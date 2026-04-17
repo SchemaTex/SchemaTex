@@ -1,11 +1,26 @@
-# Lineage
+<p align="center">
+  <strong>Lineage</strong><br>
+  Text-to-SVG rendering for genograms, ecomaps, and pedigree charts.<br>
+  <em>Like <a href="https://mermaid.js.org/">Mermaid</a> — but for relationship diagrams.</em>
+</p>
 
-Text-to-SVG rendering engine for **genograms**, **ecomaps**, and **pedigree charts**.
+<p align="center">
+  <a href="#install">Install</a> ·
+  <a href="#quick-start">Quick Start</a> ·
+  <a href="#genogram-syntax">Genogram</a> ·
+  <a href="#ecomap-syntax">Ecomap</a> ·
+  <a href="#api">API</a> ·
+  <a href="#contributing">Contributing</a>
+</p>
 
-Like [Mermaid](https://mermaid.js.org/) — but for relationship diagrams used in social work, family therapy, genetics, and clinical practice.
+---
+
+## What is Lineage?
+
+Lineage turns plain text into clinical-grade SVG diagrams — genograms, ecomaps, and pedigree charts — the kind used daily in social work, family therapy, genetics, and medical practice.
 
 ```
-genogram
+genogram "The Smiths"
   john [male, 1950]
   mary [female, 1952]
   john -- mary
@@ -13,19 +28,23 @@ genogram
     bob [male, 1978, deceased]
 ```
 
-↓
+This produces a standards-compliant genogram with proper McGoldrick symbols, generation-based layout, and accessible SVG output — no dragging boxes around, no learning a visual editor.
 
-![genogram example](docs/example-genogram.svg)
+### Why not Mermaid?
 
-## Why Lineage?
+Mermaid is great for flowcharts and sequence diagrams. But **relationship diagrams** have domain-specific requirements that general-purpose tools can't meet:
 
-Mermaid is great for flowcharts and sequence diagrams. But **specialized relationship diagrams** — genograms, ecomaps, pedigree charts — need domain-specific layout algorithms and standardized symbol systems that general-purpose tools can't provide.
-
-- **Genograms** follow the [McGoldrick standard](https://en.wikipedia.org/wiki/Genogram): gender-specific shapes, medical condition fills, relationship line patterns, generation-based layout
-- **Ecomaps** use radial layout with weighted connections showing resource flow direction
+- **Genograms** follow the [McGoldrick (2020) standard](https://en.wikipedia.org/wiki/Genogram) — gender-specific shapes (square/circle/diamond), medical condition fill patterns, standardized relationship lines, generation-based layout
+- **Ecomaps** use radial layout with concentric rings, weighted connection types, and directional energy flow arrows ([Hartman 1978](https://en.wikipedia.org/wiki/Ecomap))
 - **Pedigree charts** track genetic inheritance with carrier/affected status indicators
 
 No existing open-source library handles these well. GoJS has a genogram sample but costs $7k+. Everything else is either proprietary or abandoned.
+
+### Design principles
+
+- **Zero runtime dependencies.** No D3, no dagre, no parser generators. Hand-written parsers and layout algorithms. The entire library is self-contained TypeScript.
+- **Semantic SVG output.** Every element has accessible `<title>`/`<desc>`, CSS classes for theming, and `data-*` attributes for interactivity. No inline styles.
+- **Plugin architecture.** Each diagram type (genogram, ecomap, pedigree) is an independent plugin with its own parser, layout engine, and renderer. Import only what you need.
 
 ## Install
 
@@ -33,189 +52,332 @@ No existing open-source library handles these well. GoJS has a genogram sample b
 npm install lineage
 ```
 
-## Usage
+Works with any bundler (Vite, webpack, esbuild, Rollup) and Node.js. Ships as ESM + CJS with full TypeScript declarations.
 
-### Basic
+## Quick Start
 
 ```ts
 import { render } from 'lineage';
 
 const svg = render(`
-  genogram
-    john [male, 1950]
-    mary [female, 1952]
-    john -- mary
-      alice [female, 1975]
-      bob [male, 1978]
+genogram
+  john [male, 1950]
+  mary [female, 1952]
+  john -- mary
+    alice [female, 1975]
+    bob [male, 1978]
 `);
 
 document.getElementById('diagram').innerHTML = svg;
 ```
 
-### With configuration
+The `render()` function auto-detects the diagram type from the first line and returns a complete SVG string.
+
+## Genogram Syntax
+
+Genograms model family structure across generations — marriages, divorces, children, medical conditions, and life status.
+
+### Individuals
+
+```
+genogram
+  john [male, 1950]
+  mary [female, 1952]
+  child [unknown, 1980, deceased]
+```
+
+| Property | Effect |
+|----------|--------|
+| `male` | Square symbol |
+| `female` | Circle symbol |
+| `unknown` | Diamond symbol |
+| `1950` | Birth year (shown as label) |
+| `deceased` | X drawn through symbol |
+| `stillbirth` | Smaller symbol with X |
+| `conditions: X(fill)` | Medical condition overlay |
+
+### Relationships
+
+```
+genogram
+  a [male, 1950]
+  b [female, 1952]
+  a -- b              # married
+    child [female, 1975]
+  a -x- b             # divorced
+  a -/- b             # separated
+  a ~ b               # cohabitation
+  a -o- b             # engaged
+```
+
+Children are indented under the couple line they belong to:
+
+```
+genogram
+  dad [male, 1950]
+  mom [female, 1952]
+  dad -- mom
+    son [male, 1975]
+    daughter [female, 1978]
+```
+
+### Medical conditions
+
+Conditions use standard genogram fill patterns:
+
+```
+genogram
+  patient [male, 1960, conditions: heart-disease(full) + diabetes(half-left)]
+```
+
+Fill types: `full`, `half-left`, `half-right`, `half-top`, `half-bottom`, `striped`, `dotted`
+
+### Multi-generation example
+
+```
+genogram "Three Generations"
+  grandpa [male, 1930, deceased]
+  grandma [female, 1932]
+  grandpa -- grandma
+    dad [male, 1955]
+    aunt [female, 1958]
+  dad -- mom [female, 1957]
+    me [male, 1985]
+    sister [female, 1988]
+```
+
+## Ecomap Syntax
+
+Ecomaps visualize a person or family's relationships with external systems — work, healthcare, community, legal, and social connections.
+
+### Structure
+
+Every ecomap has a **center** (the individual or family) surrounded by **external systems**, connected by lines that show relationship strength and energy flow.
+
+```
+ecomap "Maria's Network"
+  center: maria [female, age: 34]
+
+  work [label: "Tech Company", category: work]
+  church [label: "St. Mary's", category: religion]
+  mother [label: "Mom", category: family]
+
+  maria === mother
+  maria --- church
+  maria === work
+```
+
+### Connection types
+
+| Operator | Type | Visual |
+|----------|------|--------|
+| `===` | Strong | Triple line |
+| `==` | Moderate | Double line |
+| `---` | Normal | Single line |
+| `- -` | Weak | Dashed line |
+| `~~~` | Stressful | Wavy line |
+| `~=~` | Stressful-strong | Thick wavy line |
+| `~x~` | Conflictual | Line with X marks |
+| `-/-` | Broken/cut off | Line with break |
+
+### Energy flow (directional arrows)
+
+```
+therapist --> maria         # energy flows from therapist to maria
+maria ==> work              # moderate, energy flows from maria to work
+maria <-> church            # mutual energy exchange
+```
+
+| Operator | Flow | Strength |
+|----------|------|----------|
+| `-->` / `<--` | One-way | Normal |
+| `<->` | Mutual | Normal |
+| `==>` / `<==` | One-way | Moderate |
+| `<=>` | Mutual | Moderate |
+| `===>` / `<===` | One-way | Strong |
+
+### Connection labels
+
+```
+maria --- employer [label: "part-time"]
+maria ~~~ ex [label: "custody conflict"]
+```
+
+### System categories
+
+Systems can be tagged with a `category` for color-coded rendering:
+
+```
+work [label: "Tech Corp", category: work]
+doc [label: "Dr. Smith", category: health]
+church [label: "St. Mary's", category: religion]
+```
+
+Built-in categories: `family`, `friends`, `work`, `education`, `health`, `mental-health`, `religion`, `recreation`, `legal`, `government`, `substance`, `community`, `financial`, `housing`, `cultural`, `social-media`, `other`
+
+### Full example
+
+```
+ecomap "Substance Abuse Recovery"
+  center: client [male, age: 28, label: "James"]
+  aa [label: "AA Group", category: substance, importance: major]
+  sponsor [label: "Bill (Sponsor)", category: substance]
+  employer [label: "Warehouse Job", category: work]
+  mother [label: "Mom", category: family]
+  exwife [label: "Ex-wife", category: family]
+  kids [label: "Children (2)", category: family]
+  dealer [label: "Old Friends", category: substance]
+  probation [label: "P.O. Johnson", category: legal]
+  therapist [label: "CBT Therapist", category: mental-health]
+  client === aa
+  sponsor --> client
+  client --- employer [label: "new, probationary"]
+  client == mother [label: "supportive"]
+  client ~~~ exwife [label: "custody conflict"]
+  client - - kids [label: "supervised visits"]
+  client -/- dealer [label: "trying to cut off"]
+  probation --> client
+  therapist <-> client [label: "weekly"]
+```
+
+## API
+
+### `render(text, config?)`
+
+Parse, layout, and render a diagram in one call. Returns an SVG string.
 
 ```ts
 import { render } from 'lineage';
 
+const svg = render(diagramText);
+const svg = render(diagramText, { type: 'ecomap' }); // force type
 const svg = render(diagramText, {
-  theme: 'clinical',
   fontFamily: 'Inter, system-ui',
   padding: 40,
+  theme: 'clinical',
 });
 ```
 
-### Parse only (get AST)
+### `parse(text, config?)`
+
+Parse text into an AST without rendering. Useful for inspection, transformation, or custom rendering.
 
 ```ts
 import { parse } from 'lineage';
 
 const ast = parse(diagramText);
-// → { type: 'genogram', individuals: [...], relationships: [...] }
+// → { type: 'genogram', individuals: [...], relationships: [...], metadata: {...} }
 ```
 
 ### Tree-shakable imports
 
+Import only the diagram type you need:
+
 ```ts
-// Only import what you need
 import { genogram } from 'lineage/genogram';
 import { ecomap } from 'lineage/ecomap';
-import { pedigree } from 'lineage/pedigree';
+
+// Each export is a DiagramPlugin with parse(), layout(), render()
+const ast = genogram.parse(text);
+const layout = genogram.layout(ast, layoutConfig);
+const svg = genogram.render(layout, renderConfig);
 ```
 
-## DSL Syntax
+### `LineageConfig`
 
-### Genogram
-
-```
-genogram "The Smith Family"
-
-  # Generation 1
-  john [male, 1950, conditions: heart-disease]
-  mary [female, 1952]
-  john -- mary                    # married
-
-  # Generation 2
-  john -- mary
-    alice [female, 1975]          # child
-    bob [male, 1978, deceased]    # deceased child
-
-  # Second marriage
-  john -x- mary                   # divorced
-  john -- susan [female, 1955]    # remarried
-
-  # Medical conditions
-  john [conditions: heart-disease(full), diabetes(half-left)]
+```ts
+interface LineageConfig {
+  type?: 'genogram' | 'ecomap' | 'pedigree';  // force diagram type
+  fontFamily?: string;   // default: 'system-ui'
+  padding?: number;      // SVG padding in px, default: 20
+  theme?: string;        // default: 'default'
+}
 ```
 
-**Symbols:**
-| Syntax | Meaning |
-|--------|---------|
-| `[male]` | □ Male |
-| `[female]` | ○ Female |
-| `[unknown]` | ◇ Unknown/Other |
-| `[deceased]` | ✕ through shape |
-| `A -- B` | Marriage |
-| `A -x- B` | Divorce |
-| `A -/- B` | Separation |
-| `A ~ B` | Cohabitation |
-| Indented under couple | Child |
-| `[conditions: X(fill)]` | Medical condition with fill pattern |
+## SVG Output
 
-### Ecomap
+Lineage produces clean, semantic SVG suitable for embedding, printing, or interactive use:
 
-```
-ecomap "Maria's Support System"
-
-  center: maria [female, age: 34]
-
-  # External systems
-  work [label: "Tech Company"]
-  church [label: "St. Mary's"]
-  mother [label: "Mom (Rosa)"]
-  therapist [label: "Dr. Chen"]
-  ex [label: "Ex-husband"]
-
-  # Connections
-  maria === work          # strong positive
-  maria --- church        # weak/tenuous
-  maria === mother        # strong positive
-  maria === therapist     # strong positive
-  maria ~~~ ex            # stressful
-  maria --> mother        # energy flows to mother
-  therapist --> maria     # energy flows from therapist
+```html
+<svg xmlns="http://www.w3.org/2000/svg" class="lineage-diagram lineage-genogram">
+  <title>Genogram: The Smiths</title>
+  <desc>Genogram with 5 individuals across 2 generations</desc>
+  <style>/* Themeable CSS classes */</style>
+  <!-- Each element has data-* attributes for JS interaction -->
+  <g data-individual-id="john" class="lineage-node lineage-male">...</g>
+</svg>
 ```
 
-### Pedigree Chart
+**Accessibility:** Every diagram includes `<title>` and `<desc>` elements. Nodes and edges carry semantic class names.
 
-```
-pedigree "Cystic Fibrosis Inheritance"
+**Theming:** Override any `.lineage-*` CSS class. No inline styles — everything is in a single `<style>` block within the SVG.
 
-  # Generation I
-  I-1 [male, carrier]
-  I-2 [female, carrier]
-  I-1 -- I-2
-
-  # Generation II
-  I-1 -- I-2
-    II-1 [male, unaffected]
-    II-2 [female, carrier]
-    II-3 [male, affected, proband]   # proband = index case
-    II-4 [female, unaffected]
-
-  # Consanguinity
-  II-1 == II-5 [female, carrier]     # double line = related parents
-```
-
-## Output
-
-Lineage outputs clean, semantic SVG with:
-
-- Accessible `<title>` and `<desc>` elements
-- CSS class names for styling (`.lineage-node`, `.lineage-edge`, `.lineage-label`)
-- Data attributes for interaction (`data-individual-id`, `data-relationship-type`)
-- No external dependencies in the SVG output
+**Interactivity:** Use `data-individual-id` and `data-relationship-type` attributes to attach event handlers.
 
 ## Roadmap
 
-- [x] Project scaffold and type system
-- [ ] **Phase 1: Genogram** — parser, generation-based layout, McGoldrick symbols, SVG renderer
-- [ ] **Phase 2: Ecomap + Pedigree** — radial layout (ecomap), shared layout engine (pedigree)
-- [ ] **Phase 3: Integrations** — Markdown plugin, React component, Obsidian plugin
+- [x] **Phase 1: Genogram** — Parser, generation-based layout, McGoldrick symbols, SVG renderer
+- [x] **Phase 2: Ecomap** — Radial layout, weighted connections, energy flow arrows, category colors
+- [ ] **Phase 2: Pedigree** — Genetic inheritance charts with carrier/affected status
+- [ ] **Phase 3: Integrations** — React component, Markdown plugin, Obsidian plugin
 - [ ] **Phase 4: Advanced** — Interactive editing, JSON import/export, PDF export
 
 ## Architecture
 
 ```
-Text DSL
-   │
-   ▼
-┌─────────┐     ┌──────────┐     ┌──────────┐     ┌──────────┐
-│  Parser  │ ──▶ │   AST    │ ──▶ │  Layout  │ ──▶ │ Renderer │ ──▶ SVG
-└─────────┘     └──────────┘     └──────────┘     └──────────┘
-                                  genogram:         Clean SVG
-                                  generation-based   with CSS
-                                  layered layout     classes
-
-                                  ecomap:
-                                  radial/polar
-
-                                  pedigree:
-                                  simplified
-                                  generation-based
+Text DSL → Parser → AST → Layout → Renderer → SVG string
 ```
 
-Each diagram type is a **plugin** that implements `parse()`, `layout()`, and `render()`. The core provides the pipeline, type system, and shared SVG utilities.
+Each diagram type is a **plugin** implementing `DiagramPlugin`:
+
+```
+src/
+  core/
+    types.ts        # Shared type definitions (the spec)
+    api.ts          # render() and parse() entry points
+    svg.ts          # SVG builder utilities
+  diagrams/
+    genogram/       # McGoldrick-standard genogram
+      parser.ts     # Hand-written recursive descent
+      layout.ts     # Generation-based layered layout
+      symbols.ts    # Gender shapes, condition fills, status markers
+      renderer.ts   # SVG output with semantic markup
+    ecomap/         # Hartman-standard ecomap
+      parser.ts     # Connection operator parser
+      layout.ts     # Radial/polar layout with concentric rings
+      renderer.ts   # 8 line types, arrows, category colors
+    pedigree/       # (coming soon)
+```
+
+## Development
+
+```bash
+git clone https://github.com/mymap-ai/lineage.git
+cd lineage
+npm install
+npm run dev          # watch mode (tsup)
+npm run test         # vitest (113 tests)
+npm run typecheck    # strict TypeScript
+npm run lint         # ESLint
+npm run build        # ESM + CJS + DTS → dist/
+```
+
+Open `preview/index.html` in a browser (via Vite or any dev server) to see live-rendered examples of all diagram types.
 
 ## Contributing
 
-Contributions welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+Contributions are welcome. Key areas where help is needed:
 
-Key areas where help is needed:
-- McGoldrick standard symbol accuracy
-- Layout algorithm optimization (edge crossing minimization)
-- Accessibility (screen reader support for relationship diagrams)
-- Internationalization (RTL language support)
+- **Standard accuracy** — McGoldrick genogram symbols, Hartman ecomap conventions
+- **Layout optimization** — Edge crossing minimization, better label placement
+- **Accessibility** — Screen reader support for relationship diagrams
+- **Pedigree charts** — Implementation of the pedigree diagram type
+- **Integrations** — React component, Obsidian plugin, Markdown-it plugin
+
+Please open an issue to discuss significant changes before submitting a PR.
 
 ## License
 
-MIT © [MyMap AI](https://mymap.ai)
+[AGPL-3.0](LICENSE) — free to use, modify, and distribute. Commercial integrations that modify the library must open-source their changes.
+
+Built by [MyMap AI](https://mymap.ai).

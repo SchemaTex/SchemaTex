@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Lineage Genogram Preview</title>
+<style>
+  body { font-family: system-ui; background: #f5f5f5; margin: 0; padding: 20px; }
+  h1 { font-size: 18px; color: #333; }
+  h2 { font-size: 14px; color: #666; margin-top: 30px; border-bottom: 1px solid #ddd; padding-bottom: 4px; }
+  .svg-container { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin: 10px 0; overflow-x: auto; }
+  .svg-container svg { display: block; max-width: 100%; height: auto; }
+  .grid { display: flex; flex-wrap: wrap; gap: 20px; }
+</style>
+</head>
+<body>
+<h1>Lineage Preview</h1>
+<div id="output"></div>
+<script type="module">
+import { render } from '../src/index.ts';
+
+const cases = {
+  // ─── Genogram Cases ──────────────────────────────────
+  'Genogram 1: Nuclear Family': `genogram
+  john [male, 1950]
+  mary [female, 1955]
+  john -- mary
+    alice [female, 1980]
+    bob [male, 1983]`,
+
+  'Genogram 2: Three Generations': `genogram "Smith Family"
+  grandpa [male, 1930, deceased]
+  grandma [female, 1932]
+  grandpa -- grandma
+    dad [male, 1955]
+    aunt [female, 1958]
+  dad -- mom [female, 1957]
+    me [male, 1985]
+    sister [female, 1988]`,
+
+  'Genogram 3: Divorce + Remarriage': `genogram
+  tom [male, 1950]
+  jane [female, 1952]
+  tom -x- jane
+    child1 [male, 1975]
+  tom -- susan [female, 1960]
+    child2 [female, 1985]`,
+
+  'Genogram 4: Medical Conditions': `genogram
+  father [male, 1945, conditions: heart-disease(full) + diabetes(half-left)]
+  mother [female, 1948]
+  father -- mother
+    son [male, 1970, conditions: diabetes(striped)]`,
+
+  'Genogram 5: Single Individual': `genogram
+  solo [female, 1990]`,
+
+  'Genogram 6: Childless Couple': `genogram
+  husband [male, 1960]
+  wife [female, 1962]
+  husband -- wife`,
+
+  // ─── Ecomap Cases ────────────────────────────────────
+  'Ecomap 1: Basic Support Network': `ecomap "Maria's Support Network"
+  center: maria [female, age: 34]
+  work [label: "Tech Company", category: work]
+  church [label: "St. Mary's", category: religion]
+  mother [label: "Mom", category: family]
+  bestfriend [label: "Lisa", category: friends]
+  maria === mother
+  maria --- church
+  maria === work
+  maria == bestfriend`,
+
+  'Ecomap 2: Energy Flow + Stress': `ecomap "The Johnsons"
+  center: family [label: "The Johnsons"]
+  school [label: "Oak Elementary", category: education]
+  therapist [label: "Dr. Smith", category: mental-health]
+  ex [label: "Ex-spouse", category: family]
+  church [label: "Community Church", category: religion]
+  legal [label: "Family Court", category: legal]
+  family === school
+  therapist --> family
+  family ~~~ ex
+  family <-> church
+  family ~~~ legal`,
+
+  'Ecomap 3: Complex Clinical': `ecomap "Substance Abuse Recovery"
+  center: client [male, age: 28, label: "James"]
+  aa [label: "AA Group", category: substance, importance: major]
+  sponsor [label: "Bill (Sponsor)", category: substance]
+  employer [label: "Warehouse Job", category: work]
+  mother [label: "Mom", category: family]
+  exwife [label: "Ex-wife", category: family]
+  kids [label: "Children (2)", category: family]
+  dealer [label: "Old Friends", category: substance]
+  probation [label: "P.O. Johnson", category: legal]
+  therapist [label: "CBT Therapist", category: mental-health]
+  client === aa
+  sponsor --> client
+  client --- employer [label: "new, probationary"]
+  client == mother [label: "supportive"]
+  client ~~~ exwife [label: "custody conflict"]
+  client - - kids [label: "supervised visits"]
+  client -/- dealer [label: "trying to cut off"]
+  probation --> client
+  therapist <-> client [label: "weekly"]`,
+};
+
+const output = document.getElementById('output');
+for (const [name, dsl] of Object.entries(cases)) {
+  const h2 = document.createElement('h2');
+  h2.textContent = name;
+  output.appendChild(h2);
+
+  const div = document.createElement('div');
+  div.className = 'svg-container';
+  try {
+    div.innerHTML = render(dsl);
+  } catch (e) {
+    div.textContent = `Error: ${e.message}`;
+    div.style.color = 'red';
+  }
+  output.appendChild(div);
+}
+</script>
+</body>
+</html>

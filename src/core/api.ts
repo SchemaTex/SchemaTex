@@ -1,47 +1,52 @@
-/**
- * Core API — public surface of Lineage.
- *
- * render(text)          → SVG string
- * parse(text)           → AST (for advanced use)
- * renderToElement(text) → SVGElement (browser only)
- */
-
-import type { DiagramAST } from "./types";
+import type { DiagramAST, DiagramPlugin } from "./types";
+import { genogram } from "../diagrams/genogram";
+import { ecomap } from "../diagrams/ecomap";
+import { pedigree } from "../diagrams/pedigree";
 
 export interface LineageConfig {
-  /** Diagram type auto-detected from text, or set explicitly */
   type?: "genogram" | "ecomap" | "pedigree";
-  /** SVG width in px. Default: auto (fit content) */
   width?: number;
-  /** SVG height in px. Default: auto (fit content) */
   height?: number;
-  /** Padding around the diagram in px. Default: 20 */
   padding?: number;
-  /** Theme: 'default' | 'clinical' | 'minimal' */
   theme?: string;
-  /** Font family. Default: system-ui */
   fontFamily?: string;
 }
 
-/**
- * Parse text DSL into an AST without rendering.
- */
-export function parse(_text: string, _config?: LineageConfig): DiagramAST {
-  // TODO: implement parser pipeline
-  // 1. detect diagram type from first keyword
-  // 2. delegate to type-specific parser
-  // 3. return AST
-  throw new Error("Not implemented yet — see CLAUDE.md for development plan");
+const plugins: DiagramPlugin[] = [genogram, ecomap, pedigree];
+
+function detectPlugin(text: string, config?: LineageConfig): DiagramPlugin {
+  if (config?.type) {
+    const plugin = plugins.find((p) => p.type === config.type);
+    if (plugin) return plugin;
+  }
+  for (const plugin of plugins) {
+    if (plugin.detect(text)) return plugin;
+  }
+  throw new Error(
+    "Cannot detect diagram type. Start your text with 'genogram', 'ecomap', or 'pedigree'."
+  );
 }
 
-/**
- * Render text DSL to an SVG string.
- */
+export function parse(text: string, config?: LineageConfig): DiagramAST {
+  const plugin = detectPlugin(text, config);
+  return plugin.parse(text);
+}
+
 export function render(text: string, config?: LineageConfig): string {
-  const ast = parse(text, config);
-  // TODO: implement render pipeline
-  // 1. AST → layout (compute positions)
-  // 2. layout → SVG string
-  void ast;
-  throw new Error("Not implemented yet — see CLAUDE.md for development plan");
+  const plugin = detectPlugin(text, config);
+  const ast = plugin.parse(text);
+  const layoutConfig = {
+    nodeSpacingX: 80,
+    nodeSpacingY: 100,
+    nodeWidth: 40,
+    nodeHeight: 40,
+  };
+  const layout = plugin.layout(ast, layoutConfig);
+  const renderConfig = {
+    fontFamily: config?.fontFamily ?? "system-ui",
+    fontSize: 12,
+    theme: config?.theme ?? "default",
+    padding: config?.padding ?? 20,
+  };
+  return plugin.render(layout, renderConfig);
 }

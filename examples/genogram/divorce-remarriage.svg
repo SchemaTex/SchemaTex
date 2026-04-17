@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 488 322" class="lineage-diagram lineage-genogram" width="488" height="322"><title>Genogram</title>
+<desc>Genogram diagram with 5 individuals across 2 generations</desc>
+<defs></defs>
+<style>
+.lineage-shape { fill: white; stroke: #333; stroke-width: 2; }
+.lineage-label { font-family: system-ui; font-size: 12px; text-anchor: middle; fill: #333; }
+.lineage-edge { stroke: #333; stroke-width: 2; fill: none; }
+.lineage-edge-cohabiting path { stroke-dasharray: 6,4; }
+.lineage-edge-divorced .lineage-divorce-mark { stroke: #333; stroke-width: 2; }
+.lineage-edge-separated .lineage-separation-mark { stroke: #333; stroke-width: 2; }
+.lineage-deceased-mark { stroke: #333; stroke-width: 2; }
+</style>
+<g class="lineage-edges"><g class="lineage-edge lineage-edge-divorced" data-from="jane" data-to="tom"><path d="M 80 60 L 288 60" class="lineage-edge-path"/>
+<line x1="180" y1="54" x2="188" y2="66" class="lineage-divorce-mark" stroke="#333" stroke-width="2"/>
+<line x1="186" y1="54" x2="194" y2="66" class="lineage-divorce-mark" stroke="#333" stroke-width="2"/></g>
+<g class="lineage-edge lineage-edge-parent-child" data-from="tom" data-to="jane"><path d="M 184 60 L 184 141" class="lineage-edge-path"/></g>
+<g class="lineage-edge lineage-edge-parent-child" data-from="tom+jane" data-to="child1"><path d="M 184 60 L 184 206" class="lineage-edge-path"/></g>
+<g class="lineage-edge lineage-edge-married" data-from="tom" data-to="susan"><path d="M 328 60 L 408 60" class="lineage-edge-path"/></g>
+<g class="lineage-edge lineage-edge-parent-child" data-from="tom" data-to="susan"><path d="M 368 60 L 368 141" class="lineage-edge-path"/></g>
+<g class="lineage-edge lineage-edge-parent-child" data-from="tom+susan" data-to="child2"><path d="M 368 60 L 368 206" class="lineage-edge-path"/></g></g>
+<g class="lineage-generation lineage-generation-0" data-generation="0"><g class="lineage-node lineage-female" data-individual-id="jane" transform="translate(60, 60)"><title>Jane (1952)</title>
+<circle cx="0" cy="0" r="20" class="lineage-shape"/></g>
+<g class="lineage-node lineage-male" data-individual-id="tom" transform="translate(308, 60)"><title>Tom (1950)</title>
+<rect x="-20" y="-20" width="40" height="40" class="lineage-shape"/></g>
+<g class="lineage-node lineage-female" data-individual-id="susan" transform="translate(428, 60)"><title>Susan (1960)</title>
+<circle cx="0" cy="0" r="20" class="lineage-shape"/></g></g>
+<g class="lineage-generation lineage-generation-1" data-generation="1"><g class="lineage-node lineage-male" data-individual-id="child1" transform="translate(184, 226)"><title>Child1 (1975)</title>
+<rect x="-20" y="-20" width="40" height="40" class="lineage-shape"/></g>
+<g class="lineage-node lineage-female" data-individual-id="child2" transform="translate(368, 226)"><title>Child2 (1985)</title>
+<circle cx="0" cy="0" r="20" class="lineage-shape"/></g></g>
+<g class="lineage-labels"><text x="60" y="98" class="lineage-label" data-individual-id="jane">Jane (1952)</text>
+<text x="308" y="98" class="lineage-label" data-individual-id="tom">Tom (1950)</text>
+<text x="428" y="98" class="lineage-label" data-individual-id="susan">Susan (1960)</text>
+<text x="184" y="264" class="lineage-label" data-individual-id="child1">Child1 (1975)</text>
+<text x="368" y="264" class="lineage-label" data-individual-id="child2">Child2 (1985)</text></g></svg>

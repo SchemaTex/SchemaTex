@@ -1,104 +1,394 @@
-# 02 — Ecomap Standard Reference
+# 02 — Ecomap Standard Reference (Comprehensive)
 
-*Hartman (1978) ecomap model — 个体/家庭与外部环境系统的关系可视化。*
+*Hartman (1978) ecomap model + 临床社会工作实践扩展。个体/家庭与外部环境系统的关系可视化。*
 
-> Reference: Hartman, A. (1978). Diagrammatic assessment of family relationships. *Social Casework*, 59(8), 465-476.
+> **References:**
+> - Hartman, A. (1978). Diagrammatic assessment of family relationships. *Social Casework*, 59(8), 465-476.
+> - Ray, R.A. & Street, A.F. (2005). Ecomapping: An innovative research tool for nurses. *J of Advanced Nursing*, 50(5), 545-552.
+> - Rempel, G.R. et al. (2007). Technological advances in research with families. *J of Family Nursing*, 13(4), 413-436.
 
 ---
 
 ## 1. Structure
 
 Ecomap 由三层组成：
-1. **中心** — 个体或家庭单元（用圆或方框表示）
-2. **外部系统** — 工作、学校、教会、朋友、医疗、政府机构等（用圆表示）
-3. **连接线** — 表示关系质量和能量流向
+1. **中心 (Center)** — 个体或家庭单元（genogram 嵌入或简化圆/方框）
+2. **外部系统 (Systems)** — 人际关系、组织、机构、社区资源
+3. **连接线 (Connections)** — 表示关系的质量、强度、能量流向
+
+临床用途：评估个体/家庭的社会支持网络、识别资源和压力源、规划干预策略。
 
 ---
 
-## 2. Symbols
+## 2. Center Element
 
-| 元素 | Shape | SVG |
-|------|-------|-----|
-| Central person/family | Large circle (r=40) | `<circle>` class="lineage-center" |
-| External system | Medium circle (r=30) | `<circle>` class="lineage-system" |
-| System label | Text inside circle | `<text>` centered |
+### 2.1 Simple Center (Individual)
+| Element | Shape | SVG |
+|---------|-------|-----|
+| Central person | Large circle (r=50) or square (50×50) | `<circle>` / `<rect>` with class="lineage-center" |
+| Name label | Text inside shape | `<text>` centered |
+| Optional details | Age, sex symbol | Smaller text below name |
 
----
+### 2.2 Family Center (Embedded Genogram)
+在临床实践中，ecomap 的中心通常是一个**迷你 genogram**，包含核心家庭成员：
 
-## 3. Connection Line Types
+```
+┌─────────────────────────┐
+│    ○ ─── □              │  ← embedded mini genogram
+│      │                  │
+│    ○   □   ○            │
+│  (family unit)          │
+└─────────────────────────┘
+```
 
-| Type | Line Style | DSL Syntax | 含义 |
-|------|-----------|------------|------|
-| Strong/positive | Solid thick (stroke-width: 4) | `===` | 紧密、有力的关系 |
-| Moderate | Solid normal (stroke-width: 2) | `---` | 一般关系 |
-| Weak/tenuous | Dashed thin (stroke-width: 1) | `- -` | 薄弱的关系 |
-| Stressful | Wavy/zigzag line | `~~~` | 充满压力的关系 |
-| Energy flow (one-way) | Arrow on one end | `-->` or `<--` | 能量/资源单向流动 |
-| Energy flow (mutual) | Arrows on both ends | `<->` | 双向能量流动 |
+**实现方式：**
+- Center 区域用一个大的虚线圆或矩形包围
+- 内部渲染简化的 genogram（只有 symbols + couple/child lines，无 labels/conditions）
+- Class: `lineage-center-family`
+- 连接线从 center boundary 出发（不是从内部 individual）
 
-**组合：** 线型和箭头可组合，如 `====>` 表示强关系 + 单向能量流。
+### 2.3 DSL for Center
 
----
+```
+# Simple center
+center: maria [female, age: 34]
 
-## 4. Layout Rules
-
-### 4.1 Radial Layout
-- 中心人物/家庭在画布正中
-- 外部系统按类别/亲密度分布在周围
-- 越亲密的系统越靠近中心
-- 默认：系统均匀分布在圆周上
-- 可选：按类别分区（上方=工作/学校，下方=家庭，左=社区，右=专业服务）
-
-### 4.2 Spacing
-- Center circle radius: 40px
-- System circle radius: 30px
-- Minimum distance from center: 120px
-- Maximum distance from center: 250px
-- Minimum distance between systems: 80px
-
-### 4.3 Connection Lines
-- 线从 center circle 边缘到 system circle 边缘（不是中心到中心）
-- Wavy line: SVG `<path>` 用 sine wave 实现
-- Arrow: SVG `<marker>` arrowhead
+# Family center
+center: family [label: "The Johnsons"]
+  john [male, 1960]
+  mary [female, 1962]
+  john -- mary
+    kid1 [male, 1990]
+    kid2 [female, 1993]
+```
 
 ---
 
-## 5. DSL Grammar (Ecomap)
+## 3. External System Types
+
+### 3.1 Standard System Categories
+
+临床社工实践中的标准外部系统类别，每个有推荐的图标/颜色：
+
+| Category | Icon/Label | Default Color | 示例 |
+|----------|-----------|--------------|------|
+| Family (extended) | House icon | `#8D6E63` (brown) | 祖父母、姻亲、表亲 |
+| Friends/Peers | People icon | `#42A5F5` (blue) | 朋友、邻居、同事 |
+| Work/Employment | Briefcase | `#66BB6A` (green) | 雇主、同事关系 |
+| Education | Book icon | `#FFA726` (orange) | 学校、大学、培训 |
+| Health/Medical | Cross icon | `#EF5350` (red) | 医生、医院、治疗师 |
+| Mental Health | Brain icon | `#AB47BC` (purple) | 心理咨询师、精神科 |
+| Religion/Spiritual | Symbol | `#FFEE58` (yellow) | 教会、寺庙、精神团体 |
+| Recreation/Leisure | Play icon | `#26C6DA` (cyan) | 运动、爱好、俱乐部 |
+| Legal/Justice | Scale icon | `#78909C` (gray-blue) | 律师、法院、缓刑官 |
+| Government/Social Services | Building | `#8D6E63` (brown) | 社会福利、住房援助 |
+| Financial | Dollar icon | `#66BB6A` (green) | 银行、经济援助 |
+| Community | Globe icon | `#29B6F6` (light blue) | 社区组织、支持团体 |
+| Cultural/Ethnic | Flag icon | `#FFA726` (orange) | 文化组织、族裔社区 |
+| Substance (positive) | Pill icon | `#66BB6A` (green) | 戒瘾项目、AA/NA |
+| Substance (negative) | Pill icon | `#EF5350` (red) | 酒吧、毒品来源 |
+| Technology/Online | Screen icon | `#42A5F5` (blue) | 社交媒体、在线社区 |
+| Pet/Animal | Paw icon | `#8D6E63` (brown) | 宠物、服务动物 |
+
+### 3.2 System Sizing
+
+System circle 的大小可以反映该系统在个体生活中的重要性：
+
+| Importance | Circle Radius | 含义 |
+|------------|--------------|------|
+| Major | 35-40px | 生活中极重要的系统 |
+| Moderate | 25-30px (default) | 一般重要 |
+| Minor | 15-20px | 存在但影响较小 |
+
+DSL: `work [label: "Tech Corp", size: large]` or `work [label: "Tech Corp", importance: major]`
+
+---
+
+## 4. Connection Line Types (Expanded)
+
+### 4.1 Relationship Quality Lines
+
+| Type | Line Style | DSL Syntax | SVG | 含义 |
+|------|-----------|------------|-----|------|
+| Strong/positive | 3 parallel solid lines | `===` | 3 parallel `<line>`, stroke-width: 2, gap: 3px | 非常紧密、强有力 |
+| Moderate positive | 2 parallel solid lines | `==` | 2 parallel `<line>`, stroke-width: 2 | 正向、适度的关系 |
+| Normal | Single solid line | `---` | `<line>` stroke-width: 2 | 一般/中性关系 |
+| Weak/tenuous | Single dashed thin line | `- -` | stroke-dasharray="4,4", stroke-width: 1 | 薄弱的关系 |
+| Stressful | Zigzag/wavy line | `~~~` | `<path>` sine wave | 充满压力的关系 |
+| Stressful + strong | Zigzag + thick | `~=~` | thick wavy path | 紧密但充满压力 |
+| Conflictual | Crossed lines (hash marks) | `~x~` | zigzag + hash marks | 冲突关系 |
+| Broken/cutoff | Line with gap | `-/-` | dashed with visible gap | 断裂/中断的关系 |
+
+### 4.2 Energy Flow Arrows
+
+| Direction | DSL Syntax | 含义 |
+|-----------|------------|------|
+| One-way (center → system) | `-->` | 能量/资源从中心流出 |
+| One-way (system → center) | `<--` | 能量/资源从系统流入 |
+| Mutual/reciprocal | `<->` | 双向能量流动 |
+| Draining (from center) | `==>` | 大量能量流出（消耗） |
+| Nourishing (to center) | `<==` | 大量能量流入（滋养） |
+
+### 4.3 Combined Line Types
+
+Line type 和 arrow direction 可以组合：
+
+```
+maria === mother          # strong relationship, no direction specified
+maria ===> work           # strong + energy flows from maria to work
+therapist <-- maria       # energy flows from maria to therapist (maria gives)
+maria ~~~ ex              # stressful relationship
+school <-> maria          # normal reciprocal
+maria - - doctor          # weak relationship
+```
+
+### 4.4 Connection Labels
+
+连接线可以附加文字标签，描述关系的具体性质：
+
+```
+maria === mother [label: "daily calls"]
+maria ~~~ ex [label: "custody disputes"]
+maria --- therapist [label: "weekly sessions"]
+```
+
+### 4.5 SVG Implementation
+
+**Line rendering：**
+- 线从 center 边缘到 system 边缘（不是中心到中心）
+- 计算：从两个 circle center 的连线，减去各自 radius，得到 edge-to-edge 线段
+- Strong (3 lines): 主线 + 两条 offset ±3px 的平行线
+- Wavy: SVG `<path>` with quadratic bezier curves 模拟 sine wave
+- Arrow markers: `<marker>` in `<defs>`
+
+```xml
+<defs>
+  <marker id="arrow-end" viewBox="0 0 10 10" refX="9" refY="5"
+          markerWidth="8" markerHeight="8" orient="auto">
+    <path d="M 0 0 L 10 5 L 0 10 z" fill="#333"/>
+  </marker>
+  <marker id="arrow-start" viewBox="0 0 10 10" refX="1" refY="5"
+          markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+    <path d="M 10 0 L 0 5 L 10 10 z" fill="#333"/>
+  </marker>
+</defs>
+```
+
+---
+
+## 5. Layout Rules
+
+### 5.1 Radial Layout Algorithm
+
+1. **中心定位：** Center element 放在画布正中 `(width/2, height/2)`
+2. **Ring 分配：** 外部系统分配到 1-3 个同心环
+   - Inner ring (r=140px): 最亲密/最重要的系统
+   - Middle ring (r=220px): 中等重要
+   - Outer ring (r=300px): 较远/较弱的系统
+3. **角度分配：** 同一 ring 上的系统均匀分布
+   - 可选：按 category 分区（见 5.2）
+4. **避免重叠：** 如果同一 ring 上系统太多，自动增加 ring radius 或拆分到两个 ring
+
+### 5.2 Category-Based Sector Layout (可选)
+
+按类别将 ecomap 划分为象限/区域：
+
+| Sector (角度范围) | Category |
+|-------------------|----------|
+| 上方 (315°-45°) | Work / Education / Professional |
+| 右方 (45°-135°) | Friends / Recreation / Community |
+| 下方 (135°-225°) | Family (extended) / Cultural |
+| 左方 (225°-315°) | Health / Legal / Government services |
+
+这是建议布局，不是硬规则。DSL 可以指定 `[sector: top]` 覆盖。
+
+### 5.3 Spacing Rules
+
+| Parameter | Default | 含义 |
+|-----------|---------|------|
+| Center radius | 50px (individual) / 80px (family) | Center element size |
+| System radius | 30px (default) | External system circle size |
+| Inner ring radius | 140px | Closest systems ring |
+| Middle ring radius | 220px | Moderate systems ring |
+| Outer ring radius | 300px | Distant systems ring |
+| Min system-to-system gap | 40px | Avoid overlapping system circles |
+| Label font size | 11px | System label text |
+| Canvas padding | 40px | Edge padding |
+
+### 5.4 Responsive Sizing
+
+- 系统数量 ≤ 6: 单 ring，`r=180px`
+- 系统数量 7-12: 双 ring
+- 系统数量 13+: 三 ring 或 auto-expand canvas
+- 连接线密集时，适当增加 ring radius 避免线条过于拥挤
+
+---
+
+## 6. DSL Grammar (Ecomap — Expanded)
 
 ```ebnf
-document       = header center_def system_def* connection_def*
-header         = "ecomap" quoted_string? NEWLINE
-center_def     = "center:" ID properties? NEWLINE
-system_def     = ID properties? NEWLINE
-connection_def = ID connection_op ID NEWLINE
-connection_op  = "===" | "---" | "- -" | "~~~" | "-->" | "<--" | "<->" | "===>" | "<===" | "<=>"
-properties     = "[" property ("," property)* "]"
+document        = header center_def system_def* connection_def*
+header          = "ecomap" quoted_string? NEWLINE
+
+center_def      = "center:" (simple_center | family_center)
+simple_center   = ID properties? NEWLINE
+family_center   = ID properties? NEWLINE INDENT genogram_content DEDENT
+genogram_content = (individual_def | couple_def)+
+
+system_def      = ID properties? NEWLINE
+properties      = "[" property ("," property)* "]"
+property        = "label:" quoted_string
+               | "category:" CATEGORY
+               | "size:" SIZE
+               | "importance:" IMPORTANCE
+               | "sector:" SECTOR
+               | kv_prop
+
+CATEGORY        = "family" | "friends" | "work" | "education" | "health"
+               | "mental-health" | "religion" | "recreation" | "legal"
+               | "government" | "financial" | "community" | "cultural"
+               | "substance" | "technology" | "pet" | "other"
+SIZE            = "small" | "medium" | "large"
+IMPORTANCE      = "major" | "moderate" | "minor"
+SECTOR          = "top" | "right" | "bottom" | "left"
+
+connection_def  = ID connection_op ID connection_label? NEWLINE
+connection_op   = "===" | "==" | "---" | "- -" | "~~~" | "~=~" | "~x~" | "-/-"
+               | "===>" | "<===" | "<=>" | "==>" | "<==" 
+               | "-->" | "<--" | "<->"
+connection_label = "[" "label:" quoted_string "]"
+
+ID              = /[a-zA-Z][a-zA-Z0-9_-]*/
+quoted_string   = '"' /[^"]*/ '"'
+kv_prop         = IDENTIFIER ":" VALUE
 ```
 
 ---
 
-## 6. Test Cases
+## 7. Test Cases
 
-### Case 1: Basic Ecomap
+### Case 1: Basic Individual Ecomap
 ```
-ecomap "Maria's Support"
+ecomap "Maria's Support Network"
   center: maria [female, age: 34]
-  work [label: "Tech Company"]
-  church [label: "St. Mary's"]
-  mother [label: "Mom"]
+  work [label: "Tech Company", category: work]
+  church [label: "St. Mary's", category: religion]
+  mother [label: "Mom", category: family]
+  bestfriend [label: "Lisa", category: friends]
   maria === mother
   maria --- church
   maria === work
+  maria == bestfriend
 ```
 
-### Case 2: With Energy Flow
+### Case 2: With Energy Flow + Stress
 ```
-ecomap
+ecomap "The Johnsons"
   center: family [label: "The Johnsons"]
-  school [label: "Oak Elementary"]
-  therapist [label: "Dr. Smith"]
-  ex [label: "Ex-spouse"]
+  school [label: "Oak Elementary", category: education]
+  therapist [label: "Dr. Smith", category: mental-health]
+  ex [label: "Ex-spouse", category: family]
+  church [label: "Community Church", category: religion]
+  legal [label: "Family Court", category: legal]
   family === school
   therapist --> family
   family ~~~ ex
+  family <-> church
+  family ~~~ legal
 ```
+
+### Case 3: Family Center with Embedded Genogram
+```
+ecomap "Family Assessment"
+  center: family [label: "Rivera Family"]
+    juan [male, 1975]
+    maria [female, 1978]
+    juan -- maria
+      sofia [female, 2005]
+      diego [male, 2008]
+  school [label: "Lincoln High", category: education]
+  hospital [label: "County General", category: health]
+  grandma [label: "Abuela Rosa", category: family, importance: major]
+  gang [label: "Neighborhood Gang", category: community]
+  family === grandma
+  family == school
+  family --- hospital
+  family ~~~ gang
+```
+
+### Case 4: Complex Clinical Ecomap
+```
+ecomap "Substance Abuse Recovery"
+  center: client [male, age: 28, label: "James"]
+  aa [label: "AA Group", category: substance, importance: major]
+  sponsor [label: "Bill (Sponsor)", category: substance]
+  employer [label: "Warehouse Job", category: work]
+  mother [label: "Mom", category: family]
+  exwife [label: "Ex-wife", category: family]
+  kids [label: "Children (2)", category: family]
+  dealer [label: "Old Friends", category: substance]
+  probation [label: "P.O. Johnson", category: legal]
+  therapist [label: "CBT Therapist", category: mental-health]
+  client === aa
+  sponsor --> client
+  client --- employer [label: "new, probationary"]
+  client == mother [label: "supportive"]
+  client ~~~ exwife [label: "custody conflict"]
+  client - - kids [label: "supervised visits"]
+  client -/- dealer [label: "trying to cut off"]
+  probation --> client
+  therapist <-> client [label: "weekly"]
+```
+验证：dealer 连接是 broken/cutoff 线，kids 是 weak/tenuous，aa 是 strong，exwife 是 stressful，probation 和 therapist 有 directional arrows。
+
+### Case 5: Large System Count (Stress Test)
+```
+ecomap "Comprehensive Assessment"
+  center: patient [female, age: 45]
+  s1 [label: "Husband"]
+  s2 [label: "Son (12)"]
+  s3 [label: "Daughter (15)"]
+  s4 [label: "Mother-in-law"]
+  s5 [label: "Sister"]
+  s6 [label: "Best Friend"]
+  s7 [label: "Book Club"]
+  s8 [label: "Employer"]
+  s9 [label: "Coworkers"]
+  s10 [label: "GP Doctor"]
+  s11 [label: "Oncologist"]
+  s12 [label: "Church"]
+  s13 [label: "Yoga Class"]
+  s14 [label: "School (PTA)"]
+  s15 [label: "Neighbor"]
+  patient === s1
+  patient === s2
+  patient === s3
+  patient ~~~ s4
+  patient == s5
+  patient == s6
+  patient --- s7
+  patient --- s8
+  patient - - s9
+  patient == s10
+  patient === s11
+  patient --- s12
+  patient --- s13
+  patient - - s14
+  patient - - s15
+```
+验证：15 个系统 → 自动分配到 2-3 ring，无重叠，所有连接线可读。
+
+---
+
+## 8. Implementation Priority
+
+| Priority | Feature | Complexity |
+|----------|---------|------------|
+| P0 (Phase 2) | Basic radial layout + 6 line types + simple center | Medium |
+| P1 | Category-based coloring + system sizing | Low |
+| P1 | Energy flow arrows (directional lines) | Medium |
+| P2 | Family center with embedded mini genogram | High |
+| P2 | Connection labels | Low |
+| P2 | Category sector layout | Medium |
+| P3 | Responsive multi-ring layout for 13+ systems | Medium |
+| P3 | Interactive hover/click (future, post-SVG) | High |
