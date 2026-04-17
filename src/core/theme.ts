@@ -1,12 +1,238 @@
 /**
- * Shared design tokens for all Lineage diagram renderers.
+ * Shared design-token system for all Lineage diagram renderers.
  *
- * Each renderer imports these tokens instead of hardcoding values.
+ * Two-layer architecture:
+ *   1. BaseTheme — universal tokens every diagram uses
+ *   2. Semantic extensions — diagram-family tokens (PersonTokens, BiologyTokens, …)
+ *
+ * Three built-in presets: default, monochrome, dark.
  * All tokens are also exposed as CSS custom properties (--lineage-*)
  * so consumers can override them.
  */
 
-// ─── Font Sizes ─────────────────────────────────────────────
+// ─── Theme Name ──────────────��─────────────────────────────
+
+export type ThemeName = "default" | "monochrome" | "dark";
+
+// ─── Base Theme ─────────────��──────────────────────────────
+
+export interface BaseTheme {
+  bg: string;
+  text: string;
+  textMuted: string;
+  stroke: string;
+  strokeMuted: string;
+  fill: string;
+  fillMuted: string;
+  accent: string;
+  positive: string;
+  negative: string;
+  neutral: string;
+  warn: string;
+  /** Category palette — 8 distinguishable colors for ecomap systems, sociogram groups, etc. */
+  palette: readonly string[];
+}
+
+// ─── Diagram-Family Semantic Extensions ────────────────────
+
+export interface PersonTokens {
+  maleFill: string;
+  femaleFill: string;
+  unknownFill: string;
+  deceasedMark: string;
+  conditionFill: string;
+}
+
+export interface BiologyTokens {
+  cladeColors: readonly string[];
+  supportGood: string;
+  supportMedium: string;
+  supportWarn: string;
+  supportBad: string;
+}
+
+// ─── Resolved Theme ────────────────────────────────────────
+
+export type ResolvedTheme<T = object> = BaseTheme & T;
+
+// ─── Built-in Presets ────────��─────────────────────────────
+
+const DEFAULT_THEME: BaseTheme = {
+  bg: "#ffffff",
+  text: "#2c3e50",
+  textMuted: "#607d8b",
+  stroke: "#37474f",
+  strokeMuted: "#90a4ae",
+  fill: "#ffffff",
+  fillMuted: "#f5f7fa",
+  accent: "#1565c0",
+  positive: "#388e3c",
+  negative: "#d32f2f",
+  neutral: "#9e9e9e",
+  warn: "#e65100",
+  palette: [
+    "#1e88e5", // blue
+    "#43a047", // green
+    "#fb8c00", // orange
+    "#8e24aa", // purple
+    "#e53935", // red
+    "#00897b", // teal
+    "#d81b60", // pink
+    "#546e7a", // blue-grey
+  ],
+};
+
+const MONOCHROME_THEME: BaseTheme = {
+  bg: "#ffffff",
+  text: "#000000",
+  textMuted: "#555555",
+  stroke: "#000000",
+  strokeMuted: "#888888",
+  fill: "#ffffff",
+  fillMuted: "#f0f0f0",
+  accent: "#000000",
+  positive: "#000000",
+  negative: "#000000",
+  neutral: "#888888",
+  warn: "#000000",
+  palette: [
+    "#000000",
+    "#333333",
+    "#555555",
+    "#777777",
+    "#999999",
+    "#aaaaaa",
+    "#cccccc",
+    "#444444",
+  ],
+};
+
+const DARK_THEME: BaseTheme = {
+  bg: "#1e1e2e",
+  text: "#cdd6f4",
+  textMuted: "#7f849c",
+  stroke: "#cdd6f4",
+  strokeMuted: "#585b70",
+  fill: "#313244",
+  fillMuted: "#45475a",
+  accent: "#89b4fa",
+  positive: "#a6e3a1",
+  negative: "#f38ba8",
+  neutral: "#6c7086",
+  warn: "#fab387",
+  palette: [
+    "#89b4fa", // blue
+    "#a6e3a1", // green
+    "#fab387", // peach
+    "#cba6f7", // mauve
+    "#f38ba8", // red
+    "#94e2d5", // teal
+    "#f5c2e7", // pink
+    "#89dceb", // sky
+  ],
+};
+
+export const BASE_THEMES: Record<ThemeName, BaseTheme> = {
+  default: DEFAULT_THEME,
+  monochrome: MONOCHROME_THEME,
+  dark: DARK_THEME,
+};
+
+// ─── Person Tokens Per Theme ───────────────────────────────
+
+const DEFAULT_PERSON: PersonTokens = {
+  maleFill: "#dbeafe",
+  femaleFill: "#fce7f3",
+  unknownFill: "#f5f5f5",
+  deceasedMark: "#b71c1c",
+  conditionFill: "#1565c0",
+};
+
+const MONOCHROME_PERSON: PersonTokens = {
+  maleFill: "#ffffff",
+  femaleFill: "#ffffff",
+  unknownFill: "#ffffff",
+  deceasedMark: "#000000",
+  conditionFill: "#000000",
+};
+
+const DARK_PERSON: PersonTokens = {
+  maleFill: "#1e3a5f",
+  femaleFill: "#3e1f3e",
+  unknownFill: "#45475a",
+  deceasedMark: "#f38ba8",
+  conditionFill: "#89b4fa",
+};
+
+export const PERSON_TOKENS: Record<ThemeName, PersonTokens> = {
+  default: DEFAULT_PERSON,
+  monochrome: MONOCHROME_PERSON,
+  dark: DARK_PERSON,
+};
+
+// ─── Biology Tokens Per Theme ──────���───────────────────────
+
+const DEFAULT_BIOLOGY: BiologyTokens = {
+  cladeColors: ["#1e88e5", "#e53935", "#43a047", "#8e24aa", "#fb8c00", "#00897b", "#d81b60", "#3949ab"],
+  supportGood: "#43a047",
+  supportMedium: "#fdd835",
+  supportWarn: "#fb8c00",
+  supportBad: "#e53935",
+};
+
+const MONOCHROME_BIOLOGY: BiologyTokens = {
+  cladeColors: ["#000000", "#333333", "#555555", "#777777", "#999999", "#aaaaaa", "#cccccc", "#444444"],
+  supportGood: "#000000",
+  supportMedium: "#555555",
+  supportWarn: "#888888",
+  supportBad: "#aaaaaa",
+};
+
+const DARK_BIOLOGY: BiologyTokens = {
+  cladeColors: ["#89b4fa", "#f38ba8", "#a6e3a1", "#cba6f7", "#fab387", "#94e2d5", "#f5c2e7", "#89dceb"],
+  supportGood: "#a6e3a1",
+  supportMedium: "#f9e2af",
+  supportWarn: "#fab387",
+  supportBad: "#f38ba8",
+};
+
+export const BIOLOGY_TOKENS: Record<ThemeName, BiologyTokens> = {
+  default: DEFAULT_BIOLOGY,
+  monochrome: MONOCHROME_BIOLOGY,
+  dark: DARK_BIOLOGY,
+};
+
+// ─── Theme Resolution ─��────────────────────────────────────
+
+export function resolveBaseTheme(name: string): BaseTheme {
+  return BASE_THEMES[name as ThemeName] ?? BASE_THEMES["default"];
+}
+
+export function resolvePersonTheme(name: string): ResolvedTheme<PersonTokens> {
+  const themeName = (name in BASE_THEMES ? name : "default") as ThemeName;
+  return { ...BASE_THEMES[themeName], ...PERSON_TOKENS[themeName] };
+}
+
+export function resolveBiologyTheme(name: string): ResolvedTheme<BiologyTokens> {
+  const themeName = (name in BASE_THEMES ? name : "default") as ThemeName;
+  return { ...BASE_THEMES[themeName], ...BIOLOGY_TOKENS[themeName] };
+}
+
+// ─── Genogram Theme Aliases ────────────────────────────────
+
+const GENOGRAM_ALIASES: Record<string, ThemeName> = {
+  clinical: "monochrome",
+  colorful: "default",
+  mono: "monochrome",
+  bw: "monochrome",
+};
+
+export function resolveGenogramTheme(name: string): ResolvedTheme<PersonTokens> {
+  const resolved = GENOGRAM_ALIASES[name] ?? name;
+  return resolvePersonTheme(resolved);
+}
+
+// ─── Font Sizes ──────���─────────────────────────────────────
 
 export const FONT_SIZE = {
   title: 16,
@@ -17,22 +243,7 @@ export const FONT_SIZE = {
   titleLarge: 20,
 } as const;
 
-// ─── Colors ─────────────────────────────────────────────────
-
-export const COLOR = {
-  text: "#333",
-  textSecondary: "#666",
-  stroke: "#333",
-  fill: "white",
-  fillMuted: "#f5f5f5",
-  accent: "#1976D2",
-  positive: "#388E3C",
-  negative: "#D32F2F",
-  neutral: "#9E9E9E",
-  deceased: "#b71c1c",
-} as const;
-
-// ─── Stroke Widths ──────────────────────────────────────────
+// ─── Stroke Widths ─────────────────────────────────────────
 
 export const STROKE_WIDTH = {
   thin: 1,
@@ -42,7 +253,7 @@ export const STROKE_WIDTH = {
   heavy: 3.5,
 } as const;
 
-// ─── Spacing ────────────────────────────────────────────────
+// ─── Spacing ────────────���────────────────────────��─────────
 
 export const SPACING = {
   labelGap: 4,
@@ -50,29 +261,27 @@ export const SPACING = {
   titleOffset: 30,
 } as const;
 
-// ─── Font Family ────────────────────────────────────────────
+// ─── Font Family ──────────��────────────────────────────────
 
 export const DEFAULT_FONT_FAMILY = "system-ui, -apple-system, sans-serif";
 
-// ─── CSS Custom Properties ──────────────────────────────────
+// ─── CSS Custom Properties ─────────────────────────────────
 
-/**
- * Generates CSS custom property declarations for all design tokens.
- * Embed this in a <style> block so consumers can override via:
- *   .lineage-diagram { --lineage-text: #000; }
- */
-export function cssCustomProperties(): string {
+export function cssCustomProperties(theme?: BaseTheme): string {
+  const t = theme ?? BASE_THEMES["default"];
   return `
-  --lineage-text: ${COLOR.text};
-  --lineage-text-secondary: ${COLOR.textSecondary};
-  --lineage-stroke: ${COLOR.stroke};
-  --lineage-fill: ${COLOR.fill};
-  --lineage-fill-muted: ${COLOR.fillMuted};
-  --lineage-accent: ${COLOR.accent};
-  --lineage-positive: ${COLOR.positive};
-  --lineage-negative: ${COLOR.negative};
-  --lineage-neutral: ${COLOR.neutral};
-  --lineage-deceased: ${COLOR.deceased};
+  --lineage-bg: ${t.bg};
+  --lineage-text: ${t.text};
+  --lineage-text-muted: ${t.textMuted};
+  --lineage-stroke: ${t.stroke};
+  --lineage-stroke-muted: ${t.strokeMuted};
+  --lineage-fill: ${t.fill};
+  --lineage-fill-muted: ${t.fillMuted};
+  --lineage-accent: ${t.accent};
+  --lineage-positive: ${t.positive};
+  --lineage-negative: ${t.negative};
+  --lineage-neutral: ${t.neutral};
+  --lineage-warn: ${t.warn};
   --lineage-font-title: ${FONT_SIZE.title}px;
   --lineage-font-label: ${FONT_SIZE.label}px;
   --lineage-font-secondary: ${FONT_SIZE.secondary}px;
@@ -81,3 +290,19 @@ export function cssCustomProperties(): string {
   --lineage-stroke-medium: ${STROKE_WIDTH.medium};
   --lineage-stroke-thick: ${STROKE_WIDTH.thick};`;
 }
+
+// ─── Legacy Exports (deprecated, use resolveBaseTheme) ─��───
+
+/** @deprecated Use resolveBaseTheme("default") instead */
+export const COLOR = {
+  text: DEFAULT_THEME.text,
+  textSecondary: DEFAULT_THEME.textMuted,
+  stroke: DEFAULT_THEME.stroke,
+  fill: DEFAULT_THEME.fill,
+  fillMuted: DEFAULT_THEME.fillMuted,
+  accent: DEFAULT_THEME.accent,
+  positive: DEFAULT_THEME.positive,
+  negative: DEFAULT_THEME.negative,
+  neutral: DEFAULT_THEME.neutral,
+  deceased: DEFAULT_PERSON.deceasedMark,
+} as const;

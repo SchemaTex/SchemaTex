@@ -5,7 +5,7 @@ import type {
   RenderConfig,
 } from "../../core/types";
 import { svgRoot, el, group, text, title, desc } from "../../core/svg";
-import { cssCustomProperties } from "../../core/theme";
+import { cssCustomProperties, resolveBaseTheme, STROKE_WIDTH, type BaseTheme } from "../../core/theme";
 
 // ─── Category colors (Hartman standard) ────────────────────
 
@@ -41,12 +41,13 @@ export function renderEcomap(
     (n) => n.individual.properties?.center !== "true"
   );
 
-  const defsStr = buildDefs();
-  const styleStr = buildStyles(config);
+  const t = resolveBaseTheme(config.theme);
+  const defsStr = buildDefs(t);
+  const styleStr = buildStyles(config, t);
   const connectionsStr = renderConnections(layout.edges);
   const centerStr = centerNode ? renderCenter(centerNode, config) : "";
   const systemsStr = renderSystems(systemNodes, config);
-  const labelsStr = renderConnectionLabels(layout.edges);
+  const labelsStr = renderConnectionLabels(layout.edges, t);
 
   return svgRoot(
     {
@@ -72,7 +73,7 @@ export function renderEcomap(
 
 // ─── Defs ──────────────────────────────────────────────────
 
-function buildDefs(): string {
+function buildDefs(t: BaseTheme): string {
   const arrowMarker = el(
     "marker",
     {
@@ -84,7 +85,7 @@ function buildDefs(): string {
       markerHeight: "8",
       orient: "auto-start-reverse",
     },
-    [el("path", { d: "M 0 0 L 10 5 L 0 10 z", fill: "#555" })]
+    [el("path", { d: "M 0 0 L 10 5 L 0 10 z", fill: t.strokeMuted })]
   );
 
   return el("defs", {}, [arrowMarker]);
@@ -92,21 +93,22 @@ function buildDefs(): string {
 
 // ─── Styles ────────────────────────────────────────────────
 
-function buildStyles(config: RenderConfig): string {
+function buildStyles(config: RenderConfig, t: BaseTheme): string {
   let css = `
-.lineage-ecomap {${cssCustomProperties()}
+.lineage-ecomap {${cssCustomProperties(t)}
+  background: ${t.bg};
 }
-.lineage-ecomap-center-shape { fill: white; stroke: #333; stroke-width: 2.5; }
-.lineage-ecomap-center-label { font-family: ${config.fontFamily}; font-size: ${config.fontSize + 2}px; text-anchor: middle; dominant-baseline: central; fill: #333; font-weight: 600; }
-.lineage-ecomap-system-shape { fill: #f5f5f5; stroke: #888; stroke-width: 2; }
-.lineage-ecomap-system-label { font-family: ${config.fontFamily}; font-size: ${config.fontSize - 1}px; text-anchor: middle; fill: #333; }
-.lineage-ecomap-eco-line { stroke: #555; stroke-width: 2; fill: none; }
-.lineage-ecomap-eco-line-parallel { stroke: #555; stroke-width: 1.5; fill: none; }
-.lineage-ecomap-eco-line-weak { stroke: #888; stroke-width: 1.5; stroke-dasharray: 6,4; fill: none; }
-.lineage-ecomap-eco-line-broken { stroke: #888; stroke-width: 2; stroke-dasharray: 3,8; fill: none; }
-.lineage-ecomap-eco-line-stressful { stroke: #555; stroke-width: 2; fill: none; }
-.lineage-ecomap-eco-conn-label { font-family: ${config.fontFamily}; font-size: ${config.fontSize - 2}px; text-anchor: middle; fill: #666; }
-.lineage-ecomap-eco-arrow { fill: #555; }
+.lineage-ecomap-center-shape { fill: ${t.fill}; stroke: ${t.stroke}; stroke-width: ${STROKE_WIDTH.thick}; }
+.lineage-ecomap-center-label { font-family: ${config.fontFamily}; font-size: ${config.fontSize + 2}px; text-anchor: middle; dominant-baseline: central; fill: ${t.text}; font-weight: 600; }
+.lineage-ecomap-system-shape { fill: ${t.fillMuted}; stroke: ${t.strokeMuted}; stroke-width: ${STROKE_WIDTH.medium}; }
+.lineage-ecomap-system-label { font-family: ${config.fontFamily}; font-size: ${config.fontSize - 1}px; text-anchor: middle; fill: ${t.text}; }
+.lineage-ecomap-eco-line { stroke: ${t.strokeMuted}; stroke-width: ${STROKE_WIDTH.medium}; fill: none; stroke-linecap: round; }
+.lineage-ecomap-eco-line-parallel { stroke: ${t.strokeMuted}; stroke-width: ${STROKE_WIDTH.normal}; fill: none; stroke-linecap: round; }
+.lineage-ecomap-eco-line-weak { stroke: ${t.neutral}; stroke-width: ${STROKE_WIDTH.normal}; stroke-dasharray: 6,4; fill: none; stroke-linecap: round; }
+.lineage-ecomap-eco-line-broken { stroke: ${t.neutral}; stroke-width: ${STROKE_WIDTH.medium}; stroke-dasharray: 3,8; fill: none; stroke-linecap: round; }
+.lineage-ecomap-eco-line-stressful { stroke: ${t.strokeMuted}; stroke-width: ${STROKE_WIDTH.medium}; fill: none; stroke-linecap: round; }
+.lineage-ecomap-eco-conn-label { font-family: ${config.fontFamily}; font-size: ${config.fontSize - 2}px; text-anchor: middle; fill: ${t.textMuted}; }
+.lineage-ecomap-eco-arrow { fill: ${t.strokeMuted}; }
 `;
 
   for (const [cat, color] of Object.entries(CATEGORY_COLORS)) {
@@ -348,7 +350,7 @@ function renderConnections(edges: LayoutEdge[]): string {
 
 // ─── Connection labels ─────────────────────────────────────
 
-function renderConnectionLabels(edges: LayoutEdge[]): string {
+function renderConnectionLabels(edges: LayoutEdge[], t: BaseTheme): string {
   const elements: string[] = [];
 
   for (const edge of edges) {
@@ -367,7 +369,7 @@ function renderConnectionLabels(edges: LayoutEdge[]): string {
           width: 80,
           height: 16,
           rx: 3,
-          fill: "white",
+          fill: t.bg,
           "fill-opacity": "0.85",
         }),
         text(

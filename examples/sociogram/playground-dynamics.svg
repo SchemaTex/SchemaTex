@@ -1,6 +1,25 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="lineage-diagram lineage-sociogram" viewBox="0 0 400 430" width="400" height="430"><title>Sociogram: Playground Dynamics</title>
 <desc>Sociogram with 8 members and 10 connections</desc>
-<style>.lineage-sociogram { font-family: system-ui, -apple-system, sans-serif; }
+<style>.lineage-sociogram {
+  --lineage-text: #333;
+  --lineage-text-secondary: #666;
+  --lineage-stroke: #333;
+  --lineage-fill: white;
+  --lineage-fill-muted: #f5f5f5;
+  --lineage-accent: #1976D2;
+  --lineage-positive: #388E3C;
+  --lineage-negative: #D32F2F;
+  --lineage-neutral: #9E9E9E;
+  --lineage-deceased: #b71c1c;
+  --lineage-font-title: 16px;
+  --lineage-font-label: 12px;
+  --lineage-font-secondary: 11px;
+  --lineage-font-small: 9px;
+  --lineage-stroke-normal: 1.5;
+  --lineage-stroke-medium: 2;
+  --lineage-stroke-thick: 2.5;
+  font-family: system-ui, -apple-system, sans-serif;
+}
 .lineage-sociogram-node { fill: #42A5F5; stroke: #1976D2; stroke-width: 2; }
 .lineage-sociogram-node-star { fill: #FFD54F; stroke: #F9A825; stroke-width: 2.5; }
 .lineage-sociogram-node-isolate { fill: #E0E0E0; stroke: #9E9E9E; stroke-width: 2; stroke-dasharray: 4 3; }

@@ -21,7 +21,7 @@ import {
   defs,
   path,
 } from "../../core/svg";
-import { cssCustomProperties } from "../../core/theme";
+import { cssCustomProperties, resolvePersonTheme, STROKE_WIDTH, type ResolvedTheme, type PersonTokens } from "../../core/theme";
 
 // ─── Public API ─────────────────────────────────────────────
 
@@ -30,8 +30,9 @@ export function renderPedigree(
   config: RenderConfig,
   ast?: DiagramAST
 ): string {
-  const defsStr = buildDefs(layout.nodes);
-  const styleStr = buildStyles(config);
+  const t = resolvePersonTheme(config.theme);
+  const defsStr = buildDefs(layout.nodes, t);
+  const styleStr = buildStyles(config, t);
 
   const genGroups = groupByGeneration(layout.nodes);
   const edgeLayers = renderEdges(layout.edges);
@@ -56,7 +57,7 @@ export function renderPedigree(
   ];
 
   if (ast?.legend && ast.legend.length > 0) {
-    children.push(renderLegend(ast.legend, layout, config));
+    children.push(renderLegend(ast.legend, layout, config, t));
   }
 
   return svgRoot(
@@ -72,7 +73,7 @@ export function renderPedigree(
 
 // ─── Defs ──────────────────────────────────────────────────
 
-function buildDefs(nodes: LayoutNode[]): string {
+function buildDefs(nodes: LayoutNode[], t: ResolvedTheme<PersonTokens>): string {
   const children: string[] = [];
   const needs = new Set<string>();
 
@@ -103,7 +104,7 @@ function buildDefs(nodes: LayoutNode[]): string {
       markerHeight: "8",
       orient: "auto-start-reverse",
     }, [
-      path({ d: "M 0 0 L 10 5 L 0 10 z", fill: "#333" }),
+      path({ d: "M 0 0 L 10 5 L 0 10 z", fill: t.stroke }),
     ])
   );
 
@@ -112,23 +113,24 @@ function buildDefs(nodes: LayoutNode[]): string {
 
 // ─── Styles ────────────────────────────────────────────────
 
-function buildStyles(config: RenderConfig): string {
+function buildStyles(config: RenderConfig, t: ResolvedTheme<PersonTokens>): string {
   const css = `
-.lineage-pedigree {${cssCustomProperties()}
+.lineage-pedigree {${cssCustomProperties(t)}
+  background: ${t.bg};
 }
-.lineage-pedigree-shape { fill: white; stroke: #333; stroke-width: 2; }
-.lineage-pedigree-label { font-family: ${config.fontFamily}; font-size: ${config.fontSize}px; text-anchor: middle; fill: #333; }
-.lineage-pedigree-gen-label { font-family: ${config.fontFamily}; font-size: 14px; font-weight: bold; fill: #333; text-anchor: middle; }
-.lineage-pedigree-edge { stroke: #333; stroke-width: 2; fill: none; }
-.lineage-pedigree-deceased-mark { stroke: #333; stroke-width: 2; }
-.lineage-pedigree-affected-fill { fill: #333; }
-.lineage-pedigree-carrier-fill { fill: #333; }
-.lineage-pedigree-carrier-x-dot { fill: #333; }
-.lineage-pedigree-presymptomatic-mark { stroke: #333; stroke-width: 2; }
-.lineage-pedigree-proband-arrow-line { stroke: #333; stroke-width: 2; fill: none; marker-end: url(#lineage-pedigree-proband-arrow); }
-.lineage-pedigree-proband-label { font-family: ${config.fontFamily}; font-size: 10px; font-weight: bold; fill: #333; }
-.lineage-pedigree-legend { font-family: ${config.fontFamily}; font-size: 11px; fill: #333; }
-.lineage-pedigree-legend-box { fill: white; stroke: #999; stroke-width: 1; }
+.lineage-pedigree-shape { fill: ${t.fill}; stroke: ${t.stroke}; stroke-width: ${STROKE_WIDTH.medium}; stroke-linejoin: round; }
+.lineage-pedigree-label { font-family: ${config.fontFamily}; font-size: ${config.fontSize}px; text-anchor: middle; fill: ${t.text}; }
+.lineage-pedigree-gen-label { font-family: ${config.fontFamily}; font-size: 14px; font-weight: bold; fill: ${t.text}; text-anchor: middle; }
+.lineage-pedigree-edge { stroke: ${t.stroke}; stroke-width: ${STROKE_WIDTH.medium}; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.lineage-pedigree-deceased-mark { stroke: ${t.deceasedMark}; stroke-width: ${STROKE_WIDTH.medium}; stroke-linecap: round; }
+.lineage-pedigree-affected-fill { fill: ${t.conditionFill}; }
+.lineage-pedigree-carrier-fill { fill: ${t.conditionFill}; }
+.lineage-pedigree-carrier-x-dot { fill: ${t.conditionFill}; }
+.lineage-pedigree-presymptomatic-mark { stroke: ${t.conditionFill}; stroke-width: ${STROKE_WIDTH.medium}; }
+.lineage-pedigree-proband-arrow-line { stroke: ${t.stroke}; stroke-width: ${STROKE_WIDTH.medium}; fill: none; marker-end: url(#lineage-pedigree-proband-arrow); }
+.lineage-pedigree-proband-label { font-family: ${config.fontFamily}; font-size: 10px; font-weight: bold; fill: ${t.stroke}; }
+.lineage-pedigree-legend { font-family: ${config.fontFamily}; font-size: 11px; fill: ${t.text}; }
+.lineage-pedigree-legend-box { fill: ${t.fill}; stroke: ${t.strokeMuted}; stroke-width: 1; }
 `;
   return el("style", {}, css);
 }
@@ -153,7 +155,7 @@ function renderEdges(edges: LayoutEdge[]): string {
           line({
             x1: mid.x - 4, y1: mid.y - 6,
             x2: mid.x + 4, y2: mid.y + 6,
-            stroke: "#333", "stroke-width": "2",
+            class: "lineage-pedigree-edge",
           })
         );
       }
@@ -430,7 +432,8 @@ function renderGenerationLabels(
 function renderLegend(
   legendEntries: LegendEntry[],
   layout: LayoutResult,
-  _config: RenderConfig
+  _config: RenderConfig,
+  t: ResolvedTheme<PersonTokens>
 ): string {
   const boxW = 160;
   const rowH = 22;
@@ -454,8 +457,8 @@ function renderLegend(
         y: ry,
         width: swatchSize,
         height: swatchSize,
-        fill: "#333",
-        stroke: "#333",
+        fill: t.conditionFill,
+        stroke: t.stroke,
         "stroke-width": "1",
       }),
       text({ x: x + 30, y: ry + 11, class: "lineage-pedigree-legend" }, entry.label)

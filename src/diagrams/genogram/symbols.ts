@@ -280,9 +280,6 @@ function indexBorder(sex: Individual["sex"], half: number): string {
         width: outer * 2,
         height: outer * 2,
         class: "lineage-genogram-index-border",
-        fill: "none",
-        stroke: "#d4a017",
-        "stroke-width": "3",
       });
     case "female":
       return circle({
@@ -290,9 +287,6 @@ function indexBorder(sex: Individual["sex"], half: number): string {
         cy: 0,
         r: outer,
         class: "lineage-genogram-index-border",
-        fill: "none",
-        stroke: "#d4a017",
-        "stroke-width": "3",
       });
     case "unknown":
     case "other":
@@ -301,9 +295,6 @@ function indexBorder(sex: Individual["sex"], half: number): string {
       return polygon({
         points: `0,${-outer} ${outer},0 0,${outer} ${-outer},0`,
         class: "lineage-genogram-index-border",
-        fill: "none",
-        stroke: "#d4a017",
-        "stroke-width": "3",
       });
   }
 }

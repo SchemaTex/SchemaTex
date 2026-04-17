@@ -130,7 +130,8 @@ lineage/
 │   ├── core/
 │   │   ├── api.ts               # render(), parse()
 │   │   ├── types.ts             # 所有共享类型（唯一真相源）
-│   │   └── svg.ts               # SVG builder utility
+│   │   ├── svg.ts               # SVG builder utility
+│   │   └── theme.ts             # 统一主题系统（两层架构）
 │   └── diagrams/
 │       ├── genogram/
 │       │   ├── index.ts         # DiagramPlugin 实现
@@ -174,10 +175,32 @@ lineage/
 ## Hard Constraints
 
 1. **零 runtime dependency** — 无 D3、无 dagre、无外部 parser。手写一切。Bundle 小 + 无供应链风险。
-2. **输出必须是有效语义 SVG** — 可访问性（title/desc）、CSS class 可主题化、data-* 属性可交互。
+2. **输出必须是有效语义 SVG** — 可访问性（title/desc）、CSS class 可主题化（通过 `src/core/theme.ts` 统一主题系统）、data-* 属性可交互。
 3. **Strict TypeScript** — 无 `any`，无未注释的 `as` cast。
 4. **Test-first for layout** — 布局算法先写测试再写实现。
 5. **标准合规** — Genogram: McGoldrick 2020, Ecomap: Hartman 1978, Pedigree: genetics standard, Sociogram: Moreno 1934 + Brandes 2011, Timing: WaveDrom + IEEE 1497, Logic Gate: IEEE Std 91-1984/91a + IEC 60617-12, Circuit: IEEE 315/ANSI Y32.2 + IEC 60617, Block: Ogata/Franklin control systems convention, Ladder: IEC 61131-3:2013 + NEMA ICS 1, SLD: IEEE Std 315-1975 + ANSI device numbering。
+
+---
+
+## Theme System
+
+`src/core/theme.ts` 实现两层主题架构：
+
+**Layer 1 — BaseTheme（所有图表共用）：** `bg`, `text`, `textMuted`, `stroke`, `strokeMuted`, `fill`, `fillMuted`, `accent`, `positive`, `negative`, `neutral`, `warn`, `palette`
+
+**Layer 2 — Semantic Extensions（按图表族扩展）：**
+- `PersonTokens`（genogram/pedigree）：`maleFill`, `femaleFill`, `unknownFill`, `deceasedMark`, `conditionFill`
+- `BiologyTokens`（phylo）：`cladeColors`, `supportGood/Medium/Warn/Bad`
+
+**三个内置 preset：** `default`（蓝灰配色）、`monochrome`（黑白/学术/打印）、`dark`（Catppuccin Mocha）
+
+**Resolver functions：**
+- `resolveBaseTheme(name)` → 通用图表（ecomap, sociogram）
+- `resolvePersonTheme(name)` → Person 图表（pedigree）
+- `resolveBiologyTheme(name)` → Biology 图表（phylo）
+- `resolveGenogramTheme(name)` → Genogram（支持 alias：`clinical`=monochrome, `colorful`=default, `mono`/`bw`=monochrome）
+
+**CSS custom properties** 通过 `cssCustomProperties(theme)` 注入每个 SVG 的 `<style>` block，消费者可通过 `--lineage-*` 变量覆盖。
 
 ---
 

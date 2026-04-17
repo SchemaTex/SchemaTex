@@ -35,7 +35,7 @@ describe("index person", () => {
   test("renderer adds gold border for index person", () => {
     const svg = render(`genogram\n  john [male, 1950, index]\n  mary [female, 1952]\n  john -- mary`);
     expect(svg).toContain("lineage-genogram-index-border");
-    expect(svg).toContain("#d4a017");
+    expect(svg).toContain("#e65100"); // t.warn from default theme
     expect(svg).toContain("lineage-genogram-index-person");
   });
 

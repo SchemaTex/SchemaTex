@@ -1,115 +1,134 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1010 654" class="lineage-diagram lineage-pedigree" width="1010" height="654"><title>BRCA1 Family — Hereditary Breast/Ovarian Cancer</title>
 <desc>Pedigree chart with 18 individuals across 4 generations</desc>
-<defs><clipPath id="lineage-clip-carrier-rect"><rect x="0" y="0" width="50%" height="100%"/></clipPath>
-<clipPath id="lineage-clip-carrier-circle"><rect x="-50" y="-50" width="50" height="100"/></clipPath>
-<marker id="lineage-proband-arrow" viewBox="0 0 10 10" refX="0" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#333"/></marker></defs>
+<defs><clipPath id="lineage-pedigree-clip-carrier-rect"><rect x="0" y="0" width="50%" height="100%"/></clipPath>
+<clipPath id="lineage-pedigree-clip-carrier-circle"><rect x="-50" y="-50" width="50" height="100"/></clipPath>
+<marker id="lineage-pedigree-proband-arrow" viewBox="0 0 10 10" refX="0" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#333"/></marker></defs>
 <style>
-.lineage-shape { fill: white; stroke: #333; stroke-width: 2; }
-.lineage-label { font-family: system-ui; font-size: 12px; text-anchor: middle; fill: #333; }
-.lineage-gen-label { font-family: system-ui; font-size: 14px; font-weight: bold; fill: #333; text-anchor: middle; }
-.lineage-edge { stroke: #333; stroke-width: 2; fill: none; }
-.lineage-deceased-mark { stroke: #333; stroke-width: 2; }
-.lineage-affected-fill { fill: #333; }
-.lineage-carrier-fill { fill: #333; }
-.lineage-carrier-x-dot { fill: #333; }
-.lineage-presymptomatic-mark { stroke: #333; stroke-width: 2; }
-.lineage-proband-arrow-line { stroke: #333; stroke-width: 2; fill: none; marker-end: url(#lineage-proband-arrow); }
-.lineage-proband-label { font-family: system-ui; font-size: 10px; font-weight: bold; fill: #333; }
-.lineage-legend { font-family: system-ui; font-size: 11px; fill: #333; }
-.lineage-legend-box { fill: white; stroke: #999; stroke-width: 1; }
+.lineage-pedigree {
+  --lineage-text: #333;
+  --lineage-text-secondary: #666;
+  --lineage-stroke: #333;
+  --lineage-fill: white;
+  --lineage-fill-muted: #f5f5f5;
+  --lineage-accent: #1976D2;
+  --lineage-positive: #388E3C;
+  --lineage-negative: #D32F2F;
+  --lineage-neutral: #9E9E9E;
+  --lineage-deceased: #b71c1c;
+  --lineage-font-title: 16px;
+  --lineage-font-label: 12px;
+  --lineage-font-secondary: 11px;
+  --lineage-font-small: 9px;
+  --lineage-stroke-normal: 1.5;
+  --lineage-stroke-medium: 2;
+  --lineage-stroke-thick: 2.5;
+}
+.lineage-pedigree-shape { fill: white; stroke: #333; stroke-width: 2; }
+.lineage-pedigree-label { font-family: system-ui, -apple-system, sans-serif; font-size: 12px; text-anchor: middle; fill: #333; }
+.lineage-pedigree-gen-label { font-family: system-ui, -apple-system, sans-serif; font-size: 14px; font-weight: bold; fill: #333; text-anchor: middle; }
+.lineage-pedigree-edge { stroke: #333; stroke-width: 2; fill: none; }
+.lineage-pedigree-deceased-mark { stroke: #333; stroke-width: 2; }
+.lineage-pedigree-affected-fill { fill: #333; }
+.lineage-pedigree-carrier-fill { fill: #333; }
+.lineage-pedigree-carrier-x-dot { fill: #333; }
+.lineage-pedigree-presymptomatic-mark { stroke: #333; stroke-width: 2; }
+.lineage-pedigree-proband-arrow-line { stroke: #333; stroke-width: 2; fill: none; marker-end: url(#lineage-pedigree-proband-arrow); }
+.lineage-pedigree-proband-label { font-family: system-ui, -apple-system, sans-serif; font-size: 10px; font-weight: bold; fill: #333; }
+.lineage-pedigree-legend { font-family: system-ui, -apple-system, sans-serif; font-size: 11px; fill: #333; }
+.lineage-pedigree-legend-box { fill: white; stroke: #999; stroke-width: 1; }
 </style>
-<g class="lineage-generation-labels"><text x="25" y="65" class="lineage-gen-label">I</text>
-<text x="25" y="231" class="lineage-gen-label">II</text>
-<text x="25" y="397" class="lineage-gen-label">III</text>
-<text x="25" y="563" class="lineage-gen-label">IV</text></g>
-<g class="lineage-edges"><g class="lineage-edge lineage-edge-married" data-from="i-1" data-to="i-2"><path d="M 610 60 L 690 60" class="lineage-edge-path"/></g>
-<g class="lineage-edge lineage-edge-parent-child" data-from="i-1" data-to="i-2"><path d="M 650 60 L 650 141" class="lineage-edge-path"/></g>
-<g class="lineage-edge lineage-edge-parent-child" data-from="i-1" data-to="i-2"><path d="M 410 141 L 890 141" class="lineage-edge-path"/></g>
-<g class="lineage-edge lineage-edge-parent-child" data-from="i-1+i-2" data-to="ii-1"><path d="M 410 141 L 410 206" class="lineage-edge-path"/></g>
-<g class="lineage-edge lineage-edge-parent-child" data-from="i-1+i-2" data-to="ii-2"><path d="M 530 141 L 530 206" class="lineage-edge-path"/></g>
-<g class="lineage-edge lineage-edge-parent-child" data-from="i-1+i-2" data-to="ii-3"><path d="M 890 141 L 890 206" class="lineage-edge-path"/></g>
-<g class="lineage-edge lineage-edge-married" data-from="ii-4" data-to="ii-1"><path d="M 310 226 L 390 226" class="lineage-edge-path"/></g>
-<g class="lineage-edge lineage-edge-parent-child" data-from="ii-4" data-to="ii-1"><path d="M 350 226 L 350 307" class="lineage-edge-path"/></g>
-<g class="lineage-edge lineage-edge-parent-child" data-from="ii-4" data-to="ii-1"><path d="M 230 307 L 470 307" class="lineage-edge-path"/></g>
-<g class="lineage-edge lineage-edge-parent-child" data-from="ii-1+ii-4" data-to="iii-1"><path d="M 230 307 L 230 372" class="lineage-edge-path"/></g>
-<g class="lineage-edge lineage-edge-parent-child" data-from="ii-1+ii-4" data-to="iii-2"><path d="M 350 307 L 350 372" class="lineage-edge-path"/></g>
-<g class="lineage-edge lineage-edge-parent-child" data-from="ii-1+ii-4" data-to="iii-3"><path d="M 470 307 L 470 372" class="lineage-edge-path"/></g>
-<g class="lineage-edge lineage-edge-married" data-from="ii-2" data-to="ii-5"><path d="M 550 226 L 630 226" class="lineage-edge-path"/></g>
-<g class="lineage-edge lineage-edge-parent-child" data-from="ii-2" data-to="ii-5"><path d="M 590 226 L 590 307" class="lineage-edge-path"/></g>
-<g class="lineage-edge lineage-edge-parent-child" data-from="ii-2" data-to="ii-5"><path d="M 590 307 L 710 307" class="lineage-edge-path"/></g>
-<g class="lineage-edge lineage-edge-parent-child" data-from="ii-2+ii-5" data-to="iii-4"><path d="M 590 307 L 590 372" class="lineage-edge-path"/></g>
-<g class="lineage-edge lineage-edge-parent-child" data-from="ii-2+ii-5" data-to="iii-5"><path d="M 710 307 L 710 372" class="lineage-edge-path"/></g>
-<g class="lineage-edge lineage-edge-married" data-from="ii-6" data-to="ii-3"><path d="M 790 226 L 870 226" class="lineage-edge-path"/></g>
-<g class="lineage-edge lineage-edge-parent-child" data-from="ii-6" data-to="ii-3"><path d="M 830 226 L 830 307" class="lineage-edge-path"/></g>
-<g class="lineage-edge lineage-edge-parent-child" data-from="ii-6" data-to="ii-3"><path d="M 830 307 L 950 307" class="lineage-edge-path"/></g>
-<g class="lineage-edge lineage-edge-parent-child" data-from="ii-3+ii-6" data-to="iii-6"><path d="M 830 307 L 830 372" class="lineage-edge-path"/></g>
-<g class="lineage-edge lineage-edge-parent-child" data-from="ii-3+ii-6" data-to="iii-7"><path d="M 950 307 L 950 372" class="lineage-edge-path"/></g>
-<g class="lineage-edge lineage-edge-married" data-from="iii-8" data-to="iii-1"><path d="M 130 392 L 210 392" class="lineage-edge-path"/></g>
-<g class="lineage-edge lineage-edge-parent-child" data-from="iii-8" data-to="iii-1"><path d="M 170 392 L 170 473" class="lineage-edge-path"/></g>
-<g class="lineage-edge lineage-edge-parent-child" data-from="iii-8" data-to="iii-1"><path d="M 110 473 L 230 473" class="lineage-edge-path"/></g>
-<g class="lineage-edge lineage-edge-parent-child" data-from="iii-1+iii-8" data-to="iv-1"><path d="M 110 473 L 110 538" class="lineage-edge-path"/></g>
-<g class="lineage-edge lineage-edge-parent-child" data-from="iii-1+iii-8" data-to="iv-2"><path d="M 230 473 L 230 538" class="lineage-edge-path"/></g></g>
-<g class="lineage-generation lineage-generation-0" data-generation="0"><g class="lineage-node lineage-male lineage-unaffected" data-individual-id="i-1" transform="translate(590, 60)"><title>I-1</title>
-<rect x="-20" y="-20" width="40" height="40" class="lineage-shape"/></g>
-<g class="lineage-node lineage-female lineage-deceased lineage-affected" data-individual-id="i-2" transform="translate(710, 60)"><title>I-2 (affected)</title>
-<circle cx="0" cy="0" r="20" class="lineage-shape"/>
-<circle cx="0" cy="0" r="20" class="lineage-affected-fill"/>
-<line x1="14.139999999999999" y1="-14.139999999999999" x2="-14.139999999999999" y2="14.139999999999999" class="lineage-deceased-mark"/></g></g>
-<g class="lineage-generation lineage-generation-1" data-generation="1"><g class="lineage-node lineage-male lineage-unaffected" data-individual-id="ii-4" transform="translate(290, 226)"><title>II-4</title>
-<rect x="-20" y="-20" width="40" height="40" class="lineage-shape"/></g>
-<g class="lineage-node lineage-female lineage-affected" data-individual-id="ii-1" transform="translate(410, 226)"><title>II-1 (affected)</title>
-<circle cx="0" cy="0" r="20" class="lineage-shape"/>
-<circle cx="0" cy="0" r="20" class="lineage-affected-fill"/></g>
-<g class="lineage-node lineage-male lineage-unaffected" data-individual-id="ii-2" transform="translate(530, 226)"><title>II-2</title>
-<rect x="-20" y="-20" width="40" height="40" class="lineage-shape"/></g>
-<g class="lineage-node lineage-female lineage-unaffected" data-individual-id="ii-5" transform="translate(650, 226)"><title>II-5</title>
-<circle cx="0" cy="0" r="20" class="lineage-shape"/></g>
-<g class="lineage-node lineage-male lineage-unaffected" data-individual-id="ii-6" transform="translate(770, 226)"><title>II-6</title>
-<rect x="-20" y="-20" width="40" height="40" class="lineage-shape"/></g>
-<g class="lineage-node lineage-female lineage-carrier" data-individual-id="ii-3" transform="translate(890, 226)"><title>II-3 (carrier)</title>
-<circle cx="0" cy="0" r="20" class="lineage-shape"/>
-<circle cx="0" cy="0" r="20" class="lineage-carrier-fill" clip-path="url(#lineage-clip-carrier-circle)"/></g></g>
-<g class="lineage-generation lineage-generation-2" data-generation="2"><g class="lineage-node lineage-male lineage-unaffected" data-individual-id="iii-8" transform="translate(110, 392)"><title>III-8</title>
-<rect x="-20" y="-20" width="40" height="40" class="lineage-shape"/></g>
-<g class="lineage-node lineage-female lineage-affected" data-individual-id="iii-1" transform="translate(230, 392)"><title>III-1 (affected)</title>
-<circle cx="0" cy="0" r="20" class="lineage-shape"/>
-<circle cx="0" cy="0" r="20" class="lineage-affected-fill"/>
-<line x1="-40" y1="40" x2="-22" y2="22" class="lineage-proband-arrow-line"/>
-<text x="-44" y="44" class="lineage-proband-label" text-anchor="end">P</text></g>
-<g class="lineage-node lineage-male lineage-unaffected" data-individual-id="iii-2" transform="translate(350, 392)"><title>III-2</title>
-<rect x="-20" y="-20" width="40" height="40" class="lineage-shape"/></g>
-<g class="lineage-node lineage-female lineage-presymptomatic" data-individual-id="iii-3" transform="translate(470, 392)"><title>III-3 (presymptomatic)</title>
-<circle cx="0" cy="0" r="20" class="lineage-shape"/>
-<line x1="0" y1="-20" x2="0" y2="20" class="lineage-presymptomatic-mark"/></g>
-<g class="lineage-node lineage-male lineage-unaffected" data-individual-id="iii-4" transform="translate(590, 392)"><title>III-4</title>
-<rect x="-20" y="-20" width="40" height="40" class="lineage-shape"/></g>
-<g class="lineage-node lineage-female lineage-unaffected" data-individual-id="iii-5" transform="translate(710, 392)"><title>III-5</title>
-<circle cx="0" cy="0" r="20" class="lineage-shape"/></g>
-<g class="lineage-node lineage-female lineage-carrier" data-individual-id="iii-6" transform="translate(830, 392)"><title>III-6 (carrier)</title>
-<circle cx="0" cy="0" r="20" class="lineage-shape"/>
-<circle cx="0" cy="0" r="20" class="lineage-carrier-fill" clip-path="url(#lineage-clip-carrier-circle)"/></g>
-<g class="lineage-node lineage-male lineage-unaffected" data-individual-id="iii-7" transform="translate(950, 392)"><title>III-7</title>
-<rect x="-20" y="-20" width="40" height="40" class="lineage-shape"/></g></g>
-<g class="lineage-generation lineage-generation-3" data-generation="3"><g class="lineage-node lineage-female lineage-unaffected" data-individual-id="iv-1" transform="translate(110, 558)"><title>IV-1</title>
-<circle cx="0" cy="0" r="20" class="lineage-shape"/></g>
-<g class="lineage-node lineage-female lineage-presymptomatic" data-individual-id="iv-2" transform="translate(230, 558)"><title>IV-2 (presymptomatic)</title>
-<circle cx="0" cy="0" r="20" class="lineage-shape"/>
-<line x1="0" y1="-20" x2="0" y2="20" class="lineage-presymptomatic-mark"/></g></g>
-<g class="lineage-labels"><text x="590" y="98" class="lineage-label" data-individual-id="i-1">I-1</text>
-<text x="710" y="98" class="lineage-label" data-individual-id="i-2">I-2</text>
-<text x="290" y="264" class="lineage-label" data-individual-id="ii-4">II-4</text>
-<text x="410" y="264" class="lineage-label" data-individual-id="ii-1">II-1</text>
-<text x="530" y="264" class="lineage-label" data-individual-id="ii-2">II-2</text>
-<text x="650" y="264" class="lineage-label" data-individual-id="ii-5">II-5</text>
-<text x="770" y="264" class="lineage-label" data-individual-id="ii-6">II-6</text>
-<text x="890" y="264" class="lineage-label" data-individual-id="ii-3">II-3</text>
-<text x="110" y="430" class="lineage-label" data-individual-id="iii-8">III-8</text>
-<text x="230" y="430" class="lineage-label" data-individual-id="iii-1">III-1</text>
-<text x="350" y="430" class="lineage-label" data-individual-id="iii-2">III-2</text>
-<text x="470" y="430" class="lineage-label" data-individual-id="iii-3">III-3</text>
-<text x="590" y="430" class="lineage-label" data-individual-id="iii-4">III-4</text>
-<text x="710" y="430" class="lineage-label" data-individual-id="iii-5">III-5</text>
-<text x="830" y="430" class="lineage-label" data-individual-id="iii-6">III-6</text>
-<text x="950" y="430" class="lineage-label" data-individual-id="iii-7">III-7</text>
-<text x="110" y="596" class="lineage-label" data-individual-id="iv-1">IV-1</text>
-<text x="230" y="596" class="lineage-label" data-individual-id="iv-2">IV-2</text></g></svg>
+<g class="lineage-pedigree-generation-labels"><text x="25" y="65" class="lineage-pedigree-gen-label">I</text>
+<text x="25" y="231" class="lineage-pedigree-gen-label">II</text>
+<text x="25" y="397" class="lineage-pedigree-gen-label">III</text>
+<text x="25" y="563" class="lineage-pedigree-gen-label">IV</text></g>
+<g class="lineage-pedigree-edges"><g class="lineage-pedigree-edge lineage-pedigree-edge-married" data-from="i-1" data-to="i-2"><path d="M 610 60 L 690 60" class="lineage-pedigree-edge-path"/></g>
+<g class="lineage-pedigree-edge lineage-pedigree-edge-parent-child" data-from="i-1" data-to="i-2"><path d="M 650 60 L 650 141" class="lineage-pedigree-edge-path"/></g>
+<g class="lineage-pedigree-edge lineage-pedigree-edge-parent-child" data-from="i-1" data-to="i-2"><path d="M 410 141 L 890 141" class="lineage-pedigree-edge-path"/></g>
+<g class="lineage-pedigree-edge lineage-pedigree-edge-parent-child" data-from="i-1+i-2" data-to="ii-1"><path d="M 410 141 L 410 206" class="lineage-pedigree-edge-path"/></g>
+<g class="lineage-pedigree-edge lineage-pedigree-edge-parent-child" data-from="i-1+i-2" data-to="ii-2"><path d="M 530 141 L 530 206" class="lineage-pedigree-edge-path"/></g>
+<g class="lineage-pedigree-edge lineage-pedigree-edge-parent-child" data-from="i-1+i-2" data-to="ii-3"><path d="M 890 141 L 890 206" class="lineage-pedigree-edge-path"/></g>
+<g class="lineage-pedigree-edge lineage-pedigree-edge-married" data-from="ii-4" data-to="ii-1"><path d="M 310 226 L 390 226" class="lineage-pedigree-edge-path"/></g>
+<g class="lineage-pedigree-edge lineage-pedigree-edge-parent-child" data-from="ii-4" data-to="ii-1"><path d="M 350 226 L 350 307" class="lineage-pedigree-edge-path"/></g>
+<g class="lineage-pedigree-edge lineage-pedigree-edge-parent-child" data-from="ii-4" data-to="ii-1"><path d="M 230 307 L 470 307" class="lineage-pedigree-edge-path"/></g>
+<g class="lineage-pedigree-edge lineage-pedigree-edge-parent-child" data-from="ii-1+ii-4" data-to="iii-1"><path d="M 230 307 L 230 372" class="lineage-pedigree-edge-path"/></g>
+<g class="lineage-pedigree-edge lineage-pedigree-edge-parent-child" data-from="ii-1+ii-4" data-to="iii-2"><path d="M 350 307 L 350 372" class="lineage-pedigree-edge-path"/></g>
+<g class="lineage-pedigree-edge lineage-pedigree-edge-parent-child" data-from="ii-1+ii-4" data-to="iii-3"><path d="M 470 307 L 470 372" class="lineage-pedigree-edge-path"/></g>
+<g class="lineage-pedigree-edge lineage-pedigree-edge-married" data-from="ii-2" data-to="ii-5"><path d="M 550 226 L 630 226" class="lineage-pedigree-edge-path"/></g>
+<g class="lineage-pedigree-edge lineage-pedigree-edge-parent-child" data-from="ii-2" data-to="ii-5"><path d="M 590 226 L 590 307" class="lineage-pedigree-edge-path"/></g>
+<g class="lineage-pedigree-edge lineage-pedigree-edge-parent-child" data-from="ii-2" data-to="ii-5"><path d="M 590 307 L 710 307" class="lineage-pedigree-edge-path"/></g>
+<g class="lineage-pedigree-edge lineage-pedigree-edge-parent-child" data-from="ii-2+ii-5" data-to="iii-4"><path d="M 590 307 L 590 372" class="lineage-pedigree-edge-path"/></g>
+<g class="lineage-pedigree-edge lineage-pedigree-edge-parent-child" data-from="ii-2+ii-5" data-to="iii-5"><path d="M 710 307 L 710 372" class="lineage-pedigree-edge-path"/></g>
+<g class="lineage-pedigree-edge lineage-pedigree-edge-married" data-from="ii-6" data-to="ii-3"><path d="M 790 226 L 870 226" class="lineage-pedigree-edge-path"/></g>
+<g class="lineage-pedigree-edge lineage-pedigree-edge-parent-child" data-from="ii-6" data-to="ii-3"><path d="M 830 226 L 830 307" class="lineage-pedigree-edge-path"/></g>
+<g class="lineage-pedigree-edge lineage-pedigree-edge-parent-child" data-from="ii-6" data-to="ii-3"><path d="M 830 307 L 950 307" class="lineage-pedigree-edge-path"/></g>
+<g class="lineage-pedigree-edge lineage-pedigree-edge-parent-child" data-from="ii-3+ii-6" data-to="iii-6"><path d="M 830 307 L 830 372" class="lineage-pedigree-edge-path"/></g>
+<g class="lineage-pedigree-edge lineage-pedigree-edge-parent-child" data-from="ii-3+ii-6" data-to="iii-7"><path d="M 950 307 L 950 372" class="lineage-pedigree-edge-path"/></g>
+<g class="lineage-pedigree-edge lineage-pedigree-edge-married" data-from="iii-8" data-to="iii-1"><path d="M 130 392 L 210 392" class="lineage-pedigree-edge-path"/></g>
+<g class="lineage-pedigree-edge lineage-pedigree-edge-parent-child" data-from="iii-8" data-to="iii-1"><path d="M 170 392 L 170 473" class="lineage-pedigree-edge-path"/></g>
+<g class="lineage-pedigree-edge lineage-pedigree-edge-parent-child" data-from="iii-8" data-to="iii-1"><path d="M 110 473 L 230 473" class="lineage-pedigree-edge-path"/></g>
+<g class="lineage-pedigree-edge lineage-pedigree-edge-parent-child" data-from="iii-1+iii-8" data-to="iv-1"><path d="M 110 473 L 110 538" class="lineage-pedigree-edge-path"/></g>
+<g class="lineage-pedigree-edge lineage-pedigree-edge-parent-child" data-from="iii-1+iii-8" data-to="iv-2"><path d="M 230 473 L 230 538" class="lineage-pedigree-edge-path"/></g></g>
+<g class="lineage-pedigree-generation lineage-pedigree-generation-0" data-generation="0"><g class="lineage-pedigree-node lineage-pedigree-male lineage-pedigree-unaffected" data-individual-id="i-1" transform="translate(590, 60)"><title>I-1</title>
+<rect x="-20" y="-20" width="40" height="40" class="lineage-pedigree-shape"/></g>
+<g class="lineage-pedigree-node lineage-pedigree-female lineage-pedigree-deceased lineage-pedigree-affected" data-individual-id="i-2" transform="translate(710, 60)"><title>I-2 (affected)</title>
+<circle cx="0" cy="0" r="20" class="lineage-pedigree-shape"/>
+<circle cx="0" cy="0" r="20" class="lineage-pedigree-affected-fill"/>
+<line x1="14.139999999999999" y1="-14.139999999999999" x2="-14.139999999999999" y2="14.139999999999999" class="lineage-pedigree-deceased-mark"/></g></g>
+<g class="lineage-pedigree-generation lineage-pedigree-generation-1" data-generation="1"><g class="lineage-pedigree-node lineage-pedigree-male lineage-pedigree-unaffected" data-individual-id="ii-4" transform="translate(290, 226)"><title>II-4</title>
+<rect x="-20" y="-20" width="40" height="40" class="lineage-pedigree-shape"/></g>
+<g class="lineage-pedigree-node lineage-pedigree-female lineage-pedigree-affected" data-individual-id="ii-1" transform="translate(410, 226)"><title>II-1 (affected)</title>
+<circle cx="0" cy="0" r="20" class="lineage-pedigree-shape"/>
+<circle cx="0" cy="0" r="20" class="lineage-pedigree-affected-fill"/></g>
+<g class="lineage-pedigree-node lineage-pedigree-male lineage-pedigree-unaffected" data-individual-id="ii-2" transform="translate(530, 226)"><title>II-2</title>
+<rect x="-20" y="-20" width="40" height="40" class="lineage-pedigree-shape"/></g>
+<g class="lineage-pedigree-node lineage-pedigree-female lineage-pedigree-unaffected" data-individual-id="ii-5" transform="translate(650, 226)"><title>II-5</title>
+<circle cx="0" cy="0" r="20" class="lineage-pedigree-shape"/></g>
+<g class="lineage-pedigree-node lineage-pedigree-male lineage-pedigree-unaffected" data-individual-id="ii-6" transform="translate(770, 226)"><title>II-6</title>
+<rect x="-20" y="-20" width="40" height="40" class="lineage-pedigree-shape"/></g>
+<g class="lineage-pedigree-node lineage-pedigree-female lineage-pedigree-carrier" data-individual-id="ii-3" transform="translate(890, 226)"><title>II-3 (carrier)</title>
+<circle cx="0" cy="0" r="20" class="lineage-pedigree-shape"/>
+<circle cx="0" cy="0" r="20" class="lineage-pedigree-carrier-fill" clip-path="url(#lineage-pedigree-clip-carrier-circle)"/></g></g>
+<g class="lineage-pedigree-generation lineage-pedigree-generation-2" data-generation="2"><g class="lineage-pedigree-node lineage-pedigree-male lineage-pedigree-unaffected" data-individual-id="iii-8" transform="translate(110, 392)"><title>III-8</title>
+<rect x="-20" y="-20" width="40" height="40" class="lineage-pedigree-shape"/></g>
+<g class="lineage-pedigree-node lineage-pedigree-female lineage-pedigree-affected" data-individual-id="iii-1" transform="translate(230, 392)"><title>III-1 (affected)</title>
+<circle cx="0" cy="0" r="20" class="lineage-pedigree-shape"/>
+<circle cx="0" cy="0" r="20" class="lineage-pedigree-affected-fill"/>
+<line x1="-40" y1="40" x2="-22" y2="22" class="lineage-pedigree-proband-arrow-line"/>
+<text x="-44" y="44" class="lineage-pedigree-proband-label" text-anchor="end">P</text></g>
+<g class="lineage-pedigree-node lineage-pedigree-male lineage-pedigree-unaffected" data-individual-id="iii-2" transform="translate(350, 392)"><title>III-2</title>
+<rect x="-20" y="-20" width="40" height="40" class="lineage-pedigree-shape"/></g>
+<g class="lineage-pedigree-node lineage-pedigree-female lineage-pedigree-presymptomatic" data-individual-id="iii-3" transform="translate(470, 392)"><title>III-3 (presymptomatic)</title>
+<circle cx="0" cy="0" r="20" class="lineage-pedigree-shape"/>
+<line x1="0" y1="-20" x2="0" y2="20" class="lineage-pedigree-presymptomatic-mark"/></g>
+<g class="lineage-pedigree-node lineage-pedigree-male lineage-pedigree-unaffected" data-individual-id="iii-4" transform="translate(590, 392)"><title>III-4</title>
+<rect x="-20" y="-20" width="40" height="40" class="lineage-pedigree-shape"/></g>
+<g class="lineage-pedigree-node lineage-pedigree-female lineage-pedigree-unaffected" data-individual-id="iii-5" transform="translate(710, 392)"><title>III-5</title>
+<circle cx="0" cy="0" r="20" class="lineage-pedigree-shape"/></g>
+<g class="lineage-pedigree-node lineage-pedigree-female lineage-pedigree-carrier" data-individual-id="iii-6" transform="translate(830, 392)"><title>III-6 (carrier)</title>
+<circle cx="0" cy="0" r="20" class="lineage-pedigree-shape"/>
+<circle cx="0" cy="0" r="20" class="lineage-pedigree-carrier-fill" clip-path="url(#lineage-pedigree-clip-carrier-circle)"/></g>
+<g class="lineage-pedigree-node lineage-pedigree-male lineage-pedigree-unaffected" data-individual-id="iii-7" transform="translate(950, 392)"><title>III-7</title>
+<rect x="-20" y="-20" width="40" height="40" class="lineage-pedigree-shape"/></g></g>
+<g class="lineage-pedigree-generation lineage-pedigree-generation-3" data-generation="3"><g class="lineage-pedigree-node lineage-pedigree-female lineage-pedigree-unaffected" data-individual-id="iv-1" transform="translate(110, 558)"><title>IV-1</title>
+<circle cx="0" cy="0" r="20" class="lineage-pedigree-shape"/></g>
+<g class="lineage-pedigree-node lineage-pedigree-female lineage-pedigree-presymptomatic" data-individual-id="iv-2" transform="translate(230, 558)"><title>IV-2 (presymptomatic)</title>
+<circle cx="0" cy="0" r="20" class="lineage-pedigree-shape"/>
+<line x1="0" y1="-20" x2="0" y2="20" class="lineage-pedigree-presymptomatic-mark"/></g></g>
+<g class="lineage-pedigree-labels"><text x="590" y="98" class="lineage-pedigree-label" data-individual-id="i-1">I-1</text>
+<text x="710" y="98" class="lineage-pedigree-label" data-individual-id="i-2">I-2</text>
+<text x="290" y="264" class="lineage-pedigree-label" data-individual-id="ii-4">II-4</text>
+<text x="410" y="264" class="lineage-pedigree-label" data-individual-id="ii-1">II-1</text>
+<text x="530" y="264" class="lineage-pedigree-label" data-individual-id="ii-2">II-2</text>
+<text x="650" y="264" class="lineage-pedigree-label" data-individual-id="ii-5">II-5</text>
+<text x="770" y="264" class="lineage-pedigree-label" data-individual-id="ii-6">II-6</text>
+<text x="890" y="264" class="lineage-pedigree-label" data-individual-id="ii-3">II-3</text>
+<text x="110" y="430" class="lineage-pedigree-label" data-individual-id="iii-8">III-8</text>
+<text x="230" y="430" class="lineage-pedigree-label" data-individual-id="iii-1">III-1</text>
+<text x="350" y="430" class="lineage-pedigree-label" data-individual-id="iii-2">III-2</text>
+<text x="470" y="430" class="lineage-pedigree-label" data-individual-id="iii-3">III-3</text>
+<text x="590" y="430" class="lineage-pedigree-label" data-individual-id="iii-4">III-4</text>
+<text x="710" y="430" class="lineage-pedigree-label" data-individual-id="iii-5">III-5</text>
+<text x="830" y="430" class="lineage-pedigree-label" data-individual-id="iii-6">III-6</text>
+<text x="950" y="430" class="lineage-pedigree-label" data-individual-id="iii-7">III-7</text>
+<text x="110" y="596" class="lineage-pedigree-label" data-individual-id="iv-1">IV-1</text>
+<text x="230" y="596" class="lineage-pedigree-label" data-individual-id="iv-2">IV-2</text></g></svg>

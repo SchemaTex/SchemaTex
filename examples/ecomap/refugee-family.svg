@@ -1,92 +1,111 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 820 820" class="lineage-diagram lineage-ecomap" width="820" height="820"><title>Ecomap</title>
 <desc>Ecomap diagram with 9 external systems</desc>
-<defs><marker id="lineage-eco-arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#555"/></marker></defs>
+<defs><marker id="lineage-ecomap-eco-arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#555"/></marker></defs>
 <style>
-.lineage-center-shape { fill: white; stroke: #333; stroke-width: 2.5; }
-.lineage-center-label { font-family: system-ui; font-size: 14px; text-anchor: middle; dominant-baseline: central; fill: #333; font-weight: 600; }
-.lineage-system-shape { fill: #f5f5f5; stroke: #888; stroke-width: 2; }
-.lineage-system-label { font-family: system-ui; font-size: 11px; text-anchor: middle; fill: #333; }
-.lineage-eco-line { stroke: #555; stroke-width: 2; fill: none; }
-.lineage-eco-line-parallel { stroke: #555; stroke-width: 1.5; fill: none; }
-.lineage-eco-line-weak { stroke: #888; stroke-width: 1.5; stroke-dasharray: 6,4; fill: none; }
-.lineage-eco-line-broken { stroke: #888; stroke-width: 2; stroke-dasharray: 3,8; fill: none; }
-.lineage-eco-line-stressful { stroke: #555; stroke-width: 2; fill: none; }
-.lineage-eco-conn-label { font-family: system-ui; font-size: 10px; text-anchor: middle; fill: #666; }
-.lineage-eco-arrow { fill: #555; }
-.lineage-system-family .lineage-system-shape { fill: #8D6E6318; stroke: #8D6E63; }
-.lineage-system-friends .lineage-system-shape { fill: #42A5F518; stroke: #42A5F5; }
-.lineage-system-work .lineage-system-shape { fill: #66BB6A18; stroke: #66BB6A; }
-.lineage-system-education .lineage-system-shape { fill: #FFA72618; stroke: #FFA726; }
-.lineage-system-health .lineage-system-shape { fill: #EF535018; stroke: #EF5350; }
-.lineage-system-mental-health .lineage-system-shape { fill: #AB47BC18; stroke: #AB47BC; }
-.lineage-system-religion .lineage-system-shape { fill: #CCBB3318; stroke: #CCBB33; }
-.lineage-system-recreation .lineage-system-shape { fill: #26C6DA18; stroke: #26C6DA; }
-.lineage-system-legal .lineage-system-shape { fill: #78909C18; stroke: #78909C; }
-.lineage-system-government .lineage-system-shape { fill: #8D6E6318; stroke: #8D6E63; }
-.lineage-system-financial .lineage-system-shape { fill: #66BB6A18; stroke: #66BB6A; }
-.lineage-system-community .lineage-system-shape { fill: #29B6F618; stroke: #29B6F6; }
-.lineage-system-cultural .lineage-system-shape { fill: #FFA72618; stroke: #FFA726; }
-.lineage-system-substance .lineage-system-shape { fill: #EF535018; stroke: #EF5350; }
-.lineage-system-technology .lineage-system-shape { fill: #42A5F518; stroke: #42A5F5; }
-.lineage-system-pet .lineage-system-shape { fill: #8D6E6318; stroke: #8D6E63; }
+.lineage-ecomap {
+  --lineage-text: #333;
+  --lineage-text-secondary: #666;
+  --lineage-stroke: #333;
+  --lineage-fill: white;
+  --lineage-fill-muted: #f5f5f5;
+  --lineage-accent: #1976D2;
+  --lineage-positive: #388E3C;
+  --lineage-negative: #D32F2F;
+  --lineage-neutral: #9E9E9E;
+  --lineage-deceased: #b71c1c;
+  --lineage-font-title: 16px;
+  --lineage-font-label: 12px;
+  --lineage-font-secondary: 11px;
+  --lineage-font-small: 9px;
+  --lineage-stroke-normal: 1.5;
+  --lineage-stroke-medium: 2;
+  --lineage-stroke-thick: 2.5;
+}
+.lineage-ecomap-center-shape { fill: white; stroke: #333; stroke-width: 2.5; }
+.lineage-ecomap-center-label { font-family: system-ui, -apple-system, sans-serif; font-size: 14px; text-anchor: middle; dominant-baseline: central; fill: #333; font-weight: 600; }
+.lineage-ecomap-system-shape { fill: #f5f5f5; stroke: #888; stroke-width: 2; }
+.lineage-ecomap-system-label { font-family: system-ui, -apple-system, sans-serif; font-size: 11px; text-anchor: middle; fill: #333; }
+.lineage-ecomap-eco-line { stroke: #555; stroke-width: 2; fill: none; }
+.lineage-ecomap-eco-line-parallel { stroke: #555; stroke-width: 1.5; fill: none; }
+.lineage-ecomap-eco-line-weak { stroke: #888; stroke-width: 1.5; stroke-dasharray: 6,4; fill: none; }
+.lineage-ecomap-eco-line-broken { stroke: #888; stroke-width: 2; stroke-dasharray: 3,8; fill: none; }
+.lineage-ecomap-eco-line-stressful { stroke: #555; stroke-width: 2; fill: none; }
+.lineage-ecomap-eco-conn-label { font-family: system-ui, -apple-system, sans-serif; font-size: 10px; text-anchor: middle; fill: #666; }
+.lineage-ecomap-eco-arrow { fill: #555; }
+.lineage-ecomap-system-family .lineage-ecomap-system-shape { fill: #8D6E6318; stroke: #8D6E63; }
+.lineage-ecomap-system-friends .lineage-ecomap-system-shape { fill: #42A5F518; stroke: #42A5F5; }
+.lineage-ecomap-system-work .lineage-ecomap-system-shape { fill: #66BB6A18; stroke: #66BB6A; }
+.lineage-ecomap-system-education .lineage-ecomap-system-shape { fill: #FFA72618; stroke: #FFA726; }
+.lineage-ecomap-system-health .lineage-ecomap-system-shape { fill: #EF535018; stroke: #EF5350; }
+.lineage-ecomap-system-mental-health .lineage-ecomap-system-shape { fill: #AB47BC18; stroke: #AB47BC; }
+.lineage-ecomap-system-religion .lineage-ecomap-system-shape { fill: #CCBB3318; stroke: #CCBB33; }
+.lineage-ecomap-system-recreation .lineage-ecomap-system-shape { fill: #26C6DA18; stroke: #26C6DA; }
+.lineage-ecomap-system-legal .lineage-ecomap-system-shape { fill: #78909C18; stroke: #78909C; }
+.lineage-ecomap-system-government .lineage-ecomap-system-shape { fill: #8D6E6318; stroke: #8D6E63; }
+.lineage-ecomap-system-financial .lineage-ecomap-system-shape { fill: #66BB6A18; stroke: #66BB6A; }
+.lineage-ecomap-system-community .lineage-ecomap-system-shape { fill: #29B6F618; stroke: #29B6F6; }
+.lineage-ecomap-system-cultural .lineage-ecomap-system-shape { fill: #FFA72618; stroke: #FFA726; }
+.lineage-ecomap-system-substance .lineage-ecomap-system-shape { fill: #EF535018; stroke: #EF5350; }
+.lineage-ecomap-system-technology .lineage-ecomap-system-shape { fill: #42A5F518; stroke: #42A5F5; }
+.lineage-ecomap-system-pet .lineage-ecomap-system-shape { fill: #8D6E6318; stroke: #8D6E63; }
 </style>
-<g class="lineage-connections"><g class="lineage-connection lineage-connection-strong" data-from="family" data-to="resettlement"><line x1="406" y1="360" x2="406" y2="290" class="lineage-eco-line-parallel"/>
-<line x1="410" y1="360" x2="410" y2="290" class="lineage-eco-line-parallel"/>
-<line x1="414" y1="360" x2="414" y2="290" class="lineage-eco-line-parallel"/></g>
-<g class="lineage-connection lineage-connection-strong" data-from="family" data-to="school"><line x1="460" y1="406" x2="530" y2="406" class="lineage-eco-line-parallel"/>
-<line x1="460" y1="410" x2="530" y2="410" class="lineage-eco-line-parallel"/>
-<line x1="460" y1="414" x2="530" y2="414" class="lineage-eco-line-parallel"/></g>
-<g class="lineage-connection lineage-connection-normal" data-from="family" data-to="esl"><line x1="410" y1="360" x2="410" y2="170" class="lineage-eco-line"/></g>
-<g class="lineage-connection lineage-connection-normal" data-from="family" data-to="clinic"><line x1="457.5528258147577" y1="394.54915028125265" x2="638.2535639108369" y2="335.83592135001265" class="lineage-eco-line" marker-start="url(#lineage-eco-arrow)"/></g>
-<g class="lineage-connection lineage-connection-normal" data-from="family" data-to="caseworker"><line x1="439.38926261462365" y1="450.45084971874735" x2="551.0684605501935" y2="604.1640786499873" class="lineage-eco-line" marker-start="url(#lineage-eco-arrow)" marker-end="url(#lineage-eco-arrow)"/></g>
-<g class="lineage-connection lineage-connection-strong" data-from="family" data-to="temple"><line x1="414" y1="460" x2="414" y2="530" class="lineage-eco-line-parallel"/>
-<line x1="410" y1="460" x2="410" y2="530" class="lineage-eco-line-parallel"/>
-<line x1="406" y1="460" x2="406" y2="530" class="lineage-eco-line-parallel"/></g>
-<g class="lineage-connection lineage-connection-strong" data-from="family" data-to="neighbors"><line x1="360" y1="414" x2="290" y2="414" class="lineage-eco-line-parallel"/>
-<line x1="360" y1="410" x2="290" y2="410" class="lineage-eco-line-parallel"/>
-<line x1="360" y1="406" x2="290" y2="406" class="lineage-eco-line-parallel"/></g>
-<g class="lineage-connection lineage-connection-normal" data-from="family" data-to="employer"><line x1="380.61073738537635" y1="450.45084971874735" x2="268.93153944980645" y2="604.1640786499873" class="lineage-eco-line"/></g>
-<g class="lineage-connection lineage-connection-moderate" data-from="family" data-to="cousins"><line x1="361.8291401964924" y1="396.45126331384296" x2="181.12840210041324" y2="337.73803438260296" class="lineage-eco-line-parallel"/>
-<line x1="363.06520817399223" y1="392.64703724866234" x2="182.364470077913" y2="333.93380831742235" class="lineage-eco-line-parallel"/></g></g>
-<g class="lineage-center" data-id="family"><circle cx="410" cy="410" r="50" class="lineage-center-shape"/>
-<text x="410" y="410" class="lineage-center-label">Nguyen Family</text></g>
-<g class="lineage-systems"><g class="lineage-system lineage-system-government" data-system-id="resettlement"><circle cx="410" cy="260" r="30" class="lineage-system-shape"/>
-<text x="410" y="304" class="lineage-system-label">IRC Office</text></g>
-<g class="lineage-system lineage-system-education" data-system-id="school"><circle cx="560" cy="410" r="30" class="lineage-system-shape"/>
-<text x="560" y="454" class="lineage-system-label">Lincoln</text>
-<text x="560" y="467" class="lineage-system-label">Elementary</text></g>
-<g class="lineage-system lineage-system-education" data-system-id="esl"><circle cx="410" cy="140" r="30" class="lineage-system-shape"/>
-<text x="410" y="184" class="lineage-system-label">Adult ESL</text>
-<text x="410" y="197" class="lineage-system-label">Class</text></g>
-<g class="lineage-system lineage-system-health" data-system-id="clinic"><circle cx="666.7852593996914" cy="326.5654115187642" r="30" class="lineage-system-shape"/>
-<text x="666.7852593996914" y="370.5654115187642" class="lineage-system-label">Community</text>
-<text x="666.7852593996914" y="383.5654115187642" class="lineage-system-label">Clinic</text></g>
-<g class="lineage-system lineage-system-mental-health" data-system-id="caseworker"><circle cx="568.7020181189678" cy="628.4345884812358" r="30" class="lineage-system-shape"/>
-<text x="568.7020181189678" y="672.4345884812358" class="lineage-system-label">Ms. Patel</text></g>
-<g class="lineage-system lineage-system-cultural" data-system-id="temple"><circle cx="410" cy="560" r="30" class="lineage-system-shape"/>
-<text x="410" y="604" class="lineage-system-label">Vietnamese</text>
-<text x="410" y="617" class="lineage-system-label">Temple</text></g>
-<g class="lineage-system lineage-system-community" data-system-id="neighbors"><circle cx="260" cy="410" r="30" class="lineage-system-shape"/>
-<text x="260" y="454" class="lineage-system-label">Sponsor</text>
-<text x="260" y="467" class="lineage-system-label">Family</text></g>
-<g class="lineage-system lineage-system-work" data-system-id="employer"><circle cx="251.29798188103229" cy="628.4345884812358" r="30" class="lineage-system-shape"/>
-<text x="251.29798188103229" y="672.4345884812358" class="lineage-system-label">Warehouse</text>
-<text x="251.29798188103229" y="685.4345884812358" class="lineage-system-label">Job</text></g>
-<g class="lineage-system lineage-system-family" data-system-id="cousins"><circle cx="153.21474060030852" cy="326.5654115187642" r="30" class="lineage-system-shape"/>
-<text x="153.21474060030852" y="370.5654115187642" class="lineage-system-label">Cousins (CA)</text></g></g>
-<g class="lineage-connection-labels"><g class="lineage-conn-label-group"><rect x="370" y="317" width="80" height="16" rx="3" fill="white" fill-opacity="0.85"/>
-<text x="410" y="329" class="lineage-eco-conn-label">active case</text></g>
-<g class="lineage-conn-label-group"><rect x="370" y="257" width="80" height="16" rx="3" fill="white" fill-opacity="0.85"/>
-<text x="410" y="269" class="lineage-eco-conn-label">twice weekly</text></g>
-<g class="lineage-conn-label-group"><rect x="507.90319486279725" y="357.19253581563265" width="80" height="16" rx="3" fill="white" fill-opacity="0.85"/>
-<text x="547.9031948627972" y="369.19253581563265" class="lineage-eco-conn-label">vaccinations</text></g>
-<g class="lineage-conn-label-group"><rect x="455.2288615824086" y="519.3074641843673" width="80" height="16" rx="3" fill="white" fill-opacity="0.85"/>
-<text x="495.2288615824086" y="531.3074641843673" class="lineage-eco-conn-label">weekly</text></g>
-<g class="lineage-conn-label-group"><rect x="370" y="487" width="80" height="16" rx="3" fill="white" fill-opacity="0.85"/>
-<text x="410" y="499" class="lineage-eco-conn-label">anchor</text></g>
-<g class="lineage-conn-label-group"><rect x="285" y="402" width="80" height="16" rx="3" fill="white" fill-opacity="0.85"/>
-<text x="325" y="414" class="lineage-eco-conn-label">housing host</text></g>
-<g class="lineage-conn-label-group"><rect x="284.7711384175914" y="519.3074641843673" width="80" height="16" rx="3" fill="white" fill-opacity="0.85"/>
-<text x="324.7711384175914" y="531.3074641843673" class="lineage-eco-conn-label">new, part-time</text></g>
-<g class="lineage-conn-label-group"><rect x="232.09680513720275" y="357.19253581563265" width="80" height="16" rx="3" fill="white" fill-opacity="0.85"/>
-<text x="272.09680513720275" y="369.19253581563265" class="lineage-eco-conn-label">phone support</text></g></g></svg>
+<g class="lineage-ecomap-connections"><g class="lineage-ecomap-connection lineage-ecomap-connection-strong" data-from="family" data-to="resettlement"><line x1="406" y1="360" x2="406" y2="290" class="lineage-ecomap-eco-line-parallel"/>
+<line x1="410" y1="360" x2="410" y2="290" class="lineage-ecomap-eco-line-parallel"/>
+<line x1="414" y1="360" x2="414" y2="290" class="lineage-ecomap-eco-line-parallel"/></g>
+<g class="lineage-ecomap-connection lineage-ecomap-connection-strong" data-from="family" data-to="school"><line x1="460" y1="406" x2="530" y2="406" class="lineage-ecomap-eco-line-parallel"/>
+<line x1="460" y1="410" x2="530" y2="410" class="lineage-ecomap-eco-line-parallel"/>
+<line x1="460" y1="414" x2="530" y2="414" class="lineage-ecomap-eco-line-parallel"/></g>
+<g class="lineage-ecomap-connection lineage-ecomap-connection-normal" data-from="family" data-to="esl"><line x1="410" y1="360" x2="410" y2="170" class="lineage-ecomap-eco-line"/></g>
+<g class="lineage-ecomap-connection lineage-ecomap-connection-normal" data-from="family" data-to="clinic"><line x1="457.5528258147577" y1="394.54915028125265" x2="638.2535639108369" y2="335.83592135001265" class="lineage-ecomap-eco-line" marker-start="url(#lineage-ecomap-eco-arrow)"/></g>
+<g class="lineage-ecomap-connection lineage-ecomap-connection-normal" data-from="family" data-to="caseworker"><line x1="439.38926261462365" y1="450.45084971874735" x2="551.0684605501935" y2="604.1640786499873" class="lineage-ecomap-eco-line" marker-start="url(#lineage-ecomap-eco-arrow)" marker-end="url(#lineage-ecomap-eco-arrow)"/></g>
+<g class="lineage-ecomap-connection lineage-ecomap-connection-strong" data-from="family" data-to="temple"><line x1="414" y1="460" x2="414" y2="530" class="lineage-ecomap-eco-line-parallel"/>
+<line x1="410" y1="460" x2="410" y2="530" class="lineage-ecomap-eco-line-parallel"/>
+<line x1="406" y1="460" x2="406" y2="530" class="lineage-ecomap-eco-line-parallel"/></g>
+<g class="lineage-ecomap-connection lineage-ecomap-connection-strong" data-from="family" data-to="neighbors"><line x1="360" y1="414" x2="290" y2="414" class="lineage-ecomap-eco-line-parallel"/>
+<line x1="360" y1="410" x2="290" y2="410" class="lineage-ecomap-eco-line-parallel"/>
+<line x1="360" y1="406" x2="290" y2="406" class="lineage-ecomap-eco-line-parallel"/></g>
+<g class="lineage-ecomap-connection lineage-ecomap-connection-normal" data-from="family" data-to="employer"><line x1="380.61073738537635" y1="450.45084971874735" x2="268.93153944980645" y2="604.1640786499873" class="lineage-ecomap-eco-line"/></g>
+<g class="lineage-ecomap-connection lineage-ecomap-connection-moderate" data-from="family" data-to="cousins"><line x1="361.8291401964924" y1="396.45126331384296" x2="181.12840210041324" y2="337.73803438260296" class="lineage-ecomap-eco-line-parallel"/>
+<line x1="363.06520817399223" y1="392.64703724866234" x2="182.364470077913" y2="333.93380831742235" class="lineage-ecomap-eco-line-parallel"/></g></g>
+<g class="lineage-ecomap-center" data-id="family"><circle cx="410" cy="410" r="50" class="lineage-ecomap-center-shape"/>
+<text x="410" y="410" class="lineage-ecomap-center-label">Nguyen Family</text></g>
+<g class="lineage-ecomap-systems"><g class="lineage-ecomap-system lineage-ecomap-system-government" data-system-id="resettlement"><circle cx="410" cy="260" r="30" class="lineage-ecomap-system-shape"/>
+<text x="410" y="304" class="lineage-ecomap-system-label">IRC Office</text></g>
+<g class="lineage-ecomap-system lineage-ecomap-system-education" data-system-id="school"><circle cx="560" cy="410" r="30" class="lineage-ecomap-system-shape"/>
+<text x="560" y="454" class="lineage-ecomap-system-label">Lincoln</text>
+<text x="560" y="467" class="lineage-ecomap-system-label">Elementary</text></g>
+<g class="lineage-ecomap-system lineage-ecomap-system-education" data-system-id="esl"><circle cx="410" cy="140" r="30" class="lineage-ecomap-system-shape"/>
+<text x="410" y="184" class="lineage-ecomap-system-label">Adult ESL</text>
+<text x="410" y="197" class="lineage-ecomap-system-label">Class</text></g>
+<g class="lineage-ecomap-system lineage-ecomap-system-health" data-system-id="clinic"><circle cx="666.7852593996914" cy="326.5654115187642" r="30" class="lineage-ecomap-system-shape"/>
+<text x="666.7852593996914" y="370.5654115187642" class="lineage-ecomap-system-label">Community</text>
+<text x="666.7852593996914" y="383.5654115187642" class="lineage-ecomap-system-label">Clinic</text></g>
+<g class="lineage-ecomap-system lineage-ecomap-system-mental-health" data-system-id="caseworker"><circle cx="568.7020181189678" cy="628.4345884812358" r="30" class="lineage-ecomap-system-shape"/>
+<text x="568.7020181189678" y="672.4345884812358" class="lineage-ecomap-system-label">Ms. Patel</text></g>
+<g class="lineage-ecomap-system lineage-ecomap-system-cultural" data-system-id="temple"><circle cx="410" cy="560" r="30" class="lineage-ecomap-system-shape"/>
+<text x="410" y="604" class="lineage-ecomap-system-label">Vietnamese</text>
+<text x="410" y="617" class="lineage-ecomap-system-label">Temple</text></g>
+<g class="lineage-ecomap-system lineage-ecomap-system-community" data-system-id="neighbors"><circle cx="260" cy="410" r="30" class="lineage-ecomap-system-shape"/>
+<text x="260" y="454" class="lineage-ecomap-system-label">Sponsor</text>
+<text x="260" y="467" class="lineage-ecomap-system-label">Family</text></g>
+<g class="lineage-ecomap-system lineage-ecomap-system-work" data-system-id="employer"><circle cx="251.29798188103229" cy="628.4345884812358" r="30" class="lineage-ecomap-system-shape"/>
+<text x="251.29798188103229" y="672.4345884812358" class="lineage-ecomap-system-label">Warehouse</text>
+<text x="251.29798188103229" y="685.4345884812358" class="lineage-ecomap-system-label">Job</text></g>
+<g class="lineage-ecomap-system lineage-ecomap-system-family" data-system-id="cousins"><circle cx="153.21474060030852" cy="326.5654115187642" r="30" class="lineage-ecomap-system-shape"/>
+<text x="153.21474060030852" y="370.5654115187642" class="lineage-ecomap-system-label">Cousins (CA)</text></g></g>
+<g class="lineage-ecomap-connection-labels"><g class="lineage-ecomap-conn-label-group"><rect x="370" y="317" width="80" height="16" rx="3" fill="white" fill-opacity="0.85"/>
+<text x="410" y="329" class="lineage-ecomap-eco-conn-label">active case</text></g>
+<g class="lineage-ecomap-conn-label-group"><rect x="370" y="257" width="80" height="16" rx="3" fill="white" fill-opacity="0.85"/>
+<text x="410" y="269" class="lineage-ecomap-eco-conn-label">twice weekly</text></g>
+<g class="lineage-ecomap-conn-label-group"><rect x="507.90319486279725" y="357.19253581563265" width="80" height="16" rx="3" fill="white" fill-opacity="0.85"/>
+<text x="547.9031948627972" y="369.19253581563265" class="lineage-ecomap-eco-conn-label">vaccinations</text></g>
+<g class="lineage-ecomap-conn-label-group"><rect x="455.2288615824086" y="519.3074641843673" width="80" height="16" rx="3" fill="white" fill-opacity="0.85"/>
+<text x="495.2288615824086" y="531.3074641843673" class="lineage-ecomap-eco-conn-label">weekly</text></g>
+<g class="lineage-ecomap-conn-label-group"><rect x="370" y="487" width="80" height="16" rx="3" fill="white" fill-opacity="0.85"/>
+<text x="410" y="499" class="lineage-ecomap-eco-conn-label">anchor</text></g>
+<g class="lineage-ecomap-conn-label-group"><rect x="285" y="402" width="80" height="16" rx="3" fill="white" fill-opacity="0.85"/>
+<text x="325" y="414" class="lineage-ecomap-eco-conn-label">housing host</text></g>
+<g class="lineage-ecomap-conn-label-group"><rect x="284.7711384175914" y="519.3074641843673" width="80" height="16" rx="3" fill="white" fill-opacity="0.85"/>
+<text x="324.7711384175914" y="531.3074641843673" class="lineage-ecomap-eco-conn-label">new, part-time</text></g>
+<g class="lineage-ecomap-conn-label-group"><rect x="232.09680513720275" y="357.19253581563265" width="80" height="16" rx="3" fill="white" fill-opacity="0.85"/>
+<text x="272.09680513720275" y="369.19253581563265" class="lineage-ecomap-eco-conn-label">phone support</text></g></g></svg>

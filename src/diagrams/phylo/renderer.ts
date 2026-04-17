@@ -12,38 +12,18 @@ import {
   rect,
   el,
 } from "../../core/svg";
-import { cssCustomProperties, COLOR, FONT_SIZE, STROKE_WIDTH } from "../../core/theme";
+import { cssCustomProperties, resolveBiologyTheme, FONT_SIZE, STROKE_WIDTH, type ResolvedTheme, type BiologyTokens } from "../../core/theme";
 
 // ─── Constants ──────────────────────────────────────────────
 
-const DEFAULT_BRANCH_COLOR = COLOR.text;
-const DEFAULT_BRANCH_WIDTH = STROKE_WIDTH.normal;
 const TIP_LABEL_GAP = 6;
 const SUPPORT_THRESHOLD = 50;
 
-const SUPPORT_COLORS: { min: number; color: string }[] = [
-  { min: 95, color: "#43A047" },
-  { min: 75, color: "#FDD835" },
-  { min: 50, color: "#FB8C00" },
-  { min: 0, color: "#E53935" },
-];
-
-const CLADE_PALETTE = [
-  "#1E88E5",
-  "#E53935",
-  "#43A047",
-  "#8E24AA",
-  "#FB8C00",
-  "#00897B",
-  "#D81B60",
-  "#3949AB",
-];
-
-function getSupportColor(value: number): string {
-  for (const entry of SUPPORT_COLORS) {
-    if (value >= entry.min) return entry.color;
-  }
-  return "#E53935";
+function getSupportColor(value: number, t: ResolvedTheme<BiologyTokens>): string {
+  if (value >= 95) return t.supportGood;
+  if (value >= 75) return t.supportMedium;
+  if (value >= 50) return t.supportWarn;
+  return t.supportBad;
 }
 
 function isSpeciesBinomial(label: string): boolean {
@@ -54,30 +34,31 @@ function isSpeciesBinomial(label: string): boolean {
 
 // ─── CSS ────────────────────────────────────────────────────
 
-function buildCSS(ast: PhyloTreeAST): string {
+function buildCSS(ast: PhyloTreeAST, t: ResolvedTheme<BiologyTokens>): string {
   const cladeColors = ast.clades.map((c, i) => {
-    const color = c.color ?? CLADE_PALETTE[i % CLADE_PALETTE.length];
+    const color = c.color ?? t.cladeColors[i % t.cladeColors.length];
     return `.lineage-phylo-clade-${c.id} { stroke: ${color}; }
 .lineage-phylo-clade-bg-${c.id} { fill: ${color}; fill-opacity: 0.12; }
 .lineage-phylo-clade-label-${c.id} { fill: ${color}; }`;
   });
 
   return `
-.lineage-phylo {${cssCustomProperties()}
+.lineage-phylo {${cssCustomProperties(t)}
   font-family: system-ui, -apple-system, sans-serif;
+  background: ${t.bg};
 }
-.lineage-phylo-branch { fill: none; stroke: ${DEFAULT_BRANCH_COLOR}; stroke-width: ${DEFAULT_BRANCH_WIDTH}; stroke-linecap: round; }
-.lineage-phylo-branch-connector { fill: none; stroke: ${DEFAULT_BRANCH_COLOR}; stroke-width: ${DEFAULT_BRANCH_WIDTH}; }
-.lineage-phylo-tip-label { font-size: ${FONT_SIZE.label}px; fill: ${COLOR.text}; dominant-baseline: central; }
+.lineage-phylo-branch { fill: none; stroke: ${t.text}; stroke-width: ${STROKE_WIDTH.normal}; stroke-linecap: round; }
+.lineage-phylo-branch-connector { fill: none; stroke: ${t.text}; stroke-width: ${STROKE_WIDTH.normal}; }
+.lineage-phylo-tip-label { font-size: ${FONT_SIZE.label}px; fill: ${t.text}; dominant-baseline: central; }
 .lineage-phylo-tip-label-italic { font-style: italic; }
-.lineage-phylo-support-label { font-size: ${FONT_SIZE.small}px; fill: ${COLOR.textSecondary}; text-anchor: middle; dominant-baseline: auto; }
+.lineage-phylo-support-label { font-size: ${FONT_SIZE.small}px; fill: ${t.textMuted}; text-anchor: middle; dominant-baseline: auto; }
 .lineage-phylo-support-dot { stroke: none; }
-.lineage-phylo-scale-bar line { stroke: ${COLOR.text}; stroke-width: ${STROKE_WIDTH.normal}; }
-.lineage-phylo-scale-bar text { font-size: 10px; fill: ${COLOR.text}; text-anchor: middle; }
-.lineage-phylo-scale-tick { stroke: ${COLOR.text}; stroke-width: ${STROKE_WIDTH.thin}; }
-.lineage-phylo-title { font-size: ${FONT_SIZE.title}px; font-weight: bold; fill: ${COLOR.text}; text-anchor: middle; }
+.lineage-phylo-scale-bar line { stroke: ${t.text}; stroke-width: ${STROKE_WIDTH.normal}; }
+.lineage-phylo-scale-bar text { font-size: 10px; fill: ${t.text}; text-anchor: middle; }
+.lineage-phylo-scale-tick { stroke: ${t.text}; stroke-width: ${STROKE_WIDTH.thin}; }
+.lineage-phylo-title { font-size: ${FONT_SIZE.title}px; font-weight: bold; fill: ${t.text}; text-anchor: middle; }
 .lineage-phylo-clade-label { font-size: 13px; font-weight: bold; }
-.lineage-phylo-root-marker { fill: none; stroke: ${COLOR.text}; stroke-width: ${STROKE_WIDTH.normal}; }
+.lineage-phylo-root-marker { fill: none; stroke: ${t.text}; stroke-width: ${STROKE_WIDTH.normal}; }
 ${cladeColors.join("\n")}
 `.trim();
 }
@@ -113,6 +94,7 @@ function computeScaleBar(
 
 function renderScaleBar(
   layout: PhyloLayoutResult,
+  t: ResolvedTheme<BiologyTokens>,
   scaleLabel?: string
 ): string {
   if (layout.ast.mode === "cladogram") return "";
@@ -134,7 +116,7 @@ function renderScaleBar(
   if (scaleLabel) {
     elements.push(
       text(
-        { x: x + bar.pxLength / 2, y: y + 28, "text-anchor": "middle", "font-size": "9", fill: "#666" },
+        { x: x + bar.pxLength / 2, y: y + 28, "text-anchor": "middle", "font-size": "9", fill: t.textMuted },
         scaleLabel
       )
     );
@@ -145,7 +127,7 @@ function renderScaleBar(
 
 // ─── Clade Backgrounds ──────────────────────────────────────
 
-function renderCladeBackgrounds(layout: PhyloLayoutResult): string[] {
+function renderCladeBackgrounds(layout: PhyloLayoutResult, t: ResolvedTheme<BiologyTokens>): string[] {
   const elements: string[] = [];
 
   for (let ci = 0; ci < layout.ast.clades.length; ci++) {
@@ -166,7 +148,7 @@ function renderCladeBackgrounds(layout: PhyloLayoutResult): string[] {
       return n.x + labelW;
     }));
 
-    const color = clade.color ?? CLADE_PALETTE[ci % CLADE_PALETTE.length];
+    const color = clade.color ?? t.cladeColors[ci % t.cladeColors.length];
 
     elements.push(
       rect({
@@ -206,8 +188,9 @@ function renderCladeBackgrounds(layout: PhyloLayoutResult): string[] {
 
 export function renderPhylo(layout: PhyloLayoutResult): string {
   const { ast, nodes, branches } = layout;
+  const t = resolveBiologyTheme(ast.metadata?.theme ?? "default");
 
-  const css = buildCSS(ast);
+  const css = buildCSS(ast, t);
 
   const titleOffset = ast.title ? 30 : 0;
   const totalHeight = layout.height + titleOffset;
@@ -225,7 +208,7 @@ export function renderPhylo(layout: PhyloLayoutResult): string {
       : -1;
     const cladeColor =
       cladeIdx >= 0
-        ? ast.clades[cladeIdx].color ?? CLADE_PALETTE[cladeIdx % CLADE_PALETTE.length]
+        ? ast.clades[cladeIdx].color ?? t.cladeColors[cladeIdx % t.cladeColors.length]
         : undefined;
 
     const cls = branch.isConnector
@@ -265,7 +248,7 @@ export function renderPhylo(layout: PhyloLayoutResult): string {
     if (!node.isLeaf && node.support !== undefined) {
       const support = node.support > 1 ? node.support : node.support * 100;
       if (support >= SUPPORT_THRESHOLD) {
-        const color = getSupportColor(support);
+        const color = getSupportColor(support, t);
         nodeElements.push(
           circle({
             cx: x,
@@ -306,10 +289,10 @@ export function renderPhylo(layout: PhyloLayoutResult): string {
   }
 
   // Clade backgrounds
-  const cladeBgElements = renderCladeBackgrounds(layout);
+  const cladeBgElements = renderCladeBackgrounds(layout, t);
 
   // Scale bar
-  const scaleBarEl = renderScaleBar(layout, ast.scaleLabel);
+  const scaleBarEl = renderScaleBar(layout, t, ast.scaleLabel);
 
   // Title
   const titleEl = ast.title

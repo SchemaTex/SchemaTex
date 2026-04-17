@@ -174,9 +174,9 @@ group boys [label: "Boys"]
 
     it("includes valence colors in style", () => {
       const svg = renderFromText("sociogram\nalice -> bob\n");
-      expect(svg).toContain("#388E3C");
-      expect(svg).toContain("#D32F2F");
-      expect(svg).toContain("#9E9E9E");
+      expect(svg).toContain("#388e3c");
+      expect(svg).toContain("#d32f2f");
+      expect(svg).toContain("#9e9e9e");
     });
   });
 

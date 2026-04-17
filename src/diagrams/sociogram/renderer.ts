@@ -11,61 +11,49 @@ import {
   desc,
   polygon,
 } from "../../core/svg";
-import { cssCustomProperties, COLOR, FONT_SIZE } from "../../core/theme";
+import { cssCustomProperties, resolveBaseTheme, FONT_SIZE, STROKE_WIDTH, type BaseTheme } from "../../core/theme";
 
 // ─── Constants ──────────────────────────────────────────────
-
-const GROUP_PALETTE = [
-  "#42A5F5", // blue
-  "#66BB6A", // green
-  "#FFA726", // orange
-  "#AB47BC", // purple
-  "#EF5350", // red
-  "#26C6DA", // cyan
-  "#FFEE58", // yellow
-  "#8D6E63", // brown
-];
-
-const VALENCE_COLORS = {
-  positive: "#388E3C",
-  negative: "#D32F2F",
-  neutral: "#9E9E9E",
-};
-
-const ROLE_FILL: Record<string, string> = {
-  star: "#FFD54F",
-  isolate: "#E0E0E0",
-  rejected: "#FFCDD2",
-};
 
 const LABEL_GAP = 4;
 const LABEL_FONT_SIZE = 11;
 
+function valenceColors(t: BaseTheme) {
+  return { positive: t.positive, negative: t.negative, neutral: t.neutral };
+}
+
+function roleFills(t: BaseTheme) {
+  return { star: t.warn, isolate: t.fillMuted, rejected: t.negative };
+}
+
 // ─── CSS ────────────────────────────────────────────────────
 
-function buildCSS(ast: SociogramAST): string {
+function buildCSS(ast: SociogramAST, t: BaseTheme): string {
+  const vc = valenceColors(t);
+  const rf = roleFills(t);
   const groupColors = ast.groups.map((g, i) => {
-    const color = g.color ?? GROUP_PALETTE[i % GROUP_PALETTE.length];
+    const color = g.color ?? t.palette[i % t.palette.length];
     return `.lineage-sociogram-group-${g.id} { fill: ${color}; stroke: ${color}; }`;
   });
 
   return `
-.lineage-sociogram {${cssCustomProperties()}
+.lineage-sociogram {${cssCustomProperties(t)}
   font-family: system-ui, -apple-system, sans-serif;
+  background: ${t.bg};
 }
-.lineage-sociogram-node { fill: #42A5F5; stroke: ${COLOR.accent}; stroke-width: 2; }
-.lineage-sociogram-node-star { fill: #FFD54F; stroke: #F9A825; stroke-width: 2.5; }
-.lineage-sociogram-node-isolate { fill: #E0E0E0; stroke: ${COLOR.neutral}; stroke-width: 2; stroke-dasharray: 4 3; }
-.lineage-sociogram-node-neglectee { fill: #BBDEFB; stroke: ${COLOR.accent}; stroke-width: 2; stroke-dasharray: 4 3; }
-.lineage-sociogram-node-rejected { fill: #FFCDD2; stroke: ${COLOR.negative}; stroke-width: 2; stroke-dasharray: 4 3; }
+.lineage-sociogram-node { fill: ${t.accent}; stroke: ${t.accent}; stroke-width: ${STROKE_WIDTH.medium}; }
+.lineage-sociogram-node-star { fill: ${rf.star}; stroke: ${t.warn}; stroke-width: ${STROKE_WIDTH.thick}; }
+.lineage-sociogram-node-isolate { fill: ${rf.isolate}; stroke: ${t.neutral}; stroke-width: ${STROKE_WIDTH.medium}; stroke-dasharray: 4 3; }
+.lineage-sociogram-node-neglectee { fill: ${t.fillMuted}; stroke: ${t.accent}; stroke-width: ${STROKE_WIDTH.medium}; stroke-dasharray: 4 3; }
+.lineage-sociogram-node-rejected { fill: ${rf.rejected}; stroke: ${t.negative}; stroke-width: ${STROKE_WIDTH.medium}; stroke-dasharray: 4 3; }
 .lineage-sociogram-edge { stroke-linecap: round; }
-.lineage-sociogram-edge-positive { stroke: ${VALENCE_COLORS.positive}; }
-.lineage-sociogram-edge-negative { stroke: ${VALENCE_COLORS.negative}; stroke-dasharray: 6 3; }
-.lineage-sociogram-edge-neutral { stroke: ${VALENCE_COLORS.neutral}; stroke-dasharray: 2 3; }
-.lineage-sociogram-label { font-size: ${LABEL_FONT_SIZE}px; fill: ${COLOR.text}; text-anchor: middle; }
-.lineage-sociogram-edge-label { font-size: ${FONT_SIZE.small}px; fill: ${COLOR.textSecondary}; text-anchor: middle; }
-.lineage-sociogram-title { font-size: ${FONT_SIZE.title}px; font-weight: bold; fill: ${COLOR.text}; text-anchor: middle; }
-.lineage-sociogram-star-badge { font-size: 10px; fill: #F9A825; }
+.lineage-sociogram-edge-positive { stroke: ${vc.positive}; }
+.lineage-sociogram-edge-negative { stroke: ${vc.negative}; stroke-dasharray: 6 3; }
+.lineage-sociogram-edge-neutral { stroke: ${vc.neutral}; stroke-dasharray: 2 3; }
+.lineage-sociogram-label { font-size: ${LABEL_FONT_SIZE}px; fill: ${t.text}; text-anchor: middle; }
+.lineage-sociogram-edge-label { font-size: ${FONT_SIZE.small}px; fill: ${t.textMuted}; text-anchor: middle; }
+.lineage-sociogram-title { font-size: ${FONT_SIZE.title}px; font-weight: bold; fill: ${t.text}; text-anchor: middle; }
+.lineage-sociogram-star-badge { font-size: 10px; fill: ${t.warn}; }
 .lineage-sociogram-group-label { font-size: 13px; font-weight: bold; fill-opacity: 0.7; text-anchor: middle; }
 ${groupColors.join("\n")}
 `.trim();
@@ -73,11 +61,12 @@ ${groupColors.join("\n")}
 
 // ─── Defs (Arrow Markers) ───────────────────────────────────
 
-function buildDefs(): string {
+function buildDefs(t: BaseTheme): string {
+  const vc = valenceColors(t);
   const markers = [
-    { id: "sociogram-arrow", fill: "#388E3C" },
-    { id: "sociogram-arrow-negative", fill: "#D32F2F" },
-    { id: "sociogram-arrow-neutral", fill: "#9E9E9E" },
+    { id: "sociogram-arrow", fill: vc.positive },
+    { id: "sociogram-arrow-negative", fill: vc.negative },
+    { id: "sociogram-arrow-neutral", fill: vc.neutral },
   ];
 
   const markerEls = markers.map((m) =>
@@ -124,18 +113,20 @@ function getNodeClass(role?: NodeRole): string {
 
 function getNodeFill(
   node: SociogramLayoutNode,
-  ast: SociogramAST
+  ast: SociogramAST,
+  t: BaseTheme
 ): string | undefined {
   const role = node.computedRole ?? node.node.role;
+  const rf = roleFills(t);
 
   if (ast.config.coloring === "role" && role) {
-    return ROLE_FILL[role];
+    return rf[role as keyof typeof rf];
   }
 
   if (ast.config.coloring === "group" && node.node.group) {
     const gIdx = ast.groups.findIndex((g) => g.id === node.node.group);
     if (gIdx >= 0) {
-      return ast.groups[gIdx].color ?? GROUP_PALETTE[gIdx % GROUP_PALETTE.length];
+      return ast.groups[gIdx].color ?? t.palette[gIdx % t.palette.length];
     }
   }
 
@@ -143,7 +134,8 @@ function getNodeFill(
 }
 
 function renderNodes(
-  layout: SociogramLayoutResult
+  layout: SociogramLayoutResult,
+  t: BaseTheme
 ): { nodeEls: string[]; labelEls: string[] } {
   const nodeEls: string[] = [];
   const labelEls: string[] = [];
@@ -153,7 +145,7 @@ function renderNodes(
     const { node, x, y, radius, computedRole } = layoutNode;
     const role = computedRole ?? node.role;
     const cls = getNodeClass(role);
-    const fill = getNodeFill(layoutNode, ast);
+    const fill = getNodeFill(layoutNode, ast, t);
 
     const attrs: Record<string, string | number | undefined> = {
       cx: x,
@@ -175,7 +167,7 @@ function renderNodes(
       nodeEls.push(
         polygon({
           points,
-          fill: "#F9A825",
+          fill: t.warn,
           class: "lineage-sociogram-star-badge",
         })
       );
@@ -287,7 +279,7 @@ function renderEdges(layout: SociogramLayoutResult): {
 
 // ─── Group Background Labels ────────────────────────────────
 
-function renderGroupLabels(layout: SociogramLayoutResult): string[] {
+function renderGroupLabels(layout: SociogramLayoutResult, t: BaseTheme): string[] {
   const elements: string[] = [];
   const { ast } = layout;
 
@@ -298,7 +290,7 @@ function renderGroupLabels(layout: SociogramLayoutResult): string[] {
     );
     if (memberNodes.length === 0) continue;
 
-    const color = grp.color ?? GROUP_PALETTE[gi % GROUP_PALETTE.length];
+    const color = grp.color ?? t.palette[gi % t.palette.length];
     const cx = memberNodes.reduce((s, n) => s + n.x, 0) / memberNodes.length;
     const minY = Math.min(...memberNodes.map((n) => n.y - n.radius));
 
@@ -322,17 +314,18 @@ function renderGroupLabels(layout: SociogramLayoutResult): string[] {
 
 export function renderSociogram(layout: SociogramLayoutResult): string {
   const { ast } = layout;
+  const t = resolveBaseTheme("default");
 
-  const css = buildCSS(ast);
-  const defsStr = buildDefs();
+  const css = buildCSS(ast, t);
+  const defsStr = buildDefs(t);
 
   const titleOffset = ast.title ? 30 : 0;
   const totalWidth = layout.width;
   const totalHeight = layout.height + titleOffset;
 
   const { edgeEls, edgeLabelEls } = renderEdges(layout);
-  const { nodeEls, labelEls } = renderNodes(layout);
-  const groupLabelEls = renderGroupLabels(layout);
+  const { nodeEls, labelEls } = renderNodes(layout, t);
+  const groupLabelEls = renderGroupLabels(layout, t);
 
   const titleEl = ast.title
     ? text(

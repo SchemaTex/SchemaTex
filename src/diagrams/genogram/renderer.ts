@@ -1,6 +1,6 @@
 import type { LayoutResult, LayoutNode, LayoutEdge, RenderConfig, DiagramAST, RelationshipType } from "../../core/types";
 import { svgRoot, el, group, text, title, desc } from "../../core/svg";
-import { cssCustomProperties } from "../../core/theme";
+import { cssCustomProperties, resolveGenogramTheme, STROKE_WIDTH } from "../../core/theme";
 import { renderIndividualSymbol, getRequiredDefs } from "./symbols";
 
 // ─── Public API ─────────────────────────────────────────────
@@ -81,67 +81,29 @@ export function renderGenogram(
 
 // ─── Styles ─────────────────────────────────────────────────
 
-// ─── Themes ────────────────────────────────────────────────
-
-interface ThemeColors {
-  stroke: string;
-  fill: string;
-  text: string;
-  maleFill: string;
-  femaleFill: string;
-  unknownFill: string;
-  edge: string;
-  deceasedMark: string;
-  conditionFill: string;
-}
-
-const THEMES: Record<string, ThemeColors> = {
-  default: {
-    stroke: "#2c3e50", fill: "white", text: "#2c3e50",
-    maleFill: "#dae8fc", femaleFill: "#fce4ec", unknownFill: "#f5f5f5",
-    edge: "#546e7a", deceasedMark: "#b71c1c", conditionFill: "#1565c0",
-  },
-  clinical: {
-    stroke: "#2c3e50", fill: "white", text: "#2c3e50",
-    maleFill: "#dae8fc", femaleFill: "#fce4ec", unknownFill: "#f5f5f5",
-    edge: "#546e7a", deceasedMark: "#b71c1c", conditionFill: "#1565c0",
-  },
-  colorful: {
-    stroke: "#37474f", fill: "white", text: "#263238",
-    maleFill: "#bbdefb", femaleFill: "#f8bbd0", unknownFill: "#e0e0e0",
-    edge: "#455a64", deceasedMark: "#c62828", conditionFill: "#1976d2",
-  },
-  mono: {
-    stroke: "#000", fill: "white", text: "#000",
-    maleFill: "white", femaleFill: "white", unknownFill: "white",
-    edge: "#000", deceasedMark: "#000", conditionFill: "#000",
-  },
-};
-
-function getTheme(name: string): ThemeColors {
-  return THEMES[name] ?? THEMES["default"];
-}
+// ─── Theme Resolution ──────────────────────────────────────
 
 function buildStyles(config: RenderConfig): string {
-  const t = getTheme(config.theme);
+  const t = resolveGenogramTheme(config.theme);
   const css = `
-.lineage-genogram {${cssCustomProperties()}
+.lineage-genogram {${cssCustomProperties(t)}
+  background: ${t.bg};
 }
-.lineage-genogram-shape { fill: ${t.fill}; stroke: ${t.stroke}; stroke-width: 2; }
+.lineage-genogram-shape { fill: ${t.fill}; stroke: ${t.stroke}; stroke-width: ${STROKE_WIDTH.medium}; stroke-linejoin: round; }
 .lineage-genogram-male .lineage-genogram-shape { fill: ${t.maleFill}; }
 .lineage-genogram-female .lineage-genogram-shape { fill: ${t.femaleFill}; }
 .lineage-genogram-unknown .lineage-genogram-shape { fill: ${t.unknownFill}; }
 .lineage-genogram-label { font-family: ${config.fontFamily}; font-size: ${config.fontSize}px; text-anchor: middle; fill: ${t.text}; }
-.lineage-genogram-edge { stroke: ${t.edge}; stroke-width: 2; fill: none; }
+.lineage-genogram-edge { stroke: ${t.strokeMuted}; stroke-width: ${STROKE_WIDTH.medium}; fill: none; stroke-linecap: round; stroke-linejoin: round; }
 .lineage-genogram-edge-cohabiting path { stroke-dasharray: 6,4; }
-.lineage-genogram-edge-divorced .lineage-genogram-divorce-mark { stroke: ${t.edge}; stroke-width: 2; }
-.lineage-genogram-edge-separated .lineage-genogram-separation-mark { stroke: ${t.edge}; stroke-width: 2; }
-.lineage-genogram-deceased-mark { stroke: ${t.deceasedMark}; stroke-width: 2; }
+.lineage-genogram-edge-divorced .lineage-genogram-divorce-mark { stroke: ${t.strokeMuted}; stroke-width: ${STROKE_WIDTH.medium}; }
+.lineage-genogram-edge-separated .lineage-genogram-separation-mark { stroke: ${t.strokeMuted}; stroke-width: ${STROKE_WIDTH.medium}; }
+.lineage-genogram-deceased-mark { stroke: ${t.deceasedMark}; stroke-width: ${STROKE_WIDTH.medium}; stroke-linecap: round; }
 .lineage-genogram-condition-fill { fill: ${t.conditionFill}; }
 .lineage-genogram-age { font-family: ${config.fontFamily}; fill: ${t.text}; pointer-events: none; }
 .lineage-genogram-title { fill: ${t.text}; }
 .lineage-genogram-edge-label { font-family: ${config.fontFamily}; fill: ${t.text}; }
-.lineage-genogram-index-border { stroke: #d4a017; stroke-width: 3; fill: none; }
+.lineage-genogram-index-border { stroke: ${t.warn}; stroke-width: ${STROKE_WIDTH.heavy}; fill: none; }
 `;
   return el("style", {}, css);
 }

@@ -26,3 +26,18 @@ export { ecomap } from "./diagrams/ecomap";
 export { pedigree } from "./diagrams/pedigree";
 export { phylo } from "./diagrams/phylo";
 export { sociogram } from "./diagrams/sociogram";
+
+export {
+  type ThemeName,
+  type BaseTheme,
+  type PersonTokens,
+  type BiologyTokens,
+  type ResolvedTheme,
+  BASE_THEMES,
+  PERSON_TOKENS,
+  BIOLOGY_TOKENS,
+  resolveBaseTheme,
+  resolvePersonTheme,
+  resolveBiologyTheme,
+  resolveGenogramTheme,
+} from "./core/theme";

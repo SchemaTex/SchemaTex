@@ -1,5 +1,6 @@
 import { describe, test, expect } from "vitest";
 import { render } from "../../src/index";
+import { resolveGenogramTheme, BASE_THEMES, PERSON_TOKENS } from "../../src/core/theme";
 
 const BASIC_GENOGRAM = `genogram
   john [male, 1950]
@@ -8,34 +9,37 @@ const BASIC_GENOGRAM = `genogram
     alice [female, 1975]`;
 
 describe("genogram themes", () => {
-  test("default theme uses clinical colors", () => {
+  test("default theme uses resolved tokens", () => {
+    const t = resolveGenogramTheme("default");
     const svg = render(BASIC_GENOGRAM);
-    expect(svg).toContain("#2c3e50"); // stroke
-    expect(svg).toContain("#dae8fc"); // male fill
-    expect(svg).toContain("#fce4ec"); // female fill
+    expect(svg).toContain(t.text);
+    expect(svg).toContain(t.maleFill);
+    expect(svg).toContain(t.femaleFill);
   });
 
-  test("clinical theme uses blue male fill and pink female fill", () => {
+  test("clinical alias resolves to monochrome", () => {
+    const t = resolveGenogramTheme("clinical");
+    const mono = resolveGenogramTheme("monochrome");
+    expect(t).toEqual(mono);
     const svg = render(BASIC_GENOGRAM, { theme: "clinical" });
-    expect(svg).toContain("#dae8fc"); // male fill
-    expect(svg).toContain("#fce4ec"); // female fill
-    expect(svg).toContain("#2c3e50"); // stroke
+    expect(svg).toContain(BASE_THEMES.monochrome.stroke);
   });
 
-  test("colorful theme uses colored fills", () => {
-    const svg = render(BASIC_GENOGRAM, { theme: "colorful" });
-    expect(svg).toContain("#bbdefb"); // male fill
-    expect(svg).toContain("#f8bbd0"); // female fill
+  test("colorful alias resolves to default", () => {
+    const t = resolveGenogramTheme("colorful");
+    const def = resolveGenogramTheme("default");
+    expect(t).toEqual(def);
   });
 
-  test("mono theme uses pure black", () => {
+  test("mono theme uses monochrome tokens", () => {
     const svg = render(BASIC_GENOGRAM, { theme: "mono" });
-    expect(svg).toContain("stroke: #000");
+    expect(svg).toContain(BASE_THEMES.monochrome.stroke);
   });
 
-  test("unknown theme falls back to default (clinical)", () => {
+  test("unknown theme falls back to default", () => {
     const svg = render(BASIC_GENOGRAM, { theme: "nonexistent" });
-    expect(svg).toContain("#2c3e50");
+    const t = resolveGenogramTheme("default");
+    expect(svg).toContain(t.text);
   });
 
   test("theme applies to condition fills", () => {
@@ -43,6 +47,6 @@ describe("genogram themes", () => {
   father [male, 1945, conditions: heart-disease(full)]
   mother [female, 1948]
   father -- mother`, { theme: "clinical" });
-    expect(svg).toContain("#1565c0"); // clinical condition fill
+    expect(svg).toContain(PERSON_TOKENS.monochrome.conditionFill);
   });
 });
