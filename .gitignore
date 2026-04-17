@@ -1,7 +1,44 @@
+# Dependencies
 node_modules/
+
+# Build output
 dist/
+
+# TypeScript
 *.tsbuildinfo
-.DS_Store
+*.d.ts.map
+
+# Test coverage
 coverage/
+.nyc_output/
+
+# Environment variables
 .env
 .env.local
+.env*.local
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Tool caches
+.tsup/
+.cache/
+.eslintcache
+
+# Vitest
+.vitest-snapshots/
