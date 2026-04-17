@@ -78,6 +78,8 @@ genogram "The Potter Family"
 
 **Features shown:** birth/death year ranges (`1960–1981`), `index` person gold border, quoted relationship label (`m. 1978`), `deceased` status, and three emotional relationship types — `cutoff` (dashed blue), `hostile` (red), `close` (green).
 
+![Harry Potter Genogram](examples/genogram/harry-potter.svg)
+
 ---
 
 ### Ecomap — Refugee Family Resettlement
@@ -108,6 +110,8 @@ ecomap "Nguyen Family Resettlement"
 ```
 
 **Features shown:** center node, 9 external systems with categories, mixed connection strengths (`===` / `==` / `---`), directional arrows (`-->`, `<->`), and labeled connections.
+
+![Nguyen Family Ecomap](examples/ecomap/refugee-family.svg)
 
 ---
 
@@ -140,6 +144,8 @@ pedigree "BRCA1 Family — Hereditary Breast/Ovarian Cancer"
 
 **Features shown:** 4 generations with Roman numeral labels, `affected` / `carrier` / `presymptomatic` / `unaffected` status fills, `proband` arrow marker, `deceased` individual, and automatic sibling/spouse layout.
 
+![BRCA1 Pedigree](examples/pedigree/brca-family.svg)
+
 ---
 
 ### Phylogenetic Tree — Bacterial Diversity
@@ -158,6 +164,8 @@ phylo "Bacterial Diversity"
 ```
 
 **Features shown:** Standard Newick input with branch lengths, NHX bootstrap support values (colored dots: green ≥95, yellow ≥75), 3 clade-colored branch groups with labels, and proportional scale bar.
+
+![Bacterial Diversity Phylogenetic Tree](examples/phylo/bacterial-diversity.svg)
 
 ---
 
@@ -195,6 +203,8 @@ sociogram "Playground Dynamics"
 ```
 
 **Features shown:** Force-directed layout, group coloring (Boys blue, Girls red), mutual choices (`<->`), rejection edge (`-x>`) with label, neutral connections (`-.-`), auto-detected roles (stars, isolates).
+
+![Playground Dynamics Sociogram](examples/sociogram/playground-dynamics.svg)
 
 ---
 
