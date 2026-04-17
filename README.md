@@ -5,6 +5,7 @@
 </p>
 
 <p align="center">
+  <a href="#gallery">Gallery</a> ·
   <a href="#install">Install</a> ·
   <a href="#quick-start">Quick Start</a> ·
   <a href="#genogram-syntax">Genogram</a> ·
@@ -45,6 +46,98 @@ No existing open-source library handles these well. GoJS has a genogram sample b
 - **Zero runtime dependencies.** No D3, no dagre, no parser generators. Hand-written parsers and layout algorithms. The entire library is self-contained TypeScript.
 - **Semantic SVG output.** Every element has accessible `<title>`/`<desc>`, CSS classes for theming, and `data-*` attributes for interactivity. No inline styles.
 - **Plugin architecture.** Each diagram type (genogram, ecomap, pedigree) is an independent plugin with its own parser, layout engine, and renderer. Import only what you need.
+
+## Gallery
+
+### Genogram — Harry Potter Family
+
+Multi-generation family with death years, relationship labels, index person, and emotional relationships.
+
+```
+genogram "The Potter Family"
+  fleamont [male, 1909, 1979, deceased]
+  euphemia [female, 1920, 1979, deceased]
+  fleamont -- euphemia
+    james [male, 1960, 1981, deceased]
+  mr_evans [male, 1925, deceased]
+  mrs_evans [female, 1928, deceased]
+  mr_evans -- mrs_evans
+    lily [female, 1960, 1981, deceased]
+    petunia [female, 1958]
+  james -- lily "m. 1978"
+    harry [male, 1980, index]
+  petunia -- vernon [male, 1951]
+    dudley [male, 1980]
+  harry -cutoff- petunia
+  harry -hostile- dudley
+  harry -close- lily
+```
+
+**Features shown:** birth/death year ranges (`1960–1981`), `index` person gold border, quoted relationship label (`m. 1978`), `deceased` status, and three emotional relationship types — `cutoff` (dashed blue), `hostile` (red), `close` (green).
+
+---
+
+### Ecomap — Refugee Family Resettlement
+
+Family system embedded in institutional, social, and cultural support networks.
+
+```
+ecomap "Nguyen Family Resettlement"
+  center: family [label: "Nguyen Family"]
+  resettlement [label: "IRC Office", category: government]
+  school [label: "Lincoln Elementary", category: education]
+  esl [label: "Adult ESL Class", category: education]
+  clinic [label: "Community Clinic", category: health]
+  caseworker [label: "Ms. Patel", category: mental-health]
+  temple [label: "Vietnamese Temple", category: cultural]
+  neighbors [label: "Sponsor Family", category: community]
+  employer [label: "Warehouse Job", category: work]
+  cousins [label: "Cousins (CA)", category: family]
+  family === resettlement [label: "active case"]
+  family === school
+  family --- esl [label: "twice weekly"]
+  clinic --> family [label: "vaccinations"]
+  caseworker <-> family [label: "weekly"]
+  family === temple [label: "anchor"]
+  neighbors === family [label: "housing host"]
+  family --- employer [label: "new, part-time"]
+  cousins == family [label: "phone support"]
+```
+
+**Features shown:** center node, 9 external systems with categories, mixed connection strengths (`===` / `==` / `---`), directional arrows (`-->`, `<->`), and labeled connections.
+
+---
+
+### Pedigree — Hereditary Breast & Ovarian Cancer (BRCA)
+
+Four-generation family with multiple affected members, X-linked carrier status, and a proband.
+
+```
+pedigree "BRCA1 Family — Hereditary Breast/Ovarian Cancer"
+  I-1 [male, unaffected]
+  I-2 [female, affected, deceased]
+  I-1 -- I-2
+    II-1 [female, affected]
+    II-2 [male, unaffected]
+    II-3 [female, carrier]
+  II-1 -- II-4 [male, unaffected]
+    III-1 [female, affected, proband]
+    III-2 [male, unaffected]
+    III-3 [female, presymptomatic]
+  II-2 -- II-5 [female, unaffected]
+    III-4 [male, unaffected]
+    III-5 [female, unaffected]
+  II-3 -- II-6 [male, unaffected]
+    III-6 [female, carrier]
+    III-7 [male, unaffected]
+  III-1 -- III-8 [male, unaffected]
+    IV-1 [female, unaffected]
+    IV-2 [female, presymptomatic]
+```
+
+**Features shown:** 4 generations with Roman numeral labels, `affected` / `carrier` / `presymptomatic` / `unaffected` status fills, `proband` arrow marker, `deceased` individual, and automatic sibling/spouse layout.
+
+---
 
 ## Install
 
