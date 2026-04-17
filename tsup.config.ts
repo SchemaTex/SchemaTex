@@ -1,0 +1,17 @@
+import { defineConfig } from "tsup";
+
+export default defineConfig({
+  entry: {
+    index: "src/index.ts",
+    "diagrams/genogram/index": "src/diagrams/genogram/index.ts",
+    "diagrams/ecomap/index": "src/diagrams/ecomap/index.ts",
+    "diagrams/pedigree/index": "src/diagrams/pedigree/index.ts",
+  },
+  format: ["esm", "cjs"],
+  dts: true,
+  sourcemap: true,
+  clean: true,
+  splitting: true,
+  treeshake: true,
+  minify: false, // keep readable for open-source
+});
