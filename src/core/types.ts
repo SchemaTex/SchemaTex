@@ -731,6 +731,13 @@ export interface CircuitAST {
   /** Explicit net declarations for multi-terminal connections */
   nets: CircuitNet[];
   metadata?: Record<string, string>;
+  /** Layout mode: "positional" (Schemdraw-style direction chain) or "netlist" (SPICE-style, auto-layout). */
+  mode?: "positional" | "netlist";
+  /**
+   * Netlist-only. Maps componentId → { pinName → netId }.
+   * Populated by the netlist parser; consumed by the auto-layout engine.
+   */
+  pinMap?: Record<string, Record<string, string>>;
 }
 
 // ── Block Diagram ────────────────────────────────────────────
@@ -742,6 +749,8 @@ export interface BlockNode {
   /** Display label / transfer function e.g. "G(s)" */
   label: string;
   role?: BlockRole;
+  /** Routing hint for feedback/feedforward blocks: "above" = route over forward path */
+  route?: "above" | "below";
 }
 
 export interface SummingJunction {

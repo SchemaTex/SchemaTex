@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Lineage · Block Diagram Preview</title>
+<style>
+  body { font-family: system-ui; background: #f5f5f5; margin: 0; padding: 20px; }
+  nav { font-size: 13px; color: #888; margin-bottom: 16px; }
+  nav a { color: #555; text-decoration: none; }
+  nav a:hover { text-decoration: underline; }
+  h1 { font-size: 18px; color: #333; margin: 0 0 4px; }
+  .subtitle { font-size: 13px; color: #888; margin-bottom: 24px; }
+  h2 { font-size: 14px; color: #666; margin-top: 30px; border-bottom: 1px solid #ddd; padding-bottom: 4px; }
+  pre.src { background: #f7f7f7; padding: 10px; font-size: 12px; border-radius: 6px; margin: 6px 0; border: 1px solid #eee; white-space: pre-wrap; }
+  .svg-container { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin: 10px 0; overflow-x: auto; }
+  .svg-container svg { display: block; max-width: 100%; height: auto; }
+  .section-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #aaa; margin-top: 40px; margin-bottom: -8px; }
+</style>
+</head>
+<body>
+<nav><a href="index.html">← All Diagrams</a></nav>
+<h1>Block Diagram</h1>
+<div class="subtitle">Control systems — Laplace-domain transfer functions, summing junctions, feedback loops</div>
+<div id="output"></div>
+<script type="module">
+import { render } from '../src/index.ts';
+
+const cases = [
+  ['Open Loop', `blockdiagram "Open Loop"
+G = block("G(s)") [role: plant]
+in -> G ["R(s)"]
+G -> out ["Y(s)"]`],
+
+  ['Two-Block Cascade', `blockdiagram "Cascade"
+G1 = block("G1(s)") [role: actuator]
+G2 = block("G2(s)") [role: plant]
+in -> G1 -> G2 -> out`],
+
+  ['Unity Feedback', `blockdiagram "Unity Feedback"
+C = block("C(s)") [role: controller]
+G = block("G(s)") [role: plant]
+err = sum(+r, -y)
+in -> err ["R(s)"]
+err -> C ["E(s)"]
+C -> G ["U(s)"]
+G -> out ["Y(s)"]
+G -> err`],
+
+  ['PID Closed-Loop with Sensor', `blockdiagram "PID Closed-Loop Control System"
+C = block("C(s)") [role: controller]
+G = block("G(s)") [role: plant]
+H = block("H(s)") [role: sensor]
+err = sum(+r, -ym)
+in -> err ["R(s)"]
+err -> C ["E(s)"]
+C -> G ["U(s)"]
+G -> out ["Y(s)"]
+G -> H
+H -> err ["Y_m(s)"]`],
+
+  ['Discrete-Time Signals', `blockdiagram "Digital Control"
+C = block("C(z)") [role: controller]
+ZOH = block("ZOH") [role: actuator]
+G = block("G(s)") [role: plant]
+H = block("H(s)") [role: sensor]
+err = sum(+r, -ym)
+in -> err ["r[k]", discrete]
+err -> C ["e[k]", discrete]
+C -> ZOH ["u[k]", discrete]
+ZOH -> G ["u(t)"]
+G -> out ["Y(s)"]
+G -> H
+H -> err ["y_m"]`],
+
+  ['⚠️ Multi-Loop (nested feedback) — stress test', `blockdiagram "Multi-Loop System"
+G1 = block("G1(s)") [role: plant]
+G2 = block("G2(s)") [role: plant]
+G3 = block("G3(s)") [role: plant]
+G4 = block("G4(s)") [role: plant]
+H1 = block("H1(s)") [role: sensor]
+H2 = block("H2(s)") [role: sensor]
+H3 = block("H3(s)") [role: sensor]
+s1 = sum(+R, -h3)
+s2 = sum(+a, +h2)
+s3 = sum(+b, +h1)
+in -> s1 ["R(s)"]
+s1 -> G1
+G1 -> s2
+s2 -> G2
+G2 -> s3
+s3 -> G3
+G3 -> G4
+G4 -> out ["C"]
+G4 -> H1
+H1 -> s3
+G3 -> H2
+H2 -> s2
+G4 -> H3
+H3 -> s1`],
+
+  ['⚠️ MIMO (multi-input) — stress test (CRT TV style)', `blockdiagram "CRT TV Block Diagram"
+line_osc = block("line oscillator")
+line_drv = block("line driver")
+line_out = block("line output")
+video_out = block("video output")
+frame_osc = block("frame osc + sync")
+frame_out = block("frame output")
+ew_mod = block("E-W modulator")
+crt = block("C.R.T.") [role: plant]
+degauss = block("degaussing circuit")
+in -> video_out ["RGB"]
+in -> frame_osc ["sync"]
+in -> degauss ["AC mains"]
+frame_osc -> line_osc
+line_osc -> line_drv -> line_out
+line_out -> crt
+video_out -> crt
+frame_osc -> frame_out
+frame_out -> ew_mod
+ew_mod -> crt
+degauss -> crt
+crt -> out`],
+
+  ['Phase 1: Nested Multi-Loop (H2 feedforward)', `blockdiagram "Nested Feedback Loops"
+G1 = block("G1(s)") [role: plant]
+G2 = block("G2(s)") [role: plant]
+G3 = block("G3(s)") [role: plant]
+H1 = block("H1(s)") [role: sensor]
+H2 = block("H2(s)") [role: sensor, route: above]
+s1 = sum(+R, -h2)
+s2 = sum(+a, -h1)
+in -> s1 ["R(s)"]
+s1 -> G1 -> s2
+s2 -> G2 -> G3
+G3 -> out ["Y(s)"]
+G2 -> H1
+H1 -> s2
+G3 -> H2
+H2 -> s1`],
+
+  ['Three-Block Cascade (Feedback)', `blockdiagram "Nested Control"
+C = block("C(s)") [role: controller]
+G1 = block("G1(s)") [role: actuator]
+G2 = block("G2(s)") [role: plant]
+H = block("H(s)") [role: sensor]
+err = sum(+r, -ym)
+in -> err
+err -> C -> G1 -> G2 -> out
+G2 -> H
+H -> err`],
+];
+
+const output = document.getElementById('output');
+for (const [title, src] of cases) {
+  const label = document.createElement('div');
+  label.className = 'section-label';
+  label.textContent = title;
+  output.appendChild(label);
+
+  const pre = document.createElement('pre');
+  pre.className = 'src';
+  pre.textContent = src;
+  output.appendChild(pre);
+
+  const div = document.createElement('div');
+  div.className = 'svg-container';
+  try {
+    div.innerHTML = render(src);
+  } catch (e) {
+    div.innerHTML = `<pre style="color:#c00;">${e.message}</pre>`;
+  }
+  output.appendChild(div);
+}
+</script>
+</body>
+</html>

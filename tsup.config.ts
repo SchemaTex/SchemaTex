@@ -10,6 +10,8 @@ export default defineConfig({
     "diagrams/sociogram/index": "src/diagrams/sociogram/index.ts",
     "diagrams/timing/index": "src/diagrams/timing/index.ts",
     "diagrams/logic/index": "src/diagrams/logic/index.ts",
+    "diagrams/circuit/index": "src/diagrams/circuit/index.ts",
+    "diagrams/blockdiagram/index": "src/diagrams/blockdiagram/index.ts",
   },
   format: ["esm", "cjs"],
   dts: true,

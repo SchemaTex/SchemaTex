@@ -28,6 +28,8 @@ export { phylo } from "./diagrams/phylo";
 export { sociogram } from "./diagrams/sociogram";
 export { timing } from "./diagrams/timing";
 export { logic } from "./diagrams/logic";
+export { circuit } from "./diagrams/circuit";
+export { blockdiagram } from "./diagrams/blockdiagram";
 
 export {
   type ThemeName,

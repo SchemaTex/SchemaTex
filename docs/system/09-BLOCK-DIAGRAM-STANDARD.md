@@ -477,3 +477,106 @@ G -> H -> err
 | P2 | Multi-loop (nested feedback) layout | High | Medium |
 | P3 | Transfer function fraction display (numerator/denominator) | Medium | Low |
 | P3 | Signal flow graph (Mason's gain) | High | Low |
+
+---
+
+## 7. Phase 2 — Advanced Layout (Planned)
+
+Phase 0/1 cover SISO control systems with forward + feedback/feedforward loops.
+Phase 2 addresses **stress-test patterns** that current 1D column layout handles
+poorly: nested multi-input blocks (MIMO), bus-level signals, and diagrams that
+need explicit 2D placement rather than auto-derived columns. These features
+are **not yet implemented** — DSL shapes below are design targets.
+
+### 7.1 Named Input Ports (Multi-Input Blocks)
+
+Real systems (CRT TV, aircraft attitude, power electronics) have blocks with
+multiple distinguishable inputs — not just sum-of-signals. Today `A -> B` only
+picks a side by feedback heuristic. We need:
+
+```
+crt = block("C.R.T.") [ports: video=left, horiz=top, vert=bottom, power=right]
+video_out -> crt.video
+line_out  -> crt.horiz
+ew_mod    -> crt.vert
+degauss   -> crt.power
+```
+
+Parser: `[ports: name=side,...]` where `side ∈ {left, top, bottom, right}`.
+Layout allocates multiple anchors per edge on the named block. Edge syntax
+`A -> B.port` addresses a specific pin.
+
+### 7.2 Explicit 2D Grid Placement
+
+When BFS columns produce awkward layouts (multi-input convergence nodes,
+side-by-side independent subsystems), allow explicit `row` + `col`:
+
+```
+G1 = block("G1") [col: 2, row: 0]
+G2 = block("G2") [col: 2, row: 1]
+merger = block("merge") [col: 3, row: 0.5]
+G1 -> merger
+G2 -> merger
+```
+
+Layout: when `col/row` present, skip BFS for that node; mix with auto-placed
+nodes by treating explicit rows as hints that push auto columns outward.
+
+### 7.3 Bus Signals
+
+A bus carries multiple parallel lines (e.g., RGB, 3-phase power, state vector).
+Visually: thicker stroke + slash-with-count annotation.
+
+```
+rgb = signal("RGB") [bus: 3]
+in -> video_out ["RGB", bus: 3]
+```
+
+Renderer: stroke-width ≥ 3px; draw a short diagonal slash at midpoint with
+count label above it. Bus edges do not merge into non-bus endpoints without
+an explicit `demux` block.
+
+### 7.4 Orthogonal Routing with Obstacle Avoidance
+
+Current routing is right-angle but naive — long feedback paths can cross
+forward blocks. Phase 2 routing:
+
+- Compute node bounding boxes as obstacles.
+- Route feedback/feedforward lanes in reserved corridors (one track per
+  `fbRow`, already allocated in Phase 1 layout).
+- For cross-row jumps, pick the corridor side (above/below) that minimizes
+  crossings using a simple A*-like grid search at 10px resolution.
+- Junction dots rendered wherever two edges share a point.
+
+### 7.5 Disturbance Injection (Vertical)
+
+Disturbances inject at a sum junction from above, visually offset:
+
+```
+d = disturbance("d(t)")
+sum1 = sum(+u, +d)
+d -> sum1
+```
+
+Parser adds `disturbance("label")` primitive. Layout places disturbance label
+directly above the target sum's `top` pin (small text, no block border).
+
+### 7.6 System Boundary (Grouping)
+
+Draw a dashed box around a named subsystem:
+
+```
+boundary "Plant" { G1, G2, H1 }
+```
+
+Layout computes bbox of grouped nodes + padding; renderer emits a dashed
+`<rect>` with the boundary label in the top-left.
+
+### 7.7 Phase 2 Acceptance Tests
+
+| Pattern | Currently | Phase 2 target |
+|---------|-----------|----------------|
+| CRT TV (MIMO C.R.T. block) | Inputs pile on left pin | Named ports, 4 sides used |
+| 3-phase inverter bus | Three parallel edges | One bus signal, slash = 3 |
+| Smith predictor (forward + model feedback) | Overlap | Separate corridors, no crossings |
+| Nested boundary (controller vs plant) | No grouping | Dashed boxes, labels |
