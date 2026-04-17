@@ -1,6 +1,6 @@
 <p align="center">
   <strong>Lineage</strong><br>
-  Text-to-SVG rendering for genograms, ecomaps, and pedigree charts.<br>
+  Text-to-SVG rendering for genograms, ecomaps, pedigree charts, phylogenetic trees, and sociograms.<br>
   <em>Like <a href="https://mermaid.js.org/">Mermaid</a> — but for relationship diagrams.</em>
 </p>
 
@@ -10,6 +10,9 @@
   <a href="#quick-start">Quick Start</a> ·
   <a href="#genogram-syntax">Genogram</a> ·
   <a href="#ecomap-syntax">Ecomap</a> ·
+  <a href="#pedigree-syntax">Pedigree</a> ·
+  <a href="#phylogenetic-tree-syntax">Phylo</a> ·
+  <a href="#sociogram-syntax">Sociogram</a> ·
   <a href="#api">API</a> ·
   <a href="#contributing">Contributing</a>
 </p>
@@ -136,6 +139,62 @@ pedigree "BRCA1 Family — Hereditary Breast/Ovarian Cancer"
 ```
 
 **Features shown:** 4 generations with Roman numeral labels, `affected` / `carrier` / `presymptomatic` / `unaffected` status fills, `proband` arrow marker, `deceased` individual, and automatic sibling/spouse layout.
+
+---
+
+### Phylogenetic Tree — Bacterial Diversity
+
+Ten-taxon tree with Newick input, clade coloring, and bootstrap support values.
+
+```
+phylo "Bacterial Diversity"
+  newick: "((((Ecoli:0.1,Salmonella:0.12):0.05[&&NHX:B=98],Vibrio:0.2):0.08[&&NHX:B=85],((Bacillus:0.15,Staph:0.18):0.06[&&NHX:B=92],Listeria:0.22):0.1):0.15,((Myco_tb:0.3,Myco_leprae:0.28):0.12[&&NHX:B=100],(Strepto:0.25,Lactobacillus:0.2):0.08[&&NHX:B=78]):0.2);"
+
+  clade Gamma = (Ecoli, Salmonella, Vibrio) [color: "#1E88E5", label: "γ-Proteobacteria"]
+  clade Firmi = (Bacillus, Staph, Listeria, Strepto, Lactobacillus) [color: "#E53935", label: "Firmicutes"]
+  clade Actino = (Myco_tb, Myco_leprae) [color: "#43A047", label: "Actinobacteria"]
+
+  scale "substitutions/site"
+```
+
+**Features shown:** Standard Newick input with branch lengths, NHX bootstrap support values (colored dots: green ≥95, yellow ≥75), 3 clade-colored branch groups with labels, and proportional scale bar.
+
+---
+
+### Sociogram — Playground Dynamics
+
+Social network diagram with groups, mutual choices, rejections, and neutral connections.
+
+```
+sociogram "Playground Dynamics"
+  config: layout = force-directed
+  config: coloring = group
+
+  group boys [label: "Boys", color: "#42A5F5"]
+    tom
+    jack
+    mike
+    leo
+
+  group girls [label: "Girls", color: "#EF5350"]
+    anna
+    beth
+    chloe
+    diana
+
+  tom <-> jack
+  tom -> mike
+  jack -> leo
+  mike -x> leo [label: "conflict"]
+  anna <-> beth
+  anna <-> chloe
+  beth <-> chloe
+  anna -> diana
+  diana -.- tom
+  leo -.- anna
+```
+
+**Features shown:** Force-directed layout, group coloring (Boys blue, Girls red), mutual choices (`<->`), rejection edge (`-x>`) with label, neutral connections (`-.-`), auto-detected roles (stars, isolates).
 
 ---
 
@@ -386,6 +445,178 @@ pedigree "Cancer Family"
 
 Generation labels (I, II, III...) and individual numbering (I-1, I-2...) are rendered automatically.
 
+## Phylogenetic Tree Syntax
+
+Phylogenetic trees display evolutionary relationships between species, genes, or sequences. Lineage supports the standard **Newick format** natively, plus an indent-based DSL for hand-written trees.
+
+### Newick input
+
+```
+phylo "Simple Vertebrates"
+  newick: "((Human:0.1,Mouse:0.3):0.05,(Chicken:0.4,(Zebrafish:0.6,Frog:0.5):0.15):0.1);"
+  scale "substitutions/site"
+```
+
+### Tree modes
+
+| Mode | Effect | Activation |
+|------|--------|------------|
+| `phylogram` | Branch lengths proportional to evolutionary distance (default) | — |
+| `cladogram` | All tips aligned, only topology shown | `[mode: cladogram]` |
+| `chronogram` | Branch lengths proportional to divergence time | `[mode: chronogram]` |
+
+### Layout types
+
+| Layout | Description | Activation |
+|--------|-------------|------------|
+| `rectangular` | Standard L-shaped branches (default) | — |
+| `slanted` | Diagonal branch lines | `[layout: slanted]` |
+
+### Bootstrap support values
+
+```
+phylo "Primates"
+  newick: "((Human:0.02,Chimp:0.03):0.01[&&NHX:B=100],(Gorilla:0.05,Orangutan:0.08):0.04[&&NHX:B=72]);"
+```
+
+Support values ≥50 are shown as colored dots (green ≥95, yellow ≥75, orange ≥50) with numeric labels.
+
+### Clade highlighting
+
+```
+clade Mammals = (Human, Mouse, Dog) [color: "#1E88E5", label: "Mammalia"]
+clade Birds = (Chicken, Eagle) [color: "#43A047", label: "Aves", highlight: background]
+```
+
+Highlight modes: `branch` (colored branches, default), `background` (shaded rectangle), `both`.
+
+### Indent DSL (alternative to Newick)
+
+For small, hand-written trees:
+
+```
+phylo "Simple Tree"
+
+root:
+  :0.15
+    :0.03
+      Human: 0.1
+      Chimp: 0.08
+    Gorilla: 0.12
+  Dog: 0.35
+
+clade Apes = (Human, Chimp, Gorilla) [color: "#1E88E5"]
+scale "substitutions/site"
+```
+
+### Full example
+
+```
+phylo "Bacterial Diversity"
+  newick: "((((Ecoli:0.1,Salmonella:0.12):0.05,Vibrio:0.2):0.08,((Bacillus:0.15,Staph:0.18):0.06,Listeria:0.22):0.1):0.15,((Myco_tb:0.3,Myco_leprae:0.28):0.12,(Strepto:0.25,Lactobacillus:0.2):0.08):0.2);"
+
+  clade Gamma = (Ecoli, Salmonella, Vibrio) [color: "#1E88E5", label: "γ-Proteobacteria"]
+  clade Firmi = (Bacillus, Staph, Listeria, Strepto, Lactobacillus) [color: "#E53935", label: "Firmicutes"]
+  clade Actino = (Myco_tb, Myco_leprae) [color: "#43A047", label: "Actinobacteria"]
+
+  scale "substitutions/site"
+```
+
+## Sociogram Syntax
+
+Sociograms visualize social relationships within a group — who chooses whom, mutual bonds, rejections, and social isolation. Based on Moreno (1934) sociometry.
+
+### Nodes
+
+```
+sociogram
+  alice [label: "Alice", group: team-a]
+  bob [label: "Bob", role: star]
+  carol [label: "Carol", size: large]
+```
+
+| Property | Effect |
+|----------|--------|
+| `label: "..."` | Display name |
+| `group: id` | Group membership (for coloring) |
+| `role: star\|isolate\|bridge` | Force role annotation |
+| `size: small\|medium\|large` | Override node size |
+
+### Edge operators
+
+| Operator | Direction | Valence | Visual |
+|----------|-----------|---------|--------|
+| `->` | One-way | Positive | Green solid arrow |
+| `<->` | Mutual | Positive | Green double arrow |
+| `--` | Undirected | Positive | Green solid line |
+| `-x>` | One-way | Negative | Red dashed arrow |
+| `<x->` | Mutual | Negative | Red dashed double arrow |
+| `-x-` | Undirected | Negative | Red dashed line |
+| `-.>` | One-way | Neutral | Gray dotted arrow |
+| `-.-` | Undirected | Neutral | Gray dotted line |
+| `==>` | One-way | Strong positive | Thick green arrow |
+| `<==>` | Mutual | Strong positive | Thick green double arrow |
+| `===>` / `<===>` | Very strong | Positive | Very thick line |
+
+### Edge properties
+
+```
+alice -> bob [label: "best friend", weight: 3]
+```
+
+### Groups
+
+```
+group boys [label: "Boys", color: "#42A5F5"]
+    tom
+    jack
+    mike
+```
+
+### Config options
+
+```
+config: layout = force-directed    # circular | force-directed
+config: sizing = in-degree         # uniform | in-degree
+config: coloring = group           # default | group | role
+config: highlight = stars, isolates
+```
+
+### Auto-detected roles
+
+| Role | Detection | Visual |
+|------|-----------|--------|
+| Star | in-degree ≥ mean + 1.5σ | Gold fill + star badge |
+| Isolate | in-degree = 0 AND out-degree = 0 | Gray, dashed border |
+| Neglectee | in-degree = 0, out-degree > 0 | Blue, dashed border |
+| Rejected | ≥2 rejection edges received | Red-tinted, dashed border |
+
+### Full example
+
+```
+sociogram "Mrs. Chen's 4th Grade Class"
+  config: layout = circular
+
+  alice [label: "Alice"]
+  bob [label: "Bob"]
+  carol [label: "Carol"]
+  dave [label: "Dave"]
+  eve [label: "Eve"]
+  frank [label: "Frank"]
+
+  alice -> bob
+  alice -> carol
+  bob -> alice
+  bob -> dave
+  carol -> alice
+  carol -> eve
+  dave -> bob
+  dave -> frank
+  eve -> carol
+  eve -> alice
+  frank -> dave
+```
+
 ## API
 
 ### `render(text, config?)`
@@ -433,7 +664,7 @@ const svg = genogram.render(layout, renderConfig);
 
 ```ts
 interface LineageConfig {
-  type?: 'genogram' | 'ecomap' | 'pedigree';  // force diagram type
+  type?: 'genogram' | 'ecomap' | 'pedigree' | 'phylo' | 'sociogram';  // force diagram type
   fontFamily?: string;   // default: 'system-ui'
   padding?: number;      // SVG padding in px, default: 20
   theme?: string;        // 'default' | 'clinical' | 'colorful' | 'mono'
@@ -465,6 +696,8 @@ Lineage produces clean, semantic SVG suitable for embedding, printing, or intera
 - [x] **Phase 1: Genogram** — Parser, generation-based layout, McGoldrick symbols, SVG renderer
 - [x] **Phase 2: Ecomap** — Radial layout, weighted connections, energy flow arrows, category colors
 - [x] **Phase 2: Pedigree** — Generation layout, Roman numeral labels, affected/carrier/presymptomatic fills, proband arrows, consanguinity, legend
+- [x] **Phase 2: Phylogenetic Tree** — Newick parser, rectangular/slanted/cladogram layouts, bootstrap support, clade highlighting, scale bar
+- [x] **Phase 2: Sociogram** — Moreno sociometry, circular + force-directed layout, 3 valence types, auto-detected roles, group coloring
 - [ ] **Phase 3: Integrations** — React component, Markdown plugin, Obsidian plugin
 - [ ] **Phase 4: Advanced** — Interactive editing, JSON import/export, PDF export
 
@@ -496,6 +729,14 @@ src/
       parser.ts     # Genetic status + legend parser
       layout.ts     # Generation layout + Roman numeral labels
       renderer.ts   # Affected/carrier fills, proband arrows
+    phylo/          # Phylogenetic tree (Felsenstein standard)
+      parser.ts     # Newick + indent DSL + clade definitions
+      layout.ts     # Rectangular/slanted/cladogram layout
+      renderer.ts   # Branch paths, support dots, scale bar, clade highlights
+    sociogram/      # Moreno sociometry (1934)
+      parser.ts     # Edge operators, groups, config
+      layout.ts     # Circular + Fruchterman-Reingold force-directed
+      renderer.ts   # Valence-colored edges, role-based nodes, arrow markers
 ```
 
 ## Development
@@ -505,7 +746,7 @@ git clone https://github.com/mymap-ai/lineage.git
 cd lineage
 npm install
 npm run dev          # watch mode (tsup)
-npm run test         # vitest (167 tests)
+npm run test         # vitest (338 tests)
 npm run typecheck    # strict TypeScript
 npm run lint         # ESLint
 npm run build        # ESM + CJS + DTS → dist/

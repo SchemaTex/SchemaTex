@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Lineage · Sociogram Preview</title>
+<style>
+  body { font-family: system-ui; background: #f5f5f5; margin: 0; padding: 20px; }
+  nav { font-size: 13px; color: #888; margin-bottom: 16px; }
+  nav a { color: #555; text-decoration: none; }
+  nav a:hover { text-decoration: underline; }
+  h1 { font-size: 18px; color: #333; margin: 0 0 4px; }
+  .subtitle { font-size: 13px; color: #888; margin-bottom: 24px; }
+  h2 { font-size: 14px; color: #666; margin-top: 30px; border-bottom: 1px solid #ddd; padding-bottom: 4px; }
+  .svg-container { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin: 10px 0; overflow-x: auto; }
+  .svg-container svg { display: block; max-width: 100%; height: auto; }
+</style>
+</head>
+<body>
+<nav><a href="index.html">&larr; All Diagrams</a></nav>
+<h1>Sociogram</h1>
+<div class="subtitle">Social network diagrams — group dynamics, choices, rejections</div>
+<div id="output"></div>
+<script type="module">
+import { render } from '../src/index.ts';
+
+const cases = [
+  ['Case 1: Basic Classroom (Circular)', `sociogram "Mrs. Chen's 4th Grade Class"
+  config: layout = circular
+  alice [label: "Alice"]
+  bob [label: "Bob"]
+  carol [label: "Carol"]
+  dave [label: "Dave"]
+  eve [label: "Eve"]
+  frank [label: "Frank"]
+  alice -> bob
+  alice -> carol
+  bob -> alice
+  bob -> dave
+  carol -> alice
+  carol -> eve
+  dave -> bob
+  dave -> frank
+  eve -> carol
+  eve -> alice
+  frank -> dave`],
+
+  ['Case 2: Playground Dynamics (Force-Directed, Groups)', `sociogram "Playground Dynamics"
+  config: layout = force-directed
+  config: coloring = group
+
+  group boys [label: "Boys", color: "#42A5F5"]
+    tom
+    jack
+    mike
+    leo
+
+  group girls [label: "Girls", color: "#EF5350"]
+    anna
+    beth
+    chloe
+    diana
+
+  tom <-> jack
+  tom -> mike
+  jack -> leo
+  mike -x> leo [label: "conflict"]
+  anna <-> beth
+  anna <-> chloe
+  beth <-> chloe
+  anna -> diana
+  diana -.- tom
+  leo -.- anna`],
+
+  ['Case 3: Group Therapy (Circular, Star Role)', `sociogram "Group Therapy Session 5 - Trust Network"
+  config: layout = circular
+
+  therapist [label: "Dr. Park", role: star]
+  james [label: "James"]
+  maria [label: "Maria"]
+  lee [label: "Lee"]
+  sarah [label: "Sarah"]
+  tom [label: "Tom"]
+  nina [label: "Nina"]
+
+  james -> therapist
+  james <-> maria [weight: 3, label: "strong bond"]
+  james -> lee
+  maria -> therapist
+  maria -> sarah
+  lee -> therapist
+  lee -.- nina
+  sarah <-> nina
+  sarah -> therapist
+  tom -> therapist
+  nina -> maria`],
+
+  ['Case 4: Criminal Network (Force-Directed)', `sociogram "Operation Sunset - Communication Network"
+  config: layout = force-directed
+
+  boss [label: "Subject Alpha"]
+  lt1 [label: "Lieutenant 1"]
+  lt2 [label: "Lieutenant 2"]
+  courier1 [label: "Courier A"]
+  courier2 [label: "Courier B"]
+  contact1 [label: "External Contact 1"]
+  contact2 [label: "External Contact 2"]
+  associate1 [label: "Associate 1"]
+  associate2 [label: "Associate 2"]
+
+  boss <-> lt1 [weight: 4]
+  boss <-> lt2 [weight: 4]
+  lt1 -> courier1
+  lt1 -> courier2
+  lt2 -> associate1
+  lt2 -> associate2
+  courier1 -> contact1 [label: "supplier"]
+  courier2 -> contact2 [label: "distributor"]
+  lt1 <-> lt2 [weight: 2]
+  associate1 -.- courier1`],
+
+  ['Case 5: Edge Valence Types', `sociogram "Edge Types Demo"
+  config: layout = circular
+  a [label: "Alice"]
+  b [label: "Bob"]
+  c [label: "Carol"]
+  d [label: "Dave"]
+  e [label: "Eve"]
+  f [label: "Frank"]
+  a -> b
+  a <-> c
+  b -- d
+  c -x> e [label: "rejection"]
+  d <x-> f [label: "mutual conflict"]
+  e -.- f [label: "neutral"]
+  a ==> d [label: "strong"]`],
+
+  ['Case 6: In-Degree Sizing', `sociogram "Popularity Contest"
+  config: layout = circular
+  config: sizing = in-degree
+  star [label: "Most Popular"]
+  a [label: "A"]
+  b [label: "B"]
+  c [label: "C"]
+  d [label: "D"]
+  e [label: "E"]
+  lone [label: "Loner"]
+  a -> star
+  b -> star
+  c -> star
+  d -> star
+  e -> star
+  a -> b
+  c -> d`],
+
+  ['Case 7: Organizational Influence (Force-Directed, Groups)', `sociogram "Engineering Team Informal Influence"
+  config: layout = force-directed
+  config: coloring = group
+
+  group leadership [label: "Leadership", color: "#AB47BC"]
+    ceo [label: "CEO"]
+    vp [label: "VP Eng"]
+
+  group teamA [label: "Team A", color: "#42A5F5"]
+    lead1 [label: "Tech Lead A"]
+    dev1 [label: "Senior Dev"]
+    dev2 [label: "Dev"]
+
+  group teamB [label: "Team B", color: "#66BB6A"]
+    lead2 [label: "Tech Lead B"]
+    dev3 [label: "Dev"]
+    dev4 [label: "Junior Dev"]
+
+  ops [label: "DevOps", group: infra]
+
+  dev1 -> lead1
+  dev2 -> lead1
+  dev2 -> dev1
+  dev3 -> lead2
+  dev4 -> dev3
+  lead1 -> vp
+  lead2 -> vp
+  vp -> ceo
+  dev1 -> ops [label: "deploy help"]
+  dev3 -> ops [label: "infra questions"]
+  lead1 <-> lead2 [label: "weekly sync"]
+  dev4 -> dev1 [label: "mentorship"]`],
+
+  ['Case 8: Isolates and Neglectees', `sociogram "Social Isolation Detection"
+  config: layout = circular
+  popular [label: "Popular"]
+  normal1 [label: "Normal 1"]
+  normal2 [label: "Normal 2"]
+  neglected [label: "Neglected"]
+  isolated [label: "Isolated"]
+  rejected1 [label: "Rejected"]
+  normal1 -> popular
+  normal2 -> popular
+  normal1 <-> normal2
+  neglected -> popular
+  neglected -> normal1
+  normal1 -x> rejected1
+  normal2 -x> rejected1`],
+];
+
+const out = document.getElementById('output');
+for (const [label, src] of cases) {
+  const h2 = document.createElement('h2');
+  h2.textContent = label;
+  out.appendChild(h2);
+  const div = document.createElement('div');
+  div.className = 'svg-container';
+  try {
+    div.innerHTML = render(src);
+  } catch (e) {
+    div.textContent = 'Error: ' + e.message;
+    div.style.color = 'red';
+  }
+  out.appendChild(div);
+}
+</script>
+</body>
+</html>

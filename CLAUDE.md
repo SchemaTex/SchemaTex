@@ -19,6 +19,8 @@ Owner: Victor (victor@mymap.ai)。商业目标：开源获分发 → MyMap.ai / 
 | `docs/system/01-GENOGRAM-STANDARD.md` | 做 genogram 相关代码时读——McGoldrick 符号、布局规则、DSL grammar、test cases |
 | `docs/system/02-ECOMAP-STANDARD.md` | 做 ecomap 时读 |
 | `docs/system/03-PEDIGREE-STANDARD.md` | 做 pedigree 时读 |
+| `docs/system/04-PHYLOGENETIC-STANDARD.md` | 做 phylo 时读——Newick/NHX 格式、布局算法、clade 高亮 |
+| `docs/system/05-SOCIOGRAM-STANDARD.md` | 做 sociogram 时读——Moreno sociometry、edge operators、force-directed 布局 |
 | `docs/impl/1.0-genogram-parser.md` | 实现 parser 时读——详细步骤 + tests + DoD |
 | `docs/impl/1.1-genogram-symbols.md` | 实现 symbols 时读 |
 | `docs/impl/1.2-genogram-layout.md` | 实现 layout 时读——**最难最重要**，7 步算法 + edge cases |
@@ -85,4 +87,4 @@ Pipeline: `Text → Parser → AST → Layout → LayoutResult → Renderer → 
 
 Types 定义在 `src/core/types.ts`。SVG builder 在 `src/core/svg.ts`。
 
-当前优先级：**Phase 1 — Genogram**（impl 1.0 → 1.4）。
+已完成：Genogram, Ecomap, Pedigree, Phylogenetic Tree, Sociogram。下一步：EE Diagrams 或 Phase 3 Integrations。

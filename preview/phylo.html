@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Lineage · Phylogenetic Tree Preview</title>
+<style>
+  body { font-family: system-ui; background: #f5f5f5; margin: 0; padding: 20px; }
+  nav { font-size: 13px; color: #888; margin-bottom: 16px; }
+  nav a { color: #555; text-decoration: none; }
+  nav a:hover { text-decoration: underline; }
+  h1 { font-size: 18px; color: #333; margin: 0 0 4px; }
+  .subtitle { font-size: 13px; color: #888; margin-bottom: 24px; }
+  h2 { font-size: 14px; color: #666; margin-top: 30px; border-bottom: 1px solid #ddd; padding-bottom: 4px; }
+  .svg-container { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin: 10px 0; overflow-x: auto; }
+  .svg-container svg { display: block; max-width: 100%; height: auto; }
+</style>
+</head>
+<body>
+<nav><a href="index.html">&larr; All Diagrams</a></nav>
+<h1>Phylogenetic Tree</h1>
+<div class="subtitle">Evolutionary trees, cladograms, species relationships</div>
+<div id="output"></div>
+<script type="module">
+import { render } from '../src/index.ts';
+
+const cases = [
+  ['Case 1: Simple Vertebrates (Phylogram)', `phylo "Simple Vertebrates"
+  newick: "((Human:0.1,Mouse:0.3):0.05,(Chicken:0.4,(Zebrafish:0.6,Frog:0.5):0.15):0.1);"
+  scale "substitutions/site"`],
+
+  ['Case 2: Cladogram with Clades', `phylo "Animal Kingdom" [mode: cladogram]
+  newick: "(((Cat,Dog)Carnivora,(Human,Chimp)Primates)Mammalia,(Chicken,Eagle)Aves);"
+  clade Mammals = (Cat, Dog, Human, Chimp) [color: "#1E88E5", label: "Mammalia"]
+  clade Birds = (Chicken, Eagle) [color: "#43A047", label: "Aves"]`],
+
+  ['Case 3: Bootstrap Support Values', `phylo "Primate Phylogeny"
+  newick: "((Human:0.02,Chimp:0.03):0.01[&&NHX:B=100],(Gorilla:0.05,(Orangutan:0.08,Gibbon:0.10):0.04[&&NHX:B=72]):0.03[&&NHX:B=95]);"
+  scale "substitutions/site"`],
+
+  ['Case 4: Slanted Layout', `phylo "Vertebrate Slanted" [layout: slanted]
+  newick: "((Human:0.1,Mouse:0.3):0.05,(Chicken:0.4,(Zebrafish:0.6,Frog:0.5):0.15):0.1);"
+  scale "substitutions/site"`],
+
+  ['Case 5: Polytomy (Rapid Radiation)', `phylo "Rapid Radiation"
+  newick: "((A:0.1,B:0.1,C:0.1,D:0.1):0.5,E:0.6);"
+  scale "substitutions/site"`],
+
+  ['Case 6: Quoted Species Names (Italic)', `phylo "Hominids"
+  newick: "('Homo sapiens':0.02,'Pan troglodytes':0.03,'Gorilla gorilla':0.05,'Pongo pygmaeus':0.08);"
+  scale "substitutions/site"`],
+
+  ['Case 7: Indent DSL (Native Syntax)', `phylo "Simple Tree"
+
+root:
+  :0.15
+    :0.03
+      Human: 0.1
+      Chimp: 0.08
+    Gorilla: 0.12
+  Dog: 0.35
+
+clade Apes = (Human, Chimp, Gorilla) [color: "#1E88E5"]
+scale "substitutions/site"`],
+
+  ['Case 8: Bacterial Diversity with Clades', `phylo "Bacterial Diversity"
+  newick: "((((Ecoli:0.1,Salmonella:0.12):0.05,Vibrio:0.2):0.08,((Bacillus:0.15,Staph:0.18):0.06,Listeria:0.22):0.1):0.15,((Myco_tb:0.3,Myco_leprae:0.28):0.12,(Strepto:0.25,Lactobacillus:0.2):0.08):0.2);"
+  clade Gamma = (Ecoli, Salmonella, Vibrio) [color: "#1E88E5", label: "Gamma-Proteobacteria"]
+  clade Firmi = (Bacillus, Staph, Listeria, Strepto, Lactobacillus) [color: "#E53935", label: "Firmicutes"]
+  clade Actino = (Myco_tb, Myco_leprae) [color: "#43A047", label: "Actinobacteria"]
+  scale "substitutions/site"`],
+
+  ['Case 9: Clade with Background Highlight', `phylo "Highlighted Clades"
+  newick: "((A:0.1,B:0.2):0.3,(C:0.1,D:0.2):0.3,(E:0.4,F:0.35):0.2);"
+  clade Group1 = (A, B) [color: "#1E88E5", label: "Group 1", highlight: background]
+  clade Group2 = (C, D) [color: "#E53935", label: "Group 2", highlight: background]
+  clade Group3 = (E, F) [color: "#43A047", label: "Group 3", highlight: both]
+  scale "substitutions/site"`],
+];
+
+const output = document.getElementById('output');
+
+for (const [name, dsl] of cases) {
+  const h2 = document.createElement('h2');
+  h2.textContent = name;
+  output.appendChild(h2);
+
+  const div = document.createElement('div');
+  div.className = 'svg-container';
+  try {
+    div.innerHTML = render(dsl);
+  } catch (e) {
+    div.textContent = `Error: ${e.message}`;
+    div.style.color = 'red';
+  }
+  output.appendChild(div);
+}
+</script>
+</body>
+</html>

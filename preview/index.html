@@ -2,266 +2,66 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Lineage Genogram Preview</title>
+<title>Lineage Preview</title>
 <style>
-  body { font-family: system-ui; background: #f5f5f5; margin: 0; padding: 20px; }
-  h1 { font-size: 18px; color: #333; }
-  h2 { font-size: 14px; color: #666; margin-top: 30px; border-bottom: 1px solid #ddd; padding-bottom: 4px; }
-  .svg-container { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin: 10px 0; overflow-x: auto; }
-  .svg-container svg { display: block; max-width: 100%; height: auto; }
-  .grid { display: flex; flex-wrap: wrap; gap: 20px; }
+  body { font-family: system-ui; background: #f5f5f5; margin: 0; padding: 40px 20px; }
+  h1 { font-size: 22px; color: #333; margin-bottom: 8px; }
+  p { color: #666; font-size: 14px; margin-bottom: 32px; }
+  .grid { display: flex; flex-wrap: wrap; gap: 16px; }
+  .card {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 20px 24px;
+    text-decoration: none;
+    color: inherit;
+    min-width: 180px;
+    transition: box-shadow 0.15s;
+  }
+  .card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.1); border-color: #999; }
+  .card h2 { font-size: 16px; margin: 0 0 4px; color: #222; }
+  .card p { font-size: 13px; color: #888; margin: 0; }
+  .badge {
+    display: inline-block;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 99px;
+    margin-bottom: 10px;
+    font-weight: 600;
+  }
+  .implemented { background: #d4edda; color: #155724; }
+  .planned { background: #fff3cd; color: #856404; }
 </style>
 </head>
 <body>
 <h1>Lineage Preview</h1>
-<div id="output"></div>
-<script type="module">
-import { render } from '../src/index.ts';
-
-const cases = {
-  // ─── Genogram Cases ──────────────────────────────────
-  'Genogram 1: Nuclear Family': `genogram
-  john [male, 1950]
-  mary [female, 1955]
-  john -- mary
-    alice [female, 1980]
-    bob [male, 1983]`,
-
-  'Genogram 2: Three Generations': `genogram "Smith Family"
-  grandpa [male, 1930, deceased]
-  grandma [female, 1932]
-  grandpa -- grandma
-    dad [male, 1955]
-    aunt [female, 1958]
-  dad -- mom [female, 1957]
-    me [male, 1985]
-    sister [female, 1988]`,
-
-  'Genogram 3: Divorce + Remarriage': `genogram
-  tom [male, 1950]
-  jane [female, 1952]
-  tom -x- jane
-    child1 [male, 1975]
-  tom -- susan [female, 1960]
-    child2 [female, 1985]`,
-
-  'Genogram 4: Medical Conditions': `genogram
-  father [male, 1945, conditions: heart-disease(full) + diabetes(half-left)]
-  mother [female, 1948]
-  father -- mother
-    son [male, 1970, conditions: diabetes(striped)]`,
-
-  'Genogram 5: Single Individual': `genogram
-  solo [female, 1990]`,
-
-  'Genogram 6: Childless Couple': `genogram
-  husband [male, 1960]
-  wife [female, 1962]
-  husband -- wife`,
-
-  // ─── Ecomap Cases ────────────────────────────────────
-  'Ecomap 1: Basic Support Network': `ecomap "Maria's Support Network"
-  center: maria [female, age: 34]
-  work [label: "Tech Company", category: work]
-  church [label: "St. Mary's", category: religion]
-  mother [label: "Mom", category: family]
-  bestfriend [label: "Lisa", category: friends]
-  maria === mother
-  maria --- church
-  maria === work
-  maria == bestfriend`,
-
-  'Ecomap 2: Energy Flow + Stress': `ecomap "The Johnsons"
-  center: family [label: "The Johnsons"]
-  school [label: "Oak Elementary", category: education]
-  therapist [label: "Dr. Smith", category: mental-health]
-  ex [label: "Ex-spouse", category: family]
-  church [label: "Community Church", category: religion]
-  legal [label: "Family Court", category: legal]
-  family === school
-  therapist --> family
-  family ~~~ ex
-  family <-> church
-  family ~~~ legal`,
-
-  'Ecomap 3: Complex Clinical': `ecomap "Substance Abuse Recovery"
-  center: client [male, age: 28, label: "James"]
-  aa [label: "AA Group", category: substance, importance: major]
-  sponsor [label: "Bill (Sponsor)", category: substance]
-  employer [label: "Warehouse Job", category: work]
-  mother [label: "Mom", category: family]
-  exwife [label: "Ex-wife", category: family]
-  kids [label: "Children (2)", category: family]
-  dealer [label: "Old Friends", category: substance]
-  probation [label: "P.O. Johnson", category: legal]
-  therapist [label: "CBT Therapist", category: mental-health]
-  client === aa
-  sponsor --> client
-  client --- employer [label: "new, probationary"]
-  client == mother [label: "supportive"]
-  client ~~~ exwife [label: "custody conflict"]
-  client - - kids [label: "supervised visits"]
-  client -/- dealer [label: "trying to cut off"]
-  probation --> client
-  therapist <-> client [label: "weekly"]`,
-};
-
-// Cases with optional config overrides
-const configuredCases = {
-  // ─── Themed Genogram Cases ───────────────────────────────
-  'Genogram (clinical theme): Nuclear Family': {
-    dsl: `genogram
-  john [male, 1950]
-  mary [female, 1955]
-  john -- mary
-    alice [female, 1980]
-    bob [male, 1983]`,
-    config: { theme: 'clinical' },
-  },
-  'Genogram (colorful theme): Medical Conditions': {
-    dsl: `genogram
-  father [male, 1945, conditions: heart-disease(full) + diabetes(half-left)]
-  mother [female, 1948]
-  father -- mother
-    son [male, 1970, conditions: diabetes(striped)]`,
-    config: { theme: 'colorful' },
-  },
-
-  // ─── Pedigree Cases ──────────────────────────────────────
-  'Pedigree 1: Autosomal Recessive (CF)': {
-    dsl: `pedigree "Cystic Fibrosis Family"
-  I-1 [male, carrier]
-  I-2 [female, carrier]
-  I-1 -- I-2
-    II-1 [male, unaffected]
-    II-2 [female, carrier]
-    II-3 [male, affected, proband]
-    II-4 [female, unaffected]`,
-  },
-  'Pedigree 2: Consanguinity': {
-    dsl: `pedigree "Consanguineous Marriage"
-  I-1 [male, carrier]
-  I-2 [female, unaffected]
-  I-1 -- I-2
-    II-1 [male, carrier]
-    II-2 [female, unaffected]
-  I-3 [male, unaffected]
-  I-4 [female, carrier]
-  I-3 -- I-4
-    II-3 [female, carrier]
-  II-1 == II-3
-    III-1 [male, affected, proband]`,
-  },
-  'Pedigree 3: X-Linked Recessive (Hemophilia)': {
-    dsl: `pedigree "Hemophilia A"
-  I-1 [male, unaffected]
-  I-2 [female, carrier-x]
-  I-1 -- I-2
-    II-1 [male, affected]
-    II-2 [female, carrier-x]
-    II-3 [male, unaffected]
-    II-4 [female, unaffected]
-  II-2 -- II-5 [male, unaffected]
-    III-1 [male, affected]
-    III-2 [female, carrier-x]
-    III-3 [male, unaffected]`,
-  },
-  'Pedigree 4: Huntington Disease (5 Gen)': {
-    dsl: `pedigree "Huntington Disease"
-  I-1 [male, affected, deceased]
-  I-2 [female, deceased]
-  I-1 -- I-2
-    II-1 [male, affected, deceased]
-    II-2 [female, unaffected]
-    II-3 [male, unaffected, deceased]
-  II-1 -- II-4 [female, unaffected]
-    III-1 [female, affected]
-    III-2 [male, presymptomatic]
-    III-3 [female, unaffected]
-  III-1 -- III-4 [male, unaffected]
-    IV-1 [male, presymptomatic, proband]
-    IV-2 [female, unaffected]
-  III-3 -- III-5 [male, unaffected]
-    IV-3 [male, unaffected]
-    IV-4 [female, unaffected]`,
-  },
-
-  // ─── Advanced Genogram Features ─────────────────────────
-  'Genogram Advanced 1: Title + Rel Labels + Death Years': {
-    dsl: `genogram "Potter Family"
-  james [male, 1960, 1981, deceased]
-  lily [female, 1960, 1981, deceased]
-  james -- lily "m. 1979"
-    harry [male, 1980, index]`,
-  },
-  'Genogram Advanced 2: Emotional Relationships': {
-    dsl: `genogram "Family Dynamics"
-  dad [male, 1955, age: 70]
-  mom [female, 1958, age: 67]
-  dad -- mom "m. 1980"
-    son [male, 1982, age: 43]
-    daughter [female, 1985, age: 40]
-  dad -hostile- son
-  mom -close- daughter
-  son -distant- daughter`,
-  },
-  'Genogram Advanced 3: Multi-Color Medical Conditions': {
-    dsl: `genogram "Medical History"
-  grandfather [male, 1935, 1995, deceased, conditions: heart-disease(full, #e74c3c) + diabetes(half-left, #ff9800)]
-  grandmother [female, 1938, conditions: cancer(half-right, #9c27b0)]
-  grandfather -- grandmother
-    father [male, 1965, conditions: heart-disease(quad-tl, #e74c3c) + hypertension(quad-tr, #2196f3)]
-    uncle [male, 1968, conditions: diabetes(full, #ff9800)]`,
-  },
-  'Genogram Advanced 4: Abuse + Cross-Gen Emotional': {
-    dsl: `genogram "Clinical Assessment"
-  father [male, 1960, age: 65]
-  mother [female, 1963, age: 62]
-  father -- mother
-    patient [female, 1990, age: 35, index]
-    brother [male, 1988, age: 37]
-  father -abuse-> patient
-  mother -close- patient
-  patient -cutoff- brother
-  patient -harmony- mother`,
-  },
-};
-
-const output = document.getElementById('output');
-
-// Render original cases (no config override)
-for (const [name, dsl] of Object.entries(cases)) {
-  const h2 = document.createElement('h2');
-  h2.textContent = name;
-  output.appendChild(h2);
-
-  const div = document.createElement('div');
-  div.className = 'svg-container';
-  try {
-    div.innerHTML = render(dsl);
-  } catch (e) {
-    div.textContent = `Error: ${e.message}`;
-    div.style.color = 'red';
-  }
-  output.appendChild(div);
-}
-
-// Render configured cases (themed genograms + pedigrees)
-for (const [name, entry] of Object.entries(configuredCases)) {
-  const h2 = document.createElement('h2');
-  h2.textContent = name;
-  output.appendChild(h2);
-
-  const div = document.createElement('div');
-  div.className = 'svg-container';
-  try {
-    div.innerHTML = render(entry.dsl, entry.config || {});
-  } catch (e) {
-    div.textContent = `Error: ${e.message}`;
-    div.style.color = 'red';
-  }
-  output.appendChild(div);
-}
-</script>
+<p>Text DSL → SVG · Select a diagram type to view cases</p>
+<div class="grid">
+  <a class="card" href="genogram.html">
+    <div class="badge implemented">Implemented</div>
+    <h2>Genogram</h2>
+    <p>Family systems, medical history, emotional relationships</p>
+  </a>
+  <a class="card" href="ecomap.html">
+    <div class="badge implemented">Implemented</div>
+    <h2>Ecomap</h2>
+    <p>Social support networks, energy flow, clinical assessment</p>
+  </a>
+  <a class="card" href="pedigree.html">
+    <div class="badge implemented">Implemented</div>
+    <h2>Pedigree</h2>
+    <p>Genetic inheritance, medical genetics, hereditary conditions</p>
+  </a>
+  <a class="card" href="phylo.html">
+    <div class="badge implemented">Implemented</div>
+    <h2>Phylogenetic</h2>
+    <p>Evolutionary trees, cladograms, species relationships</p>
+  </a>
+  <a class="card" href="sociogram.html">
+    <div class="badge implemented">Implemented</div>
+    <h2>Sociogram</h2>
+    <p>Social network analysis, group dynamics, influence maps</p>
+  </a>
+</div>
 </body>
 </html>

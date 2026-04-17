@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Lineage · Ecomap Preview</title>
+<style>
+  body { font-family: system-ui; background: #f5f5f5; margin: 0; padding: 20px; }
+  nav { font-size: 13px; color: #888; margin-bottom: 16px; }
+  nav a { color: #555; text-decoration: none; }
+  nav a:hover { text-decoration: underline; }
+  h1 { font-size: 18px; color: #333; margin: 0 0 4px; }
+  .subtitle { font-size: 13px; color: #888; margin-bottom: 24px; }
+  h2 { font-size: 14px; color: #666; margin-top: 30px; border-bottom: 1px solid #ddd; padding-bottom: 4px; }
+  .svg-container { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin: 10px 0; overflow-x: auto; }
+  .svg-container svg { display: block; max-width: 100%; height: auto; }
+</style>
+</head>
+<body>
+<nav><a href="index.html">← All Diagrams</a></nav>
+<h1>Ecomap</h1>
+<div class="subtitle">Social support networks, energy flow, clinical assessment</div>
+<div id="output"></div>
+<script type="module">
+import { render } from '../src/index.ts';
+
+const cases = [
+  ['Basic Support Network', `ecomap "Maria's Support Network"
+  center: maria [female, age: 34]
+  work [label: "Tech Company", category: work]
+  church [label: "St. Mary's", category: religion]
+  mother [label: "Mom", category: family]
+  bestfriend [label: "Lisa", category: friends]
+  maria === mother
+  maria --- church
+  maria === work
+  maria == bestfriend`],
+
+  ['Energy Flow + Stress', `ecomap "The Johnsons"
+  center: family [label: "The Johnsons"]
+  school [label: "Oak Elementary", category: education]
+  therapist [label: "Dr. Smith", category: mental-health]
+  ex [label: "Ex-spouse", category: family]
+  church [label: "Community Church", category: religion]
+  legal [label: "Family Court", category: legal]
+  family === school
+  therapist --> family
+  family ~~~ ex
+  family <-> church
+  family ~~~ legal`],
+
+  ['Complex Clinical (Substance Abuse Recovery)', `ecomap "Substance Abuse Recovery"
+  center: client [male, age: 28, label: "James"]
+  aa [label: "AA Group", category: substance, importance: major]
+  sponsor [label: "Bill (Sponsor)", category: substance]
+  employer [label: "Warehouse Job", category: work]
+  mother [label: "Mom", category: family]
+  exwife [label: "Ex-wife", category: family]
+  kids [label: "Children (2)", category: family]
+  dealer [label: "Old Friends", category: substance]
+  probation [label: "P.O. Johnson", category: legal]
+  therapist [label: "CBT Therapist", category: mental-health]
+  client === aa
+  sponsor --> client
+  client --- employer [label: "new, probationary"]
+  client == mother [label: "supportive"]
+  client ~~~ exwife [label: "custody conflict"]
+  client - - kids [label: "supervised visits"]
+  client -/- dealer [label: "trying to cut off"]
+  probation --> client
+  therapist <-> client [label: "weekly"]`],
+];
+
+const output = document.getElementById('output');
+
+for (const [name, dsl] of cases) {
+  const h2 = document.createElement('h2');
+  h2.textContent = name;
+  output.appendChild(h2);
+
+  const div = document.createElement('div');
+  div.className = 'svg-container';
+  try {
+    div.innerHTML = render(dsl);
+  } catch (e) {
+    div.textContent = `Error: ${e.message}`;
+    div.style.color = 'red';
+  }
+  output.appendChild(div);
+}
+</script>
+</body>
+</html>

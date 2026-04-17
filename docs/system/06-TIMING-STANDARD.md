@@ -1,0 +1,384 @@
+# 05 — Digital Timing Diagram Standard Reference
+
+*WaveDrom WaveJSON syntax + IEEE 1497 timing annotation conventions + 数字系统信号表示标准。*
+
+> **Primary References:**
+> - WaveDrom WaveJSON specification: https://wavedrom.com/tutorial.html
+> - IEEE Std 1497 (Standard Delay Format — SDF): timing annotation conventions
+> - IEEE Std 1364 (Verilog HDL): digital timing simulation concepts
+> - Schemdraw timing module: https://schemdraw.readthedocs.io/en/latest/elements/timing.html
+
+---
+
+## 1. Signal Types & Visual Representations
+
+### 1.1 Core Waveform States
+
+| Character | Signal State | Visual | SVG Pattern |
+|-----------|-------------|--------|-------------|
+| `0` | Logic Low | Horizontal line at bottom rail | `M x1,y_lo L x2,y_lo` |
+| `1` | Logic High | Horizontal line at top rail | `M x1,y_hi L x2,y_hi` |
+| `x` | Unknown / Don't-Care | Cross-hatch fill between rails | Two diagonal lines + gray fill |
+| `z` | High-Impedance / Tri-state | Dashed line at mid-rail | `M x1,y_mid L x2,y_mid` stroke-dasharray |
+| `=` | Data Value (bus) | Diagonal transitions at edges, text label center | Trapezoid shape + `<text>` |
+| `.` | Hold Previous State | No transition, continue prior state | Extend previous path |
+| `u` | Rising Edge | Diagonal from low to high | `M x1,y_lo L x2,y_hi` |
+| `d` | Falling Edge | Diagonal from high to low | `M x1,y_hi L x2,y_lo` |
+| `p` / `P` | Positive Clock | Square wave, rising-edge active | Period: lo→hi→lo |
+| `n` / `N` | Negative Clock | Square wave, falling-edge active | Period: hi→lo→hi |
+| `h` / `H` | Hold High | Constant high for period | `M x1,y_hi L x2,y_hi` |
+| `l` / `L` | Hold Low | Constant low for period | `M x1,y_lo L x2,y_lo` |
+| `2`–`9` | Named Data Reference | Same as `=` with data[] label | Trapezoid + indexed text |
+
+### 1.2 Signal Rail Positions (per signal band)
+
+```
+y_offset = signal_index * (signal_height + spacing)
+
+y_hi  = y_offset + padding_top           (top of band, ~10% from top)
+y_lo  = y_offset + signal_height - pad   (bottom of band, ~10% from bottom)
+y_mid = y_offset + signal_height / 2     (midpoint, for Z state)
+
+Default values:
+  signal_height = 28px
+  spacing = 4px
+  padding_top = 4px
+  padding_bot = 4px
+  → y_hi = y_offset + 4
+  → y_lo = y_offset + 24
+  → y_mid = y_offset + 14
+```
+
+### 1.3 Transition Shapes
+
+**Sharp Transition (default for digital):**
+- 0→1: `M x,y_lo V y_hi` (vertical line)
+- 1→0: `M x,y_hi V y_lo`
+- Transition x-position: center of period boundary
+
+**Slanted Transition (bus/data values):**
+- Trapezoid edges: `M x-4,y_lo L x+4,y_hi` (rising diagonal at left edge of new value)
+- Used for `=` and numeric data characters
+- Creates professional "bus transition" appearance
+
+**Clock Waveform (one period `p`):**
+```
+M x1,y_lo L x1,y_hi           # Rising edge at start
+L x1+pw/2,y_hi                # High for half period
+L x1+pw/2,y_lo                # Falling edge at midpoint
+L x1+pw,y_lo                  # Low for second half
+```
+
+**Unknown (x) Pattern:**
+```
+<!-- Cross-hatch fill using pattern element -->
+<pattern id="unknown-fill" width="6" height="6" patternUnits="userSpaceOnUse">
+  <path d="M0,6 L6,0 M-1,1 L1,-1 M5,7 L7,5" stroke="#888" stroke-width="1"/>
+</pattern>
+<!-- Filled rect for the x period -->
+<rect x="x1" y="y_hi" width="period_width" height="signal_height-2*pad"
+      fill="url(#unknown-fill)" stroke="#888" stroke-width="1"/>
+```
+
+**High-Z (z) Pattern:**
+```
+<line x1="x1" y1="y_mid" x2="x2" y2="y_mid"
+      stroke="#888" stroke-width="1.5" stroke-dasharray="4,3"/>
+```
+
+---
+
+## 2. Layout Rules
+
+### 2.1 Canvas Structure
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│ [title]                                         hscale=N        │
+├──────────────┬──────────────────────────────────────────────────┤
+│ Signal Names │  Period 0 │ Period 1 │ Period 2 │ ...            │
+│  (left col)  ├───────────────────────────────────────────────── │
+│              │  waveform band per signal                        │
+│              │  ...                                             │
+├──────────────┴──────────────────────────────────────────────────┤
+│ [annotations: timing marks, arrows, labels]                     │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### 2.2 Dimension Defaults
+
+| Parameter | Default | 含义 |
+|-----------|---------|------|
+| `signal_name_width` | 120px | Left column for signal names |
+| `signal_height` | 28px | Height of each signal band |
+| `signal_spacing` | 4px | Gap between signal bands |
+| `period_width` | 40px | Width of one time period (hscale=1) |
+| `hscale` | 1 | Multiplier for period_width |
+| `padding_top` | 20px | Above first signal |
+| `padding_bottom` | 30px | Below last signal (annotation space) |
+| `padding_left` | 10px | Left margin inside name column |
+
+Effective period width = `period_width × hscale`
+
+### 2.3 Signal Name Column
+
+- Text: right-aligned, vertically centered in signal band
+- Font: monospace, 12px, `class="lt-signal-name"`
+- Group headers: bold, 13px, with left bracket indicator
+- Indented sub-signals: 8px left indent per nesting level
+
+### 2.4 Clock Signal Positioning
+
+- Clock signals SHOULD appear first (topmost row)
+- Multiple clocks: ordered by frequency (fastest first)
+- No enforcement required — DSL order is respected
+
+### 2.5 Group Bracket Notation
+
+When signals are grouped, render a left-side bracket:
+```svg
+<!-- Vertical bracket left of grouped signals -->
+<path d="M x_bracket,y_top L x_bracket,y_bottom
+         M x_bracket,y_top L x_bracket+6,y_top
+         M x_bracket,y_bottom L x_bracket+6,y_bottom"
+      stroke="#333" stroke-width="1.5" fill="none"/>
+<text x="x_bracket-4" y="y_mid" font-size="11" font-weight="bold"
+      text-anchor="end" dominant-baseline="middle">GroupName</text>
+```
+
+---
+
+## 3. Timing Annotations
+
+### 3.1 Arrow Types (WaveDrom node/edge syntax)
+
+| Syntax | Visual | 含义 |
+|--------|--------|------|
+| `->` | → (solid line + arrowhead) | Causal relationship |
+| `<->` | ↔ (bidirectional) | Duration / constraint span |
+| `~>` | curved arrow | Propagation delay |
+| `-~>` | straight then curved | Setup/hold time span |
+| `<~>` | curved bidirectional | Timing window |
+
+**SVG arrowhead marker definition:**
+```xml
+<defs>
+  <marker id="lt-arrow" markerWidth="8" markerHeight="8"
+          refX="7" refY="3" orient="auto">
+    <polygon points="0 0, 8 3, 0 6" fill="#E53935"/>
+  </marker>
+  <marker id="lt-arrow-start" markerWidth="8" markerHeight="8"
+          refX="1" refY="3" orient="auto-start-reverse">
+    <polygon points="0 0, 8 3, 0 6" fill="#E53935"/>
+  </marker>
+</defs>
+```
+
+### 3.2 Setup / Hold Time Visualization
+
+```svg
+<!-- Setup time: span from data change to clock edge -->
+<g class="lt-timing-annotation">
+  <!-- Vertical reference line at clock edge -->
+  <line x1="x_clk" y1="y_top" x2="x_clk" y2="y_bottom"
+        stroke="#E53935" stroke-width="1" stroke-dasharray="3,3"/>
+  <!-- Bidirectional arrow -->
+  <line x1="x_data" y1="y_annot" x2="x_clk" y2="y_annot"
+        stroke="#E53935" stroke-width="1.5"
+        marker-start="url(#lt-arrow-start)" marker-end="url(#lt-arrow)"/>
+  <!-- Label -->
+  <text x="x_mid" y="y_annot-6" font-size="10" fill="#E53935"
+        text-anchor="middle">t_su</text>
+</g>
+```
+
+### 3.3 Propagation Delay
+
+```svg
+<!-- Curved arrow from input transition to output transition -->
+<path d="M x_in,y_in Q x_mid,y_ctrl x_out,y_out"
+      stroke="#E53935" stroke-width="1.5" fill="none"
+      marker-end="url(#lt-arrow)"/>
+<text x="x_mid" y="y_ctrl-6" font-size="10" fill="#E53935"
+      text-anchor="middle">t_pd</text>
+```
+
+---
+
+## 4. DSL Grammar (Timing Diagram)
+
+```ebnf
+document        = header? signal_def* config?
+header          = "timing" quoted_string? NEWLINE
+
+signal_def      = signal_line
+                | group_def
+                | spacer_def
+                | comment
+
+signal_line     = INDENT? name ":" wave_string data_clause? phase_clause? NEWLINE
+name            = IDENTIFIER | quoted_string
+wave_string     = /[01xzpPnNhHlLusd=\.2-9]+/
+data_clause     = "data:" "[" quoted_string ("," quoted_string)* "]"
+phase_clause    = "phase:" FLOAT        # time offset, 0.0–1.0
+
+group_def       = "[" group_name "]" NEWLINE signal_def+
+group_name      = /[^\]]+/
+
+spacer_def      = "---" NEWLINE         # visual gap between signal groups
+
+comment         = "#" [^\n]* NEWLINE
+
+config          = "config:" "{" config_prop* "}"
+config_prop     = "hscale:" INT NEWLINE
+                | "skin:" IDENTIFIER NEWLINE
+                | "period:" INT NEWLINE     # period_width in px
+
+# Timing annotations (separate from signal definitions)
+annotation_def  = "annotate:" NEWLINE INDENT annotation+ DEDENT
+annotation      = node_id "->" node_id label_clause? NEWLINE
+                | node_id "<->" node_id label_clause? NEWLINE
+node_id         = IDENTIFIER
+label_clause    = "label:" quoted_string
+```
+
+**DSL 示例（完整）：**
+```
+timing "SPI Transaction" [hscale: 2]
+
+CLK:  ppppppppp
+CS:   10000001
+MOSI: x=======x  data: ["0xAB", "0xCD", "0xEF", "0x01", "0x02", "0x03", "0x04", "0x05"]
+MISO: xzzzz===x  data: ["", "", "", "", "0xFF", "0x12", "0x34", "0x56"]
+---
+# Timing constraints
+annotate:
+  cs_fall -> clk_rise   label: "t_su = 5ns"
+  clk_fall -> cs_rise   label: "t_hold = 2ns"
+```
+
+---
+
+## 5. SVG Structure
+
+```xml
+<svg class="lt-timing" data-diagram-type="timing">
+  <defs>
+    <!-- Arrow markers -->
+    <!-- Pattern fills for unknown/Z states -->
+    <style>
+      .lt-signal-name { font: 12px monospace; fill: #333; }
+      .lt-wave-line   { stroke: #1565C0; stroke-width: 2; fill: none; }
+      .lt-clock-line  { stroke: #1B5E20; stroke-width: 2; fill: none; }
+      .lt-data-fill   { fill: #E3F2FD; stroke: #1565C0; stroke-width: 1.5; }
+      .lt-unknown     { fill: url(#unknown-fill); stroke: #888; stroke-width: 1; }
+      .lt-hiz         { stroke: #9E9E9E; stroke-width: 1.5; stroke-dasharray: 4,3; }
+      .lt-annotation  { stroke: #E53935; fill: none; }
+      .lt-annot-text  { font: 10px sans-serif; fill: #E53935; }
+      .lt-grid-line   { stroke: #E0E0E0; stroke-width: 0.5; }
+      .lt-period-tick { stroke: #BDBDBD; stroke-width: 1; }
+    </style>
+  </defs>
+  <title>Timing Diagram — [name]</title>
+  <desc>[description]</desc>
+
+  <!-- Name column background -->
+  <rect class="lt-name-bg" x="0" y="0" width="120" height="{total_h}"/>
+
+  <!-- Signal names -->
+  <g id="lt-names">...</g>
+
+  <!-- Grid lines (period boundaries) -->
+  <g id="lt-grid">...</g>
+
+  <!-- Waveforms (one <g> per signal) -->
+  <g id="lt-waves">
+    <g data-signal="CLK" data-index="0">...</g>
+    <g data-signal="CS"  data-index="1">...</g>
+    ...
+  </g>
+
+  <!-- Data labels above waveforms -->
+  <g id="lt-data-labels">...</g>
+
+  <!-- Timing annotations -->
+  <g id="lt-annotations">...</g>
+</svg>
+```
+
+---
+
+## 6. Test Cases
+
+### Case 1: Basic Clock + Data
+```
+timing
+CLK:  pppppppp
+DATA: x=======  data: ["A", "B", "C", "D", "E", "F", "G", "H"]
+EN:   01111110
+```
+验证：CLK 为方波，DATA 有 8 段 trapezoid 形状并带文字标签，EN 有正确 0/1 跳变。
+
+### Case 2: High-Z and Unknown States
+```
+timing
+OE:   01111110
+BUS:  xzz=====z  data: ["", "", "0xFF", "0x00", "0xAB", "0xCD"]
+```
+验证：`z` 渲染为中线虚线，`x` 渲染为 cross-hatch 填充。
+
+### Case 3: Multiple Clocks + Groups
+```
+timing "Clock Domain Crossing"
+[Domain A]
+CLK_A: pppppppppppppppp
+SIG_A: 0111100001111000
+[Domain B]
+CLK_B: ppppppppppppppp. phase: 0.5
+SIG_B: x.011110000111100
+```
+验证：两组信号分别有 bracket，CLK_B 相位偏移 0.5 个周期。
+
+### Case 4: Setup / Hold Annotation
+```
+timing
+CLK:  pppp
+DATA: x==.  data: ["VAL"]
+annotate:
+  d_change -> clk_rise  label: "t_su ≥ 3ns"
+  clk_rise -> d_stable  label: "t_h ≥ 1ns"
+```
+验证：红色双向箭头 + 标签在 CLK 上升沿附近正确定位。
+
+### Case 5: Single Signal
+```
+timing
+RST: 10000001
+```
+验证：单信号不崩溃，画布大小正确缩放。
+
+### Case 6: hscale 配置
+```
+timing [hscale: 3]
+A: 01010101
+B: 00110011
+```
+验证：period_width = 40 × 3 = 120px，每个周期明显更宽。
+
+---
+
+## 7. Implementation Priority
+
+| Priority | Feature | Complexity | 用户价值 |
+|----------|---------|------------|---------|
+| P0 (MVP) | `0/1/p/n/.` basic states + sharp transitions | Low | Core — 所有时序图都用 |
+| P0 | Signal name column + horizontal layout | Low | Core |
+| P0 | `=` data values + data[] label array | Low | High — bus signals 核心 |
+| P1 | `x` unknown (cross-hatch) + `z` hi-Z (dashed) | Low | High — 数字设计必须 |
+| P1 | Clock waveforms (p/n/P/N) | Low | High |
+| P1 | Group notation `[name]` + bracket | Medium | High |
+| P1 | `hscale` config | Low | Medium |
+| P2 | Timing annotations (arrows, labels) | Medium | Medium — 专业用法 |
+| P2 | Phase offset | Low | Medium |
+| P2 | `u/d` explicit edge characters | Low | Low |
+| P3 | Edge timing constraint visualization | High | Low — advanced only |

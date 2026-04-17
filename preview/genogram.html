@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Lineage · Genogram Preview</title>
+<style>
+  body { font-family: system-ui; background: #f5f5f5; margin: 0; padding: 20px; }
+  nav { font-size: 13px; color: #888; margin-bottom: 16px; }
+  nav a { color: #555; text-decoration: none; }
+  nav a:hover { text-decoration: underline; }
+  h1 { font-size: 18px; color: #333; margin: 0 0 4px; }
+  .subtitle { font-size: 13px; color: #888; margin-bottom: 24px; }
+  h2 { font-size: 14px; color: #666; margin-top: 30px; border-bottom: 1px solid #ddd; padding-bottom: 4px; }
+  .svg-container { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin: 10px 0; overflow-x: auto; }
+  .svg-container svg { display: block; max-width: 100%; height: auto; }
+  .section-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #aaa; margin-top: 40px; margin-bottom: -8px; }
+</style>
+</head>
+<body>
+<nav><a href="index.html">← All Diagrams</a></nav>
+<h1>Genogram</h1>
+<div class="subtitle">Family systems, medical history, emotional relationships</div>
+<div id="output"></div>
+<script type="module">
+import { render } from '../src/index.ts';
+
+const sections = [
+  {
+    label: 'Basic Cases',
+    cases: [
+      ['Nuclear Family', `genogram
+  john [male, 1950]
+  mary [female, 1955]
+  john -- mary
+    alice [female, 1980]
+    bob [male, 1983]`],
+
+      ['Three Generations', `genogram "Smith Family"
+  grandpa [male, 1930, deceased]
+  grandma [female, 1932]
+  grandpa -- grandma
+    dad [male, 1955]
+    aunt [female, 1958]
+  dad -- mom [female, 1957]
+    me [male, 1985]
+    sister [female, 1988]`],
+
+      ['Divorce + Remarriage', `genogram
+  tom [male, 1950]
+  jane [female, 1952]
+  tom -x- jane
+    child1 [male, 1975]
+  tom -- susan [female, 1960]
+    child2 [female, 1985]`],
+
+      ['Medical Conditions', `genogram
+  father [male, 1945, conditions: heart-disease(full) + diabetes(half-left)]
+  mother [female, 1948]
+  father -- mother
+    son [male, 1970, conditions: diabetes(striped)]`],
+
+      ['Single Individual', `genogram
+  solo [female, 1990]`],
+
+      ['Childless Couple', `genogram
+  husband [male, 1960]
+  wife [female, 1962]
+  husband -- wife`],
+    ],
+  },
+  {
+    label: 'Advanced Features',
+    cases: [
+      ['Title + Rel Labels + Death Years', `genogram "Potter Family"
+  james [male, 1960, 1981, deceased]
+  lily [female, 1960, 1981, deceased]
+  james -- lily "m. 1979"
+    harry [male, 1980, index]`],
+
+      ['Emotional Relationships', `genogram "Family Dynamics"
+  dad [male, 1955, age: 70]
+  mom [female, 1958, age: 67]
+  dad -- mom "m. 1980"
+    son [male, 1982, age: 43]
+    daughter [female, 1985, age: 40]
+  dad -hostile- son
+  mom -close- daughter
+  son -distant- daughter`],
+
+      ['Multi-Color Medical Conditions', `genogram "Medical History"
+  grandfather [male, 1935, 1995, deceased, conditions: heart-disease(full, #e74c3c) + diabetes(half-left, #ff9800)]
+  grandmother [female, 1938, conditions: cancer(half-right, #9c27b0)]
+  grandfather -- grandmother
+    father [male, 1965, conditions: heart-disease(quad-tl, #e74c3c) + hypertension(quad-tr, #2196f3)]
+    uncle [male, 1968, conditions: diabetes(full, #ff9800)]`],
+
+      ['Abuse + Cross-Gen Emotional', `genogram "Clinical Assessment"
+  father [male, 1960, age: 65]
+  mother [female, 1963, age: 62]
+  father -- mother
+    patient [female, 1990, age: 35, index]
+    brother [male, 1988, age: 37]
+  father -abuse-> patient
+  mother -close- patient
+  patient -cutoff- brother
+  patient -harmony- mother`],
+    ],
+  },
+  {
+    label: 'Themes',
+    configuredCases: [
+      ['Clinical Theme · Nuclear Family', `genogram
+  john [male, 1950]
+  mary [female, 1955]
+  john -- mary
+    alice [female, 1980]
+    bob [male, 1983]`, { theme: 'clinical' }],
+
+      ['Colorful Theme · Medical Conditions', `genogram
+  father [male, 1945, conditions: heart-disease(full) + diabetes(half-left)]
+  mother [female, 1948]
+  father -- mother
+    son [male, 1970, conditions: diabetes(striped)]`, { theme: 'colorful' }],
+    ],
+  },
+];
+
+const output = document.getElementById('output');
+
+for (const section of sections) {
+  const label = document.createElement('div');
+  label.className = 'section-label';
+  label.textContent = section.label;
+  output.appendChild(label);
+
+  const casesToRender = section.configuredCases ?? section.cases.map(([name, dsl]) => [name, dsl, {}]);
+
+  for (const [name, dsl, config = {}] of casesToRender) {
+    const h2 = document.createElement('h2');
+    h2.textContent = name;
+    output.appendChild(h2);
+
+    const div = document.createElement('div');
+    div.className = 'svg-container';
+    try {
+      div.innerHTML = render(dsl, config);
+    } catch (e) {
+      div.textContent = `Error: ${e.message}`;
+      div.style.color = 'red';
+    }
+    output.appendChild(div);
+  }
+}
+</script>
+</body>
+</html>

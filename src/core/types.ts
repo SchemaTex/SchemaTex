@@ -11,7 +11,20 @@
 
 // ─── AST Types ───────────────────────────────────────────────
 
-export type DiagramType = "genogram" | "ecomap" | "pedigree" | "phylo";
+export type DiagramType =
+  // Relationship diagrams
+  | "genogram"
+  | "ecomap"
+  | "pedigree"
+  | "phylo"
+  | "sociogram"
+  // Electrical engineering diagrams
+  | "timing"    // Digital timing / waveform (06-TIMING-STANDARD)
+  | "logic"     // Logic gate netlist (07-LOGIC-GATE-STANDARD)
+  | "circuit"   // Circuit schematic positional DSL (08-CIRCUIT-SCHEMATIC-STANDARD)
+  | "block"     // Control systems block diagram (09-BLOCK-DIAGRAM-STANDARD)
+  | "ladder"    // PLC ladder logic IEC 61131-3 (10-LADDER-LOGIC-STANDARD)
+  | "sld";      // Single-line diagram / power distribution (11-SINGLE-LINE-STANDARD)
 
 export type GenogramMode = "medical" | "heritage";
 export type LegendPosition = "bottom-right" | "right" | "bottom-center" | "none";
@@ -419,3 +432,264 @@ export interface RenderConfig {
   /** Legend position override */
   legendPosition?: LegendPosition;
 }
+
+// ─── Electrical Engineering AST Types ───────────────────────
+
+// ── Timing Diagram ──────────────────────────────────────────
+
+/** A single waveform signal or group */
+export type TimingSignalState =
+  | "0" | "1" | "x" | "z" | "=" | "." | "u" | "d"
+  | "p" | "P" | "n" | "N" | "h" | "H" | "l" | "L"
+  | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9";
+
+export interface TimingSignal {
+  /** Signal name (display label) */
+  name: string;
+  /** WaveDrom wave string: sequence of state chars */
+  wave: string;
+  /** Data labels for bus states (= or 2-9) */
+  data?: string[];
+  /** Phase offset in half-periods */
+  phase?: number;
+  /** Period multiplier */
+  period?: number;
+  /** Node markers for annotation arrows */
+  node?: string;
+}
+
+export interface TimingGroup {
+  label: string;
+  signals: Array<TimingSignal | TimingGroup>;
+}
+
+export interface TimingAnnotation {
+  /** Source node marker id */
+  from: string;
+  /** Target node marker id */
+  to: string;
+  label?: string;
+}
+
+export interface TimingAST {
+  type: "timing";
+  title?: string;
+  /** Time scale multiplier (1–4) */
+  hscale?: number;
+  signals: Array<TimingSignal | TimingGroup>;
+  annotations?: TimingAnnotation[];
+  metadata?: Record<string, string>;
+}
+
+// ── Logic Gate ───────────────────────────────────────────────
+
+export type LogicGateType =
+  | "AND" | "OR" | "NOT" | "NAND" | "NOR" | "XOR" | "XNOR" | "BUF"
+  | "DFF" | "JKFF" | "SRFF" | "TFF"    // Sequential
+  | "MUX" | "DEMUX" | "DECODER" | "ENCODER";  // Combinational complex
+
+export type LogicGateStyle = "ansi" | "iec";
+
+export interface LogicGateNode {
+  id: string;
+  gateType: LogicGateType;
+  inputs: string[];          // References to signal ids or gate ids (with ~ for active-low)
+  label?: string;
+  style?: LogicGateStyle;
+}
+
+export interface LogicGateInput {
+  id: string;
+  label: string;
+  isActiveLow?: boolean;
+}
+
+export interface LogicGateOutput {
+  id: string;
+  /** Signal source id (gate output or input port) */
+  from: string;
+  label: string;
+  isActiveLow?: boolean;
+}
+
+export interface LogicGateAST {
+  type: "logic";
+  title?: string;
+  style?: LogicGateStyle;
+  inputs: LogicGateInput[];
+  outputs: LogicGateOutput[];
+  gates: LogicGateNode[];
+  metadata?: Record<string, string>;
+}
+
+// ── Circuit Schematic ────────────────────────────────────────
+
+export type CircuitComponentType =
+  | "resistor" | "capacitor" | "inductor" | "transformer"
+  | "diode" | "led" | "zener" | "schottky"
+  | "npn" | "pnp" | "nmos" | "pmos"
+  | "opamp" | "voltage_source" | "current_source" | "battery"
+  | "ground" | "vcc" | "gnd_signal" | "gnd_chassis" | "gnd_digital"
+  | "wire" | "dot" | "label" | "port";
+
+export type CircuitDirection = "right" | "left" | "up" | "down";
+
+export interface CircuitComponent {
+  id: string;
+  componentType: CircuitComponentType;
+  direction: CircuitDirection;
+  /** Reference to anchor point of previous/named element: e.g. "R1.end", "origin" */
+  at?: string;
+  /** Display label (R1, C2, etc.) */
+  label?: string;
+  /** Value annotation (1kΩ, 100nF, etc.) */
+  value?: string;
+  /** Extra attributes (length for wires, gain for opamp, etc.) */
+  attrs?: Record<string, string>;
+}
+
+export interface CircuitAST {
+  type: "circuit";
+  title?: string;
+  components: CircuitComponent[];
+  metadata?: Record<string, string>;
+}
+
+// ── Block Diagram ────────────────────────────────────────────
+
+export type BlockRole = "plant" | "controller" | "sensor" | "actuator" | "reference" | "disturbance" | "generic";
+
+export interface BlockNode {
+  id: string;
+  /** Display label / transfer function e.g. "G(s)" */
+  label: string;
+  role?: BlockRole;
+}
+
+export interface SummingJunction {
+  id: string;
+  /** Signed inputs: "+r" means add signal r, "-ym" means subtract signal ym */
+  inputs: string[];
+  /** Output signal id */
+  output?: string;
+}
+
+export interface BlockEdge {
+  from: string;
+  to: string;
+  /** Signal label e.g. "E(s)", "U(s)" */
+  label?: string;
+  /** Dashed line for discrete-time signals */
+  discrete?: boolean;
+}
+
+export interface BlockAST {
+  type: "block";
+  title?: string;
+  blocks: BlockNode[];
+  sums: SummingJunction[];
+  connections: BlockEdge[];
+  metadata?: Record<string, string>;
+}
+
+// ── Ladder Logic ─────────────────────────────────────────────
+
+export type LadderContactType = "XIC" | "XIO" | "ONS" | "OSF";
+export type LadderCoilType = "OTE" | "OTL" | "OTU" | "OTN";
+export type LadderFBType =
+  | "TON" | "TOFF" | "TP"         // Timers
+  | "CTU" | "CTD" | "CTUD"        // Counters
+  | "ADD" | "SUB" | "MUL" | "DIV" // Math
+  | "MOV" | "CMP" | "EQ" | "NEQ" | "LT" | "GT" | "LEQ" | "GEQ"; // Move/Compare
+
+export interface LadderContact {
+  elementType: "contact";
+  contactType: LadderContactType;
+  tag: string;
+  address?: string;
+}
+
+export interface LadderCoil {
+  elementType: "coil";
+  coilType: LadderCoilType;
+  tag: string;
+  address?: string;
+}
+
+export interface LadderFunctionBlock {
+  elementType: "function_block";
+  fbType: LadderFBType;
+  tag: string;
+  params: Record<string, string | number>;
+}
+
+export type LadderElement = LadderContact | LadderCoil | LadderFunctionBlock;
+
+export interface LadderBranch {
+  elements: LadderElement[];
+}
+
+export interface LadderRung {
+  number: number;
+  comment?: string;
+  /** Sequential elements and parallel groups */
+  elements: Array<LadderElement | { parallel: LadderBranch[] }>;
+}
+
+export interface LadderAST {
+  type: "ladder";
+  title?: string;
+  rungs: LadderRung[];
+  metadata?: Record<string, string>;
+}
+
+// ── Single-Line Diagram ──────────────────────────────────────
+
+export type SLDNodeType =
+  | "utility" | "generator"
+  | "transformer"
+  | "bus"
+  | "breaker" | "switch" | "fuse"
+  | "motor" | "load" | "capacitor_bank"
+  | "ct" | "pt" | "relay"
+  | "solar" | "wind" | "ups";
+
+export interface SLDNode {
+  id: string;
+  nodeType: SLDNodeType;
+  label?: string;
+  /** Voltage level e.g. "13.8kV", "480V" */
+  voltage?: string;
+  /** Equipment rating e.g. "1000A", "500kVA" */
+  rating?: string;
+  /** ANSI device number (relays: 51, 87, 27, etc.) */
+  deviceNumber?: string;
+  /** Additional nameplate data (transformer: kVA, ratio, %Z) */
+  nameplate?: Record<string, string>;
+}
+
+export interface SLDConnection {
+  from: string;
+  to: string;
+  /** Cable specification e.g. "3#2/0 AWG" */
+  cable?: string;
+  label?: string;
+}
+
+export interface SLDAST {
+  type: "sld";
+  title?: string;
+  nodes: SLDNode[];
+  connections: SLDConnection[];
+  metadata?: Record<string, string>;
+}
+
+// ── EE Plugin union type (for type-narrowing in plugins) ──────
+
+export type EEDiagramAST =
+  | TimingAST
+  | LogicGateAST
+  | CircuitAST
+  | BlockAST
+  | LadderAST
+  | SLDAST;

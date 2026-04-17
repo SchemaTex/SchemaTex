@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Lineage · Pedigree Preview</title>
+<style>
+  body { font-family: system-ui; background: #f5f5f5; margin: 0; padding: 20px; }
+  nav { font-size: 13px; color: #888; margin-bottom: 16px; }
+  nav a { color: #555; text-decoration: none; }
+  nav a:hover { text-decoration: underline; }
+  h1 { font-size: 18px; color: #333; margin: 0 0 4px; }
+  .subtitle { font-size: 13px; color: #888; margin-bottom: 24px; }
+  h2 { font-size: 14px; color: #666; margin-top: 30px; border-bottom: 1px solid #ddd; padding-bottom: 4px; }
+  .svg-container { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin: 10px 0; overflow-x: auto; }
+  .svg-container svg { display: block; max-width: 100%; height: auto; }
+</style>
+</head>
+<body>
+<nav><a href="index.html">← All Diagrams</a></nav>
+<h1>Pedigree</h1>
+<div class="subtitle">Genetic inheritance, medical genetics, hereditary conditions</div>
+<div id="output"></div>
+<script type="module">
+import { render } from '../src/index.ts';
+
+const cases = [
+  ['Autosomal Recessive (Cystic Fibrosis)', `pedigree "Cystic Fibrosis Family"
+  I-1 [male, carrier]
+  I-2 [female, carrier]
+  I-1 -- I-2
+    II-1 [male, unaffected]
+    II-2 [female, carrier]
+    II-3 [male, affected, proband]
+    II-4 [female, unaffected]`],
+
+  ['Consanguinity', `pedigree "Consanguineous Marriage"
+  I-1 [male, carrier]
+  I-2 [female, unaffected]
+  I-1 -- I-2
+    II-1 [male, carrier]
+    II-2 [female, unaffected]
+  I-3 [male, unaffected]
+  I-4 [female, carrier]
+  I-3 -- I-4
+    II-3 [female, carrier]
+  II-1 == II-3
+    III-1 [male, affected, proband]`],
+
+  ['X-Linked Recessive (Hemophilia A)', `pedigree "Hemophilia A"
+  I-1 [male, unaffected]
+  I-2 [female, carrier-x]
+  I-1 -- I-2
+    II-1 [male, affected]
+    II-2 [female, carrier-x]
+    II-3 [male, unaffected]
+    II-4 [female, unaffected]
+  II-2 -- II-5 [male, unaffected]
+    III-1 [male, affected]
+    III-2 [female, carrier-x]
+    III-3 [male, unaffected]`],
+
+  ['Huntington Disease (5 Generations)', `pedigree "Huntington Disease"
+  I-1 [male, affected, deceased]
+  I-2 [female, deceased]
+  I-1 -- I-2
+    II-1 [male, affected, deceased]
+    II-2 [female, unaffected]
+    II-3 [male, unaffected, deceased]
+  II-1 -- II-4 [female, unaffected]
+    III-1 [female, affected]
+    III-2 [male, presymptomatic]
+    III-3 [female, unaffected]
+  III-1 -- III-4 [male, unaffected]
+    IV-1 [male, presymptomatic, proband]
+    IV-2 [female, unaffected]
+  III-3 -- III-5 [male, unaffected]
+    IV-3 [male, unaffected]
+    IV-4 [female, unaffected]`],
+];
+
+const output = document.getElementById('output');
+
+for (const [name, dsl] of cases) {
+  const h2 = document.createElement('h2');
+  h2.textContent = name;
+  output.appendChild(h2);
+
+  const div = document.createElement('div');
+  div.className = 'svg-container';
+  try {
+    div.innerHTML = render(dsl);
+  } catch (e) {
+    div.textContent = `Error: ${e.message}`;
+    div.style.color = 'red';
+  }
+  output.appendChild(div);
+}
+</script>
+</body>
+</html>
