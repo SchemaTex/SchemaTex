@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Lineage · Timing Preview</title>
+<style>
+  body { font-family: system-ui; background: #f5f5f5; margin: 0; padding: 20px; }
+  nav { font-size: 13px; color: #888; margin-bottom: 16px; }
+  nav a { color: #555; text-decoration: none; }
+  nav a:hover { text-decoration: underline; }
+  h1 { font-size: 18px; color: #333; margin: 0 0 4px; }
+  .subtitle { font-size: 13px; color: #888; margin-bottom: 24px; }
+  h2 { font-size: 14px; color: #666; margin-top: 30px; border-bottom: 1px solid #ddd; padding-bottom: 4px; }
+  pre.src { background: #f7f7f7; padding: 10px; font-size: 12px; border-radius: 6px; margin: 6px 0; border: 1px solid #eee; }
+  .svg-container { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin: 10px 0; overflow-x: auto; }
+  .svg-container svg { display: block; max-width: 100%; height: auto; }
+  .section-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #aaa; margin-top: 40px; margin-bottom: -8px; }
+</style>
+</head>
+<body>
+<nav><a href="index.html">← All Diagrams</a></nav>
+<h1>Timing Diagram</h1>
+<div class="subtitle">Digital waveforms — clocks, data buses, unknown/hi-Z states (WaveDrom-compatible)</div>
+<div id="output"></div>
+<script type="module">
+import { render } from '../src/index.ts';
+
+const cases = [
+  ['Basic Clock + Data + Enable', `timing "Basic Clock + Data Bus" [hscale: 2]
+CLK:   pppppppp
+EN:    01111110
+DATA:  x======x  data: ["A","B","C","D","E","F"]`],
+
+  ['Unknown + High-Z', `timing "Unknown + High-Z"
+OE:    01111110
+BUS:   xzz=====z  data: ["","","0xFF","0x00","0xAB","0xCD"]`],
+
+  ['SPI-like Transaction', `timing "SPI Transaction"
+CLK:   pppppppp
+CS_N:  10000001
+MOSI:  x=======  data: ["0xAB","0xCD","0xEF","0x01","0x02","0x03","0x04","0x05"]
+MISO:  zzzz====  data: ["","","","","0xFF","0x12","0x34","0x56"]`],
+
+  ['Negative Clock + Hold', `timing "Negedge Clock"
+CLK_N: nnnnnnnn
+Q:     0.1.0.1.`],
+
+  ['Groups', `timing "Clock Domain Crossing"
+[Domain A]
+CLK_A: pppppppp
+SIG_A: 01111000
+[Domain B]
+CLK_B: nnnnnnnn
+SIG_B: x=====xx  data: ["w0","w1","w2","w3","w4"]`],
+
+  ['Single Signal', `timing
+RST: 10000001`],
+
+  ['Shift Register (SN74HC595-style)', `timing "SN74HC595 Shift Register" [hscale: 1]
+SRCLK:  ppppppppppppppppppp
+SER:    0100000000000100000
+RCLK:   0ppppppppp000ppppp0
+~SRCLR: 11111111111111111110
+~OE:    0000000000111111110
+QA:     xx10000000xxxxxxxx1
+QB:     xxx1000000xxxxxxxx0
+QC:     xxxx100000xxxxxxxx0
+QD:     xxxxx10000xxxxxxxx0
+QE:     xxxxxx1000xxxxxxxx0
+QF:     xxxxxxx100xxxxxxxx0
+QG:     xxxxxxxx10xxxxxxxx0
+QH:     xxxxxxxxx1xxxxxxxx0
+QHp:    0000000000000000010`],
+
+  ['Active-Low Signals (overline)', `timing "Active-Low Conventions"
+CLK:   pppp
+~CS:   10001
+~WE:   11011
+/RD:   11100
+DATA:  x==x=  data: ["A0","A1","A2"]`],
+];
+
+const out = document.getElementById('output');
+for (const [name, src] of cases) {
+  const h = document.createElement('h2'); h.textContent = name; out.appendChild(h);
+  const pre = document.createElement('pre'); pre.className = 'src'; pre.textContent = src; out.appendChild(pre);
+  const wrap = document.createElement('div'); wrap.className = 'svg-container';
+  try { wrap.innerHTML = render(src); } catch (e) { wrap.innerHTML = '<pre style="color:#c00">'+e.message+'</pre>'; }
+  out.appendChild(wrap);
+}
+</script>
+</body>
+</html>

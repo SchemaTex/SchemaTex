@@ -26,7 +26,8 @@ export { ecomap } from "./diagrams/ecomap";
 export { pedigree } from "./diagrams/pedigree";
 export { phylo } from "./diagrams/phylo";
 export { sociogram } from "./diagrams/sociogram";
-export { fishbone } from "./diagrams/fishbone";
+export { timing } from "./diagrams/timing";
+export { logic } from "./diagrams/logic";
 
 export {
   type ThemeName,

@@ -548,6 +548,13 @@ export interface LogicGateNode {
   inputs: string[];          // References to signal ids or gate ids (with ~ for active-low)
   label?: string;
   style?: LogicGateStyle;
+  /** Optional module/sub-circuit this gate belongs to */
+  moduleId?: string;
+}
+
+export interface LogicGateModule {
+  id: string;
+  label: string;
 }
 
 export interface LogicGateInput {
@@ -571,6 +578,7 @@ export interface LogicGateAST {
   inputs: LogicGateInput[];
   outputs: LogicGateOutput[];
   gates: LogicGateNode[];
+  modules?: LogicGateModule[];
   metadata?: Record<string, string>;
 }
 

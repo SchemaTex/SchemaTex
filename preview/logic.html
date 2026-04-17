@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Lineage · Logic Gate Preview</title>
+<style>
+  body { font-family: system-ui; background: #f5f5f5; margin: 0; padding: 20px; }
+  nav { font-size: 13px; color: #888; margin-bottom: 16px; }
+  nav a { color: #555; text-decoration: none; }
+  nav a:hover { text-decoration: underline; }
+  h1 { font-size: 18px; color: #333; margin: 0 0 4px; }
+  .subtitle { font-size: 13px; color: #888; margin-bottom: 24px; }
+  h2 { font-size: 14px; color: #666; margin-top: 30px; border-bottom: 1px solid #ddd; padding-bottom: 4px; }
+  pre.src { background: #f7f7f7; padding: 10px; font-size: 12px; border-radius: 6px; margin: 6px 0; border: 1px solid #eee; }
+  .svg-container { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin: 10px 0; overflow-x: auto; }
+  .svg-container svg { display: block; max-width: 100%; height: auto; }
+  .section-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #aaa; margin-top: 40px; margin-bottom: -8px; }
+</style>
+</head>
+<body>
+<nav><a href="index.html">← All Diagrams</a></nav>
+<h1>Logic Gate Diagram</h1>
+<div class="subtitle">IEEE 91 ANSI distinctive shapes + IEC 60617 rectangular — DAG layout, Manhattan wiring</div>
+<div id="output"></div>
+<script type="module">
+import { render } from '../src/index.ts';
+
+const cases = [
+  ['Simple AND', `logic "Simple AND"
+input A, B
+output Y
+Y = AND(A, B)`],
+
+  ['Half Adder', `logic "Half Adder"
+input A, B
+output SUM, CARRY
+SUM = XOR(A, B)
+CARRY = AND(A, B)`],
+
+  ['Full Adder (1-bit)', `logic "1-bit Full Adder"
+input A, B, Cin
+output Sum, Cout
+s1 = XOR(A, B)
+Sum = XOR(s1, Cin)
+c1 = AND(A, B)
+c2 = AND(s1, Cin)
+Cout = OR(c1, c2)`],
+
+  ['NAND with Active-Low Input', `logic "NAND with ~B"
+input A, B
+output Y
+Y = NAND(A, ~B)`],
+
+  ['D Flip-Flop', `logic "D Flip-Flop"
+input D, CLK
+output Q
+Q = DFF(D, CLK)`],
+
+  ['SR Latch', `logic "SR Latch"
+input S, R
+output Q
+Q = LATCH_SR(S, R)`],
+
+  ['IEC Style NOR', `logic "IEC NOR" [style: iec]
+input A, B
+output Y
+Y = NOR(A, B)`],
+
+  ['Chain: NOT → AND → OR', `logic "Chained Gates"
+input A, B, C
+output Y
+na = NOT(A)
+ab = AND(na, B)
+Y = OR(ab, C)`],
+
+  ['All Combinational Gates', `logic "All Combinational Gates"
+input A, B
+output YAND, YOR, YNOT, YNAND, YNOR, YXOR, YXNOR, YBUF
+YAND = AND(A, B)
+YOR = OR(A, B)
+YNOT = NOT(A)
+YNAND = NAND(A, B)
+YNOR = NOR(A, B)
+YXOR = XOR(A, B)
+YXNOR = XNOR(A, B)
+YBUF = BUF(A)`],
+
+  ['Buffers: Tristate + Open-Drain + Schmitt', `logic "Special Buffers"
+input A, EN
+output YT, YTI, YOD, YS
+YT = TRISTATE_BUF(A, EN)
+YTI = TRISTATE_INV(A, EN)
+YOD = OPEN_DRAIN(A)
+YS = SCHMITT(A)`],
+
+  ['All Flip-Flops', `logic "Flip-Flops"
+input D, J, K, T, S, R, CLK
+output QD, QJK, QT, QSR
+QD = DFF(D, CLK)
+QJK = JKFF(J, CLK, K)
+QT = TFF(T, CLK)
+QSR = SRFF(S, R)`],
+
+  ['All Latches', `logic "Latches"
+input D, E, S, R
+output QD, QSR
+QD = LATCH_D(D, E)
+QSR = LATCH_SR(S, R)`],
+
+  ['Complex: MUX/DEMUX/DECODER/ENCODER', `logic "Complex Combinational"
+input A, B, SEL
+output YM, YD, YE, YN
+YM = MUX(A, B, SEL)
+YD = DEMUX(A, SEL)
+YE = ENCODER(A, B)
+YN = DECODER(A, B)`],
+
+  ['Counter + Shift Register', `logic "Sequential Complex"
+input CLK, RST, SER
+output QCTR, QSR
+QCTR = COUNTER(CLK, RST)
+QSR = SHIFT_REG(CLK, SER)`],
+
+  ['XNOR from NOT/AND/OR (Y = A·B + A̅·B̅)', `logic "XNOR Equivalent"
+input A, B
+output Y
+nA = NOT(A)
+nB = NOT(B)
+t1 = AND(A, B)
+t2 = AND(nA, nB)
+Y = OR(t1, t2)`],
+
+  ['4-bit Equality Comparator (A == B)', `logic "4-bit Equality Comparator"
+input A0, A1, A2, A3, B0, B1, B2, B3
+output EQ
+e0 = XNOR(A0, B0)
+e1 = XNOR(A1, B1)
+e2 = XNOR(A2, B2)
+e3 = XNOR(A3, B3)
+EQ = AND(e0, e1, e2, e3)`],
+
+  ['Sub-circuit Modules (dashed enclosure)', `logic "Full Adder with Labeled Sub-circuits"
+input A, B, Cin
+output Sum, Cout
+module "Sum Logic" {
+  s1 = XOR(A, B)
+  Sum = XOR(s1, Cin)
+}
+module "Carry Logic" {
+  c1 = AND(A, B)
+  c2 = AND(s1, Cin)
+  Cout = OR(c1, c2)
+}`],
+
+  ['Multi-module: 2-to-1 MUX built from gates', `logic "2-to-1 MUX (gate-level)"
+input A, B, SEL
+output Y
+module "Select Inverter" {
+  nSEL = NOT(SEL)
+}
+module "Input Masks" {
+  gA = AND(A, nSEL)
+  gB = AND(B, SEL)
+}
+module "Combiner" {
+  Y = OR(gA, gB)
+}`],
+
+  ['4-bit Magnitude Comparator (A > B, A == B, A < B)', `logic "4-bit Magnitude Comparator"
+input A0, A1, A2, A3, B0, B1, B2, B3
+output GT, EQ, LT
+nB0 = NOT(B0)
+nB1 = NOT(B1)
+nB2 = NOT(B2)
+nB3 = NOT(B3)
+nA0 = NOT(A0)
+nA1 = NOT(A1)
+nA2 = NOT(A2)
+nA3 = NOT(A3)
+g0 = AND(A0, nB0)
+g1 = AND(A1, nB1)
+g2 = AND(A2, nB2)
+g3 = AND(A3, nB3)
+l0 = AND(nA0, B0)
+l1 = AND(nA1, B1)
+l2 = AND(nA2, B2)
+l3 = AND(nA3, B3)
+e0 = XNOR(A0, B0)
+e1 = XNOR(A1, B1)
+e2 = XNOR(A2, B2)
+e3 = XNOR(A3, B3)
+GT = OR(g3, g2, g1, g0)
+LT = OR(l3, l2, l1, l0)
+EQ = AND(e0, e1, e2, e3)`],
+];
+
+const out = document.getElementById('output');
+for (const [name, src] of cases) {
+  const h = document.createElement('h2'); h.textContent = name; out.appendChild(h);
+  const pre = document.createElement('pre'); pre.className = 'src'; pre.textContent = src; out.appendChild(pre);
+  const wrap = document.createElement('div'); wrap.className = 'svg-container';
+  try { wrap.innerHTML = render(src); } catch (e) { wrap.innerHTML = '<pre style="color:#c00">'+e.message+'</pre>'; }
+  out.appendChild(wrap);
+}
+</script>
+</body>
+</html>
