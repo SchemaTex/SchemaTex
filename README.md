@@ -240,6 +240,59 @@ ecomap "Substance Abuse Recovery"
   therapist <-> client [label: "weekly"]
 ```
 
+## Pedigree Syntax
+
+Pedigree charts track genetic inheritance patterns — simpler than genograms, focused on carrier status and trait expression.
+
+### Structure
+
+```
+pedigree "Cystic Fibrosis Family"
+  I-1 [male, carrier]
+  I-2 [female, carrier]
+  I-1 -- I-2
+    II-1 [male, unaffected]
+    II-2 [female, carrier]
+    II-3 [male, affected, proband]
+    II-4 [female, unaffected]
+```
+
+### Genetic status
+
+| Property | Fill | Meaning |
+|----------|------|---------|
+| `affected` | Full black | Has the condition |
+| `carrier` | Half-filled (left) | Carries the gene |
+| `carrier-x` | Center dot | X-linked carrier |
+| `obligate-carrier` | Center dot | Obligate carrier |
+| `presymptomatic` | Vertical line | Gene positive, no symptoms yet |
+| `unaffected` | Empty | Does not have the condition |
+
+### Special markers
+
+| Marker | Symbol | Meaning |
+|--------|--------|---------|
+| `proband` | Arrow + P | Index case |
+| `consultand` | Arrow + C | Person who sought counseling |
+| `evaluated` | E above | Clinically evaluated |
+
+### Consanguinity
+
+```
+II-1 == II-3    # double line = related parents
+```
+
+### Legend (for multi-trait pedigrees)
+
+```
+pedigree "Cancer Family"
+  legend: breast = "Breast cancer" (fill: quad-tl)
+  legend: ovarian = "Ovarian cancer" (fill: quad-tr)
+  I-1 [female, affected: breast+ovarian]
+```
+
+Generation labels (I, II, III...) and individual numbering (I-1, I-2...) are rendered automatically.
+
 ## API
 
 ### `render(text, config?)`
@@ -254,7 +307,7 @@ const svg = render(diagramText, { type: 'ecomap' }); // force type
 const svg = render(diagramText, {
   fontFamily: 'Inter, system-ui',
   padding: 40,
-  theme: 'clinical',
+  theme: 'mono', // override theme
 });
 ```
 
@@ -290,7 +343,7 @@ interface LineageConfig {
   type?: 'genogram' | 'ecomap' | 'pedigree';  // force diagram type
   fontFamily?: string;   // default: 'system-ui'
   padding?: number;      // SVG padding in px, default: 20
-  theme?: string;        // default: 'default'
+  theme?: string;        // 'default' | 'clinical' | 'colorful' | 'mono'
 }
 ```
 
@@ -310,7 +363,7 @@ Lineage produces clean, semantic SVG suitable for embedding, printing, or intera
 
 **Accessibility:** Every diagram includes `<title>` and `<desc>` elements. Nodes and edges carry semantic class names.
 
-**Theming:** Override any `.lineage-*` CSS class. No inline styles — everything is in a single `<style>` block within the SVG.
+**Theming:** The default theme renders males in light blue and females in light pink (clinical style). Built-in themes: `default` (clinical colors), `colorful` (brighter palette), `mono` (pure black/white). Override any `.lineage-*` CSS class for custom styling — no inline styles, everything is in a single `<style>` block within the SVG.
 
 **Interactivity:** Use `data-individual-id` and `data-relationship-type` attributes to attach event handlers.
 
@@ -318,7 +371,7 @@ Lineage produces clean, semantic SVG suitable for embedding, printing, or intera
 
 - [x] **Phase 1: Genogram** — Parser, generation-based layout, McGoldrick symbols, SVG renderer
 - [x] **Phase 2: Ecomap** — Radial layout, weighted connections, energy flow arrows, category colors
-- [ ] **Phase 2: Pedigree** — Genetic inheritance charts with carrier/affected status
+- [x] **Phase 2: Pedigree** — Generation layout, Roman numeral labels, affected/carrier/presymptomatic fills, proband arrows, consanguinity, legend
 - [ ] **Phase 3: Integrations** — React component, Markdown plugin, Obsidian plugin
 - [ ] **Phase 4: Advanced** — Interactive editing, JSON import/export, PDF export
 
@@ -346,7 +399,10 @@ src/
       parser.ts     # Connection operator parser
       layout.ts     # Radial/polar layout with concentric rings
       renderer.ts   # 8 line types, arrows, category colors
-    pedigree/       # (coming soon)
+    pedigree/       # Bennett-standard pedigree chart
+      parser.ts     # Genetic status + legend parser
+      layout.ts     # Generation layout + Roman numeral labels
+      renderer.ts   # Affected/carrier fills, proband arrows
 ```
 
 ## Development
@@ -356,7 +412,7 @@ git clone https://github.com/mymap-ai/lineage.git
 cd lineage
 npm install
 npm run dev          # watch mode (tsup)
-npm run test         # vitest (113 tests)
+npm run test         # vitest (167 tests)
 npm run typecheck    # strict TypeScript
 npm run lint         # ESLint
 npm run build        # ESM + CJS + DTS → dist/
@@ -371,7 +427,7 @@ Contributions are welcome. Key areas where help is needed:
 - **Standard accuracy** — McGoldrick genogram symbols, Hartman ecomap conventions
 - **Layout optimization** — Edge crossing minimization, better label placement
 - **Accessibility** — Screen reader support for relationship diagrams
-- **Pedigree charts** — Implementation of the pedigree diagram type
+- **Emotional relationships** — Colored line styles for hostile, close, distant, cutoff relationships
 - **Integrations** — React component, Obsidian plugin, Markdown-it plugin
 
 Please open an issue to discuss significant changes before submitting a PR.

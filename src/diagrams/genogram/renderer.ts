@@ -1,4 +1,4 @@
-import type { LayoutResult, LayoutNode, LayoutEdge, RenderConfig } from "../../core/types";
+import type { LayoutResult, LayoutNode, LayoutEdge, RenderConfig, DiagramAST, RelationshipType } from "../../core/types";
 import { svgRoot, el, group, text, title, desc } from "../../core/svg";
 import { renderIndividualSymbol, getRequiredDefs } from "./symbols";
 
@@ -6,53 +6,280 @@ import { renderIndividualSymbol, getRequiredDefs } from "./symbols";
 
 export function renderGenogram(
   layout: LayoutResult,
-  config: RenderConfig
+  config: RenderConfig,
+  ast?: DiagramAST
 ): string {
-  const defsStr = getRequiredDefs(layout.nodes.map((n) => n.individual));
+  const hasDirectional = layout.edges.some(e => e.relationship.directional);
+  const defsStr = getRequiredDefs(layout.nodes.map((n) => n.individual), hasDirectional);
   const styleStr = buildStyles(config);
 
   const genGroups = groupByGeneration(layout.nodes);
-  const edgeLayers = renderEdges(layout.edges);
+
+  // Separate structural and emotional edges
+  const structuralEdges = layout.edges.filter(e => !EMOTIONAL_REL_TYPES.has(e.relationship.type));
+  const emotionalEdges = layout.edges.filter(e => EMOTIONAL_REL_TYPES.has(e.relationship.type));
+
+  const edgeLayers = renderEdges(structuralEdges);
+  const emotionalLayer = renderEmotionalEdges(emotionalEdges);
   const nodeLayers = renderNodes(genGroups);
   const labelLayer = renderLabels(layout.nodes, config);
+  const edgeLabelLayer = renderEdgeLabels(structuralEdges, config);
 
   const nodeCount = layout.nodes.length;
   const genCount = genGroups.size;
 
+  const chartTitle = ast?.metadata?.title;
+
+  // Adjust viewBox and add title offset if title exists
+  const titleHeight = chartTitle ? 40 : 0;
+  const totalHeight = layout.height + titleHeight;
+
+  const layers: string[] = [
+    title(chartTitle ? `Genogram: ${chartTitle}` : "Genogram"),
+    desc(
+      `Genogram diagram with ${nodeCount} individuals across ${genCount} generations`
+    ),
+    defsStr,
+    styleStr,
+  ];
+
+  if (chartTitle) {
+    layers.push(
+      text(
+        {
+          x: layout.width / 2,
+          y: 28,
+          class: "lineage-title",
+          "text-anchor": "middle",
+          "font-size": "20",
+          "font-weight": "bold",
+          "font-family": config.fontFamily,
+        },
+        chartTitle
+      )
+    );
+  }
+
+  // Wrap content in a group with title offset
+  const contentGroup = group(
+    { transform: titleHeight > 0 ? `translate(0, ${titleHeight})` : undefined },
+    [edgeLayers, emotionalLayer, ...nodeLayers, labelLayer, edgeLabelLayer]
+  );
+  layers.push(contentGroup);
+
   return svgRoot(
     {
-      viewBox: `0 0 ${layout.width} ${layout.height}`,
+      viewBox: `0 0 ${layout.width} ${totalHeight}`,
       class: "lineage-diagram lineage-genogram",
       width: layout.width,
-      height: layout.height,
+      height: totalHeight,
     },
-    [
-      title("Genogram"),
-      desc(
-        `Genogram diagram with ${nodeCount} individuals across ${genCount} generations`
-      ),
-      defsStr,
-      styleStr,
-      edgeLayers,
-      ...nodeLayers,
-      labelLayer,
-    ]
+    layers
   );
 }
 
 // ─── Styles ─────────────────────────────────────────────────
 
+// ─── Themes ────────────────────────────────────────────────
+
+interface ThemeColors {
+  stroke: string;
+  fill: string;
+  text: string;
+  maleFill: string;
+  femaleFill: string;
+  unknownFill: string;
+  edge: string;
+  deceasedMark: string;
+  conditionFill: string;
+}
+
+const THEMES: Record<string, ThemeColors> = {
+  default: {
+    stroke: "#2c3e50", fill: "white", text: "#2c3e50",
+    maleFill: "#dae8fc", femaleFill: "#fce4ec", unknownFill: "#f5f5f5",
+    edge: "#546e7a", deceasedMark: "#b71c1c", conditionFill: "#1565c0",
+  },
+  clinical: {
+    stroke: "#2c3e50", fill: "white", text: "#2c3e50",
+    maleFill: "#dae8fc", femaleFill: "#fce4ec", unknownFill: "#f5f5f5",
+    edge: "#546e7a", deceasedMark: "#b71c1c", conditionFill: "#1565c0",
+  },
+  colorful: {
+    stroke: "#37474f", fill: "white", text: "#263238",
+    maleFill: "#bbdefb", femaleFill: "#f8bbd0", unknownFill: "#e0e0e0",
+    edge: "#455a64", deceasedMark: "#c62828", conditionFill: "#1976d2",
+  },
+  mono: {
+    stroke: "#000", fill: "white", text: "#000",
+    maleFill: "white", femaleFill: "white", unknownFill: "white",
+    edge: "#000", deceasedMark: "#000", conditionFill: "#000",
+  },
+};
+
+function getTheme(name: string): ThemeColors {
+  return THEMES[name] ?? THEMES["default"];
+}
+
 function buildStyles(config: RenderConfig): string {
+  const t = getTheme(config.theme);
   const css = `
-.lineage-shape { fill: white; stroke: #333; stroke-width: 2; }
-.lineage-label { font-family: ${config.fontFamily}; font-size: ${config.fontSize}px; text-anchor: middle; fill: #333; }
-.lineage-edge { stroke: #333; stroke-width: 2; fill: none; }
+.lineage-shape { fill: ${t.fill}; stroke: ${t.stroke}; stroke-width: 2; }
+.lineage-male .lineage-shape { fill: ${t.maleFill}; }
+.lineage-female .lineage-shape { fill: ${t.femaleFill}; }
+.lineage-unknown .lineage-shape { fill: ${t.unknownFill}; }
+.lineage-label { font-family: ${config.fontFamily}; font-size: ${config.fontSize}px; text-anchor: middle; fill: ${t.text}; }
+.lineage-edge { stroke: ${t.edge}; stroke-width: 2; fill: none; }
 .lineage-edge-cohabiting path { stroke-dasharray: 6,4; }
-.lineage-edge-divorced .lineage-divorce-mark { stroke: #333; stroke-width: 2; }
-.lineage-edge-separated .lineage-separation-mark { stroke: #333; stroke-width: 2; }
-.lineage-deceased-mark { stroke: #333; stroke-width: 2; }
+.lineage-edge-divorced .lineage-divorce-mark { stroke: ${t.edge}; stroke-width: 2; }
+.lineage-edge-separated .lineage-separation-mark { stroke: ${t.edge}; stroke-width: 2; }
+.lineage-deceased-mark { stroke: ${t.deceasedMark}; stroke-width: 2; }
+.lineage-condition-fill { fill: ${t.conditionFill}; }
+.lineage-age { font-family: ${config.fontFamily}; fill: ${t.text}; pointer-events: none; }
+.lineage-title { fill: ${t.text}; }
+.lineage-edge-label { font-family: ${config.fontFamily}; fill: ${t.text}; }
+.lineage-index-border { stroke: #d4a017; stroke-width: 3; fill: none; }
 `;
   return el("style", {}, css);
+}
+
+// ─── Emotional Relationship Types ───────────────────────────
+
+const EMOTIONAL_REL_TYPES = new Set<string>([
+  "harmony", "close", "bestfriends", "love", "inlove", "friendship",
+  "hostile", "conflict", "enmity", "distant-hostile", "cutoff",
+  "close-hostile", "fused", "fused-hostile",
+  "distant", "normal", "nevermet",
+  "abuse", "physical-abuse", "emotional-abuse", "sexual-abuse", "neglect",
+  "manipulative", "controlling", "jealous",
+  "focused", "focused-neg", "distrust", "admirer", "limerence",
+]);
+
+function getEmotionalColor(type: RelationshipType): string {
+  // Positive: green
+  if (["harmony", "close", "bestfriends", "love", "inlove", "friendship"].includes(type)) return "#4caf50";
+  // Negative: red
+  if (["hostile", "conflict", "enmity", "distant-hostile", "cutoff"].includes(type)) return "#e53935";
+  // Ambivalent: purple
+  if (["close-hostile", "fused", "fused-hostile"].includes(type)) return "#9c27b0";
+  // Distance: gray
+  if (["distant", "normal", "nevermet"].includes(type)) return "#9e9e9e";
+  // Abuse: dark red
+  if (["abuse", "physical-abuse", "emotional-abuse", "sexual-abuse", "neglect"].includes(type)) return "#b71c1c";
+  // Control: orange
+  if (["manipulative", "controlling", "jealous"].includes(type)) return "#e65100";
+  // Special: blue
+  return "#1565c0";
+}
+
+function getEmotionalLineStyle(type: RelationshipType): string {
+  // Hostile types: zigzag rendered as stroke-dasharray
+  if (["hostile", "conflict", "enmity", "distant-hostile", "close-hostile", "fused-hostile"].includes(type)) {
+    return "stroke-dasharray: 8,3,2,3;";
+  }
+  // Distant types: dashed
+  if (["distant", "distant-hostile", "nevermet"].includes(type)) {
+    return "stroke-dasharray: 6,4;";
+  }
+  // Cutoff: gap
+  if (type === "cutoff") {
+    return "stroke-dasharray: 2,8;";
+  }
+  return "";
+}
+
+function getEmotionalStrokeWidth(type: RelationshipType): number {
+  // Fused/best friends: thick (3 lines visually)
+  if (["fused", "fused-hostile", "bestfriends"].includes(type)) return 4;
+  // Close/love: medium (2 lines)
+  if (["close", "close-hostile", "love", "inlove"].includes(type)) return 3;
+  return 2;
+}
+
+function renderEmotionalEdges(edges: LayoutEdge[]): string {
+  if (edges.length === 0) return group({ class: "lineage-emotional-edges" }, []);
+
+  const children: string[] = [];
+  for (const edge of edges) {
+    const type = edge.relationship.type;
+    const color = getEmotionalColor(type);
+    const lineStyle = getEmotionalLineStyle(type);
+    const strokeWidth = getEmotionalStrokeWidth(type);
+    const directional = edge.relationship.directional;
+
+    const elements: string[] = [
+      el("path", {
+        d: edge.path,
+        fill: "none",
+        stroke: color,
+        "stroke-width": strokeWidth,
+        style: lineStyle || undefined,
+        "marker-end": directional ? "url(#lineage-arrow)" : undefined,
+      }),
+    ];
+
+    // Render label on emotional edge
+    if (edge.relationship.label) {
+      const mid = pathMidpoint(edge.path);
+      if (mid) {
+        elements.push(
+          text(
+            {
+              x: mid.x,
+              y: mid.y - 6,
+              class: "lineage-edge-label",
+              "text-anchor": "middle",
+              "font-size": "10",
+              fill: color,
+            },
+            edge.relationship.label
+          )
+        );
+      }
+    }
+
+    children.push(
+      group(
+        {
+          class: `lineage-emotional lineage-emotional-${type}`,
+          "data-from": edge.from,
+          "data-to": edge.to,
+          "data-relationship-type": type,
+        },
+        elements
+      )
+    );
+  }
+
+  return group({ class: "lineage-emotional-edges" }, children);
+}
+
+// ─── Edge Labels ────────────────────────────────────────────
+
+function renderEdgeLabels(edges: LayoutEdge[], config: RenderConfig): string {
+  const labels: string[] = [];
+
+  for (const edge of edges) {
+    if (!edge.relationship.label) continue;
+    const mid = pathMidpoint(edge.path);
+    if (!mid) continue;
+
+    labels.push(
+      text(
+        {
+          x: mid.x,
+          y: mid.y - 6,
+          class: "lineage-edge-label",
+          "text-anchor": "middle",
+          "font-size": "10",
+          "font-family": config.fontFamily,
+        },
+        edge.relationship.label
+      )
+    );
+  }
+
+  return group({ class: "lineage-edge-labels" }, labels);
 }
 
 // ─── Edges ──────────────────────────────────────────────────
@@ -201,9 +428,9 @@ function renderLabels(
 
     let labelText = label.charAt(0).toUpperCase() + label.slice(1);
     if (ind.birthYear && ind.deathYear) {
-      labelText += ` (${ind.birthYear}-${ind.deathYear})`;
+      labelText += ` (${ind.birthYear}–${ind.deathYear})`;
     } else if (ind.birthYear) {
-      labelText += ` (${ind.birthYear})`;
+      labelText += ` (b. ${ind.birthYear})`;
     }
 
     labels.push(

@@ -15,6 +15,7 @@ interface FamilyUnit {
   id: string;
   partners: [string, string];
   relationship: RelationshipType;
+  label?: string;
   children: string[];
 }
 
@@ -36,7 +37,8 @@ export function layoutGenogram(
   const ordered = orderNodesInGenerations(graph, config);
   const positions = assignPositions(ordered, graph, config);
   const edges = computeEdges(graph, positions, config);
-  return packageResult(positions, edges, graph, config);
+  const emotionalEdges = computeEmotionalEdges(ast.relationships, positions, config);
+  return packageResult(positions, [...edges, ...emotionalEdges], graph, config);
 }
 
 // ─── Step 1: Build graph ────────────────────────────────────
@@ -109,6 +111,7 @@ function buildGraph(ast: DiagramAST): LayoutGraph {
       id: fuId,
       partners,
       relationship: rel.type,
+      label: rel.label,
       children,
     });
   }
@@ -500,11 +503,45 @@ function centerChildrenUnderParents(
 
       const childSpacing = config.nodeSpacingX + config.nodeWidth;
       if (sortedChildren.length > 1) {
-        const totalWidth = (sortedChildren.length - 1) * childSpacing;
+        // Calculate per-gap spacing: add room for married-in spouses
+        const gaps: number[] = [];
+        for (let gi = 0; gi < sortedChildren.length - 1; gi++) {
+          let gap = childSpacing;
+
+          // If the RIGHT child has a spouse placed to their LEFT
+          const nextChild = sortedChildren[gi + 1];
+          const nextFUs = personToFUs.get(nextChild) ?? [];
+          for (const cfu of nextFUs) {
+            const pid = cfu.partners[0] === nextChild ? cfu.partners[1] : cfu.partners[0];
+            const cInd = graph.individuals.get(nextChild);
+            const pInd = graph.individuals.get(pid);
+            if (!(cInd?.sex === "male" || (cInd?.sex !== "female" && pInd?.sex === "female"))) {
+              gap += coupleGap;
+            }
+          }
+
+          // If the LEFT child has a spouse placed to their RIGHT
+          const currChild = sortedChildren[gi];
+          const currFUs = personToFUs.get(currChild) ?? [];
+          for (const cfu of currFUs) {
+            const pid = cfu.partners[0] === currChild ? cfu.partners[1] : cfu.partners[0];
+            const cInd = graph.individuals.get(currChild);
+            const pInd = graph.individuals.get(pid);
+            if (cInd?.sex === "male" || (cInd?.sex !== "female" && pInd?.sex === "female")) {
+              gap += coupleGap;
+            }
+          }
+
+          gaps.push(gap);
+        }
+
+        const totalWidth = gaps.reduce((s, g) => s + g, 0);
         const startX = parentMidX - totalWidth / 2;
+        let cx = startX;
         for (let i = 0; i < sortedChildren.length; i++) {
           const pos = positions.get(sortedChildren[i]);
-          if (pos) pos.x = startX + i * childSpacing;
+          if (pos) pos.x = cx;
+          if (i < gaps.length) cx += gaps[i];
         }
       } else {
         const pos = positions.get(sortedChildren[0]);
@@ -603,6 +640,7 @@ function computeEdges(
       type: fu.relationship,
       from: leftId,
       to: rightId,
+      label: fu.label,
     };
     const couplePath = `M ${leftPos.x + half} ${leftPos.y} L ${rightPos.x - half} ${rightPos.y}`;
     edges.push({
@@ -731,11 +769,29 @@ function packageResult(
 
   let maxX = 0;
   let maxY = 0;
+  let minX = Infinity;
   for (const node of nodes) {
-    const right = node.x + node.width;
+    const cx = node.x + node.width / 2;
+    const labelText = estimateLabelText(node.individual);
+    const labelHalfWidth = labelText.length * 3.8;
+    const right = Math.max(node.x + node.width, cx + labelHalfWidth);
+    const left = Math.min(node.x, cx - labelHalfWidth);
     const bottom = node.y + node.height;
     if (right > maxX) maxX = right;
     if (bottom > maxY) maxY = bottom;
+    if (left < minX) minX = left;
+  }
+
+  // If labels extend beyond left edge, shift everything right
+  if (minX < 0) {
+    const shift = -minX;
+    for (const node of nodes) {
+      node.x += shift;
+    }
+    for (const edge of shiftedEdges) {
+      edge.path = shiftPath(edge.path, shift, 0);
+    }
+    maxX += shift;
   }
 
   return {
@@ -746,13 +802,80 @@ function packageResult(
   };
 }
 
+function estimateLabelText(ind: Individual): string {
+  const name = ind.label || ind.id;
+  if (ind.birthYear && ind.deathYear) return `${name} (${ind.birthYear}–${ind.deathYear})`;
+  if (ind.birthYear) return `${name} (b. ${ind.birthYear})`;
+  return name;
+}
+
+// ─── Emotional relationship edges ───────────────────────────
+
+const EMOTIONAL_REL_TYPES = new Set([
+  "harmony", "close", "bestfriends", "love", "inlove", "friendship",
+  "hostile", "conflict", "enmity", "distant-hostile", "cutoff",
+  "close-hostile", "fused", "fused-hostile",
+  "distant", "normal", "nevermet",
+  "abuse", "physical-abuse", "emotional-abuse", "sexual-abuse", "neglect",
+  "manipulative", "controlling", "jealous",
+  "focused", "focused-neg", "distrust", "admirer", "limerence",
+]);
+
+function computeEmotionalEdges(
+  relationships: Relationship[],
+  positions: Map<string, NodePosition>,
+  config: LayoutConfig
+): LayoutEdge[] {
+  const edges: LayoutEdge[] = [];
+  const half = config.nodeWidth / 2;
+
+  const emotionalRels = relationships.filter(r => EMOTIONAL_REL_TYPES.has(r.type));
+
+  for (const rel of emotionalRels) {
+    const posA = positions.get(rel.from);
+    const posB = positions.get(rel.to);
+    if (!posA || !posB) continue;
+
+    // Use raw positions (no padding) — packageResult will shift
+    const ax = posA.x;
+    const ay = posA.y;
+    const bx = posB.x;
+    const by = posB.y;
+
+    let pathData: string;
+
+    if (posA.generation === posB.generation) {
+      // Same generation: curved path below nodes
+      const midX = (ax + bx) / 2;
+      const curveY = ay + half + 30;
+      pathData = `M ${ax} ${ay + half} Q ${midX} ${curveY} ${bx} ${by + half}`;
+    } else {
+      // Cross-generation: curved path to the side
+      const midY = (ay + by) / 2;
+      const maxX = Math.max(ax, bx);
+      const curveX = maxX + half + 30;
+      pathData = `M ${ax} ${ay} Q ${curveX} ${midY} ${bx} ${by}`;
+    }
+
+    edges.push({
+      from: rel.from,
+      to: rel.to,
+      relationship: rel,
+      path: pathData,
+    });
+  }
+
+  return edges;
+}
+
 function shiftPath(pathData: string, dx: number, dy: number): string {
+  // Shift all coordinate pairs in the path
   return pathData.replace(
-    /([ML])\s*([\d.-]+)\s+([\d.-]+)/g,
-    (_match, cmd: string, xStr: string, yStr: string) => {
+    /([\d.-]+)\s+([\d.-]+)/g,
+    (_match, xStr: string, yStr: string) => {
       const x = parseFloat(xStr) + dx;
       const y = parseFloat(yStr) + dy;
-      return `${cmd} ${x} ${y}`;
+      return `${x} ${y}`;
     }
   );
 }

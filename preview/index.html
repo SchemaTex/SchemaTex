@@ -106,7 +106,130 @@ const cases = {
   therapist <-> client [label: "weekly"]`,
 };
 
+// Cases with optional config overrides
+const configuredCases = {
+  // ─── Themed Genogram Cases ───────────────────────────────
+  'Genogram (clinical theme): Nuclear Family': {
+    dsl: `genogram
+  john [male, 1950]
+  mary [female, 1955]
+  john -- mary
+    alice [female, 1980]
+    bob [male, 1983]`,
+    config: { theme: 'clinical' },
+  },
+  'Genogram (colorful theme): Medical Conditions': {
+    dsl: `genogram
+  father [male, 1945, conditions: heart-disease(full) + diabetes(half-left)]
+  mother [female, 1948]
+  father -- mother
+    son [male, 1970, conditions: diabetes(striped)]`,
+    config: { theme: 'colorful' },
+  },
+
+  // ─── Pedigree Cases ──────────────────────────────────────
+  'Pedigree 1: Autosomal Recessive (CF)': {
+    dsl: `pedigree "Cystic Fibrosis Family"
+  I-1 [male, carrier]
+  I-2 [female, carrier]
+  I-1 -- I-2
+    II-1 [male, unaffected]
+    II-2 [female, carrier]
+    II-3 [male, affected, proband]
+    II-4 [female, unaffected]`,
+  },
+  'Pedigree 2: Consanguinity': {
+    dsl: `pedigree "Consanguineous Marriage"
+  I-1 [male, carrier]
+  I-2 [female, unaffected]
+  I-1 -- I-2
+    II-1 [male, carrier]
+    II-2 [female, unaffected]
+  I-3 [male, unaffected]
+  I-4 [female, carrier]
+  I-3 -- I-4
+    II-3 [female, carrier]
+  II-1 == II-3
+    III-1 [male, affected, proband]`,
+  },
+  'Pedigree 3: X-Linked Recessive (Hemophilia)': {
+    dsl: `pedigree "Hemophilia A"
+  I-1 [male, unaffected]
+  I-2 [female, carrier-x]
+  I-1 -- I-2
+    II-1 [male, affected]
+    II-2 [female, carrier-x]
+    II-3 [male, unaffected]
+    II-4 [female, unaffected]
+  II-2 -- II-5 [male, unaffected]
+    III-1 [male, affected]
+    III-2 [female, carrier-x]
+    III-3 [male, unaffected]`,
+  },
+  'Pedigree 4: Huntington Disease (5 Gen)': {
+    dsl: `pedigree "Huntington Disease"
+  I-1 [male, affected, deceased]
+  I-2 [female, deceased]
+  I-1 -- I-2
+    II-1 [male, affected, deceased]
+    II-2 [female, unaffected]
+    II-3 [male, unaffected, deceased]
+  II-1 -- II-4 [female, unaffected]
+    III-1 [female, affected]
+    III-2 [male, presymptomatic]
+    III-3 [female, unaffected]
+  III-1 -- III-4 [male, unaffected]
+    IV-1 [male, presymptomatic, proband]
+    IV-2 [female, unaffected]
+  III-3 -- III-5 [male, unaffected]
+    IV-3 [male, unaffected]
+    IV-4 [female, unaffected]`,
+  },
+
+  // ─── Advanced Genogram Features ─────────────────────────
+  'Genogram Advanced 1: Title + Rel Labels + Death Years': {
+    dsl: `genogram "Potter Family"
+  james [male, 1960, 1981, deceased]
+  lily [female, 1960, 1981, deceased]
+  james -- lily "m. 1979"
+    harry [male, 1980, index]`,
+  },
+  'Genogram Advanced 2: Emotional Relationships': {
+    dsl: `genogram "Family Dynamics"
+  dad [male, 1955, age: 70]
+  mom [female, 1958, age: 67]
+  dad -- mom "m. 1980"
+    son [male, 1982, age: 43]
+    daughter [female, 1985, age: 40]
+  dad -hostile- son
+  mom -close- daughter
+  son -distant- daughter`,
+  },
+  'Genogram Advanced 3: Multi-Color Medical Conditions': {
+    dsl: `genogram "Medical History"
+  grandfather [male, 1935, 1995, deceased, conditions: heart-disease(full, #e74c3c) + diabetes(half-left, #ff9800)]
+  grandmother [female, 1938, conditions: cancer(half-right, #9c27b0)]
+  grandfather -- grandmother
+    father [male, 1965, conditions: heart-disease(quad-tl, #e74c3c) + hypertension(quad-tr, #2196f3)]
+    uncle [male, 1968, conditions: diabetes(full, #ff9800)]`,
+  },
+  'Genogram Advanced 4: Abuse + Cross-Gen Emotional': {
+    dsl: `genogram "Clinical Assessment"
+  father [male, 1960, age: 65]
+  mother [female, 1963, age: 62]
+  father -- mother
+    patient [female, 1990, age: 35, index]
+    brother [male, 1988, age: 37]
+  father -abuse-> patient
+  mother -close- patient
+  patient -cutoff- brother
+  patient -harmony- mother`,
+  },
+};
+
 const output = document.getElementById('output');
+
+// Render original cases (no config override)
 for (const [name, dsl] of Object.entries(cases)) {
   const h2 = document.createElement('h2');
   h2.textContent = name;
@@ -116,6 +239,23 @@ for (const [name, dsl] of Object.entries(cases)) {
   div.className = 'svg-container';
   try {
     div.innerHTML = render(dsl);
+  } catch (e) {
+    div.textContent = `Error: ${e.message}`;
+    div.style.color = 'red';
+  }
+  output.appendChild(div);
+}
+
+// Render configured cases (themed genograms + pedigrees)
+for (const [name, entry] of Object.entries(configuredCases)) {
+  const h2 = document.createElement('h2');
+  h2.textContent = name;
+  output.appendChild(h2);
+
+  const div = document.createElement('div');
+  div.className = 'svg-container';
+  try {
+    div.innerHTML = render(entry.dsl, entry.config || {});
   } catch (e) {
     div.textContent = `Error: ${e.message}`;
     div.style.color = 'red';

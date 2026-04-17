@@ -6,6 +6,7 @@ import {
   circle,
   polygon,
   line,
+  text,
   title,
   defs,
   pattern,
@@ -30,6 +31,13 @@ export function renderIndividualSymbol(
   const titleText = formatTitle(individual);
   const children: string[] = [title(titleText)];
 
+  // Index person: outer gold border (concentric shape, slightly larger)
+  const isIndex = individual.markers?.includes("index-person");
+  if (isIndex) {
+    children.push(indexBorder(individual.sex, half));
+    classes.push("lineage-index-person");
+  }
+
   // Base shape
   children.push(baseShape(individual.sex, half));
 
@@ -45,6 +53,23 @@ export function renderIndividualSymbol(
     children.push(...deceasedOverlay(individual.sex, half));
   }
 
+  // Age display inside node
+  const ageToShow = individual.age ?? calcAge(individual);
+  if (ageToShow !== undefined) {
+    children.push(
+      text(
+        {
+          x: 0,
+          y: 5,
+          class: "lineage-age",
+          "text-anchor": "middle",
+          "font-size": "11",
+        },
+        String(ageToShow)
+      )
+    );
+  }
+
   return group(
     {
       class: classes.join(" "),
@@ -55,7 +80,7 @@ export function renderIndividualSymbol(
   );
 }
 
-export function getRequiredDefs(individuals: Individual[]): string {
+export function getRequiredDefs(individuals: Individual[], includeArrowMarker = false): string {
   const neededFills = new Set<string>();
   for (const ind of individuals) {
     if (ind.conditions) {
@@ -111,6 +136,61 @@ export function getRequiredDefs(individuals: Individual[]): string {
     );
   }
 
+  if (neededFills.has("half-top")) {
+    children.push(
+      el("clipPath", { id: "lineage-clip-half-top-rect" }, [
+        rect({ x: "0", y: "0", width: "100%", height: "50%" }),
+      ]),
+      el("clipPath", { id: "lineage-clip-half-top-circle" }, [
+        rect({ x: "-50", y: "-50", width: "100", height: "50" }),
+      ])
+    );
+  }
+
+  if (neededFills.has("quad-tl")) {
+    children.push(
+      el("clipPath", { id: "lineage-clip-quad-tl-rect" }, [
+        rect({ x: "0", y: "0", width: "50%", height: "50%" }),
+      ]),
+      el("clipPath", { id: "lineage-clip-quad-tl-circle" }, [
+        rect({ x: "-50", y: "-50", width: "50", height: "50" }),
+      ])
+    );
+  }
+
+  if (neededFills.has("quad-tr")) {
+    children.push(
+      el("clipPath", { id: "lineage-clip-quad-tr-rect" }, [
+        rect({ x: "50%", y: "0", width: "50%", height: "50%" }),
+      ]),
+      el("clipPath", { id: "lineage-clip-quad-tr-circle" }, [
+        rect({ x: "0", y: "-50", width: "50", height: "50" }),
+      ])
+    );
+  }
+
+  if (neededFills.has("quad-bl")) {
+    children.push(
+      el("clipPath", { id: "lineage-clip-quad-bl-rect" }, [
+        rect({ x: "0", y: "50%", width: "50%", height: "50%" }),
+      ]),
+      el("clipPath", { id: "lineage-clip-quad-bl-circle" }, [
+        rect({ x: "-50", y: "0", width: "50", height: "50" }),
+      ])
+    );
+  }
+
+  if (neededFills.has("quad-br")) {
+    children.push(
+      el("clipPath", { id: "lineage-clip-quad-br-rect" }, [
+        rect({ x: "50%", y: "50%", width: "50%", height: "50%" }),
+      ]),
+      el("clipPath", { id: "lineage-clip-quad-br-circle" }, [
+        rect({ x: "0", y: "0", width: "50", height: "50" }),
+      ])
+    );
+  }
+
   if (neededFills.has("striped")) {
     children.push(
       pattern(
@@ -128,6 +208,38 @@ export function getRequiredDefs(individuals: Individual[]): string {
           }),
         ]
       )
+    );
+  }
+
+  if (neededFills.has("dotted")) {
+    children.push(
+      pattern(
+        {
+          id: "lineage-pattern-dotted",
+          patternUnits: "userSpaceOnUse",
+          width: "6",
+          height: "6",
+        },
+        [
+          circle({ cx: "3", cy: "3", r: "1", fill: "#333" }),
+        ]
+      )
+    );
+  }
+
+  if (includeArrowMarker) {
+    children.push(
+      el("marker", {
+        id: "lineage-arrow",
+        viewBox: "0 0 10 10",
+        refX: "10",
+        refY: "5",
+        markerWidth: "6",
+        markerHeight: "6",
+        orient: "auto",
+      }, [
+        path({ d: "M 0 0 L 10 5 L 0 10 z", fill: "#333" }),
+      ])
     );
   }
 
@@ -149,6 +261,51 @@ function formatTitle(ind: Individual): string {
     return `${name} (${ind.birthYear})`;
   }
   return name;
+}
+
+function calcAge(ind: Individual): number | undefined {
+  if (!ind.birthYear) return undefined;
+  if (ind.deathYear) return ind.deathYear - ind.birthYear;
+  if (ind.status === "deceased") return undefined;
+  return undefined;
+}
+
+function indexBorder(sex: Individual["sex"], half: number): string {
+  const outer = half + 4;
+  switch (sex) {
+    case "male":
+      return rect({
+        x: -outer,
+        y: -outer,
+        width: outer * 2,
+        height: outer * 2,
+        class: "lineage-index-border",
+        fill: "none",
+        stroke: "#d4a017",
+        "stroke-width": "3",
+      });
+    case "female":
+      return circle({
+        cx: 0,
+        cy: 0,
+        r: outer,
+        class: "lineage-index-border",
+        fill: "none",
+        stroke: "#d4a017",
+        "stroke-width": "3",
+      });
+    case "unknown":
+    case "other":
+    case "nonbinary":
+    case "intersex":
+      return polygon({
+        points: `0,${-outer} ${outer},0 0,${outer} ${-outer},0`,
+        class: "lineage-index-border",
+        fill: "none",
+        stroke: "#d4a017",
+        "stroke-width": "3",
+      });
+  }
 }
 
 function baseShape(sex: Individual["sex"], half: number): string {
@@ -215,6 +372,8 @@ function conditionFillElement(
     attrs.fill = fillColor;
   } else if (cond.fill === "striped") {
     attrs.fill = "url(#lineage-pattern-striped)";
+  } else if (cond.fill === "dotted") {
+    attrs.fill = "url(#lineage-pattern-dotted)";
   } else {
     const clipSuffix = sex === "female" ? "circle" : "rect";
     attrs["clip-path"] = `url(#lineage-clip-${cond.fill}-${clipSuffix})`;

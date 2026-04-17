@@ -11,7 +11,7 @@
 
 // ─── AST Types ───────────────────────────────────────────────
 
-export type DiagramType = "genogram" | "ecomap" | "pedigree";
+export type DiagramType = "genogram" | "ecomap" | "pedigree" | "phylo";
 
 export type GenogramMode = "medical" | "heritage";
 export type LegendPosition = "bottom-right" | "right" | "bottom-center" | "none";
@@ -173,6 +173,110 @@ export type MedicalCategory =
   | "liver-gi"
   | "obesity"
   | "other";
+
+// ─── Phylogenetic Tree Types ────────────────────────────────
+
+/** Layout algorithm for phylogenetic tree */
+export type PhyloLayout = "rectangular" | "slanted" | "circular" | "unrooted";
+
+/** Tree representation mode — determines how branch lengths are interpreted */
+export type PhyloMode = "phylogram" | "cladogram" | "chronogram";
+
+/** Clade highlight display mode */
+export type CladeHighlightMode = "branch" | "background" | "both";
+
+/** A phylogenetic tree node (distinct from family-tree Individual) */
+export interface PhyloNode {
+  /** Unique id (auto-generated for unnamed internal nodes) */
+  id: string;
+  /** Display label (species name, gene id, etc.) */
+  label?: string;
+  /** Branch length to parent (substitutions/site or time units) */
+  branchLength?: number;
+  /** Bootstrap support or Bayesian posterior probability (0-100 or 0-1) */
+  support?: number;
+  /** Children nodes (empty = leaf/tip) */
+  children: PhyloNode[];
+  /** Is this a leaf/tip node? */
+  isLeaf: boolean;
+  /** NHX metadata key-value pairs */
+  nhx?: Record<string, string>;
+}
+
+/** Clade definition for visual highlighting */
+export interface CladeDef {
+  id: string;
+  /** Label to display next to clade bracket/background */
+  label?: string;
+  /** Leaf ids that define this clade (MRCA computed automatically) */
+  members: string[];
+  /** Branch/background color */
+  color?: string;
+  /** Highlight mode */
+  highlight?: CladeHighlightMode;
+}
+
+/** Phylogenetic tree AST — separate from DiagramAST because structure is fundamentally different */
+export interface PhyloTreeAST {
+  type: "phylo";
+  /** Tree title */
+  title?: string;
+  /** Root node of the tree */
+  root: PhyloNode;
+  /** Is this explicitly unrooted? */
+  unrooted: boolean;
+  /** Layout algorithm */
+  layout: PhyloLayout;
+  /** Branch length interpretation */
+  mode: PhyloMode;
+  /** Clade definitions for visual highlighting */
+  clades: CladeDef[];
+  /** Scale bar label (e.g. "substitutions/site", "Million years ago") */
+  scaleLabel?: string;
+  /** Most recent sampling date (for chronogram mode) */
+  mrsd?: string;
+  /** Outgroup taxon id (for rooting) */
+  outgroup?: string;
+  /** Custom metadata */
+  metadata?: Record<string, string>;
+}
+
+/** Layout result for phylogenetic tree */
+export interface PhyloLayoutNode {
+  node: PhyloNode;
+  x: number;
+  y: number;
+  /** Angle in radians (for circular/unrooted layouts) */
+  angle?: number;
+  /** Radius from center (for circular/unrooted layouts) */
+  radius?: number;
+}
+
+/** Phylogenetic tree render config (extends base RenderConfig) */
+export interface PhyloRenderConfig {
+  fontFamily: string;
+  fontSize: number;
+  theme: string;
+  padding: number;
+  /** Branch line width in px */
+  branchWidth: number;
+  /** Show tip dots */
+  showTipDots: boolean;
+  /** Show bootstrap/support values as text */
+  showSupportValues: boolean;
+  /** Show bootstrap/support values as colored dots */
+  showSupportDots: boolean;
+  /** Minimum support value to display (default: 50) */
+  supportThreshold: number;
+  /** Show scale bar */
+  showScaleBar: boolean;
+  /** Tip spacing in px */
+  tipSpacing: number;
+  /** Fan opening angle in degrees (circular layout, default: 0 = full circle) */
+  openAngle: number;
+  /** Italicize species binomials automatically */
+  italicizeSpecies: boolean;
+}
 
 // ─── Relationship Types ─────────────────────────────────────
 

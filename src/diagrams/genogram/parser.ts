@@ -4,6 +4,7 @@ import type {
   Relationship,
   RelationshipType,
   Condition,
+  ConditionFill,
 } from "../../core/types";
 
 // ─── ParseError ─────────────────────────────────────────────
@@ -48,10 +49,27 @@ const VALID_FILLS = new Set([
   "full",
   "half-left",
   "half-right",
+  "half-top",
   "half-bottom",
+  "quad-tl",
+  "quad-tr",
+  "quad-bl",
+  "quad-br",
   "quarter",
   "striped",
+  "dotted",
 ]);
+
+const EMOTIONAL_TYPES = new Set([
+  "harmony", "close", "bestfriends", "love", "inlove", "friendship",
+  "hostile", "conflict", "enmity", "distant-hostile", "cutoff",
+  "close-hostile", "fused", "fused-hostile",
+  "distant", "normal", "nevermet",
+  "abuse", "physical-abuse", "emotional-abuse", "sexual-abuse", "neglect",
+  "manipulative", "controlling", "jealous",
+  "focused", "focused-neg", "distrust", "admirer", "limerence",
+]);
+
 
 // ─── Parser state ───────────────────────────────────────────
 
@@ -107,13 +125,43 @@ export function parseGenogram(text: string): DiagramAST {
       continue;
     }
 
+    // Check for emotional relationship line: `A -TYPE- B` or `A -TYPE-> B`
+    const emotionalMatch = detectEmotionalOp(trimmed);
+    if (emotionalMatch) {
+      const { leftId, emotionalType, rightId: emRightId, directional, label: emLabel } = emotionalMatch;
+      const lineNum = state.currentLine + 1;
+      const leftKey = leftId.toLowerCase();
+      const rightKey = emRightId.toLowerCase();
+
+      if (!individualsMap.has(leftKey)) {
+        throw new ParseError(`Unknown individual '${leftId}'`, lineNum, 1, lineText);
+      }
+      if (!individualsMap.has(rightKey)) {
+        throw new ParseError(`Unknown individual '${emRightId}'`, lineNum, 1, lineText);
+      }
+
+      const rel: Relationship = {
+        type: emotionalType as RelationshipType,
+        from: leftKey,
+        to: rightKey,
+      };
+      if (directional) rel.directional = true;
+      if (emLabel) rel.label = emLabel;
+      relationships.push(rel);
+      state.currentLine++;
+      continue;
+    }
+
     const coupleMatch = detectCoupleOp(trimmed);
     if (coupleMatch) {
       const { leftId, op, rightRaw } = coupleMatch;
       const lineNum = state.currentLine + 1;
 
+      // Extract optional relationship label: quoted string at the end
+      const { cleaned: rightCleaned, label: relLabel } = extractRelLabel(rightRaw);
+
       // Parse right side — may have inline props
-      const { id: rightId, props: rightProps } = parseIdWithOptionalProps(rightRaw);
+      const { id: rightId, props: rightProps } = parseIdWithOptionalProps(rightCleaned);
 
       // Ensure left individual exists
       const leftKey = leftId.toLowerCase();
@@ -140,7 +188,9 @@ export function parseGenogram(text: string): DiagramAST {
         );
       }
 
-      relationships.push({ type: op.type, from: leftKey, to: rightKey });
+      const rel: Relationship = { type: op.type, from: leftKey, to: rightKey };
+      if (relLabel) rel.label = relLabel;
+      relationships.push(rel);
 
       const coupleIndent = getIndent(lineText);
       state.currentLine++;
@@ -278,6 +328,51 @@ interface CoupleMatch {
   rightRaw: string;
 }
 
+interface EmotionalMatch {
+  leftId: string;
+  emotionalType: string;
+  rightId: string;
+  directional: boolean;
+  label: string | null;
+}
+
+function detectEmotionalOp(trimmed: string): EmotionalMatch | null {
+  // Pattern: ID -TYPE- ID or ID -TYPE-> ID, optionally followed by "label"
+  const match = trimmed.match(
+    /^([a-zA-Z][a-zA-Z0-9_-]*)\s+-([\w-]+)->(.*)|^([a-zA-Z][a-zA-Z0-9_-]*)\s+-([\w-]+)-\s+(.*)/
+  );
+  if (!match) return null;
+
+  const directional = !!match[1];
+  const leftId = directional ? match[1] : match[4];
+  const emotionalType = directional ? match[2] : match[5];
+  const rest = (directional ? match[3] : match[6]).trim();
+
+  if (!EMOTIONAL_TYPES.has(emotionalType)) return null;
+
+  // Extract right ID and optional quoted label
+  const { id: rightId, label } = extractIdAndLabel(rest);
+  if (!rightId || !/^[a-zA-Z][a-zA-Z0-9_-]*$/.test(rightId)) return null;
+
+  return { leftId, emotionalType, rightId, directional, label };
+}
+
+function extractIdAndLabel(raw: string): { id: string; label: string | null } {
+  // ID possibly followed by "label text"
+  const labelMatch = raw.match(/^([a-zA-Z][a-zA-Z0-9_-]*)\s+"([^"]*)"$/);
+  if (labelMatch) return { id: labelMatch[1], label: labelMatch[2] };
+  const idOnly = raw.match(/^([a-zA-Z][a-zA-Z0-9_-]*)$/);
+  if (idOnly) return { id: idOnly[1], label: null };
+  return { id: raw.trim(), label: null };
+}
+
+function extractRelLabel(rightRaw: string): { cleaned: string; label: string | null } {
+  // Check for trailing "label text" after the individual definition
+  const match = rightRaw.match(/^(.*?)\s+"([^"]*)"$/);
+  if (match) return { cleaned: match[1].trim(), label: match[2] };
+  return { cleaned: rightRaw, label: null };
+}
+
 function detectCoupleOp(trimmed: string): CoupleMatch | null {
   for (const op of COUPLE_OPS) {
     const parts = splitByOperator(trimmed, op.token);
@@ -388,11 +483,18 @@ function buildIndividual(
       individual.sex = tokenLower as Individual["sex"];
     } else if (VALID_STATUS.has(tokenLower)) {
       individual.status = tokenLower as Individual["status"];
+    } else if (tokenLower === "index") {
+      if (!individual.markers) individual.markers = [];
+      individual.markers.push("index-person");
     } else if (SPECIAL_CHILD_PROPS.has(tokenLower)) {
       // Handled at caller level for relationships
       continue;
     } else if (/^\d{4}$/.test(tokenLower)) {
-      individual.birthYear = parseInt(token, 10);
+      if (individual.birthYear !== undefined) {
+        individual.deathYear = parseInt(token, 10);
+      } else {
+        individual.birthYear = parseInt(token, 10);
+      }
     } else if (tokenLower.startsWith("conditions:")) {
       individual.conditions = parseConditions(
         token.substring("conditions:".length).trim(),
@@ -401,13 +503,23 @@ function buildIndividual(
       );
     } else if (token.includes(":")) {
       const colonIdx = token.indexOf(":");
-      const key = token.substring(0, colonIdx).trim();
+      const key = token.substring(0, colonIdx).trim().toLowerCase();
       const value = token.substring(colonIdx + 1).trim();
-      if (!individual.properties) individual.properties = {};
-      individual.properties[key] = value;
+      if (key === "age") {
+        const ageNum = parseInt(value, 10);
+        if (!isNaN(ageNum)) individual.age = ageNum;
+      } else if (key === "death") {
+        const deathNum = parseInt(value, 10);
+        if (!isNaN(deathNum)) individual.deathYear = deathNum;
+      } else if (key === "label") {
+        individual.label = value.replace(/^"|"$/g, "");
+      } else {
+        if (!individual.properties) individual.properties = {};
+        individual.properties[key] = value;
+      }
     } else {
       throw new ParseError(
-        `Unknown property '${token}'. Valid: male, female, unknown, deceased, stillborn, miscarriage, abortion, adopted, foster, twin-identical, twin-fraternal, a 4-digit year, conditions:..., or key:value`,
+        `Unknown property '${token}'. Valid: male, female, unknown, deceased, stillborn, miscarriage, abortion, adopted, foster, twin-identical, twin-fraternal, index, a 4-digit year, conditions:..., age:N, death:YYYY, or key:value`,
         lineNum,
         1,
         lineText
@@ -430,22 +542,28 @@ function parseConditions(
     const match = part.match(/^([a-zA-Z0-9_-]+)\(([^)]+)\)$/);
     if (!match) {
       throw new ParseError(
-        `Invalid condition format '${part}'. Expected: name(fill-pattern)`,
+        `Invalid condition format '${part}'. Expected: name(fill) or name(fill, #color)`,
         lineNum,
         1,
         lineText
       );
     }
-    const [, label, fill] = match;
+    const [, label, innerRaw] = match;
+    const innerParts = innerRaw.split(",").map((s) => s.trim());
+    const fill = innerParts[0];
+    const color = innerParts[1]; // optional
+
     if (!VALID_FILLS.has(fill)) {
       throw new ParseError(
-        `Invalid fill pattern '${fill}'. Valid: full, half-left, half-right, half-bottom, quarter, striped`,
+        `Invalid fill pattern '${fill}'. Valid: full, half-left, half-right, half-top, half-bottom, quad-tl, quad-tr, quad-bl, quad-br, quarter, striped, dotted`,
         lineNum,
         1,
         lineText
       );
     }
-    conditions.push({ label, fill: fill as import("../../core/types").ConditionFill });
+    const cond: Condition = { label, fill: fill as ConditionFill };
+    if (color) cond.color = color;
+    conditions.push(cond);
   }
 
   return conditions;
