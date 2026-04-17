@@ -206,6 +206,37 @@ sociogram "Playground Dynamics"
 
 ![Playground Dynamics Sociogram](examples/sociogram/playground-dynamics.svg)
 
+### Timing Diagram — SPI Transaction
+
+Digital waveforms with clock, chip-select, data buses, and high-impedance states.
+
+```
+timing "SPI Transaction"
+CLK:   pppppppp
+CS_N:  10000001
+MOSI:  x=======  data: ["0xAB","0xCD","0xEF","0x01","0x02","0x03","0x04","0x05"]
+MISO:  zzzz====  data: ["","","","","0xFF","0x12","0x34","0x56"]
+```
+
+**Features shown:** clock pulses (`p`), bus segments with data labels (`=`), high-impedance state (`z`, dashed midline), unknown/tri-state (`x`, cross-hatch), active-low signal name (`~CS_N` renders with overline).
+
+### Logic Gate Diagram — Full Adder
+
+IEEE 91 ANSI distinctive shapes with DAG layout and Manhattan wiring.
+
+```
+logic "1-bit Full Adder"
+input A, B, Cin
+output Sum, Cout
+s1 = XOR(A, B)
+Sum = XOR(s1, Cin)
+c1 = AND(A, B)
+c2 = AND(s1, Cin)
+Cout = OR(c1, c2)
+```
+
+**Features shown:** multi-level gate composition, fan-out wiring (signal `s1` feeds two gates), output labels on wire stubs, monochrome IEEE 91 style. Use `[style: iec]` for IEC 60617 rectangular symbols.
+
 ---
 
 ## Install
@@ -627,6 +658,126 @@ sociogram "Mrs. Chen's 4th Grade Class"
   frank -> dave
 ```
 
+## Timing Diagram Syntax
+
+Digital waveforms — compatible with WaveDrom wave string conventions.
+
+### Header
+
+```
+timing "Optional Title" [hscale: 2]
+```
+
+`hscale` multiplies the period width (default `1` → 40 px per period).
+
+### Signals
+
+```
+SIGNAL_NAME: wave_string  data: ["label1","label2"]
+```
+
+| Char | Meaning |
+|------|---------|
+| `0` / `l` | Logic low |
+| `1` / `h` | Logic high |
+| `p` / `P` | Positive clock pulse (low→high→low) |
+| `n` / `N` | Negative clock pulse (high→low→high) |
+| `x` | Unknown / undefined (cross-hatch fill) |
+| `z` | High-impedance (dashed midline) |
+| `=` / `2`–`9` | Bus / data value segment |
+| `.` | Continue previous state |
+| `u` / `d` | Rising / falling ramp |
+
+Active-low signal names: prefix with `~` or `/` → name renders with overline bar (e.g. `~CS` → C̄S̄).
+
+### Groups
+
+```
+[Domain A]
+CLK_A: pppppppp
+SIG_A: 01110000
+---
+CLK_B: nnnnnnnn
+```
+
+### Full example
+
+```
+timing "SPI Transaction"
+CLK:   pppppppp
+~CS:   10000001
+MOSI:  x=======  data: ["0xAB","0xCD","0xEF","0x01","0x02","0x03","0x04","0x05"]
+MISO:  zzzz====  data: ["","","","","0xFF","0x12","0x34","0x56"]
+```
+
+---
+
+## Logic Gate Diagram Syntax
+
+IEEE 91 ANSI distinctive shapes (default) or IEC 60617 rectangular with functional labels.
+
+### Header
+
+```
+logic "Optional Title" [style: ansi]   # or style: iec
+```
+
+### Inputs and outputs
+
+```
+input A, B, Cin      # one or more signal names
+output Sum, Cout     # one or more output names
+```
+
+### Gate assignments
+
+```
+id = GATE(input1, input2, ...)
+```
+
+Active-low input: prefix with `~` — renders as a bubble on the pin.
+
+### Supported gate types
+
+| Category | Types |
+|----------|-------|
+| Combinational | `AND` `OR` `NOT` `NAND` `NOR` `XOR` `XNOR` `BUF` |
+| Special buffers | `TRISTATE_BUF` `TRISTATE_INV` `OPEN_DRAIN` `SCHMITT` |
+| Flip-flops | `DFF` `JKFF` `SRFF` `TFF` |
+| Latches | `LATCH_SR` `LATCH_D` |
+| Complex | `MUX` `DEMUX` `ENCODER` `DECODER` `COUNTER` `SHIFT_REG` |
+
+### Sub-circuit modules (dashed enclosure)
+
+Group related gates into a labeled dashed box:
+
+```
+module "Carry Logic" {
+  c1 = AND(A, B)
+  c2 = AND(s1, Cin)
+  Cout = OR(c1, c2)
+}
+```
+
+### Full example
+
+```
+logic "1-bit Full Adder"
+input A, B, Cin
+output Sum, Cout
+module "Sum Logic" {
+  s1 = XOR(A, B)
+  Sum = XOR(s1, Cin)
+}
+module "Carry Logic" {
+  c1 = AND(A, B)
+  c2 = AND(s1, Cin)
+  Cout = OR(c1, c2)
+}
+```
+
+---
+
 ## API
 
 ### `render(text, config?)`
@@ -708,6 +859,8 @@ Lineage produces clean, semantic SVG suitable for embedding, printing, or intera
 - [x] **Phase 2: Pedigree** — Generation layout, Roman numeral labels, affected/carrier/presymptomatic fills, proband arrows, consanguinity, legend
 - [x] **Phase 2: Phylogenetic Tree** — Newick parser, rectangular/slanted/cladogram layouts, bootstrap support, clade highlighting, scale bar
 - [x] **Phase 2: Sociogram** — Moreno sociometry, circular + force-directed layout, 3 valence types, auto-detected roles, group coloring
+- [x] **Phase 2: Timing Diagram** — WaveDrom-compatible wave state machine (0/1/x/z/p/n/h/l/u/d/=/.), bus segments with data labels, hi-Z, groups, active-low overline, hscale
+- [x] **Phase 2: Logic Gate Diagram** — IEEE 91 ANSI + IEC 60617, 24 gate types, DAG layout, Manhattan wiring, module sub-circuit enclosures
 - [ ] **Phase 3: Integrations** — React component, Markdown plugin, Obsidian plugin
 - [ ] **Phase 4: Advanced** — Interactive editing, JSON import/export, PDF export
 
@@ -747,6 +900,14 @@ src/
       parser.ts     # Edge operators, groups, config
       layout.ts     # Circular + Fruchterman-Reingold force-directed
       renderer.ts   # Valence-colored edges, role-based nodes, arrow markers
+    timing/         # Digital timing diagram (WaveDrom-compatible)
+      parser.ts     # Wave string + group parser
+      renderer.ts   # Wave state machine, bus trapezoids, x-hatch, hi-Z
+    logic/          # Logic gate diagram (IEEE 91 ANSI + IEC 60617)
+      parser.ts     # Gate assignments, active-low ~, module blocks
+      layout.ts     # Longest-path DAG layering, module bounding boxes
+      symbols.ts    # Gate geometry: pins, ANSI paths, IEC labels
+      renderer.ts   # Gate bodies, bubbles, Manhattan wires, dashed modules
 ```
 
 ## Development
