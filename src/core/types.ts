@@ -795,6 +795,8 @@ export interface LadderContact {
   contactType: LadderContactType;
   tag: string;
   address?: string;
+  /** Human-readable description (rendered above the tag as 1–3 wrapped lines) */
+  name?: string;
 }
 
 export interface LadderCoil {
@@ -802,6 +804,8 @@ export interface LadderCoil {
   coilType: LadderCoilType;
   tag: string;
   address?: string;
+  /** Human-readable description (rendered above the tag as 1–3 wrapped lines) */
+  name?: string;
 }
 
 export interface LadderFunctionBlock {

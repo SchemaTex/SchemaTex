@@ -30,6 +30,7 @@ export { timing } from "./diagrams/timing";
 export { logic } from "./diagrams/logic";
 export { circuit } from "./diagrams/circuit";
 export { blockdiagram } from "./diagrams/blockdiagram";
+export { ladder } from "./diagrams/ladder";
 
 export {
   type ThemeName,

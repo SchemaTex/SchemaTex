@@ -1,7 +1,7 @@
 <p align="center">
   <strong>Lineage</strong><br>
-  Text-to-SVG rendering for genograms, ecomaps, pedigree charts, phylogenetic trees, and sociograms.<br>
-  <em>Like <a href="https://mermaid.js.org/">Mermaid</a> — but for relationship diagrams.</em>
+  Text-to-SVG rendering for relationship diagrams and electrical engineering schematics.<br>
+  <em>Like <a href="https://mermaid.js.org/">Mermaid</a> — but for genograms, pedigrees, ladder logic, and more.</em>
 </p>
 
 <p align="center">
@@ -13,6 +13,9 @@
   <a href="#pedigree-syntax">Pedigree</a> ·
   <a href="#phylogenetic-tree-syntax">Phylo</a> ·
   <a href="#sociogram-syntax">Sociogram</a> ·
+  <a href="#timing-diagram-syntax">Timing</a> ·
+  <a href="#logic-gate-diagram-syntax">Logic Gate</a> ·
+  <a href="#ladder-logic-syntax">Ladder Logic</a> ·
   <a href="#api">API</a> ·
   <a href="#contributing">Contributing</a>
 </p>
@@ -21,7 +24,12 @@
 
 ## What is Lineage?
 
-Lineage turns plain text into clinical-grade SVG diagrams — genograms, ecomaps, and pedigree charts — the kind used daily in social work, family therapy, genetics, and medical practice.
+Lineage turns plain text into standards-compliant SVG diagrams across two domains:
+
+- **Relationship diagrams** — genograms, ecomaps, pedigree charts, phylogenetic trees, sociograms. Used daily in social work, family therapy, genetics, and medical practice.
+- **Electrical / industrial diagrams** — timing waveforms, logic gate schematics, circuit schematics, block diagrams, and PLC ladder logic (IEC 61131-3 / Allen-Bradley).
+
+All diagram types share the same pipeline (Text → Parser → AST → Layout → SVG) and zero runtime dependencies.
 
 ```
 genogram "The Smiths"
@@ -32,7 +40,19 @@ genogram "The Smiths"
     bob [male, 1978, deceased]
 ```
 
-This produces a standards-compliant genogram with proper McGoldrick symbols, generation-based layout, and accessible SVG output — no dragging boxes around, no learning a visual editor.
+```
+ladder "Motor Start/Stop"
+rung 1 "Seal-in circuit":
+  parallel:
+    branch:
+      XIC(START_PB, name="Start Button")
+    branch:
+      XIC(MOTOR_AUX, name="Aux Contact")
+  XIO(STOP_PB, name="Stop Button")
+  OTE(MOTOR_CMD, name="Motor Command")
+```
+
+These produce standards-compliant diagrams with proper McGoldrick symbols, generation-based layout, and accessible SVG output — no dragging boxes around, no learning a visual editor.
 
 ### Why not Mermaid?
 
@@ -236,6 +256,60 @@ Cout = OR(c1, c2)
 ```
 
 **Features shown:** multi-level gate composition, fan-out wiring (signal `s1` feeds two gates), output labels on wire stubs, monochrome IEEE 91 style. Use `[style: iec]` for IEC 60617 rectangular symbols.
+
+---
+
+### Ladder Logic — System Mode Selection
+
+Three-rung industrial PLC program with Allen-Bradley naming conventions: XIC/XIO contacts, Set/Reset coil pairs on output-side parallel branches, input-side seal-in, and nested serial parallel blocks.
+
+```
+ladder "System Mode Selection"
+
+rung 1 "Set system Auto mode, reset Manual":
+  XIC(AUTO_HMIPB, "BIT 5.10", name="Auto Mode HMI Pushbutton")
+  XIO(MANL_HMIPB, "BIT 5.11", name="Manual Mode HMI Pushbutton")
+  XIO(SYS_FAULT, "BIT 3.0", name="System Fault")
+  parallel:
+    branch:
+      OTL(SYS_AUTO, "BIT 3.1", name="System Auto Mode")
+    branch:
+      OTU(SYS_MANUAL, "BIT 3.2", name="System Manual Mode")
+
+rung 2 "Set Manual, reset Auto (with Home seal-in)":
+  parallel:
+    branch:
+      XIC(MANL_HMIPB, "BIT 5.11", name="Manual Mode HMI Pushbutton")
+    branch:
+      XIC(SYS_HOMECMD, "BIT 3.5", name="System Home Command")
+  XIO(AUTO_HMIPB, "BIT 5.10", name="Auto Mode HMI Pushbutton")
+  XIO(SYS_FAULT, "BIT 3.0", name="System Fault")
+  XIO(SYS_AUTOCYCLE, "BIT 3.4", name="System Auto Cycling")
+  parallel:
+    branch:
+      OTL(SYS_MANUAL, "BIT 3.2", name="System Manual Mode")
+    branch:
+      OTU(SYS_AUTO, "BIT 3.1", name="System Auto Mode")
+
+rung 3 "Auto cycling seal-in":
+  parallel:
+    branch:
+      XIC(CYC_START_PB, "IN 1.8", name="Cycle Start Pushbutton")
+    branch:
+      XIC(SYS_AUTOCYCLE, "BIT 3.4", name="System Auto Cycling")
+  XIC(SYS_AUTO, "BIT 3.1", name="System Auto Mode")
+  parallel:
+    branch:
+      XIO(CYC_STOP_PB, "IN 1.10", name="Cycle Stop Pushbutton")
+    branch:
+      XIC(AUTOSEQ_STEP0, "BIT 9.0", name="Auto Sequence Cycle Start Step 0")
+  XIO(SYS_FAULT, "BIT 3.0", name="System Fault")
+  OTE(SYS_AUTOCYCLE, "BIT 3.4", name="System Auto Cycling")
+```
+
+**Features shown:** Allen-Bradley tag + BIT address + human-readable description (`name=`) rendered as three-line labels (black / blue / red). Set (`OTL`) and Reset (`OTU`) coils in a parallel block on the output side of rung 1 & 2 — matching how real PLC ladder programs latch mode bits. Input-side seal-in parallel (Home Command holding Manual state). Two serial parallel blocks on rung 3 for independent OR conditions.
+
+![System Mode Selection Ladder](examples/ladder/mode-selection.svg)
 
 ---
 
@@ -778,6 +852,168 @@ module "Carry Logic" {
 
 ---
 
+## Ladder Logic Syntax
+
+PLC ladder logic (IEC 61131-3 / Allen-Bradley convention) — left power rail → contacts and logic → right power rail. Each rung is a horizontal circuit; parallel blocks add OR branches.
+
+### Header
+
+```
+ladder "Optional Title"
+```
+
+### Rungs
+
+```
+rung 1 "Optional comment":
+  XIC(TAG)
+  OTE(OUTPUT)
+```
+
+Each rung contains a sequence of elements indented by two spaces. Elements are executed left to right. The last element is conventionally a coil.
+
+### Contact types
+
+| Instruction | Name | Symbol | Passes power when |
+|-------------|------|--------|-------------------|
+| `XIC(TAG)` | Examine If Closed | `‐┤ ├‐` | TAG = 1 (normally open) |
+| `XIO(TAG)` | Examine If Open | `‐┤/├‐` | TAG = 0 (normally closed) |
+| `ONS(TAG)` | One-Shot Rising | `‐┤↑├‐` | Rising edge of TAG |
+| `OSF(TAG)` | One-Shot Falling | `‐┤↓├‐` | Falling edge of TAG |
+
+### Coil types
+
+| Instruction | Name | Symbol | Action |
+|-------------|------|--------|--------|
+| `OTE(TAG)` | Output Energize | `‐( )‐` | TAG = rung state |
+| `OTL(TAG)` | Output Latch (Set) | `‐(S)‐` | TAG = 1, stays latched |
+| `OTU(TAG)` | Output Unlatch (Reset) | `‐(R)‐` | TAG = 0, stays reset |
+| `OTN(TAG)` | Output Negate | `‐(/)‐` | TAG = NOT rung state |
+
+### Function blocks
+
+Timers, counters, and math blocks render as labeled rectangles:
+
+```
+rung 1:
+  XIC(SENSOR)
+  TON(TIMER1, PT=5000)    # On-delay timer, preset 5000ms
+
+rung 2:
+  XIC(COUNTER_DONE)
+  CTU(CTR1, PV=10)        # Count-Up counter, preset 10
+
+rung 3:
+  GRT(CMP1, Source_A=TEMP, Source_B=100)   # Greater-than compare
+  OTE(HIGH_TEMP)
+```
+
+| Category | Instructions |
+|----------|-------------|
+| Timers | `TON` `TOFF` `TP` |
+| Counters | `CTU` `CTD` `CTUD` |
+| Math | `ADD` `SUB` `MUL` `DIV` `MOV` |
+| Compare | `EQU` `NEQ` `GRT` `LES` `GEQ` `LEQ` |
+
+Compare instructions (`GRT`, `EQU`, etc.) render in the contact zone — they pass power when the comparison is true.
+
+### Tag labels and addresses
+
+All contacts and coils accept an optional address string (positional second argument) and a `name=` keyword for a multi-line human-readable description:
+
+```
+XIC(AUTO_HMIPB, "BIT 5.10", name="Auto Mode HMI Pushbutton")
+OTL(SYS_AUTO,   "BIT 3.1",  name="System Auto Mode")
+```
+
+The rendered label stacks three rows above the symbol body:
+- **Description** — gray, word-wrapped
+- **Tag** — blue monospace (Allen-Bradley convention)
+- **Address** — red monospace
+
+### Parallel branches (OR logic)
+
+```
+rung 1 "Seal-in with parallel input":
+  parallel:
+    branch:
+      XIC(START_PB)
+    branch:
+      XIC(MOTOR_AUX)
+  XIO(STOP_PB)
+  OTE(MOTOR_CMD)
+```
+
+Parallel blocks can appear anywhere in a rung — on the input side (condition OR), output side (latch multiple coils), or in series (two independent OR conditions).
+
+**Output-side parallel — SET and RESET coils simultaneously:**
+
+```
+rung 1 "Set Auto, clear Manual":
+  XIC(AUTO_BTN)
+  XIO(SYS_FAULT)
+  parallel:
+    branch:
+      OTL(SYS_AUTO)     # Set Auto bit
+    branch:
+      OTU(SYS_MANUAL)   # Clear Manual bit
+```
+
+**Two serial parallel blocks (independent OR conditions in series):**
+
+```
+rung 3 "Start OR seal-in, AND stop NC OR step0":
+  parallel:
+    branch:
+      XIC(START_PB)
+    branch:
+      XIC(SYS_AUTOCYCLE)
+  XIC(SYS_AUTO)
+  parallel:
+    branch:
+      XIO(STOP_PB)
+    branch:
+      XIC(AUTOSEQ_STEP0)
+  OTE(SYS_AUTOCYCLE)
+```
+
+### Full example
+
+```
+ladder "Motor Start/Stop"
+
+rung 1 "Seal-in circuit":
+  parallel:
+    branch:
+      XIC(START_PB, name="Start Button")
+    branch:
+      XIC(MOTOR_AUX, name="Auxiliary Contact")
+  XIO(STOP_PB, name="Stop Button")
+  OTE(MOTOR_CMD, "O:0/0", name="Motor Command")
+
+rung 2 "Running indicator":
+  XIC(MOTOR_CMD)
+  OTE(PILOT_LIGHT, "O:0/1", name="Pilot Light")
+
+rung 3 "Overload latch":
+  XIC(OVERLOAD, "I:0/2", name="Overload Relay")
+  OTL(FAULT_BIT, name="Fault Latched")
+
+rung 4 "Fault reset":
+  XIC(RESET_PB, "I:0/3", name="Reset Button")
+  OTU(FAULT_BIT, name="Fault Latched")
+
+rung 5 "Time-delay output":
+  XIC(MOTOR_CMD)
+  TON(RUN_TIMER, PT=3000)
+
+rung 6 "Delayed output":
+  XIC(RUN_TIMER_DN, name="Timer Done")
+  OTE(CONVEYOR, "O:0/2", name="Conveyor Start")
+```
+
+---
+
 ## API
 
 ### `render(text, config?)`
@@ -825,7 +1061,8 @@ const svg = genogram.render(layout, renderConfig);
 
 ```ts
 interface LineageConfig {
-  type?: 'genogram' | 'ecomap' | 'pedigree' | 'phylo' | 'sociogram';  // force diagram type
+  type?: 'genogram' | 'ecomap' | 'pedigree' | 'phylo' | 'sociogram'
+       | 'timing' | 'logic' | 'circuit' | 'blockdiagram' | 'ladder';
   fontFamily?: string;   // default: 'system-ui'
   padding?: number;      // SVG padding in px, default: 20
   theme?: string;        // 'default' | 'clinical' | 'colorful' | 'mono'
@@ -854,13 +1091,21 @@ Lineage produces clean, semantic SVG suitable for embedding, printing, or intera
 
 ## Roadmap
 
-- [x] **Phase 1: Genogram** — Parser, generation-based layout, McGoldrick symbols, SVG renderer
-- [x] **Phase 2: Ecomap** — Radial layout, weighted connections, energy flow arrows, category colors
-- [x] **Phase 2: Pedigree** — Generation layout, Roman numeral labels, affected/carrier/presymptomatic fills, proband arrows, consanguinity, legend
-- [x] **Phase 2: Phylogenetic Tree** — Newick parser, rectangular/slanted/cladogram layouts, bootstrap support, clade highlighting, scale bar
-- [x] **Phase 2: Sociogram** — Moreno sociometry, circular + force-directed layout, 3 valence types, auto-detected roles, group coloring
-- [x] **Phase 2: Timing Diagram** — WaveDrom-compatible wave state machine (0/1/x/z/p/n/h/l/u/d/=/.), bus segments with data labels, hi-Z, groups, active-low overline, hscale
-- [x] **Phase 2: Logic Gate Diagram** — IEEE 91 ANSI + IEC 60617, 24 gate types, DAG layout, Manhattan wiring, module sub-circuit enclosures
+**Relationship diagrams**
+- [x] **Genogram** — McGoldrick (2020) symbols, generation-based layout, medical condition fills, emotional relationship lines
+- [x] **Ecomap** — Hartman radial layout, weighted connections, directional energy flow, category colors
+- [x] **Pedigree** — Bennett-standard, affected/carrier/presymptomatic fills, proband arrows, consanguinity, legend
+- [x] **Phylogenetic Tree** — Newick parser, rectangular/slanted/cladogram layouts, bootstrap support, clade highlighting, scale bar
+- [x] **Sociogram** — Moreno sociometry, circular + force-directed layout, 3 valence types, auto-detected roles, group coloring
+
+**Electrical / industrial diagrams**
+- [x] **Timing Diagram** — WaveDrom-compatible wave state machine (0/1/x/z/p/n/h/l/u/d/=/.), bus segments, hi-Z, hscale, active-low overline
+- [x] **Logic Gate Diagram** — IEEE 91 ANSI + IEC 60617, 24 gate types, DAG layout, Manhattan wiring, module enclosures
+- [x] **Circuit Schematic** — IEEE 315 / IEC 60617 positional DSL, 30+ component symbols, direction-chained layout
+- [x] **Block Diagram** — Control-systems layout, transfer functions, summing junctions, feedback loops, feedforward paths
+- [x] **Ladder Logic** — IEC 61131-3 / Allen-Bradley, XIC/XIO/ONS contacts, OTE/OTL/OTU coils, TON/CTU function blocks, compare instructions, parallel branches, multi-line tag labels
+
+**Coming next**
 - [ ] **Phase 3: Integrations** — React component, Markdown plugin, Obsidian plugin
 - [ ] **Phase 4: Advanced** — Interactive editing, JSON import/export, PDF export
 
@@ -876,7 +1121,7 @@ Each diagram type is a **plugin** implementing `DiagramPlugin`:
 src/
   core/
     types.ts        # Shared type definitions (the spec)
-    api.ts          # render() and parse() entry points
+    api.ts          # render() entry point + plugin registry
     svg.ts          # SVG builder utilities
   diagrams/
     genogram/       # McGoldrick-standard genogram
@@ -908,6 +1153,19 @@ src/
       layout.ts     # Longest-path DAG layering, module bounding boxes
       symbols.ts    # Gate geometry: pins, ANSI paths, IEC labels
       renderer.ts   # Gate bodies, bubbles, Manhattan wires, dashed modules
+    circuit/        # Circuit schematic (IEEE 315 / IEC 60617)
+      parser.ts     # Positional direction-chained DSL
+      layout.ts     # Direction-chain layout engine
+      symbols.ts    # 30+ component symbols (resistor, cap, diode, opamp…)
+      renderer.ts   # Component bodies, wires, junction dots
+    blockdiagram/   # Control-systems block diagram
+      parser.ts     # block() / sum() / signal() / connection DSL
+      layout.ts     # Forward chain, feedback loop, feedforward routing
+      renderer.ts   # Blocks, summing junctions, labeled signal arrows
+    ladder/         # PLC ladder logic (IEC 61131-3 / Allen-Bradley)
+      parser.ts     # Indented rung DSL, contact/coil/FB/parallel parsing
+      layout.ts     # Slot-width layout, dynamic rung height, parallel buses
+      renderer.ts   # Rails, contacts (XIC/XIO/ONS), coils, FBs, AB color labels
 ```
 
 ## Development

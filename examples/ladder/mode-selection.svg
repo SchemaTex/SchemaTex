@@ -1,0 +1,234 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="lt-ladder" role="img" aria-labelledby="lt-ladder-title lt-ladder-desc" width="692.4999999999999" height="879" viewBox="0 0 692.4999999999999 879"><title>System Mode Selection</title>
+<desc>PLC ladder logic diagram with 3 rungs</desc>
+<style>.lt-ladder { background: #fff; font-family: system-ui, -apple-system, sans-serif; }
+.lt-ladder-rail { stroke: #333; stroke-width: 4; stroke-linecap: square; }
+.lt-ladder-wire { stroke: #333; stroke-width: 1.5; fill: none; }
+.lt-ladder-element { stroke: #333; stroke-width: 2; fill: none; }
+.lt-ladder-coil { stroke: #333; stroke-width: 2; fill: none; }
+.lt-ladder-fb { fill: #fff; stroke: #333; stroke-width: 2; }
+.lt-ladder-fb-name { font: bold 11px sans-serif; fill: #111; text-anchor: middle; }
+.lt-ladder-pin { font: 8px sans-serif; fill: #333; }
+.lt-ladder-name { font: 9px sans-serif; fill: #222; text-anchor: middle; }
+.lt-ladder-tag { font: 600 9px ui-monospace, SFMono-Regular, Menlo, monospace; fill: #1d6fb8; text-anchor: middle; }
+.lt-ladder-addr { font: 600 8.5px ui-monospace, monospace; fill: #c02626; text-anchor: middle; }
+.lt-ladder-rung-num { font: 10px sans-serif; fill: #666; text-anchor: end; }
+.lt-ladder-comment { font: italic 10px sans-serif; fill: #888; }
+.lt-ladder-title { font: bold 15px sans-serif; fill: #111; }
+.lt-ladder-symbol-label { font: bold 10px sans-serif; fill: #333; text-anchor: middle; }</style>
+<text x="60" y="20" class="lt-ladder-title">System Mode Selection</text>
+<g transform="translate(0, 30)"><line x1="60" y1="0" x2="60" y2="849" class="lt-ladder-rail"/>
+<line x1="662.4999999999999" y1="0" x2="662.4999999999999" y2="849" class="lt-ladder-rail"/>
+<text x="54" y="207" class="lt-ladder-rung-num">Rung 001</text>
+<text x="70" y="80" class="lt-ladder-comment">— Set system Auto mode, reset Manual —</text>
+<text x="54" y="453" class="lt-ladder-rung-num">Rung 002</text>
+<text x="70" y="326" class="lt-ladder-comment">— Set Manual, reset Auto (with Home seal-in) —</text>
+<text x="54" y="704.5" class="lt-ladder-rung-num">Rung 003</text>
+<text x="70" y="572" class="lt-ladder-comment">— Auto cycling seal-in —</text>
+<path d="M 60 204 L 102.65 204" class="lt-ladder-wire"/>
+<path d="M 134.65 204 L 207 204" class="lt-ladder-wire"/>
+<path d="M 239 204 L 308.29999999999995 204" class="lt-ladder-wire"/>
+<path d="M 340.29999999999995 204 L 379.9 204" class="lt-ladder-wire"/>
+<path d="M 379.9 123 L 379.9 285" class="lt-ladder-wire"/>
+<path d="M 497.2 123 L 497.2 285" class="lt-ladder-wire"/>
+<path d="M 379.9 168 L 422.55 168" class="lt-ladder-wire"/>
+<path d="M 454.55 168 L 497.2 168" class="lt-ladder-wire"/>
+<path d="M 379.9 256 L 422.54999999999995 256" class="lt-ladder-wire"/>
+<path d="M 454.54999999999995 256 L 497.2 256" class="lt-ladder-wire"/>
+<path d="M 60 450 L 76 450" class="lt-ladder-wire"/>
+<path d="M 76 369 L 76 531" class="lt-ladder-wire"/>
+<path d="M 199.39999999999998 369 L 199.39999999999998 531" class="lt-ladder-wire"/>
+<path d="M 76 414 L 121.69999999999999 414" class="lt-ladder-wire"/>
+<path d="M 153.7 414 L 199.39999999999998 414" class="lt-ladder-wire"/>
+<path d="M 76 502 L 121.69999999999999 502" class="lt-ladder-wire"/>
+<path d="M 153.7 502 L 199.39999999999998 502" class="lt-ladder-wire"/>
+<path d="M 199.39999999999998 450 L 242.04999999999998 450" class="lt-ladder-wire"/>
+<path d="M 274.04999999999995 450 L 340.29999999999995 450" class="lt-ladder-wire"/>
+<path d="M 372.29999999999995 450 L 438.54999999999995 450" class="lt-ladder-wire"/>
+<path d="M 470.54999999999995 450 L 513.1999999999999 450" class="lt-ladder-wire"/>
+<path d="M 513.1999999999999 369 L 513.1999999999999 531" class="lt-ladder-wire"/>
+<path d="M 630.4999999999999 369 L 630.4999999999999 531" class="lt-ladder-wire"/>
+<path d="M 513.1999999999999 414 L 555.8499999999999 414" class="lt-ladder-wire"/>
+<path d="M 587.8499999999999 414 L 630.4999999999999 414" class="lt-ladder-wire"/>
+<path d="M 513.1999999999999 502 L 555.8499999999999 502" class="lt-ladder-wire"/>
+<path d="M 587.8499999999999 502 L 630.4999999999999 502" class="lt-ladder-wire"/>
+<path d="M 60 701.5 L 76 701.5" class="lt-ladder-wire"/>
+<path d="M 76 620.5 L 76 782.5" class="lt-ladder-wire"/>
+<path d="M 193.3 620.5 L 193.3 782.5" class="lt-ladder-wire"/>
+<path d="M 76 665.5 L 118.65 665.5" class="lt-ladder-wire"/>
+<path d="M 150.65 665.5 L 193.3 665.5" class="lt-ladder-wire"/>
+<path d="M 76 753.5 L 118.65 753.5" class="lt-ladder-wire"/>
+<path d="M 150.65 753.5 L 193.3 753.5" class="lt-ladder-wire"/>
+<path d="M 193.3 701.5 L 229.85000000000002 701.5" class="lt-ladder-wire"/>
+<path d="M 261.85 701.5 L 298.4 701.5" class="lt-ladder-wire"/>
+<path d="M 298.4 615 L 298.4 788" class="lt-ladder-wire"/>
+<path d="M 415.7 615 L 415.7 788" class="lt-ladder-wire"/>
+<path d="M 298.4 660 L 341.05 660" class="lt-ladder-wire"/>
+<path d="M 373.05 660 L 415.7 660" class="lt-ladder-wire"/>
+<path d="M 298.4 759 L 341.04999999999995 759" class="lt-ladder-wire"/>
+<path d="M 373.04999999999995 759 L 415.7 759" class="lt-ladder-wire"/>
+<path d="M 415.7 701.5 L 455.29999999999995 701.5" class="lt-ladder-wire"/>
+<path d="M 487.29999999999995 701.5 L 553.55 701.5" class="lt-ladder-wire"/>
+<path d="M 497.2 204 L 662.4999999999999 204" class="lt-ladder-wire"/>
+<path d="M 630.4999999999999 450 L 662.4999999999999 450" class="lt-ladder-wire"/>
+<path d="M 585.55 701.5 L 662.4999999999999 701.5" class="lt-ladder-wire"/>
+<g data-element="contact" data-tag="AUTO_HMIPB"><line x1="102.65" y1="204" x2="106.65" y2="204" class="lt-ladder-wire"/>
+<line x1="130.65" y1="204" x2="134.65" y2="204" class="lt-ladder-wire"/>
+<line x1="106.65" y1="192" x2="106.65" y2="216" class="lt-ladder-element"/>
+<line x1="130.65" y1="192" x2="130.65" y2="216" class="lt-ladder-element"/>
+<text x="118.65" y="166" class="lt-ladder-name">Auto Mode HMI</text>
+<text x="118.65" y="177" class="lt-ladder-name">Pushbutton</text>
+<text x="118.65" y="188" class="lt-ladder-tag">AUTO_HMIPB</text>
+<text x="118.65" y="226" class="lt-ladder-addr">BIT 5.10</text></g>
+<g data-element="contact" data-tag="MANL_HMIPB"><line x1="207" y1="204" x2="211" y2="204" class="lt-ladder-wire"/>
+<line x1="235" y1="204" x2="239" y2="204" class="lt-ladder-wire"/>
+<line x1="211" y1="192" x2="211" y2="216" class="lt-ladder-element"/>
+<line x1="235" y1="192" x2="235" y2="216" class="lt-ladder-element"/>
+<line x1="213" y1="214" x2="233" y2="194" class="lt-ladder-element"/>
+<text x="223" y="166" class="lt-ladder-name">Manual Mode</text>
+<text x="223" y="177" class="lt-ladder-name">HMI Pushbutton</text>
+<text x="223" y="188" class="lt-ladder-tag">MANL_HMIPB</text>
+<text x="223" y="226" class="lt-ladder-addr">BIT 5.11</text></g>
+<g data-element="contact" data-tag="SYS_FAULT"><line x1="308.29999999999995" y1="204" x2="312.29999999999995" y2="204" class="lt-ladder-wire"/>
+<line x1="336.29999999999995" y1="204" x2="340.29999999999995" y2="204" class="lt-ladder-wire"/>
+<line x1="312.29999999999995" y1="192" x2="312.29999999999995" y2="216" class="lt-ladder-element"/>
+<line x1="336.29999999999995" y1="192" x2="336.29999999999995" y2="216" class="lt-ladder-element"/>
+<line x1="314.29999999999995" y1="214" x2="334.29999999999995" y2="194" class="lt-ladder-element"/>
+<text x="324.29999999999995" y="177" class="lt-ladder-name">System Fault</text>
+<text x="324.29999999999995" y="188" class="lt-ladder-tag">SYS_FAULT</text>
+<text x="324.29999999999995" y="226" class="lt-ladder-addr">BIT 3.0</text></g>
+<g data-element="coil" data-tag="SYS_AUTO"><path d="M 428.55 156 A 10 12 0 0 0 428.55 180" class="lt-ladder-coil"/>
+<path d="M 448.55 156 A 10 12 0 0 1 448.55 180" class="lt-ladder-coil"/>
+<line x1="422.55" y1="168" x2="428.55" y2="168" class="lt-ladder-wire"/>
+<line x1="448.55" y1="168" x2="454.55" y2="168" class="lt-ladder-wire"/>
+<text x="438.55" y="171" class="lt-ladder-symbol-label">S</text>
+<text x="438.55" y="130" class="lt-ladder-name">System Auto</text>
+<text x="438.55" y="141" class="lt-ladder-name">Mode</text>
+<text x="438.55" y="152" class="lt-ladder-tag">SYS_AUTO</text>
+<text x="438.55" y="190" class="lt-ladder-addr">BIT 3.1</text></g>
+<g data-element="coil" data-tag="SYS_MANUAL"><path d="M 428.54999999999995 244 A 10 12 0 0 0 428.54999999999995 268" class="lt-ladder-coil"/>
+<path d="M 448.54999999999995 244 A 10 12 0 0 1 448.54999999999995 268" class="lt-ladder-coil"/>
+<line x1="422.54999999999995" y1="256" x2="428.54999999999995" y2="256" class="lt-ladder-wire"/>
+<line x1="448.54999999999995" y1="256" x2="454.54999999999995" y2="256" class="lt-ladder-wire"/>
+<text x="438.54999999999995" y="259" class="lt-ladder-symbol-label">R</text>
+<text x="438.54999999999995" y="218" class="lt-ladder-name">System Manual</text>
+<text x="438.54999999999995" y="229" class="lt-ladder-name">Mode</text>
+<text x="438.54999999999995" y="240" class="lt-ladder-tag">SYS_MANUAL</text>
+<text x="438.54999999999995" y="278" class="lt-ladder-addr">BIT 3.2</text></g>
+<g data-element="contact" data-tag="MANL_HMIPB"><line x1="121.69999999999999" y1="414" x2="125.69999999999999" y2="414" class="lt-ladder-wire"/>
+<line x1="149.7" y1="414" x2="153.7" y2="414" class="lt-ladder-wire"/>
+<line x1="125.69999999999999" y1="402" x2="125.69999999999999" y2="426" class="lt-ladder-element"/>
+<line x1="149.7" y1="402" x2="149.7" y2="426" class="lt-ladder-element"/>
+<text x="137.7" y="376" class="lt-ladder-name">Manual Mode</text>
+<text x="137.7" y="387" class="lt-ladder-name">HMI Pushbutton</text>
+<text x="137.7" y="398" class="lt-ladder-tag">MANL_HMIPB</text>
+<text x="137.7" y="436" class="lt-ladder-addr">BIT 5.11</text></g>
+<g data-element="contact" data-tag="SYS_HOMECMD"><line x1="121.69999999999999" y1="502" x2="125.69999999999999" y2="502" class="lt-ladder-wire"/>
+<line x1="149.7" y1="502" x2="153.7" y2="502" class="lt-ladder-wire"/>
+<line x1="125.69999999999999" y1="490" x2="125.69999999999999" y2="514" class="lt-ladder-element"/>
+<line x1="149.7" y1="490" x2="149.7" y2="514" class="lt-ladder-element"/>
+<text x="137.7" y="464" class="lt-ladder-name">System Home</text>
+<text x="137.7" y="475" class="lt-ladder-name">Command</text>
+<text x="137.7" y="486" class="lt-ladder-tag">SYS_HOMECMD</text>
+<text x="137.7" y="524" class="lt-ladder-addr">BIT 3.5</text></g>
+<g data-element="contact" data-tag="AUTO_HMIPB"><line x1="242.04999999999998" y1="450" x2="246.04999999999998" y2="450" class="lt-ladder-wire"/>
+<line x1="270.04999999999995" y1="450" x2="274.04999999999995" y2="450" class="lt-ladder-wire"/>
+<line x1="246.04999999999998" y1="438" x2="246.04999999999998" y2="462" class="lt-ladder-element"/>
+<line x1="270.04999999999995" y1="438" x2="270.04999999999995" y2="462" class="lt-ladder-element"/>
+<line x1="248.04999999999998" y1="460" x2="268.04999999999995" y2="440" class="lt-ladder-element"/>
+<text x="258.04999999999995" y="412" class="lt-ladder-name">Auto Mode HMI</text>
+<text x="258.04999999999995" y="423" class="lt-ladder-name">Pushbutton</text>
+<text x="258.04999999999995" y="434" class="lt-ladder-tag">AUTO_HMIPB</text>
+<text x="258.04999999999995" y="472" class="lt-ladder-addr">BIT 5.10</text></g>
+<g data-element="contact" data-tag="SYS_FAULT"><line x1="340.29999999999995" y1="450" x2="344.29999999999995" y2="450" class="lt-ladder-wire"/>
+<line x1="368.29999999999995" y1="450" x2="372.29999999999995" y2="450" class="lt-ladder-wire"/>
+<line x1="344.29999999999995" y1="438" x2="344.29999999999995" y2="462" class="lt-ladder-element"/>
+<line x1="368.29999999999995" y1="438" x2="368.29999999999995" y2="462" class="lt-ladder-element"/>
+<line x1="346.29999999999995" y1="460" x2="366.29999999999995" y2="440" class="lt-ladder-element"/>
+<text x="356.29999999999995" y="423" class="lt-ladder-name">System Fault</text>
+<text x="356.29999999999995" y="434" class="lt-ladder-tag">SYS_FAULT</text>
+<text x="356.29999999999995" y="472" class="lt-ladder-addr">BIT 3.0</text></g>
+<g data-element="contact" data-tag="SYS_AUTOCYCLE"><line x1="438.54999999999995" y1="450" x2="442.54999999999995" y2="450" class="lt-ladder-wire"/>
+<line x1="466.54999999999995" y1="450" x2="470.54999999999995" y2="450" class="lt-ladder-wire"/>
+<line x1="442.54999999999995" y1="438" x2="442.54999999999995" y2="462" class="lt-ladder-element"/>
+<line x1="466.54999999999995" y1="438" x2="466.54999999999995" y2="462" class="lt-ladder-element"/>
+<line x1="444.54999999999995" y1="460" x2="464.54999999999995" y2="440" class="lt-ladder-element"/>
+<text x="454.54999999999995" y="412" class="lt-ladder-name">System Auto</text>
+<text x="454.54999999999995" y="423" class="lt-ladder-name">Cycling</text>
+<text x="454.54999999999995" y="434" class="lt-ladder-tag">SYS_AUTOCYCLE</text>
+<text x="454.54999999999995" y="472" class="lt-ladder-addr">BIT 3.4</text></g>
+<g data-element="coil" data-tag="SYS_MANUAL"><path d="M 561.8499999999999 402 A 10 12 0 0 0 561.8499999999999 426" class="lt-ladder-coil"/>
+<path d="M 581.8499999999999 402 A 10 12 0 0 1 581.8499999999999 426" class="lt-ladder-coil"/>
+<line x1="555.8499999999999" y1="414" x2="561.8499999999999" y2="414" class="lt-ladder-wire"/>
+<line x1="581.8499999999999" y1="414" x2="587.8499999999999" y2="414" class="lt-ladder-wire"/>
+<text x="571.8499999999999" y="417" class="lt-ladder-symbol-label">S</text>
+<text x="571.8499999999999" y="376" class="lt-ladder-name">System Manual</text>
+<text x="571.8499999999999" y="387" class="lt-ladder-name">Mode</text>
+<text x="571.8499999999999" y="398" class="lt-ladder-tag">SYS_MANUAL</text>
+<text x="571.8499999999999" y="436" class="lt-ladder-addr">BIT 3.2</text></g>
+<g data-element="coil" data-tag="SYS_AUTO"><path d="M 561.8499999999999 490 A 10 12 0 0 0 561.8499999999999 514" class="lt-ladder-coil"/>
+<path d="M 581.8499999999999 490 A 10 12 0 0 1 581.8499999999999 514" class="lt-ladder-coil"/>
+<line x1="555.8499999999999" y1="502" x2="561.8499999999999" y2="502" class="lt-ladder-wire"/>
+<line x1="581.8499999999999" y1="502" x2="587.8499999999999" y2="502" class="lt-ladder-wire"/>
+<text x="571.8499999999999" y="505" class="lt-ladder-symbol-label">R</text>
+<text x="571.8499999999999" y="464" class="lt-ladder-name">System Auto</text>
+<text x="571.8499999999999" y="475" class="lt-ladder-name">Mode</text>
+<text x="571.8499999999999" y="486" class="lt-ladder-tag">SYS_AUTO</text>
+<text x="571.8499999999999" y="524" class="lt-ladder-addr">BIT 3.1</text></g>
+<g data-element="contact" data-tag="CYC_START_PB"><line x1="118.65" y1="665.5" x2="122.65" y2="665.5" class="lt-ladder-wire"/>
+<line x1="146.65" y1="665.5" x2="150.65" y2="665.5" class="lt-ladder-wire"/>
+<line x1="122.65" y1="653.5" x2="122.65" y2="677.5" class="lt-ladder-element"/>
+<line x1="146.65" y1="653.5" x2="146.65" y2="677.5" class="lt-ladder-element"/>
+<text x="134.65" y="627.5" class="lt-ladder-name">Cycle Start</text>
+<text x="134.65" y="638.5" class="lt-ladder-name">Pushbutton</text>
+<text x="134.65" y="649.5" class="lt-ladder-tag">CYC_START_PB</text>
+<text x="134.65" y="687.5" class="lt-ladder-addr">IN 1.8</text></g>
+<g data-element="contact" data-tag="SYS_AUTOCYCLE"><line x1="118.65" y1="753.5" x2="122.65" y2="753.5" class="lt-ladder-wire"/>
+<line x1="146.65" y1="753.5" x2="150.65" y2="753.5" class="lt-ladder-wire"/>
+<line x1="122.65" y1="741.5" x2="122.65" y2="765.5" class="lt-ladder-element"/>
+<line x1="146.65" y1="741.5" x2="146.65" y2="765.5" class="lt-ladder-element"/>
+<text x="134.65" y="715.5" class="lt-ladder-name">System Auto</text>
+<text x="134.65" y="726.5" class="lt-ladder-name">Cycling</text>
+<text x="134.65" y="737.5" class="lt-ladder-tag">SYS_AUTOCYCLE</text>
+<text x="134.65" y="775.5" class="lt-ladder-addr">BIT 3.4</text></g>
+<g data-element="contact" data-tag="SYS_AUTO"><line x1="229.85000000000002" y1="701.5" x2="233.85000000000002" y2="701.5" class="lt-ladder-wire"/>
+<line x1="257.85" y1="701.5" x2="261.85" y2="701.5" class="lt-ladder-wire"/>
+<line x1="233.85000000000002" y1="689.5" x2="233.85000000000002" y2="713.5" class="lt-ladder-element"/>
+<line x1="257.85" y1="689.5" x2="257.85" y2="713.5" class="lt-ladder-element"/>
+<text x="245.85000000000002" y="663.5" class="lt-ladder-name">System Auto</text>
+<text x="245.85000000000002" y="674.5" class="lt-ladder-name">Mode</text>
+<text x="245.85000000000002" y="685.5" class="lt-ladder-tag">SYS_AUTO</text>
+<text x="245.85000000000002" y="723.5" class="lt-ladder-addr">BIT 3.1</text></g>
+<g data-element="contact" data-tag="CYC_STOP_PB"><line x1="341.05" y1="660" x2="345.05" y2="660" class="lt-ladder-wire"/>
+<line x1="369.05" y1="660" x2="373.05" y2="660" class="lt-ladder-wire"/>
+<line x1="345.05" y1="648" x2="345.05" y2="672" class="lt-ladder-element"/>
+<line x1="369.05" y1="648" x2="369.05" y2="672" class="lt-ladder-element"/>
+<line x1="347.05" y1="670" x2="367.05" y2="650" class="lt-ladder-element"/>
+<text x="357.05" y="622" class="lt-ladder-name">Cycle Stop</text>
+<text x="357.05" y="633" class="lt-ladder-name">Pushbutton</text>
+<text x="357.05" y="644" class="lt-ladder-tag">CYC_STOP_PB</text>
+<text x="357.05" y="682" class="lt-ladder-addr">IN 1.10</text></g>
+<g data-element="contact" data-tag="AUTOSEQ_STEP0"><line x1="341.04999999999995" y1="759" x2="345.04999999999995" y2="759" class="lt-ladder-wire"/>
+<line x1="369.04999999999995" y1="759" x2="373.04999999999995" y2="759" class="lt-ladder-wire"/>
+<line x1="345.04999999999995" y1="747" x2="345.04999999999995" y2="771" class="lt-ladder-element"/>
+<line x1="369.04999999999995" y1="747" x2="369.04999999999995" y2="771" class="lt-ladder-element"/>
+<text x="357.04999999999995" y="710" class="lt-ladder-name">Auto Sequence</text>
+<text x="357.04999999999995" y="721" class="lt-ladder-name">Cycle Start</text>
+<text x="357.04999999999995" y="732" class="lt-ladder-name">Step 0</text>
+<text x="357.04999999999995" y="743" class="lt-ladder-tag">AUTOSEQ_STEP0</text>
+<text x="357.04999999999995" y="781" class="lt-ladder-addr">BIT 9.0</text></g>
+<g data-element="contact" data-tag="SYS_FAULT"><line x1="455.29999999999995" y1="701.5" x2="459.29999999999995" y2="701.5" class="lt-ladder-wire"/>
+<line x1="483.29999999999995" y1="701.5" x2="487.29999999999995" y2="701.5" class="lt-ladder-wire"/>
+<line x1="459.29999999999995" y1="689.5" x2="459.29999999999995" y2="713.5" class="lt-ladder-element"/>
+<line x1="483.29999999999995" y1="689.5" x2="483.29999999999995" y2="713.5" class="lt-ladder-element"/>
+<line x1="461.29999999999995" y1="711.5" x2="481.29999999999995" y2="691.5" class="lt-ladder-element"/>
+<text x="471.29999999999995" y="674.5" class="lt-ladder-name">System Fault</text>
+<text x="471.29999999999995" y="685.5" class="lt-ladder-tag">SYS_FAULT</text>
+<text x="471.29999999999995" y="723.5" class="lt-ladder-addr">BIT 3.0</text></g>
+<g data-element="coil" data-tag="SYS_AUTOCYCLE"><path d="M 559.55 689.5 A 10 12 0 0 0 559.55 713.5" class="lt-ladder-coil"/>
+<path d="M 579.55 689.5 A 10 12 0 0 1 579.55 713.5" class="lt-ladder-coil"/>
+<line x1="553.55" y1="701.5" x2="559.55" y2="701.5" class="lt-ladder-wire"/>
+<line x1="579.55" y1="701.5" x2="585.55" y2="701.5" class="lt-ladder-wire"/>
+<text x="569.55" y="663.5" class="lt-ladder-name">System Auto</text>
+<text x="569.55" y="674.5" class="lt-ladder-name">Cycling</text>
+<text x="569.55" y="685.5" class="lt-ladder-tag">SYS_AUTOCYCLE</text>
+<text x="569.55" y="723.5" class="lt-ladder-addr">BIT 3.4</text></g></g></svg>
