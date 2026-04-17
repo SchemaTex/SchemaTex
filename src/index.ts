@@ -1,8 +1,8 @@
 /**
  * Lineage — Text-to-diagram rendering engine for relationship diagrams.
  *
- * Supports: genogram, ecomap, pedigree chart.
- * Output: SVG string or DOM element.
+ * Supports: genogram, ecomap, pedigree, phylogenetic tree, sociogram.
+ * Output: SVG string.
  *
  * @example
  * ```ts
@@ -20,7 +20,7 @@
  * ```
  */
 
-export { render, parse, type LineageConfig } from "./core/api";
+export { render, type LineageConfig } from "./core/api";
 export { genogram } from "./diagrams/genogram";
 export { ecomap } from "./diagrams/ecomap";
 export { pedigree } from "./diagrams/pedigree";

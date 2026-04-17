@@ -1,9 +1,7 @@
-import type { DiagramPlugin } from "../../core/types";
+import type { DiagramPlugin, RenderConfig } from "../../core/types";
 import { parsePedigree, PedigreeParseError } from "./parser";
 import { layoutPedigree } from "./layout";
 import { renderPedigree } from "./renderer";
-
-let _lastAst: ReturnType<typeof parsePedigree> | null = null;
 
 export const pedigree: DiagramPlugin = {
   type: "pedigree",
@@ -13,20 +11,22 @@ export const pedigree: DiagramPlugin = {
     return firstLine === "pedigree" || firstLine.startsWith("pedigree ");
   },
 
-  parse(text: string) {
+  render(text: string, config?: RenderConfig): string {
     const ast = parsePedigree(text);
-    _lastAst = ast;
-    return ast;
-  },
-
-  layout(ast, config) {
-    return layoutPedigree(ast, config);
-  },
-
-  render(layout, config) {
-    const svg = renderPedigree(layout, config, _lastAst ?? undefined);
-    _lastAst = null;
-    return svg;
+    const layoutConfig = {
+      nodeSpacingX: 80,
+      nodeSpacingY: 100,
+      nodeWidth: 40,
+      nodeHeight: 40,
+    };
+    const layout = layoutPedigree(ast, layoutConfig);
+    const renderConfig: RenderConfig = {
+      fontFamily: config?.fontFamily ?? "system-ui, -apple-system, sans-serif",
+      fontSize: config?.fontSize ?? 12,
+      theme: config?.theme ?? "default",
+      padding: config?.padding ?? 20,
+    };
+    return renderPedigree(layout, renderConfig, ast);
   },
 };
 

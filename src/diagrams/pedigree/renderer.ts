@@ -21,6 +21,7 @@ import {
   defs,
   path,
 } from "../../core/svg";
+import { cssCustomProperties } from "../../core/theme";
 
 // ─── Public API ─────────────────────────────────────────────
 
@@ -82,10 +83,10 @@ function buildDefs(nodes: LayoutNode[]): string {
 
   if (needs.has("carrier")) {
     children.push(
-      el("clipPath", { id: "lineage-clip-carrier-rect" }, [
+      el("clipPath", { id: "lineage-pedigree-clip-carrier-rect" }, [
         rect({ x: "0", y: "0", width: "50%", height: "100%" }),
       ]),
-      el("clipPath", { id: "lineage-clip-carrier-circle" }, [
+      el("clipPath", { id: "lineage-pedigree-clip-carrier-circle" }, [
         rect({ x: "-50", y: "-50", width: "50", height: "100" }),
       ])
     );
@@ -94,7 +95,7 @@ function buildDefs(nodes: LayoutNode[]): string {
   // Proband arrow marker
   children.push(
     el("marker", {
-      id: "lineage-proband-arrow",
+      id: "lineage-pedigree-proband-arrow",
       viewBox: "0 0 10 10",
       refX: "0",
       refY: "5",
@@ -113,19 +114,21 @@ function buildDefs(nodes: LayoutNode[]): string {
 
 function buildStyles(config: RenderConfig): string {
   const css = `
-.lineage-shape { fill: white; stroke: #333; stroke-width: 2; }
-.lineage-label { font-family: ${config.fontFamily}; font-size: ${config.fontSize}px; text-anchor: middle; fill: #333; }
-.lineage-gen-label { font-family: ${config.fontFamily}; font-size: 14px; font-weight: bold; fill: #333; text-anchor: middle; }
-.lineage-edge { stroke: #333; stroke-width: 2; fill: none; }
-.lineage-deceased-mark { stroke: #333; stroke-width: 2; }
-.lineage-affected-fill { fill: #333; }
-.lineage-carrier-fill { fill: #333; }
-.lineage-carrier-x-dot { fill: #333; }
-.lineage-presymptomatic-mark { stroke: #333; stroke-width: 2; }
-.lineage-proband-arrow-line { stroke: #333; stroke-width: 2; fill: none; marker-end: url(#lineage-proband-arrow); }
-.lineage-proband-label { font-family: ${config.fontFamily}; font-size: 10px; font-weight: bold; fill: #333; }
-.lineage-legend { font-family: ${config.fontFamily}; font-size: 11px; fill: #333; }
-.lineage-legend-box { fill: white; stroke: #999; stroke-width: 1; }
+.lineage-pedigree {${cssCustomProperties()}
+}
+.lineage-pedigree-shape { fill: white; stroke: #333; stroke-width: 2; }
+.lineage-pedigree-label { font-family: ${config.fontFamily}; font-size: ${config.fontSize}px; text-anchor: middle; fill: #333; }
+.lineage-pedigree-gen-label { font-family: ${config.fontFamily}; font-size: 14px; font-weight: bold; fill: #333; text-anchor: middle; }
+.lineage-pedigree-edge { stroke: #333; stroke-width: 2; fill: none; }
+.lineage-pedigree-deceased-mark { stroke: #333; stroke-width: 2; }
+.lineage-pedigree-affected-fill { fill: #333; }
+.lineage-pedigree-carrier-fill { fill: #333; }
+.lineage-pedigree-carrier-x-dot { fill: #333; }
+.lineage-pedigree-presymptomatic-mark { stroke: #333; stroke-width: 2; }
+.lineage-pedigree-proband-arrow-line { stroke: #333; stroke-width: 2; fill: none; marker-end: url(#lineage-pedigree-proband-arrow); }
+.lineage-pedigree-proband-label { font-family: ${config.fontFamily}; font-size: 10px; font-weight: bold; fill: #333; }
+.lineage-pedigree-legend { font-family: ${config.fontFamily}; font-size: 11px; fill: #333; }
+.lineage-pedigree-legend-box { fill: white; stroke: #999; stroke-width: 1; }
 `;
   return el("style", {}, css);
 }
@@ -137,10 +140,10 @@ function renderEdges(edges: LayoutEdge[]): string {
 
   for (const edge of edges) {
     const relType = edge.relationship.type;
-    const cssClass = `lineage-edge lineage-edge-${relType}`;
+    const cssClass = `lineage-pedigree-edge lineage-pedigree-edge-${relType}`;
 
     const elements: string[] = [
-      el("path", { d: edge.path, class: "lineage-edge-path" }),
+      el("path", { d: edge.path, class: "lineage-pedigree-edge-path" }),
     ];
 
     if (relType === "separated") {
@@ -161,7 +164,7 @@ function renderEdges(edges: LayoutEdge[]): string {
     );
   }
 
-  return group({ class: "lineage-edges" }, children);
+  return group({ class: "lineage-pedigree-edges" }, children);
 }
 
 function pathMidpoint(pathData: string): { x: number; y: number } | null {
@@ -201,7 +204,7 @@ function renderNodes(genGroups: Map<number, LayoutNode[]>): string[] {
 
     layers.push(
       group(
-        { class: `lineage-generation lineage-generation-${genIdx}`, "data-generation": genIdx },
+        { class: `lineage-pedigree-generation lineage-pedigree-generation-${genIdx}`, "data-generation": genIdx },
         nodeElements
       )
     );
@@ -217,9 +220,9 @@ function renderPedigreeSymbol(
   size: number
 ): string {
   const half = size / 2;
-  const classes = ["lineage-node", `lineage-${ind.sex === "other" ? "unknown" : ind.sex}`];
-  if (ind.status === "deceased") classes.push("lineage-deceased");
-  if (ind.geneticStatus) classes.push(`lineage-${ind.geneticStatus}`);
+  const classes = ["lineage-pedigree-node", `lineage-pedigree-${ind.sex === "other" ? "unknown" : ind.sex}`];
+  if (ind.status === "deceased") classes.push("lineage-pedigree-deceased");
+  if (ind.geneticStatus) classes.push(`lineage-pedigree-${ind.geneticStatus}`);
 
   const titleText = formatTitle(ind);
   const children: string[] = [title(titleText)];
@@ -240,7 +243,7 @@ function renderPedigreeSymbol(
   // Presymptomatic vertical line
   if (gs === "presymptomatic") {
     children.push(
-      line({ x1: 0, y1: -half, x2: 0, y2: half, class: "lineage-presymptomatic-mark" })
+      line({ x1: 0, y1: -half, x2: 0, y2: half, class: "lineage-pedigree-presymptomatic-mark" })
     );
   }
 
@@ -248,7 +251,7 @@ function renderPedigreeSymbol(
   if (ind.status === "deceased") {
     const ext = ind.sex === "female" ? half * 0.707 : half;
     children.push(
-      line({ x1: ext, y1: -ext, x2: -ext, y2: ext, class: "lineage-deceased-mark" })
+      line({ x1: ext, y1: -ext, x2: -ext, y2: ext, class: "lineage-pedigree-deceased-mark" })
     );
   }
 
@@ -259,10 +262,10 @@ function renderPedigreeSymbol(
       line({
         x1: -half - arrowLen, y1: half + arrowLen,
         x2: -half - 2, y2: half + 2,
-        class: "lineage-proband-arrow-line",
+        class: "lineage-pedigree-proband-arrow-line",
       }),
       text(
-        { x: -half - arrowLen - 4, y: half + arrowLen + 4, class: "lineage-proband-label", "text-anchor": "end" },
+        { x: -half - arrowLen - 4, y: half + arrowLen + 4, class: "lineage-pedigree-proband-label", "text-anchor": "end" },
         "P"
       )
     );
@@ -275,10 +278,10 @@ function renderPedigreeSymbol(
       line({
         x1: -half - arrowLen, y1: half + arrowLen,
         x2: -half - 2, y2: half + 2,
-        class: "lineage-proband-arrow-line",
+        class: "lineage-pedigree-proband-arrow-line",
       }),
       text(
-        { x: -half - arrowLen - 4, y: half + arrowLen + 4, class: "lineage-proband-label", "text-anchor": "end" },
+        { x: -half - arrowLen - 4, y: half + arrowLen + 4, class: "lineage-pedigree-proband-label", "text-anchor": "end" },
         "C"
       )
     );
@@ -288,7 +291,7 @@ function renderPedigreeSymbol(
   if (ind.markers?.includes("evaluated")) {
     children.push(
       text(
-        { x: 0, y: -half - 4, class: "lineage-proband-label", "text-anchor": "middle" },
+        { x: 0, y: -half - 4, class: "lineage-pedigree-proband-label", "text-anchor": "middle" },
         "E"
       )
     );
@@ -307,16 +310,16 @@ function renderPedigreeSymbol(
 function baseShape(sex: Individual["sex"], half: number): string {
   switch (sex) {
     case "male":
-      return rect({ x: -half, y: -half, width: half * 2, height: half * 2, class: "lineage-shape" });
+      return rect({ x: -half, y: -half, width: half * 2, height: half * 2, class: "lineage-pedigree-shape" });
     case "female":
-      return circle({ cx: 0, cy: 0, r: half, class: "lineage-shape" });
+      return circle({ cx: 0, cy: 0, r: half, class: "lineage-pedigree-shape" });
     default:
-      return polygon({ points: `0,${-half} ${half},0 0,${half} ${-half},0`, class: "lineage-shape" });
+      return polygon({ points: `0,${-half} ${half},0 0,${half} ${-half},0`, class: "lineage-pedigree-shape" });
   }
 }
 
 function affectedFill(sex: Individual["sex"], half: number): string {
-  const attrs = { class: "lineage-affected-fill" };
+  const attrs = { class: "lineage-pedigree-affected-fill" };
   switch (sex) {
     case "male":
       return rect({ x: -half, y: -half, width: half * 2, height: half * 2, ...attrs });
@@ -330,8 +333,8 @@ function affectedFill(sex: Individual["sex"], half: number): string {
 function carrierFill(sex: Individual["sex"], half: number): string {
   const clipSuffix = sex === "female" ? "circle" : "rect";
   const attrs = {
-    class: "lineage-carrier-fill",
-    "clip-path": `url(#lineage-clip-carrier-${clipSuffix})`,
+    class: "lineage-pedigree-carrier-fill",
+    "clip-path": `url(#lineage-pedigree-clip-carrier-${clipSuffix})`,
   };
   switch (sex) {
     case "male":
@@ -344,7 +347,7 @@ function carrierFill(sex: Individual["sex"], half: number): string {
 }
 
 function carrierDot(half: number): string {
-  return circle({ cx: 0, cy: 0, r: half * 0.15, class: "lineage-carrier-x-dot" });
+  return circle({ cx: 0, cy: 0, r: half * 0.15, class: "lineage-pedigree-carrier-x-dot" });
 }
 
 function formatTitle(ind: Individual): string {
@@ -386,13 +389,13 @@ function renderLabels(
 
     labels.push(
       text(
-        { x: cx, y: labelY, class: "lineage-label", "data-individual-id": ind.id },
+        { x: cx, y: labelY, class: "lineage-pedigree-label", "data-individual-id": ind.id },
         displayLabel
       )
     );
   }
 
-  return group({ class: "lineage-labels" }, labels);
+  return group({ class: "lineage-pedigree-labels" }, labels);
 }
 
 // ─── Generation Labels ─────────────────────────────────────
@@ -413,13 +416,13 @@ function renderGenerationLabels(
 
     labels.push(
       text(
-        { x: 25, y: midY + 5, class: "lineage-gen-label" },
+        { x: 25, y: midY + 5, class: "lineage-pedigree-gen-label" },
         roman
       )
     );
   }
 
-  return group({ class: "lineage-generation-labels" }, labels);
+  return group({ class: "lineage-pedigree-generation-labels" }, labels);
 }
 
 // ─── Legend ────────────────────────────────────────────────
@@ -436,8 +439,8 @@ function renderLegend(
   const y = layout.height - boxH - 20;
 
   const children: string[] = [
-    rect({ x, y, width: boxW, height: boxH, rx: 4, ry: 4, class: "lineage-legend-box" }),
-    text({ x: x + boxW / 2, y: y + 18, class: "lineage-legend", "text-anchor": "middle", "font-weight": "bold" }, "Legend"),
+    rect({ x, y, width: boxW, height: boxH, rx: 4, ry: 4, class: "lineage-pedigree-legend-box" }),
+    text({ x: x + boxW / 2, y: y + 18, class: "lineage-pedigree-legend", "text-anchor": "middle", "font-weight": "bold" }, "Legend"),
   ];
 
   for (let i = 0; i < legendEntries.length; i++) {
@@ -455,11 +458,11 @@ function renderLegend(
         stroke: "#333",
         "stroke-width": "1",
       }),
-      text({ x: x + 30, y: ry + 11, class: "lineage-legend" }, entry.label)
+      text({ x: x + 30, y: ry + 11, class: "lineage-pedigree-legend" }, entry.label)
     );
   }
 
-  return group({ class: "lineage-legend-group" }, children);
+  return group({ class: "lineage-pedigree-legend-group" }, children);
 }
 
 // ─── Helpers ───────────────────────────────────────────────

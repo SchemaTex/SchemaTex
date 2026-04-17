@@ -1,4 +1,4 @@
-import type { DiagramPlugin, DiagramAST, LayoutResult, RenderConfig } from "../../core/types";
+import type { DiagramPlugin, RenderConfig } from "../../core/types";
 import { parseGenogram } from "./parser";
 import { layoutGenogram } from "./layout";
 import { renderGenogram } from "./renderer";
@@ -8,8 +8,6 @@ export { layoutGenogram } from "./layout";
 export { renderGenogram } from "./renderer";
 export { renderIndividualSymbol, getRequiredDefs } from "./symbols";
 
-let _lastAst: DiagramAST | undefined;
-
 export const genogram: DiagramPlugin = {
   type: "genogram",
 
@@ -18,15 +16,21 @@ export const genogram: DiagramPlugin = {
     return firstLine === "genogram" || firstLine.startsWith("genogram ");
   },
 
-  parse(text: string): DiagramAST {
+  render(text: string, config?: RenderConfig): string {
     const ast = parseGenogram(text);
-    _lastAst = ast;
-    return ast;
-  },
-
-  layout: layoutGenogram,
-
-  render(layout: LayoutResult, config: RenderConfig): string {
-    return renderGenogram(layout, config, _lastAst);
+    const layoutConfig = {
+      nodeSpacingX: 80,
+      nodeSpacingY: 100,
+      nodeWidth: 40,
+      nodeHeight: 40,
+    };
+    const layout = layoutGenogram(ast, layoutConfig);
+    const renderConfig: RenderConfig = {
+      fontFamily: config?.fontFamily ?? "system-ui, -apple-system, sans-serif",
+      fontSize: config?.fontSize ?? 12,
+      theme: config?.theme ?? "default",
+      padding: config?.padding ?? 20,
+    };
+    return renderGenogram(layout, renderConfig, ast);
   },
 };

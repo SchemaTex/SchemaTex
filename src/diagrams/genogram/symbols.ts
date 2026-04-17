@@ -23,10 +23,10 @@ export function renderIndividualSymbol(
 ): string {
   const half = size / 2;
   const classes = [
-    "lineage-node",
-    `lineage-${individual.sex === "other" ? "unknown" : individual.sex}`,
+    "lineage-genogram-node",
+    `lineage-genogram-${individual.sex === "other" ? "unknown" : individual.sex}`,
   ];
-  if (individual.status === "deceased") classes.push("lineage-deceased");
+  if (individual.status === "deceased") classes.push("lineage-genogram-deceased");
 
   const titleText = formatTitle(individual);
   const children: string[] = [title(titleText)];
@@ -35,7 +35,7 @@ export function renderIndividualSymbol(
   const isIndex = individual.markers?.includes("index-person");
   if (isIndex) {
     children.push(indexBorder(individual.sex, half));
-    classes.push("lineage-index-person");
+    classes.push("lineage-genogram-index-person");
   }
 
   // Base shape
@@ -61,7 +61,7 @@ export function renderIndividualSymbol(
         {
           x: 0,
           y: 5,
-          class: "lineage-age",
+          class: "lineage-genogram-age",
           "text-anchor": "middle",
           "font-size": "11",
         },
@@ -94,10 +94,10 @@ export function getRequiredDefs(individuals: Individual[], includeArrowMarker = 
 
   if (neededFills.has("half-left")) {
     children.push(
-      el("clipPath", { id: "lineage-clip-half-left-rect" }, [
+      el("clipPath", { id: "lineage-genogram-clip-half-left-rect" }, [
         rect({ x: "0", y: "0", width: "50%", height: "100%" }),
       ]),
-      el("clipPath", { id: "lineage-clip-half-left-circle" }, [
+      el("clipPath", { id: "lineage-genogram-clip-half-left-circle" }, [
         rect({ x: "-50", y: "-50", width: "50", height: "100" }),
       ])
     );
@@ -105,10 +105,10 @@ export function getRequiredDefs(individuals: Individual[], includeArrowMarker = 
 
   if (neededFills.has("half-right")) {
     children.push(
-      el("clipPath", { id: "lineage-clip-half-right-rect" }, [
+      el("clipPath", { id: "lineage-genogram-clip-half-right-rect" }, [
         rect({ x: "50%", y: "0", width: "50%", height: "100%" }),
       ]),
-      el("clipPath", { id: "lineage-clip-half-right-circle" }, [
+      el("clipPath", { id: "lineage-genogram-clip-half-right-circle" }, [
         rect({ x: "0", y: "-50", width: "50", height: "100" }),
       ])
     );
@@ -116,10 +116,10 @@ export function getRequiredDefs(individuals: Individual[], includeArrowMarker = 
 
   if (neededFills.has("half-bottom")) {
     children.push(
-      el("clipPath", { id: "lineage-clip-half-bottom-rect" }, [
+      el("clipPath", { id: "lineage-genogram-clip-half-bottom-rect" }, [
         rect({ x: "0", y: "50%", width: "100%", height: "50%" }),
       ]),
-      el("clipPath", { id: "lineage-clip-half-bottom-circle" }, [
+      el("clipPath", { id: "lineage-genogram-clip-half-bottom-circle" }, [
         rect({ x: "-50", y: "0", width: "100", height: "50" }),
       ])
     );
@@ -127,10 +127,10 @@ export function getRequiredDefs(individuals: Individual[], includeArrowMarker = 
 
   if (neededFills.has("quarter")) {
     children.push(
-      el("clipPath", { id: "lineage-clip-quarter-rect" }, [
+      el("clipPath", { id: "lineage-genogram-clip-quarter-rect" }, [
         rect({ x: "0", y: "0", width: "50%", height: "50%" }),
       ]),
-      el("clipPath", { id: "lineage-clip-quarter-circle" }, [
+      el("clipPath", { id: "lineage-genogram-clip-quarter-circle" }, [
         rect({ x: "-50", y: "-50", width: "50", height: "50" }),
       ])
     );
@@ -138,10 +138,10 @@ export function getRequiredDefs(individuals: Individual[], includeArrowMarker = 
 
   if (neededFills.has("half-top")) {
     children.push(
-      el("clipPath", { id: "lineage-clip-half-top-rect" }, [
+      el("clipPath", { id: "lineage-genogram-clip-half-top-rect" }, [
         rect({ x: "0", y: "0", width: "100%", height: "50%" }),
       ]),
-      el("clipPath", { id: "lineage-clip-half-top-circle" }, [
+      el("clipPath", { id: "lineage-genogram-clip-half-top-circle" }, [
         rect({ x: "-50", y: "-50", width: "100", height: "50" }),
       ])
     );
@@ -149,10 +149,10 @@ export function getRequiredDefs(individuals: Individual[], includeArrowMarker = 
 
   if (neededFills.has("quad-tl")) {
     children.push(
-      el("clipPath", { id: "lineage-clip-quad-tl-rect" }, [
+      el("clipPath", { id: "lineage-genogram-clip-quad-tl-rect" }, [
         rect({ x: "0", y: "0", width: "50%", height: "50%" }),
       ]),
-      el("clipPath", { id: "lineage-clip-quad-tl-circle" }, [
+      el("clipPath", { id: "lineage-genogram-clip-quad-tl-circle" }, [
         rect({ x: "-50", y: "-50", width: "50", height: "50" }),
       ])
     );
@@ -160,10 +160,10 @@ export function getRequiredDefs(individuals: Individual[], includeArrowMarker = 
 
   if (neededFills.has("quad-tr")) {
     children.push(
-      el("clipPath", { id: "lineage-clip-quad-tr-rect" }, [
+      el("clipPath", { id: "lineage-genogram-clip-quad-tr-rect" }, [
         rect({ x: "50%", y: "0", width: "50%", height: "50%" }),
       ]),
-      el("clipPath", { id: "lineage-clip-quad-tr-circle" }, [
+      el("clipPath", { id: "lineage-genogram-clip-quad-tr-circle" }, [
         rect({ x: "0", y: "-50", width: "50", height: "50" }),
       ])
     );
@@ -171,10 +171,10 @@ export function getRequiredDefs(individuals: Individual[], includeArrowMarker = 
 
   if (neededFills.has("quad-bl")) {
     children.push(
-      el("clipPath", { id: "lineage-clip-quad-bl-rect" }, [
+      el("clipPath", { id: "lineage-genogram-clip-quad-bl-rect" }, [
         rect({ x: "0", y: "50%", width: "50%", height: "50%" }),
       ]),
-      el("clipPath", { id: "lineage-clip-quad-bl-circle" }, [
+      el("clipPath", { id: "lineage-genogram-clip-quad-bl-circle" }, [
         rect({ x: "-50", y: "0", width: "50", height: "50" }),
       ])
     );
@@ -182,10 +182,10 @@ export function getRequiredDefs(individuals: Individual[], includeArrowMarker = 
 
   if (neededFills.has("quad-br")) {
     children.push(
-      el("clipPath", { id: "lineage-clip-quad-br-rect" }, [
+      el("clipPath", { id: "lineage-genogram-clip-quad-br-rect" }, [
         rect({ x: "50%", y: "50%", width: "50%", height: "50%" }),
       ]),
-      el("clipPath", { id: "lineage-clip-quad-br-circle" }, [
+      el("clipPath", { id: "lineage-genogram-clip-quad-br-circle" }, [
         rect({ x: "0", y: "0", width: "50", height: "50" }),
       ])
     );
@@ -195,7 +195,7 @@ export function getRequiredDefs(individuals: Individual[], includeArrowMarker = 
     children.push(
       pattern(
         {
-          id: "lineage-pattern-striped",
+          id: "lineage-genogram-pattern-striped",
           patternUnits: "userSpaceOnUse",
           width: "4",
           height: "4",
@@ -215,7 +215,7 @@ export function getRequiredDefs(individuals: Individual[], includeArrowMarker = 
     children.push(
       pattern(
         {
-          id: "lineage-pattern-dotted",
+          id: "lineage-genogram-pattern-dotted",
           patternUnits: "userSpaceOnUse",
           width: "6",
           height: "6",
@@ -230,7 +230,7 @@ export function getRequiredDefs(individuals: Individual[], includeArrowMarker = 
   if (includeArrowMarker) {
     children.push(
       el("marker", {
-        id: "lineage-arrow",
+        id: "lineage-genogram-arrow",
         viewBox: "0 0 10 10",
         refX: "10",
         refY: "5",
@@ -279,7 +279,7 @@ function indexBorder(sex: Individual["sex"], half: number): string {
         y: -outer,
         width: outer * 2,
         height: outer * 2,
-        class: "lineage-index-border",
+        class: "lineage-genogram-index-border",
         fill: "none",
         stroke: "#d4a017",
         "stroke-width": "3",
@@ -289,7 +289,7 @@ function indexBorder(sex: Individual["sex"], half: number): string {
         cx: 0,
         cy: 0,
         r: outer,
-        class: "lineage-index-border",
+        class: "lineage-genogram-index-border",
         fill: "none",
         stroke: "#d4a017",
         "stroke-width": "3",
@@ -300,7 +300,7 @@ function indexBorder(sex: Individual["sex"], half: number): string {
     case "intersex":
       return polygon({
         points: `0,${-outer} ${outer},0 0,${outer} ${-outer},0`,
-        class: "lineage-index-border",
+        class: "lineage-genogram-index-border",
         fill: "none",
         stroke: "#d4a017",
         "stroke-width": "3",
@@ -316,14 +316,14 @@ function baseShape(sex: Individual["sex"], half: number): string {
         y: -half,
         width: half * 2,
         height: half * 2,
-        class: "lineage-shape",
+        class: "lineage-genogram-shape",
       });
     case "female":
       return circle({
         cx: 0,
         cy: 0,
         r: half,
-        class: "lineage-shape",
+        class: "lineage-genogram-shape",
       });
     case "unknown":
     case "other":
@@ -331,7 +331,7 @@ function baseShape(sex: Individual["sex"], half: number): string {
     case "intersex":
       return polygon({
         points: `0,${-half} ${half},0 0,${half} ${-half},0`,
-        class: "lineage-shape",
+        class: "lineage-genogram-shape",
       });
   }
 }
@@ -344,7 +344,7 @@ function deceasedOverlay(sex: Individual["sex"], half: number): string[] {
       y1: -extend,
       x2: extend,
       y2: extend,
-      class: "lineage-deceased-mark",
+      class: "lineage-genogram-deceased-mark",
       stroke: "#333",
       "stroke-width": "2",
     }),
@@ -353,7 +353,7 @@ function deceasedOverlay(sex: Individual["sex"], half: number): string[] {
       y1: -extend,
       x2: -extend,
       y2: extend,
-      class: "lineage-deceased-mark",
+      class: "lineage-genogram-deceased-mark",
       stroke: "#333",
       "stroke-width": "2",
     }),
@@ -371,16 +371,16 @@ function conditionFillElement(
   if (cond.fill === "full") {
     attrs.fill = fillColor;
   } else if (cond.fill === "striped") {
-    attrs.fill = "url(#lineage-pattern-striped)";
+    attrs.fill = "url(#lineage-genogram-pattern-striped)";
   } else if (cond.fill === "dotted") {
-    attrs.fill = "url(#lineage-pattern-dotted)";
+    attrs.fill = "url(#lineage-genogram-pattern-dotted)";
   } else {
     const clipSuffix = sex === "female" ? "circle" : "rect";
-    attrs["clip-path"] = `url(#lineage-clip-${cond.fill}-${clipSuffix})`;
+    attrs["clip-path"] = `url(#lineage-genogram-clip-${cond.fill}-${clipSuffix})`;
     attrs.fill = fillColor;
   }
 
-  attrs.class = `lineage-condition-fill lineage-condition-${cond.label}`;
+  attrs.class = `lineage-genogram-condition-fill lineage-genogram-condition-${cond.label}`;
 
   switch (sex) {
     case "male":

@@ -19,8 +19,8 @@ describe("genogram symbols", () => {
   test("male symbol is a rect", () => {
     const svg = renderIndividualSymbol(makeIndividual({ sex: "male" }), 0, 0, 40);
     expect(svg).toContain("<rect");
-    expect(svg).toContain("lineage-male");
-    expect(svg).toContain("lineage-node");
+    expect(svg).toContain("lineage-genogram-male");
+    expect(svg).toContain("lineage-genogram-node");
   });
 
   test("female symbol is a circle", () => {
@@ -29,7 +29,7 @@ describe("genogram symbols", () => {
       0, 0, 40
     );
     expect(svg).toContain("<circle");
-    expect(svg).toContain("lineage-female");
+    expect(svg).toContain("lineage-genogram-female");
   });
 
   test("unknown symbol is a diamond polygon", () => {
@@ -38,7 +38,7 @@ describe("genogram symbols", () => {
       0, 0, 40
     );
     expect(svg).toContain("<polygon");
-    expect(svg).toContain("lineage-unknown");
+    expect(svg).toContain("lineage-genogram-unknown");
   });
 
   test("other sex uses diamond like unknown", () => {
@@ -54,7 +54,7 @@ describe("genogram symbols", () => {
       makeIndividual({ status: "deceased" }),
       0, 0, 40
     );
-    expect(svg).toContain("lineage-deceased");
+    expect(svg).toContain("lineage-genogram-deceased");
     const lineCount = (svg.match(/<line /g) || []).length;
     expect(lineCount).toBeGreaterThanOrEqual(2);
   });

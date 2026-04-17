@@ -8,24 +8,34 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
-      "require": "./dist/index.cjs",
-      "types": "./dist/index.d.ts"
+      "require": "./dist/index.cjs"
     },
     "./genogram": {
+      "types": "./dist/diagrams/genogram/index.d.ts",
       "import": "./dist/diagrams/genogram/index.js",
-      "require": "./dist/diagrams/genogram/index.cjs",
-      "types": "./dist/diagrams/genogram/index.d.ts"
+      "require": "./dist/diagrams/genogram/index.cjs"
     },
     "./ecomap": {
+      "types": "./dist/diagrams/ecomap/index.d.ts",
       "import": "./dist/diagrams/ecomap/index.js",
-      "require": "./dist/diagrams/ecomap/index.cjs",
-      "types": "./dist/diagrams/ecomap/index.d.ts"
+      "require": "./dist/diagrams/ecomap/index.cjs"
     },
     "./pedigree": {
+      "types": "./dist/diagrams/pedigree/index.d.ts",
       "import": "./dist/diagrams/pedigree/index.js",
-      "require": "./dist/diagrams/pedigree/index.cjs",
-      "types": "./dist/diagrams/pedigree/index.d.ts"
+      "require": "./dist/diagrams/pedigree/index.cjs"
+    },
+    "./phylo": {
+      "types": "./dist/diagrams/phylo/index.d.ts",
+      "import": "./dist/diagrams/phylo/index.js",
+      "require": "./dist/diagrams/phylo/index.cjs"
+    },
+    "./sociogram": {
+      "types": "./dist/diagrams/sociogram/index.d.ts",
+      "import": "./dist/diagrams/sociogram/index.js",
+      "require": "./dist/diagrams/sociogram/index.cjs"
     }
   },
   "files": [
@@ -46,6 +56,8 @@
     "genogram",
     "ecomap",
     "pedigree",
+    "phylogenetic",
+    "sociogram",
     "family-tree",
     "diagram",
     "svg",

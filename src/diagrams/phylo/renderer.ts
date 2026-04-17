@@ -12,11 +12,12 @@ import {
   rect,
   el,
 } from "../../core/svg";
+import { cssCustomProperties, COLOR, FONT_SIZE, STROKE_WIDTH } from "../../core/theme";
 
 // ─── Constants ──────────────────────────────────────────────
 
-const DEFAULT_BRANCH_COLOR = "#333";
-const DEFAULT_BRANCH_WIDTH = 1.5;
+const DEFAULT_BRANCH_COLOR = COLOR.text;
+const DEFAULT_BRANCH_WIDTH = STROKE_WIDTH.normal;
 const TIP_LABEL_GAP = 6;
 const SUPPORT_THRESHOLD = 50;
 
@@ -56,25 +57,27 @@ function isSpeciesBinomial(label: string): boolean {
 function buildCSS(ast: PhyloTreeAST): string {
   const cladeColors = ast.clades.map((c, i) => {
     const color = c.color ?? CLADE_PALETTE[i % CLADE_PALETTE.length];
-    return `.lineage-clade-${c.id} { stroke: ${color}; }
-.lineage-clade-bg-${c.id} { fill: ${color}; fill-opacity: 0.12; }
-.lineage-clade-label-${c.id} { fill: ${color}; }`;
+    return `.lineage-phylo-clade-${c.id} { stroke: ${color}; }
+.lineage-phylo-clade-bg-${c.id} { fill: ${color}; fill-opacity: 0.12; }
+.lineage-phylo-clade-label-${c.id} { fill: ${color}; }`;
   });
 
   return `
-.lineage-phylo { font-family: system-ui, -apple-system, sans-serif; }
-.lineage-branch { fill: none; stroke: ${DEFAULT_BRANCH_COLOR}; stroke-width: ${DEFAULT_BRANCH_WIDTH}; stroke-linecap: round; }
-.lineage-branch-connector { fill: none; stroke: ${DEFAULT_BRANCH_COLOR}; stroke-width: ${DEFAULT_BRANCH_WIDTH}; }
-.lineage-tip-label { font-size: 12px; fill: #333; dominant-baseline: central; }
-.lineage-tip-label-italic { font-style: italic; }
-.lineage-support-label { font-size: 9px; fill: #666; text-anchor: middle; dominant-baseline: auto; }
-.lineage-support-dot { stroke: none; }
-.lineage-scale-bar line { stroke: #333; stroke-width: 1.5; }
-.lineage-scale-bar text { font-size: 10px; fill: #333; text-anchor: middle; }
-.lineage-scale-tick { stroke: #333; stroke-width: 1; }
-.lineage-title { font-size: 16px; font-weight: bold; fill: #333; text-anchor: middle; }
-.lineage-clade-label { font-size: 13px; font-weight: bold; }
-.lineage-root-marker { fill: none; stroke: #333; stroke-width: 1.5; }
+.lineage-phylo {${cssCustomProperties()}
+  font-family: system-ui, -apple-system, sans-serif;
+}
+.lineage-phylo-branch { fill: none; stroke: ${DEFAULT_BRANCH_COLOR}; stroke-width: ${DEFAULT_BRANCH_WIDTH}; stroke-linecap: round; }
+.lineage-phylo-branch-connector { fill: none; stroke: ${DEFAULT_BRANCH_COLOR}; stroke-width: ${DEFAULT_BRANCH_WIDTH}; }
+.lineage-phylo-tip-label { font-size: ${FONT_SIZE.label}px; fill: ${COLOR.text}; dominant-baseline: central; }
+.lineage-phylo-tip-label-italic { font-style: italic; }
+.lineage-phylo-support-label { font-size: ${FONT_SIZE.small}px; fill: ${COLOR.textSecondary}; text-anchor: middle; dominant-baseline: auto; }
+.lineage-phylo-support-dot { stroke: none; }
+.lineage-phylo-scale-bar line { stroke: ${COLOR.text}; stroke-width: ${STROKE_WIDTH.normal}; }
+.lineage-phylo-scale-bar text { font-size: 10px; fill: ${COLOR.text}; text-anchor: middle; }
+.lineage-phylo-scale-tick { stroke: ${COLOR.text}; stroke-width: ${STROKE_WIDTH.thin}; }
+.lineage-phylo-title { font-size: ${FONT_SIZE.title}px; font-weight: bold; fill: ${COLOR.text}; text-anchor: middle; }
+.lineage-phylo-clade-label { font-size: 13px; font-weight: bold; }
+.lineage-phylo-root-marker { fill: none; stroke: ${COLOR.text}; stroke-width: ${STROKE_WIDTH.normal}; }
 ${cladeColors.join("\n")}
 `.trim();
 }
@@ -122,10 +125,10 @@ function renderScaleBar(
   const y = layout.height - 20;
 
   const elements = [
-    line({ x1: x, y1: y, x2: x + bar.pxLength, y2: y, class: "lineage-scale-bar" }),
-    line({ x1: x, y1: y - 4, x2: x, y2: y + 4, class: "lineage-scale-tick" }),
-    line({ x1: x + bar.pxLength, y1: y - 4, x2: x + bar.pxLength, y2: y + 4, class: "lineage-scale-tick" }),
-    text({ x: x + bar.pxLength / 2, y: y + 16, "text-anchor": "middle", class: "lineage-scale-bar" }, bar.label),
+    line({ x1: x, y1: y, x2: x + bar.pxLength, y2: y, class: "lineage-phylo-scale-bar" }),
+    line({ x1: x, y1: y - 4, x2: x, y2: y + 4, class: "lineage-phylo-scale-tick" }),
+    line({ x1: x + bar.pxLength, y1: y - 4, x2: x + bar.pxLength, y2: y + 4, class: "lineage-phylo-scale-tick" }),
+    text({ x: x + bar.pxLength / 2, y: y + 16, "text-anchor": "middle", class: "lineage-phylo-scale-bar" }, bar.label),
   ];
 
   if (scaleLabel) {
@@ -137,7 +140,7 @@ function renderScaleBar(
     );
   }
 
-  return group({ class: "lineage-scale-bar" }, elements);
+  return group({ class: "lineage-phylo-scale-bar" }, elements);
 }
 
 // ─── Clade Backgrounds ──────────────────────────────────────
@@ -172,7 +175,7 @@ function renderCladeBackgrounds(layout: PhyloLayoutResult): string[] {
         width: maxX - minX,
         height: maxY - minY,
         rx: 4,
-        class: `lineage-clade-bg lineage-clade-bg-${clade.id}`,
+        class: `lineage-phylo-clade-bg lineage-phylo-clade-bg-${clade.id}`,
         fill: color,
         "fill-opacity": 0.12,
       })
@@ -184,7 +187,7 @@ function renderCladeBackgrounds(layout: PhyloLayoutResult): string[] {
           {
             x: maxX + 4,
             y: (minY + maxY) / 2,
-            class: `lineage-clade-label lineage-clade-label-${clade.id}`,
+            class: `lineage-phylo-clade-label lineage-phylo-clade-label-${clade.id}`,
             fill: color,
             "font-weight": "bold",
             "font-size": "13",
@@ -226,8 +229,8 @@ export function renderPhylo(layout: PhyloLayoutResult): string {
         : undefined;
 
     const cls = branch.isConnector
-      ? "lineage-branch lineage-branch-connector"
-      : `lineage-branch lineage-branch-internal${branch.cladeId ? ` lineage-clade-${branch.cladeId}` : ""}`;
+      ? "lineage-phylo-branch lineage-phylo-branch-connector"
+      : `lineage-phylo-branch lineage-phylo-branch-internal${branch.cladeId ? ` lineage-phylo-clade-${branch.cladeId}` : ""}`;
 
     const attrs: Record<string, string | number | undefined> = {
       d: branch.path,
@@ -250,7 +253,7 @@ export function renderPhylo(layout: PhyloLayoutResult): string {
         cx: rootLayout.x,
         cy: rootLayout.y,
         r: 5,
-        class: "lineage-root-marker",
+        class: "lineage-phylo-root-marker",
       })
     );
   }
@@ -268,13 +271,13 @@ export function renderPhylo(layout: PhyloLayoutResult): string {
             cx: x,
             cy: y,
             r: 4,
-            class: "lineage-support-dot",
+            class: "lineage-phylo-support-dot",
             fill: color,
           })
         );
         labelElements.push(
           text(
-            { x, y: y - 8, class: "lineage-support-label" },
+            { x, y: y - 8, class: "lineage-phylo-support-label" },
             String(Math.round(support))
           )
         );
@@ -285,7 +288,7 @@ export function renderPhylo(layout: PhyloLayoutResult): string {
     if (node.isLeaf) {
       const label = node.label ?? node.id;
       const italic = isSpeciesBinomial(label);
-      const cls = `lineage-tip-label${italic ? " lineage-tip-label-italic" : ""}`;
+      const cls = `lineage-phylo-tip-label${italic ? " lineage-phylo-tip-label-italic" : ""}`;
 
       labelElements.push(
         text(
@@ -311,7 +314,7 @@ export function renderPhylo(layout: PhyloLayoutResult): string {
   // Title
   const titleEl = ast.title
     ? text(
-        { x: totalWidth / 2, y: 20, class: "lineage-title" },
+        { x: totalWidth / 2, y: 20, class: "lineage-phylo-title" },
         ast.title
       )
     : "";
@@ -331,7 +334,7 @@ export function renderPhylo(layout: PhyloLayoutResult): string {
   if (cladeBgElements.length > 0) {
     svgContent.push(
       group(
-        { class: "lineage-clade-highlights", transform: transformY ? `translate(0,${transformY})` : undefined },
+        { class: "lineage-phylo-clade-highlights", transform: transformY ? `translate(0,${transformY})` : undefined },
         cladeBgElements
       )
     );
@@ -339,21 +342,21 @@ export function renderPhylo(layout: PhyloLayoutResult): string {
 
   svgContent.push(
     group(
-      { class: "lineage-branches", transform: transformY ? `translate(0,${transformY})` : undefined },
+      { class: "lineage-phylo-branches", transform: transformY ? `translate(0,${transformY})` : undefined },
       branchElements
     )
   );
 
   svgContent.push(
     group(
-      { class: "lineage-nodes", transform: transformY ? `translate(0,${transformY})` : undefined },
+      { class: "lineage-phylo-nodes", transform: transformY ? `translate(0,${transformY})` : undefined },
       nodeElements
     )
   );
 
   svgContent.push(
     group(
-      { class: "lineage-labels", transform: transformY ? `translate(0,${transformY})` : undefined },
+      { class: "lineage-phylo-labels", transform: transformY ? `translate(0,${transformY})` : undefined },
       labelElements
     )
   );

@@ -11,6 +11,7 @@ import {
   desc,
   polygon,
 } from "../../core/svg";
+import { cssCustomProperties, COLOR, FONT_SIZE } from "../../core/theme";
 
 // ─── Constants ──────────────────────────────────────────────
 
@@ -49,19 +50,21 @@ function buildCSS(ast: SociogramAST): string {
   });
 
   return `
-.lineage-sociogram { font-family: system-ui, -apple-system, sans-serif; }
-.lineage-sociogram-node { fill: #42A5F5; stroke: #1976D2; stroke-width: 2; }
+.lineage-sociogram {${cssCustomProperties()}
+  font-family: system-ui, -apple-system, sans-serif;
+}
+.lineage-sociogram-node { fill: #42A5F5; stroke: ${COLOR.accent}; stroke-width: 2; }
 .lineage-sociogram-node-star { fill: #FFD54F; stroke: #F9A825; stroke-width: 2.5; }
-.lineage-sociogram-node-isolate { fill: #E0E0E0; stroke: #9E9E9E; stroke-width: 2; stroke-dasharray: 4 3; }
-.lineage-sociogram-node-neglectee { fill: #BBDEFB; stroke: #1976D2; stroke-width: 2; stroke-dasharray: 4 3; }
-.lineage-sociogram-node-rejected { fill: #FFCDD2; stroke: #D32F2F; stroke-width: 2; stroke-dasharray: 4 3; }
+.lineage-sociogram-node-isolate { fill: #E0E0E0; stroke: ${COLOR.neutral}; stroke-width: 2; stroke-dasharray: 4 3; }
+.lineage-sociogram-node-neglectee { fill: #BBDEFB; stroke: ${COLOR.accent}; stroke-width: 2; stroke-dasharray: 4 3; }
+.lineage-sociogram-node-rejected { fill: #FFCDD2; stroke: ${COLOR.negative}; stroke-width: 2; stroke-dasharray: 4 3; }
 .lineage-sociogram-edge { stroke-linecap: round; }
 .lineage-sociogram-edge-positive { stroke: ${VALENCE_COLORS.positive}; }
 .lineage-sociogram-edge-negative { stroke: ${VALENCE_COLORS.negative}; stroke-dasharray: 6 3; }
 .lineage-sociogram-edge-neutral { stroke: ${VALENCE_COLORS.neutral}; stroke-dasharray: 2 3; }
-.lineage-sociogram-label { font-size: ${LABEL_FONT_SIZE}px; fill: #333; text-anchor: middle; }
-.lineage-sociogram-edge-label { font-size: 9px; fill: #666; text-anchor: middle; }
-.lineage-sociogram-title { font-size: 16px; font-weight: bold; fill: #333; text-anchor: middle; }
+.lineage-sociogram-label { font-size: ${LABEL_FONT_SIZE}px; fill: ${COLOR.text}; text-anchor: middle; }
+.lineage-sociogram-edge-label { font-size: ${FONT_SIZE.small}px; fill: ${COLOR.textSecondary}; text-anchor: middle; }
+.lineage-sociogram-title { font-size: ${FONT_SIZE.title}px; font-weight: bold; fill: ${COLOR.text}; text-anchor: middle; }
 .lineage-sociogram-star-badge { font-size: 10px; fill: #F9A825; }
 .lineage-sociogram-group-label { font-size: 13px; font-weight: bold; fill-opacity: 0.7; text-anchor: middle; }
 ${groupColors.join("\n")}

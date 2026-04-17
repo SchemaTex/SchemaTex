@@ -5,6 +5,7 @@ import type {
   RenderConfig,
 } from "../../core/types";
 import { svgRoot, el, group, text, title, desc } from "../../core/svg";
+import { cssCustomProperties } from "../../core/theme";
 
 // ─── Category colors (Hartman standard) ────────────────────
 
@@ -75,7 +76,7 @@ function buildDefs(): string {
   const arrowMarker = el(
     "marker",
     {
-      id: "lineage-eco-arrow",
+      id: "lineage-ecomap-eco-arrow",
       viewBox: "0 0 10 10",
       refX: "10",
       refY: "5",
@@ -93,21 +94,23 @@ function buildDefs(): string {
 
 function buildStyles(config: RenderConfig): string {
   let css = `
-.lineage-center-shape { fill: white; stroke: #333; stroke-width: 2.5; }
-.lineage-center-label { font-family: ${config.fontFamily}; font-size: ${config.fontSize + 2}px; text-anchor: middle; dominant-baseline: central; fill: #333; font-weight: 600; }
-.lineage-system-shape { fill: #f5f5f5; stroke: #888; stroke-width: 2; }
-.lineage-system-label { font-family: ${config.fontFamily}; font-size: ${config.fontSize - 1}px; text-anchor: middle; fill: #333; }
-.lineage-eco-line { stroke: #555; stroke-width: 2; fill: none; }
-.lineage-eco-line-parallel { stroke: #555; stroke-width: 1.5; fill: none; }
-.lineage-eco-line-weak { stroke: #888; stroke-width: 1.5; stroke-dasharray: 6,4; fill: none; }
-.lineage-eco-line-broken { stroke: #888; stroke-width: 2; stroke-dasharray: 3,8; fill: none; }
-.lineage-eco-line-stressful { stroke: #555; stroke-width: 2; fill: none; }
-.lineage-eco-conn-label { font-family: ${config.fontFamily}; font-size: ${config.fontSize - 2}px; text-anchor: middle; fill: #666; }
-.lineage-eco-arrow { fill: #555; }
+.lineage-ecomap {${cssCustomProperties()}
+}
+.lineage-ecomap-center-shape { fill: white; stroke: #333; stroke-width: 2.5; }
+.lineage-ecomap-center-label { font-family: ${config.fontFamily}; font-size: ${config.fontSize + 2}px; text-anchor: middle; dominant-baseline: central; fill: #333; font-weight: 600; }
+.lineage-ecomap-system-shape { fill: #f5f5f5; stroke: #888; stroke-width: 2; }
+.lineage-ecomap-system-label { font-family: ${config.fontFamily}; font-size: ${config.fontSize - 1}px; text-anchor: middle; fill: #333; }
+.lineage-ecomap-eco-line { stroke: #555; stroke-width: 2; fill: none; }
+.lineage-ecomap-eco-line-parallel { stroke: #555; stroke-width: 1.5; fill: none; }
+.lineage-ecomap-eco-line-weak { stroke: #888; stroke-width: 1.5; stroke-dasharray: 6,4; fill: none; }
+.lineage-ecomap-eco-line-broken { stroke: #888; stroke-width: 2; stroke-dasharray: 3,8; fill: none; }
+.lineage-ecomap-eco-line-stressful { stroke: #555; stroke-width: 2; fill: none; }
+.lineage-ecomap-eco-conn-label { font-family: ${config.fontFamily}; font-size: ${config.fontSize - 2}px; text-anchor: middle; fill: #666; }
+.lineage-ecomap-eco-arrow { fill: #555; }
 `;
 
   for (const [cat, color] of Object.entries(CATEGORY_COLORS)) {
-    css += `.lineage-system-${cat} .lineage-system-shape { fill: ${color}18; stroke: ${color}; }\n`;
+    css += `.lineage-ecomap-system-${cat} .lineage-ecomap-system-shape { fill: ${color}18; stroke: ${color}; }\n`;
   }
 
   return el("style", {}, css);
@@ -127,13 +130,13 @@ function renderCenter(node: LayoutNode, config: RenderConfig): string {
       cx,
       cy,
       r,
-      class: "lineage-center-shape",
+      class: "lineage-ecomap-center-shape",
     }),
     text(
       {
         x: cx,
         y: cy,
-        class: "lineage-center-label",
+        class: "lineage-ecomap-center-label",
       },
       label
     ),
@@ -145,7 +148,7 @@ function renderCenter(node: LayoutNode, config: RenderConfig): string {
         {
           x: cx,
           y: cy + config.fontSize + 4,
-          class: "lineage-center-label",
+          class: "lineage-ecomap-center-label",
           "font-size": `${config.fontSize}px`,
           "font-weight": "normal",
         },
@@ -155,7 +158,7 @@ function renderCenter(node: LayoutNode, config: RenderConfig): string {
   }
 
   return group(
-    { class: "lineage-center", "data-id": ind.id },
+    { class: "lineage-ecomap-center", "data-id": ind.id },
     elements
   );
 }
@@ -186,7 +189,7 @@ function renderSystems(
           {
             x: cx,
             y: labelStartY + li * (config.fontSize + 1),
-            class: "lineage-system-label",
+            class: "lineage-ecomap-system-label",
           },
           labelLines[li]
         )
@@ -196,7 +199,7 @@ function renderSystems(
     elements.push(
       group(
         {
-          class: `lineage-system lineage-system-${cat}`,
+          class: `lineage-ecomap-system lineage-ecomap-system-${cat}`,
           "data-system-id": ind.id,
         },
         [
@@ -204,7 +207,7 @@ function renderSystems(
             cx,
             cy,
             r,
-            class: "lineage-system-shape",
+            class: "lineage-ecomap-system-shape",
           }),
           ...labelElements,
         ]
@@ -212,7 +215,7 @@ function renderSystems(
     );
   }
 
-  return group({ class: "lineage-systems" }, elements);
+  return group({ class: "lineage-ecomap-systems" }, elements);
 }
 
 // ─── Connections ───────────────────────────────────────────
@@ -234,7 +237,7 @@ function renderConnections(edges: LayoutEdge[]): string {
       case "strong":
         lineElements.push(
           ...parallelLines(coords, 3, 4, {
-            class: "lineage-eco-line-parallel",
+            class: "lineage-ecomap-eco-line-parallel",
             ...arrowAttrs,
           })
         );
@@ -243,7 +246,7 @@ function renderConnections(edges: LayoutEdge[]): string {
       case "moderate":
         lineElements.push(
           ...parallelLines(coords, 2, 4, {
-            class: "lineage-eco-line-parallel",
+            class: "lineage-ecomap-eco-line-parallel",
             ...arrowAttrs,
           })
         );
@@ -256,7 +259,7 @@ function renderConnections(edges: LayoutEdge[]): string {
             y1: coords.y1,
             x2: coords.x2,
             y2: coords.y2,
-            class: "lineage-eco-line-weak",
+            class: "lineage-ecomap-eco-line-weak",
             ...arrowAttrs,
           })
         );
@@ -274,7 +277,7 @@ function renderConnections(edges: LayoutEdge[]): string {
               8,
               20
             ),
-            class: "lineage-eco-line-stressful",
+            class: "lineage-ecomap-eco-line-stressful",
             "stroke-width": relType === "stressful-strong" ? "3" : "2",
             ...arrowAttrs,
           })
@@ -292,7 +295,7 @@ function renderConnections(edges: LayoutEdge[]): string {
               8,
               20
             ),
-            class: "lineage-eco-line-stressful",
+            class: "lineage-ecomap-eco-line-stressful",
             ...arrowAttrs,
           })
         );
@@ -308,7 +311,7 @@ function renderConnections(edges: LayoutEdge[]): string {
             y1: coords.y1,
             x2: coords.x2,
             y2: coords.y2,
-            class: "lineage-eco-line-broken",
+            class: "lineage-ecomap-eco-line-broken",
             ...arrowAttrs,
           })
         );
@@ -321,7 +324,7 @@ function renderConnections(edges: LayoutEdge[]): string {
             y1: coords.y1,
             x2: coords.x2,
             y2: coords.y2,
-            class: "lineage-eco-line",
+            class: "lineage-ecomap-eco-line",
             ...arrowAttrs,
           })
         );
@@ -331,7 +334,7 @@ function renderConnections(edges: LayoutEdge[]): string {
     elements.push(
       group(
         {
-          class: `lineage-connection lineage-connection-${relType}`,
+          class: `lineage-ecomap-connection lineage-ecomap-connection-${relType}`,
           "data-from": edge.from,
           "data-to": edge.to,
         },
@@ -340,7 +343,7 @@ function renderConnections(edges: LayoutEdge[]): string {
     );
   }
 
-  return group({ class: "lineage-connections" }, elements);
+  return group({ class: "lineage-ecomap-connections" }, elements);
 }
 
 // ─── Connection labels ─────────────────────────────────────
@@ -357,7 +360,7 @@ function renderConnectionLabels(edges: LayoutEdge[]): string {
     const my = (coords.y1 + coords.y2) / 2;
 
     elements.push(
-      group({ class: "lineage-conn-label-group" }, [
+      group({ class: "lineage-ecomap-conn-label-group" }, [
         el("rect", {
           x: mx - 40,
           y: my - 8,
@@ -368,14 +371,14 @@ function renderConnectionLabels(edges: LayoutEdge[]): string {
           "fill-opacity": "0.85",
         }),
         text(
-          { x: mx, y: my + 4, class: "lineage-eco-conn-label" },
+          { x: mx, y: my + 4, class: "lineage-ecomap-eco-conn-label" },
           edge.relationship.label
         ),
       ])
     );
   }
 
-  return group({ class: "lineage-connection-labels" }, elements);
+  return group({ class: "lineage-ecomap-connection-labels" }, elements);
 }
 
 // ─── Line type helpers ─────────────────────────────────────
@@ -484,7 +487,7 @@ function conflictMarks(coords: LineCoords): string[] {
       y1: my - 3 + ny * markLen,
       x2: mx - 3 - nx * markLen,
       y2: my - 3 - ny * markLen,
-      class: "lineage-eco-line",
+      class: "lineage-ecomap-eco-line",
       "stroke-width": "2",
     }),
     el("line", {
@@ -492,7 +495,7 @@ function conflictMarks(coords: LineCoords): string[] {
       y1: my + 3 + ny * markLen,
       x2: mx + 3 - nx * markLen,
       y2: my + 3 - ny * markLen,
-      class: "lineage-eco-line",
+      class: "lineage-ecomap-eco-line",
       "stroke-width": "2",
     }),
   ];
@@ -504,13 +507,13 @@ function getArrowAttrs(
   if (!flow || flow === "none") return {};
   switch (flow) {
     case "from":
-      return { "marker-end": "url(#lineage-eco-arrow)" };
+      return { "marker-end": "url(#lineage-ecomap-eco-arrow)" };
     case "to":
-      return { "marker-start": "url(#lineage-eco-arrow)" };
+      return { "marker-start": "url(#lineage-ecomap-eco-arrow)" };
     case "mutual":
       return {
-        "marker-start": "url(#lineage-eco-arrow)",
-        "marker-end": "url(#lineage-eco-arrow)",
+        "marker-start": "url(#lineage-ecomap-eco-arrow)",
+        "marker-end": "url(#lineage-ecomap-eco-arrow)",
       };
     default:
       return {};

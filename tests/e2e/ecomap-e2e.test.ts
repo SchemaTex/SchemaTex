@@ -1,5 +1,6 @@
 import { describe, test, expect } from "vitest";
-import { render, parse } from "../../src/index";
+import { render } from "../../src/index";
+import { parseEcomap } from "../../src/diagrams/ecomap";
 
 describe("ecomap e2e", () => {
   test("render() auto-detects ecomap and produces SVG", () => {
@@ -15,7 +16,7 @@ ecomap "Test"
   });
 
   test("parse() returns ecomap AST", () => {
-    const ast = parse(`
+    const ast = parseEcomap(`
 ecomap
   center: x [male]
   y [label: "Y"]
@@ -51,10 +52,10 @@ ecomap "Maria's Support Network"
     expect(svg).toContain("Tech Company");
     expect(svg).toContain("Mom");
     expect(svg).toContain("Lisa");
-    expect(svg).toContain("lineage-system-work");
-    expect(svg).toContain("lineage-system-religion");
-    expect(svg).toContain("lineage-system-family");
-    expect(svg).toContain("lineage-system-friends");
+    expect(svg).toContain("lineage-ecomap-system-work");
+    expect(svg).toContain("lineage-ecomap-system-religion");
+    expect(svg).toContain("lineage-ecomap-system-family");
+    expect(svg).toContain("lineage-ecomap-system-friends");
   });
 
   test("Case 2: energy flow + stress", () => {
@@ -73,8 +74,8 @@ ecomap "The Johnsons"
   family ~~~ legal
 `);
     expect(svg).toContain("The Johnsons");
-    expect(svg).toContain("lineage-connection-strong");
-    expect(svg).toContain("lineage-connection-stressful");
+    expect(svg).toContain("lineage-ecomap-connection-strong");
+    expect(svg).toContain("lineage-ecomap-connection-stressful");
     // directional arrows
     expect(svg).toContain("marker-");
   });
@@ -104,10 +105,10 @@ ecomap "Substance Abuse Recovery"
 `);
     expect(svg).toContain("James");
     expect(svg).toContain("AA Group");
-    expect(svg).toContain("lineage-connection-strong");
-    expect(svg).toContain("lineage-connection-weak");
-    expect(svg).toContain("lineage-connection-broken");
-    expect(svg).toContain("lineage-connection-stressful");
+    expect(svg).toContain("lineage-ecomap-connection-strong");
+    expect(svg).toContain("lineage-ecomap-connection-weak");
+    expect(svg).toContain("lineage-ecomap-connection-broken");
+    expect(svg).toContain("lineage-ecomap-connection-stressful");
     expect(svg).toContain("custody conflict");
     expect(svg).toContain("supervised visits");
   });

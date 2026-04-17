@@ -1,4 +1,4 @@
-import type { DiagramPlugin } from "../../core/types";
+import type { DiagramPlugin, RenderConfig } from "../../core/types";
 import { parseEcomap } from "./parser";
 import { layoutEcomap } from "./layout";
 import { renderEcomap } from "./renderer";
@@ -15,15 +15,21 @@ export const ecomap: DiagramPlugin = {
     return firstLine === "ecomap" || firstLine.startsWith("ecomap ");
   },
 
-  parse(text: string) {
-    return parseEcomap(text);
-  },
-
-  layout(ast, config) {
-    return layoutEcomap(ast, config);
-  },
-
-  render(layout, config) {
-    return renderEcomap(layout, config);
+  render(text: string, config?: RenderConfig): string {
+    const ast = parseEcomap(text);
+    const layoutConfig = {
+      nodeSpacingX: 80,
+      nodeSpacingY: 100,
+      nodeWidth: 40,
+      nodeHeight: 40,
+    };
+    const layout = layoutEcomap(ast, layoutConfig);
+    const renderConfig: RenderConfig = {
+      fontFamily: config?.fontFamily ?? "system-ui, -apple-system, sans-serif",
+      fontSize: config?.fontSize ?? 12,
+      theme: config?.theme ?? "default",
+      padding: config?.padding ?? 20,
+    };
+    return renderEcomap(layout, renderConfig);
   },
 };

@@ -58,9 +58,9 @@ genogram
   mary [female, 1955]
   john -- mary
 `);
-    expect(svg).toContain("lineage-male");
-    expect(svg).toContain("lineage-female");
-    expect(svg).toContain("lineage-node");
+    expect(svg).toContain("lineage-genogram-male");
+    expect(svg).toContain("lineage-genogram-female");
+    expect(svg).toContain("lineage-genogram-node");
   });
 
   test("includes data attributes for interaction", () => {
@@ -77,7 +77,7 @@ genogram
   john [male, 1950]
 `);
     expect(svg).toContain("<style>");
-    expect(svg).toContain(".lineage-shape");
+    expect(svg).toContain(".lineage-genogram-shape");
   });
 
   test("renders labels below symbols", () => {
@@ -85,7 +85,7 @@ genogram
 genogram
   john [male, 1950]
 `);
-    expect(svg).toContain("lineage-label");
+    expect(svg).toContain("lineage-genogram-label");
     expect(svg).toContain("John");
   });
 
@@ -105,8 +105,8 @@ genogram
   b [female]
   a -- b
 `);
-    expect(svg).toContain("lineage-edge");
-    expect(svg).toContain("lineage-edge-married");
+    expect(svg).toContain("lineage-genogram-edge");
+    expect(svg).toContain("lineage-genogram-edge-married");
   });
 
   test("renders parent-child connections", () => {
@@ -117,7 +117,7 @@ genogram
   a -- b
     c [male, 1975]
 `);
-    expect(svg).toContain("lineage-edge-parent-child");
+    expect(svg).toContain("lineage-genogram-edge-parent-child");
   });
 
   test("renders deceased with X overlay", () => {
@@ -125,7 +125,7 @@ genogram
 genogram
   john [male, 1930, deceased]
 `);
-    expect(svg).toContain("lineage-deceased");
+    expect(svg).toContain("lineage-genogram-deceased");
   });
 
   test("all 6 standard cases render without error", () => {

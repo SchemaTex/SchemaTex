@@ -6,6 +6,8 @@ export default defineConfig({
     "diagrams/genogram/index": "src/diagrams/genogram/index.ts",
     "diagrams/ecomap/index": "src/diagrams/ecomap/index.ts",
     "diagrams/pedigree/index": "src/diagrams/pedigree/index.ts",
+    "diagrams/phylo/index": "src/diagrams/phylo/index.ts",
+    "diagrams/sociogram/index": "src/diagrams/sociogram/index.ts",
   },
   format: ["esm", "cjs"],
   dts: true,

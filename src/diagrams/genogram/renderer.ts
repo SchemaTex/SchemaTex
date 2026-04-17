@@ -1,5 +1,6 @@
 import type { LayoutResult, LayoutNode, LayoutEdge, RenderConfig, DiagramAST, RelationshipType } from "../../core/types";
 import { svgRoot, el, group, text, title, desc } from "../../core/svg";
+import { cssCustomProperties } from "../../core/theme";
 import { renderIndividualSymbol, getRequiredDefs } from "./symbols";
 
 // ─── Public API ─────────────────────────────────────────────
@@ -49,7 +50,7 @@ export function renderGenogram(
         {
           x: layout.width / 2,
           y: 28,
-          class: "lineage-title",
+          class: "lineage-genogram-title",
           "text-anchor": "middle",
           "font-size": "20",
           "font-weight": "bold",
@@ -124,21 +125,23 @@ function getTheme(name: string): ThemeColors {
 function buildStyles(config: RenderConfig): string {
   const t = getTheme(config.theme);
   const css = `
-.lineage-shape { fill: ${t.fill}; stroke: ${t.stroke}; stroke-width: 2; }
-.lineage-male .lineage-shape { fill: ${t.maleFill}; }
-.lineage-female .lineage-shape { fill: ${t.femaleFill}; }
-.lineage-unknown .lineage-shape { fill: ${t.unknownFill}; }
-.lineage-label { font-family: ${config.fontFamily}; font-size: ${config.fontSize}px; text-anchor: middle; fill: ${t.text}; }
-.lineage-edge { stroke: ${t.edge}; stroke-width: 2; fill: none; }
-.lineage-edge-cohabiting path { stroke-dasharray: 6,4; }
-.lineage-edge-divorced .lineage-divorce-mark { stroke: ${t.edge}; stroke-width: 2; }
-.lineage-edge-separated .lineage-separation-mark { stroke: ${t.edge}; stroke-width: 2; }
-.lineage-deceased-mark { stroke: ${t.deceasedMark}; stroke-width: 2; }
-.lineage-condition-fill { fill: ${t.conditionFill}; }
-.lineage-age { font-family: ${config.fontFamily}; fill: ${t.text}; pointer-events: none; }
-.lineage-title { fill: ${t.text}; }
-.lineage-edge-label { font-family: ${config.fontFamily}; fill: ${t.text}; }
-.lineage-index-border { stroke: #d4a017; stroke-width: 3; fill: none; }
+.lineage-genogram {${cssCustomProperties()}
+}
+.lineage-genogram-shape { fill: ${t.fill}; stroke: ${t.stroke}; stroke-width: 2; }
+.lineage-genogram-male .lineage-genogram-shape { fill: ${t.maleFill}; }
+.lineage-genogram-female .lineage-genogram-shape { fill: ${t.femaleFill}; }
+.lineage-genogram-unknown .lineage-genogram-shape { fill: ${t.unknownFill}; }
+.lineage-genogram-label { font-family: ${config.fontFamily}; font-size: ${config.fontSize}px; text-anchor: middle; fill: ${t.text}; }
+.lineage-genogram-edge { stroke: ${t.edge}; stroke-width: 2; fill: none; }
+.lineage-genogram-edge-cohabiting path { stroke-dasharray: 6,4; }
+.lineage-genogram-edge-divorced .lineage-genogram-divorce-mark { stroke: ${t.edge}; stroke-width: 2; }
+.lineage-genogram-edge-separated .lineage-genogram-separation-mark { stroke: ${t.edge}; stroke-width: 2; }
+.lineage-genogram-deceased-mark { stroke: ${t.deceasedMark}; stroke-width: 2; }
+.lineage-genogram-condition-fill { fill: ${t.conditionFill}; }
+.lineage-genogram-age { font-family: ${config.fontFamily}; fill: ${t.text}; pointer-events: none; }
+.lineage-genogram-title { fill: ${t.text}; }
+.lineage-genogram-edge-label { font-family: ${config.fontFamily}; fill: ${t.text}; }
+.lineage-genogram-index-border { stroke: #d4a017; stroke-width: 3; fill: none; }
 `;
   return el("style", {}, css);
 }
@@ -197,7 +200,7 @@ function getEmotionalStrokeWidth(type: RelationshipType): number {
 }
 
 function renderEmotionalEdges(edges: LayoutEdge[]): string {
-  if (edges.length === 0) return group({ class: "lineage-emotional-edges" }, []);
+  if (edges.length === 0) return group({ class: "lineage-genogram-emotional-edges" }, []);
 
   const children: string[] = [];
   for (const edge of edges) {
@@ -214,7 +217,7 @@ function renderEmotionalEdges(edges: LayoutEdge[]): string {
         stroke: color,
         "stroke-width": strokeWidth,
         style: lineStyle || undefined,
-        "marker-end": directional ? "url(#lineage-arrow)" : undefined,
+        "marker-end": directional ? "url(#lineage-genogram-arrow)" : undefined,
       }),
     ];
 
@@ -227,7 +230,7 @@ function renderEmotionalEdges(edges: LayoutEdge[]): string {
             {
               x: mid.x,
               y: mid.y - 6,
-              class: "lineage-edge-label",
+              class: "lineage-genogram-edge-label",
               "text-anchor": "middle",
               "font-size": "10",
               fill: color,
@@ -241,7 +244,7 @@ function renderEmotionalEdges(edges: LayoutEdge[]): string {
     children.push(
       group(
         {
-          class: `lineage-emotional lineage-emotional-${type}`,
+          class: `lineage-genogram-emotional lineage-genogram-emotional-${type}`,
           "data-from": edge.from,
           "data-to": edge.to,
           "data-relationship-type": type,
@@ -251,7 +254,7 @@ function renderEmotionalEdges(edges: LayoutEdge[]): string {
     );
   }
 
-  return group({ class: "lineage-emotional-edges" }, children);
+  return group({ class: "lineage-genogram-emotional-edges" }, children);
 }
 
 // ─── Edge Labels ────────────────────────────────────────────
@@ -269,7 +272,7 @@ function renderEdgeLabels(edges: LayoutEdge[], config: RenderConfig): string {
         {
           x: mid.x,
           y: mid.y - 6,
-          class: "lineage-edge-label",
+          class: "lineage-genogram-edge-label",
           "text-anchor": "middle",
           "font-size": "10",
           "font-family": config.fontFamily,
@@ -279,7 +282,7 @@ function renderEdgeLabels(edges: LayoutEdge[], config: RenderConfig): string {
     );
   }
 
-  return group({ class: "lineage-edge-labels" }, labels);
+  return group({ class: "lineage-genogram-edge-labels" }, labels);
 }
 
 // ─── Edges ──────────────────────────────────────────────────
@@ -289,10 +292,10 @@ function renderEdges(edges: LayoutEdge[]): string {
 
   for (const edge of edges) {
     const relType = edge.relationship.type;
-    const cssClass = `lineage-edge lineage-edge-${relType}`;
+    const cssClass = `lineage-genogram-edge lineage-genogram-edge-${relType}`;
 
     const elements: string[] = [
-      el("path", { d: edge.path, class: "lineage-edge-path" }),
+      el("path", { d: edge.path, class: "lineage-genogram-edge-path" }),
     ];
 
     // Divorce markers: two short slashes at midpoint
@@ -305,7 +308,7 @@ function renderEdges(edges: LayoutEdge[]): string {
             y1: mid.y - 6,
             x2: mid.x + 4,
             y2: mid.y + 6,
-            class: "lineage-divorce-mark",
+            class: "lineage-genogram-divorce-mark",
             stroke: "#333",
             "stroke-width": "2",
           }),
@@ -314,7 +317,7 @@ function renderEdges(edges: LayoutEdge[]): string {
             y1: mid.y - 6,
             x2: mid.x + 4 + 6,
             y2: mid.y + 6,
-            class: "lineage-divorce-mark",
+            class: "lineage-genogram-divorce-mark",
             stroke: "#333",
             "stroke-width": "2",
           })
@@ -332,7 +335,7 @@ function renderEdges(edges: LayoutEdge[]): string {
             y1: mid.y - 6,
             x2: mid.x + 4,
             y2: mid.y + 6,
-            class: "lineage-separation-mark",
+            class: "lineage-genogram-separation-mark",
             stroke: "#333",
             "stroke-width": "2",
           })
@@ -352,7 +355,7 @@ function renderEdges(edges: LayoutEdge[]): string {
     );
   }
 
-  return group({ class: "lineage-edges" }, children);
+  return group({ class: "lineage-genogram-edges" }, children);
 }
 
 function pathMidpoint(
@@ -401,7 +404,7 @@ function renderNodes(
     layers.push(
       group(
         {
-          class: `lineage-generation lineage-generation-${genIdx}`,
+          class: `lineage-genogram-generation lineage-genogram-generation-${genIdx}`,
           "data-generation": genIdx,
         },
         nodeElements
@@ -438,7 +441,7 @@ function renderLabels(
         {
           x: cx,
           y: labelY,
-          class: "lineage-label",
+          class: "lineage-genogram-label",
           "data-individual-id": ind.id,
         },
         labelText
@@ -446,5 +449,5 @@ function renderLabels(
     );
   }
 
-  return group({ class: "lineage-labels" }, labels);
+  return group({ class: "lineage-genogram-labels" }, labels);
 }

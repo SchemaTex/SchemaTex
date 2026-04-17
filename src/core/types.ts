@@ -22,7 +22,7 @@ export type DiagramType =
   | "timing"    // Digital timing / waveform (06-TIMING-STANDARD)
   | "logic"     // Logic gate netlist (07-LOGIC-GATE-STANDARD)
   | "circuit"   // Circuit schematic positional DSL (08-CIRCUIT-SCHEMATIC-STANDARD)
-  | "block"     // Control systems block diagram (09-BLOCK-DIAGRAM-STANDARD)
+  | "blockdiagram"  // Control systems block diagram (09-BLOCK-DIAGRAM-STANDARD)
   | "ladder"    // PLC ladder logic IEC 61131-3 (10-LADDER-LOGIC-STANDARD)
   | "sld";      // Single-line diagram / power distribution (11-SINGLE-LINE-STANDARD)
 
@@ -401,9 +401,7 @@ export interface LayoutEdge {
 export interface DiagramPlugin {
   type: DiagramType;
   detect: (text: string) => boolean;
-  parse: (text: string) => DiagramAST;
-  layout: (ast: DiagramAST, config: LayoutConfig) => LayoutResult;
-  render: (layout: LayoutResult, config: RenderConfig) => string;
+  render: (text: string, config?: RenderConfig) => string;
 }
 
 export interface LayoutConfig {
@@ -484,9 +482,26 @@ export interface TimingAST {
 // ── Logic Gate ───────────────────────────────────────────────
 
 export type LogicGateType =
+  // ── Combinational Gates ──────────────────────────────────────
   | "AND" | "OR" | "NOT" | "NAND" | "NOR" | "XOR" | "XNOR" | "BUF"
-  | "DFF" | "JKFF" | "SRFF" | "TFF"    // Sequential
-  | "MUX" | "DEMUX" | "DECODER" | "ENCODER";  // Combinational complex
+  // ── Buffers with special output types ────────────────────────
+  | "TRISTATE_BUF"   // Buffer + enable pin; Z-state when disabled
+  | "TRISTATE_INV"   // Inverting buffer + enable pin
+  | "OPEN_DRAIN"     // Open-drain/open-collector output (pull-up required)
+  | "SCHMITT"        // Schmitt trigger; hysteresis symbol inside body
+  // ── Edge-triggered flip-flops ─────────────────────────────────
+  | "DFF"            // D flip-flop (clock triangle)
+  | "JKFF"           // JK flip-flop
+  | "SRFF"           // SR flip-flop
+  | "TFF"            // T (toggle) flip-flop
+  // ── Level-sensitive latches ────────────────────────────────────
+  | "LATCH_SR"       // SR latch (NOR/NAND cross-coupled, no clock)
+  | "LATCH_D"        // D latch (transparent when enable=1)
+  // ── Combinational complex ──────────────────────────────────────
+  | "MUX" | "DEMUX" | "DECODER" | "ENCODER"
+  // ── Sequential complex ─────────────────────────────────────────
+  | "COUNTER"        // Generic binary counter (CTR label, CLK/RESET/Q0–Q3)
+  | "SHIFT_REG";     // Generic shift register (SRG label, CLK/SER/Q0–Q7)
 
 export type LogicGateStyle = "ansi" | "iec";
 
@@ -525,12 +540,120 @@ export interface LogicGateAST {
 // ── Circuit Schematic ────────────────────────────────────────
 
 export type CircuitComponentType =
-  | "resistor" | "capacitor" | "inductor" | "transformer"
-  | "diode" | "led" | "zener" | "schottky"
-  | "npn" | "pnp" | "nmos" | "pmos"
-  | "opamp" | "voltage_source" | "current_source" | "battery"
-  | "ground" | "vcc" | "gnd_signal" | "gnd_chassis" | "gnd_digital"
-  | "wire" | "dot" | "label" | "port";
+  // ── Resistors & Passive Variants ────────────────────────────
+  | "resistor"          // Zigzag (ANSI) / rectangle (IEC)
+  | "potentiometer"     // Resistor + diagonal arrow, 3-pin (A/wiper/B)
+  | "rheostat"          // Resistor + diagonal arrow, 2-pin variable
+  | "thermistor_ntc"    // Resistor + diagonal arrow + "-t°" label
+  | "thermistor_ptc"    // Resistor + diagonal arrow + "+t°" label
+  | "ldr"               // Resistor + two inward arrows (light dependent)
+  | "varistor"          // Resistor + "V" label inside box
+  | "fuse"              // Small rectangle/oval on wire (sacrificial)
+  | "fuse_slow"         // Fuse + "T" designation
+
+  // ── Capacitors ───────────────────────────────────────────────
+  | "capacitor"         // Two parallel lines (nonpolar)
+  | "electrolytic_cap"  // Curved plate + polarity markers (polar)
+  | "variable_cap"      // Capacitor + diagonal arrow
+
+  // ── Inductors ────────────────────────────────────────────────
+  | "inductor"          // Arc humps (air core)
+  | "inductor_iron"     // Arc humps + two parallel core lines
+  | "inductor_ferrite"  // Arc humps + one filled core line
+  | "variable_inductor" // Inductor + diagonal arrow
+  | "ferrite_bead"      // Small filled rectangle on wire (EMI bead)
+  | "crystal"           // Rect body + two external lines (quartz oscillator)
+  | "transformer"       // Two coil groups + core lines
+
+  // ── Diodes ───────────────────────────────────────────────────
+  | "diode"             // Triangle + bar
+  | "zener"             // Triangle + bent bar (Z)
+  | "schottky"          // Triangle + S-bar
+  | "led"               // Diode + two outward arrows
+  | "photodiode"        // Diode + two inward arrows
+  | "varactor"          // Diode + variable capacitor symbol
+  | "tvs_diode"         // Bidirectional zener (two bent bars)
+  | "bridge_rectifier"  // Diamond of 4 diodes, 4-pin (AC1/AC2/DC+/DC−)
+
+  // ── Bipolar Transistors ───────────────────────────────────────
+  | "npn"               // NPN BJT (arrow outward on emitter)
+  | "pnp"               // PNP BJT (arrow inward on emitter)
+  | "darlington_npn"    // NPN + NPN Darlington pair
+  | "darlington_pnp"    // PNP + PNP Darlington pair
+
+  // ── Field Effect Transistors ──────────────────────────────────
+  | "nmos"              // N-channel MOSFET enhancement (gate insulated, dashed channel)
+  | "pmos"              // P-channel MOSFET enhancement
+  | "nmos_depletion"    // N-channel MOSFET depletion (solid channel)
+  | "jfet_n"            // N-channel JFET (gate arrow pointing in)
+  | "jfet_p"            // P-channel JFET (gate arrow pointing out)
+
+  // ── Power Semiconductors ─────────────────────────────────────
+  | "igbt"              // IGBT: MOSFET gate + BJT body + diode body
+  | "scr"               // SCR/Thyristor: diode + gate lead (PNPN)
+  | "triac"             // TRIAC: two back-to-back SCRs + gate
+  | "diac"              // DIAC: two back-to-back diodes, 2-pin
+
+  // ── Optoelectronics ───────────────────────────────────────────
+  | "phototransistor"   // NPN shape + two inward arrows on base
+  | "optocoupler"       // LED + phototransistor in dashed isolation box
+
+  // ── Op-Amp / Analog ICs ───────────────────────────────────────
+  | "opamp"             // Triangle: +/− inputs, output, ±Vcc
+  | "comparator"        // Triangle (same shape, open-collector output)
+  | "schmitt_buffer"    // Buffer triangle + hysteresis symbol inside
+  | "tri_state_buffer"  // Buffer triangle + enable pin
+  | "instrumentation_amp" // Three op-amp INA block
+
+  // ── Generic IC & Special Blocks ──────────────────────────────
+  | "generic_ic"        // Rect with configurable labeled pins (attrs: pins_left, pins_right)
+  | "voltage_regulator" // 3-terminal rect block (IN/GND/OUT), e.g. LM7805
+  | "dc_dc_converter"   // 2-port rect block with "DC/DC" label
+  | "555_timer"         // 8-pin rect with standard 555 pinout
+
+  // ── Sources & Power ───────────────────────────────────────────
+  | "voltage_source"    // Circle + V or ± polarity
+  | "current_source"    // Circle + arrow
+  | "ac_source"         // Circle + ~ (sine symbol)
+  | "battery"           // Alternating long/short lines
+  | "vcc"               // Power rail arrow pointing up
+  | "ground"            // Earth ground (3 horizontal lines)
+  | "gnd_signal"        // Signal ground (solid triangle)
+  | "gnd_chassis"       // Chassis ground (hash-like)
+  | "gnd_digital"       // Digital ground (square)
+
+  // ── Switches ──────────────────────────────────────────────────
+  | "switch_spst"       // Single-pole single-throw (angled arm + gap)
+  | "switch_spdt"       // Single-pole double-throw (3-pin)
+  | "switch_dpdt"       // Double-pole double-throw (6-pin)
+  | "push_no"           // Push button normally-open (circle + contact gap)
+  | "push_nc"           // Push button normally-closed (circle + line + slash)
+
+  // ── Relays (coil and contacts placed separately) ───────────────
+  | "relay_coil"        // Rectangle with coil symbol, 2-pin
+  | "relay_no"          // Relay contact normally-open (like switch_spst)
+  | "relay_nc"          // Relay contact normally-closed (with slash)
+
+  // ── Electromechanical ─────────────────────────────────────────
+  | "motor"             // Circle + M + shaft line
+  | "speaker"           // Triangle + box + radiating lines
+  | "microphone"        // Circle + vertical lines (capsule)
+  | "buzzer"            // Piezo symbol or speaker variant
+
+  // ── Measurement ───────────────────────────────────────────────
+  | "ammeter"           // Circle + "A"
+  | "voltmeter"         // Circle + "V"
+  | "wattmeter"         // Circle + "W"
+  | "oscilloscope"      // Circle + waveform symbol
+
+  // ── Connectors & Annotations ──────────────────────────────────
+  | "wire"              // Plain wire segment
+  | "dot"               // Junction dot
+  | "label"             // Net label (flag or text-only)
+  | "port"              // Named port (hollow circle + label)
+  | "test_point"        // TP marker (small circle + "TP" label)
+  | "no_connect"        // X marker — no electrical connection
+  | "antenna";          // Antenna (vertical line + radiating stubs)
 
 export type CircuitDirection = "right" | "left" | "up" | "down";
 
@@ -548,10 +671,20 @@ export interface CircuitComponent {
   attrs?: Record<string, string>;
 }
 
+/** Multi-terminal electrical node — connects multiple anchor refs to the same node */
+export interface CircuitNet {
+  /** Net name (e.g. "VOUT") */
+  id: string;
+  /** Anchor refs sharing the same node (e.g. ["R2.end", "U1.out", "OUT.start"]) */
+  anchors: string[];
+}
+
 export interface CircuitAST {
   type: "circuit";
   title?: string;
   components: CircuitComponent[];
+  /** Explicit net declarations for multi-terminal connections */
+  nets: CircuitNet[];
   metadata?: Record<string, string>;
 }
 
@@ -584,7 +717,7 @@ export interface BlockEdge {
 }
 
 export interface BlockAST {
-  type: "block";
+  type: "blockdiagram";
   title?: string;
   blocks: BlockNode[];
   sums: SummingJunction[];
@@ -600,7 +733,8 @@ export type LadderFBType =
   | "TON" | "TOFF" | "TP"         // Timers
   | "CTU" | "CTD" | "CTUD"        // Counters
   | "ADD" | "SUB" | "MUL" | "DIV" // Math
-  | "MOV" | "CMP" | "EQ" | "NEQ" | "LT" | "GT" | "LEQ" | "GEQ"; // Move/Compare
+  | "MOV"                                                       // Move
+  | "EQU" | "NEQ" | "GRT" | "LES" | "GEQ" | "LEQ";             // Compare (Allen-Bradley convention)
 
 export interface LadderContact {
   elementType: "contact";
@@ -646,13 +780,54 @@ export interface LadderAST {
 // ── Single-Line Diagram ──────────────────────────────────────
 
 export type SLDNodeType =
-  | "utility" | "generator"
-  | "transformer"
-  | "bus"
-  | "breaker" | "switch" | "fuse"
-  | "motor" | "load" | "capacitor_bank"
-  | "ct" | "pt" | "relay"
-  | "solar" | "wind" | "ups";
+  // ── Generation & Sources ─────────────────────────────────────
+  | "utility"           // Infinite bus / utility feed (circle + ~)
+  | "generator"         // Synchronous generator (circle + G)
+  | "solar"             // PV array (panel symbol)
+  | "wind"              // Wind turbine
+  | "ups"               // Uninterruptible power supply block
+
+  // ── Transformers (winding configuration variants) ──────────────
+  | "transformer"           // Generic (two coil groups, no winding spec)
+  | "transformer_dy"        // Delta primary → Wye grounded secondary (Δ-Yg)
+  | "transformer_yd"        // Wye grounded primary → Delta secondary (Yg-Δ)
+  | "transformer_yy"        // Wye-Wye (both grounded)
+  | "transformer_dd"        // Delta-Delta
+  | "autotransformer"       // Single winding with tap (zigzag coil symbol)
+  | "transformer_3winding"  // Three-winding power transformer
+
+  // ── Buses & Nodes ─────────────────────────────────────────────
+  | "bus"               // Horizontal thick line (6px stroke)
+
+  // ── Switching Equipment ───────────────────────────────────────
+  | "breaker"           // Circuit breaker (diagonal + arc at top)
+  | "breaker_vacuum"    // Vacuum CB (diagonal + "V" inside oval)
+  | "switch"            // Disconnect switch (diagonal, no arc, open tip)
+  | "switch_load"       // Load interrupter switch
+  | "ground_switch"     // Grounding disconnect (diagonal + ground symbol)
+  | "ats"               // Automatic transfer switch (two breakers + tie)
+  | "recloser"          // Auto-reclosing breaker (diagonal + arc + circling arrow)
+  | "sectionalizer"     // Sectionalizer (diagonal + "S" designation)
+  | "fuse"              // Expulsion fuse cutout (diagonal in oval)
+  | "fuse_cl"           // Current-limiting fuse (diagonal in rect)
+
+  // ── Protection & Monitoring ───────────────────────────────────
+  | "ct"                // Current transformer (small circle + CT + line through)
+  | "pt"                // Potential/voltage transformer (small circle + PT)
+  | "relay"             // Protection relay (small circle + ANSI device number)
+  | "surge_arrester"    // Surge arrester / lightning arrester (downward arrow + ground)
+  | "ground_fault"      // Ground fault detector (GFI)
+
+  // ── Loads & Equipment ─────────────────────────────────────────
+  | "motor"             // Motor (circle + M + 3-phase dots)
+  | "load"              // Generic load (rectangle)
+  | "capacitor_bank"    // Capacitor bank (two plates + switch)
+  | "harmonic_filter"   // Passive harmonic filter (LC symbol)
+  | "vfd"               // Variable frequency drive (rect + "VFD")
+
+  // ── Metering ──────────────────────────────────────────────────
+  | "watthour_meter"    // Energy meter (circle + Wh)
+  | "demand_meter"      // Demand meter (circle + D);
 
 export interface SLDNode {
   id: string;

@@ -11,21 +11,13 @@ export const sociogram: DiagramPlugin = {
     return first.startsWith("sociogram");
   },
 
-  parse(text: string) {
-    return parseSociogram(text) as never;
-  },
-
-  layout(_ast) {
-    return null as never;
-  },
-
-  render(_layout) {
-    return "";
+  render(text: string): string {
+    const ast = parseSociogram(text);
+    const layout = layoutSociogram(ast);
+    return renderSociogram(layout);
   },
 };
 
-export function renderSociogramDiagram(text: string): string {
-  const ast = parseSociogram(text);
-  const layout = layoutSociogram(ast);
-  return renderSociogram(layout);
-}
+export { parseSociogram } from "./parser";
+export { layoutSociogram } from "./layout";
+export { renderSociogram } from "./renderer";

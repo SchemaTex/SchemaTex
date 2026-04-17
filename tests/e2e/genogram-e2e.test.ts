@@ -1,5 +1,6 @@
 import { describe, test, expect } from "vitest";
-import { render, parse } from "../../src/core/api";
+import { render } from "../../src/core/api";
+import { parseGenogram } from "../../src/diagrams/genogram";
 import * as fs from "node:fs";
 import * as path from "node:path";
 
@@ -53,12 +54,12 @@ describe("genogram end-to-end", () => {
   });
 
   test("auto-detects genogram type", () => {
-    const ast = parse("genogram\n  a [male]");
+    const ast = parseGenogram("genogram\n  a [male]");
     expect(ast.type).toBe("genogram");
   });
 
   test("parse returns correct AST structure", () => {
-    const ast = parse(FIXTURES["nuclear-family"]);
+    const ast = parseGenogram(FIXTURES["nuclear-family"]);
     expect(ast.type).toBe("genogram");
     expect(ast.individuals).toHaveLength(4);
     expect(ast.relationships.length).toBeGreaterThan(0);
@@ -76,9 +77,9 @@ describe("genogram end-to-end", () => {
     const svg = render(FIXTURES["nuclear-family"]);
     expect(svg).toContain("lineage-diagram");
     expect(svg).toContain("lineage-genogram");
-    expect(svg).toContain("lineage-node");
-    expect(svg).toContain("lineage-edge");
-    expect(svg).toContain("lineage-label");
+    expect(svg).toContain("lineage-genogram-node");
+    expect(svg).toContain("lineage-genogram-edge");
+    expect(svg).toContain("lineage-genogram-label");
     expect(svg).toContain("<style>");
     expect(svg).toContain("<title>");
     expect(svg).toContain("<desc>");
