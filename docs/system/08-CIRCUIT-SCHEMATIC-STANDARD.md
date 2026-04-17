@@ -512,3 +512,502 @@ at: V1.start
 | P3 | Switch variants (SPST/SPDT) | Medium | Low |
 | P3 | 555 timer / IC box | Medium | Low |
 | P3 | IEC resistor symbol (rectangle) | Low | Low |
+
+---
+
+## 6. Expanded Professional Symbol Library (v2)
+
+*以下符号是 v1 标准的扩展，覆盖工程实践中高频使用的元件。所有路径均为 rightward 方向（direction="right"），实现时通过 SVG rotate 变换处理其他方向。坐标原点在组件左侧中心线。*
+
+---
+
+### 6.1 Passive Variants
+
+#### Potentiometer
+- **Pins**: 3-pin — `start` (left), `wiper` (center/top), `end` (right)
+- **尺寸**: 60px long × 24px tall（含 wiper 箭头）
+- **SVG Path**:
+  ```
+  /* 基础 zigzag (与 resistor 相同) */
+  M 0,0 L 10,0 L 13,-8 L 18,8 L 23,-8 L 28,8 L 33,-8 L 38,8 L 40,0 L 50,0
+  /* wiper 箭头从顶部指向中心 */
+  M 25,-22 L 25,-10   /* 垂直线 */
+  M 20,-22 L 25,-16 L 30,-22  /* 箭头头部 */
+  ```
+- **Wiper pin**: `(25, -22)` 即 center X, above body
+
+#### Rheostat (可变电阻，2-pin)
+- **Pins**: 2-pin — `start`, `end`
+- **SVG Path**: 与 potentiometer 相同，但 wiper 指向 end terminal（斜向箭头贯穿 zigzag）
+  ```
+  M 0,0 L 10,0 L 13,-8 L 18,8 L 23,-8 L 28,8 L 33,-8 L 38,8 L 40,0 L 50,0
+  /* 斜穿箭头 */
+  M 5,-12 L 45,12  /* 对角线 */
+  M 40,8 L 45,12 L 41,7   /* 箭头 */
+  ```
+
+#### Thermistor NTC
+- **Pins**: 2-pin — `start`, `end`
+- **SVG Path**: Resistor zigzag + 右上角 "-t°" 文字标注
+  ```
+  M 0,0 L 10,0 L 13,-8 L 18,8 L 23,-8 L 28,8 L 33,-8 L 38,8 L 40,0 L 50,0
+  /* 符号标记 — 在 renderer 中作为 <text> 元素 */
+  /* text: "-t°" at (44, -6), font-size: 8px */
+  ```
+
+#### Thermistor PTC
+- **同 NTC**，文字标记改为 "+t°"
+
+#### LDR (Light Dependent Resistor)
+- **Pins**: 2-pin — `start`, `end`
+- **SVG Path**: Resistor zigzag + 两个向内的光箭头
+  ```
+  M 0,0 L 10,0 L 13,-8 L 18,8 L 23,-8 L 28,8 L 33,-8 L 38,8 L 40,0 L 50,0
+  /* 左侧光箭头 (从左上到右下) */
+  M 2,-18 L 14,-6   M 11,-6 L 14,-6 L 14,-9   /* arrow1 */
+  /* 右侧光箭头 */
+  M 10,-20 L 22,-8  M 19,-8 L 22,-8 L 22,-11  /* arrow2 */
+  ```
+
+#### Varistor (MOV)
+- **Pins**: 2-pin — `start`, `end`
+- **SVG Path**: Resistor zigzag in a rounded box，带 "V" 文字
+  ```
+  M 0,0 H 8  M 8,-10 H 42 V 10 H 8 V -10  /* box */
+  /* zigzag inside box — scaled down */
+  M 10,0 L 13,-6 L 17,6 L 21,-6 L 25,6 L 29,-6 L 33,6 L 37,0
+  M 42,0 H 50
+  /* "V" 文字 in renderer at (44, -14) */
+  ```
+
+#### Fuse
+- **Pins**: 2-pin — `start`, `end`
+- **IEEE 315 符号**: 小矩形（表示熔断元件）
+  ```
+  M 0,0 H 14  /* left wire */
+  M 14,-6 H 36 V 6 H 14 V -6  /* fuse body rect */
+  M 36,0 H 50  /* right wire */
+  ```
+
+#### Fuse (Slow-Blow)
+- **同 Fuse**，矩形内额外加 "T" 文字标注
+
+#### Electrolytic Capacitor (极性电容)
+- **Pins**: 2-pin — `start` (negative), `end` (positive)
+- **SVG Path**:
+  ```
+  M 0,0 H 18   /* lead to negative plate */
+  M 18,-12 V 12  /* negative plate (straight line) */
+  M 22,-12 Q 26,-12 26,0 Q 26,12 22,12  /* positive plate (curved) */
+  M 26,0 H 40   /* positive lead */
+  /* Polarity marks */
+  /* "+" text at (30, -15), font-size: 9px */
+  /* "−" text at (14, -15), font-size: 9px */
+  ```
+
+#### Variable Capacitor
+- **Pins**: 2-pin — `start`, `end`
+- **SVG Path**: 两平行板 + 对角箭头
+  ```
+  M 0,0 H 17  M 17,-12 V 12  M 23,-12 V 12  M 23,0 H 40
+  /* diagonal arrow */
+  M 10,-16 L 32,8   M 28,6 L 32,8 L 30,4
+  ```
+
+#### Crystal (石英晶体)
+- **Pins**: 2-pin — `start`, `end`
+- **IEEE 符号**: 两条线 + 矩形体 + 两条线
+  ```
+  M 0,0 H 14
+  M 14,-10 V 10  /* left plate */
+  M 18,-8 H 32 V 8 H 18 V -8  /* crystal body rect */
+  M 32,-10 V 10  /* right plate */
+  M 36,0 H 50
+  ```
+
+#### Ferrite Bead (磁珠)
+- **Pins**: 2-pin — `start`, `end`
+- **符号**: 填充小矩形叠加在导线上
+  ```
+  M 0,0 H 50   /* continuous wire */
+  /* filled rect overlay */
+  M 20,-5 H 30 V 5 H 20 V -5  fill="#555"
+  ```
+
+#### Inductor (Iron Core)
+- **同 inductor**，追加双平行线 (core):
+  ```
+  /* same 4-hump arcs as inductor */
+  M -2,-14 H 52   /* core line 1 */
+  M -2,-10 H 52   /* core line 2 */
+  ```
+
+#### Inductor (Ferrite Core)
+- **同 inductor**，追加单填充线:
+  ```
+  M -2,-12 H 52   stroke-width:3 fill="none"
+  ```
+
+#### Variable Inductor
+- **同 inductor** + 对角箭头（与 rheostat 相同方式）
+
+---
+
+### 6.2 Power Semiconductors
+
+#### IGBT (Insulated Gate Bipolar Transistor)
+- **Pins**: 3-pin — `gate` (left), `collector` (top-right), `emitter` (bottom-right)
+- **标准**: IEC/IEEE N-channel IGBT = MOSFET gate + BJT collector/emitter structure + body diode
+- **SVG Path** (centered at origin, 60×60px body):
+  ```
+  /* Gate lead */
+  M -20,0 H -8   /* gate input wire */
+  /* Gate insulation line */
+  M -8,-20 V 20   stroke-width:2
+  /* Channel lines */
+  M -4,-18 V -4   /* upper channel segment */
+  M -4,4 V 18    /* lower channel segment */
+  /* Collector/Emitter base line */
+  M -4,-18 H 8   M -4,18 H 8
+  /* Collector wire (top) */
+  M 8,-18 V -30  /* upward */
+  /* Emitter wire (bottom, with arrow) */
+  M 8,18 V 30    /* downward */
+  /* Emitter arrow (outward = N-type) */
+  M 2,14 L 8,18 L 2,22
+  /* Body diode (anti-parallel) */
+  M 8,-18 L 8,18   /* diode series with emitter path */
+  /* diode symbol: small triangle + bar at midpoint */
+  M 12,-4 L 12,4 L 20,0 Z   /* triangle */
+  M 20,-5 V 5    /* bar */
+  ```
+
+#### SCR / Thyristor
+- **Pins**: 3-pin — `anode` (left), `cathode` (right), `gate` (bottom)
+- **符号**: 二极管 + gate lead 从 cathode 侧引出
+  ```
+  M 0,0 H 16   /* anode lead */
+  M 16,-14 L 32,0 L 16,14 Z   /* triangle */
+  M 32,-12 V 12   /* cathode bar */
+  M 32,0 H 50   /* cathode lead */
+  M 32,8 L 32,20 H 50  /* gate lead from cathode junction downward */
+  ```
+
+#### TRIAC
+- **Pins**: 3-pin — `T1` (left), `T2` (right), `gate` (bottom)
+- **符号**: 两个 SCR 反向并联 (头对头三角形)
+  ```
+  M 0,0 H 14
+  /* Upper triangle (T1→T2 direction) */
+  M 14,-12 L 30,0 L 14,12  /* triangle outline */
+  M 14,-12 V 12  /* left bar */
+  /* Lower triangle (T2→T1 direction, inverted) */
+  M 30,-12 L 14,0 L 30,12  /* inverted triangle */
+  M 30,-12 V 12  /* right bar */
+  M 30,0 H 44
+  /* Gate */
+  M 30,8 L 44,20   /* gate lead from right junction */
+  ```
+
+#### DIAC
+- **Pins**: 2-pin — `T1` (left), `T2` (right)
+- **符号**: 两三角背靠背，无 gate
+  ```
+  M 0,0 H 14
+  M 14,-12 L 28,0 L 14,12  M 14,-12 V 12
+  M 28,-12 L 14,0 L 28,12  M 28,-12 V 12
+  M 28,0 H 42
+  ```
+
+#### JFET N-Channel
+- **Pins**: 3-pin — `gate` (left), `drain` (top), `source` (bottom)
+- **符号**: 垂直 channel bar + gate arrow pointing in
+  ```
+  /* Channel bar */
+  M 20,-20 V 20   stroke-width:2
+  /* Drain connection (top) */
+  M 20,-20 H 40 V -30  /* horizontal + upward */
+  /* Source connection (bottom) */
+  M 20,20 H 40 V 30
+  /* Gate with arrow */
+  M -20,0 H 10  /* gate wire */
+  M 10,-5 H 16  /* upper gate segment */
+  M 10,5 H 16   /* lower gate segment */
+  /* Arrow: pointing toward channel (N-type) */
+  M 10,0 L 16,-4 L 16,4 Z   fill
+  ```
+
+#### JFET P-Channel
+- **同 JFET N**，gate arrow 方向反转（pointing away from channel）
+
+#### Darlington NPN
+- **Pins**: `base` (left), `collector` (top), `emitter` (bottom)
+- **符号**: 两个 NPN 嵌套，外框矩形
+  ```
+  M 0,-20 H 60 V 60 H 0 Z   stroke-dashed  /* outer box */
+  /* inner NPN1 */
+  /* inner NPN2 — emitter of NPN1 feeds base of NPN2 */
+  /* simplified: show "Darlington" label inside */
+  ```
+  *实现建议：使用 generic_ic 变体 + "Q" label，在 attrs 中指定 darlington=true*
+
+#### Bridge Rectifier
+- **Pins**: 4-pin — `ac1`, `ac2` (left side), `dc_pos` (top), `dc_neg` (bottom)
+- **符号**: 4个二极管菱形排列
+  ```
+  /* Rotated 45° diamond outline */
+  M 0,0 L 20,-20 L 40,0 L 20,20 Z   stroke dashed (envelope)
+  /* 4 diodes — simplified: arrows pointing from AC to DC rail */
+  /* D1: bottom-left→top (ac1→dc_pos) */
+  /* D2: bottom-right→top (ac2→dc_pos) */
+  /* D3: bottom→bottom-left (dc_neg→ac1) */
+  /* D4: bottom→bottom-right (dc_neg→ac2) */
+  /* In renderer: draw as 40×40px diamond with internal arrows */
+  ```
+
+---
+
+### 6.3 Optoelectronics
+
+#### Photodiode
+- **Pins**: 2-pin — `anode` (left), `cathode` (right)
+- **符号**: 标准二极管 + 两个向内指的箭头（表示接收光）
+  ```
+  M 0,0 H 14
+  M 14,-12 L 28,0 L 14,12 Z   /* triangle */
+  M 28,-12 V 12   /* bar */
+  M 28,0 H 42
+  /* incoming light arrows (from upper-left) */
+  M 0,-22 L 10,-10   M 8,-10 L 10,-10 L 10,-13
+  M 6,-26 L 16,-14   M 14,-14 L 16,-14 L 16,-17
+  ```
+
+#### Phototransistor
+- **Pins**: 3-pin — `collector` (top), `base` (optional, left), `emitter` (bottom)
+- **符号**: NPN BJT 形状 + 两个向内箭头（光替代 base 偏置）
+  ```
+  /* NPN BJT paths (same as npn) */
+  /* incoming light arrows — same as photodiode */
+  M -6,-22 L 4,-10   M 2,-10 L 4,-10 L 4,-13
+  M -2,-26 L 8,-14   M 6,-14 L 8,-14 L 8,-17
+  ```
+
+#### Optocoupler
+- **Pins**: 4-pin — `a` (LED anode), `k` (LED cathode), `c` (transistor collector), `e` (transistor emitter)
+- **符号**: LED + 光箭头 + phototransistor，包围在虚线矩形中
+  ```
+  /* dashed isolation box */
+  M 0,-20 H 80 V 60 H 0 V -20   stroke-dasharray:4,3
+  /* LED symbol at x=15 */
+  /* light arrows between LED and transistor */
+  M 30,-5 L 50,15   /* arrow1 */
+  M 30,5 L 50,25    /* arrow2 */
+  /* arrowheads */
+  /* phototransistor at x=55 */
+  ```
+  *尺寸: 80×80px body，比普通元件大*
+
+---
+
+### 6.4 Switches
+
+#### Switch SPST (Normally Open)
+- **Pins**: 2-pin — `start`, `end`
+- **符号**: 导线 + 45° 倾斜臂 + 缺口
+  ```
+  M 0,0 H 14   /* left wire */
+  M 14,0 L 34,-12  /* contact arm (open position, 35° tilt) */
+  /* contact point */
+  M 36,0 H 50  /* right wire */
+  /* contact dot: circle r=2 at (14,0) */
+  /* contact dot: circle r=2 at (36,0) */
+  ```
+
+#### Switch SPDT
+- **Pins**: 3-pin — `common` (left), `nc` (top-right), `no` (bottom-right)
+- **符号**: 公共接触 + 两个输出端
+  ```
+  M 0,0 H 14   /* common wire */
+  M 14,0 L 36,-14  /* arm pointing to NC position */
+  M 38,-16 H 50   /* NC output */
+  M 38,8 H 50    /* NO output (open gap) */
+  /* dots at connection points */
+  ```
+
+#### Push Button NO (常开按钮)
+- **Pins**: 2-pin — `start`, `end`
+- **IEEE 符号**: 圆圈代表按钮机构 + 水平间断接触
+  ```
+  M 0,0 H 14
+  M 14,0 H 22  /* left contact */
+  /* gap (NO state) */
+  M 28,0 H 36  /* right contact */
+  M 36,0 H 50
+  /* actuator (vertical line above gap) */
+  M 25,-4 V -14  /* push rod */
+  M 18,-14 H 32  /* button top */
+  ```
+
+#### Push Button NC (常闭按钮)
+- **同 Push NO**，接触点连通（实线），按下时断开，plus slash through contact
+
+#### Switch DPDT
+- **Pins**: 6-pin — `com1`, `com2`, `nc1`, `nc2`, `no1`, `no2`
+- **符号**: 两个 SPDT 机械连动（用虚线连接两个 arm）
+  ```
+  /* Upper SPDT */
+  /* Lower SPDT */
+  /* Mechanical link: dashed line connecting both arms */
+  M 16,-20 V 40   stroke-dasharray:3,2  /* actuator shaft */
+  ```
+
+---
+
+### 6.5 Relays
+
+> **注意**: Relay 线圈和触点是**分开的独立元件**，用参考标号关联（如 K1 coil + K1 contacts）。
+
+#### Relay Coil
+- **Pins**: 2-pin — `start` (pos/A1), `end` (neg/A2)
+- **IEEE 符号**: 矩形 + 波浪线（线圈）
+  ```
+  M 0,0 H 8
+  M 8,-10 H 42 V 10 H 8 V -10  /* coil body rect */
+  /* coil symbol inside */
+  M 10,0 Q 12,-7 14,0 Q 16,7 18,0 Q 20,-7 22,0 Q 24,7 26,0 Q 28,-7 30,0
+  M 42,0 H 50
+  ```
+
+#### Relay Contact NO
+- **Pins**: 2-pin — `start`, `end`
+- **符号**: 完全等同于 switch_spst（arm open）—— 但 data-relay 属性携带 K1 等标号
+  ```
+  /* Identical to switch_spst SVG */
+  /* Label shown as "K1" or "K1-1" (relay tag + contact number) */
+  ```
+
+#### Relay Contact NC
+- **符号**: Switch SPST arm + 对角斜线（表示常闭）
+  ```
+  /* switch_spst paths */
+  M 16,-8 L 34,8   /* NC diagonal slash */
+  ```
+
+---
+
+### 6.6 Measurement Symbols
+
+#### Ammeter
+- **Pins**: 2-pin — `start`, `end`
+- **符号**: Circle + "A"
+  ```
+  M 0,0 H 10
+  <circle cx="25" cy="0" r="14"/>
+  <text x="25" y="5" text-anchor="middle" font-size="12" font-weight="bold">A</text>
+  M 40,0 H 50
+  ```
+
+#### Voltmeter
+- **Pins**: 2-pin — `start`, `end` (placed in parallel with component under test)
+- **符号**: Circle + "V"
+  ```
+  /* same as ammeter, text: "V" */
+  ```
+
+#### Wattmeter
+- **Pins**: 4-pin (2 voltage + 2 current)
+- **符号**: Circle + "W"
+
+#### Oscilloscope Probe
+- **Pins**: 1-pin — `signal`
+- **符号**: 探针形状
+  ```
+  M 0,0 H 30 L 40,8 L 40,-8 L 30,0  /* probe tip */
+  /* ground clip: small line below */
+  ```
+
+---
+
+### 6.7 Special Symbols
+
+#### Antenna
+- **Pins**: 1-pin — `feed`
+- **符号**: 垂直线 + 向上辐射斜线
+  ```
+  M 0,30 V 0   /* vertical mast */
+  M 0,0 L -12,-16  /* left element */
+  M 0,0 L 12,-16   /* right element */
+  M 0,8 L -8,-4
+  M 0,8 L 8,-4
+  ```
+
+#### Test Point
+- **Pins**: 1-pin — `signal`
+- **符号**: 小圆圈 + "TP" 标注
+  ```
+  <circle cx="0" cy="0" r="5" fill="white" stroke-width="1.5"/>
+  /* TP label via renderer */
+  ```
+
+#### No-Connect
+- **Pins**: 0 (annotation only)
+- **符号**: X 形标记
+  ```
+  M -5,-5 L 5,5   M 5,-5 L -5,5
+  ```
+
+#### Voltage Regulator (三端稳压)
+- **Pins**: 3-pin — `in` (left), `gnd` (bottom), `out` (right)
+- **符号**: 矩形 block + "REG" label + 三引脚
+  ```
+  M -30,0 H -10  /* input wire */
+  M -10,-20 H 10 V 20 H -10 V -20  /* body rect 20×40px */
+  M 10,0 H 30    /* output wire */
+  M 0,20 V 40    /* ground pin */
+  /* "REG" text inside body */
+  /* IN/OUT/GND labels in renderer */
+  ```
+
+#### DC-DC Converter
+- **Pins**: 4-pin — `vin+`, `vin−` (left), `vout+`, `vout−` (right)
+- **符号**: 矩形 block + "DC/DC" label + 波浪箭头（表示转换）
+  ```
+  M -40,-15 H -15  M -40,15 H -15
+  M -15,-25 H 15 V 25 H -15 V -25  /* body 30×50px */
+  M 15,-15 H 40  M 15,15 H 40
+  /* "DC/DC" label in renderer */
+  /* internal arrow: M -8,0 L 8,0 with arrowhead */
+  ```
+
+#### Comparator
+- **Pins**: 5-pin — `in_pos` (top-left), `in_neg` (bottom-left), `out` (right), `vcc`, `gnd`
+- **符号**: 完全等同于 op-amp 三角形，但 out 引脚连接 open-collector 符号
+  ```
+  /* identical to op-amp triangle */
+  /* output: add open-circle at tip */
+  <circle cx="50" cy="0" r="3" fill="white" stroke-width="1.5"/>
+  ```
+
+---
+
+### 6.8 Updated Implementation Priority Table
+
+| Priority | Symbols | Est. Hours |
+|----------|---------|------------|
+| P0 (MVP) | resistor, capacitor, inductor, voltage_source, current_source, battery, ground, vcc, wire, dot, label, port | 2h |
+| P0 | diode, led, zener, schottky, npn, pnp, opamp | 1h |
+| P0 | nmos, pmos, transformer, fuse, electrolytic_cap | 1h |
+| P1 | potentiometer, rheostat, thermistor_ntc/ptc, varistor, crystal | 1h |
+| P1 | ferrite_bead, ldr, photodiode, phototransistor, optocoupler | 1h |
+| P1 | switch_spst, switch_spdt, push_no, push_nc | 0.5h |
+| P1 | relay_coil, relay_no, relay_nc | 0.5h |
+| P1 | igbt, scr, triac, jfet_n, jfet_p | 1h |
+| P1 | ammeter, voltmeter, test_point, no_connect, antenna | 0.5h |
+| P2 | voltage_regulator, dc_dc_converter, comparator, schmitt_buffer | 1h |
+| P2 | bridge_rectifier, diac, variable_cap, variable_inductor | 0.5h |
+| P2 | motor, speaker, microphone, buzzer | 0.5h |
+| P2 | generic_ic, 555_timer, ac_source, wattmeter | 0.5h |
+| P3 | switch_dpdt, darlington_npn/pnp, inductor_iron/ferrite | 1h |
+| P3 | tri_state_buffer, instrumentation_amp, dc_dc_converter | 0.5h |
+
+**Total symbol count (v2): 64 symbols (P0: 19, P1: 24, P2: 14, P3: 7)**

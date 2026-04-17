@@ -557,3 +557,281 @@ bus -> cb3 -> lp1
 | P3 | Generator symbol | Medium | Low |
 | P3 | ATS (Auto Transfer Switch) | Medium | Low |
 | P3 | Metering instruments (A, V, W) | Low | Low |
+
+---
+
+## 6. Expanded Symbol Library (v2): Winding Configurations & Protection Equipment
+
+*v1 只有通用变压器和基础开关设备。实际工程 SLD 中，变压器接线方式（Δ-Yg、Y-Δ等）是关键信息，保护设备（避雷器、重合器）也必须专业呈现。*
+
+---
+
+### 6.1 Transformer Winding Configuration Symbols
+
+变压器符号由**两个绕组符号**组成，每个绕组用标准接线符号表示。
+
+#### Winding Symbol Primitives
+
+| 接线方式 | 符号 | SVG 描述 |
+|---------|------|---------|
+| Delta (Δ) | △ | 等边三角形，边长20px，开口朝下或朝上 |
+| Wye grounded (Yg) | Y接地 | Y形 + 底部接地线（三横线） |
+| Wye ungrounded (Y) | Y形 | Y形，无接地线 |
+| Zigzag (Z) | Z形 | 两段折线，表示延伸三角形接法 |
+
+**Delta (Δ) SVG:**
+```xml
+<!-- Equilateral triangle, 20×17px, centered at origin -->
+<polygon points="0,-10 -10,7 10,7" fill="none" stroke="#333" stroke-width="2"/>
+```
+
+**Wye Grounded (Yg) SVG:**
+```xml
+<!-- Y stem: center to top three branches -->
+<line x1="0" y1="0" x2="0" y2="-12"/>       <!-- stem -->
+<line x1="0" y1="-12" x2="-8" y2="-20"/>    <!-- left branch -->
+<line x1="0" y1="-12" x2="8" y2="-20"/>     <!-- right branch -->
+<line x1="0" y1="-12" x2="0" y2="-22"/>     <!-- center branch (may omit) -->
+<!-- Ground symbol at bottom -->
+<line x1="-10" y1="6" x2="10" y2="6"/>
+<line x1="-6" y1="10" x2="6" y2="10"/>
+<line x1="-2" y1="14" x2="2" y2="14"/>
+```
+
+**Wye Ungrounded (Y) SVG:** 同 Yg，省去接地符号
+
+#### Transformer_DY (Delta→Wye Grounded, 最常见)
+- **DSL attr**: `[winding: "D-Yg"]`
+- **符号**: 上方 Δ (primary) + 下方 Yg (secondary) + 中间 core lines
+- **SVG** (combined at origin):
+```xml
+<!-- Primary Delta -->
+<g transform="translate(0,-20)">
+  <polygon points="0,-10 -10,7 10,7" fill="none" stroke="#333" stroke-width="2"/>
+</g>
+<!-- Core lines (middle zone) -->
+<line x1="-14" y1="-4" x2="14" y2="-4" stroke="#333" stroke-width="2"/>
+<line x1="-14" y1="0" x2="14" y2="0" stroke="#333" stroke-width="2"/>
+<!-- Secondary Wye-Grounded -->
+<g transform="translate(0,22)">
+  <!-- Y branches -->
+  <line x1="0" y1="-8" x2="-6" y2="-14"/>
+  <line x1="0" y1="-8" x2="6" y2="-14"/>
+  <line x1="0" y1="-8" x2="0" y2="0"/>
+  <!-- Ground -->
+  <line x1="-8" y1="4" x2="8" y2="4"/>
+  <line x1="-5" y1="7" x2="5" y2="7"/>
+  <line x1="-2" y1="10" x2="2" y2="10"/>
+</g>
+<!-- Polarity dots -->
+<circle cx="-10" cy="-14" r="2.5" fill="#333"/>
+<circle cx="8" cy="18" r="2.5" fill="#333"/>
+```
+
+#### Transformer_YY (Wye-Wye)
+- **DSL attr**: `[winding: "Yg-Yg"]`
+- **符号**: 上下两个 Yg 符号 + core lines
+
+#### Transformer_DD (Delta-Delta)
+- **DSL attr**: `[winding: "D-D"]`
+- **符号**: 上下两个 Δ 符号 + core lines
+
+#### Transformer_YD (Wye→Delta)
+- **DSL attr**: `[winding: "Yg-D"]`
+
+#### Autotransformer
+- **DSL attr**: `[type: "auto"]`
+- **符号**: 单线圈（带中间 tap），两端连线 + tap 引出
+```xml
+<!-- Single winding with center tap -->
+<path d="M -12,0 A 4,4 0 0 1 -4,0 A 4,4 0 0 1 4,0 A 4,4 0 0 1 12,0"
+      fill="none" stroke="#333" stroke-width="2"/>
+<!-- Center tap -->
+<line x1="0" y1="4" x2="0" y2="18"/>
+<!-- Primary/Secondary terminals are same winding ends -->
+```
+
+#### Three-Winding Transformer
+- **DSL attr**: `[type: "3winding"]`
+- **符号**: 三个绕组，第三绕组从中间引出
+- **Nameplate**: 需在 attrs 中指定 `tertiary: "13.8kV/138kV/12.47kV"`
+
+---
+
+### 6.2 Switching Equipment (v2 Additions)
+
+#### Recloser (重合器)
+- **描述**: 自动重合断路器，检测故障后延时重合（用于配电系统）
+- **区别于 breaker**: 加小圆弧 + 循环箭头表示重合功能
+```xml
+<!-- Base: diagonal line (same as breaker) -->
+<line x1="-12" y1="12" x2="12" y2="-12" stroke="#333" stroke-width="2"/>
+<!-- Arc at top (like breaker) -->
+<path d="M 8,-8 A 6,6 0 0 1 16,-8" fill="none" stroke="#333" stroke-width="2"/>
+<!-- Reclosing indicator: small circular arrow -->
+<path d="M 14,-16 A 6,6 0 1 1 20,-10" fill="none" stroke="#333" stroke-width="1.5"/>
+<polygon points="20,-10 22,-14 17,-13" fill="#333"/>  <!-- arrowhead -->
+```
+
+#### Sectionalizer (线路分段器)
+- **描述**: 配合重合器使用，自动隔离故障段（无弧断开）
+- **区别于 switch**: 加 "S" 字母 designation
+```xml
+<!-- Base disconnect switch symbol -->
+<line x1="-12" y1="12" x2="12" y2="-12" stroke="#333" stroke-width="2"/>
+<circle cx="12" cy="-12" r="2" fill="white" stroke="#333" stroke-width="1.5"/>
+<!-- "S" label -->
+<text x="16" y="-14" font-size="9" fill="#333">S</text>
+```
+
+#### Ground Switch (接地刀闸)
+- **描述**: 安全接地用，通常与断路器联锁
+```xml
+<!-- Diagonal line (switch arm) -->
+<line x1="-12" y1="12" x2="12" y2="-12" stroke="#333" stroke-width="2"/>
+<!-- Ground symbol at bottom tip -->
+<line x1="-12" y1="16" x2="12" y2="16"/>
+<line x1="-8" y1="20" x2="8" y2="20"/>
+<line x1="-4" y1="24" x2="4" y2="24"/>
+<line x1="-12" y1="12" x2="0" y2="16"/>  <!-- connection to ground symbol -->
+```
+
+#### ATS (Automatic Transfer Switch)
+- **描述**: 自动切换两路电源（主用/备用）
+- **符号**: 两个断路器符号 + 连接杆（表示联动互锁）
+```xml
+<!-- Source 1 breaker (left) -->
+<g transform="translate(-20,0)">
+  <line x1="-8" y1="8" x2="8" y2="-8" stroke="#333" stroke-width="2"/>
+  <path d="M 5,-5 A 4,4 0 0 1 10,-5" fill="none" stroke="#333" stroke-width="1.5"/>
+</g>
+<!-- Source 2 breaker (right) -->
+<g transform="translate(20,0)">
+  <line x1="-8" y1="8" x2="8" y2="-8" stroke="#333" stroke-width="2"/>
+  <path d="M 5,-5 A 4,4 0 0 1 10,-5" fill="none" stroke="#333" stroke-width="1.5"/>
+</g>
+<!-- Mechanical interlock (dashed line between arms) -->
+<line x1="-12" y1="-8" x2="12" y2="-8" stroke="#333" stroke-width="1.5" stroke-dasharray="3,2"/>
+<!-- "ATS" label -->
+<text x="0" y="20" text-anchor="middle" font-size="9" font-weight="bold">ATS</text>
+```
+
+---
+
+### 6.3 Protection Equipment (v2 Additions)
+
+#### Surge Arrester (避雷器 / Lightning Arrester)
+- **描述**: 限制过电压，将浪涌电流导入大地
+- **IEEE 符号**: 下行箭头 + 接地线，或 arc gap + ground
+```xml
+<!-- Vertical line (line connection at top) -->
+<line x1="0" y1="-20" x2="0" y2="0" stroke="#333" stroke-width="2"/>
+<!-- Surge arrester body: rectangle with arc inside -->
+<rect x="-8" y="0" width="16" height="16" fill="white" stroke="#333" stroke-width="2"/>
+<path d="M -4,8 Q 0,2 4,8" fill="none" stroke="#333" stroke-width="1.5"/>  <!-- arc inside -->
+<!-- Ground connection -->
+<line x1="0" y1="16" x2="0" y2="24"/>
+<line x1="-10" y1="24" x2="10" y2="24"/>
+<line x1="-6" y1="28" x2="6" y2="28"/>
+<line x1="-2" y1="32" x2="2" y2="32"/>
+```
+
+#### Fuse Cutout (跌落式熔断器)
+- **描述**: 配电线路上的隔离保护，可视化熔断状态
+- **符号**: 椭圆包住对角线（与普通 fuse 区分）
+```xml
+<line x1="-14" y1="14" x2="14" y2="-14" stroke="#333" stroke-width="2"/>  <!-- fuse element -->
+<ellipse cx="0" cy="0" rx="10" ry="16" transform="rotate(45)"
+         fill="none" stroke="#333" stroke-width="1.5"/>  <!-- enclosure -->
+```
+
+#### VFD (Variable Frequency Drive)
+- **描述**: 变频器，控制电机转速
+- **符号**: 矩形块 + "VFD" 标注 + 频率变化符号
+```xml
+<rect x="-20" y="-16" width="40" height="32" fill="white" stroke="#333" stroke-width="2"/>
+<text x="0" y="-4" text-anchor="middle" font-size="9" font-weight="bold">VFD</text>
+<!-- frequency symbol: Hz or ~→~ with arrow -->
+<text x="0" y="8" text-anchor="middle" font-size="8">f₁→f₂</text>
+```
+
+---
+
+### 6.4 Metering Symbols (v2)
+
+#### Watthour Meter (电能表)
+```xml
+<circle r="16" fill="white" stroke="#333" stroke-width="2"/>
+<text x="0" y="5" text-anchor="middle" font-size="11" font-weight="bold">Wh</text>
+```
+
+#### Potential Transformer / Voltage Transformer (PT/VT)
+- **描述**: 高电压降低用于测量，与 CT 类似但并联接线
+```xml
+<!-- Smaller transformer: two tiny coil groups side by side -->
+<circle r="8" fill="white" stroke="#333" stroke-width="1.5"/>
+<text x="0" y="3" text-anchor="middle" font-size="7">PT</text>
+<!-- Parallel connection lines (unlike CT series) -->
+<line x1="-16" y1="0" x2="-8" y2="0" stroke="#333" stroke-width="1.5"/>
+<line x1="8" y1="0" x2="16" y2="0" stroke="#333" stroke-width="1.5"/>
+```
+
+---
+
+### 6.5 Generator (Synchronous)
+- **区别于 motor**: 圆圈 + "G" 标注（而非 "M"）+ 箭头方向表示发电（输出电能）
+```xml
+<circle r="14" fill="white" stroke="#333" stroke-width="2"/>
+<text text-anchor="middle" dominant-baseline="central"
+      font-size="12" font-weight="bold">G</text>
+<!-- 3-phase output lines at top -->
+<line x1="-6" y1="-12" x2="-6" y2="-18" stroke="#333" stroke-width="1.5"/>
+<line x1="0" y1="-14" x2="0" y2="-18" stroke="#333" stroke-width="1.5"/>
+<line x1="6" y1="-12" x2="6" y2="-18" stroke="#333" stroke-width="1.5"/>
+```
+
+---
+
+### 6.6 Updated DSL Examples
+
+```
+sld "Substation with Protection"
+  UTIL   = utility [voltage: "115kV"]
+  TX1    = transformer_dy [rating: "10MVA", primary: "115kV", secondary: "13.8kV", impedance: "6%"]
+  ARR1   = surge_arrester
+  BUS1   = bus [voltage: "13.8kV"]
+  CB1    = breaker [rating: "1200A", label: "Main Breaker"]
+  CT1    = ct [ratio: "600:5"]
+  REL51  = relay [device: "51", label: "OC Relay"]
+  REL87  = relay [device: "87T", label: "Diff Relay"]
+  VFD1   = vfd [rating: "200HP"]
+  M1     = motor [rating: "200HP", voltage: "13.8kV"]
+
+  UTIL   -> TX1
+  UTIL   -> ARR1   /* surge arrester in parallel */
+  ARR1   -> BUS1   /* direct to bus */
+  TX1    -> CB1
+  CB1    -> CT1
+  CT1    -> BUS1
+  CT1    -> REL51
+  TX1    -> REL87   /* differential relay monitors transformer */
+  BUS1   -> VFD1
+  VFD1   -> M1
+```
+
+---
+
+### 6.7 Updated Implementation Priority (v2)
+
+| Priority | Symbols | Hours |
+|----------|---------|-------|
+| P0 (v1) | utility, transformer (generic), bus, breaker, switch, fuse, motor, load, ct, relay | 4h |
+| P1 | transformer_dy, transformer_yy, transformer_dd (winding configs) | 1.5h |
+| P1 | surge_arrester, fuse_cl (current limiting) | 0.5h |
+| P1 | recloser, sectionalizer | 0.5h |
+| P1 | generator (sync), vfd, ats | 0.75h |
+| P2 | autotransformer, transformer_3winding | 0.75h |
+| P2 | ground_switch, watthour_meter, pt | 0.5h |
+| P2 | harmonic_filter, capacitor_bank (switched) | 0.5h |
+
+**Total SLD symbols (v2): 37 (P0: 10, P1: 16, P2: 11)**

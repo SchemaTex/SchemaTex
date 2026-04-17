@@ -478,3 +478,179 @@ Y = and(A, ~B)
 | P2 | N-bit Register | Medium | Medium |
 | P3 | Feedback path routing (above/below main path) | High | Medium |
 | P3 | Complex IC box (MUX, DEMUX) | Medium | Low |
+
+---
+
+## 6. Extended Symbol Library (v2): Special Buffers, Latches & Complex Elements
+
+*以下是 v1 标准的扩展，覆盖数字电路中实际工程高频使用的变体。所有符号延续 IEEE Std 91-1984 ANSI 风格（以 ANSI 为主，IEC 括号内给出）。*
+
+---
+
+### 6.1 Tri-State Buffer (TRISTATE_BUF)
+
+- **IEEE 91 描述**: Buffer with control input (EN/OE); output = Z (high-impedance) when disabled
+- **Pins**: `A` (data in), `EN` (enable, active-high), `Y` (output)
+- **Active-low enable**: 在 EN 引脚加 bubble → `~EN`
+- **ANSI 符号**: Buffer triangle + 额外 enable 引脚从底部引入
+  ```
+  /* Buffer triangle (same as BUF) */
+  M 0,20 V 40  M 0,40 L 35,30 L 0,20  /* triangle body */
+  M -20,30 H 0   /* data input A */
+  M 35,30 H 55   /* output Y */
+  /* Enable input from below */
+  M 15,50 V 36   /* EN pin wire */
+  /* EN label at (15, 55) */
+  ```
+- **IEC 符号**: Rectangle body with "EN" label and "1" function designation
+- **Output Z-state indicator**: 在 renderer 中 data-tristate="true"，用虚线输出线表示
+
+### 6.2 Tri-State Inverter (TRISTATE_INV)
+
+- **Pins**: `A` (data in), `EN` (enable), `Y` (inverted output)
+- **ANSI 符号**: NOT triangle + bubble at output + enable pin
+  ```
+  /* NOT triangle body */
+  M 0,20 V 40  M 0,40 L 35,30 L 0,20
+  /* inversion bubble */
+  <circle cx="38" cy="30" r="4" fill="white" stroke-width="1.5"/>
+  /* EN pin from below at body midpoint */
+  M 12,50 V 36
+  ```
+
+### 6.3 Open-Drain Buffer (OPEN_DRAIN)
+
+- **描述**: Output transistor pulls to GND when active; high state requires external pull-up
+- **Pins**: `A` (input), `Y` (open-drain output)
+- **ANSI 符号**: Buffer triangle + 特殊输出符号（指向 GND 的三角形）
+  ```
+  /* Buffer triangle */
+  M 0,20 V 40  M 0,40 L 30,30 L 0,20
+  /* Open-drain indicator: downward triangle at output */
+  M 30,30 L 42,24 L 42,36 Z   fill="none" stroke-width="1.5"
+  /* implied: external pull-up resistor on output line */
+  ```
+- **注**: 在 DSL 中加 [pullup: "10k"] attr 时，renderer 额外画 pull-up R 符号
+
+### 6.4 Schmitt Trigger (SCHMITT)
+
+- **IEEE 91 描述**: Hysteresis symbol (方波形符号) inside buffer triangle
+- **Pins**: `A` (input), `Y` (output)
+- **ANSI 符号**: Buffer triangle + 磁滞方波符号（小 S 形）
+  ```
+  /* Buffer triangle */
+  M 0,20 V 40  M 0,40 L 35,30 L 0,20
+  /* Hysteresis symbol inside at (15, 30): miniature square-wave hysteresis curve */
+  M 10,32 H 14 V 28 H 18 V 32 H 22   /* step symbol */
+  /* input/output wires */
+  M -20,30 H 0
+  M 35,30 H 55
+  ```
+- **Inverting variant**: 在 output 加 bubble
+
+### 6.5 SR Latch (LATCH_SR)
+
+- **IEEE 91 描述**: Level-sensitive (not clocked), no clock pin. Set/Reset asynchronous.
+- **区别于 SRFF**: 无 clock triangle，直接响应 S/R 电平
+- **Pins**: `S` (set), `R` (reset), `Q`, `~Q`
+- **ANSI 符号**: Rectangle 60×60px + S/R left, Q/~Q right, no clock
+  ```
+  M 0,0 H 60 V 60 H 0 Z   /* body */
+  /* Inputs on left */
+  M -20,15 H 0   /* S pin */
+  M -20,45 H 0   /* R pin */
+  /* Outputs on right */
+  M 60,15 H 80   /* Q pin */
+  M 60,45 H 80   /* ~Q pin */
+  /* bubble on ~Q output */
+  <circle cx="63" cy="45" r="4" fill="white" stroke-width="1.5"/>
+  /* Pin labels: "S" (5,14), "R" (5,44), "Q" (52,14), "Q̄" (52,44) */
+  ```
+- **IEC 符号**: Same rect with "SR" inside
+
+### 6.6 D Latch (LATCH_D)
+
+- **IEEE 91 描述**: Level-sensitive (transparent when E=1); edge-triggered version = DFF
+- **Pins**: `D` (data), `E` or `EN` (enable/gate), `Q`, `~Q`
+- **ANSI 符号**: DFF-style rectangle but without clock triangle
+  ```
+  M 0,0 H 60 V 60 H 0 Z   /* body */
+  /* D input (left top) */
+  M -20,15 H 0
+  /* E input (left bottom) */
+  M -20,45 H 0
+  /* NO clock triangle (key distinction from DFF) */
+  /* Outputs right */
+  M 60,15 H 80   /* Q */
+  M 60,45 H 80   /* ~Q + bubble */
+  /* Pin labels: "D", "E", "Q", "Q̄" */
+  ```
+- **注**: 当 DSL 中写 `G3 = LATCH_D(D=A, E=CLK_EN)` 时不画 clock triangle
+
+### 6.7 Counter (COUNTER)
+
+- **IEEE 91 描述**: Binary counter, generic representation
+- **Pins**: `CLK`, `RESET/CLR` (inputs); `Q0`, `Q1`, `Q2`, `Q3` (outputs)
+- **可选 pins**: `EN` (enable), `LOAD` (parallel load), `D0–D3` (preset data), `CO` (carry out)
+- **ANSI 符号**: 较大矩形 (60×80px) + "CTR" label
+  ```
+  M 0,0 H 60 V 80 H 0 Z   /* body */
+  /* CLK input (left, with clock triangle) */
+  M -20,25 H 0
+  <polygon points="0,20 8,25 0,30"/>   /* clock triangle */
+  /* CLR input */
+  M -20,55 H 0
+  /* Q outputs (right): Q0 at y=15, Q1 at y=30, Q2 at y=45, Q3 at y=60 */
+  M 60,15 H 80   M 60,30 H 80   M 60,45 H 80   M 60,60 H 80
+  /* CO (carry out) at right bottom */
+  M 60,72 H 80
+  /* "CTR" label centered in body */
+  /* Pin labels: CLK, CLR, Q0-Q3, CO */
+  ```
+- **attrs in DSL**: `[bits: 4]` (default 4), `[mode: up|down|updown]`
+
+### 6.8 Shift Register (SHIFT_REG)
+
+- **IEEE 91 描述**: Generic shift register, serial or parallel I/O
+- **Pins**: `CLK`, `SER` (serial in), `SHIFT/LOAD`, `Q0–Q7` (parallel out), `SER_OUT` (serial out)
+- **ANSI 符号**: Large rectangle (60×100px) + "SRG" label
+  ```
+  M 0,0 H 60 V 100 H 0 Z   /* body */
+  /* CLK (left, clock triangle) */
+  M -20,20 H 0
+  <polygon points="0,15 8,20 0,25"/>
+  /* SER in */
+  M -20,40 H 0
+  /* SHIFT/LOAD control */
+  M -20,60 H 0
+  /* Q0-Q7 outputs on right (8 outputs, 10px spacing) */
+  /* SER_OUT at bottom-right */
+  /* "SRG" label in body */
+  /* attrs: [bits: 8], [mode: SIPO|PISO|PIPO] */
+  ```
+
+---
+
+### 6.9 Pin Annotation: Active-Low and Edge-Triggered Notation
+
+| Notation | 含义 | SVG 实现 |
+|---------|------|---------|
+| `~ID` prefix in DSL | Active-low input | Bubble at pin (`<circle r=4>`) |
+| Clock triangle | Edge-triggered (rising) | `<polygon points="0,y-5 8,y 0,y+5"/>` |
+| `CLK_N` or `~CLK` | Falling-edge trigger | Bubble before clock triangle |
+| `OE` / `EN` pin | Output enable / enable | Normal pin, no special rendering |
+
+### 6.10 Updated Implementation Priority (v2)
+
+| Priority | Symbols Added | Hours |
+|----------|--------------|-------|
+| P0 | AND, OR, NOT, NAND, NOR, XOR, XNOR, BUF (existing) | 2h |
+| P0 | DFF, JKFF, SRFF, TFF (existing) | 1h |
+| P0 | MUX, DEMUX, DECODER, ENCODER (existing) | 1h |
+| P1 | TRISTATE_BUF, TRISTATE_INV | 0.5h |
+| P1 | OPEN_DRAIN, SCHMITT | 0.5h |
+| P1 | LATCH_SR, LATCH_D | 0.5h |
+| P2 | COUNTER (CTR, 4-bit) | 0.75h |
+| P2 | SHIFT_REG (SRG, 8-bit) | 0.75h |
+
+**Total logic gate symbols (v2): 24 (P0: 16, P1: 6, P2: 2)**

@@ -274,7 +274,7 @@ DEDENT        = decrease in whitespace
 
 **DSL 示例：经典 PID 闭环控制**
 ```
-block "PID Closed-Loop Control System"
+blockdiagram "PID Closed-Loop Control System"
 
 # System components
 C = block("C(s)") [name: "PID Controller", role: controller]
@@ -305,7 +305,7 @@ H -> err ["Y_m(s)"]
 
 **DSL 示例：Cascaded Blocks with Disturbance**
 ```
-block "Process with Disturbance"
+blockdiagram "Process with Disturbance"
 
 C = block("C(s)") [role: controller]
 G1 = block("G1(s)") [role: actuator]
@@ -408,7 +408,7 @@ H -> err ["-"]
 
 ### Case 1: Simple Open-Loop
 ```
-block "Open Loop"
+blockdiagram "Open Loop"
 G = block("G(s)") [role: plant]
 in -> G ["R(s)"]
 G -> out ["Y(s)"]
@@ -417,7 +417,7 @@ G -> out ["Y(s)"]
 
 ### Case 2: Unity Feedback (Negative)
 ```
-block "Unity Feedback"
+blockdiagram "Unity Feedback"
 C = block("C(s)") [role: controller]
 G = block("G(s)") [role: plant]
 err = sum(+r, -y)
@@ -431,7 +431,7 @@ G -> err ["-"]
 
 ### Case 3: Two-Block Cascade
 ```
-block "Cascade"
+blockdiagram "Cascade"
 G1 = block("G1(s)")
 G2 = block("G2(s)")
 in -> G1 -> G2 -> out
@@ -444,7 +444,7 @@ in -> G1 -> G2 -> out
 
 ### Case 5: Discrete-Time System
 ```
-block "Digital Control"
+blockdiagram "Digital Control"
 C = block("C(z)") [role: controller]
 G = block("G(s)") [role: plant]
 ZOH = block("ZOH") [role: actuator]

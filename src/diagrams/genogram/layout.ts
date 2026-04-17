@@ -695,12 +695,16 @@ function computeEdges(
       // Vertical lines from sibship to each child
       for (const child of childPositions) {
         const childTop = child.pos.y - config.nodeHeight / 2;
-        const sibX =
-          childPositions.length === 1 ? midX : child.pos.x;
-        const childPath =
-          childPositions.length === 1
-            ? `M ${midX} ${coupleY} L ${midX} ${childTop}`
-            : `M ${sibX} ${dropY} L ${child.pos.x} ${childTop}`;
+        let childPath: string;
+        if (childPositions.length === 1) {
+          if (Math.abs(child.pos.x - midX) < 1) {
+            childPath = `M ${midX} ${coupleY} L ${midX} ${childTop}`;
+          } else {
+            childPath = `M ${midX} ${dropY} L ${child.pos.x} ${dropY} L ${child.pos.x} ${childTop}`;
+          }
+        } else {
+          childPath = `M ${child.pos.x} ${dropY} L ${child.pos.x} ${childTop}`;
+        }
 
         const pcRel = findParentChildRel(graph, fu.id, child.id);
         edges.push({

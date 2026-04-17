@@ -51,6 +51,24 @@ export interface BiologyTokens {
   supportBad: string;
 }
 
+/**
+ * Tokens for causality / analysis diagrams (fishbone, future fault-tree, 5-whys).
+ * Category color is applied to top-level bones + their labels; deeper levels stay
+ * neutral so color doesn't overload hierarchy.
+ */
+export interface CausalityTokens {
+  /** Effect / outcome box fill */
+  headFill: string;
+  /** Effect / outcome box stroke */
+  headStroke: string;
+  /** Effect / outcome box text color */
+  headText: string;
+  /** Spine / trunk line color */
+  spineStroke: string;
+  /** 8-color category palette; cycles when DSL omits explicit color */
+  boneColors: readonly string[];
+}
+
 // ─── Resolved Theme ────────────────────────────────────────
 
 export type ResolvedTheme<T = object> = BaseTheme & T;
@@ -202,6 +220,65 @@ export const BIOLOGY_TOKENS: Record<ThemeName, BiologyTokens> = {
   dark: DARK_BIOLOGY,
 };
 
+// ─── Causality Tokens Per Theme ────────────────────────────
+
+const DEFAULT_CAUSALITY: CausalityTokens = {
+  headFill: "#1e293b",
+  headStroke: "#0f172a",
+  headText: "#ffffff",
+  spineStroke: "#1f2937",
+  boneColors: [
+    "#dc2626", // red-600
+    "#2563eb", // blue-600
+    "#059669", // emerald-600
+    "#d97706", // amber-600
+    "#7c3aed", // violet-600
+    "#0891b2", // cyan-600
+    "#db2777", // pink-600
+    "#475569", // slate-600
+  ],
+};
+
+const MONOCHROME_CAUSALITY: CausalityTokens = {
+  headFill: "#ffffff",
+  headStroke: "#000000",
+  headText: "#000000",
+  spineStroke: "#000000",
+  boneColors: [
+    "#000000",
+    "#222222",
+    "#444444",
+    "#555555",
+    "#666666",
+    "#777777",
+    "#888888",
+    "#999999",
+  ],
+};
+
+const DARK_CAUSALITY: CausalityTokens = {
+  headFill: "#3a3a2a",
+  headStroke: "#cdd6f4",
+  headText: "#f9e2af",
+  spineStroke: "#cdd6f4",
+  boneColors: [
+    "#f38ba8", // red
+    "#89b4fa", // blue
+    "#a6e3a1", // green
+    "#fab387", // peach
+    "#cba6f7", // mauve
+    "#94e2d5", // teal
+    "#f5c2e7", // pink
+    "#89dceb", // sky
+  ],
+};
+
+export const CAUSALITY_TOKENS: Record<ThemeName, CausalityTokens> = {
+  default: DEFAULT_CAUSALITY,
+  monochrome: MONOCHROME_CAUSALITY,
+  dark: DARK_CAUSALITY,
+};
+
 // ─── Theme Resolution ─��────────────────────────────────────
 
 export function resolveBaseTheme(name: string): BaseTheme {
@@ -216,6 +293,11 @@ export function resolvePersonTheme(name: string): ResolvedTheme<PersonTokens> {
 export function resolveBiologyTheme(name: string): ResolvedTheme<BiologyTokens> {
   const themeName = (name in BASE_THEMES ? name : "default") as ThemeName;
   return { ...BASE_THEMES[themeName], ...BIOLOGY_TOKENS[themeName] };
+}
+
+export function resolveFishboneTheme(name: string): ResolvedTheme<CausalityTokens> {
+  const themeName = (name in BASE_THEMES ? name : "default") as ThemeName;
+  return { ...BASE_THEMES[themeName], ...CAUSALITY_TOKENS[themeName] };
 }
 
 // ─── Genogram Theme Aliases ────────────────────────────────

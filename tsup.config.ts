@@ -8,6 +8,7 @@ export default defineConfig({
     "diagrams/pedigree/index": "src/diagrams/pedigree/index.ts",
     "diagrams/phylo/index": "src/diagrams/phylo/index.ts",
     "diagrams/sociogram/index": "src/diagrams/sociogram/index.ts",
+    "diagrams/fishbone/index": "src/diagrams/fishbone/index.ts",
   },
   format: ["esm", "cjs"],
   dts: true,

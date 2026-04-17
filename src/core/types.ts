@@ -24,7 +24,9 @@ export type DiagramType =
   | "circuit"   // Circuit schematic positional DSL (08-CIRCUIT-SCHEMATIC-STANDARD)
   | "blockdiagram"  // Control systems block diagram (09-BLOCK-DIAGRAM-STANDARD)
   | "ladder"    // PLC ladder logic IEC 61131-3 (10-LADDER-LOGIC-STANDARD)
-  | "sld";      // Single-line diagram / power distribution (11-SINGLE-LINE-STANDARD)
+  | "sld"       // Single-line diagram / power distribution (11-SINGLE-LINE-STANDARD)
+  // Causality / analysis diagrams
+  | "fishbone"; // Ishikawa cause-and-effect (14-FISHBONE-STANDARD)
 
 export type GenogramMode = "medical" | "heritage";
 export type LegendPosition = "bottom-right" | "right" | "bottom-center" | "none";
@@ -186,6 +188,41 @@ export type MedicalCategory =
   | "liver-gi"
   | "obesity"
   | "other";
+
+// ─── Fishbone (Ishikawa) Types ──────────────────────────────
+
+export type FishboneOrientation = "ltr" | "rtl";
+
+export interface FishboneNode {
+  /** Display text on the bone. */
+  label: string;
+  /** Optional explicit hex color (conventionally set only on majors). */
+  color?: string;
+  /** Nested sub-causes (unbounded depth, recommended ≤ 3). */
+  children: FishboneNode[];
+}
+
+export interface FishboneLegendEntry {
+  label: string;
+  color: string;
+}
+
+export interface FishboneAST {
+  type: "fishbone";
+  title?: string;
+  /** Problem / outcome displayed in the head box. */
+  effect: string;
+  /** Top-level cause categories (major bones). */
+  majors: FishboneNode[];
+  /** Effect position: `ltr` → head on right, `rtl` → head on left. */
+  orientation: FishboneOrientation;
+  /** Optional explicit canvas dimensions (otherwise auto-computed). */
+  width?: number;
+  height?: number;
+  /** Optional legend entries rendered in a corner box. */
+  legend?: FishboneLegendEntry[];
+  metadata?: Record<string, string>;
+}
 
 // ─── Phylogenetic Tree Types ────────────────────────────────
 

@@ -1,7 +1,7 @@
 /**
  * Lineage — Text-to-diagram rendering engine for relationship diagrams.
  *
- * Supports: genogram, ecomap, pedigree, phylogenetic tree, sociogram.
+ * Supports: genogram, ecomap, pedigree, phylogenetic tree, sociogram, fishbone.
  * Output: SVG string.
  *
  * @example
@@ -26,18 +26,22 @@ export { ecomap } from "./diagrams/ecomap";
 export { pedigree } from "./diagrams/pedigree";
 export { phylo } from "./diagrams/phylo";
 export { sociogram } from "./diagrams/sociogram";
+export { fishbone } from "./diagrams/fishbone";
 
 export {
   type ThemeName,
   type BaseTheme,
   type PersonTokens,
   type BiologyTokens,
+  type CausalityTokens,
   type ResolvedTheme,
   BASE_THEMES,
   PERSON_TOKENS,
   BIOLOGY_TOKENS,
+  CAUSALITY_TOKENS,
   resolveBaseTheme,
   resolvePersonTheme,
   resolveBiologyTheme,
   resolveGenogramTheme,
+  resolveFishboneTheme,
 } from "./core/theme";

@@ -4,9 +4,10 @@ import { ecomap } from "../diagrams/ecomap";
 import { pedigree } from "../diagrams/pedigree";
 import { phylo } from "../diagrams/phylo";
 import { sociogram } from "../diagrams/sociogram";
+import { fishbone } from "../diagrams/fishbone";
 
 export interface LineageConfig {
-  type?: "genogram" | "ecomap" | "pedigree" | "phylo" | "sociogram";
+  type?: "genogram" | "ecomap" | "pedigree" | "phylo" | "sociogram" | "fishbone";
   width?: number;
   height?: number;
   padding?: number;
@@ -14,7 +15,7 @@ export interface LineageConfig {
   fontFamily?: string;
 }
 
-const plugins: DiagramPlugin[] = [genogram, ecomap, pedigree, phylo, sociogram];
+const plugins: DiagramPlugin[] = [genogram, ecomap, pedigree, phylo, sociogram, fishbone];
 
 function detectPlugin(text: string, config?: LineageConfig): DiagramPlugin {
   if (config?.type) {
@@ -25,7 +26,7 @@ function detectPlugin(text: string, config?: LineageConfig): DiagramPlugin {
     if (plugin.detect(text)) return plugin;
   }
   throw new Error(
-    "Cannot detect diagram type. Start your text with 'genogram', 'ecomap', 'pedigree', 'phylo', or 'sociogram'."
+    "Cannot detect diagram type. Start your text with 'genogram', 'ecomap', 'pedigree', 'phylo', 'sociogram', or 'fishbone'."
   );
 }
 
