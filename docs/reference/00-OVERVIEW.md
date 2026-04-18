@@ -6,14 +6,28 @@
 
 ## What is Schematex?
 
-开源 TypeScript 库：Text DSL → SVG 渲染引擎，专注**专业领域图表**（domain-specific diagrams）。
+**Schematex — Standards-as-code for professional diagrams.**
 
-定位类似 Mermaid，但 Mermaid 做通用图表（flowchart、sequence、ER），Schematex 做 Mermaid 覆盖不到的**领域专有图表**——两大领域：
+开源 TypeScript 库：Text DSL → SVG 渲染引擎，专注**遵循真实行业标准**的专业领域图表（standards-compliant domain-specific diagrams）。
 
-**Relationship Diagrams（关系图谱）：** genogram、ecomap、pedigree chart、sociogram、phylogenetic tree
-**Electrical Engineering Diagrams（电气工程图）：** digital timing、logic gate、circuit schematic、block diagram（control systems）、ladder logic（PLC）、single-line diagram（power distribution）
+**核心差异化（positioning）：** 通用图表工具（Mermaid / D2 / Excalidraw）把 diagram 当成"带标签的形状"；Schematex 把每个 diagram 背后的**领域标准当成一等公民**——parser、layout 算法、SVG symbol 全部按发布的标准实现，不是我们自己发明的。
 
-**关键区别：** Mermaid 用通用图布局（dagre/ELK），Schematex 用**领域特定布局算法**（genogram → generation-based layered layout，ecomap → radial layout，logic gate → DAG topological sort，ladder logic → fixed power-rail layout，etc.）。通用布局画不好这些图。
+**四大 domain cluster：**
+
+| Cluster | 覆盖图表 | 标准 |
+|---------|---------|------|
+| 👪 **Relationships** | genogram · ecomap · pedigree · sociogram · phylogenetic tree | McGoldrick 2020 · Hartman 1978 · NSGC · Moreno 1934 · Newick/NHX |
+| ⚡ **Electrical & Industrial** | timing · logic gate · circuit schematic · block diagram · ladder logic · single-line diagram | WaveDrom · IEEE 91 · IEEE 315 · Ogata · IEC 61131-3 · ANSI device numbering |
+| 🏢 **Corporate / Legal** | entity structure · cap table | Tier-based ownership hierarchy with percentage rollup |
+| 🐟 **Causality / Analysis** | fishbone (Ishikawa) | Ishikawa 1968 cause-and-effect |
+
+**三大价值支柱（value pillars）：**
+
+1. **Standards-compliant** — 每种图的符号、布局、DSL 语法都对应真实的发布标准，domain expert 敢拿去 clinical / engineering / legal 用。
+2. **Zero runtime dependency** — 无 D3、无 dagre、无 parser generator。纯 TypeScript 手写，KB 级 bundle，SSR-safe，嵌入任何 React/Vue/Svelte 项目。
+3. **LLM-native by design** — DSL 设计时就考虑 LLM 常见失败模式（CJK 引号、嵌套歧义），错误信息 AI-readable，每种图型都有 pre-tuned prompt 配套。
+
+**关键区别：** Mermaid 用通用图布局（dagre/ELK），Schematex 用**领域特定布局算法**（genogram → generation-based layered layout；ecomap → radial layout；logic gate → DAG topological sort；ladder → fixed power-rail layout；phylo → rectangular/cladogram；etc.）。通用布局画不好这些图——这就是为什么 Mermaid 至今没有 genogram 或 ladder logic。
 
 ---
 
@@ -35,9 +49,19 @@
 | 执法/情报分析师 | 犯罪网络分析、嫌疑人社交圈映射 | FBI Law Enforcement Bulletin 推荐方法 |
 
 ### 商业联动
-Schematex 是 MyMap.ai 和 ChatDiagram.com 的渲染基础层。开源获取社区贡献和分发，商业产品在其上提供 AI 生成 + 编辑 + 导出。
+Schematex 计划作为 MyMap.ai 和 ChatDiagram.com 的渲染基础层（替换路径进行中，尚未上线）。开源 (AGPL-3.0) 获取社区贡献和分发，商业产品在其上提供 AI 生成 + 编辑 + 导出；不能接受 AGPL 的第三方 SaaS 可购买商业授权。
 
 EE diagram 系列面向工程师/教育市场，差异化切入点：无 JavaScript 依赖的纯 SVG 渲染（Schemdraw 是 Python-only，draw.io 需要庞大运行时），可嵌入任何前端框架。
+
+### 开源用户三分层（谁来 star / 谁来 deploy / 谁来付费）
+
+| 层 | 身份 | 给项目什么 | 项目给他什么 |
+|----|------|-----------|-------------|
+| **L1 Starrer** | AI dev · TS 工程师 · HN/reddit 路过者 | 声量、GitHub rank、SEO 权重 | 15 秒能懂的 hero demo |
+| **L2 Deployer** | EHR / LegalTech / EdTech / Industrial IDE 的 full-stack dev | Issue、PR、case study、口碑 | 5 分钟能跑通的 quickstart + domain integration guide |
+| **L3 Payer** | 不能用 AGPL 的 SaaS 产品、医疗合规软件、企业内部工具 | 商业授权收入 | 稳定性、SLA、法律清晰（contact victor@mymap.ai） |
+
+冷启动阶段所有增长投入都优先服务 L1（README 首屏、Show HN、showcase SVG），L2 的 docs 次之，L3 被动等待询价。
 
 ---
 
@@ -59,6 +83,8 @@ Text DSL ──→ Parser ──→ AST ──→ Layout Engine ──→ Layout
                              (block: fixed L-R + feedback route)
                              (ladder: fixed power-rail per rung)
                              (sld: top-down voltage hierarchy)
+                             (entity: tier-based ownership hierarchy)
+                             (fishbone: symmetric spine + slanted ribs)
 ```
 
 每个图表类型实现 `DiagramPlugin` 接口（定义在 `src/core/types.ts`）：
@@ -105,7 +131,9 @@ schematex/
 │   │   ├── 08-CIRCUIT-SCHEMATIC-STANDARD.md  # Analog/digital schematics
 │   │   ├── 09-BLOCK-DIAGRAM-STANDARD.md  # Control systems block diagrams
 │   │   ├── 10-LADDER-LOGIC-STANDARD.md   # PLC ladder logic (IEC 61131-3)
-│   │   └── 11-SINGLE-LINE-STANDARD.md    # Power distribution SLD (IEEE 315)
+│   │   ├── 11-SINGLE-LINE-STANDARD.md    # Power distribution SLD (IEEE 315)
+│   │   ├── 12-ENTITY-STRUCTURE-STANDARD.md  # Corporate / legal / tax ownership
+│   │   └── 13-FISHBONE-STANDARD.md       # Ishikawa cause-and-effect
 │   ├── impl/                    # 实施计划（CC 自主执行）
 │   │   │  ── Relationship Diagrams ──
 │   │   ├── 1.0-genogram-parser.md
@@ -122,7 +150,9 @@ schematex/
 │   │   ├── 8.0-circuit-schematic.md # Positional DSL + component library
 │   │   ├── 9.0-block-diagram.md     # Control systems + feedback routing
 │   │   ├── 10.0-ladder-logic.md     # PLC ladder + function blocks
-│   │   └── 11.0-single-line.md      # Power SLD + voltage hierarchy
+│   │   ├── 11.0-single-line.md      # Power SLD + voltage hierarchy
+│   │   ├── 12.0-entity-structure.md # Corporate ownership
+│   │   └── 13.0-fishbone.md         # Ishikawa cause-and-effect
 │   └── issues/                  # 问题追踪
 │
 ├── src/
@@ -154,11 +184,16 @@ schematex/
 │       │   ├── parser.ts        # Newick + indent DSL + clade defs
 │       │   ├── layout.ts        # Rectangular/slanted/cladogram
 │       │   └── renderer.ts      # Branch paths, support dots, scale bar
-│       └── sociogram/
+│       ├── sociogram/
+│       │   ├── index.ts
+│       │   ├── parser.ts        # Edge operators, groups, config
+│       │   ├── layout.ts        # Circular + Fruchterman-Reingold force-directed
+│       │   └── renderer.ts      # Valence-colored edges, role nodes, arrows
+│       └── fishbone/
 │           ├── index.ts
-│           ├── parser.ts        # Edge operators, groups, config
-│           ├── layout.ts        # Circular + Fruchterman-Reingold force-directed
-│           └── renderer.ts      # Valence-colored edges, role nodes, arrows
+│           ├── parser.ts        # Dual-style DSL (structured + compact)
+│           ├── layout.ts        # Symmetric spine + aligned-header rib placement
+│           └── renderer.ts      # Mask-based text-gap + category pills
 │
 ├── tests/
 │   ├── genogram/

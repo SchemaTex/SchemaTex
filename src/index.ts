@@ -33,6 +33,7 @@ export { blockdiagram } from "./diagrams/blockdiagram";
 export { ladder } from "./diagrams/ladder";
 export { sld } from "./diagrams/sld";
 export { entity } from "./diagrams/entity";
+export { fishbone } from "./diagrams/fishbone";
 
 export {
   type ThemeName,

@@ -11,6 +11,7 @@ import { blockdiagram } from "../diagrams/blockdiagram";
 import { ladder } from "../diagrams/ladder";
 import { sld } from "../diagrams/sld";
 import { entity } from "../diagrams/entity";
+import { fishbone } from "../diagrams/fishbone";
 
 export interface SchematexConfig {
   type?:
@@ -25,7 +26,8 @@ export interface SchematexConfig {
     | "blockdiagram"
     | "ladder"
     | "sld"
-    | "entity";
+    | "entity"
+    | "fishbone";
   width?: number;
   height?: number;
   padding?: number;
@@ -46,6 +48,7 @@ const plugins: DiagramPlugin[] = [
   ladder,
   sld,
   entity,
+  fishbone,
 ];
 
 function detectPlugin(text: string, config?: SchematexConfig): DiagramPlugin {
@@ -57,7 +60,7 @@ function detectPlugin(text: string, config?: SchematexConfig): DiagramPlugin {
     if (plugin.detect(text)) return plugin;
   }
   throw new Error(
-    "Cannot detect diagram type. Start your text with 'genogram', 'ecomap', 'pedigree', 'phylo', 'sociogram', 'timing', 'logic', 'circuit', 'blockdiagram', 'ladder', 'sld', or 'entity-structure'."
+    "Cannot detect diagram type. Start your text with 'genogram', 'ecomap', 'pedigree', 'phylo', 'sociogram', 'timing', 'logic', 'circuit', 'blockdiagram', 'ladder', 'sld', 'entity-structure', or 'fishbone'."
   );
 }
 
