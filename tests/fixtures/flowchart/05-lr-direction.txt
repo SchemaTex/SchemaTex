@@ -1,0 +1,5 @@
+flowchart LR "Pipeline (LR)"
+  A([Input]) --> B[Parse]
+  B --> C[Validate]
+  C --> D[Transform]
+  D --> E([Output])

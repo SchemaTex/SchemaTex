@@ -1,0 +1,8 @@
+venn "Plant kingdom sample" [diagram: euler]
+set conifers  "Conifers"
+set flowering "Flowering plants"
+set mosses    "Mosses"
+
+conifers disjoint flowering
+conifers disjoint mosses
+flowering disjoint mosses

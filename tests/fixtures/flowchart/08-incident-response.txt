@@ -1,0 +1,19 @@
+flowchart TB "Production Incident Response"
+  A([Alert Fires]) --> B[Oncall Paged]
+  B --> C{Ack in 5min?}
+  C -->|no| D[Escalate to Manager]
+  D --> B
+  C -->|yes| E[Assess Severity]
+  E --> F{SEV level?}
+  F -->|SEV1| G[Page Leadership]
+  F -->|SEV2| H[Open War Room]
+  F -->|SEV3| I[Create Ticket]
+  G --> H
+  H --> J[Mitigate]
+  I --> J
+  J --> K{Resolved?}
+  K -->|no| L[Try Next Runbook]
+  L --> J
+  K -->|yes| M[Write Postmortem]
+  M --> N[Schedule RCA]
+  N --> O([Incident Closed])

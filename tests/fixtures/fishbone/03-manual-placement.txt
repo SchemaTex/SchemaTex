@@ -1,0 +1,25 @@
+fishbone "Manual placement — Key vs Secondary"
+effect "Q3 留存下滑 15%"
+
+# 关键因素放上半，次要因素放下半
+category product "产品 Product"  [side: top, order: 0]
+category growth  "增长 Growth"   [side: top, order: 1]
+category tech    "技术 Technical"[side: top, order: 2]
+category ops     "运营 Ops"      [side: bottom, order: 0]
+category brand   "品牌 Brand"    [side: bottom, order: 1]
+
+product : "核心功能体验下降"
+product : "新功能采纳率低"
+product : "竞品差异化减弱"
+
+growth : "付费获客 CAC 上升"
+growth : "激活率下降"
+
+tech : "移动端性能退化"
+tech : "推送到达率下降"
+
+ops : "客服响应变慢"
+ops : "FAQ 覆盖不足"
+
+brand : "社区活跃度下降"
+brand : "品牌曝光份额下滑"

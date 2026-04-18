@@ -1,0 +1,16 @@
+flowchart TB "CI/CD Pipeline"
+  A([Dev Push]) --> B[Lint]
+  B --> C[Unit Tests]
+  C --> D{CI Passes?}
+  D -->|no| E[Notify Author]
+  E --> A
+  D -->|yes| F[Build Image]
+  F --> G[Deploy Staging]
+  G --> H{Stage OK?}
+  H -->|no| I[Rollback Staging]
+  I --> E
+  H -->|yes| J[Deploy Prod]
+  J --> K{Canary OK?}
+  K -->|no| L[Rollback Prod]
+  L --> E
+  K -->|yes| M([Released])

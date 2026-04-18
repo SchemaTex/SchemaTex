@@ -1,0 +1,10 @@
+venn "Transport vehicles" [diagram: euler]
+set vehicles   "Vehicles"
+set cars       "Cars"
+set bicycles   "Bicycles"
+set motorbikes "Motorbikes"
+
+cars subset vehicles
+motorbikes subset vehicles
+bicycles disjoint vehicles
+cars disjoint motorbikes

@@ -1,0 +1,7 @@
+flowchart TB "Skip-layer edges"
+  A[Top] --> B[L1]
+  A --> C[L2]
+  A --> D[L3]
+  B --> E[Merge]
+  C --> E
+  D --> E

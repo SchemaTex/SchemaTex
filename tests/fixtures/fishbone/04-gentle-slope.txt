@@ -1,0 +1,30 @@
+fishbone "Gentle slope — dense labels"
+effect "API P99 latency 200ms → 3.2s"
+
+config slope = gentle
+
+category deploy   "Deploy"
+category deps     "Dependencies"
+category db       "Database"
+category network  "Network"
+category code     "Code"
+category observe  "Observability"
+
+deploy : "canary % 过高"
+deploy : "回滚耗时 12min"
+
+deps : "第三方 SDK 引入新版"
+deps : "auth 服务 p95 飙升"
+
+db : "连接池耗尽"
+db : "慢查询未加索引"
+  - "新 feature 未审 query plan"
+
+network : "单 AZ 丢包"
+network : "ALB 健康检查超时"
+
+code : "N+1 query 回归"
+code : "并发锁退化"
+
+observe : "警报阈值过高"
+observe : "dashboard 缺 p99 指标"

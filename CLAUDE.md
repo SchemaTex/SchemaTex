@@ -4,11 +4,15 @@
 
 ## What is Schematex?
 
+**Tagline: "Standards-as-code for professional diagrams."**
+
 开源 TypeScript 库：Text DSL → SVG。13+ diagram types — genogram / ecomap / pedigree / phylo / sociogram / timing / logic-gate / circuit / ladder / block / SLD / entity-structure / fishbone。
 
-定位："Mermaid for standards-compliant domain diagrams"。零 runtime dependency。
+**三大价值支柱：** (1) Standards-compliant（每种图对应真实发布标准：McGoldrick / IEC 61131-3 / IEEE 315 / Newick 等）(2) Zero runtime dependency（无 D3/dagre/parser generator）(3) LLM-native by design（DSL 为 LLM 生成而设计）。
 
-Owner: Victor (victor@mymap.ai)。商业目标：开源获分发 → MyMap.ai / ChatDiagram.com 集成变现。
+**四大 domain cluster：** 👪 Relationships · ⚡ Electrical & Industrial · 🏢 Corporate/Legal · 🐟 Causality/Analysis。详见 `docs/reference/00-OVERVIEW.md`。
+
+Owner: Victor (victor@mymap.ai)。商业目标：AGPL-3.0 + 商业授权双轨 → 开源获分发，MyMap.ai / ChatDiagram.com 集成变现（替换路径进行中）。
 
 ---
 

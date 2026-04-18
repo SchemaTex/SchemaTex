@@ -1,10 +1,10 @@
 <p align="center">
   <strong>Schematex</strong><br>
-  <em>Text → SVG for the diagrams Mermaid forgot.</em>
+  <em>Standards-as-code for professional diagrams.</em>
 </p>
 
 <p align="center">
-  Genograms · Ecomaps · Pedigrees · Phylogenetic trees · Sociograms · Timing diagrams · Logic gates · Circuit schematics · Ladder logic · Single-line diagrams · Entity structures · Block diagrams · Fishbones
+  McGoldrick genograms · NSGC pedigrees · IEC 61131-3 ladder logic · IEEE 315 single-line diagrams · Newick phylogenetic trees · Moreno sociograms · and 7 more — all from a tiny text DSL, with zero runtime dependencies.
 </p>
 
 <p align="center">
@@ -24,9 +24,16 @@
 
 ---
 
-**Schematex** is a zero-dependency TypeScript library that compiles a small text DSL into standards-compliant SVG diagrams. Thirteen diagram families across three domains — **relationship** (social work, therapy, medicine), **electrical & industrial** (EE, PLC, power), and **corporate / legal** (cap tables, entity structures).
+**Schematex** is the open-source rendering engine for diagrams that follow real industry standards. Thirteen diagram families across four domains:
 
-Like [Mermaid](https://mermaid.js.org/), but for the domain diagrams Mermaid doesn't cover: McGoldrick genograms, IEEE 315 single-line diagrams, IEC 61131-3 ladder logic, Newick phylogenetic trees, and more.
+- 👪 **Relationships** — genograms, ecomaps, pedigrees, sociograms, phylogenetic trees
+- ⚡ **Electrical & Industrial** — ladder logic, single-line diagrams, circuit schematics, logic gates, timing, block diagrams
+- 🏢 **Corporate & Legal** — entity structures, cap tables
+- 🐟 **Causality & Analysis** — fishbone / Ishikawa
+
+Mermaid draws generic flowcharts. Schematex draws the diagrams your domain experts actually sign off on — a genogram a genetic counselor accepts clinically, ladder logic that maps 1:1 to IEC 61131-3, a cap table that survives a Series A review.
+
+⚡ **Zero runtime dependencies** · 📐 **10+ industry standards** · 🤖 **LLM-native DSL** · 🌱 **SSR-ready pure SVG**
 
 ## Install
 
@@ -299,13 +306,26 @@ Signal-flow block diagrams (summing junctions, gain blocks, feedback loops) and 
 
 ## Why Schematex?
 
-**Mermaid is great for flowcharts and sequence diagrams.** But domain diagrams have domain-specific requirements a general-purpose tool can't meet:
+**Generic flowchart tools can't draw professional diagrams.** Every diagram domain has published standards — symbol conventions, layout rules, labelling grammars — and when you ignore them, domain experts reject the output:
 
-- Genograms follow the [McGoldrick (2020)](https://en.wikipedia.org/wiki/Genogram) standard — gender-specific shapes, medical condition fill patterns, generation-based layout.
-- Ladder logic follows [IEC 61131-3](https://en.wikipedia.org/wiki/IEC_61131-3) with Allen-Bradley tag conventions — three-line labels (tag/address/description), Set/Reset coils, input-side seal-in.
-- Single-line diagrams follow [IEEE 315](https://standards.ieee.org/ieee/315/5052/) symbols with proper protective device clustering.
+- **Genograms** follow the [McGoldrick (2020)](https://en.wikipedia.org/wiki/Genogram) standard — gender-specific shapes, medical condition fill patterns, emotional-relationship line styles, generation-based layout. A circle-labeled-as-female in a flowchart is not a genogram.
+- **Ladder logic** follows [IEC 61131-3](https://en.wikipedia.org/wiki/IEC_61131-3) with Allen-Bradley tag conventions — three-line labels (tag/address/description), Set/Reset coils, input-side seal-in, parallel rungs.
+- **Single-line diagrams** follow [IEEE 315](https://standards.ieee.org/ieee/315/5052/) — protective device clustering, voltage-tier hierarchy, transformer symbology.
+- **Pedigrees** follow NSGC human-pedigree nomenclature; **phylogenetic trees** roundtrip Newick + NHX; **cap tables** compute tier-aware ownership rollup.
 
-No existing open-source library handles these well. GoJS has a genogram sample but costs **$7k+**. Everything else is proprietary or abandoned.
+Schematex treats each standard as a first-class citizen with its own parser, layout algorithm, and SVG renderer — **standards-as-code**, not generic shapes with domain labels.
+
+No existing open-source library covers this spread. GoJS has isolated samples but costs **$7k+/seat**. Schemdraw is Python-only. draw.io is a heavyweight GUI. Everything else is proprietary or abandoned.
+
+### Designed for LLM code generation
+
+Schematex DSLs are small, consistent, and shaped by what LLMs get wrong:
+
+- Each diagram type has a minimal, documented grammar an LLM can learn from a single example.
+- Error messages are AI-readable — line number plus specific fix suggestion, not `Parse error at line 42`.
+- Syntax avoids the common LLM failure modes (CJK quoting, ambiguous nesting, positional vs. named args).
+
+Written by humans, shaped by what LLMs get wrong.
 
 ## Features
 
@@ -354,6 +374,6 @@ npm run build
 
 ## License
 
-[AGPL-3.0](./LICENSE) for open-source use. Commercial licensing available — contact victor@mymap.ai.
+[AGPL-3.0](./LICENSE) for open-source use. For commercial use without AGPL obligations (embedding Schematex into proprietary or closed-source products), a commercial license is available — contact **victor@mymap.ai**.
 
-<p align="center"><sub>Built by <a href="https://mymap.ai">MyMap.ai</a>. Used in production at <a href="https://chatdiagram.com">ChatDiagram</a> and <a href="https://conceptmap.ai">ConceptMap</a>.</sub></p>
+<p align="center"><sub>Built by <a href="https://mymap.ai">MyMap.ai</a>.</sub></p>

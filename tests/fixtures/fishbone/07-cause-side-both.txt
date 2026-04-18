@@ -1,0 +1,31 @@
+fishbone "Cause-side both — double-column causes"
+effect "Medication dose error"
+
+config causeSide = both
+
+category methods  "Methods"
+category material "Materials"
+category machines "Machines"
+category manpower "Manpower"
+category patient  "Patients"
+
+methods : "Double-check not performed"
+methods : "Order transcription error"
+methods : "Verbal order confusion"
+methods : "Pre-op handoff skipped"
+
+material : "Similar-looking vial labels"
+material : "Same strength multi-vial"
+material : "Expired stock restock"
+material : "Look-alike packaging"
+
+machines : "Pump default profile not updated"
+machines : "Barcode scanner misread"
+machines : "BCMA workflow override"
+
+manpower : "Staffing shortage"
+manpower : "Trainee unsupervised"
+
+patient : "ID band missing"
+patient : "Allergy not flagged"
+patient : "Weight not rechecked"

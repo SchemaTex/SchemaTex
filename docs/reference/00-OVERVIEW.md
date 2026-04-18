@@ -19,7 +19,8 @@
 | 👪 **Relationships** | genogram · ecomap · pedigree · sociogram · phylogenetic tree | McGoldrick 2020 · Hartman 1978 · NSGC · Moreno 1934 · Newick/NHX |
 | ⚡ **Electrical & Industrial** | timing · logic gate · circuit schematic · block diagram · ladder logic · single-line diagram | WaveDrom · IEEE 91 · IEEE 315 · Ogata · IEC 61131-3 · ANSI device numbering |
 | 🏢 **Corporate / Legal** | entity structure · cap table | Tier-based ownership hierarchy with percentage rollup |
-| 🐟 **Causality / Analysis** | fishbone (Ishikawa) | Ishikawa 1968 cause-and-effect |
+| 🐟 **Causality / Analysis** | fishbone (Ishikawa) · venn/euler | Ishikawa 1968 cause-and-effect · Venn 1880 / Euler set-theoretic diagrams |
+| 🔀 **Generic process** | flowchart | Sugiyama layered DAG + orthogonal routing (14-FLOWCHART-STANDARD) |
 
 **三大价值支柱（value pillars）：**
 
@@ -85,6 +86,7 @@ Text DSL ──→ Parser ──→ AST ──→ Layout Engine ──→ Layout
                              (sld: top-down voltage hierarchy)
                              (entity: tier-based ownership hierarchy)
                              (fishbone: symmetric spine + slanted ribs)
+                             (venn: analytic 2-circle / 3-circle triangle / 4-ellipse + Euler containment)
 ```
 
 每个图表类型实现 `DiagramPlugin` 接口（定义在 `src/core/types.ts`）：
@@ -133,7 +135,9 @@ schematex/
 │   │   ├── 10-LADDER-LOGIC-STANDARD.md   # PLC ladder logic (IEC 61131-3)
 │   │   ├── 11-SINGLE-LINE-STANDARD.md    # Power distribution SLD (IEEE 315)
 │   │   ├── 12-ENTITY-STRUCTURE-STANDARD.md  # Corporate / legal / tax ownership
-│   │   └── 13-FISHBONE-STANDARD.md       # Ishikawa cause-and-effect
+│   │   ├── 13-FISHBONE-STANDARD.md       # Ishikawa cause-and-effect
+│   │   ├── 14-FLOWCHART-STANDARD.md      # Sugiyama layered DAG + orthogonal routing
+│   │   └── 15-VENN-STANDARD.md           # Venn / Euler set-theoretic diagrams
 │   ├── impl/                    # 实施计划（CC 自主执行）
 │   │   │  ── Relationship Diagrams ──
 │   │   ├── 1.0-genogram-parser.md
@@ -189,11 +193,25 @@ schematex/
 │       │   ├── parser.ts        # Edge operators, groups, config
 │       │   ├── layout.ts        # Circular + Fruchterman-Reingold force-directed
 │       │   └── renderer.ts      # Valence-colored edges, role nodes, arrows
-│       └── fishbone/
+│       ├── fishbone/
+│       │   ├── index.ts
+│       │   ├── parser.ts        # Dual-style DSL (structured + compact)
+│       │   ├── layout.ts        # Symmetric spine + aligned-header rib placement
+│       │   └── renderer.ts      # Mask-based text-gap + category pills
+│       ├── venn/
+│       │   ├── index.ts
+│       │   ├── parser.ts        # 4 DSL modes (declarative / enumeration / region / euler)
+│       │   ├── geometry.ts      # Analytic lens area, bisection solver, Monte-Carlo centroid
+│       │   ├── layout.ts        # n=2/3/4 + Euler containment
+│       │   ├── labels.ts        # Region centroid placement + leader-line fallback
+│       │   └── renderer.ts      # mix-blend-mode multiply + semantic SVG
+│       └── flowchart/
 │           ├── index.ts
-│           ├── parser.ts        # Dual-style DSL (structured + compact)
-│           ├── layout.ts        # Symmetric spine + aligned-header rib placement
-│           └── renderer.ts      # Mask-based text-gap + category pills
+│           ├── parser.ts        # Mermaid-like DSL (nodes, edges, subgraphs, classDefs)
+│           ├── shapes.ts        # Shape catalog (rect/round/stadium/diamond/parallelogram + M2)
+│           ├── layout.ts        # Sugiyama 4-phase: FAS cycle-removal → layering → median → Brandes-Köpf
+│           ├── routing.ts       # Manhattan/orthogonal edge routing with dummy nodes
+│           └── renderer.ts      # Semantic SVG + clusters + arrowheads
 │
 ├── tests/
 │   ├── genogram/

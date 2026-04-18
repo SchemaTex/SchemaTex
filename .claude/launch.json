@@ -4,7 +4,7 @@
     {
       "name": "preview",
       "runtimeExecutable": "npx",
-      "runtimeArgs": ["vite", "--port", "3031", "preview/"],
+      "runtimeArgs": ["vite", "--port", "3031", "--config", "vite.preview.config.ts", "."],
       "port": 3031
     },
     {

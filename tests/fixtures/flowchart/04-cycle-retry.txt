@@ -1,0 +1,6 @@
+flowchart TB "Retry loop"
+  A([Start]) --> B[Attempt]
+  B --> C{Success?}
+  C -->|yes| D([Done])
+  C -->|no| E[Wait]
+  E --> B

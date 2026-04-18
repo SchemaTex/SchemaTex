@@ -1,0 +1,6 @@
+flowchart TB "Branching decision"
+  A([Start]) --> B{Valid?}
+  B -->|yes| C[Save]
+  B -->|no| D[Reject]
+  C --> E([Done])
+  D --> E

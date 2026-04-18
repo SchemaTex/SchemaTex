@@ -1,0 +1,16 @@
+flowchart TB "Signup & Subscription Funnel"
+  A[Visit Landing] --> B[Click Sign Up]
+  B --> C[Verify Email]
+  C --> D[Enter Trial]
+  D --> E{Subscribe?}
+  E -->|yes| F[Complete Payment]
+  E -->|no| G[Churn]
+  F --> H[Active Subscriber]
+  class A start
+  class B process
+  class C process
+  class D success
+  class E decision
+  class F success
+  class G neutral
+  class H danger

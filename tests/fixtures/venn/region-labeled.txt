@@ -1,0 +1,12 @@
+venn "Note-taking app feature overlap"
+set notion   "Notion"
+set obsidian "Obsidian"
+set roam     "Roam Research"
+
+region notion only              : "Databases"
+region obsidian only            : "Plugins"
+region roam only                : "Block refs"
+region notion & obsidian        : "Markdown"
+region notion & roam            : "Web clipper"
+region obsidian & roam          : "Bi-links"
+region notion & obsidian & roam : "Wiki tags"

@@ -332,9 +332,7 @@ export function layoutEntity(ast: EntityAST): EntityLayoutResult {
         const isHier =
           e.op === "ownership" || e.op === "voting" || e.op === "pool";
         const parentCount = isHier ? (parents.get(e.to) ?? []).length : 0;
-        const childCount = isHier ? (children.get(e.from) ?? []).length : 0;
         const fanIn = parentCount > 1;
-        const fanOut = childCount > 1;
 
         // fan-in (many parents → one child): top corner (parent side) is
         //   unique per parent.
