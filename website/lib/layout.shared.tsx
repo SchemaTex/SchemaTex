@@ -8,6 +8,7 @@ export const baseOptions: BaseLayoutProps = {
   },
   links: [
     { text: 'Docs', url: '/docs', active: 'nested-url' },
+    { text: 'Gallery', url: '/gallery', active: 'nested-url' },
     { text: 'Examples', url: '/examples', active: 'nested-url' },
     { text: 'Playground', url: '/playground' },
     { text: 'GitHub', url: 'https://github.com/victorzhrn/Schematex', external: true },

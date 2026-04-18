@@ -1,0 +1,25 @@
+---
+title: "Pedigree: autosomal recessive (cystic fibrosis)"
+description: "Three-generation pedigree illustrating autosomal recessive inheritance of cystic fibrosis — carrier parents, affected child, unaffected siblings."
+diagram: pedigree
+industry: healthcare
+complexity: 2
+standard: "NSGC"
+---
+
+Classic textbook pedigree for autosomal recessive inheritance — two
+carrier parents producing an affected child, with carriers and unaffected
+siblings following the 1:2:1 Mendelian ratio.
+
+<Playground initial={`pedigree "CF family — autosomal recessive"
+  I-1 [male, carrier]
+  I-2 [female, carrier]
+  I-1 -- I-2
+    II-1 [male, affected, proband]
+    II-2 [female, carrier]
+    II-3 [male, unaffected]
+  II-2 -- II-4 [male, carrier]
+    III-1 [female, affected]
+    III-2 [male, unaffected]`} />
+
+[Pedigree syntax →](/docs/pedigree)

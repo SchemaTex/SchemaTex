@@ -1,0 +1,27 @@
+---
+title: "Block diagram: PID control loop"
+description: "Classic closed-loop PID controller with plant, feedback, reference and error signals. The textbook figure from any control-systems course."
+diagram: block
+industry: industrial
+complexity: 2
+standard: "Ogata control systems"
+---
+
+The canonical closed-loop PID diagram from any control-systems textbook —
+reference in, error through the controller, plant output fed back through
+the summing junction. Signal-flow semantics, not a generic flowchart.
+
+<Playground initial={`blockdiagram "PID control loop"
+C = block("PID C(s)") [role: controller]
+G = block("Plant G(s)") [role: plant]
+err = sum(+r, -y)
+r = signal("r (setpoint)")
+y = signal("y (output)")
+in -> r
+r -> err
+err -> C
+C -> G
+G -> y
+G -> err`} />
+
+[Block syntax →](/docs/block)

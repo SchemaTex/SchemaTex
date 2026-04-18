@@ -1,0 +1,27 @@
+---
+title: "Entity structure: Series A cap table"
+description: "Post-Series A startup cap table — founders, seed investors, lead VC, employee option pool, with ownership percentages and entity types."
+diagram: entity
+industry: legal-finance
+complexity: 2
+standard: "Tier ownership"
+---
+
+A typical post–Series A cap table: two founders, a seed fund, the lead
+VC, an angel group, and the employee option pool — all rolling up into
+the Delaware C-corp with ownership percentages intact.
+
+<Playground initial={`entity "Acme Inc. — post Series A"
+  acme [type: corp, jurisdiction: DE, label: "Acme Inc."]
+  founders [type: individual, label: "Founders (2)"]
+  seed [type: fund, jurisdiction: DE, label: "Seed Fund I"]
+  lead [type: fund, jurisdiction: DE, label: "Sequoia Series A"]
+  angels [type: individual, label: "Angel group"]
+  esop [type: trust, jurisdiction: DE, label: "Employee Option Pool"]
+  founders --45%--> acme
+  seed --12%--> acme
+  lead --22%--> acme
+  angels --6%--> acme
+  esop --15%--> acme`} />
+
+[Entity syntax →](/docs/entity)

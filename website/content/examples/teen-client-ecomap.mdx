@@ -1,0 +1,29 @@
+---
+title: "Ecomap: teen client intake"
+description: "Minimal ecomap for a 15-year-old client — family, school, peer group, part-time job, therapist. Used in adolescent social work assessments."
+diagram: ecomap
+industry: healthcare
+complexity: 1
+standard: "Hartman 1978"
+---
+
+A social worker's intake ecomap for a teen client — mapping the family,
+school, peer group, mentors, and clinical supports that surround an
+adolescent in crisis.
+
+<Playground initial={`ecomap "Marcus, age 15"
+  center: client [label: "Marcus"]
+  mom [label: "Mother", category: family]
+  dad [label: "Father (divorced)", category: family]
+  school [label: "East High School", category: education]
+  coach [label: "Soccer Coach", category: community]
+  peers [label: "Soccer team", category: community]
+  therapist [label: "Ms. Chen", category: mental-health]
+  mom === client [label: "primary caregiver"]
+  dad --- client [label: "EOW weekends"]
+  school === client
+  coach --> client [label: "mentor"]
+  peers === client
+  therapist <-> client [label: "weekly"]`} />
+
+[Ecomap syntax →](/docs/ecomap)

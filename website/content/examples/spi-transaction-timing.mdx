@@ -1,0 +1,21 @@
+---
+title: "Timing diagram: SPI transaction"
+description: "Digital timing diagram of an 8-byte SPI transaction — clock, chip-select, MOSI data bytes, MISO response. Standard WaveDrom-compatible syntax."
+diagram: timing
+industry: industrial
+complexity: 2
+standard: "WaveDrom / IEEE 1497"
+---
+
+A full 8-byte SPI master→slave transfer — clock pulses, active-low
+chip-select, four MOSI command bytes followed by four MISO response bytes.
+The syntax is WaveDrom-compatible, so the same DSL renders in embedded
+datasheets.
+
+<Playground initial={`timing "SPI Transaction"
+CLK:   pppppppp
+CS_N:  10000001
+MOSI:  x=======  data: ["0xAB","0xCD","0xEF","0x01","0x02","0x03","0x04","0x05"]
+MISO:  zzzz====  data: ["","","","","0xFF","0x12","0x34","0x56"]`} />
+
+[Timing syntax →](/docs/timing)
