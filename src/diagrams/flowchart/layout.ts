@@ -447,7 +447,7 @@ export function layoutFlowchart(ast: FlowchartAST): FlowchartLayoutResult {
       Math.ceil(n.label.length * FC_CONST.charWidth) + FC_CONST.labelHPad * 2
     );
     let shapeW = Math.max(FC_CONST.minNodeWidth, labelW);
-    let shapeH = FC_CONST.nodeHeight;
+    let shapeH: number = FC_CONST.nodeHeight;
     if (n.shape === "diamond") {
       shapeW = Math.max(shapeW, labelW * 1.25);
       shapeH = Math.max(shapeH, 52);
@@ -884,28 +884,3 @@ function edgeLabelAnchor(
   return { x: a.x + 6, y: midY, textAnchor: "start" };
 }
 
-function midpointOf(pts: Array<{ x: number; y: number }>): { x: number; y: number } {
-  // Arc-length midpoint
-  let total = 0;
-  const segs: number[] = [];
-  for (let i = 1; i < pts.length; i++) {
-    const dx = pts[i]!.x - pts[i - 1]!.x;
-    const dy = pts[i]!.y - pts[i - 1]!.y;
-    const d = Math.hypot(dx, dy);
-    segs.push(d);
-    total += d;
-  }
-  const half = total / 2;
-  let acc = 0;
-  for (let i = 0; i < segs.length; i++) {
-    if (acc + segs[i]! >= half) {
-      const t = (half - acc) / (segs[i]! || 1);
-      return {
-        x: pts[i]!.x + (pts[i + 1]!.x - pts[i]!.x) * t,
-        y: pts[i]!.y + (pts[i + 1]!.y - pts[i]!.y) * t,
-      };
-    }
-    acc += segs[i]!;
-  }
-  return pts[Math.floor(pts.length / 2)]!;
-}
