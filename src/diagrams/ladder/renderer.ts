@@ -3,6 +3,7 @@ import type {
   LadderContact,
   LadderCoil,
   LadderFunctionBlock,
+  RenderConfig,
 } from "../../core/types";
 import {
   svgRoot,
@@ -13,25 +14,30 @@ import {
   title as titleEl,
   desc,
 } from "../../core/svg";
+import { resolveIndustrialTheme, type IndustrialTokens, type ResolvedTheme } from "../../core/theme";
 import { layoutLadder, type LadderLayoutNode, wrapName } from "./layout";
 
-const CSS = `
-.lt-ladder { background: #fff; font-family: system-ui, -apple-system, sans-serif; }
-.lt-ladder-rail { stroke: #333; stroke-width: 4; stroke-linecap: square; }
-.lt-ladder-wire { stroke: #333; stroke-width: 1.5; fill: none; }
-.lt-ladder-element { stroke: #333; stroke-width: 2; fill: none; }
-.lt-ladder-coil { stroke: #333; stroke-width: 2; fill: none; }
-.lt-ladder-fb { fill: #fff; stroke: #333; stroke-width: 2; }
-.lt-ladder-fb-name { font: bold 11px sans-serif; fill: #111; text-anchor: middle; }
-.lt-ladder-pin { font: 8px sans-serif; fill: #333; }
-.lt-ladder-name { font: 9px sans-serif; fill: #222; text-anchor: middle; }
-.lt-ladder-tag { font: 600 9px ui-monospace, SFMono-Regular, Menlo, monospace; fill: #1d6fb8; text-anchor: middle; }
-.lt-ladder-addr { font: 600 8.5px ui-monospace, monospace; fill: #c02626; text-anchor: middle; }
-.lt-ladder-rung-num { font: 10px sans-serif; fill: #666; text-anchor: end; }
-.lt-ladder-comment { font: italic 10px sans-serif; fill: #888; }
-.lt-ladder-title { font: bold 15px sans-serif; fill: #111; }
-.lt-ladder-symbol-label { font: bold 10px sans-serif; fill: #333; text-anchor: middle; }
+type IT = ResolvedTheme<IndustrialTokens>;
+
+function buildCss(t: IT): string {
+  return `
+.lt-ladder { background: ${t.bg}; font-family: system-ui, -apple-system, sans-serif; }
+.lt-ladder-rail { stroke: ${t.strokeHeavy}; stroke-width: 4; stroke-linecap: square; }
+.lt-ladder-wire { stroke: ${t.stroke}; stroke-width: 1.5; fill: none; }
+.lt-ladder-element { stroke: ${t.stroke}; stroke-width: 2; fill: none; }
+.lt-ladder-coil { stroke: ${t.stroke}; stroke-width: 2; fill: none; }
+.lt-ladder-fb { fill: ${t.bg}; stroke: ${t.stroke}; stroke-width: 2; }
+.lt-ladder-fb-name { font: bold 11px sans-serif; fill: ${t.text}; text-anchor: middle; }
+.lt-ladder-pin { font: 8px sans-serif; fill: ${t.stroke}; }
+.lt-ladder-name { font: 9px sans-serif; fill: ${t.text}; text-anchor: middle; }
+.lt-ladder-tag { font: 600 9px ui-monospace, SFMono-Regular, Menlo, monospace; fill: ${t.accent}; text-anchor: middle; }
+.lt-ladder-addr { font: 600 8.5px ui-monospace, monospace; fill: ${t.error}; text-anchor: middle; }
+.lt-ladder-rung-num { font: 10px sans-serif; fill: ${t.textMuted}; text-anchor: end; }
+.lt-ladder-comment { font: italic 10px sans-serif; fill: ${t.textMuted}; }
+.lt-ladder-title { font: bold 15px sans-serif; fill: ${t.text}; }
+.lt-ladder-symbol-label { font: bold 10px sans-serif; fill: ${t.stroke}; text-anchor: middle; }
 `.trim();
+}
 
 const LINE_H = 11;
 
@@ -188,8 +194,9 @@ function renderNode(node: LadderLayoutNode): string {
   }
 }
 
-export function renderLadder(ast: LadderAST): string {
+export function renderLadder(ast: LadderAST, config?: RenderConfig): string {
   const layout = layoutLadder(ast);
+  const t = resolveIndustrialTheme(config?.theme ?? "default");
   const titleOffset = ast.title ? 30 : 0;
   const width = layout.width;
   const height = layout.height + titleOffset;
@@ -199,7 +206,7 @@ export function renderLadder(ast: LadderAST): string {
   children.push(
     desc(`PLC ladder logic diagram with ${ast.rungs.length} rung${ast.rungs.length === 1 ? "" : "s"}`)
   );
-  children.push(el("style", {}, CSS));
+  children.push(el("style", {}, buildCss(t)));
 
   if (ast.title) {
     children.push(

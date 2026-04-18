@@ -22,6 +22,7 @@ import {
   el,
   text as textEl,
   path as pathEl,
+  rect,
   title as titleEl,
   desc as descEl,
   defs,
@@ -29,40 +30,31 @@ import {
 import { parseFlowchart } from "./parser";
 import { layoutFlowchart, FC_CONST } from "./layout";
 import { shapeSVG } from "./shapes";
-import { resolveBaseTheme, type ThemeName } from "../../core/theme";
-
-function stadiumFill(themeName: ThemeName): string {
-  return themeName === "dark" ? "#1e3a5f" : themeName === "monochrome" ? "#ffffff" : "#dbeafe";
-}
-function diamondFill(themeName: ThemeName): string {
-  return themeName === "dark" ? "#3a3a2a" : themeName === "monochrome" ? "#ffffff" : "#fef3c7";
-}
-function roundFill(themeName: ThemeName): string {
-  return themeName === "dark" ? "#1f3a2a" : themeName === "monochrome" ? "#ffffff" : "#dcfce7";
-}
+import { resolveFlowchartTheme, type ThemeName } from "../../core/theme";
 
 const CSS_TEMPLATE = (themeName: ThemeName): string => {
-  const t = resolveBaseTheme(themeName);
+  const t = resolveFlowchartTheme(themeName);
+  const c = t.classes;
   return `
 .sx-fc { background: ${t.bg}; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
 .sx-fc-node { fill: ${t.fillMuted}; stroke: ${t.stroke}; stroke-width: 1.5; stroke-linejoin: round; }
-.sx-fc-node-stadium { fill: ${stadiumFill(themeName)}; stroke: ${t.stroke}; }
-.sx-fc-node-diamond { fill: ${diamondFill(themeName)}; stroke: ${t.stroke}; }
-.sx-fc-node-round { fill: ${roundFill(themeName)}; stroke: ${t.stroke}; }
+.sx-fc-node-stadium { fill: ${t.stadiumFill}; stroke: ${t.stroke}; }
+.sx-fc-node-diamond { fill: ${t.diamondFill}; stroke: ${t.stroke}; }
+.sx-fc-node-round { fill: ${t.roundFill}; stroke: ${t.stroke}; }
 .sx-fc-node-text { fill: ${t.text}; font: 12px system-ui, -apple-system, "Segoe UI", sans-serif; }
 /* Semantic class presets (applied via 'class A start') — override shape fills */
-.sx-fc-class-start    > .sx-fc-node { fill: #f0ece0; stroke: #9a8b6a; }
-.sx-fc-class-start    > .sx-fc-node-text { fill: #5c4e2e; font-weight: 600; }
-.sx-fc-class-process  > .sx-fc-node { fill: #e8e4ff; stroke: #8b7dd8; }
-.sx-fc-class-process  > .sx-fc-node-text { fill: #4c3a8f; font-weight: 600; }
-.sx-fc-class-decision > .sx-fc-node { fill: #fde8c8; stroke: #d4985c; }
-.sx-fc-class-decision > .sx-fc-node-text { fill: #8a5a1f; font-weight: 600; }
-.sx-fc-class-success  > .sx-fc-node { fill: #d4f0e0; stroke: #7bc19a; }
-.sx-fc-class-success  > .sx-fc-node-text { fill: #1e5a3a; font-weight: 600; }
-.sx-fc-class-danger   > .sx-fc-node { fill: #fbe0dc; stroke: #d89181; }
-.sx-fc-class-danger   > .sx-fc-node-text { fill: #8a3525; font-weight: 600; }
-.sx-fc-class-neutral  > .sx-fc-node { fill: #ececec; stroke: #a0a0a0; }
-.sx-fc-class-neutral  > .sx-fc-node-text { fill: #555555; font-weight: 600; }
+.sx-fc-class-start    > .sx-fc-node { fill: ${c.start.fill}; stroke: ${c.start.stroke}; }
+.sx-fc-class-start    > .sx-fc-node-text { fill: ${c.start.text}; font-weight: 600; }
+.sx-fc-class-process  > .sx-fc-node { fill: ${c.process.fill}; stroke: ${c.process.stroke}; }
+.sx-fc-class-process  > .sx-fc-node-text { fill: ${c.process.text}; font-weight: 600; }
+.sx-fc-class-decision > .sx-fc-node { fill: ${c.decision.fill}; stroke: ${c.decision.stroke}; }
+.sx-fc-class-decision > .sx-fc-node-text { fill: ${c.decision.text}; font-weight: 600; }
+.sx-fc-class-success  > .sx-fc-node { fill: ${c.success.fill}; stroke: ${c.success.stroke}; }
+.sx-fc-class-success  > .sx-fc-node-text { fill: ${c.success.text}; font-weight: 600; }
+.sx-fc-class-danger   > .sx-fc-node { fill: ${c.danger.fill}; stroke: ${c.danger.stroke}; }
+.sx-fc-class-danger   > .sx-fc-node-text { fill: ${c.danger.text}; font-weight: 600; }
+.sx-fc-class-neutral  > .sx-fc-node { fill: ${c.neutral.fill}; stroke: ${c.neutral.stroke}; }
+.sx-fc-class-neutral  > .sx-fc-node-text { fill: ${c.neutral.text}; font-weight: 600; }
 .sx-fc-edge { fill: none; stroke: ${t.strokeMuted}; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
 .sx-fc-edge-thick { stroke: ${t.stroke}; stroke-width: 2.4; }
 .sx-fc-edge-dashed { stroke-dasharray: 5 3; }
@@ -180,6 +172,19 @@ function renderEdgeLabel(
   cy: number,
   textAnchor: "start" | "middle" | "end"
 ): string {
+  // Approximate pill size — matches entity diagram edge label style.
+  const w = Math.max(20, label.length * 6.5 + 10);
+  const h = 16;
+  const rx = cx - (textAnchor === "start" ? 0 : textAnchor === "end" ? w : w / 2);
+  const ry = cy - h / 2;
+  const bg = rect({
+    x: rx,
+    y: ry,
+    width: w,
+    height: h,
+    rx: 3,
+    class: "sx-fc-edge-label-bg",
+  });
   const t = textEl(
     {
       x: cx,
@@ -190,7 +195,7 @@ function renderEdgeLabel(
     },
     label
   );
-  return group({ class: "sx-fc-edge-label-g" }, [t]);
+  return group({ class: "sx-fc-edge-label-g" }, [bg, t]);
 }
 
 function fmt(n: number): string {

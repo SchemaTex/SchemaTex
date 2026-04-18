@@ -11,10 +11,10 @@ export const sociogram: DiagramPlugin = {
     return first.startsWith("sociogram");
   },
 
-  render(text: string): string {
+  render(text: string, config): string {
     const ast = parseSociogram(text);
     const layout = layoutSociogram(ast);
-    return renderSociogram(layout);
+    return renderSociogram(layout, { theme: config?.theme });
   },
 };
 

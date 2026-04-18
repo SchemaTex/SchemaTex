@@ -32,7 +32,11 @@ export type DiagramType =
   // Set-theory / logic diagrams
   | "venn"    // Venn / Euler diagram (15-VENN-STANDARD)
   // Generic process / decision flowchart
-  | "flowchart"; // Flowchart (14-FLOWCHART-STANDARD)
+  | "flowchart" // Flowchart (14-FLOWCHART-STANDARD)
+  // Knowledge / brainstorming diagrams
+  | "mindmap" // Mindmap — radial Buzan + markmap-compat tree (20-MINDMAP-STANDARD)
+  // Strategy / prioritization / analysis diagrams
+  | "matrix"; // Matrix / 2x2 quadrant / 3x3 / N×M heatmap (18-MATRIX-STANDARD)
 
 export type GenogramMode = "medical" | "heritage";
 export type LegendPosition = "bottom-right" | "right" | "bottom-center" | "none";
@@ -1267,4 +1271,53 @@ export interface FlowchartLayoutResult {
   nodes: FlowchartLayoutNode[];
   edges: FlowchartLayoutEdge[];
   clusters: FlowchartLayoutCluster[];
+}
+
+// ─── Mindmap Types ──────────────────────────────────────────
+
+export type MindmapStyle = "map" | "logic-right" | "org-down";
+
+export interface MindmapNode {
+  id: string;
+  label: string;
+  depth: number;
+  children: MindmapNode[];
+}
+
+export interface MindmapAST {
+  type: "mindmap";
+  title?: string;
+  style: MindmapStyle;
+  root: MindmapNode;
+  /** Theme override from DSL `%% theme:` directive. */
+  themeOverride?: string;
+}
+
+export interface MindmapLayoutNode {
+  node: MindmapNode;
+  x: number;
+  y: number;
+  /** "center" for root; "left"/"right" for map style; "right" for logic-right; "down" for org-down. */
+  side: "left" | "right" | "center" | "down";
+  /** Main-branch index (0..N-1); -1 for root. Drives palette. */
+  branchIndex: number;
+  labelWidth: number;
+  labelHeight: number;
+}
+
+export interface MindmapLayoutEdge {
+  from: string;
+  to: string;
+  path: string;
+  color: string;
+  width: number;
+}
+
+export interface MindmapLayoutResult {
+  width: number;
+  height: number;
+  style: MindmapStyle;
+  nodes: MindmapLayoutNode[];
+  edges: MindmapLayoutEdge[];
+  title?: string;
 }

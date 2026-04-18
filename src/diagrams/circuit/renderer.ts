@@ -1,4 +1,4 @@
-import type { CircuitAST } from "../../core/types";
+import type { CircuitAST, RenderConfig } from "../../core/types";
 import { layoutCircuit, type LaidOutComponent, type CircuitLayoutResult } from "./layout";
 import { layoutCircuitNetlist, type RoutedWire } from "./autolayout";
 import { getSymbol } from "./symbols";
@@ -13,6 +13,7 @@ import {
   desc,
   escapeXml,
 } from "../../core/svg";
+import { resolveIndustrialTheme } from "../../core/theme";
 
 function renderItem(it: LaidOutComponent, offX: number, offY: number): string {
   const comp = it.component;
@@ -54,7 +55,7 @@ function renderItem(it: LaidOutComponent, offX: number, offY: number): string {
 
   const sym = getSymbol(comp.componentType);
   if (!sym) {
-    return `<rect x="${tx - 10}" y="${ty - 10}" width="20" height="20" fill="none" stroke="#c00" stroke-dasharray="3,2"/><text x="${tx}" y="${ty + 3}" text-anchor="middle" font-size="9" fill="#c00">?${escapeXml(comp.componentType)}</text>`;
+    return `<rect x="${tx - 10}" y="${ty - 10}" width="20" height="20" fill="none" class="schematex-circuit-err" stroke-dasharray="3,2"/><text x="${tx}" y="${ty + 3}" text-anchor="middle" font-size="9" class="schematex-circuit-err">?${escapeXml(comp.componentType)}</text>`;
   }
 
   const body = sym.svg(comp.label, comp.value, comp.attrs);
@@ -118,12 +119,14 @@ function renderRoute(r: RoutedWire, offX: number, offY: number): string {
   return line + dots;
 }
 
-export function renderCircuit(ast: CircuitAST): string {
+export function renderCircuit(ast: CircuitAST, config?: RenderConfig): string {
   const isNetlist = ast.mode === "netlist";
   const layout: CircuitLayoutResult & { routes?: RoutedWire[] } = isNetlist
     ? layoutCircuitNetlist(ast)
     : layoutCircuit(ast);
   const { width, height, offsetX, offsetY } = layout;
+
+  const t = resolveIndustrialTheme(config?.theme ?? "default");
 
   // In netlist mode, routes are rendered BEFORE items so components sit on top
   // of wires (visually cleaner — symbol fills cover the wire endpoints).
@@ -133,17 +136,18 @@ export function renderCircuit(ast: CircuitAST): string {
   const items = layout.items.map((it) => renderItem(it, offsetX, offsetY)).join("");
 
   const css = `
-.schematex-circuit { background: #fff; font-family: system-ui, -apple-system, sans-serif; }
-.schematex-circuit-body { stroke: #222; stroke-width: 1.75; fill: none; stroke-linejoin: round; stroke-linecap: round; }
-.schematex-circuit-fill { stroke: #222; stroke-width: 1.5; fill: #222; }
-.schematex-circuit-wire { stroke: #222; stroke-width: 1.75; fill: none; stroke-linecap: square; }
-.schematex-circuit-dot { fill: #222; stroke: none; }
-.schematex-circuit-label { font: 600 11px system-ui, sans-serif; fill: #111; }
-.schematex-circuit-value { font: italic 10px system-ui, sans-serif; fill: #555; }
-.schematex-circuit-net-label { font: 600 11px system-ui, sans-serif; fill: #06c; }
-.schematex-circuit-pol { font: 9px sans-serif; fill: #222; }
-.schematex-circuit-meter { font: bold 12px sans-serif; fill: #222; }
-.schematex-circuit-title { font: bold 14px sans-serif; fill: #111; }
+.schematex-circuit { background: ${t.bg}; font-family: system-ui, -apple-system, sans-serif; }
+.schematex-circuit-body { stroke: ${t.stroke}; stroke-width: 1.75; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.schematex-circuit-fill { stroke: ${t.stroke}; stroke-width: 1.5; fill: ${t.stroke}; }
+.schematex-circuit-wire { stroke: ${t.stroke}; stroke-width: 1.75; fill: none; stroke-linecap: square; }
+.schematex-circuit-dot { fill: ${t.stroke}; stroke: none; }
+.schematex-circuit-label { font: 600 11px system-ui, sans-serif; fill: ${t.text}; }
+.schematex-circuit-value { font: italic 10px system-ui, sans-serif; fill: ${t.textMuted}; }
+.schematex-circuit-net-label { font: 600 11px system-ui, sans-serif; fill: ${t.accent}; }
+.schematex-circuit-pol { font: 9px sans-serif; fill: ${t.stroke}; }
+.schematex-circuit-meter { font: bold 12px sans-serif; fill: ${t.stroke}; }
+.schematex-circuit-title { font: bold 14px sans-serif; fill: ${t.text}; }
+.schematex-circuit-err { stroke: ${t.error}; fill: ${t.error}; }
 `.trim();
 
   const titleBar = ast.title

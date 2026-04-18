@@ -8,9 +8,9 @@ export const sld: DiagramPlugin = {
     const first = text.trim().split("\n")[0]?.trim().toLowerCase() ?? "";
     return first.startsWith("sld");
   },
-  render(text: string): string {
+  render(text: string, config): string {
     const ast = parseSLDDSL(text);
-    return renderSLD(ast);
+    return renderSLD(ast, config);
   },
 };
 

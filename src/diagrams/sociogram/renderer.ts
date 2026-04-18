@@ -312,9 +312,12 @@ function renderGroupLabels(layout: SociogramLayoutResult, t: BaseTheme): string[
 
 // ─── Main Renderer ──────────────────────────────────────────
 
-export function renderSociogram(layout: SociogramLayoutResult): string {
+export function renderSociogram(
+  layout: SociogramLayoutResult,
+  options: { theme?: string } = {}
+): string {
   const { ast } = layout;
-  const t = resolveBaseTheme("default");
+  const t = resolveBaseTheme(options.theme ?? "default");
 
   const css = buildCSS(ast, t);
   const defsStr = buildDefs(t);

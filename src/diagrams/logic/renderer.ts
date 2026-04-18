@@ -1,4 +1,4 @@
-import type { LogicGateAST, LogicGateStyle } from "../../core/types";
+import type { LogicGateAST, LogicGateStyle, RenderConfig } from "../../core/types";
 import { layoutLogic } from "./layout";
 import {
   svgRoot,
@@ -12,6 +12,7 @@ import {
   desc,
   polygon,
 } from "../../core/svg";
+import { resolveIndustrialTheme } from "../../core/theme";
 
 const PORT_SIZE = 40;
 const PORT_H = 30;
@@ -145,10 +146,11 @@ function renderGateBody(
   return out;
 }
 
-export function renderLogic(ast: LogicGateAST): string {
+export function renderLogic(ast: LogicGateAST, config?: RenderConfig): string {
   const style: LogicGateStyle = ast.style ?? "ansi";
   const layout = layoutLogic(ast);
   const { width, height } = layout;
+  const t = resolveIndustrialTheme(config?.theme ?? "default");
 
   const gateSvgs: string[] = [];
   const portSvgs: string[] = [];
@@ -269,18 +271,18 @@ export function renderLogic(ast: LogicGateAST): string {
   });
 
   const css = `
-.schematex-logic { background: #fff; font-family: system-ui, -apple-system, sans-serif; }
-.schematex-logic-gate-body { fill: none; stroke: #111; stroke-width: 1.75; stroke-linejoin: round; }
-.schematex-logic-bubble { fill: #fff; stroke: #111; stroke-width: 1.5; }
-.schematex-logic-clock-tri { fill: none; stroke: #111; stroke-width: 1.5; stroke-linejoin: round; }
-.schematex-logic-wire { stroke: #111; stroke-width: 1.5; fill: none; stroke-linecap: square; }
-.schematex-logic-port-label { font: 13px system-ui, sans-serif; fill: #111; }
-.schematex-logic-pin-label { font: 9px sans-serif; fill: #333; }
-.schematex-logic-gate-type { font: 10px sans-serif; fill: #666; }
-.schematex-logic-gate-iec-label { font: bold 13px sans-serif; fill: #111; }
-.schematex-logic-title { font: bold 14px sans-serif; fill: #111; }
-.schematex-logic-module { fill: none; stroke: #555; stroke-width: 1.25; stroke-dasharray: 6 4; }
-.schematex-logic-module-label { font: 11px sans-serif; fill: #555; font-style: italic; }
+.schematex-logic { background: ${t.bg}; font-family: system-ui, -apple-system, sans-serif; }
+.schematex-logic-gate-body { fill: none; stroke: ${t.strokeHeavy}; stroke-width: 1.75; stroke-linejoin: round; }
+.schematex-logic-bubble { fill: ${t.bg}; stroke: ${t.strokeHeavy}; stroke-width: 1.5; }
+.schematex-logic-clock-tri { fill: none; stroke: ${t.strokeHeavy}; stroke-width: 1.5; stroke-linejoin: round; }
+.schematex-logic-wire { stroke: ${t.strokeHeavy}; stroke-width: 1.5; fill: none; stroke-linecap: square; }
+.schematex-logic-port-label { font: 13px system-ui, sans-serif; fill: ${t.text}; }
+.schematex-logic-pin-label { font: 9px sans-serif; fill: ${t.stroke}; }
+.schematex-logic-gate-type { font: 10px sans-serif; fill: ${t.textMuted}; }
+.schematex-logic-gate-iec-label { font: bold 13px sans-serif; fill: ${t.text}; }
+.schematex-logic-title { font: bold 14px sans-serif; fill: ${t.text}; }
+.schematex-logic-module { fill: none; stroke: ${t.textMuted}; stroke-width: 1.25; stroke-dasharray: 6 4; }
+.schematex-logic-module-label { font: 11px sans-serif; fill: ${t.textMuted}; font-style: italic; }
 `.trim();
 
   const titleSvg = ast.title

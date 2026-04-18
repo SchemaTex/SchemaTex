@@ -1,4 +1,5 @@
 import type { EntityAST, EntityNode, EntityEdge } from "../../core/types";
+import type { RenderConfig } from "../../core/types";
 import {
   svgRoot,
   group,
@@ -13,38 +14,41 @@ import {
   polygon,
   escapeXml,
 } from "../../core/svg";
+import { resolveBaseTheme, type BaseTheme } from "../../core/theme";
 import {
   layoutEntity,
   type EntityLayoutNode,
   type EntityLayoutEdge,
 } from "./layout";
 
-const CSS = `
-.lt-entity { background: #fff; font-family: system-ui, -apple-system, sans-serif; }
-.lt-entity-title { font: bold 16px sans-serif; fill: #111; }
-.lt-entity-name { font: 600 12px sans-serif; fill: #111; text-anchor: middle; }
-.lt-entity-type { font: 500 10px sans-serif; fill: #555; text-anchor: middle; }
-.lt-entity-role { font: italic 10px sans-serif; fill: #555; text-anchor: middle; }
-.lt-entity-note { font: 10px sans-serif; fill: #666; text-anchor: middle; }
-.lt-entity-badge-bg { fill: #fff; stroke: #888; stroke-width: 1; }
-.lt-entity-badge-text { font: 600 9px sans-serif; fill: #333; text-anchor: middle; letter-spacing: 0.5px; }
-.lt-entity-edge { stroke: #333; stroke-width: 1.5; fill: none; }
-.lt-entity-edge-voting { stroke: #333; stroke-width: 1.2; fill: none; }
-.lt-entity-edge-pool { stroke: #888; stroke-width: 1.5; fill: none; stroke-dasharray: 5,4; }
-.lt-entity-edge-license { stroke: #7c3aed; stroke-width: 1.5; fill: none; stroke-dasharray: 5,4; }
-.lt-entity-edge-distribution { stroke: #059669; stroke-width: 1.5; fill: none; stroke-dasharray: 5,4; }
-.lt-entity-edge-voting-pref { stroke: #2563eb; stroke-width: 1.8; fill: none; }
-.lt-entity-label-bg { fill: #fff; stroke: #ddd; stroke-width: 1; }
-.lt-entity-label { font: 600 10px sans-serif; fill: #111; text-anchor: middle; }
-.lt-entity-label-sub { font: 500 9px sans-serif; fill: #666; text-anchor: middle; }
+function buildCss(t: BaseTheme): string {
+  return `
+.lt-entity { background: ${t.bg}; font-family: system-ui, -apple-system, sans-serif; }
+.lt-entity-title { font: bold 16px sans-serif; fill: ${t.text}; }
+.lt-entity-name { font: 600 12px sans-serif; fill: ${t.text}; text-anchor: middle; }
+.lt-entity-type { font: 500 10px sans-serif; fill: ${t.textMuted}; text-anchor: middle; }
+.lt-entity-role { font: italic 10px sans-serif; fill: ${t.textMuted}; text-anchor: middle; }
+.lt-entity-note { font: 10px sans-serif; fill: ${t.textMuted}; text-anchor: middle; }
+.lt-entity-badge-bg { fill: ${t.bg}; stroke: ${t.strokeMuted}; stroke-width: 1; }
+.lt-entity-badge-text { font: 600 9px sans-serif; fill: ${t.text}; text-anchor: middle; letter-spacing: 0.5px; }
+.lt-entity-edge { stroke: ${t.stroke}; stroke-width: 1.5; fill: none; }
+.lt-entity-edge-voting { stroke: ${t.stroke}; stroke-width: 1.2; fill: none; }
+.lt-entity-edge-pool { stroke: ${t.strokeMuted}; stroke-width: 1.5; fill: none; stroke-dasharray: 5,4; }
+.lt-entity-edge-license { stroke: ${t.palette[3]}; stroke-width: 1.5; fill: none; stroke-dasharray: 5,4; }
+.lt-entity-edge-distribution { stroke: ${t.positive}; stroke-width: 1.5; fill: none; stroke-dasharray: 5,4; }
+.lt-entity-edge-voting-pref { stroke: ${t.accent}; stroke-width: 1.8; fill: none; }
+.lt-entity-label-bg { fill: ${t.bg}; stroke: ${t.strokeMuted}; stroke-width: 1; }
+.lt-entity-label { font: 600 10px sans-serif; fill: ${t.text}; text-anchor: middle; }
+.lt-entity-label-sub { font: 500 9px sans-serif; fill: ${t.textMuted}; text-anchor: middle; }
 .lt-entity-cluster { fill: none; stroke-dasharray: 6,4; stroke-width: 1.2; }
-.lt-entity-cluster-label-bg { fill: #fff; }
+.lt-entity-cluster-label-bg { fill: ${t.bg}; }
 .lt-entity-cluster-label { font: 600 11px sans-serif; letter-spacing: 0.5px; }
-.lt-entity-status-new { stroke: #059669; stroke-width: 2.2; }
-.lt-entity-status-eliminated { stroke: #dc2626; stroke-width: 2.2; }
-.lt-entity-status-modified { stroke: #d97706; stroke-width: 2.2; }
+.lt-entity-status-new { stroke: ${t.positive}; stroke-width: 2.2; }
+.lt-entity-status-eliminated { stroke: ${t.negative}; stroke-width: 2.2; }
+.lt-entity-status-modified { stroke: ${t.warn}; stroke-width: 2.2; }
 .lt-entity-status-tag { font: 700 8px sans-serif; text-anchor: middle; letter-spacing: 0.5px; }
 `.trim();
+}
 
 const FILL: Record<string, string> = {
   corp: "#dbeafe",
@@ -83,13 +87,13 @@ function statusClass(node: EntityNode): string | undefined {
   }
 }
 
-function renderShape(ln: EntityLayoutNode): string {
+function renderShape(ln: EntityLayoutNode, t: BaseTheme): string {
   const n = ln.node;
-  const fill = FILL[n.entityType] ?? "#fff";
+  const fill = FILL[n.entityType] ?? t.bg;
   const sc = statusClass(n);
   const commonAttrs: Record<string, string | number> = {
     fill,
-    stroke: "#1f2937",
+    stroke: t.stroke,
     "stroke-width": 1.4,
   };
   if (sc) {
@@ -227,13 +231,13 @@ function renderBadge(ln: EntityLayoutNode): string | undefined {
   ]);
 }
 
-function renderStatusTag(ln: EntityLayoutNode): string | undefined {
+function renderStatusTag(ln: EntityLayoutNode, t: BaseTheme): string | undefined {
   const n = ln.node;
   if (!n.status || n.status === "normal") return undefined;
   const map: Record<string, { label: string; color: string }> = {
-    new: { label: "NEW", color: "#059669" },
-    eliminated: { label: "ELIMINATED", color: "#dc2626" },
-    modified: { label: "MODIFIED", color: "#d97706" },
+    new: { label: "NEW", color: t.positive },
+    eliminated: { label: "ELIMINATED", color: t.negative },
+    modified: { label: "MODIFIED", color: t.warn },
   };
   const info = map[n.status];
   if (!info) return undefined;
@@ -244,7 +248,7 @@ function renderStatusTag(ln: EntityLayoutNode): string | undefined {
   return group({}, [
     rect({ x, y, width: w, height: h, rx: 2, fill: info.color, stroke: "none" }),
     textEl(
-      { x: x + w / 2, y: y + h - 3, class: "lt-entity-status-tag", fill: "#fff" },
+      { x: x + w / 2, y: y + h - 3, class: "lt-entity-status-tag", fill: t.bg },
       info.label
     ),
   ]);
@@ -354,8 +358,9 @@ function renderEdgeLabel(le: EntityLayoutEdge): string | undefined {
   return group({}, pieces);
 }
 
-export function renderEntity(ast: EntityAST): string {
+export function renderEntity(ast: EntityAST, config?: RenderConfig): string {
   const layout = layoutEntity(ast);
+  const t = resolveBaseTheme(config?.theme ?? "default");
   const titleOffset = ast.title ? 34 : 12;
   const width = Math.ceil(layout.width);
   const height = Math.ceil(layout.height + titleOffset);
@@ -367,16 +372,16 @@ export function renderEntity(ast: EntityAST): string {
       `Entity structure diagram with ${ast.entities.length} entities and ${ast.edges.length} relationships`
     )
   );
-  children.push(el("style", {}, CSS));
+  children.push(el("style", {}, buildCss(t)));
 
-  // Arrow markers (per color)
+  // Arrow markers (per semantic role)
   children.push(
     defs([
-      arrowMarker("lt-entity-arrow", "#1f2937"),
-      arrowMarker("lt-entity-arrow-purple", "#7c3aed"),
-      arrowMarker("lt-entity-arrow-green", "#059669"),
-      arrowMarker("lt-entity-arrow-grey", "#888"),
-      arrowMarker("lt-entity-arrow-blue", "#2563eb"),
+      arrowMarker("lt-entity-arrow", t.stroke),
+      arrowMarker("lt-entity-arrow-purple", t.palette[3] ?? t.stroke),
+      arrowMarker("lt-entity-arrow-green", t.positive),
+      arrowMarker("lt-entity-arrow-grey", t.strokeMuted),
+      arrowMarker("lt-entity-arrow-blue", t.accent),
     ])
   );
 
@@ -388,7 +393,7 @@ export function renderEntity(ast: EntityAST): string {
 
   // Clusters (behind nodes) — label sits INSIDE the cluster top row
   for (const c of layout.clusters) {
-    const color = c.color ?? "#64748b";
+    const color = c.color ?? t.strokeMuted;
     inner.push(
       rect({
         x: c.x,
@@ -429,10 +434,10 @@ export function renderEntity(ast: EntityAST): string {
   // Nodes
   for (const ln of layout.nodes) {
     const parts: string[] = [];
-    parts.push(renderShape(ln));
+    parts.push(renderShape(ln, t));
     const badge = renderBadge(ln);
     if (badge) parts.push(badge);
-    const status = renderStatusTag(ln);
+    const status = renderStatusTag(ln, t);
     if (status) parts.push(status);
     for (const p of renderNodeLabels(ln)) parts.push(p);
     inner.push(

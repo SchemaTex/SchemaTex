@@ -8,9 +8,9 @@ export const entity: DiagramPlugin = {
     const first = text.trim().split("\n")[0]?.trim().toLowerCase() ?? "";
     return first.startsWith("entity-structure");
   },
-  render(text: string): string {
+  render(text: string, config): string {
     const ast = parseEntityDSL(text);
-    return renderEntity(ast);
+    return renderEntity(ast, config);
   },
 };
 

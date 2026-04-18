@@ -14,6 +14,8 @@ import { entity } from "../diagrams/entity";
 import { fishbone } from "../diagrams/fishbone";
 import { venn } from "../diagrams/venn";
 import { flowchart } from "../diagrams/flowchart";
+import { mindmap } from "../diagrams/mindmap";
+import { matrix } from "../diagrams/matrix";
 
 export interface SchematexConfig {
   type?:
@@ -31,7 +33,9 @@ export interface SchematexConfig {
     | "entity"
     | "fishbone"
     | "venn"
-    | "flowchart";
+    | "flowchart"
+    | "mindmap"
+    | "matrix";
   width?: number;
   height?: number;
   padding?: number;
@@ -55,6 +59,8 @@ const plugins: DiagramPlugin[] = [
   fishbone,
   venn,
   flowchart,
+  mindmap,
+  matrix,
 ];
 
 function detectPlugin(text: string, config?: SchematexConfig): DiagramPlugin {
@@ -66,7 +72,7 @@ function detectPlugin(text: string, config?: SchematexConfig): DiagramPlugin {
     if (plugin.detect(text)) return plugin;
   }
   throw new Error(
-    "Cannot detect diagram type. Start your text with 'genogram', 'ecomap', 'pedigree', 'phylo', 'sociogram', 'timing', 'logic', 'circuit', 'blockdiagram', 'ladder', 'sld', 'entity-structure', 'fishbone', 'venn', or 'flowchart'."
+    "Cannot detect diagram type. Start your text with 'genogram', 'ecomap', 'pedigree', 'phylo', 'sociogram', 'timing', 'logic', 'circuit', 'blockdiagram', 'ladder', 'sld', 'entity-structure', 'fishbone', 'venn', 'flowchart', 'mindmap', or 'matrix'."
   );
 }
 

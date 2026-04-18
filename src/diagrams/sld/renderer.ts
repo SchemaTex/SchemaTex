@@ -1,4 +1,4 @@
-import type { SLDAST, SLDNode } from "../../core/types";
+import type { SLDAST, SLDNode, RenderConfig } from "../../core/types";
 import {
   svgRoot,
   group,
@@ -9,31 +9,36 @@ import {
   desc,
   defs,
 } from "../../core/svg";
+import { resolveIndustrialTheme, type IndustrialTokens, type ResolvedTheme } from "../../core/theme";
 import { layoutSLD, type SLDLayoutNode } from "./layout";
 import { renderSymbol } from "./symbols";
 
-const CSS = `
-.lt-sld { background: #fff; font-family: system-ui, -apple-system, sans-serif; }
-.lt-sld-stroke { stroke: #333; stroke-width: 1.8; fill: none; }
-.lt-sld-stroke-thick { stroke: #333; stroke-width: 2.4; fill: none; stroke-linecap: round; }
-.lt-sld-fill { fill: #fff; stroke: #333; stroke-width: 2; }
-.lt-sld-fill-dark { fill: #333; stroke: #333; stroke-width: 1; }
-.lt-sld-dot { fill: #333; stroke: none; }
-.lt-sld-wire { stroke: #333; stroke-width: 2; fill: none; }
-.lt-sld-bus { stroke: #222; stroke-width: 6; stroke-linecap: square; }
-.lt-sld-band-odd { fill: #f7f7f7; stroke: none; }
-.lt-sld-band-even { fill: #fbfbfb; stroke: none; }
-.lt-sld-band-label { font: bold 11px sans-serif; fill: #666; }
-.lt-sld-title { font: bold 16px sans-serif; fill: #111; }
-.lt-sld-id { font: bold 11px sans-serif; fill: #222; text-anchor: middle; }
-.lt-sld-rating { font: 9px sans-serif; fill: #555; text-anchor: middle; }
-.lt-sld-voltage { font: bold 10px sans-serif; fill: #444; }
-.lt-sld-nameplate { font: 9px sans-serif; fill: #444; }
-.lt-sld-cable { font: 9px ui-monospace, SFMono-Regular, Menlo, monospace; fill: #666; }
-.lt-sld-symbol-text { font: 11px sans-serif; fill: #222; dominant-baseline: middle; }
-.lt-sld-wdg { font: bold 10px sans-serif; fill: #333; dominant-baseline: middle; }
-.lt-sld-bus-label { font: bold 11px sans-serif; fill: #1d4e89; }
+type IT = ResolvedTheme<IndustrialTokens>;
+
+function buildCss(t: IT): string {
+  return `
+.lt-sld { background: ${t.bg}; font-family: system-ui, -apple-system, sans-serif; }
+.lt-sld-stroke { stroke: ${t.stroke}; stroke-width: 1.8; fill: none; }
+.lt-sld-stroke-thick { stroke: ${t.stroke}; stroke-width: 2.4; fill: none; stroke-linecap: round; }
+.lt-sld-fill { fill: ${t.bg}; stroke: ${t.stroke}; stroke-width: 2; }
+.lt-sld-fill-dark { fill: ${t.stroke}; stroke: ${t.stroke}; stroke-width: 1; }
+.lt-sld-dot { fill: ${t.stroke}; stroke: none; }
+.lt-sld-wire { stroke: ${t.stroke}; stroke-width: 2; fill: none; }
+.lt-sld-bus { stroke: ${t.strokeHeavy}; stroke-width: 6; stroke-linecap: square; }
+.lt-sld-band-odd { fill: ${t.bandOdd}; stroke: none; }
+.lt-sld-band-even { fill: ${t.bandEven}; stroke: none; }
+.lt-sld-band-label { font: bold 11px sans-serif; fill: ${t.textMuted}; }
+.lt-sld-title { font: bold 16px sans-serif; fill: ${t.text}; }
+.lt-sld-id { font: bold 11px sans-serif; fill: ${t.text}; text-anchor: middle; }
+.lt-sld-rating { font: 9px sans-serif; fill: ${t.textMuted}; text-anchor: middle; }
+.lt-sld-voltage { font: bold 10px sans-serif; fill: ${t.textMuted}; }
+.lt-sld-nameplate { font: 9px sans-serif; fill: ${t.textMuted}; }
+.lt-sld-cable { font: 9px ui-monospace, SFMono-Regular, Menlo, monospace; fill: ${t.textMuted}; }
+.lt-sld-symbol-text { font: 11px sans-serif; fill: ${t.text}; dominant-baseline: middle; }
+.lt-sld-wdg { font: bold 10px sans-serif; fill: ${t.stroke}; dominant-baseline: middle; }
+.lt-sld-bus-label { font: bold 11px sans-serif; fill: ${t.accent}; }
 `.trim();
+}
 
 function renderLabels(ln: SLDLayoutNode): string[] {
   const pieces: string[] = [];
@@ -130,8 +135,9 @@ function renderLabels(ln: SLDLayoutNode): string[] {
   return pieces;
 }
 
-export function renderSLD(ast: SLDAST): string {
+export function renderSLD(ast: SLDAST, config?: RenderConfig): string {
   const layout = layoutSLD(ast);
+  const t = resolveIndustrialTheme(config?.theme ?? "default");
   const titleOffset = ast.title ? 34 : 12;
   const width = Math.ceil(layout.width);
   const height = Math.ceil(layout.height + titleOffset);
@@ -143,7 +149,7 @@ export function renderSLD(ast: SLDAST): string {
       `Single-line diagram with ${ast.nodes.length} nodes and ${ast.connections.length} connections`
     )
   );
-  children.push(el("style", {}, CSS));
+  children.push(el("style", {}, buildCss(t)));
 
   // Arrow marker
   children.push(
@@ -159,7 +165,7 @@ export function renderSLD(ast: SLDAST): string {
           orient: "auto",
           markerUnits: "strokeWidth",
         },
-        [el("path", { d: "M 0 0 L 6 3 L 0 6 z", fill: "#555" })]
+        [el("path", { d: "M 0 0 L 6 3 L 0 6 z", fill: t.textMuted })]
       ),
     ])
   );
