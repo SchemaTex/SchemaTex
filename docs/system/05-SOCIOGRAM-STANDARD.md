@@ -51,7 +51,7 @@ Sociogram 是由 Jacob L. Moreno 于 1934 年开发的**群体社会关系可视
 | 家庭系统动力 | 家庭成员间的选择/排斥 | 补充 genogram 的动力维度 |
 | 社区评估 | 机构间关系映射 | 识别服务gap、资源集中度 |
 
-**与 Lineage 现有用户的重叠：** 使用 genogram + ecomap 的社工/治疗师也是 sociogram 的天然用户。
+**与 Schematex 现有用户的重叠：** 使用 genogram + ecomap 的社工/治疗师也是 sociogram 的天然用户。
 
 ### 2.3 Organizational Development（企业用户）
 
@@ -79,7 +79,7 @@ Sociogram 是由 Jacob L. Moreno 于 1934 年开发的**群体社会关系可视
 
 ### 2.5 Academic Research（长尾用户）
 
-社会学、人类学、政治学研究中的社会网络分析。通常使用 Gephi、NetworkX、Pajek 等重型工具。Lineage 的机会在于**轻量快速可视化**——论文插图、教学演示。
+社会学、人类学、政治学研究中的社会网络分析。通常使用 Gephi、NetworkX、Pajek 等重型工具。Schematex 的机会在于**轻量快速可视化**——论文插图、教学演示。
 
 ---
 
@@ -210,7 +210,7 @@ alice -> bob [weight: 3, label: "trusted advisor"]
 
 ## 6. Structural Patterns (Auto-Detected)
 
-Lineage 应自动检测并可选标注以下经典社会计量结构：
+Schematex 应自动检测并可选标注以下经典社会计量结构：
 
 ### 6.1 Individual-Level Patterns
 
@@ -628,22 +628,22 @@ sociogram "Conference Networking"
 ```xml
 <polygon points="..." fill="#42A5F5" fill-opacity="0.08"
          stroke="#42A5F5" stroke-opacity="0.2" stroke-width="1"
-         class="lineage-sociogram-clique"/>
+         class="schematex-sociogram-clique"/>
 ```
 
 ### 10.4 CSS Classes
 
 ```css
-.lineage-sociogram-node { }
-.lineage-sociogram-node-star { }
-.lineage-sociogram-node-isolate { }
-.lineage-sociogram-edge { }
-.lineage-sociogram-edge-positive { }
-.lineage-sociogram-edge-negative { }
-.lineage-sociogram-edge-neutral { }
-.lineage-sociogram-label { }
-.lineage-sociogram-clique { }
-.lineage-sociogram-group-label { }
+.schematex-sociogram-node { }
+.schematex-sociogram-node-star { }
+.schematex-sociogram-node-isolate { }
+.schematex-sociogram-edge { }
+.schematex-sociogram-edge-positive { }
+.schematex-sociogram-edge-negative { }
+.schematex-sociogram-edge-neutral { }
+.schematex-sociogram-label { }
+.schematex-sociogram-clique { }
+.schematex-sociogram-group-label { }
 ```
 
 ---

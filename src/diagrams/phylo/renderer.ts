@@ -37,28 +37,28 @@ function isSpeciesBinomial(label: string): boolean {
 function buildCSS(ast: PhyloTreeAST, t: ResolvedTheme<BiologyTokens>): string {
   const cladeColors = ast.clades.map((c, i) => {
     const color = c.color ?? t.cladeColors[i % t.cladeColors.length];
-    return `.lineage-phylo-clade-${c.id} { stroke: ${color}; }
-.lineage-phylo-clade-bg-${c.id} { fill: ${color}; fill-opacity: 0.12; }
-.lineage-phylo-clade-label-${c.id} { fill: ${color}; }`;
+    return `.schematex-phylo-clade-${c.id} { stroke: ${color}; }
+.schematex-phylo-clade-bg-${c.id} { fill: ${color}; fill-opacity: 0.12; }
+.schematex-phylo-clade-label-${c.id} { fill: ${color}; }`;
   });
 
   return `
-.lineage-phylo {${cssCustomProperties(t)}
+.schematex-phylo {${cssCustomProperties(t)}
   font-family: system-ui, -apple-system, sans-serif;
   background: ${t.bg};
 }
-.lineage-phylo-branch { fill: none; stroke: ${t.text}; stroke-width: ${STROKE_WIDTH.normal}; stroke-linecap: round; }
-.lineage-phylo-branch-connector { fill: none; stroke: ${t.text}; stroke-width: ${STROKE_WIDTH.normal}; }
-.lineage-phylo-tip-label { font-size: ${FONT_SIZE.label}px; fill: ${t.text}; dominant-baseline: central; }
-.lineage-phylo-tip-label-italic { font-style: italic; }
-.lineage-phylo-support-label { font-size: ${FONT_SIZE.small}px; fill: ${t.textMuted}; text-anchor: middle; dominant-baseline: auto; }
-.lineage-phylo-support-dot { stroke: none; }
-.lineage-phylo-scale-bar line { stroke: ${t.text}; stroke-width: ${STROKE_WIDTH.normal}; }
-.lineage-phylo-scale-bar text { font-size: 10px; fill: ${t.text}; text-anchor: middle; }
-.lineage-phylo-scale-tick { stroke: ${t.text}; stroke-width: ${STROKE_WIDTH.thin}; }
-.lineage-phylo-title { font-size: ${FONT_SIZE.title}px; font-weight: bold; fill: ${t.text}; text-anchor: middle; }
-.lineage-phylo-clade-label { font-size: 13px; font-weight: bold; }
-.lineage-phylo-root-marker { fill: none; stroke: ${t.text}; stroke-width: ${STROKE_WIDTH.normal}; }
+.schematex-phylo-branch { fill: none; stroke: ${t.text}; stroke-width: ${STROKE_WIDTH.normal}; stroke-linecap: round; }
+.schematex-phylo-branch-connector { fill: none; stroke: ${t.text}; stroke-width: ${STROKE_WIDTH.normal}; }
+.schematex-phylo-tip-label { font-size: ${FONT_SIZE.label}px; fill: ${t.text}; dominant-baseline: central; }
+.schematex-phylo-tip-label-italic { font-style: italic; }
+.schematex-phylo-support-label { font-size: ${FONT_SIZE.small}px; fill: ${t.textMuted}; text-anchor: middle; dominant-baseline: auto; }
+.schematex-phylo-support-dot { stroke: none; }
+.schematex-phylo-scale-bar line { stroke: ${t.text}; stroke-width: ${STROKE_WIDTH.normal}; }
+.schematex-phylo-scale-bar text { font-size: 10px; fill: ${t.text}; text-anchor: middle; }
+.schematex-phylo-scale-tick { stroke: ${t.text}; stroke-width: ${STROKE_WIDTH.thin}; }
+.schematex-phylo-title { font-size: ${FONT_SIZE.title}px; font-weight: bold; fill: ${t.text}; text-anchor: middle; }
+.schematex-phylo-clade-label { font-size: 13px; font-weight: bold; }
+.schematex-phylo-root-marker { fill: none; stroke: ${t.text}; stroke-width: ${STROKE_WIDTH.normal}; }
 ${cladeColors.join("\n")}
 `.trim();
 }
@@ -107,10 +107,10 @@ function renderScaleBar(
   const y = layout.height - 20;
 
   const elements = [
-    line({ x1: x, y1: y, x2: x + bar.pxLength, y2: y, class: "lineage-phylo-scale-bar" }),
-    line({ x1: x, y1: y - 4, x2: x, y2: y + 4, class: "lineage-phylo-scale-tick" }),
-    line({ x1: x + bar.pxLength, y1: y - 4, x2: x + bar.pxLength, y2: y + 4, class: "lineage-phylo-scale-tick" }),
-    text({ x: x + bar.pxLength / 2, y: y + 16, "text-anchor": "middle", class: "lineage-phylo-scale-bar" }, bar.label),
+    line({ x1: x, y1: y, x2: x + bar.pxLength, y2: y, class: "schematex-phylo-scale-bar" }),
+    line({ x1: x, y1: y - 4, x2: x, y2: y + 4, class: "schematex-phylo-scale-tick" }),
+    line({ x1: x + bar.pxLength, y1: y - 4, x2: x + bar.pxLength, y2: y + 4, class: "schematex-phylo-scale-tick" }),
+    text({ x: x + bar.pxLength / 2, y: y + 16, "text-anchor": "middle", class: "schematex-phylo-scale-bar" }, bar.label),
   ];
 
   if (scaleLabel) {
@@ -122,7 +122,7 @@ function renderScaleBar(
     );
   }
 
-  return group({ class: "lineage-phylo-scale-bar" }, elements);
+  return group({ class: "schematex-phylo-scale-bar" }, elements);
 }
 
 // ─── Clade Backgrounds ──────────────────────────────────────
@@ -157,7 +157,7 @@ function renderCladeBackgrounds(layout: PhyloLayoutResult, t: ResolvedTheme<Biol
         width: maxX - minX,
         height: maxY - minY,
         rx: 4,
-        class: `lineage-phylo-clade-bg lineage-phylo-clade-bg-${clade.id}`,
+        class: `schematex-phylo-clade-bg schematex-phylo-clade-bg-${clade.id}`,
         fill: color,
         "fill-opacity": 0.12,
       })
@@ -169,7 +169,7 @@ function renderCladeBackgrounds(layout: PhyloLayoutResult, t: ResolvedTheme<Biol
           {
             x: maxX + 4,
             y: (minY + maxY) / 2,
-            class: `lineage-phylo-clade-label lineage-phylo-clade-label-${clade.id}`,
+            class: `schematex-phylo-clade-label schematex-phylo-clade-label-${clade.id}`,
             fill: color,
             "font-weight": "bold",
             "font-size": "13",
@@ -212,8 +212,8 @@ export function renderPhylo(layout: PhyloLayoutResult): string {
         : undefined;
 
     const cls = branch.isConnector
-      ? "lineage-phylo-branch lineage-phylo-branch-connector"
-      : `lineage-phylo-branch lineage-phylo-branch-internal${branch.cladeId ? ` lineage-phylo-clade-${branch.cladeId}` : ""}`;
+      ? "schematex-phylo-branch schematex-phylo-branch-connector"
+      : `schematex-phylo-branch schematex-phylo-branch-internal${branch.cladeId ? ` schematex-phylo-clade-${branch.cladeId}` : ""}`;
 
     const attrs: Record<string, string | number | undefined> = {
       d: branch.path,
@@ -236,7 +236,7 @@ export function renderPhylo(layout: PhyloLayoutResult): string {
         cx: rootLayout.x,
         cy: rootLayout.y,
         r: 5,
-        class: "lineage-phylo-root-marker",
+        class: "schematex-phylo-root-marker",
       })
     );
   }
@@ -254,13 +254,13 @@ export function renderPhylo(layout: PhyloLayoutResult): string {
             cx: x,
             cy: y,
             r: 4,
-            class: "lineage-phylo-support-dot",
+            class: "schematex-phylo-support-dot",
             fill: color,
           })
         );
         labelElements.push(
           text(
-            { x, y: y - 8, class: "lineage-phylo-support-label" },
+            { x, y: y - 8, class: "schematex-phylo-support-label" },
             String(Math.round(support))
           )
         );
@@ -271,7 +271,7 @@ export function renderPhylo(layout: PhyloLayoutResult): string {
     if (node.isLeaf) {
       const label = node.label ?? node.id;
       const italic = isSpeciesBinomial(label);
-      const cls = `lineage-phylo-tip-label${italic ? " lineage-phylo-tip-label-italic" : ""}`;
+      const cls = `schematex-phylo-tip-label${italic ? " schematex-phylo-tip-label-italic" : ""}`;
 
       labelElements.push(
         text(
@@ -297,7 +297,7 @@ export function renderPhylo(layout: PhyloLayoutResult): string {
   // Title
   const titleEl = ast.title
     ? text(
-        { x: totalWidth / 2, y: 20, class: "lineage-phylo-title" },
+        { x: totalWidth / 2, y: 20, class: "schematex-phylo-title" },
         ast.title
       )
     : "";
@@ -317,7 +317,7 @@ export function renderPhylo(layout: PhyloLayoutResult): string {
   if (cladeBgElements.length > 0) {
     svgContent.push(
       group(
-        { class: "lineage-phylo-clade-highlights", transform: transformY ? `translate(0,${transformY})` : undefined },
+        { class: "schematex-phylo-clade-highlights", transform: transformY ? `translate(0,${transformY})` : undefined },
         cladeBgElements
       )
     );
@@ -325,21 +325,21 @@ export function renderPhylo(layout: PhyloLayoutResult): string {
 
   svgContent.push(
     group(
-      { class: "lineage-phylo-branches", transform: transformY ? `translate(0,${transformY})` : undefined },
+      { class: "schematex-phylo-branches", transform: transformY ? `translate(0,${transformY})` : undefined },
       branchElements
     )
   );
 
   svgContent.push(
     group(
-      { class: "lineage-phylo-nodes", transform: transformY ? `translate(0,${transformY})` : undefined },
+      { class: "schematex-phylo-nodes", transform: transformY ? `translate(0,${transformY})` : undefined },
       nodeElements
     )
   );
 
   svgContent.push(
     group(
-      { class: "lineage-phylo-labels", transform: transformY ? `translate(0,${transformY})` : undefined },
+      { class: "schematex-phylo-labels", transform: transformY ? `translate(0,${transformY})` : undefined },
       labelElements
     )
   );
@@ -355,7 +355,7 @@ export function renderPhylo(layout: PhyloLayoutResult): string {
 
   return svgRoot(
     {
-      class: "lineage-diagram lineage-phylo",
+      class: "schematex-diagram schematex-phylo",
       viewBox: `0 0 ${totalWidth} ${totalHeight}`,
       width: totalWidth,
       height: totalHeight,

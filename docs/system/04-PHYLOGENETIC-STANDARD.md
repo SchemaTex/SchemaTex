@@ -13,7 +13,7 @@
 
 ---
 
-## 1. Key Differences from Other Lineage Diagram Types
+## 1. Key Differences from Other Schematex Diagram Types
 
 | 方面 | Genogram / Pedigree | Phylogenetic Tree |
 |------|-------------------|-------------------|
@@ -22,11 +22,11 @@
 | 边的含义 | 家庭/情感关系 | 进化分歧（时间或突变距离） |
 | 分支长度 | 无含义（等距排列） | **核心信息**：代表进化距离或时间 |
 | 关系方向 | 水平（夫妻）+ 垂直（亲子） | Root → Tip（祖先 → 后代） |
-| 输入格式 | 自定义 DSL | Newick 标准 + Lineage 扩展 DSL |
+| 输入格式 | 自定义 DSL | Newick 标准 + Schematex 扩展 DSL |
 | 标注重点 | 个体属性（性别/状态/条件） | Bootstrap 支持度 + clade 着色 + 分歧时间 |
 | 布局方向 | 上→下（固定） | 多种：rectangular / circular / radial / unrooted |
 
-**核心区别：** Phylogenetic tree 是唯一一个 **branch length 承载定量信息** 的 Lineage diagram 类型——它是 phylogram 不是 cladogram（除非用户明确选择 cladogram 模式）。
+**核心区别：** Phylogenetic tree 是唯一一个 **branch length 承载定量信息** 的 Schematex diagram 类型——它是 phylogram 不是 cladogram（除非用户明确选择 cladogram 模式）。
 
 ---
 
@@ -64,7 +64,7 @@
 
 ## 3. Tree Representation Modes
 
-Lineage 支持 3 种 tree representation，决定 branch length 的视觉含义：
+Schematex 支持 3 种 tree representation，决定 branch length 的视觉含义：
 
 ### 3.1 Phylogram（默认）
 - **Branch length 成比例**于进化距离（substitutions/site）
@@ -192,7 +192,7 @@ Bootstrap 值是 phylogenetic tree 的关键视觉元素，有两种显示模式
 
 **Mode A: Numbers on branches（默认）**
 - 数字标注在 internal node 旁（branch 中点偏上）
-- Font: 9px, class="lineage-support-label"
+- Font: 9px, class="schematex-support-label"
 - 只显示 ≥50 的值（<50 通常不可靠，省略）
 - 颜色编码（可选）：≥95 green, 75-94 yellow, 50-74 orange
 
@@ -214,7 +214,7 @@ Bootstrap 值是 phylogenetic tree 的关键视觉元素，有两种显示模式
 
 | Feature | 默认 | 说明 |
 |---------|------|------|
-| Font | 12px, font-family inherit | class="lineage-tip-label" |
+| Font | 12px, font-family inherit | class="schematex-tip-label" |
 | Alignment | Left-aligned after tip point | 留 6px gap |
 | Italic | Species names 自动斜体 | 遵循生物学命名法（如 *Homo sapiens*） |
 | Truncation | None（full label） | 对长名可 tooltip |
@@ -232,7 +232,7 @@ Phylogram 和 chronogram **必须** 有 scale bar：
 - 位置：底部左侧
 - Phylogram: 显示 substitution distance（如 `── 0.05`）
 - Chronogram: 显示时间（如 `── 10 Mya`）
-- SVG: `<line>` + `<text>`, class="lineage-scale-bar"
+- SVG: `<line>` + `<text>`, class="schematex-scale-bar"
 - 长度：自动计算为 round number（0.01, 0.05, 0.1, 0.5, 1.0...）占 tree width 的 ~15-25%
 
 ### 5.6 Clade Highlighting
@@ -259,7 +259,7 @@ clade Birds = (Chicken, Eagle) [color: "#43A047", label: "Aves"]
 
 ## 6. Newick Format Support
 
-Lineage 的 phylogenetic parser 必须原生支持 Newick 格式——它是进化生物学的通用语言。
+Schematex 的 phylogenetic parser 必须原生支持 Newick 格式——它是进化生物学的通用语言。
 
 ### 6.1 Newick Grammar (Standard)
 
@@ -318,15 +318,15 @@ NUMBER          = /[+-]?(\d+\.?\d*|\.\d+)([eE][+-]?\d+)?/
 - `B` = bootstrap, `T` = taxonomy, `S` = species name
 - **P1 支持：** 解析 `B` (bootstrap) 字段即可
 
-### 6.4 Lineage DSL (Extended Syntax)
+### 6.4 Schematex DSL (Extended Syntax)
 
-Newick 简洁但不好读。Lineage 提供扩展 DSL 添加视觉配置：
+Newick 简洁但不好读。Schematex 提供扩展 DSL 添加视觉配置：
 
 ```
 phylo "Tree of Life"
   newick: "(((Human:0.1,Chimp:0.08):0.03,Gorilla:0.12):0.15,Dog:0.35,(Cat:0.30,Mouse:0.45):0.2);"
   
-  # 或者用 Lineage 原生 DSL（小型 tree）
+  # 或者用 Schematex 原生 DSL（小型 tree）
   # 见 Section 8
 
   clade Primates = (Human, Chimp, Gorilla) [color: "#1E88E5"]
@@ -338,9 +338,9 @@ phylo "Tree of Life"
 
 ---
 
-## 7. Lineage Native DSL (Alternative to Newick)
+## 7. Schematex Native DSL (Alternative to Newick)
 
-对于小型 tree 或手写场景，Lineage 提供一种缩进式 DSL 作为 Newick 的可读替代：
+对于小型 tree 或手写场景，Schematex 提供一种缩进式 DSL 作为 Newick 的可读替代：
 
 ```
 phylo "Vertebrate Evolution" [layout: rectangular, mode: phylogram]
@@ -446,44 +446,44 @@ NEWLINE        = /\n/
 ### 9.2 SVG Structure
 
 ```svg
-<svg class="lineage-phylo" viewBox="0 0 {W} {H}">
+<svg class="schematex-phylo" viewBox="0 0 {W} {H}">
   <defs>
     <!-- clip paths, markers if needed -->
   </defs>
   
-  <g class="lineage-branches" transform="translate({padL},{padT})">
+  <g class="schematex-branches" transform="translate({padL},{padT})">
     <!-- All branch paths: <path> or <line> elements -->
-    <path class="lineage-branch" d="M ..." stroke="#333" />
+    <path class="schematex-branch" d="M ..." stroke="#333" />
     <!-- Clade-colored branches override stroke -->
-    <path class="lineage-branch lineage-clade-Primates" d="..." stroke="#1E88E5" />
+    <path class="schematex-branch schematex-clade-Primates" d="..." stroke="#1E88E5" />
   </g>
   
-  <g class="lineage-clade-highlights">
+  <g class="schematex-clade-highlights">
     <!-- Background shading rectangles/arcs -->
-    <rect class="lineage-clade-bg" ... fill="#1E88E5" fill-opacity="0.12" />
+    <rect class="schematex-clade-bg" ... fill="#1E88E5" fill-opacity="0.12" />
   </g>
   
-  <g class="lineage-nodes">
+  <g class="schematex-nodes">
     <!-- Internal node support dots -->
-    <circle class="lineage-support-dot" cx="..." cy="..." r="4" fill="#43A047" />
+    <circle class="schematex-support-dot" cx="..." cy="..." r="4" fill="#43A047" />
     <!-- Tip dots (if enabled) -->
   </g>
   
-  <g class="lineage-labels">
+  <g class="schematex-labels">
     <!-- Tip labels -->
-    <text class="lineage-tip-label" x="..." y="..." font-style="italic">Homo sapiens</text>
+    <text class="schematex-tip-label" x="..." y="..." font-style="italic">Homo sapiens</text>
     <!-- Support value text (if mode A) -->
-    <text class="lineage-support-label" x="..." y="...">98</text>
+    <text class="schematex-support-label" x="..." y="...">98</text>
   </g>
   
-  <g class="lineage-scale-bar" transform="translate({x},{y})">
+  <g class="schematex-scale-bar" transform="translate({x},{y})">
     <line x1="0" y1="0" x2="{len}" y2="0" stroke="#333" stroke-width="1.5" />
     <line x1="0" y1="-4" x2="0" y2="4" stroke="#333" stroke-width="1" />
     <line x1="{len}" y1="-4" x2="{len}" y2="4" stroke="#333" stroke-width="1" />
     <text x="{len/2}" y="16" text-anchor="middle">0.05</text>
   </g>
   
-  <g class="lineage-legend">
+  <g class="schematex-legend">
     <!-- Clade legend entries -->
   </g>
 </svg>
@@ -493,17 +493,17 @@ NEWLINE        = /\n/
 
 | Class | 用途 |
 |-------|------|
-| `.lineage-phylo` | Root SVG |
-| `.lineage-branch` | All branch paths |
-| `.lineage-branch-internal` | Internal (horizontal) branch segment |
-| `.lineage-branch-connector` | Vertical connector line |
-| `.lineage-clade-{id}` | Per-clade scoped class |
-| `.lineage-clade-bg` | Background highlight rect/arc |
-| `.lineage-tip-label` | Leaf text labels |
-| `.lineage-support-label` | Bootstrap/PP text |
-| `.lineage-support-dot` | Bootstrap colored dot |
-| `.lineage-scale-bar` | Scale bar group |
-| `.lineage-root-marker` | Root node circle |
+| `.schematex-phylo` | Root SVG |
+| `.schematex-branch` | All branch paths |
+| `.schematex-branch-internal` | Internal (horizontal) branch segment |
+| `.schematex-branch-connector` | Vertical connector line |
+| `.schematex-clade-{id}` | Per-clade scoped class |
+| `.schematex-clade-bg` | Background highlight rect/arc |
+| `.schematex-tip-label` | Leaf text labels |
+| `.schematex-support-label` | Bootstrap/PP text |
+| `.schematex-support-dot` | Bootstrap colored dot |
+| `.schematex-scale-bar` | Scale bar group |
+| `.schematex-root-marker` | Root node circle |
 
 ---
 
@@ -684,7 +684,7 @@ phylo "Mammal Divergence" [mode: chronogram, mrsd: "0"]
 ```
 验证：所有 tips 对齐到右侧（present = 0 Mya），X 轴从左到右 = 过去到现在，Human-Chimp 分歧点在 ~6.4 Mya，Mouse-Rat 在 ~75 Mya。底部时间轴。
 
-### Case 7: Lineage Native DSL (Indent-Based)
+### Case 7: Schematex Native DSL (Indent-Based)
 ```
 phylo "Simple Tree"
 
@@ -731,7 +731,7 @@ phylo "Hominids"
 | P2 | Circular layout | High | Arc 计算 + label rotation |
 | P2 | Chronogram mode + time axis | Medium | Tips 对齐 + X 轴 reversed |
 | P2 | Support dots (colored by confidence) | Low | 在 P1 基础上加 circle + color mapping |
-| P2 | Lineage native indent DSL parser | Medium | Alternative to Newick for handwritten trees |
+| P2 | Schematex native indent DSL parser | Medium | Alternative to Newick for handwritten trees |
 | P3 | Unrooted layout (equal-angle) | High | 最复杂的布局算法 |
 | P3 | Unrooted daylight optimization | Medium | 在 equal-angle 基础上迭代优化 |
 | P3 | Extended Newick (NHX full support) | Low | 在 P1 NHX bootstrap 基础上扩展 |

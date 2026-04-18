@@ -33,28 +33,28 @@ function buildCSS(ast: SociogramAST, t: BaseTheme): string {
   const rf = roleFills(t);
   const groupColors = ast.groups.map((g, i) => {
     const color = g.color ?? t.palette[i % t.palette.length];
-    return `.lineage-sociogram-group-${g.id} { fill: ${color}; stroke: ${color}; }`;
+    return `.schematex-sociogram-group-${g.id} { fill: ${color}; stroke: ${color}; }`;
   });
 
   return `
-.lineage-sociogram {${cssCustomProperties(t)}
+.schematex-sociogram {${cssCustomProperties(t)}
   font-family: system-ui, -apple-system, sans-serif;
   background: ${t.bg};
 }
-.lineage-sociogram-node { fill: ${t.accent}; stroke: ${t.accent}; stroke-width: ${STROKE_WIDTH.medium}; }
-.lineage-sociogram-node-star { fill: ${rf.star}; stroke: ${t.warn}; stroke-width: ${STROKE_WIDTH.thick}; }
-.lineage-sociogram-node-isolate { fill: ${rf.isolate}; stroke: ${t.neutral}; stroke-width: ${STROKE_WIDTH.medium}; stroke-dasharray: 4 3; }
-.lineage-sociogram-node-neglectee { fill: ${t.fillMuted}; stroke: ${t.accent}; stroke-width: ${STROKE_WIDTH.medium}; stroke-dasharray: 4 3; }
-.lineage-sociogram-node-rejected { fill: ${rf.rejected}; stroke: ${t.negative}; stroke-width: ${STROKE_WIDTH.medium}; stroke-dasharray: 4 3; }
-.lineage-sociogram-edge { stroke-linecap: round; }
-.lineage-sociogram-edge-positive { stroke: ${vc.positive}; }
-.lineage-sociogram-edge-negative { stroke: ${vc.negative}; stroke-dasharray: 6 3; }
-.lineage-sociogram-edge-neutral { stroke: ${vc.neutral}; stroke-dasharray: 2 3; }
-.lineage-sociogram-label { font-size: ${LABEL_FONT_SIZE}px; fill: ${t.text}; text-anchor: middle; }
-.lineage-sociogram-edge-label { font-size: ${FONT_SIZE.small}px; fill: ${t.textMuted}; text-anchor: middle; }
-.lineage-sociogram-title { font-size: ${FONT_SIZE.title}px; font-weight: bold; fill: ${t.text}; text-anchor: middle; }
-.lineage-sociogram-star-badge { font-size: 10px; fill: ${t.warn}; }
-.lineage-sociogram-group-label { font-size: 13px; font-weight: bold; fill-opacity: 0.7; text-anchor: middle; }
+.schematex-sociogram-node { fill: ${t.accent}; stroke: ${t.accent}; stroke-width: ${STROKE_WIDTH.medium}; }
+.schematex-sociogram-node-star { fill: ${rf.star}; stroke: ${t.warn}; stroke-width: ${STROKE_WIDTH.thick}; }
+.schematex-sociogram-node-isolate { fill: ${rf.isolate}; stroke: ${t.neutral}; stroke-width: ${STROKE_WIDTH.medium}; stroke-dasharray: 4 3; }
+.schematex-sociogram-node-neglectee { fill: ${t.fillMuted}; stroke: ${t.accent}; stroke-width: ${STROKE_WIDTH.medium}; stroke-dasharray: 4 3; }
+.schematex-sociogram-node-rejected { fill: ${rf.rejected}; stroke: ${t.negative}; stroke-width: ${STROKE_WIDTH.medium}; stroke-dasharray: 4 3; }
+.schematex-sociogram-edge { stroke-linecap: round; }
+.schematex-sociogram-edge-positive { stroke: ${vc.positive}; }
+.schematex-sociogram-edge-negative { stroke: ${vc.negative}; stroke-dasharray: 6 3; }
+.schematex-sociogram-edge-neutral { stroke: ${vc.neutral}; stroke-dasharray: 2 3; }
+.schematex-sociogram-label { font-size: ${LABEL_FONT_SIZE}px; fill: ${t.text}; text-anchor: middle; }
+.schematex-sociogram-edge-label { font-size: ${FONT_SIZE.small}px; fill: ${t.textMuted}; text-anchor: middle; }
+.schematex-sociogram-title { font-size: ${FONT_SIZE.title}px; font-weight: bold; fill: ${t.text}; text-anchor: middle; }
+.schematex-sociogram-star-badge { font-size: 10px; fill: ${t.warn}; }
+.schematex-sociogram-group-label { font-size: 13px; font-weight: bold; fill-opacity: 0.7; text-anchor: middle; }
 ${groupColors.join("\n")}
 `.trim();
 }
@@ -100,14 +100,14 @@ function edgeStrokeWidth(weight: number): number {
 // ─── Node Rendering ─────────────────────────────────────────
 
 function getNodeClass(role?: NodeRole): string {
-  if (!role) return "lineage-sociogram-node";
+  if (!role) return "schematex-sociogram-node";
   switch (role) {
-    case "star": return "lineage-sociogram-node lineage-sociogram-node-star";
-    case "isolate": return "lineage-sociogram-node lineage-sociogram-node-isolate";
-    case "neglectee": return "lineage-sociogram-node lineage-sociogram-node-neglectee";
-    case "rejected": return "lineage-sociogram-node lineage-sociogram-node-rejected";
-    case "bridge": return "lineage-sociogram-node";
-    default: return "lineage-sociogram-node";
+    case "star": return "schematex-sociogram-node schematex-sociogram-node-star";
+    case "isolate": return "schematex-sociogram-node schematex-sociogram-node-isolate";
+    case "neglectee": return "schematex-sociogram-node schematex-sociogram-node-neglectee";
+    case "rejected": return "schematex-sociogram-node schematex-sociogram-node-rejected";
+    case "bridge": return "schematex-sociogram-node";
+    default: return "schematex-sociogram-node";
   }
 }
 
@@ -168,7 +168,7 @@ function renderNodes(
         polygon({
           points,
           fill: t.warn,
-          class: "lineage-sociogram-star-badge",
+          class: "schematex-sociogram-star-badge",
         })
       );
     }
@@ -180,7 +180,7 @@ function renderNodes(
         {
           x,
           y: y + radius + LABEL_GAP + LABEL_FONT_SIZE,
-          class: "lineage-sociogram-label",
+          class: "schematex-sociogram-label",
           "data-node-id": node.id,
         },
         label
@@ -241,7 +241,7 @@ function renderEdges(layout: SociogramLayoutResult): {
 
   for (const layoutEdge of layout.edges) {
     const { edge, x1, y1, x2, y2 } = layoutEdge;
-    const valenceClass = `lineage-sociogram-edge-${edge.valence}`;
+    const valenceClass = `schematex-sociogram-edge-${edge.valence}`;
     const markers = getMarkerUrl(edge.valence, edge.direction);
     const sw = edgeStrokeWidth(edge.weight);
 
@@ -250,7 +250,7 @@ function renderEdges(layout: SociogramLayoutResult): {
       y1,
       x2,
       y2,
-      class: `lineage-sociogram-edge ${valenceClass}`,
+      class: `schematex-sociogram-edge ${valenceClass}`,
       "stroke-width": sw,
       "data-from": edge.from,
       "data-to": edge.to,
@@ -267,7 +267,7 @@ function renderEdges(layout: SociogramLayoutResult): {
       const my = (y1 + y2) / 2;
       edgeLabelEls.push(
         text(
-          { x: mx, y: my - 6, class: "lineage-sociogram-edge-label" },
+          { x: mx, y: my - 6, class: "schematex-sociogram-edge-label" },
           edge.label
         )
       );
@@ -299,7 +299,7 @@ function renderGroupLabels(layout: SociogramLayoutResult, t: BaseTheme): string[
         {
           x: cx,
           y: minY - 14,
-          class: "lineage-sociogram-group-label",
+          class: "schematex-sociogram-group-label",
           fill: color,
         },
         grp.label ?? grp.id
@@ -329,7 +329,7 @@ export function renderSociogram(layout: SociogramLayoutResult): string {
 
   const titleEl = ast.title
     ? text(
-        { x: totalWidth / 2, y: 20, class: "lineage-sociogram-title" },
+        { x: totalWidth / 2, y: 20, class: "schematex-sociogram-title" },
         ast.title
       )
     : "";
@@ -350,28 +350,28 @@ export function renderSociogram(layout: SociogramLayoutResult): string {
 
   if (groupLabelEls.length > 0) {
     svgContent.push(
-      group({ class: "lineage-sociogram-groups", transform }, groupLabelEls)
+      group({ class: "schematex-sociogram-groups", transform }, groupLabelEls)
     );
   }
 
   svgContent.push(
-    group({ class: "lineage-sociogram-edges", transform }, [
+    group({ class: "schematex-sociogram-edges", transform }, [
       ...edgeEls,
       ...edgeLabelEls,
     ])
   );
 
   svgContent.push(
-    group({ class: "lineage-sociogram-nodes", transform }, nodeEls)
+    group({ class: "schematex-sociogram-nodes", transform }, nodeEls)
   );
 
   svgContent.push(
-    group({ class: "lineage-sociogram-labels", transform }, labelEls)
+    group({ class: "schematex-sociogram-labels", transform }, labelEls)
   );
 
   return svgRoot(
     {
-      class: "lineage-diagram lineage-sociogram",
+      class: "schematex-diagram schematex-sociogram",
       viewBox: `0 0 ${totalWidth} ${totalHeight}`,
       width: totalWidth,
       height: totalHeight,

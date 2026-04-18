@@ -75,11 +75,11 @@ describe("genogram end-to-end", () => {
 
   test("rendered SVG contains expected structure", () => {
     const svg = render(FIXTURES["nuclear-family"]);
-    expect(svg).toContain("lineage-diagram");
-    expect(svg).toContain("lineage-genogram");
-    expect(svg).toContain("lineage-genogram-node");
-    expect(svg).toContain("lineage-genogram-edge");
-    expect(svg).toContain("lineage-genogram-label");
+    expect(svg).toContain("schematex-diagram");
+    expect(svg).toContain("schematex-genogram");
+    expect(svg).toContain("schematex-genogram-node");
+    expect(svg).toContain("schematex-genogram-edge");
+    expect(svg).toContain("schematex-genogram-label");
     expect(svg).toContain("<style>");
     expect(svg).toContain("<title>");
     expect(svg).toContain("<desc>");

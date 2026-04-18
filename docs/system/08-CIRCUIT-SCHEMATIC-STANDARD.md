@@ -19,7 +19,7 @@ Circuit schematic 的 layout 与树/图类型有根本不同：
 - **Schemdraw 方式（位置式）**: 每个元件指定放置方向，链式排列
 - **Netlist 方式（声明式）**: 声明元件 + 连接，自动 layout
 
-**Lineage 采用位置式 DSL（更直观，CC 实现更可控）**，元件按方向链式排列，通过 `at:` 锚点分支。
+**Schematex 采用位置式 DSL（更直观，CC 实现更可控）**，元件按方向链式排列，通过 `at:` 锚点分支。
 
 ### 1.2 Passive Components
 

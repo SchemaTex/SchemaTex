@@ -1,8 +1,8 @@
-# CLAUDE.md — Lineage
+# CLAUDE.md — Schematex
 
 > 入口文件。开工前读完本文件 + 引用的 docs。不读完不动代码。
 
-## What is Lineage?
+## What is Schematex?
 
 开源 TypeScript 库：Text DSL → SVG，专注 genogram / ecomap / pedigree chart。
 定位："Mermaid for relationship diagrams"。零 runtime dependency。

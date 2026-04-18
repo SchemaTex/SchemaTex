@@ -73,7 +73,7 @@ function renderWave(signal: TimingSignal, ctx: WaveCtx): { svg: string; labels: 
     // Trapezoid outline
     const d = `M ${start + inset},${yHi} L ${end - inset},${yHi} L ${end},${yMid} L ${end - inset},${yLo} L ${start + inset},${yLo} L ${start},${yMid} Z`;
     busRects.push(
-      el("path", { class: "lineage-timing-bus", d, "data-bus-index": String(busIndex) })
+      el("path", { class: "schematex-timing-bus", d, "data-bus-index": String(busIndex) })
     );
     // Data label
     const label = signal.data?.[dataIdx] ?? "";
@@ -83,7 +83,7 @@ function renderWave(signal: TimingSignal, ctx: WaveCtx): { svg: string; labels: 
           {
             x: (start + end) / 2,
             y: yMid + 4,
-            class: "lineage-timing-bus-label",
+            class: "schematex-timing-bus-label",
             "text-anchor": "middle",
           },
           label
@@ -183,7 +183,7 @@ function renderWave(signal: TimingSignal, ctx: WaveCtx): { svg: string; labels: 
             y1: yMid,
             x2: xNext,
             y2: yMid,
-            class: "lineage-timing-hiz",
+            class: "schematex-timing-hiz",
           })
         );
         prev = "z";
@@ -198,8 +198,8 @@ function renderWave(signal: TimingSignal, ctx: WaveCtx): { svg: string; labels: 
             y: yHi,
             width: pw,
             height: yLo - yHi,
-            class: "lineage-timing-unknown",
-            fill: "url(#lineage-timing-xhatch)",
+            class: "schematex-timing-unknown",
+            fill: "url(#schematex-timing-xhatch)",
           })
         );
         prev = "x";
@@ -233,8 +233,8 @@ function renderWave(signal: TimingSignal, ctx: WaveCtx): { svg: string; labels: 
             y: yHi,
             width: pw,
             height: yLo - yHi,
-            class: "lineage-timing-unknown",
-            fill: "url(#lineage-timing-xhatch)",
+            class: "schematex-timing-unknown",
+            fill: "url(#schematex-timing-xhatch)",
           })
         );
         prev = "x";
@@ -249,7 +249,7 @@ function renderWave(signal: TimingSignal, ctx: WaveCtx): { svg: string; labels: 
   flushLine();
 
   const waveSvg = paths
-    .map((d) => el("path", { class: "lineage-timing-wave", d }))
+    .map((d) => el("path", { class: "schematex-timing-wave", d }))
     .concat(xPatchRects, zLines, busRects)
     .join("");
 
@@ -289,7 +289,7 @@ export function renderTiming(ast: TimingAST): string {
         y1: PAD_TOP,
         x2: xg,
         y2: height - PAD_BOT,
-        class: "lineage-timing-grid",
+        class: "schematex-timing-grid",
       })
     );
   }
@@ -304,7 +304,7 @@ export function renderTiming(ast: TimingAST): string {
           {
             x: 6 + row.indent * 10,
             y: ry + GROUP_LABEL_H - 6,
-            class: "lineage-timing-group-label",
+            class: "schematex-timing-group-label",
           },
           row.label
         )
@@ -326,8 +326,8 @@ export function renderTiming(ast: TimingAST): string {
           x: NAME_W - 8,
           y: yMid + 4,
           class: activeLow
-            ? "lineage-timing-name lineage-timing-name-activelow"
-            : "lineage-timing-name",
+            ? "schematex-timing-name schematex-timing-name-activelow"
+            : "schematex-timing-name",
           "text-anchor": "end",
         },
         displayName
@@ -359,7 +359,7 @@ export function renderTiming(ast: TimingAST): string {
   const xhatch = el(
     "pattern",
     {
-      id: "lineage-timing-xhatch",
+      id: "schematex-timing-xhatch",
       patternUnits: "userSpaceOnUse",
       width: 6,
       height: 6,
@@ -375,21 +375,21 @@ export function renderTiming(ast: TimingAST): string {
   );
 
   const css = `
-.lineage-timing { background: #fff; font-family: system-ui, -apple-system, sans-serif; }
-.lineage-timing-name { font: 12px monospace; fill: #111; }
-.lineage-timing-name-activelow { text-decoration: overline; }
-.lineage-timing-group-label { font: bold 12px sans-serif; fill: #111; }
-.lineage-timing-wave { stroke: #111; stroke-width: 1.75; fill: none; stroke-linejoin: miter; stroke-linecap: square; }
-.lineage-timing-bus { fill: none; stroke: #111; stroke-width: 1.5; }
-.lineage-timing-bus-label { font: 11px monospace; fill: #111; }
-.lineage-timing-unknown { stroke: #555; stroke-width: 0.5; }
-.lineage-timing-hiz { stroke: #555; stroke-width: 1.5; stroke-dasharray: 4 3; }
-.lineage-timing-grid { stroke: #eee; stroke-width: 0.5; }
+.schematex-timing { background: #fff; font-family: system-ui, -apple-system, sans-serif; }
+.schematex-timing-name { font: 12px monospace; fill: #111; }
+.schematex-timing-name-activelow { text-decoration: overline; }
+.schematex-timing-group-label { font: bold 12px sans-serif; fill: #111; }
+.schematex-timing-wave { stroke: #111; stroke-width: 1.75; fill: none; stroke-linejoin: miter; stroke-linecap: square; }
+.schematex-timing-bus { fill: none; stroke: #111; stroke-width: 1.5; }
+.schematex-timing-bus-label { font: 11px monospace; fill: #111; }
+.schematex-timing-unknown { stroke: #555; stroke-width: 0.5; }
+.schematex-timing-hiz { stroke: #555; stroke-width: 1.5; stroke-dasharray: 4 3; }
+.schematex-timing-grid { stroke: #eee; stroke-width: 0.5; }
 `.trim();
 
   return svgRoot(
     {
-      class: "lineage-timing",
+      class: "schematex-timing",
       viewBox: `0 0 ${width} ${height}`,
       width,
       height,
@@ -400,17 +400,17 @@ export function renderTiming(ast: TimingAST): string {
       titleEl(ast.title ?? "Timing Diagram"),
       desc(`Digital timing diagram with ${rows.filter((r) => r.kind === "signal").length} signals`),
       defs([xhatch, el("style", {}, css)]),
-      group({ class: "lineage-timing-grid-g" }, gridLines),
-      group({ class: "lineage-timing-waves" }, waveSvgs),
-      group({ class: "lineage-timing-labels" }, labelSvgs),
-      group({ class: "lineage-timing-names" }, nameSvgs),
+      group({ class: "schematex-timing-grid-g" }, gridLines),
+      group({ class: "schematex-timing-waves" }, waveSvgs),
+      group({ class: "schematex-timing-labels" }, labelSvgs),
+      group({ class: "schematex-timing-names" }, nameSvgs),
       ast.title
         ? text(
             {
               x: width / 2,
               y: 14,
               "text-anchor": "middle",
-              class: "lineage-timing-title",
+              class: "schematex-timing-title",
               style: "font: bold 13px sans-serif; fill: #333;",
             },
             ast.title

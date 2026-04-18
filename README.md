@@ -1,7 +1,7 @@
 <p align="center">
-  <strong>Lineage</strong><br>
-  Text-to-SVG rendering for relationship diagrams and electrical engineering schematics.<br>
-  <em>Like <a href="https://mermaid.js.org/">Mermaid</a> — but for genograms, pedigrees, ladder logic, and more.</em>
+  <strong>Schematex</strong><br>
+  Text-to-SVG rendering for relationship diagrams and electrical/industrial schematics.<br>
+  <em>Like <a href="https://mermaid.js.org/">Mermaid</a> — but for genograms, pedigrees, ladder logic, single-line diagrams, and more.</em>
 </p>
 
 <p align="center">
@@ -25,9 +25,9 @@
 
 ---
 
-## What is Lineage?
+## What is Schematex?
 
-Lineage turns plain text into standards-compliant SVG diagrams across two domains:
+Schematex turns plain text into standards-compliant SVG diagrams across two domains:
 
 - **Relationship diagrams** — genograms, ecomaps, pedigree charts, phylogenetic trees, sociograms. Used daily in social work, family therapy, genetics, and medical practice.
 - **Electrical / industrial diagrams** — timing waveforms, logic gate schematics, circuit schematics, block diagrams, PLC ladder logic (IEC 61131-3 / Allen-Bradley), and single-line power diagrams (IEEE 315).
@@ -339,7 +339,7 @@ Circuit Schematic also supports a **positional DSL** (Schemdraw-style direction-
 ## Install
 
 ```bash
-npm install lineage
+npm install schematex
 ```
 
 Works with any bundler (Vite, webpack, esbuild, Rollup) and Node.js. Ships as ESM + CJS with full TypeScript declarations.
@@ -347,7 +347,7 @@ Works with any bundler (Vite, webpack, esbuild, Rollup) and Node.js. Ships as ES
 ## Quick Start
 
 ```ts
-import { render } from 'lineage';
+import { render } from 'schematex';
 
 const svg = render(`
 genogram
@@ -585,7 +585,7 @@ Generation labels (I, II, III...) and individual numbering (I-1, I-2...) are ren
 
 ## Phylogenetic Tree Syntax
 
-Phylogenetic trees display evolutionary relationships between species, genes, or sequences. Lineage supports the standard **Newick format** natively, plus an indent-based DSL for hand-written trees.
+Phylogenetic trees display evolutionary relationships between species, genes, or sequences. Schematex supports the standard **Newick format** natively, plus an indent-based DSL for hand-written trees.
 
 ### Newick input
 
@@ -1351,7 +1351,7 @@ mergesub -> target : was 40% → 100%
 Parse, layout, and render a diagram in one call. Returns an SVG string.
 
 ```ts
-import { render } from 'lineage';
+import { render } from 'schematex';
 
 const svg = render(diagramText);
 const svg = render(diagramText, { type: 'ecomap' }); // force type
@@ -1367,7 +1367,7 @@ const svg = render(diagramText, {
 Parse text into an AST without rendering. Useful for inspection, transformation, or custom rendering.
 
 ```ts
-import { parse } from 'lineage';
+import { parse } from 'schematex';
 
 const ast = parse(diagramText);
 // → { type: 'genogram', individuals: [...], relationships: [...], metadata: {...} }
@@ -1378,8 +1378,8 @@ const ast = parse(diagramText);
 Import only the diagram type you need:
 
 ```ts
-import { genogram } from 'lineage/genogram';
-import { ecomap } from 'lineage/ecomap';
+import { genogram } from 'schematex/genogram';
+import { ecomap } from 'schematex/ecomap';
 
 // Each export is a DiagramPlugin with parse(), layout(), render()
 const ast = genogram.parse(text);
@@ -1387,10 +1387,10 @@ const layout = genogram.layout(ast, layoutConfig);
 const svg = genogram.render(layout, renderConfig);
 ```
 
-### `LineageConfig`
+### `SchematexConfig`
 
 ```ts
-interface LineageConfig {
+interface SchematexConfig {
   type?: 'genogram' | 'ecomap' | 'pedigree' | 'phylo' | 'sociogram'
        | 'timing' | 'logic' | 'circuit' | 'blockdiagram' | 'ladder'
        | 'sld' | 'entity';
@@ -1402,21 +1402,21 @@ interface LineageConfig {
 
 ## SVG Output
 
-Lineage produces clean, semantic SVG suitable for embedding, printing, or interactive use:
+Schematex produces clean, semantic SVG suitable for embedding, printing, or interactive use:
 
 ```html
-<svg xmlns="http://www.w3.org/2000/svg" class="lineage-diagram lineage-genogram">
+<svg xmlns="http://www.w3.org/2000/svg" class="schematex-diagram schematex-genogram">
   <title>Genogram: The Smiths</title>
   <desc>Genogram with 5 individuals across 2 generations</desc>
   <style>/* Themeable CSS classes */</style>
   <!-- Each element has data-* attributes for JS interaction -->
-  <g data-individual-id="john" class="lineage-node lineage-male">...</g>
+  <g data-individual-id="john" class="schematex-node schematex-male">...</g>
 </svg>
 ```
 
 **Accessibility:** Every diagram includes `<title>` and `<desc>` elements. Nodes and edges carry semantic class names.
 
-**Theming:** The default theme renders males in light blue and females in light pink (clinical style). Built-in themes: `default` (clinical colors), `colorful` (brighter palette), `mono` (pure black/white). Override any `.lineage-*` CSS class for custom styling — no inline styles, everything is in a single `<style>` block within the SVG.
+**Theming:** The default theme renders males in light blue and females in light pink (clinical style). Built-in themes: `default` (clinical colors), `colorful` (brighter palette), `mono` (pure black/white). Override any `.schematex-*` CSS class for custom styling — no inline styles, everything is in a single `<style>` block within the SVG.
 
 **Interactivity:** Use `data-individual-id` and `data-relationship-type` attributes to attach event handlers.
 
@@ -1512,8 +1512,8 @@ src/
 ## Development
 
 ```bash
-git clone https://github.com/mymap-ai/lineage.git
-cd lineage
+git clone https://github.com/victorzhrn/Schematex.git
+cd Schematex
 npm install
 npm run dev          # watch mode (tsup)
 npm run test         # vitest (338 tests)
@@ -1540,4 +1540,4 @@ Please open an issue to discuss significant changes before submitting a PR.
 
 [AGPL-3.0](LICENSE) — free to use, modify, and distribute. Commercial integrations that modify the library must open-source their changes.
 
-Built by [MyMap AI](https://mymap.ai).
+Built by [Victor](https://github.com/victorzhrn).

@@ -33,7 +33,7 @@ ecomap
 `);
     expect(svg).toContain("<svg");
     expect(svg).toContain('xmlns="http://www.w3.org/2000/svg"');
-    expect(svg).toContain("class=\"lineage-diagram lineage-ecomap\"");
+    expect(svg).toContain("class=\"schematex-diagram schematex-ecomap\"");
     expect(svg).toContain("</svg>");
   });
 
@@ -56,8 +56,8 @@ ecomap
   w [label: "Work"]
   maria --- w
 `);
-    expect(svg).toContain('class="lineage-ecomap-center-shape"');
-    expect(svg).toContain('class="lineage-ecomap-center-label"');
+    expect(svg).toContain('class="schematex-ecomap-center-shape"');
+    expect(svg).toContain('class="schematex-ecomap-center-label"');
     expect(svg).toContain("Maria");
   });
 
@@ -78,9 +78,9 @@ ecomap
   work [label: "Tech Corp", category: work]
   m --- work
 `);
-    expect(svg).toContain('class="lineage-ecomap-system-shape"');
+    expect(svg).toContain('class="schematex-ecomap-system-shape"');
     expect(svg).toContain("Tech Corp");
-    expect(svg).toContain("lineage-ecomap-system-work");
+    expect(svg).toContain("schematex-ecomap-system-work");
   });
 
   test("renders category-specific CSS class", () => {
@@ -90,7 +90,7 @@ ecomap
   church [label: "Church", category: religion]
   m --- church
 `);
-    expect(svg).toContain("lineage-ecomap-system-religion");
+    expect(svg).toContain("schematex-ecomap-system-religion");
   });
 
   test("renders category color styles", () => {
@@ -100,8 +100,8 @@ ecomap
   w [label: "W"]
   m --- w
 `);
-    expect(svg).toContain(".lineage-ecomap-system-work");
-    expect(svg).toContain(".lineage-ecomap-system-health");
+    expect(svg).toContain(".schematex-ecomap-system-work");
+    expect(svg).toContain(".schematex-ecomap-system-health");
   });
 
   test("renders strong connection as parallel lines", () => {
@@ -111,8 +111,8 @@ ecomap
   mother [label: "Mom"]
   m === mother
 `);
-    expect(svg).toContain("lineage-ecomap-connection-strong");
-    expect(svg).toContain("lineage-ecomap-eco-line-parallel");
+    expect(svg).toContain("schematex-ecomap-connection-strong");
+    expect(svg).toContain("schematex-ecomap-eco-line-parallel");
   });
 
   test("renders weak connection as dashed line", () => {
@@ -122,7 +122,7 @@ ecomap
   doc [label: "Doc"]
   m - - doc
 `);
-    expect(svg).toContain("lineage-ecomap-connection-weak");
+    expect(svg).toContain("schematex-ecomap-connection-weak");
   });
 
   test("renders stressful connection as wavy path", () => {
@@ -132,8 +132,8 @@ ecomap
   ex [label: "Ex"]
   m ~~~ ex
 `);
-    expect(svg).toContain("lineage-ecomap-connection-stressful");
-    expect(svg).toContain("lineage-ecomap-eco-line-stressful");
+    expect(svg).toContain("schematex-ecomap-connection-stressful");
+    expect(svg).toContain("schematex-ecomap-eco-line-stressful");
     // Wavy path uses Q (quadratic bezier)
     expect(svg).toMatch(/Q\s+[\d.-]+\s+[\d.-]+/);
   });
@@ -145,7 +145,7 @@ ecomap
   old [label: "Old"]
   m -/- old
 `);
-    expect(svg).toContain("lineage-ecomap-connection-broken");
+    expect(svg).toContain("schematex-ecomap-connection-broken");
   });
 
   test("renders arrow markers for energy flow", () => {
@@ -155,7 +155,7 @@ ecomap
   w [label: "Work"]
   m --> w
 `);
-    expect(svg).toContain("lineage-ecomap-eco-arrow");
+    expect(svg).toContain("schematex-ecomap-eco-arrow");
     expect(svg).toContain("marker-end");
   });
 
@@ -178,7 +178,7 @@ ecomap
   m --- w [label: "part-time"]
 `);
     expect(svg).toContain("part-time");
-    expect(svg).toContain("lineage-ecomap-eco-conn-label");
+    expect(svg).toContain("schematex-ecomap-eco-conn-label");
   });
 
   test("renders defs with arrow marker", () => {
@@ -190,6 +190,6 @@ ecomap
 `);
     expect(svg).toContain("<defs>");
     expect(svg).toContain("<marker");
-    expect(svg).toContain('id="lineage-ecomap-eco-arrow"');
+    expect(svg).toContain('id="schematex-ecomap-eco-arrow"');
   });
 });

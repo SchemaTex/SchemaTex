@@ -36,7 +36,7 @@
 
 ### 1.3 Bennett 2022 Gender/Sex Inclusivity Update
 
-Bennett 2022 引入了 sex 与 gender 分离的符号系统，Lineage 必须支持：
+Bennett 2022 引入了 sex 与 gender 分离的符号系统，Schematex 必须支持：
 
 | Notation | 含义 | Visual |
 |----------|------|--------|
@@ -69,8 +69,8 @@ jordan [intersex, 1990]          # → diamond (UAAB)
 ### 1.5 SVG Implementation Notes
 
 - All shapes: `stroke-width: 2`, `fill: white` (default), `stroke: #333`
-- CSS classes: `lineage-node`, `lineage-male`, `lineage-female`, `lineage-unknown`, `lineage-nonbinary`
-- Deceased overlay: `class="lineage-deceased-marker"`
+- CSS classes: `schematex-node`, `schematex-male`, `schematex-female`, `schematex-unknown`, `schematex-nonbinary`
+- Deceased overlay: `class="schematex-deceased-marker"`
 - Index person: outer shape `stroke-width: 1`, inner shape `stroke-width: 2`, gap 3px
 - Data attributes: `data-individual-id`, `data-sex`, `data-status`, `data-generation`
 
@@ -268,7 +268,7 @@ genogram "Heritage Example" [mode: heritage]
 
 **实现：**
 - Age/initials 作为 `<text>` 渲染在 shape 中心
-- Font: bold, 12-14px, class="lineage-in-shape-text"
+- Font: bold, 12-14px, class="schematex-in-shape-text"
 - 如果同时有 condition fill，text 颜色自动调整为白色（深色 fill 时）或黑色（浅色/无 fill 时）
 - DSL 中 `age` 可以省略——如果有 birth year，renderer 可自动计算
 
@@ -300,7 +300,7 @@ ross [male, 1966, occupation: "Professor", notes: "Golden Child"]
 
 **渲染：**
 - Annotations 显示在 name + year 下方
-- Font: italic, 10px, class="lineage-annotation"  
+- Font: italic, 10px, class="schematex-annotation"  
 - 最多显示 3 行 annotation，超出部分 truncate + tooltip
 - 可通过 render config 控制是否显示 annotations
 
@@ -316,7 +316,7 @@ ross -hostile- rachel [label: "On and off"]
 
 **渲染：**
 - Label 显示在 line 中点上方（couple lines）或沿着 line（emotional lines）
-- Font: 10px, class="lineage-edge-label"
+- Font: 10px, class="schematex-edge-label"
 - 背景色：white with slight opacity，避免与 line 混淆
 
 ---
@@ -503,7 +503,7 @@ M x1,y1 L x1+10,y1-5 L x1+20,y1+5 L x1+30,y1-5 ... L x2,y2
 
 ### 3.5 Modern Family Structures
 
-Lineage 必须支持现代非传统家庭结构：
+Schematex 必须支持现代非传统家庭结构：
 
 | Structure | 处理方式 |
 |-----------|---------|

@@ -1,5 +1,5 @@
 /**
- * Core type definitions for Lineage.
+ * Core type definitions for Schematex.
  *
  * The pipeline is: Text → Parser → AST → Layout → LayoutResult → Renderer → SVG
  *

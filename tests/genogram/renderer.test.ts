@@ -58,9 +58,9 @@ genogram
   mary [female, 1955]
   john -- mary
 `);
-    expect(svg).toContain("lineage-genogram-male");
-    expect(svg).toContain("lineage-genogram-female");
-    expect(svg).toContain("lineage-genogram-node");
+    expect(svg).toContain("schematex-genogram-male");
+    expect(svg).toContain("schematex-genogram-female");
+    expect(svg).toContain("schematex-genogram-node");
   });
 
   test("includes data attributes for interaction", () => {
@@ -77,7 +77,7 @@ genogram
   john [male, 1950]
 `);
     expect(svg).toContain("<style>");
-    expect(svg).toContain(".lineage-genogram-shape");
+    expect(svg).toContain(".schematex-genogram-shape");
   });
 
   test("renders labels below symbols", () => {
@@ -85,7 +85,7 @@ genogram
 genogram
   john [male, 1950]
 `);
-    expect(svg).toContain("lineage-genogram-label");
+    expect(svg).toContain("schematex-genogram-label");
     expect(svg).toContain("John");
   });
 
@@ -94,8 +94,8 @@ genogram
 genogram
   john [male, 1950]
 `);
-    expect(svg).toContain("lineage-diagram");
-    expect(svg).toContain("lineage-genogram");
+    expect(svg).toContain("schematex-diagram");
+    expect(svg).toContain("schematex-genogram");
   });
 
   test("renders couple edge lines", () => {
@@ -105,8 +105,8 @@ genogram
   b [female]
   a -- b
 `);
-    expect(svg).toContain("lineage-genogram-edge");
-    expect(svg).toContain("lineage-genogram-edge-married");
+    expect(svg).toContain("schematex-genogram-edge");
+    expect(svg).toContain("schematex-genogram-edge-married");
   });
 
   test("renders parent-child connections", () => {
@@ -117,7 +117,7 @@ genogram
   a -- b
     c [male, 1975]
 `);
-    expect(svg).toContain("lineage-genogram-edge-parent-child");
+    expect(svg).toContain("schematex-genogram-edge-parent-child");
   });
 
   test("renders deceased with X overlay", () => {
@@ -125,7 +125,7 @@ genogram
 genogram
   john [male, 1930, deceased]
 `);
-    expect(svg).toContain("lineage-genogram-deceased");
+    expect(svg).toContain("schematex-genogram-deceased");
   });
 
   test("all 6 standard cases render without error", () => {

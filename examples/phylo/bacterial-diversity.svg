@@ -1,97 +1,100 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="lineage-diagram lineage-phylo" viewBox="0 0 499.6 290" width="499.6" height="290"><title>Phylogenetic Tree: Bacterial Diversity</title>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="schematex-diagram schematex-phylo" viewBox="0 0 499.6 290" width="499.6" height="290"><title>Phylogenetic Tree: Bacterial Diversity</title>
 <desc>Phylogenetic tree with 10 taxa, phylogram mode, rectangular layout</desc>
-<style>.lineage-phylo {
-  --lineage-text: #333;
-  --lineage-text-secondary: #666;
-  --lineage-stroke: #333;
-  --lineage-fill: white;
-  --lineage-fill-muted: #f5f5f5;
-  --lineage-accent: #1976D2;
-  --lineage-positive: #388E3C;
-  --lineage-negative: #D32F2F;
-  --lineage-neutral: #9E9E9E;
-  --lineage-deceased: #b71c1c;
-  --lineage-font-title: 16px;
-  --lineage-font-label: 12px;
-  --lineage-font-secondary: 11px;
-  --lineage-font-small: 9px;
-  --lineage-stroke-normal: 1.5;
-  --lineage-stroke-medium: 2;
-  --lineage-stroke-thick: 2.5;
+<style>.schematex-phylo {
+  --schematex-bg: #ffffff;
+  --schematex-text: #2c3e50;
+  --schematex-text-muted: #607d8b;
+  --schematex-stroke: #37474f;
+  --schematex-stroke-muted: #90a4ae;
+  --schematex-fill: #ffffff;
+  --schematex-fill-muted: #f5f7fa;
+  --schematex-accent: #1565c0;
+  --schematex-positive: #388e3c;
+  --schematex-negative: #d32f2f;
+  --schematex-neutral: #9e9e9e;
+  --schematex-warn: #e65100;
+  --schematex-font-title: 16px;
+  --schematex-font-label: 12px;
+  --schematex-font-secondary: 11px;
+  --schematex-font-small: 9px;
+  --schematex-stroke-normal: 1.5;
+  --schematex-stroke-medium: 2;
+  --schematex-stroke-thick: 2.5;
   font-family: system-ui, -apple-system, sans-serif;
+  background: #ffffff;
 }
-.lineage-phylo-branch { fill: none; stroke: #333; stroke-width: 1.5; stroke-linecap: round; }
-.lineage-phylo-branch-connector { fill: none; stroke: #333; stroke-width: 1.5; }
-.lineage-phylo-tip-label { font-size: 12px; fill: #333; dominant-baseline: central; }
-.lineage-phylo-tip-label-italic { font-style: italic; }
-.lineage-phylo-support-label { font-size: 9px; fill: #666; text-anchor: middle; dominant-baseline: auto; }
-.lineage-phylo-support-dot { stroke: none; }
-.lineage-phylo-scale-bar line { stroke: #333; stroke-width: 1.5; }
-.lineage-phylo-scale-bar text { font-size: 10px; fill: #333; text-anchor: middle; }
-.lineage-phylo-scale-tick { stroke: #333; stroke-width: 1; }
-.lineage-phylo-title { font-size: 16px; font-weight: bold; fill: #333; text-anchor: middle; }
-.lineage-phylo-clade-label { font-size: 13px; font-weight: bold; }
-.lineage-phylo-root-marker { fill: none; stroke: #333; stroke-width: 1.5; }
-.lineage-phylo-clade-Gamma { stroke: #1E88E5; }
-.lineage-phylo-clade-bg-Gamma { fill: #1E88E5; fill-opacity: 0.12; }
-.lineage-phylo-clade-label-Gamma { fill: #1E88E5; }
-.lineage-phylo-clade-Firmi { stroke: #E53935; }
-.lineage-phylo-clade-bg-Firmi { fill: #E53935; fill-opacity: 0.12; }
-.lineage-phylo-clade-label-Firmi { fill: #E53935; }
-.lineage-phylo-clade-Actino { stroke: #43A047; }
-.lineage-phylo-clade-bg-Actino { fill: #43A047; fill-opacity: 0.12; }
-.lineage-phylo-clade-label-Actino { fill: #43A047; }</style>
-<text x="249.8" y="20" class="lineage-phylo-title">Bacterial Diversity</text>
-<g class="lineage-phylo-branches" transform="translate(0,30)"><path d="M 20,75 V 170" class="lineage-phylo-branch lineage-phylo-branch-connector"/>
-<path d="M 20,75 H 107.09677419354838" class="lineage-phylo-branch lineage-phylo-branch-internal"/>
-<path d="M 20,170 H 136.1290322580645" class="lineage-phylo-branch lineage-phylo-branch-internal"/>
-<path d="M 107.09677419354838,45 V 105" class="lineage-phylo-branch lineage-phylo-branch-connector"/>
-<path d="M 107.09677419354838,45 H 153.5483870967742" class="lineage-phylo-branch lineage-phylo-branch-internal lineage-phylo-clade-Gamma" stroke="#1E88E5"/>
-<path d="M 107.09677419354838,105 H 165.16129032258064" class="lineage-phylo-branch lineage-phylo-branch-internal lineage-phylo-clade-Firmi" stroke="#E53935"/>
-<path d="M 153.5483870967742,30 V 60" class="lineage-phylo-branch lineage-phylo-branch-connector"/>
-<path d="M 153.5483870967742,30 H 182.58064516129033" class="lineage-phylo-branch lineage-phylo-branch-internal lineage-phylo-clade-Gamma" stroke="#1E88E5"/>
-<path d="M 153.5483870967742,60 H 269.6774193548387" class="lineage-phylo-branch lineage-phylo-branch-internal lineage-phylo-clade-Gamma" stroke="#1E88E5"/>
-<path d="M 182.58064516129033,20 V 40" class="lineage-phylo-branch lineage-phylo-branch-connector"/>
-<path d="M 182.58064516129033,20 H 240.6451612903226" class="lineage-phylo-branch lineage-phylo-branch-internal lineage-phylo-clade-Gamma" stroke="#1E88E5"/>
-<path d="M 182.58064516129033,40 H 252.25806451612902" class="lineage-phylo-branch lineage-phylo-branch-internal lineage-phylo-clade-Gamma" stroke="#1E88E5"/>
-<path d="M 165.16129032258064,90 V 120" class="lineage-phylo-branch lineage-phylo-branch-connector"/>
-<path d="M 165.16129032258064,90 H 200" class="lineage-phylo-branch lineage-phylo-branch-internal lineage-phylo-clade-Firmi" stroke="#E53935"/>
-<path d="M 165.16129032258064,120 H 292.9032258064516" class="lineage-phylo-branch lineage-phylo-branch-internal lineage-phylo-clade-Firmi" stroke="#E53935"/>
-<path d="M 200,80 V 100" class="lineage-phylo-branch lineage-phylo-branch-connector"/>
-<path d="M 200,80 H 287.0967741935484" class="lineage-phylo-branch lineage-phylo-branch-internal lineage-phylo-clade-Firmi" stroke="#E53935"/>
-<path d="M 200,100 H 304.51612903225805" class="lineage-phylo-branch lineage-phylo-branch-internal lineage-phylo-clade-Firmi" stroke="#E53935"/>
-<path d="M 136.1290322580645,150 V 190" class="lineage-phylo-branch lineage-phylo-branch-connector"/>
-<path d="M 136.1290322580645,150 H 205.80645161290323" class="lineage-phylo-branch lineage-phylo-branch-internal lineage-phylo-clade-Actino" stroke="#43A047"/>
-<path d="M 136.1290322580645,190 H 182.5806451612903" class="lineage-phylo-branch lineage-phylo-branch-internal lineage-phylo-clade-Firmi" stroke="#E53935"/>
-<path d="M 205.80645161290323,140 V 160" class="lineage-phylo-branch lineage-phylo-branch-connector"/>
-<path d="M 205.80645161290323,140 H 380" class="lineage-phylo-branch lineage-phylo-branch-internal lineage-phylo-clade-Actino" stroke="#43A047"/>
-<path d="M 205.80645161290323,160 H 368.38709677419354" class="lineage-phylo-branch lineage-phylo-branch-internal lineage-phylo-clade-Actino" stroke="#43A047"/>
-<path d="M 182.5806451612903,180 V 200" class="lineage-phylo-branch lineage-phylo-branch-connector"/>
-<path d="M 182.5806451612903,180 H 327.741935483871" class="lineage-phylo-branch lineage-phylo-branch-internal lineage-phylo-clade-Firmi" stroke="#E53935"/>
-<path d="M 182.5806451612903,200 H 298.7096774193548" class="lineage-phylo-branch lineage-phylo-branch-internal lineage-phylo-clade-Firmi" stroke="#E53935"/></g>
-<g class="lineage-phylo-nodes" transform="translate(0,30)"><circle cx="20" cy="122.5" r="5" class="lineage-phylo-root-marker"/>
-<circle cx="182.58064516129033" cy="30" r="4" class="lineage-phylo-support-dot" fill="#43A047"/>
-<circle cx="153.5483870967742" cy="45" r="4" class="lineage-phylo-support-dot" fill="#FDD835"/>
-<circle cx="200" cy="90" r="4" class="lineage-phylo-support-dot" fill="#FDD835"/>
-<circle cx="205.80645161290323" cy="150" r="4" class="lineage-phylo-support-dot" fill="#43A047"/>
-<circle cx="182.5806451612903" cy="190" r="4" class="lineage-phylo-support-dot" fill="#FDD835"/></g>
-<g class="lineage-phylo-labels" transform="translate(0,30)"><text x="246.6451612903226" y="20" class="lineage-phylo-tip-label" data-taxon-id="Ecoli">Ecoli</text>
-<text x="258.258064516129" y="40" class="lineage-phylo-tip-label" data-taxon-id="Salmonella">Salmonella</text>
-<text x="275.6774193548387" y="60" class="lineage-phylo-tip-label" data-taxon-id="Vibrio">Vibrio</text>
-<text x="293.0967741935484" y="80" class="lineage-phylo-tip-label" data-taxon-id="Bacillus">Bacillus</text>
-<text x="310.51612903225805" y="100" class="lineage-phylo-tip-label" data-taxon-id="Staph">Staph</text>
-<text x="298.9032258064516" y="120" class="lineage-phylo-tip-label" data-taxon-id="Listeria">Listeria</text>
-<text x="386" y="140" class="lineage-phylo-tip-label" data-taxon-id="Myco_tb">Myco_tb</text>
-<text x="374.38709677419354" y="160" class="lineage-phylo-tip-label" data-taxon-id="Myco_leprae">Myco_leprae</text>
-<text x="333.741935483871" y="180" class="lineage-phylo-tip-label" data-taxon-id="Strepto">Strepto</text>
-<text x="304.7096774193548" y="200" class="lineage-phylo-tip-label" data-taxon-id="Lactobacillus">Lactobacillus</text>
-<text x="182.58064516129033" y="22" class="lineage-phylo-support-label">98</text>
-<text x="153.5483870967742" y="37" class="lineage-phylo-support-label">85</text>
-<text x="200" y="82" class="lineage-phylo-support-label">92</text>
-<text x="205.80645161290323" y="142" class="lineage-phylo-support-label">100</text>
-<text x="182.5806451612903" y="182" class="lineage-phylo-support-label">78</text></g>
-<g transform="translate(0,30)"><g class="lineage-phylo-scale-bar"><line x1="20" y1="240" x2="136.1290322580645" y2="240" class="lineage-phylo-scale-bar"/>
-<line x1="20" y1="236" x2="20" y2="244" class="lineage-phylo-scale-tick"/>
-<line x1="136.1290322580645" y1="236" x2="136.1290322580645" y2="244" class="lineage-phylo-scale-tick"/>
-<text x="78.06451612903226" y="256" text-anchor="middle" class="lineage-phylo-scale-bar">0.2</text>
-<text x="78.06451612903226" y="268" text-anchor="middle" font-size="9" fill="#666">substitutions/site</text></g></g></svg>
+.schematex-phylo-branch { fill: none; stroke: #2c3e50; stroke-width: 1.5; stroke-linecap: round; }
+.schematex-phylo-branch-connector { fill: none; stroke: #2c3e50; stroke-width: 1.5; }
+.schematex-phylo-tip-label { font-size: 12px; fill: #2c3e50; dominant-baseline: central; }
+.schematex-phylo-tip-label-italic { font-style: italic; }
+.schematex-phylo-support-label { font-size: 9px; fill: #607d8b; text-anchor: middle; dominant-baseline: auto; }
+.schematex-phylo-support-dot { stroke: none; }
+.schematex-phylo-scale-bar line { stroke: #2c3e50; stroke-width: 1.5; }
+.schematex-phylo-scale-bar text { font-size: 10px; fill: #2c3e50; text-anchor: middle; }
+.schematex-phylo-scale-tick { stroke: #2c3e50; stroke-width: 1; }
+.schematex-phylo-title { font-size: 16px; font-weight: bold; fill: #2c3e50; text-anchor: middle; }
+.schematex-phylo-clade-label { font-size: 13px; font-weight: bold; }
+.schematex-phylo-root-marker { fill: none; stroke: #2c3e50; stroke-width: 1.5; }
+.schematex-phylo-clade-Gamma { stroke: #1E88E5; }
+.schematex-phylo-clade-bg-Gamma { fill: #1E88E5; fill-opacity: 0.12; }
+.schematex-phylo-clade-label-Gamma { fill: #1E88E5; }
+.schematex-phylo-clade-Firmi { stroke: #E53935; }
+.schematex-phylo-clade-bg-Firmi { fill: #E53935; fill-opacity: 0.12; }
+.schematex-phylo-clade-label-Firmi { fill: #E53935; }
+.schematex-phylo-clade-Actino { stroke: #43A047; }
+.schematex-phylo-clade-bg-Actino { fill: #43A047; fill-opacity: 0.12; }
+.schematex-phylo-clade-label-Actino { fill: #43A047; }</style>
+<text x="249.8" y="20" class="schematex-phylo-title">Bacterial Diversity</text>
+<g class="schematex-phylo-branches" transform="translate(0,30)"><path d="M 20,75 V 170" class="schematex-phylo-branch schematex-phylo-branch-connector"/>
+<path d="M 20,75 H 107.09677419354838" class="schematex-phylo-branch schematex-phylo-branch-internal"/>
+<path d="M 20,170 H 136.1290322580645" class="schematex-phylo-branch schematex-phylo-branch-internal"/>
+<path d="M 107.09677419354838,45 V 105" class="schematex-phylo-branch schematex-phylo-branch-connector"/>
+<path d="M 107.09677419354838,45 H 153.5483870967742" class="schematex-phylo-branch schematex-phylo-branch-internal schematex-phylo-clade-Gamma" stroke="#1E88E5"/>
+<path d="M 107.09677419354838,105 H 165.16129032258064" class="schematex-phylo-branch schematex-phylo-branch-internal schematex-phylo-clade-Firmi" stroke="#E53935"/>
+<path d="M 153.5483870967742,30 V 60" class="schematex-phylo-branch schematex-phylo-branch-connector"/>
+<path d="M 153.5483870967742,30 H 182.58064516129033" class="schematex-phylo-branch schematex-phylo-branch-internal schematex-phylo-clade-Gamma" stroke="#1E88E5"/>
+<path d="M 153.5483870967742,60 H 269.6774193548387" class="schematex-phylo-branch schematex-phylo-branch-internal schematex-phylo-clade-Gamma" stroke="#1E88E5"/>
+<path d="M 182.58064516129033,20 V 40" class="schematex-phylo-branch schematex-phylo-branch-connector"/>
+<path d="M 182.58064516129033,20 H 240.6451612903226" class="schematex-phylo-branch schematex-phylo-branch-internal schematex-phylo-clade-Gamma" stroke="#1E88E5"/>
+<path d="M 182.58064516129033,40 H 252.25806451612902" class="schematex-phylo-branch schematex-phylo-branch-internal schematex-phylo-clade-Gamma" stroke="#1E88E5"/>
+<path d="M 165.16129032258064,90 V 120" class="schematex-phylo-branch schematex-phylo-branch-connector"/>
+<path d="M 165.16129032258064,90 H 200" class="schematex-phylo-branch schematex-phylo-branch-internal schematex-phylo-clade-Firmi" stroke="#E53935"/>
+<path d="M 165.16129032258064,120 H 292.9032258064516" class="schematex-phylo-branch schematex-phylo-branch-internal schematex-phylo-clade-Firmi" stroke="#E53935"/>
+<path d="M 200,80 V 100" class="schematex-phylo-branch schematex-phylo-branch-connector"/>
+<path d="M 200,80 H 287.0967741935484" class="schematex-phylo-branch schematex-phylo-branch-internal schematex-phylo-clade-Firmi" stroke="#E53935"/>
+<path d="M 200,100 H 304.51612903225805" class="schematex-phylo-branch schematex-phylo-branch-internal schematex-phylo-clade-Firmi" stroke="#E53935"/>
+<path d="M 136.1290322580645,150 V 190" class="schematex-phylo-branch schematex-phylo-branch-connector"/>
+<path d="M 136.1290322580645,150 H 205.80645161290323" class="schematex-phylo-branch schematex-phylo-branch-internal schematex-phylo-clade-Actino" stroke="#43A047"/>
+<path d="M 136.1290322580645,190 H 182.5806451612903" class="schematex-phylo-branch schematex-phylo-branch-internal schematex-phylo-clade-Firmi" stroke="#E53935"/>
+<path d="M 205.80645161290323,140 V 160" class="schematex-phylo-branch schematex-phylo-branch-connector"/>
+<path d="M 205.80645161290323,140 H 380" class="schematex-phylo-branch schematex-phylo-branch-internal schematex-phylo-clade-Actino" stroke="#43A047"/>
+<path d="M 205.80645161290323,160 H 368.38709677419354" class="schematex-phylo-branch schematex-phylo-branch-internal schematex-phylo-clade-Actino" stroke="#43A047"/>
+<path d="M 182.5806451612903,180 V 200" class="schematex-phylo-branch schematex-phylo-branch-connector"/>
+<path d="M 182.5806451612903,180 H 327.741935483871" class="schematex-phylo-branch schematex-phylo-branch-internal schematex-phylo-clade-Firmi" stroke="#E53935"/>
+<path d="M 182.5806451612903,200 H 298.7096774193548" class="schematex-phylo-branch schematex-phylo-branch-internal schematex-phylo-clade-Firmi" stroke="#E53935"/></g>
+<g class="schematex-phylo-nodes" transform="translate(0,30)"><circle cx="20" cy="122.5" r="5" class="schematex-phylo-root-marker"/>
+<circle cx="182.58064516129033" cy="30" r="4" class="schematex-phylo-support-dot" fill="#43a047"/>
+<circle cx="153.5483870967742" cy="45" r="4" class="schematex-phylo-support-dot" fill="#fdd835"/>
+<circle cx="200" cy="90" r="4" class="schematex-phylo-support-dot" fill="#fdd835"/>
+<circle cx="205.80645161290323" cy="150" r="4" class="schematex-phylo-support-dot" fill="#43a047"/>
+<circle cx="182.5806451612903" cy="190" r="4" class="schematex-phylo-support-dot" fill="#fdd835"/></g>
+<g class="schematex-phylo-labels" transform="translate(0,30)"><text x="246.6451612903226" y="20" class="schematex-phylo-tip-label" data-taxon-id="Ecoli">Ecoli</text>
+<text x="258.258064516129" y="40" class="schematex-phylo-tip-label" data-taxon-id="Salmonella">Salmonella</text>
+<text x="275.6774193548387" y="60" class="schematex-phylo-tip-label" data-taxon-id="Vibrio">Vibrio</text>
+<text x="293.0967741935484" y="80" class="schematex-phylo-tip-label" data-taxon-id="Bacillus">Bacillus</text>
+<text x="310.51612903225805" y="100" class="schematex-phylo-tip-label" data-taxon-id="Staph">Staph</text>
+<text x="298.9032258064516" y="120" class="schematex-phylo-tip-label" data-taxon-id="Listeria">Listeria</text>
+<text x="386" y="140" class="schematex-phylo-tip-label" data-taxon-id="Myco_tb">Myco_tb</text>
+<text x="374.38709677419354" y="160" class="schematex-phylo-tip-label" data-taxon-id="Myco_leprae">Myco_leprae</text>
+<text x="333.741935483871" y="180" class="schematex-phylo-tip-label" data-taxon-id="Strepto">Strepto</text>
+<text x="304.7096774193548" y="200" class="schematex-phylo-tip-label" data-taxon-id="Lactobacillus">Lactobacillus</text>
+<text x="182.58064516129033" y="22" class="schematex-phylo-support-label">98</text>
+<text x="153.5483870967742" y="37" class="schematex-phylo-support-label">85</text>
+<text x="200" y="82" class="schematex-phylo-support-label">92</text>
+<text x="205.80645161290323" y="142" class="schematex-phylo-support-label">100</text>
+<text x="182.5806451612903" y="182" class="schematex-phylo-support-label">78</text></g>
+<g transform="translate(0,30)"><g class="schematex-phylo-scale-bar"><line x1="20" y1="240" x2="136.1290322580645" y2="240" class="schematex-phylo-scale-bar"/>
+<line x1="20" y1="236" x2="20" y2="244" class="schematex-phylo-scale-tick"/>
+<line x1="136.1290322580645" y1="236" x2="136.1290322580645" y2="244" class="schematex-phylo-scale-tick"/>
+<text x="78.06451612903226" y="256" text-anchor="middle" class="schematex-phylo-scale-bar">0.2</text>
+<text x="78.06451612903226" y="268" text-anchor="middle" font-size="9" fill="#607d8b">substitutions/site</text></g></g></svg>

@@ -32,7 +32,7 @@ function renderGateBody(
         y: 0,
         width: g.width,
         height: g.height,
-        class: "lineage-logic-gate-body",
+        class: "schematex-logic-gate-body",
       })
     );
     if (g.iecLabel) {
@@ -41,7 +41,7 @@ function renderGateBody(
           {
             x: g.width / 2,
             y: g.height / 2 + 4,
-            class: "lineage-logic-gate-iec-label",
+            class: "schematex-logic-gate-iec-label",
             "text-anchor": "middle",
           },
           g.iecLabel
@@ -50,7 +50,7 @@ function renderGateBody(
     }
   } else {
     out.push(
-      el("path", { d: g.ansiPath, class: "lineage-logic-gate-body" })
+      el("path", { d: g.ansiPath, class: "schematex-logic-gate-body" })
     );
   }
 
@@ -62,7 +62,7 @@ function renderGateBody(
         cx: op.x - 4,
         cy: op.y,
         r: 4,
-        class: "lineage-logic-bubble",
+        class: "schematex-logic-bubble",
       })
     );
   }
@@ -74,7 +74,7 @@ function renderGateBody(
       out.push(
         polygon({
           points: `${cp.x},${cp.y - 5} ${cp.x + 8},${cp.y} ${cp.x},${cp.y + 5}`,
-          class: "lineage-logic-clock-tri",
+          class: "schematex-logic-clock-tri",
         })
       );
     }
@@ -88,7 +88,7 @@ function renderGateBody(
           cx: op.x + 4,
           cy: op.y,
           r: 4,
-          class: "lineage-logic-bubble",
+          class: "schematex-logic-bubble",
         })
       );
     }
@@ -102,7 +102,7 @@ function renderGateBody(
           {
             x: pin.x + 5,
             y: pin.y + 3,
-            class: "lineage-logic-pin-label",
+            class: "schematex-logic-pin-label",
           },
           pin.label
         )
@@ -116,7 +116,7 @@ function renderGateBody(
           {
             x: pin.x - 6,
             y: pin.y + 3,
-            class: "lineage-logic-pin-label",
+            class: "schematex-logic-pin-label",
             "text-anchor": "end",
           },
           pin.label
@@ -134,7 +134,7 @@ function renderGateBody(
         {
           x: labelX,
           y: labelY,
-          class: "lineage-logic-gate-type",
+          class: "schematex-logic-gate-type",
           "text-anchor": "middle",
         },
         n.gateType ?? ""
@@ -163,13 +163,13 @@ export function renderLogic(ast: LogicGateAST): string {
           width: m.width,
           height: m.height,
           rx: 6,
-          class: "lineage-logic-module",
+          class: "schematex-logic-module",
         }),
         text(
           {
             x: m.x + 10,
             y: m.y + 14,
-            class: "lineage-logic-module-label",
+            class: "schematex-logic-module-label",
           },
           m.label
         ),
@@ -199,7 +199,7 @@ export function renderLogic(ast: LogicGateAST): string {
               x: 0,
               y: cy + 4,
               "text-anchor": "start",
-              class: "lineage-logic-port-label",
+              class: "schematex-logic-port-label",
             },
             n.label
           ),
@@ -208,14 +208,14 @@ export function renderLogic(ast: LogicGateAST): string {
             y1: cy,
             x2: n.isActiveLow ? PORT_SIZE - 8 : PORT_SIZE,
             y2: cy,
-            class: "lineage-logic-wire",
+            class: "schematex-logic-wire",
           }),
           n.isActiveLow
             ? circle({
                 cx: PORT_SIZE - 4,
                 cy,
                 r: 4,
-                class: "lineage-logic-bubble",
+                class: "schematex-logic-bubble",
               })
             : "",
         ])
@@ -229,14 +229,14 @@ export function renderLogic(ast: LogicGateAST): string {
             y1: cy,
             x2: 12,
             y2: cy,
-            class: "lineage-logic-wire",
+            class: "schematex-logic-wire",
           }),
           text(
             {
               x: 16,
               y: cy + 4,
               "text-anchor": "start",
-              class: "lineage-logic-port-label",
+              class: "schematex-logic-port-label",
             },
             n.label
           ),
@@ -253,14 +253,14 @@ export function renderLogic(ast: LogicGateAST): string {
           cx: w.toX - 4,
           cy: w.toY,
           r: 4,
-          class: "lineage-logic-bubble",
+          class: "schematex-logic-bubble",
         })
       );
     }
     return [
       pathEl({
         d: w.path,
-        class: "lineage-logic-wire",
+        class: "schematex-logic-wire",
         "data-from": w.fromNode,
         "data-to": w.toNode,
       }),
@@ -269,18 +269,18 @@ export function renderLogic(ast: LogicGateAST): string {
   });
 
   const css = `
-.lineage-logic { background: #fff; font-family: system-ui, -apple-system, sans-serif; }
-.lineage-logic-gate-body { fill: none; stroke: #111; stroke-width: 1.75; stroke-linejoin: round; }
-.lineage-logic-bubble { fill: #fff; stroke: #111; stroke-width: 1.5; }
-.lineage-logic-clock-tri { fill: none; stroke: #111; stroke-width: 1.5; stroke-linejoin: round; }
-.lineage-logic-wire { stroke: #111; stroke-width: 1.5; fill: none; stroke-linecap: square; }
-.lineage-logic-port-label { font: 13px system-ui, sans-serif; fill: #111; }
-.lineage-logic-pin-label { font: 9px sans-serif; fill: #333; }
-.lineage-logic-gate-type { font: 10px sans-serif; fill: #666; }
-.lineage-logic-gate-iec-label { font: bold 13px sans-serif; fill: #111; }
-.lineage-logic-title { font: bold 14px sans-serif; fill: #111; }
-.lineage-logic-module { fill: none; stroke: #555; stroke-width: 1.25; stroke-dasharray: 6 4; }
-.lineage-logic-module-label { font: 11px sans-serif; fill: #555; font-style: italic; }
+.schematex-logic { background: #fff; font-family: system-ui, -apple-system, sans-serif; }
+.schematex-logic-gate-body { fill: none; stroke: #111; stroke-width: 1.75; stroke-linejoin: round; }
+.schematex-logic-bubble { fill: #fff; stroke: #111; stroke-width: 1.5; }
+.schematex-logic-clock-tri { fill: none; stroke: #111; stroke-width: 1.5; stroke-linejoin: round; }
+.schematex-logic-wire { stroke: #111; stroke-width: 1.5; fill: none; stroke-linecap: square; }
+.schematex-logic-port-label { font: 13px system-ui, sans-serif; fill: #111; }
+.schematex-logic-pin-label { font: 9px sans-serif; fill: #333; }
+.schematex-logic-gate-type { font: 10px sans-serif; fill: #666; }
+.schematex-logic-gate-iec-label { font: bold 13px sans-serif; fill: #111; }
+.schematex-logic-title { font: bold 14px sans-serif; fill: #111; }
+.schematex-logic-module { fill: none; stroke: #555; stroke-width: 1.25; stroke-dasharray: 6 4; }
+.schematex-logic-module-label { font: 11px sans-serif; fill: #555; font-style: italic; }
 `.trim();
 
   const titleSvg = ast.title
@@ -289,7 +289,7 @@ export function renderLogic(ast: LogicGateAST): string {
           x: width / 2,
           y: 18,
           "text-anchor": "middle",
-          class: "lineage-logic-title",
+          class: "schematex-logic-title",
         },
         ast.title
       )
@@ -297,7 +297,7 @@ export function renderLogic(ast: LogicGateAST): string {
 
   return svgRoot(
     {
-      class: "lineage-logic",
+      class: "schematex-logic",
       viewBox: `0 0 ${width} ${height + (ast.title ? 20 : 0)}`,
       width,
       height: height + (ast.title ? 20 : 0),
@@ -313,10 +313,10 @@ export function renderLogic(ast: LogicGateAST): string {
       group(
         { transform: `translate(0, ${ast.title ? 20 : 0})` },
         [
-          group({ class: "lineage-logic-modules" }, moduleSvgs),
-          group({ class: "lineage-logic-wires" }, wireSvgs),
-          group({ class: "lineage-logic-gates" }, gateSvgs),
-          group({ class: "lineage-logic-ports" }, portSvgs),
+          group({ class: "schematex-logic-modules" }, moduleSvgs),
+          group({ class: "schematex-logic-wires" }, wireSvgs),
+          group({ class: "schematex-logic-gates" }, gateSvgs),
+          group({ class: "schematex-logic-ports" }, portSvgs),
         ]
       ),
       titleSvg,

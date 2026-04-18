@@ -52,7 +52,7 @@ export function renderEcomap(
   return svgRoot(
     {
       viewBox: `0 0 ${layout.width} ${layout.height}`,
-      class: "lineage-diagram lineage-ecomap",
+      class: "schematex-diagram schematex-ecomap",
       width: layout.width,
       height: layout.height,
     },
@@ -77,7 +77,7 @@ function buildDefs(t: BaseTheme): string {
   const arrowMarker = el(
     "marker",
     {
-      id: "lineage-ecomap-eco-arrow",
+      id: "schematex-ecomap-eco-arrow",
       viewBox: "0 0 10 10",
       refX: "10",
       refY: "5",
@@ -95,24 +95,24 @@ function buildDefs(t: BaseTheme): string {
 
 function buildStyles(config: RenderConfig, t: BaseTheme): string {
   let css = `
-.lineage-ecomap {${cssCustomProperties(t)}
+.schematex-ecomap {${cssCustomProperties(t)}
   background: ${t.bg};
 }
-.lineage-ecomap-center-shape { fill: ${t.fill}; stroke: ${t.stroke}; stroke-width: ${STROKE_WIDTH.thick}; }
-.lineage-ecomap-center-label { font-family: ${config.fontFamily}; font-size: ${config.fontSize + 2}px; text-anchor: middle; dominant-baseline: central; fill: ${t.text}; font-weight: 600; }
-.lineage-ecomap-system-shape { fill: ${t.fillMuted}; stroke: ${t.strokeMuted}; stroke-width: ${STROKE_WIDTH.medium}; }
-.lineage-ecomap-system-label { font-family: ${config.fontFamily}; font-size: ${config.fontSize - 1}px; text-anchor: middle; fill: ${t.text}; }
-.lineage-ecomap-eco-line { stroke: ${t.strokeMuted}; stroke-width: ${STROKE_WIDTH.medium}; fill: none; stroke-linecap: round; }
-.lineage-ecomap-eco-line-parallel { stroke: ${t.strokeMuted}; stroke-width: ${STROKE_WIDTH.normal}; fill: none; stroke-linecap: round; }
-.lineage-ecomap-eco-line-weak { stroke: ${t.neutral}; stroke-width: ${STROKE_WIDTH.normal}; stroke-dasharray: 6,4; fill: none; stroke-linecap: round; }
-.lineage-ecomap-eco-line-broken { stroke: ${t.neutral}; stroke-width: ${STROKE_WIDTH.medium}; stroke-dasharray: 3,8; fill: none; stroke-linecap: round; }
-.lineage-ecomap-eco-line-stressful { stroke: ${t.strokeMuted}; stroke-width: ${STROKE_WIDTH.medium}; fill: none; stroke-linecap: round; }
-.lineage-ecomap-eco-conn-label { font-family: ${config.fontFamily}; font-size: ${config.fontSize - 2}px; text-anchor: middle; fill: ${t.textMuted}; }
-.lineage-ecomap-eco-arrow { fill: ${t.strokeMuted}; }
+.schematex-ecomap-center-shape { fill: ${t.fill}; stroke: ${t.stroke}; stroke-width: ${STROKE_WIDTH.thick}; }
+.schematex-ecomap-center-label { font-family: ${config.fontFamily}; font-size: ${config.fontSize + 2}px; text-anchor: middle; dominant-baseline: central; fill: ${t.text}; font-weight: 600; }
+.schematex-ecomap-system-shape { fill: ${t.fillMuted}; stroke: ${t.strokeMuted}; stroke-width: ${STROKE_WIDTH.medium}; }
+.schematex-ecomap-system-label { font-family: ${config.fontFamily}; font-size: ${config.fontSize - 1}px; text-anchor: middle; fill: ${t.text}; }
+.schematex-ecomap-eco-line { stroke: ${t.strokeMuted}; stroke-width: ${STROKE_WIDTH.medium}; fill: none; stroke-linecap: round; }
+.schematex-ecomap-eco-line-parallel { stroke: ${t.strokeMuted}; stroke-width: ${STROKE_WIDTH.normal}; fill: none; stroke-linecap: round; }
+.schematex-ecomap-eco-line-weak { stroke: ${t.neutral}; stroke-width: ${STROKE_WIDTH.normal}; stroke-dasharray: 6,4; fill: none; stroke-linecap: round; }
+.schematex-ecomap-eco-line-broken { stroke: ${t.neutral}; stroke-width: ${STROKE_WIDTH.medium}; stroke-dasharray: 3,8; fill: none; stroke-linecap: round; }
+.schematex-ecomap-eco-line-stressful { stroke: ${t.strokeMuted}; stroke-width: ${STROKE_WIDTH.medium}; fill: none; stroke-linecap: round; }
+.schematex-ecomap-eco-conn-label { font-family: ${config.fontFamily}; font-size: ${config.fontSize - 2}px; text-anchor: middle; fill: ${t.textMuted}; }
+.schematex-ecomap-eco-arrow { fill: ${t.strokeMuted}; }
 `;
 
   for (const [cat, color] of Object.entries(CATEGORY_COLORS)) {
-    css += `.lineage-ecomap-system-${cat} .lineage-ecomap-system-shape { fill: ${color}18; stroke: ${color}; }\n`;
+    css += `.schematex-ecomap-system-${cat} .schematex-ecomap-system-shape { fill: ${color}18; stroke: ${color}; }\n`;
   }
 
   return el("style", {}, css);
@@ -132,13 +132,13 @@ function renderCenter(node: LayoutNode, config: RenderConfig): string {
       cx,
       cy,
       r,
-      class: "lineage-ecomap-center-shape",
+      class: "schematex-ecomap-center-shape",
     }),
     text(
       {
         x: cx,
         y: cy,
-        class: "lineage-ecomap-center-label",
+        class: "schematex-ecomap-center-label",
       },
       label
     ),
@@ -150,7 +150,7 @@ function renderCenter(node: LayoutNode, config: RenderConfig): string {
         {
           x: cx,
           y: cy + config.fontSize + 4,
-          class: "lineage-ecomap-center-label",
+          class: "schematex-ecomap-center-label",
           "font-size": `${config.fontSize}px`,
           "font-weight": "normal",
         },
@@ -160,7 +160,7 @@ function renderCenter(node: LayoutNode, config: RenderConfig): string {
   }
 
   return group(
-    { class: "lineage-ecomap-center", "data-id": ind.id },
+    { class: "schematex-ecomap-center", "data-id": ind.id },
     elements
   );
 }
@@ -191,7 +191,7 @@ function renderSystems(
           {
             x: cx,
             y: labelStartY + li * (config.fontSize + 1),
-            class: "lineage-ecomap-system-label",
+            class: "schematex-ecomap-system-label",
           },
           labelLines[li]
         )
@@ -201,7 +201,7 @@ function renderSystems(
     elements.push(
       group(
         {
-          class: `lineage-ecomap-system lineage-ecomap-system-${cat}`,
+          class: `schematex-ecomap-system schematex-ecomap-system-${cat}`,
           "data-system-id": ind.id,
         },
         [
@@ -209,7 +209,7 @@ function renderSystems(
             cx,
             cy,
             r,
-            class: "lineage-ecomap-system-shape",
+            class: "schematex-ecomap-system-shape",
           }),
           ...labelElements,
         ]
@@ -217,7 +217,7 @@ function renderSystems(
     );
   }
 
-  return group({ class: "lineage-ecomap-systems" }, elements);
+  return group({ class: "schematex-ecomap-systems" }, elements);
 }
 
 // ─── Connections ───────────────────────────────────────────
@@ -239,7 +239,7 @@ function renderConnections(edges: LayoutEdge[]): string {
       case "strong":
         lineElements.push(
           ...parallelLines(coords, 3, 4, {
-            class: "lineage-ecomap-eco-line-parallel",
+            class: "schematex-ecomap-eco-line-parallel",
             ...arrowAttrs,
           })
         );
@@ -248,7 +248,7 @@ function renderConnections(edges: LayoutEdge[]): string {
       case "moderate":
         lineElements.push(
           ...parallelLines(coords, 2, 4, {
-            class: "lineage-ecomap-eco-line-parallel",
+            class: "schematex-ecomap-eco-line-parallel",
             ...arrowAttrs,
           })
         );
@@ -261,7 +261,7 @@ function renderConnections(edges: LayoutEdge[]): string {
             y1: coords.y1,
             x2: coords.x2,
             y2: coords.y2,
-            class: "lineage-ecomap-eco-line-weak",
+            class: "schematex-ecomap-eco-line-weak",
             ...arrowAttrs,
           })
         );
@@ -279,7 +279,7 @@ function renderConnections(edges: LayoutEdge[]): string {
               8,
               20
             ),
-            class: "lineage-ecomap-eco-line-stressful",
+            class: "schematex-ecomap-eco-line-stressful",
             "stroke-width": relType === "stressful-strong" ? "3" : "2",
             ...arrowAttrs,
           })
@@ -297,7 +297,7 @@ function renderConnections(edges: LayoutEdge[]): string {
               8,
               20
             ),
-            class: "lineage-ecomap-eco-line-stressful",
+            class: "schematex-ecomap-eco-line-stressful",
             ...arrowAttrs,
           })
         );
@@ -313,7 +313,7 @@ function renderConnections(edges: LayoutEdge[]): string {
             y1: coords.y1,
             x2: coords.x2,
             y2: coords.y2,
-            class: "lineage-ecomap-eco-line-broken",
+            class: "schematex-ecomap-eco-line-broken",
             ...arrowAttrs,
           })
         );
@@ -326,7 +326,7 @@ function renderConnections(edges: LayoutEdge[]): string {
             y1: coords.y1,
             x2: coords.x2,
             y2: coords.y2,
-            class: "lineage-ecomap-eco-line",
+            class: "schematex-ecomap-eco-line",
             ...arrowAttrs,
           })
         );
@@ -336,7 +336,7 @@ function renderConnections(edges: LayoutEdge[]): string {
     elements.push(
       group(
         {
-          class: `lineage-ecomap-connection lineage-ecomap-connection-${relType}`,
+          class: `schematex-ecomap-connection schematex-ecomap-connection-${relType}`,
           "data-from": edge.from,
           "data-to": edge.to,
         },
@@ -345,7 +345,7 @@ function renderConnections(edges: LayoutEdge[]): string {
     );
   }
 
-  return group({ class: "lineage-ecomap-connections" }, elements);
+  return group({ class: "schematex-ecomap-connections" }, elements);
 }
 
 // ─── Connection labels ─────────────────────────────────────
@@ -362,7 +362,7 @@ function renderConnectionLabels(edges: LayoutEdge[], t: BaseTheme): string {
     const my = (coords.y1 + coords.y2) / 2;
 
     elements.push(
-      group({ class: "lineage-ecomap-conn-label-group" }, [
+      group({ class: "schematex-ecomap-conn-label-group" }, [
         el("rect", {
           x: mx - 40,
           y: my - 8,
@@ -373,14 +373,14 @@ function renderConnectionLabels(edges: LayoutEdge[], t: BaseTheme): string {
           "fill-opacity": "0.85",
         }),
         text(
-          { x: mx, y: my + 4, class: "lineage-ecomap-eco-conn-label" },
+          { x: mx, y: my + 4, class: "schematex-ecomap-eco-conn-label" },
           edge.relationship.label
         ),
       ])
     );
   }
 
-  return group({ class: "lineage-ecomap-connection-labels" }, elements);
+  return group({ class: "schematex-ecomap-connection-labels" }, elements);
 }
 
 // ─── Line type helpers ─────────────────────────────────────
@@ -489,7 +489,7 @@ function conflictMarks(coords: LineCoords): string[] {
       y1: my - 3 + ny * markLen,
       x2: mx - 3 - nx * markLen,
       y2: my - 3 - ny * markLen,
-      class: "lineage-ecomap-eco-line",
+      class: "schematex-ecomap-eco-line",
       "stroke-width": "2",
     }),
     el("line", {
@@ -497,7 +497,7 @@ function conflictMarks(coords: LineCoords): string[] {
       y1: my + 3 + ny * markLen,
       x2: mx + 3 - nx * markLen,
       y2: my + 3 - ny * markLen,
-      class: "lineage-ecomap-eco-line",
+      class: "schematex-ecomap-eco-line",
       "stroke-width": "2",
     }),
   ];
@@ -509,13 +509,13 @@ function getArrowAttrs(
   if (!flow || flow === "none") return {};
   switch (flow) {
     case "from":
-      return { "marker-end": "url(#lineage-ecomap-eco-arrow)" };
+      return { "marker-end": "url(#schematex-ecomap-eco-arrow)" };
     case "to":
-      return { "marker-start": "url(#lineage-ecomap-eco-arrow)" };
+      return { "marker-start": "url(#schematex-ecomap-eco-arrow)" };
     case "mutual":
       return {
-        "marker-start": "url(#lineage-ecomap-eco-arrow)",
-        "marker-end": "url(#lineage-ecomap-eco-arrow)",
+        "marker-start": "url(#schematex-ecomap-eco-arrow)",
+        "marker-end": "url(#schematex-ecomap-eco-arrow)",
       };
     default:
       return {};

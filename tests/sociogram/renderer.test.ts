@@ -23,9 +23,9 @@ describe("Sociogram Renderer", () => {
       expect(svg).toMatch(/viewBox="0 0 \d+ \d+"/);
     });
 
-    it("includes class lineage-sociogram", () => {
+    it("includes class schematex-sociogram", () => {
       const svg = renderFromText("sociogram\nalice\n");
-      expect(svg).toContain("lineage-sociogram");
+      expect(svg).toContain("schematex-sociogram");
     });
   });
 
@@ -78,12 +78,12 @@ describe("Sociogram Renderer", () => {
 
     it("applies star class for star nodes", () => {
       const svg = renderFromText("sociogram\nalice [role: star]\n");
-      expect(svg).toContain("lineage-sociogram-node-star");
+      expect(svg).toContain("schematex-sociogram-node-star");
     });
 
     it("applies isolate class for isolate nodes", () => {
       const svg = renderFromText("sociogram\nalice\nbob\nalice -> bob\ncarol\n");
-      expect(svg).toContain("lineage-sociogram-node-isolate");
+      expect(svg).toContain("schematex-sociogram-node-isolate");
     });
 
     it("renders star badge polygon for star role", () => {
@@ -102,17 +102,17 @@ describe("Sociogram Renderer", () => {
 
     it("applies positive class", () => {
       const svg = renderFromText("sociogram\nalice -> bob\n");
-      expect(svg).toContain("lineage-sociogram-edge-positive");
+      expect(svg).toContain("schematex-sociogram-edge-positive");
     });
 
     it("applies negative class for rejection", () => {
       const svg = renderFromText("sociogram\nalice -x> bob\n");
-      expect(svg).toContain("lineage-sociogram-edge-negative");
+      expect(svg).toContain("schematex-sociogram-edge-negative");
     });
 
     it("applies neutral class", () => {
       const svg = renderFromText("sociogram\nalice -.- bob\n");
-      expect(svg).toContain("lineage-sociogram-edge-neutral");
+      expect(svg).toContain("schematex-sociogram-edge-neutral");
     });
 
     it("renders marker-end for one-way edge", () => {
@@ -142,12 +142,12 @@ describe("Sociogram Renderer", () => {
     it("renders title text when provided", () => {
       const svg = renderFromText('sociogram "My Network"\nalice\n');
       expect(svg).toContain("My Network");
-      expect(svg).toContain("lineage-sociogram-title");
+      expect(svg).toContain("schematex-sociogram-title");
     });
 
     it("does not render title text element when absent", () => {
       const svg = renderFromText("sociogram\nalice\n");
-      expect(svg).not.toMatch(/<text[^>]*class="lineage-sociogram-title"/);
+      expect(svg).not.toMatch(/<text[^>]*class="schematex-sociogram-title"/);
     });
   });
 
@@ -161,7 +161,7 @@ group boys [label: "Boys"]
 `;
       const svg = renderFromText(input);
       expect(svg).toContain("Boys");
-      expect(svg).toContain("lineage-sociogram-group-label");
+      expect(svg).toContain("schematex-sociogram-group-label");
     });
   });
 
@@ -169,7 +169,7 @@ group boys [label: "Boys"]
     it("includes style block", () => {
       const svg = renderFromText("sociogram\nalice\n");
       expect(svg).toContain("<style>");
-      expect(svg).toContain("lineage-sociogram-node");
+      expect(svg).toContain("schematex-sociogram-node");
     });
 
     it("includes valence colors in style", () => {
@@ -239,7 +239,7 @@ group boys [label: "Boys"]
 `;
       const svg = renderFromText(input);
       expect(svg).toContain("Playground Dynamics");
-      expect(svg).toContain("lineage-sociogram-edge-negative");
+      expect(svg).toContain("schematex-sociogram-edge-negative");
       expect(svg).toContain("conflict");
       expect(svg).toContain("Boys");
       expect(svg).toContain("Girls");
@@ -271,7 +271,7 @@ group boys [label: "Boys"]
 `;
       const svg = renderFromText(input);
       expect(svg).toContain("Dr. Park");
-      expect(svg).toContain("lineage-sociogram-node-star");
+      expect(svg).toContain("schematex-sociogram-node-star");
       expect(svg).toContain("strong bond");
     });
   });
@@ -280,7 +280,7 @@ group boys [label: "Boys"]
     it("renders sociogram through the main render() API", async () => {
       const { render } = await import("../../src/core/api");
       const svg = render("sociogram\nalice -> bob\n");
-      expect(svg).toContain("lineage-sociogram");
+      expect(svg).toContain("schematex-sociogram");
       expect(svg).toContain("alice");
     });
   });

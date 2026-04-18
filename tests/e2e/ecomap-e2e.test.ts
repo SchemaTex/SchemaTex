@@ -11,7 +11,7 @@ ecomap "Test"
   maria === work
 `);
     expect(svg).toContain("<svg");
-    expect(svg).toContain("lineage-ecomap");
+    expect(svg).toContain("schematex-ecomap");
     expect(svg).toContain("</svg>");
   });
 
@@ -32,7 +32,7 @@ ecomap
       `ecomap\n  center: x [female]\n  y [label: "Y"]\n  x --- y`,
       { type: "ecomap" }
     );
-    expect(svg).toContain("lineage-ecomap");
+    expect(svg).toContain("schematex-ecomap");
   });
 
   test("Case 1: basic individual ecomap", () => {
@@ -52,10 +52,10 @@ ecomap "Maria's Support Network"
     expect(svg).toContain("Tech Company");
     expect(svg).toContain("Mom");
     expect(svg).toContain("Lisa");
-    expect(svg).toContain("lineage-ecomap-system-work");
-    expect(svg).toContain("lineage-ecomap-system-religion");
-    expect(svg).toContain("lineage-ecomap-system-family");
-    expect(svg).toContain("lineage-ecomap-system-friends");
+    expect(svg).toContain("schematex-ecomap-system-work");
+    expect(svg).toContain("schematex-ecomap-system-religion");
+    expect(svg).toContain("schematex-ecomap-system-family");
+    expect(svg).toContain("schematex-ecomap-system-friends");
   });
 
   test("Case 2: energy flow + stress", () => {
@@ -74,8 +74,8 @@ ecomap "The Johnsons"
   family ~~~ legal
 `);
     expect(svg).toContain("The Johnsons");
-    expect(svg).toContain("lineage-ecomap-connection-strong");
-    expect(svg).toContain("lineage-ecomap-connection-stressful");
+    expect(svg).toContain("schematex-ecomap-connection-strong");
+    expect(svg).toContain("schematex-ecomap-connection-stressful");
     // directional arrows
     expect(svg).toContain("marker-");
   });
@@ -105,10 +105,10 @@ ecomap "Substance Abuse Recovery"
 `);
     expect(svg).toContain("James");
     expect(svg).toContain("AA Group");
-    expect(svg).toContain("lineage-ecomap-connection-strong");
-    expect(svg).toContain("lineage-ecomap-connection-weak");
-    expect(svg).toContain("lineage-ecomap-connection-broken");
-    expect(svg).toContain("lineage-ecomap-connection-stressful");
+    expect(svg).toContain("schematex-ecomap-connection-strong");
+    expect(svg).toContain("schematex-ecomap-connection-weak");
+    expect(svg).toContain("schematex-ecomap-connection-broken");
+    expect(svg).toContain("schematex-ecomap-connection-stressful");
     expect(svg).toContain("custody conflict");
     expect(svg).toContain("supervised visits");
   });
