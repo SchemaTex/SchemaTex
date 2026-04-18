@@ -25,6 +25,8 @@ export type DiagramType =
   | "blockdiagram"  // Control systems block diagram (09-BLOCK-DIAGRAM-STANDARD)
   | "ladder"    // PLC ladder logic IEC 61131-3 (10-LADDER-LOGIC-STANDARD)
   | "sld"       // Single-line diagram / power distribution (11-SINGLE-LINE-STANDARD)
+  // Corporate / legal structure diagrams
+  | "entity"    // Entity structure / corporate ownership (12-ENTITY-STRUCTURE-STANDARD)
   // Causality / analysis diagrams
   | "fishbone"; // Ishikawa cause-and-effect (14-FISHBONE-STANDARD)
 
@@ -916,6 +918,77 @@ export interface SLDAST {
   title?: string;
   nodes: SLDNode[];
   connections: SLDConnection[];
+  metadata?: Record<string, string>;
+}
+
+// ─── Entity Structure Types ─────────────────────────────────
+
+export type EntityType =
+  | "corp"
+  | "llc"
+  | "lp"
+  | "trust"
+  | "individual"
+  | "foundation"
+  | "disregarded"
+  | "pool"
+  | "placeholder";
+
+export type EntityStatus = "normal" | "new" | "eliminated" | "modified";
+
+export interface EntityNode {
+  id: string;
+  name: string;
+  entityType: EntityType;
+  /** ISO 3166-1 alpha-2 or 2-3 letter state code (DE, IE, KY, BVI, ...) */
+  jurisdiction?: string;
+  status?: EntityStatus;
+  taxClass?: string;
+  role?: string;
+  note?: string;
+  formationDate?: string;
+  properties?: Record<string, string>;
+}
+
+export type EntityEdgeOp =
+  | "ownership"   // -> solid black arrow (default)
+  | "voting"      // ==> double line (voting-only control)
+  | "pool"        // -.-> dashed grey (option pool)
+  | "license"     // -~-> purple dashed (IP license / management)
+  | "distribution"; // --> green dashed (trust distribution)
+
+export interface EntityEdge {
+  from: string;
+  to: string;
+  op: EntityEdgeOp;
+  /** Raw percentage text, e.g. "100%" or "V 75% / E 50%" or "was 40% → 100%" */
+  percentage?: string;
+  /** Share class label (Series A Pref, Common, Option Pool) */
+  shareClass?: string;
+  label?: string;
+}
+
+export interface JurisdictionDef {
+  code: string;
+  name: string;
+  color?: string;
+}
+
+export interface ClusterDef {
+  id: string;
+  label: string;
+  /** Entity ids (explicit members) */
+  members: string[];
+  color?: string;
+}
+
+export interface EntityAST {
+  type: "entity";
+  title?: string;
+  entities: EntityNode[];
+  edges: EntityEdge[];
+  jurisdictions: JurisdictionDef[];
+  clusters: ClusterDef[];
   metadata?: Record<string, string>;
 }
 

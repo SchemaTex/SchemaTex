@@ -17,6 +17,8 @@
   <a href="#logic-gate-diagram-syntax">Logic Gate</a> ·
   <a href="#ladder-logic-syntax">Ladder Logic</a> ·
   <a href="#circuit-schematic-syntax">Circuit</a> ·
+  <a href="#single-line-diagram-syntax">SLD</a> ·
+  <a href="#entity-structure-diagram-syntax">Entity Structure</a> ·
   <a href="#api">API</a> ·
   <a href="#contributing">Contributing</a>
 </p>
@@ -28,7 +30,8 @@
 Lineage turns plain text into standards-compliant SVG diagrams across two domains:
 
 - **Relationship diagrams** — genograms, ecomaps, pedigree charts, phylogenetic trees, sociograms. Used daily in social work, family therapy, genetics, and medical practice.
-- **Electrical / industrial diagrams** — timing waveforms, logic gate schematics, circuit schematics, block diagrams, and PLC ladder logic (IEC 61131-3 / Allen-Bradley).
+- **Electrical / industrial diagrams** — timing waveforms, logic gate schematics, circuit schematics, block diagrams, PLC ladder logic (IEC 61131-3 / Allen-Bradley), and single-line power diagrams (IEEE 315).
+- **Legal / financial diagrams** — corporate entity structure charts for cap tables, trusts, M&A structures, and international tax layouts.
 
 All diagram types share the same pipeline (Text → Parser → AST → Layout → SVG) and zero runtime dependencies.
 
@@ -1101,6 +1104,246 @@ Positional mode does no collision detection — wire distances are interpreted l
 
 ---
 
+## Single-Line Diagram Syntax
+
+IEEE 315 / IEC 60617 power distribution diagrams — one-line representation of electrical power systems.
+
+### Header
+
+```
+sld "Optional Title"
+```
+
+### Components
+
+```
+sld "Substation"
+
+utility "GRID" "12.47 kV"
+transformer "T1" "12.47kV / 480V" [kva: 500]
+bus "BUS-1" "480V"
+breaker "CB1"
+load "PANEL-A" "120/208V" [kw: 75]
+
+utility -> transformer
+transformer -> bus BUS-1
+BUS-1 -> breaker CB1
+CB1 -> load PANEL-A
+```
+
+### Component types
+
+| Type | Symbol | Use |
+|------|--------|-----|
+| `utility` | Arrow into fence | Grid connection / utility source |
+| `transformer` | Two circles | Voltage step-up / step-down |
+| `bus` | Thick horizontal bar | Common connection point |
+| `breaker` | Square with diagonal | Circuit breaker |
+| `fuse` | Rectangle with S-curve | Fuse protection |
+| `switch` | Diagonal line | Disconnect switch |
+| `load` | Rectangle | End load / panel |
+| `generator` | Circle with G | On-site generation |
+| `motor` | Circle with M | Motor load |
+| `capacitor` | Parallel lines | Power factor correction |
+| `meter` | Circle | Revenue metering |
+| `relay` | Diamond | Protection relay |
+| `vfd` | Rectangle | Variable frequency drive |
+| `ups` | Battery-backed rect | Uninterruptible power supply |
+| `solar` | Sun symbol | Photovoltaic array |
+
+### Connection syntax
+
+```
+source -> target [label: "optional"]
+source -> bus BUS-1    # connect to named bus bar
+```
+
+### Full example
+
+```
+sld "Industrial Facility — One-Line Diagram"
+
+utility "UTILITY" "13.8 kV"
+transformer "MAIN-XFMR" "13.8kV / 4.16kV" [kva: 2000, impedance: "5.75%"]
+bus "MV-BUS" "4.16 kV"
+breaker "MV-CB1"
+transformer "DIST-1" "4.16kV / 480V" [kva: 750]
+bus "LV-BUS-1" "480 V"
+breaker "LV-CB1"
+breaker "LV-CB2"
+load "MCC-A" "480V" [kw: 200]
+motor "PUMP-1" "480V" [hp: 100]
+
+utility -> MAIN-XFMR
+MAIN-XFMR -> bus MV-BUS
+MV-BUS -> MV-CB1
+MV-CB1 -> DIST-1
+DIST-1 -> bus LV-BUS-1
+LV-BUS-1 -> LV-CB1
+LV-BUS-1 -> LV-CB2
+LV-CB1 -> MCC-A
+LV-CB2 -> PUMP-1
+```
+
+---
+
+## Entity Structure Diagram Syntax
+
+Corporate ownership, legal entity, and tax structure diagrams — cap tables, trusts, M&A, VC/PE holdings, international structures.
+
+### Header
+
+```
+entity-structure "Optional Title"
+```
+
+### Entities
+
+```
+entity id "Display Name" type@JURISDICTION [options]
+```
+
+| Type | Shape | Use |
+|------|-------|-----|
+| `corp` | Rectangle (blue) | Corporation, Inc., Ltd. |
+| `llc` | Rounded rectangle (green) | LLC, partnership |
+| `lp` | Notched polygon (yellow) | Limited partnership, fund |
+| `trust` | Ellipse (purple) | Trust, estate |
+| `individual` | Circle (orange) | Natural person |
+| `foundation` | Pentagon (yellow) | Private foundation, charity |
+| `disregarded` | Dashed rectangle (gray) | Disregarded entity (tax) |
+| `pool` | Dashed rounded rect | Option pool, reserved shares |
+| `placeholder` | Dashed rect (light) | Entity to be formed |
+
+The `@JURISDICTION` suffix (ISO 3166-1 alpha-2, e.g. `@DE`, `@KY`, `@SG`) adds a badge and enables auto-clustering.
+
+### Entity options
+
+```
+entity acme "Acme Corp" corp@DE [role: "Operating Company", note: "USD 10M ARR", status: new]
+```
+
+| Option | Effect |
+|--------|--------|
+| `role: "..."` | Italic sub-label below name |
+| `note: "..."` | Small gray note below shape |
+| `est: "YYYY-MM-DD"` | Establishment date |
+| `status: new` | Green NEW badge |
+| `status: modified` | Orange MODIFIED badge |
+| `status: eliminated` | Red ELIMINATED badge |
+
+### Ownership edges
+
+```
+parent -> child : 100%
+parent -> child : 51% [class: "Common A"]
+pool -.-> company : 10% [class: "Option Pool"]
+trustee -~-> trust [label: "Manages"]
+trust --> beneficiary [label: "Distributions"]
+```
+
+| Operator | Type | Visual |
+|----------|------|--------|
+| `->` | Ownership / equity | Black solid arrow |
+| `==>` | Voting control | Purple bold arrow |
+| `-.->` | Option pool / contingent | Green dashed arrow |
+| `-~->` | License / management | Grey wavy arrow |
+| `-->` | Distribution / flow | Blue arrow |
+
+### Jurisdiction clustering
+
+Declare jurisdictions to get colored dashed-border clusters grouping entities by country:
+
+```
+jurisdiction US "United States" [color: "#3b82f6"]
+jurisdiction IE "Ireland" [color: "#059669"]
+jurisdiction KY "Cayman Islands" [color: "#059669"]
+```
+
+Entities with a matching `@CODE` suffix are automatically grouped inside the cluster.
+
+### Full examples
+
+**PE holding structure:**
+
+```
+entity-structure "Acme Holdings Fund I — Portfolio Structure"
+
+entity lp "Acme Holdings Fund I" lp@DE
+entity blocker "Acme Blocker Corp" corp@DE
+entity widgets "Acme Widgets, Inc." corp@DE
+entity services "Acme Services, LLC" llc@DE
+
+lp -> blocker : 100%
+blocker -> widgets : 100%
+blocker -> services : 100%
+```
+
+**Startup cap table (Post-Series A):**
+
+```
+entity-structure "Acme Technologies, Inc. — Cap Table (Post-Series A)"
+
+entity alice "Alice Chen" individual [role: "Co-founder · CEO"]
+entity bob "Bob Martinez" individual [role: "Co-founder · CTO"]
+entity vc "Sequoia Fund XX" lp@DE
+entity esop "ESOP Pool" pool [note: "reserved, unissued"]
+entity acme "Acme Technologies, Inc." corp@DE [note: "Fully diluted: 10M shares"]
+
+alice -> acme : 30% [class: "Common"]
+bob -> acme : 25% [class: "Common"]
+vc -> acme : 20% [class: "Series A Pref"]
+esop -.-> acme : 10% [class: "Option Pool"]
+```
+
+**International tax structure:**
+
+```
+entity-structure "Acme Global — International Holdings Structure"
+
+jurisdiction US "United States" [color: "#3b82f6"]
+jurisdiction IE "Ireland" [color: "#059669"]
+jurisdiction KY "Cayman Islands" [color: "#059669"]
+
+entity parent "Acme Global, Inc." corp@US [note: "Ultimate Parent"]
+entity ie-holdco "Acme Ireland Holdings" corp@IE
+entity ie-ip "Acme IP Ltd" corp@KY [note: "holds group IP"]
+entity nl-bv "Acme EU Distribution" corp@NL [note: "EMEA ops"]
+
+parent -> ie-holdco : 100%
+ie-holdco -> ie-ip : 100%
+ie-holdco -> nl-bv : 100%
+ie-ip -~-> nl-bv [label: "IP License · royalty"]
+```
+
+**Family trust / M&A delta:**
+
+```
+entity-structure "Smith Family — Trust & Asset Holding Structure"
+
+entity grantor "John Smith" individual [role: "Grantor / Settlor"]
+entity trust "Smith Family Trust" trust@DE [est: "2024-03-15"]
+entity famllc "Smith Family Holdings" llc@DE
+entity realestate "Smith Real Estate" llc@DE [note: "property holding"]
+
+grantor -> trust [label: "Settles"]
+trust -> famllc : 100%
+famllc -> realestate : 100%
+
+---
+
+entity-structure "Acme Holdings — Post-Acquisition"
+
+entity parent "Acme Holdings" corp@DE
+entity mergesub "MergeSub, LLC" llc@DE [status: new, note: "formed for merger"]
+entity target "TargetCo" corp@DE [status: modified]
+
+parent -> mergesub : 100%
+mergesub -> target : was 40% → 100%
+```
+
+---
+
 ## API
 
 ### `render(text, config?)`
@@ -1149,7 +1392,8 @@ const svg = genogram.render(layout, renderConfig);
 ```ts
 interface LineageConfig {
   type?: 'genogram' | 'ecomap' | 'pedigree' | 'phylo' | 'sociogram'
-       | 'timing' | 'logic' | 'circuit' | 'blockdiagram' | 'ladder';
+       | 'timing' | 'logic' | 'circuit' | 'blockdiagram' | 'ladder'
+       | 'sld' | 'entity';
   fontFamily?: string;   // default: 'system-ui'
   padding?: number;      // SVG padding in px, default: 20
   theme?: string;        // 'default' | 'clinical' | 'colorful' | 'mono'
@@ -1191,6 +1435,8 @@ Lineage produces clean, semantic SVG suitable for embedding, printing, or intera
 - [x] **Circuit Schematic** — IEEE 315 / IEC 60617 positional DSL, 30+ component symbols, direction-chained layout
 - [x] **Block Diagram** — Control-systems layout, transfer functions, summing junctions, feedback loops, feedforward paths
 - [x] **Ladder Logic** — IEC 61131-3 / Allen-Bradley, XIC/XIO/ONS contacts, OTE/OTL/OTU coils, TON/CTU function blocks, compare instructions, parallel branches, multi-line tag labels
+- [x] **Single-Line Diagram (SLD)** — IEEE 315 power distribution, utility/transformer/bus/breaker/load/generator/motor symbols, advanced hierarchical layout engine
+- [x] **Entity Structure** — Corporate ownership, cap tables, trusts, M&A delta, international tax structures, 9 entity types, 5 edge operators, jurisdiction auto-clustering
 
 **Coming next**
 - [ ] **Phase 3: Integrations** — React component, Markdown plugin, Obsidian plugin
@@ -1253,6 +1499,14 @@ src/
       parser.ts     # Indented rung DSL, contact/coil/FB/parallel parsing
       layout.ts     # Slot-width layout, dynamic rung height, parallel buses
       renderer.ts   # Rails, contacts (XIC/XIO/ONS), coils, FBs, AB color labels
+    sld/            # Single-line power diagram (IEEE 315)
+      parser.ts     # Component + connection DSL with bus declarations
+      layout.ts     # Hierarchical tier layout with bus bar placement
+      renderer.ts   # 15+ power component symbols, bus bars, protection devices
+    entity/         # Corporate entity structure (legal / tax / VC/PE)
+      parser.ts     # entity / jurisdiction / cluster / edge DSL
+      layout.ts     # Tier-based layout, cap-table convergence, jurisdiction clusters
+      renderer.ts   # 9 entity shapes, 5 edge types, status badges, jurisdiction tags
 ```
 
 ## Development

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Lineage · Entity Structure Preview</title>
+<style>
+  body { font-family: system-ui; background: #f5f5f5; margin: 0; padding: 20px; }
+  nav { font-size: 13px; color: #888; margin-bottom: 16px; }
+  nav a { color: #555; text-decoration: none; }
+  nav a:hover { text-decoration: underline; }
+  h1 { font-size: 18px; color: #333; margin: 0 0 4px; }
+  .subtitle { font-size: 13px; color: #888; margin-bottom: 24px; }
+  h2 { font-size: 14px; color: #666; margin-top: 30px; border-bottom: 1px solid #ddd; padding-bottom: 4px; }
+  pre.src { background: #f7f7f7; padding: 10px; font-size: 12px; border-radius: 6px; margin: 6px 0; border: 1px solid #eee; white-space: pre-wrap; }
+  .svg-container { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin: 10px 0; overflow-x: auto; }
+  .svg-container svg { display: block; max-width: 100%; height: auto; }
+</style>
+</head>
+<body>
+<nav><a href="index.html">← All Diagrams</a></nav>
+<h1>Entity Structure Diagram</h1>
+<div class="subtitle">Corporate ownership · legal entity · tax structure — for legal, tax, M&A, VC/PE, family office</div>
+<div id="output"></div>
+<script type="module">
+import { render } from '../src/index.ts';
+
+const cases = [
+  ['TC-ENT-01 · PE holding structure (3 tier · 4 entities)', `entity-structure "Acme Holdings Fund I — Portfolio Structure"
+
+entity lp "Acme Holdings Fund I" lp@DE
+entity blocker "Acme Blocker Corp" corp@DE
+entity widgets "Acme Widgets, Inc." corp@DE
+entity services "Acme Services, LLC" llc@DE
+entity intl "Acme International, Inc." corp@DE
+
+lp -> blocker : 100%
+blocker -> widgets : 100%
+blocker -> services : 100%
+blocker -> intl : 100%`],
+
+  ['TC-ENT-02 · Startup cap table (Post-Series A)', `entity-structure "Acme Technologies, Inc. — Cap Table (Post-Series A)"
+
+entity alice "Alice Chen" individual [role: "Co-founder · CEO"]
+entity bob "Bob Martinez" individual [role: "Co-founder · CTO"]
+entity carol "Carol Wei" individual [role: "Co-founder · VP Eng"]
+entity vc "Sequoia Fund XX" lp@DE
+entity esop "ESOP Pool" pool [note: "reserved, unissued"]
+entity acme "Acme Technologies, Inc." corp@DE [note: "Fully diluted: 10M shares"]
+
+alice -> acme : 30% [class: "Common"]
+bob -> acme : 25% [class: "Common"]
+carol -> acme : 15% [class: "Common"]
+vc -> acme : 20% [class: "Series A Pref"]
+esop -.-> acme : 10% [class: "Option Pool"]`],
+
+  ['TC-ENT-03 · International tax structure (5 jurisdictions + IP license)', `entity-structure "Acme Global — International Holdings Structure"
+
+jurisdiction US "United States" [color: "#3b82f6"]
+jurisdiction IE "Ireland" [color: "#059669"]
+jurisdiction KY "Cayman Islands" [color: "#059669"]
+jurisdiction NL "Netherlands" [color: "#059669"]
+jurisdiction SG "Singapore" [color: "#dc2626"]
+
+entity parent "Acme Global, Inc." corp@US [note: "Ultimate Parent"]
+entity ie-holdco "Acme Ireland Holdings" corp@IE
+entity sg-holdco "Acme Singapore Pte" corp@SG
+entity ie-ip "Acme IP Ltd" corp@KY [note: "holds group IP"]
+entity nl-bv "Acme EU Distribution" corp@NL [note: "EMEA ops"]
+entity sg-apac "Acme APAC Trading" corp@SG [note: "APAC ops"]
+
+parent -> ie-holdco : 100%
+parent -> sg-holdco : 100%
+ie-holdco -> ie-ip : 100%
+ie-holdco -> nl-bv : 100%
+sg-holdco -> sg-apac : 100%
+
+ie-ip -~-> nl-bv [label: "IP License · royalty"]`],
+
+  ['TC-ENT-04 · Family trust structure', `entity-structure "Smith Family — Trust & Asset Holding Structure"
+
+entity grantor "John Smith" individual [role: "Grantor / Settlor"]
+entity trust "Smith Family Trust" trust@DE [est: "2024-03-15", note: "Irrevocable Dynasty Trust"]
+entity trustee "Northern Trust" individual [role: "Independent Trustee"]
+entity beneficiary1 "Emma Smith" individual [role: "Beneficiary (50%)"]
+entity beneficiary2 "Liam Smith" individual [role: "Beneficiary (50%)"]
+entity famllc "Smith Family Holdings" llc@DE
+entity realestate "Smith Real Estate" llc@DE [note: "property holding"]
+entity investment "Smith Investments" llc@DE [note: "liquid assets"]
+
+grantor -> trust [label: "Settles"]
+trustee -~-> trust [label: "Manages"]
+trust --> beneficiary1 [label: "Distributions"]
+trust --> beneficiary2 [label: "Distributions"]
+trust -> famllc : 100%
+famllc -> realestate : 100%
+famllc -> investment : 100%`],
+
+  ['TC-ENT-05 · Pre/Post transaction (M&A delta)', `entity-structure "Acme Holdings — Post-Acquisition"
+
+entity parent "Acme Holdings" corp@DE
+entity mergesub "MergeSub, LLC" llc@DE [status: new, note: "formed for merger"]
+entity target "TargetCo" corp@DE [status: modified]
+
+parent -> mergesub : 100%
+mergesub -> target : was 40% → 100%`],
+
+  ['TC-ENT-06 · Mixed entity types showcase', `entity-structure "Entity Type Showcase"
+
+entity p "Private Foundation" foundation@DE
+entity f "Family Office LLC" llc@DE
+entity c "OperatingCo, Inc." corp@DE
+entity lp1 "Investment LP" lp@DE
+entity t "Family Trust" trust@DE
+entity i "Founder" individual [role: "Ultimate Beneficial Owner"]
+entity d "Delaware Branch" disregarded@DE [note: "disregarded for tax"]
+entity ph "NewCo (TBD)" placeholder [note: "to be formed Q3 2026"]
+
+i -> t [label: "Settles"]
+t -> f : 100%
+f -> p : 100%
+f -> c : 80%
+f -> lp1 : 100%
+c -> d : 100%
+c -> ph : 100%`],
+];
+
+const out = document.getElementById('output');
+for (const [title, src] of cases) {
+  const h = document.createElement('h2'); h.textContent = title; out.appendChild(h);
+  const pre = document.createElement('pre'); pre.className = 'src'; pre.textContent = src; out.appendChild(pre);
+  const div = document.createElement('div'); div.className = 'svg-container';
+  try {
+    div.innerHTML = render(src);
+  } catch (e) {
+    div.innerHTML = '<code style="color:#c00">' + (e.message || e) + '</code>';
+  }
+  out.appendChild(div);
+}
+</script>
+</body>
+</html>
