@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Schematex · Matrix / Quadrant Preview</title>
+<style>
+  body { font-family: system-ui; background: #f5f5f5; margin: 0; padding: 20px; }
+  nav { font-size: 13px; color: #888; margin-bottom: 16px; }
+  nav a { color: #555; text-decoration: none; }
+  h1 { font-size: 18px; color: #333; margin: 0 0 4px; }
+  .subtitle { font-size: 13px; color: #888; margin-bottom: 24px; }
+  h2 { font-size: 14px; color: #333; margin-top: 30px; border-bottom: 1px solid #ddd; padding-bottom: 4px; }
+  .note { font-size: 12px; color: #888; margin: 4px 0 8px; }
+  pre.src { background: #f7f7f7; padding: 10px; font-size: 12px; border-radius: 6px; margin: 6px 0; border: 1px solid #eee; white-space: pre-wrap; }
+  .svg-container { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin: 10px 0; overflow-x: auto; }
+  .svg-container svg { display: block; max-width: 100%; height: auto; }
+</style>
+</head>
+<body>
+<nav><a href="index.html">← All Diagrams</a></nav>
+<h1>Matrix / Quadrant / Heatmap</h1>
+<div class="subtitle">2×2 · 3×3 · N×M heatmap · Eisenhower / BCG / RICE / Risk · bubble sizing + label collision avoidance</div>
+<div id="output"></div>
+<script type="module">
+import { render } from '../src/index.ts';
+
+const cases = [
+  ['TC-MX-01 · Minimal empty 2×2 template',
+   'Simplest case: axes only, no data.',
+   `matrix "Template"
+x-axis: Low → High
+y-axis: Low → High
+`],
+
+  ['TC-MX-02 · Single point',
+   'Edge case: one solo point centered.',
+   `matrix "Solo"
+x-axis: Low → High
+y-axis: Low → High
+
+"Only item" at (0.5, 0.5)
+`],
+
+  ['TC-MX-03 · Eisenhower (template, 8 tasks)',
+   'Template auto-fills axes + 4 quadrant annotations (Do First / Schedule / Delegate / Delete).',
+   `matrix eisenhower "Week of 2026-04-15"
+
+"Ship Paddle fix"       at (0.95, 0.95)
+"Quarterly strategy"    at (0.15, 0.95)
+"Team 1:1"              at (0.3, 0.85)
+"Security audit"        at (0.25, 0.90)
+"Slack triage"          at (0.9, 0.2)
+"Twitter DMs"           at (0.7, 0.1)
+"LinkedIn scroll"       at (0.8, 0.05)
+"Inbox zero"            at (0.85, 0.3)
+`],
+
+  ['TC-MX-04 · Impact / Effort with categories',
+   'Custom axes + category legend (design / infra / ux).',
+   `matrix impact-effort "Feature Backlog Q2"
+
+"Dark mode"          at (0.3, 0.9) category: design
+"OAuth v2"           at (0.9, 0.7) category: infra
+"Tooltip polish"     at (0.1, 0.3) category: ux
+"Keyboard shortcuts" at (0.2, 0.7) category: ux
+"DB sharding"        at (0.95, 0.55) category: infra
+"Icon refresh"       at (0.4, 0.4) category: design
+"Empty-states"       at (0.15, 0.5) category: ux
+"Rate-limiter"       at (0.6, 0.75) category: infra
+`],
+
+  ['TC-MX-05 · BCG Growth-Share with bubble size',
+   'BCG convention: high share on LEFT (x-axis reversed). Bubble size = revenue (area-proportional).',
+   `matrix bcg "Product Portfolio 2026"
+
+"MyMap.ai"       at (0.2, 0.8) size: 1800000 category: product
+"ChatDiagram"    at (0.4, 0.9) size: 600000  category: product
+"ConceptMap"     at (0.6, 0.75) size: 150000 category: product
+"ContractMaker"  at (0.8, 0.6) size: 40000   category: product
+"Legacy app A"   at (0.2, 0.2) size: 900000  category: legacy
+"Experiment B"   at (0.85, 0.3) size: 10000  category: experiment
+`],
+
+  ['TC-MX-06 · Ansoff 2×2',
+   'Existing vs. New on both axes.',
+   `matrix ansoff "Growth Strategy"
+
+"Core business expansion" at (0.2, 0.2)
+"New geographies"         at (0.2, 0.8)
+"Adjacent products"       at (0.8, 0.2)
+"Moonshots"               at (0.85, 0.85)
+`],
+
+  ['TC-MX-07 · Johari Window',
+   'Known / unknown to self × others.',
+   `matrix johari "Team self-awareness"
+
+"Confident"    at (0.25, 0.25)
+"Creative"     at (0.25, 0.75)
+"Impatient"    at (0.75, 0.25)
+"Blind spots"  at (0.75, 0.75)
+`],
+
+  ['TC-MX-08 · RICE bubble matrix',
+   'size encodes Confidence (0..100).',
+   `matrix rice "Prioritization"
+
+"Payment refactor"   at (0.9, 0.8) size: 70
+"Onboarding tweak"   at (0.2, 0.6) size: 90
+"AI auto-complete"   at (0.7, 0.9) size: 50
+"Copy polish"        at (0.1, 0.3) size: 95
+"Mobile app"         at (0.95, 0.5) size: 30
+`],
+
+  ['TC-MX-09 · Dense overlapping labels (collision avoidance)',
+   'Force-based offset + leader lines kick in.',
+   `matrix "Clustered features"
+x-axis: Low Effort → High Effort
+y-axis: Low Impact → High Impact
+
+"Alpha"   at (0.50, 0.50)
+"Beta"    at (0.52, 0.49)
+"Gamma"   at (0.49, 0.52)
+"Delta"   at (0.51, 0.51)
+"Epsilon" at (0.53, 0.50)
+"Zeta"    at (0.50, 0.53)
+"Eta"     at (0.48, 0.50)
+"Theta"   at (0.50, 0.48)
+`],
+
+  ['TC-MX-10 · Bubble size 10× variation (area-proportional)',
+   'radius(C) / radius(A) ≈ √100 = 10 per Tufte.',
+   `matrix "Area-proportional bubbles"
+x-axis: Low → High
+y-axis: Low → High
+
+"A" at (0.2, 0.5) size: 1
+"B" at (0.5, 0.5) size: 10
+"C" at (0.8, 0.5) size: 100
+`],
+
+  ['TC-MX-11 · Off-chart clamp badges',
+   'Values outside [0,1] get clamped + an ↗ badge.',
+   `matrix "Outliers"
+x-axis: Low → High
+y-axis: Low → High
+
+"Normal"    at (0.5, 0.5)
+"Outlier A" at (1.3, 1.2)
+"Outlier B" at (-0.2, 0.5)
+`],
+
+  ['TC-MX-12 · 9-Box Performance × Potential',
+   '3×3 template with per-cell labels (Stars / Core Player / Risk).',
+   `matrix 9-box "Talent Review 2026-Q1"
+
+"Alice" at (0.9, 0.9)
+"Bob"   at (0.5, 0.8)
+"Carol" at (0.15, 0.15)
+"Dan"   at (0.5, 0.5)
+"Eve"   at (0.85, 0.5)
+"Frank" at (0.15, 0.85)
+`],
+
+  ['TC-MX-13 · McKinsey 3×3 GE Matrix',
+   'Custom 3×3 with points scattered across cells.',
+   `matrix "GE–McKinsey Portfolio"
+x-axis: Low Strength → High Strength
+y-axis: Low Attractiveness → High Attractiveness
+grid: 3x3
+
+"Business Unit A" at (0.85, 0.85)
+"Business Unit B" at (0.5, 0.8)
+"Business Unit C" at (0.15, 0.5)
+"Business Unit D" at (0.5, 0.5)
+"Business Unit E" at (0.9, 0.2)
+"Business Unit F" at (0.1, 0.1)
+`],
+
+  ['TC-MX-14 · Risk Matrix 5×5 heatmap',
+   'ISO 31000 risk register — Likelihood × Impact. Background tints follow heat ramp.',
+   `matrix risk-matrix "2026-Q2 Risk Register"
+
+cell (3,4) value: 15 label: "Customer data breach"
+cell (2,2) value: 6  label: "CI flaky"
+cell (4,4) value: 20 label: "Ransomware"
+cell (1,3) value: 6  label: "Compliance delay"
+cell (0,1) value: 1  label: "CSS regression"
+cell (3,1) value: 5  label: "Dep drift"
+`],
+
+  ['TC-MX-16 · Axis auto-off for heatmap (row/col labels only)',
+   'showAxis defaults to OFF for heatmap — row/col labels carry the semantics.',
+   `matrix heatmap 5x5 "Risk register (no axis)"
+rows: [Rare, Unlikely, Possible, Likely, Certain]
+cols: [Negligible, Minor, Moderate, Major, Severe]
+
+cell (3,4) value: 15 label: "Data breach"
+cell (4,4) value: 20 label: "Ransomware"
+cell (2,2) value: 6  label: "CI flaky"
+cell (0,1) value: 1  label: "CSS regression"
+`],
+
+  ['TC-MX-17 · Axis forced on for heatmap',
+   'axis: on overrides auto.',
+   `matrix heatmap 5x5 "Risk with axis forced"
+x-axis: Negligible → Severe
+y-axis: Rare → Certain
+axis: on
+rows: [Rare, Unlikely, Possible, Likely, Certain]
+cols: [Negligible, Minor, Moderate, Major, Severe]
+
+cell (3,4) value: 15 label: "Data breach"
+cell (4,4) value: 20 label: "Ransomware"
+`],
+
+  ['TC-MX-18 · Ansoff with quadrant descriptions',
+   'Each quadrant gets a description sub-line under the label (PMI-style template).',
+   `matrix ansoff "Growth Strategy 2026"
+quadrant Q3 "Market Penetration" description: "Grow share in known markets with existing products."
+quadrant Q4 "Product Development" description: "New products to existing customers."
+quadrant Q2 "Market Development" description: "Existing products into new markets or segments."
+quadrant Q1 "Diversification" description: "New products in new markets — highest risk, highest upside."
+`],
+
+  ['TC-MX-19 · Correlation / dot matrix (Lean tool deployment)',
+   'N×M dot matrix — strong/medium/weak levels. No axis, row/col labels instead.',
+   `matrix correlation "Lean tool deployment by dept"
+rows: [HR, Finance, Purchasing, IT, Quality, Marketing, Maintenance, Production, Store]
+cols: [Graphical Analysis, SPC, KPIs, Data Collection, Cause and Effect, Process Mapping, Kaizen, 5S]
+
+cell (0, 8) level: strong
+cell (2, 8) level: medium
+cell (3, 8) level: strong
+cell (6, 8) level: medium
+
+cell (0, 7) level: strong
+cell (2, 7) level: strong
+cell (3, 7) level: strong
+cell (4, 7) level: strong
+cell (5, 7) level: strong
+cell (6, 7) level: medium
+cell (7, 7) level: medium
+
+cell (2, 6) level: medium
+cell (3, 6) level: strong
+cell (6, 6) level: medium
+
+cell (0, 5) level: strong
+cell (2, 5) level: strong
+cell (3, 5) level: strong
+cell (4, 5) level: medium
+cell (5, 5) level: medium
+cell (7, 5) level: strong
+
+cell (3, 4) level: strong
+cell (5, 4) level: medium
+
+cell (0, 3) level: weak
+cell (7, 3) level: medium
+
+cell (0, 2) level: weak
+
+cell (0, 1) level: strong
+cell (2, 1) level: strong
+
+cell (2, 0) level: strong
+cell (3, 0) level: strong
+`],
+
+  ['TC-MX-20 · Correlation with Score + Rank margins',
+   'margins: true adds Score/Rank summary rows and columns. Highest values bold.',
+   `matrix correlation "Tool deployment scorecard"
+margins: true
+rows: [HR, Finance, Purchasing, IT, Quality]
+cols: [SPC, KPIs, Data Collection, Kaizen, 5S]
+
+cell (1, 4) level: strong
+cell (2, 4) level: strong
+cell (3, 4) level: medium
+
+cell (0, 3) level: strong
+cell (2, 3) level: medium
+cell (3, 3) level: medium
+cell (4, 3) level: strong
+
+cell (0, 2) level: medium
+cell (1, 2) level: strong
+cell (2, 2) level: strong
+cell (3, 2) level: strong
+cell (4, 2) level: medium
+
+cell (2, 1) level: weak
+
+cell (0, 0) level: strong
+cell (1, 0) level: weak
+`],
+
+  ['TC-MX-15 · Feature comparison 7×7 heatmap',
+   'Custom N×M heatmap (7 products × 7 features).',
+   `matrix heatmap 7x7 "Feature Comparison 2026"
+rows: [Notion, Obsidian, Roam, Logseq, Coda, Airtable, Miro]
+cols: [Export, API, Mobile, Offline, Price, Collab, Speed]
+
+cell (0,0) value: 5
+cell (1,0) value: 5
+cell (2,0) value: 2
+cell (3,0) value: 4
+cell (4,0) value: 3
+cell (5,0) value: 1
+cell (6,0) value: 4
+cell (0,1) value: 5
+cell (1,1) value: 3
+cell (2,1) value: 2
+cell (3,1) value: 5
+cell (4,1) value: 1
+cell (5,1) value: 5
+cell (6,1) value: 3
+cell (0,2) value: 3
+cell (1,2) value: 4
+cell (2,2) value: 1
+cell (3,2) value: 3
+cell (4,2) value: 3
+cell (5,2) value: 4
+cell (6,2) value: 5
+cell (0,3) value: 1
+cell (1,3) value: 5
+cell (2,3) value: 5
+cell (3,3) value: 5
+cell (4,3) value: 2
+cell (5,3) value: 1
+cell (6,3) value: 2
+cell (0,4) value: 3
+cell (1,4) value: 5
+cell (2,4) value: 4
+cell (3,4) value: 5
+cell (4,4) value: 2
+cell (5,4) value: 2
+cell (6,4) value: 3
+cell (0,5) value: 5
+cell (1,5) value: 2
+cell (2,5) value: 4
+cell (3,5) value: 3
+cell (4,5) value: 5
+cell (5,5) value: 5
+cell (6,5) value: 5
+cell (0,6) value: 4
+cell (1,6) value: 5
+cell (2,6) value: 3
+cell (3,6) value: 4
+cell (4,6) value: 4
+cell (5,6) value: 3
+cell (6,6) value: 2
+`],
+];
+
+const out = document.getElementById('output');
+for (const [title, note, src] of cases) {
+  const section = document.createElement('div');
+  section.innerHTML = `<h2>${title}</h2><div class="note">${note || ''}</div><pre class="src">${src.replace(/</g, '&lt;')}</pre><div class="svg-container"></div>`;
+  out.appendChild(section);
+  try {
+    section.querySelector('.svg-container').innerHTML = render(src);
+  } catch (e) {
+    section.querySelector('.svg-container').innerHTML = `<pre style="color:red">${e.message}\n${e.stack || ''}</pre>`;
+  }
+}
+</script>
+</body>
+</html>
