@@ -244,9 +244,10 @@ effect "Manufacturing line defect rate > 3%"
 
 ```
 category <id> "<display name>"
+category <id> "<display name>" [side: top|bottom, order: <int>]
 ```
 
-示例：
+示例（基础）：
 ```
 category content "内容 Content"
 category tech "技术 Technical"
@@ -256,7 +257,14 @@ category competition "竞争 Competition"
 category algo "算法 Algorithm"
 ```
 
-顺序决定 color palette 分配（第 0 个 category = indigo, 第 1 = teal ...）。
+示例（带手动布局属性）：
+```
+category product "产品 Product"  [side: top, order: 0]
+category growth  "增长 Growth"   [side: top, order: 1]
+category ops     "运营 Ops"      [side: bottom, order: 0]
+```
+
+顺序决定 color palette 分配（第 0 个 category = indigo, 第 1 = teal ...）。`[side/order]` 只影响布局，不影响颜色分配。
 
 ---
 
@@ -391,9 +399,10 @@ tech : "结构化数据缺失"
    - 每行 cause 占 30px 垂直空间；若某 rib 超过 4 个 cause，height 自适应增长
 
 2. **Category 分配到上/下半：**
-   - n 个 category 对半分：前 ⌈n/2⌉ 放上半，后 ⌊n/2⌋ 放下半
-   - 若 n 为奇数，上半多 1 个
-   - 上下半内按声明顺序从左到右排列
+   - 尊重每个 category 的 `side` 属性（`[side: top|bottom]`），手动指定优先
+   - 无 `side` 的 category：按贪心策略补齐两半（不足的一半优先填充），奇数时上半多 1 个
+   - `config sides = top|bottom`：全部 category 强制在指定半侧；仍尊重 `[side]` 覆盖（同侧内按 order 排列）
+   - 同一半内按 `order` 属性值从小到大（左→右）排列；未指定 order 的 category 按声明顺序追加
 
 3. **Spine 几何：**
    - `spine_y = canvas_height / 2`
@@ -441,11 +450,11 @@ cause_def       = ID ":" quoted_string properties? NEWLINE sub_cause_list?
 
 sub_cause_list  = ( INDENT "-" quoted_string properties? NEWLINE )+
 
-config_def      = "config" ":" config_key "=" config_value NEWLINE
+config_def      = "config" config_key "=" config_value NEWLINE
 
 config_key      = "direction" | "tail" | "palette" | "overflow"
                 | "maxCausesPerRib" | "canvasWidth" | "canvasHeight"
-                | "sides" | "slope" | "ribSlope" | "density" | "causeSide"
+                | "sides" | "slope" | "ribSlope" | "density" | "causeSide" | "cause-side"
 
 properties      = "[" property ("," property)* "]"
 property        = "color:" HEX                      # 自定义 category / cause 颜色
@@ -453,6 +462,10 @@ property        = "color:" HEX                      # 自定义 category / cause
                 | "note:" quoted_string             # tooltip 内容
                 | "data:" quoted_string             # 外部数据 hook
                 | kv_prop
+
+kv_prop         = key ":" value
+key             = "side" | "order"
+value           = "top" | "bottom" | INTEGER
 
 ID              = /[a-zA-Z][a-zA-Z0-9_-]*/
 INTEGER         = /[0-9]+/
@@ -688,31 +701,33 @@ patient : "Allergy not flagged"
 
 ## 14. Implementation Priority
 
-| Priority | Feature | Complexity |
-|----------|---------|------------|
-| P0 (Phase 13.0) | Parser: effect + category + cause DSL | Low |
-| P0 | Layout: spine + symmetric rib placement + 0.6 斜率 | Medium |
-| P0 | Renderer: spine / tail fork / effect polygon / rib line / category header | Low |
-| P0 | Level-1 cause 水平 branch + 右侧 label | Low |
-| P0 | 6-color palette 循环分配（CSS custom properties） | Low |
-| P0 | Text-gap mask 自动生成（防止 rib 穿字） | Medium |
-| P0 | Test case 1 (6M website traffic) 视觉对齐 sample SVG | — |
-| P1 | Sub-cause (Level 2) tick + label | Low |
-| P1 | 3+ sub-cause 垂直堆叠渲染 | Low |
-| P1 | Overflow: auto rib 延长（> 4 cause / rib） | Medium |
-| P1 | Left-facing fishbone（direction: left） | Low |
-| P1 | Test case 2, 3, 5 视觉通过 | — |
-| P2 | Category icon（rib header 左侧预留 16×16 icon slot） | Medium |
-| P2 | Cause weight（视觉强调 = 高权重 cause 字重加粗、color accent） | Low |
-| P2 | Auto-layout 调整 when n categories 大（n > 8） | Medium |
-| P3 | 动态折叠 category（交互式，展开 / 收起 ribs） | High |
-| P3 | 从 5-Why 数据自动转 fishbone AST | Medium |
+| Priority | Feature | Status |
+|----------|---------|--------|
+| P0 (Phase 13.0) | Parser: effect + category + cause DSL | ✅ Done |
+| P0 | Layout: spine + symmetric rib placement + 0.6 斜率 | ✅ Done |
+| P0 | Renderer: spine / tail fork / effect polygon / rib line / category header | ✅ Done |
+| P0 | Level-1 cause 水平 branch + 右侧 label | ✅ Done |
+| P0 | 6-color palette 循环分配（CSS custom properties） | ✅ Done |
+| P0 | Text-gap mask 自动生成（防止 rib 穿字） | ✅ Done |
+| P1 | Sub-cause (Level 2) tick + label | ✅ Done |
+| P1 | Overflow: auto rib 延长（> 4 cause / rib） | ✅ Done |
+| P1 (v2) | `config sides = both|top|bottom` 单侧/双侧布局 | ✅ Done |
+| P1 (v2) | `[side: top|bottom, order: N]` 每条 rib 手动布局 | ✅ Done |
+| P1 (v2) | `config slope = gentle|normal|steep` / `ribSlope` 斜率控制 | ✅ Done |
+| P1 (v2) | `config density = compact|normal|spacious` 整体密度 | ✅ Done |
+| P1 (v2) | `config causeSide = head|tail|both` 细刺挂向控制 | ✅ Done |
+| P2 | Left-facing fishbone（direction: left） | Backlog |
+| P2 | Category icon（rib header 左侧预留 16×16 icon slot） | Backlog |
+| P2 | Cause weight（视觉强调 = 高权重 cause 字重加粗、color accent） | Backlog |
+| P2 | Auto-layout 调整 when n categories 大（n > 8） | Backlog |
+| P3 | 动态折叠 category（交互式，展开 / 收起 ribs） | Backlog |
+| P3 | 从 5-Why 数据自动转 fishbone AST | Backlog |
 
 ---
 
 ## 15. Coverage Matrix
 
-验证本 standard 对 5 个 sample case 的完整覆盖：
+### 基础功能（Case 1–5）
 
 | Feature | Case 1 (Traffic) | Case 2 (Welding) | Case 3 (RCA) | Case 4 (Small) | Case 5 (Healthcare) |
 |---------|:-----:|:-----:|:-----:|:-----:|:-----:|
@@ -721,16 +736,25 @@ patient : "Allergy not flagged"
 | 6 categories | ✓ | ✓ | ✓ | — | — |
 | 5 categories (odd) | — | — | — | — | ✓ |
 | 4 categories (min) | — | — | — | ✓ | — |
-| Rib 0.6 斜率远离鱼头 | ✓ | ✓ | ✓ | ✓ | ✓ |
-| Category header pill | ✓ | ✓ | ✓ | ✓ | ✓ |
 | Level-1 cause horizontal branch | ✓ | ✓ | ✓ | ✓ | ✓ |
 | Level-2 sub-cause (vertical tick) | — | ✓ | ✓ | — | — |
 | Uneven cause count per rib | — | ✓ | ✓ | ✓ | ✓ |
-| Auto-rib-extend (overflow) | — | — | — | — | — |
 | Text-gap mask | ✓ | ✓ | ✓ | ✓ | ✓ |
 | Color palette 循环 | ✓ (6) | ✓ (6) | ✓ (6) | ✓ (4) | ✓ (5) |
-| Custom category names | — | — | ✓ | ✓ | ✓ |
 | Chinese + English labels | ✓ | ✓ | — | ✓ | — |
 | Pure English labels | — | — | ✓ | — | ✓ |
 
-**结论：** 本 standard 定义的 effect / spine / rib geometry / category palette / cause levels / text-gap mask / DSL grammar 共同覆盖 5 个 sample case 的全部视觉需求，可直接驱动 parser + renderer 实现 `src/diagrams/fishbone/`。
+### v2 Flexibility Options（Case 7–13）
+
+| Feature | TC-07 (sides=top) | TC-08 ([side/order]) | TC-09 (slope=gentle) | TC-10 (compact) | TC-11 (spacious) | TC-12 (causeSide=both) | TC-13 (combo) |
+|---------|:-----:|:-----:|:-----:|:-----:|:-----:|:-----:|:-----:|
+| `sides = top` | ✓ | — | — | — | — | — | — |
+| `sides = bottom` | — | — | — | — | — | — | ✓ |
+| `[side: top|bottom]` 手动分配 | — | ✓ | — | — | — | — | — |
+| `[order: N]` 排序控制 | — | ✓ | — | — | — | — | — |
+| `slope = gentle` | — | — | ✓ | — | — | — | ✓ |
+| `density = compact` | — | — | — | ✓ | — | — | ✓ |
+| `density = spacious` | — | — | — | — | ✓ | — | — |
+| `causeSide = both` | — | — | — | — | — | ✓ | — |
+
+**结论：** v2 flexibility options (A1–A5) 已完整实现，覆盖 单侧/双侧布局、手动排序、斜率、密度、细刺挂向 五个维度，所有 13 个 test case 通过视觉验证。

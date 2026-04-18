@@ -1,4 +1,5 @@
 import type { FishboneAST, FishboneCauseSide, FishboneNode } from "../../core/types";
+import { resolveFishboneTheme } from "../../core/theme";
 
 /**
  * Fishbone layout engine.
@@ -141,16 +142,6 @@ export const FB_CONST = {
 
 // ─── Default palette (13-FISHBONE-STANDARD §5.4) ─────────────
 
-const DEFAULT_PALETTE = [
-  "#534AB7", // indigo
-  "#0F6E56", // teal
-  "#185FA5", // blue
-  "#993C1D", // rust
-  "#854F0B", // amber
-  "#A32D2D", // red
-  "#6D28D9", // violet
-  "#0E7490", // cyan
-];
 
 // ─── Text measurement (CJK-aware approximation) ───────────────
 
@@ -217,7 +208,7 @@ const DENSITY: Record<"compact" | "normal" | "spacious", DensityTunables> = {
 
 // ─── Public API ───────────────────────────────────────────────
 
-export function layoutFishbone(ast: FishboneAST): FishboneLayoutResult {
+export function layoutFishbone(ast: FishboneAST, opts?: { palette?: readonly string[] }): FishboneLayoutResult {
   const majors = ast.majors.length > 0 ? ast.majors : [];
   const nRibs = majors.length;
 
@@ -378,7 +369,7 @@ export function layoutFishbone(ast: FishboneAST): FishboneLayoutResult {
 
   // ── Ribs ────────────────────────────────────────────────────
   const ribs: FishboneLayoutRib[] = [];
-  const palette = DEFAULT_PALETTE;
+  const palette = opts?.palette ?? resolveFishboneTheme("default").boneColors;
   const textBBoxes: FishboneBBox[] = [];
 
   const buildHalfRibs = (

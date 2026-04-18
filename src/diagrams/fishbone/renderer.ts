@@ -13,6 +13,7 @@ import {
 } from "../../core/svg";
 import { parseFishboneDSL } from "./parser";
 import { layoutFishbone, type FishboneLayoutResult, type FishboneBBox } from "./layout";
+import { resolveFishboneTheme } from "../../core/theme";
 
 const CSS = `
 .sx-fb { background: var(--schematex-fb-bg, #ffffff); font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
@@ -222,8 +223,10 @@ function renderRibs(layout: FishboneLayoutResult, maskUrl: string): string {
   return group({ class: "sx-fb-ribs" }, parts);
 }
 
-export function renderFishboneAST(ast: FishboneAST): string {
-  const layout = layoutFishbone(ast);
+export function renderFishboneAST(ast: FishboneAST, options: { theme?: string } = {}): string {
+  const themeName = options.theme ?? ast.metadata?.["theme"] ?? "default";
+  const tokens = resolveFishboneTheme(themeName);
+  const layout = layoutFishbone(ast, { palette: tokens.boneColors });
   const ltr = layout.orientation !== "rtl";
   const maskId = `sx-fb-mask-${randomId()}`;
   const maskUrl = `url(#${maskId})`;
@@ -322,7 +325,7 @@ export function renderFishboneAST(ast: FishboneAST): string {
   );
 }
 
-export function renderFishbone(text: string): string {
+export function renderFishbone(text: string, options: { theme?: string } = {}): string {
   const ast = parseFishboneDSL(text);
-  return renderFishboneAST(ast);
+  return renderFishboneAST(ast, options);
 }
