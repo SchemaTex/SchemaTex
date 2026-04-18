@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Schematex · Mindmap Preview</title>
+<style>
+  body { font-family: system-ui; background: #f5f5f5; margin: 0; padding: 20px; }
+  nav { font-size: 13px; color: #888; margin-bottom: 16px; }
+  nav a { color: #555; text-decoration: none; }
+  h1 { font-size: 18px; color: #333; margin: 0 0 4px; }
+  .subtitle { font-size: 13px; color: #888; margin-bottom: 24px; }
+  h2 { font-size: 14px; color: #666; margin-top: 30px; border-bottom: 1px solid #ddd; padding-bottom: 4px; }
+  pre.src { background: #f7f7f7; padding: 10px; font-size: 12px; border-radius: 6px; margin: 6px 0; border: 1px solid #eee; white-space: pre-wrap; }
+  .svg-container { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin: 10px 0; overflow-x: auto; }
+  .svg-container svg { display: block; max-width: 100%; height: auto; }
+</style>
+</head>
+<body>
+<nav><a href="index.html">← All Diagrams</a></nav>
+<h1>Mindmap</h1>
+<div class="subtitle">XMind 经典三款式：Map · Logic-Right · Org-Down — 20-MINDMAP-STANDARD</div>
+<div id="output"></div>
+<script type="module">
+import { render } from '../src/index.ts';
+
+const cases = [
+  ['TC-MM-01 · Map · Minimal 3-branch', `%% style: map
+# Project Plan
+## Scope
+- features
+- non-goals
+## Timeline
+- milestones
+## Team
+- roles
+`],
+  ['TC-MM-02 · Map · Balanced 6-branch OKR', `%% style: map
+# Q2 OKRs
+## Product
+- ship v1
+- API v2
+## Engineering
+- reliability
+- tech debt
+## Design
+- system upgrade
+## Marketing
+- brand refresh
+## Sales
+- enterprise
+## Ops
+- finance
+`],
+  ['TC-MM-03 · Map · Deep (5 levels)', `%% style: map
+# ML Roadmap
+## Supervised
+- Classification
+  - Linear
+    - Logistic
+      - L1/L2
+- Regression
+## Unsupervised
+- Clustering
+- Dim reduction
+`],
+  ['TC-MM-04 · Map · Unbalanced (stress)', `%% style: map
+# Thinking Fast and Slow
+## System 1
+- intuition
+- fast
+- emotional
+- biases
+  - anchoring
+  - availability
+  - confirmation
+  - loss aversion
+  - framing
+## System 2
+- deliberate
+- slow
+## Two Selves
+- experiencing
+- remembering
+`],
+  ['TC-MM-05 · Logic-Right · markmap-compat', `%% style: logic-right
+# Migration Plan
+## Phase 1
+- audit
+- baseline metrics
+## Phase 2
+- refactor
+  - module A
+  - module B
+## Phase 3
+- ship
+- monitor
+`],
+  ['TC-MM-06 · Logic-Right · Tech Stack', `%% style: logic-right
+# Tech Stack
+## Frontend
+- React
+- TypeScript
+- Vite
+## Backend
+- Node
+- Postgres
+- Redis
+## Infra
+- Vercel
+- Cloudflare
+`],
+  ['TC-MM-07 · Org-Down · Animal Kingdom', `%% style: org-down
+# Animal Kingdom
+## Vertebrata
+- Mammals
+- Birds
+- Reptiles
+## Invertebrata
+- Arthropods
+- Mollusks
+`],
+  ['TC-MM-08 · Org-Down · Team Structure', `%% style: org-down
+# Engineering
+## Platform
+- Infra
+- Security
+## Product
+- Web
+- Mobile
+## Data
+- Analytics
+- ML
+`],
+  ['TC-MM-09 · Map · Monochrome theme', `%% style: map
+%% theme: monochrome
+# Research Paper
+## Introduction
+- motivation
+- prior work
+## Method
+- dataset
+- model
+## Results
+- benchmarks
+- ablation
+## Discussion
+- limitations
+`],
+  ['TC-MM-10 · Map · Dark theme', `%% style: map
+%% theme: dark
+# Daily Routine
+## Morning
+- meditate
+- exercise
+## Work
+- focus blocks
+- meetings
+## Evening
+- reading
+- family
+`],
+];
+
+const out = document.getElementById('output');
+for (const [title, src] of cases) {
+  const section = document.createElement('div');
+  section.innerHTML = `<h2>${title}</h2><pre class="src">${src.replace(/</g, '&lt;')}</pre><div class="svg-container"></div>`;
+  out.appendChild(section);
+  try {
+    section.querySelector('.svg-container').innerHTML = render(src);
+  } catch (e) {
+    section.querySelector('.svg-container').innerHTML = `<pre style="color:red">${e.message}\n${e.stack || ''}</pre>`;
+  }
+}
+</script>
+</body>
+</html>
