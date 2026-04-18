@@ -16,6 +16,7 @@
   <a href="#timing-diagram-syntax">Timing</a> ·
   <a href="#logic-gate-diagram-syntax">Logic Gate</a> ·
   <a href="#ladder-logic-syntax">Ladder Logic</a> ·
+  <a href="#circuit-schematic-syntax">Circuit</a> ·
   <a href="#api">API</a> ·
   <a href="#contributing">Contributing</a>
 </p>
@@ -310,6 +311,25 @@ rung 3 "Auto cycling seal-in":
 **Features shown:** Allen-Bradley tag + BIT address + human-readable description (`name=`) rendered as three-line labels (black / blue / red). Set (`OTL`) and Reset (`OTU`) coils in a parallel block on the output side of rung 1 & 2 — matching how real PLC ladder programs latch mode bits. Input-side seal-in parallel (Home Command holding Manual state). Two serial parallel blocks on rung 3 for independent OR conditions.
 
 ![System Mode Selection Ladder](examples/ladder/mode-selection.svg)
+
+### Circuit Schematic — NPN Common-Emitter Amplifier
+
+SPICE-style netlist input with **automatic schematic layout** — no manual positioning. The parser builds a net graph, ranks components (power source + middle + ground), and routes orthogonal wires with a shared supply rail at top and ground rail at bottom.
+
+```
+circuit "CE Amp (netlist)" netlist
+V1 vcc 0 9V
+Rc vcc c 2.2k
+Rb vcc b 100k
+Q1 c b e npn
+Re e 0 1k
+```
+
+**Features shown:** SPICE-subset grammar (`<id> <net1> <net2> [...] <value-or-model>`), auto-detected component types by prefix (V→source, R→resistor, Q→BJT), ground net aliases (`0` / `gnd` / `GND`), auto-synthesized ground symbol, shared `vcc` supply rail (top) and `GND` rail (bottom), single-L orthogonal routing for signal nets, NPN transistor with three pins (`c`/`b`/`e`) — all laid out without any coordinate hints from the author.
+
+![CE Amp Netlist Schematic](examples/circuit/ce-amp-netlist.svg)
+
+Circuit Schematic also supports a **positional DSL** (Schemdraw-style direction-chained layout) when you want fine-grained placement control — see the [syntax guide](#circuit-schematic-syntax).
 
 ---
 
@@ -1011,6 +1031,73 @@ rung 6 "Delayed output":
   XIC(RUN_TIMER_DN, name="Timer Done")
   OTE(CONVEYOR, "O:0/2", name="Conveyor Start")
 ```
+
+---
+
+## Circuit Schematic Syntax
+
+Two authoring modes — pick the one that matches your workflow.
+
+### Netlist mode (auto-layout)
+
+SPICE-subset grammar. The parser infers component type from the ID prefix, collects net bindings, and auto-places everything:
+
+```
+circuit "CE Amp (netlist)" netlist
+V1 vcc 0 9V
+Rc vcc c 2.2k
+Rb vcc b 100k
+Q1 c b e npn
+Re e 0 1k
+```
+
+Each non-comment line: `<id> <net1> <net2> [net3 ...] [model] [key=value ...]`
+
+| Prefix | Type | Pin order |
+|--------|------|-----------|
+| `R` | resistor | `[p1, p2]` |
+| `C` | capacitor | `[p1, p2]` |
+| `L` | inductor | `[p1, p2]` |
+| `D` | diode | `[anode, cathode]` |
+| `V` | voltage source | `[+, −]` |
+| `I` | current source | `[+, −]` |
+| `Q` | NPN BJT (use `pnp` model for PNP) | `[c, b, e]` |
+| `M` | NMOS FET (use `pmos` model for PMOS) | `[d, g, s]` |
+| `F` / `S` / `B` / `K` | fuse / switch / battery / relay coil | `[p1, p2]` |
+
+Ground net aliases: `0`, `gnd`, `GND`, `Ground`. A ground symbol is auto-synthesized when the GND net is referenced but no explicit ground component exists.
+
+### Positional mode (manual layout)
+
+Schemdraw-style direction-chained DSL when you need explicit control over placement. Each statement extends a cursor; `at: <id>.<pin>` jumps to a named anchor:
+
+```
+circuit "RC Low-Pass Filter"
+V1: vsource down label="Vin" value="5V"
+wire right
+R1: resistor right label="R1" value="1kΩ"
+wire right 20
+dot
+C1: capacitor down label="C1" value="100nF"
+wire down 10
+ground
+at: C1.start
+wire right 20
+label "Vout" right
+```
+
+Statements:
+
+- `<id>: <type> <direction> [label="..."] [value="..."] [model="..."]` — place component; direction is `right` / `left` / `up` / `down`.
+- `wire <direction> [length]` — draw a wire from cursor; default length 20px.
+- `at: <id>.<pin>` — reset cursor to a named pin anchor (e.g. `U1.plus`, `Q1.collector`).
+- `dot` — visible junction marker at the current cursor position.
+- `ground` — place a ground symbol at the cursor.
+- `label "<text>" <direction>` — floating text annotation.
+
+Supported types (30+): `resistor`, `capacitor`, `inductor`, `diode`, `zener`, `schottky`, `led`, `photodiode`, `vsource`, `isource`, `acsource`, `battery`, `npn`, `pnp`, `nmos`, `pmos`, `jfet_n`, `jfet_p`, `opamp`, `555_timer`, `voltage_regulator`, `transformer`, `fuse`, `switch_spst`, `push_no`, `potentiometer`, `rheostat`, `thermistor_ntc`, `ldr`, `ammeter`, `voltmeter`, `lamp`, `buzzer`, `speaker`, `microphone`, `motor`, `relay_coil`, `ground` / `gnd_signal` / `gnd_chassis` / `gnd_digital`, `electrolytic_cap`, `generic_ic`, `wire`.
+
+Positional mode does no collision detection — wire distances are interpreted literally, so the author is responsible for spacing that fits the chosen symbols.
 
 ---
 

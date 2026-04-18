@@ -9,6 +9,7 @@ import { logic } from "../diagrams/logic";
 import { circuit } from "../diagrams/circuit";
 import { blockdiagram } from "../diagrams/blockdiagram";
 import { ladder } from "../diagrams/ladder";
+import { sld } from "../diagrams/sld";
 
 export interface LineageConfig {
   type?:
@@ -21,7 +22,8 @@ export interface LineageConfig {
     | "logic"
     | "circuit"
     | "blockdiagram"
-    | "ladder";
+    | "ladder"
+    | "sld";
   width?: number;
   height?: number;
   padding?: number;
@@ -40,6 +42,7 @@ const plugins: DiagramPlugin[] = [
   circuit,
   blockdiagram,
   ladder,
+  sld,
 ];
 
 function detectPlugin(text: string, config?: LineageConfig): DiagramPlugin {
@@ -51,7 +54,7 @@ function detectPlugin(text: string, config?: LineageConfig): DiagramPlugin {
     if (plugin.detect(text)) return plugin;
   }
   throw new Error(
-    "Cannot detect diagram type. Start your text with 'genogram', 'ecomap', 'pedigree', 'phylo', 'sociogram', 'timing', 'logic', 'circuit', 'blockdiagram', or 'ladder'."
+    "Cannot detect diagram type. Start your text with 'genogram', 'ecomap', 'pedigree', 'phylo', 'sociogram', 'timing', 'logic', 'circuit', 'blockdiagram', 'ladder', or 'sld'."
   );
 }
 

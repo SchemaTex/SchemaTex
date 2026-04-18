@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Lineage · Single-Line Diagram Preview</title>
+<style>
+  body { font-family: system-ui; background: #f5f5f5; margin: 0; padding: 20px; }
+  nav { font-size: 13px; color: #888; margin-bottom: 16px; }
+  nav a { color: #555; text-decoration: none; }
+  nav a:hover { text-decoration: underline; }
+  h1 { font-size: 18px; color: #333; margin: 0 0 4px; }
+  .subtitle { font-size: 13px; color: #888; margin-bottom: 24px; }
+  h2 { font-size: 14px; color: #666; margin-top: 30px; border-bottom: 1px solid #ddd; padding-bottom: 4px; }
+  pre.src { background: #f7f7f7; padding: 10px; font-size: 12px; border-radius: 6px; margin: 6px 0; border: 1px solid #eee; white-space: pre-wrap; }
+  .svg-container { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin: 10px 0; overflow-x: auto; }
+  .svg-container svg { display: block; max-width: 100%; height: auto; }
+</style>
+</head>
+<body>
+<nav><a href="index.html">← All Diagrams</a></nav>
+<h1>Single-Line Diagram (SLD)</h1>
+<div class="subtitle">IEEE Std 315 / ANSI Y32.2 · Power distribution, utility → transformer → bus → loads</div>
+<div id="output"></div>
+<script type="module">
+import { render } from '../src/index.ts';
+
+const cases = [
+  ['TC-SLD-01 · Simple radial feed', `sld "Simple Radial"
+UTIL = utility [voltage: "13.8kV", label: "13.8kV Utility"]
+TX1 = transformer [rating: "500 kVA", primary: "13.8kV", secondary: "480V", impedance: "5.75%"]
+BUS1 = bus [voltage: "480V", label: "Main Bus"]
+LOAD1 = load [rating: "400A", label: "Plant Load"]
+
+UTIL -> TX1
+TX1 -> BUS1
+BUS1 -> LOAD1`],
+
+  ['TC-SLD-02 · Multiple motor feeders', `sld "Motor Control Center"
+UTIL = utility [voltage: "13.8kV"]
+TX1 = transformer_dy [rating: "1000 kVA", primary: "13.8kV", secondary: "480V"]
+MAIN = breaker [rating: "2000A", label: "CB-MAIN"]
+BUS1 = bus [voltage: "480V", label: "480V Main Bus"]
+CB1 = breaker [rating: "400A", label: "CB-1"]
+CB2 = breaker [rating: "400A", label: "CB-2"]
+CB3 = breaker [rating: "200A", label: "CB-3"]
+M1 = motor [rating: "150HP", voltage: "480V", label: "Pump M-1"]
+M2 = motor [rating: "150HP", voltage: "480V", label: "Fan M-2"]
+LP1 = load [rating: "100A", label: "LP-1"]
+
+UTIL -> TX1
+TX1 -> MAIN
+MAIN -> BUS1
+BUS1 -> CB1
+BUS1 -> CB2
+BUS1 -> CB3
+CB1 -> M1
+CB2 -> M2
+CB3 -> LP1`],
+
+  ['TC-SLD-03 · Two-level voltage hierarchy', `sld "Two-stage distribution"
+UTIL = utility [voltage: "115kV"]
+TX1 = transformer_dy [rating: "10 MVA", primary: "115kV", secondary: "13.8kV", impedance: "6%"]
+BUS_HV = bus [voltage: "13.8kV", label: "Primary Bus"]
+CB1 = breaker [rating: "1200A"]
+TX2 = transformer_dy [rating: "1500 kVA", primary: "13.8kV", secondary: "480V"]
+BUS_LV = bus [voltage: "480V", label: "Secondary Bus"]
+CBA = breaker [rating: "400A"]
+CBB = breaker [rating: "400A"]
+M1 = motor [rating: "200HP", label: "Compressor"]
+PANEL1 = load [rating: "200A", label: "Panel A"]
+
+UTIL -> TX1
+TX1 -> BUS_HV
+BUS_HV -> CB1
+CB1 -> TX2
+TX2 -> BUS_LV
+BUS_LV -> CBA
+BUS_LV -> CBB
+CBA -> M1
+CBB -> PANEL1`],
+
+  ['TC-SLD-04 · Generator + ATS (backup power)', `sld "Utility with generator backup"
+UTIL = utility [voltage: "480V", label: "Utility"]
+GEN = generator [rating: "500 kW", voltage: "480V", label: "Emergency Gen"]
+ATS1 = ats [rating: "800A", label: "ATS-1"]
+BUS1 = bus [voltage: "480V", label: "Critical Load Bus"]
+CB1 = breaker [rating: "200A"]
+CB2 = breaker [rating: "200A"]
+L1 = load [rating: "100A", label: "Critical Load 1"]
+L2 = load [rating: "100A", label: "Critical Load 2"]
+
+UTIL -> ATS1
+GEN -> ATS1
+ATS1 -> BUS1
+BUS1 -> CB1
+BUS1 -> CB2
+CB1 -> L1
+CB2 -> L2`],
+
+  ['TC-SLD-05 · Protection: CT + relay', `sld "Protection Scheme"
+UTIL = utility [voltage: "13.8kV"]
+CB1 = breaker [rating: "1200A", label: "Main CB"]
+CT1 = ct [label: "CT-1"]
+REL51 = relay [device: "51", label: "Overcurrent"]
+BUS1 = bus [voltage: "13.8kV", label: "13.8kV Bus"]
+TX1 = transformer_dy [rating: "2 MVA", primary: "13.8kV", secondary: "480V"]
+BUS2 = bus [voltage: "480V"]
+LOAD1 = load [rating: "500A", label: "Facility Load"]
+
+UTIL -> CB1
+CB1 -> CT1
+CT1 -> BUS1
+CT1 -> REL51
+BUS1 -> TX1
+TX1 -> BUS2
+BUS2 -> LOAD1`],
+
+  ['TC-SLD-06 · Residential 200A service', `sld "Residential 200A Service"
+UTIL = utility [voltage: "240V", label: "Utility 240/120V"]
+METER = watthour_meter [label: "M-1"]
+MAIN = breaker [rating: "200A / 10kA AIC", label: "MAIN"]
+PANEL = load [rating: "200A, 120/240V", label: "Main Panel"]
+
+UTIL -> METER
+METER -> MAIN
+MAIN -> PANEL`],
+
+  ['TC-SLD-07 · VFD feeding motor', `sld "VFD-driven motor"
+UTIL = utility [voltage: "480V"]
+CB1 = breaker [rating: "100A"]
+VFD1 = vfd [rating: "50HP", label: "VFD-1"]
+M1 = motor [rating: "50HP", voltage: "480V", label: "Pump"]
+
+UTIL -> CB1
+CB1 -> VFD1
+VFD1 -> M1`],
+
+  ['TC-SLD-08 · Transformer winding variants', `sld "Winding configurations"
+UTIL = utility [voltage: "34.5kV"]
+TX_DY = transformer_dy [rating: "5 MVA", label: "TX-A (Δ-Yg)"]
+BUS1 = bus [voltage: "13.8kV"]
+TX_YY = transformer_yy [rating: "2 MVA", label: "TX-B (Y-Y)"]
+BUS2 = bus [voltage: "4.16kV"]
+TX_DD = transformer_dd [rating: "1 MVA", label: "TX-C (Δ-Δ)"]
+BUS3 = bus [voltage: "480V"]
+LOAD = load [rating: "800A"]
+
+UTIL -> TX_DY
+TX_DY -> BUS1
+BUS1 -> TX_YY
+TX_YY -> BUS2
+BUS2 -> TX_DD
+TX_DD -> BUS3
+BUS3 -> LOAD`],
+
+  ['TC-SLD-09 · Solar + surge arrester + capacitor bank', `sld "Renewable + PF correction"
+UTIL = utility [voltage: "13.8kV"]
+PV1 = solar [rating: "500 kW", label: "PV Array"]
+ARR1 = surge_arrester [label: "LA-1"]
+BUS1 = bus [voltage: "13.8kV", label: "13.8kV Bus"]
+CB1 = breaker [rating: "1200A"]
+CAP1 = capacitor_bank [rating: "2 MVAr", label: "Cap Bank"]
+TX1 = transformer_dy [rating: "3 MVA"]
+BUS2 = bus [voltage: "480V"]
+LOAD1 = load [rating: "800A", label: "Plant Load"]
+
+UTIL -> BUS1
+PV1 -> BUS1
+ARR1 -> BUS1
+BUS1 -> CB1
+BUS1 -> CAP1
+CB1 -> TX1
+TX1 -> BUS2
+BUS2 -> LOAD1`],
+
+  ['Real-world · Chandika Distillery (multi-source → sync panel)', `sld "Chandika Distillery"
+GRID = utility [voltage: "11kV", label: "Grid"]
+VCB = breaker_vacuum [rating: "11kV", label: "VCB 11kV"]
+TX1 = transformer [rating: "1 MVA", primary: "11kV", secondary: "440V", label: "TX 11kV/440V"]
+TURBINE = generator [rating: "1 MW", label: "Turbine"]
+ALT = generator [rating: "1 MW", label: "Alternator"]
+ACB = breaker [rating: "2500A", label: "ACB 2500A"]
+SYNC = load [label: "Sync Panel", rating: "440V"]
+DG = generator [rating: "Backup", label: "DG Set"]
+BUS = bus [voltage: "440V", label: "Main Bus"]
+F1  = breaker [label: "Old plant"]
+F2  = breaker [label: "500kW Distillation"]
+F3  = breaker [label: "Boiler & Turbine"]
+F4  = breaker [label: "WTP"]
+F5  = breaker [label: "Old Boiler"]
+F6  = breaker [label: "Malt Plant"]
+F7  = breaker [label: "ETP"]
+F8  = breaker [label: "Utility"]
+F9  = breaker [label: "CO2 Recovery"]
+F10 = breaker [label: "Production"]
+F11 = breaker [label: "Lighting"]
+F12 = breaker [label: "Office"]
+
+GRID -> VCB
+VCB -> TX1
+TX1 -> SYNC
+TURBINE -> ALT
+ALT -> ACB
+ACB -> SYNC
+DG -> SYNC
+SYNC -> BUS
+BUS -> F1
+BUS -> F2
+BUS -> F3
+BUS -> F4
+BUS -> F5
+BUS -> F6
+BUS -> F7
+BUS -> F8
+BUS -> F9
+BUS -> F10
+BUS -> F11
+BUS -> F12`],
+
+  ['Real-world · Substation w/ protection stack (ref image 3)', `sld "Substation Entry"
+GRID = utility [voltage: "33kV", label: "Grid"]
+ACR = recloser [label: "ACR"]
+LA1 = surge_arrester [label: "Lightning Arrestor"]
+VCB1 = breaker_vacuum [label: "VCB"]
+ISO1 = switch [label: "Isolator"]
+PT1 = pt [label: "PT"]
+CT1 = ct [label: "CT"]
+TX = transformer_dy [rating: "2 MVA", primary: "33kV", secondary: "415V", label: "Transformer"]
+ACB1 = breaker [label: "ACB"]
+CAP = capacitor_bank [label: "Capacitor Bank"]
+BUS1 = bus [voltage: "415V"]
+
+GRID -> ACR
+ACR -> LA1
+LA1 -> VCB1
+VCB1 -> ISO1
+ISO1 -> PT1
+PT1 -> CT1
+CT1 -> TX
+TX -> ACB1
+ACB1 -> BUS1
+BUS1 -> CAP`],
+
+  ['TC-SLD-11 · Hub (sync panel) with multi-parent spread', `sld "Sync Panel Hub"
+GRID = utility [voltage: "33kV", label: "Utility"]
+VCB1 = breaker_vacuum [label: "VCB"]
+TX1 = transformer_dy [rating: "2 MVA", label: "Plant TX"]
+TURB = generator [label: "Turbine"]
+ALT = generator [label: "Alternator"]
+ACB_G = breaker [label: "ACB-G"]
+DG = generator [label: "DG Set"]
+ACB_DG = breaker [label: "ACB-DG"]
+SYNC = hub [label: "Sync Panel"]
+BUS = bus [voltage: "415V", label: "415V Plant Bus"]
+F1 = breaker [rating: "400A", label: "F1"]
+F2 = breaker [rating: "400A", label: "F2"]
+F3 = breaker [rating: "200A", label: "F3"]
+F4 = breaker [rating: "200A", label: "F4"]
+F5 = breaker [rating: "200A", label: "F5"]
+F6 = breaker [rating: "200A", label: "F6"]
+
+GRID -> VCB1
+VCB1 -> TX1
+TX1 -> SYNC
+TURB -> ALT
+ALT -> ACB_G
+ACB_G -> SYNC
+DG -> ACB_DG
+ACB_DG -> SYNC
+SYNC -> BUS
+BUS -> F1
+BUS -> F2
+BUS -> F3
+BUS -> F4
+BUS -> F5
+BUS -> F6`],
+
+  ['TC-SLD-12 · Parallel buses with bus-tie', `sld "Main-Tie-Main"
+U1 = utility [voltage: "13.8kV", label: "Source A"]
+U2 = utility [voltage: "13.8kV", label: "Source B"]
+TXA = transformer_dy [rating: "1500 kVA", label: "TX-A"]
+TXB = transformer_dy [rating: "1500 kVA", label: "TX-B"]
+CBA = breaker [rating: "2000A", label: "Main-A"]
+CBB = breaker [rating: "2000A", label: "Main-B"]
+BUSA = bus [voltage: "480V", label: "Bus-A"]
+BUSB = bus [voltage: "480V", label: "Bus-B"]
+TIE = bus_tie [label: "TIE"]
+LA1 = motor [rating: "150HP", label: "M-A1"]
+LA2 = load [rating: "300A", label: "MCC-A"]
+LB1 = motor [rating: "200HP", label: "M-B1"]
+LB2 = load [rating: "200A", label: "MCC-B"]
+
+U1 -> TXA
+TXA -> CBA
+CBA -> BUSA
+U2 -> TXB
+TXB -> CBB
+CBB -> BUSB
+BUSA -> TIE
+TIE -> BUSB
+BUSA -> LA1
+BUSA -> LA2
+BUSB -> LB1
+BUSB -> LB2`],
+
+  ['TC-SLD-10 · Industrial plant w/ cables', `sld "Industrial Plant"
+UTIL = utility [voltage: "13.8kV"]
+TX1 = transformer_dy [rating: "2500 kVA", label: "TX-1"]
+MAIN = breaker [rating: "4000A"]
+BUS = bus [voltage: "480V", label: "Main Bus"]
+CB1 = breaker [rating: "800A"]
+CB2 = breaker [rating: "400A"]
+CB3 = breaker [rating: "400A"]
+MCC1 = load [rating: "800A", label: "MCC-1"]
+M1 = motor [rating: "250HP", label: "Blower"]
+M2 = motor [rating: "150HP", label: "Compressor"]
+
+UTIL -> TX1 [cable: "3#500MCM"]
+TX1 -> MAIN
+MAIN -> BUS
+BUS -> CB1 [cable: "3#4/0 AWG"]
+BUS -> CB2 [cable: "3#2/0 AWG"]
+BUS -> CB3 [cable: "3#2/0 AWG"]
+CB1 -> MCC1
+CB2 -> M1
+CB3 -> M2`],
+];
+
+const out = document.getElementById('output');
+for (const [title, src] of cases) {
+  const h = document.createElement('h2'); h.textContent = title; out.appendChild(h);
+  const pre = document.createElement('pre'); pre.className = 'src'; pre.textContent = src; out.appendChild(pre);
+  const div = document.createElement('div'); div.className = 'svg-container';
+  try {
+    div.innerHTML = render(src);
+  } catch (e) {
+    div.innerHTML = '<code style="color:#c00">' + (e.message || e) + '</code>';
+  }
+  out.appendChild(div);
+}
+</script>
+</body>
+</html>

@@ -856,6 +856,8 @@ export type SLDNodeType =
 
   // ── Buses & Nodes ─────────────────────────────────────────────
   | "bus"               // Horizontal thick line (6px stroke)
+  | "bus_tie"           // Bus-tie breaker between two parallel same-level buses
+  | "hub"               // Multi-port synchronization / combining hub (wide rectangle)
 
   // ── Switching Equipment ───────────────────────────────────────
   | "breaker"           // Circuit breaker (diagonal + arc at top)
