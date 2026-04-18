@@ -181,6 +181,176 @@ category People: training gap; staffing shortfall
 category Process: approval delays; handoff gaps; no SLA
 category Machine: downtime; maintenance deferred
 category Materials: vendor quality; stock-outs`],
+
+  ['TC-FB-07 · sides = top (单侧向上发散)', `fishbone "Top-only — Funnel conversion drop"
+
+effect "漏斗转化下跌"
+
+config sides = top
+
+category acquisition "获客 Acquisition"
+category activation  "激活 Activation"
+category retention   "留存 Retention"
+category revenue     "变现 Revenue"
+
+acquisition : "广告 CPM 上涨"
+acquisition : "SEO 排名下滑"
+activation  : "onboarding 流失"
+activation  : "首单体验差"
+retention   : "Day-7 唤醒失效"
+retention   : "推送打扰"
+revenue     : "支付失败率上升"
+revenue     : "订阅续约 flow 冗长"`],
+
+  ['TC-FB-08 · [side] + [order] — 手动分上下半并指定顺序（关键 vs 次要）', `fishbone "Manual placement — Key vs Secondary"
+
+effect "Q3 留存下滑 15%"
+
+# 关键因素放上半，次要因素放下半
+category product "产品 Product"  [side: top, order: 0]
+category growth  "增长 Growth"   [side: top, order: 1]
+category tech    "技术 Technical"[side: top, order: 2]
+category ops     "运营 Ops"      [side: bottom, order: 0]
+category brand   "品牌 Brand"    [side: bottom, order: 1]
+
+product : "核心功能体验下降"
+product : "新功能采纳率低"
+product : "竞品差异化减弱"
+
+growth : "付费获客 CAC 上升"
+growth : "激活率下降"
+
+tech : "移动端性能退化"
+tech : "推送到达率下降"
+
+ops : "客服响应变慢"
+ops : "FAQ 覆盖不足"
+
+brand : "社区活跃度下降"
+brand : "品牌曝光份额下滑"`],
+
+  ['TC-FB-09 · slope = gentle（rib 更陡，label 密集场景）', `fishbone "Gentle slope — dense labels"
+
+effect "API P99 latency 200ms → 3.2s"
+
+config slope = gentle
+
+category deploy   "Deploy"
+category deps     "Dependencies"
+category db       "Database"
+category network  "Network"
+category code     "Code"
+category observe  "Observability"
+
+deploy : "canary % 过高"
+deploy : "回滚耗时 12min"
+
+deps : "第三方 SDK 引入新版"
+deps : "auth 服务 p95 飙升"
+
+db : "连接池耗尽"
+db : "慢查询未加索引"
+  - "新 feature 未审 query plan"
+
+network : "单 AZ 丢包"
+network : "ALB 健康检查超时"
+
+code : "N+1 query 回归"
+code : "并发锁退化"
+
+observe : "警报阈值过高"
+observe : "dashboard 缺 p99 指标"`],
+
+  ['TC-FB-10 · density = compact（报告内联缩略）', `fishbone "Compact density — report inline"
+
+effect "期末不及格"
+
+config density = compact
+
+category study    "学习方法"
+category health   "身心状态"
+category external "外部"
+category teach    "教学"
+
+study : "复习不充分"
+study : "笔记混乱"
+health : "考前失眠"
+health : "焦虑"
+external : "家庭干扰"
+teach : "考试范围未覆盖"
+teach : "题型训练少"`],
+
+  ['TC-FB-11 · density = spacious（演示幻灯片）', `fishbone "Spacious density — presentation slide"
+
+effect "Customer churn spike"
+
+config density = spacious
+
+category product  "Product"
+category support  "Support"
+category pricing  "Pricing"
+category competitor "Competitor"
+
+product   : "Core feature regression"
+product   : "Onboarding friction"
+support   : "Ticket SLA missed"
+support   : "Knowledge base stale"
+pricing   : "Recent price hike"
+pricing   : "Annual discount removed"
+competitor: "New entrant with AI feature"
+competitor: "Free tier expansion"`],
+
+  ['TC-FB-12 · causeSide = both（rib 两侧交替挂刺）', `fishbone "Cause-side both — double-column causes"
+
+effect "Medication dose error"
+
+config causeSide = both
+
+category methods  "Methods"
+category material "Materials"
+category machines "Machines"
+category manpower "Manpower"
+category patient  "Patients"
+
+methods : "Double-check not performed"
+methods : "Order transcription error"
+methods : "Verbal order confusion"
+methods : "Pre-op handoff skipped"
+
+material : "Similar-looking vial labels"
+material : "Same strength multi-vial"
+material : "Expired stock restock"
+material : "Look-alike packaging"
+
+machines : "Pump default profile not updated"
+machines : "Barcode scanner misread"
+machines : "BCMA workflow override"
+
+manpower : "Staffing shortage"
+manpower : "Trainee unsupervised"
+
+patient : "ID band missing"
+patient : "Allergy not flagged"
+patient : "Weight not rechecked"`],
+
+  ['TC-FB-13 · sides=bottom + density=compact + slope=gentle（dashboard widget 组合）', `fishbone "Bottom-only compact — dashboard widget"
+
+effect "搜索结果点击率下降"
+
+config sides = bottom
+config density = compact
+config slope = gentle
+
+category content "内容"
+category ranking "排序"
+category ux "体验"
+
+content : "缺少结构化摘要"
+content : "标题关键词弱"
+ranking : "新排序模型上线"
+ranking : "CTR 正向样本少"
+ux : "首屏广告挤压"
+ux : "移动端字号小"`],
 ];
 
 const out = document.getElementById('output');

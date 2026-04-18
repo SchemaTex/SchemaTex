@@ -1,4 +1,4 @@
-import type { FishboneAST, FishboneNode } from "../../core/types";
+import type { FishboneAST, FishboneCauseSide, FishboneNode } from "../../core/types";
 
 /**
  * Fishbone layout engine.
@@ -42,6 +42,8 @@ export interface FishboneLayoutCause {
   labelX: number;
   labelY: number;
   labelAnchor: "start" | "end";
+  /** Direction this cause branch sticks out: "head" = toward head, "tail" = toward tail. */
+  causeSide: "head" | "tail";
   /** Sub-causes (Level 2) stacked below the main label */
   subCauses: FishboneLayoutSubCause[];
 }
@@ -167,32 +169,121 @@ export function estimateTextWidth(s: string, fontSize: number): number {
   return w;
 }
 
+// ─── Density presets ──────────────────────────────────────────
+
+interface DensityTunables {
+  rowHeight: number;
+  subRowHeight: number;
+  colStep: number;
+  headerW: number;
+  headerH: number;
+  headerGap: number;
+  minRowsPerHalf: number;
+  colFirstOffset: number;
+}
+
+const DENSITY: Record<"compact" | "normal" | "spacious", DensityTunables> = {
+  compact: {
+    rowHeight: 24,
+    subRowHeight: 15,
+    colStep: 110,
+    headerW: 118,
+    headerH: 30,
+    headerGap: 8,
+    minRowsPerHalf: 3,
+    colFirstOffset: 140,
+  },
+  normal: {
+    rowHeight: 30,
+    subRowHeight: 17,
+    colStep: 130,
+    headerW: 132,
+    headerH: 34,
+    headerGap: 12,
+    minRowsPerHalf: 4,
+    colFirstOffset: 170,
+  },
+  spacious: {
+    rowHeight: 36,
+    subRowHeight: 19,
+    colStep: 150,
+    headerW: 148,
+    headerH: 38,
+    headerGap: 16,
+    minRowsPerHalf: 5,
+    colFirstOffset: 200,
+  },
+};
+
 // ─── Public API ───────────────────────────────────────────────
 
 export function layoutFishbone(ast: FishboneAST): FishboneLayoutResult {
   const majors = ast.majors.length > 0 ? ast.majors : [];
   const nRibs = majors.length;
 
-  // Split top/bottom evenly; if odd, top gets the extra.
-  const nTop = Math.ceil(nRibs / 2);
-  const nBot = nRibs - nTop;
-  const topMajors = majors.slice(0, nTop);
-  const botMajors = majors.slice(nTop);
+  const density = ast.density ?? "normal";
+  const D = DENSITY[density];
+  const ribSlope = ast.ribSlope ?? FB_CONST.RIB_SLOPE;
+  const causeSideSetting: FishboneCauseSide = ast.causeSide ?? "head";
+  const sides = ast.sides ?? "both";
+
+  // Partition ribs into top/bottom halves honoring per-category `side` overrides
+  // and the `sides` setting. If a category has an explicit side, use it;
+  // otherwise fall back to the global `sides` default (single-sided layouts
+  // pin everything to that half; "both" alternates declaration order across
+  // the two halves as before).
+  const topMajors: FishboneNode[] = [];
+  const botMajors: FishboneNode[] = [];
+  if (sides === "top" || sides === "bottom") {
+    const bucket = sides === "top" ? topMajors : botMajors;
+    for (const m of majors) {
+      if (m.side === "top") topMajors.push(m);
+      else if (m.side === "bottom") botMajors.push(m);
+      else bucket.push(m);
+    }
+  } else {
+    const autoPool: FishboneNode[] = [];
+    for (const m of majors) {
+      if (m.side === "top") topMajors.push(m);
+      else if (m.side === "bottom") botMajors.push(m);
+      else autoPool.push(m);
+    }
+    // Greedy balance — push into whichever half currently has fewer ribs,
+    // ties → top (matches the prior "top gets the extra" rule).
+    for (const m of autoPool) {
+      if (topMajors.length <= botMajors.length) topMajors.push(m);
+      else botMajors.push(m);
+    }
+  }
+
+  // Respect per-rib `order` (lower = closer to tail). Stable sort within half.
+  const byOrder = (a: FishboneNode, b: FishboneNode): number => {
+    const ao = a.order ?? Number.POSITIVE_INFINITY;
+    const bo = b.order ?? Number.POSITIVE_INFINITY;
+    return ao - bo;
+  };
+  topMajors.sort(byOrder);
+  botMajors.sort(byOrder);
+
+  const nTop = topMajors.length;
+  const nBot = botMajors.length;
+  // Keep legacy var names alive
+  void nRibs;
 
   // Row count per rib = max(subCauses) for that rib's Level-1 list.
   // Extent per rib = sum of rowHeights for slots 0..n-1.
   const ribRowHeights = (m: FishboneNode): number[] => {
     if (m.children.length === 0) return [];
     return m.children.map(
-      (c) => FB_CONST.ROW_HEIGHT + c.children.length * FB_CONST.SUB_ROW_HEIGHT
+      (c) => D.rowHeight + c.children.length * D.subRowHeight
     );
   };
 
   const topExtents = topMajors.map((m) =>
-    sumOrMin(ribRowHeights(m), FB_CONST.MIN_ROWS_PER_HALF * FB_CONST.ROW_HEIGHT)
+    sumOrMin(ribRowHeights(m), D.minRowsPerHalf * D.rowHeight)
   );
   const botExtents = botMajors.map((m) =>
-    sumOrMin(ribRowHeights(m), FB_CONST.MIN_ROWS_PER_HALF * FB_CONST.ROW_HEIGHT)
+    sumOrMin(ribRowHeights(m), D.minRowsPerHalf * D.rowHeight)
   );
 
   // ── Head sizing (computed early so it can influence half-extent padding) ──
@@ -207,16 +298,26 @@ export function layoutFishbone(ast: FishboneAST): FishboneLayoutResult {
   // Head extends ±headEffectiveH/2 from spine — guarantee half extents cover it.
   const minHalfFromHead = Math.ceil(headEffectiveH / 2) + 6;
 
-  const topHalfExtent = Math.max(
-    minHalfFromHead,
-    FB_CONST.MIN_ROWS_PER_HALF * FB_CONST.ROW_HEIGHT,
-    ...(topExtents.length ? topExtents : [0])
-  );
-  const botHalfExtent = Math.max(
-    nBot > 0 ? minHalfFromHead : 0,
-    nBot > 0 ? FB_CONST.MIN_ROWS_PER_HALF * FB_CONST.ROW_HEIGHT : 0,
-    ...(botExtents.length ? botExtents : [0])
-  );
+  const topHalfExtent =
+    nTop > 0
+      ? Math.max(
+          minHalfFromHead,
+          D.minRowsPerHalf * D.rowHeight,
+          ...(topExtents.length ? topExtents : [0])
+        )
+      : sides === "bottom"
+        ? Math.max(minHalfFromHead, 0)
+        : 0;
+  const botHalfExtent =
+    nBot > 0
+      ? Math.max(
+          minHalfFromHead,
+          D.minRowsPerHalf * D.rowHeight,
+          ...(botExtents.length ? botExtents : [0])
+        )
+      : sides === "top"
+        ? Math.max(minHalfFromHead, 0)
+        : 0;
 
   const nCols = Math.max(nTop, nBot, 1);
 
@@ -241,13 +342,18 @@ export function layoutFishbone(ast: FishboneAST): FishboneLayoutResult {
   // that sits under it (sub causes are indented by SUB_TICK_LEN + 4 from labelX).
   const subExtent = maxSubLabelW > 0 ? FB_CONST.SUB_TICK_LEN + 4 + maxSubLabelW : 0;
   const labelColW = Math.max(maxCauseLabelW, subExtent);
+  // When causes can sit on both sides, each column must reserve label space on both sides.
+  const labelExtentsPerCol = causeSideSetting === "both" ? 2 : 1;
   const minColStep =
     FB_CONST.BRANCH_LEN + FB_CONST.LABEL_GAP + labelColW + FB_CONST.COL_GAP_BETWEEN_LABELS;
-  const colStep = Math.max(FB_CONST.COL_STEP, Math.ceil(minColStep));
+  const colStep = Math.max(
+    D.colStep,
+    Math.ceil(minColStep * (labelExtentsPerCol === 2 ? 1.15 : 1))
+  );
 
   // ── Canvas sizing ───────────────────────────────────────────
   const spineStartX = FB_CONST.PADDING + FB_CONST.TAIL_LEN + FB_CONST.SPINE_OFFSET_FROM_TAIL;
-  const firstRibX = spineStartX + FB_CONST.COL_FIRST_OFFSET;
+  const firstRibX = spineStartX + D.colFirstOffset;
   const lastRibX = firstRibX + (nCols - 1) * colStep;
   // Reserve room for the last rib's label column before the head begins.
   const spineEndX = lastRibX + Math.max(40, FB_CONST.BRANCH_LEN + FB_CONST.LABEL_GAP + labelColW + 12);
@@ -262,12 +368,12 @@ export function layoutFishbone(ast: FishboneAST): FishboneLayoutResult {
   const titleReserve = title ? FB_CONST.TITLE_CLEARANCE + 20 : 0;
 
   const spineY =
-    FB_CONST.PADDING + titleReserve + topHalfExtent + FB_CONST.HEADER_H / 2 + 12;
+    FB_CONST.PADDING + titleReserve + topHalfExtent + D.headerH / 2 + 12;
 
   const height =
     ast.height ??
     Math.ceil(
-      spineY + botHalfExtent + FB_CONST.HEADER_H / 2 + 12 + FB_CONST.PADDING
+      spineY + botHalfExtent + D.headerH / 2 + 12 + FB_CONST.PADDING
     );
 
   // ── Ribs ────────────────────────────────────────────────────
@@ -289,27 +395,27 @@ export function layoutFishbone(ast: FishboneAST): FishboneLayoutResult {
 
       // Aligned rib endpoint Y → same for all ribs in half.
       const endY = half === "top" ? spineY - halfExtent : spineY + halfExtent;
-      const endX = spineX - halfExtent * FB_CONST.RIB_SLOPE;
+      const endX = spineX - halfExtent * ribSlope;
 
       // Header pill positioned along the rib's slope extension.
-      // The rib direction: for every 1 unit of Y away from spine, X moves -RIB_SLOPE.
-      const extraDist = FB_CONST.HEADER_GAP + FB_CONST.HEADER_H / 2;
+      // The rib direction: for every 1 unit of Y away from spine, X moves -ribSlope.
+      const extraDist = D.headerGap + D.headerH / 2;
       const headerCenterY =
         half === "top" ? endY - extraDist : endY + extraDist;
       // Continue the slope: pill center X follows the same dx/dy as the rib.
-      const headerCenterX = endX - extraDist * FB_CONST.RIB_SLOPE;
+      const headerCenterX = endX - extraDist * ribSlope;
       const headerW = Math.max(
-        FB_CONST.HEADER_W,
+        D.headerW,
         estimateTextWidth(major.label, FB_CONST.HEADER_FONT) + 28
       );
       const headerX = headerCenterX - headerW / 2;
-      const headerY = headerCenterY - FB_CONST.HEADER_H / 2;
+      const headerY = headerCenterY - D.headerH / 2;
 
       textBBoxes.push({
         x: headerX,
         y: headerY,
         w: headerW,
-        h: FB_CONST.HEADER_H,
+        h: D.headerH,
       });
 
       // Cause slots — cumulative along rib from spine outward.
@@ -318,22 +424,40 @@ export function layoutFishbone(ast: FishboneAST): FishboneLayoutResult {
       for (let s = 0; s < major.children.length; s++) {
         const child = major.children[s]!;
         const rowH =
-          FB_CONST.ROW_HEIGHT + child.children.length * FB_CONST.SUB_ROW_HEIGHT;
+          D.rowHeight + child.children.length * D.subRowHeight;
         // vertical offset for this slot (center of row)
-        const slotOffset = accum + rowH / 2 - FB_CONST.ROW_HEIGHT / 2;
+        const slotOffset = accum + rowH / 2 - D.rowHeight / 2;
         const ribY =
           half === "top" ? spineY - slotOffset : spineY + slotOffset;
-        const ribX = spineX - slotOffset * FB_CONST.RIB_SLOPE;
+        const ribX = spineX - slotOffset * ribSlope;
+
+        // Resolve cause direction for this slot.
+        const causeDir: "head" | "tail" =
+          causeSideSetting === "tail"
+            ? "tail"
+            : causeSideSetting === "both"
+              ? s % 2 === 0
+                ? "head"
+                : "tail"
+              : "head";
 
         const branchY = ribY;
-        const branchX = ribX + FB_CONST.BRANCH_LEN; // extend toward head side
-        const labelX = branchX + FB_CONST.LABEL_GAP;
+        const branchX =
+          causeDir === "head"
+            ? ribX + FB_CONST.BRANCH_LEN
+            : ribX - FB_CONST.BRANCH_LEN;
+        const labelX =
+          causeDir === "head"
+            ? branchX + FB_CONST.LABEL_GAP
+            : branchX - FB_CONST.LABEL_GAP;
         const labelY = branchY;
+        const labelAnchor: "start" | "end" =
+          causeDir === "head" ? "start" : "end";
 
         // Text bbox for mask
         const labelW = estimateTextWidth(child.label, FB_CONST.LABEL_FONT);
         textBBoxes.push({
-          x: labelX - 2,
+          x: causeDir === "head" ? labelX - 2 : labelX - labelW - 2,
           y: labelY - FB_CONST.LABEL_FONT / 2 - 2,
           w: labelW + 4,
           h: FB_CONST.LABEL_FONT + 4,
@@ -343,10 +467,15 @@ export function layoutFishbone(ast: FishboneAST): FishboneLayoutResult {
         const subCauses: FishboneLayoutSubCause[] = [];
         for (let si = 0; si < child.children.length; si++) {
           const sub = child.children[si]!;
-          const subY = labelY + (si + 1) * FB_CONST.SUB_ROW_HEIGHT;
-          const tickX1 = labelX + 2;
-          const tickX2 = tickX1 + FB_CONST.SUB_TICK_LEN;
-          const subX = tickX2 + 4;
+          const subY = labelY + (si + 1) * D.subRowHeight;
+          const tickX1 =
+            causeDir === "head" ? labelX + 2 : labelX - 2;
+          const tickX2 =
+            causeDir === "head"
+              ? tickX1 + FB_CONST.SUB_TICK_LEN
+              : tickX1 - FB_CONST.SUB_TICK_LEN;
+          const subX =
+            causeDir === "head" ? tickX2 + 4 : tickX2 - 4;
           subCauses.push({
             label: sub.label,
             x: subX,
@@ -354,11 +483,11 @@ export function layoutFishbone(ast: FishboneAST): FishboneLayoutResult {
             tickX1,
             tickX2,
             tickY: subY,
-            anchor: "start",
+            anchor: causeDir === "head" ? "start" : "end",
           });
           const subW = estimateTextWidth(sub.label, FB_CONST.SUB_FONT);
           textBBoxes.push({
-            x: subX - 2,
+            x: causeDir === "head" ? subX - 2 : subX - subW - 2,
             y: subY - FB_CONST.SUB_FONT / 2 - 2,
             w: subW + 4,
             h: FB_CONST.SUB_FONT + 4,
@@ -375,7 +504,8 @@ export function layoutFishbone(ast: FishboneAST): FishboneLayoutResult {
           branchY,
           labelX,
           labelY,
-          labelAnchor: "start",
+          labelAnchor,
+          causeSide: causeDir,
           subCauses,
         });
 
@@ -394,7 +524,7 @@ export function layoutFishbone(ast: FishboneAST): FishboneLayoutResult {
         headerX,
         headerY,
         headerW,
-        headerH: FB_CONST.HEADER_H,
+        headerH: D.headerH,
         causes,
       });
     }

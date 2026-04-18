@@ -1,4 +1,11 @@
-import type { FishboneAST, FishboneNode, FishboneOrientation } from "../../core/types";
+import type {
+  FishboneAST,
+  FishboneCauseSide,
+  FishboneDensity,
+  FishboneNode,
+  FishboneOrientation,
+  FishboneSides,
+} from "../../core/types";
 
 export class FishboneParseError extends Error {
   constructor(message: string) {
@@ -11,7 +18,15 @@ interface CategoryDef {
   id: string;
   label: string;
   color?: string;
+  side?: "top" | "bottom";
+  order?: number;
 }
+
+const SLOPE_PRESETS: Record<string, number> = {
+  gentle: 0.45,
+  normal: 0.6,
+  steep: 0.75,
+};
 
 /**
  * Fishbone DSL parser.
@@ -54,6 +69,10 @@ export function parseFishboneDSL(text: string): FishboneAST {
   let orientation: FishboneOrientation = "ltr";
   let width: number | undefined;
   let height: number | undefined;
+  let sides: FishboneSides | undefined;
+  let ribSlope: number | undefined;
+  let density: FishboneDensity | undefined;
+  let causeSide: FishboneCauseSide | undefined;
 
   const categories: CategoryDef[] = [];
   const causesByCategory = new Map<string, FishboneNode[]>();
@@ -114,6 +133,22 @@ export function parseFishboneDSL(text: string): FishboneAST {
         } else if (key === "height") {
           const n = Number(val);
           if (Number.isFinite(n)) height = n;
+        } else if (key === "sides") {
+          const v = val.toLowerCase();
+          if (v === "both" || v === "top" || v === "bottom") sides = v;
+        } else if (key === "slope" || key === "ribslope") {
+          const preset = SLOPE_PRESETS[val.toLowerCase()];
+          if (preset !== undefined) ribSlope = preset;
+          else {
+            const n = Number(val);
+            if (Number.isFinite(n) && n > 0 && n < 3) ribSlope = n;
+          }
+        } else if (key === "density") {
+          const v = val.toLowerCase();
+          if (v === "compact" || v === "normal" || v === "spacious") density = v;
+        } else if (key === "causeside" || key === "cause-side") {
+          const v = val.toLowerCase();
+          if (v === "head" || v === "tail" || v === "both") causeSide = v;
         }
       }
       continue;
@@ -131,7 +166,13 @@ export function parseFishboneDSL(text: string): FishboneAST {
         const label = stripQuotes(structured[2]!);
         const props = parseProps(structured[3] ?? "");
         if (!getCat(id)) {
-          categories.push({ id, label, color: props["color"] });
+          const sideProp = props["side"]?.toLowerCase();
+          const side =
+            sideProp === "top" || sideProp === "bottom" ? sideProp : undefined;
+          const orderProp = props["order"];
+          const orderNum = orderProp !== undefined ? Number(orderProp) : NaN;
+          const order = Number.isFinite(orderNum) ? orderNum : undefined;
+          categories.push({ id, label, color: props["color"], side, order });
           causesByCategory.set(id, []);
         }
         lastLevel1 = null;
@@ -200,6 +241,8 @@ export function parseFishboneDSL(text: string): FishboneAST {
     label: c.label,
     color: c.color,
     children: causesByCategory.get(c.id) ?? [],
+    side: c.side,
+    order: c.order,
   }));
 
   return {
@@ -210,6 +253,10 @@ export function parseFishboneDSL(text: string): FishboneAST {
     orientation,
     width,
     height,
+    sides,
+    ribSlope,
+    density,
+    causeSide,
   };
 }
 
