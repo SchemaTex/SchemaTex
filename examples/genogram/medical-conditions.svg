@@ -6,17 +6,17 @@
 <style>
 .schematex-genogram {
   --schematex-bg: #ffffff;
-  --schematex-text: #2c3e50;
-  --schematex-text-muted: #607d8b;
-  --schematex-stroke: #37474f;
-  --schematex-stroke-muted: #90a4ae;
+  --schematex-text: #0f172a;
+  --schematex-text-muted: #475569;
+  --schematex-stroke: #334155;
+  --schematex-stroke-muted: #94a3b8;
   --schematex-fill: #ffffff;
-  --schematex-fill-muted: #f5f7fa;
-  --schematex-accent: #1565c0;
-  --schematex-positive: #388e3c;
-  --schematex-negative: #d32f2f;
-  --schematex-neutral: #9e9e9e;
-  --schematex-warn: #e65100;
+  --schematex-fill-muted: #f1f5f9;
+  --schematex-accent: #2563eb;
+  --schematex-positive: #059669;
+  --schematex-negative: #dc2626;
+  --schematex-neutral: #94a3b8;
+  --schematex-warn: #d97706;
   --schematex-font-title: 16px;
   --schematex-font-label: 12px;
   --schematex-font-secondary: 11px;
@@ -26,21 +26,21 @@
   --schematex-stroke-thick: 2.5;
   background: #ffffff;
 }
-.schematex-genogram-shape { fill: #ffffff; stroke: #37474f; stroke-width: 2; stroke-linejoin: round; }
+.schematex-genogram-shape { fill: #ffffff; stroke: #334155; stroke-width: 2; stroke-linejoin: round; }
 .schematex-genogram-male .schematex-genogram-shape { fill: #dbeafe; }
 .schematex-genogram-female .schematex-genogram-shape { fill: #fce7f3; }
 .schematex-genogram-unknown .schematex-genogram-shape { fill: #f5f5f5; }
-.schematex-genogram-label { font-family: system-ui, -apple-system, sans-serif; font-size: 12px; text-anchor: middle; fill: #2c3e50; }
-.schematex-genogram-edge { stroke: #90a4ae; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.schematex-genogram-label { font-family: system-ui, -apple-system, sans-serif; font-size: 12px; text-anchor: middle; fill: #0f172a; }
+.schematex-genogram-edge { stroke: #94a3b8; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
 .schematex-genogram-edge-cohabiting path { stroke-dasharray: 6,4; }
-.schematex-genogram-edge-divorced .schematex-genogram-divorce-mark { stroke: #90a4ae; stroke-width: 2; }
-.schematex-genogram-edge-separated .schematex-genogram-separation-mark { stroke: #90a4ae; stroke-width: 2; }
+.schematex-genogram-edge-divorced .schematex-genogram-divorce-mark { stroke: #94a3b8; stroke-width: 2; }
+.schematex-genogram-edge-separated .schematex-genogram-separation-mark { stroke: #94a3b8; stroke-width: 2; }
 .schematex-genogram-deceased-mark { stroke: #b71c1c; stroke-width: 2; stroke-linecap: round; }
 .schematex-genogram-condition-fill { fill: #1565c0; }
-.schematex-genogram-age { font-family: system-ui, -apple-system, sans-serif; fill: #2c3e50; pointer-events: none; }
-.schematex-genogram-title { fill: #2c3e50; }
-.schematex-genogram-edge-label { font-family: system-ui, -apple-system, sans-serif; fill: #2c3e50; }
-.schematex-genogram-index-border { stroke: #e65100; stroke-width: 3.5; fill: none; }
+.schematex-genogram-age { font-family: system-ui, -apple-system, sans-serif; fill: #0f172a; pointer-events: none; }
+.schematex-genogram-title { fill: #0f172a; }
+.schematex-genogram-edge-label { font-family: system-ui, -apple-system, sans-serif; fill: #0f172a; }
+.schematex-genogram-index-border { stroke: #d97706; stroke-width: 3.5; fill: none; }
 </style>
 <g><g class="schematex-genogram-edges"><g class="schematex-genogram-edge schematex-genogram-edge-married" data-from="father" data-to="mother"><path d="M 80.8 60 L 160.8 60" class="schematex-genogram-edge-path"/></g>
 <g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="father" data-to="mother"><path d="M 120.8 60 L 120.8 141" class="schematex-genogram-edge-path"/></g>
