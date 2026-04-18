@@ -10,7 +10,7 @@ describe("pedigree e2e", () => {
   I-1 -- I-2
     II-1 [male, affected, proband]`);
     expect(svg).toContain("<svg");
-    expect(svg).toContain("lineage-pedigree");
+    expect(svg).toContain("schematex-pedigree");
     expect(svg).toContain("</svg>");
   });
 
@@ -34,9 +34,9 @@ describe("pedigree e2e", () => {
     II-2 [female, carrier]
     II-3 [male, affected, proband]
     II-4 [female, unaffected]`);
-    expect(svg).toContain("lineage-pedigree-carrier-fill");
-    expect(svg).toContain("lineage-pedigree-affected-fill");
-    expect(svg).toContain("lineage-pedigree-proband-arrow-line");
+    expect(svg).toContain("schematex-pedigree-carrier-fill");
+    expect(svg).toContain("schematex-pedigree-affected-fill");
+    expect(svg).toContain("schematex-pedigree-proband-arrow-line");
     expect(svg).toContain(">I<");
     expect(svg).toContain(">II<");
   });
@@ -54,8 +54,8 @@ describe("pedigree e2e", () => {
     II-3 [female, carrier]
   II-1 == II-3
     III-1 [male, affected, proband]`);
-    expect(svg).toContain("lineage-pedigree-edge-consanguineous");
-    expect(svg).toContain("lineage-pedigree-affected-fill");
+    expect(svg).toContain("schematex-pedigree-edge-consanguineous");
+    expect(svg).toContain("schematex-pedigree-affected-fill");
     expect(svg).toContain(">III<");
   });
 
@@ -72,8 +72,8 @@ describe("pedigree e2e", () => {
     III-1 [male, affected]
     III-2 [female, carrier-x]
     III-3 [male, unaffected]`);
-    expect(svg).toContain("lineage-pedigree-carrier-x-dot");
-    expect(svg).toContain("lineage-pedigree-affected-fill");
+    expect(svg).toContain("schematex-pedigree-carrier-x-dot");
+    expect(svg).toContain("schematex-pedigree-affected-fill");
     expect(svg).toContain(">III<");
   });
 
@@ -97,8 +97,8 @@ describe("pedigree e2e", () => {
     IV-4 [female, unaffected]`);
     expect(svg).toContain(">IV<");
     expect(svg).not.toContain(">V<");
-    expect(svg).toContain("lineage-pedigree-presymptomatic");
-    expect(svg).toContain("lineage-pedigree-proband-arrow-line");
-    expect(svg).toContain("lineage-pedigree-deceased");
+    expect(svg).toContain("schematex-pedigree-presymptomatic");
+    expect(svg).toContain("schematex-pedigree-proband-arrow-line");
+    expect(svg).toContain("schematex-pedigree-deceased");
   });
 });

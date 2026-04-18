@@ -10,9 +10,9 @@
  *   defs([
  *     pattern({ id: 'half-fill', ... }, [...]),
  *   ]),
- *   group({ class: 'lineage-generation-0', transform: 'translate(0, 0)' }, [
- *     rect({ x: 100, y: 50, width: 40, height: 40, class: 'lineage-node' }),
- *     text({ x: 120, y: 110, class: 'lineage-label' }, 'John'),
+ *   group({ class: 'schematex-generation-0', transform: 'translate(0, 0)' }, [
+ *     rect({ x: 100, y: 50, width: 40, height: 40, class: 'schematex-node' }),
+ *     text({ x: 120, y: 110, class: 'schematex-label' }, 'John'),
  *   ]),
  * ]);
  * ```

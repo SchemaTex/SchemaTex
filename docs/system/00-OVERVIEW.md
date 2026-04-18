@@ -1,19 +1,19 @@
 # 00 — System Overview
 
-*Lineage 是什么、为谁服务、核心管道、文件结构。*
+*Schematex 是什么、为谁服务、核心管道、文件结构。*
 
 ---
 
-## What is Lineage?
+## What is Schematex?
 
 开源 TypeScript 库：Text DSL → SVG 渲染引擎，专注**专业领域图表**（domain-specific diagrams）。
 
-定位类似 Mermaid，但 Mermaid 做通用图表（flowchart、sequence、ER），Lineage 做 Mermaid 覆盖不到的**领域专有图表**——两大领域：
+定位类似 Mermaid，但 Mermaid 做通用图表（flowchart、sequence、ER），Schematex 做 Mermaid 覆盖不到的**领域专有图表**——两大领域：
 
 **Relationship Diagrams（关系图谱）：** genogram、ecomap、pedigree chart、sociogram、phylogenetic tree
 **Electrical Engineering Diagrams（电气工程图）：** digital timing、logic gate、circuit schematic、block diagram（control systems）、ladder logic（PLC）、single-line diagram（power distribution）
 
-**关键区别：** Mermaid 用通用图布局（dagre/ELK），Lineage 用**领域特定布局算法**（genogram → generation-based layered layout，ecomap → radial layout，logic gate → DAG topological sort，ladder logic → fixed power-rail layout，etc.）。通用布局画不好这些图。
+**关键区别：** Mermaid 用通用图布局（dagre/ELK），Schematex 用**领域特定布局算法**（genogram → generation-based layered layout，ecomap → radial layout，logic gate → DAG topological sort，ladder logic → fixed power-rail layout，etc.）。通用布局画不好这些图。
 
 ---
 
@@ -35,7 +35,7 @@
 | 执法/情报分析师 | 犯罪网络分析、嫌疑人社交圈映射 | FBI Law Enforcement Bulletin 推荐方法 |
 
 ### 商业联动
-Lineage 是 MyMap.ai 和 ChatDiagram.com 的渲染基础层。开源获取社区贡献和分发，商业产品在其上提供 AI 生成 + 编辑 + 导出。
+Schematex 是 MyMap.ai 和 ChatDiagram.com 的渲染基础层。开源获取社区贡献和分发，商业产品在其上提供 AI 生成 + 编辑 + 导出。
 
 EE diagram 系列面向工程师/教育市场，差异化切入点：无 JavaScript 依赖的纯 SVG 渲染（Schemdraw 是 Python-only，draw.io 需要庞大运行时），可嵌入任何前端框架。
 
@@ -81,7 +81,7 @@ interface DiagramPlugin {
 ## Directory Structure
 
 ```
-lineage/
+schematex/
 ├── CLAUDE.md                    # CC 开发指令（入口文件）
 ├── README.md                    # GitHub 公开 README
 ├── package.json                 # 零 runtime dependency
@@ -200,7 +200,7 @@ lineage/
 - `resolveBiologyTheme(name)` → Biology 图表（phylo）
 - `resolveGenogramTheme(name)` → Genogram（支持 alias：`clinical`=monochrome, `colorful`=default, `mono`/`bw`=monochrome）
 
-**CSS custom properties** 通过 `cssCustomProperties(theme)` 注入每个 SVG 的 `<style>` block，消费者可通过 `--lineage-*` 变量覆盖。
+**CSS custom properties** 通过 `cssCustomProperties(theme)` 注入每个 SVG 的 `<style>` block，消费者可通过 `--schematex-*` 变量覆盖。
 
 ---
 

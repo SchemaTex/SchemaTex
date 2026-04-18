@@ -12,7 +12,7 @@ import { ladder } from "../diagrams/ladder";
 import { sld } from "../diagrams/sld";
 import { entity } from "../diagrams/entity";
 
-export interface LineageConfig {
+export interface SchematexConfig {
   type?:
     | "genogram"
     | "ecomap"
@@ -48,7 +48,7 @@ const plugins: DiagramPlugin[] = [
   entity,
 ];
 
-function detectPlugin(text: string, config?: LineageConfig): DiagramPlugin {
+function detectPlugin(text: string, config?: SchematexConfig): DiagramPlugin {
   if (config?.type) {
     const plugin = plugins.find((p) => p.type === config.type);
     if (plugin) return plugin;
@@ -61,7 +61,7 @@ function detectPlugin(text: string, config?: LineageConfig): DiagramPlugin {
   );
 }
 
-export function render(text: string, config?: LineageConfig): string {
+export function render(text: string, config?: SchematexConfig): string {
   const plugin = detectPlugin(text, config);
   const renderConfig: RenderConfig = {
     fontFamily: config?.fontFamily ?? "system-ui, -apple-system, sans-serif",

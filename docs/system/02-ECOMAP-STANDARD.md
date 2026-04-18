@@ -25,7 +25,7 @@ Ecomap 由三层组成：
 ### 2.1 Simple Center (Individual)
 | Element | Shape | SVG |
 |---------|-------|-----|
-| Central person | Large circle (r=50) or square (50×50) | `<circle>` / `<rect>` with class="lineage-center" |
+| Central person | Large circle (r=50) or square (50×50) | `<circle>` / `<rect>` with class="schematex-center" |
 | Name label | Text inside shape | `<text>` centered |
 | Optional details | Age, sex symbol | Smaller text below name |
 
@@ -44,7 +44,7 @@ Ecomap 由三层组成：
 **实现方式：**
 - Center 区域用一个大的虚线圆或矩形包围
 - 内部渲染简化的 genogram（只有 symbols + couple/child lines，无 labels/conditions）
-- Class: `lineage-center-family`
+- Class: `schematex-center-family`
 - 连接线从 center boundary 出发（不是从内部 individual）
 
 ### 2.3 DSL for Center

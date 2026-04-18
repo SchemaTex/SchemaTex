@@ -1,12 +1,12 @@
 /**
- * Shared design-token system for all Lineage diagram renderers.
+ * Shared design-token system for all Schematex diagram renderers.
  *
  * Two-layer architecture:
  *   1. BaseTheme — universal tokens every diagram uses
  *   2. Semantic extensions — diagram-family tokens (PersonTokens, BiologyTokens, …)
  *
  * Three built-in presets: default, monochrome, dark.
- * All tokens are also exposed as CSS custom properties (--lineage-*)
+ * All tokens are also exposed as CSS custom properties (--schematex-*)
  * so consumers can override them.
  */
 
@@ -352,25 +352,25 @@ export const DEFAULT_FONT_FAMILY = "system-ui, -apple-system, sans-serif";
 export function cssCustomProperties(theme?: BaseTheme): string {
   const t = theme ?? BASE_THEMES["default"];
   return `
-  --lineage-bg: ${t.bg};
-  --lineage-text: ${t.text};
-  --lineage-text-muted: ${t.textMuted};
-  --lineage-stroke: ${t.stroke};
-  --lineage-stroke-muted: ${t.strokeMuted};
-  --lineage-fill: ${t.fill};
-  --lineage-fill-muted: ${t.fillMuted};
-  --lineage-accent: ${t.accent};
-  --lineage-positive: ${t.positive};
-  --lineage-negative: ${t.negative};
-  --lineage-neutral: ${t.neutral};
-  --lineage-warn: ${t.warn};
-  --lineage-font-title: ${FONT_SIZE.title}px;
-  --lineage-font-label: ${FONT_SIZE.label}px;
-  --lineage-font-secondary: ${FONT_SIZE.secondary}px;
-  --lineage-font-small: ${FONT_SIZE.small}px;
-  --lineage-stroke-normal: ${STROKE_WIDTH.normal};
-  --lineage-stroke-medium: ${STROKE_WIDTH.medium};
-  --lineage-stroke-thick: ${STROKE_WIDTH.thick};`;
+  --schematex-bg: ${t.bg};
+  --schematex-text: ${t.text};
+  --schematex-text-muted: ${t.textMuted};
+  --schematex-stroke: ${t.stroke};
+  --schematex-stroke-muted: ${t.strokeMuted};
+  --schematex-fill: ${t.fill};
+  --schematex-fill-muted: ${t.fillMuted};
+  --schematex-accent: ${t.accent};
+  --schematex-positive: ${t.positive};
+  --schematex-negative: ${t.negative};
+  --schematex-neutral: ${t.neutral};
+  --schematex-warn: ${t.warn};
+  --schematex-font-title: ${FONT_SIZE.title}px;
+  --schematex-font-label: ${FONT_SIZE.label}px;
+  --schematex-font-secondary: ${FONT_SIZE.secondary}px;
+  --schematex-font-small: ${FONT_SIZE.small}px;
+  --schematex-stroke-normal: ${STROKE_WIDTH.normal};
+  --schematex-stroke-medium: ${STROKE_WIDTH.medium};
+  --schematex-stroke-thick: ${STROKE_WIDTH.thick};`;
 }
 
 // ─── Legacy Exports (deprecated, use resolveBaseTheme) ─��───

@@ -14,7 +14,7 @@
 
 ### 1.1 Symbol Style Options
 
-两种标准并存，Lineage 通过 render config `style` 参数支持：
+两种标准并存，Schematex 通过 render config `style` 参数支持：
 
 | Style | 标准 | 特点 | 主要使用场景 |
 |-------|------|------|------------|

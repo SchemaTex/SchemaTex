@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Schematex · Circuit Schematic Preview</title>
+<style>
+  body { font-family: system-ui; background: #f5f5f5; margin: 0; padding: 20px; }
+  nav { font-size: 13px; color: #888; margin-bottom: 16px; }
+  nav a { color: #555; text-decoration: none; }
+  nav a:hover { text-decoration: underline; }
+  h1 { font-size: 18px; color: #333; margin: 0 0 4px; }
+  .subtitle { font-size: 13px; color: #888; margin-bottom: 24px; }
+  h2 { font-size: 14px; color: #666; margin-top: 30px; border-bottom: 1px solid #ddd; padding-bottom: 4px; }
+  pre.src { background: #f7f7f7; padding: 10px; font-size: 12px; border-radius: 6px; margin: 6px 0; border: 1px solid #eee; white-space: pre-wrap; }
+  .svg-container { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin: 10px 0; overflow-x: auto; }
+  .svg-container svg { display: block; max-width: 100%; height: auto; }
+  .section-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #aaa; margin-top: 40px; margin-bottom: -8px; }
+</style>
+</head>
+<body>
+<nav><a href="index.html">← All Diagrams</a></nav>
+<h1>Circuit Schematic</h1>
+<div class="subtitle">IEEE 315 / ANSI Y32.2 + IEC 60617 — positional DSL (direction-chained layout)</div>
+<div id="output"></div>
+<script type="module">
+import { render } from '../src/index.ts';
+
+const cases = [
+  ['Series Resistors', `circuit "Series Resistors"
+R1: resistor right label="R1" value="1kΩ"
+R2: resistor right label="R2" value="2kΩ"
+R3: resistor right label="R3" value="470Ω"`],
+
+  ['RC Low-Pass Filter', `circuit "RC Low-Pass Filter"
+V1: vsource down label="Vin" value="5V"
+wire right
+R1: resistor right label="R1" value="1kΩ"
+wire right 20
+dot
+C1: capacitor down label="C1" value="100nF"
+wire down 10
+ground
+at: C1.start
+wire right 20
+label "Vout" right`],
+
+  ['Voltage Divider', `circuit "Voltage Divider"
+V1: vsource down value="12V"
+wire right 20
+R1: resistor down label="R1" value="10kΩ"
+dot
+R2: resistor down label="R2" value="10kΩ"
+wire down 10
+ground`],
+
+  ['LED Driver', `circuit "LED Driver"
+V1: vsource down value="5V"
+wire right
+R1: resistor right label="R1" value="220Ω"
+D1: led right label="D1"
+wire down 20
+ground`],
+
+  ['Diode Half-Wave Rectifier', `circuit "Half-Wave Rectifier"
+V1: acsource down value="120V"
+wire right
+D1: diode right label="D1"
+wire right
+dot
+R1: resistor down label="RL" value="1kΩ"
+wire down 10
+ground`],
+
+  ['Zener Regulator', `circuit "Zener Regulator"
+V1: vsource down value="12V"
+wire right
+R1: resistor right label="Rs" value="330Ω"
+wire right 20
+dot
+Z1: zener down label="D1" value="5.1V"
+wire down 10
+ground`],
+
+  ['LC Filter', `circuit "LC Filter"
+V1: acsource down value="Vs"
+wire right
+L1: inductor right label="L1" value="10mH"
+wire right 10
+dot
+C1: capacitor down label="C1" value="1µF"
+wire down 10
+ground`],
+
+  ['Battery + Switch + Lamp', `circuit "Battery Circuit"
+V1: battery down value="9V"
+wire right
+SW: switch_spst right label="SW1"
+R1: resistor right label="R1" value="100Ω"
+wire down 20
+ground`],
+
+  ['NPN Common-Emitter Amplifier', `circuit "Common Emitter"
+Rb: resistor down label="Rb" value="100kΩ"
+Q1: npn right label="Q1"
+at: Q1.collector
+Rc: resistor up label="Rc" value="1kΩ"
+at: Q1.emitter
+wire right 10
+ground`],
+
+  ['Inverting Op-Amp', `circuit "Inverting Amplifier"
+V1: vsource down value="Vin"
+wire right 20
+Rin: resistor right label="Rin" value="10kΩ"
+U1: opamp right label="U1"
+at: U1.plus
+wire left 20
+ground
+at: U1.out
+wire right 20
+label "Vout" right`],
+
+  ['Ammeter + Voltmeter', `circuit "Meter Placement"
+V1: vsource down value="5V"
+wire right
+A1: ammeter right label="A"
+R1: resistor right label="R" value="1kΩ"
+wire down 20
+ground`],
+
+  ['Component Gallery', `circuit "Symbol Gallery"
+R1: resistor right label="R"
+C1: capacitor right label="C"
+L1: inductor right label="L"
+D1: diode right label="D"
+LED1: led right label="LED"
+Z1: zener right label="Z"
+F1: fuse right label="F"`],
+
+  ['Transistors Gallery', `circuit "Transistor Types"
+Q1: npn right label="NPN"
+wire right 30
+Q2: pnp right label="PNP"
+wire right 30
+M1: nmos right label="NMOS"
+wire right 30
+M2: pmos right label="PMOS"`],
+
+  ['Potentiometer Divider', `circuit "Pot Divider"
+V1: vsource down value="5V"
+wire right
+POT: potentiometer right label="R1" value="10kΩ"
+wire down 20
+ground
+at: POT.wiper
+wire up 10
+label "Vout" up`],
+
+  // ─── Full symbol coverage (matches physics textbook gallery) ──────
+  ['Full Symbol Gallery — Row 1: Switches & Cells', `circuit "Switches & Cells"
+SW1: switch_spst right label="Closed"
+wire right 20
+SW2: push_no right label="Push"
+wire right 20
+B1: battery right label="Cell"`],
+
+  ['Full Symbol Gallery — Row 2: R / C / L', `circuit "R-C-L"
+R1: resistor right label="Resistor"
+wire right 20
+C1: capacitor right label="Capacitor"
+wire right 20
+L1: inductor right label="Inductor"`],
+
+  ['Full Symbol Gallery — Row 3: Wire / Resistor / Battery', `circuit "Wire & Battery"
+W1: wire right 60
+wire right 20
+R1: resistor right label="Rectangle-R"
+wire right 20
+B1: battery right label="3V"`],
+
+  ['Full Symbol Gallery — Row 4: Fuse / Rheostat / Thermistor', `circuit "Variable Passives"
+F1: fuse right label="Fuse"
+wire right 20
+RH: rheostat right label="Rheostat"
+wire right 20
+TH: thermistor_ntc right label="NTC"`],
+
+  ['Full Symbol Gallery — Row 5: Meters & Motor', `circuit "Meters + Motor"
+A1: ammeter right label="A"
+wire right 20
+V1: voltmeter right label="V"
+wire right 20
+M1: motor right label="M"`],
+
+  ['Full Symbol Gallery — Row 6: Diode / LDR / Ground', `circuit "Diode / LDR / GND"
+D1: diode right label="D"
+wire right 20
+L1: ldr right label="LDR"
+wire right 20
+GND1: ground right label="GND"`],
+
+  ['Full Symbol Gallery — Row 7: Buzzer / Lamp / Transistor', `circuit "Output & Active"
+BZ: buzzer right label="Buzzer"
+wire right 20
+LMP: lamp right label="Lamp"
+wire right 30
+Q1: npn right label="Transistor"`],
+
+  ['Full Symbol Gallery — Row 8: Speaker / Mic / Potentiometer', `circuit "Transducers + Pot"
+SP: speaker right label="Speaker"
+wire right 30
+MIC: microphone right label="Mic"
+wire right 30
+POT: potentiometer right label="Pot"`],
+
+  ['Full Symbol Gallery — Row 9: Sources', `circuit "Sources"
+V1: vsource right label="V"
+wire right 20
+I1: isource right label="I"
+wire right 20
+AC: acsource right label="AC"`],
+
+  ['Full Symbol Gallery — Row 10: Diode Family', `circuit "Diode Variants"
+D1: diode right label="Std"
+wire right 20
+Z1: zener right label="Zener"
+wire right 20
+S1: schottky right label="Schottky"
+wire right 20
+LED1: led right label="LED"
+wire right 20
+PD1: photodiode right label="Photo"`],
+
+  ['Full Symbol Gallery — Row 11: FET Family', `circuit "FETs"
+M1: nmos right label="NMOS"
+wire right 30
+M2: pmos right label="PMOS"
+wire right 30
+J1: jfet_n right label="JFET-N"
+wire right 30
+J2: jfet_p right label="JFET-P"`],
+
+  ['Full Symbol Gallery — Row 12: Ground Variants', `circuit "Ground Variants"
+G1: ground right label="Earth"
+wire right 30
+G2: gnd_signal right label="Signal"
+wire right 30
+G3: gnd_chassis right label="Chassis"
+wire right 30
+G4: gnd_digital right label="Digital"`],
+
+  // ─── Complex real-world circuits ────────────────────────────────
+  ['Complex: 555 Timer LED Flasher', `circuit "555 Astable LED Flasher"
+U1: 555_timer right label="U1"
+at: U1.vcc
+wire up 30
+label "+9V" up
+at: U1.rst
+wire up 30
+label "+9V" up
+at: U1.gnd
+wire down 40
+ground
+at: U1.ctl
+wire down 30
+C2: capacitor down value="0.01µF"
+wire down 20
+ground
+at: U1.out
+wire right 40
+R3: resistor right value="470Ω"
+wire right 20
+LED1: led right label="LED"
+wire down 40
+ground`],
+
+  ['Complex: Transformer + Bridge Input Stage', `circuit "Transformer + Rectifier"
+V1: acsource down value="120VAC"
+wire right 30
+T1: transformer right label="T1"
+at: T1.end
+wire right 30
+D1: diode right label="D1"
+wire right 30
+dot
+C1: electrolytic_cap down label="C1" value="1000µF"
+wire down 20
+ground
+at: C1.start
+wire right 60
+R1: resistor down label="RL" value="1kΩ"
+wire down 20
+ground`],
+
+  ['Complex: Common-Emitter Amp with Bias Network', `circuit "CE Amplifier with Biasing"
+V1: vsource down value="+VCC"
+wire right 40
+dot
+Rb: resistor down label="Rb" value="47kΩ"
+wire down 20
+dot
+Q1: npn right label="Q1"
+at: Q1.collector
+wire up 20
+Rc: resistor up label="Rc" value="2.2kΩ"
+at: Q1.emitter
+wire down 20
+Re: resistor down label="Re" value="1kΩ"
+wire down 20
+ground`],
+
+  ['Complex: Schmitt Trigger (Op-Amp)', `circuit "Non-Inverting Schmitt Trigger"
+V1: vsource down value="Vin"
+wire right 80
+U1: opamp right label="U1"
+at: U1.plus
+wire left 50
+dot
+wire up 30
+R1: resistor right label="R1" value="10kΩ"
+at: U1.out
+wire right 50
+label "Vout" right
+at: U1.minus
+wire left 60
+ground`],
+
+  ['Complex: Battery + Lamp + Switch', `circuit "Flashlight"
+B1: battery down value="3V"
+wire right
+SW: switch_spst right label="SW"
+wire right
+LMP: lamp right label="Bulb"
+wire down 20
+ground`],
+
+  // ─── Netlist DSL (auto-layout) ───────────────────────────────
+  ['Netlist: Voltage Divider', `circuit "Divider (netlist)" netlist
+V1 vin 0 5V
+R1 vin vmid 10k
+R2 vmid 0 10k`],
+
+  ['Netlist: RC Low-Pass', `circuit "RC LPF (netlist)" netlist
+V1 vin 0 value="5V"
+R1 vin vout 1k
+C1 vout 0 100n`],
+
+  ['Netlist: LED + Resistor', `circuit "LED driver (netlist)" netlist
+V1 vcc 0 5V
+R1 vcc n1 220
+D1 n1 0 led`],
+
+  ['Netlist: Common Emitter Amp', `circuit "CE Amp (netlist)" netlist
+V1 vcc 0 9V
+Rc vcc c 2.2k
+Rb vcc b 100k
+Q1 c b e npn
+Re e 0 1k`],
+
+  ['Complex: Voltage Regulator', `circuit "5V Regulator"
+V1: vsource down value="+12V"
+wire right 40
+dot
+C1: capacitor down value="10µF"
+wire down 20
+ground
+at: C1.start
+wire right 40
+U1: voltage_regulator right label="U1" model="7805"
+wire right 40
+dot
+C2: capacitor down value="10µF"
+wire down 20
+ground
+at: C2.start
+wire right 40
+label "+5V" right`],
+];
+
+const out = document.getElementById('output');
+for (const [name, src] of cases) {
+  const h = document.createElement('h2'); h.textContent = name; out.appendChild(h);
+  const pre = document.createElement('pre'); pre.className = 'src'; pre.textContent = src; out.appendChild(pre);
+  const wrap = document.createElement('div'); wrap.className = 'svg-container';
+  try { wrap.innerHTML = render(src); } catch (e) { wrap.innerHTML = '<pre style="color:#c00">'+e.message+'</pre>'; }
+  out.appendChild(wrap);
+}
+</script>
+</body>
+</html>

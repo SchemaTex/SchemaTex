@@ -1,12 +1,12 @@
 /**
- * Lineage — Text-to-diagram rendering engine for relationship diagrams.
+ * Schematex — Text-to-diagram rendering engine for relationship diagrams.
  *
  * Supports: genogram, ecomap, pedigree, phylogenetic tree, sociogram, fishbone.
  * Output: SVG string.
  *
  * @example
  * ```ts
- * import { render } from 'lineage';
+ * import { render } from 'schematex';
  *
  * const svg = render(`
  *   genogram
@@ -20,7 +20,7 @@
  * ```
  */
 
-export { render, type LineageConfig } from "./core/api";
+export { render, type SchematexConfig } from "./core/api";
 export { genogram } from "./diagrams/genogram";
 export { ecomap } from "./diagrams/ecomap";
 export { pedigree } from "./diagrams/pedigree";

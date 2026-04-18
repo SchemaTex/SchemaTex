@@ -13,13 +13,13 @@ describe("chart title", () => {
   test("renderer displays title text in SVG", () => {
     const svg = render(`genogram "The Smiths"\n  john [male, 1950]\n  mary [female, 1952]\n  john -- mary`);
     expect(svg).toContain("The Smiths");
-    expect(svg).toContain("lineage-genogram-title");
+    expect(svg).toContain("schematex-genogram-title");
   });
 
   test("no title text element when header has no quoted string", () => {
     const svg = render(`genogram\n  john [male, 1950]`);
-    // No <text> element with lineage-title class wrapping content
-    expect(svg).not.toMatch(/<text[^>]*class="lineage-genogram-title"[^>]*>/);
+    // No <text> element with schematex-title class wrapping content
+    expect(svg).not.toMatch(/<text[^>]*class="schematex-genogram-title"[^>]*>/);
   });
 });
 
@@ -34,15 +34,15 @@ describe("index person", () => {
 
   test("renderer adds gold border for index person", () => {
     const svg = render(`genogram\n  john [male, 1950, index]\n  mary [female, 1952]\n  john -- mary`);
-    expect(svg).toContain("lineage-genogram-index-border");
+    expect(svg).toContain("schematex-genogram-index-border");
     expect(svg).toContain("#e65100"); // t.warn from default theme
-    expect(svg).toContain("lineage-genogram-index-person");
+    expect(svg).toContain("schematex-genogram-index-person");
   });
 
   test("non-index persons do not have gold border element", () => {
     const svg = render(`genogram\n  john [male, 1950]\n  mary [female, 1952]\n  john -- mary`);
     // No actual gold border shapes rendered (CSS rule exists but no element uses it)
-    expect(svg).not.toContain("lineage-genogram-index-person");
+    expect(svg).not.toContain("schematex-genogram-index-person");
   });
 });
 
@@ -57,7 +57,7 @@ describe("age display", () => {
 
   test("renderer shows age text inside node", () => {
     const svg = render(`genogram\n  john [male, age: 46]\n  mary [female, age: 44]\n  john -- mary`);
-    expect(svg).toContain("lineage-genogram-age");
+    expect(svg).toContain("schematex-genogram-age");
     expect(svg).toContain(">46<");
     expect(svg).toContain(">44<");
   });
@@ -107,7 +107,7 @@ describe("relationship labels", () => {
   test("renderer displays relationship label on edge", () => {
     const svg = render(`genogram\n  john [male, 1950]\n  mary [female, 1952]\n  john -- mary "m. 1979"`);
     expect(svg).toContain("m. 1979");
-    expect(svg).toContain("lineage-genogram-edge-label");
+    expect(svg).toContain("schematex-genogram-edge-label");
   });
 });
 
@@ -163,8 +163,8 @@ describe("emotional relationships", () => {
 
   test("renderer draws emotional edges with color", () => {
     const svg = render(`genogram\n  john [male, 1950]\n  mary [female, 1952]\n  john -- mary\n  john -hostile- mary`);
-    expect(svg).toContain("lineage-genogram-emotional");
-    expect(svg).toContain("lineage-genogram-emotional-hostile");
+    expect(svg).toContain("schematex-genogram-emotional");
+    expect(svg).toContain("schematex-genogram-emotional-hostile");
     expect(svg).toContain("#e53935"); // hostile = red
   });
 
@@ -175,7 +175,7 @@ describe("emotional relationships", () => {
 
   test("directional emotional edge has arrow marker", () => {
     const svg = render(`genogram\n  john [male, 1950]\n  mary [female, 1952]\n  john -- mary\n  john -abuse-> mary`);
-    expect(svg).toContain("lineage-genogram-arrow");
+    expect(svg).toContain("schematex-genogram-arrow");
     expect(svg).toContain("marker-end");
   });
 
@@ -219,7 +219,7 @@ describe("cross-generation emotional relationships", () => {
   grandpa -- grandma
     dad [male, 1955]
   dad -close- grandma`);
-    expect(svg).toContain("lineage-genogram-emotional-close");
+    expect(svg).toContain("schematex-genogram-emotional-close");
     expect(svg).toContain("Q"); // quadratic curve for cross-gen
   });
 });

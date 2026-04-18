@@ -5,8 +5,8 @@ describe("phylo renderer — SVG output", () => {
   test("renders basic phylogram SVG", () => {
     const svg = render(`phylo\n  newick: "(A:0.1,B:0.2);"`);
     expect(svg).toContain("<svg");
-    expect(svg).toContain("lineage-phylo");
-    expect(svg).toContain("lineage-phylo-branch");
+    expect(svg).toContain("schematex-phylo");
+    expect(svg).toContain("schematex-phylo-branch");
     expect(svg).toContain("A");
     expect(svg).toContain("B");
   });
@@ -14,17 +14,17 @@ describe("phylo renderer — SVG output", () => {
   test("renders title when provided", () => {
     const svg = render(`phylo "Vertebrates"\n  newick: "(A:0.1,B:0.2);"`);
     expect(svg).toContain("Vertebrates");
-    expect(svg).toContain("lineage-phylo-title");
+    expect(svg).toContain("schematex-phylo-title");
   });
 
   test("no title element when not provided", () => {
     const svg = render(`phylo\n  newick: "(A:0.1,B:0.2);"`);
-    expect(svg).not.toMatch(/<text[^>]*class="lineage-phylo-title"[^>]*>/);
+    expect(svg).not.toMatch(/<text[^>]*class="schematex-phylo-title"[^>]*>/);
   });
 
   test("renders tip labels", () => {
     const svg = render(`phylo\n  newick: "(Human:0.1,Mouse:0.3);"`);
-    expect(svg).toContain("lineage-phylo-tip-label");
+    expect(svg).toContain("schematex-phylo-tip-label");
     expect(svg).toContain("Human");
     expect(svg).toContain("Mouse");
   });
@@ -41,7 +41,7 @@ describe("phylo renderer — SVG output", () => {
     const svg = render(
       `phylo\n  newick: "(A:0.1,B:0.2);"\n  scale "substitutions/site"`
     );
-    expect(svg).toContain("lineage-phylo-scale-bar");
+    expect(svg).toContain("schematex-phylo-scale-bar");
     expect(svg).toContain("substitutions/site");
   });
 
@@ -50,12 +50,12 @@ describe("phylo renderer — SVG output", () => {
       `phylo [mode: cladogram]\n  newick: "(A:0.1,B:0.2);"`
     );
     // CSS rule exists but no actual scale bar group element
-    expect(svg).not.toMatch(/<g class="lineage-phylo-scale-bar">/);
+    expect(svg).not.toMatch(/<g class="schematex-phylo-scale-bar">/);
   });
 
   test("renders root marker for rooted tree", () => {
     const svg = render(`phylo\n  newick: "(A:0.1,B:0.2);"`);
-    expect(svg).toContain("lineage-phylo-root-marker");
+    expect(svg).toContain("schematex-phylo-root-marker");
   });
 
   test("no root marker for unrooted tree", () => {
@@ -63,15 +63,15 @@ describe("phylo renderer — SVG output", () => {
       `phylo [layout: unrooted]\n  newick: "(A:0.1,B:0.2,C:0.3);"`
     );
     // CSS rule exists but no actual circle element with that class
-    expect(svg).not.toMatch(/<circle[^>]*class="lineage-phylo-root-marker"/);
+    expect(svg).not.toMatch(/<circle[^>]*class="schematex-phylo-root-marker"/);
   });
 
   test("renders support values above threshold", () => {
     const svg = render(
       `phylo\n  newick: "((A:0.02,B:0.03):0.01[&&NHX:B=98],C:0.05);"`
     );
-    expect(svg).toContain("lineage-phylo-support-dot");
-    expect(svg).toContain("lineage-phylo-support-label");
+    expect(svg).toContain("schematex-phylo-support-dot");
+    expect(svg).toContain("schematex-phylo-support-label");
     expect(svg).toContain(">98<");
   });
 
@@ -87,14 +87,14 @@ describe("phylo renderer — SVG output", () => {
   newick: "((A:0.1,B:0.2):0.3,(C:0.1,D:0.2):0.3);"
   clade G1 = (A, B) [color: "#1E88E5"]`);
     expect(svg).toContain("#1E88E5");
-    expect(svg).toContain("lineage-phylo-clade-G1");
+    expect(svg).toContain("schematex-phylo-clade-G1");
   });
 
   test("renders clade background when highlight: background", () => {
     const svg = render(`phylo
   newick: "((A:0.1,B:0.2):0.3,(C:0.1,D:0.2):0.3);"
   clade G1 = (A, B) [color: "#1E88E5", highlight: background, label: "Group 1"]`);
-    expect(svg).toContain("lineage-phylo-clade-bg");
+    expect(svg).toContain("schematex-phylo-clade-bg");
     expect(svg).toContain("Group 1");
   });
 
@@ -137,7 +137,7 @@ describe("phylo renderer — test cases from standard doc", () => {
     expect(svg).toContain("Chicken");
     expect(svg).toContain("Zebrafish");
     expect(svg).toContain("Frog");
-    expect(svg).toContain("lineage-phylo-scale-bar");
+    expect(svg).toContain("schematex-phylo-scale-bar");
   });
 
   test("Case 2: Cladogram with clades", () => {
@@ -177,7 +177,7 @@ scale "substitutions/site"`);
     expect(svg).toContain("Human");
     expect(svg).toContain("Dog");
     expect(svg).toContain("#1E88E5");
-    expect(svg).toContain("lineage-phylo-scale-bar");
+    expect(svg).toContain("schematex-phylo-scale-bar");
   });
 
   test("Case 8: Polytomy", () => {

@@ -144,7 +144,7 @@ Pedigree 的关系线比 genogram **简单得多**——没有 emotional relatio
 - 左侧显示 Roman numeral（I, II, III, IV...）
 - I = 最年长的一代
 - 对齐到该代的中心 Y 坐标
-- Font: bold, 14px, class="lineage-generation-label"
+- Font: bold, 14px, class="schematex-generation-label"
 
 ### 4.2 Individual Labels
 - 每代内从左到右编号：1, 2, 3...
