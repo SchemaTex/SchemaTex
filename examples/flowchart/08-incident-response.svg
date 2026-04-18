@@ -1,0 +1,126 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1492.25 840" width="1492.25" height="840" class="sx-fc" data-diagram-type="flowchart" data-direction="TB" role="graphics-document"><title>Production Incident Response — Flowchart</title>
+<desc>Flowchart with 15 nodes and 18 edges.</desc>
+<style>.sx-fc { background: #ffffff; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+.sx-fc-node { fill: #f5f7fa; stroke: #37474f; stroke-width: 1.5; stroke-linejoin: round; }
+.sx-fc-node-stadium { fill: #dbeafe; stroke: #37474f; }
+.sx-fc-node-diamond { fill: #fef3c7; stroke: #37474f; }
+.sx-fc-node-round { fill: #dcfce7; stroke: #37474f; }
+.sx-fc-node-text { fill: #2c3e50; font: 12px system-ui, -apple-system, "Segoe UI", sans-serif; }
+/* Semantic class presets (applied via 'class A start') — override shape fills */
+.sx-fc-class-start    > .sx-fc-node { fill: #f0ece0; stroke: #9a8b6a; }
+.sx-fc-class-start    > .sx-fc-node-text { fill: #5c4e2e; font-weight: 600; }
+.sx-fc-class-process  > .sx-fc-node { fill: #e8e4ff; stroke: #8b7dd8; }
+.sx-fc-class-process  > .sx-fc-node-text { fill: #4c3a8f; font-weight: 600; }
+.sx-fc-class-decision > .sx-fc-node { fill: #fde8c8; stroke: #d4985c; }
+.sx-fc-class-decision > .sx-fc-node-text { fill: #8a5a1f; font-weight: 600; }
+.sx-fc-class-success  > .sx-fc-node { fill: #d4f0e0; stroke: #7bc19a; }
+.sx-fc-class-success  > .sx-fc-node-text { fill: #1e5a3a; font-weight: 600; }
+.sx-fc-class-danger   > .sx-fc-node { fill: #fbe0dc; stroke: #d89181; }
+.sx-fc-class-danger   > .sx-fc-node-text { fill: #8a3525; font-weight: 600; }
+.sx-fc-class-neutral  > .sx-fc-node { fill: #ececec; stroke: #a0a0a0; }
+.sx-fc-class-neutral  > .sx-fc-node-text { fill: #555555; font-weight: 600; }
+.sx-fc-edge { fill: none; stroke: #90a4ae; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.sx-fc-edge-thick { stroke: #37474f; stroke-width: 2.4; }
+.sx-fc-edge-dashed { stroke-dasharray: 5 3; }
+.sx-fc-edge-dotted { stroke-dasharray: 1.5 3; }
+.sx-fc-edge-label { fill: #607d8b; font: 11px system-ui, -apple-system, "Segoe UI", sans-serif; }
+.sx-fc-edge-label-bg { fill: #ffffff; fill-opacity: 0.96; stroke: #90a4ae; stroke-width: 0.5; }
+.sx-fc-title { fill: #2c3e50; font: 600 14px system-ui, -apple-system, "Segoe UI", sans-serif; }</style>
+<defs><marker id="sx-fc-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+  <path d="M0,0 L8,4 L0,8 L2,4 Z" fill="context-stroke"/>
+</marker>
+<marker id="sx-fc-arrow-o" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+  <circle cx="4" cy="4" r="3" fill="none" stroke="context-stroke" stroke-width="1"/>
+</marker>
+<marker id="sx-fc-arrow-x" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+  <path d="M1,1 L7,7 M1,7 L7,1" stroke="context-stroke" stroke-width="1.2"/>
+</marker></defs>
+<text x="746.125" y="16" class="sx-fc-title" text-anchor="middle">Production Incident Response</text>
+<g transform="translate(0 24)"><g class="sx-fc-edges"><g data-edge-id="A-&gt;B" data-kind="solid" data-from="A" data-to="B"><path d="M 77.5 72 L 77.5 102 L 181.25 102 L 181.25 132" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>A → B</title></g>
+<g data-edge-id="B-&gt;C" data-kind="solid" data-from="B" data-to="C"><path d="M 181.25 176 L 181.25 204 L 388.75 204 L 388.75 232" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>B → C</title></g>
+<g data-edge-id="C-&gt;D" data-kind="solid" data-from="C" data-to="D"><path d="M 388.75 284 L 388.75 312 L 388.75 312 L 388.75 340" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>C → D: no</title>
+<g class="sx-fc-edge-label-g"><text x="394.75" y="312" class="sx-fc-edge-label" text-anchor="start" dominant-baseline="central">no</text></g></g>
+<g data-edge-id="D-&gt;B" data-kind="solid" data-from="D" data-to="B"><path d="M 181.25 176 L 181.25 217 L 285 217 L 285 258 L 285 299 L 388.75 299 L 388.75 340" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>D → B</title></g>
+<g data-edge-id="C-&gt;E" data-kind="solid" data-from="C" data-to="E"><path d="M 388.75 284 L 388.75 312 L 1401.25 312 L 1401.25 340" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>C → E: yes</title>
+<g class="sx-fc-edge-label-g"><text x="895" y="304" class="sx-fc-edge-label" text-anchor="middle" dominant-baseline="central">yes</text></g></g>
+<g data-edge-id="E-&gt;F" data-kind="solid" data-from="E" data-to="F"><path d="M 1109.25 76 L 1109.25 115 L 1401.25 115 L 1401.25 154 L 1401.25 206 L 1401.25 206 L 1401.25 258 L 1401.25 299 L 1401.25 299 L 1401.25 340" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>E → F</title></g>
+<g data-edge-id="F-&gt;G" data-kind="solid" data-from="F" data-to="G"><path d="M 1109.25 76 L 1109.25 104 L 1268.75 104 L 1268.75 132" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>F → G: SEV1</title>
+<g class="sx-fc-edge-label-g"><text x="1189" y="96" class="sx-fc-edge-label" text-anchor="middle" dominant-baseline="central">SEV1</text></g></g>
+<g data-edge-id="F-&gt;H" data-kind="solid" data-from="F" data-to="H"><path d="M 1109.25 76 L 1109.25 115 L 1368.25 115 L 1368.25 154 L 1368.25 195 L 1268.75 195 L 1268.75 236" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>F → H: SEV2</title>
+<g class="sx-fc-edge-label-g"><text x="1238.75" y="107" class="sx-fc-edge-label" text-anchor="middle" dominant-baseline="central">SEV2</text></g></g>
+<g data-edge-id="F-&gt;I" data-kind="solid" data-from="F" data-to="I"><path d="M 1109.25 76 L 1109.25 104 L 1109.25 104 L 1109.25 132" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>F → I: SEV3</title>
+<g class="sx-fc-edge-label-g"><text x="1115.25" y="104" class="sx-fc-edge-label" text-anchor="start" dominant-baseline="central">SEV3</text></g></g>
+<g data-edge-id="G-&gt;H" data-kind="solid" data-from="G" data-to="H"><path d="M 1268.75 176 L 1268.75 206 L 1268.75 206 L 1268.75 236" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>G → H</title></g>
+<g data-edge-id="H-&gt;J" data-kind="solid" data-from="H" data-to="J"><path d="M 1268.75 280 L 1268.75 310 L 1109.25 310 L 1109.25 340" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>H → J</title></g>
+<g data-edge-id="I-&gt;J" data-kind="solid" data-from="I" data-to="J"><path d="M 1109.25 176 L 1109.25 217 L 1109.25 217 L 1109.25 258 L 1109.25 299 L 1109.25 299 L 1109.25 340" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>I → J</title></g>
+<g data-edge-id="J-&gt;K" data-kind="solid" data-from="J" data-to="K"><path d="M 1109.25 384 L 1109.25 412 L 850.25 412 L 850.25 440" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>J → K</title></g>
+<g data-edge-id="K-&gt;L" data-kind="solid" data-from="K" data-to="L"><path d="M 850.25 492 L 850.25 520 L 1109.25 520 L 1109.25 548" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>K → L: no</title>
+<g class="sx-fc-edge-label-g"><text x="979.75" y="512" class="sx-fc-edge-label" text-anchor="middle" dominant-baseline="central">no</text></g></g>
+<g data-edge-id="L-&gt;J" data-kind="solid" data-from="L" data-to="J"><path d="M 1109.25 384 L 1109.25 425 L 1109.25 425 L 1109.25 466 L 1109.25 507 L 1109.25 507 L 1109.25 548" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>L → J</title></g>
+<g data-edge-id="K-&gt;M" data-kind="solid" data-from="K" data-to="M"><path d="M 850.25 492 L 850.25 520 L 850.25 520 L 850.25 548" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>K → M: yes</title>
+<g class="sx-fc-edge-label-g"><text x="856.25" y="520" class="sx-fc-edge-label" text-anchor="start" dominant-baseline="central">yes</text></g></g>
+<g data-edge-id="M-&gt;N" data-kind="solid" data-from="M" data-to="N"><path d="M 850.25 592 L 850.25 620 L 850.25 620 L 850.25 648" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>M → N</title></g>
+<g data-edge-id="N-&gt;O" data-kind="solid" data-from="N" data-to="O"><path d="M 850.25 692 L 850.25 720 L 850.25 720 L 850.25 748" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>N → O</title></g></g>
+<g class="sx-fc-nodes"><g data-node-id="A" data-shape="stadium" data-layer="0" class="sx-fc-node-g" transform="translate(24 28)"><rect x="0" y="0" width="107" height="44" rx="22" ry="22" class="sx-fc-node sx-fc-node-stadium"/>
+<text x="53.5" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central">Alert Fires</text>
+<title>Alert Fires</title></g>
+<g data-node-id="F" data-shape="diamond" data-layer="0" class="sx-fc-node-g" transform="translate(1046.75 24)"><polygon points="62.5,0 125,26 62.5,52 0,26" class="sx-fc-node sx-fc-node-diamond"/>
+<text x="62.5" y="26" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central">SEV level?</text>
+<title>SEV level?</title></g>
+<g data-node-id="B" data-shape="rect" data-layer="1" class="sx-fc-node-g" transform="translate(124.25 132)"><rect x="0" y="0" width="114" height="44" rx="14" ry="14" class="sx-fc-node"/>
+<text x="57" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central">Oncall Paged</text>
+<title>Oncall Paged</title></g>
+<g data-node-id="I" data-shape="rect" data-layer="1" class="sx-fc-node-g" transform="translate(1048.75 132)"><rect x="0" y="0" width="121" height="44" rx="14" ry="14" class="sx-fc-node"/>
+<text x="60.5" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central">Create Ticket</text>
+<title>Create Ticket</title></g>
+<g data-node-id="G" data-shape="rect" data-layer="1" class="sx-fc-node-g" transform="translate(1201.75 132)"><rect x="0" y="0" width="134" height="44" rx="14" ry="14" class="sx-fc-node"/>
+<text x="67" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central">Page Leadership</text>
+<title>Page Leadership</title></g>
+<g data-node-id="C" data-shape="diamond" data-layer="2" class="sx-fc-node-g" transform="translate(317.5 232)"><polygon points="71.25,0 142.5,26 71.25,52 0,26" class="sx-fc-node sx-fc-node-diamond"/>
+<text x="71.25" y="26" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central">Ack in 5min?</text>
+<title>Ack in 5min?</title></g>
+<g data-node-id="H" data-shape="rect" data-layer="2" class="sx-fc-node-g" transform="translate(1208.25 236)"><rect x="0" y="0" width="121" height="44" rx="14" ry="14" class="sx-fc-node"/>
+<text x="60.5" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central">Open War Room</text>
+<title>Open War Room</title></g>
+<g data-node-id="D" data-shape="rect" data-layer="3" class="sx-fc-node-g" transform="translate(307.75 340)"><rect x="0" y="0" width="162" height="44" rx="14" ry="14" class="sx-fc-node"/>
+<text x="81" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central">Escalate to Manager</text>
+<title>Escalate to Manager</title></g>
+<g data-node-id="J" data-shape="rect" data-layer="3" class="sx-fc-node-g" transform="translate(1065.75 340)"><rect x="0" y="0" width="87" height="44" rx="14" ry="14" class="sx-fc-node"/>
+<text x="43.5" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central">Mitigate</text>
+<title>Mitigate</title></g>
+<g data-node-id="E" data-shape="rect" data-layer="3" class="sx-fc-node-g" transform="translate(1334.25 340)"><rect x="0" y="0" width="134" height="44" rx="14" ry="14" class="sx-fc-node"/>
+<text x="67" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central">Assess Severity</text>
+<title>Assess Severity</title></g>
+<g data-node-id="K" data-shape="diamond" data-layer="4" class="sx-fc-node-g" transform="translate(791.5 440)"><polygon points="58.75,0 117.5,26 58.75,52 0,26" class="sx-fc-node sx-fc-node-diamond"/>
+<text x="58.75" y="26" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central">Resolved?</text>
+<title>Resolved?</title></g>
+<g data-node-id="M" data-shape="rect" data-layer="5" class="sx-fc-node-g" transform="translate(779.75 548)"><rect x="0" y="0" width="141" height="44" rx="14" ry="14" class="sx-fc-node"/>
+<text x="70.5" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central">Write Postmortem</text>
+<title>Write Postmortem</title></g>
+<g data-node-id="L" data-shape="rect" data-layer="5" class="sx-fc-node-g" transform="translate(1038.75 548)"><rect x="0" y="0" width="141" height="44" rx="14" ry="14" class="sx-fc-node"/>
+<text x="70.5" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central">Try Next Runbook</text>
+<title>Try Next Runbook</title></g>
+<g data-node-id="N" data-shape="rect" data-layer="6" class="sx-fc-node-g" transform="translate(793.25 648)"><rect x="0" y="0" width="114" height="44" rx="14" ry="14" class="sx-fc-node"/>
+<text x="57" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central">Schedule RCA</text>
+<title>Schedule RCA</title></g>
+<g data-node-id="O" data-shape="stadium" data-layer="7" class="sx-fc-node-g" transform="translate(783.25 748)"><rect x="0" y="0" width="134" height="44" rx="22" ry="22" class="sx-fc-node sx-fc-node-stadium"/>
+<text x="67" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central">Incident Closed</text>
+<title>Incident Closed</title></g></g></g></svg>

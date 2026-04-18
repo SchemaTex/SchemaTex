@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 434 424" width="434" height="424" class="sx-fc" data-diagram-type="flowchart" data-direction="TB" role="graphics-document"><title>Branching decision — Flowchart</title>
+<desc>Flowchart with 5 nodes and 5 edges.</desc>
+<style>.sx-fc { background: #ffffff; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+.sx-fc-node { fill: #f5f7fa; stroke: #37474f; stroke-width: 1.5; stroke-linejoin: round; }
+.sx-fc-node-stadium { fill: #dbeafe; stroke: #37474f; }
+.sx-fc-node-diamond { fill: #fef3c7; stroke: #37474f; }
+.sx-fc-node-round { fill: #dcfce7; stroke: #37474f; }
+.sx-fc-node-text { fill: #2c3e50; font: 12px system-ui, -apple-system, "Segoe UI", sans-serif; }
+/* Semantic class presets (applied via 'class A start') — override shape fills */
+.sx-fc-class-start    > .sx-fc-node { fill: #f0ece0; stroke: #9a8b6a; }
+.sx-fc-class-start    > .sx-fc-node-text { fill: #5c4e2e; font-weight: 600; }
+.sx-fc-class-process  > .sx-fc-node { fill: #e8e4ff; stroke: #8b7dd8; }
+.sx-fc-class-process  > .sx-fc-node-text { fill: #4c3a8f; font-weight: 600; }
+.sx-fc-class-decision > .sx-fc-node { fill: #fde8c8; stroke: #d4985c; }
+.sx-fc-class-decision > .sx-fc-node-text { fill: #8a5a1f; font-weight: 600; }
+.sx-fc-class-success  > .sx-fc-node { fill: #d4f0e0; stroke: #7bc19a; }
+.sx-fc-class-success  > .sx-fc-node-text { fill: #1e5a3a; font-weight: 600; }
+.sx-fc-class-danger   > .sx-fc-node { fill: #fbe0dc; stroke: #d89181; }
+.sx-fc-class-danger   > .sx-fc-node-text { fill: #8a3525; font-weight: 600; }
+.sx-fc-class-neutral  > .sx-fc-node { fill: #ececec; stroke: #a0a0a0; }
+.sx-fc-class-neutral  > .sx-fc-node-text { fill: #555555; font-weight: 600; }
+.sx-fc-edge { fill: none; stroke: #90a4ae; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.sx-fc-edge-thick { stroke: #37474f; stroke-width: 2.4; }
+.sx-fc-edge-dashed { stroke-dasharray: 5 3; }
+.sx-fc-edge-dotted { stroke-dasharray: 1.5 3; }
+.sx-fc-edge-label { fill: #607d8b; font: 11px system-ui, -apple-system, "Segoe UI", sans-serif; }
+.sx-fc-edge-label-bg { fill: #ffffff; fill-opacity: 0.96; stroke: #90a4ae; stroke-width: 0.5; }
+.sx-fc-title { fill: #2c3e50; font: 600 14px system-ui, -apple-system, "Segoe UI", sans-serif; }</style>
+<defs><marker id="sx-fc-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+  <path d="M0,0 L8,4 L0,8 L2,4 Z" fill="context-stroke"/>
+</marker>
+<marker id="sx-fc-arrow-o" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+  <circle cx="4" cy="4" r="3" fill="none" stroke="context-stroke" stroke-width="1"/>
+</marker>
+<marker id="sx-fc-arrow-x" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+  <path d="M1,1 L7,7 M1,7 L7,1" stroke="context-stroke" stroke-width="1.2"/>
+</marker></defs>
+<text x="217" y="16" class="sx-fc-title" text-anchor="middle">Branching decision</text>
+<g transform="translate(0 24)"><g class="sx-fc-edges"><g data-edge-id="A-&gt;B" data-kind="solid" data-from="A" data-to="B"><path d="M 60 68 L 60 96 L 164.5 96 L 164.5 124" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>A → B</title></g>
+<g data-edge-id="B-&gt;C" data-kind="solid" data-from="B" data-to="C"><path d="M 164.5 176 L 164.5 204 L 269 204 L 269 232" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>B → C: yes</title>
+<g class="sx-fc-edge-label-g"><text x="216.75" y="196" class="sx-fc-edge-label" text-anchor="middle" dominant-baseline="central">yes</text></g></g>
+<g data-edge-id="B-&gt;D" data-kind="solid" data-from="B" data-to="D"><path d="M 164.5 176 L 164.5 204 L 373.5 204 L 373.5 232" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>B → D: no</title>
+<g class="sx-fc-edge-label-g"><text x="269" y="196" class="sx-fc-edge-label" text-anchor="middle" dominant-baseline="central">no</text></g></g>
+<g data-edge-id="C-&gt;E" data-kind="solid" data-from="C" data-to="E"><path d="M 269 276 L 269 304 L 373.5 304 L 373.5 332" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>C → E</title></g>
+<g data-edge-id="D-&gt;E" data-kind="solid" data-from="D" data-to="E"><path d="M 373.5 276 L 373.5 304 L 373.5 304 L 373.5 332" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>D → E</title></g></g>
+<g class="sx-fc-nodes"><g data-node-id="A" data-shape="stadium" data-layer="0" class="sx-fc-node-g" transform="translate(24 24)"><rect x="0" y="0" width="72" height="44" rx="22" ry="22" class="sx-fc-node sx-fc-node-stadium"/>
+<text x="36" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central">Start</text>
+<title>Start</title></g>
+<g data-node-id="B" data-shape="diamond" data-layer="1" class="sx-fc-node-g" transform="translate(118.88 124)"><polygon points="45.625,0 91.25,26 45.625,52 0,26" class="sx-fc-node sx-fc-node-diamond"/>
+<text x="45.625" y="26" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central">Valid?</text>
+<title>Valid?</title></g>
+<g data-node-id="C" data-shape="rect" data-layer="2" class="sx-fc-node-g" transform="translate(233 232)"><rect x="0" y="0" width="72" height="44" rx="14" ry="14" class="sx-fc-node"/>
+<text x="36" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central">Save</text>
+<title>Save</title></g>
+<g data-node-id="D" data-shape="rect" data-layer="2" class="sx-fc-node-g" transform="translate(337 232)"><rect x="0" y="0" width="73" height="44" rx="14" ry="14" class="sx-fc-node"/>
+<text x="36.5" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central">Reject</text>
+<title>Reject</title></g>
+<g data-node-id="E" data-shape="stadium" data-layer="3" class="sx-fc-node-g" transform="translate(337.5 332)"><rect x="0" y="0" width="72" height="44" rx="22" ry="22" class="sx-fc-node sx-fc-node-stadium"/>
+<text x="36" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central">Done</text>
+<title>Done</title></g></g></g></svg>

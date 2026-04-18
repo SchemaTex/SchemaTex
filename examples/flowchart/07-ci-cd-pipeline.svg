@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 576.5 1140" width="576.5" height="1140" class="sx-fc" data-diagram-type="flowchart" data-direction="TB" role="graphics-document"><title>CI/CD Pipeline — Flowchart</title>
+<desc>Flowchart with 13 nodes and 15 edges.</desc>
+<style>.sx-fc { background: #ffffff; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+.sx-fc-node { fill: #f5f7fa; stroke: #37474f; stroke-width: 1.5; stroke-linejoin: round; }
+.sx-fc-node-stadium { fill: #dbeafe; stroke: #37474f; }
+.sx-fc-node-diamond { fill: #fef3c7; stroke: #37474f; }
+.sx-fc-node-round { fill: #dcfce7; stroke: #37474f; }
+.sx-fc-node-text { fill: #2c3e50; font: 12px system-ui, -apple-system, "Segoe UI", sans-serif; }
+/* Semantic class presets (applied via 'class A start') — override shape fills */
+.sx-fc-class-start    > .sx-fc-node { fill: #f0ece0; stroke: #9a8b6a; }
+.sx-fc-class-start    > .sx-fc-node-text { fill: #5c4e2e; font-weight: 600; }
+.sx-fc-class-process  > .sx-fc-node { fill: #e8e4ff; stroke: #8b7dd8; }
+.sx-fc-class-process  > .sx-fc-node-text { fill: #4c3a8f; font-weight: 600; }
+.sx-fc-class-decision > .sx-fc-node { fill: #fde8c8; stroke: #d4985c; }
+.sx-fc-class-decision > .sx-fc-node-text { fill: #8a5a1f; font-weight: 600; }
+.sx-fc-class-success  > .sx-fc-node { fill: #d4f0e0; stroke: #7bc19a; }
+.sx-fc-class-success  > .sx-fc-node-text { fill: #1e5a3a; font-weight: 600; }
+.sx-fc-class-danger   > .sx-fc-node { fill: #fbe0dc; stroke: #d89181; }
+.sx-fc-class-danger   > .sx-fc-node-text { fill: #8a3525; font-weight: 600; }
+.sx-fc-class-neutral  > .sx-fc-node { fill: #ececec; stroke: #a0a0a0; }
+.sx-fc-class-neutral  > .sx-fc-node-text { fill: #555555; font-weight: 600; }
+.sx-fc-edge { fill: none; stroke: #90a4ae; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.sx-fc-edge-thick { stroke: #37474f; stroke-width: 2.4; }
+.sx-fc-edge-dashed { stroke-dasharray: 5 3; }
+.sx-fc-edge-dotted { stroke-dasharray: 1.5 3; }
+.sx-fc-edge-label { fill: #607d8b; font: 11px system-ui, -apple-system, "Segoe UI", sans-serif; }
+.sx-fc-edge-label-bg { fill: #ffffff; fill-opacity: 0.96; stroke: #90a4ae; stroke-width: 0.5; }
+.sx-fc-title { fill: #2c3e50; font: 600 14px system-ui, -apple-system, "Segoe UI", sans-serif; }</style>
+<defs><marker id="sx-fc-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+  <path d="M0,0 L8,4 L0,8 L2,4 Z" fill="context-stroke"/>
+</marker>
+<marker id="sx-fc-arrow-o" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+  <circle cx="4" cy="4" r="3" fill="none" stroke="context-stroke" stroke-width="1"/>
+</marker>
+<marker id="sx-fc-arrow-x" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+  <path d="M1,1 L7,7 M1,7 L7,1" stroke="context-stroke" stroke-width="1.2"/>
+</marker></defs>
+<text x="288.25" y="16" class="sx-fc-title" text-anchor="middle">CI/CD Pipeline</text>
+<g transform="translate(0 24)"><g class="sx-fc-edges"><g data-edge-id="A-&gt;B" data-kind="solid" data-from="A" data-to="B"><path d="M 312.5 892 L 312.5 920 L 409.5 920 L 409.5 948" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>A → B</title></g>
+<g data-edge-id="B-&gt;C" data-kind="solid" data-from="B" data-to="C"><path d="M 409.5 992 L 409.5 1020 L 502.5 1020 L 502.5 1048" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>B → C</title></g>
+<g data-edge-id="C-&gt;D" data-kind="solid" data-from="C" data-to="D"><path d="M 94.5 76 L 94.5 115 L 213.5 115 L 213.5 154 L 213.5 204 L 224 204 L 224 254 L 224 306 L 283.5 306 L 283.5 358 L 283.5 410 L 369.5 410 L 369.5 462 L 369.5 514 L 409.5 514 L 409.5 566 L 409.5 618 L 502.5 618 L 502.5 670 L 502.5 720 L 502.5 720 L 502.5 770 L 502.5 820 L 502.5 820 L 502.5 870 L 502.5 920 L 502.5 920 L 502.5 970 L 502.5 1009 L 502.5 1009 L 502.5 1048" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>C → D</title></g>
+<g data-edge-id="D-&gt;E" data-kind="solid" data-from="D" data-to="E"><path d="M 94.5 76 L 94.5 115 L 180.5 115 L 180.5 154 L 180.5 204 L 191 204 L 191 254 L 191 306 L 250.5 306 L 250.5 358 L 250.5 410 L 336.5 410 L 336.5 462 L 336.5 514 L 376.5 514 L 376.5 566 L 376.5 618 L 469.5 618 L 469.5 670 L 469.5 709 L 257.5 709 L 257.5 748" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>D → E: no</title>
+<g class="sx-fc-edge-label-g"><text x="137.5" y="107" class="sx-fc-edge-label" text-anchor="middle" dominant-baseline="central">no</text></g></g>
+<g data-edge-id="E-&gt;A" data-kind="solid" data-from="E" data-to="A"><path d="M 257.5 792 L 257.5 820 L 312.5 820 L 312.5 848" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>E → A</title></g>
+<g data-edge-id="D-&gt;F" data-kind="solid" data-from="D" data-to="F"><path d="M 94.5 76 L 94.5 104 L 94.5 104 L 94.5 132" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>D → F: yes</title>
+<g class="sx-fc-edge-label-g"><text x="100.5" y="104" class="sx-fc-edge-label" text-anchor="start" dominant-baseline="central">yes</text></g></g>
+<g data-edge-id="F-&gt;G" data-kind="solid" data-from="F" data-to="G"><path d="M 94.5 176 L 94.5 204 L 94.5 204 L 94.5 232" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>F → G</title></g>
+<g data-edge-id="G-&gt;H" data-kind="solid" data-from="G" data-to="H"><path d="M 94.5 276 L 94.5 304 L 94.5 304 L 94.5 332" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>G → H</title></g>
+<g data-edge-id="H-&gt;I" data-kind="solid" data-from="H" data-to="I"><path d="M 94.5 384 L 94.5 412 L 94.5 412 L 94.5 440" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>H → I: no</title>
+<g class="sx-fc-edge-label-g"><text x="100.5" y="412" class="sx-fc-edge-label" text-anchor="start" dominant-baseline="central">no</text></g></g>
+<g data-edge-id="I-&gt;E" data-kind="solid" data-from="I" data-to="E"><path d="M 94.5 484 L 94.5 525 L 94.5 525 L 94.5 566 L 94.5 618 L 164.5 618 L 164.5 670 L 164.5 709 L 257.5 709 L 257.5 748" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>I → E</title></g>
+<g data-edge-id="H-&gt;J" data-kind="solid" data-from="H" data-to="J"><path d="M 94.5 384 L 94.5 412 L 250.5 412 L 250.5 440" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>H → J: yes</title>
+<g class="sx-fc-edge-label-g"><text x="172.5" y="404" class="sx-fc-edge-label" text-anchor="middle" dominant-baseline="central">yes</text></g></g>
+<g data-edge-id="J-&gt;K" data-kind="solid" data-from="J" data-to="K"><path d="M 250.5 484 L 250.5 512 L 250.5 512 L 250.5 540" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>J → K</title></g>
+<g data-edge-id="K-&gt;L" data-kind="solid" data-from="K" data-to="L"><path d="M 250.5 592 L 250.5 620 L 257.5 620 L 257.5 648" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>K → L: no</title>
+<g class="sx-fc-edge-label-g"><text x="254" y="612" class="sx-fc-edge-label" text-anchor="middle" dominant-baseline="central">no</text></g></g>
+<g data-edge-id="L-&gt;E" data-kind="solid" data-from="L" data-to="E"><path d="M 257.5 692 L 257.5 720 L 257.5 720 L 257.5 748" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>L → E</title></g>
+<g data-edge-id="K-&gt;M" data-kind="solid" data-from="K" data-to="M"><path d="M 250.5 592 L 250.5 620 L 393.5 620 L 393.5 648" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>K → M: yes</title>
+<g class="sx-fc-edge-label-g"><text x="322" y="612" class="sx-fc-edge-label" text-anchor="middle" dominant-baseline="central">yes</text></g></g></g>
+<g class="sx-fc-nodes"><g data-node-id="D" data-shape="diamond" data-layer="0" class="sx-fc-node-g" transform="translate(32 24)"><polygon points="62.5,0 125,26 62.5,52 0,26" class="sx-fc-node sx-fc-node-diamond"/>
+<text x="62.5" y="26" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central">CI Passes?</text>
+<title>CI Passes?</title></g>
+<g data-node-id="F" data-shape="rect" data-layer="1" class="sx-fc-node-g" transform="translate(41 132)"><rect x="0" y="0" width="107" height="44" rx="14" ry="14" class="sx-fc-node"/>
+<text x="53.5" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central">Build Image</text>
+<title>Build Image</title></g>
+<g data-node-id="G" data-shape="rect" data-layer="2" class="sx-fc-node-g" transform="translate(30.5 232)"><rect x="0" y="0" width="128" height="44" rx="14" ry="14" class="sx-fc-node"/>
+<text x="64" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central">Deploy Staging</text>
+<title>Deploy Staging</title></g>
+<g data-node-id="H" data-shape="diamond" data-layer="3" class="sx-fc-node-g" transform="translate(35.75 332)"><polygon points="58.75,0 117.5,26 58.75,52 0,26" class="sx-fc-node sx-fc-node-diamond"/>
+<text x="58.75" y="26" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central">Stage OK?</text>
+<title>Stage OK?</title></g>
+<g data-node-id="I" data-shape="rect" data-layer="4" class="sx-fc-node-g" transform="translate(24 440)"><rect x="0" y="0" width="141" height="44" rx="14" ry="14" class="sx-fc-node"/>
+<text x="70.5" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central">Rollback Staging</text>
+<title>Rollback Staging</title></g>
+<g data-node-id="J" data-shape="rect" data-layer="4" class="sx-fc-node-g" transform="translate(197 440)"><rect x="0" y="0" width="107" height="44" rx="14" ry="14" class="sx-fc-node"/>
+<text x="53.5" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central">Deploy Prod</text>
+<title>Deploy Prod</title></g>
+<g data-node-id="K" data-shape="diamond" data-layer="5" class="sx-fc-node-g" transform="translate(188 540)"><polygon points="62.5,0 125,26 62.5,52 0,26" class="sx-fc-node sx-fc-node-diamond"/>
+<text x="62.5" y="26" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central">Canary OK?</text>
+<title>Canary OK?</title></g>
+<g data-node-id="L" data-shape="rect" data-layer="6" class="sx-fc-node-g" transform="translate(197 648)"><rect x="0" y="0" width="121" height="44" rx="14" ry="14" class="sx-fc-node"/>
+<text x="60.5" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central">Rollback Prod</text>
+<title>Rollback Prod</title></g>
+<g data-node-id="M" data-shape="stadium" data-layer="6" class="sx-fc-node-g" transform="translate(350 648)"><rect x="0" y="0" width="87" height="44" rx="22" ry="22" class="sx-fc-node sx-fc-node-stadium"/>
+<text x="43.5" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central">Released</text>
+<title>Released</title></g>
+<g data-node-id="E" data-shape="rect" data-layer="7" class="sx-fc-node-g" transform="translate(197 748)"><rect x="0" y="0" width="121" height="44" rx="14" ry="14" class="sx-fc-node"/>
+<text x="60.5" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central">Notify Author</text>
+<title>Notify Author</title></g>
+<g data-node-id="A" data-shape="stadium" data-layer="8" class="sx-fc-node-g" transform="translate(269 848)"><rect x="0" y="0" width="87" height="44" rx="22" ry="22" class="sx-fc-node sx-fc-node-stadium"/>
+<text x="43.5" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central">Dev Push</text>
+<title>Dev Push</title></g>
+<g data-node-id="B" data-shape="rect" data-layer="9" class="sx-fc-node-g" transform="translate(373.5 948)"><rect x="0" y="0" width="72" height="44" rx="14" ry="14" class="sx-fc-node"/>
+<text x="36" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central">Lint</text>
+<title>Lint</title></g>
+<g data-node-id="C" data-shape="rect" data-layer="10" class="sx-fc-node-g" transform="translate(452.5 1048)"><rect x="0" y="0" width="100" height="44" rx="14" ry="14" class="sx-fc-node"/>
+<text x="50" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central">Unit Tests</text>
+<title>Unit Tests</title></g></g></g></svg>

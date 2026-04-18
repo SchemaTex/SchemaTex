@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 242.38 424" width="242.38" height="424" class="sx-fc" data-diagram-type="flowchart" data-direction="TB" role="graphics-document"><title>Retry loop — Flowchart</title>
+<desc>Flowchart with 5 nodes and 5 edges.</desc>
+<style>.sx-fc { background: #ffffff; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+.sx-fc-node { fill: #f5f7fa; stroke: #37474f; stroke-width: 1.5; stroke-linejoin: round; }
+.sx-fc-node-stadium { fill: #dbeafe; stroke: #37474f; }
+.sx-fc-node-diamond { fill: #fef3c7; stroke: #37474f; }
+.sx-fc-node-round { fill: #dcfce7; stroke: #37474f; }
+.sx-fc-node-text { fill: #2c3e50; font: 12px system-ui, -apple-system, "Segoe UI", sans-serif; }
+/* Semantic class presets (applied via 'class A start') — override shape fills */
+.sx-fc-class-start    > .sx-fc-node { fill: #f0ece0; stroke: #9a8b6a; }
+.sx-fc-class-start    > .sx-fc-node-text { fill: #5c4e2e; font-weight: 600; }
+.sx-fc-class-process  > .sx-fc-node { fill: #e8e4ff; stroke: #8b7dd8; }
+.sx-fc-class-process  > .sx-fc-node-text { fill: #4c3a8f; font-weight: 600; }
+.sx-fc-class-decision > .sx-fc-node { fill: #fde8c8; stroke: #d4985c; }
+.sx-fc-class-decision > .sx-fc-node-text { fill: #8a5a1f; font-weight: 600; }
+.sx-fc-class-success  > .sx-fc-node { fill: #d4f0e0; stroke: #7bc19a; }
+.sx-fc-class-success  > .sx-fc-node-text { fill: #1e5a3a; font-weight: 600; }
+.sx-fc-class-danger   > .sx-fc-node { fill: #fbe0dc; stroke: #d89181; }
+.sx-fc-class-danger   > .sx-fc-node-text { fill: #8a3525; font-weight: 600; }
+.sx-fc-class-neutral  > .sx-fc-node { fill: #ececec; stroke: #a0a0a0; }
+.sx-fc-class-neutral  > .sx-fc-node-text { fill: #555555; font-weight: 600; }
+.sx-fc-edge { fill: none; stroke: #90a4ae; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.sx-fc-edge-thick { stroke: #37474f; stroke-width: 2.4; }
+.sx-fc-edge-dashed { stroke-dasharray: 5 3; }
+.sx-fc-edge-dotted { stroke-dasharray: 1.5 3; }
+.sx-fc-edge-label { fill: #607d8b; font: 11px system-ui, -apple-system, "Segoe UI", sans-serif; }
+.sx-fc-edge-label-bg { fill: #ffffff; fill-opacity: 0.96; stroke: #90a4ae; stroke-width: 0.5; }
+.sx-fc-title { fill: #2c3e50; font: 600 14px system-ui, -apple-system, "Segoe UI", sans-serif; }</style>
+<defs><marker id="sx-fc-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+  <path d="M0,0 L8,4 L0,8 L2,4 Z" fill="context-stroke"/>
+</marker>
+<marker id="sx-fc-arrow-o" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+  <circle cx="4" cy="4" r="3" fill="none" stroke="context-stroke" stroke-width="1"/>
+</marker>
+<marker id="sx-fc-arrow-x" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+  <path d="M1,1 L7,7 M1,7 L7,1" stroke="context-stroke" stroke-width="1.2"/>
+</marker></defs>
+<text x="121.1875" y="16" class="sx-fc-title" text-anchor="middle">Retry loop</text>
+<g transform="translate(0 24)"><g class="sx-fc-edges"><g data-edge-id="A-&gt;B" data-kind="solid" data-from="A" data-to="B"><path d="M 78.38 68 L 78.38 96 L 78.38 96 L 78.38 124" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>A → B</title></g>
+<g data-edge-id="B-&gt;C" data-kind="solid" data-from="B" data-to="C"><path d="M 78.38 168 L 78.38 196 L 78.38 196 L 78.38 224" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>B → C</title></g>
+<g data-edge-id="C-&gt;D" data-kind="solid" data-from="C" data-to="D"><path d="M 78.38 276 L 78.38 304 L 78.38 304 L 78.38 332" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>C → D: yes</title>
+<g class="sx-fc-edge-label-g"><text x="84.375" y="304" class="sx-fc-edge-label" text-anchor="start" dominant-baseline="central">yes</text></g></g>
+<g data-edge-id="C-&gt;E" data-kind="solid" data-from="C" data-to="E"><path d="M 78.38 276 L 78.38 304 L 182.38 304 L 182.38 332" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>C → E: no</title>
+<g class="sx-fc-edge-label-g"><text x="130.375" y="296" class="sx-fc-edge-label" text-anchor="middle" dominant-baseline="central">no</text></g></g>
+<g data-edge-id="E-&gt;B" data-kind="solid" data-from="E" data-to="B"><path d="M 78.38 168 L 78.38 209 L 182.38 209 L 182.38 250 L 182.38 291 L 182.38 291 L 182.38 332" class="sx-fc-edge" marker-end="url(#sx-fc-arrow)"/>
+<title>E → B</title></g></g>
+<g class="sx-fc-nodes"><g data-node-id="A" data-shape="stadium" data-layer="0" class="sx-fc-node-g" transform="translate(42.38 24)"><rect x="0" y="0" width="72" height="44" rx="22" ry="22" class="sx-fc-node sx-fc-node-stadium"/>
+<text x="36" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central">Start</text>
+<title>Start</title></g>
+<g data-node-id="B" data-shape="rect" data-layer="1" class="sx-fc-node-g" transform="translate(38.38 124)"><rect x="0" y="0" width="80" height="44" rx="14" ry="14" class="sx-fc-node"/>
+<text x="40" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central">Attempt</text>
+<title>Attempt</title></g>
+<g data-node-id="C" data-shape="diamond" data-layer="2" class="sx-fc-node-g" transform="translate(24 224)"><polygon points="54.375,0 108.75,26 54.375,52 0,26" class="sx-fc-node sx-fc-node-diamond"/>
+<text x="54.375" y="26" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central">Success?</text>
+<title>Success?</title></g>
+<g data-node-id="D" data-shape="stadium" data-layer="3" class="sx-fc-node-g" transform="translate(42.38 332)"><rect x="0" y="0" width="72" height="44" rx="22" ry="22" class="sx-fc-node sx-fc-node-stadium"/>
+<text x="36" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central">Done</text>
+<title>Done</title></g>
+<g data-node-id="E" data-shape="rect" data-layer="3" class="sx-fc-node-g" transform="translate(146.38 332)"><rect x="0" y="0" width="72" height="44" rx="14" ry="14" class="sx-fc-node"/>
+<text x="36" y="22" class="sx-fc-node-text" text-anchor="middle" dominant-baseline="central">Wait</text>
+<title>Wait</title></g></g></g></svg>

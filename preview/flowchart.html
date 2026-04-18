@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Schematex · Flowchart Preview</title>
+<style>
+  body { font-family: system-ui; background: #f5f5f5; margin: 0; padding: 20px; }
+  nav { font-size: 13px; color: #888; margin-bottom: 16px; }
+  nav a { color: #555; text-decoration: none; }
+  nav a:hover { text-decoration: underline; }
+  h1 { font-size: 18px; color: #333; margin: 0 0 4px; }
+  .subtitle { font-size: 13px; color: #888; margin-bottom: 24px; }
+  h2 { font-size: 14px; color: #666; margin-top: 30px; border-bottom: 1px solid #ddd; padding-bottom: 4px; }
+  pre.src { background: #f7f7f7; padding: 10px; font-size: 12px; border-radius: 6px; margin: 6px 0; border: 1px solid #eee; white-space: pre-wrap; }
+  .svg-container { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin: 10px 0; overflow-x: auto; }
+  .svg-container svg { display: block; max-width: 100%; height: auto; }
+  .section-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #aaa; margin-top: 40px; margin-bottom: -8px; }
+  .error { color: red; font-size: 12px; padding: 10px; background: #fff0f0; border-radius: 6px; }
+</style>
+</head>
+<body>
+<nav><a href="index.html">← All Diagrams</a></nav>
+<h1>Flowchart</h1>
+<div class="subtitle">General-purpose flowcharts · decision trees · process flows · TB / LR directions</div>
+<div id="output"></div>
+<script type="module">
+import { render } from '../src/index.ts';
+
+const sections = [
+  {
+    label: 'Basic Cases',
+    cases: [
+      ['01 · Linear chain (TB)', `flowchart TB "Linear chain"
+  A([Start]) --> B[Fetch data]
+  B --> C[Transform]
+  C --> D([Done])`],
+
+      ['02 · Branching decision', `flowchart TB "Branching decision"
+  A([Start]) --> B{Valid?}
+  B -->|yes| C[Save]
+  B -->|no| D[Reject]
+  C --> E([Done])
+  D --> E`],
+
+      ['03 · Skip-layer edges', `flowchart TB "Skip-layer edges"
+  A[Top] --> B[L1]
+  A --> C[L2]
+  A --> D[L3]
+  B --> E[Merge]
+  C --> E
+  D --> E`],
+
+      ['04 · Retry loop', `flowchart TB "Retry loop"
+  A([Start]) --> B[Attempt]
+  B --> C{Success?}
+  C -->|yes| D([Done])
+  C -->|no| E[Wait]
+  E --> B`],
+    ]
+  },
+  {
+    label: 'Direction & Shapes',
+    cases: [
+      ['05 · LR direction (pipeline)', `flowchart LR "Pipeline (LR)"
+  A([Input]) --> B[Parse]
+  B --> C[Validate]
+  C --> D[Transform]
+  D --> E([Output])`],
+
+      ['06 · Shape gallery', `flowchart LR "Shape gallery"
+  A([Start]) --> B[Process]
+  B --> C{Decision}
+  C --> D[/Input/]
+  D --> E(Round)`],
+    ]
+  },
+  {
+    label: 'Real-world Examples',
+    cases: [
+      ['07 · CI/CD pipeline', `flowchart TB "CI/CD Pipeline"
+  A([Dev Push]) --> B[Lint]
+  B --> C[Unit Tests]
+  C --> D{CI Passes?}
+  D -->|no| E[Notify Author]
+  E --> A
+  D -->|yes| F[Build Image]
+  F --> G[Deploy Staging]
+  G --> H{Stage OK?}
+  H -->|no| I[Rollback Staging]
+  I --> E
+  H -->|yes| J[Deploy Prod]
+  J --> K{Canary OK?}
+  K -->|no| L[Rollback Prod]
+  L --> E
+  K -->|yes| M([Released])`],
+
+      ['08 · Production incident response', `flowchart TB "Production Incident Response"
+  A([Alert Fires]) --> B[Oncall Paged]
+  B --> C{Ack in 5min?}
+  C -->|no| D[Escalate to Manager]
+  D --> B
+  C -->|yes| E[Assess Severity]
+  E --> F{SEV level?}
+  F -->|SEV1| G[Page Leadership]
+  F -->|SEV2| H[Open War Room]
+  F -->|SEV3| I[Create Ticket]
+  G --> H
+  H --> J[Mitigate]
+  I --> J
+  J --> K{Resolved?}
+  K -->|no| L[Try Next Runbook]
+  L --> J
+  K -->|yes| M[Write Postmortem]
+  M --> N[Schedule RCA]
+  N --> O([Incident Closed])`],
+
+      ['09 · Semantic classes (signup funnel)', `flowchart TB "Signup & Subscription Funnel"
+  A[Visit Landing] --> B[Click Sign Up]
+  B --> C[Verify Email]
+  C --> D[Enter Trial]
+  D --> E{Subscribe?}
+  E -->|yes| F[Complete Payment]
+  E -->|no| G[Churn]
+  F --> H[Active Subscriber]
+  class A start
+  class B process
+  class C process
+  class D success
+  class E decision
+  class F success
+  class G neutral
+  class H danger`],
+    ]
+  }
+];
+
+const out = document.getElementById('output');
+
+for (const section of sections) {
+  const label = document.createElement('p');
+  label.className = 'section-label';
+  label.textContent = section.label;
+  out.appendChild(label);
+
+  for (const [title, dsl] of section.cases) {
+    const h2 = document.createElement('h2');
+    h2.textContent = title;
+    out.appendChild(h2);
+
+    const pre = document.createElement('pre');
+    pre.className = 'src';
+    pre.textContent = dsl;
+    out.appendChild(pre);
+
+    const div = document.createElement('div');
+    div.className = 'svg-container';
+    try {
+      div.innerHTML = render(dsl);
+    } catch (e) {
+      div.innerHTML = `<div class="error">Error: ${e.message}</div>`;
+    }
+    out.appendChild(div);
+  }
+}
+</script>
+</body>
+</html>
