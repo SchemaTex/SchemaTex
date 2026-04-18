@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="schematex-timing" viewBox="0 0 860 178" width="860" height="178" role="img" data-diagram-type="timing"><title>SPI Transaction</title>
+<desc>Digital timing diagram with 4 signals</desc>
+<defs><pattern id="schematex-timing-xhatch" patternUnits="userSpaceOnUse" width="6" height="6"><rect x="0" y="0" width="6" height="6" fill="#f5f5f5"/>
+<path d="M 0,6 L 6,0 M -1,1 L 1,-1 M 5,7 L 7,5" stroke="#999" stroke-width="0.8"/></pattern>
+<style>.schematex-timing { background: #fff; font-family: system-ui, -apple-system, sans-serif; }
+.schematex-timing-name { font: 12px monospace; fill: #111; }
+.schematex-timing-name-activelow { text-decoration: overline; }
+.schematex-timing-group-label { font: bold 12px sans-serif; fill: #111; }
+.schematex-timing-wave { stroke: #111; stroke-width: 1.75; fill: none; stroke-linejoin: miter; stroke-linecap: square; }
+.schematex-timing-bus { fill: none; stroke: #111; stroke-width: 1.5; }
+.schematex-timing-bus-label { font: 11px monospace; fill: #111; }
+.schematex-timing-unknown { stroke: #555; stroke-width: 0.5; }
+.schematex-timing-hiz { stroke: #555; stroke-width: 1.5; stroke-dasharray: 4 3; }
+.schematex-timing-grid { stroke: #eee; stroke-width: 0.5; }</style></defs>
+<g class="schematex-timing-grid-g"><line x1="120" y1="12" x2="120" y2="166" class="schematex-timing-grid"/>
+<line x1="200" y1="12" x2="200" y2="166" class="schematex-timing-grid"/>
+<line x1="280" y1="12" x2="280" y2="166" class="schematex-timing-grid"/>
+<line x1="360" y1="12" x2="360" y2="166" class="schematex-timing-grid"/>
+<line x1="440" y1="12" x2="440" y2="166" class="schematex-timing-grid"/>
+<line x1="520" y1="12" x2="520" y2="166" class="schematex-timing-grid"/>
+<line x1="600" y1="12" x2="600" y2="166" class="schematex-timing-grid"/>
+<line x1="680" y1="12" x2="680" y2="166" class="schematex-timing-grid"/>
+<line x1="760" y1="12" x2="760" y2="166" class="schematex-timing-grid"/>
+<line x1="840" y1="12" x2="840" y2="166" class="schematex-timing-grid"/></g>
+<g class="schematex-timing-waves"><g transform="translate(120, 0)" data-signal="CLK"><path class="schematex-timing-wave" d="M 0,42 L 0,18 L 40,18 L 40,42 L 80,42"/><path class="schematex-timing-wave" d="M 80,42 L 80,18 L 120,18 L 120,42 L 160,42"/><path class="schematex-timing-wave" d="M 160,42 L 160,18 L 200,18 L 200,42 L 240,42"/><path class="schematex-timing-wave" d="M 240,42 L 240,18 L 280,18 L 280,42 L 320,42"/><path class="schematex-timing-wave" d="M 320,42 L 320,18 L 360,18 L 360,42 L 400,42"/><path class="schematex-timing-wave" d="M 400,42 L 400,18 L 440,18 L 440,42 L 480,42"/><path class="schematex-timing-wave" d="M 480,42 L 480,18 L 520,18 L 520,42 L 560,42"/><path class="schematex-timing-wave" d="M 560,42 L 560,18 L 600,18 L 600,42 L 640,42"/><path class="schematex-timing-wave" d="M 640,42 L 640,18 L 680,18 L 680,42 L 720,42"/></g>
+<g transform="translate(120, 0)" data-signal="CS"><path class="schematex-timing-wave" d="M 0,54 L 80,54 L 80,78 L 160,78 L 240,78 L 320,78 L 400,78 L 480,78 L 560,78 L 560,54 L 640,54"/></g>
+<g transform="translate(120, 0)" data-signal="MOSI"><rect x="0" y="90" width="80" height="24" class="schematex-timing-unknown" fill="url(#schematex-timing-xhatch)"/><rect x="640" y="90" width="80" height="24" class="schematex-timing-unknown" fill="url(#schematex-timing-xhatch)"/><path class="schematex-timing-bus" d="M 85,90 L 155,90 L 160,102 L 155,114 L 85,114 L 80,102 Z" data-bus-index="0"/><path class="schematex-timing-bus" d="M 165,90 L 235,90 L 240,102 L 235,114 L 165,114 L 160,102 Z" data-bus-index="1"/><path class="schematex-timing-bus" d="M 245,90 L 315,90 L 320,102 L 315,114 L 245,114 L 240,102 Z" data-bus-index="2"/><path class="schematex-timing-bus" d="M 325,90 L 395,90 L 400,102 L 395,114 L 325,114 L 320,102 Z" data-bus-index="3"/><path class="schematex-timing-bus" d="M 405,90 L 475,90 L 480,102 L 475,114 L 405,114 L 400,102 Z" data-bus-index="4"/><path class="schematex-timing-bus" d="M 485,90 L 555,90 L 560,102 L 555,114 L 485,114 L 480,102 Z" data-bus-index="5"/><path class="schematex-timing-bus" d="M 565,90 L 635,90 L 640,102 L 635,114 L 565,114 L 560,102 Z" data-bus-index="6"/></g>
+<g transform="translate(120, 0)" data-signal="MISO"><rect x="0" y="126" width="80" height="24" class="schematex-timing-unknown" fill="url(#schematex-timing-xhatch)"/><rect x="640" y="126" width="80" height="24" class="schematex-timing-unknown" fill="url(#schematex-timing-xhatch)"/><line x1="80" y1="138" x2="160" y2="138" class="schematex-timing-hiz"/><line x1="160" y1="138" x2="240" y2="138" class="schematex-timing-hiz"/><line x1="240" y1="138" x2="320" y2="138" class="schematex-timing-hiz"/><line x1="320" y1="138" x2="400" y2="138" class="schematex-timing-hiz"/><path class="schematex-timing-bus" d="M 405,126 L 475,126 L 480,138 L 475,150 L 405,150 L 400,138 Z" data-bus-index="0"/><path class="schematex-timing-bus" d="M 485,126 L 555,126 L 560,138 L 555,150 L 485,150 L 480,138 Z" data-bus-index="1"/><path class="schematex-timing-bus" d="M 565,126 L 635,126 L 640,138 L 635,150 L 565,150 L 560,138 Z" data-bus-index="2"/></g></g>
+<g class="schematex-timing-labels"><g transform="translate(120, 0)"></g>
+<g transform="translate(120, 0)"></g>
+<g transform="translate(120, 0)"><text x="120" y="106" class="schematex-timing-bus-label" text-anchor="middle">0xAB</text><text x="200" y="106" class="schematex-timing-bus-label" text-anchor="middle">0xCD</text><text x="280" y="106" class="schematex-timing-bus-label" text-anchor="middle">0xEF</text><text x="360" y="106" class="schematex-timing-bus-label" text-anchor="middle">0x01</text><text x="440" y="106" class="schematex-timing-bus-label" text-anchor="middle">0x02</text><text x="520" y="106" class="schematex-timing-bus-label" text-anchor="middle">0x03</text><text x="600" y="106" class="schematex-timing-bus-label" text-anchor="middle">0x04</text></g>
+<g transform="translate(120, 0)"></g></g>
+<g class="schematex-timing-names"><text x="112" y="34" class="schematex-timing-name" text-anchor="end">CLK</text>
+<text x="112" y="70" class="schematex-timing-name" text-anchor="end">CS</text>
+<text x="112" y="106" class="schematex-timing-name" text-anchor="end">MOSI</text>
+<text x="112" y="142" class="schematex-timing-name" text-anchor="end">MISO</text></g>
+<text x="430" y="14" text-anchor="middle" class="schematex-timing-title" style="font: bold 13px sans-serif; fill: #333;">SPI Transaction</text></svg>

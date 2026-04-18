@@ -1,0 +1,26 @@
+---
+title: "Single-line diagram: 13.8 kV substation"
+description: Utility substation one-line diagram — 138 kV grid source, 15 MVA step-down transformer, high- and medium-voltage buses, feeder breakers. IEEE 315 symbols.
+---
+
+Simplified utility substation one-line: 138 kV grid → 15 MVA step-down
+transformer → 13.8 kV medium-voltage bus → feeder breakers.
+
+<Playground initial={`sld "13.8 kV Substation"
+utility [label: "Grid 138 kV"]
+xfmr1 [type: transformer, kva: 15000, primary: 138, secondary: 13.8]
+bus_hv [type: bus, voltage: 138]
+bus_mv [type: bus, voltage: 13.8]
+brk1 [type: breaker, amps: 1200]
+brk2 [type: breaker, amps: 1200]
+brk3 [type: breaker, amps: 1200]
+feeder1 [type: load, label: "Feeder 1"]
+feeder2 [type: load, label: "Feeder 2"]
+feeder3 [type: load, label: "Feeder 3"]
+utility -> bus_hv
+bus_hv -> xfmr1 -> bus_mv
+bus_mv -> brk1 -> feeder1
+bus_mv -> brk2 -> feeder2
+bus_mv -> brk3 -> feeder3`} height={540} />
+
+[SLD syntax →](/docs/sld)

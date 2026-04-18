@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="lt-entity" role="img" aria-label="Acme Holdings" width="490" height="556" viewBox="0 0 490 556"><title>Acme Holdings</title>
+<desc>Entity structure diagram with 4 entities and 3 relationships</desc>
+<style>.lt-entity { background: #fff; font-family: system-ui, -apple-system, sans-serif; }
+.lt-entity-title { font: bold 16px sans-serif; fill: #111; }
+.lt-entity-name { font: 600 12px sans-serif; fill: #111; text-anchor: middle; }
+.lt-entity-type { font: 500 10px sans-serif; fill: #555; text-anchor: middle; }
+.lt-entity-role { font: italic 10px sans-serif; fill: #555; text-anchor: middle; }
+.lt-entity-note { font: 10px sans-serif; fill: #666; text-anchor: middle; }
+.lt-entity-badge-bg { fill: #fff; stroke: #888; stroke-width: 1; }
+.lt-entity-badge-text { font: 600 9px sans-serif; fill: #333; text-anchor: middle; letter-spacing: 0.5px; }
+.lt-entity-edge { stroke: #333; stroke-width: 1.5; fill: none; }
+.lt-entity-edge-voting { stroke: #333; stroke-width: 1.2; fill: none; }
+.lt-entity-edge-pool { stroke: #888; stroke-width: 1.5; fill: none; stroke-dasharray: 5,4; }
+.lt-entity-edge-license { stroke: #7c3aed; stroke-width: 1.5; fill: none; stroke-dasharray: 5,4; }
+.lt-entity-edge-distribution { stroke: #059669; stroke-width: 1.5; fill: none; stroke-dasharray: 5,4; }
+.lt-entity-edge-voting-pref { stroke: #2563eb; stroke-width: 1.8; fill: none; }
+.lt-entity-label-bg { fill: #fff; stroke: #ddd; stroke-width: 1; }
+.lt-entity-label { font: 600 10px sans-serif; fill: #111; text-anchor: middle; }
+.lt-entity-label-sub { font: 500 9px sans-serif; fill: #666; text-anchor: middle; }
+.lt-entity-cluster { fill: none; stroke-dasharray: 6,4; stroke-width: 1.2; }
+.lt-entity-cluster-label-bg { fill: #fff; }
+.lt-entity-cluster-label { font: 600 11px sans-serif; letter-spacing: 0.5px; }
+.lt-entity-status-new { stroke: #059669; stroke-width: 2.2; }
+.lt-entity-status-eliminated { stroke: #dc2626; stroke-width: 2.2; }
+.lt-entity-status-modified { stroke: #d97706; stroke-width: 2.2; }
+.lt-entity-status-tag { font: 700 8px sans-serif; text-anchor: middle; letter-spacing: 0.5px; }</style>
+<defs><marker id="lt-entity-arrow" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M 0 0 L 7 3 L 0 6 z" fill="#1f2937"/></marker>
+<marker id="lt-entity-arrow-purple" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M 0 0 L 7 3 L 0 6 z" fill="#7c3aed"/></marker>
+<marker id="lt-entity-arrow-green" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M 0 0 L 7 3 L 0 6 z" fill="#059669"/></marker>
+<marker id="lt-entity-arrow-grey" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M 0 0 L 7 3 L 0 6 z" fill="#888"/></marker>
+<marker id="lt-entity-arrow-blue" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M 0 0 L 7 3 L 0 6 z" fill="#2563eb"/></marker></defs>
+<text x="20" y="22" class="lt-entity-title">Acme Holdings</text>
+<g transform="translate(0, 34)"><path d="M 245 120 L 245 210" class="lt-entity-edge" marker-end="url(#lt-entity-arrow)"/>
+<path d="M 245 272 L 245 326 L 125 326 L 125 380" class="lt-entity-edge" marker-end="url(#lt-entity-arrow)"/>
+<path d="M 245 272 L 245 326 L 365 326 L 365 380" class="lt-entity-edge" marker-end="url(#lt-entity-arrow)"/>
+<g><rect x="228" y="157" width="34" height="16" rx="3" class="lt-entity-label-bg"/>
+<text x="245" y="169" class="lt-entity-label">100%</text></g>
+<g><rect x="108" y="318" width="34" height="16" rx="3" class="lt-entity-label-bg"/>
+<text x="125" y="330" class="lt-entity-label">100%</text></g>
+<g><rect x="350" y="318" width="30" height="16" rx="3" class="lt-entity-label-bg"/>
+<text x="365" y="330" class="lt-entity-label">60%</text></g>
+<g transform="translate(245, 241)" data-entity-id="acme_inc" data-entity-type="corp" data-jurisdiction="DE"><rect x="-85" y="-31" width="170" height="62" rx="0" fill="#dbeafe" stroke="#1f2937" stroke-width="1.4"/>
+<g><rect x="61" y="-27" width="20" height="13" rx="2" class="lt-entity-badge-bg"/>
+<text x="71" y="-17" class="lt-entity-badge-text">DE</text></g>
+<text x="0" y="-6" class="lt-entity-name">Acme Inc.</text>
+<text x="0" y="8" class="lt-entity-type">Corporation</text></g>
+<g transform="translate(125, 411)" data-entity-id="acme_uk" data-entity-type="llc" data-jurisdiction="UK"><rect x="-85" y="-31" width="170" height="62" rx="10" ry="10" fill="#dcfce7" stroke="#1f2937" stroke-width="1.4"/>
+<g><rect x="61" y="-27" width="20" height="13" rx="2" class="lt-entity-badge-bg"/>
+<text x="71" y="-17" class="lt-entity-badge-text">UK</text></g>
+<text x="0" y="-6" class="lt-entity-name">Acme UK Ltd.</text>
+<text x="0" y="8" class="lt-entity-type">LLC</text></g>
+<g transform="translate(365, 411)" data-entity-id="acme_fund" data-entity-type="lp" data-jurisdiction="KY"><polygon points="-73,-31 73,-31 85,-19 85,31 -85,31 -85,-19" fill="#fef9c3" stroke="#1f2937" stroke-width="1.4"/>
+<g><rect x="61" y="-27" width="20" height="13" rx="2" class="lt-entity-badge-bg"/>
+<text x="71" y="-17" class="lt-entity-badge-text">KY</text></g>
+<text x="0" y="-6" class="lt-entity-name">Acme Growth Fund LP</text>
+<text x="0" y="8" class="lt-entity-type">LP / Fund</text></g>
+<g transform="translate(245, 80)" data-entity-id="trust_a" data-entity-type="trust" data-jurisdiction="SD"><ellipse cx="0" cy="0" rx="100" ry="40" fill="#ede9fe" stroke="#1f2937" stroke-width="1.4"/>
+<g><rect x="76" y="-36" width="20" height="13" rx="2" class="lt-entity-badge-bg"/>
+<text x="86" y="-26" class="lt-entity-badge-text">SD</text></g>
+<text x="0" y="-6" class="lt-entity-name">Founder Trust</text>
+<text x="0" y="8" class="lt-entity-type">Trust</text></g></g></svg>

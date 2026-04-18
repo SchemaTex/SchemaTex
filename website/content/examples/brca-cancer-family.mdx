@@ -1,0 +1,20 @@
+---
+title: "Genogram: hereditary cancer (BRCA)"
+description: Four-generation genogram documenting hereditary breast and ovarian cancer (BRCA1) — affected individuals, carriers, deceased members, proband marker.
+---
+
+Four-generation family genogram documenting BRCA1 hereditary breast and
+ovarian cancer. Used in genetic counseling intake.
+
+<Playground initial={`genogram "BRCA1 Family"
+  I_1 [male, 1930, 1995, deceased]
+  I_2 [female, 1932, 1990, deceased, cancer_ovarian]
+  I_1 -- I_2
+    II_1 [female, 1955, cancer_breast]
+    II_2 [male, 1958]
+    II_3 [female, 1960]
+  II_1 -- II_4 [male, 1954]
+    III_1 [female, 1985, index, cancer_breast]
+    III_2 [male, 1988]`} />
+
+For clinical pedigree notation, use [Pedigree](/docs/pedigree) instead.

@@ -1,0 +1,19 @@
+---
+title: "Entity structure: multi-jurisdiction holding company"
+description: Corporate entity structure with Delaware parent corporation, UK operating subsidiary, Cayman Islands fund, and South Dakota trust — ownership percentages and jurisdiction clustering.
+---
+
+A multi-jurisdiction holding structure typical of M&A and tax planning —
+Delaware C-corp parent, UK operating subsidiary, Cayman Islands fund, and
+a South Dakota dynasty trust.
+
+<Playground initial={`entity "Acme Holdings"
+  acme_inc [type: corp, jurisdiction: DE, label: "Acme Inc. (DE)"]
+  acme_uk [type: ltd, jurisdiction: UK, label: "Acme UK Ltd."]
+  acme_fund [type: fund, jurisdiction: KY, label: "Acme Growth Fund LP"]
+  trust_a [type: trust, jurisdiction: SD, label: "Founder Trust"]
+  trust_a --100%--> acme_inc
+  acme_inc --100%--> acme_uk
+  acme_inc --60%--> acme_fund`} />
+
+[Entity syntax →](/docs/entity)

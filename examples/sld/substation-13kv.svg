@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="lt-sld" role="img" aria-labelledby="lt-sld-title lt-sld-desc" width="760" height="694" viewBox="0 0 760 694"><title>13.8 kV Substation</title>
+<desc>Single-line diagram with 10 nodes and 9 connections</desc>
+<style>.lt-sld { background: #fff; font-family: system-ui, -apple-system, sans-serif; }
+.lt-sld-stroke { stroke: #333; stroke-width: 1.8; fill: none; }
+.lt-sld-stroke-thick { stroke: #333; stroke-width: 2.4; fill: none; stroke-linecap: round; }
+.lt-sld-fill { fill: #fff; stroke: #333; stroke-width: 2; }
+.lt-sld-fill-dark { fill: #333; stroke: #333; stroke-width: 1; }
+.lt-sld-dot { fill: #333; stroke: none; }
+.lt-sld-wire { stroke: #333; stroke-width: 2; fill: none; }
+.lt-sld-bus { stroke: #222; stroke-width: 6; stroke-linecap: square; }
+.lt-sld-band-odd { fill: #f7f7f7; stroke: none; }
+.lt-sld-band-even { fill: #fbfbfb; stroke: none; }
+.lt-sld-band-label { font: bold 11px sans-serif; fill: #666; }
+.lt-sld-title { font: bold 16px sans-serif; fill: #111; }
+.lt-sld-id { font: bold 11px sans-serif; fill: #222; text-anchor: middle; }
+.lt-sld-rating { font: 9px sans-serif; fill: #555; text-anchor: middle; }
+.lt-sld-voltage { font: bold 10px sans-serif; fill: #444; }
+.lt-sld-nameplate { font: 9px sans-serif; fill: #444; }
+.lt-sld-cable { font: 9px ui-monospace, SFMono-Regular, Menlo, monospace; fill: #666; }
+.lt-sld-symbol-text { font: 11px sans-serif; fill: #222; dominant-baseline: middle; }
+.lt-sld-wdg { font: bold 10px sans-serif; fill: #333; dominant-baseline: middle; }
+.lt-sld-bus-label { font: bold 11px sans-serif; fill: #1d4e89; }</style>
+<defs><marker id="lt-sld-arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M 0 0 L 6 3 L 0 6 z" fill="#555"/></marker></defs>
+<text x="20" y="22" class="lt-sld-title">13.8 kV Substation</text>
+<g transform="translate(0, 34)"><rect x="0" y="0" width="760" height="100" class="lt-sld-band-odd"/>
+<rect x="0" y="100" width="760" height="100" class="lt-sld-band-even"/>
+<text x="14" y="118" class="lt-sld-band-label">138 kV</text>
+<rect x="0" y="200" width="760" height="100" class="lt-sld-band-odd"/>
+<rect x="0" y="300" width="760" height="100" class="lt-sld-band-even"/>
+<text x="14" y="318" class="lt-sld-band-label">13.8 kV</text>
+<rect x="0" y="400" width="760" height="100" class="lt-sld-band-odd"/>
+<rect x="0" y="500" width="760" height="100" class="lt-sld-band-even"/>
+<path d="M 100 58 L 100 99 L 190 99 L 190 140" class="lt-sld-wire"/>
+<path d="M 190 140 L 190 178 L 280 178 L 280 216" class="lt-sld-wire"/>
+<path d="M 280 264 L 280 302 L 460 302 L 460 340" class="lt-sld-wire"/>
+<path d="M 460 340 L 460 422" class="lt-sld-wire"/>
+<path d="M 460 458 L 460 526" class="lt-sld-wire"/>
+<path d="M 460 340 L 460 381 L 550 381 L 550 422" class="lt-sld-wire"/>
+<path d="M 550 458 L 550 526" class="lt-sld-wire"/>
+<path d="M 460 340 L 460 381 L 640 381 L 640 422" class="lt-sld-wire"/>
+<path d="M 640 458 L 640 526" class="lt-sld-wire"/>
+<g transform="translate(100, 40)" data-type="utility" data-id="utility"><g><circle cx="0" cy="0" r="16" class="lt-sld-fill"/>
+<path d="M -8 0 Q -4 -8 0 0 Q 4 8 8 0" class="lt-sld-stroke" fill="none"/>
+<line x1="0" y1="-24" x2="0" y2="-16" class="lt-sld-stroke"/>
+<line x1="0" y1="16" x2="0" y2="18" class="lt-sld-stroke"/></g></g>
+<text x="100" y="-6" class="lt-sld-id">Grid 138 kV</text>
+<line x1="80" y1="140" x2="300" y2="140" class="lt-sld-bus" data-id="bus_hv"/>
+<text x="84" y="132" class="lt-sld-bus-label">138 kV · bus_hv</text>
+<g transform="translate(280, 240)" data-type="transformer" data-id="xfmr1"><g><path d="M -12 -18 A 4 4 0 0 1 -4 -18 A 4 4 0 0 1 4 -18 A 4 4 0 0 1 12 -18" class="lt-sld-stroke" fill="none"/>
+<line x1="-14" y1="-8" x2="14" y2="-8" class="lt-sld-stroke"/>
+<line x1="-14" y1="-4" x2="14" y2="-4" class="lt-sld-stroke"/>
+<path d="M -12 18 A 4 4 0 0 0 -4 18 A 4 4 0 0 0 4 18 A 4 4 0 0 0 12 18" class="lt-sld-stroke" fill="none"/>
+<circle cx="-10" cy="-14" r="2" class="lt-sld-dot"/>
+<circle cx="10" cy="14" r="2" class="lt-sld-dot"/>
+<line x1="0" y1="-24" x2="0" y2="-22" class="lt-sld-stroke"/>
+<line x1="0" y1="22" x2="0" y2="24" class="lt-sld-stroke"/></g></g>
+<text x="280" y="194" class="lt-sld-id">15 MVA</text>
+<line x1="260" y1="340" x2="660" y2="340" class="lt-sld-bus" data-id="bus_mv"/>
+<text x="264" y="332" class="lt-sld-bus-label">13.8 kV · bus_mv</text>
+<g transform="translate(460, 440)" data-type="breaker" data-id="brk1"><g><line x1="0" y1="-14" x2="0" y2="-10" class="lt-sld-stroke"/>
+<line x1="0" y1="10" x2="0" y2="14" class="lt-sld-stroke"/>
+<line x1="-6" y1="10" x2="8" y2="-10" class="lt-sld-stroke-thick"/>
+<path d="M 8 -10 Q 14 -12 12 -18" class="lt-sld-stroke" fill="none"/>
+<line x1="0" y1="-18" x2="0" y2="-14" class="lt-sld-stroke"/>
+<line x1="0" y1="14" x2="0" y2="18" class="lt-sld-stroke"/></g></g>
+<text x="460" y="400" class="lt-sld-id">brk1</text>
+<text x="460" y="472" class="lt-sld-rating">1200 A</text>
+<g transform="translate(550, 440)" data-type="breaker" data-id="brk2"><g><line x1="0" y1="-14" x2="0" y2="-10" class="lt-sld-stroke"/>
+<line x1="0" y1="10" x2="0" y2="14" class="lt-sld-stroke"/>
+<line x1="-6" y1="10" x2="8" y2="-10" class="lt-sld-stroke-thick"/>
+<path d="M 8 -10 Q 14 -12 12 -18" class="lt-sld-stroke" fill="none"/>
+<line x1="0" y1="-18" x2="0" y2="-14" class="lt-sld-stroke"/>
+<line x1="0" y1="14" x2="0" y2="18" class="lt-sld-stroke"/></g></g>
+<text x="550" y="400" class="lt-sld-id">brk2</text>
+<text x="550" y="472" class="lt-sld-rating">1200 A</text>
+<g transform="translate(640, 440)" data-type="breaker" data-id="brk3"><g><line x1="0" y1="-14" x2="0" y2="-10" class="lt-sld-stroke"/>
+<line x1="0" y1="10" x2="0" y2="14" class="lt-sld-stroke"/>
+<line x1="-6" y1="10" x2="8" y2="-10" class="lt-sld-stroke-thick"/>
+<path d="M 8 -10 Q 14 -12 12 -18" class="lt-sld-stroke" fill="none"/>
+<line x1="0" y1="-18" x2="0" y2="-14" class="lt-sld-stroke"/>
+<line x1="0" y1="14" x2="0" y2="18" class="lt-sld-stroke"/></g></g>
+<text x="640" y="400" class="lt-sld-id">brk3</text>
+<text x="640" y="472" class="lt-sld-rating">1200 A</text>
+<g transform="translate(460, 540)" data-type="load" data-id="feeder1"><g><rect x="-16" y="-12" width="32" height="24" class="lt-sld-fill"/></g></g>
+<text x="460" y="504" class="lt-sld-id">Feeder 1</text>
+<g transform="translate(550, 540)" data-type="load" data-id="feeder2"><g><rect x="-16" y="-12" width="32" height="24" class="lt-sld-fill"/></g></g>
+<text x="550" y="504" class="lt-sld-id">Feeder 2</text>
+<g transform="translate(640, 540)" data-type="load" data-id="feeder3"><g><rect x="-16" y="-12" width="32" height="24" class="lt-sld-fill"/></g></g>
+<text x="640" y="504" class="lt-sld-id">Feeder 3</text></g></svg>

@@ -1,0 +1,53 @@
+---
+title: Getting started
+description: Install Schematex and render your first diagram in under a minute.
+---
+
+## Install
+
+```bash
+npm install schematex
+```
+
+## Render
+
+```ts
+import { render } from 'schematex';
+
+const svg = render(`
+genogram "Smiths"
+  john [male, 1950]
+  mary [female, 1952]
+  john -- mary
+    alice [female, 1975, index]
+`);
+```
+
+The diagram type is inferred from the first keyword. The output is a plain SVG
+string — safe to inject via `dangerouslySetInnerHTML`, `innerHTML`, or write to
+disk.
+
+## Tree-shakable imports
+
+Import only what you need:
+
+```ts
+import { render } from 'schematex/genogram';
+import { render } from 'schematex/ladder';
+import { render } from 'schematex/sld';
+```
+
+Each sub-module ships its own parser / layout / renderer and is fully
+independent.
+
+## Frameworks
+
+- **React** — drop the SVG string into `dangerouslySetInnerHTML`, or wait for
+  `@schematex/react` (coming soon).
+- **SSR** — Schematex is pure string output, no DOM. Works in Node, edge
+  runtimes, Cloudflare Workers, and the browser.
+- **Markdown** — a `remark-schematex` plugin is planned.
+
+## What's next?
+
+Pick your diagram type from the sidebar and read its syntax guide.

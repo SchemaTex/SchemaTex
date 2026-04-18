@@ -1,84 +1,67 @@
 <p align="center">
   <strong>Schematex</strong><br>
-  Text-to-SVG rendering for relationship diagrams and electrical/industrial schematics.<br>
-  <em>Like <a href="https://mermaid.js.org/">Mermaid</a> — but for genograms, pedigrees, ladder logic, single-line diagrams, and more.</em>
+  <em>Text → SVG for the diagrams Mermaid forgot.</em>
 </p>
 
 <p align="center">
-  <a href="#gallery">Gallery</a> ·
-  <a href="#install">Install</a> ·
-  <a href="#quick-start">Quick Start</a> ·
-  <a href="#genogram-syntax">Genogram</a> ·
-  <a href="#ecomap-syntax">Ecomap</a> ·
-  <a href="#pedigree-syntax">Pedigree</a> ·
-  <a href="#phylogenetic-tree-syntax">Phylo</a> ·
-  <a href="#sociogram-syntax">Sociogram</a> ·
-  <a href="#timing-diagram-syntax">Timing</a> ·
-  <a href="#logic-gate-diagram-syntax">Logic Gate</a> ·
-  <a href="#ladder-logic-syntax">Ladder Logic</a> ·
-  <a href="#circuit-schematic-syntax">Circuit</a> ·
-  <a href="#single-line-diagram-syntax">SLD</a> ·
-  <a href="#entity-structure-diagram-syntax">Entity Structure</a> ·
-  <a href="#api">API</a> ·
-  <a href="#contributing">Contributing</a>
+  Genograms · Ecomaps · Pedigrees · Phylogenetic trees · Sociograms · Timing diagrams · Logic gates · Circuit schematics · Ladder logic · Single-line diagrams · Entity structures · Block diagrams · Fishbones
+</p>
+
+<p align="center">
+  <a href="https://schematex.dev">Website</a> ·
+  <a href="https://schematex.dev/playground">Playground</a> ·
+  <a href="https://schematex.dev/docs">Docs</a> ·
+  <a href="https://www.npmjs.com/package/schematex">npm</a>
+</p>
+
+<p align="center">
+  <a href="https://www.npmjs.com/package/schematex"><img src="https://img.shields.io/npm/v/schematex.svg?color=cb3837&label=npm" alt="npm"></a>
+  <a href="https://bundlephobia.com/package/schematex"><img src="https://img.shields.io/bundlephobia/minzip/schematex?label=gzip" alt="bundle size"></a>
+  <img src="https://img.shields.io/badge/deps-0-brightgreen" alt="zero deps">
+  <img src="https://img.shields.io/badge/TypeScript-strict-3178c6" alt="typescript strict">
+  <a href="./LICENSE"><img src="https://img.shields.io/badge/license-AGPL--3.0-blue" alt="license"></a>
 </p>
 
 ---
 
-## What is Schematex?
+**Schematex** is a zero-dependency TypeScript library that compiles a small text DSL into standards-compliant SVG diagrams. Thirteen diagram families across three domains — **relationship** (social work, therapy, medicine), **electrical & industrial** (EE, PLC, power), and **corporate / legal** (cap tables, entity structures).
 
-Schematex turns plain text into standards-compliant SVG diagrams across two domains:
+Like [Mermaid](https://mermaid.js.org/), but for the domain diagrams Mermaid doesn't cover: McGoldrick genograms, IEEE 315 single-line diagrams, IEC 61131-3 ladder logic, Newick phylogenetic trees, and more.
 
-- **Relationship diagrams** — genograms, ecomaps, pedigree charts, phylogenetic trees, sociograms. Used daily in social work, family therapy, genetics, and medical practice.
-- **Electrical / industrial diagrams** — timing waveforms, logic gate schematics, circuit schematics, block diagrams, PLC ladder logic (IEC 61131-3 / Allen-Bradley), and single-line power diagrams (IEEE 315).
-- **Legal / financial diagrams** — corporate entity structure charts for cap tables, trusts, M&A structures, and international tax layouts.
+## Install
 
-All diagram types share the same pipeline (Text → Parser → AST → Layout → SVG) and zero runtime dependencies.
-
+```bash
+npm install schematex
 ```
+
+## Quick start
+
+```ts
+import { render } from 'schematex';
+
+const svg = render(`
 genogram "The Smiths"
   john [male, 1950]
   mary [female, 1952]
   john -- mary
-    alice [female, 1975]
-    bob [male, 1978, deceased]
+    alice [female, 1975, index]
+    bob [male, 1978]
+`);
 ```
 
+The diagram type is inferred from the first keyword. Tree-shake by importing only what you need:
+
+```ts
+import { render } from 'schematex/genogram';
 ```
-ladder "Motor Start/Stop"
-rung 1 "Seal-in circuit":
-  parallel:
-    branch:
-      XIC(START_PB, name="Start Button")
-    branch:
-      XIC(MOTOR_AUX, name="Aux Contact")
-  XIO(STOP_PB, name="Stop Button")
-  OTE(MOTOR_CMD, name="Motor Command")
-```
-
-These produce standards-compliant diagrams with proper McGoldrick symbols, generation-based layout, and accessible SVG output — no dragging boxes around, no learning a visual editor.
-
-### Why not Mermaid?
-
-Mermaid is great for flowcharts and sequence diagrams. But **relationship diagrams** have domain-specific requirements that general-purpose tools can't meet:
-
-- **Genograms** follow the [McGoldrick (2020) standard](https://en.wikipedia.org/wiki/Genogram) — gender-specific shapes (square/circle/diamond), medical condition fill patterns, standardized relationship lines, generation-based layout
-- **Ecomaps** use radial layout with concentric rings, weighted connection types, and directional energy flow arrows ([Hartman 1978](https://en.wikipedia.org/wiki/Ecomap))
-- **Pedigree charts** track genetic inheritance with carrier/affected status indicators
-
-No existing open-source library handles these well. GoJS has a genogram sample but costs $7k+. Everything else is either proprietary or abandoned.
-
-### Design principles
-
-- **Zero runtime dependencies.** No D3, no dagre, no parser generators. Hand-written parsers and layout algorithms. The entire library is self-contained TypeScript.
-- **Semantic SVG output.** Every element has accessible `<title>`/`<desc>`, CSS classes for theming, and `data-*` attributes for interactivity. No inline styles.
-- **Plugin architecture.** Each diagram type (genogram, ecomap, pedigree) is an independent plugin with its own parser, layout engine, and renderer. Import only what you need.
 
 ## Gallery
 
-### Genogram — Harry Potter Family
+Thirteen diagram types, one unified pipeline. **Try any of these live at [schematex.dev/playground](https://schematex.dev/playground).**
 
-Multi-generation family with death years, relationship labels, index person, and emotional relationships.
+### 👪 Genogram — *McGoldrick family-systems standard*
+
+Multi-generation family trees for therapy, social work, and medicine. Gender-specific shapes, medical condition fills, emotional relationship lines, index-person markers.
 
 ```
 genogram "The Potter Family"
@@ -100,48 +83,40 @@ genogram "The Potter Family"
   harry -close- lily
 ```
 
-**Features shown:** birth/death year ranges (`1960–1981`), `index` person gold border, quoted relationship label (`m. 1978`), `deceased` status, and three emotional relationship types — `cutoff` (dashed blue), `hostile` (red), `close` (green).
-
 ![Harry Potter Genogram](examples/genogram/harry-potter.svg)
+
+[Genogram syntax →](https://schematex.dev/docs/genogram)
 
 ---
 
-### Ecomap — Refugee Family Resettlement
+### 🌐 Ecomap — *Hartman 1978 standard*
 
-Family system embedded in institutional, social, and cultural support networks.
+Family systems embedded in institutional, social, and cultural support networks. Radial layout, weighted connection strengths, directional energy flow.
 
 ```
 ecomap "Nguyen Family Resettlement"
   center: family [label: "Nguyen Family"]
   resettlement [label: "IRC Office", category: government]
   school [label: "Lincoln Elementary", category: education]
-  esl [label: "Adult ESL Class", category: education]
   clinic [label: "Community Clinic", category: health]
-  caseworker [label: "Ms. Patel", category: mental-health]
   temple [label: "Vietnamese Temple", category: cultural]
   neighbors [label: "Sponsor Family", category: community]
-  employer [label: "Warehouse Job", category: work]
-  cousins [label: "Cousins (CA)", category: family]
   family === resettlement [label: "active case"]
   family === school
-  family --- esl [label: "twice weekly"]
   clinic --> family [label: "vaccinations"]
-  caseworker <-> family [label: "weekly"]
   family === temple [label: "anchor"]
   neighbors === family [label: "housing host"]
-  family --- employer [label: "new, part-time"]
-  cousins == family [label: "phone support"]
 ```
-
-**Features shown:** center node, 9 external systems with categories, mixed connection strengths (`===` / `==` / `---`), directional arrows (`-->`, `<->`), and labeled connections.
 
 ![Nguyen Family Ecomap](examples/ecomap/refugee-family.svg)
 
+[Ecomap syntax →](https://schematex.dev/docs/ecomap)
+
 ---
 
-### Pedigree — Hereditary Breast & Ovarian Cancer (BRCA)
+### 🧬 Pedigree — *Standardized human pedigree nomenclature*
 
-Four-generation family with multiple affected members, X-linked carrier status, and a proband.
+Multi-generation genetic inheritance charts for clinical genetics. Affected / carrier / presymptomatic status fills, proband arrow, consanguinity.
 
 ```
 pedigree "BRCA1 Family — Hereditary Breast/Ovarian Cancer"
@@ -149,90 +124,62 @@ pedigree "BRCA1 Family — Hereditary Breast/Ovarian Cancer"
   I-2 [female, affected, deceased]
   I-1 -- I-2
     II-1 [female, affected]
-    II-2 [male, unaffected]
     II-3 [female, carrier]
   II-1 -- II-4 [male, unaffected]
     III-1 [female, affected, proband]
-    III-2 [male, unaffected]
     III-3 [female, presymptomatic]
-  II-2 -- II-5 [female, unaffected]
-    III-4 [male, unaffected]
-    III-5 [female, unaffected]
-  II-3 -- II-6 [male, unaffected]
-    III-6 [female, carrier]
-    III-7 [male, unaffected]
-  III-1 -- III-8 [male, unaffected]
-    IV-1 [female, unaffected]
-    IV-2 [female, presymptomatic]
 ```
-
-**Features shown:** 4 generations with Roman numeral labels, `affected` / `carrier` / `presymptomatic` / `unaffected` status fills, `proband` arrow marker, `deceased` individual, and automatic sibling/spouse layout.
 
 ![BRCA1 Pedigree](examples/pedigree/brca-family.svg)
 
+[Pedigree syntax →](https://schematex.dev/docs/pedigree)
+
 ---
 
-### Phylogenetic Tree — Bacterial Diversity
+### 🌿 Phylogenetic tree — *Newick + NHX*
 
-Ten-taxon tree with Newick input, clade coloring, and bootstrap support values.
+Evolutionary trees with clade coloring, bootstrap support values, proportional branch lengths, and indent-based DSL alternative.
 
 ```
 phylo "Bacterial Diversity"
-  newick: "((((Ecoli:0.1,Salmonella:0.12):0.05[&&NHX:B=98],Vibrio:0.2):0.08[&&NHX:B=85],((Bacillus:0.15,Staph:0.18):0.06[&&NHX:B=92],Listeria:0.22):0.1):0.15,((Myco_tb:0.3,Myco_leprae:0.28):0.12[&&NHX:B=100],(Strepto:0.25,Lactobacillus:0.2):0.08[&&NHX:B=78]):0.2);"
-
+  newick: "((((Ecoli:0.1,Salmonella:0.12):0.05[&&NHX:B=98],Vibrio:0.2):0.08,((Bacillus:0.15,Staph:0.18):0.06[&&NHX:B=92],Listeria:0.22):0.1):0.15,((Myco_tb:0.3,Myco_leprae:0.28):0.12[&&NHX:B=100],(Strepto:0.25,Lactobacillus:0.2):0.08):0.2);"
   clade Gamma = (Ecoli, Salmonella, Vibrio) [color: "#1E88E5", label: "γ-Proteobacteria"]
-  clade Firmi = (Bacillus, Staph, Listeria, Strepto, Lactobacillus) [color: "#E53935", label: "Firmicutes"]
-  clade Actino = (Myco_tb, Myco_leprae) [color: "#43A047", label: "Actinobacteria"]
-
+  clade Firmi = (Bacillus, Staph, Listeria) [color: "#E53935", label: "Firmicutes"]
   scale "substitutions/site"
 ```
 
-**Features shown:** Standard Newick input with branch lengths, NHX bootstrap support values (colored dots: green ≥95, yellow ≥75), 3 clade-colored branch groups with labels, and proportional scale bar.
-
 ![Bacterial Diversity Phylogenetic Tree](examples/phylo/bacterial-diversity.svg)
+
+[Phylo syntax →](https://schematex.dev/docs/phylo)
 
 ---
 
-### Sociogram — Playground Dynamics
+### 🕸 Sociogram — *Moreno sociometry*
 
-Social network diagram with groups, mutual choices, rejections, and neutral connections.
+Social network diagrams with mutual choices, rejections, and group coloring. Force-directed or hierarchical layout. Auto-detects stars, isolates, cliques.
 
 ```
 sociogram "Playground Dynamics"
   config: layout = force-directed
-  config: coloring = group
-
   group boys [label: "Boys", color: "#42A5F5"]
-    tom
-    jack
-    mike
-    leo
-
+    tom; jack; mike; leo
   group girls [label: "Girls", color: "#EF5350"]
-    anna
-    beth
-    chloe
-    diana
-
+    anna; beth; chloe; diana
   tom <-> jack
-  tom -> mike
-  jack -> leo
   mike -x> leo [label: "conflict"]
   anna <-> beth
-  anna <-> chloe
-  beth <-> chloe
-  anna -> diana
   diana -.- tom
-  leo -.- anna
 ```
-
-**Features shown:** Force-directed layout, group coloring (Boys blue, Girls red), mutual choices (`<->`), rejection edge (`-x>`) with label, neutral connections (`-.-`), auto-detected roles (stars, isolates).
 
 ![Playground Dynamics Sociogram](examples/sociogram/playground-dynamics.svg)
 
-### Timing Diagram — SPI Transaction
+[Sociogram syntax →](https://schematex.dev/docs/sociogram)
 
-Digital waveforms with clock, chip-select, data buses, and high-impedance states.
+---
+
+### ⏱ Timing diagram — *WaveDrom-compatible*
+
+Digital waveforms with clock pulses, bus segments, high-impedance, and group labels.
 
 ```
 timing "SPI Transaction"
@@ -242,11 +189,13 @@ MOSI:  x=======  data: ["0xAB","0xCD","0xEF","0x01","0x02","0x03","0x04","0x05"]
 MISO:  zzzz====  data: ["","","","","0xFF","0x12","0x34","0x56"]
 ```
 
-**Features shown:** clock pulses (`p`), bus segments with data labels (`=`), high-impedance state (`z`, dashed midline), unknown/tri-state (`x`, cross-hatch), active-low signal name (`~CS_N` renders with overline).
+[Timing syntax →](https://schematex.dev/docs/timing)
 
-### Logic Gate Diagram — Full Adder
+---
 
-IEEE 91 ANSI distinctive shapes with DAG layout and Manhattan wiring.
+### 🔌 Logic gate — *IEEE 91 & IEC 60617*
+
+Combinational and sequential logic with automatic DAG layout and Manhattan wiring.
 
 ```
 logic "1-bit Full Adder"
@@ -259,1285 +208,152 @@ c2 = AND(s1, Cin)
 Cout = OR(c1, c2)
 ```
 
-**Features shown:** multi-level gate composition, fan-out wiring (signal `s1` feeds two gates), output labels on wire stubs, monochrome IEEE 91 style. Use `[style: iec]` for IEC 60617 rectangular symbols.
+[Logic gate syntax →](https://schematex.dev/docs/logic)
 
 ---
 
-### Ladder Logic — System Mode Selection
+### ⚡ Circuit schematic — *SPICE-style netlist or positional DSL*
 
-Three-rung industrial PLC program with Allen-Bradley naming conventions: XIC/XIO contacts, Set/Reset coil pairs on output-side parallel branches, input-side seal-in, and nested serial parallel blocks.
+Analog/digital circuits with auto-routed power/ground rails and orthogonal signal wiring.
+
+```
+circuit "CE Amp (netlist)" netlist
+V1 vcc 0 9V
+Rc vcc c 2.2k
+Rb vcc b 100k
+Q1 c b e npn
+Re e 0 1k
+```
+
+![CE Amp Netlist Schematic](examples/circuit/ce-amp-netlist.svg)
+
+[Circuit syntax →](https://schematex.dev/docs/circuit)
+
+---
+
+### 🪜 Ladder logic — *IEC 61131-3 / Allen-Bradley*
+
+Industrial PLC programs with tag+address+description labels, parallel branches, and Set/Reset coil pairs.
 
 ```
 ladder "System Mode Selection"
-
-rung 1 "Set system Auto mode, reset Manual":
+rung 1 "Set Auto, reset Manual":
   XIC(AUTO_HMIPB, "BIT 5.10", name="Auto Mode HMI Pushbutton")
   XIO(MANL_HMIPB, "BIT 5.11", name="Manual Mode HMI Pushbutton")
   XIO(SYS_FAULT, "BIT 3.0", name="System Fault")
   parallel:
-    branch:
-      OTL(SYS_AUTO, "BIT 3.1", name="System Auto Mode")
-    branch:
-      OTU(SYS_MANUAL, "BIT 3.2", name="System Manual Mode")
-
-rung 2 "Set Manual, reset Auto (with Home seal-in)":
-  parallel:
-    branch:
-      XIC(MANL_HMIPB, "BIT 5.11", name="Manual Mode HMI Pushbutton")
-    branch:
-      XIC(SYS_HOMECMD, "BIT 3.5", name="System Home Command")
-  XIO(AUTO_HMIPB, "BIT 5.10", name="Auto Mode HMI Pushbutton")
-  XIO(SYS_FAULT, "BIT 3.0", name="System Fault")
-  XIO(SYS_AUTOCYCLE, "BIT 3.4", name="System Auto Cycling")
-  parallel:
-    branch:
-      OTL(SYS_MANUAL, "BIT 3.2", name="System Manual Mode")
-    branch:
-      OTU(SYS_AUTO, "BIT 3.1", name="System Auto Mode")
-
-rung 3 "Auto cycling seal-in":
-  parallel:
-    branch:
-      XIC(CYC_START_PB, "IN 1.8", name="Cycle Start Pushbutton")
-    branch:
-      XIC(SYS_AUTOCYCLE, "BIT 3.4", name="System Auto Cycling")
-  XIC(SYS_AUTO, "BIT 3.1", name="System Auto Mode")
-  parallel:
-    branch:
-      XIO(CYC_STOP_PB, "IN 1.10", name="Cycle Stop Pushbutton")
-    branch:
-      XIC(AUTOSEQ_STEP0, "BIT 9.0", name="Auto Sequence Cycle Start Step 0")
-  XIO(SYS_FAULT, "BIT 3.0", name="System Fault")
-  OTE(SYS_AUTOCYCLE, "BIT 3.4", name="System Auto Cycling")
+    branch: OTL(SYS_AUTO, "BIT 3.1", name="System Auto Mode")
+    branch: OTU(SYS_MANUAL, "BIT 3.2", name="System Manual Mode")
 ```
-
-**Features shown:** Allen-Bradley tag + BIT address + human-readable description (`name=`) rendered as three-line labels (black / blue / red). Set (`OTL`) and Reset (`OTU`) coils in a parallel block on the output side of rung 1 & 2 — matching how real PLC ladder programs latch mode bits. Input-side seal-in parallel (Home Command holding Manual state). Two serial parallel blocks on rung 3 for independent OR conditions.
 
 ![System Mode Selection Ladder](examples/ladder/mode-selection.svg)
 
-### Circuit Schematic — NPN Common-Emitter Amplifier
-
-SPICE-style netlist input with **automatic schematic layout** — no manual positioning. The parser builds a net graph, ranks components (power source + middle + ground), and routes orthogonal wires with a shared supply rail at top and ground rail at bottom.
-
-```
-circuit "CE Amp (netlist)" netlist
-V1 vcc 0 9V
-Rc vcc c 2.2k
-Rb vcc b 100k
-Q1 c b e npn
-Re e 0 1k
-```
-
-**Features shown:** SPICE-subset grammar (`<id> <net1> <net2> [...] <value-or-model>`), auto-detected component types by prefix (V→source, R→resistor, Q→BJT), ground net aliases (`0` / `gnd` / `GND`), auto-synthesized ground symbol, shared `vcc` supply rail (top) and `GND` rail (bottom), single-L orthogonal routing for signal nets, NPN transistor with three pins (`c`/`b`/`e`) — all laid out without any coordinate hints from the author.
-
-![CE Amp Netlist Schematic](examples/circuit/ce-amp-netlist.svg)
-
-Circuit Schematic also supports a **positional DSL** (Schemdraw-style direction-chained layout) when you want fine-grained placement control — see the [syntax guide](#circuit-schematic-syntax).
+[Ladder syntax →](https://schematex.dev/docs/ladder)
 
 ---
 
-## Install
+### ⚡ Single-line diagram — *IEEE 315 power one-line*
 
-```bash
-npm install schematex
-```
-
-Works with any bundler (Vite, webpack, esbuild, Rollup) and Node.js. Ships as ESM + CJS with full TypeScript declarations.
-
-## Quick Start
-
-```ts
-import { render } from 'schematex';
-
-const svg = render(`
-genogram
-  john [male, 1950]
-  mary [female, 1952]
-  john -- mary
-    alice [female, 1975]
-    bob [male, 1978]
-`);
-
-document.getElementById('diagram').innerHTML = svg;
-```
-
-The `render()` function auto-detects the diagram type from the first line and returns a complete SVG string.
-
-## Genogram Syntax
-
-Genograms model family structure across generations — marriages, divorces, children, medical conditions, and life status.
-
-### Individuals
+Substation and distribution one-line diagrams with transformers, breakers, buses, and protective relays.
 
 ```
-genogram
-  john [male, 1950]
-  mary [female, 1952]
-  child [unknown, 1980, deceased]
+sld "13.8 kV Substation"
+utility [label: "Grid 138 kV"]
+xfmr1 [type: transformer, kva: 15000, primary: 138, secondary: 13.8]
+bus_hv [type: bus, voltage: 138]
+bus_mv [type: bus, voltage: 13.8]
+brk1 [type: breaker, amps: 1200]
+utility -> bus_hv
+bus_hv -> xfmr1 -> bus_mv
+bus_mv -> brk1
 ```
 
-| Property | Effect |
-|----------|--------|
-| `male` | Square symbol |
-| `female` | Circle symbol |
-| `unknown` | Diamond symbol |
-| `1950` | Birth year (shown as label) |
-| `deceased` | X drawn through symbol |
-| `stillbirth` | Smaller symbol with X |
-| `conditions: X(fill)` | Medical condition overlay |
-
-### Relationships
-
-```
-genogram
-  a [male, 1950]
-  b [female, 1952]
-  a -- b              # married
-    child [female, 1975]
-  a -x- b             # divorced
-  a -/- b             # separated
-  a ~ b               # cohabitation
-  a -o- b             # engaged
-```
-
-Children are indented under the couple line they belong to:
-
-```
-genogram
-  dad [male, 1950]
-  mom [female, 1952]
-  dad -- mom
-    son [male, 1975]
-    daughter [female, 1978]
-```
-
-### Medical conditions
-
-Conditions use standard genogram fill patterns:
-
-```
-genogram
-  patient [male, 1960, conditions: heart-disease(full) + diabetes(half-left)]
-```
-
-Fill types: `full`, `half-left`, `half-right`, `half-top`, `half-bottom`, `striped`, `dotted`
-
-### Multi-generation example
-
-```
-genogram "Three Generations"
-  grandpa [male, 1930, deceased]
-  grandma [female, 1932]
-  grandpa -- grandma
-    dad [male, 1955]
-    aunt [female, 1958]
-  dad -- mom [female, 1957]
-    me [male, 1985]
-    sister [female, 1988]
-```
-
-## Ecomap Syntax
-
-Ecomaps visualize a person or family's relationships with external systems — work, healthcare, community, legal, and social connections.
-
-### Structure
-
-Every ecomap has a **center** (the individual or family) surrounded by **external systems**, connected by lines that show relationship strength and energy flow.
-
-```
-ecomap "Maria's Network"
-  center: maria [female, age: 34]
-
-  work [label: "Tech Company", category: work]
-  church [label: "St. Mary's", category: religion]
-  mother [label: "Mom", category: family]
-
-  maria === mother
-  maria --- church
-  maria === work
-```
-
-### Connection types
-
-| Operator | Type | Visual |
-|----------|------|--------|
-| `===` | Strong | Triple line |
-| `==` | Moderate | Double line |
-| `---` | Normal | Single line |
-| `- -` | Weak | Dashed line |
-| `~~~` | Stressful | Wavy line |
-| `~=~` | Stressful-strong | Thick wavy line |
-| `~x~` | Conflictual | Line with X marks |
-| `-/-` | Broken/cut off | Line with break |
-
-### Energy flow (directional arrows)
-
-```
-therapist --> maria         # energy flows from therapist to maria
-maria ==> work              # moderate, energy flows from maria to work
-maria <-> church            # mutual energy exchange
-```
-
-| Operator | Flow | Strength |
-|----------|------|----------|
-| `-->` / `<--` | One-way | Normal |
-| `<->` | Mutual | Normal |
-| `==>` / `<==` | One-way | Moderate |
-| `<=>` | Mutual | Moderate |
-| `===>` / `<===` | One-way | Strong |
-
-### Connection labels
-
-```
-maria --- employer [label: "part-time"]
-maria ~~~ ex [label: "custody conflict"]
-```
-
-### System categories
-
-Systems can be tagged with a `category` for color-coded rendering:
-
-```
-work [label: "Tech Corp", category: work]
-doc [label: "Dr. Smith", category: health]
-church [label: "St. Mary's", category: religion]
-```
-
-Built-in categories: `family`, `friends`, `work`, `education`, `health`, `mental-health`, `religion`, `recreation`, `legal`, `government`, `substance`, `community`, `financial`, `housing`, `cultural`, `social-media`, `other`
-
-### Full example
-
-```
-ecomap "Substance Abuse Recovery"
-  center: client [male, age: 28, label: "James"]
-  aa [label: "AA Group", category: substance, importance: major]
-  sponsor [label: "Bill (Sponsor)", category: substance]
-  employer [label: "Warehouse Job", category: work]
-  mother [label: "Mom", category: family]
-  exwife [label: "Ex-wife", category: family]
-  kids [label: "Children (2)", category: family]
-  dealer [label: "Old Friends", category: substance]
-  probation [label: "P.O. Johnson", category: legal]
-  therapist [label: "CBT Therapist", category: mental-health]
-  client === aa
-  sponsor --> client
-  client --- employer [label: "new, probationary"]
-  client == mother [label: "supportive"]
-  client ~~~ exwife [label: "custody conflict"]
-  client - - kids [label: "supervised visits"]
-  client -/- dealer [label: "trying to cut off"]
-  probation --> client
-  therapist <-> client [label: "weekly"]
-```
-
-## Pedigree Syntax
-
-Pedigree charts track genetic inheritance patterns — simpler than genograms, focused on carrier status and trait expression.
-
-### Structure
-
-```
-pedigree "Cystic Fibrosis Family"
-  I-1 [male, carrier]
-  I-2 [female, carrier]
-  I-1 -- I-2
-    II-1 [male, unaffected]
-    II-2 [female, carrier]
-    II-3 [male, affected, proband]
-    II-4 [female, unaffected]
-```
-
-### Genetic status
-
-| Property | Fill | Meaning |
-|----------|------|---------|
-| `affected` | Full black | Has the condition |
-| `carrier` | Half-filled (left) | Carries the gene |
-| `carrier-x` | Center dot | X-linked carrier |
-| `obligate-carrier` | Center dot | Obligate carrier |
-| `presymptomatic` | Vertical line | Gene positive, no symptoms yet |
-| `unaffected` | Empty | Does not have the condition |
-
-### Special markers
-
-| Marker | Symbol | Meaning |
-|--------|--------|---------|
-| `proband` | Arrow + P | Index case |
-| `consultand` | Arrow + C | Person who sought counseling |
-| `evaluated` | E above | Clinically evaluated |
-
-### Consanguinity
-
-```
-II-1 == II-3    # double line = related parents
-```
-
-### Legend (for multi-trait pedigrees)
-
-```
-pedigree "Cancer Family"
-  legend: breast = "Breast cancer" (fill: quad-tl)
-  legend: ovarian = "Ovarian cancer" (fill: quad-tr)
-  I-1 [female, affected: breast+ovarian]
-```
-
-Generation labels (I, II, III...) and individual numbering (I-1, I-2...) are rendered automatically.
-
-## Phylogenetic Tree Syntax
-
-Phylogenetic trees display evolutionary relationships between species, genes, or sequences. Schematex supports the standard **Newick format** natively, plus an indent-based DSL for hand-written trees.
-
-### Newick input
-
-```
-phylo "Simple Vertebrates"
-  newick: "((Human:0.1,Mouse:0.3):0.05,(Chicken:0.4,(Zebrafish:0.6,Frog:0.5):0.15):0.1);"
-  scale "substitutions/site"
-```
-
-### Tree modes
-
-| Mode | Effect | Activation |
-|------|--------|------------|
-| `phylogram` | Branch lengths proportional to evolutionary distance (default) | — |
-| `cladogram` | All tips aligned, only topology shown | `[mode: cladogram]` |
-| `chronogram` | Branch lengths proportional to divergence time | `[mode: chronogram]` |
-
-### Layout types
-
-| Layout | Description | Activation |
-|--------|-------------|------------|
-| `rectangular` | Standard L-shaped branches (default) | — |
-| `slanted` | Diagonal branch lines | `[layout: slanted]` |
-
-### Bootstrap support values
-
-```
-phylo "Primates"
-  newick: "((Human:0.02,Chimp:0.03):0.01[&&NHX:B=100],(Gorilla:0.05,Orangutan:0.08):0.04[&&NHX:B=72]);"
-```
-
-Support values ≥50 are shown as colored dots (green ≥95, yellow ≥75, orange ≥50) with numeric labels.
-
-### Clade highlighting
-
-```
-clade Mammals = (Human, Mouse, Dog) [color: "#1E88E5", label: "Mammalia"]
-clade Birds = (Chicken, Eagle) [color: "#43A047", label: "Aves", highlight: background]
-```
-
-Highlight modes: `branch` (colored branches, default), `background` (shaded rectangle), `both`.
-
-### Indent DSL (alternative to Newick)
-
-For small, hand-written trees:
-
-```
-phylo "Simple Tree"
-
-root:
-  :0.15
-    :0.03
-      Human: 0.1
-      Chimp: 0.08
-    Gorilla: 0.12
-  Dog: 0.35
-
-clade Apes = (Human, Chimp, Gorilla) [color: "#1E88E5"]
-scale "substitutions/site"
-```
-
-### Full example
-
-```
-phylo "Bacterial Diversity"
-  newick: "((((Ecoli:0.1,Salmonella:0.12):0.05,Vibrio:0.2):0.08,((Bacillus:0.15,Staph:0.18):0.06,Listeria:0.22):0.1):0.15,((Myco_tb:0.3,Myco_leprae:0.28):0.12,(Strepto:0.25,Lactobacillus:0.2):0.08):0.2);"
-
-  clade Gamma = (Ecoli, Salmonella, Vibrio) [color: "#1E88E5", label: "γ-Proteobacteria"]
-  clade Firmi = (Bacillus, Staph, Listeria, Strepto, Lactobacillus) [color: "#E53935", label: "Firmicutes"]
-  clade Actino = (Myco_tb, Myco_leprae) [color: "#43A047", label: "Actinobacteria"]
-
-  scale "substitutions/site"
-```
-
-## Sociogram Syntax
-
-Sociograms visualize social relationships within a group — who chooses whom, mutual bonds, rejections, and social isolation. Based on Moreno (1934) sociometry.
-
-### Nodes
-
-```
-sociogram
-  alice [label: "Alice", group: team-a]
-  bob [label: "Bob", role: star]
-  carol [label: "Carol", size: large]
-```
-
-| Property | Effect |
-|----------|--------|
-| `label: "..."` | Display name |
-| `group: id` | Group membership (for coloring) |
-| `role: star\|isolate\|bridge` | Force role annotation |
-| `size: small\|medium\|large` | Override node size |
-
-### Edge operators
-
-| Operator | Direction | Valence | Visual |
-|----------|-----------|---------|--------|
-| `->` | One-way | Positive | Green solid arrow |
-| `<->` | Mutual | Positive | Green double arrow |
-| `--` | Undirected | Positive | Green solid line |
-| `-x>` | One-way | Negative | Red dashed arrow |
-| `<x->` | Mutual | Negative | Red dashed double arrow |
-| `-x-` | Undirected | Negative | Red dashed line |
-| `-.>` | One-way | Neutral | Gray dotted arrow |
-| `-.-` | Undirected | Neutral | Gray dotted line |
-| `==>` | One-way | Strong positive | Thick green arrow |
-| `<==>` | Mutual | Strong positive | Thick green double arrow |
-| `===>` / `<===>` | Very strong | Positive | Very thick line |
-
-### Edge properties
-
-```
-alice -> bob [label: "best friend", weight: 3]
-```
-
-### Groups
-
-```
-group boys [label: "Boys", color: "#42A5F5"]
-    tom
-    jack
-    mike
-```
-
-### Config options
-
-```
-config: layout = force-directed    # circular | force-directed
-config: sizing = in-degree         # uniform | in-degree
-config: coloring = group           # default | group | role
-config: highlight = stars, isolates
-```
-
-### Auto-detected roles
-
-| Role | Detection | Visual |
-|------|-----------|--------|
-| Star | in-degree ≥ mean + 1.5σ | Gold fill + star badge |
-| Isolate | in-degree = 0 AND out-degree = 0 | Gray, dashed border |
-| Neglectee | in-degree = 0, out-degree > 0 | Blue, dashed border |
-| Rejected | ≥2 rejection edges received | Red-tinted, dashed border |
-
-### Full example
-
-```
-sociogram "Mrs. Chen's 4th Grade Class"
-  config: layout = circular
-
-  alice [label: "Alice"]
-  bob [label: "Bob"]
-  carol [label: "Carol"]
-  dave [label: "Dave"]
-  eve [label: "Eve"]
-  frank [label: "Frank"]
-
-  alice -> bob
-  alice -> carol
-  bob -> alice
-  bob -> dave
-  carol -> alice
-  carol -> eve
-  dave -> bob
-  dave -> frank
-  eve -> carol
-  eve -> alice
-  frank -> dave
-```
-
-## Timing Diagram Syntax
-
-Digital waveforms — compatible with WaveDrom wave string conventions.
-
-### Header
-
-```
-timing "Optional Title" [hscale: 2]
-```
-
-`hscale` multiplies the period width (default `1` → 40 px per period).
-
-### Signals
-
-```
-SIGNAL_NAME: wave_string  data: ["label1","label2"]
-```
-
-| Char | Meaning |
-|------|---------|
-| `0` / `l` | Logic low |
-| `1` / `h` | Logic high |
-| `p` / `P` | Positive clock pulse (low→high→low) |
-| `n` / `N` | Negative clock pulse (high→low→high) |
-| `x` | Unknown / undefined (cross-hatch fill) |
-| `z` | High-impedance (dashed midline) |
-| `=` / `2`–`9` | Bus / data value segment |
-| `.` | Continue previous state |
-| `u` / `d` | Rising / falling ramp |
-
-Active-low signal names: prefix with `~` or `/` → name renders with overline bar (e.g. `~CS` → C̄S̄).
-
-### Groups
-
-```
-[Domain A]
-CLK_A: pppppppp
-SIG_A: 01110000
----
-CLK_B: nnnnnnnn
-```
-
-### Full example
-
-```
-timing "SPI Transaction"
-CLK:   pppppppp
-~CS:   10000001
-MOSI:  x=======  data: ["0xAB","0xCD","0xEF","0x01","0x02","0x03","0x04","0x05"]
-MISO:  zzzz====  data: ["","","","","0xFF","0x12","0x34","0x56"]
-```
+[SLD syntax →](https://schematex.dev/docs/sld)
 
 ---
 
-## Logic Gate Diagram Syntax
+### 🏢 Entity structure — *cap tables & corporate ownership*
 
-IEEE 91 ANSI distinctive shapes (default) or IEC 60617 rectangular with functional labels.
-
-### Header
+Corporate parent/subsidiary structures with ownership percentages, jurisdiction clustering, and entity type shapes (C-corp, LLC, trust, fund).
 
 ```
-logic "Optional Title" [style: ansi]   # or style: iec
+entity "Acme Holdings"
+  acme_inc [type: corp, jurisdiction: DE]
+  acme_uk [type: ltd, jurisdiction: UK]
+  acme_fund [type: fund, jurisdiction: KY]
+  trust_a [type: trust, jurisdiction: SD]
+  trust_a --100%--> acme_inc
+  acme_inc --100%--> acme_uk
+  acme_inc --60%--> acme_fund
 ```
 
-### Inputs and outputs
-
-```
-input A, B, Cin      # one or more signal names
-output Sum, Cout     # one or more output names
-```
-
-### Gate assignments
-
-```
-id = GATE(input1, input2, ...)
-```
-
-Active-low input: prefix with `~` — renders as a bubble on the pin.
-
-### Supported gate types
-
-| Category | Types |
-|----------|-------|
-| Combinational | `AND` `OR` `NOT` `NAND` `NOR` `XOR` `XNOR` `BUF` |
-| Special buffers | `TRISTATE_BUF` `TRISTATE_INV` `OPEN_DRAIN` `SCHMITT` |
-| Flip-flops | `DFF` `JKFF` `SRFF` `TFF` |
-| Latches | `LATCH_SR` `LATCH_D` |
-| Complex | `MUX` `DEMUX` `ENCODER` `DECODER` `COUNTER` `SHIFT_REG` |
-
-### Sub-circuit modules (dashed enclosure)
-
-Group related gates into a labeled dashed box:
-
-```
-module "Carry Logic" {
-  c1 = AND(A, B)
-  c2 = AND(s1, Cin)
-  Cout = OR(c1, c2)
-}
-```
-
-### Full example
-
-```
-logic "1-bit Full Adder"
-input A, B, Cin
-output Sum, Cout
-module "Sum Logic" {
-  s1 = XOR(A, B)
-  Sum = XOR(s1, Cin)
-}
-module "Carry Logic" {
-  c1 = AND(A, B)
-  c2 = AND(s1, Cin)
-  Cout = OR(c1, c2)
-}
-```
+[Entity syntax →](https://schematex.dev/docs/entity)
 
 ---
 
-## Ladder Logic Syntax
+### 📦 Block diagram & 🐟 Fishbone
 
-PLC ladder logic (IEC 61131-3 / Allen-Bradley convention) — left power rail → contacts and logic → right power rail. Each rung is a horizontal circuit; parallel blocks add OR branches.
+Signal-flow block diagrams (summing junctions, gain blocks, feedback loops) and Ishikawa cause-and-effect fishbones with auto-categorized branches.
 
-### Header
+[Block syntax →](https://schematex.dev/docs/block) · [Fishbone syntax →](https://schematex.dev/docs/fishbone)
 
-```
-ladder "Optional Title"
-```
+## Why Schematex?
 
-### Rungs
+**Mermaid is great for flowcharts and sequence diagrams.** But domain diagrams have domain-specific requirements a general-purpose tool can't meet:
 
-```
-rung 1 "Optional comment":
-  XIC(TAG)
-  OTE(OUTPUT)
-```
+- Genograms follow the [McGoldrick (2020)](https://en.wikipedia.org/wiki/Genogram) standard — gender-specific shapes, medical condition fill patterns, generation-based layout.
+- Ladder logic follows [IEC 61131-3](https://en.wikipedia.org/wiki/IEC_61131-3) with Allen-Bradley tag conventions — three-line labels (tag/address/description), Set/Reset coils, input-side seal-in.
+- Single-line diagrams follow [IEEE 315](https://standards.ieee.org/ieee/315/5052/) symbols with proper protective device clustering.
 
-Each rung contains a sequence of elements indented by two spaces. Elements are executed left to right. The last element is conventionally a coil.
+No existing open-source library handles these well. GoJS has a genogram sample but costs **$7k+**. Everything else is proprietary or abandoned.
 
-### Contact types
+## Features
 
-| Instruction | Name | Symbol | Passes power when |
-|-------------|------|--------|-------------------|
-| `XIC(TAG)` | Examine If Closed | `‐┤ ├‐` | TAG = 1 (normally open) |
-| `XIO(TAG)` | Examine If Open | `‐┤/├‐` | TAG = 0 (normally closed) |
-| `ONS(TAG)` | One-Shot Rising | `‐┤↑├‐` | Rising edge of TAG |
-| `OSF(TAG)` | One-Shot Falling | `‐┤↓├‐` | Falling edge of TAG |
-
-### Coil types
-
-| Instruction | Name | Symbol | Action |
-|-------------|------|--------|--------|
-| `OTE(TAG)` | Output Energize | `‐( )‐` | TAG = rung state |
-| `OTL(TAG)` | Output Latch (Set) | `‐(S)‐` | TAG = 1, stays latched |
-| `OTU(TAG)` | Output Unlatch (Reset) | `‐(R)‐` | TAG = 0, stays reset |
-| `OTN(TAG)` | Output Negate | `‐(/)‐` | TAG = NOT rung state |
-
-### Function blocks
-
-Timers, counters, and math blocks render as labeled rectangles:
-
-```
-rung 1:
-  XIC(SENSOR)
-  TON(TIMER1, PT=5000)    # On-delay timer, preset 5000ms
-
-rung 2:
-  XIC(COUNTER_DONE)
-  CTU(CTR1, PV=10)        # Count-Up counter, preset 10
-
-rung 3:
-  GRT(CMP1, Source_A=TEMP, Source_B=100)   # Greater-than compare
-  OTE(HIGH_TEMP)
-```
-
-| Category | Instructions |
-|----------|-------------|
-| Timers | `TON` `TOFF` `TP` |
-| Counters | `CTU` `CTD` `CTUD` |
-| Math | `ADD` `SUB` `MUL` `DIV` `MOV` |
-| Compare | `EQU` `NEQ` `GRT` `LES` `GEQ` `LEQ` |
-
-Compare instructions (`GRT`, `EQU`, etc.) render in the contact zone — they pass power when the comparison is true.
-
-### Tag labels and addresses
-
-All contacts and coils accept an optional address string (positional second argument) and a `name=` keyword for a multi-line human-readable description:
-
-```
-XIC(AUTO_HMIPB, "BIT 5.10", name="Auto Mode HMI Pushbutton")
-OTL(SYS_AUTO,   "BIT 3.1",  name="System Auto Mode")
-```
-
-The rendered label stacks three rows above the symbol body:
-- **Description** — gray, word-wrapped
-- **Tag** — blue monospace (Allen-Bradley convention)
-- **Address** — red monospace
-
-### Parallel branches (OR logic)
-
-```
-rung 1 "Seal-in with parallel input":
-  parallel:
-    branch:
-      XIC(START_PB)
-    branch:
-      XIC(MOTOR_AUX)
-  XIO(STOP_PB)
-  OTE(MOTOR_CMD)
-```
-
-Parallel blocks can appear anywhere in a rung — on the input side (condition OR), output side (latch multiple coils), or in series (two independent OR conditions).
-
-**Output-side parallel — SET and RESET coils simultaneously:**
-
-```
-rung 1 "Set Auto, clear Manual":
-  XIC(AUTO_BTN)
-  XIO(SYS_FAULT)
-  parallel:
-    branch:
-      OTL(SYS_AUTO)     # Set Auto bit
-    branch:
-      OTU(SYS_MANUAL)   # Clear Manual bit
-```
-
-**Two serial parallel blocks (independent OR conditions in series):**
-
-```
-rung 3 "Start OR seal-in, AND stop NC OR step0":
-  parallel:
-    branch:
-      XIC(START_PB)
-    branch:
-      XIC(SYS_AUTOCYCLE)
-  XIC(SYS_AUTO)
-  parallel:
-    branch:
-      XIO(STOP_PB)
-    branch:
-      XIC(AUTOSEQ_STEP0)
-  OTE(SYS_AUTOCYCLE)
-```
-
-### Full example
-
-```
-ladder "Motor Start/Stop"
-
-rung 1 "Seal-in circuit":
-  parallel:
-    branch:
-      XIC(START_PB, name="Start Button")
-    branch:
-      XIC(MOTOR_AUX, name="Auxiliary Contact")
-  XIO(STOP_PB, name="Stop Button")
-  OTE(MOTOR_CMD, "O:0/0", name="Motor Command")
-
-rung 2 "Running indicator":
-  XIC(MOTOR_CMD)
-  OTE(PILOT_LIGHT, "O:0/1", name="Pilot Light")
-
-rung 3 "Overload latch":
-  XIC(OVERLOAD, "I:0/2", name="Overload Relay")
-  OTL(FAULT_BIT, name="Fault Latched")
-
-rung 4 "Fault reset":
-  XIC(RESET_PB, "I:0/3", name="Reset Button")
-  OTU(FAULT_BIT, name="Fault Latched")
-
-rung 5 "Time-delay output":
-  XIC(MOTOR_CMD)
-  TON(RUN_TIMER, PT=3000)
-
-rung 6 "Delayed output":
-  XIC(RUN_TIMER_DN, name="Timer Done")
-  OTE(CONVEYOR, "O:0/2", name="Conveyor Start")
-```
-
----
-
-## Circuit Schematic Syntax
-
-Two authoring modes — pick the one that matches your workflow.
-
-### Netlist mode (auto-layout)
-
-SPICE-subset grammar. The parser infers component type from the ID prefix, collects net bindings, and auto-places everything:
-
-```
-circuit "CE Amp (netlist)" netlist
-V1 vcc 0 9V
-Rc vcc c 2.2k
-Rb vcc b 100k
-Q1 c b e npn
-Re e 0 1k
-```
-
-Each non-comment line: `<id> <net1> <net2> [net3 ...] [model] [key=value ...]`
-
-| Prefix | Type | Pin order |
-|--------|------|-----------|
-| `R` | resistor | `[p1, p2]` |
-| `C` | capacitor | `[p1, p2]` |
-| `L` | inductor | `[p1, p2]` |
-| `D` | diode | `[anode, cathode]` |
-| `V` | voltage source | `[+, −]` |
-| `I` | current source | `[+, −]` |
-| `Q` | NPN BJT (use `pnp` model for PNP) | `[c, b, e]` |
-| `M` | NMOS FET (use `pmos` model for PMOS) | `[d, g, s]` |
-| `F` / `S` / `B` / `K` | fuse / switch / battery / relay coil | `[p1, p2]` |
-
-Ground net aliases: `0`, `gnd`, `GND`, `Ground`. A ground symbol is auto-synthesized when the GND net is referenced but no explicit ground component exists.
-
-### Positional mode (manual layout)
-
-Schemdraw-style direction-chained DSL when you need explicit control over placement. Each statement extends a cursor; `at: <id>.<pin>` jumps to a named anchor:
-
-```
-circuit "RC Low-Pass Filter"
-V1: vsource down label="Vin" value="5V"
-wire right
-R1: resistor right label="R1" value="1kΩ"
-wire right 20
-dot
-C1: capacitor down label="C1" value="100nF"
-wire down 10
-ground
-at: C1.start
-wire right 20
-label "Vout" right
-```
-
-Statements:
-
-- `<id>: <type> <direction> [label="..."] [value="..."] [model="..."]` — place component; direction is `right` / `left` / `up` / `down`.
-- `wire <direction> [length]` — draw a wire from cursor; default length 20px.
-- `at: <id>.<pin>` — reset cursor to a named pin anchor (e.g. `U1.plus`, `Q1.collector`).
-- `dot` — visible junction marker at the current cursor position.
-- `ground` — place a ground symbol at the cursor.
-- `label "<text>" <direction>` — floating text annotation.
-
-Supported types (30+): `resistor`, `capacitor`, `inductor`, `diode`, `zener`, `schottky`, `led`, `photodiode`, `vsource`, `isource`, `acsource`, `battery`, `npn`, `pnp`, `nmos`, `pmos`, `jfet_n`, `jfet_p`, `opamp`, `555_timer`, `voltage_regulator`, `transformer`, `fuse`, `switch_spst`, `push_no`, `potentiometer`, `rheostat`, `thermistor_ntc`, `ldr`, `ammeter`, `voltmeter`, `lamp`, `buzzer`, `speaker`, `microphone`, `motor`, `relay_coil`, `ground` / `gnd_signal` / `gnd_chassis` / `gnd_digital`, `electrolytic_cap`, `generic_ic`, `wire`.
-
-Positional mode does no collision detection — wire distances are interpreted literally, so the author is responsible for spacing that fits the chosen symbols.
-
----
-
-## Single-Line Diagram Syntax
-
-IEEE 315 / IEC 60617 power distribution diagrams — one-line representation of electrical power systems.
-
-### Header
-
-```
-sld "Optional Title"
-```
-
-### Components
-
-```
-sld "Substation"
-
-utility "GRID" "12.47 kV"
-transformer "T1" "12.47kV / 480V" [kva: 500]
-bus "BUS-1" "480V"
-breaker "CB1"
-load "PANEL-A" "120/208V" [kw: 75]
-
-utility -> transformer
-transformer -> bus BUS-1
-BUS-1 -> breaker CB1
-CB1 -> load PANEL-A
-```
-
-### Component types
-
-| Type | Symbol | Use |
-|------|--------|-----|
-| `utility` | Arrow into fence | Grid connection / utility source |
-| `transformer` | Two circles | Voltage step-up / step-down |
-| `bus` | Thick horizontal bar | Common connection point |
-| `breaker` | Square with diagonal | Circuit breaker |
-| `fuse` | Rectangle with S-curve | Fuse protection |
-| `switch` | Diagonal line | Disconnect switch |
-| `load` | Rectangle | End load / panel |
-| `generator` | Circle with G | On-site generation |
-| `motor` | Circle with M | Motor load |
-| `capacitor` | Parallel lines | Power factor correction |
-| `meter` | Circle | Revenue metering |
-| `relay` | Diamond | Protection relay |
-| `vfd` | Rectangle | Variable frequency drive |
-| `ups` | Battery-backed rect | Uninterruptible power supply |
-| `solar` | Sun symbol | Photovoltaic array |
-
-### Connection syntax
-
-```
-source -> target [label: "optional"]
-source -> bus BUS-1    # connect to named bus bar
-```
-
-### Full example
-
-```
-sld "Industrial Facility — One-Line Diagram"
-
-utility "UTILITY" "13.8 kV"
-transformer "MAIN-XFMR" "13.8kV / 4.16kV" [kva: 2000, impedance: "5.75%"]
-bus "MV-BUS" "4.16 kV"
-breaker "MV-CB1"
-transformer "DIST-1" "4.16kV / 480V" [kva: 750]
-bus "LV-BUS-1" "480 V"
-breaker "LV-CB1"
-breaker "LV-CB2"
-load "MCC-A" "480V" [kw: 200]
-motor "PUMP-1" "480V" [hp: 100]
-
-utility -> MAIN-XFMR
-MAIN-XFMR -> bus MV-BUS
-MV-BUS -> MV-CB1
-MV-CB1 -> DIST-1
-DIST-1 -> bus LV-BUS-1
-LV-BUS-1 -> LV-CB1
-LV-BUS-1 -> LV-CB2
-LV-CB1 -> MCC-A
-LV-CB2 -> PUMP-1
-```
-
----
-
-## Entity Structure Diagram Syntax
-
-Corporate ownership, legal entity, and tax structure diagrams — cap tables, trusts, M&A, VC/PE holdings, international structures.
-
-### Header
-
-```
-entity-structure "Optional Title"
-```
-
-### Entities
-
-```
-entity id "Display Name" type@JURISDICTION [options]
-```
-
-| Type | Shape | Use |
-|------|-------|-----|
-| `corp` | Rectangle (blue) | Corporation, Inc., Ltd. |
-| `llc` | Rounded rectangle (green) | LLC, partnership |
-| `lp` | Notched polygon (yellow) | Limited partnership, fund |
-| `trust` | Ellipse (purple) | Trust, estate |
-| `individual` | Circle (orange) | Natural person |
-| `foundation` | Pentagon (yellow) | Private foundation, charity |
-| `disregarded` | Dashed rectangle (gray) | Disregarded entity (tax) |
-| `pool` | Dashed rounded rect | Option pool, reserved shares |
-| `placeholder` | Dashed rect (light) | Entity to be formed |
-
-The `@JURISDICTION` suffix (ISO 3166-1 alpha-2, e.g. `@DE`, `@KY`, `@SG`) adds a badge and enables auto-clustering.
-
-### Entity options
-
-```
-entity acme "Acme Corp" corp@DE [role: "Operating Company", note: "USD 10M ARR", status: new]
-```
-
-| Option | Effect |
-|--------|--------|
-| `role: "..."` | Italic sub-label below name |
-| `note: "..."` | Small gray note below shape |
-| `est: "YYYY-MM-DD"` | Establishment date |
-| `status: new` | Green NEW badge |
-| `status: modified` | Orange MODIFIED badge |
-| `status: eliminated` | Red ELIMINATED badge |
-
-### Ownership edges
-
-```
-parent -> child : 100%
-parent -> child : 51% [class: "Common A"]
-pool -.-> company : 10% [class: "Option Pool"]
-trustee -~-> trust [label: "Manages"]
-trust --> beneficiary [label: "Distributions"]
-```
-
-| Operator | Type | Visual |
-|----------|------|--------|
-| `->` | Ownership / equity | Black solid arrow |
-| `==>` | Voting control | Purple bold arrow |
-| `-.->` | Option pool / contingent | Green dashed arrow |
-| `-~->` | License / management | Grey wavy arrow |
-| `-->` | Distribution / flow | Blue arrow |
-
-### Jurisdiction clustering
-
-Declare jurisdictions to get colored dashed-border clusters grouping entities by country:
-
-```
-jurisdiction US "United States" [color: "#3b82f6"]
-jurisdiction IE "Ireland" [color: "#059669"]
-jurisdiction KY "Cayman Islands" [color: "#059669"]
-```
-
-Entities with a matching `@CODE` suffix are automatically grouped inside the cluster.
-
-### Full examples
-
-**PE holding structure:**
-
-```
-entity-structure "Acme Holdings Fund I — Portfolio Structure"
-
-entity lp "Acme Holdings Fund I" lp@DE
-entity blocker "Acme Blocker Corp" corp@DE
-entity widgets "Acme Widgets, Inc." corp@DE
-entity services "Acme Services, LLC" llc@DE
-
-lp -> blocker : 100%
-blocker -> widgets : 100%
-blocker -> services : 100%
-```
-
-**Startup cap table (Post-Series A):**
-
-```
-entity-structure "Acme Technologies, Inc. — Cap Table (Post-Series A)"
-
-entity alice "Alice Chen" individual [role: "Co-founder · CEO"]
-entity bob "Bob Martinez" individual [role: "Co-founder · CTO"]
-entity vc "Sequoia Fund XX" lp@DE
-entity esop "ESOP Pool" pool [note: "reserved, unissued"]
-entity acme "Acme Technologies, Inc." corp@DE [note: "Fully diluted: 10M shares"]
-
-alice -> acme : 30% [class: "Common"]
-bob -> acme : 25% [class: "Common"]
-vc -> acme : 20% [class: "Series A Pref"]
-esop -.-> acme : 10% [class: "Option Pool"]
-```
-
-**International tax structure:**
-
-```
-entity-structure "Acme Global — International Holdings Structure"
-
-jurisdiction US "United States" [color: "#3b82f6"]
-jurisdiction IE "Ireland" [color: "#059669"]
-jurisdiction KY "Cayman Islands" [color: "#059669"]
-
-entity parent "Acme Global, Inc." corp@US [note: "Ultimate Parent"]
-entity ie-holdco "Acme Ireland Holdings" corp@IE
-entity ie-ip "Acme IP Ltd" corp@KY [note: "holds group IP"]
-entity nl-bv "Acme EU Distribution" corp@NL [note: "EMEA ops"]
-
-parent -> ie-holdco : 100%
-ie-holdco -> ie-ip : 100%
-ie-holdco -> nl-bv : 100%
-ie-ip -~-> nl-bv [label: "IP License · royalty"]
-```
-
-**Family trust / M&A delta:**
-
-```
-entity-structure "Smith Family — Trust & Asset Holding Structure"
-
-entity grantor "John Smith" individual [role: "Grantor / Settlor"]
-entity trust "Smith Family Trust" trust@DE [est: "2024-03-15"]
-entity famllc "Smith Family Holdings" llc@DE
-entity realestate "Smith Real Estate" llc@DE [note: "property holding"]
-
-grantor -> trust [label: "Settles"]
-trust -> famllc : 100%
-famllc -> realestate : 100%
-
----
-
-entity-structure "Acme Holdings — Post-Acquisition"
-
-entity parent "Acme Holdings" corp@DE
-entity mergesub "MergeSub, LLC" llc@DE [status: new, note: "formed for merger"]
-entity target "TargetCo" corp@DE [status: modified]
-
-parent -> mergesub : 100%
-mergesub -> target : was 40% → 100%
-```
-
----
+- **Zero runtime dependencies.** No D3, no dagre, no parser generators. Hand-written parsers and layout engines. Self-contained TypeScript.
+- **Standards-compliant output.** Each diagram type implements a published specification, not our own invention.
+- **Semantic SVG.** Every element has accessible `<title>` / `<desc>`, CSS classes for theming, and `data-*` attributes for interactivity. No inline styles.
+- **Tree-shakable plugin architecture.** Each diagram is an independent plugin with its own parser, layout, and renderer. `schematex/genogram` → ~30 KB.
+- **SSR-ready.** Pure string output, no DOM required. Works in Node, edge runtimes, and browsers.
+- **TypeScript strict.** No `any`, no un-typed escape hatches.
 
 ## API
 
-### `render(text, config?)`
-
-Parse, layout, and render a diagram in one call. Returns an SVG string.
-
 ```ts
-import { render } from 'schematex';
+// Universal entry — dispatches by first keyword
+import { render, parse } from 'schematex';
 
-const svg = render(diagramText);
-const svg = render(diagramText, { type: 'ecomap' }); // force type
-const svg = render(diagramText, {
-  fontFamily: 'Inter, system-ui',
-  padding: 40,
-  theme: 'mono', // override theme
-});
+render(text: string, config?: SchematexConfig): string;
+parse(text: string, config?: SchematexConfig): AST;
+
+// Per-diagram (tree-shakable)
+import { render as renderGenogram } from 'schematex/genogram';
+import { render as renderLadder } from 'schematex/ladder';
 ```
 
-### `parse(text, config?)`
+See the [API reference →](https://schematex.dev/docs/api).
 
-Parse text into an AST without rendering. Useful for inspection, transformation, or custom rendering.
+## Ecosystem
 
-```ts
-import { parse } from 'schematex';
-
-const ast = parse(diagramText);
-// → { type: 'genogram', individuals: [...], relationships: [...], metadata: {...} }
-```
-
-### Tree-shakable imports
-
-Import only the diagram type you need:
-
-```ts
-import { genogram } from 'schematex/genogram';
-import { ecomap } from 'schematex/ecomap';
-
-// Each export is a DiagramPlugin with parse(), layout(), render()
-const ast = genogram.parse(text);
-const layout = genogram.layout(ast, layoutConfig);
-const svg = genogram.render(layout, renderConfig);
-```
-
-### `SchematexConfig`
-
-```ts
-interface SchematexConfig {
-  type?: 'genogram' | 'ecomap' | 'pedigree' | 'phylo' | 'sociogram'
-       | 'timing' | 'logic' | 'circuit' | 'blockdiagram' | 'ladder'
-       | 'sld' | 'entity';
-  fontFamily?: string;   // default: 'system-ui'
-  padding?: number;      // SVG padding in px, default: 20
-  theme?: string;        // 'default' | 'clinical' | 'colorful' | 'mono'
-}
-```
-
-## SVG Output
-
-Schematex produces clean, semantic SVG suitable for embedding, printing, or interactive use:
-
-```html
-<svg xmlns="http://www.w3.org/2000/svg" class="schematex-diagram schematex-genogram">
-  <title>Genogram: The Smiths</title>
-  <desc>Genogram with 5 individuals across 2 generations</desc>
-  <style>/* Themeable CSS classes */</style>
-  <!-- Each element has data-* attributes for JS interaction -->
-  <g data-individual-id="john" class="schematex-node schematex-male">...</g>
-</svg>
-```
-
-**Accessibility:** Every diagram includes `<title>` and `<desc>` elements. Nodes and edges carry semantic class names.
-
-**Theming:** The default theme renders males in light blue and females in light pink (clinical style). Built-in themes: `default` (clinical colors), `colorful` (brighter palette), `mono` (pure black/white). Override any `.schematex-*` CSS class for custom styling — no inline styles, everything is in a single `<style>` block within the SVG.
-
-**Interactivity:** Use `data-individual-id` and `data-relationship-type` attributes to attach event handlers.
-
-## Roadmap
-
-**Relationship diagrams**
-- [x] **Genogram** — McGoldrick (2020) symbols, generation-based layout, medical condition fills, emotional relationship lines
-- [x] **Ecomap** — Hartman radial layout, weighted connections, directional energy flow, category colors
-- [x] **Pedigree** — Bennett-standard, affected/carrier/presymptomatic fills, proband arrows, consanguinity, legend
-- [x] **Phylogenetic Tree** — Newick parser, rectangular/slanted/cladogram layouts, bootstrap support, clade highlighting, scale bar
-- [x] **Sociogram** — Moreno sociometry, circular + force-directed layout, 3 valence types, auto-detected roles, group coloring
-
-**Electrical / industrial diagrams**
-- [x] **Timing Diagram** — WaveDrom-compatible wave state machine (0/1/x/z/p/n/h/l/u/d/=/.), bus segments, hi-Z, hscale, active-low overline
-- [x] **Logic Gate Diagram** — IEEE 91 ANSI + IEC 60617, 24 gate types, DAG layout, Manhattan wiring, module enclosures
-- [x] **Circuit Schematic** — IEEE 315 / IEC 60617 positional DSL, 30+ component symbols, direction-chained layout
-- [x] **Block Diagram** — Control-systems layout, transfer functions, summing junctions, feedback loops, feedforward paths
-- [x] **Ladder Logic** — IEC 61131-3 / Allen-Bradley, XIC/XIO/ONS contacts, OTE/OTL/OTU coils, TON/CTU function blocks, compare instructions, parallel branches, multi-line tag labels
-- [x] **Single-Line Diagram (SLD)** — IEEE 315 power distribution, utility/transformer/bus/breaker/load/generator/motor symbols, advanced hierarchical layout engine
-- [x] **Entity Structure** — Corporate ownership, cap tables, trusts, M&A delta, international tax structures, 9 entity types, 5 edge operators, jurisdiction auto-clustering
-
-**Coming next**
-- [ ] **Phase 3: Integrations** — React component, Markdown plugin, Obsidian plugin
-- [ ] **Phase 4: Advanced** — Interactive editing, JSON import/export, PDF export
-
-## Architecture
-
-```
-Text DSL → Parser → AST → Layout → Renderer → SVG string
-```
-
-Each diagram type is a **plugin** implementing `DiagramPlugin`:
-
-```
-src/
-  core/
-    types.ts        # Shared type definitions (the spec)
-    api.ts          # render() entry point + plugin registry
-    svg.ts          # SVG builder utilities
-  diagrams/
-    genogram/       # McGoldrick-standard genogram
-      parser.ts     # Hand-written recursive descent
-      layout.ts     # Generation-based layered layout
-      symbols.ts    # Gender shapes, condition fills, status markers
-      renderer.ts   # SVG output with semantic markup
-    ecomap/         # Hartman-standard ecomap
-      parser.ts     # Connection operator parser
-      layout.ts     # Radial/polar layout with concentric rings
-      renderer.ts   # 8 line types, arrows, category colors
-    pedigree/       # Bennett-standard pedigree chart
-      parser.ts     # Genetic status + legend parser
-      layout.ts     # Generation layout + Roman numeral labels
-      renderer.ts   # Affected/carrier fills, proband arrows
-    phylo/          # Phylogenetic tree (Felsenstein standard)
-      parser.ts     # Newick + indent DSL + clade definitions
-      layout.ts     # Rectangular/slanted/cladogram layout
-      renderer.ts   # Branch paths, support dots, scale bar, clade highlights
-    sociogram/      # Moreno sociometry (1934)
-      parser.ts     # Edge operators, groups, config
-      layout.ts     # Circular + Fruchterman-Reingold force-directed
-      renderer.ts   # Valence-colored edges, role-based nodes, arrow markers
-    timing/         # Digital timing diagram (WaveDrom-compatible)
-      parser.ts     # Wave string + group parser
-      renderer.ts   # Wave state machine, bus trapezoids, x-hatch, hi-Z
-    logic/          # Logic gate diagram (IEEE 91 ANSI + IEC 60617)
-      parser.ts     # Gate assignments, active-low ~, module blocks
-      layout.ts     # Longest-path DAG layering, module bounding boxes
-      symbols.ts    # Gate geometry: pins, ANSI paths, IEC labels
-      renderer.ts   # Gate bodies, bubbles, Manhattan wires, dashed modules
-    circuit/        # Circuit schematic (IEEE 315 / IEC 60617)
-      parser.ts     # Positional direction-chained DSL
-      layout.ts     # Direction-chain layout engine
-      symbols.ts    # 30+ component symbols (resistor, cap, diode, opamp…)
-      renderer.ts   # Component bodies, wires, junction dots
-    blockdiagram/   # Control-systems block diagram
-      parser.ts     # block() / sum() / signal() / connection DSL
-      layout.ts     # Forward chain, feedback loop, feedforward routing
-      renderer.ts   # Blocks, summing junctions, labeled signal arrows
-    ladder/         # PLC ladder logic (IEC 61131-3 / Allen-Bradley)
-      parser.ts     # Indented rung DSL, contact/coil/FB/parallel parsing
-      layout.ts     # Slot-width layout, dynamic rung height, parallel buses
-      renderer.ts   # Rails, contacts (XIC/XIO/ONS), coils, FBs, AB color labels
-    sld/            # Single-line power diagram (IEEE 315)
-      parser.ts     # Component + connection DSL with bus declarations
-      layout.ts     # Hierarchical tier layout with bus bar placement
-      renderer.ts   # 15+ power component symbols, bus bars, protection devices
-    entity/         # Corporate entity structure (legal / tax / VC/PE)
-      parser.ts     # entity / jurisdiction / cluster / edge DSL
-      layout.ts     # Tier-based layout, cap-table convergence, jurisdiction clusters
-      renderer.ts   # 9 entity shapes, 5 edge types, status badges, jurisdiction tags
-```
-
-## Development
-
-```bash
-git clone https://github.com/victorzhrn/Schematex.git
-cd Schematex
-npm install
-npm run dev          # watch mode (tsup)
-npm run test         # vitest (338 tests)
-npm run typecheck    # strict TypeScript
-npm run lint         # ESLint
-npm run build        # ESM + CJS + DTS → dist/
-```
-
-Open `preview/index.html` in a browser (via Vite or any dev server) to see live-rendered examples of all diagram types.
+- **React** — `@schematex/react` *(coming soon)*
+- **Obsidian** — code-block renderer plugin *(coming soon)*
+- **Markdown-it / remark** — diagram fence support *(coming soon)*
+- **CLI** — `npx schematex input.txt > output.svg` *(coming soon)*
 
 ## Contributing
 
-Contributions are welcome. Key areas where help is needed:
+Contributions welcome. See [CONTRIBUTING.md](./CONTRIBUTING.md).
 
-- **Standard accuracy** — McGoldrick genogram symbols, Hartman ecomap conventions
-- **Layout optimization** — Edge crossing minimization, better label placement
-- **Accessibility** — Screen reader support for relationship diagrams
-- **Emotional relationships** — Colored line styles for hostile, close, distant, cutoff relationships
-- **Integrations** — React component, Obsidian plugin, Markdown-it plugin
+Adding a new diagram type follows a 5-file pattern (parser, symbols, layout, renderer, integration). Each type has a standards document in [`docs/reference/`](./docs/reference/).
 
-Please open an issue to discuss significant changes before submitting a PR.
+```bash
+npm install
+npm run typecheck
+npm run test
+npm run build
+```
 
 ## License
 
-[AGPL-3.0](LICENSE) — free to use, modify, and distribute. Commercial integrations that modify the library must open-source their changes.
+[AGPL-3.0](./LICENSE) for open-source use. Commercial licensing available — contact victor@mymap.ai.
 
-Built by [Victor](https://github.com/victorzhrn).
+<p align="center"><sub>Built by <a href="https://mymap.ai">MyMap.ai</a>. Used in production at <a href="https://chatdiagram.com">ChatDiagram</a> and <a href="https://conceptmap.ai">ConceptMap</a>.</sub></p>

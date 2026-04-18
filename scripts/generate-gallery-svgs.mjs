@@ -85,6 +85,107 @@ const examples = [
   scale "substitutions/site"`,
   },
   {
+    file: 'examples/timing/spi-transaction.svg',
+    text: `timing "SPI Transaction" [hscale: 2]
+
+CLK:  ppppppppp
+CS:   10000001
+MOSI: x=======x  data: ["0xAB", "0xCD", "0xEF", "0x01", "0x02", "0x03", "0x04", "0x05"]
+MISO: xzzzz===x  data: ["", "", "", "", "0xFF", "0x12", "0x34", "0x56"]`,
+  },
+  {
+    file: 'examples/logic/full-adder.svg',
+    text: `logic "1-bit Full Adder" [style: ansi]
+
+input A, B, Cin
+output Sum, Cout
+
+s1 = xor(A, B)
+Sum = xor(s1, Cin)
+c1 = and(A, B)
+c2 = and(s1, Cin)
+Cout = or(c1, c2)`,
+  },
+  {
+    file: 'examples/block/pid-loop.svg',
+    text: `blockdiagram "PID Closed-Loop Control System"
+
+C = block("C(s)") [name: "PID Controller", role: controller]
+G = block("G(s)") [name: "Plant", role: plant]
+H = block("H(s)") [name: "Sensor", role: sensor]
+
+r = signal("r(t)")
+e = signal("e(t)")
+u = signal("u(t)")
+y = signal("y(t)")
+ym = signal("y_m(t)")
+
+err = sum(+r, -ym)
+
+in -> r
+r -> err ["R(s)"]
+err -> C ["E(s)"]
+C -> G ["U(s)"]
+G -> out ["Y(s)"]
+G -> H ["Y(s)"]
+H -> err ["Y_m(s)"]`,
+  },
+  {
+    file: 'examples/circuit/ce-amplifier.svg',
+    text: `circuit "CE Amp (netlist)" netlist
+V1 vcc 0 9V
+Rc vcc c 2.2k
+Rb vcc b 100k
+Q1 c b e npn
+Re e 0 1k`,
+  },
+  {
+    file: 'examples/ladder/motor-start-stop.svg',
+    text: `ladder "Motor Start/Stop"
+rung 1 "Seal-in circuit":
+  parallel:
+    branch:
+      XIC(START_PB, "IN 1.0", name="Start Button")
+    branch:
+      XIC(MOTOR_AUX, "BIT 3.0", name="Aux Contact")
+  XIO(STOP_PB, "IN 1.1", name="Stop Button")
+  OTE(MOTOR_CMD, "OUT 2.0", name="Motor Command")`,
+  },
+  {
+    file: 'examples/sld/substation-13kv.svg',
+    text: `sld "13.8 kV Substation"
+utility = utility [label: "Grid 138 kV"]
+xfmr1 = transformer [label: "15 MVA"]
+bus_hv = bus [voltage: "138 kV"]
+bus_mv = bus [voltage: "13.8 kV"]
+brk1 = breaker [rating: "1200 A"]
+brk2 = breaker [rating: "1200 A"]
+brk3 = breaker [rating: "1200 A"]
+feeder1 = load [label: "Feeder 1"]
+feeder2 = load [label: "Feeder 2"]
+feeder3 = load [label: "Feeder 3"]
+utility -> bus_hv
+bus_hv -> xfmr1
+xfmr1 -> bus_mv
+bus_mv -> brk1
+brk1 -> feeder1
+bus_mv -> brk2
+brk2 -> feeder2
+bus_mv -> brk3
+brk3 -> feeder3`,
+  },
+  {
+    file: 'examples/entity/holding-company.svg',
+    text: `entity-structure "Acme Holdings"
+entity acme_inc "Acme Inc." corp@DE
+entity acme_uk "Acme UK Ltd." llc@UK
+entity acme_fund "Acme Growth Fund LP" fund@KY
+entity trust_a "Founder Trust" trust@SD
+trust_a -> acme_inc : 100%
+acme_inc -> acme_uk : 100%
+acme_inc -> acme_fund : 60%`,
+  },
+  {
     file: 'examples/sociogram/playground-dynamics.svg',
     text: `sociogram "Playground Dynamics"
   config: layout = force-directed

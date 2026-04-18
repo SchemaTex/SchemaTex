@@ -1,0 +1,16 @@
+---
+title: "Phylogenetic tree: bacterial diversity"
+description: Ten-taxon bacterial phylogenetic tree with NHX bootstrap support values and three color-coded clades — γ-Proteobacteria, Firmicutes, Actinobacteria.
+---
+
+Ten-taxon bacterial phylogeny with bootstrap support values and three
+color-coded clades.
+
+<Playground initial={`phylo "Bacterial Diversity"
+  newick: "((((Ecoli:0.1,Salmonella:0.12):0.05[&&NHX:B=98],Vibrio:0.2):0.08[&&NHX:B=85],((Bacillus:0.15,Staph:0.18):0.06[&&NHX:B=92],Listeria:0.22):0.1):0.15,((Myco_tb:0.3,Myco_leprae:0.28):0.12[&&NHX:B=100],(Strepto:0.25,Lactobacillus:0.2):0.08[&&NHX:B=78]):0.2);"
+  clade Gamma = (Ecoli, Salmonella, Vibrio) [color: "#1E88E5", label: "γ-Proteobacteria"]
+  clade Firmi = (Bacillus, Staph, Listeria, Strepto, Lactobacillus) [color: "#E53935", label: "Firmicutes"]
+  clade Actino = (Myco_tb, Myco_leprae) [color: "#43A047", label: "Actinobacteria"]
+  scale "substitutions/site"`} />
+
+[Phylogenetic syntax →](/docs/phylo)

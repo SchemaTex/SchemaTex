@@ -1,0 +1,48 @@
+---
+title: API reference
+description: Schematex JavaScript/TypeScript API — render() and parse() functions, SchematexConfig options, tree-shakable per-diagram imports.
+---
+
+## `render(text, config?)`
+
+Renders a DSL string into an SVG string. Dispatches by first keyword.
+
+```ts
+import { render } from 'schematex';
+
+const svg: string = render(text, { theme: 'light' });
+```
+
+## `parse(text, config?)`
+
+Parses a DSL string into the typed AST without rendering.
+
+```ts
+import { parse } from 'schematex';
+
+const ast = parse(text);
+```
+
+## Tree-shakable imports
+
+```ts
+import { render } from 'schematex/genogram';
+import { render } from 'schematex/ecomap';
+import { render } from 'schematex/pedigree';
+import { render } from 'schematex/phylo';
+import { render } from 'schematex/sociogram';
+```
+
+## `SchematexConfig`
+
+```ts
+interface SchematexConfig {
+  theme?: 'light' | 'dark';
+  width?: number;
+  height?: number;
+  // per-diagram options
+}
+```
+
+See [`src/core/types.ts`](https://github.com/victorzhrn/Schematex/blob/main/src/core/types.ts)
+for the complete type definitions.
