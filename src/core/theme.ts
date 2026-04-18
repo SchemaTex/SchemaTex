@@ -69,6 +69,28 @@ export interface CausalityTokens {
   boneColors: readonly string[];
 }
 
+/**
+ * Tokens for set-theory diagrams (Venn / Euler). Paletteof set fills is
+ * tuned slightly softer than BaseTheme to blend nicely under
+ * `mix-blend-mode: multiply`.
+ */
+export interface VennTokens {
+  /** Per-set fill palette (cycles if more sets than entries). */
+  vennSetColors: readonly string[];
+  /** Default blend mode for overlap areas. */
+  vennBlendMode: "multiply" | "screen" | "none";
+  /** Fill opacity per set (pre-blend). */
+  vennSetOpacity: number;
+  /** Outline stroke for every set. */
+  vennSetStroke: string;
+  /** Primary region-label fill. */
+  vennLabelColor: string;
+  /** Count chip fill (integers inside regions). */
+  vennCountColor: string;
+  /** Leader-line stroke for externalized labels. */
+  vennLeaderColor: string;
+}
+
 // ─── Resolved Theme ────────────────────────────────────────
 
 export type ResolvedTheme<T = object> = BaseTheme & T;
@@ -279,6 +301,62 @@ export const CAUSALITY_TOKENS: Record<ThemeName, CausalityTokens> = {
   dark: DARK_CAUSALITY,
 };
 
+// ─── Venn Tokens Per Theme ─────────────────────────────────
+
+const DEFAULT_VENN: VennTokens = {
+  vennSetColors: [
+    "#4E79A7", // blue
+    "#F28E2B", // orange
+    "#E15759", // red
+    "#76B7B2", // teal
+    "#59A14F", // green
+    "#EDC948", // yellow
+    "#B07AA1", // purple
+    "#FF9DA7", // pink
+  ],
+  vennBlendMode: "multiply",
+  vennSetOpacity: 0.45,
+  vennSetStroke: "#37474f",
+  vennLabelColor: "#1f2937",
+  vennCountColor: "#0f172a",
+  vennLeaderColor: "#64748b",
+};
+
+const MONOCHROME_VENN: VennTokens = {
+  vennSetColors: ["#999999", "#999999", "#999999", "#999999", "#999999", "#999999", "#999999", "#999999"],
+  vennBlendMode: "none",
+  vennSetOpacity: 0.22,
+  vennSetStroke: "#000000",
+  vennLabelColor: "#000000",
+  vennCountColor: "#000000",
+  vennLeaderColor: "#444444",
+};
+
+const DARK_VENN: VennTokens = {
+  vennSetColors: [
+    "#89b4fa",
+    "#fab387",
+    "#f38ba8",
+    "#94e2d5",
+    "#a6e3a1",
+    "#f9e2af",
+    "#cba6f7",
+    "#f5c2e7",
+  ],
+  vennBlendMode: "screen",
+  vennSetOpacity: 0.55,
+  vennSetStroke: "#cdd6f4",
+  vennLabelColor: "#cdd6f4",
+  vennCountColor: "#f9e2af",
+  vennLeaderColor: "#7f849c",
+};
+
+export const VENN_TOKENS: Record<ThemeName, VennTokens> = {
+  default: DEFAULT_VENN,
+  monochrome: MONOCHROME_VENN,
+  dark: DARK_VENN,
+};
+
 // ─── Theme Resolution ─��────────────────────────────────────
 
 export function resolveBaseTheme(name: string): BaseTheme {
@@ -298,6 +376,11 @@ export function resolveBiologyTheme(name: string): ResolvedTheme<BiologyTokens> 
 export function resolveFishboneTheme(name: string): ResolvedTheme<CausalityTokens> {
   const themeName = (name in BASE_THEMES ? name : "default") as ThemeName;
   return { ...BASE_THEMES[themeName], ...CAUSALITY_TOKENS[themeName] };
+}
+
+export function resolveVennTheme(name: string): ResolvedTheme<VennTokens> {
+  const themeName = (name in BASE_THEMES ? name : "default") as ThemeName;
+  return { ...BASE_THEMES[themeName], ...VENN_TOKENS[themeName] };
 }
 
 // ─── Genogram Theme Aliases ────────────────────────────────

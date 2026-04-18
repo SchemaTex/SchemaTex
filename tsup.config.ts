@@ -12,6 +12,7 @@ export default defineConfig({
     "diagrams/logic/index": "src/diagrams/logic/index.ts",
     "diagrams/circuit/index": "src/diagrams/circuit/index.ts",
     "diagrams/blockdiagram/index": "src/diagrams/blockdiagram/index.ts",
+    "diagrams/flowchart/index": "src/diagrams/flowchart/index.ts",
   },
   format: ["esm", "cjs"],
   dts: true,

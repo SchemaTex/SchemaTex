@@ -34,6 +34,8 @@ export { ladder } from "./diagrams/ladder";
 export { sld } from "./diagrams/sld";
 export { entity } from "./diagrams/entity";
 export { fishbone } from "./diagrams/fishbone";
+export { venn } from "./diagrams/venn";
+export { flowchart } from "./diagrams/flowchart";
 
 export {
   type ThemeName,
@@ -41,14 +43,17 @@ export {
   type PersonTokens,
   type BiologyTokens,
   type CausalityTokens,
+  type VennTokens,
   type ResolvedTheme,
   BASE_THEMES,
   PERSON_TOKENS,
   BIOLOGY_TOKENS,
   CAUSALITY_TOKENS,
+  VENN_TOKENS,
   resolveBaseTheme,
   resolvePersonTheme,
   resolveBiologyTheme,
   resolveGenogramTheme,
   resolveFishboneTheme,
+  resolveVennTheme,
 } from "./core/theme";

@@ -28,7 +28,11 @@ export type DiagramType =
   // Corporate / legal structure diagrams
   | "entity"    // Entity structure / corporate ownership (12-ENTITY-STRUCTURE-STANDARD)
   // Causality / analysis diagrams
-  | "fishbone"; // Ishikawa cause-and-effect (14-FISHBONE-STANDARD)
+  | "fishbone" // Ishikawa cause-and-effect (14-FISHBONE-STANDARD)
+  // Set-theory / logic diagrams
+  | "venn"    // Venn / Euler diagram (15-VENN-STANDARD)
+  // Generic process / decision flowchart
+  | "flowchart"; // Flowchart (14-FLOWCHART-STANDARD)
 
 export type GenogramMode = "medical" | "heritage";
 export type LegendPosition = "bottom-right" | "right" | "bottom-center" | "none";
@@ -195,6 +199,15 @@ export type MedicalCategory =
 
 export type FishboneOrientation = "ltr" | "rtl";
 
+/** Which halves of the spine host ribs. */
+export type FishboneSides = "both" | "top" | "bottom";
+
+/** Density preset — controls spine length, slot spacing, header size. */
+export type FishboneDensity = "compact" | "normal" | "spacious";
+
+/** Where cause branches stick out of a rib. */
+export type FishboneCauseSide = "head" | "tail" | "both";
+
 export interface FishboneNode {
   /** Display text on the bone. */
   label: string;
@@ -202,6 +215,10 @@ export interface FishboneNode {
   color?: string;
   /** Nested sub-causes (unbounded depth, recommended ≤ 3). */
   children: FishboneNode[];
+  /** Per-rib placement override (only honored on majors). */
+  side?: "top" | "bottom";
+  /** Per-rib explicit ordering within its half (lower = closer to tail). */
+  order?: number;
 }
 
 export interface FishboneLegendEntry {
@@ -224,6 +241,14 @@ export interface FishboneAST {
   /** Optional legend entries rendered in a corner box. */
   legend?: FishboneLegendEntry[];
   metadata?: Record<string, string>;
+  /** Which sides of the spine host ribs. Default: "both". */
+  sides?: FishboneSides;
+  /** Rib slope dx/dy. Default: 0.6. Accepts number or preset name. */
+  ribSlope?: number;
+  /** Density preset. Default: "normal". */
+  density?: FishboneDensity;
+  /** Which side of the rib cause branches stick out on. Default: "head". */
+  causeSide?: FishboneCauseSide;
 }
 
 // ─── Phylogenetic Tree Types ────────────────────────────────
@@ -1001,3 +1026,245 @@ export type EEDiagramAST =
   | BlockAST
   | LadderAST
   | SLDAST;
+
+// ─── Venn / Euler Diagram Types ──────────────────────────────
+
+export type VennDiagramMode = "auto" | "venn" | "euler";
+export type VennPalette = "default" | "brand" | "monochrome";
+export type VennBlendMode = "multiply" | "screen" | "none";
+export type VennEulerRelationType = "subset" | "disjoint" | "overlap";
+
+/** Raw value attached to a region. */
+export type VennRegionValue =
+  | { kind: "integer"; value: number }
+  | { kind: "percent"; value: number }
+  | { kind: "text"; value: string }
+  | { kind: "list"; value: string[] }
+  | { kind: "none" };
+
+/** One set (a circle or ellipse in the diagram). */
+export interface VennSet {
+  id: string;
+  label: string;
+  /** Optional explicit elements (enumeration DSL). */
+  elements?: string[];
+  /** Override color (hex). */
+  color?: string;
+}
+
+/** A named region. `sets` is the subset of set ids that define it (at least one). */
+export interface VennRegion {
+  /** Sorted list of set ids that belong to the intersection (e.g. ["A","B"]). */
+  sets: string[];
+  /** Does this region mean "only" these sets (exclude any other set)? */
+  only: boolean;
+  /** Value payload attached to the region. */
+  value: VennRegionValue;
+}
+
+export interface VennEulerRelation {
+  from: string;
+  to: string;
+  type: VennEulerRelationType;
+}
+
+export interface VennConfig {
+  mode: VennDiagramMode;
+  proportional: boolean;
+  palette: VennPalette;
+  blendMode: VennBlendMode;
+  showCounts: boolean | "auto";
+  showPercent: boolean;
+}
+
+export interface VennAST {
+  type: "venn";
+  title?: string;
+  sets: VennSet[];
+  regions: VennRegion[];
+  relations: VennEulerRelation[];
+  config: VennConfig;
+  metadata?: Record<string, string>;
+}
+
+/** Circle geometry (n=2, n=3 and Euler). */
+export interface VennCircle {
+  id: string;
+  cx: number;
+  cy: number;
+  r: number;
+}
+
+/** Ellipse geometry (n=4). */
+export interface VennEllipse {
+  id: string;
+  cx: number;
+  cy: number;
+  rx: number;
+  ry: number;
+  /** Rotation in degrees around (cx,cy). */
+  rotation: number;
+}
+
+export type VennShape =
+  | ({ kind: "circle" } & VennCircle)
+  | ({ kind: "ellipse" } & VennEllipse);
+
+export interface VennLabelPosition {
+  /** Region this label describes (sorted set ids). */
+  sets: string[];
+  /** Canonical label text (e.g. "A ∩ B", "42", "[a,b,c]"). */
+  label: string;
+  /** Centroid x / y (inside or external). */
+  x: number;
+  y: number;
+  /** If true, label is placed outside the region and `leader` is populated. */
+  external: boolean;
+  /** Optional leader line endpoints (from region-interior → label). */
+  leader?: { x1: number; y1: number; x2: number; y2: number };
+  /** Text anchor for external labels. */
+  anchor?: "start" | "middle" | "end";
+}
+
+export interface VennLayoutResult {
+  width: number;
+  height: number;
+  /** Rendering mode chosen (venn or euler; upset deferred). */
+  mode: "venn" | "euler";
+  /** Shape per set id (circles for n=2/3/euler, ellipses for n=4). */
+  shapes: VennShape[];
+  /** Region labels + placements. */
+  labels: VennLabelPosition[];
+  /** Set-title positions (one per set). */
+  setLabels: Array<{ id: string; label: string; x: number; y: number; anchor: "start" | "middle" | "end" }>;
+  /** Title placement (optional). */
+  title?: { text: string; x: number; y: number };
+  /** Proportional-solve residual (0 if not proportional). */
+  proportionalResidual?: number;
+}
+// ─── Flowchart Types ─────────────────────────────────────────
+
+export type FlowchartDirection = "TB" | "BT" | "LR" | "RL";
+
+/**
+ * Shape keyword catalog. M1 implements only the first 5; the rest are reserved
+ * for M2 so AST/types don't have to be rewritten later.
+ */
+export type FlowchartShape =
+  // M1 core shapes
+  | "rect"
+  | "round"
+  | "stadium"
+  | "diamond"
+  | "parallelogram"
+  // M2 (declared for forward-compat; parser accepts them but may fall back to "rect")
+  | "parallelogram-alt"
+  | "trapezoid"
+  | "trapezoid-alt"
+  | "subroutine"
+  | "cylinder"
+  | "circle"
+  | "double-circle"
+  | "hexagon"
+  | "asymmetric";
+
+export type FlowchartEdgeKind =
+  | "solid"          // -->
+  | "none"           // ---
+  | "dotted"         // -.->
+  | "thick"          // ==>
+  | "bidirectional"  // <-->
+  | "crossed"        // --x
+  | "round-end";     // --o
+
+export type FlowchartArrowEnd = "none" | "arrow" | "circle" | "cross";
+
+export interface FlowchartNode {
+  id: string;
+  label: string;
+  shape: FlowchartShape;
+  icon?: string;
+  classes?: string[];
+  /** Containing subgraph id (undefined = root) */
+  parent?: string;
+}
+
+export interface FlowchartEdge {
+  id?: string;
+  from: string;
+  to: string;
+  kind: FlowchartEdgeKind;
+  label?: string;
+  arrowStart?: FlowchartArrowEnd;
+  arrowEnd?: FlowchartArrowEnd;
+  classes?: string[];
+  /** Reversed during cycle-removal (renderer must flip visual arrow) */
+  isReversed?: boolean;
+}
+
+export interface FlowchartSubgraph {
+  id: string;
+  label: string;
+  direction?: FlowchartDirection;
+  children: string[];
+  subgraphs: string[];
+  classes?: string[];
+}
+
+export interface FlowchartClassDef {
+  id: string;
+  props: Record<string, string>;
+}
+
+export interface FlowchartAST {
+  type: "flowchart";
+  title?: string;
+  direction: FlowchartDirection;
+  nodes: FlowchartNode[];
+  edges: FlowchartEdge[];
+  subgraphs: FlowchartSubgraph[];
+  classDefs: FlowchartClassDef[];
+  /** linkStyle index → css-ish props. Parsed in M1, applied in M2. */
+  linkStyles: Map<number, Record<string, string>>;
+  metadata?: Record<string, string>;
+}
+
+export interface FlowchartLayoutNode {
+  node: FlowchartNode;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  /** 0-based layer index (top for TB, left for LR) */
+  layer: number;
+  /** Position within the layer (0-based) */
+  order: number;
+  /** Dummy routing node inserted for long edges */
+  isDummy?: boolean;
+}
+
+export interface FlowchartLayoutEdge {
+  edge: FlowchartEdge;
+  /** SVG path d attribute */
+  path: string;
+  /** Label anchor with optional text-anchor hint for proper line clearance */
+  labelAnchor?: { x: number; y: number; textAnchor?: "start" | "middle" | "end" };
+}
+
+export interface FlowchartLayoutCluster {
+  subgraph: FlowchartSubgraph;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  depth: number;
+}
+
+export interface FlowchartLayoutResult {
+  width: number;
+  height: number;
+  direction: FlowchartDirection;
+  nodes: FlowchartLayoutNode[];
+  edges: FlowchartLayoutEdge[];
+  clusters: FlowchartLayoutCluster[];
+}
