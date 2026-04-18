@@ -10,8 +10,11 @@ const config = {
   reactStrictMode: true,
   transpilePackages: ['schematex'],
   webpack(webpackConfig) {
-    // Point schematex directly at the TypeScript source for live HMR.
-    webpackConfig.resolve.alias['schematex'] = path.resolve(__dirname, '../src/index.ts');
+    // Dev: point directly at TypeScript source for live HMR.
+    // Production: use the built dist/ (built by Vercel install command).
+    if (process.env.NODE_ENV === 'development') {
+      webpackConfig.resolve.alias['schematex'] = path.resolve(__dirname, '../src/index.ts');
+    }
     return webpackConfig;
   },
 };
