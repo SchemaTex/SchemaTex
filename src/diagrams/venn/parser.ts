@@ -226,6 +226,13 @@ export function parseVennDSL(input: string): VennAST {
       continue;
     }
 
+    // layout <venn|euler|auto>
+    const layoutMatch = /^layout\s+(venn|euler|auto)\s*$/i.exec(raw);
+    if (layoutMatch && layoutMatch[1]) {
+      config.mode = layoutMatch[1].toLowerCase() as VennConfig["mode"];
+      continue;
+    }
+
     // set <id> "label" [props?]
     const setMatch = /^set\s+([A-Za-z][\w-]*)\s+(.+)$/i.exec(raw);
     if (setMatch && setMatch[1] && setMatch[2]) {
@@ -262,13 +269,14 @@ export function parseVennDSL(input: string): VennAST {
       continue;
     }
 
-    // Euler relation: ID subset ID   |  ID disjoint ID  |  ID overlap ID
-    const eulerMatch = /^([A-Za-z][\w-]*)\s+(subset|disjoint|overlap)\s+([A-Za-z][\w-]*)\s*$/i.exec(
+    // Euler relation: ID subset ID   |  ID in ID  |  ID disjoint ID  |  ID overlap ID
+    const eulerMatch = /^([A-Za-z][\w-]*)\s+(subset|in|disjoint|overlap)\s+([A-Za-z][\w-]*)\s*$/i.exec(
       raw
     );
     if (eulerMatch && eulerMatch[1] && eulerMatch[2] && eulerMatch[3]) {
       const from = eulerMatch[1];
-      const rel = eulerMatch[2].toLowerCase();
+      const relRaw = eulerMatch[2].toLowerCase();
+      const rel = relRaw === "in" ? "subset" : relRaw;
       const to = eulerMatch[3];
       if (!knownSetIds.has(from)) {
         throw new VennParseError(`unknown set "${from}" in relation`, lineNo);
