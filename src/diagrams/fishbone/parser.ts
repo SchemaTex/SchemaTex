@@ -37,19 +37,19 @@ const SLOPE_PRESETS: Record<string, number> = {
  *
  *   fishbone "Title"
  *   effect "Problem statement"
- *   category content "内容 Content"
- *   category tech    "技术 Technical"
- *   content : "更新频率下降"
- *   content : "关键词未覆盖"
- *     - "长尾词无内容"
- *     - "竞品占位 H1"
+ *   category content "Content"
+ *   category tech    "Technical"
+ *   content : "Publishing frequency down"
+ *   content : "Keyword gaps"
+ *     - "No long-tail coverage"
+ *     - "Competitor dominates H1"
  *
  * Style B — compact shorthand (convenient for quick authoring, AI output)
  *
  *   fishbone "Title"
  *   effect "Problem statement"
- *   category Content: 更新频率下降; 同质化严重; 关键词未覆盖
- *   category Technical: Core Web Vitals 差; 索引覆盖率下降
+ *   category Content: Publishing frequency down; Content too generic; Keyword gaps
+ *   category Technical: Core Web Vitals failing; Crawl coverage drop
  *
  * Config directives:
  *

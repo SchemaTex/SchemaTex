@@ -13,30 +13,30 @@ description: Multi-generation genetic inheritance charts for clinical genetics. 
     III-1 [female, affected, proband]
     III-3 [female, presymptomatic]`} />
 
-*遗传学 pedigree chart 标准——追踪特定性状/疾病在家族中的遗传模式。*
+*Genetics pedigree chart standard — tracking the inheritance pattern of a specific trait or disease within a family.*
 
 > **References:**
 > - Bennett, R.L. et al. (1995). Recommendations for standardized human pedigree nomenclature. *Am J Hum Genet*, 56(3), 745-752.
 > - Bennett, R.L. et al. (2008). Standardized human pedigree nomenclature: Update and assessment. *J Genet Couns*, 17(5), 424-433.
-> - **Bennett, R.L. (2022). The evolving pedigree: Updating to reflect modern family structures, sex, and gender.** *J Genet Couns*, 31(6), 1267-1275. ← 最新标准
+> - **Bennett, R.L. (2022). The evolving pedigree: Updating to reflect modern family structures, sex, and gender.** *J Genet Couns*, 31(6), 1267-1275. ← Latest standard
 > - NSGC (National Society of Genetic Counselors) pedigree standardization committee
 
 ---
 
 ## 1. Key Differences from Genogram
 
-| 方面 | Genogram | Pedigree Chart |
+| Aspect | Genogram | Pedigree Chart |
 |------|----------|---------------|
-| 主要用途 | 家庭关系 + 医疗 + 心理 + 社工评估 | 纯遗传追踪（单一或少量 trait） |
-| Condition 表示 | 多条件 fill patterns (22 categories) | 只有 affected/carrier/unaffected (1-3 traits) |
-| 关系质量 | 有（emotional relationships 34 types） | 无（只有 mated/not mated） |
-| 代标记 | 无 | Roman numeral (I, II, III...) |
-| 个体标记 | 名字 + birth year | Generation-number (II-3) + optional name |
-| Proband | 无（有 Index Person） | 有（箭头指向 index case，P 标记） |
-| Consultand | 无 | 有（箭头 + C 标记） |
-| Consanguinity | 可选标注 | 关键信息（双线，必须标注） |
-| Sex vs Gender | 传统 binary | Bennett 2022: sex ≠ gender，diamond for unknown/DSD |
-| 关系表示 | 详细（divorce, separation, cohabitation） | 简化（mated line, no longer together, consanguinity） |
+| Primary use | Family relationships + medical + psychological + social work assessment | Pure genetic tracking (single or few traits) |
+| Condition representation | Multiple condition fill patterns (22 categories) | Only affected/carrier/unaffected (1–3 traits) |
+| Relationship quality | Yes (34 types of emotional relationships) | No (mated/not mated only) |
+| Generation labels | None | Roman numerals (I, II, III...) |
+| Individual labels | Name + birth year | Generation-number (II-3) + optional name |
+| Proband | None (has Index Person) | Yes (arrow pointing to index case, P marker) |
+| Consultand | None | Yes (arrow + C marker) |
+| Consanguinity | Optional annotation | Critical information (double line, must be shown) |
+| Sex vs Gender | Traditional binary | Bennett 2022: sex ≠ gender; diamond for unknown/DSD |
+| Relationship representation | Detailed (divorce, separation, cohabitation) | Simplified (mated line, no longer together, consanguinity) |
 
 ---
 
@@ -44,17 +44,17 @@ description: Multi-generation genetic inheritance charts for clinical genetics. 
 
 ### 2.1 Core Shapes (Bennett 2022 Updated)
 
-| Symbol | Shape | 含义 | DSL |
+| Symbol | Shape | Meaning | DSL |
 |--------|-------|------|-----|
 | □ | Square | AMAB (Assigned Male at Birth) | `[male]` or `[amab]` |
 | ○ | Circle | AFAB (Assigned Female at Birth) | `[female]` or `[afab]` |
 | ◇ | Diamond | UAAB (Unknown/Ambiguous at Birth) / DSD / Non-disclosed | `[unknown]` or `[uaab]` |
 
-**Bennett 2022 重要更新：**
-- Square/Circle 现在正式代表 **assigned sex at birth**，不是 gender identity
-- Diamond 用于：sex unknown, differences of sex development (DSD/intersex), non-disclosed, or still in utero (sex unknown)
-- Gender identity 如果与 assigned sex 不同，用 label 标注（不改变 shape）
-- 例：transgender woman (AMAB) → square shape + "TW" label or gender annotation
+**Important Bennett 2022 updates:**
+- Square/Circle now formally represent **assigned sex at birth**, not gender identity
+- Diamond is used for: sex unknown, differences of sex development (DSD/intersex), non-disclosed, or still in utero (sex unknown)
+- If gender identity differs from assigned sex, annotate with a label (do not change the shape)
+- Example: transgender woman (AMAB) → square shape + "TW" label or gender annotation
 
 ### 2.2 Affected Status
 
@@ -68,7 +68,7 @@ description: Multi-generation genetic inheritance charts for clinical genetics. 
 | Asymptomatic/presymptomatic | Vertical line through shape | `<line>` through center | `[presymptomatic]` |
 | Multiple traits | Quadrant fill (like genogram) | See below | `[affected: trait1 + trait2]` |
 
-**多 trait pedigree（最多 4 traits）：**
+**Multi-trait pedigree (up to 4 traits):**
 ```
 # Legend defines what each quadrant means
 pedigree "Breast/Ovarian Cancer Family"
@@ -94,25 +94,25 @@ pedigree "Breast/Ovarian Cancer Family"
 | Ectopic pregnancy (ECT) | Small triangle + ECT label | `<polygon>` + text | `[ectopic]` |
 | Affected SAB | Filled small triangle | `<polygon>` filled | `[sab, affected]` |
 
-**Bennett 2022 注意：** 
-- Deceased 标记从传统的 "X through shape" 更新为 "diagonal slash (/)"，与 genogram 的 X 标记不同
-- 这是 pedigree 与 genogram 的重要视觉区别
+**Bennett 2022 Note:** 
+- The deceased marker was updated from the traditional "X through shape" to "diagonal slash (/)", which differs from the X marker used in genograms
+- This is an important visual distinction between pedigrees and genograms
 
 ### 2.4 Special Markers
 
-| Marker | Symbol | 位置 | DSL |
+| Marker | Symbol | Position | DSL |
 |--------|--------|------|-----|
-| Proband | Arrow (↗) pointing to shape + "P" | 左下方 | `[proband]` |
-| Consultand | Arrow (↗) pointing to shape + "C" | 左下方 | `[consultand]` |
-| Evaluated | "E" above or inside shape | 上方 | `[evaluated]` |
-| No offspring by choice | Crossed out drop line | Couple line 下方 | `[no-children]` |
-| Infertility | Crossed out drop line + "∞" | Couple line 下方 | `[infertile]` |
+| Proband | Arrow (↗) pointing to shape + "P" | Lower-left | `[proband]` |
+| Consultand | Arrow (↗) pointing to shape + "C" | Lower-left | `[consultand]` |
+| Evaluated | "E" above or inside shape | Above | `[evaluated]` |
+| No offspring by choice | Crossed out drop line | Below couple line | `[no-children]` |
+| Infertility | Crossed out drop line + "∞" | Below couple line | `[infertile]` |
 | Adopted in | Brackets around shape | `[` shape `]` | `[adopted-in]` |
 | Adopted out | Brackets around shape, dashed line to parents | `[` shape `]` + dashed line | `[adopted-out]` |
 
 ### 2.5 Assisted Reproduction (Bennett 2022)
 
-Bennett 2022 增加了辅助生殖的标准符号，这在现代临床中越来越重要：
+Bennett 2022 added standard symbols for assisted reproduction, which are increasingly important in modern clinical practice:
 
 | Type | Symbol | DSL |
 |------|--------|-----|
@@ -120,22 +120,22 @@ Bennett 2022 增加了辅助生殖的标准符号，这在现代临床中越来�
 | Donor sperm | "D" on connecting line from sperm donor | `[donor-sperm]` |
 | Donor embryo | "D" on connecting lines from both donors | `[donor-embryo]` |
 | Surrogacy (gestational) | "S" label on surrogate, dashed line to child | `[surrogate]` |
-| IVF | "IVF" label on couple line | couple line 标注 |
+| IVF | "IVF" label on couple line | annotated on couple line |
 
 ---
 
 ## 3. Relationship Lines (Pedigree-Specific)
 
-Pedigree 的关系线比 genogram **简单得多**——没有 emotional relationships，只有遗传学相关的结构线。
+Pedigree relationship lines are **much simpler** than those in genograms — there are no emotional relationships, only structurally relevant genetic lines.
 
 ### 3.1 Partnership Lines
 
-| Type | Line Style | DSL | 含义 |
+| Type | Line Style | DSL | Meaning |
 |------|-----------|-----|------|
-| Mated (together) | Single horizontal solid line | `A -- B` | 有后代的配偶 |
-| Mated (no longer together) | Single line + single slash | `A -/- B` | 分开（不区分 divorce/separation） |
-| Consanguinity | Double horizontal line | `A == B` | 近亲婚配（遗传学关键！） |
-| Relationship line (no offspring) | Single horizontal dashed | `A ~ B` | 配偶但无后代 |
+| Mated (together) | Single horizontal solid line | `A -- B` | Partners with offspring |
+| Mated (no longer together) | Single line + single slash | `A -/- B` | Separated (divorce/separation not distinguished) |
+| Consanguinity | Double horizontal line | `A == B` | Consanguineous union (genetically critical!) |
+| Relationship line (no offspring) | Single horizontal dashed | `A ~ B` | Partners with no offspring |
 
 ### 3.2 Parent-Child Lines
 
@@ -154,46 +154,46 @@ Pedigree 的关系线比 genogram **简单得多**——没有 emotional relatio
 ## 4. Generation and Individual Labeling
 
 ### 4.1 Generation Labels
-- 左侧显示 Roman numeral（I, II, III, IV...）
-- I = 最年长的一代
-- 对齐到该代的中心 Y 坐标
+- Roman numerals (I, II, III, IV...) are displayed on the left side
+- I = the oldest generation
+- Aligned to the center Y-coordinate of that generation
 - Font: bold, 14px, class="schematex-generation-label"
 
 ### 4.2 Individual Labels
-- 每代内从左到右编号：1, 2, 3...
-- 完整标识：`II-3` = 第二代第 3 个人
-- 显示在 shape 下方
-- Proband 和 consultand 额外有箭头标记
+- Numbered left to right within each generation: 1, 2, 3...
+- Full identifier: `II-3` = the 3rd individual in the second generation
+- Displayed below the shape
+- Proband and consultand have an additional arrow marker
 
 ### 4.3 Legend (Required for Multi-Trait Pedigrees)
-- Pedigree 图必须包含 legend，解释 fill pattern 的含义
-- Legend 通常放在右下角或图表底部
-- Legend 内容：每个 trait 对应的 fill pattern + color
+- Pedigree diagrams must include a legend explaining the fill pattern meanings
+- The legend is typically placed in the bottom-right corner or at the bottom of the chart
+- Legend content: the fill pattern + color corresponding to each trait
 
 ---
 
 ## 5. Layout Rules
 
-与 genogram 共享大部分布局逻辑（generation alignment, male-left, children ordering），区别：
+Shares most layout logic with genogram (generation alignment, male-left, children ordering), with the following differences:
 
 ### 5.1 Pedigree-Specific Layout
-1. **Generation label 列：** 左侧留出 40px 列宽显示 Roman numeral
-2. **Individual numbering：** Shape 下方显示 "II-3" 格式的标识
-3. **No emotional lines：** 不需要 emotional relationship routing
-4. **Consanguinity emphasis：** 双线要明显可见，因为这是遗传学的关键信息
-5. **Proband arrow：** 从左下 45° 指向 proband shape，长度 20px
-6. **Legend box：** 右下角或底部，包含 trait 说明
+1. **Generation label column:** Reserve a 40px column on the left for Roman numerals
+2. **Individual numbering:** Display "II-3" format identifiers below each shape
+3. **No emotional lines:** Emotional relationship routing is not needed
+4. **Consanguinity emphasis:** Double lines must be clearly visible, as this is critical genetic information
+5. **Proband arrow:** Points at 45° from lower-left to the proband shape, length 20px
+6. **Legend box:** Bottom-right or bottom of diagram, containing trait descriptions
 
 ### 5.2 Spacing (Pedigree-Specific Adjustments)
 
-| Parameter | Default | 与 Genogram 差异 |
+| Parameter | Default | Difference from Genogram |
 |-----------|---------|-----------------|
-| Left margin (for gen labels) | 50px | Genogram 无此需求 |
-| Node width | 40px | 同 |
-| Node height | 40px | 同 |
-| Generation spacing | 100px | 略小于 genogram (120px)，因为无 emotional lines |
-| Sibling spacing | 50px | 略小于 genogram (60px) |
-| Legend box width | 150px | Genogram 无此需求 |
+| Left margin (for gen labels) | 50px | Genogram has no such requirement |
+| Node width | 40px | Same |
+| Node height | 40px | Same |
+| Generation spacing | 100px | Slightly less than genogram (120px), because there are no emotional lines |
+| Sibling spacing | 50px | Slightly less than genogram (60px) |
+| Legend box width | 150px | Genogram has no such requirement |
 | Legend box height | auto (based on traits) | — |
 
 ---
@@ -260,7 +260,7 @@ pedigree "Cystic Fibrosis Family"
     II-3 [male, affected, proband]
     II-4 [female, unaffected]
 ```
-验证：I-1/I-2 half-filled (carrier)，II-3 full-filled + proband arrow，左侧有 "I" "II" 标记。
+Verify: I-1/I-2 are half-filled (carrier), II-3 is full-filled + proband arrow, "I" and "II" labels appear on the left.
 
 ### Case 2: Consanguinity
 ```
@@ -277,7 +277,7 @@ pedigree "Consanguineous Marriage"
   II-1 == II-3
     III-1 [male, affected, proband]
 ```
-验证：II-1 和 II-3 之间是双线（consanguinity），III-1 full-filled + proband arrow。
+Verify: The line between II-1 and II-3 is double (consanguinity), III-1 is full-filled + proband arrow.
 
 ### Case 3: X-Linked Recessive (Hemophilia)
 ```
@@ -294,7 +294,7 @@ pedigree "Hemophilia A"
     III-2 [female, carrier-x]
     III-3 [male, unaffected]
 ```
-验证：carrier-x females 有 center dot，affected males full-filled。
+Verify: carrier-x females have a center dot, affected males are full-filled.
 
 ### Case 4: Multi-Trait Pedigree
 ```
@@ -314,7 +314,7 @@ pedigree "Cancer Family Syndrome"
     III-1 [female, unaffected, proband]
     III-2 [male, unaffected]
 ```
-验证：legend box 显示 4 个 trait 对应的 quadrant fill，I-1 有 quad-bl filled，II-1 有 quad-tl + quad-tr filled，III-1 有 proband arrow。
+Verify: legend box shows the 4 trait quadrant fills, I-1 has quad-bl filled, II-1 has quad-tl + quad-tr filled, III-1 has proband arrow.
 
 ### Case 5: Modern Family (Bennett 2022 — Assisted Reproduction)
 ```
@@ -328,7 +328,7 @@ pedigree "Donor Conception"
   II-1 -- II-2 [male]
     III-1 [female, proband]
 ```
-验证：donor-sperm 标注在 donor 到 child 的连接线上，donor node 可选显示。
+Verify: donor-sperm annotation appears on the connecting line from donor to child, donor node display is optional.
 
 ### Case 6: Pregnancy / Loss
 ```
@@ -342,7 +342,7 @@ pedigree "Reproductive History"
     II-4 [female, pregnancy]
     II-5 [female]
 ```
-验证：II-2 是小三角 (SAB)，II-3 是小 shape + SB label + deceased slash，II-4 是 diamond/shape with "P"。
+Verify: II-2 is a small triangle (SAB), II-3 is a small shape + SB label + deceased slash, II-4 is a diamond/shape with "P".
 
 ### Case 7: Large Pedigree (5 Generations)
 ```
@@ -366,7 +366,7 @@ pedigree "Huntington Disease"
   IV-1 -- IV-5 [female, unaffected]
     V-1 [unknown, pregnancy]
 ```
-验证：5 代 Roman numeral 标记（I-V），presymptomatic 有 vertical line 标记，V-1 是 pregnancy diamond。
+Verify: 5-generation Roman numeral labels (I–V), presymptomatic individuals have a vertical line marker, V-1 is a pregnancy diamond.
 
 ---
 

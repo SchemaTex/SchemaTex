@@ -9,7 +9,7 @@ CS_N:  10000001
 MOSI:  x=======  data: ["0xAB","0xCD","0xEF","0x01","0x02","0x03","0x04","0x05"]
 MISO:  zzzz====  data: ["","","","","0xFF","0x12","0x34","0x56"]`} />
 
-*WaveDrom WaveJSON syntax + IEEE 1497 timing annotation conventions + 数字系统信号表示标准。*
+*WaveDrom WaveJSON syntax + IEEE 1497 timing annotation conventions + digital systems signal representation standards.*
 
 > **Primary References:**
 > - WaveDrom WaveJSON specification: https://wavedrom.com/tutorial.html
@@ -116,7 +116,7 @@ L x1+pw,y_lo                  # Low for second half
 
 ### 2.2 Dimension Defaults
 
-| Parameter | Default | 含义 |
+| Parameter | Default | Meaning |
 |-----------|---------|------|
 | `signal_name_width` | 120px | Left column for signal names |
 | `signal_height` | 28px | Height of each signal band |
@@ -161,7 +161,7 @@ When signals are grouped, render a left-side bracket:
 
 ### 3.1 Arrow Types (WaveDrom node/edge syntax)
 
-| Syntax | Visual | 含义 |
+| Syntax | Visual | Meaning |
 |--------|--------|------|
 | `->` | → (solid line + arrowhead) | Causal relationship |
 | `<->` | ↔ (bidirectional) | Duration / constraint span |
@@ -251,7 +251,7 @@ node_id         = IDENTIFIER
 label_clause    = "label:" quoted_string
 ```
 
-**DSL 示例（完整）：**
+**DSL Example (complete):**
 ```
 timing "SPI Transaction" [hscale: 2]
 
@@ -326,7 +326,7 @@ CLK:  pppppppp
 DATA: x=======  data: ["A", "B", "C", "D", "E", "F", "G", "H"]
 EN:   01111110
 ```
-验证：CLK 为方波，DATA 有 8 段 trapezoid 形状并带文字标签，EN 有正确 0/1 跳变。
+Verify: CLK is a square wave, DATA has 8 trapezoid segments with text labels, EN has correct 0/1 transitions.
 
 ### Case 2: High-Z and Unknown States
 ```
@@ -334,7 +334,7 @@ timing
 OE:   01111110
 BUS:  xzz=====z  data: ["", "", "0xFF", "0x00", "0xAB", "0xCD"]
 ```
-验证：`z` 渲染为中线虚线，`x` 渲染为 cross-hatch 填充。
+Verify: `z` renders as a dashed midline, `x` renders as cross-hatch fill.
 
 ### Case 3: Multiple Clocks + Groups
 ```
@@ -346,7 +346,7 @@ SIG_A: 0111100001111000
 CLK_B: ppppppppppppppp. phase: 0.5
 SIG_B: x.011110000111100
 ```
-验证：两组信号分别有 bracket，CLK_B 相位偏移 0.5 个周期。
+Verify: each group of signals has a bracket, CLK_B phase offset is 0.5 periods.
 
 ### Case 4: Setup / Hold Annotation
 ```
@@ -357,37 +357,37 @@ annotate:
   d_change -> clk_rise  label: "t_su ≥ 3ns"
   clk_rise -> d_stable  label: "t_h ≥ 1ns"
 ```
-验证：红色双向箭头 + 标签在 CLK 上升沿附近正确定位。
+Verify: red bidirectional arrows + labels are correctly positioned near the CLK rising edge.
 
 ### Case 5: Single Signal
 ```
 timing
 RST: 10000001
 ```
-验证：单信号不崩溃，画布大小正确缩放。
+Verify: single signal does not crash, canvas size scales correctly.
 
-### Case 6: hscale 配置
+### Case 6: hscale Configuration
 ```
 timing [hscale: 3]
 A: 01010101
 B: 00110011
 ```
-验证：period_width = 40 × 3 = 120px，每个周期明显更宽。
+Verify: period_width = 40 × 3 = 120px, each period is noticeably wider.
 
 ---
 
 ## 7. Implementation Priority
 
-| Priority | Feature | Complexity | 用户价值 |
+| Priority | Feature | Complexity | User Value |
 |----------|---------|------------|---------|
-| P0 (MVP) | `0/1/p/n/.` basic states + sharp transitions | Low | Core — 所有时序图都用 |
+| P0 (MVP) | `0/1/p/n/.` basic states + sharp transitions | Low | Core — used in every timing diagram |
 | P0 | Signal name column + horizontal layout | Low | Core |
-| P0 | `=` data values + data[] label array | Low | High — bus signals 核心 |
-| P1 | `x` unknown (cross-hatch) + `z` hi-Z (dashed) | Low | High — 数字设计必须 |
+| P0 | `=` data values + data[] label array | Low | High — core of bus signals |
+| P1 | `x` unknown (cross-hatch) + `z` hi-Z (dashed) | Low | High — required for digital design |
 | P1 | Clock waveforms (p/n/P/N) | Low | High |
 | P1 | Group notation `[name]` + bracket | Medium | High |
 | P1 | `hscale` config | Low | Medium |
-| P2 | Timing annotations (arrows, labels) | Medium | Medium — 专业用法 |
+| P2 | Timing annotations (arrows, labels) | Medium | Medium — professional use |
 | P2 | Phase offset | Low | Medium |
 | P2 | `u/d` explicit edge characters | Low | Low |
 | P3 | Edge timing constraint visualization | High | Low — advanced only |

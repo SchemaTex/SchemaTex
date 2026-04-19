@@ -13,7 +13,7 @@ utility -> bus_hv
 bus_hv -> xfmr1 -> bus_mv
 bus_mv -> brk1`} />
 
-*IEEE Std 315 (ANSI Y32.2) 电气图形符号标准 + IEC 60617 国际标准 + 配电系统图形规范。*
+*IEEE Std 315 (ANSI Y32.2) electrical graphic symbol standard + IEC 60617 international standard + power distribution system graphic conventions.*
 
 > **Primary References:**
 > - IEEE Std 315-1975 / ANSI Y32.2-1975: Graphic Symbols for Electrical and Electronics Diagrams (de facto SLD standard)
@@ -22,7 +22,7 @@ bus_mv -> brk1`} />
 > - NFPA 70 (NEC): National Electrical Code — service entrance conventions
 > - IEEE Std 1584: Arc flash labeling conventions (informational)
 
-**注意：** Single-Line Diagram 将三相 AC 系统的三条导线简化为**一条线**表示，从而减少视觉复杂度。所有设备额定值和保护设定值以文字标注形式呈现。
+**Note:** A Single-Line Diagram simplifies the three conductors of a three-phase AC system into **a single line**, reducing visual complexity. All equipment ratings and protection settings are presented as text annotations.
 
 ---
 
@@ -69,21 +69,21 @@ bus_mv -> brk1`} />
 <line x1="18" y1="16" x2="18" y2="26" stroke="#333" stroke-width="2.5"/>
 ```
 
-**尺寸**: 36px wide × 26px tall（不含引线）
+**Dimensions**: 36px wide × 26px tall (excluding lead wires)
 
-**Transformer 标注约定:**
-- 额定值: `{kVA} kVA, {V_pri}/{V_sec} V, {%Z}% Z`
-- 例: `500 kVA, 13.8kV/480V, 5.75% Z`
+**Transformer annotation convention:**
+- Rating: `{kVA} kVA, {V_pri}/{V_sec} V, {%Z}% Z`
+- Example: `500 kVA, 13.8kV/480V, 5.75% Z`
 
 #### Battery Bank
-- 多组长短平行线（长=正极，短=负极）
-- 3 组标准表示充电电池组
+- Multiple groups of long and short parallel lines (long = positive, short = negative)
+- 3 groups is the standard representation for a storage battery bank
 
 ### 1.2 Switching & Protection Devices
 
 #### Circuit Breaker (Device 52)
-- **区别于隔离开关**: 断弧能力，对角线 + 弧线表示
-- **符号**: 对角斜线（左下→右上）+ 上端小弧线
+- **Distinction from disconnect switch**: arc-interrupting capability, shown as diagonal line + arc
+- **Symbol**: diagonal line (lower-left → upper-right) + small arc at the top
 ```xml
 <!-- Body: diagonal line -->
 <line x1="5" y1="30" x2="25" y2="5" stroke="#333" stroke-width="2.5"/>
@@ -93,23 +93,23 @@ bus_mv -> brk1`} />
 <line x1="15" y1="0" x2="15" y2="-10" stroke="#333" stroke-width="2.5"/>
 <line x1="15" y1="38" x2="15" y2="48" stroke="#333" stroke-width="2.5"/>
 ```
-**宽×高**: 30px × 38px（不含引线）
+**Width×Height**: 30px × 38px (excluding lead wires)
 
-**标注约定:**
+**Annotation convention:**
 - `{kA} kA sym` (short-circuit interrupting rating)
 - `{A}A trip` (trip setting)
-- Device number: `52` (可选）
+- Device number: `52` (optional)
 
 #### Disconnect Switch / Isolator (Device 89)
-- 同 breaker 形状，但无弧线（isolation only，不能灭弧）
+- Same shape as breaker, but without the arc (isolation only, cannot interrupt arc)
 ```xml
 <line x1="5" y1="30" x2="25" y2="5" stroke="#333" stroke-width="2.5"/>
 <!-- No arc → just a simple diagonal line -->
 ```
 
 #### Fused Disconnect
-- 隔离开关 + 保险丝符号的组合
-- 保险丝: 矩形 10×5px（IEC）或小方块（ANSI）
+- Combination of disconnect switch + fuse symbol
+- Fuse: 10×5px rectangle (IEC) or small square (ANSI)
 
 #### Fuse
 ```xml
@@ -120,11 +120,11 @@ bus_mv -> brk1`} />
 ```
 
 #### Motor Starter (Contactor with Overload)
-- 矩形盒 20×30px，标注 `M` 或 `MS`
+- Rectangle box 20×30px, labeled `M` or `MS`
 
 #### Ground Switch
-- 向下指的小三角形（ground 符号）+ 开关线
-- 表示接地刀闸
+- Small downward-pointing triangle (ground symbol) + switch line
+- Represents a grounding switch
 
 ### 1.3 Measurement & Protection
 
@@ -139,24 +139,24 @@ bus_mv -> brk1`} />
 ```
 
 #### Potential/Voltage Transformer (PT/VT)
-- 同 CT 符号，内标 `PT`，但与主线连接方式不同（并联，不是串联）
+- Same symbol as CT, labeled `PT` inside, but connected differently to the main line (in parallel, not in series)
 
-#### Relay (各类保护继电器)
+#### Relay (various protective relays)
 ```xml
 <!-- Small circle with relay function code -->
 <circle cx="10" cy="10" r="10" fill="white" stroke="#333" stroke-width="1.5"/>
 <text x="10" y="14" font-size="8" text-anchor="middle">51</text>
 ```
-常用 ANSI 继电器设备编号：
+Common ANSI relay device numbers:
 
-| 代号 | 保护类型 |
+| Code | Protection Type |
 |------|---------|
-| 27 | 低电压保护 (Under Voltage) |
-| 51 | 过电流保护 (Overcurrent) |
-| 67 | 方向过电流 (Directional Overcurrent) |
-| 87 | 差动保护 (Differential) |
-| 79 | 自动重合闸 (Auto Recloser) |
-| 81 | 频率继电器 (Frequency Relay) |
+| 27 | Under Voltage |
+| 51 | Overcurrent |
+| 67 | Directional Overcurrent |
+| 87 | Differential |
+| 79 | Auto Recloser |
+| 81 | Frequency Relay |
 
 ### 1.4 Load Devices
 
@@ -179,14 +179,14 @@ bus_mv -> brk1`} />
 ```
 
 #### Lighting Panel (LP)
-- 矩形 + `LP` 标注 + panel number
+- Rectangle + `LP` label + panel number
 
 #### Motor Control Center (MCC)
-- 较大矩形 60×40px + `MCC` 标注
+- Larger rectangle 60×40px + `MCC` label
 
 ### 1.5 Bus Bars
 
-Bus bar 是 SLD 中电压汇集点，用**粗水平线**表示：
+A bus bar is the voltage collection point in an SLD, represented by a **thick horizontal line**:
 
 ```xml
 <!-- Bus bar (three-phase, single-line representation) -->
@@ -199,13 +199,13 @@ Bus bar 是 SLD 中电压汇集点，用**粗水平线**表示：
       text-anchor="middle" class="lt-bus-label">480V Bus</text>
 ```
 
-**垂直连接（设备接入 bus）：**
-- 设备通过垂直线向下（或向上）连接到 bus bar
-- 连接线宽度 = 标准线宽（2px），比 bus bar 细
+**Vertical connections (devices connected to bus):**
+- Devices connect to the bus bar via vertical lines going down (or up)
+- Connection line width = standard stroke width (2px), thinner than the bus bar
 
 ### 1.6 Metering & Instrumentation
 
-| 元件 | 符号 | SVG |
+| Element | Symbol | SVG |
 |------|------|-----|
 | Ammeter | Circle + `A` | `<circle r="8"><text>A</text>` |
 | Voltmeter | Circle + `V` | `<circle r="8"><text>V</text>` |
@@ -220,7 +220,7 @@ Bus bar 是 SLD 中电压汇集点，用**粗水平线**表示：
 
 ### 2.1 Vertical Hierarchy (Power Flow Direction)
 
-SLD 的核心布局原则：**电源在上，负荷在下**。
+The core SLD layout principle: **source at top, loads at bottom**.
 
 ```
 ┌─────────────────────────────────────────────────┐
@@ -242,27 +242,27 @@ SLD 的核心布局原则：**电源在上，负荷在下**。
 
 ### 2.2 Voltage Level Bands
 
-每个电压等级形成一个**水平带**（horizontal band）：
+Each voltage level forms a **horizontal band**:
 
-| 电压范围 | 级别 | 典型 band 高度 |
+| Voltage Range | Level | Typical Band Height |
 |---------|------|------------|
 | > 115 kV | Transmission | 120px |
 | 1 kV – 115 kV | Distribution (MV) | 100px |
 | &lt; 1 kV (600V) | Utilization (LV) | 80px |
 | &lt; 120V | Control/Signal | 60px |
 
-Bus bar 在每个 band 的上部水平绘制。
+The bus bar is drawn horizontally at the top of each band.
 
 ### 2.3 Multiple Feeders
 
-同一 bus 上的多个 feeder（馈线）：
-- 等间距从 bus bar 向下延伸
-- 间距：`feeder_spacing = 80px`（默认）
-- 对称排列（偶数居中，奇数单边）
+Multiple feeders on the same bus:
+- Extend downward from the bus bar at equal intervals
+- Spacing: `feeder_spacing = 80px` (default)
+- Symmetrically arranged (even count centered, odd count offset)
 
 ### 2.4 Component Sizing Consistency
 
-| 元件类型 | 标准高度 | 标准宽度 |
+| Element Type | Standard Height | Standard Width |
 |---------|---------|---------|
 | Circuit Breaker | 40px | 30px |
 | Disconnect Switch | 35px | 30px |
@@ -276,16 +276,16 @@ Bus bar 在每个 band 的上部水平绘制。
 
 ```
          [Rating / Equipment ID]
-                ↑ 标注在设备上方
+                ↑ annotation above device
     ←── Bus ───[CB]─── Feeder →
-                ↓ 额定值在设备下方
+                ↓ rating below device
          [kA rating / trip setting]
 ```
 
-- **Equipment ID**: 设备上方，11px bold
-- **Rating / kA**: 设备下方，10px，`{A}A / {kA}kA`
-- **Voltage label**: bus bar 左侧或上方，12px bold
-- **Cable annotation**: 垂直连接线旁边，9px
+- **Equipment ID**: above the device, 11px bold
+- **Rating / kA**: below the device, 10px, `{A}A / {kA}kA`
+- **Voltage label**: to the left of or above the bus bar, 12px bold
+- **Cable annotation**: beside the vertical connection line, 9px
 
 ---
 
@@ -305,7 +305,7 @@ Bus bar 在每个 band 的上部水平绘制。
 
 ### 3.2 Transformer Nameplate
 
-Transformer 旁边标注铭牌数据：
+Nameplate data is annotated beside the transformer:
 ```xml
 <text x="x_right + 5" y="y_top" font-size="9" class="lt-nameplate">500 kVA</text>
 <text x="x_right + 5" y="y_top + 12" font-size="9" class="lt-nameplate">13.8kV/480V</text>
@@ -374,7 +374,7 @@ DEDENT        = decrease in whitespace
 NEWLINE       = /\n/
 ```
 
-**DSL 示例：简单工业配电 SLD**
+**DSL Example: Simple Industrial Power Distribution SLD**
 ```
 sld "Industrial Facility Power Distribution"
 
@@ -409,7 +409,7 @@ BUS-480 -> CB2 -> LP1 [cable: "3#4 AWG, 75ft"]
 BUS-480 -> CB3 -> MCC1 [cable: "3#2/0 AWG, 150ft"]
 ```
 
-**DSL 示例：住宅服务入口**
+**DSL Example: Residential Service Entrance**
 ```
 sld "Residential 200A Service"
 
@@ -508,7 +508,7 @@ tx = transformer [rating: "500 kVA, 13.8kV/480V"]
 bus = bus [voltage: "480V"]
 src -> tx -> bus
 ```
-验证：utility arrow 在顶，transformer 在中，480V bus bar 在底，垂直连线正确。
+Verify: utility arrow at top, transformer in the middle, 480V bus bar at the bottom, vertical connections correct.
 
 ### Case 2: Circuit Breaker
 ```
@@ -518,7 +518,7 @@ cb = breaker [rating: "800A", id: "CB-1"]
 motor = motor [rating: "50HP"]
 bus1 -> cb -> motor
 ```
-验证：breaker 符号（对角线 + 弧线）在 bus 和 motor 之间，额定值标注正确。
+Verify: breaker symbol (diagonal line + arc) is between the bus and motor, rating annotation correct.
 
 ### Case 3: Multiple Feeders
 ```
@@ -536,24 +536,24 @@ bus -> cb1 -> m1
 bus -> cb2 -> m2
 bus -> cb3 -> lp1
 ```
-验证：3 个 feeder 从 bus 等间距向下，各自 breaker + 负荷正确对齐。
+Verify: 3 feeders extend downward from the bus at equal intervals, each breaker + load correctly aligned.
 
 ### Case 4: Full System with Transformer + Protection
-（见 Section 4 DSL 示例：工业配电 SLD）  
-验证：4 层（utility → TX → bus → loads），设备标注齐全，cable 标注侧旁。
+(See Section 4 DSL Example: Industrial Power Distribution SLD)  
+Verify: 4 levels (utility → TX → bus → loads), all equipment annotations present, cable annotations alongside.
 
 ### Case 5: Residential Service
-（见 Section 4 DSL 示例：住宅）  
-验证：简化 3 元件布局，meter → main breaker → panel，单相配置。
+(See Section 4 DSL Example: Residential Service Entrance)  
+Verify: simplified 3-element layout, meter → main breaker → panel, single-phase configuration.
 
 ---
 
 ## 7. Implementation Priority
 
-| Priority | Feature | Complexity | 用户价值 |
+| Priority | Feature | Complexity | User Value |
 |----------|---------|------------|---------|
-| P0 (MVP) | Bus bar + vertical wire + utility source | Low | Core — SLD 骨架 |
-| P0 | Circuit Breaker symbol | Medium | Core — 每个 SLD 必须 |
+| P0 (MVP) | Bus bar + vertical wire + utility source | Low | Core — SLD skeleton |
+| P0 | Circuit Breaker symbol | Medium | Core — required in every SLD |
 | P0 | Transformer symbol (two coils) | Medium | Core |
 | P0 | Motor symbol (circle + M) | Low | Core |
 | P0 | Vertical hierarchy layout (top-to-bottom) | Medium | Core |
@@ -575,22 +575,22 @@ bus -> cb3 -> lp1
 
 ## 6. Expanded Symbol Library (v2): Winding Configurations & Protection Equipment
 
-*v1 只有通用变压器和基础开关设备。实际工程 SLD 中，变压器接线方式（Δ-Yg、Y-Δ等）是关键信息，保护设备（避雷器、重合器）也必须专业呈现。*
+*v1 only had a generic transformer and basic switching equipment. In real engineering SLDs, transformer winding configurations (Δ-Yg, Y-Δ, etc.) are critical information, and protection devices (surge arresters, reclosers) must also be rendered professionally.*
 
 ---
 
 ### 6.1 Transformer Winding Configuration Symbols
 
-变压器符号由**两个绕组符号**组成，每个绕组用标准接线符号表示。
+The transformer symbol consists of **two winding symbols**, each drawn with standard connection notation.
 
 #### Winding Symbol Primitives
 
-| 接线方式 | 符号 | SVG 描述 |
+| Winding Type | Symbol | SVG Description |
 |---------|------|---------|
-| Delta (Δ) | △ | 等边三角形，边长20px，开口朝下或朝上 |
-| Wye grounded (Yg) | Y接地 | Y形 + 底部接地线（三横线） |
-| Wye ungrounded (Y) | Y形 | Y形，无接地线 |
-| Zigzag (Z) | Z形 | 两段折线，表示延伸三角形接法 |
+| Delta (Δ) | △ | Equilateral triangle, 20px side length, opening facing down or up |
+| Wye grounded (Yg) | Y grounded | Y-shape + ground line at bottom (three horizontal bars) |
+| Wye ungrounded (Y) | Y-shape | Y-shape, no ground line |
+| Zigzag (Z) | Z-shape | Two-segment zigzag, represents extended delta connection |
 
 **Delta (Δ) SVG:**
 ```xml
@@ -611,11 +611,11 @@ bus -> cb3 -> lp1
 <line x1="-2" y1="14" x2="2" y2="14"/>
 ```
 
-**Wye Ungrounded (Y) SVG:** 同 Yg，省去接地符号
+**Wye Ungrounded (Y) SVG:** Same as Yg, omit the ground symbol
 
-#### Transformer_DY (Delta→Wye Grounded, 最常见)
+#### Transformer_DY (Delta→Wye Grounded, most common)
 - **DSL attr**: `[winding: "D-Yg"]`
-- **符号**: 上方 Δ (primary) + 下方 Yg (secondary) + 中间 core lines
+- **Symbol**: upper Δ (primary) + lower Yg (secondary) + core lines in between
 - **SVG** (combined at origin):
 ```xml
 <!-- Primary Delta -->
@@ -643,18 +643,18 @@ bus -> cb3 -> lp1
 
 #### Transformer_YY (Wye-Wye)
 - **DSL attr**: `[winding: "Yg-Yg"]`
-- **符号**: 上下两个 Yg 符号 + core lines
+- **Symbol**: Two Yg symbols (top and bottom) + core lines
 
 #### Transformer_DD (Delta-Delta)
 - **DSL attr**: `[winding: "D-D"]`
-- **符号**: 上下两个 Δ 符号 + core lines
+- **Symbol**: Two Δ symbols (top and bottom) + core lines
 
 #### Transformer_YD (Wye→Delta)
 - **DSL attr**: `[winding: "Yg-D"]`
 
 #### Autotransformer
 - **DSL attr**: `[type: "auto"]`
-- **符号**: 单线圈（带中间 tap），两端连线 + tap 引出
+- **Symbol**: Single winding (with center tap), lead wires at both ends + tap output
 ```xml
 <!-- Single winding with center tap -->
 <path d="M -12,0 A 4,4 0 0 1 -4,0 A 4,4 0 0 1 4,0 A 4,4 0 0 1 12,0"
@@ -666,16 +666,16 @@ bus -> cb3 -> lp1
 
 #### Three-Winding Transformer
 - **DSL attr**: `[type: "3winding"]`
-- **符号**: 三个绕组，第三绕组从中间引出
-- **Nameplate**: 需在 attrs 中指定 `tertiary: "13.8kV/138kV/12.47kV"`
+- **Symbol**: Three windings, with the third winding tapped from the middle
+- **Nameplate**: specify `tertiary: "13.8kV/138kV/12.47kV"` in attrs
 
 ---
 
 ### 6.2 Switching Equipment (v2 Additions)
 
-#### Recloser (重合器)
-- **描述**: 自动重合断路器，检测故障后延时重合（用于配电系统）
-- **区别于 breaker**: 加小圆弧 + 循环箭头表示重合功能
+#### Recloser
+- **Description**: Automatic reclosing circuit breaker; detects a fault and recloses after a time delay (used in distribution systems)
+- **Distinction from breaker**: adds a small arc + circular arrow to indicate the reclosing function
 ```xml
 <!-- Base: diagonal line (same as breaker) -->
 <line x1="-12" y1="12" x2="12" y2="-12" stroke="#333" stroke-width="2"/>
@@ -686,9 +686,9 @@ bus -> cb3 -> lp1
 <polygon points="20,-10 22,-14 17,-13" fill="#333"/>  <!-- arrowhead -->
 ```
 
-#### Sectionalizer (线路分段器)
-- **描述**: 配合重合器使用，自动隔离故障段（无弧断开）
-- **区别于 switch**: 加 "S" 字母 designation
+#### Sectionalizer
+- **Description**: Used with a recloser to automatically isolate a faulted section (opens without arc interruption)
+- **Distinction from switch**: adds an "S" letter designation
 ```xml
 <!-- Base disconnect switch symbol -->
 <line x1="-12" y1="12" x2="12" y2="-12" stroke="#333" stroke-width="2"/>
@@ -697,8 +697,8 @@ bus -> cb3 -> lp1
 <text x="16" y="-14" font-size="9" fill="#333">S</text>
 ```
 
-#### Ground Switch (接地刀闸)
-- **描述**: 安全接地用，通常与断路器联锁
+#### Ground Switch
+- **Description**: Used for safety grounding, typically interlocked with a circuit breaker
 ```xml
 <!-- Diagonal line (switch arm) -->
 <line x1="-12" y1="12" x2="12" y2="-12" stroke="#333" stroke-width="2"/>
@@ -710,8 +710,8 @@ bus -> cb3 -> lp1
 ```
 
 #### ATS (Automatic Transfer Switch)
-- **描述**: 自动切换两路电源（主用/备用）
-- **符号**: 两个断路器符号 + 连接杆（表示联动互锁）
+- **Description**: Automatically switches between two power sources (normal/standby)
+- **Symbol**: Two breaker symbols + coupling bar (indicating mechanical interlock)
 ```xml
 <!-- Source 1 breaker (left) -->
 <g transform="translate(-20,0)">
@@ -733,9 +733,9 @@ bus -> cb3 -> lp1
 
 ### 6.3 Protection Equipment (v2 Additions)
 
-#### Surge Arrester (避雷器 / Lightning Arrester)
-- **描述**: 限制过电压，将浪涌电流导入大地
-- **IEEE 符号**: 下行箭头 + 接地线，或 arc gap + ground
+#### Surge Arrester (Lightning Arrester)
+- **Description**: Limits overvoltage by diverting surge current to ground
+- **IEEE symbol**: Downward arrow + ground line, or arc gap + ground
 ```xml
 <!-- Vertical line (line connection at top) -->
 <line x1="0" y1="-20" x2="0" y2="0" stroke="#333" stroke-width="2"/>
@@ -749,9 +749,9 @@ bus -> cb3 -> lp1
 <line x1="-2" y1="32" x2="2" y2="32"/>
 ```
 
-#### Fuse Cutout (跌落式熔断器)
-- **描述**: 配电线路上的隔离保护，可视化熔断状态
-- **符号**: 椭圆包住对角线（与普通 fuse 区分）
+#### Fuse Cutout (Drop-Out Fuse)
+- **Description**: Isolation protection on distribution lines; visually indicates a blown fuse
+- **Symbol**: Ellipse enclosing a diagonal line (distinguished from a regular fuse)
 ```xml
 <line x1="-14" y1="14" x2="14" y2="-14" stroke="#333" stroke-width="2"/>  <!-- fuse element -->
 <ellipse cx="0" cy="0" rx="10" ry="16" transform="rotate(45)"
@@ -759,8 +759,8 @@ bus -> cb3 -> lp1
 ```
 
 #### VFD (Variable Frequency Drive)
-- **描述**: 变频器，控制电机转速
-- **符号**: 矩形块 + "VFD" 标注 + 频率变化符号
+- **Description**: Controls motor speed by varying output frequency
+- **Symbol**: Rectangle block + "VFD" label + frequency change symbol
 ```xml
 <rect x="-20" y="-16" width="40" height="32" fill="white" stroke="#333" stroke-width="2"/>
 <text x="0" y="-4" text-anchor="middle" font-size="9" font-weight="bold">VFD</text>
@@ -772,14 +772,14 @@ bus -> cb3 -> lp1
 
 ### 6.4 Metering Symbols (v2)
 
-#### Watthour Meter (电能表)
+#### Watthour Meter (Energy Meter)
 ```xml
 <circle r="16" fill="white" stroke="#333" stroke-width="2"/>
 <text x="0" y="5" text-anchor="middle" font-size="11" font-weight="bold">Wh</text>
 ```
 
 #### Potential Transformer / Voltage Transformer (PT/VT)
-- **描述**: 高电压降低用于测量，与 CT 类似但并联接线
+- **Description**: Steps down high voltage for measurement; similar to CT but connected in parallel
 ```xml
 <!-- Smaller transformer: two tiny coil groups side by side -->
 <circle r="8" fill="white" stroke="#333" stroke-width="1.5"/>
@@ -792,7 +792,7 @@ bus -> cb3 -> lp1
 ---
 
 ### 6.5 Generator (Synchronous)
-- **区别于 motor**: 圆圈 + "G" 标注（而非 "M"）+ 箭头方向表示发电（输出电能）
+- **Distinction from motor**: Circle + "G" label (instead of "M") + arrow direction indicates generation (power output)
 ```xml
 <circle r="14" fill="white" stroke="#333" stroke-width="2"/>
 <text text-anchor="middle" dominant-baseline="central"

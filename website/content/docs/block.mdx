@@ -16,10 +16,10 @@ C -> G
 G -> y
 G -> err`} />
 
-*控制系统框图标准：Laplace 域传递函数表示 + 信号流规范 + 反馈回路布局。*
+*Control system block diagram standard: Laplace-domain transfer function representation + signal flow conventions + feedback loop layout.*
 
 > **Primary References:**
-> - Ogata, K. (2010). *Modern Control Engineering*, 5th ed. — 经典控制系统框图规范
+> - Ogata, K. (2010). *Modern Control Engineering*, 5th ed. — classic control system block diagram conventions
 > - Franklin, G.F., Powell, J.D., Emami-Naeini, A. (2018). *Feedback Control of Dynamic Systems*, 8th ed.
 > - Nise, N.S. (2020). *Control Systems Engineering*, 8th ed.
 > - IEEE Std 91-1984: Logic symbol conventions (arrowhead style)
@@ -31,9 +31,9 @@ G -> err`} />
 
 ### 1.1 Core Element: Block (Transfer Function Box)
 
-所有系统元件（controller, plant, sensor 等）用矩形盒表示。
+All system elements (controller, plant, sensor, etc.) are represented by rectangular boxes.
 
-**标准尺寸**: 80px wide × 50px tall（默认）
+**Standard size**: 80px wide × 50px tall (default)
 
 ```xml
 <!-- Standard block -->
@@ -51,19 +51,19 @@ G -> err`} />
 <!-- x=80, y=25 -->
 ```
 
-**系统角色颜色编码（可选 theme）：**
+**System role color coding (optional theme):**
 
-| 角色 | Fill | 含义 |
+| Role | Fill | Meaning |
 |------|------|------|
-| Plant / Process | white | 受控对象 G(s) |
-| Controller | `#E3F2FD` (light blue) | 控制器 C(s) |
-| Sensor / Transducer | `#F3E5F5` (light purple) | 传感器 H(s) |
-| Actuator | `#E8F5E9` (light green) | 执行器 |
-| Filter / Compensator | `#FFF8E1` (light yellow) | 滤波/补偿 |
+| Plant / Process | white | Controlled object G(s) |
+| Controller | `#E3F2FD` (light blue) | Controller C(s) |
+| Sensor / Transducer | `#F3E5F5` (light purple) | Sensor H(s) |
+| Actuator | `#E8F5E9` (light green) | Actuator |
+| Filter / Compensator | `#FFF8E1` (light yellow) | Filter/compensator |
 
-### 1.2 Summing Junction（求和节点）
+### 1.2 Summing Junction
 
-**最重要的 EE 专用符号**，与通用 flowchart 的关键区别。
+**The most important EE-specific symbol**, and the key visual distinction from a generic flowchart.
 
 ```xml
 <!-- Summing junction: circle Ø24px -->
@@ -77,31 +77,31 @@ G -> err`} />
 <!-- <text x="8" y="16" font-size="14" font-family="serif">Σ</text> -->
 ```
 
-**Summing junction 的 Pin 位置**（以圆心为参考）：
+**Summing junction pin positions** (relative to the circle center):
 
-| Pin 位置 | 坐标（偏移圆心） | 典型信号 | 典型极性 |
+| Pin Position | Offset from Center | Typical Signal | Typical Polarity |
 |---------|----------------|---------|---------|
 | Left | `(-12, 0)` | Reference input r(t) | `+` |
-| Top | `(0, -12)` | Disturbance / feedforward | `+` 或 `−` |
+| Top | `(0, -12)` | Disturbance / feedforward | `+` or `−` |
 | Bottom | `(0, 12)` | Feedback signal y_m(t) | `−` |
-| Right | `(12, 0)` | Error signal e(t) = output | 无符号（输出） |
+| Right | `(12, 0)` | Error signal e(t) = output | No sign (output) |
 
-**多输入 summing junction**：同一圆，4个输入方向均可使用。输入符号 (`+`/`−`) 位于相应输入线末端，圆外侧 3px 处。
+**Multi-input summing junction**: Same circle, all 4 input directions may be used. Input signs (`+`/`−`) are placed at the end of the corresponding input wire, 3px outside the circle.
 
-### 1.3 Branch Point / Pickoff Point（信号分支点）
+### 1.3 Branch Point / Pickoff Point
 
-输出信号分叉处，表示同一信号流向多处：
+A branch point is where an output signal splits, indicating the same signal flows to multiple destinations:
 
 ```xml
 <!-- Small filled circle at branch point -->
 <circle cx="x" cy="y" r="4" fill="#333" class="lt-branch-point"/>
 ```
 
-**规则**：Branch point 总是在连线上；不需要额外的分支 junction。
+**Rule**: Branch points always lie on a wire; no additional junction element is required.
 
 ### 1.4 Signal Lines & Arrows
 
-所有信号线必须有**箭头标明方向**（与通用 flowchart 不同，EE 框图箭头是语义的：传递函数定义了输入/输出方向）。
+All signal lines must have **arrows indicating direction** (unlike generic flowcharts, EE block diagram arrows are semantic: the transfer function defines the input/output direction).
 
 ```xml
 <defs>
@@ -132,28 +132,28 @@ G -> err`} />
 
 ### 1.5 Signal Labels
 
-信号标签紧贴信号线上方 6px，serif 字体（传递函数风格）：
+Signal labels are placed 6px above the signal line, in serif font (transfer function style):
 
 ```xml
 <text x="x_mid" y="y_line-8" font-size="12" font-family="serif" font-style="italic"
       text-anchor="middle" class="lt-signal-label">e(t)</text>
 ```
 
-**标准信号名命名约定（Laplace 域）：**
+**Standard signal naming conventions (Laplace domain):**
 
-| 符号 | 含义 |
+| Symbol | Meaning |
 |------|------|
-| `R(s)` | 参考输入 (reference) |
-| `E(s)` | 误差信号 (error) = R − Y_m |
-| `U(s)` | 控制输入 (control input) |
-| `Y(s)` | 系统输出 (output) |
-| `Y_m(s)` | 测量输出 (measured output) |
-| `D(s)` | 干扰信号 (disturbance) |
-| `N(s)` | 噪声 (noise) |
+| `R(s)` | Reference input |
+| `E(s)` | Error signal = R − Y_m |
+| `U(s)` | Control input |
+| `Y(s)` | System output |
+| `Y_m(s)` | Measured output |
+| `D(s)` | Disturbance signal |
+| `N(s)` | Noise |
 
 ### 1.6 System Boundary Box
 
-系统边界用虚线矩形表示子系统范围：
+System boundaries are represented by dashed rectangles enclosing a subsystem:
 
 ```xml
 <rect x="x" y="y" width="w" height="h"
@@ -170,15 +170,15 @@ G -> err`} />
 
 ### 2.1 Primary Signal Flow Direction
 
-- **前向路径**: 左 → 右（standard）
-- **反馈路径**: 右 → 左（在前向路径的下方绕行）
-- **干扰输入**: 从上方 → 下方进入（垂直进入前向路径）
+- **Forward path**: left → right (standard)
+- **Feedback path**: right → left (routed below the forward path)
+- **Disturbance input**: top → down (enters the forward path vertically)
 
 ### 2.2 Block Alignment
 
-- 所有前向路径上的 block 中心线对齐（same y-coordinate）
-- Summing junction 中心与 block 中心等高
-- 水平间距：block 之间信号线 ≥ 40px
+- All blocks on the forward path are aligned along the same centerline (same y-coordinate)
+- The summing junction center is at the same height as the block centers
+- Horizontal spacing: signal lines between blocks ≥ 40px
 
 ### 2.3 Standard Closed-Loop Layout
 
@@ -190,11 +190,11 @@ R(s) → [Σ] → [C(s)] → [G(s)] → Y(s)
          −
 ```
 
-坐标布局（典型 600px 宽画布）：
+Coordinate layout (typical 600px wide canvas):
 
-| 元素 | x-center | y-center |
+| Element | x-center | y-center |
 |------|----------|----------|
-| 参考输入标签 | 30 | 100 |
+| Reference input label | 30 | 100 |
 | Summing junction | 80 | 100 |
 | Controller C(s) | 200 | 100 |
 | Plant G(s) | 360 | 100 |
@@ -204,9 +204,9 @@ R(s) → [Σ] → [C(s)] → [G(s)] → Y(s)
 
 ### 2.4 Feedback Path Routing
 
-反馈路径必须绕过前向路径，不直接穿越：
+The feedback path must route around the forward path, not directly cross it:
 
-**标准四段路由（output → bottom → left → summing junction）**：
+**Standard four-segment route (output → bottom → left → summing junction):**
 ```xml
 <!-- Segment 1: Vertical down from output pickup -->
 <line x1="x_out" y1="y_fwd" x2="x_out" y2="y_fb"/>
@@ -217,7 +217,7 @@ R(s) → [Σ] → [C(s)] → [G(s)] → Y(s)
       marker-end="url(#lt-bd-arrow)"/>
 ```
 
-**Bridge notation（反馈线与前向路径交叉但不连接）**：
+**Bridge notation (feedback line crosses forward path but is not connected):**
 ```xml
 <!-- Forward path line (continuous) -->
 <line x1="..." y1="y_fwd" x2="..." y2="y_fwd" stroke="#333" stroke-width="2"/>
@@ -230,18 +230,18 @@ R(s) → [Σ] → [C(s)] → [G(s)] → Y(s)
 
 ### 2.5 Multi-Loop Systems
 
-嵌套控制回路（内环 + 外环）：
+Nested control loops (inner loop + outer loop):
 
-- 内环：更小的 block group，position 更靠近 plant
-- 外环：包含整个内环，summing junction 在更左
-- 各 feedback path 分层（y 间距 ≥ 50px）
+- Inner loop: smaller block group, positioned closer to the plant
+- Outer loop: encompasses the entire inner loop, summing junction further to the left
+- Each feedback path is on a separate layer (y spacing ≥ 50px)
 
 ### 2.6 Cascade (Series) Blocks
 
-串联 blocks（前向路径上多个 blocks 依次）：
-- 等间距水平排列
-- 单一信号线穿行，不需要额外 summing junction
-- 等效传递函数 = 所有 blocks 传递函数之积
+Cascaded blocks (multiple blocks in series on the forward path):
+- Equally spaced horizontally
+- Single signal line passes through, no additional summing junction needed
+- Equivalent transfer function = product of all individual block transfer functions
 
 ---
 
@@ -288,7 +288,7 @@ INDENT        = increase in whitespace
 DEDENT        = decrease in whitespace
 ```
 
-**DSL 示例：经典 PID 闭环控制**
+**DSL Example: Classic PID Closed-Loop Control**
 ```
 blockdiagram "PID Closed-Loop Control System"
 
@@ -319,7 +319,7 @@ G -> H ["Y(s)"]
 H -> err ["Y_m(s)"]
 ```
 
-**DSL 示例：Cascaded Blocks with Disturbance**
+**DSL example: Cascaded Blocks with Disturbance**
 ```
 blockdiagram "Process with Disturbance"
 
@@ -429,7 +429,7 @@ G = block("G(s)") [role: plant]
 in -> G ["R(s)"]
 G -> out ["Y(s)"]
 ```
-验证：单 block，左入右出，信号线有箭头。
+Verify: single block, input on the left, output on the right, signal lines have arrows.
 
 ### Case 2: Unity Feedback (Negative)
 ```
@@ -443,7 +443,7 @@ C -> G ["U(s)"]
 G -> out ["Y(s)"]
 G -> err ["-"]
 ```
-验证：summing junction 在左，反馈路径从 G output 绕到 err 下方输入，负号正确。
+Verify: summing junction on the left, feedback path routes from G output around to the bottom input of err, negative sign correct.
 
 ### Case 3: Two-Block Cascade
 ```
@@ -452,11 +452,11 @@ G1 = block("G1(s)")
 G2 = block("G2(s)")
 in -> G1 -> G2 -> out
 ```
-验证：两个 block 水平串联，信号线连续。
+Verify: two blocks connected horizontally in series, signal line is continuous.
 
 ### Case 4: PID with Sensor (Full System)
-（见 Section 3 DSL 示例）  
-验证：5 个元素（summing junction + C + G + H + branch point），反馈路径在下方，所有信号标签正确。
+(See Section 3 DSL Example)  
+Verify: 5 elements (summing junction + C + G + H + branch point), feedback path below, all signal labels correct.
 
 ### Case 5: Discrete-Time System
 ```
@@ -472,18 +472,18 @@ err -> C -> ZOH
 ZOH -> G -> out
 G -> H -> err
 ```
-验证：r, err→C 为虚线（discrete），ZOH→G 为实线（continuous）。
+Verify: r, err→C are dashed lines (discrete), ZOH→G is a solid line (continuous).
 
 ---
 
 ## 6. Implementation Priority
 
-| Priority | Feature | Complexity | 用户价值 |
+| Priority | Feature | Complexity | User Value |
 |----------|---------|------------|---------|
 | P0 (MVP) | Block (transfer function box) + signal lines + arrows | Low | Core |
 | P0 | Simple unidirectional connection (`->`) | Low | Core |
 | P0 | Signal labels on lines | Low | Core |
-| P1 | Summing junction with +/− signs | Medium | High — 控制系统核心 |
+| P1 | Summing junction with +/− signs | Medium | High — core of control systems |
 | P1 | Branch point (filled dot) | Low | High |
 | P1 | Feedback path auto-routing (below forward path) | Medium | High |
 | P1 | Block role colors (plant/controller/sensor) | Low | Medium |

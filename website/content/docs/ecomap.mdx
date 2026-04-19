@@ -15,7 +15,7 @@ description: Family systems embedded in institutional, social, and cultural supp
   clinic --> family [label: "vaccinations"]
   family === temple [label: "anchor"]`} height={480} />
 
-*Hartman (1978) ecomap model + 临床社会工作实践扩展。个体/家庭与外部环境系统的关系可视化。*
+*Hartman (1978) ecomap model + extensions from clinical social work practice. Visualizes relationships between individuals/families and their external environmental systems.*
 
 > **References:**
 > - Hartman, A. (1978). Diagrammatic assessment of family relationships. *Social Casework*, 59(8), 465-476.
@@ -26,12 +26,12 @@ description: Family systems embedded in institutional, social, and cultural supp
 
 ## 1. Structure
 
-Ecomap 由三层组成：
-1. **中心 (Center)** — 个体或家庭单元（genogram 嵌入或简化圆/方框）
-2. **外部系统 (Systems)** — 人际关系、组织、机构、社区资源
-3. **连接线 (Connections)** — 表示关系的质量、强度、能量流向
+An ecomap consists of three layers:
+1. **Center** — the individual or family unit (embedded genogram or simplified circle/square)
+2. **External Systems** — interpersonal relationships, organizations, institutions, community resources
+3. **Connections** — lines representing relationship quality, strength, and direction of energy flow
 
-临床用途：评估个体/家庭的社会支持网络、识别资源和压力源、规划干预策略。
+Clinical use: assessing an individual's or family's social support network, identifying resources and stressors, and planning intervention strategies.
 
 ---
 
@@ -45,7 +45,7 @@ Ecomap 由三层组成：
 | Optional details | Age, sex symbol | Smaller text below name |
 
 ### 2.2 Family Center (Embedded Genogram)
-在临床实践中，ecomap 的中心通常是一个**迷你 genogram**，包含核心家庭成员：
+In clinical practice, the center of an ecomap is typically a **mini genogram** containing core family members:
 
 ```
 ┌─────────────────────────┐
@@ -56,11 +56,11 @@ Ecomap 由三层组成：
 └─────────────────────────┘
 ```
 
-**实现方式：**
-- Center 区域用一个大的虚线圆或矩形包围
-- 内部渲染简化的 genogram（只有 symbols + couple/child lines，无 labels/conditions）
+**Implementation approach:**
+- The center area is enclosed by a large dashed circle or rectangle
+- A simplified genogram is rendered inside (symbols + couple/child lines only, no labels/conditions)
 - Class: `schematex-center-family`
-- 连接线从 center boundary 出发（不是从内部 individual）
+- Connection lines originate from the center boundary (not from individual members inside)
 
 ### 2.3 DSL for Center
 
@@ -83,37 +83,37 @@ center: family [label: "The Johnsons"]
 
 ### 3.1 Standard System Categories
 
-临床社工实践中的标准外部系统类别，每个有推荐的图标/颜色：
+Standard external system categories in clinical social work practice, each with recommended icon/color:
 
-| Category | Icon/Label | Default Color | 示例 |
+| Category | Icon/Label | Default Color | Examples |
 |----------|-----------|--------------|------|
-| Family (extended) | House icon | `#8D6E63` (brown) | 祖父母、姻亲、表亲 |
-| Friends/Peers | People icon | `#42A5F5` (blue) | 朋友、邻居、同事 |
-| Work/Employment | Briefcase | `#66BB6A` (green) | 雇主、同事关系 |
-| Education | Book icon | `#FFA726` (orange) | 学校、大学、培训 |
-| Health/Medical | Cross icon | `#EF5350` (red) | 医生、医院、治疗师 |
-| Mental Health | Brain icon | `#AB47BC` (purple) | 心理咨询师、精神科 |
-| Religion/Spiritual | Symbol | `#FFEE58` (yellow) | 教会、寺庙、精神团体 |
-| Recreation/Leisure | Play icon | `#26C6DA` (cyan) | 运动、爱好、俱乐部 |
-| Legal/Justice | Scale icon | `#78909C` (gray-blue) | 律师、法院、缓刑官 |
-| Government/Social Services | Building | `#8D6E63` (brown) | 社会福利、住房援助 |
-| Financial | Dollar icon | `#66BB6A` (green) | 银行、经济援助 |
-| Community | Globe icon | `#29B6F6` (light blue) | 社区组织、支持团体 |
-| Cultural/Ethnic | Flag icon | `#FFA726` (orange) | 文化组织、族裔社区 |
-| Substance (positive) | Pill icon | `#66BB6A` (green) | 戒瘾项目、AA/NA |
-| Substance (negative) | Pill icon | `#EF5350` (red) | 酒吧、毒品来源 |
-| Technology/Online | Screen icon | `#42A5F5` (blue) | 社交媒体、在线社区 |
-| Pet/Animal | Paw icon | `#8D6E63` (brown) | 宠物、服务动物 |
+| Family (extended) | House icon | `#8D6E63` (brown) | Grandparents, in-laws, cousins |
+| Friends/Peers | People icon | `#42A5F5` (blue) | Friends, neighbors, coworkers |
+| Work/Employment | Briefcase | `#66BB6A` (green) | Employer, colleague relationships |
+| Education | Book icon | `#FFA726` (orange) | School, university, training |
+| Health/Medical | Cross icon | `#EF5350` (red) | Doctor, hospital, therapist |
+| Mental Health | Brain icon | `#AB47BC` (purple) | Counselor, psychiatrist |
+| Religion/Spiritual | Symbol | `#FFEE58` (yellow) | Church, temple, spiritual community |
+| Recreation/Leisure | Play icon | `#26C6DA` (cyan) | Sports, hobbies, clubs |
+| Legal/Justice | Scale icon | `#78909C` (gray-blue) | Lawyer, court, probation officer |
+| Government/Social Services | Building | `#8D6E63` (brown) | Social welfare, housing assistance |
+| Financial | Dollar icon | `#66BB6A` (green) | Bank, financial aid |
+| Community | Globe icon | `#29B6F6` (light blue) | Community organizations, support groups |
+| Cultural/Ethnic | Flag icon | `#FFA726` (orange) | Cultural organizations, ethnic community |
+| Substance (positive) | Pill icon | `#66BB6A` (green) | Recovery programs, AA/NA |
+| Substance (negative) | Pill icon | `#EF5350` (red) | Bars, drug sources |
+| Technology/Online | Screen icon | `#42A5F5` (blue) | Social media, online community |
+| Pet/Animal | Paw icon | `#8D6E63` (brown) | Pets, service animals |
 
 ### 3.2 System Sizing
 
-System circle 的大小可以反映该系统在个体生活中的重要性：
+The size of a system circle can reflect its importance in an individual's life:
 
-| Importance | Circle Radius | 含义 |
+| Importance | Circle Radius | Meaning |
 |------------|--------------|------|
-| Major | 35-40px | 生活中极重要的系统 |
-| Moderate | 25-30px (default) | 一般重要 |
-| Minor | 15-20px | 存在但影响较小 |
+| Major | 35-40px | Systems of greatest importance in life |
+| Moderate | 25-30px (default) | Moderate importance |
+| Minor | 15-20px | Present but less influential |
 
 DSL: `work [label: "Tech Corp", size: large]` or `work [label: "Tech Corp", importance: major]`
 
@@ -123,30 +123,30 @@ DSL: `work [label: "Tech Corp", size: large]` or `work [label: "Tech Corp", impo
 
 ### 4.1 Relationship Quality Lines
 
-| Type | Line Style | DSL Syntax | SVG | 含义 |
+| Type | Line Style | DSL Syntax | SVG | Meaning |
 |------|-----------|------------|-----|------|
-| Strong/positive | 3 parallel solid lines | `===` | 3 parallel `<line>`, stroke-width: 2, gap: 3px | 非常紧密、强有力 |
-| Moderate positive | 2 parallel solid lines | `==` | 2 parallel `<line>`, stroke-width: 2 | 正向、适度的关系 |
-| Normal | Single solid line | `---` | `<line>` stroke-width: 2 | 一般/中性关系 |
-| Weak/tenuous | Single dashed thin line | `- -` | stroke-dasharray="4,4", stroke-width: 1 | 薄弱的关系 |
-| Stressful | Zigzag/wavy line | `~~~` | `<path>` sine wave | 充满压力的关系 |
-| Stressful + strong | Zigzag + thick | `~=~` | thick wavy path | 紧密但充满压力 |
-| Conflictual | Crossed lines (hash marks) | `~x~` | zigzag + hash marks | 冲突关系 |
-| Broken/cutoff | Line with gap | `-/-` | dashed with visible gap | 断裂/中断的关系 |
+| Strong/positive | 3 parallel solid lines | `===` | 3 parallel `<line>`, stroke-width: 2, gap: 3px | Very close, strong relationship |
+| Moderate positive | 2 parallel solid lines | `==` | 2 parallel `<line>`, stroke-width: 2 | Positive, moderate relationship |
+| Normal | Single solid line | `---` | `<line>` stroke-width: 2 | Neutral/average relationship |
+| Weak/tenuous | Single dashed thin line | `- -` | stroke-dasharray="4,4", stroke-width: 1 | Weak relationship |
+| Stressful | Zigzag/wavy line | `~~~` | `<path>` sine wave | Stressful relationship |
+| Stressful + strong | Zigzag + thick | `~=~` | thick wavy path | Close but stressful |
+| Conflictual | Crossed lines (hash marks) | `~x~` | zigzag + hash marks | Conflictual relationship |
+| Broken/cutoff | Line with gap | `-/-` | dashed with visible gap | Broken/severed relationship |
 
 ### 4.2 Energy Flow Arrows
 
-| Direction | DSL Syntax | 含义 |
+| Direction | DSL Syntax | Meaning |
 |-----------|------------|------|
-| One-way (center → system) | `-->` | 能量/资源从中心流出 |
-| One-way (system → center) | `<--` | 能量/资源从系统流入 |
-| Mutual/reciprocal | `<->` | 双向能量流动 |
-| Draining (from center) | `==>` | 大量能量流出（消耗） |
-| Nourishing (to center) | `<==` | 大量能量流入（滋养） |
+| One-way (center → system) | `-->` | Energy/resources flowing out from center |
+| One-way (system → center) | `<--` | Energy/resources flowing in from system |
+| Mutual/reciprocal | `<->` | Bidirectional energy flow |
+| Draining (from center) | `==>` | Large energy outflow (depleting) |
+| Nourishing (to center) | `<==` | Large energy inflow (nurturing) |
 
 ### 4.3 Combined Line Types
 
-Line type 和 arrow direction 可以组合：
+Line type and arrow direction can be combined:
 
 ```
 maria === mother          # strong relationship, no direction specified
@@ -159,7 +159,7 @@ maria - - doctor          # weak relationship
 
 ### 4.4 Connection Labels
 
-连接线可以附加文字标签，描述关系的具体性质：
+Connection lines can have text labels describing the specific nature of the relationship:
 
 ```
 maria === mother [label: "daily calls"]
@@ -169,11 +169,11 @@ maria --- therapist [label: "weekly sessions"]
 
 ### 4.5 SVG Implementation
 
-**Line rendering：**
-- 线从 center 边缘到 system 边缘（不是中心到中心）
-- 计算：从两个 circle center 的连线，减去各自 radius，得到 edge-to-edge 线段
-- Strong (3 lines): 主线 + 两条 offset ±3px 的平行线
-- Wavy: SVG `<path>` with quadratic bezier curves 模拟 sine wave
+**Line rendering:**
+- Lines run from center edge to system edge (not center-to-center)
+- Calculation: take the line between two circle centers, subtract each respective radius, to get the edge-to-edge segment
+- Strong (3 lines): main line + two parallel lines offset by ±3px
+- Wavy: SVG `<path>` with quadratic bezier curves simulating a sine wave
 - Arrow markers: `<marker>` in `<defs>`
 
 ```xml
@@ -195,31 +195,31 @@ maria --- therapist [label: "weekly sessions"]
 
 ### 5.1 Radial Layout Algorithm
 
-1. **中心定位：** Center element 放在画布正中 `(width/2, height/2)`
-2. **Ring 分配：** 外部系统分配到 1-3 个同心环
-   - Inner ring (r=140px): 最亲密/最重要的系统
-   - Middle ring (r=220px): 中等重要
-   - Outer ring (r=300px): 较远/较弱的系统
-3. **角度分配：** 同一 ring 上的系统均匀分布
-   - 可选：按 category 分区（见 5.2）
-4. **避免重叠：** 如果同一 ring 上系统太多，自动增加 ring radius 或拆分到两个 ring
+1. **Center positioning:** Center element is placed at the canvas center `(width/2, height/2)`
+2. **Ring assignment:** External systems are assigned to 1-3 concentric rings
+   - Inner ring (r=140px): closest/most important systems
+   - Middle ring (r=220px): moderately important
+   - Outer ring (r=300px): more distant/weaker systems
+3. **Angle distribution:** Systems on the same ring are evenly distributed
+   - Optional: arrange by category sector (see 5.2)
+4. **Overlap avoidance:** If too many systems are on the same ring, automatically increase ring radius or split into two rings
 
-### 5.2 Category-Based Sector Layout (可选)
+### 5.2 Category-Based Sector Layout (Optional)
 
-按类别将 ecomap 划分为象限/区域：
+Divides the ecomap into quadrants/sectors by category:
 
-| Sector (角度范围) | Category |
+| Sector (angle range) | Category |
 |-------------------|----------|
-| 上方 (315°-45°) | Work / Education / Professional |
-| 右方 (45°-135°) | Friends / Recreation / Community |
-| 下方 (135°-225°) | Family (extended) / Cultural |
-| 左方 (225°-315°) | Health / Legal / Government services |
+| Top (315°-45°) | Work / Education / Professional |
+| Right (45°-135°) | Friends / Recreation / Community |
+| Bottom (135°-225°) | Family (extended) / Cultural |
+| Left (225°-315°) | Health / Legal / Government services |
 
-这是建议布局，不是硬规则。DSL 可以指定 `[sector: top]` 覆盖。
+This is a recommended layout, not a hard rule. DSL can specify `[sector: top]` to override.
 
 ### 5.3 Spacing Rules
 
-| Parameter | Default | 含义 |
+| Parameter | Default | Meaning |
 |-----------|---------|------|
 | Center radius | 50px (individual) / 80px (family) | Center element size |
 | System radius | 30px (default) | External system circle size |
@@ -232,10 +232,10 @@ maria --- therapist [label: "weekly sessions"]
 
 ### 5.4 Responsive Sizing
 
-- 系统数量 ≤ 6: 单 ring，`r=180px`
-- 系统数量 7-12: 双 ring
-- 系统数量 13+: 三 ring 或 auto-expand canvas
-- 连接线密集时，适当增加 ring radius 避免线条过于拥挤
+- Systems count ≤ 6: single ring, `r=180px`
+- Systems count 7-12: dual ring
+- Systems count 13+: three rings or auto-expand canvas
+- When connections are dense, increase ring radius appropriately to avoid crowding
 
 ---
 
@@ -354,7 +354,7 @@ ecomap "Substance Abuse Recovery"
   probation --> client
   therapist <-> client [label: "weekly"]
 ```
-验证：dealer 连接是 broken/cutoff 线，kids 是 weak/tenuous，aa 是 strong，exwife 是 stressful，probation 和 therapist 有 directional arrows。
+Verify: dealer connection is a broken/cutoff line, kids is weak/tenuous, aa is strong, exwife is stressful, probation and therapist have directional arrows.
 
 ### Case 5: Large System Count (Stress Test)
 ```
@@ -391,7 +391,7 @@ ecomap "Comprehensive Assessment"
   patient - - s14
   patient - - s15
 ```
-验证：15 个系统 → 自动分配到 2-3 ring，无重叠，所有连接线可读。
+Verify: 15 systems → automatically distributed across 2-3 rings, no overlaps, all connection lines are readable.
 
 ---
 

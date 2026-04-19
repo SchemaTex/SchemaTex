@@ -532,46 +532,46 @@ acme_inc -> acme_fund : 60%`,
     blurb:
       'A real root-cause analysis session for a website traffic drop — six Ishikawa categories (content, technical, backlinks, UX, competition, algorithm) with 24 sub-causes brainstormed across a growth team.',
     related: { label: 'Fishbone syntax', href: '/docs/fishbone' },
-    dsl: `fishbone "Fishbone diagram — 网站流量下跌原因分析"
+    dsl: `fishbone "Fishbone diagram — Website traffic drop"
 
-effect "流量下跌"
+effect "Traffic decline"
 
-category content     "内容 Content"
-category tech        "技术 Technical"
-category links       "外链 Backlinks"
-category ux          "体验 UX"
-category competition "竞争 Competition"
-category algo        "算法 Algorithm"
+category content     "Content"
+category tech        "Technical"
+category links       "Backlinks"
+category ux          "UX"
+category competition "Competition"
+category algo        "Algorithm"
 
-content : "更新频率下降"
-content : "同质化严重"
-content : "关键词未覆盖"
-content : "AI 内容质量低"
+content : "Publishing frequency down"
+content : "Content too generic"
+content : "Keyword gaps"
+content : "Low-quality AI content"
 
-tech : "Core Web Vitals 差"
-tech : "索引覆盖率下降"
-tech : "爬虫被 WAF 拦截"
-tech : "结构化数据缺失"
+tech : "Core Web Vitals failing"
+tech : "Crawl coverage drop"
+tech : "Crawler blocked by WAF"
+tech : "Missing structured data"
 
-links : "高质量外链流失"
-links : "低质量链接占比高"
-links : "引荐域名停滞"
-links : "锚文本多样性低"
+links : "High-quality backlinks lost"
+links : "High ratio of low-quality links"
+links : "Referring domain growth stalled"
+links : "Low anchor text diversity"
 
-ux : "跳出率上升"
-ux : "移动端体验差"
-ux : "首屏加载慢"
-ux : "弹窗广告过多"
+ux : "Bounce rate rising"
+ux : "Poor mobile experience"
+ux : "Slow above-fold load"
+ux : "Excessive popup ads"
 
-competition : "新对手涌入"
-competition : "AI 工具替代搜索"
-competition : "品牌心智减弱"
-competition : "对手内容更新快"
+competition : "New competitors entering"
+competition : "AI tools replacing search"
+competition : "Weakening brand recall"
+competition : "Competitors publishing faster"
 
-algo : "Core Update 惩罚"
-algo : "E-E-A-T 信号不足"
-algo : "AIO / SGE 截流"
-algo : "意图匹配漂移"`,
+algo : "Core Update penalty"
+algo : "Weak E-E-A-T signals"
+algo : "AI Overviews / SGE cutoff"
+algo : "Search intent drift"`,
   },
 ];
 

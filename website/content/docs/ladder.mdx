@@ -12,7 +12,7 @@ rung 1 "Set Auto, reset Manual":
     branch: OTL(SYS_AUTO, "BIT 3.1", name="System Auto Mode")
     branch: OTU(SYS_MANUAL, "BIT 3.2", name="System Manual Mode")`} height={500} />
 
-*IEC 61131-3:2013 梯形图语言规范 + NEMA ICS 1-2009 北美标准。*
+*IEC 61131-3:2013 Ladder Diagram language specification + NEMA ICS 1-2009 North American standard.*
 
 > **Primary References:**
 > - IEC 61131-3:2013 — Programmable controllers, Part 3: Programming languages (Ladder Diagram is one of 5)
@@ -41,30 +41,30 @@ rung 1 "Set Auto, reset Manual":
 
 ### 1.2 Layout Dimensions
 
-| 参数 | 默认值 | 含义 |
+| Parameter | Default | Meaning |
 |------|--------|------|
-| `power_rail_width` | 4px | 电源轨线宽 |
-| `rung_height` | 70px | 每条梯级高度 |
-| `rung_spacing` | 15px | 梯级间隔 |
-| `element_width` | 32px | 标准元件宽度 |
-| `element_height` | 24px | 标准元件高度（接点/线圈） |
-| `rung_wire_y_offset` | `rung_height / 2` | 梯级横线中心 |
-| `element_spacing` | 12px | 相邻元件间隔 |
-| `left_rail_x` | 20px | 左侧电源轨 x 坐标 |
-| `right_rail_x` | `canvas_width - 20` | 右侧电源轨 x 坐标 |
-| `label_offset` | 14px | 标签到元件中心的纵向距离 |
+| `power_rail_width` | 4px | Power rail stroke width |
+| `rung_height` | 70px | Height of each rung |
+| `rung_spacing` | 15px | Gap between rungs |
+| `element_width` | 32px | Standard element width |
+| `element_height` | 24px | Standard element height (contacts/coils) |
+| `rung_wire_y_offset` | `rung_height / 2` | Rung horizontal wire center |
+| `element_spacing` | 12px | Gap between adjacent elements |
+| `left_rail_x` | 20px | Left power rail x coordinate |
+| `right_rail_x` | `canvas_width - 20` | Right power rail x coordinate |
+| `label_offset` | 14px | Vertical distance from label to element center |
 
 ---
 
 ## 2. Element Symbols
 
-### 2.1 Contacts (Inputs — 读取条件)
+### 2.1 Contacts (Inputs — Read conditions)
 
-接点位于梯级左侧区域，表示输入条件。
+Contacts are located in the left region of the rung and represent input conditions.
 
 #### Normally Open Contact (XIC / NO)
-- **符号**: 两条平行竖线，间距 8px，无连接
-- **含义**: 当关联 bit = 1 时，接点闭合（导通）
+- **Symbol**: Two parallel vertical lines, 8px apart, not connected
+- **Meaning**: When associated bit = 1, the contact closes (conducts)
 - **SVG**:
   ```xml
   <!-- Left blade -->
@@ -78,35 +78,35 @@ rung 1 "Set Auto, reset Manual":
   ```
 
 #### Normally Closed Contact (XIO / NC)
-- **符号**: 两条平行竖线 + 斜线穿过（diagonal slash）
-- **SVG**: 同 NO + 额外斜线:
+- **Symbol**: Two parallel vertical lines + diagonal slash through the gap
+- **SVG**: Same as NO + extra diagonal line:
   ```xml
   <!-- Diagonal slash across gap -->
   <line x1="0" y1="6" x2="8" y2="-6" stroke="#333" stroke-width="2"/>
   ```
 
-#### Positive Transition Contact (ONS / 上升沿)
-- **符号**: 两竖线 + 上升边箭头（↑）
+#### Positive Transition Contact (ONS / Rising Edge)
+- **Symbol**: Two vertical lines + rising-edge arrow (↑)
 - **SVG**: NO + `<polygon points="4,-6 4,0 8,-3"/>` inside gap
 
-#### Negative Transition Contact (ONF / 下降沿)
-- **符号**: 两竖线 + 下降边箭头（↓）
+#### Negative Transition Contact (ONF / Falling Edge)
+- **Symbol**: Two vertical lines + falling-edge arrow (↓)
 - **SVG**: NO + `<polygon points="4,6 4,0 8,3"/>` inside gap
 
 #### Comparison Contact (EQU, GRT, LES, etc.)
-- **符号**: 矩形盒（24×18px）内含比较符（`=`, `>`, `<`, `≥`, `≤`, `≠`）
+- **Symbol**: Rectangle box (24×18px) containing comparison operator (`=`, `>`, `<`, `≥`, `≤`, `≠`)
   ```xml
   <rect x="0" y="-9" width="24" height="18" fill="white" stroke="#333" stroke-width="1.5"/>
   <text x="12" y="5" font-size="11" text-anchor="middle">≥</text>
   <!-- Input/output label references outside the box -->
   ```
 
-### 2.2 Coils (Outputs — 设置输出)
+### 2.2 Coils (Outputs — Set outputs)
 
-线圈位于梯级右侧（紧靠右侧电源轨），表示输出驱动。
+Coils are located on the right side of the rung (adjacent to the right power rail) and represent output drives.
 
 #### Output Coil (OTE / Standard)
-- **符号**: 圆括号 `( )` — 两个相对圆弧
+- **Symbol**: Parentheses `( )` — two opposing arcs
 - **SVG**:
   ```xml
   <!-- Left arc -->
@@ -121,25 +121,25 @@ rung 1 "Set Auto, reset Manual":
   ```
 
 #### Negated Output Coil (OTN)
-- 同 OTE，内部加 `/` 斜线或 `NOT` 标注
+- Same as OTE, with a `/` slash or `NOT` annotation inside
 - **SVG**: `<line x1="8" y1="8" x2="16" y2="-8" stroke="#333" stroke-width="1.5"/>`
 
 #### Set Coil / Latch (OTL)
-- 同 OTE，内部加 `S` 文字
+- Same as OTE, with `S` text inside
 - **SVG**: `<text x="12" y="5" font-size="12" font-weight="bold" text-anchor="middle">S</text>`
 
 #### Reset / Unlatch Coil (OTU)
-- 同 OTE，内部加 `R` 文字
-- **SVG**: 同上，文字 `R`
+- Same as OTE, with `R` text inside
+- **SVG**: Same as above, text `R`
 
 #### Transition Coils (ONS/ONR)
-- 上升沿/下降沿触发，内部加箭头标记
+- Rising-edge/falling-edge triggered, with arrow marker inside
 
-### 2.3 Function Blocks (复杂功能块)
+### 2.3 Function Blocks (Complex functional elements)
 
-function block 在梯级中间，矩形盒包含输入/输出 pins。
+Function blocks appear in the middle of a rung; a rectangle box contains input/output pins.
 
-**标准尺寸**: 60px wide × 50px tall（最小），根据 pin 数量扩展。
+**Standard size**: 60px wide × 50px tall (minimum), expands based on pin count.
 
 ```xml
 <!-- Function block box -->
@@ -167,7 +167,7 @@ function block 在梯级中间，矩形盒包含输入/输出 pins。
 
 #### Timer Blocks
 
-| Block | 类型 | Pins (Input) | Pins (Output) |
+| Block | Type | Pins (Input) | Pins (Output) |
 |-------|------|-------------|--------------|
 | `TON` | Timer On-Delay | `IN`, `PT` (preset time) | `Q` (done), `ET` (elapsed) |
 | `TOFF` | Timer Off-Delay | `IN`, `PT` | `Q`, `ET` |
@@ -176,7 +176,7 @@ function block 在梯级中间，矩形盒包含输入/输出 pins。
 
 #### Counter Blocks
 
-| Block | 类型 | Pins (Input) | Pins (Output) |
+| Block | Type | Pins (Input) | Pins (Output) |
 |-------|------|-------------|--------------|
 | `CTU` | Count Up | `CU` (count up), `R` (reset), `PV` (preset) | `Q` (done), `CV` (current) |
 | `CTD` | Count Down | `CD`, `LD` (load), `PV` | `Q`, `CV` |
@@ -184,12 +184,12 @@ function block 在梯级中间，矩形盒包含输入/输出 pins。
 
 #### Math Blocks
 
-矩形盒，`width=60, height=40`，内部: `ADD`, `SUB`, `MUL`, `DIV`。
+Rectangle box, `width=60, height=40`, labeled: `ADD`, `SUB`, `MUL`, `DIV`.
 Pins: `IN1`, `IN2` (inputs), `OUT` (output), `EN` (enable), `ENO` (enable output).
 
 #### Comparison Blocks
 
-内部标注: `EQU`, `NEQ`, `GRT`, `GEQ`, `LES`, `LEQ`。
+Labeled: `EQU`, `NEQ`, `GRT`, `GEQ`, `LES`, `LEQ`.
 Pins: `IN1`, `IN2`, `OUT` (boolean result).
 
 ---
@@ -198,7 +198,7 @@ Pins: `IN1`, `IN2`, `OUT` (boolean result).
 
 ### 3.1 Label Positioning
 
-每个 contact/coil 上方或下方显示变量地址/tag name：
+Each contact/coil displays the variable address/tag name above or below:
 
 ```xml
 <!-- Tag name above element -->
@@ -212,7 +212,7 @@ Pins: `IN1`, `IN2`, `OUT` (boolean result).
 
 ### 3.2 Rung Numbers
 
-左侧电源轨外侧显示梯级编号：
+Rung numbers are displayed outside the left power rail:
 ```xml
 <text x="left_rail_x - 8" y="y_rung" font-size="10"
       text-anchor="end" class="lt-rung-number">0001</text>
@@ -220,7 +220,7 @@ Pins: `IN1`, `IN2`, `OUT` (boolean result).
 
 ### 3.3 Rung Comments
 
-梯级上方可选注释行：
+Optional comment line above the rung:
 ```xml
 <text x="left_rail_x + 10" y="y_rung - rung_height/2 + 8"
       font-size="10" font-style="italic" fill="#555"
@@ -231,7 +231,7 @@ Pins: `IN1`, `IN2`, `OUT` (boolean result).
 
 ## 4. Parallel Branches
 
-梯级中的并联分支表示 OR 逻辑：
+Parallel branches in a rung represent OR logic:
 
 ### 4.1 Branch Start/End Notation
 
@@ -253,7 +253,7 @@ Pins: `IN1`, `IN2`, `OUT` (boolean result).
 
 ### 4.2 Multiple Parallel Branches
 
-每个额外 branch 在 `y_branch + branch_spacing` 处，默认 `branch_spacing = rung_height + 10`.
+Each additional branch is placed at `y_branch + branch_spacing`, with default `branch_spacing = rung_height + 10`.
 
 ---
 
@@ -313,7 +313,7 @@ DEDENT         = decrease in whitespace
 NEWLINE        = /\n/
 ```
 
-**DSL 示例（Motor Start/Stop）：**
+**DSL Example (Motor Start/Stop):**
 ```
 ladder "Motor Control"
 
@@ -343,7 +343,7 @@ rung 3 "Run indicator":
   OTE(RunIndicator)
 ```
 
-**DSL 示例（Timer + Counter）：**
+**DSL Example (Timer + Counter):**
 ```
 ladder "Timer Counter Example"
 
@@ -365,7 +365,7 @@ rung 2 "Alarm when max cycles":
   OTE(AlarmOut)
 ```
 
-**DSL 示例（Parallel Branch — OR logic）：**
+**DSL Example (Parallel Branch — OR logic):**
 ```
 ladder "Parallel Branch"
 
@@ -443,7 +443,7 @@ rung 0:
   XIC(MotorStart)
   OTE(MotorOut)
 ```
-验证：一条梯级，左侧 NO contact，右侧 output coil，两端连接电源轨。
+Verify: one rung, NO contact on the left, output coil on the right, both ends connected to power rails.
 
 ### Case 2: Series Contacts (AND logic)
 ```
@@ -454,7 +454,7 @@ rung 0:
   XIO(C)
   OTE(Y)
 ```
-验证：A/B/C 三个接点串联，C 为 NC（有斜线）。
+Verify: A/B/C three contacts in series, C is NC (has diagonal slash).
 
 ### Case 3: Parallel Branch (OR logic)
 ```
@@ -466,7 +466,7 @@ rung 0:
       XIC(Btn2)
   OTE(Lamp)
 ```
-验证：Btn1 和 Btn2 并联分支，结尾合并后接 Lamp 线圈。
+Verify: Btn1 and Btn2 are on parallel branches that merge before the Lamp coil.
 
 ### Case 4: TON Timer
 ```
@@ -479,7 +479,7 @@ rung 1:
   XIC(RunTimer.Q)
   OTE(DoneOutput)
 ```
-验证：TON block 显示 IN 和 PT 输入 pins，Q 输出 pin，T#10s 参数标注。
+Verify: TON block shows IN and PT input pins, Q output pin, T#10s parameter annotated.
 
 ### Case 5: Set/Reset Latch
 ```
@@ -491,7 +491,7 @@ rung 1:
   XIC(ResetBtn)
   OTU(MotorLatch)
 ```
-验证：OTL 线圈内显示 `S`，OTU 线圈内显示 `R`。
+Verify: OTL coil shows `S` inside, OTU coil shows `R` inside.
 
 ### Case 6: Counter
 ```
@@ -504,20 +504,20 @@ rung 1:
   XIC(PulseCnt.Q)
   OTE(BatchDone)
 ```
-验证：CTU block 有 CU/PV inputs，Q output，梯级 1 读取 .Q 位。
+Verify: CTU block has CU/PV inputs, Q output, rung 1 reads the .Q bit.
 
 ---
 
 ## 8. Implementation Priority
 
-| Priority | Feature | Complexity | 用户价值 |
+| Priority | Feature | Complexity | User Value |
 |----------|---------|------------|---------|
-| P0 (MVP) | XIC, XIO contacts + OTE coil | Low | Core — 90% 梯级用这三个 |
+| P0 (MVP) | XIC, XIO contacts + OTE coil | Low | Core — 90% of rungs use these three |
 | P0 | Power rails + rung horizontal wire | Low | Core |
 | P0 | Series elements layout | Low | Core |
 | P0 | Tag name labels above elements | Low | Core |
 | P1 | OTL (Set) / OTU (Reset) coils | Low | High |
-| P1 | Parallel branch (OR logic) | Medium | High — 工业逻辑必须 |
+| P1 | Parallel branch (OR logic) | Medium | High — required for industrial logic |
 | P1 | TON / TOFF timer blocks | Medium | High |
 | P1 | CTU counter block | Medium | High |
 | P1 | ONS / ONF transition contacts | Low | Medium |
