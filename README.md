@@ -1,5 +1,5 @@
 <p align="center">
-  <strong>Schematex</strong><br>
+  <strong>SchemaTex</strong><br>
   <em>Standards-as-code for professional diagrams.</em>
 </p>
 
@@ -24,14 +24,14 @@
 
 ---
 
-**Schematex** is the open-source rendering engine for diagrams that follow real industry standards. Thirteen diagram families across four domains:
+**SchemaTex** is the open-source rendering engine for diagrams that follow real industry standards. Thirteen diagram families across four domains:
 
 - 👪 **Relationships** — genograms, ecomaps, pedigrees, sociograms, phylogenetic trees
 - ⚡ **Electrical & Industrial** — ladder logic, single-line diagrams, circuit schematics, logic gates, timing, block diagrams
 - 🏢 **Corporate & Legal** — entity structures, cap tables
 - 🐟 **Causality & Analysis** — fishbone / Ishikawa
 
-Mermaid draws generic flowcharts. Schematex draws the diagrams your domain experts actually sign off on — a genogram a genetic counselor accepts clinically, ladder logic that maps 1:1 to IEC 61131-3, a cap table that survives a Series A review.
+Mermaid draws generic flowcharts. SchemaTex draws the diagrams your domain experts actually sign off on — a genogram a genetic counselor accepts clinically, ladder logic that maps 1:1 to IEC 61131-3, a cap table that survives a Series A review.
 
 ⚡ **Zero runtime dependencies** · 📐 **10+ industry standards** · 🤖 **LLM-native DSL** · 🌱 **SSR-ready pure SVG**
 
@@ -347,7 +347,7 @@ env : "Remote timezone lag" : "Legacy codebase"
 
 [Fishbone syntax →](https://schematex.dev/docs/fishbone)
 
-## Why Schematex?
+## Why SchemaTex?
 
 **Generic flowchart tools can't draw professional diagrams.** Every diagram domain has published standards — symbol conventions, layout rules, labelling grammars — and when you ignore them, domain experts reject the output:
 
@@ -356,13 +356,13 @@ env : "Remote timezone lag" : "Legacy codebase"
 - **Single-line diagrams** follow [IEEE 315](https://standards.ieee.org/ieee/315/5052/) — protective device clustering, voltage-tier hierarchy, transformer symbology.
 - **Pedigrees** follow NSGC human-pedigree nomenclature; **phylogenetic trees** roundtrip Newick + NHX; **cap tables** compute tier-aware ownership rollup.
 
-Schematex treats each standard as a first-class citizen with its own parser, layout algorithm, and SVG renderer — **standards-as-code**, not generic shapes with domain labels.
+SchemaTex treats each standard as a first-class citizen with its own parser, layout algorithm, and SVG renderer — **standards-as-code**, not generic shapes with domain labels.
 
 No existing open-source library covers this spread. GoJS has isolated samples but costs **$7k+/seat**. Schemdraw is Python-only. draw.io is a heavyweight GUI. Everything else is proprietary or abandoned.
 
 ### Designed for LLM code generation
 
-Schematex DSLs are small, consistent, and shaped by what LLMs get wrong:
+SchemaTex DSLs are small, consistent, and shaped by what LLMs get wrong:
 
 - Each diagram type has a minimal, documented grammar an LLM can learn from a single example.
 - Error messages are AI-readable — line number plus specific fix suggestion, not `Parse error at line 42`.
@@ -417,6 +417,6 @@ npm run build
 
 ## License
 
-[AGPL-3.0](./LICENSE) for open-source use. For commercial use without AGPL obligations (embedding Schematex into proprietary or closed-source products), a commercial license is available — contact **victor@mymap.ai**.
+[AGPL-3.0](./LICENSE) for open-source use. For commercial use without AGPL obligations (embedding SchemaTex into proprietary or closed-source products), a commercial license is available — contact **victor@mymap.ai**.
 
 <p align="center"><sub>Built by <a href="https://mymap.ai">MyMap.ai</a>.</sub></p>
