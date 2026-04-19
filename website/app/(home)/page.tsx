@@ -611,17 +611,10 @@ export default async function HomePage() {
             id="vs-heading"
             className="text-balance text-4xl font-semibold leading-tight tracking-tight text-fd-foreground md:text-5xl"
           >
-            <span style={{ background: 'var(--accent-soft)', padding: '0 6px' }}>
-              Not another flowchart library.
-            </span>
+            Not another flowchart library.
           </h2>
-          <p
-            className="mt-5 max-w-2xl text-lg leading-relaxed"
-            style={{ color: 'var(--text-muted)' }}
-          >
-            <span style={{ background: 'var(--accent-soft)', padding: '0 4px' }}>
-              How Schematex compares to the tools people already reach for.
-            </span>
+          <p className="mt-5 max-w-2xl text-lg leading-relaxed text-fd-muted-foreground">
+            How Schematex compares to the tools people already reach for.
           </p>
 
           <div
