@@ -249,8 +249,15 @@ export default function HomePage() {
             </a>
           </div>
 
+          {/* npm install pill */}
+          <div className="mt-8 inline-flex items-center gap-2 rounded-lg border border-fd-border bg-fd-card px-4 py-2 font-mono text-sm text-fd-muted-foreground">
+            <span className="select-none text-fd-muted-foreground/50">$</span>
+            <span className="text-fd-foreground">npm install schematex</span>
+            <CopyButton text="npm install schematex" label="Copy" />
+          </div>
+
           {/* Hero demo */}
-          <div className="mt-14">
+          <div className="mt-12">
             <HeroShowcase slides={heroSlides} />
           </div>
 
