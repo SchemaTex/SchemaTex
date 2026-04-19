@@ -1,8 +1,4 @@
-import type {
-  MindmapAST,
-  MindmapLayoutNode,
-  MindmapLayoutResult,
-} from "../../core/types";
+import type { MindmapAST, MindmapLayoutNode } from "../../core/types";
 import { resolveMindmapTheme, type MindmapTokens } from "../../core/theme";
 import type { ResolvedTheme } from "../../core/theme";
 import {
@@ -23,8 +19,8 @@ type Theme = ResolvedTheme<MindmapTokens>;
 
 // Main-branch underline weight. Thinner in monochrome so pure-black lines
 // don't overpower the text.
-const UNDERLINE_MAIN = 3.5;
-const UNDERLINE_MAIN_MONO = 1.8;
+const UNDERLINE_MAIN = 2.2;
+const UNDERLINE_MAIN_MONO = 1.5;
 
 function paletteColor(theme: Theme, branchIndex: number): string {
   if (branchIndex < 0) return theme.centralFill;
@@ -39,9 +35,22 @@ function underlineMain(theme: Theme): number {
 
 function renderCentral(n: MindmapLayoutNode, theme: Theme, fontFamily: string): string {
   const fs = fontSizeOf(0);
+  const pillW = n.labelWidth;
+  const pillH = n.labelHeight;
   return group(
     { class: "schematex-mindmap-central", "data-node-id": n.node.id },
     [
+      rect({
+        x: n.x - pillW / 2,
+        y: n.y - pillH / 2,
+        width: pillW,
+        height: pillH,
+        rx: pillH / 2,
+        ry: pillH / 2,
+        fill: "none",
+        stroke: theme.textMuted,
+        "stroke-width": underlineMain(theme),
+      }),
       svgText(
         {
           x: n.x,
@@ -61,74 +70,34 @@ function renderCentral(n: MindmapLayoutNode, theme: Theme, fontFamily: string): 
 // ─── Branch / leaf node ──────────────────────────────────────────────────
 //
 // Visual convention (matches layout.ts):
-//   • n.(x, y) is where the incoming Bezier edge terminates — the start of
-//     the underline on the right side, the end on the left side, or the
-//     center-top of the underline on org-down.
-//   • The underline sits AT y = n.y — same line the edge flows into — so the
-//     edge and underline read as one continuous stroke.
-//   • The label text sits just ABOVE the underline.
+//   • n.x is the label's horizontal CENTER; text renders anchor-middle.
+//   • For main branches (depth=1), a colored underline sits at y = n.y
+//     beneath the label, spanning ±labelWidth/2. Incoming bezier terminates
+//     at the underline's inner edge, reading as one continuous colored stroke.
+//   • Sub-level labels (depth ≥ 2) have no underline — the curve anchors
+//     directly into the label-edge.
 
 function renderBranchNode(
   n: MindmapLayoutNode,
   color: string,
   theme: Theme,
-  style: MindmapLayoutResult["style"],
   fontFamily: string
 ): string {
   const isMain = n.node.depth === 1;
   const fs = fontSizeOf(n.node.depth);
 
-  let tx: number;
-  let ty: number;
-  let anchor: "start" | "middle" | "end";
-  let ux1: number;
-  let ux2: number;
-  let uy: number;
-
-  if (style === "org-down") {
-    anchor = "middle";
-    tx = n.x;
-    ux1 = n.x - n.labelWidth / 2;
-    ux2 = n.x + n.labelWidth / 2;
-    if (isMain) {
-      ty = n.y - 2;
-      uy = n.y + fs * 0.35 + 3;
-    } else {
-      ty = n.y + fs * 0.35;
-      uy = 0;
-    }
-  } else if (n.side === "left") {
-    anchor = "end";
-    tx = n.x;
-    ux1 = n.x - n.labelWidth;
-    ux2 = n.x;
-    if (isMain) {
-      ty = n.y - 3;
-      uy = n.y;
-    } else {
-      ty = n.y + fs * 0.35;
-      uy = 0;
-    }
-  } else {
-    anchor = "start";
-    tx = n.x;
-    ux1 = n.x;
-    ux2 = n.x + n.labelWidth;
-    if (isMain) {
-      ty = n.y - 3;
-      uy = n.y;
-    } else {
-      ty = n.y + fs * 0.35;
-      uy = 0;
-    }
-  }
+  const tx = n.x;
+  const ty = isMain ? n.y - 3 : n.y + fs * 0.35;
+  const ux1 = n.x - n.labelWidth / 2;
+  const ux2 = n.x + n.labelWidth / 2;
+  const uy = n.y;
 
   const children: string[] = [
     svgText(
       {
         x: tx,
         y: ty,
-        "text-anchor": anchor,
+        "text-anchor": "middle",
         "font-family": fontFamily,
         "font-size": fs,
         "font-weight": isMain ? 600 : 400,
@@ -196,7 +165,7 @@ export function renderMindmapAST(
       nodeSvgs.push(renderCentral(n, theme, fontFamily));
     } else {
       nodeSvgs.push(
-        renderBranchNode(n, paletteColor(theme, n.branchIndex), theme, layout.style, fontFamily)
+        renderBranchNode(n, paletteColor(theme, n.branchIndex), theme, fontFamily)
       );
     }
   }

@@ -10,10 +10,10 @@ import type { MindmapAST, MindmapNode, MindmapStyle } from "../../core/types";
  *   bullet    = INDENT ("-" | "*" | "+") SPACE text NEWLINE
  *   INDENT    = /  *\/   (2 spaces = 1 level)
  *
- * Directives: `style` (map | logic-right | org-down), `theme`.
+ * Directives: `style` (map | logic-right), `theme`.
  */
 
-const VALID_STYLES: readonly MindmapStyle[] = ["map", "logic-right", "org-down"];
+const VALID_STYLES: readonly MindmapStyle[] = ["map", "logic-right"];
 
 interface Directives {
   style: MindmapStyle;

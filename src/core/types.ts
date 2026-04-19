@@ -36,7 +36,9 @@ export type DiagramType =
   // Knowledge / brainstorming diagrams
   | "mindmap" // Mindmap — radial Buzan + markmap-compat tree (20-MINDMAP-STANDARD)
   // Strategy / prioritization / analysis diagrams
-  | "matrix"; // Matrix / 2x2 quadrant / 3x3 / N×M heatmap (18-MATRIX-STANDARD)
+  | "matrix" // Matrix / 2x2 quadrant / 3x3 / N×M heatmap (18-MATRIX-STANDARD)
+  // Organizational hierarchy diagrams
+  | "orgchart"; // Organizational / reporting structure chart (16-ORGCHART-STANDARD)
 
 export type GenogramMode = "medical" | "heritage";
 export type LegendPosition = "bottom-right" | "right" | "bottom-center" | "none";
@@ -1275,7 +1277,7 @@ export interface FlowchartLayoutResult {
 
 // ─── Mindmap Types ──────────────────────────────────────────
 
-export type MindmapStyle = "map" | "logic-right" | "org-down";
+export type MindmapStyle = "map" | "logic-right";
 
 export interface MindmapNode {
   id: string;
@@ -1297,8 +1299,8 @@ export interface MindmapLayoutNode {
   node: MindmapNode;
   x: number;
   y: number;
-  /** "center" for root; "left"/"right" for map style; "right" for logic-right; "down" for org-down. */
-  side: "left" | "right" | "center" | "down";
+  /** "center" for root; "left"/"right" for map style; "right" for logic-right. */
+  side: "left" | "right" | "center";
   /** Main-branch index (0..N-1); -1 for root. Drives palette. */
   branchIndex: number;
   labelWidth: number;

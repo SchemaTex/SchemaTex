@@ -319,15 +319,14 @@ export const VENN_TOKENS: Record<ThemeName, VennTokens> = {
 
 // ─── Mindmap Tokens Per Theme ──────────────────────────────
 
-// XMind-inspired 8-color palette.
-const MINDMAP_PALETTE = [
-  "#2D7FF9", "#F59E0B", "#10B981", "#EF4444",
-  "#8B5CF6", "#EC4899", "#14B8A6", "#F97316",
-] as const;
+// Kept as its own struct so the mindmap palette can diverge from BaseTheme
+// later if we want (e.g., a softer / more organic set of branch colors).
+// Today the values mirror BaseTheme.palette so mindmap visually belongs with
+// the rest of the diagram family.
 
 const DEFAULT_MINDMAP: MindmapTokens = {
-  centralFill: "#1E293B",
-  branchPalette: MINDMAP_PALETTE,
+  centralFill: "#0f172a",
+  branchPalette: DEFAULT_PALETTE,
 };
 
 const MONOCHROME_MINDMAP: MindmapTokens = {
@@ -336,11 +335,8 @@ const MONOCHROME_MINDMAP: MindmapTokens = {
 };
 
 const DARK_MINDMAP: MindmapTokens = {
-  centralFill: "#89b4fa",
-  branchPalette: [
-    "#89b4fa", "#f9e2af", "#a6e3a1", "#f38ba8",
-    "#cba6f7", "#f5c2e7", "#94e2d5", "#fab387",
-  ],
+  centralFill: "#cdd6f4",
+  branchPalette: DARK_PALETTE,
 };
 
 export const MINDMAP_TOKENS: Record<ThemeName, MindmapTokens> = {
