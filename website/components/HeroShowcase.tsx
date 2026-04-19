@@ -64,10 +64,10 @@ export function HeroShowcase({ slides, intervalMs = 6500 }: HeroShowcaseProps) {
           </span>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
-          {/* DSL pane — DS uses --fill-muted bg, no extra border. Hidden on narrow. */}
+        <div className="grid h-[340px] grid-cols-1 lg:h-[440px] lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+          {/* DSL pane — hidden below lg so narrow screens only show diagram */}
           <div
-            className="relative hidden p-5 md:block md:border-r"
+            className="relative hidden overflow-y-auto p-5 lg:block lg:border-r"
             style={{
               background: 'var(--fill-muted)',
               borderColor: 'var(--fill-muted)',
@@ -88,8 +88,8 @@ export function HeroShowcase({ slides, intervalMs = 6500 }: HeroShowcaseProps) {
             ))}
           </div>
 
-          {/* Render pane — DS dot-grid stage */}
-          <div className="dot-grid relative flex min-h-[320px] items-center justify-center p-6 md:min-h-[420px]">
+          {/* Render pane — fills fixed height, diagram centered */}
+          <div className="dot-grid relative h-full">
             {slides.map((s, i) => (
               <div
                 key={i}
