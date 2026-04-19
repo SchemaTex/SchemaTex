@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1314 422" width="1314" height="422" class="sx-fb" role="img"><title>Late Software Delivery — Fishbone diagram</title>
+<desc>Ishikawa cause-and-effect diagram. Effect: Project Delayed. 4 categories.</desc>
+<style>.sx-fb { background: var(--schematex-fb-bg, #ffffff); font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+.sx-fb-title { font: 600 16px sans-serif; fill: #111; }
+.sx-fb-spine { stroke: var(--schematex-fb-spine, #141413); stroke-width: 2; stroke-linecap: butt; fill: none; }
+.sx-fb-tail { stroke: var(--schematex-fb-spine, #141413); stroke-width: 2; stroke-linecap: round; fill: none; }
+.sx-fb-head { stroke-width: 0.5; }
+.sx-fb-head-text { font: 500 14px sans-serif; text-anchor: middle; dominant-baseline: central; }
+.sx-fb-rib { stroke-width: 1.5; fill: none; }
+.sx-fb-header-pill { stroke-width: 0.6; }
+.sx-fb-header-text { font: 500 14px sans-serif; text-anchor: middle; dominant-baseline: central; }
+.sx-fb-branch { stroke-width: 0.8; opacity: 0.6; fill: none; }
+.sx-fb-cause-label { font: 400 12px sans-serif; fill: #3d3d3a; dominant-baseline: central; }
+.sx-fb-sub-tick { stroke-width: 0.7; opacity: 0.5; fill: none; }
+.sx-fb-sub-label { font: 400 11px sans-serif; fill: #555; dominant-baseline: central; }</style>
+<defs><mask id="sx-fb-mask-6urxhu" maskUnits="userSpaceOnUse"><rect x="0" y="0" width="1314" height="422" fill="white"/>
+<rect x="134.6" y="67" width="132" height="34" fill="black" rx="2"/>
+<rect x="306" y="195" width="192.16" height="16" fill="black" rx="2"/>
+<rect x="531.6" y="67" width="132" height="34" fill="black" rx="2"/>
+<rect x="703" y="195" width="172" height="16" fill="black" rx="2"/>
+<rect x="134.6" y="365" width="132" height="34" fill="black" rx="2"/>
+<rect x="306" y="255" width="346.7200000000003" height="16" fill="black" rx="2"/>
+<rect x="531.6" y="365" width="132" height="34" fill="black" rx="2"/>
+<rect x="703" y="255" width="266.08" height="16" fill="black" rx="2"/>
+<rect x="1081.7200000000003" y="196.5" width="188" height="73" fill="black" rx="2"/></mask></defs>
+<text x="657" y="28" class="sx-fb-title" text-anchor="middle">Late Software Delivery</text>
+<line x1="120" y1="233" x2="40" y2="193" class="sx-fb-tail"/>
+<line x1="120" y1="233" x2="40" y2="273" class="sx-fb-tail"/>
+<line x1="120" y1="233" x2="1077.7200000000003" y2="233" class="sx-fb-spine"/>
+<g class="sx-fb-head-g"><polygon points="1077.7200000000003,192.5 1077.7200000000003,273.5 1273.7200000000003,233" class="sx-fb-head" fill="#faece7" stroke="#993c1d"/>
+<text x="1152.2000000000003" y="233" class="sx-fb-head-text" fill="#6b2a14">Project Delayed</text></g>
+<g class="sx-fb-ribs"><line x1="290" y1="233" x2="218" y2="113" class="sx-fb-rib" stroke="#2563eb" mask="url(#sx-fb-mask-6urxhu)"/>
+<line x1="218" y1="113" x2="200.6" y2="84" class="sx-fb-rib" stroke="#2563eb"/>
+<rect x="134.6" y="67" width="132" height="34" rx="8" class="sx-fb-header-pill" fill="#d8e3fb" stroke="#2563eb"/>
+<text x="200.6" y="84" class="sx-fb-header-text" fill="#1a45a5">People</text>
+<line x1="272" y1="203" x2="302" y2="203" class="sx-fb-branch" stroke="#2563eb" mask="url(#sx-fb-mask-6urxhu)"/>
+<text x="308" y="203" class="sx-fb-cause-label" text-anchor="start">Skill gaps&quot; : &quot;Unclear roles</text>
+<line x1="687" y1="233" x2="615" y2="113" class="sx-fb-rib" stroke="#059669" mask="url(#sx-fb-mask-6urxhu)"/>
+<line x1="615" y1="113" x2="597.6" y2="84" class="sx-fb-rib" stroke="#059669"/>
+<rect x="531.6" y="67" width="132" height="34" rx="8" class="sx-fb-header-pill" fill="#d2ece4" stroke="#059669"/>
+<text x="597.6" y="84" class="sx-fb-header-text" fill="#04694a">Tools</text>
+<line x1="669" y1="203" x2="699" y2="203" class="sx-fb-branch" stroke="#059669" mask="url(#sx-fb-mask-6urxhu)"/>
+<text x="705" y="203" class="sx-fb-cause-label" text-anchor="start">Outdated IDE&quot; : &quot;Flaky CI</text>
+<line x1="290" y1="233" x2="218" y2="353" class="sx-fb-rib" stroke="#d97706" mask="url(#sx-fb-mask-6urxhu)"/>
+<line x1="218" y1="353" x2="200.6" y2="382" class="sx-fb-rib" stroke="#d97706"/>
+<rect x="134.6" y="365" width="132" height="34" rx="8" class="sx-fb-header-pill" fill="#f8e7d2" stroke="#d97706"/>
+<text x="200.6" y="382" class="sx-fb-header-text" fill="#985304">Process</text>
+<line x1="272" y1="263" x2="302" y2="263" class="sx-fb-branch" stroke="#d97706" mask="url(#sx-fb-mask-6urxhu)"/>
+<text x="308" y="263" class="sx-fb-cause-label" text-anchor="start">Missing specs&quot; : &quot;Scope creep&quot; : &quot;No retrospectives</text>
+<line x1="687" y1="233" x2="615" y2="353" class="sx-fb-rib" stroke="#7c3aed" mask="url(#sx-fb-mask-6urxhu)"/>
+<line x1="615" y1="353" x2="597.6" y2="382" class="sx-fb-rib" stroke="#7c3aed"/>
+<rect x="531.6" y="365" width="132" height="34" rx="8" class="sx-fb-header-pill" fill="#e7dcfc" stroke="#7c3aed"/>
+<text x="597.6" y="382" class="sx-fb-header-text" fill="#5729a6">Environment</text>
+<line x1="669" y1="263" x2="699" y2="263" class="sx-fb-branch" stroke="#7c3aed" mask="url(#sx-fb-mask-6urxhu)"/>
+<text x="705" y="263" class="sx-fb-cause-label" text-anchor="start">Remote timezone lag&quot; : &quot;Legacy codebase</text></g></svg>

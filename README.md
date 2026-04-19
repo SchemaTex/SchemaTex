@@ -196,6 +196,8 @@ MOSI:  x=======  data: ["0xAB","0xCD","0xEF","0x01","0x02","0x03","0x04","0x05"]
 MISO:  zzzz====  data: ["","","","","0xFF","0x12","0x34","0x56"]
 ```
 
+![SPI Transaction Timing Diagram](examples/timing/spi-transaction.svg)
+
 [Timing syntax →](https://schematex.dev/docs/timing)
 
 ---
@@ -214,6 +216,8 @@ c1 = AND(A, B)
 c2 = AND(s1, Cin)
 Cout = OR(c1, c2)
 ```
+
+![1-bit Full Adder Logic Gate](examples/logic/full-adder.svg)
 
 [Logic gate syntax →](https://schematex.dev/docs/logic)
 
@@ -275,6 +279,8 @@ bus_hv -> xfmr1 -> bus_mv
 bus_mv -> brk1
 ```
 
+![13.8 kV Substation Single-Line Diagram](examples/sld/substation-13kv.svg)
+
 [SLD syntax →](https://schematex.dev/docs/sld)
 
 ---
@@ -294,15 +300,52 @@ entity "Acme Holdings"
   acme_inc --60%--> acme_fund
 ```
 
+![Acme Holdings Entity Structure](examples/entity/holding-company.svg)
+
 [Entity syntax →](https://schematex.dev/docs/entity)
 
 ---
 
-### 📦 Block diagram & 🐟 Fishbone
+### 📦 Block diagram
 
-Signal-flow block diagrams (summing junctions, gain blocks, feedback loops) and Ishikawa cause-and-effect fishbones with auto-categorized branches.
+Signal-flow block diagrams with summing junctions, gain blocks, and feedback loops.
 
-[Block syntax →](https://schematex.dev/docs/block) · [Fishbone syntax →](https://schematex.dev/docs/fishbone)
+```
+block "PID Loop"
+  ref [type: sum, label: "+"]
+  err [type: gain, label: "Kp"]
+  plant [label: "Plant"]
+  sensor [label: "Sensor"]
+  ref -> err -> plant -> sensor
+  sensor ->> ref [label: "−"]
+```
+
+![PID Loop Block Diagram](examples/block/pid-loop.svg)
+
+[Block syntax →](https://schematex.dev/docs/block)
+
+---
+
+### 🐟 Fishbone — *Ishikawa cause-and-effect*
+
+Cause-and-effect diagrams with auto-categorized branches and alternating rib layout.
+
+```
+fishbone "Late Software Delivery"
+effect "Project Delayed"
+category people "People"
+category process "Process"
+category tools "Tools"
+category env "Environment"
+people : "Skill gaps" : "Unclear roles"
+process : "Missing specs" : "Scope creep" : "No retrospectives"
+tools : "Outdated IDE" : "Flaky CI"
+env : "Remote timezone lag" : "Legacy codebase"
+```
+
+![Late Delivery Fishbone Diagram](examples/fishbone/late-delivery.svg)
+
+[Fishbone syntax →](https://schematex.dev/docs/fishbone)
 
 ## Why Schematex?
 
