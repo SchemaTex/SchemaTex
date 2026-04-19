@@ -2,18 +2,19 @@ import Link from 'next/link';
 import { render } from 'schematex';
 import { CopyButton } from '@/components/CopyButton';
 import { HeroShowcase, type HeroSlide } from '@/components/HeroShowcase';
-import { ClusterCard } from '@/components/ClusterCard';
 import { GithubStarButton } from '@/components/GithubStarButton';
 import { getRepoStats } from '@/lib/github-stats';
 import { galleryExamples } from '@/lib/gallery-examples';
 
-const FEATURED_SLUGS = [
-  'harry-potter-family',
-  'substation-13kv',
-  'brca1-hereditary-cancer',
-  'fishbone-website-traffic',
-  'motor-start-stop',
-  'bacterial-diversity',
+// Featured cases — each tying a real diagram to the professional who ships it.
+// Order optimized for cluster coverage: relationships / industrial / corporate / causality.
+const FEATURED_CASES = [
+  { slug: 'brca1-hereditary-cancer', persona: 'For the genetic counselor' },
+  { slug: 'motor-start-stop',         persona: 'For the controls engineer' },
+  { slug: 'harry-potter-family',      persona: 'For the family therapist' },
+  { slug: 'substation-13kv',          persona: 'For the power engineer' },
+  { slug: 'holding-company',          persona: 'For corporate counsel' },
+  { slug: 'fishbone-website-traffic', persona: 'For the ops lead' },
 ] as const;
 
 const DIAGRAM_TO_CAT: Record<string, string> = {
@@ -73,33 +74,6 @@ trust -> parent : 100%
 parent -> uk : 100%
 parent -> fund : 60%`;
 
-// ───────────────────────────────────────────────────────────────────
-// Cluster preview DSLs
-// ───────────────────────────────────────────────────────────────────
-
-const CLUSTER_RELATIONSHIPS_DSL = `genogram "Family"
-  j [male, 1950]
-  m [female, 1952]
-  j -- m
-    a [female, 1975, index]
-    b [male, 1978]
-  a -close- m
-  a -hostile- b`;
-
-const CLUSTER_INDUSTRIAL_DSL = `ladder "Start/Stop"
-rung 1 "Seal-in":
-  XIC(START)
-  XIO(STOP)
-  OTE(MOTOR)`;
-
-const CLUSTER_CORPORATE_DSL = `entity-structure "Acme Holdings"
-entity trust "Founder Trust" trust@SD
-entity parent "Acme Inc." corp@DE
-entity uk "Acme UK Ltd." llc@UK
-entity fund "Acme Growth Fund" fund@KY
-trust -> parent : 100%
-parent -> uk : 100%
-parent -> fund : 60%`;
 
 const STANDARDS_RAIL = [
   'McGoldrick 2020',
@@ -113,37 +87,6 @@ const STANDARDS_RAIL = [
   'WaveDrom',
   'ISO 5807',
 ];
-
-const CLUSTER_CAUSALITY_DSL = `fishbone "Website traffic drop"
-
-effect "Traffic decline"
-
-category content     "Content"
-category tech        "Technical"
-category links       "Backlinks"
-category ux          "UX"
-category competition "Competition"
-category algo        "Algorithm"
-
-content : "Publishing frequency down"
-content : "Content too generic"
-content : "Low-quality AI content"
-
-tech : "Core Web Vitals failing"
-tech : "Crawl coverage drop"
-tech : "Missing structured data"
-
-links : "High-DR backlinks lost"
-links : "Referring domain growth stalled"
-
-ux : "Bounce rate rising"
-ux : "Slow above-fold load"
-
-competition : "New competitors entering"
-competition : "AI tools replacing search"
-
-algo : "Core Update penalty"
-algo : "Weak E-E-A-T signals"`;
 
 // ───────────────────────────────────────────────────────────────────
 // Server-side safe render — never throws into the page
@@ -382,9 +325,9 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ────────────── CLUSTERS ────────────── */}
+      {/* ────────────── PROFESSIONAL USE CASES ────────────── */}
       <section
-        aria-labelledby="clusters-heading"
+        aria-labelledby="cases-heading"
         className="border-b border-fd-border px-6 py-28 md:py-32"
       >
         <div className="mx-auto max-w-6xl">
@@ -393,99 +336,21 @@ export default async function HomePage() {
               02 / WHERE SCHEMATEX IS THE PROFESSIONAL CHOICE
             </p>
             <h2
-              id="clusters-heading"
+              id="cases-heading"
               className="text-balance text-4xl font-semibold tracking-tight text-fd-foreground md:text-5xl"
             >
-              The diagrams other libraries can&apos;t draw.
+              Diagrams professionals actually sign off on.
             </h2>
             <p className="mt-5 text-lg leading-relaxed text-fd-muted-foreground">
-              Each domain is a first-class citizen with its own parser, layout
-              algorithm, and SVG symbols based on published standards. Not
-              generic shapes with domain labels.
-            </p>
-          </div>
-
-          <div className="mt-14 grid grid-cols-1 gap-6 md:grid-cols-2">
-            <ClusterCard
-              cluster="relationships"
-              title="Clinical, Social Work & Life Sciences"
-              description="Genograms a family therapist takes to a case review. NSGC pedigrees a genetic counselor uses in clinic. Ecomaps social workers chart with clients. Sociograms for classroom and organizational research. Newick phylogenies for evolutionary biology."
-              diagrams={[
-                { name: 'genogram', standard: 'McGoldrick — family therapy' },
-                { name: 'pedigree', standard: 'NSGC — genetic counseling' },
-                { name: 'ecomap', standard: 'Hartman — social work' },
-                { name: 'sociogram', standard: 'Moreno — psychology' },
-                { name: 'phylogenetic', standard: 'Newick — evolutionary biology' },
-              ]}
-              href="/gallery?cluster=relationships"
-              svg={safeRender(CLUSTER_RELATIONSHIPS_DSL)}
-            />
-            <ClusterCard
-              cluster="industrial"
-              title="Electrical & Industrial"
-              description="Ladder logic that maps 1:1 to IEC 61131-3, SPICE-style schematics, IEEE 315 one-lines, timing waveforms, and signal-flow block diagrams."
-              diagrams={[
-                { name: 'ladder', standard: 'IEC 61131-3' },
-                { name: 'single-line', standard: 'IEEE 315' },
-                { name: 'circuit', standard: 'ANSI Y32.2' },
-                { name: 'logic gate', standard: 'IEEE 91' },
-                { name: 'timing', standard: 'WaveDrom' },
-                { name: 'block', standard: 'control' },
-              ]}
-              href="/gallery?cluster=industrial"
-              svg={safeRender(CLUSTER_INDUSTRIAL_DSL)}
-            />
-            <ClusterCard
-              cluster="corporate"
-              title="Corporate & Legal"
-              description="Parent/subsidiary structures with entity-type shapes, jurisdiction clustering, and tier-aware ownership percentage rollup that survives a Series A review."
-              diagrams={[
-                { name: 'entity structure', standard: 'cap-table' },
-                { name: 'org chart', standard: 'hierarchical' },
-              ]}
-              href="/gallery?cluster=corporate"
-              svg={safeRender(CLUSTER_CORPORATE_DSL)}
-            />
-            <ClusterCard
-              cluster="causality"
-              title="Causality & Analysis"
-              description="Ishikawa cause-and-effect fishbones and Venn/Euler set diagrams — for root-cause analysis, decision memos, and teaching artifacts."
-              diagrams={[
-                { name: 'fishbone', standard: 'Ishikawa' },
-                { name: 'venn', standard: 'Euler' },
-              ]}
-              href="/gallery?cluster=causality"
-              svg={safeRender(CLUSTER_CAUSALITY_DSL)}
-            />
-          </div>
-        </div>
-      </section>
-
-      {/* ────────────── FEATURED GALLERY ────────────── */}
-      <section
-        aria-labelledby="featured-heading"
-        className="border-b border-fd-border px-6 py-24 md:py-28"
-        style={{ background: 'var(--fill)' }}
-      >
-        <div className="mx-auto max-w-6xl">
-          <div className="max-w-3xl">
-            <p className="mb-3 type-eye">
-              03 / IN THE WILD
-            </p>
-            <h2
-              id="featured-heading"
-              className="text-balance text-3xl font-semibold tracking-tight text-fd-foreground md:text-4xl"
-            >
-              Every diagram, reproducible from a string.
-            </h2>
-            <p className="mt-4 text-lg leading-relaxed text-fd-muted-foreground">
-              Real-world examples — each renders from its DSL, each conforms to
-              a published standard. Copy, open in the playground, adapt.
+              Each diagram family is built for the practitioner who owns it —
+              from a few lines of DSL to the version a domain expert would put
+              in a chart, a memo, or a permit. Every output conforms to a
+              published standard.
             </p>
           </div>
 
           <div className="mt-12 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
-            {FEATURED_SLUGS.map((slug) => {
+            {FEATURED_CASES.map(({ slug, persona }) => {
               const ex = galleryExamples.find((g) => g.slug === slug);
               if (!ex) return null;
               const color = DIAGRAM_TO_CAT[ex.diagram] ?? 'var(--cat-7)';
@@ -494,7 +359,7 @@ export default async function HomePage() {
                 <Link
                   key={ex.slug}
                   href={`/playground?example=${ex.slug}`}
-                  className="group flex flex-col overflow-hidden bg-fd-card transition hover:border-[color:var(--stroke)]"
+                  className="group flex flex-col overflow-hidden bg-fd-card transition hover:border-[color:var(--accent)]"
                   style={{
                     border: '1px solid var(--fill-muted)',
                     borderRadius: 'var(--r)',
@@ -520,9 +385,15 @@ export default async function HomePage() {
                     />
                   </div>
                   <div
-                    className="flex flex-col gap-1 p-4"
+                    className="flex flex-col gap-1.5 p-4"
                     style={{ borderTop: '1px solid var(--fill-muted)' }}
                   >
+                    <div
+                      className="font-mono text-[11px] uppercase tracking-[0.08em]"
+                      style={{ color: 'var(--accent)' }}
+                    >
+                      {persona}
+                    </div>
                     <div className="text-[15px] font-semibold tracking-tight text-fd-foreground">
                       {ex.title}
                     </div>
@@ -564,7 +435,7 @@ export default async function HomePage() {
       >
         <div className="mx-auto max-w-6xl">
           <div className="max-w-3xl">
-            <p className="mb-3 type-eye">04 / WHY</p>
+            <p className="mb-3 type-eye">03 / WHY</p>
             <h2
               id="why-heading"
               className="text-balance text-4xl font-semibold tracking-tight text-fd-foreground md:text-5xl"
@@ -606,7 +477,7 @@ export default async function HomePage() {
         className="border-b border-fd-border px-6 py-28 md:py-32"
       >
         <div className="mx-auto max-w-6xl">
-          <p className="mb-3 type-eye">05 / POSITIONING</p>
+          <p className="mb-3 type-eye">04 / POSITIONING</p>
           <h2
             id="vs-heading"
             className="text-balance text-4xl font-semibold leading-tight tracking-tight text-fd-foreground md:text-5xl"
@@ -711,7 +582,7 @@ export default async function HomePage() {
       >
         <div className="mx-auto max-w-6xl">
           <p className="mb-3 type-eye">
-            06 / QUICKSTART
+            05 / QUICKSTART
           </p>
           <h2
             id="install-heading"
