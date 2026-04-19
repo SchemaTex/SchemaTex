@@ -605,7 +605,7 @@ export default async function HomePage() {
         aria-labelledby="vs-heading"
         className="border-b border-fd-border px-6 py-28 md:py-32"
       >
-        <div className="mx-auto max-w-5xl">
+        <div className="mx-auto max-w-6xl">
           <p className="mb-3 type-eye">05 / POSITIONING</p>
           <h2
             id="vs-heading"
@@ -716,7 +716,7 @@ export default async function HomePage() {
         aria-labelledby="install-heading"
         className="border-b border-fd-border bg-fd-muted/20 px-6 py-28 md:py-32"
       >
-        <div className="mx-auto max-w-4xl">
+        <div className="mx-auto max-w-6xl">
           <p className="mb-3 type-eye">
             06 / QUICKSTART
           </p>
