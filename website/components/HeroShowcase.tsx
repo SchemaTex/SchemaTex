@@ -64,10 +64,10 @@ export function HeroShowcase({ slides, intervalMs = 6500 }: HeroShowcaseProps) {
           </span>
         </div>
 
-        <div className="grid h-[340px] grid-cols-1 lg:h-[440px] lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
-          {/* DSL pane — hidden below lg so narrow screens only show diagram */}
+        <div className="grid h-[320px] grid-cols-1 sm:h-[420px] sm:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:h-[440px]">
+          {/* DSL pane — hidden below sm (mobile too cramped), side-by-side above */}
           <div
-            className="relative hidden overflow-y-auto p-5 lg:block lg:border-r"
+            className="relative hidden overflow-y-auto p-5 sm:block sm:border-r"
             style={{
               background: 'var(--fill-muted)',
               borderColor: 'var(--fill-muted)',

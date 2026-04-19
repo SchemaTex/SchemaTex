@@ -261,7 +261,7 @@ export default async function HomePage() {
           className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-px bg-gradient-to-r from-transparent via-fd-border to-transparent"
         />
 
-        <div className="mx-auto grid max-w-[1320px] items-center gap-10 md:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] md:gap-14">
+        <div className="mx-auto grid max-w-[1320px] items-center gap-10 min-[1100px]:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] min-[1100px]:gap-14">
           {/* LEFT — copy + CTAs */}
           <div>
             {/* Eye line: — 20 DIAGRAM FAMILIES · 10+ STANDARDS · 0 DEPS */}
