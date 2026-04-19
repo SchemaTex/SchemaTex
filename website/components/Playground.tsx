@@ -15,6 +15,8 @@ const MonacoEditor = dynamic(() => import('@monaco-editor/react'), {
 interface PlaygroundProps {
   initial: string;
   height?: number;
+  /** When true, fill the parent container's height (use h-full layout instead of fixed height). */
+  fill?: boolean;
 }
 
 // URL-safe base64 (hash fragment)
@@ -44,7 +46,7 @@ function decodeShare(s: string): string | null {
   }
 }
 
-export function Playground({ initial, height = 420 }: PlaygroundProps) {
+export function Playground({ initial, height = 420, fill = false }: PlaygroundProps) {
   const [text, setText] = useState(initial);
   const [debounced, setDebounced] = useState(initial);
   const [shareState, setShareState] = useState<'idle' | 'copied'>('idle');
@@ -105,11 +107,13 @@ export function Playground({ initial, height = 420 }: PlaygroundProps) {
     }
   }, [text]);
 
+  const containerClass = fill
+    ? 'grid h-full grid-cols-1 gap-3 md:grid-cols-2'
+    : 'grid grid-cols-1 gap-3 md:grid-cols-2';
+  const paneStyle = fill ? undefined : { height };
+
   return (
-    <div
-      className="grid grid-cols-1 gap-3 md:grid-cols-2"
-      style={{ minHeight: height }}
-    >
+    <div className={containerClass} style={fill ? undefined : { minHeight: height }}>
       <div className="relative overflow-hidden rounded-lg border border-fd-border bg-fd-card">
         <div className="absolute right-3 top-3 z-10 flex gap-2">
           <button
@@ -122,7 +126,7 @@ export function Playground({ initial, height = 420 }: PlaygroundProps) {
           <CopyButton text={text} label="Copy DSL" />
         </div>
         <MonacoEditor
-          height={height}
+          height={fill ? '100%' : height}
           defaultLanguage="plaintext"
           value={text}
           onChange={(v) => setText(v ?? '')}
@@ -144,7 +148,7 @@ export function Playground({ initial, height = 420 }: PlaygroundProps) {
       </div>
       <div
         className="relative flex items-center justify-center overflow-auto rounded-lg border border-fd-border bg-white p-4"
-        style={{ height }}
+        style={paneStyle}
       >
         {error ? (
           <pre className="text-sm text-red-600 whitespace-pre-wrap">{error}</pre>
