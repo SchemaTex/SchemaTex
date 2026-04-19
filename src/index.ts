@@ -36,6 +36,7 @@ export { entity } from "./diagrams/entity";
 export { fishbone } from "./diagrams/fishbone";
 export { venn } from "./diagrams/venn";
 export { flowchart } from "./diagrams/flowchart";
+export { orgchart } from "./diagrams/orgchart";
 
 export {
   type ThemeName,

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Schematex · Orgchart Preview</title>
+<style>
+  body { font-family: system-ui; background: #f5f5f5; margin: 0; padding: 20px; }
+  nav { font-size: 13px; color: #888; margin-bottom: 16px; }
+  nav a { color: #555; text-decoration: none; }
+  nav a:hover { text-decoration: underline; }
+  h1 { font-size: 18px; color: #333; margin: 0 0 4px; }
+  .subtitle { font-size: 13px; color: #888; margin-bottom: 24px; }
+  h2 { font-size: 14px; color: #666; margin-top: 30px; border-bottom: 1px solid #ddd; padding-bottom: 4px; }
+  pre.src { background: #f7f7f7; padding: 10px; font-size: 12px; border-radius: 6px; margin: 6px 0; border: 1px solid #eee; white-space: pre-wrap; }
+  .svg-container { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin: 10px 0; overflow-x: auto; }
+  .svg-container svg { display: block; max-width: 100%; height: auto; }
+</style>
+</head>
+<body>
+<nav><a href="index.html">← All Diagrams</a></nav>
+<h1>Organizational Chart</h1>
+<div class="subtitle">Reporting hierarchy · roles · departments · matrix lines — for HR, planning, comms</div>
+<div id="output"></div>
+<script type="module">
+import { render } from '../src/index.ts';
+
+const cases = [
+  ['TC-ORG-01 · Minimal 3-person startup', `orgchart "Tiny Startup"
+
+ceo : "Alice Chen" | CEO & Founder [role: ceo]
+  cto : "Bob Kim" | CTO [role: cto]
+  designer : "Carol Diaz" | Head of Design [role: designer]`],
+
+  ['TC-ORG-02 · Classic C-suite', `orgchart "Acme Corp — Executive Team"
+
+ceo : "Jane Smith" | CEO | Executive [role: ceo]
+  cto : "Raj Patel" | CTO | Engineering [role: cto]
+  cfo : "Mei Wong" | CFO | Finance [role: cfo]
+  coo : "Diego Santos" | COO | Operations [role: coo]
+  cmo : "Sarah Johnson" | CMO | Marketing [role: cmo]
+  cpo : "Yuki Tanaka" | CPO | Product [role: cpo]`],
+
+  ['TC-ORG-03 · Department color coding (wide team)', `orgchart "Platform Division"
+
+vp : "Morgan Lee" | VP Platform [role: vp]
+  eng1 : "Ahmed Khan" | Staff Engineer | Engineering [role: engineer]
+  eng2 : "Priya Shah" | Senior Engineer | Engineering [role: engineer]
+  eng3 : "Tom Brown" | Engineer | Engineering [role: engineer]
+  des1 : "Liu Fang" | Senior Designer | Design [role: designer]
+  des2 : "Elena Rossi" | Designer | Design [role: designer]
+  pm1 : "Jack Wilson" | Senior PM | Product [role: product]
+  data1 : "Fatima Ali" | Data Scientist | Data [role: data]`],
+
+  ['TC-ORG-04 · Deep hierarchy (3 levels)', `orgchart "Engineering Org"
+
+cto : "Raj Patel" | CTO | Engineering [role: cto]
+  vp_infra : "Anna Park" | VP Infrastructure | Engineering [role: vp]
+    eng_a : "Sam Ho" | Tech Lead | Platform [role: engineer]
+      dev_a1 : "Jin Liu" | SWE | Platform [role: engineer]
+      dev_a2 : "Noa Cohen" | SWE | Platform [role: engineer]
+    eng_b : "Leo Gomez" | Tech Lead | SRE [role: engineer]
+      dev_b1 : "Ivy Chen" | SRE [role: engineer]
+  vp_apps : "Maria Lopez" | VP Applications | Engineering [role: vp]
+    eng_c : "Kai Nakamura" | Tech Lead | Web [role: engineer]
+      dev_c1 : "Omar Hassan" | SWE [role: engineer]
+      dev_c2 : "Ruth Davis" | SWE [role: engineer]`],
+
+  ['TC-ORG-05 · Matrix / dotted reports', `orgchart "Cross-functional team"
+
+ceo : "Alice Wang" | CEO [role: ceo]
+  vp_eng : "Bob Singh" | VP Eng [role: vp]
+    eng1 : "Claire Moon" | Senior Engineer | Engineering [role: engineer]
+    eng2 : "David Liu" | Engineer | Engineering [role: engineer]
+  vp_prod : "Eva Rossi" | VP Product [role: vp]
+    pm1 : "Frank Ito" | PM | Product [role: product]
+
+pm1 -.-> eng1 [label: "project"]
+pm1 -.-> eng2 [label: "project"]`],
+
+  ['TC-ORG-06 · Assistant-of sidecar', `orgchart "Executive Office"
+
+ceo : "Diana Prince" | CEO [role: ceo]
+  ea : "Clark Kent" | Executive Assistant [role: hr, assistant-of: ceo]
+  cfo : "Bruce Wayne" | CFO | Finance [role: cfo]
+  cto : "Barry Allen" | CTO | Engineering [role: cto]`],
+
+  ['TC-ORG-07 · Vacant role + draft + external advisor', `orgchart "Hiring Plan Q2"
+
+ceo : "Founder Xu" | CEO [role: ceo]
+  cto : "Nadia Ford" | CTO [role: cto]
+  open cmo : "" | Head of Marketing [role: cmo, open: true]
+  draft cfo : "TBH" | Fractional CFO [role: cfo, draft: true]
+  advisor adv : "Dr. Grace Hopper" | Board Advisor [role: advisor, external: true]`],
+
+  ['TC-ORG-08 · Status pills (new / leaving / on-leave)', `orgchart "Q2 Transitions"
+
+ceo : "Amelia Rose" | CEO [role: ceo]
+  eng1 : "Yuki Sato" | Senior Engineer | Engineering [role: engineer, status: new]
+  eng2 : "Tariq Rahman" | Staff Engineer | Engineering [role: engineer, status: leaving]
+  des1 : "Sofia Navarro" | Design Lead | Design [role: designer, status: on-leave]
+  pm1 : "Owen Park" | Senior PM | Product [role: product]`],
+
+  ['TC-ORG-09 · Mid-size company (mixed depth, depts, matrix)', `orgchart "MidCo — 18 people"
+
+ceo : "Helena Voss" | CEO | Executive [role: ceo]
+  coo : "Raj Mehta" | COO | Operations [role: coo]
+    ops1 : "Nina Blum" | Ops Manager | Operations [role: ops]
+    ops2 : "Alex Park" | People Ops | HR [role: hr]
+  cto : "Lin Xu" | CTO | Engineering [role: cto]
+    lead_fe : "Jamie Ford" | FE Lead | Engineering [role: engineer]
+      fe1 : "Ken Ito" | SWE | Engineering [role: engineer]
+      fe2 : "Maya Singh" | SWE | Engineering [role: engineer]
+    lead_be : "Tom Ng" | BE Lead | Engineering [role: engineer]
+      be1 : "Ola Berg" | SWE | Engineering [role: engineer]
+      be2 : "Wes Kato" | SWE | Engineering [role: engineer]
+    data_l : "Priya Rao" | Data Lead | Data [role: data]
+  cfo : "Mark Hill" | CFO | Finance [role: cfo]
+    fin1 : "Ivy Lee" | Controller | Finance [role: cfo]
+  cmo : "Sara Cho" | CMO | Marketing [role: cmo]
+    mkt1 : "Ben Ray" | Growth Lead | Marketing [role: marketing]
+    mkt2 : "Zoe Tan" | Content Lead | Marketing [role: marketing]
+
+mkt1 -.-> data_l [label: "analytics"]
+fin1 -.-> ops1 [label: "reports"]`],
+
+  ['TC-ORG-10 · Info lines + gender silhouettes', `orgchart "Acme Corp — Team"
+
+ceo : "Sarah Chen" | CEO | | sarah@acme.com [role: ceo, gender: f]
+  vp_eng : "Marcus Reid" | VP Engineering | | marcus@acme.com [role: vp, gender: m]
+    eng1 : "Yuki Tanaka" | Senior Engineer | | yuki@acme.com [gender: f]
+    eng2 : "Omar Hassan" | Engineer | | omar@acme.com [gender: m]
+  vp_prod : "Lea Moreau" | VP Product | | lea@acme.com [role: vp, gender: f]
+    pm1 : "Raj Patel" | Product Manager | | raj@acme.com [gender: m]
+  advisor adv : "Dr. Kim Park" | Strategy Advisor | | External — Board [role: advisor, gender: f]`],
+
+  ['TC-ORG-11 · Compact directory (list layout)', `orgchart "Company Directory"
+config : layout = list
+
+ceo : "Sarah Chen" | CEO | Executive [role: ceo]
+  veng : "Maya Rodriguez" | VP Engineering | Engineering [role: vp]
+    dir_be : "James Wu" | Director, Backend | Engineering [role: engineer]
+      eng_a : "Arjun Tiwari" | Staff Engineer | Engineering [role: engineer]
+      eng_b : "Mei Chen" | Senior Engineer | Engineering [role: engineer]
+      eng_c : "Ben Kovac" | Senior Engineer | Engineering [role: engineer]
+    dir_fe : "Aisha Nair" | Director, Frontend | Engineering [role: engineer]
+    dir_infra : "Kenji Sato" | Director, Infra | Engineering [role: engineer]
+  vprod : "David Kim" | VP Product | Product [role: vp]
+    pm_growth : "Liam O'Brien" | Lead PM, Growth | Product [role: product]
+    pm_plat : "Priya Talwar" | Lead PM, Platform | Product [role: product]
+    pm_sr : "Yuki Nakamura" | Senior PM | Product [role: product]
+  vmkt : "Elena Petrova" | VP Marketing | Marketing [role: cmo]
+  cfo : "Margaret Donovan" | CFO | Finance [role: cfo]
+  cpo : "Isabelle Laurent" | Chief People Officer | People [role: hr]
+  gc : "Victoria Sterling" | General Counsel | Legal [role: legal]`],
+];
+
+const out = document.getElementById('output');
+for (const [title, src] of cases) {
+  const h = document.createElement('h2'); h.textContent = title; out.appendChild(h);
+  const pre = document.createElement('pre'); pre.className = 'src'; pre.textContent = src; out.appendChild(pre);
+  const div = document.createElement('div'); div.className = 'svg-container';
+  try {
+    div.innerHTML = render(src);
+  } catch (e) {
+    div.innerHTML = '<code style="color:#c00">' + (e.message || e) + '</code>';
+  }
+  out.appendChild(div);
+}
+</script>
+</body>
+</html>
