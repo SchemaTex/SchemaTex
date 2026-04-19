@@ -37,10 +37,60 @@
       "import": "./dist/diagrams/sociogram/index.js",
       "require": "./dist/diagrams/sociogram/index.cjs"
     },
+    "./timing": {
+      "types": "./dist/diagrams/timing/index.d.ts",
+      "import": "./dist/diagrams/timing/index.js",
+      "require": "./dist/diagrams/timing/index.cjs"
+    },
+    "./logic": {
+      "types": "./dist/diagrams/logic/index.d.ts",
+      "import": "./dist/diagrams/logic/index.js",
+      "require": "./dist/diagrams/logic/index.cjs"
+    },
+    "./circuit": {
+      "types": "./dist/diagrams/circuit/index.d.ts",
+      "import": "./dist/diagrams/circuit/index.js",
+      "require": "./dist/diagrams/circuit/index.cjs"
+    },
+    "./blockdiagram": {
+      "types": "./dist/diagrams/blockdiagram/index.d.ts",
+      "import": "./dist/diagrams/blockdiagram/index.js",
+      "require": "./dist/diagrams/blockdiagram/index.cjs"
+    },
+    "./ladder": {
+      "types": "./dist/diagrams/ladder/index.d.ts",
+      "import": "./dist/diagrams/ladder/index.js",
+      "require": "./dist/diagrams/ladder/index.cjs"
+    },
+    "./sld": {
+      "types": "./dist/diagrams/sld/index.d.ts",
+      "import": "./dist/diagrams/sld/index.js",
+      "require": "./dist/diagrams/sld/index.cjs"
+    },
+    "./entity": {
+      "types": "./dist/diagrams/entity/index.d.ts",
+      "import": "./dist/diagrams/entity/index.js",
+      "require": "./dist/diagrams/entity/index.cjs"
+    },
     "./fishbone": {
       "types": "./dist/diagrams/fishbone/index.d.ts",
       "import": "./dist/diagrams/fishbone/index.js",
       "require": "./dist/diagrams/fishbone/index.cjs"
+    },
+    "./venn": {
+      "types": "./dist/diagrams/venn/index.d.ts",
+      "import": "./dist/diagrams/venn/index.js",
+      "require": "./dist/diagrams/venn/index.cjs"
+    },
+    "./flowchart": {
+      "types": "./dist/diagrams/flowchart/index.d.ts",
+      "import": "./dist/diagrams/flowchart/index.js",
+      "require": "./dist/diagrams/flowchart/index.cjs"
+    },
+    "./orgchart": {
+      "types": "./dist/diagrams/orgchart/index.d.ts",
+      "import": "./dist/diagrams/orgchart/index.js",
+      "require": "./dist/diagrams/orgchart/index.cjs"
     }
   },
   "files": [
@@ -58,20 +108,38 @@
     "prepublishOnly": "npm run build"
   },
   "keywords": [
+    "diagram",
+    "svg",
+    "text-to-diagram",
+    "mermaid-alternative",
     "genogram",
     "ecomap",
     "pedigree",
     "phylogenetic",
     "sociogram",
     "family-tree",
-    "diagram",
-    "svg",
+    "ladder-logic",
+    "single-line-diagram",
+    "sld",
+    "circuit",
+    "logic-gate",
+    "timing-diagram",
+    "block-diagram",
+    "flowchart",
+    "entity-structure",
+    "fishbone",
+    "ishikawa",
+    "venn",
+    "orgchart",
     "social-work",
     "therapy",
     "medical",
+    "electrical",
+    "industrial",
+    "IEC-61131",
+    "IEEE-315",
     "visualization",
-    "text-to-diagram",
-    "mermaid-alternative"
+    "zero-dependencies"
   ],
   "author": "Victor <victor@mymap.ai>",
   "license": "AGPL-3.0-only",
@@ -84,7 +152,6 @@
     "url": "https://github.com/victorzhrn/Schematex/issues"
   },
   "devDependencies": {
-    "next": "^15.1.0",
     "@eslint/js": "^10.0.1",
     "@types/node": "^22.0.0",
     "eslint": "^9.0.0",
