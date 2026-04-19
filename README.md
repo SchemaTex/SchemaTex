@@ -166,19 +166,30 @@ phylo "Bacterial Diversity"
 Social network diagrams with mutual choices, rejections, and group coloring. Force-directed or hierarchical layout. Auto-detects stars, isolates, cliques.
 
 ```
-sociogram "Playground Dynamics"
+sociogram "Operation Sunset - Communication Network"
   config: layout = force-directed
-  group boys [label: "Boys", color: "#42A5F5"]
-    tom; jack; mike; leo
-  group girls [label: "Girls", color: "#EF5350"]
-    anna; beth; chloe; diana
-  tom <-> jack
-  mike -x> leo [label: "conflict"]
-  anna <-> beth
-  diana -.- tom
+  boss [label: "Subject Alpha"]
+  lt1 [label: "Lieutenant 1"]
+  lt2 [label: "Lieutenant 2"]
+  courier1 [label: "Courier A"]
+  courier2 [label: "Courier B"]
+  contact1 [label: "External Contact 1"]
+  contact2 [label: "External Contact 2"]
+  associate1 [label: "Associate 1"]
+  associate2 [label: "Associate 2"]
+  boss <-> lt1 [weight: 4]
+  boss <-> lt2 [weight: 4]
+  lt1 -> courier1
+  lt1 -> courier2
+  lt2 -> associate1
+  lt2 -> associate2
+  courier1 -> contact1 [label: "supplier"]
+  courier2 -> contact2 [label: "distributor"]
+  lt1 <-> lt2 [weight: 2]
+  associate1 -.- courier1
 ```
 
-![Playground Dynamics Sociogram](examples/sociogram/playground-dynamics.svg)
+![Operation Sunset Sociogram](examples/sociogram/criminal-network.svg)
 
 [Sociogram syntax →](https://schematex.dev/docs/sociogram)
 
@@ -268,18 +279,25 @@ rung 1 "Set Auto, reset Manual":
 Substation and distribution one-line diagrams with transformers, breakers, buses, and protective relays.
 
 ```
-sld "13.8 kV Substation"
-utility [label: "Grid 138 kV"]
-xfmr1 [type: transformer, kva: 15000, primary: 138, secondary: 13.8]
-bus_hv [type: bus, voltage: 138]
-bus_mv [type: bus, voltage: 13.8]
-brk1 [type: breaker, amps: 1200]
-utility -> bus_hv
-bus_hv -> xfmr1 -> bus_mv
-bus_mv -> brk1
+sld "Utility with generator backup"
+UTIL = utility [voltage: "480V", label: "Utility"]
+GEN = generator [rating: "500 kW", voltage: "480V", label: "Emergency Gen"]
+ATS1 = ats [rating: "800A", label: "ATS-1"]
+BUS1 = bus [voltage: "480V", label: "Critical Load Bus"]
+CB1 = breaker [rating: "200A"]
+CB2 = breaker [rating: "200A"]
+L1 = load [rating: "100A", label: "Critical Load 1"]
+L2 = load [rating: "100A", label: "Critical Load 2"]
+UTIL -> ATS1
+GEN -> ATS1
+ATS1 -> BUS1
+BUS1 -> CB1
+BUS1 -> CB2
+CB1 -> L1
+CB2 -> L2
 ```
 
-![13.8 kV Substation Single-Line Diagram](examples/sld/substation-13kv.svg)
+![Utility with Generator Backup SLD](examples/sld/generator-ats.svg)
 
 [SLD syntax →](https://schematex.dev/docs/sld)
 
@@ -311,16 +329,25 @@ entity "Acme Holdings"
 Signal-flow block diagrams with summing junctions, gain blocks, and feedback loops.
 
 ```
-block "PID Loop"
-  ref [type: sum, label: "+"]
-  err [type: gain, label: "Kp"]
-  plant [label: "Plant"]
-  sensor [label: "Sensor"]
-  ref -> err -> plant -> sensor
-  sensor ->> ref [label: "−"]
+blockdiagram "Nested Feedback Loops"
+G1 = block("G1(s)") [role: plant]
+G2 = block("G2(s)") [role: plant]
+G3 = block("G3(s)") [role: plant]
+H1 = block("H1(s)") [role: sensor]
+H2 = block("H2(s)") [role: sensor, route: above]
+s1 = sum(+R, -h2)
+s2 = sum(+a, -h1)
+in -> s1 ["R(s)"]
+s1 -> G1 -> s2
+s2 -> G2 -> G3
+G3 -> out ["Y(s)"]
+G2 -> H1
+H1 -> s2
+G3 -> H2
+H2 -> s1
 ```
 
-![PID Loop Block Diagram](examples/block/pid-loop.svg)
+![Nested Feedback Loops Block Diagram](examples/block/nested-feedback.svg)
 
 [Block syntax →](https://schematex.dev/docs/block)
 
@@ -331,19 +358,23 @@ block "PID Loop"
 Cause-and-effect diagrams with auto-categorized branches and alternating rib layout.
 
 ```
-fishbone "Late Software Delivery"
-effect "Project Delayed"
-category people "People"
-category process "Process"
-category tools "Tools"
-category env "Environment"
-people : "Skill gaps" : "Unclear roles"
-process : "Missing specs" : "Scope creep" : "No retrospectives"
-tools : "Outdated IDE" : "Flaky CI"
-env : "Remote timezone lag" : "Legacy codebase"
+fishbone "Website Traffic Drop — Root Cause Analysis"
+effect "Traffic Drop"
+category content "Content"
+category tech "Technical"
+category links "Backlinks"
+category ux "UX"
+category competition "Competition"
+category algo "Algorithm"
+content : "Lower update frequency" : "Thin content" : "Keyword gaps"
+tech : "Poor Core Web Vitals" : "WAF blocking crawlers"
+links : "High-DA backlink loss" : "Referring domain plateau"
+ux : "Bounce rate spike" : "Slow LCP" : "Intrusive interstitials"
+competition : "New entrants" : "AI overviews displacing clicks"
+algo : "Core Update penalty" : "Weak E-E-A-T signals" : "SGE traffic diversion"
 ```
 
-![Late Delivery Fishbone Diagram](examples/fishbone/late-delivery.svg)
+![Website Traffic Drop Fishbone](examples/fishbone/website-traffic-drop.svg)
 
 [Fishbone syntax →](https://schematex.dev/docs/fishbone)
 

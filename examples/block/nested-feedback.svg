@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="schematex-bd" viewBox="0 0 1050 416" width="1050" height="416" role="img" data-diagram-type="blockdiagram"><title>Nested Feedback Loops</title>
+<desc>Block diagram with 5 blocks, 2 summing junctions, 10 signals</desc>
+<defs><style>.schematex-bd { background: #fff; font-family: system-ui, -apple-system, sans-serif; }
+.schematex-bd-block { stroke: #333; stroke-width: 2; }
+.schematex-bd-tf { font: italic 14px serif; fill: #111; }
+.schematex-bd-block-name { font: 10px sans-serif; fill: #666; }
+.schematex-bd-sum { fill: #fff; stroke: #333; stroke-width: 2; }
+.schematex-bd-sum-sign { font: bold 11px sans-serif; fill: #333; }
+.schematex-bd-signal { stroke: #333; stroke-width: 2; fill: none; }
+.schematex-bd-signal-discrete { stroke: #333; stroke-width: 2; fill: none; stroke-dasharray: 6 4; }
+.schematex-bd-signal-label { font: italic 12px serif; fill: #333; }
+.schematex-bd-port-label { font: italic 13px serif; fill: #111; }
+.schematex-bd-title { font: bold 15px sans-serif; fill: #111; }
+.schematex-bd-branch { fill: #333; stroke: none; }</style>
+<marker id="lt-bd-arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><polygon points="0 0, 10 4, 0 8" fill="#333"/></marker></defs>
+<text x="525" y="18" text-anchor="middle" class="schematex-bd-title">Nested Feedback Loops</text>
+<g transform="translate(0, 26)"><g class="schematex-bd-signals"><path d="M 50 220 L 158 220" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="in" data-to="s1"/>
+<text x="104" y="212" text-anchor="middle" class="schematex-bd-signal-label">R(s)</text>
+<text x="150" y="226" text-anchor="middle" class="schematex-bd-sum-sign">+</text>
+<path d="M 182 220 L 280 220" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="s1" data-to="G1"/>
+<path d="M 380 220 L 478 220" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="G1" data-to="s2"/>
+<text x="470" y="226" text-anchor="middle" class="schematex-bd-sum-sign">+</text>
+<path d="M 502 220 L 600 220" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="s2" data-to="G2"/>
+<path d="M 700 220 L 760 220" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="G2" data-to="G3"/>
+<path d="M 860 220 L 960 220" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="G3" data-to="out"/>
+<text x="910" y="212" text-anchor="middle" class="schematex-bd-signal-label">Y(s)</text>
+<path d="M 650 247 L 650 330 L 860 330" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="G2" data-to="H1"/>
+<path d="M 760 330 L 490 330 L 490 232" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="H1" data-to="s2"/>
+<text x="476" y="242" text-anchor="middle" class="schematex-bd-sum-sign">+</text>
+<path d="M 810 193 L 810 110 L 1020 110" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="G3" data-to="H2"/>
+<path d="M 920 110 L 170 110 L 170 208" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="H2" data-to="s1"/>
+<text x="156" y="206" text-anchor="middle" class="schematex-bd-sum-sign">+</text></g>
+<g class="schematex-bd-nodes"><g transform="translate(280, 193)" data-block-id="G1" data-block-role="plant"><rect width="100" height="54" fill="#ffffff" class="schematex-bd-block" rx="2"/>
+<text x="50" y="32" text-anchor="middle" class="schematex-bd-tf">G1(s)</text></g>
+<g transform="translate(600, 193)" data-block-id="G2" data-block-role="plant"><rect width="100" height="54" fill="#ffffff" class="schematex-bd-block" rx="2"/>
+<text x="50" y="32" text-anchor="middle" class="schematex-bd-tf">G2(s)</text></g>
+<g transform="translate(760, 193)" data-block-id="G3" data-block-role="plant"><rect width="100" height="54" fill="#ffffff" class="schematex-bd-block" rx="2"/>
+<text x="50" y="32" text-anchor="middle" class="schematex-bd-tf">G3(s)</text></g>
+<g transform="translate(760, 303)" data-block-id="H1" data-block-role="sensor"><rect width="100" height="54" fill="#F3E5F5" class="schematex-bd-block" rx="2"/>
+<text x="50" y="32" text-anchor="middle" class="schematex-bd-tf">H1(s)</text></g>
+<g transform="translate(920, 83)" data-block-id="H2" data-block-role="sensor"><rect width="100" height="54" fill="#F3E5F5" class="schematex-bd-block" rx="2"/>
+<text x="50" y="32" text-anchor="middle" class="schematex-bd-tf">H2(s)</text></g>
+<g data-sum-id="s1"><circle cx="170" cy="220" r="12" class="schematex-bd-sum"/></g>
+<g data-sum-id="s2"><circle cx="490" cy="220" r="12" class="schematex-bd-sum"/></g>
+<g data-port-id="in"><text x="26" y="224" text-anchor="end" class="schematex-bd-port-label">in</text></g>
+<g data-port-id="out"><text x="974" y="224" text-anchor="start" class="schematex-bd-port-label">out</text></g></g>
+<g class="schematex-bd-branches"><circle cx="700" cy="220" r="3.5" class="schematex-bd-branch"/>
+<circle cx="860" cy="220" r="3.5" class="schematex-bd-branch"/></g></g></svg>

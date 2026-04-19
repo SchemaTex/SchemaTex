@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="schematex-diagram schematex-sociogram" viewBox="0 0 600 630" width="600" height="630"><title>Sociogram: Operation Sunset - Communication Network</title>
+<desc>Sociogram with 9 members and 10 connections</desc>
+<style>.schematex-sociogram {
+  --schematex-bg: #ffffff;
+  --schematex-text: #0f172a;
+  --schematex-text-muted: #475569;
+  --schematex-stroke: #334155;
+  --schematex-fill: #ffffff;
+  --schematex-fill-muted: #f1f5f9;
+  --schematex-accent: #2563eb;
+  --schematex-positive: #059669;
+  --schematex-negative: #dc2626;
+  --schematex-neutral: #94a3b8;
+  --schematex-warn: #d97706;
+  --schematex-font-title: 16px;
+  --schematex-font-label: 12px;
+  --schematex-font-small: 9px;
+  --schematex-stroke-thin: 1;
+  --schematex-stroke-normal: 2;
+  --schematex-stroke-thick: 3;
+  font-family: system-ui, -apple-system, sans-serif;
+  background: #ffffff;
+}
+.schematex-sociogram-node { fill: #2563eb; stroke: #2563eb; stroke-width: 2; }
+.schematex-sociogram-node-star { fill: #d97706; stroke: #d97706; stroke-width: 3; }
+.schematex-sociogram-node-isolate { fill: #f1f5f9; stroke: #94a3b8; stroke-width: 2; stroke-dasharray: 4 3; }
+.schematex-sociogram-node-neglectee { fill: #f1f5f9; stroke: #2563eb; stroke-width: 2; stroke-dasharray: 4 3; }
+.schematex-sociogram-node-rejected { fill: #dc2626; stroke: #dc2626; stroke-width: 2; stroke-dasharray: 4 3; }
+.schematex-sociogram-edge { stroke-linecap: round; }
+.schematex-sociogram-edge-positive { stroke: #059669; }
+.schematex-sociogram-edge-negative { stroke: #dc2626; stroke-dasharray: 6 3; }
+.schematex-sociogram-edge-neutral { stroke: #94a3b8; stroke-dasharray: 2 3; }
+.schematex-sociogram-label { font-size: 11px; fill: #0f172a; text-anchor: middle; }
+.schematex-sociogram-edge-label { font-size: 9px; fill: #475569; text-anchor: middle; }
+.schematex-sociogram-title { font-size: 16px; font-weight: bold; fill: #0f172a; text-anchor: middle; }
+.schematex-sociogram-star-badge { font-size: 10px; fill: #d97706; }
+.schematex-sociogram-group-label { font-size: 13px; font-weight: bold; fill-opacity: 0.7; text-anchor: middle; }</style>
+<defs><marker id="sociogram-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#059669"/></marker>
+<marker id="sociogram-arrow-negative" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#dc2626"/></marker>
+<marker id="sociogram-arrow-neutral" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#94a3b8"/></marker></defs>
+<text x="300" y="20" class="schematex-sociogram-title">Operation Sunset - Communication Network</text>
+<g class="schematex-sociogram-edges" transform="translate(0,30)"><line x1="485.4081173998808" y1="79.8074625714969" x2="422.2645213814773" y2="210.44191898598802" class="schematex-sociogram-edge schematex-sociogram-edge-positive" stroke-width="5" data-from="boss" data-to="lt1" marker-end="url(#sociogram-arrow)" marker-start="url(#sociogram-arrow)"/>
+<line x1="472.9822714867309" y1="60" x2="318.6097411212924" y2="60" class="schematex-sociogram-edge schematex-sociogram-edge-positive" stroke-width="5" data-from="boss" data-to="lt2" marker-end="url(#sociogram-arrow)" marker-start="url(#sociogram-arrow)"/>
+<line x1="421.8907074321831" y1="255.42904330490333" x2="487.11888235452795" y2="347.89216565601936" class="schematex-sociogram-edge schematex-sociogram-edge-positive" stroke-width="2" data-from="lt1" data-to="courier1" marker-end="url(#sociogram-arrow)"/>
+<line x1="394.30412102446445" y1="253.6338396844608" x2="237.2862880331255" y2="424.1046552806704" class="schematex-sociogram-edge schematex-sociogram-edge-positive" stroke-width="2" data-from="lt1" data-to="courier2" marker-end="url(#sociogram-arrow)"/>
+<line x1="290.7215208139636" y1="81.89841059368514" x2="302.7442169356085" y2="206.5695290008642" class="schematex-sociogram-edge schematex-sociogram-edge-positive" stroke-width="2" data-from="lt2" data-to="associate1" marker-end="url(#sociogram-arrow)"/>
+<line x1="266.6097411212924" y1="60" x2="90" y2="60" class="schematex-sociogram-edge schematex-sociogram-edge-positive" stroke-width="2" data-from="lt2" data-to="associate2" marker-end="url(#sociogram-arrow)"/>
+<line x1="508.98201331150386" y1="393.9263590679318" x2="533.76859341225" y2="510.6543091419175" class="schematex-sociogram-edge schematex-sociogram-edge-positive" stroke-width="2" data-from="courier1" data-to="contact1" marker-end="url(#sociogram-arrow)"/>
+<line x1="198.07837686796074" y1="457.45880822899835" x2="85.74991579585746" y2="524.6070848600322" class="schematex-sociogram-edge schematex-sociogram-edge-positive" stroke-width="2" data-from="courier2" data-to="contact2" marker-end="url(#sociogram-arrow)"/>
+<line x1="396.84282627168625" y1="219.2564558793087" x2="305.47250991116226" y2="84.81223546437103" class="schematex-sociogram-edge schematex-sociogram-edge-positive" stroke-width="2" data-from="lt1" data-to="lt2" marker-end="url(#sociogram-arrow)" marker-start="url(#sociogram-arrow)"/>
+<line x1="323.78229067865277" y1="248.85168427716198" x2="479.65089583515976" y2="355.46888629258336" class="schematex-sociogram-edge schematex-sociogram-edge-neutral" stroke-width="2" data-from="associate1" data-to="courier1"/>
+<text x="521.375303361877" y="446.2903341049247" class="schematex-sociogram-edge-label">supplier</text>
+<text x="141.9141463319091" y="485.03294654451526" class="schematex-sociogram-edge-label">distributor</text></g>
+<g class="schematex-sociogram-nodes" transform="translate(0,30)"><circle cx="494.9822714867309" cy="60" r="20" class="schematex-sociogram-node" data-node-id="boss"/>
+<circle cx="409.2088567175908" cy="237.45209521984745" r="20" class="schematex-sociogram-node" data-node-id="lt1"/>
+<circle cx="288.6097411212924" cy="60" r="20" class="schematex-sociogram-node" data-node-id="lt2"/>
+<circle cx="504.41231514715383" cy="372.4061857720047" r="20" class="schematex-sociogram-node" data-node-id="courier1"/>
+<circle cx="216.96164845158955" cy="446.1706704596886" r="20" class="schematex-sociogram-node" data-node-id="courier2"/>
+<circle cx="540" cy="540" r="20" class="schematex-sociogram-node" data-node-id="contact1"/>
+<circle cx="60" cy="540" r="20" class="schematex-sociogram-node" data-node-id="contact2"/>
+<circle cx="305.62391651652376" cy="236.43099799225303" r="20" class="schematex-sociogram-node" data-node-id="associate1"/>
+<circle cx="60" cy="60" r="20" class="schematex-sociogram-node" data-node-id="associate2"/></g>
+<g class="schematex-sociogram-labels" transform="translate(0,30)"><text x="494.9822714867309" y="95" class="schematex-sociogram-label" data-node-id="boss">Subject Alpha</text>
+<text x="409.2088567175908" y="272.4520952198475" class="schematex-sociogram-label" data-node-id="lt1">Lieutenant 1</text>
+<text x="288.6097411212924" y="95" class="schematex-sociogram-label" data-node-id="lt2">Lieutenant 2</text>
+<text x="504.41231514715383" y="407.4061857720047" class="schematex-sociogram-label" data-node-id="courier1">Courier A</text>
+<text x="216.96164845158955" y="481.1706704596886" class="schematex-sociogram-label" data-node-id="courier2">Courier B</text>
+<text x="540" y="575" class="schematex-sociogram-label" data-node-id="contact1">External Contact 1</text>
+<text x="60" y="575" class="schematex-sociogram-label" data-node-id="contact2">External Contact 2</text>
+<text x="305.62391651652376" y="271.430997992253" class="schematex-sociogram-label" data-node-id="associate1">Associate 1</text>
+<text x="60" y="95" class="schematex-sociogram-label" data-node-id="associate2">Associate 2</text></g></svg>
