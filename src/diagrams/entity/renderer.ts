@@ -29,15 +29,15 @@ function buildCss(t: BaseTheme): string {
 .lt-entity-type { font: 500 10px sans-serif; fill: ${t.textMuted}; text-anchor: middle; }
 .lt-entity-role { font: italic 10px sans-serif; fill: ${t.textMuted}; text-anchor: middle; }
 .lt-entity-note { font: 10px sans-serif; fill: ${t.textMuted}; text-anchor: middle; }
-.lt-entity-badge-bg { fill: ${t.bg}; stroke: ${t.strokeMuted}; stroke-width: 1; }
+.lt-entity-badge-bg { fill: ${t.bg}; stroke: ${t.neutral}; stroke-width: 1; }
 .lt-entity-badge-text { font: 600 9px sans-serif; fill: ${t.text}; text-anchor: middle; letter-spacing: 0.5px; }
 .lt-entity-edge { stroke: ${t.stroke}; stroke-width: 1.5; fill: none; }
 .lt-entity-edge-voting { stroke: ${t.stroke}; stroke-width: 1.2; fill: none; }
-.lt-entity-edge-pool { stroke: ${t.strokeMuted}; stroke-width: 1.5; fill: none; stroke-dasharray: 5,4; }
+.lt-entity-edge-pool { stroke: ${t.neutral}; stroke-width: 1.5; fill: none; stroke-dasharray: 5,4; }
 .lt-entity-edge-license { stroke: ${t.palette[3]}; stroke-width: 1.5; fill: none; stroke-dasharray: 5,4; }
 .lt-entity-edge-distribution { stroke: ${t.positive}; stroke-width: 1.5; fill: none; stroke-dasharray: 5,4; }
 .lt-entity-edge-voting-pref { stroke: ${t.accent}; stroke-width: 1.8; fill: none; }
-.lt-entity-label-bg { fill: ${t.bg}; stroke: ${t.strokeMuted}; stroke-width: 1; }
+.lt-entity-label-bg { fill: ${t.bg}; stroke: ${t.neutral}; stroke-width: 1; }
 .lt-entity-label { font: 600 10px sans-serif; fill: ${t.text}; text-anchor: middle; }
 .lt-entity-label-sub { font: 500 9px sans-serif; fill: ${t.textMuted}; text-anchor: middle; }
 .lt-entity-cluster { fill: none; stroke-dasharray: 6,4; stroke-width: 1.2; }
@@ -380,7 +380,7 @@ export function renderEntity(ast: EntityAST, config?: RenderConfig): string {
       arrowMarker("lt-entity-arrow", t.stroke),
       arrowMarker("lt-entity-arrow-purple", t.palette[3] ?? t.stroke),
       arrowMarker("lt-entity-arrow-green", t.positive),
-      arrowMarker("lt-entity-arrow-grey", t.strokeMuted),
+      arrowMarker("lt-entity-arrow-grey", t.neutral),
       arrowMarker("lt-entity-arrow-blue", t.accent),
     ])
   );
@@ -393,7 +393,7 @@ export function renderEntity(ast: EntityAST, config?: RenderConfig): string {
 
   // Clusters (behind nodes) — label sits INSIDE the cluster top row
   for (const c of layout.clusters) {
-    const color = c.color ?? t.strokeMuted;
+    const color = c.color ?? t.neutral;
     inner.push(
       rect({
         x: c.x,

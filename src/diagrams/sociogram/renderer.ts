@@ -41,11 +41,11 @@ function buildCSS(ast: SociogramAST, t: BaseTheme): string {
   font-family: system-ui, -apple-system, sans-serif;
   background: ${t.bg};
 }
-.schematex-sociogram-node { fill: ${t.accent}; stroke: ${t.accent}; stroke-width: ${STROKE_WIDTH.medium}; }
+.schematex-sociogram-node { fill: ${t.accent}; stroke: ${t.accent}; stroke-width: ${STROKE_WIDTH.normal}; }
 .schematex-sociogram-node-star { fill: ${rf.star}; stroke: ${t.warn}; stroke-width: ${STROKE_WIDTH.thick}; }
-.schematex-sociogram-node-isolate { fill: ${rf.isolate}; stroke: ${t.neutral}; stroke-width: ${STROKE_WIDTH.medium}; stroke-dasharray: 4 3; }
-.schematex-sociogram-node-neglectee { fill: ${t.fillMuted}; stroke: ${t.accent}; stroke-width: ${STROKE_WIDTH.medium}; stroke-dasharray: 4 3; }
-.schematex-sociogram-node-rejected { fill: ${rf.rejected}; stroke: ${t.negative}; stroke-width: ${STROKE_WIDTH.medium}; stroke-dasharray: 4 3; }
+.schematex-sociogram-node-isolate { fill: ${rf.isolate}; stroke: ${t.neutral}; stroke-width: ${STROKE_WIDTH.normal}; stroke-dasharray: 4 3; }
+.schematex-sociogram-node-neglectee { fill: ${t.fillMuted}; stroke: ${t.accent}; stroke-width: ${STROKE_WIDTH.normal}; stroke-dasharray: 4 3; }
+.schematex-sociogram-node-rejected { fill: ${rf.rejected}; stroke: ${t.negative}; stroke-width: ${STROKE_WIDTH.normal}; stroke-dasharray: 4 3; }
 .schematex-sociogram-edge { stroke-linecap: round; }
 .schematex-sociogram-edge-positive { stroke: ${vc.positive}; }
 .schematex-sociogram-edge-negative { stroke: ${vc.negative}; stroke-dasharray: 6 3; }

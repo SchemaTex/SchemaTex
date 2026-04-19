@@ -10,23 +10,24 @@
  * so consumers can override them.
  */
 
-// ─── Theme Name ──────────────��─────────────────────────────
+// ─── Theme Name ────────────────────────────────────────────
 
 export type ThemeName = "default" | "monochrome" | "dark";
 
-// ─── Base Theme ─────────────��──────────────────────────────
+// ─── Base Theme ────────────────────────────────────────────
 
 export interface BaseTheme {
   bg: string;
   text: string;
   textMuted: string;
   stroke: string;
-  strokeMuted: string;
   fill: string;
   fillMuted: string;
+  /** Emphasis / interactive / link color. Use for net labels, focus, selected. */
   accent: string;
   positive: string;
   negative: string;
+  /** Mid-gray. Use for muted strokes, neutral-valence edges, dashed separators. */
   neutral: string;
   warn: string;
   /** Category palette — 8 distinguishable colors for ecomap systems, sociogram groups, etc. */
@@ -52,42 +53,17 @@ export interface BiologyTokens {
 }
 
 /**
- * Tokens for causality / analysis diagrams (fishbone, future fault-tree, 5-whys).
- * Category color is applied to top-level bones + their labels; deeper levels stay
- * neutral so color doesn't overload hierarchy.
- */
-export interface CausalityTokens {
-  /** Effect / outcome box fill */
-  headFill: string;
-  /** Effect / outcome box stroke */
-  headStroke: string;
-  /** Effect / outcome box text color */
-  headText: string;
-  /** Spine / trunk line color */
-  spineStroke: string;
-  /** 8-color category palette; cycles when DSL omits explicit color */
-  boneColors: readonly string[];
-}
-
-/**
  * Tokens for set-theory diagrams (Venn / Euler). Paletteof set fills is
  * tuned slightly softer than BaseTheme to blend nicely under
  * `mix-blend-mode: multiply`.
  */
 export interface VennTokens {
-  /** Per-set fill palette (cycles if more sets than entries). */
   vennSetColors: readonly string[];
-  /** Default blend mode for overlap areas. */
   vennBlendMode: "multiply" | "screen" | "none";
-  /** Fill opacity per set (pre-blend). */
   vennSetOpacity: number;
-  /** Outline stroke for every set. */
   vennSetStroke: string;
-  /** Primary region-label fill. */
   vennLabelColor: string;
-  /** Count chip fill (integers inside regions). */
   vennCountColor: string;
-  /** Leader-line stroke for externalized labels. */
   vennLeaderColor: string;
 }
 
@@ -106,9 +82,6 @@ export interface IndustrialTokens {
   textMuted: string;
   /** Reserved accent for net/bus labels (not for body lines). */
   accent: string;
-  /** Zebra-band fills for grouped rows. */
-  bandOdd: string;
-  bandEven: string;
   /** Fault/missing-symbol indicator. */
   error: string;
 }
@@ -124,11 +97,9 @@ export interface FlowchartClassPair {
 }
 
 export interface FlowchartTokens {
-  /** Baseline fills applied by node shape when no class is set. */
   stadiumFill: string;
   diamondFill: string;
   roundFill: string;
-  /** Semantic class presets (applied via `class A start` etc.). */
   classes: {
     start: FlowchartClassPair;
     process: FlowchartClassPair;
@@ -141,22 +112,18 @@ export interface FlowchartTokens {
 
 /**
  * Tokens for knowledge / brainstorming diagrams (mindmap).
+ * Pure color tokens — stroke widths live in mindmap-internal constants.
  */
 export interface MindmapTokens {
   centralFill: string;
-  centralText: string;
   branchPalette: readonly string[];
-  edgeMain: number;
-  edgeSub: number;
-  underlineMain: number;
-  underlineSub: number;
 }
 
 // ─── Resolved Theme ────────────────────────────────────────
 
 export type ResolvedTheme<T = object> = BaseTheme & T;
 
-// ─── Built-in Presets ────────��─────────────────────────────
+// ─── Built-in Presets ──────────────────────────────────────
 
 /**
  * Unified 8-color category palettes. Single source of truth for every
@@ -202,7 +169,6 @@ const DEFAULT_THEME: BaseTheme = {
   text: "#0f172a",
   textMuted: "#475569",
   stroke: "#334155",
-  strokeMuted: "#94a3b8",
   fill: "#ffffff",
   fillMuted: "#f1f5f9",
   accent: "#2563eb",
@@ -218,7 +184,6 @@ const MONOCHROME_THEME: BaseTheme = {
   text: "#000000",
   textMuted: "#555555",
   stroke: "#000000",
-  strokeMuted: "#888888",
   fill: "#ffffff",
   fillMuted: "#f0f0f0",
   accent: "#000000",
@@ -234,7 +199,6 @@ const DARK_THEME: BaseTheme = {
   text: "#cdd6f4",
   textMuted: "#7f849c",
   stroke: "#cdd6f4",
-  strokeMuted: "#585b70",
   fill: "#313244",
   fillMuted: "#45475a",
   accent: "#89b4fa",
@@ -283,7 +247,7 @@ export const PERSON_TOKENS: Record<ThemeName, PersonTokens> = {
   dark: DARK_PERSON,
 };
 
-// ─── Biology Tokens Per Theme ──────���───────────────────────
+// ─── Biology Tokens Per Theme ──────────────────────────────
 
 const DEFAULT_BIOLOGY: BiologyTokens = {
   cladeColors: DEFAULT_PALETTE,
@@ -313,38 +277,6 @@ export const BIOLOGY_TOKENS: Record<ThemeName, BiologyTokens> = {
   default: DEFAULT_BIOLOGY,
   monochrome: MONOCHROME_BIOLOGY,
   dark: DARK_BIOLOGY,
-};
-
-// ─── Causality Tokens Per Theme ────────────────────────────
-
-const DEFAULT_CAUSALITY: CausalityTokens = {
-  headFill: "#1e293b",
-  headStroke: "#0f172a",
-  headText: "#ffffff",
-  spineStroke: "#1f2937",
-  boneColors: DEFAULT_PALETTE,
-};
-
-const MONOCHROME_CAUSALITY: CausalityTokens = {
-  headFill: "#ffffff",
-  headStroke: "#000000",
-  headText: "#000000",
-  spineStroke: "#000000",
-  boneColors: MONOCHROME_PALETTE,
-};
-
-const DARK_CAUSALITY: CausalityTokens = {
-  headFill: "#3a3a2a",
-  headStroke: "#cdd6f4",
-  headText: "#f9e2af",
-  spineStroke: "#cdd6f4",
-  boneColors: DARK_PALETTE,
-};
-
-export const CAUSALITY_TOKENS: Record<ThemeName, CausalityTokens> = {
-  default: DEFAULT_CAUSALITY,
-  monochrome: MONOCHROME_CAUSALITY,
-  dark: DARK_CAUSALITY,
 };
 
 // ─── Venn Tokens Per Theme ─────────────────────────────────
@@ -389,47 +321,26 @@ export const VENN_TOKENS: Record<ThemeName, VennTokens> = {
 
 // XMind-inspired 8-color palette.
 const MINDMAP_PALETTE = [
-  "#2D7FF9", // blue
-  "#F59E0B", // amber
-  "#10B981", // green
-  "#EF4444", // red
-  "#8B5CF6", // purple
-  "#EC4899", // pink
-  "#14B8A6", // teal
-  "#F97316", // orange
+  "#2D7FF9", "#F59E0B", "#10B981", "#EF4444",
+  "#8B5CF6", "#EC4899", "#14B8A6", "#F97316",
 ] as const;
 
 const DEFAULT_MINDMAP: MindmapTokens = {
   centralFill: "#1E293B",
-  centralText: "#ffffff",
   branchPalette: MINDMAP_PALETTE,
-  edgeMain: 3.5,
-  edgeSub: 1.8,
-  underlineMain: 3.5,
-  underlineSub: 1.8,
 };
 
 const MONOCHROME_MINDMAP: MindmapTokens = {
   centralFill: "#000000",
-  centralText: "#ffffff",
   branchPalette: ["#000000"],
-  edgeMain: 1.8,
-  edgeSub: 1.2,
-  underlineMain: 1.8,
-  underlineSub: 1.2,
 };
 
 const DARK_MINDMAP: MindmapTokens = {
   centralFill: "#89b4fa",
-  centralText: "#1e1e2e",
   branchPalette: [
     "#89b4fa", "#f9e2af", "#a6e3a1", "#f38ba8",
     "#cba6f7", "#f5c2e7", "#94e2d5", "#fab387",
   ],
-  edgeMain: 3.5,
-  edgeSub: 1.8,
-  underlineMain: 3.5,
-  underlineSub: 1.8,
 };
 
 export const MINDMAP_TOKENS: Record<ThemeName, MindmapTokens> = {
@@ -447,8 +358,6 @@ const DEFAULT_INDUSTRIAL: IndustrialTokens = {
   text: "#111111",
   textMuted: "#555555",
   accent: "#1d4e89",
-  bandOdd: "#f7f7f7",
-  bandEven: "#fbfbfb",
   error: "#cc0000",
 };
 
@@ -459,8 +368,6 @@ const MONOCHROME_INDUSTRIAL: IndustrialTokens = {
   text: "#000000",
   textMuted: "#333333",
   accent: "#000000",
-  bandOdd: "#f4f4f4",
-  bandEven: "#fbfbfb",
   error: "#000000",
 };
 
@@ -472,8 +379,6 @@ const DARK_INDUSTRIAL: IndustrialTokens = {
   text: "#cdd6f4",
   textMuted: "#9399b2",
   accent: "#89b4fa",
-  bandOdd: "#2a2b3c",
-  bandEven: "#313244",
   error: "#f38ba8",
 };
 
@@ -548,7 +453,7 @@ export function resolveMindmapTheme(name: string): ResolvedTheme<MindmapTokens> 
   return { ...BASE_THEMES[themeName], ...MINDMAP_TOKENS[themeName] };
 }
 
-// ─── Theme Resolution ─��────────────────────────────────────
+// ─── Theme Resolution ──────────────────────────────────────
 
 export function resolveBaseTheme(name: string): BaseTheme {
   return BASE_THEMES[name as ThemeName] ?? BASE_THEMES["default"];
@@ -564,9 +469,12 @@ export function resolveBiologyTheme(name: string): ResolvedTheme<BiologyTokens> 
   return { ...BASE_THEMES[themeName], ...BIOLOGY_TOKENS[themeName] };
 }
 
-export function resolveFishboneTheme(name: string): ResolvedTheme<CausalityTokens> {
-  const themeName = (name in BASE_THEMES ? name : "default") as ThemeName;
-  return { ...BASE_THEMES[themeName], ...CAUSALITY_TOKENS[themeName] };
+/**
+ * Fishbone uses BaseTheme directly — its bone colors come from `theme.palette`.
+ * Kept as a named resolver so callers don't have to know that.
+ */
+export function resolveFishboneTheme(name: string): BaseTheme {
+  return resolveBaseTheme(name);
 }
 
 export function resolveVennTheme(name: string): ResolvedTheme<VennTokens> {
@@ -588,28 +496,34 @@ export function resolveGenogramTheme(name: string): ResolvedTheme<PersonTokens> 
   return resolvePersonTheme(resolved);
 }
 
-// ─── Font Sizes ──────���─────────────────────────────────────
+// ─── Font Sizes ────────────────────────────────────────────
 
+/**
+ * Three-tier typography scale. Diagram-specific font sizes (e.g., 14px section
+ * labels, 20px hero titles) live as local constants inside their renderer.
+ */
 export const FONT_SIZE = {
   title: 16,
   label: 12,
-  secondary: 11,
   small: 9,
-  genLabel: 14,
-  titleLarge: 20,
 } as const;
 
 // ─── Stroke Widths ─────────────────────────────────────────
 
+/**
+ * Three-tier stroke scale. Anything in between is a local constant in the
+ * diagram that needs it.
+ *  thin   — hairlines, ticks, secondary gridlines
+ *  normal — default body strokes (shapes, edges)
+ *  thick  — emphasis (proband index, star node, center shape)
+ */
 export const STROKE_WIDTH = {
   thin: 1,
-  normal: 1.5,
-  medium: 2,
-  thick: 2.5,
-  heavy: 3.5,
+  normal: 2,
+  thick: 3,
 } as const;
 
-// ─── Spacing ────────────���────────────────────────��─────────
+// ─── Spacing ───────────────────────────────────────────────
 
 export const SPACING = {
   labelGap: 4,
@@ -617,7 +531,7 @@ export const SPACING = {
   titleOffset: 30,
 } as const;
 
-// ─── Font Family ──────────��────────────────────────────────
+// ─── Font Family ───────────────────────────────────────────
 
 export const DEFAULT_FONT_FAMILY = "system-ui, -apple-system, sans-serif";
 
@@ -630,7 +544,6 @@ export function cssCustomProperties(theme?: BaseTheme): string {
   --schematex-text: ${t.text};
   --schematex-text-muted: ${t.textMuted};
   --schematex-stroke: ${t.stroke};
-  --schematex-stroke-muted: ${t.strokeMuted};
   --schematex-fill: ${t.fill};
   --schematex-fill-muted: ${t.fillMuted};
   --schematex-accent: ${t.accent};
@@ -640,10 +553,8 @@ export function cssCustomProperties(theme?: BaseTheme): string {
   --schematex-warn: ${t.warn};
   --schematex-font-title: ${FONT_SIZE.title}px;
   --schematex-font-label: ${FONT_SIZE.label}px;
-  --schematex-font-secondary: ${FONT_SIZE.secondary}px;
   --schematex-font-small: ${FONT_SIZE.small}px;
+  --schematex-stroke-thin: ${STROKE_WIDTH.thin};
   --schematex-stroke-normal: ${STROKE_WIDTH.normal};
-  --schematex-stroke-medium: ${STROKE_WIDTH.medium};
   --schematex-stroke-thick: ${STROKE_WIDTH.thick};`;
 }
-

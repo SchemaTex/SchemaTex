@@ -21,9 +21,18 @@ import { layoutMindmap, fontSizeOf } from "./layout";
 
 type Theme = ResolvedTheme<MindmapTokens>;
 
+// Main-branch underline weight. Thinner in monochrome so pure-black lines
+// don't overpower the text.
+const UNDERLINE_MAIN = 3.5;
+const UNDERLINE_MAIN_MONO = 1.8;
+
 function paletteColor(theme: Theme, branchIndex: number): string {
   if (branchIndex < 0) return theme.centralFill;
   return theme.branchPalette[branchIndex % theme.branchPalette.length];
+}
+
+function underlineMain(theme: Theme): number {
+  return theme.branchPalette.length <= 1 ? UNDERLINE_MAIN_MONO : UNDERLINE_MAIN;
 }
 
 // ─── Central topic (rounded capsule) ─────────────────────────────────────
@@ -138,7 +147,7 @@ function renderBranchNode(
         x2: ux2,
         y2: uy,
         stroke: color,
-        "stroke-width": theme.underlineMain,
+        "stroke-width": underlineMain(theme),
         "stroke-linecap": "round",
       })
     );

@@ -85,7 +85,7 @@ function buildDefs(t: BaseTheme): string {
       markerHeight: "8",
       orient: "auto-start-reverse",
     },
-    [el("path", { d: "M 0 0 L 10 5 L 0 10 z", fill: t.strokeMuted })]
+    [el("path", { d: "M 0 0 L 10 5 L 0 10 z", fill: t.neutral })]
   );
 
   return el("defs", {}, [arrowMarker]);
@@ -100,15 +100,15 @@ function buildStyles(config: RenderConfig, t: BaseTheme): string {
 }
 .schematex-ecomap-center-shape { fill: ${t.fill}; stroke: ${t.stroke}; stroke-width: ${STROKE_WIDTH.thick}; }
 .schematex-ecomap-center-label { font-family: ${config.fontFamily}; font-size: ${config.fontSize + 2}px; text-anchor: middle; dominant-baseline: central; fill: ${t.text}; font-weight: 600; }
-.schematex-ecomap-system-shape { fill: ${t.fillMuted}; stroke: ${t.strokeMuted}; stroke-width: ${STROKE_WIDTH.medium}; }
+.schematex-ecomap-system-shape { fill: ${t.fillMuted}; stroke: ${t.neutral}; stroke-width: ${STROKE_WIDTH.normal}; }
 .schematex-ecomap-system-label { font-family: ${config.fontFamily}; font-size: ${config.fontSize - 1}px; text-anchor: middle; fill: ${t.text}; }
-.schematex-ecomap-eco-line { stroke: ${t.strokeMuted}; stroke-width: ${STROKE_WIDTH.medium}; fill: none; stroke-linecap: round; }
-.schematex-ecomap-eco-line-parallel { stroke: ${t.strokeMuted}; stroke-width: ${STROKE_WIDTH.normal}; fill: none; stroke-linecap: round; }
+.schematex-ecomap-eco-line { stroke: ${t.neutral}; stroke-width: ${STROKE_WIDTH.normal}; fill: none; stroke-linecap: round; }
+.schematex-ecomap-eco-line-parallel { stroke: ${t.neutral}; stroke-width: ${STROKE_WIDTH.normal}; fill: none; stroke-linecap: round; }
 .schematex-ecomap-eco-line-weak { stroke: ${t.neutral}; stroke-width: ${STROKE_WIDTH.normal}; stroke-dasharray: 6,4; fill: none; stroke-linecap: round; }
-.schematex-ecomap-eco-line-broken { stroke: ${t.neutral}; stroke-width: ${STROKE_WIDTH.medium}; stroke-dasharray: 3,8; fill: none; stroke-linecap: round; }
-.schematex-ecomap-eco-line-stressful { stroke: ${t.strokeMuted}; stroke-width: ${STROKE_WIDTH.medium}; fill: none; stroke-linecap: round; }
+.schematex-ecomap-eco-line-broken { stroke: ${t.neutral}; stroke-width: ${STROKE_WIDTH.normal}; stroke-dasharray: 3,8; fill: none; stroke-linecap: round; }
+.schematex-ecomap-eco-line-stressful { stroke: ${t.neutral}; stroke-width: ${STROKE_WIDTH.normal}; fill: none; stroke-linecap: round; }
 .schematex-ecomap-eco-conn-label { font-family: ${config.fontFamily}; font-size: ${config.fontSize - 2}px; text-anchor: middle; fill: ${t.textMuted}; }
-.schematex-ecomap-eco-arrow { fill: ${t.strokeMuted}; }
+.schematex-ecomap-eco-arrow { fill: ${t.neutral}; }
 `;
 
   for (const [cat, color] of Object.entries(CATEGORY_COLORS)) {

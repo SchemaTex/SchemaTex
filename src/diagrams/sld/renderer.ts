@@ -15,7 +15,17 @@ import { renderSymbol } from "./symbols";
 
 type IT = ResolvedTheme<IndustrialTokens>;
 
+// Zebra-band fills for grouped rows. Local to SLD — no other diagram uses
+// alternating row backgrounds, so they don't need to live in IndustrialTokens.
+const BAND_ODD_LIGHT = "#f7f7f7";
+const BAND_EVEN_LIGHT = "#fbfbfb";
+const BAND_ODD_DARK = "#2a2b3c";
+const BAND_EVEN_DARK = "#313244";
+
 function buildCss(t: IT): string {
+  const isDark = t.bg !== "#ffffff";
+  const bandOdd = isDark ? BAND_ODD_DARK : BAND_ODD_LIGHT;
+  const bandEven = isDark ? BAND_EVEN_DARK : BAND_EVEN_LIGHT;
   return `
 .lt-sld { background: ${t.bg}; font-family: system-ui, -apple-system, sans-serif; }
 .lt-sld-stroke { stroke: ${t.stroke}; stroke-width: 1.8; fill: none; }
@@ -25,8 +35,8 @@ function buildCss(t: IT): string {
 .lt-sld-dot { fill: ${t.stroke}; stroke: none; }
 .lt-sld-wire { stroke: ${t.stroke}; stroke-width: 2; fill: none; }
 .lt-sld-bus { stroke: ${t.strokeHeavy}; stroke-width: 6; stroke-linecap: square; }
-.lt-sld-band-odd { fill: ${t.bandOdd}; stroke: none; }
-.lt-sld-band-even { fill: ${t.bandEven}; stroke: none; }
+.lt-sld-band-odd { fill: ${bandOdd}; stroke: none; }
+.lt-sld-band-even { fill: ${bandEven}; stroke: none; }
 .lt-sld-band-label { font: bold 11px sans-serif; fill: ${t.textMuted}; }
 .lt-sld-title { font: bold 16px sans-serif; fill: ${t.text}; }
 .lt-sld-id { font: bold 11px sans-serif; fill: ${t.text}; text-anchor: middle; }

@@ -226,7 +226,7 @@ function renderRibs(layout: FishboneLayoutResult, maskUrl: string): string {
 export function renderFishboneAST(ast: FishboneAST, options: { theme?: string } = {}): string {
   const themeName = options.theme ?? ast.metadata?.["theme"] ?? "default";
   const tokens = resolveFishboneTheme(themeName);
-  const layout = layoutFishbone(ast, { palette: tokens.boneColors });
+  const layout = layoutFishbone(ast, { palette: tokens.palette });
   const ltr = layout.orientation !== "rtl";
   const maskId = `sx-fb-mask-${randomId()}`;
   const maskUrl = `url(#${maskId})`;

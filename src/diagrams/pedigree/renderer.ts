@@ -118,19 +118,19 @@ function buildStyles(config: RenderConfig, t: ResolvedTheme<PersonTokens>): stri
 .schematex-pedigree {${cssCustomProperties(t)}
   background: ${t.bg};
 }
-.schematex-pedigree-shape { fill: ${t.fill}; stroke: ${t.stroke}; stroke-width: ${STROKE_WIDTH.medium}; stroke-linejoin: round; }
+.schematex-pedigree-shape { fill: ${t.fill}; stroke: ${t.stroke}; stroke-width: ${STROKE_WIDTH.normal}; stroke-linejoin: round; }
 .schematex-pedigree-label { font-family: ${config.fontFamily}; font-size: ${config.fontSize}px; text-anchor: middle; fill: ${t.text}; }
 .schematex-pedigree-gen-label { font-family: ${config.fontFamily}; font-size: 14px; font-weight: bold; fill: ${t.text}; text-anchor: middle; }
-.schematex-pedigree-edge { stroke: ${t.stroke}; stroke-width: ${STROKE_WIDTH.medium}; fill: none; stroke-linecap: round; stroke-linejoin: round; }
-.schematex-pedigree-deceased-mark { stroke: ${t.deceasedMark}; stroke-width: ${STROKE_WIDTH.medium}; stroke-linecap: round; }
+.schematex-pedigree-edge { stroke: ${t.stroke}; stroke-width: ${STROKE_WIDTH.normal}; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.schematex-pedigree-deceased-mark { stroke: ${t.deceasedMark}; stroke-width: ${STROKE_WIDTH.normal}; stroke-linecap: round; }
 .schematex-pedigree-affected-fill { fill: ${t.conditionFill}; }
 .schematex-pedigree-carrier-fill { fill: ${t.conditionFill}; }
 .schematex-pedigree-carrier-x-dot { fill: ${t.conditionFill}; }
-.schematex-pedigree-presymptomatic-mark { stroke: ${t.conditionFill}; stroke-width: ${STROKE_WIDTH.medium}; }
-.schematex-pedigree-proband-arrow-line { stroke: ${t.stroke}; stroke-width: ${STROKE_WIDTH.medium}; fill: none; marker-end: url(#schematex-pedigree-proband-arrow); }
+.schematex-pedigree-presymptomatic-mark { stroke: ${t.conditionFill}; stroke-width: ${STROKE_WIDTH.normal}; }
+.schematex-pedigree-proband-arrow-line { stroke: ${t.stroke}; stroke-width: ${STROKE_WIDTH.normal}; fill: none; marker-end: url(#schematex-pedigree-proband-arrow); }
 .schematex-pedigree-proband-label { font-family: ${config.fontFamily}; font-size: 10px; font-weight: bold; fill: ${t.stroke}; }
 .schematex-pedigree-legend { font-family: ${config.fontFamily}; font-size: 11px; fill: ${t.text}; }
-.schematex-pedigree-legend-box { fill: ${t.fill}; stroke: ${t.strokeMuted}; stroke-width: 1; }
+.schematex-pedigree-legend-box { fill: ${t.fill}; stroke: ${t.neutral}; stroke-width: 1; }
 `;
   return el("style", {}, css);
 }

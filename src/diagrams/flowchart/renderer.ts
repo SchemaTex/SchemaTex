@@ -55,12 +55,12 @@ const CSS_TEMPLATE = (themeName: ThemeName): string => {
 .sx-fc-class-danger   > .sx-fc-node-text { fill: ${c.danger.text}; font-weight: 600; }
 .sx-fc-class-neutral  > .sx-fc-node { fill: ${c.neutral.fill}; stroke: ${c.neutral.stroke}; }
 .sx-fc-class-neutral  > .sx-fc-node-text { fill: ${c.neutral.text}; font-weight: 600; }
-.sx-fc-edge { fill: none; stroke: ${t.strokeMuted}; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.sx-fc-edge { fill: none; stroke: ${t.neutral}; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
 .sx-fc-edge-thick { stroke: ${t.stroke}; stroke-width: 2.4; }
 .sx-fc-edge-dashed { stroke-dasharray: 5 3; }
 .sx-fc-edge-dotted { stroke-dasharray: 1.5 3; }
 .sx-fc-edge-label { fill: ${t.textMuted}; font: 11px system-ui, -apple-system, "Segoe UI", sans-serif; }
-.sx-fc-edge-label-bg { fill: ${t.bg}; fill-opacity: 0.96; stroke: ${t.strokeMuted}; stroke-width: 0.5; }
+.sx-fc-edge-label-bg { fill: ${t.bg}; fill-opacity: 0.96; stroke: ${t.neutral}; stroke-width: 0.5; }
 .sx-fc-title { fill: ${t.text}; font: 600 14px system-ui, -apple-system, "Segoe UI", sans-serif; }
 `.trim();
 };

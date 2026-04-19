@@ -7,7 +7,6 @@
   --schematex-text: #0f172a;
   --schematex-text-muted: #475569;
   --schematex-stroke: #334155;
-  --schematex-stroke-muted: #94a3b8;
   --schematex-fill: #ffffff;
   --schematex-fill-muted: #f1f5f9;
   --schematex-accent: #2563eb;
@@ -17,11 +16,10 @@
   --schematex-warn: #d97706;
   --schematex-font-title: 16px;
   --schematex-font-label: 12px;
-  --schematex-font-secondary: 11px;
   --schematex-font-small: 9px;
-  --schematex-stroke-normal: 1.5;
-  --schematex-stroke-medium: 2;
-  --schematex-stroke-thick: 2.5;
+  --schematex-stroke-thin: 1;
+  --schematex-stroke-normal: 2;
+  --schematex-stroke-thick: 3;
   background: #ffffff;
 }
 .schematex-genogram-shape { fill: #ffffff; stroke: #334155; stroke-width: 2; stroke-linejoin: round; }
@@ -38,7 +36,7 @@
 .schematex-genogram-age { font-family: system-ui, -apple-system, sans-serif; fill: #0f172a; pointer-events: none; }
 .schematex-genogram-title { fill: #0f172a; }
 .schematex-genogram-edge-label { font-family: system-ui, -apple-system, sans-serif; fill: #0f172a; }
-.schematex-genogram-index-border { stroke: #d97706; stroke-width: 3.5; fill: none; }
+.schematex-genogram-index-border { stroke: #d97706; stroke-width: 3; fill: none; }
 </style>
 <g><g class="schematex-genogram-edges"><g class="schematex-genogram-edge schematex-genogram-edge-divorced" data-from="jane" data-to="tom"><path d="M 80 60 L 288 60" class="schematex-genogram-edge-path"/>
 <line x1="180" y1="54" x2="188" y2="66" class="schematex-genogram-divorce-mark" stroke="#333" stroke-width="2"/>

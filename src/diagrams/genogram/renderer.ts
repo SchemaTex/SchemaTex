@@ -89,21 +89,21 @@ function buildStyles(config: RenderConfig): string {
 .schematex-genogram {${cssCustomProperties(t)}
   background: ${t.bg};
 }
-.schematex-genogram-shape { fill: ${t.fill}; stroke: ${t.stroke}; stroke-width: ${STROKE_WIDTH.medium}; stroke-linejoin: round; }
+.schematex-genogram-shape { fill: ${t.fill}; stroke: ${t.stroke}; stroke-width: ${STROKE_WIDTH.normal}; stroke-linejoin: round; }
 .schematex-genogram-male .schematex-genogram-shape { fill: ${t.maleFill}; }
 .schematex-genogram-female .schematex-genogram-shape { fill: ${t.femaleFill}; }
 .schematex-genogram-unknown .schematex-genogram-shape { fill: ${t.unknownFill}; }
 .schematex-genogram-label { font-family: ${config.fontFamily}; font-size: ${config.fontSize}px; text-anchor: middle; fill: ${t.text}; }
-.schematex-genogram-edge { stroke: ${t.strokeMuted}; stroke-width: ${STROKE_WIDTH.medium}; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.schematex-genogram-edge { stroke: ${t.neutral}; stroke-width: ${STROKE_WIDTH.normal}; fill: none; stroke-linecap: round; stroke-linejoin: round; }
 .schematex-genogram-edge-cohabiting path { stroke-dasharray: 6,4; }
-.schematex-genogram-edge-divorced .schematex-genogram-divorce-mark { stroke: ${t.strokeMuted}; stroke-width: ${STROKE_WIDTH.medium}; }
-.schematex-genogram-edge-separated .schematex-genogram-separation-mark { stroke: ${t.strokeMuted}; stroke-width: ${STROKE_WIDTH.medium}; }
-.schematex-genogram-deceased-mark { stroke: ${t.deceasedMark}; stroke-width: ${STROKE_WIDTH.medium}; stroke-linecap: round; }
+.schematex-genogram-edge-divorced .schematex-genogram-divorce-mark { stroke: ${t.neutral}; stroke-width: ${STROKE_WIDTH.normal}; }
+.schematex-genogram-edge-separated .schematex-genogram-separation-mark { stroke: ${t.neutral}; stroke-width: ${STROKE_WIDTH.normal}; }
+.schematex-genogram-deceased-mark { stroke: ${t.deceasedMark}; stroke-width: ${STROKE_WIDTH.normal}; stroke-linecap: round; }
 .schematex-genogram-condition-fill { fill: ${t.conditionFill}; }
 .schematex-genogram-age { font-family: ${config.fontFamily}; fill: ${t.text}; pointer-events: none; }
 .schematex-genogram-title { fill: ${t.text}; }
 .schematex-genogram-edge-label { font-family: ${config.fontFamily}; fill: ${t.text}; }
-.schematex-genogram-index-border { stroke: ${t.warn}; stroke-width: ${STROKE_WIDTH.heavy}; fill: none; }
+.schematex-genogram-index-border { stroke: ${t.warn}; stroke-width: ${STROKE_WIDTH.thick}; fill: none; }
 `;
   return el("style", {}, css);
 }

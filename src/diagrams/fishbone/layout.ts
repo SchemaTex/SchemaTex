@@ -369,7 +369,7 @@ export function layoutFishbone(ast: FishboneAST, opts?: { palette?: readonly str
 
   // ── Ribs ────────────────────────────────────────────────────
   const ribs: FishboneLayoutRib[] = [];
-  const palette = opts?.palette ?? resolveFishboneTheme("default").boneColors;
+  const palette = opts?.palette ?? resolveFishboneTheme("default").palette;
   const textBBoxes: FishboneBBox[] = [];
 
   const buildHalfRibs = (
