@@ -1,105 +1,109 @@
 'use client';
 
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState, useEffect } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import {
-  COMPLEXITY_LABELS,
-  DIAGRAM_LABELS,
   INDUSTRY_LABELS,
-  type Complexity,
-  type DiagramType,
+  CLUSTER_TO_TYPES,
   type GalleryExample,
   type Industry,
 } from '@/lib/gallery-examples';
 import { FilterChips } from './FilterChips';
 
+type ClusterKey = keyof typeof CLUSTER_TO_TYPES;
+
+const CLUSTER_META: Record<ClusterKey, { label: string; color: string }> = {
+  relationships: { label: 'Relationships', color: 'var(--cat-0)' },
+  'electrical-industrial': { label: 'Electrical & Industrial', color: 'var(--cat-2)' },
+  'corporate-legal': { label: 'Corporate & Legal', color: 'var(--cat-3)' },
+  'causality-analysis': { label: 'Causality & Analysis', color: 'var(--cat-1)' },
+};
+
 interface GalleryFilterBarProps {
   examples: GalleryExample[];
   totalCount: number;
   visibleCount: number;
-  activeType: DiagramType | null;
+  activeCluster: ClusterKey | null;
   activeIndustry: Industry | null;
-  activeComplexity: Complexity | null;
+  activeQuery: string;
 }
 
 export function GalleryFilterBar({
   examples,
   totalCount,
   visibleCount,
-  activeType,
+  activeCluster,
   activeIndustry,
-  activeComplexity,
+  activeQuery,
 }: GalleryFilterBarProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
+  const [queryInput, setQueryInput] = useState(activeQuery);
+  useEffect(() => setQueryInput(activeQuery), [activeQuery]);
+
   const setParam = useCallback(
     (key: string, value: string | null) => {
       const params = new URLSearchParams(searchParams.toString());
-      if (value === null) params.delete(key);
+      if (value === null || value === '') params.delete(key);
       else params.set(key, value);
-      // Clear cluster when manually changing type
-      if (key === 'type') params.delete('cluster');
       const qs = params.toString();
       router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
     },
     [router, pathname, searchParams],
   );
 
+  // Debounced search commit
+  useEffect(() => {
+    const id = setTimeout(() => {
+      if (queryInput !== activeQuery) setParam('q', queryInput || null);
+    }, 180);
+    return () => clearTimeout(id);
+  }, [queryInput, activeQuery, setParam]);
+
   const clearAll = useCallback(() => {
     router.replace(pathname, { scroll: false });
   }, [router, pathname]);
 
   const hasActive =
-    activeType !== null || activeIndustry !== null || activeComplexity !== null;
+    activeCluster !== null || activeIndustry !== null || activeQuery !== '';
 
-  // Count per type / industry / complexity across the full dataset (respecting other active filters)
   const counts = useMemo(() => {
-    const typeCounts = new Map<DiagramType, number>();
+    const clusterCounts = new Map<ClusterKey, number>();
     const industryCounts = new Map<Industry, number>();
-    const complexityCounts = new Map<Complexity, number>();
+    const q = activeQuery.toLowerCase();
 
     for (const ex of examples) {
-      // For each axis, count entries matching *other* filters (so counts reflect
-      // what you'd see if you also applied this chip).
-      if (
-        (activeIndustry === null || ex.industry === activeIndustry) &&
-        (activeComplexity === null || ex.complexity === activeComplexity)
-      ) {
-        typeCounts.set(ex.diagram, (typeCounts.get(ex.diagram) ?? 0) + 1);
+      const matchesQ =
+        !q ||
+        ex.title.toLowerCase().includes(q) ||
+        ex.description.toLowerCase().includes(q) ||
+        ex.standard.toLowerCase().includes(q);
+      if (!matchesQ) continue;
+
+      for (const [k, types] of Object.entries(CLUSTER_TO_TYPES) as [ClusterKey, string[]][]) {
+        if (types.includes(ex.diagram)) {
+          if (activeIndustry === null || ex.industry === activeIndustry) {
+            clusterCounts.set(k, (clusterCounts.get(k) ?? 0) + 1);
+          }
+        }
       }
       if (
-        (activeType === null || ex.diagram === activeType) &&
-        (activeComplexity === null || ex.complexity === activeComplexity)
+        activeCluster === null ||
+        CLUSTER_TO_TYPES[activeCluster]?.includes(ex.diagram)
       ) {
         industryCounts.set(ex.industry, (industryCounts.get(ex.industry) ?? 0) + 1);
       }
-      if (
-        (activeType === null || ex.diagram === activeType) &&
-        (activeIndustry === null || ex.industry === activeIndustry)
-      ) {
-        complexityCounts.set(
-          ex.complexity,
-          (complexityCounts.get(ex.complexity) ?? 0) + 1,
-        );
-      }
     }
-    return { typeCounts, industryCounts, complexityCounts };
-  }, [examples, activeType, activeIndustry, activeComplexity]);
+    return { clusterCounts, industryCounts };
+  }, [examples, activeCluster, activeIndustry, activeQuery]);
 
-  // Only show type chips that have ≥ 1 example in dataset
-  const typesPresent = useMemo(() => {
-    const set = new Set<DiagramType>();
-    for (const ex of examples) set.add(ex.diagram);
-    return Array.from(set);
-  }, [examples]);
-
-  const typeOptions = typesPresent.map((t) => ({
-    value: t,
-    label: DIAGRAM_LABELS[t].label,
-    icon: DIAGRAM_LABELS[t].icon,
-    count: counts.typeCounts.get(t) ?? 0,
+  const clusterOptions = (Object.keys(CLUSTER_META) as ClusterKey[]).map((k) => ({
+    value: k,
+    label: CLUSTER_META[k].label,
+    color: CLUSTER_META[k].color,
+    count: counts.clusterCounts.get(k) ?? 0,
   }));
 
   const industryOptions = (Object.keys(INDUSTRY_LABELS) as Industry[]).map((k) => ({
@@ -109,64 +113,75 @@ export function GalleryFilterBar({
     count: counts.industryCounts.get(k) ?? 0,
   }));
 
-  const complexityOptions = ([1, 2, 3] as Complexity[]).map((c) => ({
-    value: String(c),
-    label: COMPLEXITY_LABELS[c],
-    count: counts.complexityCounts.get(c) ?? 0,
-  }));
-
   return (
     <div className="sticky top-0 z-30 -mx-6 border-b border-fd-border bg-fd-background/85 px-6 py-4 backdrop-blur-md">
       <div className="mx-auto flex max-w-6xl flex-col gap-3">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="text-sm text-fd-muted-foreground">
-            Showing{' '}
-            <span className="font-semibold text-fd-foreground tabular-nums">
-              {visibleCount}
-            </span>{' '}
-            of <span className="tabular-nums">{totalCount}</span>
+          <div className="font-mono text-xs text-fd-muted-foreground">
+            <span className="tabular-nums text-fd-foreground">{visibleCount}</span>
+            <span className="mx-1.5 opacity-40">/</span>
+            <span className="tabular-nums">{totalCount}</span>
+            <span className="ml-2 opacity-70">examples</span>
           </div>
-          {hasActive && (
-            <button
-              type="button"
-              onClick={clearAll}
-              className="inline-flex items-center gap-1 rounded-md border border-fd-border bg-fd-card px-2.5 py-1 text-xs font-medium text-fd-muted-foreground transition hover:border-fd-primary hover:text-fd-foreground"
+          <div className="flex items-center gap-2">
+            <div
+              className="flex items-center gap-1.5 px-2.5 py-1"
+              style={{
+                border: '1px solid var(--fill-muted)',
+                borderRadius: 'var(--r-sm)',
+                background: 'var(--fill)',
+              }}
             >
               <svg
-                width="11"
-                height="11"
+                width="12"
+                height="12"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
-                strokeWidth="2.5"
+                strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
+                className="opacity-60"
               >
-                <line x1="18" y1="6" x2="6" y2="18" />
-                <line x1="6" y1="6" x2="18" y2="18" />
+                <circle cx="11" cy="11" r="7" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
               </svg>
-              Clear all
-            </button>
-          )}
+              <input
+                type="text"
+                value={queryInput}
+                onChange={(e) => setQueryInput(e.target.value)}
+                placeholder="search examples…"
+                className="w-44 bg-transparent font-mono text-xs text-fd-foreground placeholder:text-fd-muted-foreground/60 focus:outline-none"
+              />
+            </div>
+            {hasActive && (
+              <button
+                type="button"
+                onClick={clearAll}
+                className="inline-flex items-center gap-1 px-2.5 py-1 font-mono text-xs text-fd-muted-foreground transition hover:text-fd-foreground"
+                style={{
+                  border: '1px solid var(--fill-muted)',
+                  borderRadius: 'var(--r-sm)',
+                  background: 'var(--fill)',
+                }}
+              >
+                clear
+              </button>
+            )}
+          </div>
         </div>
-        <div className="grid gap-3 md:grid-cols-[minmax(0,2fr)_minmax(0,1.5fr)_minmax(0,1fr)]">
+        <div className="grid gap-3 md:grid-cols-2">
           <FilterChips
-            label="Type"
-            options={typeOptions}
-            selected={activeType}
-            onChange={(v) => setParam('type', v)}
+            label="Cluster"
+            options={clusterOptions}
+            selected={activeCluster}
+            onChange={(v) => setParam('cluster', v)}
           />
           <FilterChips
-            label="Industry"
+            label="Use-case"
             options={industryOptions}
             selected={activeIndustry}
             onChange={(v) => setParam('industry', v)}
-          />
-          <FilterChips
-            label="Complexity"
-            options={complexityOptions}
-            selected={activeComplexity === null ? null : String(activeComplexity)}
-            onChange={(v) => setParam('complexity', v)}
           />
         </div>
       </div>

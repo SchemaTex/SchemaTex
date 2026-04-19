@@ -27,9 +27,14 @@ export function CopyButton({ text, className = '', label = 'Copy' }: CopyButtonP
       onClick={onCopy}
       aria-label={copied ? 'Copied' : label}
       className={
-        'inline-flex items-center gap-1.5 rounded-md border border-fd-border bg-fd-card/80 px-2.5 py-1 text-xs font-medium text-fd-muted-foreground backdrop-blur transition hover:text-fd-foreground ' +
+        'inline-flex items-center gap-1.5 px-2.5 py-1 font-mono text-xs text-fd-muted-foreground transition hover:text-fd-foreground ' +
         className
       }
+      style={{
+        border: '1px solid var(--fill-muted)',
+        borderRadius: 'var(--r-sm)',
+        background: 'var(--fill)',
+      }}
     >
       {copied ? (
         <>

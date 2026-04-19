@@ -3,6 +3,35 @@ import { render } from 'schematex';
 import { CopyButton } from '@/components/CopyButton';
 import { HeroShowcase, type HeroSlide } from '@/components/HeroShowcase';
 import { ClusterCard } from '@/components/ClusterCard';
+import { GithubStarButton } from '@/components/GithubStarButton';
+import { getRepoStats } from '@/lib/github-stats';
+import { galleryExamples } from '@/lib/gallery-examples';
+
+const FEATURED_SLUGS = [
+  'harry-potter-family',
+  'substation-13kv',
+  'brca1-hereditary-cancer',
+  'fishbone-website-traffic',
+  'motor-start-stop',
+  'bacterial-diversity',
+] as const;
+
+const DIAGRAM_TO_CAT: Record<string, string> = {
+  genogram: 'var(--cat-0)',
+  ecomap: 'var(--cat-0)',
+  pedigree: 'var(--cat-0)',
+  phylo: 'var(--cat-0)',
+  sociogram: 'var(--cat-0)',
+  fishbone: 'var(--cat-1)',
+  venn: 'var(--cat-1)',
+  timing: 'var(--cat-2)',
+  logic: 'var(--cat-2)',
+  circuit: 'var(--cat-2)',
+  ladder: 'var(--cat-2)',
+  sld: 'var(--cat-2)',
+  block: 'var(--cat-2)',
+  entity: 'var(--cat-3)',
+};
 
 // ───────────────────────────────────────────────────────────────────
 // Hero slides — 3 diagrams rotating every ~6.5s
@@ -63,21 +92,58 @@ rung 1 "Seal-in":
   XIO(STOP)
   OTE(MOTOR)`;
 
-const CLUSTER_CORPORATE_DSL = `entity-structure "Holdings"
+const CLUSTER_CORPORATE_DSL = `entity-structure "Acme Holdings"
+entity trust "Founder Trust" trust@SD
 entity parent "Acme Inc." corp@DE
-entity sub "Acme UK" llc@UK
-entity fund "Growth Fund" fund@KY
-parent -> sub : 100%
+entity uk "Acme UK Ltd." llc@UK
+entity fund "Acme Growth Fund" fund@KY
+trust -> parent : 100%
+parent -> uk : 100%
 parent -> fund : 60%`;
 
-const CLUSTER_CAUSALITY_DSL = `fishbone "Traffic drop"
-effect "Traffic drop"
-category content "Content"
-category tech "Tech"
-category links "Links"
-content : "Publishing cadence slipped"
-tech : "Core Web Vitals regressed"
-links : "Lost 2 high-DR backlinks"`;
+const STANDARDS_RAIL = [
+  'McGoldrick 2020',
+  'IEC 61131-3',
+  'IEEE 315',
+  'ANSI Y32.2',
+  'Newick / NHX',
+  'NSGC pedigree',
+  'Moreno sociometry',
+  'Ishikawa 1968',
+  'WaveDrom',
+  'ISO 5807',
+];
+
+const CLUSTER_CAUSALITY_DSL = `fishbone "Website traffic drop"
+
+effect "Traffic decline"
+
+category content     "Content"
+category tech        "Technical"
+category links       "Backlinks"
+category ux          "UX"
+category competition "Competition"
+category algo        "Algorithm"
+
+content : "Publishing frequency down"
+content : "Content too generic"
+content : "Low-quality AI content"
+
+tech : "Core Web Vitals failing"
+tech : "Crawl coverage drop"
+tech : "Missing structured data"
+
+links : "High-DR backlinks lost"
+links : "Referring domain growth stalled"
+
+ux : "Bounce rate rising"
+ux : "Slow above-fold load"
+
+competition : "New competitors entering"
+competition : "AI tools replacing search"
+
+algo : "Core Update penalty"
+algo : "Weak E-E-A-T signals"`;
 
 // ───────────────────────────────────────────────────────────────────
 // Server-side safe render — never throws into the page
@@ -127,7 +193,17 @@ export function Diagram({ dsl }: { dsl: string }) {
 // Page
 // ───────────────────────────────────────────────────────────────────
 
-export default function HomePage() {
+export default async function HomePage() {
+  const { stars } = await getRepoStats();
+
+  const galleryDsl = (slug: string) =>
+    galleryExamples.find((g) => g.slug === slug)?.dsl ?? '';
+
+  const PEDIGREE_DSL = galleryDsl('cystic-fibrosis-pedigree');
+  const PHYLO_DSL = galleryDsl('bacterial-diversity');
+  const SLD_DSL = galleryDsl('substation-13kv');
+  const FISHBONE_DSL = galleryDsl('fishbone-website-traffic');
+
   const heroSlides: HeroSlide[] = [
     {
       label: 'Genogram',
@@ -136,10 +212,34 @@ export default function HomePage() {
       svg: safeRender(HERO_GENOGRAM),
     },
     {
+      label: 'Pedigree',
+      standard: 'NSGC nomenclature',
+      dsl: PEDIGREE_DSL,
+      svg: safeRender(PEDIGREE_DSL),
+    },
+    {
+      label: 'Phylogenetic',
+      standard: 'Newick / NHX',
+      dsl: PHYLO_DSL,
+      svg: safeRender(PHYLO_DSL),
+    },
+    {
       label: 'Ladder logic',
       standard: 'IEC 61131-3',
       dsl: HERO_LADDER,
       svg: safeRender(HERO_LADDER),
+    },
+    {
+      label: 'Single-line',
+      standard: 'IEEE 315',
+      dsl: SLD_DSL,
+      svg: safeRender(SLD_DSL),
+    },
+    {
+      label: 'Fishbone',
+      standard: 'Ishikawa 1968',
+      dsl: FISHBONE_DSL,
+      svg: safeRender(FISHBONE_DSL),
     },
     {
       label: 'Entity structure',
@@ -151,139 +251,134 @@ export default function HomePage() {
 
   return (
     <main className="flex flex-1 flex-col">
-      {/* ────────────── HERO ────────────── */}
+      {/* ────────────── HERO (2-col, DS) ────────────── */}
       <section
         aria-labelledby="hero-heading"
-        className="relative overflow-hidden border-b border-fd-border px-6 pt-20 pb-24 md:pt-28 md:pb-32"
+        className="relative overflow-hidden border-b border-fd-border px-6 pt-16 pb-20 md:pt-24 md:pb-24"
       >
-        {/* Ambient backdrop */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,var(--color-fd-primary)/6%,transparent_70%)]"
-        />
         <div
           aria-hidden
           className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-px bg-gradient-to-r from-transparent via-fd-border to-transparent"
         />
 
-        <div className="mx-auto max-w-6xl">
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-fd-border bg-fd-card/60 px-3 py-1 text-xs text-fd-muted-foreground backdrop-blur">
-            <span className="relative flex size-1.5">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-              <span className="relative inline-flex size-1.5 rounded-full bg-emerald-500" />
-            </span>
-            v0.x — open source, AGPL-3.0
-          </div>
+        <div className="mx-auto grid max-w-[1320px] items-center gap-10 md:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] md:gap-14">
+          {/* LEFT — copy + CTAs */}
+          <div>
+            {/* Eye line: — 20 DIAGRAM FAMILIES · 10+ STANDARDS · 0 DEPS */}
+            <div className="mb-6 inline-flex items-center gap-2.5 font-mono text-[12px] uppercase tracking-[0.04em] text-fd-muted-foreground">
+              <span aria-hidden className="h-px w-6 bg-[color:var(--text-muted)]" />
+              20 DIAGRAM FAMILIES · 10+ STANDARDS · 0 DEPS
+            </div>
 
-          <h1
-            id="hero-heading"
-            className="max-w-4xl text-balance text-5xl font-semibold leading-[1.05] tracking-tight text-fd-foreground md:text-6xl lg:text-7xl"
-          >
-            Standards-as-code
-            <br />
-            <span className="text-fd-muted-foreground">
-              for professional diagrams.
-            </span>
-          </h1>
-
-          <p className="mt-7 max-w-2xl text-lg leading-relaxed text-fd-muted-foreground">
-            The open-source rendering engine for diagrams that follow real
-            industry standards — McGoldrick genograms, IEC 61131-3 ladder
-            logic, IEEE 315 single-line diagrams, Newick phylogenetic trees,
-            and 10+ more.
-          </p>
-
-          {/* Pillar badges */}
-          <div className="mt-8 flex flex-wrap gap-2">
-            {[
-              'Zero runtime dependencies',
-              '10+ industry standards',
-              'LLM-native by design',
-            ].map((p) => (
-              <span
-                key={p}
-                className="rounded-full border border-fd-border bg-fd-card px-3 py-1 text-xs font-medium text-fd-foreground"
-              >
-                {p}
-              </span>
-            ))}
-          </div>
-
-          {/* CTAs */}
-          <div className="mt-9 flex flex-wrap items-center gap-3">
-            <Link
-              href="/playground"
-              className="group inline-flex items-center gap-1.5 rounded-lg bg-fd-foreground px-5 py-2.5 text-sm font-medium text-fd-background shadow-sm transition hover:opacity-90"
+            <h1
+              id="hero-heading"
+              className="text-balance text-[40px] font-semibold leading-[1.04] tracking-[-0.025em] text-fd-foreground md:text-[58px]"
             >
-              Try the Playground
-              <span
-                aria-hidden
-                className="transition-transform group-hover:translate-x-0.5"
+              Standards-as-code
+              <br />
+              <em
+                className="not-italic"
+                style={{ color: 'var(--accent)' }}
               >
-                →
-              </span>
-            </Link>
-            <Link
-              href="/docs"
-              className="inline-flex items-center rounded-lg border border-fd-border bg-fd-card px-5 py-2.5 text-sm font-medium text-fd-foreground transition hover:border-fd-foreground/30"
-            >
-              Read the docs
-            </Link>
-            <a
-              href="https://github.com/victorzhrn/Schematex"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium text-fd-muted-foreground transition hover:text-fd-foreground"
-            >
-              <svg
-                viewBox="0 0 24 24"
-                aria-hidden
-                className="size-4 fill-current"
+                for professional diagrams.
+              </em>
+            </h1>
+
+            <p className="mt-6 max-w-[520px] text-[16px] leading-[1.6] text-fd-muted-foreground">
+              Mermaid draws generic flowcharts. Schematex draws a genogram a
+              genetic counselor accepts clinically, ladder logic that maps 1:1
+              to IEC 61131-3, and a cap table that survives a Series A review —
+               all from a tiny text DSL.
+            </p>
+
+            {/* Value tags */}
+            <div className="mt-7 flex flex-wrap gap-1.5">
+              <span className="ds-badge">20 diagram families</span>
+              <span className="ds-badge">10+ published standards</span>
+              <span className="ds-badge">zero runtime deps</span>
+              <span className="ds-badge">LLM-native</span>
+            </div>
+
+            {/* CTAs — primary + secondary install pill + github star */}
+            <div className="mt-7 flex flex-wrap items-center gap-2">
+              <Link
+                href="/playground"
+                className="group inline-flex items-center gap-2 px-4 py-2 text-sm font-medium transition hover:opacity-95"
+                style={{
+                  background: 'var(--accent)',
+                  color: '#fff',
+                  border: '1px solid var(--accent)',
+                  borderRadius: 'var(--r-sm)',
+                }}
               >
-                <path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.52-1.33-1.28-1.68-1.28-1.68-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.2 1.77 1.2 1.03 1.77 2.7 1.26 3.35.96.1-.75.4-1.26.73-1.55-2.55-.3-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.2-3.1-.12-.3-.52-1.48.11-3.08 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.79 0c2.21-1.49 3.18-1.18 3.18-1.18.63 1.6.23 2.78.11 3.08.75.81 1.2 1.84 1.2 3.1 0 4.42-2.69 5.39-5.25 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5Z" />
-              </svg>
-              GitHub
-              <span className="rounded-md border border-fd-border bg-fd-background px-1.5 py-0.5 font-mono text-[11px]">
-                ★
-              </span>
-            </a>
+                Open playground
+                <kbd
+                  className="font-mono text-[11px] leading-none"
+                  style={{
+                    border: '1px solid currentColor',
+                    borderRadius: 'var(--r-sm)',
+                    padding: '2px 5px',
+                    opacity: 0.65,
+                  }}
+                >
+                  ↵
+                </kbd>
+              </Link>
+              <div
+                className="inline-flex items-center gap-2 px-3 py-2 font-mono text-[13px] text-fd-foreground"
+                style={{
+                  background: 'var(--fill)',
+                  border: '1px solid var(--fill-muted)',
+                  borderRadius: 'var(--r-sm)',
+                }}
+              >
+                <span className="select-none text-fd-muted-foreground/60">$</span>
+                <span>npm i schematex</span>
+                <CopyButton text="npm install schematex" label="Copy" />
+              </div>
+              <GithubStarButton stars={stars} />
+            </div>
+
+            {/* Tertiary — docs link */}
+            <div className="mt-4">
+              <Link
+                href="/docs"
+                className="font-mono text-xs text-fd-muted-foreground transition hover:text-fd-foreground"
+              >
+                docs ↗
+              </Link>
+            </div>
           </div>
 
-          {/* npm install pill */}
-          <div className="mt-8 inline-flex items-center gap-2 rounded-lg border border-fd-border bg-fd-card px-4 py-2 font-mono text-sm text-fd-muted-foreground">
-            <span className="select-none text-fd-muted-foreground/50">$</span>
-            <span className="text-fd-foreground">npm install schematex</span>
-            <CopyButton text="npm install schematex" label="Copy" />
-          </div>
-
-          {/* Hero demo */}
-          <div className="mt-12">
+          {/* RIGHT — showcase */}
+          <div>
             <HeroShowcase slides={heroSlides} />
           </div>
+        </div>
+      </section>
 
-          {/* Standards strip */}
-          <div className="mt-12 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs uppercase tracking-wider text-fd-muted-foreground/80">
-            {[
-              'McGoldrick',
-              'IEC 61131-3',
-              'IEEE 315',
-              'Newick',
-              'NSGC',
-              'Moreno',
-              'Ishikawa',
-              'WaveDrom',
-              'ANSI Y32.2',
-            ].map((s, i, arr) => (
-              <span key={s} className="flex items-center gap-x-5">
-                <span>{s}</span>
-                {i < arr.length - 1 && (
-                  <span aria-hidden className="opacity-30">
-                    ·
-                  </span>
-                )}
+      {/* ────────────── STANDARDS RAIL (marquee) ────────────── */}
+      <section
+        aria-label="Standards covered"
+        className="overflow-hidden border-b py-3.5"
+        style={{
+          borderColor: 'var(--fill-muted)',
+          borderTopWidth: 1,
+          background: 'var(--fill)',
+        }}
+      >
+        <div className="marquee-track font-mono text-xs text-fd-muted-foreground">
+          {[
+            ...STANDARDS_RAIL,
+            ...STANDARDS_RAIL, // duplicate for seamless loop
+          ].map((s, i) => (
+            <span key={i} className="inline-flex items-center gap-2">
+              <span aria-hidden style={{ color: 'var(--accent)' }}>
+                ◆
               </span>
-            ))}
-          </div>
+              {s}
+            </span>
+          ))}
         </div>
       </section>
 
@@ -294,14 +389,14 @@ export default function HomePage() {
       >
         <div className="mx-auto max-w-6xl">
           <div className="max-w-3xl">
-            <p className="mb-3 text-xs font-medium uppercase tracking-[0.15em] text-fd-primary">
-              Diagram library
+            <p className="mb-3 type-eye">
+              02 / WHERE SCHEMATEX IS THE PROFESSIONAL CHOICE
             </p>
             <h2
               id="clusters-heading"
               className="text-balance text-4xl font-semibold tracking-tight text-fd-foreground md:text-5xl"
             >
-              One library. Four domains.
+              The diagrams other libraries can&apos;t draw.
             </h2>
             <p className="mt-5 text-lg leading-relaxed text-fd-muted-foreground">
               Each domain is a first-class citizen with its own parser, layout
@@ -312,172 +407,306 @@ export default function HomePage() {
 
           <div className="mt-14 grid grid-cols-1 gap-6 md:grid-cols-2">
             <ClusterCard
-              icon="👪"
-              title="Relationships"
-              description="Family systems, social networks, and evolutionary trees — with the shapes, line styles, and layout conventions each discipline actually uses."
+              cluster="relationships"
+              title="Clinical, Social Work & Life Sciences"
+              description="Genograms a family therapist takes to a case review. NSGC pedigrees a genetic counselor uses in clinic. Ecomaps social workers chart with clients. Sociograms for classroom and organizational research. Newick phylogenies for evolutionary biology."
               diagrams={[
-                'genogram',
-                'ecomap',
-                'pedigree',
-                'sociogram',
-                'phylogenetic',
+                { name: 'genogram', standard: 'McGoldrick — family therapy' },
+                { name: 'pedigree', standard: 'NSGC — genetic counseling' },
+                { name: 'ecomap', standard: 'Hartman — social work' },
+                { name: 'sociogram', standard: 'Moreno — psychology' },
+                { name: 'phylogenetic', standard: 'Newick — evolutionary biology' },
               ]}
               href="/gallery?cluster=relationships"
               svg={safeRender(CLUSTER_RELATIONSHIPS_DSL)}
-              accent="from-rose-500/10 via-transparent to-transparent"
             />
             <ClusterCard
-              icon="⚡"
+              cluster="industrial"
               title="Electrical & Industrial"
               description="Ladder logic that maps 1:1 to IEC 61131-3, SPICE-style schematics, IEEE 315 one-lines, timing waveforms, and signal-flow block diagrams."
               diagrams={[
-                'ladder',
-                'single-line',
-                'circuit',
-                'logic gate',
-                'timing',
-                'block',
+                { name: 'ladder', standard: 'IEC 61131-3' },
+                { name: 'single-line', standard: 'IEEE 315' },
+                { name: 'circuit', standard: 'ANSI Y32.2' },
+                { name: 'logic gate', standard: 'IEEE 91' },
+                { name: 'timing', standard: 'WaveDrom' },
+                { name: 'block', standard: 'control' },
               ]}
               href="/gallery?cluster=industrial"
               svg={safeRender(CLUSTER_INDUSTRIAL_DSL)}
-              accent="from-amber-500/10 via-transparent to-transparent"
             />
             <ClusterCard
-              icon="🏢"
+              cluster="corporate"
               title="Corporate & Legal"
               description="Parent/subsidiary structures with entity-type shapes, jurisdiction clustering, and tier-aware ownership percentage rollup that survives a Series A review."
-              diagrams={['entity structure', 'cap table']}
+              diagrams={[
+                { name: 'entity structure', standard: 'cap-table' },
+                { name: 'org chart', standard: 'hierarchical' },
+              ]}
               href="/gallery?cluster=corporate"
               svg={safeRender(CLUSTER_CORPORATE_DSL)}
-              accent="from-indigo-500/10 via-transparent to-transparent"
             />
             <ClusterCard
-              icon="🐟"
+              cluster="causality"
               title="Causality & Analysis"
               description="Ishikawa cause-and-effect fishbones and Venn/Euler set diagrams — for root-cause analysis, decision memos, and teaching artifacts."
-              diagrams={['fishbone', 'venn', 'euler']}
+              diagrams={[
+                { name: 'fishbone', standard: 'Ishikawa' },
+                { name: 'venn', standard: 'Euler' },
+              ]}
               href="/gallery?cluster=causality"
               svg={safeRender(CLUSTER_CAUSALITY_DSL)}
-              accent="from-emerald-500/10 via-transparent to-transparent"
             />
           </div>
         </div>
       </section>
 
-      {/* ────────────── WHY ────────────── */}
+      {/* ────────────── FEATURED GALLERY ────────────── */}
+      <section
+        aria-labelledby="featured-heading"
+        className="border-b border-fd-border px-6 py-24 md:py-28"
+        style={{ background: 'var(--fill)' }}
+      >
+        <div className="mx-auto max-w-6xl">
+          <div className="max-w-3xl">
+            <p className="mb-3 type-eye">
+              03 / IN THE WILD
+            </p>
+            <h2
+              id="featured-heading"
+              className="text-balance text-3xl font-semibold tracking-tight text-fd-foreground md:text-4xl"
+            >
+              Every diagram, reproducible from a string.
+            </h2>
+            <p className="mt-4 text-lg leading-relaxed text-fd-muted-foreground">
+              Real-world examples — each renders from its DSL, each conforms to
+              a published standard. Copy, open in the playground, adapt.
+            </p>
+          </div>
+
+          <div className="mt-12 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
+            {FEATURED_SLUGS.map((slug) => {
+              const ex = galleryExamples.find((g) => g.slug === slug);
+              if (!ex) return null;
+              const color = DIAGRAM_TO_CAT[ex.diagram] ?? 'var(--cat-7)';
+              const svg = safeRender(ex.dsl);
+              return (
+                <Link
+                  key={ex.slug}
+                  href={`/playground?example=${ex.slug}`}
+                  className="group flex flex-col overflow-hidden bg-fd-card transition hover:border-[color:var(--stroke)]"
+                  style={{
+                    border: '1px solid var(--fill-muted)',
+                    borderRadius: 'var(--r)',
+                  }}
+                >
+                  <div
+                    className="flex items-center gap-2 px-3 py-2 font-mono text-xs text-fd-muted-foreground"
+                    style={{ borderBottom: '1px solid var(--fill-muted)' }}
+                  >
+                    <span
+                      aria-hidden
+                      className="size-2"
+                      style={{ background: color, borderRadius: 2 }}
+                    />
+                    <span className="text-fd-foreground">{ex.diagram}</span>
+                    <span className="opacity-40">·</span>
+                    <span style={{ color: 'var(--accent)' }}>§ {ex.standard}</span>
+                  </div>
+                  <div className="dot-grid flex aspect-[4/3] items-center justify-center overflow-hidden p-4">
+                    <div
+                      className="flex h-full w-full items-center justify-center [&_svg]:block [&_svg]:h-auto [&_svg]:max-h-full [&_svg]:w-auto [&_svg]:max-w-full"
+                      dangerouslySetInnerHTML={{ __html: svg }}
+                    />
+                  </div>
+                  <div
+                    className="flex flex-col gap-1 p-4"
+                    style={{ borderTop: '1px solid var(--fill-muted)' }}
+                  >
+                    <div className="text-[15px] font-semibold tracking-tight text-fd-foreground">
+                      {ex.title}
+                    </div>
+                    <p className="line-clamp-2 text-[13px] leading-relaxed text-fd-muted-foreground">
+                      {ex.description}
+                    </p>
+                    <div
+                      className="mt-1 font-mono text-xs transition-opacity"
+                      style={{ color: 'var(--accent)', opacity: 0.7 }}
+                    >
+                      → open in playground
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+
+          <div className="mt-8 flex justify-center">
+            <Link
+              href="/gallery"
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-fd-foreground transition hover:border-[color:var(--stroke)]"
+              style={{
+                background: 'var(--fill)',
+                border: '1px solid var(--fill-muted)',
+                borderRadius: 'var(--r-sm)',
+              }}
+            >
+              Browse the full gallery →
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ────────────── WHY (DS stat cards) ────────────── */}
       <section
         aria-labelledby="why-heading"
         className="border-b border-fd-border bg-fd-muted/20 px-6 py-28 md:py-32"
       >
         <div className="mx-auto max-w-6xl">
           <div className="max-w-3xl">
-            <p className="mb-3 text-xs font-medium uppercase tracking-[0.15em] text-fd-primary">
-              Why Schematex
-            </p>
+            <p className="mb-3 type-eye">04 / WHY</p>
             <h2
               id="why-heading"
               className="text-balance text-4xl font-semibold tracking-tight text-fd-foreground md:text-5xl"
             >
               Built for diagrams people sign off on.
             </h2>
+            <p className="mt-5 text-lg leading-relaxed text-fd-muted-foreground">
+              Generic flowchart tools can&apos;t draw professional diagrams.
+              Schematex treats each standard as a first-class citizen.
+            </p>
           </div>
 
-          <div className="mt-14 grid grid-cols-1 gap-10 md:grid-cols-3">
-            <Pillar
-              index="01"
-              title="Standards-compliant, not standards-inspired"
-              body="Genograms a genetic counselor accepts clinically. Ladder logic that maps 1:1 to IEC 61131-3. Cap tables that survive a Series A review. Each diagram is the published standard, in code."
+          <div className="mt-14 grid grid-cols-1 gap-5 md:grid-cols-3">
+            <StatCard
+              stat="20"
+              unit="FAMILIES"
+              title="Standards-compliant output"
+              body="Every diagram type implements a published spec — McGoldrick, IEC 61131-3, IEEE 315, NSGC, Newick. Domain experts accept it."
             />
-            <Pillar
-              index="02"
-              title="Zero runtime dependencies"
-              body="No D3, no dagre, no parser generator. Hand-written TypeScript, strict. SSR-ready pure SVG — works in Node, Edge, Bun, and the browser with no DOM required."
+            <StatCard
+              stat="0"
+              unit="RUNTIME DEPS"
+              title="Hand-written everything"
+              body="No D3, no dagre, no parser generators. Each diagram is an independent plugin with its own parser, layout, renderer."
             />
-            <Pillar
-              index="03"
-              title="LLM-native by design"
-              body="Small, consistent DSLs an LLM can learn from a single example. AI-readable error messages. Syntax hardened against common LLM failure modes — CJK quoting, nesting ambiguity, positional args."
+            <StatCard
+              stat="LLM"
+              unit="NATIVE DSL"
+              title="Designed so AI gets it right"
+              body="Minimal grammars an LLM can learn from one example. Copy a gallery DSL into ChatGPT or Claude and get a professional diagram back — first try."
             />
           </div>
         </div>
       </section>
 
-      {/* ────────────── COMPARISON ────────────── */}
+      {/* ────────────── POSITIONING (comparison table) ────────────── */}
       <section
         aria-labelledby="vs-heading"
         className="border-b border-fd-border px-6 py-28 md:py-32"
       >
-        <div className="mx-auto max-w-4xl">
-          <p className="mb-3 text-xs font-medium uppercase tracking-[0.15em] text-fd-muted-foreground">
-            A quiet clarification
-          </p>
+        <div className="mx-auto max-w-5xl">
+          <p className="mb-3 type-eye">05 / POSITIONING</p>
           <h2
             id="vs-heading"
-            className="text-balance text-3xl font-semibold leading-tight tracking-tight text-fd-foreground md:text-4xl"
+            className="text-balance text-4xl font-semibold leading-tight tracking-tight text-fd-foreground md:text-5xl"
           >
-            Not all diagrams are flowcharts.
+            <span style={{ background: 'var(--accent-soft)', padding: '0 6px' }}>
+              Not another flowchart library.
+            </span>
           </h2>
-          <p className="mt-6 max-w-2xl text-lg leading-relaxed text-fd-muted-foreground">
-            Mermaid is excellent for flowcharts, sequences, and class diagrams.
-            Schematex is for the diagrams generic tools can&apos;t draw —
-            because the symbols, the layout, and the grammar are part of the
-            standard itself.
+          <p
+            className="mt-5 max-w-2xl text-lg leading-relaxed"
+            style={{ color: 'var(--text-muted)' }}
+          >
+            <span style={{ background: 'var(--accent-soft)', padding: '0 4px' }}>
+              How Schematex compares to the tools people already reach for.
+            </span>
           </p>
 
-          <div className="mt-12 overflow-hidden rounded-2xl border border-fd-border">
-            <div className="grid grid-cols-3 border-b border-fd-border bg-fd-muted/30 text-xs font-medium uppercase tracking-wider text-fd-muted-foreground">
-              <div className="p-4">Diagram</div>
-              <div className="border-l border-fd-border p-4">
-                Generic flowchart tool
-              </div>
-              <div className="border-l border-fd-border p-4 text-fd-foreground">
-                Schematex
-              </div>
-            </div>
-            {[
-              {
-                k: 'Genogram',
-                m: 'Boxes labeled "male" / "female"',
-                s: 'McGoldrick shapes, emotional relationship lines, index marker',
-              },
-              {
-                k: 'Ladder logic',
-                m: 'Not supported',
-                s: 'IEC 61131-3 rails, Set/Reset coils, parallel branches, three-line labels',
-              },
-              {
-                k: 'Single-line diagram',
-                m: 'Not supported',
-                s: 'IEEE 315 symbols, voltage-tier hierarchy, ANSI device numbering',
-              },
-              {
-                k: 'Phylogenetic tree',
-                m: 'Generic DAG',
-                s: 'Newick / NHX roundtrip, clade coloring, proportional branch lengths',
-              },
-              {
-                k: 'Entity structure',
-                m: 'Org chart rectangles',
-                s: 'Entity-type shapes, jurisdictions, tier-aware ownership rollup',
-              },
-            ].map((row, i, arr) => (
-              <div
-                key={row.k}
-                className={`grid grid-cols-3 text-sm ${
-                  i < arr.length - 1 ? 'border-b border-fd-border' : ''
-                }`}
-              >
-                <div className="p-4 font-medium text-fd-foreground">
-                  {row.k}
-                </div>
-                <div className="border-l border-fd-border p-4 text-fd-muted-foreground">
-                  {row.m}
-                </div>
-                <div className="border-l border-fd-border p-4 text-fd-foreground">
-                  {row.s}
-                </div>
-              </div>
-            ))}
+          <div
+            className="mt-12 overflow-x-auto"
+            style={{
+              border: '1px solid var(--fill-muted)',
+              borderRadius: 'var(--r)',
+              background: 'var(--fill)',
+            }}
+          >
+            <table className="w-full min-w-[720px] font-mono text-[13px]">
+              <thead>
+                <tr
+                  className="text-left text-fd-muted-foreground"
+                  style={{ borderBottom: '1px solid var(--fill-muted)' }}
+                >
+                  <th className="px-5 py-3 font-normal">Tool</th>
+                  <th className="px-5 py-3 font-normal">Domain standards</th>
+                  <th className="px-5 py-3 font-normal">Deps</th>
+                  <th className="px-5 py-3 font-normal">Pricing</th>
+                  <th className="px-5 py-3 font-normal">LLM-shaped DSL</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  {
+                    tool: 'Mermaid',
+                    dom: 'generic flowcharts only',
+                    deps: 'dagre-d3',
+                    price: 'free',
+                    llm: '—',
+                  },
+                  {
+                    tool: 'GoJS',
+                    dom: 'isolated samples',
+                    deps: '—',
+                    price: '$7k+ / seat',
+                    llm: '—',
+                  },
+                  {
+                    tool: 'Schemdraw',
+                    dom: 'circuits only',
+                    deps: 'matplotlib',
+                    price: 'free',
+                    llm: 'Python only',
+                  },
+                  {
+                    tool: 'draw.io',
+                    dom: 'GUI — no published spec',
+                    deps: '—',
+                    price: 'free',
+                    llm: '—',
+                  },
+                ].map((row) => (
+                  <tr
+                    key={row.tool}
+                    style={{ borderBottom: '1px solid var(--fill-muted)' }}
+                    className="text-fd-muted-foreground"
+                  >
+                    <td className="px-5 py-3 text-fd-foreground">{row.tool}</td>
+                    <td className="px-5 py-3">{row.dom}</td>
+                    <td className="px-5 py-3">{row.deps}</td>
+                    <td className="px-5 py-3">{row.price}</td>
+                    <td className="px-5 py-3">{row.llm}</td>
+                  </tr>
+                ))}
+                <tr
+                  style={{
+                    background: 'var(--accent-soft)',
+                    color: 'var(--accent-ink)',
+                  }}
+                >
+                  <td className="px-5 py-3 font-semibold">
+                    <span aria-hidden className="mr-1.5" style={{ color: 'var(--accent)' }}>
+                      ▸
+                    </span>
+                    schematex
+                  </td>
+                  <td className="px-5 py-3">20 families · spec-cited</td>
+                  <td className="px-5 py-3">0</td>
+                  <td className="px-5 py-3">free</td>
+                  <td className="px-5 py-3 font-semibold">designed for it</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </section>
@@ -488,8 +717,8 @@ export default function HomePage() {
         className="border-b border-fd-border bg-fd-muted/20 px-6 py-28 md:py-32"
       >
         <div className="mx-auto max-w-4xl">
-          <p className="mb-3 text-xs font-medium uppercase tracking-[0.15em] text-fd-primary">
-            Quickstart
+          <p className="mb-3 type-eye">
+            06 / QUICKSTART
           </p>
           <h2
             id="install-heading"
@@ -564,7 +793,7 @@ export default function HomePage() {
             Start with a single string.
           </h2>
           <p className="mt-5 text-lg leading-relaxed text-fd-muted-foreground">
-            Open the playground to render any of 13 diagram types live — or
+            Open the playground to render any of 20 diagram types live — or
             browse the gallery for DSL you can copy, paste, and adapt.
           </p>
           <div className="mt-10 flex flex-wrap justify-center gap-3">
@@ -645,24 +874,39 @@ export default function HomePage() {
 // Small section-level components
 // ───────────────────────────────────────────────────────────────────
 
-function Pillar({
-  index,
+function StatCard({
+  stat,
+  unit,
   title,
   body,
 }: {
-  index: string;
+  stat: string;
+  unit: string;
   title: string;
   body: string;
 }) {
   return (
-    <div className="flex flex-col">
-      <div className="mb-4 font-mono text-xs tracking-wider text-fd-muted-foreground">
-        {index}
+    <div
+      className="flex flex-col p-8"
+      style={{
+        border: '1px solid var(--fill-muted)',
+        borderRadius: 'var(--r)',
+        background: 'var(--fill)',
+      }}
+    >
+      <div
+        className="text-[64px] font-semibold leading-none tracking-tight text-fd-foreground"
+        style={{ letterSpacing: '-0.03em' }}
+      >
+        {stat}
       </div>
-      <h3 className="text-lg font-semibold tracking-tight text-fd-foreground">
+      <div className="mt-3 font-mono text-[11px] tracking-[0.08em] text-fd-muted-foreground">
+        {unit}
+      </div>
+      <div className="mt-8 text-[16px] font-semibold tracking-tight text-fd-foreground">
         {title}
-      </h3>
-      <p className="mt-3 text-[15px] leading-relaxed text-fd-muted-foreground">
+      </div>
+      <p className="mt-2 text-[14px] leading-relaxed text-fd-muted-foreground">
         {body}
       </p>
     </div>

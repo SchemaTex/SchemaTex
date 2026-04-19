@@ -3,3 +3,196 @@
 @import 'fumadocs-ui/css/preset.css';
 
 @source '../node_modules/fumadocs-ui/dist/**/*.js';
+
+/* =========================================================================
+   Schematex design-system tokens (source of truth).
+   Mirrors schematex theme.ts / site.css — do not invent new grays or blues.
+   ========================================================================= */
+
+:root {
+  --bg: #ffffff;
+  --text: #0f172a;
+  --text-muted: #475569;
+  --stroke: #334155;
+  --fill: #ffffff;
+  --fill-muted: #f1f5f9;
+  --accent: #2563eb;
+  --positive: #059669;
+  --negative: #dc2626;
+  --neutral: #94a3b8;
+  --warn: #d97706;
+
+  --accent-soft: #eff6ff;
+  --accent-ink: #1e40af;
+  --accent-hover: #1d4ed8;
+
+  /* Category palette — 4 active clusters + reserved */
+  --cat-0: #2563eb;  /* Relationships */
+  --cat-1: #059669;  /* Causality */
+  --cat-2: #d97706;  /* Electrical */
+  --cat-3: #7c3aed;  /* Corporate */
+  --cat-4: #dc2626;
+  --cat-5: #0891b2;
+  --cat-6: #db2777;
+  --cat-7: #475569;
+
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --sans: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+  --r: 6px;
+  --r-sm: 4px;
+}
+
+.dark {
+  --bg: #1e1e2e;
+  --text: #cdd6f4;
+  --text-muted: #7f849c;
+  --stroke: #a6adc8;
+  --fill: #313244;
+  --fill-muted: #45475a;
+  --accent: #89b4fa;
+  --positive: #a6e3a1;
+  --negative: #f38ba8;
+  --neutral: #6c7086;
+  --warn: #fab387;
+
+  --accent-soft: #313a54;
+  --accent-ink: #b4befe;
+  --accent-hover: #74c7ec;
+
+  --cat-0: #89b4fa;
+  --cat-1: #a6e3a1;
+  --cat-2: #fab387;
+  --cat-3: #cba6f7;
+  --cat-4: #f38ba8;
+  --cat-5: #94e2d5;
+  --cat-6: #f5c2e7;
+  --cat-7: #6c7086;
+}
+
+/* =========================================================================
+   Bridge fumadocs tokens → DS tokens.
+   Anything using `text-fd-foreground`, `bg-fd-card`, `border-fd-border` etc.
+   now pulls from the DS palette, so existing markup aligns automatically.
+   Docs (fumadocs chrome) picks this up too — consistent site-wide.
+   ========================================================================= */
+
+:root,
+.dark {
+  --color-fd-background: var(--bg);
+  --color-fd-foreground: var(--text);
+  --color-fd-muted: var(--fill-muted);
+  --color-fd-muted-foreground: var(--text-muted);
+  --color-fd-card: var(--fill);
+  --color-fd-card-foreground: var(--text);
+  --color-fd-border: var(--fill-muted);
+  --color-fd-primary: var(--accent);
+  --color-fd-primary-foreground: #ffffff;
+  --color-fd-accent: var(--accent-soft);
+  --color-fd-accent-foreground: var(--accent-ink);
+}
+
+.dark {
+  --color-fd-primary-foreground: var(--bg);
+}
+
+/* =========================================================================
+   DS utilities — dot-grid background, syntax tokens, marquee rail, badge.
+   Use as `className="dot-grid"` etc. Avoid inventing one-off gradients.
+   ========================================================================= */
+
+.dot-grid {
+  background-image: radial-gradient(circle at 1px 1px, var(--fill-muted) 1px, transparent 1px);
+  background-size: 14px 14px;
+}
+.dark .dot-grid {
+  background-image: radial-gradient(circle at 1px 1px, var(--neutral) 1px, transparent 1px);
+}
+
+.tok-kw  { color: var(--accent); font-weight: 500; }
+.tok-str { color: var(--positive); }
+.tok-num { color: var(--warn); }
+.tok-op  { color: var(--text-muted); }
+
+/* Marquee — used by the standards rail on the homepage. */
+@keyframes schematex-rail {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.marquee-track {
+  display: flex;
+  gap: 48px;
+  white-space: nowrap;
+  width: max-content;
+  animation: schematex-rail 60s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track { animation: none; }
+}
+
+/* Eyebrow — mono 12px with tracking, used for section labels. */
+.type-eye {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+
+/* Small mono badge — used for live stats (stars, version) and standard tags. */
+.ds-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--mono);
+  font-size: 12px;
+  padding: 3px 8px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--fill-muted);
+  color: var(--text-muted);
+  background: var(--fill);
+  font-weight: 400;
+}
+.ds-badge.accent {
+  border-color: var(--accent);
+  color: var(--accent-ink);
+  background: var(--accent-soft);
+}
+
+/* Playground mini buttons — mono, flat, with primary variant + kbd hint. */
+.pg-mini {
+  font-family: var(--mono);
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--fill-muted);
+  color: var(--text-muted);
+  background: var(--bg);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: color .15s ease, border-color .15s ease;
+}
+.pg-mini:hover {
+  color: var(--text);
+  border-color: var(--stroke);
+}
+.pg-mini-primary {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+  cursor: default;
+}
+.pg-mini-primary:hover {
+  color: #fff;
+  border-color: var(--accent);
+}
+.pg-kbd {
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 1px 5px;
+  border: 1px solid currentColor;
+  border-radius: var(--r-sm);
+  opacity: 0.7;
+  margin-left: 2px;
+}

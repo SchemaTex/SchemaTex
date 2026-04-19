@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Schematex — Text to SVG for domain diagrams',
     description:
-      'Like Mermaid, but for the diagrams Mermaid forgot. 13+ standards-compliant diagram types.',
+      'Like Mermaid, but for the diagrams Mermaid forgot. 20 standards-compliant diagram types.',
     url: 'https://schematex.dev',
     siteName: 'Schematex',
     type: 'website',

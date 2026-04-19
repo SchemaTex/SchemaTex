@@ -1,12 +1,13 @@
 import Link from 'next/link';
 import type { ReactNode } from 'react';
+import { Logo } from '@/components/Logo';
 
 export default function AppLayout({ children }: { children: ReactNode }) {
   return (
     <div className="flex h-screen flex-col">
       <header className="flex h-10 shrink-0 items-center gap-4 border-b border-fd-border bg-fd-background px-4 text-sm">
         <Link href="/" className="font-semibold tracking-tight text-fd-foreground">
-          Schematex
+          <Logo size={16} />
         </Link>
         <span className="text-fd-muted-foreground">/</span>
         <span className="text-fd-muted-foreground">Playground</span>

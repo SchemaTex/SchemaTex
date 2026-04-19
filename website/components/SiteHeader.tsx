@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
+import { Logo } from '@/components/Logo';
+import { GithubStarButton } from '@/components/GithubStarButton';
 
 const NAV_LINKS = [
   { label: 'Docs', href: '/docs' },
@@ -12,7 +14,7 @@ const NAV_LINKS = [
   { label: 'Playground', href: '/playground' },
 ];
 
-export function SiteHeader() {
+export function SiteHeader({ version, stars }: { version?: string; stars?: number }) {
   const pathname = usePathname() ?? '/';
   const [open, setOpen] = useState(false);
 
@@ -20,7 +22,7 @@ export function SiteHeader() {
     <header className="sticky top-0 z-40 border-b border-fd-border bg-fd-background/80 backdrop-blur">
       <div className="mx-auto flex h-14 max-w-6xl items-center gap-6 px-6">
         <Link href="/" className="font-bold tracking-tight text-fd-foreground">
-          Schematex
+          <Logo size={18} />
         </Link>
         <nav className="hidden items-center gap-1 text-sm md:flex">
           {NAV_LINKS.map((l) => {
@@ -55,20 +57,11 @@ export function SiteHeader() {
             <svg viewBox="0 0 780 250" aria-hidden className="h-2.5 w-auto fill-current">
               <path d="M240 250V0H0v250h240zm-160-40V40h80v130h40V40h40v170H80zM640 0v250h140V0H640zm100 170h-40V40h40v130zM280 0v250h160V40h40v210h40V40h40v210h40V0H280zm120 170h-40V40h40v130z"/>
             </svg>
-            npm
+            {version ? `v${version}` : 'npm'}
           </a>
-          <a
-            href="https://github.com/victorzhrn/Schematex"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hidden items-center gap-1.5 rounded-md px-2.5 py-1.5 text-sm text-fd-muted-foreground transition hover:text-fd-foreground sm:inline-flex"
-            aria-label="GitHub"
-          >
-            <svg viewBox="0 0 24 24" aria-hidden className="size-4 fill-current">
-              <path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.52-1.33-1.28-1.68-1.28-1.68-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.2 1.77 1.2 1.03 1.77 2.7 1.26 3.35.96.1-.75.4-1.26.73-1.55-2.55-.3-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.2-3.1-.12-.3-.52-1.48.11-3.08 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.79 0c2.21-1.49 3.18-1.18 3.18-1.18.63 1.6.23 2.78.11 3.08.75.81 1.2 1.84 1.2 3.1 0 4.42-2.69 5.39-5.25 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5Z" />
-            </svg>
-            GitHub
-          </a>
+          <div className="hidden sm:inline-flex">
+            <GithubStarButton stars={stars ?? 0} size="sm" />
+          </div>
           <ThemeToggle />
           <button
             type="button"

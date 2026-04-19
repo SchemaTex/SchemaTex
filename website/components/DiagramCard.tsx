@@ -1,31 +1,65 @@
 import Link from 'next/link';
 import type { ReactNode } from 'react';
+import { DiagramIcon, type DiagramType } from '@/components/DiagramIcon';
 
 interface DiagramCardProps {
   title: string;
   blurb: string;
   href: string;
   preview: ReactNode;
-  icon?: string;
+  icon?: DiagramType;
+  standard?: string;
 }
 
-export function DiagramCard({ title, blurb, href, preview, icon }: DiagramCardProps) {
+export function DiagramCard({ title, blurb, href, preview, icon, standard }: DiagramCardProps) {
   return (
     <Link
       href={href}
-      className="group flex flex-col overflow-hidden rounded-xl border border-fd-border bg-fd-card transition-all hover:-translate-y-0.5 hover:border-fd-primary hover:shadow-lg"
+      className="group flex flex-col overflow-hidden bg-fd-card transition hover:border-[color:var(--stroke)]"
+      style={{
+        border: '1px solid var(--fill-muted)',
+        borderRadius: 'var(--r)',
+      }}
     >
-      <div className="flex aspect-[4/3] items-center justify-center overflow-hidden bg-white p-4">
+      {/* Meta bar — DS mono chrome */}
+      <div
+        className="flex items-center gap-2 px-3 py-2 font-mono text-xs text-fd-muted-foreground"
+        style={{ borderBottom: '1px solid var(--fill-muted)' }}
+      >
+        {icon && (
+          <DiagramIcon
+            type={icon}
+            size={14}
+            className="shrink-0 text-fd-muted-foreground"
+          />
+        )}
+        <span className="text-fd-foreground">{title}</span>
+        {standard && (
+          <>
+            <span className="opacity-40">·</span>
+            <span style={{ color: 'var(--accent)' }}>{standard}</span>
+          </>
+        )}
+      </div>
+
+      {/* Stage — dot-grid */}
+      <div className="dot-grid flex aspect-[4/3] items-center justify-center overflow-hidden p-4">
         <div className="[&_svg]:max-h-full [&_svg]:max-w-full">{preview}</div>
       </div>
-      <div className="border-t border-fd-border p-4">
-        <div className="mb-1 flex items-center gap-2 text-fd-foreground">
-          {icon && <span className="text-xl leading-none">{icon}</span>}
-          <h3 className="font-semibold">{title}</h3>
-        </div>
-        <p className="text-sm text-fd-muted-foreground">{blurb}</p>
-        <span className="mt-3 inline-block text-sm font-medium text-fd-primary opacity-0 transition group-hover:opacity-100">
-          Explore →
+
+      {/* Blurb */}
+      <div
+        className="p-3.5"
+        style={{ borderTop: '1px solid var(--fill-muted)' }}
+      >
+        <p className="text-[13px] leading-relaxed text-fd-muted-foreground">
+          {blurb}
+        </p>
+        <span
+          className="mt-2 inline-block font-mono text-xs transition-opacity group-hover:opacity-100"
+          style={{ color: 'var(--accent)', opacity: 0.6 }}
+        >
+          open →
         </span>
       </div>
     </Link>

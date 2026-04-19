@@ -7,11 +7,13 @@ export const heroDefault = `genogram "The Smiths"
   alice -close- mary
   alice -hostile- bob`;
 
+import type { DiagramType } from '@/components/DiagramIcon';
+
 interface GalleryExample {
   slug: string;
   title: string;
   blurb: string;
-  icon: string;
+  icon: DiagramType;
   dsl: string;
   fallback: string;
 }
@@ -20,7 +22,7 @@ export const galleryExamples: GalleryExample[] = [
   {
     slug: 'genogram',
     title: 'Genogram',
-    icon: '👪',
+    icon: 'genogram',
     blurb: 'Family-systems therapy. McGoldrick standard.',
     dsl: `genogram "Family"
   j [male, 1950]
@@ -33,7 +35,7 @@ export const galleryExamples: GalleryExample[] = [
   {
     slug: 'ecomap',
     title: 'Ecomap',
-    icon: '🌐',
+    icon: 'ecomap',
     blurb: 'Family in social context. Hartman 1978.',
     dsl: `ecomap "Family"
   center: f [label: "Family"]
@@ -48,7 +50,7 @@ export const galleryExamples: GalleryExample[] = [
   {
     slug: 'pedigree',
     title: 'Pedigree',
-    icon: '🧬',
+    icon: 'pedigree',
     blurb: 'Clinical genetics. Standard nomenclature.',
     dsl: `pedigree "BRCA"
   I-1 [male, unaffected]
@@ -62,7 +64,7 @@ export const galleryExamples: GalleryExample[] = [
   {
     slug: 'phylo',
     title: 'Phylogenetic tree',
-    icon: '🌿',
+    icon: 'phylo',
     blurb: 'Evolutionary biology. Newick + NHX.',
     dsl: `phylo "Tree"
   newick: "((A:0.1,B:0.12):0.05,(C:0.15,D:0.18):0.06);"`,
@@ -71,7 +73,7 @@ export const galleryExamples: GalleryExample[] = [
   {
     slug: 'sociogram',
     title: 'Sociogram',
-    icon: '🕸',
+    icon: 'sociogram',
     blurb: 'Social network analysis. Moreno sociometry.',
     dsl: `sociogram "Group"
   a; b; c; d
@@ -84,7 +86,7 @@ export const galleryExamples: GalleryExample[] = [
   {
     slug: 'timing',
     title: 'Timing diagram',
-    icon: '⏱',
+    icon: 'timing',
     blurb: 'Digital waveforms. WaveDrom-compatible.',
     dsl: `timing "SPI"
 CLK:   pppppppp
@@ -95,7 +97,7 @@ MOSI:  x=======`,
   {
     slug: 'logic',
     title: 'Logic gate',
-    icon: '🔌',
+    icon: 'logic',
     blurb: 'Combinational logic. IEEE 91 / IEC 60617.',
     dsl: `logic "Adder"
 input A, B
@@ -107,7 +109,7 @@ C = AND(A, B)`,
   {
     slug: 'circuit',
     title: 'Circuit schematic',
-    icon: '⚡',
+    icon: 'circuit',
     blurb: 'SPICE netlist or positional DSL.',
     dsl: `circuit "CE Amp" netlist
 V1 vcc 0 9V
@@ -120,7 +122,7 @@ Re e 0 1k`,
   {
     slug: 'ladder',
     title: 'Ladder logic',
-    icon: '🪜',
+    icon: 'ladder',
     blurb: 'PLC programs. IEC 61131-3 / Allen-Bradley.',
     dsl: `ladder "Motor"
 rung 1 "Start":
@@ -132,7 +134,7 @@ rung 1 "Start":
   {
     slug: 'sld',
     title: 'Single-line diagram',
-    icon: '⚡',
+    icon: 'sld',
     blurb: 'Power one-line. IEEE 315.',
     dsl: `sld "Substation"
 utility = utility [label: "Grid 138 kV"]
@@ -151,7 +153,7 @@ brk -> feeder`,
   {
     slug: 'entity',
     title: 'Entity structure',
-    icon: '🏢',
+    icon: 'entity',
     blurb: 'Corporate ownership & cap tables.',
     dsl: `entity-structure "Holdings"
 entity parent "Acme Inc." corp@DE
@@ -164,7 +166,7 @@ parent -> fund : 60%`,
   {
     slug: 'block',
     title: 'Block diagram',
-    icon: '📦',
+    icon: 'block',
     blurb: 'Signal-flow with feedback loops.',
     dsl: `blockdiagram "Control"
 C = block("C(s)") [role: controller]
