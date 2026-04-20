@@ -4,9 +4,9 @@ import { galleryExamples, heroDefault } from '@/lib/gallery-data';
 import Link from 'next/link';
 
 export const metadata = {
-  title: 'Playground — edit DSL, see SVG live',
+  title: 'Playground — paste LLM output, see SVG live',
   description:
-    'Interactive Schematex playground. Edit the text DSL on the left, see the rendered SVG diagram on the right. Works for all 20 diagram types.',
+    'Interactive Schematex playground. Edit the text DSL on the left, see the rendered SVG diagram on the right. Made for AI — paste ChatGPT or Claude output, get a professional diagram back. Works for all 20 diagram types.',
 };
 
 const CLUSTER_COLOR: Record<string, string> = {
@@ -48,7 +48,8 @@ export default async function PlaygroundPage({
         </h1>
         <p className="text-[15px]" style={{ color: 'var(--text-muted)', maxWidth: 640 }}>
           Edit the DSL on the left. Diagram re-renders on the right. Pick a preset below
-          to start from a real example, or share your current source as a permalink.
+          to start from a real example, or paste output from ChatGPT / Claude — the DSL
+          is designed for LLMs to emit on the first try.
         </p>
       </div>
 

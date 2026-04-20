@@ -1,6 +1,7 @@
 <p align="center">
-  <strong>SchemaTex</strong><br>
-  <em>Standards-as-code for professional diagrams.</em>
+  <strong>Schematex</strong><br>
+  <em>Every diagram a doctor, engineer, or lawyer would actually use.</em><br>
+  <em>Free. Fully open source. Made for AI.</em>
 </p>
 
 <p align="center">
@@ -24,7 +25,7 @@
 
 ---
 
-**SchemaTex** is the open-source rendering engine for diagrams that follow real industry standards. 20 diagram families across five domains:
+**Schematex** is the open-source rendering engine for the diagrams professionals actually use — medical, electrical, legal, and analytical. 20 diagram families across five domains:
 
 - 👪 **Relationships** — genograms, ecomaps, pedigrees, sociograms, phylogenetic trees
 - ⚡ **Electrical & Industrial** — ladder logic, single-line diagrams, circuit schematics, logic gates, timing, block diagrams
@@ -32,9 +33,9 @@
 - 🐟 **Causality & Analysis** — fishbone / Ishikawa, decision trees (Howard-Raiffa EV · CART/sklearn · taxonomy)
 - 📅 **Timelines** — proportional / equidistant / log axis · swimlane · gantt · lollipop · BC dates · geological Ma scale
 
-Mermaid draws generic flowcharts. SchemaTex draws the diagrams your domain experts actually sign off on — a genogram a genetic counselor accepts clinically, ladder logic that maps 1:1 to IEC 61131-3, a cap table that survives a Series A review.
+Mermaid draws generic flowcharts. Schematex draws the diagrams doctors, engineers, and lawyers actually use — a genogram a genetic counselor accepts clinically, ladder logic that maps 1:1 to IEC 61131-3, a cap table that survives a Series A review.
 
-⚡ **Zero runtime dependencies** · 📐 **10+ industry standards** · 🤖 **LLM-native DSL** · 🌱 **SSR-ready pure SVG**
+🆓 **Free & fully open source** · 📐 **10+ industry standards** · 🤖 **Made for AI** · 🌱 **SSR-ready pure SVG · Zero deps**
 
 ## Install
 

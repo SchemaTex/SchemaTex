@@ -13,9 +13,9 @@ import { GalleryGrid } from '@/components/GalleryGrid';
 import { GalleryFilterBar } from '@/components/GalleryFilterBar';
 
 export const metadata: Metadata = {
-  title: 'Gallery — 20 real-world diagrams · Schematex',
+  title: 'Gallery — the diagrams doctors, engineers, and lawyers actually use',
   description:
-    '20 real-world Schematex diagrams across healthcare, industrial, legal, education, and research. Every example follows a published standard — copy the DSL, open in playground, ship.',
+    '20 real-world Schematex diagrams across healthcare, industrial, legal, education, and research. Every example follows a published standard — copy the DSL, open in playground, ship. Free, fully open source, made for AI.',
   alternates: { canonical: 'https://schematex.dev/gallery' },
 };
 
@@ -72,11 +72,12 @@ export default async function GalleryPage({
             className="text-3xl font-semibold"
             style={{ color: 'var(--text)', letterSpacing: '-0.02em' }}
           >
-            Every diagram, in the wild.
+            The diagrams doctors, engineers, and lawyers actually use.
           </h1>
           <p className="mt-2 max-w-xl text-sm" style={{ color: 'var(--text-muted)' }}>
-            20 real-world Schematex diagrams. Every one follows a published standard —
-            copy the DSL, open in playground, ship.
+            20 real-world Schematex diagrams — clinical genograms, IEC 61131-3 ladder
+            logic, NSGC pedigrees, cap tables, and more. Every one follows a published
+            standard. Copy the DSL, open in playground, ship.
           </p>
         </div>
       </section>

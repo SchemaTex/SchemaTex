@@ -7,20 +7,20 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   metadataBase: new URL('https://schematex.js.org'),
   title: {
-    default: 'Schematex — Text to SVG for domain diagrams',
+    default: 'Schematex — Diagrams doctors, engineers, and lawyers actually use',
     template: '%s · Schematex',
   },
   description:
-    'Zero-dependency TypeScript library. Compile plain text into standards-compliant SVG: genograms, ecomaps, pedigrees, phylogenetic trees, sociograms, ladder logic, single-line diagrams, and more.',
+    'Every diagram a doctor, engineer, or lawyer would actually use. Free. Fully open source. Made for AI. 20 industry-standard diagrams (genogram, pedigree, ladder logic, SLD, phylo, fishbone, entity structure, ...) from a text DSL. Pure SVG, zero dependencies.',
   icons: {
     icon: [
       { url: '/favicon.svg', type: 'image/svg+xml' },
     ],
   },
   openGraph: {
-    title: 'Schematex — Text to SVG for domain diagrams',
+    title: 'Schematex — Diagrams doctors, engineers, and lawyers actually use',
     description:
-      'Like Mermaid, but for the diagrams Mermaid forgot. 20 standards-compliant diagram types.',
+      'Free. Fully open source. Made for AI. 20 industry-standard diagrams from a text DSL — the ones Mermaid can\'t draw.',
     url: 'https://schematex.js.org',
     siteName: 'Schematex',
     type: 'website',
@@ -29,14 +29,14 @@ export const metadata: Metadata = {
         url: '/opengraph-image',
         width: 1200,
         height: 630,
-        alt: 'Schematex — Standards-as-code for professional diagrams',
+        alt: 'Schematex — Every diagram a doctor, engineer, or lawyer would actually use',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Schematex',
-    description: 'Text to SVG for domain diagrams.',
+    title: 'Schematex — Diagrams doctors, engineers, and lawyers actually use',
+    description: 'Free. Fully open source. Made for AI. 20 industry-standard diagrams from a text DSL.',
   },
 };
 

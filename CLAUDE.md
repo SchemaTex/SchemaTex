@@ -4,11 +4,13 @@
 
 ## What is Schematex?
 
-**Tagline: "Standards-as-code for professional diagrams."**
+**Tagline:**
+> *Every diagram a doctor, engineer, or lawyer would actually use.*
+> *Free. Fully open source. Made for AI.*
 
 开源 TypeScript 库：Text DSL → SVG。20 diagram families — genogram / ecomap / pedigree / phylo / sociogram / timing / logic-gate / circuit / ladder / block / SLD / entity-structure / fishbone / decision tree / venn / timeline / …
 
-**三大价值支柱：** (1) Standards-compliant（每种图对应真实发布标准：McGoldrick / IEC 61131-3 / IEEE 315 / Newick 等）(2) Zero runtime dependency（无 D3/dagre/parser generator）(3) LLM-native by design（DSL 为 LLM 生成而设计）。
+**三大价值支柱：** (1) **Diagrams professionals actually use**（每种图对应真实发布标准：McGoldrick / IEC 61131-3 / IEEE 315 / Newick 等；医生/工程师/律师本来就在画，让他们在代码里也画对）(2) **Free & fully open source**（AGPL-3.0，无 D3/dagre/parser generator，KB 级 bundle）(3) **Made for AI**（DSL 为 LLM 生成而设计：CJK 引号、嵌套歧义、AI-readable 错误）。
 
 **四大 domain cluster：** 👪 Relationships · ⚡ Electrical & Industrial · 🏢 Corporate/Legal · 🐟 Causality/Analysis。详见 `docs/reference/00-OVERVIEW.md`。
 

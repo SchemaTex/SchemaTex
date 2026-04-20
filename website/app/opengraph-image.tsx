@@ -82,17 +82,36 @@ export default function OGImage() {
           </div>
         </div>
 
-        {/* tagline */}
+        {/* tagline — two lines, Jobs style */}
         <div
           style={{
             marginTop: 40,
-            fontSize: 26,
-            color: 'rgba(255,255,255,0.75)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 10,
             fontFamily: 'ui-sans-serif, system-ui, -apple-system, sans-serif',
-            letterSpacing: '0.01em',
           }}
         >
-          Standards-as-code for professional diagrams
+          <div
+            style={{
+              fontSize: 32,
+              fontWeight: 600,
+              color: 'rgba(255,255,255,0.95)',
+              letterSpacing: '-0.005em',
+              lineHeight: 1.15,
+            }}
+          >
+            Every diagram a doctor, engineer, or lawyer would actually use.
+          </div>
+          <div
+            style={{
+              fontSize: 22,
+              color: 'rgba(255,255,255,0.7)',
+              letterSpacing: '0.01em',
+            }}
+          >
+            Free. Fully open source. Made for AI.
+          </div>
         </div>
       </div>
     ),

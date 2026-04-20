@@ -1,11 +1,16 @@
 ---
 title: Introduction
-description: Schematex compiles plain text into standards-compliant SVG diagrams. 20 diagram types across relationship, electrical, and business domains.
+description: Every diagram a doctor, engineer, or lawyer would actually use. Free. Fully open source. Made for AI. 20 industry-standard diagrams from a text DSL.
 ---
 
-**Schematex** is a zero-dependency TypeScript library that turns a small text DSL
-into standards-compliant SVG diagrams. Each diagram type implements a *published
-domain specification* — not our own invention.
+**Schematex** renders every diagram a doctor, engineer, or lawyer would actually
+use — clinical genograms, IEC 61131-3 ladder logic, NSGC pedigrees, IEEE 315
+single-line diagrams, cap tables, and 15 more. A tiny text DSL in; standards-compliant
+SVG out.
+
+**Free. Fully open source. Made for AI.** AGPL-3.0, zero runtime dependencies,
+and a DSL designed around how LLMs actually write text — paste output from
+ChatGPT or Claude and get a professional diagram back on the first try.
 
 ## What can I draw?
 
@@ -58,9 +63,10 @@ Layout algorithms are domain-specific by design — genogram uses a generation-b
 
 ## Design principles
 
-1. **Zero runtime dependencies** — no D3, no dagre, no parser generators. Everything is hand-written. Small bundle, no supply-chain risk.
-2. **Semantic SVG output** — every SVG includes `<title>` and `<desc>` for accessibility, CSS classes for theming, and `data-*` attributes for interactivity.
-3. **Standards compliance** — each diagram type implements a published domain specification: McGoldrick 2020 (genogram), Hartman 1978 (ecomap), Bennett 2022 (pedigree), Moreno 1934 (sociogram), IEEE Std 91 (logic gates), IEC 61131-3 (ladder logic), IEEE 315 (SLD), and more.
+1. **Diagrams professionals actually use** — each diagram type implements a published domain specification: McGoldrick 2020 (genogram), Hartman 1978 (ecomap), Bennett 2022 (pedigree), Moreno 1934 (sociogram), IEEE Std 91 (logic gates), IEC 61131-3 (ladder logic), IEEE 315 (SLD), and more.
+2. **Free & fully open source** — AGPL-3.0, zero runtime dependencies (no D3, no dagre, no parser generators), everything hand-written. Small bundle, no supply-chain risk. Commercial license available for closed-source use.
+3. **Made for AI** — the DSL is designed around how LLMs actually write text (CJK quotes, nesting ambiguity, AI-readable errors). Paste output from ChatGPT or Claude and get a professional diagram back on the first try.
+4. **Semantic SVG output** — every SVG includes `<title>` and `<desc>` for accessibility, CSS classes for theming, and `data-*` attributes for interactivity.
 
 ---
 
