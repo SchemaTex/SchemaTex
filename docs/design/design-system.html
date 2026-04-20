@@ -1,0 +1,2727 @@
+<!doctype html>
+<html lang="en" data-theme="default">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Schematex — Design System</title>
+<link rel="stylesheet" href="site/site.css">
+<style>
+  /* Page-local additions. Nothing here should invent base tokens —
+     it only composes tokens from theme.ts into reference surfaces. */
+  .ds-wrap { max-width: 1200px; margin: 0 auto; padding: 48px 32px 96px; }
+
+  .ds-hd {
+    border-bottom: 1px solid var(--fill-muted);
+    padding-bottom: 32px; margin-bottom: 48px;
+  }
+  .ds-hd .eye {
+    font-family: var(--mono); font-size: 12px; color: var(--text-muted);
+    letter-spacing: 0.04em; margin-bottom: 12px;
+  }
+  .ds-hd h1 {
+    font-size: 40px; letter-spacing: -0.02em; font-weight: 600;
+    margin: 0 0 12px; line-height: 1.08;
+  }
+  .ds-hd p { color: var(--text-muted); max-width: 640px; margin: 0; }
+
+  .ds-toc {
+    display: flex; gap: 22px; flex-wrap: wrap;
+    font-family: var(--mono); font-size: 12px;
+    color: var(--text-muted); margin-top: 22px;
+  }
+  .ds-toc a { color: var(--text-muted); }
+  .ds-toc a:hover { color: var(--accent); }
+  .ds-toc .num { color: var(--accent); margin-right: 6px; }
+
+  .ds-section {
+    padding: 56px 0;
+    border-bottom: 1px solid var(--fill-muted);
+  }
+  .ds-section:last-child { border-bottom: none; }
+  .ds-section h2 {
+    font-size: 28px; font-weight: 600;
+    letter-spacing: -0.02em; margin: 0 0 6px;
+    display: flex; align-items: baseline; gap: 14px;
+  }
+  .ds-section h2 .num {
+    font-family: var(--mono); font-size: 13px;
+    color: var(--accent); font-weight: 400;
+  }
+  .ds-section .lede { color: var(--text-muted); margin: 0 0 28px; max-width: 640px; }
+
+  .ds-h3 {
+    font-family: var(--mono); font-size: 12px;
+    color: var(--text-muted); letter-spacing: 0.04em;
+    margin: 28px 0 12px; text-transform: uppercase;
+  }
+
+  /* ---- Theme swatches ---- */
+  .theme-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  .theme-card {
+    border: 1px solid var(--fill-muted);
+    border-radius: var(--r);
+    overflow: hidden;
+  }
+  .theme-card .th-head {
+    display: flex; align-items: baseline; gap: 10px;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--fill-muted);
+    font-family: var(--mono); font-size: 13px;
+  }
+  .theme-card .th-head .nm { color: var(--text); }
+  .theme-card .th-head .ct { color: var(--text-muted); font-size: 11px; margin-left: auto; }
+  .theme-preview {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 1px; background: var(--fill-muted);
+  }
+  .theme-preview > div {
+    aspect-ratio: 1;
+    display: flex; align-items: end; padding: 6px;
+    font-family: var(--mono); font-size: 9px;
+    color: var(--text);
+  }
+  .theme-preview > div.light-on-dark { color: #fff; text-shadow: 0 0 2px rgba(0,0,0,0.3); }
+
+  /* ---- Token tables ---- */
+  .tok-table {
+    width: 100%; border-collapse: collapse;
+    font-family: var(--mono); font-size: 12px;
+    border: 1px solid var(--fill-muted);
+    border-radius: var(--r); overflow: hidden;
+  }
+  .tok-table th, .tok-table td {
+    padding: 10px 14px; text-align: left;
+    border-bottom: 1px solid var(--fill-muted);
+    vertical-align: middle;
+  }
+  .tok-table th {
+    background: var(--fill-muted);
+    font-weight: 500; color: var(--text-muted);
+    font-size: 11px; letter-spacing: 0.04em;
+  }
+  .tok-table tr:last-child td { border-bottom: none; }
+  .tok-table .sw {
+    display: inline-block; width: 20px; height: 20px;
+    border-radius: 3px;
+    border: 1px solid var(--fill-muted);
+    vertical-align: middle;
+    margin-right: 10px;
+  }
+  .tok-table .hex { color: var(--text-muted); }
+  .tok-table .use { color: var(--text-muted); }
+  .tok-table .reserved { opacity: 0.55; }
+  .tok-table .reserved td:first-child::before {
+    content: 'reserved';
+    display: inline-block;
+    font-size: 9px; padding: 1px 5px;
+    border: 1px dashed var(--neutral);
+    color: var(--text-muted);
+    border-radius: 3px;
+    margin-right: 10px;
+  }
+
+  /* ---- Category palette ---- */
+  .cat-strip {
+    display: grid; grid-template-columns: repeat(12, 1fr);
+    border: 1px solid var(--fill-muted);
+    border-radius: var(--r); overflow: hidden;
+  }
+  .cat-strip > div {
+    aspect-ratio: 1 / 1.4;
+    display: flex; flex-direction: column;
+    justify-content: flex-end; padding: 8px;
+    font-family: var(--mono); font-size: 10px;
+    color: #fff;
+    text-shadow: 0 0 2px rgba(0,0,0,0.4);
+    position: relative;
+  }
+  .cat-strip > div .slot { opacity: 0.8; font-size: 9px; }
+  .cat-strip > div.is-reserved::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: repeating-linear-gradient(
+      45deg,
+      transparent 0 6px,
+      rgba(255,255,255,0.18) 6px 7px
+    );
+    pointer-events: none;
+  }
+  .cat-strip > div.is-reserved::after {
+    content: 'reserved';
+    position: absolute; top: 6px; left: 6px;
+    font-size: 8px; opacity: 0.9;
+  }
+
+  /* ---- Type scale ---- */
+  .type-row {
+    display: grid; grid-template-columns: 140px 1fr 140px;
+    align-items: baseline; gap: 24px;
+    padding: 20px 0;
+    border-top: 1px dashed var(--fill-muted);
+  }
+  .type-row:first-child { border-top: none; }
+  .type-row .meta {
+    font-family: var(--mono); font-size: 11px;
+    color: var(--text-muted);
+  }
+  .type-row .meta strong { color: var(--text); font-weight: 500; }
+  .type-row .spec {
+    font-family: var(--mono); font-size: 11px;
+    color: var(--text-muted);
+    text-align: right;
+  }
+  .type-sample { color: var(--text); }
+
+  /* ---- Stroke demo ---- */
+  .stroke-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  .stroke-card {
+    border: 1px solid var(--fill-muted);
+    border-radius: var(--r);
+    padding: 20px;
+  }
+  .stroke-card .demo {
+    height: 60px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 12px;
+  }
+  .stroke-card .label {
+    font-family: var(--mono); font-size: 12px;
+    display: flex; justify-content: space-between;
+  }
+  .stroke-card .label .nm { color: var(--text); }
+  .stroke-card .label .sp { color: var(--text-muted); }
+  .stroke-card .use {
+    font-size: 12px; color: var(--text-muted);
+    margin-top: 6px;
+  }
+
+  /* ---- Motif cards ---- */
+  .motif-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--fill-muted);
+    border: 1px solid var(--fill-muted);
+    border-radius: var(--r); overflow: hidden;
+  }
+  .motif {
+    background: var(--fill);
+    padding: 20px;
+  }
+  .motif .demo {
+    height: 72px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 14px;
+  }
+  .motif h4 {
+    font-size: 14px; font-weight: 500;
+    margin: 0 0 4px;
+  }
+  .motif p {
+    font-size: 12px; color: var(--text-muted);
+    margin: 0; line-height: 1.55;
+  }
+
+  /* ---- Spacing ruler ---- */
+  .spacing-ruler {
+    display: flex; align-items: flex-end;
+    gap: 0;
+    padding: 24px;
+    border: 1px solid var(--fill-muted);
+    border-radius: var(--r);
+    background: var(--fill);
+    overflow-x: auto;
+  }
+  .spacing-ruler .block {
+    margin-right: 24px; text-align: center;
+    display: flex; flex-direction: column; align-items: center;
+  }
+  .spacing-ruler .bar {
+    background: var(--accent);
+    height: 40px;
+  }
+  .spacing-ruler .lbl {
+    font-family: var(--mono); font-size: 11px;
+    color: var(--text-muted); margin-top: 6px;
+  }
+
+  /* ---- Do / don't ---- */
+  .dod-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--fill-muted);
+    border: 1px solid var(--fill-muted);
+    border-radius: var(--r); overflow: hidden;
+  }
+  .dod {
+    background: var(--fill); padding: 22px 26px;
+  }
+  .dod h4 {
+    display: flex; align-items: center; gap: 8px;
+    font-family: var(--mono); font-size: 12px;
+    letter-spacing: 0.04em; font-weight: 500;
+    margin: 0 0 16px; color: var(--text-muted);
+  }
+  .dod h4 .mark {
+    width: 18px; height: 18px; border-radius: 3px;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-family: var(--sans); font-size: 12px; font-weight: 600;
+    color: #fff;
+  }
+  .dod .do-mark    { background: var(--positive); }
+  .dod .dont-mark  { background: var(--negative); }
+  .dod ul { list-style: none; padding: 0; margin: 0; }
+  .dod li {
+    padding: 10px 0;
+    border-top: 1px dashed var(--fill-muted);
+    font-size: 14px; color: var(--text);
+    line-height: 1.5;
+  }
+  .dod li:first-child { border-top: none; }
+
+  /* ---- Checklist ---- */
+  .chk { display: flex; flex-direction: column; gap: 8px; }
+  .chk li {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 12px 14px;
+    border: 1px solid var(--fill-muted);
+    border-radius: var(--r);
+    font-size: 14px; line-height: 1.5;
+    list-style: none;
+  }
+  .chk li .box {
+    width: 16px; height: 16px; margin-top: 2px; flex-shrink: 0;
+    border: 1.5px solid var(--stroke);
+    border-radius: 3px;
+  }
+
+  /* ================= Branding ================= */
+  .brand-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  .brand-card {
+    border: 1px solid var(--fill-muted);
+    border-radius: var(--r);
+    overflow: hidden;
+    background: var(--fill);
+  }
+  .brand-card .bc-head {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--fill-muted);
+    font-family: var(--mono); font-size: 11px;
+    color: var(--text-muted); letter-spacing: 0.04em;
+  }
+  .brand-card .bc-head .nm { color: var(--text); }
+  .brand-card .bc-stage {
+    height: 140px;
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px;
+    background: var(--bg);
+  }
+  .brand-card.on-accent .bc-stage { background: var(--accent); }
+  .brand-card.on-ink    .bc-stage { background: var(--text); }
+  .brand-card .bc-foot {
+    padding: 10px 14px;
+    border-top: 1px solid var(--fill-muted);
+    font-size: 12px; color: var(--text-muted);
+    line-height: 1.4;
+  }
+
+  /* ---- Logo mark ---- */
+  .mark {
+    display: inline-block;
+    vertical-align: middle;
+  }
+  .mark path,
+  .mark line,
+  .mark circle,
+  .mark rect { vector-effect: non-scaling-stroke; }
+
+  .logo-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+  .logo-cell {
+    border: 1px solid var(--fill-muted);
+    border-radius: var(--r);
+    background: var(--fill);
+    overflow: hidden;
+  }
+  .logo-cell .ls-stage {
+    height: 120px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--bg);
+  }
+  .logo-cell.on-accent .ls-stage { background: var(--accent); }
+  .logo-cell.on-ink    .ls-stage { background: var(--text); }
+  .logo-cell.on-paper  .ls-stage { background: #fff; }
+  .logo-cell .ls-meta {
+    padding: 10px 14px;
+    border-top: 1px solid var(--fill-muted);
+    font-family: var(--mono); font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  /* construction overlay */
+  .logo-construct {
+    border: 1px solid var(--fill-muted);
+    border-radius: var(--r);
+    padding: 28px;
+    background:
+      radial-gradient(circle at 1px 1px, var(--fill-muted) 1px, transparent 1px) 0 0 / 12px 12px,
+      var(--fill);
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* ---- Icon system ---- */
+  .icon-group-hd {
+    font-family: var(--mono); font-size: 11px;
+    color: var(--text-muted); letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin: 28px 0 12px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .icon-group-hd .cat-dot {
+    width: 10px; height: 10px; border-radius: 2px;
+  }
+  .icon-group-hd .count {
+    font-size: 10px; color: var(--text-muted);
+    margin-left: auto;
+  }
+  .icon-grid {
+    display: grid; grid-template-columns: repeat(5, 1fr);
+    gap: 1px;
+    background: var(--fill-muted);
+    border: 1px solid var(--fill-muted);
+    border-radius: var(--r); overflow: hidden;
+  }
+  .icon-cell {
+    background: var(--fill);
+    padding: 20px 16px 14px;
+    display: flex; flex-direction: column; align-items: center; gap: 10px;
+    min-height: 120px;
+  }
+  .icon-cell svg { color: var(--text); }
+  .icon-cell .num {
+    font-family: var(--mono); font-size: 10px;
+    color: var(--text-muted); letter-spacing: 0.04em;
+  }
+  .icon-cell .nm {
+    font-size: 12px; font-weight: 500; color: var(--text);
+    text-align: center;
+  }
+  .icon-cell .std {
+    font-family: var(--mono); font-size: 10px;
+    color: var(--text-muted); text-align: center;
+  }
+
+  .icon-scale-row {
+    display: flex; gap: 20px; align-items: flex-end;
+    padding: 24px;
+    border: 1px solid var(--fill-muted);
+    border-radius: var(--r);
+    background: var(--fill);
+  }
+  .icon-scale-row .cell {
+    display: flex; flex-direction: column; align-items: center; gap: 10px;
+    padding: 8px;
+  }
+  .icon-scale-row .cell .lbl {
+    font-family: var(--mono); font-size: 10px;
+    color: var(--text-muted);
+  }
+
+  /* Wordmark glyph — consistent across all brand surfaces */
+  .wm-brand {
+    display: inline-flex; align-items: baseline;
+    font-family: var(--sans);
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    color: currentColor;
+  }
+  .wm-brand .wm-main { }
+  .wm-brand .wm-tex {
+    font-family: var(--mono);
+    font-weight: 400;
+    font-size: 0.52em;
+    transform: translateY(0.2em);
+    margin-left: 2px;
+    letter-spacing: 0;
+    opacity: 0.7;
+  }
+
+  /* Favicon grid */
+  .fav-grid {
+    display: grid; grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+  }
+  .fav-cell {
+    text-align: center;
+    border: 1px solid var(--fill-muted);
+    border-radius: var(--r);
+    padding: 16px;
+    background: var(--fill);
+  }
+  .fav-cell .art {
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 10px;
+  }
+  .fav-cell .nm {
+    font-family: var(--mono); font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  /* Open Graph preview */
+  .og-stack {
+    display: flex; flex-direction: column; gap: 20px;
+  }
+  .og-card {
+    border: 1px solid var(--fill-muted);
+    border-radius: var(--r);
+    overflow: hidden;
+    background: var(--fill);
+  }
+  .og-card .og-stage {
+    aspect-ratio: 1200 / 630;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    background: var(--bg);
+  }
+  .og-card .og-left {
+    padding: 44px 40px;
+    display: flex; flex-direction: column;
+    justify-content: space-between;
+    border-right: 1px solid var(--fill-muted);
+  }
+  .og-card .og-right {
+    padding: 40px;
+    display: flex; align-items: center; justify-content: center;
+    background:
+      radial-gradient(circle at 1px 1px, var(--fill-muted) 1px, transparent 1px) 0 0 / 16px 16px,
+      var(--fill);
+  }
+  .og-card .og-meta {
+    padding: 10px 16px;
+    border-top: 1px solid var(--fill-muted);
+    font-family: var(--mono); font-size: 11px;
+    color: var(--text-muted);
+    display: flex; justify-content: space-between;
+  }
+  .og-h {
+    font-size: 40px; line-height: 1.05; letter-spacing: -0.02em;
+    font-weight: 600; color: var(--text);
+  }
+  .og-h em { font-style: normal; color: var(--accent); }
+  .og-foot {
+    display: flex; gap: 24px; align-items: baseline;
+    font-family: var(--mono); font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  /* OG variant B: accent ground */
+  .og-card.og-accent .og-stage { background: var(--accent); }
+  .og-card.og-accent .og-left { border-right-color: rgba(255,255,255,0.18); }
+  .og-card.og-accent .og-right {
+    background:
+      radial-gradient(circle at 1px 1px, rgba(255,255,255,0.25) 1px, transparent 1px) 0 0 / 16px 16px,
+      var(--accent);
+  }
+  .og-card.og-accent .og-h,
+  .og-card.og-accent .og-foot,
+  .og-card.og-accent .og-h em { color: #fff; }
+  .og-card.og-accent .og-foot { color: rgba(255,255,255,0.85); }
+
+  /* ================= Clusters ================= */
+  .cluster-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+  .cluster-card {
+    border: 1px solid var(--fill-muted);
+    border-radius: var(--r);
+    background: var(--bg);
+    overflow: hidden;
+    display: flex; flex-direction: column;
+  }
+  .cluster-card .cl-head {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--fill-muted);
+    background: color-mix(in oklab, var(--c) 6%, var(--bg));
+  }
+  .cluster-card .cl-dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--c);
+    flex-shrink: 0;
+  }
+  .cluster-card .cl-meta { flex: 1; min-width: 0; }
+  .cluster-card .cl-name {
+    font-size: 15px; font-weight: 600; color: var(--text);
+    letter-spacing: -0.01em;
+  }
+  .cluster-card .cl-slot {
+    font-family: var(--mono); font-size: 10.5px;
+    color: var(--text-muted); letter-spacing: 0.02em;
+    margin-top: 2px;
+  }
+  .cluster-card .cl-count {
+    font-family: var(--mono); font-size: 11px;
+    color: var(--c); font-weight: 500;
+    padding: 3px 8px; border-radius: 10px;
+    background: color-mix(in oklab, var(--c) 12%, transparent);
+    border: 1px solid color-mix(in oklab, var(--c) 25%, transparent);
+  }
+  .cluster-card .cl-icons {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 1px; background: var(--fill-muted);
+    border-bottom: 1px solid var(--fill-muted);
+  }
+  .cluster-card .cl-icons figure {
+    margin: 0; padding: 14px 8px 10px;
+    background: var(--bg);
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    color: var(--c);
+  }
+  .cluster-card .cl-icons svg {
+    width: 28px; height: 28px; display: block;
+  }
+  .cluster-card .cl-icons figcaption {
+    font-family: var(--mono); font-size: 10px;
+    color: var(--text-muted); letter-spacing: 0.02em;
+  }
+  /* cluster with 5 icons → 5 cols; 7 icons → 4 cols, 2nd row of 3 */
+  .cluster-card .cl-icons:has(> figure:nth-child(5):last-child) {
+    grid-template-columns: repeat(5, 1fr);
+  }
+  .cluster-card .cl-note {
+    margin: 0; padding: 12px 16px 14px;
+    font-size: 12.5px; color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  .cluster-reserved {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+  }
+  .cluster-reserved .res {
+    border: 1px dashed color-mix(in oklab, var(--c) 45%, var(--fill-muted));
+    border-radius: var(--r);
+    padding: 12px 14px;
+    display: flex; align-items: center; gap: 10px;
+    background: color-mix(in oklab, var(--c) 4%, var(--bg));
+    opacity: 0.85;
+  }
+  .cluster-reserved .res .cl-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--c); flex-shrink: 0;
+  }
+  .cluster-reserved .res strong {
+    font-size: 13px; color: var(--text); font-weight: 600;
+  }
+  .cluster-reserved .res .cl-slot {
+    font-family: var(--mono); font-size: 10px;
+    color: var(--text-muted); margin-top: 1px;
+  }
+  .cluster-reserved .res .cl-tag {
+    margin-left: auto;
+    font-family: var(--mono); font-size: 9px;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    padding: 2px 6px; border-radius: 3px;
+    color: var(--text-muted);
+    border: 1px solid var(--fill-muted);
+  }
+
+  /* ================= Node anatomy ================= */
+  .node-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+  .node-card {
+    border: 1px solid var(--fill-muted);
+    border-radius: var(--r);
+    overflow: hidden;
+    background: var(--fill);
+    display: flex; flex-direction: column;
+  }
+  .node-card .nc-stage {
+    height: 120px;
+    display: flex; align-items: center; justify-content: center;
+    padding: 16px;
+    background:
+      radial-gradient(circle at 1px 1px, var(--fill-muted) 1px, transparent 1px) 0 0 / 12px 12px,
+      var(--bg);
+  }
+  .node-card .nc-body {
+    padding: 12px 14px;
+    border-top: 1px solid var(--fill-muted);
+    flex: 1;
+  }
+  .node-card .nc-name {
+    font-size: 13px; font-weight: 500; margin-bottom: 4px;
+  }
+  .node-card .nc-spec {
+    font-family: var(--mono); font-size: 11px;
+    color: var(--text-muted); line-height: 1.45;
+  }
+
+  /* ================= Per-diagram palettes ================= */
+  .pd-list {
+    display: flex; flex-direction: column; gap: 16px;
+  }
+  .pd {
+    border: 1px solid var(--fill-muted);
+    border-radius: var(--r);
+    overflow: hidden;
+    background: var(--fill);
+  }
+  .pd-head {
+    display: grid; grid-template-columns: 200px 1fr;
+    gap: 24px; padding: 18px 22px;
+    border-bottom: 1px solid var(--fill-muted);
+  }
+  .pd-head h3 {
+    margin: 0; font-size: 16px; font-weight: 600;
+  }
+  .pd-head .who {
+    font-family: var(--mono); font-size: 11px;
+    color: var(--text-muted); margin-top: 4px;
+  }
+  .pd-head .desc {
+    color: var(--text-muted); font-size: 13px;
+    line-height: 1.55; margin: 0;
+    max-width: 640px;
+  }
+  .pd-body {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 0;
+  }
+  .pd-col { padding: 20px 22px; }
+  .pd-col + .pd-col {
+    border-left: 1px solid var(--fill-muted);
+  }
+  .pd-col-hd {
+    font-family: var(--mono); font-size: 11px;
+    color: var(--text-muted); letter-spacing: 0.04em;
+    margin-bottom: 14px; text-transform: uppercase;
+  }
+  .pd-preview {
+    height: 180px;
+    display: flex; align-items: center; justify-content: center;
+    padding: 16px;
+    background:
+      radial-gradient(circle at 1px 1px, var(--fill-muted) 1px, transparent 1px) 0 0 / 14px 14px,
+      var(--bg);
+    border-radius: var(--r-sm);
+  }
+  .pd-tokens {
+    display: flex; flex-direction: column; gap: 6px;
+    font-family: var(--mono); font-size: 12px;
+  }
+  .pd-tok {
+    display: grid; grid-template-columns: 20px 160px 1fr;
+    gap: 12px; align-items: center;
+    padding: 5px 0;
+    border-top: 1px dashed var(--fill-muted);
+  }
+  .pd-tok:first-child { border-top: none; }
+  .pd-tok i {
+    width: 18px; height: 18px; border-radius: 3px;
+    border: 1px solid rgba(0,0,0,0.08);
+  }
+  [data-theme="dark"] .pd-tok i { border-color: rgba(255,255,255,0.08); }
+  .pd-tok .tk { color: var(--text); }
+  .pd-tok .use { color: var(--text-muted); font-size: 11px; }
+
+  /* ---- Responsive ---- */
+  @media (max-width: 900px) {
+    .theme-grid,
+    .brand-grid { grid-template-columns: 1fr; }
+    .node-grid { grid-template-columns: 1fr 1fr; }
+    .pd-body,
+    .og-row,
+    .pd-head { grid-template-columns: 1fr; }
+    .pd-col + .pd-col { border-left: none; border-top: 1px solid var(--fill-muted); }
+  }
+</style>
+</head>
+<body>
+
+<!-- ================= SPRITES ================= -->
+<!-- Logo mark: brackets + S-curve edge between two nodes. 24×24 base grid. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <!-- Primary logo mark.
+         A tiny directed graph: one root, two children, one emphasized leaf.
+         This is the universal skeleton shared by genograms, orgcharts,
+         phylo trees, and block diagrams — so the mark reads "diagram" to
+         every cluster, not "S" to none of them.
+         Construction: 24×24 grid. Nodes sit at (12,5), (6,19), (18,19).
+         Strokes = 2 px to match the diagram stroke scale (stroke.md). -->
+    <!-- Primary logo mark — "Bracket-S" (S4a).
+         Two square brackets enclose a two-node graph whose edge is a
+         smooth S-curve. The bracket says "this is a defined entity /
+         schema"; the S-curve + endpoints says "a connection between
+         two things." Together: a schema-of-connection.
+         Construction: 24×24 grid. Brackets hug x=2.5/21.5.
+         Endpoints at (16,7) and (8,17). Cubic bezier control points
+         at (16,12) and (8,12) produce the S. Stroke 2px throughout. -->
+    <symbol id="mark" viewBox="0 0 24 24">
+      <!-- left bracket -->
+      <path d="M 5 3 H 2.5 V 21 H 5"
+            fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linejoin="miter" stroke-linecap="square"/>
+      <!-- right bracket -->
+      <path d="M 19 3 H 21.5 V 21 H 19"
+            fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linejoin="miter" stroke-linecap="square"/>
+      <!-- S-curve edge between the two endpoints -->
+      <path d="M 16 7 C 16 12, 8 12, 8 17"
+            fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round"/>
+      <!-- endpoint nodes -->
+      <circle cx="16" cy="7"  r="2.2" fill="currentColor"/>
+      <circle cx="8"  cy="17" r="2.2" fill="currentColor"/>
+    </symbol>
+
+    <!-- Outlined variant for app icons on solid grounds.
+         Same geometry, endpoints drawn as rings so it inverts cleanly.
+         Curve is trimmed to stop at the ring edge. -->
+    <symbol id="mark-outline" viewBox="0 0 24 24">
+      <path d="M 5 3 H 2.5 V 21 H 5"
+            fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linejoin="miter" stroke-linecap="square"/>
+      <path d="M 19 3 H 21.5 V 21 H 19"
+            fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linejoin="miter" stroke-linecap="square"/>
+      <path d="M 14.2 7.6 C 14 12, 10 12, 9.8 16.4"
+            fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round"/>
+      <circle cx="16" cy="7"  r="2" fill="none" stroke="currentColor" stroke-width="2"/>
+      <circle cx="8"  cy="17" r="2" fill="none" stroke="currentColor" stroke-width="2"/>
+    </symbol>
+
+    <!-- ========= 20 diagram-type icons. All 24×24. =========
+         Visual grammar: 1.5px stroke, no fills, square join/cap,
+         faithful to each standard's schematic. -->
+
+    <!-- 01 Genogram -->
+    <symbol id="ic-genogram" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="4" width="5" height="5"/>
+      <circle cx="18.5" cy="6.5" r="2.5"/>
+      <path d="M8 6.5 H16"/>
+      <path d="M12 6.5 V12"/>
+      <rect x="9.5" y="15" width="5" height="5"/>
+      <path d="M9.5 15 L14.5 20"/>
+    </symbol>
+
+    <!-- 02 Ecomap -->
+    <symbol id="ic-ecomap" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="3"/>
+      <circle cx="4.5" cy="5" r="1.8"/>
+      <circle cx="20" cy="5" r="1.8"/>
+      <circle cx="4.5" cy="19" r="1.8"/>
+      <circle cx="20" cy="19" r="1.8"/>
+      <path d="M10 10 L6 6"/>
+      <path d="M14 10 L18 6" stroke-dasharray="1.5 2"/>
+      <path d="M10 14 L6 18"/>
+      <path d="M14 14 L18 18"/>
+    </symbol>
+
+    <!-- 03 Pedigree -->
+    <symbol id="ic-pedigree" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="3" width="4" height="4"/>
+      <circle cx="19" cy="5" r="2"/>
+      <path d="M7 5 H17"/>
+      <path d="M13 7 V11"/>
+      <path d="M8 11 H18"/>
+      <rect x="6" y="11" width="4" height="4" fill="currentColor"/>
+      <circle cx="16" cy="13" r="2" fill="currentColor"/>
+      <rect x="3" y="18" width="4" height="4"/>
+      <circle cx="11" cy="20" r="2" fill="currentColor"/>
+      <path d="M8 15 V18 M8 18 H5 M16 15 V18 H11"/>
+    </symbol>
+
+    <!-- 04 Phylogenetic -->
+    <symbol id="ic-phylo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 12 H8"/>
+      <path d="M8 5 V19"/>
+      <path d="M8 5 H13 M8 13 H13 M8 19 H21"/>
+      <path d="M13 3 V7 M13 3 H21 M13 7 H21"/>
+      <path d="M13 11 V15 M13 11 H21 M13 15 H21"/>
+    </symbol>
+
+    <!-- 05 Sociogram -->
+    <symbol id="ic-sociogram" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="2"/>
+      <circle cx="4" cy="6" r="1.8"/>
+      <circle cx="20" cy="7" r="1.8"/>
+      <circle cx="5" cy="19" r="1.8"/>
+      <circle cx="19" cy="18" r="1.8"/>
+      <path d="M10.5 10.8 L5.5 7"/>
+      <path d="M13.5 11 L18.3 7.6"/>
+      <path d="M10.8 13.4 L6.3 17.8"/>
+      <path d="M13.4 13.2 L17.6 16.8"/>
+      <path d="M5.3 7.5 L18.6 7.5"/>
+    </symbol>
+
+    <!-- 06 Timing -->
+    <symbol id="ic-timing" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 7 H6 V3 H11 V7 H14 V3 H19 V7 H22"/>
+      <path d="M3 17 H8 V13 H13 V17 H16 V13 H20 V17 H22"/>
+      <path d="M3 11 H22" stroke-dasharray="1 2"/>
+    </symbol>
+
+    <!-- 07 Logic gate (AND) -->
+    <symbol id="ic-logic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4 6 H11 A6 6 0 0 1 11 18 H4 Z"/>
+      <path d="M1 9 H4 M1 15 H4 M17 12 H22"/>
+    </symbol>
+
+    <!-- 08 Circuit schematic -->
+    <symbol id="ic-circuit" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 12 H7"/>
+      <rect x="7" y="10" width="6" height="4"/>
+      <path d="M13 12 H16"/>
+      <circle cx="19" cy="12" r="3"/>
+      <path d="M19 9 V15 M17 12 H21"/>
+      <path d="M3 6 V12 M21 12 V18 M3 18 H21"/>
+    </symbol>
+
+    <!-- 09 Block diagram -->
+    <symbol id="ic-block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="9" width="5" height="6"/>
+      <rect x="10" y="4" width="5" height="6"/>
+      <rect x="10" y="14" width="5" height="6"/>
+      <rect x="17" y="9" width="4" height="6"/>
+      <path d="M8 11 H10 M8 13 H10 M15 7 H17 V11 M15 17 H17 V13"/>
+      <path d="M12.5 10 V14"/>
+    </symbol>
+
+    <!-- 10 Ladder logic -->
+    <symbol id="ic-ladder" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 3 V21 M21 3 V21"/>
+      <path d="M3 7 H8 M10 5 V9 M12 5 V9 M14 7 H21"/>
+      <path d="M3 13 H8 M10 11 V15 M10 11 L12 15 M12 11 L10 15 M14 13 H17"/>
+      <circle cx="19" cy="13" r="1.6"/>
+      <path d="M3 19 H10 M12 17 V21 M14 19 H21"/>
+    </symbol>
+
+    <!-- 11 Single-line diagram -->
+    <symbol id="ic-sld" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 2 V5"/>
+      <circle cx="12" cy="7.5" r="2.5"/>
+      <path d="M12 10 V12"/>
+      <path d="M8 12 H16"/>
+      <path d="M12 12 V15"/>
+      <rect x="9.5" y="15" width="5" height="3"/>
+      <path d="M12 18 V20 M9 20 H15 M10 22 H14 M11 22 L11 20"/>
+    </symbol>
+
+    <!-- 12 Entity structure -->
+    <symbol id="ic-entity" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="8" y="3" width="8" height="4"/>
+      <path d="M12 7 V10 M5 10 H19"/>
+      <path d="M5 10 V12 M12 10 V12 M19 10 V12"/>
+      <rect x="3" y="12" width="4" height="4"/>
+      <rect x="10" y="12" width="4" height="4"/>
+      <rect x="17" y="12" width="4" height="4"/>
+      <path d="M10.5 16 H13.5 M10.5 18 H13.5 M10.5 20 H13.5"/>
+      <rect x="10" y="16.5" width="4" height="1.2"/>
+    </symbol>
+
+    <!-- 13 Fishbone -->
+    <symbol id="ic-fishbone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M2 12 H20"/>
+      <path d="M20 12 L22 10 M20 12 L22 14"/>
+      <path d="M6 12 L9 5 M10 12 L13 5 M14 12 L17 5"/>
+      <path d="M6 12 L9 19 M10 12 L13 19 M14 12 L17 19"/>
+    </symbol>
+
+    <!-- 14 Flowchart -->
+    <symbol id="ic-flowchart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="8" y="2" width="8" height="4" rx="2"/>
+      <path d="M12 6 V9"/>
+      <path d="M12 9 L18 13 L12 17 L6 13 Z"/>
+      <path d="M12 17 V20"/>
+      <rect x="8" y="20" width="8" height="2.8"/>
+    </symbol>
+
+    <!-- 15 Venn -->
+    <symbol id="ic-venn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <circle cx="9" cy="12" r="6"/>
+      <circle cx="15" cy="12" r="6"/>
+    </symbol>
+
+    <!-- 16 Orgchart -->
+    <symbol id="ic-orgchart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="9" y="3" width="6" height="4"/>
+      <path d="M12 7 V10 M5 10 H19 M5 10 V13 M12 10 V13 M19 10 V13"/>
+      <rect x="3" y="13" width="4" height="4"/>
+      <rect x="10" y="13" width="4" height="4"/>
+      <rect x="17" y="13" width="4" height="4"/>
+      <path d="M5 17 V20 M3 20 H7 M12 17 V20 M10 20 H14 M19 17 V20 M17 20 H21"/>
+    </symbol>
+
+    <!-- 17 Decision tree -->
+    <symbol id="ic-decision" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 3 L16 7 L12 11 L8 7 Z"/>
+      <path d="M9.5 9 L5 14 M14.5 9 L19 14"/>
+      <path d="M3 14 L5 12 L7 14 L5 16 Z"/>
+      <path d="M17 14 L19 12 L21 14 L19 16 Z"/>
+      <rect x="3" y="18" width="4" height="3"/>
+      <rect x="10" y="18" width="4" height="3"/>
+      <rect x="17" y="18" width="4" height="3"/>
+      <path d="M5 16 V18 M12 11 V18 M19 16 V18"/>
+    </symbol>
+
+    <!-- 18 Matrix -->
+    <symbol id="ic-matrix" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="3" width="18" height="18"/>
+      <path d="M9 3 V21 M15 3 V21 M3 9 H21 M3 15 H21"/>
+      <circle cx="6" cy="6" r="1" fill="currentColor"/>
+      <circle cx="18" cy="12" r="1" fill="currentColor"/>
+      <circle cx="12" cy="18" r="1" fill="currentColor"/>
+    </symbol>
+
+    <!-- 19 Timeline -->
+    <symbol id="ic-timeline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M2 12 H22"/>
+      <circle cx="5" cy="12" r="1.6" fill="currentColor"/>
+      <circle cx="11" cy="12" r="1.6" fill="currentColor"/>
+      <circle cx="17" cy="12" r="1.6" fill="currentColor"/>
+      <path d="M5 12 V7 M11 12 V17 M17 12 V7"/>
+      <path d="M2 8 H7 M8 18 H14 M14 8 H19"/>
+    </symbol>
+
+    <!-- 20 Mindmap -->
+    <symbol id="ic-mindmap" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="2.5"/>
+      <path d="M12 9.5 Q8 4 4 3"/>
+      <path d="M12 9.5 Q16 4 20 3"/>
+      <path d="M12 14.5 Q8 20 4 21"/>
+      <path d="M12 14.5 Q16 20 20 21"/>
+      <circle cx="4" cy="3" r="1.3" fill="currentColor"/>
+      <circle cx="20" cy="3" r="1.3" fill="currentColor"/>
+      <circle cx="4" cy="21" r="1.3" fill="currentColor"/>
+      <circle cx="20" cy="21" r="1.3" fill="currentColor"/>
+    </symbol>
+  </defs>
+</svg>
+
+<header class="site-nav">
+  <div class="nav-inner">
+    <a class="wm" href="#top">
+      <svg class="mark" width="20" height="20" aria-hidden="true"><use href="#mark"/></svg>
+      <span class="wm-brand"><span class="wm-main">Schematex</span></span>
+      <span class="ver">Design System v1</span>
+    </a>
+    <nav class="primary">
+      <a href="#positioning">Positioning</a>
+      <a href="#branding">Branding</a>
+      <a href="#icons">Icons</a>
+      <a href="#color">Color</a>
+      <a href="#type">Type</a>
+      <a href="#node">Nodes</a>
+      <a href="#palettes">Palettes</a>
+    </nav>
+    <div class="right">
+      <div class="theme-switch" id="theme-switch">
+        <button data-th="default" class="active">default</button>
+        <button data-th="dark">dark</button>
+      </div>
+      <a class="gh-badge">
+        <span class="gh-l">source</span>
+        <span class="gh-r">theme.ts</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<div class="ds-wrap">
+
+  <header class="ds-hd">
+    <div class="eye">SCHEMATEX · DESIGN SYSTEM · v1</div>
+    <h1>Standards-as-code for professional diagrams</h1>
+    <p>Reference for every surface that sits around a generated Schematex diagram — website, marketing, docs. Every token here is already implemented in <code>src/core/theme.ts</code>; this page <em>mirrors</em> the source, it does not invent.</p>
+    <div class="ds-toc">
+      <a href="#positioning"><span class="num">01</span>Positioning</a>
+      <a href="#branding"><span class="num">02</span>Branding</a>
+      <a href="#icons"><span class="num">03</span>Icon system</a>
+      <a href="#clusters"><span class="num">04</span>Clusters</a>
+      <a href="#color"><span class="num">05</span>Color</a>
+      <a href="#type"><span class="num">06</span>Type</a>
+      <a href="#stroke"><span class="num">07</span>Stroke</a>
+      <a href="#node"><span class="num">08</span>Node anatomy</a>
+      <a href="#palettes"><span class="num">09</span>Per-diagram palettes</a>
+      <a href="#spacing"><span class="num">10</span>Spacing</a>
+      <a href="#motifs"><span class="num">11</span>Motifs</a>
+      <a href="#dos"><span class="num">12</span>Do / don't</a>
+      <a href="#checklist"><span class="num">13</span>Checklist</a>
+    </div>
+  </header>
+
+  <!-- 01 POSITIONING -->
+  <section class="ds-section" id="positioning">
+    <h2><span class="num">01</span>Positioning</h2>
+    <p class="lede">Three pillars Schematex defends in every design decision.</p>
+
+    <div class="pillars" style="border-radius:var(--r);overflow:hidden;">
+      <div class="pillar">
+        <div class="pillar-big">13</div>
+        <div class="pillar-unit">STANDARDS-COMPLIANT</div>
+        <h3>Every diagram tied to a real standard</h3>
+        <p>McGoldrick 2020, IEC 61131-3, IEEE 315, Newick + NHX — not an artistic interpretation.</p>
+      </div>
+      <div class="pillar">
+        <div class="pillar-big">0</div>
+        <div class="pillar-unit">RUNTIME DEPENDENCIES</div>
+        <h3>No D3, no dagre, no parser generator</h3>
+        <p>Pure TypeScript. Ships as a single ESM bundle. Renders deterministic SVG you can pipe into a PDF.</p>
+      </div>
+      <div class="pillar">
+        <div class="pillar-big">{ }</div>
+        <div class="pillar-unit">LLM-NATIVE DSL</div>
+        <h3>DSLs written to be produced by language models</h3>
+        <p>Positional syntax, few keywords, forgiving whitespace. An LLM can emit a compliant diagram on first try.</p>
+      </div>
+    </div>
+
+    <div class="ds-h3">Tone</div>
+    <p style="margin:0; color:var(--text-muted); max-width:720px;">
+      Technical, precise, engineer-calm. Linear / Resend / Notion-docs, not Stripe-consumer or Vercel-gradients.
+      No AI-bro glow effects. No emojis in product UI chrome.
+    </p>
+  </section>
+
+  <!-- 02 BRANDING -->
+  <section class="ds-section" id="branding">
+    <h2><span class="num">02</span>Branding</h2>
+    <p class="lede">The brand is <strong>Schematex</strong> — a wordmark plus a diagram mark. The mark is a tiny schematic in itself: two square <em>brackets</em> enclose a two-node graph connected by a smooth S-curve. The brackets say "a defined entity / schema"; the curve + endpoints say "a connection between two things." Together: a schema-of-connection — and the curve hides an S for <em>Schematex</em>.</p>
+
+    <div class="ds-h3">2.1 — The mark</div>
+    <div style="display:grid; grid-template-columns: 1.1fr 1fr; gap:16px;">
+      <div class="logo-construct">
+        <svg viewBox="0 0 240 240" width="320" height="320" aria-hidden="true">
+          <!-- grid: 24u (each u = 10px) so every construction coord is integer -->
+          <g stroke="var(--fill-muted)" stroke-width="1">
+            <line x1="25"  y1="0" x2="25"  y2="240"/>
+            <line x1="50"  y1="0" x2="50"  y2="240"/>
+            <line x1="80"  y1="0" x2="80"  y2="240"/>
+            <line x1="120" y1="0" x2="120" y2="240"/>
+            <line x1="160" y1="0" x2="160" y2="240"/>
+            <line x1="190" y1="0" x2="190" y2="240"/>
+            <line x1="215" y1="0" x2="215" y2="240"/>
+            <line x1="0" y1="30"  x2="240" y2="30"/>
+            <line x1="0" y1="70"  x2="240" y2="70"/>
+            <line x1="0" y1="120" x2="240" y2="120"/>
+            <line x1="0" y1="170" x2="240" y2="170"/>
+            <line x1="0" y1="210" x2="240" y2="210"/>
+          </g>
+          <!-- left bracket -->
+          <path d="M 50 30 H 25 V 210 H 50"
+                fill="none" stroke="var(--text)" stroke-width="20"
+                stroke-linejoin="miter" stroke-linecap="square"/>
+          <!-- right bracket -->
+          <path d="M 190 30 H 215 V 210 H 190"
+                fill="none" stroke="var(--text)" stroke-width="20"
+                stroke-linejoin="miter" stroke-linecap="square"/>
+          <!-- S-curve edge -->
+          <path d="M 160 70 C 160 120, 80 120, 80 170"
+                fill="none" stroke="var(--accent)" stroke-width="20"
+                stroke-linecap="round"/>
+          <!-- endpoint nodes -->
+          <circle cx="160" cy="70"  r="22" fill="var(--text)"/>
+          <circle cx="80"  cy="170" r="22" fill="var(--text)"/>
+          <!-- construction labels -->
+          <g font-family="ui-monospace,SFMono-Regular,Menlo,monospace"
+             font-size="11" fill="var(--text-muted)">
+            <text x="182" y="52">node A · r = 2.2u</text>
+            <text x="8"   y="192">node B</text>
+            <text x="92"  y="116">cubic bezier · cp @ y = 12u</text>
+            <text x="92"  y="232">24 × 24 u grid · stroke = 2u</text>
+          </g>
+        </svg>
+      </div>
+      <div class="brand-card" style="display:flex; flex-direction:column;">
+        <div class="bc-head"><span class="nm">Geometry</span><span>24×24 base grid</span></div>
+        <div class="bc-foot" style="border-top:none; flex:1; padding:22px; line-height:1.7;">
+          <strong style="color:var(--text);">Brackets + S-curve edge.</strong> Brackets hug <code>x = 2.5</code> and <code>x = 21.5</code>, full-height. Two filled endpoint nodes at <code>(16, 7)</code> and <code>(8, 17)</code>, joined by a cubic bezier with control points on the midline — a symmetric S.
+          <br/><br/>
+          <strong style="color:var(--text);">Why this shape.</strong> The bracket is the universal "defined object" notation across every cluster — data structures, set theory, code, BNF grammars. The S-curve edge is the minimum graph that still reads as a graph. Put together, they say <em>schema of a connection</em> — and they hide the S without resorting to a font.
+          <br/><br/>
+          Node radius <code>2.2u</code>; all strokes <code>2u</code>. The curve takes <code>--accent</code>; brackets + nodes stay in <code>--text</code> so the mark holds up in monochrome print.
+        </div>
+      </div>
+    </div>
+
+    <div class="ds-h3">2.2 — Mark on surfaces</div>
+    <div class="logo-grid">
+      <div class="logo-cell">
+        <div class="ls-stage">
+          <svg class="mark" width="56" height="56"><use href="#mark"/></svg>
+        </div>
+        <div class="ls-meta">default · on bg</div>
+      </div>
+      <div class="logo-cell on-accent">
+        <div class="ls-stage" style="color:#fff;">
+          <svg class="mark" width="56" height="56"><use href="#mark-outline"/></svg>
+        </div>
+        <div class="ls-meta">outline · on accent</div>
+      </div>
+      <div class="logo-cell on-ink">
+        <div class="ls-stage" style="color:var(--bg);">
+          <svg class="mark" width="56" height="56"><use href="#mark"/></svg>
+        </div>
+        <div class="ls-meta">inverted · on ink</div>
+      </div>
+      <div class="logo-cell on-paper">
+        <div class="ls-stage" style="color:#000;">
+          <svg class="mark" width="56" height="56"><use href="#mark"/></svg>
+        </div>
+        <div class="ls-meta">mono · print</div>
+      </div>
+    </div>
+
+    <div class="ds-h3">2.3 — Wordmark construction</div>
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+      <div class="brand-card">
+        <div class="bc-head"><span class="nm">Primary · inline</span><span>for body text &amp; nav</span></div>
+        <div class="bc-stage">
+          <span class="wm-brand" style="font-size:48px;">
+            <span class="wm-main">Schematex</span>
+          </span>
+        </div>
+        <div class="bc-foot">Single-word, system-ui 600, <code>letter-spacing: -0.015em</code>. Use inside prose, nav, footer copy.</div>
+      </div>
+      <div class="brand-card">
+        <div class="bc-head"><span class="nm">Display · split</span><span>for hero &amp; OG</span></div>
+        <div class="bc-stage">
+          <span class="wm-brand" style="font-size:48px;">
+            <span class="wm-main">Schema</span><span class="wm-tex">tex</span>
+          </span>
+        </div>
+        <div class="bc-foot">Same letters, but <code>tex</code> dropped into mono + subscript. Reserved for masthead moments — not every appearance.</div>
+      </div>
+    </div>
+
+    <p style="color:var(--text-muted); font-size:13px; margin:18px 0 0; max-width:680px;">
+      <strong style="color:var(--text);">Never</strong> write it as "SchemaTex", "SchemaTeX", "SCHEMATEX" (in prose), or "schematex" at the start of a sentence. In mono code samples <code>schematex</code> lowercase is correct — that's the package name, not the brand.
+    </p>
+
+    <div class="ds-h3">2.2 — On different surfaces</div>
+    <div class="brand-grid">
+      <div class="brand-card">
+        <div class="bc-head"><span class="nm">On bg</span><span>default surface</span></div>
+        <div class="bc-stage">
+          <span class="wm-brand" style="font-size:32px; color:var(--text);">
+            <span class="wm-main">Schema</span><span class="wm-tex">tex</span>
+          </span>
+        </div>
+      </div>
+      <div class="brand-card on-accent">
+        <div class="bc-head"><span class="nm">On accent</span><span>CTA, banners</span></div>
+        <div class="bc-stage">
+          <span class="wm-brand" style="font-size:32px; color:#fff;">
+            <span class="wm-main">Schema</span><span class="wm-tex" style="opacity:0.85;">tex</span>
+          </span>
+        </div>
+      </div>
+      <div class="brand-card on-ink">
+        <div class="bc-head"><span class="nm">On ink</span><span>footer, dark hero</span></div>
+        <div class="bc-stage">
+          <span class="wm-brand" style="font-size:32px; color:var(--bg);">
+            <span class="wm-main">Schema</span><span class="wm-tex" style="opacity:0.75;">tex</span>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ds-h3">2.4 — Lockups (mark + wordmark)</div>
+    <div class="brand-grid">
+      <div class="brand-card">
+        <div class="bc-head"><span class="nm">Horizontal</span><span>web nav, docs</span></div>
+        <div class="bc-stage">
+          <span style="display:inline-flex; align-items:center; gap:10px; color:var(--text);">
+            <svg class="mark" width="34" height="34"><use href="#mark"/></svg>
+            <span class="wm-brand" style="font-size:28px; color:var(--text);">
+              <span class="wm-main">Schema</span><span class="wm-tex">tex</span>
+            </span>
+          </span>
+        </div>
+        <div class="bc-foot">Mark sits at cap-height; gap = 0.35 × mark width. Accent edge stays visible even at 20 px.</div>
+      </div>
+      <div class="brand-card on-accent">
+        <div class="bc-head"><span class="nm">On accent</span><span>banners, CTAs</span></div>
+        <div class="bc-stage">
+          <span style="display:inline-flex; align-items:center; gap:10px; color:#fff;">
+            <svg class="mark" width="34" height="34"><use href="#mark-outline"/></svg>
+            <span class="wm-brand" style="font-size:28px; color:#fff;">
+              <span class="wm-main">Schema</span><span class="wm-tex" style="opacity:0.85;">tex</span>
+            </span>
+          </span>
+        </div>
+        <div class="bc-foot" style="background:transparent;">Outline mark on accent ground — the edge becomes implicit (it’s the ground itself).</div>
+      </div>
+      <div class="brand-card on-ink">
+        <div class="bc-head"><span class="nm">On ink</span><span>dark hero, footer</span></div>
+        <div class="bc-stage">
+          <span style="display:inline-flex; align-items:center; gap:10px; color:var(--bg);">
+            <svg class="mark" width="34" height="34"><use href="#mark"/></svg>
+            <span class="wm-brand" style="font-size:28px; color:var(--bg);">
+              <span class="wm-main">Schema</span><span class="wm-tex" style="opacity:0.75;">tex</span>
+            </span>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ds-h3">2.5 — Favicon &amp; app-icon</div>
+    <div class="fav-grid">
+      <!-- 16 · favicon · on accent, outlined -->
+      <div class="fav-cell">
+        <div class="art">
+          <svg width="32" height="32" viewBox="0 0 32 32">
+            <rect width="32" height="32" rx="6" fill="var(--accent)"/>
+            <svg x="4" y="4" width="24" height="24" viewBox="0 0 24 24" color="#fff">
+              <use href="#mark-outline"/>
+            </svg>
+          </svg>
+        </div>
+        <div class="nm">16 · favicon</div>
+      </div>
+      <!-- 32 · browser tab · same treatment, larger preview -->
+      <div class="fav-cell">
+        <div class="art">
+          <svg width="48" height="48" viewBox="0 0 32 32">
+            <rect width="32" height="32" rx="6" fill="var(--accent)"/>
+            <svg x="4" y="4" width="24" height="24" viewBox="0 0 24 24" color="#fff">
+              <use href="#mark-outline"/>
+            </svg>
+          </svg>
+        </div>
+        <div class="nm">32 · browser tab</div>
+      </div>
+      <!-- 64 · app shelf · on ink, accent-curve variant -->
+      <div class="fav-cell">
+        <div class="art">
+          <svg width="64" height="64" viewBox="0 0 64 64">
+            <rect width="64" height="64" rx="12" fill="#0f172a"/>
+            <svg x="8" y="8" width="48" height="48" viewBox="0 0 24 24">
+              <!-- brackets + nodes white; curve in accent -->
+              <path d="M 5 3 H 2.5 V 21 H 5"
+                    fill="none" stroke="#fff" stroke-width="2"
+                    stroke-linejoin="miter" stroke-linecap="square"/>
+              <path d="M 19 3 H 21.5 V 21 H 19"
+                    fill="none" stroke="#fff" stroke-width="2"
+                    stroke-linejoin="miter" stroke-linecap="square"/>
+              <path d="M 16 7 C 16 12, 8 12, 8 17"
+                    fill="none" stroke="#2563eb" stroke-width="2"
+                    stroke-linecap="round"/>
+              <circle cx="16" cy="7"  r="2.2" fill="#fff"/>
+              <circle cx="8"  cy="17" r="2.2" fill="#fff"/>
+            </svg>
+          </svg>
+        </div>
+        <div class="nm">64 · app shelf</div>
+      </div>
+      <!-- 192 · dark pwa · soft bg, catppuccin-ish palette -->
+      <div class="fav-cell" style="background:#0f172a;">
+        <div class="art">
+          <svg width="80" height="80" viewBox="0 0 80 80">
+            <rect width="80" height="80" rx="16" fill="#1e1e2e"/>
+            <svg x="10" y="10" width="60" height="60" viewBox="0 0 24 24">
+              <path d="M 5 3 H 2.5 V 21 H 5"
+                    fill="none" stroke="#cdd6f4" stroke-width="2"
+                    stroke-linejoin="miter" stroke-linecap="square"/>
+              <path d="M 19 3 H 21.5 V 21 H 19"
+                    fill="none" stroke="#cdd6f4" stroke-width="2"
+                    stroke-linejoin="miter" stroke-linecap="square"/>
+              <path d="M 16 7 C 16 12, 8 12, 8 17"
+                    fill="none" stroke="#89b4fa" stroke-width="2"
+                    stroke-linecap="round"/>
+              <circle cx="16" cy="7"  r="2.2" fill="#cdd6f4"/>
+              <circle cx="8"  cy="17" r="2.2" fill="#cdd6f4"/>
+            </svg>
+          </svg>
+        </div>
+        <div class="nm" style="color:#94a3b8;">192 · dark pwa</div>
+      </div>
+      <!-- 512 · mono / print · full black mark on white -->
+      <div class="fav-cell">
+        <div class="art">
+          <svg width="80" height="80" viewBox="0 0 80 80">
+            <rect width="80" height="80" rx="16" fill="#fff" stroke="#000" stroke-width="1.5"/>
+            <svg x="10" y="10" width="60" height="60" viewBox="0 0 24 24" color="#000">
+              <use href="#mark"/>
+            </svg>
+          </svg>
+        </div>
+        <div class="nm">512 · mono / print</div>
+      </div>
+    </div>
+
+    <div class="ds-h3">2.6 — Open Graph &amp; social cards</div>
+    <p style="color:var(--text-muted); font-size:13px; margin:-4px 0 16px; max-width:680px;">
+      OG cards lead with a <strong style="color:var(--text);">real diagram</strong> rendered from the library, not marketing illustration. The left pane carries the message; the right pane <em>is</em> the product. No stars, no license badges — the repo page carries that metadata.
+    </p>
+    <div class="og-stack">
+
+      <!-- OG variant 1 — default: diagram on gridded ground -->
+      <div class="og-card">
+        <div class="og-stage">
+          <div class="og-left">
+            <span style="display:inline-flex; align-items:center; gap:10px;">
+              <svg class="mark" width="26" height="26" style="color:var(--text);"><use href="#mark"/></svg>
+              <span class="wm-brand" style="font-size:20px; color:var(--text);">
+                <span class="wm-main">Schema</span><span class="wm-tex">tex</span>
+              </span>
+            </span>
+            <div class="og-h">Standards-as-code<br/>for <em>professional diagrams.</em></div>
+            <div class="og-foot">
+              <span>20 diagram types</span>
+              <span>·</span>
+              <span>10+ standards</span>
+              <span>·</span>
+              <span>0 runtime deps</span>
+            </div>
+          </div>
+          <div class="og-right">
+            <!-- Diagram hero: genogram three-gen, rendered faithfully -->
+            <svg viewBox="0 0 360 280" width="100%" height="100%" preserveAspectRatio="xMidYMid meet">
+              <!-- gen I -->
+              <rect x="80" y="30" width="40" height="40" fill="#fff" stroke="#0f172a" stroke-width="2"/>
+              <circle cx="250" cy="50" r="20" fill="#fbd6e5" stroke="#0f172a" stroke-width="2"/>
+              <line x1="60" y1="30" x2="140" y2="70" stroke="#8b1a1a" stroke-width="2"/>
+              <line x1="120" y1="50" x2="230" y2="50" stroke="#0f172a" stroke-width="2"/>
+              <line x1="175" y1="50" x2="175" y2="130" stroke="#0f172a" stroke-width="2"/>
+              <!-- gen II -->
+              <line x1="125" y1="130" x2="225" y2="130" stroke="#0f172a" stroke-width="2"/>
+              <rect x="105" y="130" width="40" height="40" fill="#fff" stroke="#0f172a" stroke-width="2"/>
+              <circle cx="225" cy="150" r="20" fill="#fbd6e5" stroke="#0f172a" stroke-width="2"/>
+              <!-- gen III: affected proband -->
+              <line x1="145" y1="150" x2="205" y2="150" stroke="#0f172a" stroke-width="2"/>
+              <line x1="175" y1="150" x2="175" y2="220" stroke="#0f172a" stroke-width="2"/>
+              <line x1="125" y1="220" x2="225" y2="220" stroke="#0f172a" stroke-width="2"/>
+              <rect x="105" y="220" width="40" height="40" fill="#2563eb" stroke="#0f172a" stroke-width="3"/>
+              <circle cx="225" cy="240" r="20" fill="#fff" stroke="#0f172a" stroke-width="2"/>
+              <circle cx="225" cy="240" r="5" fill="#0f172a"/>
+              <polygon points="100,220 110,220 110,230" fill="#2563eb"/>
+              <!-- meta -->
+              <text x="125" y="280" font-family="system-ui" font-size="11" fill="#475569">III-1 · proband</text>
+              <text x="205" y="280" font-family="system-ui" font-size="11" fill="#475569">III-2 · carrier</text>
+            </svg>
+          </div>
+        </div>
+        <div class="og-meta">
+          <span>og:image · 1200 × 630 · default</span>
+          <span>genogram · McGoldrick 2020</span>
+        </div>
+      </div>
+
+      <!-- OG variant 2 — announcement: accent ground, flowchart/ladder hero -->
+      <div class="og-card og-accent">
+        <div class="og-stage">
+          <div class="og-left">
+            <span style="display:inline-flex; align-items:center; gap:10px; color:#fff;">
+              <svg class="mark" width="26" height="26"><use href="#mark-outline"/></svg>
+              <span class="wm-brand" style="font-size:20px; color:#fff;">
+                <span class="wm-main">Schema</span><span class="wm-tex" style="opacity:0.85;">tex</span>
+              </span>
+            </span>
+            <div class="og-h">v0.2 ships ladder logic &amp; single-line.</div>
+            <div class="og-foot">
+              <span>IEC 61131-3</span>
+              <span>·</span>
+              <span>IEEE 315</span>
+              <span>·</span>
+              <span>fully tested</span>
+            </div>
+          </div>
+          <div class="og-right">
+            <!-- Ladder rung hero -->
+            <svg viewBox="0 0 360 280" width="100%" height="100%" preserveAspectRatio="xMidYMid meet">
+              <!-- rails -->
+              <g stroke="#fff" stroke-width="3" fill="none">
+                <line x1="20"  y1="30"  x2="20"  y2="250"/>
+                <line x1="340" y1="30"  x2="340" y2="250"/>
+                <line x1="20"  y1="30"  x2="340" y2="30"/>
+                <line x1="20"  y1="250" x2="340" y2="250"/>
+              </g>
+              <!-- rung 1: XIC -- XIO -- OTE -->
+              <g stroke="#fff" stroke-width="3" fill="none">
+                <line x1="20"  y1="90" x2="80"  y2="90"/>
+                <line x1="80"  y1="75" x2="80"  y2="105"/>
+                <line x1="90"  y1="75" x2="90"  y2="105"/>
+                <line x1="90"  y1="90" x2="160" y2="90"/>
+                <line x1="160" y1="75" x2="160" y2="105"/>
+                <line x1="160" y1="75" x2="175" y2="105"/>
+                <line x1="175" y1="75" x2="175" y2="105"/>
+                <line x1="175" y1="90" x2="280" y2="90"/>
+                <circle cx="300" cy="90" r="15"/>
+                <line x1="315" y1="90" x2="340" y2="90"/>
+              </g>
+              <text x="300" y="94" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="12" fill="#fff">OTE</text>
+              <!-- rung 2: OTL latch -->
+              <g stroke="#fff" stroke-width="3" fill="none">
+                <line x1="20"  y1="180" x2="100" y2="180"/>
+                <line x1="100" y1="165" x2="100" y2="195"/>
+                <line x1="110" y1="165" x2="110" y2="195"/>
+                <line x1="110" y1="180" x2="280" y2="180"/>
+                <circle cx="300" cy="180" r="15"/>
+                <line x1="315" y1="180" x2="340" y2="180"/>
+              </g>
+              <text x="300" y="184" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="12" fill="#fff">OTL</text>
+              <!-- addresses -->
+              <g font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="11" fill="rgba(255,255,255,0.85)">
+                <text x="60"  y="66">I:0/0</text>
+                <text x="145" y="66">I:0/1</text>
+                <text x="280" y="66">O:0/0</text>
+                <text x="50"  y="156">I:0/2</text>
+                <text x="280" y="156">O:0/1</text>
+              </g>
+            </svg>
+          </div>
+        </div>
+        <div class="og-meta" style="color:rgba(255,255,255,0.85); border-top-color:rgba(255,255,255,0.18);">
+          <span>twitter:card · 1200 × 630 · announcement</span>
+          <span>ladder · IEC 61131-3</span>
+        </div>
+      </div>
+
+    </div>
+
+    <p style="font-size:13px; color:var(--text-muted); margin:18px 0 0; max-width:720px;">
+      <strong style="color:var(--text);">Rules:</strong> headline 40 px system-ui 600, max 2 lines. Brand lockup always top-left. Diagram occupies the right half bleed-free with ≥ 24 px safe margin. Rotate the diagram with each release — genogram for clinical posts, ladder for industrial, flowchart for general. Never invent a diagram that the library can't actually render.
+    </p>
+  </section>
+
+  <!-- 03 ICON SYSTEM -->
+  <section class="ds-section" id="icons">
+    <h2><span class="num">03</span>Icon system</h2>
+    <p class="lede">Every diagram type has a dedicated icon in a single consistent visual language. Icons <strong>miniaturize the real diagram</strong>: a genogram icon shows a genogram, a ladder icon shows two rails + rungs, a circuit icon has a resistor and a component. No generic swooshes. No stand-in pictograms.</p>
+
+    <div class="ds-h3">3.1 — Drawing grammar</div>
+    <table class="tok-table">
+      <thead>
+        <tr><th style="width:170px;">Rule</th><th>Value</th><th>Why</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong style="color:var(--text);">Canvas</strong></td><td class="hex">24 × 24, 1 px inner safe-area</td><td class="use">Matches lucide / feather / radix so we interleave cleanly.</td></tr>
+        <tr><td><strong style="color:var(--text);">Stroke</strong></td><td class="hex">1.5 px · round join · round cap</td><td class="use">Same weight the diagrams use — miniatures feel like the real thing.</td></tr>
+        <tr><td><strong style="color:var(--text);">Fill</strong></td><td class="hex">none (outline-only by default)</td><td class="use">Filled variants only for emphasized states (affected, proband, active).</td></tr>
+        <tr><td><strong style="color:var(--text);">Color</strong></td><td class="hex"><code>currentColor</code> · inherits</td><td class="use">One token sets every icon — no per-icon palette.</td></tr>
+        <tr><td><strong style="color:var(--text);">Geometry</strong></td><td class="hex">axis-aligned · 0.5 px snap</td><td class="use">Crisp at 16 px. Diagonal only when the standard demands it (fishbone, decision).</td></tr>
+      </tbody>
+    </table>
+
+    <div class="ds-h3">3.2 — Scale ladder</div>
+    <div class="icon-scale-row">
+      <div class="cell"><svg width="14" height="14" aria-hidden="true"><use href="#ic-flowchart"/></svg><span class="lbl">14 · inline</span></div>
+      <div class="cell"><svg width="16" height="16" aria-hidden="true"><use href="#ic-flowchart"/></svg><span class="lbl">16 · body</span></div>
+      <div class="cell"><svg width="20" height="20" aria-hidden="true"><use href="#ic-flowchart"/></svg><span class="lbl">20 · nav</span></div>
+      <div class="cell"><svg width="24" height="24" aria-hidden="true"><use href="#ic-flowchart"/></svg><span class="lbl">24 · default</span></div>
+      <div class="cell"><svg width="32" height="32" aria-hidden="true"><use href="#ic-flowchart"/></svg><span class="lbl">32 · card</span></div>
+      <div class="cell"><svg width="48" height="48" aria-hidden="true"><use href="#ic-flowchart"/></svg><span class="lbl">48 · hero tile</span></div>
+    </div>
+
+    <div class="ds-h3">3.3 — The 20-icon set</div>
+
+    <!-- Relationships -->
+    <div class="icon-group-hd">
+      <span class="cat-dot" style="background:var(--cat-0);"></span>
+      Relationships
+      <span class="count">4 icons</span>
+    </div>
+    <div class="icon-grid">
+      <div class="icon-cell">
+        <svg width="32" height="32" aria-hidden="true"><use href="#ic-genogram"/></svg>
+        <div class="num">01</div>
+        <div class="nm">Genogram</div>
+        <div class="std">McGoldrick 2020</div>
+      </div>
+      <div class="icon-cell">
+        <svg width="32" height="32" aria-hidden="true"><use href="#ic-ecomap"/></svg>
+        <div class="num">02</div>
+        <div class="nm">Ecomap</div>
+        <div class="std">Hartman 1978</div>
+      </div>
+      <div class="icon-cell">
+        <svg width="32" height="32" aria-hidden="true"><use href="#ic-pedigree"/></svg>
+        <div class="num">03</div>
+        <div class="nm">Pedigree</div>
+        <div class="std">NSGC</div>
+      </div>
+      <div class="icon-cell">
+        <svg width="32" height="32" aria-hidden="true"><use href="#ic-sociogram"/></svg>
+        <div class="num">05</div>
+        <div class="nm">Sociogram</div>
+        <div class="std">Moreno 1934</div>
+      </div>
+      <div class="icon-cell" style="background:var(--fill-muted); opacity:0.5;">
+        <div style="font-size:10px; color:var(--text-muted); text-align:center; margin-top:20px;">future<br/>slot</div>
+      </div>
+    </div>
+
+    <!-- Electrical & Industrial -->
+    <div class="icon-group-hd">
+      <span class="cat-dot" style="background:var(--cat-2);"></span>
+      Electrical &amp; Industrial
+      <span class="count">5 icons</span>
+    </div>
+    <div class="icon-grid">
+      <div class="icon-cell">
+        <svg width="32" height="32" aria-hidden="true"><use href="#ic-timing"/></svg>
+        <div class="num">06</div>
+        <div class="nm">Timing</div>
+        <div class="std">IEEE 91</div>
+      </div>
+      <div class="icon-cell">
+        <svg width="32" height="32" aria-hidden="true"><use href="#ic-logic"/></svg>
+        <div class="num">07</div>
+        <div class="nm">Logic gate</div>
+        <div class="std">IEEE 91 / ANSI</div>
+      </div>
+      <div class="icon-cell">
+        <svg width="32" height="32" aria-hidden="true"><use href="#ic-circuit"/></svg>
+        <div class="num">08</div>
+        <div class="nm">Circuit schematic</div>
+        <div class="std">IEEE 315</div>
+      </div>
+      <div class="icon-cell">
+        <svg width="32" height="32" aria-hidden="true"><use href="#ic-ladder"/></svg>
+        <div class="num">10</div>
+        <div class="nm">Ladder logic</div>
+        <div class="std">IEC 61131-3</div>
+      </div>
+      <div class="icon-cell">
+        <svg width="32" height="32" aria-hidden="true"><use href="#ic-sld"/></svg>
+        <div class="num">11</div>
+        <div class="nm">Single-line</div>
+        <div class="std">IEEE 141</div>
+      </div>
+    </div>
+
+    <!-- Corporate / Legal -->
+    <div class="icon-group-hd">
+      <span class="cat-dot" style="background:var(--cat-3);"></span>
+      Corporate &amp; Legal
+      <span class="count">4 icons</span>
+    </div>
+    <div class="icon-grid">
+      <div class="icon-cell">
+        <svg width="32" height="32" aria-hidden="true"><use href="#ic-block"/></svg>
+        <div class="num">09</div>
+        <div class="nm">Block diagram</div>
+        <div class="std">generic</div>
+      </div>
+      <div class="icon-cell">
+        <svg width="32" height="32" aria-hidden="true"><use href="#ic-entity"/></svg>
+        <div class="num">12</div>
+        <div class="nm">Entity structure</div>
+        <div class="std">legal / corporate</div>
+      </div>
+      <div class="icon-cell">
+        <svg width="32" height="32" aria-hidden="true"><use href="#ic-flowchart"/></svg>
+        <div class="num">14</div>
+        <div class="nm">Flowchart</div>
+        <div class="std">ISO 5807</div>
+      </div>
+      <div class="icon-cell">
+        <svg width="32" height="32" aria-hidden="true"><use href="#ic-orgchart"/></svg>
+        <div class="num">16</div>
+        <div class="nm">Orgchart</div>
+        <div class="std">hierarchical</div>
+      </div>
+      <div class="icon-cell" style="background:var(--fill-muted); opacity:0.5;">
+        <div style="font-size:10px; color:var(--text-muted); text-align:center; margin-top:20px;">future<br/>slot</div>
+      </div>
+    </div>
+
+    <!-- Causality / Analysis -->
+    <div class="icon-group-hd">
+      <span class="cat-dot" style="background:var(--cat-1);"></span>
+      Causality &amp; Analysis
+      <span class="count">7 icons</span>
+    </div>
+    <div class="icon-grid">
+      <div class="icon-cell">
+        <svg width="32" height="32" aria-hidden="true"><use href="#ic-phylo"/></svg>
+        <div class="num">04</div>
+        <div class="nm">Phylogenetic</div>
+        <div class="std">Newick / NHX</div>
+      </div>
+      <div class="icon-cell">
+        <svg width="32" height="32" aria-hidden="true"><use href="#ic-fishbone"/></svg>
+        <div class="num">13</div>
+        <div class="nm">Fishbone</div>
+        <div class="std">Ishikawa</div>
+      </div>
+      <div class="icon-cell">
+        <svg width="32" height="32" aria-hidden="true"><use href="#ic-venn"/></svg>
+        <div class="num">15</div>
+        <div class="nm">Venn</div>
+        <div class="std">set theory</div>
+      </div>
+      <div class="icon-cell">
+        <svg width="32" height="32" aria-hidden="true"><use href="#ic-decision"/></svg>
+        <div class="num">17</div>
+        <div class="nm">Decision tree</div>
+        <div class="std">CART-style</div>
+      </div>
+      <div class="icon-cell">
+        <svg width="32" height="32" aria-hidden="true"><use href="#ic-matrix"/></svg>
+        <div class="num">18</div>
+        <div class="nm">Matrix</div>
+        <div class="std">2×2 / N×N</div>
+      </div>
+      <div class="icon-cell">
+        <svg width="32" height="32" aria-hidden="true"><use href="#ic-timeline"/></svg>
+        <div class="num">19</div>
+        <div class="nm">Timeline</div>
+        <div class="std">chronological</div>
+      </div>
+      <div class="icon-cell">
+        <svg width="32" height="32" aria-hidden="true"><use href="#ic-mindmap"/></svg>
+        <div class="num">20</div>
+        <div class="nm">Mindmap</div>
+        <div class="std">XMind-style</div>
+      </div>
+    </div>
+
+    <div class="ds-h3">3.4 — Do / don't</div>
+    <div class="dod-grid">
+      <div class="dod">
+        <h4><span class="mark-sq do-mark" style="width:18px;height:18px;border-radius:3px;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:600;background:var(--positive);">✓</span>DO</h4>
+        <ul>
+          <li>Miniaturize the actual diagram — not a metaphor for it.</li>
+          <li>Keep stroke at 1.5 px; let <code>currentColor</code> carry hue.</li>
+          <li>Pair the icon with the diagram's <em>cluster color</em>, not an invented color.</li>
+          <li>Use the icon in nav, tab chips, and doc TOCs — one surface per context.</li>
+        </ul>
+      </div>
+      <div class="dod">
+        <h4><span class="mark-sq dont-mark" style="width:18px;height:18px;border-radius:3px;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:600;background:var(--negative);">✗</span>DON'T</h4>
+        <ul>
+          <li>Substitute emojis (📊 🧬 ⚡) for the icons — they carry brand.</li>
+          <li>Add fills, gradients, or shadows. Outlines only.</li>
+          <li>Invent icons for new diagrams without adding a <code>symbol</code> here first.</li>
+          <li>Shrink below 14 px — the rail structure of ladder / entity breaks.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 CLUSTERS -->
+  <section class="ds-section" id="clusters">
+    <h2><span class="num">04</span>Four diagram clusters</h2>
+    <p class="lede">The organizing rail of the product. Navigation, marketing copy, and docs all group around these four — <strong>never</strong> a flat list of 20. Slots 8–11 are reserved for future clusters and must not be used in production UI.</p>
+
+    <div class="ds-h3">3.1 — Active clusters · 20 diagrams across 4 buckets</div>
+    <div class="cluster-grid">
+      <!-- Cluster 1 · Relationships -->
+      <article class="cluster-card" style="--c: var(--cat-0);">
+        <header class="cl-head">
+          <span class="cl-dot"></span>
+          <div class="cl-meta">
+            <div class="cl-name">Relationships</div>
+            <div class="cl-slot">cluster 00 · cat-0 · blue</div>
+          </div>
+          <span class="cl-count">4</span>
+        </header>
+        <div class="cl-icons">
+          <figure><svg viewBox="0 0 24 24"><use href="#ic-genogram"/></svg><figcaption>Genogram</figcaption></figure>
+          <figure><svg viewBox="0 0 24 24"><use href="#ic-pedigree"/></svg><figcaption>Pedigree</figcaption></figure>
+          <figure><svg viewBox="0 0 24 24"><use href="#ic-sociogram"/></svg><figcaption>Sociogram</figcaption></figure>
+          <figure><svg viewBox="0 0 24 24"><use href="#ic-ecomap"/></svg><figcaption>Ecomap</figcaption></figure>
+        </div>
+        <p class="cl-note">People and the bonds between them — kinship, affect, support.</p>
+      </article>
+
+      <!-- Cluster 2 · Electrical & Industrial -->
+      <article class="cluster-card" style="--c: var(--cat-2);">
+        <header class="cl-head">
+          <span class="cl-dot"></span>
+          <div class="cl-meta">
+            <div class="cl-name">Electrical &amp; Industrial</div>
+            <div class="cl-slot">cluster 02 · cat-2 · amber</div>
+          </div>
+          <span class="cl-count">5</span>
+        </header>
+        <div class="cl-icons">
+          <figure><svg viewBox="0 0 24 24"><use href="#ic-circuit"/></svg><figcaption>Circuit</figcaption></figure>
+          <figure><svg viewBox="0 0 24 24"><use href="#ic-sld"/></svg><figcaption>SLD</figcaption></figure>
+          <figure><svg viewBox="0 0 24 24"><use href="#ic-ladder"/></svg><figcaption>Ladder</figcaption></figure>
+          <figure><svg viewBox="0 0 24 24"><use href="#ic-logic"/></svg><figcaption>Logic</figcaption></figure>
+          <figure><svg viewBox="0 0 24 24"><use href="#ic-timing"/></svg><figcaption>Timing</figcaption></figure>
+        </div>
+        <p class="cl-note">IEEE 315 / IEC 61131-3. Stays black &amp; white in production — accent is nav-only.</p>
+      </article>
+
+      <!-- Cluster 3 · Corporate & Legal -->
+      <article class="cluster-card" style="--c: var(--cat-3);">
+        <header class="cl-head">
+          <span class="cl-dot"></span>
+          <div class="cl-meta">
+            <div class="cl-name">Corporate &amp; Legal</div>
+            <div class="cl-slot">cluster 03 · cat-3 · violet</div>
+          </div>
+          <span class="cl-count">4</span>
+        </header>
+        <div class="cl-icons">
+          <figure><svg viewBox="0 0 24 24"><use href="#ic-entity"/></svg><figcaption>Entity</figcaption></figure>
+          <figure><svg viewBox="0 0 24 24"><use href="#ic-orgchart"/></svg><figcaption>Orgchart</figcaption></figure>
+          <figure><svg viewBox="0 0 24 24"><use href="#ic-block"/></svg><figcaption>Block</figcaption></figure>
+          <figure><svg viewBox="0 0 24 24"><use href="#ic-flowchart"/></svg><figcaption>Flowchart</figcaption></figure>
+        </div>
+        <p class="cl-note">Structure and process — entities, reporting lines, control flow.</p>
+      </article>
+
+      <!-- Cluster 4 · Causality & Analysis -->
+      <article class="cluster-card" style="--c: var(--cat-1);">
+        <header class="cl-head">
+          <span class="cl-dot"></span>
+          <div class="cl-meta">
+            <div class="cl-name">Causality &amp; Analysis</div>
+            <div class="cl-slot">cluster 01 · cat-1 · emerald</div>
+          </div>
+          <span class="cl-count">7</span>
+        </header>
+        <div class="cl-icons">
+          <figure><svg viewBox="0 0 24 24"><use href="#ic-fishbone"/></svg><figcaption>Fishbone</figcaption></figure>
+          <figure><svg viewBox="0 0 24 24"><use href="#ic-phylo"/></svg><figcaption>Phylo</figcaption></figure>
+          <figure><svg viewBox="0 0 24 24"><use href="#ic-venn"/></svg><figcaption>Venn</figcaption></figure>
+          <figure><svg viewBox="0 0 24 24"><use href="#ic-mindmap"/></svg><figcaption>Mindmap</figcaption></figure>
+          <figure><svg viewBox="0 0 24 24"><use href="#ic-matrix"/></svg><figcaption>Matrix</figcaption></figure>
+          <figure><svg viewBox="0 0 24 24"><use href="#ic-decision"/></svg><figcaption>Decision</figcaption></figure>
+          <figure><svg viewBox="0 0 24 24"><use href="#ic-timeline"/></svg><figcaption>Timeline</figcaption></figure>
+        </div>
+        <p class="cl-note">Why and what-if — root cause, evolutionary descent, set logic, temporal reasoning.</p>
+      </article>
+    </div>
+
+    <div class="ds-h3">3.2 — Reserved · slots 8–11</div>
+    <div class="cluster-reserved">
+      <div class="res" style="--c: var(--cat-8);">
+        <span class="cl-dot"></span>
+        <div><strong>Biology</strong><div class="cl-slot">cat-8 · teal</div></div>
+        <span class="cl-tag">reserved</span>
+      </div>
+      <div class="res" style="--c: var(--cat-9);">
+        <span class="cl-dot"></span>
+        <div><strong>Time / project</strong><div class="cl-slot">cat-9 · indigo</div></div>
+        <span class="cl-tag">reserved</span>
+      </div>
+      <div class="res" style="--c: var(--cat-10);">
+        <span class="cl-dot"></span>
+        <div><strong>Health / clinical</strong><div class="cl-slot">cat-10 · rose</div></div>
+        <span class="cl-tag">reserved</span>
+      </div>
+      <div class="res" style="--c: var(--cat-11);">
+        <span class="cl-dot"></span>
+        <div><strong>Geo / topology</strong><div class="cl-slot">cat-11 · lime</div></div>
+        <span class="cl-tag">reserved</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 COLOR -->
+  <section class="ds-section" id="color">
+    <h2><span class="num">05</span>Color system</h2>
+    <p class="lede">Two themes drive the website (default + dark). <strong>Monochrome</strong> is a diagram-only output variant for IEC / IEEE print compliance — it never becomes a website mode.</p>
+
+    <div class="ds-h3">4.1 — Themes</div>
+    <div class="theme-grid">
+      <div class="theme-card">
+        <div class="th-head"><span class="nm">default</span><span class="ct">website + docs</span></div>
+        <div class="theme-preview">
+          <div style="background:#ffffff;">bg</div>
+          <div style="background:#f1f5f9;">fill-muted</div>
+          <div style="background:#2563eb;" class="light-on-dark">accent</div>
+          <div style="background:#0f172a;" class="light-on-dark">text</div>
+        </div>
+      </div>
+      <div class="theme-card">
+        <div class="th-head"><span class="nm">dark</span><span class="ct">website + docs</span></div>
+        <div class="theme-preview">
+          <div style="background:#1e1e2e;" class="light-on-dark">bg</div>
+          <div style="background:#45475a;" class="light-on-dark">fill-muted</div>
+          <div style="background:#89b4fa;">accent</div>
+          <div style="background:#cdd6f4;">text</div>
+        </div>
+      </div>
+      <div class="theme-card">
+        <div class="th-head"><span class="nm">monochrome</span><span class="ct">diagram-only · print</span></div>
+        <div class="theme-preview">
+          <div style="background:#ffffff;">bg</div>
+          <div style="background:#f0f0f0;">fill-muted</div>
+          <div style="background:#000000;" class="light-on-dark">ink</div>
+          <div style="background:#555555;" class="light-on-dark">text-muted</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ds-h3">4.2 — Base 11 tokens · current theme</div>
+    <table class="tok-table" id="base-tokens-table">
+      <thead>
+        <tr><th style="width:44px;"></th><th>Token</th><th>Value</th><th>Purpose</th></tr>
+      </thead>
+      <tbody id="base-tokens-body"></tbody>
+    </table>
+
+    <div class="ds-h3">4.3 — Category palette · 8 active + 4 reserved</div>
+    <p style="color:var(--text-muted); font-size:13px; margin:-4px 0 12px; max-width:660px;">
+      Category positions are <strong style="color:var(--text);">semantic, not decorative</strong>. Slot 7 is always "unclassified slate" — its hue changes per theme but its role doesn't. Slots 8–11 stay off-limits until a new cluster lands; they're pre-declared so we don't scramble for colors when Biology or Gantt arrives.
+    </p>
+    <div class="cat-strip">
+      <div style="background:var(--cat-0);"><span>slot 0</span><span class="slot">Relationships</span></div>
+      <div style="background:var(--cat-1);"><span>slot 1</span><span class="slot">Causality</span></div>
+      <div style="background:var(--cat-2);"><span>slot 2</span><span class="slot">Electrical</span></div>
+      <div style="background:var(--cat-3);"><span>slot 3</span><span class="slot">Corporate</span></div>
+      <div style="background:var(--cat-4);"><span>slot 4</span><span class="slot">red</span></div>
+      <div style="background:var(--cat-5);"><span>slot 5</span><span class="slot">cyan</span></div>
+      <div style="background:var(--cat-6);"><span>slot 6</span><span class="slot">pink</span></div>
+      <div style="background:var(--cat-7);"><span>slot 7</span><span class="slot">unclassified</span></div>
+      <div style="background:var(--cat-8);" class="is-reserved"><span>slot 8</span><span class="slot">teal</span></div>
+      <div style="background:var(--cat-9);" class="is-reserved"><span>slot 9</span><span class="slot">indigo</span></div>
+      <div style="background:var(--cat-10);" class="is-reserved"><span>slot 10</span><span class="slot">rose</span></div>
+      <div style="background:var(--cat-11);" class="is-reserved"><span>slot 11</span><span class="slot">lime</span></div>
+    </div>
+  </section>
+
+  <!-- 06 TYPE -->
+  <section class="ds-section" id="type">
+    <h2><span class="num">06</span>Type</h2>
+    <p class="lede">Two scales — don't mix them. In-diagram type stays at 3 tiers; marketing chrome uses a separate 6-tier ladder.</p>
+
+    <div class="ds-h3">5.1 — In-diagram · 3 tiers + code</div>
+    <div>
+      <div class="type-row">
+        <div class="meta"><strong>title</strong><br/>section headers, card titles</div>
+        <div class="type-sample" style="font-size:16px; font-weight:700;">Three-generation family</div>
+        <div class="spec">16 / 700 / sans</div>
+      </div>
+      <div class="type-row">
+        <div class="meta"><strong>label</strong><br/>default body text</div>
+        <div class="type-sample" style="font-size:12px; font-weight:400;">fleamont · b. 1909 · deceased</div>
+        <div class="spec">12 / 400 / sans</div>
+      </div>
+      <div class="type-row">
+        <div class="meta"><strong>small</strong><br/>captions, edge weights</div>
+        <div class="type-sample" style="font-size:9px; font-weight:400;">m. 1978 · consanguineous</div>
+        <div class="spec">9 / 400 / sans</div>
+      </div>
+      <div class="type-row">
+        <div class="meta"><strong>code</strong><br/>DSL snippets, ladder addresses</div>
+        <div class="type-sample" style="font-family:var(--mono); font-size:13px;">XIC(AUTO_HMIPB, "BIT 5.10")</div>
+        <div class="spec">13 / 400 / mono</div>
+      </div>
+    </div>
+
+    <div class="ds-h3">5.2 — Marketing · 6 tiers</div>
+    <div>
+      <div class="type-row">
+        <div class="meta"><strong>hero</strong></div>
+        <div class="type-sample" style="font-size:60px; font-weight:600; line-height:1; letter-spacing:-0.025em;">Standards-as-code</div>
+        <div class="spec">60 / 600</div>
+      </div>
+      <div class="type-row">
+        <div class="meta"><strong>h1</strong></div>
+        <div class="type-sample" style="font-size:36px; font-weight:600; letter-spacing:-0.02em;">Four diagram clusters</div>
+        <div class="spec">36 / 600</div>
+      </div>
+      <div class="type-row">
+        <div class="meta"><strong>h2</strong></div>
+        <div class="type-sample" style="font-size:24px; font-weight:600; letter-spacing:-0.015em;">Color system</div>
+        <div class="spec">24 / 600</div>
+      </div>
+      <div class="type-row">
+        <div class="meta"><strong>h3</strong></div>
+        <div class="type-sample" style="font-size:18px; font-weight:600;">Three themes</div>
+        <div class="spec">18 / 600</div>
+      </div>
+      <div class="type-row">
+        <div class="meta"><strong>body</strong></div>
+        <div class="type-sample" style="font-size:15px;">Every diagram corresponds to a real published standard.</div>
+        <div class="spec">15 / 400</div>
+      </div>
+      <div class="type-row">
+        <div class="meta"><strong>caption</strong></div>
+        <div class="type-sample" style="font-size:12px; color:var(--text-muted);">Ishikawa fishbone · 4M template · Nikkei / 1990</div>
+        <div class="spec">12 / 400</div>
+      </div>
+    </div>
+
+    <div class="ds-h3">5.3 — Families</div>
+    <table class="tok-table">
+      <tbody>
+        <tr><td style="width:120px;"><strong style="color:var(--text);">sans</strong></td><td class="hex">system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif</td><td class="use">No webfont — performance &amp; neutrality</td></tr>
+        <tr><td><strong style="color:var(--text);">mono</strong></td><td class="hex">ui-monospace, SFMono-Regular, Menlo, Consolas, monospace</td><td class="use">Code + DSL snippets + wordmark "tex"</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- 07 STROKE -->
+  <section class="ds-section" id="stroke">
+    <h2><span class="num">07</span>Stroke</h2>
+    <p class="lede">Three weights. Same discipline as typography. Emphasis is expressed by weight — and for relationships, by doubling the line.</p>
+
+    <div class="stroke-grid">
+      <div class="stroke-card">
+        <div class="demo">
+          <svg width="120" height="40"><line x1="0" y1="20" x2="120" y2="20" stroke="var(--stroke)" stroke-width="1"/></svg>
+        </div>
+        <div class="label"><span class="nm">thin</span><span class="sp">1 px</span></div>
+        <div class="use">Hairlines, ticks, gridlines</div>
+      </div>
+      <div class="stroke-card">
+        <div class="demo">
+          <svg width="120" height="40"><line x1="0" y1="20" x2="120" y2="20" stroke="var(--stroke)" stroke-width="2"/></svg>
+        </div>
+        <div class="label"><span class="nm">normal</span><span class="sp">2 px</span></div>
+        <div class="use">Default body strokes, shape outlines, edges</div>
+      </div>
+      <div class="stroke-card">
+        <div class="demo">
+          <svg width="120" height="40"><line x1="0" y1="20" x2="120" y2="20" stroke="var(--stroke)" stroke-width="3"/></svg>
+        </div>
+        <div class="label"><span class="nm">thick</span><span class="sp">3 px</span></div>
+        <div class="use">Node emphasis — proband, star, centerpiece</div>
+      </div>
+    </div>
+
+    <div class="ds-h3">Line language</div>
+    <div class="motif-grid">
+      <div class="motif">
+        <div class="demo">
+          <svg width="120" height="40"><line x1="0" y1="20" x2="120" y2="20" stroke="var(--stroke)" stroke-width="2" stroke-dasharray="5 4"/></svg>
+        </div>
+        <h4>Dashed — weak / uncommitted</h4>
+        <p>Ecomap broken link, genogram separated couple, sociogram isolate.</p>
+      </div>
+      <div class="motif">
+        <div class="demo">
+          <svg width="120" height="40">
+            <line x1="0" y1="17" x2="120" y2="17" stroke="var(--stroke)" stroke-width="2"/>
+            <line x1="0" y1="23" x2="120" y2="23" stroke="var(--stroke)" stroke-width="2"/>
+          </svg>
+        </div>
+        <h4>Double — reinforced tie</h4>
+        <p>Marriage, strong affiliation, overdetermined relationship. Node emphasis uses thick stroke, not double.</p>
+      </div>
+      <div class="motif">
+        <div class="demo">
+          <svg width="120" height="40"><line x1="0" y1="20" x2="120" y2="20" stroke="var(--stroke)" stroke-width="2" stroke-dasharray="1 3"/></svg>
+        </div>
+        <h4>Dotted — peripheral / latent</h4>
+        <p>Dotted fills at 6–10 % opacity = category background (fishbone rib zones, mindmap branch shading).</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 08 NODE ANATOMY -->
+  <section class="ds-section" id="node">
+    <h2><span class="num">08</span>Node anatomy</h2>
+    <p class="lede">Every node across every diagram is a composition of the same four layers. Break any one and the family stops feeling coherent.</p>
+
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom:24px;">
+      <div class="brand-card">
+        <div class="bc-head"><span class="nm">Four layers</span><span>anatomy</span></div>
+        <div class="bc-stage" style="height:200px;">
+          <svg width="240" height="140" viewBox="0 0 240 140">
+            <!-- annotations -->
+            <g font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="10" fill="#94a3b8">
+              <text x="4" y="38">① fill</text>
+              <text x="4" y="58">② stroke</text>
+              <text x="4" y="78">③ text</text>
+              <text x="4" y="98">④ badge</text>
+            </g>
+            <!-- node -->
+            <g transform="translate(110, 30)">
+              <rect x="0" y="0" width="100" height="72" rx="4" fill="var(--fill)" stroke="var(--stroke)" stroke-width="2"/>
+              <text x="50" y="30" text-anchor="middle" font-family="system-ui" font-size="13" font-weight="600" fill="var(--text)">Harry P.</text>
+              <text x="50" y="48" text-anchor="middle" font-family="system-ui" font-size="10" fill="var(--text-muted)">b. 1980 · index</text>
+              <circle cx="98" cy="4" r="8" fill="var(--accent)"/>
+              <text x="98" y="7.5" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="8" fill="#fff">★</text>
+            </g>
+            <!-- callout lines -->
+            <g stroke="#cbd5e1" stroke-width="1" stroke-dasharray="3 3" fill="none">
+              <line x1="48" y1="34" x2="112" y2="50"/>
+              <line x1="48" y1="54" x2="110" y2="32"/>
+              <line x1="48" y1="74" x2="130" y2="60"/>
+              <line x1="48" y1="94" x2="200" y2="32"/>
+            </g>
+          </svg>
+        </div>
+        <div class="bc-foot">Each layer pulls from the base 11 tokens — never a handpicked hex. Per-diagram palettes remap <em>only</em> fill.</div>
+      </div>
+
+      <div class="brand-card">
+        <div class="bc-head"><span class="nm">Default resolution</span><span>token map</span></div>
+        <div class="bc-stage" style="height:200px; flex-direction:column; align-items:stretch; padding:16px;">
+          <table class="tok-table" style="border:none; font-size:12px;">
+            <tbody>
+              <tr><td style="width:30%;"><strong style="color:var(--text);">① fill</strong></td><td style="color:var(--text-muted);">→ <code>fill</code> · <code>fill-muted</code> · per-diagram fill</td></tr>
+              <tr><td><strong style="color:var(--text);">② stroke</strong></td><td style="color:var(--text-muted);">→ <code>stroke</code> (2 px normal · 3 px emphasis)</td></tr>
+              <tr><td><strong style="color:var(--text);">③ text</strong></td><td style="color:var(--text-muted);">→ <code>text</code> (title) · <code>text-muted</code> (caption)</td></tr>
+              <tr><td><strong style="color:var(--text);">④ badge</strong></td><td style="color:var(--text-muted);">→ <code>accent</code> (index) · <code>positive/negative/warn</code> (status)</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="bc-foot">The <em>badge</em> is optional — used for proband, deceased, active-state. Max one badge per node.</div>
+      </div>
+    </div>
+
+    <div class="ds-h3">7.1 — Node type library</div>
+    <div class="node-grid">
+      <div class="node-card">
+        <div class="nc-stage">
+          <svg width="120" height="80" viewBox="0 0 120 80">
+            <rect x="10" y="10" width="100" height="60" rx="4" fill="var(--fill)" stroke="var(--stroke)" stroke-width="2"/>
+            <text x="60" y="38" text-anchor="middle" font-family="system-ui" font-size="13" font-weight="600" fill="var(--text)">Node</text>
+            <text x="60" y="56" text-anchor="middle" font-family="system-ui" font-size="10" fill="var(--text-muted)">body text</text>
+          </svg>
+        </div>
+        <div class="nc-body">
+          <div class="nc-name">Default box</div>
+          <div class="nc-spec">fill · stroke 2 · r 4 · title + caption</div>
+        </div>
+      </div>
+
+      <div class="node-card">
+        <div class="nc-stage">
+          <svg width="120" height="80" viewBox="0 0 120 80">
+            <rect x="10" y="10" width="100" height="60" rx="4" fill="var(--fill)" stroke="var(--accent)" stroke-width="3"/>
+            <text x="60" y="38" text-anchor="middle" font-family="system-ui" font-size="13" font-weight="600" fill="var(--text)">Proband</text>
+            <text x="60" y="56" text-anchor="middle" font-family="system-ui" font-size="10" fill="var(--accent)">index · III-1</text>
+            <polygon points="102,10 110,10 110,18" fill="var(--accent)"/>
+          </svg>
+        </div>
+        <div class="nc-body">
+          <div class="nc-name">Emphasised</div>
+          <div class="nc-spec">stroke 3 · accent tint · corner arrow</div>
+        </div>
+      </div>
+
+      <div class="node-card">
+        <div class="nc-stage">
+          <svg width="120" height="80" viewBox="0 0 120 80">
+            <rect x="10" y="10" width="100" height="60" rx="4" fill="var(--fill)" stroke="var(--stroke)" stroke-width="2"/>
+            <line x1="10" y1="10" x2="110" y2="70" stroke="var(--negative)" stroke-width="2"/>
+            <text x="60" y="38" text-anchor="middle" font-family="system-ui" font-size="13" font-weight="600" fill="var(--text-muted)">Node</text>
+            <text x="60" y="56" text-anchor="middle" font-family="system-ui" font-size="10" fill="var(--text-muted)">d. 2004</text>
+          </svg>
+        </div>
+        <div class="nc-body">
+          <div class="nc-name">Terminated</div>
+          <div class="nc-spec">negative slash · muted text · same fill</div>
+        </div>
+      </div>
+
+      <div class="node-card">
+        <div class="nc-stage">
+          <svg width="120" height="80" viewBox="0 0 120 80">
+            <polygon points="60,10 110,40 60,70 10,40" fill="var(--fill)" stroke="var(--stroke)" stroke-width="2"/>
+            <text x="60" y="44" text-anchor="middle" font-family="system-ui" font-size="12" font-weight="600" fill="var(--text)">Decision?</text>
+          </svg>
+        </div>
+        <div class="nc-body">
+          <div class="nc-name">Decision</div>
+          <div class="nc-spec">diamond · label only · no caption</div>
+        </div>
+      </div>
+
+      <div class="node-card">
+        <div class="nc-stage">
+          <svg width="120" height="80" viewBox="0 0 120 80">
+            <rect x="10" y="10" width="100" height="60" rx="30" fill="var(--positive)" stroke="none"/>
+            <text x="60" y="44" text-anchor="middle" font-family="system-ui" font-size="13" font-weight="600" fill="#fff">Start</text>
+          </svg>
+        </div>
+        <div class="nc-body">
+          <div class="nc-name">Start / Success</div>
+          <div class="nc-spec">pill · positive fill · white text</div>
+        </div>
+      </div>
+
+      <div class="node-card">
+        <div class="nc-stage">
+          <svg width="120" height="80" viewBox="0 0 120 80">
+            <circle cx="60" cy="40" r="24" fill="#d6e8fb" stroke="var(--stroke)" stroke-width="2"/>
+            <text x="60" y="44" text-anchor="middle" font-family="system-ui" font-size="11" font-weight="600" fill="var(--text)">♂</text>
+          </svg>
+        </div>
+        <div class="nc-body">
+          <div class="nc-name">Person · male</div>
+          <div class="nc-spec">male fill · kinship sigil · circle/square shape</div>
+        </div>
+      </div>
+
+      <div class="node-card">
+        <div class="nc-stage">
+          <svg width="120" height="80" viewBox="0 0 120 80">
+            <rect x="10" y="20" width="100" height="40" fill="var(--negative)" stroke="none"/>
+            <text x="60" y="44" text-anchor="middle" font-family="system-ui" font-size="13" font-weight="600" fill="#fff">Fault</text>
+          </svg>
+        </div>
+        <div class="nc-body">
+          <div class="nc-name">Danger / fault</div>
+          <div class="nc-spec">negative fill · white text · sharp corners</div>
+        </div>
+      </div>
+
+      <div class="node-card">
+        <div class="nc-stage">
+          <svg width="120" height="80" viewBox="0 0 120 80">
+            <rect x="10" y="20" width="100" height="40" fill="none" stroke="var(--stroke)" stroke-width="2" stroke-dasharray="4 4"/>
+            <text x="60" y="44" text-anchor="middle" font-family="system-ui" font-size="13" font-weight="500" fill="var(--text-muted)">Latent</text>
+          </svg>
+        </div>
+        <div class="nc-body">
+          <div class="nc-name">Latent / placeholder</div>
+          <div class="nc-spec">dashed 4-4 · muted text · no fill</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ds-h3">7.2 — Edges</div>
+    <div class="motif-grid">
+      <div class="motif">
+        <div class="demo">
+          <svg width="160" height="40">
+            <line x1="0" y1="20" x2="140" y2="20" stroke="var(--stroke)" stroke-width="2"/>
+            <polygon points="140,14 150,20 140,26" fill="var(--stroke)"/>
+          </svg>
+        </div>
+        <h4>Directed</h4>
+        <p>Single solid line + arrowhead. Arrowhead fill = edge color.</p>
+      </div>
+      <div class="motif">
+        <div class="demo">
+          <svg width="160" height="40"><line x1="0" y1="20" x2="160" y2="20" stroke="var(--stroke)" stroke-width="2"/></svg>
+        </div>
+        <h4>Undirected</h4>
+        <p>Solid line, no terminator. Default.</p>
+      </div>
+      <div class="motif">
+        <div class="demo">
+          <svg width="160" height="40">
+            <line x1="0" y1="20" x2="140" y2="20" stroke="var(--accent)" stroke-width="2"/>
+            <polygon points="140,14 150,20 140,26" fill="var(--accent)"/>
+          </svg>
+        </div>
+        <h4>Selected / traced</h4>
+        <p>Accent color. Never red (red = danger) and never green (green = success).</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 09 PER-DIAGRAM PALETTES -->
+  <section class="ds-section" id="palettes">
+    <h2><span class="num">09</span>Per-diagram palettes</h2>
+    <p class="lede">Diagrams whose standard mandates specific fills, classes, or ramps. These override the generic node-fill layer — they <strong>never</strong> override stroke, text, or the base 11 tokens.</p>
+
+    <div class="pd-list">
+
+      <!-- GENOGRAM -->
+      <div class="pd">
+        <div class="pd-head">
+          <div>
+            <h3>Genogram</h3>
+            <div class="who">McGoldrick 2020 · clinical</div>
+          </div>
+          <p class="desc">Biological-sex cues are <em>muted pastels</em>, not saturated — the diagram must read as a professional pedigree, not a baby registry. Condition flags use a saturated overlay on the <code>conditionFill</code> token; deceased uses a dark-red slash, never a full fill.</p>
+        </div>
+        <div class="pd-body">
+          <div class="pd-col">
+            <div class="pd-col-hd">preview</div>
+            <div class="pd-preview">
+              <svg width="260" height="150" viewBox="0 0 260 150">
+                <!-- gen I -->
+                <rect x="40" y="20" width="40" height="40" fill="#d6e8fb" stroke="#334155" stroke-width="2"/>
+                <circle cx="180" cy="40" r="20" fill="#fbd6e5" stroke="#334155" stroke-width="2"/>
+                <line x1="70" y1="20" x2="70" y2="10" stroke="#8b1a1a" stroke-width="2"/>
+                <line x1="50" y1="20" x2="90" y2="60" stroke="#8b1a1a" stroke-width="2"/>
+                <line x1="80" y1="40" x2="160" y2="40" stroke="#334155" stroke-width="2"/>
+                <!-- gen II -->
+                <rect x="100" y="100" width="40" height="40" fill="#2563eb" stroke="#334155" stroke-width="3"/>
+                <circle cx="180" cy="120" r="20" fill="#fbd6e5" stroke="#334155" stroke-width="2"/>
+                <line x1="120" y1="60" x2="120" y2="100" stroke="#334155" stroke-width="2"/>
+                <line x1="160" y1="60" x2="180" y2="100" stroke="#334155" stroke-width="2"/>
+                <polygon points="98,100 108,100 108,110" fill="#2563eb"/>
+                <text x="60" y="80" font-family="system-ui" font-size="9" fill="#475569" text-anchor="middle">d. 1998</text>
+                <text x="120" y="152" font-family="system-ui" font-size="9" fill="#475569" text-anchor="middle">III-1 proband</text>
+              </svg>
+            </div>
+          </div>
+          <div class="pd-col">
+            <div class="pd-col-hd">tokens</div>
+            <div class="pd-tokens">
+              <div class="pd-tok"><i style="background:#d6e8fb;"></i><span class="tk">maleFill</span><span class="use">#d6e8fb · pale blue · square</span></div>
+              <div class="pd-tok"><i style="background:#fbd6e5;"></i><span class="tk">femaleFill</span><span class="use">#fbd6e5 · pale pink · circle</span></div>
+              <div class="pd-tok"><i style="background:#2563eb;"></i><span class="tk">conditionFill</span><span class="use">= accent · affected cases</span></div>
+              <div class="pd-tok"><i style="background:#8b1a1a;"></i><span class="tk">deceasedMark</span><span class="use">#8b1a1a · slash only, not fill</span></div>
+              <div class="pd-tok"><i style="background:transparent; border-style:dashed;"></i><span class="tk">carrierDot</span><span class="use">small centered dot · same stroke</span></div>
+              <div class="pd-tok"><i style="background:transparent; border:2px solid #334155;"></i><span class="tk">probandArrow</span><span class="use">accent corner arrow + stroke 3</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PEDIGREE -->
+      <div class="pd">
+        <div class="pd-head">
+          <div>
+            <h3>Pedigree</h3>
+            <div class="who">NSGC Pedigree Standard Nomenclature</div>
+          </div>
+          <p class="desc">A stricter cousin of the genogram. Same shapes, but <em>fills encode disease status</em>, not sex. NSGC requires four fill states — unaffected / affected / carrier / obligate. Sex is encoded only by shape.</p>
+        </div>
+        <div class="pd-body">
+          <div class="pd-col">
+            <div class="pd-col-hd">preview</div>
+            <div class="pd-preview">
+              <svg width="260" height="140" viewBox="0 0 260 140">
+                <!-- row -->
+                <g transform="translate(20, 50)">
+                  <rect width="40" height="40" fill="#ffffff" stroke="#334155" stroke-width="2"/>
+                  <text x="20" y="58" text-anchor="middle" font-family="system-ui" font-size="9" fill="#475569">unaff.</text>
+                </g>
+                <g transform="translate(80, 50)">
+                  <rect width="40" height="40" fill="#334155" stroke="#334155" stroke-width="2"/>
+                  <text x="20" y="58" text-anchor="middle" font-family="system-ui" font-size="9" fill="#475569">affected</text>
+                </g>
+                <g transform="translate(140, 50)">
+                  <rect width="40" height="40" fill="#ffffff" stroke="#334155" stroke-width="2"/>
+                  <circle cx="20" cy="20" r="6" fill="#334155"/>
+                  <text x="20" y="58" text-anchor="middle" font-family="system-ui" font-size="9" fill="#475569">carrier</text>
+                </g>
+                <g transform="translate(200, 50)">
+                  <rect width="40" height="40" fill="none" stroke="#334155" stroke-width="2"/>
+                  <line x1="0" y1="0" x2="40" y2="40" stroke="#334155" stroke-width="2"/>
+                  <text x="20" y="58" text-anchor="middle" font-family="system-ui" font-size="9" fill="#475569">obligate</text>
+                </g>
+              </svg>
+            </div>
+          </div>
+          <div class="pd-col">
+            <div class="pd-col-hd">tokens</div>
+            <div class="pd-tokens">
+              <div class="pd-tok"><i style="background:#ffffff; border:1.5px solid #334155;"></i><span class="tk">unaffectedFill</span><span class="use">white + stroke only</span></div>
+              <div class="pd-tok"><i style="background:#334155;"></i><span class="tk">affectedFill</span><span class="use">= stroke · solid fill</span></div>
+              <div class="pd-tok"><i style="background:radial-gradient(#334155 30%, #fff 30%);"></i><span class="tk">carrierDot</span><span class="use">center dot · r 6</span></div>
+              <div class="pd-tok"><i style="background:#fff; border:1.5px solid #334155;"></i><span class="tk">obligateDiagonal</span><span class="use">white + stroke diagonal</span></div>
+              <div class="pd-tok"><i style="background:#8b1a1a;"></i><span class="tk">deceasedSlash</span><span class="use">as genogram · shared token</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FLOWCHART -->
+      <div class="pd">
+        <div class="pd-head">
+          <div>
+            <h3>Flowchart</h3>
+            <div class="who">6 semantic node classes</div>
+          </div>
+          <p class="desc">The only diagram family with opinionated colored nodes. Every node gets paired <code>fill/stroke/text</code> tokens based on semantic role. Designers do not invent new classes and do not apply these colors to non-flowchart shapes.</p>
+        </div>
+        <div class="pd-body">
+          <div class="pd-col">
+            <div class="pd-col-hd">preview</div>
+            <div class="pd-preview">
+              <svg width="260" height="160" viewBox="0 0 260 160">
+                <!-- start -->
+                <rect x="90" y="8" width="80" height="28" rx="14" fill="#059669"/>
+                <text x="130" y="27" text-anchor="middle" font-family="system-ui" font-size="12" font-weight="600" fill="#fff">Start</text>
+                <!-- process -->
+                <rect x="90" y="52" width="80" height="28" rx="2" fill="#f1f5f9" stroke="#334155" stroke-width="2"/>
+                <text x="130" y="71" text-anchor="middle" font-family="system-ui" font-size="12" font-weight="500" fill="#0f172a">Process</text>
+                <!-- decision -->
+                <polygon points="130,92 180,112 130,132 80,112" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/>
+                <text x="130" y="116" text-anchor="middle" font-family="system-ui" font-size="11" font-weight="600" fill="#1e40af">Decision?</text>
+                <!-- edges -->
+                <g stroke="#334155" stroke-width="2" fill="none">
+                  <line x1="130" y1="36" x2="130" y2="52"/>
+                  <line x1="130" y1="80" x2="130" y2="92"/>
+                </g>
+              </svg>
+            </div>
+          </div>
+          <div class="pd-col">
+            <div class="pd-col-hd">6 classes</div>
+            <div class="pd-tokens">
+              <div class="pd-tok"><i style="background:#059669;"></i><span class="tk">start</span><span class="use">pill · positive fill · white text</span></div>
+              <div class="pd-tok"><i style="background:#f1f5f9; border:1.5px solid #334155;"></i><span class="tk">process</span><span class="use">fill-muted · stroke · text</span></div>
+              <div class="pd-tok"><i style="background:#eff6ff; border:1.5px solid #2563eb;"></i><span class="tk">decision</span><span class="use">diamond · accent-soft · accent stroke</span></div>
+              <div class="pd-tok"><i style="background:#059669;"></i><span class="tk">success</span><span class="use">= start · pill or rect</span></div>
+              <div class="pd-tok"><i style="background:#dc2626;"></i><span class="tk">danger</span><span class="use">negative fill · white text</span></div>
+              <div class="pd-tok"><i style="background:#f1f5f9; border:1.5px dashed #94a3b8;"></i><span class="tk">neutral</span><span class="use">dashed · placeholder / latent</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MINDMAP -->
+      <div class="pd">
+        <div class="pd-head">
+          <div>
+            <h3>Mindmap</h3>
+            <div class="who">XMind-inspired branch palette</div>
+          </div>
+          <p class="desc">Main branches draw from the 8-color category palette <em>in declaration order</em>. Color is applied only as a colored <strong>underline</strong> + branch stroke — never as a filled pill and never as text color on leaves. Sub-branches inherit parent color at 60 % opacity.</p>
+        </div>
+        <div class="pd-body">
+          <div class="pd-col">
+            <div class="pd-col-hd">preview</div>
+            <div class="pd-preview">
+              <svg width="280" height="180" viewBox="0 0 280 180">
+                <!-- center -->
+                <text x="140" y="94" text-anchor="middle" font-family="system-ui" font-size="15" font-weight="700" fill="#0f172a">Topic</text>
+                <line x1="110" y1="100" x2="170" y2="100" stroke="#0f172a" stroke-width="2"/>
+                <!-- b1 blue -->
+                <path d="M140 90 C 100 60, 60 40, 30 30" stroke="#2563eb" stroke-width="2" fill="none"/>
+                <text x="26" y="22" font-family="system-ui" font-size="11" fill="#0f172a">Idea A</text>
+                <line x1="6" y1="26" x2="46" y2="26" stroke="#2563eb" stroke-width="2"/>
+                <!-- b2 emerald -->
+                <path d="M140 90 C 180 60, 220 40, 250 30" stroke="#059669" stroke-width="2" fill="none"/>
+                <text x="218" y="22" font-family="system-ui" font-size="11" fill="#0f172a">Idea B</text>
+                <line x1="218" y1="26" x2="270" y2="26" stroke="#059669" stroke-width="2"/>
+                <!-- b3 amber -->
+                <path d="M140 110 C 100 140, 60 160, 30 170" stroke="#d97706" stroke-width="2" fill="none"/>
+                <text x="10" y="162" font-family="system-ui" font-size="11" fill="#0f172a">Idea C</text>
+                <line x1="6" y1="166" x2="50" y2="166" stroke="#d97706" stroke-width="2"/>
+                <!-- b4 violet -->
+                <path d="M140 110 C 180 140, 220 160, 250 170" stroke="#7c3aed" stroke-width="2" fill="none"/>
+                <text x="220" y="162" font-family="system-ui" font-size="11" fill="#0f172a">Idea D</text>
+                <line x1="218" y1="166" x2="270" y2="166" stroke="#7c3aed" stroke-width="2"/>
+              </svg>
+            </div>
+          </div>
+          <div class="pd-col">
+            <div class="pd-col-hd">branch order</div>
+            <div class="pd-tokens">
+              <div class="pd-tok"><i style="background:var(--cat-0);"></i><span class="tk">branch-1</span><span class="use">cat-0 · first declared</span></div>
+              <div class="pd-tok"><i style="background:var(--cat-1);"></i><span class="tk">branch-2</span><span class="use">cat-1</span></div>
+              <div class="pd-tok"><i style="background:var(--cat-2);"></i><span class="tk">branch-3</span><span class="use">cat-2</span></div>
+              <div class="pd-tok"><i style="background:var(--cat-3);"></i><span class="tk">branch-4</span><span class="use">cat-3</span></div>
+              <div class="pd-tok"><i style="background:var(--cat-4);"></i><span class="tk">branch-5…8</span><span class="use">cat-4…7 · wraps at 8</span></div>
+              <div class="pd-tok"><i style="background:var(--fill-muted);"></i><span class="tk">sub-branch</span><span class="use">parent @ 60 % opacity</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PHYLO -->
+      <div class="pd">
+        <div class="pd-head">
+          <div>
+            <h3>Phylogenetic tree</h3>
+            <div class="who">Newick + NHX · support ramp</div>
+          </div>
+          <p class="desc">Clade support (bootstrap / posterior) is encoded on a 4-stop <em>confidence ramp</em> — green → yellow → orange → red. This is the only place in the system where a diverging gradient is allowed, because the standard demands it.</p>
+        </div>
+        <div class="pd-body">
+          <div class="pd-col">
+            <div class="pd-col-hd">preview</div>
+            <div class="pd-preview">
+              <svg width="280" height="180" viewBox="0 0 280 180">
+                <g stroke-width="2" fill="none">
+                  <line x1="20" y1="90" x2="80" y2="90" stroke="#334155"/>
+                  <line x1="80" y1="40" x2="80" y2="140"/>
+                  <line x1="80" y1="40" x2="150" y2="40" stroke="#059669"/>
+                  <line x1="80" y1="140" x2="150" y2="140" stroke="#d97706"/>
+                  <line x1="150" y1="20" x2="150" y2="60"/>
+                  <line x1="150" y1="20" x2="220" y2="20" stroke="#059669"/>
+                  <line x1="150" y1="60" x2="220" y2="60" stroke="#d97706"/>
+                  <line x1="150" y1="120" x2="150" y2="160"/>
+                  <line x1="150" y1="120" x2="220" y2="120" stroke="#d97706"/>
+                  <line x1="150" y1="160" x2="220" y2="160" stroke="#dc2626"/>
+                </g>
+                <g fill="#fff" stroke-width="2">
+                  <circle cx="80" cy="90" r="8" fill="#059669"/>
+                  <circle cx="150" cy="40" r="6" fill="#059669"/>
+                  <circle cx="150" cy="140" r="6" fill="#d97706"/>
+                </g>
+                <g font-family="system-ui" font-size="10" fill="#475569">
+                  <text x="224" y="23">Taxon A</text>
+                  <text x="224" y="63">Taxon B</text>
+                  <text x="224" y="123">Taxon C</text>
+                  <text x="224" y="163">Taxon D</text>
+                </g>
+              </svg>
+            </div>
+          </div>
+          <div class="pd-col">
+            <div class="pd-col-hd">support ramp</div>
+            <div class="pd-tokens">
+              <div class="pd-tok"><i style="background:#059669;"></i><span class="tk">high</span><span class="use">≥ 0.95 · positive green</span></div>
+              <div class="pd-tok"><i style="background:#84cc16;"></i><span class="tk">good</span><span class="use">0.80 – 0.95 · lime</span></div>
+              <div class="pd-tok"><i style="background:#d97706;"></i><span class="tk">medium</span><span class="use">0.50 – 0.80 · warn</span></div>
+              <div class="pd-tok"><i style="background:#dc2626;"></i><span class="tk">low</span><span class="use">&lt; 0.50 · negative</span></div>
+              <div class="pd-tok"><i style="background:#334155;"></i><span class="tk">branch</span><span class="use">= stroke · uncolored</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VENN -->
+      <div class="pd">
+        <div class="pd-head">
+          <div>
+            <h3>Venn / Set</h3>
+            <div class="who">soft fills + multiply blend</div>
+          </div>
+          <p class="desc">Category fills drop one saturation step from cat-N and rely on <code>mix-blend-mode: multiply</code> for correct intersection darkening. Designers never hand-pick overlap colors — the blend mode does the math.</p>
+        </div>
+        <div class="pd-body">
+          <div class="pd-col">
+            <div class="pd-col-hd">preview</div>
+            <div class="pd-preview">
+              <svg width="260" height="160" viewBox="0 0 260 160">
+                <g style="mix-blend-mode:multiply;">
+                  <circle cx="100" cy="80" r="50" fill="#bfdbfe" stroke="#2563eb" stroke-width="2"/>
+                  <circle cx="160" cy="80" r="50" fill="#bbf7d0" stroke="#059669" stroke-width="2"/>
+                </g>
+                <text x="70" y="82" font-family="system-ui" font-size="11" font-weight="600" fill="#0f172a">A</text>
+                <text x="188" y="82" font-family="system-ui" font-size="11" font-weight="600" fill="#0f172a">B</text>
+                <text x="128" y="82" font-family="system-ui" font-size="11" font-weight="600" fill="#0f172a">∩</text>
+              </svg>
+            </div>
+          </div>
+          <div class="pd-col">
+            <div class="pd-col-hd">tokens</div>
+            <div class="pd-tokens">
+              <div class="pd-tok"><i style="background:#bfdbfe;"></i><span class="tk">set-fill</span><span class="use">cat-N @ ~200 tint · ~35 % sat</span></div>
+              <div class="pd-tok"><i style="background:#2563eb;"></i><span class="tk">set-stroke</span><span class="use">cat-N full saturation</span></div>
+              <div class="pd-tok"><i style="background:transparent; border:1px dashed #94a3b8;"></i><span class="tk">blend</span><span class="use"><code>mix-blend-mode: multiply</code></span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- INDUSTRIAL -->
+      <div class="pd">
+        <div class="pd-head">
+          <div>
+            <h3>Industrial (Circuit · SLD · Ladder · Logic)</h3>
+            <div class="who">IEEE 315 · IEC 61131-3</div>
+          </div>
+          <p class="desc"><strong style="color:var(--text);">Always monochrome.</strong> Even under <code>default</code> theme, these diagrams render black-on-white — per the standards' compliance mandate. Dark mode inverts luminance only. Never introduce hue. Live / active state is expressed by <em>stroke weight</em>, not color change.</p>
+        </div>
+        <div class="pd-body">
+          <div class="pd-col">
+            <div class="pd-col-hd">preview</div>
+            <div class="pd-preview" style="background:#fff;">
+              <svg width="260" height="110" viewBox="0 0 260 110">
+                <g stroke="#000" stroke-width="2" fill="none">
+                  <line x1="20" y1="20" x2="240" y2="20"/>
+                  <line x1="20" y1="90" x2="240" y2="90"/>
+                  <line x1="60" y1="20" x2="60" y2="90"/>
+                  <line x1="140" y1="20" x2="140" y2="90"/>
+                  <line x1="200" y1="20" x2="200" y2="90"/>
+                </g>
+                <!-- XIC -->
+                <g stroke="#000" stroke-width="3" fill="none">
+                  <line x1="50" y1="55" x2="70" y2="55"/>
+                  <line x1="60" y1="45" x2="60" y2="65"/>
+                </g>
+                <!-- OTL -->
+                <g stroke="#000" stroke-width="2" fill="none">
+                  <circle cx="200" cy="55" r="10"/>
+                  <text x="200" y="58" font-family="system-ui" font-size="10" fill="#000" text-anchor="middle" stroke="none">L</text>
+                </g>
+                <text x="60" y="82" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="9" fill="#000" text-anchor="middle">XIC</text>
+              </svg>
+            </div>
+          </div>
+          <div class="pd-col">
+            <div class="pd-col-hd">rules</div>
+            <div class="pd-tokens">
+              <div class="pd-tok"><i style="background:#000;"></i><span class="tk">ink</span><span class="use">all strokes · #000 · no hue</span></div>
+              <div class="pd-tok"><i style="background:#fff; border:1.5px solid #000;"></i><span class="tk">paper</span><span class="use">all fills · #fff</span></div>
+              <div class="pd-tok"><i style="background:transparent; border:2px solid #000;"></i><span class="tk">active-state</span><span class="use">stroke 3 (not color change)</span></div>
+              <div class="pd-tok"><i style="background:transparent; border:1.5px dashed #000;"></i><span class="tk">de-energised</span><span class="use">dashed · no color</span></div>
+              <div class="pd-tok"><i style="background:#fff; border:1.5px solid #888;"></i><span class="tk">dark · ink</span><span class="use">invert to white ink on #1e1e2e</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 10 SPACING -->
+  <section class="ds-section" id="spacing">
+    <h2><span class="num">10</span>Spacing</h2>
+    <p class="lede">Diagrams lay out mathematically — this scale applies to website chrome around them.</p>
+
+    <div class="spacing-ruler">
+      <div class="block"><div class="bar" style="width:4px;"></div><div class="lbl">4</div></div>
+      <div class="block"><div class="bar" style="width:8px;"></div><div class="lbl">8</div></div>
+      <div class="block"><div class="bar" style="width:12px;"></div><div class="lbl">12</div></div>
+      <div class="block"><div class="bar" style="width:16px;"></div><div class="lbl">16</div></div>
+      <div class="block"><div class="bar" style="width:24px;"></div><div class="lbl">24</div></div>
+      <div class="block"><div class="bar" style="width:32px;"></div><div class="lbl">32</div></div>
+      <div class="block"><div class="bar" style="width:48px;"></div><div class="lbl">48</div></div>
+      <div class="block"><div class="bar" style="width:64px;"></div><div class="lbl">64</div></div>
+      <div class="block"><div class="bar" style="width:96px;"></div><div class="lbl">96</div></div>
+    </div>
+
+    <p style="color:var(--text-muted); font-size:13px; margin-top:16px; max-width:640px;">
+      Diagram cards should have <strong style="color:var(--text);">≥ 32 px padding</strong> — the diagrams themselves are dense.
+    </p>
+  </section>
+
+  <!-- 10 MOTIFS -->
+  <section class="ds-section" id="motifs">
+    <h2><span class="num">10</span>Repeating motifs</h2>
+    <p class="lede">Visual conventions that cross the whole product. Treat them consistently and the surfaces feel coherent without extra work.</p>
+
+    <div class="motif-grid">
+      <div class="motif">
+        <div class="demo">
+          <svg width="120" height="52">
+            <text x="60" y="20" text-anchor="middle" font-family="system-ui" font-size="12" font-weight="600" fill="var(--text)">Title</text>
+            <text x="60" y="36" text-anchor="middle" font-family="system-ui" font-size="9" fill="var(--text-muted)">description caption</text>
+          </svg>
+        </div>
+        <h4>Title + description</h4>
+        <p>Every SVG carries <code>&lt;title&gt;</code> + <code>&lt;desc&gt;</code>. Surface them on the page as a caption under the preview.</p>
+      </div>
+      <div class="motif">
+        <div class="demo">
+          <svg width="120" height="40">
+            <circle cx="24" cy="20" r="12" fill="none" stroke="var(--stroke)" stroke-width="2"/>
+            <circle cx="96" cy="20" r="12" fill="none" stroke="var(--stroke)" stroke-width="2"/>
+            <line x1="36" y1="20" x2="84" y2="20" stroke="var(--stroke)" stroke-width="2" stroke-dasharray="5 4"/>
+          </svg>
+        </div>
+        <h4>Broken link</h4>
+        <p>Dashed line always means <em>weak / uncommitted / separated</em> — never "planned" or "future" (which would be dotted).</p>
+      </div>
+      <div class="motif">
+        <div class="demo">
+          <svg width="80" height="52">
+            <rect x="12" y="10" width="56" height="32" fill="none" stroke="var(--stroke)" stroke-width="2"/>
+            <line x1="12" y1="10" x2="68" y2="42" stroke="var(--negative)" stroke-width="2"/>
+          </svg>
+        </div>
+        <h4>Slash mark</h4>
+        <p>A small red slash over a node means <em>deceased / eliminated / terminated</em> — uniform across person diagrams and entity trees.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 11 DOs -->
+  <section class="ds-section" id="dos">
+    <h2><span class="num">11</span>Do / don't</h2>
+    <p class="lede">Hard rules. The authoring library enforces many; these protect the ones it can't.</p>
+
+    <div class="dod-grid">
+      <div class="dod">
+        <h4><span class="mark do-mark">✓</span>DO</h4>
+        <ul>
+          <li>Write the brand as <strong>Schematex</strong> — capital S, lowercase rest.</li>
+          <li>Use <code>var(--accent)</code> as the single CTA color.</li>
+          <li>Use flat fills on anything touching a diagram.</li>
+          <li>Use the 12-slot palette for tags, chips, cluster badges — first 8 only in production.</li>
+          <li>Keep industrial diagrams black &amp; white — dark mode inverts luminance only.</li>
+          <li>Surface <code>&lt;title&gt;</code> + <code>&lt;desc&gt;</code> as caption text under previews.</li>
+        </ul>
+      </div>
+      <div class="dod">
+        <h4><span class="mark dont-mark">✗</span>DON'T</h4>
+        <ul>
+          <li>Write "SchemaTex", "SchemaTeX", or "SCHEMATEX" in prose.</li>
+          <li>Introduce a new accent color or gradient on anything diagram-adjacent.</li>
+          <li>Add drop shadows to diagram frames — 1 px <code>neutral</code> border only.</li>
+          <li>Use slots 8–11 before a new cluster lands.</li>
+          <li>Add font sizes between 9 / 12 / 16 for in-diagram type (14 is probably a label → 12).</li>
+          <li>Recolor industrial diagrams (IEEE 315 / IEC 61131-3 stay B&amp;W).</li>
+          <li>Put emojis in product UI chrome — cluster emoji 👪⚡🏢🐟 are doc-only references.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 12 CHECKLIST -->
+  <section class="ds-section" id="checklist">
+    <h2><span class="num">12</span>Designer checklist</h2>
+    <p class="lede">Run this before shipping any new surface.</p>
+
+    <ul class="chk">
+      <li><span class="box"></span>Brand written as <strong>Schematex</strong> in prose.</li>
+      <li><span class="box"></span>The surface uses the <code>default</code> base theme tokens verbatim — no custom grays or blues.</li>
+      <li><span class="box"></span>Dark mode uses Catppuccin Mocha (<code>#1e1e2e</code>, <code>#cdd6f4</code>, <code>#89b4fa</code>).</li>
+      <li><span class="box"></span>Category chips / charts draw from the first 8 palette slots, not invented colors.</li>
+      <li><span class="box"></span>Typography stays in 3 tiers for in-diagram content. Marketing scale used only outside frames.</li>
+      <li><span class="box"></span>Per-diagram palette used <em>only</em> for nodes of that diagram type.</li>
+      <li><span class="box"></span>Industrial diagrams are not recolored in dark mode — luminance inversion only.</li>
+      <li><span class="box"></span>No webfont loaded. <code>system-ui</code> + <code>ui-monospace</code> only.</li>
+    </ul>
+  </section>
+
+</div>
+
+<script>
+  // Theme switcher + live token table (default + dark only — mono removed from site chrome)
+  const TOKENS = [
+    { key: 'bg',          use: 'Page background' },
+    { key: 'text',        use: 'Primary text' },
+    { key: 'text-muted',  use: 'Secondary text, captions' },
+    { key: 'stroke',      use: 'Primary borders' },
+    { key: 'fill',        use: 'Shape fills' },
+    { key: 'fill-muted',  use: 'Subtle fills, code blocks' },
+    { key: 'accent',      use: 'Links, focus, CTAs' },
+    { key: 'positive',    use: 'Success states' },
+    { key: 'negative',    use: 'Errors, destructive' },
+    { key: 'neutral',     use: 'Muted strokes, dashed separators' },
+    { key: 'warn',        use: 'Warnings, attention' }
+  ];
+
+  function renderTokens() {
+    const body = document.getElementById('base-tokens-body');
+    const cs = getComputedStyle(document.documentElement);
+    body.innerHTML = TOKENS.map(t => {
+      const val = cs.getPropertyValue('--' + t.key).trim();
+      return `<tr>
+        <td><span class="sw" style="background:${val}"></span></td>
+        <td><strong style="color:var(--text);">${t.key}</strong></td>
+        <td class="hex">${val}</td>
+        <td class="use">${t.use}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  const sw = document.getElementById('theme-switch');
+  sw.addEventListener('click', (e) => {
+    const b = e.target.closest('button[data-th]');
+    if (!b) return;
+    const th = b.dataset.th;
+    document.documentElement.setAttribute('data-theme', th);
+    sw.querySelectorAll('button').forEach(x => x.classList.toggle('active', x === b));
+    renderTokens();
+    try { localStorage.setItem('schematex.theme', th); } catch(e) {}
+  });
+
+  // Hydrate from localStorage
+  try {
+    const saved = localStorage.getItem('schematex.theme');
+    if (saved && (saved === 'default' || saved === 'dark')) {
+      document.documentElement.setAttribute('data-theme', saved);
+      sw.querySelectorAll('button').forEach(x => x.classList.toggle('active', x.dataset.th === saved));
+    }
+  } catch(e) {}
+
+  renderTokens();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,823 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Schematex — Component reference</title>
+<link rel="stylesheet" href="site.css">
+
+<style>
+  /* ---- Component reference page-specific styles ---- */
+  .cr-wrap { max-width: 1100px; margin: 0 auto; padding: 64px 32px 96px; }
+
+  .cr-hd { padding-bottom: 28px; border-bottom: 1px solid var(--fill-muted); margin-bottom: 40px; }
+  .cr-hd .eye { font-family: var(--mono); font-size: 12px; color: var(--text-muted); letter-spacing: 0.04em; margin-bottom: 12px; }
+  .cr-hd h1 { font-size: 36px; letter-spacing: -0.02em; font-weight: 600; margin: 0 0 12px; line-height: 1.1; }
+  .cr-hd p { color: var(--text-muted); max-width: 620px; margin: 0; font-size: 15px; }
+  .cr-hd .crumbs { margin-top: 20px; font-family: var(--mono); font-size: 12px; color: var(--text-muted); }
+  .cr-hd .crumbs a { color: var(--accent); }
+
+  /* Table of contents */
+  .cr-toc {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 0;
+    margin-bottom: 64px; border: 1px solid var(--fill-muted);
+    border-radius: var(--r); overflow: hidden;
+  }
+  .cr-toc a {
+    padding: 14px 18px; border-right: 1px solid var(--fill-muted);
+    border-bottom: 1px solid var(--fill-muted);
+    display: flex; align-items: baseline; gap: 10px;
+    color: var(--text);
+  }
+  .cr-toc a:hover { background: var(--fill-muted); }
+  .cr-toc a:nth-child(3n) { border-right: 0; }
+  .cr-toc a:nth-last-child(-n+3) { border-bottom: 0; }
+  .cr-toc .num { font-family: var(--mono); font-size: 11px; color: var(--accent); }
+  .cr-toc .nm { font-weight: 500; }
+  .cr-toc .cnt { font-family: var(--mono); font-size: 11px; color: var(--text-muted); margin-left: auto; }
+
+  /* Section */
+  .cr-sec { margin-bottom: 72px; scroll-margin-top: 80px; }
+  .cr-sec-hd {
+    display: grid; grid-template-columns: auto 1fr auto;
+    gap: 16px; align-items: baseline;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--fill-muted);
+    margin-bottom: 28px;
+  }
+  .cr-sec-hd .n { font-family: var(--mono); font-size: 12px; color: var(--text-muted); letter-spacing: 0.04em; }
+  .cr-sec-hd h2 { font-size: 22px; letter-spacing: -0.015em; font-weight: 500; margin: 0; }
+  .cr-sec-hd .tag { font-family: var(--mono); font-size: 11px; color: var(--text-muted); }
+
+  .cr-lede { color: var(--text-muted); max-width: 620px; margin: 0 0 24px; font-size: 14px; }
+
+  /* Example frame — shows a rendered example + note + class name  */
+  .cr-demo {
+    border: 1px solid var(--fill-muted);
+    border-radius: var(--r);
+    background: var(--fill);
+    margin-bottom: 16px;
+    overflow: hidden;
+  }
+  .cr-demo-stage {
+    padding: 32px;
+    display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
+    min-height: 80px;
+    background:
+      linear-gradient(var(--bg), var(--bg)),
+      radial-gradient(circle at 1px 1px, var(--fill-muted) 1px, transparent 1px) 0 0 / 14px 14px;
+    background-blend-mode: normal;
+    background: radial-gradient(circle at 1px 1px, var(--fill-muted) 1px, transparent 1px) 0 0 / 14px 14px, var(--bg);
+  }
+  [data-theme="dark"] .cr-demo-stage {
+    background: radial-gradient(circle at 1px 1px, var(--neutral) 1px, transparent 1px) 0 0 / 14px 14px, var(--bg);
+  }
+  .cr-demo-stage.col { flex-direction: column; align-items: stretch; gap: 14px; }
+  .cr-demo-stage.center { justify-content: center; }
+  .cr-demo-foot {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 16px;
+    border-top: 1px solid var(--fill-muted);
+    font-family: var(--mono); font-size: 12px; color: var(--text-muted);
+    gap: 16px; flex-wrap: wrap;
+  }
+  .cr-demo-foot code { color: var(--text); }
+  .cr-note {
+    font-size: 12px; color: var(--text-muted);
+    margin: 8px 2px 20px; line-height: 1.5;
+  }
+
+  /* Input & form styles (missing from site.css — documented here) */
+  .input {
+    font-family: var(--mono); font-size: 13px;
+    padding: 8px 12px;
+    border: 1px solid var(--fill-muted);
+    border-radius: var(--r-sm);
+    background: var(--bg);
+    color: var(--text);
+    outline: none;
+    transition: border-color .15s, box-shadow .15s;
+    min-width: 240px;
+  }
+  .input::placeholder { color: var(--text-muted); opacity: 0.7; }
+  .input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  .input.sm { font-size: 12px; padding: 5px 9px; }
+  .input.err { border-color: var(--negative); }
+  .input.err:focus { box-shadow: 0 0 0 3px color-mix(in srgb, var(--negative) 15%, transparent); }
+
+  .fieldset { display: flex; flex-direction: column; gap: 6px; }
+  .fieldset .lbl {
+    font-family: var(--mono); font-size: 11px;
+    color: var(--text-muted); letter-spacing: 0.04em;
+  }
+  .fieldset .hint { font-size: 12px; color: var(--text-muted); }
+  .fieldset .err-msg { font-size: 12px; color: var(--negative); display: flex; gap: 6px; align-items: center; }
+
+  .checkbox {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 13px; cursor: pointer;
+  }
+  .checkbox .cb-box {
+    width: 14px; height: 14px; border: 1px solid var(--stroke);
+    border-radius: 3px; background: var(--bg);
+    display: inline-grid; place-items: center; flex-shrink: 0;
+  }
+  .checkbox.checked .cb-box {
+    background: var(--accent); border-color: var(--accent);
+  }
+  .checkbox .cb-box svg { display: none; width: 10px; height: 10px; color: #fff; }
+  .checkbox.checked .cb-box svg { display: block; }
+
+  .radio {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 13px; cursor: pointer;
+  }
+  .radio .rb-box {
+    width: 14px; height: 14px; border: 1px solid var(--stroke);
+    border-radius: 50%; background: var(--bg);
+    display: inline-grid; place-items: center; flex-shrink: 0;
+  }
+  .radio.checked .rb-box { border-color: var(--accent); }
+  .radio .rb-box i { width: 6px; height: 6px; border-radius: 50%; display: none; background: var(--accent); }
+  .radio.checked .rb-box i { display: block; }
+
+  .switch-t {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 13px; cursor: pointer;
+  }
+  .switch-t .sw-track {
+    width: 32px; height: 18px; border-radius: 999px;
+    background: var(--fill-muted); border: 1px solid var(--fill-muted);
+    position: relative; transition: background .15s;
+  }
+  .switch-t .sw-knob {
+    position: absolute; top: 1px; left: 1px;
+    width: 14px; height: 14px; border-radius: 50%;
+    background: var(--bg); border: 1px solid var(--stroke);
+    transition: left .15s;
+  }
+  .switch-t.on .sw-track { background: var(--accent); border-color: var(--accent); }
+  .switch-t.on .sw-knob { left: 15px; border-color: var(--accent); }
+
+  /* Tabs */
+  .tabs {
+    display: inline-flex;
+    border-bottom: 1px solid var(--fill-muted);
+    gap: 0; font-family: var(--mono); font-size: 13px;
+  }
+  .tabs .tab {
+    padding: 10px 14px;
+    color: var(--text-muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: color .15s;
+  }
+  .tabs .tab:hover { color: var(--text); }
+  .tabs .tab.active { color: var(--text); border-bottom-color: var(--accent); }
+
+  /* Pill tabs (segmented) */
+  .seg {
+    display: inline-flex;
+    border: 1px solid var(--fill-muted);
+    border-radius: var(--r-sm);
+    overflow: hidden; background: var(--bg);
+    font-family: var(--mono); font-size: 12px;
+  }
+  .seg button {
+    border: 0; background: transparent;
+    padding: 5px 12px; color: var(--text-muted);
+    cursor: pointer; font-family: inherit;
+    border-right: 1px solid var(--fill-muted);
+  }
+  .seg button:last-child { border-right: 0; }
+  .seg button.active { background: var(--text); color: var(--bg); }
+  .seg button:hover:not(.active) { color: var(--text); }
+
+  /* Cards */
+  .c-card {
+    border: 1px solid var(--fill-muted);
+    border-radius: var(--r);
+    background: var(--fill);
+    padding: 20px;
+  }
+  .c-card.hover { transition: border-color .15s; cursor: pointer; }
+  .c-card.hover:hover { border-color: var(--stroke); }
+  .c-card-k { font-family: var(--mono); font-size: 11px; color: var(--text-muted); letter-spacing: 0.04em; }
+  .c-card-t { font-size: 16px; font-weight: 500; margin: 8px 0 6px; letter-spacing: -0.01em; }
+  .c-card-d { color: var(--text-muted); font-size: 13px; line-height: 1.5; margin: 0; }
+
+  /* Code block with chrome */
+  .codeblock {
+    border: 1px solid var(--fill-muted);
+    border-radius: var(--r); overflow: hidden;
+    background: var(--fill); font-family: var(--mono);
+  }
+  .codeblock .cb-bar {
+    padding: 8px 12px; display: flex; align-items: center;
+    justify-content: space-between; gap: 10px;
+    border-bottom: 1px solid var(--fill-muted);
+    font-size: 12px; color: var(--text-muted);
+  }
+  .codeblock .cb-bar .dots { display: flex; gap: 6px; }
+  .codeblock .cb-bar .dots span {
+    width: 8px; height: 8px; border-radius: 50%; background: var(--fill-muted);
+  }
+  [data-theme="dark"] .codeblock .cb-bar .dots span { background: var(--neutral); }
+  .codeblock .cb-pre {
+    margin: 0; padding: 14px 16px;
+    font-size: 13px; line-height: 1.65;
+    color: var(--text); white-space: pre;
+    overflow-x: auto;
+  }
+
+  /* Inline code */
+  code.inline {
+    font-family: var(--mono); font-size: 0.9em;
+    padding: 1px 6px; border-radius: var(--r-sm);
+    background: var(--fill-muted); color: var(--text);
+  }
+
+  /* Toolbar (playground-style) */
+  .c-toolbar {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 12px;
+    border: 1px solid var(--fill-muted);
+    border-radius: var(--r);
+    background: var(--fill);
+    flex-wrap: wrap;
+  }
+  .c-toolbar-group { display: flex; gap: 4px; }
+  .c-toolbar-sep { width: 1px; height: 18px; background: var(--fill-muted); }
+
+  /* Modal */
+  .c-modal-stage {
+    position: relative;
+    min-height: 240px;
+    display: flex; align-items: center; justify-content: center;
+    background: color-mix(in srgb, var(--text) 30%, transparent);
+    border-radius: var(--r);
+    padding: 40px 20px;
+  }
+  [data-theme="dark"] .c-modal-stage { background: color-mix(in srgb, #000 60%, transparent); }
+  .c-modal {
+    width: 100%; max-width: 420px;
+    background: var(--bg);
+    border: 1px solid var(--stroke);
+    border-radius: var(--r);
+    overflow: hidden;
+  }
+  .c-modal-hd {
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--fill-muted);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .c-modal-hd h4 { font-size: 15px; font-weight: 500; margin: 0; letter-spacing: -0.01em; }
+  .c-modal-hd .x {
+    color: var(--text-muted); cursor: pointer;
+    font-size: 16px;
+  }
+  .c-modal-body { padding: 18px; color: var(--text-muted); font-size: 14px; line-height: 1.55; }
+  .c-modal-ft {
+    padding: 12px 18px; border-top: 1px solid var(--fill-muted);
+    display: flex; justify-content: flex-end; gap: 8px;
+  }
+
+  /* Toast */
+  .c-toast {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 10px 14px;
+    background: var(--text); color: var(--bg);
+    border-radius: var(--r-sm);
+    font-size: 13px;
+  }
+  .c-toast.ok .dot { background: var(--positive); }
+  .c-toast.err .dot { background: var(--negative); }
+  .c-toast .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+
+  /* Empty state */
+  .c-empty {
+    text-align: center;
+    padding: 48px 24px;
+    border: 1px dashed var(--fill-muted);
+    border-radius: var(--r);
+    max-width: 420px; margin: 0 auto;
+  }
+  .c-empty .mk { font-family: var(--mono); font-size: 28px; color: var(--text-muted); opacity: 0.5; font-weight: 300; }
+  .c-empty h4 { font-size: 16px; font-weight: 500; margin: 14px 0 6px; }
+  .c-empty p { color: var(--text-muted); font-size: 13px; margin: 0 0 16px; }
+
+  /* Alert */
+  .c-alert {
+    display: flex; gap: 10px; align-items: flex-start;
+    padding: 12px 14px;
+    border: 1px solid var(--fill-muted);
+    border-left: 3px solid var(--accent);
+    border-radius: var(--r-sm);
+    background: var(--fill);
+    font-size: 13px;
+    color: var(--text);
+  }
+  .c-alert.info { border-left-color: var(--accent); }
+  .c-alert.positive { border-left-color: var(--positive); }
+  .c-alert.warn { border-left-color: var(--warn); }
+  .c-alert.negative { border-left-color: var(--negative); }
+  .c-alert .ttl { font-weight: 500; }
+  .c-alert .bd { color: var(--text-muted); margin-top: 2px; }
+  .c-alert .mk { flex-shrink: 0; width: 14px; text-align: center; font-family: var(--mono); font-size: 12px; color: var(--text-muted); margin-top: 1px; }
+
+  /* kbd */
+  kbd.kbd {
+    font-family: var(--mono); font-size: 11px;
+    padding: 1px 5px;
+    border: 1px solid var(--fill-muted);
+    border-bottom-width: 2px;
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--text-muted);
+  }
+
+  /* Callout – do & don't */
+  .dod {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px;
+  }
+  .dod > div {
+    padding: 14px 16px;
+    border: 1px solid var(--fill-muted);
+    border-radius: var(--r-sm);
+    font-size: 13px;
+    background: var(--fill);
+  }
+  .dod .do { border-left: 2px solid var(--positive); }
+  .dod .dont { border-left: 2px solid var(--negative); }
+  .dod h5 {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em;
+    margin: 0 0 8px;
+  }
+  .dod .do h5 { color: var(--positive); }
+  .dod .dont h5 { color: var(--negative); }
+
+  @media (max-width: 760px) {
+    .cr-toc { grid-template-columns: repeat(2, 1fr); }
+    .cr-toc a:nth-child(3n) { border-right: 1px solid var(--fill-muted); }
+    .cr-toc a:nth-child(2n) { border-right: 0; }
+    .cr-toc a:nth-last-child(-n+3) { border-bottom: 1px solid var(--fill-muted); }
+    .cr-toc a:nth-last-child(-n+2) { border-bottom: 0; }
+    .dod { grid-template-columns: 1fr; }
+  }
+</style>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+
+<!-- ============ NAV ============ -->
+<header class="site-nav">
+  <div class="nav-inner">
+    <a class="wm" href="schematex.html">
+      schematex<span class="ver">v0.1.0</span>
+    </a>
+    <nav class="primary">
+      <a href="schematex.html">home</a>
+      <a href="schematex.html">playground</a>
+      <a href="schematex.html">gallery</a>
+      <a href="schematex.html">examples</a>
+      <a href="components.html" class="active">components</a>
+      <a>docs</a>
+    </nav>
+    <div class="right">
+      <div class="theme-switch" role="tablist" aria-label="theme">
+        <button class="active" data-theme-btn="default">default</button>
+        <button data-theme-btn="dark">dark</button>
+      </div>
+      <a class="gh-badge">
+        <span class="gh-l">github</span>
+        <span class="gh-r">★ 42</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<div id="root"></div>
+
+<script type="text/babel">
+  const { useState } = React;
+
+  // ---------- small helpers ----------
+  function Demo({ children, code, note, col, center }) {
+    return (
+      <>
+        <div className="cr-demo">
+          <div className={`cr-demo-stage${col ? ' col' : ''}${center ? ' center' : ''}`}>
+            {children}
+          </div>
+          {code && (
+            <div className="cr-demo-foot">
+              <code>{code}</code>
+              <span className="muted">hover / click states included</span>
+            </div>
+          )}
+        </div>
+        {note && <div className="cr-note">{note}</div>}
+      </>
+    );
+  }
+
+  function Section({ id, num, title, tag, lede, children }) {
+    return (
+      <section className="cr-sec" id={id}>
+        <div className="cr-sec-hd">
+          <span className="n">{num}</span>
+          <h2>{title}</h2>
+          {tag && <span className="tag">{tag}</span>}
+        </div>
+        {lede && <p className="cr-lede">{lede}</p>}
+        {children}
+      </section>
+    );
+  }
+
+  // ---------- stateful sub-components ----------
+  function TabsExample() {
+    const [t, setT] = useState('overview');
+    return (
+      <div className="tabs">
+        {['overview', 'source', 'spec', 'changelog'].map(k => (
+          <div key={k}
+               className={`tab ${t === k ? 'active' : ''}`}
+               onClick={() => setT(k)}>
+            {k}
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  function SegExample() {
+    const [v, setV] = useState('default');
+    return (
+      <div className="seg">
+        {['default', 'mono', 'dark'].map(x => (
+          <button key={x}
+                  className={v === x ? 'active' : ''}
+                  onClick={() => setV(x)}>{x}</button>
+        ))}
+      </div>
+    );
+  }
+
+  function CheckExample() {
+    const [a, setA] = useState(true);
+    const [b, setB] = useState(false);
+    return (
+      <>
+        <label className={`checkbox ${a ? 'checked' : ''}`} onClick={() => setA(!a)}>
+          <span className="cb-box">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <path d="M3 8l3 3 7-7"/>
+            </svg>
+          </span>
+          Show DSL comments
+        </label>
+        <label className={`checkbox ${b ? 'checked' : ''}`} onClick={() => setB(!b)}>
+          <span className="cb-box">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <path d="M3 8l3 3 7-7"/>
+            </svg>
+          </span>
+          Auto-render on keystroke
+        </label>
+      </>
+    );
+  }
+
+  function RadioExample() {
+    const [v, setV] = useState('svg');
+    return ['svg', 'png', 'pdf'].map(x => (
+      <label key={x} className={`radio ${v === x ? 'checked' : ''}`} onClick={() => setV(x)}>
+        <span className="rb-box"><i/></span>
+        {x.toUpperCase()}
+      </label>
+    ));
+  }
+
+  function SwitchExample() {
+    const [on, setOn] = useState(true);
+    return (
+      <label className={`switch-t ${on ? 'on' : ''}`} onClick={() => setOn(!on)}>
+        <span className="sw-track"><span className="sw-knob"/></span>
+        Grid background
+      </label>
+    );
+  }
+
+  function ModalExample() {
+    return (
+      <div className="c-modal-stage">
+        <div className="c-modal">
+          <div className="c-modal-hd">
+            <h4>Share this diagram</h4>
+            <span className="x">×</span>
+          </div>
+          <div className="c-modal-body">
+            Anyone with the link will be able to view and fork your DSL. The link encodes the current source — edits after now will need a new share.
+          </div>
+          <div className="c-modal-ft">
+            <button className="btn">Cancel</button>
+            <button className="btn primary">Copy link</button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ---------- main page ----------
+  const SECTIONS = [
+    { id: 'buttons',   n: '01', name: 'Buttons',       cnt: '4 variants' },
+    { id: 'badges',    n: '02', name: 'Badges',        cnt: '3 variants' },
+    { id: 'inputs',    n: '03', name: 'Inputs & forms',cnt: 'input · checkbox · radio · switch' },
+    { id: 'tabs',      n: '04', name: 'Tabs',          cnt: 'underline · segmented' },
+    { id: 'cards',     n: '05', name: 'Cards',         cnt: 'default · hover' },
+    { id: 'code',      n: '06', name: 'Code & kbd',    cnt: 'block · inline · kbd' },
+    { id: 'toolbar',   n: '07', name: 'Toolbar',       cnt: 'groups · separators' },
+    { id: 'alerts',    n: '08', name: 'Alerts',        cnt: '4 tones' },
+    { id: 'toast',     n: '09', name: 'Toasts',        cnt: 'ok · err · neutral' },
+    { id: 'modal',     n: '10', name: 'Modal',         cnt: '1 size' },
+    { id: 'empty',     n: '11', name: 'Empty state',   cnt: '1 layout' },
+    { id: 'nav',       n: '12', name: 'Nav patterns',  cnt: 'top · theme switch' }
+  ];
+
+  function Page() {
+    return (
+      <div className="cr-wrap">
+        <div className="cr-hd">
+          <div className="eye">/ COMPONENT REFERENCE · v1</div>
+          <h1>Atomic components.</h1>
+          <p>The building blocks that make up the Schematex website. Everything here uses only the tokens in <code className="inline">site/site.css</code> — no invented grays, no new accents, no custom radii.</p>
+          <div className="crumbs">
+            <a href="design-system.html">design system</a>  ·  <span>this page</span>  ·  <a href="schematex.html">pages (playground · gallery · …)</a>
+          </div>
+        </div>
+
+        <div className="cr-toc">
+          {SECTIONS.map(s => (
+            <a key={s.id} href={'#' + s.id}>
+              <span className="num">{s.n}</span>
+              <span className="nm">{s.name}</span>
+              <span className="cnt">{s.cnt}</span>
+            </a>
+          ))}
+        </div>
+
+        {/* 01 BUTTONS */}
+        <Section id="buttons" num="01" title="Buttons" tag=".btn · .btn-mini"
+          lede="Four sizes × three tones. The primary tone uses --accent and must stay the single CTA color on a surface. Ghost has no border and is for toolbars.">
+          <Demo code=".btn  ·  .btn.primary  ·  .btn.ghost">
+            <button className="btn primary">Render <span className="kbd">⌘R</span></button>
+            <button className="btn">Open example</button>
+            <button className="btn ghost">github ↗</button>
+          </Demo>
+          <Demo code=".btn-mini  ·  .btn-mini.primary">
+            <button className="btn-mini primary">▷ render</button>
+            <button className="btn-mini">⎘ copy</button>
+            <button className="btn-mini">↓ export</button>
+            <button className="btn-mini">reset</button>
+          </Demo>
+          <div className="dod">
+            <div className="do">
+              <h5>DO</h5>
+              One primary per surface. Mini buttons for dense toolbars. Ghost on top nav.
+            </div>
+            <div className="dont">
+              <h5>DON'T</h5>
+              Two primaries competing. Gradients. Drop shadows. Inventing a second accent.
+            </div>
+          </div>
+        </Section>
+
+        {/* 02 BADGES */}
+        <Section id="badges" num="02" title="Badges" tag=".badge · .badge.accent"
+          lede="Mono-font micro-labels. Neutral by default; accent form for CTAs & the active class.">
+          <Demo code=".badge  ·  .badge.accent">
+            <span className="badge">13 types</span>
+            <span className="badge">§ IEC 61131-3</span>
+            <span className="badge accent">zero deps</span>
+            <span className="badge">v0.1.0</span>
+          </Demo>
+          <Demo code="cluster dots — bg from --cat-*">
+            <span className="badge"><i style={{width:8, height:8, background:'var(--cat-0)', display:'inline-block', borderRadius:2}}/> relationships</span>
+            <span className="badge"><i style={{width:8, height:8, background:'var(--cat-2)', display:'inline-block', borderRadius:2}}/> electrical</span>
+            <span className="badge"><i style={{width:8, height:8, background:'var(--cat-3)', display:'inline-block', borderRadius:2}}/> corporate</span>
+            <span className="badge"><i style={{width:8, height:8, background:'var(--cat-1)', display:'inline-block', borderRadius:2}}/> causality</span>
+          </Demo>
+        </Section>
+
+        {/* 03 INPUTS */}
+        <Section id="inputs" num="03" title="Inputs & forms" tag=".input · .checkbox · .radio · .switch-t"
+          lede="Mono-font inputs match the DSL-editor feel. Accent ring on focus. No box-shadow on rest.">
+          <Demo col>
+            <div className="fieldset">
+              <span className="lbl">DIAGRAM TITLE</span>
+              <input className="input" defaultValue="The Potter Family" />
+              <span className="hint">Used in the &lt;title&gt; element of the SVG export.</span>
+            </div>
+            <div className="fieldset">
+              <span className="lbl">IDENTIFIER</span>
+              <input className="input err" defaultValue="12-invalid-id" />
+              <span className="err-msg">✗ must start with a letter; only [a-z0-9_] allowed</span>
+            </div>
+          </Demo>
+          <Demo col>
+            <CheckExample/>
+          </Demo>
+          <Demo>
+            <RadioExample/>
+          </Demo>
+          <Demo>
+            <SwitchExample/>
+          </Demo>
+        </Section>
+
+        {/* 04 TABS */}
+        <Section id="tabs" num="04" title="Tabs" tag=".tabs · .seg"
+          lede="Underline tabs for navigation between peer views. Segmented control for small, enumerable state (like theme).">
+          <Demo>
+            <TabsExample/>
+          </Demo>
+          <Demo>
+            <SegExample/>
+          </Demo>
+        </Section>
+
+        {/* 05 CARDS */}
+        <Section id="cards" num="05" title="Cards" tag=".c-card"
+          lede="A 1 px border and var(--r) radius — never a shadow, never a gradient.">
+          <Demo>
+            <div className="c-card" style={{width: 280}}>
+              <div className="c-card-k">§ IEC 61131-3</div>
+              <div className="c-card-t">Ladder logic</div>
+              <div className="c-card-d">Control-logic rungs with contacts, coils, and parallel branches.</div>
+            </div>
+            <div className="c-card hover" style={{width: 280}}>
+              <div className="c-card-k">§ McGoldrick 2020</div>
+              <div className="c-card-t">Genogram</div>
+              <div className="c-card-d">Three-generation family systems — interactive hover state.</div>
+            </div>
+          </Demo>
+        </Section>
+
+        {/* 06 CODE */}
+        <Section id="code" num="06" title="Code & keyboard" tag=".codeblock · code.inline · kbd"
+          lede="Code blocks inherit the DSL highlighter's 4 token classes (--accent, --positive, --warn, --text-muted). No theme-specific colors.">
+          <Demo col>
+            <div className="codeblock">
+              <div className="cb-bar">
+                <span>genogram.schematex</span>
+                <div className="dots"><span/><span/><span/></div>
+              </div>
+              <pre className="cb-pre"><span className="tok-kw">genogram</span> <span className="tok-str">"The Potter Family"</span>{'\n'}  fleamont <span className="tok-op">[</span>male, <span className="tok-num">1909</span>, <span className="tok-kw">deceased</span><span className="tok-op">]</span>{'\n'}  james <span className="tok-op">--</span> lily <span className="tok-str">"m. 1978"</span>{'\n'}    harry <span className="tok-op">[</span>male, <span className="tok-num">1980</span>, <span className="tok-kw">index</span><span className="tok-op">]</span></pre>
+            </div>
+          </Demo>
+          <Demo>
+            <span>Use <code className="inline">render()</code> to produce SVG string.</span>
+            <span>Press <kbd className="kbd">⌘</kbd> <kbd className="kbd">R</kbd> to re-render.</span>
+          </Demo>
+        </Section>
+
+        {/* 07 TOOLBAR */}
+        <Section id="toolbar" num="07" title="Toolbar" tag=".c-toolbar"
+          lede="Horizontal group of mini-buttons + separators. Used on the playground header and in the gallery filter.">
+          <Demo col>
+            <div className="c-toolbar">
+              <div className="c-toolbar-group">
+                <button className="btn-mini">↶ undo</button>
+                <button className="btn-mini">↷ redo</button>
+              </div>
+              <div className="c-toolbar-sep"/>
+              <div className="c-toolbar-group">
+                <button className="btn-mini">⎘ copy</button>
+                <button className="btn-mini">↓ export</button>
+                <button className="btn-mini">⎘ share</button>
+              </div>
+              <div className="c-toolbar-sep"/>
+              <div className="c-toolbar-group" style={{marginLeft: 'auto'}}>
+                <button className="btn-mini primary">▷ render <span className="kbd">⌘R</span></button>
+              </div>
+            </div>
+          </Demo>
+        </Section>
+
+        {/* 08 ALERTS */}
+        <Section id="alerts" num="08" title="Alerts" tag=".c-alert"
+          lede="Thin left-border accent, rest is neutral. Four tones mapped to the semantic color tokens.">
+          <Demo col>
+            <div className="c-alert info">
+              <span className="mk">i</span>
+              <div><span className="ttl">Diagram auto-saved.</span><div className="bd">Your DSL is stored in this browser. Sign in to sync across devices.</div></div>
+            </div>
+            <div className="c-alert positive">
+              <span className="mk">✓</span>
+              <div><span className="ttl">Parsed in 3.2 ms.</span><div className="bd">No syntax errors. SVG weighs 4.1 KB.</div></div>
+            </div>
+            <div className="c-alert warn">
+              <span className="mk">!</span>
+              <div><span className="ttl">Deprecated keyword: <code className="inline">closed</code>.</span><div className="bd">Use <code className="inline">-close-</code> for the close-relationship line instead.</div></div>
+            </div>
+            <div className="c-alert negative">
+              <span className="mk">✗</span>
+              <div><span className="ttl">Parse error at line 6, col 12.</span><div className="bd">Unexpected token <code className="inline">}</code> — expected identifier or closing bracket.</div></div>
+            </div>
+          </Demo>
+        </Section>
+
+        {/* 09 TOAST */}
+        <Section id="toast" num="09" title="Toasts" tag=".c-toast"
+          lede="Transient feedback — inverse surface, short copy, always with a status dot.">
+          <Demo col>
+            <div className="c-toast ok"><span className="dot"/>Link copied to clipboard.</div>
+            <div className="c-toast"><span className="dot"/>Preset changed to <code style={{color:'inherit'}}>ladder</code>.</div>
+            <div className="c-toast err"><span className="dot"/>Export failed — diagram has unparsed errors.</div>
+          </Demo>
+        </Section>
+
+        {/* 10 MODAL */}
+        <Section id="modal" num="10" title="Modal" tag=".c-modal"
+          lede="One size, one purpose — a focused decision. Escape-to-close, click-outside-to-close assumed.">
+          <Demo>
+            <ModalExample/>
+          </Demo>
+        </Section>
+
+        {/* 11 EMPTY STATE */}
+        <Section id="empty" num="11" title="Empty state" tag=".c-empty"
+          lede="Dashed border, mono glyph, short reason, one action. Used when a filter returns 0 results.">
+          <Demo center>
+            <div className="c-empty">
+              <div className="mk">/ 0</div>
+              <h4>No examples match.</h4>
+              <p>Try a different cluster, drop the use-case filter, or clear the search.</p>
+              <button className="btn">Reset filters</button>
+            </div>
+          </Demo>
+        </Section>
+
+        {/* 12 NAV PATTERNS */}
+        <Section id="nav" num="12" title="Nav patterns" tag=".site-nav · .theme-switch · .gh-badge"
+          lede="Top nav with wordmark, primary links, theme switch, GitHub star badge. Sticky, 90% opaque, 10 px blur.">
+          <Demo col>
+            <div style={{border: '1px solid var(--fill-muted)', borderRadius: 'var(--r)', padding: 16, background: 'var(--fill)'}}>
+              <div style={{display:'flex', gap: 24, alignItems:'center'}}>
+                <a className="wm">schematex<span className="ver">v0.1.0</span></a>
+                <nav className="primary" style={{display:'flex', gap: 24, fontSize: 13, color: 'var(--text-muted)'}}>
+                  <a>home</a>
+                  <a className="active" style={{color:'var(--text)', position:'relative'}}>playground</a>
+                  <a>gallery</a>
+                  <a>examples</a>
+                </nav>
+                <div style={{marginLeft:'auto', display:'flex', gap: 10, alignItems:'center'}}>
+                  <div className="theme-switch">
+                    <button className="active">default</button>
+                    <button>dark</button>
+                  </div>
+                  <a className="gh-badge">
+                    <span className="gh-l">github</span>
+                    <span className="gh-r">★ 42</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </Demo>
+        </Section>
+
+        <div style={{textAlign:'center', padding: '48px 0 0', color:'var(--text-muted)', fontSize:13, borderTop:'1px solid var(--fill-muted)'}}>
+          <span className="mono">/ end</span>  ·  <a href="design-system.html" style={{color:'var(--accent)'}}>→ see the full design system</a>
+        </div>
+      </div>
+    );
+  }
+
+  ReactDOM.createRoot(document.getElementById('root')).render(<Page/>);
+
+  // ---------- theme switch (simple) ----------
+  document.querySelectorAll('[data-theme-btn]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const t = btn.dataset.themeBtn;
+      document.documentElement.setAttribute('data-theme', t);
+      document.querySelectorAll('[data-theme-btn]').forEach(b => b.classList.toggle('active', b === btn));
+      try { localStorage.setItem('schematex.theme', t); } catch(e) {}
+    });
+  });
+  // Hydrate
+  try {
+    const saved = localStorage.getItem('schematex.theme');
+    if (saved) {
+      document.documentElement.setAttribute('data-theme', saved === 'mono' ? 'default' : saved);
+      document.querySelectorAll('[data-theme-btn]').forEach(b => b.classList.toggle('active', b.dataset.themeBtn === saved));
+    }
+  } catch(e) {}
+</script>
+
+</body>
+</html>
