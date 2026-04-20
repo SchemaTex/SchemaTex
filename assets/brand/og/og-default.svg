@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <title>Schematex — Standards-as-code for professional diagrams</title>
+
+  <!-- background: white with faint grid -->
+  <rect width="1200" height="630" fill="#ffffff"/>
+  <g stroke="#f1f5f9" stroke-width="1">
+    <path d="M0 40 H1200 M0 80 H1200 M0 120 H1200 M0 160 H1200 M0 200 H1200 M0 240 H1200 M0 280 H1200 M0 320 H1200 M0 360 H1200 M0 400 H1200 M0 440 H1200 M0 480 H1200 M0 520 H1200 M0 560 H1200 M0 600 H1200"/>
+    <path d="M40 0 V630 M80 0 V630 M120 0 V630 M160 0 V630 M200 0 V630 M240 0 V630 M280 0 V630 M320 0 V630 M360 0 V630 M400 0 V630 M440 0 V630 M480 0 V630 M520 0 V630 M560 0 V630 M600 0 V630 M640 0 V630 M680 0 V630 M720 0 V630 M760 0 V630 M800 0 V630 M840 0 V630 M880 0 V630 M920 0 V630 M960 0 V630 M1000 0 V630 M1040 0 V630 M1080 0 V630 M1120 0 V630 M1160 0 V630"/>
+  </g>
+
+  <!-- divider between left copy and right diagram -->
+  <line x1="560" y1="60" x2="560" y2="570" stroke="#e2e8f0" stroke-width="1"/>
+
+  <!-- LEFT: brand lockup + headline + footer -->
+  <g>
+    <!-- lockup: mark + wordmark -->
+    <svg x="80" y="80" width="50" height="50" viewBox="0 0 24 24">
+      <path d="M 5 3 H 2.5 V 21 H 5" fill="none" stroke="#0f172a" stroke-width="2" stroke-linejoin="miter" stroke-linecap="square"/>
+      <path d="M 19 3 H 21.5 V 21 H 19" fill="none" stroke="#0f172a" stroke-width="2" stroke-linejoin="miter" stroke-linecap="square"/>
+      <path d="M 16 7 C 16 12, 8 12, 8 17" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="16" cy="7" r="2.2" fill="#0f172a"/>
+      <circle cx="8" cy="17" r="2.2" fill="#0f172a"/>
+    </svg>
+    <text x="146" y="120"
+          font-family="system-ui, -apple-system, 'Segoe UI', sans-serif"
+          font-size="36" font-weight="600" letter-spacing="-0.54"
+          fill="#0f172a">Schema<tspan
+            font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
+            font-size="25" font-weight="500" dy="5">tex</tspan></text>
+
+    <!-- headline -->
+    <g font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-weight="600" fill="#0f172a">
+      <text x="80" y="300" font-size="52" letter-spacing="-0.78">Standards-as-code</text>
+      <text x="80" y="360" font-size="52" letter-spacing="-0.78">for <tspan font-style="italic" fill="#2563eb">professional</tspan></text>
+      <text x="80" y="420" font-size="52" font-style="italic" fill="#2563eb" letter-spacing="-0.78">diagrams.</text>
+    </g>
+
+    <!-- foot stats -->
+    <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="16" fill="#475569">
+      <text x="80" y="530">20 diagram types  ·  10+ standards  ·  0 runtime deps</text>
+      <text x="80" y="558" fill="#94a3b8">schematex.dev</text>
+    </g>
+  </g>
+
+  <!-- RIGHT: genogram three-generation hero -->
+  <g transform="translate(620, 90)">
+    <!-- generation I -->
+    <rect x="80" y="30" width="50" height="50" fill="#ffffff" stroke="#0f172a" stroke-width="2.5"/>
+    <circle cx="320" cy="55" r="25" fill="#fbd6e5" stroke="#0f172a" stroke-width="2.5"/>
+    <line x1="130" y1="55" x2="295" y2="55" stroke="#0f172a" stroke-width="2"/>
+    <line x1="212" y1="55" x2="212" y2="160" stroke="#0f172a" stroke-width="2"/>
+    <text x="80" y="110" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="12" fill="#475569">I-1 · 1952</text>
+    <text x="295" y="110" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="12" fill="#475569">I-2 · 1955</text>
+
+    <!-- generation II -->
+    <line x1="140" y1="160" x2="285" y2="160" stroke="#0f172a" stroke-width="2"/>
+    <rect x="115" y="160" width="50" height="50" fill="#ffffff" stroke="#0f172a" stroke-width="2.5"/>
+    <circle cx="285" cy="185" r="25" fill="#fbd6e5" stroke="#0f172a" stroke-width="2.5"/>
+    <line x1="165" y1="185" x2="260" y2="185" stroke="#0f172a" stroke-width="2"/>
+    <line x1="212" y1="185" x2="212" y2="280" stroke="#0f172a" stroke-width="2"/>
+
+    <!-- generation III: affected proband + carrier -->
+    <line x1="140" y1="280" x2="285" y2="280" stroke="#0f172a" stroke-width="2"/>
+    <rect x="115" y="280" width="50" height="50" fill="#2563eb" stroke="#0f172a" stroke-width="3.5"/>
+    <circle cx="285" cy="305" r="25" fill="#ffffff" stroke="#0f172a" stroke-width="2.5"/>
+    <circle cx="285" cy="305" r="7" fill="#0f172a"/>
+    <!-- proband arrow -->
+    <polygon points="92,295 115,295 115,310 92,310" fill="#2563eb"/>
+    <polygon points="80,302 100,290 100,314" fill="#2563eb"/>
+    <text x="105" y="356" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="12" fill="#475569">III-1 · proband</text>
+    <text x="255" y="356" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="12" fill="#475569">III-2 · carrier</text>
+
+    <!-- legend corner -->
+    <text x="0" y="420" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="11" fill="#94a3b8">genogram · McGoldrick 2020</text>
+  </g>
+</svg>

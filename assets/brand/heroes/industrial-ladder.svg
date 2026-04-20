@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="lt-ladder" role="img" aria-labelledby="lt-ladder-title lt-ladder-desc" width="412.94999999999993" height="343" viewBox="0 0 412.94999999999993 343"><title>Motor Start/Stop</title>
+<desc>PLC ladder logic diagram with 1 rung</desc>
+<style>.lt-ladder { background: #fff; font-family: system-ui, -apple-system, sans-serif; }
+.lt-ladder-rail { stroke: #333; stroke-width: 4; stroke-linecap: square; }
+.lt-ladder-wire { stroke: #333; stroke-width: 1.5; fill: none; }
+.lt-ladder-element { stroke: #333; stroke-width: 2; fill: none; }
+.lt-ladder-coil { stroke: #333; stroke-width: 2; fill: none; }
+.lt-ladder-fb { fill: #fff; stroke: #333; stroke-width: 2; }
+.lt-ladder-fb-name { font: bold 11px sans-serif; fill: #111; text-anchor: middle; }
+.lt-ladder-pin { font: 8px sans-serif; fill: #333; }
+.lt-ladder-name { font: 9px sans-serif; fill: #222; text-anchor: middle; }
+.lt-ladder-tag { font: 600 9px ui-monospace, SFMono-Regular, Menlo, monospace; fill: #1d6fb8; text-anchor: middle; }
+.lt-ladder-addr { font: 600 8.5px ui-monospace, monospace; fill: #c02626; text-anchor: middle; }
+.lt-ladder-rung-num { font: 10px sans-serif; fill: #666; text-anchor: end; }
+.lt-ladder-comment { font: italic 10px sans-serif; fill: #888; }
+.lt-ladder-title { font: bold 15px sans-serif; fill: #111; }
+.lt-ladder-symbol-label { font: bold 10px sans-serif; fill: #333; text-anchor: middle; }</style>
+<text x="60" y="20" class="lt-ladder-title">Motor Start/Stop</text>
+<g transform="translate(0, 30)"><line x1="60" y1="0" x2="60" y2="313" class="lt-ladder-rail"/>
+<line x1="382.94999999999993" y1="0" x2="382.94999999999993" y2="313" class="lt-ladder-rail"/>
+<text x="54" y="185" class="lt-ladder-rung-num">Rung 001</text>
+<text x="70" y="80" class="lt-ladder-comment">— Seal-in circuit —</text>
+<path d="M 60 182 L 76 182" class="lt-ladder-wire"/>
+<path d="M 76 112 L 76 252" class="lt-ladder-wire"/>
+<path d="M 187.2 112 L 187.2 252" class="lt-ladder-wire"/>
+<path d="M 76 146 L 115.6 146" class="lt-ladder-wire"/>
+<path d="M 147.6 146 L 187.2 146" class="lt-ladder-wire"/>
+<path d="M 76 223 L 115.6 223" class="lt-ladder-wire"/>
+<path d="M 147.6 223 L 187.2 223" class="lt-ladder-wire"/>
+<path d="M 187.2 182 L 223.75 182" class="lt-ladder-wire"/>
+<path d="M 255.75 182 L 318.94999999999993 182" class="lt-ladder-wire"/>
+<path d="M 350.94999999999993 182 L 382.94999999999993 182" class="lt-ladder-wire"/>
+<g data-element="contact" data-tag="START_PB"><line x1="115.6" y1="146" x2="119.6" y2="146" class="lt-ladder-wire"/>
+<line x1="143.6" y1="146" x2="147.6" y2="146" class="lt-ladder-wire"/>
+<line x1="119.6" y1="134" x2="119.6" y2="158" class="lt-ladder-element"/>
+<line x1="143.6" y1="134" x2="143.6" y2="158" class="lt-ladder-element"/>
+<text x="131.6" y="119" class="lt-ladder-name">Start Button</text>
+<text x="131.6" y="130" class="lt-ladder-tag">START_PB</text>
+<text x="131.6" y="168" class="lt-ladder-addr">IN 1.0</text></g>
+<g data-element="contact" data-tag="MOTOR_AUX"><line x1="115.6" y1="223" x2="119.6" y2="223" class="lt-ladder-wire"/>
+<line x1="143.6" y1="223" x2="147.6" y2="223" class="lt-ladder-wire"/>
+<line x1="119.6" y1="211" x2="119.6" y2="235" class="lt-ladder-element"/>
+<line x1="143.6" y1="211" x2="143.6" y2="235" class="lt-ladder-element"/>
+<text x="131.6" y="196" class="lt-ladder-name">Aux Contact</text>
+<text x="131.6" y="207" class="lt-ladder-tag">MOTOR_AUX</text>
+<text x="131.6" y="245" class="lt-ladder-addr">BIT 3.0</text></g>
+<g data-element="contact" data-tag="STOP_PB"><line x1="223.75" y1="182" x2="227.75" y2="182" class="lt-ladder-wire"/>
+<line x1="251.75" y1="182" x2="255.75" y2="182" class="lt-ladder-wire"/>
+<line x1="227.75" y1="170" x2="227.75" y2="194" class="lt-ladder-element"/>
+<line x1="251.75" y1="170" x2="251.75" y2="194" class="lt-ladder-element"/>
+<line x1="229.75" y1="192" x2="249.75" y2="172" class="lt-ladder-element"/>
+<text x="239.75" y="155" class="lt-ladder-name">Stop Button</text>
+<text x="239.75" y="166" class="lt-ladder-tag">STOP_PB</text>
+<text x="239.75" y="204" class="lt-ladder-addr">IN 1.1</text></g>
+<g data-element="coil" data-tag="MOTOR_CMD"><path d="M 324.94999999999993 170 A 10 12 0 0 0 324.94999999999993 194" class="lt-ladder-coil"/>
+<path d="M 344.94999999999993 170 A 10 12 0 0 1 344.94999999999993 194" class="lt-ladder-coil"/>
+<line x1="318.94999999999993" y1="182" x2="324.94999999999993" y2="182" class="lt-ladder-wire"/>
+<line x1="344.94999999999993" y1="182" x2="350.94999999999993" y2="182" class="lt-ladder-wire"/>
+<text x="334.94999999999993" y="155" class="lt-ladder-name">Motor Command</text>
+<text x="334.94999999999993" y="166" class="lt-ladder-tag">MOTOR_CMD</text>
+<text x="334.94999999999993" y="204" class="lt-ladder-addr">OUT 2.0</text></g></g></svg>

@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <title>Schematex — announcement</title>
+
+  <rect width="1200" height="630" fill="#2563eb"/>
+
+  <!-- subtle divider -->
+  <line x1="560" y1="60" x2="560" y2="570" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
+
+  <!-- LEFT copy -->
+  <g>
+    <!-- outlined lockup on accent -->
+    <svg x="80" y="80" width="50" height="50" viewBox="0 0 24 24">
+      <path d="M 5 3 H 2.5 V 21 H 5" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="miter" stroke-linecap="square"/>
+      <path d="M 19 3 H 21.5 V 21 H 19" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="miter" stroke-linecap="square"/>
+      <path d="M 14.2 7.6 C 14 12, 10 12, 9.8 16.4" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="16" cy="7" r="2" fill="none" stroke="#fff" stroke-width="2"/>
+      <circle cx="8" cy="17" r="2" fill="none" stroke="#fff" stroke-width="2"/>
+    </svg>
+    <text x="146" y="120"
+          font-family="system-ui, -apple-system, 'Segoe UI', sans-serif"
+          font-size="36" font-weight="600" letter-spacing="-0.54"
+          fill="#fff">Schema<tspan
+            font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
+            font-size="25" font-weight="500" dy="5" fill="rgba(255,255,255,0.85)">tex</tspan></text>
+
+    <!-- headline -->
+    <g font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-weight="600" fill="#fff">
+      <text x="80" y="300" font-size="52" letter-spacing="-0.78">Ladder logic</text>
+      <text x="80" y="360" font-size="52" letter-spacing="-0.78">&amp; single-line,</text>
+      <text x="80" y="420" font-size="52" letter-spacing="-0.78">standards-faithful.</text>
+    </g>
+
+    <!-- foot -->
+    <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="16" fill="rgba(255,255,255,0.85)">
+      <text x="80" y="530">IEC 61131-3  ·  IEEE 315  ·  fully tested</text>
+      <text x="80" y="558" fill="rgba(255,255,255,0.6)">schematex.dev</text>
+    </g>
+  </g>
+
+  <!-- RIGHT: ladder rung hero, white-on-blue -->
+  <g transform="translate(620, 110)">
+    <!-- rails (rectangle) -->
+    <g stroke="#fff" stroke-width="3" fill="none">
+      <line x1="30" y1="30" x2="30" y2="380"/>
+      <line x1="500" y1="30" x2="500" y2="380"/>
+      <line x1="30" y1="30" x2="500" y2="30"/>
+      <line x1="30" y1="380" x2="500" y2="380"/>
+    </g>
+
+    <!-- rung 1: XIC / XIO / OTE -->
+    <g stroke="#fff" stroke-width="3" fill="none">
+      <line x1="30" y1="120" x2="110" y2="120"/>
+      <line x1="110" y1="100" x2="110" y2="140"/>
+      <line x1="125" y1="100" x2="125" y2="140"/>
+      <line x1="125" y1="120" x2="230" y2="120"/>
+      <line x1="230" y1="100" x2="230" y2="140"/>
+      <line x1="230" y1="100" x2="250" y2="140"/>
+      <line x1="250" y1="100" x2="250" y2="140"/>
+      <line x1="250" y1="120" x2="420" y2="120"/>
+      <circle cx="445" cy="120" r="22"/>
+      <line x1="467" y1="120" x2="500" y2="120"/>
+    </g>
+    <text x="445" y="125" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="14" fill="#fff">OTE</text>
+
+    <!-- rung 2: OTL latch -->
+    <g stroke="#fff" stroke-width="3" fill="none">
+      <line x1="30" y1="260" x2="140" y2="260"/>
+      <line x1="140" y1="240" x2="140" y2="280"/>
+      <line x1="155" y1="240" x2="155" y2="280"/>
+      <line x1="155" y1="260" x2="420" y2="260"/>
+      <circle cx="445" cy="260" r="22"/>
+      <line x1="467" y1="260" x2="500" y2="260"/>
+    </g>
+    <text x="445" y="265" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="14" fill="#fff">OTL</text>
+
+    <!-- addresses -->
+    <g font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="12" fill="rgba(255,255,255,0.85)">
+      <text x="85" y="92">I:0/0</text>
+      <text x="205" y="92">I:0/1</text>
+      <text x="420" y="92">O:0/0</text>
+      <text x="75" y="232">I:0/2</text>
+      <text x="420" y="232">O:0/1</text>
+    </g>
+
+    <text x="0" y="420" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="11" fill="rgba(255,255,255,0.7)">ladder · IEC 61131-3</text>
+  </g>
+</svg>
