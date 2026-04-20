@@ -17,6 +17,8 @@ import { flowchart } from "../diagrams/flowchart";
 import { mindmap } from "../diagrams/mindmap";
 import { matrix } from "../diagrams/matrix";
 import { orgchart } from "../diagrams/orgchart";
+import { decisiontree } from "../diagrams/decisiontree";
+import { timeline } from "../diagrams/timeline";
 
 export interface SchematexConfig {
   type?:
@@ -37,7 +39,9 @@ export interface SchematexConfig {
     | "flowchart"
     | "mindmap"
     | "matrix"
-    | "orgchart";
+    | "orgchart"
+    | "decisiontree"
+    | "timeline";
   width?: number;
   height?: number;
   padding?: number;
@@ -64,6 +68,8 @@ const plugins: DiagramPlugin[] = [
   mindmap,
   matrix,
   orgchart,
+  decisiontree,
+  timeline,
 ];
 
 function detectPlugin(text: string, config?: SchematexConfig): DiagramPlugin {

@@ -4,7 +4,7 @@
 </p>
 
 <p align="center">
-  McGoldrick genograms · NSGC pedigrees · IEC 61131-3 ladder logic · IEEE 315 single-line diagrams · Newick phylogenetic trees · Moreno sociograms · and 7 more — all from a tiny text DSL, with zero runtime dependencies.
+  McGoldrick genograms · NSGC pedigrees · IEC 61131-3 ladder logic · IEEE 315 single-line diagrams · Newick phylogenetic trees · Howard-Raiffa decision trees · Moreno sociograms · and more — all from a tiny text DSL, with zero runtime dependencies.
 </p>
 
 <p align="center">
@@ -24,12 +24,13 @@
 
 ---
 
-**SchemaTex** is the open-source rendering engine for diagrams that follow real industry standards. Thirteen diagram families across four domains:
+**SchemaTex** is the open-source rendering engine for diagrams that follow real industry standards. Fourteen diagram families across five domains:
 
 - 👪 **Relationships** — genograms, ecomaps, pedigrees, sociograms, phylogenetic trees
 - ⚡ **Electrical & Industrial** — ladder logic, single-line diagrams, circuit schematics, logic gates, timing, block diagrams
 - 🏢 **Corporate & Legal** — entity structures, cap tables
-- 🐟 **Causality & Analysis** — fishbone / Ishikawa
+- 🐟 **Causality & Analysis** — fishbone / Ishikawa, decision trees (Howard-Raiffa EV · CART/sklearn · taxonomy)
+- 📅 **Timelines** — proportional / equidistant / log axis · swimlane · gantt · lollipop · BC dates · geological Ma scale
 
 Mermaid draws generic flowcharts. SchemaTex draws the diagrams your domain experts actually sign off on — a genogram a genetic counselor accepts clinically, ladder logic that maps 1:1 to IEC 61131-3, a cap table that survives a Series A review.
 
@@ -377,6 +378,101 @@ algo : "Core Update penalty" : "Weak E-E-A-T signals" : "SGE traffic diversion"
 ![Website Traffic Drop Fishbone](examples/fishbone/website-traffic-drop.svg)
 
 [Fishbone syntax →](https://schematex.dev/docs/fishbone)
+
+### 🌳 Decision Tree — *Howard-Raiffa · CART/sklearn · Taxonomy*
+
+Three modes in one DSL. Decision analysis with EV rollback (Howard-Raiffa), ML tree visualization (sklearn `plot_tree` style), and yes/no taxonomy trees. Diagonal edge routing, payoff-aligned columns, optimal-path highlighting.
+
+**Decision analysis — EV rollback:**
+```
+decisiontree:decision "Oil drilling"
+
+decision "Drill or sell rights?"
+  choice "Sell rights"
+    end payoff=90000 "Guaranteed sale"
+  choice "Drill"
+    chance "Well outcome"
+      prob 0.3 end payoff=500000 "Major strike"
+      prob 0.5 end payoff=50000  "Minor strike"
+      prob 0.2 end payoff=-200000 "Dry hole"
+```
+
+**ML tree — sklearn CART style:**
+```
+decisiontree:ml "Iris classification"
+classes: setosa, versicolor, virginica
+impurity: gini
+branchLabels: relation
+
+split feature=petal_width op=<= threshold=0.8 samples=120 value=[50,35,35] gini=0.66
+  true leaf samples=50 value=[50,0,0] gini=0 class=setosa
+  false split feature=petal_width op=<= threshold=1.75 samples=70 value=[0,35,35] gini=0.5
+    true leaf samples=36 value=[0,32,4] gini=0.198 class=versicolor
+    false leaf samples=34 value=[0,3,31] gini=0.162 class=virginica
+```
+
+**Taxonomy — yes/no classification:**
+```
+decisiontree:taxonomy "ED Triage Level"
+direction: left-right
+
+q "Airway compromise?"
+  yes: a "Level 1 — Resuscitation"
+  no: q "Vital signs unstable?"
+    yes: a "Level 2 — Emergent"
+    no: q "Multiple resources needed?"
+      yes: a "Level 3 — Urgent"
+      no: a "Level 4/5 — Less urgent"
+```
+
+[Decision Tree syntax →](https://schematex.dev/docs/decisiontree)
+
+---
+
+### 📅 Timeline
+
+Historical events, biographical lifelines, product roadmaps, and geological timescales on a proportional / equidistant / log axis. Three visual styles: **swimlane** (multi-track biographies), **gantt** (project plan with pins + category lanes + legend), and **lollipop** (alternating above/below cards on a center axis). Supports BC/AD dates, quarter dates (`2026-Q1`), and geological mega-year (`Ma`) scale.
+
+```
+timeline "Apollo program"
+
+1961-05-25: milestone "Kennedy Moon speech"
+1967-01-27: "Apollo 1 fire"
+1968-12-21 - 1968-12-27: "Apollo 8 — first lunar orbit"
+1969-07-16 - 1969-07-24: "Apollo 11 — Moon landing" [icon:🚀]
+1970-04-11 - 1970-04-17: "Apollo 13 — abort"
+1972-12-07 - 1972-12-19: "Apollo 17 — last crewed Moon mission"
+```
+
+```
+timeline "Brand story"
+config: style = lollipop
+
+era 2015 - 2019: "Scrappy startup"
+era 2019 - 2023: "Scale-up"
+era 2023 - 2027: "Enterprise era"
+
+2015: "Founded in a coffee shop" [icon:☕]
+2017: milestone "First 1000 users" [icon:👥]
+2019: "Series A" [icon:💰]
+2021: "Opened NYC office" [icon:🏙]
+2023: milestone "Crossed $50M ARR" [icon:📊]
+2025: "Acquired Acme Inc." [icon:🤝]
+```
+
+```
+timeline "Q2 Launch plan"
+config: style = gantt
+
+2026-04-01: milestone "Kickoff"
+2026-06-30: milestone "GA launch" [icon:🚀]
+
+2026-04-01 - 2026-04-30: "Research & specs" [category: "Design"]
+2026-04-10 - 2026-06-10: "API build" [category: "Eng"]
+2026-05-15 - 2026-06-25: "Campaign prep" [category: "Marketing"]
+```
+
+[Timeline syntax →](https://schematex.dev/docs/timeline)
 
 ## Why SchemaTex?
 

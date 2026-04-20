@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Schematex · Timeline Preview</title>
+<style>
+  body { font-family: system-ui; background: #f5f5f5; margin: 0; padding: 20px; }
+  nav { font-size: 13px; color: #888; margin-bottom: 16px; }
+  nav a { color: #555; text-decoration: none; }
+  nav a:hover { text-decoration: underline; }
+  h1 { font-size: 18px; color: #333; margin: 0 0 4px; }
+  .subtitle { font-size: 13px; color: #888; margin-bottom: 24px; }
+  h2 { font-size: 14px; color: #666; margin-top: 30px; border-bottom: 1px solid #ddd; padding-bottom: 4px; }
+  pre.src { background: #f7f7f7; padding: 10px; font-size: 12px; border-radius: 6px; margin: 6px 0; border: 1px solid #eee; white-space: pre-wrap; }
+  .svg-container { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin: 10px 0; overflow-x: auto; }
+  .svg-container svg { display: block; max-width: 100%; height: auto; }
+</style>
+</head>
+<body>
+<nav><a href="index.html">← All Diagrams</a></nav>
+<h1>Timeline</h1>
+<div class="subtitle">Events / milestones / lifespans on a time axis · eras · named tracks · BC + Ma dates</div>
+<div id="output"></div>
+<script type="module">
+import { render } from '../src/index.ts';
+
+const cases = [
+  ['TC-TL-01 · Single event (smoke test)', `timeline
+2024-11-05: "Election day"`],
+
+  ['TC-TL-02 · Basic point events (US Space Firsts)', `timeline "US Space Firsts"
+config: scale = proportional
+
+1957-10-04: "Sputnik 1"
+1961-04-12: "Gagarin first human in space"
+1962-02-20: "Glenn orbits Earth"
+1969-07-20: milestone "Apollo 11 Moon landing" [icon:🚀]
+1971-04-19: "Salyut 1 first space station"
+1981-04-12: "STS-1 Space Shuttle"
+1998-11-20: "ISS first module"`],
+
+  ['TC-TL-03 · Range (lifespan) + milestone', `timeline "Einstein — key moments"
+
+1879 - 1955: "Albert Einstein"
+1905: milestone "Annus Mirabilis"
+1915: milestone "General Relativity"
+1921: milestone "Nobel Prize" [icon:🏆]`],
+
+  ['TC-TL-04 · Era bands + milestones (WWII European Front)', `timeline "WWII European Front"
+
+era 1939-09 - 1940-05: "Phoney War"
+era 1940-05 - 1941-06: "Fall of France + Blitz"
+era 1941-06 - 1943-02: "Eastern Front early"
+era 1943-02 - 1944-06: "Turning point"
+era 1944-06 - 1945-05: "Allied advance"
+
+1939-09-01: milestone "Germany invades Poland"
+1940-05-10 - 1940-06-25: "Battle of France"
+1940-07 - 1940-10: "Battle of Britain"
+1941-06-22: milestone "Barbarossa"
+1942-08 - 1943-02: "Stalingrad"
+1944-06-06: milestone "D-Day"
+1945-05-08: milestone "VE Day"`],
+
+  ['TC-TL-05 · Named tracks (Einstein multi-track)', `timeline "Einstein — life and work"
+
+era 1879 - 1919: "German Empire" [color: #fef3c7]
+era 1919 - 1933: "Weimar Republic" [color: #dbeafe]
+era 1933 - 1955: "Post-Germany era" [color: #fce7f3]
+
+track "Career":
+  1879 - 1895: "Early education"
+  1896 - 1900: "ETH Zurich"
+  1902 - 1909: "Swiss Patent Office"
+  1905: milestone "Annus Mirabilis"
+    note: "4 breakthrough papers: photoelectric effect, Brownian motion, special relativity, E=mc²."
+  1909 - 1914: "Zurich → Prague"
+  1914 - 1933: "Berlin / Kaiser Wilhelm"
+  1915: milestone "General Relativity"
+  1921: milestone "Nobel Prize" [icon:🏆]
+  1933 - 1955: "Princeton IAS"
+
+track "Personal":
+  1903 - 1919: "Married Mileva"
+  1919 - 1936: "Married Elsa"
+
+track "Public":
+  1939: "Einstein–Szilárd letter" [icon:✉️]
+  1952: "Declined Israel presidency"
+  1955-04-18: "Died in Princeton" [icon:🕯]`],
+
+  ['TC-TL-06 · Product roadmap (equidistant, 3 swimlanes)', `timeline "Schematex 2026 roadmap"
+config: scale = equidistant
+
+track "Diagrams":
+  2026-Q1: "Timeline v1 launch"
+  2026-Q2: "Gantt interactive"
+  2026-Q3: "Mindmap polish"
+  2026-Q4: "Swimlane / user journey"
+
+track "Platform":
+  2026-Q1: "Theme v2 API"
+  2026-Q2: "MDX embed"
+  2026-Q3: "CLI + Node.js API"
+  2026-Q4: "Figma plugin"
+
+track "Community":
+  2026-Q1: milestone "500 GitHub stars"
+  2026-Q3: milestone "1000 stars + first external PR"`],
+
+  ['TC-TL-07 · BC/AD historical eras (Europe 500 BC – 1700 AD)', `timeline "Europe 500 BC – 1700 AD"
+
+era -753 - -509: "Roman Kingdom"
+era -509 - -27: "Roman Republic"
+era -27 - 476: "Roman Empire (West)"
+era 476 - 1000: "Early Middle Ages"
+era 1000 - 1300: "High Middle Ages"
+era 1300 - 1500: "Late Middle Ages"
+era 1400 - 1600: "Renaissance"
+era 1517 - 1648: "Reformation"
+
+-753: milestone "Founding of Rome"
+-44: milestone "Caesar assassinated"
+476: milestone "Fall of Western Rome"
+800: "Charlemagne crowned"
+1066: milestone "Norman Conquest"
+1215: "Magna Carta"
+1347 - 1353: "Black Death"
+1453: milestone "Fall of Constantinople"
+1492: milestone "Columbus reaches Americas"
+1517: "Luther's 95 Theses"`],
+
+  ['TC-TL-08 · Covid (proportional, auto-pack)', `timeline "Covid milestones"
+config: scale = proportional
+
+2019-12-01: "First cases Wuhan"
+2020-01-30: "WHO PHEIC"
+2020-03-11: milestone "WHO pandemic"
+2020-12-11: milestone "First vaccine EUA"
+2021-01-20: "Biden inauguration"
+2023-05-05: milestone "WHO ends PHEIC"`],
+
+  ['TC-TL-09 · Geological timescale (log, Ma)', `timeline "Life on Earth"
+config: scale = log
+
+4600Ma: milestone "Earth forms"
+4000Ma: "Oldest rocks"
+3500Ma: "First life"
+2400Ma: "Great Oxidation"
+540Ma: milestone "Cambrian Explosion"
+252Ma: milestone "Permian-Triassic extinction"
+66Ma: milestone "K-Pg extinction" [icon:☄️]
+0.3Ma: "Homo sapiens emerges"
+0.012Ma: "Holocene begins"`],
+
+  ['TC-TL-10 · Apollo program (ranges + auto-pack)', `timeline "Apollo program"
+
+1961-05-25: milestone "Kennedy Moon speech"
+1967-01-27: "Apollo 1 fire"
+1968-12-21 - 1968-12-27: "Apollo 8 — first lunar orbit"
+1969-07-16 - 1969-07-24: "Apollo 11 — Moon landing" [icon:🚀]
+1970-04-11 - 1970-04-17: "Apollo 13 — abort"
+1972-12-07 - 1972-12-19: "Apollo 17 — last crewed Moon mission"`],
+
+  ['TC-TL-11 · Icon + shape + color overrides', `timeline "Custom styled timeline"
+
+1969: milestone "Moon landing" [icon:🚀, color:#fb8c00]
+1977: "Voyager launch" [shape:diamond, icon:🛰]
+2012: "Curiosity on Mars" [shape:star, color:#d32f2f]
+2021: milestone "Perseverance on Mars" [color:#6a1b9a, icon:🔴]`],
+
+  ['TC-TL-12 · Company history (ranges + milestones)', `timeline "Company history"
+
+2018: "Founded in garage"
+2019: milestone "Seed round $2M"
+2020-03: "Pandemic pivot"
+2020 - 2024: "Remote-first scaling"
+2021: milestone "Series A $15M"
+2023: milestone "Series B $50M"
+2025: milestone "IPO" [icon:🎉]`],
+
+  ['TC-TL-13 · Gantt project plan (task bars + pins + legend)', `timeline "Q2 Launch plan"
+config: style = gantt
+
+2026-04-01: milestone "Kickoff"
+2026-04-15: "Design review"
+2026-05-20: "Beta cut"
+2026-06-30: milestone "GA launch" [icon:🚀]
+
+2026-04-01 - 2026-04-30: "Research & specs" [category: "Design"]
+2026-04-15 - 2026-05-25: "UI mockups" [category: "Design"]
+2026-04-10 - 2026-06-10: "API build" [category: "Eng"]
+2026-05-01 - 2026-06-20: "Dashboard" [category: "Eng"]
+2026-05-15 - 2026-06-25: "Campaign prep" [category: "Marketing"]
+2026-06-10 - 2026-06-30: "Rollout" [category: "Ops"]`],
+
+  ['TC-TL-14 · Gantt with overlapping tasks per team', `timeline "Engineering roadmap H1"
+config: style = gantt
+
+2026-01-15: milestone "Planning done"
+2026-03-01: "Alpha"
+2026-05-01: milestone "Beta" [icon:🎯]
+2026-06-15: milestone "GA" [icon:🚀]
+
+2026-01-01 - 2026-02-28: "Architecture" [category: "Platform"]
+2026-02-01 - 2026-04-30: "Auth service" [category: "Platform"]
+2026-02-15 - 2026-05-30: "Billing" [category: "Platform"]
+2026-01-15 - 2026-03-30: "Onboarding UX" [category: "Product"]
+2026-03-15 - 2026-06-15: "Dashboard v2" [category: "Product"]
+2026-04-01 - 2026-06-15: "Mobile app" [category: "Mobile"]
+2026-05-01 - 2026-06-15: "Launch campaign" [category: "Growth"]`],
+
+  ['TC-TL-15 · Lollipop (auto-alternate history)', `timeline "Company history"
+config: style = lollipop
+
+1996: "Founded" [icon:🎓]
+2001: milestone "First patent" [icon:💡]
+2005: "Product launch" [icon:🚀]
+2012: "Global expansion" [icon:🌍]
+2018: milestone "IPO" [icon:🏆]
+2024: "Hit $1B revenue" [icon:📈]`],
+
+  ['TC-TL-16 · Lollipop (explicit side + icons)', `timeline "Mission timeline"
+config: style = lollipop
+config: scale = equidistant
+
+1961: "Vostok 1" [icon:🧑‍🚀, side: above]
+1969: milestone "Apollo 11" [icon:🌕, side: below]
+1971: "Salyut 1" [icon:🛰, side: above]
+1981: "Space Shuttle" [icon:🛩, side: below]
+1990: "Hubble launch" [icon:🔭, side: above]
+1998: "ISS begins" [icon:🏗, side: below]
+2012: "Curiosity" [icon:🛞, side: above]
+2021: milestone "James Webb" [icon:✨, side: below]`],
+
+  ['TC-TL-17 · Lollipop with eras background', `timeline "Brand story"
+config: style = lollipop
+
+era 2015 - 2019: "Scrappy startup"
+era 2019 - 2023: "Scale-up"
+era 2023 - 2027: "Enterprise era"
+
+2015: "Founded in a coffee shop" [icon:☕]
+2017: milestone "First 1000 users" [icon:👥]
+2019: "Series A" [icon:💰]
+2021: "Opened NYC office" [icon:🏙]
+2023: milestone "Crossed $50M ARR" [icon:📊]
+2025: "Acquired Acme Inc." [icon:🤝]`],
+];
+
+const out = document.getElementById('output');
+for (const [title, src] of cases) {
+  const h = document.createElement('h2'); h.textContent = title; out.appendChild(h);
+  const pre = document.createElement('pre'); pre.className = 'src'; pre.textContent = src; out.appendChild(pre);
+  const div = document.createElement('div'); div.className = 'svg-container';
+  try {
+    div.innerHTML = render(src);
+  } catch (e) {
+    div.innerHTML = '<code style="color:#c00">' + (e.message || e) + '</code>';
+  }
+  out.appendChild(div);
+}
+</script>
+</body>
+</html>

@@ -37,6 +37,8 @@ export { fishbone } from "./diagrams/fishbone";
 export { venn } from "./diagrams/venn";
 export { flowchart } from "./diagrams/flowchart";
 export { orgchart } from "./diagrams/orgchart";
+export { decisiontree } from "./diagrams/decisiontree";
+export { timeline } from "./diagrams/timeline";
 
 export {
   type ThemeName,
@@ -55,4 +57,6 @@ export {
   resolveGenogramTheme,
   resolveFishboneTheme,
   resolveVennTheme,
+  resolveTimelineTheme,
+  type TimelineTokens,
 } from "./core/theme";

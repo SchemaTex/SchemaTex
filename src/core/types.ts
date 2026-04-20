@@ -38,7 +38,11 @@ export type DiagramType =
   // Strategy / prioritization / analysis diagrams
   | "matrix" // Matrix / 2x2 quadrant / 3x3 / N×M heatmap (18-MATRIX-STANDARD)
   // Organizational hierarchy diagrams
-  | "orgchart"; // Organizational / reporting structure chart (16-ORGCHART-STANDARD)
+  | "orgchart" // Organizational / reporting structure chart (16-ORGCHART-STANDARD)
+  // Decision-analysis / ML / taxonomy trees
+  | "decisiontree" // Decision tree — Howard-Raiffa + CART + taxonomy (17-DECISION-TREE-STANDARD)
+  // Time axis
+  | "timeline"; // Timeline — events / eras / lifespans on a time axis (19-TIMELINE-STANDARD)
 
 export type GenogramMode = "medical" | "heritage";
 export type LegendPosition = "bottom-right" | "right" | "bottom-center" | "none";

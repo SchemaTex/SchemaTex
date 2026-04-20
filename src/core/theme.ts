@@ -119,6 +119,39 @@ export interface MindmapTokens {
   branchPalette: readonly string[];
 }
 
+/**
+ * Tokens for timeline diagrams. Palette-driven so categories/tracks share
+ * colors with the rest of the diagram family (ecomap/sociogram/phylo).
+ * Era bands and card surfaces use theme-neutral tints so no magic hex codes
+ * leak into the renderer.
+ */
+export interface TimelineTokens {
+  axis: string;
+  axisLabel: string;
+  eraLabel: string;
+  eraOpacity: number;
+  eraPlotOpacity: number;
+  /** Alternating lane stripe fill. */
+  laneStripe: string;
+  laneStripeOpacity: number;
+  /** Category / task bar palette. Cycled by `category` (fallback to trackIdx). */
+  categoryPalette: readonly string[];
+  /** Point/milestone ring — defaults to accent but configurable. */
+  markerRing: string;
+  markerFill: string;
+  milestoneFill: string;
+  /** Gantt vertical pin shaft. */
+  pinShaft: string;
+  /** Lollipop card. */
+  cardBg: string;
+  cardStroke: string;
+  cardText: string;
+  cardShadow: string;
+  /** Gantt legend chip background. */
+  legendBg: string;
+  legendStroke: string;
+}
+
 // ─── Resolved Theme ────────────────────────────────────────
 
 export type ResolvedTheme<T = object> = BaseTheme & T;
@@ -447,6 +480,82 @@ export function resolveFlowchartTheme(name: string): ResolvedTheme<FlowchartToke
 export function resolveMindmapTheme(name: string): ResolvedTheme<MindmapTokens> {
   const themeName = (name in BASE_THEMES ? name : "default") as ThemeName;
   return { ...BASE_THEMES[themeName], ...MINDMAP_TOKENS[themeName] };
+}
+
+// ─── Timeline Tokens Per Theme ─────────────────────────────
+
+const DEFAULT_TIMELINE: TimelineTokens = {
+  axis: "#334155",
+  axisLabel: "#475569",
+  eraLabel: "#0f172a",
+  eraOpacity: 0.55,
+  eraPlotOpacity: 0.14,
+  laneStripe: "#f1f5f9",
+  laneStripeOpacity: 0.6,
+  categoryPalette: DEFAULT_PALETTE,
+  markerRing: "#2563eb",
+  markerFill: "#ffffff",
+  milestoneFill: "#d97706",
+  pinShaft: "#94a3b8",
+  cardBg: "#ffffff",
+  cardStroke: "#cbd5e1",
+  cardText: "#0f172a",
+  cardShadow: "rgba(15,23,42,0.08)",
+  legendBg: "#f8fafc",
+  legendStroke: "#e2e8f0",
+};
+
+const MONOCHROME_TIMELINE: TimelineTokens = {
+  axis: "#000000",
+  axisLabel: "#333333",
+  eraLabel: "#000000",
+  eraOpacity: 0.2,
+  eraPlotOpacity: 0.08,
+  laneStripe: "#f0f0f0",
+  laneStripeOpacity: 0.6,
+  categoryPalette: MONOCHROME_PALETTE,
+  markerRing: "#000000",
+  markerFill: "#ffffff",
+  milestoneFill: "#000000",
+  pinShaft: "#888888",
+  cardBg: "#ffffff",
+  cardStroke: "#000000",
+  cardText: "#000000",
+  cardShadow: "rgba(0,0,0,0.06)",
+  legendBg: "#ffffff",
+  legendStroke: "#000000",
+};
+
+const DARK_TIMELINE: TimelineTokens = {
+  axis: "#cdd6f4",
+  axisLabel: "#9399b2",
+  eraLabel: "#cdd6f4",
+  eraOpacity: 0.5,
+  eraPlotOpacity: 0.18,
+  laneStripe: "#313244",
+  laneStripeOpacity: 0.5,
+  categoryPalette: DARK_PALETTE,
+  markerRing: "#89b4fa",
+  markerFill: "#1e1e2e",
+  milestoneFill: "#fab387",
+  pinShaft: "#6c7086",
+  cardBg: "#313244",
+  cardStroke: "#45475a",
+  cardText: "#cdd6f4",
+  cardShadow: "rgba(0,0,0,0.35)",
+  legendBg: "#181825",
+  legendStroke: "#45475a",
+};
+
+export const TIMELINE_TOKENS: Record<ThemeName, TimelineTokens> = {
+  default: DEFAULT_TIMELINE,
+  monochrome: MONOCHROME_TIMELINE,
+  dark: DARK_TIMELINE,
+};
+
+export function resolveTimelineTheme(name: string): ResolvedTheme<TimelineTokens> {
+  const themeName = (name in BASE_THEMES ? name : "default") as ThemeName;
+  return { ...BASE_THEMES[themeName], ...TIMELINE_TOKENS[themeName] };
 }
 
 // ─── Theme Resolution ──────────────────────────────────────
