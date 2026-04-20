@@ -6,11 +6,12 @@
 
 ## What is Schematex?
 
-**Schematex — Standards-as-code for professional diagrams.**
+> **Every diagram a doctor, engineer, or lawyer would actually use.**
+> **Free. Fully open source. Made for AI.**
 
 开源 TypeScript 库：Text DSL → SVG 渲染引擎，专注**遵循真实行业标准**的专业领域图表（standards-compliant domain-specific diagrams）。
 
-**核心差异化（positioning）：** 通用图表工具（Mermaid / D2 / Excalidraw）把 diagram 当成"带标签的形状"；Schematex 把每个 diagram 背后的**领域标准当成一等公民**——parser、layout 算法、SVG symbol 全部按发布的标准实现，不是我们自己发明的。
+**核心差异化（positioning）：** 通用图表工具（Mermaid / D2 / Excalidraw）把 diagram 当成"带标签的形状"；Schematex 把每个 diagram 背后的**领域标准当成一等公民**——parser、layout 算法、SVG symbol 全部按发布的标准实现，不是我们自己发明的。专业人群（临床医生、电气工程师、公司律师）原本就在画这些图，Schematex 让他们在软件里也能画对。
 
 **四大 domain cluster：**
 
@@ -24,9 +25,9 @@
 
 **三大价值支柱（value pillars）：**
 
-1. **Standards-compliant** — 每种图的符号、布局、DSL 语法都对应真实的发布标准，domain expert 敢拿去 clinical / engineering / legal 用。
-2. **Zero runtime dependency** — 无 D3、无 dagre、无 parser generator。纯 TypeScript 手写，KB 级 bundle，SSR-safe，嵌入任何 React/Vue/Svelte 项目。
-3. **LLM-native by design** — DSL 设计时就考虑 LLM 常见失败模式（CJK 引号、嵌套歧义），错误信息 AI-readable，每种图型都有 pre-tuned prompt 配套。
+1. **Diagrams professionals actually use** — 每种图的符号、布局、DSL 语法都对应真实的发布标准。医生画 pedigree / 工程师画 ladder / 律师画 entity structure——他们本来就在画，Schematex 让他们在代码里也画对。
+2. **Free & fully open source** — AGPL-3.0，不 telemetry，不锁 feature。无 D3、无 dagre、无 parser generator，纯 TypeScript 手写，KB 级 bundle，SSR-safe，嵌入任何 React/Vue/Svelte 项目。
+3. **Made for AI** — DSL 为 LLM 生成而设计：考虑 CJK 引号/嵌套歧义等常见失败模式，错误信息 AI-readable，每种图型都有 pre-tuned prompt 配套。让 AI 管道能直接 emit diagram。
 
 **关键区别：** Mermaid 用通用图布局（dagre/ELK），Schematex 用**领域特定布局算法**（genogram → generation-based layered layout；ecomap → radial layout；logic gate → DAG topological sort；ladder → fixed power-rail layout；phylo → rectangular/cladogram；etc.）。通用布局画不好这些图——这就是为什么 Mermaid 至今没有 genogram 或 ladder logic。
 

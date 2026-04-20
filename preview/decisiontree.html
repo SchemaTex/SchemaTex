@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Schematex · Decision Tree Preview</title>
+<style>
+  body { font-family: system-ui; background: #f5f5f5; margin: 0; padding: 20px; }
+  nav { font-size: 13px; color: #888; margin-bottom: 16px; }
+  nav a { color: #555; text-decoration: none; }
+  nav a:hover { text-decoration: underline; }
+  h1 { font-size: 18px; color: #333; margin: 0 0 4px; }
+  .subtitle { font-size: 13px; color: #888; margin-bottom: 24px; }
+  h2 { font-size: 14px; color: #666; margin-top: 30px; border-bottom: 1px solid #ddd; padding-bottom: 4px; }
+  pre.src { background: #f7f7f7; padding: 10px; font-size: 12px; border-radius: 6px; margin: 6px 0; border: 1px solid #eee; white-space: pre-wrap; }
+  .svg-container { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin: 10px 0; overflow-x: auto; }
+  .svg-container svg { display: block; max-width: 100%; height: auto; }
+</style>
+</head>
+<body>
+<nav><a href="index.html">← All Diagrams</a></nav>
+<h1>Decision Tree</h1>
+<div class="subtitle">Three modes: decision analysis (Howard-Raiffa EV) · ML (CART / sklearn style) · Taxonomy (yes/no)</div>
+<div id="output"></div>
+<script type="module">
+import { render } from '../src/index.ts';
+
+const cases = [
+  ['TC-DT-01 · Simplest taxonomy (2 levels)', `decisiontree "Is it a bird?"
+
+q "Has feathers?"
+  yes: a "Bird"
+  no: a "Not a bird"`],
+
+  ['TC-DT-02 · Mammal taxonomy (4 levels, yes/no)', `decisiontree "Is it a mammal?"
+
+q "Has fur or hair?"
+  yes: q "Produces milk?"
+    yes: a "Mammal"
+    no: a "Unknown — investigate"
+  no: q "Lays eggs?"
+    yes: q "Has feathers?"
+      yes: a "Bird"
+      no: a "Reptile / Fish / Amphibian"
+    no: a "Invertebrate"`],
+
+  ['TC-DT-03 · Medical triage (custom branch labels, left-right)', `decisiontree:taxonomy "ED Triage Level"
+direction: left-right
+
+q "Airway compromise?"
+  yes: a "Level 1 — Resuscitation"
+  no: q "Vital signs unstable?"
+    yes: a "Level 2 — Emergent"
+    no: q "Multiple resources needed?"
+      yes: a "Level 3 — Urgent"
+      no: q "One resource needed?"
+        yes: a "Level 4 — Less urgent"
+        no: a "Level 5 — Non-urgent"`],
+
+  ['TC-DT-04 · Umbrella decision (classic, EV rollback)', `decisiontree:decision "Should I take the umbrella?"
+
+decision "Take umbrella?"
+  choice "Yes"
+    chance "Weather"
+      prob 0.4 end payoff=-2 "Rains (slight annoy)"
+      prob 0.6 end payoff=-1 "No rain (carry burden)"
+  choice "No"
+    chance "Weather"
+      prob 0.4 end payoff=-10 "Rains (soaked)"
+      prob 0.6 end payoff=0 "No rain (free)"`],
+
+  ['TC-DT-05 · Product launch decision (3 strategies × 3 outcomes)', `decisiontree:decision "New Product Launch"
+
+decision "Launch strategy"
+  choice "Soft launch"
+    chance "Market response"
+      prob 0.6 end payoff=150000 "Good reception"
+      prob 0.3 end payoff=40000 "Mixed"
+      prob 0.1 end payoff=-30000 "Poor"
+  choice "Full launch"
+    chance "Market response"
+      prob 0.5 end payoff=300000 "Good reception"
+      prob 0.3 end payoff=80000 "Mixed"
+      prob 0.2 end payoff=-120000 "Poor"
+  choice "No launch"
+    end payoff=0 "Status quo"`],
+
+  ['TC-DT-06 · Bayesian probability tree (COVID test)', `decisiontree:decision "COVID test — Bayesian"
+
+chance "Has disease?"
+  prob 0.01 chance "Test result (infected)"
+    prob 0.95 end payoff=1 "True positive"
+    prob 0.05 end payoff=0 "False negative"
+  prob 0.99 chance "Test result (healthy)"
+    prob 0.03 end payoff=0 "False positive"
+    prob 0.97 end payoff=1 "True negative"`],
+
+  ['TC-DT-07 · Iris classification (ML, 3 classes)', `decisiontree:ml "Iris classification"
+classes: setosa, versicolor, virginica
+impurity: gini
+branchLabels: relation
+
+split feature=petal_width op=<= threshold=0.8 samples=120 value=[50,35,35] gini=0.66
+  true leaf samples=50 value=[50,0,0] gini=0 class=setosa
+  false split feature=petal_width op=<= threshold=1.75 samples=70 value=[0,35,35] gini=0.5
+    true split feature=petal_length op=<= threshold=4.95 samples=36 value=[0,32,4] gini=0.198
+      true leaf samples=32 value=[0,32,0] gini=0 class=versicolor
+      false leaf samples=4 value=[0,0,4] gini=0 class=virginica
+    false leaf samples=34 value=[0,3,31] gini=0.162 class=virginica`],
+
+  ['TC-DT-08 · Regression tree (Housing prices, MSE)', `decisiontree:ml "Housing price regression"
+impurity: mse
+
+split feature=RM op=<= threshold=6.94 samples=506 value=22.5 mse=84.4
+  true split feature=LSTAT op=<= threshold=14.4 samples=430 value=19.9 mse=40.2
+    true leaf samples=255 value=23.3 mse=26.0
+    false leaf samples=175 value=14.9 mse=23.3
+  false leaf samples=76 value=37.2 mse=79.7`],
+
+  ['TC-DT-09 · Credit approval (taxonomy with custom labels)', `decisiontree:taxonomy "Credit decision"
+direction: left-right
+
+q "Credit score"
+  label ">= 700": a "Auto-approve"
+  label "600-699": q "Income verified?"
+    yes: a "Approve with limit"
+    no: a "Manual review"
+  label "< 600": a "Reject"`],
+
+  ['TC-DT-10 · Multi-stage investment decision (nested decision + chance)', `decisiontree:decision "Oil drilling"
+
+decision "Drill or sell rights?"
+  choice "Sell rights"
+    end payoff=90000 "Guaranteed sale"
+  choice "Drill"
+    chance "Well outcome"
+      prob 0.3 end payoff=500000 "Major strike"
+      prob 0.5 end payoff=50000 "Minor strike"
+      prob 0.2 end payoff=-200000 "Dry hole"`],
+
+  ['TC-DT-11 · Product strategy (diagonal / blue-reference style)', `decisiontree:decision "Product Strategy"
+
+decision "Product Strategy"
+  choice "High Value/Price"
+    chance "Market"
+      prob 0.3 end payoff=100000000 "Success"
+      prob 0.5 end payoff=70000000 "Moderate Success"
+      prob 0.2 end payoff=-30000000 "Failure"
+  choice "Low Value/Price"
+    chance "Market"
+      prob 0.5 end payoff=50000000 "Success"
+      prob 0.3 end payoff=30000000 "Moderate Success"
+      prob 0.2 end payoff=-10000000 "Failure"`],
+
+  ['TC-DT-12 · Credit scoring (nested chance — P(Good)/P(Moderate)/P(Bad))', `decisiontree:decision "Credit Risk · Income → History"
+
+chance "Income"
+  prob 0.4 chance "History (>$90K)"
+    prob 0.7 end payoff=1 "P: Low Risk"
+    prob 0.2 end payoff=0.5 "P: Moderate Risk"
+    prob 0.1 end payoff=0 "P: High Risk"
+  prob 0.4 chance "History ($40-90K)"
+    prob 0.4 end payoff=0.8 "P: Low Risk"
+    prob 0.4 end payoff=0.5 "P: Moderate Risk"
+    prob 0.2 end payoff=0.1 "P: High Risk"
+  prob 0.2 end payoff=0 "P: High Risk"`],
+
+  ['TC-DT-13 · Umbrella (orthogonal style — edgeStyle override)', `decisiontree:decision "Umbrella · orthogonal edges"
+edgeStyle: orthogonal
+
+decision "Take umbrella?"
+  choice "Yes"
+    chance "Weather"
+      prob 0.4 end payoff=-2 "Rains (slight annoy)"
+      prob 0.6 end payoff=-1 "No rain (carry)"
+  choice "No"
+    chance "Weather"
+      prob 0.4 end payoff=-10 "Rains (soaked)"
+      prob 0.6 end payoff=0 "No rain (free)"`],
+
+  ['TC-DT-14 · Taxonomy (bracket style — classic textbook tree)', `decisiontree:taxonomy "Animal classification"
+edgeStyle: bracket
+direction: top-down
+
+q "Has backbone?"
+  yes: q "Warm-blooded?"
+    yes: q "Has fur?"
+      yes: a "Mammal"
+      no: a "Bird"
+    no: q "Lives in water?"
+      yes: a "Fish"
+      no: a "Reptile/Amphibian"
+  no: a "Invertebrate"`],
+];
+
+const out = document.getElementById('output');
+for (const [title, src] of cases) {
+  const h = document.createElement('h2'); h.textContent = title; out.appendChild(h);
+  const pre = document.createElement('pre'); pre.className = 'src'; pre.textContent = src; out.appendChild(pre);
+  const div = document.createElement('div'); div.className = 'svg-container';
+  try {
+    div.innerHTML = render(src);
+  } catch (e) {
+    div.innerHTML = '<code style="color:#c00">' + (e.message || e) + '</code>';
+  }
+  out.appendChild(div);
+}
+</script>
+</body>
+</html>
