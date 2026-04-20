@@ -1,4 +1,5 @@
 import type { DiagramPlugin, RenderConfig } from "../../core/types";
+import { parseTimeline } from "./parser";
 import { renderTimeline } from "./renderer";
 
 export const timeline: DiagramPlugin = {
@@ -6,6 +7,7 @@ export const timeline: DiagramPlugin = {
   detect(text) {
     return /^\s*timeline\b/i.test(text);
   },
+  parse: parseTimeline,
   render(text, config?: RenderConfig) {
     return renderTimeline(text, config);
   },

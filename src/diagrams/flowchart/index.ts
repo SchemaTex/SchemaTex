@@ -1,4 +1,5 @@
 import type { DiagramPlugin, RenderConfig } from "../../core/types";
+import { parseFlowchart } from "./parser";
 import { renderFlowchart } from "./renderer";
 
 export const flowchart: DiagramPlugin = {
@@ -14,6 +15,8 @@ export const flowchart: DiagramPlugin = {
     }
     return false;
   },
+  parse: parseFlowchart,
+
   render(text: string, config?: RenderConfig): string {
     const themeName = (config?.theme ?? "default") as "default" | "monochrome" | "dark";
     return renderFlowchart(text, themeName);

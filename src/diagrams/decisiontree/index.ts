@@ -7,6 +7,8 @@ export const decisiontree: DiagramPlugin = {
   detect(text) {
     return /^\s*decisiontree\b/i.test(text);
   },
+  parse: parseDecisionTree,
+
   render(text, config?: RenderConfig) {
     const ast = parseDecisionTree(text);
     return renderDecisionTree(ast, config);

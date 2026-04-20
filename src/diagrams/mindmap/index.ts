@@ -1,4 +1,5 @@
 import type { DiagramPlugin, RenderConfig } from "../../core/types";
+import { parseMindmap } from "./parser";
 import { renderMindmap } from "./renderer";
 
 export const mindmap: DiagramPlugin = {
@@ -16,6 +17,8 @@ export const mindmap: DiagramPlugin = {
     }
     return false;
   },
+  parse: parseMindmap,
+
   render(text: string, config?: RenderConfig): string {
     return renderMindmap(text, {
       theme: config?.theme,

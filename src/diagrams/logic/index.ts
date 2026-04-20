@@ -8,6 +8,8 @@ export const logic: DiagramPlugin = {
     const first = text.trim().split("\n")[0]?.trim().toLowerCase() ?? "";
     return first.startsWith("logic");
   },
+  parse: parseLogic,
+
   render(text: string, config): string {
     const ast = parseLogic(text);
     return renderLogic(ast, config);

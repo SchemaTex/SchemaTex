@@ -12,6 +12,8 @@ export const phylo: DiagramPlugin = {
     return firstLine === "phylo" || firstLine.startsWith("phylo ");
   },
 
+  parse: parsePhylo,
+
   render(text: string): string {
     const ast = parsePhylo(text);
     const layout = layoutPhylo(ast);

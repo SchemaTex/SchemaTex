@@ -8,6 +8,8 @@ export const blockdiagram: DiagramPlugin = {
     const first = text.trim().split("\n")[0]?.trim().toLowerCase() ?? "";
     return first.startsWith("blockdiagram");
   },
+  parse: parseBlockDiagram,
+
   render(text: string): string {
     const ast = parseBlockDiagram(text);
     return renderBlockDiagram(ast);

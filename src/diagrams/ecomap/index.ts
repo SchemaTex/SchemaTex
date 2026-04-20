@@ -15,6 +15,8 @@ export const ecomap: DiagramPlugin = {
     return firstLine === "ecomap" || firstLine.startsWith("ecomap ");
   },
 
+  parse: parseEcomap,
+
   render(text: string, config?: RenderConfig): string {
     const ast = parseEcomap(text);
     const layoutConfig = {

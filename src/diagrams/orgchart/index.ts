@@ -7,6 +7,8 @@ export const orgchart: DiagramPlugin = {
   detect(text) {
     return /^\s*orgchart\b/i.test(text);
   },
+  parse: parseOrgchart,
+
   render(text, config) {
     const ast = parseOrgchart(text);
     return renderOrgchart(ast, config);

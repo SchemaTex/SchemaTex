@@ -510,22 +510,36 @@ Written by humans, shaped by what LLMs get wrong.
 ## API
 
 ```ts
-// Universal entry — dispatches by first keyword
+// Universal entry — auto-detects diagram type from first keyword
 import { render, parse } from 'schematex';
 
-render(text: string, config?: SchematexConfig): string;
-parse(text: string, config?: SchematexConfig): AST;
+const svg = render(text, config?);      // → SVG string
+const ast = parse(text, config?);       // → AST (JSON-serializable)
 
-// Per-diagram (tree-shakable)
-import { render as renderGenogram } from 'schematex/genogram';
-import { render as renderLadder } from 'schematex/ladder';
+// Per-diagram tree-shaking
+import { render } from 'schematex/genogram';
+
+// Browser DOM
+import { renderToElement, renderToContainer } from 'schematex/browser';
+container.appendChild(renderToElement(dsl));
+
+// React
+import { SchematexDiagram } from 'schematex/react';
+// <SchematexDiagram dsl="genogram ..." theme="monochrome" />
+
+// Export (browser Canvas)
+import { svgToPngBlob, downloadBlob, printSvgAsPdf } from 'schematex/export';
+const blob = await svgToPngBlob(svg, { scale: 2 });
+downloadBlob(blob, 'diagram.png');
 ```
 
 See the [API reference →](https://schematex.dev/docs/api).
 
 ## Ecosystem
 
-- **React** — `@schematex/react` *(coming soon)*
+- **React** — `schematex/react` — `<SchematexDiagram dsl="..." />` component
+- **Browser** — `schematex/browser` — `renderToElement()` / `renderToContainer()`
+- **Export** — `schematex/export` — PNG (@2×) + print-to-PDF via browser Canvas
 - **Obsidian** — code-block renderer plugin *(coming soon)*
 - **Markdown-it / remark** — diagram fence support *(coming soon)*
 - **CLI** — `npx schematex input.txt > output.svg` *(coming soon)*

@@ -11,6 +11,8 @@ export const sociogram: DiagramPlugin = {
     return first.startsWith("sociogram");
   },
 
+  parse: parseSociogram,
+
   render(text: string, config): string {
     const ast = parseSociogram(text);
     const layout = layoutSociogram(ast);

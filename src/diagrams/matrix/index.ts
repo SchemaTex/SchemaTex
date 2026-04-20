@@ -1,4 +1,5 @@
 import type { DiagramPlugin } from "../../core/types";
+import { parseMatrix } from "./parser";
 import { renderMatrix } from "./renderer";
 
 export const matrix: DiagramPlugin = {
@@ -7,6 +8,8 @@ export const matrix: DiagramPlugin = {
     const first = text.trim().split("\n")[0]?.trim().toLowerCase() ?? "";
     return first.startsWith("matrix");
   },
+  parse: parseMatrix,
+
   render(text: string): string {
     return renderMatrix(text);
   },

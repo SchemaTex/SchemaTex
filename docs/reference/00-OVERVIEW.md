@@ -94,16 +94,20 @@ Text DSL ──→ Parser ──→ AST ──→ Layout Engine ──→ Layout
 ```ts
 interface DiagramPlugin {
   type: DiagramType;
-  detect(text: string): boolean;       // 能否处理这段文本？
-  parse(text: string): DiagramAST;     // 文本 → AST
-  layout(ast, config): LayoutResult;   // AST → 带坐标的节点/边
-  render(layout, config): string;      // LayoutResult → SVG 字符串
+  detect(text: string): boolean;          // 能否处理这段文本？
+  render(text: string, config?): string;  // 文本 → SVG（内部调用 parse → layout → renderer）
+  parse?(text: string): unknown;          // 可选：文本 → AST（供 JSON export 使用）
 }
 ```
 
 **API 入口（`src/core/api.ts`）：**
 - `render(text, config?)` → SVG string（自动检测图表类型）
-- `parse(text, config?)` → AST（高级用法，给需要自定义渲染的消费者）
+- `parse(text, config?)` → AST as `unknown`（JSON 序列化 / 自定义渲染）
+
+**Subpath exports：**
+- `schematex/browser` — `renderToElement()` + `renderToContainer()`（需要 DOM）
+- `schematex/react` — `<SchematexDiagram dsl="..." />` React 组件（需要 React ≥18）
+- `schematex/export` — `svgToPngBlob()` + `downloadBlob()` + `printSvgAsPdf()`（浏览器 Canvas）
 
 ---
 
@@ -162,6 +166,9 @@ schematex/
 │
 ├── src/
 │   ├── index.ts                 # 公共 API re-export
+│   ├── browser.ts               # renderToElement() / renderToContainer() (DOM)
+│   ├── react.tsx                # <SchematexDiagram> React 组件
+│   ├── export.ts                # svgToPngBlob() / printSvgAsPdf() (Canvas)
 │   ├── core/
 │   │   ├── api.ts               # render(), parse()
 │   │   ├── types.ts             # 所有共享类型（唯一真相源）

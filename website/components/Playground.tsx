@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { render } from 'schematex';
+import { svgToPngBlob, downloadBlob, printSvgAsPdf } from 'schematex/export';
 
 const MonacoEditor = dynamic(() => import('@monaco-editor/react'), {
   ssr: false,
@@ -177,34 +178,14 @@ export function Playground({ initial, height = 560, fill = false }: PlaygroundPr
     URL.revokeObjectURL(url);
   }, [svg, meta.name]);
 
-  const handleDownloadPng = useCallback(() => {
+  const handleDownloadPng = useCallback(async () => {
     if (!svg) return;
-    const blob = new Blob([svg], { type: 'image/svg+xml' });
-    const svgUrl = URL.createObjectURL(blob);
-    const img = new Image();
-    img.onload = () => {
-      const scale = 2;
-      const canvas = document.createElement('canvas');
-      canvas.width = (img.width || 800) * scale;
-      canvas.height = (img.height || 600) * scale;
-      const ctx = canvas.getContext('2d');
-      if (!ctx) return;
-      ctx.scale(scale, scale);
-      ctx.drawImage(img, 0, 0);
-      URL.revokeObjectURL(svgUrl);
-      canvas.toBlob((pngBlob) => {
-        if (!pngBlob) return;
-        const pngUrl = URL.createObjectURL(pngBlob);
-        const a = document.createElement('a');
-        a.href = pngUrl;
-        a.download = `${meta.name || 'diagram'}.png`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(pngUrl);
-      }, 'image/png');
-    };
-    img.src = svgUrl;
+    try {
+      const blob = await svgToPngBlob(svg, { scale: 2, background: 'white' });
+      downloadBlob(blob, `${meta.name || 'diagram'}.png`);
+    } catch {
+      /* noop — browser may block in certain environments */
+    }
   }, [svg, meta.name]);
 
   useEffect(() => {
@@ -273,7 +254,7 @@ export function Playground({ initial, height = 560, fill = false }: PlaygroundPr
                 {[
                   { label: '.svg', desc: 'vector', action: handleDownloadSvg },
                   { label: '.png', desc: '@2× raster', action: handleDownloadPng },
-                  { label: '.pdf', desc: 'print-ready', action: () => {} },
+                  { label: '.pdf', desc: 'print-ready', action: () => { if (svg) printSvgAsPdf(svg, meta.name || 'diagram'); } },
                 ].map(({ label, desc, action }) => (
                   <button
                     key={label}

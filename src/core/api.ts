@@ -85,6 +85,24 @@ function detectPlugin(text: string, config?: SchematexConfig): DiagramPlugin {
   );
 }
 
+/**
+ * Parse DSL text to the diagram's AST and return it as a plain object.
+ * Useful for JSON serialization, programmatic inspection, or custom renderers.
+ *
+ * @example
+ * ```ts
+ * const ast = parse('genogram\n  alice [female]');
+ * console.log(JSON.stringify(ast, null, 2));
+ * ```
+ */
+export function parse(text: string, config?: SchematexConfig): unknown {
+  const plugin = detectPlugin(text, config);
+  if (plugin.parse) return plugin.parse(text);
+  throw new Error(
+    `Diagram type '${plugin.type}' does not yet expose a parse() method.`
+  );
+}
+
 export function render(text: string, config?: SchematexConfig): string {
   const plugin = detectPlugin(text, config);
   const renderConfig: RenderConfig = {

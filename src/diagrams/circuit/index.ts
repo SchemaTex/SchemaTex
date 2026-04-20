@@ -8,6 +8,8 @@ export const circuit: DiagramPlugin = {
     const first = text.trim().split("\n")[0]?.trim().toLowerCase() ?? "";
     return first.startsWith("circuit");
   },
+  parse: parseCircuit,
+
   render(text: string, config): string {
     const ast = parseCircuit(text);
     return renderCircuit(ast, config);

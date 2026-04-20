@@ -8,6 +8,8 @@ export const ladder: DiagramPlugin = {
     const first = text.trim().split("\n")[0]?.trim().toLowerCase() ?? "";
     return first.startsWith("ladder");
   },
+  parse: parseLadderDSL,
+
   render(text: string, config): string {
     const ast = parseLadderDSL(text);
     return renderLadder(ast, config);

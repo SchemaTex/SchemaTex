@@ -11,6 +11,8 @@ export const pedigree: DiagramPlugin = {
     return firstLine === "pedigree" || firstLine.startsWith("pedigree ");
   },
 
+  parse: parsePedigree,
+
   render(text: string, config?: RenderConfig): string {
     const ast = parsePedigree(text);
     const layoutConfig = {

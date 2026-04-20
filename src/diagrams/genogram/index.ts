@@ -16,6 +16,8 @@ export const genogram: DiagramPlugin = {
     return firstLine === "genogram" || firstLine.startsWith("genogram ");
   },
 
+  parse: parseGenogram,
+
   render(text: string, config?: RenderConfig): string {
     const ast = parseGenogram(text);
     const layoutConfig = {

@@ -476,6 +476,8 @@ export interface DiagramPlugin {
   type: DiagramType;
   detect: (text: string) => boolean;
   render: (text: string, config?: RenderConfig) => string;
+  /** Parse DSL text to the diagram's AST (for JSON export / programmatic access). */
+  parse?: (text: string) => unknown;
 }
 
 export interface LayoutConfig {

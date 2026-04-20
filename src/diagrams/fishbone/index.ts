@@ -1,4 +1,5 @@
 import type { DiagramPlugin } from "../../core/types";
+import { parseFishboneDSL } from "./parser";
 import { renderFishbone } from "./renderer";
 
 export const fishbone: DiagramPlugin = {
@@ -7,6 +8,7 @@ export const fishbone: DiagramPlugin = {
     const first = text.trim().split("\n")[0]?.trim().toLowerCase() ?? "";
     return first.startsWith("fishbone");
   },
+  parse: parseFishboneDSL,
   render(text: string): string {
     return renderFishbone(text);
   },
