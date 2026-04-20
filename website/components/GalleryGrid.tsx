@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import { render } from 'schematex';
 import {
-  DIAGRAM_LABELS,
   INDUSTRY_LABELS,
   CLUSTER_META,
   getDiagramCluster,
