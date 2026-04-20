@@ -6,9 +6,11 @@ interface CopyButtonProps {
   text: string;
   className?: string;
   label?: string;
+  /** `boxed` (default): bordered, own background — for standalone use. `ghost`: no border/bg — for nesting inside another pill. */
+  variant?: 'boxed' | 'ghost';
 }
 
-export function CopyButton({ text, className = '', label = 'Copy' }: CopyButtonProps) {
+export function CopyButton({ text, className = '', label = 'Copy', variant = 'boxed' }: CopyButtonProps) {
   const [copied, setCopied] = useState(false);
 
   async function onCopy() {
@@ -19,6 +21,30 @@ export function CopyButton({ text, className = '', label = 'Copy' }: CopyButtonP
     } catch {
       /* noop */
     }
+  }
+
+  if (variant === 'ghost') {
+    return (
+      <button
+        type="button"
+        onClick={onCopy}
+        aria-label={copied ? 'Copied' : label}
+        className={
+          'inline-flex items-center gap-1.5 font-mono text-xs text-fd-muted-foreground/70 transition hover:text-fd-foreground ' +
+          className
+        }
+      >
+        {copied ? (
+          <>
+            <CheckIcon /> Copied
+          </>
+        ) : (
+          <>
+            <ClipboardIcon /> {label}
+          </>
+        )}
+      </button>
+    );
   }
 
   return (

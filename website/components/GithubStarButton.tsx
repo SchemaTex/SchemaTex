@@ -6,7 +6,7 @@ interface GithubStarButtonProps {
 }
 
 export function GithubStarButton({ stars, size = 'md' }: GithubStarButtonProps) {
-  const pad = size === 'sm' ? '4px 8px' : '6px 10px';
+  const pad = size === 'sm' ? '4px 8px' : '8px 10px';
   const iconSize = size === 'sm' ? 14 : 16;
   const text = size === 'sm' ? 'text-xs' : 'text-[13px]';
   return (

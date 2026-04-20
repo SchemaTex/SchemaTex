@@ -19,7 +19,7 @@
 | 👪 **Relationships** | genogram · ecomap · pedigree · sociogram · phylogenetic tree | McGoldrick 2020 · Hartman 1978 · NSGC · Moreno 1934 · Newick/NHX |
 | ⚡ **Electrical & Industrial** | timing · logic gate · circuit schematic · block diagram · ladder logic · single-line diagram | WaveDrom · IEEE 91 · IEEE 315 · Ogata · IEC 61131-3 · ANSI device numbering |
 | 🏢 **Corporate / Legal** | entity structure · cap table | Tier-based ownership hierarchy with percentage rollup |
-| 🐟 **Causality / Analysis** | fishbone (Ishikawa) · venn/euler | Ishikawa 1968 cause-and-effect · Venn 1880 / Euler set-theoretic diagrams |
+| 🐟 **Causality / Analysis** | fishbone (Ishikawa) · venn/euler · decision tree | Ishikawa 1968 cause-and-effect · Venn 1880 / Euler set-theoretic diagrams · Howard-Raiffa EV rollback / CART-sklearn / taxonomy |
 | 🔀 **Generic process** | flowchart | Sugiyama layered DAG + orthogonal routing (14-FLOWCHART-STANDARD) |
 
 **三大价值支柱（value pillars）：**

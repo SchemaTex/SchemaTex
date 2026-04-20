@@ -19,8 +19,8 @@ export function SiteHeader({ version, stars }: { version?: string; stars?: numbe
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-fd-border bg-fd-background/80 backdrop-blur">
-      <div className="mx-auto flex h-14 max-w-6xl items-center gap-6 px-6">
+    <header className="sticky top-0 z-40 border-b border-fd-border bg-fd-background/80 px-6 backdrop-blur">
+      <div className="mx-auto flex h-14 max-w-6xl items-center gap-6">
         <Link href="/" className="font-bold tracking-tight text-fd-foreground">
           <Logo size={18} />
         </Link>
@@ -86,7 +86,7 @@ export function SiteHeader({ version, stars }: { version?: string; stars?: numbe
       </div>
       {open && (
         <nav className="border-t border-fd-border md:hidden">
-          <ul className="mx-auto max-w-6xl px-6 py-2">
+          <ul className="mx-auto max-w-6xl py-2">
             {NAV_LINKS.map((l) => (
               <li key={l.href}>
                 <Link

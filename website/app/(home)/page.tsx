@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { render } from 'schematex';
 import { CopyButton } from '@/components/CopyButton';
 import { HeroShowcase, type HeroSlide } from '@/components/HeroShowcase';
+import { CoverageGrid } from '@/components/CoverageGrid';
 import { GithubStarButton } from '@/components/GithubStarButton';
 import { getRepoStats } from '@/lib/github-stats';
 import { galleryExamples } from '@/lib/gallery-examples';
@@ -204,49 +205,41 @@ export default async function HomePage() {
           className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-px bg-gradient-to-r from-transparent via-fd-border to-transparent"
         />
 
-        <div className="mx-auto grid max-w-[1320px] items-center gap-10 min-[1100px]:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] min-[1100px]:gap-14">
-          {/* LEFT — copy + CTAs */}
-          <div>
-            {/* Eye line: — 20 DIAGRAM FAMILIES · 10+ STANDARDS · 0 DEPS */}
-            <div className="mb-6 inline-flex items-center gap-2.5 font-mono text-[12px] uppercase tracking-[0.04em] text-fd-muted-foreground">
-              <span aria-hidden className="h-px w-6 bg-[color:var(--text-muted)]" />
-              20 DIAGRAM FAMILIES · 10+ STANDARDS · 0 DEPS
-            </div>
+        <div className="mx-auto max-w-6xl">
+          {/* 2-col on lg: copy left (7fr), coverage grid right (5fr) */}
+          <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:gap-12">
+            {/* LEFT — copy */}
+            <div>
+            {/* Eye line — uses type-eye + numbering to align with the rest of the page */}
+            <p className="type-eye mb-5">
+              01 / INTRODUCING SCHEMATEX · 20 FAMILIES · 10+ STANDARDS · 0 DEPS
+            </p>
 
             <h1
               id="hero-heading"
               className="text-balance text-[40px] font-semibold leading-[1.04] tracking-[-0.025em] text-fd-foreground md:text-[58px]"
             >
-              Standards-as-code
-              <br />
+              Standards-as-code for{' '}
               <em
                 className="not-italic"
                 style={{ color: 'var(--accent)' }}
               >
-                for professional diagrams.
+                professional diagrams.
               </em>
             </h1>
 
-            <p className="mt-6 max-w-[520px] text-[16px] leading-[1.6] text-fd-muted-foreground">
+            <p className="mt-6 max-w-[620px] text-[17px] leading-[1.6] text-fd-muted-foreground">
               Mermaid draws generic flowcharts. Schematex draws a genogram a
               genetic counselor accepts clinically, ladder logic that maps 1:1
               to IEC 61131-3, and a cap table that survives a Series A review —
-               all from a tiny text DSL.
+              all from a tiny text DSL.
             </p>
 
-            {/* Value tags */}
-            <div className="mt-7 flex flex-wrap gap-1.5">
-              <span className="ds-badge">20 diagram families</span>
-              <span className="ds-badge">10+ published standards</span>
-              <span className="ds-badge">zero runtime deps</span>
-              <span className="ds-badge">LLM-native</span>
-            </div>
-
-            {/* CTAs — primary + secondary install pill + github star */}
-            <div className="mt-7 flex flex-wrap items-center gap-2">
+            {/* CTAs — unified height (h-10) and radius (var(--r-sm)) across all four */}
+            <div className="mt-8 flex flex-wrap items-center gap-2">
               <Link
                 href="/playground"
-                className="group inline-flex items-center gap-2 px-4 py-2 text-sm font-medium transition hover:opacity-95"
+                className="group inline-flex h-10 items-center gap-2 px-4 text-sm font-medium transition hover:opacity-95"
                 style={{
                   background: 'var(--accent)',
                   color: '#fff',
@@ -268,7 +261,7 @@ export default async function HomePage() {
                 </kbd>
               </Link>
               <div
-                className="inline-flex items-center gap-2 px-3 py-2 font-mono text-[13px] text-fd-foreground"
+                className="inline-flex h-10 items-center gap-2 px-3 font-mono text-[13px] text-fd-foreground"
                 style={{
                   background: 'var(--fill)',
                   border: '1px solid var(--fill-muted)',
@@ -277,24 +270,24 @@ export default async function HomePage() {
               >
                 <span className="select-none text-fd-muted-foreground/60">$</span>
                 <span>npm i schematex</span>
-                <CopyButton text="npm install schematex" label="Copy" />
+                <CopyButton variant="ghost" text="npm install schematex" label="Copy" />
               </div>
               <GithubStarButton stars={stars} />
-            </div>
-
-            {/* Tertiary — docs link */}
-            <div className="mt-4">
               <Link
                 href="/docs"
-                className="font-mono text-xs text-fd-muted-foreground transition hover:text-fd-foreground"
+                className="inline-flex h-10 items-center px-2 font-mono text-xs text-fd-muted-foreground transition hover:text-fd-foreground"
               >
                 docs ↗
               </Link>
             </div>
+            </div>
+
+            {/* RIGHT — 20-family coverage grid, cluster-colored */}
+            <CoverageGrid />
           </div>
 
-          {/* RIGHT — showcase */}
-          <div>
+          {/* Showcase — full width beneath the 2-col header */}
+          <div className="mt-12 md:mt-14">
             <HeroShowcase slides={heroSlides} />
           </div>
         </div>
@@ -663,13 +656,24 @@ export default async function HomePage() {
           <div className="mt-10 flex flex-wrap justify-center gap-3">
             <Link
               href="/playground"
-              className="inline-flex items-center gap-1.5 rounded-lg bg-fd-foreground px-6 py-3 text-sm font-medium text-fd-background transition hover:opacity-90"
+              className="inline-flex items-center gap-1.5 px-6 py-3 text-sm font-medium transition hover:opacity-95"
+              style={{
+                background: 'var(--accent)',
+                color: '#fff',
+                border: '1px solid var(--accent)',
+                borderRadius: 'var(--r-sm)',
+              }}
             >
               Open the Playground →
             </Link>
             <Link
               href="/gallery"
-              className="inline-flex items-center rounded-lg border border-fd-border bg-fd-card px-6 py-3 text-sm font-medium text-fd-foreground transition hover:border-fd-foreground/30"
+              className="inline-flex items-center px-6 py-3 text-sm font-medium text-fd-foreground transition hover:border-[color:var(--stroke)]"
+              style={{
+                background: 'var(--fill)',
+                border: '1px solid var(--fill-muted)',
+                borderRadius: 'var(--r-sm)',
+              }}
             >
               Browse the Gallery
             </Link>

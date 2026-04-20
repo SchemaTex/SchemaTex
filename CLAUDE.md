@@ -6,7 +6,7 @@
 
 **Tagline: "Standards-as-code for professional diagrams."**
 
-开源 TypeScript 库：Text DSL → SVG。13+ diagram types — genogram / ecomap / pedigree / phylo / sociogram / timing / logic-gate / circuit / ladder / block / SLD / entity-structure / fishbone。
+开源 TypeScript 库：Text DSL → SVG。20 diagram families — genogram / ecomap / pedigree / phylo / sociogram / timing / logic-gate / circuit / ladder / block / SLD / entity-structure / fishbone / decision tree / venn / timeline / …
 
 **三大价值支柱：** (1) Standards-compliant（每种图对应真实发布标准：McGoldrick / IEC 61131-3 / IEEE 315 / Newick 等）(2) Zero runtime dependency（无 D3/dagre/parser generator）(3) LLM-native by design（DSL 为 LLM 生成而设计）。
 
@@ -87,4 +87,4 @@ Pipeline: `Text → Parser → AST → Layout → LayoutResult → Renderer → 
 
 Types 在 `src/core/types.ts`。SVG builder 在 `src/core/svg.ts`。
 
-已完成：Genogram, Ecomap, Pedigree, Phylo, Sociogram, Timing, Logic Gate, Circuit, Block, Ladder, SLD, Entity Structure。
+已完成：Genogram, Ecomap, Pedigree, Phylo, Sociogram, Timing, Logic Gate, Circuit, Block, Ladder, SLD, Entity Structure, Decision Tree。

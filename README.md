@@ -24,7 +24,7 @@
 
 ---
 
-**SchemaTex** is the open-source rendering engine for diagrams that follow real industry standards. Fourteen diagram families across five domains:
+**SchemaTex** is the open-source rendering engine for diagrams that follow real industry standards. 20 diagram families across five domains:
 
 - 👪 **Relationships** — genograms, ecomaps, pedigrees, sociograms, phylogenetic trees
 - ⚡ **Electrical & Industrial** — ladder logic, single-line diagrams, circuit schematics, logic gates, timing, block diagrams
@@ -65,7 +65,7 @@ import { render } from 'schematex/genogram';
 
 ## Gallery
 
-Thirteen diagram types, one unified pipeline. **Try any of these live at [schematex.dev/playground](https://schematex.dev/playground).**
+20 diagram types, one unified pipeline. **Try any of these live at [schematex.dev/playground](https://schematex.dev/playground).**
 
 ### 👪 Genogram — *McGoldrick family-systems standard*
 

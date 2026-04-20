@@ -43,7 +43,7 @@ export function HeroShowcase({ slides, intervalMs = 6500 }: HeroShowcaseProps) {
           <div className="flex gap-1.5">
             <span
               className="size-2.5 rounded-full"
-              style={{ background: 'var(--fill-muted)' }}
+              style={{ background: 'var(--accent)', opacity: 0.85 }}
             />
             <span
               className="size-2.5 rounded-full"
@@ -64,8 +64,9 @@ export function HeroShowcase({ slides, intervalMs = 6500 }: HeroShowcaseProps) {
           </span>
         </div>
 
-        <div className="grid h-[320px] grid-cols-1 sm:h-[420px] sm:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:h-[440px]">
-          {/* DSL pane — hidden below sm (mobile too cramped), side-by-side above */}
+        <div className="grid h-[340px] grid-cols-1 sm:h-[500px] sm:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:h-[600px]">
+          {/* DSL pane — hidden below sm (mobile too cramped). Instant swap: text
+              crossfades read as overlapping garble, so render only the active slide. */}
           <div
             className="relative hidden overflow-y-auto p-5 sm:block sm:border-r"
             style={{
@@ -73,39 +74,25 @@ export function HeroShowcase({ slides, intervalMs = 6500 }: HeroShowcaseProps) {
               borderColor: 'var(--fill-muted)',
             }}
           >
-            {slides.map((s, i) => (
-              <pre
-                key={i}
-                aria-hidden={i !== index}
-                className={`font-mono text-[13px] leading-relaxed text-fd-foreground transition-opacity duration-700 ${
-                  i === index
-                    ? 'relative opacity-100'
-                    : 'pointer-events-none absolute inset-5 opacity-0'
-                }`}
-              >
-                <code>{s.dsl}</code>
-              </pre>
-            ))}
+            <pre className="font-mono text-[13px] leading-relaxed text-fd-foreground">
+              <code>{slides[index]?.dsl}</code>
+            </pre>
           </div>
 
-          {/* Render pane — fills fixed height, diagram centered */}
+          {/* Render pane — fills fixed height, diagram centered. Instant swap
+              keeps the chrome label, DSL, and diagram visually in lockstep. */}
           <div className="dot-grid relative h-full">
-            {slides.map((s, i) => (
-              <div
-                key={i}
-                aria-hidden={i !== index}
-                className={`absolute inset-0 flex items-center justify-center p-6 transition-opacity duration-700 [&_svg]:max-h-full [&_svg]:max-w-full ${
-                  i === index ? 'opacity-100' : 'opacity-0'
-                }`}
-                dangerouslySetInnerHTML={{ __html: s.svg }}
-              />
-            ))}
+            <div
+              key={index}
+              className="absolute inset-0 flex items-center justify-center p-6 [&_svg]:max-h-full [&_svg]:max-w-full"
+              dangerouslySetInnerHTML={{ __html: slides[index]?.svg ?? '' }}
+            />
           </div>
         </div>
       </div>
 
       {/* Tab indicators — mono labels, accent underline on active */}
-      <div className="mt-4 flex items-center justify-center gap-4 font-mono text-xs">
+      <div className="mt-4 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 font-mono text-xs">
         {slides.map((s, i) => (
           <button
             key={i}
