@@ -47,7 +47,7 @@ export default function Layout({ children }: { children: ReactNode }) {
         <RootProvider>{children}</RootProvider>
         <Script
           defer
-          data-domain="schematex.dev"
+          data-domain="schematex.js.org"
           src="https://plausible.ideamarketfit.com/js/script.js"
         />
       </body>
