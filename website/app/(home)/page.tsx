@@ -223,30 +223,31 @@ export default async function HomePage() {
 
         <div className="relative mx-auto max-w-6xl">
           {/* Copy column — capped so headline doesn't stretch the full page width */}
-          <div className="max-w-[800px]">
+          <div className="max-w-[960px]">
             {/* Eye line — uses type-eye + numbering to align with the rest of the page */}
             <p className="type-eye mb-5">
-              01 / INTRODUCING SCHEMATEX · 20 FAMILIES · 10+ STANDARDS · 0 DEPS
+              01 / INTRODUCING SCHEMATEX · FREE · OPEN SOURCE · MADE FOR AI
             </p>
 
             <h1
               id="hero-heading"
               className="text-balance text-[40px] font-semibold leading-[1.04] tracking-[-0.025em] text-fd-foreground md:text-[58px]"
             >
-              Standards-as-code for{' '}
+              Every diagram a{' '}
               <em
                 className="not-italic"
                 style={{ color: 'var(--accent)' }}
               >
-                professional diagrams.
+                doctor, engineer, or lawyer
               </em>
+              {' '}would actually use.
             </h1>
 
-            <p className="mt-6 max-w-[620px] text-[17px] leading-[1.6] text-fd-muted-foreground">
-              Mermaid draws generic flowcharts. Schematex draws a genogram a
-              genetic counselor accepts clinically, ladder logic that maps 1:1
-              to IEC 61131-3, and a cap table that survives a Series A review —
-              all from a tiny text DSL.
+            <p className="mt-6 max-w-[860px] text-[17px] leading-[1.6] text-fd-muted-foreground">
+              Free. Fully open source. Made for AI. Mermaid draws flowcharts —
+              Schematex draws the 20 diagrams Mermaid can&apos;t: clinical
+              genograms, IEC 61131-3 ladder logic, NSGC pedigrees, IEEE 315
+              single-line diagrams, cap tables. All from a tiny text DSL.
             </p>
 
             {/* CTAs — unified height (h-10) and radius (var(--r-sm)) across all four */}
@@ -336,13 +337,13 @@ export default async function HomePage() {
         <div className="mx-auto max-w-6xl">
           <div className="max-w-3xl">
             <p className="mb-3 type-eye">
-              02 / WHERE SCHEMATEX IS THE PROFESSIONAL CHOICE
+              02 / DIAGRAMS PROFESSIONALS ACTUALLY USE
             </p>
             <h2
               id="cases-heading"
               className="text-balance text-4xl font-semibold tracking-tight text-fd-foreground md:text-5xl"
             >
-              Diagrams professionals actually sign off on.
+              The diagrams your doctor, engineer, or lawyer actually uses.
             </h2>
             <p className="mt-5 text-lg leading-relaxed text-fd-muted-foreground">
               Each diagram family is built for the practitioner who owns it —
@@ -443,11 +444,13 @@ export default async function HomePage() {
               id="why-heading"
               className="text-balance text-4xl font-semibold tracking-tight text-fd-foreground md:text-5xl"
             >
-              Built for diagrams people sign off on.
+              Free. Fully open source. Made for AI.
             </h2>
             <p className="mt-5 text-lg leading-relaxed text-fd-muted-foreground">
               Generic flowchart tools can&apos;t draw professional diagrams.
-              Schematex treats each standard as a first-class citizen.
+              Schematex treats each standard as a first-class citizen — and
+              the whole thing is AGPL-3.0, zero-dep, and designed for LLMs to
+              emit on the first try.
             </p>
           </div>
 
@@ -455,20 +458,20 @@ export default async function HomePage() {
             <StatCard
               stat="20"
               unit="FAMILIES"
-              title="Standards-compliant output"
-              body="Every diagram type implements a published spec — McGoldrick, IEC 61131-3, IEEE 315, NSGC, Newick. Domain experts accept it."
+              title="Diagrams professionals actually use"
+              body="Every diagram type implements a published spec — McGoldrick, IEC 61131-3, IEEE 315, NSGC, Newick. Doctors, engineers, and lawyers already draw these by hand; now they can ship them from code."
             />
             <StatCard
-              stat="0"
-              unit="RUNTIME DEPS"
-              title="Hand-written everything"
-              body="No D3, no dagre, no parser generators. Each diagram is an independent plugin with its own parser, layout, renderer."
+              stat="100%"
+              unit="FREE · OPEN SOURCE"
+              title="AGPL-3.0, zero runtime deps"
+              body="No D3, no dagre, no parser generators, no telemetry, no locked features. KB-level bundle, SSR-safe, commercial license available for closed-source use."
             />
             <StatCard
-              stat="LLM"
-              unit="NATIVE DSL"
-              title="Designed so AI gets it right"
-              body="Minimal grammars an LLM can learn from one example. Copy a gallery DSL into ChatGPT or Claude and get a professional diagram back — first try."
+              stat="AI"
+              unit="FIRST-CLASS"
+              title="Made for LLMs to emit"
+              body="Minimal grammars designed around how LLMs actually write text — CJK quotes, nesting ambiguity, AI-readable errors. Paste the output from ChatGPT or Claude and get a professional diagram back, first try."
             />
           </div>
         </div>
@@ -699,8 +702,8 @@ export default async function HomePage() {
               Schematex
             </div>
             <p className="mt-2 max-w-xs text-sm leading-relaxed text-fd-muted-foreground">
-              Standards-as-code for professional diagrams. Open source under
-              AGPL-3.0.
+              Every diagram a doctor, engineer, or lawyer would actually use.
+              Free. Fully open source. Made for AI. AGPL-3.0.
             </p>
           </div>
           <FooterCol
