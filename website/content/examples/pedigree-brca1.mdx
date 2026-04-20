@@ -1,0 +1,45 @@
+---
+title: BRCA1 hereditary cancer (four-generation)
+diagram: pedigree
+standard: NSGC
+industry: [healthcare]
+persona: For the genetic counselor
+complexity: 3
+tags: [BRCA, four-generation, carrier, presymptomatic, proband, NSGC]
+featured: false
+relatedLink:
+  label: Pedigree syntax
+  href: /docs/pedigree
+status: published
+dsl: |
+  pedigree "BRCA1 Family — Hereditary Breast/Ovarian Cancer"
+    I-1 [male, unaffected]
+    I-2 [female, affected, deceased]
+    I-1 -- I-2
+      II-1 [female, affected]
+      II-2 [male, unaffected]
+      II-3 [female, carrier]
+    II-1 -- II-4 [male, unaffected]
+      III-1 [female, affected, proband]
+      III-2 [male, unaffected]
+      III-3 [female, presymptomatic]
+    II-3 -- II-6 [male, unaffected]
+      III-6 [female, carrier]
+      III-7 [male, unaffected]
+---
+
+## Scenario
+
+A genetic counselor documents a four-generation BRCA1 pedigree for a patient referred after a personal diagnosis of breast cancer at age 35. The NSGC-standard pedigree distinguishes affected, carrier, and presymptomatic individuals — critical for insurance pre-authorization and cascade testing recommendations for at-risk relatives.
+
+## Annotation key
+
+- `affected` — full fill; individual has been diagnosed with the condition
+- `carrier` — half fill; individual carries the mutation but is currently asymptomatic
+- `presymptomatic` — quarter fill or dot; positive genetic test but no clinical diagnosis yet
+- `proband` — triangle marker; the individual who triggered clinical investigation
+- `deceased` — diagonal slash through the symbol
+
+## How to read
+
+The pattern of affected females across three generations (I-2, II-1, III-1) is the red flag for hereditary BRCA1. The proband (III-1) is the entry point. Her aunt (II-3) is a carrier who has already passed the mutation to III-6. The presymptomatic sibling (III-3) has tested positive but is not yet diagnosed — she receives enhanced surveillance recommendations.

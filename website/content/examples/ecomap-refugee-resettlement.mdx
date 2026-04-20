@@ -1,0 +1,51 @@
+---
+title: Refugee family resettlement
+diagram: ecomap
+standard: Hartman 1978
+industry: [healthcare, social-work]
+persona: For the resettlement caseworker
+complexity: 2
+tags: [resettlement, cultural, category, arrow-direction]
+featured: false
+relatedLink:
+  label: Ecomap syntax
+  href: /docs/ecomap
+status: published
+dsl: |
+  ecomap "Nguyen Family Resettlement"
+    center: family [label: "Nguyen Family"]
+    resettlement [label: "IRC Office", category: government]
+    school [label: "Lincoln Elementary", category: education]
+    esl [label: "Adult ESL Class", category: education]
+    clinic [label: "Community Clinic", category: health]
+    caseworker [label: "Ms. Patel", category: mental-health]
+    temple [label: "Vietnamese Temple", category: cultural]
+    neighbors [label: "Sponsor Family", category: community]
+    employer [label: "Warehouse Job", category: work]
+    cousins [label: "Cousins (CA)", category: family]
+    family === resettlement [label: "active case"]
+    family === school
+    family --- esl [label: "twice weekly"]
+    clinic --> family [label: "vaccinations"]
+    caseworker <-> family [label: "weekly"]
+    family === temple [label: "anchor"]
+    neighbors === family [label: "housing host"]
+    family --- employer [label: "new, part-time"]
+    cousins == family [label: "phone support"]
+---
+
+## Scenario
+
+A resettlement caseworker at the IRC maps the Nguyen family's ecological support network during an initial home visit. The diagram surfaces which systems are strong anchors (temple, sponsor family) and which are fragile (new job, ESL class), guiding case prioritization and resource allocation.
+
+## Annotation key
+
+- `center: family [...]` — designates the central node (the family unit)
+- `category: government / education / health / cultural / community / work / family` — color-codes each system node by domain
+- `===` — strong, supportive tie; `==` — moderately strong; `---` — tenuous
+- `-->` — unidirectional support (clinic delivers vaccinations to family)
+- `<->` — reciprocal relationship (caseworker and family both invest in the relationship)
+
+## How to read
+
+The family sits at the center with nine surrounding systems. The IRC and temple are the two strongest connections (===). The employer and ESL class are tenuous (---), representing early-stage relationships. The cousins in California provide moderate phone support (==) but no in-person resources. The caseworker's bidirectional arrow marks the primary professional support relationship.

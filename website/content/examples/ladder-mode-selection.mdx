@@ -1,0 +1,56 @@
+---
+title: System mode selection (Set/Reset)
+diagram: ladder
+standard: IEC 61131-3
+industry: [industrial]
+persona: For the automation engineer
+complexity: 3
+tags: [OTL, OTU, Set-Reset, parallel-outputs, interlocks, Allen-Bradley]
+featured: false
+relatedLink:
+  label: Ladder syntax
+  href: /docs/ladder
+status: published
+dsl: |
+  ladder "System Mode Selection"
+
+  rung 1 "Set system Auto mode, reset Manual":
+    XIC(AUTO_HMIPB, "BIT 5.10", name="Auto Mode HMI Pushbutton")
+    XIO(MANL_HMIPB, "BIT 5.11", name="Manual Mode HMI Pushbutton")
+    XIO(SYS_FAULT, "BIT 3.0", name="System Fault")
+    parallel:
+      branch:
+        OTL(SYS_AUTO, "BIT 3.1", name="System Auto Mode")
+      branch:
+        OTU(SYS_MANUAL, "BIT 3.2", name="System Manual Mode")
+
+  rung 2 "Set Manual, reset Auto (with Home seal-in)":
+    parallel:
+      branch:
+        XIC(MANL_HMIPB, "BIT 5.11", name="Manual Mode HMI Pushbutton")
+      branch:
+        XIC(SYS_HOMECMD, "BIT 3.5", name="System Home Command")
+    XIO(AUTO_HMIPB, "BIT 5.10", name="Auto Mode HMI Pushbutton")
+    XIO(SYS_FAULT, "BIT 3.0", name="System Fault")
+    parallel:
+      branch:
+        OTL(SYS_MANUAL, "BIT 3.2", name="System Manual Mode")
+      branch:
+        OTU(SYS_AUTO, "BIT 3.1", name="System Auto Mode")
+---
+
+## Scenario
+
+An Allen-Bradley PLC program for a machine that requires mutually exclusive Auto and Manual operating modes, with a Home command that can trigger a manual mode entry as a safety fallback. The latched Set/Reset coil pattern is standard for retained-state mode selection that survives a power cycle.
+
+## Annotation key
+
+- `OTL(tag, addr, name=...)` — Output Latch (Set): energizes and *latches* the bit high; bit stays high even when the rung loses power
+- `OTU(tag, addr, name=...)` — Output Unlatch (Reset): clears a latched bit back to 0
+- `parallel: branch:` — output-side parallel branches execute simultaneously when the rung is true
+- Rung 1 sets Auto and simultaneously resets Manual; Rung 2 does the inverse
+- The `SYS_FAULT` XIO contact appears in both rungs as a master interlock — no mode change is allowed during a fault
+
+## How to read
+
+Rung 1 fires when the operator presses the Auto HMI button AND Manual is not pressed AND no fault exists. It simultaneously latches `SYS_AUTO` ON and unlatches `SYS_MANUAL`. Rung 2 is the mirror: Manual button OR Home command, guarded by Auto-not-pressed and no-fault, sets Manual and resets Auto. The latched coils mean the last-pressed mode persists through PLC power cycles.

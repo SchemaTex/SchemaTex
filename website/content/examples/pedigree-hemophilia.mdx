@@ -1,0 +1,43 @@
+---
+title: Hemophilia A (X-linked recessive)
+diagram: pedigree
+standard: NSGC
+industry: [healthcare]
+persona: For the genetic counselor
+complexity: 2
+tags: [x-linked, carrier, three-generation, NSGC]
+featured: true
+relatedLink:
+  label: Pedigree syntax
+  href: /docs/pedigree
+status: published
+dsl: |
+  pedigree "Hemophilia A"
+    I-1 [male, unaffected]
+    I-2 [female, carrier-x]
+    I-1 -- I-2
+      II-1 [male, affected]
+      II-2 [female, carrier-x]
+      II-3 [male, unaffected]
+      II-4 [female, unaffected]
+    II-2 -- II-5 [male, unaffected]
+      III-1 [male, affected]
+      III-2 [female, carrier-x]
+      III-3 [male, unaffected]
+---
+
+## Scenario
+
+A genetic counselor documents a three-generation hemophilia A pedigree during a prenatal consultation. The X-linked recessive pattern — carrier females who show no symptoms but pass the mutated allele — must be clearly distinguished from affected males. NSGC standard notation is required for clinical records and insurance pre-authorization.
+
+## Annotation key
+
+- `carrier-x` — female carrier of an X-linked recessive allele; rendered as a circle with a centre dot per NSGC convention
+- `affected` — fully filled symbol; individual expresses the condition
+- `unaffected` — open (unfilled) symbol; no clinical presentation
+- `proband` — the index case who prompted clinical referral (not used here, but add `proband` to any individual)
+- `I-1 -- I-2` followed by indented children — defines a mating pair and their offspring
+
+## How to read
+
+Generation I: unaffected father, carrier mother. Generation II: one affected son (II-1), one carrier daughter (II-2), two unaffected children. Generation III: carrier daughter II-2 married an unaffected man; they produced another affected son (III-1) and another carrier daughter (III-2) — demonstrating the classic X-linked skip-generation pattern where the trait disappears in daughters only to re-emerge in grandsons.

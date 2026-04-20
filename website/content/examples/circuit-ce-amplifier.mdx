@@ -1,0 +1,38 @@
+---
+title: NPN common-emitter amplifier
+diagram: circuit
+standard: IEEE 315
+industry: [education]
+persona: For the electronics engineer
+complexity: 2
+tags: [SPICE, netlist, BJT, amplifier, auto-layout]
+featured: false
+relatedLink:
+  label: Circuit syntax
+  href: /docs/circuit
+status: published
+dsl: |
+  circuit "CE Amp (netlist)" netlist
+  V1 vcc 0 9V
+  Rc vcc c 2.2k
+  Rb vcc b 100k
+  Q1 c b e npn
+  Re e 0 1k
+---
+
+## Scenario
+
+The NPN common-emitter amplifier is the first transistor circuit every electronics student builds. Schematex renders it from a five-line SPICE netlist — the same format used in LTspice, ngspice, and Cadence — with automatic component placement and rail routing, so the diagram matches the hand-drawn textbook version without any manual layout.
+
+## Annotation key
+
+- `circuit "..." netlist` — enables netlist parsing mode (SPICE syntax)
+- `V1 vcc 0 9V` — voltage source named V1, positive terminal at node `vcc`, negative at `0` (ground), value 9V
+- `Rc vcc c 2.2k` — resistor Rc between nodes `vcc` and `c` with value 2.2 kΩ
+- `Rb vcc b 100k` — base bias resistor between `vcc` and node `b`
+- `Q1 c b e npn` — NPN BJT transistor: collector=c, base=b, emitter=e
+- `Re e 0 1k` — emitter degeneration resistor between node `e` and ground
+
+## How to read
+
+The supply rail (Vcc = 9 V) connects to the top of both resistors. Rc is the collector load; the output signal is taken across it. Rb biases the base into the active region. Re provides emitter degeneration for stability. Q1 amplifies a small base current into a large collector-to-emitter current flow. The auto-layout positions Vcc at top, ground at bottom, and Q1 in the center.

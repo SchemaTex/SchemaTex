@@ -1,0 +1,44 @@
+---
+title: International tax holding structure
+diagram: entity
+standard: Tier ownership
+industry: [legal-finance]
+persona: For corporate counsel
+complexity: 3
+tags: [cross-border, IP-license, royalty, BEPS, holding]
+featured: true
+relatedLink:
+  label: Entity syntax
+  href: /docs/entity
+status: published
+dsl: |
+  entity-structure "Acme Global Holdings"
+  entity parent "Acme Global, Inc." corp@US [note: "Ultimate Parent"]
+  entity ie-holdco "Acme Ireland Holdings" corp@IE
+  entity ie-ip "Acme IP Ltd" corp@KY [note: "Holds group IP"]
+  entity nl-bv "Acme EU Distribution" corp@NL
+  entity sg-apac "Acme APAC Trading" corp@SG
+  parent -> ie-holdco : 100%
+  ie-holdco -> ie-ip : 100%
+  ie-holdco -> nl-bv : 100%
+  ie-ip -~-> nl-bv [label: "IP License · royalty"]
+  parent -> sg-apac : 100%
+---
+
+## Scenario
+
+Corporate counsel or a Big Four tax team draws this structure during cross-border M&A due diligence or transfer-pricing documentation. The OECD BEPS framework requires taxpayers to document the substance and economic rationale of every intercompany flow — this diagram is the first attachment to the TP master file and the tax opinion memo.
+
+## Annotation key
+
+- `entity name "Display Name" corp@US` — creates an entity node; `corp` is the entity type, `US` is the jurisdiction
+- `corp / llc / fund / trust` — entity type; determines the symbol rendered
+- `@US / @IE / @KY / @NL / @SG` — ISO country code for jurisdiction labeling
+- `[note: "..."]` — adds a subsidiary note below the entity name
+- `->` — solid directed line; represents an equity ownership relationship
+- `-~->` — dashed directed line; represents a contractual (non-equity) relationship such as an IP license or intercompany loan
+- `: 100%` — label on a directed edge; shows the ownership percentage
+
+## How to read
+
+The US parent owns 100% of the Irish holdco, which in turn holds both the Cayman IP entity and the Dutch distribution subsidiary. The dashed arrow from the IP entity to the Dutch entity represents the IP license — royalties flow from the Netherlands up to Cayman, shifting taxable income to a low-rate jurisdiction. Singapore APAC is a parallel branch for Asia-Pacific operations, owned directly by the US parent.

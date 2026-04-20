@@ -1,0 +1,38 @@
+---
+title: SPI transaction timing diagram
+diagram: timing
+standard: WaveDrom / IEEE 1497
+industry: [industrial, education]
+persona: For the firmware engineer
+complexity: 2
+tags: [SPI, digital, clock, chip-select, MOSI, MISO, WaveDrom]
+featured: false
+relatedLink:
+  label: Timing syntax
+  href: /docs/timing
+status: published
+dsl: |
+  timing "SPI Transaction"
+  CLK:   pppppppp
+  CS_N:  10000001
+  MOSI:  x=======  data: ["0xAB","0xCD","0xEF","0x01","0x02","0x03","0x04","0x05"]
+  MISO:  zzzz====  data: ["","","","","0xFF","0x12","0x34","0x56"]
+---
+
+## Scenario
+
+A firmware engineer or hardware designer documents an 8-byte SPI master-to-slave transaction for a device driver review or datasheet. The WaveDrom-compatible syntax means the same DSL can be pasted directly into WaveDrom's online editor or embedded in documentation pipelines.
+
+## Annotation key
+
+- `p` — clock pulse (high period followed by low); each `p` is one clock cycle
+- `1` / `0` — logic high / logic low
+- `=` — data bus: stable data (value unchanged from previous cycle)
+- `x` — don't-care or undefined state (transition state)
+- `z` — high-impedance (floating / tri-state)
+- `data: [...]` — optional data labels for each stable segment, rendered inside the bus bar
+- `CS_N` — active-low chip select; `1` = deselected, `0` = selected
+
+## How to read
+
+The clock runs for 8 cycles. CS_N goes low at cycle 1 and returns high at cycle 8, framing the transaction. MOSI (master out) sends 8 bytes starting at cycle 1. MISO (slave in) is high-Z for the first 4 cycles (slave preparing the response) then transitions to stable data bytes 5–8. The transaction completes when CS_N de-asserts.

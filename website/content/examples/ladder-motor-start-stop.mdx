@@ -1,0 +1,40 @@
+---
+title: Motor start/stop seal-in circuit
+diagram: ladder
+standard: IEC 61131-3
+industry: [industrial]
+persona: For the controls engineer
+complexity: 1
+tags: [seal-in, motor, XIC, XIO, OTE, parallel]
+featured: true
+relatedLink:
+  label: Ladder syntax
+  href: /docs/ladder
+status: published
+dsl: |
+  ladder "Motor Start/Stop"
+  rung 1 "Seal-in circuit":
+    parallel:
+      branch:
+        XIC(START_PB, "IN 1.0", name="Start Button")
+      branch:
+        XIC(MOTOR_AUX, "BIT 3.0", name="Aux Contact")
+    XIO(STOP_PB, "IN 1.1", name="Stop Button")
+    OTE(MOTOR_CMD, "OUT 2.0", name="Motor Command")
+---
+
+## Scenario
+
+Every controls engineer learns the three-wire motor start/stop circuit before writing their first PLC program. It appears verbatim in IEC 61131-3 training materials, Allen-Bradley certification exams, and factory acceptance tests worldwide. The seal-in contact latches the motor ON after the momentary start pushbutton is released — the fundamental pattern for any maintained-output logic.
+
+## Annotation key
+
+- `XIC(tag, address, name=...)` — Examine If Closed: contact passes power when the referenced bit is `1` (true)
+- `XIO(tag, address, name=...)` — Examine If Open: contact passes power when the referenced bit is `0` (false); normal for stop buttons wired N.C.
+- `OTE(tag, address, name=...)` — Output Energize: coil energizes the referenced bit when rung has power
+- `parallel: branch:` — models a parallel contact branch (logical OR)
+- The `MOTOR_AUX` contact in the parallel branch is the seal-in: once the motor output energizes, the aux contact closes and holds the rung true even after the START_PB releases
+
+## How to read
+
+The rung reads left to right. Power flows if *either* the start button (XIC START_PB) *or* the aux contact (XIC MOTOR_AUX) is closed, *and* the stop button (XIO STOP_PB) is not pressed. When the output coil (OTE MOTOR_CMD) energizes the motor, it also drives the aux contact bit — latching the rung high. Pressing STOP breaks the series path and de-energizes the rung, dropping the motor and the seal-in simultaneously.

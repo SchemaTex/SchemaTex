@@ -4,20 +4,20 @@ import { CopyButton } from '@/components/CopyButton';
 import { HeroShowcase, type HeroSlide } from '@/components/HeroShowcase';
 import { GithubStarButton } from '@/components/GithubStarButton';
 import { getRepoStats } from '@/lib/github-stats';
-import { galleryExamples } from '@/lib/gallery-examples';
+import { allExamples } from '@/lib/examples-source';
 
 // Featured cases — each tying a real diagram to the professional who ships it.
 // Order optimized for cluster coverage: relationships / industrial / corporate / causality.
-const FEATURED_CASES = [
-  { slug: 'medical-history-genogram',   persona: 'For the clinical social worker' },
-  { slug: 'hemophilia-pedigree',         persona: 'For the genetic counselor' },
-  { slug: 'substance-abuse-recovery',   persona: 'For the case manager' },
-  { slug: 'motor-start-stop',           persona: 'For the controls engineer' },
-  { slug: 'generator-ats-sld',          persona: 'For the facility engineer' },
-  { slug: 'full-adder-logic',           persona: 'For the electronics designer' },
-  { slug: 'international-tax-structure',persona: 'For corporate counsel' },
-  { slug: 'fishbone-website-traffic',   persona: 'For the ops lead' },
-  { slug: 'playground-dynamics',        persona: 'For the school counselor' },
+const FEATURED_SLUGS = [
+  'genogram-medical-history',
+  'pedigree-hemophilia',
+  'ecomap-substance-recovery',
+  'ladder-motor-start-stop',
+  'sld-generator-ats',
+  'logic-full-adder',
+  'entity-international-tax',
+  'fishbone-website-traffic',
+  'sociogram-playground-dynamics',
 ] as const;
 
 const DIAGRAM_TO_CAT: Record<string, string> = {
@@ -142,13 +142,13 @@ export function Diagram({ dsl }: { dsl: string }) {
 export default async function HomePage() {
   const { stars } = await getRepoStats();
 
-  const galleryDsl = (slug: string) =>
-    galleryExamples.find((g) => g.slug === slug)?.dsl ?? '';
+  const getDsl = (slug: string) =>
+    allExamples.find((g) => g.slug === slug)?.dsl ?? '';
 
-  const PEDIGREE_DSL = galleryDsl('cystic-fibrosis-pedigree');
-  const PHYLO_DSL = galleryDsl('bacterial-diversity');
-  const SLD_DSL = galleryDsl('substation-13kv');
-  const FISHBONE_DSL = galleryDsl('fishbone-website-traffic');
+  const PEDIGREE_DSL = getDsl('pedigree-cystic-fibrosis');
+  const PHYLO_DSL = getDsl('phylo-bacterial-diversity');
+  const SLD_DSL = getDsl('sld-substation-13kv');
+  const FISHBONE_DSL = getDsl('fishbone-website-traffic');
 
   const heroSlides: HeroSlide[] = [
     {
@@ -357,9 +357,10 @@ export default async function HomePage() {
           </div>
 
           <div className="mt-12 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
-            {FEATURED_CASES.map(({ slug, persona }) => {
-              const ex = galleryExamples.find((g) => g.slug === slug);
+            {FEATURED_SLUGS.map((slug) => {
+              const ex = allExamples.find((g) => g.slug === slug);
               if (!ex) return null;
+              const persona = ex.persona ?? '';
               const color = DIAGRAM_TO_CAT[ex.diagram] ?? 'var(--cat-7)';
               const svg = safeRender(ex.dsl);
               return (
@@ -405,7 +406,7 @@ export default async function HomePage() {
                       {ex.title}
                     </div>
                     <p className="line-clamp-2 text-[13px] leading-relaxed text-fd-muted-foreground">
-                      {ex.description}
+                      {ex.description ?? ex.title}
                     </p>
                     <div
                       className="mt-1 font-mono text-xs transition-opacity"

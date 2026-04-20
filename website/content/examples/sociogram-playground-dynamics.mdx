@@ -1,0 +1,53 @@
+---
+title: Playground dynamics
+diagram: sociogram
+standard: Moreno 1934
+industry: [education]
+persona: For the school counselor
+complexity: 2
+tags: [groups, force-directed, mutual, conflict, classroom]
+featured: true
+relatedLink:
+  label: Sociogram syntax
+  href: /docs/sociogram
+status: published
+dsl: |
+  sociogram "Playground Dynamics"
+    config: layout = force-directed
+    config: coloring = group
+
+    group boys [label: "Boys", color: "#42A5F5"]
+      tom; jack; mike; leo
+
+    group girls [label: "Girls", color: "#EF5350"]
+      anna; beth; chloe; diana
+
+    tom <-> jack
+    tom -> mike
+    jack -> leo
+    mike -x> leo [label: "conflict"]
+    anna <-> beth
+    anna <-> chloe
+    beth <-> chloe
+    anna -> diana
+    diana -.- tom
+    leo -.- anna
+---
+
+## Scenario
+
+A school counselor administers a sociometric survey to a class and maps the results to identify social stars, isolates, and conflict pairs. The force-directed layout naturally clusters tight friendship groups and surfaces bridging individuals — the counselor can immediately see who is at social risk and which cross-group connections are worth nurturing.
+
+## Annotation key
+
+- `group id [label:..., color:...]` — defines a named group; members listed below with `;` separator
+- `<->` — mutual/reciprocal choice (both children named each other)
+- `->` — one-way positive nomination (A chose B, B did not choose A)
+- `-x>` — conflict or rejection edge; rendered with an X marker
+- `-.-` — neutral / weak tie; neither positive nor negative nomination
+- `config: layout = force-directed` — uses physics simulation to position nodes; tightly connected nodes cluster naturally
+- `config: coloring = group` — colors each node by its assigned group
+
+## How to read
+
+The diagram shows two tight cliques: the blue boys' group (Tom–Jack mutual friendship, with Leo drifting at the edge) and the red girls' group (Anna–Beth–Chloe triangle). Leo and Mike have a conflict edge — an immediate flag for the counselor. Diana sits between groups with only a weak tie to Tom, suggesting social isolation risk. Anna has the most outward nominations, making her a social star worth engaging as a peer ally.

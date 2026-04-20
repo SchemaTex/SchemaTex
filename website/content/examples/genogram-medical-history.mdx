@@ -1,0 +1,43 @@
+---
+title: Multi-generation medical history
+diagram: genogram
+standard: McGoldrick 2020
+industry: [healthcare, clinical]
+persona: For the clinical social worker
+complexity: 3
+tags: [conditions, multicolor, three-generation, inheritance]
+featured: true
+relatedLink:
+  label: Genogram syntax
+  href: /docs/genogram
+status: published
+dsl: |
+  genogram "Medical History"
+    grandfather [male, 1930, 1990, deceased, conditions: heart-disease(full, #e74c3c) + diabetes(half-left, #ff9800)]
+    grandmother [female, 1935, conditions: cancer(half-right, #9c27b0)]
+    grandfather -- grandmother
+      father [male, 1960, conditions: heart-disease(quad-tl, #e74c3c) + hypertension(quad-tr, #2196f3)]
+      uncle [male, 1963, conditions: diabetes(full, #ff9800)]
+    mother [female, 1962]
+    father -- mother
+      patient [male, 1988, index, conditions: hypertension(half-left, #2196f3)]
+      sister [female, 1991]
+---
+
+## Scenario
+
+A clinical social worker or genetic counselor captures three generations of family medical history at intake. The `conditions()` annotation lets each person carry multiple diagnoses simultaneously — and the fill geometry (full, half, quadrant) encodes severity or inheritance proportion at a glance, without cluttering the diagram with text labels.
+
+## Annotation key
+
+- `conditions: X(fill, color)` — paints a shape inside the genogram symbol using the named fill zone and hex color
+- `full` — entire symbol filled; indicates fully affected
+- `half-left` / `half-right` — left or right half filled; often used for one of two conditions side-by-side
+- `quad-tl` / `quad-tr` — top-left or top-right quadrant; allows up to four distinct conditions per person
+- `+ diabetes(...)` — chain multiple conditions on the same person with `+`
+- `deceased` — draws a diagonal slash through the symbol
+- `index` — marks the proband with an arrow
+
+## How to read
+
+The grandfather's full red fill (heart disease) and half-orange fill (diabetes) are visually inherited by the father, who carries both — encoded as top-left and top-right quadrant fills. The patient (index) shows only hypertension in the left half, indicating partial inheritance. Tracing any color across generations immediately reveals the inheritance chain.

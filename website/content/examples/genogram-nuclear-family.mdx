@@ -1,0 +1,34 @@
+---
+title: Nuclear family (minimal template)
+diagram: genogram
+standard: McGoldrick 2020
+industry: [healthcare]
+persona: For the therapist
+complexity: 1
+tags: [starter, minimal, marriage-date, index]
+featured: false
+relatedLink:
+  label: Genogram syntax
+  href: /docs/genogram
+status: published
+dsl: |
+  genogram "Smith Family"
+    john [male, 1975]
+    mary [female, 1977]
+    john -- mary "m. 2002"
+      alice [female, 2005, index]
+---
+
+## Scenario
+
+The simplest genogram that is clinically useful — a married couple with one child. Used as a session intake template and as the starting point when teaching genogram notation to new practitioners.
+
+## Annotation key
+
+- `--` — standard marriage/union line
+- `"m. 2002"` — marriage year label
+- `index` — marks Alice as the identified patient
+
+## How to read
+
+Two parents connected by a union line with a marriage date; their child Alice (marked as the index person) hangs below. Extend this template by adding siblings, grandparents, or emotional relationship lines.

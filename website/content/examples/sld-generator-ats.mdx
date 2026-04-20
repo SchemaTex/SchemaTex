@@ -1,0 +1,49 @@
+---
+title: Generator + ATS backup power
+diagram: sld
+standard: IEEE 315
+industry: [industrial]
+persona: For the facility engineer
+complexity: 2
+tags: [ATS, generator, backup-power, bus, breaker]
+featured: true
+relatedLink:
+  label: SLD syntax
+  href: /docs/sld
+status: published
+dsl: |
+  sld "Utility + Generator Backup"
+  UTIL = utility [voltage: "480V", label: "Utility"]
+  GEN = generator [rating: "500 kW", voltage: "480V", label: "Emergency Gen"]
+  ATS1 = ats [rating: "800A", label: "ATS-1"]
+  BUS1 = bus [voltage: "480V", label: "Critical Load Bus"]
+  CB1 = breaker [rating: "200A"]
+  CB2 = breaker [rating: "200A"]
+  L1 = load [rating: "100A", label: "Critical Load 1"]
+  L2 = load [rating: "100A", label: "Critical Load 2"]
+  UTIL -> ATS1
+  GEN -> ATS1
+  ATS1 -> BUS1
+  BUS1 -> CB1
+  BUS1 -> CB2
+  CB1 -> L1
+  CB2 -> L2
+---
+
+## Scenario
+
+A facility engineer draws this one-line during the design review of a data-center UPS bypass or hospital emergency power system. The single-line diagram (SLD) is the first document a utility inspector or commissioning engineer asks for — it must show every source, switching device, bus, and load path in a single horizontal view without wiring details.
+
+## Annotation key
+
+- `utility` — mains supply; drawn as the IEEE 315 utility symbol (three-line source)
+- `generator` — diesel or gas genset; drawn as rotating-machine circle with winding symbol
+- `ats` — Automatic Transfer Switch; drawn as the NEMA/IEEE transfer-switch symbol
+- `bus` — horizontal bus bar; all connected devices share the same voltage rail
+- `breaker` — molded-case or air circuit breaker; drawn as the IEEE 315 breaker symbol
+- `load` — end-consumer device or feeder
+- `UTIL -> ATS1` — directed line representing the power path from source to device
+
+## How to read
+
+Two sources (utility and generator) feed into the ATS. The ATS selects the live source and connects it to the 480 V critical load bus. From the bus, two independently-fused circuit breakers (CB1, CB2) feed their respective critical loads. If utility power fails, the ATS senses the loss, the generator starts, and the ATS transfers within seconds — all without interrupting the bus downstream.

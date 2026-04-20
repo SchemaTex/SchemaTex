@@ -1,0 +1,45 @@
+---
+title: Teen client intake
+diagram: ecomap
+standard: Hartman 1978
+industry: [healthcare, social-work]
+persona: For the adolescent counselor
+complexity: 1
+tags: [adolescent, intake, minimal, school, peers]
+featured: false
+relatedLink:
+  label: Ecomap syntax
+  href: /docs/ecomap
+status: published
+dsl: |
+  ecomap "Marcus, age 15"
+    center: client [label: "Marcus"]
+    mom [label: "Mother", category: family]
+    dad [label: "Father (divorced)", category: family]
+    school [label: "East High School", category: education]
+    coach [label: "Soccer Coach", category: community]
+    peers [label: "Soccer team", category: community]
+    therapist [label: "Ms. Chen", category: mental-health]
+    mom === client [label: "primary caregiver"]
+    dad --- client [label: "EOW weekends"]
+    school === client
+    coach --> client [label: "mentor"]
+    peers === client
+    therapist <-> client [label: "weekly"]
+---
+
+## Scenario
+
+A school-based counselor draws this ecomap during an initial intake session with Marcus, a 15-year-old referred for behavioral issues. The diagram takes under five minutes and immediately shows where Marcus's support is concentrated (peers, soccer team) and where it's fragile (divorced father, every-other-weekend contact).
+
+## Annotation key
+
+- `center: client` — the identified young person
+- `===` — strong connection; `---` — tenuous connection
+- `-->` — mentor/support flows toward client
+- `<->` — reciprocal therapeutic alliance
+- `EOW weekends` — edge label capturing the visitation schedule
+
+## How to read
+
+Marcus's strongest systems are his mother (primary caregiver), school, and soccer peers — all strong ties (===). His father is a tenuous connection (---). The therapist and soccer coach have supportive directional relationships pointing toward Marcus. The soccer team appears to be the central protective factor in this adolescent's life.

@@ -1,0 +1,39 @@
+---
+title: Multi-jurisdiction holding company
+diagram: entity
+standard: Tier ownership
+industry: [legal-finance]
+persona: For the M&A attorney
+complexity: 2
+tags: [holding, multi-jurisdiction, trust, fund, Delaware]
+featured: false
+relatedLink:
+  label: Entity syntax
+  href: /docs/entity
+status: published
+dsl: |
+  entity-structure "Acme Holdings"
+  entity trust_a "Founder Trust" trust@SD
+  entity acme_inc "Acme Inc." corp@DE
+  entity acme_uk "Acme UK Ltd." llc@UK
+  entity acme_fund "Acme Growth Fund LP" fund@KY
+  trust_a -> acme_inc : 100%
+  acme_inc -> acme_uk : 100%
+  acme_inc -> acme_fund : 60%
+---
+
+## Scenario
+
+An M&A attorney or corporate counsel draws this structure for a client engagement letter, board minutes, or due diligence data room. The entity diagram is the first document requested in any M&A transaction, debt financing, or regulatory review — it maps the corporate family tree with jurisdiction and ownership percentages.
+
+## Annotation key
+
+- `entity id "Display Name" type@jurisdiction` — creates an entity node
+- `corp` — C-corporation or equivalent; `llc` — limited liability company; `trust` — trust entity; `fund` — investment fund/LP
+- `@SD / @DE / @UK / @KY` — state or country jurisdiction
+- `->` — equity ownership relationship
+- `: 100% / 60%` — percentage label on the ownership line
+
+## How to read
+
+The South Dakota founder trust owns 100% of the Delaware C-corp (the operating parent). The Delaware entity owns 100% of the UK subsidiary and 60% of the Cayman Islands fund (implying 40% external LP interest). This is a typical private equity or founder-led holding structure for multi-market operations.

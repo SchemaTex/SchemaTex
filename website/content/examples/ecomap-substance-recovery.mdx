@@ -1,0 +1,56 @@
+---
+title: Substance abuse recovery
+diagram: ecomap
+standard: Hartman 1978
+industry: [healthcare, social-work]
+persona: For the case manager
+complexity: 3
+tags: [recovery, relationships, line-types, arrow-direction]
+featured: true
+relatedLink:
+  label: Ecomap syntax
+  href: /docs/ecomap
+status: published
+dsl: |
+  ecomap "Substance Abuse Recovery"
+    center: client [male, age: 28, label: "James"]
+    aa [label: "AA Group", category: substance, importance: major]
+    sponsor [label: "Bill (Sponsor)", category: substance]
+    employer [label: "Warehouse Job", category: work]
+    mother [label: "Mom", category: family]
+    exwife [label: "Ex-wife", category: family]
+    kids [label: "Children (2)", category: family]
+    dealer [label: "Old Friends", category: substance]
+    probation [label: "P.O. Johnson", category: legal]
+    therapist [label: "CBT Therapist", category: mental-health]
+    client === aa
+    sponsor --> client
+    client --- employer [label: "new, probationary"]
+    client == mother [label: "supportive"]
+    client ~~~ exwife [label: "custody conflict"]
+    client - - kids [label: "supervised visits"]
+    client -/- dealer [label: "trying to cut off"]
+    probation --> client
+    therapist <-> client [label: "weekly"]
+---
+
+## Scenario
+
+A case manager at a substance abuse recovery center creates this ecomap during an initial biopsychosocial assessment. The diagram externalises the client's full ecological field — every system pressing on his recovery — and immediately surfaces the imbalance: most energy flows inward (legal supervision, sponsor), almost nothing flows outward. The visual becomes the conversation starter for the treatment plan.
+
+## Annotation key
+
+- `===` — strong, supportive connection
+- `==` — moderately strong connection
+- `---` — tenuous or fragile connection
+- `~~~` — stressful, conflicted connection
+- `-/-` — severing or cut-off relationship
+- `- - ` — currently restricted (supervised visits shown with spaces)
+- `-->` — one-way energy or support flow (giver → receiver)
+- `<->` — reciprocal, mutual relationship
+- `category: mental-health / family / legal / work / substance` — colors the node by domain
+- `importance: major` — increases node prominence in the layout
+
+## How to read
+
+The client sits at the center. Arrow directions show who gives energy to whom: the probation officer and sponsor both point *toward* James (external pressure / support), while James gives energy *toward* the AA group. The therapist is the only `<->` reciprocal relationship — the treatment alliance. The `-/-` (severing) line to the dealer marks the highest-risk edge in early recovery. Supervised visits (`- -`) with the children shows the family system is strained but not severed.

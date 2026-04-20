@@ -4,9 +4,11 @@ import { Suspense } from 'react';
 import {
   CLUSTER_TO_TYPES,
   INDUSTRY_LABELS,
-  galleryExamples,
+  type GalleryExample,
+  type DiagramType,
   type Industry,
 } from '@/lib/gallery-examples';
+import { allExamples } from '@/lib/examples-source';
 
 type ClusterKey = keyof typeof CLUSTER_TO_TYPES;
 import { GalleryGrid } from '@/components/GalleryGrid';
@@ -34,6 +36,22 @@ function parseIndustry(v: string | undefined): Industry | null {
   if (!v) return null;
   return v in INDUSTRY_LABELS ? (v as Industry) : null;
 }
+
+function toGalleryExample(ex: (typeof allExamples)[number]): GalleryExample {
+  return {
+    slug: ex.slug,
+    title: ex.title,
+    description: ex.description ?? ex.title,
+    diagram: ex.diagram as DiagramType,
+    industry: (ex.industry[0] ?? 'healthcare') as Industry,
+    complexity: ex.complexity as 1 | 2 | 3,
+    standard: ex.standard ?? '',
+    dsl: ex.dsl,
+    hasDetailPage: true,
+  };
+}
+
+const galleryExamples: GalleryExample[] = allExamples.map(toGalleryExample);
 
 export default async function GalleryPage({
   searchParams,

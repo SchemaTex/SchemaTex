@@ -1,0 +1,39 @@
+---
+title: Hereditary cancer (BRCA1) family
+diagram: genogram
+standard: McGoldrick 2020
+industry: [healthcare]
+persona: For the genetic counselor
+complexity: 3
+tags: [hereditary-cancer, four-generation, deceased, BRCA]
+featured: false
+relatedLink:
+  label: For clinical pedigree notation, use Pedigree
+  href: /docs/pedigree
+status: published
+dsl: |
+  genogram "BRCA1 Family"
+    I_1 [male, 1930, 1995, deceased]
+    I_2 [female, 1932, 1990, deceased, cancer_ovarian]
+    I_1 -- I_2
+      II_1 [female, 1955, cancer_breast]
+      II_2 [male, 1958]
+      II_3 [female, 1960]
+    II_1 -- II_4 [male, 1954]
+      III_1 [female, 1985, index, cancer_breast]
+      III_2 [male, 1988]
+---
+
+## Scenario
+
+A family history genogram for hereditary breast/ovarian cancer, documented at the initial genetic counseling intake before formal pedigree analysis. For standardized clinical pedigree notation (NSGC), use the Pedigree diagram type instead.
+
+## Annotation key
+
+- `cancer_ovarian` / `cancer_breast` — custom condition tags; render as shaded sectors on the symbol
+- `deceased` with birth and death years — marks individuals with a slash and date range
+- `index` — marks the proband who triggered the clinical referral
+
+## How to read
+
+The maternal grandmother (I_2) had ovarian cancer and is deceased. Her daughter (II_1) developed breast cancer. The proband (III_1, index) is a third-generation female with breast cancer — the inheritance pattern spanning three generations justifies BRCA genetic testing.

@@ -1,0 +1,41 @@
+---
+title: 1-bit full adder
+diagram: logic
+standard: IEEE 91
+industry: [education, industrial]
+persona: For the electronics designer
+complexity: 2
+tags: [XOR, AND, OR, combinational, ALU]
+featured: true
+relatedLink:
+  label: Logic gate syntax
+  href: /docs/logic
+status: published
+dsl: |
+  logic "1-bit Full Adder"
+  input A, B, Cin
+  output Sum, Cout
+  s1 = XOR(A, B)
+  Sum = XOR(s1, Cin)
+  c1 = AND(A, B)
+  c2 = AND(s1, Cin)
+  Cout = OR(c1, c2)
+---
+
+## Scenario
+
+The 1-bit full adder is the foundational building block of every arithmetic logic unit. Digital logic students derive it in lecture; FPGA engineers instantiate it in RTL. Schematex renders it from a purely functional description — no manual gate placement, no wire routing — making it easy to embed in textbooks, datasheets, or AI-generated hardware documentation.
+
+## Annotation key
+
+- `input A, B, Cin` — declare named input ports
+- `output Sum, Cout` — declare named output ports
+- `s1 = XOR(A, B)` — intermediate signal `s1` is the XOR of inputs A and B
+- `Sum = XOR(s1, Cin)` — the sum bit is the XOR of the partial sum and carry-in
+- `c1 = AND(A, B)` — carry generated when both A and B are 1
+- `c2 = AND(s1, Cin)` — carry propagated when partial sum is 1 and Cin is 1
+- `Cout = OR(c1, c2)` — carry-out is 1 if either generate or propagate carry is active
+
+## How to read
+
+The diagram renders two XOR gates for the sum path (A⊕B, then ⊕Cin) and two AND gates feeding an OR for the carry-out (the standard generate/propagate structure). The layout is automatically ranked so data flows left to right, inputs on the left edge, outputs on the right. Every 4-bit or 8-bit ripple-carry adder in textbooks is just this circuit chained together.

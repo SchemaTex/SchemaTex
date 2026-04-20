@@ -1,6 +1,6 @@
 import type { MetadataRoute } from 'next';
 import { source } from '@/lib/source';
-import { examples } from '@/lib/examples-data';
+import { allExamples } from '@/lib/examples-source';
 
 const SITE = 'https://schematex.dev';
 
@@ -15,7 +15,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     url: `${SITE}${page.url}`,
     priority: 0.7,
   }));
-  const examplePages = examples.map((ex) => ({
+  const examplePages = allExamples.map((ex) => ({
     url: `${SITE}/examples/${ex.slug}`,
     priority: 0.7,
   }));

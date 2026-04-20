@@ -1,0 +1,71 @@
+---
+title: Website traffic drop root-cause analysis
+diagram: fishbone
+standard: Ishikawa 1968
+industry: [business]
+persona: For the ops lead
+complexity: 3
+tags: [root-cause, Ishikawa, six-categories, growth]
+featured: true
+relatedLink:
+  label: Fishbone syntax
+  href: /docs/fishbone
+status: published
+dsl: |
+  fishbone "Fishbone diagram — Website traffic drop"
+
+  effect "Traffic decline"
+
+  category content     "Content"
+  category tech        "Technical"
+  category links       "Backlinks"
+  category ux          "UX"
+  category competition "Competition"
+  category algo        "Algorithm"
+
+  content : "Publishing frequency down"
+  content : "Content too generic"
+  content : "Keyword gaps"
+  content : "Low-quality AI content"
+
+  tech : "Core Web Vitals failing"
+  tech : "Crawl coverage drop"
+  tech : "Crawler blocked by WAF"
+  tech : "Missing structured data"
+
+  links : "High-quality backlinks lost"
+  links : "High ratio of low-quality links"
+  links : "Referring domain growth stalled"
+  links : "Low anchor text diversity"
+
+  ux : "Bounce rate rising"
+  ux : "Poor mobile experience"
+  ux : "Slow above-fold load"
+  ux : "Excessive popup ads"
+
+  competition : "New competitors entering"
+  competition : "AI tools replacing search"
+  competition : "Weakening brand recall"
+  competition : "Competitors publishing faster"
+
+  algo : "Core Update penalty"
+  algo : "Weak E-E-A-T signals"
+  algo : "AI Overviews / SGE cutoff"
+  algo : "Search intent drift"
+---
+
+## Scenario
+
+An ops lead runs a growth post-mortem after a 30% organic traffic drop. The Ishikawa (fishbone) diagram structures the team's brainstorm into six standard causal categories, preventing the meeting from fixating on the most vocal hypothesis while ignoring systemic causes. The completed diagram becomes the project brief for the remediation sprint.
+
+## Annotation key
+
+- `effect "..."` — the problem statement, placed at the fish's head (right side)
+- `category id "Label"` — defines a major causal branch (a "bone"); use a short `id` to assign causes
+- `id : "cause text"` — assigns a cause string to the named category branch
+- Each category renders as a diagonal rib pointing toward the effect
+- Sub-causes (second-order) can be added by nesting if the DSL supports it
+
+## How to read
+
+The effect (traffic decline) sits at the right. Six causal ribs branch from the spine: Content, Technical, Backlinks, UX, Competition, and Algorithm. Each rib lists four specific hypotheses. In a workshop, the team votes on each cause, color-codes high-confidence ones, and converts the highest-priority items into action items. The diagram serves as both a brainstorming artifact and a living post-mortem document.

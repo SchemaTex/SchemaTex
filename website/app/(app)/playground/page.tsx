@@ -1,6 +1,22 @@
 import { Playground } from '@/components/Playground';
 import { DiagramIcon } from '@/components/DiagramIcon';
-import { galleryExamples, heroDefault } from '@/lib/gallery-data';
+import { allExamples } from '@/lib/examples-source';
+
+const heroDefault = `genogram "The Smiths"
+  john [male, 1950]
+  mary [female, 1952]
+  john -- mary
+    alice [female, 1975, index]
+    bob [male, 1978]
+  alice -close- mary
+  alice -hostile- bob`;
+
+const galleryExamples = allExamples.map((ex) => ({
+  slug: ex.slug,
+  title: ex.title,
+  dsl: ex.dsl,
+  icon: ex.diagram as import('@/components/DiagramIcon').DiagramType,
+}));
 import Link from 'next/link';
 
 export const metadata = {

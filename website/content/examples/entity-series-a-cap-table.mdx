@@ -1,0 +1,43 @@
+---
+title: Series A cap table
+diagram: entity
+standard: Tier ownership
+industry: [legal-finance]
+persona: For the startup attorney
+complexity: 2
+tags: [cap-table, Series-A, ESOP, VC, founders]
+featured: false
+relatedLink:
+  label: Entity syntax
+  href: /docs/entity
+status: published
+dsl: |
+  entity "Acme Inc. — post Series A"
+    acme [type: corp, jurisdiction: DE, label: "Acme Inc."]
+    founders [type: individual, label: "Founders (2)"]
+    seed [type: fund, jurisdiction: DE, label: "Seed Fund I"]
+    lead [type: fund, jurisdiction: DE, label: "Sequoia Series A"]
+    angels [type: individual, label: "Angel group"]
+    esop [type: trust, jurisdiction: DE, label: "Employee Option Pool"]
+    founders --45%--> acme
+    seed --12%--> acme
+    lead --22%--> acme
+    angels --6%--> acme
+    esop --15%--> acme
+---
+
+## Scenario
+
+A startup attorney or CFO documents the post-Series A ownership table for a 409A valuation, board consent, or investor report. The cap table diagram makes the dilution story visual — founders can immediately see their post-money percentage, and the VC can verify their ownership stake before signing the term sheet.
+
+## Annotation key
+
+- `--45%-->` — ownership arrow with percentage label; all percentages should sum to 100%
+- `type: individual` — natural person (founder, angel)
+- `type: fund` — institutional investor entity
+- `type: trust` — the ESOP/option pool (typically a Delaware trust or reserved pool)
+- `type: corp` — the issuer (the company being invested in)
+
+## How to read
+
+Acme Inc. (Delaware C-corp) sits at the bottom as the issuer. Five shareholder classes flow down with their ownership arrows: founders at 45%, the lead Series A investor at 22%, the employee option pool at 15%, the seed fund at 12%, and angels at 6%. Percentages sum to 100%, representing a clean fully-diluted cap table on the day of Series A close.

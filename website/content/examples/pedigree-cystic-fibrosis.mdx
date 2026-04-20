@@ -1,0 +1,40 @@
+---
+title: Cystic fibrosis (autosomal recessive)
+diagram: pedigree
+standard: NSGC
+industry: [healthcare]
+persona: For the genetic counselor
+complexity: 2
+tags: [autosomal-recessive, carrier, Mendelian, proband]
+featured: false
+relatedLink:
+  label: Pedigree syntax
+  href: /docs/pedigree
+status: published
+dsl: |
+  pedigree "CF family — autosomal recessive"
+    I-1 [male, carrier]
+    I-2 [female, carrier]
+    I-1 -- I-2
+      II-1 [male, affected, proband]
+      II-2 [female, carrier]
+      II-3 [male, unaffected]
+    II-2 -- II-4 [male, carrier]
+      III-1 [female, affected]
+      III-2 [male, unaffected]
+---
+
+## Scenario
+
+The classic textbook pedigree for autosomal recessive inheritance — used in genetics courses, patient education, and clinical counseling to illustrate the 25% recurrence risk when both parents are carriers.
+
+## Annotation key
+
+- `carrier` — half-filled symbol; one normal allele and one mutant allele (Aa)
+- `affected` — fully filled symbol; two mutant alleles (aa)
+- `unaffected` — open symbol; either homozygous normal (AA) or carrier (Aa) — cannot distinguish clinically without testing
+- `proband` — triangle arrow; the first affected individual identified in the family
+
+## How to read
+
+Both Generation I parents are carriers. Their Generation II children follow the expected 1:2:1 Mendelian ratio: one affected son (proband), one carrier daughter, one unaffected son. In Generation III, carrier daughter II-2 married a carrier II-4 — producing another affected granddaughter (III-1), reinforcing the recessive inheritance pattern.

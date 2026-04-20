@@ -1,0 +1,49 @@
+---
+title: Engineering team influence mapping
+diagram: sociogram
+standard: Moreno 1934
+industry: [business]
+persona: For the engineering manager
+complexity: 2
+tags: [force-directed, groups, bridging, stars, isolates]
+featured: false
+relatedLink:
+  label: Sociogram syntax
+  href: /docs/sociogram
+status: published
+dsl: |
+  sociogram "Engineering team — informal influence"
+    config: layout = force-directed
+    group leads [label: "Tech leads", color: "#1976D2"]
+      alex; sam
+    group sr [label: "Senior ICs", color: "#66BB6A"]
+      priya; jordan; kim; tao
+    group jr [label: "Junior", color: "#FFA726"]
+      lee; ravi; nina; dev
+    alex <-> sam
+    alex -> priya
+    sam -> jordan
+    priya <-> kim
+    jordan <-> tao
+    kim -> lee
+    priya -> ravi
+    tao -> nina
+    dev -.- lee
+    nina -.- priya
+---
+
+## Scenario
+
+An engineering manager runs an informal network analysis survey ("Who do you go to when you're stuck?") and maps the results to identify knowledge hubs, bridging individuals between seniority tiers, and team members who are drifting toward isolation before performance reviews surface the issue.
+
+## Annotation key
+
+- `group id [label:..., color:...]` — assigns individuals to organizational tiers, color-coded
+- `<->` — mutual influence; both nominated each other
+- `->` — one-way influence nomination
+- `-.-` — weak tie; neither party nominated the other in the survey
+- The force-directed layout clusters mutual-nomination groups and separates isolates
+
+## How to read
+
+Alex and Sam (tech leads) are mutually influential. Alex bridges down to Priya, Sam to Jordan — healthy knowledge flow across tiers. Priya and Kim form a strong senior IC hub. Dev and Nina have only weak ties (--. to the network), suggesting integration risk. Dev's only connection is a weak tie to Lee — a coaching opportunity before the next performance cycle.

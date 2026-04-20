@@ -1,0 +1,49 @@
+---
+title: The Potter family
+diagram: genogram
+standard: McGoldrick 2020
+industry: [education]
+persona: For the family therapist
+complexity: 3
+tags: [emotional-relationships, three-generation, deceased, cutoff, hostile, close]
+featured: false
+relatedLink:
+  label: Genogram syntax
+  href: /docs/genogram
+status: published
+dsl: |
+  genogram "The Potter Family"
+    fleamont [male, 1909, 1979, deceased]
+    euphemia [female, 1920, 1979, deceased]
+    fleamont -- euphemia
+      james [male, 1960, 1981, deceased]
+    mr_evans [male, 1925, deceased]
+    mrs_evans [female, 1928, deceased]
+    mr_evans -- mrs_evans
+      lily [female, 1960, 1981, deceased]
+      petunia [female, 1958]
+    james -- lily "m. 1978"
+      harry [male, 1980, index]
+    petunia -- vernon [male, 1951]
+      dudley [male, 1980]
+    harry -cutoff- petunia
+    harry -hostile- dudley
+    harry -close- lily
+---
+
+## Scenario
+
+A teaching example for social work students learning genogram notation. The Potter family is fictional but emotionally rich — death years, a marriage date, cross-family emotional relationships, and three distinct relational patterns (cutoff, hostile, close) all in one diagram.
+
+## Annotation key
+
+- `[male/female, birth_year, death_year, deceased]` — person with death marker
+- `"m. 1978"` — marriage date label on the union line
+- `index` — marks Harry as the identified patient (proband)
+- `-cutoff-` — estrangement; drawn as two parallel bars across the relationship line
+- `-hostile-` — conflict; drawn as zigzag line
+- `-close-` — enmeshment/closeness; drawn as double parallel line
+
+## How to read
+
+Read each indented block as a family unit. James and Lily (index generation) both died in 1981. Harry's emotional world is defined by three relational lines: cutoff from Aunt Petunia, hostility toward cousin Dudley, and closeness to his deceased mother.

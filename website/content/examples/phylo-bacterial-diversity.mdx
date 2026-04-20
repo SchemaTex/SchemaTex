@@ -1,0 +1,37 @@
+---
+title: Bacterial diversity (ten-taxon tree)
+diagram: phylo
+standard: Newick/NHX
+industry: [research]
+persona: For the microbiologist
+complexity: 3
+tags: [Newick, NHX, bootstrap, clade, color-coding]
+featured: false
+relatedLink:
+  label: Phylogenetic syntax
+  href: /docs/phylo
+status: published
+dsl: |
+  phylo "Bacterial Diversity"
+    newick: "((((Ecoli:0.1,Salmonella:0.12):0.05[&&NHX:B=98],Vibrio:0.2):0.08[&&NHX:B=85],((Bacillus:0.15,Staph:0.18):0.06[&&NHX:B=92],Listeria:0.22):0.1):0.15,((Myco_tb:0.3,Myco_leprae:0.28):0.12[&&NHX:B=100],(Strepto:0.25,Lactobacillus:0.2):0.08[&&NHX:B=78]):0.2);"
+    clade Gamma = (Ecoli, Salmonella, Vibrio) [color: "#1E88E5", label: "γ-Proteobacteria"]
+    clade Firmi = (Bacillus, Staph, Listeria, Strepto, Lactobacillus) [color: "#E53935", label: "Firmicutes"]
+    clade Actino = (Myco_tb, Myco_leprae) [color: "#43A047", label: "Actinobacteria"]
+    scale "substitutions/site"
+---
+
+## Scenario
+
+A microbiologist or bioinformatician pastes a Newick tree string exported from RAxML, IQ-TREE, or MEGA and immediately gets a publication-ready SVG with clade highlights and a branch-length scale bar — no manual layout required.
+
+## Annotation key
+
+- `newick: "..."` — standard Newick format tree string; branch lengths follow `:` after each taxon name
+- `[&&NHX:B=98]` — NHX annotation; `B=` is the bootstrap support value (0–100), rendered on internal nodes
+- `clade id = (taxon, ...)` — defines a named clade by listing its leaf members
+- `[color: "#hex", label: "..."]` — colors the clade's subtree and adds a labeled arc
+- `scale "..."` — draws a calibrated scale bar with the given unit label
+
+## How to read
+
+The tree shows three major bacterial clades. Blue (γ-Proteobacteria): *E. coli*, *Salmonella*, and *Vibrio* cluster with 98% bootstrap support. Red (Firmicutes): *Bacillus*, *Staph*, *Listeria*, *Streptococcus*, and *Lactobacillus*. Green (Actinobacteria): the two *Mycobacterium* species form a highly supported clade (bootstrap 100). Branch lengths represent substitutions per site — longer branches indicate faster evolutionary rates.
