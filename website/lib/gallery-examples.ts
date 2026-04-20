@@ -560,7 +560,136 @@ C -> G
 G -> y
 G -> err`,
   },
-  // 20. Fishbone — website traffic (new — from preview page, TC-FB-01)
+  // 20. Multi-color medical history genogram
+  {
+    slug: 'medical-history-genogram',
+    title: 'Multi-Generation Medical History',
+    description:
+      'Three-generation genogram with color-coded medical conditions — heart disease, diabetes, cancer, hypertension — showing inheritance patterns across the family tree.',
+    diagram: 'genogram',
+    industry: 'healthcare',
+    complexity: 3,
+    standard: 'McGoldrick 2020',
+    hasDetailPage: false,
+    dsl: `genogram "Medical History"
+  grandfather [male, 1930, 1990, deceased, conditions: heart-disease(full, #e74c3c) + diabetes(half-left, #ff9800)]
+  grandmother [female, 1935, conditions: cancer(half-right, #9c27b0)]
+  grandfather -- grandmother
+    father [male, 1960, conditions: heart-disease(quad-tl, #e74c3c) + hypertension(quad-tr, #2196f3)]
+    uncle [male, 1963, conditions: diabetes(full, #ff9800)]
+  mother [female, 1962]
+  father -- mother
+    patient [male, 1988, index, conditions: hypertension(half-left, #2196f3)]
+    sister [female, 1991]`,
+  },
+  // 21. Hemophilia A — X-linked recessive pedigree
+  {
+    slug: 'hemophilia-pedigree',
+    title: 'Hemophilia A — X-Linked Recessive',
+    description:
+      'Three-generation pedigree for X-linked recessive hemophilia A — carrier females (half-fill), affected males, standard NSGC pedigree notation.',
+    diagram: 'pedigree',
+    industry: 'healthcare',
+    complexity: 2,
+    standard: 'NSGC pedigree nomenclature',
+    hasDetailPage: false,
+    dsl: `pedigree "Hemophilia A"
+  I-1 [male, unaffected]
+  I-2 [female, carrier-x]
+  I-1 -- I-2
+    II-1 [male, affected]
+    II-2 [female, carrier-x]
+    II-3 [male, unaffected]
+    II-4 [female, unaffected]
+  II-2 -- II-5 [male, unaffected]
+    III-1 [male, affected]
+    III-2 [female, carrier-x]
+    III-3 [male, unaffected]`,
+  },
+  // 22. Substance abuse recovery ecomap
+  {
+    slug: 'substance-abuse-recovery',
+    title: 'Substance Abuse Recovery — Ecomap',
+    description:
+      'Clinical ecomap for a client in early recovery — AA sponsor, CBT therapist, probation officer, estranged family, and "old friends" being cut off.',
+    diagram: 'ecomap',
+    industry: 'healthcare',
+    complexity: 3,
+    standard: 'Hartman 1978',
+    hasDetailPage: false,
+    dsl: `ecomap "Substance Abuse Recovery"
+  center: client [male, age: 28, label: "James"]
+  aa [label: "AA Group", category: substance, importance: major]
+  sponsor [label: "Bill (Sponsor)", category: substance]
+  employer [label: "Warehouse Job", category: work]
+  mother [label: "Mom", category: family]
+  exwife [label: "Ex-wife", category: family]
+  kids [label: "Children (2)", category: family]
+  dealer [label: "Old Friends", category: substance]
+  probation [label: "P.O. Johnson", category: legal]
+  therapist [label: "CBT Therapist", category: mental-health]
+  client === aa
+  sponsor --> client
+  client --- employer [label: "new, probationary"]
+  client == mother [label: "supportive"]
+  client ~~~ exwife [label: "custody conflict"]
+  client - - kids [label: "supervised visits"]
+  client -/- dealer [label: "trying to cut off"]
+  probation --> client
+  therapist <-> client [label: "weekly"]`,
+  },
+  // 23. Generator + ATS backup power SLD
+  {
+    slug: 'generator-ats-sld',
+    title: 'Generator + ATS Backup Power',
+    description:
+      'Single-line diagram for a facility with utility feed and emergency generator — ATS transfers critical loads automatically on utility failure.',
+    diagram: 'sld',
+    industry: 'industrial',
+    complexity: 2,
+    standard: 'IEEE 315',
+    hasDetailPage: false,
+    dsl: `sld "Utility + Generator Backup"
+UTIL = utility [voltage: "480V", label: "Utility"]
+GEN = generator [rating: "500 kW", voltage: "480V", label: "Emergency Gen"]
+ATS1 = ats [rating: "800A", label: "ATS-1"]
+BUS1 = bus [voltage: "480V", label: "Critical Load Bus"]
+CB1 = breaker [rating: "200A"]
+CB2 = breaker [rating: "200A"]
+L1 = load [rating: "100A", label: "Critical Load 1"]
+L2 = load [rating: "100A", label: "Critical Load 2"]
+UTIL -> ATS1
+GEN -> ATS1
+ATS1 -> BUS1
+BUS1 -> CB1
+BUS1 -> CB2
+CB1 -> L1
+CB2 -> L2`,
+  },
+  // 24. International tax structure entity
+  {
+    slug: 'international-tax-structure',
+    title: 'International Tax Structure',
+    description:
+      'Five-entity cross-border holding structure — US parent, Irish holdco, Cayman IP company, Dutch distribution, Singapore APAC ops, with royalty license.',
+    diagram: 'entity',
+    industry: 'legal-finance',
+    complexity: 3,
+    standard: 'Tier-based ownership',
+    hasDetailPage: false,
+    dsl: `entity-structure "Acme Global Holdings"
+entity parent "Acme Global, Inc." corp@US [note: "Ultimate Parent"]
+entity ie-holdco "Acme Ireland Holdings" corp@IE
+entity ie-ip "Acme IP Ltd" corp@KY [note: "Holds group IP"]
+entity nl-bv "Acme EU Distribution" corp@NL
+entity sg-apac "Acme APAC Trading" corp@SG
+parent -> ie-holdco : 100%
+ie-holdco -> ie-ip : 100%
+ie-holdco -> nl-bv : 100%
+ie-ip -~-> nl-bv [label: "IP License · royalty"]
+parent -> sg-apac : 100%`,
+  },
+  // 25. Fishbone — website traffic (new — from preview page, TC-FB-01)
   {
     slug: 'fishbone-website-traffic',
     title: 'Website Traffic Drop RCA',

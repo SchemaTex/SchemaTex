@@ -9,12 +9,15 @@ import { galleryExamples } from '@/lib/gallery-examples';
 // Featured cases — each tying a real diagram to the professional who ships it.
 // Order optimized for cluster coverage: relationships / industrial / corporate / causality.
 const FEATURED_CASES = [
-  { slug: 'brca1-hereditary-cancer', persona: 'For the genetic counselor' },
-  { slug: 'motor-start-stop',         persona: 'For the controls engineer' },
-  { slug: 'harry-potter-family',      persona: 'For the family therapist' },
-  { slug: 'substation-13kv',          persona: 'For the power engineer' },
-  { slug: 'holding-company',          persona: 'For corporate counsel' },
-  { slug: 'fishbone-website-traffic', persona: 'For the ops lead' },
+  { slug: 'medical-history-genogram',   persona: 'For the clinical social worker' },
+  { slug: 'hemophilia-pedigree',         persona: 'For the genetic counselor' },
+  { slug: 'substance-abuse-recovery',   persona: 'For the case manager' },
+  { slug: 'motor-start-stop',           persona: 'For the controls engineer' },
+  { slug: 'generator-ats-sld',          persona: 'For the facility engineer' },
+  { slug: 'full-adder-logic',           persona: 'For the electronics designer' },
+  { slug: 'international-tax-structure',persona: 'For corporate counsel' },
+  { slug: 'fishbone-website-traffic',   persona: 'For the ops lead' },
+  { slug: 'playground-dynamics',        persona: 'For the school counselor' },
 ] as const;
 
 const DIAGRAM_TO_CAT: Record<string, string> = {

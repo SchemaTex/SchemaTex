@@ -24,18 +24,18 @@ export interface ExampleSection {
 }
 
 export const exampleSections: ExampleSection[] = [
-  { label: 'Genogram', slugs: ['harry-potter-family', 'nuclear-family', 'brca-cancer-family'] },
-  { label: 'Ecomap', slugs: ['refugee-resettlement', 'teen-client-ecomap'] },
-  { label: 'Pedigree', slugs: ['brca1-hereditary-cancer', 'cystic-fibrosis-pedigree'] },
+  { label: 'Genogram', slugs: ['harry-potter-family', 'nuclear-family', 'brca-cancer-family', 'medical-history-genogram'] },
+  { label: 'Ecomap', slugs: ['refugee-resettlement', 'teen-client-ecomap', 'substance-abuse-recovery'] },
+  { label: 'Pedigree', slugs: ['brca1-hereditary-cancer', 'cystic-fibrosis-pedigree', 'hemophilia-pedigree'] },
   { label: 'Phylogenetic', slugs: ['bacterial-diversity'] },
   { label: 'Sociogram', slugs: ['playground-dynamics', 'workplace-influence-sociogram'] },
   { label: 'Timing', slugs: ['spi-transaction-timing'] },
   { label: 'Logic Gate', slugs: ['full-adder-logic'] },
   { label: 'Ladder', slugs: ['motor-start-stop', 'mode-selection'] },
   { label: 'Circuit', slugs: ['ce-amplifier'] },
-  { label: 'SLD', slugs: ['substation-13kv'] },
+  { label: 'SLD', slugs: ['substation-13kv', 'generator-ats-sld'] },
   { label: 'Block Diagram', slugs: ['pid-loop-block'] },
-  { label: 'Entity', slugs: ['holding-company', 'series-a-cap-table'] },
+  { label: 'Entity', slugs: ['holding-company', 'series-a-cap-table', 'international-tax-structure'] },
   { label: 'Fishbone', slugs: ['fishbone-website-traffic'] },
 ];
 
@@ -572,6 +572,140 @@ algo : "Core Update penalty"
 algo : "Weak E-E-A-T signals"
 algo : "AI Overviews / SGE cutoff"
 algo : "Search intent drift"`,
+  },
+  {
+    slug: 'medical-history-genogram',
+    title: 'Genogram: multi-generation medical history',
+    description:
+      'Three-generation family genogram with color-coded inherited conditions — heart disease, diabetes, cancer, hypertension — showing how conditions pass across generations.',
+    diagram: 'genogram',
+    industry: 'healthcare',
+    complexity: 3,
+    standard: 'McGoldrick 2020',
+    blurb:
+      'A three-generation family medical history genogram using the conditions() annotation to show which conditions each person carries. The grandfather\'s full red fill (heart-disease) and half-orange fill (diabetes) are visually inherited by the father\'s quad-tl and quad-tr fills, and the index patient carries hypertension in the half-left quadrant — making the inheritance chain immediately visible.',
+    related: { label: 'Genogram syntax', href: '/docs/genogram' },
+    dsl: `genogram "Medical History"
+  grandfather [male, 1930, 1990, deceased, conditions: heart-disease(full, #e74c3c) + diabetes(half-left, #ff9800)]
+  grandmother [female, 1935, conditions: cancer(half-right, #9c27b0)]
+  grandfather -- grandmother
+    father [male, 1960, conditions: heart-disease(quad-tl, #e74c3c) + hypertension(quad-tr, #2196f3)]
+    uncle [male, 1963, conditions: diabetes(full, #ff9800)]
+  mother [female, 1962]
+  father -- mother
+    patient [male, 1988, index, conditions: hypertension(half-left, #2196f3)]
+    sister [female, 1991]`,
+  },
+  {
+    slug: 'hemophilia-pedigree',
+    title: 'Pedigree: Hemophilia A (X-linked recessive)',
+    description:
+      'Three-generation clinical pedigree for X-linked recessive hemophilia A — carrier females shown with half-fill dot, affected males fully filled, standard NSGC notation.',
+    diagram: 'pedigree',
+    industry: 'healthcare',
+    complexity: 2,
+    standard: 'NSGC',
+    blurb:
+      'X-linked recessive hemophilia A pedigree across three generations. carrier-x marks females who carry one mutated X chromosome — shown as a circle with a centre dot per NSGC convention. Affected males (filled square) inherit the mutation from a carrier mother. The pedigree shows a carrier grandmother passing the trait through a carrier daughter to a new affected grandson.',
+    related: { label: 'Pedigree syntax', href: '/docs/pedigree' },
+    dsl: `pedigree "Hemophilia A"
+  I-1 [male, unaffected]
+  I-2 [female, carrier-x]
+  I-1 -- I-2
+    II-1 [male, affected]
+    II-2 [female, carrier-x]
+    II-3 [male, unaffected]
+    II-4 [female, unaffected]
+  II-2 -- II-5 [male, unaffected]
+    III-1 [male, affected]
+    III-2 [female, carrier-x]
+    III-3 [male, unaffected]`,
+  },
+  {
+    slug: 'substance-abuse-recovery',
+    title: 'Ecomap: substance abuse recovery',
+    description:
+      'Clinical ecomap for a 28-year-old male client in early substance abuse recovery — mapping AA, sponsor, therapist, employer, estranged family, legal supervision, and old dealer contacts.',
+    diagram: 'ecomap',
+    industry: 'healthcare',
+    complexity: 3,
+    standard: 'Hartman 1978',
+    blurb:
+      'A social worker\'s ecomap for a client in early recovery — documenting every system in his ecological field. The line types encode relationship quality: === (strong/supportive), == (moderately strong), --- (tenuous), -/- (severing), ~~~ (stressful). Arrow direction shows who gives energy to whom. The visual immediately shows the imbalance: legal and AA are inbound pressure; only the sponsor and therapist are reciprocal.',
+    related: { label: 'Ecomap syntax', href: '/docs/ecomap' },
+    dsl: `ecomap "Substance Abuse Recovery"
+  center: client [male, age: 28, label: "James"]
+  aa [label: "AA Group", category: substance, importance: major]
+  sponsor [label: "Bill (Sponsor)", category: substance]
+  employer [label: "Warehouse Job", category: work]
+  mother [label: "Mom", category: family]
+  exwife [label: "Ex-wife", category: family]
+  kids [label: "Children (2)", category: family]
+  dealer [label: "Old Friends", category: substance]
+  probation [label: "P.O. Johnson", category: legal]
+  therapist [label: "CBT Therapist", category: mental-health]
+  client === aa
+  sponsor --> client
+  client --- employer [label: "new, probationary"]
+  client == mother [label: "supportive"]
+  client ~~~ exwife [label: "custody conflict"]
+  client - - kids [label: "supervised visits"]
+  client -/- dealer [label: "trying to cut off"]
+  probation --> client
+  therapist <-> client [label: "weekly"]`,
+  },
+  {
+    slug: 'generator-ats-sld',
+    title: 'Single-line diagram: generator + ATS backup power',
+    description:
+      'Facility power one-line diagram with utility feed, 500 kW emergency generator, and automatic transfer switch — critical loads fed through breakers on a 480 V bus.',
+    diagram: 'sld',
+    industry: 'industrial',
+    complexity: 2,
+    standard: 'IEEE 315',
+    blurb:
+      'A facility backup power single-line: utility and emergency generator both feed an ATS (Automatic Transfer Switch) that selects the live source and connects to the critical load bus. Each device uses an IEEE 315 symbol — the ATS is a transfer-switch symbol, the generator uses the rotating-machine circle. Breakers between the bus and loads isolate individual circuits.',
+    related: { label: 'SLD syntax', href: '/docs/sld' },
+    dsl: `sld "Utility + Generator Backup"
+UTIL = utility [voltage: "480V", label: "Utility"]
+GEN = generator [rating: "500 kW", voltage: "480V", label: "Emergency Gen"]
+ATS1 = ats [rating: "800A", label: "ATS-1"]
+BUS1 = bus [voltage: "480V", label: "Critical Load Bus"]
+CB1 = breaker [rating: "200A"]
+CB2 = breaker [rating: "200A"]
+L1 = load [rating: "100A", label: "Critical Load 1"]
+L2 = load [rating: "100A", label: "Critical Load 2"]
+UTIL -> ATS1
+GEN -> ATS1
+ATS1 -> BUS1
+BUS1 -> CB1
+BUS1 -> CB2
+CB1 -> L1
+CB2 -> L2`,
+  },
+  {
+    slug: 'international-tax-structure',
+    title: 'Entity structure: international tax holding',
+    description:
+      'Five-entity cross-border holding structure with a US parent, Irish holdco, Cayman IP company, Dutch EU distribution, and Singapore APAC ops — including an IP license royalty flow.',
+    diagram: 'entity',
+    industry: 'legal-finance',
+    complexity: 3,
+    standard: 'Tier ownership',
+    blurb:
+      'A classic BEPS-era international holding structure: the US parent owns 100% of an Irish holdco which in turn owns a Cayman IP company and a Dutch distribution entity. The -~-> (dashed) arrow from the IP company to the Dutch entity represents the IP license and royalty flow — a common mechanism for shifting taxable income to a low-rate jurisdiction. Singapore APAC is a parallel branch for Asia-Pacific operations.',
+    related: { label: 'Entity syntax', href: '/docs/entity' },
+    dsl: `entity-structure "Acme Global Holdings"
+entity parent "Acme Global, Inc." corp@US [note: "Ultimate Parent"]
+entity ie-holdco "Acme Ireland Holdings" corp@IE
+entity ie-ip "Acme IP Ltd" corp@KY [note: "Holds group IP"]
+entity nl-bv "Acme EU Distribution" corp@NL
+entity sg-apac "Acme APAC Trading" corp@SG
+parent -> ie-holdco : 100%
+ie-holdco -> ie-ip : 100%
+ie-holdco -> nl-bv : 100%
+ie-ip -~-> nl-bv [label: "IP License · royalty"]
+parent -> sg-apac : 100%`,
   },
 ];
 
