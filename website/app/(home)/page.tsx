@@ -509,40 +509,40 @@ export default async function HomePage() {
                   style={{ borderBottom: '1px solid var(--fill-muted)' }}
                 >
                   <th className="px-5 py-3 font-normal">Tool</th>
-                  <th className="px-5 py-3 font-normal">Domain standards</th>
-                  <th className="px-5 py-3 font-normal">Deps</th>
-                  <th className="px-5 py-3 font-normal">Pricing</th>
-                  <th className="px-5 py-3 font-normal">LLM-shaped DSL</th>
+                  <th className="px-5 py-3 font-normal">Pro domain diagrams</th>
+                  <th className="px-5 py-3 font-normal">Price</th>
+                  <th className="px-5 py-3 font-normal">For developers</th>
+                  <th className="px-5 py-3 font-normal">AI-friendly</th>
                 </tr>
               </thead>
               <tbody>
                 {[
                   {
                     tool: 'Mermaid',
-                    dom: 'generic flowcharts only',
-                    deps: 'dagre-d3',
+                    dom: 'flowcharts only',
                     price: 'free',
-                    llm: '—',
+                    dev: '✓ (npm)',
+                    llm: 'partial',
                   },
                   {
-                    tool: 'GoJS',
-                    dom: 'isolated samples',
-                    deps: '—',
-                    price: '$7k+ / seat',
-                    llm: '—',
+                    tool: 'D2',
+                    dom: 'architecture only',
+                    price: 'free',
+                    dev: '✗ (Go CLI)',
+                    llm: 'partial',
                   },
                   {
-                    tool: 'Schemdraw',
-                    dom: 'circuits only',
-                    deps: 'matplotlib',
+                    tool: 'WaveDrom',
+                    dom: 'timing only',
                     price: 'free',
-                    llm: 'Python only',
+                    dev: '✓ (npm)',
+                    llm: 'partial',
                   },
                   {
-                    tool: 'draw.io',
-                    dom: 'GUI — no published spec',
-                    deps: '—',
+                    tool: 'PlantUML',
+                    dom: 'UML only',
                     price: 'free',
+                    dev: '✗ (Java)',
                     llm: '—',
                   },
                 ].map((row) => (
@@ -553,8 +553,8 @@ export default async function HomePage() {
                   >
                     <td className="px-5 py-3 text-fd-foreground">{row.tool}</td>
                     <td className="px-5 py-3">{row.dom}</td>
-                    <td className="px-5 py-3">{row.deps}</td>
                     <td className="px-5 py-3">{row.price}</td>
+                    <td className="px-5 py-3">{row.dev}</td>
                     <td className="px-5 py-3">{row.llm}</td>
                   </tr>
                 ))}
@@ -571,8 +571,8 @@ export default async function HomePage() {
                     schematex
                   </td>
                   <td className="px-5 py-3">20 families · spec-cited</td>
-                  <td className="px-5 py-3">0</td>
-                  <td className="px-5 py-3">free</td>
+                  <td className="px-5 py-3 font-semibold">free</td>
+                  <td className="px-5 py-3">✓ (0 deps, npm)</td>
                   <td className="px-5 py-3 font-semibold">designed for it</td>
                 </tr>
               </tbody>
