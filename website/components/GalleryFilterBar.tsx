@@ -8,7 +8,6 @@ import {
   type GalleryExample,
   type Industry,
 } from '@/lib/gallery-examples';
-import { FilterChips } from './FilterChips';
 
 type ClusterKey = keyof typeof CLUSTER_TO_TYPES;
 
@@ -54,7 +53,6 @@ export function GalleryFilterBar({
     [router, pathname, searchParams],
   );
 
-  // Debounced search commit
   useEffect(() => {
     const id = setTimeout(() => {
       if (queryInput !== activeQuery) setParam('q', queryInput || null);
@@ -109,80 +107,129 @@ export function GalleryFilterBar({
   const industryOptions = (Object.keys(INDUSTRY_LABELS) as Industry[]).map((k) => ({
     value: k,
     label: INDUSTRY_LABELS[k].label,
-    icon: INDUSTRY_LABELS[k].icon,
     count: counts.industryCounts.get(k) ?? 0,
   }));
 
   return (
-    <div className="sticky top-0 z-30 -mx-6 border-b border-fd-border bg-fd-background/85 px-6 py-4 backdrop-blur-md">
-      <div className="mx-auto flex max-w-6xl flex-col gap-3">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="font-mono text-xs text-fd-muted-foreground">
-            <span className="tabular-nums text-fd-foreground">{visibleCount}</span>
-            <span className="mx-1.5 opacity-40">/</span>
-            <span className="tabular-nums">{totalCount}</span>
-            <span className="ml-2 opacity-70">examples</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div
-              className="flex items-center gap-1.5 px-2.5 py-1"
-              style={{
-                border: '1px solid var(--fill-muted)',
-                borderRadius: 'var(--r-sm)',
-                background: 'var(--fill)',
-              }}
+    <div
+      className="sticky top-0 z-30 -mx-6 px-6 py-4 backdrop-blur-md"
+      style={{ borderBottom: '1px solid var(--fill-muted)', background: 'color-mix(in srgb, var(--bg) 90%, transparent)' }}
+    >
+      <div className="mx-auto max-w-6xl flex flex-col gap-3">
+        {/* Row 1: full-width search */}
+        <div
+          className="flex items-center gap-2 px-3 py-2"
+          style={{
+            border: '1px solid var(--fill-muted)',
+            borderRadius: 'var(--r-sm)',
+            background: 'var(--fill)',
+          }}
+        >
+          <svg
+            width="12"
+            height="12"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            style={{ color: 'var(--text-muted)', opacity: 0.6, flexShrink: 0 }}
+          >
+            <circle cx="11" cy="11" r="7" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+          <input
+            type="text"
+            value={queryInput}
+            onChange={(e) => setQueryInput(e.target.value)}
+            placeholder="search examples…"
+            className="flex-1 bg-transparent font-mono text-xs focus:outline-none"
+            style={{ color: 'var(--text)' }}
+          />
+          {queryInput && (
+            <button
+              type="button"
+              onClick={() => setQueryInput('')}
+              className="font-mono text-xs"
+              style={{ color: 'var(--text-muted)' }}
             >
-              <svg
-                width="12"
-                height="12"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="opacity-60"
-              >
-                <circle cx="11" cy="11" r="7" />
-                <line x1="21" y1="21" x2="16.65" y2="16.65" />
-              </svg>
-              <input
-                type="text"
-                value={queryInput}
-                onChange={(e) => setQueryInput(e.target.value)}
-                placeholder="search examples…"
-                className="w-44 bg-transparent font-mono text-xs text-fd-foreground placeholder:text-fd-muted-foreground/60 focus:outline-none"
-              />
-            </div>
-            {hasActive && (
-              <button
-                type="button"
-                onClick={clearAll}
-                className="inline-flex items-center gap-1 px-2.5 py-1 font-mono text-xs text-fd-muted-foreground transition hover:text-fd-foreground"
-                style={{
-                  border: '1px solid var(--fill-muted)',
-                  borderRadius: 'var(--r-sm)',
-                  background: 'var(--fill)',
-                }}
-              >
-                clear
-              </button>
-            )}
+              ×
+            </button>
+          )}
+        </div>
+
+        {/* Row 2: CLUSTER chips */}
+        <div className="flex items-center gap-3">
+          <span className="type-eye shrink-0">CLUSTER ·</span>
+          <div className="flex flex-wrap gap-1.5">
+            {clusterOptions.map((opt) => {
+              const isActive = activeCluster === opt.value;
+              const isDisabled = opt.count === 0 && !isActive;
+              return (
+                <button
+                  key={opt.value}
+                  type="button"
+                  className={`gal-chip${isActive ? ' active' : ''}`}
+                  disabled={isDisabled}
+                  onClick={() => setParam('cluster', isActive ? null : opt.value)}
+                >
+                  <span aria-hidden style={{ color: isActive ? 'inherit' : opt.color, fontSize: 9 }}>■</span>
+                  {opt.label}
+                  <span style={{ opacity: 0.5 }}>{opt.count}</span>
+                </button>
+              );
+            })}
           </div>
         </div>
-        <div className="grid gap-3 md:grid-cols-2">
-          <FilterChips
-            label="Cluster"
-            options={clusterOptions}
-            selected={activeCluster}
-            onChange={(v) => setParam('cluster', v)}
-          />
-          <FilterChips
-            label="Use-case"
-            options={industryOptions}
-            selected={activeIndustry}
-            onChange={(v) => setParam('industry', v)}
-          />
+
+        {/* Row 3: USE-CASE chips */}
+        <div className="flex items-center gap-3">
+          <span className="type-eye shrink-0">USE-CASE ·</span>
+          <div className="flex flex-wrap gap-1.5">
+            {industryOptions.map((opt) => {
+              const isActive = activeIndustry === opt.value;
+              const isDisabled = opt.count === 0 && !isActive;
+              return (
+                <button
+                  key={opt.value}
+                  type="button"
+                  className={`gal-chip${isActive ? ' active' : ''}`}
+                  disabled={isDisabled}
+                  onClick={() => setParam('industry', isActive ? null : opt.value)}
+                >
+                  {opt.label}
+                  <span style={{ opacity: 0.5 }}>{opt.count}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Status bar */}
+        <div className="flex items-center justify-between">
+          <span className="font-mono text-xs" style={{ color: 'var(--text-muted)' }}>
+            <span style={{ color: 'var(--text)' }}>{visibleCount}</span>
+            {' results'}
+            {hasActive && (
+              <>
+                <span className="mx-1.5" style={{ opacity: 0.4 }}>·</span>
+                {`filtered from ${totalCount}`}
+              </>
+            )}
+          </span>
+          {hasActive && (
+            <button
+              type="button"
+              onClick={clearAll}
+              className="font-mono text-xs transition"
+              style={{ color: 'var(--text-muted)' }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--text)')}
+              onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-muted)')}
+            >
+              reset filters ×
+            </button>
+          )}
         </div>
       </div>
     </div>

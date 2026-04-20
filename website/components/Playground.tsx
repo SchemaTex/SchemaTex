@@ -83,6 +83,9 @@ export function Playground({ initial, height = 560, fill = false }: PlaygroundPr
   const [debounced, setDebounced] = useState(initial);
   const [copyState, setCopyState] = useState<'idle' | 'done'>('idle');
   const [shareState, setShareState] = useState<'idle' | 'done'>('idle');
+  const [exportOpen, setExportOpen] = useState(false);
+  const [zoom, setZoom] = useState(100);
+  const exportRef = useRef<HTMLDivElement>(null);
   const hydrated = useRef(false);
 
   useEffect(() => {
@@ -161,7 +164,7 @@ export function Playground({ initial, height = 560, fill = false }: PlaygroundPr
     }
   }, [text]);
 
-  const handleDownload = useCallback(() => {
+  const handleDownloadSvg = useCallback(() => {
     if (!svg) return;
     const blob = new Blob([svg], { type: 'image/svg+xml' });
     const url = URL.createObjectURL(blob);
@@ -173,6 +176,47 @@ export function Playground({ initial, height = 560, fill = false }: PlaygroundPr
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   }, [svg, meta.name]);
+
+  const handleDownloadPng = useCallback(() => {
+    if (!svg) return;
+    const blob = new Blob([svg], { type: 'image/svg+xml' });
+    const svgUrl = URL.createObjectURL(blob);
+    const img = new Image();
+    img.onload = () => {
+      const scale = 2;
+      const canvas = document.createElement('canvas');
+      canvas.width = (img.width || 800) * scale;
+      canvas.height = (img.height || 600) * scale;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      ctx.scale(scale, scale);
+      ctx.drawImage(img, 0, 0);
+      URL.revokeObjectURL(svgUrl);
+      canvas.toBlob((pngBlob) => {
+        if (!pngBlob) return;
+        const pngUrl = URL.createObjectURL(pngBlob);
+        const a = document.createElement('a');
+        a.href = pngUrl;
+        a.download = `${meta.name || 'diagram'}.png`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(pngUrl);
+      }, 'image/png');
+    };
+    img.src = svgUrl;
+  }, [svg, meta.name]);
+
+  useEffect(() => {
+    if (!exportOpen) return;
+    function onClickAway(e: MouseEvent) {
+      if (exportRef.current && !exportRef.current.contains(e.target as Node)) {
+        setExportOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', onClickAway);
+    return () => document.removeEventListener('mousedown', onClickAway);
+  }, [exportOpen]);
 
   const panelStyle: React.CSSProperties = {
     border: '1px solid var(--fill-muted)',
@@ -208,9 +252,45 @@ export function Playground({ initial, height = 560, fill = false }: PlaygroundPr
           <button type="button" onClick={handleShare} className="pg-mini">
             {shareState === 'done' ? 'link copied' : 'share'}
           </button>
-          <button type="button" onClick={handleDownload} className="pg-mini">
-            download.svg
-          </button>
+          <div ref={exportRef} className="relative">
+            <button
+              type="button"
+              onClick={() => setExportOpen((o) => !o)}
+              className="pg-mini"
+            >
+              export ↓
+            </button>
+            {exportOpen && (
+              <div
+                className="absolute right-0 top-full z-50 mt-1 flex flex-col overflow-hidden"
+                style={{
+                  border: '1px solid var(--fill-muted)',
+                  borderRadius: 'var(--r-sm)',
+                  background: 'var(--bg)',
+                  minWidth: 100,
+                }}
+              >
+                {[
+                  { label: '.svg', desc: 'vector', action: handleDownloadSvg },
+                  { label: '.png', desc: '@2× raster', action: handleDownloadPng },
+                  { label: '.pdf', desc: 'print-ready', action: () => {} },
+                ].map(({ label, desc, action }) => (
+                  <button
+                    key={label}
+                    type="button"
+                    onClick={() => { action(); setExportOpen(false); }}
+                    className="flex w-full items-center justify-between px-2.5 py-1.5 font-mono text-xs transition"
+                    style={{ color: 'var(--text)', borderRadius: 'var(--r-sm)' }}
+                    onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = 'var(--fill-muted)'; }}
+                    onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
+                  >
+                    {label}
+                    <span style={{ color: 'var(--text-muted)', fontSize: 11 }}>{desc}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
           <span className="pg-mini pg-mini-primary" aria-hidden>
             render
             <span className="pg-kbd">⌘R</span>
@@ -250,7 +330,31 @@ export function Playground({ initial, height = 560, fill = false }: PlaygroundPr
             }}
           />
         </div>
-        <div className="dot-grid relative flex min-h-0 items-center justify-center overflow-auto p-6">
+        <div className="flex min-h-0 flex-col overflow-hidden">
+          <div
+            className="flex shrink-0 items-center justify-between px-3 py-1.5 font-mono text-[11px]"
+            style={{ borderBottom: '1px solid var(--fill-muted)', color: 'var(--text-muted)', background: 'var(--fill)' }}
+          >
+            <span>↘ preview</span>
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                onClick={() => setZoom((z) => Math.max(25, z - 25))}
+                className="flex size-5 items-center justify-center transition hover:text-[color:var(--text)]"
+              >
+                −
+              </button>
+              <span style={{ minWidth: 36, textAlign: 'center' }}>{zoom}%</span>
+              <button
+                type="button"
+                onClick={() => setZoom((z) => Math.min(200, z + 25))}
+                className="flex size-5 items-center justify-center transition hover:text-[color:var(--text)]"
+              >
+                +
+              </button>
+            </div>
+          </div>
+          <div className="dot-grid relative flex flex-1 items-center justify-center overflow-auto p-6">
           {error ? (
             <pre
               className="whitespace-pre-wrap font-mono text-sm"
@@ -261,9 +365,11 @@ export function Playground({ initial, height = 560, fill = false }: PlaygroundPr
           ) : svg ? (
             <div
               className="[&_svg]:block [&_svg]:max-h-full [&_svg]:max-w-full"
+              style={{ transform: `scale(${zoom / 100})`, transformOrigin: 'center center' }}
               dangerouslySetInnerHTML={{ __html: svg }}
             />
           ) : null}
+          </div>
         </div>
       </div>
 

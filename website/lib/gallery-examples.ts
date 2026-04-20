@@ -79,6 +79,20 @@ export const CLUSTER_TO_TYPES: Record<string, DiagramType[]> = {
   'causality-analysis': ['fishbone', 'venn'],
 };
 
+export const CLUSTER_META: Record<string, { label: string; color: string }> = {
+  relationships:          { label: 'Relationships',           color: 'var(--cat-0)' },
+  'electrical-industrial':{ label: 'Electrical & Industrial', color: 'var(--cat-2)' },
+  'corporate-legal':      { label: 'Corporate & Legal',       color: 'var(--cat-3)' },
+  'causality-analysis':   { label: 'Causality & Analysis',    color: 'var(--cat-1)' },
+};
+
+export function getDiagramCluster(diagram: DiagramType): string {
+  for (const [cluster, types] of Object.entries(CLUSTER_TO_TYPES)) {
+    if ((types as string[]).includes(diagram)) return cluster;
+  }
+  return 'relationships';
+}
+
 export const galleryExamples: GalleryExample[] = [
   // 1. Harry Potter family (existing)
   {

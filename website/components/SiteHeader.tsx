@@ -10,7 +10,6 @@ import { GithubStarButton } from '@/components/GithubStarButton';
 const NAV_LINKS = [
   { label: 'Docs', href: '/docs' },
   { label: 'Gallery', href: '/gallery' },
-  { label: 'Examples', href: '/examples' },
   { label: 'Playground', href: '/playground' },
 ];
 

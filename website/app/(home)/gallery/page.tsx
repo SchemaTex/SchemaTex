@@ -60,18 +60,23 @@ export default async function GalleryPage({
   return (
     <main className="flex flex-1 flex-col">
       {/* Header */}
-      <section className="border-b border-fd-border bg-gradient-to-b from-fd-background to-fd-muted/20 px-6 pb-8 pt-16">
+      <section className="border-b px-6 pb-8 pt-12" style={{ borderColor: 'var(--fill-muted)' }}>
         <div className="mx-auto max-w-6xl">
-          <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-fd-border bg-fd-card px-3 py-1 text-xs text-fd-muted-foreground">
-            <span className="size-1.5 rounded-full bg-emerald-500" />
-            {galleryExamples.length} examples · 14 diagram types · 6 industries
+          <p className="type-eye mb-3">/ GALLERY</p>
+          <div className="mb-4 flex flex-wrap gap-2">
+            <span className="ds-badge">{galleryExamples.length} examples</span>
+            <span className="ds-badge">14 diagram types</span>
+            <span className="ds-badge">4 clusters</span>
           </div>
-          <h1 className="text-balance text-4xl font-bold tracking-tight text-fd-foreground md:text-5xl">
-            Gallery
+          <h1
+            className="text-3xl font-semibold"
+            style={{ color: 'var(--text)', letterSpacing: '-0.02em' }}
+          >
+            Every diagram, in the wild.
           </h1>
-          <p className="mt-3 max-w-2xl text-lg text-fd-muted-foreground">
-            20 real-world diagrams across 4 domains. Every one follows a published
-            standard. Copy the DSL, open in playground, ship.
+          <p className="mt-2 max-w-xl text-sm" style={{ color: 'var(--text-muted)' }}>
+            20 real-world Schematex diagrams. Every one follows a published standard —
+            copy the DSL, open in playground, ship.
           </p>
         </div>
       </section>
@@ -131,18 +136,25 @@ export default async function GalleryPage({
 
 function EmptyState() {
   return (
-    <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-fd-border bg-fd-card/40 py-20 text-center">
-      <div className="mb-4 flex size-12 items-center justify-center rounded-full bg-fd-muted/40 text-xl">
-        🔎
+    <div
+      className="flex flex-col items-center justify-center py-20 text-center"
+      style={{
+        border: '1px dashed var(--fill-muted)',
+        borderRadius: 'var(--r)',
+        background: 'var(--fill)',
+      }}
+    >
+      <div
+        className="mb-4 font-mono text-2xl"
+        style={{ color: 'var(--text-muted)', opacity: 0.5 }}
+      >
+        / 0
       </div>
-      <h2 className="text-lg font-semibold text-fd-foreground">No examples match</h2>
-      <p className="mt-1 max-w-sm text-sm text-fd-muted-foreground">
+      <p className="font-mono text-sm" style={{ color: 'var(--text)' }}>No examples match</p>
+      <p className="mt-1 max-w-sm text-xs" style={{ color: 'var(--text-muted)' }}>
         Try removing one of the filters, or start fresh.
       </p>
-      <Link
-        href="/gallery"
-        className="mt-4 inline-flex items-center gap-1 rounded-md border border-fd-border bg-fd-card px-3 py-1.5 text-sm font-medium text-fd-foreground transition hover:border-fd-primary"
-      >
+      <Link href="/gallery" className="ds-badge mt-4 hover:border-[color:var(--accent)]">
         Clear filters
       </Link>
     </div>

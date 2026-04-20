@@ -4,16 +4,19 @@ import { Logo } from '@/components/Logo';
 
 export default function AppLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="flex h-screen flex-col">
-      <header className="flex h-10 shrink-0 items-center gap-4 border-b border-fd-border bg-fd-background px-4 text-sm">
-        <Link href="/" className="font-semibold tracking-tight text-fd-foreground">
+    <div className="flex min-h-screen flex-col">
+      <header
+        className="sticky top-0 z-40 flex h-10 shrink-0 items-center gap-4 px-4 text-sm"
+        style={{ borderBottom: '1px solid var(--fill-muted)', background: 'var(--bg)' }}
+      >
+        <Link href="/" className="font-semibold tracking-tight" style={{ color: 'var(--text)' }}>
           <Logo size={16} />
         </Link>
-        <span className="text-fd-muted-foreground">/</span>
-        <span className="text-fd-muted-foreground">Playground</span>
+        <span style={{ color: 'var(--text-muted)' }}>/</span>
+        <span style={{ color: 'var(--text-muted)' }}>Playground</span>
         <div className="ml-auto flex items-center gap-3">
-          <Link href="/examples" className="text-fd-muted-foreground hover:text-fd-foreground">
-            Examples
+          <Link href="/gallery" className="text-fd-muted-foreground hover:text-fd-foreground">
+            Gallery
           </Link>
           <Link href="/docs" className="text-fd-muted-foreground hover:text-fd-foreground">
             Docs
@@ -28,7 +31,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
           </a>
         </div>
       </header>
-      <main className="min-h-0 flex-1">{children}</main>
+      <main className="flex-1">{children}</main>
     </div>
   );
 }

@@ -2,7 +2,6 @@ import Link from 'next/link';
 import { render } from 'schematex';
 import { CopyButton } from '@/components/CopyButton';
 import { HeroShowcase, type HeroSlide } from '@/components/HeroShowcase';
-import { CoverageGrid } from '@/components/CoverageGrid';
 import { GithubStarButton } from '@/components/GithubStarButton';
 import { getRepoStats } from '@/lib/github-stats';
 import { galleryExamples } from '@/lib/gallery-examples';
@@ -205,11 +204,26 @@ export default async function HomePage() {
           className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-px bg-gradient-to-r from-transparent via-fd-border to-transparent"
         />
 
-        <div className="mx-auto max-w-6xl">
-          {/* 2-col on lg: copy left (7fr), coverage grid right (5fr) */}
-          <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:gap-12">
-            {/* LEFT — copy */}
-            <div>
+        {/* Draft-board backdrop — blueprint dot grid masked diagonally so it's
+            invisible at top-left (behind copy) and densest at bottom-right.
+            Fills the empty side of the hero without competing with content. */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 -z-10"
+          style={{
+            backgroundImage:
+              'radial-gradient(circle, color-mix(in srgb, var(--text-muted) 35%, transparent) 1.1px, transparent 1.4px)',
+            backgroundSize: '18px 18px',
+            WebkitMaskImage:
+              'linear-gradient(125deg, transparent 25%, rgba(0,0,0,0.5) 60%, rgba(0,0,0,1) 100%)',
+            maskImage:
+              'linear-gradient(125deg, transparent 25%, rgba(0,0,0,0.5) 60%, rgba(0,0,0,1) 100%)',
+          }}
+        />
+
+        <div className="relative mx-auto max-w-6xl">
+          {/* Copy column — capped so headline doesn't stretch the full page width */}
+          <div className="max-w-[800px]">
             {/* Eye line — uses type-eye + numbering to align with the rest of the page */}
             <p className="type-eye mb-5">
               01 / INTRODUCING SCHEMATEX · 20 FAMILIES · 10+ STANDARDS · 0 DEPS
@@ -280,13 +294,9 @@ export default async function HomePage() {
                 docs ↗
               </Link>
             </div>
-            </div>
-
-            {/* RIGHT — 20-family coverage grid, cluster-colored */}
-            <CoverageGrid />
           </div>
 
-          {/* Showcase — full width beneath the 2-col header */}
+          {/* Showcase — sits beneath the copy; draft-board bg fills side space */}
           <div className="mt-12 md:mt-14">
             <HeroShowcase slides={heroSlides} />
           </div>
