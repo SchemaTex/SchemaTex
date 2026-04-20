@@ -75,6 +75,97 @@ const sections = [
     ]
   },
   {
+    label: 'M2 Shapes',
+    cases: [
+      ['10 · All M2 shapes', `flowchart LR "M2 Shape Gallery"
+  A[(DB)] --> B((Circle))
+  B --> C(((Stop)))
+  D[[Sub]] --> E{{Hex}}
+  E --> F>Flag]
+  G[/trap\\] --> H[\\trap/]`],
+
+      ['11 · Cylinder + double-circle', `flowchart TB "Database flow"
+  A([Start]) --> B[(Postgres)]
+  B --> C{Found?}
+  C -->|yes| D[Process]
+  C -->|no| E(((End)))`],
+
+      ['12 · Subroutine + hexagon', `flowchart LR "ETL pipeline"
+  A([Input]) --> B[[Validate]]
+  B --> C{{Route}}
+  C -->|csv| D[[Parse CSV]]
+  C -->|json| E[[Parse JSON]]
+  D --> F([Done])
+  E --> F`],
+    ]
+  },
+  {
+    label: 'Fan-out (&)',
+    cases: [
+      ['13 · A & B --> C (2 sources, 1 target)', `flowchart TD "Fan-in"
+  A[Auth] & B[Cache] --> C[Handler]
+  C --> D([Response])`],
+
+      ['14 · A --> B & C (1 source, 2 targets)', `flowchart TD "Fan-out"
+  A([Request]) --> B[Log] & C[Process]
+  C --> D([Done])`],
+
+      ['15 · A & B --> C & D (cross-product, 4 edges)', `flowchart TD "Cross-product"
+  A[ServiceA] & B[ServiceB] --> C[QueueA] & D[QueueB]
+  C --> E([Consumer])
+  D --> E`],
+
+      ['16 · Multi-fan LR', `flowchart LR "Parallel publish"
+  A([Build]) --> B[Test] & C[Lint] & D[Typecheck]
+  B & C & D --> E([Release])`],
+    ]
+  },
+  {
+    label: 'Subgraphs',
+    cases: [
+      ['17 · Two clusters (Client / Backend)', `flowchart LR "System architecture"
+  subgraph "Client"
+    UI[React App] --> GW[API Gateway]
+  end
+  subgraph "Backend"
+    GW --> Auth[Auth Service]
+    GW --> API[Core API]
+    API --> DB[(Postgres)]
+  end
+  Auth --> DB`],
+
+      ['18 · Three-tier architecture', `flowchart TB "Three-tier app"
+  subgraph "Presentation"
+    Web[Web App]
+    Mobile[Mobile App]
+  end
+  subgraph "Application"
+    API[REST API]
+    Jobs[Background Jobs]
+  end
+  subgraph "Data"
+    DB[(Primary DB)]
+    Cache[(Redis)]
+    Queue[(Job Queue)]
+  end
+  Web --> API
+  Mobile --> API
+  API --> DB
+  API --> Cache
+  Jobs --> Queue
+  Jobs --> DB`],
+
+      ['19 · Subgraph with id + bracket label', `flowchart LR
+  subgraph fe [Frontend]
+    A[Page] --> B[Component]
+  end
+  subgraph be [Backend]
+    C[Controller] --> D[(Store)]
+  end
+  B --> C`],
+    ]
+  },
+  {
     label: 'Real-world Examples',
     cases: [
       ['07 · CI/CD pipeline', `flowchart TB "CI/CD Pipeline"

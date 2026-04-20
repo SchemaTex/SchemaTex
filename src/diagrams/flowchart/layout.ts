@@ -23,6 +23,7 @@ import type {
   FlowchartLayoutResult,
   FlowchartNode,
 } from "../../core/types";
+import { bkXCoords, type BKNode } from "../../core/layered/bk";
 
 // ─── Constants / Defaults ──────────────────────────────────
 
@@ -269,13 +270,103 @@ function insertDummies(
   return { dummyIds, updatedEdges: updated };
 }
 
-// ─── Phase 4: Crossing minimization (median heuristic) ────
+// ─── Phase 4: Crossing minimization ────────────────────────
+//
+// Weighted barycenter + best-tracking sweep + DFS init ordering.
+// Crossings counted exactly via Barth-Jünger-Mutzel accumulator tree
+// (O((n+e) log n) instead of O(E²)).
 
-function medianOrder(
+/**
+ * DFS-based initial ordering. Start at rank-0 sources, walk successors
+ * depth-first, recording discovery order within each layer. Produces a
+ * much better starting point than parse order for the sweep to refine.
+ */
+function dfsInitOrder(
   layers: string[][],
   segments: Array<[string, string]>
 ): string[][] {
-  // Adjacency per node: predecessors (above layer) + successors (below layer)
+  const layerOf = new Map<string, number>();
+  layers.forEach((l, i) => l.forEach((id) => layerOf.set(id, i)));
+  const succ = new Map<string, string[]>();
+  for (const [u, v] of segments) {
+    if (!succ.has(u)) succ.set(u, []);
+    succ.get(u)!.push(v);
+  }
+  const order: string[][] = layers.map(() => []);
+  const seen = new Set<string>();
+  const visit = (id: string): void => {
+    if (seen.has(id)) return;
+    seen.add(id);
+    const l = layerOf.get(id);
+    if (l === undefined) return;
+    order[l]!.push(id);
+    for (const n of succ.get(id) ?? []) visit(n);
+  };
+  for (const id of layers[0] ?? []) visit(id);
+  // Any unreached nodes (disconnected) get appended in original order.
+  for (const layer of layers) {
+    for (const id of layer) if (!seen.has(id)) {
+      seen.add(id);
+      const l = layerOf.get(id)!;
+      order[l]!.push(id);
+    }
+  }
+  return order;
+}
+
+/**
+ * Barycenter ordering heuristic. For each node, compute the mean position
+ * of its neighbors in the fixed layer; sort nodes by that score.
+ *
+ * Weighted barycenter (vs plain median) is what dagre uses — it handles
+ * asymmetric neighbor counts (e.g. A & B → C & D cross-product) more
+ * smoothly because it averages rather than picking a tie-break index.
+ *
+ * `biasRight` controls tie-breaking: when two nodes share the same
+ * barycenter score, we preserve original order either left-first or
+ * right-first. Alternating the bias across sweeps helps escape local
+ * minima.
+ */
+function barycenterReorder(
+  layer: string[],
+  fixed: string[],
+  neighborsOf: (id: string) => string[],
+  biasRight: boolean
+): string[] {
+  const fixedIdx = new Map<string, number>();
+  fixed.forEach((id, i) => fixedIdx.set(id, i));
+  const scored = layer.map((id, i) => {
+    const neighbors = neighborsOf(id)
+      .map((n) => fixedIdx.get(n))
+      .filter((p): p is number => p !== undefined);
+    if (neighbors.length === 0) return { id, score: -1, orig: i, hasNeighbors: false };
+    const sum = neighbors.reduce((s, n) => s + n, 0);
+    return { id, score: sum / neighbors.length, orig: i, hasNeighbors: true };
+  });
+  // Nodes without neighbors keep their original position (stable anchor).
+  // Sort only the neighbor-having nodes by score, then interleave.
+  const withNbrs = scored.filter((s) => s.hasNeighbors);
+  const withoutNbrs = scored.filter((s) => !s.hasNeighbors);
+  withNbrs.sort((a, b) => {
+    if (a.score !== b.score) return a.score - b.score;
+    return biasRight ? b.orig - a.orig : a.orig - b.orig;
+  });
+  // Merge: nodes without neighbors keep their slots (by orig index); fill
+  // remaining slots with sorted neighbor-having nodes.
+  const result: Array<typeof scored[number] | undefined> = new Array(layer.length);
+  for (const s of withoutNbrs) result[s.orig] = s;
+  let k = 0;
+  for (let i = 0; i < result.length; i++) {
+    if (result[i] !== undefined) continue;
+    result[i] = withNbrs[k++];
+  }
+  return result.map((s) => s!.id);
+}
+
+function orderLayers(
+  layers: string[][],
+  segments: Array<[string, string]>
+): string[][] {
   const succ = new Map<string, string[]>();
   const pred = new Map<string, string[]>();
   for (const layer of layers) for (const id of layer) {
@@ -287,88 +378,105 @@ function medianOrder(
     pred.get(v)?.push(u);
   }
 
-  const indexOf = (layer: string[], id: string): number => layer.indexOf(id);
-
-  const reorderByMedian = (
-    layer: string[],
-    fixed: string[],
-    useSucc: boolean
-  ): string[] => {
-    const fixedIdx = new Map<string, number>();
-    fixed.forEach((id, i) => fixedIdx.set(id, i));
-    const scored = layer.map((id, i) => {
-      const neighbors = useSucc ? succ.get(id) ?? [] : pred.get(id) ?? [];
-      const positions = neighbors
-        .map((n) => fixedIdx.get(n))
-        .filter((p): p is number => p !== undefined)
-        .sort((a, b) => a - b);
-      if (positions.length === 0) return { id, score: i, orig: i };
-      const m = positions.length;
-      const mid = positions[Math.floor(m / 2)]!;
-      // Classic median heuristic: for even count, average the two middle
-      const score =
-        m % 2 === 1
-          ? mid
-          : (positions[m / 2 - 1]! + positions[m / 2]!) / 2;
-      return { id, score, orig: i };
-    });
-    scored.sort((a, b) => a.score - b.score || a.orig - b.orig);
-    return scored.map((s) => s.id);
-  };
-
-  const result = layers.map((l) => l.slice());
-  let bestCrossings = countCrossings(result, segments, indexOf);
+  let result = dfsInitOrder(layers, segments);
+  let bestCrossings = countCrossings(result, segments);
   let best = result.map((l) => l.slice());
 
-  for (let iter = 0; iter < FC_CONST.crossingSweepIters; iter++) {
+  // Run sweeps until `maxStale` consecutive sweeps fail to improve, or
+  // cap at `crossingSweepIters`. Alternates direction AND bias every
+  // pair of sweeps (dagre pattern).
+  const maxStale = 4;
+  let stale = 0;
+  for (let iter = 0; iter < FC_CONST.crossingSweepIters && stale < maxStale; iter++) {
     const down = iter % 2 === 0;
+    const biasRight = (iter % 4) >= 2;
+    const next = result.map((l) => l.slice());
     if (down) {
-      for (let i = 1; i < result.length; i++) {
-        result[i] = reorderByMedian(result[i]!, result[i - 1]!, false);
+      for (let i = 1; i < next.length; i++) {
+        next[i] = barycenterReorder(
+          next[i]!,
+          next[i - 1]!,
+          (id) => pred.get(id) ?? [],
+          biasRight
+        );
       }
     } else {
-      for (let i = result.length - 2; i >= 0; i--) {
-        result[i] = reorderByMedian(result[i]!, result[i + 1]!, true);
+      for (let i = next.length - 2; i >= 0; i--) {
+        next[i] = barycenterReorder(
+          next[i]!,
+          next[i + 1]!,
+          (id) => succ.get(id) ?? [],
+          biasRight
+        );
       }
     }
-    const c = countCrossings(result, segments, indexOf);
+    const c = countCrossings(next, segments);
     if (c < bestCrossings) {
       bestCrossings = c;
-      best = result.map((l) => l.slice());
+      best = next.map((l) => l.slice());
+      stale = 0;
+    } else {
+      stale++;
     }
+    result = next;
   }
 
   return best;
 }
 
+/**
+ * Exact crossing count across adjacent layer pairs using the
+ * Barth-Jünger-Mutzel accumulator-tree algorithm — O((n+e) log n).
+ *
+ * Reference: "Simple and Efficient Bilayer Cross Counting" (2002).
+ * Much faster than the O(E²) bubble-inversion scan for large graphs.
+ */
 function countCrossings(
   layers: string[][],
-  segments: Array<[string, string]>,
-  indexOf: (layer: string[], id: string) => number
+  segments: Array<[string, string]>
 ): number {
-  // Count inversions per adjacent-layer pair
   let total = 0;
+  const layerIdx: Map<string, number>[] = layers.map((l) => {
+    const m = new Map<string, number>();
+    l.forEach((id, i) => m.set(id, i));
+    return m;
+  });
   for (let i = 0; i < layers.length - 1; i++) {
-    const upper = layers[i]!;
-    const lower = layers[i + 1]!;
-    const pairs: Array<[number, number]> = [];
+    const upper = layerIdx[i]!;
+    const lower = layerIdx[i + 1]!;
+    const n = layers[i + 1]!.length;
+    if (n === 0) continue;
+    // Collect edges (iu, iv) between layer i and i+1
+    const edges: Array<[number, number]> = [];
     for (const [u, v] of segments) {
-      const iu = indexOf(upper, u);
-      const iv = indexOf(lower, v);
-      if (iu >= 0 && iv >= 0) pairs.push([iu, iv]);
+      const iu = upper.get(u);
+      const iv = lower.get(v);
+      if (iu !== undefined && iv !== undefined) edges.push([iu, iv]);
     }
-    // Count inversions on `pairs` sorted by iu: inversion on iv
-    pairs.sort((a, b) => a[0] - b[0] || a[1] - b[1]);
-    for (let a = 0; a < pairs.length; a++) {
-      for (let b = a + 1; b < pairs.length; b++) {
-        if (pairs[a]![1] > pairs[b]![1]) total++;
+    // Sort by iu, then iv — southern endpoints visited in northern order.
+    edges.sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+    // Accumulator tree sized to next power of 2 ≥ n.
+    let firstIndex = 1;
+    while (firstIndex < n) firstIndex <<= 1;
+    const treeSize = 2 * firstIndex - 1;
+    firstIndex -= 1;
+    const tree = new Uint32Array(treeSize);
+    for (const [, iv] of edges) {
+      let idx = iv + firstIndex;
+      tree[idx]! += 1;
+      let weightSum = 0;
+      while (idx > 0) {
+        if (idx % 2) weightSum += tree[idx + 1] ?? 0;
+        idx = (idx - 1) >> 1;
+        tree[idx]! += 1;
       }
+      total += weightSum;
     }
   }
   return total;
 }
 
-// ─── Phase 5: X-coordinate assignment ─────────────────────
+// ─── Phase 5: X-coordinate assignment (Brandes-Köpf) ──────
 
 interface Placed {
   id: string;
@@ -380,56 +488,137 @@ interface Placed {
   order: number;
 }
 
+// ─── Lane-based x-coord assignment (for clustered graphs) ─
+
 /**
- * Simple symmetric placement:
- *   - Each layer's total width is computed (sum of node widths + gaps).
- *   - Layers are centered around the global centerline.
- *   - Then for each node, its preferred x = average of neighbor xs from both
- *     adjacent layers; a single left-to-right sweep per layer snaps positions
- *     while respecting minimum separation.
+ * Lane-based placement: each top-level cluster (and the implicit
+ * "no-cluster" group) gets its own horizontal lane. Within a lane,
+ * members are packed per-layer, and dummies derive their x from
+ * neighbor barycenter (keeps edges smooth across lanes).
  *
- * This is a pragmatic subset of Brandes-Köpf that behaves well on M1 target
- * graphs (≤ 20 nodes). Longer edges look straight because the same centering
- * is applied to dummy nodes.
+ * Guarantees cluster bboxes — computed downstream as min/max of
+ * member positions + CLUSTER_PAD — never enclose foreign nodes,
+ * because non-members live in different lanes with a LANE_GAP
+ * separator.
  */
-function assignXCoords(
-  layers: LNode[][],
-  nodeSpacingX: number
+function laneBasedXCoords(
+  layerNodes: LNode[][],
+  pathOf: (id: string) => string[],
+  nodeSpacingX: number,
+  segments: Array<[string, string]>
 ): Map<string, number> {
-  const x = new Map<string, number>();
+  const INNER_PAD = 28; // padding inside each cluster lane (matches CLUSTER_PAD roughly)
+  const LANE_GAP = 36; // horizontal gap between adjacent lanes
 
-  // Pass 1: compute initial layer widths, center each layer at 0
-  const layerWidths: number[] = [];
-  for (const layer of layers) {
-    let w = 0;
-    for (let i = 0; i < layer.length; i++) {
-      w += layer[i]!.width;
-      if (i < layer.length - 1) w += nodeSpacingX;
-    }
-    layerWidths.push(w);
-  }
-  const maxWidth = Math.max(...layerWidths, 1);
+  // Top-level cluster of a node, or null if node is not in any cluster.
+  const laneOf = (id: string): string | null => {
+    const p = pathOf(id);
+    return p.length > 0 ? p[0]! : null;
+  };
 
-  // Initial positions: centered
-  for (let li = 0; li < layers.length; li++) {
-    const layer = layers[li]!;
-    const layerW = layerWidths[li]!;
-    let cursor = (maxWidth - layerW) / 2;
+  // Determine lane order from first appearance in any layer's sorted order.
+  const laneOrder: Array<string | null> = [];
+  const laneSeen = new Set<string | null>();
+  for (const layer of layerNodes) {
     for (const n of layer) {
-      x.set(n.id, cursor + n.width / 2);
-      cursor += n.width + nodeSpacingX;
+      if (n.isDummy) continue;
+      const lane = laneOf(n.id);
+      if (!laneSeen.has(lane)) {
+        laneSeen.add(lane);
+        laneOrder.push(lane);
+      }
     }
   }
 
-  // Iterative median refinement (a few passes smooths dummy-heavy columns)
-  const neighborsAbove = new Map<string, string[]>();
-  const neighborsBelow = new Map<string, string[]>();
-  // Built by caller; we infer from layer adjacency using order consistency
-  // → we compute these externally via chain traversal; see layoutFlowchart.
+  // Partition each layer into lane → ordered member list.
+  const lanesPerLayer: Array<Map<string | null, LNode[]>> = layerNodes.map(
+    (layer) => {
+      const m = new Map<string | null, LNode[]>();
+      for (const n of layer) {
+        if (n.isDummy) continue;
+        const lane = laneOf(n.id);
+        if (!m.has(lane)) m.set(lane, []);
+        m.get(lane)!.push(n);
+      }
+      return m;
+    }
+  );
 
-  void neighborsAbove;
-  void neighborsBelow;
-  return x;
+  // Lane width = max over layers of (inner packed width + 2 × inner padding
+  // for cluster lanes). Non-cluster lane uses no padding.
+  const laneWidths: number[] = laneOrder.map((lane) => {
+    let maxInner = 0;
+    for (const layerLanes of lanesPerLayer) {
+      const members = layerLanes.get(lane) ?? [];
+      if (members.length === 0) continue;
+      const inner =
+        members.reduce((s, n) => s + n.width, 0) +
+        (members.length - 1) * nodeSpacingX;
+      if (inner > maxInner) maxInner = inner;
+    }
+    const pad = lane !== null ? 2 * INNER_PAD : 0;
+    return maxInner + pad;
+  });
+
+  // Lane x-starts.
+  const laneStartX: number[] = [];
+  {
+    let x = 0;
+    for (let i = 0; i < laneWidths.length; i++) {
+      laneStartX.push(x);
+      x += laneWidths[i]!;
+      if (i < laneWidths.length - 1) x += LANE_GAP;
+    }
+  }
+
+  // Place members: centered per-layer within their lane.
+  const result = new Map<string, number>();
+  for (let li = 0; li < lanesPerLayer.length; li++) {
+    for (let laneIdx = 0; laneIdx < laneOrder.length; laneIdx++) {
+      const lane = laneOrder[laneIdx]!;
+      const members = lanesPerLayer[li]!.get(lane) ?? [];
+      if (members.length === 0) continue;
+      const laneW = laneWidths[laneIdx]!;
+      const laneStart = laneStartX[laneIdx]!;
+      const innerW =
+        members.reduce((s, n) => s + n.width, 0) +
+        (members.length - 1) * nodeSpacingX;
+      let cursor = laneStart + (laneW - innerW) / 2;
+      for (const n of members) {
+        result.set(n.id, cursor + n.width / 2);
+        cursor += n.width + nodeSpacingX;
+      }
+    }
+  }
+
+  // Place dummies: median barycenter of known neighbors, iterated for
+  // stability. Dummies are not constrained to lanes (edges may cross).
+  for (let pass = 0; pass < 4; pass++) {
+    for (const layer of layerNodes) {
+      for (const n of layer) {
+        if (!n.isDummy) continue;
+        const neighbors: number[] = [];
+        for (const [u, v] of segments) {
+          if (v === n.id) {
+            const ux = result.get(u);
+            if (ux !== undefined) neighbors.push(ux);
+          }
+          if (u === n.id) {
+            const vx = result.get(v);
+            if (vx !== undefined) neighbors.push(vx);
+          }
+        }
+        if (neighbors.length === 0) {
+          if (!result.has(n.id)) result.set(n.id, 0);
+          continue;
+        }
+        neighbors.sort((a, b) => a - b);
+        result.set(n.id, neighbors[Math.floor(neighbors.length / 2)]!);
+      }
+    }
+  }
+
+  return result;
 }
 
 // ─── Entry point ──────────────────────────────────────────
@@ -452,11 +641,30 @@ export function layoutFlowchart(ast: FlowchartAST): FlowchartLayoutResult {
       shapeW = Math.max(shapeW, labelW * 1.25);
       shapeH = Math.max(shapeH, 52);
     }
-    if (n.shape === "parallelogram" || n.shape === "parallelogram-alt") {
+    if (n.shape === "parallelogram" || n.shape === "parallelogram-alt" ||
+        n.shape === "trapezoid" || n.shape === "trapezoid-alt") {
       shapeW += 20;
     }
     if (n.shape === "stadium" || n.shape === "round") {
       shapeW = Math.max(shapeW, shapeH + 20);
+    }
+    if (n.shape === "circle" || n.shape === "double-circle") {
+      // Force square bounding box so the circle fills it evenly
+      const side = Math.max(shapeW, shapeH) + 8;
+      shapeW = side;
+      shapeH = side;
+    }
+    if (n.shape === "hexagon") {
+      // Extra horizontal room for the angled cuts
+      shapeW = Math.max(shapeW, labelW + 44);
+    }
+    if (n.shape === "cylinder") {
+      // Slightly taller to show the top ellipse cap
+      shapeH = Math.max(shapeH, 52);
+    }
+    if (n.shape === "subroutine") {
+      // Extra width for the two inner bars
+      shapeW = Math.max(shapeW, labelW + 36);
     }
     // In LR, swap so abstract-TB "h" corresponds to flow-direction extent
     // (= user-authored width); output swap restores canonical shape dims.
@@ -549,7 +757,64 @@ export function layoutFlowchart(ast: FlowchartAST): FlowchartLayoutResult {
       }
     }
   }
-  const ordered = medianOrder(layers, segments);
+  let ordered = orderLayers(layers, segments);
+
+  // ── Cluster ancestry resolution ──────────────────────────
+  // Shared by contiguity sort (below) and lane-based x-coord placement.
+  const parentOf = new Map<string, string | undefined>();
+  for (const n of ast.nodes) parentOf.set(n.id, n.parent);
+  const sgParent = new Map<string, string | undefined>();
+  for (const sg of ast.subgraphs) {
+    for (const childSg of sg.subgraphs) sgParent.set(childSg, sg.id);
+    if (!sgParent.has(sg.id)) sgParent.set(sg.id, undefined);
+  }
+  const ancestryPath = (id: string): string[] => {
+    const path: string[] = [];
+    let cur = parentOf.get(id);
+    while (cur !== undefined) {
+      path.unshift(cur);
+      cur = sgParent.get(cur);
+    }
+    return path;
+  };
+  // Dummy ancestry: intersect ancestries of the edge's endpoints. Dummies
+  // lying inside a cluster stay in its lane; inter-cluster dummies land
+  // in the enclosing common ancestor (or "no cluster" at the root).
+  const dummyAncestry = new Map<string, string[]>();
+  for (const e of updatedEdges) {
+    if (e.chain.length < 3) continue;
+    const fromA = ancestryPath(e.chain[0]!);
+    const toA = ancestryPath(e.chain[e.chain.length - 1]!);
+    const common: string[] = [];
+    for (let k = 0; k < Math.min(fromA.length, toA.length); k++) {
+      if (fromA[k] === toA[k]) common.push(fromA[k]!);
+      else break;
+    }
+    for (let i = 1; i < e.chain.length - 1; i++) {
+      dummyAncestry.set(e.chain[i]!, common);
+    }
+  }
+  const pathOf = (id: string): string[] =>
+    dummyAncestry.get(id) ?? ancestryPath(id);
+
+  // Within-layer contiguity: sort each layer by ancestry so same-cluster
+  // members stay adjacent (preserves crossing-min order as tiebreaker).
+  if (ast.subgraphs.length > 0) {
+    ordered = ordered.map((layer) => {
+      const keyed = layer.map((id, i) => ({ id, i, path: pathOf(id) }));
+      keyed.sort((a, b) => {
+        const la = a.path;
+        const lb = b.path;
+        const len = Math.min(la.length, lb.length);
+        for (let k = 0; k < len; k++) {
+          if (la[k] !== lb[k]) return la[k]!.localeCompare(lb[k]!);
+        }
+        if (la.length !== lb.length) return la.length - lb.length;
+        return a.i - b.i;
+      });
+      return keyed.map((k) => k.id);
+    });
+  }
 
   // Assign order indices
   for (let li = 0; li < ordered.length; li++) {
@@ -564,40 +829,22 @@ export function layoutFlowchart(ast: FlowchartAST): FlowchartLayoutResult {
   const layerNodes: LNode[][] = ordered.map((layer) =>
     layer.map((id) => lnodes.get(id)!)
   );
-  const xMap = assignXCoords(layerNodes, FC_CONST.nodeSpacingX);
-
-  // Refine with median pull (3 passes) to straighten long edges through dummies
-  for (let pass = 0; pass < 4; pass++) {
-    for (let li = 0; li < layerNodes.length; li++) {
-      const layer = layerNodes[li]!;
-      // Collect neighbors from both adjacent layers
-      const pullList = layer.map((n) => {
-        const neighbors: number[] = [];
-        for (const [u, v] of segments) {
-          if (v === n.id) {
-            const ux = xMap.get(u);
-            if (ux !== undefined) neighbors.push(ux);
-          }
-          if (u === n.id) {
-            const vx = xMap.get(v);
-            if (vx !== undefined) neighbors.push(vx);
-          }
-        }
-        if (neighbors.length === 0) return xMap.get(n.id) ?? 0;
-        neighbors.sort((a, b) => a - b);
-        return neighbors[Math.floor(neighbors.length / 2)]!;
-      });
-      // Apply pulled positions, then enforce non-overlap left-to-right
-      let cursor = -Infinity;
-      for (let oi = 0; oi < layer.length; oi++) {
-        const n = layer[oi]!;
-        const desired = pullList[oi]!;
-        const minX = cursor + FC_CONST.nodeSpacingX + n.width / 2;
-        const newX = Math.max(desired, oi === 0 ? desired : minX);
-        xMap.set(n.id, newX);
-        cursor = newX + n.width / 2;
-      }
-    }
+  let xMap: Map<string, number>;
+  if (ast.subgraphs.length > 0) {
+    // Lane-based placement: each top-level cluster occupies its own
+    // horizontal lane, so cluster bboxes can't overlap foreign nodes.
+    xMap = laneBasedXCoords(
+      layerNodes,
+      pathOf,
+      FC_CONST.nodeSpacingX,
+      segments
+    );
+  } else {
+    // No clusters → pure BK gives optimal straight-edge layouts.
+    const bkLayers: BKNode[][] = layerNodes.map((layer) =>
+      layer.map((n) => ({ id: n.id, width: n.width, isDummy: n.isDummy }))
+    );
+    xMap = bkXCoords(bkLayers, segments, FC_CONST.nodeSpacingX);
   }
 
   // ── Compute y coords & final canvas dimensions ──────────
@@ -613,9 +860,19 @@ export function layoutFlowchart(ast: FlowchartAST): FlowchartLayoutResult {
     }
     return maxH > 0 ? maxH : FC_CONST.nodeHeight;
   });
+  // Extra top/left padding to fit cluster borders + title labels. Clusters
+  // extend CLUSTER_PAD + CLUSTER_TITLE_H past their outermost member in the
+  // title direction (top for TB, left for LR), and CLUSTER_PAD on other sides.
+  const hasClusters = ast.subgraphs.length > 0;
+  const CLUSTER_OVERHEAD_TITLE = hasClusters ? 44 : 0; // CLUSTER_PAD(24) + CLUSTER_TITLE_H(20)
+  const CLUSTER_OVERHEAD_SIDE = hasClusters ? 24 : 0; // CLUSTER_PAD
+  // In TB, title sits above (extra Y); in LR, title sits left (extra X).
+  const extraTopPad = isHorizontal ? CLUSTER_OVERHEAD_SIDE : CLUSTER_OVERHEAD_TITLE;
+  const extraLeftPad = isHorizontal ? CLUSTER_OVERHEAD_TITLE : CLUSTER_OVERHEAD_SIDE;
+
   const layerCenterY: number[] = [];
   {
-    let y = FC_CONST.padding;
+    let y = FC_CONST.padding + extraTopPad;
     for (let li = 0; li < layerHeights.length; li++) {
       y += layerHeights[li]! / 2;
       layerCenterY.push(y);
@@ -637,7 +894,7 @@ export function layoutFlowchart(ast: FlowchartAST): FlowchartLayoutResult {
   }
 
   const padding = FC_CONST.padding;
-  const shiftX = padding - minX;
+  const shiftX = padding + extraLeftPad - minX;
 
   const placed: Placed[] = [];
   for (let li = 0; li < layerNodes.length; li++) {
@@ -668,11 +925,14 @@ export function layoutFlowchart(ast: FlowchartAST): FlowchartLayoutResult {
     }
   }
 
-  const canvasW = maxX - minX + 2 * padding;
+  // Right/bottom also need cluster overhead so the far side border fits.
+  const extraRightPad = isHorizontal ? CLUSTER_OVERHEAD_SIDE : CLUSTER_OVERHEAD_SIDE;
+  const extraBottomPad = isHorizontal ? CLUSTER_OVERHEAD_SIDE : CLUSTER_OVERHEAD_SIDE;
+  const canvasW = maxX - minX + 2 * padding + extraLeftPad + extraRightPad;
   const lastLayer = layerCenterY.length - 1;
   const canvasH =
     lastLayer >= 0
-      ? layerCenterY[lastLayer]! + layerHeights[lastLayer]! / 2 + padding
+      ? layerCenterY[lastLayer]! + layerHeights[lastLayer]! / 2 + padding + extraBottomPad
       : 2 * padding;
 
   // ── Build layout nodes (possibly swapped for LR) ────────
@@ -781,13 +1041,52 @@ export function layoutFlowchart(ast: FlowchartAST): FlowchartLayoutResult {
     };
   });
 
+  // ── Compute cluster bounding boxes ───────────────────────
+  function collectDescendantNodeIds(sgId: string): string[] {
+    const sg = ast.subgraphs.find((s) => s.id === sgId);
+    if (!sg) return [];
+    const ids = [...sg.children];
+    for (const childSgId of sg.subgraphs) ids.push(...collectDescendantNodeIds(childSgId));
+    return ids;
+  }
+
+  function computeDepth(sgId: string): number {
+    for (const s of ast.subgraphs) {
+      if (s.subgraphs.includes(sgId)) return 1 + computeDepth(s.id);
+    }
+    return 0;
+  }
+
+  const CLUSTER_PAD = 24;
+  const CLUSTER_TITLE_H = 20;
+
+  const clusters = ast.subgraphs
+    .map((sg) => {
+      const memberIds = collectDescendantNodeIds(sg.id);
+      const members = outNodes.filter((n) => memberIds.includes(n.node.id));
+      if (members.length === 0) return null;
+      const minX = Math.min(...members.map((n) => n.x)) - CLUSTER_PAD;
+      const minY = Math.min(...members.map((n) => n.y)) - CLUSTER_PAD - CLUSTER_TITLE_H;
+      const maxX = Math.max(...members.map((n) => n.x + n.width)) + CLUSTER_PAD;
+      const maxY = Math.max(...members.map((n) => n.y + n.height)) + CLUSTER_PAD;
+      return {
+        subgraph: sg,
+        x: minX,
+        y: minY,
+        width: maxX - minX,
+        height: maxY - minY,
+        depth: computeDepth(sg.id),
+      };
+    })
+    .filter((c): c is NonNullable<typeof c> => c !== null);
+
   return {
     width: outWidth,
     height: outHeight,
     direction: dir,
     nodes: outNodes,
     edges: outEdges,
-    clusters: [],
+    clusters,
   };
 }
 

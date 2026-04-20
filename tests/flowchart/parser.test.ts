@@ -88,4 +88,87 @@ A --> B
   test("throws on bad header", () => {
     expect(() => parseFlowchart("not-a-header\nA --> B")).toThrow();
   });
+
+  test("parses M2 shapes: cylinder, circle, double-circle, subroutine, hexagon, asymmetric, trapezoid", () => {
+    const ast = parseFlowchart(`flowchart LR
+A[(DB)] --> B((Start)) --> C(((Stop)))
+D[[Sub]] --> E{{Hex}} --> F>Flag]
+G[/trap\\] --> H[\\trap/]`);
+    const m = new Map(ast.nodes.map((n) => [n.id, n]));
+    expect(m.get("A")?.shape).toBe("cylinder");
+    expect(m.get("B")?.shape).toBe("circle");
+    expect(m.get("C")?.shape).toBe("double-circle");
+    expect(m.get("D")?.shape).toBe("subroutine");
+    expect(m.get("E")?.shape).toBe("hexagon");
+    expect(m.get("F")?.shape).toBe("asymmetric");
+    expect(m.get("G")?.shape).toBe("trapezoid");
+    expect(m.get("H")?.shape).toBe("trapezoid-alt");
+  });
+
+  test("fan-out: A & B --> C generates 2 edges", () => {
+    const ast = parseFlowchart("flowchart TD\nA & B --> C");
+    expect(ast.edges).toHaveLength(2);
+    expect(ast.edges[0]).toMatchObject({ from: "A", to: "C" });
+    expect(ast.edges[1]).toMatchObject({ from: "B", to: "C" });
+  });
+
+  test("fan-out: A --> B & C generates 2 edges", () => {
+    const ast = parseFlowchart("flowchart TD\nA --> B & C");
+    expect(ast.edges).toHaveLength(2);
+    expect(ast.edges[0]).toMatchObject({ from: "A", to: "B" });
+    expect(ast.edges[1]).toMatchObject({ from: "A", to: "C" });
+  });
+
+  test("fan-out: A & B --> C & D generates 4 edges (cross-product)", () => {
+    const ast = parseFlowchart("flowchart TD\nA & B --> C & D");
+    expect(ast.edges).toHaveLength(4);
+    const pairs = ast.edges.map((e) => `${e.from}->${e.to}`);
+    expect(pairs).toContain("A->C");
+    expect(pairs).toContain("A->D");
+    expect(pairs).toContain("B->C");
+    expect(pairs).toContain("B->D");
+  });
+
+  test("subgraph parsing: assigns children and label", () => {
+    const ast = parseFlowchart(`flowchart TD
+subgraph "Core"
+  A --> B
+end
+C --> A`);
+    expect(ast.subgraphs).toHaveLength(1);
+    const sg = ast.subgraphs[0]!;
+    expect(sg.label).toBe("Core");
+    expect(sg.children).toContain("A");
+    expect(sg.children).toContain("B");
+    // C is outside the subgraph
+    const c = ast.nodes.find((n) => n.id === "C");
+    expect(c?.parent).toBeUndefined();
+  });
+
+  test("subgraph with id and bracket label: subgraph ide1 [one]", () => {
+    const ast = parseFlowchart(`flowchart TD
+subgraph ide1 [one]
+  X --> Y
+end`);
+    expect(ast.subgraphs[0]?.id).toBe("ide1");
+    expect(ast.subgraphs[0]?.label).toBe("one");
+  });
+
+  test("classDef stores props", () => {
+    const ast = parseFlowchart(`flowchart TD
+A --> B
+classDef danger fill:#d32f2f,color:#fff`);
+    expect(ast.classDefs).toHaveLength(1);
+    expect(ast.classDefs[0]?.id).toBe("danger");
+    expect(ast.classDefs[0]?.props["fill"]).toBe("#d32f2f");
+  });
+
+  test("style statement stores per-node style", () => {
+    const ast = parseFlowchart(`flowchart TD
+A --> B
+style A fill:#f9f,stroke:#333`);
+    const a = ast.nodes.find((n) => n.id === "A");
+    expect(a?.style?.["fill"]).toBe("#f9f");
+    expect(a?.style?.["stroke"]).toBe("#333");
+  });
 });

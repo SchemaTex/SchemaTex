@@ -1197,6 +1197,8 @@ export interface FlowchartNode {
   shape: FlowchartShape;
   icon?: string;
   classes?: string[];
+  /** Inline CSS overrides from `style nodeId fill:#f9f,...` */
+  style?: Record<string, string>;
   /** Containing subgraph id (undefined = root) */
   parent?: string;
 }

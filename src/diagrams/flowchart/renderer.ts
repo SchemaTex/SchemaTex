@@ -10,6 +10,7 @@
 
 import type {
   FlowchartAST,
+  FlowchartLayoutCluster,
   FlowchartLayoutEdge,
   FlowchartLayoutNode,
   FlowchartLayoutResult,
@@ -62,6 +63,13 @@ const CSS_TEMPLATE = (themeName: ThemeName): string => {
 .sx-fc-edge-label { fill: ${t.textMuted}; font: 11px system-ui, -apple-system, "Segoe UI", sans-serif; }
 .sx-fc-edge-label-bg { fill: ${t.bg}; fill-opacity: 0.96; stroke: ${t.neutral}; stroke-width: 0.5; }
 .sx-fc-title { fill: ${t.text}; font: 600 14px system-ui, -apple-system, "Segoe UI", sans-serif; }
+/* Shape sub-elements */
+.sx-fc-node-subline { fill: none; stroke: ${t.stroke}; stroke-width: 1.5; }
+.sx-fc-node-arc { fill: none; stroke: ${t.stroke}; stroke-width: 1.5; }
+.sx-fc-node-ring { fill: none; stroke: ${t.stroke}; stroke-width: 1.8; }
+/* Cluster (subgraph) */
+.sx-fc-cluster { fill: ${t.fillMuted}; fill-opacity: 0.35; stroke: ${t.neutral}; stroke-width: 1.5; stroke-dasharray: 5,3; }
+.sx-fc-cluster-title { fill: ${t.textMuted}; font: 500 11px system-ui, -apple-system, "Segoe UI", sans-serif; }
 `.trim();
 };
 
@@ -99,6 +107,19 @@ function markerEndFor(edge: FlowchartEdge): string | undefined {
 
 function markerStartFor(edge: FlowchartEdge): string | undefined {
   return edge.arrowStart === "arrow" ? "url(#sx-fc-arrow)" : undefined;
+}
+
+function renderCluster(lc: FlowchartLayoutCluster): string {
+  const sg = lc.subgraph;
+  const bg = rect({ x: lc.x, y: lc.y, width: lc.width, height: lc.height, rx: 8, class: "sx-fc-cluster" });
+  const label = textEl(
+    { x: lc.x + 12, y: lc.y + 15, class: "sx-fc-cluster-title" },
+    sg.label
+  );
+  return group(
+    { "data-cluster-id": sg.id, "data-depth": lc.depth, class: "sx-fc-cluster-g" },
+    [bg, label]
+  );
 }
 
 function renderNode(ln: FlowchartLayoutNode): string {
@@ -208,8 +229,30 @@ export function renderFlowchartAST(
 ): string {
   const layout: FlowchartLayoutResult = layoutFlowchart(ast);
 
+  const clusterSvg = layout.clusters.map(renderCluster);
   const nodeSvg = layout.nodes.map(renderNode);
   const edgeSvg = layout.edges.map(renderEdge);
+
+  // Per-node style overrides (from `style nodeId fill:#f9f,...` statements)
+  const nodeStyleOverrides = ast.nodes
+    .filter((n) => n.style && Object.keys(n.style).length > 0)
+    .map((n) => {
+      const props = Object.entries(n.style!)
+        .map(([k, v]) => `${k}:${v}`)
+        .join(";");
+      return `g[data-node-id="${n.id}"] .sx-fc-node { ${props} }`;
+    })
+    .join("\n");
+
+  // classDef overrides (from `classDef name fill:#xxx,...` statements)
+  const classDefOverrides = ast.classDefs
+    .map((cd) => {
+      const props = Object.entries(cd.props)
+        .map(([k, v]) => `${k}:${v}`)
+        .join(";");
+      return `.sx-fc-class-${cd.id} > .sx-fc-node { ${props} }`;
+    })
+    .join("\n");
 
   const titleBlock = ast.title
     ? textEl(
@@ -223,21 +266,33 @@ export function renderFlowchartAST(
       )
     : "";
 
-  const inner: string[] = [
+  const cssOverrides = [nodeStyleOverrides, classDefOverrides].filter((s) => s.length > 0).join("\n");
+
+  const headMeta: string[] = [
     titleEl(ast.title ? `${ast.title} — Flowchart` : "Flowchart"),
     descEl(
       `Flowchart with ${ast.nodes.length} node${ast.nodes.length === 1 ? "" : "s"} and ${ast.edges.length} edge${ast.edges.length === 1 ? "" : "s"}.`
     ),
-    el("style", {}, CSS_TEMPLATE(themeName)),
+    el("style", {}, CSS_TEMPLATE(themeName) + (cssOverrides ? "\n" + cssOverrides : "")),
     defs([ARROW_MARKER]),
   ];
-  if (titleBlock) inner.push(titleBlock);
-  inner.push(group({ class: "sx-fc-edges" }, edgeSvg));
-  inner.push(group({ class: "sx-fc-nodes" }, nodeSvg));
+  // Content that participates in the layout → gets translated down when a
+  // title reserves top space.
+  const content: string[] = [];
+  // Render order: clusters (lowest z) → edges → nodes (highest z)
+  if (clusterSvg.length > 0) content.push(group({ class: "sx-fc-clusters" }, clusterSvg));
+  content.push(group({ class: "sx-fc-edges" }, edgeSvg));
+  content.push(group({ class: "sx-fc-nodes" }, nodeSvg));
 
-  // Extra top padding when a title is present
-  const topPad = ast.title ? 24 : 0;
+  // Extra top padding when a title is present. Clusters can extend above
+  // layout origin by CLUSTER_PAD+CLUSTER_TITLE_H (~44px), so title needs
+  // extra clearance to avoid overlapping subgraph borders/labels.
+  const hasClusters = layout.clusters.length > 0;
+  const topPad = ast.title ? (hasClusters ? 56 : 24) : 0;
   const totalH = layout.height + topPad;
+
+  // Retitled title sits in the un-translated band at top, centered.
+  const titleSvg = titleBlock;
 
   return svgRoot(
     {
@@ -249,17 +304,13 @@ export function renderFlowchartAST(
       "data-direction": layout.direction,
       role: "graphics-document",
     },
-    [
-      ...inner.slice(0, 4),
-      ...(titleBlock ? [titleBlock] : []),
-      group(
-        { transform: topPad > 0 ? `translate(0 ${topPad})` : "translate(0 0)" },
-        [
-          group({ class: "sx-fc-edges" }, edgeSvg),
-          group({ class: "sx-fc-nodes" }, nodeSvg),
+    topPad > 0
+      ? [
+          ...headMeta,
+          titleSvg,
+          group({ transform: `translate(0 ${topPad})` }, content),
         ]
-      ),
-    ]
+      : [...headMeta, titleSvg, ...content]
   );
 }
 
