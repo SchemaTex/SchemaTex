@@ -5,7 +5,7 @@ import type { ReactNode } from 'react';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://schematex.dev'),
+  metadataBase: new URL('https://schematex.js.org'),
   title: {
     default: 'Schematex — Text to SVG for domain diagrams',
     template: '%s · Schematex',
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     title: 'Schematex — Text to SVG for domain diagrams',
     description:
       'Like Mermaid, but for the diagrams Mermaid forgot. 20 standards-compliant diagram types.',
-    url: 'https://schematex.dev',
+    url: 'https://schematex.js.org',
     siteName: 'Schematex',
     type: 'website',
     images: [
