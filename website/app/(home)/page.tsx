@@ -244,10 +244,10 @@ export default async function HomePage() {
             </h1>
 
             <p className="mt-6 max-w-[860px] text-[17px] leading-[1.6] text-fd-muted-foreground">
-              Free. Fully open source. Made for AI. Mermaid draws flowcharts —
-              Schematex draws the 20 diagrams Mermaid can&apos;t: clinical
-              genograms, IEC 61131-3 ladder logic, NSGC pedigrees, IEEE 315
-              single-line diagrams, cap tables. All from a tiny text DSL.
+              Schematex draws the 20 diagrams doctors, engineers, and lawyers
+              already draw by hand — clinical genograms, IEC&nbsp;61131-3
+              ladder logic, NSGC pedigrees, cap tables. Text DSL in,
+              standards-compliant SVG out.
             </p>
 
             {/* CTAs — unified height (h-10) and radius (var(--r-sm)) across all four */}
