@@ -38,6 +38,9 @@ export const metadata: Metadata = {
     title: 'Schematex — Diagrams doctors, engineers, and lawyers actually use',
     description: 'Free. Fully open source. Made for AI. 20 industry-standard diagrams from a text DSL.',
   },
+  verification: {
+    google: 'uqdjccFb66g-qLb9LNOCW7MoCKJiEZ_0knXoRe6pm7A',
+  },
 };
 
 export default function Layout({ children }: { children: ReactNode }) {
