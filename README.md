@@ -23,6 +23,10 @@
   <a href="./LICENSE"><img src="https://img.shields.io/badge/license-AGPL--3.0-blue" alt="license"></a>
 </p>
 
+<p align="center">
+  <img src="https://schematex.dev/hero-demo.gif" alt="Schematex demo — genogram, pedigree, ladder logic, phylo, entity structure, fishbone, circuit, ecomap, timing" width="720">
+</p>
+
 ---
 
 **Schematex** is the open-source rendering engine for the diagrams professionals actually use — medical, electrical, legal, and analytical. 20 diagram families across five domains:

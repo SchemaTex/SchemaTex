@@ -53,10 +53,8 @@ export function SiteHeader({ version, stars }: { version?: string; stars?: numbe
             className="hidden items-center gap-1.5 rounded-md border border-fd-border bg-fd-card px-2.5 py-1 font-mono text-xs text-fd-muted-foreground transition hover:border-fd-foreground/40 hover:text-fd-foreground md:inline-flex"
             aria-label="View on npm"
           >
-            <svg viewBox="0 0 780 250" aria-hidden className="h-2.5 w-auto" style={{ fill: '#CB3837' }}>
-              <path d="M240 250V0H0v250h240zm-160-40V40h80v130h40V40h40v170H80zM640 0v250h140V0H640zm100 170h-40V40h40v130zM280 0v250h160V40h40v210h40V40h40v210h40V0H280zm120 170h-40V40h40v130z"/>
-            </svg>
-            {version ? `v${version}` : 'npm'}
+            <span>npm</span>
+            {version && <span>{`v${version}`}</span>}
           </a>
           <div className="hidden sm:inline-flex">
             <GithubStarButton stars={stars ?? 0} size="sm" />

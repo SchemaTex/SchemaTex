@@ -8,6 +8,12 @@
       "port": 3031
     },
     {
+      "name": "static",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["serve", ".", "--listen", "3032", "--no-clipboard"],
+      "port": 3032
+    },
+    {
       "name": "website",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev", "--prefix", "website", "--", "--port", "3030"],
