@@ -1,0 +1,197 @@
+---
+title: Decision tree diagram
+description: Decision trees in three modes — taxonomy (yes/no question flows), decision analysis (expected value with probabilities), and machine learning (trained classifier visualization). Used by product managers, business analysts, data scientists, clinicians, and customer support teams.
+---
+
+<Playground initial={`decisiontree "SaaS Pricing Decision"
+
+question "Annual contract?"
+  yes: question "Team size > 50?"
+    yes: answer "Enterprise plan — custom quote"
+    no: answer "Team plan — $49/seat/mo"
+  no: question "Need API access?"
+    yes: answer "Pro plan — $99/mo"
+    no: answer "Starter plan — $29/mo"`} />
+
+*Three modes in one keyword: taxonomy flows, probability-weighted decision analysis, and ML classifier trees.*
+
+---
+
+## Modes
+
+```
+decisiontree           # taxonomy (default) — yes/no question trees
+decisiontree:decision  # decision analysis — expected value + probabilities
+decisiontree:ml        # machine learning — trained classifier visualization
+```
+
+---
+
+## Taxonomy mode (default)
+
+Best for: troubleshooting guides, FAQs, clinical decision support, product recommendation flows.
+
+```
+decisiontree "Title"
+
+question "Root question?"
+  yes: question "Follow-up?"
+    yes: answer "Outcome A"
+    no: answer "Outcome B"
+  no: answer "Outcome C"
+```
+
+**Node keywords:** `question` (or `q`), `answer` (or `a`, `leaf`)
+
+**Branch labels:** `yes:`, `no:`, or custom — `label "Low risk":`
+
+### Config options
+
+```
+direction: left-right   # left-right (default) | top-down
+branchLabels: boolean   # boolean (default) | relation
+edgeStyle: diagonal     # diagonal | orthogonal | bracket
+```
+
+### Custom branch labels
+
+```
+decisiontree "Triage"
+
+question "Pain level?"
+  label "Severe": answer "Emergency — go to ER"
+  label "Moderate": answer "Urgent care"
+  label "Mild": answer "Rest + OTC medication"
+```
+
+---
+
+## Decision analysis mode
+
+Best for: investment decisions, risk analysis, strategy evaluation, financial modeling with expected values.
+
+```
+decisiontree:decision "Build vs Buy"
+
+decision "Build in-house?"
+  choice "Build"
+    chance "Succeeds" [payoff: 500000]
+      prob 0.7
+        end "High ROI" [payoff: 800000]
+      prob 0.3
+        end "Over budget" [payoff: 100000]
+  choice "Buy vendor"
+    end "Known cost" [payoff: 400000]
+```
+
+**Node keywords:** `decision`, `chance`, `end`, `outcome`
+
+**Branch keywords:** `choice "label"`, `prob 0.6`
+
+**Properties:** `[payoff: value]` on any node
+
+Expected value is calculated automatically via backward induction.
+
+### Constraint
+Probabilities on `chance` node children must sum to 1.0 (±0.01).
+
+---
+
+## Machine learning mode
+
+Best for: explaining trained classifiers, feature importance analysis, model transparency reports.
+
+```
+decisiontree:ml "Iris Classification"
+direction: top-down
+impurity: gini
+
+split "Petal Length <= 2.45" feature=petal_length op="<=" threshold=2.45 samples=150 gini=0.666
+  true
+    leaf "Setosa" value=50 gini=0
+  false
+    split "Petal Width <= 1.75" feature=petal_width op="<=" threshold=1.75 samples=100 gini=0.5
+      true
+        leaf "Versicolor" value=50 gini=0
+      false
+        leaf "Virginica" value=50 gini=0
+```
+
+**Node keywords:** `split`, `leaf`
+
+**Branch prefixes:** `true`, `false`
+
+**ML properties** (key=value, no colon):
+
+| Property | Meaning |
+|----------|---------|
+| `feature=name` | Feature used at split |
+| `op="<="` | Comparison operator |
+| `threshold=5.9` | Split threshold |
+| `samples=150` | Sample count |
+| `gini=0.5` | Gini impurity |
+| `entropy=0.5` | Entropy |
+| `class=name` | Class for leaf |
+| `value=50` | Sample count or `[50,50]` array |
+
+### Config options (ML)
+
+```
+direction: top-down   # top-down | left-right
+impurity: gini        # gini | entropy | mse | gain
+classes: A, B, C      # class labels for display
+```
+
+---
+
+## Examples
+
+### Troubleshooting guide
+
+```
+decisiontree "Email Not Sending"
+
+question "Error shown in UI?"
+  yes: question "Error code 550?"
+    yes: answer "Recipient email rejected — check address"
+    no: answer "Check SMTP logs for error detail"
+  no: question "Message in Sent folder?"
+    yes: answer "Delivery delayed — check spam filters"
+    no: answer "Client not connected — check network"
+```
+
+### Medical triage
+
+```
+decisiontree "Chest Pain Triage"
+edgeStyle: orthogonal
+
+question "Onset sudden?"
+  yes: question "ECG changes?"
+    yes: answer "ACS protocol — cardiology consult"
+    no: question "D-dimer elevated?"
+      yes: answer "PE workup — CT pulmonary angio"
+      no: answer "Aortic dissection — CT angio"
+  no: question "Reproducible on palpation?"
+    yes: answer "Musculoskeletal — NSAIDs, follow-up"
+    no: answer "GI / anxiety — further history"
+```
+
+### Investment decision analysis
+
+```
+decisiontree:decision "Market Entry"
+direction: top-down
+
+decision "Enter new market?"
+  choice "Enter"
+    chance "Market reception"
+      prob 0.5
+        end "Strong adoption" [payoff: 2000000]
+      prob 0.3
+        end "Moderate adoption" [payoff: 800000]
+      prob 0.2
+        end "Poor adoption" [payoff: -300000]
+  choice "Stay out"
+    end "Status quo" [payoff: 0]
+```

@@ -1,0 +1,170 @@
+---
+title: Timeline diagram
+description: Chronological event diagrams in swimlane, Gantt, or lollipop styles. For project planning, historical visualization, clinical histories, and process scheduling. Used by project managers, historians, researchers, and product teams.
+---
+
+<Playground initial={`timeline "Apollo Program"
+config: style = swimlane
+
+era [color: #1565C0] 1961 - 1966: "Mercury & Gemini"
+era [color: #2E7D32] 1966 - 1972: "Apollo Missions"
+
+1961-05-05: "First American in space (Shepard)"
+1962-02-20: "First US orbital flight (Glenn)"
+[side: above] 1965-06-03: "First US spacewalk (White)"
+[color: #F9A825] 1967-01-27: milestone "Apollo 1 fire"
+1968-12-21: "Apollo 8 — lunar orbit"
+[color: #1B5E20] 1969-07-20: milestone "Moon landing — Apollo 11"
+1972-12-14: "Last Moon walk — Apollo 17"`} />
+
+*Flexible timeline renderer supporting swimlane tracks, Gantt bars, lollipop dots, and milestone markers.*
+
+---
+
+## Styles
+
+Four visual styles are available via `config: style`:
+
+| Style | Best for |
+|-------|----------|
+| `swimlane` (default) | Events spread above/below a horizontal axis |
+| `gantt` | Horizontal bars for durations (project scheduling) |
+| `lollipop` | Dot-on-stick markers along a horizontal axis |
+| `gantt-project` | Alias for `gantt` |
+
+---
+
+## Syntax
+
+### Header
+
+```
+timeline "Title"
+```
+
+### Config options
+
+```
+config: style = swimlane        # swimlane | gantt | lollipop
+config: orientation = horizontal  # horizontal | vertical
+config: scale = proportional    # proportional | equidistant | log
+config: axis = bottom           # bottom | center
+```
+
+### Events
+
+Single date event:
+```
+2024-06-15: "Event label"
+```
+
+Date range (bar/span):
+```
+2024-06-01 - 2024-08-31: "Q3 development"
+2024-06-01 .. 2024-08-31: "Q3 development"  # .. is equivalent
+```
+
+Milestone:
+```
+2024-09-01: milestone "Product launch"
+```
+
+With properties:
+```
+[color: #E53935, side: above] 2024-09-01: milestone "Launch"
+```
+
+### Event properties
+
+| Property | Example | Meaning |
+|----------|---------|---------|
+| `color` | `color: #E53935` | Custom color for this event |
+| `side` | `side: above` \| `side: below` | Position above or below axis |
+| `icon` | `icon: 🚀` | Icon displayed with event |
+| `category` | `category: "engineering"` | Group label |
+| `shape` | `shape: diamond` | Custom event shape |
+
+### Eras (background spans)
+
+```
+era 2020 - 2022: "Foundation Phase"
+era [color: #E8F5E9] 2022 .. 2025: "Growth Phase"
+```
+
+### Tracks (swimlane grouping)
+
+```
+track "Engineering":
+  2024-01-01: "Sprint 1"
+  2024-03-01 - 2024-05-01: "Feature X"
+
+track "Marketing":
+  2024-04-15: "Campaign kick-off"
+  [color: gold] 2024-06-01: milestone "Launch"
+```
+
+---
+
+## Date formats
+
+| Format | Example |
+|--------|---------|
+| Full date | `2024-06-15` |
+| Year-month | `2024-06` |
+| Year only | `2024` |
+| Quarter | `2024-Q2` |
+| BC years | `-753` (753 BC) |
+| Geological | `65Ma` (65 million years ago) |
+
+---
+
+## Examples
+
+### Project roadmap — Gantt style
+
+```
+timeline "SaaS Rebuild Roadmap"
+config: style = gantt
+
+track "Backend":
+  2024-01-15 - 2024-03-31: "API v2 design"
+  2024-04-01 - 2024-07-31: "Migration"
+
+track "Frontend":
+  2024-03-01 - 2024-05-31: "Design system"
+  2024-06-01 - 2024-09-30: "UI rebuild"
+
+[color: #1B5E20] 2024-10-01: milestone "Public launch"
+```
+
+### Historical — lollipop style
+
+```
+timeline "History of Computing"
+config: style = lollipop
+config: scale = proportional
+
+1936: "Turing publishes computability paper"
+1945: "ENIAC — first general-purpose computer"
+1969: "ARPANET — internet precursor"
+1971: milestone "Intel 4004 — first microprocessor"
+1976: "Apple I"
+1991: "World Wide Web (Berners-Lee)"
+[color: #1565C0] 2007: milestone "iPhone — mobile computing"
+```
+
+### Clinical history
+
+```
+timeline "Patient Case Timeline"
+
+era 2020-01 - 2020-06: "Initial Presentation"
+era 2020-07 - 2022-12: "Treatment Phase"
+
+[side: above] 2020-02-10: "First symptoms reported"
+2020-04-05: "Diagnosis confirmed"
+[color: #E53935] 2020-05-20: milestone "Hospital admission"
+2020-07-01 - 2021-03-31: "Chemotherapy course"
+[color: #2E7D32] 2021-04-15: milestone "Remission"
+2022-11-30: "5-year follow-up clear"
+```

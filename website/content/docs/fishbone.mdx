@@ -1,20 +1,131 @@
 ---
 title: Fishbone diagram
-description: Ishikawa cause-and-effect (fishbone) diagrams with auto-categorized branches. For root-cause analysis, quality management (Six Sigma, TQM), and problem decomposition.
+description: Ishikawa cause-and-effect diagrams with auto-categorized branches. For root-cause analysis, quality management (Six Sigma, TQM, lean manufacturing), and engineering problem decomposition. Used by quality engineers, operations managers, and process improvement teams.
 ---
 
-**Fishbone diagrams** (Ishikawa diagrams) organize potential causes of a
-problem into categories — used in root-cause analysis and quality management.
+<Playground initial={`fishbone "Website Traffic Drop — Root Cause Analysis"
+effect "Traffic Drop"
+category content "Content"
+category tech "Technical"
+category links "Backlinks"
+category ux "UX"
+category competition "Competition"
+category algo "Algorithm"
+content : "Lower update frequency" : "Thin content" : "Keyword gaps"
+tech : "Poor Core Web Vitals" : "WAF blocking crawlers"
+links : "High-DA backlink loss" : "Referring domain plateau"
+ux : "Bounce rate spike" : "Slow LCP"
+competition : "New entrants" : "AI overviews displacing clicks"
+algo : "Core Update penalty" : "Weak E-E-A-T signals"`} />
 
-## Try it
+*Ishikawa (1968) cause-and-effect analysis. Standard for quality management (ISO 9001), Six Sigma DMAIC, and lean manufacturing root-cause analysis.*
 
-<Playground initial={`fishbone "Late delivery"
-  problem: "Late delivery to customer"
-  category People: training; staffing
-  category Process: approval delays; handoff gaps
-  category Machine: downtime; maintenance
-  category Materials: vendor quality; stock-outs`} />
+> **References:**
+> - Ishikawa, K. (1968). *Guide to Quality Control.* JUSE Press. (original fishbone diagram)
+> - ASQ (American Society for Quality) — cause-and-effect diagram conventions
+> - ISO 9001:2015 §10.2 — Nonconformity and corrective action (fishbone as root-cause tool)
 
-## Reference
+---
 
-Coming soon.
+## Syntax
+
+Two styles are available and can be mixed in one diagram.
+
+### Style A — structured (category then causes separately)
+
+```
+fishbone "Title"
+effect "Problem statement"
+category content "Content"
+category tech    "Technical"
+content : "Cause 1" : "Cause 2"
+tech    : "Cause A"
+  - "Sub-cause A1"
+  - "Sub-cause A2"
+```
+
+### Style B — compact shorthand (semicolon-separated, good for AI output)
+
+```
+fishbone "Title"
+effect "Problem statement"
+category Content: cause one; cause two; cause three
+category Technical: Core Web Vitals failing; Crawl drop
+```
+
+---
+
+## Config options
+
+```
+config direction = right   # head orientation: right (default) or left
+config width = 900
+config height = 620
+config density = compact   # compact | normal (default) | spacious
+config slope = normal      # gentle | normal (default) | steep
+config sides = both        # both (default) | top | bottom
+```
+
+---
+
+## Category options
+
+```
+category id "Label" [color: "#E53935", side: top]
+```
+
+| Property | Values | Meaning |
+|----------|--------|---------|
+| `color` | hex color | Branch and label color for this category |
+| `side` | `top` \| `bottom` | Force branch to top or bottom rail (default: alternating) |
+
+---
+
+## Examples
+
+### Manufacturing — 6M standard categories
+
+```
+fishbone "Defective PCB Assembly"
+effect "Solder joint defect rate 3.2%"
+category man "Man"
+category machine "Machine"
+category material "Material"
+category method "Method"
+category measurement "Measurement"
+category env "Environment"
+man : "Operator training gap" : "Shift changeover"
+machine : "Reflow oven temp drift" : "Squeegee wear"
+material : "Solder paste age" : "PCB pad oxidation"
+method : "Stencil aperture design" : "Pick-and-place speed"
+measurement : "AOI false-accept rate" : "Manual inspection fatigue"
+env : "Humidity spike" : "ESD protocol gaps"
+```
+
+### Healthcare — 5P categories
+
+```
+fishbone "ICU Medication Error Increase"
+effect "Medication errors up 18% Q3"
+category people "People"
+category process "Process"
+category pharmacy "Pharmacy"
+category patient "Patient"
+category policy "Policy"
+people : "Float staff unfamiliar with unit" : "Handoff communication gaps"
+process : "CPOE alert fatigue" : "5-Rights verification skipped"
+pharmacy : "Look-alike packaging" : "Dispensing robot calibration"
+patient : "Complex polypharmacy" : "Allergy list not updated"
+policy : "Override policy too permissive"
+```
+
+### Software — quick compact style
+
+```
+fishbone "API P99 latency > 2s"
+effect "P99 latency regression post-deploy"
+category Code: N+1 query in new endpoint; Synchronous external call; Missing cache layer
+category Infra: DB connection pool exhausted; Auto-scaling lag; CDN misconfigured
+category Data: Index missing on accounts table; 10× data growth since last test
+category Process: Load test skipped in CI; Canary traffic too low to catch
+```

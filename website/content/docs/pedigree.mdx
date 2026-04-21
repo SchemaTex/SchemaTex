@@ -1,6 +1,6 @@
 ---
 title: Pedigree
-description: Multi-generation genetic inheritance charts for clinical genetics. Affected/carrier/presymptomatic status fills, proband arrow markers, consanguinity. Standardized human pedigree nomenclature.
+description: Multi-generation genetic inheritance charts for clinical genetics. Affected/carrier/presymptomatic status fills, proband arrow markers, consanguinity. Standardized human pedigree nomenclature. Used by genetic counselors, clinical geneticists, and medical genetics programs.
 ---
 
 <Playground initial={`pedigree "BRCA1 Family — Hereditary Breast/Ovarian Cancer"
@@ -198,58 +198,10 @@ Shares most layout logic with genogram (generation alignment, male-left, childre
 
 ---
 
-## 6. DSL Grammar (Pedigree — Expanded)
+## 6. Examples
 
-```text
-document       = header legend_def* statement*
-header         = "pedigree" quoted_string? NEWLINE
+### Autosomal recessive — Cystic Fibrosis
 
-legend_def     = "legend:" IDENTIFIER "=" quoted_string legend_fill? NEWLINE
-legend_fill    = "(" "fill:" FILL_SPEC ")"
-FILL_SPEC      = "full" | "quad-tl" | "quad-tr" | "quad-bl" | "quad-br"
-               | "half-left" | "half-right" | "striped" | "dotted"
-
-statement      = comment | individual_def | couple_def
-
-individual_def = ID properties? NEWLINE
-properties     = "[" property ("," property)* "]"
-property       = sex_prop | status_prop | genetic_prop | special_prop | kv_prop
-
-sex_prop       = "male" | "female" | "unknown" | "amab" | "afab" | "uaab"
-status_prop    = "deceased" | "stillborn" | "pregnancy"
-               | "sab" | "tab" | "ectopic"
-genetic_prop   = "affected" | "carrier" | "carrier-x" | "obligate-carrier"
-               | "presymptomatic" | "unaffected"
-               | "affected:" trait_list
-trait_list     = IDENTIFIER ("+" IDENTIFIER)*
-special_prop   = "proband" | "consultand" | "evaluated"
-               | "adopted-in" | "adopted-out"
-               | "donor-egg" | "donor-sperm" | "donor-embryo" | "surrogate"
-               | "no-children" | "infertile"
-               | "twin-mz" | "twin-dz" | "twin-unknown"
-               | "triplet-mz" | "triplet-dz"
-
-couple_def     = ID couple_op ID couple_label? NEWLINE (INDENT child+ DEDENT)?
-couple_op      = "--" | "==" | "-/-" | "~"
-couple_label   = "[" kv_prop "]"
-child          = individual_def
-
-comment        = "#" [^\n]* NEWLINE
-
-ID             = /[a-zA-Z][a-zA-Z0-9_-]*/
-IDENTIFIER     = /[a-zA-Z][a-zA-Z0-9_-]*/
-VALUE          = /[^\],\n]+/
-quoted_string  = '"' /[^"]*/ '"'
-INDENT         = increase in leading whitespace (2+ spaces)
-DEDENT         = decrease in leading whitespace
-NEWLINE        = /\n/
-```
-
----
-
-## 7. Test Cases
-
-### Case 1: Autosomal Recessive (Cystic Fibrosis)
 ```
 pedigree "Cystic Fibrosis Family"
   I-1 [male, carrier]
@@ -260,9 +212,9 @@ pedigree "Cystic Fibrosis Family"
     II-3 [male, affected, proband]
     II-4 [female, unaffected]
 ```
-Verify: I-1/I-2 are half-filled (carrier), II-3 is full-filled + proband arrow, "I" and "II" labels appear on the left.
 
-### Case 2: Consanguinity
+### Consanguineous union
+
 ```
 pedigree "Consanguineous Marriage"
   I-1 [male, carrier]
@@ -277,9 +229,9 @@ pedigree "Consanguineous Marriage"
   II-1 == II-3
     III-1 [male, affected, proband]
 ```
-Verify: The line between II-1 and II-3 is double (consanguinity), III-1 is full-filled + proband arrow.
 
-### Case 3: X-Linked Recessive (Hemophilia)
+### X-linked recessive — Hemophilia A
+
 ```
 pedigree "Hemophilia A"
   I-1 [male, unaffected]
@@ -294,9 +246,9 @@ pedigree "Hemophilia A"
     III-2 [female, carrier-x]
     III-3 [male, unaffected]
 ```
-Verify: carrier-x females have a center dot, affected males are full-filled.
 
-### Case 4: Multi-Trait Pedigree
+### Multi-trait — Cancer family syndrome
+
 ```
 pedigree "Cancer Family Syndrome"
   legend: breast = "Breast cancer" (fill: quad-tl)
@@ -314,37 +266,9 @@ pedigree "Cancer Family Syndrome"
     III-1 [female, unaffected, proband]
     III-2 [male, unaffected]
 ```
-Verify: legend box shows the 4 trait quadrant fills, I-1 has quad-bl filled, II-1 has quad-tl + quad-tr filled, III-1 has proband arrow.
 
-### Case 5: Modern Family (Bennett 2022 — Assisted Reproduction)
-```
-pedigree "Donor Conception"
-  I-1 [male]
-  I-2 [female]
-  I-1 -- I-2
-    II-1 [female]
-  
-  donor [male, donor-sperm]
-  II-1 -- II-2 [male]
-    III-1 [female, proband]
-```
-Verify: donor-sperm annotation appears on the connecting line from donor to child, donor node display is optional.
+### Huntington disease — 5 generations
 
-### Case 6: Pregnancy / Loss
-```
-pedigree "Reproductive History"
-  I-1 [male]
-  I-2 [female]
-  I-1 -- I-2
-    II-1 [male]
-    II-2 [female, sab]
-    II-3 [male, stillborn]
-    II-4 [female, pregnancy]
-    II-5 [female]
-```
-Verify: II-2 is a small triangle (SAB), II-3 is a small shape + SB label + deceased slash, II-4 is a diamond/shape with "P".
-
-### Case 7: Large Pedigree (5 Generations)
 ```
 pedigree "Huntington Disease"
   I-1 [male, affected, deceased]
@@ -366,22 +290,3 @@ pedigree "Huntington Disease"
   IV-1 -- IV-5 [female, unaffected]
     V-1 [unknown, pregnancy]
 ```
-Verify: 5-generation Roman numeral labels (I–V), presymptomatic individuals have a vertical line marker, V-1 is a pregnancy diamond.
-
----
-
-## 8. Implementation Priority
-
-| Priority | Feature | Complexity |
-|----------|---------|------------|
-| P0 (Phase 2.1) | Basic pedigree layout reusing genogram engine + Roman numeral labels + individual numbering | Medium |
-| P0 | Affected/carrier/unaffected fill + proband arrow | Low |
-| P1 | Consanguinity double line (already in genogram, but critical for pedigree) | Low |
-| P1 | Deceased slash (/ not X), SAB/TAB/stillborn symbols | Medium |
-| P1 | Legend box rendering | Medium |
-| P2 | Multi-trait quadrant fill system | Medium |
-| P2 | X-linked carrier dot | Low |
-| P2 | Bennett 2022 sex/gender annotation | Low |
-| P2 | Assisted reproduction symbols (donor, surrogate) | Medium |
-| P3 | Presymptomatic vertical line marker | Low |
-| P3 | Adopted in/out bracket notation | Low |

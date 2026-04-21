@@ -1,6 +1,6 @@
 ---
 title: Ladder logic
-description: Industrial PLC programs in IEC 61131-3 ladder logic. Allen-Bradley tag+address+description labels, Set/Reset coil pairs, parallel branches, seal-in circuits. For manufacturing and automation.
+description: Industrial PLC programs in IEC 61131-3 ladder logic. Allen-Bradley tag+address+description labels, Set/Reset coil pairs, parallel branches, seal-in circuits. Used by PLC programmers, automation engineers, and industrial controls technicians.
 ---
 
 <Playground initial={`ladder "System Mode Selection"
@@ -63,43 +63,21 @@ rung 1 "Set Auto, reset Manual":
 Contacts are located in the left region of the rung and represent input conditions.
 
 #### Normally Open Contact (XIC / NO)
-- **Symbol**: Two parallel vertical lines, 8px apart, not connected
+- **Symbol**: Two parallel vertical lines, not connected
 - **Meaning**: When associated bit = 1, the contact closes (conducts)
-- **SVG**:
-  ```xml
-  <!-- Left blade -->
-  <line x1="0" y1="-12" x2="0" y2="12" stroke="#333" stroke-width="2"/>
-  <!-- Right blade -->
-  <line x1="8" y1="-12" x2="8" y2="12" stroke="#333" stroke-width="2"/>
-  <!-- Lead wires (connecting to rung line) -->
-  <line x1="-12" y1="0" x2="0" y2="0" stroke="#333" stroke-width="2"/>
-  <line x1="8" y1="0" x2="20" y2="0" stroke="#333" stroke-width="2"/>
-  <!-- Total width: 32px (−12 to 20) -->
-  ```
 
 #### Normally Closed Contact (XIO / NC)
 - **Symbol**: Two parallel vertical lines + diagonal slash through the gap
-- **SVG**: Same as NO + extra diagonal line:
-  ```xml
-  <!-- Diagonal slash across gap -->
-  <line x1="0" y1="6" x2="8" y2="-6" stroke="#333" stroke-width="2"/>
-  ```
+- **Meaning**: Contact opens when bit = 1
 
 #### Positive Transition Contact (ONS / Rising Edge)
 - **Symbol**: Two vertical lines + rising-edge arrow (↑)
-- **SVG**: NO + `<polygon points="4,-6 4,0 8,-3"/>` inside gap
 
 #### Negative Transition Contact (ONF / Falling Edge)
 - **Symbol**: Two vertical lines + falling-edge arrow (↓)
-- **SVG**: NO + `<polygon points="4,6 4,0 8,3"/>` inside gap
 
 #### Comparison Contact (EQU, GRT, LES, etc.)
-- **Symbol**: Rectangle box (24×18px) containing comparison operator (`=`, `>`, `<`, `≥`, `≤`, `≠`)
-  ```xml
-  <rect x="0" y="-9" width="24" height="18" fill="white" stroke="#333" stroke-width="1.5"/>
-  <text x="12" y="5" font-size="11" text-anchor="middle">≥</text>
-  <!-- Input/output label references outside the box -->
-  ```
+- **Symbol**: Rectangle box containing comparison operator (`=`, `>`, `<`, `≥`, `≤`, `≠`)
 
 ### 2.2 Coils (Outputs — Set outputs)
 
@@ -107,30 +85,15 @@ Coils are located on the right side of the rung (adjacent to the right power rai
 
 #### Output Coil (OTE / Standard)
 - **Symbol**: Parentheses `( )` — two opposing arcs
-- **SVG**:
-  ```xml
-  <!-- Left arc -->
-  <path d="M 0,0 A 8,12 0 0 0 0,0" fill="none"/>
-  <!-- Cleaner: two arcs forming parentheses shape -->
-  <path d="M 8,-12 Q 0,-12 0,0 Q 0,12 8,12" fill="none" stroke="#333" stroke-width="2"/>
-  <path d="M 16,-12 Q 24,-12 24,0 Q 24,12 16,12" fill="none" stroke="#333" stroke-width="2"/>
-  <!-- Lead wires -->
-  <line x1="-12" y1="0" x2="8" y2="0" stroke="#333" stroke-width="2"/>
-  <line x1="16" y1="0" x2="28" y2="0" stroke="#333" stroke-width="2"/>
-  <!-- Total width: 40px -->
-  ```
 
 #### Negated Output Coil (OTN)
-- Same as OTE, with a `/` slash or `NOT` annotation inside
-- **SVG**: `<line x1="8" y1="8" x2="16" y2="-8" stroke="#333" stroke-width="1.5"/>`
+- Same as OTE, with a `/` slash annotation inside
 
 #### Set Coil / Latch (OTL)
 - Same as OTE, with `S` text inside
-- **SVG**: `<text x="12" y="5" font-size="12" font-weight="bold" text-anchor="middle">S</text>`
 
 #### Reset / Unlatch Coil (OTU)
 - Same as OTE, with `R` text inside
-- **SVG**: Same as above, text `R`
 
 #### Transition Coils (ONS/ONR)
 - Rising-edge/falling-edge triggered, with arrow marker inside
@@ -138,32 +101,6 @@ Coils are located on the right side of the rung (adjacent to the right power rai
 ### 2.3 Function Blocks (Complex functional elements)
 
 Function blocks appear in the middle of a rung; a rectangle box contains input/output pins.
-
-**Standard size**: 60px wide × 50px tall (minimum), expands based on pin count.
-
-```xml
-<!-- Function block box -->
-<rect x="0" y="0" width="60" height="50"
-      fill="white" stroke="#333" stroke-width="2"
-      class="lt-function-block"/>
-<!-- Block type label (top center) -->
-<text x="30" y="14" font-size="11" font-weight="bold"
-      text-anchor="middle" class="lt-fb-type">TON</text>
-<!-- Divider line under type label -->
-<line x1="0" y1="18" x2="60" y2="18" stroke="#333" stroke-width="1"/>
-<!-- Input pin labels (left side) -->
-<text x="4" y="28" font-size="9">IN</text>
-<text x="4" y="40" font-size="9">PT</text>
-<!-- Input pin wires (left edge) -->
-<line x1="-10" y1="25" x2="0" y2="25" stroke="#333" stroke-width="1.5"/>
-<line x1="-10" y1="37" x2="0" y2="37" stroke="#333" stroke-width="1.5"/>
-<!-- Output pin labels (right side) -->
-<text x="36" y="28" font-size="9">Q</text>
-<text x="36" y="40" font-size="9">ET</text>
-<!-- Output pin wires (right edge) -->
-<line x1="60" y1="25" x2="70" y2="25" stroke="#333" stroke-width="1.5"/>
-<line x1="60" y1="37" x2="70" y2="37" stroke="#333" stroke-width="1.5"/>
-```
 
 #### Timer Blocks
 
@@ -198,62 +135,13 @@ Pins: `IN1`, `IN2`, `OUT` (boolean result).
 
 ### 3.1 Label Positioning
 
-Each contact/coil displays the variable address/tag name above or below:
-
-```xml
-<!-- Tag name above element -->
-<text x="x_center" y="y_rung - element_height/2 - 4"
-      font-size="9" font-family="monospace" text-anchor="middle"
-      class="lt-tag-label">StartBtn</text>
-<!-- Address below element (optional) -->
-<text x="x_center" y="y_rung + element_height/2 + 12"
-      font-size="8" text-anchor="middle" class="lt-address-label">I:0/0</text>
-```
-
-### 3.2 Rung Numbers
-
-Rung numbers are displayed outside the left power rail:
-```xml
-<text x="left_rail_x - 8" y="y_rung" font-size="10"
-      text-anchor="end" class="lt-rung-number">0001</text>
-```
-
-### 3.3 Rung Comments
-
-Optional comment line above the rung:
-```xml
-<text x="left_rail_x + 10" y="y_rung - rung_height/2 + 8"
-      font-size="10" font-style="italic" fill="#555"
-      class="lt-rung-comment">Motor start/stop latch logic</text>
-```
+Each contact/coil displays the variable address/tag name above or below the element. Rung numbers appear to the left of the power rail. Optional rung comments appear above each rung.
 
 ---
 
 ## 4. Parallel Branches
 
-Parallel branches in a rung represent OR logic:
-
-### 4.1 Branch Start/End Notation
-
-```xml
-<!-- Branch Start: vertical line down from rung wire -->
-<line x1="x_branch_start" y1="y_rung" x2="x_branch_start" y2="y_branch"
-      stroke="#333" stroke-width="2"/>
-
-<!-- Branch parallel wire -->
-<line x1="x_branch_start" y1="y_branch" x2="x_branch_end" y2="y_branch"
-      stroke="#333" stroke-width="2"/>
-
-<!-- Elements on branch wire (at y_branch level) -->
-
-<!-- Branch End: vertical line back up to rung wire -->
-<line x1="x_branch_end" y1="y_branch" x2="x_branch_end" y2="y_rung"
-      stroke="#333" stroke-width="2"/>
-```
-
-### 4.2 Multiple Parallel Branches
-
-Each additional branch is placed at `y_branch + branch_spacing`, with default `branch_spacing = rung_height + 10`.
+Parallel branches in a rung represent OR logic. Each `branch:` block runs in parallel with the main rung line.
 
 ---
 
@@ -379,151 +267,3 @@ rung 0 "Start from push button OR remote":
   OTE(MotorRun)
 ```
 
----
-
-## 6. SVG Structure
-
-```xml
-<svg class="lt-ladder" data-diagram-type="ladder">
-  <defs>
-    <style>
-      .lt-power-rail   { stroke: #333; stroke-width: 4; fill: none; }
-      .lt-rung-wire    { stroke: #333; stroke-width: 2; fill: none; }
-      .lt-contact      { stroke: #333; stroke-width: 2; fill: none; }
-      .lt-coil         { stroke: #333; stroke-width: 2; fill: none; }
-      .lt-fb-box       { stroke: #333; stroke-width: 2; fill: white; }
-      .lt-fb-type      { font: bold 11px monospace; fill: #333; }
-      .lt-tag-label    { font: 9px monospace; fill: #333; }
-      .lt-address      { font: 8px monospace; fill: #666; }
-      .lt-rung-number  { font: 10px monospace; fill: #999; }
-      .lt-rung-comment { font: italic 10px sans-serif; fill: #555; }
-      .lt-branch-wire  { stroke: #333; stroke-width: 2; fill: none; }
-    </style>
-  </defs>
-  <title>Ladder Logic Diagram — [name]</title>
-  <desc>[description]</desc>
-
-  <!-- Left power rail -->
-  <line class="lt-power-rail" x1="20" y1="0" x2="20" y2="{total_h}"/>
-
-  <!-- Right power rail -->
-  <line class="lt-power-rail" x1="{w-20}" y1="0" x2="{w-20}" y2="{total_h}"/>
-
-  <!-- Rungs -->
-  <g id="lt-rungs">
-    <g id="rung-0" data-rung="0">
-      <!-- Rung number -->
-      <text class="lt-rung-number" ...>0000</text>
-      <!-- Rung comment -->
-      <text class="lt-rung-comment" ...>Motor start/stop</text>
-      <!-- Rung horizontal wire -->
-      <line class="lt-rung-wire" x1="20" y1="y" x2="{w-20}" y2="y"/>
-      <!-- Elements in rung -->
-      <g id="rung-0-elem-0" data-type="XIC" data-tag="StartBtn">
-        <!-- contact SVG -->
-        <text class="lt-tag-label" ...>StartBtn</text>
-      </g>
-      <g id="rung-0-elem-1" data-type="OTL" data-tag="MotorLatch">
-        <!-- coil SVG -->
-        <text class="lt-tag-label" ...>MotorLatch</text>
-      </g>
-    </g>
-  </g>
-</svg>
-```
-
----
-
-## 7. Test Cases
-
-### Case 1: Single Contact → Single Coil
-```
-ladder
-rung 0:
-  XIC(MotorStart)
-  OTE(MotorOut)
-```
-Verify: one rung, NO contact on the left, output coil on the right, both ends connected to power rails.
-
-### Case 2: Series Contacts (AND logic)
-```
-ladder
-rung 0:
-  XIC(A)
-  XIC(B)
-  XIO(C)
-  OTE(Y)
-```
-Verify: A/B/C three contacts in series, C is NC (has diagonal slash).
-
-### Case 3: Parallel Branch (OR logic)
-```
-ladder
-rung 0:
-  parallel:
-    XIC(Btn1)
-    branch:
-      XIC(Btn2)
-  OTE(Lamp)
-```
-Verify: Btn1 and Btn2 are on parallel branches that merge before the Lamp coil.
-
-### Case 4: TON Timer
-```
-ladder
-var RunTimer: timer
-rung 0:
-  XIC(StartSignal)
-  TON(RunTimer, StartSignal, T#10s)
-rung 1:
-  XIC(RunTimer.Q)
-  OTE(DoneOutput)
-```
-Verify: TON block shows IN and PT input pins, Q output pin, T#10s parameter annotated.
-
-### Case 5: Set/Reset Latch
-```
-ladder
-rung 0:
-  XIC(SetBtn)
-  OTL(MotorLatch)
-rung 1:
-  XIC(ResetBtn)
-  OTU(MotorLatch)
-```
-Verify: OTL coil shows `S` inside, OTU coil shows `R` inside.
-
-### Case 6: Counter
-```
-ladder
-var PulseCnt: counter
-rung 0:
-  XIC(PulseInput)
-  CTU(PulseCnt, PulseInput, 50)
-rung 1:
-  XIC(PulseCnt.Q)
-  OTE(BatchDone)
-```
-Verify: CTU block has CU/PV inputs, Q output, rung 1 reads the .Q bit.
-
----
-
-## 8. Implementation Priority
-
-| Priority | Feature | Complexity | User Value |
-|----------|---------|------------|---------|
-| P0 (MVP) | XIC, XIO contacts + OTE coil | Low | Core — 90% of rungs use these three |
-| P0 | Power rails + rung horizontal wire | Low | Core |
-| P0 | Series elements layout | Low | Core |
-| P0 | Tag name labels above elements | Low | Core |
-| P1 | OTL (Set) / OTU (Reset) coils | Low | High |
-| P1 | Parallel branch (OR logic) | Medium | High — required for industrial logic |
-| P1 | TON / TOFF timer blocks | Medium | High |
-| P1 | CTU counter block | Medium | High |
-| P1 | ONS / ONF transition contacts | Low | Medium |
-| P2 | Comparison contacts (EQU, GRT, etc.) | Medium | Medium |
-| P2 | Math blocks (ADD, SUB, MOV) | Medium | Medium |
-| P2 | Rung comments + rung numbers | Low | Medium |
-| P2 | CTUD up/down counter | Medium | Low |
-| P3 | JMP / LBL jump instructions | Medium | Low |
-| P3 | IEC symbol style (vs NEMA) | Medium | Low |

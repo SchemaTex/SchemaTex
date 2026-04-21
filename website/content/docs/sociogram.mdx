@@ -1,6 +1,6 @@
 ---
 title: Sociogram
-description: Social network diagrams with mutual choices, rejections, group coloring, force-directed or hierarchical layout. Auto-detects sociometric roles — stars, isolates, cliques. Based on Moreno sociometry.
+description: Social network diagrams with mutual choices, rejections, group coloring, force-directed or hierarchical layout. Auto-detects sociometric roles — stars, isolates, cliques. Based on Moreno sociometry. Used by teachers for classroom dynamics analysis, therapists for group assessment, and HR teams for informal influence mapping.
 ---
 
 <Playground initial={`sociogram "Playground Dynamics"
@@ -267,60 +267,7 @@ Sociogram supports multiple layouts suitable for different scenarios:
 | **Concentric** | Layered rings by in-degree | Emphasizing core-periphery structure | O(n log n) |
 | **Group-based** | Partitioned by group attribute | Cross-group relationship visualization | O(n) + force within group |
 
-### 7.2 Force-Directed Layout (Default)
-
-Fruchterman-Reingold algorithm implementation:
-
-```
-Initialize: nodes placed randomly within canvas
-Loop max_iterations times:
-  Calculate repulsive force for each node pair (f_rep = k²/d)
-  Calculate attractive force for each edge (f_att = d²/k)
-  Update node positions (clamp to canvas bounds)
-  Gradually reduce temperature (simulated annealing)
-```
-
-| Parameter | Default Value | Meaning |
-|-----------|--------------|------|
-| k (optimal distance) | `sqrt(canvas_area / node_count)` | Ideal distance between nodes |
-| max_iterations | 300 | Convergence steps |
-| initial_temperature | canvas_width / 10 | Initial displacement limit |
-| cooling_rate | 0.95 | Temperature decay per step |
-| min_distance | 60px | Minimum node spacing (hard constraint) |
-
-### 7.3 Circular Layout
-
-```
-Angle interval = 2π / node_count
-Position of i-th node:
-  x = center_x + radius × cos(i × angle_interval - π/2)
-  y = center_y + radius × sin(i × angle_interval - π/2)
-```
-
-| Parameter | Default Value | Meaning |
-|-----------|--------------|------|
-| Radius | max(120, node_count × 20) | Circle radius |
-| Start angle | -π/2 (12 o'clock) | Starting position of first node |
-
-**Sorting optimization:** Cluster nodes of the same group into adjacent positions to reduce cross-group edge crossings.
-
-### 7.4 Concentric Layout
-
-Layered by social status:
-```
-Ring 0 (center):  Stars (highest in-degree)
-Ring 1:           Above-average in-degree
-Ring 2:           Average in-degree
-Ring 3 (outer):   Below-average + isolates
-```
-
-| Parameter | Default Value |
-|-----------|--------------|
-| Ring 0 radius | 0px (single star at center) or 40px (multiple) |
-| Ring gap | 80px |
-| Outer ring radius | ring_count × 80px |
-
-### 7.5 Spacing & Canvas Rules
+### 7.2 Spacing & Canvas Rules
 
 | Parameter | Default | Meaning |
 |-----------|---------|------|
@@ -342,74 +289,10 @@ Ring 3 (outer):   Below-average + isolates
 
 ---
 
-## 8. DSL Grammar (Sociogram)
+## 8. Examples
 
-```text
-document        = header config* group_def* node_def* edge_def*
-header          = "sociogram" quoted_string? NEWLINE
+### Classroom dynamics
 
-config          = "config:" config_key "=" config_value NEWLINE
-config_key      = "layout" | "sizing" | "highlight" | "coloring"
-config_value    = /[a-zA-Z0-9_, -]+/
-
-group_def       = "group" ID properties? NEWLINE
-                  INDENT node_ref+ DEDENT
-
-node_def        = ID properties? NEWLINE
-properties      = "[" property ("," property)* "]"
-property        = "label:" quoted_string
-               | "group:" ID
-               | "size:" SIZE
-               | "role:" ROLE
-               | kv_prop
-
-SIZE            = "small" | "medium" | "large"
-ROLE            = "star" | "isolate" | "bridge"
-
-edge_def        = ID edge_op ID edge_props? NEWLINE
-edge_op         = "->" | "<->" | "--"          (* positive *)
-               | "-x>" | "<x->" | "-x-"       (* negative/rejection *)
-               | "-.>" | "<.->" | "-.-"        (* neutral *)
-               | "==>" | "<==>" | "==="        (* strong positive *)
-               | "===>" | "<===>"              (* very strong positive *)
-edge_props      = "[" edge_prop ("," edge_prop)* "]"
-edge_prop       = "label:" quoted_string
-               | "weight:" NUMBER
-
-ID              = /[a-zA-Z][a-zA-Z0-9_-]*/
-quoted_string   = '"' /[^"]*/ '"'
-NUMBER          = /[0-9]+/
-kv_prop         = IDENTIFIER ":" VALUE
-```
-
----
-
-## 9. Test Cases
-
-### Case 1: Basic Classroom Sociogram (Directed Choices)
-```
-sociogram "Mrs. Chen's 4th Grade Class"
-  alice [label: "Alice"]
-  bob [label: "Bob"]
-  carol [label: "Carol"]
-  dave [label: "Dave"]
-  eve [label: "Eve"]
-  frank [label: "Frank"]
-  alice -> bob
-  alice -> carol
-  bob -> alice
-  bob -> dave
-  carol -> alice
-  carol -> eve
-  dave -> bob
-  dave -> frank
-  eve -> carol
-  eve -> alice
-  frank -> dave
-```
-Verify: alice is a star (in-degree 3), frank is a neglectee (in-degree 1, only chosen by dave). alice ↔ bob and alice ↔ carol are mutual pairs.
-
-### Case 2: With Groups and Rejection (Bullying Analysis)
 ```
 sociogram "Playground Dynamics"
   config: layout = force-directed
@@ -417,64 +300,23 @@ sociogram "Playground Dynamics"
   config: coloring = group
 
   group boys [label: "Boys", color: "#42A5F5"]
-    tom
-    jack
-    mike
-    leo
+    tom; jack; mike; leo
 
   group girls [label: "Girls", color: "#EF5350"]
-    anna
-    beth
-    chloe
-    diana
+    anna; beth; chloe; diana
 
   tom <-> jack
-  tom -> mike
-  jack -> leo
   mike -x> leo [label: "conflict"]
   anna <-> beth
   anna <-> chloe
   beth <-> chloe
-  anna -> diana
   diana -.- tom
-  leo -.- anna
 ```
-Verify: anna-beth-chloe form a clique (all three mutually choose each other). leo is close to an isolate (only jack chooses him unidirectionally). mike → leo is a rejection (red dashed line). diana and tom have a neutral connection.
 
-### Case 3: Organizational Influence Map
+### Group therapy trust network
+
 ```
-sociogram "Engineering Team Informal Influence"
-  config: layout = concentric
-  config: sizing = in-degree
-
-  ceo [label: "CEO", group: leadership]
-  vp [label: "VP Eng", group: leadership]
-  lead1 [label: "Tech Lead A", group: team-a]
-  lead2 [label: "Tech Lead B", group: team-b]
-  dev1 [label: "Senior Dev", group: team-a]
-  dev2 [label: "Dev", group: team-a]
-  dev3 [label: "Dev", group: team-b]
-  dev4 [label: "Junior Dev", group: team-b]
-  ops [label: "DevOps", group: infra]
-
-  dev1 -> lead1
-  dev2 -> lead1
-  dev2 -> dev1
-  dev3 -> lead2
-  dev4 -> dev3
-  lead1 -> vp
-  lead2 -> vp
-  vp -> ceo
-  dev1 -> ops [label: "deployment help"]
-  dev3 -> ops [label: "infra questions"]
-  lead1 <-> lead2 [label: "weekly sync"]
-  dev4 -> dev1 [label: "mentorship"]
-```
-Verify: in concentric layout, lead1 and vp should be in the inner ring (high in-degree), dev4 in the outer ring. ops is a bridge (connecting team-a and team-b).
-
-### Case 4: Group Therapy Sociogram (Social Atom)
-```
-sociogram "Group Therapy Session 5 - Trust Network"
+sociogram "Group Therapy — Trust Network"
   config: layout = circular
 
   therapist [label: "Dr. Park", role: star]
@@ -497,196 +339,27 @@ sociogram "Group Therapy Session 5 - Trust Network"
   tom -> therapist
   nina -> maria
 ```
-Verify: circular layout, therapist is a star. james ↔ maria is a strong mutual pair (thick line). tom is close to an isolate (only connected to therapist). lee and nina have a neutral connection.
 
-### Case 5: Criminal Network Analysis
+### Org team informal influence
+
 ```
-sociogram "Operation Sunset - Communication Network"
-  config: layout = force-directed
-  config: sizing = betweenness
+sociogram "Engineering Team Informal Influence"
+  config: layout = concentric
+  config: sizing = in-degree
 
-  boss [label: "Subject Alpha"]
-  lt1 [label: "Lieutenant 1"]
-  lt2 [label: "Lieutenant 2"]
-  courier1 [label: "Courier A"]
-  courier2 [label: "Courier B"]
-  contact1 [label: "External Contact 1"]
-  contact2 [label: "External Contact 2"]
-  associate1 [label: "Associate"]
-  associate2 [label: "Associate"]
+  ceo [label: "CEO", group: leadership]
+  vp [label: "VP Eng", group: leadership]
+  lead1 [label: "Tech Lead A", group: team-a]
+  lead2 [label: "Tech Lead B", group: team-b]
+  dev1 [label: "Senior Dev", group: team-a]
+  dev2 [label: "Dev", group: team-a]
+  ops [label: "DevOps", group: infra]
 
-  boss <-> lt1 [weight: 4]
-  boss <-> lt2 [weight: 4]
-  lt1 -> courier1
-  lt1 -> courier2
-  lt2 -> associate1
-  lt2 -> associate2
-  courier1 -> contact1 [label: "supplier"]
-  courier2 -> contact2 [label: "distributor"]
-  lt1 <-> lt2 [weight: 2]
-  associate1 -.- courier1
+  dev1 -> lead1
+  dev2 -> lead1
+  lead1 -> vp
+  lead2 -> vp
+  vp -> ceo
+  dev1 -> ops [label: "deployment help"]
+  lead1 <-> lead2 [label: "weekly sync"]
 ```
-Verify: boss and lt1 have the highest betweenness (largest nodes). courier1 is a bridge (connecting lt1 and contact1). The hierarchical structure should emerge naturally in force-directed layout.
-
-### Case 6: Large Group Stress Test (30 nodes)
-```
-sociogram "Conference Networking"
-  config: layout = force-directed
-
-  p1 [label: "Person 1", group: a]
-  p2 [label: "Person 2", group: a]
-  p3 [label: "Person 3", group: a]
-  p4 [label: "Person 4", group: a]
-  p5 [label: "Person 5", group: a]
-  p6 [label: "Person 6", group: b]
-  p7 [label: "Person 7", group: b]
-  p8 [label: "Person 8", group: b]
-  p9 [label: "Person 9", group: b]
-  p10 [label: "Person 10", group: b]
-  p11 [label: "Person 11", group: c]
-  p12 [label: "Person 12", group: c]
-  p13 [label: "Person 13", group: c]
-  p14 [label: "Person 14", group: c]
-  p15 [label: "Person 15", group: c]
-  p16 [label: "Person 16", group: d]
-  p17 [label: "Person 17", group: d]
-  p18 [label: "Person 18", group: d]
-  p19 [label: "Person 19", group: d]
-  p20 [label: "Person 20", group: d]
-  p21 [label: "Person 21"]
-  p22 [label: "Person 22"]
-  p23 [label: "Person 23"]
-  p24 [label: "Person 24"]
-  p25 [label: "Person 25"]
-  p26 [label: "Person 26"]
-  p27 [label: "Person 27"]
-  p28 [label: "Person 28"]
-  p29 [label: "Person 29"]
-  p30 [label: "Person 30"]
-  p1 <-> p2
-  p1 <-> p3
-  p2 <-> p4
-  p3 <-> p5
-  p4 <-> p5
-  p6 <-> p7
-  p6 <-> p8
-  p7 <-> p9
-  p8 <-> p10
-  p11 <-> p12
-  p11 <-> p13
-  p12 <-> p14
-  p13 <-> p15
-  p16 <-> p17
-  p16 <-> p18
-  p17 <-> p19
-  p18 <-> p20
-  p1 -> p6 [label: "cross-group"]
-  p6 -> p11 [label: "cross-group"]
-  p11 -> p16 [label: "cross-group"]
-  p21 -> p1
-  p22 -> p6
-  p23 -> p11
-  p24 -> p16
-  p25 -- p26
-  p27 -- p28
-  p29 -- p30
-```
-Verify: 30 nodes → automatically uses 800×800 canvas. The 4 groups should naturally cluster via force-directed layout. p1, p6, p11, p16 are cross-group bridges. p25-p30 are independent pairs.
-
----
-
-## 10. SVG Implementation Details
-
-### 10.1 Arrow Markers
-
-```xml
-<defs>
-  <!-- Positive arrow (dark gray) -->
-  <marker id="sociogram-arrow" viewBox="0 0 10 10" refX="9" refY="5"
-          markerWidth="8" markerHeight="8" orient="auto">
-    <path d="M 0 0 L 10 5 L 0 10 z" fill="#333"/>
-  </marker>
-  <!-- Rejection arrow (red) -->
-  <marker id="sociogram-arrow-reject" viewBox="0 0 10 10" refX="9" refY="5"
-          markerWidth="8" markerHeight="8" orient="auto">
-    <path d="M 0 0 L 10 5 L 0 10 z" fill="#D32F2F"/>
-  </marker>
-  <!-- Neutral arrow (gray) -->
-  <marker id="sociogram-arrow-neutral" viewBox="0 0 10 10" refX="9" refY="5"
-          markerWidth="8" markerHeight="8" orient="auto">
-    <path d="M 0 0 L 10 5 L 0 10 z" fill="#9E9E9E"/>
-  </marker>
-</defs>
-```
-
-### 10.2 Edge Rendering
-
-**Edge-to-edge calculation (same as ecomap):**
-- Lines run from node edge to node edge, not center to center
-- Calculation: along the line between `(center_A, center_B)`, subtract each respective radius + marker size
-
-**Bidirectional edges:**
-- Mutual choice (`<->`): markers at both ends, using a single line
-- Avoid overlap: if A→B and B→A are both one-way but not mutual, draw two slightly curved lines (offset ±3px)
-
-**Self-referential edges:**
-- Not supported (sociograms do not require self-referential relationships)
-
-### 10.3 Clique Highlighting
-
-When `config: highlight = cliques`:
-1. Detect all cliques (complete subgraph, ≥3 nodes)
-2. For each clique, compute convex hull
-3. Render semi-transparent background `<polygon>` with rounded corners
-
-```xml
-<polygon points="..." fill="#42A5F5" fill-opacity="0.08"
-         stroke="#42A5F5" stroke-opacity="0.2" stroke-width="1"
-         class="schematex-sociogram-clique"/>
-```
-
-### 10.4 CSS Classes
-
-```css
-.schematex-sociogram-node { }
-.schematex-sociogram-node-star { }
-.schematex-sociogram-node-isolate { }
-.schematex-sociogram-edge { }
-.schematex-sociogram-edge-positive { }
-.schematex-sociogram-edge-negative { }
-.schematex-sociogram-edge-neutral { }
-.schematex-sociogram-label { }
-.schematex-sociogram-clique { }
-.schematex-sociogram-group-label { }
-```
-
----
-
-## 11. Sociogram Variants (Future Phases)
-
-### 11.1 Social Atom (Moreno)
-Personal sociogram — one person draws their most important surrounding relationships. Can reuse ecomap radial layout.
-
-### 11.2 Spectrogram
-Linear arrangement, members positioned along a line according to some dimension. Extremely simple layout (one-dimensional).
-
-### 11.3 Target Sociogram
-Bullseye layout — focal person at center, with people placed closer to the center the closer the relationship. Similar to concentric layout but centered on a single person.
-
----
-
-## 12. Implementation Priority
-
-| Priority | Feature | Complexity | Reuse |
-|----------|---------|------------|------|
-| P0 (Phase 3) | Circular layout + directed edges + 3 valence types | Medium | Arrow markers reused from ecomap |
-| P0 | Node auto-detection (star/isolate) | Low | Pure data computation |
-| P1 | Force-directed layout (Fruchterman-Reingold) | High | New algorithm, but formula is well-defined |
-| P1 | Group coloring + group-based node clustering | Medium | Color palette reused from ecomap |
-| P1 | Edge weight → line thickness | Low | |
-| P2 | Concentric layout | Medium | Adapted from radial layout |
-| P2 | Clique detection + convex hull highlighting | High | Graph theory algorithm |
-| P2 | Node sizing by metric (in-degree/betweenness) | Medium | |
-| P3 | Edge labels | Low | Reused from ecomap |
-| P3 | Social Atom variant (egocentric view) | Low | Reused from ecomap radial |
-| P3 | Bridge detection | Medium | Betweenness centrality |
