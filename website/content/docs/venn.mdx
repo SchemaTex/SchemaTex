@@ -1,0 +1,157 @@
+---
+title: Venn / Euler diagram
+description: Set relationship diagrams in four DSL modes — declarative intersections with counts, element enumeration, named region labels, and Euler subset/disjoint relations. Used by data analysts, educators, researchers, and product managers for overlap analysis, set logic, and audience segmentation.
+---
+
+<Playground initial={`venn "Customer Segments"
+set A "Email subscribers" [color: "#1E88E5"]
+set B "Paid users" [color: "#E53935"]
+set C "Mobile app users" [color: "#43A047"]
+A & B : 1840
+A & C : 920
+B & C : 2100
+A & B & C : 650
+A only : 12400
+B only : 3200
+C only : 8700`} />
+
+*Four composable DSL modes — mix declarative counts, element lists, region labels, and Euler hierarchy in a single diagram.*
+
+---
+
+## Mode 1 — Declarative counts
+
+Define sets, then assign values to intersections:
+
+```
+venn "Support Tickets"
+set A "Bug reports" [color: "#E53935"]
+set B "Feature requests" [color: "#1E88E5"]
+
+A & B : 23         # overlap value
+A only : 145       # A minus B
+B only : 312       # B minus A
+```
+
+---
+
+## Mode 2 — Element enumeration
+
+List elements per set; intersections are computed automatically:
+
+```
+venn "Tech Skills"
+Frontend = { React, TypeScript, CSS, Webpack }
+Backend  = { TypeScript, Python, PostgreSQL, Redis }
+DevOps   = { Docker, Kubernetes, Redis, PostgreSQL }
+```
+
+---
+
+## Mode 3 — Region labels
+
+Label regions with text instead of counts:
+
+```
+venn "Go-to-Market"
+set A "Awareness"
+set B "Consideration"
+set C "Purchase"
+
+region A & B : "Nurture"
+region B & C : "Convert"
+region A & B & C : "Loyal customer"
+```
+
+---
+
+## Mode 4 — Euler (subset / disjoint)
+
+Express set hierarchy and separation:
+
+```
+venn "Biology"
+set mammals "Mammals"
+set dogs "Dogs"
+set cats "Cats"
+set fish "Fish"
+
+dogs subset mammals
+cats subset mammals
+fish disjoint mammals
+```
+
+Euler relations: `subset` (or `in`), `disjoint`, `overlap`
+
+---
+
+## Set definition
+
+```
+set ID "Label" [color: "#hex"]
+```
+
+| Property | Values | Meaning |
+|----------|--------|---------|
+| `color` | hex string | Fill color for this set |
+
+---
+
+## Config options
+
+```
+config: proportional = true    # area proportional to value
+config: showCounts = true      # always show numbers (default: auto)
+config: showPercent = true     # show % of total
+config: palette = default      # default | brand | monochrome
+config: blendMode = multiply   # multiply | screen | none
+```
+
+---
+
+## Examples
+
+### Skills overlap (enumeration)
+
+```
+venn "Full-Stack Team Skills"
+Frontend = { React, TypeScript, CSS, Jest }
+Backend  = { TypeScript, Node.js, PostgreSQL, Jest }
+Infra    = { Docker, Kubernetes, PostgreSQL, Terraform }
+```
+
+### Market segments (declarative)
+
+```
+venn "Product Personas"
+set power "Power Users" [color: "#7B1FA2"]
+set casual "Casual Users" [color: "#0288D1"]
+set trial "Trial Users" [color: "#388E3C"]
+
+power & casual : 340
+casual & trial : 890
+power & trial : 120
+power & casual & trial : 45
+power only : 1200
+casual only : 5600
+trial only : 3100
+```
+
+### Taxonomy (Euler)
+
+```
+venn "Programming Paradigms"
+set prog "Programming Languages"
+set oop "Object-Oriented"
+set fp "Functional"
+set python "Python"
+set haskell "Haskell"
+set java "Java"
+
+oop subset prog
+fp subset prog
+python subset oop
+java subset oop
+haskell subset fp
+python overlap fp
+```

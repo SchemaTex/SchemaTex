@@ -1,0 +1,180 @@
+---
+title: Matrix / Quadrant diagram
+description: 2×2 prioritization matrices, 3×3 talent grids, heatmaps, and correlation tables with built-in templates for Eisenhower, BCG, Ansoff, impact-effort, RICE, 9-box, Johari Window, and risk matrices. Used by product managers, executives, consultants, and HR teams for prioritization, portfolio analysis, and talent review.
+---
+
+<Playground initial={`matrix eisenhower "Q2 Initiatives"
+
+"Fix checkout bug" at (0.15, 0.85) size: 3 highlight: true
+"Rewrite onboarding" at (0.7, 0.8) size: 4
+"Update docs" at (0.2, 0.35) size: 2
+"Refactor auth" at (0.75, 0.3) size: 3
+"Add dark mode" at (0.8, 0.45) size: 2
+"SEO audit" at (0.3, 0.6) size: 2`} />
+
+*8 built-in templates + fully custom axes. Points positioned by (x, y) coordinates on a 0–1 scale.*
+
+---
+
+## Built-in templates
+
+```
+matrix eisenhower      # Urgent/Important 2×2
+matrix impact-effort   # Impact/Effort 2×2
+matrix rice            # Reach×Impact/Effort 2×2
+matrix bcg             # Market Share/Growth (BCG) 2×2
+matrix ansoff          # Products/Markets 2×2
+matrix johari          # Johari Window 2×2
+matrix 9-box           # Performance/Potential 3×3
+matrix risk-matrix     # Likelihood/Severity heatmap 5×5
+```
+
+Just use a template name — axes and quadrant labels are pre-configured.
+
+---
+
+## Custom quadrant matrix
+
+```
+matrix "Feature Prioritization"
+x-axis: Low Value → High Value
+y-axis: Low Effort → High Effort
+
+quadrant Q1 "Quick Wins"
+quadrant Q2 "Strategic Bets"
+quadrant Q3 "Avoid"
+quadrant Q4 "Fill-ins"
+
+"Dark mode" at (0.8, 0.25) size: 3
+"API v2" at (0.75, 0.85) size: 5 highlight: true
+"Fix login bug" at (0.9, 0.15) size: 4 highlight: true
+"Update FAQ" at (0.2, 0.1) size: 1
+```
+
+---
+
+## Axis syntax
+
+```
+x-axis: Low Cost → High Cost      # → or ->
+y-axis: Low Impact → High Impact  # left label → right label
+y-axis: Rare ↑ Certain            # ↑ for vertical
+```
+
+Reversed axis (right-to-left): use `←` or `<-`:
+```
+x-axis: High Share ← Low Share    # BCG convention
+```
+
+---
+
+## Points
+
+```
+"Label" at (x, y)
+"Label" at (x, y) size: 4 category: infra color: #E53935 highlight: true
+```
+
+| Property | Values | Meaning |
+|----------|--------|---------|
+| `x`, `y` | 0.0 – 1.0 | Position (0,0 = bottom-left, 1,1 = top-right) |
+| `size` | number | Bubble radius weight (default 3) |
+| `category` | text | Color group for legend |
+| `color` | hex | Override bubble color |
+| `shape` | `circle` \| `square` \| `triangle` \| `diamond` | Bubble shape |
+| `highlight` | `true` | Emphasize this point |
+| `note` | quoted text | Tooltip annotation |
+
+---
+
+## Heatmap mode
+
+```
+matrix heatmap 4x4 "Skill Matrix"
+rows: [Strategy, Execution, Communication, Technical]
+cols: [Junior, Mid, Senior, Staff]
+
+cell (0,0) level: weak
+cell (1,0) level: medium
+cell (2,0) level: strong
+cell (3,1) level: strong
+cell (0,3) value: 9
+```
+
+Cell levels: `strong` (3), `medium` (2), `weak` (1) — or set `value:` directly.
+
+---
+
+## Correlation matrix
+
+```
+matrix correlation 4x4 "Product Metrics Correlation"
+rows: [DAU, Retention, Revenue, NPS]
+cols: [DAU, Retention, Revenue, NPS]
+
+cell (0,0) value: 1
+cell (1,0) value: 0.82
+cell (2,0) value: 0.54
+cell (3,0) value: 0.71
+```
+
+---
+
+## Config options
+
+```
+config:
+  quadrantBg: true          # colored quadrant backgrounds
+  gridLines: true           # grid overlay
+  axisArrows: true          # arrows on axes
+  showCounts: true          # always show counts
+  bubbleScale: area         # area | radius
+  legendPosition: bottom-right  # bottom-right | bottom-left | none
+```
+
+---
+
+## Examples
+
+### BCG portfolio analysis
+
+```
+matrix bcg "Product Portfolio"
+
+"ChatBot Pro" at (0.8, 0.85) size: 5 category: saas highlight: true
+"Analytics Suite" at (0.7, 0.3) size: 4 category: saas
+"Legacy CRM" at (0.2, 0.2) size: 6 category: legacy
+"New Mobile App" at (0.35, 0.8) size: 3 category: mobile
+```
+
+### 9-box talent review
+
+```
+matrix 9-box "Engineering Team — H1 Review"
+
+"Alex K." at (0.9, 0.9) size: 3 highlight: true
+"Jordan L." at (0.5, 0.8) size: 3
+"Sam R." at (0.9, 0.5) size: 3
+"Priya N." at (0.3, 0.6) size: 3
+"Marcus W." at (0.6, 0.5) size: 3
+"Casey T." at (0.2, 0.2) size: 3
+```
+
+### Custom risk assessment
+
+```
+matrix "Project Risk Assessment"
+x-axis: Negligible → Severe
+y-axis: Rare → Certain
+
+quadrant Q1 "Monitor"
+quadrant Q2 "Mitigate"
+quadrant Q3 "Accept"
+quadrant Q4 "Escalate"
+
+"Vendor delay" at (0.45, 0.7) size: 4 highlight: true
+"Scope creep" at (0.55, 0.8) size: 5 highlight: true
+"Security breach" at (0.85, 0.35) size: 4
+"Team turnover" at (0.6, 0.4) size: 3
+"Budget overrun" at (0.5, 0.65) size: 3
+```

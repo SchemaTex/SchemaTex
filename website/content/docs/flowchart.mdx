@@ -1,0 +1,148 @@
+---
+title: Flowchart
+description: General-purpose flowcharts with 13 node shapes, 6 edge types, subgraph clustering, and fan-out wiring. Mermaid-compatible syntax. Used by software engineers, business analysts, and technical writers for process documentation, system design, and decision flows.
+---
+
+<Playground initial={`flowchart TD
+  A([Start]) --> B{Valid input?}
+  B -->|Yes| C[Process data]
+  B -->|No| D[Return error]
+  C --> E[(Save to DB)]
+  E --> F([End])`} />
+
+*Mermaid-compatible flowchart DSL with extended shape set and automatic DAG layout.*
+
+---
+
+## Direction
+
+```
+flowchart TD   # top → down (default)
+flowchart LR   # left → right
+flowchart BT   # bottom → top
+flowchart RL   # right → left
+flowchart TB   # same as TD
+```
+
+---
+
+## Node shapes
+
+| Syntax | Shape | Use for |
+|--------|-------|---------|
+| `A[Label]` | Rectangle | Process step |
+| `A(Label)` | Rounded rect | Soft step / subprocess |
+| `A([Label])` | Stadium (pill) | Start / end terminal |
+| `A{Label}` | Diamond | Decision |
+| `A{{Label}}` | Hexagon | Preparation / config |
+| `A[[Label]]` | Subroutine | Predefined process |
+| `A[(Label)]` | Cylinder | Database / storage |
+| `A((Label))` | Circle | Connector / junction |
+| `A(((Label)))` | Double circle | End state |
+| `A[/Label/]` | Parallelogram | Input / output |
+| `A[\Label\]` | Parallelogram alt | Manual operation |
+| `A[/Label\]` | Trapezoid | Manual input |
+| `A>Label]` | Asymmetric | Tag / annotation |
+
+---
+
+## Edges
+
+| Syntax | Style | Use for |
+|--------|-------|---------|
+| `A --> B` | Solid arrow | Normal flow |
+| `A --- B` | No arrow | Association |
+| `A -.-> B` | Dotted arrow | Optional / async path |
+| `A ==> B` | Thick arrow | Critical path |
+| `A <--> B` | Bidirectional | Two-way |
+| `A --x B` | Crossed end | Block / reject |
+| `A --o B` | Circle end | Aggregation |
+
+### Edge labels
+
+```
+A -->|Yes| B           # pipe label
+A -- Yes --> B         # inline label
+A -.->|optional| B    # dotted with label
+```
+
+---
+
+## Fan-out (cross-product edges)
+
+```
+A & B --> C            # both A and B connect to C
+A --> B & C            # A connects to both B and C
+A & B --> C & D        # all combinations
+```
+
+---
+
+## Subgraphs
+
+```
+flowchart LR
+  subgraph "Frontend"
+    ui[React App] --> api[API Client]
+  end
+  subgraph "Backend"
+    server[Express] --> db[(PostgreSQL)]
+  end
+  api --> server
+```
+
+---
+
+## Comments
+
+```
+%% This is a comment
+A --> B  %% inline comment
+```
+
+---
+
+## Examples
+
+### Software deployment pipeline
+
+```
+flowchart LR
+  code[Push code] --> ci{CI pass?}
+  ci -->|Yes| staging[Deploy staging]
+  ci -->|No| fix[Fix errors]
+  fix --> code
+  staging --> review{Review OK?}
+  review -->|Yes| prod[Deploy prod]
+  review -->|No| rollback[Rollback]
+```
+
+### User authentication flow
+
+```
+flowchart TD
+  start([Login request]) --> creds{Credentials valid?}
+  creds -->|No| fail[Return 401]
+  creds -->|Yes| mfa{MFA enabled?}
+  mfa -->|No| token[Issue JWT]
+  mfa -->|Yes| otp{OTP correct?}
+  otp -->|No| lockout[Increment failed attempts]
+  otp -->|Yes| token
+  token --> done([Authenticated])
+```
+
+### Data processing with subgraphs
+
+```
+flowchart TD
+  subgraph "Ingestion"
+    raw[/Raw data/] --> validate{Valid schema?}
+    validate -->|No| dead[(Dead letter queue)]
+    validate -->|Yes| clean[Clean & normalize]
+  end
+  subgraph "Storage"
+    clean --> dw[(Data warehouse)]
+    clean --> cache[(Redis cache)]
+  end
+  dw --> report[Generate report]
+```

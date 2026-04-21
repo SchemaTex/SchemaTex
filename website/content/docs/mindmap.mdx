@@ -1,0 +1,164 @@
+---
+title: Mind map
+description: Radial mind maps and horizontal logic trees from Markdown-style heading and bullet syntax. Two styles — radial map and logic-right tree. Used by students, educators, project managers, and consultants for brainstorming, note-taking, knowledge structuring, and concept overviews.
+---
+
+<Playground initial={`mindmap
+%% style: map
+
+# Product Strategy
+
+## Market
+- Target segments
+- Competitive landscape
+- Pricing research
+
+## Product
+- Core features
+- Roadmap Q3-Q4
+- Technical debt
+
+## Growth
+- Acquisition channels
+- Retention levers
+- Referral program
+
+## Team
+- Engineering
+- Design
+- Marketing`} />
+
+*Markdown heading levels set hierarchy depth. Bullets extend any heading branch.*
+
+---
+
+## Syntax
+
+```
+mindmap          # optional header keyword
+
+# Central Topic  # root node (H1)
+
+## Branch        # level 1 (H2)
+### Sub-branch   # level 2 (H3)
+#### Leaf        # level 3 (H4)
+
+- Bullet item    # child of current heading
+  - Sub-bullet   # 2 spaces = 1 deeper level
+```
+
+Rules:
+- Exactly one `#` root node allowed
+- Heading depth (`##`, `###`, ...) sets the tree level
+- Bullet indent: 2 spaces = 1 level deeper than the enclosing heading
+- Comments: not supported (use `%%` directives only)
+
+---
+
+## Directives
+
+```
+%% style: map          # radial map (default)
+%% style: logic-right  # horizontal tree branching right
+%% theme: dark         # theme override
+```
+
+Place directives before the `#` root node.
+
+---
+
+## Styles
+
+| Style | Layout | Best for |
+|-------|--------|---------|
+| `map` (default) | Radial — branches spread in all directions | Brainstorming, concept maps |
+| `logic-right` | Horizontal tree — all branches go right | Structured outlines, decision hierarchies |
+
+---
+
+## Examples
+
+### Project kickoff — radial map
+
+```
+mindmap
+%% style: map
+
+# Project Kickoff
+
+## Goals
+- Define scope
+- Set timeline
+- Align stakeholders
+
+## Risks
+- Technical complexity
+  - Legacy integrations
+  - Performance targets
+- Team availability
+- Budget constraints
+
+## Deliverables
+- Architecture doc
+- MVP prototype
+- User testing plan
+
+## Team
+- Product
+- Engineering
+- Design
+- QA
+```
+
+### Knowledge map — logic-right tree
+
+```
+mindmap
+%% style: logic-right
+
+# Machine Learning
+
+## Supervised Learning
+### Classification
+- Logistic Regression
+- Random Forest
+- Neural Networks
+### Regression
+- Linear Regression
+- Gradient Boosting
+
+## Unsupervised Learning
+### Clustering
+- K-Means
+- DBSCAN
+### Dimensionality Reduction
+- PCA
+- t-SNE
+
+## Reinforcement Learning
+- Q-Learning
+- Policy Gradient
+```
+
+### Meeting notes
+
+```
+mindmap
+
+# Design Review — Auth Flow
+
+## Decisions
+- Use JWT with refresh tokens
+- 15-minute access token TTL
+- Biometric opt-in for mobile
+
+## Open Questions
+- MFA enforcement policy
+- Session handling on web
+  - Cookie vs localStorage
+
+## Action Items
+- Security review by Thurs
+- Update API docs
+- Prototype MFA screen
+```

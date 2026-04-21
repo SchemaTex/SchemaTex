@@ -1,0 +1,134 @@
+---
+title: Org chart
+description: Organizational hierarchy diagrams with role icons, open headcount, matrix reporting lines, and assistant positions. Supports tree and list layouts, top-down and left-right orientation. Used by HR teams, founders, investors, and ops managers for headcount planning, team communication, and org design.
+---
+
+<Playground initial={`orgchart "Engineering Org"
+ceo: "Sarah Chen" | CEO [role: ceo]
+  cto: "Marcus Webb" | CTO [role: cto]
+    fe: "Priya Nair" | VP Frontend [role: vp]
+      fe1: "Alex Kim" | Senior Engineer [role: engineer]
+      fe2: "Jordan Lee" | Engineer [role: engineer]
+    be: "Omar Hassan" | VP Backend [role: vp]
+      be1: "Yuki Tanaka" | Senior Engineer [role: engineer]
+      open1: open "TBH" | Backend Engineer [role: engineer]
+  cpo: "Diane Russo" | CPO [role: cpo]`} />
+
+*Indentation-based hierarchy with explicit edge overrides, matrix dotted lines, and open-headcount markers.*
+
+---
+
+## Node syntax
+
+```
+id: "Name" | "Title" | "Department" [props]
+```
+
+Fields are separated by `|`. Only name is required.
+
+```
+alice: "Alice Zhang"                          # name only
+alice: "Alice Zhang" | "VP Engineering"       # name + title
+alice: "Alice Zhang" | "VP Eng" | "Platform"  # + department
+```
+
+---
+
+## Node kinds
+
+| Keyword | Meaning |
+|---------|---------|
+| (default) | Regular person node |
+| `role id: ...` | Open/unfilled role |
+| `open id: ...` | Alias for role |
+| `draft id: ...` | Draft / TBH position |
+| `tbh id: ...` | Alias for draft |
+| `advisor id: ...` | External advisor / board member |
+| `external id: ...` | Alias for advisor |
+
+---
+
+## Node properties
+
+| Property | Values | Meaning |
+|----------|--------|---------|
+| `role:` | ceo, cto, cfo, coo, cmo, cpo, vp, engineer, designer, sales, hr, legal, ops, marketing, product, data, advisor, intern, vacant | Role icon |
+| `icon:` | same as role | Alias for role |
+| `department:` | text | Department override |
+| `status:` | `new` \| `leaving` \| `on-leave` | Highlight status |
+| `avatar-color:` | hex color | Avatar background |
+| `gender:` | `male` \| `female` | Avatar style |
+| `note:` | text | Info line |
+| `email:` | text | Info line |
+| `assistant-of:` | node id | Place as assistant |
+| `matrix:` | node ids | Add dotted matrix lines |
+
+---
+
+## Explicit edges
+
+```
+alice -> bob           # reporting line (solid)
+alice -.-> charlie     # matrix line (dotted)
+```
+
+---
+
+## Config options
+
+```
+config: direction = TD   # TD (top-down, default) | LR (left-right)
+config: layout = tree    # tree (default) | list (compact directory)
+```
+
+---
+
+## Examples
+
+### Startup leadership team
+
+```
+orgchart "Acme Inc."
+
+ceo: "Jamie Torres" | CEO [role: ceo]
+  cto: "Raj Patel" | CTO [role: cto]
+    eng1: "Lee Wong" | Staff Engineer [role: engineer]
+    eng2: "Kim Park" | Senior Engineer [role: engineer]
+    open1: open "TBH" | Frontend Engineer [role: engineer]
+  cfo: "Maria Santos" | CFO [role: cfo]
+  vpmkt: "Chris Obi" | VP Marketing [role: marketing]
+
+advisor adv1: "Dr. Alan Ford" | Board Advisor [role: advisor]
+```
+
+### Left-right with matrix reporting
+
+```
+orgchart "Product Org"
+config: direction = LR
+
+cpo: "Ellen Wu" | CPO [role: cpo]
+  pm1: "Nour Ahmed" | Product Lead | Core [role: product]
+  pm2: "Tyler Brooks" | Product Lead | Growth [role: product]
+  design: "Suki Ito" | Design Lead [role: designer]
+
+# Matrix: design lead dotted-reports to both PMs
+pm1 -.-> design
+pm2 -.-> design
+```
+
+### HR directory (list layout)
+
+```
+orgchart "Engineering Directory"
+config: layout = list
+
+cto: "Wei Zhang" | CTO
+  platform: "Platform Team"
+    p1: "Amara Diallo" | Staff Eng [role: engineer, status: new]
+    p2: "Ben Novak" | Senior Eng [role: engineer]
+    p3: draft "TBH" | Engineer [role: engineer]
+  growth: "Growth Team"
+    g1: "Fatima Al-Rashid" | Senior Eng [role: engineer]
+    g2: "Marco Ricci" | Engineer [role: engineer, status: leaving]
+```
