@@ -24,7 +24,7 @@
 </p>
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/SchemaTex/SchemaTex/main/website/public/hero-demo.gif" alt="Schematex demo — genogram, pedigree, ladder logic, phylo, entity structure, fishbone, circuit, ecomap, timing" width="720">
+  <img src="./website/public/hero-demo.gif" alt="Schematex demo — genogram, pedigree, ladder logic, phylo, entity structure, fishbone, circuit, ecomap, timing" width="720">
 </p>
 
 ---
