@@ -3,26 +3,19 @@
 import { useCallback, useMemo, useState, useEffect } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import {
+  DIAGRAM_LABELS,
   INDUSTRY_LABELS,
   CLUSTER_TO_TYPES,
+  type DiagramType,
   type GalleryExample,
   type Industry,
 } from '@/lib/gallery-examples';
-
-type ClusterKey = keyof typeof CLUSTER_TO_TYPES;
-
-const CLUSTER_META: Record<ClusterKey, { label: string; color: string }> = {
-  relationships: { label: 'Relationships', color: 'var(--cat-0)' },
-  'electrical-industrial': { label: 'Electrical & Industrial', color: 'var(--cat-2)' },
-  'corporate-legal': { label: 'Corporate & Legal', color: 'var(--cat-3)' },
-  'causality-analysis': { label: 'Causality & Analysis', color: 'var(--cat-1)' },
-};
 
 interface GalleryFilterBarProps {
   examples: GalleryExample[];
   totalCount: number;
   visibleCount: number;
-  activeCluster: ClusterKey | null;
+  activeDiagram: DiagramType | null;
   activeIndustry: Industry | null;
   activeQuery: string;
 }
@@ -31,7 +24,7 @@ export function GalleryFilterBar({
   examples,
   totalCount,
   visibleCount,
-  activeCluster,
+  activeDiagram,
   activeIndustry,
   activeQuery,
 }: GalleryFilterBarProps) {
@@ -64,11 +57,10 @@ export function GalleryFilterBar({
     router.replace(pathname, { scroll: false });
   }, [router, pathname]);
 
-  const hasActive =
-    activeCluster !== null || activeIndustry !== null || activeQuery !== '';
+  const hasActive = activeDiagram !== null || activeIndustry !== null || activeQuery !== '';
 
   const counts = useMemo(() => {
-    const clusterCounts = new Map<ClusterKey, number>();
+    const diagramCounts = new Map<DiagramType, number>();
     const industryCounts = new Map<Industry, number>();
     const q = activeQuery.toLowerCase();
 
@@ -80,28 +72,35 @@ export function GalleryFilterBar({
         ex.standard.toLowerCase().includes(q);
       if (!matchesQ) continue;
 
-      for (const [k, types] of Object.entries(CLUSTER_TO_TYPES) as [ClusterKey, string[]][]) {
-        if (types.includes(ex.diagram)) {
-          if (activeIndustry === null || ex.industry === activeIndustry) {
-            clusterCounts.set(k, (clusterCounts.get(k) ?? 0) + 1);
-          }
-        }
+      const matchesDiagram = activeDiagram === null || ex.diagram === activeDiagram;
+      const matchesIndustry = activeIndustry === null || ex.industry === activeIndustry;
+
+      if (matchesIndustry) {
+        diagramCounts.set(ex.diagram, (diagramCounts.get(ex.diagram) ?? 0) + 1);
       }
-      if (
-        activeCluster === null ||
-        CLUSTER_TO_TYPES[activeCluster]?.includes(ex.diagram)
-      ) {
+      if (matchesDiagram) {
         industryCounts.set(ex.industry, (industryCounts.get(ex.industry) ?? 0) + 1);
       }
     }
-    return { clusterCounts, industryCounts };
-  }, [examples, activeCluster, activeIndustry, activeQuery]);
+    return { diagramCounts, industryCounts };
+  }, [examples, activeDiagram, activeIndustry, activeQuery]);
 
-  const clusterOptions = (Object.keys(CLUSTER_META) as ClusterKey[]).map((k) => ({
-    value: k,
-    label: CLUSTER_META[k].label,
-    color: CLUSTER_META[k].color,
-    count: counts.clusterCounts.get(k) ?? 0,
+  // Diagram types present in the dataset, ordered by cluster grouping
+  const diagramsPresent = useMemo(() => {
+    const inDataset = new Set(examples.map((e) => e.diagram));
+    const ordered: DiagramType[] = [];
+    for (const types of Object.values(CLUSTER_TO_TYPES)) {
+      for (const t of types as DiagramType[]) {
+        if (inDataset.has(t)) ordered.push(t);
+      }
+    }
+    return ordered;
+  }, [examples]);
+
+  const diagramOptions = diagramsPresent.map((t) => ({
+    value: t,
+    label: DIAGRAM_LABELS[t]?.label ?? t,
+    count: counts.diagramCounts.get(t) ?? 0,
   }));
 
   const industryOptions = (Object.keys(INDUSTRY_LABELS) as Industry[]).map((k) => ({
@@ -116,7 +115,7 @@ export function GalleryFilterBar({
       style={{ borderBottom: '1px solid var(--fill-muted)', background: 'color-mix(in srgb, var(--bg) 90%, transparent)' }}
     >
       <div className="mx-auto max-w-6xl flex flex-col gap-3">
-        {/* Row 1: full-width search */}
+        {/* Row 1: search */}
         <div
           className="flex items-center gap-2 px-3 py-2"
           style={{
@@ -159,31 +158,7 @@ export function GalleryFilterBar({
           )}
         </div>
 
-        {/* Row 2: CLUSTER chips */}
-        <div className="flex items-center gap-3">
-          <span className="type-eye shrink-0">CLUSTER ·</span>
-          <div className="flex flex-wrap gap-1.5">
-            {clusterOptions.map((opt) => {
-              const isActive = activeCluster === opt.value;
-              const isDisabled = opt.count === 0 && !isActive;
-              return (
-                <button
-                  key={opt.value}
-                  type="button"
-                  className={`gal-chip${isActive ? ' active' : ''}`}
-                  disabled={isDisabled}
-                  onClick={() => setParam('cluster', isActive ? null : opt.value)}
-                >
-                  <span aria-hidden style={{ color: isActive ? 'inherit' : opt.color, fontSize: 9 }}>■</span>
-                  {opt.label}
-                  <span style={{ opacity: 0.5 }}>{opt.count}</span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Row 3: USE-CASE chips */}
+        {/* Row 2: USE-CASE chips */}
         <div className="flex items-center gap-3">
           <span className="type-eye shrink-0">USE-CASE ·</span>
           <div className="flex flex-wrap gap-1.5">
@@ -197,6 +172,29 @@ export function GalleryFilterBar({
                   className={`gal-chip${isActive ? ' active' : ''}`}
                   disabled={isDisabled}
                   onClick={() => setParam('industry', isActive ? null : opt.value)}
+                >
+                  {opt.label}
+                  <span style={{ opacity: 0.5 }}>{opt.count}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Row 3: DIAGRAM chips */}
+        <div className="flex items-center gap-3">
+          <span className="type-eye shrink-0">DIAGRAM ·</span>
+          <div className="flex flex-wrap gap-1.5">
+            {diagramOptions.map((opt) => {
+              const isActive = activeDiagram === opt.value;
+              const isDisabled = opt.count === 0 && !isActive;
+              return (
+                <button
+                  key={opt.value}
+                  type="button"
+                  className={`gal-chip${isActive ? ' active' : ''}`}
+                  disabled={isDisabled}
+                  onClick={() => setParam('type', isActive ? null : opt.value)}
                 >
                   {opt.label}
                   <span style={{ opacity: 0.5 }}>{opt.count}</span>

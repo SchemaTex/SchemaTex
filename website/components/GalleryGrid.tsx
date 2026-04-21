@@ -88,10 +88,6 @@ function GalleryCard({ ex }: { ex: GalleryExample }) {
         </div>
       </Link>
 
-      {/* Secondary link — playground strip */}
-      <Link href={playgroundHref} className="gal-card-strip">
-        open in playground →
-      </Link>
     </article>
   );
 }

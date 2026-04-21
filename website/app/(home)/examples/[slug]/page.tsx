@@ -59,6 +59,14 @@ export default async function ExampleDetailPage({
         <h1 className="text-balance text-3xl font-semibold tracking-tight text-fd-foreground md:text-4xl">
           {ex.title}
         </h1>
+        {ex.description && (
+          <p className="mt-3 text-lg leading-relaxed text-fd-muted-foreground">
+            {ex.description}
+          </p>
+        )}
+        {ex.persona && (
+          <p className="mt-2 text-sm text-fd-muted-foreground opacity-70">{ex.persona}</p>
+        )}
       </header>
 
       <div className="mb-6 flex flex-wrap items-center gap-2">

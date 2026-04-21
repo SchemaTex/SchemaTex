@@ -2,15 +2,13 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import {
-  CLUSTER_TO_TYPES,
+  DIAGRAM_LABELS,
   INDUSTRY_LABELS,
   type GalleryExample,
   type DiagramType,
   type Industry,
 } from '@/lib/gallery-examples';
 import { allExamples } from '@/lib/examples-source';
-
-type ClusterKey = keyof typeof CLUSTER_TO_TYPES;
 import { GalleryGrid } from '@/components/GalleryGrid';
 import { GalleryFilterBar } from '@/components/GalleryFilterBar';
 
@@ -22,14 +20,14 @@ export const metadata: Metadata = {
 };
 
 interface SearchParamsShape {
-  cluster?: string;
+  type?: string;
   industry?: string;
   q?: string;
 }
 
-function parseCluster(v: string | undefined): ClusterKey | null {
+function parseDiagram(v: string | undefined): DiagramType | null {
   if (!v) return null;
-  return v in CLUSTER_TO_TYPES ? (v as ClusterKey) : null;
+  return v in DIAGRAM_LABELS ? (v as DiagramType) : null;
 }
 
 function parseIndustry(v: string | undefined): Industry | null {
@@ -59,14 +57,13 @@ export default async function GalleryPage({
   searchParams: Promise<SearchParamsShape>;
 }) {
   const params = await searchParams;
-  const activeCluster = parseCluster(params.cluster);
+  const activeDiagram = parseDiagram(params.type);
   const activeIndustry = parseIndustry(params.industry);
   const activeQuery = (params.q ?? '').trim();
-  const clusterTypes = activeCluster ? CLUSTER_TO_TYPES[activeCluster] : undefined;
   const q = activeQuery.toLowerCase();
 
   const filtered = galleryExamples.filter((ex) => {
-    if (clusterTypes !== undefined && !clusterTypes.includes(ex.diagram)) return false;
+    if (activeDiagram !== null && ex.diagram !== activeDiagram) return false;
     if (activeIndustry !== null && ex.industry !== activeIndustry) return false;
     if (q) {
       const hay = `${ex.title} ${ex.description} ${ex.standard}`.toLowerCase();
@@ -108,7 +105,7 @@ export default async function GalleryPage({
               examples={galleryExamples}
               totalCount={galleryExamples.length}
               visibleCount={filtered.length}
-              activeCluster={activeCluster}
+              activeDiagram={activeDiagram}
               activeIndustry={activeIndustry}
               activeQuery={activeQuery}
             />
