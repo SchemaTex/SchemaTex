@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState } from 'react';
 import { DiagramFrame } from './DiagramFrame';
 
 export interface HeroSlide {
@@ -39,7 +39,7 @@ const KW = new Set([
 
 // Single regex that matches all token classes in priority order — matches
 // the canonical tokenizer in the design system prototype.
-const TOKEN_RE = /("[^"]*"|'[^']*')|(-?\d+(?:\.\d+)?%?|0x[\da-f]+)|([A-Za-z_][A-Za-z0-9_-]*)|(\/\/.*$)|([\[\](){},:;=<>+\-*\/|^&!?]+|-->|->|--)|(\s+)/g;
+const TOKEN_RE = /("[^"]*"|'[^']*')|(-?\d+(?:\.\d+)?%?|0x[\da-f]+)|([A-Za-z_][A-Za-z0-9_-]*)|(\/\/.*$)|([[\](){},:;=<>+\-*/|^&!?]+|-->|->|--)|(\s+)/g;
 
 function tokenizeLine(line: string): Token[] {
   const tokens: Token[] = [];
@@ -56,7 +56,7 @@ function tokenizeLine(line: string): Token[] {
     else if (m[3]) tokens.push({ text: m[3], type: KW.has(m[3]) ? 'kw' : '' });
     else if (m[4]) tokens.push({ text: m[4], type: 'op' });   // // comment
     else if (m[5]) tokens.push({ text: m[5], type: 'op' });   // operators/punct
-    else           tokens.push({ text: m[6]!, type: '' });     // whitespace
+    else           tokens.push({ text: m[6] ?? '', type: '' }); // whitespace
     idx = TOKEN_RE.lastIndex;
   }
   if (idx < line.length) tokens.push({ text: line.slice(idx), type: '' });

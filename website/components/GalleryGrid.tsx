@@ -21,8 +21,6 @@ function GalleryCard({ ex }: { ex: GalleryExample }) {
   const clusterColor = CLUSTER_META[cluster]?.color ?? 'var(--text-muted)';
   const industry = INDUSTRY_LABELS[ex.industry];
   const exampleHref = `/examples/${ex.slug}`;
-  const playgroundHref = `/playground?example=${ex.slug}`;
-
   return (
     <article className="gal-card">
       {/* Primary link — card body → example detail page */}
