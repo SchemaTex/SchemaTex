@@ -23,6 +23,7 @@ export const metadata = {
   title: 'Playground — paste LLM output, see SVG live',
   description:
     'Interactive Schematex playground. Edit the text DSL on the left, see the rendered SVG diagram on the right. Made for AI — paste ChatGPT or Claude output, get a professional diagram back. Works for all 20 diagram types.',
+  alternates: { canonical: 'https://schematex.js.org/playground' },
 };
 
 const CLUSTER_COLOR: Record<string, string> = {

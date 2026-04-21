@@ -20,6 +20,7 @@ export async function generateMetadata({
   return {
     title: ex.title,
     description: ex.description,
+    alternates: { canonical: `https://schematex.js.org/examples/${slug}` },
   };
 }
 

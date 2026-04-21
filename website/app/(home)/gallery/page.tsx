@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   title: 'Gallery — the diagrams doctors, engineers, and lawyers actually use',
   description:
     '20 real-world Schematex diagrams across healthcare, industrial, legal, education, and research. Every example follows a published standard — copy the DSL, open in playground, ship. Free, fully open source, made for AI.',
-  alternates: { canonical: 'https://schematex.dev/gallery' },
+  alternates: { canonical: 'https://schematex.js.org/gallery' },
 };
 
 interface SearchParamsShape {

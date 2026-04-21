@@ -1,10 +1,15 @@
 import Link from 'next/link';
+import type { Metadata } from 'next';
 import { render } from 'schematex';
 import { CopyButton } from '@/components/CopyButton';
 import { HeroShowcase, type HeroSlide } from '@/components/HeroShowcase';
 import { GithubStarButton } from '@/components/GithubStarButton';
 import { getRepoStats } from '@/lib/github-stats';
 import { allExamples } from '@/lib/examples-source';
+
+export const metadata: Metadata = {
+  alternates: { canonical: 'https://schematex.js.org' },
+};
 
 // Featured cases — each tying a real diagram to the professional who ships it.
 // Order optimized for cluster coverage: relationships / industrial / corporate / causality.
@@ -114,8 +119,29 @@ export default async function HomePage() {
     }];
   });
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: 'Schematex',
+    applicationCategory: 'DeveloperApplication',
+    operatingSystem: 'Any',
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+    url: 'https://schematex.js.org',
+    downloadUrl: 'https://www.npmjs.com/package/schematex',
+    codeRepository: 'https://github.com/victorzhrn/Schematex',
+    license: 'https://spdx.org/licenses/AGPL-3.0-only.html',
+    description:
+      'Every diagram a doctor, engineer, or lawyer would actually use. 20 industry-standard diagram types from a text DSL — genogram, pedigree, ladder logic, SLD, phylo, fishbone, entity structure. Free, fully open source, made for AI. Pure SVG, zero dependencies.',
+    keywords:
+      'genogram, pedigree, ladder logic, single-line diagram, phylogenetic tree, fishbone, entity structure, text to diagram, mermaid alternative, open source diagram library',
+  };
+
   return (
     <main className="flex flex-1 flex-col">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* ────────────── HERO (2-col, DS) ────────────── */}
       <section
         aria-labelledby="hero-heading"
