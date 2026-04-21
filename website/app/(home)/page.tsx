@@ -37,47 +37,6 @@ const DIAGRAM_TO_CAT: Record<string, string> = {
   entity: 'var(--cat-3)',
 };
 
-// ───────────────────────────────────────────────────────────────────
-// Hero slides — 3 diagrams rotating every ~6.5s
-// ───────────────────────────────────────────────────────────────────
-
-const HERO_GENOGRAM = `genogram "The Potters"
-  fleamont [male, 1909, deceased]
-  euphemia [female, 1920, deceased]
-  fleamont -- euphemia
-    james [male, 1960, deceased]
-  evans_m [male, 1925, deceased]
-  evans_f [female, 1928, deceased]
-  evans_m -- evans_f
-    lily [female, 1960, deceased]
-    petunia [female, 1958]
-  james -- lily "m. 1978"
-    harry [male, 1980, index]
-  petunia -- vernon [male, 1951]
-    dudley [male, 1980]
-  harry -close- lily
-  harry -hostile- dudley`;
-
-const HERO_LADDER = `ladder "Motor Control"
-rung 1 "Start/Stop seal-in":
-  XIC(START, "I:0.0/0", name="Start PB")
-  XIO(STOP, "I:0.0/1", name="Stop PB")
-  XIC(MOTOR_RUN, "O:0.0/0", name="Motor Run")
-  OTE(MOTOR_RUN, "O:0.0/0", name="Motor Coil")
-rung 2 "Fault indicator":
-  XIC(OL_TRIP, "I:0.0/2", name="OL Relay")
-  OTE(FAULT_LAMP, "O:0.0/1", name="Fault Lamp")`;
-
-const HERO_ENTITY = `entity-structure "Acme Holdings"
-entity trust "Founder Trust" trust@SD
-entity parent "Acme Inc." corp@DE
-entity uk "Acme UK Ltd." llc@UK
-entity fund "Acme Growth Fund" fund@KY
-trust -> parent : 100%
-parent -> uk : 100%
-parent -> fund : 60%`;
-
-
 const STANDARDS_RAIL = [
   'McGoldrick 2020',
   'IEC 61131-3',
@@ -142,58 +101,18 @@ export function Diagram({ dsl }: { dsl: string }) {
 export default async function HomePage() {
   const { stars } = await getRepoStats();
 
-  const getDsl = (slug: string) =>
-    allExamples.find((g) => g.slug === slug)?.dsl ?? '';
-
-  const PEDIGREE_DSL = getDsl('pedigree-cystic-fibrosis');
-  const PHYLO_DSL = getDsl('phylo-bacterial-diversity');
-  const SLD_DSL = getDsl('sld-substation-13kv');
-  const FISHBONE_DSL = getDsl('fishbone-website-traffic');
-
-  const heroSlides: HeroSlide[] = [
-    {
-      label: 'Genogram',
-      standard: 'McGoldrick 2020',
-      dsl: HERO_GENOGRAM,
-      svg: safeRender(HERO_GENOGRAM),
-    },
-    {
-      label: 'Pedigree',
-      standard: 'NSGC nomenclature',
-      dsl: PEDIGREE_DSL,
-      svg: safeRender(PEDIGREE_DSL),
-    },
-    {
-      label: 'Phylogenetic',
-      standard: 'Newick / NHX',
-      dsl: PHYLO_DSL,
-      svg: safeRender(PHYLO_DSL),
-    },
-    {
-      label: 'Ladder logic',
-      standard: 'IEC 61131-3',
-      dsl: HERO_LADDER,
-      svg: safeRender(HERO_LADDER),
-    },
-    {
-      label: 'Single-line',
-      standard: 'IEEE 315',
-      dsl: SLD_DSL,
-      svg: safeRender(SLD_DSL),
-    },
-    {
-      label: 'Fishbone',
-      standard: 'Ishikawa 1968',
-      dsl: FISHBONE_DSL,
-      svg: safeRender(FISHBONE_DSL),
-    },
-    {
-      label: 'Entity structure',
-      standard: 'Cap-table tier rollup',
-      dsl: HERO_ENTITY,
-      svg: safeRender(HERO_ENTITY),
-    },
-  ];
+  // Hero rotates through the same 9 professional cases used in the grid below.
+  // Single source of truth for DSL + standard keeps the two sections in lockstep.
+  const heroSlides: HeroSlide[] = FEATURED_SLUGS.flatMap((slug) => {
+    const ex = allExamples.find((g) => g.slug === slug);
+    if (!ex) return [];
+    return [{
+      label: ex.diagram,
+      standard: ex.standard ?? '—',
+      dsl: ex.dsl,
+      svg: safeRender(ex.dsl),
+    }];
+  });
 
   return (
     <main className="flex flex-1 flex-col">

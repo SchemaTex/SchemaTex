@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { render } from 'schematex';
 import { svgToPngBlob, downloadBlob, printSvgAsPdf } from 'schematex/export';
+import { DiagramFrame } from './DiagramFrame';
 
 const MonacoEditor = dynamic(() => import('@monaco-editor/react'), {
   ssr: false,
@@ -199,90 +200,95 @@ export function Playground({ initial, height = 560, fill = false }: PlaygroundPr
     return () => document.removeEventListener('mousedown', onClickAway);
   }, [exportOpen]);
 
-  const panelStyle: React.CSSProperties = {
-    border: '1px solid var(--fill-muted)',
-    borderRadius: 'var(--r)',
-    background: 'var(--bg)',
-    ...(fill ? {} : { height }),
-  };
+  const actions = (
+    <>
+      <button type="button" onClick={handleCopy} className="pg-mini">
+        {copyState === 'done' ? 'copied' : 'copy'}
+      </button>
+      <button type="button" onClick={handleShare} className="pg-mini">
+        {shareState === 'done' ? 'link copied' : 'share'}
+      </button>
+      <div ref={exportRef} className="relative">
+        <button
+          type="button"
+          onClick={() => setExportOpen((o) => !o)}
+          className="pg-mini"
+        >
+          export ↓
+        </button>
+        {exportOpen && (
+          <div
+            className="absolute right-0 top-full z-50 mt-1 flex flex-col overflow-hidden"
+            style={{
+              border: '1px solid var(--fill-muted)',
+              borderRadius: 'var(--r-sm)',
+              background: 'var(--bg)',
+              minWidth: 100,
+            }}
+          >
+            {[
+              { label: '.svg', desc: 'vector', action: handleDownloadSvg },
+              { label: '.png', desc: '@2× raster', action: handleDownloadPng },
+              { label: '.pdf', desc: 'print-ready', action: () => { if (svg) printSvgAsPdf(svg, meta.name || 'diagram'); } },
+            ].map(({ label, desc, action }) => (
+              <button
+                key={label}
+                type="button"
+                onClick={() => { action(); setExportOpen(false); }}
+                className="flex w-full items-center justify-between px-2.5 py-1.5 font-mono text-xs transition"
+                style={{ color: 'var(--text)', borderRadius: 'var(--r-sm)' }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = 'var(--fill-muted)'; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
+              >
+                {label}
+                <span style={{ color: 'var(--text-muted)', fontSize: 11 }}>{desc}</span>
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+      <span className="pg-mini pg-mini-primary" aria-hidden>
+        render
+        <span className="pg-kbd">⌘R</span>
+      </span>
+    </>
+  );
+
+  const footer = (
+    <div
+      className="flex shrink-0 items-center justify-between px-3 py-2 font-mono text-[11px] text-fd-muted-foreground"
+      style={{ background: 'var(--bg)', borderTop: '1px solid var(--fill-muted)' }}
+    >
+      <span>
+        UTF-8 · LF · {lineCount} line{lineCount === 1 ? '' : 's'} · {charCount} chars
+      </span>
+      <span>
+        {error ? (
+          <span style={{ color: 'var(--negative)' }}>✗ parse error</span>
+        ) : (
+          <>
+            <span style={{ color: 'var(--positive)' }}>✓ parsed</span>
+            <span className="mx-1.5 opacity-40">·</span>
+            <span style={{ color: 'var(--accent)' }}>{renderMs.toFixed(1)} ms</span>
+            <span className="mx-1.5 opacity-40">·</span>
+            {formatBytes(svgBytes)} SVG
+          </>
+        )}
+      </span>
+    </div>
+  );
 
   return (
-    <div
-      className={fill ? 'flex h-full flex-col overflow-hidden' : 'flex flex-col overflow-hidden'}
-      style={panelStyle}
+    <DiagramFrame
+      diagram={meta.name}
+      standard={meta.std}
+      actions={actions}
+      footer={footer}
+      className={fill ? 'h-full' : ''}
+      style={fill ? undefined : { height }}
     >
-      {/* Title bar: dots + mono title + mini actions */}
-      <div
-        className="flex shrink-0 items-center gap-3 px-3 py-2"
-        style={{ borderBottom: '1px solid var(--fill-muted)' }}
-      >
-        <div className="flex gap-1.5">
-          <span className="size-[9px] rounded-full" style={{ background: 'var(--fill-muted)' }} />
-          <span className="size-[9px] rounded-full" style={{ background: 'var(--fill-muted)' }} />
-          <span className="size-[9px] rounded-full" style={{ background: 'var(--fill-muted)' }} />
-        </div>
-        <div className="font-mono text-[13px] text-fd-foreground">
-          {meta.name}
-          <span className="mx-2 opacity-40">·</span>
-          <span style={{ color: 'var(--accent)' }}>§ {meta.std}</span>
-        </div>
-        <div className="ml-auto flex gap-1.5 font-mono">
-          <button type="button" onClick={handleCopy} className="pg-mini">
-            {copyState === 'done' ? 'copied' : 'copy'}
-          </button>
-          <button type="button" onClick={handleShare} className="pg-mini">
-            {shareState === 'done' ? 'link copied' : 'share'}
-          </button>
-          <div ref={exportRef} className="relative">
-            <button
-              type="button"
-              onClick={() => setExportOpen((o) => !o)}
-              className="pg-mini"
-            >
-              export ↓
-            </button>
-            {exportOpen && (
-              <div
-                className="absolute right-0 top-full z-50 mt-1 flex flex-col overflow-hidden"
-                style={{
-                  border: '1px solid var(--fill-muted)',
-                  borderRadius: 'var(--r-sm)',
-                  background: 'var(--bg)',
-                  minWidth: 100,
-                }}
-              >
-                {[
-                  { label: '.svg', desc: 'vector', action: handleDownloadSvg },
-                  { label: '.png', desc: '@2× raster', action: handleDownloadPng },
-                  { label: '.pdf', desc: 'print-ready', action: () => { if (svg) printSvgAsPdf(svg, meta.name || 'diagram'); } },
-                ].map(({ label, desc, action }) => (
-                  <button
-                    key={label}
-                    type="button"
-                    onClick={() => { action(); setExportOpen(false); }}
-                    className="flex w-full items-center justify-between px-2.5 py-1.5 font-mono text-xs transition"
-                    style={{ color: 'var(--text)', borderRadius: 'var(--r-sm)' }}
-                    onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = 'var(--fill-muted)'; }}
-                    onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
-                  >
-                    {label}
-                    <span style={{ color: 'var(--text-muted)', fontSize: 11 }}>{desc}</span>
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-          <span className="pg-mini pg-mini-primary" aria-hidden>
-            render
-            <span className="pg-kbd">⌘R</span>
-          </span>
-        </div>
-      </div>
-
-      {/* Split: editor + render */}
       <div
         className="grid min-h-0 flex-1 grid-cols-1 md:grid-cols-2"
-        style={{ borderBottom: '1px solid var(--fill-muted)' }}
       >
         <div
           className="min-h-0 overflow-hidden"
@@ -353,29 +359,6 @@ export function Playground({ initial, height = 560, fill = false }: PlaygroundPr
           </div>
         </div>
       </div>
-
-      {/* Footer stats */}
-      <div
-        className="flex shrink-0 items-center justify-between px-3 py-2 font-mono text-[11px] text-fd-muted-foreground"
-        style={{ background: 'var(--bg)' }}
-      >
-        <span>
-          UTF-8 · LF · {lineCount} line{lineCount === 1 ? '' : 's'} · {charCount} chars
-        </span>
-        <span>
-          {error ? (
-            <span style={{ color: 'var(--negative)' }}>✗ parse error</span>
-          ) : (
-            <>
-              <span style={{ color: 'var(--positive)' }}>✓ parsed</span>
-              <span className="mx-1.5 opacity-40">·</span>
-              <span style={{ color: 'var(--accent)' }}>{renderMs.toFixed(1)} ms</span>
-              <span className="mx-1.5 opacity-40">·</span>
-              {formatBytes(svgBytes)} SVG
-            </>
-          )}
-        </span>
-      </div>
-    </div>
+    </DiagramFrame>
   );
 }
