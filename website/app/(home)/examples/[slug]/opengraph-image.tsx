@@ -7,14 +7,16 @@ export const runtime = 'nodejs';
 
 const TMP_FONT_PATH = '/tmp/schematex-noto-sans-regular.ttf';
 
-function ensureFont(): string {
-  if (existsSync(TMP_FONT_PATH)) return TMP_FONT_PATH;
-  // Passing a URL (not fileURLToPath'd string) avoids a cross-realm
-  // URL-instance type check that fails inside the Next.js bundle.
-  const fontUrl = new URL('./_assets/noto-sans-regular.ttf', import.meta.url);
-  const buf = readFileSync(fontUrl);
-  writeFileSync(TMP_FONT_PATH, buf);
-  return TMP_FONT_PATH;
+function ensureFont(): string | null {
+  try {
+    if (existsSync(TMP_FONT_PATH)) return TMP_FONT_PATH;
+    const fontUrl = new URL('./_assets/noto-sans-regular.ttf', import.meta.url);
+    const buf = readFileSync(fontUrl);
+    writeFileSync(TMP_FONT_PATH, buf);
+    return TMP_FONT_PATH;
+  } catch {
+    return null;
+  }
 }
 
 export const size = { width: 1200, height: 630 };
@@ -84,8 +86,8 @@ export default async function Image({
   const resvg = new Resvg(wrapper, {
     fitTo: { mode: 'width', value: W },
     font: {
-      loadSystemFonts: false,
-      fontFiles: [fontPath],
+      loadSystemFonts: fontPath === null,
+      fontFiles: fontPath ? [fontPath] : [],
       defaultFontFamily: 'Noto Sans',
       sansSerifFamily: 'Noto Sans',
       serifFamily: 'Noto Sans',

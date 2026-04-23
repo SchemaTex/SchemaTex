@@ -10,6 +10,11 @@ const config = {
   reactStrictMode: true,
   transpilePackages: ['schematex'],
   serverExternalPackages: ['@resvg/resvg-js'],
+  outputFileTracingIncludes: {
+    '/examples/[slug]/opengraph-image': [
+      './app/(home)/examples/[slug]/_assets/**',
+    ],
+  },
   webpack(webpackConfig) {
     // Dev: point directly at TypeScript source for live HMR.
     // Production: use the built dist/ (built by Vercel install command).
