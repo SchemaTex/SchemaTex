@@ -117,6 +117,15 @@ export interface FlowchartTokens {
 export interface MindmapTokens {
   centralFill: string;
   branchPalette: readonly string[];
+  /** Inline `code` foreground/background. */
+  codeFg: string;
+  codeBg: string;
+  /** Link color (with underline). */
+  linkColor: string;
+  /** Checkbox stroke color (unchecked state). */
+  checkboxStroke: string;
+  /** Checkbox fill when checked. */
+  checkboxFill: string;
 }
 
 /**
@@ -360,16 +369,31 @@ export const VENN_TOKENS: Record<ThemeName, VennTokens> = {
 const DEFAULT_MINDMAP: MindmapTokens = {
   centralFill: "#0f172a",
   branchPalette: DEFAULT_PALETTE,
+  codeFg: "#be185d",
+  codeBg: "#fdf2f8",
+  linkColor: "#2563eb",
+  checkboxStroke: "#64748b",
+  checkboxFill: "#10b981",
 };
 
 const MONOCHROME_MINDMAP: MindmapTokens = {
   centralFill: "#000000",
   branchPalette: ["#000000"],
+  codeFg: "#000000",
+  codeBg: "#e5e5e5",
+  linkColor: "#000000",
+  checkboxStroke: "#000000",
+  checkboxFill: "#000000",
 };
 
 const DARK_MINDMAP: MindmapTokens = {
   centralFill: "#cdd6f4",
   branchPalette: DARK_PALETTE,
+  codeFg: "#f5c2e7",
+  codeBg: "#313244",
+  linkColor: "#89b4fa",
+  checkboxStroke: "#a6adc8",
+  checkboxFill: "#a6e3a1",
 };
 
 export const MINDMAP_TOKENS: Record<ThemeName, MindmapTokens> = {

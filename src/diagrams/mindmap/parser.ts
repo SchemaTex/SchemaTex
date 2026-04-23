@@ -1,7 +1,8 @@
 import type { MindmapAST, MindmapNode, MindmapStyle } from "../../core/types";
+import { tokenizeInline } from "./inline";
 
 /**
- * Mindmap DSL parser — markdown-heading + bullet list.
+ * Mindmap DSL parser — markdown-heading + bullet list with inline markdown.
  *
  * Grammar (EBNF):
  *   document  = directive* heading (heading | bullet)*
@@ -10,14 +11,20 @@ import type { MindmapAST, MindmapNode, MindmapStyle } from "../../core/types";
  *   bullet    = INDENT ("-" | "*" | "+") SPACE text NEWLINE
  *   INDENT    = /  *\/   (2 spaces = 1 level)
  *
- * Directives: `style` (map | logic-right), `theme`.
+ * `text` may contain inline markdown (bold / italic / code / link /
+ * leading `[ ]` task checkbox). Tokens are parsed here and attached to
+ * the node; layout & renderer consume `tokens` rather than `label`.
+ *
+ * Directives: `style`, `theme`, `maxLabelWidth`.
  */
 
 const VALID_STYLES: readonly MindmapStyle[] = ["map", "logic-right"];
+const DEFAULT_MAX_LABEL_WIDTH = 240;
 
 interface Directives {
   style: MindmapStyle;
   themeOverride?: string;
+  maxLabelWidth: number;
 }
 
 function parseDirective(line: string, out: Directives): void {
@@ -30,7 +37,14 @@ function parseDirective(line: string, out: Directives): void {
     out.style = val as MindmapStyle;
   } else if (key === "theme") {
     out.themeOverride = val;
+  } else if (key === "maxlabelwidth") {
+    const n = Number(val);
+    if (Number.isFinite(n) && n >= 80 && n <= 1000) out.maxLabelWidth = n;
   }
+}
+
+function makeNode(id: string, label: string, depth: number): MindmapNode {
+  return { id, label, tokens: tokenizeInline(label), depth, children: [] };
 }
 
 export function parseMindmap(text: string): MindmapAST {
@@ -39,7 +53,7 @@ export function parseMindmap(text: string): MindmapAST {
   // Skip optional leading "mindmap" marker.
   if (lines[0]?.trim().toLowerCase() === "mindmap") lines.shift();
 
-  const directives: Directives = { style: "map" };
+  const directives: Directives = { style: "map", maxLabelWidth: DEFAULT_MAX_LABEL_WIDTH };
   let root: MindmapNode | null = null;
   let idCounter = 0;
   const nextId = () => `n${idCounter++}`;
@@ -71,7 +85,7 @@ export function parseMindmap(text: string): MindmapAST {
     if (heading) {
       const depth = heading[1].length - 1; // H1 → 0 (root), H2 → 1, ...
       const label = heading[2].trim();
-      const node: MindmapNode = { id: nextId(), label, depth, children: [] };
+      const node = makeNode(nextId(), label, depth);
       if (depth === 0) {
         if (root) throw new Error("Mindmap: multiple `#` center nodes not allowed");
         root = node;
@@ -89,7 +103,7 @@ export function parseMindmap(text: string): MindmapAST {
       const indent = bullet[1].length;
       const depth = lastHeadingDepth + 1 + Math.floor(indent / 2);
       const label = bullet[2].trim();
-      const node: MindmapNode = { id: nextId(), label, depth, children: [] };
+      const node = makeNode(nextId(), label, depth);
       attach(node, depth);
       continue;
     }
@@ -101,6 +115,7 @@ export function parseMindmap(text: string): MindmapAST {
     type: "mindmap",
     style: directives.style,
     root,
+    maxLabelWidth: directives.maxLabelWidth,
   };
   if (directives.themeOverride) ast.themeOverride = directives.themeOverride;
   return ast;

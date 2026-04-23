@@ -1,11 +1,13 @@
 import type {
   MindmapAST,
+  MindmapLabelLine,
   MindmapLayoutEdge,
   MindmapLayoutNode,
   MindmapLayoutResult,
   MindmapNode,
   MindmapStyle,
 } from "../../core/types";
+import { measureTokens, wrapTokens } from "./inline";
 
 /**
  * Mindmap layout — two XMind-inspired styles:
@@ -14,27 +16,24 @@ import type {
  *
  * Layout invariants:
  *   • Each node's n.x is its label's horizontal CENTER. Text renders
- *     anchor-middle at n.x, so labels are centered in their depth's column.
- *   • Per-depth columns are globally aligned: before laying out, we scan
- *     the tree for the max label width at each depth, then every depth-d
- *     node shares the same slot-center x. Prevents ragged columns where a
- *     long-label parent pushes its child further out than a sibling's.
- *   • Bezier edges travel from the parent label's OUTER edge (right edge
- *     for right-side, left edge for left-side) to the child label's
- *     INNER edge. For main branches, the colored underline sits beneath
- *     the label and visually merges with the incoming bezier — reading
- *     as one continuous colored stroke.
+ *     anchor-middle at n.x.
+ *   • Labels can be multi-line (inline markdown wrapped at maxLabelWidth).
+ *     labelHeight = lines × lineHeight + padding; labelWidth = max line width.
+ *   • Per-depth columns are globally aligned to the max label width at that
+ *     depth (incl. post-wrap width), so sibling branches stay flush.
+ *   • Tidy-tree packing uses each node's true labelHeight, so rich labels
+ *     automatically push neighbors apart without overlap.
+ *   • Bezier edges travel from parent's outer label edge to child's inner
+ *     label edge. Main-branch underlines merge visually with the curve.
  */
 
 const PADDING = 40;
-const SIBLING_GAP = 20;     // vertical gap between sibling subtree rects
+const SIBLING_GAP = 18;     // vertical gap between sibling subtree rects
 const MAIN_GAP = 44;        // vertical gap between main branches on same side
-const ROOT_CAPSULE_PAD_X = 10;
-const ROOT_CAPSULE_PAD_Y = 10;
+const UNDERLINE_GAP = 4;    // px between text bottom and underline stroke
+const LINE_GAP = 4;         // extra px between wrapped lines
 
 // Horizontal span of the Bezier curve between consecutive slot columns.
-// Deeper levels use a tighter gap — at depth ≥2 there's usually only one
-// child, and a wide constant span reads as awkward empty space.
 function bezierGapFor(childDepth: number): number {
   if (childDepth <= 1) return 90;
   if (childDepth === 2) return 60;
@@ -51,68 +50,116 @@ function fontSizeOf(depth: number): number {
   return FONT_SUB;
 }
 
-function estimateLabelWidth(label: string, depth: number): number {
-  return Math.max(32, label.length * fontSizeOf(depth) * 0.58);
+function lineHeightOf(fs: number): number {
+  return fs + LINE_GAP;
 }
 
-function rowHeightOf(depth: number): number {
-  return fontSizeOf(depth) + 14;
+// Root font (20pt) is ~1.5× sub font (13pt), so a single maxLabelWidth budget
+// would wrap root text far sooner than body text. Scale the budget by depth
+// so root gets room to breathe before wrapping.
+function widthBudget(depth: number, maxLabelWidth: number): number {
+  if (depth === 0) return maxLabelWidth * 1.5;
+  return maxLabelWidth;
+}
+
+// ─── Label measurement ──────────────────────────────────────────────────
+
+interface LabelMetrics {
+  lines: MindmapLabelLine[];
+  width: number;   // max line width
+  height: number;  // lines × lineHeight + padding (for leaves)
+}
+
+function measureLabel(node: MindmapNode, maxWidth: number): LabelMetrics {
+  const fs = fontSizeOf(node.depth);
+  // Unwrapped width first — if it fits, skip wrapping.
+  const raw = measureTokens(node.tokens, fs);
+  let lines: MindmapLabelLine[];
+  if (raw <= maxWidth) {
+    lines = [{ tokens: node.tokens.slice(), width: raw }];
+  } else {
+    lines = wrapTokens(node.tokens, maxWidth, fs);
+  }
+  let maxW = 0;
+  for (const ln of lines) if (ln.width > maxW) maxW = ln.width;
+  const lh = lineHeightOf(fs);
+  // Label block = text lines + underline gap. No surrounding box/padding —
+  // underline sits at the bottom edge, edges enter/leave at that y.
+  const height = lines.length * lh + UNDERLINE_GAP;
+  return { lines, width: Math.max(32, maxW), height };
 }
 
 // ─── Column bookkeeping ──────────────────────────────────────────────────
 
 interface Columns {
-  /** Center x of the slot at depth d. All depth-d nodes share this x. */
   center: number[];
 }
 
-function computeColumns(subtreeRoots: MindmapNode[], firstColStartX: number): Columns {
+// Scan subtree(s) and return the max measured label width at each depth.
+// Used both for column positioning AND for equalizing every node's rendered
+// underline width at its depth (so sibling bezier curves span identical gaps).
+function computeMaxLW(
+  subtreeRoots: MindmapNode[],
+  maxLabelWidth: number
+): number[] {
   const maxLW: number[] = [];
   const walk = (n: MindmapNode) => {
-    const lw = estimateLabelWidth(n.label, n.depth);
-    if (maxLW[n.depth] === undefined || lw > maxLW[n.depth]) maxLW[n.depth] = lw;
+    const m = measureLabel(n, widthBudget(n.depth, maxLabelWidth));
+    if (maxLW[n.depth] === undefined || m.width > maxLW[n.depth]) maxLW[n.depth] = m.width;
     for (const c of n.children) walk(c);
   };
   for (const r of subtreeRoots) walk(r);
+  return maxLW;
+}
 
+function buildColumns(
+  maxLW: number[],
+  firstColStartX: number,
+  rootDepth: number
+): Columns {
   const center: number[] = [];
-  if (subtreeRoots.length === 0) return { center };
-  const rootDepth = subtreeRoots[0].depth;
-  // Slot-left of first column is firstColStartX; center = left + lw/2.
+  if (maxLW[rootDepth] === undefined) return { center };
   let slotLeft = firstColStartX;
   center[rootDepth] = slotLeft + maxLW[rootDepth] / 2;
   for (let d = rootDepth + 1; d < maxLW.length; d++) {
     slotLeft = slotLeft + maxLW[d - 1] + bezierGapFor(d);
-    center[d] = slotLeft + maxLW[d] / 2;
+    center[d] = slotLeft + (maxLW[d] ?? 0) / 2;
   }
   return { center };
 }
 
-// ─── Core primitive: tidy tree extending rightward ───────────────────────
+// ─── Tidy tree extending rightward ──────────────────────────────────────
 
 function tidyRight(
   node: MindmapNode,
   yTop: number,
   branchIdx: number,
   columns: Columns,
+  maxLabelWidth: number,
+  maxLW: number[],
   out: MindmapLayoutNode[]
 ): { layoutNode: MindmapLayoutNode; height: number } {
-  const rowH = rowHeightOf(node.depth);
-  const lw = estimateLabelWidth(node.label, node.depth);
+  const m = measureLabel(node, widthBudget(node.depth, maxLabelWidth));
   const x = columns.center[node.depth];
+  const fs = fontSizeOf(node.depth);
+  // Expand to the max width at this depth so all same-depth nodes share
+  // the same underline length and bezier endpoints stay consistent.
+  const labelWidth = Math.max(m.width, maxLW[node.depth] ?? m.width);
 
   if (node.children.length === 0) {
     const ln: MindmapLayoutNode = {
       node,
       x,
-      y: yTop + rowH / 2,
+      y: yTop + m.height / 2,
       side: "right",
       branchIndex: branchIdx,
-      labelWidth: lw,
-      labelHeight: rowH,
+      labelWidth,
+      labelHeight: m.height,
+      fontSize: fs,
+      lines: m.lines,
     };
     out.push(ln);
-    return { layoutNode: ln, height: rowH };
+    return { layoutNode: ln, height: m.height };
   }
 
   let cursor = yTop;
@@ -124,12 +171,14 @@ function tidyRight(
       cursor,
       branchIdx,
       columns,
+      maxLabelWidth,
+      maxLW,
       out
     );
     childLayouts.push(cln);
     cursor += height;
   }
-  const totalH = Math.max(rowH, cursor - yTop);
+  const totalH = Math.max(m.height, cursor - yTop);
 
   const firstY = childLayouts[0].y;
   const lastY = childLayouts[childLayouts.length - 1].y;
@@ -141,8 +190,10 @@ function tidyRight(
     y: parentY,
     side: "right",
     branchIndex: branchIdx,
-    labelWidth: lw,
-    labelHeight: rowH,
+    labelWidth,
+    labelHeight: m.height,
+    fontSize: fs,
+    lines: m.lines,
   };
   out.push(ln);
   return { layoutNode: ln, height: totalH };
@@ -150,11 +201,8 @@ function tidyRight(
 
 // ─── Edge geometry helpers ───────────────────────────────────────────────
 
-/** Horizontal edge of a node's label on the side the edge travels toward. */
 function labelEdgeX(n: MindmapLayoutNode, outward: boolean): number {
-  // outward = from this node moving away from the root.
-  // center: outward direction depends on child side — caller handles.
-  if (n.side === "center") return n.x; // caller offsets by capsuleW/2
+  if (n.side === "center") return n.x;
   const dir = n.side === "left" ? -1 : 1;
   return n.x + (outward ? dir : -dir) * n.labelWidth / 2;
 }
@@ -165,7 +213,17 @@ function bezierH(x1: number, y1: number, x2: number, y2: number): string {
 }
 
 function edgeWidthFor(depth: number): number {
-  return depth <= 1 ? 2.2 : 1.4;
+  if (depth <= 1) return 2.2;
+  if (depth === 2) return 1.6;
+  return 1.2;
+}
+
+/** Underline stroke width for a node at this depth. */
+function underlineWidthFor(depth: number): number {
+  if (depth === 0) return 2.4;
+  if (depth === 1) return 2.2;
+  if (depth === 2) return 1.6;
+  return 1.2;
 }
 
 // ─── Canvas normalization ────────────────────────────────────────────────
@@ -175,13 +233,12 @@ function normalize(nodes: MindmapLayoutNode[]): { width: number; height: number 
   for (const n of nodes) {
     const lw = n.labelWidth;
     const lh = n.labelHeight;
-    // All labels are now center-anchored on n.x.
     const leftX = n.x - lw / 2;
     const rightX = n.x + lw / 2;
     minX = Math.min(minX, leftX);
     maxX = Math.max(maxX, rightX);
-    minY = Math.min(minY, n.y - lh);
-    maxY = Math.max(maxY, n.y + lh);
+    minY = Math.min(minY, n.y - lh / 2);
+    maxY = Math.max(maxY, n.y + lh / 2);
   }
   const dx = PADDING - minX;
   const dy = PADDING - minY;
@@ -192,17 +249,21 @@ function normalize(nodes: MindmapLayoutNode[]): { width: number; height: number 
   return { width: (maxX - minX) + PADDING * 2, height: (maxY - minY) + PADDING * 2 };
 }
 
-// ─── Shared edge construction ────────────────────────────────────────────
+/** y of a node's bottom underline — where edges enter/leave.
+ * Matches renderer: stroke sits mid-UNDERLINE_GAP, not at the raw bottom. */
+function underlineY(n: MindmapLayoutNode): number {
+  return n.y + n.labelHeight / 2 - UNDERLINE_GAP / 2;
+}
 
 function buildEdges(root: MindmapNode, byId: Map<string, MindmapLayoutNode>): MindmapLayoutEdge[] {
   const edges: MindmapLayoutEdge[] = [];
   const walk = (parent: MindmapNode) => {
     const pln = byId.get(parent.id)!;
+    const pUY = underlineY(pln);
     for (const c of parent.children) {
       const cln = byId.get(c.id)!;
       let fromX: number;
       if (pln.side === "center") {
-        // Root capsule — emit from left or right capsule edge based on child side.
         const halfW = pln.labelWidth / 2;
         fromX = cln.side === "left" ? pln.x - halfW : pln.x + halfW;
       } else {
@@ -212,7 +273,7 @@ function buildEdges(root: MindmapNode, byId: Map<string, MindmapLayoutNode>): Mi
       edges.push({
         from: parent.id,
         to: c.id,
-        path: bezierH(fromX, pln.y, toX, cln.y),
+        path: bezierH(fromX, pUY, toX, underlineY(cln)),
         color: "",
         width: edgeWidthFor(c.depth),
       });
@@ -233,29 +294,28 @@ function layoutMap(ast: MindmapAST): MindmapLayoutResult {
   const leftMains = mains.slice(rightCount);
 
   const nodes: MindmapLayoutNode[] = [];
+  const mw = ast.maxLabelWidth;
 
-  const rootLabelW = estimateLabelWidth(root.label, 0);
-  const rootCapsuleW = rootLabelW + ROOT_CAPSULE_PAD_X * 2;
-  const rootCapsuleH = rowHeightOf(0) + ROOT_CAPSULE_PAD_Y;
-  const firstColLeft = rootCapsuleW / 2 + bezierGapFor(1);
+  const rootM = measureLabel(root, widthBudget(0, mw));
+  const firstColLeft = rootM.width / 2 + bezierGapFor(1);
 
-  // Right side — stack mains vertically; all depth-d nodes share one column.
-  const rightCols = computeColumns(rightMains, firstColLeft);
+  // Single global maxLW scan over both sides so L/R siblings share width.
+  const maxLW = computeMaxLW([...rightMains, ...leftMains], mw);
+  const cols = buildColumns(maxLW, firstColLeft, 1);
+
   let rightCursor = 0;
   for (let i = 0; i < rightMains.length; i++) {
     if (i > 0) rightCursor += MAIN_GAP;
-    const { height } = tidyRight(rightMains[i], rightCursor, i, rightCols, nodes);
+    const { height } = tidyRight(rightMains[i], rightCursor, i, cols, mw, maxLW, nodes);
     rightCursor += height;
   }
   const rightHeight = rightCursor;
 
-  // Left side — lay out as "right" then mirror x and re-tag side.
-  const leftCols = computeColumns(leftMains, firstColLeft);
   const leftStart = nodes.length;
   let leftCursor = 0;
   for (let i = 0; i < leftMains.length; i++) {
     if (i > 0) leftCursor += MAIN_GAP;
-    const { height } = tidyRight(leftMains[i], leftCursor, rightCount + i, leftCols, nodes);
+    const { height } = tidyRight(leftMains[i], leftCursor, rightCount + i, cols, mw, maxLW, nodes);
     leftCursor += height;
   }
   const leftHeight = leftCursor;
@@ -271,8 +331,10 @@ function layoutMap(ast: MindmapAST): MindmapLayoutResult {
     y: rootY,
     side: "center",
     branchIndex: -1,
-    labelWidth: rootCapsuleW,
-    labelHeight: rootCapsuleH,
+    labelWidth: rootM.width,
+    labelHeight: rootM.height,
+    fontSize: fontSizeOf(0),
+    lines: rootM.lines,
   };
   nodes.push(rootNode);
 
@@ -288,17 +350,17 @@ function layoutMap(ast: MindmapAST): MindmapLayoutResult {
 function layoutLogicRight(ast: MindmapAST): MindmapLayoutResult {
   const root = ast.root;
   const nodes: MindmapLayoutNode[] = [];
+  const mw = ast.maxLabelWidth;
 
-  const rootLabelW = estimateLabelWidth(root.label, 0);
-  const rootCapsuleW = rootLabelW + ROOT_CAPSULE_PAD_X * 2;
-  const rootCapsuleH = rowHeightOf(0) + ROOT_CAPSULE_PAD_Y;
-  const firstColLeft = rootCapsuleW / 2 + bezierGapFor(1);
+  const rootM = measureLabel(root, widthBudget(0, mw));
+  const firstColLeft = rootM.width / 2 + bezierGapFor(1);
 
-  const cols = computeColumns(root.children, firstColLeft);
+  const maxLW = computeMaxLW(root.children, mw);
+  const cols = buildColumns(maxLW, firstColLeft, 1);
   let cursor = 0;
   for (let i = 0; i < root.children.length; i++) {
     if (i > 0) cursor += MAIN_GAP;
-    const { height } = tidyRight(root.children[i], cursor, i, cols, nodes);
+    const { height } = tidyRight(root.children[i], cursor, i, cols, mw, maxLW, nodes);
     cursor += height;
   }
   const totalHeight = cursor;
@@ -309,8 +371,10 @@ function layoutLogicRight(ast: MindmapAST): MindmapLayoutResult {
     y: totalHeight / 2,
     side: "center",
     branchIndex: -1,
-    labelWidth: rootCapsuleW,
-    labelHeight: rootCapsuleH,
+    labelWidth: rootM.width,
+    labelHeight: rootM.height,
+    fontSize: fontSizeOf(0),
+    lines: rootM.lines,
   };
   nodes.push(rootNode);
 
@@ -329,4 +393,4 @@ export function layoutMindmap(ast: MindmapAST): MindmapLayoutResult {
   return layoutMap(ast);
 }
 
-export { estimateLabelWidth, rowHeightOf, fontSizeOf };
+export { fontSizeOf, lineHeightOf, LINE_GAP, UNDERLINE_GAP, underlineWidthFor };

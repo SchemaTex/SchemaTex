@@ -1287,9 +1287,23 @@ export interface FlowchartLayoutResult {
 
 export type MindmapStyle = "map" | "logic-right";
 
+/**
+ * Inline markdown token for mindmap labels. Parsed once at parse-time by
+ * `inline.ts`, consumed by layout (width measurement) and renderer (tspan
+ * emission). See `docs/reference/00-OVERVIEW.md` for the DSL contract.
+ */
+export type InlineToken =
+  | { kind: "text"; value: string; bold?: boolean; italic?: boolean }
+  | { kind: "code"; value: string }
+  | { kind: "link"; href: string; value: InlineToken[] }
+  | { kind: "checkbox"; checked: boolean };
+
 export interface MindmapNode {
   id: string;
+  /** Raw label text (post-bullet-marker, pre-tokenize) — kept for title/tooltip. */
   label: string;
+  /** Tokenized label. Layout & renderer consume this. */
+  tokens: InlineToken[];
   depth: number;
   children: MindmapNode[];
 }
@@ -1301,6 +1315,8 @@ export interface MindmapAST {
   root: MindmapNode;
   /** Theme override from DSL `%% theme:` directive. */
   themeOverride?: string;
+  /** Max wrap width for labels (px). Default 240. From `%% maxLabelWidth:`. */
+  maxLabelWidth: number;
 }
 
 export interface MindmapLayoutNode {
@@ -1313,6 +1329,15 @@ export interface MindmapLayoutNode {
   branchIndex: number;
   labelWidth: number;
   labelHeight: number;
+  /** Font size chosen for this node — used by renderer + for per-line measurement. */
+  fontSize: number;
+  /** Wrapped token lines. Always at least one entry. */
+  lines: MindmapLabelLine[];
+}
+
+export interface MindmapLabelLine {
+  tokens: InlineToken[];
+  width: number;
 }
 
 export interface MindmapLayoutEdge {

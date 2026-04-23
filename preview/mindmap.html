@@ -137,6 +137,88 @@ const cases = [
 - reading
 - family
 `],
+  ['TC-MM-09 · RICH · Bold / italic / code / link', `%% style: logic-right
+# API **Design** Review
+## Authentication
+- use \`Bearer\` tokens in \`Authorization\` header
+- see [RFC 6750](https://datatracker.ietf.org/doc/html/rfc6750)
+- *rotate* secrets quarterly
+## Endpoints
+- \`GET /v1/users\` — list users
+- \`POST /v1/users\` — create
+- **Rate limit**: 100 req/min
+## Errors
+- return \`4xx\` for client errors
+- return \`5xx\` for server errors
+`],
+  ['TC-MM-10 · RICH · Task list (checkbox)', `%% style: logic-right
+# Q2 Roadmap
+## Ship v1
+- [x] design review
+- [x] API spec frozen
+- [ ] implementation
+- [ ] QA sign-off
+## Docs
+- [x] overview page
+- [ ] migration guide
+- [ ] examples gallery
+## Launch
+- [ ] blog post
+- [ ] HN thread
+- [ ] newsletter
+`],
+  ['TC-MM-11 · RICH · Multi-line wrap (long labels)', `%% style: map
+%% maxLabelWidth: 220
+# Product Strategy 2026
+## Positioning
+- Every diagram a doctor, engineer, or lawyer would actually use
+- Free and fully open source — AGPL-3.0 with commercial dual license
+- Made for AI — DSL designed for LLM output
+## Differentiation
+- Zero runtime dependencies — no D3, no dagre, no parser generator
+- Semantic SVG with CSS-themable classes and data-* hooks
+- 20 diagram families covering real professional standards
+## Distribution
+- npm package with tree-shakeable per-diagram imports
+- Embedded in MyMap.ai and ChatDiagram.com as the rendering engine
+`],
+  ['TC-MM-12 · RICH · Kitchen sink (everything)', `%% style: logic-right
+%% maxLabelWidth: 260
+# **Schematex** launch checklist
+## Code
+- [x] \`src/core/\` stable
+- [x] parser & renderer for all **20 diagram types**
+- [ ] add *inline markdown* to remaining text-heavy diagrams
+## Docs
+- [x] [reference docs](https://schematex.js.org/docs)
+- [ ] per-diagram tutorial with **at least 3 examples**
+- [ ] video walkthrough on YouTube — *short form first*
+## Distribution
+- [x] publish to npm as \`schematex\`
+- [ ] write [launch post](https://news.ycombinator.com)
+- [ ] reply to every HN comment within **4 hours**
+## Metrics
+- track \`npm_downloads\` weekly
+- monitor GitHub stars & forks
+- collect feedback via [Discord](https://discord.gg/schematex)
+`],
+  ['TC-MM-13 · RICH · Dark theme + rich content', `%% style: map
+%% theme: dark
+%% maxLabelWidth: 220
+# AI **Agent** Architecture
+## Planning
+- decompose goal into \`subtasks\`
+- *maintain* a working memory graph
+- [ ] add reflection loop
+## Tools
+- \`web_search\` with \`[query](url)\` citations
+- \`code_exec\` in sandboxed VM
+- \`read_file\` / \`write_file\` scoped to workspace
+## Execution
+- [x] ReAct prompting
+- [x] tool-use streaming
+- [ ] parallel tool calls
+`],
 ];
 
 const out = document.getElementById('output');
