@@ -1,18 +1,21 @@
-import { readFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { render } from 'schematex';
 import { notFound } from 'next/navigation';
 import { getExample } from '@/lib/examples-source';
 
 export const runtime = 'nodejs';
 
-const FONT_PATH = fileURLToPath(
-  new URL('./_assets/noto-sans-regular.ttf', import.meta.url),
-);
-// Load once at module init; also forces Next to bundle the file.
-const FONT_BUFFER = readFileSync(FONT_PATH);
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const _keepFontRef = FONT_BUFFER.length;
+const TMP_FONT_PATH = '/tmp/schematex-noto-sans-regular.ttf';
+
+function ensureFont(): string {
+  if (existsSync(TMP_FONT_PATH)) return TMP_FONT_PATH;
+  // Passing a URL (not fileURLToPath'd string) avoids a cross-realm
+  // URL-instance type check that fails inside the Next.js bundle.
+  const fontUrl = new URL('./_assets/noto-sans-regular.ttf', import.meta.url);
+  const buf = readFileSync(fontUrl);
+  writeFileSync(TMP_FONT_PATH, buf);
+  return TMP_FONT_PATH;
+}
 
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
@@ -76,12 +79,13 @@ export default async function Image({
 <text x="${W - PAD_X}" y="${H - 40}" font-family="sans-serif" font-size="15" fill="#64748b" text-anchor="end">schematex.js.org</text>
 </svg>`;
 
+  const fontPath = ensureFont();
   const { Resvg } = await import('@resvg/resvg-js');
   const resvg = new Resvg(wrapper, {
     fitTo: { mode: 'width', value: W },
     font: {
       loadSystemFonts: false,
-      fontFiles: [FONT_PATH],
+      fontFiles: [fontPath],
       defaultFontFamily: 'Noto Sans',
       sansSerifFamily: 'Noto Sans',
       serifFamily: 'Noto Sans',
