@@ -1,8 +1,18 @@
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { render } from 'schematex';
 import { notFound } from 'next/navigation';
 import { getExample } from '@/lib/examples-source';
 
 export const runtime = 'nodejs';
+
+const FONT_PATH = fileURLToPath(
+  new URL('./_assets/noto-sans-regular.ttf', import.meta.url),
+);
+// Load once at module init; also forces Next to bundle the file.
+const FONT_BUFFER = readFileSync(FONT_PATH);
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const _keepFontRef = FONT_BUFFER.length;
 
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
@@ -70,8 +80,11 @@ export default async function Image({
   const resvg = new Resvg(wrapper, {
     fitTo: { mode: 'width', value: W },
     font: {
-      loadSystemFonts: true,
-      defaultFontFamily: 'sans-serif',
+      loadSystemFonts: false,
+      fontFiles: [FONT_PATH],
+      defaultFontFamily: 'Noto Sans',
+      sansSerifFamily: 'Noto Sans',
+      serifFamily: 'Noto Sans',
     },
   });
   const png = resvg.render().asPng();
