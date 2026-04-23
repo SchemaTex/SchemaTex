@@ -17,10 +17,39 @@ export async function generateMetadata({
   const { slug } = await params;
   const ex = getExample(slug);
   if (!ex) return { title: 'Not found' };
+  const url = `https://schematex.js.org/examples/${slug}`;
+  const keywords = Array.from(
+    new Set(
+      [
+        ex.diagram,
+        ex.standard,
+        ...ex.industry,
+        ...ex.tags,
+        'schematex',
+        'diagram',
+        'SVG',
+        'text to diagram',
+        'DSL',
+      ].filter(Boolean) as string[],
+    ),
+  );
   return {
     title: ex.title,
     description: ex.description,
-    alternates: { canonical: `https://schematex.js.org/examples/${slug}` },
+    keywords,
+    alternates: { canonical: url },
+    openGraph: {
+      type: 'article',
+      url,
+      siteName: 'Schematex',
+      title: ex.title,
+      description: ex.description,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: ex.title,
+      description: ex.description,
+    },
   };
 }
 
@@ -34,9 +63,32 @@ export default async function ExampleDetailPage({
   if (!ex) notFound();
 
   const MDX = ex.body;
+  const url = `https://schematex.js.org/examples/${slug}`;
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'TechArticle',
+    headline: ex.title,
+    description: ex.description,
+    url,
+    image: `${url}/opengraph-image`,
+    inLanguage: 'en',
+    keywords: [ex.diagram, ex.standard, ...ex.industry, ...ex.tags]
+      .filter(Boolean)
+      .join(', '),
+    about: ex.diagram,
+    isPartOf: {
+      '@type': 'WebSite',
+      name: 'Schematex',
+      url: 'https://schematex.js.org',
+    },
+  };
 
   return (
     <main className="mx-auto max-w-6xl px-6 py-10">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <nav className="mb-6 text-sm text-fd-muted-foreground">
         <Link href="/examples" className="hover:text-fd-foreground">
           ← Examples
