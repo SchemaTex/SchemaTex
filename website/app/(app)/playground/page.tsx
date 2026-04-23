@@ -141,7 +141,7 @@ export default async function PlaygroundPage({
       </div>
 
       {/* Editor panel */}
-      <Playground key={example ?? 'default'} initial={initial} height={640} />
+      <Playground key={example ?? 'default'} initial={initial} height={640} syncHash />
     </div>
   );
 }

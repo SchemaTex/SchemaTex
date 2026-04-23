@@ -1,6 +1,5 @@
 ---
 title: Genogram
-description: Multi-generation family trees following the McGoldrick standard. Gender-specific shapes, medical condition fills, emotional relationship lines, index-person markers. Used in family therapy, social work, and clinical medicine.
 ---
 
 <Playground initial={`genogram "The Potter Family"
@@ -21,384 +20,333 @@ description: Multi-generation family trees following the McGoldrick standard. Ge
   harry -hostile- dudley
   harry -close- lily`} height={520} />
 
-*McGoldrick et al. (2020) symbol system + GenoPro emotional taxonomy + Bennett 2022 gender inclusivity + clinical medical condition system + Cultural Heritage genogram support.*
+## About genograms
 
-> **Primary References:**
-> - McGoldrick, M., Gerson, R., & Petry, S. (2020). *Genograms: Assessment and Treatment.* 4th ed.
-> - Bennett, R.L. et al. (2022). *Standardized human pedigree nomenclature: Update and assessment of the recommendations of the National Society of Genetic Counselors.* J Genet Couns.
-> - Hardy, K.V. & Laszloffy, T.A. (1995). The cultural genogram: Key to training culturally competent family therapists. *J Marital Fam Ther*, 21(3), 227-237.
-> - GenoPro symbol reference: https://genopro.com/genogram/
-> - GenogramAI symbol catalog (~150 symbols): https://genogramai.com
+A **genogram** is a family diagram that goes beyond the names-and-dates of a traditional family tree: it records the *emotional* and *medical* texture of a family across three or more generations. Therapists, social workers, and genetic counselors use them to surface patterns — cut-offs, over-involvement, recurring illnesses — that are hard to see in prose case notes.
+
+Schematex follows the **[McGoldrick, Gerson & Petry (2020) standard](https://www.guilford.com/books/Genograms/McGoldrick-Gerson-Petry/9781462542055)** used in clinical training, plus the widely adopted **[GenoPro](https://genopro.com/genogram/) 32-type emotional-relationship taxonomy**. For theory and history see [Wikipedia: Genogram](https://en.wikipedia.org/wiki/Genogram). This page documents what the parser accepts today.
 
 ---
 
-## 1. Individual Symbols
+## 1. Your first genogram
 
-### 1.1 Core Shapes
+The smallest clinically useful genogram: two parents, one child.
 
-| Symbol | Shape | SVG Element | Meaning |
-|--------|-------|-------------|---------|
-| □ | Square (40×40) | `<rect>` | Male |
-| ○ | Circle (r=20) | `<circle>` | Female |
-| ◇ | Diamond (40×40) | `<polygon>` | Unknown sex / Nonbinary (Bennett 2022) |
-| △ | Triangle (small, 20×20) | `<polygon>` | Pregnancy (current) |
-| Concentric shape | Double outline (gap=3px) | Two shapes, inner + outer | Index Person (IP) / Identified Patient |
+<Playground initial={`genogram
+  alice [female, 1980]
+  bob [male, 1978]
+  alice -- bob "m. 2005"
+    carol [female, 2008]`} />
 
-### 1.2 Status Modifiers
+Four rules cover 80% of usage:
 
-| Status | Visual | SVG Implementation |
-|--------|--------|-------------------|
-| Deceased | X through shape, corner to corner | Two `<line>` elements crossing shape |
-| Stillborn | 50% size shape + SB label | Scaled shape with text |
-| Miscarriage | Small triangle (△, 12×12) | `<polygon>` small |
-| Spontaneous abortion | Small × (12×12) | Two short `<line>` elements |
-| Induced abortion | Small × with horizontal line through | `<line>` elements + cross bar |
-| Pregnancy | Dashed outline | `stroke-dasharray="4,3"` on shape |
+1. Start with the keyword `genogram`, optionally followed by a quoted title.
+2. Declare each person on their own line: `id [attributes]`. Attributes go in square brackets, comma-separated.
+3. Connect two people with a **couple operator** — `--` (marriage) here; see §4.1 for all six. A trailing quoted string is the relationship label.
+4. **Indent under the couple line** to add their children.
 
-### 1.3 Bennett 2022 Gender/Sex Inclusivity Update
-
-Bennett 2022 introduced a symbol system that separates sex from gender identity. Schematex must support this:
-
-| Notation | Meaning | Visual |
-|----------|---------|--------|
-| AMAB | Assigned Male at Birth | Square (traditional male symbol) |
-| AFAB | Assigned Female at Birth | Circle (traditional female symbol) |
-| UAAB | Unknown/Ambiguous at Birth / Intersex | Diamond |
-| Nonbinary | Gender identity = nonbinary | Diamond + optional gender label |
-| Transgender | Gender ≠ assigned sex | Shape = assigned sex, label indicates gender identity |
-
-**DSL syntax:**
-```
-alex [nonbinary, 1995]           # → diamond
-sam [male, transgender, 1988]    # → square (AMAB) + transgender marker
-jordan [intersex, 1990]          # → diamond (UAAB)
-```
-
-**Implementation rules:**
-- `sex` property controls the shape (male→□, female→○, unknown/nonbinary/intersex→◇)
-- `transgender` property adds a small triangle marker at the corner of the shape
-- `gender` property is optional, used for label display
-
-### 1.4 Multiple Births
-
-| Type | Visual | DSL |
-|------|--------|-----|
-| Identical twins | V-shape: two child lines meet at single point on sibship line | `[twin-identical]` |
-| Fraternal twins | Inverted-V with horizontal bar connecting at top | `[twin-fraternal]` |
-| Triplets+ | Same pattern, 3+ lines from single point or bar | `[triplet-identical]` / `[triplet-fraternal]` |
-
-### 1.5 SVG Implementation Notes
-
-- All shapes: `stroke-width: 2`, `fill: white` (default), `stroke: #333`
-- CSS classes: `schematex-node`, `schematex-male`, `schematex-female`, `schematex-unknown`, `schematex-nonbinary`
-- Deceased overlay: `class="schematex-deceased-marker"`
-- Index person: outer shape `stroke-width: 1`, inner shape `stroke-width: 2`, gap 3px
-- Data attributes: `data-individual-id`, `data-sex`, `data-status`, `data-generation`
+> Comments must be on their own line, starting with `#`. Trailing inline comments (`bob [male, 1978] # ...`) are not supported and will break the parser — see §8.
 
 ---
 
-## 2. Medical/Psychological Condition System
+## 2. Individuals
 
-### 2.1 Condition Display: Quadrant Fill System
+An individual line is `id [attr1, attr2, …]`. Attributes are comma-separated, order-independent, all optional.
 
-Conditions are represented by filling different regions of the individual shape. Up to 4 conditions can be displayed simultaneously (quadrant system); when more than 4 conditions are present, the display switches to a radial pie display or legend system.
+**ID rules.** Must match `[a-zA-Z][a-zA-Z0-9_-]*`. IDs are case-insensitive internally but preserve their original casing as the display label (override with `label:"…"`).
 
-| Fill Position | Quadrant | SVG Implementation |
-|---------------|----------|--------------------|
-| Full fill | Entire shape | `fill: {color}` |
-| Top-left quarter | Top-left 1/4 | `<clipPath>` top-left quadrant |
-| Top-right quarter | Top-right 1/4 | `<clipPath>` top-right quadrant |
-| Bottom-left quarter | Bottom-left 1/4 | `<clipPath>` bottom-left quadrant |
-| Bottom-right quarter | Bottom-right 1/4 | `<clipPath>` bottom-right quadrant |
-| Half-left | Left half | `<clipPath>` left half |
-| Half-right | Right half | `<clipPath>` right half |
-| Half-top | Top half | `<clipPath>` top half |
-| Half-bottom | Bottom half | `<clipPath>` bottom half |
-| Striped/hatched | Diagonal stripe fill | `<pattern>` diagonal lines |
-| Dotted | Dot fill | `<pattern>` dots |
+**Attributes accepted by the parser today:**
 
-**Multiple condition stacking rules:**
-1. 1 condition → full fill or half fill
-2. 2 conditions → left half + right half
-3. 3 conditions → top-left + top-right + bottom half
-4. 4 conditions → four quadrants
-5. 5+ conditions → radial pie (equal sectors) or numbered legend
-6. Carrier (asymptomatic) → striped/hatched pattern, does not occupy a quadrant
+| Attribute | Values | Effect |
+|---|---|---|
+| Sex | `male`, `female`, `unknown`, `other` | Shape: square, circle, diamond, diamond |
+| Status | `deceased`, `stillborn`, `miscarriage`, `abortion` | Visual modifier (X-out, scaled shape, etc.) |
+| Birth year | 4-digit number, e.g. `1980` | First 4-digit token = birth year |
+| Death year | 4-digit number after birth, e.g. `1980, 2055` | Second 4-digit token = death year |
+| `index` | flag | Concentric shape = identified patient |
+| `age:N` | e.g. `age:42` | Age shown inside shape |
+| `death:YYYY` | e.g. `death:2020` | Explicit death year |
+| `label:"…"` | e.g. `label:"Dr. Smith"` | Display label override |
+| `conditions:…` | see §5 | Medical/psychological conditions |
+| `key:value` | any custom | Stored as metadata |
 
-### 2.2 Standard Medical Condition Categories (22 Categories)
+<Playground initial={`genogram
+  grandma [female, 1920, 2002, deceased]
+  dad [male, 1950, age:74]
+  me [male, 1985, index]
+  daughter [female, 2012, label:"Em"]`} />
 
-A standard color-coding system based on GenogramAI and clinical practice. Each category has a recommended color that users can customize.
+---
 
-| Category | Default Color | Hex | Common conditions |
-|----------|--------------|-----|-------------------|
-| Cardiovascular | Red | `#E53935` | Heart disease, hypertension, stroke, CHF |
-| Cancer | Dark Blue | `#1E88E5` | All malignancies (can be subdivided by type) |
-| Diabetes | Orange | `#FB8C00` | Type 1, Type 2, gestational |
-| Mental Health (General) | Purple | `#8E24AA` | Schizophrenia, psychosis, other |
-| Depression | Indigo | `#5C6BC0` | Major depressive disorder, dysthymia |
-| Anxiety | Teal | `#26A69A` | GAD, panic disorder, phobias, OCD |
-| Bipolar | Violet | `#AB47BC` | Bipolar I, Bipolar II |
-| PTSD | Dark Teal | `#00897B` | Post-traumatic stress disorder |
-| Substance Abuse (Alcohol) | Amber | `#FFB300` | Alcohol use disorder |
-| Substance Abuse (Drugs) | Deep Orange | `#F4511E` | Drug use disorder (opioids, stimulants, etc.) |
-| Substance Abuse (Tobacco) | Brown | `#795548` | Nicotine dependence |
-| Neurological | Gray-Blue | `#546E7A` | Alzheimer's, Parkinson's, epilepsy, MS |
-| Respiratory | Light Blue | `#42A5F5` | Asthma, COPD, cystic fibrosis |
-| Autoimmune | Pink | `#EC407A` | Lupus, rheumatoid arthritis, Crohn's |
-| Genetic/Chromosomal | Dark Green | `#2E7D32` | Down syndrome, sickle cell, Huntington's |
-| Reproductive | Rose | `#F48FB1` | Infertility, PCOS, endometriosis |
-| Eating Disorders | Light Purple | `#CE93D8` | Anorexia, bulimia, BED |
-| Learning/Developmental | Lime | `#9CCC65` | ADHD, autism spectrum, dyslexia |
-| Kidney/Urological | Olive | `#827717` | CKD, kidney stones |
-| Liver/GI | Yellow-Green | `#C0CA33` | Hepatitis, cirrhosis, IBD |
-| Obesity | Dark Amber | `#FF8F00` | BMI ≥ 30 |
-| Other/Custom | Gray | `#757575` | Any unlisted condition |
+## 3. Shapes
 
-### 2.3 Condition SVG Defs
+| Visual | Sex value | Meaning |
+|---|---|---|
+| ☐ Square | `male` | Male |
+| ○ Circle | `female` | Female |
+| ◇ Diamond | `unknown`, `other`, *or* attribute omitted | Unknown / unspecified |
 
-Each condition used must define the corresponding `<clipPath>` and optional `<pattern>` in `<defs>`:
+Status modifiers layer on top of the base shape:
 
-```xml
-<defs>
-  <!-- Quadrant clip paths for squares (40×40) -->
-  <clipPath id="quad-tl-rect"><rect x="0" y="0" width="20" height="20"/></clipPath>
-  <clipPath id="quad-tr-rect"><rect x="20" y="0" width="20" height="20"/></clipPath>
-  <clipPath id="quad-bl-rect"><rect x="0" y="20" width="20" height="20"/></clipPath>
-  <clipPath id="quad-br-rect"><rect x="20" y="20" width="20" height="20"/></clipPath>
-  <clipPath id="half-left-rect"><rect x="0" y="0" width="20" height="40"/></clipPath>
-  <clipPath id="half-right-rect"><rect x="20" y="0" width="20" height="40"/></clipPath>
-  <clipPath id="half-top-rect"><rect x="0" y="0" width="40" height="20"/></clipPath>
-  <clipPath id="half-bottom-rect"><rect x="0" y="20" width="40" height="20"/></clipPath>
+<Playground initial={`genogram
+  alive [male, 1960]
+  passed [male, 1930, 2010, deceased]
+  stillborn_child [unknown, stillborn]
+  lost [unknown, miscarriage]`} />
 
-  <!-- Quadrant clip paths for circles (r=20) -->
-  <!-- Use rect clips centered at circle center, intersected with circle -->
+---
 
-  <!-- Carrier pattern (diagonal stripes) -->
-  <pattern id="carrier-stripe" patternUnits="userSpaceOnUse" width="6" height="6">
-    <path d="M-1,1 l2,-2 M0,6 l6,-6 M5,7 l2,-2" stroke="#333" stroke-width="1"/>
-  </pattern>
+## 4. Connections
 
-  <!-- Dotted pattern -->
-  <pattern id="dotted" patternUnits="userSpaceOnUse" width="6" height="6">
-    <circle cx="3" cy="3" r="1" fill="#333"/>
-  </pattern>
-</defs>
+### 4.1 Couple operators
+
+The parser tries these in order. The first one that matches wins — so `-x-` beats `--`.
+
+| Operator | Type | Example | Meaning |
+|---|---|---|---|
+| `-x-` | divorced | `a -x- b` | Divorce |
+| `-/-` | separated | `a -/- b` | Separation |
+| `-o-` | engaged | `a -o- b` | Engagement |
+| `==` | consanguineous | `a == b` | Blood-related couple |
+| `--` | married | `a -- b` | Marriage |
+| `~` | cohabiting | `a ~ b` | Cohabiting / LTR |
+
+A trailing quoted string becomes the relationship label (`a -- b "m. 2005"`).
+
+### 4.2 Inline individual on the right side
+
+If the right-hand person hasn't been declared yet, you can declare them in-place:
+
+<Playground initial={`genogram
+  ann [female, 1970]
+  ann -- ben [male, 1968] "m. 1995"
+    kim [female, 1997]`} />
+
+### 4.3 Children (indented under a couple)
+
+Indentation under a couple line = "these are the children of this couple." Any indent greater than the couple's indent works; by convention use 2 more spaces. Children are rendered in order of declaration (render also sorts by birth year when present).
+
+<Playground initial={`genogram
+  dad [male, 1950]
+  mom [female, 1952]
+  dad -- mom
+    eldest [male, 1975]
+    middle [female, 1978, adopted]
+    twin_a [male, 1985, twin-identical]
+    twin_b [male, 1985, twin-identical]`} />
+
+**Special child attributes:**
+
+| Attribute | Effect |
+|---|---|
+| `adopted` | Adoption line style |
+| `foster` | Foster relationship |
+| `twin-identical` | Grouped with other `twin-identical` children of the same couple |
+| `twin-fraternal` | Grouped with other `twin-fraternal` children |
+
+### 4.4 Emotional relationships
+
+Separate line, parser pattern `A -TYPE- B` (non-directional) or `A -TYPE-> B` (directional).  An optional quoted label goes at the end. **Both individuals must already be declared** before the emotional line.
+
+```
+harry -cutoff- petunia           # non-directional
+harry -hostile- dudley "since 1991"
+uncle -abuse-> nephew             # directional (arrow)
 ```
 
-### 2.4 DSL Syntax for Conditions
+All 32 types the parser accepts today:
+
+| Category | Types |
+|---|---|
+| Positive / close | `harmony`, `close`, `bestfriends`, `love`, `inlove`, `friendship` |
+| Negative / hostile | `hostile`, `conflict`, `enmity`, `distant-hostile`, `cutoff` |
+| Ambivalent | `close-hostile`, `fused`, `fused-hostile` |
+| Distance | `distant`, `normal`, `nevermet` |
+| Abuse *(directional)* | `abuse`, `physical-abuse`, `emotional-abuse`, `sexual-abuse`, `neglect` |
+| Control *(directional)* | `manipulative`, `controlling`, `jealous` |
+| Special | `focused`, `focused-neg`, `distrust`, `admirer`, `limerence` |
+
+<Playground initial={`genogram
+  dad [male, 1950]
+  son [male, 1985]
+  daughter [female, 1988]
+  dad -close- daughter
+  dad -conflict- son
+  son -cutoff- dad "since 2010"`} />
+
+---
+
+## 5. Medical conditions
+
+Syntax: `conditions: name(fill) [+ name(fill, #color)]…`
 
 ```
-# Single condition
-father [male, 1945, conditions: heart-disease(full, #E53935)]
-
-# Multiple conditions (quadrant auto-assigned)
-mother [female, 1948, conditions: diabetes + cancer + anxiety]
-
-# Specify fill position + color
-uncle [male, 1950, conditions: heart-disease(half-left, #E53935) + diabetes(half-right, #FB8C00)]
-
-# Carrier (asymptomatic)
-son [male, 1975, conditions: diabetes(carrier)]
-
-# Using category shorthand
-daughter [female, 1978, conditions: cardiovascular + mental-health]
+father [male, 1945, conditions: heart(full, #E53935)]
+mother [female, 1948, conditions: diabetes(half-left) + anxiety(half-right, #26A69A)]
 ```
 
-**Parsing rules:**
-- When no fill position is specified, quadrants are auto-assigned based on condition count (see stacking rules in 2.1)
-- When no color is specified, the category default color is used
-- `carrier` fill → striped pattern
-- Category shorthand (e.g. `cardiovascular`) maps to the default color
-- Custom condition names (not in standard categories) use gray as the default color
+- **`name`** — any identifier you choose (displayed in legend/tooltip).
+- **`fill`** — required, controls which region of the shape is colored. See table below.
+- **`color`** — optional hex. Default depends on the renderer theme.
+- Multiple conditions are joined with `+`. Each needs its own `(fill)`.
 
+**Fill positions:**
 
-## 3. Relationship Lines
+| `fill` value | Region |
+|---|---|
+| `full` | Entire shape |
+| `half-left` / `half-right` | Left / right half |
+| `half-top` / `half-bottom` | Top / bottom half |
+| `quad-tl` / `quad-tr` / `quad-bl` / `quad-br` | One quadrant |
+| `striped` | Diagonal stripe pattern (asymptomatic carrier) |
+| `dotted` | Dot pattern |
 
-### 3.1 Couple/Partnership Relationships
+<Playground initial={`genogram
+  dad [male, 1950, conditions: heart(full, #E53935)]
+  mom [female, 1952, conditions: diabetes(half-left) + depression(half-right, #5C6BC0)]
+  dad -- mom
+    son [male, 1980, conditions: carrier(striped)]`} />
 
-| Relationship | Line Style | DSL Syntax | SVG |
-|-------------|-----------|------------|-----|
-| Marriage | Solid horizontal line | `A -- B` | `<line>` stroke-width: 2 |
-| Cohabitation/LTR | Dashed line | `A ~ B` | stroke-dasharray="6,4" |
-| Engagement | Solid + small diamond midpoint | `A -o- B` | line + small diamond marker |
-| Separation | Solid + single slash | `A -/- B` | line + one diagonal slash |
-| Divorce | Solid + double slash | `A -x- B` | line + two diagonal slashes |
-| Consanguinity | Double horizontal line | `A == B` | Two parallel lines, gap 4px |
-| Remarriage | New marriage line from same person | Second `A -- C` | Additional horizontal line |
-| Same-sex marriage | Same as marriage | `A -- B` (both same sex) | Same rendering, positioning by age |
-| Domestic partnership | Dashed + DP label | `A ~dp~ B` | stroke-dasharray + text label |
+---
 
-### 3.2 Emotional Relationship Types (GenoPro 34-Type Taxonomy)
+## 6. Labels & comments
 
-This is the most important extension in clinical genogram use. GenoPro defines 34 emotional relationship types in 7 major categories:
+- **Title:** `genogram "Smith Family"` — first line only.
+- **Person label override:** `alice [female, label:"Dr. Alice Smith"]`.
+- **Relationship label:** trailing quoted string on a couple or emotional line — `alice -- bob "m. 2005"`.
+- **Comments:** `#` at the start of a line (after leading whitespace). Inline comments are **not** supported.
 
-#### Category 1: Positive/Close Relationships
-| Type | Line Style | DSL | Meaning |
-|------|-----------|-----|---------|
-| Harmony | Single green solid line | `A -harmony- B` | Harmonious relationship |
-| Close | Two parallel green lines | `A -close- B` | Close/intimate |
-| Best friends | Three parallel green lines | `A -bestfriends- B` | Best friends |
-| Love | Heart symbol on line | `A -love- B` | Love |
-| In love | Double heart on line | `A -inlove- B` | Deeply in love |
-| Friendship | Single blue line | `A -friendship- B` | Friendship |
-
-#### Category 2: Negative/Hostile Relationships
-| Type | Line Style | DSL | Meaning |
-|------|-----------|-----|---------|
-| Hostile | Zigzag red line | `A -hostile- B` | Hostile |
-| Conflict | Zigzag line + hash marks | `A -conflict- B` | Conflict |
-| Enmity | Thick zigzag red line | `A -enmity- B` | Enmity/hatred |
-| Distant-hostile | Dotted zigzag line | `A -distant-hostile- B` | Distant + hostile |
-| Cutoff | Broken line with gap | `A -cutoff- B` | Estranged/cut off |
-
-#### Category 3: Ambivalent/Complex Relationships
-| Type | Line Style | DSL | Meaning |
-|------|-----------|-----|---------|
-| Close-hostile | Two parallel + zigzag | `A -close-hostile- B` | Close but hostile |
-| Fused | Three parallel lines (intense) | `A -fused- B` | Fused (over-involved) |
-| Fused-hostile | Three parallel + zigzag | `A -fused-hostile- B` | Fused + hostile |
-
-#### Category 4: Distance Relationships
-| Type | Line Style | DSL | Meaning |
-|------|-----------|-----|---------|
-| Distant | Dotted thin line | `A -distant- B` | Distant |
-| Plain/Normal | Single solid line (default) | `A -normal- B` | Normal relationship |
-| Never met | No line (gap symbol) | `A -nevermet- B` | Never met |
-
-#### Category 5: Abuse Relationships
-| Type | Line Style | DSL | Meaning |
-|------|-----------|-----|---------|
-| Abuse (general) | Arrow + red zigzag | `A -abuse-> B` | Abuse (directional) |
-| Physical abuse | Arrow + thick red zigzag | `A -physical-abuse-> B` | Physical abuse |
-| Emotional abuse | Arrow + wavy red line | `A -emotional-abuse-> B` | Emotional abuse |
-| Sexual abuse | Arrow + red zigzag + dot | `A -sexual-abuse-> B` | Sexual abuse |
-| Neglect | Arrow + thin dotted red | `A -neglect-> B` | Neglect |
-
-**Note:** Abuse relationships are **directional** (`->` indicates A abuses B).
-
-#### Category 6: Control/Power Relationships
-| Type | Line Style | DSL | Meaning |
-|------|-----------|-----|---------|
-| Manipulative | Arrow + curved line | `A -manipulative-> B` | Manipulation |
-| Controlling | Arrow + thick line + bar | `A -controlling-> B` | Control |
-| Jealous | Arrow + green zigzag | `A -jealous-> B` | Jealousy |
-
-#### Category 7: Special Relationships
-| Type | Line Style | DSL | Meaning |
-|------|-----------|-----|---------|
-| Focused on | Arrow + magnifying symbol | `A -focused-> B` | Focused on (positive) |
-| Focused on negatively | Arrow + negative magnifying | `A -focused-neg-> B` | Focused on (negative) |
-| Distrust | Dotted line + X | `A -distrust- B` | Distrust |
-| Fan/Admirer | Arrow + star | `A -admirer-> B` | Admiration/fan |
-| Limerence | Arrow + heart + question | `A -limerence-> B` | Unrequited love/obsession |
-
-### 3.3 Emotional Relationship SVG Implementation
-
-**Line rendering priority:**
-1. Base line shape: straight / zigzag / wavy / dotted / dashed
-2. Color coding: green (positive), red (negative/abuse), blue (neutral), orange (control)
-3. Multiplicity: 1 line (normal), 2 lines (close), 3 lines (fused/best friends)
-4. Directional markers: arrowhead for abuse/control/focused relationships
-5. Special symbols: heart, X, star (rendered as small SVG markers at line midpoint)
-
-**SVG markers in `<defs>`:**
-```xml
-<defs>
-  <marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-    <path d="M 0 0 L 10 5 L 0 10 z" fill="#333"/>
-  </marker>
-  <marker id="heart" viewBox="0 0 12 12" refX="6" refY="6" markerWidth="8" markerHeight="8">
-    <path d="M6,10 C2,6 0,4 2,2 C4,0 6,2 6,4 C6,2 8,0 10,2 C12,4 10,6 6,10z" fill="#E53935"/>
-  </marker>
-</defs>
 ```
-
-**Zigzag path generation (for hostile/conflict):**
-```
-M x1,y1 L x1+10,y1-5 L x1+20,y1+5 L x1+30,y1-5 ... L x2,y2
-```
-
-### 3.4 Parent-Child Relationships
-
-| Relationship | Line Style | DSL Property | Meaning |
-|-------------|-----------|-------------|---------|
-| Biological child | Solid vertical line | (default) | Biological |
-| Adopted child | Dashed line + brackets | `[adopted]` | Adopted |
-| Foster child | Dotted vertical line | `[foster]` | Foster |
-| Identical twins | Lines meet at single point (V) | `[twin-identical]` | Identical twins |
-| Fraternal twins | Lines connect with bar | `[twin-fraternal]` | Fraternal twins |
-| Triplets+ | 3+ lines from single point/bar | `[triplet-identical]` | Triplets+ |
-| Surrogacy | Dotted line + S label | `[surrogate]` | Surrogacy |
-| Donor gamete | Dotted line + D label | `[donor]` | Donor gamete |
-| Step-child | Step-shaped line (two right angles) | `[step]` | Stepchild |
-
-### 3.5 Modern Family Structures
-
-Schematex must support modern non-traditional family structures:
-
-| Structure | How to handle |
-|-----------|--------------|
-| Same-sex parents | Two same-sex partners, standard couple line, children connect the same way |
-| Single parent by choice | Only one parent node, direct vertical line to children |
-| Donor conception | Dotted line from donor node (donor can optionally be shown/hidden) |
-| Surrogacy | Surrogate connected to child with dotted line, biological parents with solid line |
-| Co-parenting (non-couple) | Two individuals connected to children but no couple line between them |
-| Blended family | Step-children connections + multiple marriage lines |
-| Polyamorous family | Multiple concurrent couple lines from same individual (no divorce markers) |
-
-**Children connection structure (standard):**
-```
-Father ────── Mother       (couple line)
-       │                    
-       ├──── Child 1        (sibship line + drop lines)
-       ├──── Child 2
-       └──── Child 3
+genogram "Smith Family"
+  # this line is a comment — fine
+  alice [female, 1980]   # ← THIS trailing comment breaks the parser
 ```
 
 ---
 
-## 4. Layout Rules
+## 7. Reserved words & escaping
 
-### 4.1 Generation Alignment
-- **Individuals of the same generation must share the same Y coordinate** — the most important layout constraint
-- Generation 0 (oldest generation) is at the top
-- Y coordinates increase downward (SVG coordinate system)
-- Generation spacing: default 120px
+**Reserved at line start:** `genogram` (header keyword).
 
-### 4.2 Couple Positioning
-- **Male left, female right** (McGoldrick standard hard rule)
-- Same-sex partners: ordered by age (older on left, younger on right)
-- Nonbinary partners: ordered by appearance in DSL (first on left)
-- Couple line is horizontal, connecting the center height of both shapes
+**Reserved operator tokens** inside a line — avoid using these sequences in IDs:
+`--`, `~`, `==`, `-x-`, `-/-`, `-o-`, and any `-<type>-` / `-<type>->` matching an emotional-relationship type.
 
-### 4.3 Children Ordering
-- Children are ordered left to right by **birth year** (oldest to youngest)
-- Children group is centered below the couple line
-- Sibship line is directly below the couple line
+**Strings with spaces** must be double-quoted: titles, labels, `label:"…"`. Single quotes and backticks are not recognized.
 
-### 4.4 Multiple Marriages
-- Arranged left to right in chronological order
-- First spouse is innermost, subsequent spouses extend outward
-- Children from each marriage hang below their respective couple line
+---
 
-### 4.5 Edge Crossing Minimization
-- Barycenter heuristic method
-- Priority: no parent-child crossings > no couple crossings > no emotional relationship crossings
+## 8. Common mistakes
 
-### 4.6 Spacing Rules
-| Parameter | Default | Meaning |
-|-----------|---------|---------|
-| Node width | 40px | Individual shape width |
-| Node height | 40px | Individual shape height |
-| Sibling spacing | 60px | Horizontal between siblings |
-| Family unit spacing | 80px | Horizontal between family units |
-| Generation spacing | 120px | Vertical between generations |
-| Couple line length | 60px | Between partners |
-| Drop line length | 40px | Couple to sibship line |
-| Emotional line offset | 20px | Offset from structural lines (avoid overlap) |
+Real parser errors, what triggers them, and how to fix.
 
-### 4.7 Emotional Relationship Line Routing
-- Emotional relationship lines are rendered above structural lines (couple/parent-child)
-- If A and B are in different generations, the line routes around intermediate nodes (avoiding passing through shapes)
-- Emotional lines within the same generation are drawn below the nodes (curved path)
-- Emotional lines between different generations are drawn to the right (avoiding the parent-child area)
+| You wrote | Parser says | Fix |
+|---|---|---|
+| `alex [nonbinary, 1995]` | `Unknown property 'nonbinary'` | Use `unknown` or `other` (nonbinary is §13 Roadmap) |
+| `alice [female, transgender]` | `Unknown property 'transgender'` | Not yet parseable (§13 Roadmap) |
+| `dad -- mom`  ← followed by `child [male, 2010]` at the **same indent** | Child parsed as a new top-level individual, not as their child | Indent the child line deeper than the couple line (2 spaces is enough) |
+| `A -- B` where `A` was never declared | `Unknown individual 'A'` | Declare `A [sex, year]` on a line above |
+| `father -- mother "married"` on line 1 (no `genogram` header) | `Expected "genogram" header` | Start the file with `genogram` or `genogram "Title"` |
+| `conditions: diabetes + cancer` (no parens) | `Invalid condition format 'diabetes'` | Add fill: `conditions: diabetes(half-left) + cancer(half-right)` |
+| `[triplet-identical]` | `Unknown property 'triplet-identical'` | Triplets not yet parseable (§13 Roadmap) |
+| `dad -- mom # first marriage` | Trailing inline `#` comment is treated as part of the label / errors | Move the comment to its own line |
+
+---
+
+## 9. Grammar (EBNF)
+
+```text
+document       = header (blank | comment | individual | couple-block | emotional)*
+
+header         = "genogram" ( WS quoted-string )? NEWLINE
+quoted-string  = '"' any-char-but-quote* '"'
+
+individual     = INDENT id ( "[" attrs "]" )? NEWLINE
+couple-block   = INDENT id WS coupleOp WS right-side ( WS quoted-string )? NEWLINE
+                   ( deeper-indent child )*
+child          = INDENT id ( "[" attrs "]" )? NEWLINE
+right-side     = id ( "[" attrs "]" )?
+
+emotional      = INDENT id WS "-" type "-"  id ( WS quoted-string )? NEWLINE
+               | INDENT id WS "-" type "->" id ( WS quoted-string )? NEWLINE
+
+coupleOp       = "-x-" | "-/-" | "-o-" | "==" | "--" | "~"
+type           = "harmony" | "close" | "bestfriends" | "love" | "inlove"
+               | "friendship" | "hostile" | "conflict" | "enmity"
+               | "distant-hostile" | "cutoff" | "close-hostile" | "fused"
+               | "fused-hostile" | "distant" | "normal" | "nevermet"
+               | "abuse" | "physical-abuse" | "emotional-abuse"
+               | "sexual-abuse" | "neglect" | "manipulative" | "controlling"
+               | "jealous" | "focused" | "focused-neg" | "distrust"
+               | "admirer" | "limerence"
+
+id             = [a-zA-Z] [a-zA-Z0-9_-]*
+attrs          = attr ("," attr)*
+attr           = "male" | "female" | "unknown" | "other"
+               | "deceased" | "stillborn" | "miscarriage" | "abortion"
+               | "adopted" | "foster" | "twin-identical" | "twin-fraternal"
+               | "index"
+               | digit digit digit digit                         // year
+               | "age" ":" digits
+               | "death" ":" digit digit digit digit
+               | "label" ":" quoted-string
+               | "conditions" ":" condition ("+" condition)*
+               | key ":" value                                    // custom
+condition      = name "(" fill ("," "#" hex)? ")"
+fill           = "full" | "half-left" | "half-right" | "half-top" | "half-bottom"
+               | "quad-tl" | "quad-tr" | "quad-bl" | "quad-br"
+               | "striped" | "dotted"
+
+comment        = INDENT "#" any NEWLINE
+```
+
+Authoritative source: `src/diagrams/genogram/parser.ts`. If this diverges from the parser, the parser wins — please open an issue.
+
+---
+
+## 10. Standard compliance
+
+Schematex genograms follow **McGoldrick, Gerson & Petry (2020), *Genograms: Assessment and Treatment*, 4th ed.** for structural symbols, couple operators, and generation alignment. Emotional-relationship taxonomy follows **GenoPro's 32-type classification** (we do not implement GenoPro's 34-type set in full; `focused-admirer` and one duplicate are folded into `focused` and `admirer`).
+
+What is implemented today vs. the standard:
+
+- ✅ Core structural symbols (male/female/unknown, deceased, stillborn, miscarriage, abortion)
+- ✅ McGoldrick 6-operator couple system
+- ✅ GenoPro 32 emotional types, directional where clinically specified
+- ✅ Medical condition quadrant fill system (4-position + stripe/dot patterns)
+- ✅ Index person (concentric shape)
+- ✅ Twin groupings (identical / fraternal)
+- ⏳ Bennett 2022 gender inclusivity additions — see §13
+- ⏳ Donor / surrogate / step-child connection types — see §13
+
+References:
+- McGoldrick, M., Gerson, R., & Petry, S. (2020). *Genograms: Assessment and Treatment* (4th ed.).
+- Hardy, K.V. & Laszloffy, T.A. (1995). The cultural genogram. *J Marital Fam Ther*, 21(3), 227–237.
+- GenoPro symbol reference — https://genopro.com/genogram/
+
+---
+
+## 11. Related examples
+
+Ready-to-use scenarios from the examples gallery:
+
+<RelatedExamples slugs={[
+  'genogram-nuclear-family',
+  'genogram-medical-history',
+  'genogram-brca-cancer',
+  'genogram-potter-family',
+]} />
+
+---
+
+## 13. Roadmap
+
+**Planned — not yet parseable.** Do not use these in generated DSL today; the parser will reject them.
+
+- **Bennett 2022 gender inclusivity** — `nonbinary`, `intersex` as sex values; `transgender` as a marker. Currently typed in `src/core/types.ts` but the parser's `VALID_SEX` set does not yet include them.
+- **Triplets and higher-order births** — `triplet-identical`, `triplet-fraternal`.
+- **Modern family structures** — `surrogate`, `donor`, `step` as child-type attributes.
+- **Category shorthand for conditions** — `conditions: cardiovascular + depression` without `(fill)`, auto-assigning quadrants and default colors.
+- **Domestic partnership operator** — `~dp~` / explicit DP label.
+- **Heritage annotations** — cultural-genogram heritage identifiers on individuals.
+
+Track in the GitHub issues if you need any of these sooner.

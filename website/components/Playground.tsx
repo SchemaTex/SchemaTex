@@ -18,6 +18,14 @@ interface PlaygroundProps {
   height?: number;
   /** When true, fill the parent container's height. */
   fill?: boolean;
+  /**
+   * When true, read/write the editor contents via the URL hash (`#s=...`).
+   * Enables shareable-link behavior on single-Playground pages. Must be
+   * left off (default) on pages with multiple Playgrounds, otherwise they
+   * will race to write the same hash and overwrite each other's `initial`
+   * on mount — causing every Playground on the page to show the same DSL.
+   */
+  syncHash?: boolean;
 }
 
 const TYPE_META: Record<string, { name: string; std: string }> = {
@@ -80,7 +88,7 @@ function formatBytes(n: number): string {
   return `${(n / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-export function Playground({ initial, height = 560, fill = false }: PlaygroundProps) {
+export function Playground({ initial, height = 560, fill = false, syncHash = false }: PlaygroundProps) {
   const [text, setText] = useState(initial);
   const [debounced, setDebounced] = useState(initial);
   const [copyState, setCopyState] = useState<'idle' | 'done'>('idle');
@@ -91,6 +99,7 @@ export function Playground({ initial, height = 560, fill = false }: PlaygroundPr
   const hydrated = useRef(false);
 
   useEffect(() => {
+    if (!syncHash) return;
     if (hydrated.current) return;
     hydrated.current = true;
     const hash = window.location.hash.replace(/^#/, '');
@@ -101,7 +110,7 @@ export function Playground({ initial, height = 560, fill = false }: PlaygroundPr
         setDebounced(decoded);
       }
     }
-  }, []);
+  }, [syncHash]);
 
   useEffect(() => {
     const id = setTimeout(() => setDebounced(text), 120);
@@ -109,6 +118,7 @@ export function Playground({ initial, height = 560, fill = false }: PlaygroundPr
   }, [text]);
 
   useEffect(() => {
+    if (!syncHash) return;
     const id = setTimeout(() => {
       const encoded = encodeShare(debounced);
       if (encoded) {
@@ -118,7 +128,7 @@ export function Playground({ initial, height = 560, fill = false }: PlaygroundPr
       }
     }, 400);
     return () => clearTimeout(id);
-  }, [debounced]);
+  }, [debounced, syncHash]);
 
   const { svg, error, renderMs, svgBytes } = useMemo(() => {
     const start = typeof performance !== 'undefined' ? performance.now() : Date.now();
@@ -314,6 +324,7 @@ export function Playground({ initial, height = 560, fill = false }: PlaygroundPr
               padding: { top: 12, bottom: 12 },
               automaticLayout: true,
               tabSize: 2,
+              scrollbar: { alwaysConsumeMouseWheel: false },
             }}
           />
         </div>
