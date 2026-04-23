@@ -13,18 +13,18 @@ relatedLink:
   href: /docs/entity
 status: published
 dsl: |
-  entity "Acme Inc. — post Series A"
-    acme [type: corp, jurisdiction: DE, label: "Acme Inc."]
-    founders [type: individual, label: "Founders (2)"]
-    seed [type: fund, jurisdiction: DE, label: "Seed Fund I"]
-    lead [type: fund, jurisdiction: DE, label: "Sequoia Series A"]
-    angels [type: individual, label: "Angel group"]
-    esop [type: trust, jurisdiction: DE, label: "Employee Option Pool"]
-    founders --45%--> acme
-    seed --12%--> acme
-    lead --22%--> acme
-    angels --6%--> acme
-    esop --15%--> acme
+  entity-structure "Acme Inc. — post Series A"
+  entity acme "Acme Inc." corp@DE
+  entity founders "Founders (2)" individual
+  entity seed "Seed Fund I" lp@DE
+  entity lead "Sequoia Series A" lp@DE
+  entity angels "Angel group" individual
+  entity esop "Employee Option Pool" trust@DE
+  founders -> acme : 45%
+  seed -> acme : 12%
+  lead -> acme : 22%
+  angels -> acme : 6%
+  esop -> acme : 15%
 ---
 
 ## Scenario
@@ -33,11 +33,11 @@ A startup attorney or CFO documents the post-Series A ownership table for a 409A
 
 ## Annotation key
 
-- `--45%-->` — ownership arrow with percentage label; all percentages should sum to 100%
-- `type: individual` — natural person (founder, angel)
-- `type: fund` — institutional investor entity
-- `type: trust` — the ESOP/option pool (typically a Delaware trust or reserved pool)
-- `type: corp` — the issuer (the company being invested in)
+- `-> acme : 45%` — ownership arrow with percentage label; all percentages should sum to 100%
+- `individual` — natural person (founder, angel)
+- `lp` — institutional investor entity (fund/LP)
+- `trust` — the ESOP/option pool (typically a Delaware trust or reserved pool)
+- `corp@DE` — the issuer (Delaware C-corp)
 
 ## How to read
 

@@ -14,21 +14,25 @@ relatedLink:
 status: published
 dsl: |
   sld "13.8 kV Substation"
-  utility [label: "Grid 138 kV"]
-  xfmr1 [type: transformer, kva: 15000, primary: 138, secondary: 13.8]
-  bus_hv [type: bus, voltage: 138]
-  bus_mv [type: bus, voltage: 13.8]
-  brk1 [type: breaker, amps: 1200]
-  brk2 [type: breaker, amps: 1200]
-  brk3 [type: breaker, amps: 1200]
-  feeder1 [type: load, label: "Feeder 1"]
-  feeder2 [type: load, label: "Feeder 2"]
-  feeder3 [type: load, label: "Feeder 3"]
+  utility = utility [label: "Grid 138 kV"]
+  xfmr1 = transformer [kva: 15000, primary: 138, secondary: 13.8]
+  bus_hv = bus [voltage: 138]
+  bus_mv = bus [voltage: 13.8]
+  brk1 = breaker [amps: 1200]
+  brk2 = breaker [amps: 1200]
+  brk3 = breaker [amps: 1200]
+  feeder1 = load [label: "Feeder 1"]
+  feeder2 = load [label: "Feeder 2"]
+  feeder3 = load [label: "Feeder 3"]
   utility -> bus_hv
-  bus_hv -> xfmr1 -> bus_mv
-  bus_mv -> brk1 -> feeder1
-  bus_mv -> brk2 -> feeder2
-  bus_mv -> brk3 -> feeder3
+  bus_hv -> xfmr1
+  xfmr1 -> bus_mv
+  bus_mv -> brk1
+  brk1 -> feeder1
+  bus_mv -> brk2
+  brk2 -> feeder2
+  bus_mv -> brk3
+  brk3 -> feeder3
 ---
 
 ## Scenario
@@ -37,7 +41,7 @@ A power systems engineer documents a distribution substation design for a utilit
 
 ## Annotation key
 
-- `utility [label: "..."]` — utility supply source (three-phase symbol)
+- `utility = utility [label: "..."]` — utility supply source (three-phase symbol)
 - `[type: transformer, kva:..., primary:..., secondary:...]` — step-down transformer with rated kVA and voltage levels
 - `[type: bus, voltage:...]` — horizontal bus bar at the specified voltage level
 - `[type: breaker, amps:...]` — rated circuit breaker

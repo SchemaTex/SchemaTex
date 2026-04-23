@@ -15,13 +15,13 @@ status: published
 dsl: |
   genogram "BRCA1 Family"
     I_1 [male, 1930, 1995, deceased]
-    I_2 [female, 1932, 1990, deceased, cancer_ovarian]
+    I_2 [female, 1932, 1990, deceased, conditions: ovarian_cancer(full, #B388FF)]
     I_1 -- I_2
-      II_1 [female, 1955, cancer_breast]
+      II_1 [female, 1955, conditions: breast_cancer(full, #EC407A)]
       II_2 [male, 1958]
       II_3 [female, 1960]
     II_1 -- II_4 [male, 1954]
-      III_1 [female, 1985, index, cancer_breast]
+      III_1 [female, 1985, index, conditions: breast_cancer(full, #EC407A)]
       III_2 [male, 1988]
 ---
 
@@ -31,7 +31,7 @@ A family history genogram for hereditary breast/ovarian cancer, documented at th
 
 ## Annotation key
 
-- `cancer_ovarian` / `cancer_breast` — custom condition tags; render as shaded sectors on the symbol
+- `conditions: ovarian_cancer(full)` / `conditions: breast_cancer(full)` — medical conditions filling the symbol; color is optional hex
 - `deceased` with birth and death years — marks individuals with a slash and date range
 - `index` — marks the proband who triggered the clinical referral
 
