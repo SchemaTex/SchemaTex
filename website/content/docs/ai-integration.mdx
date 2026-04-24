@@ -36,7 +36,11 @@ Parse-only check. Returns `{ ok: true }` or `{ ok: false, errors: [{line, column
 ### `renderDsl({ type?, dsl, theme?, padding? })`
 Render DSL to an SVG string. Returns `{ ok: true, svg }` or `{ ok: false, errors }`.
 
-**Skip this if your app already has a rendering pipeline.** If you're building on top of the `schematex` package (Path 1), call `renderDsl` from the library directly — don't round-trip through the tool layer. The tool version is intended for pure chat clients (Claude Desktop, ChatGPT) that need the SVG returned inline in the conversation.
+<Callout type="info" title="Do you actually need this tool?">
+**If your app already renders diagrams** (you're using the `schematex` package directly), skip `renderDsl` — have the agent return the validated DSL and render it yourself. Calling the tool just adds an unnecessary round-trip.
+
+**Use `renderDsl` only when** you need the SVG returned inside the conversation itself: Claude Desktop, ChatGPT, Cursor, or any pure chat client that has no rendering pipeline of its own.
+</Callout>
 
 ---
 
@@ -79,11 +83,15 @@ Any MCP client that speaks JSON-RPC over HTTP can connect. No install, no local 
 
 ### Claude.ai
 
-[**→ Open "Add custom connector" in Claude.ai**](https://claude.ai/settings/connectors?modal=add-custom-connector)
+<Cards>
+  <Card
+    href="https://claude.ai/settings/connectors?modal=add-custom-connector"
+    title="Add Schematex to Claude.ai →"
+    description="Opens the connector dialog — paste https://schematex.js.org/mcp and click Add. Free / Pro / Team / Enterprise."
+  />
+</Cards>
 
-Clicking the link above opens the connector dialog directly. Paste `https://schematex.js.org/mcp` as the server URL and click **Add**. The connector will appear under Settings → Connectors and is available in every conversation.
-
-> Requires a Claude.ai account (Free / Pro / Team / Enterprise).
+The connector will appear under Settings → Connectors and is available in every conversation.
 
 ### Claude Desktop (app)
 
