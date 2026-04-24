@@ -1,0 +1,41 @@
+---
+title: Customer segment overlap
+description: Three-set Venn showing email subscriber, paid-user, and mobile-app-user overlap with counts for every region — useful for lifecycle marketing planning.
+diagram: venn
+standard: Venn (1880)
+industry: [saas, marketing]
+persona: For the lifecycle marketer
+complexity: 2
+tags: [segmentation, marketing, analytics, venn, audience]
+featured: true
+relatedLink:
+  label: Venn syntax
+  href: /docs/venn
+status: published
+dsl: |
+  venn "Customer Segments — Q3 2025"
+  set email "Email subscribers" [color: "#1E88E5"]
+  set paid "Paid users" [color: "#E53935"]
+  set mobile "Mobile app users" [color: "#43A047"]
+  email & paid : 1840
+  email & mobile : 920
+  paid & mobile : 2100
+  email & paid & mobile : 650
+  email only : 12400
+  paid only : 3200
+  mobile only : 8700
+---
+
+## Scenario
+
+A lifecycle marketer is planning Q4 campaigns and needs to see which audiences overlap before deciding where to spend budget. The 650-strong triple intersection is the highest-LTV segment; the 12.4k email-only group is the biggest conversion opportunity. Putting the numbers on one Venn makes the gaps and overlaps argue for themselves in a 30-second leadership review.
+
+## Annotation key
+
+- `set ID "Label"` — declare a circle
+- `A & B : n` — count in the intersection of A and B
+- `A only : n` — count exclusive to A
+
+## How to read
+
+Each circle is a total audience; each overlap is people who belong to multiple audiences. The triple intersection (email ∩ paid ∩ mobile, 650 users) is your most engaged cohort — the obvious group to upsell. The *email only* and *mobile only* exclusive regions are your largest activation opportunities because each represents users who have not yet crossed into the other channels.

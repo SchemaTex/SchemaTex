@@ -1,0 +1,37 @@
+---
+title: BCG product portfolio
+description: BCG matrix plotting five product lines by market share and growth rate — stars, cash cows, question marks, and one dog — for annual investment planning.
+diagram: matrix
+standard: BCG Growth-Share (1970)
+industry: [strategy, consulting]
+persona: For the VP of product strategy
+complexity: 3
+tags: [matrix, bcg, portfolio, strategy, investment]
+featured: false
+relatedLink:
+  label: Matrix syntax
+  href: /docs/matrix
+status: published
+dsl: |
+  matrix bcg "Product Portfolio — FY26"
+  "Platform SDK" at (0.8, 0.8) size: 5 highlight: true category: star
+  "Legacy API" at (0.85, 0.15) size: 4 category: cashcow
+  "Mobile SDK" at (0.25, 0.85) size: 3 category: question
+  "Self-serve billing" at (0.35, 0.75) size: 2 category: question
+  "On-prem installer" at (0.2, 0.15) size: 1 category: dog
+---
+
+## Scenario
+
+A VP of product strategy presents this at the annual planning offsite. The Platform SDK is the clear star — keep investing. The Legacy API is a cash cow that funds new bets. Two question marks (Mobile SDK, Self-serve billing) get the hard conversation: which one earns the next round of engineering spend? The on-prem installer is a dog — sunset candidate.
+
+## Annotation key
+
+- `matrix bcg` — preset axes (market share ← → low; low → high growth)
+- `"Label" at (x, y)` — share (0–1) × growth (0–1)
+- `size:` — relative revenue contribution
+- `category:` — BCG quadrant tag; drives colour
+
+## How to read
+
+BCG uses a *reversed* x-axis: high market share is on the left, low on the right. That quirk puts cash cows in the bottom-left (high share, low growth) and stars in the top-left (high share, high growth). The right half holds low-share products: top-right = question marks (decide: invest or kill), bottom-right = dogs (usually kill). Bubble size shows current revenue — don't prematurely kill a cow that funds a star.

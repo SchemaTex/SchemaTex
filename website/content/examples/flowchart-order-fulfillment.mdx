@@ -1,0 +1,43 @@
+---
+title: E-commerce order fulfillment
+description: Flowchart mapping the full order-to-delivery path with inventory and payment decision gates, exception handling, and a single End terminal.
+diagram: flowchart
+standard: ISO 5807:1985
+industry: [saas, ecommerce]
+persona: For the product operations lead
+complexity: 3
+tags: [process, decision, e-commerce, operations, exception-handling]
+featured: true
+relatedLink:
+  label: Flowchart syntax
+  href: /docs/flowchart
+status: published
+dsl: |
+  flowchart LR
+    start([New order received])
+    start --> validate{Inventory available?}
+    validate -->|Yes| reserve[Reserve items]
+    validate -->|No| notify[Notify customer]
+    notify --> done([End])
+    reserve --> payment{Payment authorized?}
+    payment -->|Yes| ship[Ship order]
+    payment -->|No| cancel[Cancel & release]
+    ship --> confirm[Send confirmation email]
+    confirm --> done
+    cancel --> done
+---
+
+## Scenario
+
+A product ops lead circulates this flowchart during an ops-review meeting to align engineering, customer support, and fulfillment on the single source of truth for what happens when a new order comes in. It surfaces the two decision gates (inventory, payment) and the three exception paths (out-of-stock notification, payment failure with released hold, successful ship with confirmation).
+
+## Annotation key
+
+- `([…])` — stadium / terminal; used for Start and End
+- `{…}` — diamond; decision node
+- `[…]` — rectangle; process step
+- `-->|label|` — edge with a branch label (`Yes` / `No`)
+
+## How to read
+
+Start at the top-left terminal. Inventory check gates the first branch — a "No" routes straight to the End after notification. A "Yes" reserves stock then hits the payment gate. Payment failure releases the reservation and goes to End; success ships and emails the customer. Every path terminates at the same End node, so nothing dangles.

@@ -1,0 +1,57 @@
+{
+  "name": "@schematex/mcp",
+  "version": "0.1.0",
+  "description": "MCP server for Schematex — gives AI agents tools to discover diagram types, read syntax, fetch examples, validate DSL, and render SVGs. Ships with stdio transport; also available hosted at https://schematex.js.org/mcp.",
+  "type": "module",
+  "bin": {
+    "schematex-mcp": "./dist/bin.js"
+  },
+  "main": "./dist/index.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./server": {
+      "types": "./dist/server.d.ts",
+      "import": "./dist/server.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsc -p tsconfig.json --watch",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "schematex",
+    "diagram",
+    "ai-tools"
+  ],
+  "author": "Victor <victor@mymap.ai>",
+  "license": "AGPL-3.0-only",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/victorzhrn/Schematex",
+    "directory": "packages/mcp"
+  },
+  "homepage": "https://schematex.js.org",
+  "bugs": {
+    "url": "https://github.com/victorzhrn/Schematex/issues"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "schematex": "file:../../",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.5.0"
+  }
+}

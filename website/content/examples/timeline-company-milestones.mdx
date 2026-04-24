@@ -1,0 +1,44 @@
+---
+title: Company milestone history
+description: Lollipop timeline of a company's first five years — fundraising rounds, key hires, product GAs — suited for an investor deck or anniversary blog post.
+diagram: timeline
+standard: Timeline convention
+industry: [startup, investor-relations]
+persona: For the founder preparing a pitch
+complexity: 2
+tags: [timeline, milestones, fundraising, company-history, pitch]
+featured: false
+relatedLink:
+  label: Timeline syntax
+  href: /docs/timeline
+status: published
+dsl: |
+  timeline "Acme — First Five Years"
+  config: style = lollipop
+
+  2020-06: "Founders meet at Y Combinator" [side: below]
+  2020-11: milestone "Incorporation + pre-seed $1M" [side: above, color: #1565C0]
+  2021-04: "First engineer hired" [side: below]
+  2021-09: milestone "Product beta — 50 design partners" [side: above, color: #2E7D32]
+  2022-03: milestone "Seed round — $6M" [side: above, color: #1565C0]
+  2022-11: "Team reaches 20 people" [side: below]
+  2023-05: milestone "Platform v1 GA" [side: above, color: #6A1B9A]
+  2023-10: milestone "Series A — $22M" [side: above, color: #1565C0]
+  2024-06: "100th enterprise customer" [side: below]
+  2025-01: milestone "Platform v2 launched" [side: above, color: #6A1B9A]
+---
+
+## Scenario
+
+The founder drops this into the first page of the fundraising deck. Funding rounds, product GAs, and growth markers alternate above/below the axis, which makes the parallel story — "we raised capital and shipped on time" — visible in one glance. Reviewers who only read the top of the page still get the two-line story.
+
+## Annotation key
+
+- `style = lollipop` — dot-on-stick markers alternating above/below axis
+- `milestone` — diamond marker for headline events
+- `[side: above|below]` — explicit placement
+- `[color: #hex]` — colour-code category (fundraising / product / team)
+
+## How to read
+
+Time runs left to right. Each marker is a single dated event; *milestone* markers are the diamond-shaped headline items (fundraising, GAs). Colour carries category: blue = fundraising, purple = product, green = early commercial traction. Events below the axis are supporting context (people, growth stats); events above are the announceable headlines.

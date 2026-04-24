@@ -1,0 +1,41 @@
+---
+title: Product launch timeline
+description: Gantt-style timeline for a three-month product launch — overlapping workstreams, two milestones, and a freeze window, used for exec status updates.
+diagram: timeline
+standard: Timeline / Gantt convention
+industry: [saas, product]
+persona: For the launch program manager
+complexity: 3
+tags: [timeline, gantt, product-launch, scheduling, program]
+featured: true
+relatedLink:
+  label: Timeline syntax
+  href: /docs/timeline
+status: published
+dsl: |
+  timeline "Platform v2 Launch"
+  config: style = gantt
+
+  2025-07-01 - 2025-08-15: "Engineering build" [category: "engineering"]
+  2025-07-15 - 2025-08-31: "Design polish" [category: "design"]
+  2025-08-01 - 2025-09-10: "Marketing collateral" [category: "marketing"]
+  2025-08-20: milestone "Feature freeze" [color: #E53935]
+  2025-08-20 - 2025-09-05: "QA hardening" [category: "engineering"]
+  2025-09-01 - 2025-09-12: "Press embargo outreach" [category: "marketing"]
+  2025-09-15: milestone "Public launch" [color: #2E7D32]
+---
+
+## Scenario
+
+The launch PM shares this in weekly exec status. Overlapping bars show where workstreams parallelize (design polishing while engineering still builds) and the feature-freeze diamond makes the handoff between build and QA unmissable. The second milestone (public launch) anchors the entire timeline and is the reason every other bar exists.
+
+## Annotation key
+
+- `DATE - DATE: "Label"` — range (bar) event
+- `DATE: milestone "Label"` — point milestone (diamond)
+- `[category: …]` — group colour in the gantt legend
+- `[color: #hex]` — explicit marker colour
+
+## How to read
+
+Time flows left to right. Horizontal bars are continuous work; diamonds are instantaneous events. Overlapping bars mean two teams are working simultaneously — fine, so long as they coordinate. The red *Feature freeze* marks the transition from net-new work to hardening; any engineering bar extending past it needs an exception. The green *Public launch* is the terminal milestone every other bar is serving.

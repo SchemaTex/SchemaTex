@@ -8,9 +8,13 @@ import type {
 } from "../../core/types";
 
 export class FishboneParseError extends Error {
-  constructor(message: string) {
-    super(message);
+  public line?: number;
+  public source?: string;
+  constructor(message: string, line?: number, source?: string) {
+    super(line !== undefined ? `Line ${line}: ${message}` : message);
     this.name = "FishboneParseError";
+    this.line = line;
+    this.source = source;
   }
 }
 
@@ -103,7 +107,9 @@ export function parseFishboneDSL(text: string): FishboneAST {
     if (indent >= 2 && trimmed.startsWith("-")) {
       if (!lastLevel1) {
         throw new FishboneParseError(
-          `Sub-cause at line ${i + 1} has no preceding Level-1 cause: "${trimmed}"`
+          `Sub-cause has no preceding Level-1 cause`,
+          i + 1,
+          trimmed
         );
       }
       const subText = stripQuotes(trimmed.slice(1).trim());
@@ -208,7 +214,9 @@ export function parseFishboneDSL(text: string): FishboneAST {
       const cat = getCat(catId);
       if (!cat) {
         throw new FishboneParseError(
-          `Unknown category "${catId}" at line ${i + 1}. Declare with \`category ${catId} "..."\` first.`
+          `Unknown category "${catId}". Declare with \`category ${catId} "..."\` first.`,
+          i + 1,
+          trimmed
         );
       }
       const bucket = causesByCategory.get(cat.id)!;

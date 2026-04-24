@@ -6,9 +6,13 @@ import type {
 } from "../../core/types";
 
 export class SLDParseError extends Error {
-  constructor(message: string) {
-    super(message);
+  public line?: number;
+  public source?: string;
+  constructor(message: string, line?: number, source?: string) {
+    super(line !== undefined ? `Line ${line}: ${message}` : message);
     this.name = "SLDParseError";
+    this.line = line;
+    this.source = source;
   }
 }
 
@@ -168,11 +172,13 @@ export function parseSLDDSL(text: string): SLDAST {
       const nodeType = nodeMatch[2] as SLDNodeType;
       if (!NODE_TYPES.has(nodeType)) {
         throw new SLDParseError(
-          `Unknown node type "${nodeType}" for "${id}" (line: ${line})`
+          `Unknown node type "${nodeType}" for "${id}"`,
+          i + 1,
+          line
         );
       }
       if (nodeMap.has(id)) {
-        throw new SLDParseError(`Duplicate node id "${id}"`);
+        throw new SLDParseError(`Duplicate node id "${id}"`, i + 1, line);
       }
       const node: SLDNode = { id, nodeType };
       if (nodeMatch[3]) {
@@ -183,7 +189,7 @@ export function parseSLDDSL(text: string): SLDAST {
       continue;
     }
 
-    throw new SLDParseError(`Cannot parse line: ${line}`);
+    throw new SLDParseError(`Cannot parse line`, i + 1, line);
   }
 
   // Validate connections

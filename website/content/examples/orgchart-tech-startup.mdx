@@ -1,0 +1,48 @@
+---
+title: Series-A tech startup org
+description: Three-level org chart for a ~30-person Series-A startup — CEO with engineering, product, and ops directs, showing open roles and a board advisor.
+diagram: orgchart
+standard: HR convention
+industry: [saas, startup]
+persona: For the founder / head of people
+complexity: 3
+tags: [orgchart, startup, hiring, headcount, series-a]
+featured: true
+relatedLink:
+  label: Org chart syntax
+  href: /docs/orgchart
+status: published
+dsl: |
+  orgchart "Acme — Series A Team"
+  ceo: "Jamie Torres" | CEO [role: ceo]
+    cto: "Raj Patel" | CTO [role: cto]
+      lead_fe: "Priya Nair" | Eng Lead | Frontend [role: engineer]
+        eng1: "Alex Kim" | Senior Engineer [role: engineer]
+        eng2: "Jordan Lee" | Engineer [role: engineer, status: new]
+        open1: open "TBH" | Frontend Engineer [role: engineer]
+      lead_be: "Omar Hassan" | Eng Lead | Backend [role: engineer]
+        eng3: "Yuki Tanaka" | Staff Engineer [role: engineer]
+        draft1: draft "TBH" | Senior Engineer [role: engineer]
+    cpo: "Ellen Wu" | CPO [role: cpo]
+      pm1: "Tyler Brooks" | Product Lead | Core [role: product]
+      pm2: "Suki Ito" | Product Lead | Growth [role: product]
+    coo: "Maria Santos" | COO [role: ops]
+      fin1: "Nour Ahmed" | Finance Manager [role: ops]
+  advisor adv1: "Dr. Alan Ford" | Board Advisor [role: advisor]
+---
+
+## Scenario
+
+The founder is preparing a hiring plan for the next two quarters and uses this chart in a board update. It shows the current team, the one confirmed open req (Frontend Engineer), one planned-but-not-recruiting slot (Staff Engineer backend), and the board advisor relationship. Indentation communicates reporting lines without drawing edges.
+
+## Annotation key
+
+- `id: "Name" | "Title" | "Department"` — a person node
+- Indentation (2 spaces) — reporting hierarchy
+- `open …` / `draft …` — unfilled / planned roles
+- `advisor …` — external board or advisor relationship
+- `[role: …]` — colour-coded by function
+
+## How to read
+
+The single root is the CEO. Each two-space indent step moves one level down the reporting tree. Two kinds of "ghost" slots appear: `open` nodes (Frontend Engineer) are reqs you are actively hiring for; `draft` nodes (Staff Backend) are next-quarter plans. The advisor sits outside the tree — not in the reporting chain but formally associated with the org.

@@ -1,0 +1,41 @@
+---
+title: Programming paradigm overlap
+description: Venn diagram showing the intersection of object-oriented, functional, and logic programming paradigms with language counts — a teaching aid for CS curricula.
+diagram: venn
+standard: Venn (1880)
+industry: [education, software]
+persona: For the CS instructor
+complexity: 2
+tags: [education, programming, paradigms, venn, teaching]
+featured: false
+relatedLink:
+  label: Venn syntax
+  href: /docs/venn
+status: published
+dsl: |
+  venn "Programming Paradigms"
+  set oop "Object-Oriented" [color: "#1E88E5"]
+  set fp "Functional" [color: "#E53935"]
+  set logic "Logic" [color: "#43A047"]
+  oop & fp : 180
+  oop & logic : 45
+  fp & logic : 90
+  oop & fp & logic : 12
+  oop only : 620
+  fp only : 340
+  logic only : 95
+---
+
+## Scenario
+
+A CS instructor opens a lecture on programming paradigms with this Venn. Counts come from a language survey — how many languages offer strong OOP, FP, and logic support. The tiny triple-overlap (12) tells students that languages supporting all three well are rare; the large OOP-only region shows industry gravity; the FP ∩ logic overlap (90) is where languages like Prolog-with-lambdas sit.
+
+## Annotation key
+
+- `set ID "Label"` — paradigm circle
+- `A & B : n` — number of languages supporting both paradigms strongly
+- `A only : n` — languages committed to a single paradigm
+
+## How to read
+
+Each circle represents a paradigm. Overlapping regions count multi-paradigm languages. The `oop & fp` intersection (180) is where modern mainstream languages — Scala, Kotlin, Swift, TypeScript — sit. The tiny triple intersection (12) is a reminder that truly multi-paradigm language design is expensive; the larger exclusive regions show how few languages commit to logic programming at all.

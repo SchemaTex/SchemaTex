@@ -1,0 +1,43 @@
+---
+title: Support ticket triage
+description: Taxonomy-mode decision tree for front-line support — routes an incoming ticket through outage, billing, and reproducibility gates to the right team.
+diagram: decisiontree
+standard: Clinical/support decision flow
+industry: [saas, support]
+persona: For the support lead
+complexity: 3
+tags: [decisiontree, support, triage, routing, runbook]
+featured: true
+relatedLink:
+  label: Decision tree syntax
+  href: /docs/decisiontree
+status: published
+dsl: |
+  decisiontree "Customer Support Triage"
+  direction: top-down
+
+  question "Is the service completely down?"
+    yes: question "Outage confirmed on status page?"
+      yes: answer "Follow incident protocol — page on-call"
+      no: answer "Check monitoring — open severity-1 ticket"
+    no: question "Is the issue affecting billing?"
+      yes: answer "Escalate to billing team — SLA breach risk"
+      no: question "Can user reproduce consistently?"
+        yes: answer "Collect HAR trace — file bug report"
+        no: answer "Ask for screenshot — watch for recurrence"
+---
+
+## Scenario
+
+The support lead bakes this tree into the agent runbook so new hires can triage in week one without a buddy. Three gates — outage, billing, reproducibility — route 90% of tickets deterministically. The remaining 10% (edge cases, multi-category) get flagged for human escalation instead of guessed at.
+
+## Annotation key
+
+- `question "text"` — internal decision node
+- `answer "text"` — terminal outcome
+- `yes:` / `no:` — branch label
+- Indentation (2 spaces) — parent-child nesting
+
+## How to read
+
+Start at the root. At each `question` node the agent answers yes or no and follows the matching branch. Every path terminates in an `answer` — a concrete next action, not another decision. The tree is deliberately shallow (max depth 3) so agents can hold it in their head; deeper branches would push into a runbook rather than a decision tree.

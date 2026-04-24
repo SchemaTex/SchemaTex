@@ -1,0 +1,49 @@
+---
+title: Scale-up with matrix reporting
+description: Org chart for a 60-person scale-up with two product lines — solid-line functional reporting plus dotted-line product-manager reporting into each engineering lead.
+diagram: orgchart
+standard: HR convention
+industry: [saas, scaleup]
+persona: For the head of engineering
+complexity: 4
+tags: [orgchart, matrix-reporting, scale-up, engineering, organization]
+featured: false
+relatedLink:
+  label: Org chart syntax
+  href: /docs/orgchart
+status: published
+dsl: |
+  orgchart "Scaleup — Matrixed Product Lines"
+  ceo: "Jamie Torres" | CEO [role: ceo]
+    cto: "Raj Patel" | CTO [role: cto]
+      lead_core: "Priya Nair" | Eng Lead | Core [role: engineer]
+        eng1: "Alex Kim" | Senior Engineer [role: engineer]
+        eng2: "Jordan Lee" | Engineer [role: engineer]
+      lead_growth: "Omar Hassan" | Eng Lead | Growth [role: engineer]
+        eng3: "Yuki Tanaka" | Staff Engineer [role: engineer]
+        eng4: "Maya Patel" | Engineer [role: engineer]
+    cpo: "Ellen Wu" | CPO [role: cpo]
+      pm_core: "Tyler Brooks" | PM | Core [role: product]
+      pm_growth: "Suki Ito" | PM | Growth [role: product]
+    cdo: "Liu Wei" | CDO [role: design]
+      des_core: "Ana Rossi" | Designer | Core [role: design]
+      des_growth: "Kai Park" | Designer | Growth [role: design]
+  pm_core -.-> lead_core
+  pm_growth -.-> lead_growth
+  des_core -.-> lead_core
+  des_growth -.-> lead_growth
+---
+
+## Scenario
+
+The head of engineering is explaining the matrix structure to a new eng lead. Functional managers (CTO, CPO, CDO) own career growth; product-line leads coordinate day-to-day work. The dotted lines from PMs and designers into the two eng leads make this split visible without implying a change in reporting chain.
+
+## Annotation key
+
+- Solid line (indentation) — functional / HR reporting
+- `A -.-> B` — dotted line; secondary / product reporting
+- `[role: …]` — colour-coded by function
+
+## How to read
+
+Solid lines (from indentation) answer "who owns my performance review and career." Dotted lines answer "whose roadmap am I aligned to this quarter." PMs and designers both report functionally into their chiefs but are dotted-lined into the engineering lead whose product line they're embedded in — a typical scale-up pattern that balances functional excellence with product-team velocity.

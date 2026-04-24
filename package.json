@@ -106,6 +106,16 @@
       "types": "./dist/export.d.ts",
       "import": "./dist/export.js",
       "require": "./dist/export.cjs"
+    },
+    "./ai": {
+      "types": "./dist/ai/index.d.ts",
+      "import": "./dist/ai/index.js",
+      "require": "./dist/ai/index.cjs"
+    },
+    "./ai/sdk": {
+      "types": "./dist/ai/ai-sdk.d.ts",
+      "import": "./dist/ai/ai-sdk.js",
+      "require": "./dist/ai/ai-sdk.cjs"
     }
   },
   "files": [
@@ -114,12 +124,14 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "npm run build:ai && tsup",
+    "build:ai": "node scripts/build-ai-content.mjs",
     "dev": "tsup --watch",
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "eslint src/",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "npm run build:ai && tsc --noEmit",
+    "validate:examples": "npm run build && node scripts/validate-examples.mjs",
     "prepublishOnly": "npm run build"
   },
   "keywords": [
@@ -167,14 +179,22 @@
     "url": "https://github.com/victorzhrn/Schematex/issues"
   },
   "peerDependencies": {
+    "ai": ">=5.0.0",
     "react": ">=18.0.0",
-    "react-dom": ">=18.0.0"
+    "react-dom": ">=18.0.0",
+    "zod": ">=3.23.0"
   },
   "peerDependenciesMeta": {
     "react": {
       "optional": true
     },
     "react-dom": {
+      "optional": true
+    },
+    "ai": {
+      "optional": true
+    },
+    "zod": {
       "optional": true
     }
   },
@@ -183,11 +203,13 @@
     "@resvg/resvg-js": "^2.6.2",
     "@types/node": "^22.0.0",
     "@types/react": "^19.2.14",
+    "ai": "^5.0.179",
     "eslint": "^9.0.0",
     "playwright": "^1.59.1",
     "tsup": "^8.0.0",
     "typescript": "^5.5.0",
     "typescript-eslint": "^8.58.2",
-    "vitest": "^2.0.0"
+    "vitest": "^2.0.0",
+    "zod": "^3.25.76"
   }
 }

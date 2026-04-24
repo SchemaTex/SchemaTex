@@ -1,0 +1,45 @@
+---
+title: Investment decision analysis
+description: Decision-analysis tree evaluating build-vs-buy vs hybrid for a platform choice — chance nodes with probabilities, automatic expected-value rollback.
+diagram: decisiontree
+standard: Raiffa & Schlaifer (1961)
+industry: [strategy, management]
+persona: For the CTO evaluating vendors
+complexity: 4
+tags: [decisiontree, decision-analysis, expected-value, investment, buildvbuy]
+featured: false
+relatedLink:
+  label: Decision tree syntax
+  href: /docs/decisiontree
+status: published
+dsl: |
+  decisiontree:decision "Platform Vendor Choice"
+
+  decision "Which vendor?"
+    choice "Build in-house"
+      chance "Project outcome"
+        prob 0.6 end "On-time delivery" payoff=900000
+        prob 0.4 end "Over budget / delayed" payoff=150000
+    choice "Managed SaaS vendor"
+      end "Predictable cost" payoff=500000
+    choice "Hybrid approach"
+      chance "Integration complexity"
+        prob 0.5 end "Smooth integration" payoff=700000
+        prob 0.5 end "Integration rework" payoff=300000
+---
+
+## Scenario
+
+A CTO is deciding how to stand up a new data-platform layer: build internally, buy managed SaaS, or take a hybrid. Each path has outcomes with probabilities and net-value estimates. The decision-analysis tree rolls the expected value back to the decision node so the optimal branch is identified automatically.
+
+## Annotation key
+
+- `decision "…"` — actor chooses a branch
+- `chance "…"` — nature chooses; `prob N` on each child (must sum to 1)
+- `end "…" payoff=N` — terminal payoff
+- `choice "label"` — label on an outgoing decision branch
+- EV rollback: chance = probability-weighted sum; decision = max child EV
+
+## How to read
+
+Evaluate each branch's expected value. Build in-house: 0.6 × 900k + 0.4 × 150k = **600k**. Managed SaaS: flat **500k**. Hybrid: 0.5 × 700k + 0.5 × 300k = **500k**. Under these estimates the optimal branch is *Build in-house* — the parser flags it on render. The chart's real value is in forcing stakeholders to state probabilities explicitly; sensitivity to them is where the interesting argument happens.

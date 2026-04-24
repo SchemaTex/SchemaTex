@@ -1,0 +1,48 @@
+---
+title: CI/CD pipeline with gated deploy
+description: Flowchart of a trunk-based CI/CD pipeline — build, test, security scan, staging gate, and production deploy with automatic rollback on failed smoke tests.
+diagram: flowchart
+standard: ISO 5807:1985
+industry: [saas, devops]
+persona: For the platform engineer
+complexity: 3
+tags: [cicd, devops, pipeline, deployment, rollback]
+featured: false
+relatedLink:
+  label: Flowchart syntax
+  href: /docs/flowchart
+status: published
+dsl: |
+  flowchart TD
+    commit([Push to main]) --> build[Build artifact]
+    build --> unit{Unit tests pass?}
+    unit -->|No| fail([Fail build])
+    unit -->|Yes| scan[Security scan]
+    scan --> vuln{High-severity CVEs?}
+    vuln -->|Yes| fail
+    vuln -->|No| stage[Deploy to staging]
+    stage --> smoke{Smoke tests green?}
+    smoke -->|No| fail
+    smoke -->|Yes| approve{Manual approval?}
+    approve -->|No| wait([Await approver])
+    approve -->|Yes| prod[Deploy to production]
+    prod --> health{Post-deploy health check?}
+    health -->|Yes| done([Release complete])
+    health -->|No| rollback[Automatic rollback]
+    rollback --> done
+---
+
+## Scenario
+
+A platform engineer is documenting the team's trunk-based pipeline for a new-hire runbook. The diagram makes the four automated gates (tests → scan → smoke → post-deploy health) and the single human gate (manual approval) obvious at a glance, and shows that every failure path terminates the pipeline rather than silently continuing.
+
+## Annotation key
+
+- `([…])` — stadium; start and terminal nodes
+- `{…}` — diamond; automated or manual gate
+- `[…]` — rectangle; build / deploy / scan step
+- `-->|Yes/No|` — branch labels on each gate
+
+## How to read
+
+Start at *Push to main*. Every diamond is a gate — a *No* on any of unit tests, CVE scan, or smoke tests terminates at *Fail build*. Manual approval is the only human gate; it can park the pipeline at *Await approver* without failing. The post-deploy health check guards production: a failure triggers automatic rollback, which still completes at *Release complete* because the rollback itself is a successful outcome.
