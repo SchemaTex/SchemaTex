@@ -43,15 +43,13 @@ interface LineRenderResult {
 
 function renderLine(
   line: MindmapLabelLine,
-  cx: number,
-  cy: number,   // vertical center of the line
+  leftX: number,  // fixed left edge for all lines in this node (left-aligned)
+  cy: number,     // vertical center of the line
   fontSize: number,
   fontFamily: string,
   fontWeight: number,
   theme: Theme
 ): LineRenderResult {
-  // Left edge of the line (center-anchored at cx).
-  const leftX = cx - line.width / 2;
   const baselineY = cy + fontSize * 0.35;
 
   // Build tspans AND decorations in sequence, tracking cursor.
@@ -212,10 +210,14 @@ function renderNode(
   const decorations: string[] = [];
   const weight = isRoot ? 700 : isMain ? 600 : 400;
 
+  // All lines start at the column's left edge (same as underline left).
+  // Uses equalized labelWidth so all same-depth nodes are flush-left aligned.
+  const textLeft = n.x - n.labelWidth / 2;
+
   for (let i = 0; i < lineCount; i++) {
     const line = n.lines[i];
     const cy = topY + (i + 0.5) * lh;
-    const r = renderLine(line, n.x, cy, fs, fontFamily, weight, theme);
+    const r = renderLine(line, textLeft, cy, fs, fontFamily, weight, theme);
     decorations.push(...r.decorations);
     children.push(r.textElement);
   }
