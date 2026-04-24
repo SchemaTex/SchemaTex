@@ -174,7 +174,7 @@ function wrapTitle(s: string, maxPerLine: number): string {
   return lines.slice(0, 3).join('\n');
 }
 
-function renderWrappedText(
+function _renderWrappedText(
   text: string,
   x: number,
   yStart: number,

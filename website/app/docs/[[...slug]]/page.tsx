@@ -48,16 +48,16 @@ export async function generateMetadata(props: { params: Promise<{ slug?: string[
     alternates: { canonical: `https://schematex.js.org${page.url}` },
     openGraph: ogImage
       ? {
-          title: `${ogEntry!.title} · Schematex`,
-          description: ogEntry!.standard,
+          title: `${ogEntry?.title ?? ''} · Schematex`,
+          description: ogEntry?.standard ?? '',
           images: [ogImage],
         }
       : undefined,
     twitter: ogImage
       ? {
           card: 'summary_large_image',
-          title: `${ogEntry!.title} · Schematex`,
-          description: ogEntry!.standard,
+          title: `${ogEntry?.title ?? ''} · Schematex`,
+          description: ogEntry?.standard ?? '',
           images: [ogImage.url],
         }
       : undefined,
