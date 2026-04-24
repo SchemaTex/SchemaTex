@@ -7,19 +7,22 @@ const CLAUDE_CONNECTOR_URL =
 interface MCPConnectCardProps {
   /** `full` (default) for hero CTAs at top/bottom of long pages. `compact` for inline mentions. */
   size?: 'full' | 'compact';
-  /** Override the headline. */
+  /** Override the headline (full only). */
   title?: string;
-  /** Override the supporting line. */
+  /** Override the supporting line (full only). */
   description?: string;
 }
 
 /**
  * Two-action call-to-action for connecting Schematex's hosted MCP to Claude.ai.
- * - Left: copyable MCP URL.
- * - Right: deep link that opens Claude.ai's "Add custom connector" dialog.
  *
- * Used on `/docs/ai-integration` (full), `/docs/getting-started` (compact),
- * and `/docs` introduction (compact).
+ * Layout: a copyable URL on the left, a primary "Open in Claude.ai" button
+ * on the right. Sits side-by-side on desktop, stacks on mobile.
+ *
+ * - `full` size — wraps in a soft card with title/description/help text.
+ *   Used at the top and bottom of `/docs/ai-integration`.
+ * - `compact` size — bare action row, no card chrome. Used inline on
+ *   `/docs` (Introduction) and `/docs/getting-started`.
  */
 export function MCPConnectCard({
   size = 'full',
@@ -28,114 +31,128 @@ export function MCPConnectCard({
 }: MCPConnectCardProps) {
   const isFull = size === 'full';
 
+  const actionRow = (
+    <div className="not-prose flex flex-col sm:flex-row sm:items-stretch gap-2">
+      {/* URL — copyable. Click anywhere on the pill to copy. */}
+      <CopyURLPill />
+
+      {/* Primary CTA — opens Claude.ai connector dialog. */}
+      <a
+        href={CLAUDE_CONNECTOR_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="mcp-connect-cta inline-flex items-center justify-center gap-2 font-medium transition no-underline"
+        style={{
+          background: 'var(--accent)',
+          color: '#ffffff',
+          padding: '10px 18px',
+          borderRadius: 'var(--r-sm)',
+          fontSize: '14px',
+          whiteSpace: 'nowrap',
+          textDecoration: 'none',
+          lineHeight: 1.2,
+        }}
+      >
+        <ClaudeIcon />
+        <span>Open in Claude.ai</span>
+        <ArrowIcon />
+      </a>
+    </div>
+  );
+
+  if (!isFull) {
+    return <div className="my-5">{actionRow}</div>;
+  }
+
   return (
     <div
       className="not-prose my-6"
       style={{
-        border: '1px solid var(--stroke)',
-        borderRadius: 'var(--r-md)',
-        background: 'var(--fill)',
-        padding: isFull ? '24px' : '16px',
+        background: 'var(--fill-muted)',
+        borderRadius: 'var(--r-md, 8px)',
+        padding: '20px 22px',
       }}
     >
-      {isFull && (
-        <>
-          <div
-            className="font-semibold"
-            style={{
-              fontSize: '17px',
-              color: 'var(--ink)',
-              marginBottom: '6px',
-              letterSpacing: '-0.01em',
-            }}
-          >
-            {title}
-          </div>
-          <p
-            style={{
-              fontSize: '14px',
-              color: 'var(--ink-muted)',
-              margin: 0,
-              marginBottom: '16px',
-              lineHeight: 1.5,
-            }}
-          >
-            {description}
-          </p>
-        </>
-      )}
-
       <div
-        className="flex flex-col md:flex-row md:items-stretch"
-        style={{ gap: '10px' }}
+        style={{
+          fontSize: '16px',
+          fontWeight: 600,
+          color: 'var(--text)',
+          letterSpacing: '-0.01em',
+          marginBottom: '4px',
+        }}
       >
-        {/* URL pill + copy */}
-        <div
-          className="flex items-center justify-between gap-2 flex-1 min-w-0"
-          style={{
-            border: '1px solid var(--fill-muted)',
-            borderRadius: 'var(--r-sm)',
-            background: 'var(--bg)',
-            padding: '8px 10px 8px 14px',
-          }}
-        >
-          <code
-            className="font-mono truncate"
-            style={{
-              fontSize: '13px',
-              color: 'var(--ink)',
-              background: 'transparent',
-              padding: 0,
-              border: 0,
-            }}
-          >
-            {MCP_URL}
-          </code>
-          <CopyButton text={MCP_URL} variant="ghost" label="Copy URL" />
-        </div>
-
-        {/* Open Claude.ai button */}
-        <a
-          href={CLAUDE_CONNECTOR_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center justify-center gap-2 font-medium transition hover:opacity-90"
-          style={{
-            background: 'var(--ink)',
-            color: 'var(--bg)',
-            padding: '10px 16px',
-            borderRadius: 'var(--r-sm)',
-            fontSize: '13px',
-            whiteSpace: 'nowrap',
-            textDecoration: 'none',
-          }}
-        >
-          <ClaudeIcon />
-          Open in Claude.ai
-          <ArrowIcon />
-        </a>
+        {title}
       </div>
+      <p
+        style={{
+          fontSize: '13.5px',
+          color: 'var(--text-muted)',
+          margin: 0,
+          marginBottom: '14px',
+          lineHeight: 1.55,
+        }}
+      >
+        {description}
+      </p>
 
-      {isFull && (
-        <p
-          style={{
-            fontSize: '12px',
-            color: 'var(--ink-muted)',
-            margin: 0,
-            marginTop: '14px',
-            lineHeight: 1.5,
-          }}
-        >
-          Click <strong>Open in Claude.ai</strong> → the connector dialog opens
-          with the URL field empty → paste the URL above → click <strong>Add</strong>.
-          Works on Free / Pro / Team / Enterprise.
-        </p>
-      )}
+      {actionRow}
+
+      <p
+        style={{
+          fontSize: '12px',
+          color: 'var(--text-muted)',
+          margin: 0,
+          marginTop: '12px',
+          lineHeight: 1.5,
+        }}
+      >
+        One click to open the connector dialog. Paste the URL, click{' '}
+        <strong style={{ color: 'var(--text)' }}>Add</strong>. Works on every
+        Claude.ai plan.
+      </p>
+    </div>
+  );
+}
+
+/**
+ * URL "chip" — monospace URL with a copy button inline. Single bordered pill,
+ * no nested boxes. The whole thing reads as one visual unit.
+ */
+function CopyURLPill() {
+  return (
+    <div
+      className="flex items-center justify-between gap-2 flex-1 min-w-0"
+      style={{
+        background: 'var(--bg)',
+        border: '1px solid var(--fill-muted)',
+        borderRadius: 'var(--r-sm)',
+        padding: '8px 6px 8px 14px',
+        minHeight: '40px',
+      }}
+    >
+      <code
+        className="font-mono truncate"
+        style={{
+          fontSize: '13px',
+          color: 'var(--text)',
+          background: 'transparent',
+          padding: 0,
+          border: 0,
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+        }}
+      >
+        {MCP_URL}
+      </code>
+      <CopyButton text={MCP_URL} variant="ghost" label="Copy" />
     </div>
   );
 }
 
 function ClaudeIcon() {
+  // Simple chat-bubble glyph (avoids any vendor-specific marks).
   return (
     <svg
       width="14"
@@ -148,7 +165,7 @@ function ClaudeIcon() {
       strokeLinejoin="round"
       aria-hidden
     >
-      <path d="M12 2 4 6v6c0 5.5 3.8 10.7 8 12 4.2-1.3 8-6.5 8-12V6l-8-4z" />
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
     </svg>
   );
 }
@@ -161,12 +178,12 @@ function ArrowIcon() {
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth="2"
+      strokeWidth="2.25"
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden
     >
-      <path d="M7 17 17 7M7 7h10v10" />
+      <path d="M7 17 17 7M9 7h8v8" />
     </svg>
   );
 }
