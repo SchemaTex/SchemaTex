@@ -36,6 +36,8 @@ Parse-only check. Returns `{ ok: true }` or `{ ok: false, errors: [{line, column
 ### `renderDsl({ type?, dsl, theme?, padding? })`
 Render DSL to an SVG string. Returns `{ ok: true, svg }` or `{ ok: false, errors }`.
 
+**Skip this if your app already has a rendering pipeline.** If you're building on top of the `schematex` package (Path 1), call `renderDsl` from the library directly — don't round-trip through the tool layer. The tool version is intended for pure chat clients (Claude Desktop, ChatGPT) that need the SVG returned inline in the conversation.
+
 ---
 
 ## Path 1 — Vercel AI SDK (in-app)
@@ -75,9 +77,17 @@ https://schematex.js.org/mcp
 
 Any MCP client that speaks JSON-RPC over HTTP can connect. No install, no local process, always up to date with the latest schematex release.
 
-### Claude Desktop — custom connector
+### Claude.ai
 
-Settings → Connectors → Add custom connector → paste the URL.
+[**→ Open "Add custom connector" in Claude.ai**](https://claude.ai/settings/connectors?modal=add-custom-connector)
+
+Clicking the link above opens the connector dialog directly. Paste `https://schematex.js.org/mcp` as the server URL and click **Add**. The connector will appear under Settings → Connectors and is available in every conversation.
+
+> Requires a Claude.ai account (Free / Pro / Team / Enterprise).
+
+### Claude Desktop (app)
+
+Settings → Connectors → Add custom connector → paste `https://schematex.js.org/mcp`.
 
 ### ChatGPT / Cursor / Windsurf
 
@@ -124,7 +134,7 @@ The single biggest reliability win is making the agent validate its own output a
 5. validateDsl({ type, dsl })
    ├─ ok:    return DSL to user
    └─ error: read line/column/message, fix, goto 5
-6. (optional) renderDsl({ type, dsl })     → return SVG
+6. (optional) renderDsl({ type, dsl })     → return SVG (skip if app renders natively)
 ```
 
 A simple system prompt that implements this loop:
