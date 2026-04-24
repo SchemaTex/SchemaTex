@@ -1,0 +1,65 @@
+name: Auto Release on Version Bump
+
+# Triggers whenever a push lands on main.
+# If package.json version changed vs the previous commit → create a GitHub Release + tag.
+# npm publish is handled separately (run manually or via another workflow).
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write   # needed to create tags and releases
+
+jobs:
+  release:
+    name: Create release if version bumped
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout (with history)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2        # need HEAD and HEAD~1 to diff versions
+
+      - name: Detect version change
+        id: version
+        run: |
+          # Current version
+          CURR=$(node -pe "require('./package.json').version")
+
+          # Previous version (HEAD~1). Falls back to "none" on first commit.
+          PREV=$(git show HEAD~1:package.json 2>/dev/null \
+            | node -pe "JSON.parse(require('fs').readFileSync('/dev/stdin','utf8')).version" \
+            || echo "none")
+
+          echo "prev=$PREV"
+          echo "curr=$CURR"
+
+          if [ "$CURR" != "$PREV" ] && [ -n "$CURR" ]; then
+            echo "changed=true"  >> $GITHUB_OUTPUT
+            echo "version=$CURR" >> $GITHUB_OUTPUT
+            echo "tag=v$CURR"    >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create GitHub Release
+        if: steps.version.outputs.changed == 'true'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.tag }}
+          name: ${{ steps.version.outputs.tag }}
+          # Auto-generate release notes from commits since last tag
+          generate_release_notes: true
+          draft: false
+          # Mark as pre-release if version contains alpha/beta/rc
+          prerelease: >-
+            ${{
+              contains(steps.version.outputs.version, 'alpha') ||
+              contains(steps.version.outputs.version, 'beta')  ||
+              contains(steps.version.outputs.version, 'rc')
+            }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

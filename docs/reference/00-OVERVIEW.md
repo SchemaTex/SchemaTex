@@ -18,7 +18,7 @@
 | Cluster | 覆盖图表 | 标准 |
 |---------|---------|------|
 | 👪 **Relationships** | genogram · ecomap · pedigree · sociogram · phylogenetic tree | McGoldrick 2020 · Hartman 1978 · NSGC · Moreno 1934 · Newick/NHX |
-| ⚡ **Electrical & Industrial** | timing · logic gate · circuit schematic · block diagram · ladder logic · single-line diagram | WaveDrom · IEEE 91 · IEEE 315 · Ogata · IEC 61131-3 · ANSI device numbering |
+| ⚡ **Electrical & Industrial** | timing · logic gate · circuit schematic · block diagram · ladder logic · single-line diagram · state diagram · P&ID | WaveDrom · IEEE 91 · IEEE 315 · Ogata · IEC 61131-3 · ANSI device numbering · UML 2.5 / Harel statechart · ISA-5.1 / ISO 10628 |
 | 🏢 **Corporate / Legal** | entity structure · cap table | Tier-based ownership hierarchy with percentage rollup |
 | 🐟 **Causality / Analysis** | fishbone (Ishikawa) · venn/euler · decision tree | Ishikawa 1968 cause-and-effect · Venn 1880 / Euler set-theoretic diagrams · Howard-Raiffa EV rollback / CART-sklearn / taxonomy |
 | 🔀 **Generic process** | flowchart | Sugiyama layered DAG + orthogonal routing (14-FLOWCHART-STANDARD) |
@@ -142,7 +142,9 @@ schematex/
 │   │   ├── 12-ENTITY-STRUCTURE-STANDARD.md  # Corporate / legal / tax ownership
 │   │   ├── 13-FISHBONE-STANDARD.md       # Ishikawa cause-and-effect
 │   │   ├── 14-FLOWCHART-STANDARD.md      # Sugiyama layered DAG + orthogonal routing
-│   │   └── 15-VENN-STANDARD.md           # Venn / Euler set-theoretic diagrams
+│   │   ├── 15-VENN-STANDARD.md           # Venn / Euler set-theoretic diagrams
+│   │   ├── 16-STATE-DIAGRAM-STANDARD.md  # UML 2.5 / Harel statechart (planned)
+│   │   └── 17-PID-STANDARD.md            # Process & instrumentation (ISA-5.1) (planned)
 │   ├── impl/                    # 实施计划（CC 自主执行）
 │   │   │  ── Relationship Diagrams ──
 │   │   ├── 1.0-genogram-parser.md
@@ -239,7 +241,7 @@ schematex/
 2. **输出必须是有效语义 SVG** — 可访问性（title/desc）、CSS class 可主题化（通过 `src/core/theme.ts` 统一主题系统）、data-* 属性可交互。
 3. **Strict TypeScript** — 无 `any`，无未注释的 `as` cast。
 4. **Test-first for layout** — 布局算法先写测试再写实现。
-5. **标准合规** — Genogram: McGoldrick 2020, Ecomap: Hartman 1978, Pedigree: genetics standard, Sociogram: Moreno 1934 + Brandes 2011, Timing: WaveDrom + IEEE 1497, Logic Gate: IEEE Std 91-1984/91a + IEC 60617-12, Circuit: IEEE 315/ANSI Y32.2 + IEC 60617, Block: Ogata/Franklin control systems convention, Ladder: IEC 61131-3:2013 + NEMA ICS 1, SLD: IEEE Std 315-1975 + ANSI device numbering。
+5. **标准合规** — Genogram: McGoldrick 2020, Ecomap: Hartman 1978, Pedigree: genetics standard, Sociogram: Moreno 1934 + Brandes 2011, Timing: WaveDrom + IEEE 1497, Logic Gate: IEEE Std 91-1984/91a + IEC 60617-12, Circuit: IEEE 315/ANSI Y32.2 + IEC 60617, Block: Ogata/Franklin control systems convention, Ladder: IEC 61131-3:2013 + NEMA ICS 1, SLD: IEEE Std 315-1975 + ANSI device numbering, State diagram: UML 2.5 + Harel 1987 statechart, P&ID: ISA-5.1-2009 + ISO 10628-1:2014。
 
 ---
 

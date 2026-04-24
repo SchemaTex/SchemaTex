@@ -1,164 +1,353 @@
 ---
 title: Mind map
-description: Radial mind maps and horizontal logic trees from Markdown-style heading and bullet syntax. Two styles — radial map and logic-right tree. Used by students, educators, project managers, and consultants for brainstorming, note-taking, knowledge structuring, and concept overviews.
 ---
+
+## About mind maps
+
+A **mind map** is a radial diagram that organizes ideas around a central topic, branching outward into subtopics and details. Tony Buzan popularized the format in the 1970s as a note-taking and brainstorming tool; the method has since been adopted widely in education, project planning, meeting facilitation, and knowledge management. The key insight is that non-linear branching mirrors how associative thinking works — faster than outlining, more structured than free-writing.
+
+Schematex mind maps use a **Markdown-heading + bullet-list** DSL inspired by [markmap](https://markmap.js.org/) — a format most people already know. Two layout styles are available: the classic radial **map** (branches in all directions) and a **logic-right** horizontal tree. This page documents what the parser accepts today.
 
 <Playground initial={`mindmap
-%% style: map
 
-# Product Strategy
+# Product Launch Plan
 
-## Market
-- Target segments
-- Competitive landscape
-- Pricing research
+## Market readiness
+### Competitive analysis
+- Direct competitors
+- Pricing benchmarks
+### Target segments
+- SMB customers
+- Enterprise pilot
 
-## Product
-- Core features
-- Roadmap Q3-Q4
-- Technical debt
+## Engineering
+### Feature freeze
+- Core API complete
+- Edge cases resolved
+### Infrastructure
+- Load testing
+- CDN configuration
+  - Cache rules
+  - Geo routing
 
-## Growth
-- Acquisition channels
-- Retention levers
-- Referral program
+## Go-to-market
+- Landing page live
+- Email campaign
+- Press outreach
+  - TechCrunch pitch
+  - Newsletter sponsors
 
-## Team
-- Engineering
-- Design
-- Marketing`} />
-
-*Markdown heading levels set hierarchy depth. Bullets extend any heading branch.*
-
----
-
-## Syntax
-
-```
-mindmap          # optional header keyword
-
-# Central Topic  # root node (H1)
-
-## Branch        # level 1 (H2)
-### Sub-branch   # level 2 (H3)
-#### Leaf        # level 3 (H4)
-
-- Bullet item    # child of current heading
-  - Sub-bullet   # 2 spaces = 1 deeper level
-```
-
-Rules:
-- Exactly one `#` root node allowed
-- Heading depth (`##`, `###`, ...) sets the tree level
-- Bullet indent: 2 spaces = 1 level deeper than the enclosing heading
-- Comments: not supported (use `%%` directives only)
+## Success metrics
+- Week 1 signups
+- Activation rate
+- NPS at day 30`} height={500} />
 
 ---
 
-## Directives
+## 1. Your first mind map
 
-```
-%% style: map          # radial map (default)
-%% style: logic-right  # horizontal tree branching right
-%% theme: dark         # theme override
-```
+The smallest useful mind map: a central topic with two branches, one with a sub-item.
 
-Place directives before the `#` root node.
+<Playground initial={`mindmap
+
+# Team retrospective
+
+## What went well
+- Clear sprint goals
+- Good test coverage
+
+## What to improve
+- Slower PR reviews
+  - Add a review SLA`} />
+
+Four rules cover 80% of usage:
+
+1. Start with an optional `mindmap` keyword on its own line, then a blank line.
+2. The root is the single `#` heading — exactly one is allowed.
+3. Use `##`, `###`, and deeper headings to set branch depth. Heading level equals tree depth.
+4. Use `-`, `*`, or `+` bullets to add sub-items under any heading. Each 2-space indent adds one more depth level.
+
+> Comments are not supported. Use `%%` directives (before the `#` root) for configuration only.
 
 ---
 
-## Styles
+## 2. Headings and depth
 
-| Style | Layout | Best for |
-|-------|--------|---------|
-| `map` (default) | Radial — branches spread in all directions | Brainstorming, concept maps |
-| `logic-right` | Horizontal tree — all branches go right | Structured outlines, decision hierarchies |
-
----
-
-## Examples
-
-### Project kickoff — radial map
+Heading level maps directly to tree depth. `#` is always the root (depth 0). `##` is depth 1. `###` is depth 2, and so on up to `######` (depth 5).
 
 ```
 mindmap
-%% style: map
 
-# Project Kickoff
-
-## Goals
-- Define scope
-- Set timeline
-- Align stakeholders
-
-## Risks
-- Technical complexity
-  - Legacy integrations
-  - Performance targets
-- Team availability
-- Budget constraints
-
-## Deliverables
-- Architecture doc
-- MVP prototype
-- User testing plan
-
-## Team
-- Product
-- Engineering
-- Design
-- QA
+# Root
+## Branch A         ← depth 1
+### Sub-branch      ← depth 2
+#### Leaf           ← depth 3
+## Branch B
 ```
 
-### Knowledge map — logic-right tree
+Headings can jump levels — `####` after `##` is valid and produces a node at depth 3. The tree depth is relative to the root, not to the previous heading.
+
+---
+
+## 3. Bullets
+
+Bullets extend a heading branch with further detail. Any of `-`, `*`, or `+` is accepted as the bullet marker. Each **2 spaces** of indentation adds one level of depth relative to the enclosing heading.
+
+```
+## Risks
+- Technical complexity         ← depth 2 (one level under ## Risks)
+  - Legacy integrations        ← depth 3 (2 spaces indent)
+    - Auth service             ← depth 4 (4 spaces indent)
+- Team availability            ← depth 2 again
+```
+
+<Playground initial={`mindmap
+
+# Book outline
+
+## Chapter 1 — Introduction
+- Why this matters
+  - Historical context
+  - Current state
+- What you will learn
+
+## Chapter 2 — Core concepts
+- Concept A
+  - Definition
+  - Examples
+- Concept B
+  - Definition
+  - Worked example
+    - Step-by-step walkthrough`} height={440} />
+
+---
+
+## 4. Inline formatting
+
+Node labels support a subset of Markdown inline formatting. The parser tokenizes labels at parse time; the renderer uses the tokens to emit styled text.
+
+| Syntax | Effect | Example |
+|---|---|---|
+| `**text**` | Bold | `**Critical path**` |
+| `*text*` | Italic | `*optional*` |
+| `` `code` `` | Monospace code | `` `npm install` `` |
+| `[text](url)` | Link | `[RFC 7519](https://tools.ietf.org/html/rfc7519)` |
+| `[ ] item` | Unchecked task | `[ ] Write tests` |
+| `[x] item` | Checked task | `[x] Design review` |
+
+The checkbox must be at the very start of the label (before any other text). Inline formatting can be nested: `**[bold link](url)**`.
+
+<Playground initial={`mindmap
+
+# Sprint 24 review
+
+## Completed
+- [x] **Auth redesign** — JWT + refresh tokens
+- [x] API rate limiting \`per-user\`
+- [x] [Error budget dashboard](https://metrics.example.com)
+
+## In progress
+- [ ] *Mobile push notifications*
+  - [ ] iOS APNs integration
+  - [ ] Android FCM setup
+
+## Blocked
+- [ ] **Payment webhook** — waiting on Stripe team
+  - *Escalated to account manager*`} height={420} />
+
+---
+
+## 5. Layout styles
+
+The `%% style:` directive selects the layout algorithm. Place it before the `#` root heading.
+
+| Style | Layout | Best for |
+|---|---|---|
+| `map` (default) | Radial — branches spread in all directions from the center | Brainstorming, concept maps, free-form exploration |
+| `logic-right` | Horizontal tree — all branches extend to the right | Structured outlines, hierarchies, sequential breakdowns |
+
+```
+%% style: map
+%% style: logic-right
+```
+
+**`map`** (default) — radial layout, branches spread in all directions from the center. Best for brainstorming and concept maps.
+
+<Playground initial={`mindmap
+
+# Machine learning
+
+## Supervised
+### Classification
+- Decision tree
+- SVM
+- Neural net
+### Regression
+- Linear
+- Gradient boosting
+
+## Unsupervised
+### Clustering
+- K-means
+- DBSCAN
+### Reduction
+- PCA
+- t-SNE
+
+## Reinforcement
+- Q-learning
+- Policy gradient`} height={480} />
+
+**`logic-right`** — horizontal tree, all branches extend to the right. Best for structured outlines and sequential hierarchies.
+
+<Playground initial={`mindmap
+%% style: logic-right
+
+# Machine learning
+
+## Supervised
+### Classification
+- Decision tree
+- SVM
+- Neural net
+### Regression
+- Linear
+- Gradient boosting
+
+## Unsupervised
+### Clustering
+- K-means
+- DBSCAN
+### Reduction
+- PCA
+- t-SNE
+
+## Reinforcement
+- Q-learning
+- Policy gradient`} height={460} />
+
+---
+
+## 6. Directives
+
+Directives are `%%` lines placed **before** the `#` root heading. They configure the diagram globally.
+
+| Directive | Values | Default | Effect |
+|---|---|---|---|
+| `%% style: …` | `map`, `logic-right` | `map` | Layout algorithm |
+| `%% theme: …` | any string | (none) | Theme override passed to renderer |
+| `%% maxLabelWidth: …` | integer 80–1000 | `240` | Max pixel width before label wraps |
 
 ```
 mindmap
 %% style: logic-right
+%% maxLabelWidth: 320
 
-# Machine Learning
-
-## Supervised Learning
-### Classification
-- Logistic Regression
-- Random Forest
-- Neural Networks
-### Regression
-- Linear Regression
-- Gradient Boosting
-
-## Unsupervised Learning
-### Clustering
-- K-Means
-- DBSCAN
-### Dimensionality Reduction
-- PCA
-- t-SNE
-
-## Reinforcement Learning
-- Q-Learning
-- Policy Gradient
+# Wide label root
 ```
 
-### Meeting notes
+<Playground initial={`mindmap
+%% style: logic-right
+%% maxLabelWidth: 200
 
+# Schematex features
+
+## DSL-first design
+- One keyword per diagram
+- AI-friendly syntax
+- CJK support
+
+## Zero dependencies
+- Hand-written parser
+- No D3, no dagre
+- ~KB-level bundle
+
+## Standards-compliant
+- IEEE for logic gates
+- IEC for circuits
+- McGoldrick for genograms`} height={360} />
+
+---
+
+## 7. Labels & comments
+
+- **Root title:** the text after `#` on the root heading line.
+- **Branch labels:** the text after `##`, `###`, etc.
+- **Bullet labels:** the text after the `- ` / `* ` / `+ ` marker.
+- **Inline formatting:** `**bold**`, `*italic*`, `` `code` ``, `[text](url)`, `[ ]` / `[x]`.
+- **Comments:** not supported in the body. Use `%%` directives before the `#` root for configuration; `%%` lines in the body are treated as directives (silently ignored if unrecognized).
+
+---
+
+## 8. Reserved words & escaping
+
+**Reserved at document start:** `mindmap` (optional keyword) and `%%` (directive prefix).
+
+**Reserved as root:** exactly one `#` heading; a second `#` heading throws a parse error.
+
+**Bullet markers:** `-`, `*`, `+` followed by a space. A `*` that is not followed by a space is treated as an italic marker if it appears inside label text.
+
+**Inline conflicts:** a label beginning with `[ ]` or `[x] ` is parsed as a checkbox, not a Markdown link. If you need a label that literally starts with `[`, write `\[` — the backslash escapes the bracket.
+
+---
+
+## 9. Common mistakes
+
+| You wrote | Parser says | Fix |
+|---|---|---|
+| Two `#` headings | `Error: multiple # center nodes not allowed` | Use exactly one `#` heading as the root |
+| `##Branch` (no space after `##`) | Line is not recognized as a heading; silently skipped | Always put a space: `## Branch` |
+| Bullet indented 3 spaces | Depth = `lastHeadingDepth + 1 + floor(3/2) = lastHeadingDepth + 2` — may create an unexpected level | Use multiples of 2 spaces: 0, 2, 4, 6… |
+| `%% style: radial` | Unknown value silently ignored; layout stays `map` | Use `map` or `logic-right` |
+| `mindmap` keyword mid-document | Treated as a plain text line (the keyword is only recognized on the very first line) | Place `mindmap` on line 1, before any content |
+| `[ ]text` (no space after bracket) | Checkbox not recognized; rendered as literal `[ ]text` | `[ ] text` — space required after the closing bracket |
+
+---
+
+## 10. Grammar (EBNF)
+
+```text
+document       = ("mindmap" NEWLINE)? (blank | directive)* node*
+
+directive      = "%%" WS key ":" WS value NEWLINE
+key            = "style" | "theme" | "maxlabelwidth"
+
+node           = heading | bullet
+heading        = INDENT? "#"+ SPACE label NEWLINE
+bullet         = SPACE* bullet-marker SPACE label NEWLINE
+bullet-marker  = "-" | "*" | "+"
+
+label          = inline-token*
+inline-token   = checkbox
+               | "**" inline-token* "**"
+               | "*" inline-token* "*"
+               | "`" code-text "`"
+               | "[" inline-token* "]" "(" url ")"
+               | plain-text
+
+checkbox       = "[ ]" SPACE | "[x]" SPACE | "[X]" SPACE
+
+INDENT         = WS*    %% headings may have leading whitespace (ignored)
+SPACE          = " " | "\t"
 ```
-mindmap
 
-# Design Review — Auth Flow
+**Depth rules:**
+- Heading `#` → depth 0 (root)
+- Heading `##` → depth 1, `###` → depth 2, etc.
+- Bullet at `n` leading spaces → depth = `lastHeadingDepth + 1 + floor(n / 2)`
 
-## Decisions
-- Use JWT with refresh tokens
-- 15-minute access token TTL
-- Biometric opt-in for mobile
+Authoritative source: `src/diagrams/mindmap/parser.ts`. If this diverges from the parser, the parser wins — please open an issue.
 
-## Open Questions
-- MFA enforcement policy
-- Session handling on web
-  - Cookie vs localStorage
+---
 
-## Action Items
-- Security review by Thurs
-- Update API docs
-- Prototype MFA screen
-```
+## 11. Roadmap
+
+**Planned — not yet parseable.** Do not use these in generated DSL today; the parser will reject or ignore them.
+
+- **`%%{init: {…}}%%` block** — Mermaid-style init block for theme/config; currently only `%%` line directives are supported.
+- **Auto-numbered branches** — `%% numbering: true` to prefix each branch with 1., 1.1., etc.
+- **Callout / note nodes** — a special marker to attach a floating annotation box to any node.
+- **Image nodes** — `![alt](url)` as an entire node label rendered as an inline image.
+- **Collapsed branches** — `%% collapsed: branchId` to render a subtree as a single folded indicator.
+
+Track in the GitHub issues if you need any of these sooner.

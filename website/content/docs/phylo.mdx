@@ -1,378 +1,340 @@
 ---
 title: Phylogenetic tree
-description: Evolutionary trees with Newick/NHX input, clade coloring, bootstrap support values, proportional branch lengths. Indent-based DSL alternative also supported.
 ---
 
-<Playground initial={`phylo "Bacterial Diversity"
+## About phylogenetic trees
+
+A **phylogenetic tree** (also called a phylogram or cladogram) shows the inferred evolutionary history of a group of species, genes, or sequences. Internal nodes represent hypothetical common ancestors; tips represent observed taxa; branch lengths encode evolutionary distance or divergence time. Evolutionary biologists, molecular ecologists, and clinical microbiologists use phylogenetic trees to reconstruct the history of life, track pathogen outbreaks, and understand how gene families evolved.
+
+Schematex accepts trees in **[Newick format](https://phylipweb.github.io/phylip/newicktree.html)** — the universal interchange standard used by PAUP\*, IQ-TREE, RAxML, BEAST, and virtually every phylogenetics program — extended with **[NHX annotations](https://home.cc.umanitoba.ca/~psgendb/doc/atv/NHX.pdf)** for bootstrap values and clade metadata. An indentation-based DSL is also supported for hand-authored trees. This page documents what the parser accepts today.
+
+<Playground initial={`phylo "Vertebrate Evolution" [layout: circular, mode: phylogram]
+  newick: "(((Human:0.1,Chimp:0.08,Gorilla:0.12):0.15,(Mouse:0.45,Rat:0.42):0.3):0.05,((Dog:0.35,(Cat:0.30,Tiger:0.32):0.1):0.2,(Whale:0.6,Dolphin:0.55):0.15):0.3,(Salmon:0.5,Zebrafish:0.45):0.4);"
+  clade Primates = (Human, Chimp, Gorilla) [color: "#1E88E5", label: "Primates", highlight: both]
+  clade Rodents = (Mouse, Rat) [color: "#E53935", label: "Rodents", highlight: background]
+  clade Carnivora = (Dog, Cat, Tiger) [color: "#43A047", label: "Carnivora", highlight: both]
+  clade Cetacea = (Whale, Dolphin) [color: "#FB8C00", label: "Cetacea", highlight: background]
+  scale "substitutions/site"`} height={540} />
+
+---
+
+## 1. Your first phylogenetic tree
+
+The smallest useful tree: four taxa, two clades.
+
+<Playground initial={`phylo "Vertebrates"
+  newick: "((Human:0.1,Chimp:0.08):0.03,(Dog:0.35,Cat:0.30):0.2);"`} />
+
+Three rules cover 80% of usage:
+
+1. Start with `phylo`, optionally followed by a quoted title and bracket props.
+2. Provide the tree topology in `newick:` format — the standard Newick string, quoted, on one line. The trailing `;` is optional.
+3. Optionally define **clade** highlight groups and a **scale** label below the newick line.
+
+> Comments must start with `#` on their own line. Inline trailing comments are not supported.
+
+---
+
+## 2. Input formats
+
+### 2.1 Newick format
+
+Newick is the primary input. The full grammar is:
+
+```
+(A,B,(C,D));                         # topology only
+(A:0.1,B:0.2,(C:0.3,D:0.4):0.5);    # with branch lengths
+((A:0.1,B:0.2):0.05[&&NHX:B=98],(C,D):0.08);  # NHX bootstrap
+('Homo sapiens':0.1,'Mus musculus':0.2);        # quoted names with spaces
+```
+
+Branch lengths follow the node name after a colon. Internal node support values can appear as plain brackets `[95]` or as NHX `[&&NHX:B=95]`.
+
+<Playground initial={`phylo "Newick examples"
+  newick: "((A:0.1,B:0.2):0.05[&&NHX:B=98],(C:0.3,D:0.4):0.08[&&NHX:B=87]);"`} />
+
+**Newick rules the parser accepts:**
+
+| Feature | Syntax | Notes |
+|---|---|---|
+| Leaf name | `A`, `Homo_sapiens` | No spaces — use `_` or quote |
+| Quoted leaf name | `'Homo sapiens'` | Single quotes; `''` is a literal quote inside |
+| Branch length | `:0.035` after name | Float; optional |
+| Internal node name | `(A,B)ancestor` | After closing `)` |
+| Bootstrap (plain) | `(A,B)[95]` | Integer or float in brackets |
+| Bootstrap (NHX) | `(A,B)[&&NHX:B=95]` | `B=` field; other NHX fields stored but not rendered |
+| Semicolon | `;` at end | Optional — parser strips it |
+| Polytomy | `(A,B,C)` | More than 2 children |
+
+### 2.2 Indent DSL
+
+For hand-written or small trees, Schematex offers an indentation-based alternative that is easier to read and edit than raw Newick:
+
+<Playground initial={`phylo "Vertebrates (indent DSL)" [mode: phylogram]
+root:
+  :0.03
+    Human: 0.1
+    Chimp: 0.08
+  :0.2
+    Dog: 0.35
+    Cat: 0.30
+scale "substitutions/site"`} />
+
+**Indent DSL rules:**
+
+| Syntax | Meaning |
+|---|---|
+| `Name: length` | Leaf node with branch length |
+| `: length` | Unnamed internal node with branch length |
+| `Name` | Leaf node, no branch length (cladogram) |
+| `Name [N]` | Node with support value N |
+| Deeper indent | Child of the node above at a shallower indent |
+| `#` line | Comment, ignored |
+
+The first line that ends with `:` and has no spaces triggers indent-tree mode (e.g. `root:`). The name before the colon becomes the root label; all indented lines below become its children.
+
+---
+
+## 3. Layout
+
+Set the layout in the header brackets: `phylo "Title" [layout: rectangular]`.
+
+| Layout | Value | Description |
+|---|---|---|
+| Rectangular | `rectangular` | Default. L-shaped branches; root on left, tips on right |
+| Slanted | `slanted` | Diagonal lines from parent to child; more compact |
+| Circular | `circular` | Root at center, tips around the circumference |
+| Unrooted | `unrooted` | Equal-angle radial; emphasizes distance, not ancestry |
+
+`[unrooted]` as a bare flag is equivalent to `[layout: unrooted]`.
+
+**Circular** — root at center, tips fanning outward. Most visually striking for many-taxa trees with clade highlights.
+
+<Playground initial={`phylo "Vertebrates — circular" [layout: circular]
+  newick: "((Human:0.1,Chimp:0.08,Gorilla:0.12):0.15,(Dog:0.35,Cat:0.30,Wolf:0.32):0.2,(Salmon:0.5,Zebrafish:0.45):0.3);"
+  clade Primates = (Human, Chimp, Gorilla) [color: "#1E88E5", label: "Primates", highlight: both]
+  clade Carnivora = (Dog, Cat, Wolf) [color: "#E53935", label: "Carnivora", highlight: both]`} height={440} />
+
+**Rectangular** — L-shaped branches; root on the left, tips on the right. The classic phylogram form for published figures.
+
+<Playground initial={`phylo "Bacterial Diversity" [layout: rectangular, mode: phylogram]
   newick: "((((Ecoli:0.1,Salmonella:0.12):0.05[&&NHX:B=98],Vibrio:0.2):0.08,((Bacillus:0.15,Staph:0.18):0.06[&&NHX:B=92],Listeria:0.22):0.1):0.15,((Myco_tb:0.3,Myco_leprae:0.28):0.12[&&NHX:B=100],(Strepto:0.25,Lactobacillus:0.2):0.08):0.2);"
   clade Gamma = (Ecoli, Salmonella, Vibrio) [color: "#1E88E5", label: "γ-Proteobacteria"]
   clade Firmi = (Bacillus, Staph, Listeria) [color: "#E53935", label: "Firmicutes"]
-  scale "substitutions/site"`} />
+  scale "substitutions/site"`} height={480} />
 
-*Evolutionary biology phylogenetic trees — showing evolutionary relationships and divergence distances between species, genes, or sequences.*
+**Slanted** — diagonal lines from parent to child; more compact than rectangular, same left-to-right reading direction.
 
-> **References:**
-> - Felsenstein, J. (2004). *Inferring Phylogenies.* Sinauer Associates.
-> - Baum, D.A. & Smith, S.D. (2013). *Tree Thinking: An Introduction to Phylogenetic Biology.* Roberts & Company.
-> - Letunic, I. & Bork, P. (2024). iTOL v6: Interactive Tree Of Life. *Nucleic Acids Res*, 52(W1), W78-W82.
-> - Huson, D.H. et al. (2007). Dendroscope: An interactive viewer for large phylogenetic trees. *BMC Bioinformatics*, 8, 460.
-> - Cardona, G. et al. (2008). Extended Newick: it is time for a standard representation of phylogenetic networks. *BMC Bioinformatics*, 9, 532.
-> - Newick format specification: https://phylipweb.github.io/phylip/newicktree.html
-> - Xu, S. et al. (2022). ggtree: Data Integration, Manipulation and Visualization of Phylogenetic Trees. R package.
+<Playground initial={`phylo "Vertebrates — slanted" [layout: slanted]
+  newick: "((Human:0.1,Chimp:0.08,Gorilla:0.12):0.15,(Dog:0.35,Cat:0.30,Wolf:0.32):0.2,(Salmon:0.5,Zebrafish:0.45):0.3);"
+  clade Primates = (Human, Chimp, Gorilla) [color: "#1E88E5", label: "Primates"]
+  clade Carnivora = (Dog, Cat, Wolf) [color: "#E53935", label: "Carnivora"]
+  scale "substitutions/site"`} height={360} />
 
----
+**Unrooted** — equal-angle radial layout; de-emphasizes the root, emphasizes pairwise distance between all taxa.
 
-## 1. Key Differences from Other Schematex Diagram Types
-
-| Aspect | Genogram / Pedigree | Phylogenetic Tree |
-|--------|---------------------|-------------------|
-| Primary use | Family relationships + medical/genetic | Species/gene evolutionary relationships |
-| Node meaning | Real individuals (people) | Species, genes, sequences, or operational taxonomic units (OTUs) |
-| Edge meaning | Family/social relationships | Evolutionary divergence (time or mutation distance) |
-| Branch length | No meaning (equal spacing) | **Core information**: represents evolutionary distance or time |
-| Relationship direction | Horizontal (couple) + vertical (parent-child) | Root → Tip (ancestor → descendant) |
-| Input format | Custom DSL | Newick standard + Schematex extended DSL |
-| Annotation focus | Individual attributes (sex/status/conditions) | Bootstrap support values + clade coloring + divergence times |
-| Layout direction | Top → bottom (fixed) | Multiple: rectangular / circular / radial / unrooted |
-
-**Key distinction:** The phylogenetic tree is the only Schematex diagram type where **branch length carries quantitative information** — it is a phylogram, not a cladogram (unless the user explicitly selects cladogram mode).
+<Playground initial={`phylo "Vertebrates — unrooted" [unrooted]
+  newick: "((Human:0.1,Chimp:0.08,Gorilla:0.12):0.15,(Dog:0.35,Cat:0.30,Wolf:0.32):0.2,(Salmon:0.5,Zebrafish:0.45):0.3);"
+  clade Primates = (Human, Chimp, Gorilla) [color: "#1E88E5", label: "Primates"]
+  clade Carnivora = (Dog, Cat, Wolf) [color: "#E53935", label: "Carnivora"]`} height={400} />
 
 ---
 
-## 2. Tree Components & Terminology
+## 4. Mode
 
-### 2.1 Node Types
+Set with `[mode: …]` in the header (or in a `style [mode: …]` line).
 
-| Node | Meaning | SVG | DSL |
-|------|---------|-----|-----|
-| **Root** | Most Recent Common Ancestor (MRCA) | No special symbol or small `<circle>` | tree root (implicit) |
-| **Internal node** | Hypothetical ancestor (inferred divergence point) | `<circle r="3">` or omitted | nested parentheses `(A,B)` |
-| **Leaf / Tip** | Observed taxon (species/gene/sequence) | `<text>` label, optional `<circle r="4">` | terminal name |
-| **Polytomy** | Multifurcation (>2 children, indicates uncertainty or simultaneous divergence) | 3+ branches from a single point | `(A,B,C)` |
+| Mode | Value | Branch length meaning |
+|---|---|---|
+| Phylogram | `phylogram` | Default. Proportional to evolutionary distance (substitutions/site) |
+| Cladogram | `cladogram` | Ignored — tips align; only topology matters |
+| Chronogram | `chronogram` | Proportional to divergence time; all tips align to "present" |
 
-### 2.2 Branch (Edge) Properties
-
-| Property | Meaning | Visual Encoding | Units |
-|----------|---------|-----------------|-------|
-| **Length** | Evolutionary distance or divergence time | Proportional horizontal branch length | substitutions/site or millions of years (Mya) |
-| **Support value** | Bootstrap / posterior probability | Number or dot color on internal node | 0-100 (bootstrap) or 0-1 (Bayesian PP) |
-| **Label** | Branch annotation | `<text>` at branch midpoint | Any string |
-
-### 2.3 Tree Semantics
-
-| Concept | Definition | DSL Expression |
-|---------|------------|----------------|
-| **Rooted tree** | Has an explicit root → all branches have direction (ancestor→descendant) | `phylo "title"` (default: rooted) |
-| **Unrooted tree** | Expresses only distance relationships, no ancestral direction | `phylo "title" [unrooted]` |
-| **Clade** | An ancestor and all its descendants (monophyletic group) | nested parentheses `(A,(B,C))` |
-| **Outgroup** | External group used to determine root position | `[outgroup: taxon_id]` |
-| **Bifurcating** | Each internal node has exactly 2 child nodes | (default) |
-| **Multifurcating** | Some nodes have >2 child nodes (polytomy) | `(A,B,C,D)` |
-
----
-
-## 3. Tree Representation Modes
-
-Schematex supports 3 tree representation modes that determine the visual meaning of branch length:
-
-### 3.1 Phylogram (Default)
-- **Branch length proportional** to evolutionary distance (substitutions/site)
-- SVG horizontal length of each branch = `branchLength × scale`
-- Tips do not necessarily align (because evolutionary rates differ)
-- A **scale bar** is required at the bottom (e.g. "0.05 substitutions/site")
-- This is the most information-dense mode and is the default
-
-### 3.2 Cladogram
-- **Branch length has no meaning** — only shows topology (who is closer to whom)
-- All tips align to the same vertical line
-- Internal nodes distributed at equal intervals
-- Suitable when only branching order matters
-- Activated with `[mode: cladogram]`
-
-### 3.3 Chronogram (Time Tree)
-- **Branch length proportional to divergence time** (units: Mya or years)
-- All tips align to "present" (right side)
-- X axis is a time axis (left = past → right = present)
-- **Geological time scale** or numeric time axis shown at the bottom
-- Activated with `[mode: chronogram]`
-- Requires branch lengths in Newick + `[mrsd: "2026"]` (most recent sampling date)
-
----
-
-## 4. Layout Types
-
-### 4.1 Rectangular Layout (Default)
-
-The most standard layout: branches follow an L-shaped path (horizontal first, then a vertical turn).
+Chronogram requires branch lengths in units of time plus `[mrsd: "YYYY"]` (most-recent sampling date) in the header so the renderer can align tips to present.
 
 ```
-Root ─┬── Taxon_A
-      │
-      └─┬── Taxon_B
-        │
-        └─┬── Taxon_C
-          │
-          └── Taxon_D
-```
-
-- Root on left, tips on right
-- Horizontal branch = evolutionary distance
-- Vertical line = connector only (no length meaning)
-- Best suited for small to medium trees with ≤100 tips
-
-**SVG implementation:**
-- Horizontal branches: `<line x1 y1 x2 y2>` or `<path d="M x1,y1 H x2">`
-- Vertical connector lines: `<line>` from topmost to bottommost child node
-- Branches as step path: `M x1,y H x2 V y2` (horizontal for branch length, then vertical to child)
-
-### 4.2 Slanted (Diagonal) Layout
-
-Same topology as rectangular, but diagonal lines replace L-shapes:
-
-```
-Root ──── Taxon_A
-    \
-     ──── Taxon_B
-      \
-       ─── Taxon_C
-        \
-         ── Taxon_D
-```
-
-- Branches are straight lines (diagonal from parent to child)
-- `<line>` or `<path d="M x1,y1 L x2,y2">`
-- Visually more compact
-- Activated with `[layout: slanted]`
-
-### 4.3 Circular (Fan) Layout
-
-Root at center, tips distributed around the circumference:
-
-- Angle allocation: each tip occupies `360° / numTips`
-- Internal nodes positioned at the angular midpoint of their children
-- Branches extend radially
-- Ideal for **large trees** (50-500+ tips) — most efficient use of space
-- Activated with `[layout: circular]`
-
-**SVG implementation:**
-- Radial branches: `<path>` with `M` + arc segments
-- Vertical connector lines → arcs: `<path d="M ... A ...">`
-- Tip labels rotated tangentially: `transform="rotate(angle)"`
-
-**Parameters:**
-- `openAngle`: fan opening angle (default 0 = full 360°; set to e.g. 30 to leave a gap for legend)
-
-### 4.4 Unrooted (Radial Equal-Angle) Layout
-
-Unrooted tree — emphasizes distance relationships rather than ancestral direction:
-
-- **Equal-angle algorithm:** angle allocated to each subtree ∝ number of tips in that subtree
-- An arbitrary internal node is chosen as the drawing center, radiating outward
-- Suitable for showing **network-like evolutionary distance relationships** without implying direction
-- Activated with `[layout: unrooted]`
-
-**Daylight improvement (optional optimization):**
-- Iterative adjustment on top of equal-angle: visit each internal node and rotate subtrees so the "daylight" (gap angle between adjacent subtrees) is equalized
-- Reduces tip clustering
-
----
-
-## 5. Visual Encoding Conventions
-
-### 5.1 Branch Styling
-
-| Feature | Default | Options | DSL |
-|---------|---------|---------|-----|
-| Line width | 1.5px | 0.5-4px by user | `[branch-width: 2]` |
-| Line color | `#333` (dark gray) | Per-clade coloring | `clade C1 = (A,B) [color: "#E53935"]` |
-| Line style | solid | dashed (uncertain) | `[style: dashed]` |
-
-### 5.2 Node Decoration
-
-| Element | When Displayed | SVG | Default Size |
-|---------|----------------|-----|-------------|
-| **Leaf dot** | Optional (off by default) | `<circle r="3" fill="#333">` | r=3px |
-| **Internal node dot** | When support value is present | `<circle>` with color-mapped fill | r=4px |
-| **Root marker** | Root node of rooted tree | `<circle r="5" fill="none" stroke="#333">` | r=5px |
-
-### 5.3 Bootstrap / Support Value Display
-
-Bootstrap values are key visual elements in phylogenetic trees and have two display modes:
-
-**Mode A: Numbers on branches (default)**
-- Numbers annotated next to internal nodes (slightly above branch midpoint)
-- Font: 9px, class="schematex-support-label"
-- Only values ≥50 are displayed (&lt;50 are generally unreliable and omitted)
-- Color coding (optional): ≥95 green, 75-94 yellow, 50-74 orange
-
-**Mode B: Colored dots on nodes**
-- Internal nodes shown as dots, color = support strength
-- Gradient scale: red (low) → yellow (medium) → green (high)
-- Circle size can be fixed or proportional to support value
-
-**Support value thresholds (standard conventions):**
-
-| Range | Meaning | Default Color |
-|-------|---------|---------------|
-| ≥95 (or ≥0.95 PP) | Strong support | `#43A047` (green) |
-| 75-94 (0.75-0.94) | Moderate support | `#FDD835` (yellow) |
-| 50-74 (0.50-0.74) | Weak support | `#FB8C00` (orange) |
-| &lt;50 (&lt;0.50) | Very weak (hidden by default) | `#E53935` (red, if shown) |
-
-### 5.4 Tip Labels
-
-| Feature | Default | Notes |
-|---------|---------|-------|
-| Font | 12px, font-family inherit | class="schematex-tip-label" |
-| Alignment | Left-aligned after tip point | 6px gap |
-| Italic | Species names automatically italicized | Follows biological nomenclature (e.g. *Homo sapiens*) |
-| Truncation | None (full label) | Long names can use tooltip |
-| Coloring | Inherit from clade color or #333 | Linked to branch color |
-
-**Label rotation in circular layout:**
-- Right semicircle (0-180°): normal orientation, label faces outward
-- Left semicircle (180-360°): label rotated 180° to maintain readability
-- `text-anchor`: "start" for right semicircle, "end" for left semicircle
-
-### 5.5 Scale Bar
-
-Phylogram and chronogram **must** have a scale bar:
-
-- Position: bottom-left
-- Phylogram: shows substitution distance (e.g. `── 0.05`)
-- Chronogram: shows time (e.g. `── 10 Mya`)
-- SVG: `<line>` + `<text>`, class="schematex-scale-bar"
-- Length: automatically calculated as a round number (0.01, 0.05, 0.1, 0.5, 1.0...) occupying ~15-25% of tree width
-
-### 5.6 Clade Highlighting
-
-Clade highlighting is a core visual feature of phylogenetic trees — marking monophyletic groups with colored blocks:
-
-**Mode A: Background shading**
-- Semi-transparent rectangle (rectangular) or sector (circular) covering the entire clade
-- `<rect>` with `fill-opacity: 0.15` or `<path>` (arc sector)
-- Clade label on the right (bold, 12px)
-
-**Mode B: Branch coloring**
-- All branches within the clade colored with the same color
-- Inherited by tip labels
-- The most minimal visual approach
-
-**DSL:**
-```
-clade Mammals = (Human, Mouse, Dog) [color: "#1E88E5", label: "Mammals"]
-clade Birds = (Chicken, Eagle) [color: "#43A047", label: "Aves"]
+phylo "SARS-CoV-2 variants" [mode: chronogram, mrsd: "2023"]
+  newick: "((Alpha:0.5,Delta:0.4):0.3,Omicron:0.8);"
+  scale "years"
 ```
 
 ---
 
-## 6. Newick Format Support
+## 5. Clade highlighting
 
-Schematex's phylogenetic parser must natively support the Newick format — it is the universal language of evolutionary biology.
+A `clade` line marks a monophyletic group with a color, an optional label, and an optional highlight mode.
 
-### 6.1 Newick Grammar (Standard)
+```
+clade ID = (member1, member2, ...) [color: "#hex", label: "text", highlight: mode]
+```
+
+| Prop | Values | Effect |
+|---|---|---|
+| `color:` | hex string e.g. `"#1E88E5"` | Branch and/or background color |
+| `label:` | quoted string | Clade label shown at right margin |
+| `highlight:` | `branch`, `background`, `both` | `branch` colors lines; `background` shades the region; `both` does both |
+
+Members are tip (leaf) IDs from the Newick string. The renderer computes the MRCA of the listed tips and highlights the entire subtree rooted there.
+
+<Playground initial={`phylo "Mammal clades" [layout: rectangular]
+  newick: "(((Human:0.1,Chimp:0.08,Gorilla:0.12):0.15,Mouse:0.45):0.05,(Dog:0.35,(Cat:0.30,Tiger:0.32):0.1):0.2);"
+  clade Primates = (Human, Chimp, Gorilla) [color: "#1E88E5", label: "Primates", highlight: both]
+  clade Carnivora = (Dog, Cat, Tiger) [color: "#E53935", label: "Carnivora", highlight: branch]`} />
+
+---
+
+## 6. Scale bar and outgroup
+
+**Scale bar:** `scale "label"` — adds a bar at the bottom. The label describes the unit (e.g. `"substitutions/site"`, `"Mya"`). Omit for cladogram mode where branch lengths have no meaning.
+
+**Outgroup:** `outgroup: taxonId` — records the outgroup for documentation; the renderer may use it to visually mark the outgroup taxon.
+
+```
+phylo "Vertebrates"
+  newick: "((Human:0.1,Chimp:0.08):0.03,Lamprey:0.8);"
+  outgroup: Lamprey
+  scale "substitutions/site"
+```
+
+---
+
+## 7. Header props reference
+
+All options go inside `[…]` on the `phylo` header line, or in a `style […]` line anywhere in the body.
+
+| Prop | Values | Default | Effect |
+|---|---|---|---|
+| `layout:` | `rectangular`, `slanted`, `circular`, `unrooted` | `rectangular` | Tree layout |
+| `mode:` | `phylogram`, `cladogram`, `chronogram` | `phylogram` | Branch length semantics |
+| `unrooted` | (flag) | — | Equivalent to `layout: unrooted` |
+| `branch-width:` | number | `1.5` | Stroke width of branches |
+| `openAngle:` | number (degrees) | `0` | Fan gap for circular layout (0 = full 360°) |
+| `mrsd:` | quoted year string | — | Most-recent sampling date for chronograms |
+
+---
+
+## 8. Labels & comments
+
+- **Title:** `phylo "Tree of Life"` — first line only.
+- **Scale label:** `scale "substitutions/site"` — one per document.
+- **Clade label:** `[label: "Primates"]` inside a `clade` line.
+- **Comments:** `#` at the start of a line (after leading whitespace). Inline trailing comments are not supported.
+
+---
+
+## 9. Common mistakes
+
+| You wrote | Parser says | Fix |
+|---|---|---|
+| `newick: (A,B,C);` (unquoted) | `PhyloParseError: Phylo document must start with 'phylo'` | Quote the Newick string: `newick: "(A,B,C);"` |
+| Tip name with a space: `Homo sapiens:0.1` | Parsed as `Homo` — space terminates an unquoted name | Use underscore (`Homo_sapiens`) or single-quote (`'Homo sapiens'`) |
+| Leaf ID in `clade` doesn't match Newick name | Clade silently has 0 members; no highlight | Copy names exactly as they appear in the Newick string |
+| `clade X = (A, B)` with no `newick:` or indent tree | `PhyloParseError: No tree definition found` | Add a `newick:` line or an indent tree block |
+| `mode: chronogram` with no branch lengths | Renderer treats all lengths as 0; tips overlap at root | Add `:length` to every edge in the Newick string |
+| `root:` line not detected | If the `root:` line has a space in the name (e.g. `My root:`) the indent tree is not triggered | Use a single-word root label or `root:` |
+| Newick with internal node names: `(A,B)ancestor:0.5` | Parses fine — `ancestor` is the internal node label | Supported; internal names appear on internal nodes |
+
+---
+
+## 10. Grammar (EBNF)
 
 ```text
-tree       = subtree ";" 
-subtree    = leaf | internal
-leaf       = name
-internal   = "(" branchset ")" name
-branchset  = branch ("," branch)*
-branch     = subtree length
-name       = EMPTY | UNQUOTED_STRING | QUOTED_STRING
-length     = EMPTY | ":" NUMBER
+document        = header (blank | comment | newick-line | scale-line
+                    | outgroup-line | clade-line | style-line | indent-line)*
 
-UNQUOTED_STRING = /[^\s():,;\[\]']+/
-QUOTED_STRING   = "'" /([^']|'')*/ "'"
-NUMBER          = /[+-]?(\d+\.?\d*|\.\d+)([eE][+-]?\d+)?/
+header          = "phylo" ( WS quoted-string )? ( WS "[" props "]" )? NEWLINE
+quoted-string   = '"' any-char-but-quote* '"'
+
+newick-line     = "newick:" WS quoted-newick NEWLINE
+scale-line      = "scale" ( WS quoted-string )? NEWLINE
+outgroup-line   = "outgroup:" WS id NEWLINE
+clade-line      = "clade" WS id WS "=" WS "(" id ("," id)* ")"
+                    ( WS "[" clade-props "]" )? NEWLINE
+style-line      = "style" WS "[" props "]" NEWLINE
+
+// Indent tree — triggered by a line ending in ":" with no spaces
+indent-tree     = root-line indent-node*
+root-line       = id ":" NEWLINE
+indent-node     = INDENT ( id ":" length | ":" length | id ) ( WS "[" number "]" )? NEWLINE
+
+props           = prop ("," prop)*
+prop            = "layout:" layout-value
+                | "mode:" mode-value
+                | "unrooted"
+                | "branch-width:" number
+                | "openAngle:" number
+                | "mrsd:" quoted-string
+
+clade-props     = clade-prop ("," clade-prop)*
+clade-prop      = "color:" quoted-string
+                | "label:" quoted-string
+                | "highlight:" ( "branch" | "background" | "both" )
+
+layout-value    = "rectangular" | "slanted" | "circular" | "unrooted"
+mode-value      = "phylogram" | "cladogram" | "chronogram"
+
+// Newick grammar (embedded, parsed separately)
+newick          = subtree ";"?
+subtree         = leaf | internal
+internal        = "(" subtree ("," subtree)* ")" name? nhx? length?
+leaf            = name nhx? length?
+name            = unquoted-name | "'" single-quoted "'")
+length          = ":" number
+nhx             = "[" number "]"                     // plain bootstrap
+                | "[&&NHX:" nhx-pair (":" nhx-pair)* "]"
+nhx-pair        = key "=" value
+
+id              = [a-zA-Z] [a-zA-Z0-9_-]*
+number          = /[+-]?[0-9]+(\.[0-9]+)?([eE][+-]?[0-9]+)?/
+comment         = INDENT "#" any NEWLINE
 ```
 
-### 6.2 Newick Examples (All must pass the parser)
-
-```
-# Minimal topology — no names, no lengths
-(,,(,));
-
-# Leaf names only
-(A,B,(C,D));
-
-# All nodes named
-(A,B,(C,D)E)F;
-
-# With branch lengths (most common format)
-(A:0.1,B:0.2,(C:0.3,D:0.4):0.5);
-
-# Internal node with name + length
-(A:0.1,B:0.2,(C:0.3,D:0.4)E:0.5)F;
-
-# Lengths only, no names
-(:0.1,:0.2,(:0.3,:0.4):0.5);
-
-# Multifurcating tree (polytomy)
-(A,B,C,D);
-
-# Single leaf (degenerate)
-(A);
-
-# Quoted label (with special characters)
-('Homo sapiens':0.1,'Mus musculus':0.2);
-```
-
-### 6.3 Extended Newick (NHX) — Optional Support
-
-```
-(A:0.1[&&NHX:B=100],B:0.2[&&NHX:B=85],(C:0.3,D:0.4)E:0.5[&&NHX:B=72])F;
-```
-- `[&&NHX:key=value:...]` appended after node name
-- `B` = bootstrap, `T` = taxonomy, `S` = species name
-- **P1 support:** parsing the `B` (bootstrap) field is sufficient
-
-### 6.4 Schematex DSL (Extended Syntax)
-
-Newick is concise but not easy to read. Schematex provides an extended DSL for adding visual configuration:
-
-```
-phylo "Tree of Life"
-  newick: "(((Human:0.1,Chimp:0.08):0.03,Gorilla:0.12):0.15,Dog:0.35,(Cat:0.30,Mouse:0.45):0.2);"
-  
-  # Or use Schematex native DSL (small trees)
-  # See Section 8
-
-  clade Primates = (Human, Chimp, Gorilla) [color: "#1E88E5"]
-  clade Carnivora = (Dog, Cat) [color: "#E53935"]
-  
-  style [layout: rectangular, mode: phylogram]
-  scale [label: "substitutions/site"]
-```
+Authoritative source: `src/diagrams/phylo/parser.ts`. If this diverges from the parser, the parser wins — please open an issue.
 
 ---
 
-## 7. Schematex Native DSL (Alternative to Newick)
+## 11. Standard compliance
 
-For small trees or hand-written scenarios, Schematex provides an indent-based DSL as a readable alternative to Newick:
+Schematex phylogenetic trees follow the **[Newick format specification](https://phylipweb.github.io/phylip/newicktree.html)** (as documented in the PHYLIP package) for the core tree serialization, and the **[NHX (New Hampshire Extended)](https://home.cc.umanitoba.ca/~psgendb/doc/atv/NHX.pdf)** convention for bootstrap support values. The `B=` field in NHX brackets is the only NHX field rendered visually today; all other fields are parsed and stored but not displayed.
 
-```
-phylo "Vertebrate Evolution" [layout: rectangular, mode: phylogram]
+What is implemented today:
 
-# Indentation = nesting (parent-child), colon followed by = branch length
-root:
-  :0.15
-    :0.03
-      Human: 0.1
-      Chimp: 0.08
-    Gorilla: 0.12
-  Dog: 0.35
-  :0.2
-    Cat: 0.30
-    Mouse: 0.45
+- ✅ Newick topology, branch lengths, quoted names, polytomies
+- ✅ Bootstrap values — plain `[95]` and NHX `[&&NHX:B=95]`
+- ✅ Rectangular, slanted, circular, and unrooted layouts
+- ✅ Phylogram, cladogram, and chronogram modes
+- ✅ Clade highlighting (branch color, background shading, both)
+- ✅ Scale bar
+- ✅ Indent DSL alternative
+- ⏳ Multi-tree documents (forest) — see §12
+- ⏳ Time-calibrated axis for chronograms (geological scale)
+- ⏳ Per-tip icons or images
+- ⏳ NHX fields beyond `B=` (species, taxonomy, duplication events)
 
-scale "substitutions/site"
-clade Primates = (Human, Chimp, Gorilla) [color: "#1E88E5"]
-```
+References:
 
-**Indent DSL rules:**
-- Each indentation level = one level of nesting in the tree (equivalent to Newick parentheses)
-- `Name: length` = leaf node with branch length
-- `:length` = unnamed internal node with branch length
-- `Name:` (no length) = leaf node, cladogram mode
-- Comments `#` are ignored
+- Felsenstein, J. (1986). The Newick tree format. PHYLIP documentation.
+- Zmasek, C.M. & Eddy, S.R. (2001). ATV: Display and manipulation of annotated phylogenetic trees. *Bioinformatics*, 17(4), 383–384. (NHX specification)
+- Felsenstein, J. (2004). *Inferring Phylogenies.* Sinauer Associates.
+
+---
+
+## 12. Related examples
+
+<RelatedExamples slugs={[
+  'phylo-bacterial-diversity',
+]} />
+
+---
+
+## 13. Roadmap
+
+**Planned — not yet parseable.** Do not use these in generated DSL today; the parser will reject or ignore them.
+
+- **Multi-tree documents** — a `phylo` file with more than one `newick:` block (e.g. gene trees vs species tree).
+- **Geological time axis for chronograms** — an epoch-labelled X axis (Cenozoic / Mesozoic etc.) instead of a plain numeric scale.
+- **Per-tip metadata** — attaching traits or colored markers to individual tips without declaring a full clade (e.g. `tip Ecoli [color: "#F00", shape: star]`).
+- **NHX fields beyond bootstrap** — rendering species (`S=`), duplication (`D=`), and transfer events (`Tr=`) as branch symbols.
+- **Tanglegram** — two trees displayed side by side with connecting lines linking corresponding tips.
+
+Track in the GitHub issues if you need any of these sooner.

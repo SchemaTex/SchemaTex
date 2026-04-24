@@ -1,131 +1,300 @@
 ---
 title: Fishbone diagram
-description: Ishikawa cause-and-effect diagrams with auto-categorized branches. For root-cause analysis, quality management (Six Sigma, TQM, lean manufacturing), and engineering problem decomposition. Used by quality engineers, operations managers, and process improvement teams.
 ---
 
-<Playground initial={`fishbone "Website Traffic Drop — Root Cause Analysis"
-effect "Traffic Drop"
-category content "Content"
-category tech "Technical"
-category links "Backlinks"
-category ux "UX"
-category competition "Competition"
-category algo "Algorithm"
-content : "Lower update frequency" : "Thin content" : "Keyword gaps"
-tech : "Poor Core Web Vitals" : "WAF blocking crawlers"
-links : "High-DA backlink loss" : "Referring domain plateau"
-ux : "Bounce rate spike" : "Slow LCP"
-competition : "New entrants" : "AI overviews displacing clicks"
-algo : "Core Update penalty" : "Weak E-E-A-T signals"`} />
+## About fishbone diagrams
 
-*Ishikawa (1968) cause-and-effect analysis. Standard for quality management (ISO 9001), Six Sigma DMAIC, and lean manufacturing root-cause analysis.*
+A **fishbone diagram** (also called an Ishikawa or cause-and-effect diagram) maps the potential causes of a problem onto a horizontal spine that ends at the "effect" — the problem statement. Each major branch represents a category of causes; sub-branches carry contributing details. Kaoru Ishikawa introduced the technique in 1968 as a quality-control tool for manufacturing; it has since spread to healthcare, software engineering, and business operations as a structured brainstorming method for root-cause analysis. Teams run it in retrospectives, DMAIC improve phases, and incident post-mortems to prevent premature fixation on the loudest hypothesis.
 
-> **References:**
-> - Ishikawa, K. (1968). *Guide to Quality Control.* JUSE Press. (original fishbone diagram)
-> - ASQ (American Society for Quality) — cause-and-effect diagram conventions
-> - ISO 9001:2015 §10.2 — Nonconformity and corrective action (fishbone as root-cause tool)
+Schematex follows **Ishikawa (1968)** cause-and-effect conventions with the standard 6M manufacturing categories (Man, Machine, Material, Method, Measurement, Mother Nature/Environment) and their service variants (People, Process, Place, Policy, Procedures, Patron). Two authoring styles — structured and compact — can be mixed in one document. External references: [Ishikawa, K. — Guide to Quality Control (1968)](https://en.wikipedia.org/wiki/Ishikawa_diagram) · [ASQ Cause-and-Effect Diagram](https://asq.org/quality-resources/cause-analysis-tools/fishbone) · [ISO 9001:2015 §10.2 — Corrective Action](https://www.iso.org/standard/62085.html).
 
----
-
-## Syntax
-
-Two styles are available and can be mixed in one diagram.
-
-### Style A — structured (category then causes separately)
-
-```
-fishbone "Title"
-effect "Problem statement"
-category content "Content"
-category tech    "Technical"
-content : "Cause 1" : "Cause 2"
-tech    : "Cause A"
-  - "Sub-cause A1"
-  - "Sub-cause A2"
-```
-
-### Style B — compact shorthand (semicolon-separated, good for AI output)
-
-```
-fishbone "Title"
-effect "Problem statement"
-category Content: cause one; cause two; cause three
-category Technical: Core Web Vitals failing; Crawl drop
-```
-
----
-
-## Config options
-
-```
-config direction = right   # head orientation: right (default) or left
-config width = 900
-config height = 620
-config density = compact   # compact | normal (default) | spacious
-config slope = normal      # gentle | normal (default) | steep
-config sides = both        # both (default) | top | bottom
-```
-
----
-
-## Category options
-
-```
-category id "Label" [color: "#E53935", side: top]
-```
-
-| Property | Values | Meaning |
-|----------|--------|---------|
-| `color` | hex color | Branch and label color for this category |
-| `side` | `top` \| `bottom` | Force branch to top or bottom rail (default: alternating) |
-
----
-
-## Examples
-
-### Manufacturing — 6M standard categories
-
-```
-fishbone "Defective PCB Assembly"
-effect "Solder joint defect rate 3.2%"
+<Playground initial={`fishbone "Solder Joint Defect Rate — Root Cause Analysis"
+effect "3.2% solder joint failure rate"
 category man "Man"
 category machine "Machine"
 category material "Material"
 category method "Method"
-category measurement "Measurement"
+category meas "Measurement"
 category env "Environment"
-man : "Operator training gap" : "Shift changeover"
-machine : "Reflow oven temp drift" : "Squeegee wear"
-material : "Solder paste age" : "PCB pad oxidation"
-method : "Stencil aperture design" : "Pick-and-place speed"
-measurement : "AOI false-accept rate" : "Manual inspection fatigue"
-env : "Humidity spike" : "ESD protocol gaps"
+man : "Operator training gap"
+man : "Shift handover not documented"
+machine : "Reflow oven temp drift"
+machine : "Squeegee blade worn"
+material : "Solder paste past shelf life"
+material : "PCB pad oxidation"
+method : "Stencil aperture undersized"
+method : "Pick-and-place speed too high"
+meas : "AOI false-accept rate rising"
+env : "Humidity spike in Q3"
+env : "ESD grounding gaps"`} height={460} />
+
+---
+
+## 1. Your first fishbone
+
+The smallest useful fishbone: three categories, one cause each, one with a sub-cause.
+
+<Playground initial={`fishbone "API latency spike"
+effect "P99 > 2 s after deploy"
+category code "Code"
+category infra "Infra"
+category data "Data"
+code : "N+1 query in new endpoint"
+  - "Missing eager-load on orders"
+infra : "DB connection pool exhausted"
+data : "Index missing on accounts table"`} />
+
+Four rules cover 80% of usage:
+
+1. Start with `fishbone`, optionally followed by a quoted title.
+2. Declare each branch with `category id "Label"` — the `id` is a short internal key, `"Label"` is what prints on the diagram.
+3. Add causes with `id : "cause text"` on their own lines.
+4. Indent a line by at least 2 spaces and start it with `-` to create a sub-cause (second-order branch) under the preceding cause.
+
+> Comments must start with `#` on their own line.
+
+---
+
+## 2. Building blocks
+
+### The spine and effect
+
+`effect "Problem statement"` places text in the fish's head. If `effect` is omitted the parser falls back to the diagram title.
+
+```
+fishbone "Title"
+effect "Specific problem statement"
 ```
 
-### Healthcare — 5P categories
+The head sits on the right by default (`config direction = right`). Use `config direction = left` to flip it.
+
+### Categories (major bones)
+
+`category id "Label"` declares a branch. The `id` is used internally to assign causes; the quoted `"Label"` appears on the diagram.
+
+Categories also accept optional properties in `[…]`:
+
+| Property | Values | Effect |
+|---|---|---|
+| `color: "#hex"` | hex color string | Branch and label color |
+| `side: top` / `side: bottom` | `top`, `bottom` | Forces this branch to the top or bottom rail (default: alternating) |
+| `order: N` | integer | Position within its rail — lower numbers sit closer to the tail |
 
 ```
-fishbone "ICU Medication Error Increase"
-effect "Medication errors up 18% Q3"
-category people "People"
+category rework "Rework" [color: "#E53935", side: top, order: 1]
+```
+
+### Causes (minor bones)
+
+Two styles are accepted and can be mixed in one diagram:
+
+**Style A — structured.** Declare categories first, then assign causes with `id : "text"`:
+
+```
+category code "Code"
+category infra "Infra"
+code : "N+1 query in endpoint"
+code : "Missing cache layer"
+infra : "Auto-scaling lag"
+```
+
+**Style B — compact.** Category label and causes in one line, separated by `;` or `,`:
+
+```
+category Code: N+1 query; Missing cache; Synchronous call
+category Infra: Auto-scaling lag; CDN misconfigured
+```
+
+In compact style the `id` is auto-derived from the label text (lowercased, spaces → hyphens). Quotes are optional for cause text.
+
+<Playground initial={`fishbone "Conversion rate drop"
+effect "Checkout conversion -12% MoM"
+# Style A — structured
+category ux "UX"
+category trust "Trust"
+ux : "Confusing multi-step form"
+ux : "Slow page on mobile"
+trust : "No payment security badge"
+# Style B — compact
+category Pricing: Price-anchoring missing; No annual discount shown; Coupon field too prominent`} height={380} />
+
+---
+
+## 3. Sub-causes (second-order branches)
+
+Indent a `-` line by at least 2 spaces after a Level-1 cause to attach a sub-cause to it. The `-` dash is part of the syntax; the text follows it.
+
+```
+method : "Stencil aperture undersized"
+  - "Tolerance spec from 2018 board revision"
+  - "No re-validation after material change"
+method : "Pick-and-place speed too high"
+  - "Speed limit lifted during overtime run"
+```
+
+Sub-causes appear as shorter, narrower twigs branching off their parent rib.
+
+<Playground initial={`fishbone "Medication error increase"
+effect "Errors up 18% in Q3"
 category process "Process"
-category pharmacy "Pharmacy"
-category patient "Patient"
-category policy "Policy"
-people : "Float staff unfamiliar with unit" : "Handoff communication gaps"
-process : "CPOE alert fatigue" : "5-Rights verification skipped"
-pharmacy : "Look-alike packaging" : "Dispensing robot calibration"
-patient : "Complex polypharmacy" : "Allergy list not updated"
-policy : "Override policy too permissive"
+category people "People"
+process : "CPOE alert fatigue"
+  - "47 non-critical alerts per shift"
+  - "Override too easy — one click"
+process : "5-Rights verification skipped"
+  - "No barcode scanner at bedside"
+people : "Float staff unfamiliar with unit"
+  - "No unit-specific orientation checklist"
+people : "Handoff communication gaps"`} height={420} />
+
+---
+
+## 4. Config options
+
+`config key = value` lines can appear anywhere after the header. Unknown keys and values are silently ignored.
+
+| Config key | Values | Default | Effect |
+|---|---|---|---|
+| `direction` | `right` / `left` (also `ltr` / `rtl`) | `right` | Which side the effect head appears on |
+| `sides` | `both`, `top`, `bottom` | `both` | Which half of the spine hosts branches |
+| `density` | `compact`, `normal`, `spacious` | `normal` | Spacing between ribs — affects how many branches fit before overlap |
+| `slope` (or `ribslope`) | `gentle`, `normal`, `steep`, or a number (0–3) | `normal` (0.6) | Rib angle — shallow vs. steep diagonal |
+| `causeside` (or `cause-side`) | `head`, `tail`, `both` | `head` | Which side of a rib sub-causes branch off from |
+| `width` | integer px | auto | Override canvas width |
+| `height` | integer px | auto | Override canvas height |
+
+```
+config direction = left
+config density = compact
+config slope = gentle
+config sides = top
 ```
 
-### Software — quick compact style
+---
 
+## 5. Labels & comments
+
+- **Diagram title:** `fishbone "Website Traffic Drop"` — first line, optional.
+- **Effect label:** `effect "30% organic traffic decline"` — the problem at the fish's head.
+- **Category label:** `category id "Human-readable name"` — printed on the branch.
+- **Cause text:** quoted `"like this"` or unquoted (spaces allowed in compact style).
+- **Sub-cause text:** after the leading `-`, quoted or unquoted.
+- **Comments:** `#` at the start of a line (after optional leading whitespace). The `#` character inside a double-quoted string is not treated as a comment.
+
+---
+
+## 6. Reserved words & escaping
+
+**Reserved at line start:** `fishbone` (header), `effect`, `category`, `config`.
+
+**The `-` prefix** on an indented line is reserved as the sub-cause marker. To include a literal hyphen-dash at the start of cause text, quote it: `code : "- old deprecated path"`.
+
+**Strings with spaces** in structured-style cause text should be double-quoted: `code : "N+1 query"`. In compact style (`category Label: ...`) the text runs to the `;` or `,` separator and quoting is optional.
+
+**The `#` character** starts a comment unless inside a double-quoted string.
+
+| Reserved sequence | Context | Alternative |
+|---|---|---|
+| `#` at line start | Comment marker | Quote the text if `#` is part of content |
+| `-` at start after ≥2-space indent | Sub-cause marker | Quote: `- "- text with dash"` |
+| `category`, `effect`, `config`, `fishbone` | Line-start keywords | Cannot be used as category IDs |
+
+---
+
+## 7. Common mistakes
+
+| You wrote | Parser says | Fix |
+|---|---|---|
+| `cause1 : "text"` with no prior `category cause1` | `FishboneParseError: Unknown category "cause1"` | Declare `category cause1 "Label"` before assigning causes |
+| `- "sub-cause"` at the start of the file (no preceding Level-1 cause) | `FishboneParseError: Sub-cause … has no preceding Level-1 cause` | Place the sub-cause line immediately after a `id : "cause"` line |
+| `- "sub-cause"` with only 1-space indent | Treated as a cause line, not a sub-cause | Indent with at least 2 spaces |
+| `category Code: cause one, cause two` | Parsed as compact style — `,` and `;` are both separators | Intended behavior; both separators work |
+| `config direction = center` | Unknown value — silently ignored, stays `right` | Use `right` or `left` |
+| `config slope = 45` | Out of range (must be 0–3 exclusive); silently ignored | Use a preset (`gentle`, `normal`, `steep`) or a value like `0.5` |
+| `fishbone: "Title"` | Parsed correctly — colon after keyword is optional | Both `fishbone "Title"` and `fishbone: "Title"` work |
+
+---
+
+## 8. Grammar (EBNF)
+
+```text
+document       = header (blank | comment | effect | category | config | cause | sub-cause)*
+
+header         = "fishbone" ":"? ( WS quoted-string )? NEWLINE
+effect         = "effect" ":"? WS quoted-string NEWLINE
+config         = "config" WS config-key WS "=" WS config-value NEWLINE
+config-key     = "direction" | "width" | "height" | "sides"
+               | "slope" | "ribslope" | "density" | "causeside" | "cause-side"
+config-value   = bare-word | number | quoted-string
+
+category       = "category" WS id WS label-or-compact ( "[" category-attrs "]" )? NEWLINE
+
+label-or-compact
+               = quoted-string                            # structured form: category id "Label"
+               | id WS ":" WS compact-causes             # compact form: category Label: cause; cause
+
+category-attrs = category-attr ("," category-attr)*
+category-attr  = "color:" quoted-string
+               | "side:" ( "top" | "bottom" )
+               | "order:" integer
+
+cause          = id WS ":" WS cause-text NEWLINE         # structured form
+cause-text     = quoted-string | bare-text
+
+sub-cause      = INDENT≥2 "-" WS cause-text NEWLINE
+
+compact-causes = compact-cause ( (";" | ",") compact-cause )*
+compact-cause  = quoted-string | bare-text
+
+comment        = "#" any NEWLINE
+id             = [a-zA-Z] [a-zA-Z0-9_-]*
+quoted-string  = '"' any-char-but-unescaped-quote* '"'
 ```
-fishbone "API P99 latency > 2s"
-effect "P99 latency regression post-deploy"
-category Code: N+1 query in new endpoint; Synchronous external call; Missing cache layer
-category Infra: DB connection pool exhausted; Auto-scaling lag; CDN misconfigured
-category Data: Index missing on accounts table; 10× data growth since last test
-category Process: Load test skipped in CI; Canary traffic too low to catch
-```
+
+Authoritative source: `src/diagrams/fishbone/parser.ts`. If this diverges from the parser, the parser wins — please open an issue.
+
+---
+
+## 9. Standard compliance
+
+Schematex fishbone diagrams follow **Ishikawa (1968)** cause-and-effect conventions: a horizontal spine with a labeled head (the effect) and diagonal ribs for major causal categories, each carrying minor bones (individual causes). The two-level hierarchy (category → cause → sub-cause) matches the traditional "5 Whys" drill-down depth used in Six Sigma DMAIC and ISO 9001 corrective action workflows.
+
+What is implemented today:
+
+- ✅ Structured style: `category id "Label"` + `id : "cause"`
+- ✅ Compact style: `category Label: cause; cause; cause`
+- ✅ Sub-causes (Level 2) via indented `-` prefix
+- ✅ Per-category color and side override
+- ✅ `direction`, `density`, `slope`, `sides`, `causeside` config
+- ✅ Optional explicit `width` / `height`
+- ⏳ Level 3+ sub-sub-causes (parser stores children but renderer clips at depth 2)
+- ⏳ Auto-suggest standard category sets (6M, 8P, 5P)
+- ⏳ Per-category `order` rendering (parsed but not yet applied by the layout engine)
+
+References:
+
+- Ishikawa, K. (1968). *Guide to Quality Control.* JUSE Press.
+- ASQ — [Cause-and-Effect (Fishbone) Diagram](https://asq.org/quality-resources/cause-analysis-tools/fishbone)
+- ISO 9001:2015 §10.2 — Nonconformity and corrective action
+
+---
+
+## 10. Related examples
+
+<RelatedExamples slugs={[
+  'fishbone-website-traffic',
+]} />
+
+---
+
+## 11. Roadmap
+
+**Planned — not yet parseable.** Do not use these in generated DSL today; the parser will reject or ignore them.
+
+- **Level 3 sub-sub-causes** — a third indent tier; the AST structure supports it but the renderer currently stops at Level 2.
+- **`causeside` per-category override** — set `cause-side` on individual categories rather than globally.
+- **Auto-suggest standard categories** — `template: 6M` / `template: 8P` shorthand that pre-populates the standard manufacturing or service category names.
+- **Legend block** — `legend` keyword to declare a color-coding key rendered alongside the diagram.
+- **`metadata:` block** — structured key-value metadata (facilitator, date, revision) displayed in a corner annotation.
+
+Track in the GitHub issues if you need any of these sooner.

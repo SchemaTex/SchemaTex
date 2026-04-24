@@ -1,8 +1,8 @@
-# User-Facing Syntax Docs — Standard
+# User-Facing Syntax Docs — Guideline
 
 *How we write every `website/content/docs/{diagram}.mdx` page. Principles first, prescriptions last.*
 
-> **Owner:** Victor · **Status:** Active standard
+> **Owner:** Victor · **Status:** Active guideline
 > **Audience:** humans learning the DSL, and LLMs generating it on their behalf.
 > **This is the doc you write to.** `docs/reference/*` is internal engineering spec — not a substitute, not an overflow.
 
@@ -44,14 +44,16 @@ A good page answers these questions in roughly this order. Skip any that don't a
 2. *"What is the smallest thing I can write?"* — an annotated 3-line snippet.
 3. *"What are the building blocks?"* — the primitive (person, node, actor) and its attributes.
 4. *"What shapes / variants exist?"* — if the diagram has them; a single table.
-5. *"How do I connect things?"* — the operator table + a runnable example.
+5. *"How do I connect things?"* — the operator table + a Playground that exercises at least three operators side by side. A table alone is not enough; readers need to see the difference rendered.
 6. *"How do I nest / group / indent?"* — if structural nesting is part of the DSL.
-7. *"How do I label, comment, and configure?"* — quoting rules, comments, `%%` directives.
-8. *"What will trip me up?"* — reserved words, escaping, the common parse errors.
+7. *"How do I label, comment, and configure?"* — quoting rules, comments, `%%` directives. This is lookup material; a Playground usually adds nothing here.
+8. *"What will trip me up?"* — reserved words, escaping, the common parse errors. Same — a table of mistakes is more useful than a broken Playground.
 9. *"What's the formal grammar?"* — EBNF, lifted from the parser's header comment. For readers who need precision.
-10. *"Where does this come from, and where do I go deeper?"* — standard citations, links to related examples, roadmap if relevant.
+10. *"What's implemented vs. the standard?"* — a short compliance checklist (✅ done, ⏳ roadmap). Include whenever the diagram follows a named external standard. Keeps the roadmap grounded in specifics rather than wishlist.
+11. *"Where can I see it in action?"* — `<RelatedExamples slugs={[…]} />` as the closing section. This is now the standard way to link gallery examples; use the actual example slugs from `website/content/examples/`.
+12. *"What's coming?"* — a **Roadmap** section, clearly labeled "not yet parseable," listing features that exist in `src/core/types.ts` or are frequently requested but not yet in the parser. Always include it; users will try future syntax regardless.
 
-A diagram that doesn't have connections (a treemap, a timeline) skips Q5 entirely. A diagram whose grammar is trivial (mindmap) can fold Q9 into prose. The goal is that a reader finishes the page able to write valid DSL for their actual task — not that every section appears.
+A diagram that doesn't have connections (a treemap, a timeline) skips Q5 entirely. A diagram whose grammar is trivial (mindmap) can fold Q9 into prose. The goal is that a reader finishes the page able to write valid DSL for their actual task — not that every question appears.
 
 ## 4. Hard rules
 
@@ -69,15 +71,23 @@ Everything else — section count, table column order, line budget, Playground f
 
 **Depth scales with the diagram's surface area.** A mindmap doc at ~150 lines and a genogram doc at ~300 lines are both correct; a 500-line mindmap doc means you leaked reference material, and a 100-line genogram doc means you skipped the emotional-relationship table.
 
-**Use a roadmap section only when the drift matters.** If `src/core/types.ts` defines five attributes the parser doesn't yet accept and users keep trying them (based on issues, examples, or prior drift), document the gap. If no one has tried the feature, silence is fine — don't create promises.
+**Always include a roadmap section.** Users try future syntax regardless of whether it's documented. A clearly-labeled "not yet parseable" section prevents broken DSL and sets expectations. Pair it with the standard compliance checklist (Q10) so the gap between spec and implementation is visible in one place.
 
 **Reference docs are a pointer, not a hierarchy.** Don't structure user docs as "simplified reference docs" — they're a different genre with a different audience. Citations at the end, not cross-references throughout.
+
+**The hero Playground and §1 serve different purposes.** The hero (in the About zone) shows the diagram at its most representative — a realistic scenario, labeled nodes, diverse patterns, enough complexity to convey the diagram's range. §1 ("Your first {diagram}") is the smallest thing that teaches structure — 3–5 lines, one of everything. They are not interchangeable. A page that uses the same DSL for both is missing one of them.
+
+**Use real labels in examples.** `alice [label: "Alice"]` beats bare `alice` when the diagram type has a label attribute. LLMs and readers both need to see how names appear on the rendered output. Bare IDs as display labels is an acceptable shortcut only when IDs are already human-readable (e.g. Roman-numeral pedigree IDs like `I-1`).
 
 **When in doubt, delete.** The failure mode we're rewriting away from is pages that document everything the type system supports plus everything the renderer could theoretically do. Err on the side of "not in the main body."
 
 ## 6. Playgrounds
 
-We have an interactive runner (`website/components/Playground.tsx`) and should use it the way Mermaid uses its "Run ▶" button: as the default way to show a feature, not a special treat. If a section introduces a concept, it gets a Playground. A page that is all prose and one hero Playground is under-using the medium.
+We have an interactive runner (`website/components/Playground.tsx`) and should use it the way Mermaid uses its "Run ▶" button: as the default way to show a feature, not a special treat.
+
+**When to add a Playground:** when a section introduces behavior the reader can experiment with — a new operator, a new attribute, a layout mode, a structural pattern. The heuristic: if changing a value in the DSL produces a visibly different output, it needs a Playground.
+
+**When not to:** reference and lookup sections don't need Playgrounds. Labels & comments, reserved words, common mistakes — these are consulted, not experimented with. A broken-DSL Playground is not more useful than a table of errors. A Playground that shows "this is how you quote a string" adds no information beyond the prose.
 
 Snippets inside Playgrounds are isolated worlds — they include the diagram keyword, declare everything they reference, and are copy-pasteable as-is.
 
@@ -89,7 +99,7 @@ Snippets inside Playgrounds are isolated worlds — they include the diagram key
 | `docs/reference/{NN}-{NAME}-STANDARD.md` | Engineering spec. Implementation details, standard compliance, design decisions. Not a substitute for user docs. |
 | `src/diagrams/{name}/parser.ts` | Truth for what syntax is accepted. The docs follow the parser, not the other way around. |
 | `src/core/types.ts` | Truth for what the AST supports. A feature here but not in the parser is a roadmap candidate, not a main-body claim. |
-| `website/content/examples/{diagram}-*.mdx` | Runnable scenarios. User docs link to them, don't duplicate them. |
+| `website/content/examples/{diagram}-*.mdx` | Runnable scenarios. User docs link to them via `<RelatedExamples slugs={[…]} />` — don't duplicate their DSL in the main doc body. |
 
 ## 8. Adoption
 

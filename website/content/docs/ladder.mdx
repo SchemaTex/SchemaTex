@@ -1,269 +1,361 @@
 ---
 title: Ladder logic
-description: Industrial PLC programs in IEC 61131-3 ladder logic. Allen-Bradley tag+address+description labels, Set/Reset coil pairs, parallel branches, seal-in circuits. Used by PLC programmers, automation engineers, and industrial controls technicians.
 ---
 
-<Playground initial={`ladder "System Mode Selection"
-rung 1 "Set Auto, reset Manual":
-  XIC(AUTO_HMIPB, "BIT 5.10", name="Auto Mode HMI Pushbutton")
-  XIO(MANL_HMIPB, "BIT 5.11", name="Manual Mode HMI Pushbutton")
+## About ladder logic diagrams
+
+**Ladder logic** is the graphical programming language used to describe control programs in Programmable Logic Controllers (PLCs) — the industrial computers that run factory automation, HVAC systems, conveyor lines, and process equipment worldwide. The name comes from the diagram's appearance: two vertical power rails (rails) connected by horizontal rungs, each rung expressing one condition-to-action rule. Electricians and controls engineers adopted it because it mirrors the relay-contact schematics they already knew.
+
+Schematex follows **[IEC 61131-3:2013](https://en.wikipedia.org/wiki/IEC_61131-3)**, the international standard for PLC programming languages, with Allen-Bradley (Rockwell) tag-address-name naming conventions common in North American industrial practice. This page documents what the parser accepts today.
+
+<Playground initial={`ladder "Motor Start/Stop"
+rung 1 "Seal-in circuit":
+  parallel:
+    branch:
+      XIC(START_PB, "IN 1.0", name="Start Button")
+    branch:
+      XIC(MOTOR_AUX, "BIT 3.0", name="Aux Contact")
+  XIO(STOP_PB, "IN 1.1", name="Stop Button")
+  OTE(MOTOR_CMD, "OUT 2.0", name="Motor Command")
+rung 2 "Mode select with Set/Reset":
+  XIC(AUTO_HMIPB, "BIT 5.10", name="Auto Mode Button")
   XIO(SYS_FAULT, "BIT 3.0", name="System Fault")
   parallel:
-    branch: OTL(SYS_AUTO, "BIT 3.1", name="System Auto Mode")
-    branch: OTU(SYS_MANUAL, "BIT 3.2", name="System Manual Mode")`} height={500} />
-
-*IEC 61131-3:2013 Ladder Diagram language specification + NEMA ICS 1-2009 North American standard.*
-
-> **Primary References:**
-> - IEC 61131-3:2013 — Programmable controllers, Part 3: Programming languages (Ladder Diagram is one of 5)
-> - NEMA ICS 1-2009 — General Standards for Industrial Control and Systems (NA standard)
-> - Allen-Bradley (Rockwell) RSLogix / Studio 5000 ladder conventions
-> - Siemens TIA Portal ladder conventions
+    branch:
+      OTL(SYS_AUTO, "BIT 3.1", name="System Auto Mode")
+    branch:
+      OTU(SYS_MANUAL, "BIT 3.2", name="System Manual Mode")
+rung 3 "Run timer":
+  XIC(MOTOR_CMD)
+  TON(RUN_TMR, PT=5000)
+rung 4 "Alarm on cycle complete":
+  XIC(CYCLE_DONE, "BIT 4.0", name="Cycle Done")
+  OTN(ALARM_OUT, "OUT 2.5", name="Alarm Output")`} height={500} />
 
 ---
 
-## 1. Structure & Layout
+## 1. Your first ladder diagram
 
-### 1.1 Overall Diagram Structure
+The smallest useful ladder program: one rung, two contacts, one coil.
+
+<Playground initial={`ladder "First Rung"
+rung 1 "Start when button pressed, stop on fault":
+  XIC(START_PB)
+  XIO(FAULT)
+  OTE(MOTOR_RUN)`} />
+
+Four rules cover 80% of usage:
+
+1. Start with `ladder`, optionally followed by a quoted title.
+2. Each **rung** begins with `rung N "optional comment":` on its own line.
+3. Elements are listed one per line, indented under the rung — left to right means series (AND logic).
+4. A `parallel:` / `branch:` block introduces OR logic. Every branch holds its own element list.
+
+> Comments must start with `#` on their own line.
+
+---
+
+## 2. Contacts
+
+Contacts represent input conditions — they pass power when the associated bit matches the contact type.
+
+| Type | Name | Passes power when… |
+|---|---|---|
+| `XIC` | Examine If Closed | Tag bit = 1 (normally open) |
+| `XIO` | Examine If Open | Tag bit = 0 (normally closed) |
+| `ONS` | One-Shot Rising | Tag transitions 0 → 1 (rising edge, one scan) |
+| `OSF` | One-Shot Falling | Tag transitions 1 → 0 (falling edge, one scan) |
+
+**Syntax:**
 
 ```
-│ Power Rail L │                                  │ Power Rail R │
-│              │                                  │              │
-│              ├──[element]──[element]──...────────┤              │ ← Rung 0
-│              │                                  │              │
-│              ├──[element]──[branch]─────────────┤              │ ← Rung 1
-│              │               │                  │              │
-│              │            [element]             │              │
-│              │               │                  │              │
-│              ├───────────────┘─────────────────┤              │ ← Rung 2 (continues)
-│              │                                  │              │
+XIC(tag)
+XIC(tag, "address")
+XIC(tag, "address", name="Description")
+XIC(tag, address="address", name="Description")
 ```
 
-### 1.2 Layout Dimensions
+- `tag` — required. The PLC tag name (displayed below the contact symbol).
+- `"address"` — optional positional second argument. The I/O address (e.g. `"IN 1.0"`, `"BIT 3.1"`).
+- `name="…"` — optional key-value. Human-readable description (displayed above the symbol).
 
-| Parameter | Default | Meaning |
-|------|--------|------|
-| `power_rail_width` | 4px | Power rail stroke width |
-| `rung_height` | 70px | Height of each rung |
-| `rung_spacing` | 15px | Gap between rungs |
-| `element_width` | 32px | Standard element width |
-| `element_height` | 24px | Standard element height (contacts/coils) |
-| `rung_wire_y_offset` | `rung_height / 2` | Rung horizontal wire center |
-| `element_spacing` | 12px | Gap between adjacent elements |
-| `left_rail_x` | 20px | Left power rail x coordinate |
-| `right_rail_x` | `canvas_width - 20` | Right power rail x coordinate |
-| `label_offset` | 14px | Vertical distance from label to element center |
+<Playground initial={`ladder "Contact types"
+rung 1 "All four contact types":
+  XIC(START_PB, "IN 1.0", name="Start Button")
+  XIO(E_STOP, "IN 1.5", name="Emergency Stop NC")
+  ONS(PULSE_IN, "BIT 5.0", name="One-Shot Rising")
+  OSF(RESET_SIG, "BIT 5.1", name="One-Shot Falling")
+  OTE(OUT_RLY, "OUT 2.0", name="Output Relay")`} />
 
 ---
 
-## 2. Element Symbols
+## 3. Coils
 
-### 2.1 Contacts (Inputs — Read conditions)
+Coils represent output actions — they act on a tag bit when the rung has power flow.
 
-Contacts are located in the left region of the rung and represent input conditions.
+| Type | Name | Effect on tag bit |
+|---|---|---|
+| `OTE` | Output Energize | Sets bit = 1 while rung is true; clears to 0 when rung is false |
+| `OTL` | Output Latch | Sets bit = 1; **retains** even after rung goes false (latches) |
+| `OTU` | Output Unlatch | Clears bit = 0; retains even after rung goes false |
+| `OTN` | Output Negate | Sets bit = 0 while rung is true; sets to 1 when rung is false |
 
-#### Normally Open Contact (XIC / NO)
-- **Symbol**: Two parallel vertical lines, not connected
-- **Meaning**: When associated bit = 1, the contact closes (conducts)
+**Syntax:** identical to contacts — `OTE(tag)`, `OTE(tag, "address")`, `OTE(tag, "address", name="…")`.
 
-#### Normally Closed Contact (XIO / NC)
-- **Symbol**: Two parallel vertical lines + diagonal slash through the gap
-- **Meaning**: Contact opens when bit = 1
+`OTL` and `OTU` are used in pairs to build Set/Reset flip-flops. The last rung to write wins.
 
-#### Positive Transition Contact (ONS / Rising Edge)
-- **Symbol**: Two vertical lines + rising-edge arrow (↑)
-
-#### Negative Transition Contact (ONF / Falling Edge)
-- **Symbol**: Two vertical lines + falling-edge arrow (↓)
-
-#### Comparison Contact (EQU, GRT, LES, etc.)
-- **Symbol**: Rectangle box containing comparison operator (`=`, `>`, `<`, `≥`, `≤`, `≠`)
-
-### 2.2 Coils (Outputs — Set outputs)
-
-Coils are located on the right side of the rung (adjacent to the right power rail) and represent output drives.
-
-#### Output Coil (OTE / Standard)
-- **Symbol**: Parentheses `( )` — two opposing arcs
-
-#### Negated Output Coil (OTN)
-- Same as OTE, with a `/` slash annotation inside
-
-#### Set Coil / Latch (OTL)
-- Same as OTE, with `S` text inside
-
-#### Reset / Unlatch Coil (OTU)
-- Same as OTE, with `R` text inside
-
-#### Transition Coils (ONS/ONR)
-- Rising-edge/falling-edge triggered, with arrow marker inside
-
-### 2.3 Function Blocks (Complex functional elements)
-
-Function blocks appear in the middle of a rung; a rectangle box contains input/output pins.
-
-#### Timer Blocks
-
-| Block | Type | Pins (Input) | Pins (Output) |
-|-------|------|-------------|--------------|
-| `TON` | Timer On-Delay | `IN`, `PT` (preset time) | `Q` (done), `ET` (elapsed) |
-| `TOFF` | Timer Off-Delay | `IN`, `PT` | `Q`, `ET` |
-| `TP` | Timer Pulse | `IN`, `PT` | `Q`, `ET` |
-| `RTO` | Retentive Timer On | `IN`, `PT`, `R` (reset) | `Q`, `ET` |
-
-#### Counter Blocks
-
-| Block | Type | Pins (Input) | Pins (Output) |
-|-------|------|-------------|--------------|
-| `CTU` | Count Up | `CU` (count up), `R` (reset), `PV` (preset) | `Q` (done), `CV` (current) |
-| `CTD` | Count Down | `CD`, `LD` (load), `PV` | `Q`, `CV` |
-| `CTUD` | Up/Down | `CU`, `CD`, `R`, `LD`, `PV` | `QU`, `QD`, `CV` |
-
-#### Math Blocks
-
-Rectangle box, `width=60, height=40`, labeled: `ADD`, `SUB`, `MUL`, `DIV`.
-Pins: `IN1`, `IN2` (inputs), `OUT` (output), `EN` (enable), `ENO` (enable output).
-
-#### Comparison Blocks
-
-Labeled: `EQU`, `NEQ`, `GRT`, `GEQ`, `LES`, `LEQ`.
-Pins: `IN1`, `IN2`, `OUT` (boolean result).
+<Playground initial={`ladder "Set-Reset latch"
+rung 1 "Set on start":
+  XIC(START_PB, "IN 1.0", name="Start")
+  OTL(MOTOR_ON, "BIT 3.0", name="Motor Latch")
+rung 2 "Reset on stop or fault":
+  parallel:
+    branch:
+      XIC(STOP_PB, "IN 1.1", name="Stop")
+    branch:
+      XIC(E_STOP, "IN 1.5", name="E-Stop")
+  OTU(MOTOR_ON, "BIT 3.0", name="Motor Latch")`} />
 
 ---
 
-## 3. Variable Labels & Addressing
+## 4. Function blocks
 
-### 3.1 Label Positioning
+Function blocks perform timer, counter, math, and comparison operations. They appear inline in a rung and have keyword parameters after the mandatory tag argument.
 
-Each contact/coil displays the variable address/tag name above or below the element. Rung numbers appear to the left of the power rail. Optional rung comments appear above each rung.
+### 4.1 Timers
+
+| Type | Name | Key parameters |
+|---|---|---|
+| `TON` | Timer On-Delay | `PT=` preset time in milliseconds |
+| `TOFF` | Timer Off-Delay | `PT=` preset time in milliseconds |
+| `TP` | Timer Pulse | `PT=` preset time in milliseconds |
+
+```
+TON(timer_tag, PT=5000)
+```
+
+The timer tag stores elapsed time. The timer's `Q` bit (done output) is accessed by tag name in downstream contacts.
+
+### 4.2 Counters
+
+| Type | Name | Key parameters |
+|---|---|---|
+| `CTU` | Count Up | `PV=` preset value (integer) |
+| `CTD` | Count Down | `PV=` preset value |
+| `CTUD` | Count Up/Down | `PV=` preset value |
+
+```
+CTU(cycle_counter, PV=100)
+```
+
+### 4.3 Math
+
+| Type | Operation |
+|---|---|
+| `ADD` | Add |
+| `SUB` | Subtract |
+| `MUL` | Multiply |
+| `DIV` | Divide |
+| `MOV` | Move (copy) |
+
+```
+ADD(result_tag, IN1=setpoint, IN2=offset)
+MOV(dest_tag, IN1=source_tag)
+```
+
+### 4.4 Comparisons
+
+| Type | Meaning |
+|---|---|
+| `EQU` | Equal |
+| `NEQ` | Not equal |
+| `GRT` | Greater than |
+| `LES` | Less than |
+| `GEQ` | Greater than or equal |
+| `LEQ` | Less than or equal |
+
+```
+EQU(compare_tag, IN1=speed_actual, IN2=speed_setpoint)
+```
+
+<Playground initial={`ladder "Timer and counter"
+rung 1 "Start run timer":
+  XIC(MOTOR_CMD, "BIT 3.0", name="Motor Running")
+  TON(RUN_TIMER, PT=10000)
+rung 2 "Count completed cycles":
+  XIC(CYCLE_SENSOR, "IN 2.0", name="Cycle Sensor")
+  CTU(PART_COUNT, PV=500)
+rung 3 "Alarm when batch complete":
+  XIC(PART_COUNT, name="Count Done")
+  OTE(BATCH_ALARM, "OUT 3.0", name="Batch Complete Alarm")`} />
 
 ---
 
-## 4. Parallel Branches
+## 5. Parallel branches
 
-Parallel branches in a rung represent OR logic. Each `branch:` block runs in parallel with the main rung line.
+A `parallel:` block introduces OR logic — the rung has power if **any** branch conducts. Each branch is a `branch:` sub-block with its elements indented below it.
+
+```
+parallel:
+  branch:
+    XIC(LOCAL_START)
+  branch:
+    XIC(REMOTE_START)
+```
+
+Branches in a `parallel:` are evaluated simultaneously. The block closes when indentation returns to the level before `parallel:`.
+
+**Rules:**
+- `parallel:` must appear inside a rung.
+- `branch:` must appear inside a `parallel:` — using it alone throws `LadderParseError`.
+- Each branch holds one or more elements.
+- Elements after the `parallel:` block are series with it (AND logic).
+
+<Playground initial={`ladder "Parallel OR logic"
+rung 1 "Start from either local or remote":
+  parallel:
+    branch:
+      XIC(LOCAL_START, "IN 1.0", name="Local Start")
+    branch:
+      XIC(REMOTE_START, "BIT 5.2", name="Remote Start")
+  XIO(STOP_ALL, "IN 1.5", name="Stop All")
+  OTE(CONVEYOR, "OUT 2.0", name="Conveyor Run")`} />
 
 ---
 
-## 5. DSL Grammar (Ladder Logic)
+## 6. Labels & comments
+
+- **Title:** `ladder "Motor Control"` — first line only, quoted string.
+- **Rung number:** required integer after `rung`.
+- **Rung comment:** optional quoted string after the rung number, before the colon: `rung 3 "Run indicator":`.
+- **Tag:** first argument inside the parentheses — displayed below the symbol.
+- **Address:** second positional argument (quoted): `XIC(START_PB, "IN 1.0")`.
+- **Name:** `name="…"` keyword argument — human-readable description displayed above the symbol.
+- **Line comments:** `#` at the start of a line (after leading whitespace). Inline `# …` after an element line is also stripped.
+
+---
+
+## 7. Reserved words & escaping
+
+**Reserved at line start (case-insensitive):** `ladder`, `rung`, `parallel:`, `branch:`.
+
+**Element names** are all uppercase ASCII: `XIC`, `XIO`, `ONS`, `OSF`, `OTE`, `OTL`, `OTU`, `OTN`, `TON`, `TOFF`, `TP`, `CTU`, `CTD`, `CTUD`, `ADD`, `SUB`, `MUL`, `DIV`, `MOV`, `EQU`, `NEQ`, `GRT`, `LES`, `GEQ`, `LEQ`.
+
+**Tag IDs** — must match `[A-Z][A-Z0-9_]*` (the parser matches `[A-Z][A-Z0-9_]*` for the element name prefix). Lowercase tags are accepted inside the parentheses.
+
+**Quoted strings** in address or name arguments must use double quotes `"…"`.
+
+---
+
+## 8. Common mistakes
+
+| You wrote | Parser says | Fix |
+|---|---|---|
+| `rung 1` (no colon) | `LadderParseError: element outside of rung` | Rung header must end with `:` — `rung 1:` |
+| `ONF(TAG)` | `LadderParseError: unknown element type "ONF"` | Falling-edge contact is `OSF`, not `ONF` |
+| `parallel:` without `branch:` | Empty parallel block — rung has no element | Add at least one `branch:` inside the `parallel:` |
+| `branch:` before `parallel:` | `LadderParseError: branch: without parallel:` | Always open `parallel:` first |
+| `OTE()` — no tag | `LadderParseError: element missing tag` | Tag is required: `OTE(MY_TAG)` |
+| `var StartBtn: bool` (variable declaration) | `LadderParseError: invalid element syntax` | No variable declarations — tags are used directly |
+| Empty rung (no elements after `rung N:`) | `LadderParseError: Rung N: empty rung` | Add at least one element to each rung |
+| `TON(T1, T#5s)` | `LadderParseError: invalid element syntax` (T# not a valid number) | Use milliseconds integer: `TON(T1, PT=5000)` |
+
+---
+
+## 9. Grammar (EBNF)
 
 ```text
-document       = header statement*
-header         = "ladder" quoted_string? NEWLINE
+document      = header NEWLINE rung+
 
-statement      = comment | variable_decl | rung_def
+header        = "ladder" ( WS quoted-string )? NEWLINE
+quoted-string = '"' any-char-but-quote* '"'
 
-comment        = "#" [^\n]* NEWLINE
+rung          = "rung" WS integer ( WS quoted-string )? ":" NEWLINE
+                  element+
 
-variable_decl  = "var" id ":" data_type ("=" init_value)? NEWLINE
-data_type      = "bool" | "int" | "float" | "timer" | "counter" | "string"
-init_value     = "true" | "false" | INT | FLOAT | quoted_string
+element       = contact-line
+              | coil-line
+              | fb-line
+              | parallel-block
 
-rung_def       = "rung" INT? rung_comment? ":" NEWLINE INDENT
-                   rung_element+
-                 DEDENT
+contact-line  = contact-type "(" tag ( "," arg )* ")" NEWLINE
+contact-type  = "XIC" | "XIO" | "ONS" | "OSF"
 
-rung_comment   = quoted_string
+coil-line     = coil-type "(" tag ( "," arg )* ")" NEWLINE
+coil-type     = "OTE" | "OTL" | "OTU" | "OTN"
 
-rung_element   = series_element
-               | parallel_block
+fb-line       = fb-type "(" tag ( "," arg )* ")" NEWLINE
+fb-type       = "TON" | "TOFF" | "TP"
+              | "CTU" | "CTD" | "CTUD"
+              | "ADD" | "SUB" | "MUL" | "DIV" | "MOV"
+              | "EQU" | "NEQ" | "GRT" | "LES" | "GEQ" | "LEQ"
 
-series_element = contact | coil | function_block | jump
+arg           = quoted-string             // positional (address)
+              | key "=" quoted-string     // keyword (e.g. name="…")
+              | key "=" number            // keyword (e.g. PT=5000)
 
-parallel_block = "parallel:" NEWLINE INDENT
-                   (series_element+)
-                   ("branch:" NEWLINE INDENT series_element+ DEDENT)+
-                 DEDENT
+parallel-block = INDENT≥2 "parallel:" NEWLINE
+                   ( INDENT branch-block )+
 
-contact        = contact_type "(" IDENTIFIER ")" NEWLINE
-contact_type   = "XIC" | "XIO" | "ONS" | "ONF"    # NO, NC, rising, falling edge
-               | "EQU" | "NEQ" | "GRT" | "GEQ" | "LES" | "LEQ"  # compare
+branch-block   = "branch:" NEWLINE
+                   ( INDENT element )+
 
-coil           = coil_type "(" IDENTIFIER ")" NEWLINE
-coil_type      = "OTE" | "OTN" | "OTL" | "OTU"   # output, negated, set, reset
-
-function_block = fb_type "(" fb_params ")" NEWLINE
-fb_type        = "TON" | "TOFF" | "TP" | "RTO"
-               | "CTU" | "CTD" | "CTUD"
-               | "ADD" | "SUB" | "MUL" | "DIV" | "MOV"
-fb_params      = IDENTIFIER ("," IDENTIFIER)*
-
-jump           = "JMP" "(" LABEL_ID ")" NEWLINE
-               | "LBL" "(" LABEL_ID ")" NEWLINE
-
-IDENTIFIER     = /[a-zA-Z][a-zA-Z0-9_]*/
-LABEL_ID       = /[a-zA-Z][a-zA-Z0-9_]*/
-INT            = /[0-9]+/
-FLOAT          = /[0-9]+\.[0-9]+/
-quoted_string  = '"' /[^"]*/ '"'
-INDENT         = increase in whitespace
-DEDENT         = decrease in whitespace
-NEWLINE        = /\n/
+tag           = [A-Za-z][A-Za-z0-9_]*
+key           = [A-Za-z][A-Za-z0-9_]*
+integer       = [0-9]+
+number        = [0-9]+ ( "." [0-9]+ )?
+comment       = "#" any NEWLINE
 ```
 
-**DSL Example (Motor Start/Stop):**
-```
-ladder "Motor Control"
+Authoritative source: `src/diagrams/ladder/parser.ts`. If this diverges from the parser, the parser wins — please open an issue.
 
-var StartBtn: bool
-var StopBtn: bool
-var EmergencyStop: bool = false
-var MotorLatch: bool = false
-var MotorRun: bool = false
-var RunIndicator: bool = false
+---
 
-rung 0 "Start latch with stop condition":
-  XIC(StartBtn)
-  XIO(StopBtn)
-  XIO(EmergencyStop)
-  OTL(MotorLatch)
+## 10. Standard compliance
 
-rung 1 "Unlatch on E-stop":
-  XIC(EmergencyStop)
-  OTU(MotorLatch)
+Schematex ladder logic follows **IEC 61131-3:2013** Part 3 for the Ladder Diagram language and uses **Allen-Bradley (Rockwell) tag-address-name** conventions common in North American PLC practice.
 
-rung 2 "Motor run output":
-  XIC(MotorLatch)
-  OTE(MotorRun)
+What is implemented today:
 
-rung 3 "Run indicator":
-  XIC(MotorRun)
-  OTE(RunIndicator)
-```
+- ✅ Four contact types: XIC (NO), XIO (NC), ONS (rising edge), OSF (falling edge)
+- ✅ Four coil types: OTE (output), OTL (latch/set), OTU (unlatch/reset), OTN (negate)
+- ✅ Three timer function blocks: TON, TOFF, TP with millisecond `PT=` parameter
+- ✅ Three counter function blocks: CTU, CTD, CTUD with integer `PV=` parameter
+- ✅ Math function blocks: ADD, SUB, MUL, DIV, MOV
+- ✅ Comparison function blocks: EQU, NEQ, GRT, LES, GEQ, LEQ
+- ✅ Parallel / branch blocks for OR logic
+- ✅ Tag, address, and name annotations per Allen-Bradley Studio 5000 conventions
+- ⏳ Retentive timer (RTO) — in the standard; not yet in the parser
+- ⏳ Jump (JMP) / Label (LBL) instructions
+- ⏳ Master Control Reset (MCR) zone
+- ⏳ Immediate I/O instructions (IIN, IOT)
+- ⏳ Structured Text or Function Block Diagram elements embedded in rungs
 
-**DSL Example (Timer + Counter):**
-```
-ladder "Timer Counter Example"
+References:
 
-var RunSignal: bool
-var RunTimer: timer
-var CycleCounter: counter
-var AlarmOut: bool
+- IEC 61131-3:2013 — *Programmable controllers, Part 3: Programming languages*
+- NEMA ICS 1-2009 — *General Standards for Industrial Control and Systems*
+- Rockwell Automation Studio 5000 Logix Designer — [Ladder Diagram Programming Manual](https://literature.rockwellautomation.com/)
 
-rung 0 "TON timer when running":
-  XIC(RunSignal)
-  TON(RunTimer, RunSignal, T#5s)
+---
 
-rung 1 "Count on timer done":
-  XIC(RunTimer.Q)
-  CTU(CycleCounter, RunTimer.Q, 100)
+## 11. Related examples
 
-rung 2 "Alarm when max cycles":
-  XIC(CycleCounter.Q)
-  OTE(AlarmOut)
-```
+<RelatedExamples slugs={[
+  'ladder-motor-start-stop',
+  'ladder-mode-selection',
+]} />
 
-**DSL Example (Parallel Branch — OR logic):**
-```
-ladder "Parallel Branch"
+---
 
-rung 0 "Start from push button OR remote":
-  parallel:
-    XIC(LocalStart)
-    branch:
-      XIC(RemoteStart)
-  XIC(MotorLatch)
-  XIO(StopBtn)
-  OTE(MotorRun)
-```
+## 12. Roadmap
 
+**Planned — not yet parseable.** Do not use these in generated DSL today; the parser will reject or ignore them.
+
+- **Retentive Timer On (RTO)** — timer that holds elapsed time through power loss; requires a separate reset contact.
+- **Jump (JMP) / Label (LBL)** — branch to a labeled rung to skip logic conditionally; used in large programs for performance.
+- **Master Control Reset (MCR) zone** — a bracketed zone that de-energizes all non-retentive outputs when the MCR input is false.
+- **Structured text in rungs** — inline expression evaluation (e.g., `CALC(result = a * b + c)`).
+- **Immediate I/O (IIN / IOT)** — force I/O scan mid-program for time-critical control.
+
+Track in the GitHub issues if you need any of these sooner.

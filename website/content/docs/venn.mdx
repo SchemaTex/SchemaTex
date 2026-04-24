@@ -1,157 +1,286 @@
 ---
 title: Venn / Euler diagram
-description: Set relationship diagrams in four DSL modes — declarative intersections with counts, element enumeration, named region labels, and Euler subset/disjoint relations. Used by data analysts, educators, researchers, and product managers for overlap analysis, set logic, and audience segmentation.
 ---
 
-<Playground initial={`venn "Customer Segments"
-set A "Email subscribers" [color: "#1E88E5"]
-set B "Paid users" [color: "#E53935"]
-set C "Mobile app users" [color: "#43A047"]
-A & B : 1840
-A & C : 920
-B & C : 2100
-A & B & C : 650
-A only : 12400
-B only : 3200
-C only : 8700`} />
+## About Venn and Euler diagrams
 
-*Four composable DSL modes — mix declarative counts, element lists, region labels, and Euler hierarchy in a single diagram.*
+A **Venn diagram** uses overlapping circles to show every possible logical relationship among a collection of sets — whether or not each intersection actually contains any elements. A **Euler diagram** is the more general form: circles are only drawn where relationships actually exist, so a set fully contained in another is shown as a nested circle, and two disjoint sets do not overlap at all. John Venn introduced the fixed-overlap form in 1880; Leonhard Euler described the general set-containment form in the 1760s.
 
----
+Educators use them to teach set theory; data analysts reach for them to show audience overlap between segments (email list ∩ mobile users ∩ paid subscribers); researchers in biology, linguistics, and medicine use Euler diagrams to map taxonomic or conceptual hierarchies. Schematex supports all four common usage patterns in one DSL — declarative counts, element enumeration, region labels, and Euler subset/disjoint/overlap relations — and can mix them in a single diagram. See the [Wikipedia article on Venn diagrams](https://en.wikipedia.org/wiki/Venn_diagram) and [Euler diagrams](https://en.wikipedia.org/wiki/Euler_diagram) for background.
 
-## Mode 1 — Declarative counts
-
-Define sets, then assign values to intersections:
-
-```
-venn "Support Tickets"
-set A "Bug reports" [color: "#E53935"]
-set B "Feature requests" [color: "#1E88E5"]
-
-A & B : 23         # overlap value
-A only : 145       # A minus B
-B only : 312       # B minus A
-```
+<Playground initial={`venn "Customer Segments — Q3 2025"
+set email "Email subscribers" [color: "#1E88E5"]
+set paid "Paid users" [color: "#E53935"]
+set mobile "Mobile app users" [color: "#43A047"]
+email & paid : 1840
+email & mobile : 920
+paid & mobile : 2100
+email & paid & mobile : 650
+email only : 12400
+paid only : 3200
+mobile only : 8700`} height={480} />
 
 ---
 
-## Mode 2 — Element enumeration
+## 1. Your first Venn diagram
 
-List elements per set; intersections are computed automatically:
+The smallest useful diagram: two sets, one overlap, two exclusive regions.
 
-```
-venn "Tech Skills"
-Frontend = { React, TypeScript, CSS, Webpack }
-Backend  = { TypeScript, Python, PostgreSQL, Redis }
-DevOps   = { Docker, Kubernetes, Redis, PostgreSQL }
-```
+<Playground initial={`venn "Support channels"
+set A "Email support" [color: "#1E88E5"]
+set B "Live chat" [color: "#E53935"]
+A & B : 320
+A only : 1450
+B only : 890`} />
 
----
+Four rules cover 80% of usage:
 
-## Mode 3 — Region labels
+1. Start with `venn`, optionally followed by a quoted title.
+2. Declare each **set** with `set ID "Label"` — the id is used internally, the label appears in the diagram.
+3. Assign values to **regions** using `A & B : value` for intersections and `A only : value` for exclusive regions.
+4. Configure appearance with `config:` lines; the diagram mode (`venn` vs `euler`) can be set explicitly or left as `auto`.
 
-Label regions with text instead of counts:
-
-```
-venn "Go-to-Market"
-set A "Awareness"
-set B "Consideration"
-set C "Purchase"
-
-region A & B : "Nurture"
-region B & C : "Convert"
-region A & B & C : "Loyal customer"
-```
+> Comments must start with `#` on their own line.
 
 ---
 
-## Mode 4 — Euler (subset / disjoint)
+## 2. Sets
 
-Express set hierarchy and separation:
-
-```
-venn "Biology"
-set mammals "Mammals"
-set dogs "Dogs"
-set cats "Cats"
-set fish "Fish"
-
-dogs subset mammals
-cats subset mammals
-fish disjoint mammals
-```
-
-Euler relations: `subset` (or `in`), `disjoint`, `overlap`
-
----
-
-## Set definition
+A set declaration creates one circle in the diagram.
 
 ```
 set ID "Label" [color: "#hex"]
 ```
 
-| Property | Values | Meaning |
-|----------|--------|---------|
-| `color` | hex string | Fill color for this set |
+| Part | Required | Notes |
+|---|---|---|
+| `ID` | Yes | Must match `[A-Za-z][A-Za-z0-9_-]*` |
+| `"Label"` | Yes | Quoted string displayed on the circle |
+| `[color: "#hex"]` | No | Override fill color for this set |
+
+Sets must be declared before they are referenced in region or relation lines.
+
+<Playground initial={`venn "Programming paradigms"
+set oop "Object-Oriented" [color: "#1E88E5"]
+set fp "Functional" [color: "#E53935"]
+set logic "Logic" [color: "#43A047"]
+oop & fp : 180
+oop & logic : 45
+fp & logic : 90
+oop & fp & logic : 12
+oop only : 620
+fp only : 340
+logic only : 95`} height={440} />
 
 ---
 
-## Config options
+## 3. Regions
+
+A region assigns a value to an intersection or exclusive area. The four DSL modes can be mixed in one diagram.
+
+### 3.1 Declarative mode — counts and percentages
+
+Assign a number or percentage to a named region. The region key is either an `&`-separated list of set ids (for intersections) or `ID only` (for the part of that set not covered by any other set).
 
 ```
-config: proportional = true    # area proportional to value
-config: showCounts = true      # always show numbers (default: auto)
-config: showPercent = true     # show % of total
-config: palette = default      # default | brand | monochrome
-config: blendMode = multiply   # multiply | screen | none
+A & B : 320          # integer count
+A & B & C : 45       # three-way intersection
+A only : 1450        # A minus all other sets
+A & B : 18.5%        # percentage value
 ```
+
+<Playground initial={`venn "Market research"
+set aware "Awareness" [color: "#7B1FA2"]
+set consider "Consideration" [color: "#0288D1"]
+set convert "Conversion" [color: "#388E3C"]
+aware & consider : 3400
+consider & convert : 890
+aware & convert : 210
+aware & consider & convert : 150
+aware only : 18200
+consider only : 2100
+convert only : 540`} height={440} />
+
+### 3.2 Region labels (text)
+
+Use the `region` keyword prefix and assign a quoted string instead of a number. The string is rendered inside the region.
+
+```
+region A & B : "Nurture"
+region B & C : "Convert"
+region A & B & C : "Loyal customer"
+```
+
+<Playground initial={`venn "Go-to-market funnel"
+set A "Awareness" [color: "#7B1FA2"]
+set B "Consideration" [color: "#0288D1"]
+set C "Purchase" [color: "#388E3C"]
+region A & B : "Nurture"
+region B & C : "Convert"
+region A only : "Cold audience"
+region A & B & C : "Loyal"
+region C only : "Direct buyers"`} height={440} />
+
+### 3.3 Enumeration mode — element lists
+
+List the actual elements of each set. Schematex computes all intersections automatically.
+
+```
+ID = { element1, element2, element3 }
+```
+
+Elements are comma-separated bare words or quoted strings. Enumeration sets do not need an explicit `set` declaration — the declaration is implied.
+
+<Playground initial={`venn "Full-stack team skills"
+Frontend = { React, TypeScript, CSS, Jest, Webpack }
+Backend  = { TypeScript, Node.js, PostgreSQL, Jest, Redis }
+DevOps   = { Docker, Kubernetes, PostgreSQL, Terraform, Redis }`} height={440} />
 
 ---
 
-## Examples
+## 4. Euler relations
 
-### Skills overlap (enumeration)
-
-```
-venn "Full-Stack Team Skills"
-Frontend = { React, TypeScript, CSS, Jest }
-Backend  = { TypeScript, Node.js, PostgreSQL, Jest }
-Infra    = { Docker, Kubernetes, PostgreSQL, Terraform }
-```
-
-### Market segments (declarative)
+Euler relations express structural containment or separation — that one set is a subset of another, that two sets are completely disjoint, or that they merely overlap. They must reference set ids already declared with `set`.
 
 ```
-venn "Product Personas"
-set power "Power Users" [color: "#7B1FA2"]
-set casual "Casual Users" [color: "#0288D1"]
-set trial "Trial Users" [color: "#388E3C"]
-
-power & casual : 340
-casual & trial : 890
-power & trial : 120
-power & casual & trial : 45
-power only : 1200
-casual only : 5600
-trial only : 3100
+from subset to    # from is fully inside to (also: "in")
+from in to        # alias for subset
+from disjoint to  # from and to do not overlap
+from overlap to   # from and to partially overlap (explicit — the default for unrelated sets)
 ```
 
-### Taxonomy (Euler)
+<Playground initial={`venn "Biology taxonomy"
+set animals "Animals"
+set vertebrates "Vertebrates"
+set mammals "Mammals"
+set birds "Birds"
+set fish "Fish"
+vertebrates subset animals
+mammals subset vertebrates
+birds subset vertebrates
+fish subset vertebrates
+mammals disjoint birds
+mammals disjoint fish
+birds disjoint fish`} height={440} />
+
+| Keyword | Alias | Meaning |
+|---|---|---|
+| `subset` | `in` | `from` is fully contained within `to` |
+| `disjoint` | — | `from` and `to` do not intersect |
+| `overlap` | — | `from` and `to` intersect but neither contains the other |
+
+---
+
+## 5. Configuration
+
+`config:` lines tune diagram behavior. Each goes on its own line.
+
+| Config key | Values | Default | Effect |
+|---|---|---|---|
+| `diagram` | `venn`, `euler`, `auto` | `auto` | Force Venn (all circles fixed) or Euler (subset nesting). `auto` infers from the presence of Euler relations. |
+| `proportional` | `true`, `false` | `false` | Scale circle area proportional to region count values |
+| `showCounts` | `true`, `false` | `auto` | Always / never show count labels. `auto` shows them when counts are provided. |
+| `showPercent` | `true`, `false` | `false` | Show each region value as a percentage of the grand total |
+| `palette` | `default`, `brand`, `monochrome` | `default` | Color palette for sets (overridden by per-set `color:`) |
+| `blendMode` | `multiply`, `screen`, `none` | `multiply` | How overlapping fill colors blend |
+
+Config can also be written inline on the header line: `venn "Title" [proportional: true, showPercent: true]`.
 
 ```
-venn "Programming Paradigms"
-set prog "Programming Languages"
-set oop "Object-Oriented"
-set fp "Functional"
-set python "Python"
-set haskell "Haskell"
-set java "Java"
-
-oop subset prog
-fp subset prog
-python subset oop
-java subset oop
-haskell subset fp
-python overlap fp
+venn "Segment overlap"
+config: proportional = true
+config: showPercent = true
+config: blendMode = screen
 ```
+
+**Layout selection:**
+
+- `layout venn` — alternative form of `config: diagram = venn` (parses identically).
+- `layout euler` — alternative form of `config: diagram = euler`.
+- `layout auto` — alternative form of `config: diagram = auto`.
+
+---
+
+## 6. Labels & comments
+
+- **Title:** `venn "My diagram"` — first line only.
+- **Set label:** `set A "Email subscribers"` — quoted string on the `set` line.
+- **Region value:** integer, percentage, quoted string, or element list assigned after the `:`.
+- **Comments:** `#` at the start of a line (after leading whitespace).
+
+---
+
+## 7. Reserved words & escaping
+
+**Reserved at line start:** `venn` (header), `set`, `config:`, `layout`, `region`.
+
+**Reserved operators in region keys:** `&` (intersection), `only` (exclusive region).
+
+**Euler relation keywords:** `subset`, `in`, `disjoint`, `overlap` — cannot be used as set ids.
+
+**ID rules:** must match `[A-Za-z][A-Za-z0-9_-]*`. Labels with spaces go in the quoted `"Label"` field.
+
+---
+
+## 8. Common mistakes
+
+| You wrote | Parser says | Fix |
+|---|---|---|
+| `A & B : 320` before `set A …` and `set B …` | `VennParseError: unknown set id "A" in region key` | Declare sets with `set` before referencing them in region lines |
+| `dogs subset mammals` before `set dogs …` | `VennParseError: unknown set "dogs" in relation` | Declare sets first, then write Euler relations |
+| `set A Email subscribers` (unquoted label with space) | Parser error — label is expected to be a quoted string | Quote it: `set A "Email subscribers"` |
+| `A & B = 320` (equals instead of colon) | Line doesn't match region pattern; parse error | Use colon: `A & B : 320` |
+| `Frontend = { React TypeScript }` (no commas) | `React TypeScript` treated as one element | Comma-separate: `Frontend = { React, TypeScript }` |
+| `config: mode = venn` | `mode` is not a recognized key (key is `diagram`) | Use `config: diagram = venn` |
+| Mixing enumeration sets with explicit `A & B :` regions | Enumeration auto-derive only runs when `regions.length === 0` | Use one style per diagram or add all regions explicitly |
+
+---
+
+## 9. Grammar (EBNF)
+
+```text
+document       = header (blank | comment | config | layout-stmt | set-decl | enum-decl | euler-rel | region)*
+
+header         = "venn" ( ":"? WS quoted-string )? ( WS "[" config-props "]" )? NEWLINE
+quoted-string  = '"' any-char-but-quote* '"'
+
+config         = "config" WS ":" WS config-key WS "=" WS config-value NEWLINE
+config-key     = "diagram" | "proportional" | "palette" | "blendMode" | "showCounts" | "showPercent"
+
+layout-stmt    = "layout" WS ( "venn" | "euler" | "auto" ) NEWLINE
+
+set-decl       = "set" WS id WS quoted-string ( WS "[" set-props "]" )? NEWLINE
+set-props      = "color:" quoted-hex | "fill:" quoted-hex
+
+enum-decl      = id WS "=" WS "{" element-list "}" NEWLINE
+element-list   = element ( "," element )*
+element        = quoted-string | bare-word
+
+euler-rel      = id WS euler-op WS id NEWLINE
+euler-op       = "subset" | "in" | "disjoint" | "overlap"
+
+region         = "region"? WS region-key WS ":" WS region-value NEWLINE
+region-key     = id WS "only"
+               | id ( WS "&" WS id )+
+region-value   = integer | percent | quoted-string | "[" element-list "]"
+
+percent        = number "%"
+id             = [A-Za-z] [A-Za-z0-9_-]*
+comment        = "#" any NEWLINE
+```
+
+Authoritative source: `src/diagrams/venn/parser.ts`. If this diverges from the parser, the parser wins — please open an issue.
+
+---
+
+## 10. Roadmap
+
+**Planned — not yet parseable.** Do not use these in generated DSL today; the parser will reject or ignore them.
+
+- **Three-way and N-way Euler nesting** — the renderer currently supports up to 3 sets in Venn mode; larger Euler diagrams with complex containment are not yet fully laid out.
+- **`fill:` color alias** — the `fill:` property on `set` is accepted by the parser (as an alias for `color:`) but the renderer currently only uses `color:`.
+- **`label:` on regions** — `region A & B [label: "Core"]` syntax for separate label vs. value.
+- **Area-proportional Euler** — `proportional: true` currently only affects Venn mode; Euler containment layout ignores the flag.
+- **`and` keyword** — natural-language `A and B : 120` as alias for `A & B : 120`.
+
+Track in the GitHub issues if you need any of these sooner.

@@ -1,279 +1,292 @@
 ---
 title: Ecomap
-description: Family systems embedded in institutional, social, and cultural support networks. Radial layout with weighted connection strengths and directional energy flow arrows. Based on Hartman (1978). Used by social workers, clinical counselors, family therapists, and case managers.
 ---
+
+## About ecomaps
+
+An **ecomap** is a single page that shows a person or family at the center and the web of outside systems — extended family, school, church, clinic, employer, support groups — arrayed around them. Each connecting line records the *quality* (strong, tenuous, stressful) and *direction* (who gives, who takes) of the relationship. Social workers, school counselors, case managers, and community-health nurses use ecomaps to see at a glance where a client has anchors and where the safety net is thin.
+
+Schematex follows the **[Hartman (1978) ecomap model](https://journals.sagepub.com/doi/10.1177/104438947805900803)** — the original *Social Casework* paper that introduced the notation — extended with conventions from contemporary clinical social work practice. For background see [Wikipedia: Ecomap](https://en.wikipedia.org/wiki/Ecomap). This page documents what the parser accepts today.
 
 <Playground initial={`ecomap "Nguyen Family Resettlement"
   center: family [label: "Nguyen Family"]
   resettlement [label: "IRC Office", category: government]
   school [label: "Lincoln Elementary", category: education]
   clinic [label: "Community Clinic", category: health]
+  caseworker [label: "Ms. Patel", category: mental-health]
   temple [label: "Vietnamese Temple", category: cultural]
   neighbors [label: "Sponsor Family", category: community]
+  employer [label: "Warehouse Job", category: work]
   family === resettlement [label: "active case"]
   family === school
   clinic --> family [label: "vaccinations"]
-  family === temple [label: "anchor"]`} height={480} />
-
-*Hartman (1978) ecomap model + extensions from clinical social work practice. Visualizes relationships between individuals/families and their external environmental systems.*
-
-> **References:**
-> - Hartman, A. (1978). Diagrammatic assessment of family relationships. *Social Casework*, 59(8), 465-476.
-> - Ray, R.A. & Street, A.F. (2005). Ecomapping: An innovative research tool for nurses. *J of Advanced Nursing*, 50(5), 545-552.
-> - Rempel, G.R. et al. (2007). Technological advances in research with families. *J of Family Nursing*, 13(4), 413-436.
+  caseworker <-> family [label: "weekly"]
+  family === temple [label: "anchor"]
+  neighbors === family [label: "housing host"]
+  family --- employer [label: "new, part-time"]`} height={520} />
 
 ---
 
-## 1. Structure
+## 1. Your first ecomap
 
-An ecomap consists of three layers:
-1. **Center** — the individual or family unit (embedded genogram or simplified circle/square)
-2. **External Systems** — interpersonal relationships, organizations, institutions, community resources
-3. **Connections** — lines representing relationship quality, strength, and direction of energy flow
+The smallest useful ecomap: one center and three outside systems.
 
-Clinical use: assessing an individual's or family's social support network, identifying resources and stressors, and planning intervention strategies.
+<Playground initial={`ecomap
+  center: client [label: "Maria"]
+  mom [label: "Mother", category: family]
+  work [label: "Tech Corp", category: work]
+  therapist [label: "Dr. Patel", category: mental-health]
+  mom === client
+  work --- client
+  therapist <-> client [label: "weekly"]`} />
 
----
+Four rules cover 80% of usage:
 
-## 2. Center Element
+1. Start with the keyword `ecomap`, optionally followed by a quoted title.
+2. Declare the center on its own line: `center: id [label: "…"]`. Exactly one center per diagram.
+3. Declare each outside system on its own line: `id [label: "…", category: …]`.
+4. Connect any two declared IDs with a **connection operator** — `===` (strong), `---` (normal), `<->` (reciprocal), etc. See §3 for the full table. A trailing `[label: "…"]` adds an edge label.
 
-### 2.1 Simple Center (Individual)
-| Element | Shape | SVG |
-|---------|-------|-----|
-| Central person | Large circle (r=50) or square (50×50) | `<circle>` / `<rect>` with class="schematex-center" |
-| Name label | Text inside shape | `<text>` centered |
-| Optional details | Age, sex symbol | Smaller text below name |
-
-### 2.2 Family Center (Embedded Genogram)
-In clinical practice, the center of an ecomap is typically a **mini genogram** containing core family members:
-
-```
-┌─────────────────────────┐
-│    ○ ─── □              │  ← embedded mini genogram
-│      │                  │
-│    ○   □   ○            │
-│  (family unit)          │
-└─────────────────────────┘
-```
-
-**Implementation approach:**
-- The center area is enclosed by a large dashed circle or rectangle
-- A simplified genogram is rendered inside (symbols + couple/child lines only, no labels/conditions)
-- Class: `schematex-center-family`
-- Connection lines originate from the center boundary (not from individual members inside)
-
-### 2.3 DSL for Center
-
-```
-# Simple center
-center: maria [female, age: 34]
-
-# Family center
-center: family [label: "The Johnsons"]
-  john [male, 1960]
-  mary [female, 1962]
-  john -- mary
-    kid1 [male, 1990]
-    kid2 [female, 1993]
-```
+> Comments must be on their own line, starting with `#`. Inline trailing comments will break the parser.
 
 ---
 
-## 3. External System Types
+## 2. Center and outside systems
 
-### 3.1 Standard System Categories
+Every ecomap has one **center** and any number of **outside systems**. Both use the same `id [attrs]` syntax; the only difference is the `center:` prefix.
 
-Standard external system categories in clinical social work practice, each with recommended icon/color:
+**ID rules.** Must match `[a-zA-Z][a-zA-Z0-9_-]*`. IDs are case-insensitive; the original token is kept as the default label.
 
-| Category | Icon/Label | Default Color | Examples |
-|----------|-----------|--------------|------|
-| Family (extended) | House icon | `#8D6E63` (brown) | Grandparents, in-laws, cousins |
-| Friends/Peers | People icon | `#42A5F5` (blue) | Friends, neighbors, coworkers |
-| Work/Employment | Briefcase | `#66BB6A` (green) | Employer, colleague relationships |
-| Education | Book icon | `#FFA726` (orange) | School, university, training |
-| Health/Medical | Cross icon | `#EF5350` (red) | Doctor, hospital, therapist |
-| Mental Health | Brain icon | `#AB47BC` (purple) | Counselor, psychiatrist |
-| Religion/Spiritual | Symbol | `#FFEE58` (yellow) | Church, temple, spiritual community |
-| Recreation/Leisure | Play icon | `#26C6DA` (cyan) | Sports, hobbies, clubs |
-| Legal/Justice | Scale icon | `#78909C` (gray-blue) | Lawyer, court, probation officer |
-| Government/Social Services | Building | `#8D6E63` (brown) | Social welfare, housing assistance |
-| Financial | Dollar icon | `#66BB6A` (green) | Bank, financial aid |
-| Community | Globe icon | `#29B6F6` (light blue) | Community organizations, support groups |
-| Cultural/Ethnic | Flag icon | `#FFA726` (orange) | Cultural organizations, ethnic community |
-| Substance (positive) | Pill icon | `#66BB6A` (green) | Recovery programs, AA/NA |
-| Substance (negative) | Pill icon | `#EF5350` (red) | Bars, drug sources |
-| Technology/Online | Screen icon | `#42A5F5` (blue) | Social media, online community |
-| Pet/Animal | Paw icon | `#8D6E63` (brown) | Pets, service animals |
+**Attributes accepted by the parser today:**
 
-### 3.2 System Sizing
+| Attribute | Values | Effect |
+|---|---|---|
+| `label:"…"` | any quoted string | Display label override |
+| `category:…` | see §2.1 | Color / grouping of a system node |
+| `size:…` | `small`, `medium`, `large` | Node size |
+| `importance:…` | `major`, `moderate`, `minor` | Visual weight |
+| `sector:…` | `top`, `right`, `bottom`, `left` | Hint for which side of the center the system sits on |
+| `age:N` | e.g. `age:34` | Age shown inside a person-typed center |
+| `male` / `female` / `unknown` | flag | Sex for a person-typed center |
 
-The size of a system circle can reflect its importance in an individual's life:
+### 2.1 System categories
 
-| Importance | Circle Radius | Meaning |
-|------------|--------------|------|
-| Major | 35-40px | Systems of greatest importance in life |
-| Moderate | 25-30px (default) | Moderate importance |
-| Minor | 15-20px | Present but less influential |
+Categories color-code outside systems by the life domain they belong to. The parser accepts any string — these are the values the renderer has themed palettes for:
 
-DSL: `work [label: "Tech Corp", size: large]` or `work [label: "Tech Corp", importance: major]`
+| Category | Typical examples |
+|---|---|
+| `family` | Extended family, in-laws, cousins |
+| `friends` | Friends, neighbors |
+| `work` | Employer, coworkers |
+| `education` | School, college, training program |
+| `health` | Primary care, specialist, hospital |
+| `mental-health` | Therapist, psychiatrist, support group |
+| `religion` | Church, temple, spiritual community |
+| `recreation` | Sports, hobbies, clubs |
+| `legal` | Lawyer, probation, court |
+| `government` | Social services, housing, immigration |
+| `financial` | Bank, benefits, financial aid |
+| `community` | Neighborhood groups, sponsors |
+| `cultural` | Cultural/ethnic organizations |
+| `substance` | Recovery programs or, if negative, active-use sources |
+| `technology` | Online community, support forum |
+| `pet` | Pets, service animals |
+
+<Playground initial={`ecomap
+  center: client [label: "Marcus, age 15"]
+  mom [label: "Mother", category: family]
+  dad [label: "Father (divorced)", category: family]
+  school [label: "East High School", category: education]
+  coach [label: "Soccer Coach", category: community]
+  therapist [label: "Ms. Chen", category: mental-health]
+  mom === client
+  dad --- client [label: "EOW weekends"]
+  school === client
+  coach --> client [label: "mentor"]
+  therapist <-> client [label: "weekly"]`} />
 
 ---
 
-## 4. Connection Line Types (Expanded)
+## 3. Connections
 
-### 4.1 Relationship Quality Lines
+A connection is one line: `fromId OP toId` optionally followed by `[label: "…"]`. Both IDs must already be declared (center counts).
 
-| Type | Line Style | DSL Syntax | SVG | Meaning |
-|------|-----------|------------|-----|------|
-| Strong/positive | 3 parallel solid lines | `===` | 3 parallel `<line>`, stroke-width: 2, gap: 3px | Very close, strong relationship |
-| Moderate positive | 2 parallel solid lines | `==` | 2 parallel `<line>`, stroke-width: 2 | Positive, moderate relationship |
-| Normal | Single solid line | `---` | `<line>` stroke-width: 2 | Neutral/average relationship |
-| Weak/tenuous | Single dashed thin line | `- -` | stroke-dasharray="4,4", stroke-width: 1 | Weak relationship |
-| Stressful | Zigzag/wavy line | `~~~` | `<path>` sine wave | Stressful relationship |
-| Stressful + strong | Zigzag + thick | `~=~` | thick wavy path | Close but stressful |
-| Conflictual | Crossed lines (hash marks) | `~x~` | zigzag + hash marks | Conflictual relationship |
-| Broken/cutoff | Line with gap | `-/-` | dashed with visible gap | Broken/severed relationship |
+### 3.1 Relationship-quality operators
 
-### 4.2 Energy Flow Arrows
+| Operator | Type | Meaning |
+|---|---|---|
+| `===` | strong | Close, supportive, high-frequency |
+| `==` | moderate | Positive, moderate involvement |
+| `---` | normal | Neutral / average |
+| `- -` | weak | Tenuous, fragile, early-stage |
+| `~~~` | stressful | Stressful relationship |
+| `~=~` | stressful-strong | Close *and* stressful |
+| `~x~` | conflictual | Active conflict |
+| `-/-` | broken | Severed, estranged, cutoff |
 
-| Direction | DSL Syntax | Meaning |
-|-----------|------------|------|
-| One-way (center → system) | `-->` | Energy/resources flowing out from center |
-| One-way (system → center) | `<--` | Energy/resources flowing in from system |
-| Mutual/reciprocal | `<->` | Bidirectional energy flow |
-| Draining (from center) | `==>` | Large energy outflow (depleting) |
-| Nourishing (to center) | `<==` | Large energy inflow (nurturing) |
+### 3.2 Energy-flow operators
 
-### 4.3 Combined Line Types
+Layer arrow direction onto strong or normal lines:
 
-Line type and arrow direction can be combined:
+| Operator | Meaning |
+|---|---|
+| `-->` | One-way: energy flows from center to system |
+| `<--` | One-way: energy flows from system to center |
+| `<->` | Reciprocal / bidirectional |
+| `===>` | Strong one-way outflow (draining) |
+| `<===` | Strong one-way inflow (nourishing) |
+| `<=>` | Strong reciprocal |
+| `==>` | Moderate one-way outflow |
+| `<==` | Moderate one-way inflow |
+
+The parser normalizes direction so arrows read relative to the center. Writing `family === resettlement` and `resettlement === family` produces the same diagram; writing `clinic --> family` vs `family <-- clinic` likewise produces the same arrow pointing *from* the clinic *to* the family.
+
+<Playground initial={`ecomap
+  center: client [label: "Rosa"]
+  mom [category: family]
+  ex [category: family]
+  aa [label: "AA Group", category: substance]
+  job [label: "Warehouse", category: work]
+  mom === client [label: "daily calls"]
+  ex ~x~ client [label: "custody disputes"]
+  aa <== client [label: "sponsor support"]
+  job - - client [label: "unstable hours"]`} />
+
+### 3.3 Edge labels
+
+A trailing `[label: "…"]` is the only attribute a connection line accepts. Put schedule, nature, or a short note here:
 
 ```
-maria === mother          # strong relationship, no direction specified
-maria ===> work           # strong + energy flows from maria to work
-therapist <-- maria       # energy flows from maria to therapist (maria gives)
-maria ~~~ ex              # stressful relationship
-school <-> maria          # normal reciprocal
-maria - - doctor          # weak relationship
-```
-
-### 4.4 Connection Labels
-
-Connection lines can have text labels describing the specific nature of the relationship:
-
-```
-maria === mother [label: "daily calls"]
-maria ~~~ ex [label: "custody disputes"]
-maria --- therapist [label: "weekly sessions"]
-```
-
-### 4.5 SVG Implementation
-
-**Line rendering:**
-- Lines run from center edge to system edge (not center-to-center)
-- Calculation: take the line between two circle centers, subtract each respective radius, to get the edge-to-edge segment
-- Strong (3 lines): main line + two parallel lines offset by ±3px
-- Wavy: SVG `<path>` with quadratic bezier curves simulating a sine wave
-- Arrow markers: `<marker>` in `<defs>`
-
-```xml
-<defs>
-  <marker id="arrow-end" viewBox="0 0 10 10" refX="9" refY="5"
-          markerWidth="8" markerHeight="8" orient="auto">
-    <path d="M 0 0 L 10 5 L 0 10 z" fill="#333"/>
-  </marker>
-  <marker id="arrow-start" viewBox="0 0 10 10" refX="1" refY="5"
-          markerWidth="8" markerHeight="8" orient="auto-start-reverse">
-    <path d="M 10 0 L 0 5 L 10 10 z" fill="#333"/>
-  </marker>
-</defs>
+family === temple [label: "weekly service"]
+clinic --> family [label: "vaccinations"]
+caseworker <-> family [label: "every Tuesday"]
 ```
 
 ---
 
-## 5. Layout Rules
+## 4. Labels & comments
 
-### 5.1 Radial Layout Algorithm
+- **Title:** `ecomap "Nguyen Family"` — first line only.
+- **Node label override:** `family [label: "The Nguyens"]`.
+- **Edge label:** trailing `[label: "…"]` on a connection line.
+- **Comments:** `#` or `//` at the start of a line (after leading whitespace). Inline trailing comments are **not** supported.
 
-1. **Center positioning:** Center element is placed at the canvas center `(width/2, height/2)`
-2. **Ring assignment:** External systems are assigned to 1-3 concentric rings
-   - Inner ring (r=140px): closest/most important systems
-   - Middle ring (r=220px): moderately important
-   - Outer ring (r=300px): more distant/weaker systems
-3. **Angle distribution:** Systems on the same ring are evenly distributed
-   - Optional: arrange by category sector (see 5.2)
-4. **Overlap avoidance:** If too many systems are on the same ring, automatically increase ring radius or split into two rings
-
-### 5.2 Category-Based Sector Layout (Optional)
-
-Divides the ecomap into quadrants/sectors by category:
-
-| Sector (angle range) | Category |
-|-------------------|----------|
-| Top (315°-45°) | Work / Education / Professional |
-| Right (45°-135°) | Friends / Recreation / Community |
-| Bottom (135°-225°) | Family (extended) / Cultural |
-| Left (225°-315°) | Health / Legal / Government services |
-
-This is a recommended layout, not a hard rule. DSL can specify `[sector: top]` to override.
-
-### 5.3 Spacing Rules
-
-| Parameter | Default | Meaning |
-|-----------|---------|------|
-| Center radius | 50px (individual) / 80px (family) | Center element size |
-| System radius | 30px (default) | External system circle size |
-| Inner ring radius | 140px | Closest systems ring |
-| Middle ring radius | 220px | Moderate systems ring |
-| Outer ring radius | 300px | Distant systems ring |
-| Min system-to-system gap | 40px | Avoid overlapping system circles |
-| Label font size | 11px | System label text |
-| Canvas padding | 40px | Edge padding |
-
-### 5.4 Responsive Sizing
-
-- Systems count ≤ 6: single ring, `r=180px`
-- Systems count 7-12: dual ring
-- Systems count 13+: three rings or auto-expand canvas
-- When connections are dense, increase ring radius appropriately to avoid crowding
+```
+ecomap "Marcus Intake"
+  # caseworker's notes — fine
+  // also fine
+  mom [category: family]   # ← THIS trailing comment breaks the parser
+```
 
 ---
 
-## 6. DSL Grammar (Ecomap — Expanded)
+## 5. Reserved words & escaping
+
+**Reserved at line start:** `ecomap`, `center:`.
+
+**Reserved operator tokens** inside a line — avoid using these sequences in IDs:
+`===`, `==`, `---`, `- -`, `~~~`, `~=~`, `~x~`, `-/-`, and the directional variants listed in §3.2.
+
+**Strings with spaces** must be double-quoted: titles and any label. Single quotes and backticks are not recognized.
+
+---
+
+## 6. Common mistakes
+
+Real parser errors, what triggers them, and how to fix.
+
+| You wrote | Parser says | Fix |
+|---|---|---|
+| `family -- school` | `Unexpected: family -- school` | Ecomap uses `===`/`---`/`<->` etc. `--` is a genogram/pedigree operator |
+| `family === school` where `school` was never declared | Silently creates an empty `school` node with no label/category | Declare systems above their connection lines |
+| No `center:` anywhere | Renders but with no visual center anchor | Every ecomap needs exactly one `center:` line |
+| Two `center:` lines | Only the first is treated as center; the second becomes a regular system | Pick one |
+| `family==school` (no spaces) | `Unexpected: family==school` | Operators require a space on each side |
+| `family === school [weekly]` | Bare token `weekly` is parsed as a property flag, no label shown | Use `[label: "weekly"]` |
+| `family === school # daily` | Trailing `#` is consumed as part of the line | Move the comment above |
+
+---
+
+## 7. Grammar (EBNF)
 
 ```text
-document        = header center_def system_def* connection_def*
-header          = "ecomap" quoted_string? NEWLINE
+document       = header (blank | comment | center | system | connection)*
 
-center_def      = "center:" (simple_center | family_center)
-simple_center   = ID properties? NEWLINE
-family_center   = ID properties? NEWLINE INDENT genogram_content DEDENT
-genogram_content = (individual_def | couple_def)+
+header         = "ecomap" ( WS quoted-string )? NEWLINE
+quoted-string  = '"' any-char-but-quote* '"'
 
-system_def      = ID properties? NEWLINE
-properties      = "[" property ("," property)* "]"
-property        = "label:" quoted_string
-               | "category:" CATEGORY
-               | "size:" SIZE
-               | "importance:" IMPORTANCE
-               | "sector:" SECTOR
-               | kv_prop
+center         = "center:" WS id ( "[" attrs "]" )? NEWLINE
+system         = id ( "[" attrs "]" )? NEWLINE
+connection     = id WS op WS id ( WS "[" "label:" quoted-string "]" )? NEWLINE
 
-CATEGORY        = "family" | "friends" | "work" | "education" | "health"
+op             = "===" | "==" | "---" | "- -" | "~~~" | "~=~" | "~x~" | "-/-"
+               | "===>" | "<===" | "<=>" | "==>" | "<=="
+               | "-->" | "<--" | "<->"
+
+id             = [a-zA-Z] [a-zA-Z0-9_-]*
+attrs          = attr ("," attr)*
+attr           = "label" ":" quoted-string
+               | "category" ":" category
+               | "size" ":" ("small" | "medium" | "large")
+               | "importance" ":" ("major" | "moderate" | "minor")
+               | "sector" ":" ("top" | "right" | "bottom" | "left")
+               | "age" ":" digits
+               | "male" | "female" | "unknown"
+               | key ":" value                  // custom, stored as metadata
+
+category       = "family" | "friends" | "work" | "education" | "health"
                | "mental-health" | "religion" | "recreation" | "legal"
                | "government" | "financial" | "community" | "cultural"
                | "substance" | "technology" | "pet" | "other"
-SIZE            = "small" | "medium" | "large"
-IMPORTANCE      = "major" | "moderate" | "minor"
-SECTOR          = "top" | "right" | "bottom" | "left"
 
-connection_def  = ID connection_op ID connection_label? NEWLINE
-connection_op   = "===" | "==" | "---" | "- -" | "~~~" | "~=~" | "~x~" | "-/-"
-               | "===>" | "<===" | "<=>" | "==>" | "<==" 
-               | "-->" | "<--" | "<->"
-connection_label = "[" "label:" quoted_string "]"
-
-ID              = /[a-zA-Z][a-zA-Z0-9_-]*/
-quoted_string   = '"' /[^"]*/ '"'
-kv_prop         = IDENTIFIER ":" VALUE
+comment        = ( "#" | "//" ) any NEWLINE
 ```
+
+Authoritative source: `src/diagrams/ecomap/parser.ts`. If this diverges from the parser, the parser wins — please open an issue.
+
+---
+
+## 8. Standard compliance
+
+Schematex ecomaps follow **Hartman (1978), *Diagrammatic Assessment of Family Relationships*** for the core notation: a bounded center surrounded by outside systems, connecting lines that encode both quality and directionality. The category palette and the expanded operator set (stressful-strong, reciprocal arrows) follow conventions from contemporary clinical social work and nursing research.
+
+What is implemented today:
+
+- ✅ Center + outside-system radial structure
+- ✅ 8 quality operators (strong / moderate / normal / weak / stressful / stressful-strong / conflictual / broken)
+- ✅ 8 directional operators (one-way and reciprocal, at three intensities)
+- ✅ Category color-coding (17 categories)
+- ✅ Edge labels
+- ⏳ Embedded mini-genogram as the center (see §10)
+- ⏳ Sector-based layout hints beyond the current four cardinals
+
+References:
+
+- Hartman, A. (1978). Diagrammatic assessment of family relationships. *Social Casework*, 59(8), 465–476.
+- Ray, R.A. & Street, A.F. (2005). Ecomapping: An innovative research tool for nurses. *Journal of Advanced Nursing*, 50(5), 545–552.
+- Rempel, G.R., Neufeld, A., & Kushner, K.E. (2007). Interactive use of genograms and ecomaps in family caregiving research. *Journal of Family Nursing*, 13(4), 403–419.
+
+---
+
+## 9. Related examples
+
+Ready-to-use scenarios from the examples gallery:
+
+<RelatedExamples slugs={[
+  'ecomap-refugee-resettlement',
+  'ecomap-teen-client',
+  'ecomap-substance-recovery',
+]} />
+
+---
+
+## 10. Roadmap
+
+**Planned — not yet parseable.** Do not use these in generated DSL today; the parser will reject or silently ignore them.
+
+- **Embedded mini-genogram as the center** — declaring a full family block inside the `center:` node (indented couples and children) so the center is a small genogram rather than a single shape. The parser currently reads indented content under `center:` as skipped lines.
+- **Per-category default arrow semantics** — e.g. auto-directional arrows for `health` systems (in) vs `work` systems (out).
+- **Multiple centers** — ecomaps for two clients sharing some systems.
+- **Custom color overrides** — `[color: "#…"]` on a system or connection.
+
+Track in the GitHub issues if you need any of these sooner.

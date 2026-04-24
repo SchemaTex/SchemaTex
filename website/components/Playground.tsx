@@ -279,7 +279,7 @@ export function Playground({ initial, height = 560, fill = false, syncHash = fal
           <>
             <span style={{ color: 'var(--positive)' }}>✓ parsed</span>
             <span className="mx-1.5 opacity-40">·</span>
-            <span style={{ color: 'var(--accent)' }}>{renderMs.toFixed(1)} ms</span>
+            <span style={{ color: 'var(--accent)' }} suppressHydrationWarning>{renderMs.toFixed(1)} ms</span>
             <span className="mx-1.5 opacity-40">·</span>
             {formatBytes(svgBytes)} SVG
           </>

@@ -1,114 +1,215 @@
 ---
 title: Matrix / Quadrant diagram
-description: 2×2 prioritization matrices, 3×3 talent grids, heatmaps, and correlation tables with built-in templates for Eisenhower, BCG, Ansoff, impact-effort, RICE, 9-box, Johari Window, and risk matrices. Used by product managers, executives, consultants, and HR teams for prioritization, portfolio analysis, and talent review.
 ---
 
-<Playground initial={`matrix eisenhower "Q2 Initiatives"
+## About matrix diagrams
 
-"Fix checkout bug" at (0.15, 0.85) size: 3 highlight: true
-"Rewrite onboarding" at (0.7, 0.8) size: 4
-"Update docs" at (0.2, 0.35) size: 2
-"Refactor auth" at (0.75, 0.3) size: 3
-"Add dark mode" at (0.8, 0.45) size: 2
-"SEO audit" at (0.3, 0.6) size: 2`} />
+A **matrix diagram** places items in a two-dimensional space defined by two intersecting axes — most commonly a 2×2 quadrant grid — so that position conveys meaning at a glance. Product managers use the Eisenhower matrix to separate urgent work from important work; strategy consultants use the BCG matrix to allocate portfolio investment; HR teams use the 9-box grid to map performance against potential. The visual convention dates to the Boston Consulting Group's 1970s portfolio work and has been extended by frameworks like Ansoff, Johari, and RICE.
 
-*8 built-in templates + fully custom axes. Points positioned by (x, y) coordinates on a 0–1 scale.*
+Schematex supports three matrix modes: **quadrant** (2×2 or 3×3 bubble plots with labeled axes), **heatmap** (N×M colored-cell grids), and **correlation** (N×M dot-intensity tables). Eight pre-built templates cover the most common frameworks out of the box, and all axis labels, quadrant names, and point properties are fully customizable.
 
----
-
-## Built-in templates
-
-```
-matrix eisenhower      # Urgent/Important 2×2
-matrix impact-effort   # Impact/Effort 2×2
-matrix rice            # Reach×Impact/Effort 2×2
-matrix bcg             # Market Share/Growth (BCG) 2×2
-matrix ansoff          # Products/Markets 2×2
-matrix johari          # Johari Window 2×2
-matrix 9-box           # Performance/Potential 3×3
-matrix risk-matrix     # Likelihood/Severity heatmap 5×5
-```
-
-Just use a template name — axes and quadrant labels are pre-configured.
+<Playground initial={`matrix impact-effort "Q3 Planning"
+"Fix checkout timeout" at (0.15, 0.82) size: 4 highlight: true category: reliability
+"Redesign onboarding" at (0.72, 0.78) size: 5 category: growth
+"Add dark mode" at (0.78, 0.38) size: 3 category: polish
+"Write runbook" at (0.18, 0.32) size: 2 category: reliability
+"API rate limiting" at (0.55, 0.65) size: 4 category: reliability
+"Blog post series" at (0.35, 0.55) size: 2 category: growth`} height={460} />
 
 ---
 
-## Custom quadrant matrix
+## 1. Your first matrix
 
-```
-matrix "Feature Prioritization"
-x-axis: Low Value → High Value
-y-axis: Low Effort → High Effort
+The smallest useful matrix: a custom 2×2 with two labeled axes and three points.
 
-quadrant Q1 "Quick Wins"
-quadrant Q2 "Strategic Bets"
-quadrant Q3 "Avoid"
-quadrant Q4 "Fill-ins"
+<Playground initial={`matrix "Feature Prioritization"
+x-axis: Low Effort → High Effort
+y-axis: Low Value → High Value
 
-"Dark mode" at (0.8, 0.25) size: 3
-"API v2" at (0.75, 0.85) size: 5 highlight: true
-"Fix login bug" at (0.9, 0.15) size: 4 highlight: true
-"Update FAQ" at (0.2, 0.1) size: 1
-```
+"Add search" at (0.3, 0.8)
+"Rebuild pipeline" at (0.85, 0.7)
+"Update footer" at (0.2, 0.2)`} />
 
----
+Four rules cover 80% of usage:
 
-## Axis syntax
+1. Start with the keyword `matrix`, optionally followed by a template name or a quoted title.
+2. Set the axes with `x-axis:` and `y-axis:` — or use a built-in template and skip this step entirely.
+3. Each point is `"Label" at (x, y)` where `x` and `y` are decimal fractions from 0.0 (low/left/bottom) to 1.0 (high/right/top).
+4. Add optional properties — `size:`, `category:`, `color:`, `shape:`, `highlight:` — after the coordinates.
 
-```
-x-axis: Low Cost → High Cost      # → or ->
-y-axis: Low Impact → High Impact  # left label → right label
-y-axis: Rare ↑ Certain            # ↑ for vertical
-```
-
-Reversed axis (right-to-left): use `←` or `<-`:
-```
-x-axis: High Share ← Low Share    # BCG convention
-```
+> Comments must start with `#` anywhere on a line (outside quoted strings).
 
 ---
 
-## Points
+## 2. Built-in templates
+
+A template pre-configures axes, quadrant labels, and grid size. Just use the template name as the second token on the header line.
+
+| Template | Grid | Use case |
+|---|---|---|
+| `eisenhower` | 2×2 | Urgency / Importance task prioritization |
+| `impact-effort` | 2×2 | Feature prioritization by impact vs. effort |
+| `rice` | 2×2 | RICE scoring — Reach × Impact vs. Effort |
+| `bcg` | 2×2 | Portfolio — Market Share vs. Growth rate |
+| `ansoff` | 2×2 | Product/market growth strategy |
+| `johari` | 2×2 | Self-awareness — known-to-self vs. known-to-others |
+| `9-box` | 3×3 | HR talent review — Performance vs. Potential |
+| `risk-matrix` | 5×5 | Risk assessment — Likelihood vs. Severity (heatmap) |
+
+<Playground initial={`matrix eisenhower "This Week"
+"Ship hotfix" at (0.1, 0.9) size: 5 highlight: true
+"Team 1:1s" at (0.1, 0.7) size: 3
+"Write Q3 OKRs" at (0.8, 0.85) size: 4
+"Inbox zero" at (0.1, 0.3) size: 2
+"Refactor auth" at (0.75, 0.4) size: 3`} height={420} />
+
+Axes and quadrant labels from a template can be overridden with explicit `x-axis:` / `y-axis:` / `quadrant` directives.
+
+---
+
+## 3. Axes
+
+Axis lines declare the semantic poles of each dimension.
+
+```
+x-axis: Low Effort → High Effort
+y-axis: Low Value → High Value
+```
+
+The arrow separates the low label (left / bottom) from the high label (right / top). All of these separators are equivalent:
+
+| Separator | Example |
+|---|---|
+| `→` (Unicode) | `x-axis: Rare → Certain` |
+| `->` (ASCII) | `x-axis: Rare -> Certain` |
+| `↑` | `y-axis: Cheap ↑ Expensive` |
+| `←` / `<-` / `<` | Reversed axis — high label is on the left |
+
+A **reversed axis** is for conventions where the "high" value sits at the left or bottom:
+
+```
+x-axis: High Market Share ← Low Market Share
+```
+
+<Playground initial={`matrix "Product Portfolio"
+x-axis: High Market Share ← Low Market Share
+y-axis: Low Growth → High Growth
+
+quadrant Q1 "Question Marks"
+quadrant Q2 "Stars"
+quadrant Q3 "Cash Cows"
+quadrant Q4 "Dogs"
+
+"Analytics Suite" at (0.25, 0.35) size: 5
+"ChatBot Pro" at (0.2, 0.8) size: 4 highlight: true
+"Legacy CRM" at (0.75, 0.25) size: 6
+"Mobile App" at (0.65, 0.75) size: 3`} height={440} />
+
+---
+
+## 4. Points
+
+Each point is a bubble positioned by a normalized (x, y) coordinate pair.
 
 ```
 "Label" at (x, y)
-"Label" at (x, y) size: 4 category: infra color: #E53935 highlight: true
+"Label" at (x, y) size: 4 category: design color: #7B1FA2 highlight: true note: "clarify spec"
 ```
 
 | Property | Values | Meaning |
-|----------|--------|---------|
-| `x`, `y` | 0.0 – 1.0 | Position (0,0 = bottom-left, 1,1 = top-right) |
-| `size` | number | Bubble radius weight (default 3) |
-| `category` | text | Color group for legend |
-| `color` | hex | Override bubble color |
-| `shape` | `circle` \| `square` \| `triangle` \| `diamond` | Bubble shape |
-| `highlight` | `true` | Emphasize this point |
-| `note` | quoted text | Tooltip annotation |
+|---|---|---|
+| `size:` | positive number | Bubble area weight (default: 3) |
+| `category:` | bareword | Color group; drives the legend |
+| `color:` | hex string | Override bubble color for this point |
+| `shape:` | `circle` \| `square` \| `triangle` \| `diamond` | Bubble shape (default: `circle`) |
+| `highlight:` | `true` | Draws an emphasis ring around the bubble |
+| `note:` | quoted string | Tooltip annotation |
+| `label:` | quoted string | Replaces the display label (different from the ID) |
+
+Coordinates outside `[0, 1]` are clamped to the chart boundary and flagged with a badge — the original value is stored for tooltip display.
+
+<Playground initial={`matrix "Risk Register"
+x-axis: Low Impact → High Impact
+y-axis: Rare → Certain
+
+"Vendor delay" at (0.45, 0.7) size: 4 category: schedule highlight: true
+"Security breach" at (0.9, 0.3) size: 5 category: security shape: diamond
+"Budget overrun" at (0.5, 0.65) size: 3 category: finance
+"Key hire falls through" at (0.6, 0.55) size: 3 category: people
+"Scope creep" at (0.4, 0.8) size: 4 category: schedule`} height={440} />
 
 ---
 
-## Heatmap mode
+## 5. Quadrant labels
+
+Label each quadrant with a name and an optional subtitle.
 
 ```
-matrix heatmap 4x4 "Skill Matrix"
+quadrant Q1 "Do First"
+quadrant Q2 "Schedule"
+quadrant Q3 "Delete"
+quadrant Q4 "Delegate"
+
+# With an optional subtitle:
+quadrant Q1 "Do First" description: "High urgency, high importance"
+```
+
+Quadrant numbering follows the standard mathematical convention: **Q1 = top-right, Q2 = top-left, Q3 = bottom-left, Q4 = bottom-right**. The `Q` prefix is optional — `quadrant 1 "Label"` is equally valid.
+
+---
+
+## 6. Heatmap mode
+
+Heatmap mode fills N×M cells with color intensity instead of plotting bubble positions.
+
+```
+matrix heatmap 4x3 "Skill Matrix"
 rows: [Strategy, Execution, Communication, Technical]
+cols: [Junior, Mid, Senior]
+
+cell (0,0) level: weak
+cell (1,0) level: medium
+cell (2,0) level: strong
+cell (0,1) value: 7
+cell (1,2) label: "Top 10%"
+```
+
+- `matrix heatmap COLxROW` — header sets the grid dimensions.
+- `rows:` and `cols:` — comma-separated or bracket-list of axis labels.
+- `cell (col, row)` — zero-indexed, column first, row second (row 0 = bottom).
+- `level:` — `strong` (3), `medium` (2), or `weak` (1) — shorthand for heat intensity.
+- `value:` — explicit numeric value (overrides `level:`).
+- `label:` — quoted text placed inside the cell.
+
+<Playground initial={`matrix heatmap 4x4 "Competency Heat Map"
+rows: [Leadership, Execution, Communication, Technical]
 cols: [Junior, Mid, Senior, Staff]
 
 cell (0,0) level: weak
 cell (1,0) level: medium
 cell (2,0) level: strong
+cell (3,0) level: strong
+cell (0,1) level: medium
+cell (1,1) level: medium
+cell (2,1) level: strong
 cell (3,1) level: strong
-cell (0,3) value: 9
-```
-
-Cell levels: `strong` (3), `medium` (2), `weak` (1) — or set `value:` directly.
+cell (0,2) level: weak
+cell (1,2) level: medium
+cell (2,2) level: medium
+cell (3,2) level: strong
+cell (0,3) level: weak
+cell (1,3) level: weak
+cell (2,3) level: medium
+cell (3,3) level: strong`} height={380} />
 
 ---
 
-## Correlation matrix
+## 7. Correlation mode
+
+Correlation mode renders an N×M dot matrix where intensity represents the relationship strength between row and column variables.
 
 ```
-matrix correlation 4x4 "Product Metrics Correlation"
+matrix correlation 4x4 "Product Metrics"
 rows: [DAU, Retention, Revenue, NPS]
 cols: [DAU, Retention, Revenue, NPS]
 
@@ -118,63 +219,170 @@ cell (2,0) value: 0.54
 cell (3,0) value: 0.71
 ```
 
+The same `cell` syntax applies. `level: strong | medium | weak` is also accepted in correlation mode.
+
 ---
 
-## Config options
+## 8. Config options
+
+A `config:` block tunes visual rendering. Each option goes on its own indented line below the `config:` header.
 
 ```
 config:
-  quadrantBg: true          # colored quadrant backgrounds
-  gridLines: true           # grid overlay
-  axisArrows: true          # arrows on axes
-  showCounts: true          # always show counts
-  bubbleScale: area         # area | radius
-  legendPosition: bottom-right  # bottom-right | bottom-left | none
+  quadrantBg: true
+  gridLines: true
+  axisArrows: true
+  bubbleScale: area
+  legendPosition: bottom-right
+```
+
+| Key | Values | Default | Effect |
+|---|---|---|---|
+| `quadrantBg` | `true` \| `false` | `true` | Colored quadrant background fills |
+| `gridLines` | `true` \| `false` | `true` | Grid lines overlay |
+| `axisArrows` | `true` \| `false` | `true` | Arrows at axis ends |
+| `bubbleScale` | `area` \| `radius` | `area` | Whether `size:` scales bubble area or radius |
+| `quadrantAnnotations` | `true` \| `false` | `true` | Show quadrant label text in corners |
+| `legendPosition` | `bottom-right` \| `right` \| `bottom-center` \| `none` | `bottom-right` | Category legend placement |
+| `labelCollision` | `auto` \| `offset-only` \| `leader-only` \| `off` | `auto` | Overlap avoidance strategy for point labels |
+| `offChartPolicy` | `clamp-badge` \| `drop` | `clamp-badge` | What to do with points outside [0,1] |
+
+Two shorthand directives also work at the top level (not inside the `config:` block):
+
+```
+axis: off          # off | on | auto — show or hide the axis lines
+margins: true      # true | false — show Score + Rank margins (correlation mode)
 ```
 
 ---
 
-## Examples
+## 9. Labels & comments
 
-### BCG portfolio analysis
-
-```
-matrix bcg "Product Portfolio"
-
-"ChatBot Pro" at (0.8, 0.85) size: 5 category: saas highlight: true
-"Analytics Suite" at (0.7, 0.3) size: 4 category: saas
-"Legacy CRM" at (0.2, 0.2) size: 6 category: legacy
-"New Mobile App" at (0.35, 0.8) size: 3 category: mobile
-```
-
-### 9-box talent review
+- **Title:** `matrix "My Title"` or `title: My Title` as a standalone line.
+- **Point label:** the quoted string before `at (…)`.
+- **Axis labels:** `x-axis:` and `y-axis:` directives.
+- **Quadrant labels:** `quadrant Q1 "Name"` directive.
+- **Comments:** `#` anywhere on a line, outside quoted strings.
 
 ```
-matrix 9-box "Engineering Team — H1 Review"
-
-"Alex K." at (0.9, 0.9) size: 3 highlight: true
-"Jordan L." at (0.5, 0.8) size: 3
-"Sam R." at (0.9, 0.5) size: 3
-"Priya N." at (0.3, 0.6) size: 3
-"Marcus W." at (0.6, 0.5) size: 3
-"Casey T." at (0.2, 0.2) size: 3
+matrix "Prioritization"
+# This is a comment
+x-axis: Low Cost → High Cost   # inline comment after a directive
+"Fix bug" at (0.1, 0.9) size: 3  # comment after a point
 ```
 
-### Custom risk assessment
+---
 
+## 10. Reserved words & escaping
+
+**Reserved at line start:** `matrix` (header), `x-axis:`, `y-axis:`, `quadrant`, `config:`, `title:`, `rows:`, `cols:`, `grid:`, `axis:`, `margins:`, `cell`.
+
+**Point lines must start with a quote character** (`"` or `'`). A line that does not start with a quote is not treated as a point.
+
+**Strings with spaces** in axis labels do not need quoting — the text after the colon (and after the arrow) is taken verbatim. In `note:` and `label:` point properties, use double quotes.
+
+---
+
+## 11. Common mistakes
+
+| You wrote | Parser says | Fix |
+|---|---|---|
+| `"Fix bug" at (1, 2)` | Point parsed; x=1 clamped, y=1 clamped; off-chart badge shown | Keep coordinates in [0.0, 1.0] or accept the clamp-badge |
+| `quadrant 1 "Quick Wins"` (no Q prefix) | Accepted — `Q` prefix is optional | Both `quadrant 1` and `quadrant Q1` work |
+| `config: gridLines: false` (on same line) | Only `config:` keyword recognized; `gridLines: false` silently ignored | Put options on their own indented lines below `config:` |
+| `x-axis: "Low" → "High"` (quoted labels) | Arrow not found inside quotes — treated as plain text | Remove quotes: `x-axis: Low → High` |
+| `matrix heatmap` without dimensions | Defaults to 2×2; rows/cols directives set actual size | Specify dimensions on the header: `matrix heatmap 4x4` |
+| `cell (0, 0) level: Strong` (capital S) | `level` match is case-insensitive — accepted | Both `strong` and `Strong` work |
+| `shape: oval` | Unknown shape value — silently ignored | Use `circle`, `square`, `triangle`, or `diamond` |
+
+---
+
+## 12. Grammar (EBNF)
+
+```text
+document     = header directive*
+
+header       = "matrix" ( template-name | mode-header | title )? NEWLINE
+template-name = "eisenhower"|"impact-effort"|"rice"|"bcg"|"ansoff"|"johari"|"9-box"|"risk-matrix"
+mode-header  = ( "heatmap" | "correlation" ) ( number "x" number )? title?
+title        = quoted-string | bare-text
+
+directive    = x-axis | y-axis | quadrant-dir | config-block
+             | point | cell | rows-dir | cols-dir | grid-dir
+             | title-dir | axis-dir | margins-dir | comment | blank
+
+x-axis       = "x-axis:" WS axis-spec NEWLINE
+y-axis       = "y-axis:" WS axis-spec NEWLINE
+axis-spec    = text arrow text  |  text   # plain text → high label only
+arrow        = "→" | "->" | "↑" | "←" | "<-" | "<" | "↓"
+
+quadrant-dir = "quadrant" WS "Q"? digit WS quoted-string ( WS "description:" quoted-string )? NEWLINE
+
+config-block = "config:" NEWLINE ( INDENT key ":" WS value NEWLINE )*
+
+point        = quoted-string WS "at" WS "(" number "," number ")" ( WS point-prop )* NEWLINE
+point-prop   = "size:" number
+             | "category:" bareword
+             | "color:" hex-color
+             | "shape:" ( "circle"|"square"|"triangle"|"diamond" )
+             | "highlight:" "true"
+             | "note:" quoted-string
+             | "label:" quoted-string
+
+cell         = "cell" WS "(" digit "," digit ")" ( WS cell-prop )* NEWLINE
+cell-prop    = "value:" number
+             | "label:" quoted-string
+             | "level:" ( "strong" | "medium" | "weak" )
+
+rows-dir     = "rows:" WS label-list NEWLINE
+cols-dir     = "cols:" WS label-list NEWLINE
+grid-dir     = "grid:" WS number "x" number NEWLINE
+axis-dir     = "axis:" WS ( "off" | "on" | "auto" ) NEWLINE
+margins-dir  = "margins:" WS ( "true" | "false" | "on" | "1" ) NEWLINE
+
+label-list   = "[" text ("," text)* "]" | text ("," text)*
+quoted-string = '"' any-char-but-quote* '"' | "'" any-char-but-quote* "'"
+comment      = "#" any NEWLINE
 ```
-matrix "Project Risk Assessment"
-x-axis: Negligible → Severe
-y-axis: Rare → Certain
 
-quadrant Q1 "Monitor"
-quadrant Q2 "Mitigate"
-quadrant Q3 "Accept"
-quadrant Q4 "Escalate"
+Authoritative source: `src/diagrams/matrix/parser.ts`. If this diverges from the parser, the parser wins — please open an issue.
 
-"Vendor delay" at (0.45, 0.7) size: 4 highlight: true
-"Scope creep" at (0.55, 0.8) size: 5 highlight: true
-"Security breach" at (0.85, 0.35) size: 4
-"Team turnover" at (0.6, 0.4) size: 3
-"Budget overrun" at (0.5, 0.65) size: 3
-```
+---
+
+## 13. Standard compliance
+
+Schematex matrix diagrams implement the standard 2×2 quadrant convention used by the **Boston Consulting Group (1970)**, **Eisenhower decision matrix**, **Ansoff growth matrix**, and **Johari Window** frameworks. The 9-box grid follows the **McKinsey/GE talent review** convention (3×3, performance × potential). Heatmap and correlation modes follow no named external standard but use the universal cell-intensity encoding found in tools like Excel conditional formatting and R's `corrplot`.
+
+What is implemented today:
+
+- ✅ 2×2 quadrant mode with custom axes and quadrant labels
+- ✅ 3×3 quadrant mode (`9-box` template)
+- ✅ N×M heatmap mode with `level:` and `value:` cells
+- ✅ N×M correlation mode
+- ✅ Eight built-in templates (eisenhower, impact-effort, rice, bcg, ansoff, johari, 9-box, risk-matrix)
+- ✅ Point properties: size, category, color, shape, highlight, note
+- ✅ Reversed axes (`←` / `<-`)
+- ✅ Config block (quadrantBg, gridLines, axisArrows, bubbleScale, legendPosition, labelCollision, offChartPolicy)
+- ⏳ `label:` override on points (parsed, renderer support pending)
+- ⏳ Off-chart `drop` policy (parsed, renderer always clamp-badges today)
+- ⏳ `margins:` correlation score/rank sidebar (parsed, not yet rendered)
+
+References:
+
+- Henderson, B. (1970). *The Product Portfolio.* Boston Consulting Group.
+- Covey, S. (1989). *The 7 Habits of Highly Effective People.* (Eisenhower matrix popularization)
+- Ansoff, H.I. (1957). "Strategies for Diversification." *Harvard Business Review*.
+
+---
+
+## 14. Roadmap
+
+**Planned — not yet parseable.** Do not use these in generated DSL today; the parser will reject or ignore them.
+
+- **Swimlane / zone overlays** — named rectangular highlight regions drawn behind the grid.
+- **Threshold lines** — horizontal or vertical reference lines with labels (e.g. "break-even" line).
+- **Bubble labels inside** — option to print the point label inside the bubble rather than beside it.
+- **Export to table** — structured CSV / JSON output alongside the SVG for spreadsheet import.
+- **4×4 and custom-label quadrant mode** — arbitrary NxM with labeled cells in quadrant (bubble-plot) mode, not just heatmap.
+
+Track in the GitHub issues if you need any of these sooner.

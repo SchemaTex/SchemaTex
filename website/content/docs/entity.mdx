@@ -1,379 +1,367 @@
 ---
 title: Entity structure diagram
-description: Corporate entity structures and cap tables. Parent/subsidiary ownership with percentages, jurisdiction clustering, entity-type shapes — C-corp, LLC, trust, fund. For M&A, legal, tax, and financial planning.
 ---
 
-<Playground initial={`entity "Acme Holdings"
-  acme_inc [type: corp, jurisdiction: DE]
-  acme_uk [type: ltd, jurisdiction: UK]
-  acme_fund [type: fund, jurisdiction: KY]
-  trust_a [type: trust, jurisdiction: SD]
-  trust_a --100%--> acme_inc
-  acme_inc --100%--> acme_uk
-  acme_inc --60%--> acme_fund`} />
+## About entity structure diagrams
 
-*Corporate ownership / legal entity / tax structure diagrams. Standardized corporate structure charts for legal, tax, M&A, VC/PE, family office, and estate planning.*
+An **entity structure diagram** maps the legal and economic relationships between organizations and people — who owns what, through which entity form, and in which jurisdiction. Corporate counsel use them to document holding structures and subsidiary chains. Tax advisors draw them to show cross-border IP licensing flows and transfer-pricing arrangements. Startup attorneys produce them for cap tables and board consents. Estate planners use them to show grantor-trust-beneficiary arrangements. The diagram is the first document requested in any M&A due diligence process and the standard attachment to an OECD transfer-pricing master file.
 
-> **References (industry conventions + related standards):**
-> - **SEC Regulation S-K, Item 601(b)(21)** — Exhibit 21 subsidiary disclosure format conventions for public companies
-> - **IRS Form 8832** — Entity Classification Election (C-Corp / pass-through / disregarded entity classification)
-> - **ISO 3166-1 alpha-2** — Country/region codes (used for jurisdiction badge)
-> - **ISO 20275:2017** — Entity Legal Forms classification framework in Legal Entity Identifier (LEI)
-> - **OECD Transfer Pricing Guidelines (2022)** — Conventions for representing cross-border IP licensing / royalty / service fee in structure diagrams
-> - **ACTEC Fundamentals of Estate Planning (2023)** — Standard representation of trust / grantor / trustee / beneficiary roles in structure diagrams
-> - **Big 4 tax memo conventions** (EY / PwC / KPMG / Deloitte) — De-facto standard for cross-border tax structure diagrams
-> - **Carta / Pulley cap table visualization conventions** — Modern practices for cap table visualization
->
-> Note: No single ISO/IEEE standard governs entity structure diagrams. This standard synthesizes the above sources plus practitioner conventions to form a programmatically renderable specification.
+Schematex follows the practitioner conventions synthesized from **SEC Regulation S-K Exhibit 21** (subsidiary disclosure), **IRS Form 8832** entity classifications, **ISO 3166-1** jurisdiction codes, **ISO 20275** legal entity forms, and Big Four tax memo conventions. Entity types map to distinct shapes (rectangle for corp, rounded rectangle for LLC, ellipse for trust) so any reader can identify the legal form at a glance. This page documents what the parser accepts today.
 
----
-
-## 1. Structure
-
-Entity structure diagrams express **ownership / control / role relationships between legal entities**. They consist of three layers:
-
-1. **Entity nodes** — each legal entity (corporation, LLC, partnership, trust, foundation, natural person)
-2. **Relationship edges** — ownership (%), control, management, distribution, licensing, services
-3. **Jurisdiction grouping (optional)** — clusters entities by jurisdiction for visual clarity
-
-**Typical use cases:**
-- Legal: corporate structure due diligence, shareholder structure mapping, contract counterparty relationships
-- Tax: cross-border tax planning, transfer pricing structures, pre/post transaction comparison
-- M&A: transaction step diagrams, pre/post restructuring comparison, blocker corp structures
-- VC/PE: cap tables, fund structures, portfolio holdings
-- Family office: trust structures, estate planning, asset-isolation LLCs
-- Public companies: Exhibit 21 subsidiaries visualization
-
-**Differences from other diagram types:**
-- Not a genogram (genogram shows bloodline relationships + gender symbols; entity structure shows legal/economic ownership + entity-type symbols)
-- Not an org chart (org chart shows HR management reporting lines; entity structure shows legal entity ownership)
-- Not a flowchart (flowchart shows process flow; entity structure is a static ownership snapshot)
-
----
-
-## 2. Entity Types
-
-The core of entity structure diagrams is **visually distinguishing entity types**. A single diagram may contain C-Corp, LLC, LP, Trust, and Individual — each legal form has different tax treatment and liability protection, so they must be immediately identifiable at a glance.
-
-### 2.1 Entity Type Symbol Conventions
-
-| Entity Type | Shape | SVG Implementation | Default Fill | DSL Keyword |
-|-------------|-------|--------------------|--------------|-------------|
-| **Corporation** (C-Corp, S-Corp, Inc., Ltd., SA, AG, KK) | Sharp-cornered rectangle | `<rect>` 160×60, sharp corners | `#dbeafe` (blue) | `corp` |
-| **LLC** (Limited Liability Company, LLP, GmbH, BV) | Rounded rectangle | `<rect>` 160×60, rx=8 | `#dcfce7` (green) | `llc` |
-| **Limited Partnership** (LP, LLLP, Fund) | Notched-corner rectangle | `<polygon>` with clipped top-left/top-right corners | `#fef9c3` (yellow) | `lp` |
-| **Trust** | Ellipse | `<ellipse>` rx=100, ry=40 | `#ede9fe` (purple) | `trust` |
-| **Individual / Natural Person** | Circle | `<circle>` r=30-35 | `#fed7aa` (orange) | `individual` / `person` |
-| **Foundation / NPO** | Upward-pointing pentagon (shield) | `<polygon>` pentagon | `#fef9c3` (gold) | `foundation` |
-| **Disregarded Entity / Branch** | Dashed rectangle | `<rect>` + stroke-dasharray="5,3" | `#f5f5f5` (gray) | `disregarded` / `branch` |
-| **To-Be-Formed / Target** | Dashed border + semi-transparent | `<rect>` + stroke-dasharray + opacity 0.6 | base color + alpha | `placeholder` / `tbf` |
-| **Reserved Pool** (ESOP, option pool) | Dashed rounded rectangle | `<rect>` rx=6 + stroke-dasharray | `#f1f5f9` (gray) | `pool` |
-
-### 2.2 Node Size and Content
-
-Each entity node contains:
-- **Shape** (see table above)
-- **Entity name** (12px, 600 weight, centered)
-- **Entity type label** (10px, 500 weight, centered below name)
-- **Jurisdiction badge** (2-letter ISO 3166-1 alpha-2, 9px, top-right corner, 18×12 with border)
-- **Tax classification label** (optional, 10px, bottom-left)
-- **Issuance/formation date** (optional, italic, 10px)
-
-**Default sizes:**
-- Corp / LLC / LP / Disregarded: 160 × 60
-- Trust: ellipse rx=100, ry=40
-- Individual: circle r=30 (standard) / r=35 (grantor/primary)
-- Foundation: pentagon width 140, height 70
-
-### 2.3 Fill Colors (by Tax Classification)
-
-Colors are driven by `--schematex-entity-*` CSS custom properties and can be fully overridden by consumers. Default palette:
-
-| CSS Variable | Default | Tax Meaning |
-|--------------|---------|-------------|
-| `--schematex-entity-ccorp` | `#dbeafe` | Taxable entity (C-Corp) |
-| `--schematex-entity-passthrough` | `#dcfce7` | Pass-through taxation (LLC, LP, S-Corp) |
-| `--schematex-entity-trust` | `#ede9fe` | Trust |
-| `--schematex-entity-individual` | `#fed7aa` | Natural person |
-| `--schematex-entity-disregarded` | `#f5f5f5` | Disregarded entity (DRE) |
-| `--schematex-entity-foundation` | `#fef9c3` | Non-profit / Foundation |
-| `--schematex-entity-pool` | `#f1f5f9` | Reserved pool (non-independent entity) |
-
-### 2.4 DSL for Entity Definition
-
-```
-entity <id> "<display name>" <type>@<jurisdiction> [properties]
-```
-
-Example:
-```
-entity parent "Acme Global, Inc." corp@DE
+<Playground initial={`entity-structure "Acme Global Holdings"
+entity parent "Acme Global, Inc." corp@US [note: "Ultimate Parent"]
 entity ie-holdco "Acme Ireland Holdings" corp@IE
-entity ie-ip "Acme IP Ltd" corp@KY [tax: ccorp]
-entity smith-trust "Smith Family Irrevocable Trust" trust@DE [est: "2024-03-15"]
-entity alice "Alice Chen" individual [role: "CEO"]
-entity esop "ESOP Pool" pool [note: "reserved, unissued"]
+entity ie-ip "Acme IP Ltd" corp@KY [note: "Holds group IP"]
+entity nl-bv "Acme EU Distribution" llc@NL
+entity sg-apac "Acme APAC Trading" corp@SG
+entity esop "Employee Option Pool" pool
+parent -> ie-holdco : 100%
+ie-holdco -> ie-ip : 100%
+ie-holdco -> nl-bv : 100%
+ie-ip -~-> nl-bv [label: "IP License · royalty"]
+parent -> sg-apac : 100%
+esop -.-> ie-holdco`} height={480} />
+
+---
+
+## 1. Your first entity structure
+
+The smallest useful entity structure: a parent owning two subsidiaries.
+
+<Playground initial={`entity-structure "Simple holding"
+entity holdco "Holdco LLC" llc@DE
+entity opco "OpCo Inc." corp@DE
+entity sub_uk "UK Sub Ltd." llc@UK
+holdco -> opco : 100%
+holdco -> sub_uk : 100%`} />
+
+Four rules cover 80% of usage:
+
+1. Start with `entity-structure`, optionally followed by a quoted title.
+2. Each legal entity is a node: `entity ID "Display Name" type` — the type determines the shape.
+3. Connect entities with `->`. Append `: pct` to label ownership percentage: `parent -> child : 60%`.
+4. Add `@jurisdiction` after the type to show a jurisdiction badge: `corp@DE`.
+
+> Comments must start with `#` on their own line.
+
+---
+
+## 2. Entity types
+
+The entity type determines the shape rendered for that node. Schematex maps several common aliases to a canonical type.
+
+| Canonical type | Aliases accepted | Rendered shape | Typical use |
+|---|---|---|---|
+| `corp` | `corporation`, `inc` | Rectangle (sharp corners) | C-corp, S-corp, Ltd., SA, AG |
+| `llc` | `llp`, `gmbh`, `bv` | Rounded rectangle | LLC, LLP, GmbH, BV |
+| `lp` | `lllp`, `fund` | Notched rectangle | LP, LLLP, investment fund |
+| `trust` | — | Ellipse | Family trust, statutory trust |
+| `individual` | `person` | Circle | Founder, grantor, natural person |
+| `foundation` | `npo` | Pentagon (shield) | Non-profit, charitable foundation |
+| `disregarded` | `branch` | Dashed rectangle | Disregarded entity, foreign branch |
+| `pool` | — | Dashed rounded rectangle | Option pool, ESOP, unissued shares |
+| `placeholder` | `tbf` | Dashed rectangle (faded) | To-be-formed entity, acquisition target |
+
+**Entity syntax:**
+
+```
+entity ID "Display Name" type
+entity ID "Display Name" type@JURISDICTION
+entity ID "Display Name" type@JURISDICTION [properties]
+```
+
+**ID rules.** Must start with a letter, followed by letters, digits, underscores, or hyphens: `[A-Za-z][A-Za-z0-9_-]*`.
+
+<Playground initial={`entity-structure "Entity type shapes"
+entity c1 "Delaware C-Corp" corp@DE
+entity l1 "California LLC" llc@CA
+entity p1 "Cayman Fund LP" lp@KY
+entity t1 "Family Trust" trust@SD
+entity i1 "Jane Smith" individual
+entity f1 "Acme Foundation" foundation
+entity d1 "Irish Branch" disregarded@IE
+entity pool1 "ESOP Pool" pool
+entity tbf1 "Acquisition Target" placeholder
+c1 -> l1 : 100%
+c1 -> p1 : 80%
+c1 -> f1
+i1 -> t1
+t1 -> c1 : 100%`} height={480} />
+
+---
+
+## 3. Node properties
+
+Optional properties inside `[…]` annotate the entity with additional context visible in the rendered node.
+
+| Property | Syntax | Effect |
+|---|---|---|
+| `status: new` | `new`, `eliminated`, `modified`, `normal` | Visual badge for transaction-step diagrams |
+| `tax: ccorp` | quoted string | Tax classification label below entity name |
+| `role: "Grantor"` | quoted string | Role label (for individuals and trustees) |
+| `note: "…"` | quoted string | Small note displayed inside the node |
+| `est: "2024-03-15"` | quoted string | Formation date |
+
+Any key not in the reserved set (`status`, `tax`, `role`, `note`, `est`) is stored as a custom property.
+
+```
+entity alice "Alice Chen" individual [role: "Founder & CEO"]
+entity trust1 "Smith Irrevocable Trust" trust@SD [est: "2019-06-01", note: "Spendthrift provisions"]
+entity opco "OpCo, Inc." corp@DE [status: new, tax: ccorp]
 ```
 
 ---
 
-## 3. Jurisdiction Badge
+## 4. Jurisdiction
 
-### 3.1 Jurisdiction Code
-
-2-letter codes per **ISO 3166-1 alpha-2**. Common codes:
-
-| Code | Full Name | Code | Full Name |
-|------|-----------|------|-----------|
-| US | United States (national) | IE | Ireland |
-| DE | Delaware (US sub-national, special) | NL | Netherlands |
-| CA | California / Canada (context) | LU | Luxembourg |
-| NY | New York (US sub-national) | KY | Cayman Islands |
-| UK | United Kingdom | BM | Bermuda |
-| SG | Singapore | VG | British Virgin Islands |
-| HK | Hong Kong | JE | Jersey |
-| CN | China (mainland) | GG | Guernsey |
-| JP | Japan | PA | Panama |
-| BVI | BVI (3-letter exception) | CH | Switzerland |
-
-**Note:** US state-level jurisdictions (Delaware, Wyoming, Nevada) are extremely common in US legal/tax contexts and are treated as "sub-national jurisdictions." The 2-letter state codes (DE, WY, NV, NY, CA) are permitted as jurisdiction badges. The DSL must explicitly indicate whether a code refers to a state or country; `@DE` is resolved as Delaware by default (most common in legal contexts).
-
-### 3.2 Badge Rendering
-
-- Position: top-right corner of node
-- Size: 18 × 12 (2-letter) / 24 × 12 (3-letter, e.g. BVI)
-- Background: white fill + 1px muted stroke
-- Font: 9px, 600 weight, letter-spacing 0.5px
-- Corner radius: rx=2
-
----
-
-## 4. Ownership Edges
-
-### 4.1 Edge Types
-
-| Edge Type | Line Style | Arrow | DSL Syntax | Meaning |
-|-----------|-----------|-------|-----------|---------|
-| **Ownership** (standard equity) | Solid line (1.5px) | End arrow | `parent -> child : 100%` | Share ownership, default |
-| **Preferred / Special class** | Solid blue line | End arrow | `vc -> acme : 20% [class: "Series A Pref"]` | Preferred stock |
-| **Option Pool** | Dashed gray line | End arrow | `esop -.-> acme : 10%` | Reserved option pool |
-| **IP / Service License** | Purple dashed line | End arrow | `ip -~-> opco [label: "IP License"]` | Non-equity relationship |
-| **Management / Trustee role** | Purple dashed line | End arrow | `trustee -~-> trust [label: "Manages"]` | Non-ownership role |
-| **Distribution** (trust → beneficiary) | Green dashed line | End arrow | `trust --> beneficiary [label: "Distributions"]` | Cash/asset distribution |
-| **Settlement** (grantor → trust) | Solid line | End arrow | `grantor -> trust [label: "Settles"]` | Formation, funding |
-| **Voting-only control** | Double line | End arrow | `ctrl ==> target : V 100% / E 0%` | Voting rights only |
-
-### 4.2 Ownership Percentage Labels
-
-- **Displayed by default**: all ownership edges must carry a % label
-- **Showing 100%**: displayed as "100%" by default; configurable with `showHundredPercent: false` to hide (common in blocker structure diagrams to reduce visual noise)
-- **V / E split** (voting vs economic interest separation):
-  ```
-  parent -> sub : V 75% / E 50%
-  ```
-  Rendered as `V 75% / E 50%`, on one or two lines depending on configuration.
-- **Share class**:
-  ```
-  vc -> acme : 20% [class: "Series A Pref"]
-  ```
-  Rendered: primary label `20%`, secondary label `Series A Pref` (10px muted).
-
-### 4.3 Edge Path Routing
-
-Follows Schematex's **orthogonal routing** convention (same as genogram parent-child edges):
-
-1. Start from the bottom-center of the parent node (`parent_x, parent_y + height/2`)
-2. Go vertically down to the **branch Y** (midpoint between parent bottom and child top)
-3. Move horizontally to the child's center X
-4. Go vertically down to the child's top (`child_x, child_y - height/2`)
-
-Multiple children share the same branch Y, forming a typical "E"-shape bus.
-
-**Special cases:**
-- If child's X aligns with parent's X: degenerates to a straight line
-- Convergence routing (multiple sources → single target, e.g. cap table): reversed routing — sources connect down to a branch bar, branch bar converges to target top
-- Non-hierarchical (e.g. trustee to the right of trust): horizontal straight line
-
-### 4.4 Edge Label Rendering
-
-- Position: centered on the horizontal branch segment, 2px above
-- Background: white fill, light muted stroke (prevents illegibility when overlapping with edge)
-- Font: 10px, 600 weight (primary) / 9px, 500 weight (sub label, e.g. share class)
-- Corner radius: rx=2-3
-- Padding: 4px horizontal, 2px vertical
-
----
-
-## 5. Jurisdiction Cluster (Optional)
-
-When a structure spans multiple jurisdictions, a **dashed rectangle** groups entities in the same jurisdiction, helping readers immediately identify regional groupings.
-
-### 5.1 Cluster Rendering
-
-- **Shape**: `<rect>` dashed stroke, stroke-dasharray="6,4", stroke 1.2px
-- **Color**: Can be assigned by region (US = blue / EU = green / Asia = red / other = neutral gray)
-- **Label**: top-left corner, 11px, 600 weight, letter-spacing 0.5px; white background rectangle to avoid overlap with cluster border
-- **Padding**: 20-30px around entities inside the cluster
-
-### 5.2 DSL
+Append `@CODE` after the entity type to display a jurisdiction badge on the node. The code is a 2–3 letter string — ISO 3166-1 alpha-2 country codes and US state abbreviations are both accepted.
 
 ```
-jurisdiction <code> "<display name>" [color: <hex>]
+entity parent "Parent Corp" corp@US
+entity ie_sub "Ireland Sub" corp@IE
+entity ky_fund "Cayman Fund" lp@KY
+entity de_llc "Delaware LLC" llc@DE
 ```
 
-Example:
+Common codes: `US` United States · `DE` Delaware · `CA` California · `NY` New York · `UK` United Kingdom · `IE` Ireland · `NL` Netherlands · `KY` Cayman Islands · `SG` Singapore · `HK` Hong Kong · `JP` Japan · `BM` Bermuda · `VG` British Virgin Islands · `CH` Switzerland · `LU` Luxembourg · `SD` South Dakota.
+
+`@DE` resolves as Delaware by default (most common in US legal contexts).
+
+### Jurisdiction clusters
+
+Declare a jurisdiction with `jurisdiction CODE "Name" [color: "#hex"]` to group all entities sharing that code into a labeled, dashed-border cluster region on the diagram.
+
 ```
 jurisdiction US "United States" [color: "#3b82f6"]
 jurisdiction IE "Ireland" [color: "#059669"]
-jurisdiction SG "Singapore" [color: "#dc2626"]
-
-entity parent "Acme Global" corp@US
-entity ie-holdco "Acme Ireland" corp@IE
-...
 ```
 
-When an entity's `@jurisdiction` matches a declared `jurisdiction` definition, it is automatically included in that cluster's rendering. If `jurisdiction` is not declared, only the badge is shown — no cluster is drawn.
+When an entity's `@CODE` matches a declared `jurisdiction`, it is automatically placed inside that cluster. If `jurisdiction` is not declared, the badge still appears but no cluster region is drawn.
 
-### 5.3 Mixed-Jurisdiction Cluster
+<Playground initial={`entity-structure "IP holding structure"
+jurisdiction US "United States" [color: "#3b82f6"]
+jurisdiction IE "Ireland" [color: "#059669"]
+jurisdiction KY "Cayman Islands" [color: "#d97706"]
+entity parent "TopCo, Inc." corp@US
+entity ie_hold "Ireland Holdings" corp@IE
+entity ie_ip "IP HoldCo" corp@KY [note: "Group IP"]
+entity ie_op "EU Opco" llc@IE
+parent -> ie_hold : 100%
+ie_hold -> ie_ip : 100%
+ie_hold -> ie_op : 100%
+ie_ip -~-> ie_op [label: "IP License"]`} height={440} />
 
-A single cluster may contain multiple jurisdictions (e.g. "Ireland / Cayman IP Structure" containing IE + KY entities):
+### Manual clusters
 
-```
-cluster "Ireland / Cayman IP" [members: ie-holdco, ie-ip, nl-bv, color: "#059669"]
-```
-
----
-
-## 6. Pre/Post-Transaction Comparison
-
-M&A, restructuring, and trust formation scenarios frequently require side-by-side display of **pre-event / post-event** structures.
-
-### 6.1 Rendering Modes
-
-**Mode A: Side-by-side (external HTML layout)**
-- Two independent SVGs, "Pre-Transaction" on the left, "Post-Transaction" on the right
-- Differentiated by title
-
-**Mode B: Single diagram with diff annotations (small delta)**
-- Single SVG with delta annotations on changed entities:
-  - **New entity**: green stroke (#059669) + "NEW" label in top-left corner
-  - **Eliminated entity**: red stroke + diagonal strikethrough + "ELIMINATED" label
-  - **Changed ownership**: yellow stroke + edge annotation "was X% → now Y%"
-  - **Unchanged**: default styling
-
-### 6.2 DSL for Transaction Delta
+Use `cluster "Label" [members: [id1, id2], color: "#hex"]` to group entities that don't share a single jurisdiction code.
 
 ```
-entity newsub "NewSubCo, LLC" llc@DE [status: new]
-entity oldsub "OldSubCo, Inc." corp@DE [status: eliminated]
-entity changed "ChangedCo" corp@DE [status: modified]
-
-parent -> changed : was 50% -> 100%
+cluster "Ireland / Cayman IP" [members: [ie_ip, nl_bv], color: "#059669"]
 ```
 
 ---
 
-## 7. Layout Rules
+## 5. Ownership edges
 
-### 7.1 Tier-Based Hierarchy (Default)
+An edge line connects two entity IDs with an operator. The operator determines the line style and visual semantics.
 
-1. **Topological sort** — sort all entities topologically by ownership direction (parent → child); no cycles (ownership cycles are handled specially by Cross-ownership, see 7.4)
-2. **Tier assignment** — each entity's tier = max(tier of all parents) + 1
-3. **Horizontal centering within tier** — entities within the same tier are arranged left-to-right in order of first appearance, centered
-4. **Vertical gap between tiers** — default 130px (sufficient space to render ownership % labels)
+| Operator | Renders as | Meaning |
+|---|---|---|
+| `->` | Solid arrow | Equity ownership (default) |
+| `==>` | Double line arrow | Voting-only control (no economic interest) |
+| `-.->` | Dashed grey arrow | Option pool / conditional ownership |
+| `-~->` | Dashed purple arrow | IP license, management agreement, intercompany service |
+| `-->` | Dashed green arrow | Distribution (trust to beneficiaries) |
 
-### 7.2 Width Calculation
+**Ownership percentage:** append `: pct` after the target ID.
 
-- Each entity defaults to 200px width (including 20px padding)
-- Tier width = Σ entity widths
-- Canvas width = max(all tier widths) + 2 × 50px padding
+```
+parent -> subsidiary : 60%
+```
 
-### 7.3 Horizontal Alignment
+**Share class:** add `[class: "Series A Pref"]` to label the share class on the edge.
 
-- When a parent has multiple children, the parent is horizontally centered between the children's midpoints
-- When a child has multiple parents (cap table scenario), the child is horizontally centered between the parents' midpoints
+```
+vc -> startup : 22% [class: "Series A Pref"]
+```
 
-### 7.4 Special Layouts
+**Non-equity label:** use `[label: "…"]` for descriptive edge text on license or distribution edges.
 
-**Cap Table mode (multiple sources → single target)**:
-- All shareholders (individual + LP + pool) placed in the top tier
-- Target company in the bottom tier, centered
-- Branch bar between tiers, converging multiple edges
+```
+ip_co -~-> opco [label: "IP License · royalty"]
+trust --> beneficiary [label: "Discretionary distributions"]
+```
 
-**Trust mode (hub + spokes)**:
-- Grantor at top
-- Trust at center of Tier 2 (ellipse)
-- Trustee to the right of Trust (same tier, outside the hierarchical chain)
-- Beneficiaries to the left of Trust (same tier, receiving distributions)
-- Tier below Trust: Family LLC → Asset LLCs
+**Combining:** `class:` and `label:` can appear together.
 
-**Cross-ownership (two entities holding each other)**:
-- Special case expressed with **bidirectional arrows** or **two separate edges**
-- Does not break tier structure; S-curve edge routing used to avoid clutter
+```
+fund -> portfolio : 35% [class: "Common", label: "Post-Series B"]
+```
 
-### 7.5 Spacing Rules
-
-| Parameter | Default | Meaning |
-|-----------|---------|---------|
-| Tier vertical gap | 140px | Vertical distance between tiers |
-| Entity horizontal gap | 50px | Horizontal spacing between entities in the same tier |
-| Node width (Corp/LLC/LP) | 160-180px | Default node width |
-| Node height | 60px | Default node height |
-| Trust ellipse rx / ry | 100 / 40 | Ellipse radii |
-| Individual circle radius | 30 (standard) / 35 (primary) | Circle radius |
-| Jurisdiction badge | 18 × 12 | Top-right badge size |
-| Canvas padding | 40px | Canvas margin |
-| Cluster padding | 25px | Inner whitespace within cluster |
+<Playground initial={`entity-structure "Mixed edge types"
+entity holdco "HoldCo LLC" llc@DE
+entity opco "OpCo Inc." corp@DE
+entity ip_co "IP Ltd" corp@KY
+entity fund "Growth Fund" lp@DE
+entity esop "ESOP Pool" pool
+entity trust1 "Family Trust" trust@SD
+entity founder "J. Smith" individual
+# Equity ownership
+holdco -> opco : 100%
+holdco -> ip_co : 100%
+# IP license (non-equity)
+ip_co -~-> opco [label: "Exclusive license"]
+# Option pool (dashed)
+esop -.-> opco : 10%
+# Voting control
+fund ==> holdco
+# Trust distribution
+trust1 --> founder [label: "Income distributions"]
+founder -> trust1 : 100%`} height={500} />
 
 ---
 
-## 8. DSL Grammar (EBNF)
+## 6. Labels & comments
+
+- **Title:** `entity-structure "Acme Holdings"` — first line, quoted.
+- **Entity display name:** the quoted string in `entity ID "Name" type` — appears inside the node.
+- **Jurisdiction badge:** `@CODE` after type — 2–3 letter code shown in the node corner.
+- **Node properties:** `[note: "…", role: "…", status: new, …]` — annotations inside the node.
+- **Edge percentage:** `: pct` after the target ID — appears on the ownership arrow.
+- **Edge class:** `[class: "…"]` — share class label on the arrow.
+- **Edge label:** `[label: "…"]` — descriptive text on the arrow.
+- **Comments:** `#` at the start of a line (after leading whitespace). Inline trailing `#` comments inside bracket blocks are also stripped.
+
+---
+
+## 7. Reserved words & escaping
+
+**Reserved at line start:** `entity-structure` (header), `entity`, `jurisdiction`, `cluster`.
+
+**Entity type keywords** — these strings are parsed as entity types and must not be used as entity IDs: `corp`, `corporation`, `inc`, `llc`, `llp`, `gmbh`, `bv`, `lp`, `lllp`, `fund`, `trust`, `individual`, `person`, `foundation`, `npo`, `disregarded`, `branch`, `pool`, `placeholder`, `tbf`.
+
+**Edge operator tokens** — avoid these sequences inside IDs: `->`, `==>`, `-.->`, `-~->`, `-->`.
+
+**Strings with spaces** must be double-quoted in display names, notes, role labels, and color values.
+
+**Jurisdiction codes** are case-insensitive in the source but normalized to uppercase: `@de` and `@DE` are equivalent.
+
+---
+
+## 8. Common mistakes
+
+| You wrote | Parser says | Fix |
+|---|---|---|
+| `entity acme Acme Inc. corp@DE` (name unquoted) | Parse fails — name must be quoted | `entity acme "Acme Inc." corp@DE` |
+| `acme -> sub [50%]` (percent inside brackets) | `50%` not recognized as a property key | `acme -> sub : 50%` (colon before percent, outside brackets) |
+| `entity acme "Acme" Ltd@DE` | `Ltd` is not a recognized type keyword | Use `corp` or `llc`; `Ltd` is not in the alias table |
+| `acme -> unknown_id : 100%` | `EntityParseError: Edge references unknown entity "unknown_id"` | Declare every entity before using it in an edge |
+| `cluster "US entities" [ids: [a, b]]` | `ids:` not recognized; property is silently ignored | Use `members: [a, b]` |
+| `jurisdiction DE "Delaware"` then `entity co "Co" corp@DE` | Cluster draws around `co` — correct. But `@DE` in a US context is Delaware, not Germany | Use `@DE` for Delaware, `@DEU` is not valid — there is no ambiguity workaround; document the intent in a `note:` |
+| `entity x "X" corp [status: pending]` | `pending` is not a valid status — property silently stored as custom prop | Use `new`, `eliminated`, `modified`, or `normal` |
+
+---
+
+## 9. Grammar (EBNF)
 
 ```text
-document        = header (jurisdiction_def | cluster_def | entity_def | edge_def)* legend?
-header          = "entity-structure" quoted_string NEWLINE
-                | "entity-structure:" quoted_string NEWLINE
+document        = header (blank | comment | jurisdiction-def | cluster-def | entity-def | edge)*
 
-jurisdiction_def = "jurisdiction" CODE quoted_string properties? NEWLINE
+header          = "entity-structure" ( WS quoted-string )? NEWLINE
+quoted-string   = '"' any-char-but-quote* '"'
 
-cluster_def     = "cluster" quoted_string properties? NEWLINE
+jurisdiction-def = "jurisdiction" CODE WS quoted-string ( "[" jur-attrs "]" )? NEWLINE
+jur-attrs        = jur-attr ("," jur-attr)*
+jur-attr         = "color:" quoted-string
 
-entity_def      = "entity" ID quoted_string ENTITY_TYPE ("@" CODE)? properties? NEWLINE
+cluster-def     = "cluster" WS quoted-string ( "[" cluster-attrs "]" )? NEWLINE
+cluster-attrs   = cluster-attr ("," cluster-attr)*
+cluster-attr    = "members:" "[" id ("," id)* "]"
+                | "color:" quoted-string
 
-edge_def        = ID edge_op ID (":" percentage)? properties? NEWLINE
+entity-def      = "entity" WS id WS quoted-string WS entity-type ( "@" CODE )?
+                  ( "[" entity-attrs "]" )? NEWLINE
+entity-attrs    = entity-attr ("," entity-attr)*
+entity-attr     = "status:" status
+                | "tax:" quoted-string
+                | "role:" quoted-string
+                | "note:" quoted-string
+                | "est:" quoted-string
+                | key ":" quoted-string        # custom property
 
-edge_op         = "->"       # standard ownership (solid arrow)
-                | "==>"      # voting-only control (double line arrow)
-                | "-.->"     # dashed ownership (pool, conditional)
-                | "-~->"     # licensing / service / management (purple dashed)
-                | "-->"      # distribution (green dashed, when context is trust)
+entity-type     = "corp" | "corporation" | "inc"
+                | "llc" | "llp" | "gmbh" | "bv"
+                | "lp" | "lllp" | "fund"
+                | "trust"
+                | "individual" | "person"
+                | "foundation" | "npo"
+                | "disregarded" | "branch"
+                | "pool"
+                | "placeholder" | "tbf"
 
-ENTITY_TYPE     = "corp" | "llc" | "lp" | "trust" | "individual" | "person"
-                | "foundation" | "disregarded" | "branch"
-                | "placeholder" | "tbf" | "pool"
+edge            = id WS op WS id ( ":" WS pct-text )? ( "[" edge-attrs "]" )? NEWLINE
+op              = "->" | "==>" | "-.->" | "-~->" | "-->"
+pct-text        = any text up to "[" or end of line   # e.g. "100%" or "V 75% / E 50%"
 
-CODE            = /[A-Z]{2,3}/   # ISO 3166-1 alpha-2 or 3-letter exception (BVI)
+edge-attrs      = edge-attr ("," edge-attr)*
+edge-attr       = "class:" quoted-string
+                | "label:" quoted-string
 
-percentage      = /[0-9]+(\.[0-9]+)?%/
-                | "V" ws /[0-9]+%/ "/" "E" ws /[0-9]+%/   # V/E split
-
-properties      = "[" property ("," property)* "]"
-property        = "class:" quoted_string            # share class
-                | "label:" quoted_string            # edge text label
-                | "status:" STATUS                  # new | eliminated | modified
-                | "tax:" TAX_CLASS
-                | "est:" quoted_string              # formation date
-                | "role:" quoted_string             # for individuals
-                | "note:" quoted_string
-                | "color:" HEX
-                | "members:" "[" ID_LIST "]"        # for cluster def
-                | kv_prop
-
-STATUS          = "new" | "eliminated" | "modified" | "normal"
-TAX_CLASS       = "ccorp" | "passthrough" | "scorp" | "trust"
-                | "disregarded" | "foundation" | "individual"
-
-ID              = /[a-zA-Z][a-zA-Z0-9_-]*/
-HEX             = /#[0-9a-fA-F]{3,8}/
-quoted_string   = '"' /[^"]*/ '"'
+status          = "new" | "eliminated" | "modified" | "normal"
+CODE            = [A-Za-z]{2,3}
+id              = [A-Za-z] [A-Za-z0-9_-]*
+comment         = "#" any NEWLINE
 ```
+
+Authoritative source: `src/diagrams/entity/parser.ts`. If this diverges from the parser, the parser wins — please open an issue.
+
+---
+
+## 10. Standard compliance
+
+Schematex entity structure diagrams synthesize conventions from:
+
+- **SEC Regulation S-K, Item 601(b)(21)** — Exhibit 21 subsidiary disclosure conventions
+- **IRS Form 8832** — C-corp / pass-through / disregarded entity classifications
+- **ISO 3166-1 alpha-2** — jurisdiction codes on node badges
+- **ISO 20275:2017** — Legal Entity Identifier (LEI) entity form classification
+- **OECD Transfer Pricing Guidelines (2022)** — cross-border IP license and royalty flow conventions
+- **Big Four tax memo conventions** (EY / PwC / KPMG / Deloitte) — de-facto standard for cross-border structure diagrams
+
+What is implemented today:
+
+- ✅ Nine entity types with distinct shapes: `corp`, `llc`, `lp`, `trust`, `individual`, `foundation`, `disregarded`, `pool`, `placeholder`
+- ✅ Type aliases: `corporation`, `inc`, `llp`, `gmbh`, `bv`, `lllp`, `fund`, `person`, `npo`, `branch`, `tbf`
+- ✅ Five edge operators: `->` (ownership), `==>` (voting), `-.->` (pool), `-~->` (license), `-->` (distribution)
+- ✅ Ownership percentage labels (`: pct`) and share class (`[class: "…"]`)
+- ✅ Jurisdiction badges (`@CODE`) with ISO 3166-1 and US state codes
+- ✅ Jurisdiction cluster regions (dashed-border grouping by `@CODE`)
+- ✅ Manual clusters (`cluster "…" [members: […]]`)
+- ✅ Node properties: `status`, `tax`, `role`, `note`, `est`, custom key-value pairs
+- ⏳ V/E split percentage — `V 75% / E 50%` stored in `percentage` string but rendering as two-line label not yet implemented
+- ⏳ Transaction-step diff rendering — `status: new` / `eliminated` / `modified` stored but visual diff badges not yet rendered
+- ⏳ Inline share-count annotation — `100 shares Common` alongside percentage
+
+---
+
+## 11. Related examples
+
+<RelatedExamples slugs={[
+  'entity-holding-company',
+  'entity-international-tax',
+  'entity-series-a-cap-table',
+]} />
+
+---
+
+## 12. Roadmap
+
+**Planned — not yet parseable.** Do not use these in generated DSL today; the parser will reject or ignore them.
+
+- **V/E split rendering** — `V 75% / E 50%` on a single edge, displayed as a two-line percentage label distinguishing voting interest from economic interest.
+- **Transaction-step diff badges** — `status: new` renders a green "NEW" badge; `status: eliminated` renders a red strikethrough; used for pre/post M&A structure comparison on a single diagram.
+- **Share count annotation** — `-> sub : 100 shares Common` alongside a percentage to capture the exact share count from a capitalization table.
+- **Bidirectional ownership** — explicit `<->` edge for cross-ownership (two entities holding each other), with S-curve routing to avoid clutter.
+- **Legend block** — auto-generated legend showing shape-to-entity-type and operator-to-relationship-type mapping.
+
+Track in the GitHub issues if you need any of these sooner.

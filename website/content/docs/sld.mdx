@@ -1,422 +1,379 @@
 ---
 title: Single-line diagram (SLD)
-description: Power system one-line diagrams following IEEE 315. Substation and distribution layouts with transformers, breakers, disconnects, buses, and protective relays. For electrical engineering, utilities, and power distribution.
 ---
+
+## About single-line diagrams
+
+A **single-line diagram** (also called a one-line diagram) represents the electrical power system of a facility or substation using a single line to stand in for all three phases of a three-phase AC system. Equipment — transformers, circuit breakers, buses, motors, loads — is shown with standardized symbols, and the power flow path connects them top-to-bottom from source to load. Electrical engineers, utility planners, and facility managers use SLDs as the primary reference document for every power system project: it is the first deliverable in any interconnection application, arc-flash study, or commissioning package.
+
+Schematex follows **[IEEE Std 315 (ANSI Y32.2)](https://standards.ieee.org/ieee/315/1099/)** graphic symbol conventions for equipment, extended with IEC 60617 winding-configuration notation for transformer variants. This page documents what the parser accepts today.
 
 <Playground initial={`sld "13.8 kV Substation"
-utility [label: "Grid 138 kV"]
-xfmr1 [type: transformer, kva: 15000, primary: 138, secondary: 13.8]
-bus_hv [type: bus, voltage: 138]
-bus_mv [type: bus, voltage: 13.8]
-brk1 [type: breaker, amps: 1200]
+utility = utility [label: "Grid 138 kV"]
+bus_hv = bus [voltage: "138kV", label: "HV Bus"]
+xfmr1 = transformer_dy [rating: "15 MVA", voltage: "138kV/13.8kV", label: "Main Xfmr"]
+bus_mv = bus [voltage: "13.8kV", label: "MV Bus"]
+brk1 = breaker [rating: "1200A", label: "BKR-1"]
+brk2 = breaker [rating: "1200A", label: "BKR-2"]
+brk3 = breaker [rating: "1200A", label: "BKR-3"]
+feeder1 = load [label: "Feeder 1"]
+feeder2 = load [label: "Feeder 2"]
+feeder3 = load [label: "Feeder 3"]
 utility -> bus_hv
-bus_hv -> xfmr1 -> bus_mv
-bus_mv -> brk1`} />
-
-*IEEE Std 315 (ANSI Y32.2) electrical graphic symbol standard + IEC 60617 international standard + power distribution system graphic conventions.*
-
-> **Primary References:**
-> - IEEE Std 315-1975 / ANSI Y32.2-1975: Graphic Symbols for Electrical and Electronics Diagrams (de facto SLD standard)
-> - IEC 60617:2025 (BS 3939): International graphical symbols for diagrams
-> - ANSI Device Numbering (ANSI/IEEE C37.2): Protection device numbering (e.g., Device 52 = AC circuit breaker)
-> - NFPA 70 (NEC): National Electrical Code — service entrance conventions
-> - IEEE Std 1584: Arc flash labeling conventions (informational)
-
-**Note:** A Single-Line Diagram simplifies the three conductors of a three-phase AC system into **a single line**, reducing visual complexity. All equipment ratings and protection settings are presented as text annotations.
+bus_hv -> xfmr1
+xfmr1 -> bus_mv
+bus_mv -> brk1
+bus_mv -> brk2
+bus_mv -> brk3
+brk1 -> feeder1
+brk2 -> feeder2
+brk3 -> feeder3`} height={480} />
 
 ---
 
-## 1. Symbol Set
+## 1. Your first single-line diagram
 
-### 1.1 Power Sources
+The simplest SLD: a utility source, a transformer, a breaker, and a load.
 
-#### Utility / Grid Connection
-```xml
-<!-- Arrow pointing down (utility power flowing into system) -->
-<polygon points="0,-20 -10,-5 10,-5" fill="white" stroke="#333" stroke-width="2"/>
-<text x="0" y="10" font-size="10" text-anchor="middle" font-style="italic">Utility</text>
-<line x1="0" y1="-5" x2="0" y2="20" stroke="#333" stroke-width="3"/>
-```
+<Playground initial={`sld "Simple feeder"
+util = utility [label: "Utility 13.8kV"]
+xfmr = transformer [rating: "500 kVA", voltage: "13.8kV/480V"]
+bus1 = bus [voltage: "480V", label: "480V Bus"]
+cb1 = breaker [rating: "200A"]
+load1 = load [label: "Panel LP-1"]
+util -> xfmr
+xfmr -> bus1
+bus1 -> cb1
+cb1 -> load1`} />
 
-#### Generator
-```xml
-<!-- Circle Ø32px with "G" label and AC wave symbol -->
-<circle cx="16" cy="16" r="16" fill="white" stroke="#333" stroke-width="2"/>
-<text x="16" y="13" font-size="13" font-weight="bold" text-anchor="middle">G</text>
-<!-- Small sine wave symbol inside circle (bottom half) -->
-<path d="M 8,20 Q 11,14 14,20 Q 17,26 20,20" fill="none" stroke="#333" stroke-width="1.2"/>
-<!-- Lead wire (top and bottom) -->
-<line x1="16" y1="0" x2="16" y2="-10" stroke="#333" stroke-width="2.5"/>
-<line x1="16" y1="32" x2="16" y2="42" stroke="#333" stroke-width="2.5"/>
-```
+Four rules cover 80% of usage:
 
-#### Transformer (Two-Winding)
-```xml
-<!-- Primary coil: series of arcs (3 humps), left/top -->
-<path d="M 0,0 A 6,6 0 0 1 12,0 A 6,6 0 0 1 24,0 A 6,6 0 0 1 36,0"
-      fill="none" stroke="#333" stroke-width="2"/>
-<!-- Gap (core gap) -->
-<line x1="0" y1="6" x2="36" y2="6" stroke="#333" stroke-width="0.8"/>
-<line x1="0" y1="10" x2="36" y2="10" stroke="#333" stroke-width="0.8"/>
-<!-- Secondary coil: series of arcs (3 humps), below gap -->
-<path d="M 0,16 A 6,6 0 0 0 12,16 A 6,6 0 0 0 24,16 A 6,6 0 0 0 36,16"
-      fill="none" stroke="#333" stroke-width="2"/>
-<!-- Polarity dots (standard: upper primary = upper secondary same polarity) -->
-<circle cx="2" cy="-4" r="2.5" fill="#333"/>  <!-- primary dot -->
-<circle cx="2" cy="20" r="2.5" fill="#333"/>  <!-- secondary dot -->
-<!-- Lead wires -->
-<line x1="18" y1="-10" x2="18" y2="0" stroke="#333" stroke-width="2.5"/>
-<line x1="18" y1="16" x2="18" y2="26" stroke="#333" stroke-width="2.5"/>
-```
+1. Start with `sld`, optionally followed by a quoted title.
+2. Declare each equipment item as `id = nodeType [attributes]` — one per line.
+3. Connect items with `from -> to`, optionally adding `[cable: "…", label: "…"]`.
+4. IDs may contain letters, digits, underscores, and hyphens — but must start with a letter.
 
-**Dimensions**: 36px wide × 26px tall (excluding lead wires)
-
-**Transformer annotation convention:**
-- Rating: `{kVA} kVA, {V_pri}/{V_sec} V, {%Z}% Z`
-- Example: `500 kVA, 13.8kV/480V, 5.75% Z`
-
-#### Battery Bank
-- Multiple groups of long and short parallel lines (long = positive, short = negative)
-- 3 groups is the standard representation for a storage battery bank
-
-### 1.2 Switching & Protection Devices
-
-#### Circuit Breaker (Device 52)
-- **Distinction from disconnect switch**: arc-interrupting capability, shown as diagonal line + arc
-- **Symbol**: diagonal line (lower-left → upper-right) + small arc at the top
-```xml
-<!-- Body: diagonal line -->
-<line x1="5" y1="30" x2="25" y2="5" stroke="#333" stroke-width="2.5"/>
-<!-- Arc indicator (distinguishes breaker from switch) -->
-<path d="M 25,5 Q 30,0 28,-5" fill="none" stroke="#333" stroke-width="2"/>
-<!-- Lead wires (top and bottom) -->
-<line x1="15" y1="0" x2="15" y2="-10" stroke="#333" stroke-width="2.5"/>
-<line x1="15" y1="38" x2="15" y2="48" stroke="#333" stroke-width="2.5"/>
-```
-**Width×Height**: 30px × 38px (excluding lead wires)
-
-**Annotation convention:**
-- `{kA} kA sym` (short-circuit interrupting rating)
-- `{A}A trip` (trip setting)
-- Device number: `52` (optional)
-
-#### Disconnect Switch / Isolator (Device 89)
-- Same shape as breaker, but without the arc (isolation only, cannot interrupt arc)
-```xml
-<line x1="5" y1="30" x2="25" y2="5" stroke="#333" stroke-width="2.5"/>
-<!-- No arc → just a simple diagonal line -->
-```
-
-#### Fused Disconnect
-- Combination of disconnect switch + fuse symbol
-- Fuse: 10×5px rectangle (IEC) or small square (ANSI)
-
-#### Fuse
-```xml
-<!-- IEC fuse: thin rectangle with wires -->
-<rect x="-5" y="-4" width="10" height="28" fill="white" stroke="#333" stroke-width="1.5"/>
-<line x1="0" y1="-12" x2="0" y2="-4" stroke="#333" stroke-width="2"/>
-<line x1="0" y1="24" x2="0" y2="32" stroke="#333" stroke-width="2"/>
-```
-
-#### Motor Starter (Contactor with Overload)
-- Rectangle box 20×30px, labeled `M` or `MS`
-
-#### Ground Switch
-- Small downward-pointing triangle (ground symbol) + switch line
-- Represents a grounding switch
-
-### 1.3 Measurement & Protection
-
-#### Current Transformer (CT)
-```xml
-<!-- Circle Ø14px -->
-<circle cx="7" cy="7" r="7" fill="white" stroke="#333" stroke-width="1.5"/>
-<!-- "CT" label inside -->
-<text x="7" y="10" font-size="7" font-weight="bold" text-anchor="middle">CT</text>
-<!-- Primary line passes through center (the single line) -->
-<line x1="0" y1="7" x2="14" y2="7" stroke="#333" stroke-width="2"/>
-```
-
-#### Potential/Voltage Transformer (PT/VT)
-- Same symbol as CT, labeled `PT` inside, but connected differently to the main line (in parallel, not in series)
-
-#### Relay (various protective relays)
-```xml
-<!-- Small circle with relay function code -->
-<circle cx="10" cy="10" r="10" fill="white" stroke="#333" stroke-width="1.5"/>
-<text x="10" y="14" font-size="8" text-anchor="middle">51</text>
-```
-Common ANSI relay device numbers:
-
-| Code | Protection Type |
-|------|---------|
-| 27 | Under Voltage |
-| 51 | Overcurrent |
-| 67 | Directional Overcurrent |
-| 87 | Differential |
-| 79 | Auto Recloser |
-| 81 | Frequency Relay |
-
-### 1.4 Load Devices
-
-#### Motor
-```xml
-<!-- Circle Ø28px with "M" -->
-<circle cx="14" cy="14" r="14" fill="white" stroke="#333" stroke-width="2"/>
-<text x="14" y="19" font-size="14" font-weight="bold" text-anchor="middle">M</text>
-<!-- Three phase connection points (120° apart, on circle perimeter) -->
-<!-- For 3-phase: three small dots at 12, 4, 8 o'clock positions -->
-<circle cx="14" cy="0" r="2" fill="#333"/>   <!-- top, phase A -->
-<circle cx="26" cy="21" r="2" fill="#333"/>  <!-- lower-right, phase B -->
-<circle cx="2" cy="21" r="2" fill="#333"/>   <!-- lower-left, phase C -->
-```
-
-#### Panel / Load Box (Generic)
-```xml
-<rect x="0" y="0" width="40" height="30" fill="white" stroke="#333" stroke-width="2"/>
-<text x="20" y="19" font-size="10" text-anchor="middle">LP-1</text>
-```
-
-#### Lighting Panel (LP)
-- Rectangle + `LP` label + panel number
-
-#### Motor Control Center (MCC)
-- Larger rectangle 60×40px + `MCC` label
-
-### 1.5 Bus Bars
-
-A bus bar is the voltage collection point in an SLD, represented by a **thick horizontal line**:
-
-```xml
-<!-- Bus bar (three-phase, single-line representation) -->
-<!-- Thick horizontal line -->
-<line x1="0" y1="y_bus" x2="{bus_width}" y2="y_bus"
-      stroke="#333" stroke-width="6"
-      class="lt-bus-bar" data-voltage="480V"/>
-<!-- Bus voltage label (above bus) -->
-<text x="{bus_width/2}" y="y_bus-10" font-size="11" font-weight="bold"
-      text-anchor="middle" class="lt-bus-label">480V Bus</text>
-```
-
-**Vertical connections (devices connected to bus):**
-- Devices connect to the bus bar via vertical lines going down (or up)
-- Connection line width = standard stroke width (2px), thinner than the bus bar
-
-### 1.6 Metering & Instrumentation
-
-| Element | Symbol | SVG |
-|------|------|-----|
-| Ammeter | Circle + `A` | `<circle r="8"><text>A</text>` |
-| Voltmeter | Circle + `V` | `<circle r="8"><text>V</text>` |
-| Power Meter | Circle + `W` | `<circle r="8"><text>W</text>` |
-| Energy Meter | Circle + `Wh` | `<circle r="8"><text>Wh</text>` |
-| Power Factor Meter | Circle + `PF` | `<circle r="8"><text>PF</text>` |
-| Frequency Meter | Circle + `Hz` | `<circle r="8"><text>Hz</text>` |
+> Comments must start with `#` on their own line.
 
 ---
 
-## 2. Layout Conventions
+## 2. Node types
 
-### 2.1 Vertical Hierarchy (Power Flow Direction)
+A node line is `id = nodeType [attr: value, …]`. The node type determines the symbol drawn.
 
-The core SLD layout principle: **source at top, loads at bottom**.
+### 2.1 Sources
 
-```
-┌─────────────────────────────────────────────────┐
-│     Utility Source / Generator (top)            │
-├─────────────────────────────────────────────────┤
-│  ══════ High Voltage Bus (transmission level) ══ │
-│         ↓              ↓                        │
-│      [TX1]          [TX2]      (transformers)   │
-│         ↓              ↓                        │
-│  ══════ Medium Voltage Bus ══════════════════════ │
-│         ↓              ↓         ↓              │
-│      [CB1]          [CB2]     [CB3]  (breakers) │
-│         ↓              ↓         ↓              │
-│  ══════ Low Voltage Bus (480V/208V) ═════════════ │
-│    ↓    ↓    ↓    ↓    ↓    ↓    ↓    ↓         │
-│  [M1] [LP1] [MCC] [ATS] ... (loads, bottom)    │
-└─────────────────────────────────────────────────┘
-```
+| Type | Symbol | Typical use |
+|---|---|---|
+| `utility` | Utility source arrow | Infinite bus / grid connection |
+| `generator` | Circle with `G` | Diesel, gas, or hydro genset |
+| `solar` | PV panel symbol | Photovoltaic array |
+| `wind` | Turbine symbol | Wind turbine |
+| `ups` | Block with battery | Uninterruptible power supply |
 
-### 2.2 Voltage Level Bands
+<Playground initial={`sld "Generation sources"
+util = utility [label: "Grid 115 kV"]
+gen = generator [rating: "2 MW", label: "Diesel Gen"]
+sol = solar [rating: "500 kW", label: "PV Array"]
+wnd = wind [rating: "1 MW", label: "Wind Turbine"]
+ups = ups [rating: "100 kVA", label: "UPS System"]
+util -> gen
+util -> sol
+util -> wnd
+util -> ups`} height={360} />
 
-Each voltage level forms a **horizontal band**:
+### 2.2 Transformers
 
-| Voltage Range | Level | Typical Band Height |
-|---------|------|------------|
-| > 115 kV | Transmission | 120px |
-| 1 kV – 115 kV | Distribution (MV) | 100px |
-| &lt; 1 kV (600V) | Utilization (LV) | 80px |
-| &lt; 120V | Control/Signal | 60px |
+| Type | Winding configuration | Notes |
+|---|---|---|
+| `transformer` | Generic two-winding | No winding spec |
+| `transformer_dy` | Delta → Wye grounded (Δ-Yg) | Most common distribution |
+| `transformer_yd` | Wye grounded → Delta (Yg-Δ) | |
+| `transformer_yy` | Wye-Wye (both grounded) | |
+| `transformer_dd` | Delta-Delta | |
+| `autotransformer` | Single-winding with tap | Zigzag coil symbol |
+| `transformer_3winding` | Three-winding | HV / MV / LV taps |
 
-The bus bar is drawn horizontally at the top of each band.
+<Playground initial={`sld "Transformer configurations"
+src = utility [label: "138kV Grid"]
+t_dy = transformer_dy [rating: "30 MVA", voltage: "138kV/13.8kV", label: "Δ-Yg (most common)"]
+t_yy = transformer_yy [rating: "10 MVA", voltage: "138kV/13.8kV", label: "Yg-Yg"]
+t_auto = autotransformer [rating: "50 MVA", voltage: "138kV/69kV", label: "Autotransformer"]
+t_3w = transformer_3winding [rating: "40 MVA", voltage: "138/13.8/4.16kV", label: "3-Winding"]
+src -> t_dy
+src -> t_yy
+src -> t_auto
+src -> t_3w`} height={360} />
 
-### 2.3 Multiple Feeders
+### 2.3 Buses and nodes
 
-Multiple feeders on the same bus:
-- Extend downward from the bus bar at equal intervals
-- Spacing: `feeder_spacing = 80px` (default)
-- Symmetrically arranged (even count centered, odd count offset)
+| Type | Symbol | Typical use |
+|---|---|---|
+| `bus` | Thick horizontal line | Main voltage bus bar |
+| `bus_tie` | Bus-tie breaker | Links two parallel buses at the same voltage |
+| `hub` | Wide rectangle | Multi-feeder combining point |
 
-### 2.4 Component Sizing Consistency
+### 2.4 Switching and protection
 
-| Element Type | Standard Height | Standard Width |
-|---------|---------|---------|
-| Circuit Breaker | 40px | 30px |
-| Disconnect Switch | 35px | 30px |
-| Transformer | 30px | 40px |
-| Motor | 30px | 30px |
-| CT / PT | 16px | 16px |
-| Relay | 22px | 22px |
-| Bus Bar | 6px thick | 100%+ bus width |
+| Type | Symbol | Device number |
+|---|---|---|
+| `breaker` | Diagonal + arc | 52 (AC circuit breaker) |
+| `breaker_vacuum` | Diagonal + V-oval | 52 vacuum type |
+| `switch` | Diagonal (no arc) | 89 (disconnect / isolator) |
+| `switch_load` | Load interrupter switch | — |
+| `ground_switch` | Diagonal + ground symbol | Grounding disconnect |
+| `ats` | Transfer switch symbol | Automatic transfer switch |
+| `recloser` | Diagonal + arc + arrow | Auto-reclosing breaker |
+| `sectionalizer` | Diagonal + S | Distribution sectionalizer |
+| `fuse` | Oval with diagonal | Expulsion fuse cutout |
+| `fuse_cl` | Rectangle with diagonal | Current-limiting fuse |
 
-### 2.5 Annotation Placement
+<Playground initial={`sld "Switching and protection"
+src = utility [label: "Source"]
+rclsr = recloser [label: "Recloser"]
+sect = sectionalizer [label: "Sectionalizer"]
+fuse1 = fuse [label: "Fuse"]
+sw = switch [label: "Disconnect"]
+gnd_sw = ground_switch [label: "Ground SW"]
+src -> rclsr
+rclsr -> sect
+sect -> fuse1
+sect -> sw
+sw -> gnd_sw`} height={340} />
 
-```
-         [Rating / Equipment ID]
-                ↑ annotation above device
-    ←── Bus ───[CB]─── Feeder →
-                ↓ rating below device
-         [kA rating / trip setting]
-```
+### 2.5 Protection and monitoring
 
-- **Equipment ID**: above the device, 11px bold
-- **Rating / kA**: below the device, 10px, `{A}A / {kA}kA`
-- **Voltage label**: to the left of or above the bus bar, 12px bold
-- **Cable annotation**: beside the vertical connection line, 9px
+| Type | Symbol | Typical use |
+|---|---|---|
+| `ct` | Small circle with line through | Current transformer |
+| `pt` | Small circle | Potential / voltage transformer |
+| `relay` | Small circle with device number | Protection relay (ANSI number via `device:`) |
+| `surge_arrester` | Arrow + ground | Lightning arrester |
+| `ground_fault` | GFI symbol | Ground-fault detector |
+
+### 2.6 Loads and equipment
+
+| Type | Symbol | Typical use |
+|---|---|---|
+| `motor` | Circle with `M` | Three-phase motor |
+| `load` | Rectangle | Generic load or feeder |
+| `capacitor_bank` | Two plates + switch | Power factor correction |
+| `harmonic_filter` | LC symbol | Passive harmonic filter |
+| `vfd` | Rectangle with VFD | Variable-frequency drive |
+
+### 2.7 Metering
+
+| Type | Symbol | Typical use |
+|---|---|---|
+| `watthour_meter` | Circle with `Wh` | Energy meter |
+| `demand_meter` | Circle with `D` | Demand meter |
+
+<Playground initial={`sld "Equipment types"
+src = utility [label: "Grid 13.8kV"]
+tx = transformer_dy [rating: "1000 kVA", voltage: "13.8kV/480V", label: "Main TX"]
+bk = breaker [rating: "2000A", label: "Main Breaker"]
+bus = bus [voltage: "480V", label: "480V MV Bus"]
+ct1 = ct [label: "CT-1"]
+rly = relay [device: "51", label: "Overcurrent Relay"]
+cap = capacitor_bank [rating: "150 kVAR", label: "PF Cap"]
+mtr = motor [rating: "100HP", label: "Pump Motor"]
+gen = generator [rating: "500kW", label: "Emergency Gen"]
+ats = ats [rating: "800A", label: "ATS-1"]
+src -> tx
+tx -> bk
+bk -> bus
+bus -> ct1
+ct1 -> rly
+bus -> cap
+bus -> mtr
+gen -> ats
+ats -> bus`} height={440} />
 
 ---
 
-## 3. Annotation System
+## 3. Node attributes
 
-### 3.1 Equipment Labels
+Attributes are written inside `[…]` after the node type, comma-separated.
 
-```xml
-<!-- Equipment ID (e.g., "CB-101") -->
-<text x="x_center" y="y_top - 8" font-size="11" font-weight="bold"
-      text-anchor="middle" class="lt-equip-id">CB-101</text>
+| Attribute | Values | Effect |
+|---|---|---|
+| `label: "…"` | quoted string | Display name on the diagram |
+| `voltage: "…"` | quoted string, e.g. `"13.8kV"`, `"480V"` | Voltage level annotation |
+| `rating: "…"` | quoted string, e.g. `"1000 kVA"`, `"200A"` | Equipment rating annotation |
+| `device: "…"` | ANSI device number, e.g. `"51"`, `"87"` | Used with `relay` nodes |
+| any other key | quoted string | Stored as nameplate data (transformer kVA, %Z, etc.) |
 
-<!-- Rating (e.g., "800A / 65kA sym") -->
-<text x="x_center" y="y_bottom + 14" font-size="9"
-      text-anchor="middle" class="lt-equip-rating">800A / 65kA sym</text>
+**Example with all common attributes:**
+
+```
+xfmr = transformer_dy [
+  label: "Main Transformer",
+  voltage: "13.8kV/480V",
+  rating: "1000 kVA",
+  impedance: "5.75%Z"
+]
 ```
 
-### 3.2 Transformer Nameplate
-
-Nameplate data is annotated beside the transformer:
-```xml
-<text x="x_right + 5" y="y_top" font-size="9" class="lt-nameplate">500 kVA</text>
-<text x="x_right + 5" y="y_top + 12" font-size="9" class="lt-nameplate">13.8kV/480V</text>
-<text x="x_right + 5" y="y_top + 24" font-size="9" class="lt-nameplate">5.75% Z</text>
-```
-
-### 3.3 Cable / Conductor Annotation
-
-```xml
-<!-- Cable annotation alongside feeder line -->
-<text x="x_line + 5" y="y_mid" font-size="9"
-      text-anchor="start" class="lt-cable-label"
-      transform="rotate(-90, x_line+5, y_mid)">
-  3#3/0 AWG, 200A
-</text>
-```
+The attribute block may span multiple lines — the parser joins lines until the `]` is balanced.
 
 ---
 
-## 4. DSL Grammar (Single-Line Diagram)
+## 4. Connections
+
+A connection line is `fromId -> toId`, optionally followed by `[cable: "…", label: "…"]`.
+
+```
+bus1 -> cb1
+bus1 -> cb1 [cable: "3#2/0 AWG"]
+bus1 -> cb1 [cable: "3#2/0 AWG", label: "Feeder A"]
+```
+
+**Rules:**
+- Both IDs must be declared before or after the connection — all connections are validated at end of parse.
+- Only `->` (directed, source-to-load) is accepted. The connection direction is used for layout.
+- An unknown node ID throws `SLDParseError: Connection references unknown node "…"`.
+
+<Playground initial={`sld "ATS backup with cable labels"
+UTIL = utility [label: "Utility 480V"]
+GEN = generator [rating: "500 kW", label: "Emergency Gen"]
+ATS1 = ats [rating: "800A", label: "ATS-1"]
+BUS1 = bus [voltage: "480V", label: "Critical Bus"]
+CB1 = breaker [rating: "200A", label: "CB-1"]
+CB2 = breaker [rating: "200A", label: "CB-2"]
+L1 = load [label: "Server Room"]
+L2 = load [label: "Life Safety"]
+UTIL -> ATS1 [label: "Normal source"]
+GEN -> ATS1 [label: "Emergency source"]
+ATS1 -> BUS1 [cable: "3#2/0 AWG"]
+BUS1 -> CB1
+BUS1 -> CB2
+CB1 -> L1 [cable: "3#4 AWG"]
+CB2 -> L2 [cable: "3#4 AWG"]`} height={400} />
+
+---
+
+## 5. Labels & comments
+
+- **Title:** `sld "Substation One-Line"` — first line only.
+- **Node label:** `id = type [label: "…"]` — the display name.
+- **Connection label:** `A -> B [label: "…"]` — appears alongside the connecting line.
+- **Cable annotation:** `A -> B [cable: "3#2/0 AWG, 200ft"]` — conductor specification.
+- **Comments:** `#` at the start of a line. Inline `#` on the same line as a node or connection is also stripped.
+
+---
+
+## 6. Reserved words & escaping
+
+**Reserved at line start:** `sld` (header).
+
+**Operator token** — avoid `->` inside node IDs. IDs may contain `[A-Za-z][A-Za-z0-9_-]*` — hyphens are valid (e.g. `CB-101` is a legal ID).
+
+**Attribute block** — `[…]` brackets may span multiple physical lines. The parser joins continuation lines until the bracket depth reaches zero.
+
+**Duplicate IDs** throw `SLDParseError: Duplicate node id "…"`.
+
+---
+
+## 7. Common mistakes
+
+| You wrote | Parser says | Fix |
+|---|---|---|
+| `xfmr1 [type: transformer]` | `SLDParseError: Cannot parse line` | Use `=` assignment: `xfmr1 = transformer [...]` |
+| `id = battery [...]` | `SLDParseError: Unknown node type "battery"` | No `battery` type — use `ups` or `generator` |
+| `A -- B` (bidirectional) | `SLDParseError: Cannot parse line` | Only `->` is accepted; use two `->` lines if needed |
+| `A -> B -> C` (chained) | `SLDParseError: Cannot parse line` | Each connection is one `->` per line |
+| `relay [label: "OC"]` (no device number) | Relay renders with blank number | Add `device: "51"` for the ANSI device number |
+| `voltage: 480V` (unquoted) | Attribute value not recognized | Quote all values: `voltage: "480V"` |
+| Node ID starting with digit: `2BUS` | `SLDParseError: Cannot parse line` | IDs must start with a letter: `BUS2` |
+| Connection before node declared | `SLDParseError: Connection references unknown node "…"` | Declare nodes before or after connections — validated at end of parse, so order is flexible |
+
+---
+
+## 8. Grammar (EBNF)
 
 ```text
-document      = header statement*
-header        = "sld" quoted_string? NEWLINE
+document      = header NEWLINE ( blank | comment | node-def | connection )*
 
-statement     = comment | source_def | bus_def | device_def | load_def
-              | connect_def | feeder_def | boundary_def
+header        = "sld" ( WS quoted-string )? NEWLINE
+quoted-string = '"' any-char-but-quote* '"'
 
-comment       = "#" [^\n]* NEWLINE
+node-def      = id WS "=" WS node-type ( WS "[" attr-list "]" )? NEWLINE
+node-type     = "utility" | "generator" | "solar" | "wind" | "ups"
+              | "transformer" | "transformer_dy" | "transformer_yd"
+              | "transformer_yy" | "transformer_dd"
+              | "autotransformer" | "transformer_3winding"
+              | "bus" | "bus_tie" | "hub"
+              | "breaker" | "breaker_vacuum" | "switch" | "switch_load"
+              | "ground_switch" | "ats" | "recloser" | "sectionalizer"
+              | "fuse" | "fuse_cl"
+              | "ct" | "pt" | "relay" | "surge_arrester" | "ground_fault"
+              | "motor" | "load" | "capacitor_bank" | "harmonic_filter" | "vfd"
+              | "watthour_meter" | "demand_meter"
 
-source_def    = IDENTIFIER "=" source_type attrs NEWLINE
-source_type   = "utility" | "generator" | "battery"
-attrs         = "[" attr ("," attr)* "]"
-attr          = "voltage:" voltage_spec
-              | "rating:" quoted_string
-              | "label:" quoted_string
-              | "id:" quoted_string
-voltage_spec  = FLOAT "V" | FLOAT "kV"
+attr-list     = attr ( "," attr )*
+attr          = key ":" WS quoted-string
 
-bus_def       = IDENTIFIER "=" "bus" attrs NEWLINE
+connection    = id WS "->" WS id ( WS "[" conn-attrs "]" )? NEWLINE
+conn-attrs    = conn-attr ( "," conn-attr )*
+conn-attr     = "cable" ":" WS quoted-string
+              | "label" ":" WS quoted-string
 
-device_def    = IDENTIFIER "=" device_type attrs NEWLINE
-device_type   = "breaker" | "switch" | "fuse" | "fused-switch"
-              | "transformer" | "ct" | "pt" | "relay"
-              | "starter" | "contactor" | "mcc"
-              | "ammeter" | "voltmeter" | "power-meter"
-
-load_def      = IDENTIFIER "=" load_type attrs NEWLINE
-load_type     = "motor" | "panel" | "lighting-panel" | "ats" | "ups" | "load"
-
-connect_def   = IDENTIFIER "->" IDENTIFIER cable_clause? NEWLINE
-              | IDENTIFIER "--" IDENTIFIER             # bidirectional (bus tie)
-cable_clause  = "[" "cable:" quoted_string "]"
-
-feeder_def    = "feeder" IDENTIFIER "from:" bus_id "to:" load_id
-              INDENT device_def+ DEDENT
-
-boundary_def  = "boundary" quoted_string ":" NEWLINE
-              INDENT statement+ DEDENT
-
-IDENTIFIER    = /[a-zA-Z][a-zA-Z0-9_-]*/
-FLOAT         = /[0-9]+(\.[0-9]+)?/
-quoted_string = '"' /[^"]*/ '"'
-INDENT        = increase in whitespace
-DEDENT        = decrease in whitespace
-NEWLINE       = /\n/
+id            = [A-Za-z] [A-Za-z0-9_-]*
+key           = [A-Za-z] [A-Za-z0-9_]*
+comment       = "#" any NEWLINE
 ```
 
-**DSL Example: Simple Industrial Power Distribution SLD**
-```
-sld "Industrial Facility Power Distribution"
+The attribute block `[…]` may span multiple physical lines — the parser joins continuation lines until the bracket depth returns to zero.
 
-# Sources
-util = utility [voltage: "13.8kV", rating: "500MVA", label: "13.8kV Utility"]
+Authoritative source: `src/diagrams/sld/parser.ts`. If this diverges from the parser, the parser wins — please open an issue.
 
-# Main transformer
-TX1 = transformer [rating: "1000 kVA, 13.8kV/480V, 5.75%Z", id: "TX-1"]
+---
 
-# Main breaker
-CB-MAIN = breaker [rating: "2000A / 85kA sym", id: "CB-MAIN", voltage: "480V"]
+## 9. Standard compliance
 
-# 480V Bus
-BUS-480 = bus [voltage: "480V", label: "480V Main Bus"]
+Schematex SLDs follow **IEEE Std 315 (ANSI Y32.2)** graphic symbol conventions for switching equipment, transformers, and sources. Transformer winding configuration variants (`transformer_dy`, `transformer_yy`, etc.) use **IEC 60617** Δ/Y notation. Protection relay device numbers follow **ANSI/IEEE C37.2**.
 
-# Distribution breakers
-CB1 = breaker [rating: "400A / 65kA", id: "CB-1"]
-CB2 = breaker [rating: "400A / 65kA", id: "CB-2"]
-CB3 = breaker [rating: "200A / 65kA", id: "CB-3"]
+What is implemented today:
 
-# Loads
-M1 = motor [rating: "150HP, 480V, 3ph", label: "Pump Motor M-1"]
-LP1 = lighting-panel [rating: "100A, 208/120V", label: "LP-1"]
-MCC1 = mcc [rating: "800A", label: "MCC-1"]
+- ✅ All source types: utility, generator, solar, wind, UPS
+- ✅ Six transformer variants plus autotransformer and three-winding
+- ✅ Bus, bus-tie, hub
+- ✅ Full switching set: breaker, vacuum breaker, switch, load switch, ground switch, ATS, recloser, sectionalizer, fuse, current-limiting fuse
+- ✅ Protection and monitoring: CT, PT, relay (with ANSI device number), surge arrester, ground-fault detector
+- ✅ Load equipment: motor, load, capacitor bank, harmonic filter, VFD
+- ✅ Metering: watt-hour meter, demand meter
+- ✅ Directed connections with cable and label annotations
+- ✅ `label`, `voltage`, `rating`, `device` node attributes; arbitrary nameplate data
+- ⏳ Bus-tie switching with open/closed state indicator
+- ⏳ Protection zones (dashed boundary lines enclosing relay + CT)
+- ⏳ Arc-flash label blocks (incident energy, PPE level, working distance)
+- ⏳ Voltage-level banding (automatic color-coded horizontal bands by kV level)
 
-# Connections (top-to-bottom power flow)
-util -> TX1
-TX1 -> CB-MAIN
-CB-MAIN -> BUS-480
-BUS-480 -> CB1 -> M1 [cable: "3#2/0 AWG, 200ft"]
-BUS-480 -> CB2 -> LP1 [cable: "3#4 AWG, 75ft"]
-BUS-480 -> CB3 -> MCC1 [cable: "3#2/0 AWG, 150ft"]
-```
+References:
 
-**DSL Example: Residential Service Entrance**
-```
-sld "Residential 200A Service"
+- IEEE Std 315-1975 / ANSI Y32.2-1975 — *Graphic Symbols for Electrical and Electronics Diagrams*
+- IEC 60617:2025 (BS 3939) — *Graphical symbols for diagrams*
+- ANSI/IEEE C37.2 — *Electrical Power System Device Function Numbers*
 
-util = utility [voltage: "240V", label: "Utility 240V/120V Split-Phase"]
-meter = ammeter [id: "M-1"]
-main-cb = breaker [rating: "200A / 10kA AIC", id: "MAIN"]
-panel = panel [rating: "200A, 120/240V, 24-space", label: "Main Panel"]
+---
 
-util -> meter -> main-cb -> panel
-```
+## 10. Related examples
+
+<RelatedExamples slugs={[
+  'sld-generator-ats',
+  'sld-substation-13kv',
+]} />
+
+---
+
+## 11. Roadmap
+
+**Planned — not yet parseable.** Do not use these in generated DSL today; the parser will reject or ignore them.
+
+- **Bus-tie open/closed state** — `bus_tie` with explicit open/closed attribute so the symbol renders in the correct switching position.
+- **Protection zones** — a `zone:` or `boundary:` block that draws a dashed rectangle around a set of nodes (relay + CT + breaker) to indicate a protection zone.
+- **Arc-flash annotation blocks** — `arc_flash: [incident_energy: "8 cal/cm²", ppe: "2", distance: "18in"]` per IEEE 1584.
+- **Voltage-level banding** — automatic horizontal shading bands by kV level; nodes are placed in their voltage tier automatically.
+- **Bidirectional connection** (`<->`) — for bus-tie or normally-open tie paths where direction is undefined.
+
+Track in the GitHub issues if you need any of these sooner.

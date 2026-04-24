@@ -1,197 +1,357 @@
 ---
 title: Decision tree diagram
-description: Decision trees in three modes — taxonomy (yes/no question flows), decision analysis (expected value with probabilities), and machine learning (trained classifier visualization). Used by product managers, business analysts, data scientists, clinicians, and customer support teams.
 ---
 
-<Playground initial={`decisiontree "SaaS Pricing Decision"
+## About decision trees
 
-question "Annual contract?"
-  yes: question "Team size > 50?"
-    yes: answer "Enterprise plan — custom quote"
-    no: answer "Team plan — $49/seat/mo"
-  no: question "Need API access?"
-    yes: answer "Pro plan — $99/mo"
-    no: answer "Starter plan — $29/mo"`} />
+A **decision tree** is a branching diagram that represents a sequence of choices and their consequences as a rooted tree: each internal node is a question or decision, each edge is an answer or action, and each leaf is an outcome. The format appears across three quite different practices — troubleshooting flowcharts and clinical decision rules (taxonomy trees), risk and investment analysis using expected value (decision analysis), and machine learning model inspection (classifier trees). Despite surface differences all three share the same tree structure, which is why Schematex encodes them under one keyword with a mode selector.
 
-*Three modes in one keyword: taxonomy flows, probability-weighted decision analysis, and ML classifier trees.*
+Schematex decision trees cover: (1) **taxonomy mode** — the yes/no question flows used in medical triage ([Turing 1937](https://en.wikipedia.org/wiki/Decision_tree) lineage; now standard in clinical decision support), (2) **decision analysis mode** — the expected-value rollback method developed in management science ([Raiffa & Schlaifer, 1961](https://en.wikipedia.org/wiki/Decision_tree#Decision_analysis)), and (3) **ML mode** — the CART split/leaf format used to visualize scikit-learn and similar trained classifiers ([Breiman et al., 1984](https://en.wikipedia.org/wiki/Decision_tree_learning)).
 
----
+<Playground initial={`decisiontree "Customer Support Triage"
+direction: top-down
 
-## Modes
-
-```
-decisiontree           # taxonomy (default) — yes/no question trees
-decisiontree:decision  # decision analysis — expected value + probabilities
-decisiontree:ml        # machine learning — trained classifier visualization
-```
+question "Is the service completely down?"
+  yes: question "Outage confirmed on status page?"
+    yes: answer "Follow incident protocol — page on-call"
+    no: answer "Check monitoring — open severity-1 ticket"
+  no: question "Is the issue affecting billing?"
+    yes: answer "Escalate to billing team — SLA breach risk"
+    no: question "Can user reproduce consistently?"
+      yes: answer "Collect HAR trace — file bug report"
+      no: answer "Ask for screenshot — watch for recurrence"`} height={460} />
 
 ---
 
-## Taxonomy mode (default)
+## 1. Your first decision tree
 
-Best for: troubleshooting guides, FAQs, clinical decision support, product recommendation flows.
+The smallest useful decision tree: a root question with two branches.
 
-```
-decisiontree "Title"
+<Playground initial={`decisiontree "Laptop troubleshoot"
 
-question "Root question?"
-  yes: question "Follow-up?"
-    yes: answer "Outcome A"
-    no: answer "Outcome B"
-  no: answer "Outcome C"
-```
+question "Does it power on?"
+  yes: answer "Check display — connect external monitor"
+  no: question "Is the charger light on?"
+    yes: answer "Hold power button 10 s — try again"
+    no: answer "Check outlet and charging cable"`} />
 
-**Node keywords:** `question` (or `q`), `answer` (or `a`, `leaf`)
+Four rules cover 80% of usage:
 
-**Branch labels:** `yes:`, `no:`, or custom — `label "Low risk":`
+1. Start with `decisiontree`, optionally with `:mode` and a quoted title.
+2. Each question node uses `question "text"` (or shorthand `q "text"`).
+3. Each answer/leaf uses `answer "text"` (or `a "text"` or `leaf "text"`).
+4. Branch labels — `yes:`, `no:`, or a custom `label "X":` — prefix the child node on the same line.
 
-### Config options
+Indentation controls nesting: each level adds 2 spaces. The parser computes parent-child relationships from indent depth.
 
-```
-direction: left-right   # left-right (default) | top-down
-branchLabels: boolean   # boolean (default) | relation
-edgeStyle: diagonal     # diagonal | orthogonal | bracket
-```
-
-### Custom branch labels
-
-```
-decisiontree "Triage"
-
-question "Pain level?"
-  label "Severe": answer "Emergency — go to ER"
-  label "Moderate": answer "Urgent care"
-  label "Mild": answer "Rest + OTC medication"
-```
+> Comments must start with `#` or `//` on their own line.
 
 ---
 
-## Decision analysis mode
+## 2. Modes
 
-Best for: investment decisions, risk analysis, strategy evaluation, financial modeling with expected values.
+The mode is set in the header line:
 
-```
-decisiontree:decision "Build vs Buy"
+| Header | Mode | Used for |
+|---|---|---|
+| `decisiontree` | taxonomy | Yes/no question flows, troubleshooting guides, clinical decision support |
+| `decisiontree:decision` (or `decisiontree:da`) | decision analysis | Investment decisions, risk analysis, expected value calculation |
+| `decisiontree:ml` | machine learning | Visualizing trained CART classifiers (scikit-learn, XGBoost, etc.) |
 
-decision "Build in-house?"
-  choice "Build"
-    chance "Succeeds" [payoff: 500000]
-      prob 0.7
-        end "High ROI" [payoff: 800000]
-      prob 0.3
-        end "Over budget" [payoff: 100000]
-  choice "Buy vendor"
-    end "Known cost" [payoff: 400000]
-```
-
-**Node keywords:** `decision`, `chance`, `end`, `outcome`
-
-**Branch keywords:** `choice "label"`, `prob 0.6`
-
-**Properties:** `[payoff: value]` on any node
-
-Expected value is calculated automatically via backward induction.
-
-### Constraint
-Probabilities on `chance` node children must sum to 1.0 (±0.01).
+Default direction is `top-down` for taxonomy and ML, `left-right` for decision analysis.
 
 ---
 
-## Machine learning mode
+## 3. Taxonomy mode
 
-Best for: explaining trained classifiers, feature importance analysis, model transparency reports.
+Best for: troubleshooting guides, FAQs, clinical protocols, product recommendation flows.
 
-```
-decisiontree:ml "Iris Classification"
+### Node keywords
+
+| Keyword | Aliases | Meaning |
+|---|---|---|
+| `question "…"` | `q "…"` | Internal node — a question with children |
+| `answer "…"` | `a "…"`, `leaf "…"` | Leaf node — a terminal outcome |
+
+### Branch labels
+
+| Syntax | Meaning |
+|---|---|
+| `yes: question "…"` | Branch labeled "yes" |
+| `no: answer "…"` | Branch labeled "no" |
+| `label "Custom text": answer "…"` | Branch with any custom label |
+
+Custom labels let you go beyond yes/no for multi-way decisions from one question.
+
+<Playground initial={`decisiontree "Triage — chest pain onset"
+
+q "Onset sudden?"
+  yes: q "ECG changes present?"
+    yes: a "ACS protocol — cardiology consult"
+    no: q "D-dimer elevated?"
+      yes: a "PE workup — CT pulmonary angiography"
+      no: a "Aortic dissection — CT angiography"
+  no: q "Pain reproducible on palpation?"
+    yes: a "Musculoskeletal — NSAIDs, follow-up PCP"
+    no: a "GI / anxiety — further history"`} height={420} />
+
+<Playground initial={`decisiontree "Pain level triage"
+
+question "Reported pain level?"
+  label "Severe (8-10)": answer "Emergency — send to ER immediately"
+  label "Moderate (4-7)": answer "Urgent care — within 2 hours"
+  label "Mild (1-3)": answer "Schedule next available — OTC care"
+  label "None": answer "Monitor — patient may be post-medication"`} height={320} />
+
+---
+
+## 4. Decision analysis mode
+
+Best for: investment decisions, build-vs-buy analysis, risk-weighted strategy evaluation.
+
+### Node keywords
+
+| Keyword | Aliases | Meaning |
+|---|---|---|
+| `decision "…"` | — | Decision node — the actor chooses a branch |
+| `chance "…"` | — | Chance node — an uncertain outcome |
+| `end "…"` | `outcome "…"` | Terminal node — final payoff |
+
+### Branch keywords
+
+| Keyword | Meaning |
+|---|---|
+| `choice "label"` | Names the incoming branch from a decision node |
+| `prob N` | Sets the probability (0–1) on the incoming branch from a chance node |
+
+### Payoff attribute
+
+`payoff=N` on any node sets the payoff value. On `end` / `outcome` nodes it defines the terminal value. The parser runs expected-value rollback automatically: each `chance` node's EV is the probability-weighted sum of its children's EVs; each `decision` node's EV is the maximum child EV, and the optimal branch is flagged.
+
+**Constraint:** probabilities on all direct children of a `chance` node must sum to 1.0 (±0.01). The parser throws a `DTreeParseError` if they do not.
+
+<Playground initial={`decisiontree:decision "Cloud vendor selection"
+
+decision "Which vendor?"
+  choice "Build in-house"
+    chance "Project outcome"
+      prob 0.6 end "On-time delivery" payoff=900000
+      prob 0.4 end "Over budget / delayed" payoff=150000
+  choice "Managed SaaS vendor"
+    end "Predictable cost" payoff=500000
+  choice "Hybrid approach"
+    chance "Integration complexity"
+      prob 0.5 end "Smooth integration" payoff=700000
+      prob 0.5 end "Integration rework" payoff=300000`} height={440} />
+
+---
+
+## 5. Machine learning mode
+
+Best for: explaining trained CART classifiers, model transparency reports, feature importance analysis.
+
+### Node keywords
+
+| Keyword | Meaning |
+|---|---|
+| `split "…"` | Internal split node — contains a feature test |
+| `leaf "…"` | Leaf node — class or regression value |
+
+### Branch prefixes
+
+`true` and `false` prefix child nodes to mark which branch each child represents.
+
+### Properties (key=value, no colon, no quotes around values)
+
+| Property | Applies to | Meaning |
+|---|---|---|
+| `feature=name` | split | Feature name used at the split |
+| `op="<="` | split | Comparison operator (quote if contains special chars) |
+| `threshold=5.9` | split | Split threshold value |
+| `samples=150` | split, leaf | Sample count at this node |
+| `gini=0.5` | split, leaf | Gini impurity |
+| `entropy=0.5` | split, leaf | Entropy impurity |
+| `mse=0.3` | split, leaf | Mean squared error (regression) |
+| `gain=0.2` | split, leaf | Information gain |
+| `class=name` | leaf | Predicted class name |
+| `value=50` | leaf | Sample count; use `value=[50,30,20]` for class distribution |
+
+<Playground initial={`decisiontree:ml "Iris classification (CART)"
 direction: top-down
 impurity: gini
 
-split "Petal Length <= 2.45" feature=petal_length op="<=" threshold=2.45 samples=150 gini=0.666
-  true
-    leaf "Setosa" value=50 gini=0
-  false
-    split "Petal Width <= 1.75" feature=petal_width op="<=" threshold=1.75 samples=100 gini=0.5
-      true
-        leaf "Versicolor" value=50 gini=0
-      false
-        leaf "Virginica" value=50 gini=0
+split "Petal length ≤ 2.45" feature=petal_length op="<=" threshold=2.45 samples=150 gini=0.667
+  true leaf "Setosa" class=Iris-setosa value=50 gini=0.0
+  false split "Petal width ≤ 1.75" feature=petal_width op="<=" threshold=1.75 samples=100 gini=0.5
+    true leaf "Versicolor" class=Iris-versicolor value=50 gini=0.0
+    false leaf "Virginica" class=Iris-virginica value=50 gini=0.0`} height={400} />
+
+---
+
+## 6. Config options
+
+Config lines appear between the header and the first node. Each is `key: value` (colon, no `config` keyword).
+
+### Shared config (all modes)
+
+| Key | Values | Default | Effect |
+|---|---|---|---|
+| `direction:` | `top-down`, `left-right` | `top-down` (taxonomy/ML), `left-right` (decision) | Layout direction |
+| `edgeStyle:` (or `edge-style:`) | `diagonal`, `orthogonal`, `bracket` | mode-dependent | Edge drawing style |
+
+### Taxonomy config
+
+| Key | Values | Default | Effect |
+|---|---|---|---|
+| `branchLabels:` (or `branch-labels:`) | `boolean`, `relation` | `boolean` | Branch label style |
+
+### Decision analysis config
+
+| Key | Values | Default | Effect |
+|---|---|---|---|
+| `branchLength:` (or `branch-length:`) | `probability` | off | Scale branch length proportional to probability |
+
+### ML config
+
+| Key | Values | Default | Effect |
+|---|---|---|---|
+| `impurity:` | `gini`, `entropy`, `mse`, `gain` | `gini` | Impurity metric shown on nodes |
+| `classes:` | comma-separated list | — | Class label names for display |
+
 ```
-
-**Node keywords:** `split`, `leaf`
-
-**Branch prefixes:** `true`, `false`
-
-**ML properties** (key=value, no colon):
-
-| Property | Meaning |
-|----------|---------|
-| `feature=name` | Feature used at split |
-| `op="<="` | Comparison operator |
-| `threshold=5.9` | Split threshold |
-| `samples=150` | Sample count |
-| `gini=0.5` | Gini impurity |
-| `entropy=0.5` | Entropy |
-| `class=name` | Class for leaf |
-| `value=50` | Sample count or `[50,50]` array |
-
-### Config options (ML)
-
-```
-direction: top-down   # top-down | left-right
-impurity: gini        # gini | entropy | mse | gain
-classes: A, B, C      # class labels for display
+decisiontree:ml "Loan classifier"
+direction: top-down
+impurity: gini
+classes: Approved, Denied, Review
 ```
 
 ---
 
-## Examples
+## 7. Labels & comments
 
-### Troubleshooting guide
+- **Diagram title:** `decisiontree "Title"` — the quoted string after the header keyword.
+- **Node label:** the quoted string immediately after the node keyword — `question "Is the fee waived?"`.
+- **Branch label:** `yes:`, `no:`, or `label "Custom":` before the child node — on the same line as the child.
+- **Payoff:** `payoff=250000` at the end of a decision/end node line.
+- **ML properties:** `key=value` tokens after the node's label string (no `[…]` brackets, no colons).
+- **Comments:** `#` or `//` at the start of a line (after optional leading whitespace). Only full-line comments are supported — inline trailing comments are not.
 
+---
+
+## 8. Reserved words & escaping
+
+**Reserved node keywords:** `decision`, `chance`, `end`, `outcome`, `choice`, `prob`, `split`, `leaf`, `question`, `q`, `answer`, `a`.
+
+**Reserved branch prefixes:** `yes:`, `no:`, `true`, `false`, `label`.
+
+**Reserved header forms:** `decisiontree`, `decisiontree:decision`, `decisiontree:da`, `decisiontree:ml`.
+
+**Strings with spaces** must be double-quoted: `question "Annual revenue > $1M?"`. Node labels, branch labels from `label "…":` syntax, and the diagram title all require double quotes.
+
+| Reserved token | Context | Notes |
+|---|---|---|
+| `yes:` / `no:` | Line start in taxonomy | Cannot be used as a label — use `label "yes":` if you need literal text "yes" |
+| `true` / `false` | Line start in ML mode | Cannot be a node label |
+| `choice` | Line start in decision mode | Acts as branch wrapper, not a node |
+| `prob` | Line start in decision mode | Must be followed by a number |
+
+---
+
+## 9. Common mistakes
+
+| You wrote | Parser says | Fix |
+|---|---|---|
+| `yes: "Approve"` (no node keyword) | `DTreeParseError: Missing taxonomy node kind` | `yes: answer "Approve"` |
+| Probabilities on `chance` children summing to 0.8 | `DTreeParseError: probabilities do not sum to 1.0` | Adjust so all `prob` values sum to exactly 1.0 (±0.01) |
+| `question "text"` with a child at the same indent level | Child not parsed as a child — becomes a sibling | Indent children by 2 more spaces than the parent |
+| `config direction = top-down` (using `config` keyword) | `config` is a fishbone keyword — not recognized here | Use `direction: top-down` (no `config` prefix) |
+| `feature = petal_length` (spaces around `=`) | Parsed as separate tokens; property not recognized | No spaces: `feature=petal_length` |
+| `[payoff: 500000]` bracket syntax | Not recognized — parser ignores brackets for payoff | Use `payoff=500000` (no brackets, no spaces around `=`) |
+| `decisiontree:taxonomy` | `DTreeParseError: Invalid header` | Use `decisiontree` (no mode suffix for taxonomy) |
+
+---
+
+## 10. Grammar (EBNF)
+
+```text
+document       = header ( config-line )* node
+
+header         = "decisiontree" ( ":" mode )? ( WS quoted-string )? NEWLINE
+mode           = "decision" | "da" | "ml"
+                 // omitted → taxonomy
+
+config-line    = config-key ":" WS config-value NEWLINE
+config-key     = "direction" | "edgeStyle" | "edge-style"
+               | "branchLabels" | "branch-labels"
+               | "branchLength" | "branch-length"
+               | "impurity" | "classes"
+
+// ── Taxonomy mode ──────────────────────────────
+node           = ( branch-prefix WS )? tax-node ( WS "[" tax-attrs "]" )? NEWLINE
+                   INDENT child-node*
+tax-node       = ( "question" | "q" ) WS quoted-string
+               | ( "answer" | "a" | "leaf" ) WS quoted-string
+branch-prefix  = "yes:" | "no:" | "label" WS quoted-string ":"
+
+// ── Decision-analysis mode ─────────────────────
+da-node        = "decision" WS quoted-string NEWLINE INDENT da-child+
+               | "chance" WS quoted-string NEWLINE INDENT da-prob-child+
+               | ( "end" | "outcome" ) WS quoted-string ( WS "payoff=" number )? NEWLINE
+da-child       = "choice" WS quoted-string NEWLINE INDENT da-node
+da-prob-child  = "prob" WS number WS da-node    // prob, value, and child all on one line
+
+// ── ML mode ───────────────────────────────────
+ml-node        = ( "true" | "false" )? ml-kind WS quoted-string ml-prop* NEWLINE
+                   INDENT ml-child*
+                 // "true"/"false" and ml-kind must be on the same line
+ml-kind        = "split" | "leaf"
+ml-prop        = WS key "=" value     // no spaces around "="
+
+comment        = ( "#" | "//" ) any NEWLINE
+quoted-string  = '"' any-char-but-quote* '"'
 ```
-decisiontree "Email Not Sending"
 
-question "Error shown in UI?"
-  yes: question "Error code 550?"
-    yes: answer "Recipient email rejected — check address"
-    no: answer "Check SMTP logs for error detail"
-  no: question "Message in Sent folder?"
-    yes: answer "Delivery delayed — check spam filters"
-    no: answer "Client not connected — check network"
-```
+Authoritative source: `src/diagrams/decisiontree/parser.ts`. If this diverges from the parser, the parser wins — please open an issue.
 
-### Medical triage
+---
 
-```
-decisiontree "Chest Pain Triage"
-edgeStyle: orthogonal
+## 11. Standard compliance
 
-question "Onset sudden?"
-  yes: question "ECG changes?"
-    yes: answer "ACS protocol — cardiology consult"
-    no: question "D-dimer elevated?"
-      yes: answer "PE workup — CT pulmonary angio"
-      no: answer "Aortic dissection — CT angio"
-  no: question "Reproducible on palpation?"
-    yes: answer "Musculoskeletal — NSAIDs, follow-up"
-    no: answer "GI / anxiety — further history"
-```
+Schematex decision trees cover three established conventions:
 
-### Investment decision analysis
+**Taxonomy mode** follows the question/answer flowchart conventions common in clinical decision support systems (Arden Syntax lineage) and ISO 9001 troubleshooting procedures.
 
-```
-decisiontree:decision "Market Entry"
-direction: top-down
+**Decision analysis mode** follows the expected-value rollback method from management science: decision nodes (square, actor chooses), chance nodes (circle, probabilistic), terminal nodes with payoffs. EV is computed automatically via backward induction (Raiffa & Schlaifer, 1961).
 
-decision "Enter new market?"
-  choice "Enter"
-    chance "Market reception"
-      prob 0.5
-        end "Strong adoption" [payoff: 2000000]
-      prob 0.3
-        end "Moderate adoption" [payoff: 800000]
-      prob 0.2
-        end "Poor adoption" [payoff: -300000]
-  choice "Stay out"
-    end "Status quo" [payoff: 0]
-```
+**ML mode** follows the CART (Classification and Regression Trees) split/leaf notation (Breiman et al., 1984) compatible with scikit-learn's `export_text` and `plot_tree` output.
+
+What is implemented today:
+
+- ✅ All three modes: taxonomy, decision analysis, ML
+- ✅ Taxonomy: `question`/`q`, `answer`/`a`/`leaf`, `yes:`, `no:`, `label "X":` branch labels
+- ✅ Decision: `decision`, `chance`, `end`/`outcome`, `choice`, `prob`, `payoff=N`, automatic EV rollback
+- ✅ ML: `split`, `leaf`, `true`/`false` branch prefixes, `feature=`, `threshold=`, `gini=`, `entropy=`, `mse=`, `class=`, `value=`
+- ✅ Config: `direction:`, `edgeStyle:`, `impurity:`, `classes:`, `branchLabels:`, `branchLength:`
+- ⏳ Probability-weighted branch length rendering (`branchLength: probability` parsed but not yet applied visually)
+- ⏳ Sensitivity analysis overlays (tornado chart-style annotations on decision trees)
+- ⏳ Forest / ensemble view — multiple trees side-by-side
+
+References:
+
+- Raiffa, H. & Schlaifer, R. (1961). *Applied Statistical Decision Theory.* Harvard Business School.
+- Breiman, L. et al. (1984). *Classification and Regression Trees.* Wadsworth.
+- Wikipedia — [Decision tree](https://en.wikipedia.org/wiki/Decision_tree) · [Decision tree learning](https://en.wikipedia.org/wiki/Decision_tree_learning)
+
+---
+
+## 12. Roadmap
+
+**Planned — not yet parseable.** Do not use these in generated DSL today; the parser will reject or ignore them.
+
+- **`branchLength: probability` visual rendering** — the config key parses but the layout engine does not yet scale branch lengths by probability.
+- **Sensitivity / tornado analysis** — `sensitivity:` block annotating which `prob` values most affect the final EV.
+- **Export annotations** — structured table output (decision matrix) alongside the diagram SVG.
+- **Forest view** — `forest` keyword wrapping multiple `decisiontree` blocks in a side-by-side comparison layout.
+- **Collapse/expand interactive markers** — `collapsed: true` on a node to render a triangle placeholder for deep subtrees.
+
+Track in the GitHub issues if you need any of these sooner.

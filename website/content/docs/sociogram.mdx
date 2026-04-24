@@ -1,324 +1,15 @@
 ---
 title: Sociogram
-description: Social network diagrams with mutual choices, rejections, group coloring, force-directed or hierarchical layout. Auto-detects sociometric roles — stars, isolates, cliques. Based on Moreno sociometry. Used by teachers for classroom dynamics analysis, therapists for group assessment, and HR teams for informal influence mapping.
 ---
 
-<Playground initial={`sociogram "Playground Dynamics"
-  config: layout = force-directed
-  group boys [label: "Boys", color: "#42A5F5"]
-    tom; jack; mike; leo
-  group girls [label: "Girls", color: "#EF5350"]
-    anna; beth; chloe; diana
-  tom <-> jack
-  mike -x> leo [label: "conflict"]
-  anna <-> beth
-  diana -.- tom`} />
+## About sociograms
 
-*Moreno (1934) sociometry model + modern social network analysis conventions + multi-domain application extensions. Visualization and analysis of social relationships within groups.*
+A **sociogram** maps the web of choices, rejections, and alliances *within* a group — who likes whom, who is isolated, where cliques form. Jacob Moreno introduced the method in 1934 as a clinical tool for group therapy; it has since been adopted by classroom teachers (who use it to detect exclusion and bullying), HR teams (informal influence mapping), and organizational researchers. Unlike an ecomap, which centers on one person's external environment, a sociogram treats every member of the group symmetrically.
 
-> **Primary References:**
-> - Moreno, J.L. (1934). *Who Shall Survive? Foundations of Sociometry, Group Psychotherapy and Sociodrama.* Beacon House.
-> - Moreno, J.L. & Jennings, H.H. (1938). Statistics of social configurations. *Sociometry*, 1(3/4), 342-374.
-> - Brandes, U. et al. (2011). Effects of sociogram drawing conventions and edge crossings in social network visualization. *J Graph Algorithms Appl.* 15(1), 157-176.
-> - Hanneman, R.A. & Riddle, M. (2005). *Introduction to Social Network Methods.* UC Riverside.
-> - FBI Law Enforcement Bulletin (2014). Social Network Analysis: A Systematic Approach for Investigating.
+Schematex follows the **[Moreno (1934) sociometry conventions](https://en.wikipedia.org/wiki/Sociometry)** for node roles and edge types, extended with modern social network analysis notations for valence, direction, and weight. This page documents what the parser accepts today.
 
----
-
-## 1. What is a Sociogram?
-
-A sociogram is a **group social relationship visualization tool** developed by Jacob L. Moreno in 1934. Unlike an ecomap (individual ↔ external systems), a sociogram focuses on the relationship network **between members within a group** — who chose whom, who is isolated, who is central, and which people form cliques.
-
-Key differences:
-| Dimension | Ecomap | Sociogram |
-|------|--------|-----------|
-| Focus | One person/family vs. external systems | All members within a group, among each other |
-| Layout | Radial (center-periphery) | Network graph (force-directed / circular) |
-| Edge meaning | Relationship quality (strong/weak/stressful) | Social choices (choice/rejection/mutual) |
-| Use case | Clinical assessment | Group dynamics analysis |
-
----
-
-## 2. Who Uses Sociograms — User Segments
-
-### 2.1 Education (Largest User Group)
-
-**Teachers + school counselors** are the primary user group for sociograms. Typical use cases:
-
-| Scenario | Method | Purpose |
-|------|------|------|
-| Classroom social assessment | Have each student list 2 classmates they want to work with | Identify stars (popular), isolates (excluded), cliques (subgroups) |
-| Seating/group arrangement | Optimize based on sociogram data | Ensure isolates are included, break up exclusive cliques |
-| Bullying prevention | Regular sociogram tracking | Detect relationship changes, early intervention |
-| Camp/class assignment | Teacher-student relationship mapping | Balance social dynamics across groups |
-
-**Key search signals:** "sociogram classroom", "sociogram maker" (teacher tool intent)
-
-### 2.2 Clinical / Social Work (Professional Users)
-
-**Social workers + group therapists + psychodrama therapists:**
-
-| Scenario | Method | Purpose |
-|------|------|------|
-| Group therapy dynamics assessment | Therapist observation + member questionnaire | Identify alliances, conflicts, power structures |
-| Social atom | Individual draws their most important relationships | Moreno's core technique, warm-up for psychodrama |
-| Family system dynamics | Choices/rejections among family members | Complements the dynamic dimension of genograms |
-| Community assessment | Mapping relationships between institutions | Identify service gaps, resource concentration |
-
-**Overlap with existing Schematex users:** Social workers/therapists who use genogram + ecomap are natural sociogram users as well.
-
-### 2.3 Organizational Development (Enterprise Users)
-
-**HR professionals + organizational development consultants + team leads:**
-
-| Scenario | Method | Purpose |
-|------|------|------|
-| Informal influence mapping | "Who do you turn to when you have a problem?" | Discover informal leaders vs. formal org chart |
-| Team building | Cross-departmental social network analysis | Optimize cross-functional team composition |
-| Information flow analysis | "Who do you get work information from?" | Identify information bottlenecks and silos |
-| Post-merger cultural integration | Cross-connections between two teams | Assess integration progress |
-
-### 2.4 Law Enforcement / Intelligence (High-Value Professional Users)
-
-**Law enforcement analysts + intelligence analysts:**
-
-| Scenario | Method | Purpose |
-|------|------|------|
-| Criminal network analysis | Phone records, social media, surveillance data → link analysis | Identify organizational leaders, intermediaries, periphery |
-| Gang structure mapping | Arrest records, co-location records | Understand gang hierarchy and territory |
-| Suspect social circle | 1-2 degree relationship network | Track fugitives, predict behavior |
-| Counter-terrorism network analysis | Communication patterns + financial flows | Identify cell structures |
-
-**Note:** Law enforcement scenarios typically use specialized tools like Palantir or i2 Analyst's Notebook, but basic sociogram visualization capability (lightweight, embeddable, Text DSL input) represents a differentiation opportunity.
-
-### 2.5 Academic Research (Long-Tail Users)
-
-Social network analysis in sociology, anthropology, and political science research. Typically uses heavy tools like Gephi, NetworkX, and Pajek. Schematex's opportunity lies in **lightweight, fast visualization** — paper figures, teaching demonstrations.
-
----
-
-## 3. Sociogram Structure
-
-A sociogram consists of three layers:
-1. **Nodes** — individual members within the group
-2. **Edges** — social relationships/choices between members
-3. **Structural Patterns** — group structures emerging from nodes + edges
-
----
-
-## 4. Node Types & Symbols
-
-### 4.1 Standard Node Shape
-
-| Element | Shape | SVG | Meaning |
-|---------|-------|-----|------|
-| Default member | Circle (r=20) | `<circle>` | Individual in the group |
-| Star (popular) | Circle + star marker | `<circle>` + `<polygon>` overlay | Central figure chosen by many |
-| Isolate | Circle + dashed border | `<circle stroke-dasharray>` | Chosen by no one / chooses no one |
-| Ego (focal person) | Double circle (concentric) | Two `<circle>` elements, gap=3px | Focal person for egocentric view |
-
-**Auto-detection rules (automatically labeled based on data):**
-- **Star:** in-degree ≥ mean + 1.5 × SD, or in-degree ≥ group_size × 0.4
-- **Isolate:** in-degree = 0 AND out-degree = 0
-- **Neglectee:** in-degree = 0 but out-degree > 0
-- **Rejected:** rejection count ≥ 2
-
-### 4.2 Node Sizing
-
-Node size can reflect sociometric metrics:
-
-| Mode | Size Rule | Meaning |
-|------|-----------|------|
-| Uniform (default) | All nodes same size (r=20) | Neutral display |
-| By in-degree | r = 14 + in_degree × 4 (min: 14, max: 40) | More popular = larger |
-| By betweenness | r = 14 + normalized_betweenness × 26 | More central bridge role = larger |
-
-DSL: `config: sizing = in-degree` or on a node: `[size: large]`
-
-### 4.3 Node Coloring
-
-| Mode | Color Rule | Meaning |
-|------|-----------|------|
-| Default | All `#42A5F5` (blue) | Neutral |
-| By group/category | Color by group attribute | Distinguish subgroups (class, department, gender, etc.) |
-| By role | Star=gold, Isolate=gray, Normal=blue | Highlight social status |
-| By custom attribute | User-defined | Any classification dimension |
-
-Default color palette for groups (up to 8 groups):
-```
-group1: #42A5F5 (blue)
-group2: #66BB6A (green)
-group3: #FFA726 (orange)
-group4: #AB47BC (purple)
-group5: #EF5350 (red)
-group6: #26C6DA (cyan)
-group7: #FFEE58 (yellow)
-group8: #8D6E63 (brown)
-```
-
-### 4.4 Node Labels
-
-| Element | Position | Font | Meaning |
-|---------|----------|------|------|
-| Name/ID | Below node center, 4px gap | 11px, `font-family: sans-serif` | Primary identifier |
-| Role badge | Top-right corner | 9px | Optional: ★ star, ● isolate |
-| Details | Below name | 9px, gray | Optional: age, title, etc. |
-
----
-
-## 5. Edge Types (Connection Lines)
-
-### 5.1 Relationship Direction
-
-| Type | Line Style | DSL Syntax | SVG | Meaning |
-|------|-----------|------------|-----|------|
-| One-way choice | Arrow → | `A -> B` | `<line>` + `marker-end="url(#arrow)"` | A chose B |
-| Mutual choice | Double arrow ↔ | `A <-> B` | `<line>` + both markers | Mutual choice |
-| Undirected | Plain line — | `A -- B` | `<line>` without markers | Known relationship, direction unknown |
-
-### 5.2 Relationship Valence (Positive/Negative)
-
-| Type | Line Style | DSL Syntax | SVG | Meaning |
-|------|-----------|------------|-----|------|
-| Positive/attraction | Solid line | `->` / `<->` / `--` | `<line>` solid, color: `#388E3C` (green) | Choice/like/trust |
-| Negative/rejection | Dashed red line | `-x>` / `<x->` / `-x-` | `<line>` dashed, color: `#D32F2F` (red) | Rejection/conflict/avoidance |
-| Neutral/indifferent | Dotted gray line | `-.>` / `<.->` / `-.-` | `<line>` dotted, color: `#9E9E9E` (gray) | Neutral/no clear attitude |
-
-### 5.3 Edge Weight (Relationship Strength)
-
-| Weight | Line Width | DSL Syntax | Meaning |
-|--------|-----------|------------|------|
-| Weak (1) | 1px | `A -> B [weight: 1]` | Weak connection |
-| Normal (2, default) | 2px | `A -> B` | Average connection |
-| Strong (3) | 3.5px | `A -> B [weight: 3]` or `A ==> B` | Strong connection |
-| Very strong (4+) | 5px | `A -> B [weight: 4]` or `A ===> B` | Very strong connection |
-
-### 5.4 Edge Labels
-
-```
-A -> B [label: "best friend"]
-C -x> D [label: "bullying"]
-E <-> F [label: "study partners"]
-```
-
-### 5.5 Combined DSL Examples
-
-```
-# One-way positive choice
-alice -> bob
-
-# Mutual strong positive
-alice <==> carol
-
-# One-way rejection
-dave -x> eve
-
-# Mutual neutral
-frank <.-> grace
-
-# Weighted with label
-alice -> bob [weight: 3, label: "trusted advisor"]
-```
-
----
-
-## 6. Structural Patterns (Auto-Detected)
-
-Schematex should auto-detect and optionally annotate the following classic sociometric structures:
-
-### 6.1 Individual-Level Patterns
-
-| Pattern | Detection Rule | Visual Annotation |
-|---------|---------------|-------------------|
-| **Star** | in-degree ≥ mean + 1.5σ | Gold fill / ★ badge |
-| **Isolate** | in-degree = 0 AND out-degree = 0 | Dashed border, gray fill |
-| **Neglectee** | in-degree = 0, out-degree > 0 | Dashed border, blue fill |
-| **Rejected** | rejection count ≥ 2 | Red dashed border |
-
-### 6.2 Pair-Level Patterns
-
-| Pattern | Detection Rule | Visual Annotation |
-|---------|---------------|-------------------|
-| **Mutual pair** | A→B AND B→A | Thicker bidirectional line |
-| **Asymmetric pair** | A→B but NOT B→A | Standard arrow |
-
-### 6.3 Group-Level Patterns
-
-| Pattern | Detection Rule | Visual Annotation |
-|---------|---------------|-------------------|
-| **Clique** | Subgroup where all members mutually choose each other (≥3 members) | Shaded convex hull background |
-| **Chain** | A→B→C→... (unidirectional sequence, no mutual) | Sequential arrow path highlighted |
-| **Bridge** | Node connecting two otherwise separate clusters | Diamond shape overlay or highlight ring |
-
-DSL control: `config: highlight = stars, isolates, cliques` (default: `stars, isolates`)
-
----
-
-## 7. Layout Rules
-
-### 7.1 Layout Algorithm Options
-
-Sociogram supports multiple layouts suitable for different scenarios:
-
-| Layout | Algorithm | Best For | Complexity |
-|--------|------|---------|--------|
-| **Force-directed** (default) | Fruchterman-Reingold / spring model | General group networks, automatic clustering | O(n² × iterations) |
-| **Circular** | Evenly arranged around a circle | Small groups (≤15 people), emphasizing who connects to whom | O(n) |
-| **Concentric** | Layered rings by in-degree | Emphasizing core-periphery structure | O(n log n) |
-| **Group-based** | Partitioned by group attribute | Cross-group relationship visualization | O(n) + force within group |
-
-### 7.2 Spacing & Canvas Rules
-
-| Parameter | Default | Meaning |
-|-----------|---------|------|
-| Node radius | 20px (uniform) | Default node size |
-| Min node-to-node gap | 60px | Avoid overlapping |
-| Edge-to-node gap | 2px | Lines do not enter nodes |
-| Canvas padding | 50px | Edge whitespace |
-| Label gap below node | 4px | Gap between label and node |
-| Arrow marker size | 8px | Arrow size |
-
-### 7.6 Responsive Sizing
-
-| Group Size | Recommended Layout | Canvas Size |
-|------------|-------------------|-------------|
-| ≤ 8 | Circular | 400 × 400 |
-| 9-20 | Force-directed or Circular | 600 × 600 |
-| 21-40 | Force-directed | 800 × 800 |
-| 41+ | Force-directed + group clustering | 1000 × 1000+ |
-
----
-
-## 8. Examples
-
-### Classroom dynamics
-
-```
-sociogram "Playground Dynamics"
-  config: layout = force-directed
-  config: highlight = stars, isolates, cliques
-  config: coloring = group
-
-  group boys [label: "Boys", color: "#42A5F5"]
-    tom; jack; mike; leo
-
-  group girls [label: "Girls", color: "#EF5350"]
-    anna; beth; chloe; diana
-
-  tom <-> jack
-  mike -x> leo [label: "conflict"]
-  anna <-> beth
-  anna <-> chloe
-  beth <-> chloe
-  diana -.- tom
-```
-
-### Group therapy trust network
-
-```
-sociogram "Group Therapy — Trust Network"
+<Playground initial={`sociogram "Group Therapy — Week 6"
   config: layout = circular
-
   therapist [label: "Dr. Park", role: star]
   james [label: "James"]
   maria [label: "Maria"]
@@ -326,40 +17,405 @@ sociogram "Group Therapy — Trust Network"
   sarah [label: "Sarah"]
   tom [label: "Tom"]
   nina [label: "Nina"]
-
   james -> therapist
   james <-> maria [weight: 3, label: "strong bond"]
   james -> lee
   maria -> therapist
   maria -> sarah
   lee -> therapist
-  lee -.- nina
+  lee -x> nina [label: "tension"]
   sarah <-> nina
   sarah -> therapist
   tom -> therapist
-  nina -> maria
-```
+  tom -.- nina
+  nina -> maria`} height={520} />
 
-### Org team informal influence
+---
 
-```
-sociogram "Engineering Team Informal Influence"
+## 1. Your first sociogram
+
+The smallest useful sociogram: four people, three different relationship types.
+
+<Playground initial={`sociogram "Study group"
+  alice [label: "Alice"]
+  bob [label: "Bob"]
+  carol [label: "Carol"]
+  dave [label: "Dave"]
+  alice <-> bob [label: "lab partners"]
+  carol -> alice
+  dave -x> bob [label: "rivalry"]`} />
+
+Four rules cover 80% of usage:
+
+1. Start with the keyword `sociogram`, optionally followed by a quoted title.
+2. Each person is a **node** — declared explicitly with `id [label: "…"]` or auto-created the first time they appear in an edge.
+3. Connect two nodes with an **edge operator** — `<->` (mutual), `->` (one-way), `-x>` (rejection), `-.-` (neutral). See §3.
+4. Optionally declare **groups** and **config** lines to control layout and coloring.
+
+> Comments must start with `#` on their own line.
+
+---
+
+## 2. Nodes
+
+A node line is `id [attr: value, …]`. Nodes are also created implicitly when first referenced in an edge — but explicit declaration lets you set labels, groups, and roles.
+
+**ID rules.** Must match `[a-zA-Z][a-zA-Z0-9_-]*`. The ID is used internally; the `label:` attribute sets the display name.
+
+**Node attributes:**
+
+| Attribute | Values | Effect |
+|---|---|---|
+| `label: "…"` | quoted string | Display name (defaults to the ID) |
+| `group: id` | group ID | Associates the node with a group for coloring |
+| `role: …` | `star`, `isolate`, `bridge`, `neglectee`, `rejected` | Explicit sociometric role annotation |
+| `size: …` | `small`, `medium`, `large` | Node size override |
+
+<Playground initial={`sociogram "Group roles demo"
+  config: layout = circular
+  dr_park [label: "Dr. Park", role: star]
+  james [label: "James"]
+  nina [label: "Nina", role: neglectee]
+  loner [label: "Alex", role: isolate]
+  bridge [label: "Sam", role: bridge, size: large]
+  james -> dr_park
+  james -> bridge
+  bridge -> dr_park
+  bridge -> nina
+  nina -> james`} />
+
+---
+
+## 3. Edges
+
+An edge line is `leftId OP rightId` optionally followed by `[label: "…", weight: N]`. Both IDs are auto-registered as nodes if not yet declared.
+
+### 3.1 Direction and valence
+
+<Playground initial={`sociogram "Edge types"
+  config: layout = circular
+  a [label: "A"]
+  b [label: "B"]
+  c [label: "C"]
+  d [label: "D"]
+  e [label: "E"]
+  f [label: "F"]
+  # Positive
+  a -> b [label: "chose B"]
+  b <-> c [label: "mutual"]
+  # Negative
+  c -x> d [label: "rejects D"]
+  d <x-> e [label: "mutual reject"]
+  # Neutral
+  e -.- f [label: "indifferent"]
+  f <.-> a [label: "mutual neutral"]`} />
+
+| Operator | Direction | Valence | Meaning |
+|---|---|---|---|
+| `A -> B` | one-way | positive | A chose B |
+| `A <- B` | one-way | positive | B chose A (same as `B -> A`) |
+| `A <-> B` | mutual | positive | Both chose each other |
+| `A -- B` | undirected | positive | Relationship known; direction not recorded |
+| `A -x> B` | one-way | negative | A rejects B |
+| `A <x- B` | one-way | negative | B rejects A |
+| `A <x-> B` | mutual | negative | Mutual rejection |
+| `A -x- B` | undirected | negative | Conflict; direction unknown |
+| `A -.> B` | one-way | neutral | A is indifferent toward B |
+| `A <.-> B` | mutual | neutral | Mutual indifference |
+| `A -.- B` | undirected | neutral | Neutral relationship |
+
+### 3.2 Weight / strength
+
+Higher weight = thicker line. Use the shorthand operators or override explicitly with `[weight: N]`.
+
+| Weight | Shorthand | Direction | Meaning |
+|---|---|---|---|
+| 2 (default) | `->` `<->` `--` `-x>` `-.-` | any | Standard connection |
+| 3 | `==>` `<==` `<==>` `===` | one-way / mutual / undirected | Strong |
+| 4 | `===>` `<===` `<===>` | one-way / mutual | Very strong |
+| custom | `[weight: N]` | — | Any integer |
+
+<Playground initial={`sociogram "Relationship strengths"
+  config: layout = circular
+  a [label: "A"]
+  b [label: "B"]
+  c [label: "C"]
+  d [label: "D"]
+  a -> b [label: "weight 2 (default)"]
+  b ==> c [label: "weight 3 (strong)"]
+  c ===> d [label: "weight 4 (very strong)"]
+  d -> a [weight: 1, label: "weight 1 (weak)"]`} />
+
+### 3.3 Edge labels
+
+`A -> B [label: "best friend"]` — the label appears on the connecting line.
+
+---
+
+## 4. Groups
+
+A `group` block collects nodes into a named subgroup for coloring and layout clustering.
+
+**Group syntax:**
+- `group id [label: "…", color: "#hex"]` — the group header line.
+- Member lines follow, each indented **at least 4 spaces**, one node per line.
+- A non-indented line (or the next `group`) closes the current group.
+- Members can carry their own props: `anna [label: "Anna K.", size: large]`.
+
+Nodes can also be assigned inline: `alice [group: girls]`.
+
+<Playground initial={`sociogram "Classroom dynamics"
+  config: layout = force-directed
+  group boys [label: "Boys", color: "#42A5F5"]
+    tom [label: "Tom"]
+    jack [label: "Jack"]
+    mike [label: "Mike"]
+    leo [label: "Leo"]
+  group girls [label: "Girls", color: "#EF5350"]
+    anna [label: "Anna"]
+    beth [label: "Beth"]
+    chloe [label: "Chloe"]
+    diana [label: "Diana"]
+  tom <-> jack
+  anna <-> beth
+  anna <-> chloe
+  beth <-> chloe
+  mike -x> leo [label: "conflict"]
+  diana -> anna
+  tom -> anna [label: "cross-group"]`} />
+
+---
+
+## 5. Configuration
+
+`config:` lines tune layout and visual encoding. Each is its own line.
+
+| Config key | Values | Default | Effect |
+|---|---|---|---|
+| `layout` | `circular`, `force-directed`, `concentric` | `circular` | Placement algorithm |
+| `sizing` | `uniform`, `in-degree`, `betweenness` | `uniform` | Node size by metric |
+| `coloring` | `default`, `group`, `role` | `default` | Node color scheme |
+| `highlight` | comma list: `stars`, `isolates`, `cliques` | `stars,isolates` | Which patterns to annotate |
+
+**Layout notes:**
+- `circular` — nodes evenly spaced on a ring. Best for small groups (≤15).
+- `force-directed` — spring model; clusters emerge automatically. Best for medium-sized groups with distinct subgroups.
+- `concentric` — inner rings hold high-in-degree nodes. Best for showing core-periphery structure.
+
+**Circular** — uniform ring placement; every node equally visible. Best for small, tightly-knit groups.
+
+<Playground initial={`sociogram "Therapy group — circular"
+  config: layout = circular
+  dr_park [label: "Dr. Park", role: star]
+  james [label: "James"]
+  maria [label: "Maria"]
+  lee [label: "Lee"]
+  sarah [label: "Sarah"]
+  tom [label: "Tom"]
+  nina [label: "Nina", role: neglectee]
+  james -> dr_park
+  james <-> maria [weight: 3]
+  james -> lee
+  maria -> dr_park
+  lee -> dr_park
+  lee -x> nina
+  sarah <-> nina
+  sarah -> dr_park
+  tom -> dr_park
+  nina -> maria`} height={460} />
+
+**Force-directed** — spring physics pulls connected nodes together and pushes disconnected ones apart. Subgroups cluster organically.
+
+<Playground initial={`sociogram "Classroom dynamics — force-directed"
+  config: layout = force-directed
+  group boys [label: "Boys", color: "#42A5F5"]
+    tom [label: "Tom"]
+    jack [label: "Jack"]
+    mike [label: "Mike"]
+    leo [label: "Leo"]
+  group girls [label: "Girls", color: "#EF5350"]
+    anna [label: "Anna"]
+    beth [label: "Beth"]
+    chloe [label: "Chloe"]
+    diana [label: "Diana"]
+  tom <-> jack
+  anna <-> beth
+  anna <-> chloe
+  beth <-> chloe
+  mike -x> leo [label: "conflict"]
+  diana -> anna
+  tom -> anna [label: "cross-group"]
+  jack -> beth`} height={460} />
+
+**Concentric** — nodes sorted by in-degree; high-centrality nodes appear on inner rings, peripheral nodes on outer rings.
+
+<Playground initial={`sociogram "Informal influence — concentric"
   config: layout = concentric
   config: sizing = in-degree
+  vp [label: "VP Eng"]
+  lead_a [label: "Lead A"]
+  lead_b [label: "Lead B"]
+  alice [label: "Alice"]
+  bob [label: "Bob"]
+  carol [label: "Carol"]
+  dave [label: "Dave"]
+  alice -> lead_a
+  bob -> lead_a
+  carol -> lead_a
+  carol -> lead_b
+  dave -> lead_b
+  lead_a -> vp
+  lead_b -> vp
+  alice <-> bob
+  carol <-> dave`} height={460} />
 
-  ceo [label: "CEO", group: leadership]
-  vp [label: "VP Eng", group: leadership]
-  lead1 [label: "Tech Lead A", group: team-a]
-  lead2 [label: "Tech Lead B", group: team-b]
-  dev1 [label: "Senior Dev", group: team-a]
-  dev2 [label: "Dev", group: team-a]
-  ops [label: "DevOps", group: infra]
+---
 
-  dev1 -> lead1
-  dev2 -> lead1
-  lead1 -> vp
-  lead2 -> vp
-  vp -> ceo
-  dev1 -> ops [label: "deployment help"]
-  lead1 <-> lead2 [label: "weekly sync"]
+## 6. Sociometric roles
+
+The parser stores role annotations on nodes. The renderer uses them to apply visual badges — a star marker for `star`, a dashed border for `isolate`, and so on.
+
+| Role | Meaning |
+|---|---|
+| `star` | Central figure chosen by many (high in-degree) |
+| `isolate` | No connections in or out |
+| `neglectee` | Reaches out to others but receives no choices |
+| `rejected` | Receives rejection edges from multiple members |
+| `bridge` | Connects two otherwise separate clusters |
+
+<Playground initial={`sociogram "Role annotations"
+  config: layout = circular
+  center [label: "Maria", role: star]
+  bridge_node [label: "Sam", role: bridge]
+  newcomer [label: "New Kid", role: neglectee]
+  loner [label: "Alex", role: isolate]
+  outcast [label: "Pat", role: rejected]
+  center <-> bridge_node
+  bridge_node -> outcast
+  newcomer -> center
+  newcomer -> bridge_node
+  center -x> outcast
+  bridge_node -x> outcast`} />
+
+---
+
+## 7. Labels & comments
+
+- **Title:** `sociogram "Study group"` — first line only.
+- **Node label:** `alice [label: "Alice K."]`.
+- **Group label:** `group boys [label: "Boys"]`.
+- **Edge label:** `alice -> bob [label: "lab partners"]`.
+- **Comments:** `#` at the start of a line (after leading whitespace).
+
+---
+
+## 8. Reserved words & escaping
+
+**Reserved at line start:** `sociogram` (header), `group`, `config:`.
+
+**Reserved operator tokens** — avoid these sequences inside IDs: `->`, `<-`, `<->`, `--`, `===`, `==>`, `<==`, `<===>`, `-x>`, `<x-`, `-x-`, `<x->`, `-.>`, `<.->`, `-.-`.
+
+**Strings with spaces** must be double-quoted in `label:` and `color:` values.
+
+---
+
+## 9. Common mistakes
+
+| You wrote | Parser says | Fix |
+|---|---|---|
+| `tom; jack; mike` on one group line | `tom;` fails the ID regex — silently ignored | One node per line, each indented ≥4 spaces |
+| Group members indented 2 spaces | Not treated as group members (parser requires ≥4) | Use 4+ spaces indent |
+| `alice <> bob` | No matching operator — not parsed as an edge | Use `<->` for mutual positive |
+| `config: layout = grid` | Unknown value silently ignored; layout stays `circular` | Use `circular`, `force-directed`, or `concentric` |
+| Node with a space in the ID: `dr park` | Parser takes `dr` as the ID and `park` as a stray token | Use underscore: `dr_park [label: "Dr. Park"]` |
+
+---
+
+## 10. Grammar (EBNF)
+
+```text
+document       = header (blank | comment | config | group-block | edge | node)*
+
+header         = "sociogram" ( WS quoted-string )? NEWLINE
+quoted-string  = '"' any-char-but-quote* '"'
+
+config         = "config:" WS key WS "=" WS value NEWLINE
+key            = "layout" | "sizing" | "coloring" | "highlight"
+
+group-block    = "group" WS id ( "[" group-attrs "]" )? NEWLINE
+                   ( INDENT≥4 member-line )*
+member-line    = id ( "[" node-attrs "]" )? NEWLINE
+group-attrs    = group-attr ("," group-attr)*
+group-attr     = "label:" quoted-string | "color:" quoted-string
+
+node           = id ( "[" node-attrs "]" )? NEWLINE
+node-attrs     = node-attr ("," node-attr)*
+node-attr      = "label:" quoted-string
+               | "group:" id
+               | "role:" role
+               | "size:" ("small" | "medium" | "large")
+
+edge           = id WS op WS id ( "[" edge-attrs "]" )? NEWLINE
+edge-attrs     = edge-attr ("," edge-attr)*
+edge-attr      = "label:" quoted-string | "weight:" number
+
+op             = // positive
+                 "<===>" | "===>" | "<==="
+               | "<==>"|"==>"|"<=="
+               | "===" | "<->" | "->" | "<-" | "--"
+               // negative
+               | "<x->" | "-x>" | "<x-" | "-x-"
+               // neutral
+               | "<.->" | "-\.>" | "-.-"
+
+role           = "star" | "isolate" | "bridge" | "neglectee" | "rejected"
+id             = [a-zA-Z] [a-zA-Z0-9_-]*
+comment        = "#" any NEWLINE
 ```
+
+Authoritative source: `src/diagrams/sociogram/parser.ts`. If this diverges from the parser, the parser wins — please open an issue.
+
+---
+
+## 11. Standard compliance
+
+Schematex sociograms follow **Moreno (1934) sociometry** conventions for node roles (star, isolate, neglectee) and directed-choice semantics. The edge operator set is extended with valence (positive / negative / neutral) and weight levels following modern social network analysis practice (Hanneman & Riddle, 2005).
+
+What is implemented today:
+
+- ✅ Directed, mutual, and undirected edges
+- ✅ Positive, negative, and neutral valence operators
+- ✅ Four weight levels (1–4) with shorthand operators and `[weight: N]`
+- ✅ Groups with color
+- ✅ Node role declarations (`star`, `isolate`, `bridge`, `neglectee`, `rejected`)
+- ✅ Three layouts: circular, force-directed, concentric
+- ✅ Three sizing modes: uniform, in-degree, betweenness
+- ⏳ Auto-detected clique highlighting — shaded convex hull (see §13)
+- ⏳ Social atom view (ego-centered layout)
+
+References:
+
+- Moreno, J.L. (1934). *Who Shall Survive? Foundations of Sociometry, Group Psychotherapy and Sociodrama.* Beacon House.
+- Hanneman, R.A. & Riddle, M. (2005). *Introduction to Social Network Methods.* UC Riverside.
+
+---
+
+## 12. Related examples
+
+<RelatedExamples slugs={[
+  'sociogram-playground-dynamics',
+  'sociogram-team-influence',
+]} />
+
+---
+
+## 13. Roadmap
+
+**Planned — not yet parseable.** Do not use these in generated DSL today; the parser will reject or ignore them.
+
+- **Auto-detected clique highlighting** — shaded convex hull drawn around mutual-choice subgroups of ≥3.
+- **Bridge auto-detection** — `role: bridge` inferred from betweenness centrality without explicit declaration.
+- **Social atom view** — ego-centered layout where one nominated node sits at the center.
+- **Reciprocity matrix export** — structured table output alongside the diagram.
+
+Track in the GitHub issues if you need any of these sooner.

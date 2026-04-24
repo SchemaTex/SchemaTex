@@ -1,5 +1,5 @@
 import type { SLDNodeType } from "../../core/types";
-import { el, group, path as pathEl, text as textEl } from "../../core/svg";
+import { el, group, line, path as pathEl, text as textEl } from "../../core/svg";
 
 /**
  * Symbol renderers — each returns SVG markup centered at (0,0)
@@ -84,7 +84,7 @@ export function geometryFor(type: SLDNodeType): SymbolGeometry {
 }
 
 function lineEl(x1: number, y1: number, x2: number, y2: number, cls = "lt-sld-stroke"): string {
-  return el("line", { x1, y1, x2, y2, class: cls });
+  return line({ x1, y1, x2, y2, class: cls });
 }
 
 function utilitySymbol(): string {
@@ -218,7 +218,7 @@ function breakerSymbol(): string {
   return group({}, [
     lineEl(0, -14, 0, -10, "lt-sld-stroke"),
     lineEl(0, 10, 0, 14, "lt-sld-stroke"),
-    el("line", { x1: -6, y1: 10, x2: 8, y2: -10, class: "lt-sld-stroke-thick" }),
+    line({ x1: -6, y1: 10, x2: 8, y2: -10, class: "lt-sld-stroke-thick" }),
     pathEl({ d: "M 8 -10 Q 14 -12 12 -18", class: "lt-sld-stroke", fill: "none" }),
     lineEl(0, -18, 0, -14),
     lineEl(0, 14, 0, 18),
@@ -228,7 +228,7 @@ function breakerSymbol(): string {
 function vacuumBreakerSymbol(): string {
   return group({}, [
     el("ellipse", { cx: 0, cy: 0, rx: 10, ry: 14, class: "lt-sld-fill" }),
-    el("line", { x1: -6, y1: 10, x2: 8, y2: -10, class: "lt-sld-stroke-thick" }),
+    line({ x1: -6, y1: 10, x2: 8, y2: -10, class: "lt-sld-stroke-thick" }),
     textEl({ x: -2, y: -4, class: "lt-sld-symbol-text", "text-anchor": "middle", "font-size": "8" }, "V"),
     lineEl(0, -18, 0, -14),
     lineEl(0, 14, 0, 18),
@@ -237,7 +237,7 @@ function vacuumBreakerSymbol(): string {
 
 function recloserSymbol(): string {
   return group({}, [
-    el("line", { x1: -6, y1: 10, x2: 8, y2: -10, class: "lt-sld-stroke-thick" }),
+    line({ x1: -6, y1: 10, x2: 8, y2: -10, class: "lt-sld-stroke-thick" }),
     pathEl({ d: "M 8 -10 Q 14 -12 12 -18", class: "lt-sld-stroke", fill: "none" }),
     pathEl({ d: "M 14 -6 A 5 5 0 1 1 18 -4", class: "lt-sld-stroke", fill: "none" }),
     el("polygon", { points: "18,-4 20,-8 15,-7", class: "lt-sld-dot" }),
@@ -249,10 +249,10 @@ function recloserSymbol(): string {
 function switchSymbol(open = false): string {
   const pieces: string[] = [];
   if (open) {
-    pieces.push(el("line", { x1: -6, y1: 10, x2: 10, y2: -8, class: "lt-sld-stroke-thick" }));
+    pieces.push(line({ x1: -6, y1: 10, x2: 10, y2: -8, class: "lt-sld-stroke-thick" }));
     pieces.push(el("circle", { cx: 10, cy: -8, r: 2, class: "lt-sld-fill" }));
   } else {
-    pieces.push(el("line", { x1: -6, y1: 10, x2: 8, y2: -10, class: "lt-sld-stroke-thick" }));
+    pieces.push(line({ x1: -6, y1: 10, x2: 8, y2: -10, class: "lt-sld-stroke-thick" }));
   }
   pieces.push(lineEl(0, -18, 0, -10));
   pieces.push(lineEl(0, 10, 0, 18));
@@ -261,7 +261,7 @@ function switchSymbol(open = false): string {
 
 function loadSwitchSymbol(): string {
   return group({}, [
-    el("line", { x1: -6, y1: 10, x2: 8, y2: -10, class: "lt-sld-stroke-thick" }),
+    line({ x1: -6, y1: 10, x2: 8, y2: -10, class: "lt-sld-stroke-thick" }),
     el("rect", { x: 6, y: -14, width: 6, height: 6, class: "lt-sld-fill" }),
     lineEl(0, -18, 0, -10),
     lineEl(0, 10, 0, 18),
@@ -270,7 +270,7 @@ function loadSwitchSymbol(): string {
 
 function groundSwitchSymbol(): string {
   return group({}, [
-    el("line", { x1: -6, y1: 0, x2: 8, y2: -14, class: "lt-sld-stroke-thick" }),
+    line({ x1: -6, y1: 0, x2: 8, y2: -14, class: "lt-sld-stroke-thick" }),
     lineEl(0, -18, 0, -4),
     // ground symbol
     lineEl(-8, 6, 8, 6),
@@ -282,7 +282,7 @@ function groundSwitchSymbol(): string {
 
 function sectionalizerSymbol(): string {
   return group({}, [
-    el("line", { x1: -6, y1: 10, x2: 10, y2: -8, class: "lt-sld-stroke-thick" }),
+    line({ x1: -6, y1: 10, x2: 10, y2: -8, class: "lt-sld-stroke-thick" }),
     el("circle", { cx: 10, cy: -8, r: 2, class: "lt-sld-fill" }),
     textEl({ x: 14, y: -4, class: "lt-sld-wdg", "text-anchor": "start" }, "S"),
     lineEl(0, -18, 0, -10),
@@ -360,8 +360,8 @@ function vfdSymbol(): string {
 function atsSymbol(): string {
   return group({}, [
     el("rect", { x: -22, y: -16, width: 44, height: 32, class: "lt-sld-fill" }),
-    el("line", { x1: -14, y1: -8, x2: -2, y2: 6, class: "lt-sld-stroke-thick" }),
-    el("line", { x1: 14, y1: -8, x2: 2, y2: 6, class: "lt-sld-stroke-thick" }),
+    line({ x1: -14, y1: -8, x2: -2, y2: 6, class: "lt-sld-stroke-thick" }),
+    line({ x1: 14, y1: -8, x2: 2, y2: 6, class: "lt-sld-stroke-thick" }),
     textEl({ x: 0, y: 14, class: "lt-sld-symbol-text", "text-anchor": "middle", "font-weight": "bold", "font-size": "9" }, "ATS"),
     lineEl(-12, -18, -12, -16),
     lineEl(12, -18, 12, -16),

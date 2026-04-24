@@ -1,134 +1,357 @@
 ---
 title: Org chart
-description: Organizational hierarchy diagrams with role icons, open headcount, matrix reporting lines, and assistant positions. Supports tree and list layouts, top-down and left-right orientation. Used by HR teams, founders, investors, and ops managers for headcount planning, team communication, and org design.
 ---
 
-<Playground initial={`orgchart "Engineering Org"
-ceo: "Sarah Chen" | CEO [role: ceo]
-  cto: "Marcus Webb" | CTO [role: cto]
-    fe: "Priya Nair" | VP Frontend [role: vp]
-      fe1: "Alex Kim" | Senior Engineer [role: engineer]
-      fe2: "Jordan Lee" | Engineer [role: engineer]
-    be: "Omar Hassan" | VP Backend [role: vp]
-      be1: "Yuki Tanaka" | Senior Engineer [role: engineer]
-      open1: open "TBH" | Backend Engineer [role: engineer]
-  cpo: "Diane Russo" | CPO [role: cpo]`} />
+## About org charts
 
-*Indentation-based hierarchy with explicit edge overrides, matrix dotted lines, and open-headcount markers.*
+An **org chart** (organizational chart) maps the formal reporting structure of an organization — who manages whom, which teams sit under which leaders, and where open roles and external advisors fit in. HR teams reach for them during headcount planning; founders use them before board meetings; operations managers circulate them when restructuring. Unlike a generic flowchart, an org chart treats people (and positions) as the primary entities, with the hierarchy encoded by indentation or explicit edges.
 
----
+Schematex follows general org-chart conventions with extensions for open/unfilled positions, matrix (dotted-line) reporting, and assistant relationships. There is no single ISO standard for org charts; the conventions implemented here are drawn from HR practice and software-industry norms. For the authoritative academic background see [Fayol (1916)](https://en.wikipedia.org/wiki/Henri_Fayol) and the [Wikipedia article on org charts](https://en.wikipedia.org/wiki/Organizational_chart).
 
-## Node syntax
-
-```
-id: "Name" | "Title" | "Department" [props]
-```
-
-Fields are separated by `|`. Only name is required.
-
-```
-alice: "Alice Zhang"                          # name only
-alice: "Alice Zhang" | "VP Engineering"       # name + title
-alice: "Alice Zhang" | "VP Eng" | "Platform"  # + department
-```
-
----
-
-## Node kinds
-
-| Keyword | Meaning |
-|---------|---------|
-| (default) | Regular person node |
-| `role id: ...` | Open/unfilled role |
-| `open id: ...` | Alias for role |
-| `draft id: ...` | Draft / TBH position |
-| `tbh id: ...` | Alias for draft |
-| `advisor id: ...` | External advisor / board member |
-| `external id: ...` | Alias for advisor |
-
----
-
-## Node properties
-
-| Property | Values | Meaning |
-|----------|--------|---------|
-| `role:` | ceo, cto, cfo, coo, cmo, cpo, vp, engineer, designer, sales, hr, legal, ops, marketing, product, data, advisor, intern, vacant | Role icon |
-| `icon:` | same as role | Alias for role |
-| `department:` | text | Department override |
-| `status:` | `new` \| `leaving` \| `on-leave` | Highlight status |
-| `avatar-color:` | hex color | Avatar background |
-| `gender:` | `male` \| `female` | Avatar style |
-| `note:` | text | Info line |
-| `email:` | text | Info line |
-| `assistant-of:` | node id | Place as assistant |
-| `matrix:` | node ids | Add dotted matrix lines |
-
----
-
-## Explicit edges
-
-```
-alice -> bob           # reporting line (solid)
-alice -.-> charlie     # matrix line (dotted)
-```
-
----
-
-## Config options
-
-```
-config: direction = TD   # TD (top-down, default) | LR (left-right)
-config: layout = tree    # tree (default) | list (compact directory)
-```
-
----
-
-## Examples
-
-### Startup leadership team
-
-```
-orgchart "Acme Inc."
-
+<Playground initial={`orgchart "Acme Corp — Q3 2025"
 ceo: "Jamie Torres" | CEO [role: ceo]
   cto: "Raj Patel" | CTO [role: cto]
-    eng1: "Lee Wong" | Staff Engineer [role: engineer]
-    eng2: "Kim Park" | Senior Engineer [role: engineer]
-    open1: open "TBH" | Frontend Engineer [role: engineer]
+    lead_fe: "Priya Nair" | Engineering Lead | Frontend [role: engineer]
+      eng1: "Alex Kim" | Senior Engineer [role: engineer]
+      eng2: "Jordan Lee" | Engineer [role: engineer, status: new]
+      open1: open "TBH" | Frontend Engineer [role: engineer]
+    lead_be: "Omar Hassan" | Engineering Lead | Backend [role: engineer]
+      eng3: "Yuki Tanaka" | Staff Engineer [role: engineer]
+      draft1: draft "TBH" | Senior Engineer [role: engineer]
   cfo: "Maria Santos" | CFO [role: cfo]
-  vpmkt: "Chris Obi" | VP Marketing [role: marketing]
-
+    fin1: "Nour Ahmed" | Finance Manager [role: ops]
+  cpo: "Ellen Wu" | CPO [role: cpo]
+    pm1: "Tyler Brooks" | Product Lead | Core [role: product]
+    pm2: "Suki Ito" | Product Lead | Growth [role: product]
 advisor adv1: "Dr. Alan Ford" | Board Advisor [role: advisor]
+pm1 -.-> lead_fe
+pm2 -.-> lead_be`} height={520} />
+
+---
+
+## 1. Your first org chart
+
+The smallest useful org chart: a three-level hierarchy with one open role.
+
+<Playground initial={`orgchart "Engineering Team"
+cto: "Wei Zhang" | CTO [role: cto]
+  lead: "Sam Obi" | Engineering Lead [role: engineer]
+    eng: "Ana Rossi" | Engineer [role: engineer]
+    open1: open "TBH" | Engineer [role: engineer]`} />
+
+Four rules cover 80% of usage:
+
+1. Start with the keyword `orgchart`, optionally followed by a quoted title.
+2. Each person is a **node** — `id: "Name" | "Title" | "Department" [props]`. The `|` separates the name, title, and department fields.
+3. **Indentation determines hierarchy** — each extra two (or more) spaces moves a node one level deeper under the nearest less-indented node above it.
+4. Declare open roles with `open id:` or `draft id:`, and external advisors with `advisor id:`.
+
+> Comments must start with `#` on their own line (inline trailing `//` is also stripped).
+
+---
+
+## 2. Nodes
+
+A node line has the form `[kind] id: fields [props]`. The `id` must match `[A-Za-z][A-Za-z0-9_-]*`.
+
+### 2.1 Fields (pipe-separated)
+
+The part after the `:` and before the optional `[props]` block is split on `|`:
+
+```
+alice: "Alice Zhang"                                # name only
+alice: "Alice Zhang" | "VP Engineering"             # name + title
+alice: "Alice Zhang" | "VP Eng" | "Platform"        # name + title + department
+alice: "Alice Zhang" | "VP Eng" | "Platform" | "x@co.com"  # + info line
 ```
 
-### Left-right with matrix reporting
+| Position | Content | Notes |
+|---|---|---|
+| 1st | Name | Quoted or unquoted |
+| 2nd | Title / job level | Optional |
+| 3rd | Department | Optional |
+| 4th | Info line | Optional; also settable via `note:`, `email:`, `phone:`, `location:` props |
+
+<Playground initial={`orgchart "Field count demo"
+alice: "Alice"
+  bob: "Bob" | "CTO"
+    carol: "Carol" | "Engineer" | "Engineering"
+    dave: "Dave" | "VP Sales" | "Sales" | "dave@co.com"`} height={300} />
+
+### 2.2 Node kinds
+
+The optional **kind keyword** before the id changes how the node is rendered:
+
+| Keyword(s) | Kind | Meaning |
+|---|---|---|
+| *(none)* | `person` | Regular person |
+| `role`, `open` | `role` | Open / unfilled position |
+| `draft`, `tbh` | `draft` | Planned position, not actively recruiting |
+| `advisor`, `external` | `advisor` | External advisor, board member, or contractor |
+
+<Playground initial={`orgchart "Node kinds"
+ceo: "Jordan Kim" | CEO [role: ceo]
+  eng_lead: "Priya Nair" | Engineering Lead [role: engineer]
+    open eng_open: "TBH" | Senior Engineer [role: engineer]
+    draft eng_draft: "TBH" | Staff Engineer [role: engineer]
+  advisor adv1: "Dr. Lee" | Board Advisor [role: advisor]`} height={320} />
+
+### 2.3 Node properties
+
+Properties go in `[key: value, …]` at the end of a node line.
+
+| Property | Values | Effect |
+|---|---|---|
+| `role:` | see table below | Role icon displayed in the avatar |
+| `icon:` | same as `role:` | Alias for `role:` |
+| `department:` | text | Overrides the department field |
+| `status:` | `new` \| `leaving` \| `on-leave` | Status pill on the card |
+| `avatar-color:` | hex color (e.g. `"#7B1FA2"`) | Avatar background color |
+| `gender:` | `male` \| `female` | Avatar silhouette (used when no role icon is set) |
+| `note:` | text | Info line (first one wins) |
+| `email:` | text | Info line |
+| `phone:` | text | Info line |
+| `location:` | text | Info line |
+| `assistant-of:` | node id | Renders this node as an assistant to the named node |
+| `matrix:` | space- or comma-separated node ids | Adds dotted matrix lines from those nodes to this one |
+| `reports:` | node id | Explicit parent override (instead of indentation) |
+| `open` | *(bare flag)* | Marks node as open; equivalent to using `role` kind keyword |
+| `draft` or `tbh` | *(bare flag)* | Marks node as draft; equivalent to `draft` kind keyword |
+| `external` | *(bare flag)* | Marks node as external; equivalent to `advisor` kind keyword |
+
+**Role icons** — the `role:` value resolves to a display icon. Accepted keywords (case-insensitive):
+
+| Keywords | Icon |
+|---|---|
+| `ceo` | CEO |
+| `cto` | CTO |
+| `cfo` | CFO |
+| `coo` | COO |
+| `cmo` | CMO |
+| `cpo` | CPO |
+| `vp` | VP |
+| `engineer`, `engineering` | Engineer |
+| `designer`, `design` | Designer |
+| `sales` | Sales |
+| `hr` | HR |
+| `legal` | Legal |
+| `ops`, `operations` | Ops |
+| `marketing` | Marketing |
+| `product` | Product |
+| `data` | Data |
+| `advisor` | Advisor |
+| `intern` | Intern |
+| `vacant` | Vacant |
+
+<Playground initial={`orgchart "People directory"
+ceo: "Jamie Torres" | CEO [role: ceo, avatar-color: "#1E88E5"]
+  cto: "Raj Patel" | CTO [role: cto]
+    eng1: "Priya Nair" | Staff Engineer [role: engineer, status: new]
+    eng2: "Jordan Lee" | Senior Engineer [role: engineer]
+  cfo: "Maria Santos" | CFO [role: cfo]
+    fin1: "Nour Ahmed" | Finance Manager [role: ops, status: on-leave]
+  advisor adv1: "Dr. Alan Ford" | Board Advisor [role: advisor]
+  draft draft1: "TBH" | General Counsel [role: legal]`} height={380} />
+
+---
+
+## 3. Hierarchy
+
+Hierarchy is expressed by **indentation** — the most common pattern. Each node becomes a child of the nearest node above it that has a smaller indent. Tabs are treated as two spaces.
 
 ```
-orgchart "Product Org"
+ceo: "CEO"
+  cto: "CTO"           # child of ceo (indent 2)
+    eng: "Engineer"    # child of cto (indent 4)
+  cfo: "CFO"           # child of ceo (indent 2, same level as cto)
+```
+
+Alternatively, use the `reports:` property to set a parent explicitly regardless of indentation:
+
+```
+orgchart "Flat file"
+ceo: "CEO"
+cto: "CTO" [reports: ceo]
+eng: "Engineer" [reports: cto]
+```
+
+<Playground initial={`orgchart "Series A Startup"
+ceo: "Lena Brandt" | CEO [role: ceo]
+  cto: "James Osei" | CTO [role: cto]
+    be: "Platform Lead" | Engineering [role: engineer]
+      be1: "Fatima Al-Rashid" | Backend Engineer [role: engineer]
+      be2: "Marco Ricci" | Backend Engineer [role: engineer]
+    fe: "Frontend Lead" | Engineering [role: engineer]
+      fe1: "Yumi Tanaka" | Frontend Engineer [role: engineer, status: new]
+      open_fe: open "TBH" | Frontend Engineer [role: engineer]
+  cpo: "Diana Russo" | CPO [role: cpo]
+    pm1: "Chris Obi" | Product Manager [role: product]
+  cmo: "Kai Nakamura" | CMO [role: cmo]
+    mkt1: draft "TBH" | Growth Marketer [role: marketing]`} height={480} />
+
+---
+
+## 4. Edges
+
+Two kinds of edges exist. Most reporting lines come from the indentation hierarchy automatically. You can also write them explicitly — or add matrix (dotted) lines.
+
+| Operator | Edge kind | Meaning |
+|---|---|---|
+| `from -> to` | `report` | Solid reporting line |
+| `from -.-> to` | `matrix` | Dotted matrix (indirect) reporting line |
+
+Explicit edges require that both node ids are already declared. A `report` edge created explicitly is not duplicated if the same relationship is already implied by indentation.
+
+Edge labels are supported:
+
+```
+pm1 -.-> design [label: "product partnership"]
+```
+
+<Playground initial={`orgchart "Matrix org"
 config: direction = LR
-
 cpo: "Ellen Wu" | CPO [role: cpo]
-  pm1: "Nour Ahmed" | Product Lead | Core [role: product]
-  pm2: "Tyler Brooks" | Product Lead | Growth [role: product]
+  pm_core: "Core PM" | Product Manager [role: product]
+  pm_growth: "Growth PM" | Product Manager [role: product]
   design: "Suki Ito" | Design Lead [role: designer]
+  data_lead: "Ben Park" | Data Lead [role: data]
+pm_core -.-> design [label: "design partner"]
+pm_growth -.-> design
+pm_growth -.-> data_lead`} height={320} />
 
-# Matrix: design lead dotted-reports to both PMs
-pm1 -.-> design
-pm2 -.-> design
-```
+---
 
-### HR directory (list layout)
+## 5. Configuration
 
-```
-orgchart "Engineering Directory"
+`config:` lines adjust layout and orientation. Each goes on its own line.
+
+| Config key | Values | Default | Effect |
+|---|---|---|---|
+| `direction` | `TD`, `LR` | `TD` | Top-down or left-right flow |
+| `layout` | `tree`, `list`, `directory`, `compact` | `tree` | Visual layout mode |
+
+**Layout notes:**
+- `tree` — standard hierarchical tree with branching connectors. Best for most org charts.
+- `list` / `directory` / `compact` — compact indented directory view. Good for large headcount lists where tree branching becomes unwieldy.
+
+**Tree layout** (default) — avatar cards with branching connectors and department color-coding. Best for teams up to ~30 people.
+
+<Playground initial={`orgchart "Acme Engineering — tree"
+cto: "Wei Zhang" | CTO [role: cto]
+  platform: "Platform Lead" | Engineering [role: engineer]
+    p1: "Amara Diallo" | Staff Engineer [role: engineer]
+    p2: "Ben Novak" | Senior Engineer [role: engineer]
+    p3: draft "TBH" | Engineer [role: engineer]
+  growth: "Growth Lead" | Engineering [role: engineer, status: new]
+    g1: "Fatima Al-Rashid" | Senior Engineer [role: engineer]
+    g2: "Marco Ricci" | Engineer [role: engineer]`} height={400} />
+
+**List layout** — compact directory rows with indent guides. Best for large teams where tree branching becomes unwieldy.
+
+<Playground initial={`orgchart "Engineering Directory — list"
 config: layout = list
-
-cto: "Wei Zhang" | CTO
+cto: "Wei Zhang" | CTO [role: cto]
   platform: "Platform Team"
-    p1: "Amara Diallo" | Staff Eng [role: engineer, status: new]
+    p1: "Amara Diallo" | Staff Eng [role: engineer]
     p2: "Ben Novak" | Senior Eng [role: engineer]
     p3: draft "TBH" | Engineer [role: engineer]
   growth: "Growth Team"
-    g1: "Fatima Al-Rashid" | Senior Eng [role: engineer]
-    g2: "Marco Ricci" | Engineer [role: engineer, status: leaving]
+    g1: "Fatima Al-Rashid" | Senior Eng [role: engineer, status: new]
+    g2: "Marco Ricci" | Engineer [role: engineer, status: leaving]`} height={360} />
+
+---
+
+## 6. Labels & comments
+
+- **Title:** `orgchart "Acme Corp"` — first line only.
+- **Name field:** first pipe-delimited field after the colon; may be quoted (`"Alice Zhang"`) or unquoted (`Alice`).
+- **Title/department fields:** second and third pipe-delimited fields.
+- **Info line:** fourth pipe-delimited field, or set via `note:`, `email:`, `phone:`, or `location:` props. First one encountered wins.
+- **Comments:** `#` at the start of a line (after leading whitespace). Inline `//` is also stripped.
+
+---
+
+## 7. Reserved words & escaping
+
+**Reserved at line start:** `orgchart` (header), `config:`, `role`, `open`, `draft`, `tbh`, `advisor`, `external`.
+
+**Reserved operator tokens** — avoid these sequences inside ids: `->`, `-.->`
+
+**ID rules:** must match `[A-Za-z][A-Za-z0-9_-]*`. Names with spaces go in the quoted name field, not the id.
+
+**Strings with spaces** in props values (e.g. `department: "Platform Eng"`) must be double-quoted.
+
+---
+
+## 8. Common mistakes
+
+| You wrote | Parser says | Fix |
+|---|---|---|
+| `alice: Alice Zhang` (unquoted name with space) | Parses `Alice` as the name, `Zhang` is lost or misread | Quote the name: `alice: "Alice Zhang"` |
+| `open1 open: "TBH"` | `open` after the id is not a kind keyword; fails id regex | Kind keyword comes first: `open open1: "TBH"` |
+| `alice -> bob` before either node is declared | `OrgchartParseError: Edge references unknown node` | Declare nodes first, then write edges at the end |
+| `config: direction = top-down` | Unknown value ignored; direction stays `TD` | Use `TD` or `LR` |
+| `config: layout = compact` | Accepted — maps to `list` layout | Correct; `compact`, `directory`, and `list` all work |
+| `alice [matrix: bob charlie]` | Space-separated ids in `matrix:` — both are added | Also works with commas: `matrix: "bob, charlie"` |
+| Node id with a space: `fe lead` | Parser takes `fe` as the id; `lead` fails | Use underscore: `fe_lead` |
+| Duplicate id | `OrgchartParseError: Duplicate node id` | Each node needs a unique id |
+
+---
+
+## 9. Grammar (EBNF)
+
+```text
+document       = header (blank | comment | config | edge | node)*
+
+header         = "orgchart" ( WS quoted-string )? NEWLINE
+quoted-string  = '"' any-char-but-quote* '"'
+
+config         = "config" WS ":" WS key WS "=" WS value NEWLINE
+key            = "direction" | "layout"
+
+node           = INDENT* kind? id ":" WS fields ( "[" node-attrs "]" )? NEWLINE
+kind           = "role" | "open" | "draft" | "tbh" | "advisor" | "external" | "person"
+fields         = field ( "|" field )*
+field          = quoted-string | unquoted-text
+node-attrs     = node-attr ("," node-attr)*
+node-attr      = "role:" role-keyword
+               | "icon:" role-keyword
+               | "department:" text
+               | "status:" ( "new" | "leaving" | "on-leave" )
+               | "avatar-color:" quoted-hex
+               | "gender:" ( "male" | "female" )
+               | "note:" text
+               | "email:" text
+               | "phone:" text
+               | "location:" text
+               | "assistant-of:" id
+               | "matrix:" id-list
+               | "reports:" id
+               | bare-flag
+
+bare-flag      = "open" | "draft" | "tbh" | "external"
+
+edge           = id WS edge-op WS id ( "[" edge-attrs "]" )? NEWLINE
+edge-op        = "->" | ".->"  // -.-> for matrix
+edge-attrs     = "label:" quoted-string
+
+id             = [A-Za-z] [A-Za-z0-9_-]*
+comment        = ( "#" | "//" ) any NEWLINE
 ```
+
+Authoritative source: `src/diagrams/orgchart/parser.ts`. If this diverges from the parser, the parser wins — please open an issue.
+
+---
+
+## 10. Roadmap
+
+**Planned — not yet parseable.** Do not use these in generated DSL today; the parser will reject or ignore them.
+
+- **`assistant-of:` visual rendering** — the property is parsed and stored in the AST but the renderer does not yet draw the assistant elbow connector.
+- **Config `coloring`** — department-based color themes (`coloring: department`).
+- **Config `compact` size tiers** — explicit card-size control (`size: small | medium | large`).
+- **`span:` node width** — spanning a node across multiple sibling columns in tree layout.
+- **Photo / avatar URL** — `avatar: "https://…"` to display a real headshot.
+- **Export to HRIS formats** — JSON/CSV structured output alongside the SVG.
+
+Track in the GitHub issues if you need any of these sooner.

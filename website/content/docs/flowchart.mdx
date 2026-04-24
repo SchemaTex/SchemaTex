@@ -1,148 +1,362 @@
 ---
 title: Flowchart
-description: General-purpose flowcharts with 13 node shapes, 6 edge types, subgraph clustering, and fan-out wiring. Mermaid-compatible syntax. Used by software engineers, business analysts, and technical writers for process documentation, system design, and decision flows.
 ---
+
+## About flowcharts
+
+A **flowchart** maps the steps of a process — decisions, operations, inputs, outputs, and the paths between them — using a standardized set of symbols connected by arrows. Engineers use them to specify algorithms; business analysts use them to document workflows; quality teams use them to trace failure modes. They are among the most universally understood technical diagrams across every industry.
+
+Schematex follows the **[ISO 5807:1985](https://www.iso.org/standard/11955.html)** symbol conventions for flowchart shapes and uses a **[Mermaid-compatible](https://mermaid.js.org/syntax/flowchart.html)** DSL so existing Mermaid flowcharts transfer directly. This page documents what the parser accepts today.
+
+<Playground initial={`flowchart LR
+  start([New order received])
+  start --> validate{Inventory available?}
+  validate -->|Yes| reserve[Reserve items]
+  validate -->|No| notify[Notify customer]
+  notify --> done([End])
+  reserve --> payment{Payment authorized?}
+  payment -->|Yes| ship[Ship order]
+  payment -->|No| cancel[Cancel & release]
+  ship --> confirm[Send confirmation email]
+  confirm --> done
+  cancel --> done`} height={420} />
+
+---
+
+## 1. Your first flowchart
+
+The smallest useful flowchart: a decision with two outcomes.
 
 <Playground initial={`flowchart TD
-  A([Start]) --> B{Valid input?}
-  B -->|Yes| C[Process data]
+  A([Start]) --> B{File exists?}
+  B -->|Yes| C[Read file]
   B -->|No| D[Return error]
-  C --> E[(Save to DB)]
-  E --> F([End])`} />
+  C --> E([Done])`} />
 
-*Mermaid-compatible flowchart DSL with extended shape set and automatic DAG layout.*
+Four rules cover 80% of usage:
 
----
+1. Start with `flowchart` followed by a direction: `TD`, `LR`, `BT`, or `RL`.
+2. Each node is `ID[Label]` — the shape brackets determine the node type (see §2).
+3. Connect nodes with `-->`. Add a label between pipe characters: `-->|Yes|`.
+4. Nodes are created automatically when first referenced in an edge — but explicit declarations let you set shapes and labels independently.
 
-## Direction
-
-```
-flowchart TD   # top → down (default)
-flowchart LR   # left → right
-flowchart BT   # bottom → top
-flowchart RL   # right → left
-flowchart TB   # same as TD
-```
+> Comments start with `%%` on their own line.
 
 ---
 
-## Node shapes
+## 2. Node shapes
 
-| Syntax | Shape | Use for |
-|--------|-------|---------|
-| `A[Label]` | Rectangle | Process step |
-| `A(Label)` | Rounded rect | Soft step / subprocess |
+Each node shape is written as `ID<brackets>Label<brackets>`. The ID must start with a letter and may contain letters, digits, `_`, and `-`.
+
+| Syntax | Shape | Typical use |
+|---|---|---|
+| `A[Label]` | Rectangle | Process step, operation |
+| `A(Label)` | Rounded rectangle | Subprocess, soft step |
 | `A([Label])` | Stadium (pill) | Start / end terminal |
-| `A{Label}` | Diamond | Decision |
-| `A{{Label}}` | Hexagon | Preparation / config |
+| `A{Label}` | Diamond | Decision / condition |
+| `A{{Label}}` | Hexagon | Preparation, configuration |
 | `A[[Label]]` | Subroutine | Predefined process |
-| `A[(Label)]` | Cylinder | Database / storage |
-| `A((Label))` | Circle | Connector / junction |
+| `A[(Label)]` | Cylinder | Database, storage |
+| `A((Label))` | Circle | Connector, junction |
 | `A(((Label)))` | Double circle | End state |
 | `A[/Label/]` | Parallelogram | Input / output |
-| `A[\Label\]` | Parallelogram alt | Manual operation |
+| `A[\Label\]` | Parallelogram (alt) | Manual operation |
 | `A[/Label\]` | Trapezoid | Manual input |
-| `A>Label]` | Asymmetric | Tag / annotation |
+| `A[\Label/]` | Trapezoid (alt) | Off-page connector |
+| `A>Label]` | Asymmetric | Tag, annotation |
+
+<Playground initial={`flowchart TD
+  t([Terminal / stadium])
+  r[Rectangle process]
+  d{Diamond decision}
+  p[/Parallelogram input/]
+  db[(Cylinder database)]
+  sub[[Subroutine]]
+  t --> r --> d
+  d -->|branch A| p
+  d -->|branch B| db
+  p --> sub
+  db --> sub`} height={440} />
 
 ---
 
-## Edges
+## 3. Edges
 
-| Syntax | Style | Use for |
-|--------|-------|---------|
-| `A --> B` | Solid arrow | Normal flow |
-| `A --- B` | No arrow | Association |
-| `A -.-> B` | Dotted arrow | Optional / async path |
-| `A ==> B` | Thick arrow | Critical path |
-| `A <--> B` | Bidirectional | Two-way |
-| `A --x B` | Crossed end | Block / reject |
-| `A --o B` | Circle end | Aggregation |
+An edge connects two nodes. The connector symbol determines the visual style and whether a label or arrowhead is present.
 
-### Edge labels
+### 3.1 Edge types
+
+<Playground initial={`flowchart TD
+  A --> B
+  C --- D
+  E -.-> F
+  G ==> H
+  I <--> J
+  K --x L
+  M --o N`} height={380} />
+
+| Syntax | Style | Arrow | Typical use |
+|---|---|---|---|
+| `A --> B` | Solid | Arrow | Normal flow |
+| `A --- B` | Solid | None | Association, undirected link |
+| `A -.-> B` | Dotted | Arrow | Optional / async path |
+| `A ==> B` | Thick | Arrow | Critical / primary path |
+| `A <--> B` | Solid | Both ends | Bidirectional flow |
+| `A --x B` | Solid | Cross | Blocked / rejected path |
+| `A --o B` | Solid | Circle | Aggregation / composition |
+
+### 3.2 Edge labels
+
+Two syntaxes attach a label to an edge:
+
+**Pipe label** — placed between `|` characters directly after the arrow:
+```
+A -->|Yes| B
+A -.->|optional| B
+A ==>|critical| B
+```
+
+**Inline label** — text placed between the dashes, before the arrow character:
+```
+A -- success --> B
+A -- error --x C
+```
+
+Both produce identical results. Pipe label is more common when sharing a diagram with Mermaid tools.
+
+<Playground initial={`flowchart TD
+  req[Request received]
+  req -->|valid| proc[Process]
+  req -->|invalid| err[Return 400]
+  proc -- success --> ok([Done])
+  proc -.->|timeout| retry[Retry queue]
+  retry ==>|max retries| dead[(Dead letter)]`} height={380} />
+
+### 3.3 Chains
+
+Connect three or more nodes in a single line:
 
 ```
-A -->|Yes| B           # pipe label
-A -- Yes --> B         # inline label
-A -.->|optional| B    # dotted with label
+A --> B --> C --> D
 ```
+
+This is equivalent to three separate edge statements.
+
+### 3.4 Fan-out with `&`
+
+Use `&` to include multiple nodes on either side of an arrow. The parser generates the full cross-product of edges:
+
+```
+A & B --> C        %% A→C and B→C
+A --> B & C        %% A→B and A→C
+A & B --> C & D    %% four edges: A→C, A→D, B→C, B→D
+```
+
+<Playground initial={`flowchart LR
+  deploy[Deploy service]
+  smoke[Smoke test]
+  health[Health check]
+  notify_slack[Slack alert]
+  notify_email[Email alert]
+  deploy --> smoke & health
+  smoke & health -->|fail| notify_slack & notify_email`} height={300} />
 
 ---
 
-## Fan-out (cross-product edges)
+## 4. Subgraphs
+
+A `subgraph` groups related nodes into a labeled cluster with a visible border.
 
 ```
-A & B --> C            # both A and B connect to C
-A --> B & C            # A connects to both B and C
-A & B --> C & D        # all combinations
+subgraph "Title"
+  A --> B
+end
 ```
+
+Three subgraph header forms are accepted:
+
+| Form | ID | Label |
+|---|---|---|
+| `subgraph "My Group"` | auto-generated | `My Group` |
+| `subgraph sg1 "My Group"` | `sg1` | `My Group` |
+| `subgraph sg1 [My Group]` | `sg1` | `My Group` |
+
+Subgraphs can have their own `direction` override:
+
+```
+subgraph sg1 "Frontend"
+  direction LR
+  ui[React App] --> api[API Client]
+end
+```
+
+<Playground initial={`flowchart TB
+  subgraph ingestion [Ingestion]
+    raw[/Raw events/] --> parse[Parse & validate]
+    parse --> enrich[Enrich]
+  end
+  subgraph storage [Storage]
+    dw[(Data warehouse)]
+    cache[(Redis cache)]
+  end
+  enrich --> dw
+  enrich --> cache
+  dw --> report[Generate report]`} height={420} />
 
 ---
 
-## Subgraphs
+## 5. Styling
+
+### 5.1 Semantic classes
+
+Assign CSS class names to nodes for theme-level visual grouping. Classes are defined with `classDef` and applied with `class`.
+
+```
+classDef danger fill:#f9c,stroke:#c00
+classDef safe fill:#cfc,stroke:#090
+class errorNode danger
+class successNode safe
+```
+
+### 5.2 Per-node style overrides
+
+```
+style nodeId fill:#f9f,stroke:#333,stroke-width:4px
+```
+
+Accepts standard CSS property names. Multiple properties are comma-separated.
+
+---
+
+## 6. Labels & comments
+
+- **Direction:** `flowchart TD` — first token after `flowchart` or `graph`. `TD` and `TB` are equivalent.
+- **Title:** `flowchart LR "My diagram"` — optional quoted string after the direction.
+- **Edge labels:** pipe syntax `-->|label|` or inline `-- label -->`.
+- **Comments:** `%%` at the start of a line (after leading whitespace).
 
 ```
 flowchart LR
-  subgraph "Frontend"
-    ui[React App] --> api[API Client]
-  end
-  subgraph "Backend"
-    server[Express] --> db[(PostgreSQL)]
-  end
-  api --> server
+%% This is a comment — ignored by the parser
+A[Step 1] --> B[Step 2]  %% inline %% is NOT supported — only line-start %%
 ```
 
 ---
 
-## Comments
+## 7. Reserved words & escaping
 
-```
-%% This is a comment
-A --> B  %% inline comment
-```
+**Reserved at line start:** `flowchart`, `graph` (header), `subgraph`, `end`, `direction`, `class`, `classDef`, `style`, `linkStyle`.
+
+**Reserved ID characters:** IDs match `[A-Za-z0-9_-]` starting with a letter. Do not use spaces or operator characters in node IDs.
+
+**Operator tokens to avoid inside IDs:** `-->`, `---`, `-.->`, `==>`, `<-->`, `--x`, `--o`, `|`, `&`.
+
+**Labels with special characters:** The label is everything inside the shape brackets. Special characters are supported inside labels as-is — brackets/braces that would be ambiguous are closed by the matching closing token.
 
 ---
 
-## Examples
+## 8. Common mistakes
 
-### Software deployment pipeline
+| You wrote | Parser says | Fix |
+|---|---|---|
+| `flowchart` with no direction | Direction defaults to `TB` | Add a direction: `flowchart TD` |
+| `A --> B` before declaring shapes | Works — nodes created as rectangles with the ID as label | Declare explicitly when you need a non-rect shape: `A([Start])` |
+| `A[Label with [brackets]]` | Inner `]` closes the shape early | Avoid nested brackets in labels |
+| `subgraph My Group` (unquoted, with space) | Parser takes `My` as subgraph id, `Group` as unknown token | Quote: `subgraph "My Group"` |
+| `%% comment` mid-line after code | Inline comments are not supported; `%%` must be at line start | Move comments to their own line |
+| `A --> B --> C` mixed with `A --> B` | Chains are additive — duplicate edges may appear | Use chains OR separate lines, not both for the same pair |
+| `direction LR` outside a subgraph | Silently ignored — `direction` override only applies inside `subgraph … end` | Set direction on the `flowchart` header line |
 
-```
-flowchart LR
-  code[Push code] --> ci{CI pass?}
-  ci -->|Yes| staging[Deploy staging]
-  ci -->|No| fix[Fix errors]
-  fix --> code
-  staging --> review{Review OK?}
-  review -->|Yes| prod[Deploy prod]
-  review -->|No| rollback[Rollback]
+---
+
+## 9. Grammar (EBNF)
+
+```text
+document       = header (blank | comment | subgraph-block | direction-stmt
+                        | class-stmt | classdef-stmt | style-stmt
+                        | linkstyle-stmt | chain-stmt)*
+
+header         = ("flowchart" | "graph") ( WS direction )? ( WS title )? NEWLINE
+direction      = "TD" | "TB" | "BT" | "LR" | "RL"
+title          = '"' any-char-but-quote* '"' | bare-word
+
+subgraph-block = "subgraph" ( WS subgraph-header )? NEWLINE
+                   ( WS? "direction" WS direction NEWLINE )?
+                   statement*
+                 "end" NEWLINE
+subgraph-header = id WS "[" label "]"
+                | id WS quoted-string
+                | quoted-string
+                | id
+
+chain-stmt     = node-group ( WS edge-op WS pipe-label? WS node-group )* NEWLINE
+node-group     = node-ref ( WS "&" WS node-ref )*
+node-ref       = id shape-suffix?
+shape-suffix   = "[" label "]"          %% rect
+               | "(" label ")"          %% round
+               | "([" label "])"        %% stadium
+               | "{" label "}"          %% diamond
+               | "{{" label "}}"        %% hexagon
+               | "[[" label "]]"        %% subroutine
+               | "[(" label ")]"        %% cylinder
+               | "((" label "))"        %% circle
+               | "(((" label ")))"      %% double-circle
+               | "[/" label "/]"        %% parallelogram
+               | "[\" label "\]"        %% parallelogram-alt
+               | "[/" label "\]"        %% trapezoid
+               | "[\" label "/]"        %% trapezoid-alt
+               | ">" label "]"          %% asymmetric
+
+edge-op        = "-->" | "---" | "-."-".->" | "==>" | "<-->" | "--x" | "--o"
+               | inline-label variants of the above
+pipe-label     = "|" text "|"
+
+class-stmt     = "class" WS id-list WS class-name NEWLINE
+classdef-stmt  = "classDef" WS class-name WS css-props NEWLINE
+style-stmt     = "style" WS id WS css-props NEWLINE
+linkstyle-stmt = "linkStyle" WS ...    %% parsed but not yet rendered
+
+comment        = "%%" any NEWLINE
+id             = [A-Za-z] [A-Za-z0-9_-]*
 ```
 
-### User authentication flow
+Authoritative source: `src/diagrams/flowchart/parser.ts`. If this diverges from the parser, the parser wins — please open an issue.
 
-```
-flowchart TD
-  start([Login request]) --> creds{Credentials valid?}
-  creds -->|No| fail[Return 401]
-  creds -->|Yes| mfa{MFA enabled?}
-  mfa -->|No| token[Issue JWT]
-  mfa -->|Yes| otp{OTP correct?}
-  otp -->|No| lockout[Increment failed attempts]
-  otp -->|Yes| token
-  token --> done([Authenticated])
-```
+---
 
-### Data processing with subgraphs
+## 10. Standard compliance
 
-```
-flowchart TD
-  subgraph "Ingestion"
-    raw[/Raw data/] --> validate{Valid schema?}
-    validate -->|No| dead[(Dead letter queue)]
-    validate -->|Yes| clean[Clean & normalize]
-  end
-  subgraph "Storage"
-    clean --> dw[(Data warehouse)]
-    clean --> cache[(Redis cache)]
-  end
-  dw --> report[Generate report]
-```
+Schematex flowcharts follow **ISO 5807:1985** symbol conventions. The DSL syntax is intentionally compatible with **[Mermaid flowchart](https://mermaid.js.org/syntax/flowchart.html)** so diagrams created in one tool can be used in the other.
+
+What is implemented today:
+
+- ✅ All five directions: `TD`, `TB`, `BT`, `LR`, `RL`
+- ✅ 13 node shapes (rect through asymmetric)
+- ✅ 7 edge kinds: solid, no-arrow, dotted, thick, bidirectional, crossed, round-end
+- ✅ Pipe labels (`-->|text|`) and inline labels (`-- text -->`)
+- ✅ Edge chains (`A --> B --> C`)
+- ✅ Fan-out with `&` (cross-product edges)
+- ✅ Subgraphs with optional id, label, and per-subgraph direction
+- ✅ `classDef` / `class` semantic grouping
+- ✅ Per-node `style` CSS overrides
+- ⏳ `linkStyle` rendering — parsed but visual application pending
+- ⏳ Shape rendering for all 13 shapes — M1 fully renders rect/round/stadium/diamond/parallelogram; remaining shapes fall back to rect
+- ⏳ Swim-lane layout variant
+
+References:
+
+- ISO 5807:1985 — *Information processing — Documentation symbols and conventions for data, program and system flowcharts, program network charts and system resources charts*
+- Mermaid flowchart documentation — https://mermaid.js.org/syntax/flowchart.html
+
+---
+
+## 11. Roadmap
+
+**Planned — not yet parseable.** Do not use these in generated DSL today; the parser will reject or ignore them.
+
+- **`linkStyle` visual rendering** — `linkStyle 0 stroke:#f00` is parsed and stored but not yet applied by the renderer.
+- **Full shape rendering for all 13 shapes** — subroutine, cylinder, circle, double-circle, hexagon, asymmetric, trapezoid, and parallelogram-alt fall back to rect in M1.
+- **Swim-lane layout** — horizontal bands grouping nodes by actor or system (Mermaid `subgraph` with `direction TB` inside `LR` root).
+- **`%%{init: {…}}%%` init block** — Mermaid-compatible theme and layout initialization block.
+
+Track in the GitHub issues if you need any of these sooner.
