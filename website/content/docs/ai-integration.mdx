@@ -3,6 +3,8 @@ title: Using Schematex with AI
 description: Integrate Schematex into AI agents via the Vercel AI SDK, the hosted MCP endpoint, or the @schematex/mcp npm package.
 ---
 
+<MCPConnectCard />
+
 ## TL;DR
 
 Schematex ships a tool layer built for LLMs — five tools that let an AI agent **discover** diagram types, **learn** their syntax, **see** curated examples, **validate** its own output, and **render** SVG. Three integration paths, same tools:
@@ -81,17 +83,9 @@ https://schematex.js.org/mcp
 
 Any MCP client that speaks JSON-RPC over HTTP can connect. No install, no local process, always up to date with the latest schematex release.
 
-### Claude.ai
+### Claude.ai (web)
 
-<Cards>
-  <Card
-    href="https://claude.ai/settings/connectors?modal=add-custom-connector"
-    title="Add Schematex to Claude.ai →"
-    description="Opens the connector dialog — paste https://schematex.js.org/mcp and click Add. Free / Pro / Team / Enterprise."
-  />
-</Cards>
-
-The connector will appear under Settings → Connectors and is available in every conversation.
+Use the connect block at the top of this page — one click opens the connector dialog, paste the URL, done. The connector then appears under Settings → Connectors and is available in every conversation.
 
 ### Claude Desktop (app)
 
@@ -183,6 +177,15 @@ You generate Schematex DSL for diagrams. Always follow this procedure:
 ```
 
 Not all 20 parsers emit line info yet (genogram, pedigree, ecomap, venn, sld, fishbone do today; others return message-only). The shape is stable — `line` is optional.
+
+---
+
+## Ready to try it?
+
+<MCPConnectCard
+  title="Add Schematex to Claude — it takes 10 seconds"
+  description="Hosted MCP. No install, no local process. The connector stays up to date with every Schematex release."
+/>
 
 ---
 
