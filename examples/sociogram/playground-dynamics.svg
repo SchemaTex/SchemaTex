@@ -1,47 +1,45 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="schematex-diagram schematex-sociogram" viewBox="0 0 400 430" width="400" height="430"><title>Sociogram: Playground Dynamics</title>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="schematex-diagram schematex-sociogram" viewBox="0 0 472 496" width="472" height="496"><title>Sociogram: Playground Dynamics</title>
 <desc>Sociogram with 8 members and 10 connections</desc>
 <style>.schematex-sociogram {
   --schematex-bg: #ffffff;
-  --schematex-text: #2c3e50;
-  --schematex-text-muted: #607d8b;
-  --schematex-stroke: #37474f;
-  --schematex-stroke-muted: #90a4ae;
+  --schematex-text: #0f172a;
+  --schematex-text-muted: #475569;
+  --schematex-stroke: #334155;
   --schematex-fill: #ffffff;
-  --schematex-fill-muted: #f5f7fa;
-  --schematex-accent: #1565c0;
-  --schematex-positive: #388e3c;
-  --schematex-negative: #d32f2f;
-  --schematex-neutral: #9e9e9e;
-  --schematex-warn: #e65100;
+  --schematex-fill-muted: #f1f5f9;
+  --schematex-accent: #2563eb;
+  --schematex-positive: #059669;
+  --schematex-negative: #dc2626;
+  --schematex-neutral: #94a3b8;
+  --schematex-warn: #d97706;
   --schematex-font-title: 16px;
   --schematex-font-label: 12px;
-  --schematex-font-secondary: 11px;
   --schematex-font-small: 9px;
-  --schematex-stroke-normal: 1.5;
-  --schematex-stroke-medium: 2;
-  --schematex-stroke-thick: 2.5;
+  --schematex-stroke-thin: 1;
+  --schematex-stroke-normal: 2;
+  --schematex-stroke-thick: 3;
   font-family: system-ui, -apple-system, sans-serif;
   background: #ffffff;
 }
-.schematex-sociogram-node { fill: #1565c0; stroke: #1565c0; stroke-width: 2; }
-.schematex-sociogram-node-star { fill: #e65100; stroke: #e65100; stroke-width: 2.5; }
-.schematex-sociogram-node-isolate { fill: #f5f7fa; stroke: #9e9e9e; stroke-width: 2; stroke-dasharray: 4 3; }
-.schematex-sociogram-node-neglectee { fill: #f5f7fa; stroke: #1565c0; stroke-width: 2; stroke-dasharray: 4 3; }
-.schematex-sociogram-node-rejected { fill: #d32f2f; stroke: #d32f2f; stroke-width: 2; stroke-dasharray: 4 3; }
+.schematex-sociogram-node { fill: #2563eb; stroke: #2563eb; stroke-width: 2; }
+.schematex-sociogram-node-star { fill: #d97706; stroke: #d97706; stroke-width: 3; }
+.schematex-sociogram-node-isolate { fill: #f1f5f9; stroke: #94a3b8; stroke-width: 2; stroke-dasharray: 4 3; }
+.schematex-sociogram-node-neglectee { fill: #f1f5f9; stroke: #2563eb; stroke-width: 2; stroke-dasharray: 4 3; }
+.schematex-sociogram-node-rejected { fill: #dc2626; stroke: #dc2626; stroke-width: 2; stroke-dasharray: 4 3; }
 .schematex-sociogram-edge { stroke-linecap: round; }
-.schematex-sociogram-edge-positive { stroke: #388e3c; }
-.schematex-sociogram-edge-negative { stroke: #d32f2f; stroke-dasharray: 6 3; }
-.schematex-sociogram-edge-neutral { stroke: #9e9e9e; stroke-dasharray: 2 3; }
-.schematex-sociogram-label { font-size: 11px; fill: #2c3e50; text-anchor: middle; }
-.schematex-sociogram-edge-label { font-size: 9px; fill: #607d8b; text-anchor: middle; }
-.schematex-sociogram-title { font-size: 16px; font-weight: bold; fill: #2c3e50; text-anchor: middle; }
-.schematex-sociogram-star-badge { font-size: 10px; fill: #e65100; }
+.schematex-sociogram-edge-positive { stroke: #059669; }
+.schematex-sociogram-edge-negative { stroke: #dc2626; stroke-dasharray: 6 3; }
+.schematex-sociogram-edge-neutral { stroke: #94a3b8; stroke-dasharray: 2 3; }
+.schematex-sociogram-label { font-size: 11px; fill: #0f172a; text-anchor: middle; }
+.schematex-sociogram-edge-label { font-size: 9px; fill: #475569; text-anchor: middle; }
+.schematex-sociogram-title { font-size: 16px; font-weight: bold; fill: #0f172a; text-anchor: middle; }
+.schematex-sociogram-star-badge { font-size: 10px; fill: #d97706; }
 .schematex-sociogram-group-label { font-size: 13px; font-weight: bold; fill-opacity: 0.7; text-anchor: middle; }
 .schematex-sociogram-group-boys { fill: #42A5F5; stroke: #42A5F5; }
 .schematex-sociogram-group-girls { fill: #EF5350; stroke: #EF5350; }</style>
-<defs><marker id="sociogram-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#388e3c"/></marker>
-<marker id="sociogram-arrow-negative" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#d32f2f"/></marker>
-<marker id="sociogram-arrow-neutral" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#9e9e9e"/></marker></defs>
+<defs><marker id="sociogram-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#059669"/></marker>
+<marker id="sociogram-arrow-negative" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#dc2626"/></marker>
+<marker id="sociogram-arrow-neutral" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#94a3b8"/></marker></defs>
 <text x="200" y="20" class="schematex-sociogram-title">Playground Dynamics</text>
 <g class="schematex-sociogram-groups" transform="translate(0,30)"><text x="299.72532936285484" y="26" class="schematex-sociogram-group-label" fill="#42A5F5">Boys</text>
 <text x="91.41032218521654" y="45.78851270154203" class="schematex-sociogram-group-label" fill="#EF5350">Girls</text></g>
@@ -71,4 +69,22 @@
 <text x="128.86279858701576" y="255.7182415109049" class="schematex-sociogram-label" data-node-id="anna">anna</text>
 <text x="60" y="375.0001087779495" class="schematex-sociogram-label" data-node-id="beth">beth</text>
 <text x="60" y="315.0001087779495" class="schematex-sociogram-label" data-node-id="chloe">chloe</text>
-<text x="116.7784901538504" y="114.78851270154203" class="schematex-sociogram-label" data-node-id="diana">diana</text></g></svg>
+<text x="116.7784901538504" y="114.78851270154203" class="schematex-sociogram-label" data-node-id="diana">diana</text></g>
+<g class="schematex-legend"><style>
+.schematex-legend { font-family: system-ui, sans-serif; }
+.schematex-legend-title { font-size: 12px; font-weight: 700; fill: #0f172a; }
+.schematex-legend-section { font-size: 9px; font-weight: 600; fill: #475569; letter-spacing: 0.6px; }
+.schematex-legend-label { font-size: 11px; fill: #0f172a; dominant-baseline: alphabetic; }
+</style>
+<text x="16" y="456.5" class="schematex-legend-section">GROUPS</text>
+<g class="schematex-legend-row" data-legend-key="group.boys" data-legend-section="groups"><rect x="76.9" y="448" width="20" height="10" fill="#42A5F5" stroke="#334155"/>
+<text x="105.9" y="456.5" class="schematex-legend-label">Boys</text></g>
+<g class="schematex-legend-row" data-legend-key="group.girls" data-legend-section="groups"><rect x="151.9" y="448" width="20" height="10" fill="#EF5350" stroke="#334155"/>
+<text x="180.9" y="456.5" class="schematex-legend-label">Girls</text></g>
+<text x="16" y="474.5" class="schematex-legend-section">TIES</text>
+<g class="schematex-legend-row" data-legend-key="valence.positive" data-legend-section="ties"><line x1="76.9" y1="471" x2="96.9" y2="471" stroke="#059669" stroke-width="2" stroke-linecap="round"/>
+<text x="105.9" y="474.5" class="schematex-legend-label">Positive tie</text></g>
+<g class="schematex-legend-row" data-legend-key="valence.negative" data-legend-section="ties"><line x1="204.9" y1="471" x2="224.9" y2="471" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-dasharray="5,3"/>
+<text x="233.9" y="474.5" class="schematex-legend-label">Negative tie</text></g>
+<g class="schematex-legend-row" data-legend-key="valence.neutral" data-legend-section="ties"><line x1="332.9" y1="471" x2="352.9" y2="471" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-dasharray="1.5,3"/>
+<text x="361.9" y="474.5" class="schematex-legend-label">Neutral tie</text></g></g></svg>

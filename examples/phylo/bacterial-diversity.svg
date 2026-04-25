@@ -2,39 +2,37 @@
 <desc>Phylogenetic tree with 10 taxa, phylogram mode, rectangular layout</desc>
 <style>.schematex-phylo {
   --schematex-bg: #ffffff;
-  --schematex-text: #2c3e50;
-  --schematex-text-muted: #607d8b;
-  --schematex-stroke: #37474f;
-  --schematex-stroke-muted: #90a4ae;
+  --schematex-text: #0f172a;
+  --schematex-text-muted: #475569;
+  --schematex-stroke: #334155;
   --schematex-fill: #ffffff;
-  --schematex-fill-muted: #f5f7fa;
-  --schematex-accent: #1565c0;
-  --schematex-positive: #388e3c;
-  --schematex-negative: #d32f2f;
-  --schematex-neutral: #9e9e9e;
-  --schematex-warn: #e65100;
+  --schematex-fill-muted: #f1f5f9;
+  --schematex-accent: #2563eb;
+  --schematex-positive: #059669;
+  --schematex-negative: #dc2626;
+  --schematex-neutral: #94a3b8;
+  --schematex-warn: #d97706;
   --schematex-font-title: 16px;
   --schematex-font-label: 12px;
-  --schematex-font-secondary: 11px;
   --schematex-font-small: 9px;
-  --schematex-stroke-normal: 1.5;
-  --schematex-stroke-medium: 2;
-  --schematex-stroke-thick: 2.5;
+  --schematex-stroke-thin: 1;
+  --schematex-stroke-normal: 2;
+  --schematex-stroke-thick: 3;
   font-family: system-ui, -apple-system, sans-serif;
   background: #ffffff;
 }
-.schematex-phylo-branch { fill: none; stroke: #2c3e50; stroke-width: 1.5; stroke-linecap: round; }
-.schematex-phylo-branch-connector { fill: none; stroke: #2c3e50; stroke-width: 1.5; }
-.schematex-phylo-tip-label { font-size: 12px; fill: #2c3e50; dominant-baseline: central; }
+.schematex-phylo-branch { fill: none; stroke: #0f172a; stroke-width: 2; stroke-linecap: round; }
+.schematex-phylo-branch-connector { fill: none; stroke: #0f172a; stroke-width: 2; }
+.schematex-phylo-tip-label { font-size: 12px; fill: #0f172a; dominant-baseline: central; }
 .schematex-phylo-tip-label-italic { font-style: italic; }
-.schematex-phylo-support-label { font-size: 9px; fill: #607d8b; text-anchor: middle; dominant-baseline: auto; }
+.schematex-phylo-support-label { font-size: 9px; fill: #475569; text-anchor: middle; dominant-baseline: auto; }
 .schematex-phylo-support-dot { stroke: none; }
-.schematex-phylo-scale-bar line { stroke: #2c3e50; stroke-width: 1.5; }
-.schematex-phylo-scale-bar text { font-size: 10px; fill: #2c3e50; text-anchor: middle; }
-.schematex-phylo-scale-tick { stroke: #2c3e50; stroke-width: 1; }
-.schematex-phylo-title { font-size: 16px; font-weight: bold; fill: #2c3e50; text-anchor: middle; }
+.schematex-phylo-scale-bar line { stroke: #0f172a; stroke-width: 2; }
+.schematex-phylo-scale-bar text { font-size: 10px; fill: #0f172a; text-anchor: middle; }
+.schematex-phylo-scale-tick { stroke: #0f172a; stroke-width: 1; }
+.schematex-phylo-title { font-size: 16px; font-weight: bold; fill: #0f172a; text-anchor: middle; }
 .schematex-phylo-clade-label { font-size: 13px; font-weight: bold; }
-.schematex-phylo-root-marker { fill: none; stroke: #2c3e50; stroke-width: 1.5; }
+.schematex-phylo-root-marker { fill: none; stroke: #0f172a; stroke-width: 2; }
 .schematex-phylo-clade-Gamma { stroke: #1E88E5; }
 .schematex-phylo-clade-bg-Gamma { fill: #1E88E5; fill-opacity: 0.12; }
 .schematex-phylo-clade-label-Gamma { fill: #1E88E5; }
@@ -73,11 +71,11 @@
 <path d="M 182.5806451612903,180 H 327.741935483871" class="schematex-phylo-branch schematex-phylo-branch-internal schematex-phylo-clade-Firmi" stroke="#E53935"/>
 <path d="M 182.5806451612903,200 H 298.7096774193548" class="schematex-phylo-branch schematex-phylo-branch-internal schematex-phylo-clade-Firmi" stroke="#E53935"/></g>
 <g class="schematex-phylo-nodes" transform="translate(0,30)"><circle cx="20" cy="122.5" r="5" class="schematex-phylo-root-marker"/>
-<circle cx="182.58064516129033" cy="30" r="4" class="schematex-phylo-support-dot" fill="#43a047"/>
-<circle cx="153.5483870967742" cy="45" r="4" class="schematex-phylo-support-dot" fill="#fdd835"/>
-<circle cx="200" cy="90" r="4" class="schematex-phylo-support-dot" fill="#fdd835"/>
-<circle cx="205.80645161290323" cy="150" r="4" class="schematex-phylo-support-dot" fill="#43a047"/>
-<circle cx="182.5806451612903" cy="190" r="4" class="schematex-phylo-support-dot" fill="#fdd835"/></g>
+<circle cx="182.58064516129033" cy="30" r="4" class="schematex-phylo-support-dot" fill="#059669"/>
+<circle cx="153.5483870967742" cy="45" r="4" class="schematex-phylo-support-dot" fill="#ca8a04"/>
+<circle cx="200" cy="90" r="4" class="schematex-phylo-support-dot" fill="#ca8a04"/>
+<circle cx="205.80645161290323" cy="150" r="4" class="schematex-phylo-support-dot" fill="#059669"/>
+<circle cx="182.5806451612903" cy="190" r="4" class="schematex-phylo-support-dot" fill="#ca8a04"/></g>
 <g class="schematex-phylo-labels" transform="translate(0,30)"><text x="246.6451612903226" y="20" class="schematex-phylo-tip-label" data-taxon-id="Ecoli">Ecoli</text>
 <text x="258.258064516129" y="40" class="schematex-phylo-tip-label" data-taxon-id="Salmonella">Salmonella</text>
 <text x="275.6774193548387" y="60" class="schematex-phylo-tip-label" data-taxon-id="Vibrio">Vibrio</text>
@@ -97,4 +95,4 @@
 <line x1="20" y1="236" x2="20" y2="244" class="schematex-phylo-scale-tick"/>
 <line x1="136.1290322580645" y1="236" x2="136.1290322580645" y2="244" class="schematex-phylo-scale-tick"/>
 <text x="78.06451612903226" y="256" text-anchor="middle" class="schematex-phylo-scale-bar">0.2</text>
-<text x="78.06451612903226" y="268" text-anchor="middle" font-size="9" fill="#607d8b">substitutions/site</text></g></g></svg>
+<text x="78.06451612903226" y="268" text-anchor="middle" font-size="9" fill="#475569">substitutions/site</text></g></g></svg>
