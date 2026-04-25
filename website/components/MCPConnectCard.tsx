@@ -41,20 +41,20 @@ export function MCPConnectCard({
         href={CLAUDE_CONNECTOR_URL}
         target="_blank"
         rel="noopener noreferrer"
-        className="mcp-connect-cta inline-flex items-center justify-center gap-1.5 font-medium transition no-underline"
+        className="mcp-connect-cta inline-flex items-center justify-center gap-1 font-medium transition no-underline"
         style={{
           background: '#D97757',
           color: '#ffffff',
-          padding: '7px 14px',
+          padding: '6px 11px',
           borderRadius: 'var(--r-sm)',
-          fontSize: '13px',
+          fontSize: '12px',
           whiteSpace: 'nowrap',
           textDecoration: 'none',
           lineHeight: 1.2,
         }}
       >
         <ClaudeIcon />
-        <span>Open in Claude.ai</span>
+        <span>Open in Claude</span>
         <ArrowIcon />
       </a>
     </div>
@@ -155,8 +155,8 @@ function ClaudeIcon() {
   // Simple chat-bubble glyph (avoids any vendor-specific marks).
   return (
     <svg
-      width="14"
-      height="14"
+      width="12"
+      height="12"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -173,8 +173,8 @@ function ClaudeIcon() {
 function ArrowIcon() {
   return (
     <svg
-      width="13"
-      height="13"
+      width="11"
+      height="11"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
