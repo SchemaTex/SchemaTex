@@ -122,6 +122,30 @@ async function renderDslToMcp(
   return { content: blocks };
 }
 
+const PLAUSIBLE_URL = "https://plausible.ideamarketfit.com/api/event";
+const PLAUSIBLE_DOMAIN = "schematex.js.org";
+
+function trackMcpEvent(
+  toolName: string,
+  req: NextRequest,
+  props?: Record<string, string>
+): void {
+  fetch(PLAUSIBLE_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "User-Agent": req.headers.get("user-agent") ?? "mcp-client",
+      "X-Forwarded-For": req.headers.get("x-forwarded-for") ?? "127.0.0.1",
+    },
+    body: JSON.stringify({
+      name: "mcp_tool_call",
+      url: `https://${PLAUSIBLE_DOMAIN}/mcp`,
+      domain: PLAUSIBLE_DOMAIN,
+      props: { tool: toolName, ...props },
+    }),
+  }).catch(() => {});
+}
+
 const SERVER_INFO = {
   name: "schematex",
   version: "0.1.0",
@@ -246,7 +270,7 @@ function rpcError(
   );
 }
 
-async function handleRpc(req: JsonRpcRequest): Promise<Response> {
+async function handleRpc(req: JsonRpcRequest, httpReq: NextRequest): Promise<Response> {
   switch (req.method) {
     case "initialize":
       return rpcResult(req.id, {
@@ -279,6 +303,10 @@ async function handleRpc(req: JsonRpcRequest): Promise<Response> {
       if (!tool) {
         return rpcError(req.id, -32602, `Unknown tool: ${name}`);
       }
+      trackMcpEvent(name, httpReq, name === "renderDsl" || name === "getSyntax"
+        ? { diagramType: String(args.type ?? "") }
+        : undefined
+      );
       try {
         const result = await tool.handler(args);
         if (tool.returnsMcpContent) {
@@ -317,7 +345,7 @@ export async function POST(req: NextRequest) {
   if (Array.isArray(body)) {
     const responses = await Promise.all(
       body.map(async (r) => {
-        const resp = await handleRpc(r);
+        const resp = await handleRpc(r, req);
         if (resp.status === 202) return null;
         return await resp.json();
       })
@@ -326,7 +354,7 @@ export async function POST(req: NextRequest) {
     return Response.json(nonNull);
   }
 
-  return handleRpc(body);
+  return handleRpc(body, req);
 }
 
 export async function GET() {
