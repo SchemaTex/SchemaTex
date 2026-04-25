@@ -40,7 +40,7 @@ export const metadata: Metadata = {
     description: 'Free. Fully open source. Made for AI. 20 industry-standard diagrams from a text DSL.',
   },
   verification: {
-    google: 'uqdjccFb66g-qLb9LNOCW7MoCKJiEZ_0knXoRe6pm7A',
+    google: 'UqGz5UGD4MAq8_l-V2YAGTpNqBTOHAOy9IixrLZzzgs',
   },
 };
 
