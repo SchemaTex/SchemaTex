@@ -152,10 +152,47 @@ Pedigree 的关系线比 genogram **简单得多**——没有 emotional relatio
 - 显示在 shape 下方
 - Proband 和 consultand 额外有箭头标记
 
-### 4.3 Legend (Required for Multi-Trait Pedigrees)
-- Pedigree 图必须包含 legend，解释 fill pattern 的含义
-- Legend 通常放在右下角或图表底部
-- Legend 内容：每个 trait 对应的 fill pattern + color
+### 4.3 Legend (Auto-Derived; Trait Legend Required for Multi-Trait Pedigrees)
+
+Pedigree uses the unified legend system (see [`LEGEND-SYSTEM.md`](./LEGEND-SYSTEM.md)). It is **on by default**, mode `auto` — emits no legend when nothing non-trivial varies.
+
+**Auto-derived sections:**
+
+| Section | Items emitted | Source |
+|---|---|---|
+| `status` | one row per used genetic status | `individual.geneticStatus` ∈ {`affected`, `carrier`, `carrier-x`, `obligate-carrier`, `presymptomatic`} (`unaffected` dropped — universal default) |
+| `traits` | one row per legacy trait | the legacy `legend: id = "Label" (fill: ...)` directive — feeds explicit multi-trait charts |
+| `symbols` | deceased slash, proband (P), consultand (C), non-obvious sex shapes | only when used |
+
+Standard McGoldrick conventions everyone reads at a glance — square=Male, circle=Female, ── = married, │ = parent-child — are excluded by default. The legend remains *signal* of the chart's unique encoding.
+
+**Legacy trait DSL still works** for explicit multi-trait pedigrees:
+
+```dsl
+pedigree "BRCA Family"
+  legend: brca1 = "BRCA1 (breast)" (fill: quad-tl)
+  legend: brca2 = "BRCA2 (ovarian)" (fill: quad-tr)
+  ...
+```
+
+**New unified DSL overrides** also available:
+
+```dsl
+pedigree "..."
+  legend: off                           # disable
+  legend.position: bottom-right          # corner overlay
+  legend.label status.affected: "..."   # rename
+  legend.hide: status.carrier-x          # hide a row
+```
+
+Row keys:
+
+| Item type | Key format | Example |
+|---|---|---|
+| Genetic status | `status.<status>` | `status.affected`, `status.carrier` |
+| Trait (legacy) | the trait id | `brca1`, `cf` |
+| Marker | `marker.<id>` | `marker.proband`, `marker.consultand` |
+| Status overlay | `status.deceased` | (only when present) |
 
 ---
 

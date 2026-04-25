@@ -176,6 +176,46 @@ maria --- therapist [label: "weekly sessions"]
 
 ---
 
+## 4B. Legend (Auto-Derived)
+
+Ecomap renders a unified legend at the bottom of the canvas (see [`LEGEND-SYSTEM.md`](./LEGEND-SYSTEM.md) for the cross-diagram model). The legend is **on by default**, mode `auto` — if the chart has nothing non-trivial to communicate, no legend is rendered.
+
+### Auto-derived sections
+
+| Section | Items emitted | Source |
+|---|---|---|
+| `systems` | one row per used Hartman category | `node.properties.category` (excludes the center node) |
+| `ties` | one row per used connection type | edge `relationType` — `strong`, `moderate`, `weak`, `stressful`, `stressful-strong`, `conflictual`, `broken`. Plain "normal" line is dropped (universal default). |
+
+### WYSIWYG matching
+
+Swatches use the actual rendering colors and patterns from the renderer:
+
+- Categories use the same Hartman palette (`family` brown, `work` green, `health` red, `mental-health` purple, etc.) — the legend swatch fills exactly match the colored ring around the system on the chart.
+- Tie swatches mirror line style and stroke width: strong = thick solid, weak = dashed, stressful = wavy, broken = dotted gap.
+
+### DSL overrides
+
+All standard `legend.*` directives apply (see LEGEND-SYSTEM.md). Common ones:
+
+```dsl
+ecomap "Family Support Network"
+  legend: off                          # disable entirely
+  legend.position: bottom-right         # move to corner overlay
+  legend.label work: "Job & income"     # rename a row
+  legend.hide: weak                     # hide a tie type
+  ...
+```
+
+Each row carries `data-legend-key` for programmatic targeting:
+
+| Item type | Key format | Example |
+|---|---|---|
+| Hartman category | `cat.<id>` | `cat.family`, `cat.mental-health` |
+| Tie type | `<type>` | `strong`, `weak`, `stressful` |
+
+---
+
 ## 5. Layout Rules
 
 ### 5.1 Radial Layout Algorithm

@@ -240,6 +240,45 @@ DSL 控制: `config: highlight = stars, isolates, cliques` (默认: `stars, isol
 
 ---
 
+## 6B. Legend (Auto-Derived)
+
+Sociogram renders a unified legend at the bottom of the canvas (see [`LEGEND-SYSTEM.md`](./LEGEND-SYSTEM.md) for the cross-diagram model). The legend is **on by default**, mode `auto` — if the chart has nothing non-trivial to communicate, no legend is rendered.
+
+### Auto-derived sections
+
+| Section | Items emitted | Source |
+|---|---|---|
+| `groups` | color swatch per declared group | only when `config.coloring = group` or any group has an explicit `color` |
+| `roles` | role markers used in the chart | `node.role` ∈ {`star`, `isolate`, `neglectee`, `rejected`} (`bridge` is structural-only and excluded) |
+| `ties` | edge valence colors | edge `valence` ∈ {`positive`, `negative`, `neutral`} — only valences actually used |
+
+### WYSIWYG matching
+
+- Group swatches use either the explicit `color:` from the group block or the theme palette in declaration order — same logic as the chart's node fills.
+- Role swatches mirror the chart's role rendering: `star` = warn-color filled circle, `isolate` = muted dashed circle, `neglectee` = muted with accent stroke, `rejected` = negative-color filled circle.
+- Tie swatches mirror Moreno's three-channel encoding: positive = green solid, negative = red dashed, neutral = grey dotted.
+
+### DSL overrides
+
+```dsl
+sociogram "Classroom Network"
+  config: coloring = group
+  legend.label valence.positive: "Friendship choice"
+  legend.hide: valence.neutral
+  legend.position: bottom-right          # move to corner overlay
+  ...
+```
+
+Row keys:
+
+| Item type | Key format | Example |
+|---|---|---|
+| Group | `group.<id>` | `group.boys`, `group.girls` |
+| Role | `role.<role>` | `role.star`, `role.isolate` |
+| Valence | `valence.<v>` | `valence.positive`, `valence.negative` |
+
+---
+
 ## 7. Layout Rules
 
 ### 7.1 Layout Algorithm Options

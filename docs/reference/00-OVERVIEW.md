@@ -271,11 +271,14 @@ schematex/
 
 每种 diagram 的视觉编码（颜色 / 线型 / 形状 / 标记）都对应**领域语义**——genogram 的红色锯齿线 = hostile，ecomap 的双线 = strong tie，entity 的虚线绿色 = distribution。统一的 Legend 系统：
 
-- 自动从 AST 派生（只列实际用到的编码，不列 catalog）
-- DSL 可改：`legend: on/off/<position>` · `legend.title:` · `legend.label <key>:` · `legend.hide:` · `legend.item <id>: ...`
-- 共享渲染器在 `src/core/legend.ts`，类型在 `src/core/types.ts`（`LegendSpec` / `LegendItem` / `LegendOverrides`）
+- **Auto-derive**：自动从 AST 派生，只列**实际使用且非教科书级常识**的编码——square=male / circle=female / married 单横线 / parent-child 单竖线等通用约定默认不显示
+- **DSL 可改**：`legend: on/off/<position>` · `legend.title:` · `legend.label <key>:` · `legend.hide:` · `legend.item <id>: ...`
+- **3 个标准位置**：`bottom-inline`（默认，无边框横向 strip）· `bottom-right`（角落浮动）· `none`
+- **共享渲染器** 在 `src/core/legend.ts`，类型在 `src/core/types.ts`（`LegendSpec` / `LegendItem` / `LegendOverrides`）
 
-详见 [`LEGEND-SYSTEM.md`](./LEGEND-SYSTEM.md)。Tier-A diagrams（genogram / ecomap / sociogram / entity / fishbone / phylo / pedigree）默认 on，Tier-B 默认 on，Tier-C compliance diagrams（timing / logic / circuit / ladder / sld / venn / mindmap）默认 off。
+**已实现**：genogram · ecomap · sociogram · pedigree。**计划中**：entity · fishbone · phylo · timeline · matrix。**按设计无 legend**：timing · logic · circuit · ladder · sld · venn · mindmap（field-standard symbols 自身已足够明确）。
+
+详见 [`LEGEND-SYSTEM.md`](./LEGEND-SYSTEM.md)。
 
 ---
 

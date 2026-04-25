@@ -349,32 +349,40 @@ ross -close- therapist
 
 ---
 
-## 2E. Legend Box
+## 2E. Legend (Auto-Derived)
 
-Genogram 默认 **legend on**, position `outside-right`. Renderer 自动从 AST 推导 legend，**只列实际出现的编码**——unused relationship types / sex / status / conditions 不会出现。
+Genogram is **legend-on by default**, mode `auto`, position `bottom-inline` (horizontal strip below the diagram, no box/border). Renderer auto-derives from the AST and **only emits encodings that actually vary in this chart**.
 
-详见 [`LEGEND-SYSTEM.md`](./LEGEND-SYSTEM.md) 的统一规范。本节列出 genogram 自己的 sections + keys。
+**Universal McGoldrick conventions are excluded by default** — they are read at a glance by anyone literate in the format and only clutter the legend:
 
-### 2E.1 Sections (按渲染顺序)
+- `sex.male` (square), `sex.female` (circle)
+- `married` (single horizontal line)
+- `parent-child` (single vertical line)
 
-| Section id | Title (default) | 内容 |
+A nuclear family with no special encoding therefore renders **no legend at all**. Users can opt back in via `legend.item` if needed.
+
+See [`LEGEND-SYSTEM.md`](./LEGEND-SYSTEM.md) for the cross-diagram model. This section lists genogram-specific sections and keys.
+
+### 2E.1 Sections (in render order)
+
+| Section id | Title (default) | Contents |
 |---|---|---|
-| `symbols` | Symbols | 出现过的 sex × status 组合（square/circle/diamond + deceased X overlay） |
-| `structural` | Structural | 出现过的 couple / parent-child / twin 关系（married/divorced/cohabiting/twin-identical/...） |
-| `relationships` | Relationships | 出现过的 emotional 关系（close/hostile/conflict/cutoff/abuse/...）—— 颜色 + 线型 + 粗细 swatch |
-| `conditions` | Conditions | 每个独立 condition.label 一行（color + fill-pattern swatch） |
-| `heritage` | Heritage | heritage 模式下每个 heritage id 一行 |
-| `markers` | Markers | proband / consultand / index-person / transgender 等出现过的 marker |
+| `symbols` | Symbols | Non-obvious sex shapes (`sex.unknown` / `nonbinary` / `intersex`) + status overlays (`deceased`, `stillborn`, `miscarriage`, …) |
+| `structural` | Structural | Non-obvious couple / parent-child relations: `divorced`, `separated`, `engaged`, `cohabiting`, `consanguineous`, `adopted`, `foster`, `twin-identical`, `twin-fraternal` (married + parent-child are dropped — universal) |
+| `relationships` | Relationships | Emotional relationships used (`close`, `hostile`, `conflict`, `cutoff`, `abuse`, …) — colored line swatches |
+| `conditions` | Conditions | One row per unique `condition.label`, swatch matches the actual fill color + pattern |
+| `heritage` | Heritage | One row per heritage id (when in heritage mode) |
+| `markers` | Markers | `proband (P)`, `consultand (C)`, `evaluated (E)`, `index-person`, `transgender`, etc. — only when used |
 
 ### 2E.2 Auto-derived keys
 
-| 来源 | Key 格式 | 例子 |
+| Source | Key format | Example |
 |---|---|---|
-| Sex shape | `sex.<value>` | `sex.male`, `sex.female`, `sex.unknown`, `sex.other`, `sex.nonbinary`, `sex.intersex` |
-| Status overlay | `status.<value>` | `status.deceased`, `status.stillborn`, `status.miscarriage`, `status.pregnancy` |
-| Couple / structural | literal `RelationshipType` | `married`, `divorced`, `separated`, `cohabiting`, `consanguineous`, `parent-child`, `adopted`, `foster`, `twin-identical`, `twin-fraternal` |
-| Emotional | literal `RelationshipType` | `close`, `hostile`, `conflict`, `enmity`, `cutoff`, `fused`, `distant`, `nevermet`, `abuse`, `controlling`, `focused`, `admirer`, `limerence`, … |
-| Condition | the user-written `condition.label` | `cancer`, `BRCA1`, `Type 2 Diabetes` |
+| Sex shape (non-obvious only) | `sex.<value>` | `sex.unknown`, `sex.nonbinary`, `sex.intersex` |
+| Status overlay | `status.<value>` | `status.deceased`, `status.stillborn`, `status.miscarriage` |
+| Couple / structural | literal `RelationshipType` | `divorced`, `separated`, `cohabiting`, `consanguineous`, `adopted`, `foster`, `twin-identical`, `twin-fraternal` |
+| Emotional | literal `RelationshipType` | `close`, `hostile`, `conflict`, `cutoff`, `fused`, `distant`, `abuse`, `controlling`, `focused`, … |
+| Condition | the user-written `condition.label` | `cancer`, `BRCA1`, `heart-disease` |
 | Heritage | the heritage id | `irish`, `chinese-han`, `cherokee` |
 | Marker | `marker.<id>` | `marker.proband`, `marker.index-person`, `marker.transgender` |
 
@@ -382,13 +390,14 @@ Genogram 默认 **legend on**, position `outside-right`. Renderer 自动从 AST 
 
 ```dsl
 genogram "Smith Family"
-  legend.title: "Family Symbols"          # default: "Legend"
-  legend.position: outside-right          # default
-  legend.label close: "Best friends"      # rename a row
+  legend.title: "Family Symbols"          # default: hidden (no title row)
+  legend.position: bottom-right            # default: bottom-inline
+  legend.label close: "Best friends"       # rename a row
   legend.label cancer: "Stage IV cancer"
-  legend.hide: cohabiting, normal         # hide rows
+  legend.hide: cohabiting, distant         # hide rows
   legend.section relationships: "Connection Styles"   # rename section
   legend.item dv: "Domestic violence" (kind: line, color: #b71c1c, pattern: zigzag)
+  legend.item married: "Married" (kind: line)         # opt back in to a universal
   ...
 ```
 

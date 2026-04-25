@@ -10,10 +10,10 @@ A legend is a small key drawn next to a diagram that explains what a color, line
 
 | Phase | Diagrams | State |
 |---|---|---|
-| Foundation | shared types, renderer, DSL directives, theme tokens | implemented |
-| Tier-A migration | genogram | implemented |
-| Tier-A migration | ecomap, sociogram, entity, fishbone, phylo | planned |
-| Pedigree migration | pedigree (move from `LegendEntry` to `LegendSpec`) | planned |
+| Foundation | shared types, renderer, DSL directives, theme tokens | **implemented** |
+| Tier-A migration | genogram | **implemented** |
+| Tier-A migration | ecomap, sociogram, pedigree | **implemented** |
+| Tier-A migration | entity, fishbone, phylo | planned |
 | Tier-B migration | timeline, matrix (already render legends — unify under shared core); flowchart, decisiontree, orgchart | planned |
 | Tier-C compliance | timing, logic, circuit, ladder, sld, venn, mindmap | no legend by design |
 
@@ -36,11 +36,14 @@ Legend is on by default for diagrams whose visual encoding cannot be read at a g
 | **C-conditional** | blockdiagram | **on** if `role` set on ≥2 blocks; otherwise off | Block roles drive fill colors; transfer-function labels usually self-describe. |
 | **C** Compliance / self-labeled | timing, logic, circuit, ladder, sld, venn, mindmap | **off** | Symbols are field-standard or labels live on the shape itself. |
 
+Auto-derivation is *signal-rich*: it only emits items for encodings that **vary in this specific chart**. Universal McGoldrick / Hartman / Moreno conventions everyone in the field reads at a glance — square=Male, circle=Female, ── = married, │ = parent-child, ── = positive tie — are excluded by default. A pedigree showing only unaffected family members renders with no legend at all.
+
 Override per-diagram via the DSL:
 
 ```
-legend: off                         # override default
-legend: on outside-right            # also accepts position keyword
+legend: off                         # disable
+legend: on bottom-right             # mode + position keyword
+legend.position: bottom-right       # just position
 ```
 
 ---
@@ -93,9 +96,11 @@ interface LegendItem {
 ### `LegendSpec`
 
 ```ts
+// Standard positions — others (top-*, outside-*, etc.) are legacy aliases
+// silently mapped onto these by the renderer.
 type LegendPosition =
-  | "top-left" | "top-right" | "bottom-left" | "bottom-right"
-  | "outside-right" | "outside-bottom"
+  | "bottom-inline"   // default: horizontal strip below diagram, no box/border
+  | "bottom-right"    // overlay anchored at bottom-right corner
   | "none";
 
 interface LegendSection { id: string; title: string; hidden?: boolean; }
@@ -185,13 +190,13 @@ The auto-derive function for each diagram walks the AST and emits items **only f
 
 | Diagram | Sections (in order) | Notes |
 |---|---|---|
-| genogram | Symbols → Structural → Relationships → Conditions → Heritage → Markers | Largest legend in the library; ~25 possible relationship types alone. |
-| ecomap | Categories → Strength → Energy flow | Strength = parallel/single/dashed/dotted/wavy line preview. |
-| sociogram | Valence → Strength → Roles → Groups | Valence = green/red/grey lines. |
+| **genogram** ✅ | Symbols → Structural → Relationships → Conditions → Heritage → Markers | Square=Male, circle=Female, married, parent-child are dropped by default (textbook McGoldrick). |
+| **ecomap** ✅ | Systems → Ties | Systems = Hartman category palette. Ties skip plain-line default. |
+| **sociogram** ✅ | Groups → Roles → Ties | Groups only when `coloring=group` or any group has explicit color. Roles: star/isolate/neglectee/rejected. Ties: positive/negative/neutral. |
+| **pedigree** ✅ | Genetic status → Traits → Symbols | Genetic status auto-derived from `affected` / `carrier` / `carrier-x` / `presymptomatic`. Legacy `legend: id = "..."` directive still feeds the Traits section. |
 | entity | Entity types → Edge ops → Status → Clusters | Edge ops have 5 nearly-identical dashed styles. |
 | fishbone | Major bones | One row per major-bone color → category. |
 | phylo | Clades → Support thresholds | Clades only if `clade` blocks are defined; thresholds: ≥95 / ≥75 / ≥50 / <50. |
-| pedigree | Trait fills → Genetic status → Markers | Migrates the existing `legend:` DSL into this system. |
 | flowchart | Class definitions → Edge kinds | Only if user defined `classDef` and/or used multiple edge kinds. |
 | decisiontree | Node shapes | Only shapes actually used (decision/chance/outcome/taxon/leaf). |
 | orgchart | Departments → Card status → Reporting line | Departments only if `department` set; card-status only if vacant/draft/external present. |
@@ -207,26 +212,39 @@ Legend visual tokens are derived from the existing `BaseTheme` in [`src/core/the
 
 | Element | Token |
 |---|---|
-| Box background | `t.bg` |
-| Box stroke | `t.neutral` |
-| Box title | `t.text` |
-| Section title | `t.textMuted` |
+| Title (when shown) | `t.text` |
+| Section label | `t.textMuted` |
 | Item label | `t.text` |
-| Swatch border | `t.stroke` |
+| Swatch fill | `LegendItem.fill ?? LegendItem.color ?? t.fill` |
+| Swatch stroke | `LegendItem.color ?? t.stroke` |
 
-CSS class prefix: `schematex-legend-*`. Consumers can override via the `--schematex-*` custom properties already exposed by every diagram.
+The bottom-inline layout has **no box, border, hairline, or background** — labels and swatches float on the diagram's canvas color. Consumers can restyle via `.schematex-legend-*` CSS classes.
 
 ---
 
 ## Position semantics
 
+Three standard positions; everything else is a legacy alias the renderer silently maps onto one of these.
+
 | Position | Behavior |
 |---|---|
-| `top-left`, `top-right`, `bottom-left`, `bottom-right` | Overlay inside the existing canvas; risks overlapping content on dense diagrams. |
-| `outside-right`, `outside-bottom` | Renderer reserves canvas margin and grows `width` / `height` so the legend never overlaps content. **Default for Tier-A diagrams.** |
+| `bottom-inline` (**default**) | Horizontal strip below the diagram. Each section gets its own row with a fixed left label column; items wrap inside their section if too long. Min canvas width 480 px so narrow charts don't blow up to 5+ rows. The chart auto-centers when the legend forces a wider viewBox. |
+| `bottom-right` | Compact overlay card anchored at bottom-right corner of canvas. No box border. |
 | `none` | Equivalent to `legend: off`. |
 
-If `legendOverrides.position` is unset, each diagram picks the safest default — usually `outside-right`.
+Legacy aliases — `outside-right`, `outside-bottom`, `top-left`, `top-right`, `bottom-left`, `bottom-center`, `right` — still parse but render as one of the three standard positions (mostly `bottom-inline` or `bottom-right`). Don't author new docs/examples with them.
+
+### What is dropped from the auto-derived legend
+
+The renderer aggressively excludes encodings that everyone in the field reads at a glance, so the legend remains a *signal* of the chart's unique content:
+
+| Diagram | Always dropped (universal convention) |
+|---|---|
+| genogram, pedigree | `sex.male` (square), `sex.female` (circle), `married` (──), `parent-child` (│) |
+| ecomap | (none — every Hartman tie type is intentionally distinctive) |
+| sociogram | (none) |
+
+User can opt back in by adding a `legend.item` directive (e.g. `legend.item married: "Married" (kind: line)`).
 
 ---
 
@@ -296,5 +314,5 @@ sociogram
 2. Author the per-diagram standard doc's `## Legend` section listing sections and keys.
 3. Implement `buildXxxLegend(ast)` returning a `LegendSpec` with `mode: "on"` (or `"auto"` for conditional cases like blockdiagram).
 4. In the diagram parser, accept legend directives via `parseLegendDirective(line, overrides)` from `src/core/legend-parser.ts`.
-5. In the diagram renderer, after layout: call `applyLegendOverrides(autoSpec, ast.legendOverrides)`, then `renderLegend(...)`. If the position is `outside-right`/`outside-bottom`, expand `viewBox` accordingly.
+5. In the diagram renderer, after layout: call `applyLegendOverrides(autoSpec, ast.legendOverrides)`, then `renderLegend(...)`. Grow `viewBox` to `max(layout.width/height, lb.x + lb.w + 8, lb.y + lb.h + 8)`, and translate the chart-content group by `(finalWidth - layout.width) / 2` so it stays centered when the legend widens the canvas. Use the genogram / ecomap / pedigree renderer as reference.
 6. Add tests: parser captures overrides, builder emits expected items, renderer produces expected SVG snapshot.
