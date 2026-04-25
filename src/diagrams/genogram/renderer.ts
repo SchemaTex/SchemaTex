@@ -46,8 +46,12 @@ export function renderGenogram(
     styleStr,
   ];
 
+  // Build chart content (title + diagram) at native layout.width. We'll wrap
+  // it in a horizontally-centering group AFTER the legend tells us the final
+  // viewBox width.
+  const chartContent: string[] = [];
   if (chartTitle) {
-    layers.push(
+    chartContent.push(
       text(
         {
           x: layout.width / 2,
@@ -62,23 +66,23 @@ export function renderGenogram(
       )
     );
   }
-
-  // Wrap content in a group with title offset
-  const contentGroup = group(
-    { transform: titleHeight > 0 ? `translate(0, ${titleHeight})` : undefined },
-    [edgeLayers, emotionalLayer, ...nodeLayers, labelLayer, edgeLabelLayer]
+  chartContent.push(
+    group(
+      { transform: titleHeight > 0 ? `translate(0, ${titleHeight})` : undefined },
+      [edgeLayers, emotionalLayer, ...nodeLayers, labelLayer, edgeLabelLayer]
+    )
   );
-  layers.push(contentGroup);
 
-  // Compose legend
+  // Compose legend (against the natural canvas size, not the centered one).
   let finalWidth = layout.width;
   let finalHeight = totalHeight;
+  let legendSvg = "";
   if (ast) {
     const themeBase = resolveGenogramTheme(config.theme);
     const autoSpec = buildGenogramLegend(ast, themeBase);
     const finalSpec = applyLegendOverrides(autoSpec, ast.legendOverrides);
     if (finalSpec.mode === "on" && finalSpec.items.length > 0) {
-      const { svg: legendSvg, bbox: lb } = renderLegend(
+      const { svg, bbox: lb } = renderLegend(
         finalSpec,
         {
           canvasWidth: layout.width,
@@ -89,8 +93,8 @@ export function renderGenogram(
         themeBase,
         { fontFamily: config.fontFamily, fontSize: config.fontSize }
       );
-      if (legendSvg) {
-        layers.push(legendSvg);
+      if (svg) {
+        legendSvg = svg;
         const overflowX = lb.x + lb.w + 8;
         const overflowY = lb.y + lb.h + 8;
         if (overflowX > finalWidth) finalWidth = overflowX;
@@ -98,6 +102,17 @@ export function renderGenogram(
       }
     }
   }
+
+  // Center the chart horizontally inside the (possibly widened) viewBox so
+  // small diagrams don't sit flush-left under a wide legend strip.
+  const chartXOffset = Math.max(0, (finalWidth - layout.width) / 2);
+  layers.push(
+    group(
+      { transform: chartXOffset > 0 ? `translate(${chartXOffset}, 0)` : undefined },
+      chartContent
+    )
+  );
+  if (legendSvg) layers.push(legendSvg);
 
   return svgRoot(
     {
