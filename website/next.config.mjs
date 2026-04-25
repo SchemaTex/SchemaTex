@@ -1,4 +1,5 @@
 import { createMDX } from 'fumadocs-mdx/next';
+import { withSentryConfig } from '@sentry/nextjs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -25,4 +26,12 @@ const config = {
   },
 };
 
-export default withMDX(config);
+export default withSentryConfig(withMDX(config), {
+  org: 'imf-hy',
+  project: 'schematex',
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+  widenClientFileUpload: true,
+  tunnelRoute: '/monitoring',
+  silent: !process.env.CI,
+  disableLogger: true,
+});
