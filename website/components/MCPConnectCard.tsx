@@ -53,7 +53,6 @@ export function MCPConnectCard({
           lineHeight: 1.2,
         }}
       >
-        <ClaudeIcon />
         <span>Open in Claude</span>
         <ArrowIcon />
       </a>
