@@ -1,4 +1,5 @@
 import type {
+  DiagramAST,
   LayoutResult,
   LayoutNode,
   LayoutEdge,
@@ -6,6 +7,8 @@ import type {
 } from "../../core/types";
 import { svgRoot, el, group, text, title, desc } from "../../core/svg";
 import { cssCustomProperties, resolveBaseTheme, STROKE_WIDTH, type BaseTheme } from "../../core/theme";
+import { applyLegendOverrides, renderLegend } from "../../core/legend";
+import { buildEcomapLegend } from "./legend";
 
 // ─── Category colors (Hartman standard) ────────────────────
 
@@ -32,7 +35,8 @@ const CATEGORY_COLORS: Record<string, string> = {
 
 export function renderEcomap(
   layout: LayoutResult,
-  config: RenderConfig
+  config: RenderConfig,
+  ast?: DiagramAST
 ): string {
   const centerNode = layout.nodes.find(
     (n) => n.individual.properties?.center === "true"
@@ -49,25 +53,67 @@ export function renderEcomap(
   const systemsStr = renderSystems(systemNodes, config);
   const labelsStr = renderConnectionLabels(layout.edges, t);
 
+  const layers: string[] = [
+    title("Ecomap"),
+    desc(`Ecomap diagram with ${systemNodes.length} external systems`),
+    defsStr,
+    styleStr,
+  ];
+
+  // Defer pushing chart-content until we know whether the legend widens the
+  // viewBox so we can horizontally center the chart.
+  const chartContent = [
+    connectionsStr,
+    centerStr,
+    systemsStr,
+    labelsStr,
+  ];
+
+  let finalWidth = layout.width;
+  let finalHeight = layout.height;
+  let legendSvg = "";
+
+  if (ast) {
+    const autoSpec = buildEcomapLegend(ast);
+    const finalSpec = applyLegendOverrides(autoSpec, ast.legendOverrides);
+    if (finalSpec.mode === "on" && finalSpec.items.length > 0) {
+      const { svg, bbox: lb } = renderLegend(
+        finalSpec,
+        {
+          canvasWidth: layout.width,
+          canvasHeight: layout.height,
+          padding: 16,
+        },
+        t,
+        { fontFamily: config.fontFamily, fontSize: config.fontSize }
+      );
+      if (svg) {
+        legendSvg = svg;
+        const overflowX = lb.x + lb.w + 8;
+        const overflowY = lb.y + lb.h + 8;
+        if (overflowX > finalWidth) finalWidth = overflowX;
+        if (overflowY > finalHeight) finalHeight = overflowY;
+      }
+    }
+  }
+
+  const chartXOffset = Math.max(0, (finalWidth - layout.width) / 2);
+  layers.push(
+    group(
+      { transform: chartXOffset > 0 ? `translate(${chartXOffset}, 0)` : undefined },
+      chartContent
+    )
+  );
+  if (legendSvg) layers.push(legendSvg);
+
   return svgRoot(
     {
-      viewBox: `0 0 ${layout.width} ${layout.height}`,
+      viewBox: `0 0 ${finalWidth} ${finalHeight}`,
       class: "schematex-diagram schematex-ecomap",
-      width: layout.width,
-      height: layout.height,
+      width: finalWidth,
+      height: finalHeight,
     },
-    [
-      title("Ecomap"),
-      desc(
-        `Ecomap diagram with ${systemNodes.length} external systems`
-      ),
-      defsStr,
-      styleStr,
-      connectionsStr,
-      centerStr,
-      systemsStr,
-      labelsStr,
-    ]
+    layers
   );
 }
 

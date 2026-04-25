@@ -1,10 +1,12 @@
 import type {
   DiagramAST,
   Individual,
+  LegendOverrides,
   Relationship,
   RelationshipType,
   Sex,
 } from "../../core/types";
+import { parseLegendDirective } from "../../core/legend-parser";
 
 // ─── Error ─────────────────────────────────────────────────
 
@@ -55,6 +57,8 @@ export function parseEcomap(text: string): DiagramAST {
   const knownIds = new Set<string>();
   const relationships: Relationship[] = [];
   const metadata: Record<string, string> = {};
+  const legendOverrides: LegendOverrides = {};
+  let hasLegendOverrides = false;
   let centerId: string | null = null;
 
   let i = 0;
@@ -77,6 +81,13 @@ export function parseEcomap(text: string): DiagramAST {
       trimmed.startsWith("#") ||
       trimmed.startsWith("//")
     ) {
+      i++;
+      continue;
+    }
+
+    // Legend directives: legend.title, legend.position, legend.label, etc.
+    if (parseLegendDirective(trimmed, legendOverrides)) {
+      hasLegendOverrides = true;
       i++;
       continue;
     }
@@ -163,7 +174,13 @@ export function parseEcomap(text: string): DiagramAST {
     throw new EcomapParseError(`Unexpected: ${trimmed}`, i + 1);
   }
 
-  return { type: "ecomap", individuals, relationships, metadata };
+  return {
+    type: "ecomap",
+    individuals,
+    relationships,
+    metadata,
+    legendOverrides: hasLegendOverrides ? legendOverrides : undefined,
+  };
 }
 
 // ─── Helpers ───────────────────────────────────────────────

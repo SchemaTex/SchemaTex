@@ -32,6 +32,6 @@ export const ecomap: DiagramPlugin = {
       theme: config?.theme ?? "default",
       padding: config?.padding ?? 20,
     };
-    return renderEcomap(layout, renderConfig);
+    return renderEcomap(layout, renderConfig, ast);
   },
 };
