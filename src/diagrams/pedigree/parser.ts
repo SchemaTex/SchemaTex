@@ -1,6 +1,7 @@
 import type {
   DiagramAST,
   Individual,
+  LegendOverrides,
   Relationship,
   RelationshipType,
   GeneticStatus,
@@ -8,6 +9,7 @@ import type {
   LegendEntry,
   ConditionFill,
 } from "../../core/types";
+import { parseLegendDirective } from "../../core/legend-parser";
 
 // ─── ParseError ─────────────────────────────────────────────
 
@@ -57,6 +59,8 @@ export function parsePedigree(text: string): DiagramAST {
   i++;
 
   const legend: LegendEntry[] = [];
+  const legendOverrides: LegendOverrides = {};
+  let hasLegendOverrides = false;
   const individualsMap = new Map<string, Individual>();
   const relationships: Relationship[] = [];
 
@@ -69,7 +73,17 @@ export function parsePedigree(text: string): DiagramAST {
       continue;
     }
 
-    // Legend definition
+    // Unified legend directives (legend.title / .position / .label / .hide /
+    // .section / .item / `legend: on|off|<position>`). Legacy `legend: id =
+    // "..."` falls through to the regex below — applyMaster() returns false
+    // for the trait-id form, so parseLegendDirective hands it back to us.
+    if (parseLegendDirective(trimmed, legendOverrides)) {
+      hasLegendOverrides = true;
+      i++;
+      continue;
+    }
+
+    // Legend definition (legacy trait-fill DSL).
     const legendMatch = trimmed.match(
       /^legend:\s*([a-zA-Z][a-zA-Z0-9_-]*)\s*=\s*"([^"]*)"\s*(?:\(\s*fill:\s*([a-zA-Z-]+)\s*\))?$/
     );
@@ -153,6 +167,7 @@ export function parsePedigree(text: string): DiagramAST {
     relationships,
     metadata: Object.keys(metadata).length > 0 ? metadata : undefined,
     legend: legend.length > 0 ? legend : undefined,
+    legendOverrides: hasLegendOverrides ? legendOverrides : undefined,
   };
 }
 

@@ -4,7 +4,6 @@ import type {
   LayoutEdge,
   RenderConfig,
   Individual,
-  LegendEntry,
   DiagramAST,
 } from "../../core/types";
 import {
@@ -22,6 +21,8 @@ import {
   path,
 } from "../../core/svg";
 import { cssCustomProperties, resolvePersonTheme, STROKE_WIDTH, type ResolvedTheme, type PersonTokens } from "../../core/theme";
+import { applyLegendOverrides, renderLegend as renderLegendCore } from "../../core/legend";
+import { buildPedigreeLegend } from "./legend";
 
 // ─── Public API ─────────────────────────────────────────────
 
@@ -45,29 +46,61 @@ export function renderPedigree(
 
   const diagramTitle = ast?.metadata?.title ?? "Pedigree";
 
-  const children = [
+  const layers: string[] = [
     title(diagramTitle),
     desc(`Pedigree chart with ${nodeCount} individuals across ${genCount} generations`),
     defsStr,
     styleStr,
-    genLabels,
-    edgeLayers,
-    ...nodeLayers,
-    labelLayer,
   ];
 
-  if (ast?.legend && ast.legend.length > 0) {
-    children.push(renderLegend(ast.legend, layout, config, t));
+  // Defer chart-content push until legend bbox is known so we can center.
+  const chartContent = [genLabels, edgeLayers, ...nodeLayers, labelLayer];
+
+  let finalWidth = layout.width;
+  let finalHeight = layout.height;
+  let legendSvg = "";
+
+  if (ast) {
+    const autoSpec = buildPedigreeLegend(ast, t);
+    const finalSpec = applyLegendOverrides(autoSpec, ast.legendOverrides);
+    if (finalSpec.mode === "on" && finalSpec.items.length > 0) {
+      const { svg, bbox: lb } = renderLegendCore(
+        finalSpec,
+        {
+          canvasWidth: layout.width,
+          canvasHeight: layout.height,
+          padding: 16,
+        },
+        t,
+        { fontFamily: config.fontFamily, fontSize: config.fontSize }
+      );
+      if (svg) {
+        legendSvg = svg;
+        const overflowX = lb.x + lb.w + 8;
+        const overflowY = lb.y + lb.h + 8;
+        if (overflowX > finalWidth) finalWidth = overflowX;
+        if (overflowY > finalHeight) finalHeight = overflowY;
+      }
+    }
   }
+
+  const chartXOffset = Math.max(0, (finalWidth - layout.width) / 2);
+  layers.push(
+    group(
+      { transform: chartXOffset > 0 ? `translate(${chartXOffset}, 0)` : undefined },
+      chartContent
+    )
+  );
+  if (legendSvg) layers.push(legendSvg);
 
   return svgRoot(
     {
-      viewBox: `0 0 ${layout.width} ${layout.height}`,
+      viewBox: `0 0 ${finalWidth} ${finalHeight}`,
       class: "schematex-diagram schematex-pedigree",
-      width: layout.width,
-      height: layout.height,
+      width: finalWidth,
+      height: finalHeight,
     },
-    children
+    layers
   );
 }
 
@@ -428,45 +461,7 @@ function renderGenerationLabels(
 }
 
 // ─── Legend ────────────────────────────────────────────────
-
-function renderLegend(
-  legendEntries: LegendEntry[],
-  layout: LayoutResult,
-  _config: RenderConfig,
-  t: ResolvedTheme<PersonTokens>
-): string {
-  const boxW = 160;
-  const rowH = 22;
-  const boxH = 30 + legendEntries.length * rowH;
-  const x = layout.width - boxW - 20;
-  const y = layout.height - boxH - 20;
-
-  const children: string[] = [
-    rect({ x, y, width: boxW, height: boxH, rx: 4, ry: 4, class: "schematex-pedigree-legend-box" }),
-    text({ x: x + boxW / 2, y: y + 18, class: "schematex-pedigree-legend", "text-anchor": "middle", "font-weight": "bold" }, "Legend"),
-  ];
-
-  for (let i = 0; i < legendEntries.length; i++) {
-    const entry = legendEntries[i];
-    const ry = y + 30 + i * rowH;
-    const swatchSize = 14;
-
-    children.push(
-      rect({
-        x: x + 10,
-        y: ry,
-        width: swatchSize,
-        height: swatchSize,
-        fill: t.conditionFill,
-        stroke: t.stroke,
-        "stroke-width": "1",
-      }),
-      text({ x: x + 30, y: ry + 11, class: "schematex-pedigree-legend" }, entry.label)
-    );
-  }
-
-  return group({ class: "schematex-pedigree-legend-group" }, children);
-}
+// (moved to ./legend.ts; rendered via core/legend)
 
 // ─── Helpers ───────────────────────────────────────────────
 
