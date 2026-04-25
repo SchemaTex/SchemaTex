@@ -36,18 +36,18 @@ export function MCPConnectCard({
       {/* URL — copyable. Click anywhere on the pill to copy. */}
       <CopyURLPill />
 
-      {/* Primary CTA — opens Claude.ai connector dialog. */}
+      {/* Primary CTA — opens Claude.ai connector dialog. Claude brand orange. */}
       <a
         href={CLAUDE_CONNECTOR_URL}
         target="_blank"
         rel="noopener noreferrer"
-        className="mcp-connect-cta inline-flex items-center justify-center gap-2 font-medium transition no-underline"
+        className="mcp-connect-cta inline-flex items-center justify-center gap-1.5 font-medium transition no-underline"
         style={{
-          background: 'var(--accent)',
+          background: '#D97757',
           color: '#ffffff',
-          padding: '10px 18px',
+          padding: '7px 14px',
           borderRadius: 'var(--r-sm)',
-          fontSize: '14px',
+          fontSize: '13px',
           whiteSpace: 'nowrap',
           textDecoration: 'none',
           lineHeight: 1.2,
