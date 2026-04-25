@@ -14,8 +14,10 @@
  * The same five tools are also available via the `@schematex/mcp` npm
  * package for stdio hosts (Claude Desktop etc.).
  */
+import { createHash } from "node:crypto";
 import { existsSync, writeFileSync } from "node:fs";
 import { NextRequest } from "next/server";
+import { put } from "@vercel/blob";
 import {
   listDiagrams,
   getSyntax,
@@ -44,12 +46,24 @@ interface McpToolResult {
   isError?: boolean;
 }
 
+function extractTitle(dsl: string, type: string): string {
+  const match = dsl.match(/^\s*title\s+"([^"]+)"/m);
+  const raw = match?.[1] ?? type;
+  return raw
+    .toLowerCase()
+    .replace(/[\s/\\]+/g, "-")
+    .replace(/[^\w-]/g, "")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 60) || type;
+}
+
 async function renderDslToMcp(
   args: Record<string, unknown>
 ): Promise<McpToolResult> {
+  const dsl = String(args.dsl);
   const result: RenderDslResult = renderDsl(
     args.type as string | undefined,
-    String(args.dsl),
+    dsl,
     {
       theme: args.theme as string | undefined,
       padding: args.padding as number | undefined,
@@ -63,30 +77,61 @@ async function renderDslToMcp(
   }
 
   const typeLabel = result.type ?? "diagram";
-  let pngBase64: string | null = null;
+
+  // Rasterise SVG → PNG
+  let png: Buffer | null = null;
   let rasterError: string | null = null;
   try {
     const fontPath = ensureFont();
     const { Resvg } = await import("@resvg/resvg-js");
-    const png = new Resvg(result.svg, {
-      font: {
-        loadSystemFonts: false,
-        fontFiles: [fontPath],
-        defaultFontFamily: "Noto Sans",
-        sansSerifFamily: "Noto Sans",
-        serifFamily: "Noto Sans",
-      },
-    })
-      .render()
-      .asPng();
-    pngBase64 = Buffer.from(png).toString("base64");
+    png = Buffer.from(
+      new Resvg(result.svg, {
+        font: {
+          loadSystemFonts: false,
+          fontFiles: [fontPath],
+          defaultFontFamily: "Noto Sans",
+          sansSerifFamily: "Noto Sans",
+          serifFamily: "Noto Sans",
+        },
+      })
+        .render()
+        .asPng()
+    );
   } catch (err) {
     rasterError = err instanceof Error ? err.message : String(err);
   }
 
+  // Upload PNG + DSL to Blob (fire-and-forget on error — never fail the render)
+  let blobUrl: string | null = null;
+  if (png && process.env.BLOB_READ_WRITE_TOKEN) {
+    try {
+      const date = new Date().toISOString().slice(0, 10);
+      const title = extractTitle(dsl, typeLabel);
+      const hash = createHash("sha256").update(dsl).digest("hex").slice(0, 8);
+      const prefix = `renders/${date}/${title}-${hash}`;
+
+      const [pngBlob] = await Promise.all([
+        put(`${prefix}.png`, png, {
+          access: "public",
+          addRandomSuffix: false,
+          contentType: "image/png",
+        }),
+        put(`${prefix}.dsl`, dsl, {
+          access: "public",
+          addRandomSuffix: false,
+          contentType: "text/plain",
+        }),
+      ]);
+      blobUrl = pngBlob.url;
+    } catch {
+      // Blob upload failure is non-fatal
+    }
+  }
+
   const blocks: McpContentBlock[] = [];
-  if (pngBase64) {
-    blocks.push({ type: "image", data: pngBase64, mimeType: "image/png" });
+
+  if (png) {
+    blocks.push({ type: "image", data: png.toString("base64"), mimeType: "image/png" });
   }
   blocks.push({
     type: "resource",
@@ -96,11 +141,13 @@ async function renderDslToMcp(
       text: result.svg,
     },
   });
+
+  const urlNote = blobUrl ? ` Permanent URL: ${blobUrl}` : "";
   blocks.push({
     type: "text",
-    text: pngBase64
-      ? `Rendered ${typeLabel}. The PNG above is the final artifact — display it to the user as-is. Do not regenerate or wrap it in another SVG. The original SVG source is attached as a resource for editing.`
-      : `Rendered ${typeLabel} (PNG rasterisation failed: ${rasterError}). The SVG source is attached as a resource — display it to the user as-is rather than redrawing.`,
+    text: png
+      ? `Rendered ${typeLabel}.${urlNote} Include this in your reply so the diagram appears inline:\n\n![${typeLabel}](${blobUrl ?? "data:image/png;base64," + png.toString("base64")})\n\nDo NOT regenerate or redraw the SVG.`
+      : `Rendered ${typeLabel} (PNG failed: ${rasterError}). SVG attached as resource — display as-is, do not redraw.`,
   });
 
   return { content: blocks };
