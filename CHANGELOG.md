@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.2.3] — 2026-04-25
+
+### Added — Unified legend system
+
+- **`bottom-inline` legend position** (new default): sections flow left-to-right in rows, each section on its own row with a fixed label column; canvas minimum width 480 px
+- **`bottom-right` legend position**: compact floating legend anchored to the lower-right corner
+- **`none` position**: suppress legend entirely (also via `legend: none` in DSL)
+- **`LegendItem.fill`** field: separates shape-fill color from stroke/line color for WYSIWYG swatches
+- **Ecomap legend** (`buildEcomapLegend`): auto-derives SYSTEMS (Hartman category colors) + TIES (strength/valence) sections from the chart
+- **Sociogram legend** (`buildSociogramLegend`): auto-derives GROUPS (node group colors) + ROLES + TIES (valence line styles) sections
+- **Pedigree legend** (`buildPedigreeLegend`): auto-derives GENETIC STATUS (affected/carrier/presymptomatic fill patterns) + TRAITS (legacy DSL) + SYMBOLS (deceased diagonal, proband P) sections
+- `legend.*` DSL directives (`legend: position`, `legend: title`, `legend: none`) now supported across genogram, ecomap, sociogram, and pedigree
+
+### Changed
+
+- **Genogram legend** auto-derivation no longer emits Male/Female shapes, Married, or Parent-Child — these universal McGoldrick conventions are excluded by default ("obvious" encodings)
+- **No legend border/box**: dropped hairline box; legend is borderless and minimal
+- **Chart centering**: when legend widens the canvas beyond the chart's natural width, chart content is translated to stay horizontally centered
+- **Condition fill CSS fix**: `.schematex-genogram-condition-fill:not([fill])` — prevents the theme CSS from overriding per-individual inline `fill` attributes
+- **Quad clip-path fix**: switched to `clipPathUnits="objectBoundingBox"` with 0..1 fractional coordinates; `quad-tl`/`quad-tr` now clip to the correct quadrant
+- Reference docs updated: `LEGEND-SYSTEM.md`, `00-OVERVIEW.md`, `01-GENOGRAM-STANDARD.md`, `02-ECOMAP-STANDARD.md`, `03-PEDIGREE-STANDARD.md`, `05-SOCIOGRAM-STANDARD.md`
+
+---
+
 ## [0.2.2] — 2026-04-23
 
 ### Added — Mindmap rich content (inline markdown)
