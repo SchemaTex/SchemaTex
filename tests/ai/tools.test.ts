@@ -146,6 +146,95 @@ UTIL -> FOO`
     const result = validateDsl(undefined, "genogram\n  alice [female]");
     expect(result.ok).toBe(true);
   });
+
+  // ─── Pass A: parsers backfilled with line/column ────────────────
+
+  it("flowchart parser emits line + column", () => {
+    const result = validateDsl("flowchart", `flowchart BAD\nA --> B`);
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.errors[0].line).toBe(1);
+      expect(result.errors[0].column).toBeGreaterThan(0);
+    }
+  });
+
+  it("decisiontree parser emits line", () => {
+    const result = validateDsl(
+      "decisiontree",
+      `decisiontree "T"\ndecision "Root"\n  bogus "Bad"`
+    );
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.errors[0].line).toBeGreaterThan(0);
+    }
+  });
+
+  it("timeline parser emits line", () => {
+    const result = validateDsl(
+      "timeline",
+      `timeline "T"\nera "Bad"`
+    );
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.errors[0].line).toBeGreaterThan(0);
+    }
+  });
+
+  it("ladder parser emits line + source", () => {
+    const result = validateDsl(
+      "ladder",
+      `ladder "T"\nrung 1:\n  BOGUS(TAG)`
+    );
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.errors[0].line).toBe(3);
+      expect(result.errors[0].source).toContain("BOGUS");
+    }
+  });
+
+  it("mindmap parser emits line", () => {
+    // No root H1 → first H2 triggers orphan on line 1.
+    const result = validateDsl("mindmap", `## orphan child`);
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.errors[0].line).toBe(1);
+    }
+  });
+
+  it("timing parser emits line + source", () => {
+    const result = validateDsl(
+      "timing",
+      `timing "T"\nCLK: !!!`
+    );
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.errors[0].line).toBe(2);
+      expect(result.errors[0].source).toContain("CLK");
+    }
+  });
+
+  it("blockdiagram parser emits line + source", () => {
+    const result = validateDsl(
+      "blockdiagram",
+      `blockdiagram "T"\nA = block("a")\n->`
+    );
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.errors[0].line).toBe(3);
+      expect(result.errors[0].source).toContain("->");
+    }
+  });
+
+  it("orgchart parser emits line + source", () => {
+    const result = validateDsl(
+      "orgchart",
+      `orgchart "T"\nA: "Alice" | CEO\nA: "Dup" | CEO`
+    );
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.errors[0].line).toBe(3);
+    }
+  });
 });
 
 describe("renderDsl", () => {

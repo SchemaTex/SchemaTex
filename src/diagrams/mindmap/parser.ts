@@ -18,6 +18,18 @@ import { tokenizeInline } from "./inline";
  * Directives: `style`, `theme`, `maxLabelWidth`.
  */
 
+export class MindmapParseError extends Error {
+  constructor(
+    message: string,
+    public line?: number,
+    public column?: number,
+    public source?: string
+  ) {
+    super(line !== undefined ? `Line ${line}: ${message}` : message);
+    this.name = "MindmapParseError";
+  }
+}
+
 const VALID_STYLES: readonly MindmapStyle[] = ["map", "logic-right"];
 const DEFAULT_MAX_LABEL_WIDTH = 240;
 
@@ -48,10 +60,15 @@ function makeNode(id: string, label: string, depth: number): MindmapNode {
 }
 
 export function parseMindmap(text: string): MindmapAST {
-  const lines = text.split(/\r?\n/);
+  const allLines = text.split(/\r?\n/);
+  let lineOffset = 0;
 
   // Skip optional leading "mindmap" marker.
-  if (lines[0]?.trim().toLowerCase() === "mindmap") lines.shift();
+  if (allLines[0]?.trim().toLowerCase() === "mindmap") {
+    allLines.shift();
+    lineOffset = 1;
+  }
+  const lines = allLines;
 
   const directives: Directives = { style: "map", maxLabelWidth: DEFAULT_MAX_LABEL_WIDTH };
   let root: MindmapNode | null = null;
@@ -62,16 +79,18 @@ export function parseMindmap(text: string): MindmapAST {
   const stack: { node: MindmapNode; depth: number }[] = [];
   let lastHeadingDepth = 0;
 
-  const attach = (node: MindmapNode, depth: number) => {
+  const attach = (node: MindmapNode, depth: number, lineNo: number, source: string) => {
     while (stack.length && stack[stack.length - 1].depth >= depth) stack.pop();
     const parent = stack[stack.length - 1]?.node;
-    if (!parent) throw new Error("Mindmap: orphan node — expected root # heading first");
+    if (!parent) throw new MindmapParseError("orphan node — expected root # heading first", lineNo, undefined, source);
     node.depth = parent.depth + 1;
     parent.children.push(node);
     stack.push({ node, depth });
   };
 
-  for (const raw of lines) {
+  for (let i = 0; i < lines.length; i++) {
+    const raw = lines[i] ?? "";
+    const lineNo = i + 1 + lineOffset;
     const line = raw.replace(/\s+$/, "");
     const trimmed = line.trim();
     if (!trimmed) continue;
@@ -87,12 +106,12 @@ export function parseMindmap(text: string): MindmapAST {
       const label = heading[2].trim();
       const node = makeNode(nextId(), label, depth);
       if (depth === 0) {
-        if (root) throw new Error("Mindmap: multiple `#` center nodes not allowed");
+        if (root) throw new MindmapParseError("multiple `#` center nodes not allowed", lineNo, undefined, line);
         root = node;
         stack.length = 0;
         stack.push({ node, depth: 0 });
       } else {
-        attach(node, depth);
+        attach(node, depth, lineNo, line);
       }
       lastHeadingDepth = depth;
       continue;
@@ -104,12 +123,12 @@ export function parseMindmap(text: string): MindmapAST {
       const depth = lastHeadingDepth + 1 + Math.floor(indent / 2);
       const label = bullet[2].trim();
       const node = makeNode(nextId(), label, depth);
-      attach(node, depth);
+      attach(node, depth, lineNo, line);
       continue;
     }
   }
 
-  if (!root) throw new Error("Mindmap: missing central topic — start with `# Title`");
+  if (!root) throw new MindmapParseError("missing central topic — start with `# Title`");
 
   const ast: MindmapAST = {
     type: "mindmap",

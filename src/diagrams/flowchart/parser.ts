@@ -55,9 +55,10 @@ export class FlowchartParseError extends Error {
   constructor(
     message: string,
     public line: number,
-    public col: number
+    public column: number,
+    public source?: string
   ) {
-    super(`[line ${line}:${col}] ${message}`);
+    super(`[line ${line}:${column}] ${message}`);
     this.name = "FlowchartParseError";
   }
 }

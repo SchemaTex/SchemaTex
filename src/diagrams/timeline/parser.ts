@@ -13,7 +13,12 @@ import type {
 import { parseDate } from "./dates";
 
 export class TimelineParseError extends Error {
-  constructor(message: string, public line?: number) {
+  constructor(
+    message: string,
+    public line?: number,
+    public column?: number,
+    public source?: string
+  ) {
     super(line !== undefined ? `Line ${line}: ${message}` : message);
     this.name = "TimelineParseError";
   }

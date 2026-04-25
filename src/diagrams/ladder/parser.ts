@@ -12,8 +12,13 @@ import type {
 } from "../../core/types";
 
 export class LadderParseError extends Error {
-  constructor(message: string) {
-    super(message);
+  constructor(
+    message: string,
+    public line?: number,
+    public column?: number,
+    public source?: string
+  ) {
+    super(line !== undefined ? `Line ${line}: ${message}` : message);
     this.name = "LadderParseError";
   }
 }
@@ -56,12 +61,12 @@ function stripQuotes(v: string): string {
 function parseElement(line: string, lineNo: number): LadderElement {
   const m = line.match(/^([A-Z][A-Z0-9_]*)\s*\(\s*([^)]*)\s*\)\s*$/);
   if (!m) {
-    throw new LadderParseError(`Line ${lineNo}: invalid element syntax: ${line}`);
+    throw new LadderParseError(`invalid element syntax: ${line}`, lineNo, undefined, line);
   }
   const op = m[1] as string;
   const args = splitArgs(m[2]);
   if (args.length === 0 || !args[0]) {
-    throw new LadderParseError(`Line ${lineNo}: element missing tag: ${line}`);
+    throw new LadderParseError(`element missing tag: ${line}`, lineNo, undefined, line);
   }
   const tag = args[0];
 
@@ -126,7 +131,7 @@ function parseElement(line: string, lineNo: number): LadderElement {
     return fb;
   }
 
-  throw new LadderParseError(`Line ${lineNo}: unknown element type "${op}"`);
+  throw new LadderParseError(`unknown element type "${op}"`, lineNo, undefined, line);
 }
 
 export function parseLadderDSL(text: string): LadderAST {
@@ -191,7 +196,7 @@ export function parseLadderDSL(text: string): LadderAST {
     }
 
     if (!currentRung) {
-      throw new LadderParseError(`Line ${lineNo}: element outside of rung: ${line}`);
+      throw new LadderParseError(`element outside of rung: ${line}`, lineNo, undefined, line);
     }
 
     // parallel:
@@ -205,7 +210,7 @@ export function parseLadderDSL(text: string): LadderAST {
     // branch:
     if (/^branch\s*:\s*$/i.test(line)) {
       if (!currentParallel) {
-        throw new LadderParseError(`Line ${lineNo}: branch: without parallel:`);
+        throw new LadderParseError(`branch: without parallel:`, lineNo, undefined, line);
       }
       currentBranch = { elements: [] };
       currentParallel.push(currentBranch);

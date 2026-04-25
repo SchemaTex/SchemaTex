@@ -7,8 +7,13 @@ import type {
 } from "../../core/types";
 
 export class BlockDiagramParseError extends Error {
-  constructor(message: string) {
-    super(message);
+  constructor(
+    message: string,
+    public line?: number,
+    public column?: number,
+    public source?: string
+  ) {
+    super(line !== undefined ? `Line ${line}: ${message}` : message);
     this.name = "BlockDiagramParseError";
   }
 }
@@ -90,7 +95,9 @@ export function parseBlockDiagram(text: string): BlockAST {
   const connections: BlockEdge[] = [];
   const signals = new Map<string, SignalDecl>();
 
-  for (const rawLine of lines) {
+  for (let i = 0; i < lines.length; i++) {
+    const rawLine = lines[i] ?? "";
+    const lineNo = i + 1;
     const line = rawLine.replace(/#.*$/, "").trim();
     if (!line) continue;
 
@@ -176,7 +183,7 @@ export function parseBlockDiagram(text: string): BlockAST {
       }
       const parts = body.split("->").map((x) => x.trim()).filter(Boolean);
       if (parts.length < 2) {
-        throw new BlockDiagramParseError(`Invalid connection: ${line}`);
+        throw new BlockDiagramParseError(`Invalid connection: ${line}`, lineNo, undefined, line);
       }
       for (let i = 0; i < parts.length - 1; i++) {
         const from = parts[i];

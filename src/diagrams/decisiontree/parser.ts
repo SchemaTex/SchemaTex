@@ -9,7 +9,12 @@ import type {
 } from "./types";
 
 export class DTreeParseError extends Error {
-  constructor(message: string, public line?: number) {
+  constructor(
+    message: string,
+    public line?: number,
+    public column?: number,
+    public source?: string
+  ) {
     super(line !== undefined ? `Line ${line}: ${message}` : message);
     this.name = "DTreeParseError";
   }

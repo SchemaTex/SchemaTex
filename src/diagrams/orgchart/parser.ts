@@ -9,8 +9,13 @@ import type {
 } from "./types";
 
 export class OrgchartParseError extends Error {
-  constructor(message: string) {
-    super(message);
+  constructor(
+    message: string,
+    public line?: number,
+    public column?: number,
+    public source?: string
+  ) {
+    super(line !== undefined ? `Line ${line}: ${message}` : message);
     this.name = "OrgchartParseError";
   }
 }
@@ -108,17 +113,20 @@ function parseProps(inside: string): Record<string, string> {
 interface RawLine {
   indent: number;
   text: string;
+  line: number;
 }
 
 function tokenizeLines(text: string): RawLine[] {
   const result: RawLine[] = [];
-  for (const raw of text.split("\n")) {
+  const split = text.split("\n");
+  for (let i = 0; i < split.length; i++) {
+    const raw = split[i] ?? "";
     const stripped = stripComment(raw.replace(/\r$/, ""));
     if (!stripped.trim()) continue;
     const match = stripped.match(/^(\s*)(.*)$/);
     if (!match) continue;
     const indent = match[1].replace(/\t/g, "  ").length;
-    result.push({ indent, text: match[2].trim() });
+    result.push({ indent, text: match[2].trim(), line: i + 1 });
   }
   return result;
 }
@@ -266,10 +274,10 @@ export function parseOrgchart(text: string): OrgchartAST {
     // Node line
     const parsed = parseNodeLine(line);
     if (!parsed) {
-      throw new OrgchartParseError(`Cannot parse line: ${line}`);
+      throw new OrgchartParseError(`Cannot parse line: ${line}`, rl.line, undefined, line);
     }
     if (nodeMap.has(parsed.id)) {
-      throw new OrgchartParseError(`Duplicate node id "${parsed.id}"`);
+      throw new OrgchartParseError(`Duplicate node id "${parsed.id}"`, rl.line, undefined, line);
     }
 
     const node: OrgchartNode = {

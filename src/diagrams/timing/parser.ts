@@ -1,8 +1,13 @@
 import type { TimingAST, TimingSignal, TimingGroup } from "../../core/types";
 
 export class TimingParseError extends Error {
-  constructor(message: string) {
-    super(message);
+  constructor(
+    message: string,
+    public line?: number,
+    public column?: number,
+    public source?: string
+  ) {
+    super(line !== undefined ? `Line ${line}: ${message}` : message);
     this.name = "TimingParseError";
   }
 }
@@ -36,7 +41,9 @@ export function parseTiming(text: string): TimingAST {
   let hscale: number | undefined;
   let currentGroup: TimingGroup | null = null;
 
-  for (const raw of lines) {
+  for (let i = 0; i < lines.length; i++) {
+    const raw = lines[i] ?? "";
+    const lineNo = i + 1;
     const line = raw.trim();
     if (!line || line.startsWith("#")) continue;
 
@@ -71,7 +78,7 @@ export function parseTiming(text: string): TimingAST {
       const name = sigMatch[1].trim();
       const { wave, data } = splitDataList(sigMatch[2]);
       if (!VALID_STATES.test(wave)) {
-        throw new TimingParseError(`Invalid wave string "${wave}" for signal ${name}`);
+        throw new TimingParseError(`Invalid wave string "${wave}" for signal ${name}`, lineNo, undefined, line);
       }
       const signal: TimingSignal = { name, wave, data: data.length ? data : undefined };
       if (currentGroup) currentGroup.signals.push(signal);
