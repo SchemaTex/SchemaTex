@@ -92,104 +92,37 @@ export function getRequiredDefs(individuals: Individual[], includeArrowMarker = 
 
   const children: string[] = [];
 
-  if (neededFills.has("half-left")) {
+  // All clipPaths use clipPathUnits="objectBoundingBox" so a single clip works
+  // for any base shape (rect, circle, diamond) regardless of its size: the
+  // rect coordinates are interpreted as fractions (0..1) of the clipped
+  // element's bounding box. Both the legacy `-rect` and `-circle` ids point
+  // at structurally identical clips — kept under both names for backwards
+  // compatibility with conditionFillElement's `${cond.fill}-${clipSuffix}` ref.
+  function quadClips(suffix: string, x: number, y: number, w: number, h: number) {
+    const r = rect({ x, y, width: w, height: h });
     children.push(
-      el("clipPath", { id: "schematex-genogram-clip-half-left-rect" }, [
-        rect({ x: "0", y: "0", width: "50%", height: "100%" }),
-      ]),
-      el("clipPath", { id: "schematex-genogram-clip-half-left-circle" }, [
-        rect({ x: "-50", y: "-50", width: "50", height: "100" }),
-      ])
+      el(
+        "clipPath",
+        { id: `schematex-genogram-clip-${suffix}-rect`, clipPathUnits: "objectBoundingBox" },
+        [r]
+      ),
+      el(
+        "clipPath",
+        { id: `schematex-genogram-clip-${suffix}-circle`, clipPathUnits: "objectBoundingBox" },
+        [r]
+      )
     );
   }
 
-  if (neededFills.has("half-right")) {
-    children.push(
-      el("clipPath", { id: "schematex-genogram-clip-half-right-rect" }, [
-        rect({ x: "50%", y: "0", width: "50%", height: "100%" }),
-      ]),
-      el("clipPath", { id: "schematex-genogram-clip-half-right-circle" }, [
-        rect({ x: "0", y: "-50", width: "50", height: "100" }),
-      ])
-    );
-  }
-
-  if (neededFills.has("half-bottom")) {
-    children.push(
-      el("clipPath", { id: "schematex-genogram-clip-half-bottom-rect" }, [
-        rect({ x: "0", y: "50%", width: "100%", height: "50%" }),
-      ]),
-      el("clipPath", { id: "schematex-genogram-clip-half-bottom-circle" }, [
-        rect({ x: "-50", y: "0", width: "100", height: "50" }),
-      ])
-    );
-  }
-
-  if (neededFills.has("quarter")) {
-    children.push(
-      el("clipPath", { id: "schematex-genogram-clip-quarter-rect" }, [
-        rect({ x: "0", y: "0", width: "50%", height: "50%" }),
-      ]),
-      el("clipPath", { id: "schematex-genogram-clip-quarter-circle" }, [
-        rect({ x: "-50", y: "-50", width: "50", height: "50" }),
-      ])
-    );
-  }
-
-  if (neededFills.has("half-top")) {
-    children.push(
-      el("clipPath", { id: "schematex-genogram-clip-half-top-rect" }, [
-        rect({ x: "0", y: "0", width: "100%", height: "50%" }),
-      ]),
-      el("clipPath", { id: "schematex-genogram-clip-half-top-circle" }, [
-        rect({ x: "-50", y: "-50", width: "100", height: "50" }),
-      ])
-    );
-  }
-
-  if (neededFills.has("quad-tl")) {
-    children.push(
-      el("clipPath", { id: "schematex-genogram-clip-quad-tl-rect" }, [
-        rect({ x: "0", y: "0", width: "50%", height: "50%" }),
-      ]),
-      el("clipPath", { id: "schematex-genogram-clip-quad-tl-circle" }, [
-        rect({ x: "-50", y: "-50", width: "50", height: "50" }),
-      ])
-    );
-  }
-
-  if (neededFills.has("quad-tr")) {
-    children.push(
-      el("clipPath", { id: "schematex-genogram-clip-quad-tr-rect" }, [
-        rect({ x: "50%", y: "0", width: "50%", height: "50%" }),
-      ]),
-      el("clipPath", { id: "schematex-genogram-clip-quad-tr-circle" }, [
-        rect({ x: "0", y: "-50", width: "50", height: "50" }),
-      ])
-    );
-  }
-
-  if (neededFills.has("quad-bl")) {
-    children.push(
-      el("clipPath", { id: "schematex-genogram-clip-quad-bl-rect" }, [
-        rect({ x: "0", y: "50%", width: "50%", height: "50%" }),
-      ]),
-      el("clipPath", { id: "schematex-genogram-clip-quad-bl-circle" }, [
-        rect({ x: "-50", y: "0", width: "50", height: "50" }),
-      ])
-    );
-  }
-
-  if (neededFills.has("quad-br")) {
-    children.push(
-      el("clipPath", { id: "schematex-genogram-clip-quad-br-rect" }, [
-        rect({ x: "50%", y: "50%", width: "50%", height: "50%" }),
-      ]),
-      el("clipPath", { id: "schematex-genogram-clip-quad-br-circle" }, [
-        rect({ x: "0", y: "0", width: "50", height: "50" }),
-      ])
-    );
-  }
+  if (neededFills.has("half-left"))   quadClips("half-left",   0,   0,   0.5, 1);
+  if (neededFills.has("half-right"))  quadClips("half-right",  0.5, 0,   0.5, 1);
+  if (neededFills.has("half-top"))    quadClips("half-top",    0,   0,   1,   0.5);
+  if (neededFills.has("half-bottom")) quadClips("half-bottom", 0,   0.5, 1,   0.5);
+  if (neededFills.has("quarter"))     quadClips("quarter",     0,   0,   0.5, 0.5);
+  if (neededFills.has("quad-tl"))     quadClips("quad-tl",     0,   0,   0.5, 0.5);
+  if (neededFills.has("quad-tr"))     quadClips("quad-tr",     0.5, 0,   0.5, 0.5);
+  if (neededFills.has("quad-bl"))     quadClips("quad-bl",     0,   0.5, 0.5, 0.5);
+  if (neededFills.has("quad-br"))     quadClips("quad-br",     0.5, 0.5, 0.5, 0.5);
 
   if (neededFills.has("striped")) {
     children.push(
