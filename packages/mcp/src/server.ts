@@ -14,6 +14,7 @@ import {
   validateDsl,
   renderDsl,
 } from "schematex/ai";
+import { buildRenderDslContent } from "./render-content.js";
 
 const NAME = "schematex";
 const VERSION = "0.1.0";
@@ -124,7 +125,7 @@ export function createSchematexMcpServer(): McpServer {
     {
       title: "Render DSL to SVG",
       description:
-        "Render Schematex DSL to an SVG string. Returns { ok: true, svg } or { ok: false, errors }. Use when the caller needs the actual diagram output, not just validation.",
+        "Render Schematex DSL to a diagram. Returns a PNG image (the final artifact — display as-is, do not redraw) plus the original SVG as an embedded resource for editing. On error, returns { ok: false, errors } as text.",
       inputSchema: {
         type: z.string().optional().describe("Diagram type (auto-detected if omitted)."),
         dsl: z.string().describe("The DSL source text to render."),
@@ -132,14 +133,9 @@ export function createSchematexMcpServer(): McpServer {
         padding: z.number().optional().describe("Outer padding in pixels."),
       },
     },
-    async ({ type, dsl, theme, padding }) => ({
-      content: [
-        {
-          type: "text",
-          text: JSON.stringify(renderDsl(type, dsl, { theme, padding }), null, 2),
-        },
-      ],
-    })
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- SDK's CallToolResult content is a strict discriminated union; our helper returns the same shape but typed loosely so it can be shared with the HTTP route. Trust at the boundary.
+    async ({ type, dsl, theme, padding }) =>
+      buildRenderDslContent(renderDsl(type, dsl, { theme, padding })) as any
   );
 
   return server;

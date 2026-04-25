@@ -14,6 +14,7 @@
  * The same five tools are also available via the `@schematex/mcp` npm
  * package for stdio hosts (Claude Desktop etc.).
  */
+import { existsSync, writeFileSync } from "node:fs";
 import { NextRequest } from "next/server";
 import {
   listDiagrams,
@@ -21,10 +22,89 @@ import {
   getExamples,
   validateDsl,
   renderDsl,
+  type RenderDslResult,
 } from "schematex/ai";
+import { NOTO_SANS_BASE64 } from "../(home)/examples/[slug]/_assets/noto-sans-base64";
 
+export const runtime = "nodejs";
 export const maxDuration = 60;
 export const dynamic = "force-dynamic";
+
+const TMP_FONT_PATH = "/tmp/schematex-noto-sans-regular.ttf";
+
+function ensureFont(): string {
+  if (existsSync(TMP_FONT_PATH)) return TMP_FONT_PATH;
+  writeFileSync(TMP_FONT_PATH, Buffer.from(NOTO_SANS_BASE64, "base64"));
+  return TMP_FONT_PATH;
+}
+
+type McpContentBlock = Record<string, unknown>;
+interface McpToolResult {
+  content: McpContentBlock[];
+  isError?: boolean;
+}
+
+async function renderDslToMcp(
+  args: Record<string, unknown>
+): Promise<McpToolResult> {
+  const result: RenderDslResult = renderDsl(
+    args.type as string | undefined,
+    String(args.dsl),
+    {
+      theme: args.theme as string | undefined,
+      padding: args.padding as number | undefined,
+    }
+  );
+  if (!result.ok) {
+    return {
+      isError: true,
+      content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+    };
+  }
+
+  const typeLabel = result.type ?? "diagram";
+  let pngBase64: string | null = null;
+  let rasterError: string | null = null;
+  try {
+    const fontPath = ensureFont();
+    const { Resvg } = await import("@resvg/resvg-js");
+    const png = new Resvg(result.svg, {
+      font: {
+        loadSystemFonts: false,
+        fontFiles: [fontPath],
+        defaultFontFamily: "Noto Sans",
+        sansSerifFamily: "Noto Sans",
+        serifFamily: "Noto Sans",
+      },
+    })
+      .render()
+      .asPng();
+    pngBase64 = Buffer.from(png).toString("base64");
+  } catch (err) {
+    rasterError = err instanceof Error ? err.message : String(err);
+  }
+
+  const blocks: McpContentBlock[] = [];
+  if (pngBase64) {
+    blocks.push({ type: "image", data: pngBase64, mimeType: "image/png" });
+  }
+  blocks.push({
+    type: "resource",
+    resource: {
+      uri: `schematex://render/${typeLabel}.svg`,
+      mimeType: "image/svg+xml",
+      text: result.svg,
+    },
+  });
+  blocks.push({
+    type: "text",
+    text: pngBase64
+      ? `Rendered ${typeLabel}. The PNG above is the final artifact — display it to the user as-is. Do not regenerate or wrap it in another SVG. The original SVG source is attached as a resource for editing.`
+      : `Rendered ${typeLabel} (PNG rasterisation failed: ${rasterError}). The SVG source is attached as a resource — display it to the user as-is rather than redrawing.`,
+  });
+
+  return { content: blocks };
+}
 
 const SERVER_INFO = {
   name: "schematex",
@@ -40,13 +120,21 @@ interface JsonRpcRequest {
   params?: Record<string, unknown>;
 }
 
-type ToolHandler = (args: Record<string, unknown>) => unknown;
+type ToolHandler = (
+  args: Record<string, unknown>
+) => unknown | Promise<unknown> | Promise<McpToolResult>;
 
 const TOOLS: Array<{
   name: string;
   description: string;
   inputSchema: Record<string, unknown>;
+  /**
+   * Handlers may return either raw JSON (which is wrapped as a single
+   * text content block) or a pre-built `McpToolResult` (used by renderDsl
+   * so it can ship an `image` block alongside the SVG resource).
+   */
   handler: ToolHandler;
+  returnsMcpContent?: boolean;
 }> = [
   {
     name: "listDiagrams",
@@ -106,7 +194,7 @@ const TOOLS: Array<{
   {
     name: "renderDsl",
     description:
-      "Render Schematex DSL to an SVG string. Returns { ok: true, svg } or { ok: false, errors }.",
+      "Render Schematex DSL to a diagram. Returns a PNG image (the final artifact — display as-is, do not redraw) plus the original SVG as an embedded resource for editing. On error, returns { ok: false, errors } as text.",
     inputSchema: {
       type: "object",
       properties: {
@@ -117,11 +205,8 @@ const TOOLS: Array<{
       },
       required: ["dsl"],
     },
-    handler: (args) =>
-      renderDsl(args.type as string | undefined, String(args.dsl), {
-        theme: args.theme as string | undefined,
-        padding: args.padding as number | undefined,
-      }),
+    handler: (args) => renderDslToMcp(args),
+    returnsMcpContent: true,
   },
 ];
 
@@ -179,7 +264,10 @@ async function handleRpc(req: JsonRpcRequest): Promise<Response> {
         return rpcError(req.id, -32602, `Unknown tool: ${name}`);
       }
       try {
-        const result = tool.handler(args);
+        const result = await tool.handler(args);
+        if (tool.returnsMcpContent) {
+          return rpcResult(req.id, result);
+        }
         return rpcResult(req.id, {
           content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
         });
