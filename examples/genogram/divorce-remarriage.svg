@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 525 322" class="schematex-diagram schematex-genogram" width="525" height="322"><title>Genogram</title>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 525 370" class="schematex-diagram schematex-genogram" width="525" height="370"><title>Genogram</title>
 <desc>Genogram diagram with 5 individuals across 2 generations</desc>
 <defs></defs>
 <style>
@@ -32,7 +32,8 @@
 .schematex-genogram-edge-divorced .schematex-genogram-divorce-mark { stroke: #94a3b8; stroke-width: 2; }
 .schematex-genogram-edge-separated .schematex-genogram-separation-mark { stroke: #94a3b8; stroke-width: 2; }
 .schematex-genogram-deceased-mark { stroke: #b71c1c; stroke-width: 2; stroke-linecap: round; }
-.schematex-genogram-condition-fill { fill: #1565c0; }
+/* Inline fill on each .schematex-genogram-condition-fill element comes from cond.color. The CSS only sets a default for elements that did not receive an inline fill attribute. */
+.schematex-genogram-condition-fill:not([fill]) { fill: #1565c0; }
 .schematex-genogram-age { font-family: system-ui, -apple-system, sans-serif; fill: #0f172a; pointer-events: none; }
 .schematex-genogram-title { fill: #0f172a; }
 .schematex-genogram-edge-label { font-family: system-ui, -apple-system, sans-serif; fill: #0f172a; }
@@ -62,4 +63,13 @@
 <text x="428" y="98" class="schematex-genogram-label" data-individual-id="susan">Susan (b. 1960)</text>
 <text x="184" y="264" class="schematex-genogram-label" data-individual-id="child1">Child1 (b. 1975)</text>
 <text x="368" y="264" class="schematex-genogram-label" data-individual-id="child2">Child2 (b. 1985)</text></g>
-<g class="schematex-genogram-edge-labels"></g></g></svg>
+<g class="schematex-genogram-edge-labels"></g></g>
+<g class="schematex-legend"><style>
+.schematex-legend { font-family: system-ui, -apple-system, sans-serif; }
+.schematex-legend-title { font-size: 12px; font-weight: 700; fill: #0f172a; }
+.schematex-legend-section { font-size: 9px; font-weight: 600; fill: #475569; letter-spacing: 0.6px; }
+.schematex-legend-label { font-size: 11px; fill: #0f172a; dominant-baseline: alphabetic; }
+</style>
+<text x="16" y="348.5" class="schematex-legend-section">STRUCTURAL</text>
+<g class="schematex-legend-row" data-legend-key="divorced" data-legend-section="structural"><line x1="107.5" y1="345" x2="127.5" y2="345" stroke="#334155" stroke-width="2" stroke-linecap="round"/><line x1="122.5" y1="341" x2="130.5" y2="349" stroke="#334155" stroke-width="1.6" stroke-linecap="round"/><line x1="130.5" y1="341" x2="122.5" y2="349" stroke="#334155" stroke-width="1.6" stroke-linecap="round"/>
+<text x="136.5" y="348.5" class="schematex-legend-label">Divorced</text></g></g></svg>

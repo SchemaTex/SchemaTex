@@ -351,33 +351,48 @@ ross -close- therapist
 
 ## 2E. Legend Box
 
-复杂 genogram 必须包含 legend box 解释颜色/符号含义。
+Genogram 默认 **legend on**, position `outside-right`. Renderer 自动从 AST 推导 legend，**只列实际出现的编码**——unused relationship types / sex / status / conditions 不会出现。
 
-### 2E.1 Auto-Generated Legend
+详见 [`LEGEND-SYSTEM.md`](./LEGEND-SYSTEM.md) 的统一规范。本节列出 genogram 自己的 sections + keys。
 
-Renderer 自动生成 legend，包含图中实际使用的：
-- Condition categories + 对应颜色
-- Heritage colors (if heritage mode)
-- Emotional relationship line styles
-- Special symbols (adopted, foster, deceased, etc.)
+### 2E.1 Sections (按渲染顺序)
 
-### 2E.2 Legend Positioning
+| Section id | Title (default) | 内容 |
+|---|---|---|
+| `symbols` | Symbols | 出现过的 sex × status 组合（square/circle/diamond + deceased X overlay） |
+| `structural` | Structural | 出现过的 couple / parent-child / twin 关系（married/divorced/cohabiting/twin-identical/...） |
+| `relationships` | Relationships | 出现过的 emotional 关系（close/hostile/conflict/cutoff/abuse/...）—— 颜色 + 线型 + 粗细 swatch |
+| `conditions` | Conditions | 每个独立 condition.label 一行（color + fill-pattern swatch） |
+| `heritage` | Heritage | heritage 模式下每个 heritage id 一行 |
+| `markers` | Markers | proband / consultand / index-person / transgender 等出现过的 marker |
 
-| Position | 何时使用 |
-|----------|---------|
-| Bottom-right (default) | 大多数情况 |
-| Right side | 图表较宽时 |
-| Bottom center | 图表较高时 |
-| External (separate SVG group) | 嵌入到网页时可单独定位 |
+### 2E.2 Auto-derived keys
 
-### 2E.3 DSL
+| 来源 | Key 格式 | 例子 |
+|---|---|---|
+| Sex shape | `sex.<value>` | `sex.male`, `sex.female`, `sex.unknown`, `sex.other`, `sex.nonbinary`, `sex.intersex` |
+| Status overlay | `status.<value>` | `status.deceased`, `status.stillborn`, `status.miscarriage`, `status.pregnancy` |
+| Couple / structural | literal `RelationshipType` | `married`, `divorced`, `separated`, `cohabiting`, `consanguineous`, `parent-child`, `adopted`, `foster`, `twin-identical`, `twin-fraternal` |
+| Emotional | literal `RelationshipType` | `close`, `hostile`, `conflict`, `enmity`, `cutoff`, `fused`, `distant`, `nevermet`, `abuse`, `controlling`, `focused`, `admirer`, `limerence`, … |
+| Condition | the user-written `condition.label` | `cancer`, `BRCA1`, `Type 2 Diabetes` |
+| Heritage | the heritage id | `irish`, `chinese-han`, `cherokee` |
+| Marker | `marker.<id>` | `marker.proband`, `marker.index-person`, `marker.transgender` |
 
+### 2E.3 DSL overrides
+
+```dsl
+genogram "Smith Family"
+  legend.title: "Family Symbols"          # default: "Legend"
+  legend.position: outside-right          # default
+  legend.label close: "Best friends"      # rename a row
+  legend.label cancer: "Stage IV cancer"
+  legend.hide: cohabiting, normal         # hide rows
+  legend.section relationships: "Connection Styles"   # rename section
+  legend.item dv: "Domestic violence" (kind: line, color: #b71c1c, pattern: zigzag)
+  ...
 ```
-genogram "Family Study" [legend: bottom-right]
-  # ... individuals and relationships ...
-```
 
-Legend 内容自动从图中使用的 conditions/heritage/relationships 推导，不需要手动指定每一项。但 `legend:` 定义（见 2B.1）可覆盖自动推导的颜色/标签。
+To turn off entirely: `legend: off`.
 
 ---
 

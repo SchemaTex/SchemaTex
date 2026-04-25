@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 281.6 322" class="schematex-diagram schematex-genogram" width="281.6" height="322"><title>Genogram</title>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 472 370" class="schematex-diagram schematex-genogram" width="472" height="370"><title>Genogram</title>
 <desc>Genogram diagram with 3 individuals across 2 generations</desc>
 <defs><clipPath id="schematex-genogram-clip-half-left-rect"><rect x="0" y="0" width="50%" height="100%"/></clipPath>
 <clipPath id="schematex-genogram-clip-half-left-circle"><rect x="-50" y="-50" width="50" height="100"/></clipPath>
@@ -34,7 +34,8 @@
 .schematex-genogram-edge-divorced .schematex-genogram-divorce-mark { stroke: #94a3b8; stroke-width: 2; }
 .schematex-genogram-edge-separated .schematex-genogram-separation-mark { stroke: #94a3b8; stroke-width: 2; }
 .schematex-genogram-deceased-mark { stroke: #b71c1c; stroke-width: 2; stroke-linecap: round; }
-.schematex-genogram-condition-fill { fill: #1565c0; }
+/* Inline fill on each .schematex-genogram-condition-fill element comes from cond.color. The CSS only sets a default for elements that did not receive an inline fill attribute. */
+.schematex-genogram-condition-fill:not([fill]) { fill: #1565c0; }
 .schematex-genogram-age { font-family: system-ui, -apple-system, sans-serif; fill: #0f172a; pointer-events: none; }
 .schematex-genogram-title { fill: #0f172a; }
 .schematex-genogram-edge-label { font-family: system-ui, -apple-system, sans-serif; fill: #0f172a; }
@@ -56,4 +57,15 @@
 <g class="schematex-genogram-labels"><text x="60.8" y="98" class="schematex-genogram-label" data-individual-id="father">Father (b. 1945)</text>
 <text x="180.8" y="98" class="schematex-genogram-label" data-individual-id="mother">Mother (b. 1948)</text>
 <text x="120.8" y="264" class="schematex-genogram-label" data-individual-id="son">Son (b. 1970)</text></g>
-<g class="schematex-genogram-edge-labels"></g></g></svg>
+<g class="schematex-genogram-edge-labels"></g></g>
+<g class="schematex-legend"><style>
+.schematex-legend { font-family: system-ui, -apple-system, sans-serif; }
+.schematex-legend-title { font-size: 12px; font-weight: 700; fill: #0f172a; }
+.schematex-legend-section { font-size: 9px; font-weight: 600; fill: #475569; letter-spacing: 0.6px; }
+.schematex-legend-label { font-size: 11px; fill: #0f172a; dominant-baseline: alphabetic; }
+</style>
+<text x="16" y="348.5" class="schematex-legend-section">CONDITIONS</text>
+<g class="schematex-legend-row" data-legend-key="heart-disease" data-legend-section="conditions"><rect x="107.5" y="340" width="20" height="10" fill="#9ca3af" stroke="#334155"/>
+<text x="136.5" y="348.5" class="schematex-legend-label">Heart Disease</text></g>
+<g class="schematex-legend-row" data-legend-key="diabetes" data-legend-section="conditions"><rect x="241.5" y="340" width="20" height="10" fill="transparent" stroke="#334155"/><rect x="241.5" y="340" width="10" height="10" fill="#9ca3af"/>
+<text x="270.5" y="348.5" class="schematex-legend-label">Diabetes</text></g></g></svg>

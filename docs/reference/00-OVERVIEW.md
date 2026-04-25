@@ -267,6 +267,18 @@ schematex/
 
 ---
 
+## Legend System
+
+每种 diagram 的视觉编码（颜色 / 线型 / 形状 / 标记）都对应**领域语义**——genogram 的红色锯齿线 = hostile，ecomap 的双线 = strong tie，entity 的虚线绿色 = distribution。统一的 Legend 系统：
+
+- 自动从 AST 派生（只列实际用到的编码，不列 catalog）
+- DSL 可改：`legend: on/off/<position>` · `legend.title:` · `legend.label <key>:` · `legend.hide:` · `legend.item <id>: ...`
+- 共享渲染器在 `src/core/legend.ts`，类型在 `src/core/types.ts`（`LegendSpec` / `LegendItem` / `LegendOverrides`）
+
+详见 [`LEGEND-SYSTEM.md`](./LEGEND-SYSTEM.md)。Tier-A diagrams（genogram / ecomap / sociogram / entity / fishbone / phylo / pedigree）默认 on，Tier-B 默认 on，Tier-C compliance diagrams（timing / logic / circuit / ladder / sld / venn / mindmap）默认 off。
+
+---
+
 ## Quality Gates
 
 每次 commit 前 CC 必须确认：

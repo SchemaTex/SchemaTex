@@ -45,19 +45,115 @@ export type DiagramType =
   | "timeline"; // Timeline — events / eras / lifespans on a time axis (19-TIMELINE-STANDARD)
 
 export type GenogramMode = "medical" | "heritage";
-export type LegendPosition = "bottom-right" | "right" | "bottom-center" | "none";
+
+/**
+ * Standard legend positions:
+ *   - "bottom-inline" (default) — horizontal strip below the diagram, no box/border
+ *   - "bottom-right"            — overlay anchored at bottom-right corner
+ *   - "none"                    — disabled
+ *
+ * All other values are legacy aliases (pedigree DSL, older docs) that the renderer
+ * silently maps to one of the standard positions: "outside-*", "right",
+ * "top-*", "bottom-left", "bottom-center" → bottom-inline (or bottom-right where
+ * a corner is closer in spirit).
+ */
+export type LegendPosition =
+  | "bottom-inline"
+  | "bottom-right"
+  | "none"
+  // Legacy aliases (kept for backwards compat; mapped at render time)
+  | "top-left"
+  | "top-right"
+  | "bottom-left"
+  | "bottom-center"
+  | "outside-right"
+  | "outside-bottom"
+  | "right";
+
+export type LegendItemKind =
+  | "shape"
+  | "fill"
+  | "fill-pattern"
+  | "line"
+  | "marker"
+  | "edge";
+
+export type LegendLinePattern =
+  | "solid"
+  | "dashed"
+  | "dotted"
+  | "double"
+  | "wavy"
+  | "zigzag"
+  | "broken";
+
+export interface LegendItem {
+  /** Stable identifier addressable from DSL `legend.label <key>: ...` */
+  key: string;
+  /** Display text (user-overridable). */
+  label: string;
+  kind: LegendItemKind;
+  /** Primary color. For "shape": stroke. For "line"/"edge": stroke. For "fill"/"fill-pattern"/"marker": fill. */
+  color?: string;
+  /** For kind: "shape" — fill color (separate from stroke). Used for WYSIWYG matching of node fills. */
+  fill?: string;
+  /** Secondary color for two-tone swatches (half-fill, etc.). */
+  color2?: string;
+  pattern?: LegendLinePattern;
+  strokeWidth?: number;
+  /** For kind: "shape" — "square" | "circle" | "diamond" | "triangle" | "concentric-square" | "concentric-circle". */
+  shape?: string;
+  /** For kind: "marker" / "edge" — "arrow" | "X" | "dot" | "P" | "C" | "E" | "star" | "slash". */
+  marker?: string;
+  /** Section group id (e.g. "symbols", "structural", "relationships", "conditions"). */
+  section?: string;
+}
+
+export interface LegendSection {
+  id: string;
+  title: string;
+  hidden?: boolean;
+}
+
+export interface LegendSpec {
+  /** "auto" resolves to "on" if items remain after override, else "off". */
+  mode: "on" | "off" | "auto";
+  title: string;
+  position: LegendPosition;
+  columns: number;
+  sections: LegendSection[];
+  items: LegendItem[];
+}
+
+/** User edits parsed from DSL; merged onto each diagram's auto-derived spec. */
+export interface LegendOverrides {
+  mode?: "on" | "off" | "auto";
+  title?: string;
+  position?: LegendPosition;
+  columns?: number;
+  /** Rename items by key. */
+  labels?: Record<string, string>;
+  /** Hide items by key. */
+  hide?: string[];
+  /** Rename / hide sections by id. */
+  sections?: Record<string, { title?: string; hidden?: boolean }>;
+  /** Manually authored items appended after auto-derived ones. */
+  added?: LegendItem[];
+}
 
 export interface DiagramAST {
   type: DiagramType;
   individuals: Individual[];
   relationships: Relationship[];
   metadata?: Record<string, string>;
-  /** Legend definitions (pedigree traits, heritage colors, etc.) */
+  /** Legacy: pedigree-style trait legend. To be migrated into LegendOverrides.added. */
   legend?: LegendEntry[];
   /** Genogram display mode: medical conditions or cultural heritage */
   mode?: GenogramMode;
-  /** Legend box position */
+  /** Legacy: pre-unified-legend position field. New code uses legendOverrides.position. */
   legendPosition?: LegendPosition;
+  /** Unified legend system — user DSL edits merged onto auto-derived spec at render time. */
+  legendOverrides?: LegendOverrides;
 }
 
 export interface LegendEntry {

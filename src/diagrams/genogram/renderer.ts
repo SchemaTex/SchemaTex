@@ -2,6 +2,8 @@ import type { LayoutResult, LayoutNode, LayoutEdge, RenderConfig, DiagramAST, Re
 import { svgRoot, el, group, text, title, desc } from "../../core/svg";
 import { cssCustomProperties, resolveGenogramTheme, STROKE_WIDTH } from "../../core/theme";
 import { renderIndividualSymbol, getRequiredDefs } from "./symbols";
+import { applyLegendOverrides, renderLegend } from "../../core/legend";
+import { buildGenogramLegend } from "./legend";
 
 // ─── Public API ─────────────────────────────────────────────
 
@@ -68,12 +70,41 @@ export function renderGenogram(
   );
   layers.push(contentGroup);
 
+  // Compose legend
+  let finalWidth = layout.width;
+  let finalHeight = totalHeight;
+  if (ast) {
+    const themeBase = resolveGenogramTheme(config.theme);
+    const autoSpec = buildGenogramLegend(ast, themeBase);
+    const finalSpec = applyLegendOverrides(autoSpec, ast.legendOverrides);
+    if (finalSpec.mode === "on" && finalSpec.items.length > 0) {
+      const { svg: legendSvg, bbox: lb } = renderLegend(
+        finalSpec,
+        {
+          canvasWidth: layout.width,
+          canvasHeight: totalHeight,
+          padding: 16,
+          titleHeight,
+        },
+        themeBase,
+        { fontFamily: config.fontFamily, fontSize: config.fontSize }
+      );
+      if (legendSvg) {
+        layers.push(legendSvg);
+        const overflowX = lb.x + lb.w + 8;
+        const overflowY = lb.y + lb.h + 8;
+        if (overflowX > finalWidth) finalWidth = overflowX;
+        if (overflowY > finalHeight) finalHeight = overflowY;
+      }
+    }
+  }
+
   return svgRoot(
     {
-      viewBox: `0 0 ${layout.width} ${totalHeight}`,
+      viewBox: `0 0 ${finalWidth} ${finalHeight}`,
       class: "schematex-diagram schematex-genogram",
-      width: layout.width,
-      height: totalHeight,
+      width: finalWidth,
+      height: finalHeight,
     },
     layers
   );
@@ -99,7 +130,8 @@ function buildStyles(config: RenderConfig): string {
 .schematex-genogram-edge-divorced .schematex-genogram-divorce-mark { stroke: ${t.neutral}; stroke-width: ${STROKE_WIDTH.normal}; }
 .schematex-genogram-edge-separated .schematex-genogram-separation-mark { stroke: ${t.neutral}; stroke-width: ${STROKE_WIDTH.normal}; }
 .schematex-genogram-deceased-mark { stroke: ${t.deceasedMark}; stroke-width: ${STROKE_WIDTH.normal}; stroke-linecap: round; }
-.schematex-genogram-condition-fill { fill: ${t.conditionFill}; }
+/* Inline fill on each .schematex-genogram-condition-fill element comes from cond.color. The CSS only sets a default for elements that did not receive an inline fill attribute. */
+.schematex-genogram-condition-fill:not([fill]) { fill: ${t.conditionFill}; }
 .schematex-genogram-age { font-family: ${config.fontFamily}; fill: ${t.text}; pointer-events: none; }
 .schematex-genogram-title { fill: ${t.text}; }
 .schematex-genogram-edge-label { font-family: ${config.fontFamily}; fill: ${t.text}; }

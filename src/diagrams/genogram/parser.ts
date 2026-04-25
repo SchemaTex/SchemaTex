@@ -1,11 +1,13 @@
 import type {
   DiagramAST,
   Individual,
+  LegendOverrides,
   Relationship,
   RelationshipType,
   Condition,
   ConditionFill,
 } from "../../core/types";
+import { parseLegendDirective } from "../../core/legend-parser";
 
 // ─── ParseError ─────────────────────────────────────────────
 
@@ -111,6 +113,7 @@ export function parseGenogram(text: string): DiagramAST {
   const individualsMap = new Map<string, Individual>();
   const relationships: Relationship[] = [];
   const childSpecialProps = new Map<string, string>();
+  const legendOverrides: LegendOverrides = {};
 
   skipBlankAndComments(state);
 
@@ -121,6 +124,12 @@ export function parseGenogram(text: string): DiagramAST {
     const lineText = state.lines[state.currentLine];
     const trimmed = lineText.trim();
     if (trimmed === "" || trimmed.startsWith("#")) {
+      state.currentLine++;
+      continue;
+    }
+
+    // Legend directives (`legend: ...`, `legend.title: ...`, etc.)
+    if (parseLegendDirective(trimmed, legendOverrides)) {
       state.currentLine++;
       continue;
     }
@@ -292,11 +301,16 @@ export function parseGenogram(text: string): DiagramAST {
     }
   }
 
+  const hasLegendOverrides =
+    Object.keys(legendOverrides).length > 0 &&
+    Object.values(legendOverrides).some((v) => v !== undefined);
+
   return {
     type: "genogram",
     individuals: Array.from(individualsMap.values()),
     relationships,
     metadata: Object.keys(metadata).length > 0 ? metadata : undefined,
+    legendOverrides: hasLegendOverrides ? legendOverrides : undefined,
   };
 }
 
