@@ -15,7 +15,6 @@
  * package for stdio hosts (Claude Desktop etc.).
  */
 import { createHash } from "node:crypto";
-import { existsSync, writeFileSync } from "node:fs";
 import { NextRequest } from "next/server";
 import { put } from "@vercel/blob";
 import {
@@ -26,19 +25,10 @@ import {
   renderDsl,
   type RenderDslResult,
 } from "schematex/ai";
-import { NOTO_SANS_BASE64 } from "../(home)/examples/[slug]/_assets/noto-sans-base64";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
 export const dynamic = "force-dynamic";
-
-const TMP_FONT_PATH = "/tmp/schematex-noto-sans-regular.ttf";
-
-function ensureFont(): string {
-  if (existsSync(TMP_FONT_PATH)) return TMP_FONT_PATH;
-  writeFileSync(TMP_FONT_PATH, Buffer.from(NOTO_SANS_BASE64, "base64"));
-  return TMP_FONT_PATH;
-}
 
 type McpContentBlock = Record<string, unknown>;
 interface McpToolResult {
@@ -78,43 +68,21 @@ async function renderDslToMcp(
 
   const typeLabel = result.type ?? "diagram";
 
-  // Rasterise SVG → PNG
-  let png: Buffer | null = null;
-  let rasterError: string | null = null;
-  try {
-    const fontPath = ensureFont();
-    const { Resvg } = await import("@resvg/resvg-js");
-    png = Buffer.from(
-      new Resvg(result.svg, {
-        font: {
-          loadSystemFonts: false,
-          fontFiles: [fontPath],
-          defaultFontFamily: "Noto Sans",
-          sansSerifFamily: "Noto Sans",
-          serifFamily: "Noto Sans",
-        },
-      })
-        .render()
-        .asPng()
-    );
-  } catch (err) {
-    rasterError = err instanceof Error ? err.message : String(err);
-  }
-
-  // Upload PNG + DSL to Blob (fire-and-forget on error — never fail the render)
+  // Upload SVG + DSL to Blob. SVG → public URL → Claude embeds via markdown
+  // image, browser renders natively (true WYSIWYG, no rasterisation drift).
   let blobUrl: string | null = null;
-  if (png && process.env.BLOB_READ_WRITE_TOKEN) {
+  if (process.env.BLOB_READ_WRITE_TOKEN) {
     try {
       const date = new Date().toISOString().slice(0, 10);
       const title = extractTitle(dsl, typeLabel);
       const hash = createHash("sha256").update(dsl).digest("hex").slice(0, 8);
       const prefix = `renders/${date}/${title}-${hash}`;
 
-      const [pngBlob] = await Promise.all([
-        put(`${prefix}.png`, png, {
+      const [svgBlob] = await Promise.all([
+        put(`${prefix}.svg`, result.svg, {
           access: "public",
           addRandomSuffix: false,
-          contentType: "image/png",
+          contentType: "image/svg+xml",
         }),
         put(`${prefix}.dsl`, dsl, {
           access: "public",
@@ -122,33 +90,34 @@ async function renderDslToMcp(
           contentType: "text/plain",
         }),
       ]);
-      blobUrl = pngBlob.url;
+      blobUrl = svgBlob.url;
     } catch {
-      // Blob upload failure is non-fatal
+      // Blob upload failure is non-fatal — fall back to inline SVG resource only.
     }
   }
 
-  const blocks: McpContentBlock[] = [];
-
-  if (png) {
-    blocks.push({ type: "image", data: png.toString("base64"), mimeType: "image/png" });
-  }
-  blocks.push({
-    type: "resource",
-    resource: {
-      uri: `schematex://render/${typeLabel}.svg`,
-      mimeType: "image/svg+xml",
-      text: result.svg,
+  const blocks: McpContentBlock[] = [
+    {
+      type: "resource",
+      resource: {
+        uri: blobUrl ?? `schematex://render/${typeLabel}.svg`,
+        mimeType: "image/svg+xml",
+        text: result.svg,
+      },
     },
-  });
+  ];
 
-  const urlNote = blobUrl ? ` Permanent URL: ${blobUrl}` : "";
-  blocks.push({
-    type: "text",
-    text: png
-      ? `Rendered ${typeLabel}.${urlNote} Include this in your reply so the diagram appears inline:\n\n![${typeLabel}](${blobUrl ?? "data:image/png;base64," + png.toString("base64")})\n\nDo NOT regenerate or redraw the SVG.`
-      : `Rendered ${typeLabel} (PNG failed: ${rasterError}). SVG attached as resource — display as-is, do not redraw.`,
-  });
+  if (blobUrl) {
+    blocks.push({
+      type: "text",
+      text: `Rendered ${typeLabel}. Permanent URL: ${blobUrl}\n\nInclude this markdown in your reply so the diagram appears inline:\n\n![${typeLabel}](${blobUrl})\n\nDo NOT regenerate or redraw the SVG.`,
+    });
+  } else {
+    blocks.push({
+      type: "text",
+      text: `Rendered ${typeLabel}. SVG attached as resource — display as-is, do not redraw.`,
+    });
+  }
 
   return { content: blocks };
 }
