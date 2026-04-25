@@ -1,3 +1,5 @@
+import { parseLegendDirective } from "../../core/legend-parser";
+
 export class SociogramParseError extends Error {
   constructor(message: string) {
     super(message);
@@ -53,6 +55,7 @@ export interface SociogramAST {
   nodes: SociogramNode[];
   edges: SociogramEdge[];
   groups: SociogramGroup[];
+  legendOverrides?: import("../../core/types").LegendOverrides;
 }
 
 // ─── Edge Operator Parsing ──────────────────────────────────
@@ -175,6 +178,8 @@ export function parseSociogram(text: string): SociogramAST {
   const edges: SociogramEdge[] = [];
   const groups: SociogramGroup[] = [];
   const nodeIds = new Set<string>();
+  const legendOverrides: import("../../core/types").LegendOverrides = {};
+  let hasLegendOverrides = false;
 
   let currentGroup: SociogramGroup | null = null;
 
@@ -184,6 +189,12 @@ export function parseSociogram(text: string): SociogramAST {
     lineIdx++;
 
     if (!trimmed || trimmed.startsWith("#")) continue;
+
+    // Legend directives (legend.title, legend.position, legend.label, etc.)
+    if (parseLegendDirective(trimmed, legendOverrides)) {
+      hasLegendOverrides = true;
+      continue;
+    }
 
     // Config line
     if (trimmed.startsWith("config:")) {
@@ -315,5 +326,6 @@ export function parseSociogram(text: string): SociogramAST {
     nodes,
     edges,
     groups,
+    legendOverrides: hasLegendOverrides ? legendOverrides : undefined,
   };
 }

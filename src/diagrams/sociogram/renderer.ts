@@ -12,6 +12,8 @@ import {
   polygon,
 } from "../../core/svg";
 import { cssCustomProperties, resolveBaseTheme, FONT_SIZE, STROKE_WIDTH, type BaseTheme } from "../../core/theme";
+import { applyLegendOverrides, renderLegend } from "../../core/legend";
+import { buildSociogramLegend } from "./legend";
 
 // ─── Constants ──────────────────────────────────────────────
 
@@ -372,12 +374,38 @@ export function renderSociogram(
     group({ class: "schematex-sociogram-labels", transform }, labelEls)
   );
 
+  // Compose legend
+  let finalWidth = totalWidth;
+  let finalHeight = totalHeight;
+  const autoSpec = buildSociogramLegend(ast, t);
+  const finalSpec = applyLegendOverrides(autoSpec, ast.legendOverrides);
+  if (finalSpec.mode === "on" && finalSpec.items.length > 0) {
+    const { svg: legendSvg, bbox: lb } = renderLegend(
+      finalSpec,
+      {
+        canvasWidth: totalWidth,
+        canvasHeight: totalHeight,
+        padding: 16,
+        titleHeight: titleOffset,
+      },
+      t,
+      { fontFamily: "system-ui, sans-serif", fontSize: 12 }
+    );
+    if (legendSvg) {
+      svgContent.push(legendSvg);
+      const overflowX = lb.x + lb.w + 8;
+      const overflowY = lb.y + lb.h + 8;
+      if (overflowX > finalWidth) finalWidth = overflowX;
+      if (overflowY > finalHeight) finalHeight = overflowY;
+    }
+  }
+
   return svgRoot(
     {
       class: "schematex-diagram schematex-sociogram",
-      viewBox: `0 0 ${totalWidth} ${totalHeight}`,
-      width: totalWidth,
-      height: totalHeight,
+      viewBox: `0 0 ${finalWidth} ${finalHeight}`,
+      width: finalWidth,
+      height: finalHeight,
     },
     svgContent
   );
