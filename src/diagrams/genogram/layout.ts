@@ -681,9 +681,14 @@ function computeEdges(
         path: dropPath,
       });
 
-      // Sibship line (horizontal)
+      // Sibship line (horizontal). Extend to include midX so the parent
+      // drop line always lands on the bar — needed when a child is also a
+      // partner in another union and gets pulled outside the [leftX, rightX]
+      // range of their siblings.
       if (childPositions.length > 1) {
-        const sibPath = `M ${leftX} ${dropY} L ${rightX} ${dropY}`;
+        const sibLeft = Math.min(leftX, midX);
+        const sibRight = Math.max(rightX, midX);
+        const sibPath = `M ${sibLeft} ${dropY} L ${sibRight} ${dropY}`;
         edges.push({
           from: fu.partners[0],
           to: fu.partners[1],
