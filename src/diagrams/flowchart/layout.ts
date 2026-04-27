@@ -1053,9 +1053,17 @@ export function layoutFlowchart(ast: FlowchartAST): FlowchartLayoutResult {
     ? CLUSTER_GEO.pad + CLUSTER_GEO.titleH
     : 0;
   const CLUSTER_OVERHEAD_SIDE = hasClusters ? CLUSTER_GEO.pad : 0;
-  // In TB, title sits above (extra Y); in LR, title sits left (extra X).
-  const extraTopPad = isHorizontal ? CLUSTER_OVERHEAD_SIDE : CLUSTER_OVERHEAD_TITLE;
-  const extraLeftPad = isHorizontal ? CLUSTER_OVERHEAD_TITLE : CLUSTER_OVERHEAD_SIDE;
+  // Title pad goes on the side that becomes the visual top (TB/BT) or visual
+  // left (LR/RL) AFTER the BT/RL flip applied below. We lay out in TB/LR
+  // coordinates throughout — for BT the title overhead must therefore sit on
+  // the bottom of the layout (becomes visual top post-flip); for RL on the
+  // right (becomes visual left).
+  const extraTopPad = !isHorizontal && dir !== "BT"
+    ? CLUSTER_OVERHEAD_TITLE
+    : CLUSTER_OVERHEAD_SIDE;
+  const extraLeftPad = isHorizontal && dir !== "RL"
+    ? CLUSTER_OVERHEAD_TITLE
+    : CLUSTER_OVERHEAD_SIDE;
 
   // ── Per-layer top-level cluster set ─────────────────────
   // For dynamic layer-gap computation: when adjacent layers belong to
@@ -1165,8 +1173,13 @@ export function layoutFlowchart(ast: FlowchartAST): FlowchartLayoutResult {
   }
 
   // Right/bottom also need cluster overhead so the far side border fits.
-  const extraRightPad = isHorizontal ? CLUSTER_OVERHEAD_SIDE : CLUSTER_OVERHEAD_SIDE;
-  const extraBottomPad = isHorizontal ? CLUSTER_OVERHEAD_SIDE : CLUSTER_OVERHEAD_SIDE;
+  // Mirror image of extraTopPad/extraLeftPad: BT/RL push title to the far side.
+  const extraRightPad = isHorizontal && dir === "RL"
+    ? CLUSTER_OVERHEAD_TITLE
+    : CLUSTER_OVERHEAD_SIDE;
+  const extraBottomPad = !isHorizontal && dir === "BT"
+    ? CLUSTER_OVERHEAD_TITLE
+    : CLUSTER_OVERHEAD_SIDE;
   const canvasW = maxX - minX + 2 * padding + extraLeftPad + extraRightPad;
   const lastLayer = layerCenterY.length - 1;
   const canvasH =
@@ -1220,6 +1233,29 @@ export function layoutFlowchart(ast: FlowchartAST): FlowchartLayoutResult {
   for (const [id, p] of dummyPos) {
     if (!isHorizontal) dummyCenter.set(id, p);
     else dummyCenter.set(id, { x: p.y, y: p.x });
+  }
+
+  // ── BT / RL flip ─────────────────────────────────────────
+  // Layout was computed in TB/LR coordinates. Mirror the entire placement
+  // across the appropriate axis so source layers end up at the visual
+  // bottom (BT) or right (RL). Done before edge routing so paths are
+  // generated in the final coordinate system automatically. Cluster
+  // bboxes computed downstream from outNodes inherit the flip.
+  if (dir === "BT" || dir === "RL") {
+    const flipY = dir === "BT";
+    const flipX = dir === "RL";
+    for (const n of outNodes) {
+      if (flipY) n.y = outHeight - n.y - n.height;
+      if (flipX) n.x = outWidth - n.x - n.width;
+    }
+    for (const c of nodeCenter.values()) {
+      if (flipY) c.y = outHeight - c.y;
+      if (flipX) c.x = outWidth - c.x;
+    }
+    for (const c of dummyCenter.values()) {
+      if (flipY) c.y = outHeight - c.y;
+      if (flipX) c.x = outWidth - c.x;
+    }
   }
 
   // Import routing lazily to avoid circular deps (routing module is sibling).

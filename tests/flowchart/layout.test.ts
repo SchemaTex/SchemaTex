@@ -248,4 +248,41 @@ R1 --> Done`);
       expect(x).toBeLessThan(rx + 1);
     }
   });
+
+  test("BT direction places source below sink", () => {
+    const tb = layoutFlowchart(parseFlowchart("flowchart TB\nA --> B"));
+    const bt = layoutFlowchart(parseFlowchart("flowchart BT\nA --> B"));
+    const get = (l: ReturnType<typeof layoutFlowchart>, id: string) =>
+      l.nodes.find((n) => n.node.id === id)!;
+    expect(get(tb, "A").y).toBeLessThan(get(tb, "B").y);
+    expect(get(bt, "A").y).toBeGreaterThan(get(bt, "B").y);
+  });
+
+  test("RL direction places source right of sink", () => {
+    const lr = layoutFlowchart(parseFlowchart("flowchart LR\nA --> B"));
+    const rl = layoutFlowchart(parseFlowchart("flowchart RL\nA --> B"));
+    const get = (l: ReturnType<typeof layoutFlowchart>, id: string) =>
+      l.nodes.find((n) => n.node.id === id)!;
+    expect(get(lr, "A").x).toBeLessThan(get(lr, "B").x);
+    expect(get(rl, "A").x).toBeGreaterThan(get(rl, "B").x);
+  });
+
+  test("BT clusters keep title above bbox after flip", () => {
+    const ast = parseFlowchart(`flowchart BT
+subgraph Top
+  T[Top]
+end
+subgraph Bot
+  B[Bot]
+end
+B --> T`);
+    const r = layoutFlowchart(ast);
+    const get = (id: string) => r.nodes.find((n) => n.node.id === id)!;
+    expect(get("B").y).toBeGreaterThan(get("T").y);
+    const top = r.clusters.find((c) => c.subgraph.id === "Top")!;
+    const bot = r.clusters.find((c) => c.subgraph.id === "Bot")!;
+    expect(top.y).toBeLessThanOrEqual(get("T").y);
+    expect(bot.y).toBeLessThanOrEqual(get("B").y);
+    expect(top.y + top.height).toBeLessThan(bot.y);
+  });
 });

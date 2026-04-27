@@ -19,7 +19,10 @@ Circuit schematic 的 layout 与树/图类型有根本不同：
 - **Schemdraw 方式（位置式）**: 每个元件指定放置方向，链式排列
 - **Netlist 方式（声明式）**: 声明元件 + 连接，自动 layout
 
-**Schematex 采用位置式 DSL（更直观，CC 实现更可控）**，元件按方向链式排列，通过 `at:` 锚点分支。
+**Schematex 同时支持两种 DSL：**
+
+- **位置式（默认）** — header `circuit "name"`，元件按方向链式排列，通过 `at:` 锚点分支。更直观，更可控。详见 §1–§4。
+- **Netlist（SPICE-subset）** — header `circuit "name" netlist`，声明元件 + nets，自动布局。适合从 SPICE 文件转换、或 AI 生成时使用 EE 工程惯例。详见 §4.5。
 
 ### 1.2 Passive Components
 
@@ -365,6 +368,78 @@ at: Rf.end
 wire down  # connect feedback from Vout back to Rf end
 at: U1.out
 ```
+
+---
+
+## 4.5 Netlist DSL (SPICE-subset, declarative)
+
+Alternative to the positional DSL. Triggered by adding `netlist` to the header:
+
+```
+circuit "RFID-Based Attendance System" netlist
+B1   vin 0 9V          label="9V Battery"
+U1   vin vcc 0  voltage_regulator label="5V Regulator"
+R1   vcc led_a 220     label="220Ω"
+D1   led_a 0 led       label="LED"
+W1   U_UNO.TX U_ESP32.RX label="Serial TX→RX"
+```
+
+Each non-blank, non-comment line is a component declaration:
+
+```
+<id>  <net1> <net2> [<net3> ...]  [<model>]  [key=value ...]
+```
+
+### 4.5.1 Component-type inference (prefix table)
+
+The first character of `<id>` determines the default type and pin order. Override with `type=<...>` if your id breaks the convention.
+
+| Prefix | Default type     | Pin order        | Notes |
+|--------|------------------|------------------|-------|
+| `R`    | resistor         | start, end       | passive |
+| `C`    | capacitor        | start, end       | use `type=ecap` for electrolytic |
+| `L`    | inductor         | start, end       | |
+| `D`    | diode            | anode (start), cathode (end) | model token: `led`, `zener`, `schottky`, `photodiode` |
+| `V`    | voltage_source   | plus, minus      | |
+| `I`    | current_source   | plus, minus      | |
+| `Q`    | npn (BJT)        | c, b, e          | model token: `npn`, `pnp` |
+| `M`    | nmos (MOSFET)    | d, g, s          | model token: `nmos`, `pmos` |
+| `J`    | jfet_n           | d, g, s          | model token: `jfet_n`, `jfet_p` |
+| `S`    | switch_spst      | start, end       | |
+| `F`    | fuse             | start, end       | |
+| `B`    | battery          | plus, minus      | |
+| `K`    | relay_coil       | start, end       | |
+| `U`    | generic_ic       | (declare via `pins="..."` attr) | |
+| `X`    | generic_ic       | (declare via `pins="..."` attr) | |
+| `W`    | wire             | start, end       | explicit point-to-point connection (non-SPICE convention; common in EE textbook netlists) |
+
+Anything else (e.g. `N1`, `MyComponent`) → must declare with `type=<...>`.
+
+### 4.5.2 Ground nets
+
+The following net names are aliased to ground: `0`, `gnd`, `GND`, `Gnd`, `ground`, `Ground`.
+
+### 4.5.3 Type aliases (for `type=`)
+
+`vsource`→voltage_source · `isource`→current_source · `acsource`→ac_source · `ecap`→electrolytic_cap · `pot`→potentiometer · `gnd`→ground · `ic`→generic_ic · `reg`→voltage_regulator · `timer555`→555_timer · `transistor`→npn
+
+### 4.5.4 Trailing tokens
+
+After the pin nets, the parser interprets extras in this order:
+
+1. **Model token** (e.g. `npn`, `1N4007`, `led`) — overrides `componentType`.
+2. **Bare value** (e.g. `10k`, `100n`) → stored as `value`.
+3. **`key=value` pairs** (`label="..."`, `value=10k`, `type=wire`, `pins="vcc,gnd,out"`).
+
+### 4.5.5 Auto-layout
+
+Netlist mode skips the positional `right`/`down`/`at:` directives entirely. Layout is computed by [autolayout.ts](../../src/diagrams/circuit/autolayout.ts) — currently a force-directed pass over the inferred graph. For deterministic, publication-quality output you should still prefer the positional DSL.
+
+### 4.5.6 Common AI-generation pitfalls
+
+- **`W1`/`W2` for wires** — supported (see prefix table). Real SPICE has no `W` device; this is a textbook/AI convention that schematex accepts as a quality-of-life feature.
+- **Pin references like `U_UNO.TX`** — the pin name must exist in the symbol's anchor map, OR the IC must declare `pins="TX,RX,..."`. Otherwise the connection silently fails.
+- **Mixing positional + netlist in one diagram** — not supported. Pick one mode per `circuit` block.
 
 ---
 

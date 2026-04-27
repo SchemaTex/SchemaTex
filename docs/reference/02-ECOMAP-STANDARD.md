@@ -152,7 +152,27 @@ maria ~~~ ex [label: "custody disputes"]
 maria --- therapist [label: "weekly sessions"]
 ```
 
-### 4.5 SVG Implementation
+### 4.5 Mesosystem Connections (between two non-center systems)
+
+Hartman's 1978 original ecomap is strictly center-spoke (lines from client to systems only). Modern social-work practice — informed by Bronfenbrenner's mesosystem — also captures interactions **between** two external systems (e.g. `school ↔ parents`, `work ↔ therapist`). Schematex supports these as *mesosystem connections*.
+
+```
+ecomap "Family Support Network"
+  center: m [female]
+  mother [label: "Mother", category: family]
+  work [label: "Work", category: work]
+  m === mother
+  m --- work
+  mother ~~~ work [label: "stress over hours"]   # mesosystem
+```
+
+Behavior:
+- All connection operators (`===`, `---`, `- -`, `~~~`, energy-flow arrows) are accepted between any two systems, not just from the center.
+- Mesosystem edges render as a chord between the two ring nodes, using the same line style as a center-spoke edge of that operator type.
+- The renderer marks them with `data-mesosystem="true"` and adds the `schematex-ecomap-connection-mesosystem` CSS class, with reduced stroke-opacity by default so they read as secondary to the center-spoke edges.
+- The center-spoke remains the primary structure of the diagram. Treat mesosystem edges as supplementary; if you need a free-form network of relationships, use a sociogram instead.
+
+### 4.6 SVG Implementation
 
 **Line rendering：**
 - 线从 center 边缘到 system 边缘（不是中心到中心）

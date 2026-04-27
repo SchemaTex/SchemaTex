@@ -61,6 +61,7 @@ const PREFIX_MAP: Record<string, { type: CircuitComponentType; pins: string[] }>
   K: { type: "relay_coil", pins: ["start", "end"] },
   U: { type: "generic_ic", pins: [] }, // pins declared via pins="..." attr
   X: { type: "generic_ic", pins: [] },
+  W: { type: "wire", pins: ["start", "end"] }, // explicit wire (non-SPICE convention, common in EE textbooks)
 };
 
 /** Aliases for type=xxx — mirror parser.ts aliases. */

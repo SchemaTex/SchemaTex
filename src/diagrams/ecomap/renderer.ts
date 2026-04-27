@@ -48,7 +48,7 @@ export function renderEcomap(
   const t = resolveBaseTheme(config.theme);
   const defsStr = buildDefs(t);
   const styleStr = buildStyles(config, t);
-  const connectionsStr = renderConnections(layout.edges);
+  const connectionsStr = renderConnections(layout.edges, centerNode?.individual.id);
   const centerStr = centerNode ? renderCenter(centerNode, config) : "";
   const systemsStr = renderSystems(systemNodes, config);
   const labelsStr = renderConnectionLabels(layout.edges, t);
@@ -155,6 +155,11 @@ function buildStyles(config: RenderConfig, t: BaseTheme): string {
 .schematex-ecomap-eco-line-stressful { stroke: ${t.neutral}; stroke-width: ${STROKE_WIDTH.normal}; fill: none; stroke-linecap: round; }
 .schematex-ecomap-eco-conn-label { font-family: ${config.fontFamily}; font-size: ${config.fontSize - 2}px; text-anchor: middle; fill: ${t.textMuted}; }
 .schematex-ecomap-eco-arrow { fill: ${t.neutral}; }
+.schematex-ecomap-connection-mesosystem .schematex-ecomap-eco-line,
+.schematex-ecomap-connection-mesosystem .schematex-ecomap-eco-line-parallel,
+.schematex-ecomap-connection-mesosystem .schematex-ecomap-eco-line-weak,
+.schematex-ecomap-connection-mesosystem .schematex-ecomap-eco-line-broken,
+.schematex-ecomap-connection-mesosystem .schematex-ecomap-eco-line-stressful { stroke-opacity: 0.55; }
 `;
 
   for (const [cat, color] of Object.entries(CATEGORY_COLORS)) {
@@ -268,7 +273,7 @@ function renderSystems(
 
 // ─── Connections ───────────────────────────────────────────
 
-function renderConnections(edges: LayoutEdge[]): string {
+function renderConnections(edges: LayoutEdge[], centerId?: string): string {
   const elements: string[] = [];
 
   for (const edge of edges) {
@@ -379,16 +384,19 @@ function renderConnections(edges: LayoutEdge[]): string {
         break;
     }
 
-    elements.push(
-      group(
-        {
-          class: `schematex-ecomap-connection schematex-ecomap-connection-${relType}`,
-          "data-from": edge.from,
-          "data-to": edge.to,
-        },
-        lineElements
-      )
-    );
+    const isMesosystem =
+      centerId !== undefined && edge.from !== centerId && edge.to !== centerId;
+    const groupClass = isMesosystem
+      ? `schematex-ecomap-connection schematex-ecomap-connection-${relType} schematex-ecomap-connection-mesosystem`
+      : `schematex-ecomap-connection schematex-ecomap-connection-${relType}`;
+    const groupAttrs: Record<string, string> = {
+      class: groupClass,
+      "data-from": edge.from,
+      "data-to": edge.to,
+    };
+    if (isMesosystem) groupAttrs["data-mesosystem"] = "true";
+
+    elements.push(group(groupAttrs, lineElements));
   }
 
   return group({ class: "schematex-ecomap-connections" }, elements);

@@ -192,4 +192,21 @@ ecomap
     expect(svg).toContain("<marker");
     expect(svg).toContain('id="schematex-ecomap-eco-arrow"');
   });
+
+  test("non-center pair tagged as mesosystem connection", () => {
+    const svg = renderFromDSL(`
+ecomap
+  center: m [female]
+  mother [label: "Mother", category: family]
+  work [label: "Work", category: work]
+  m --- mother
+  m --- work
+  mother ~~~ work [label: "stress"]
+`);
+    expect(svg).toContain('data-mesosystem="true"');
+    expect(svg).toContain("schematex-ecomap-connection-mesosystem");
+    // Spoke edges (m -> mother, m -> work) must NOT carry the mesosystem class
+    const matches = svg.match(/data-mesosystem="true"/g) ?? [];
+    expect(matches.length).toBe(1);
+  });
 });
