@@ -7,6 +7,7 @@
 
 import type { FlowchartShape } from "../../core/types";
 import { rect, polygon, circle as svgCircle, line as svgLine, path as svgPath } from "../../core/svg";
+import { SHAPE_SLANT } from "./layout";
 
 export function shapeSVG(shape: FlowchartShape, w: number, h: number): string {
   switch (shape) {
@@ -28,28 +29,28 @@ export function shapeSVG(shape: FlowchartShape, w: number, h: number): string {
     }
 
     case "parallelogram": {
-      const slant = 20;
+      const slant = SHAPE_SLANT.parallelogram;
       const points = `${slant},0 ${w},0 ${w - slant},${h} 0,${h}`;
       return polygon({ points, class: "sx-fc-node" });
     }
 
     // ── M2 additional shapes ────────────────────────────────────
     case "parallelogram-alt": {
-      const slant = 20;
+      const slant = SHAPE_SLANT.parallelogram;
       const points = `0,0 ${w - slant},0 ${w},${h} ${slant},${h}`;
       return polygon({ points, class: "sx-fc-node" });
     }
 
     case "trapezoid": {
       // Wider at top, narrowing at bottom — manual operation (ISO 5807)
-      const slant = 16;
+      const slant = SHAPE_SLANT.trapezoid;
       const points = `0,0 ${w},0 ${w - slant},${h} ${slant},${h}`;
       return polygon({ points, class: "sx-fc-node" });
     }
 
     case "trapezoid-alt": {
       // Wider at bottom (manual input)
-      const slant = 16;
+      const slant = SHAPE_SLANT.trapezoid;
       const points = `${slant},0 ${w - slant},0 ${w},${h} 0,${h}`;
       return polygon({ points, class: "sx-fc-node" });
     }

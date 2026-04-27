@@ -1,6 +1,9 @@
 import { describe, test, expect } from "vitest";
 import { parseFlowchart } from "../../src/diagrams/flowchart/parser";
-import { layoutFlowchart } from "../../src/diagrams/flowchart/layout";
+import {
+  layoutFlowchart,
+  measureLabelWidth,
+} from "../../src/diagrams/flowchart/layout";
 
 describe("flowchart layout", () => {
   test("linear chain yields one node per layer (TB)", () => {
@@ -110,5 +113,139 @@ A -->|no| C[Reject]`);
     const ast = parseFlowchart("flowchart TD\nA --> B\nB --> C");
     const r = layoutFlowchart(ast);
     expect(r.nodes.map((n) => n.node.id).sort()).toEqual(["A", "B", "C"]);
+  });
+
+  test("CJK label width is roughly double Latin width per char", () => {
+    // 6 CJK chars vs 6 Latin chars must produce noticeably wider measurement.
+    const cjk = measureLabelWidth("網路公開招募");
+    const latin = measureLabelWidth("recruit");
+    expect(cjk).toBeGreaterThan(latin * 1.4);
+    // Mixed labels: CJK characters dominate the width even with Latin tokens.
+    const mixed = measureLabelWidth("基本資料、POMS量表、配戴HRV");
+    expect(mixed).toBeGreaterThan(150);
+  });
+
+  test("CJK label drives wider node so text doesn't overflow padding", () => {
+    const latinAst = parseFlowchart("flowchart TD\nA([recruit])");
+    const cjkAst = parseFlowchart("flowchart TD\nA([網路公開招募])");
+    const latinR = layoutFlowchart(latinAst);
+    const cjkR = layoutFlowchart(cjkAst);
+    const latinW = latinR.nodes.find((n) => n.node.id === "A")!.width;
+    const cjkW = cjkR.nodes.find((n) => n.node.id === "A")!.width;
+    // CJK label of 6 full-width chars must produce strictly wider node than
+    // 7 Latin chars, since per-glyph width is ~2× larger.
+    expect(cjkW).toBeGreaterThan(latinW);
+  });
+
+  test("parallelogram with long CJK label fits inside slanted body", () => {
+    const ast = parseFlowchart(
+      "flowchart TD\nP[/基本資料、POMS量表、個人儀式感量表、配戴HRV/]"
+    );
+    const r = layoutFlowchart(ast);
+    const p = r.nodes.find((n) => n.node.id === "P")!;
+    // Inner usable width at y=h/2 = w − 2·slant (slant = 20). Label rendered
+    // width must fit, otherwise the polygon clips the glyphs.
+    const labelW = measureLabelWidth(p.node.label);
+    const usableInner = p.width - 2 * 20;
+    expect(usableInner).toBeGreaterThanOrEqual(labelW);
+  });
+
+  test("sequential clusters (TB) keep a centered straight spine", () => {
+    // Pre / Intervention / Post each occupy a distinct layer range — lane
+    // mode would push each cluster sideways. BK should keep the spine
+    // straight and centered.
+    const ast = parseFlowchart(`flowchart TD
+A --> B
+subgraph S1 [Phase1]
+  P1
+end
+B --> P1
+subgraph S2 [Phase2]
+  P2
+end
+P1 --> P2
+subgraph S3 [Phase3]
+  P3
+end
+P2 --> P3
+P3 --> Z`);
+    const r = layoutFlowchart(ast);
+    const cx = (id: string): number => {
+      const n = r.nodes.find((nn) => nn.node.id === id)!;
+      return n.x + n.width / 2;
+    };
+    // Sequential clusters → straight spine. All node centers should share
+    // the same X (within 1px tolerance for rounding).
+    const centers = ["A", "B", "P1", "P2", "P3", "Z"].map(cx);
+    const refX = centers[0]!;
+    for (const x of centers) {
+      expect(Math.abs(x - refX)).toBeLessThan(2);
+    }
+  });
+
+  test("sequential cluster bboxes never overlap (bbox-disjoint)", () => {
+    // Three back-to-back clusters in TB. Without per-gap spacing, the
+    // pad+pad+title (=68px) requirement exceeds the default 56px layer gap
+    // and adjacent cluster bboxes overlap by ~12px.
+    const ast = parseFlowchart(`flowchart TD
+A --> B
+subgraph S1 [Phase1]
+  P1
+end
+B --> P1
+subgraph S2 [Phase2]
+  P2
+end
+P1 --> P2
+subgraph S3 [Phase3]
+  P3a
+  P3b
+  P3a --> P3b
+end
+P2 --> P3a
+P3b --> Z`);
+    const r = layoutFlowchart(ast);
+    const cs = [...r.clusters].sort((a, b) => a.y - b.y);
+    expect(cs.length).toBe(3);
+    for (let i = 0; i < cs.length - 1; i++) {
+      const aBottom = cs[i]!.y + cs[i]!.height;
+      const bTop = cs[i + 1]!.y;
+      // Strictly disjoint, with at least the configured cluster gap of
+      // breathing room between bboxes.
+      expect(bTop).toBeGreaterThanOrEqual(aBottom);
+      expect(bTop - aBottom).toBeGreaterThanOrEqual(8);
+    }
+  });
+
+  test("parallel sibling clusters: spine sits centered between clusters", () => {
+    const ast = parseFlowchart(`flowchart TD
+Start --> Random
+Random --> G1
+Random --> G2
+subgraph Left [LeftPath]
+  L1
+  G1 --> L1
+end
+subgraph Right [RightPath]
+  R1
+  G2 --> R1
+end
+L1 --> Done
+R1 --> Done`);
+    const r = layoutFlowchart(ast);
+    const cx = (id: string): number => {
+      const n = r.nodes.find((nn) => nn.node.id === id)!;
+      return n.x + n.width / 2;
+    };
+    // Spine nodes (Start, Random, Done) should be horizontally between
+    // L1 (left cluster) and R1 (right cluster).
+    const lx = cx("L1");
+    const rx = cx("R1");
+    expect(lx).toBeLessThan(rx);
+    for (const id of ["Start", "Random", "Done"]) {
+      const x = cx(id);
+      expect(x).toBeGreaterThan(lx - 1);
+      expect(x).toBeLessThan(rx + 1);
+    }
   });
 });

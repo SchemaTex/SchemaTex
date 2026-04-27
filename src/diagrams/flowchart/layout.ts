@@ -34,12 +34,82 @@ export const FC_CONST = {
   layerSpacingY: 56, // flow-direction gap between layers
   dummyWidth: 1,
   padding: 24,
-  charWidth: 6.8, // approx font-size 12 proportional width
+  /** Latin/digit avg width at 12px font. CJK uses cjkCharWidth instead. */
+  charWidth: 6.8,
+  /** Full-width glyph width at 12px (CJK ideograph, kana, hangul, fullwidth). */
+  cjkCharWidth: 12.5,
   labelHPad: 16,
   minNodeWidth: 72,
-  maxLabelWidth: 220,
+  /**
+   * Cap on per-line label width. Until line-wrapping lands, this clamp is
+   * a soft contract: nodes never grow past this, and any overflow becomes
+   * the caller's problem. Set generously so common CJK sentences (≤30
+   * full-width chars) still fit without truncation or text overflow.
+   */
+  maxLabelWidth: 420,
   crossingSweepIters: 24,
 } as const;
+
+/**
+ * Slant inset constants — must match the values used in shapes.ts so layout
+ * size calculations stay aligned with rendered geometry.
+ */
+export const SHAPE_SLANT = {
+  parallelogram: 20,
+  trapezoid: 16,
+} as const;
+
+/**
+ * Cluster (subgraph) bbox geometry — used by layer-gap computation AND by
+ * cluster bbox derivation downstream. Single source of truth so the two
+ * stay aligned.
+ *
+ *   pad         padding between cluster border and inner-most member, on
+ *               every side except the title-bearing side
+ *   titleH      additional space the title label reserves on the title side
+ *               (top in TB, left in LR)
+ */
+export const CLUSTER_GEO = {
+  pad: 24,
+  titleH: 20,
+  /** Extra visible separation between two sequential cluster bboxes. */
+  gap: 12,
+} as const;
+
+/**
+ * Per-codepoint width estimate. Multi-script aware: CJK ideographs and
+ * full-width punctuation are ~2× the width of Latin glyphs at the same
+ * font-size, so a single average constant systematically under-measures
+ * Chinese / Japanese / Korean labels and causes text overflow on slanted
+ * shapes (parallelogram, hexagon) plus zero-padding on stadium / circle
+ * starters. We classify by Unicode block and sum.
+ */
+function isFullWidth(code: number): boolean {
+  // CJK Unified Ideographs (incl. Ext-A) + common East Asian blocks
+  if (code >= 0x3000 && code <= 0x303f) return true; // CJK Symbols & Punctuation
+  if (code >= 0x3040 && code <= 0x309f) return true; // Hiragana
+  if (code >= 0x30a0 && code <= 0x30ff) return true; // Katakana
+  if (code >= 0x3400 && code <= 0x4dbf) return true; // CJK Ext-A
+  if (code >= 0x4e00 && code <= 0x9fff) return true; // CJK Unified
+  if (code >= 0xac00 && code <= 0xd7af) return true; // Hangul Syllables
+  if (code >= 0xf900 && code <= 0xfaff) return true; // CJK Compat Ideographs
+  if (code >= 0xff00 && code <= 0xff60) return true; // Fullwidth Forms
+  if (code >= 0xffe0 && code <= 0xffe6) return true; // Fullwidth signs
+  // Astral CJK (Ext-B/C/D/E/F)
+  if (code >= 0x20000 && code <= 0x2ffff) return true;
+  return false;
+}
+
+export function measureLabelWidth(label: string): number {
+  let w = 0;
+  // Iterate by codepoint so astral chars count once.
+  for (const ch of label) {
+    const code = ch.codePointAt(0) ?? 0;
+    if (isFullWidth(code)) w += FC_CONST.cjkCharWidth;
+    else w += FC_CONST.charWidth;
+  }
+  return w;
+}
 
 // ─── Internal working types ────────────────────────────────
 
@@ -530,6 +600,54 @@ function laneBasedXCoords(
     }
   }
 
+  // ── Null-lane centering ───────────────────────────────────
+  // When sibling clusters run in parallel (e.g. ExpPath ‖ CtrlPath) and the
+  // "no cluster" lane only contains nodes on layers OUTSIDE the cluster
+  // span (typical: head/tail spine like Start → Random → … → End), placing
+  // null at the leftmost lane drags the whole spine off-center. Move null
+  // to the middle so the spine sits between the parallel clusters.
+  const clusterLanes = laneOrder.filter((l): l is string => l !== null);
+  if (clusterLanes.length >= 2 && laneOrder.includes(null)) {
+    // Partition each layer first so we can decide.
+    const tmpPartition: Array<Map<string | null, LNode[]>> = layerNodes.map(
+      (layer) => {
+        const m = new Map<string | null, LNode[]>();
+        for (const n of layer) {
+          if (n.isDummy) continue;
+          const lane = laneOf(n.id);
+          if (!m.has(lane)) m.set(lane, []);
+          m.get(lane)!.push(n);
+        }
+        return m;
+      }
+    );
+    const clusterOccupiedLayers = new Set<number>();
+    for (let li = 0; li < tmpPartition.length; li++) {
+      for (const lane of clusterLanes) {
+        if ((tmpPartition[li]!.get(lane) ?? []).length > 0) {
+          clusterOccupiedLayers.add(li);
+        }
+      }
+    }
+    let nullIsBoundary = true;
+    for (let li = 0; li < tmpPartition.length; li++) {
+      const nm = tmpPartition[li]!.get(null) ?? [];
+      if (nm.length > 0 && clusterOccupiedLayers.has(li)) {
+        nullIsBoundary = false;
+        break;
+      }
+    }
+    if (nullIsBoundary) {
+      const mid = Math.floor(clusterLanes.length / 2);
+      laneOrder.length = 0;
+      laneOrder.push(
+        ...clusterLanes.slice(0, mid),
+        null,
+        ...clusterLanes.slice(mid)
+      );
+    }
+  }
+
   // Partition each layer into lane → ordered member list.
   const lanesPerLayer: Array<Map<string | null, LNode[]>> = layerNodes.map(
     (layer) => {
@@ -621,6 +739,51 @@ function laneBasedXCoords(
   return result;
 }
 
+// ─── Cluster span analysis ────────────────────────────────
+
+/**
+ * Decide whether lane-based x-coord placement is required.
+ *
+ * Lanes are needed when two or more top-level clusters share at least
+ * one layer (parallel branches): without lane separation their members
+ * would interleave horizontally and the cluster bboxes — derived as
+ * min/max of member positions — would enclose foreign nodes.
+ *
+ * For sequential clusters (each occupies its own consecutive layer
+ * range, like a multi-phase pipeline) BK gives a clean straight spine
+ * and the bboxes wrap naturally with no interference.
+ */
+function hasOverlappingTopLevelClusters(
+  ast: FlowchartAST,
+  layerMap: Map<string, number>,
+  sgParent: Map<string, string | undefined>
+): boolean {
+  const topLevel = ast.subgraphs.filter((sg) => !sgParent.get(sg.id));
+  if (topLevel.length < 2) return false;
+  const collect = (sgId: string): string[] => {
+    const sg = ast.subgraphs.find((s) => s.id === sgId);
+    if (!sg) return [];
+    const ids = [...sg.children];
+    for (const childSgId of sg.subgraphs) ids.push(...collect(childSgId));
+    return ids;
+  };
+  const ranges = topLevel.map((sg) => {
+    const ids = collect(sg.id);
+    if (ids.length === 0) return { min: 0, max: -1 };
+    const layers = ids.map((id) => layerMap.get(id) ?? 0);
+    return { min: Math.min(...layers), max: Math.max(...layers) };
+  });
+  for (let i = 0; i < ranges.length; i++) {
+    for (let j = i + 1; j < ranges.length; j++) {
+      const a = ranges[i]!;
+      const b = ranges[j]!;
+      if (a.max < a.min || b.max < b.min) continue;
+      if (a.min <= b.max && b.min <= a.max) return true;
+    }
+  }
+  return false;
+}
+
 // ─── Entry point ──────────────────────────────────────────
 
 export function layoutFlowchart(ast: FlowchartAST): FlowchartLayoutResult {
@@ -631,19 +794,31 @@ export function layoutFlowchart(ast: FlowchartAST): FlowchartLayoutResult {
   // Returned w/h are in "abstract TB space" — flow direction is always Y.
   // For LR we swap at the end so the user-authored shape dims are preserved.
   const sizeOf = (n: FlowchartNode): { w: number; h: number } => {
+    const rawTextW = measureLabelWidth(n.label);
     const labelW = Math.min(
       FC_CONST.maxLabelWidth,
-      Math.ceil(n.label.length * FC_CONST.charWidth) + FC_CONST.labelHPad * 2
+      Math.ceil(rawTextW) + FC_CONST.labelHPad * 2
     );
     let shapeW = Math.max(FC_CONST.minNodeWidth, labelW);
     let shapeH: number = FC_CONST.nodeHeight;
     if (n.shape === "diamond") {
-      shapeW = Math.max(shapeW, labelW * 1.25);
+      // Diamond's inner usable width at y=h/2 equals the full width, but text
+      // near the vertical extents is clipped by the rhombus edges. Bump 1.4×
+      // (was 1.25) to give CJK labels more vertical breathing room.
+      shapeW = Math.max(shapeW, labelW * 1.4);
       shapeH = Math.max(shapeH, 52);
     }
-    if (n.shape === "parallelogram" || n.shape === "parallelogram-alt" ||
-        n.shape === "trapezoid" || n.shape === "trapezoid-alt") {
-      shapeW += 20;
+    if (n.shape === "parallelogram" || n.shape === "parallelogram-alt") {
+      // Parallelogram has a slant of `slant` on each side (see shapes.ts:30).
+      // At y=h/2 the usable width is w-2·slant, NOT w-slant. The renderer
+      // centers the label, so we must reserve 2·slant of horizontal slack
+      // plus a small ε for stroke clearance.
+      shapeW += 2 * SHAPE_SLANT.parallelogram + 8;
+    }
+    if (n.shape === "trapezoid" || n.shape === "trapezoid-alt") {
+      // Trapezoid usable width at y=h/2 is w-slant (one side cut); near the
+      // narrow end it's w-2·slant. Add 2·slant + ε for safety.
+      shapeW += 2 * SHAPE_SLANT.trapezoid + 8;
     }
     if (n.shape === "stadium" || n.shape === "round") {
       shapeW = Math.max(shapeW, shapeH + 20);
@@ -655,8 +830,13 @@ export function layoutFlowchart(ast: FlowchartAST): FlowchartLayoutResult {
       shapeH = side;
     }
     if (n.shape === "hexagon") {
-      // Extra horizontal room for the angled cuts
-      shapeW = Math.max(shapeW, labelW + 44);
+      // Hexagon cuts both ends — usable width at y=h/2 is full w, but the
+      // angled cut at top/bottom (cut=min(20,w/4)) eats label area.
+      shapeW = Math.max(shapeW, labelW + 48);
+    }
+    if (n.shape === "asymmetric") {
+      // Right-pointing flag — 15px arrow on the right side.
+      shapeW += 24;
     }
     if (n.shape === "cylinder") {
       // Slightly taller to show the top ellipse cap
@@ -829,10 +1009,17 @@ export function layoutFlowchart(ast: FlowchartAST): FlowchartLayoutResult {
   const layerNodes: LNode[][] = ordered.map((layer) =>
     layer.map((id) => lnodes.get(id)!)
   );
+  // Lane-based placement is only needed when sibling top-level clusters
+  // share at least one layer (parallel branches). For sequential clusters
+  // (each on its own layer range, e.g. Pre → Intervention → Post in TB),
+  // pure BK produces a straight, centered spine and the cluster bboxes —
+  // computed afterward as min/max of member positions — naturally wrap
+  // their members without dragging the diagram sideways.
+  const useLane =
+    ast.subgraphs.length > 0 &&
+    hasOverlappingTopLevelClusters(ast, layerMap, sgParent);
   let xMap: Map<string, number>;
-  if (ast.subgraphs.length > 0) {
-    // Lane-based placement: each top-level cluster occupies its own
-    // horizontal lane, so cluster bboxes can't overlap foreign nodes.
+  if (useLane) {
     xMap = laneBasedXCoords(
       layerNodes,
       pathOf,
@@ -840,7 +1027,6 @@ export function layoutFlowchart(ast: FlowchartAST): FlowchartLayoutResult {
       segments
     );
   } else {
-    // No clusters → pure BK gives optimal straight-edge layouts.
     const bkLayers: BKNode[][] = layerNodes.map((layer) =>
       layer.map((n) => ({ id: n.id, width: n.width, isDummy: n.isDummy }))
     );
@@ -849,7 +1035,6 @@ export function layoutFlowchart(ast: FlowchartAST): FlowchartLayoutResult {
 
   // ── Compute y coords & final canvas dimensions ──────────
   const isHorizontal = dir === "LR" || dir === "RL";
-  const layerGap = FC_CONST.layerSpacingY;
 
   // Per-layer max height (abstract TB) — respects variable-height nodes.
   const layerHeights: number[] = layerNodes.map((layer) => {
@@ -861,14 +1046,67 @@ export function layoutFlowchart(ast: FlowchartAST): FlowchartLayoutResult {
     return maxH > 0 ? maxH : FC_CONST.nodeHeight;
   });
   // Extra top/left padding to fit cluster borders + title labels. Clusters
-  // extend CLUSTER_PAD + CLUSTER_TITLE_H past their outermost member in the
-  // title direction (top for TB, left for LR), and CLUSTER_PAD on other sides.
+  // extend pad + titleH past their outermost member in the title direction
+  // (top for TB, left for LR), and pad on the other sides.
   const hasClusters = ast.subgraphs.length > 0;
-  const CLUSTER_OVERHEAD_TITLE = hasClusters ? 44 : 0; // CLUSTER_PAD(24) + CLUSTER_TITLE_H(20)
-  const CLUSTER_OVERHEAD_SIDE = hasClusters ? 24 : 0; // CLUSTER_PAD
+  const CLUSTER_OVERHEAD_TITLE = hasClusters
+    ? CLUSTER_GEO.pad + CLUSTER_GEO.titleH
+    : 0;
+  const CLUSTER_OVERHEAD_SIDE = hasClusters ? CLUSTER_GEO.pad : 0;
   // In TB, title sits above (extra Y); in LR, title sits left (extra X).
   const extraTopPad = isHorizontal ? CLUSTER_OVERHEAD_SIDE : CLUSTER_OVERHEAD_TITLE;
   const extraLeftPad = isHorizontal ? CLUSTER_OVERHEAD_TITLE : CLUSTER_OVERHEAD_SIDE;
+
+  // ── Per-layer top-level cluster set ─────────────────────
+  // For dynamic layer-gap computation: when adjacent layers belong to
+  // distinct clusters, the gap must accommodate cluster A's bottom-pad
+  // + cluster B's top-pad + title (~68px in TB), otherwise the cluster
+  // bboxes overlap visually.
+  const topLevelOf = (sgId: string): string => {
+    let cur = sgId;
+    let safety = 32;
+    while (safety-- > 0) {
+      const p = sgParent.get(cur);
+      if (!p) return cur;
+      cur = p;
+    }
+    return cur;
+  };
+  const clustersAtLayer: Array<Set<string>> = layerNodes.map(() => new Set());
+  for (let li = 0; li < layerNodes.length; li++) {
+    for (const n of layerNodes[li]!) {
+      if (n.isDummy) continue;
+      const parent = parentOf.get(n.id);
+      if (!parent) continue;
+      clustersAtLayer[li]!.add(topLevelOf(parent));
+    }
+  }
+  /**
+   * Minimum gap required between two adjacent layers to keep cluster
+   * bboxes disjoint:
+   *   - A cluster that EXITS at li (in li but not li+1) needs `pad` below
+   *     its members for its bottom border.
+   *   - A cluster that ENTERS at li+1 (in li+1 but not li) needs `pad +
+   *     titleH` above its members for its top border + title.
+   * If neither side opens or closes a cluster, the default layerSpacingY
+   * already fits an edge label between rows.
+   */
+  const layerGapAt = (li: number): number => {
+    const a = clustersAtLayer[li] ?? new Set<string>();
+    const b = clustersAtLayer[li + 1] ?? new Set<string>();
+    let hasExit = false;
+    for (const c of a) if (!b.has(c)) { hasExit = true; break; }
+    let hasEntry = false;
+    for (const c of b) if (!a.has(c)) { hasEntry = true; break; }
+    let required = 0;
+    if (hasExit) required += CLUSTER_GEO.pad;
+    if (hasEntry) required += CLUSTER_GEO.pad + CLUSTER_GEO.titleH;
+    // Visible breathing room when two distinct cluster bboxes meet at this
+    // gap (sequential clusters, e.g. Pre → Intervention). Without it the
+    // bboxes touch and look like one cluster with a horizontal divider.
+    if (hasExit && hasEntry) required += CLUSTER_GEO.gap;
+    return Math.max(FC_CONST.layerSpacingY, required);
+  };
 
   const layerCenterY: number[] = [];
   {
@@ -876,7 +1114,8 @@ export function layoutFlowchart(ast: FlowchartAST): FlowchartLayoutResult {
     for (let li = 0; li < layerHeights.length; li++) {
       y += layerHeights[li]! / 2;
       layerCenterY.push(y);
-      y += layerHeights[li]! / 2 + layerGap;
+      y += layerHeights[li]! / 2;
+      if (li < layerHeights.length - 1) y += layerGapAt(li);
     }
   }
 
@@ -1057,8 +1296,7 @@ export function layoutFlowchart(ast: FlowchartAST): FlowchartLayoutResult {
     return 0;
   }
 
-  const CLUSTER_PAD = 24;
-  const CLUSTER_TITLE_H = 20;
+  const { pad: CLUSTER_PAD, titleH: CLUSTER_TITLE_H } = CLUSTER_GEO;
 
   const clusters = ast.subgraphs
     .map((sg) => {
@@ -1066,7 +1304,8 @@ export function layoutFlowchart(ast: FlowchartAST): FlowchartLayoutResult {
       const members = outNodes.filter((n) => memberIds.includes(n.node.id));
       if (members.length === 0) return null;
       const minX = Math.min(...members.map((n) => n.x)) - CLUSTER_PAD;
-      const minY = Math.min(...members.map((n) => n.y)) - CLUSTER_PAD - CLUSTER_TITLE_H;
+      const minY =
+        Math.min(...members.map((n) => n.y)) - CLUSTER_PAD - CLUSTER_TITLE_H;
       const maxX = Math.max(...members.map((n) => n.x + n.width)) + CLUSTER_PAD;
       const maxY = Math.max(...members.map((n) => n.y + n.height)) + CLUSTER_PAD;
       return {

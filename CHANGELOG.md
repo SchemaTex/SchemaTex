@@ -11,6 +11,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.2.5] — 2026-04-27
+
+### Fixed — Flowchart: sequential subgraph right-drift
+
+When all subgraphs occupy distinct, non-overlapping layer ranges (sequential topology), the lane-based x-coordinate algorithm would still activate and push each cluster into its own horizontal lane, causing the diagram to drift rightward with each additional subgraph. The fix: `hasOverlappingTopLevelClusters()` now detects sequential vs. parallel cluster topology; lane mode only activates when two or more top-level clusters genuinely overlap in layer range. Sequential layouts use Brandes-Köpf directly, keeping the spine straight and centered.
+
+### Fixed — Flowchart: null-lane centering for parallel sibling clusters
+
+In symmetric parallel layouts (e.g. two branches that fan out and rejoin), the spine nodes (Start / merge / Done) were placed in a "null lane" that was pushed to the far left or right depending on sort order. The fix: when the null lane has no layer overlap with any cluster (boundary-only) and sibling clusters exist, the null lane is reordered to the center of `laneOrder`, keeping the spine visually centered between the two branch clusters.
+
+### Fixed — Flowchart: cluster bbox vertical overlap
+
+When three or more sequential clusters were stacked top-to-bottom, the fixed `layerSpacingY: 56` gap between layers was insufficient. Each cluster requires `pad (24) + titleH (20)` of extra clearance at its entry/exit boundary (≥ 80 px total for a back-to-back pair), but the fixed gap only allocated 56 px. The fix: `layerGapAt(li)` computes a per-boundary minimum based on which clusters enter and exit at that boundary, using shared `CLUSTER_GEO` constants, and `Math.max(layerSpacingY, required)` ensures the stricter requirement wins.
+
+### Fixed — Flowchart: parallelogram/trapezoid text overflow
+
+The parallelogram and trapezoid shapes narrow at the sides by `slant` pixels on each edge, but node sizing was using the same inset formula as a rectangle, causing long labels to overflow the slanted boundary. The fix: `sizeOf()` now adds `2 × SHAPE_SLANT + 8` extra horizontal padding for parallelogram and trapezoid shapes. The `SHAPE_SLANT` constant (`{ parallelogram: 20, trapezoid: 16 }`) is shared between `layout.ts` and `shapes.ts` to keep geometry consistent.
+
+### Added — Flowchart: CJK-aware label width measurement
+
+`measureLabelWidth(label)` replaces the previous `label.length * charWidth` approximation. It iterates codepoints and applies `cjkCharWidth: 12.5` for full-width characters (CJK Unified, CJK Extension A/B, Hangul, Katakana, Hiragana, Fullwidth Forms, and astral CJK blocks) vs. `charWidth: 6.8` for all others. This ensures nodes containing traditional/simplified Chinese, Japanese, or Korean text are sized wide enough so glyphs do not overflow node boundaries. `maxLabelWidth` raised to 420 to accommodate long CJK labels.
+
+---
+
 ## [0.2.4] — 2026-04-25
 
 ### Fixed — Genogram: disconnected sibship bar when a child is also a partner in another union
