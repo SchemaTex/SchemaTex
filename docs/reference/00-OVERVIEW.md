@@ -143,8 +143,8 @@ schematex/
 │   │   ├── 13-FISHBONE-STANDARD.md       # Ishikawa cause-and-effect
 │   │   ├── 14-FLOWCHART-STANDARD.md      # Sugiyama layered DAG + orthogonal routing
 │   │   ├── 15-VENN-STANDARD.md           # Venn / Euler set-theoretic diagrams
-│   │   ├── 16-STATE-DIAGRAM-STANDARD.md  # UML 2.5 / Harel statechart (planned)
-│   │   └── 17-PID-STANDARD.md            # Process & instrumentation (ISA-5.1) (planned)
+│   │   ├── 21-STATE-DIAGRAM-STANDARD.md  # UML 2.5 / Harel statechart
+│   │   └── 22-PID-STANDARD.md            # Process & instrumentation (ISA-5.1)
 │   ├── impl/                    # 实施计划（CC 自主执行）
 │   │   │  ── Relationship Diagrams ──
 │   │   ├── 1.0-genogram-parser.md

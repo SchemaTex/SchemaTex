@@ -44,6 +44,8 @@ const SYNTAX_KEYS = [
   "orgchart",
   "mindmap",
   "timeline",
+  "state",
+  "pid",
 ];
 
 // ─── Minimal YAML-frontmatter parser ─────────────────────────────

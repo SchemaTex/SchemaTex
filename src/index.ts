@@ -39,6 +39,8 @@ export { flowchart } from "./diagrams/flowchart";
 export { orgchart } from "./diagrams/orgchart";
 export { decisiontree } from "./diagrams/decisiontree";
 export { timeline } from "./diagrams/timeline";
+export { state } from "./diagrams/state";
+export { pid } from "./diagrams/pid";
 
 export {
   type ThemeName,

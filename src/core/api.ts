@@ -19,6 +19,8 @@ import { matrix } from "../diagrams/matrix";
 import { orgchart } from "../diagrams/orgchart";
 import { decisiontree } from "../diagrams/decisiontree";
 import { timeline } from "../diagrams/timeline";
+import { state } from "../diagrams/state";
+import { pid } from "../diagrams/pid";
 
 export interface SchematexConfig {
   type?:
@@ -41,7 +43,9 @@ export interface SchematexConfig {
     | "matrix"
     | "orgchart"
     | "decisiontree"
-    | "timeline";
+    | "timeline"
+    | "state"
+    | "pid";
   width?: number;
   height?: number;
   padding?: number;
@@ -70,6 +74,8 @@ const plugins: DiagramPlugin[] = [
   orgchart,
   decisiontree,
   timeline,
+  state,
+  pid,
 ];
 
 function detectPlugin(text: string, config?: SchematexConfig): DiagramPlugin {

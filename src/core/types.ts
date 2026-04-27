@@ -42,7 +42,11 @@ export type DiagramType =
   // Decision-analysis / ML / taxonomy trees
   | "decisiontree" // Decision tree — Howard-Raiffa + CART + taxonomy (17-DECISION-TREE-STANDARD)
   // Time axis
-  | "timeline"; // Timeline — events / eras / lifespans on a time axis (19-TIMELINE-STANDARD)
+  | "timeline" // Timeline — events / eras / lifespans on a time axis (19-TIMELINE-STANDARD)
+  // Behavior modeling
+  | "state"    // UML 2.5 / Harel statechart (21-STATE-DIAGRAM-STANDARD)
+  // Process & instrumentation
+  | "pid";     // ISA-5.1 / ISO 10628 P&ID (22-PID-STANDARD)
 
 export type GenogramMode = "medical" | "heritage";
 

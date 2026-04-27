@@ -14,7 +14,8 @@ export type DiagramCluster =
   | "causality-analysis"
   | "generic"
   | "strategy"
-  | "knowledge";
+  | "knowledge"
+  | "behavior-modeling";
 
 export interface DiagramMeta {
   /** Canonical type id — matches `DiagramType` and plugin keys. */
@@ -146,6 +147,16 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
     standard: "IEEE Std 315 + ANSI device numbering",
     syntaxKey: "sld",
   },
+  {
+    type: "pid",
+    name: "P&ID (Piping & Instrumentation)",
+    tagline: "ISA-5.1 process equipment, valves, and instrument bubbles.",
+    useWhen:
+      "Use for chemical / petrochemical / pharmaceutical / water-treatment process diagrams — vessels, columns, heat exchangers, pumps, valves, and instrument loops with ISA tag codes (FT/FIC/PT/etc.). Equipment + piping + instrumentation in one diagram.",
+    cluster: "electrical-industrial",
+    standard: "ANSI/ISA-5.1-2009 + ISO 10628-1:2014",
+    syntaxKey: "pid",
+  },
   // ── Corporate / Legal ────────────────────────────────────────
   {
     type: "entity",
@@ -187,6 +198,17 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
     cluster: "causality-analysis",
     standard: "Howard-Raiffa / CART-sklearn / taxonomy",
     syntaxKey: "decisiontree",
+  },
+  // ── Behavior modeling ────────────────────────────────────────
+  {
+    type: "state",
+    name: "State diagram",
+    tagline: "UML 2.5 / Harel statechart with composite states and pseudo-states.",
+    useWhen:
+      "Use for modeling reactive system behavior — finite state machines, lifecycle states, controller modes, UI workflows. Supports simple states, composite (nested) states, fork/join, choice, history, and full Mermaid `stateDiagram-v2` syntax.",
+    cluster: "behavior-modeling",
+    standard: "OMG UML 2.5.1 §14 + Harel (1987) statechart",
+    syntaxKey: "state",
   },
   // ── Generic process / flow ───────────────────────────────────
   {

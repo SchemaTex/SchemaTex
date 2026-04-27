@@ -47,6 +47,10 @@ const TYPE_META: Record<string, { name: string; std: string }> = {
   entity: { name: 'entity-structure', std: 'Corporate' },
   fishbone: { name: 'fishbone', std: 'Ishikawa 1968' },
   ishikawa: { name: 'fishbone', std: 'Ishikawa 1968' },
+  state: { name: 'state-diagram', std: 'UML 2.5 / Harel' },
+  statediagram: { name: 'state-diagram', std: 'UML 2.5 / Harel' },
+  'statediagram-v2': { name: 'state-diagram', std: 'UML 2.5 / Harel' },
+  pid: { name: 'P&ID', std: 'ISA-5.1 / ISO 10628' },
 };
 
 function detectType(dsl: string): { name: string; std: string } {

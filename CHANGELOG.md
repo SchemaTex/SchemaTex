@@ -9,6 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added — State diagram (UML 2.5 / Harel statechart)
+
+New diagram type `state` for behavior modeling. Implements a strict superset of [Mermaid `stateDiagram-v2`](https://mermaid.js.org/syntax/stateDiagram.html) syntax (every Mermaid example pastes in unchanged) plus UML 2.5 features Mermaid omits: `entry / exit / do` activities, full `trigger [guard] / action` transition labels, `terminate` and history pseudo-states, junction, choice (diamond), and Schematex-style block notes. Layout reuses the flowchart Sugiyama engine — Greedy-FAS cycle removal handles state-machine cycles, longest-path layering + barycenter crossing-min + Brandes-Köpf x-coords give clean composite-aware placement, and Manhattan routing detours around node bboxes. Default direction `TB` (matches Mermaid). Pseudo-state path-endpoint trimming so arrows land on the symbol perimeter, not the layout bbox edge. Composite-target transitions auto-redirect to the composite's initial pseudo-state (avoids Mermaid-incompatible phantom-node rendering).
+
+### Added — P&ID (Piping & Instrumentation Diagram)
+
+New diagram type `pid` for process-engineering documentation. ANSI/ISA-5.1-2009 instrument bubbles + ISO 10628-1:2014 equipment symbols. P0 MVP covers 22 process-equipment types (vessels, columns, heat exchangers, pumps, reactors, separators, flare, cooling tower), 7 valve types (gate, ball, globe, butterfly, check, control with diaphragm actuator, PSV with diagonal outlet + spring), 8 ISA-5.1 instrument-bubble variants (field/CR × discrete/shared/computer/PLC), 8 line types (process, pneumatic with tick marks, electric dashed, capillary dotted, software, mechanical, hydraulic), ISA letter-code tag parsing, auto-routed `measures` / `controls` signal lines, and Manhattan routing. Multi-row layouts, tee junctions, and crossing detection deferred to v0.4.
+
+### Added — `state` and `pid` MCP / AI integration
+
+Both new diagrams are registered in `DIAGRAM_REGISTRY` (consumed by the Schematex MCP server's `listDiagrams` / `getSyntax` tools), with full per-diagram syntax docs (`website/content/docs/state.mdx`, `pid.mdx`) compiled into the AI content bundle via `scripts/build-ai-content.mjs`. New domain cluster `behavior-modeling` introduced for state diagrams.
+
 ---
 
 ## [0.2.5] — 2026-04-27
