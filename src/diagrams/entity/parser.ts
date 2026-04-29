@@ -269,7 +269,7 @@ export function parseEntityDSL(text: string): EntityAST {
       }
       // rest: "target [: pct] [props]" OR "target [props]"
       const restMatch = rest.match(
-        /^([A-Za-z][A-Za-z0-9_-]*)(?:\s*:\s*([^\[]+?))?(?:\s*\[([^\]]*)\])?\s*$/
+        /^([A-Za-z][A-Za-z0-9_-]*)(?:\s*:\s*([^[]+?))?(?:\s*\[([^\]]*)\])?\s*$/
       );
       if (!restMatch) {
         throw new EntityParseError(`Cannot parse edge: ${line}`);

@@ -279,7 +279,7 @@ export function parseMatrix(text: string): MatrixAST {
   let templateName: MatrixTemplate | undefined;
   let inConfig = false;
 
-  for (let raw of lines) {
+  for (const raw of lines) {
     // strip trailing comments (but keep # inside quotes)
     let line = raw;
     const hashIdx = findCommentStart(line);

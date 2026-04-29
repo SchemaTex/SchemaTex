@@ -64,6 +64,9 @@ function shade(hex: string, weight: number): string {
 function computeInitials(name: string): string {
   const trimmed = name.trim();
   if (!trimmed) return "?";
+  // \x00 anchors the ASCII range; the test detects non-ASCII first chars
+  // (CJK, Cyrillic, etc.) so we treat the whole grapheme as the initial.
+  // eslint-disable-next-line no-control-regex
   if (/[^\x00-\x7F]/.test(trimmed[0])) {
     return Array.from(trimmed)[0];
   }

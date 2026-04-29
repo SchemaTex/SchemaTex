@@ -12,7 +12,7 @@ export class TimingParseError extends Error {
   }
 }
 
-const VALID_STATES = /^[01xzpPnNhHlLudD=\.23456789]+$/;
+const VALID_STATES = /^[01xzpPnNhHlLudD=.23456789]+$/;
 
 function splitDataList(rest: string): { wave: string; data: string[] } {
   // Wave string is first token; remaining tokens are quoted strings or a `data: [...]` form
