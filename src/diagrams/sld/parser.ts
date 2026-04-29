@@ -146,7 +146,7 @@ export function parseSLDDSL(text: string): SLDAST {
 
     // Connection: A -> B [cable: "...", label: "..."]
     const connMatch = line.match(
-      /^([A-Za-z][A-Za-z0-9_\-]*)\s*->\s*([A-Za-z][A-Za-z0-9_\-]*)(?:\s*\[([^\]]*)\])?\s*$/
+      /^([A-Za-z][A-Za-z0-9_-]*)\s*->\s*([A-Za-z][A-Za-z0-9_-]*)(?:\s*\[([^\]]*)\])?\s*$/
     );
     if (connMatch) {
       const from = connMatch[1];
@@ -165,7 +165,7 @@ export function parseSLDDSL(text: string): SLDAST {
 
     // Node definition: ID = type [attrs]
     const nodeMatch = line.match(
-      /^([A-Za-z][A-Za-z0-9_\-]*)\s*=\s*([a-zA-Z_][a-zA-Z0-9_]*)(?:\s*\[([^\]]*)\])?\s*$/
+      /^([A-Za-z][A-Za-z0-9_-]*)\s*=\s*([a-zA-Z_][a-zA-Z0-9_]*)(?:\s*\[([^\]]*)\])?\s*$/
     );
     if (nodeMatch) {
       const id = nodeMatch[1];

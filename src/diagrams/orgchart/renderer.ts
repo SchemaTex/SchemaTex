@@ -186,7 +186,7 @@ function renderCardBody(ln: OrgchartLayoutNode, t: BaseTheme): string {
   // Anchor row count determines nameY offset
   const lineCount = 1 + (hasTitle ? 1 : 0) + (hasInfo ? 1 : 0);
   const lineH = 16;
-  let nameY = -(lineCount - 1) * lineH / 2;
+  const nameY = -(lineCount - 1) * lineH / 2;
 
   parts.push(textEl({ x: textX, y: nameY, class: "lt-org-name" }, displayName));
   if (hasTitle) {

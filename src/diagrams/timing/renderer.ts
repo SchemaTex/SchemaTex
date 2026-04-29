@@ -261,7 +261,7 @@ export function renderTiming(ast: TimingAST): string {
   const rows = flatten(ast.signals);
   const maxWaveLen = Math.max(
     1,
-    ...rows.filter((r) => r.kind === "signal").map((r) => (r as any).signal.wave.length)
+    ...rows.flatMap((r) => (r.kind === "signal" ? [r.signal.wave.length] : []))
   );
   const waveAreaW = maxWaveLen * pw;
   const width = NAME_W + waveAreaW + 20;
