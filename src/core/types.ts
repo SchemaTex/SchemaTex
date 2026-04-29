@@ -194,6 +194,13 @@ export interface Individual {
   annotations?: Record<string, string>;
   /** Whether this individual is external/non-family (dashed border) */
   external?: boolean;
+  /**
+   * Pedigree convention for "known relative, unknown ancestry":
+   * id of another individual whose generation this person shares as a sibling.
+   * No phantom parents are synthesized — layout pins generation, renderer
+   * draws a dashed bracket between the two.
+   */
+  siblingOf?: string;
   /** Custom properties for extensibility */
   properties?: Record<string, string>;
 }
@@ -247,7 +254,9 @@ export type IndividualMarker =
   | "index-person" // genogram: identified patient (concentric shape)
   | "transgender" // Bennett 2022: gender ≠ assigned sex
   | "no-children" // by choice
-  | "infertile";
+  | "infertile"
+  // Pedigree convention: ≥1 sibling(s) of unknown count — single diamond with "?"
+  | "unknown-siblings";
 
 export type TwinType =
   | "twin-identical" // monozygotic
@@ -474,6 +483,7 @@ export type RelationshipType =
   | "separated"
   | "engaged"
   | "cohabiting"
+  | "cohabiting-ended" // unmarried cohabitation that has ended (LATAM "quiebre")
   | "domestic-partnership"
   | "consanguineous"
   // Structural parent-child
@@ -540,6 +550,13 @@ export interface Relationship {
   weight?: number;
   /** For ecomap: energy flow direction */
   energyFlow?: "from" | "to" | "mutual" | "none";
+  /**
+   * Genogram parent-child only. When true, this link is data-true but
+   * does NOT dominate layout — used for foster/adopted/guardian "current
+   * caregiver" relationships when biological parents already claim the
+   * child structurally. Renderer draws it as a dotted line.
+   */
+  secondary?: boolean;
 }
 
 // ─── Layout Types ────────────────────────────────────────────

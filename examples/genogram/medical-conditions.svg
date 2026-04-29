@@ -31,8 +31,15 @@
 .schematex-genogram-label { font-family: system-ui, -apple-system, sans-serif; font-size: 12px; text-anchor: middle; fill: #0f172a; }
 .schematex-genogram-edge { stroke: #94a3b8; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
 .schematex-genogram-edge-cohabiting path { stroke-dasharray: 6,4; }
+.schematex-genogram-edge-cohabiting-ended path { stroke-dasharray: 6,4; }
 .schematex-genogram-edge-divorced .schematex-genogram-divorce-mark { stroke: #94a3b8; stroke-width: 2; }
 .schematex-genogram-edge-separated .schematex-genogram-separation-mark { stroke: #94a3b8; stroke-width: 2; }
+.schematex-genogram-edge-cohabiting-ended .schematex-genogram-separation-mark { stroke: #94a3b8; stroke-width: 2; }
+/* Secondary parent-child link (foster/adopted "current caregiver") — dotted, muted */
+.schematex-genogram-edge-secondary path { stroke: #94a3b8; stroke-width: 2; stroke-dasharray: 2,4; fill: none; opacity: 0.85; }
+/* Sibling-of bracket (known relative, unknown ancestry) — dashed */
+.schematex-genogram-sibling-of path { stroke: #94a3b8; stroke-width: 2; stroke-dasharray: 4,3; fill: none; opacity: 0.7; }
+.schematex-genogram-unknown-siblings-mark { fill: #0f172a; pointer-events: none; }
 .schematex-genogram-deceased-mark { stroke: #b71c1c; stroke-width: 2; stroke-linecap: round; }
 /* Inline fill on each .schematex-genogram-condition-fill element comes from cond.color. The CSS only sets a default for elements that did not receive an inline fill attribute. */
 .schematex-genogram-condition-fill:not([fill]) { fill: #1565c0; }
@@ -44,6 +51,7 @@
 <g transform="translate(95.19999999999999, 0)"><g><g class="schematex-genogram-edges"><g class="schematex-genogram-edge schematex-genogram-edge-married" data-from="father" data-to="mother"><path d="M 80.8 60 L 160.8 60" class="schematex-genogram-edge-path"/></g>
 <g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="father" data-to="mother"><path d="M 120.8 60 L 120.8 141" class="schematex-genogram-edge-path"/></g>
 <g class="schematex-genogram-edge schematex-genogram-edge-parent-child" data-from="father+mother" data-to="son"><path d="M 120.8 60 L 120.8 206" class="schematex-genogram-edge-path"/></g></g>
+<g class="schematex-genogram-sibling-of-edges"></g>
 <g class="schematex-genogram-emotional-edges"></g>
 <g class="schematex-genogram-generation schematex-genogram-generation-0" data-generation="0"><g class="schematex-genogram-node schematex-genogram-male" data-individual-id="father" transform="translate(60.8, 60)"><title>Father (1945)</title>
 <rect x="-20" y="-20" width="40" height="40" class="schematex-genogram-shape"/>

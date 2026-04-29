@@ -26,7 +26,14 @@ export function renderGenogram(
   const emotionalLayer = renderEmotionalEdges(emotionalEdges);
   const nodeLayers = renderNodes(genGroups);
   const labelLayer = renderLabels(layout.nodes, config);
-  const edgeLabelLayer = renderEdgeLabels(structuralEdges, config);
+  // Secondary parent-child rels carry their own visible label (e.g. "foster")
+  // already embedded in the relationship; suppress edge labels for them so
+  // the sentinel from layout doesn't render as text.
+  const labelEdges = structuralEdges.filter(
+    (e) => !e.relationship.secondary
+  );
+  const edgeLabelLayer = renderEdgeLabels(labelEdges, config);
+  const siblingOfLayer = renderSiblingOfBrackets(layout, ast);
 
   const nodeCount = layout.nodes.length;
   const genCount = genGroups.size;
@@ -69,7 +76,7 @@ export function renderGenogram(
   chartContent.push(
     group(
       { transform: titleHeight > 0 ? `translate(0, ${titleHeight})` : undefined },
-      [edgeLayers, emotionalLayer, ...nodeLayers, labelLayer, edgeLabelLayer]
+      [edgeLayers, siblingOfLayer, emotionalLayer, ...nodeLayers, labelLayer, edgeLabelLayer]
     )
   );
 
@@ -142,8 +149,15 @@ function buildStyles(config: RenderConfig): string {
 .schematex-genogram-label { font-family: ${config.fontFamily}; font-size: ${config.fontSize}px; text-anchor: middle; fill: ${t.text}; }
 .schematex-genogram-edge { stroke: ${t.neutral}; stroke-width: ${STROKE_WIDTH.normal}; fill: none; stroke-linecap: round; stroke-linejoin: round; }
 .schematex-genogram-edge-cohabiting path { stroke-dasharray: 6,4; }
+.schematex-genogram-edge-cohabiting-ended path { stroke-dasharray: 6,4; }
 .schematex-genogram-edge-divorced .schematex-genogram-divorce-mark { stroke: ${t.neutral}; stroke-width: ${STROKE_WIDTH.normal}; }
 .schematex-genogram-edge-separated .schematex-genogram-separation-mark { stroke: ${t.neutral}; stroke-width: ${STROKE_WIDTH.normal}; }
+.schematex-genogram-edge-cohabiting-ended .schematex-genogram-separation-mark { stroke: ${t.neutral}; stroke-width: ${STROKE_WIDTH.normal}; }
+/* Secondary parent-child link (foster/adopted "current caregiver") — dotted, muted */
+.schematex-genogram-edge-secondary path { stroke: ${t.neutral}; stroke-width: ${STROKE_WIDTH.normal}; stroke-dasharray: 2,4; fill: none; opacity: 0.85; }
+/* Sibling-of bracket (known relative, unknown ancestry) — dashed */
+.schematex-genogram-sibling-of path { stroke: ${t.neutral}; stroke-width: ${STROKE_WIDTH.normal}; stroke-dasharray: 4,3; fill: none; opacity: 0.7; }
+.schematex-genogram-unknown-siblings-mark { fill: ${t.text}; pointer-events: none; }
 .schematex-genogram-deceased-mark { stroke: ${t.deceasedMark}; stroke-width: ${STROKE_WIDTH.normal}; stroke-linecap: round; }
 /* Inline fill on each .schematex-genogram-condition-fill element comes from cond.color. The CSS only sets a default for elements that did not receive an inline fill attribute. */
 .schematex-genogram-condition-fill:not([fill]) { fill: ${t.conditionFill}; }
@@ -301,11 +315,32 @@ function renderEdges(edges: LayoutEdge[]): string {
 
   for (const edge of edges) {
     const relType = edge.relationship.type;
-    const cssClass = `schematex-genogram-edge schematex-genogram-edge-${relType}`;
+    const isSecondary = edge.relationship.secondary === true;
+    const cssClass = isSecondary
+      ? `schematex-genogram-edge schematex-genogram-edge-secondary schematex-genogram-edge-secondary-${relType}`
+      : `schematex-genogram-edge schematex-genogram-edge-${relType}`;
 
     const elements: string[] = [
       el("path", { d: edge.path, class: "schematex-genogram-edge-path" }),
     ];
+
+    // cohabiting-ended: single slash mark like separation
+    if (relType === "cohabiting-ended" && !isSecondary) {
+      const mid = pathMidpoint(edge.path);
+      if (mid) {
+        elements.push(
+          el("line", {
+            x1: mid.x - 4,
+            y1: mid.y - 6,
+            x2: mid.x + 4,
+            y2: mid.y + 6,
+            class: "schematex-genogram-separation-mark",
+            stroke: "#333",
+            "stroke-width": "2",
+          })
+        );
+      }
+    }
 
     // Divorce markers: two short slashes at midpoint
     if (relType === "divorced") {
@@ -424,7 +459,51 @@ function renderNodes(
   return layers;
 }
 
-// ─── Labels ─────────────────────────────────────────────────
+// ─── Sibling-of brackets (known relative, unknown ancestry) ────
+// Drawn directly from AST + layout (not as LayoutEdges) so the synthetic
+// edge type doesn't pollute structural / emotional / secondary classifiers.
+// Cross-generation references are skipped — `siblingOf` is generationally
+// pinned by `assignGenerations`, so a mismatch here means user error or a
+// missing referent, both of which we silently no-op rather than misdraw.
+
+function renderSiblingOfBrackets(
+  layout: LayoutResult,
+  ast?: DiagramAST
+): string {
+  if (!ast) return group({ class: "schematex-genogram-sibling-of-edges" }, []);
+  const elements: string[] = [];
+  const nodeById = new Map(layout.nodes.map((n) => [n.id, n] as const));
+
+  for (const ind of ast.individuals) {
+    if (!ind.siblingOf) continue;
+    const fromNode = nodeById.get(ind.id);
+    const toNode = nodeById.get(ind.siblingOf);
+    if (!fromNode || !toNode) continue;
+    if (fromNode.generation !== toNode.generation) continue;
+
+    const fromCx = fromNode.x + fromNode.width / 2;
+    const fromTopY = fromNode.y;
+    const toCx = toNode.x + toNode.width / 2;
+    const toTopY = toNode.y;
+    const bracketY = Math.min(fromTopY, toTopY) - 12;
+
+    const path =
+      `M ${fromCx} ${fromTopY} L ${fromCx} ${bracketY}` +
+      ` L ${toCx} ${bracketY} L ${toCx} ${toTopY}`;
+    elements.push(
+      group(
+        {
+          class: "schematex-genogram-sibling-of",
+          "data-from": ind.id,
+          "data-to": ind.siblingOf,
+        },
+        [el("path", { d: path })]
+      )
+    );
+  }
+
+  return group({ class: "schematex-genogram-sibling-of-edges" }, elements);
+}
 
 function renderLabels(
   nodes: LayoutNode[],

@@ -105,6 +105,23 @@ const sections = [
   patient -cutoff- brother
   patient -harmony- mother`],
 
+      ['Foster Care · Isaías (LATAM child protection)', `genogram "Familia Isaías"
+  victor [male, label: "Víctor Seguel"]
+  monica [female, label: "Mónica Barrientos"]
+  victor ~/~ monica
+    ?
+    isaias [male, 2020, age: 6, label: "Isaías", index]
+  pablo_sr [male, label: "Don Pablo"]
+  priscila [female, label: "Doña Priscila"]
+  pablo_sr -- priscila
+    pablo_jr [male, label: "Pablo (jr)"]
+    alanis [female, label: "Alanis"]
+    isaias [foster]
+  tio_materno [male, label: "Tío materno", sibling-of: monica]
+  victor -physical-abuse-> isaias
+  monica -physical-abuse-> isaias
+  tio_materno -nevermet- isaias`],
+
       ['Harry Potter Family', `genogram "The Potter Family"
   fleamont [male, 1909, 1979, deceased]
   euphemia [female, 1920, 1979, deceased]

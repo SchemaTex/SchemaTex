@@ -25,7 +25,11 @@ export class ParseError extends Error {
 
 // ─── Couple operators ───────────────────────────────────────
 
+// Order matters — the parser tries these in sequence and the first match wins.
+// Longer tokens MUST come first so e.g. `~/~` is not split as `~` + `/~`.
 const COUPLE_OPS: Array<{ token: string; type: RelationshipType }> = [
+  { token: "~/~", type: "cohabiting-ended" },
+  { token: "-//", type: "separated" }, // alias for -/-
   { token: "-x-", type: "divorced" },
   { token: "-/-", type: "separated" },
   { token: "-o-", type: "engaged" },
@@ -47,6 +51,10 @@ const SPECIAL_CHILD_PROPS = new Set([
   "twin-identical",
   "twin-fraternal",
 ]);
+// Tokens whose appearance on a redeclared child indicates the link is a
+// secondary "current caregiver" relationship (foster / adopted / guardian),
+// not the structural biological link.
+const SECONDARY_LINK_PROPS = new Set(["foster", "adopted", "guardian"]);
 const VALID_FILLS = new Set([
   "full",
   "half-left",
@@ -114,6 +122,12 @@ export function parseGenogram(text: string): DiagramAST {
   const relationships: Relationship[] = [];
   const childSpecialProps = new Map<string, string>();
   const legendOverrides: LegendOverrides = {};
+  // Track which children already have a structural (primary) parent-child rel.
+  // The first one wins layout; later declarations under another couple become
+  // secondary "current caregiver" links.
+  const childrenWithPrimary = new Set<string>();
+  // Counter for auto-generated `?` placeholder ids.
+  let unknownSibCounter = 0;
 
   skipBlankAndComments(state);
 
@@ -186,8 +200,14 @@ export function parseGenogram(text: string): DiagramAST {
       // Register right individual if it has inline props or doesn't exist yet
       const rightKey = rightId.toLowerCase();
       if (rightProps) {
-        const rightIndividual = buildIndividual(rightId, rightProps, lineNum, lineText);
-        individualsMap.set(rightKey, rightIndividual);
+        const incoming = buildIndividual(rightId, rightProps, lineNum, lineText);
+        const existing = individualsMap.get(rightKey);
+        individualsMap.set(
+          rightKey,
+          existing
+            ? mergeIndividual(existing, incoming, lineNum, lineText)
+            : incoming
+        );
       } else if (!individualsMap.has(rightKey)) {
         throw new ParseError(
           `Unknown individual '${rightId}'`,
@@ -219,35 +239,69 @@ export function parseGenogram(text: string): DiagramAST {
 
         // This is a child line
         const childLineNum = state.currentLine + 1;
-        const { id: childId, propsStr } = splitIdAndProps(childTrimmed);
-        const childKey = childId.toLowerCase();
 
-        const individual = buildIndividual(
-          childId,
-          propsStr,
+        // `?` shorthand → synthetic placeholder id with unknown-siblings marker
+        let parsedId: string;
+        let parsedProps: string | null;
+        if (childTrimmed === "?" || childTrimmed.startsWith("? ")) {
+          parsedId = `__unknown_siblings_${++unknownSibCounter}`;
+          parsedProps = "unknown, unknown-siblings";
+        } else {
+          const split = splitIdAndProps(childTrimmed);
+          parsedId = split.id;
+          parsedProps = split.propsStr;
+        }
+        const childKey = parsedId.toLowerCase();
+
+        const incoming = buildIndividual(
+          parsedId,
+          parsedProps,
           childLineNum,
           childLine
         );
 
         // Check for special child properties (adopted, foster, twin)
-        if (propsStr) {
-          for (const sp of SPECIAL_CHILD_PROPS) {
-            if (propsTokens(propsStr).includes(sp)) {
-              childSpecialProps.set(childKey, sp);
-            }
-          }
+        const tokens = parsedProps ? propsTokens(parsedProps) : [];
+        for (const sp of SPECIAL_CHILD_PROPS) {
+          if (tokens.includes(sp)) childSpecialProps.set(childKey, sp);
         }
+        const isSecondaryDecl = tokens.some((t) => SECONDARY_LINK_PROPS.has(t));
 
-        individualsMap.set(childKey, individual);
+        const existing = individualsMap.get(childKey);
+        individualsMap.set(
+          childKey,
+          existing
+            ? mergeIndividual(existing, incoming, childLineNum, childLine)
+            : incoming
+        );
 
         // parent-child relationship: from = "leftKey+rightKey"
+        // IMPORTANT: derive the rel type from THIS line's tokens, not from
+        // the cross-declaration `childSpecialProps` map — otherwise a child
+        // declared once with `[foster]` and again as a plain bio child would
+        // see the bio rel typed as "foster" too (the global map is sticky).
         const coupleKey = `${leftKey}+${rightKey}`;
-        const pcType = childSpecialProps.get(childKey);
+        const lineChildType = tokens.find((t) =>
+          SPECIAL_CHILD_PROPS.has(t)
+        );
         const relType: RelationshipType =
-          pcType && (pcType === "adopted" || pcType === "foster")
-            ? pcType
+          lineChildType === "adopted" || lineChildType === "foster"
+            ? (lineChildType as RelationshipType)
             : "parent-child";
-        relationships.push({ type: relType, from: coupleKey, to: childKey });
+
+        // Dual-parent handling: if this child already has a primary
+        // structural rel, demote this one to secondary so it doesn't
+        // compete for layout. Otherwise this becomes the primary.
+        const isSecondary =
+          isSecondaryDecl && childrenWithPrimary.has(childKey);
+        const rel: Relationship = {
+          type: relType,
+          from: coupleKey,
+          to: childKey,
+        };
+        if (isSecondary) rel.secondary = true;
+        relationships.push(rel);
+        if (!isSecondary) childrenWithPrimary.add(childKey);
 
         state.currentLine++;
       }
@@ -261,7 +315,10 @@ export function parseGenogram(text: string): DiagramAST {
 
       const existing = individualsMap.get(key);
       if (existing) {
-        individualsMap.set(key, mergeIndividual(existing, individual));
+        individualsMap.set(
+          key,
+          mergeIndividual(existing, individual, lineNum, lineText)
+        );
       } else {
         individualsMap.set(key, individual);
       }
@@ -301,6 +358,14 @@ export function parseGenogram(text: string): DiagramAST {
     }
   }
 
+  // Order-insensitive primary/secondary normalization for dual-parent cases.
+  // If a child has multiple parent-child rels, prefer the bio one as primary
+  // (`type: "parent-child"`); otherwise keep the first declared as primary.
+  // All other parent-child rels for that child become `secondary: true`. This
+  // protects against the LLM emitting foster-parents-first / bio-parents-second
+  // (which would otherwise leave both rels primary and break layout).
+  normalizePrimaryParentRels(relationships);
+
   const hasLegendOverrides =
     Object.keys(legendOverrides).length > 0 &&
     Object.values(legendOverrides).some((v) => v !== undefined);
@@ -312,6 +377,36 @@ export function parseGenogram(text: string): DiagramAST {
     metadata: Object.keys(metadata).length > 0 ? metadata : undefined,
     legendOverrides: hasLegendOverrides ? legendOverrides : undefined,
   };
+}
+
+function normalizePrimaryParentRels(relationships: Relationship[]): void {
+  const PARENT_CHILD_TYPES = new Set<RelationshipType>([
+    "parent-child",
+    "adopted",
+    "foster",
+  ]);
+  // Group indices by child id
+  const byChild = new Map<string, number[]>();
+  for (let i = 0; i < relationships.length; i++) {
+    const r = relationships[i];
+    if (!PARENT_CHILD_TYPES.has(r.type)) continue;
+    const arr = byChild.get(r.to) ?? [];
+    arr.push(i);
+    byChild.set(r.to, arr);
+  }
+  for (const indices of byChild.values()) {
+    if (indices.length < 2) continue;
+    // Prefer "parent-child" (bio) as primary; else first declared.
+    let primaryIdx = indices.find((i) => relationships[i].type === "parent-child");
+    if (primaryIdx === undefined) primaryIdx = indices[0];
+    for (const i of indices) {
+      if (i === primaryIdx) {
+        delete relationships[i].secondary;
+      } else {
+        relationships[i].secondary = true;
+      }
+    }
+  }
 }
 
 // ─── Helpers ────────────────────────────────────────────────
@@ -500,7 +595,11 @@ function buildIndividual(
     } else if (tokenLower === "index") {
       if (!individual.markers) individual.markers = [];
       individual.markers.push("index-person");
-    } else if (SPECIAL_CHILD_PROPS.has(tokenLower)) {
+    } else if (tokenLower === "unknown-siblings") {
+      if (!individual.markers) individual.markers = [];
+      individual.markers.push("unknown-siblings");
+      if (!individual.label || individual.label === id) individual.label = "?";
+    } else if (SPECIAL_CHILD_PROPS.has(tokenLower) || tokenLower === "guardian") {
       // Handled at caller level for relationships
       continue;
     } else if (/^\d{4}$/.test(tokenLower)) {
@@ -527,13 +626,15 @@ function buildIndividual(
         if (!isNaN(deathNum)) individual.deathYear = deathNum;
       } else if (key === "label") {
         individual.label = value.replace(/^"|"$/g, "");
+      } else if (key === "sibling-of") {
+        individual.siblingOf = value.toLowerCase();
       } else {
         if (!individual.properties) individual.properties = {};
         individual.properties[key] = value;
       }
     } else {
       throw new ParseError(
-        `Unknown property '${token}'. Valid: male, female, unknown, deceased, stillborn, miscarriage, abortion, adopted, foster, twin-identical, twin-fraternal, index, a 4-digit year, conditions:..., age:N, death:YYYY, or key:value`,
+        `Unknown property '${token}'. Valid: male, female, unknown, deceased, stillborn, miscarriage, abortion, adopted, foster, guardian, twin-identical, twin-fraternal, index, unknown-siblings, a 4-digit year, conditions:..., age:N, death:YYYY, label:"...", sibling-of:ID, or key:value`,
         lineNum,
         1,
         lineText
@@ -583,20 +684,117 @@ function parseConditions(
   return conditions;
 }
 
+/**
+ * Merge a redeclaration into an existing individual.
+ *
+ * Rule: defaults (`sex: "unknown"`, `status: "alive"`, label === id) yield to
+ * any non-default value from the other side. Two conflicting non-default
+ * values (e.g. sex declared as both `male` and `female`) raise ParseError —
+ * silent data loss is the bug we're fixing here.
+ */
 function mergeIndividual(
   existing: Individual,
-  incoming: Individual
+  incoming: Individual,
+  lineNum: number,
+  lineText: string
 ): Individual {
+  // Sex conflict detection (defaults pass through silently)
+  let mergedSex = existing.sex;
+  if (incoming.sex !== "unknown") {
+    if (existing.sex !== "unknown" && existing.sex !== incoming.sex) {
+      throw new ParseError(
+        `Conflicting sex for '${existing.id}': previously '${existing.sex}', now '${incoming.sex}'`,
+        lineNum,
+        1,
+        lineText
+      );
+    }
+    mergedSex = incoming.sex;
+  }
+
+  let mergedStatus = existing.status;
+  if (incoming.status !== "alive") {
+    if (existing.status !== "alive" && existing.status !== incoming.status) {
+      throw new ParseError(
+        `Conflicting status for '${existing.id}': previously '${existing.status}', now '${incoming.status}'`,
+        lineNum,
+        1,
+        lineText
+      );
+    }
+    mergedStatus = incoming.status;
+  }
+
+  if (
+    incoming.birthYear !== undefined &&
+    existing.birthYear !== undefined &&
+    incoming.birthYear !== existing.birthYear
+  ) {
+    throw new ParseError(
+      `Conflicting birth year for '${existing.id}': previously ${existing.birthYear}, now ${incoming.birthYear}`,
+      lineNum,
+      1,
+      lineText
+    );
+  }
+  if (
+    incoming.deathYear !== undefined &&
+    existing.deathYear !== undefined &&
+    incoming.deathYear !== existing.deathYear
+  ) {
+    throw new ParseError(
+      `Conflicting death year for '${existing.id}': previously ${existing.deathYear}, now ${incoming.deathYear}`,
+      lineNum,
+      1,
+      lineText
+    );
+  }
+
+  // Label: incoming overrides only if it's not the default (id-derived)
+  const incomingHasExplicitLabel =
+    incoming.label !== incoming.id && incoming.label !== "";
+  const existingHasExplicitLabel =
+    existing.label !== existing.id && existing.label !== "";
+  const mergedLabel = incomingHasExplicitLabel
+    ? incoming.label
+    : existingHasExplicitLabel
+    ? existing.label
+    : existing.label;
+
+  // Markers: union (preserve set semantics)
+  const mergedMarkers = mergeArrayUnique(existing.markers, incoming.markers);
+
   return {
     ...existing,
-    sex: incoming.sex !== "unknown" ? incoming.sex : existing.sex,
-    status: incoming.status !== "alive" ? incoming.status : existing.status,
+    sex: mergedSex,
+    status: mergedStatus,
+    label: mergedLabel,
     birthYear: incoming.birthYear ?? existing.birthYear,
     deathYear: incoming.deathYear ?? existing.deathYear,
+    age: incoming.age ?? existing.age,
     conditions: incoming.conditions ?? existing.conditions,
+    heritage: incoming.heritage ?? existing.heritage,
+    siblingOf: incoming.siblingOf ?? existing.siblingOf,
+    markers: mergedMarkers,
     properties: {
       ...existing.properties,
       ...incoming.properties,
     },
   };
+}
+
+function mergeArrayUnique<T>(
+  a: T[] | undefined,
+  b: T[] | undefined
+): T[] | undefined {
+  if (!a && !b) return undefined;
+  const seen = new Set<T>();
+  const out: T[] = [];
+  for (const v of [...(a ?? []), ...(b ?? [])]) {
+    if (!seen.has(v)) {
+      seen.add(v);
+      out.push(v);
+    }
+  }
+  return out.length ? out : undefined;
 }

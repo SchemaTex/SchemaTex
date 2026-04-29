@@ -37,8 +37,19 @@ export function layoutGenogram(
   const ordered = orderNodesInGenerations(graph, config);
   const positions = assignPositions(ordered, graph, config);
   const edges = computeEdges(graph, positions, config);
+  const secondaryEdges = computeSecondaryParentEdges(
+    ast.relationships,
+    graph,
+    positions,
+    config
+  );
   const emotionalEdges = computeEmotionalEdges(ast.relationships, positions, config);
-  return packageResult(positions, [...edges, ...emotionalEdges], graph, config);
+  return packageResult(
+    positions,
+    [...edges, ...secondaryEdges, ...emotionalEdges],
+    graph,
+    config
+  );
 }
 
 // ─── Step 1: Build graph ────────────────────────────────────
@@ -60,6 +71,7 @@ function buildGraph(ast: DiagramAST): LayoutGraph {
       r.type === "separated" ||
       r.type === "engaged" ||
       r.type === "cohabiting" ||
+      r.type === "cohabiting-ended" ||
       r.type === "consanguineous"
   );
 
@@ -86,14 +98,17 @@ function buildGraph(ast: DiagramAST): LayoutGraph {
       partners = [rel.from, rel.to];
     }
 
-    // Find children for this family unit
+    // Find children for this family unit. Skip *secondary* parent-child rels
+    // (foster/adopted "current caregiver" links): they are data-true but must
+    // not dominate layout — the bio couple keeps the child structurally.
     const children: string[] = [];
     for (const r of ast.relationships) {
       if (
         (r.type === "parent-child" ||
           r.type === "adopted" ||
           r.type === "foster") &&
-        r.from === fuId
+        r.from === fuId &&
+        !r.secondary
       ) {
         children.push(r.to);
         childOf.set(r.to, fuId);
@@ -124,9 +139,15 @@ function buildGraph(ast: DiagramAST): LayoutGraph {
 function assignGenerations(graph: LayoutGraph): void {
   const { individuals, familyUnits, childOf, generations } = graph;
 
-  // Find roots: individuals not a child of any family unit
+  // Find roots: individuals not a child of any family unit AND not anchored
+  // via siblingOf to another individual (those will be placed in step 2).
   const allIds = Array.from(individuals.keys());
-  const roots = allIds.filter((id) => !childOf.has(id));
+  const roots = allIds.filter((id) => {
+    if (childOf.has(id)) return false;
+    const ind = individuals.get(id);
+    if (ind?.siblingOf) return false;
+    return true;
+  });
 
   if (roots.length === 0 && allIds.length > 0) {
     // Fallback: everyone is generation 0
@@ -181,6 +202,24 @@ function assignGenerations(graph: LayoutGraph): void {
           generations.set(childId, childGen);
           changed = true;
         }
+      }
+    }
+  }
+
+  // Resolve siblingOf anchors — copy generation from the referenced sibling.
+  // Iterate to fixed point in case of chains (siblingOf → siblingOf).
+  let siblingChanged = true;
+  let safety = 0;
+  while (siblingChanged && safety++ < allIds.length + 1) {
+    siblingChanged = false;
+    for (const id of allIds) {
+      if (generations.has(id)) continue;
+      const ind = individuals.get(id);
+      if (!ind?.siblingOf) continue;
+      const refGen = generations.get(ind.siblingOf);
+      if (refGen !== undefined) {
+        generations.set(id, refGen);
+        siblingChanged = true;
       }
     }
   }
@@ -298,15 +337,36 @@ function orderGeneration(
     }
   }
 
-  // Place remaining unpartnered individuals (sorted by birth year)
+  // Place remaining unpartnered individuals. Sibling-of anchors get inserted
+  // immediately adjacent to their referenced sibling so the dashed bracket
+  // stays short. Everyone else falls back to birth-year sort.
   const remaining = nodeIds.filter((id) => !placed.has(id));
-  remaining.sort((a, b) => {
+  const siblingOfRemaining = remaining.filter((id) => {
+    const ind = graph.individuals.get(id);
+    return ind?.siblingOf && placed.has(ind.siblingOf);
+  });
+  const otherRemaining = remaining.filter(
+    (id) => !siblingOfRemaining.includes(id)
+  );
+  otherRemaining.sort((a, b) => {
     const indA = graph.individuals.get(a);
     const indB = graph.individuals.get(b);
     return (indA?.birthYear ?? 9999) - (indB?.birthYear ?? 9999);
   });
-  for (const id of remaining) {
+  for (const id of otherRemaining) {
     ordered.push(id);
+    placed.add(id);
+  }
+  // Insert each sibling-of node right after its referenced sibling.
+  for (const id of siblingOfRemaining) {
+    const ind = graph.individuals.get(id);
+    if (!ind?.siblingOf) continue;
+    const refIdx = ordered.indexOf(ind.siblingOf);
+    if (refIdx === -1) {
+      ordered.push(id);
+    } else {
+      ordered.splice(refIdx + 1, 0, id);
+    }
     placed.add(id);
   }
 
@@ -871,6 +931,63 @@ function computeEmotionalEdges(
       to: rel.to,
       relationship: rel,
       path: pathData,
+    });
+  }
+
+  return edges;
+}
+
+// ─── Secondary parent-child edges (foster/adopted "current caregiver") ──
+
+function computeSecondaryParentEdges(
+  relationships: Relationship[],
+  graph: LayoutGraph,
+  positions: Map<string, NodePosition>,
+  config: LayoutConfig
+): LayoutEdge[] {
+  const edges: LayoutEdge[] = [];
+  const half = config.nodeHeight / 2;
+
+  for (const rel of relationships) {
+    if (!rel.secondary) continue;
+    if (
+      rel.type !== "parent-child" &&
+      rel.type !== "foster" &&
+      rel.type !== "adopted"
+    )
+      continue;
+
+    // Resolve couple key "leftId+rightId" → midpoint of the two partners
+    const fu = graph.familyUnits.find((f) => f.id === rel.from);
+    if (!fu) continue;
+    const posA = positions.get(fu.partners[0]);
+    const posB = positions.get(fu.partners[1]);
+    const childPos = positions.get(rel.to);
+    if (!posA || !posB || !childPos) continue;
+
+    const coupleMidX = (posA.x + posB.x) / 2;
+    const coupleY = posA.y;
+    // Anchor on the bottom edge of the couple line, route to top of child
+    const startX = coupleMidX;
+    const startY = coupleY + half + 4;
+    const childTopY = childPos.y - half - 4;
+
+    // Manhattan-style routing so the dotted line is unambiguous, even when
+    // the foster couple sits on a different generation than the bio child.
+    const path =
+      childPos.y === coupleY
+        ? `M ${startX} ${startY} L ${startX} ${startY + 16} L ${childPos.x} ${
+            startY + 16
+          } L ${childPos.x} ${childPos.y - half - 4}`
+        : `M ${startX} ${startY} L ${startX} ${
+            (startY + childTopY) / 2
+          } L ${childPos.x} ${(startY + childTopY) / 2} L ${childPos.x} ${childTopY}`;
+
+    edges.push({
+      from: rel.from,
+      to: rel.to,
+      relationship: rel,
+      path,
     });
   }
 
