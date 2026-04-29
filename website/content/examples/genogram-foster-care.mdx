@@ -1,0 +1,57 @@
+---
+title: Foster care / child protection
+description: Foster-care genogram for a real LATAM child-protection case — biological parents (cohabitation ended), abuse, current foster placement (dotted secondary link), unknown-count siblings, and a maternal uncle as known-relative-with-unknown-ancestry.
+diagram: genogram
+standard: McGoldrick 2020 + Bennett 2022 (adopted-out / dual-parent convention)
+industry: [social-work, child-protection, legal]
+persona: For the foster-care social worker
+complexity: 4
+tags: [foster-care, dual-parent, abuse, sibling-of, unknown-siblings, latam]
+featured: true
+relatedLink:
+  label: Genogram syntax
+  href: /docs/genogram
+status: published
+dsl: |
+  genogram "Familia Isaías"
+    victor [male, label: "Víctor Seguel"]
+    monica [female, label: "Mónica Barrientos"]
+    victor ~/~ monica
+      ?
+      isaias [male, 2020, age: 6, label: "Isaías", index]
+    pablo_sr [male, label: "Don Pablo"]
+    priscila [female, label: "Doña Priscila"]
+    pablo_sr -- priscila
+      pablo_jr [male, label: "Pablo (jr)"]
+      alanis [female, label: "Alanis"]
+      isaias [foster]
+    tio_materno [male, label: "Tío materno", sibling-of: monica]
+    victor -physical-abuse-> isaias
+    monica -physical-abuse-> isaias
+    tio_materno -nevermet- isaias
+---
+
+## Scenario
+
+A foster-care social worker in Chile is preparing the case file for Isaías, a 6-year-old boy removed from his biological parents (Víctor and Mónica) due to physical abuse from both. He currently lives with foster parents Don Pablo and Doña Priscila, who have two biological children of their own. The case file mentions Isaías has siblings whose names and ages are unknown, and a maternal uncle who is a potential reunification resource but currently has no contact.
+
+A judge or psychologist receiving this diagram must, at a glance, correctly conclude:
+
+1. Isaías is the **biological son** of Víctor and Mónica — solid parent-child line down from the bio couple.
+2. He **currently lives** with Don Pablo and Doña Priscila as a foster child — *secondary dotted link* from the foster couple, drawn without pulling Isaías away from his bio-parent position.
+3. He was **removed due to physical abuse** from both bio parents — directional red zigzag arrows.
+4. The **maternal uncle** is Mónica's brother (`sibling-of: monica`) with **no current relationship** to Isaías — dashed bracket between Mónica and Tío + `nevermet` line.
+5. Isaías has **unknown-count siblings** still with the bio parents — single `?` diamond placeholder.
+6. **Isaías is the index person** — concentric outer border highlight.
+
+## Annotation key
+
+- `~/~` — cohabitation ended (never-married); standard for LATAM caseloads where bio parents lived together unmarried and the relationship has broken. Distinct from `-x-` divorce (no marriage) and `-/-` separation (still married).
+- Re-declaring `isaias [foster]` under the foster couple after declaring him under the bio couple → engine treats the second declaration as a **secondary "current caregiver" link** (dotted), preserving all attributes from the first declaration.
+- `?` on a child line → a single diamond with `?` glyph meaning "≥1 siblings, count and identities unknown" (standard pedigree convention).
+- `[sibling-of: monica]` → places Tío materno on Mónica's generation with a dashed bracket between them, **without** synthesizing phantom maternal grandparents.
+- `-physical-abuse->` → directional red arrow; the `>` indicates the perpetrator (left side) and victim (right side).
+
+## Why this matters
+
+A genogram engine that quietly rendered Isaías as a third biological child of Don Pablo + Doña Priscila — or dropped his sex and label when the `[foster]` redeclaration overwrote the original — would invert the case story. This example exercises every fix from the 2026-04 foster-care brief: dual-parent rendering, same-id merge, sibling-of, cohabiting-ended, and the unknown-siblings placeholder.

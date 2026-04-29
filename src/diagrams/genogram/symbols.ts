@@ -70,6 +70,26 @@ export function renderIndividualSymbol(
     );
   }
 
+  // Unknown-siblings glyph: bold "?" centered in the diamond.
+  // Drawn after the base shape so the question mark sits on top.
+  const isUnknownSiblings = individual.markers?.includes("unknown-siblings");
+  if (isUnknownSiblings) {
+    classes.push("schematex-genogram-unknown-siblings");
+    children.push(
+      text(
+        {
+          x: 0,
+          y: 5,
+          class: "schematex-genogram-unknown-siblings-mark",
+          "text-anchor": "middle",
+          "font-size": "16",
+          "font-weight": "bold",
+        },
+        "?"
+      )
+    );
+  }
+
   return group(
     {
       class: classes.join(" "),

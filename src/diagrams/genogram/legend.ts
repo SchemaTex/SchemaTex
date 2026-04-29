@@ -43,7 +43,7 @@ const EMOTIONAL_TYPES: ReadonlySet<string> = new Set([
 ]);
 
 const STRUCTURAL_TYPES: ReadonlySet<string> = new Set([
-  "married", "divorced", "separated", "engaged", "cohabiting",
+  "married", "divorced", "separated", "engaged", "cohabiting", "cohabiting-ended",
   "domestic-partnership", "consanguineous",
   "parent-child", "adopted", "foster",
   "twin-identical", "twin-fraternal",
@@ -255,7 +255,7 @@ function buildStructuralItems(
   }
   // Order matters for legend display.
   const order: RelationshipType[] = [
-    "divorced", "separated", "engaged", "cohabiting",
+    "divorced", "separated", "engaged", "cohabiting", "cohabiting-ended",
     "domestic-partnership", "consanguineous",
     "adopted", "foster",
     "twin-identical", "twin-fraternal",
@@ -283,6 +283,14 @@ function structuralItem(t: RelationshipType, theme?: GenogramThemeLike): LegendI
       return { ...base, kind: "edge", marker: "X", pattern: "solid" };
     case "separated":
       return { ...base, kind: "edge", marker: "slash", pattern: "solid" };
+    case "cohabiting-ended":
+      return {
+        ...base,
+        label: "Cohabiting (ended)",
+        kind: "edge",
+        marker: "slash",
+        pattern: "dashed",
+      };
     case "engaged":
     case "cohabiting":
     case "adopted":
@@ -438,7 +446,7 @@ function buildMarkerItems(
   }
   const order: IndividualMarker[] = [
     "proband", "consultand", "evaluated", "index-person",
-    "transgender", "no-children", "infertile",
+    "transgender", "no-children", "infertile", "unknown-siblings",
   ];
   const items: LegendItem[] = [];
   for (const m of order) {
@@ -472,6 +480,16 @@ function markerItem(m: IndividualMarker, theme?: GenogramThemeLike): LegendItem 
       return { key: `marker.${m}`, label: "No children (by choice)", kind: "marker", marker: "slash", section: "markers" };
     case "infertile":
       return { key: `marker.${m}`, label: "Infertile", kind: "marker", marker: "X", section: "markers" };
+    case "unknown-siblings":
+      return {
+        key: `marker.${m}`,
+        label: "Sibling(s) — unknown count",
+        kind: "shape",
+        shape: "diamond",
+        fill: "#ffffff",
+        color: theme?.stroke,
+        section: "markers",
+      };
     default:
       return { key: `marker.${m}`, label: humanize(m), kind: "marker", marker: "dot", section: "markers" };
   }

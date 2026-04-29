@@ -64,9 +64,11 @@ An individual line is `id [attr1, attr2, …]`. Attributes are comma-separated, 
 | Birth year | 4-digit number, e.g. `1980` | First 4-digit token = birth year |
 | Death year | 4-digit number after birth, e.g. `1980, 2055` | Second 4-digit token = death year |
 | `index` | flag | Concentric shape = identified patient |
+| `unknown-siblings` | flag | Diamond with `?` — placeholder for ≥1 siblings of unknown count |
 | `age:N` | e.g. `age:42` | Age shown inside shape |
 | `death:YYYY` | e.g. `death:2020` | Explicit death year |
 | `label:"…"` | e.g. `label:"Dr. Smith"` | Display label override |
+| `sibling-of:<id>` | e.g. `sibling-of:monica` | Pins same generation as the referenced sibling, draws a dashed bracket — for known relatives with unknown ancestry. |
 | `conditions:…` | see §5 | Medical/psychological conditions |
 | `key:value` | any custom | Stored as metadata |
 
@@ -105,11 +107,13 @@ The parser tries these in order. The first one that matches wins — so `-x-` be
 | Operator | Type | Example | Meaning |
 |---|---|---|---|
 | `-x-` | divorced | `a -x- b` | Divorce |
-| `-/-` | separated | `a -/- b` | Separation |
+| `-/-` | separated | `a -/- b` | Separation (married) |
+| `-//` | separated | `a -// b` | Separation (alias for `-/-`) |
 | `-o-` | engaged | `a -o- b` | Engagement |
 | `==` | consanguineous | `a == b` | Blood-related couple |
 | `--` | married | `a -- b` | Marriage |
-| `~` | cohabiting | `a ~ b` | Cohabiting / LTR |
+| `~` | cohabiting | `a ~ b` | Cohabiting / LTR (current) |
+| `~/~` | cohabiting-ended | `a ~/~ b` | Cohabitation has ended (never-married). Common in LATAM child-protection caseloads where biological parents lived together unmarried and the relationship has since broken — distinct from `-x-` divorce (no marriage) and `-/-` separation (still married). |
 
 A trailing quoted string becomes the relationship label (`a -- b "m. 2005"`).
 
@@ -141,8 +145,46 @@ Indentation under a couple line = "these are the children of this couple." Any i
 |---|---|
 | `adopted` | Adoption line style |
 | `foster` | Foster relationship |
+| `guardian` | Guardianship by a non-parent relative (e.g. grandparent custody). Same primitive as `foster` — drawn as a secondary "current caregiver" link when biological parents are also declared. |
 | `twin-identical` | Grouped with other `twin-identical` children of the same couple |
 | `twin-fraternal` | Grouped with other `twin-fraternal` children |
+| `unknown-siblings` | Single diamond with `?` glyph — "≥1 siblings, count and identities unknown" (pedigree convention). |
+
+### 4.3.1 Dual-parent families (foster, adoption, guardianship)
+
+Children placed with a non-biological caregiver while biological parents are still part of the case can be declared under both couples. **Declare the child with full attributes the first time** (under the biological couple), then **redeclare with just `[foster]` / `[adopted]` / `[guardian]`** under the current caregiver. The first declaration wins layout; the second is drawn as a secondary dotted "current caregiver" link that does not pull the child away from their biological position.
+
+<Playground initial={`genogram "Foster placement"
+  bp1 [male, label: "Bio dad"]
+  bp2 [female, label: "Bio mom"]
+  bp1 ~/~ bp2
+    child [male, 2018, index]
+  fp1 [male, label: "Foster dad"]
+  fp2 [female, label: "Foster mom"]
+  fp1 -- fp2
+    own [male, 2010]
+    child [foster]`} />
+
+The same primitive serves adoption (closed/open), foster placement, and guardianship by a relative — only the keyword differs. Re-declaration **merges** non-conflicting attributes (sex, birth year, label, `index` marker) into the original; declaring a conflicting `male` vs `female` raises a parse error rather than silently overwriting.
+
+### 4.3.2 Unknown-count siblings
+
+When a case file mentions "the child has siblings" without naming them, use either the `?` shorthand on its own line, or `[unknown-siblings]` on a regular id. Both render as a single diamond with a "?" glyph — the standard pedigree marker for "one or more siblings, identities unknown."
+
+<Playground initial={`genogram
+  dad [male]
+  mom [female]
+  dad -- mom
+    ?
+    known_kid [male, 2018]`} />
+
+### 4.3.3 Sibling-of (known relative, unknown ancestry)
+
+To express "X is a sibling of Y" without inventing parents, use the `sibling-of: <id>` property. The renderer pins X to Y's generation and draws a dashed bracket above the two — the standard pedigree convention for a known relative whose ancestry is not part of the case.
+
+<Playground initial={`genogram
+  monica [female, 1990]
+  uncle [male, label: "Tío materno", sibling-of: monica]`} />
 
 ### 4.4 Emotional relationships
 
@@ -229,7 +271,9 @@ genogram "Smith Family"
 **Reserved at line start:** `genogram` (header keyword).
 
 **Reserved operator tokens** inside a line — avoid using these sequences in IDs:
-`--`, `~`, `==`, `-x-`, `-/-`, `-o-`, and any `-<type>-` / `-<type>->` matching an emotional-relationship type.
+`--`, `~`, `~/~`, `==`, `-x-`, `-/-`, `-//`, `-o-`, and any `-<type>-` / `-<type>->` matching an emotional-relationship type.
+
+**Reserved id `?`** — bare `?` on a child line auto-generates a synthetic placeholder with the `unknown-siblings` marker. Do not use `?` as a real id.
 
 **Strings with spaces** must be double-quoted: titles, labels, `label:"…"`. Single quotes and backticks are not recognized.
 
@@ -249,6 +293,8 @@ Real parser errors, what triggers them, and how to fix.
 | `conditions: diabetes + cancer` (no parens) | `Invalid condition format 'diabetes'` | Add fill: `conditions: diabetes(half-left) + cancer(half-right)` |
 | `[triplet-identical]` | `Unknown property 'triplet-identical'` | Triplets not yet parseable (§13 Roadmap) |
 | `dad -- mom # first marriage` | Trailing inline `#` comment is treated as part of the label / errors | Move the comment to its own line |
+| Same id declared twice with different sex (`x [male]` then `x [female]`) | `Conflicting sex for 'x': previously 'male', now 'female'` | Pick one or rename one of the ids |
+| `child [foster]` redeclared but biological parents never declared | `child` becomes the foster couple's regular child (no secondary link drawn) | This is intentional — secondary links require an existing primary parent-child rel from a prior declaration |
 
 ---
 
@@ -264,12 +310,13 @@ individual     = INDENT id ( "[" attrs "]" )? NEWLINE
 couple-block   = INDENT id WS coupleOp WS right-side ( WS quoted-string )? NEWLINE
                    ( deeper-indent child )*
 child          = INDENT id ( "[" attrs "]" )? NEWLINE
+               | INDENT "?" NEWLINE                              // unknown-count sibling shorthand
 right-side     = id ( "[" attrs "]" )?
 
 emotional      = INDENT id WS "-" type "-"  id ( WS quoted-string )? NEWLINE
                | INDENT id WS "-" type "->" id ( WS quoted-string )? NEWLINE
 
-coupleOp       = "-x-" | "-/-" | "-o-" | "==" | "--" | "~"
+coupleOp       = "~/~" | "-//" | "-x-" | "-/-" | "-o-" | "==" | "--" | "~"
 type           = "harmony" | "close" | "bestfriends" | "love" | "inlove"
                | "friendship" | "hostile" | "conflict" | "enmity"
                | "distant-hostile" | "cutoff" | "close-hostile" | "fused"
@@ -283,12 +330,14 @@ id             = [a-zA-Z] [a-zA-Z0-9_-]*
 attrs          = attr ("," attr)*
 attr           = "male" | "female" | "unknown" | "other"
                | "deceased" | "stillborn" | "miscarriage" | "abortion"
-               | "adopted" | "foster" | "twin-identical" | "twin-fraternal"
-               | "index"
+               | "adopted" | "foster" | "guardian"
+               | "twin-identical" | "twin-fraternal"
+               | "index" | "unknown-siblings"
                | digit digit digit digit                         // year
                | "age" ":" digits
                | "death" ":" digit digit digit digit
                | "label" ":" quoted-string
+               | "sibling-of" ":" id
                | "conditions" ":" condition ("+" condition)*
                | key ":" value                                    // custom
 condition      = name "(" fill ("," "#" hex)? ")"
@@ -334,6 +383,7 @@ Ready-to-use scenarios from the examples gallery:
   'genogram-medical-history',
   'genogram-brca-cancer',
   'genogram-potter-family',
+  'genogram-foster-care',
 ]} />
 
 ---
@@ -348,5 +398,6 @@ Ready-to-use scenarios from the examples gallery:
 - **Category shorthand for conditions** — `conditions: cardiovascular + depression` without `(fill)`, auto-assigning quadrants and default colors.
 - **Domestic partnership operator** — `~dp~` / explicit DP label.
 - **Heritage annotations** — cultural-genogram heritage identifiers on individuals.
+- **Household boundary boxes** — group nodes that share a roof (foster placement, multi-generational household).
 
 Track in the GitHub issues if you need any of these sooner.

@@ -412,9 +412,10 @@ To turn off entirely: `legend: off`.
 | Relationship | Line Style | DSL Syntax | SVG |
 |-------------|-----------|------------|-----|
 | Marriage | Solid horizontal line | `A -- B` | `<line>` stroke-width: 2 |
-| Cohabitation/LTR | Dashed line | `A ~ B` | stroke-dasharray="6,4" |
+| Cohabitation/LTR (current) | Dashed line | `A ~ B` | stroke-dasharray="6,4" |
+| Cohabitation ended (never-married) | Dashed line + single slash | `A ~/~ B` | stroke-dasharray + slash mark — common in LATAM child-protection caseloads where bio parents lived together unmarried and the relationship has broken |
 | Engagement | Solid + small diamond midpoint | `A -o- B` | line + small diamond marker |
-| Separation | Solid + single slash | `A -/- B` | line + one diagonal slash |
+| Separation | Solid + single slash | `A -/- B` or `A -// B` | line + one diagonal slash |
 | Divorce | Solid + double slash | `A -x- B` | line + two diagonal slashes |
 | Consanguinity | Double horizontal line | `A == B` | Two parallel lines, gap 4px |
 | Remarriage | New marriage line from same person | Second `A -- C` | Additional horizontal line |
@@ -518,12 +519,98 @@ M x1,y1 L x1+10,y1-5 L x1+20,y1+5 L x1+30,y1-5 ... L x2,y2
 | Biological child | Solid vertical line | (default) | 亲生 |
 | Adopted child | Dashed line + brackets | `[adopted]` | 收养 |
 | Foster child | Dotted vertical line | `[foster]` | 寄养 |
+| Guardianship by relative | Dotted vertical line (same as foster) | `[guardian]` | 监护（非亲生），如祖父母监护，与 foster 共用同一 secondary-link primitive |
+| **Dual parents** (bio + current caregiver) | Bio link primary; secondary dotted line from caregiver couple | Redeclare child under second couple with `[foster]` / `[adopted]` / `[guardian]` | 寄养/收养/监护中"现照护人"链接，layout 仍由 bio couple 主导 — see §3.4.1 |
+| Unknown-count siblings placeholder | Single diamond with `?` glyph | Bare `?` on a child line, or `[unknown-siblings]` marker | 已知存在但身份不明的兄弟姐妹 |
+| Sibling-of (known relative, unknown ancestry) | Dashed bracket between two same-generation nodes, no parents drawn | `[sibling-of: <id>]` property | 已知亲属、家系未知（标准 pedigree 约定） |
 | Identical twins | Lines meet at single point (V) | `[twin-identical]` | 同卵双胞胎 |
 | Fraternal twins | Lines connect with bar | `[twin-fraternal]` | 异卵双胞胎 |
 | Triplets+ | 3+ lines from single point/bar | `[triplet-identical]` | 三胞胎+ |
 | Surrogacy | Dotted line + S label | `[surrogate]` | 代孕 |
 | Donor gamete | Dotted line + D label | `[donor]` | 供体配子 |
 | Step-child | Step-shaped line (two right angles) | `[step]` | 继子女 |
+
+### 3.4.1 Dual-parent rendering (foster / adoption / guardianship)
+
+**用例：** 子女已被从生父母手中带走，目前与寄养家庭/收养家庭/亲属监护人同住。临床/法律 genogram 必须同时展示两条 parent-child 链接，但只有一组（生父母）应主导布局——否则视觉上会暗示"现照护人"是生父母，与案件事实相反。
+
+**DSL 写法（推荐 approach a — 重复声明 + secondary marker）：**
+
+```
+genogram "Foster placement"
+  bp1 [male, label: "Bio dad"]
+  bp2 [female, label: "Bio mom"]
+  bp1 ~/~ bp2
+    child [male, 2018, index]    # ← first declaration: structural
+  fp1 [male, label: "Foster dad"]
+  fp2 [female, label: "Foster mom"]
+  fp1 -- fp2
+    own [male, 2010]
+    child [foster]                # ← redeclaration: secondary, dotted link
+```
+
+**Parser 行为：**
+1. 第一次 `child [male, 2018, index]` 在生父母 children block 中 → 建立 primary `parent-child` 关系，`child` 加入 `childrenWithPrimary` 集合。
+2. 第二次 `child [foster]` 在寄养父母 children block 中 → 因为 `child` 已在 `childrenWithPrimary`，且 `[foster]`（或 `[adopted]` / `[guardian]`）是 secondary-link prop → 建立 `foster` 关系并标记 `secondary: true`。
+3. `mergeIndividual` 合并两次声明的非冲突字段（sex, birthYear, label, markers）。冲突的 sex 会抛 `ParseError`。
+
+**Layout 行为：**
+- `buildGraph` 收集 `fu.children` 时**跳过** `secondary === true` 的关系。
+- 寄养 couple 的布局只考虑其生物学 children（如 `own`）。
+- 生父母 couple 把 `child` 居中在他们的 sibship line 下方。
+
+**Renderer 行为：**
+- Primary 边走标准 structural-edges 通道。
+- Secondary 边走独立的 dotted-line 通道（CSS class `schematex-genogram-edge-secondary`），`stroke-dasharray: 2,4`，`opacity: 0.85`，从寄养 couple 的中点 Manhattan-route 到 child 顶部。
+- 跨 generation 也能画——dotted 路径不会被结构性 sibship line 抢占。
+
+**Anti-patterns（明确禁止）：**
+- ❌ 不要为 `[adopted]` / `[foster]` / `[guardian]` 实现独立的 layout 分支。三者都是同一 primitive："生父母关系已存在时的 secondary parent-child link"，只有 visual 标签不同。
+- ❌ 不要为 secondary 边引入新 `RelationshipType`。`secondary: boolean` 标记已足够——保留 `type` 让 legend 自动派生 "Foster" / "Adopted" 行。
+
+**Related：** Gap 1 of 2026-04 foster-care brief。 Cf. Bennett 2022 §6.3 (adopted-out children in pedigree)。
+
+---
+
+### 3.4.2 Sibling-of (known relative, unknown ancestry)
+
+**用例：** 案件文档提到"Mónica 的弟弟"，但他与 IP 没有当前关系，且案卷里没有外祖父母信息。强行声明 phantom 外祖父母会引入虚假信息。
+
+**DSL：**
+```
+monica [female, 1990]
+uncle [male, label: "Tío materno", sibling-of: monica]
+```
+
+**Parser：** `sibling-of: <id>` KV 解析为 `Individual.siblingOf`。
+**Layout：** `assignGenerations` 在 BFS 完成后，迭代地把 `siblingOf` 节点的 generation 设置为引用对象的 generation。`orderGeneration` 把 sibling-of 节点插入到引用对象旁边。
+**Renderer：** `renderSiblingOfBrackets` 在 ast pass 中独立绘制 dashed bracket（`schematex-genogram-sibling-of`），从 left node 顶部 → 上方 8px → right node 顶部。
+
+不合成 phantom parents——这是 pedigree 标准约定。
+
+---
+
+### 3.4.3 Unknown-count sibling placeholder
+
+**用例：** "孩子还有兄弟姐妹但姓名年龄未知"。强迫起一个虚假的占位符 ID 是 false precision。
+
+**DSL（两种等价形式）：**
+
+```
+# Shorthand: bare ? on a child line
+dad -- mom
+  ?
+  known_kid [male, 2018]
+
+# Explicit: [unknown-siblings] marker on a regular id
+dad -- mom
+  sibs [unknown-siblings]
+```
+
+**Parser：** `?` 在 child line 上自动生成 `__unknown_siblings_<n>` ID + `unknown-siblings` marker + sex `unknown` + label `?`。
+**Symbols：** `unknown-siblings` marker 在 diamond 中心绘制粗体 `?` 字符（`schematex-genogram-unknown-siblings-mark`）。
+
+---
 
 ### 3.5 Modern Family Structures
 
@@ -619,6 +706,7 @@ individual_def = ID properties? NEWLINE
 properties     = "[" property ("," property)* "]"
 property       = sex_prop | gender_prop | status_prop | year_prop
                | condition_prop | heritage_prop | child_prop | kv_prop
+               | "index" | "unknown-siblings"
 
 sex_prop       = "male" | "female" | "unknown" | "nonbinary" | "intersex"
 gender_prop    = "transgender"
@@ -631,19 +719,25 @@ fill_position  = "full" | "half-left" | "half-right" | "half-top" | "half-bottom
                | "quad-tl" | "quad-tr" | "quad-bl" | "quad-br"
 heritage_prop  = "heritage:" IDENTIFIER ("+" IDENTIFIER)*
 color          = "#" HEX{6} | NAMED_COLOR
-child_prop     = "adopted" | "foster" | "surrogate" | "donor" | "step"
+child_prop     = "adopted" | "foster" | "guardian" | "surrogate" | "donor" | "step"
                | "twin-identical" | "twin-fraternal"
                | "triplet-identical" | "triplet-fraternal"
 kv_prop        = IDENTIFIER ":" VALUE
+               | "sibling-of" ":" ID
+               | "label" ":" quoted_string
+               | "age" ":" INTEGER
+               | "death" ":" /[0-9]{4}/
 
 annotation_def = INDENT "@" IDENTIFIER ":" quoted_string NEWLINE  # follows individual_def
 
 relationship_def       = couple_rel | couple_with_children
 couple_rel             = ID couple_op ID rel_label? NEWLINE
 couple_with_children   = ID couple_op ID rel_label? NEWLINE INDENT child+ DEDENT
-couple_op              = "--" | "-x-" | "-/-" | "~" | "==" | "-o-" | "~dp~"
+couple_op              = "--" | "-x-" | "-/-" | "-//" | "~" | "~/~" | "==" | "-o-" | "~dp~"
+# Note: "~/~" / "-//" must be matched before "~" / "-/-" — longest token wins.
 rel_label              = "[" "label:" quoted_string "]"
-child                  = individual_def
+child                  = individual_def | unknown_sib_placeholder
+unknown_sib_placeholder = INDENT "?" NEWLINE  # auto-generated unknown-siblings node
 
 emotional_rel_def      = ID emotional_op ID rel_label? NEWLINE
 emotional_op           = "-" EMOTIONAL_TYPE "-" ID
@@ -868,6 +962,38 @@ genogram "Extended Family"
   brother -- sis-in-law [female, 1999]
 ```
 验证：两个 grandparent couple 在 generation 0，parents + uncles/aunts 在 generation 1，me/siblings + in-laws 在 generation 2。
+
+---
+
+### Case 14: Foster Care / Child Protection (LATAM)
+```
+genogram "Familia Isaías"
+  victor [male, label: "Víctor Seguel"]
+  monica [female, label: "Mónica Barrientos"]
+  victor ~/~ monica
+    ?
+    isaias [male, 2020, age: 6, label: "Isaías", index]
+  pablo_sr [male, label: "Don Pablo"]
+  priscila [female, label: "Doña Priscila"]
+  pablo_sr -- priscila
+    pablo_jr [male, label: "Pablo (jr)"]
+    alanis [female, label: "Alanis"]
+    isaias [foster]
+  tio_materno [male, label: "Tío materno", sibling-of: monica]
+  victor -physical-abuse-> isaias
+  monica -physical-abuse-> isaias
+  tio_materno -nevermet- isaias
+```
+
+**验证（陌生人读图后必须能正确得出的 6 个结论）：**
+1. Isaías 是 Víctor 和 Mónica 的生子（生父母 cohabiting-ended，已分手）
+2. 当前与 Don Pablo + Doña Priscila 一起寄养（dotted secondary 链接）
+3. 因被生父母双方身体虐待而被带走（两条 abuse arrows）
+4. Tío materno 是 Mónica 的兄弟，与 Isaías 无关系（`sibling-of` + `nevermet`）
+5. Isaías 还有未知数量的兄弟姐妹仍跟生父母（`?` 占位符）
+6. Isaías 是案件 IP（concentric 同心标记）
+
+覆盖能力：dual-parent rendering · same-id merge · sibling-of · cohabiting-ended · `?` placeholder · directional abuse · index marker — i.e. all five P0 gaps from the 2026-04 foster-care brief.
 
 ---
 
