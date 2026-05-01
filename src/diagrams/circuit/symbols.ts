@@ -882,24 +882,11 @@ const potentiometer: SymbolDef = {
     ].join(""),
 };
 
-// ─── Terminal block / Junction box ───────────────────────────
-//
-// Labeled rectangular enclosure with N named terminals on the left side
-// and corresponding pin anchors on the right (so wires can pass through).
-// Common in instrumentation drawings: junction boxes, terminal strips.
-//
-// DSL: `JB1 net1 net2 net3 net4 type=terminal_block label="JB1" pins="SIG,COM,12V+,GND"`
-// Anchor names are derived from the pins attribute (lowercased, "_" for non-word
-// chars), or fall back to t1/t2/…
+// Terminal block / junction box. Pin anchors are dynamic per-instance from
+// `pins="..."`; the static `start`/`end` anchors here are placeholders.
 const terminal_block: SymbolDef = {
   length: 80,
-  // Default anchors — pin names get added dynamically inside svg(), but the
-  // type system requires static anchors here. Keep generic ones; the netlist
-  // resolver creates per-instance anchors from the pins attr.
-  anchors: {
-    start: { x: 0, y: 0 },
-    end: { x: 80, y: 0 },
-  },
+  anchors: { start: { x: 0, y: 0 }, end: { x: 80, y: 0 } },
   svg: (label?: string, _value?: string, attrs?: Record<string, string>) => {
     const pinsAttr = attrs?.pins ?? attrs?.terminals ?? "1,2,3,4";
     const pins = pinsAttr.split(",").map((s) => s.trim()).filter(Boolean);
@@ -909,24 +896,18 @@ const terminal_block: SymbolDef = {
     const bodyH = pitch * (n + 1);
     const topY = -bodyH / 2;
     const parts: string[] = [];
-    // Outer enclosure — slightly heavier border than ICs
     parts.push(
       `<rect x="0" y="${topY}" width="${BODY_W}" height="${bodyH}" rx="3" fill="white" stroke-width="2" ${BODY}/>`
     );
-    // Top label
     if (label) {
       parts.push(
         `<text x="${BODY_W / 2}" y="${topY + 14}" text-anchor="middle" class="schematex-circuit-meter">${label}</text>`
       );
     }
-    // Terminals — small filled circle + label, pin stub extending left
     for (let i = 0; i < n; i++) {
       const y = topY + pitch * (i + 1) + (label ? 8 : 0);
-      // Wire stub coming in from the left
       parts.push(`<line x1="-8" y1="${y}" x2="0" y2="${y}" ${WIRE}/>`);
-      // Terminal screw (filled circle just inside the border)
       parts.push(`<circle cx="6" cy="${y}" r="2" ${FILL}/>`);
-      // Pin label
       parts.push(
         `<text x="12" y="${y + 3}" class="schematex-circuit-pol">${pins[i] ?? `T${i + 1}`}</text>`
       );

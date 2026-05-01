@@ -53,9 +53,7 @@ export function SchematexDiagram({
       onError?.(e);
       return null;
     }
-    // onError intentionally excluded so a fresh callback from the parent
-    // doesn't bust the memo on every render. eslint react-hooks rule isn't
-    // installed in this project, so no disable comment is needed.
+    // onError excluded — a fresh callback shouldn't bust the memo.
   }, [dsl, type, theme, fontFamily, padding]);
 
   return (

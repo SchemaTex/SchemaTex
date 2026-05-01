@@ -426,9 +426,7 @@ function assignPositions(
   // Pass 3: Center children under parents (and drag partners)
   centerChildrenUnderParents(positions, graph, config);
 
-  // Pass 3b: Unscramble interleaved sibships. Centering can pull children of
-  // different couples into each other's territory; this pass groups children
-  // by sibship and lays each group out contiguously with familyGap between.
+  // Pass 3b: Unscramble interleaved sibships (Case A — cousins from different couples).
   unscrambleSibships(positions, graph, config);
 
   // Pass 4: Resolve any new overlaps introduced by centering
@@ -640,14 +638,7 @@ function centerChildrenUnderParents(
   }
 }
 
-/**
- * After centering, when two sibships from different couples sit on the same
- * generation row, their children may interleave (centering pulls each
- * sibship to its own parent midpoint without regard for other sibships).
- * This pass groups children by sibship and re-positions each group as a
- * contiguous block, with familyGap between blocks. Cousins of different
- * parental couples thus stay visually distinct (Case A).
- */
+/** Re-lay each sibship as a contiguous block with `familyGap` between, so cousins don't interleave (Case A). */
 function unscrambleSibships(
   positions: Map<string, NodePosition>,
   graph: LayoutGraph,
@@ -656,7 +647,6 @@ function unscrambleSibships(
   const familyGap = config.nodeWidth + config.nodeSpacingX * 1.5;
   const childSpacing = config.nodeWidth + config.nodeSpacingX;
 
-  // Group all positioned individuals by generation
   const byGen = new Map<number, string[]>();
   for (const [id, pos] of positions) {
     const arr = byGen.get(pos.generation) ?? [];
@@ -665,7 +655,6 @@ function unscrambleSibships(
   }
 
   for (const [, ids] of byGen) {
-    // Bucket by their sibship (familyUnit they're a child of)
     const sibshipMap = new Map<string, string[]>();
     for (const id of ids) {
       const fu = graph.childOf.get(id);
@@ -674,9 +663,8 @@ function unscrambleSibships(
       arr.push(id);
       sibshipMap.set(fu, arr);
     }
-    if (sibshipMap.size <= 1) continue; // single sibship row — nothing to do
+    if (sibshipMap.size <= 1) continue;
 
-    // Order sibships by parent-couple midpoint (left-to-right)
     const sibships = [...sibshipMap.entries()]
       .map(([fuId, children]) => {
         const fu = graph.familyUnits.find((f) => f.id === fuId);
@@ -684,18 +672,13 @@ function unscrambleSibships(
         const pa = positions.get(fu.partners[0]);
         const pb = positions.get(fu.partners[1]);
         if (!pa || !pb) return null;
-        return {
-          fuId,
-          children,
-          midX: (pa.x + pb.x) / 2,
-        };
+        return { fuId, children, midX: (pa.x + pb.x) / 2 };
       })
       .filter((x): x is { fuId: string; children: string[]; midX: number } => x !== null)
       .sort((a, b) => a.midX - b.midX);
 
     let cursor: number | null = null;
     for (const ss of sibships) {
-      // Sort children by birth year (stable within sibship)
       const sortedKids = [...ss.children].sort((a, b) => {
         const ya = graph.individuals.get(a)?.birthYear ?? 9999;
         const yb = graph.individuals.get(b)?.birthYear ?? 9999;
@@ -722,21 +705,16 @@ function resolveOverlaps(
   graph?: LayoutGraph
 ): void {
   const minGap = config.nodeWidth + config.nodeSpacingX;
-  // Wider gap between distinct sibships on the same generation row, so
-  // cousins from different parental couples don't visually merge into one
-  // undifferentiated sibling row (Case A).
+  // Cousins from different couples need wider visual separation than siblings.
   const familyGap = config.nodeWidth + config.nodeSpacingX * 1.5;
 
-  // Build a node→cluster map. Cluster key is the family unit a node is a
-  // child of (`childOf`). Partners married into a child get the same cluster
-  // as their spouse so couple pairs stay within one cluster.
+  // Cluster = childOf family unit; spouses inherit from their partner.
   const cluster = new Map<string, string>();
   if (graph) {
     for (const [id] of positions) {
       const fu = graph.childOf.get(id);
       if (fu) cluster.set(id, fu);
     }
-    // Spouse inherits cluster of the partnered child (if their partner has one)
     for (const fu of graph.familyUnits) {
       for (const p of fu.partners) {
         if (cluster.has(p)) continue;
@@ -759,8 +737,6 @@ function resolveOverlaps(
       const cur = genNodes[i];
       const cPrev = cluster.get(prev.id);
       const cCur = cluster.get(cur.id);
-      // Use familyGap when adjacent nodes are in different known clusters;
-      // otherwise minGap is enough.
       const required = cPrev && cCur && cPrev !== cCur ? familyGap : minGap;
       const gap = cur.x - prev.x;
       if (gap < required) {

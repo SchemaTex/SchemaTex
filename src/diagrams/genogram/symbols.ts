@@ -257,8 +257,6 @@ function baseShape(
   half: number,
   shape?: Individual["shape"]
 ): string {
-  // Explicit shape override wins (e.g. anthropology / unilineal kinship
-  // conventions where males are triangles).
   const cls = "schematex-genogram-shape";
   switch (shape) {
     case "square":

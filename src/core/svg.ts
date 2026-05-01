@@ -103,15 +103,7 @@ export function text(attrs: Attrs, content: string): string {
   return el("text", attrs, escapeXml(content));
 }
 
-/**
- * Multi-line text. Splits `content` on `<br/>` / `<br>` / literal `\n` and
- * emits one `<tspan>` row per line, vertically centered around the y anchor.
- * `lineHeight` is in user units (default 14). The `x` attribute is required
- * — each tspan re-anchors at that x for centered/aligned multi-line text.
- *
- * Inline tags `<b>...</b>` and `<i>...</i>` are tolerated by stripping them
- * (we don't yet emit per-run formatting); the surrounding text still renders.
- */
+/** Splits on `<br/>`/`<br>`/`\n` into vertically centered `<tspan>` rows. Strips `<b>`/`<i>`. */
 export function multilineText(
   attrs: Attrs & { x: number | string },
   content: string,
@@ -119,17 +111,11 @@ export function multilineText(
 ): string {
   const stripped = String(content).replace(/<\/?[bi]>/gi, "");
   const lines = stripped.split(/<br\s*\/?>|\n/i);
-  if (lines.length <= 1) {
-    return text(attrs, lines[0] ?? "");
-  }
+  if (lines.length <= 1) return text(attrs, lines[0] ?? "");
   const total = (lines.length - 1) * lineHeight;
   const tspans = lines.map((ln, i) => {
     const dy = i === 0 ? -total / 2 : lineHeight;
-    return el(
-      "tspan",
-      { x: attrs.x, dy },
-      escapeXml(ln)
-    );
+    return el("tspan", { x: attrs.x, dy }, escapeXml(ln));
   });
   return el("text", attrs, tspans.join(""));
 }
