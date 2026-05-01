@@ -153,21 +153,13 @@ export function parseBlockDiagram(text: string): BlockAST {
       continue;
     }
 
-    // Connection chain: A -> B -> C [label_or_attrs]
-    // Allow chains and a trailing [ ... ] (label-only or label+flags).
-    // Also accept inline `[id] -> [id]` form where bracketed identifiers
-    // auto-declare blocks (D2 / Mermaid convention).
+    // Connection chain: `A -> B -> C [label_or_attrs]`. Inline `[id] -> [id]` (D2/Mermaid) auto-declares.
     const arrowIdx = line.indexOf("->");
     if (arrowIdx >= 0) {
       let body = line;
       let tailAttrs: ParsedAttrs = {};
-      // Trailing attrs are `... <space>[...]` — the bracket must be PRECEDED
-      // by whitespace at top level. Without this guard, a leading `[id]` was
-      // greedily consumed as attrs, leaving body="".
+      // Trailing `[...]` must be preceded by whitespace, else it's an inline endpoint.
       if (body.endsWith("]")) {
-        // Scan backwards for the matching `[` of the trailing `]`. A real
-        // trailing attr-block is preceded by whitespace at top level AND
-        // doesn't contain a bare identifier (which would be an inline endpoint).
         let bracketStart = -1;
         let depth = 0;
         let inQuote = false;
@@ -185,7 +177,6 @@ export function parseBlockDiagram(text: string): BlockAST {
         }
         if (bracketStart >= 0) {
           const inner = body.slice(bracketStart + 1, -1).trim();
-          // Bare identifier inside `[…]` is an inline endpoint, not attrs.
           const isBareId = /^[A-Za-z_]\w*$/.test(inner);
           if (!isBareId) {
             body = body.slice(0, bracketStart).trim();
@@ -201,8 +192,6 @@ export function parseBlockDiagram(text: string): BlockAST {
       if (parts.length < 2) {
         throw new BlockDiagramParseError(`Invalid connection: ${line}`, lineNo, undefined, line);
       }
-      // Strip optional `[brackets]` from each endpoint and auto-declare blocks
-      // that haven't been declared yet.
       const endpoints = parts.map((p) => {
         const m = /^\[([A-Za-z_]\w*)\]$/.exec(p);
         return m ? m[1] : p;

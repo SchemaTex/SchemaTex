@@ -71,20 +71,14 @@ interface NodeRef {
   label?: string;
 }
 
-/** Try to parse a shape-suffix starting at `pos` in `line`. Returns null if none. */
-/**
- * Mermaid convention: a label wrapped in matched double quotes inside any
- * shape-suffix bracket pair is treated as a quoted string — strip the quotes.
- * This lets the user include special chars like `]` and `<br/>` in the label.
- */
+/** Mermaid: matched outer double-quotes are stripped from shape-suffix labels. */
 function unquoteLabel(s: string): string {
   const t = s.trim();
-  if (t.length >= 2 && t.startsWith('"') && t.endsWith('"')) {
-    return t.slice(1, -1);
-  }
+  if (t.length >= 2 && t.startsWith('"') && t.endsWith('"')) return t.slice(1, -1);
   return t;
 }
 
+/** Try to parse a shape-suffix starting at `pos` in `line`. Returns null if none. */
 function parseShapeSuffix(
   line: string,
   pos: number

@@ -265,15 +265,11 @@ function renderPedigreeSymbol(
   const titleText = formatTitle(ind);
   const children: string[] = [title(titleText)];
 
-  // ─── Pregnancy-loss symbols (NSGC standard) ───
-  // SAB / TAB / Ectopic are drawn as a small filled triangle (point down),
-  // ~60% of the normal node size, regardless of sex. TAB adds a diagonal
-  // slash through it; ectopic adds an "ECT" label.
+  // NSGC pregnancy-loss: filled point-down triangle (~60% size). TAB adds slash; Ectopic adds "ECT".
   const pregLoss = ind.status === "sab" || ind.status === "tab" || ind.status === "ectopic";
   if (pregLoss) {
     classes.push(`schematex-pedigree-${ind.status}`);
-    const t = half * 0.6; // smaller — this isn't a born individual
-    // Filled point-down triangle (apex at bottom)
+    const t = half * 0.6;
     children.push(
       polygon({
         points: `${-t},${-t} ${t},${-t} 0,${t}`,
@@ -281,7 +277,6 @@ function renderPedigreeSymbol(
       })
     );
     if (ind.status === "tab") {
-      // Diagonal slash for terminated/induced
       children.push(
         line({
           x1: -t * 1.1, y1: t * 1.1, x2: t * 1.1, y2: -t * 1.1,
@@ -297,8 +292,7 @@ function renderPedigreeSymbol(
         )
       );
     }
-    // Skip the regular sex-based shape and downstream genetic-status fills
-    // for these symbols — they aren't applicable.
+    // Skip regular shape + genetic-status fills — not applicable.
     return group(
       {
         class: classes.join(" "),

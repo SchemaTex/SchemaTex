@@ -136,8 +136,6 @@ function renderNode(ln: FlowchartLayoutNode): string {
     },
     n.label
   );
-  // Strip rich-text tags from accessibility title — screen readers don't
-  // need <br/> markers, just the plain text broken into spaces.
   const plainLabel = n.label
     .replace(/<br\s*\/?>/gi, " ")
     .replace(/<\/?[bi]>/gi, "");

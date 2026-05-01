@@ -11,7 +11,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [0.4.0] — 2026-04-30
+## [0.3.2] — 2026-04-30
+
+### Changed — Internal cleanup of v0.3.1 fixes
+
+Code review revealed redundancy and noise in the v0.3.1 PR. No behavior changes; same test surface continues to pass.
+
+- **circuit/netlist:** consolidated 4 separate ground-check codepaths (`GROUND_NETS` set, `isGroundNetName`, `GROUND_ID_PATTERN`, inline error-hint regex) into one `isGroundRef` helper. Trimmed redundant error-message hint that duplicated the auto-resolve branch.
+- **timeline/parser:** removed unreachable `if` block (`startsWith("")` is always true) and its empty body. The block was also silently dropping the colon validation that previously existed for `track "Name":`.
+- **react.tsx:** restored a concise inline comment explaining why `onError` is excluded from `useMemo` deps. Previous 3-line comment was self-contradictory ("no disable comment is needed" — written as a 3-line replacement for a 1-line disable comment).
+- **eslint.config / orgchart / svg / circuit symbols / pedigree / blockdiagram / flowchart / genogram:** trimmed multi-line "story" comments down to single-line intent. Removed comments that re-narrated obvious code or self-referenced the audit PR.
+
+### Renamed — Previous release
+
+The release that landed on 2026-04-30 was tagged `v0.4.0` in error; SemVer-wise it's a fix release with two minor additions and should have been `v0.3.1`. The CHANGELOG entry has been renamed accordingly. The git tag `v0.4.0` remains for historical reference.
+
+---
+
+## [0.3.1] — 2026-04-30
 
 ### Fixed — Genogram: cousins of different couples no longer interleave (Case A)
 
