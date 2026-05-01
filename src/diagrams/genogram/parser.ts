@@ -628,6 +628,19 @@ function buildIndividual(
         individual.label = value.replace(/^"|"$/g, "");
       } else if (key === "sibling-of") {
         individual.siblingOf = value.toLowerCase();
+      } else if (key === "shape") {
+        const v = value.toLowerCase();
+        if (
+          v === "square" || v === "circle" || v === "diamond" ||
+          v === "triangle" || v === "triangle-down"
+        ) {
+          individual.shape = v;
+        } else {
+          throw new ParseError(
+            `Invalid shape '${value}'. Valid: square, circle, diamond, triangle, triangle-down`,
+            lineNum, 1, lineText
+          );
+        }
       } else {
         if (!individual.properties) individual.properties = {};
         individual.properties[key] = value;

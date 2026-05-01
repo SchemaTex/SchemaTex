@@ -195,6 +195,13 @@ export interface Individual {
   /** Whether this individual is external/non-family (dashed border) */
   external?: boolean;
   /**
+   * Optional shape override. By default the shape is derived from `sex`
+   * (male=square, female=circle, other=diamond). Some kinship/anthropology
+   * conventions use triangles for males, etc. This field lets the DSL request
+   * a specific shape regardless of sex.
+   */
+  shape?: "square" | "circle" | "diamond" | "triangle" | "triangle-down";
+  /**
    * Pedigree convention for "known relative, unknown ancestry":
    * id of another individual whose generation this person shares as a sibling.
    * No phantom parents are synthesized — layout pins generation, renderer
@@ -811,6 +818,7 @@ export type CircuitComponentType =
   | "voltage_regulator" // 3-terminal rect block (IN/GND/OUT), e.g. LM7805
   | "dc_dc_converter"   // 2-port rect block with "DC/DC" label
   | "555_timer"         // 8-pin rect with standard 555 pinout
+  | "terminal_block"    // Labeled enclosure with N named terminals (junction box, terminal strip)
 
   // ── Sources & Power ───────────────────────────────────────────
   | "voltage_source"    // Circle + V or ± polarity

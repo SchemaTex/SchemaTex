@@ -22,6 +22,7 @@ import {
   group,
   el,
   text as textEl,
+  multilineText,
   path as pathEl,
   rect,
   title as titleEl,
@@ -125,7 +126,7 @@ function renderCluster(lc: FlowchartLayoutCluster): string {
 function renderNode(ln: FlowchartLayoutNode): string {
   const n: FlowchartNode = ln.node;
   const shapeEl = shapeSVG(n.shape, ln.width, ln.height);
-  const label = textEl(
+  const label = multilineText(
     {
       x: ln.width / 2,
       y: ln.height / 2,
@@ -135,7 +136,12 @@ function renderNode(ln: FlowchartLayoutNode): string {
     },
     n.label
   );
-  const nodeTitle = titleEl(n.label);
+  // Strip rich-text tags from accessibility title — screen readers don't
+  // need <br/> markers, just the plain text broken into spaces.
+  const plainLabel = n.label
+    .replace(/<br\s*\/?>/gi, " ")
+    .replace(/<\/?[bi]>/gi, "");
+  const nodeTitle = titleEl(plainLabel);
   const classAttr = ["sx-fc-node-g", ...(n.classes ?? []).map((c) => `sx-fc-class-${c}`)].join(" ");
   return group(
     {

@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Schematex · v0.4.0 Fixes Preview</title>
+<style>
+  body { font-family: system-ui; background: #f5f5f5; margin: 0; padding: 20px; }
+  nav { font-size: 13px; color: #888; margin-bottom: 16px; }
+  nav a { color: #555; text-decoration: none; }
+  nav a:hover { text-decoration: underline; }
+  h1 { font-size: 20px; color: #333; margin: 0 0 4px; }
+  .subtitle { font-size: 13px; color: #888; margin-bottom: 24px; }
+  h2 { font-size: 15px; color: #333; margin-top: 36px; padding: 8px 12px; background: #fff; border-left: 4px solid #2563eb; border-radius: 4px; }
+  h2 .case { font-family: ui-monospace, "SF Mono", Menlo, monospace; color: #2563eb; font-size: 13px; margin-right: 8px; }
+  .case-meta { font-size: 12px; color: #888; margin: 4px 0 12px 16px; line-height: 1.5; }
+  .case-meta strong { color: #555; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 12px; }
+  .grid-1 { display: grid; grid-template-columns: 1fr; gap: 16px; margin-top: 12px; }
+  .card { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 16px; }
+  .card-title { font-size: 13px; font-weight: 600; color: #333; margin-bottom: 4px; }
+  .card-note { font-size: 12px; color: #888; margin-bottom: 10px; }
+  .card pre { background: #f8f8f8; padding: 8px; border-radius: 4px; font-size: 11px; line-height: 1.4; margin: 0 0 10px; overflow-x: auto; max-height: 220px; }
+  .card .svg-wrap { background: #fafafa; border: 1px solid #eee; border-radius: 4px; padding: 12px; overflow-x: auto; }
+  .card .svg-wrap svg { display: block; max-width: 100%; height: auto; }
+  .card.error pre { color: #b91c1c; background: #fef2f2; }
+</style>
+</head>
+<body>
+<nav><a href="index.html">← All Diagrams</a></nav>
+<h1>v0.4.0 Fixes Preview</h1>
+<div class="subtitle">Each section verifies one fix from the 2026-04-30 issue audit. Open the page in dev mode to inspect rendered SVG.</div>
+<div id="output"></div>
+
+<script type="module">
+import { render } from '../src/index.ts';
+
+const cases = [
+  // ─── Case A — Genogram sibship grouping ─────────────────────────
+  {
+    case: 'A',
+    title: 'Genogram — cousins of different parental couples are visually separated',
+    meta: '<strong>Before:</strong> children of paul-martin and kobi-madi interleaved on G1, making cousins look like siblings (16-iter user abandon). <strong>After:</strong> sibships laid out as contiguous blocks with familyGap between, no interleaving.',
+    items: [
+      {
+        label: 'Two sibships, dense G1',
+        dsl: `genogram "Cousins should be visually grouped"
+  paul [male, 1940]
+  martin [female, 1942]
+  paul -- martin
+    oren [male, 1962]
+    itai [male, 1965]
+    gadi [male, 1968]
+    idan [male, 1972]
+
+  kobi [male, 1941]
+  madi [female, 1943]
+  kobi -- madi
+    matan [male, 1963]
+    noa [female, 1970]
+    roni [female, 1971]`,
+      },
+    ],
+    layout: 'grid-1',
+  },
+
+  // ─── Case B-genogram — shape override ──────────────────────────
+  {
+    case: 'B',
+    title: 'Genogram — shape: override (triangle for unilineal kinship)',
+    meta: '<strong>New:</strong> <code>shape: triangle</code> / <code>square</code> / <code>circle</code> / <code>diamond</code> / <code>triangle-down</code> overrides the sex-based default. Useful for anthropology / matrilineal / natolocal kinship diagrams.',
+    items: [
+      {
+        label: 'Default (sex-based) shapes',
+        dsl: `genogram
+  alex [male, 1980, label:"Default male"]
+  beth [female, 1982, label:"Default female"]`,
+      },
+      {
+        label: 'Anthropology convention: triangle = male',
+        dsl: `genogram
+  alex [male, 1980, label:"Triangle male", shape:triangle]
+  beth [female, 1982, label:"Female"]`,
+      },
+    ],
+    layout: 'grid',
+  },
+
+  // ─── Case B-pedigree — sab triangle ───────────────────────────
+  {
+    case: 'B',
+    title: 'Pedigree — SAB / TAB / Ectopic render as NSGC triangles',
+    meta: '<strong>Before:</strong> <code>[sab]</code> rendered as a regular (sex-based) shape — diamond when sex unspecified. <strong>After:</strong> SAB renders as small filled point-down triangle (NSGC standard); TAB adds diagonal slash; Ectopic adds "ECT" label.',
+    items: [
+      { label: 'Spontaneous abortion (SAB)',  dsl: `pedigree
+  I-1 [male]
+  I-2 [female]
+  I-1 -- I-2
+    II-1 [sab]` },
+      { label: 'Therapeutic abortion (TAB)',  dsl: `pedigree
+  I-1 [male]
+  I-2 [female]
+  I-1 -- I-2
+    II-1 [tab]` },
+      { label: 'Ectopic',                     dsl: `pedigree
+  I-1 [male]
+  I-2 [female]
+  I-1 -- I-2
+    II-1 [ectopic]` },
+      { label: 'Stillborn (sex-based + SB)',  dsl: `pedigree
+  I-1 [male]
+  I-2 [female]
+  I-1 -- I-2
+    II-1 [male, stillborn]` },
+    ],
+    layout: 'grid',
+  },
+
+  // ─── Case C — terminal_block ──────────────────────────────────
+  {
+    case: 'C',
+    title: 'Circuit — terminal_block primitive (junction box)',
+    meta: '<strong>New:</strong> <code>type=terminal_block</code> / <code>type=junction_box</code> draws a labeled rectangular enclosure with N named terminals. Aliases: <code>tb</code>, <code>jbox</code>, <code>junction_box</code>, <code>enclosure</code>. T-prefix infers automatically.',
+    items: [
+      {
+        label: 'Humidity sensor → junction box (4-cable)',
+        dsl: `circuit "Humidity sensor wiring" netlist
+TB1 sig com pwr_12 gnd type=terminal_block label="JB1" pins="SIG,COM,12V+,GND"`,
+      },
+    ],
+    layout: 'grid-1',
+  },
+
+  // ─── Case D — Ground aliases ──────────────────────────────────
+  {
+    case: 'D',
+    title: 'Circuit — ground id aliases (GND_REF / AGND / DGND / EARTH / PE)',
+    meta: '<strong>Before:</strong> <code>GND_REF</code> and friends threw "Cannot infer type". <strong>After:</strong> ids matching <code>/^(GND|AGND|DGND|EARTH|PE)/</code> auto-resolve to ground. Net names <code>VSS</code>/<code>COM</code>/etc canonicalize to <code>GND</code>.',
+    items: [
+      {
+        label: 'Mixed ground references',
+        dsl: `circuit "Mixed grounds" netlist
+R1 vcc AGND 1k
+R2 vcc DGND 1k
+R3 vcc EARTH 1k
+GND_REF AGND
+EARTH1 DGND`,
+      },
+    ],
+    layout: 'grid-1',
+  },
+
+  // ─── Case E — Timeline section ────────────────────────────────
+  {
+    case: 'E',
+    title: 'Timeline — section keyword (Mermaid-compatible alias)',
+    meta: '<strong>Before:</strong> only <code>track "Name":</code> worked. <strong>After:</strong> <code>section "Name"</code> and bare <code>section Foo</code> (Mermaid style) both supported as track aliases. <em>(Multi-<code>:</code> rows and non-date keys still deferred.)</em>',
+    items: [
+      {
+        label: 'Family timeline grouped by generation',
+        dsl: `timeline "ציר זמן משפחתי"
+section "Grandparents (G2)"
+  1929 : "Eliezer"
+  1931 : "Sabina"
+section "Parents (G3)"
+  1956 : "Michal"
+  1961 : "Kobi"
+  1965 : "Racheli"
+section "Children (G4)"
+  1985 : "Roni"
+  1987 : "Boaz"`,
+      },
+    ],
+    layout: 'grid-1',
+  },
+
+  // ─── Case F — Blockdiagram inline ─────────────────────────────
+  {
+    case: 'F',
+    title: 'Blockdiagram — inline [id] -> [id] auto-declares',
+    meta: '<strong>Before:</strong> <code>[AuthN] -> [SessionAPI]</code> threw "Invalid connection" because the trailing-attrs <code>[…]</code> parser ate the leading bracket. <strong>After:</strong> bracketed ids auto-declare blocks; trailing-attrs detection now requires whitespace + non-bare-id content.',
+    items: [
+      {
+        label: 'Architecture diagram with auto-declared blocks',
+        dsl: `blockdiagram "Control / Data Plane"
+[AuthN] -> [SessionAPI]
+[SessionAPI] -> [Orchestrator]
+[Karpenter] -> [K8sCluster] ["Scales Nodes"]
+[K8sCluster] -> [Engine]
+[Engine] -> [Streamer] ["WebRTC"]`,
+      },
+    ],
+    layout: 'grid-1',
+  },
+
+  // ─── Case G — Flowchart <br/> ─────────────────────────────────
+  {
+    case: 'G',
+    title: 'Flowchart — multi-line node labels via <br/>',
+    meta: '<strong>Before:</strong> <code>&lt;br/&gt;</code> rendered as literal text inside a single-line label. <strong>After:</strong> labels split on <code>&lt;br/&gt;</code> / <code>&lt;br&gt;</code> / <code>\\n</code> into multiple <code>&lt;tspan&gt;</code> rows. Also strips <code>&lt;b&gt;</code> / <code>&lt;i&gt;</code> tags so PRISMA-style labels render cleanly.',
+    items: [
+      {
+        label: 'PRISMA-style flowchart with rich labels',
+        dsl: `flowchart TD
+  ID["1. IDENTIFICATION<br/>65 records<br/>(PubMed: 38, Scopus: 27)"]
+  DUP["Duplicates removed<br/>n=7"]
+  SCREEN["2. SCREENING<br/>Title + abstract<br/>n=58"]
+  EXC1["Excluded<br/>n=42"]
+  FINAL["INCLUDED<br/>n=16"]
+  ID --> DUP --> SCREEN
+  SCREEN --> EXC1
+  SCREEN --> FINAL`,
+      },
+    ],
+    layout: 'grid-1',
+  },
+];
+
+const root = document.getElementById('output');
+for (const c of cases) {
+  const section = document.createElement('section');
+  const h2 = document.createElement('h2');
+  h2.innerHTML = `<span class="case">Case ${c.case}</span>${c.title}`;
+  section.appendChild(h2);
+
+  const meta = document.createElement('div');
+  meta.className = 'case-meta';
+  meta.innerHTML = c.meta;
+  section.appendChild(meta);
+
+  const grid = document.createElement('div');
+  grid.className = c.layout || 'grid';
+  for (const item of c.items) {
+    const card = document.createElement('div');
+    card.className = 'card';
+    const t = document.createElement('div');
+    t.className = 'card-title';
+    t.textContent = item.label;
+    card.appendChild(t);
+
+    const pre = document.createElement('pre');
+    pre.textContent = item.dsl;
+    card.appendChild(pre);
+
+    const svgWrap = document.createElement('div');
+    svgWrap.className = 'svg-wrap';
+    try {
+      const svg = render(item.dsl);
+      svgWrap.innerHTML = svg;
+    } catch (err) {
+      card.classList.add('error');
+      svgWrap.textContent = `Render error: ${err && err.message ? err.message : err}`;
+    }
+    card.appendChild(svgWrap);
+    grid.appendChild(card);
+  }
+  section.appendChild(grid);
+  root.appendChild(section);
+}
+</script>
+</body>
+</html>

@@ -39,7 +39,7 @@ export function renderIndividualSymbol(
   }
 
   // Base shape
-  children.push(baseShape(individual.sex, half));
+  children.push(baseShape(individual.sex, half, individual.shape));
 
   // Condition fills
   if (individual.conditions?.length) {
@@ -252,31 +252,36 @@ function indexBorder(sex: Individual["sex"], half: number): string {
   }
 }
 
-function baseShape(sex: Individual["sex"], half: number): string {
+function baseShape(
+  sex: Individual["sex"],
+  half: number,
+  shape?: Individual["shape"]
+): string {
+  // Explicit shape override wins (e.g. anthropology / unilineal kinship
+  // conventions where males are triangles).
+  const cls = "schematex-genogram-shape";
+  switch (shape) {
+    case "square":
+      return rect({ x: -half, y: -half, width: half * 2, height: half * 2, class: cls });
+    case "circle":
+      return circle({ cx: 0, cy: 0, r: half, class: cls });
+    case "diamond":
+      return polygon({ points: `0,${-half} ${half},0 0,${half} ${-half},0`, class: cls });
+    case "triangle":
+      return polygon({ points: `0,${-half} ${half},${half} ${-half},${half}`, class: cls });
+    case "triangle-down":
+      return polygon({ points: `${-half},${-half} ${half},${-half} 0,${half}`, class: cls });
+  }
   switch (sex) {
     case "male":
-      return rect({
-        x: -half,
-        y: -half,
-        width: half * 2,
-        height: half * 2,
-        class: "schematex-genogram-shape",
-      });
+      return rect({ x: -half, y: -half, width: half * 2, height: half * 2, class: cls });
     case "female":
-      return circle({
-        cx: 0,
-        cy: 0,
-        r: half,
-        class: "schematex-genogram-shape",
-      });
+      return circle({ cx: 0, cy: 0, r: half, class: cls });
     case "unknown":
     case "other":
     case "nonbinary":
     case "intersex":
-      return polygon({
-        points: `0,${-half} ${half},0 0,${half} ${-half},0`,
-        class: "schematex-genogram-shape",
-      });
+      return polygon({ points: `0,${-half} ${half},0 0,${half} ${-half},0`, class: cls });
   }
 }
 

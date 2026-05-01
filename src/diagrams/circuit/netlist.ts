@@ -62,7 +62,13 @@ const PREFIX_MAP: Record<string, { type: CircuitComponentType; pins: string[] }>
   U: { type: "generic_ic", pins: [] }, // pins declared via pins="..." attr
   X: { type: "generic_ic", pins: [] },
   W: { type: "wire", pins: ["start", "end"] }, // explicit wire (non-SPICE convention, common in EE textbooks)
+  T: { type: "terminal_block", pins: [] }, // junction box / terminal strip; pins declared via pins="..." attr
 };
+
+// Ids that "look like" a ground reference and should auto-resolve to ground
+// even when the prefix doesn't match PREFIX_MAP. Match is case-insensitive on
+// the full id (e.g. GND, GND_REF, AGND, DGND, EARTH, PE).
+const GROUND_ID_PATTERN = /^(gnd|ground|earth|pe|agnd|dgnd|gnda|gndd)(_?\w*)?$/i;
 
 /** Aliases for type=xxx — mirror parser.ts aliases. */
 const TYPE_ALIASES: Record<string, CircuitComponentType> = {
@@ -76,10 +82,37 @@ const TYPE_ALIASES: Record<string, CircuitComponentType> = {
   reg: "voltage_regulator",
   timer555: "555_timer",
   transistor: "npn",
+  tb: "terminal_block",
+  junction_box: "terminal_block",
+  jbox: "terminal_block",
+  enclosure: "terminal_block",
 };
 
-/** Ground net aliases. */
-const GROUND_NETS = new Set(["0", "gnd", "GND", "Gnd", "ground", "Ground"]);
+/**
+ * Ground net aliases — net names that all canonicalize to "GND".
+ * Includes SPICE node "0", common analog/digital ground variants (AGND/DGND),
+ * earth/protective-earth (EARTH/PE), and substrate-supply alias VSS/COM.
+ * Also matches any id starting with `GND` (e.g. `GND_REF`, `GND1`).
+ */
+const GROUND_NETS = new Set([
+  "0",
+  "gnd", "GND", "Gnd",
+  "ground", "Ground",
+  "agnd", "AGND",
+  "dgnd", "DGND",
+  "gnda", "GNDA",
+  "gndd", "GNDD",
+  "earth", "EARTH", "Earth",
+  "pe", "PE",
+  "vss", "VSS", "Vss",
+  "com", "COM", "Com",
+]);
+
+function isGroundNetName(name: string): boolean {
+  if (GROUND_NETS.has(name)) return true;
+  // Match `GND_REF`, `GND1`, `GND_DIGITAL`, etc.
+  return /^GND[_0-9]\w*$/i.test(name);
+}
 
 function tokenize(line: string): string[] {
   // Split on whitespace, respecting key="quoted values with spaces"
@@ -202,9 +235,16 @@ export function parseNetlist(
     } else if (defaults) {
       cType = defaults.type;
       pinOrder = defaults.pins;
+    } else if (GROUND_ID_PATTERN.test(id)) {
+      // Id looks like a ground reference (GND, GND_REF, AGND, EARTH, PE, …)
+      cType = "ground";
+      pinOrder = ["start"];
     } else {
+      const hint = /^(gnd|ground|earth|pe|agnd|dgnd|vss|com)/i.test(id)
+        ? ` (looks like a ground reference — try type=ground)`
+        : "";
       throw new NetlistParseError(
-        `Cannot infer type from id "${id}" — use type= override`,
+        `Cannot infer type from id "${id}" — use type= override${hint}`,
         lineIdx + 1
       );
     }
@@ -251,6 +291,21 @@ export function parseNetlist(
       pinOrder = ["start"];
     }
 
+    // Terminal block / junction box: pins are user-defined via pins="..." attr.
+    // Pin anchor names are derived from the labels (lowercase, "_" for non-word
+    // chars). Default to t1/t2/… if no labels given. We always reset pinOrder
+    // here because the prefix-derived default (e.g. J → jfet_n's 3 pins) is
+    // wrong for a terminal_block, even when type= override switched the cType.
+    if (cType === "terminal_block") {
+      const pinsAttr = kv.pins ?? kv.terminals;
+      const labels = pinsAttr
+        ? pinsAttr.split(",").map((s) => s.trim()).filter(Boolean)
+        : Array.from({ length: Math.max(netRefs.length, 1) }, (_, i) => `t${i + 1}`);
+      pinOrder = labels.map((label, idx) =>
+        label.toLowerCase().replace(/[^a-z0-9]+/g, "_") || `t${idx + 1}`
+      );
+    }
+
     if (netRefs.length < pinOrder.length) {
       throw new NetlistParseError(
         `Component ${id} (${cType}) expects ${pinOrder.length} nets, got ${netRefs.length}`,
@@ -263,7 +318,7 @@ export function parseNetlist(
     const pins: Record<string, string> = {};
     for (let p = 0; p < pinOrder.length; p++) {
       let net = netRefs[p];
-      if (GROUND_NETS.has(net)) net = "GND";
+      if (isGroundNetName(net)) net = "GND";
       pins[pinOrder[p]] = net;
       ensureNet(net).anchors.push(`${id}.${pinOrder[p]}`);
     }

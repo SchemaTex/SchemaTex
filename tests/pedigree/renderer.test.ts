@@ -106,4 +106,38 @@ describe("pedigree renderer", () => {
     II-1 [male]`);
     expect(svg).toContain("schematex-pedigree-label");
   });
+
+  // ─── Case B: NSGC pregnancy-loss symbols ──────────────────────
+  describe("pregnancy-loss symbols (Case B)", () => {
+    test("sab status renders a small triangle", () => {
+      const svg = renderFromDSL(`pedigree
+  I-1 [sab]`);
+      expect(svg).toContain("schematex-pedigree-sab");
+      expect(svg).toContain("<polygon");
+      // Should not draw the regular base shape (rect/circle/diamond) for sab
+      expect(svg).not.toMatch(/schematex-pedigree-shape"\s+points/);
+    });
+
+    test("tab status renders triangle with slash", () => {
+      const svg = renderFromDSL(`pedigree
+  I-1 [tab]`);
+      expect(svg).toContain("schematex-pedigree-tab");
+      expect(svg).toContain("<polygon");
+      // tab adds a diagonal slash
+      expect(svg).toContain("schematex-pedigree-tab-slash");
+    });
+
+    test("ectopic status renders triangle with ECT label", () => {
+      const svg = renderFromDSL(`pedigree
+  I-1 [ectopic]`);
+      expect(svg).toContain("schematex-pedigree-ectopic");
+      expect(svg).toContain("ECT");
+    });
+
+    test("stillborn keeps base shape but adds SB marker", () => {
+      const svg = renderFromDSL(`pedigree
+  I-1 [male, stillborn]`);
+      expect(svg).toContain("SB");
+    });
+  });
 });

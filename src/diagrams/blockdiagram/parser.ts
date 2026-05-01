@@ -155,29 +155,45 @@ export function parseBlockDiagram(text: string): BlockAST {
 
     // Connection chain: A -> B -> C [label_or_attrs]
     // Allow chains and a trailing [ ... ] (label-only or label+flags).
-    // Find the attribute `[` at top level (outside quotes) — labels may contain `[`.
+    // Also accept inline `[id] -> [id]` form where bracketed identifiers
+    // auto-declare blocks (D2 / Mermaid convention).
     const arrowIdx = line.indexOf("->");
     if (arrowIdx >= 0) {
       let body = line;
       let tailAttrs: ParsedAttrs = {};
+      // Trailing attrs are `... <space>[...]` — the bracket must be PRECEDED
+      // by whitespace at top level. Without this guard, a leading `[id]` was
+      // greedily consumed as attrs, leaving body="".
       if (body.endsWith("]")) {
+        // Scan backwards for the matching `[` of the trailing `]`. A real
+        // trailing attr-block is preceded by whitespace at top level AND
+        // doesn't contain a bare identifier (which would be an inline endpoint).
         let bracketStart = -1;
+        let depth = 0;
         let inQuote = false;
-        for (let i = 0; i < body.length - 1; i++) {
+        for (let i = body.length - 1; i >= 1; i--) {
           const ch = body[i];
           if (ch === '"') inQuote = !inQuote;
-          else if (ch === "[" && !inQuote) {
-            bracketStart = i;
-            break;
+          else if (!inQuote && ch === "]") depth++;
+          else if (!inQuote && ch === "[") {
+            depth--;
+            if (depth === 0) {
+              if (/\s/.test(body[i - 1] ?? "")) bracketStart = i;
+              break;
+            }
           }
         }
         if (bracketStart >= 0) {
           const inner = body.slice(bracketStart + 1, -1).trim();
-          body = body.slice(0, bracketStart).trim();
-          if (inner.startsWith('"') && inner.endsWith('"') && !inner.slice(1, -1).includes(',')) {
-            tailAttrs.label = inner.slice(1, -1);
-          } else {
-            tailAttrs = parseAttrs(inner);
+          // Bare identifier inside `[…]` is an inline endpoint, not attrs.
+          const isBareId = /^[A-Za-z_]\w*$/.test(inner);
+          if (!isBareId) {
+            body = body.slice(0, bracketStart).trim();
+            if (inner.startsWith('"') && inner.endsWith('"') && !inner.slice(1, -1).includes(',')) {
+              tailAttrs.label = inner.slice(1, -1);
+            } else {
+              tailAttrs = parseAttrs(inner);
+            }
           }
         }
       }
@@ -185,10 +201,26 @@ export function parseBlockDiagram(text: string): BlockAST {
       if (parts.length < 2) {
         throw new BlockDiagramParseError(`Invalid connection: ${line}`, lineNo, undefined, line);
       }
-      for (let i = 0; i < parts.length - 1; i++) {
-        const from = parts[i];
-        const to = parts[i + 1];
-        const isLast = i === parts.length - 2;
+      // Strip optional `[brackets]` from each endpoint and auto-declare blocks
+      // that haven't been declared yet.
+      const endpoints = parts.map((p) => {
+        const m = /^\[([A-Za-z_]\w*)\]$/.exec(p);
+        return m ? m[1] : p;
+      });
+      for (const ep of endpoints) {
+        if (!/^[A-Za-z_]\w*$/.test(ep)) continue;
+        const exists =
+          blocks.some((b) => b.id === ep) ||
+          sums.some((s) => s.id === ep) ||
+          signals.has(ep);
+        if (!exists) {
+          blocks.push({ id: ep, label: ep, role: "generic" });
+        }
+      }
+      for (let i = 0; i < endpoints.length - 1; i++) {
+        const from = endpoints[i];
+        const to = endpoints[i + 1];
+        const isLast = i === endpoints.length - 2;
         const edge: BlockEdge = { from, to };
         if (isLast && tailAttrs.label) edge.label = tailAttrs.label;
         if (isLast && tailAttrs.discrete) edge.discrete = true;

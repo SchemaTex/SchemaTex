@@ -9,6 +9,54 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+---
+
+## [0.4.0] — 2026-04-30
+
+### Fixed — Genogram: cousins of different couples no longer interleave (Case A)
+
+When two sibships from different parental couples share a generation row, children were getting interleaved by birth-year sort and centering, making cousins look like siblings. New post-centering pass `unscrambleSibships` groups children by their `childOf` family unit, orders sibship blocks by parent midpoint (left-to-right), and lays each block out contiguously with `familyGap` separation between blocks. `resolveOverlaps` is now cluster-aware and enforces `familyGap` instead of `minGap` between adjacent nodes from different sibships. Resolves the 16-iteration user-abandon case in the 2026-04-30 production audit.
+
+### Fixed — Pedigree: SAB / TAB / Ectopic now render as NSGC triangles (Case B)
+
+`[sab]`, `[tab]`, `[ectopic]`, and `[stillborn]` statuses were parsed but rendered as regular sex-based shapes (square/circle/diamond). Now follows NSGC pedigree-symbol standard: SAB renders as a small filled point-down triangle (~60% size); TAB adds a diagonal slash; Ectopic adds an "ECT" label; Stillborn keeps the sex-based shape but adds an "SB" label. New CSS classes `schematex-pedigree-loss-shape`, `schematex-pedigree-tab-slash`, `schematex-pedigree-status-label`.
+
+### Fixed — Blockdiagram: inline `[id] -> [id]` no longer rejected (Case F)
+
+The trailing-attrs `[…]` parser was greedily consuming the leading `[` of bracketed identifiers, making body empty and throwing `Invalid connection`. Fixed by scanning backwards from the closing `]` (depth-aware), requiring whitespace before the matching `[`, and treating bare-identifier brackets as inline endpoints rather than attrs. Bracketed ids in connection chains now auto-declare blocks. Trailing attrs `... ["label"]` and `... [role:plant]` continue to work.
+
+### Fixed — Circuit: `GND_REF`/`AGND`/`DGND`/`EARTH`/`PE` no longer reject (Case D)
+
+Previously only `0` / `gnd` / `GND` / `Gnd` / `ground` / `Ground` were recognized as ground net aliases, and there was no `G` prefix in `PREFIX_MAP`, so `GND_REF` declared as a component threw `Cannot infer type from id`. Extended `GROUND_NETS` with `AGND`, `DGND`, `GNDA`, `GNDD`, `EARTH`, `PE`, `VSS`, `COM` (case variants). Added pattern `GROUND_ID_PATTERN` so any id starting with `gnd|ground|earth|pe|agnd|dgnd` resolves to type `ground` automatically. Improved error message suggests `type=ground` for ground-like ids.
+
+### Added — Circuit: `terminal_block` primitive (Case C)
+
+New component type `terminal_block` draws a labeled rectangular enclosure with N user-defined terminals on the left, each rendered with a small terminal-screw circle and a label. Aliases: `tb`, `junction_box`, `jbox`, `enclosure`. T-prefixed ids infer the type automatically. Pin labels supplied via `pins="SIG,COM,12V+,GND"`. Fills the gap for instrumentation drawings (junction boxes, terminal strips) where users previously had to hand-build enclosures from `wire` segments.
+
+### Added — Genogram: `shape:` override field (Case B)
+
+New optional `shape:` attribute on individuals lets the DSL request a specific shape regardless of sex. Accepts `square`, `circle`, `diamond`, `triangle`, `triangle-down`. Useful for anthropology / unilineal kinship diagrams where males are conventionally drawn as triangles, or for visually distinguishing matrilineal vs patrilineal lineages.
+
+### Added — Flowchart: multi-line node labels via `<br/>` (Case G)
+
+Labels containing `<br/>`, `<br>`, or literal `\n` now render as multiple `<tspan>` rows centered around the node label anchor. New `multilineText` helper in `core/svg.ts`. Inline `<b>` and `<i>` tags are stripped (no per-run formatting yet) so PRISMA-style flowchart labels render cleanly. Accessibility `<title>` strips tags so screen readers get plain text.
+
+### Added — Flowchart: Mermaid-style outer-quote stripping in node labels
+
+Labels wrapped in `["..."]`, `("...")`, `{"..."}`, etc. now have the surrounding quotes stripped. Mermaid uses this convention to allow special chars (`]`, `<br/>`, etc.) inside labels.
+
+### Added — Timeline: `section` keyword (Case E, partial)
+
+New `section "Name"` keyword acts as a Mermaid-timeline-compatible alias for `track`, including bare-name form (`section Foo`) without trailing colon. Events follow the section header at any indentation level until the next `section`/`track`. Multi-`:`-separated rows and non-date row keys are deferred to a future release (require categorical-axis layout work).
+
+### Preview
+
+`preview/v04-fixes.html` exercises every fix above with side-by-side DSL + rendered SVG, plus before/after notes.
+
+---
+
+## [0.3.0] — 2026-04-29
+
 ### Added — State diagram (UML 2.5 / Harel statechart)
 
 New diagram type `state` for behavior modeling. Implements a strict superset of [Mermaid `stateDiagram-v2`](https://mermaid.js.org/syntax/stateDiagram.html) syntax (every Mermaid example pastes in unchanged) plus UML 2.5 features Mermaid omits: `entry / exit / do` activities, full `trigger [guard] / action` transition labels, `terminate` and history pseudo-states, junction, choice (diamond), and Schematex-style block notes. Layout reuses the flowchart Sugiyama engine — Greedy-FAS cycle removal handles state-machine cycles, longest-path layering + barycenter crossing-min + Brandes-Köpf x-coords give clean composite-aware placement, and Manhattan routing detours around node bboxes. Default direction `TB` (matches Mermaid). Pseudo-state path-endpoint trimming so arrows land on the symbol perimeter, not the layout bbox edge. Composite-target transitions auto-redirect to the composite's initial pseudo-state (avoids Mermaid-incompatible phantom-node rendering).
@@ -20,6 +68,18 @@ New diagram type `pid` for process-engineering documentation. ANSI/ISA-5.1-2009 
 ### Added — `state` and `pid` MCP / AI integration
 
 Both new diagrams are registered in `DIAGRAM_REGISTRY` (consumed by the Schematex MCP server's `listDiagrams` / `getSyntax` tools), with full per-diagram syntax docs (`website/content/docs/state.mdx`, `pid.mdx`) compiled into the AI content bundle via `scripts/build-ai-content.mjs`. New domain cluster `behavior-modeling` introduced for state diagrams.
+
+### Added — Ecomap: mesosystem edges (Bronfenbrenner 1979)
+
+Edges connecting two non-center nodes are now tagged as **mesosystem** connections — Bronfenbrenner's bioecological extension to Hartman's 1978 ecomap. Each such edge gets a `data-mesosystem` attribute, a CSS class, and reduced opacity so the central client-system relationships remain the visual focus. Documentation updated in `docs/reference/02-ECOMAP-STANDARD.md`.
+
+### Added — Circuit: W-prefixed wire IDs
+
+`W1`, `W2`, … now parse as wire components in the netlist (extends the SPICE-style `PREFIX_MAP`). Common in EE textbooks (non-SPICE convention) — documented in `docs/reference/08-CIRCUIT-SCHEMATIC-STANDARD.md`.
+
+### Fixed — Flowchart: `BT` / `RL` direction coordinate flip
+
+`direction BT` and `direction RL` now correctly flip node and edge coordinates after layout, instead of leaving the diagram in the default TB/LR orientation. Cluster title padding is also swapped post-flip so subgraph titles render on the correct visual side. Three regression tests added.
 
 ---
 

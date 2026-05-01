@@ -212,23 +212,51 @@ export function parseTimeline(src: string): TimelineAST {
       continue;
     }
 
-    // track "Name":
-    if (/^track\b/i.test(text)) {
-      const body = text.replace(/^track\s+/i, "");
-      const [name, restAfter] = readQuoted(body, L.line);
-      if (!restAfter.trim().startsWith(":")) {
-        throw new TimelineParseError(`Expected ':' after track name`, L.line);
+    // track "Name":  OR  section "Name"  OR  section Foo (Mermaid-style)
+    // `section` is accepted as a Mermaid-timeline-compatible alias for
+    // `track`. Trailing colon optional; name may be quoted or bare.
+    const isTrack = /^track\b/i.test(text);
+    const isSection = /^section\b/i.test(text);
+    if (isTrack || isSection) {
+      const keyword = isTrack ? "track" : "section";
+      const body = text.replace(new RegExp(`^${keyword}\\s+`, "i"), "");
+      let name: string;
+      if (body.startsWith('"')) {
+        const [n, restAfter] = readQuoted(body, L.line);
+        name = n;
+        if (isTrack && !restAfter.trim().startsWith(":") && !restAfter.trim().startsWith("")) {
+          // For `track` the colon was previously required; relax it for parity.
+        }
+      } else {
+        // Bare name (Mermaid-style). Strip trailing colon if present.
+        name = body.replace(/:\s*$/, "").trim();
+        if (!name) {
+          throw new TimelineParseError(`Expected name after '${keyword}'`, L.line);
+        }
       }
       const trackId = nextId("track");
       ast.tracks.push({ id: trackId, label: name });
       i++;
-      // Consume indented events belonging to this track
-      while (i < lines.length && lines[i]!.indent > L.indent) {
+      // Consume events belonging to this section/track. Two indent styles
+      // are supported: explicit indentation under the keyword (track-style),
+      // OR flat events that follow until the next `section`/`track`/EOF
+      // (Mermaid-section-style — sections aren't indented).
+      const baseIndent = L.indent;
+      while (i < lines.length) {
         const child = lines[i]!;
-        // Skip a note: line; it's attached to the preceding event below
+        // Stop at the next section/track at same-or-lower indent.
+        if (
+          child.indent <= baseIndent &&
+          /^(section|track)\b/i.test(child.text)
+        ) {
+          break;
+        }
+        // For track-keyword (legacy strict), require deeper indent.
+        if (isTrack && child.indent <= baseIndent) break;
+        // Skip note: lines (attached below)
         if (/^note\s*:/i.test(child.text)) { i++; continue; }
         const parsed = parseEventLine(child.text, child.line, nextId);
-        if (!parsed) throw new TimelineParseError(`Unrecognized line in track: ${child.text}`, child.line);
+        if (!parsed) throw new TimelineParseError(`Unrecognized line in ${keyword}: ${child.text}`, child.line);
         parsed.event.trackId = trackId;
         ast.events.push(parsed.event);
         i++;

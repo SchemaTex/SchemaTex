@@ -213,6 +213,64 @@ genogram
     }
   });
 
+  // ─── Case A: cousins from different couples must be visually separated ───
+  test("cousins of different parental couples have wider gap than siblings (dense)", () => {
+    // Reproduces the user-reported failure: two large sibships from
+    // different couples on the same generation row. After centering and
+    // overlap resolution, the gap between sibships collapses to the same
+    // gap as siblings within a sibship — making cousins look like siblings.
+    const layout = layoutFromText(`
+genogram
+  paul [male, 1940]
+  martin [female, 1942]
+  paul -- martin
+    oren [male, 1962]
+    itai [male, 1965]
+    gadi [male, 1968]
+    idan [male, 1972]
+
+  kobi [male, 1941]
+  madi [female, 1943]
+  kobi -- madi
+    matan [male, 1963]
+    noa [female, 1966]
+    roni [female, 1971]
+`);
+    const idan = findNode(layout.nodes, "idan");   // rightmost of paul-martin sibship
+    const matan = findNode(layout.nodes, "matan"); // leftmost of kobi-madi sibship
+    const oren = findNode(layout.nodes, "oren");
+    const itai = findNode(layout.nodes, "itai");
+    const noa = findNode(layout.nodes, "noa");
+    const roni = findNode(layout.nodes, "roni");
+
+    // Within-sibship sibling gaps
+    const siblingGap = Math.abs(itai.x - oren.x);
+    // Cross-sibship cousin gap
+    const cousinGap = Math.abs(matan.x - idan.x);
+    // Within-sibship sibling gap on the other side
+    const otherSiblingGap = Math.abs(roni.x - noa.x);
+
+    // Cross-sibship cousin gap should be visibly wider than a within-sibship gap.
+    // Default config: minGap=100, familyGap=130 → ratio 1.3.
+    expect(cousinGap).toBeGreaterThan(siblingGap * 1.25);
+    expect(cousinGap).toBeGreaterThan(otherSiblingGap * 1.25);
+
+    // And the children of paul-martin must all be left of all children of kobi-madi
+    // (no interleaving — Case A's core complaint).
+    const paulMartinKids = [
+      findNode(layout.nodes, "oren"),
+      findNode(layout.nodes, "itai"),
+      findNode(layout.nodes, "gadi"),
+      findNode(layout.nodes, "idan"),
+    ].map((n) => n.x);
+    const kobiMadiKids = [
+      findNode(layout.nodes, "matan"),
+      findNode(layout.nodes, "noa"),
+      findNode(layout.nodes, "roni"),
+    ].map((n) => n.x);
+    expect(Math.max(...paulMartinKids)).toBeLessThan(Math.min(...kobiMadiKids));
+  });
+
   // ─── Layout dimensions are reasonable ───────────────────
   test("layout dimensions encompass all nodes", () => {
     const layout = layoutFromText(`
