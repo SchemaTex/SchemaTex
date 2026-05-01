@@ -126,4 +126,30 @@ describe("genogram symbols", () => {
     expect(svg).toContain("<g ");
     expect(svg).toContain("</g>");
   });
+
+  // ─── Case B: shape override ────────────────────────────────────
+  describe("shape override (Case B)", () => {
+    test("shape: triangle overrides male's default square", () => {
+      const svg = renderIndividualSymbol(
+        makeIndividual({ sex: "male", shape: "triangle" }),
+        0, 0, 40
+      );
+      expect(svg).toContain("<polygon");
+      // The base shape <rect> for male should NOT be drawn
+      expect(svg).not.toMatch(/<rect[^>]*class="schematex-genogram-shape"/);
+    });
+
+    test("shape: triangle-down for matrilineal kinship convention", () => {
+      const svg = renderIndividualSymbol(
+        makeIndividual({ sex: "male", shape: "triangle-down" }),
+        0, 0, 40
+      );
+      expect(svg).toContain("<polygon");
+    });
+
+    test("no shape override falls back to sex-based default", () => {
+      const svg = renderIndividualSymbol(makeIndividual({ sex: "female" }), 0, 0, 40);
+      expect(svg).toContain("<circle");
+    });
+  });
 });

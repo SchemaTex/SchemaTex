@@ -162,6 +162,9 @@ function buildStyles(config: RenderConfig, t: ResolvedTheme<PersonTokens>): stri
 .schematex-pedigree-presymptomatic-mark { stroke: ${t.conditionFill}; stroke-width: ${STROKE_WIDTH.normal}; }
 .schematex-pedigree-proband-arrow-line { stroke: ${t.stroke}; stroke-width: ${STROKE_WIDTH.normal}; fill: none; marker-end: url(#schematex-pedigree-proband-arrow); }
 .schematex-pedigree-proband-label { font-family: ${config.fontFamily}; font-size: 10px; font-weight: bold; fill: ${t.stroke}; }
+.schematex-pedigree-loss-shape { fill: ${t.stroke}; stroke: ${t.stroke}; stroke-width: ${STROKE_WIDTH.normal}; stroke-linejoin: round; }
+.schematex-pedigree-tab-slash { stroke: ${t.deceasedMark}; stroke-width: ${STROKE_WIDTH.normal}; stroke-linecap: round; }
+.schematex-pedigree-status-label { font-family: ${config.fontFamily}; font-size: 10px; font-weight: bold; fill: ${t.text}; }
 .schematex-pedigree-legend { font-family: ${config.fontFamily}; font-size: 11px; fill: ${t.text}; }
 .schematex-pedigree-legend-box { fill: ${t.fill}; stroke: ${t.neutral}; stroke-width: 1; }
 `;
@@ -262,8 +265,63 @@ function renderPedigreeSymbol(
   const titleText = formatTitle(ind);
   const children: string[] = [title(titleText)];
 
+  // ─── Pregnancy-loss symbols (NSGC standard) ───
+  // SAB / TAB / Ectopic are drawn as a small filled triangle (point down),
+  // ~60% of the normal node size, regardless of sex. TAB adds a diagonal
+  // slash through it; ectopic adds an "ECT" label.
+  const pregLoss = ind.status === "sab" || ind.status === "tab" || ind.status === "ectopic";
+  if (pregLoss) {
+    classes.push(`schematex-pedigree-${ind.status}`);
+    const t = half * 0.6; // smaller — this isn't a born individual
+    // Filled point-down triangle (apex at bottom)
+    children.push(
+      polygon({
+        points: `${-t},${-t} ${t},${-t} 0,${t}`,
+        class: `schematex-pedigree-loss-shape schematex-pedigree-${ind.status}-shape`,
+      })
+    );
+    if (ind.status === "tab") {
+      // Diagonal slash for terminated/induced
+      children.push(
+        line({
+          x1: -t * 1.1, y1: t * 1.1, x2: t * 1.1, y2: -t * 1.1,
+          class: "schematex-pedigree-tab-slash",
+        })
+      );
+    }
+    if (ind.status === "ectopic") {
+      children.push(
+        text(
+          { x: 0, y: t + 14, class: "schematex-pedigree-status-label", "text-anchor": "middle" },
+          "ECT"
+        )
+      );
+    }
+    // Skip the regular sex-based shape and downstream genetic-status fills
+    // for these symbols — they aren't applicable.
+    return group(
+      {
+        class: classes.join(" "),
+        "data-individual-id": ind.id,
+        transform: `translate(${x}, ${y})`,
+      },
+      children
+    );
+  }
+
   // Base shape
   children.push(baseShape(ind.sex, half));
+
+  // Stillborn: keep the sex-based shape, add an "SB" label below.
+  if (ind.status === "stillborn") {
+    classes.push("schematex-pedigree-stillborn");
+    children.push(
+      text(
+        { x: 0, y: half + 14, class: "schematex-pedigree-status-label", "text-anchor": "middle" },
+        "SB"
+      )
+    );
+  }
 
   // Genetic status fills
   const gs = ind.geneticStatus;

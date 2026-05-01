@@ -72,6 +72,19 @@ interface NodeRef {
 }
 
 /** Try to parse a shape-suffix starting at `pos` in `line`. Returns null if none. */
+/**
+ * Mermaid convention: a label wrapped in matched double quotes inside any
+ * shape-suffix bracket pair is treated as a quoted string — strip the quotes.
+ * This lets the user include special chars like `]` and `<br/>` in the label.
+ */
+function unquoteLabel(s: string): string {
+  const t = s.trim();
+  if (t.length >= 2 && t.startsWith('"') && t.endsWith('"')) {
+    return t.slice(1, -1);
+  }
+  return t;
+}
+
 function parseShapeSuffix(
   line: string,
   pos: number
@@ -85,94 +98,94 @@ function parseShapeSuffix(
   if (ch === ">") {
     const end = line.indexOf("]", pos + 1);
     if (end < 0) return null;
-    return { shape: "asymmetric", label: line.slice(pos + 1, end).trim(), end: end + 1 };
+    return { shape: "asymmetric", label: unquoteLabel(line.slice(pos + 1, end)), end: end + 1 };
   }
 
   // Triple paren double-circle: ((( ... )))
   if (ch === "(" && line[pos + 1] === "(" && line[pos + 2] === "(") {
     const end = line.indexOf(")))", pos + 3);
     if (end < 0) return null;
-    return { shape: "double-circle", label: line.slice(pos + 3, end).trim(), end: end + 3 };
+    return { shape: "double-circle", label: unquoteLabel(line.slice(pos + 3, end)), end: end + 3 };
   }
 
   // Stadium: ([ ... ])
   if (ch === "(" && line[pos + 1] === "[") {
     const end = line.indexOf("])", pos + 2);
     if (end < 0) return null;
-    return { shape: "stadium", label: line.slice(pos + 2, end).trim(), end: end + 2 };
+    return { shape: "stadium", label: unquoteLabel(line.slice(pos + 2, end)), end: end + 2 };
   }
 
   // Double-paren circle: (( ... ))
   if (ch === "(" && line[pos + 1] === "(") {
     const end = line.indexOf("))", pos + 2);
     if (end < 0) return null;
-    return { shape: "circle", label: line.slice(pos + 2, end).trim(), end: end + 2 };
+    return { shape: "circle", label: unquoteLabel(line.slice(pos + 2, end)), end: end + 2 };
   }
 
   // Double-bracket subroutine: [[ ... ]]
   if (ch === "[" && line[pos + 1] === "[") {
     const end = line.indexOf("]]", pos + 2);
     if (end < 0) return null;
-    return { shape: "subroutine", label: line.slice(pos + 2, end).trim(), end: end + 2 };
+    return { shape: "subroutine", label: unquoteLabel(line.slice(pos + 2, end)), end: end + 2 };
   }
 
   // Cylinder: [( ... )]
   if (ch === "[" && line[pos + 1] === "(") {
     const end = line.indexOf(")]", pos + 2);
     if (end < 0) return null;
-    return { shape: "cylinder", label: line.slice(pos + 2, end).trim(), end: end + 2 };
+    return { shape: "cylinder", label: unquoteLabel(line.slice(pos + 2, end)), end: end + 2 };
   }
 
   // Hexagon: {{ ... }}
   if (ch === "{" && line[pos + 1] === "{") {
     const end = line.indexOf("}}", pos + 2);
     if (end < 0) return null;
-    return { shape: "hexagon", label: line.slice(pos + 2, end).trim(), end: end + 2 };
+    return { shape: "hexagon", label: unquoteLabel(line.slice(pos + 2, end)), end: end + 2 };
   }
 
   // Trapezoid: [/ ... \]  (wider at top)
   if (ch === "[" && line[pos + 1] === "/") {
     const endSlash = line.indexOf("\\]", pos + 2);
     if (endSlash >= 0) {
-      return { shape: "trapezoid", label: line.slice(pos + 2, endSlash).trim(), end: endSlash + 2 };
+      return { shape: "trapezoid", label: unquoteLabel(line.slice(pos + 2, endSlash)), end: endSlash + 2 };
     }
     // Fall through to plain parallelogram [/ /]
     const end = line.indexOf("/]", pos + 2);
     if (end < 0) return null;
-    return { shape: "parallelogram", label: line.slice(pos + 2, end).trim(), end: end + 2 };
+    return { shape: "parallelogram", label: unquoteLabel(line.slice(pos + 2, end)), end: end + 2 };
   }
 
   // Trapezoid-alt: [\ ... /]  (wider at bottom)
   if (ch === "[" && line[pos + 1] === "\\") {
     const endFwd = line.indexOf("/]", pos + 2);
     if (endFwd >= 0) {
-      return { shape: "trapezoid-alt", label: line.slice(pos + 2, endFwd).trim(), end: endFwd + 2 };
+      return { shape: "trapezoid-alt", label: unquoteLabel(line.slice(pos + 2, endFwd)), end: endFwd + 2 };
     }
     // Parallelogram-alt: [\ \]
     const end = line.indexOf("\\]", pos + 2);
     if (end < 0) return null;
-    return { shape: "parallelogram-alt", label: line.slice(pos + 2, end).trim(), end: end + 2 };
+    return { shape: "parallelogram-alt", label: unquoteLabel(line.slice(pos + 2, end)), end: end + 2 };
   }
 
   // Rect: [ ... ]
   if (ch === "[") {
     const end = line.indexOf("]", pos + 1);
     if (end < 0) return null;
-    return { shape: "rect", label: line.slice(pos + 1, end).trim(), end: end + 1 };
+    return { shape: "rect", label: unquoteLabel(line.slice(pos + 1, end)), end: end + 1 };
   }
 
   // Round: ( ... )
   if (ch === "(") {
     const end = line.indexOf(")", pos + 1);
     if (end < 0) return null;
-    return { shape: "round", label: line.slice(pos + 1, end).trim(), end: end + 1 };
+    return { shape: "round", label: unquoteLabel(line.slice(pos + 1, end)), end: end + 1 };
   }
 
   // Diamond: { ... }
   if (ch === "{") {
     const end = line.indexOf("}", pos + 1);
     if (end < 0) return null;
-    return { shape: "diamond", label: line.slice(pos + 1, end).trim(), end: end + 1 };
+    return { shape: "diamond", label: unquoteLabel(line.slice(pos + 1, end)), end: end + 1 };
   }
 
   return null;
@@ -281,7 +294,7 @@ function parsePipeLabel(line: string, pos: number): { label: string; end: number
   if (line[pos] !== "|") return null;
   const end = line.indexOf("|", pos + 1);
   if (end < 0) return null;
-  return { label: line.slice(pos + 1, end).trim(), end: end + 1 };
+  return { label: unquoteLabel(line.slice(pos + 1, end)), end: end + 1 };
 }
 
 function skipSpaces(line: string, pos: number): number {

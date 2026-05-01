@@ -71,4 +71,27 @@ D --> I[/Input/] --> R(Round)`);
     expect(svg).toContain("<title>");
     expect(svg).toContain("Workflow &lt;v2&gt;");
   });
+
+  // ─── Case G: multi-line labels with <br/> ──────────────────────
+  describe("multi-line node labels", () => {
+    test("<br/> in label produces multiple <tspan> rows", () => {
+      const svg = renderFlowchart('flowchart TD\nA["Line one<br/>Line two"]');
+      expect(svg).toContain("<tspan");
+      expect(svg).toContain("Line one");
+      expect(svg).toContain("Line two");
+      expect(svg).not.toContain("&lt;br");
+    });
+
+    test("<br> (no slash) also splits", () => {
+      const svg = renderFlowchart('flowchart TD\nA["Top<br>Bottom"]');
+      expect(svg).toContain("<tspan");
+      expect(svg).toContain("Top");
+      expect(svg).toContain("Bottom");
+    });
+
+    test("plain label still renders without escaped angle brackets", () => {
+      const svg = renderFlowchart('flowchart TD\nA["Just one line"]');
+      expect(svg).toContain("Just one line");
+    });
+  });
 });
