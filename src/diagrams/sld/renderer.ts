@@ -27,7 +27,7 @@ function buildCss(t: IT): string {
   const bandOdd = isDark ? BAND_ODD_DARK : BAND_ODD_LIGHT;
   const bandEven = isDark ? BAND_EVEN_DARK : BAND_EVEN_LIGHT;
   return `
-.lt-sld { background: ${t.bg}; font-family: system-ui, -apple-system, sans-serif; }
+.lt-sld { font-family: system-ui, -apple-system, sans-serif; }
 .lt-sld-stroke { stroke: ${t.stroke}; stroke-width: 1.8; fill: none; }
 .lt-sld-stroke-thick { stroke: ${t.stroke}; stroke-width: 2.4; fill: none; stroke-linecap: round; }
 .lt-sld-fill { fill: ${t.bg}; stroke: ${t.stroke}; stroke-width: 2; }

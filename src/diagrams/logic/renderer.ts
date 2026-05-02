@@ -271,7 +271,7 @@ export function renderLogic(ast: LogicGateAST, config?: RenderConfig): string {
   });
 
   const css = `
-.schematex-logic { background: ${t.bg}; font-family: system-ui, -apple-system, sans-serif; }
+.schematex-logic { font-family: system-ui, -apple-system, sans-serif; }
 .schematex-logic-gate-body { fill: none; stroke: ${t.strokeHeavy}; stroke-width: 1.75; stroke-linejoin: round; }
 .schematex-logic-bubble { fill: ${t.bg}; stroke: ${t.strokeHeavy}; stroke-width: 1.5; }
 .schematex-logic-clock-tri { fill: none; stroke: ${t.strokeHeavy}; stroke-width: 1.5; stroke-linejoin: round; }

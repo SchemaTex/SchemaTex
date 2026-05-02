@@ -142,7 +142,6 @@ function buildDefs(t: BaseTheme): string {
 function buildStyles(config: RenderConfig, t: BaseTheme): string {
   let css = `
 .schematex-ecomap {${cssCustomProperties(t)}
-  background: ${t.bg};
 }
 .schematex-ecomap-center-shape { fill: ${t.fill}; stroke: ${t.stroke}; stroke-width: ${STROKE_WIDTH.thick}; }
 .schematex-ecomap-center-label { font-family: ${config.fontFamily}; font-size: ${config.fontSize + 2}px; text-anchor: middle; dominant-baseline: central; fill: ${t.text}; font-weight: 600; }

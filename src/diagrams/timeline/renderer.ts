@@ -87,7 +87,7 @@ function styleForTheme(theme: Theme, fontFamily?: string): string {
       --st-card-text: ${theme.cardText};
       --st-legend-bg: ${theme.legendBg};
       --st-legend-stroke: ${theme.legendStroke};
-      font-family: ${font}; background: var(--schematex-bg); }
+      font-family: ${font}; }
     .st-title { font-size: 16px; font-weight: 600; fill: var(--schematex-text); }
     .st-axis-line { stroke: var(--st-axis); stroke-width: 1.5; fill: none; }
     .st-axis-tick { stroke: var(--st-axis); stroke-width: 1; opacity: 0.55; }

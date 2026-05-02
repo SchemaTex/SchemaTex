@@ -32,7 +32,7 @@ const HEAT_RAMP = [
 ];
 
 const CSS = `
-.sx-matrix { background: #fff; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+.sx-matrix { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
 .sx-matrix-title { font: 600 16px sans-serif; fill: #111; }
 .sx-matrix-grid { stroke: #e5e7eb; stroke-width: 1; fill: none; }
 .sx-matrix-mid { stroke: #9ca3af; stroke-width: 1.2; stroke-dasharray: 4 3; fill: none; }

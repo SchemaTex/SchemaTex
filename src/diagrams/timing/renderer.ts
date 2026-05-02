@@ -375,7 +375,7 @@ export function renderTiming(ast: TimingAST): string {
   );
 
   const css = `
-.schematex-timing { background: #fff; font-family: system-ui, -apple-system, sans-serif; }
+.schematex-timing { font-family: system-ui, -apple-system, sans-serif; }
 .schematex-timing-name { font: 12px monospace; fill: #111; }
 .schematex-timing-name-activelow { text-decoration: overline; }
 .schematex-timing-group-label { font: bold 12px sans-serif; fill: #111; }

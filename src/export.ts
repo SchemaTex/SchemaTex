@@ -18,7 +18,7 @@
 export interface PngExportOptions {
   /** Pixel ratio multiplier. Default: 2 (retina/2×). */
   scale?: number;
-  /** Background fill color. Default: 'white'. Pass null for transparent. */
+  /** Background fill color. Default: null (transparent). Pass a color string (e.g. 'white') to fill. */
   background?: string | null;
 }
 
@@ -30,7 +30,7 @@ export function svgToPngBlob(
   svgString: string,
   options: PngExportOptions = {}
 ): Promise<Blob> {
-  const { scale = 2, background = "white" } = options;
+  const { scale = 2, background = null } = options;
 
   return new Promise((resolve, reject) => {
     const blob = new Blob([svgString], { type: "image/svg+xml;charset=utf-8" });

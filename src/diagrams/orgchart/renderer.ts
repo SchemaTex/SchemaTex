@@ -17,7 +17,7 @@ import type { OrgchartAST, OrgchartLayoutNode, OrgchartRoleIcon } from "./types"
 
 function buildCss(t: BaseTheme): string {
   return `
-.lt-org { background: ${t.bg}; font-family: system-ui, -apple-system, sans-serif; }
+.lt-org { font-family: system-ui, -apple-system, sans-serif; }
 .lt-org-title { font: 500 16px sans-serif; fill: ${t.text}; }
 .lt-org-card { fill: ${t.bg}; stroke: ${t.neutral}; stroke-width: 1; }
 .lt-org-card-vacant { fill: ${t.bg}; stroke: ${t.warn}; stroke-width: 1; stroke-dasharray: 4,3; }

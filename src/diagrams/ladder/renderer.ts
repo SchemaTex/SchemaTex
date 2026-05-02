@@ -21,7 +21,7 @@ type IT = ResolvedTheme<IndustrialTokens>;
 
 function buildCss(t: IT): string {
   return `
-.lt-ladder { background: ${t.bg}; font-family: system-ui, -apple-system, sans-serif; }
+.lt-ladder { font-family: system-ui, -apple-system, sans-serif; }
 .lt-ladder-rail { stroke: ${t.strokeHeavy}; stroke-width: 4; stroke-linecap: square; }
 .lt-ladder-wire { stroke: ${t.stroke}; stroke-width: 1.5; fill: none; }
 .lt-ladder-element { stroke: ${t.stroke}; stroke-width: 2; fill: none; }
