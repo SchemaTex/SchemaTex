@@ -1388,6 +1388,8 @@ export interface FlowchartLayoutEdge {
   path: string;
   /** Label anchor with optional text-anchor hint for proper line clearance */
   labelAnchor?: { x: number; y: number; textAnchor?: "start" | "middle" | "end" };
+  /** Position in `ast.edges` (declaration order) — used by linkStyle index targeting */
+  index?: number;
 }
 
 export interface FlowchartLayoutCluster {

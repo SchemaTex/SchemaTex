@@ -216,7 +216,10 @@ export function parseNetlist(
       pinOrder = ["start"];
     } else {
       throw new NetlistParseError(
-        `Cannot infer type from id "${id}" — use type= override`,
+        `Cannot infer type from id "${id}". ` +
+          `Either rename to a SPICE-prefix id (R*, C*, L*, D*, V*, I*, Q*, M*, J*, S*, F*, B*, K*, U*, X*, W*, T*) ` +
+          `or pass an explicit \`type=<name>\` attribute (e.g. \`${id} ... type=resistor\`). ` +
+          `Schematex circuit covers electrical schematics only — hydraulic/pneumatic prefixes (EV*, BOMBA*, TANK*, etc.) are not supported.`,
         lineIdx + 1
       );
     }

@@ -11,6 +11,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.3.3] — 2026-05-01
+
+### Fixed — production-audit findings (4 items)
+
+Four contained fixes surfaced by ChatDiagram production audit 2026-05-01. Quality gate clean (570 tests pass, +1 new).
+
+- **flowchart `linkStyle` now actually renders.** Parser already accepted `linkStyle 1,5,6 stroke:#ff0000,stroke-width:4px` but stored the result without applying it. Renderer now emits `data-edge-index="N"` per edge and emits matching CSS overrides. Multiple comma-separated indices supported per statement.
+- **flowchart inline `<b>` / `<i>` in node labels.** `multilineText` previously stripped these tags. Now per-line segments inside `<b>...</b>` render with `font-weight=bold`; `<i>...</i>` with `font-style=italic`. Mid-line bolding works (`Foo <b>bar</b> baz`). Combines with existing `<br/>` line-break support.
+- **circuit `Cannot infer type` error message rewrite.** Old: `Cannot infer type from id "X" — use type= override`. New message lists the valid SPICE prefixes (`R/C/L/D/V/I/Q/M/J/S/F/B/K/U/X/W/T`), gives an explicit `type=…` example using the user's id, and states the engine's scope (electrical schematics only — hydraulic/pneumatic prefixes like `EV*`, `BOMBA*`, `TANK*` are not supported).
+- **genogram dual-union sibship regression test.** New test in `tests/genogram/layout.test.ts` covers the case where one shared parent has children with two different partners (Case F from the 2026-05-01 audit). Confirms the existing layout already groups offspring per-union with cross-union gap > 1.25× within-sibship gap. No layout change required — added as regression guard.
+
+### Docs
+
+- **flowchart standard:** `linkStyle` and `<b>/<i>` rows in the M1/M2/M3 implementation tracker now show ✅. EBNF grammar for `link_style` updated to accept comma-separated indices.
+- **circuit standard:** prefix table now lists `T` (terminal_block). Ground-net regex matches the actual code (was documenting only 6 of the 11 supported aliases). Added explicit scope note that the engine is IEEE 315 / IEC 60617 electrical only — not ISO 1219 hydraulic/pneumatic.
+
+---
+
 ## [0.3.2] — 2026-04-30
 
 ### Changed — Internal cleanup of v0.3.1 fixes

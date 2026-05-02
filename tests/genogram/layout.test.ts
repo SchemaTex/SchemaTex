@@ -271,6 +271,54 @@ genogram
     expect(Math.max(...paulMartinKids)).toBeLessThan(Math.min(...kobiMadiKids));
   });
 
+  // ─── Multi-partner offspring (Case F from 2026-05-01 issue report) ───
+  test("offspring from two different partners of one shared parent are visually grouped by union", () => {
+    // 39yo male case study: ex-wife sibship (1 son + 1 daughter) and
+    // ex-girlfriend sibship (3 daughters). All five children share the
+    // same father — but should NOT all sit side-by-side undifferentiated.
+    // The within-sibship gap must be smaller than the cross-sibship gap.
+    const layout = layoutFromText(`
+genogram
+  index_man [male, 1987]
+  ex_wife [female, 1988]
+  index_man -x- ex_wife
+    son1 [male, 2010]
+    daughter1 [female, 2013]
+
+  ex_gf [female, 1990]
+  index_man -/- ex_gf
+    daughter_g1 [female, 2016]
+    daughter_g2 [female, 2018]
+    daughter_g3 [female, 2020]
+`);
+
+    const son1 = findNode(layout.nodes, "son1");
+    const daughter1 = findNode(layout.nodes, "daughter1");
+    const dg1 = findNode(layout.nodes, "daughter_g1");
+    const dg2 = findNode(layout.nodes, "daughter_g2");
+    const dg3 = findNode(layout.nodes, "daughter_g3");
+
+    // Within-sibship gaps
+    const exWifeSibGap = Math.abs(son1.x - daughter1.x);
+    const exGfSibGap1 = Math.abs(dg2.x - dg1.x);
+    const exGfSibGap2 = Math.abs(dg3.x - dg2.x);
+
+    // Cross-sibship gap = rightmost of one sibship → leftmost of other
+    const exWifeKidsX = [son1.x, daughter1.x];
+    const exGfKidsX = [dg1.x, dg2.x, dg3.x];
+    const exWifeRight = Math.max(...exWifeKidsX);
+    const exGfLeft = Math.min(...exGfKidsX);
+    const crossGap = Math.abs(exGfLeft - exWifeRight);
+
+    // Cross-union gap should be visibly wider than within-sibship gap.
+    expect(crossGap).toBeGreaterThan(exWifeSibGap * 1.25);
+    expect(crossGap).toBeGreaterThan(exGfSibGap1 * 1.25);
+    expect(crossGap).toBeGreaterThan(exGfSibGap2 * 1.25);
+
+    // No interleaving — all ex-wife children must be on one side.
+    expect(Math.max(...exWifeKidsX)).toBeLessThan(Math.min(...exGfKidsX));
+  });
+
   // ─── Layout dimensions are reasonable ───────────────────
   test("layout dimensions encompass all nodes", () => {
     const layout = layoutFromText(`
