@@ -612,8 +612,24 @@ export function parseFlowchart(source: string): FlowchartAST {
       continue;
     }
 
-    // ── linkStyle: parse but skip rendering for now ──────────
-    if (/^linkStyle\s/.test(trimmed)) continue;
+    // ── linkStyle: `linkStyle 1,5,6 stroke:#ff0000,stroke-width:4px` ──
+    const linkStyleMatch = /^linkStyle\s+([\d,\s]+|default)\s+(.+)$/.exec(trimmed);
+    if (linkStyleMatch) {
+      const sel = linkStyleMatch[1]!.trim();
+      const props = parseCssProps(linkStyleMatch[2]!);
+      if (sel !== "default") {
+        const indices = sel
+          .split(/[,\s]+/)
+          .map((s) => s.trim())
+          .filter((s) => s.length > 0)
+          .map((s) => parseInt(s, 10))
+          .filter((n) => !isNaN(n));
+        for (const idx of indices) {
+          ast.linkStyles.set(idx, { ...(ast.linkStyles.get(idx) ?? {}), ...props });
+        }
+      }
+      continue;
+    }
 
     // ── edge / node chain statement ──────────────────────────
     let parsed: { nodes: ParsedNodeDef[]; edges: PendingEdge[] };

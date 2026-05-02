@@ -301,7 +301,7 @@ subgraph_def    = "subgraph" (IDENTIFIER | quoted_string) direction?
 class_def       = "classDef" IDENTIFIER css_props
 class_apply     = "class" IDENTIFIER ("," IDENTIFIER)* IDENTIFIER  # class A,B foo
 style_def       = "style" IDENTIFIER css_props
-link_style      = "linkStyle" (NUMBER | "default") css_props
+link_style      = "linkStyle" (NUMBER ("," NUMBER)* | "default") css_props
 
 config_def      = "%%{init:" json_obj "}%%"
 
@@ -1134,8 +1134,9 @@ ChatDiagram 消费者可用这些 hook 实现：
 | Cross-cluster edge routing | — | ✓ | ✓ | — | 7, 8 |
 | classDef (parsed + CSS injection) | — | ✓ | ✓ | ✅ | 11 |
 | `class` / `style` node statements | — | ✓ | ✓ | ✅ | 11, parser test |
-| `linkStyle` | — | ✓ | ✓ | — | 11 |
-| Markdown in label | — | — | ✓ | — | — |
+| `linkStyle` | — | ✓ | ✓ | ✅ | 11 |
+| Inline `<b>` / `<i>` in labels | — | ✓ | ✓ | ✅ | renderer test |
+| Markdown in label (`**bold**`) | — | — | ✓ | — | — |
 | Animated edges | — | — | ✓ | — | — |
 | Click href | — | — | ✓ | — | — |
 | Disconnected components | — | ✓ | ✓ | — | 14 |

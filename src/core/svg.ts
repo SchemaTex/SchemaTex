@@ -103,19 +103,65 @@ export function text(attrs: Attrs, content: string): string {
   return el("text", attrs, escapeXml(content));
 }
 
-/** Splits on `<br/>`/`<br>`/`\n` into vertically centered `<tspan>` rows. Strips `<b>`/`<i>`. */
+interface Segment { text: string; bold: boolean; italic: boolean }
+
+function parseInlineSegments(line: string): Segment[] {
+  const out: Segment[] = [];
+  let bold = false;
+  let italic = false;
+  let buf = "";
+  let i = 0;
+  while (i < line.length) {
+    const rest = line.slice(i);
+    const m = /^<(\/?)([bi])>/i.exec(rest);
+    if (m) {
+      if (buf) { out.push({ text: buf, bold, italic }); buf = ""; }
+      const isClose = m[1] === "/";
+      const tag = m[2]!.toLowerCase();
+      if (tag === "b") bold = !isClose;
+      else italic = !isClose;
+      i += m[0].length;
+    } else {
+      buf += line[i];
+      i++;
+    }
+  }
+  if (buf) out.push({ text: buf, bold, italic });
+  return out;
+}
+
+function segmentTspan(
+  seg: Segment,
+  extra: Attrs
+): string {
+  const a: Attrs = { ...extra };
+  if (seg.bold) a["font-weight"] = "bold";
+  if (seg.italic) a["font-style"] = "italic";
+  return el("tspan", a, escapeXml(seg.text));
+}
+
+/** Splits on `<br/>`/`<br>`/`\n` into vertically centered `<tspan>` rows. Honors inline `<b>`/`<i>` per segment. */
 export function multilineText(
   attrs: Attrs & { x: number | string },
   content: string,
   lineHeight = 14
 ): string {
-  const stripped = String(content).replace(/<\/?[bi]>/gi, "");
-  const lines = stripped.split(/<br\s*\/?>|\n/i);
-  if (lines.length <= 1) return text(attrs, lines[0] ?? "");
+  const lines = String(content).split(/<br\s*\/?>|\n/i);
   const total = (lines.length - 1) * lineHeight;
-  const tspans = lines.map((ln, i) => {
-    const dy = i === 0 ? -total / 2 : lineHeight;
-    return el("tspan", { x: attrs.x, dy }, escapeXml(ln));
+  const tspans: string[] = [];
+  lines.forEach((ln, lineIdx) => {
+    const segs = parseInlineSegments(ln);
+    const rendered = segs.length === 0 ? [{ text: "", bold: false, italic: false }] : segs;
+    rendered.forEach((seg, segIdx) => {
+      // Only the first segment of each line carries x + dy (line break);
+      // subsequent segments inherit position and continue inline.
+      const extra: Attrs = {};
+      if (segIdx === 0) {
+        extra.x = attrs.x;
+        extra.dy = lineIdx === 0 ? -total / 2 : lineHeight;
+      }
+      tspans.push(segmentTspan(seg, extra));
+    });
   });
   return el("text", attrs, tspans.join(""));
 }

@@ -1258,6 +1258,10 @@ export function layoutFlowchart(ast: FlowchartAST): FlowchartLayoutResult {
     }
   }
 
+  // Map original edge → declaration index, for linkStyle targeting.
+  const edgeIndex = new Map<typeof ast.edges[number], number>();
+  ast.edges.forEach((e, i) => edgeIndex.set(e, i));
+
   // Import routing lazily to avoid circular deps (routing module is sibling).
   // We inline minimal routing right here to keep imports simple.
   const outEdges = updatedEdges.map((le) => {
@@ -1275,7 +1279,7 @@ export function layoutFlowchart(ast: FlowchartAST): FlowchartLayoutResult {
       }
     }
     if (points.length < 2) {
-      return { edge: le.original, path: "" };
+      return { edge: le.original, path: "", index: edgeIndex.get(le.original) };
     }
     // Clip endpoints to node borders
     const startNode = nodeCenter.get(chain[0]!);
@@ -1313,6 +1317,7 @@ export function layoutFlowchart(ast: FlowchartAST): FlowchartLayoutResult {
       },
       path: d,
       labelAnchor,
+      index: edgeIndex.get(le.original),
     };
   });
 

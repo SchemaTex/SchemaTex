@@ -183,6 +183,7 @@ function renderEdge(le: FlowchartLayoutEdge): string {
   return group(
     {
       "data-edge-id": e.id ?? `${e.from}->${e.to}`,
+      "data-edge-index": le.index,
       "data-kind": e.kind,
       "data-from": e.from,
       "data-to": e.to,
@@ -258,6 +259,17 @@ export function renderFlowchartAST(
     })
     .join("\n");
 
+  // linkStyle overrides (from `linkStyle 1,5,6 stroke:#ff0000,...` statements).
+  // Edge index is the declaration order in `ast.edges`.
+  const linkStyleOverrides = Array.from(ast.linkStyles.entries())
+    .map(([idx, props]) => {
+      const cssProps = Object.entries(props)
+        .map(([k, v]) => `${k}:${v}`)
+        .join(";");
+      return `g[data-edge-index="${idx}"] path { ${cssProps} }`;
+    })
+    .join("\n");
+
   const titleBlock = ast.title
     ? textEl(
         {
@@ -270,7 +282,9 @@ export function renderFlowchartAST(
       )
     : "";
 
-  const cssOverrides = [nodeStyleOverrides, classDefOverrides].filter((s) => s.length > 0).join("\n");
+  const cssOverrides = [nodeStyleOverrides, classDefOverrides, linkStyleOverrides]
+    .filter((s) => s.length > 0)
+    .join("\n");
 
   const headMeta: string[] = [
     titleEl(ast.title ? `${ast.title} — Flowchart` : "Flowchart"),

@@ -412,12 +412,15 @@ The first character of `<id>` determines the default type and pin order. Overrid
 | `U`    | generic_ic       | (declare via `pins="..."` attr) | |
 | `X`    | generic_ic       | (declare via `pins="..."` attr) | |
 | `W`    | wire             | start, end       | explicit point-to-point connection (non-SPICE convention; common in EE textbook netlists) |
+| `T`    | terminal_block   | (declare via `pins="..."` attr) | also `type=junction_box` / `type=jbox` aliases |
 
 Anything else (e.g. `N1`, `MyComponent`) → must declare with `type=<...>`.
 
+> **Scope note:** Schematex circuit covers **electrical schematics only** (IEEE 315 / IEC 60617 conventions). Hydraulic and pneumatic schematics (ISO 1219) use a fundamentally different visual grammar (directional valve envelopes, cylinder symbols, line-style differentiation for pressure / return / drain) and are out of scope for this engine. If your netlist uses hydraulic prefixes such as `EV*` (electrovalve), `BOMBA*` (pump), `TANK*`, `DIPOSIT*`, or types like `electrovalvula_4_3` / `valvula_limitadora_pressio` / `regulador_cabal`, the parser will reject the id (no inferred type) and the renderer will draw an unknown-type placeholder for any explicit `type=` it can't resolve.
+
 ### 4.5.2 Ground nets
 
-The following net names are aliased to ground: `0`, `gnd`, `GND`, `Gnd`, `ground`, `Ground`.
+Net names matching `(0 | gnd | ground | earth | pe | agnd | dgnd | gnda | gndd | vss | com)` (case-insensitive, with optional `_<word>` or `<digit>` suffix) canonicalize to ground. Examples: `0`, `GND`, `gnd_ref`, `AGND`, `DGND_DIG`, `EARTH1`, `PE`, `VSS`, `COM`.
 
 ### 4.5.3 Type aliases (for `type=`)
 

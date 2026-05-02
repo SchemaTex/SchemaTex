@@ -226,6 +226,42 @@ style nodeId fill:#f9f,stroke:#333,stroke-width:4px
 
 Accepts standard CSS property names. Multiple properties are comma-separated.
 
+### 5.3 Per-edge style overrides
+
+`linkStyle` targets edges by their **declaration index** (0-based, in the order they appear in the source). Multiple comma-separated indices apply the same props to several edges:
+
+```
+flowchart TD
+  A --> B
+  B ==> C
+  B -.-> D
+  C --> E
+  D --> E
+  linkStyle 1 stroke:#d32f2f,stroke-width:4px
+  linkStyle 2,4 stroke:#f57c00,stroke-dasharray:5 5
+```
+
+Use this to highlight a critical path or distinguish an alternate flow.
+
+### 5.4 Inline label formatting
+
+Node labels accept three inline formatting tags:
+
+| Tag | Effect |
+|---|---|
+| `<br/>` or `<br>` | Line break |
+| `<b>…</b>` | Bold |
+| `<i>…</i>` | Italic |
+
+```
+flowchart TD
+  M1["0 \| 0<br/><b>START</b>"]
+  M2["4 \| 4<br/><b>Phase 1</b><br/><i>est. 4h</i>"]
+  M1 --> M2
+```
+
+Tags can be nested and mixed mid-line (`Hello <b>world</b>!`). Edge labels are single-line and do not currently support these tags.
+
 ---
 
 ## 6. Labels & comments
@@ -314,7 +350,8 @@ pipe-label     = "|" text "|"
 class-stmt     = "class" WS id-list WS class-name NEWLINE
 classdef-stmt  = "classDef" WS class-name WS css-props NEWLINE
 style-stmt     = "style" WS id WS css-props NEWLINE
-linkstyle-stmt = "linkStyle" WS ...    %% parsed but not yet rendered
+linkstyle-stmt = "linkStyle" WS index-list WS css-props NEWLINE
+index-list     = NUMBER ( "," NUMBER )* | "default"
 
 comment        = "%%" any NEWLINE
 id             = [A-Za-z] [A-Za-z0-9_-]*
@@ -339,7 +376,8 @@ What is implemented today:
 - ✅ Subgraphs with optional id, label, and per-subgraph direction
 - ✅ `classDef` / `class` semantic grouping
 - ✅ Per-node `style` CSS overrides
-- ⏳ `linkStyle` rendering — parsed but visual application pending
+- ✅ `linkStyle` rendering — `linkStyle 1,5,6 stroke:#f00,stroke-width:4px` applies CSS to the matching edges by declaration order
+- ✅ Inline `<b>` / `<i>` in node labels (combines with existing `<br/>` line breaks)
 - ⏳ Shape rendering for all 13 shapes — M1 fully renders rect/round/stadium/diamond/parallelogram; remaining shapes fall back to rect
 - ⏳ Swim-lane layout variant
 
@@ -354,9 +392,9 @@ References:
 
 **Planned — not yet parseable.** Do not use these in generated DSL today; the parser will reject or ignore them.
 
-- **`linkStyle` visual rendering** — `linkStyle 0 stroke:#f00` is parsed and stored but not yet applied by the renderer.
 - **Full shape rendering for all 13 shapes** — subroutine, cylinder, circle, double-circle, hexagon, asymmetric, trapezoid, and parallelogram-alt fall back to rect in M1.
 - **Swim-lane layout** — horizontal bands grouping nodes by actor or system (Mermaid `subgraph` with `direction TB` inside `LR` root).
 - **`%%{init: {…}}%%` init block** — Mermaid-compatible theme and layout initialization block.
+- **Markdown formatting in labels** — `**bold**` / `*italic*` markdown syntax (HTML `<b>`/`<i>` already work — see §5).
 
 Track in the GitHub issues if you need any of these sooner.

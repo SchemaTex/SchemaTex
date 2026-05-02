@@ -384,7 +384,7 @@ circuit "Low-pass filter" netlist
 Each line is: `ID net1 net2 [net3…] [value] [key=value…]`
 
 - **ID** — component identifier. The first letter determines the default type (SPICE prefix convention).
-- **net1, net2, …** — net names the pins connect to. Use `0`, `gnd`, or `GND` for the ground net.
+- **net1, net2, …** — net names the pins connect to. Net names matching `0`, `gnd`, `ground`, `earth`, `pe`, `agnd`, `dgnd`, `gnda`, `gndd`, `vss`, or `com` (case-insensitive, with optional `_<word>` or numeric suffix — e.g. `gnd_ref`, `AGND_DIG`, `EARTH1`) all canonicalize to the ground net.
 - **value** (optional bare token) — component value or model name.
 - **key=value** (optional) — `label=`, `value=`, `type=` overrides.
 
@@ -406,6 +406,10 @@ Each line is: `ID net1 net2 [net3…] [value] [key=value…]`
 | `B` | `battery` | plus, minus |
 | `K` | `relay_coil` | p1, p2 |
 | `U`, `X` | `generic_ic` | custom via `pins=` |
+| `W` | `wire` | start, end |
+| `T` | `terminal_block` | custom via `pins=` (also `type=junction_box`) |
+
+> **Scope:** schematex circuit covers **electrical schematics only** (IEEE 315 / IEC 60617). Hydraulic and pneumatic schematics (ISO 1219) use a fundamentally different visual grammar — directional valve envelopes, cylinder symbols, line styles for pressure/return/drain — and are not supported by this engine. Hydraulic prefixes such as `EV*` (electrovalve), `BOMBA*` (pump), `TANK*`, `DIPOSIT*` will be rejected with a "cannot infer type" error.
 
 ### 4.3 Transistor model override
 
