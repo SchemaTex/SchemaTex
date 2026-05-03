@@ -35,7 +35,7 @@ function idSlug(id: string): string {
 
 function buildCss(tokens: ReturnType<typeof resolveVennTheme>): string {
   return `
-.schematex-venn { background: ${tokens.bg}; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+.schematex-venn { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
 .schematex-venn-title { font: 600 16px sans-serif; fill: ${tokens.text}; }
 .schematex-venn-set { stroke: ${tokens.vennSetStroke}; stroke-width: 1.25; }
 .schematex-venn-blend-multiply { mix-blend-mode: multiply; }

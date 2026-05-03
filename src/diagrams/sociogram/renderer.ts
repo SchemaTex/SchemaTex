@@ -41,7 +41,6 @@ function buildCSS(ast: SociogramAST, t: BaseTheme): string {
   return `
 .schematex-sociogram {${cssCustomProperties(t)}
   font-family: system-ui, -apple-system, sans-serif;
-  background: ${t.bg};
 }
 .schematex-sociogram-node { fill: ${t.accent}; stroke: ${t.accent}; stroke-width: ${STROKE_WIDTH.normal}; }
 .schematex-sociogram-node-star { fill: ${rf.star}; stroke: ${t.warn}; stroke-width: ${STROKE_WIDTH.thick}; }

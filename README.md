@@ -534,11 +534,30 @@ import { SchematexDiagram } from 'schematex/react';
 
 // Export (browser Canvas)
 import { svgToPngBlob, downloadBlob, printSvgAsPdf } from 'schematex/export';
-const blob = await svgToPngBlob(svg, { scale: 2 });
+const blob = await svgToPngBlob(svg, { scale: 2 });           // transparent PNG
+const opaque = await svgToPngBlob(svg, { background: 'white' }); // opt-in fill
 downloadBlob(blob, 'diagram.png');
 ```
 
 See the [API reference →](https://schematex.dev/docs/api).
+
+### Backgrounds & dark mode
+
+Schematex SVGs are **background-agnostic by default** — no fill is baked into the
+output, so a diagram inherits whatever color its host element provides. This
+keeps the same SVG embeddable in light pages, dark canvases, or print PDFs.
+
+When using `theme: "dark"`, the diagram's strokes and text are designed for a
+dark surface — wrap the SVG in a container with a dark background, e.g.:
+
+```html
+<div style="background: #0f172a; padding: 16px;">
+  <!-- schematex SVG with theme: "dark" -->
+</div>
+```
+
+PNG export (`svgToPngBlob`) defaults to a transparent background. Pass
+`background: 'white'` (or any color) to bake one in.
 
 ## Ecosystem
 

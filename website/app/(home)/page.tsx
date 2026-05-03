@@ -331,7 +331,10 @@ export default async function HomePage() {
                     <span className="opacity-40">·</span>
                     <span style={{ color: 'var(--accent)' }}>§ {ex.standard}</span>
                   </div>
-                  <div className="dot-grid flex aspect-[4/3] items-center justify-center overflow-hidden p-4">
+                  <div
+                    className="dot-grid flex aspect-[4/3] items-center justify-center overflow-hidden p-4"
+                    style={{ background: '#ffffff' }}
+                  >
                     <div
                       className="flex h-full w-full items-center justify-center [&_svg]:block [&_svg]:h-auto [&_svg]:max-h-full [&_svg]:w-auto [&_svg]:max-w-full"
                       dangerouslySetInnerHTML={{ __html: svg }}

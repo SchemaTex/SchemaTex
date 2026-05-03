@@ -48,7 +48,16 @@ export default function Layout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body className="flex min-h-screen flex-col">
-        <RootProvider>{children}</RootProvider>
+        <RootProvider
+          theme={{
+            // Light by default, no `prefers-color-scheme` follow. Users can
+            // still toggle to dark via the header switch.
+            defaultTheme: 'light',
+            enableSystem: false,
+          }}
+        >
+          {children}
+        </RootProvider>
         <Script
           defer
           data-domain="schematex.js.org"

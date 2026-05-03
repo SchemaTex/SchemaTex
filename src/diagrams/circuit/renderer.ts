@@ -136,7 +136,7 @@ export function renderCircuit(ast: CircuitAST, config?: RenderConfig): string {
   const items = layout.items.map((it) => renderItem(it, offsetX, offsetY)).join("");
 
   const css = `
-.schematex-circuit { background: ${t.bg}; font-family: system-ui, -apple-system, sans-serif; }
+.schematex-circuit { font-family: system-ui, -apple-system, sans-serif; }
 .schematex-circuit-body { stroke: ${t.stroke}; stroke-width: 1.75; fill: none; stroke-linejoin: round; stroke-linecap: round; }
 .schematex-circuit-fill { stroke: ${t.stroke}; stroke-width: 1.5; fill: ${t.stroke}; }
 .schematex-circuit-wire { stroke: ${t.stroke}; stroke-width: 1.75; fill: none; stroke-linecap: square; }

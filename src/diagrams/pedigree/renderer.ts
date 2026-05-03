@@ -149,7 +149,6 @@ function buildDefs(nodes: LayoutNode[], t: ResolvedTheme<PersonTokens>): string 
 function buildStyles(config: RenderConfig, t: ResolvedTheme<PersonTokens>): string {
   const css = `
 .schematex-pedigree {${cssCustomProperties(t)}
-  background: ${t.bg};
 }
 .schematex-pedigree-shape { fill: ${t.fill}; stroke: ${t.stroke}; stroke-width: ${STROKE_WIDTH.normal}; stroke-linejoin: round; }
 .schematex-pedigree-label { font-family: ${config.fontFamily}; font-size: ${config.fontSize}px; text-anchor: middle; fill: ${t.text}; }

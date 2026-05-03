@@ -140,7 +140,6 @@ function buildStyles(config: RenderConfig): string {
   const t = resolveGenogramTheme(config.theme);
   const css = `
 .schematex-genogram {${cssCustomProperties(t)}
-  background: ${t.bg};
 }
 .schematex-genogram-shape { fill: ${t.fill}; stroke: ${t.stroke}; stroke-width: ${STROKE_WIDTH.normal}; stroke-linejoin: round; }
 .schematex-genogram-male .schematex-genogram-shape { fill: ${t.maleFill}; }

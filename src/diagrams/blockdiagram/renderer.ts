@@ -30,7 +30,7 @@ export function renderBlockDiagram(ast: BlockAST): string {
   const height = layout.height + titleOffset;
 
   const css = `
-.schematex-bd { background: #fff; font-family: system-ui, -apple-system, sans-serif; }
+.schematex-bd { font-family: system-ui, -apple-system, sans-serif; }
 .schematex-bd-block { stroke: #333; stroke-width: 2; }
 .schematex-bd-tf { font: italic 14px serif; fill: #111; }
 .schematex-bd-block-name { font: 10px sans-serif; fill: #666; }

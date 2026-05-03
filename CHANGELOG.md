@@ -11,6 +11,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.3.4] — 2026-05-02
+
+### Changed — background handling
+
+SVG output is now background-agnostic. The diagram inherits whatever color
+its host element provides, so the same SVG embeds cleanly in light pages,
+dark canvases, and print PDFs without `!important` overrides.
+
+- **Removed `background:` from inline `<style>` blocks** across all 19
+  diagram renderers (genogram, ecomap, pedigree, phylo, sociogram, flowchart,
+  circuit, logic, timing, ladder, sld, blockdiagram, entity, decisiontree,
+  orgchart, venn, matrix, fishbone, timeline). Stroke / fill / text colors
+  are unchanged — only the canvas fill is no longer baked in.
+- **PNG export (`svgToPngBlob`) defaults to transparent.** Previously
+  defaulted to `'white'`. Pass `{ background: 'white' }` (or any color) to
+  keep the old behavior.
+- **Dark theme requires a dark host wrapper.** When using `theme: "dark"`,
+  wrap the SVG in a container with a dark background. README has an example.
+
+No DSL changes. No layout changes. All 569 tests pass.
+
+---
+
 ## [0.3.3] — 2026-05-01
 
 ### Fixed — production-audit findings (4 items)

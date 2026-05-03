@@ -38,7 +38,7 @@ const CSS_TEMPLATE = (themeName: ThemeName): string => {
   const t = resolveFlowchartTheme(themeName);
   const c = t.classes;
   return `
-.sx-fc { background: ${t.bg}; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+.sx-fc { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
 .sx-fc-node { fill: ${t.fillMuted}; stroke: ${t.stroke}; stroke-width: 1.5; stroke-linejoin: round; }
 .sx-fc-node-stadium { fill: ${t.stadiumFill}; stroke: ${t.stroke}; }
 .sx-fc-node-diamond { fill: ${t.diamondFill}; stroke: ${t.stroke}; }

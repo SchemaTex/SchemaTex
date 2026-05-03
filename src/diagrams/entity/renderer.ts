@@ -23,7 +23,7 @@ import {
 
 function buildCss(t: BaseTheme): string {
   return `
-.lt-entity { background: ${t.bg}; font-family: system-ui, -apple-system, sans-serif; }
+.lt-entity { font-family: system-ui, -apple-system, sans-serif; }
 .lt-entity-title { font: bold 16px sans-serif; fill: ${t.text}; }
 .lt-entity-name { font: 600 12px sans-serif; fill: ${t.text}; text-anchor: middle; }
 .lt-entity-type { font: 500 10px sans-serif; fill: ${t.textMuted}; text-anchor: middle; }

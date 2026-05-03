@@ -23,7 +23,7 @@ const CLASS_PALETTE = [
 
 function buildCss(t: BaseTheme): string {
   return `
-.lt-dtree { background: ${t.bg}; font-family: system-ui, -apple-system, sans-serif; }
+.lt-dtree { font-family: system-ui, -apple-system, sans-serif; }
 .lt-dtree-title { font: 500 16px sans-serif; fill: ${t.text}; }
 .lt-dtree-edge { fill: none; stroke: ${t.stroke}; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
 .lt-dtree-edge-optimal { fill: none; stroke: ${t.positive}; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }

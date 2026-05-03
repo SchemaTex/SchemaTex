@@ -45,7 +45,6 @@ function buildCSS(ast: PhyloTreeAST, t: ResolvedTheme<BiologyTokens>): string {
   return `
 .schematex-phylo {${cssCustomProperties(t)}
   font-family: system-ui, -apple-system, sans-serif;
-  background: ${t.bg};
 }
 .schematex-phylo-branch { fill: none; stroke: ${t.text}; stroke-width: ${STROKE_WIDTH.normal}; stroke-linecap: round; }
 .schematex-phylo-branch-connector { fill: none; stroke: ${t.text}; stroke-width: ${STROKE_WIDTH.normal}; }
