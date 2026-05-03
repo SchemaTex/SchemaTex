@@ -36,10 +36,12 @@ function GalleryCard({ ex }: { ex: GalleryExample }) {
           <span className="truncate">§ {ex.standard}</span>
         </div>
 
-        {/* Diagram preview — dot-grid background, fixed height */}
+        {/* Diagram preview — dot-grid background, fixed height.
+            Force white surface so the always-light-theme schematex SVG remains
+            readable when the site is in dark mode. */}
         <div
           className="dot-grid flex items-center justify-center p-4"
-          style={{ height: 180, color: 'var(--stroke)' }}
+          style={{ height: 180, color: 'var(--stroke)', background: '#ffffff' }}
         >
           {svg ? (
             <div

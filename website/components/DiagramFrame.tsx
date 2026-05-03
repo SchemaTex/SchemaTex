@@ -25,7 +25,9 @@ export function DiagramFrame({
       style={{
         border: '1px solid var(--fill-muted)',
         borderRadius: 'var(--r)',
-        background: 'var(--bg)',
+        // Force white surface so the always-light-theme schematex SVG (with dark
+        // strokes/text) stays readable when the site is in dark mode.
+        background: '#ffffff',
         ...style,
       }}
     >
