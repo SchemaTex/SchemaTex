@@ -7,6 +7,7 @@ import type {
   JurisdictionDef,
   ClusterDef,
 } from "../../core/types";
+import { matchQuotedTitle } from "../../core/quotes";
 
 export class EntityParseError extends Error {
   constructor(message: string) {
@@ -185,8 +186,8 @@ export function parseEntityDSL(text: string): EntityAST {
 
     // Header: entity-structure "title"  or  entity-structure: "title"
     if (/^entity-structure\b/i.test(line)) {
-      const m = line.match(/"([^"]*)"/);
-      if (m) title = m[1];
+      const t = matchQuotedTitle(line);
+      if (t !== undefined) title = t;
       continue;
     }
 

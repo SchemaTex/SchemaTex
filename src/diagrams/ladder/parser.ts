@@ -10,6 +10,7 @@ import type {
   LadderCoilType,
   LadderFBType,
 } from "../../core/types";
+import { matchQuotedTitle } from "../../core/quotes";
 
 export class LadderParseError extends Error {
   constructor(
@@ -172,8 +173,8 @@ export function parseLadderDSL(text: string): LadderAST {
 
     // Header: ladder "title"
     if (/^ladder\b/i.test(line)) {
-      const m = line.match(/"([^"]*)"/);
-      if (m) title = m[1];
+      const t = matchQuotedTitle(line);
+      if (t !== undefined) title = t;
       continue;
     }
 

@@ -11,6 +11,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.3.5] — 2026-05-04
+
+### Fixed — production-audit findings (3 items)
+
+Three parser bugs surfaced by ChatDiagram production data (2026-05-04 audit, ~370 parser errors / 14+ locales). Quality gate clean (587 tests pass, +27 new).
+
+- **Logic parser: ref-before-decl now a warning, not a hard error.** When a gate references a signal that was never declared with `input`, the parser previously threw `Unknown signal "X" in gate Y`. It now auto-declares the signal as an input and appends a string to `ast.warnings`. Active-low markers (`~`) are preserved on auto-declared signals. This matches real production patterns where LLMs emit gate-first DSL without explicit `input` lines. `LogicGateInput` gains `autoDeclared?: boolean`; `LogicGateAST` gains `warnings?: string[]`.
+- **Smart-quote support across all diagram header titles.** Eleven parsers extracted diagram titles with the regex `/"([^"]*)"/`, which rejected Unicode curly quotes and other locale-specific pairs used by non-English speakers. A new shared helper (`src/core/quotes.ts`) recognises `"…"` `'…'` `"…"` `'…'` `«…»` `「…」` `『…』` and `\"` / `\'` escape sequences. All header-title extraction in blockdiagram, circuit, entity, ladder, logic, orgchart, phylo, sld, sociogram, timing, and venn parsers now uses this helper.
+- **Venn tokenizer: smart-quote support in title, set labels, region values, and comment stripping.** `parseTitleAndProps`, `parseConfigProps`, `splitTopLevelCommas`, and `parseValue` all updated to be quote-pair-aware. The `stripComment` helper now correctly skips over non-ASCII quote pairs (e.g. `«…»`) before looking for `#`. Fixes both the `unterminated quoted title` error and the `\"` escape robustness gap reported in Spanish-locale sessions.
+
+---
+
 ## [0.3.4] — 2026-05-02
 
 ### Changed — background handling

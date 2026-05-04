@@ -4,6 +4,7 @@ import type {
   SLDNodeType,
   SLDConnection,
 } from "../../core/types";
+import { matchQuotedTitle } from "../../core/quotes";
 
 export class SLDParseError extends Error {
   public line?: number;
@@ -139,8 +140,8 @@ export function parseSLDDSL(text: string): SLDAST {
 
     // Header: sld "title"
     if (/^sld\b/i.test(line)) {
-      const m = line.match(/"([^"]*)"/);
-      if (m) title = m[1];
+      const t = matchQuotedTitle(line);
+      if (t !== undefined) title = t;
       continue;
     }
 

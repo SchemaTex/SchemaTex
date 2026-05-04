@@ -7,6 +7,7 @@ import type {
   LogicGateStyle,
   LogicGateModule,
 } from "../../core/types";
+import { matchQuotedTitle } from "../../core/quotes";
 
 export class LogicParseError extends Error {
   constructor(message: string) {
@@ -79,8 +80,8 @@ export function parseLogic(text: string): LogicGateAST {
 
     // Header
     if (/^logic\b/i.test(line)) {
-      const t = line.match(/"([^"]*)"/);
-      if (t) title = t[1];
+      const t = matchQuotedTitle(line);
+      if (t !== undefined) title = t;
       const s = line.match(/style\s*:\s*(ansi|iec)/i);
       if (s) style = s[1].toLowerCase() as LogicGateStyle;
       continue;
@@ -139,16 +140,30 @@ export function parseLogic(text: string): LogicGateAST {
     else if (gates.some((g) => g.id === out.id)) out.from = out.id;
   }
 
-  // Validate: undefined input references
+  // Resolve undefined signal references: auto-declare them as inputs and
+  // emit a warning. Hard-failing here is hostile to LLM-generated DSL where
+  // the model often forgets the explicit `input` line — see playbook.
+  const warnings: string[] = [];
   const known = new Set<string>([
     ...inputs.map((i) => i.id),
     ...gates.map((g) => g.id),
   ]);
+  const autoDeclared = new Set<string>();
   for (const g of gates) {
     for (const inp of g.inputs) {
-      const clean = inp.startsWith("~") ? inp.slice(1) : inp;
-      if (!known.has(clean)) {
-        throw new LogicParseError(`Unknown signal "${clean}" in gate ${g.id}`);
+      const isLow = inp.startsWith("~");
+      const clean = isLow ? inp.slice(1) : inp;
+      if (!known.has(clean) && !autoDeclared.has(clean)) {
+        autoDeclared.add(clean);
+        inputs.push({
+          id: clean,
+          label: clean,
+          isActiveLow: isLow || undefined,
+          autoDeclared: true,
+        });
+        warnings.push(
+          `Signal "${clean}" referenced in gate ${g.id} was not declared; auto-declared as input.`
+        );
       }
     }
   }
@@ -161,5 +176,6 @@ export function parseLogic(text: string): LogicGateAST {
     outputs,
     gates,
     modules: modules.length > 0 ? modules : undefined,
+    warnings: warnings.length > 0 ? warnings : undefined,
   };
 }

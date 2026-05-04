@@ -7,6 +7,7 @@ import type {
   OrgchartNodeKind,
   OrgchartRoleIcon,
 } from "./types";
+import { matchQuotedTitle } from "../../core/quotes";
 
 export class OrgchartParseError extends Error {
   constructor(
@@ -225,8 +226,8 @@ export function parseOrgchart(text: string): OrgchartAST {
 
     // Header
     if (/^orgchart\b/i.test(line)) {
-      const m = line.match(/"([^"]*)"/);
-      if (m) title = m[1];
+      const t = matchQuotedTitle(line);
+      if (t !== undefined) title = t;
       continue;
     }
 

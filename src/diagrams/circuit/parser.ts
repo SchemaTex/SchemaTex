@@ -6,6 +6,7 @@ import type {
   CircuitNet,
 } from "../../core/types";
 import { parseNetlist } from "./netlist";
+import { matchQuotedTitle } from "../../core/quotes";
 
 export class CircuitParseError extends Error {
   constructor(message: string) {
@@ -162,7 +163,7 @@ export function parseCircuit(text: string): CircuitAST {
     .find((l) => l.length > 0) ?? "";
 
   if (/^circuit\b.*\bnetlist\s*$/i.test(firstMeaningful)) {
-    const titleMatch = firstMeaningful.match(/"([^"]*)"/);
+    const netlistTitle = matchQuotedTitle(firstMeaningful);
     let headerIdx = -1;
     for (let i = 0; i < rawLines.length; i++) {
       const s = rawLines[i].replace(/#.*$/, "").trim();
@@ -172,7 +173,7 @@ export function parseCircuit(text: string): CircuitAST {
       }
     }
     const body = rawLines.slice(headerIdx + 1).join("\n");
-    return parseNetlist(body, titleMatch?.[1]);
+    return parseNetlist(body, netlistTitle);
   }
 
   const lines = text.split("\n").map((l) => l.replace(/\r$/, ""));
@@ -191,8 +192,8 @@ export function parseCircuit(text: string): CircuitAST {
 
     // header
     if (/^circuit\b/i.test(stripped)) {
-      const t = stripped.match(/"([^"]*)"/);
-      if (t) title = t[1];
+      const t = matchQuotedTitle(stripped);
+      if (t !== undefined) title = t;
       continue;
     }
 

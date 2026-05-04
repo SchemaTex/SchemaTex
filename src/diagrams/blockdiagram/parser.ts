@@ -5,6 +5,7 @@ import type {
   SummingJunction,
   BlockRole,
 } from "../../core/types";
+import { matchQuotedTitle } from "../../core/quotes";
 
 export class BlockDiagramParseError extends Error {
   constructor(
@@ -103,8 +104,8 @@ export function parseBlockDiagram(text: string): BlockAST {
 
     // Header: blockdiagram "Title"
     if (/^blockdiagram\b/i.test(line)) {
-      const t = line.match(/"([^"]*)"/);
-      if (t) title = t[1];
+      const t = matchQuotedTitle(line);
+      if (t !== undefined) title = t;
       continue;
     }
 

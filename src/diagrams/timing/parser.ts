@@ -1,4 +1,5 @@
 import type { TimingAST, TimingSignal, TimingGroup } from "../../core/types";
+import { matchQuotedTitle } from "../../core/quotes";
 
 export class TimingParseError extends Error {
   constructor(
@@ -49,8 +50,8 @@ export function parseTiming(text: string): TimingAST {
 
     // Header: `timing "title" [hscale: 2]`
     if (/^timing\b/i.test(line)) {
-      const titleMatch = line.match(/"([^"]*)"/);
-      if (titleMatch) title = titleMatch[1];
+      const t = matchQuotedTitle(line);
+      if (t !== undefined) title = t;
       const hs = line.match(/hscale\s*:\s*(\d+(?:\.\d+)?)/);
       if (hs) hscale = parseFloat(hs[1]);
       continue;

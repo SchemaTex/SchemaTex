@@ -724,6 +724,8 @@ export interface LogicGateInput {
   id: string;
   label: string;
   isActiveLow?: boolean;
+  /** True when the parser inferred this input from a gate reference rather than an explicit declaration. */
+  autoDeclared?: boolean;
 }
 
 export interface LogicGateOutput {
@@ -743,6 +745,8 @@ export interface LogicGateAST {
   gates: LogicGateNode[];
   modules?: LogicGateModule[];
   metadata?: Record<string, string>;
+  /** Non-fatal parser warnings (e.g. signals auto-declared as inputs). */
+  warnings?: string[];
 }
 
 // ── Circuit Schematic ────────────────────────────────────────

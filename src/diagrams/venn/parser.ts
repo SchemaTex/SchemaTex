@@ -20,6 +20,11 @@ import type {
   VennRegionValue,
   VennSet,
 } from "../../core/types";
+import {
+  extractQuotedString,
+  isOpenQuote,
+  stripQuotes as stripQuotesShared,
+} from "../../core/quotes";
 
 export class VennParseError extends Error {
   constructor(message: string, public readonly line?: number) {
@@ -38,34 +43,53 @@ const DEFAULT_CONFIG: VennConfig = {
 };
 
 function stripComment(line: string): string {
-  // Comments start at first unquoted '#'.
-  let inQuote = false;
+  // Comments start at first '#' that isn't inside any recognised quote pair.
   for (let i = 0; i < line.length; i++) {
-    const ch = line[i];
-    if (ch === '"') inQuote = !inQuote;
-    else if (ch === "#" && !inQuote) return line.slice(0, i);
+    const ch = line[i]!;
+    if (isOpenQuote(ch)) {
+      try {
+        const r = extractQuotedString(line, i);
+        if (r) {
+          i = r.end - 1;
+          continue;
+        }
+      } catch {
+        // unterminated quote — leave the rest alone
+        return line;
+      }
+    }
+    if (ch === "#") return line.slice(0, i);
   }
   return line;
 }
 
 function stripQuotes(s: string): string {
-  const t = s.trim();
-  if (t.length >= 2 && t.startsWith('"') && t.endsWith('"')) return t.slice(1, -1);
-  return t;
+  return stripQuotesShared(s);
 }
 
 function parseConfigProps(text: string): Record<string, string> {
   // Split on commas that are not inside quotes or brackets.
   const out: Record<string, string> = {};
   let depth = 0;
-  let inQuote = false;
   let buf = "";
   const parts: string[] = [];
-  for (const ch of text) {
-    if (ch === '"') inQuote = !inQuote;
-    else if (!inQuote && (ch === "[" || ch === "(" || ch === "{")) depth++;
-    else if (!inQuote && (ch === "]" || ch === ")" || ch === "}")) depth--;
-    if (ch === "," && depth === 0 && !inQuote) {
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i]!;
+    if (isOpenQuote(ch)) {
+      try {
+        const r = extractQuotedString(text, i);
+        if (r) {
+          buf += text.slice(i, r.end);
+          i = r.end - 1;
+          continue;
+        }
+      } catch {
+        // fall through and treat the opener as a literal char
+      }
+    }
+    if (ch === "[" || ch === "(" || ch === "{") depth++;
+    else if (ch === "]" || ch === ")" || ch === "}") depth--;
+    if (ch === "," && depth === 0) {
       parts.push(buf);
       buf = "";
     } else {
@@ -85,14 +109,20 @@ function parseConfigProps(text: string): Record<string, string> {
 
 function parseTitleAndProps(rest: string): { title?: string; props: Record<string, string> } {
   // Matches:  "title" [k: v, k2: v2]   or   "title"   or   [k: v]
+  // Smart quotes ("..." «...» 「...」 etc.) are accepted as quote pairs.
   const trimmed = rest.trim();
   let i = 0;
   let title: string | undefined;
-  if (trimmed.startsWith('"')) {
-    const end = trimmed.indexOf('"', 1);
-    if (end < 0) throw new VennParseError("unterminated quoted title");
-    title = trimmed.slice(1, end);
-    i = end + 1;
+  if (trimmed.length > 0 && isOpenQuote(trimmed[0]!)) {
+    try {
+      const r = extractQuotedString(trimmed, 0);
+      if (r) {
+        title = r.value;
+        i = r.end;
+      }
+    } catch {
+      throw new VennParseError("unterminated quoted title");
+    }
   }
   const tail = trimmed.slice(i).trim();
   let props: Record<string, string> = {};
@@ -120,9 +150,10 @@ function parseValue(raw: string): VennRegionValue {
   if (/^-?\d+$/.test(t)) {
     return { kind: "integer", value: parseInt(t, 10) };
   }
-  // Quoted string
-  if (t.startsWith('"') && t.endsWith('"')) {
-    return { kind: "text", value: t.slice(1, -1) };
+  // Quoted string (any recognised pair, smart-quote-aware)
+  if (t.length >= 2 && isOpenQuote(t[0]!)) {
+    const stripped = stripQuotesShared(t);
+    if (stripped !== t) return { kind: "text", value: stripped };
   }
   // Bare word / text
   return { kind: "text", value: t };
@@ -132,12 +163,23 @@ function splitTopLevelCommas(s: string): string[] {
   const out: string[] = [];
   let buf = "";
   let depth = 0;
-  let inQuote = false;
-  for (const ch of s) {
-    if (ch === '"') inQuote = !inQuote;
-    else if (!inQuote && (ch === "{" || ch === "[" || ch === "(")) depth++;
-    else if (!inQuote && (ch === "}" || ch === "]" || ch === ")")) depth--;
-    if (ch === "," && depth === 0 && !inQuote) {
+  for (let i = 0; i < s.length; i++) {
+    const ch = s[i]!;
+    if (isOpenQuote(ch)) {
+      try {
+        const r = extractQuotedString(s, i);
+        if (r) {
+          buf += s.slice(i, r.end);
+          i = r.end - 1;
+          continue;
+        }
+      } catch {
+        // unterminated quote — bail out and let the caller surface the error
+      }
+    }
+    if (ch === "{" || ch === "[" || ch === "(") depth++;
+    else if (ch === "}" || ch === "]" || ch === ")") depth--;
+    if (ch === "," && depth === 0) {
       out.push(buf);
       buf = "";
     } else {

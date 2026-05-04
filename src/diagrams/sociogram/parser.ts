@@ -1,4 +1,5 @@
 import { parseLegendDirective } from "../../core/legend-parser";
+import { matchQuotedTitle } from "../../core/quotes";
 
 export class SociogramParseError extends Error {
   constructor(message: string) {
@@ -163,9 +164,7 @@ export function parseSociogram(text: string): SociogramAST {
   }
   lineIdx++;
 
-  let titleStr: string | undefined;
-  const titleMatch = headerLine.match(/"([^"]+)"/);
-  if (titleMatch) titleStr = titleMatch[1];
+  const titleStr: string | undefined = matchQuotedTitle(headerLine);
 
   const config: SociogramConfig = {
     layout: "circular",

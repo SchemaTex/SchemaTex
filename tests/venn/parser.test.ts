@@ -78,6 +78,45 @@ region A & B : "both"
   });
 });
 
+describe("Venn parser — smart quote support", () => {
+  test("accepts curly Unicode quotes in title", () => {
+    const ast = parseVennDSL(`
+venn “PRISMA”
+set A "A"
+set B "B"
+A only : 1
+`);
+    expect(ast.title).toBe("PRISMA");
+  });
+
+  test("accepts French/Spanish guillemets in title", () => {
+    const ast = parseVennDSL(`
+venn «Árbol de la vida»
+set A "A"
+A only : 1
+`);
+    expect(ast.title).toBe("Árbol de la vida");
+  });
+
+  test("accepts CJK corner brackets in set label", () => {
+    const ast = parseVennDSL(`
+venn "x"
+set A 「集合A」
+A only : 1
+`);
+    expect(ast.sets[0]?.label).toBe("集合A");
+  });
+
+  test("supports \\\" escape inside ASCII-quoted title", () => {
+    const ast = parseVennDSL(`
+venn "she said \\"hi\\""
+set A "A"
+A only : 1
+`);
+    expect(ast.title).toBe('she said "hi"');
+  });
+});
+
 describe("Venn parser — Euler syntax", () => {
   test("parses subset / disjoint relations", () => {
     const ast = parseVennDSL(`

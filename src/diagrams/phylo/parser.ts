@@ -6,6 +6,7 @@ import type {
   CladeDef,
   CladeHighlightMode,
 } from "../../core/types";
+import { matchQuotedTitle } from "../../core/quotes";
 
 export class PhyloParseError extends Error {
   constructor(message: string) {
@@ -376,9 +377,7 @@ export function parsePhylo(text: string): PhyloTreeAST {
   }
   lineIdx++;
 
-  let title: string | undefined;
-  const titleMatch = headerLine.match(/"([^"]+)"/);
-  if (titleMatch) title = titleMatch[1];
+  const title: string | undefined = matchQuotedTitle(headerLine);
 
   let headerProps: ReturnType<typeof parseHeaderProps> = {
     layout: "rectangular",
