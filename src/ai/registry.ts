@@ -231,6 +231,16 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
     standard: "OMG UML 2.5.1 §14 + Harel (1987) statechart",
     syntaxKey: "state",
   },
+  {
+    type: "bpmn",
+    name: "BPMN business process",
+    tagline: "OMG BPMN 2.0 — pools and lanes, events, gateways, tasks for organizational processes.",
+    useWhen:
+      "Use for business processes that span multiple roles, departments, or systems — claims handling, hiring, order-to-cash, incident response, ISO-9001 / SOX audits. Pools = participants, lanes = roles, events = start/intermediate/end, gateways = XOR/AND/OR/event-based branches, message flows cross pool boundaries (`~~>`). Distinct from `flowchart` (no pools/lanes/event taxonomy), `state` (mode-centric, not activity-centric), and `pid` (physical equipment, not organisational work).",
+    cluster: "behavior-modeling",
+    standard: "OMG BPMN 2.0.2 / ISO/IEC 19510:2013 visual subset; see 25-BPMN-STANDARD.md",
+    syntaxKey: "bpmn",
+  },
   // ── Generic process / flow ───────────────────────────────────
   {
     type: "flowchart",

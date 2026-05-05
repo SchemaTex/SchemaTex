@@ -478,4 +478,6 @@ These are the BPMN-specific footguns that a parser and a renderer must catch:
 
 ## 10. Implementation Status
 
-Not yet implemented. Tracked as `bpmn` engine; impl docs land in `../CoCEO/schematex/impl/25.X-bpmn-*.md`.
+**v0.1 — Implemented (2026-05-04).** Pools / lanes / black-box pools, start &middot; intermediate &middot; end events with `none` / `message` / `timer` triggers, tasks with 6 markers (`user` / `service` / `send` / `receive` / `manual` / `script`) + collapsed subprocess, gateways `xor` / `or` / `and` / `event`, connectors `-->` / `--?` / `--*` / `~~>`, with parser-side validation of pool-boundary and default-flow rules. Layout uses longest-path layering with DFS-based cycle break; routing is orthogonal Manhattan with mid-channel bends.
+
+**v0.2+ deferred.** Boundary events (timer / error / escalation / compensation), expanded subprocesses, transaction & call activities, the rare event triggers (cancel / signal / link / conditional / multiple / parallel-multiple / terminate / compensation), loop and multi-instance markers, artifacts (data object / store / group / annotation), BPMN 2.0 XML import/export.

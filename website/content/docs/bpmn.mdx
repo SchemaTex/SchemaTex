@@ -1,0 +1,228 @@
+---
+title: BPMN / Business Process
+---
+
+## About BPMN diagrams
+
+A **BPMN diagram** documents a business process — the activities, decisions, events, and message exchanges that happen across roles, departments, and systems. It's the dominant notation in enterprise BPM, ISO-9001 / SOX audits, and process-mining tooling. The *only* official serialization is BPMN 2.0 XML, which is verbose and hostile to LLM generation; Schematex provides a compact text DSL that produces a conformant visual subset.
+
+Schematex implements OMG **BPMN 2.0.2 / ISO/IEC 19510:2013** for the elements that real-world business analysts actually draw: pools, lanes, events (start / intermediate / end with none / message / timer triggers), activities (tasks with markers + collapsed subprocesses), gateways (XOR / OR / AND / event-based), and sequence / conditional / default / message flows.
+
+> **Note** — Schematex is a rendering library, not a process-execution engine. There is no token simulation, no XML round-trip, and no DI (Diagram Interchange) layer. v0.1 covers the visual subset most teams use; boundary events, expanded subprocesses, and the rare trigger types (cancel / compensation / escalation / signal / link) are deferred to v0.2+.
+
+<Playground initial={`bpmn
+direction: LR
+title: "Loan Application Approval"
+
+pool "Bank" {
+  lane "Clerk" {
+    A: start "Application received"
+    B: task user "Check completeness"
+    G1: gateway xor "Complete?"
+  }
+  lane "Underwriter" {
+    C: task service "Risk score"
+    D: task user "Underwriter review"
+    G2: gateway xor "Decision"
+    E: end "Approved"
+    F: end "Rejected"
+  }
+}
+
+flows
+A --> B
+B --> G1
+G1 --? "yes" --> C
+G1 --* "no" --> F
+C --> D
+D --> G2
+G2 --? "approve" --> E
+G2 --* "reject" --> F`} height={420} />
+
+---
+
+## 1. Your first BPMN diagram
+
+Three sections: a one-line `bpmn` header, one or more `pool { … }` blocks, and a `flows` block. Inside each pool you put `lane { … }` blocks, and inside each lane you list flow objects as `id: kind "label"`.
+
+<Playground initial={`bpmn
+pool "Service" {
+  lane "Worker" {
+    A: start "Request"
+    B: task service "Process"
+    F: end "Done"
+  }
+}
+
+flows
+A --> B
+B --> F`} />
+
+Every flow object starts with an **id**, a colon, the **kind**, an optional sub-keyword (trigger / marker / gateway type), and a quoted **label**. Ids are referenced by flow lines.
+
+---
+
+## 2. Pools and lanes
+
+A **pool** represents one participant — an organisation, a department, or a system. A **lane** subdivides a pool into roles. The pool label is rendered rotated 90° on the left edge of a horizontal pool.
+
+```
+pool "Customer" blackbox          // black-box pool — no internal flow
+pool "Bank" {
+  lane "Clerk" { … }
+  lane "Underwriter" { … }
+}
+```
+
+A **black-box pool** is a participant whose internal process you don't model — typically an external customer or partner. Black-box pools must contain zero flow objects (Schematex enforces this in the parser).
+
+Sequence flow (`-->`) is **not allowed** to cross pool boundaries. Use a message flow (`~~>`) for cross-pool communication.
+
+---
+
+## 3. Events
+
+Events are circles. Stroke weight encodes lifecycle role:
+
+| Kind | Stroke | DSL |
+|---|---|---|
+| Start | thin (1px) | `start` |
+| Intermediate | thin double ring | `intermediate` |
+| End | thick (3px) | `end` |
+
+The optional **trigger** keyword adds an inner glyph. v0.1 supports the three most common triggers — `none` (no glyph), `message` (envelope), and `timer` (clock face):
+
+```
+A: start                       // none-trigger
+A: start message "Inbound"     // message-catch (unfilled envelope)
+T: intermediate timer "60 min" // timer (clock face)
+F: end "Done"
+```
+
+Filled glyph = **throw**, unfilled glyph = **catch**. Schematex picks the right fill automatically based on event kind.
+
+---
+
+## 4. Activities — tasks and subprocesses
+
+Activities are rounded rectangles. The two v0.1 forms are `task` and a **collapsed** subprocess (the `+` marker indicates expandable detail):
+
+```
+B: task "Generic abstract task"
+U: task user "User decides"
+S: task service "API call"
+SE: task send "Send email"
+RE: task receive "Wait for reply"
+M: task manual "Hand-stamp the form"
+SC: task script "Run rule engine"
+
+X: subprocess "Verify identity" collapsed
+```
+
+The **task marker** (small icon top-left) communicates *who or what* performs the work — a person (`user`), a software service (`service`), an outbound message (`send`), an inbound wait (`receive`), an out-of-system manual step (`manual`), or an automated script (`script`). When in doubt, omit the marker — it defaults to abstract.
+
+---
+
+## 5. Gateways
+
+Gateways are diamonds. The inner glyph encodes branching semantics:
+
+| Kind | Glyph | Meaning | DSL |
+|---|---|---|---|
+| Exclusive (XOR) | **X** | Take exactly one outgoing branch (data-based) | `gateway xor` |
+| Inclusive (OR) | **O** | Take one or more outgoing branches | `gateway or` |
+| Parallel (AND) | **+** | Take all outgoing branches concurrently | `gateway and` |
+| Event-based | pentagon-in-circle | Pick the branch whose event fires first | `gateway event` |
+
+Schematex uses Bruce Silver's **X glyph** for XOR by default — that's the convention real BPMN audits expect. Most diagrams use XOR (data branch) and AND (parallel split / join); OR is rare and event-based mostly appears in race-condition models.
+
+---
+
+## 6. Connectors
+
+Four connector types. Three of them stay inside a pool; only message flow is allowed to cross pool boundaries.
+
+```
+A --> B                  // sequence flow (default)
+G --? "yes" --> C        // conditional sequence (label is a guard)
+G --* "default" --> D    // default flow (one per gateway, max)
+"Customer" ~~> A : "Submit application"   // message flow
+E ~~> "Customer" : "Notify approval"      // message flow back
+```
+
+- `-->` is the workhorse — solid line + filled triangle arrowhead.
+- `--? "label" -->` adds a small unfilled diamond at the source. Use it when leaving an activity *directly* on a guarded outcome. (At a gateway, the conditional label suffices; the diamond glyph isn't drawn.)
+- `--* "label" -->` adds a slash mark at the source. **One default flow maximum per gateway** — Schematex enforces this.
+- `~~>` is dashed with an open arrowhead and a small unfilled circle at the source. Source or target may be a quoted **pool name** (for black-box participants) or an object id.
+
+---
+
+## 7. Validation
+
+The parser refuses diagrams that violate BPMN semantics, with line-numbered errors:
+
+| Rule | Error |
+|---|---|
+| Sequence flow crosses pool | `sequence flow 'A --> B' crosses pool boundary — use message flow (~~>)` |
+| Message flow inside one pool | `message flow 'A ~~> B' must cross pool boundaries` |
+| Black-box pool has internals | `black-box pool "X" cannot contain lanes` |
+| Two default flows from same gateway | `gateway 'G' has 2 default flows (max 1)` |
+| Duplicate id within a pool | `duplicate id 'A'` |
+| Unknown source / target | `unknown source 'X' in sequence flow` |
+
+These checks fire during parse, so an LLM gets a usable signal before the layout pass.
+
+---
+
+## 8. Larger example — pizza order with black-box customer
+
+A canonical BPMN tutorial: an external customer (whose process we don't model) places an order with a pizzeria split into Clerk / Chef / Delivery lanes, with a rework loop on the chef's quality check.
+
+<Playground initial={`bpmn
+direction: LR
+title: "Pizza order"
+
+pool "Customer" blackbox
+
+pool "Pizzeria" {
+  lane "Clerk" {
+    A: start message "Order received"
+    B: task user "Take order"
+  }
+  lane "Chef" {
+    C: task manual "Make pizza"
+    G1: gateway xor "Pizza ok?"
+    D: task manual "Rework"
+  }
+  lane "Delivery" {
+    E: task send "Deliver"
+    F: end "Done"
+  }
+}
+
+flows
+A --> B
+B --> C
+C --> G1
+G1 --? "yes" --> E
+G1 --* "no" --> D
+D --> C
+E --> F
+"Customer" ~~> A : "Place order"
+E ~~> "Customer" : "Pizza delivered"`} height={520} />
+
+The rework loop (`D --> C`) creates a back-edge that the layout's cycle-break detects via DFS — the longest-path layering then proceeds on the forward DAG so columns stay sensible.
+
+---
+
+## 9. Limitations of v0.1
+
+These are deferred to a later release. If your diagram needs one, file an issue with the use case:
+
+- **Boundary events** — events attached to an activity edge (timer, error, escalation, compensation). Currently you have to model the boundary as a free-floating intermediate event with manual flows.
+- **Expanded subprocesses** — collapsed `subprocess` works; expanded inline blocks (`subprocess "X" { … }`) are deferred.
+- **Rare event triggers** — error / escalation / cancel / compensation / signal / link / conditional / multiple / parallel-multiple. Use `none` or `message` as a placeholder.
+- **Transaction / call activities** — render as normal tasks for v0.1.
+- **Loop and multi-instance markers** — bottom-center activity glyphs; deferred.
+- **Artifacts** — data object / data store / group / text annotation. Deferred.
+- **BPMN 2.0 XML import / export** — out of scope. Schematex computes layout from DSL; no DI layer to round-trip.

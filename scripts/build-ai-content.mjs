@@ -48,6 +48,7 @@ const SYNTAX_KEYS = [
   "pid",
   "erd",
   "breadboard",
+  "bpmn",
 ];
 
 // ─── Minimal YAML-frontmatter parser ─────────────────────────────

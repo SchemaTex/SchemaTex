@@ -50,7 +50,9 @@ export type DiagramType =
   // Data modeling
   | "erd"     // Entity-Relationship Diagram (Chen / crow's foot, 27-ERD-STANDARD)
   // Physical wiring / hardware prototyping
-  | "breadboard";    // Fritzing-style breadboard view (26-BREADBOARD-STANDARD)
+  | "breadboard"    // Fritzing-style breadboard view (26-BREADBOARD-STANDARD)
+  // Business process modelling
+  | "bpmn";       // OMG BPMN 2.0 business process diagram (25-BPMN-STANDARD)
 
 export type GenogramMode = "medical" | "heritage";
 
@@ -1728,6 +1730,164 @@ export interface BreadboardLayoutResult {
   substrate: BreadboardLayoutSubstrate;
   parts: BreadboardLayoutPart[];
   wires: BreadboardLayoutWire[];
+  width: number;
+  height: number;
+}
+
+// ─── BPMN AST Types (25-BPMN-STANDARD) ─────────────────────
+
+/** Direction the process flows. LR is conventional. */
+export type BpmnDirection = "LR" | "TB";
+
+/** BPMN event lifecycle role — encoded in stroke weight. */
+export type BpmnEventKind = "start" | "intermediate" | "end";
+
+/** Trigger types (inner glyph). v0.1 supports the common subset. */
+export type BpmnEventTrigger = "none" | "message" | "timer";
+
+/** Filled glyph = throw, unfilled = catch. v0.1 derives this from kind+context. */
+export type BpmnEventThrowCatch = "throw" | "catch";
+
+export interface BpmnEvent {
+  id: string;
+  kind: BpmnEventKind;
+  trigger: BpmnEventTrigger;
+  /** Filled (throw) vs unfilled (catch). End events with a trigger throw; intermediate without context catch. */
+  throwCatch: BpmnEventThrowCatch;
+  label?: string;
+  /** Owning lane id, set by parser. */
+  laneId: string;
+  /** Owning pool id. */
+  poolId: string;
+}
+
+/** Activity (rounded rectangle) — v0.1 covers task and collapsed subprocess. */
+export type BpmnActivityKind = "task" | "subprocess-collapsed";
+
+/** Task type marker (top-left small icon). */
+export type BpmnTaskMarker =
+  | "abstract"
+  | "user"
+  | "service"
+  | "send"
+  | "receive"
+  | "manual"
+  | "script";
+
+export interface BpmnActivity {
+  id: string;
+  kind: BpmnActivityKind;
+  marker: BpmnTaskMarker;
+  label: string;
+  laneId: string;
+  poolId: string;
+}
+
+/** Gateway types — diamond inner glyph. */
+export type BpmnGatewayKind = "xor" | "or" | "and" | "event";
+
+export interface BpmnGateway {
+  id: string;
+  gatewayKind: BpmnGatewayKind;
+  label?: string;
+  laneId: string;
+  poolId: string;
+}
+
+export type BpmnFlowObject = BpmnEvent | BpmnActivity | BpmnGateway;
+
+/** Connector kinds — sequence/conditional/default within a pool, message across pools. */
+export type BpmnFlowKind = "sequence" | "conditional" | "default" | "message";
+
+export interface BpmnFlow {
+  /** Source flow-object id, OR a pool name (for message flows from a black-box pool). */
+  from: string;
+  /** Target flow-object id, OR a pool name. */
+  to: string;
+  kind: BpmnFlowKind;
+  label?: string;
+}
+
+export interface BpmnLane {
+  id: string;
+  label: string;
+  poolId: string;
+  /** Ordered child object ids (events / activities / gateways). */
+  children: string[];
+}
+
+export interface BpmnPool {
+  id: string;
+  label: string;
+  /** Black-box pools must contain no flow objects. */
+  blackbox: boolean;
+  /** Lane ids in display order. Empty for blackbox. */
+  lanes: string[];
+}
+
+export interface BpmnAst {
+  type: "bpmn";
+  direction: BpmnDirection;
+  title?: string;
+  pools: BpmnPool[];
+  lanes: BpmnLane[];
+  events: BpmnEvent[];
+  activities: BpmnActivity[];
+  gateways: BpmnGateway[];
+  flows: BpmnFlow[];
+}
+
+// ─── BPMN Layout Types ─────────────────────────────────────
+
+export interface BpmnLayoutObject {
+  obj: BpmnFlowObject;
+  /** Top-left corner of the object's bounding box. */
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+export interface BpmnLayoutLane {
+  lane: BpmnLane;
+  /** Lane band geometry (interior, label band excluded). */
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  /** X position of the lane label band (rotated text). */
+  labelX: number;
+  labelY: number;
+  labelHeight: number;
+}
+
+export interface BpmnLayoutPool {
+  pool: BpmnPool;
+  /** Pool outer geometry (includes pool label band on the left). */
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  /** Pool label band geometry (rotated text on the left). */
+  labelX: number;
+  labelY: number;
+  labelWidth: number;
+}
+
+export interface BpmnLayoutFlow {
+  flow: BpmnFlow;
+  /** Manhattan polyline path data. */
+  path: string;
+  /** Anchor for label rendering. */
+  labelAnchor?: { x: number; y: number };
+}
+
+export interface BpmnLayoutResult {
+  ast: BpmnAst;
+  pools: BpmnLayoutPool[];
+  lanes: BpmnLayoutLane[];
+  objects: BpmnLayoutObject[];
+  flows: BpmnLayoutFlow[];
   width: number;
   height: number;
 }

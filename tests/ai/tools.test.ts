@@ -14,9 +14,9 @@ import {
 } from "../../src/ai";
 
 describe("listDiagrams", () => {
-  it("returns all 24 diagram types", () => {
+  it("returns all 25 diagram types", () => {
     const list = listDiagrams();
-    expect(list.length).toBe(24);
+    expect(list.length).toBe(25);
     const types = list.map((d) => d.type);
     expect(types).toContain("genogram");
     expect(types).toContain("sld");
@@ -26,6 +26,7 @@ describe("listDiagrams", () => {
     expect(types).toContain("pid");
     expect(types).toContain("erd");
     expect(types).toContain("breadboard");
+    expect(types).toContain("bpmn");
   });
 
   it("each entry has tagline + useWhen + standard", () => {

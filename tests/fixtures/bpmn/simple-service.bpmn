@@ -1,0 +1,26 @@
+bpmn
+direction: LR
+title: "Simple service flow"
+
+pool "API" {
+  lane "Worker" {
+    A: start "Request"
+    B: task service "Validate"
+    C: task service "Persist"
+    G: gateway and "Fan-out"
+    D: task service "Notify"
+    E: task service "Audit log"
+    H: gateway and "Join"
+    F: end "Done"
+  }
+}
+
+flows
+A --> B
+B --> C
+C --> G
+G --> D
+G --> E
+D --> H
+E --> H
+H --> F

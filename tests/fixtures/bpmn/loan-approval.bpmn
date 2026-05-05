@@ -1,0 +1,28 @@
+bpmn
+direction: LR
+title: "Loan Application Approval"
+
+pool "Bank" {
+  lane "Clerk" {
+    A: start "Application received"
+    B: task user "Check completeness"
+    G1: gateway xor "Complete?"
+  }
+  lane "Underwriter" {
+    C: task service "Risk score"
+    D: task user "Underwriter review"
+    G2: gateway xor "Decision"
+    E: end "Approved"
+    F: end "Rejected"
+  }
+}
+
+flows
+A --> B
+B --> G1
+G1 --? "yes" --> C
+G1 --* "no" --> F
+C --> D
+D --> G2
+G2 --? "approve" --> E
+G2 --* "reject" --> F
