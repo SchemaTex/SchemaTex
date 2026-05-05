@@ -33,6 +33,10 @@ export const ERD_CONST = {
   GLYPH_BAR_HALF: 6,          // bar half-length perpendicular to line
   GLYPH_CIRCLE_R: 4,          // open-circle radius
   LABEL_OFFSET: 6,
+
+  /** Pixels between adjacent vertical-segment x-coordinates of nearby edges
+   *  to keep their bend points from overlapping. */
+  EDGE_BEND_STAGGER: 10,
 };
 
 // ─── Entity sizing ────────────────────────────────────────────
@@ -67,7 +71,7 @@ function measureEntity(ent: ErdEntity): { width: number; height: number; rows: E
   return { width, height, rows };
 }
 
-// ─── Column assignment (poor-man's layered) ───────────────────
+// ─── Layer assignment ─────────────────────────────────────────
 
 interface RefPair {
   from: string;
@@ -75,8 +79,6 @@ interface RefPair {
 }
 
 function buildColumnAssignment(ast: ErdAst): Map<string, number> {
-  // Topological-ish layering: child (FK source) sits to the right of parent (FK target) in LR.
-  // For TB we use the same numeric column → row layer.
   const ids = ast.entities.map((e) => e.id);
   const idToIdx = new Map(ids.map((id, i) => [id, i] as const));
 
@@ -85,16 +87,14 @@ function buildColumnAssignment(ast: ErdAst): Map<string, number> {
     const f = parseRefSide(r.from);
     const t = parseRefSide(r.to);
     if (idToIdx.has(f.table) && idToIdx.has(t.table)) {
-      // The "many" side conventionally points to the "one" side; treat the "one" side as parent.
       const oneIsTo = isOne(r.toCard) && !isOne(r.fromCard);
       const oneIsFrom = isOne(r.fromCard) && !isOne(r.toCard);
       if (oneIsTo) pairs.push({ from: t.table, to: f.table });
       else if (oneIsFrom) pairs.push({ from: f.table, to: t.table });
-      else pairs.push({ from: f.table, to: t.table }); // arbitrary tie-break
+      else pairs.push({ from: f.table, to: t.table });
     }
   }
 
-  // Compute longest-path-from-source layer for each node (Kahn-style with relaxation; safe on cycles).
   const layer = new Map<string, number>();
   for (const id of ids) layer.set(id, 0);
   let changed = true;
@@ -124,6 +124,183 @@ function isOne(c: ErdRef["fromCard"]): boolean {
   return c === "one-mandatory" || c === "one-optional";
 }
 
+// ─── Within-layer barycenter ordering ─────────────────────────
+
+/**
+ * Reorder entities within each layer to reduce expected edge crossings,
+ * using a multi-pass barycenter heuristic (Sugiyama phase 3). Each entity
+ * is sorted by the median index of its neighbors in the adjacent layer.
+ */
+function reorderByBarycenter(
+  layerToEnts: Map<number, string[]>,
+  layers: number[],
+  refs: ErdRef[]
+): void {
+  if (layers.length < 2) return;
+
+  const neighbors = new Map<string, Set<string>>();
+  for (const r of refs) {
+    const a = parseRefSide(r.from).table;
+    const b = parseRefSide(r.to).table;
+    if (!neighbors.has(a)) neighbors.set(a, new Set());
+    if (!neighbors.has(b)) neighbors.set(b, new Set());
+    neighbors.get(a)!.add(b);
+    neighbors.get(b)!.add(a);
+  }
+
+  function sweep(direction: "down" | "up"): void {
+    const ordered = direction === "down" ? layers : [...layers].reverse();
+    for (let i = 1; i < ordered.length; i++) {
+      const prev = ordered[i - 1]!;
+      const cur = ordered[i]!;
+      const prevList = layerToEnts.get(prev)!;
+      const curList = layerToEnts.get(cur)!;
+      const prevIdx = new Map(prevList.map((id, idx) => [id, idx] as const));
+      const baryByEnt = new Map<string, number>();
+      for (let j = 0; j < curList.length; j++) {
+        const id = curList[j]!;
+        const ns = neighbors.get(id);
+        if (!ns) {
+          baryByEnt.set(id, j);
+          continue;
+        }
+        const indices: number[] = [];
+        for (const n of ns) {
+          if (prevIdx.has(n)) indices.push(prevIdx.get(n)!);
+        }
+        if (indices.length === 0) {
+          baryByEnt.set(id, j);
+        } else {
+          // Median is more robust than mean for graphs with hubs.
+          indices.sort((x, y) => x - y);
+          const m = indices.length;
+          const med = m % 2 === 1
+            ? indices[(m - 1) / 2]!
+            : (indices[m / 2 - 1]! + indices[m / 2]!) / 2;
+          baryByEnt.set(id, med);
+        }
+      }
+      curList.sort((a, b) => {
+        const da = baryByEnt.get(a) ?? 0;
+        const db = baryByEnt.get(b) ?? 0;
+        if (da === db) return 0;
+        return da - db;
+      });
+    }
+  }
+
+  // Down-up-down typically converges for ERD-shaped graphs.
+  sweep("down");
+  sweep("up");
+  sweep("down");
+}
+
+// ─── Brandes-Köpf-lite y-coordinate assignment ────────────────
+
+interface PlacedSlot {
+  id: string;
+  /** Top-edge y of the entity. */
+  y: number;
+  height: number;
+  width: number;
+  /** Order of the entity inside its layer. */
+  layerOrder: number;
+}
+
+/**
+ * For each layer (left-to-right), place entities at a y-coordinate that
+ * approximates the average of their already-placed neighbors' y-centers.
+ * Falls back to top-down packing with collision avoidance.
+ *
+ * After the forward pass we run a backward refinement pass — entities with
+ * slack above (no forward-pass neighbor pulled them down) get nudged toward
+ * their backward-pass barycenter target, which evens out chains where the
+ * primary "anchor" is in a later layer.
+ */
+function assignYCoordinates(
+  orderedLayers: { layer: number; ids: string[] }[],
+  measured: Map<string, { width: number; height: number }>,
+  neighbors: Map<string, Set<string>>
+): Map<string, number> {
+  const C = ERD_CONST;
+  const placed = new Map<string, PlacedSlot>();
+
+  // Forward pass.
+  for (const ls of orderedLayers) {
+    let prevBottom = C.PADDING - C.ROW_GAP;
+    for (let i = 0; i < ls.ids.length; i++) {
+      const id = ls.ids[i]!;
+      const m = measured.get(id)!;
+      const ns = neighbors.get(id);
+      let target = C.PADDING;
+      if (ns) {
+        const placedNeighborCenters: number[] = [];
+        for (const n of ns) {
+          const p = placed.get(n);
+          if (p) placedNeighborCenters.push(p.y + p.height / 2);
+        }
+        if (placedNeighborCenters.length > 0) {
+          placedNeighborCenters.sort((a, b) => a - b);
+          const k = placedNeighborCenters.length;
+          const med = k % 2 === 1
+            ? placedNeighborCenters[(k - 1) / 2]!
+            : (placedNeighborCenters[k / 2 - 1]! + placedNeighborCenters[k / 2]!) / 2;
+          target = med - m.height / 2;
+        }
+      }
+      const y = Math.max(target, prevBottom + C.ROW_GAP);
+      placed.set(id, {
+        id,
+        y,
+        height: m.height,
+        width: m.width,
+        layerOrder: i,
+      });
+      prevBottom = y + m.height;
+    }
+  }
+
+  // Backward refinement pass: for each layer right-to-left, try to pull
+  // entities upward toward their full-graph barycenter while preserving
+  // ordering and minimum spacing.
+  for (let li = orderedLayers.length - 1; li >= 0; li--) {
+    const ls = orderedLayers[li]!;
+    let prevBottom = C.PADDING - C.ROW_GAP;
+    for (let i = 0; i < ls.ids.length; i++) {
+      const id = ls.ids[i]!;
+      const slot = placed.get(id)!;
+      const ns = neighbors.get(id);
+      let target = slot.y;
+      if (ns && ns.size > 0) {
+        const centers: number[] = [];
+        for (const n of ns) {
+          const p = placed.get(n);
+          if (p) centers.push(p.y + p.height / 2);
+        }
+        if (centers.length > 0) {
+          centers.sort((a, b) => a - b);
+          const k = centers.length;
+          const med = k % 2 === 1
+            ? centers[(k - 1) / 2]!
+            : (centers[k / 2 - 1]! + centers[k / 2]!) / 2;
+          target = med - slot.height / 2;
+        }
+      }
+      // Maintain monotone non-overlap with the previous entity in this layer.
+      const lower = prevBottom + C.ROW_GAP;
+      // Don't move BELOW current y (forward pass already enforced that path);
+      // we only relax UPWARD here so chains can pull together.
+      const newY = Math.max(lower, Math.min(slot.y, target));
+      slot.y = newY;
+      prevBottom = newY + slot.height;
+    }
+  }
+
+  const out = new Map<string, number>();
+  for (const [id, p] of placed) out.set(id, p.y);
+  return out;
+}
+
 // ─── Main layout ──────────────────────────────────────────────
 
 export function layoutErd(ast: ErdAst): ErdLayoutResult {
@@ -131,10 +308,7 @@ export function layoutErd(ast: ErdAst): ErdLayoutResult {
   const isLR = ast.direction === "LR";
 
   // Measure all entities first.
-  const measured = new Map<
-    string,
-    { ent: ErdEntity; width: number; height: number; rows: ErdLayoutRow[] }
-  >();
+  const measured = new Map<string, { ent: ErdEntity; width: number; height: number; rows: ErdLayoutRow[] }>();
   for (const e of ast.entities) {
     const m = measureEntity(e);
     measured.set(e.id, { ent: e, ...m });
@@ -151,65 +325,93 @@ export function layoutErd(ast: ErdAst): ErdLayoutResult {
   }
   const layers = Array.from(layerToEnts.keys()).sort((a, b) => a - b);
 
-  // v0.1 NOTE: within-layer ordering uses declaration order. A barycenter
-  // sweep alone is not enough because the cursor packs vertically and ignores
-  // each entity's barycenter target Y; a proper fix requires Brandes-Köpf
-  // y-coordinate assignment. Tracked for v0.2.
+  // Within-layer ordering: barycenter sort to minimize expected crossings.
+  reorderByBarycenter(layerToEnts, layers, ast.refs);
 
-  // Compute per-layer width (max entity width in that layer).
+  // Build undirected neighbor map (for y-coordinate assignment).
+  const neighbors = new Map<string, Set<string>>();
+  for (const r of ast.refs) {
+    const a = parseRefSide(r.from).table;
+    const b = parseRefSide(r.to).table;
+    if (!neighbors.has(a)) neighbors.set(a, new Set());
+    if (!neighbors.has(b)) neighbors.set(b, new Set());
+    neighbors.get(a)!.add(b);
+    neighbors.get(b)!.add(a);
+  }
+
+  // Per-layer max width / max height (the layer occupies one column or one row).
   const layerSizes = layers.map((l) => {
     const ids = layerToEnts.get(l)!;
-    const widths = ids.map((id) => measured.get(id)!.width);
-    return { layer: l, ids, maxDim: Math.max(...widths) };
+    return {
+      layer: l,
+      ids,
+      maxWidth: Math.max(...ids.map((id) => measured.get(id)!.width)),
+      maxHeight: Math.max(...ids.map((id) => measured.get(id)!.height)),
+    };
   });
+
+  // For LR: sizing dim = max width per column, ordering dim = y.
+  // For TB: sizing dim = max height per row,   ordering dim = x.
+  // We assign the ordering coordinate using neighbor-aware barycenter targets.
+  // The "measured" map for assignYCoordinates needs the right (ordering, sizing) pair.
+  const orderedLayers = layerSizes.map((ls) => ({ layer: ls.layer, ids: ls.ids }));
+
+  // For y-assignment in LR mode (and x-assignment in TB mode), we need
+  // entity height when packing y, entity width when packing x.
+  const measureForOrdering = new Map<string, { width: number; height: number }>();
+  if (isLR) {
+    for (const [id, m] of measured) {
+      measureForOrdering.set(id, { width: m.width, height: m.height });
+    }
+  } else {
+    // Swap so the algorithm's "height" is treated as the entity's width
+    // (the dimension we pack along the x axis).
+    for (const [id, m] of measured) {
+      measureForOrdering.set(id, { width: m.height, height: m.width });
+    }
+  }
+  const orderingCoord = assignYCoordinates(orderedLayers, measureForOrdering, neighbors);
 
   const placed: ErdLayoutEntity[] = [];
 
   if (isLR) {
-    // Columns by layer, rows stacked top-down.
     let cursorX = C.PADDING;
     for (const ls of layerSizes) {
-      // Stack vertically.
-      let cursorY = C.PADDING;
       for (const id of ls.ids) {
         const m = measured.get(id)!;
-        const x = cursorX + (ls.maxDim - m.width) / 2;
+        const x = cursorX + (ls.maxWidth - m.width) / 2;
+        const y = orderingCoord.get(id) ?? C.PADDING;
         placed.push({
           entity: m.ent,
           x,
-          y: cursorY,
-          width: m.width,
-          height: m.height,
-          headerHeight: C.HEADER_HEIGHT,
-          rows: m.rows,
-        });
-        cursorY += m.height + C.ROW_GAP;
-      }
-      cursorX += ls.maxDim + C.COL_GAP;
-    }
-  } else {
-    // TB: rows by layer, columns stacked left-to-right.
-    let cursorY = C.PADDING;
-    for (const ls of layerSizes) {
-      // Compute row max height instead.
-      const heights = ls.ids.map((id) => measured.get(id)!.height);
-      const rowMax = Math.max(...heights);
-      let cursorX = C.PADDING;
-      for (const id of ls.ids) {
-        const m = measured.get(id)!;
-        const y = cursorY + (rowMax - m.height) / 2;
-        placed.push({
-          entity: m.ent,
-          x: cursorX,
           y,
           width: m.width,
           height: m.height,
           headerHeight: C.HEADER_HEIGHT,
           rows: m.rows,
         });
-        cursorX += m.width + C.COL_GAP;
       }
-      cursorY += rowMax + C.ROW_GAP;
+      cursorX += ls.maxWidth + C.COL_GAP;
+    }
+  } else {
+    let cursorY = C.PADDING;
+    for (const ls of layerSizes) {
+      for (const id of ls.ids) {
+        const m = measured.get(id)!;
+        // In TB mode, the ordering coord IS x (we swapped width/height above).
+        const x = orderingCoord.get(id) ?? C.PADDING;
+        const y = cursorY + (ls.maxHeight - m.height) / 2;
+        placed.push({
+          entity: m.ent,
+          x,
+          y,
+          width: m.width,
+          height: m.height,
+          headerHeight: C.HEADER_HEIGHT,
+          rows: m.rows,
+        });
+      }
+      cursorY += ls.maxHeight + C.ROW_GAP;
     }
   }
 
@@ -223,9 +425,11 @@ export function layoutErd(ast: ErdAst): ErdLayoutResult {
   const width = maxX + C.PADDING;
   const height = maxY + C.PADDING;
 
-  // Edges: orthogonal Manhattan.
+  // Edges: orthogonal Manhattan with bend-point staggering.
   const placedById = new Map(placed.map((p) => [p.entity.id, p] as const));
   const edges: ErdLayoutEdge[] = [];
+  const bendBucketUses = new Map<string, number>();
+
   for (const r of ast.refs) {
     const fromTable = parseRefSide(r.from).table;
     const toTable = parseRefSide(r.to).table;
@@ -235,7 +439,7 @@ export function layoutErd(ast: ErdAst): ErdLayoutResult {
 
     const fromCol = parseRefSide(r.from).column;
     const toCol = parseRefSide(r.to).column;
-    const route = routeOrthogonal(a, b, fromCol, toCol);
+    const route = routeOrthogonal(a, b, fromCol, toCol, bendBucketUses);
     edges.push({
       ref: r,
       path: route.path,
@@ -254,12 +458,9 @@ export function layoutErd(ast: ErdAst): ErdLayoutResult {
   };
 }
 
-// ─── Orthogonal routing (single-bend Manhattan) ───────────────
+// ─── Orthogonal routing (single-bend Manhattan w/ stagger) ────
 
-function rowYByColumn(
-  e: ErdLayoutEntity,
-  col: string | undefined
-): number {
+function rowYByColumn(e: ErdLayoutEntity, col: string | undefined): number {
   if (col) {
     const idx = e.rows.findIndex((r) => r.attribute.name.toLowerCase() === col.toLowerCase());
     if (idx >= 0) return e.y + e.rows[idx]!.yCenter;
@@ -271,7 +472,8 @@ function routeOrthogonal(
   a: ErdLayoutEntity,
   b: ErdLayoutEntity,
   fromCol: string | undefined,
-  toCol: string | undefined
+  toCol: string | undefined,
+  bendBucketUses: Map<string, number>
 ): {
   path: string;
   fromAnchor: ErdLayoutEdge["fromAnchor"];
@@ -280,7 +482,6 @@ function routeOrthogonal(
 } {
   const C = ERD_CONST;
 
-  // Pick sides: prefer horizontal alignment when entities are roughly in different x-bands.
   const aCenterX = a.x + a.width / 2;
   const bCenterX = b.x + b.width / 2;
   const aCenterY = a.y + a.height / 2;
@@ -289,11 +490,9 @@ function routeOrthogonal(
   const dx = bCenterX - aCenterX;
   const dy = bCenterY - aCenterY;
 
-  // Default: horizontal exit.
   type Side = "left" | "right" | "top" | "bottom";
   let aSide: Side;
   let bSide: Side;
-
   if (Math.abs(dx) >= Math.abs(dy)) {
     aSide = dx >= 0 ? "right" : "left";
     bSide = dx >= 0 ? "left" : "right";
@@ -306,9 +505,16 @@ function routeOrthogonal(
   const bAnchor = sideAnchor(b, bSide, toCol);
 
   if (aSide === "right" || aSide === "left") {
-    // horizontal exit, vertical entry.
-    const midX = (aAnchor.x + bAnchor.x) / 2;
-    // Vertical from (midX, aAnchor.y) to (midX, bAnchor.y), then horizontal to bAnchor.
+    const baseMidX = (aAnchor.x + bAnchor.x) / 2;
+    // Bucket by integer midX to detect collisions; stagger by use count.
+    const bucketKey = `H:${Math.round(baseMidX / 4) * 4}`;
+    const useIdx = bendBucketUses.get(bucketKey) ?? 0;
+    bendBucketUses.set(bucketKey, useIdx + 1);
+    // Alternate left / right of the base midpoint by stagger amount.
+    const sign = useIdx % 2 === 0 ? 1 : -1;
+    const stagger = Math.ceil(useIdx / 2) * C.EDGE_BEND_STAGGER * sign;
+    const midX = baseMidX + stagger;
+
     const path =
       `M ${aAnchor.x} ${aAnchor.y} ` +
       `L ${midX} ${aAnchor.y} ` +
@@ -321,8 +527,14 @@ function routeOrthogonal(
       labelAt: { x: midX, y: (aAnchor.y + bAnchor.y) / 2 - C.LABEL_OFFSET },
     };
   } else {
-    // vertical exit, horizontal entry.
-    const midY = (aAnchor.y + bAnchor.y) / 2;
+    const baseMidY = (aAnchor.y + bAnchor.y) / 2;
+    const bucketKey = `V:${Math.round(baseMidY / 4) * 4}`;
+    const useIdx = bendBucketUses.get(bucketKey) ?? 0;
+    bendBucketUses.set(bucketKey, useIdx + 1);
+    const sign = useIdx % 2 === 0 ? 1 : -1;
+    const stagger = Math.ceil(useIdx / 2) * C.EDGE_BEND_STAGGER * sign;
+    const midY = baseMidY + stagger;
+
     const path =
       `M ${aAnchor.x} ${aAnchor.y} ` +
       `L ${aAnchor.x} ${midY} ` +
