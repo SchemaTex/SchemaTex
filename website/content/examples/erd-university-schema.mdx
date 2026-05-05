@@ -1,0 +1,48 @@
+---
+title: University schema (academic ERD)
+description: Classic textbook schema with Student / Course / Enrollment associative entity and labelled relationships — the canonical Elmasri & Navathe ch.3 example.
+diagram: erd
+standard: Crow's-foot (Everest 1976) / DBML compatible
+industry: [education, software]
+persona: For the database student
+complexity: 1
+tags: [ERD, crow's-foot, schema, associative-entity, M-N]
+featured: true
+relatedLink:
+  label: ERD syntax
+  href: /docs/erd
+status: published
+dsl: |
+  erd
+  title: "University Schema"
+
+  table Student {
+    student_id  int       PK
+    name        varchar
+    email       varchar   UK
+    major_id    int       FK -> Major.major_id
+  }
+
+  table Major {
+    major_id    int       PK
+    name        varchar
+  }
+
+  table Course {
+    course_id   int       PK
+    title       varchar
+    credits     int
+  }
+
+  table Enrollment {
+    student_id  int       PK FK -> Student.student_id
+    course_id   int       PK FK -> Course.course_id
+    grade       char
+  }
+
+  ref Student.major_id many-mandatory -- one-mandatory Major.major_id : "majors in"
+  ref Enrollment.student_id many-mandatory -- one-mandatory Student.student_id
+  ref Enrollment.course_id many-mandatory -- one-mandatory Course.course_id
+---
+
+The university schema is the canonical introduction to associative entities. The M:N relationship between Student and Course is resolved through Enrollment, which carries the relationship attribute `grade`. Both Student and Course join Enrollment via composite primary keys (each FK column doubles as part of the PK).

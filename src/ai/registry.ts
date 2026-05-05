@@ -163,10 +163,21 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
     name: "Entity structure",
     tagline: "Corporate ownership hierarchy with percentage rollup.",
     useWhen:
-      "Use for legal entity structures, holdco/opco charts, international tax charts, Series-A cap-table snapshots. Tiered layout with ownership percentages.",
+      "Use for legal entity structures, holdco/opco charts, international tax charts, Series-A cap-table snapshots. Tiered layout with ownership percentages. NOT for database schema diagrams — use `erd` for those.",
     cluster: "corporate-legal",
     standard: "Tier-based ownership hierarchy",
     syntaxKey: "entity",
+  },
+  // ── Data modeling ────────────────────────────────────────────
+  {
+    type: "erd",
+    name: "Entity-Relationship Diagram (ERD)",
+    tagline: "Database schema diagram (crow's-foot tabular entities + cardinality glyphs).",
+    useWhen:
+      "Use for relational database schema diagrams — tables, columns, primary/foreign keys, and cardinality (1..1 / 0..N / 1..N) between tables. DBML-like text DSL plus Mermaid `}o--||` glyph aliases. Distinct from `entity` (which is for corporate/legal ownership). v0.1 supports crow's-foot only; Chen and Barker notations are deferred.",
+    cluster: "corporate-legal",
+    standard: "Chen 1976 / Everest 1976 (crow's foot) — implements the crow's-foot subset; see 27-ERD-STANDARD.md",
+    syntaxKey: "erd",
   },
   // ── Causality / Analysis ─────────────────────────────────────
   {

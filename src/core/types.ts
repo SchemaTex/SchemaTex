@@ -46,7 +46,9 @@ export type DiagramType =
   // Behavior modeling
   | "state"    // UML 2.5 / Harel statechart (21-STATE-DIAGRAM-STANDARD)
   // Process & instrumentation
-  | "pid";     // ISA-5.1 / ISO 10628 P&ID (22-PID-STANDARD)
+  | "pid"     // ISA-5.1 / ISO 10628 P&ID (22-PID-STANDARD)
+  // Data modeling
+  | "erd";     // Entity-Relationship Diagram (Chen / crow's foot, 27-ERD-STANDARD)
 
 export type GenogramMode = "medical" | "heritage";
 
@@ -1156,6 +1158,100 @@ export interface EntityAST {
   jurisdictions: JurisdictionDef[];
   clusters: ClusterDef[];
   metadata?: Record<string, string>;
+}
+
+// ─── ERD (Entity-Relationship Diagram) Types ─────────────────
+// 27-ERD-STANDARD — crow's foot first. Chen / Barker deferred.
+
+export type ErdNotation = "crowsfoot" | "chen" | "barker";
+
+/** Min..Max cardinality for one end of a relationship. */
+export type ErdCardinality =
+  | "one-mandatory"   // 1..1   ─┃
+  | "one-optional"    // 0..1   ─○
+  | "many-mandatory"  // 1..N   ─┃<
+  | "many-optional";  // 0..N   ─○<
+
+/** Attribute / column row within a tabular entity (crow's foot mode). */
+export interface ErdAttribute {
+  name: string;
+  /** Free-form type token, e.g. "int", "varchar(255)", "timestamp" — rendered verbatim. */
+  type?: string;
+  pk?: boolean;
+  fk?: boolean;
+  uk?: boolean;
+  /** NOT NULL marker. */
+  notNull?: boolean;
+  /** FK target as "TableName.columnName" (parser canonicalizes inline `FK -> X.y` here). */
+  fkTarget?: string;
+  /** Optional in-line comment / description. */
+  comment?: string;
+}
+
+export interface ErdEntity {
+  id: string;
+  /** Display name (defaults to id when not separately quoted). */
+  name: string;
+  attributes: ErdAttribute[];
+  /** Reserved for Chen mode (weak entity). Ignored in crow's foot rendering. */
+  weak?: boolean;
+}
+
+export interface ErdRef {
+  /** "TableName" or "TableName.columnName". */
+  from: string;
+  to: string;
+  fromCard: ErdCardinality;
+  toCard: ErdCardinality;
+  /** "--" identifying (solid). "..": non-identifying (dashed). */
+  identifying: boolean;
+  label?: string;
+}
+
+export interface ErdAst {
+  type: "erd";
+  notation: ErdNotation;
+  direction: "LR" | "TB";
+  title?: string;
+  entities: ErdEntity[];
+  refs: ErdRef[];
+}
+
+/** Per-attribute-row geometry inside a laid-out entity. */
+export interface ErdLayoutRow {
+  attribute: ErdAttribute;
+  /** y offset relative to entity top, where the row's vertical center sits. */
+  yCenter: number;
+}
+
+export interface ErdLayoutEntity {
+  entity: ErdEntity;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  /** y coordinate of the header bar baseline (relative to entity top). */
+  headerHeight: number;
+  rows: ErdLayoutRow[];
+}
+
+export interface ErdLayoutEdge {
+  ref: ErdRef;
+  /** Orthogonal SVG path data ("M ... L ... L ..."). */
+  path: string;
+  /** Center coords of the source-end glyph anchor (just outside the entity edge). */
+  fromAnchor: { x: number; y: number; side: "left" | "right" | "top" | "bottom" };
+  toAnchor: { x: number; y: number; side: "left" | "right" | "top" | "bottom" };
+  /** Optional label position (mid-segment). */
+  labelAt?: { x: number; y: number };
+}
+
+export interface ErdLayoutResult {
+  ast: ErdAst;
+  entities: ErdLayoutEntity[];
+  edges: ErdLayoutEdge[];
+  width: number;
+  height: number;
 }
 
 // ── EE Plugin union type (for type-narrowing in plugins) ──────
