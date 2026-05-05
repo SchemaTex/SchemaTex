@@ -29,10 +29,10 @@
 
 ---
 
-**Schematex** is the open-source rendering engine for the diagrams professionals actually use — medical, electrical, legal, and analytical. 22 diagram families across six domains:
+**Schematex** is the open-source rendering engine for the diagrams professionals actually use — medical, electrical, legal, and analytical. 27 diagram families across six domains:
 
 - 👪 **Relationships** — genograms, ecomaps, pedigrees, sociograms, phylogenetic trees
-- ⚡ **Electrical & Industrial** — ladder logic, single-line diagrams, circuit schematics, logic gates, timing, block diagrams, **P&ID** (ISA-5.1)
+- ⚡ **Electrical & Industrial** — ladder logic, single-line diagrams, circuit schematics, logic gates, timing, block diagrams, **FBD**, **SFC**, **P&ID** (ISA-5.1)
 - 🏢 **Corporate & Legal** — entity structures, cap tables
 - 🐟 **Causality & Analysis** — fishbone / Ishikawa, decision trees (Howard-Raiffa EV · CART/sklearn · taxonomy)
 - 🔄 **Behavior modeling** — UML 2.5 / Harel **state diagrams** (Mermaid-compatible superset)
@@ -71,7 +71,7 @@ import { render } from 'schematex/genogram';
 
 ## Gallery
 
-22 diagram types, one unified pipeline. **Try any of these live at [schematex.dev/playground](https://schematex.dev/playground).**
+27 diagram types, one unified pipeline. **Try any of these live at [schematex.dev/playground](https://schematex.dev/playground).**
 
 ### 👪 Genogram — *McGoldrick family-systems standard*
 

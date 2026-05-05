@@ -18,7 +18,7 @@
 | Cluster | 覆盖图表 | 标准 |
 |---------|---------|------|
 | 👪 **Relationships** | genogram · ecomap · pedigree · sociogram · phylogenetic tree | McGoldrick 2020 · Hartman 1978 · NSGC · Moreno 1934 · Newick/NHX |
-| ⚡ **Electrical & Industrial** | timing · logic gate · circuit schematic · block diagram · ladder logic · single-line diagram · state diagram · P&ID · breadboard | WaveDrom · IEEE 91 · IEEE 315 · Ogata · IEC 61131-3 · ANSI device numbering · UML 2.5 / Harel statechart · ISA-5.1 / ISO 10628 · Fritzing visual conventions |
+| ⚡ **Electrical & Industrial** | timing · logic gate · circuit schematic · block diagram · ladder logic · FBD · SFC · single-line diagram · state diagram · P&ID · breadboard | WaveDrom · IEEE 91 · IEEE 315 · Ogata · IEC 61131-3 (LD §6.3 + FBD §6.4 + SFC §6.5) · ANSI device numbering · UML 2.5 / Harel statechart · ISA-5.1 / ISO 10628 · Fritzing visual conventions |
 | 🏢 **Corporate / Legal** | entity structure · cap table | Tier-based ownership hierarchy with percentage rollup |
 | 🗄️ **Data modeling** | ERD (crow's-foot) | Chen 1976 + Everest 1976 + DBML-compat (27-ERD-STANDARD) |
 | 🐟 **Causality / Analysis** | fishbone (Ishikawa) · venn/euler · decision tree | Ishikawa 1968 cause-and-effect · Venn 1880 / Euler set-theoretic diagrams · Howard-Raiffa EV rollback / CART-sklearn / taxonomy |

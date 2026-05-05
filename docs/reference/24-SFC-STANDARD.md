@@ -891,6 +891,43 @@ transition from: S0 to: S1: TRUE
 
 ---
 
+## 12b. Implementation Status — v0.1 (shipped 2026-05-04)
+
+**Implemented (P0 + most of P1):**
+
+- ✅ Step shape rendering: initial (double-bordered), normal (single-bordered), final (parses `[final]`)
+- ✅ Single transitions with mandatory boolean condition text (rendered to right of bar)
+- ✅ Named transitions (e.g. `transition T_Reset from: ... to: ...: cond`) — id rendered to left of bar
+- ✅ Vertical wires connecting linearly-adjacent body steps
+- ✅ Top-down strict layout per IEC mandate (no LR mode)
+- ✅ Indent-sensitive DSL parser
+- ✅ Action blocks with all eleven qualifiers: N, S, R, L, D, P, P0, P1, SD, DS, SL
+- ✅ Time-parameterized actions (L/D/SD/DS/SL with `T#...` literals rendered in a third row inside the action block)
+- ✅ Multi-action stacking on a single step (rendered vertically on right side)
+- ✅ Alternative branch (single-bar OR) divergence + convergence with per-branch entry/exit transitions
+- ✅ Simultaneous branch (double-bar AND, 4px gap between parallel lines) divergence + convergence with shared transitions above/below
+- ✅ Branch priority annotations (`[priority: N]`)
+- ✅ Jump-back transitions render as margin arrows (alternates left/right side) with target id label
+- ✅ Variable declarations (reuses LD/FBD primitive types: bool/int/real/time/timer/counter/string)
+- ✅ Auto-promote first-declared step to `initial` when none is marked
+- ✅ Multi-initial detection (parser error when two `[initial]` markers present)
+
+**Deferred to follow-up:**
+
+- ❌ Active-step runtime indicator (small filled circle in step's bottom-left corner; useful only for runtime-debugging integrations)
+- ❌ S/R action-pair dashed connector (visually link a stored action with its matching reset)
+- ❌ Final-step triple border — currently parsed via `[final]` but rendered identically to initial
+- ❌ Forcing orders (out-of-scope per IEC 60848-only feature)
+- ❌ Deeper-nested branches (alt-in-sim-in-alt) — parses but layout heuristics get loose for deep nests; recommend keeping nesting to ≤ 2 levels in v0.1
+
+**Engineering tradeoffs in v0.1:**
+
+- Condition text and action body text are stored as **opaque strings** — Schematex parses the surrounding DSL but never tries to evaluate or type-check the IEC structured-text expressions. This matches how `state` (§21) handles guards/actions.
+- A transition whose `from`/`to` doesn't match a linearly-adjacent body pair is automatically routed as a margin jump arrow. This handles the vast majority of cycle/loop patterns; pathological cases (multiple back-edges per step) may overlap in v0.1.
+- Indentation is normalized (tab = 4 spaces). Mixed-tabs-and-spaces in the same file works but is discouraged.
+
+---
+
 ## 13. Differences from Other Schematex Diagrams
 
 | Aspect | state (§21) | flowchart (§14) | ladder (§10) | **sfc (this)** |

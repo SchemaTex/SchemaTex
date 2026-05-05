@@ -52,7 +52,10 @@ export type DiagramType =
   // Physical wiring / hardware prototyping
   | "breadboard"    // Fritzing-style breadboard view (26-BREADBOARD-STANDARD)
   // Business process modelling
-  | "bpmn";       // OMG BPMN 2.0 business process diagram (25-BPMN-STANDARD)
+  | "bpmn"       // OMG BPMN 2.0 business process diagram (25-BPMN-STANDARD)
+  // IEC 61131-3 visual PLC languages (sister to ladder §10)
+  | "fbd"        // Function Block Diagram — IEC 61131-3 §6.4 (23-FBD-STANDARD)
+  | "sfc";       // Sequential Function Chart — IEC 61131-3 §6.5 (24-SFC-STANDARD)
 
 export type GenogramMode = "medical" | "heritage";
 
@@ -1888,6 +1891,314 @@ export interface BpmnLayoutResult {
   lanes: BpmnLayoutLane[];
   objects: BpmnLayoutObject[];
   flows: BpmnLayoutFlow[];
+  width: number;
+  height: number;
+}
+
+// ─── FBD (Function Block Diagram) Types ─────────────────────
+// IEC 61131-3 §6.4 — function blocks wired through named ports.
+// See docs/reference/23-FBD-STANDARD.md.
+
+/** IEC 61131-3 standard data types (subset used for wire coloring + display). */
+export type FbdDataType =
+  | "bool"
+  | "int" | "dint" | "uint" | "udint"
+  | "real" | "lreal"
+  | "time" | "date" | "tod"
+  | "string" | "wstring"
+  | "byte" | "word" | "dword"
+  | "timer" | "counter"
+  | "any";
+
+/** Variable scope (IEC 61131-3 §2.4.3). */
+export type FbdVarScope =
+  | "local"
+  | "input"
+  | "output"
+  | "in_out"
+  | "global"
+  | "external";
+
+export interface FbdVarDecl {
+  name: string;
+  scope: FbdVarScope;
+  dataType: FbdDataType | string; // user-defined FB type as opaque string
+  initValue?: string;
+  /** True if the type is a user-defined function block (not a primitive type). */
+  isUserFb?: boolean;
+}
+
+/** Standard function block / function names (uppercase). The renderer knows how to draw each. */
+export type FbdStdBlockName =
+  | "AND" | "OR" | "NOT" | "NAND" | "NOR" | "XOR" | "XNOR" | "BUF"
+  | "R_TRIG" | "F_TRIG" | "SR" | "RS"
+  | "TON" | "TOF" | "TP"
+  | "CTU" | "CTD"
+  | "ADD" | "SUB" | "MUL" | "DIV" | "MOD"
+  | "ABS" | "NEG" | "MOVE"
+  | "EQ" | "NE" | "GT" | "GE" | "LT" | "LE"
+  | "SEL" | "MUX" | "MAX" | "MIN" | "LIMIT";
+
+export type FbdPortSide = "in" | "out";
+
+export interface FbdPort {
+  name: string;
+  side: FbdPortSide;
+  dataType: FbdDataType;
+  /** Inline constant on input ports (e.g. `T#5s`, `5`, `TRUE`). When set, no incoming wire. */
+  constant?: string;
+  /** Negation bubble on this port. */
+  negated?: boolean;
+}
+
+export interface FbdBlock {
+  /** Optional user-given instance tag (italic above header). */
+  instance?: string;
+  /** Type — standard name or user-defined FB type. */
+  blockType: string;
+  /** True if blockType is one of FbdStdBlockName. */
+  isStd: boolean;
+  /** Ports in declaration order (top-to-bottom on each side). */
+  ports: FbdPort[];
+  /** Network this block belongs to. */
+  networkIndex: number;
+  /** Synthetic id for wire references (`block-N` or instance). */
+  id: string;
+}
+
+export interface FbdWire {
+  /** Source: either `{block: id, port: name}` or `{var: name}` (declared variable). */
+  from: { kind: "port"; blockId: string; portName: string } | { kind: "var"; name: string };
+  /** Sink. */
+  to: { kind: "port"; blockId: string; portName: string } | { kind: "var"; name: string };
+  /** Inferred from source port. */
+  dataType: FbdDataType;
+  /** Negation bubble at sink end (for `~`). */
+  negatedAtSink?: boolean;
+}
+
+export interface FbdNetwork {
+  index: number;
+  title?: string;
+  blocks: FbdBlock[];
+  wires: FbdWire[];
+}
+
+export interface FbdAst {
+  type: "fbd";
+  title?: string;
+  variables: FbdVarDecl[];
+  networks: FbdNetwork[];
+}
+
+// ─── FBD Layout Types ────────────────────────────────────────
+
+export interface FbdLayoutPort {
+  name: string;
+  side: FbdPortSide;
+  /** Absolute x of the port end (port_stub_length out from block edge). */
+  x: number;
+  y: number;
+  /** Block-edge x (port stub start). */
+  edgeX: number;
+  dataType: FbdDataType;
+  constant?: string;
+  negated?: boolean;
+}
+
+export interface FbdLayoutBlock {
+  block: FbdBlock;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  ports: FbdLayoutPort[];
+}
+
+export interface FbdLayoutWire {
+  wire: FbdWire;
+  /** SVG path "d" attribute (Manhattan polyline). */
+  path: string;
+}
+
+/** Variable terminal: a small labeled box on the left (input vars) or right (output vars) of each network. */
+export interface FbdLayoutVarTerm {
+  name: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  side: "left" | "right";
+  dataType: FbdDataType;
+}
+
+export interface FbdLayoutNetwork {
+  network: FbdNetwork;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  blocks: FbdLayoutBlock[];
+  wires: FbdLayoutWire[];
+  varTerms: FbdLayoutVarTerm[];
+  /** Junction points (filled circles where one wire branches to multiple sinks). */
+  junctions: { x: number; y: number }[];
+}
+
+export interface FbdLayoutResult {
+  ast: FbdAst;
+  networks: FbdLayoutNetwork[];
+  width: number;
+  height: number;
+}
+
+// ─── SFC (Sequential Function Chart) Types ──────────────────
+// IEC 61131-3 §6.5 — steps + transitions with bars.
+// See docs/reference/24-SFC-STANDARD.md.
+
+export type SfcStepKind = "initial" | "normal" | "final";
+
+export type SfcActionQualifier =
+  | "N" | "S" | "R" | "L" | "D" | "P" | "P0" | "P1" | "SD" | "DS" | "SL";
+
+export interface SfcAction {
+  qualifier: SfcActionQualifier;
+  /** Action body — name reference or inline ST text. */
+  body: string;
+  /** Optional duration literal (T#5s) for L/D/SD/SL/DS qualifiers. */
+  time?: string;
+}
+
+export interface SfcStep {
+  id: string;
+  kind: SfcStepKind;
+  /** Display label override; defaults to id. */
+  label?: string;
+  actions: SfcAction[];
+}
+
+export interface SfcTransition {
+  /** Optional explicit transition id (e.g. T_Reset). */
+  id?: string;
+  from: string;
+  to: string;
+  /** Boolean expression as raw text. */
+  condition: string;
+}
+
+export type SfcVarType =
+  | "bool" | "int" | "real" | "time" | "timer" | "counter" | string;
+
+export interface SfcVarDecl {
+  name: string;
+  dataType: SfcVarType;
+  initValue?: string;
+}
+
+/** Branch group nodes — recursive AST for alt/sim regions. */
+export type SfcNode =
+  | { kind: "step"; stepId: string }
+  | { kind: "alt"; branches: SfcAltBranch[]; mergeTo: string }
+  | { kind: "sim"; condition: string; branches: SfcSimBranch[]; mergeTo: string; mergeCondition: string };
+
+export interface SfcAltBranch {
+  /** Optional priority (default = declaration order). */
+  priority?: number;
+  /** Entry transition condition (rendered between divergence bar and first step). */
+  entryCondition: string;
+  /** Inner steps in linear order. */
+  body: SfcNode[];
+  /** Exit transition condition (rendered between last step and convergence bar). */
+  exitCondition: string;
+}
+
+export interface SfcSimBranch {
+  body: SfcNode[];
+}
+
+export interface SfcAst {
+  type: "sfc";
+  title?: string;
+  variables: SfcVarDecl[];
+  steps: Map<string, SfcStep>;
+  /** Top-level node sequence (linear chain with possibly branch nodes). */
+  body: SfcNode[];
+  /** All transitions — explicit ones from `transition` directives.
+   * Branch entry/exit conditions live inside SfcAltBranch / SfcSimBranch. */
+  transitions: SfcTransition[];
+}
+
+// ─── SFC Layout Types ──────────────────────────────────────
+
+export interface SfcLayoutStep {
+  step: SfcStep;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+export interface SfcLayoutAction {
+  action: SfcAction;
+  stepId: string;
+  /** Index in step's action list. */
+  index: number;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  qualifierWidth: number;
+}
+
+export interface SfcLayoutTransition {
+  transition: SfcTransition;
+  /** Center of the transition bar. */
+  cx: number;
+  cy: number;
+  /** Bar half-width — bar spans [cx-w, cx+w]. */
+  w: number;
+  /** Optional explicit id label (e.g. T_Reset). */
+  id?: string;
+}
+
+export type SfcBarKind = "alt-div" | "alt-conv" | "sim-div" | "sim-conv";
+
+export interface SfcLayoutBar {
+  kind: SfcBarKind;
+  /** Horizontal extent. */
+  x1: number;
+  x2: number;
+  y: number;
+}
+
+export interface SfcLayoutWire {
+  /** SVG path "d" — typically a vertical or L-shape. */
+  path: string;
+  /** Optional class hint (e.g. "wire", "jump"). */
+  cls: "wire" | "jump";
+}
+
+export interface SfcLayoutJump {
+  fromStepId: string;
+  toStepId: string;
+  /** Polyline path including arrowhead. */
+  path: string;
+  /** Margin label position. */
+  labelX: number;
+  labelY: number;
+  labelText: string;
+  /** Condition text (rendered near the source). */
+  condition?: string;
+}
+
+export interface SfcLayoutResult {
+  ast: SfcAst;
+  steps: SfcLayoutStep[];
+  actions: SfcLayoutAction[];
+  transitions: SfcLayoutTransition[];
+  bars: SfcLayoutBar[];
+  wires: SfcLayoutWire[];
+  jumps: SfcLayoutJump[];
   width: number;
   height: number;
 }

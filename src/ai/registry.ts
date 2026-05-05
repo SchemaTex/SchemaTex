@@ -138,6 +138,26 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
     syntaxKey: "ladder",
   },
   {
+    type: "fbd",
+    name: "Function Block Diagram (FBD)",
+    tagline: "IEC 61131-3 §6.4 function blocks wired through named ports.",
+    useWhen:
+      "Use for PLC programs that are easier to read as data-flow than as ladder rungs — boolean logic (AND/OR/NOT/NAND/NOR/XOR), timers (TON/TOF/TP), counters (CTU/CTD), edge detectors (R_TRIG/F_TRIG), comparison (EQ/NE/GT/GE/LT/LE), math (ADD/SUB/MUL/DIV/MOVE), selection (SEL/MUX/MAX/MIN/LIMIT). Inline expression notation `Out = OR(A, AND(B, C))`. Sister language to `ladder` (§10) and `sfc` (§24); together they form the visual half of IEC 61131-3.",
+    cluster: "electrical-industrial",
+    standard: "IEC 61131-3:2013 §6.4 + §2.5 standard FB library; see 23-FBD-STANDARD.md",
+    syntaxKey: "fbd",
+  },
+  {
+    type: "sfc",
+    name: "Sequential Function Chart (SFC)",
+    tagline: "IEC 61131-3 §6.5 step + transition state machine for cyclic PLC sequences.",
+    useWhen:
+      "Use for PLC sequential control — batch reactors, robotic cells, packaging lines, assembly stations — where the program has explicit phases that hand off to each other on boolean conditions. Steps with action qualifiers (N/S/R/L/D/P), transitions with conditions, alternative branches (single bar, OR semantics) and simultaneous branches (double bar, AND semantics), jumps for loops. Distinct from `state` (UML — Schematex `state` covers reactive UI/lifecycle FSMs, not cyclic PLC scans) and from `flowchart` (no bars, no qualifiers).",
+    cluster: "electrical-industrial",
+    standard: "IEC 61131-3:2013 §6.5 + IEC 60848 GRAFCET visual subset; see 24-SFC-STANDARD.md",
+    syntaxKey: "sfc",
+  },
+  {
     type: "sld",
     name: "Single-line diagram",
     tagline: "Electrical power distribution single-line (one-line) diagram.",

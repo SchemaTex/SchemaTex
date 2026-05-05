@@ -1,0 +1,42 @@
+---
+title: Bottle counter — debounce → edge → count (FBD)
+description: Three-network FBD pipeline that debounces a bottle sensor with a 50ms TON, takes the rising edge with R_TRIG, counts up to 24 bottles per case with CTU, and self-resets when the case is full. A real production-line pattern that exercises timer + edge-detector + counter + named-instance references in sequence.
+diagram: fbd
+standard: IEC 61131-3:2013 §6.4 + §2.5
+industry: [manufacturing, packaging, beverage, food-processing]
+persona: For the packaging-line controls engineer
+complexity: 3
+tags: [fbd, plc, ton, ctu, r-trig, debounce, sensor, packaging]
+featured: true
+relatedLink:
+  label: FBD syntax
+  href: /docs/fbd
+status: published
+dsl: |
+  fbd "Bottle Counter"
+
+  var BottleSensor: bool
+  var BatchDone: bool
+  var BatchSize: counter
+  var DwellTimer: timer
+
+  network 0 "Debounce sensor with 50ms dwell":
+    Dwell = TON(IN: BottleSensor, PT: T#50ms)
+
+  network 1 "Count one bottle on rising edge of debounced signal":
+    Pulse     = R_TRIG(CLK: Dwell.Q)
+    BatchSize = CTU(CU: Pulse.Q, R: BatchDone, PV: 24)
+
+  network 2 "Latch batch done":
+    BatchDone = MOVE(BatchSize.Q)
+---
+
+Counting bottles on a conveyor sounds trivial — the photoelectric sensor goes high when a bottle interrupts the beam, increment the counter, done. In practice it's where most beginner PLC code first goes wrong, because real sensors *bounce*: the beam is broken, then briefly restored as light reflects off the bottle's edge, then broken again. Without debounce, a single bottle can register as three or four counts. This FBD captures the canonical fix in three short networks, and shows how named-instance references chain timers, edge-detectors, and counters into a pipeline.
+
+**Network 0 — debounce.** A TON (on-delay timer) ignores the sensor unless it stays high for at least 50ms continuously. `PT: T#50ms` is the IEC duration literal for the preset; it renders as a small yellow constant box at the PT input port. The Q output goes true 50ms after the IN goes true and resets immediately when IN drops — exactly the "is this signal *really* asserted, or just noise?" semantic the line needs.
+
+**Network 1 — edge → count.** Two named instances chain together. `Pulse = R_TRIG(CLK: Dwell.Q)` references the debounced output from network 0 by its instance.port name. R_TRIG emits a one-scan pulse on the rising edge — without it, the counter would increment continuously while the sensor is held high (e.g. if the conveyor jammed with a bottle in the beam). `BatchSize = CTU(CU: Pulse.Q, R: BatchDone, PV: 24)` then increments on each pulse, and resets when `BatchDone` goes true. The PV=24 is the case size for a six-pack of four-packs.
+
+**Network 2 — feedback latch.** The counter's Q output (true when CV ≥ PV) is moved into the `BatchDone` variable, which feeds back to network 1's reset input. This is one full case cycle: count to 24 → done → reset → start over. As with the motor latch, Schematex doesn't simulate the scan order; it renders the graph. The "feedback" appears in the wire from network 2 back to network 1's CTU.R.
+
+**What the data-type colors are telling you.** The TON.IN wire is BOOL (black). The TON.PT wire is TIME (magenta — but it's an inline constant here, so no wire). R_TRIG.CLK is BOOL (black). CTU.CV would be INT (blue) if it were wired anywhere — it's left dangling here because we only need Q. Different wire colors per data type are the TIA Portal de-facto convention, ported over to Schematex for at-a-glance validation: if a REAL wire (orange) lands on a BOOL port, you have a type error in your DSL.

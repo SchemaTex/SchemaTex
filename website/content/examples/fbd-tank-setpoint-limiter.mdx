@@ -1,0 +1,38 @@
+---
+title: Tank setpoint limiter + alarm (FBD)
+description: Two-network FBD that clamps an operator-entered tank-level setpoint to the safe range [0, 95]% via LIMIT, and raises an alarm if the operator types an out-of-range value. Uses LT and GT comparison blocks, the LIMIT selection block, and demonstrates REAL (orange) and BOOL (black) wires carrying different data types in one diagram.
+diagram: fbd
+standard: IEC 61131-3:2013 §6.4 + §2.5
+industry: [chemical-processing, water-treatment, brewing, hvac]
+persona: For the process-control engineer
+complexity: 2
+tags: [fbd, plc, comparison, limit, real, hmi, operator-input]
+featured: false
+relatedLink:
+  label: FBD syntax
+  href: /docs/fbd
+status: published
+dsl: |
+  fbd "Tank Level Setpoint Limiter"
+
+  var DesiredSetpoint: real
+  var SafeSetpoint: real
+  var Alarm: bool
+
+  network 0 "Clamp setpoint to safe range":
+    SafeSetpoint = LIMIT(MN: 0.0, IN: DesiredSetpoint, MX: 95.0)
+
+  network 1 "Alarm on out-of-range request":
+    OutOfRange = OR(LT(DesiredSetpoint, 0.0), GT(DesiredSetpoint, 95.0))
+    Alarm = MOVE(OutOfRange.OUT)
+---
+
+When an operator types a tank-level setpoint into the HMI, you can't just trust the number. Maybe they meant to type 75 and hit 750. Maybe they typed -5 because they were copying from a spec sheet that used a different reference. Maybe the HMI's input field doesn't have validation and the value is whatever bit-pattern the OPC UA bridge happened to land on. The PLC always validates, and the canonical pattern is: clamp to a safe range, then raise an alarm if the requested value was out of range so a human knows to check.
+
+**Network 0 — LIMIT.** `SafeSetpoint = LIMIT(MN: 0.0, IN: DesiredSetpoint, MX: 95.0)` is the clamp. LIMIT takes three REAL inputs and returns a REAL: the value of `IN` if it's in [MN, MX], otherwise MN or MX. Both bounds are inline constants — they render as yellow boxed text at their ports, no wire needed. The downstream control loop reads `SafeSetpoint`, never `DesiredSetpoint` directly. Even if the operator's input is corrupted, the tank can never be commanded outside the physically safe range.
+
+**Network 1 — out-of-range alarm.** `OutOfRange = OR(LT(DesiredSetpoint, 0.0), GT(DesiredSetpoint, 95.0))` is an inline expression that nests two comparison blocks inside an OR. LT (less-than) returns BOOL when its first input is less than the second; GT (greater-than) is the opposite. The OR fires when *either* fires — the operator's value was either too low or too high. The `Alarm = MOVE(OutOfRange.OUT)` then drives whatever HMI alarm channel — a red banner, a Slack notification, a SCADA event log entry.
+
+**Two data types in one diagram.** Look at the wire colors in the rendered SVG: the wire from `DesiredSetpoint` into LIMIT.IN is REAL (orange — IEEE 754 floating-point); the wires from LT.OUT and GT.OUT into OR are BOOL (black). The LIMIT.OUT is also REAL (orange). One of the FBD engine's small but pleasant features: the renderer infers each wire's type from the source port and colors it accordingly, following the TIA Portal convention. If you accidentally wired an INT to a REAL port the colors would mismatch at the junction and you'd notice immediately.
+
+**Why not ladder?** Ladder logic excels at boolean signal routing — contacts in series and parallel feeding into output coils. It has zero affordance for REAL arithmetic and comparison; you'd write the LIMIT expression as a structured-text "function block" call inside a ladder rung, which kills the visual semantic. FBD makes the math first-class. For per-scan combinational logic involving any non-BOOL signal, FBD is what the IEC 61131-3 standard expects you to use.

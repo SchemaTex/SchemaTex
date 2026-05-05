@@ -11,7 +11,90 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.4.0] — 2026-05-04
+
+### Added — FBD (Function Block Diagram) v0.1 — IEC 61131-3 §6.4
+
+The second IEC 61131-3 visual language. FBD describes per-scan combinational logic as a network of rectangular function blocks wired left-to-right — the canonical form for REAL arithmetic, comparison chains, PID loops, and multi-input boolean logic that's unreadable in ladder.
+
+- **Full pipeline:** parser → layered-DAG layout → SVG renderer. `fbd "Title"` keyword auto-detects.
+- **40+ standard blocks** with correct IEC distinctive symbols: `&` (AND), `≥1` (OR), `=1` (XOR), `1` (BUF/NOT), `SR`, `RS`, `TON`, `TOF`, `CTU`, `CTD`, `ADD`, `SUB`, `MUL`, `DIV`, `MOD`, `LT`, `GT`, `LE`, `GE`, `EQ`, `NE`, `SEL`, `MUX`, `LIMIT`, `MOVE`, `BOOL_TO_INT`, and more.
+- **Output negation bubbles** on NAND, NOR, XNOR, NOT (small circle on output port per IEC standard).
+- **Wire data-type coloring:** BOOL = black, INT = blue, REAL = orange, TIME = magenta — follows TIA Portal convention.
+- **Inline expression syntax:** `Out = OR(A, AND(B, ~C))` — nesting becomes sub-blocks automatically; no intermediate variable names needed.
+- **Inline constants:** `LIMIT(MN: 0.0, IN: Sp, MX: 95.0)` — boxed yellow constants rendered at their port, no wire needed.
+- **Negation prefix:** `~Signal` emits an inverted input bubble on the consuming port.
+- **Instance-named notation:** `timer_1 TON(IN: Run, PT: T#5s)` — variable `timer_1.Q`/`timer_1.ET` referenced in downstream networks.
+- **Multiple networks** per diagram, each with optional label.
+- **Layered-DAG layout:** longest-path layering, per-layer y-packing, Manhattan 3-segment wire routing with column-offset spreading to avoid overlaps.
+- **Lenient parser:** undeclared variables auto-declared as BOOL; cycle-safe layer assignment for feedback loops.
+- **`fbd` export** in `package.json`, AI registry entry (`electrical-industrial` cluster), syntax doc, 3 example MDX files.
+- **Tests:** 12 unit tests (parser × 8, renderer × 4).
+
+**v0.1 deferred:** explicit `VAR_INPUT`/`VAR_OUTPUT` typed declarations, EN/ENO enable pins, formal structured-text expression parser, user-defined function blocks.
+
+```
+fbd "Motor seal-in latch"
+var Start: bool
+var Stop: bool
+var Running: bool
+network 0 "Seal-in latch":
+  Running = OR(Start, AND(Running, NOT(Stop)))
+```
+
+### Added — SFC (Sequential Function Chart) v0.1 — IEC 61131-3 §6.5
+
+The fifth IEC 61131-3 language — the only one that models *sequential* state. SFC is a PLC-native state machine: each step holds the active token, transitions fire on boolean conditions, and actions execute per-qualifier while their step is active.
+
+- **Full pipeline:** parser → recursive-region layout → SVG renderer. `sfc "Title"` keyword auto-detects.
+- **Steps:** `step S0 [initial]`, `step S1 [label: "Filling"]` — initial step renders with double border per IEC §6.5.1.2.
+- **Transitions:** `transition from: S0 to: S1: StartBtn` — condition text rendered next to the horizontal bar.
+- **Action blocks:** right-side action boxes with qualifier compartment (N/S/R/L/D/P/P0/P1/SD/DS/SL) + body text + optional time row (`D Mixer_Run T#10s`).
+- **All 11 IEC action qualifiers** recognized and rendered with correct abbreviation.
+- **Alternative branches (single bar):** `alt from: S_Pick:` / `branch [priority: N]:` / `merge_to: S_Ship` — OR-semantic, exactly one branch fires; priority numbers rendered near entry.
+- **Simultaneous branches (double bar):** `sim from: S_Heat: TRUE` / `branch:` / `merge_to: S_Done: Cond` — AND-semantic, all branches run concurrently; double-line bars per IEC §6.5.4.
+- **Jump arrows:** back-edge and non-adjacent transitions render as margin arrows alternating left/right with target label.
+- **Strictly top-to-bottom layout** per IEC mandate; recursive bottom-up width sizing; top-down coordinate assignment.
+- **`sfc` export** in `package.json`, AI registry entry, syntax doc, 3 example MDX files.
+- **Tests:** 10 unit tests (parser × 6, renderer × 4).
+
+**v0.1 deferred:** macro-step (§6.5.3), forced transitions, step-active monitoring tags, multiple simultaneous tokens.
+
+```
+sfc "Bottle Filling"
+var StartBtn: bool
+var TankLevel: real
+step S0 [initial]
+  N FillValve_Closed
+step S1 [label: "Filling"]
+  N FillValve_Open
+step S2 [label: "Done"]
+  N Confirm_Done
+transition from: S0 to: S1: StartBtn
+transition from: S1 to: S2: TankLevel >= 80.0
+transition from: S2 to: S0: DoneBtn
+```
+
+### Added — infrastructure and docs
+
+- **6 new example MDX files:** `fbd-motor-latch`, `fbd-bottle-counter`, `fbd-tank-setpoint-limiter`, `sfc-bottle-filling`, `sfc-bake-cool-concurrent`, `sfc-order-routing-alt` — all with industry context, complexity ratings, and `featured` flags.
+- **2 new reference docs:** `docs/reference/23-FBD-STANDARD.md` and `docs/reference/24-SFC-STANDARD.md`.
+- **AI registry:** both types added to `src/ai/registry.ts` under `electrical-industrial`; syntax keys added to `scripts/build-ai-content.mjs`; total AI-bundled syntax docs 27, examples 58.
+- **Website nav:** `fbd` and `sfc` added to `website/content/docs/meta.json` Electrical & Industrial section.
+- **Diagram count updated** to 27 across README, package.json, website homepage, gallery, and playground pages.
+- **674 tests passing** (0 failures); typecheck and lint clean.
+
+---
+
 ## [0.3.5] — 2026-05-04
+
+### Added — matrix `style: table` + new examples
+
+- **`style: table` directive for matrix diagrams.** Flips any 2×2 or 3×3 quadrant diagram from scatter/bubble mode into a text-in-cell table layout — the canonical form for Eisenhower, Johari, Impact-Effort, and 9-box. Setting `style: table` automatically disables axis arrows, axis labels, grid lines, and the quadrant-annotation overlay; quadrant titles are instead rendered as cell-header text inside each cell, and multiple items for the same cell stack as a bullet list. Renderer gains three new CSS classes (`sx-matrix-cell-title`, `sx-matrix-cell-subtitle`, `sx-matrix-cell-item`) for theming.
+- **`Q1`…`Q4` shorthand for 2×2 table mode.** Instead of `cell (col, row) label: "…"`, authors can write `Q2: "Ship hotfix"` — one line per item, repeating the key to stack items. Q1 = top-right, Q2 = top-left, Q3 = bottom-left, Q4 = bottom-right. Designed to match what LLMs naturally emit for Eisenhower-style prompts.
+- **3×3 `style: table` support.** `renderQuadrantBackground` extended to cover 3×3 grids with a diagonal severity heatmap (green → amber → red, following the GE/McKinsey 9-box convention). `renderCellLabels` unified from a 3×3-only helper into a shared 2×2/3×3 path.
+- **Four new example MDX files.** `matrix-eisenhower-week` (updated to table form), `matrix-impact-effort`, `matrix-johari-window`, and `matrix-9-box-talent` — each a canonical AI-grounding few-shot for LLM DSL generation. All four also added to `src/ai/_generated.ts`.
+- **PRISMA 2020 flowchart example.** `flowchart-prisma-systematic-review.mdx` — canonical four-phase systematic-review flow (Identification → Screening → Eligibility → Included) using `subgraph`, `classDef excluded`, and per-box `(n = N)` counts. Added to `_generated.ts` and documented in `14-FLOWCHART-STANDARD.md §15.5` as the LLM grounding reference for "systematic review" / "meta-analysis" / "Cochrane review" prompts.
 
 ### Fixed — production-audit findings (3 items)
 
