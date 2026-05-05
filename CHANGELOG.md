@@ -11,7 +11,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [0.4.0] — 2026-05-04
+## [0.4.0] — 2026-05-05
+
+This release adds **5 new diagram engines**, bringing Schematex to **27 diagram types** total.
+
+### Added — ERD (Entity Relationship Diagram) v0.1 — crow's-foot notation
+
+First engine in the new **Data modeling** cluster.
+
+- **Full pipeline:** parser → layered LR/TB layout → tabular SVG renderer with crow's-foot endpoint glyphs (bar, open circle, foot, foot+circle).
+- **DBML-compatible DSL:** `Table Name { col type PK FK -> X.y }` with Mermaid `}o--||` ASCII glyph aliases as input shorthand.
+- **Automatic crow's-foot rendering:** endpoint cardinality symbols (`|`, `o`, `<`) read from relation glyphs and rendered per notation standard.
+- **AI registry entry** under new `data-modeling` cluster with explicit disambiguation from the `entity` type (corporate ownership vs. database schema).
+- **`erd` export**, syntax doc, 2 example MDX files (university schema, e-commerce schema).
+- **Tests:** 23 unit tests (parser, layout, renderer, e2e).
+
+**v0.1 deferred:** Chen notation, Barker notation, multi-schema diagrams.
+
+### Added — Breadboard v0.1 — Fritzing-style component layout
+
+- **Section-based DSL:** `board:` dimensions, `parts` with `@col-row` hole addressing, power-rail notation (`@+t8`), span placements, off-board MCU side placement.
+- **Parts catalog:** resistors (auto color-bands from value), LED, capacitors, diode, button, DIP ICs, headers, MCU breakouts (Arduino Uno/Nano, ESP32, Raspberry Pi Pico), HC-SR04, DHT11/22, SSD1306 OLED, LCD 1602 I²C, rotary encoder, servo.
+- **Cubic Bézier wire routing** with `via @coord` override; post-layout shift with copy-on-return fix for shared pin references.
+- **Z-ordered renderer:** substrate + rails + trough + parts + wires, semantic SVG with CSS class hooks.
+- **`breadboard` export**, syntax doc, 3 example MDX files (blink-LED, HC-SR04, ESP32 OLED).
+- **Tests:** 16 unit tests + 5 fixture files.
+
+### Added — BPMN v0.1 — OMG BPMN 2.0 business-process diagrams
+
+- **Full pipeline:** parser → longest-path layered layout with DFS cycle-break → orthogonal Manhattan routing → SVG renderer.
+- **Pools & lanes:** `pool "Name"` + `lane "Name"` for horizontal swimlane partitioning; black-box pools.
+- **Events:** start · intermediate · end, with none / message / timer trigger variants; correct IEC-style circle glyphs.
+- **Tasks:** plain tasks + 6 marker types (user / service / send / receive / manual / script) + collapsed subprocess.
+- **Gateways:** XOR (×), OR (+), AND (×-filled), event-based.
+- **Connectors:** sequence flow `-->`, message flow `--?`, association `--*`, default flow `~~>`.
+- **Parser-side validation** of pool-boundary rules and default-flow constraints.
+- **`bpmn` export**, syntax doc, example MDX files.
+- **Tests:** full parser + renderer coverage.
+
+**v0.1 deferred:** boundary events, expanded subprocesses, rare event triggers (cancel/signal/link/conditional/multiple), data objects.
 
 ### Added — FBD (Function Block Diagram) v0.1 — IEC 61131-3 §6.4
 
@@ -77,10 +115,11 @@ transition from: S2 to: S0: DoneBtn
 
 ### Added — infrastructure and docs
 
-- **6 new example MDX files:** `fbd-motor-latch`, `fbd-bottle-counter`, `fbd-tank-setpoint-limiter`, `sfc-bottle-filling`, `sfc-bake-cool-concurrent`, `sfc-order-routing-alt` — all with industry context, complexity ratings, and `featured` flags.
-- **2 new reference docs:** `docs/reference/23-FBD-STANDARD.md` and `docs/reference/24-SFC-STANDARD.md`.
-- **AI registry:** both types added to `src/ai/registry.ts` under `electrical-industrial`; syntax keys added to `scripts/build-ai-content.mjs`; total AI-bundled syntax docs 27, examples 58.
-- **Website nav:** `fbd` and `sfc` added to `website/content/docs/meta.json` Electrical & Industrial section.
+- **11 new example MDX files** covering ERD, Breadboard, BPMN, FBD, and SFC — all with industry context, complexity ratings, and `featured` flags.
+- **5 new reference docs:** `docs/reference/23-FBD-STANDARD.md`, `24-SFC-STANDARD.md`, `25-ERD-STANDARD.md`, `26-BREADBOARD-STANDARD.md`, `27-BPMN-STANDARD.md`.
+- **New Data modeling cluster** added to `docs/reference/00-OVERVIEW.md` and AI registry.
+- **AI registry:** all 5 types in `src/ai/registry.ts`; syntax keys in `scripts/build-ai-content.mjs`; total AI-bundled syntax docs 27, examples 58.
+- **Website nav (`meta.json`):** FBD and SFC added to Electrical & Industrial; ERD to Data modeling; Breadboard and BPMN to their respective sections.
 - **Diagram count updated** to 27 across README, package.json, website homepage, gallery, and playground pages.
 - **674 tests passing** (0 failures); typecheck and lint clean.
 
