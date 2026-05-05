@@ -1,0 +1,39 @@
+---
+title: ESP32 + SSD1306 OLED I²C
+description: ESP32 DevKit driving a 128×64 OLED display over I²C — four wires (3V3 / GND / SDA / SCL). The standard "first display" project for ESP32 learners.
+diagram: breadboard
+standard: Fritzing visual conventions (no ISO standard)
+industry: [education, maker, iot]
+persona: For the ESP32 / IoT learner
+complexity: 2
+tags: [breadboard, esp32, oled, ssd1306, i2c, display]
+featured: false
+relatedLink:
+  label: Breadboard syntax
+  href: /docs/breadboard
+status: published
+dsl: |
+  breadboard
+  board: half
+  title: "ESP32 + SSD1306 OLED I²C"
+
+  parts
+    esp: mcu esp32 @beside-left
+    oled: display oled-ssd1306 @8a
+
+  wires
+    oled:GND --black--  @-t1
+    oled:VCC --red--    @+t1
+    oled:SCL --white--  @10c
+    oled:SDA --green--  @11c
+    esp:3V3  --red--    @+t1
+    esp:GND  --black--  @-t1
+    esp:GPIO22 --white-- @10c
+    esp:GPIO21 --green-- @11c
+---
+
+The SSD1306 OLED is the canonical first display project for an ESP32. Four wires get a 128×64 pixel monochrome display running over I²C. Two things differ from the equivalent Arduino Uno setup:
+
+**3.3 V supply, not 5 V.** The ESP32 runs at 3.3 V on every pin including its supply rail. Wiring an OLED to the Uno's 5 V will work, but mixing in 5 V signals from a Uno into the same I²C bus as the ESP32 will damage the ESP32. Stay on the 3V3 rail.
+
+**Default I²C pins are GPIO21 (SDA) and GPIO22 (SCL).** The Adafruit / Espressif convention is green for SDA and white for SCL — preserved here. These pins are remappable in firmware via `Wire.begin(sda, scl)` if you need them elsewhere.

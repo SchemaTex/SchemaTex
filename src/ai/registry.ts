@@ -157,6 +157,16 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
     standard: "ANSI/ISA-5.1-2009 + ISO 10628-1:2014",
     syntaxKey: "pid",
   },
+  {
+    type: "breadboard",
+    name: "Breadboard / Physical wiring",
+    tagline: "Fritzing-style breadboard view — physical wiring of Arduino / ESP32 / Pi prototypes.",
+    useWhen:
+      "Use for maker / Arduino / ESP32 / Raspberry Pi tutorials and lab handouts where the user wants to see *how to physically wire components on a breadboard* — not the abstract circuit schematic. Address tie-points by `@col-row` (e.g. `@5e`, `@+t8`). Smooth Bézier jumper-wires with conventional colors. Distinct from `circuit` (IEEE 315 schematic — same prototype, different view).",
+    cluster: "electrical-industrial",
+    standard: "Fritzing visual conventions + Wokwi DSL precedent (no ISO standard exists for this view; see 26-BREADBOARD-STANDARD.md)",
+    syntaxKey: "breadboard",
+  },
   // ── Corporate / Legal ────────────────────────────────────────
   {
     type: "entity",

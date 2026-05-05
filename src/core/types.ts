@@ -48,7 +48,9 @@ export type DiagramType =
   // Process & instrumentation
   | "pid"     // ISA-5.1 / ISO 10628 P&ID (22-PID-STANDARD)
   // Data modeling
-  | "erd";     // Entity-Relationship Diagram (Chen / crow's foot, 27-ERD-STANDARD)
+  | "erd"     // Entity-Relationship Diagram (Chen / crow's foot, 27-ERD-STANDARD)
+  // Physical wiring / hardware prototyping
+  | "breadboard";    // Fritzing-style breadboard view (26-BREADBOARD-STANDARD)
 
 export type GenogramMode = "medical" | "heritage";
 
@@ -1582,4 +1584,150 @@ export interface MindmapLayoutResult {
   nodes: MindmapLayoutNode[];
   edges: MindmapLayoutEdge[];
   title?: string;
+}
+
+// ─── Breadboard / Physical Wiring Types ─────────────────────
+
+/**
+ * Breadboard form factor:
+ *  - "mini"  170 tie-points, 17 cols × 5+5 rows, no power rails
+ *  - "half"  400 tie-points, 30 cols, 2 rail pairs (continuous)
+ *  - "full"  830 tie-points, 63 cols, 2 rail pairs (broken at col 30/31)
+ */
+export type BreadboardForm = "mini" | "half" | "full";
+
+/** Power-rail half: top vs bottom edge of board, positive vs negative stripe. */
+export type BreadboardRail = "+t" | "-t" | "+b" | "-b";
+
+/** Breadboard hole address — main grid (col + row) or rail (col + rail). */
+export type BreadboardCoord =
+  | { kind: "hole"; col: number; row: "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" | "i" | "j" }
+  | { kind: "rail"; rail: BreadboardRail; col: number };
+
+/** Off-board MCU placement (relative to breadboard substrate). */
+export type BreadboardSidePlacement = "beside-left" | "beside-right" | "above" | "below";
+
+/** Where a part lives. Either a span across the grid (resistor, led, dip) or a side placement (uno). */
+export type BreadboardPlacement =
+  | { kind: "point"; at: BreadboardCoord }
+  | { kind: "span"; from: BreadboardCoord; to: BreadboardCoord }
+  | { kind: "side"; side: BreadboardSidePlacement };
+
+/** Catalog of v0.1 part kinds. */
+export type BreadboardPartKind =
+  | "resistor"
+  | "led"
+  | "cap-elec"
+  | "cap-ceramic"
+  | "diode"
+  | "button"
+  | "dip"
+  | "header"
+  | "mcu-uno"
+  | "mcu-nano"
+  | "mcu-esp32"
+  | "mcu-pico"
+  | "sensor-hcsr04"
+  | "sensor-dht11"
+  | "sensor-dht22"
+  | "display-oled-ssd1306"
+  | "display-lcd-1602-i2c"
+  | "module-rotary-ky040"
+  | "actuator-servo-sg90";
+
+export interface BreadboardPart {
+  /** User-assigned id (e.g. "uno", "r1"). */
+  id: string;
+  kind: BreadboardPartKind;
+  /** Optional kind-specific args. e.g. resistor.value="220", dip.pins=8, led.color="red". */
+  args: Record<string, string | number>;
+  placement: BreadboardPlacement;
+  /** Optional inline label drawn near the part body. */
+  label?: string;
+}
+
+export type BreadboardWireColor =
+  | "red"
+  | "black"
+  | "blue"
+  | "yellow"
+  | "orange"
+  | "green"
+  | "white"
+  | "purple"
+  | "brown"
+  | "grey";
+
+/** Wire endpoint — either a part pin or a board hole/rail. */
+export type BreadboardEndpoint =
+  | { kind: "pin"; partId: string; pin: string }
+  | { kind: "coord"; at: BreadboardCoord };
+
+export interface BreadboardWire {
+  from: BreadboardEndpoint;
+  to: BreadboardEndpoint;
+  color: BreadboardWireColor;
+  /** Optional intermediate hole that biases the Bézier control points. */
+  via?: BreadboardCoord;
+}
+
+export interface BreadboardAst {
+  type: "breadboard";
+  board: BreadboardForm;
+  title?: string;
+  parts: BreadboardPart[];
+  wires: BreadboardWire[];
+}
+
+/** Resolved part box on (or beside) the substrate. */
+export interface BreadboardLayoutPart {
+  part: BreadboardPart;
+  /** Top-left x of bounding box in canvas px. */
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  /** For span/point parts: rotation angle in degrees (currently 0 or 90). */
+  rotation: number;
+  /** Resolved pin centers in canvas px, keyed by pin name. */
+  pins: Record<string, { x: number; y: number }>;
+}
+
+export interface BreadboardLayoutWire {
+  wire: BreadboardWire;
+  /** Cubic Bézier path "M x1 y1 C cx1 cy1 cx2 cy2 x2 y2". */
+  path: string;
+  /** Endpoint dots (rendered as small filled circles). */
+  fromXY: { x: number; y: number };
+  toXY: { x: number; y: number };
+  color: BreadboardWireColor;
+}
+
+export interface BreadboardLayoutSubstrate {
+  /** Top-left of board substrate. */
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  /** Hole pitch in px (default 14). */
+  pitch: number;
+  /** Number of columns (17 / 30 / 63). */
+  cols: number;
+  /** Whether rails exist on this form. */
+  hasRails: boolean;
+  /** Whether rails break at col 30/31 (full board only). */
+  railsBreak: boolean;
+  /** Vertical center of the trough channel. */
+  troughY: number;
+  /** Width of trough channel (≈ pitch). */
+  troughHeight: number;
+}
+
+export interface BreadboardLayoutResult {
+  ast: BreadboardAst;
+  substrate: BreadboardLayoutSubstrate;
+  parts: BreadboardLayoutPart[];
+  wires: BreadboardLayoutWire[];
+  width: number;
+  height: number;
 }

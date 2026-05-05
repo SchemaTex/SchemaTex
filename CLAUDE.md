@@ -89,4 +89,4 @@ Pipeline: `Text → Parser → AST → Layout → LayoutResult → Renderer → 
 
 Types 在 `src/core/types.ts`。SVG builder 在 `src/core/svg.ts`。
 
-已完成：Genogram, Ecomap, Pedigree, Phylo, Sociogram, Timing, Logic Gate, Circuit, Block, Ladder, SLD, Entity Structure, Decision Tree, ERD (crow's-foot v0.1; Chen/Barker deferred)。
+已完成：Genogram, Ecomap, Pedigree, Phylo, Sociogram, Timing, Logic Gate, Circuit, Block, Ladder, SLD, Entity Structure, Decision Tree, ERD (crow's-foot v0.1; Chen/Barker deferred), Breadboard (v0.1; Fritzing-style stylized parts catalog, smooth Bézier wires)。

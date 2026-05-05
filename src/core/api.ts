@@ -22,6 +22,7 @@ import { timeline } from "../diagrams/timeline";
 import { state } from "../diagrams/state";
 import { pid } from "../diagrams/pid";
 import { erd } from "../diagrams/erd";
+import { breadboard } from "../diagrams/breadboard";
 
 export interface SchematexConfig {
   type?:
@@ -47,7 +48,8 @@ export interface SchematexConfig {
     | "timeline"
     | "state"
     | "pid"
-    | "erd";
+    | "erd"
+    | "breadboard";
   width?: number;
   height?: number;
   padding?: number;
@@ -79,6 +81,7 @@ const plugins: DiagramPlugin[] = [
   state,
   pid,
   erd,
+  breadboard,
 ];
 
 function detectPlugin(text: string, config?: SchematexConfig): DiagramPlugin {
@@ -90,7 +93,7 @@ function detectPlugin(text: string, config?: SchematexConfig): DiagramPlugin {
     if (plugin.detect(text)) return plugin;
   }
   throw new Error(
-    "Cannot detect diagram type. Start your text with 'genogram', 'ecomap', 'pedigree', 'phylo', 'sociogram', 'timing', 'logic', 'circuit', 'blockdiagram', 'ladder', 'sld', 'entity-structure', 'fishbone', 'venn', 'flowchart', 'mindmap', 'matrix', 'orgchart', 'state', 'pid', or 'erd'."
+    "Cannot detect diagram type. Start your text with 'genogram', 'ecomap', 'pedigree', 'phylo', 'sociogram', 'timing', 'logic', 'circuit', 'blockdiagram', 'ladder', 'sld', 'entity-structure', 'fishbone', 'venn', 'flowchart', 'mindmap', 'matrix', 'orgchart', 'state', 'pid', 'erd', or 'breadboard'."
   );
 }
 

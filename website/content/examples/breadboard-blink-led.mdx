@@ -1,0 +1,35 @@
+---
+title: Blink LED on Arduino Uno
+description: The maker hello-world. Arduino Uno + 220Ω resistor + 5mm red LED — D13 → resistor → LED → GND. Tests basic part placement, beside-left MCU, and the iconic Bézier wire arc.
+diagram: breadboard
+standard: Fritzing visual conventions (no ISO standard)
+industry: [education, maker, hardware]
+persona: For the Arduino beginner
+complexity: 1
+tags: [breadboard, arduino, uno, led, blink, tutorial]
+featured: true
+relatedLink:
+  label: Breadboard syntax
+  href: /docs/breadboard
+status: published
+dsl: |
+  breadboard
+  board: half
+  title: "Blink LED — Arduino Uno hello-world"
+
+  parts
+    uno: mcu uno @beside-left
+    r1:  resistor 220 @5e..9e
+    d1:  led red @10e..10f
+
+  wires
+    uno:5V  --red--    @+t1
+    uno:GND --black--  @-t1
+    @+t1    --red--    @5a
+    uno:D13 --yellow-- @9a
+    @10j    --black--  @-t1
+---
+
+The "Blink" sketch is the Arduino equivalent of `printf("hello\n")` — the smallest program that proves the toolchain, board, and wiring all work. The breadboard wiring routes D13 through a 220Ω current-limiting resistor into the LED's anode (long lead, row e), and pulls the cathode (short lead, row f) down to ground via the bottom rail. Power and ground rails are jumpered from the Uno's 5V and GND pins on the left.
+
+If the LED doesn't light up, three things to check, in order: LED polarity (the flat-side flag in the diagram is the cathode); resistor value (220–330Ω works for a 5mm red LED at 5V); and that D13 is the actual pin you're toggling in your sketch.
