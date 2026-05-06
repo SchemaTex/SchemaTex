@@ -11,6 +11,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.4.1] — 2026-05-06
+
+### Added — matrix `style: table` + new examples
+
+- **`style: table` directive for matrix diagrams.** Flips any 2×2 or 3×3 quadrant diagram from scatter/bubble mode into a text-in-cell table layout — the canonical form for Eisenhower, Johari, Impact-Effort, and 9-box. Setting `style: table` automatically disables axis arrows, axis labels, grid lines, and the quadrant-annotation overlay; quadrant titles are instead rendered as cell-header text inside each cell, and multiple items for the same cell stack as a bullet list. Renderer gains three new CSS classes (`sx-matrix-cell-title`, `sx-matrix-cell-subtitle`, `sx-matrix-cell-item`) for theming.
+- **`Q1`…`Q4` shorthand for 2×2 table mode.** Instead of `cell (col, row) label: "…"`, authors can write `Q2: "Ship hotfix"` — one line per item, repeating the key to stack items. Q1 = top-right, Q2 = top-left, Q3 = bottom-left, Q4 = bottom-right. Designed to match what LLMs naturally emit for Eisenhower-style prompts.
+- **3×3 `style: table` support.** `renderQuadrantBackground` extended to cover 3×3 grids with a diagonal severity heatmap (green → amber → red, following the GE/McKinsey 9-box convention). `renderCellLabels` unified from a 3×3-only helper into a shared 2×2/3×3 path.
+- **Four new example MDX files.** `matrix-eisenhower-week` (updated to table form), `matrix-impact-effort`, `matrix-johari-window`, and `matrix-9-box-talent` — each a canonical AI-grounding few-shot for LLM DSL generation. All four also added to `src/ai/_generated.ts`.
+- **PRISMA 2020 flowchart example.** `flowchart-prisma-systematic-review.mdx` — canonical four-phase systematic-review flow (Identification → Screening → Eligibility → Included) using `subgraph`, `classDef excluded`, and per-box `(n = N)` counts. Added to `_generated.ts` and documented in `14-FLOWCHART-STANDARD.md §15.5` as the LLM grounding reference for "systematic review" / "meta-analysis" / "Cochrane review" prompts.
+- **Examples-corpus AI grounding spec** (`docs/system/EXAMPLES-CORPUS-AI-GROUNDING.md`).
+
+### Notes
+
+These items were originally drafted into the 0.3.5 changelog entry but slipped past the 0.3.5 / 0.4.0 release boundaries; they ship for real in 0.4.1.
+
+---
+
 ## [0.4.0] — 2026-05-05
 
 This release adds **5 new diagram engines**, bringing Schematex to **27 diagram types** total.
@@ -126,14 +143,6 @@ transition from: S2 to: S0: DoneBtn
 ---
 
 ## [0.3.5] — 2026-05-04
-
-### Added — matrix `style: table` + new examples
-
-- **`style: table` directive for matrix diagrams.** Flips any 2×2 or 3×3 quadrant diagram from scatter/bubble mode into a text-in-cell table layout — the canonical form for Eisenhower, Johari, Impact-Effort, and 9-box. Setting `style: table` automatically disables axis arrows, axis labels, grid lines, and the quadrant-annotation overlay; quadrant titles are instead rendered as cell-header text inside each cell, and multiple items for the same cell stack as a bullet list. Renderer gains three new CSS classes (`sx-matrix-cell-title`, `sx-matrix-cell-subtitle`, `sx-matrix-cell-item`) for theming.
-- **`Q1`…`Q4` shorthand for 2×2 table mode.** Instead of `cell (col, row) label: "…"`, authors can write `Q2: "Ship hotfix"` — one line per item, repeating the key to stack items. Q1 = top-right, Q2 = top-left, Q3 = bottom-left, Q4 = bottom-right. Designed to match what LLMs naturally emit for Eisenhower-style prompts.
-- **3×3 `style: table` support.** `renderQuadrantBackground` extended to cover 3×3 grids with a diagonal severity heatmap (green → amber → red, following the GE/McKinsey 9-box convention). `renderCellLabels` unified from a 3×3-only helper into a shared 2×2/3×3 path.
-- **Four new example MDX files.** `matrix-eisenhower-week` (updated to table form), `matrix-impact-effort`, `matrix-johari-window`, and `matrix-9-box-talent` — each a canonical AI-grounding few-shot for LLM DSL generation. All four also added to `src/ai/_generated.ts`.
-- **PRISMA 2020 flowchart example.** `flowchart-prisma-systematic-review.mdx` — canonical four-phase systematic-review flow (Identification → Screening → Eligibility → Included) using `subgraph`, `classDef excluded`, and per-box `(n = N)` counts. Added to `_generated.ts` and documented in `14-FLOWCHART-STANDARD.md §15.5` as the LLM grounding reference for "systematic review" / "meta-analysis" / "Cochrane review" prompts.
 
 ### Fixed — production-audit findings (3 items)
 

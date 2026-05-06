@@ -49,6 +49,9 @@ const CSS = `
 .sx-matrix-corr-rowbg-a { fill: #f0fdf4; }
 .sx-matrix-corr-rowbg-b { fill: #fff; }
 .sx-matrix-cell-label { font: 500 12px sans-serif; fill: #1f2937; text-anchor: middle; }
+.sx-matrix-cell-title { font: 600 13px sans-serif; fill: #111827; }
+.sx-matrix-cell-subtitle { font: 400 11px sans-serif; fill: #6b7280; }
+.sx-matrix-cell-item { font: 500 12px sans-serif; fill: #1f2937; }
 .sx-matrix-cell-value { font: 600 18px sans-serif; fill: #111; text-anchor: middle; }
 .sx-matrix-bubble { stroke-width: 1.5; }
 .sx-matrix-label { font: 500 11px sans-serif; fill: #111827; text-anchor: middle; dominant-baseline: central; pointer-events: none; }
@@ -83,23 +86,84 @@ function bubbleFill(p: MatrixPoint, categories: string[]): string {
 }
 
 function renderQuadrantBackground(ast: MatrixAST, lay: MatrixLayoutResult): string {
-  if (!ast.config.quadrantBg || ast.grid !== "2x2") return "";
+  if (!ast.config.quadrantBg) return "";
   const { plot } = lay;
-  const halfW = plot.w / 2;
-  const halfH = plot.h / 2;
-  // Q1 TR, Q2 TL, Q3 BL, Q4 BR
-  const rects = [
-    { x: plot.x0 + halfW, y: plot.y0, w: halfW, h: halfH, fill: QUADRANT_TINTS[0] },
-    { x: plot.x0, y: plot.y0, w: halfW, h: halfH, fill: QUADRANT_TINTS[1] },
-    { x: plot.x0, y: plot.y0 + halfH, w: halfW, h: halfH, fill: QUADRANT_TINTS[2] },
-    { x: plot.x0 + halfW, y: plot.y0 + halfH, w: halfW, h: halfH, fill: QUADRANT_TINTS[3] },
-  ];
-  return group(
-    { id: "sx-matrix-quad-bg" },
-    rects.map((r) =>
-      rect({ x: r.x, y: r.y, width: r.w, height: r.h, fill: r.fill, "fill-opacity": 0.55 })
-    )
+
+  if (ast.grid === "2x2") {
+    const halfW = plot.w / 2;
+    const halfH = plot.h / 2;
+    // Q1 TR, Q2 TL, Q3 BL, Q4 BR
+    const rects = [
+      { x: plot.x0 + halfW, y: plot.y0, w: halfW, h: halfH, fill: QUADRANT_TINTS[0] },
+      { x: plot.x0, y: plot.y0, w: halfW, h: halfH, fill: QUADRANT_TINTS[1] },
+      { x: plot.x0, y: plot.y0 + halfH, w: halfW, h: halfH, fill: QUADRANT_TINTS[2] },
+      { x: plot.x0 + halfW, y: plot.y0 + halfH, w: halfW, h: halfH, fill: QUADRANT_TINTS[3] },
+    ];
+    return group(
+      { id: "sx-matrix-quad-bg" },
+      rects.map((r) =>
+        rect({ x: r.x, y: r.y, width: r.w, height: r.h, fill: r.fill, "fill-opacity": 0.55 })
+      )
+    );
+  }
+
+  // 3×3 table mode: subtle diagonal heatmap (top-right green, mid yellow, bottom-left red).
+  // Convention used in GE/McKinsey 9-box: anti-diagonal severity from "stars" → "PIP".
+  if (ast.grid === "3x3" && ast.style === "table") {
+    const cellW = plot.w / 3;
+    const cellH = plot.h / 3;
+    // score = col + row (0..4). 4 = top-right (best), 0 = bottom-left (worst).
+    const TINT_3x3 = [
+      "#fee2e2", // 0: red-100
+      "#fef3c7", // 1: amber-100
+      "#fef3c7", // 2: amber-100
+      "#dcfce7", // 3: green-100
+      "#dcfce7", // 4: green-100
+    ];
+    const cells: string[] = [];
+    for (let col = 0; col < 3; col++) {
+      for (let row = 0; row < 3; row++) {
+        const score = col + row;
+        const fill = TINT_3x3[score]!;
+        const x = plot.x0 + col * cellW;
+        const y = plot.y0 + (2 - row) * cellH;
+        cells.push(
+          rect({ x, y, width: cellW, height: cellH, fill, "fill-opacity": 0.6 })
+        );
+      }
+    }
+    return group({ id: "sx-matrix-quad-bg" }, cells);
+  }
+
+  return "";
+}
+
+function renderTableChrome(ast: MatrixAST, lay: MatrixLayoutResult): string {
+  // Always draw grid lines + outer border in table mode (overrides gridLines:false
+  // that style:table sets). Without this, cells are invisible — text floats.
+  if (ast.style !== "table") return "";
+  if (ast.mode !== "quadrant") return "";
+  const { plot } = lay;
+  const lines: string[] = [];
+  for (let i = 1; i < ast.cols; i++) {
+    const x = plot.x0 + (plot.w * i) / ast.cols;
+    lines.push(lineEl({ x1: x, y1: plot.y0, x2: x, y2: plot.y0 + plot.h, class: "sx-matrix-grid" }));
+  }
+  for (let j = 1; j < ast.rows; j++) {
+    const y = plot.y0 + (plot.h * j) / ast.rows;
+    lines.push(lineEl({ x1: plot.x0, y1: y, x2: plot.x0 + plot.w, y2: y, class: "sx-matrix-grid" }));
+  }
+  lines.push(
+    rect({
+      x: plot.x0,
+      y: plot.y0,
+      width: plot.w,
+      height: plot.h,
+      class: "sx-matrix-plot-border",
+      fill: "none",
+    })
   );
+  return group({ id: "sx-matrix-table-chrome" }, lines);
 }
 
 function renderGrid(ast: MatrixAST, lay: MatrixLayoutResult): string {
@@ -222,6 +286,8 @@ function renderAxes(ast: MatrixAST, lay: MatrixLayoutResult): string {
 
 function renderQuadAnnotations(ast: MatrixAST, lay: MatrixLayoutResult): string {
   if (!ast.config.quadrantAnnotations || ast.grid !== "2x2" || ast.annotations.length === 0) return "";
+  // table style renders annotations as cell-titles inside renderCellTable
+  if (ast.style === "table") return "";
   const { plot } = lay;
   const halfW = plot.w / 2;
   const halfH = plot.h / 2;
@@ -282,16 +348,112 @@ function wrapLabel(text: string, maxChars: number): string[] {
   return out;
 }
 
-function render3x3CellLabels(ast: MatrixAST, lay: MatrixLayoutResult): string {
-  if (ast.grid !== "3x3" || ast.cellLabels.length === 0) return "";
+function quadrantOf(col: number, row: number, cols: number, rows: number): 1 | 2 | 3 | 4 | undefined {
+  if (cols !== 2 || rows !== 2) return undefined;
+  if (col === 1 && row === 1) return 1; // TR
+  if (col === 0 && row === 1) return 2; // TL
+  if (col === 0 && row === 0) return 3; // BL
+  if (col === 1 && row === 0) return 4; // BR
+  return undefined;
+}
+
+function renderCellLabels(ast: MatrixAST, lay: MatrixLayoutResult): string {
+  if (ast.mode !== "quadrant" || ast.cellLabels.length === 0) return "";
+  if (ast.grid !== "2x2" && ast.grid !== "3x3") return "";
+
   const { plot } = lay;
   const cellW = plot.w / ast.cols;
   const cellH = plot.h / ast.rows;
-  const nodes = ast.cellLabels.map((cl) => {
-    const cx = plot.x0 + cellW * (cl.col + 0.5);
-    const cy = plot.y0 + cellH * (ast.rows - 1 - cl.row + 0.5);
-    return textEl({ x: cx, y: cy, class: "sx-matrix-cell-label" }, cl.label);
-  });
+  // Group cellLabels by (col,row) so multiple `cell (..)` lines stack as a list
+  const buckets = new Map<string, string[]>();
+  for (const cl of ast.cellLabels) {
+    const k = `${cl.col},${cl.row}`;
+    const arr = buckets.get(k) ?? [];
+    arr.push(cl.label);
+    buckets.set(k, arr);
+  }
+
+  const nodes: string[] = [];
+  const maxCharsPerLine = Math.max(8, Math.floor((cellW - 24) / 6.6));
+  const tableMode = ast.style === "table";
+
+  // In table mode, also render cell titles for annotated quadrants that have NO items —
+  // gives the canonical "Eisenhower 4-quadrant grid" feel even with sparse data.
+  if (tableMode && ast.grid === "2x2") {
+    for (const a of ast.annotations) {
+      const cell = (() => {
+        switch (a.q) {
+          case 1: return { col: 1, row: 1 };
+          case 2: return { col: 0, row: 1 };
+          case 3: return { col: 0, row: 0 };
+          case 4: return { col: 1, row: 0 };
+        }
+      })();
+      const k = `${cell.col},${cell.row}`;
+      if (!buckets.has(k)) buckets.set(k, []);
+    }
+  }
+
+  for (const [k, items] of buckets) {
+    const [col, row] = k.split(",").map(Number) as [number, number];
+    const cellX = plot.x0 + cellW * col;
+    const cellY = plot.y0 + cellH * (ast.rows - 1 - row);
+
+    // Single label, no quadrant title → keep classic centered placement (3x3 9-box look)
+    if (items.length === 1 && !tableMode) {
+      const cx = cellX + cellW / 2;
+      const cy = cellY + cellH / 2;
+      nodes.push(textEl({ x: cx, y: cy, class: "sx-matrix-cell-label" }, items[0]!));
+      continue;
+    }
+
+    // Table-style: optional cell-title (quadrant annotation) + bullet list, top-anchored
+    const padX = 14;
+    const padY = 14;
+    let cursorY = cellY + padY + 12;
+
+    if (tableMode) {
+      const q = quadrantOf(col, row, ast.cols, ast.rows);
+      const annot = q ? ast.annotations.find((a) => a.q === q) : undefined;
+      if (annot) {
+        nodes.push(
+          textEl(
+            { x: cellX + cellW / 2, y: cursorY, class: "sx-matrix-cell-title", "text-anchor": "middle" },
+            annot.label,
+          ),
+        );
+        cursorY += 22;
+        if (annot.description) {
+          const descLines = wrapLabel(annot.description, Math.max(12, maxCharsPerLine));
+          for (const dl of descLines) {
+            nodes.push(
+              textEl(
+                { x: cellX + cellW / 2, y: cursorY, class: "sx-matrix-cell-subtitle", "text-anchor": "middle" },
+                dl,
+              ),
+            );
+            cursorY += 13;
+          }
+          cursorY += 4;
+        }
+      }
+    }
+
+    for (const item of items) {
+      const lines = wrapLabel(item, maxCharsPerLine);
+      for (let i = 0; i < lines.length; i++) {
+        const prefix = tableMode ? (i === 0 ? "•  " : "    ") : "";
+        nodes.push(
+          textEl(
+            { x: cellX + padX, y: cursorY, class: "sx-matrix-cell-item", "text-anchor": "start" },
+            prefix + lines[i]!,
+          ),
+        );
+        cursorY += 16;
+      }
+    }
+  }
+
   return group({ id: "sx-matrix-cell-labels" }, nodes);
 }
 
@@ -778,8 +940,9 @@ export function renderMatrixAST(ast: MatrixAST): string {
     renderTitle(ast, lay),
     renderQuadrantBackground(ast, lay),
     renderGrid(ast, lay),
+    renderTableChrome(ast, lay),
     renderQuadAnnotations(ast, lay),
-    render3x3CellLabels(ast, lay),
+    renderCellLabels(ast, lay),
     renderHeatmap(ast, lay),
     renderCorrelation(ast, lay),
     renderAxes(ast, lay),

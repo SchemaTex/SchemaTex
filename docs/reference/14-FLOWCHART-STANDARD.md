@@ -1035,6 +1035,24 @@ flowchart LR
 
 ---
 
+## 15.5 Domain pattern: PRISMA 2020 systematic review
+
+PRISMA 2020 (Page et al., BMJ 2021) prescribes a fixed four-phase flow diagram for systematic reviews — **Identification → Screening → Eligibility → Included** — and it is required by Cochrane, JAMA, Lancet, and most evidence-synthesis journals. Schematex does **not** ship a dedicated PRISMA engine; the canonical layout is achievable today as a flowchart variant using existing `subgraph` + `class` + `classDef` features. The example `flowchart-prisma-systematic-review.mdx` is the authoritative AI-grounding reference for this pattern.
+
+**Mandatory structural elements** (per PRISMA 2020 reporting checklist):
+
+1. Each of the four phases lives inside a named `subgraph`. The renderer draws a labeled cluster border around each, matching the printed PRISMA template.
+2. Every node carries an explicit `(n = N)` count in its label. PRISMA reviewers will reject a diagram where any box's count is missing.
+3. The "records excluded" stream is visually distinguished from the surviving stream — Schematex uses a `classDef excluded` red-tinted class applied via `class A,B,C excluded`.
+4. The eligibility-phase exclusion box itemizes reasons (wrong population / wrong intervention / wrong outcome / abstract-only / etc.) — not just an aggregate count. Inline text with separators is acceptable.
+5. The terminal nodes (qualitative synthesis count + meta-analysis count) use the stadium shape `(["..."])` so reviewers' eyes land on the final included-study count.
+
+**Why no dedicated engine.** PRISMA is a **structural template**, not a new visual language — it shares 100% of its rendering primitives with general flowchart (rect, stadium, subgraph, class). A bespoke engine would duplicate flowchart's layout/routing without adding capability. The discipline lives in the example MDX + this section as the AI-grounding contract.
+
+**LLM prompt rule.** When the user mentions "PRISMA", "systematic review", "meta-analysis flow", "evidence screening", or "Cochrane review" — emit a flowchart DSL modeled on `flowchart-prisma-systematic-review.mdx`. Do not invent a new diagram type.
+
+---
+
 ## 16. Accessibility
 
 - `<svg role="graphics-document">`

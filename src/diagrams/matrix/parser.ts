@@ -42,6 +42,17 @@ function emptyAxis(): MatrixAxis {
   return { low: "", high: "" };
 }
 
+function quadrantToCell(q: 1 | 2 | 3 | 4): { col: number; row: number } {
+  // 2×2 mapping: Q1=top-right, Q2=top-left, Q3=bottom-left, Q4=bottom-right
+  // (rows: 0=bottom, 1=top)
+  switch (q) {
+    case 1: return { col: 1, row: 1 };
+    case 2: return { col: 0, row: 1 };
+    case 3: return { col: 0, row: 0 };
+    case 4: return { col: 1, row: 0 };
+  }
+}
+
 function newAST(): MatrixAST {
   return {
     type: "matrix",
@@ -381,8 +392,31 @@ export function parseMatrix(text: string): MatrixAST {
       continue;
     }
 
+    if (/^style\s*:/i.test(line)) {
+      const v = line.replace(/^style\s*:\s*/i, "").trim().toLowerCase().replace(/"/g, "");
+      if (v === "table") {
+        st.ast.config.showAxis = "off";
+        st.ast.config.axisArrows = false;
+        st.ast.config.gridLines = false;
+        st.ast.config.quadrantAnnotations = false;
+        st.ast.style = "table";
+      }
+      continue;
+    }
+
     if (/^cell\s*\(/i.test(line)) {
       parseCellLine(line, st);
+      continue;
+    }
+
+    // `Q1: "label"` shorthand for 2×2 cellLabel (Q1=TR, Q2=TL, Q3=BL, Q4=BR)
+    const qShort = line.match(/^q([1-4])\s*:\s*(.+)$/i);
+    if (qShort) {
+      const q = Number(qShort[1]) as 1 | 2 | 3 | 4;
+      const labelRaw = qShort[2]!.trim();
+      const label = stripQuotes(labelRaw);
+      const cell = quadrantToCell(q);
+      st.ast.cellLabels.push({ col: cell.col, row: cell.row, label });
       continue;
     }
 

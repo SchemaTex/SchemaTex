@@ -1,0 +1,45 @@
+---
+title: Johari window — manager self-assessment
+description: 2×2 Johari window placing self-traits across Open / Blind / Hidden / Unknown — the classic coaching exercise rendered as a four-cell table.
+diagram: matrix
+standard: Johari window (Luft & Ingham 1955)
+industry: [coaching, hr, management]
+persona: For the new engineering manager
+complexity: 1
+tags: [matrix, johari, coaching, self-awareness, hr, table]
+featured: false
+relatedLink:
+  label: Matrix syntax
+  href: /docs/matrix
+status: published
+dsl: |
+  matrix johari "Self vs. Team — Q2 Reflection"
+  style: table
+  Q2: "Strong technical instincts"
+  Q2: "Direct in code review"
+  Q2: "Patient with juniors"
+  Q1: "Interrupts in meetings"
+  Q1: "Hard to read when stressed"
+  Q3: "Imposter syndrome about leadership"
+  Q3: "Anxiety about cross-team politics"
+  Q4: "Capacity for difficult conversations under pressure"
+---
+
+## Scenario
+
+A newly-promoted engineering manager runs a Johari exercise with her team during a 1:1 retro. She populates the **Open** cell (things both she and the team see); the team adds to **Blind** (things they see that she doesn't); she fills **Hidden** privately; **Unknown** is the open hypothesis space — capabilities and limitations that haven't surfaced yet.
+
+The table form is the canonical Johari output. Coaches print it on a single page and walk through it with the coachee — a scatter plot of dots would defeat the entire purpose.
+
+## Annotation key
+
+- `matrix johari` — preset axes (Known to Self × Known to Others) with the four window panes
+- `style: table` — flips off axes/grid, places each pane title as a cell header, lists items as bullets
+- `Q1` = Blind (top-right: not known to self, known to others)
+- `Q2` = Open / Arena (top-left: known to self + others)
+- `Q3` = Hidden / Façade (bottom-left: known to self, not to others)
+- `Q4` = Unknown (bottom-right: not known to either — the growth hypothesis space)
+
+## How to read
+
+The classic Johari coaching prompt: **how do you move items from Hidden → Open** (vulnerability work) **and from Blind → Open** (feedback-acceptance work)? An overstuffed Hidden pane signals psychological-safety debt; an empty Blind pane usually means the team hasn't been asked.

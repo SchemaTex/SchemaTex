@@ -1,0 +1,91 @@
+---
+title: PRISMA 2020 systematic review flow
+description: Canonical PRISMA 2020 flow diagram for a systematic review — records identified across databases, screened, assessed for eligibility, and included in synthesis.
+diagram: flowchart
+standard: PRISMA 2020 (Page et al., BMJ 2021)
+industry: [healthcare, research, biotech]
+persona: For the systematic-review author or research librarian
+complexity: 3
+tags: [flowchart, prisma, systematic-review, meta-analysis, research, evidence-synthesis]
+featured: true
+relatedLink:
+  label: Flowchart syntax
+  href: /docs/flowchart
+status: published
+dsl: |
+  flowchart TD
+    classDef excluded fill:#fef2f2,stroke:#b91c1c,stroke-width:1px,color:#7f1d1d
+
+    subgraph ID ["Identification"]
+      pubmed["PubMed (n = 482)"]
+      embase["Embase (n = 314)"]
+      cochrane["Cochrane (n = 91)"]
+      registers["Trial registers (n = 38)"]
+    end
+
+    subgraph SCREEN ["Screening"]
+      dedup["After duplicates removed (n = 712)"]
+      titles["Title and abstract screened (n = 712)"]
+      excl_titles["Records excluded (n = 598)"]
+      fulltext["Full-text sought (n = 114)"]
+      retrieved["Assessed for eligibility (n = 109)"]
+      not_retrieved["Not retrieved (n = 5)"]
+    end
+
+    subgraph ELIG ["Eligibility"]
+      assessed["Full-text articles assessed (n = 109)"]
+      excl_reasons["Excluded with reasons (n = 60)"]
+      r1["Wrong population (n = 18)"]
+      r2["Wrong intervention (n = 22)"]
+      r3["Wrong outcome (n = 11)"]
+      r4["Conference abstract only (n = 9)"]
+    end
+
+    included(["Studies in qualitative synthesis (n = 49)"])
+    meta(["Studies in meta-analysis (n = 31)"])
+
+    pubmed --> dedup
+    embase --> dedup
+    cochrane --> dedup
+    registers --> dedup
+    dedup --> titles
+    titles -->|excluded| excl_titles
+    titles -->|kept| fulltext
+    fulltext --> retrieved
+    fulltext -->|paywall / no response| not_retrieved
+    retrieved --> assessed
+    assessed -->|excluded with reasons| excl_reasons
+    excl_reasons --> r1
+    excl_reasons --> r2
+    excl_reasons --> r3
+    excl_reasons --> r4
+    assessed -->|met inclusion criteria| included
+    included --> meta
+
+    class excl_titles,not_retrieved,excl_reasons,r1,r2,r3,r4 excluded
+---
+
+## Scenario
+
+A research librarian working with a clinical team produces the PRISMA 2020 flow diagram for an upcoming Cochrane review submission. The journal **requires** the diagram in this exact four-phase structure (Identification → Screening → Eligibility → Included), with the count `(n = …)` shown explicitly in every box and the excluded-with-reasons box itemizing rejection reasons. Authoring this in a DSL (rather than redrawing in Word or BioRender) means the counts can be regenerated as the screening team updates the search.
+
+## Annotation key
+
+- **Subgraphs** name the four PRISMA phases: `subgraph ID ["Identification"]`, etc. — the rendered output groups boxes inside a labeled cluster border.
+- **`(n = N)` inline** — keep the count in the same label (PRISMA 2020 requires the count to be visible in every box; inline is the simplest layout that survives wide labels).
+- **`classDef excluded`** + **`class A,B excluded`** — applies the red-tinted class to the "records excluded" boxes so the eliminated stream is visually separated from the surviving stream.
+- **Edge labels** (`-->|excluded|`, `-->|met inclusion criteria|`) annotate the screening decision on each fork.
+- **Stadium nodes** (`(["…"])`) mark the two terminal outcomes (qualitative synthesis count, meta-analysis count) so readers' eyes land there.
+
+## How to read
+
+Top to bottom, the four phases mirror the PRISMA 2020 template exactly:
+
+1. **Identification** — every database and register the team searched, with raw record counts before deduplication.
+2. **Screening** — after deduplication, records pass through title/abstract screening (most are excluded here), then eligible records advance to full-text retrieval. Records lost at retrieval (paywall, no response from authors) are split into a separate "not retrieved" box per PRISMA 2020 reporting requirements.
+3. **Eligibility** — full-text articles are assessed against inclusion/exclusion criteria. Exclusions **must** be itemized with reasons — this is the box reviewers most often flag if missing.
+4. **Included** — final study count for the qualitative synthesis, with a sub-count for studies that contributed to the meta-analysis (not all included studies always do).
+
+## Standard reference
+
+Page MJ, McKenzie JE, Bossuyt PM, et al. *The PRISMA 2020 statement: an updated guideline for reporting systematic reviews.* BMJ 2021;372:n71. The flow-diagram template lives at [prisma-statement.org/prisma-2020-flow-diagram](https://www.prisma-statement.org/prisma-2020-flow-diagram).

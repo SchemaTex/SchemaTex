@@ -1,0 +1,55 @@
+---
+title: 9-box talent grid
+description: 3×3 performance × potential talent grid — the GE/McKinsey HR review tool used to plan promotions, succession, and performance management.
+diagram: matrix
+standard: 9-Box Talent Grid (GE / McKinsey)
+industry: [hr, management, leadership]
+persona: For the VP of People
+complexity: 2
+tags: [matrix, 9-box, talent, hr, succession, performance, table]
+featured: false
+relatedLink:
+  label: Matrix syntax
+  href: /docs/matrix
+status: published
+dsl: |
+  matrix 9-box "Engineering — H1 Talent Review"
+  style: table
+  cell (0,2) label: "Enigma"
+  cell (0,2) label: "Samir K. (sr. eng)"
+  cell (1,2) label: "Growth Employee"
+  cell (1,2) label: "Priya R. (eng II)"
+  cell (1,2) label: "Tomás L. (eng II)"
+  cell (2,2) label: "Future Leader"
+  cell (2,2) label: "Maya O. (sr. eng)"
+  cell (0,1) label: "Dilemma"
+  cell (0,1) label: "David C. (eng II)"
+  cell (1,1) label: "Core Player"
+  cell (1,1) label: "Lin H. (sr. eng)"
+  cell (1,1) label: "Kofi A. (eng II)"
+  cell (2,1) label: "High Impact"
+  cell (2,1) label: "Reina S. (staff)"
+  cell (0,0) label: "Under-performer"
+  cell (0,0) label: "— PIP candidate —"
+  cell (1,0) label: "Effective"
+  cell (1,0) label: "Jordan P. (eng I)"
+  cell (2,0) label: "Trusted Pro"
+  cell (2,0) label: "Elena V. (staff)"
+---
+
+## Scenario
+
+A VP of People runs the half-year talent review with eng managers. Each direct report lands in one of nine cells based on **performance** (the x-axis: how they're doing today) and **potential** (the y-axis: how much room they have to grow). The three top-row cells are the succession bench. The three bottom-row cells are the performance-management agenda. The middle row is the steady-state core that holds the org together.
+
+## Annotation key
+
+- `matrix 9-box` — preset 3×3 grid (the canonical nine cell names ship with the template)
+- `style: table` — top-aligned bullet-list rendering inside each cell
+- `cell (col, row) label: "..."` — each line adds one bullet to that cell. First line per cell is the canonical role name (Enigma / Future Leader / Core Player / …); subsequent lines list the people in that cell
+- Coordinates: `(0, 0)` is bottom-left (low performance, low potential); `(2, 2)` is top-right (high performance, high potential)
+
+## How to read
+
+**Future Leader** (top-right) is the natural-successor cell — the person you'd promote if a senior role opens tomorrow. **Dilemma** (top-left) and **Enigma** (top-middle-left) are the high-potential / low-performance cells: stuck in the wrong role, or under-coached, or in a bad team-fit — usually a managerial action item, not a performance issue. **Under-performer** (bottom-left) is the only cell that should ever be empty; if it has names, plan the next conversation now.
+
+The canonical 9-box discipline is to **anchor each calibration discussion on observable evidence** — a recent shipped project, a missed deadline, a mentee promotion. Without that anchor, the grid drifts into bias. The table format is what the calibration committee literally prints and marks up in the room.

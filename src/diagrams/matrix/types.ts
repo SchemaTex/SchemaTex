@@ -94,11 +94,15 @@ export interface MatrixConfig {
   margins: boolean;
 }
 
+export type MatrixStyle = "default" | "table";
+
 export interface MatrixAST {
   type: "matrix";
   title?: string;
   mode: MatrixMode;
   grid: MatrixGrid;
+  /** Optional render style preset. `table` = text-in-cell layout (no axes / arrows / annotations). */
+  style?: MatrixStyle;
   /** For NxM heatmap: column count */
   cols: number;
   /** For NxM heatmap: row count */
