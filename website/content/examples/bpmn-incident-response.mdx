@@ -1,0 +1,71 @@
+---
+title: Production incident response (BPMN)
+description: Three-lane BPMN of an on-call rotation handling a production page — L1 triage, L2 investigation, and a Comms lane that posts status updates. Exercises timer intermediate event, severity-based XOR routing, and a self-loop on the triage gate.
+diagram: bpmn
+standard: OMG BPMN 2.0.2 / ISO/IEC 19510:2013
+industry: [software, sre, devops]
+persona: For the on-call engineer
+complexity: 3
+tags: [bpmn, business-process, incident-response, timer-event, on-call, sre]
+featured: false
+relatedLink:
+  label: BPMN syntax
+  href: /docs/bpmn
+status: published
+dsl: |
+  bpmn
+  direction: LR
+  title: "Production incident response"
+
+  pool "Monitoring" blackbox
+
+  pool "Engineering" {
+    lane "On-call L1" {
+      A: start message "Page received"
+      ACK: task user "Acknowledge"
+      TR: task user "Triage"
+      G1: gateway xor "Severity?"
+    }
+    lane "On-call L2" {
+      INV: task user "Investigate"
+      ROOT: task service "Root cause"
+      FIX: task user "Implement fix"
+      DEPLOY: task service "Deploy patch"
+    }
+    lane "Comms" {
+      SP: task send "Status page"
+      T1: intermediate timer "30 min"
+      UP: task send "Update users"
+      PM: task user "Post-mortem"
+      Z: end "Resolved"
+    }
+  }
+
+  flows
+  A --> ACK
+  ACK --> TR
+  TR --> G1
+  G1 --? "P1" --> SP
+  G1 --? "P2-P3" --> INV
+  G1 --* "info" --> TR
+  SP --> INV
+  INV --> ROOT
+  ROOT --> FIX
+  FIX --> DEPLOY
+  DEPLOY --> T1
+  T1 --> UP
+  UP --> PM
+  PM --> Z
+  "Monitoring" ~~> A : "Alert"
+  SP ~~> "Monitoring" : "Status"
+---
+
+The shape of an incident-response runbook is exactly what BPMN was designed for: multiple roles handing off to each other under time pressure, with a clear escalation path and a hard line between "what we did internally" and "what we told users". Generic flowcharts blur those distinctions; BPMN's lanes make them auditable.
+
+**Three lanes, three roles.** L1 owns the page-acknowledgement SLA. L2 owns the technical fix. Comms owns the user-facing narrative. Every cross-lane handoff is visible as a sequence-flow that crosses a lane partition. When the post-mortem arrives, you can answer "why did Comms post the all-clear before L2 confirmed?" by reading the lane crossings.
+
+**Timer intermediate event.** `T1: intermediate timer "30 min"` is a double-ringed circle with a clock-face inner glyph. It says: *wait 30 minutes after the patch deploys before telling users the problem is fixed*. That delay isn't an arbitrary process step — it's the empirical bake time most SRE teams use to confirm a regression hasn't surfaced. Encoding it as a timer event (rather than a vague "wait" task) lets process-mining tools measure the actual wait distribution in production.
+
+**Self-loop on the triage XOR.** The default flow `G1 --* "info" --> TR` routes back to triage for info-level pages — the engineer keeps revisiting the page in their queue rather than escalating. This is a real cycle in the process graph; the layout's DFS cycle-break detects the back edge and lays out the rest as a forward DAG so the columns don't collapse.
+
+**Message flow to the monitoring system.** Status-page updates go *out* to the monitoring system as a message flow (`SP ~~> "Monitoring"`). The monitoring system is rendered as a black-box pool — Datadog / PagerDuty / Sentry / whatever your stack uses, you don't model their internals, you just model the message exchange.

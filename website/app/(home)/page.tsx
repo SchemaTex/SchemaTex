@@ -131,7 +131,7 @@ export default async function HomePage() {
     codeRepository: 'https://github.com/victorzhrn/Schematex',
     license: 'https://spdx.org/licenses/AGPL-3.0-only.html',
     description:
-      'Every diagram a doctor, engineer, or lawyer would actually use. 20 industry-standard diagram types from a text DSL — genogram, pedigree, ladder logic, SLD, phylo, fishbone, entity structure. Free, fully open source, made for AI. Pure SVG, zero dependencies.',
+      'Every diagram a doctor, engineer, or lawyer would actually use. 27 industry-standard diagram types from a text DSL — genogram, pedigree, ladder logic, SLD, FBD, SFC, phylo, fishbone, entity structure. Free, fully open source, made for AI. Pure SVG, zero dependencies.',
     keywords:
       'genogram, pedigree, ladder logic, single-line diagram, phylogenetic tree, fishbone, entity structure, text to diagram, mermaid alternative, open source diagram library',
   };
@@ -615,7 +615,7 @@ export default async function HomePage() {
             Start with a single string.
           </h2>
           <p className="mt-5 text-lg leading-relaxed text-fd-muted-foreground">
-            Open the playground to render any of 20 diagram types live — or
+            Open the playground to render any of 27 diagram types live — or
             browse the gallery for DSL you can copy, paste, and adapt.
           </p>
           <div className="mt-10 flex flex-wrap justify-center gap-3">

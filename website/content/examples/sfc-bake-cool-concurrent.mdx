@@ -1,0 +1,51 @@
+---
+title: Bake & cool concurrent batch (SFC)
+description: Simultaneous-branch SFC of a batch oven that bakes (15-minute D-qualified action) and cools the chamber jacket (5-minute L-qualified action) concurrently after a heat-up phase. Both branches must complete before the converge bar fires. Exercises the IEC 61131-3 §6.5.4 double-bar simultaneous divergence and time-parameterized action qualifiers.
+diagram: sfc
+standard: IEC 61131-3:2013 §6.5
+industry: [chemical-processing, food-processing, pharmaceuticals, baking]
+persona: For the batch-process controls engineer
+complexity: 3
+tags: [sfc, plc, simultaneous-branch, time-qualified, batch-reactor, oven]
+featured: true
+relatedLink:
+  label: SFC syntax
+  href: /docs/sfc
+status: published
+dsl: |
+  sfc "Bake and cool concurrently"
+
+  var BakeReady: bool
+  var Bake_Done: bool
+  var Cool_Done: bool
+
+  step S0 [initial]
+
+  step S_Heat
+    N Heater_On
+
+  sim from: S_Heat: TRUE
+    branch:
+      step S_Bake
+        D Oven_Run T#15m
+    branch:
+      step S_Cool
+        L Cooler_On T#5m
+  merge_to: S_Done: Bake_Done AND Cool_Done
+
+  step S_Done
+    N AnnounceDone
+
+  transition from: S0 to: S_Heat: BakeReady
+  transition from: S_Done to: S0: NOT BakeReady
+---
+
+A real batch reactor or industrial oven rarely runs phases one at a time — once the chamber is hot, you want to start the bake timer and the chamber-jacket cooling cycle simultaneously, because the cooling jacket protects equipment downstream and has its own independent timeout. SFC's simultaneous-branch construct captures this exactly: one entry transition fires both branches in lockstep, both branches run concurrently, and the chart waits at the convergence until *every* branch is done.
+
+**Two parallel horizontal lines = simultaneous bar.** The IEC 61131-3 §6.5.4 grammar uses **single-line bars** for alternative (OR-semantic) branches and **double-line bars** for simultaneous (AND-semantic) branches — visually distinct so an experienced eye can tell at a glance which kind of fork they're looking at. Schematex renders the double bar with a 4px gap between the two lines, exactly per spec.
+
+**The shared transition above and below.** Notice the `TRUE` transition just above the simultaneous divergence — that's the *single shared* condition that triggers the fork. Both branches start at once when `TRUE` fires (in this case unconditionally, because the heater step's job was already complete). At the bottom, the `Bake_Done AND Cool_Done` is the merge condition: the chart waits at the simultaneous convergence until *both* branch outcomes are asserted, then moves to S_Done. This shared-transition placement (above the divergence, below the convergence) is the inverse of how alternative branches work — alternative branches have their condition *between* the bar and each branch.
+
+**D vs L qualifiers — different time semantics.** S_Bake's `D Oven_Run T#15m` is a **time-delayed** action: when the step becomes active, wait 15 minutes, *then* start running `Oven_Run`. This matches a real oven: you want a soak interval before the heating element actually fires. S_Cool's `L Cooler_On T#5m` is **time-limited**: start running `Cooler_On` immediately on step entry, but stop after 5 minutes regardless. Both qualifiers render with a small bottom row inside the action block showing the duration literal — `T#15m` and `T#5m` — so anyone reviewing the chart can read the timing at a glance without cross-referencing a separate timing table.
+
+**Why concurrency matters here.** If the bake and cool ran sequentially, the total recipe time would be `15m + 5m = 20m` per batch. Running them in parallel cuts to `max(15m, 5m) = 15m`. Across 50 batches per shift, that's nearly an extra hour of throughput — the kind of optimization that's invisible in ladder-only programs but obvious in SFC. The reason most plants don't have it: the engineer didn't have a graphical sequential language in their toolbox. Schematex fills that gap.

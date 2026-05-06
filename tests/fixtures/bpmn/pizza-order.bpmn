@@ -1,0 +1,32 @@
+bpmn
+direction: LR
+title: "Pizza order"
+
+pool "Customer" blackbox
+
+pool "Pizzeria" {
+  lane "Clerk" {
+    A: start message "Order received"
+    B: task user "Take order"
+  }
+  lane "Chef" {
+    C: task manual "Make pizza"
+    G1: gateway xor "Pizza ok?"
+    D: task manual "Rework"
+  }
+  lane "Delivery" {
+    E: task send "Deliver"
+    F: end "Done"
+  }
+}
+
+flows
+A --> B
+B --> C
+C --> G1
+G1 --? "yes" --> E
+G1 --* "no" --> D
+D --> C
+E --> F
+"Customer" ~~> A : "Place order"
+E ~~> "Customer" : "Pizza delivered"

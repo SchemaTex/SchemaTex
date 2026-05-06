@@ -1,0 +1,184 @@
+---
+title: Function Block Diagram (FBD)
+---
+
+## About function block diagrams
+
+**Function Block Diagram (FBD)** is one of the five PLC programming languages defined by **[IEC 61131-3:2013](https://en.wikipedia.org/wiki/IEC_61131-3)** — the international standard for industrial automation. It's the second-most-drawn PLC language in production code (after ladder), and the natural choice when a chunk of program is easier to read as **data flow** than as power-rail-and-rung relays. AND/OR logic, timers (TON/TOF/TP), counters (CTU/CTD), comparison (EQ/NE/GT/GE/LT/LE), math (ADD/SUB/MUL/DIV/MOVE), edge detectors (R\_TRIG/F\_TRIG), bistable latches (SR/RS) — all rendered as named-port boxes wired left-to-right.
+
+Schematex follows the **IEC 61131-3 §6.4** visual conventions with **IEC 60617-12** distinctive symbols (`&` for AND, `≥1` for OR, `=1` for XOR, `1` for NOT/BUF). Wires are colored by data type (BOOL black, INT blue, REAL orange, TIME magenta) following TIA Portal de-facto convention. Sister language to **[ladder](/docs/ladder)** (§6.3, rung-based) and **[sfc](/docs/sfc)** (§6.5, sequence-based); together they form the visual half of IEC 61131-3.
+
+<Playground initial={`fbd "Motor Control"
+
+var Start: bool
+var Stop: bool
+var Latch: bool
+var MotorOut: bool
+
+network 0 "Start/stop latch":
+  Latch = OR(Start, AND(Latch, ~Stop))
+
+network 1 "Drive output":
+  MotorOut = MOVE(Latch)`} height={420} />
+
+---
+
+## 1. Your first FBD network
+
+The smallest useful FBD network: one block, two inputs, one output.
+
+```
+fbd
+network 0:
+  Out = AND(A, B)
+```
+
+`A` and `B` are auto-declared as BOOL inputs (left-side terminals), and `Out` is auto-wired to the AND block's `OUT` port (right-side terminal). The block sits between them with port stubs and labels.
+
+---
+
+## 2. Variables
+
+Declare variables before any networks. Each variable has a name, an IEC data type, and an optional initial value.
+
+```
+fbd "Tank Control"
+
+var StartBtn: bool
+var TankLevel: real
+var SetPoint: real = 80.0
+var DwellTimer: timer
+var Pulse: counter
+```
+
+Supported types: `bool`, `int`, `dint`, `uint`, `udint`, `real`, `lreal`, `time`, `date`, `tod`, `string`, `wstring`, `byte`, `word`, `dword`, `timer`, `counter`. Any other identifier is treated as a user-defined function-block type.
+
+Optional scope prefixes (default = local): `var_input`, `var_output`, `var_in_out`, `var_global`, `var_external`.
+
+---
+
+## 3. Networks
+
+A **network** is one independent piece of data flow, evaluated left-to-right within itself; networks evaluate top-to-bottom across the program per scan.
+
+```
+network 0 "Start latch":
+  ...
+
+network 1:
+  ...
+```
+
+The number is optional — networks are auto-numbered if absent. The title (in quotes) renders at the top-left of the network frame.
+
+---
+
+## 4. Block calls — inline expression notation
+
+The clearest way to write a combinational network is as a single nested expression:
+
+```
+network 0:
+  Out = OR(A, AND(B, ~C))
+```
+
+The parser builds the call tree: outer OR with `A` on input 1 and the AND result on input 2; the AND has `B` and the negated `C`. The renderer lays them out left-to-right (inputs at layer 0, AND at layer 1, OR at layer 2, output at layer 3).
+
+`~C` adds a **negation bubble** (small open circle) at the input port — equivalent to inserting a NOT block on that wire, but cleaner.
+
+---
+
+## 5. Block calls — instance-named notation
+
+When you need to reference a block's outputs from elsewhere, give it an instance tag:
+
+```
+network 0:
+  Pulse = R_TRIG(CLK: Sensor)
+  Count = CTU(CU: Pulse.Q, R: Reset, PV: 100)
+  Done  = GE(IN1: Count.CV, IN2: 100)
+```
+
+`Pulse.Q`, `Count.CV` reference output ports of named instances. The instance tag renders italicized above the block header.
+
+Argument lists accept **named ports** (`CU: Pulse.Q`) or **positional** (`CTU(Pulse.Q, Reset, 100)`) — named is recommended for readability and required when you skip a port.
+
+---
+
+## 6. Inline constants
+
+Input ports can take literals directly — no wire needed:
+
+```
+network 0:
+  Dwell = TON(IN: BottleSensor, PT: T#50ms)
+  Cap   = LIMIT(MN: 0.0, IN: Setpoint, MX: 95.0)
+  Mode  = SEL(G: ManualSwitch, IN0: AutoMode, IN1: ManualMode)
+```
+
+`T#50ms`, `0.0`, `95.0` render as small yellow boxed text to the left of their port. Time literals follow IEC 61131-3: `T#10ms`, `T#5s`, `T#3m20s`, `T#1h`. Booleans are `true` / `false` (case-insensitive).
+
+---
+
+## 7. Standard block library
+
+| Category | Blocks |
+|---|---|
+| Boolean | `AND`, `OR`, `NOT`, `NAND`, `NOR`, `XOR`, `XNOR`, `BUF` |
+| Edge detect | `R_TRIG`, `F_TRIG` |
+| Bistable | `SR`, `RS` |
+| Timer | `TON`, `TOF`, `TP` |
+| Counter | `CTU`, `CTD` |
+| Math | `ADD`, `SUB`, `MUL`, `DIV`, `MOD`, `ABS`, `NEG`, `MOVE` |
+| Comparison | `EQ`, `NE`, `GT`, `GE`, `LT`, `LE` |
+| Selection | `SEL`, `MUX`, `MAX`, `MIN`, `LIMIT` |
+
+AND, OR, NAND, NOR, ADD, MUL, MAX, MIN accept any number of inputs (default 2). Pass extra positional args or use `[inputs: N]` to extend.
+
+```
+network 0:
+  All4 = AND(A, B, C, D)
+  Sum  = ADD(X, Y, Z)
+```
+
+---
+
+## 8. Larger example — bottle counter
+
+```
+fbd "Bottle Counter"
+
+var ConveyorRunning: bool
+var BottleSensor: bool
+var BatchDone: bool
+var BatchSize: counter
+var DwellTimer: timer
+
+network 0 "Debounce sensor with 50ms dwell":
+  Dwell = TON(IN: BottleSensor, PT: T#50ms)
+
+network 1 "Count one bottle on rising edge of debounced signal":
+  Pulse     = R_TRIG(CLK: Dwell.Q)
+  BatchSize = CTU(CU: Pulse.Q, R: BatchDone, PV: 24)
+
+network 2 "Batch done":
+  BatchDone = MOVE(BatchSize.Q)
+```
+
+Three networks: debounce → edge-detect → count → flag. Each network is one DAG; the renderer routes wires through Manhattan paths.
+
+---
+
+## 9. v0.1 limitations
+
+The current engine implements the standard-block subset most teams use day-to-day. The following are deferred and will be added in a follow-up:
+
+- **EN/ENO power-flow rails** (`[en]` block attribute, `[rail: on]` header) — adds a top-of-network enable rail, vendor convention from Studio 5000 / TIA Portal.
+- **User-defined function blocks** with `pins_in:` / `pins_out:` declarations — for custom motor controllers, PID instances, etc.
+- **Page connectors** (`connector_out` / `connector_in`) for wires that span multiple pages.
+- **Bit-string blocks** (SHL, SHR, ROL, ROR, AND_BIT, OR_BIT, etc.).
+- **Extended math** (SQRT, LN, LOG, EXP, SIN, COS, TAN, ASIN, ACOS, ATAN).
+- **ANSI distinctive shape mode** (`[shape: ansi]`) — the `logic` engine already provides this for pure-Boolean diagrams.
+- **CTUD** bidirectional counter, **TP** retentive timer (RTO).
+
+If you need any of these now, open an issue or use the `ladder` engine for the full IEC 61131-3 LD subset.

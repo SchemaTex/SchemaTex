@@ -1,0 +1,64 @@
+bpmn
+direction: LR
+title: "Hiring pipeline (tech role)"
+
+pool "Candidate" blackbox
+
+pool "Company" {
+  lane "Recruiter" {
+    A: start message "Application"
+    SCR: task user "Screen resume"
+    G1: gateway xor "Pass?"
+    REJ1: task send "Send rejection"
+    Z1: end "Rejected"
+  }
+  lane "Hiring manager" {
+    PHN: task user "Phone screen"
+    G2: gateway xor "Continue?"
+    DBR: task user "Debrief"
+    G3: gateway xor "Offer?"
+  }
+  lane "Engineering panel" {
+    AND: gateway and "Loop"
+    T1: task user "Coding round"
+    T2: task user "System design"
+    T3: task user "Behavioral"
+    JOIN: gateway and "Joined"
+  }
+  lane "Offer" {
+    OFF: task send "Send offer"
+    NEG: task user "Negotiate"
+    G4: gateway xor "Signed?"
+    HIRE: end "Hired"
+    REJ2: task send "Withdraw"
+    Z2: end "Withdrawn"
+  }
+}
+
+flows
+A --> SCR
+SCR --> G1
+G1 --? "yes" --> PHN
+G1 --* "no" --> REJ1
+REJ1 --> Z1
+PHN --> G2
+G2 --? "yes" --> AND
+G2 --* "no" --> REJ1
+AND --> T1
+AND --> T2
+AND --> T3
+T1 --> JOIN
+T2 --> JOIN
+T3 --> JOIN
+JOIN --> DBR
+DBR --> G3
+G3 --? "yes" --> OFF
+G3 --* "no" --> REJ1
+OFF --> NEG
+NEG --> G4
+G4 --? "yes" --> HIRE
+G4 --* "no" --> REJ2
+REJ2 --> Z2
+"Candidate" ~~> A : "Apply"
+OFF ~~> "Candidate" : "Offer letter"
+REJ1 ~~> "Candidate" : "Rejection"

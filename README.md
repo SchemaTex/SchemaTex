@@ -29,13 +29,14 @@
 
 ---
 
-**Schematex** is the open-source rendering engine for the diagrams professionals actually use — medical, electrical, legal, and analytical. 22 diagram families across six domains:
+**Schematex** is the open-source rendering engine for the diagrams professionals actually use — medical, electrical, legal, and analytical. 27 diagram families across seven domains:
 
 - 👪 **Relationships** — genograms, ecomaps, pedigrees, sociograms, phylogenetic trees
-- ⚡ **Electrical & Industrial** — ladder logic, single-line diagrams, circuit schematics, logic gates, timing, block diagrams, **P&ID** (ISA-5.1)
+- ⚡ **Electrical & Industrial** — ladder logic, single-line diagrams, circuit schematics, logic gates, timing, block diagrams, **FBD**, **SFC**, breadboard, **P&ID** (ISA-5.1)
 - 🏢 **Corporate & Legal** — entity structures, cap tables
 - 🐟 **Causality & Analysis** — fishbone / Ishikawa, decision trees (Howard-Raiffa EV · CART/sklearn · taxonomy)
-- 🔄 **Behavior modeling** — UML 2.5 / Harel **state diagrams** (Mermaid-compatible superset)
+- 🔄 **Behavior modeling** — UML 2.5 / Harel **state diagrams** (Mermaid-compatible superset), **BPMN 2.0** (OMG)
+- 🗄️ **Data modeling** — ERD crow's-foot notation
 - 📅 **Timelines** — proportional / equidistant / log axis · swimlane · gantt · lollipop · BC dates · geological Ma scale
 
 Mermaid draws generic flowcharts. Schematex draws the diagrams doctors, engineers, and lawyers actually use — a genogram a genetic counselor accepts clinically, ladder logic that maps 1:1 to IEC 61131-3, a cap table that survives a Series A review.
@@ -71,7 +72,7 @@ import { render } from 'schematex/genogram';
 
 ## Gallery
 
-22 diagram types, one unified pipeline. **Try any of these live at [schematex.dev/playground](https://schematex.dev/playground).**
+27 diagram types, one unified pipeline. **Try any of these live at [schematex.dev/playground](https://schematex.dev/playground).**
 
 ### 👪 Genogram — *McGoldrick family-systems standard*
 

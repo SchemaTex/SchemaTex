@@ -1,0 +1,203 @@
+---
+title: Sequential Function Chart (SFC)
+---
+
+## About sequential function charts
+
+**Sequential Function Chart (SFC)** is the **state-machine view** of a cyclic PLC program — what's happening *now* and what triggers the *next* phase. It's the fifth language defined by **[IEC 61131-3:2013 §6.5](https://en.wikipedia.org/wiki/Sequential_function_chart)** and the engineering subset of **IEC 60848 GRAFCET**. Where **[ladder](/docs/ladder)** and **[fbd](/docs/fbd)** describe per-scan combinational logic, SFC describes the temporal sequencing across them: which step is active, when it hands off, what runs in parallel.
+
+In production code, ~10% of networks are written in SFC, but ~100% of nontrivial sequential machines have at least one SFC chart — batch reactors, robotic cells, packaging lines, assembly stations. Until now there was no good open-source SFC DSL: vendor IDEs (Studio 5000, TIA Portal, CODESYS) were the only option. Schematex ships an IEC 61131-3 SFC subset designed for AI generation.
+
+Distinct from **[state](/docs/state)** (UML statechart for reactive UIs and lifecycle FSMs): SFC has *cyclic-scan* semantics, double-bordered initial steps, action-block qualifiers (N/S/R/L/D/P), and bar-based branches (single bar = OR, double bar = AND).
+
+<Playground initial={`sfc "Bottle Filling"
+
+var StartBtn: bool
+var TankLevel: real
+var DoneBtn: bool
+
+step S0 [initial]
+  N FillValve_Closed
+
+step S1 [label: "Filling"]
+  N FillValve_Open
+
+step S2 [label: "Done"]
+  N Confirm_Done
+
+transition from: S0 to: S1: StartBtn
+transition from: S1 to: S2: TankLevel >= 80.0
+transition from: S2 to: S0: DoneBtn`} height={520} />
+
+---
+
+## 1. Your first chart
+
+Two steps, one transition, an initial marker:
+
+```
+sfc
+step S0 [initial]
+step S1
+transition from: S0 to: S1: Trigger
+```
+
+`S0` renders as a **double-bordered rectangle** (the IEC initial-step convention); `S1` as a single-border rectangle. Between them is a horizontal **transition bar** with the condition text `Trigger` to its right.
+
+If you forget `[initial]`, the first declared step is auto-promoted to initial.
+
+---
+
+## 2. Steps
+
+```
+step S_Filling [label: "Filling tank"]
+  N FillValve_Open
+  D Mixer_Run T#30s
+  P StartChime
+```
+
+A step has:
+
+- An **id** (unique across the chart) — used in transitions and jumps.
+- An optional `[label: "..."]` for display.
+- An optional `[initial]` (one allowed) or `[final]` (vendor stop step, three borders).
+- Zero or more **action blocks**, indented one level, each with a qualifier letter.
+
+---
+
+## 3. Transitions
+
+A **transition** declares a directed link between two steps with a boolean condition:
+
+```
+transition from: S0 to: S1: StartBtn
+transition from: S1 to: S2: TankLevel >= 80.0 AND NOT EmergencyStop
+transition T_Reset from: S5 to: S0: ResetBtn
+```
+
+The condition text is opaque — Schematex stores it verbatim and renders it next to the bar. Every transition must have a non-empty condition; use `TRUE` for unconditional links.
+
+Transitions whose `from` and `to` are linearly adjacent in the body render as inline bars between the steps. Transitions whose pair is *not* linearly adjacent (e.g. a jump back to an earlier step) render as **margin arrows** on the left or right side of the chart.
+
+---
+
+## 4. Action qualifiers
+
+Actions attach to the right side of a step and run according to their qualifier letter:
+
+| Qualifier | Behavior |
+|---|---|
+| `N` | Active while step is active (most common) |
+| `S` | Stored — set true on entry, stays until matching `R` |
+| `R` | Reset — clears a previously-stored action |
+| `L` | Time-Limited — active up to T after step entry |
+| `D` | Time-Delayed — activates T after entry |
+| `P` | Pulse — true for one PLC scan only |
+| `P0` | Pulse on deactivate (Siemens) |
+| `P1` | Synonym for `P` (Siemens) |
+| `SD` | Stored & Delayed |
+| `DS` | Delayed & Stored |
+| `SL` | Stored & Time-Limited |
+
+Time-parameterized qualifiers (L, D, SD, DS, SL) take a duration literal:
+
+```
+step S1
+  L LimitedRun T#5s
+  D DelayedRun T#2s
+```
+
+---
+
+## 5. Alternative branches (single bar — OR)
+
+Only **one** branch fires per scan, picked by transition condition:
+
+```
+step S0 [initial]
+step S_Pick
+
+alt from: S_Pick:
+  branch [priority: 1]:
+    transition: IsExpressShipping
+    step S_Express
+      N PrepExpressBox
+    transition: TRUE
+  branch [priority: 2]:
+    transition: IsStandardShipping
+    step S_Standard
+      N PrepStandardBox
+    transition: TRUE
+merge_to: S_Ship
+
+step S_Ship
+
+transition from: S0 to: S_Pick: ProductOrdered
+transition from: S_Ship to: S0: Shipped
+```
+
+The single horizontal lines above and below the branches are the divergence and convergence bars. Each branch starts with its **entry transition** (between div bar and first step) and ends with an **exit transition** (between last step and conv bar).
+
+---
+
+## 6. Simultaneous branches (double bar — AND)
+
+**All** branches run concurrently; the chart waits at the convergence until every branch finishes:
+
+```
+sim from: S_Heat: TRUE
+  branch:
+    step S_Bake
+      D Oven_Run T#15m
+  branch:
+    step S_Cool
+      L Cooler_On T#5m
+merge_to: S_Done: Bake_Done AND Cool_Done
+```
+
+The two parallel horizontal lines (gap 4px) above and below the branches are the simultaneous bars. The shared **transition above** (`TRUE` here) triggers the divergence; the shared **transition below** (`Bake_Done AND Cool_Done`) is checked before convergence fires.
+
+---
+
+## 7. Jumps (loops)
+
+A transition whose target is an earlier step renders as a margin arrow:
+
+```
+step S0 [initial]
+step S1
+step S2
+transition from: S0 to: S1: A
+transition from: S1 to: S2: B
+transition T_Reset from: S2 to: S0: ResetBtn
+transition from: S2 to: S1: NOT ResetBtn
+```
+
+The forward `S2 → S1` (back-edge) gets the margin arrow on the right; the `T_Reset` jump back to `S0` goes on the left. Each margin arrow shows its target id and condition.
+
+---
+
+## 8. Variables
+
+Reused from `ladder` and `fbd`:
+
+```
+var StartBtn: bool
+var TankLevel: real
+var BakeReady: bool
+var Counter: counter
+var T1: timer
+```
+
+Variables declared in conditions and actions are not validated — Schematex treats condition / action body text as opaque strings, matching how `state` handles guards and actions.
+
+---
+
+## 9. v0.1 limitations
+
+- **Nested branches** (alt-in-sim, sim-in-alt) parse but layout collapse heuristics are basic; deep nests may overlap.
+- **S/R action-pair dashed connectors** (visually link an `S` action with its matching `R` elsewhere) are deferred.
+- **Active-step runtime indicator** (yellow fill on the currently active step) is deferred — useful for debugging integrations that surface PLC runtime state.
+- **GRAFCET forcing orders** (out-of-scope per IEC 60848-only feature).
+- **Final step** parses with `[final]` but renders with the same double border as initial; the IEC triple-border convention is deferred.

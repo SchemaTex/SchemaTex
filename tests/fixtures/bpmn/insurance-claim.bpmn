@@ -1,0 +1,48 @@
+bpmn
+direction: LR
+title: "Insurance claim processing"
+
+pool "Claimant" blackbox
+
+pool "Insurer" {
+  lane "Intake" {
+    A: start message "Claim filed"
+    B: task user "Register claim"
+    G1: gateway xor "Type?"
+  }
+  lane "Auto adjuster" {
+    C1: task user "Inspect vehicle"
+    C2: task service "Estimate damage"
+  }
+  lane "Property adjuster" {
+    D1: task user "Site visit"
+    D2: task service "Cost worksheet"
+  }
+  lane "Underwriter" {
+    G2: gateway xor "Within policy?"
+    E: task user "Approve payout"
+    F1: task send "Pay claimant"
+    F2: task send "Issue denial"
+    Z1: end "Closed paid"
+    Z2: end "Closed denied"
+  }
+}
+
+flows
+A --> B
+B --> G1
+G1 --? "auto" --> C1
+G1 --? "property" --> D1
+G1 --* "other" --> F2
+C1 --> C2
+D1 --> D2
+C2 --> G2
+D2 --> G2
+G2 --? "yes" --> E
+G2 --* "no" --> F2
+E --> F1
+F1 --> Z1
+F2 --> Z2
+"Claimant" ~~> A : "Submit claim"
+F1 ~~> "Claimant" : "Payout"
+F2 ~~> "Claimant" : "Denial letter"

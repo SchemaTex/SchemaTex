@@ -138,6 +138,26 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
     syntaxKey: "ladder",
   },
   {
+    type: "fbd",
+    name: "Function Block Diagram (FBD)",
+    tagline: "IEC 61131-3 §6.4 function blocks wired through named ports.",
+    useWhen:
+      "Use for PLC programs that are easier to read as data-flow than as ladder rungs — boolean logic (AND/OR/NOT/NAND/NOR/XOR), timers (TON/TOF/TP), counters (CTU/CTD), edge detectors (R_TRIG/F_TRIG), comparison (EQ/NE/GT/GE/LT/LE), math (ADD/SUB/MUL/DIV/MOVE), selection (SEL/MUX/MAX/MIN/LIMIT). Inline expression notation `Out = OR(A, AND(B, C))`. Sister language to `ladder` (§10) and `sfc` (§24); together they form the visual half of IEC 61131-3.",
+    cluster: "electrical-industrial",
+    standard: "IEC 61131-3:2013 §6.4 + §2.5 standard FB library; see 23-FBD-STANDARD.md",
+    syntaxKey: "fbd",
+  },
+  {
+    type: "sfc",
+    name: "Sequential Function Chart (SFC)",
+    tagline: "IEC 61131-3 §6.5 step + transition state machine for cyclic PLC sequences.",
+    useWhen:
+      "Use for PLC sequential control — batch reactors, robotic cells, packaging lines, assembly stations — where the program has explicit phases that hand off to each other on boolean conditions. Steps with action qualifiers (N/S/R/L/D/P), transitions with conditions, alternative branches (single bar, OR semantics) and simultaneous branches (double bar, AND semantics), jumps for loops. Distinct from `state` (UML — Schematex `state` covers reactive UI/lifecycle FSMs, not cyclic PLC scans) and from `flowchart` (no bars, no qualifiers).",
+    cluster: "electrical-industrial",
+    standard: "IEC 61131-3:2013 §6.5 + IEC 60848 GRAFCET visual subset; see 24-SFC-STANDARD.md",
+    syntaxKey: "sfc",
+  },
+  {
     type: "sld",
     name: "Single-line diagram",
     tagline: "Electrical power distribution single-line (one-line) diagram.",
@@ -157,16 +177,37 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
     standard: "ANSI/ISA-5.1-2009 + ISO 10628-1:2014",
     syntaxKey: "pid",
   },
+  {
+    type: "breadboard",
+    name: "Breadboard / Physical wiring",
+    tagline: "Fritzing-style breadboard view — physical wiring of Arduino / ESP32 / Pi prototypes.",
+    useWhen:
+      "Use for maker / Arduino / ESP32 / Raspberry Pi tutorials and lab handouts where the user wants to see *how to physically wire components on a breadboard* — not the abstract circuit schematic. Address tie-points by `@col-row` (e.g. `@5e`, `@+t8`). Smooth Bézier jumper-wires with conventional colors. Distinct from `circuit` (IEEE 315 schematic — same prototype, different view).",
+    cluster: "electrical-industrial",
+    standard: "Fritzing visual conventions + Wokwi DSL precedent (no ISO standard exists for this view; see 26-BREADBOARD-STANDARD.md)",
+    syntaxKey: "breadboard",
+  },
   // ── Corporate / Legal ────────────────────────────────────────
   {
     type: "entity",
     name: "Entity structure",
     tagline: "Corporate ownership hierarchy with percentage rollup.",
     useWhen:
-      "Use for legal entity structures, holdco/opco charts, international tax charts, Series-A cap-table snapshots. Tiered layout with ownership percentages.",
+      "Use for legal entity structures, holdco/opco charts, international tax charts, Series-A cap-table snapshots. Tiered layout with ownership percentages. NOT for database schema diagrams — use `erd` for those.",
     cluster: "corporate-legal",
     standard: "Tier-based ownership hierarchy",
     syntaxKey: "entity",
+  },
+  // ── Data modeling ────────────────────────────────────────────
+  {
+    type: "erd",
+    name: "Entity-Relationship Diagram (ERD)",
+    tagline: "Database schema diagram (crow's-foot tabular entities + cardinality glyphs).",
+    useWhen:
+      "Use for relational database schema diagrams — tables, columns, primary/foreign keys, and cardinality (1..1 / 0..N / 1..N) between tables. DBML-like text DSL plus Mermaid `}o--||` glyph aliases. Distinct from `entity` (which is for corporate/legal ownership). v0.1 supports crow's-foot only; Chen and Barker notations are deferred.",
+    cluster: "corporate-legal",
+    standard: "Chen 1976 / Everest 1976 (crow's foot) — implements the crow's-foot subset; see 27-ERD-STANDARD.md",
+    syntaxKey: "erd",
   },
   // ── Causality / Analysis ─────────────────────────────────────
   {
@@ -209,6 +250,16 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
     cluster: "behavior-modeling",
     standard: "OMG UML 2.5.1 §14 + Harel (1987) statechart",
     syntaxKey: "state",
+  },
+  {
+    type: "bpmn",
+    name: "BPMN business process",
+    tagline: "OMG BPMN 2.0 — pools and lanes, events, gateways, tasks for organizational processes.",
+    useWhen:
+      "Use for business processes that span multiple roles, departments, or systems — claims handling, hiring, order-to-cash, incident response, ISO-9001 / SOX audits. Pools = participants, lanes = roles, events = start/intermediate/end, gateways = XOR/AND/OR/event-based branches, message flows cross pool boundaries (`~~>`). Distinct from `flowchart` (no pools/lanes/event taxonomy), `state` (mode-centric, not activity-centric), and `pid` (physical equipment, not organisational work).",
+    cluster: "behavior-modeling",
+    standard: "OMG BPMN 2.0.2 / ISO/IEC 19510:2013 visual subset; see 25-BPMN-STANDARD.md",
+    syntaxKey: "bpmn",
   },
   // ── Generic process / flow ───────────────────────────────────
   {

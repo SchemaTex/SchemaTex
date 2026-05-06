@@ -798,6 +798,51 @@ network 0:
 
 ---
 
+## 10b. Implementation Status — v0.1 (shipped 2026-05-04)
+
+**Implemented (P0 + most of P1):**
+
+- ✅ Boolean blocks: AND, OR, NOT, NAND, NOR, XOR, XNOR, BUF — IEC distinctive symbols (`&` / `≥1` / `=1` / `1`) + automatic output bubble for negated outputs
+- ✅ Edge detectors: R_TRIG, F_TRIG
+- ✅ Bistable: SR (set-dominant), RS (reset-dominant)
+- ✅ Timers: TON, TOF, TP
+- ✅ Counters: CTU, CTD
+- ✅ Math: ADD, SUB, MUL, DIV, MOD, ABS, NEG, MOVE
+- ✅ Comparison: EQ, NE, GT, GE, LT, LE
+- ✅ Selection: SEL, MUX, MAX, MIN, LIMIT
+- ✅ Inline expression notation: `Out = OR(A, AND(B, ~C))` recursively expands to a layered DAG of blocks
+- ✅ Named instances and `Inst.Port` references
+- ✅ Variadic input expansion (AND/OR/ADD/MUL/MAX/MIN with N-input arity)
+- ✅ Inline constants on input ports: time literals (`T#5s`), numbers (`5`, `0.0`), booleans (`true`/`false`)
+- ✅ Negation bubbles via `~` prefix on any input argument
+- ✅ Variable declarations with all IEC primitive types + scope prefixes (`var`/`var_input`/`var_output`/etc.)
+- ✅ Multiple networks per program (top-to-bottom evaluation order)
+- ✅ Wire data-type coloring (BOOL black, INT blue, REAL orange, TIME magenta, STRING green, bit-strings dashed)
+- ✅ Junction nodes for fan-out
+- ✅ Variable terminals on left/right of each network frame
+- ✅ Layered DAG layout (longest-path layering + per-layer y-packing)
+- ✅ Manhattan wire routing with column-offset spreading
+
+**Deferred to follow-up:**
+
+- ❌ EN/ENO power-flow rails (`[en]` block attribute, `[rail: on]` header) — Studio 5000 / TIA Portal vendor convention
+- ❌ User-defined function blocks with `pins_in:` / `pins_out:` declarations
+- ❌ Page connectors (`connector_out` / `connector_in`)
+- ❌ Bit-string blocks: SHL, SHR, ROL, ROR, AND_BIT, OR_BIT, XOR_BIT, NOT_BIT
+- ❌ Extended math: SQRT, LN, LOG, EXP, SIN, COS, TAN, ASIN, ACOS, ATAN
+- ❌ ANSI distinctive shape mode (`[shape: ansi]`) — the `logic` engine (§07) already provides this for pure-Boolean designs
+- ❌ CTUD bidirectional counter, RTO retentive on-delay timer
+- ❌ Execution-order superscript for feedback cycles
+- ❌ Network-level frame styling beyond the dashed border
+
+**Engineering tradeoffs in v0.1:**
+
+- The parser is lenient: undeclared variable names referenced in calls are auto-declared as BOOL (mirrors the `logic` engine playbook for LLM-generated DSL).
+- Timing literal pattern (`T#10s`, `T#1m30s`) is preserved verbatim — Schematex is a renderer, not a simulator.
+- Layered layout uses longest-path (one block per column maximum unless multiple blocks share an input depth); this differs from Sugiyama median-heuristic ordering used in `flowchart`. Cleaner for typical FBD networks (2–6 blocks per network); may produce wider layouts than necessary for dense graphs — to be refined in v0.2.
+
+---
+
 ## 11. Differences from Other Schematex EE-Family Diagrams
 
 | Aspect | logic (§07) | block (§09) | ladder (§10) | **fbd (this)** |

@@ -1,0 +1,48 @@
+bpmn
+direction: LR
+title: "Order-to-cash (B2B)"
+
+pool "Customer" blackbox
+
+pool "Vendor" {
+  lane "Sales" {
+    A: start message "PO received"
+    B: task user "Validate PO"
+    G1: gateway xor "Credit ok?"
+    R: task send "Reject"
+    Z1: end "Order rejected"
+  }
+  lane "Operations" {
+    AND1: gateway and "Fulfill"
+    P1: task service "Pick stock"
+    P2: task user "Pack carton"
+    SH: task send "Ship"
+    AND2: gateway and "Joined"
+  }
+  lane "Finance" {
+    INV: task service "Generate invoice"
+    G2: gateway xor "Paid?"
+    DUN: task send "Send dunning"
+    Z2: end "Closed paid"
+  }
+}
+
+flows
+A --> B
+B --> G1
+G1 --? "approved" --> AND1
+G1 --* "denied" --> R
+R --> Z1
+AND1 --> P1
+AND1 --> INV
+P1 --> P2
+P2 --> SH
+SH --> AND2
+INV --> AND2
+AND2 --> G2
+G2 --? "yes" --> Z2
+G2 --* "no" --> DUN
+DUN --> G2
+"Customer" ~~> A : "Purchase order"
+SH ~~> "Customer" : "Goods"
+INV ~~> "Customer" : "Invoice"

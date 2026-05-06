@@ -1,0 +1,37 @@
+---
+title: HC-SR04 distance sensor + Arduino Uno
+description: Four-wire ultrasonic distance sensor wiring — VCC / GND / TRIG / ECHO. The textbook Adafruit / SparkFun tutorial layout used in robotics intro classes.
+diagram: breadboard
+standard: Fritzing visual conventions (no ISO standard)
+industry: [education, maker, robotics]
+persona: For the Arduino tutorial author
+complexity: 2
+tags: [breadboard, arduino, ultrasonic, sensor, hc-sr04, robotics]
+featured: true
+relatedLink:
+  label: Breadboard syntax
+  href: /docs/breadboard
+status: published
+dsl: |
+  breadboard
+  board: half
+  title: "HC-SR04 distance sensor + Arduino Uno"
+
+  parts
+    uno: mcu uno @beside-left
+    s1:  sensor hcsr04 @8a
+
+  wires
+    s1:VCC  --red--    @+t1
+    s1:GND  --black--  @-t1
+    s1:TRIG --yellow-- @9c
+    s1:ECHO --green--  @10c
+    uno:5V  --red--    @+t1
+    uno:GND --black--  @-t1
+    uno:D9  --yellow-- @9c
+    uno:D10 --green--  @10c
+---
+
+The HC-SR04 is the most common ultrasonic distance sensor in beginner Arduino kits. Four pins, four wires, no driver IC needed. The sensor module is rendered as a blue PCB tile with its four pin labels (VCC / TRIG / ECHO / GND) sitting above the breadboard rows where they plug in.
+
+The TRIG line is a digital output from the Arduino — pulse it high for 10 µs and the sensor fires an ultrasonic chirp. The ECHO line is a digital input — its high-time, in microseconds, is twice the round-trip distance divided by the speed of sound. Conventional wiring uses yellow for TRIG and green for ECHO so the two signals are visually distinguishable, though the colors carry no electrical meaning.

@@ -1,0 +1,214 @@
+---
+title: Breadboard / Physical Wiring
+---
+
+## About breadboard diagrams
+
+A **breadboard diagram** shows how to physically wire components on a solderless prototyping board — the iconic visual genre of every Arduino / ESP32 / Raspberry Pi tutorial. The reader replicates what they see, hole-for-hole, on real hardware. This is *complementary to* the abstract circuit schematic (`circuit`, IEEE 315): the schematic is the engineer's reasoning view; the breadboard is the maker's replication view.
+
+Schematex implements **Fritzing-style** stylized breadboard rendering. Components are drawn as recognisable bodies (resistors with color bands, LEDs as colored domes, DIPs with notches, MCU PCBs with labelled pin headers). Jumper wires are drawn as **smooth cubic Bézier arcs** between specific tie-points — not Manhattan right angles. The DSL addresses every part and every wire by **breadboard-native coordinates** (`@col-row`, e.g. `@5e`), not pixel positions, so the file is hand-authorable and version-controllable.
+
+> **Note** — this engine is *not* a circuit schematic and does not enforce electrical rules. Use it for tutorials, lab handouts, READMEs, and learning material. For nodal analysis or formal schematics, use the `circuit` engine instead.
+
+<Playground initial={`breadboard
+board: half
+title: "Blink LED — Arduino Uno hello-world"
+
+parts
+  uno: mcu uno @beside-left
+  r1:  resistor 220 @5e..9e
+  d1:  led red @10e..10f
+
+wires
+  uno:5V  --red--    @+t1
+  uno:GND --black--  @-t1
+  @+t1    --red--    @5a
+  uno:D13 --yellow-- @9a
+  @10j    --black--  @-t1`} height={420} />
+
+---
+
+## 1. Your first breadboard
+
+Three sections: a one-line `breadboard` header, a `parts` block, and a `wires` block. Optional `board:` and `title:` lines come right after the header.
+
+<Playground initial={`breadboard
+parts
+  uno: mcu uno @beside-left
+  r1:  resistor 220 @5e..9e
+  d1:  led red @10e..10f
+
+wires
+  uno:5V  --red--   @+t1
+  uno:GND --black-- @-t1
+  uno:D13 --yellow-- @5a
+  @10j    --black-- @-t1`} />
+
+Every part is `id: kind [args] @placement`. Every wire is `<endpoint> --color-- <endpoint>`. That's the whole grammar.
+
+---
+
+## 2. Coordinates
+
+Breadboards have a 2D address grid. Schematex coordinates always start with `@`.
+
+| Form | Meaning | Example |
+|---|---|---|
+| `@<col><row>` | Main grid hole. Rows `a–e` (top half), `f–j` (bottom half). | `@5e`, `@12g` |
+| `@+t<col>` | Top **positive** rail (red stripe). | `@+t8` |
+| `@-t<col>` | Top **negative / GND** rail (blue stripe). | `@-t8` |
+| `@+b<col>` | Bottom positive rail. | `@+b14` |
+| `@-b<col>` | Bottom negative rail. | `@-b14` |
+| `@<a>..<b>` | Span — used in part placement (resistor, diode, LED). | `@5e..9e` |
+| `@beside-left` | Off-board placement for MCU boards. | `mcu uno @beside-left` |
+
+Mini boards (`board: mini`) have **no power rails** — `@+t…` / `@-b…` are rejected by the parser.
+
+---
+
+## 3. Board sizes
+
+```
+breadboard
+board: half          // default — 30 columns, 400 tie-points, rails (continuous)
+```
+
+| Form | Tie points | Columns | Power rails |
+|---|---|---|---|
+| `mini` | 170 | 17 | none |
+| `half` (default) | 400 | 30 | continuous |
+| `full` | 830 | 63 | break at column 30/31 |
+
+> **Pitfall** — on full-size boards the rails break at the middle. If your circuit uses both halves you must jumper the rails together explicitly.
+
+---
+
+## 4. Parts catalog
+
+Each part is `id: <kind> [args] @<placement>`. The catalog covers the most common Arduino / ESP32 maker components:
+
+**Discrete components** (sit on the breadboard):
+
+| DSL | Args | Example |
+|---|---|---|
+| `resistor` | `value` (Ω; supports `k`/`M`) | `r1: resistor 220 @5e..9e` |
+| `led` | `color` (red/green/blue/yellow/white/orange) | `d1: led red @10e..10f` |
+| `cap-elec` | — | `c1: cap-elec @4e..4f` |
+| `cap-ceramic` | — | `c2: cap-ceramic @6e..6f` |
+| `diode` | — | `d2: diode @5e..8e` |
+| `button` | — | `btn: button @8e` |
+| `dip` | `pins=N` | `ic: dip pins=8 @4e` |
+| `header` | `pins=N` | `h1: header pins=4 @20a` |
+
+**Microcontroller boards** (placed beside / above / below the substrate):
+
+| DSL | Pin labels |
+|---|---|
+| `mcu uno` | `5V`, `3V3`, `GND`, `VIN`, `RST`, `D2…D13`, `A0…A5`, `RX`, `TX` |
+| `mcu nano` | Subset of Uno labels |
+| `mcu esp32` | `3V3`, `GND`, `VIN`, `GPIO2`, `GPIO4`, `GPIO5`, `GPIO12…GPIO33` |
+| `mcu pico` | Same generic GPIO labels |
+
+**Sensors / displays / actuators** (modules sit on the breadboard with pin row anchored at the supplied coordinate):
+
+| DSL | Pins |
+|---|---|
+| `sensor hcsr04` | `VCC`, `TRIG`, `ECHO`, `GND` |
+| `sensor dht11` / `sensor dht22` | `VCC`, `DATA`, `GND` |
+| `display oled-ssd1306` | `GND`, `VCC`, `SCL`, `SDA` |
+| `display lcd-1602-i2c` | `GND`, `VCC`, `SDA`, `SCL` |
+| `module rotary-ky040` | `CLK`, `DT`, `SW`, `VCC`, `GND` |
+| `actuator servo-sg90` | `GND`, `VCC`, `SIG` |
+
+Resistor color bands are decorated automatically from `value` — `220` → red-red-brown-gold, `10000` → brown-black-orange-gold.
+
+---
+
+## 5. Wires
+
+Every wire connects two endpoints. An endpoint is either a **part pin** (`partId:pinName`) or a **breadboard coordinate** (`@…`).
+
+```
+wires
+  uno:5V  --red--    @+t1
+  uno:GND --black--  @-t1
+  uno:D9  --yellow-- @9c
+  @9a     --green--  @+t9
+```
+
+| Color | Conventional role |
+|---|---|
+| `red` | +V (5V, 3.3V, VCC) |
+| `black` / `blue` | GND |
+| `yellow` / `orange` / `green` / `white` / `purple` | Signal |
+| `brown` / `grey` | Arbitrary signal |
+
+Color is purely visual — the engine does not validate it against electrical role.
+
+For visually crowded boards, `via @<coord>` lets you pin an intermediate hole that biases the Bézier control points:
+
+```
+wires
+  uno:D13 --yellow-- @9a via @8c
+```
+
+Most wires don't need `via` — the layout engine produces a natural arc on its own.
+
+---
+
+## 6. Sensor with pull-up resistor (DHT11 motif)
+
+The iconic Arduino tutorial pattern: a 10 kΩ pull-up between VCC and the sensor's data line.
+
+<Playground initial={`breadboard
+board: half
+title: "DHT11 + 10kΩ pull-up"
+
+parts
+  uno: mcu uno @beside-left
+  s1:  sensor dht11 @6a
+  r1:  resistor 10000 @8e..14e
+
+wires
+  s1:VCC  --red--    @+t1
+  s1:GND  --black--  @-t1
+  s1:DATA --yellow-- @8e
+  @14e    --red--    @+t14
+  uno:5V  --red--    @+t1
+  uno:GND --black--  @-t1
+  uno:D2  --yellow-- @8a`} height={460} />
+
+---
+
+## 7. ESP32 + I²C OLED
+
+ESP32 runs at 3.3 V (not 5 V). I²C convention: green = SDA, white = SCL.
+
+<Playground initial={`breadboard
+board: half
+title: "ESP32 + SSD1306 OLED I²C"
+
+parts
+  esp:  mcu esp32 @beside-left
+  oled: display oled-ssd1306 @8a
+
+wires
+  oled:GND --black--   @-t1
+  oled:VCC --red--     @+t1
+  oled:SCL --white--   @10c
+  oled:SDA --green--   @11c
+  esp:3V3    --red--   @+t1
+  esp:GND    --black-- @-t1
+  esp:GPIO22 --white-- @10c
+  esp:GPIO21 --green-- @11c`} height={460} />
+
+---
+
+## 8. Limitations of v0.1
+
+- **No leader-line callouts** — reference designators (R1, C2) are drawn near the part body. Off-board callout boxes are deferred.
+- **No `.fzz` import** — Schematex consumes only its own DSL; Fritzing files are not parsed.
+- **No simulation** — this is a renderer, not a Wokwi-style simulator. Component-value validation (Ohm's law, current limits) is out of scope.
+- **No PCB / schematic round-trip** — `breadboard` and `circuit` are independent engines. Authoring two views of the same prototype currently means writing two DSLs.
+- **Fixed parts catalog** — user-defined part types are deferred. v0.1 ships the maker-tutorial 80% catalog (resistors, LEDs, caps, DIPs, headers, four MCU families, six sensor / display / actuator modules).
+- **Power-rail break visual** — full-size boards mark the 30/31 break with a hole-wide gap; the rail stripes still draw through the gap (cosmetic).

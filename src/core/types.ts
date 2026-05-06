@@ -46,7 +46,16 @@ export type DiagramType =
   // Behavior modeling
   | "state"    // UML 2.5 / Harel statechart (21-STATE-DIAGRAM-STANDARD)
   // Process & instrumentation
-  | "pid";     // ISA-5.1 / ISO 10628 P&ID (22-PID-STANDARD)
+  | "pid"     // ISA-5.1 / ISO 10628 P&ID (22-PID-STANDARD)
+  // Data modeling
+  | "erd"     // Entity-Relationship Diagram (Chen / crow's foot, 27-ERD-STANDARD)
+  // Physical wiring / hardware prototyping
+  | "breadboard"    // Fritzing-style breadboard view (26-BREADBOARD-STANDARD)
+  // Business process modelling
+  | "bpmn"       // OMG BPMN 2.0 business process diagram (25-BPMN-STANDARD)
+  // IEC 61131-3 visual PLC languages (sister to ladder §10)
+  | "fbd"        // Function Block Diagram — IEC 61131-3 §6.4 (23-FBD-STANDARD)
+  | "sfc";       // Sequential Function Chart — IEC 61131-3 §6.5 (24-SFC-STANDARD)
 
 export type GenogramMode = "medical" | "heritage";
 
@@ -1158,6 +1167,100 @@ export interface EntityAST {
   metadata?: Record<string, string>;
 }
 
+// ─── ERD (Entity-Relationship Diagram) Types ─────────────────
+// 27-ERD-STANDARD — crow's foot first. Chen / Barker deferred.
+
+export type ErdNotation = "crowsfoot" | "chen" | "barker";
+
+/** Min..Max cardinality for one end of a relationship. */
+export type ErdCardinality =
+  | "one-mandatory"   // 1..1   ─┃
+  | "one-optional"    // 0..1   ─○
+  | "many-mandatory"  // 1..N   ─┃<
+  | "many-optional";  // 0..N   ─○<
+
+/** Attribute / column row within a tabular entity (crow's foot mode). */
+export interface ErdAttribute {
+  name: string;
+  /** Free-form type token, e.g. "int", "varchar(255)", "timestamp" — rendered verbatim. */
+  type?: string;
+  pk?: boolean;
+  fk?: boolean;
+  uk?: boolean;
+  /** NOT NULL marker. */
+  notNull?: boolean;
+  /** FK target as "TableName.columnName" (parser canonicalizes inline `FK -> X.y` here). */
+  fkTarget?: string;
+  /** Optional in-line comment / description. */
+  comment?: string;
+}
+
+export interface ErdEntity {
+  id: string;
+  /** Display name (defaults to id when not separately quoted). */
+  name: string;
+  attributes: ErdAttribute[];
+  /** Reserved for Chen mode (weak entity). Ignored in crow's foot rendering. */
+  weak?: boolean;
+}
+
+export interface ErdRef {
+  /** "TableName" or "TableName.columnName". */
+  from: string;
+  to: string;
+  fromCard: ErdCardinality;
+  toCard: ErdCardinality;
+  /** "--" identifying (solid). "..": non-identifying (dashed). */
+  identifying: boolean;
+  label?: string;
+}
+
+export interface ErdAst {
+  type: "erd";
+  notation: ErdNotation;
+  direction: "LR" | "TB";
+  title?: string;
+  entities: ErdEntity[];
+  refs: ErdRef[];
+}
+
+/** Per-attribute-row geometry inside a laid-out entity. */
+export interface ErdLayoutRow {
+  attribute: ErdAttribute;
+  /** y offset relative to entity top, where the row's vertical center sits. */
+  yCenter: number;
+}
+
+export interface ErdLayoutEntity {
+  entity: ErdEntity;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  /** y coordinate of the header bar baseline (relative to entity top). */
+  headerHeight: number;
+  rows: ErdLayoutRow[];
+}
+
+export interface ErdLayoutEdge {
+  ref: ErdRef;
+  /** Orthogonal SVG path data ("M ... L ... L ..."). */
+  path: string;
+  /** Center coords of the source-end glyph anchor (just outside the entity edge). */
+  fromAnchor: { x: number; y: number; side: "left" | "right" | "top" | "bottom" };
+  toAnchor: { x: number; y: number; side: "left" | "right" | "top" | "bottom" };
+  /** Optional label position (mid-segment). */
+  labelAt?: { x: number; y: number };
+}
+
+export interface ErdLayoutResult {
+  ast: ErdAst;
+  entities: ErdLayoutEntity[];
+  edges: ErdLayoutEdge[];
+  width: number;
+  height: number;
+}
+
 // ── EE Plugin union type (for type-narrowing in plugins) ──────
 
 export type EEDiagramAST =
@@ -1486,4 +1589,616 @@ export interface MindmapLayoutResult {
   nodes: MindmapLayoutNode[];
   edges: MindmapLayoutEdge[];
   title?: string;
+}
+
+// ─── Breadboard / Physical Wiring Types ─────────────────────
+
+/**
+ * Breadboard form factor:
+ *  - "mini"  170 tie-points, 17 cols × 5+5 rows, no power rails
+ *  - "half"  400 tie-points, 30 cols, 2 rail pairs (continuous)
+ *  - "full"  830 tie-points, 63 cols, 2 rail pairs (broken at col 30/31)
+ */
+export type BreadboardForm = "mini" | "half" | "full";
+
+/** Power-rail half: top vs bottom edge of board, positive vs negative stripe. */
+export type BreadboardRail = "+t" | "-t" | "+b" | "-b";
+
+/** Breadboard hole address — main grid (col + row) or rail (col + rail). */
+export type BreadboardCoord =
+  | { kind: "hole"; col: number; row: "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" | "i" | "j" }
+  | { kind: "rail"; rail: BreadboardRail; col: number };
+
+/** Off-board MCU placement (relative to breadboard substrate). */
+export type BreadboardSidePlacement = "beside-left" | "beside-right" | "above" | "below";
+
+/** Where a part lives. Either a span across the grid (resistor, led, dip) or a side placement (uno). */
+export type BreadboardPlacement =
+  | { kind: "point"; at: BreadboardCoord }
+  | { kind: "span"; from: BreadboardCoord; to: BreadboardCoord }
+  | { kind: "side"; side: BreadboardSidePlacement };
+
+/** Catalog of v0.1 part kinds. */
+export type BreadboardPartKind =
+  | "resistor"
+  | "led"
+  | "cap-elec"
+  | "cap-ceramic"
+  | "diode"
+  | "button"
+  | "dip"
+  | "header"
+  | "mcu-uno"
+  | "mcu-nano"
+  | "mcu-esp32"
+  | "mcu-pico"
+  | "sensor-hcsr04"
+  | "sensor-dht11"
+  | "sensor-dht22"
+  | "display-oled-ssd1306"
+  | "display-lcd-1602-i2c"
+  | "module-rotary-ky040"
+  | "actuator-servo-sg90";
+
+export interface BreadboardPart {
+  /** User-assigned id (e.g. "uno", "r1"). */
+  id: string;
+  kind: BreadboardPartKind;
+  /** Optional kind-specific args. e.g. resistor.value="220", dip.pins=8, led.color="red". */
+  args: Record<string, string | number>;
+  placement: BreadboardPlacement;
+  /** Optional inline label drawn near the part body. */
+  label?: string;
+}
+
+export type BreadboardWireColor =
+  | "red"
+  | "black"
+  | "blue"
+  | "yellow"
+  | "orange"
+  | "green"
+  | "white"
+  | "purple"
+  | "brown"
+  | "grey";
+
+/** Wire endpoint — either a part pin or a board hole/rail. */
+export type BreadboardEndpoint =
+  | { kind: "pin"; partId: string; pin: string }
+  | { kind: "coord"; at: BreadboardCoord };
+
+export interface BreadboardWire {
+  from: BreadboardEndpoint;
+  to: BreadboardEndpoint;
+  color: BreadboardWireColor;
+  /** Optional intermediate hole that biases the Bézier control points. */
+  via?: BreadboardCoord;
+}
+
+export interface BreadboardAst {
+  type: "breadboard";
+  board: BreadboardForm;
+  title?: string;
+  parts: BreadboardPart[];
+  wires: BreadboardWire[];
+}
+
+/** Resolved part box on (or beside) the substrate. */
+export interface BreadboardLayoutPart {
+  part: BreadboardPart;
+  /** Top-left x of bounding box in canvas px. */
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  /** For span/point parts: rotation angle in degrees (currently 0 or 90). */
+  rotation: number;
+  /** Resolved pin centers in canvas px, keyed by pin name. */
+  pins: Record<string, { x: number; y: number }>;
+}
+
+export interface BreadboardLayoutWire {
+  wire: BreadboardWire;
+  /** Cubic Bézier path "M x1 y1 C cx1 cy1 cx2 cy2 x2 y2". */
+  path: string;
+  /** Endpoint dots (rendered as small filled circles). */
+  fromXY: { x: number; y: number };
+  toXY: { x: number; y: number };
+  color: BreadboardWireColor;
+}
+
+export interface BreadboardLayoutSubstrate {
+  /** Top-left of board substrate. */
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  /** Hole pitch in px (default 14). */
+  pitch: number;
+  /** Number of columns (17 / 30 / 63). */
+  cols: number;
+  /** Whether rails exist on this form. */
+  hasRails: boolean;
+  /** Whether rails break at col 30/31 (full board only). */
+  railsBreak: boolean;
+  /** Vertical center of the trough channel. */
+  troughY: number;
+  /** Width of trough channel (≈ pitch). */
+  troughHeight: number;
+}
+
+export interface BreadboardLayoutResult {
+  ast: BreadboardAst;
+  substrate: BreadboardLayoutSubstrate;
+  parts: BreadboardLayoutPart[];
+  wires: BreadboardLayoutWire[];
+  width: number;
+  height: number;
+}
+
+// ─── BPMN AST Types (25-BPMN-STANDARD) ─────────────────────
+
+/** Direction the process flows. LR is conventional. */
+export type BpmnDirection = "LR" | "TB";
+
+/** BPMN event lifecycle role — encoded in stroke weight. */
+export type BpmnEventKind = "start" | "intermediate" | "end";
+
+/** Trigger types (inner glyph). v0.1 supports the common subset. */
+export type BpmnEventTrigger = "none" | "message" | "timer";
+
+/** Filled glyph = throw, unfilled = catch. v0.1 derives this from kind+context. */
+export type BpmnEventThrowCatch = "throw" | "catch";
+
+export interface BpmnEvent {
+  id: string;
+  kind: BpmnEventKind;
+  trigger: BpmnEventTrigger;
+  /** Filled (throw) vs unfilled (catch). End events with a trigger throw; intermediate without context catch. */
+  throwCatch: BpmnEventThrowCatch;
+  label?: string;
+  /** Owning lane id, set by parser. */
+  laneId: string;
+  /** Owning pool id. */
+  poolId: string;
+}
+
+/** Activity (rounded rectangle) — v0.1 covers task and collapsed subprocess. */
+export type BpmnActivityKind = "task" | "subprocess-collapsed";
+
+/** Task type marker (top-left small icon). */
+export type BpmnTaskMarker =
+  | "abstract"
+  | "user"
+  | "service"
+  | "send"
+  | "receive"
+  | "manual"
+  | "script";
+
+export interface BpmnActivity {
+  id: string;
+  kind: BpmnActivityKind;
+  marker: BpmnTaskMarker;
+  label: string;
+  laneId: string;
+  poolId: string;
+}
+
+/** Gateway types — diamond inner glyph. */
+export type BpmnGatewayKind = "xor" | "or" | "and" | "event";
+
+export interface BpmnGateway {
+  id: string;
+  gatewayKind: BpmnGatewayKind;
+  label?: string;
+  laneId: string;
+  poolId: string;
+}
+
+export type BpmnFlowObject = BpmnEvent | BpmnActivity | BpmnGateway;
+
+/** Connector kinds — sequence/conditional/default within a pool, message across pools. */
+export type BpmnFlowKind = "sequence" | "conditional" | "default" | "message";
+
+export interface BpmnFlow {
+  /** Source flow-object id, OR a pool name (for message flows from a black-box pool). */
+  from: string;
+  /** Target flow-object id, OR a pool name. */
+  to: string;
+  kind: BpmnFlowKind;
+  label?: string;
+}
+
+export interface BpmnLane {
+  id: string;
+  label: string;
+  poolId: string;
+  /** Ordered child object ids (events / activities / gateways). */
+  children: string[];
+}
+
+export interface BpmnPool {
+  id: string;
+  label: string;
+  /** Black-box pools must contain no flow objects. */
+  blackbox: boolean;
+  /** Lane ids in display order. Empty for blackbox. */
+  lanes: string[];
+}
+
+export interface BpmnAst {
+  type: "bpmn";
+  direction: BpmnDirection;
+  title?: string;
+  pools: BpmnPool[];
+  lanes: BpmnLane[];
+  events: BpmnEvent[];
+  activities: BpmnActivity[];
+  gateways: BpmnGateway[];
+  flows: BpmnFlow[];
+}
+
+// ─── BPMN Layout Types ─────────────────────────────────────
+
+export interface BpmnLayoutObject {
+  obj: BpmnFlowObject;
+  /** Top-left corner of the object's bounding box. */
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+export interface BpmnLayoutLane {
+  lane: BpmnLane;
+  /** Lane band geometry (interior, label band excluded). */
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  /** X position of the lane label band (rotated text). */
+  labelX: number;
+  labelY: number;
+  labelHeight: number;
+}
+
+export interface BpmnLayoutPool {
+  pool: BpmnPool;
+  /** Pool outer geometry (includes pool label band on the left). */
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  /** Pool label band geometry (rotated text on the left). */
+  labelX: number;
+  labelY: number;
+  labelWidth: number;
+}
+
+export interface BpmnLayoutFlow {
+  flow: BpmnFlow;
+  /** Manhattan polyline path data. */
+  path: string;
+  /** Anchor for label rendering. */
+  labelAnchor?: { x: number; y: number };
+}
+
+export interface BpmnLayoutResult {
+  ast: BpmnAst;
+  pools: BpmnLayoutPool[];
+  lanes: BpmnLayoutLane[];
+  objects: BpmnLayoutObject[];
+  flows: BpmnLayoutFlow[];
+  width: number;
+  height: number;
+}
+
+// ─── FBD (Function Block Diagram) Types ─────────────────────
+// IEC 61131-3 §6.4 — function blocks wired through named ports.
+// See docs/reference/23-FBD-STANDARD.md.
+
+/** IEC 61131-3 standard data types (subset used for wire coloring + display). */
+export type FbdDataType =
+  | "bool"
+  | "int" | "dint" | "uint" | "udint"
+  | "real" | "lreal"
+  | "time" | "date" | "tod"
+  | "string" | "wstring"
+  | "byte" | "word" | "dword"
+  | "timer" | "counter"
+  | "any";
+
+/** Variable scope (IEC 61131-3 §2.4.3). */
+export type FbdVarScope =
+  | "local"
+  | "input"
+  | "output"
+  | "in_out"
+  | "global"
+  | "external";
+
+export interface FbdVarDecl {
+  name: string;
+  scope: FbdVarScope;
+  dataType: FbdDataType | string; // user-defined FB type as opaque string
+  initValue?: string;
+  /** True if the type is a user-defined function block (not a primitive type). */
+  isUserFb?: boolean;
+}
+
+/** Standard function block / function names (uppercase). The renderer knows how to draw each. */
+export type FbdStdBlockName =
+  | "AND" | "OR" | "NOT" | "NAND" | "NOR" | "XOR" | "XNOR" | "BUF"
+  | "R_TRIG" | "F_TRIG" | "SR" | "RS"
+  | "TON" | "TOF" | "TP"
+  | "CTU" | "CTD"
+  | "ADD" | "SUB" | "MUL" | "DIV" | "MOD"
+  | "ABS" | "NEG" | "MOVE"
+  | "EQ" | "NE" | "GT" | "GE" | "LT" | "LE"
+  | "SEL" | "MUX" | "MAX" | "MIN" | "LIMIT";
+
+export type FbdPortSide = "in" | "out";
+
+export interface FbdPort {
+  name: string;
+  side: FbdPortSide;
+  dataType: FbdDataType;
+  /** Inline constant on input ports (e.g. `T#5s`, `5`, `TRUE`). When set, no incoming wire. */
+  constant?: string;
+  /** Negation bubble on this port. */
+  negated?: boolean;
+}
+
+export interface FbdBlock {
+  /** Optional user-given instance tag (italic above header). */
+  instance?: string;
+  /** Type — standard name or user-defined FB type. */
+  blockType: string;
+  /** True if blockType is one of FbdStdBlockName. */
+  isStd: boolean;
+  /** Ports in declaration order (top-to-bottom on each side). */
+  ports: FbdPort[];
+  /** Network this block belongs to. */
+  networkIndex: number;
+  /** Synthetic id for wire references (`block-N` or instance). */
+  id: string;
+}
+
+export interface FbdWire {
+  /** Source: either `{block: id, port: name}` or `{var: name}` (declared variable). */
+  from: { kind: "port"; blockId: string; portName: string } | { kind: "var"; name: string };
+  /** Sink. */
+  to: { kind: "port"; blockId: string; portName: string } | { kind: "var"; name: string };
+  /** Inferred from source port. */
+  dataType: FbdDataType;
+  /** Negation bubble at sink end (for `~`). */
+  negatedAtSink?: boolean;
+}
+
+export interface FbdNetwork {
+  index: number;
+  title?: string;
+  blocks: FbdBlock[];
+  wires: FbdWire[];
+}
+
+export interface FbdAst {
+  type: "fbd";
+  title?: string;
+  variables: FbdVarDecl[];
+  networks: FbdNetwork[];
+}
+
+// ─── FBD Layout Types ────────────────────────────────────────
+
+export interface FbdLayoutPort {
+  name: string;
+  side: FbdPortSide;
+  /** Absolute x of the port end (port_stub_length out from block edge). */
+  x: number;
+  y: number;
+  /** Block-edge x (port stub start). */
+  edgeX: number;
+  dataType: FbdDataType;
+  constant?: string;
+  negated?: boolean;
+}
+
+export interface FbdLayoutBlock {
+  block: FbdBlock;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  ports: FbdLayoutPort[];
+}
+
+export interface FbdLayoutWire {
+  wire: FbdWire;
+  /** SVG path "d" attribute (Manhattan polyline). */
+  path: string;
+}
+
+/** Variable terminal: a small labeled box on the left (input vars) or right (output vars) of each network. */
+export interface FbdLayoutVarTerm {
+  name: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  side: "left" | "right";
+  dataType: FbdDataType;
+}
+
+export interface FbdLayoutNetwork {
+  network: FbdNetwork;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  blocks: FbdLayoutBlock[];
+  wires: FbdLayoutWire[];
+  varTerms: FbdLayoutVarTerm[];
+  /** Junction points (filled circles where one wire branches to multiple sinks). */
+  junctions: { x: number; y: number }[];
+}
+
+export interface FbdLayoutResult {
+  ast: FbdAst;
+  networks: FbdLayoutNetwork[];
+  width: number;
+  height: number;
+}
+
+// ─── SFC (Sequential Function Chart) Types ──────────────────
+// IEC 61131-3 §6.5 — steps + transitions with bars.
+// See docs/reference/24-SFC-STANDARD.md.
+
+export type SfcStepKind = "initial" | "normal" | "final";
+
+export type SfcActionQualifier =
+  | "N" | "S" | "R" | "L" | "D" | "P" | "P0" | "P1" | "SD" | "DS" | "SL";
+
+export interface SfcAction {
+  qualifier: SfcActionQualifier;
+  /** Action body — name reference or inline ST text. */
+  body: string;
+  /** Optional duration literal (T#5s) for L/D/SD/SL/DS qualifiers. */
+  time?: string;
+}
+
+export interface SfcStep {
+  id: string;
+  kind: SfcStepKind;
+  /** Display label override; defaults to id. */
+  label?: string;
+  actions: SfcAction[];
+}
+
+export interface SfcTransition {
+  /** Optional explicit transition id (e.g. T_Reset). */
+  id?: string;
+  from: string;
+  to: string;
+  /** Boolean expression as raw text. */
+  condition: string;
+}
+
+export type SfcVarType =
+  | "bool" | "int" | "real" | "time" | "timer" | "counter" | string;
+
+export interface SfcVarDecl {
+  name: string;
+  dataType: SfcVarType;
+  initValue?: string;
+}
+
+/** Branch group nodes — recursive AST for alt/sim regions. */
+export type SfcNode =
+  | { kind: "step"; stepId: string }
+  | { kind: "alt"; branches: SfcAltBranch[]; mergeTo: string }
+  | { kind: "sim"; condition: string; branches: SfcSimBranch[]; mergeTo: string; mergeCondition: string };
+
+export interface SfcAltBranch {
+  /** Optional priority (default = declaration order). */
+  priority?: number;
+  /** Entry transition condition (rendered between divergence bar and first step). */
+  entryCondition: string;
+  /** Inner steps in linear order. */
+  body: SfcNode[];
+  /** Exit transition condition (rendered between last step and convergence bar). */
+  exitCondition: string;
+}
+
+export interface SfcSimBranch {
+  body: SfcNode[];
+}
+
+export interface SfcAst {
+  type: "sfc";
+  title?: string;
+  variables: SfcVarDecl[];
+  steps: Map<string, SfcStep>;
+  /** Top-level node sequence (linear chain with possibly branch nodes). */
+  body: SfcNode[];
+  /** All transitions — explicit ones from `transition` directives.
+   * Branch entry/exit conditions live inside SfcAltBranch / SfcSimBranch. */
+  transitions: SfcTransition[];
+}
+
+// ─── SFC Layout Types ──────────────────────────────────────
+
+export interface SfcLayoutStep {
+  step: SfcStep;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+export interface SfcLayoutAction {
+  action: SfcAction;
+  stepId: string;
+  /** Index in step's action list. */
+  index: number;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  qualifierWidth: number;
+}
+
+export interface SfcLayoutTransition {
+  transition: SfcTransition;
+  /** Center of the transition bar. */
+  cx: number;
+  cy: number;
+  /** Bar half-width — bar spans [cx-w, cx+w]. */
+  w: number;
+  /** Optional explicit id label (e.g. T_Reset). */
+  id?: string;
+}
+
+export type SfcBarKind = "alt-div" | "alt-conv" | "sim-div" | "sim-conv";
+
+export interface SfcLayoutBar {
+  kind: SfcBarKind;
+  /** Horizontal extent. */
+  x1: number;
+  x2: number;
+  y: number;
+}
+
+export interface SfcLayoutWire {
+  /** SVG path "d" — typically a vertical or L-shape. */
+  path: string;
+  /** Optional class hint (e.g. "wire", "jump"). */
+  cls: "wire" | "jump";
+}
+
+export interface SfcLayoutJump {
+  fromStepId: string;
+  toStepId: string;
+  /** Polyline path including arrowhead. */
+  path: string;
+  /** Margin label position. */
+  labelX: number;
+  labelY: number;
+  labelText: string;
+  /** Condition text (rendered near the source). */
+  condition?: string;
+}
+
+export interface SfcLayoutResult {
+  ast: SfcAst;
+  steps: SfcLayoutStep[];
+  actions: SfcLayoutAction[];
+  transitions: SfcLayoutTransition[];
+  bars: SfcLayoutBar[];
+  wires: SfcLayoutWire[];
+  jumps: SfcLayoutJump[];
+  width: number;
+  height: number;
 }

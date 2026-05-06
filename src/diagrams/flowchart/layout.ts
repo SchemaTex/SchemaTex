@@ -30,8 +30,8 @@ import { bkXCoords, type BKNode } from "../../core/layered/bk";
 export const FC_CONST = {
   nodeWidth: 120,
   nodeHeight: 44,
-  nodeSpacingX: 32, // cross-flow gap between nodes in same layer
-  layerSpacingY: 56, // flow-direction gap between layers
+  nodeSpacingX: 40, // cross-flow gap between nodes in same layer
+  layerSpacingY: 76, // flow-direction gap between layers
   dummyWidth: 1,
   padding: 24,
   /** Latin/digit avg width at 12px font. CJK uses cjkCharWidth instead. */
@@ -1127,6 +1127,16 @@ export function layoutFlowchart(ast: FlowchartAST): FlowchartLayoutResult {
     }
   }
 
+  // Channel midline (abstract TB y) between adjacent layers — every horizontal
+  // bend that crosses gap i lands on this y, so fan-out branches share a
+  // single horizontal trunk instead of stair-stepping at per-edge midpoints.
+  const channelMidAbstract: number[] = [];
+  for (let li = 0; li < layerCenterY.length - 1; li++) {
+    const bottomI = layerCenterY[li]! + layerHeights[li]! / 2;
+    const topNext = layerCenterY[li + 1]! - layerHeights[li + 1]! / 2;
+    channelMidAbstract.push((bottomI + topNext) / 2);
+  }
+
   let minX = Infinity;
   let maxX = -Infinity;
   for (const [id, x] of xMap) {
@@ -1218,6 +1228,14 @@ export function layoutFlowchart(ast: FlowchartAST): FlowchartLayoutResult {
   const outWidth = isHorizontal ? canvasH : canvasW;
   const outHeight = isHorizontal ? canvasW : canvasH;
 
+  // Map channel midlines into final (post-flip / post-LR-swap) coordinates.
+  // For TB the channel value is a y; for LR it becomes an x; BT/RL mirror.
+  const finalChannel: number[] = channelMidAbstract.map((m) => {
+    if (dir === "BT") return outHeight - m;
+    if (dir === "RL") return outWidth - m;
+    return m;
+  });
+
   // ── Build edges (routing) ───────────────────────────────
   const nodeCenter = new Map<string, { x: number; y: number; w: number; h: number }>();
   for (const ln of outNodes) {
@@ -1298,8 +1316,11 @@ export function layoutFlowchart(ast: FlowchartAST): FlowchartLayoutResult {
     }
 
     // Build Manhattan path: for each consecutive pair, insert an L-bend on the
-    // dominant axis (TB: vertical primary; LR: horizontal primary).
-    const d = buildManhattanPath(points, dir);
+    // dominant axis (TB: vertical primary; LR: horizontal primary). Bends use
+    // the shared channel midline between the two layers so all horizontal
+    // bars across a given layer gap line up.
+    const chainLayers = chain.map((id) => layerMap.get(id) ?? 0);
+    const d = buildManhattanPath(points, dir, chainLayers, finalChannel);
 
     // Label anchor: near source exit, offset toward target side. This keeps
     // branch labels (yes / no from a decision) close to the decision and off
@@ -1307,7 +1328,7 @@ export function layoutFlowchart(ast: FlowchartAST): FlowchartLayoutResult {
     // with the edge line itself. Same strategy as entity-structure edges.
     let labelAnchor: { x: number; y: number } | undefined;
     if (le.original.label) {
-      labelAnchor = edgeLabelAnchor(points, dir);
+      labelAnchor = edgeLabelAnchor(points, dir, chainLayers, finalChannel);
     }
 
     return {
@@ -1396,7 +1417,9 @@ function clipToBox(
 
 function buildManhattanPath(
   pts: Array<{ x: number; y: number }>,
-  dir: FlowchartDirection
+  dir: FlowchartDirection,
+  layers?: number[],
+  channel?: number[]
 ): string {
   if (pts.length === 0) return "";
   const parts: string[] = [`M ${fmt(pts[0]!.x)} ${fmt(pts[0]!.y)}`];
@@ -1404,14 +1427,27 @@ function buildManhattanPath(
   for (let i = 1; i < pts.length; i++) {
     const a = pts[i - 1]!;
     const b = pts[i]!;
+    // Channel-based bend: when both endpoints carry layer info, pick the
+    // shared channel between layer min(la,lb) and the next one. Falls back
+    // to the per-edge midpoint when channel data is missing or endpoints
+    // sit on the same layer (self-loops).
+    let bend: number | null = null;
+    if (layers && channel) {
+      const la = layers[i - 1];
+      const lb = layers[i];
+      if (la !== undefined && lb !== undefined && la !== lb) {
+        const ci = Math.min(la, lb);
+        const cv = channel[ci];
+        if (cv !== undefined) bend = cv;
+      }
+    }
     if (isHorizontal) {
-      // Horizontal primary: go right/left to midX, then vertical, then horizontal
-      const midX = (a.x + b.x) / 2;
+      const midX = bend ?? (a.x + b.x) / 2;
       parts.push(`L ${fmt(midX)} ${fmt(a.y)}`);
       parts.push(`L ${fmt(midX)} ${fmt(b.y)}`);
       parts.push(`L ${fmt(b.x)} ${fmt(b.y)}`);
     } else {
-      const midY = (a.y + b.y) / 2;
+      const midY = bend ?? (a.y + b.y) / 2;
       parts.push(`L ${fmt(a.x)} ${fmt(midY)}`);
       parts.push(`L ${fmt(b.x)} ${fmt(midY)}`);
       parts.push(`L ${fmt(b.x)} ${fmt(b.y)}`);
@@ -1426,8 +1462,21 @@ function fmt(n: number): string {
 
 function edgeLabelAnchor(
   pts: Array<{ x: number; y: number }>,
-  dir: FlowchartDirection
+  dir: FlowchartDirection,
+  layers?: number[],
+  channel?: number[]
 ): { x: number; y: number; textAnchor?: "start" | "middle" | "end" } {
+  // Resolve the same bend coordinate the router uses, so labels stay visually
+  // attached to the segment they describe.
+  let bend: number | null = null;
+  if (layers && channel && layers.length >= 2) {
+    const la = layers[0]!;
+    const lb = layers[1]!;
+    if (la !== lb) {
+      const cv = channel[Math.min(la, lb)];
+      if (cv !== undefined) bend = cv;
+    }
+  }
   // Strategy: label sits next to the edge polyline on the segment that is
   // unique to this edge (so fan-out branches don't collide with shared
   // routing bars). Text-anchor is set so the glyphs clear the stroke — never
@@ -1438,28 +1487,22 @@ function edgeLabelAnchor(
   const isHorizontal = dir === "LR" || dir === "RL";
 
   if (isHorizontal) {
-    const midX = (a.x + b.x) / 2;
+    const midX = bend ?? (a.x + b.x) / 2;
     const bends = Math.abs(a.y - b.y) > 1;
     if (bends) {
-      // Label on the vertical middle segment, text anchored to start so it
-      // begins a gap to the right of the line.
       const midY = (a.y + b.y) / 2;
       return { x: midX + 6, y: midY, textAnchor: "start" };
     }
-    // Straight horizontal run: label centered above the line with clearance.
     return { x: midX, y: a.y - 8, textAnchor: "middle" };
   }
 
   // TB / BT
-  const midY = (a.y + b.y) / 2;
+  const midY = bend ?? (a.y + b.y) / 2;
   const bends = Math.abs(a.x - b.x) > 1;
   if (bends) {
-    // Label centered above the horizontal middle bar, clear of the stroke.
     const midX = (a.x + b.x) / 2;
     return { x: midX, y: midY - 8, textAnchor: "middle" };
   }
-  // Straight vertical drop: anchor to the right of the stub so text begins a
-  // gap past the line.
   return { x: a.x + 6, y: midY, textAnchor: "start" };
 }
 

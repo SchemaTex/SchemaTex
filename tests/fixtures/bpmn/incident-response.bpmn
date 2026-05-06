@@ -1,0 +1,45 @@
+bpmn
+direction: LR
+title: "Production incident response"
+
+pool "Monitoring" blackbox
+
+pool "Engineering" {
+  lane "On-call L1" {
+    A: start message "Page received"
+    ACK: task user "Acknowledge"
+    TR: task user "Triage"
+    G1: gateway xor "Severity?"
+  }
+  lane "On-call L2" {
+    INV: task user "Investigate"
+    ROOT: task service "Root cause"
+    FIX: task user "Implement fix"
+    DEPLOY: task service "Deploy patch"
+  }
+  lane "Comms" {
+    SP: task send "Status page"
+    T1: intermediate timer "30 min"
+    UP: task send "Update users"
+    PM: task user "Post-mortem"
+    Z: end "Resolved"
+  }
+}
+
+flows
+A --> ACK
+ACK --> TR
+TR --> G1
+G1 --? "P1" --> SP
+G1 --? "P2-P3" --> INV
+G1 --* "info" --> TR
+SP --> INV
+INV --> ROOT
+ROOT --> FIX
+FIX --> DEPLOY
+DEPLOY --> T1
+T1 --> UP
+UP --> PM
+PM --> Z
+"Monitoring" ~~> A : "Alert"
+SP ~~> "Monitoring" : "Status"

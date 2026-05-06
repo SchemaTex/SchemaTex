@@ -1,0 +1,58 @@
+---
+title: Pizza order with black-box customer (BPMN)
+description: Two-pool BPMN — external Customer (black-box) and a Pizzeria with Clerk / Chef / Delivery lanes. Exercises message flows across pools, manual / send task markers, and a rework loop on the chef's quality check. Canonical BPMN test case 7.1.
+diagram: bpmn
+standard: OMG BPMN 2.0.2 / ISO/IEC 19510:2013
+industry: [retail, hospitality, education]
+persona: For the BPMN learner
+complexity: 2
+tags: [bpmn, business-process, message-flow, black-box-pool, rework-loop]
+featured: true
+relatedLink:
+  label: BPMN syntax
+  href: /docs/bpmn
+status: published
+dsl: |
+  bpmn
+  direction: LR
+  title: "Pizza order"
+
+  pool "Customer" blackbox
+
+  pool "Pizzeria" {
+    lane "Clerk" {
+      A: start message "Order received"
+      B: task user "Take order"
+    }
+    lane "Chef" {
+      C: task manual "Make pizza"
+      G1: gateway xor "Pizza ok?"
+      D: task manual "Rework"
+    }
+    lane "Delivery" {
+      E: task send "Deliver"
+      F: end "Done"
+    }
+  }
+
+  flows
+  A --> B
+  B --> C
+  C --> G1
+  G1 --? "yes" --> E
+  G1 --* "no" --> D
+  D --> C
+  E --> F
+  "Customer" ~~> A : "Place order"
+  E ~~> "Customer" : "Pizza delivered"
+---
+
+This is the OMG-tutorial *hello world* for BPMN — every BPM textbook and certification course uses some version of it. It's a deceptively rich example: in 12 elements it covers every concept that distinguishes BPMN from a generic flowchart.
+
+**Black-box pool.** The customer's internal process is unknown (and irrelevant) to the pizzeria, so Customer is rendered as an empty rectangle with no flow objects. Schematex enforces this — adding a lane or a task inside a `blackbox` pool fails the parse. Black-box pools exist purely as message-flow endpoints.
+
+**Message flows cross pools, sequence flows do not.** The two `~~>` connectors are dashed with an open arrowhead and a small unfilled circle at the source. That's the *only* legal way information crosses a pool boundary in BPMN. Schematex's parser will reject `A --> "Customer"` with a clear error.
+
+**Rework loop.** `D --> C` creates a back-edge. The layout's longest-path layering would normally fail on cycles; Schematex's DFS-based cycle-break tags `D → C` as a back edge, runs longest-path on the remaining DAG, then routes the loop manually. This is exactly how real processes look — quality gates always have a "go back and redo it" branch.
+
+**Task markers communicate intent.** `start message` (envelope) means "wait for an inbound message before starting"; `task manual` means a person performs the work without software ("hand-toss the dough"); `task send` means "send a message and continue". An LLM picking markers correctly turns a vague flowchart into a precise process spec.

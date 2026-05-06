@@ -1,0 +1,39 @@
+---
+title: Motor start/stop latch (FBD)
+description: Two-network FBD of the canonical PLC seal-in circuit — start-button rising edge sets a latch, stop and emergency-stop break it. Exercises declared variables, multi-network programs, inline expression notation, and negation bubbles.
+diagram: fbd
+standard: IEC 61131-3:2013 §6.4 + §2.5
+industry: [manufacturing, automation, plc, automotive]
+persona: For the controls engineer
+complexity: 2
+tags: [fbd, plc, iec-61131-3, latch, motor-control]
+featured: true
+relatedLink:
+  label: FBD syntax
+  href: /docs/fbd
+status: published
+dsl: |
+  fbd "Motor Control"
+
+  var Start: bool
+  var Stop: bool
+  var EmergencyStop: bool
+  var MotorOut: bool
+  var Latch: bool
+
+  network 0 "Start latch":
+    Latch = OR(Start, AND(Latch, ~Stop, ~EmergencyStop))
+
+  network 1 "Drive output":
+    MotorOut = MOVE(Latch)
+---
+
+The seal-in circuit — also called a start/stop latch — is the most common pattern in PLC code. Once the operator presses Start, the motor stays running even after they release the button, until either Stop or an emergency-stop input goes high. Every controls engineer writes this on day one, and every PLC textbook opens with the ladder version. The FBD form is just as concise but reads like data flow rather than like a relay schematic.
+
+**Network 0 — the latch.** `Latch = OR(Start, AND(Latch, ~Stop, ~EmergencyStop))` is the entire seal-in expressed as one nested call. The OR fires when *either* the start button is pressed *or* the latch is already set AND neither stop button is held. The `~` prefix on Stop and EmergencyStop adds a **negation bubble** at each input port — equivalent to inserting a NOT block on that wire, but rendered inline. The variadic AND expands automatically to three inputs because three positional arguments were passed.
+
+**The `Latch` feedback edge.** Notice that `Latch` appears on both the left side (as an input to the AND) and the right side (as the output of the OR). This is the *seal-in* feedback that gives the circuit its name. In a real PLC, the previous scan's `Latch` value is what feeds back — the current scan reads it, evaluates the boolean expression, and writes the new value. Schematex doesn't simulate the scan cycle; it just renders the data-flow graph faithfully, which is exactly what an engineer reviewing the program needs to see.
+
+**Network 2 — drive output.** `MotorOut = MOVE(Latch)` is a separate concern: take the latch state and assign it to the physical output that energises the motor contactor. Splitting it into its own network is a real engineering practice — it keeps the "logic" (when should the motor be on?) separate from the "actuation" (what physical output gets driven?), so swapping in test harnesses or fault-injection logic only requires modifying network 1, not network 0.
+
+**Why this is FBD and not ladder.** Both languages can express this circuit, and many PLC projects mix them. FBD wins when the engineer is thinking in terms of "this signal flows into that operator"; ladder wins when thinking in terms of "this contact closes the path to that coil." For the seal-in pattern specifically, FBD's three-input AND collapses what ladder requires drawing as three series contacts on one rung — a small win, but a representative one.

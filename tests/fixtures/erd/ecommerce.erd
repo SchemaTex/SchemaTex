@@ -1,0 +1,51 @@
+erd
+title: "E-commerce Schema"
+direction: LR
+
+table Customer {
+  customer_id  int       PK
+  email        varchar   UK
+  name         varchar
+  created_at   timestamp
+}
+
+table Address {
+  address_id   int       PK
+  customer_id  int       FK -> Customer.customer_id
+  line1        varchar
+  city         varchar
+  zip          varchar
+}
+
+table Category {
+  category_id  int       PK
+  name         varchar
+}
+
+table Product {
+  product_id   int       PK
+  category_id  int       FK -> Category.category_id
+  name         varchar
+  price        decimal
+}
+
+table Order {
+  order_id     int       PK
+  customer_id  int       FK -> Customer.customer_id
+  placed_at    timestamp
+  status       varchar
+}
+
+table OrderLine {
+  order_id     int       PK FK -> Order.order_id
+  line_no      int       PK
+  product_id   int       FK -> Product.product_id
+  qty          int
+  price        decimal
+}
+
+ref Address.customer_id many-mandatory -- one-mandatory Customer.customer_id
+ref Order.customer_id many-mandatory -- one-mandatory Customer.customer_id : "places"
+ref Product.category_id many-mandatory -- one-mandatory Category.category_id
+ref OrderLine.order_id many-mandatory -- one-mandatory Order.order_id
+ref OrderLine.product_id many-mandatory -- one-mandatory Product.product_id

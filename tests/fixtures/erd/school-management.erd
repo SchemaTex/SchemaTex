@@ -1,0 +1,100 @@
+erd
+title: "School Management System"
+
+table Addresses {
+  address_id        int       PK
+  address_details   varchar
+}
+
+table Schools {
+  school_id              int       PK
+  address_id             int       FK -> Addresses.address_id
+  school_name            varchar
+  school_principal       varchar
+  other_school_details   varchar
+}
+
+table Subjects {
+  subject_id     int       PK
+  subject_name   varchar
+}
+
+table Parents {
+  parent_id              int       PK
+  gender                 char
+  first_name             varchar
+  middle_name            varchar
+  last_name              varchar
+  other_parent_details   varchar
+}
+
+table Students {
+  student_id             int       PK
+  school_id              int       FK -> Schools.school_id
+  gender                 char
+  first_name             varchar
+  middle_name            varchar
+  last_name              varchar
+  other_student_details  varchar
+}
+
+table Teachers {
+  teacher_id             int       PK
+  school_id              int       FK -> Schools.school_id
+  gender                 char
+  first_name             varchar
+  middle_name            varchar
+  last_name              varchar
+  other_teacher_details  varchar
+}
+
+table Classes {
+  class_id      int       PK
+  subject_id    int       FK -> Subjects.subject_id
+  teacher_id    int       FK -> Teachers.teacher_id
+  class_code    varchar
+  class_name    varchar
+  date_from     date
+  date_to       date
+}
+
+table Parent_Addresses {
+  parent_id          int   PK FK -> Parents.parent_id
+  address_id         int   PK FK -> Addresses.address_id
+  date_address_from  date  PK
+  date_address_to    date
+}
+
+table Student_Addresses {
+  student_id         int   PK FK -> Students.student_id
+  address_id         int   PK FK -> Addresses.address_id
+  date_from          date  PK
+  date_to            date
+  address_details    varchar
+}
+
+table Student_Parents {
+  student_id   int   PK FK -> Students.student_id
+  parent_id    int   PK FK -> Parents.parent_id
+}
+
+table Student_Classes {
+  student_id   int   PK FK -> Students.student_id
+  class_id     int   PK FK -> Classes.class_id
+  date_from    date
+  date_to      date
+}
+
+ref Schools.address_id            many-mandatory -- one-mandatory Addresses.address_id
+ref Students.school_id            many-mandatory -- one-mandatory Schools.school_id   : "enrolled at"
+ref Teachers.school_id            many-mandatory -- one-mandatory Schools.school_id   : "employed at"
+ref Classes.subject_id            many-mandatory -- one-mandatory Subjects.subject_id
+ref Classes.teacher_id            many-mandatory -- one-mandatory Teachers.teacher_id : "taught by"
+ref Parent_Addresses.parent_id    many-mandatory -- one-mandatory Parents.parent_id
+ref Parent_Addresses.address_id   many-mandatory -- one-mandatory Addresses.address_id
+ref Student_Addresses.student_id  many-mandatory -- one-mandatory Students.student_id
+ref Student_Addresses.address_id  many-mandatory -- one-mandatory Addresses.address_id
+ref Student_Parents.student_id    many-mandatory -- one-mandatory Students.student_id
+ref Student_Parents.parent_id     many-mandatory -- one-mandatory Parents.parent_id
+ref Student_Classes.student_id    many-mandatory -- one-mandatory Students.student_id
+ref Student_Classes.class_id      many-mandatory -- one-mandatory Classes.class_id

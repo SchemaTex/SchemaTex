@@ -1,0 +1,50 @@
+---
+title: Loan application approval (BPMN)
+description: Single-pool, two-lane BPMN of a bank loan approval workflow. Clerk completeness check feeds underwriter risk-scoring + review with two end states (approved / rejected). Canonical BPMN test case 7.2.
+diagram: bpmn
+standard: OMG BPMN 2.0.2 / ISO/IEC 19510:2013
+industry: [finance, banking, compliance]
+persona: For the business analyst
+complexity: 2
+tags: [bpmn, business-process, loan, banking, xor-gateway]
+featured: true
+relatedLink:
+  label: BPMN syntax
+  href: /docs/bpmn
+status: published
+dsl: |
+  bpmn
+  direction: LR
+  title: "Loan Application Approval"
+
+  pool "Bank" {
+    lane "Clerk" {
+      A: start "Application received"
+      B: task user "Check completeness"
+      G1: gateway xor "Complete?"
+    }
+    lane "Underwriter" {
+      C: task service "Risk score"
+      D: task user "Underwriter review"
+      G2: gateway xor "Decision"
+      E: end "Approved"
+      F: end "Rejected"
+    }
+  }
+
+  flows
+  A --> B
+  B --> G1
+  G1 --? "yes" --> C
+  G1 --* "no" --> F
+  C --> D
+  D --> G2
+  G2 --? "approve" --> E
+  G2 --* "reject" --> F
+---
+
+A real loan approval has more steps — KYC, fraud screening, document collection, escalation tiers — but every variant collapses onto this skeleton. The reason a *flowchart* doesn't suffice is the **swim-lane semantics**: Clerk and Underwriter are different roles with different SLAs, often different software, sometimes different legal liability. BPMN encodes that division as first-class lanes; a generic flowchart can only hint at it with shape colours.
+
+The two **XOR gateways** (G1, G2) each have one **conditional flow** (`--?`) and one **default flow** (`--*`). The default flow is rendered with a slash mark at the source — it's the branch taken when no condition matches, and Schematex enforces *exactly one* default per gateway. Both conditional and default flows share the same gateway label ("Complete?" / "Decision"); the branch labels live on the connectors themselves.
+
+The two end events (Approved / Rejected) sit in the underwriter lane because that's who owns the outcome. F is referenced from both gateways — the rejection path joins from either "incomplete" or "rejected" decisions, which is exactly how a human auditor would expect to read the process.

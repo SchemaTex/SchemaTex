@@ -46,6 +46,11 @@ const SYNTAX_KEYS = [
   "timeline",
   "state",
   "pid",
+  "erd",
+  "breadboard",
+  "bpmn",
+  "fbd",
+  "sfc",
 ];
 
 // ─── Minimal YAML-frontmatter parser ─────────────────────────────

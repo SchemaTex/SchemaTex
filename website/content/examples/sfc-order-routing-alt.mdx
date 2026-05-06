@@ -1,0 +1,58 @@
+---
+title: Order routing — express vs standard shipping (SFC)
+description: Alternative-branch SFC of an order-fulfillment routing decision. After picking the product, exactly one branch fires per scan based on the leftmost-true entry transition (priority 1 = express shipping first). Both branches converge to a common shipping step. Exercises the IEC 61131-3 §6.5.4 single-bar OR semantics, branch priority annotations, and per-branch entry/exit transitions.
+diagram: sfc
+standard: IEC 61131-3:2013 §6.5
+industry: [logistics, e-commerce, warehousing, supply-chain]
+persona: For the warehouse-automation engineer
+complexity: 2
+tags: [sfc, plc, alternative-branch, priority, routing, e-commerce]
+featured: false
+relatedLink:
+  label: SFC syntax
+  href: /docs/sfc
+status: published
+dsl: |
+  sfc "Order routing"
+
+  var ProductOrdered: bool
+  var IsExpressShipping: bool
+  var IsStandardShipping: bool
+  var Shipped: bool
+
+  step S0 [initial]
+
+  step S_Pick
+    N PickFromBin
+
+  alt from: S_Pick:
+    branch [priority: 1]:
+      transition: IsExpressShipping
+      step S_Express
+        N PrepExpressBox
+      transition: TRUE
+    branch [priority: 2]:
+      transition: IsStandardShipping
+      step S_Standard
+        N PrepStandardBox
+      transition: TRUE
+  merge_to: S_Ship
+
+  step S_Ship
+    N CarrierPickup
+
+  transition from: S0 to: S_Pick: ProductOrdered
+  transition from: S_Ship to: S0: Shipped
+---
+
+A modern fulfillment center handles both express (next-day) and standard (3–5 day) shipping on the same physical line, with the same picking robots and the same carrier-pickup conveyor. The only divergence is the boxing step: express boxes are different sizes, use rigid corrugate, and get extra tracking labels. SFC's alternative branch is the right shape for this: one step (picking) splits into two paths (express boxing OR standard boxing) and they converge back to a common end step (carrier pickup).
+
+**Single horizontal bar = alternative.** IEC 61131-3 §6.5.4 uses a **single horizontal line** for alternative (OR-semantic) divergence and convergence. Visually it's the simpler cousin of the double-bar simultaneous fork; semantically it's the opposite — only *one* branch fires per scan, picked by which entry transition's condition evaluates true first under the priority order.
+
+**Priority annotation matters.** Both branches have `[priority: N]` markers — express is priority 1, standard is priority 2. If both `IsExpressShipping` and `IsStandardShipping` were somehow true at the same time (a bug, but a common one in early integration), the priority forces the express path. The renderer puts a small red number near each branch entry to make the priority visible at review time.
+
+**Per-branch entry and exit transitions.** Inside each branch, there are two `transition: ...` lines — the first is the **entry transition** (fires when control reaches the divergence bar; renders between the bar and the first step in that branch), and the second is the **exit transition** (fires when the branch's last step completes; renders between that step and the convergence bar). Most exit transitions are `TRUE` (unconditional) because the *step* itself is what's gating the work — once the step completes, you want to leave the branch. The entry transitions are where the actual decision logic lives.
+
+**Why not flowchart?** A flowchart of this would render the routing as a diamond with two branches and labels on each branch. You'd lose the explicit step semantics — in flowchart, the diamond *is* the decision point and there's no notion of "the picking step is currently active and the next step depends on shipping type." That distinction matters for PLC code: while the picking step is active, the picking robot is physically holding the product, and you need to know exactly when the routing decision happens (at step exit, not step entry) to coordinate the conveyor handoff. SFC's "step active → transition → next step active" semantics are what real PLC scan engines do; flowchart's diamond/box semantics are not.
+
+**The shared S_Ship destination.** Both branches converge to S_Ship, where `CarrierPickup` runs. This is one of the strengths of alternative-branch SFC: the post-routing step is shared infrastructure, drawn exactly once. If you moved to multiple destinations (e.g. express has its own carrier door, standard has another), you'd skip the convergence and let each branch end at its own terminal step — also a valid SFC pattern.

@@ -1,0 +1,46 @@
+---
+title: Bottle filling sequence (SFC)
+description: Three-step sequential function chart for a bottle-filling station — idle with valve closed, fill while tank level rises, signal done. Exercises the IEC 61131-3 §6.5 initial-step double border, N-qualified actions, and condition expressions on transitions.
+diagram: sfc
+standard: IEC 61131-3:2013 §6.5
+industry: [manufacturing, packaging, beverage, food-processing]
+persona: For the controls engineer
+complexity: 1
+tags: [sfc, plc, iec-61131-3, sequential-control, packaging]
+featured: true
+relatedLink:
+  label: SFC syntax
+  href: /docs/sfc
+status: published
+dsl: |
+  sfc "Bottle Filling"
+
+  var StartBtn: bool
+  var TankLevel: real
+  var DoneBtn: bool
+
+  step S0 [initial]
+    N FillValve_Closed
+
+  step S1 [label: "Filling"]
+    N FillValve_Open
+
+  step S2 [label: "Done"]
+    N Confirm_Done
+
+  transition from: S0 to: S1: StartBtn
+  transition from: S1 to: S2: TankLevel >= 80.0
+  transition from: S2 to: S0: DoneBtn
+---
+
+Sequential function charts are the most underused PLC language. Most automation code is written in ladder, but ladder describes per-scan combinational logic — it can't express "we're in the *fill* phase right now and the next phase begins when the tank hits 80%." Engineers fake state machines in ladder using auxiliary boolean tags (one per state, set/reset by transition logic), and the result is unreadable six months later. SFC makes the state machine explicit: each step is a phase, each transition is a boolean condition that triggers the handoff.
+
+**Three steps, three phases.** S0 is the **initial step** — drawn with a double border per IEC 61131-3 §6.5.1.2, marking the entry point when the program starts. While S0 is active, its single N-qualified action `FillValve_Closed` runs every scan. The chart sits in S0 until the StartBtn transition fires; then control moves to S1.
+
+**S1 — filling phase.** While in S1, the action `FillValve_Open` runs every scan. The chart waits in S1 until the transition `TankLevel >= 80.0` evaluates true. Note that condition is just plain text — Schematex doesn't parse or evaluate IEC structured-text expressions; it stores them verbatim and renders them next to the bar. The PLC runtime is what actually evaluates.
+
+**S2 — done phase.** S2 holds with `Confirm_Done` running until the operator presses the DoneBtn (or whatever signals the cycle complete) — at which point we loop back to S0. Because S0 is not linearly adjacent to S2 in the body, this transition renders as a **margin jump arrow** on the side of the chart, with the target step id and the condition both labeled.
+
+**N qualifier — non-stored.** The `N` letter on each action means *non-stored*: the action runs only while its owning step is active, and stops automatically when the step deactivates. This is by far the most common qualifier — about 80% of real SFC actions use it. The SFC standard supports ten others (S/R for stored, L/D for time-limited/delayed, P for one-scan pulses, etc.) but for this example N is exactly right.
+
+**Why this is SFC and not a flowchart.** A flowchart of the same machine would show diamond decisions ("is start pressed? if yes, ...") and you'd lose the explicit "we're *in* phase X" semantics. SFC's active-step token model — one step holds the token at any moment, transitions move it — is the formal definition of *cyclic sequential control*, and it maps directly to how real PLC scan engines execute. When you bring this diagram to a code review with the maintenance team, they'll instantly recognize the pattern.
