@@ -119,7 +119,6 @@ export default function PreviewPage() {
                   >
                     {item.render.ok ? (
                       <div
-                        // eslint-disable-next-line react/no-danger
                         dangerouslySetInnerHTML={{ __html: item.render.svg }}
                         className="w-full"
                         style={{ maxWidth: '100%' }}
