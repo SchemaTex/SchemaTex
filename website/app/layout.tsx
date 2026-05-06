@@ -1,8 +1,8 @@
 import './global.css';
 import { RootProvider } from 'fumadocs-ui/provider';
-import Script from 'next/script';
 import type { ReactNode } from 'react';
 import type { Metadata } from 'next';
+import { PlausibleAnalytics } from '@/components/plausible-analytics';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://schematex.js.org'),
@@ -47,6 +47,9 @@ export const metadata: Metadata = {
 export default function Layout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <PlausibleAnalytics />
+      </head>
       <body className="flex min-h-screen flex-col">
         <RootProvider
           theme={{
@@ -58,11 +61,6 @@ export default function Layout({ children }: { children: ReactNode }) {
         >
           {children}
         </RootProvider>
-        <Script
-          defer
-          data-domain="schematex.js.org"
-          src="https://plausible.ideamarketfit.com/js/script.js"
-        />
       </body>
     </html>
   );
