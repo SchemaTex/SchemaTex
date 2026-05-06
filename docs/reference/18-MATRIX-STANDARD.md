@@ -203,13 +203,19 @@ config:
 ### 4.4 Grammar (EBNF)
 
 ```ebnf
-document     = header (config_block | axis_def | annotation_def | point | cell | row_decl)* NEWLINE
+document     = header (config_block | style_dir | axis_def | annotation_def | point | cell | q_short | row_decl)* NEWLINE
 
 header       = "matrix" template_id? quoted_string? NEWLINE
              | "matrix" "heatmap" dims NEWLINE
 template_id  = "eisenhower" | "impact-effort" | "rice" | "bcg" | "ansoff"
              | "johari" | "9-box" | "risk-matrix"
 dims         = INT "x" INT                      # e.g. 5x5, 3x3, 7x12
+
+style_dir    = "style:" WS "table" NEWLINE      # switches to text-in-cell layout
+
+q_short      = "Q" ( "1" | "2" | "3" | "4" ) ":" WS quoted_string NEWLINE
+             # 2×2 shorthand: Q1=top-right, Q2=top-left, Q3=bottom-left, Q4=bottom-right
+             # Equivalent to cell (col,row) label: but restricted to 2×2 grids
 
 axis_def     = ( "x-axis:" | "y-axis:" ) axis_label ( "→" axis_label )? NEWLINE
              | "rows:" "[" label_list "]" NEWLINE
@@ -419,6 +425,17 @@ Template mode 自动注入（例：Eisenhower 的 "Do First"）：
 - 位于每象限内角 12px padding 处
 - Font 14px，weight 600，opacity 0.3（水印风格，不抢 point 视觉）
 - Color = quadrant tint 的 darker variant
+- **`style: table` 时此 group 被抑制**；象限标题改为 `sx-matrix-cell-title` 渲染在格子内部顶部
+
+### 6.6a Table-mode CSS Classes
+
+`style: table` 模式引入三个专用 CSS class（供主题覆盖）：
+
+| Class | Font | Role |
+|---|---|---|
+| `sx-matrix-cell-title` | 600 13px, `#111827` | 格子内顶部的象限标题（源自 `quadrant` annotation） |
+| `sx-matrix-cell-subtitle` | 400 11px, `#6b7280` | 象限标题下方的可选副标题（源自 `description:`） |
+| `sx-matrix-cell-item` | 500 12px, `#1f2937` | 每个 bullet 条目；`text-anchor="start"`，leading `•  ` |
 
 ### 6.7 Legend
 
@@ -863,6 +880,53 @@ src/diagrams/matrix/
    - 不做 force-based 推开 center（会 distort 数据位置，违反 matrix 的空间语义）
 
 7. **Off-chart 符号** — clamp-badge 的箭头方向用哪套？Unicode ↗↘↖↙ vs 自绘 SVG triangle。**倾向自绘**（字体依赖问题）。
+
+---
+
+## 11.5 `style: table` — text-in-cell layout
+
+**Why this exists.** Frequent production failure mode: an LLM receives a prompt like *"create an Eisenhower matrix with my 12 tasks"* and emits `"Label" at (x, y)` scatter-plot points. The user wanted the canonical four-cell **table** with task lists in each quadrant — Eisenhower's original 1954 layout — and the 2×2 chart-with-dots is technically valid but pragmatically wrong. Same for Johari, impact-effort, ansoff, and 9-box.
+
+The `style: table` directive flips rendering into the canonical text-in-cell layout used in coaching, PM, and HR contexts:
+
+| Config flag | Value with `style: table` | Effect |
+|---|---|---|
+| `showAxis` | `off` | No axis arrows, no axis labels |
+| `axisArrows` | `false` | (redundant with above) |
+| `gridLines` | `false` | No internal grid lines (mid-line + outer border only) |
+| `quadrantAnnotations` | `false` (overlay) | Quadrant titles render **inside** each cell as a header instead of as a corner overlay |
+
+Two additional rendering rules apply only in table mode:
+1. **Multiple `cell (col,row)` lines stack as a bullet list** inside that cell, top-anchored.
+2. **`Q1`/`Q2`/`Q3`/`Q4`** shorthand maps to the right cell automatically (Q1=top-right, Q2=top-left, Q3=bottom-left, Q4=bottom-right) — designed for short, AI-friendly DSL.
+
+**Canonical example (Eisenhower):**
+
+```
+matrix eisenhower "This Week"
+style: table
+Q2: "Ship hotfix"
+Q2: "Customer demo prep"
+Q1: "Write Q3 OKRs"
+Q3: "Reorganize Slack"
+Q4: "Inbox zero"
+```
+
+Renders as a 2×2 grid with each quadrant title at the top of its cell and the items listed below as bullets. No axes, no scatter points.
+
+**3×3 grids (9-box).** `style: table` also applies to 3×3 templates: each cell renders as a vertical list with cellLabels stacked top-anchored. The `Q1..Q4` shorthand is 2×2 only — for 3×3 use `cell (col, row) label: "..."` repeatedly.
+
+**When to use `style: table` vs the default scatter mode.**
+
+| Use `style: table` for | Use scatter for |
+|---|---|
+| Eisenhower with task lists | Eisenhower with effort weights (`size: N`) |
+| Impact-Effort backlog grouping | Impact-Effort with bubble sizes |
+| Johari window coaching exercise | RICE prioritization with bubble = reach |
+| 9-box talent review | BCG portfolio (canonically a bubble chart) |
+| Ansoff growth options matrix | Risk 5×5 heatmap |
+
+**AI-grounding rule.** When LLMs author DSL via the MCP server, the prompt for any 2×2 template **without** an explicit numerical third dimension (effort, revenue, reach, etc.) should default to `style: table`. The MDX examples `matrix-eisenhower-week`, `matrix-impact-effort`, `matrix-johari-window`, and `matrix-9-box-talent` are the canonical few-shots.
 
 ---
 

@@ -1,12 +1,12 @@
 ---
 title: Eisenhower week prioritization
-description: 2×2 Eisenhower matrix plotting a week's to-dos by urgency and importance, with size encoding estimated hours and a highlighted must-do.
+description: 2×2 Eisenhower table grouping a week's tasks into Do First / Schedule / Delegate / Delete — the canonical text-in-cell layout, not a scatter chart.
 diagram: matrix
 standard: Eisenhower (1954)
 industry: [productivity, management]
 persona: For the engineering manager
-complexity: 2
-tags: [matrix, eisenhower, prioritization, productivity, planning]
+complexity: 1
+tags: [matrix, eisenhower, prioritization, productivity, planning, table]
 featured: true
 relatedLink:
   label: Matrix syntax
@@ -14,26 +14,31 @@ relatedLink:
 status: published
 dsl: |
   matrix eisenhower "This Week"
-  "Ship hotfix" at (0.1, 0.9) size: 5 highlight: true
-  "Team 1:1s" at (0.1, 0.7) size: 3
-  "Write Q3 OKRs" at (0.8, 0.85) size: 4
-  "Customer demo prep" at (0.2, 0.75) size: 3
-  "Refactor auth layer" at (0.75, 0.45) size: 4
-  "Inbox zero" at (0.15, 0.25) size: 2
-  "LinkedIn updates" at (0.85, 0.15) size: 1
+  style: table
+  Q2: "Ship hotfix"
+  Q2: "Customer demo prep"
+  Q1: "Write Q3 OKRs"
+  Q1: "Refactor auth layer"
+  Q4: "LinkedIn updates"
+  Q4: "Inbox zero"
+  Q3: "Reorganize Slack channels"
 ---
 
 ## Scenario
 
-An engineering manager uses this chart at Monday planning to triage her week. The highlighted "Ship hotfix" is the unambiguous top item (urgent + important). "Write Q3 OKRs" sits in the important-but-not-urgent quadrant — the trap quadrant Eisenhower called out: it silently slips until it becomes urgent, at which point it's badly done.
+An engineering manager triages her week at Monday planning. The point of an Eisenhower matrix in real use isn't a scatter plot — it's a **four-cell list**: tasks dropped into the quadrant that matches their urgency × importance. The table tells her at a glance where her attention should go this week (Do First + Schedule), what to push down (Delegate), and what to drop (Delete).
 
 ## Annotation key
 
-- `matrix eisenhower` — template with preset axes (urgency × importance) and quadrant labels
-- `"Label" at (x, y)` — x is urgency (0=low, 1=high), y is importance
-- `size:` — estimated effort (scales the bubble)
-- `highlight: true` — red ring around the must-do
+- `matrix eisenhower` — preset axes (urgency × importance) and four quadrant titles
+- `style: table` — text-in-cell layout: hides axes/arrows/grid, renders quadrant titles as cell headers, lists each item as a bullet
+- `Q1:` … `Q4:` — shorthand for `cell (col, row) label: …`. Q1=top-right (Schedule), Q2=top-left (Do First), Q3=bottom-left (Delete), Q4=bottom-right (Delegate)
+- Repeating `Q2:` stacks multiple tasks in the same cell as a bullet list
 
 ## How to read
 
-Top-right is urgent + important — do first. Top-left (important, not urgent) is where careful planning lives; the Q3 OKRs and refactor belong here. Bottom-right (urgent, not important) is the delegation zone. Bottom-left (neither) is the "delete" zone — anything here is a candidate for saying no. Bubble size shows time cost; use it to sanity-check that your top-right doesn't exceed the week's available hours.
+The "Do First" cell (top-left in eisenhower's convention with urgent on the left axis) is the urgent + important pile — work the morning sprint. "Schedule" is the trap quadrant: important but not yet urgent (Q3 OKRs, refactor) — it silently slips until it becomes urgent and badly done. "Delegate" is the busy-work the AI generates — urgent on someone's calendar but not actually load-bearing for the org. "Delete" is the candidate for "no": neither urgent nor important.
+
+## Why a table, not a chart
+
+The classic Eisenhower output is a 2×2 grid with task lists, not a scatter of dots. If you want to encode a third dimension (time cost, owner) on top of the cell layout, drop `style: table` and use `"Label" at (x, y) size: N` instead — that switches to bubble mode.

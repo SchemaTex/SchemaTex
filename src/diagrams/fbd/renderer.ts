@@ -195,7 +195,7 @@ function renderNetwork(ln: FbdLayoutNetwork): string {
     }));
     if (wl.wire.negatedAtSink) {
       // Find sink point — last point of path
-      const m = wl.path.match(/L\s+([\d.\-]+)\s+([\d.\-]+)\s*$/);
+      const m = wl.path.match(/L\s+([\d.-]+)\s+([\d.-]+)\s*$/);
       if (m) {
         const sx = parseFloat(m[1]);
         const sy = parseFloat(m[2]);

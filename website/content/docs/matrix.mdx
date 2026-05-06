@@ -273,7 +273,71 @@ x-axis: Low Cost → High Cost   # inline comment after a directive
 
 ---
 
-## 10. Reserved words & escaping
+## 10. Table mode (`style: table`)
+
+The default matrix rendering is a **scatter / bubble chart** — points float at (x, y) coordinates. For frameworks where the output is a list of items grouped by quadrant (Eisenhower, Johari, Impact-Effort, 9-box), use `style: table` to switch to a **text-in-cell layout** instead.
+
+```
+matrix eisenhower "This Week"
+style: table
+Q2: "Ship hotfix"
+Q2: "Customer demo prep"
+Q1: "Write Q3 OKRs"
+Q1: "Refactor auth layer"
+Q4: "LinkedIn updates"
+Q3: "Reorganize Slack channels"
+```
+
+`style: table` applies these changes automatically:
+
+| Effect | Detail |
+|---|---|
+| Axes and arrows hidden | No axis lines, labels, or arrowheads |
+| Grid lines hidden | Only the outer border and cell dividers remain |
+| Quadrant titles move inside cells | Each title becomes a cell header instead of a corner overlay |
+| Items stack as a bullet list | Multiple entries for the same quadrant stack top-down |
+
+### `Q1` … `Q4` shorthand (2×2 only)
+
+For 2×2 templates, use `Qn: "item"` instead of the longer `cell (col, row) label: "item"` form. Mapping:
+
+| Shorthand | Cell | Eisenhower | Johari |
+|---|---|---|---|
+| `Q1:` | top-right | Schedule | Blind |
+| `Q2:` | top-left | Do First | Open / Arena |
+| `Q3:` | bottom-left | Delete | Hidden / Façade |
+| `Q4:` | bottom-right | Delegate | Unknown |
+
+Repeat a shorthand key to add multiple items to the same cell:
+
+```
+Q2: "Ship hotfix"
+Q2: "Customer demo prep"
+```
+
+For 3×3 grids (9-box), use `cell (col, row) label: "…"` directly — the `Q` shorthand is 2×2 only.
+
+### When to use table vs scatter
+
+| Use `style: table` for | Use scatter (default) for |
+|---|---|
+| Eisenhower with task lists | Eisenhower with `size:` effort weights |
+| Johari window coaching | Impact-Effort with bubble = revenue |
+| Backlog grouping (no numeric third dimension) | RICE / BCG portfolio (third dimension IS the bubble size) |
+| 9-box talent review | Risk heatmap (5×5 with numeric severity) |
+
+<Playground initial={`matrix eisenhower "This Week"
+style: table
+Q2: "Ship hotfix"
+Q2: "Customer demo prep"
+Q1: "Write Q3 OKRs"
+Q1: "Refactor auth layer"
+Q4: "LinkedIn updates"
+Q3: "Reorganize Slack channels"`} height={420} />
+
+---
+
+## 11. Reserved words & escaping
 
 **Reserved at line start:** `matrix` (header), `x-axis:`, `y-axis:`, `quadrant`, `config:`, `title:`, `rows:`, `cols:`, `grid:`, `axis:`, `margins:`, `cell`.
 
@@ -283,7 +347,7 @@ x-axis: Low Cost → High Cost   # inline comment after a directive
 
 ---
 
-## 11. Common mistakes
+## 12. Common mistakes
 
 | You wrote | Parser says | Fix |
 |---|---|---|
@@ -294,10 +358,12 @@ x-axis: Low Cost → High Cost   # inline comment after a directive
 | `matrix heatmap` without dimensions | Defaults to 2×2; rows/cols directives set actual size | Specify dimensions on the header: `matrix heatmap 4x4` |
 | `cell (0, 0) level: Strong` (capital S) | `level` match is case-insensitive — accepted | Both `strong` and `Strong` work |
 | `shape: oval` | Unknown shape value — silently ignored | Use `circle`, `square`, `triangle`, or `diamond` |
+| `"Fix bug" at (0.1, 0.9)` on an Eisenhower with a task list | Valid scatter point — but you probably wanted a list in a cell | Add `style: table` and use `Q2: "Fix bug"` instead |
+| `Q1: "item"` on a 3×3 template | `Q` shorthand is parsed as a point line — silently dropped | Use `cell (col, row) label: "item"` for 3×3 grids |
 
 ---
 
-## 12. Grammar (EBNF)
+## 13. Grammar (EBNF)
 
 ```text
 document     = header directive*
@@ -308,8 +374,8 @@ mode-header  = ( "heatmap" | "correlation" ) ( number "x" number )? title?
 title        = quoted-string | bare-text
 
 directive    = x-axis | y-axis | quadrant-dir | config-block
-             | point | cell | rows-dir | cols-dir | grid-dir
-             | title-dir | axis-dir | margins-dir | comment | blank
+             | point | cell | q-short | rows-dir | cols-dir | grid-dir
+             | style-dir | title-dir | axis-dir | margins-dir | comment | blank
 
 x-axis       = "x-axis:" WS axis-spec NEWLINE
 y-axis       = "y-axis:" WS axis-spec NEWLINE
@@ -334,6 +400,9 @@ cell-prop    = "value:" number
              | "label:" quoted-string
              | "level:" ( "strong" | "medium" | "weak" )
 
+style-dir    = "style:" WS "table" NEWLINE
+q-short      = "Q" ( "1" | "2" | "3" | "4" ) ":" WS quoted-string NEWLINE   # 2×2 only
+
 rows-dir     = "rows:" WS label-list NEWLINE
 cols-dir     = "cols:" WS label-list NEWLINE
 grid-dir     = "grid:" WS number "x" number NEWLINE
@@ -349,7 +418,7 @@ Authoritative source: `src/diagrams/matrix/parser.ts`. If this diverges from the
 
 ---
 
-## 13. Standard compliance
+## 14. Standard compliance
 
 Schematex matrix diagrams implement the standard 2×2 quadrant convention used by the **Boston Consulting Group (1970)**, **Eisenhower decision matrix**, **Ansoff growth matrix**, and **Johari Window** frameworks. The 9-box grid follows the **McKinsey/GE talent review** convention (3×3, performance × potential). Heatmap and correlation modes follow no named external standard but use the universal cell-intensity encoding found in tools like Excel conditional formatting and R's `corrplot`.
 
@@ -363,6 +432,7 @@ What is implemented today:
 - ✅ Point properties: size, category, color, shape, highlight, note
 - ✅ Reversed axes (`←` / `<-`)
 - ✅ Config block (quadrantBg, gridLines, axisArrows, bubbleScale, legendPosition, labelCollision, offChartPolicy)
+- ✅ `style: table` — text-in-cell layout with `Q1`…`Q4` shorthand (2×2) and stacked bullet lists
 - ⏳ `label:` override on points (parsed, renderer support pending)
 - ⏳ Off-chart `drop` policy (parsed, renderer always clamp-badges today)
 - ⏳ `margins:` correlation score/rank sidebar (parsed, not yet rendered)
@@ -375,7 +445,7 @@ References:
 
 ---
 
-## 14. Roadmap
+## 15. Roadmap
 
 **Planned — not yet parseable.** Do not use these in generated DSL today; the parser will reject or ignore them.
 

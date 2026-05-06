@@ -1,0 +1,41 @@
+---
+title: Impact-effort feature prioritization
+description: 2×2 impact × effort table sorting a backlog into Quick Wins / Major Projects / Fill-ins / Thankless — the classic PM prioritization grid.
+diagram: matrix
+standard: Impact–Effort (Sondhi 1999)
+industry: [product, management]
+persona: For the product manager
+complexity: 1
+tags: [matrix, impact, effort, prioritization, product, table]
+featured: false
+relatedLink:
+  label: Matrix syntax
+  href: /docs/matrix
+status: published
+dsl: |
+  matrix impact-effort "Sprint Planning — Q2 Backlog"
+  style: table
+  Q2: "Add bulk-delete to inbox"
+  Q2: "Surface error message inline"
+  Q2: "Fix mobile menu z-index bug"
+  Q1: "Rebuild billing on new stripe API"
+  Q1: "Multi-tenant workspace support"
+  Q3: "Brand color audit"
+  Q3: "Update tooltip copy"
+  Q4: "Animated empty-state illustrations"
+  Q4: "Internal admin dashboard polish"
+---
+
+## Scenario
+
+A solo PM running quarterly planning ranks the backlog. The table form is what stakeholders actually want to see in the planning doc — a sortable list per quadrant, not a scatter plot. Quick Wins go in the top-left (high impact, low effort) — ship them this sprint. Major Projects are the bets (high impact, high effort) — pick at most one per quarter. Thankless work (low impact, high effort) is where teams accidentally burn quarters.
+
+## Annotation key
+
+- `matrix impact-effort` — preset axes (effort × impact) with the four PM-canonical quadrant names
+- `style: table` — render as a 4-cell text grid, no axis arrows, no chart
+- `Q1` … `Q4` — Q1=high impact + high effort (Major Projects), Q2=high impact + low effort (Quick Wins), Q3=low impact + low effort (Fill-ins), Q4=low impact + high effort (Thankless)
+
+## How to read
+
+If your Quick Wins cell is empty, that's a smell — it usually means the PM hasn't broken down work small enough. If your Major Projects cell has more than one item per engineer-quarter, you're overcommitting. The Thankless cell is where you have the conversation about cutting scope or pushing to next quarter.
