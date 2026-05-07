@@ -1,0 +1,74 @@
+---
+title: Residential consumer unit — generic IEC 60364
+description: Generic European residential consumer unit per IEC 60364 / EN 61439-3 — service head, isolator, type-AC main RCD, and per-circuit MCBs for lighting, sockets, kitchen, water heater, EV charger (with type-B RCBO), and outdoor circuit.
+diagram: sld
+standard: IEC 60364 / EN 61439-3
+industry: [residential]
+persona: For the European domestic installer
+complexity: 2
+tags: [sld, residential, iec-60364, en-61439, europe, consumer-unit, rcd, rcbo, mcb, isolator, ev-charger]
+featured: true
+relatedLink:
+  label: SLD syntax
+  href: /docs/sld
+status: published
+dsl: |
+  sld "Residential Consumer Unit — IEC 60364"
+  SERVICE = utility [voltage: "230V", label: "Service head 230V/63A"]
+  KWHM = watthour_meter [label: "kWh meter"]
+  ISO = breaker [rating: "63A 6kA", label: "Main isolator"]
+  RCD = ground_fault [rating: "63A / 30mA Type AC", label: "Main RCD"]
+  CU = bus [voltage: "230V", label: "Consumer-unit busbar"]
+  MCB1 = breaker [rating: "6A B-curve", label: "MCB lighting"]
+  MCB2 = breaker [rating: "16A B-curve", label: "MCB sockets ground floor"]
+  MCB3 = breaker [rating: "16A B-curve", label: "MCB sockets first floor"]
+  MCB4 = breaker [rating: "20A C-curve", label: "MCB kitchen ring"]
+  MCB5 = breaker [rating: "20A C-curve", label: "MCB water heater"]
+  RCBO_EV = ground_fault [rating: "32A / 30mA Type B", label: "RCBO EV charger"]
+  MCB6 = breaker [rating: "10A B-curve", label: "MCB outdoor"]
+  L1 = load [label: "Lighting circuit"]
+  L2 = load [label: "Sockets — ground floor"]
+  L3 = load [label: "Sockets — first floor"]
+  L4 = load [label: "Kitchen ring final"]
+  L5 = load [label: "Water heater 4.5 kW"]
+  EV = load [label: "EV charger 7.4 kW Mode 3"]
+  L6 = load [label: "Outdoor / garden"]
+  SERVICE -> KWHM
+  KWHM -> ISO
+  ISO -> RCD
+  RCD -> CU
+  CU -> MCB1
+  MCB1 -> L1 [cable: "1.5 mm² Cu PVC"]
+  CU -> MCB2
+  MCB2 -> L2 [cable: "2.5 mm² Cu PVC"]
+  CU -> MCB3
+  MCB3 -> L3 [cable: "2.5 mm² Cu PVC"]
+  CU -> MCB4
+  MCB4 -> L4 [cable: "4 mm² Cu PVC"]
+  CU -> MCB5
+  MCB5 -> L5 [cable: "4 mm² Cu PVC"]
+  CU -> RCBO_EV
+  RCBO_EV -> EV [cable: "6 mm² Cu XLPE"]
+  CU -> MCB6
+  MCB6 -> L6 [cable: "2.5 mm² Cu XLPE"]
+---
+
+## Scenario
+
+A domestic electrical installer in any IEC 60364 jurisdiction — France (NF C 15-100), Germany (DIN VDE 0100), the United Kingdom (BS 7671), Italy (CEI 64-8), Australia / New Zealand (AS/NZS 3000), and most of the rest of the world outside the NEC — files this single-line as part of the *Certificat de Conformité* / *Elektroinstallationsattest* / *Electrical Installation Condition Report* required after a new installation or major alteration. EN 61439-3 is the European harmonized standard for *Distribution Boards intended to be operated by Ordinary persons* (DBO), and IEC 60364-4-41 governs the protection-against-shock chain (isolation → 30 mA RCD → branch protection). Unlike NEC residential practice where the *panel* lives as a leaf on the SLD with internals on a separate panel schedule, the IEC 60364 single-line is expected to expand the consumer unit's internal protection chain.
+
+## Annotation key
+
+- `utility [voltage:..., label: "Service head…"]` — the cut-out / service-fuse head where the distribution network terminates and the customer installation begins
+- `watthour_meter` — utility-owned kWh meter (smart meter in most modern installations)
+- `breaker [label: "Main isolator"]` — main switch / isolator that disconnects the entire installation, sized at or above the cut-out fuse rating
+- `ground_fault [rating: "…A / 30mA Type AC", label: "Main RCD"]` — whole-installation residual-current device, 30 mA sensitivity, Type AC (the IEC 60364 default for circuits without significant DC residual content)
+- `bus [voltage: "230V", label: "Consumer-unit busbar"]` — the internal busbar of the consumer unit, rendered as a horizontal rail to which every branch device connects
+- `breaker [rating: "…A B-curve" or "…A C-curve", label: "MCB …"]` — branch *miniature circuit breaker*: B-curve (3–5 × In) for resistive / lighting / general-sockets circuits, C-curve (5–10 × In) for inductive loads (kitchen ring, immersion heater) — per IEC 60898-1
+- `ground_fault [rating: "32A / 30mA Type B", label: "RCBO EV charger"]` — Type B RCBO is mandatory on EV charging circuits per IEC 60364-7-722 / HD 60364-7-722 because Mode-3 chargers can leak DC residual currents that blind a Type AC RCD
+- `load` — the final circuit served by each MCB / RCBO
+- `[cable: "… mm² Cu PVC|XLPE"]` — conductor cross-sectional area, copper, with PVC insulation for indoor cables and XLPE for outdoor / EV runs
+
+## How to read
+
+The service head delivers single-phase 230 V at the cut-out fuse rating (63 A here). The kWh meter records consumption, then the main isolator gives a single-action means of disconnecting the entire installation for maintenance. Downstream of the isolator the main RCD provides shock protection at 30 mA Type AC for the bulk of branch circuits; from the consumer-unit busbar, six MCBs feed lighting, two socket circuits, a kitchen ring, a water heater, and an outdoor circuit. The EV charger does not share the main RCD — IEC 60364-7-722 requires a Type B RCBO on the charger circuit because the Mode-3 charge controller can produce smooth DC residual currents that a Type AC RCD cannot detect, leaving people unprotected against shock during a DC fault. Cable sizes scale with the MCB rating per the relevant national reference method (1.5 mm² for 6 A lighting, 2.5 mm² for 16 A sockets, 4 mm² for 20 A kitchen / heater, 6 mm² for the 32 A EV charger). An inspector reads the diagram top-down to verify the protection chain and the discrimination between the main RCD and the EV-circuit RCBO.

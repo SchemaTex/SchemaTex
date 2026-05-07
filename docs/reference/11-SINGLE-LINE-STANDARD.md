@@ -396,7 +396,7 @@ BUS-480 -> CB2 -> LP1 [cable: "3#4 AWG, 75ft"]
 BUS-480 -> CB3 -> MCC1 [cable: "3#2/0 AWG, 150ft"]
 ```
 
-**DSL 示例：住宅服务入口**
+**DSL 示例：住宅服务入口 (NEC — panel 是叶节点)**
 ```
 sld "Residential 200A Service"
 
@@ -407,6 +407,58 @@ panel = panel [rating: "200A, 120/240V, 24-space", label: "Main Panel"]
 
 util -> meter -> main-cb -> panel
 ```
+
+**DSL 示例：住宅 IEC 60364 / REBT — 展开 CGMP 内部**
+
+In jurisdictions following IEC 60364 (and its national derivatives — REBT
+ITC-BT-17 in Spain, NF C 15-100 in France, DIN VDE 0100 in Germany,
+BS 7671 in the UK, AS/NZS 3000 in Australia, ABNT NBR 5410 in Brazil), the
+residential single-line is expected to **expand the consumer unit / CGMP
+internals**, showing the main isolator + RCD(s) + per-circuit MCBs. This is
+the *opposite* of NEC residential practice (panel as leaf node, internals on
+a separate panel schedule). Generating an "expanded" diagram for an IEC
+locale and a "leaf" diagram for an NEC locale is a deliberate doctrine
+branch — match the diagram to the standard the inspector reads against.
+
+Pattern:
+```
+service → kWh meter → main isolator (IGA) → main RCD (Diferencial)
+       → busbar → for each circuit: [RCBO →] MCB (PIA) → load
+```
+
+```
+sld "Vivienda — CGMP REBT ITC-BT-17"
+
+ACOM = utility [voltage: "230V", label: "Acometida 230V"]
+ICP  = watthour_meter [label: "Contador + ICP 25A"]
+IGA  = breaker [rating: "40A curva C, 6kA", label: "IGA"]
+ID   = ground_fault [rating: "40A / 30mA Tipo A", label: "Diferencial general"]
+BUS  = bus [voltage: "230V", label: "Embarrado CGMP"]
+
+C1 = breaker [rating: "10A curva C", label: "PIA C1"]
+C2 = breaker [rating: "16A curva C", label: "PIA C2"]
+# … C3-C6 …
+
+L1 = load [label: "C1 Iluminación"]
+L2 = load [label: "C2 Tomas uso general"]
+
+ACOM -> ICP
+ICP -> IGA
+IGA -> ID
+ID -> BUS
+BUS -> C1
+C1  -> L1 [cable: "1.5 mm² Cu H07V-K"]
+BUS -> C2
+C2  -> L2 [cable: "2.5 mm² Cu H07V-K"]
+```
+
+> **Pitfalls**
+> - Don't collapse the per-circuit MCBs into a single "panel" leaf — REBT inspectors expect every PIA visible with its rated curve.
+> - **EV charging circuits** require a Type B RCBO (not Type AC / Type A) per IEC 60364-7-722 — Mode-3 chargers can leak smooth DC residual currents that blind a Type AC RCD. Model the EV circuit with its own dedicated `ground_fault` device upstream of the EV `load`.
+> - Cable spec on each `->` connection is non-decorative — REBT/IEC 60364 verification reads CSA against the upstream MCB rating to confirm conductor ampacity.
+>
+> See worked examples: `sld-residential-rebt-cgmp` (Spain),
+> `sld-residential-iec-60364-consumer-unit` (generic Europe with EV Type-B RCBO).
 
 ---
 

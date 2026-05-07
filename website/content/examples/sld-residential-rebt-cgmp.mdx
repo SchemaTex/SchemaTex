@@ -1,0 +1,69 @@
+---
+title: Residential CGMP — Spanish REBT vivienda
+description: Cuadro General de Mando y Protección for a Spanish residence per REBT ITC-BT-17 — acometida, contador/ICP, IGA, diferencial Tipo A 30 mA, and per-circuit PIAs (MCBs) feeding lighting, sockets, kitchen, washer, bathroom, and HVAC circuits with H07V-K cables.
+diagram: sld
+standard: REBT ITC-BT-17
+industry: [residential]
+persona: For the Spanish or Latin American electrician
+complexity: 2
+tags: [sld, residential, rebt, spain, latam, cgmp, iga, diferencial, pia, mcb, iec-60364, h07v-k, esquema-unifilar]
+featured: true
+relatedLink:
+  label: SLD syntax
+  href: /docs/sld
+status: published
+dsl: |
+  sld "Vivienda — CGMP REBT ITC-BT-17"
+  ACOM = utility [voltage: "230V", label: "Acometida 230V mono"]
+  ICP = watthour_meter [label: "Contador + ICP 25A"]
+  IGA = breaker [rating: "40A curva C, 6kA", label: "IGA"]
+  ID = ground_fault [rating: "40A / 30mA Tipo A", label: "Diferencial general"]
+  BUS = bus [voltage: "230V", label: "Embarrado CGMP"]
+  C1 = breaker [rating: "10A curva C", label: "PIA C1"]
+  C2 = breaker [rating: "16A curva C", label: "PIA C2"]
+  C3 = breaker [rating: "25A curva C", label: "PIA C3"]
+  C4 = breaker [rating: "20A curva C", label: "PIA C4"]
+  C5 = breaker [rating: "16A curva C", label: "PIA C5"]
+  C6 = breaker [rating: "25A curva C", label: "PIA C6"]
+  L1 = load [label: "C1 Iluminación"]
+  L2 = load [label: "C2 Tomas uso general"]
+  L3 = load [label: "C3 Cocina + horno"]
+  L4 = load [label: "C4 Lavadora / lavavajillas"]
+  L5 = load [label: "C5 Tomas baño y cocina"]
+  L6 = load [label: "C6 Aerotermia / climatización"]
+  ACOM -> ICP
+  ICP -> IGA
+  IGA -> ID
+  ID -> BUS
+  BUS -> C1
+  C1 -> L1 [cable: "1.5 mm² Cu H07V-K"]
+  BUS -> C2
+  C2 -> L2 [cable: "2.5 mm² Cu H07V-K"]
+  BUS -> C3
+  C3 -> L3 [cable: "6 mm² Cu H07V-K"]
+  BUS -> C4
+  C4 -> L4 [cable: "4 mm² Cu H07V-K"]
+  BUS -> C5
+  C5 -> L5 [cable: "2.5 mm² Cu H07V-K"]
+  BUS -> C6
+  C6 -> L6 [cable: "6 mm² Cu H07V-K"]
+---
+
+## Scenario
+
+A Spanish electrician (or an electrical-engineering student preparing the *Esquema Unifilar* for a course or permit) documents the *Cuadro General de Mando y Protección* (CGMP) of a single-family home. Spain's *Reglamento Electrotécnico para Baja Tensión* (REBT) §ITC-BT-17 is explicit about what the residential single-line must show: the incoming *acometida*, the utility-owned *Interruptor de Control de Potencia* (ICP) inside the meter cabinet, the consumer-owned *Interruptor General Automático* (IGA), one or more residual-current devices (*Diferenciales*), and a per-circuit *Pequeño Interruptor Automático* (PIA / MCB) for every final circuit — typically C1 through C6 in a basic *grado de electrificación básica* dwelling. The same pattern applies across Latin America (ABNT NBR 5410 in Brazil, NMX-J-098 in Mexico) and to most IEC-60364 jurisdictions, in contrast to NEC residential practice where the panel internals would normally live on a separate panel schedule.
+
+## Annotation key
+
+- `utility [voltage:..., label:...]` — *Acometida*: the 230 V single-phase service drop from the distribution network up to the meter cabinet
+- `watthour_meter [label:...]` — *Contador + ICP*: revenue meter and the utility's tamper-sealed power-limiter breaker (25 A here, contracted at 5.75 kW)
+- `breaker [rating:"…A curva C, …kA", label: "IGA"]` — *Interruptor General Automático*: customer-owned main breaker; REBT requires curve C and ≥ 6 kA breaking capacity for residential
+- `ground_fault [rating: "…A / 30mA Tipo A", label: "Diferencial general"]` — Type-A residual-current device tripping at 30 mA per ITC-BT-17 §1.2 (Tipo A covers AC + pulsating DC residual currents from electronics and inverter loads)
+- `bus [voltage: "230V", label: "Embarrado CGMP"]` — common busbar inside the consumer unit; every PIA taps off this rail
+- `breaker [rating:"…A curva C", label: "PIA Cn"]` — branch-circuit *PIA*: one MCB per final circuit, sized per ITC-BT-25 Table 1 (10 A lighting, 16 A general sockets, 20–25 A kitchen / washer / HVAC)
+- `load [label: "Cn …"]` — the final circuit's loads grouped under their REBT circuit designation (C1–C6)
+- `[cable: "… mm² Cu H07V-K"]` — conductor cross-sectional area, copper, single-core insulated H07V-K — the canonical cable type for residential indoor wiring per UNE-EN 50525
+
+## How to read
+
+Power enters at the *acometida* and reaches the meter cabinet, where the utility's ICP enforces the contracted 5.75 kW power limit. Past the meter, the customer's CGMP begins: the IGA isolates the whole installation; the *Diferencial general* (40 A, 30 mA, Type A) trips on any earth-leakage fault to protect against electric shock per ITC-BT-24 §4.1; downstream of the differential, the busbar fans out to six branch circuits — lighting (1.5 mm²), general sockets (2.5 mm²), kitchen and oven (6 mm²), high-current appliances such as washer or dishwasher (4 mm²), bathroom and kitchen sockets (2.5 mm²), and the heat-pump / aerotermia (6 mm²). Each branch passes through its own PIA (curve C, sized per ITC-BT-25) before reaching the final circuit, so a fault in any one circuit drops only that circuit, not the whole dwelling. An REBT inspector reads this diagram top-down to verify selectivity (PIA < differential < IGA < ICP) and that conductor sizing matches PIA rating per the §ITC-BT-19 ampacity table.
