@@ -15,8 +15,8 @@ export const examplesCollection = defineCollections({
       Array.isArray(v) ? v : [v],
     ),
     persona: z.string().optional(),
-    complexity: z.number().min(1).max(3).default(2),
-    tags: z.array(z.string()).default([]),
+    complexity: z.number().min(1).max(5).default(2),
+    tags: z.array(z.union([z.string(), z.number().transform(String)])).default([]),
     featured: z.boolean().default(false),
     relatedLink: z
       .object({ label: z.string(), href: z.string() })
