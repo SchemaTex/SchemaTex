@@ -67,10 +67,19 @@ export function parseEcomap(text: string): DiagramAST {
   if (i >= lines.length) throw new EcomapParseError("Empty input", 1);
 
   const header = lines[i].trim();
-  const headerMatch = header.match(/^ecomap\s*(?:"([^"]*)")?$/i);
+  // Mermaid-style header tolerance: `ecomap`, `ecomap "Title"`,
+  // `ecomap:mode`, `ecomap:mode "Title"`. The `:mode` is captured as
+  // metadata for future use; current renderer ignores it.
+  const headerMatch = header.match(
+    /^ecomap(?::([a-zA-Z][\w-]*))?\s*(?:"([^"]*)")?\s*$/i
+  );
   if (!headerMatch)
-    throw new EcomapParseError("Expected 'ecomap' header", i + 1);
-  if (headerMatch[1]) metadata.title = headerMatch[1];
+    throw new EcomapParseError(
+      `Expected 'ecomap' header (got '${header}')`,
+      i + 1
+    );
+  if (headerMatch[1]) metadata.mode = headerMatch[1].toLowerCase();
+  if (headerMatch[2]) metadata.title = headerMatch[2];
   i++;
 
   while (i < lines.length) {
@@ -79,7 +88,8 @@ export function parseEcomap(text: string): DiagramAST {
     if (
       trimmed === "" ||
       trimmed.startsWith("#") ||
-      trimmed.startsWith("//")
+      trimmed.startsWith("//") ||
+      trimmed.startsWith("%%")
     ) {
       i++;
       continue;

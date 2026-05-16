@@ -5,6 +5,7 @@ import type {
   SLDConnection,
 } from "../../core/types";
 import { matchQuotedTitle } from "../../core/quotes";
+import { didYouMean } from "../../core/dsl-suggest";
 
 export class SLDParseError extends Error {
   public line?: number;
@@ -29,13 +30,44 @@ const NODE_TYPES = new Set<SLDNodeType>([
   "watthour_meter", "demand_meter",
 ]);
 
+// IEC 60364 / BS 7671 / REBT residential vocabulary. These map onto existing
+// IEEE-315 visual primitives until issue 02 Fix C ships a typed `rcd` node
+// and per-curve breaker glyph. The mapping is conservative: every alias
+// renders as a recognisable breaker/RCD variant, no information loss beyond
+// the label-string fidelity LLMs already rely on.
+const TYPE_ALIASES: Record<string, SLDNodeType> = {
+  mcb: "breaker",
+  mccb: "breaker",
+  miniature_circuit_breaker: "breaker",
+  rcd: "ground_fault",
+  rcbo: "ground_fault",
+  rccb: "ground_fault",
+  differential: "ground_fault",
+  diferencial: "ground_fault",
+  pia: "breaker",
+  iga: "breaker",
+  main_switch: "switch_load",
+  isolator: "switch_load",
+  disconnector: "switch_load",
+  consumer_unit: "bus",
+  distribution_board: "bus",
+  panel: "bus",
+  panelboard: "bus",
+};
+
 function stripComment(s: string): string {
-  // remove # comments (outside quotes)
+  // Strip `#`, `//`, or Mermaid `%%` comments. Quoted regions are respected
+  // so `"#fff"` (a CSS color) and `"https://…"` survive.
   let out = "";
   let inQuote = false;
-  for (const ch of s) {
+  for (let i = 0; i < s.length; i++) {
+    const ch = s[i]!;
     if (ch === '"') inQuote = !inQuote;
-    if (ch === "#" && !inQuote) break;
+    if (!inQuote) {
+      if (ch === "#") break;
+      if (ch === "/" && s[i + 1] === "/") break;
+      if (ch === "%" && s[i + 1] === "%") break;
+    }
     out += ch;
   }
   return out;
@@ -170,10 +202,17 @@ export function parseSLDDSL(text: string): SLDAST {
     );
     if (nodeMatch) {
       const id = nodeMatch[1];
-      const nodeType = nodeMatch[2] as SLDNodeType;
-      if (!NODE_TYPES.has(nodeType)) {
+      const rawType = nodeMatch[2].toLowerCase();
+      // Resolve REBT/IEC residential aliases (mcb → breaker, rcbo → ground_fault…)
+      // before the canonical-type check.
+      const canonical = (TYPE_ALIASES[rawType] ?? rawType) as SLDNodeType;
+      if (!NODE_TYPES.has(canonical)) {
+        const candidates = [
+          ...NODE_TYPES,
+          ...Object.keys(TYPE_ALIASES),
+        ];
         throw new SLDParseError(
-          `Unknown node type "${nodeType}" for "${id}"`,
+          `Unknown node type "${nodeMatch[2]}" for "${id}"${didYouMean(rawType, candidates)}`,
           i + 1,
           line
         );
@@ -181,7 +220,13 @@ export function parseSLDDSL(text: string): SLDAST {
       if (nodeMap.has(id)) {
         throw new SLDParseError(`Duplicate node id "${id}"`, i + 1, line);
       }
-      const node: SLDNode = { id, nodeType };
+      const node: SLDNode = { id, nodeType: canonical };
+      // If the user wrote an alias (mcb/rcbo/iga…), preserve the original word
+      // as the visible label unless an explicit `label:` attribute overrides
+      // it below. This keeps "MCB" / "IGA" markings on the rendered SVG.
+      if (TYPE_ALIASES[rawType]) {
+        node.label = rawType.toUpperCase();
+      }
       if (nodeMatch[3]) {
         applyAttrs(node, splitAttrs(nodeMatch[3]));
       }

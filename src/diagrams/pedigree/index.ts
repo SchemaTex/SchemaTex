@@ -8,7 +8,11 @@ export const pedigree: DiagramPlugin = {
 
   detect(text: string): boolean {
     const firstLine = text.trim().split("\n")[0]?.trim().toLowerCase() ?? "";
-    return firstLine === "pedigree" || firstLine.startsWith("pedigree ");
+    return (
+      firstLine === "pedigree" ||
+      firstLine.startsWith("pedigree ") ||
+      firstLine.startsWith("pedigree:")
+    );
   },
 
   parse: parsePedigree,

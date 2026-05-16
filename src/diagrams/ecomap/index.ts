@@ -12,7 +12,11 @@ export const ecomap: DiagramPlugin = {
 
   detect(text: string): boolean {
     const firstLine = text.trim().split("\n")[0]?.trim().toLowerCase() ?? "";
-    return firstLine === "ecomap" || firstLine.startsWith("ecomap ");
+    return (
+      firstLine === "ecomap" ||
+      firstLine.startsWith("ecomap ") ||
+      firstLine.startsWith("ecomap:")
+    );
   },
 
   parse: parseEcomap,

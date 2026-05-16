@@ -475,6 +475,72 @@ function parseCssProps(s: string): Record<string, string> {
 }
 
 /** Top-level parser entry. */
+/**
+ * Strip Mermaid-style inline `:::className` suffixes from `line` and return
+ * a tuple of [stripped-line, [(nodeId, className), ...]]. The caller is
+ * expected to apply each pair as if a `class nodeId className` statement
+ * had been written.
+ *
+ * The algorithm walks each `:::name` occurrence and looks back over an
+ * optional `[label]` / `(label)` / `{label}` / `>label` shape suffix to the
+ * preceding identifier — that's the node the class attaches to per Mermaid
+ * semantics. If no id can be located, the `:::name` is left in place and
+ * the downstream parser will surface its existing error (we'd rather not
+ * silently swallow malformed input).
+ */
+function extractInlineClasses(
+  line: string
+): { stripped: string; pairs: Array<{ id: string; className: string }> } {
+  const pairs: Array<{ id: string; className: string }> = [];
+  let out = line;
+  // Greedy left-to-right pass; restart after each substitution because the
+  // index landscape changes. The pattern :::name allows hyphens to match
+  // Mermaid's `\w[\w-]*` shape.
+  const re = /:::([A-Za-z_][\w-]*)/g;
+  let m: RegExpExecArray | null;
+  // Collect first; rewriting in-place would invalidate `re.lastIndex`.
+  const hits: Array<{ start: number; end: number; name: string }> = [];
+  while ((m = re.exec(out)) !== null) {
+    hits.push({ start: m.index, end: m.index + m[0].length, name: m[1]! });
+  }
+  if (hits.length === 0) return { stripped: line, pairs };
+  // Walk hits right-to-left so earlier slices stay aligned.
+  for (let h = hits.length - 1; h >= 0; h--) {
+    const hit = hits[h]!;
+    const before = out.slice(0, hit.start);
+    // Skip optional shape-suffix bracket pair immediately preceding the `:::`.
+    let cursor = before.length;
+    const lastCh = before[cursor - 1];
+    if (lastCh === "]" || lastCh === ")" || lastCh === "}") {
+      const closer = lastCh;
+      const opener = closer === "]" ? "[" : closer === ")" ? "(" : "{";
+      let depth = 0;
+      let i = cursor - 1;
+      for (; i >= 0; i--) {
+        if (before[i] === closer) depth++;
+        else if (before[i] === opener) {
+          depth--;
+          if (depth === 0) break;
+        }
+      }
+      if (i >= 0) cursor = i; // cursor now at the opener
+    }
+    // Now walk leftward over the identifier characters.
+    const idEnd = cursor;
+    let idStart = idEnd;
+    while (idStart > 0 && /[A-Za-z0-9_-]/.test(before[idStart - 1]!)) idStart--;
+    if (idStart === idEnd) {
+      // No identifier found — leave this `:::name` untouched so the parser
+      // reports its native error.
+      continue;
+    }
+    const id = before.slice(idStart, idEnd);
+    pairs.push({ id, className: hit.name });
+    out = out.slice(0, hit.start) + out.slice(hit.end);
+  }
+  return { stripped: out, pairs };
+}
+
 export function parseFlowchart(source: string): FlowchartAST {
   const lines = source.replace(/\r\n/g, "\n").split("\n");
 
@@ -526,8 +592,18 @@ export function parseFlowchart(source: string): FlowchartAST {
   const subgraphStack: Array<FlowchartSubgraph> = [];
 
   // ── Statement loop ───────────────────────────────────────────
+  // Pending `:::className` assignments lifted from inline node syntax. We
+  // apply them after the line has been parsed (so the referenced nodes
+  // exist in `nodeMap`).
+  const pendingInlineClasses: Array<{ id: string; className: string }> = [];
+
   for (let i = headerIdx + 1; i < lines.length; i++) {
-    const raw = lines[i]!;
+    const rawOriginal = lines[i]!;
+    // Pre-pass: lift inline `:::className` suffixes off node references so
+    // the downstream tokenizer (which doesn't speak `:::`) sees plain syntax.
+    const { stripped, pairs } = extractInlineClasses(rawOriginal);
+    for (const p of pairs) pendingInlineClasses.push(p);
+    const raw = stripped;
     const trimmed = raw.trim();
     if (trimmed.length === 0 || trimmed.startsWith("%%")) continue;
 
@@ -687,6 +763,15 @@ export function parseFlowchart(source: string): FlowchartAST {
       };
       ast.edges.push(edge);
     }
+  }
+
+  // Apply inline `:::className` class assignments that were lifted off node
+  // references during the line pre-pass. Nodes referenced here must already
+  // exist because the chain-statement parser created them as a side-effect.
+  for (const { id, className } of pendingInlineClasses) {
+    const existing = nodeMap.get(id);
+    if (!existing) continue;
+    existing.classes = [...(existing.classes ?? []), className];
   }
 
   return ast;

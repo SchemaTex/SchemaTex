@@ -51,11 +51,23 @@ export function parsePedigree(text: string): DiagramAST {
   if (i >= rawLines.length) throw new PedigreeParseError("Empty input", 1);
 
   const headerLine = rawLines[i].trim();
-  const headerMatch = headerLine.match(/^pedigree\s*(?:"([^"]*)")?$/i);
-  if (!headerMatch) throw new PedigreeParseError("Expected 'pedigree' header", i + 1);
+  // Mermaid-style header tolerance: `pedigree`, `pedigree "Title"`,
+  // `pedigree:autosomal-dominant`, `pedigree:autosomal-dominant "Title"`.
+  // The `:mode` suffix is captured into metadata so future renderers can
+  // act on it (taxonomy mode, etc.); ignored downstream if unsupported.
+  const headerMatch = headerLine.match(
+    /^pedigree(?::([a-zA-Z][\w-]*))?\s*(?:"([^"]*)")?\s*$/i
+  );
+  if (!headerMatch) {
+    throw new PedigreeParseError(
+      `Expected 'pedigree' header (got '${headerLine}')`,
+      i + 1
+    );
+  }
 
   const metadata: Record<string, string> = {};
-  if (headerMatch[1]) metadata.title = headerMatch[1];
+  if (headerMatch[1]) metadata.mode = headerMatch[1].toLowerCase();
+  if (headerMatch[2]) metadata.title = headerMatch[2];
   i++;
 
   const legend: LegendEntry[] = [];
@@ -68,7 +80,7 @@ export function parsePedigree(text: string): DiagramAST {
     const raw = rawLines[i];
     const trimmed = raw.trim();
 
-    if (trimmed === "" || trimmed.startsWith("#") || trimmed.startsWith("//")) {
+    if (trimmed === "" || trimmed.startsWith("#") || trimmed.startsWith("//") || trimmed.startsWith("%%")) {
       i++;
       continue;
     }
@@ -127,7 +139,7 @@ export function parsePedigree(text: string): DiagramAST {
         const childLine = rawLines[i];
         const childTrimmed = childLine.trim();
 
-        if (childTrimmed === "" || childTrimmed.startsWith("#")) {
+        if (childTrimmed === "" || childTrimmed.startsWith("#") || childTrimmed.startsWith("//") || childTrimmed.startsWith("%%")) {
           i++;
           continue;
         }
