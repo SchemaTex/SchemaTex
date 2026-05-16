@@ -321,11 +321,18 @@ header        = "sld" quoted_string? NEWLINE
 statement     = comment | source_def | bus_def | device_def | load_def
               | connect_def | feeder_def | boundary_def
 
-comment       = "#" [^\n]* NEWLINE
+comment       = ("#" | "//" | "%%") [^\n]* NEWLINE
 
 source_def    = IDENTIFIER "=" source_type attrs NEWLINE
 source_type   = "utility" | "generator" | "battery"
 attrs         = "[" attr ("," attr)* "]"
+
+# Parser aliases for IEC 60364 / BS 7671 / REBT residential vocabulary:
+# mcb, mccb, miniature_circuit_breaker -> breaker
+# rcd, rcbo, rccb, differential, diferencial -> ground_fault
+# pia, iga -> breaker
+# main_switch, isolator, disconnector -> switch_load
+# consumer_unit, distribution_board, panel, panelboard -> bus
 attr          = "voltage:" voltage_spec
               | "rating:" quoted_string
               | "label:" quoted_string

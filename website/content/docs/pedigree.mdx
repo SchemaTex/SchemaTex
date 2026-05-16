@@ -43,7 +43,7 @@ Four rules cover 80% of usage:
 3. Connect two individuals with a **couple operator** — `--` (mated), `==` (consanguineous), `-/-` (separated), `~` (no offspring). See §4.
 4. **Indent under the couple line** to add their children. Any deeper indent works; two spaces is conventional.
 
-> Comments must be on their own line, starting with `#`. Inline trailing comments will break the parser.
+> Comments must be on their own line, starting with `#`, `//`, or Mermaid-style `%%`. Inline trailing comments will break the parser.
 
 ---
 
@@ -217,7 +217,8 @@ Individuals use the legend trait IDs: `[affected: breast]`, `[affected: breast+o
 - **Title:** `pedigree "BRCA1 Family"` — first line only.
 - **Individual label override:** `II-1 [female, affected, label: "Jane Smith (42)"]`.
 - **Legend entry:** `legend: id = "Label" (fill: POSITION)` — see §5.
-- **Comments:** `#` or `//` at the start of a line (after leading whitespace). Inline trailing comments are **not** supported.
+- **Mode suffix:** `pedigree:autosomal-dominant "Family X"` is accepted. The suffix is stored as `metadata.mode`; current renderers ignore it.
+- **Comments:** `#`, `//`, or `%%` at the start of a line (after leading whitespace). Inline trailing comments are **not** supported.
 
 ---
 
@@ -255,7 +256,8 @@ Real parser errors, what triggers them, and how to fix.
 ```text
 document       = header (blank | comment | legend | individual | couple-block)*
 
-header         = "pedigree" ( WS quoted-string )? NEWLINE
+header         = "pedigree" ( ":" mode )? ( WS quoted-string )? NEWLINE
+mode           = [A-Za-z] [A-Za-z0-9_-]*
 quoted-string  = '"' any-char-but-quote* '"'
 
 legend         = INDENT "legend:" WS id WS "=" WS quoted-string
@@ -289,7 +291,7 @@ life-status    = "deceased" | "stillborn" | "pregnancy"
 fill-value     = "full" | "half-left" | "half-right" | "half-top" | "half-bottom"
                | "quad-tl" | "quad-tr" | "quad-bl" | "quad-br"
 
-comment        = INDENT ( "#" | "//" ) any NEWLINE
+comment        = INDENT ( "#" | "//" | "%%" ) any NEWLINE
 ```
 
 Authoritative source: `src/diagrams/pedigree/parser.ts`. If this diverges from the parser, the parser wins — please open an issue.

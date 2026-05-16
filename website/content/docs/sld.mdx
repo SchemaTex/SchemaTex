@@ -53,7 +53,7 @@ Four rules cover 80% of usage:
 3. Connect items with `from -> to`, optionally adding `[cable: "…", label: "…"]`.
 4. IDs may contain letters, digits, underscores, and hyphens — but must start with a letter.
 
-> Comments must start with `#` on their own line.
+> Comments may start with `#`, `//`, or Mermaid-style `%%` on their own line.
 
 ---
 
@@ -259,6 +259,7 @@ CB2 -> L2 [cable: "3#4 AWG"]`} height={400} />
 - **Connection label:** `A -> B [label: "…"]` — appears alongside the connecting line.
 - **Cable annotation:** `A -> B [cable: "3#2/0 AWG, 200ft"]` — conductor specification.
 - **Comments:** `#` at the start of a line. Inline `#` on the same line as a node or connection is also stripped.
+- **Residential aliases:** IEC / REBT vocabulary such as `mcb`, `rcd`, `rcbo`, `rccb`, `pia`, `iga`, `main_switch`, `consumer_unit`, `distribution_board`, `panel`, and `panelboard` is accepted as input and mapped to existing SLD primitives.
 
 ---
 
@@ -280,6 +281,7 @@ CB2 -> L2 [cable: "3#4 AWG"]`} height={400} />
 |---|---|---|
 | `xfmr1 [type: transformer]` | `SLDParseError: Cannot parse line` | Use `=` assignment: `xfmr1 = transformer [...]` |
 | `id = battery [...]` | `SLDParseError: Unknown node type "battery"` | No `battery` type — use `ups` or `generator` |
+| `id = breakerz` | `SLDParseError: Unknown node type ... (did you mean 'breaker'?)` | Use the suggested canonical type or alias |
 | `A -- B` (bidirectional) | `SLDParseError: Cannot parse line` | Only `->` is accepted; use two `->` lines if needed |
 | `A -> B -> C` (chained) | `SLDParseError: Cannot parse line` | Each connection is one `->` per line |
 | `relay [label: "OC"]` (no device number) | Relay renders with blank number | Add `device: "51"` for the ANSI device number |
@@ -309,6 +311,13 @@ node-type     = "utility" | "generator" | "solar" | "wind" | "ups"
               | "ct" | "pt" | "relay" | "surge_arrester" | "ground_fault"
               | "motor" | "load" | "capacitor_bank" | "harmonic_filter" | "vfd"
               | "watthour_meter" | "demand_meter"
+              | residential-alias
+
+residential-alias
+              = "mcb" | "mccb" | "rcd" | "rcbo" | "rccb"
+              | "differential" | "diferencial" | "pia" | "iga"
+              | "main_switch" | "isolator" | "disconnector"
+              | "consumer_unit" | "distribution_board" | "panel" | "panelboard"
 
 attr-list     = attr ( "," attr )*
 attr          = key ":" WS quoted-string
@@ -320,7 +329,7 @@ conn-attr     = "cable" ":" WS quoted-string
 
 id            = [A-Za-z] [A-Za-z0-9_-]*
 key           = [A-Za-z] [A-Za-z0-9_]*
-comment       = "#" any NEWLINE
+comment       = ( "#" | "//" | "%%" ) any NEWLINE
 ```
 
 The attribute block `[…]` may span multiple physical lines — the parser joins continuation lines until the bracket depth returns to zero.
@@ -338,6 +347,7 @@ What is implemented today:
 - ✅ All source types: utility, generator, solar, wind, UPS
 - ✅ Six transformer variants plus autotransformer and three-winding
 - ✅ Bus, bus-tie, hub
+- ✅ IEC / REBT residential vocabulary aliases mapped onto canonical primitives
 - ✅ Full switching set: breaker, vacuum breaker, switch, load switch, ground switch, ATS, recloser, sectionalizer, fuse, current-limiting fuse
 - ✅ Protection and monitoring: CT, PT, relay (with ANSI device number), surge arrester, ground-fault detector
 - ✅ Load equipment: motor, load, capacitor bank, harmonic filter, VFD

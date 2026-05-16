@@ -226,7 +226,7 @@ Row keys:
 
 ```ebnf
 document       = header legend_def* statement*
-header         = "pedigree" quoted_string? NEWLINE
+header         = "pedigree" (":" MODE)? quoted_string? NEWLINE
 
 legend_def     = "legend:" IDENTIFIER "=" quoted_string legend_fill? NEWLINE
 legend_fill    = "(" "fill:" FILL_SPEC ")"
@@ -258,7 +258,7 @@ couple_op      = "--" | "==" | "-/-" | "~"
 couple_label   = "[" kv_prop "]"
 child          = individual_def
 
-comment        = "#" [^\n]* NEWLINE
+comment        = ("#" | "//" | "%%") [^\n]* NEWLINE
 
 ID             = /[a-zA-Z][a-zA-Z0-9_-]*/
 IDENTIFIER     = /[a-zA-Z][a-zA-Z0-9_-]*/

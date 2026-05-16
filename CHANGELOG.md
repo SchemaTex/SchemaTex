@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+---
+
+## [0.4.3] — 2026-05-16
+
 ### Fixed — production parser bugs from ChatDiagram 2026-05-15 report
 
 - **Ladder `RES` reset coil now parses.** Rockwell / Allen-Bradley counter-reset
@@ -42,8 +46,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   of any DSL is now recognized and merged into the diagram's title. Inline
   titles in the header line win on conflict.
 - **Universal `%%` comment marker.** All parsers touched by this release
-  (genogram, pedigree, ecomap, fishbone, ladder, sld) now strip Mermaid-style
-  `%%` line comments in addition to the existing `#` and `//`. Future
+  (genogram, pedigree, ecomap, fishbone, ladder, sld, and flowchart) now skip
+  Mermaid-style `%%` line comments before public diagram detection. Future
   releases will roll this out to the remaining engines.
 - **"Did you mean…?" suggestions.** New `src/core/dsl-suggest.ts` returns
   unambiguous Levenshtein-distance-≤2 keyword suggestions. Wired into the

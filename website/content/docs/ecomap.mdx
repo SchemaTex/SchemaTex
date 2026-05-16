@@ -47,7 +47,7 @@ Four rules cover 80% of usage:
 3. Declare each outside system on its own line: `id [label: "…", category: …]`.
 4. Connect any two declared IDs with a **connection operator** — `===` (strong), `---` (normal), `<->` (reciprocal), etc. See §3 for the full table. A trailing `[label: "…"]` adds an edge label.
 
-> Comments must be on their own line, starting with `#`. Inline trailing comments will break the parser.
+> Comments must be on their own line, starting with `#`, `//`, or Mermaid-style `%%`. Inline trailing comments will break the parser.
 
 ---
 
@@ -169,12 +169,14 @@ caseworker <-> family [label: "every Tuesday"]
 - **Title:** `ecomap "Nguyen Family"` — first line only.
 - **Node label override:** `family [label: "The Nguyens"]`.
 - **Edge label:** trailing `[label: "…"]` on a connection line.
-- **Comments:** `#` or `//` at the start of a line (after leading whitespace). Inline trailing comments are **not** supported.
+- **Mode suffix:** `ecomap:strengths "Smith family"` is accepted. The suffix is stored as `metadata.mode`; current renderers ignore it.
+- **Comments:** `#`, `//`, or `%%` at the start of a line (after leading whitespace). Inline trailing comments are **not** supported.
 
 ```
 ecomap "Marcus Intake"
   # caseworker's notes — fine
   // also fine
+  %% Mermaid-style comments are fine
   mom [category: family]   # ← THIS trailing comment breaks the parser
 ```
 
@@ -212,7 +214,8 @@ Real parser errors, what triggers them, and how to fix.
 ```text
 document       = header (blank | comment | center | system | connection)*
 
-header         = "ecomap" ( WS quoted-string )? NEWLINE
+header         = "ecomap" ( ":" mode )? ( WS quoted-string )? NEWLINE
+mode           = [A-Za-z] [A-Za-z0-9_-]*
 quoted-string  = '"' any-char-but-quote* '"'
 
 center         = "center:" WS id ( "[" attrs "]" )? NEWLINE
@@ -239,7 +242,7 @@ category       = "family" | "friends" | "work" | "education" | "health"
                | "government" | "financial" | "community" | "cultural"
                | "substance" | "technology" | "pet" | "other"
 
-comment        = ( "#" | "//" ) any NEWLINE
+comment        = ( "#" | "//" | "%%" ) any NEWLINE
 ```
 
 Authoritative source: `src/diagrams/ecomap/parser.ts`. If this diverges from the parser, the parser wins — please open an issue.

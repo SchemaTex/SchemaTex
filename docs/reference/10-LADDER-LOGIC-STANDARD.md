@@ -253,13 +253,13 @@ header         = "ladder" quoted_string? NEWLINE
 
 statement      = comment | variable_decl | rung_def
 
-comment        = "#" [^\n]* NEWLINE
+comment        = ("#" | "//" | "%%") [^\n]* NEWLINE
 
 variable_decl  = "var" id ":" data_type ("=" init_value)? NEWLINE
 data_type      = "bool" | "int" | "float" | "timer" | "counter" | "string"
 init_value     = "true" | "false" | INT | FLOAT | quoted_string
 
-rung_def       = "rung" INT? rung_comment? ":" NEWLINE INDENT
+rung_def       = "rung" INT? rung_comment? ":"? NEWLINE INDENT
                    rung_element+
                  DEDENT
 
@@ -280,7 +280,7 @@ contact_type   = "XIC" | "XIO" | "ONS" | "ONF"    # NO, NC, rising, falling edge
                | "EQU" | "NEQ" | "GRT" | "GEQ" | "LES" | "LEQ"  # compare
 
 coil           = coil_type "(" IDENTIFIER ")" NEWLINE
-coil_type      = "OTE" | "OTN" | "OTL" | "OTU"   # output, negated, set, reset
+coil_type      = "OTE" | "OTN" | "OTL" | "OTU" | "RES"  # output, negated, set, reset, counter/timer reset
 
 function_block = fb_type "(" fb_params ")" NEWLINE
 fb_type        = "TON" | "TOFF" | "TP" | "RTO"

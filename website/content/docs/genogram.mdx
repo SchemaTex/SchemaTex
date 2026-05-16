@@ -45,7 +45,7 @@ Four rules cover 80% of usage:
 3. Connect two people with a **couple operator** — `--` (marriage) here; see §4.1 for all six. A trailing quoted string is the relationship label.
 4. **Indent under the couple line** to add their children.
 
-> Comments must be on their own line, starting with `#`. Trailing inline comments (`bob [male, 1978] # ...`) are not supported and will break the parser — see §8.
+> Comments must be on their own line, starting with `#`, `//`, or Mermaid-style `%%`. Trailing inline comments (`bob [male, 1978] # ...`) are not supported and will break the parser — see §8.
 
 ---
 
@@ -256,11 +256,12 @@ mother [female, 1948, conditions: diabetes(half-left) + anxiety(half-right, #26A
 - **Title:** `genogram "Smith Family"` — first line only.
 - **Person label override:** `alice [female, label:"Dr. Alice Smith"]`.
 - **Relationship label:** trailing quoted string on a couple or emotional line — `alice -- bob "m. 2005"`.
-- **Comments:** `#` at the start of a line (after leading whitespace). Inline comments are **not** supported.
+- **Comments:** `#`, `//`, or `%%` at the start of a line (after leading whitespace). Inline comments are **not** supported.
 
 ```
 genogram "Smith Family"
   # this line is a comment — fine
+  %% Mermaid-style comment — also fine
   alice [female, 1980]   # ← THIS trailing comment breaks the parser
 ```
 
@@ -345,7 +346,7 @@ fill           = "full" | "half-left" | "half-right" | "half-top" | "half-bottom
                | "quad-tl" | "quad-tr" | "quad-bl" | "quad-br"
                | "striped" | "dotted"
 
-comment        = INDENT "#" any NEWLINE
+comment        = INDENT ( "#" | "//" | "%%" ) any NEWLINE
 ```
 
 Authoritative source: `src/diagrams/genogram/parser.ts`. If this diverges from the parser, the parser wins — please open an issue.

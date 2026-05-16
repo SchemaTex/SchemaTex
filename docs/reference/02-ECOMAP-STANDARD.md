@@ -288,7 +288,7 @@ Each row carries `data-legend-key` for programmatic targeting:
 
 ```ebnf
 document        = header center_def system_def* connection_def*
-header          = "ecomap" quoted_string? NEWLINE
+header          = "ecomap" (":" MODE)? quoted_string? NEWLINE
 
 center_def      = "center:" (simple_center | family_center)
 simple_center   = ID properties? NEWLINE
@@ -316,6 +316,7 @@ connection_def  = ID connection_op ID connection_label? NEWLINE
 connection_op   = "===" | "==" | "---" | "- -" | "~~~" | "~=~" | "~x~" | "-/-"
                | "===>" | "<===" | "<=>" | "==>" | "<==" 
                | "-->" | "<--" | "<->"
+comment         = ("#" | "//" | "%%") [^\n]* NEWLINE
 connection_label = "[" "label:" quoted_string "]"
 
 ID              = /[a-zA-Z][a-zA-Z0-9_-]*/

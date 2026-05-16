@@ -700,7 +700,7 @@ legend_def     = "legend:" IDENTIFIER "=" quoted_string ( "(" color ")" )? NEWLI
 statement      = comment | individual_def | relationship_def
                | emotional_rel_def | annotation_def
 
-comment        = "#" [^\n]* NEWLINE
+comment        = ("#" | "//" | "%%") [^\n]* NEWLINE
 
 individual_def = ID properties? NEWLINE
 properties     = "[" property ("," property)* "]"

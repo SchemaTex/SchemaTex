@@ -438,17 +438,20 @@ tech : "结构化数据缺失"
 ## 10. DSL Grammar (EBNF)
 
 ```ebnf
-document        = header (effect_def | category_def | cause_def | config_def)* NEWLINE
+document        = header (effect_def | category_def | implicit_category_def | cause_def | config_def)* NEWLINE
 header          = "fishbone" quoted_string NEWLINE
                 | "fishbone:" quoted_string NEWLINE
 
 effect_def      = "effect" quoted_string properties? NEWLINE
 
 category_def    = "category" ID quoted_string properties? NEWLINE
+implicit_category_def
+                = bare_text NEWLINE       # top-level Mermaid mindmap-style heading
 
 cause_def       = ID ":" quoted_string properties? NEWLINE sub_cause_list?
 
 sub_cause_list  = ( INDENT "-" quoted_string properties? NEWLINE )+
+comment         = ("#" | "//" | "%%") [^\n]* NEWLINE
 
 config_def      = "config" config_key "=" config_value NEWLINE
 

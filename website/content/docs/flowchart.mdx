@@ -209,13 +209,14 @@ end
 
 ### 5.1 Semantic classes
 
-Assign CSS class names to nodes for theme-level visual grouping. Classes are defined with `classDef` and applied with `class`.
+Assign CSS class names to nodes for theme-level visual grouping. Classes are defined with `classDef` and applied with `class`. Mermaid inline class syntax is also accepted: `A[Start]:::critical`.
 
 ```
 classDef danger fill:#f9c,stroke:#c00
 classDef safe fill:#cfc,stroke:#090
 class errorNode danger
 class successNode safe
+B[Review]:::danger
 ```
 
 ### 5.2 Per-node style overrides
@@ -348,6 +349,7 @@ edge-op        = "-->" | "---" | "-."-".->" | "==>" | "<-->" | "--x" | "--o"
 pipe-label     = "|" text "|"
 
 class-stmt     = "class" WS id-list WS class-name NEWLINE
+               | node-ref ":::" class-name NEWLINE         # Mermaid inline form
 classdef-stmt  = "classDef" WS class-name WS css-props NEWLINE
 style-stmt     = "style" WS id WS css-props NEWLINE
 linkstyle-stmt = "linkStyle" WS index-list WS css-props NEWLINE
@@ -375,6 +377,7 @@ What is implemented today:
 - ✅ Fan-out with `&` (cross-product edges)
 - ✅ Subgraphs with optional id, label, and per-subgraph direction
 - ✅ `classDef` / `class` semantic grouping
+- ✅ Mermaid inline node classes: `A[Label]:::className`
 - ✅ Per-node `style` CSS overrides
 - ✅ `linkStyle` rendering — `linkStyle 1,5,6 stroke:#f00,stroke-width:4px` applies CSS to the matching edges by declaration order
 - ✅ Inline `<b>` / `<i>` in node labels (combines with existing `<br/>` line breaks)

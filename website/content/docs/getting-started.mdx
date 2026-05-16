@@ -27,6 +27,24 @@ The diagram type is inferred from the first keyword. The output is a plain SVG
 string — safe to inject via `dangerouslySetInnerHTML`, `innerHTML`, or write to
 disk.
 
+### Optional frontmatter
+
+Mermaid-style YAML frontmatter is accepted before the DSL body. A `title:` value
+is merged into the diagram title when the header line does not already provide
+one.
+
+```txt
+---
+title: Smith Family
+---
+genogram
+  john [male, 1950]
+```
+
+Leading blank lines and pure comment lines are skipped before diagram detection
+for parsers that support comments. For the Mermaid-compatible parsers touched in
+v0.4.3, `%%` is accepted as a full-line comment marker.
+
 ## Tree-shakable imports
 
 Import only what you need:
