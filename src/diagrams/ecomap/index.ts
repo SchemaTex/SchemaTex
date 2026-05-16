@@ -1,4 +1,5 @@
 import type { DiagramPlugin, RenderConfig } from "../../core/types";
+import { firstContentLine } from "../../core/dsl-preprocess";
 import { parseEcomap } from "./parser";
 import { layoutEcomap } from "./layout";
 import { renderEcomap } from "./renderer";
@@ -11,7 +12,7 @@ export const ecomap: DiagramPlugin = {
   type: "ecomap",
 
   detect(text: string): boolean {
-    const firstLine = text.trim().split("\n")[0]?.trim().toLowerCase() ?? "";
+    const firstLine = firstContentLine(text)?.toLowerCase() ?? "";
     return (
       firstLine === "ecomap" ||
       firstLine.startsWith("ecomap ") ||

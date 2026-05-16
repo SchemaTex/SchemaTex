@@ -85,6 +85,7 @@ export function parseFishboneDSL(text: string): FishboneAST {
   // category id so a following `- foo` becomes its first Level-1 cause and
   // a following bare-text line becomes a Level-1 cause under it directly.
   let implicitActiveCatId: string | null = null;
+  let implicitBulletIndent: number | null = null;
 
   let headerSeen = false;
 
@@ -111,6 +112,20 @@ export function parseFishboneDSL(text: string): FishboneAST {
     if (indent >= 2 && trimmed.startsWith("-")) {
       const subText = stripQuotes(trimmed.slice(1).trim());
       if (!subText) continue;
+      // Under an implicit category, bullets at the same indentation are
+      // sibling Level-1 causes. Deeper bullets remain sub-causes of the last
+      // Level-1 item.
+      if (
+        implicitActiveCatId &&
+        (implicitBulletIndent === null || indent <= implicitBulletIndent)
+      ) {
+        const bucket = causesByCategory.get(implicitActiveCatId)!;
+        const node: FishboneNode = { label: subText, children: [] };
+        bucket.push(node);
+        lastLevel1 = node;
+        implicitBulletIndent = indent;
+        continue;
+      }
       if (lastLevel1) {
         lastLevel1.children.push({ label: subText, children: [] });
         continue;
@@ -126,6 +141,7 @@ export function parseFishboneDSL(text: string): FishboneAST {
         const node: FishboneNode = { label: subText, children: [] };
         bucket.push(node);
         lastLevel1 = node;
+        implicitBulletIndent = indent;
         continue;
       }
       throw new FishboneParseError(
@@ -137,6 +153,8 @@ export function parseFishboneDSL(text: string): FishboneAST {
 
     // effect "..."
     if (/^effect\b/i.test(trimmed)) {
+      implicitActiveCatId = null;
+      implicitBulletIndent = null;
       const m = trimmed.match(/^effect\s*:?\s*(.*)$/i);
       if (m) effect = stripQuotes(m[1] ?? "");
       continue;
@@ -144,6 +162,8 @@ export function parseFishboneDSL(text: string): FishboneAST {
 
     // config key = value
     if (/^config\b/i.test(trimmed)) {
+      implicitActiveCatId = null;
+      implicitBulletIndent = null;
       const m = trimmed.match(/^config\s+([a-zA-Z]+)\s*=\s*(.+)$/i);
       if (m) {
         const key = m[1]!.toLowerCase();
@@ -179,6 +199,8 @@ export function parseFishboneDSL(text: string): FishboneAST {
 
     // category <id> "<display>" [color: <hex>]
     if (/^category\b/i.test(trimmed)) {
+      implicitActiveCatId = null;
+      implicitBulletIndent = null;
       const compact = trimmed.match(/^category\s+([^:]+?)\s*:\s*(.+)$/i);
       const structured = trimmed.match(
         /^category\s+([a-zA-Z][\w-]*)\s+("[^"]*"|[^\s[]+)(?:\s*(\[.*\]))?\s*$/i
@@ -245,6 +267,8 @@ export function parseFishboneDSL(text: string): FishboneAST {
       const node: FishboneNode = { label, children: [] };
       bucket.push(node);
       lastLevel1 = node;
+      implicitActiveCatId = null;
+      implicitBulletIndent = null;
       continue;
     }
 
@@ -274,6 +298,7 @@ export function parseFishboneDSL(text: string): FishboneAST {
           causesByCategory.set(id, []);
         }
         implicitActiveCatId = id;
+        implicitBulletIndent = null;
         lastLevel1 = null;
         continue;
       }

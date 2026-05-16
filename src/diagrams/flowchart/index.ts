@@ -1,19 +1,13 @@
 import type { DiagramPlugin, RenderConfig } from "../../core/types";
+import { firstContentLine } from "../../core/dsl-preprocess";
 import { parseFlowchart } from "./parser";
 import { renderFlowchart } from "./renderer";
 
 export const flowchart: DiagramPlugin = {
   type: "flowchart",
   detect(text: string): boolean {
-    // Scan the first non-blank, non-comment line.
-    for (const raw of text.split(/\r?\n/)) {
-      const t = raw.trim();
-      if (t.length === 0) continue;
-      if (t.startsWith("%%")) continue;
-      const first = t.split(/\s+/)[0]?.toLowerCase() ?? "";
-      return first === "flowchart" || first === "graph";
-    }
-    return false;
+    const first = firstContentLine(text)?.split(/\s+/)[0]?.toLowerCase() ?? "";
+    return first === "flowchart" || first === "graph";
   },
   parse: parseFlowchart,
 

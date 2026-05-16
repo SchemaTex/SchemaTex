@@ -1,11 +1,12 @@
 import type { DiagramPlugin } from "../../core/types";
+import { firstContentLine } from "../../core/dsl-preprocess";
 import { parseLadderDSL } from "./parser";
 import { renderLadder } from "./renderer";
 
 export const ladder: DiagramPlugin = {
   type: "ladder",
   detect(text: string): boolean {
-    const first = text.trim().split("\n")[0]?.trim().toLowerCase() ?? "";
+    const first = firstContentLine(text)?.toLowerCase() ?? "";
     return first.startsWith("ladder");
   },
   parse: parseLadderDSL,

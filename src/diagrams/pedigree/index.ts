@@ -1,4 +1,5 @@
 import type { DiagramPlugin, RenderConfig } from "../../core/types";
+import { firstContentLine } from "../../core/dsl-preprocess";
 import { parsePedigree, PedigreeParseError } from "./parser";
 import { layoutPedigree } from "./layout";
 import { renderPedigree } from "./renderer";
@@ -7,7 +8,7 @@ export const pedigree: DiagramPlugin = {
   type: "pedigree",
 
   detect(text: string): boolean {
-    const firstLine = text.trim().split("\n")[0]?.trim().toLowerCase() ?? "";
+    const firstLine = firstContentLine(text)?.toLowerCase() ?? "";
     return (
       firstLine === "pedigree" ||
       firstLine.startsWith("pedigree ") ||

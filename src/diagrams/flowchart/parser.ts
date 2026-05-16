@@ -599,13 +599,17 @@ export function parseFlowchart(source: string): FlowchartAST {
 
   for (let i = headerIdx + 1; i < lines.length; i++) {
     const rawOriginal = lines[i]!;
+    const originalTrimmed = rawOriginal.trim();
+    if (originalTrimmed.length === 0 || originalTrimmed.startsWith("%%")) {
+      continue;
+    }
     // Pre-pass: lift inline `:::className` suffixes off node references so
     // the downstream tokenizer (which doesn't speak `:::`) sees plain syntax.
     const { stripped, pairs } = extractInlineClasses(rawOriginal);
     for (const p of pairs) pendingInlineClasses.push(p);
     const raw = stripped;
     const trimmed = raw.trim();
-    if (trimmed.length === 0 || trimmed.startsWith("%%")) continue;
+    if (trimmed.length === 0) continue;
 
     // ── subgraph open ────────────────────────────────────────
     const sgMatch = /^subgraph(?:\s+(.*))?$/.exec(trimmed);

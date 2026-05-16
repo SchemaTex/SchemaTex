@@ -63,7 +63,15 @@ export function parseEcomap(text: string): DiagramAST {
 
   let i = 0;
 
-  while (i < lines.length && lines[i].trim() === "") i++;
+  while (
+    i < lines.length &&
+    (lines[i].trim() === "" ||
+      lines[i].trim().startsWith("#") ||
+      lines[i].trim().startsWith("//") ||
+      lines[i].trim().startsWith("%%"))
+  ) {
+    i++;
+  }
   if (i >= lines.length) throw new EcomapParseError("Empty input", 1);
 
   const header = lines[i].trim();

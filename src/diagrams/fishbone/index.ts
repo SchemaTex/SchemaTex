@@ -1,11 +1,12 @@
 import type { DiagramPlugin } from "../../core/types";
+import { firstContentLine } from "../../core/dsl-preprocess";
 import { parseFishboneDSL } from "./parser";
 import { renderFishbone } from "./renderer";
 
 export const fishbone: DiagramPlugin = {
   type: "fishbone",
   detect(text: string): boolean {
-    const first = text.trim().split("\n")[0]?.trim().toLowerCase() ?? "";
+    const first = firstContentLine(text)?.toLowerCase() ?? "";
     return first.startsWith("fishbone");
   },
   parse: parseFishboneDSL,

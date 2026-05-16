@@ -133,3 +133,12 @@ export function stripLineComment(line: string): string {
 export function isBlankOrComment(line: string): boolean {
   return stripLineComment(line).trim() === "";
 }
+
+/** Return the first non-blank, non-comment line after comment stripping. */
+export function firstContentLine(text: string): string | undefined {
+  for (const raw of text.split(/\r?\n/)) {
+    const line = stripLineComment(raw).trim();
+    if (line !== "") return line;
+  }
+  return undefined;
+}

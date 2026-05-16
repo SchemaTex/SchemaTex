@@ -9,7 +9,7 @@
  * source of truth for the bugs they cover.
  */
 import { describe, it, expect } from "vitest";
-import { render } from "../../src/core/api";
+import { parse, render } from "../../src/core/api";
 
 function renderOk(dsl: string, expectInSvg: string[] = []): string {
   const svg = render(dsl);
@@ -127,6 +127,17 @@ Tech
     // Both category labels should appear on the rendered ribs.
     expect(svg).toContain("Content");
     expect(svg).toContain("Tech");
+
+    const ast = parse(dsl) as any;
+    expect(ast.majors[0].children.map((c: any) => c.label)).toEqual([
+      "heavy hero image",
+      "too much above-the-fold text",
+    ]);
+    expect(ast.majors[0].children[0].children).toEqual([]);
+    expect(ast.majors[1].children.map((c: any) => c.label)).toEqual([
+      "JS bundle too large",
+      "render-blocking CSS",
+    ]);
   });
 
   it("mixing implicit and explicit categories does not double-count", () => {
@@ -163,6 +174,16 @@ describe("ChatDiagram 2026-05-15 — flowchart :::className inline", () => {
 `;
     const svg = renderOk(dsl);
     expect(svg).toMatch(/ok/);
+  });
+
+  it("inline class syntax inside %% comments is ignored", () => {
+    const dsl = `flowchart TD
+  %% A:::danger should be ignored
+  A[Start]
+  classDef danger fill:#f00
+`;
+    const ast = parse(dsl) as any;
+    expect(ast.nodes.find((n: any) => n.id === "A")?.classes).toBeUndefined();
   });
 });
 
@@ -253,6 +274,47 @@ util -> util
       render(sld);
     } catch (e) {
       expect(String(e)).not.toMatch(/Cannot parse line.*%%/);
+    }
+  });
+
+  it("leading %% comments are skipped before public diagram detection", () => {
+    const cases = [
+      `%% top comment
+genogram
+  alice [female]
+`,
+      `%% top comment
+pedigree
+1.1 [unaffected, male]
+`,
+      `%% top comment
+ecomap
+center: client [label: "Client"]
+school [label: "School"]
+school === client
+`,
+      `%% top comment
+fishbone "T"
+effect "E"
+category a "A"
+a : "cause"
+`,
+      `%% top comment
+ladder "T"
+rung 1:
+  XIC(X1)
+  OTE(Y1)
+`,
+      `%% top comment
+sld "T"
+util = utility
+load1 = load
+util -> load1
+`,
+    ];
+
+    for (const dsl of cases) {
+      expect(() => render(dsl)).not.toThrow();
     }
   });
 });

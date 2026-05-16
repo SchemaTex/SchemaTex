@@ -1,11 +1,12 @@
 import type { DiagramPlugin } from "../../core/types";
+import { firstContentLine } from "../../core/dsl-preprocess";
 import { parseSLDDSL } from "./parser";
 import { renderSLD } from "./renderer";
 
 export const sld: DiagramPlugin = {
   type: "sld",
   detect(text: string): boolean {
-    const first = text.trim().split("\n")[0]?.trim().toLowerCase() ?? "";
+    const first = firstContentLine(text)?.toLowerCase() ?? "";
     return first.startsWith("sld");
   },
   parse: parseSLDDSL,

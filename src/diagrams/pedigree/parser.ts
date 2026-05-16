@@ -47,7 +47,15 @@ export function parsePedigree(text: string): DiagramAST {
   const rawLines = text.split("\n");
   let i = 0;
 
-  while (i < rawLines.length && rawLines[i].trim() === "") i++;
+  while (
+    i < rawLines.length &&
+    (rawLines[i].trim() === "" ||
+      rawLines[i].trim().startsWith("#") ||
+      rawLines[i].trim().startsWith("//") ||
+      rawLines[i].trim().startsWith("%%"))
+  ) {
+    i++;
+  }
   if (i >= rawLines.length) throw new PedigreeParseError("Empty input", 1);
 
   const headerLine = rawLines[i].trim();
