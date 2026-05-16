@@ -1,0 +1,40 @@
+---
+title: Inverting op-amp amplifier
+description: Inverting op-amp topology with input resistor Rin, feedback resistor Rf — gain = −Rf/Rin — the first op-amp circuit every EE student builds.
+diagram: circuit
+standard: IEEE 315
+industry: [education, hardware]
+persona: For the EE student
+complexity: 2
+tags: [opamp, inverting, amplifier, feedback, gain, analog]
+featured: false
+relatedLink:
+  label: Circuit syntax
+  href: /docs/circuit
+status: published
+dsl: |
+  circuit "Inverting Op-Amp Amplifier (Gain = −10)" netlist
+  Vin in 0 1V
+  Rin in inv 10k
+  Rf out inv 100k
+  Rbias ninv 0 9.1k
+  V_pos vcc 0 15V
+  V_neg 0 vee 15V
+  U1 out inv ninv vcc vee opamp value="LM741"
+---
+
+## Scenario
+
+The inverting amplifier is the canonical op-amp circuit. A signal at `Vin` is amplified by a gain determined entirely by the ratio of two resistors: Gain = −Rf / Rin = −100 kΩ / 10 kΩ = −10. The negative sign indicates a 180° phase inversion. With Vin = 1 V the output is −10 V. The circuit is used wherever a precise, stable, negative gain is needed — audio mixing consoles, instrumentation signal conditioning, and ADC driver stages.
+
+## Annotation key
+
+- `Rin in inv 10k` — input resistor (10 kΩ) converts the input voltage into a current that flows into the inverting input; sets the input impedance seen by the source
+- `Rf out inv 100k` — feedback resistor (100 kΩ) connects the output back to the inverting input; the ratio Rf/Rin sets the magnitude of gain
+- `Rbias ninv 0 9.1k` — bias-compensation resistor at the non-inverting input; equals Rin ∥ Rf (≈ 9.1 kΩ) to cancel input bias current offset
+- `U1 ... opamp value="LM741"` — op-amp (LM741); virtual-ground principle forces both inputs to the same voltage, so inv ≈ 0 V
+- `V_pos / V_neg` — dual ±15 V supply rails powering the op-amp
+
+## How to read
+
+The op-amp's non-inverting input is tied to ground through Rbias. By the virtual-ground rule the inverting input is also held at 0 V by negative feedback. Therefore all of Vin appears across Rin, driving a current I = Vin/Rin into the summing node. The same current must flow through Rf (no current enters the ideal op-amp input), so the output adjusts to Vout = −I × Rf = −Vin × (Rf/Rin). Changing only Rf changes the gain without affecting input impedance. Multiple Rin/Vin pairs can be summed into the same node to build a weighted summing amplifier.

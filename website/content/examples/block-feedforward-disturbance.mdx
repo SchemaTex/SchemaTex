@@ -1,0 +1,56 @@
+---
+title: Feedforward + feedback hybrid control
+description: Feedforward disturbance compensation with PID feedback — the feedforward path cancels known load changes before they affect the output.
+diagram: block
+standard: Åström & Wittenmark
+industry: [industrial, process]
+persona: For the process control engineer
+complexity: 3
+tags: [block, feedforward, feedback, pid, disturbance, hybrid, process-control]
+featured: false
+relatedLink:
+  label: Block syntax
+  href: /docs/block
+status: published
+dsl: |
+  blockdiagram "Feedforward + Feedback Hybrid Control"
+  r = signal("r (setpoint)")
+  d = signal("d (measurable disturbance)")
+  C_ff = block("Feedforward Model C_ff(s)") [role: model]
+  u_ff = signal("u_ff (feedforward action)")
+  C_fb = block("PID Controller C_fb(s)") [role: controller]
+  u_fb = signal("u_fb (feedback action)")
+  G = block("Plant G(s)") [role: plant]
+  y = signal("y (output)")
+  err = sum(+r, -y)
+  sum_u = sum(+u_ff, +u_fb)
+  in -> r
+  in -> d
+  d -> C_ff
+  C_ff -> u_ff
+  r -> err
+  err -> C_fb
+  C_fb -> u_fb
+  u_ff -> sum_u
+  u_fb -> sum_u
+  sum_u -> G
+  d -> G
+  G -> y
+  y -> err
+---
+
+## Scenario
+
+Feedforward control is used whenever a measurable disturbance — a load change, a feed-rate variation, or an ambient temperature shift — can be modeled and pre-cancelled before it propagates to the output. Pure feedback always reacts after the fact; the feedforward path acts simultaneously with the disturbance, ideally leaving zero steady-state offset for the PID loop to clean up.
+
+## Annotation key
+
+- `d` — measurable disturbance signal; enters both the feedforward model and the plant
+- `C_ff` — feedforward model block; computes the control action needed to cancel `d` at the plant output
+- `C_fb` — PID feedback controller; handles model errors, unmeasured disturbances, and setpoint tracking
+- `sum_u = sum(+u_ff, +u_fb)` — summing junction that adds feedforward and feedback control actions
+- `d -> G` — the disturbance also enters the plant directly, representing the real physical effect
+
+## How to read
+
+The control signal `u` is the sum of two contributions: the feedforward action `u_ff`, computed directly from the measured disturbance `d` via the inverse plant model `C_ff(s)`, and the feedback action `u_fb` from the PID controller. When the feedforward model is accurate, `u_ff` cancels the disturbance effect at the plant input and the PID sees only residual error, dramatically reducing the load-change transient. The feedback loop remains essential to handle unmeasured disturbances and model inaccuracies.

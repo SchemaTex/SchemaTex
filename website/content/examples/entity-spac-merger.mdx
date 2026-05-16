@@ -1,0 +1,49 @@
+---
+title: SPAC de-SPAC merger structure
+description: SPAC sponsor, trust, target company, PIPE investors, and post-merger pubco — the standard de-SPAC structure per SEC S-4 filing conventions.
+diagram: entity
+standard: SEC S-4 / DGCL
+industry: [ib, vc, m-a]
+persona: For the investment banking analyst
+complexity: 4
+tags: [entity, spac, de-spac, merger, pipe, trust, sponsor, sec-s4]
+featured: false
+relatedLink:
+  label: Entity syntax
+  href: /docs/entity
+status: published
+dsl: |
+  entity-structure "Acme Acquisition Corp — de-SPAC"
+  entity sponsor "Sponsor LLC" llc@DE [note: "20% founder shares (promote)"]
+  entity spac "Acme Acquisition Corp (SPAC)" corp@DE [note: "NYSE: ACMX — blank-check company"]
+  entity trust "IPO Proceeds Trust" fund@DE [note: "$200M held in trust — T-bills"]
+  entity ipo_investors "Public IPO Shareholders" trust@NY [note: "80% of SPAC shares + warrants"]
+  entity target "Target Co." corp@DE [note: "Private operating company"]
+  entity merger_sub "Merger Sub Inc." corp@DE [note: "Wholly-owned — merges into Target"]
+  entity pubco "Acme Holdings Inc. (PubCo)" corp@DE [note: "NYSE: ACMX post-closing"]
+  entity pipe_investors "PIPE Investors" trust@NY [note: "$50M private placement — closing condition"]
+  sponsor -> spac : 20%
+  ipo_investors -> spac : 80%
+  trust --> spac
+  spac -> merger_sub : 100%
+  merger_sub --> target
+  target -> pubco
+  spac -> pubco
+  pipe_investors -> pubco : 15%
+---
+
+## Scenario
+
+An investment banking analyst drafts this structure diagram for the S-4 registration statement or the investor roadshow deck. The de-SPAC process merges a blank-check company (SPAC) with a private target, taking the target public without a traditional IPO. The diagram must clearly show the pre-closing SPAC structure, the forward-merger mechanics through the merger subsidiary, and the post-closing cap table split among sponsor, public shareholders, and PIPE investors.
+
+## Annotation key
+
+- `corp@DE (SPAC)` — blank-check company with no operating business; formed solely to acquire a target within 18–24 months
+- `fund@DE (Trust)` — IPO proceeds held in a trust account invested in T-bills; released only at closing or redemption
+- `-->` — non-equity structural relationship (trust custodianship; merger mechanics)
+- `merger_sub` — wholly-owned subsidiary of the SPAC that merges into Target; the legal mechanism that makes Target the surviving entity and SPAC shareholders become PubCo shareholders
+- PIPE — Private Investment in Public Equity; committed concurrently with the merger agreement to provide minimum cash certainty if SPAC shareholders redeem
+
+## How to read
+
+Pre-closing: the sponsor holds 20% founder shares (the "promote"); public IPO shareholders hold 80% of SPAC units plus warrants. The $200M IPO proceeds sit in trust. The SPAC creates a merger subsidiary. At closing: merger sub merges into Target (Target survives), converting Target equity holders into PubCo shareholders; SPAC shareholders who did not redeem become PubCo shareholders; PIPE investors inject $50M for new shares. Post-closing PubCo cap table approximation: legacy Target shareholders ~65%, public SPAC holders ~20%, sponsor ~15% (post-dilution from PIPE and redemptions vary by deal). The NYSE ticker ACMX carries over from SPAC to PubCo.

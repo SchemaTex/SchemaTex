@@ -1,0 +1,53 @@
+---
+title: Engineering department — platform, product, infra squads
+description: Engineering org with three squad leads under a VP Eng — platform, product, and infrastructure, with open headcount flagged.
+diagram: orgchart
+standard: HR convention
+industry: [saas, technology]
+persona: For the engineering director
+complexity: 3
+tags: [orgchart, engineering, squad, platform, infra, product]
+featured: false
+relatedLink:
+  label: Org chart syntax
+  href: /docs/orgchart
+status: published
+dsl: |
+  orgchart "Engineering Department — Q3 Headcount Plan"
+  staff_pe: "Diana Okonkwo" | Staff Principal Engineer [role: engineer]
+  vp_eng: "Sarah Chen" | VP Engineering [role: cto]
+    platform_lead: "Marco Rossi" | Platform Lead [role: engineer]
+      pe1: "Kenji Watanabe" | Senior Engineer | Platform [role: engineer]
+      pe2: "Aaliya Hassan" | Engineer | Platform [role: engineer]
+      pe3: "Lucas Ferreira" | Engineer | Platform [role: engineer]
+      open_sr: open "TBH" | Senior Engineer | Platform [role: engineer]
+    product_lead: "Aisha Okafor" | Product Eng Lead [role: engineer]
+      pe4: "Rohan Mehta" | Senior Engineer | Product [role: engineer]
+      pe5: "Chloe Martin" | Engineer | Product [role: engineer]
+      pe6: "Jae-won Oh" | Engineer | Product [role: engineer]
+      pe7: "Fatima Al-Rashid" | Engineer | Product [role: engineer]
+      draft_staff: draft "TBH" | Staff Engineer | Product [role: engineer]
+    infra_lead: "Dev Patel" | Infra Lead [role: engineer]
+      ie1: "Nadia Kowalski" | Senior SRE [role: engineer]
+      ie2: "Emre Yilmaz" | SRE [role: engineer]
+      open_sre: open "TBH" | Site Reliability Engineer [role: engineer]
+  staff_pe -.-> platform_lead
+  staff_pe -.-> product_lead
+  staff_pe -.-> infra_lead
+---
+
+## Scenario
+
+The engineering director is presenting the Q3 headcount plan to the CFO. The chart shows three squads — platform, product engineering, and infrastructure — each under a dedicated lead reporting to the VP of Engineering. A Staff Principal Engineer provides technical oversight across all three squads via dotted-line relationships. Two open reqs are actively being recruited (Platform Senior Engineer, SRE), and one Staff Engineer seat in the product squad is planned for Q4 but not yet approved.
+
+## Annotation key
+
+- `vp_eng: "Sarah Chen" | VP Engineering [role: cto]` — VP-level node coloured with the cto role style
+- Indentation (2 spaces) — solid-line reporting hierarchy
+- `open "TBH"` — approved open requisition, currently recruiting
+- `draft "TBH"` — planned headcount, not yet approved or posted
+- `staff_pe -.-> platform_lead` — dotted line; technical authority without HR reporting chain
+
+## How to read
+
+The tree root is the VP of Engineering. The three squad leads sit at the second level — equal peers in the org, differentiated only by domain. Headcount marked `open` (Platform Senior Eng, SRE) represents approved budget the director is actively spending; `draft` (Product Staff) is the ask for the next planning cycle. The staff principal at the top of the chart is neither the VP's direct report nor a squad lead: the dotted lines to all three leads signal that she sets technical standards and does architecture review across squads without owning any head count.

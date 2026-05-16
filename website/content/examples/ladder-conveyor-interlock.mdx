@@ -1,0 +1,69 @@
+---
+title: Multi-conveyor interlock with permissive
+description: "Three-conveyor interlock: downstream conveyor must run before upstream starts — prevents backlog pileup in a warehousing pick-and-pack line."
+diagram: ladder
+standard: IEC 61131-3
+industry: [industrial, warehousing]
+persona: For the controls engineer
+complexity: 3
+tags: [ladder, interlock, conveyor, permissive, seal-in, warehouse, plc]
+featured: false
+relatedLink:
+  label: Ladder syntax
+  href: /docs/ladder
+status: published
+dsl: |
+  ladder "Multi-Conveyor Interlock"
+
+  rung 1 "Conveyor C (discharge) — start with seal-in":
+    parallel:
+      branch:
+        XIC(CONV_C_START_PB, "IN 1.2", name="Conv C Start Button")
+      branch:
+        XIC(CONV_C_AUX, "BIT 3.2", name="Conv C Aux Contact")
+    XIO(CONV_C_STOP_PB, "IN 1.5", name="Conv C Stop Button")
+    XIO(ESTOP, "IN 1.7", name="E-Stop")
+    OTE(CONV_C_CMD, "OUT 2.2", name="Conv C Command")
+
+  rung 2 "Conveyor B — permissive: C must run first":
+    XIC(CONV_C_RUNNING, "BIT 3.2", name="Conv C Running")
+    parallel:
+      branch:
+        XIC(CONV_B_START_PB, "IN 1.1", name="Conv B Start Button")
+      branch:
+        XIC(CONV_B_AUX, "BIT 3.1", name="Conv B Aux Contact")
+    XIO(CONV_B_STOP_PB, "IN 1.4", name="Conv B Stop Button")
+    XIO(ESTOP, "IN 1.7", name="E-Stop")
+    OTE(CONV_B_CMD, "OUT 2.1", name="Conv B Command")
+
+  rung 3 "Conveyor A (infeed) — permissive: B must run first":
+    XIC(CONV_B_RUNNING, "BIT 3.1", name="Conv B Running")
+    parallel:
+      branch:
+        XIC(CONV_A_START_PB, "IN 1.0", name="Conv A Start Button")
+      branch:
+        XIC(CONV_A_AUX, "BIT 3.0", name="Conv A Aux Contact")
+    XIO(CONV_A_STOP_PB, "IN 1.3", name="Conv A Stop Button")
+    XIO(ESTOP, "IN 1.7", name="E-Stop")
+    OTE(CONV_A_CMD, "OUT 2.0", name="Conv A Command")
+
+  rung 4 "Aux contact mirror bits for downstream permissive logic":
+    XIC(CONV_C_CMD, "OUT 2.2", name="Conv C Command")
+    OTE(CONV_C_RUNNING, "BIT 3.2", name="Conv C Running")
+---
+
+## Scenario
+
+In a warehousing pick-and-pack line, product travels from an infeed conveyor (A) through a sorter (B) to a discharge conveyor (C) that feeds the shipping dock. If the discharge belt stops while upstream belts keep running, product piles up at the transfer points — jams, falls, and potential injury. The IEC 61131-3 permissive interlock pattern solves this by enforcing a downstream-first start sequence: C must be confirmed running before B can start, and B must be confirmed running before A can start. A single E-stop contact (XIO ESTOP, wired normally-closed) threads through all three rungs so any emergency cut kills all belts simultaneously.
+
+## Annotation key
+
+- `XIC(CONV_C_RUNNING, ...)` — the permissive contact: passes only when the downstream conveyor aux bit is true (motor confirmed running via MCC feedback)
+- `XIC(CONV_X_AUX, ...)` — seal-in contact that holds the rung true after the momentary start button releases
+- `XIO(ESTOP, "IN 1.7", ...)` — E-stop wired normally-closed; opens on any emergency event, dropping all three OTE coils simultaneously
+- `OTE(CONV_X_CMD, ...)` — energizes the motor starter contactor via the output module
+- Rung 4 mirrors the CMD output bit into a RUNNING status bit used by upstream permissives; in real practice this bit would typically come from an MCC auxiliary contact feedback input rather than a mirrored output bit
+
+## How to read
+
+Start from the discharge end. Press Conv C start (Rung 1): the seal-in closes and CONV_C_RUNNING energizes. Now Rung 2 sees its permissive closed — pressing Conv B start latches B, which enables CONV_B_RUNNING for Rung 3. Finally Rung 3 allows Conv A to start. If any belt trips (aux contact drops) its RUNNING bit clears, immediately dropping the permissive for the next upstream belt and cascading a controlled stop without the operator touching anything.

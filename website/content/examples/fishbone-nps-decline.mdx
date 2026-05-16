@@ -1,0 +1,67 @@
+---
+title: NPS score decline — customer experience RCA
+description: Fishbone for a 12-point NPS decline over Q3 — product, support, onboarding, pricing, competition, and communication root causes.
+diagram: fishbone
+standard: Ishikawa 1968
+industry: [saas, cx]
+persona: For the customer experience lead
+complexity: 3
+tags: [fishbone, nps, customer-experience, saas, rca, retention, support]
+featured: false
+relatedLink:
+  label: Fishbone syntax
+  href: /docs/fishbone
+status: published
+dsl: |
+  fishbone "NPS Decline RCA — Q3 Customer Experience Review"
+
+  effect "NPS drop: 52 → 40 over Q3 (12-point decline, 186 survey responses)"
+
+  category product      "Product"
+  category support      "Support"
+  category onboarding   "Onboarding"
+  category pricing      "Pricing"
+  category competition  "Competition"
+  category comms        "Communication"
+
+  product : "Three regressions shipped in 6 weeks affecting core workflow"
+  product : "Mobile app performance degraded on Android — P95 render 4.2 s"
+  product : "Top-requested feature cancelled without customer notice"
+  product : "API rate limits tightened — broke integrations for 38 accounts"
+
+  support : "Ticket median first-response rose from 2 h to 9 h in July"
+  support : "Support team understaffed — 2 FTE departed, not backfilled"
+  support : "Chat widget removed — customers routed to email only"
+
+  onboarding : "New onboarding flow confusing for non-technical admins"
+  onboarding : "Checklist items not localized for EU customers (GDPR steps missing)"
+  onboarding : "In-app tours broken after UI redesign — no fallback"
+
+  pricing : "Surprise overage charges not warned in-app before threshold"
+  pricing : "Annual price increase announced with 14-day notice — no grace period"
+  pricing : "Grandfathered plan removed — 120 accounts forced to upgrade"
+
+  competition : "Primary competitor launched feature parity at 20% lower price"
+  competition : "Competitor offered free migration service for churned accounts"
+
+  comms : "Status page not updated for 3 hours during August outage"
+  comms : "Changelog not published in 6 weeks — users unaware of fixes"
+  comms : "Account managers not notified before pricing change announcement"
+---
+
+## Scenario
+
+A customer experience lead presents this fishbone at the Q3 CX review after the Promoter score drops 12 points — from 52 to 40. The NPS survey verbatim comments are coded into six categories matching the fishbone branches. The diagram makes visible what the summary NPS number hides: the decline is not driven by any single factor but by simultaneous failures in product quality, support capacity, and pricing communication. It becomes the brief for the cross-functional Q4 CX recovery sprint.
+
+## Annotation key
+
+- **Product** — regressions, performance problems, cancelled features, and API changes that degraded existing workflows
+- **Support** — response-time degradation, channel reduction, and staffing gaps
+- **Onboarding** — friction for new users that produced early detractors before value was realized
+- **Pricing** — billing surprise and plan changes that damaged trust among tenured accounts
+- **Competition** — market-level factors that amplified every other dissatisfaction
+- **Communication** — information gaps that prevented customers from managing expectations
+
+## How to read
+
+The 12-point NPS drop (52 → 40) is the effect. The six causal branches reveal a compounding pattern: product quality degraded (regressions, Android performance), support capacity shrank (two FTE departures, longer response times), and two pricing changes created surprise billing — all in the same quarter. Competition amplified the damage by offering a lower-cost alternative at feature parity, giving dissatisfied customers a viable exit. The highest-leverage corrective actions are: restore first-response SLA to under 2 hours (support hire or tier routing), enforce 30-day notice for pricing changes with in-app warnings, and ship a public regression post-mortem to rebuild trust with affected accounts.

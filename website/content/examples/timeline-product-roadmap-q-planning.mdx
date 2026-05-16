@@ -1,0 +1,57 @@
+---
+title: Q3–Q4 product roadmap
+description: Two-quarter product roadmap in Gantt-style swimlanes — Engineering, Product, Design, and Marketing tracks for a SaaS company's H2 plan.
+diagram: timeline
+standard: Product roadmap convention
+industry: [product, saas]
+persona: For the head of product
+complexity: 3
+tags: [timeline, roadmap, gantt, swimlane, product, q3, q4, planning]
+featured: false
+relatedLink:
+  label: Timeline syntax
+  href: /docs/timeline
+status: published
+dsl: |
+  timeline "H2 Product Roadmap — Q3 & Q4 2025"
+  config: style = gantt
+
+  lane "Engineering"
+    2025-07-01 - 2025-07-21: "Auth refactor" [category: engineering]
+    2025-08-01 - 2025-09-12: "API v3" [category: engineering]
+    2025-10-01 - 2025-10-28: "Mobile performance" [category: engineering]
+    2025-11-03 - 2025-12-05: "Search indexing upgrade" [category: engineering]
+
+  lane "Product"
+    2025-07-01 - 2025-07-18: "Feature discovery sprints" [category: product]
+    2025-08-01: milestone "Q3 spec freeze" [color: #E53935]
+    2025-09-08 - 2025-09-26: "Q4 planning & prioritization" [category: product]
+    2025-10-06: milestone "Q4 spec freeze" [color: #E53935]
+
+  lane "Design"
+    2025-07-01 - 2025-08-22: "Design system v2" [category: design]
+    2025-10-01 - 2025-10-28: "Mobile redesign" [category: design]
+    2025-11-03 - 2025-11-28: "Onboarding flow refresh" [category: design]
+
+  lane "Marketing"
+    2025-07-01 - 2025-08-15: "Q3 demand-gen campaign" [category: marketing]
+    2025-09-15: milestone "Product Hunt launch" [color: #2E7D32]
+    2025-10-01 - 2025-11-28: "Q4 ABM outreach" [category: marketing]
+    2025-11-17: milestone "Holiday campaign go-live" [color: #2E7D32]
+---
+
+## Scenario
+
+The head of product presents this Gantt roadmap at the H2 planning offsite. Four swimlanes give each function a dedicated row so it is immediately clear which teams are working in parallel and where dependencies exist. The two spec-freeze diamonds act as forcing functions — everything Engineering needs from Product must land before each red diamond, or the downstream engineering bars shift right.
+
+## Annotation key
+
+- `lane "Name"` — swimlane grouping one team's work
+- `DATE - DATE: "Label"` — continuous work block (horizontal bar)
+- `DATE: milestone "Label"` — instantaneous checkpoint (diamond)
+- `[category: …]` — colour assignment in the legend
+- `[color: #hex]` — explicit milestone colour (red = freeze, green = launch)
+
+## How to read
+
+Scan horizontally along a lane to understand one team's H2 workload. Scan vertically at any date to see what all four teams are doing simultaneously. Red diamonds mark spec freezes — if a bar extends past one, it needs an exception. Green diamonds mark external launches — every bar that feeds them must complete before the diamond or the launch slips. Gaps between bars are intentional buffer; bars with no gap indicate a team is at full capacity.

@@ -1,0 +1,47 @@
+---
+title: Geologic time scale — Phanerozoic eon
+description: Geologic time scale from the Cambrian explosion (541 Ma) to present — era bands with key extinction events per International Commission on Stratigraphy.
+diagram: timeline
+standard: ICS Geologic Time Scale 2023
+industry: [education, geology]
+persona: For the earth science teacher
+complexity: 3
+tags: [timeline, geology, geologic-time, paleozoic, mesozoic, cenozoic, ics, extinction]
+featured: false
+relatedLink:
+  label: Timeline syntax
+  href: /docs/timeline
+status: published
+dsl: |
+  timeline "Phanerozoic Eon — 541 Ma to Present"
+  config: style = lollipop
+
+  -541: milestone "Cambrian explosion — first complex animals" [side: above, color: #558B2F]
+  -488: "Ordovician begins — marine invertebrates diversify" [side: below]
+  -444: milestone "End-Ordovician extinction — 85% species lost" [side: above, color: #B71C1C]
+  -419: "Silurian begins — first vascular land plants" [side: below]
+  -359: milestone "Late Devonian extinction — 75% species lost" [side: above, color: #B71C1C]
+  -299: "Permian begins — first reptiles dominant" [side: below]
+  -252: milestone "End-Permian extinction — Great Dying, 96% marine species lost" [side: above, color: #B71C1C]
+  -201: milestone "End-Triassic extinction — dinosaurs rise" [side: above, color: #B71C1C]
+  -145: "Cretaceous begins — flowering plants emerge" [side: below]
+  -66: milestone "K-Pg extinction — non-avian dinosaurs lost" [side: above, color: #B71C1C]
+  -2.6: "Pleistocene begins — repeated glacial cycles" [side: below]
+  0: milestone "Present day" [side: above, color: #1565C0]
+---
+
+## Scenario
+
+An earth science teacher projects this timeline while introducing the Phanerozoic eon. The negative-year notation (Ma before present) lets students see geological time on a familiar number line. Red extinction diamonds are immediately recognisable as crises that reset evolutionary trajectories; the green Cambrian diamond marks the starting point of complex animal life. Students can see at a glance that mass extinctions are rare but catastrophic, and that the current geological moment is a vanishingly thin sliver at the right edge.
+
+## Annotation key
+
+- Negative numbers — millions of years before present (Ma); e.g. -252 = 252 Ma ago
+- `milestone` — major geological boundary or mass extinction event
+- Red diamonds — mass extinction events per ICS classification
+- Green diamond — Cambrian explosion (origin of animal body plans)
+- Blue diamond — present day reference anchor
+
+## How to read
+
+Time flows left to right from -541 Ma (Cambrian explosion) to 0 (today). The five red diamonds mark the Big Five mass extinctions recognised by the ICS; each wiped out a substantial fraction of species and reset evolutionary trajectories. The longest gap between crises (Ordovician to Devonian: ~75 Ma) shows that life can stabilise for tens of millions of years between upheavals. The entire Cenozoic Era — the age of mammals — occupies only the rightmost 12% of this timeline.

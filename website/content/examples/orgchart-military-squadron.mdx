@@ -1,0 +1,59 @@
+---
+title: Military squadron command hierarchy
+description: Air Force fighter squadron org — Squadron Commander, DO, flight leads, and enlisted crew chiefs — with NATO rank notation.
+diagram: orgchart
+standard: NATO rank convention
+industry: [defense, government]
+persona: For the defense training officer
+complexity: 3
+tags: [orgchart, military, squadron, command, nato, rank, air-force]
+featured: false
+relatedLink:
+  label: Org chart syntax
+  href: /docs/orgchart
+status: published
+dsl: |
+  orgchart "87th Fighter Squadron — Command Structure"
+  cc: "Lt Col James Torres" | Squadron Commander / O-5 [role: ceo]
+    safety_o: "Capt Priya Singh" | Safety Officer / O-3 [role: ops]
+    weapons_o: "Capt Kwame Asante" | Weapons Officer / O-3 [role: ops]
+    do: "Maj Elena Voss" | Director of Operations / O-4 [role: coo]
+      alpha_lead: "Capt Robert Kim" | Alpha Flight Lead / O-3 [role: engineer]
+        alpha_p1: "1Lt Diego Morales" | Pilot / O-2 [role: engineer]
+        alpha_p2: "1Lt Anika Osei" | Pilot / O-2 [role: engineer]
+        alpha_p3: "2Lt Tomás Ibáñez" | Pilot / O-1 [role: engineer]
+        alpha_p4: "2Lt Mei Chen" | Pilot / O-1 [role: engineer]
+      bravo_lead: "Capt Fatima Al-Rashidi" | Bravo Flight Lead / O-3 [role: engineer]
+        bravo_p1: "1Lt Marcus Webb" | Pilot / O-2 [role: engineer]
+        bravo_p2: "1Lt Yuki Tanaka" | Pilot / O-2 [role: engineer]
+        bravo_p3: "2Lt Samuel Adeyemi" | Pilot / O-1 [role: engineer]
+        bravo_p4: "2Lt Natasha Voronova" | Pilot / O-1 [role: engineer]
+    sq_supt: "CMSgt Robert Lee" | Squadron Superintendent / E-9 [role: ops]
+      mx_section: "SMSgt Dana Park" | Maintenance Section Chief / E-8 [role: ops]
+        cc1: "TSgt Hiroshi Nakamura" | Crew Chief / E-6 [role: ops]
+        cc2: "TSgt Amara Diallo" | Crew Chief / E-6 [role: ops]
+        cc3: "SSgt Luisa Ferreira" | Crew Chief / E-5 [role: ops]
+        cc4: "SSgt Kofi Mensah" | Crew Chief / E-5 [role: ops]
+        cc5: "SSgt Ingrid Larsen" | Crew Chief / E-5 [role: ops]
+        cc6: "SSgt Brendan Nwosu" | Crew Chief / E-5 [role: ops]
+        cc7: "SSgt Valentina Cruz" | Crew Chief / E-5 [role: ops]
+        cc8: "SSgt Omar Bashir" | Crew Chief / E-5 [role: ops]
+  advisor adv1: "Col Andrea Watanabe" | Wing Commander / O-6 [role: advisor]
+---
+
+## Scenario
+
+The defense training officer is building a pre-deployment briefing package for NATO coalition partners. The chart uses the standard NATO officer grade notation (O-1 through O-6) and enlisted grade notation (E-5 through E-9) alongside rank titles, making it legible to allied forces regardless of their national naming conventions. The two staff officers (Safety and Weapons) are specialty billets that report directly to the commander — they advise on safety of flight and weapons employment doctrine without commanding pilots. The Wing Commander appears as an external advisor node, reflecting that she exercises authority over the squadron but is not in its internal chain.
+
+## Annotation key
+
+- `/ O-5` appended to title — NATO OF grade (OF-4 equivalent); O-5 = Lieutenant Colonel in USAF convention
+- `/ E-9` — NATO OR grade; E-9 = Chief Master Sergeant, the highest enlisted grade in the USAF
+- `Flight Lead` — the O-3 captain who leads a four-ship element; does not hold a separate command billet
+- `Squadron Superintendent` — senior enlisted advisor to the commander; parallel authority track to the DO for enlisted matters
+- `advisor adv1` — Wing Commander: exercises command over the squadron but is not in the internal org tree
+- Safety Officer and Weapons Officer are staff (special duty) billets shown as direct reports to CC, not in the operations chain
+
+## How to read
+
+The Squadron Commander (O-5) holds full command authority. Two parallel tracks report to him: the operations track runs through the Director of Operations (O-4) down to two flight leads each commanding four pilots; the enlisted track runs through the Squadron Superintendent (E-9) and Maintenance Section Chief (E-8) to eight crew chiefs responsible for aircraft airworthiness. Safety and Weapons officers are staff advisors — they brief the commander but do not command anyone. The Wing Commander sits outside the squadron tree as its higher headquarters: she can direct the CC but does not appear inside the squadron's internal structure.

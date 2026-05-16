@@ -1,0 +1,39 @@
+---
+title: Even-parity generator (XOR tree)
+description: 4-bit even-parity generator using a three-level XOR tree — the standard error-detection circuit for serial communication and memory systems.
+diagram: logic
+standard: IEEE 91
+industry: [education, hardware]
+persona: For the digital logic student
+complexity: 2
+tags: [logic, parity, xor-tree, error-detection, even-parity, serial, communication]
+featured: false
+relatedLink:
+  label: Logic gate syntax
+  href: /docs/logic
+status: published
+dsl: |
+  logic "4-bit Even Parity Generator"
+  input D3, D2, D1, D0
+  output P
+
+  x1 = XOR(D3, D2)
+  x2 = XOR(D1, D0)
+  P = XOR(x1, x2)
+---
+
+## Scenario
+
+Parity generation is the simplest form of error detection used in UART serial frames, ECC memory, RAID-3 disk arrays, and CAN bus frames. An even-parity generator outputs a single parity bit P such that the total number of 1s in the data word plus P is always even, allowing the receiver to detect any single-bit error. The XOR tree structure makes this function fast (only two gate levels) and naturally scalable to wider data buses.
+
+## Annotation key
+
+- `x1 = XOR(D3, D2)` — first stage: XOR of the two most-significant data bits; output is 1 when D3 ≠ D2
+- `x2 = XOR(D1, D0)` — first stage: XOR of the two least-significant data bits; output is 1 when D1 ≠ D0
+- `P = XOR(x1, x2)` — second stage: XOR of the two partial-parity results; P=1 when the total number of 1s in D3–D0 is odd, making the combined word (D3,D2,D1,D0,P) even-parity
+- XOR tree depth — log₂(N) gate levels for N input bits; this 4-bit tree has depth 2 (two pipeline stages)
+- Even parity — P=0 when D3+D2+D1+D0 is already even; P=1 when the sum is odd
+
+## How to read
+
+The circuit fans in from left (inputs D3–D0) to right (output P) across two gate levels. The first level pairs adjacent bit positions into two partial-parity signals x1 and x2. The second level XORs x1 and x2 to produce the final parity bit P. The XOR function is both associative and commutative, so the pairing order does not affect correctness. To extend to an 8-bit parity generator, add a third gate level that XORs the parity of the upper and lower nibbles. The receiver re-computes parity over the received data including P; a non-zero result indicates a single-bit (or any odd number of) transmission error.

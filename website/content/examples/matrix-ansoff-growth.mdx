@@ -1,0 +1,53 @@
+---
+title: Ansoff growth matrix
+description: Ansoff Product/Market matrix for a SaaS company's 3-year growth strategy — four quadrants with labeled strategic initiatives.
+diagram: matrix
+standard: Ansoff (1957)
+industry: [strategy, consulting]
+persona: For the strategy consultant
+complexity: 2
+tags: [matrix, ansoff, growth, strategy, product, market, consulting]
+featured: false
+relatedLink:
+  label: Matrix syntax
+  href: /docs/matrix
+status: published
+dsl: |
+  matrix ansoff "CloudHR — 3-Year Growth Strategy"
+  style: quadrant
+  x-axis: "Markets →"
+  y-axis: "Products →"
+  Q2: "Market Penetration"
+  Q2: "Grow enterprise sales team"
+  Q2: "Launch customer loyalty program"
+  Q2: "Increase self-serve conversion rate"
+  Q1: "Market Development"
+  Q1: "Expand to EMEA region"
+  Q1: "Enter SMB segment via PLG motion"
+  Q1: "Launch APAC channel partner program"
+  Q3: "Product Development"
+  Q3: "Launch mobile app"
+  Q3: "Add AI-powered insights module"
+  Q3: "Build compensation benchmarking add-on"
+  Q4: "Diversification"
+  Q4: "Acquire EdTech onboarding startup"
+  Q4: "Launch learning management module"
+---
+
+## Scenario
+
+A strategy consultant is facilitating a three-year planning session with the CEO and board of CloudHR, a mid-market SaaS HR platform. The Ansoff matrix structures the conversation by risk level: Market Penetration (existing product, existing market) is the lowest-risk quadrant and where most of this year's budget goes; Diversification (new product, new market) is the highest-risk quadrant and requires acquisition or a separate P&L. The chart provides a shared vocabulary for the board before the financial model is presented.
+
+## Annotation key
+
+- `matrix ansoff` — preset quadrant layout with the four Ansoff strategy names; axes flip Products (y) and Markets (x)
+- `style: quadrant` — renders a 2×2 grid with quadrant title headers and bulleted initiative lists
+- `Q2` (top-left) = **Market Penetration**: existing products sold into existing markets — lowest risk, often the highest near-term return
+- `Q1` (top-right) = **Market Development**: existing products pushed into new markets — medium risk; requires go-to-market investment
+- `Q3` (bottom-left) = **Product Development**: new products for existing customers — medium risk; leverages current relationships but requires R&D
+- `Q4` (bottom-right) = **Diversification**: new products for new markets — highest risk; reserved for M&A or strategic bets with a long payback period
+- Multiple `Q2:` / `Q3:` lines stack as a bullet list within the quadrant cell
+
+## How to read
+
+The Ansoff matrix is a risk-ordering tool, not a prioritisation framework. Read it left-to-right, top-to-bottom as increasing risk. For CloudHR, the near-term revenue plan lives in Market Penetration: growing the existing enterprise sales motion, optimising self-serve conversion, and running a loyalty programme for renewals. Market Development (EMEA expansion, SMB product-led growth, APAC channel) is the 18-month horizon — same product, new buyer segments and geographies. Product Development (mobile app, AI module, compensation benchmarking) requires engineering investment but sells to the known customer base, keeping market-risk low. Diversification — acquiring an EdTech company and launching an LMS — is a 3-year strategic bet that only makes sense if the core business is healthy; the board should treat this quadrant as a separate capital allocation decision, not a line item in the operating budget.

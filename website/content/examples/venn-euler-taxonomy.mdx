@@ -1,0 +1,36 @@
+---
+title: Euler diagram — animal kingdom containment
+description: Euler containment diagram showing Animals ⊃ Vertebrates ⊃ Mammals ⊃ Primates — a nested subset visualization for biology class.
+diagram: venn
+standard: Euler (1768)
+industry: [education, biology]
+persona: For the biology teacher
+complexity: 1
+tags: [euler, venn, taxonomy, mammals, vertebrates, biology, containment]
+featured: false
+relatedLink:
+  label: Venn syntax
+  href: /docs/venn
+status: published
+dsl: |
+  venn "Animal Kingdom — Nested Containment"
+  mode: euler
+  set animals "Animals" [color: "#43A047"]
+  set vertebrates "Vertebrates" [subset-of: animals, color: "#1E88E5"]
+  set mammals "Mammals" [subset-of: vertebrates, color: "#FB8C00"]
+  set primates "Primates" [subset-of: mammals, color: "#E53935"]
+---
+
+## Scenario
+
+A biology teacher uses this Euler diagram to introduce taxonomic hierarchy on the first day of a classification unit. Unlike a Venn diagram — which implies partial overlap between circles — an Euler diagram shows true containment: every primate is a mammal, every mammal is a vertebrate, and every vertebrate is an animal. Students can immediately see that the sets are nested, not intersecting.
+
+## Annotation key
+
+- `mode: euler` — enables containment (subset) layout instead of partial overlap
+- `subset-of: ID` — declares that this set is fully enclosed within another
+- Nested rings from outermost to innermost: Animals → Vertebrates → Mammals → Primates
+
+## How to read
+
+Read from the outside in. The outermost ring (Animals) contains all others. Each inner ring is a strict subset of the ring enclosing it — no element can be in Primates without also being in Mammals, Vertebrates, and Animals. The space between Vertebrates and Mammals represents vertebrates that are not mammals (fish, amphibians, reptiles, birds). The space between Mammals and Primates represents mammals that are not primates (dogs, cats, whales, bats).

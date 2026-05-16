@@ -1,0 +1,53 @@
+---
+title: Family office — grantor trust + LLC holding
+description: "Multi-generational wealth structure: grantor trust, irrevocable trust, Delaware LLC holding, and operating entities — for the estate planning attorney."
+diagram: entity
+standard: ACTEC / IRC §671–677
+industry: [wealth-management, legal]
+persona: For the estate planning attorney
+complexity: 4
+tags: [entity, family-office, trust, grantor, irrevocable, llc, estate-planning, actec]
+featured: false
+relatedLink:
+  label: Entity syntax
+  href: /docs/entity
+status: published
+dsl: |
+  entity-structure "Smith Family Office"
+  entity grantor "John Smith (Grantor)" trust@CA
+  entity spouse "Jane Smith (Spouse)" trust@CA
+  entity child1 "Child 1 (Beneficiary)" trust@CA
+  entity child2 "Child 2 (Beneficiary)" trust@CA
+  entity rev_trust "Smith Revocable Living Trust" trust@CA [note: "IRC §671 — grantor trust"]
+  entity irrev_trust "Smith 2021 Irrevocable Trust" trust@DE [note: "IRC §677 — completed gift"]
+  entity holding_llc "Smith Family Holdings LLC" llc@DE [note: "Pass-through entity"]
+  entity op_co "Smith Operating Co. LLC" llc@CA [note: "Active trading"]
+  entity re_llc "Smith RE Holdings LLC" llc@CA [note: "Real estate portfolio"]
+  entity invest_acct "Investment Portfolio" fund@DE [note: "Schwab brokerage"]
+  grantor -> rev_trust : 100%
+  spouse --> rev_trust
+  rev_trust -> irrev_trust : 100%
+  irrev_trust -> holding_llc : 100%
+  holding_llc -> op_co : 80%
+  holding_llc -> re_llc : 100%
+  holding_llc -> invest_acct : 100%
+  irrev_trust --> child1
+  irrev_trust --> child2
+---
+
+## Scenario
+
+An estate planning attorney drafts this structure for a client family during an initial engagement or annual review. The diagram captures the full wealth architecture in one view: who owns what, which trusts are grantor-taxed versus completed gifts, and which entities pass income through to the family's Schedule K-1s. It is the first document attached to a family office memo, estate plan update, or IRS audit response.
+
+## Annotation key
+
+- `trust@CA / trust@DE` — trust entity in the stated jurisdiction; California for revocable (grantor-state situs), Delaware for irrevocable (favorable trust laws)
+- `->` — equity ownership or trust corpus contribution
+- `-->` — beneficial interest or management control without outright ownership
+- `[note: "..."]` — annotates the entity with the controlling IRC section or role
+- `llc@CA / llc@DE` — limited liability company; single-member LLCs disregarded for federal tax
+- `fund@DE` — brokerage account held as an entity interest
+
+## How to read
+
+John Smith (grantor) funds the revocable living trust, which is disregarded for income tax purposes under IRC §671 — all income flows to his Form 1040. On death or an intentional gift event, assets transfer to the Delaware irrevocable trust (a completed gift under §677), removing future appreciation from the taxable estate. The irrevocable trust owns 100% of Smith Family Holdings LLC, which in turn holds the operating company (80% — the remaining 20% may be held by key employees or a management LLC), the real estate portfolio, and the investment account. Child 1 and Child 2 are named beneficiaries of the irrevocable trust with no current income rights until distribution events defined in the trust instrument.

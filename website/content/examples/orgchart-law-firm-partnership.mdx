@@ -1,0 +1,56 @@
+---
+title: Law firm partnership structure
+description: AmLaw 100-style law firm org — equity and non-equity partners, counsel, associates, and professional staff by practice group.
+diagram: orgchart
+standard: NALP convention
+industry: [legal]
+persona: For the managing partner
+complexity: 3
+tags: [orgchart, law-firm, partnership, counsel, associate, legal]
+featured: false
+relatedLink:
+  label: Org chart syntax
+  href: /docs/orgchart
+status: published
+dsl: |
+  orgchart "Chen & Associates LLP — Partnership Structure"
+  managing_partner: "Robert Chen" | Managing Partner [role: ceo]
+    corp_chair: "Jennifer Wu" | Corporate Practice Chair [role: coo]
+      corp_ep1: "David Okafor" | Equity Partner | M&A [role: legal]
+        corp_ep1_sa1: "Mei-Ling Torres" | Senior Associate [role: legal]
+        corp_ep1_a1: "Brendan Nwosu" | Associate [role: legal]
+        corp_ep1_a2: "Priya Sharma" | Associate [role: legal]
+      corp_ep2: "Simone Beaumont" | Equity Partner | Securities [role: legal]
+        corp_ep2_sa1: "Aleksei Volkov" | Senior Associate [role: legal]
+        corp_ep2_a1: "Fatou Diallo" | Associate [role: legal]
+      corp_nep: "Marcus Tran" | Non-Equity Partner | Corporate [role: legal]
+        corp_nep_a1: "Yuna Kim" | Associate [role: legal]
+        corp_para1: "Sandra Lopez" | Paralegal [role: ops]
+    lit_chair: "Marcus Johnson" | Litigation Practice Chair [role: coo]
+      lit_ep1: "Amara Osei" | Equity Partner | Commercial Lit [role: legal]
+        lit_ep1_sa1: "Tobias Gruber" | Senior Associate [role: legal]
+        lit_ep1_a1: "Chimamanda Eze" | Associate [role: legal]
+      lit_ep2: "Hiroshi Nakamura" | Equity Partner | White Collar [role: legal]
+        lit_ep2_sa1: "Valentina Cruz" | Senior Associate [role: legal]
+        lit_ep2_a1: "Daniel Abioye" | Associate [role: legal]
+      lit_counsel: "Rachel Goldstein" | Counsel | Litigation [role: legal]
+    cfo: "Dana Kim" | COO / CFO [role: finance]
+    mkt: "Alex Torres" | Chief Marketing Officer [role: ops]
+---
+
+## Scenario
+
+The managing partner is preparing materials for the annual partnership meeting, including the governance deck and lateral-hire pitch collateral. The chart shows the two-track attorney structure common to AmLaw 100 firms: equity partners share in firm profits and have capital accounts; non-equity partners are on fixed compensation; counsel are senior attorneys on a permanent non-partnership track. Associates are levelled as first-through-fifth-year and senior (sixth-plus). Professional staff — COO/CFO and CMO — sit as firm-level directs to the managing partner.
+
+## Annotation key
+
+- `[role: legal]` — attorney nodes; `[role: finance]` and `[role: ops]` — professional staff
+- Equity Partner — profit-sharing, voting interest in firm governance
+- Non-Equity Partner — title parity without capital account; typically earns a fixed bonus-eligible salary
+- Counsel — senior non-partner track: often former partners, domain specialists, or attorneys who opted out of the equity track
+- Senior Associate — sixth year or above; on the partnership evaluation clock
+- `corp_chair` / `lit_chair` — practice group chairs own lateral hiring, billing rate setting, and matter assignment within their group
+
+## How to read
+
+Robert Chen, as managing partner, chairs the firm's executive committee and carries final governance authority. The two practice chairs report to him and run their groups as semi-autonomous profit centres. Within each group, equity partners own client relationships and sign off on fee arrangements; associates bill under partner supervision. The non-equity partner in Corporate adds capacity without diluting the equity pool — a common structure when a client relationship is stable but not large enough to justify a new equity slot. Counsel in Litigation handles specialized motions work that would otherwise require lateral-hiring a lateral partner. The COO/CFO and CMO report directly to the managing partner rather than through a practice chair — they serve the whole firm, not a single group.

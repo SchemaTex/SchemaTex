@@ -1,0 +1,45 @@
+---
+title: RICE feature prioritization (bubble chart)
+description: RICE-scored feature backlog as a bubble chart — Reach × Impact axes, bubble size = Confidence, color = team — for the product sprint review.
+diagram: matrix
+standard: Sean McBride RICE framework (Intercom)
+industry: [product, saas]
+persona: For the product manager
+complexity: 2
+tags: [matrix, rice, prioritization, bubble, product, backlog, sprint]
+featured: false
+relatedLink:
+  label: Matrix syntax
+  href: /docs/matrix
+status: published
+dsl: |
+  matrix "RICE Prioritization — Q3 Feature Backlog"
+  style: bubble
+  x-axis: "Reach (users / quarter) →"
+  y-axis: "Impact (1–5 scale) →"
+  item "SSO integration" [x: 0.85, y: 0.90, size: 140, color: "#1E88E5"]
+  item "API v2" [x: 0.65, y: 0.85, size: 110, color: "#1E88E5"]
+  item "Bulk export" [x: 0.70, y: 0.55, size: 90, color: "#43A047"]
+  item "AI suggestions" [x: 0.50, y: 0.80, size: 75, color: "#FB8C00"]
+  item "Dark mode" [x: 0.90, y: 0.40, size: 120, color: "#43A047"]
+  item "Mobile app" [x: 0.35, y: 0.75, size: 60, color: "#FB8C00"]
+  item "Audit log" [x: 0.55, y: 0.60, size: 85, color: "#E53935"]
+  item "Custom webhooks" [x: 0.40, y: 0.50, size: 50, color: "#E53935"]
+---
+
+## Scenario
+
+A product manager is running the quarterly sprint-planning review and needs to communicate relative feature priority to three engineering teams — growth (blue), platform (green), and integrations (orange). RICE scoring normalises across very different feature sizes: a viral consumer feature with high reach but uncertain impact sits alongside a high-value enterprise feature with narrow reach and high confidence. The bubble chart makes the three-dimensional trade-off visible without a spreadsheet.
+
+## Annotation key
+
+- `style: bubble` — scatter plot; each item becomes a circle placed at (x, y) with area proportional to `size`
+- `x-axis` — Reach: the estimated number of users who will encounter this feature per quarter, normalised 0–1
+- `y-axis` — Impact: the 1–5 scale from the RICE formula (0.25 = minimal, 3 = massive)
+- `size` — stands in for the Confidence score; a bubble sized 140 carries ~95 % confidence, 50 carries ~30 %
+- `color` — team ownership: blue = growth squad, green = platform squad, orange = integrations squad, red = security/compliance team
+- In RICE the full score is `(Reach × Impact × Confidence) / Effort`; this chart compresses the formula to the three bubble dimensions, leaving Effort as a narrative discussion point
+
+## How to read
+
+Features in the top-right quadrant (high reach, high impact) are the clear "do next" picks — SSO Integration and API v2 land there. Features with large bubbles (high confidence) that sit in the top-right are the easiest approval conversations. A small bubble in the top-right (AI Suggestions) warns that the impact estimate is speculative — the team needs more evidence before committing a full sprint. Dark mode has high reach but low-to-medium impact: a morale feature, not a growth lever. Mobile App and Custom Webhooks sit in the lower-left: either descope them this quarter or assign them to a later planning window. Features owned by the compliance team (red) typically have non-negotiable deadlines that override RICE priority — flag them separately before the sprint-planning final cut.

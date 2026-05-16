@@ -1,0 +1,46 @@
+---
+title: Buck (step-down) SMPS
+description: Synchronous buck converter with MOSFET switch, catch diode, inductor, and capacitor — produces regulated 3.3V from 12V at up to 3A.
+diagram: circuit
+standard: IEEE 315
+industry: [power-electronics, hardware]
+persona: For the power electronics engineer
+complexity: 4
+tags: [buck, smps, power-converter, mosfet, inductor, step-down, switching]
+featured: false
+relatedLink:
+  label: Circuit syntax
+  href: /docs/circuit
+status: published
+dsl: |
+  circuit "Buck (Step-Down) Converter 12V → 3.3V 3A" netlist
+  Vin vin 0 12V
+  Cin vin 0 100u
+  M1 vin sw 0 nmos value="IRLZ44N"
+  D1 sw 0 schottky value="SS34"
+  L1 sw vout 22u
+  Cout vout 0 220u
+  R1 vout fb 10k
+  R2 fb 0 3.83k
+  U1 sw gate fb vc vcc 0 dc_dc_converter value="LM2576-ADJ"
+  Rgate gate sw 10
+  Vcc vcc 0 12V
+---
+
+## Scenario
+
+The buck converter is the workhouse of modern power electronics, used wherever a microcontroller, FPGA, or digital circuit needs a lower voltage from a higher supply. With Vin = 12 V and a duty cycle D ≈ 27.5%, the output is regulated to 3.3 V — the standard logic voltage for ARM Cortex-M, ESP32, and Raspberry Pi. Switching at 52 kHz (LM2576 internal oscillator) the inductor stores energy during the ON phase and releases it during the OFF phase, achieving efficiencies of 85–92%, far better than a linear regulator's maximum of 3.3/12 = 27.5%.
+
+## Annotation key
+
+- `M1 vin sw 0 nmos value="IRLZ44N"` — N-channel MOSFET high-side switch (IRLZ44N, 55 V, 47 A, Rds_on = 22 mΩ); driven by PWM gate signal; ON for D fraction of each cycle
+- `D1 sw 0 schottky value="SS34"` — Schottky catch diode (SS34, 3 A, 40 V); conducts during the MOSFET OFF phase to provide a freewheeling current path for the inductor; Schottky chosen for low forward voltage (0.4 V) and fast recovery
+- `L1 sw vout 22u` — 22 μH power inductor; stores energy as magnetic flux during ON phase, releases it during OFF phase; the key energy-storage element — larger L = smaller current ripple; rated for 3 A+ DC current without saturation
+- `Cout vout 0 220u` — 220 μF low-ESR output capacitor; filters switching ripple; larger or lower-ESR cap reduces output ripple voltage ΔVout = ΔIL × ESR
+- `R1, R2` — resistor divider (10 kΩ and 3.83 kΩ) from Vout to FB pin; sets output voltage Vout = 1.23 × (1 + R1/R2) ≈ 3.3 V
+- `U1 ... dc_dc_converter value="LM2576-ADJ"` — LM2576-ADJ PWM controller IC; senses FB voltage and adjusts duty cycle to regulate Vout; integrates oscillator, comparator, and driver
+- `Rgate gate sw 10` — 10 Ω gate resistor; limits current during MOSFET switching to reduce EMI and gate ringing
+
+## How to read
+
+When M1 turns ON, current ramps up through L1, charging Cout and supplying the load. D1 is reverse-biased and off. When M1 turns OFF, the inductor's magnetic field collapses, inducing a voltage that forward-biases D1 and keeps current flowing through L1 to the load. The feedback divider R1/R2 tells U1's error amplifier whether Vout is above or below the 1.23 V reference. The controller increases duty cycle when Vout droops and decreases it when Vout rises. Energy conversion efficiency is high because M1 switches rather than dissipates: power loss is dominated by I²×Rds_on, diode forward drop, and inductor ESR rather than heat in a pass element.

@@ -1,0 +1,52 @@
+---
+title: 4-way gene-set overlap (Edwards layout)
+description: Four-way gene-expression overlap across four RNA-seq conditions — stress, heat, drought, salinity — using an Edwards ellipse layout for bioinformatics.
+diagram: venn
+standard: Edwards (2004) 4-ellipse layout
+industry: [bioinformatics, research]
+persona: For the bioinformatician
+complexity: 4
+tags: [venn, gene-sets, rna-seq, edwards, bioinformatics, 4-way, expression]
+featured: false
+relatedLink:
+  label: Venn syntax
+  href: /docs/venn
+status: published
+dsl: |
+  venn "DEG Overlap — Abiotic Stress Conditions"
+  mode: edwards-4
+  set stress "Oxidative stress" [color: "#E53935"]
+  set heat "Heat shock" [color: "#FB8C00"]
+  set drought "Drought" [color: "#43A047"]
+  set salinity "Salinity" [color: "#1E88E5"]
+  stress only : 312
+  heat only : 287
+  drought only : 445
+  salinity only : 198
+  stress & heat : 89
+  stress & drought : 124
+  stress & salinity : 67
+  heat & drought : 78
+  heat & salinity : 45
+  drought & salinity : 102
+  stress & heat & drought : 34
+  stress & heat & salinity : 22
+  stress & drought & salinity : 41
+  heat & drought & salinity : 28
+  stress & heat & drought & salinity : 15
+---
+
+## Scenario
+
+A bioinformatician has run RNA-seq on Arabidopsis seedlings under four abiotic stress treatments and identified differentially expressed genes (DEGs) in each condition. The 4-way Edwards Venn reveals the core stress-response transcriptome — the 15 genes in the quadruple intersection are candidates for broad-spectrum stress-tolerance engineering — while the large drought-exclusive region (445) flags condition-specific regulators worth investigating in a targeted follow-up experiment.
+
+## Annotation key
+
+- `mode: edwards-4` — renders four ellipses at orientations that expose all 15 possible intersections
+- `A & B : n` — gene count in the pairwise intersection of two conditions
+- `A & B & C : n` — gene count shared across three conditions
+- `stress & heat & drought & salinity : n` — core pan-stress regulome
+
+## How to read
+
+Each ellipse represents the DEG set from one treatment; overlapping regions are genes significantly regulated under multiple conditions. Start with the quadruple intersection (15 genes) — these are the most broadly responsive and highest-priority for functional validation. Pairwise intersections reveal mechanistic overlap: oxidative stress and drought share 124 genes, suggesting a shared ROS-signalling component. Large exclusive regions (drought: 445) indicate highly condition-specific transcriptional programs.

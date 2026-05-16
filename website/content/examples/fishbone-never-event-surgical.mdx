@@ -1,0 +1,60 @@
+---
+title: Wrong-site surgery — root-cause analysis
+description: Joint Commission RCA of a wrong-site surgical never-event using healthcare 5P categories — People, Process, Plant, Policies, Pathogens/External.
+diagram: fishbone
+standard: Joint Commission RCA² Framework
+industry: [healthcare, patient-safety]
+persona: For the patient safety officer
+complexity: 4
+tags: [fishbone, never-event, rca, surgery, patient-safety, joint-commission]
+featured: false
+relatedLink:
+  label: Fishbone syntax
+  href: /docs/fishbone
+status: published
+dsl: |
+  fishbone "Wrong-Site Surgery RCA — Joint Commission Required"
+
+  effect "Wrong-site surgery performed (left knee, consent for right)"
+
+  category people    "People"
+  category process   "Process"
+  category plant     "Plant / Equipment"
+  category policy    "Policies"
+  category external  "External Factors"
+
+  people : "Attending surgeon fatigue — 14-hour shift, fourth case"
+  people : "Surgical resident did not speak up when site inconsistency noted"
+  people : "Circulating nurse unfamiliar with Universal Protocol timeout"
+  people : "Pre-op nurse documented laterality from verbal order — not chart"
+
+  process : "Surgical timeout not fully performed — attestation incomplete"
+  process : "Surgeon did not personally mark the operative site pre-scrub"
+  process : "Consent form laterality field left ambiguous (checkboxes not filled)"
+  process : "Imaging hung in OR without laterality verification step"
+
+  plant : "OR scheduling board displayed outdated version of OR schedule"
+  plant : "Imaging display system showed prior patient's study for 4 minutes"
+  plant : "Physical consent document not available in OR — scanned copy only"
+
+  policy : "Site-marking policy not enforced — no escalation path for omission"
+  policy : "Timeout checklist voluntary for cases under 30 minutes — loophole"
+  policy : "No mandatory second-check requirement for laterality by scrub tech"
+
+  external : "Staffing agency circulating nurse — first shift at this facility"
+  external : "OR scheduling system race condition created duplicate booking"
+---
+
+## Scenario
+
+A patient safety officer leads a mandatory Joint Commission Root Cause Analysis² (RCA²) following a wrong-site never-event. The RCA² framework requires the hospital to identify all contributing causes — not just the proximate error — and submit a corrective action plan within 45 days. This fishbone structures the multidisciplinary team's findings across five healthcare-adapted categories. The completed diagram is a required exhibit in the sentinel event report.
+
+## Annotation key
+
+- Healthcare 5P categories: **People** (workforce factors), **Process** (workflow and procedure), **Plant/Equipment** (physical environment and technology), **Policies** (rules and their enforcement), **External Factors** (system or supply factors outside direct control)
+- The Joint Commission distinguishes contributing causes (present but not sufficient alone) from root causes (necessary for the event to occur) — this diagram captures all contributing causes for team review
+- Never-event RCAs must produce at least one strong systemic action (policy or process change), not just individual retraining
+
+## How to read
+
+The sentinel event (wrong-site surgery on the left knee when consent was for the right) sits at the head. Five causal ribs surface the layered failure: the circulating nurse was agency staff unfamiliar with the Universal Protocol, the timeout was not completed, the surgeon did not mark the site personally, the consent form had an ambiguous laterality field, and the OR imaging system briefly displayed a prior patient's study. No single cause was sufficient — the event required the simultaneous failure of four independent safety barriers. The corrective action plan must address at minimum: mandatory site marking by the attending before scrub, a hard-stop in the EMR if laterality is blank on consent, and mandatory Universal Protocol training before any agency nurse is permitted in an OR.

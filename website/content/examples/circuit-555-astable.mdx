@@ -1,0 +1,43 @@
+---
+title: 555 timer — astable LED blinker
+description: NE555 astable oscillator driving a green LED at ~1 Hz — the classic maker circuit for learning timers, duty cycle, and RC time constants.
+diagram: circuit
+standard: IEEE 315
+industry: [education, maker]
+persona: For the hobbyist and maker
+complexity: 1
+tags: [555, timer, astable, led, blinker, rc, oscillator, maker]
+featured: false
+relatedLink:
+  label: Circuit syntax
+  href: /docs/circuit
+status: published
+dsl: |
+  circuit "NE555 Astable LED Blinker (~1 Hz)" netlist
+  V1 vcc 0 9V
+  U1 vcc vcc trig out rst ctrl dis thresh gnd 555_timer value="NE555"
+  Ra dis vcc 10k
+  Rb dis thresh 68k
+  C1 thresh 0 10u
+  C2 ctrl 0 10n
+  Rled out led_a 470
+  D1 led_a 0 led value="green"
+---
+
+## Scenario
+
+The NE555 in astable mode is the first timer circuit every maker builds. It free-runs as an oscillator with no external trigger required. Ra and Rb charge capacitor C1; when C1 reaches 2/3 Vcc the 555 discharges it through Rb until it drops to 1/3 Vcc, then the cycle repeats. The result is a square wave at pin OUT that blinks the LED at approximately 1 Hz — visible to the human eye and ideal for learning about RC time constants and duty cycles.
+
+## Annotation key
+
+- `U1 ... 555_timer value="NE555"` — NE555 timer IC; internally contains two comparators, an SR flip-flop, and a discharge transistor; the pin order is vcc, trig, out, rst, ctrl, dis, thresh, gnd
+- `Ra dis vcc 10k` — charge resistor (10 kΩ) from Vcc to the discharge pin; limits charging current during the charging phase
+- `Rb dis thresh 68k` — timing resistor (68 kΩ) between the discharge and threshold pins; used for both charging (with Ra) and discharging; larger Rb gives longer LOW time, controlling duty cycle
+- `C1 thresh 0 10u` — 10 μF timing capacitor that charges and discharges between 1/3 Vcc and 2/3 Vcc; sets the oscillation period T ≈ 0.693 × (Ra + 2Rb) × C1 ≈ 1 s
+- `C2 ctrl 0 10n` — 10 nF bypass capacitor on the control voltage pin (pin 5); filters noise that could modulate the timing thresholds
+- `Rled out led_a 470` — current-limiting resistor (470 Ω) for the LED; limits forward current to ~(9V−2V)/470Ω ≈ 15 mA, a safe brightness level
+- `D1 led_a 0 led value="green"` — green LED (Vf ≈ 2.1 V); illuminates when OUT goes HIGH (~Vcc), dark when OUT is LOW
+
+## How to read
+
+The circuit oscillates continuously without any external trigger. C1 charges through Ra + Rb toward Vcc. When the voltage at `thresh` crosses 2/3 Vcc the upper comparator sets the flip-flop, pulling `dis` low and allowing C1 to discharge through Rb alone to ground. When the voltage falls below 1/3 Vcc the lower comparator resets the flip-flop, `dis` goes high-impedance, and C1 starts charging again. The output pin (OUT) is HIGH during the charge phase and LOW during discharge. The HIGH period is t_high = 0.693 × (Ra + Rb) × C1 ≈ 0.54 s; the LOW period is t_low = 0.693 × Rb × C1 ≈ 0.47 s. The LED blinks with a duty cycle of ~53%.

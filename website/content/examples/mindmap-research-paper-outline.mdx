@@ -1,0 +1,75 @@
+---
+title: Literature review topic tree
+description: Mindmap outlining a ML fairness literature review — research questions, subtopics, key papers — for a PhD student's systematic survey.
+diagram: mindmap
+standard: Buzan (1970s)
+industry: [research, education]
+persona: For the PhD student
+complexity: 3
+tags: [mindmap, literature-review, research, phd, ml-fairness, survey]
+featured: false
+relatedLink:
+  label: Mindmap syntax
+  href: /docs/mindmap
+status: published
+dsl: |
+  mindmap
+
+  # ML Fairness — Literature Review
+
+  ## Fairness Definitions
+  ### Statistical
+  - Individual fairness
+  - Group fairness
+  ### Causal
+  - Counterfactual fairness
+  - Path-specific effects
+
+  ## Bias Sources
+  ### Data collection
+  - Sampling bias
+  - Historical bias
+  ### Label noise
+  - Annotator disagreement
+  - Proxy labelling
+  ### Proxy features
+  - Correlated attributes
+  - Redundant encodings
+
+  ## Mitigation Techniques
+  ### Pre-processing
+  - Reweighing
+  - Resampling
+  ### In-processing
+  - Adversarial debiasing
+  - Fairness constraints
+  ### Post-processing
+  - Threshold adjustment
+  - Score calibration
+
+  ## Benchmark Datasets
+  - COMPAS recidivism
+  - Adult Income (UCI)
+  - CelebA facial attributes
+  - Drug consumption
+
+  ## Open Problems
+  - Intersectionality
+  - Dynamic fairness over time
+  - Fairness in generative models
+---
+
+## Scenario
+
+A PhD student beginning a systematic survey of machine learning fairness needs to map the intellectual territory before writing a single word of the literature review. This mindmap externalises the topic structure so the advisor can give fast feedback on scope, missing subtopics, and emphasis — far cheaper to reorganise a mindmap than a draft chapter. The five branches correspond to the five sections the final paper will have.
+
+## Annotation key
+
+- `#` — root: the survey title and domain
+- `##` — top-level section of the review
+- `###` — subsection grouping related concepts
+- `-` bullets — atomic concepts, methods, or datasets to cover
+
+## How to read
+
+Start at the centre and follow each branch outward. The two `##` branches on definitions frame the conceptual foundation; bias sources and mitigation techniques form the methodological core; benchmark datasets anchor the empirical evaluation section; open problems motivate the conclusion. Leaves are the unit of work — each bullet corresponds to at least one paper to read and synthesise before the branch is considered covered.

@@ -1,0 +1,41 @@
+---
+title: PRISMA systematic review — database screening
+description: Three-database PRISMA deduplication Venn showing PubMed, Embase, and Cochrane overlap counts for a systematic literature review.
+diagram: venn
+standard: PRISMA 2020
+industry: [research, healthcare]
+persona: For the systematic reviewer
+complexity: 2
+tags: [venn, prisma, systematic-review, literature, pubmed, embase]
+featured: false
+relatedLink:
+  label: Venn syntax
+  href: /docs/venn
+status: published
+dsl: |
+  venn "Database Screening — PRISMA Deduplication"
+  set pubmed "PubMed" [color: "#1E88E5"]
+  set embase "Embase" [color: "#E53935"]
+  set cochrane "Cochrane" [color: "#43A047"]
+  pubmed & embase : 1240
+  pubmed & cochrane : 340
+  embase & cochrane : 280
+  pubmed & embase & cochrane : 180
+  pubmed only : 4200
+  embase only : 2800
+  cochrane only : 620
+---
+
+## Scenario
+
+A systematic reviewer searches PubMed, Embase, and Cochrane before title/abstract screening. Before any reading begins, duplicates must be removed — the same paper indexed in multiple databases would inflate the apparent evidence base. This Venn shows where the three databases overlap so the reviewer can report the PRISMA 2020 deduplication step with exact counts and transparently justify why 2,040 records were removed before screening began.
+
+## Annotation key
+
+- `set ID "Label"` — one database per circle
+- `A & B : n` — records indexed in both databases (potential duplicates)
+- `A only : n` — records unique to a single database
+
+## How to read
+
+Each circle represents one database's raw retrieval. Overlapping regions are records that appear in more than one source and are the primary deduplication targets. The triple intersection (180) means those papers were found in all three databases simultaneously. After removing all intersections as duplicates, the unique record count is 4 200 + 2 800 + 620 = 7 620 — the number that proceeds to title/abstract screening and is recorded in the PRISMA flow diagram.

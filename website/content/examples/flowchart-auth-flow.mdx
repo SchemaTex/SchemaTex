@@ -1,0 +1,55 @@
+---
+title: OAuth 2.0 authorization code + PKCE
+description: OAuth 2.0 authorization code flow with PKCE — the recommended grant for SPAs and mobile apps, per RFC 7636.
+diagram: flowchart
+standard: ISO 5807:1985
+industry: [security, saas]
+persona: For the security engineer
+complexity: 4
+tags: [oauth, pkce, authorization-code, security, spa, rfc7636]
+featured: false
+relatedLink:
+  label: Flowchart syntax
+  href: /docs/flowchart
+status: published
+dsl: |
+  flowchart LR
+    subgraph "Client App"
+      start([User initiates login]) --> gen[Generate code verifier + SHA-256 challenge]
+      gen --> redirect[Redirect to authorization endpoint with challenge + state]
+      callback[Receive authorization code] --> exchange[POST /token — code + code verifier]
+      tokens[Store access + refresh tokens] --> bearer[Attach Bearer token to API request]
+    end
+    subgraph "Authorization Server"
+      redirect --> login[Present login + consent UI]
+      login --> consent{User consents?}
+      consent -->|No| deny([Authorization denied — redirect with error])
+      consent -->|Yes| issue[Issue authorization code — redirect to callback]
+      issue --> callback
+      exchange --> verify{code_challenge matches verifier hash?}
+      verify -->|No| err([400 Bad Request — PKCE mismatch])
+      verify -->|Yes| mint[Mint access token + refresh token]
+      mint --> tokens
+    end
+    subgraph "Resource Server"
+      bearer --> validate{Bearer token valid + not expired?}
+      validate -->|No| unauth([401 Unauthorized])
+      validate -->|Yes| data([Return protected resource])
+    end
+---
+
+## Scenario
+
+A security engineer is reviewing a team's SPA authentication implementation against RFC 7636 to verify that the implicit grant has been fully removed in favor of authorization code with PKCE. The diagram makes the cryptographic handshake — code verifier generated client-side, challenge sent to the authorization server, verifier submitted at token exchange — visible alongside the three distinct server boundaries, helping reviewers confirm that no secret is ever stored in browser memory.
+
+## Annotation key
+
+- `([…])` — stadium; user-initiated events and terminal success/error responses
+- `{…}` — diamond; server-side validation gates (consent, PKCE hash match, token validity)
+- `[…]` — rectangle; client or server processing steps
+- `subgraph "…"` — trust boundary lanes for Client App, Authorization Server, and Resource Server
+- `-->|label|` — branch labels showing consent outcome or validation result
+
+## How to read
+
+The flow starts in the Client App lane where the application generates a random code verifier and derives its SHA-256 challenge before redirecting the user. In the Authorization Server lane the user authenticates and consents; the server returns an authorization code bound to the challenge. The client then submits the original verifier in the token exchange request — the Authorization Server hashes it and compares it to the stored challenge, rejecting mismatches with a 400. Valid exchanges produce short-lived access and refresh tokens. The Resource Server lane shows the final step: every API call presents the Bearer token and the server validates its signature and expiry before returning data, enforcing a clean separation between authorization and resource access.

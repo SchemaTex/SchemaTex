@@ -1,0 +1,41 @@
+---
+title: 1-bit full adder — IEC 60617 symbols
+description: Same 1-bit full adder as the ANSI example but rendered with IEC 60617 rectangular symbols — for European curriculum and DIN standards compliance.
+diagram: logic
+standard: IEC 60617
+industry: [education, industrial]
+persona: For the European EE curriculum student
+complexity: 2
+tags: [logic, iec, full-adder, iec60617, rectangular, din, european]
+featured: false
+relatedLink:
+  label: Logic gate syntax
+  href: /docs/logic
+status: published
+dsl: |
+  logic "1-bit Full Adder (IEC 60617)"
+  style: iec
+  input A, B, Cin
+  output Sum, Cout
+  s1 = XOR(A, B)
+  Sum = XOR(s1, Cin)
+  c1 = AND(A, B)
+  c2 = AND(s1, Cin)
+  Cout = OR(c1, c2)
+---
+
+## Scenario
+
+European engineering curricula, DIN-standard technical documentation, and IEC-compliant industrial datasheets use the rectangular gate symbols defined in IEC 60617-12 rather than the distinctive curved shapes of IEEE/ANSI 91. A student or engineer trained on European textbooks expects an XOR gate to show a rectangular box with the label "=1", an AND with "&", and an OR with "≥1" — this example produces exactly that representation from the same logical description as the ANSI full adder.
+
+## Annotation key
+
+- `style: iec` — switches all gate symbols from IEEE/ANSI curved shapes to IEC 60617 rectangular boxes with qualifier labels
+- XOR box labeled `=1` — IEC notation: output is 1 when exactly one input is 1 (odd parity)
+- AND box labeled `&` — IEC notation: output is 1 when all inputs are 1
+- OR box labeled `≥1` — IEC notation: output is 1 when one or more inputs are 1
+- Signal names, connections, and intermediate nodes are identical to the ANSI version — only the rendering changes
+
+## How to read
+
+The logic function is identical to the standard full adder: two XOR gates compute the sum bit (A⊕B⊕Cin) and two AND gates feeding an OR gate compute the carry-out. The IEC rendering places all gates as equal-sized rectangles with standardized qualifier text inside each box. This makes the symbol set visually consistent across an entire schematic and unambiguous for any engineer who has learned from IEC-compliant references. Comparing this diagram to the ANSI version (`logic-full-adder`) illustrates how the same DSL produces output for two international standards by changing a single style flag.

@@ -1,0 +1,46 @@
+---
+title: Litigation vs. settlement analysis
+description: Expected-value analysis of settling a $2M breach-of-contract claim vs. going to trial — with verdict probability and appeal chance nodes.
+diagram: decisiontree
+standard: Raiffa & Schlaifer (1961)
+industry: [legal]
+persona: For the litigation attorney
+complexity: 3
+tags: [litigation, settlement, legal, expected-value, trial, appeal]
+featured: false
+relatedLink:
+  label: Decision tree syntax
+  href: /docs/decisiontree
+status: published
+dsl: |
+  decisiontree:decision "Litigation Strategy"
+
+  decision "Litigation strategy?"
+    choice "Settle now"
+      end "Settlement payment" payoff=-350000
+    choice "Proceed to trial"
+      chance "Verdict"
+        prob 0.55 chance "Plaintiff appeals? (defense wins)"
+          prob 0.3 chance "Appeal outcome"
+            prob 0.4 end "Reversed on appeal" payoff=0
+            prob 0.6 end "Upheld on appeal" payoff=-2200000
+          prob 0.7 end "No appeal — defense prevails" payoff=0
+        prob 0.45 end "Plaintiff verdict — damages + fees" payoff=-2000000
+---
+
+## Scenario
+
+A corporate defendant faces a $2 million breach-of-contract claim. Outside counsel has assessed a 55% probability of a defense verdict at trial and a 45% probability of a plaintiff verdict (full damages plus attorney fees). If the defense wins, there is a 30% chance the plaintiff appeals; an appeal resolves with a 40% probability of reversal (cost: zero) and a 60% probability of affirmance, which adds appellate costs bringing total exposure to $2.2M. The client can alternatively settle immediately for $350,000. All payoffs are expressed as costs to the defendant (negative = outflow).
+
+## Annotation key
+
+- `decision "…"` — decision node; counsel and client choose the path
+- `choice "…"` — label on a decision branch
+- `chance "…"` — chance node; court or opposing party behavior; `prob N` sums to 1
+- `end "…" payoff=N` — terminal leaf; negative values represent costs to defendant
+- `prob N` — probability (0–1) on a chance branch
+- EV rollback: chance = probability-weighted sum; decision = max child EV (least negative)
+
+## How to read
+
+Roll back from leaves. Appeal-outcome EV: 0.4 × 0 + 0.6 × −2,200,000 = **−1,320,000**. Defense-wins-verdict branch EV: 0.3 × −1,320,000 + 0.7 × 0 = **−396,000**. Trial EV: 0.55 × −396,000 + 0.45 × −2,000,000 = **−1,117,800**. Settlement: **−350,000**. Under these probability estimates, settling for $350,000 is the rational choice — it avoids the −$1.12M expected cost of going to trial. The key sensitivity is the defense-verdict probability: if counsel is more than ~75% confident of winning at trial, the EV of proceeding drops below −350,000 and trial becomes preferred.

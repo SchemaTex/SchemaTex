@@ -1,0 +1,69 @@
+---
+title: Plant 480 V motor control center
+description: Industrial 480V MCC with a 2000A main breaker, six motor starters and buckets, and a VFD for variable-speed pump — standard factory floor distribution.
+diagram: sld
+standard: NEMA ICS-18
+industry: [industrial, manufacturing]
+persona: For the plant electrical engineer
+complexity: 3
+tags: [sld, mcc, industrial, motor, vfd, 480v, nema, starter, bucket]
+featured: false
+relatedLink:
+  label: SLD syntax
+  href: /docs/sld
+status: published
+dsl: |
+  sld "Plant 480V Motor Control Center — MCC-1"
+  utility_480 = utility [label: "Utility 480V 3φ"]
+  main_bkr = breaker [amps: 2000]
+  mcc_bus = bus [voltage: 480]
+  brk_p101 = breaker [amps: 150]
+  brk_m201 = breaker [amps: 100]
+  brk_c301 = breaker [amps: 200]
+  brk_vfd = breaker [amps: 125]
+  brk_b401 = breaker [amps: 60]
+  brk_a501 = breaker [amps: 60]
+  brk_plc = breaker [amps: 30]
+  motor_p101 = motor [hp: 75, label: "Pump Motor P-101"]
+  motor_m201 = motor [hp: 50, label: "Conveyor Motor M-201"]
+  motor_c301 = motor [hp: 100, label: "Compressor C-301"]
+  vfd1 = load [label: "VFD — Cooling Tower Fan 60HP"]
+  motor_b401 = motor [hp: 30, label: "Blower B-401"]
+  motor_a501 = motor [hp: 25, label: "Agitator A-501"]
+  plc_panel = panel [label: "PLC Control Panel"]
+  utility_480 -> main_bkr
+  main_bkr -> mcc_bus
+  mcc_bus -> brk_p101
+  brk_p101 -> motor_p101
+  mcc_bus -> brk_m201
+  brk_m201 -> motor_m201
+  mcc_bus -> brk_c301
+  brk_c301 -> motor_c301
+  mcc_bus -> brk_vfd
+  brk_vfd -> vfd1
+  mcc_bus -> brk_b401
+  brk_b401 -> motor_b401
+  mcc_bus -> brk_a501
+  brk_a501 -> motor_a501
+  mcc_bus -> brk_plc
+  brk_plc -> plc_panel
+---
+
+## Scenario
+
+A plant electrical engineer documents Motor Control Center MCC-1 for a process facility expansion. The MCC single-line diagram is required for the electrical permit package, factory acceptance testing (FAT) at the MCC manufacturer's shop, and OSHA 70E arc-flash hazard analysis. NEMA ICS-18 defines the construction and testing standard for low-voltage MCC assemblies; each motor starter or VFD occupies a separate removable unit (bucket) with its own branch circuit breaker. The SLD confirms that motor ratings, breaker sizes, and conductor ampacities are consistent before the MCC is ordered and built.
+
+## Annotation key
+
+- `utility [label:...]` — 480 V three-phase plant distribution feeder supplying the MCC incoming section
+- `breaker [amps: 2000]` — main incoming circuit breaker; isolates the entire MCC from the plant distribution bus
+- `bus [voltage: 480]` — horizontal copper bus bar running the full length of the MCC; feeds all starter and VFD buckets
+- `breaker [amps: N]` — individual motor branch circuit breaker (one per bucket); sized per NEC 430.52 at motor FLA × 250%
+- `motor [hp:..., label:...]` — three-phase induction motor with full-voltage non-reversing (FVNR) starter; hp determines FLA and wire size
+- `load [label: "VFD..."]` — variable-frequency drive controlling motor speed for the cooling tower fan; input breaker sized to VFD nameplate input amps
+- `panel [label:...]` — 120/208 V control power panel for PLC I/O, pilot lights, push-button stations, and 24 V DC power supply
+- `->` — directed power flow from MCC bus through breaker to motor or load
+
+## How to read
+
+The 480 V three-phase utility feeder enters the MCC at the 2000 A main breaker, which serves as the MCC's service disconnecting means and fault interrupter. The main breaker feeds the horizontal MCC bus, from which seven branch circuit breakers distribute power to individual buckets. Five FVNR motor starters drive fixed-speed loads: the 75 HP process pump (P-101), 50 HP conveyor (M-201), 100 HP air compressor (C-301), 30 HP combustion air blower (B-401), and 25 HP tank agitator (A-501). The VFD bucket runs the 60 HP cooling tower fan at variable speed to maintain condenser water setpoint, saving fan energy at part load. The 30 A control power breaker feeds the PLC control panel that sequences all six driven loads and monitors process instruments through the MCC's control wiring.

@@ -1,0 +1,96 @@
+---
+title: 4-way traffic light state machine
+description: Four-way signalized intersection using sequential timer-based state bits — green/yellow/red cycling with pedestrian walk-button permissive.
+diagram: ladder
+standard: IEC 61131-3
+industry: [municipal, infrastructure]
+persona: For the traffic control systems engineer
+complexity: 4
+tags: [ladder, traffic-light, state-machine, timer, pedestrian, sequential, municipal]
+featured: false
+relatedLink:
+  label: Ladder syntax
+  href: /docs/ladder
+status: published
+dsl: |
+  ladder "4-Way Traffic Signal"
+
+  rung 1 "NS green phase — 30 s, then transition to NS yellow":
+    XIC(NS_GREEN, "BIT 5.0", name="NS Green State")
+    TON(NS_GREEN_TMR, "TMR 4.0", name="NS Green Timer", preset=30000)
+
+  rung 2 "NS green timer done — clear NS green, set NS yellow":
+    XIC(NS_GREEN_TMR.DN, "BIT 4.15", name="NS Green Timer Done")
+    parallel:
+      branch:
+        OTU(NS_GREEN, "BIT 5.0", name="NS Green State")
+      branch:
+        OTL(NS_YELLOW, "BIT 5.1", name="NS Yellow State")
+
+  rung 3 "NS yellow phase — 5 s, then transition to EW green":
+    XIC(NS_YELLOW, "BIT 5.1", name="NS Yellow State")
+    TON(NS_YELLOW_TMR, "TMR 4.1", name="NS Yellow Timer", preset=5000)
+
+  rung 4 "NS yellow done — clear NS yellow, set EW green":
+    XIC(NS_YELLOW_TMR.DN, "BIT 4.31", name="NS Yellow Timer Done")
+    parallel:
+      branch:
+        OTU(NS_YELLOW, "BIT 5.1", name="NS Yellow State")
+      branch:
+        OTL(EW_GREEN, "BIT 5.2", name="EW Green State")
+
+  rung 5 "EW green phase — 30 s (or shortened by ped button), then EW yellow":
+    XIC(EW_GREEN, "BIT 5.2", name="EW Green State")
+    TON(EW_GREEN_TMR, "TMR 4.2", name="EW Green Timer", preset=30000)
+
+  rung 6 "EW green done — clear EW green, set EW yellow":
+    XIC(EW_GREEN_TMR.DN, "BIT 4.47", name="EW Green Timer Done")
+    parallel:
+      branch:
+        OTU(EW_GREEN, "BIT 5.2", name="EW Green State")
+      branch:
+        OTL(EW_YELLOW, "BIT 5.3", name="EW Yellow State")
+
+  rung 7 "EW yellow phase — 5 s, then back to NS green":
+    XIC(EW_YELLOW, "BIT 5.3", name="EW Yellow State")
+    TON(EW_YELLOW_TMR, "TMR 4.3", name="EW Yellow Timer", preset=5000)
+
+  rung 8 "EW yellow done — clear EW yellow, set NS green (cycle restart)":
+    XIC(EW_YELLOW_TMR.DN, "BIT 4.63", name="EW Yellow Timer Done")
+    parallel:
+      branch:
+        OTU(EW_YELLOW, "BIT 5.3", name="EW Yellow State")
+      branch:
+        OTL(NS_GREEN, "BIT 5.0", name="NS Green State")
+
+  rung 9 "NS red output — active when not NS green and not NS yellow":
+    XIO(NS_GREEN, "BIT 5.0", name="NS Green State")
+    XIO(NS_YELLOW, "BIT 5.1", name="NS Yellow State")
+    OTE(NS_RED_LAMP, "OUT 2.0", name="NS Red Lamp")
+
+  rung 10 "EW red output — active when not EW green and not EW yellow":
+    XIO(EW_GREEN, "BIT 5.2", name="EW Green State")
+    XIO(EW_YELLOW, "BIT 5.3", name="EW Yellow State")
+    OTE(EW_RED_LAMP, "OUT 2.3", name="EW Red Lamp")
+
+  rung 11 "Pedestrian WALK signal — active during EW red (NS phase)":
+    XIC(NS_GREEN, "BIT 5.0", name="NS Green State")
+    XIC(PED_BUTTON, "IN 1.0", name="Pedestrian Push Button")
+    OTE(PED_WALK_LAMP, "OUT 2.6", name="Walk Signal Lamp")
+---
+
+## Scenario
+
+A four-way signalized intersection in a municipal traffic management system runs a fixed-time North-South / East-West phase cycle mandated by the local department of transportation. The PLC program must implement a state-machine cycle — NS green → NS yellow → EW green → EW yellow → repeat — using retentive latched state bits so that a PLC power cycle or scan watchdog reset re-enters the cycle in a known state. Red outputs are derived by Boolean complement: a direction shows red whenever it holds neither a green nor a yellow state bit. The pedestrian walk signal is permitted only during the NS green phase when the push button is pressed, keeping pedestrians out of the EW travel path.
+
+## Annotation key
+
+- `OTL / OTU` — latched Set/Reset coils; state bits persist across PLC scan even if the energizing rung goes false, giving the state machine memory between timer firings
+- `TON(X_TMR, preset=N)` — Timer On Delay; DN bit (`.DN`) asserts after N milliseconds of continuous rung-true; the timer resets automatically when its rung goes false
+- `XIC(X_TMR.DN, ...)` — contacts the timer Done bit to trigger the state transition rung
+- Rungs 9–10 compute red lamps by Boolean complement: if neither green nor yellow state is active, the red lamp energizes — no extra state bit required
+- `XIC(PED_BUTTON, "IN 1.0", ...)` — pedestrian push button wired to a digital input; the walk lamp only energizes if both the NS green state is active AND the button is pressed
+
+## How to read
+
+The state machine cycles through four latched bits: NS_GREEN → NS_YELLOW → EW_GREEN → EW_YELLOW → back to NS_GREEN. Each state bit starts its own TON timer. When the timer's DN bit asserts, a transition rung fires: it unlatches the current state and latches the next. Rungs 9 and 10 are output-only rungs that derive the red lamps from the absence of green and yellow state bits. Rung 11 gates the pedestrian walk signal behind both the NS green state and an explicit button press — pedestrians cannot walk during the EW green phase regardless of button presses.

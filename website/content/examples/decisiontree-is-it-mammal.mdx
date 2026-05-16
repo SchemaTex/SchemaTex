@@ -1,0 +1,47 @@
+---
+title: Is it a mammal? — taxonomy key
+description: Biology identification key for mammals vs. other vertebrates — warm-blooded, hair, milk — the canonical taxonomy decision tree for K-12 science.
+diagram: decisiontree
+standard: Linnaean taxonomy
+industry: [education]
+persona: For the biology teacher
+complexity: 1
+tags: [taxonomy, mammal, biology, classification, k12, teaching]
+featured: false
+relatedLink:
+  label: Decision tree syntax
+  href: /docs/decisiontree
+status: published
+dsl: |
+  decisiontree:taxonomy "Is it a mammal?"
+
+  question "Is it a vertebrate?"
+    no: answer "Not a mammal (invertebrate)"
+    yes: question "Is it warm-blooded?"
+      no: answer "Not a mammal (reptile, fish, or amphibian)"
+      yes: question "Does it have hair or fur?"
+        no: answer "Not a mammal (likely a bird)"
+        yes: question "Does the female nurse young with milk?"
+          no: answer "Not a mammal"
+          yes: question "Does it lay eggs?"
+            yes: answer "Monotreme (e.g. platypus, echidna)"
+            no: question "Does it have a pouch for young?"
+              yes: answer "Marsupial (e.g. kangaroo, opossum)"
+              no: answer "Placental mammal"
+---
+
+## Scenario
+
+This is the classic dichotomous identification key taught in K-12 biology to introduce students to the class Mammalia. Working through four shared mammalian characteristics — vertebrate skeleton, endothermy (warm-bloodedness), hair or fur, and lactation — eliminates all other vertebrate classes before arriving at the three mammalian subclasses: Monotremata (egg-laying), Marsupialia (pouched), and Placentalia (placental). The key is deliberately top-down so students can stop as soon as they reach a leaf, rather than having to memorize all five criteria upfront.
+
+## Annotation key
+
+- `question "…"` — internal node; student or teacher evaluates the criterion for the observed animal
+- `answer "…"` — terminal classification leaf
+- `yes:` / `no:` — branch taken based on the presence or absence of the stated trait
+- Indentation (2 spaces per level) defines parent-child nesting
+- All five yes-branches must be traversed to reach a placental mammal leaf
+
+## How to read
+
+Start at the root. An earthworm exits immediately at the first node (not a vertebrate). A salmon exits at the second (cold-blooded). A sparrow exits at the third (no hair — feathers instead). A dog passes all four shared-mammal criteria and reaches the egg-laying question: dogs do not lay eggs, and they lack a pouch, so the leaf is *Placental mammal*. A duck-billed platypus passes all mammal criteria but exits at the egg-laying question as a *Monotreme* — making it the classic counterexample teachers use to show students that classification rules encode real biology, not just intuition.

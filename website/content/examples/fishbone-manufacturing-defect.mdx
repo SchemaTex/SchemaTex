@@ -1,0 +1,67 @@
+---
+title: Welding defect root-cause analysis (6M)
+description: Ishikawa 6M analysis of weld porosity defects in an automotive stamping plant — Machine, Method, Material, Man, Measurement, Mother-Nature.
+diagram: fishbone
+standard: Ishikawa 1968 / ASQ 6M
+industry: [manufacturing, quality]
+persona: For the quality assurance engineer
+complexity: 3
+tags: [fishbone, manufacturing, welding, defect, 6m, ishikawa, rca, quality]
+featured: false
+relatedLink:
+  label: Fishbone syntax
+  href: /docs/fishbone
+status: published
+dsl: |
+  fishbone "Weld Porosity Defect RCA — Automotive Stamping Plant"
+
+  effect "Weld porosity defects exceeding 2% reject rate"
+
+  category machine      "Machine"
+  category method       "Method"
+  category material     "Material"
+  category man          "Man"
+  category measurement  "Measurement"
+  category environment  "Mother Nature"
+
+  machine : "MIG welder calibration drift (±15 A)"
+  machine : "Wire feeder speed inconsistent"
+  machine : "Contact tip worn — arc instability"
+  machine : "Nozzle spatter buildup restricting gas flow"
+
+  method : "Wrong shielding gas mix (75/25 vs. 90/10 required)"
+  method : "Travel speed too fast — insufficient fusion"
+  method : "Pre-heat not applied on thick-gauge stock"
+  method : "Joint gap tolerance not enforced at fit-up"
+
+  material : "Base metal surface moisture from storage"
+  material : "Wire spool contamination — oil from feeder"
+  material : "Wrong filler alloy lot — ER70S-3 vs. ER70S-6"
+  material : "Galvanized coating not ground off at weld zone"
+
+  man : "Welder certification lapsed — 18 months overdue"
+  man : "End-of-shift fatigue — porosity rate 3× higher at hour 10"
+  man : "Inconsistent torch angle technique across operators"
+
+  measurement : "Porosity inspection gauge not calibrated in 6 months"
+  measurement : "Radiographic sample rate 5% — too low for detection"
+  measurement : "Reject threshold 2% set above ASME Section IX limit"
+
+  environment : "Shop relative humidity exceeding 85% during rainy season"
+  environment : "Wind draft from loading dock door disrupting shielding gas"
+---
+
+## Scenario
+
+A QA engineer facilitates a kaizen event after the stamping plant's monthly weld audit reveals a 2.3% porosity reject rate — above the ASME Section IX contractual limit of 2.0%. The team uses the 6M fishbone to structure a cross-functional root-cause brainstorm before ordering expensive radiographic inspection equipment. The completed diagram is attached to the 8D corrective action report submitted to the OEM customer.
+
+## Annotation key
+
+- `effect "..."` — the nonconformance statement; should reference a measurable threshold (2% reject rate) not just a vague symptom
+- 6M categories: **Machine** (equipment), **Method** (process/procedure), **Material** (inputs), **Man** (personnel), **Measurement** (inspection), **Mother Nature** (environment/conditions)
+- Each cause should be specific enough to assign an owner and a verification test
+- Bold causes in the workshop session are those that can be tested and confirmed within one shift
+
+## How to read
+
+The effect (weld porosity exceeding the 2% limit) sits at the head. Six causal ribs branch from the spine. In the workshop, the team voted: the highest-probability primary causes were shielding gas mix error (Method), welder certification lapse (Man), and wire spool contamination (Material). These became the immediate corrective actions: re-certify all welders, audit gas supply specifications, and implement incoming inspection for wire spools. The environmental causes (humidity, dock-door draft) were addressed with a capital request for a secondary containment curtain — a corrective action assigned to facilities.

@@ -1,0 +1,48 @@
+---
+title: Real estate syndication — GP/LP + SPV per property
+description: "Private real estate syndication: sponsor GP, investor LP interests, and separate SPV per property with senior lender — for the real estate syndicator."
+diagram: entity
+standard: SEC Reg D / partnership law
+industry: [real-estate, private-equity]
+persona: For the real estate syndicator
+complexity: 3
+tags: [entity, real-estate, syndication, gp, lp, spv, lender, sec-regd]
+featured: false
+relatedLink:
+  label: Entity syntax
+  href: /docs/entity
+status: published
+dsl: |
+  entity-structure "Acme Real Estate Fund I"
+  entity sponsor "Sponsor LLC" llc@DE [note: "Deal originator"]
+  entity gp_entity "GP Entity LLC" llc@DE [note: "1% GP commit + promote"]
+  entity investors "LP Investors (Reg D 506(b))" trust@CA [note: "Accredited investors"]
+  entity fund_lp "Acme Real Estate Fund I LP" lp@DE [note: "Closed-end fund"]
+  entity spv1 "123 Main St. LLC" llc@CA [note: "Multifamily — 48 units"]
+  entity spv2 "456 Oak Ave. LLC" llc@TX [note: "Mixed-use — retail + office"]
+  entity lender1 "Senior Lender A" corp@NY [note: "First lien — 65% LTV"]
+  entity lender2 "Senior Lender B" corp@TX [note: "First lien — 70% LTV"]
+  sponsor -> gp_entity : 100%
+  gp_entity -> fund_lp : 1%
+  investors -> fund_lp : 99%
+  fund_lp -> spv1 : 100%
+  fund_lp -> spv2 : 100%
+  lender1 --> spv1
+  lender2 --> spv2
+---
+
+## Scenario
+
+A real estate syndicator (sponsor) creates this entity map for the private placement memorandum (PPM) and investor onboarding package. Accredited investors investing under Reg D Rule 506(b) require a clear picture of the ownership stack, fee flows, and lender priority before wiring funds. Each property is isolated in its own SPV to ring-fence liability: a default on one asset cannot trigger cross-collateralization with another.
+
+## Annotation key
+
+- `lp@DE` — Delaware limited partnership; the standard vehicle for real estate funds; LP interests are passive investments
+- `llc@DE / llc@CA / llc@TX` — single-asset SPV LLCs in the property's state for local tax and liability purposes
+- `->` — equity ownership; GP commit is typically 1–5% of the fund to align incentives
+- `-->` — lender relationship (senior debt, not equity); lenders have first-lien priority over LP equity
+- `: 1% / : 99%` — GP/LP economic split; promote (carried interest) typically 20–30% of profits above preferred return
+
+## How to read
+
+The sponsor controls the GP entity (100%) which holds the 1% general partner interest in the fund, giving the sponsor full management authority and the carried interest promote. LP investors contribute 99% of equity capital as passive limited partners with no management rights. The fund owns each property in its own isolated LLC — 123 Main St. (California multifamily, 48 units) and 456 Oak Ave. (Texas mixed-use). Senior lenders provide non-recourse debt at 65–70% LTV, sitting ahead of all equity in the capital stack. At exit, proceeds flow: lender repayment → LP return of capital → LP preferred return (e.g., 8% IRR) → GP promote on excess profits.

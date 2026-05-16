@@ -1,0 +1,91 @@
+---
+title: E-commerce product category taxonomy
+description: Mindmap of a fashion e-commerce catalog hierarchy — Women, Men, Kids, Accessories — for a platform team designing the navigation taxonomy.
+diagram: mindmap
+standard: Google Product Taxonomy
+industry: [ecommerce, product]
+persona: For the platform product manager
+complexity: 2
+tags: [mindmap, ecommerce, taxonomy, product-catalog, navigation, fashion]
+featured: false
+relatedLink:
+  label: Mindmap syntax
+  href: /docs/mindmap
+status: published
+dsl: |
+  mindmap
+
+  # Fashion Catalog
+
+  ## Women
+  ### Tops
+  - T-shirts
+  - Blouses
+  - Sweaters
+  ### Bottoms
+  - Jeans
+  - Skirts
+  - Shorts
+  ### Dresses
+  - Casual
+  - Formal
+  ### Outerwear
+  - Coats
+  - Jackets
+  ### Shoes
+  - Heels
+  - Sneakers
+  - Boots
+
+  ## Men
+  ### Tops
+  - Shirts
+  - T-shirts
+  - Hoodies
+  ### Bottoms
+  - Chinos
+  - Jeans
+  ### Outerwear
+  - Coats
+  - Jackets
+  ### Shoes
+  - Dress shoes
+  - Sneakers
+
+  ## Kids
+  ### Boys
+  - Tops
+  - Bottoms
+  ### Girls
+  - Tops
+  - Dresses
+  ### Baby
+  - Bodysuits
+  - Sleepwear
+
+  ## Accessories
+  ### Bags
+  - Handbags
+  - Backpacks
+  ### Jewelry
+  - Necklaces
+  - Earrings
+  ### Belts
+  ### Hats
+  ### Sunglasses
+---
+
+## Scenario
+
+A platform product manager is redesigning the site navigation and needs to agree the canonical category taxonomy with merchandising, engineering, and SEO before implementation begins. This mindmap serves as the alignment artifact — every team can confirm their domain is correctly represented before a single URL slug is committed to the database schema. Branches can be reorganised in minutes; refactoring a live taxonomy costs weeks.
+
+## Annotation key
+
+- `#` — root: the catalog name
+- `##` — top-level department (typically the primary nav bar item)
+- `###` — sub-category (facet filter or secondary nav)
+- `-` bullets — leaf-level category types (the URL-slug level)
+
+## How to read
+
+Each `##` branch is a primary department; its `###` children are the sub-category pages a shopper browses to. Leaf bullets are the final filter-level categories that appear in the faceted search panel. Consistent depth across departments signals a balanced taxonomy — a `###` node with only one leaf child is a candidate for flattening to reduce navigation depth and improve page discoverability.

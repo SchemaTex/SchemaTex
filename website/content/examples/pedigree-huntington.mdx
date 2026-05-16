@@ -1,0 +1,52 @@
+---
+title: Huntington disease — autosomal dominant 3-gen
+description: Three-generation Huntington disease pedigree — autosomal dominant, late-onset, full penetrance — with predictive genetic testing notation per NSGC.
+diagram: pedigree
+standard: NSGC
+industry: [healthcare, neurology]
+persona: For the neurogenetics counselor
+complexity: 3
+tags: [pedigree, huntington, autosomal-dominant, late-onset, genetic-testing, nsgc, neurology]
+featured: false
+relatedLink:
+  label: Pedigree syntax
+  href: /docs/pedigree
+status: published
+dsl: |
+  pedigree "Huntington Disease — Autosomal Dominant"
+    I-1 [male, unaffected, deceased]
+    I-2 [female, affected, deceased, genotype: "HTT CAG 42"]
+    I-1 -- I-2
+      II-1 [male, affected, genotype: "HTT CAG 42", label: "onset age 48"]
+      II-2 [female, unaffected, genotype: "HTT CAG 19"]
+      II-3 [male, affected, genotype: "HTT CAG 40"]
+    II-4 [female, unaffected]
+    II-1 -- II-4
+      III-1 [male, proband, genotype: "HTT CAG 42 — predictive positive", label: "age 28"]
+      III-2 [female, unaffected, label: "age 25, untested"]
+    II-5 [female, unaffected]
+    II-3 -- II-5
+      III-3 [female, unaffected, genotype: "HTT CAG 19", label: "age 22"]
+      III-4 [male, unaffected, label: "age 18, untested"]
+---
+
+## Scenario
+
+A neurogenetics counselor constructs this pedigree for a 28-year-old man (III-1, proband) who sought predictive genetic testing after his father (II-1) was diagnosed with Huntington disease at age 48. The patient's paternal grandmother (I-2) was also affected. Testing confirmed III-1 carries a fully penetrant expanded allele (CAG 42), placing him at near-certain risk for motor onset, typically in the fourth to fifth decade. His maternal aunt (II-2) tested negative (CAG 19 — within normal range). His paternal uncle (II-3) is also affected (CAG 40 — reduced penetrance boundary). The pedigree is required for multidisciplinary HD clinic records and insurance pre-authorization for neuropsychological surveillance.
+
+## Annotation key
+
+- `affected` — fully filled symbol; individual has received a clinical HD diagnosis with confirmed motor signs
+- `unaffected` — open symbol; no clinical HD diagnosis; may or may not have been tested
+- `deceased` — diagonal slash; I-1 and I-2 are deceased (I-2 died of HD complications)
+- `proband` — triangle arrow; III-1, the index case who prompted genetic testing in this generation
+- `genotype: "HTT CAG 42"` — molecular confirmation of an expanded CAG repeat in the HTT gene (≥36 is abnormal; ≥40 is fully penetrant)
+- `genotype: "HTT CAG 19"` — normal allele; fewer than 36 CAG repeats; individual is not at risk
+- `genotype: "HTT CAG 40"` — fully penetrant expanded allele; II-3 is affected with onset expected
+- `genotype: "HTT CAG 42 — predictive positive"` — pre-symptomatic positive test in III-1; no motor signs yet
+- `label: "onset age 48"` — clinical annotation on II-1 recording age of HD motor-sign onset
+- `label: "age 25, untested"` / `label: "age 18, untested"` — at-risk relatives who have not undergone predictive testing; NSGC convention requires noting untested status
+
+## How to read
+
+The inheritance pattern is autosomal dominant: every child of an affected parent has a 50% risk of inheriting the expanded allele, regardless of sex. I-2 (affected, CAG 42) passed the mutation to two of three children — II-1 (affected, CAG 42) and II-3 (affected, CAG 40); II-2 inherited the normal allele (CAG 19) and is not at risk. III-1 (proband) inherited the expanded allele from II-1 and is currently pre-symptomatic at age 28; motor onset is anticipated in his late 30s to mid-40s. His sister III-2 (age 25) has chosen not to undergo predictive testing — a clinically and ethically valid choice that the counselor must respect and document. III-3 (age 22) tested negative (CAG 19) and has been discharged from surveillance. III-4 (age 18) remains untested. The pedigree supports cascade testing recommendations for all at-risk Generation III members.

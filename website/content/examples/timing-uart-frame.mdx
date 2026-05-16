@@ -1,0 +1,36 @@
+---
+title: UART 8N1 frame timing
+description: UART 8-bit, no parity, 1 stop bit (8N1) frame timing at 115200 baud — showing idle, start bit, 8 data bits, and stop bit for a firmware datasheet.
+diagram: timing
+standard: TIA-232 (RS-232)
+industry: [embedded, hardware]
+persona: For the firmware engineer
+complexity: 2
+tags: [timing, uart, 8n1, serial, baud, start-bit, stop-bit, firmware, rs232]
+featured: false
+relatedLink:
+  label: Timing syntax
+  href: /docs/timing
+status: published
+dsl: |
+  timing "UART 8N1 Frame — 115200 baud — 'A' (0x41)"
+  TX:  1 0 1 0 0 0 0 0 1 0 1 1  data: ["IDLE","START","D0","D1","D2","D3","D4","D5","D6","D7","STOP","IDLE"]
+  RX:  1 0 1 0 0 0 0 0 1 0 1 1  data: ["IDLE","START","D0","D1","D2","D3","D4","D5","D6","D7","STOP","IDLE"]
+---
+
+## Scenario
+
+A firmware engineer or serial protocol analyst documents an 8N1 UART frame for a device datasheet, a hardware bring-up guide, or a lecture on serial communication. The example transmits the ASCII character 'A' (0x41 = 0100 0001 binary), sent LSB-first as required by the UART standard, at 115200 baud over RS-232 or a 3.3 V CMOS logic-level UART interface.
+
+## Annotation key
+
+- `TX` — transmit line; idle state is logic high (mark); each character = 1 start bit + 8 data bits + 1 stop bit
+- `RX` — receive line; mirrors TX with the same bit encoding, shown here as a loopback for clarity
+- `0` (START) — start bit: always logic low, signals the beginning of a frame; receiver synchronizes its sampling clock here
+- `D0`–`D7` — data bits transmitted LSB-first; 'A' = 0x41 = 0b01000001: D0=1, D1=0, D2=0, D3=0, D4=0, D5=0, D6=1, D7=0
+- `1` (STOP) — stop bit: logic high for at least one bit period, returns the line to idle (mark) state
+- Each character cell = 1 bit period = 1/115200 s ≈ 8.68 µs
+
+## How to read
+
+The line is idle-high before the frame. The transmitter pulls TX low for exactly one bit period as the start bit, allowing the receiver's UART to detect the falling edge and begin sampling. The eight data bits follow LSB-first: for 'A' (0x41), D0 is 1 (LSB), D1–D5 are 0, D6 is 1, D7 is 0 (MSB). The stop bit returns the line to logic high for one bit period, after which the line remains idle until the next frame. The RX line mirrors TX; in a real system the receiver samples each bit at the center of its bit period, approximately 4.34 µs after the falling edge of the start bit.

@@ -1,0 +1,54 @@
+---
+title: Plant + Kalman observer (state estimator)
+description: State-space system with a Kalman filter observer — the observer reconstructs unmeasured states x̂ from noisy output y for a GNC application.
+diagram: block
+standard: Kalman (1960) / modern control
+industry: [aerospace, defense]
+persona: For the GNC engineer
+complexity: 5
+tags: [block, kalman, observer, state-space, gnc, aerospace, estimator]
+featured: false
+relatedLink:
+  label: Block syntax
+  href: /docs/block
+status: published
+dsl: |
+  blockdiagram "State-Space Plant with Kalman Observer"
+  u = signal("u (control input)")
+  G_plant = block("Plant  A, B, C, D") [role: plant]
+  y = signal("y (noisy measurement)")
+  y_hat = signal("ŷ (predicted output)")
+  err_obs = sum(+y, -y_hat)
+  K_obs = block("Kalman Observer  L") [role: observer]
+  x_hat = signal("x̂ (state estimate)")
+  C_mat = block("Output Matrix  C") [role: model]
+  K_sf = block("State Feedback  −K") [role: controller]
+  in -> u
+  u -> G_plant
+  G_plant -> y
+  y -> err_obs
+  C_mat -> y_hat
+  y_hat -> err_obs
+  err_obs -> K_obs
+  K_obs -> x_hat
+  u -> K_obs
+  x_hat -> C_mat
+  x_hat -> K_sf
+  K_sf -> u
+---
+
+## Scenario
+
+GNC engineers, roboticists, and aerospace control designers routinely combine a state-space plant model with a Luenberger or Kalman observer to reconstruct full state vectors from partial, noisy measurements. This pattern is foundational in inertial navigation, attitude control, and autonomous vehicle state estimation — anywhere physical states (velocity, attitude rate, position) cannot all be measured directly.
+
+## Annotation key
+
+- `G_plant` — state-space plant defined by matrices A (dynamics), B (input), C (output), D (feedthrough)
+- `K_obs` — Kalman observer (or Luenberger observer) with gain matrix L; corrects the state estimate using the innovation signal
+- `err_obs = sum(+y, -y_hat)` — innovation: difference between measured output and predicted output
+- `C_mat` — output matrix block; maps the estimated state x̂ to predicted output ŷ
+- `K_sf` — state-feedback gain block; computes the control input u = −K x̂
+
+## How to read
+
+The control input `u` drives both the real plant and the observer's internal model. The plant produces noisy measurement `y`; the observer predicts output `ŷ` from its own state estimate `x̂` via the output matrix `C`. The innovation `y − ŷ` is multiplied by the observer gain `L` and fed back to correct `x̂` continuously. The estimated state `x̂` then drives the state-feedback law `u = −K x̂`, closing the outer control loop. The separation principle guarantees that the observer and controller designs can be carried out independently.

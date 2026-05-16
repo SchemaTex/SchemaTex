@@ -1,0 +1,52 @@
+---
+title: Product launch go/no-go decision
+description: Stage-gate launch decision with market-size chance node, competitor-response chance, and NPV terminal values for a PM strategy review.
+diagram: decisiontree
+standard: Raiffa & Schlaifer (1961)
+industry: [strategy, product]
+persona: For the product manager
+complexity: 3
+tags: [launch, go-nogo, npv, strategy, product, chance]
+featured: false
+relatedLink:
+  label: Decision tree syntax
+  href: /docs/decisiontree
+status: published
+dsl: |
+  decisiontree:decision "Product Launch Strategy"
+
+  decision "Launch strategy?"
+    choice "Launch Q1 (full)"
+      chance "Market reception"
+        prob 0.4 chance "Competitor copies within 6mo? (strong)"
+          prob 0.5 end "Strong + copied" payoff=3200000
+          prob 0.5 end "Strong + defended" payoff=5800000
+        prob 0.35 chance "Competitor copies within 6mo? (moderate)"
+          prob 0.5 end "Moderate + copied" payoff=1400000
+          prob 0.5 end "Moderate + defended" payoff=2600000
+        prob 0.25 end "Weak reception" payoff=400000
+    choice "Launch Q3 (scoped)"
+      chance "Market reception (scoped)"
+        prob 0.45 end "Strong scoped" payoff=3100000
+        prob 0.35 end "Moderate scoped" payoff=1800000
+        prob 0.20 end "Weak scoped" payoff=600000
+    choice "No launch"
+      end "Saved development cost" payoff=900000
+---
+
+## Scenario
+
+A PM team is evaluating three paths ahead of an annual planning cycle: a full Q1 launch with the complete feature set, a scoped Q3 launch targeting the highest-confidence segments, and a no-launch option that recovers the estimated development spend. The Q1 full-launch path carries two sequential chance nodes — market reception (strong/moderate/weak) followed, for the non-weak outcomes, by a competitor-response chance (copies vs. defends). Payoffs are five-year NPV estimates in dollars, net of launch and ongoing operating costs.
+
+## Annotation key
+
+- `decision "…"` — decision node; PM team chooses a branch
+- `choice "…"` — label on a decision branch
+- `chance "…"` — chance node; market or competitor behavior; `prob N` sums to 1 per node
+- `end "…" payoff=N` — terminal leaf with five-year NPV in dollars
+- `prob N` — probability (0–1) on a chance branch
+- EV rollback: chance = probability-weighted sum; decision = max child EV
+
+## How to read
+
+For Q1 full launch: strong-reception EV = 0.5 × 3,200,000 + 0.5 × 5,800,000 = **4,500,000**; moderate EV = 0.5 × 1,400,000 + 0.5 × 2,600,000 = **2,000,000**. Full-launch EV = 0.40 × 4,500,000 + 0.35 × 2,000,000 + 0.25 × 400,000 = **2,600,000**. Scoped-Q3 EV = 0.45 × 3,100,000 + 0.35 × 1,800,000 + 0.20 × 600,000 = **2,118,000**. No launch: **900,000**. Q1 full launch produces the highest EV, but the moderate-reception + copied scenario at $1.4M is a painful downside worth stress-testing — reducing competitor copy probability from 0.5 to 0.3 in that branch raises the EV meaningfully and may justify a launch accelerator investment.

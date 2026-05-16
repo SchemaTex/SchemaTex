@@ -1,0 +1,91 @@
+---
+title: Elevator call/destination with door interlock
+description: "Single-cab elevator: call-button latching, door-closed safety interlock, travel permissive, and overtravel limit-switch protection — IEC 61131-3 standard."
+diagram: ladder
+standard: IEC 61131-3
+industry: [building, facility]
+persona: For the elevator control technician
+complexity: 4
+tags: [ladder, elevator, door-interlock, limit-switch, safety, latch, building]
+featured: false
+relatedLink:
+  label: Ladder syntax
+  href: /docs/ladder
+status: published
+dsl: |
+  ladder "Elevator Cab Control"
+
+  rung 1 "Floor 1 call latch — set on button press, reset when cab arrives":
+    XIC(FLOOR1_CALL_PB, "IN 1.0", name="Floor 1 Call Button")
+    XIO(AT_FLOOR1, "BIT 3.0", name="Cab At Floor 1")
+    OTL(FLOOR1_CALL, "BIT 5.0", name="Floor 1 Call Latch")
+
+  rung 2 "Floor 1 call reset when cab arrives":
+    XIC(AT_FLOOR1, "BIT 3.0", name="Cab At Floor 1")
+    OTU(FLOOR1_CALL, "BIT 5.0", name="Floor 1 Call Latch")
+
+  rung 3 "Floor 2 call latch — set on button press, reset when cab arrives":
+    XIC(FLOOR2_CALL_PB, "IN 1.1", name="Floor 2 Call Button")
+    XIO(AT_FLOOR2, "BIT 3.1", name="Cab At Floor 2")
+    OTL(FLOOR2_CALL, "BIT 5.1", name="Floor 2 Call Latch")
+
+  rung 4 "Floor 2 call reset when cab arrives":
+    XIC(AT_FLOOR2, "BIT 3.1", name="Cab At Floor 2")
+    OTU(FLOOR2_CALL, "BIT 5.1", name="Floor 2 Call Latch")
+
+  rung 5 "Travel UP — permissive: door closed, not at top limit, no overload, floor 2 called":
+    XIC(FLOOR2_CALL, "BIT 5.1", name="Floor 2 Call Latch")
+    XIO(AT_FLOOR2, "BIT 3.1", name="Already At Floor 2")
+    XIC(DOOR_CLOSED_SW, "IN 1.4", name="Door Closed Switch")
+    XIO(AT_TOP_LIMIT, "IN 1.5", name="Top Overtravel Limit")
+    XIO(OVERLOAD, "IN 1.6", name="Motor Overload")
+    XIO(EMERG_STOP, "IN 1.7", name="Emergency Stop")
+    OTE(TRAVEL_UP, "OUT 2.0", name="Travel Up Command")
+
+  rung 6 "Travel DOWN — permissive: door closed, not at bottom limit, no overload, floor 1 called":
+    XIC(FLOOR1_CALL, "BIT 5.0", name="Floor 1 Call Latch")
+    XIO(AT_FLOOR1, "BIT 3.0", name="Already At Floor 1")
+    XIC(DOOR_CLOSED_SW, "IN 1.4", name="Door Closed Switch")
+    XIO(AT_BOT_LIMIT, "IN 1.2", name="Bottom Overtravel Limit")
+    XIO(OVERLOAD, "IN 1.6", name="Motor Overload")
+    XIO(EMERG_STOP, "IN 1.7", name="Emergency Stop")
+    OTE(TRAVEL_DOWN, "OUT 2.1", name="Travel Down Command")
+
+  rung 7 "Door open command — cab stopped at a floor, hold door open 5 s":
+    XIC(AT_FLOOR, "BIT 3.2", name="Cab At Any Floor")
+    XIO(TRAVEL_UP, "OUT 2.0", name="Travel Up")
+    XIO(TRAVEL_DOWN, "OUT 2.1", name="Travel Down")
+    TON(DOOR_HOLD_TMR, "TMR 4.0", name="Door Hold Timer", preset=5000)
+
+  rung 8 "Door open output — energize while timer has not completed":
+    XIC(AT_FLOOR, "BIT 3.2", name="Cab At Any Floor")
+    XIO(DOOR_HOLD_TMR.DN, "BIT 4.15", name="Door Hold Timer Done")
+    XIO(TRAVEL_UP, "OUT 2.0", name="Travel Up")
+    XIO(TRAVEL_DOWN, "OUT 2.1", name="Travel Down")
+    OTE(DOOR_OPEN_CMD, "OUT 2.2", name="Door Open Command")
+
+  rung 9 "Safety alarm — emergency stop active or overload tripped":
+    parallel:
+      branch:
+        XIC(EMERG_STOP, "IN 1.7", name="Emergency Stop")
+      branch:
+        XIC(OVERLOAD, "IN 1.6", name="Motor Overload")
+    OTE(SAFETY_ALARM, "OUT 2.3", name="Safety Alarm")
+---
+
+## Scenario
+
+A single-cab, two-floor freight elevator in a light industrial facility must satisfy three layers of safety: mechanical (overtravel limit switches at top and bottom of the shaft), electrical (door-closed interlock wired to the motor contactor permissive circuit), and control logic (emergency stop and overload relay contacts wired through the PLC input module). Call buttons latch so that pressing Floor 2 while the cab is already moving holds the request until the cab arrives and the arrival sensor clears it. The door-closed switch (normally-open, closes when doors are fully seated) is wired in series with both travel commands — the cab physically cannot move with doors open regardless of the PLC output state, and the PLC additionally enforces this in software. Overtravel limit switches (normally-closed, hardwired in series with the motor drive AND through the PLC input) provide dual-channel overtravel protection per EN 81-20.
+
+## Annotation key
+
+- `OTL(FLOORX_CALL, ...)` — latches the call request; the bit remains set even after the button is released
+- `OTU(FLOORX_CALL, ...)` — clears the call latch when the AT_FLOOR sensor confirms arrival
+- `XIC(DOOR_CLOSED_SW, ...)` — door interlock contact; normally-open switch closes only when both door panels are fully seated in the closed position
+- `XIO(AT_TOP_LIMIT, ...)` and `XIO(AT_BOT_LIMIT, ...)` — normally-closed overtravel switches; XIO passes only when the bit is 0 (switch not tripped)
+- `TON(DOOR_HOLD_TMR, preset=5000)` — 5 000 ms (5 s) door-hold timer; door stays open until the timer completes or a new travel command is issued
+- `XIO(EMERG_STOP, ...)` — E-stop wired normally-closed to the input module; a pressed E-stop opens the circuit, drops the input bit to 0, and the XIO contact in travel rungs opens
+
+## How to read
+
+Call buttons latch immediately (Rungs 1 and 3) and unlatch on arrival (Rungs 2 and 4). Travel rungs (5 and 6) are pure permissive gates: they require a pending call, door closure, no overtravel, no overload, and no E-stop — all conditions must be true simultaneously. When the cab arrives at a floor (AT_FLOOR bit set), travel outputs drop, the door-hold timer starts (Rung 7), and the door open command fires (Rung 8) for 5 seconds. After 5 seconds, the door output de-energizes and the door-close mechanism can operate, after which the door-closed switch re-enables travel. Rung 9 provides an independent alarm output for SCADA/BAS notification on any safety event.

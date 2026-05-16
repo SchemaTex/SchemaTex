@@ -1,0 +1,42 @@
+---
+title: DDR4 read burst timing
+description: DDR4 read burst timing — CAS latency, data strobe (DQS), 8-beat DQ burst, and on-die termination (ODT) assertion — for memory subsystem engineers.
+diagram: timing
+standard: JEDEC DDR4 (JESD79-4)
+industry: [hardware, memory]
+persona: For the memory subsystem engineer
+complexity: 4
+tags: [timing, ddr4, read-burst, dqs, cas-latency, odt, memory, jedec]
+featured: false
+relatedLink:
+  label: Timing syntax
+  href: /docs/timing
+status: published
+dsl: |
+  timing "DDR4 Read Burst — CL=16, BL=8"
+  CLK:    pppppppppppppppppppp
+  CS_N:   10==================
+  RAS_N:  10==================
+  CAS_N:  ================1===
+  WE_N:   1===================
+  ODT:    00000000000000011111
+  DQS:    000000000000000ppppp
+  DQ:     zzzzzzzzzzzzzzzx====  data: ["","","","","","","","","","","","","","","","","D0","D1","D2","D3"]
+---
+
+## Scenario
+
+A memory subsystem engineer, FPGA designer, or PCB layout engineer needs to verify DDR4 command and data timing against the JEDEC JESD79-4 specification during simulation or hardware bring-up. This diagram shows the critical timing relationships between the ACTIVATE command (RAS), the READ command (CAS), CAS latency (CL=16), DQS preamble, the 8-beat DQ burst, and ODT assertion for read termination.
+
+## Annotation key
+
+- `CLK` — differential clock; `p` = one double-data-rate clock cycle; data is transferred on both rising and falling edges
+- `CS_N` / `RAS_N` — ACTIVATE command asserted (both low) at cycle 1 to open the target row
+- `CAS_N` — READ command issued at cycle 16 (CAS_N goes high after assertion); CAS latency (CL=16) is the delay in clock cycles from READ command to first valid data
+- `ODT` — on-die termination enables at the DRAM approximately tAONPD after the READ command to reduce signal reflections during the burst
+- `DQS` — data strobe; preamble (first `p` of DQS) precedes the first data beat; controller samples DQ on each DQS edge
+- `DQ` — data bus; `z` = high-impedance before burst, `x` = undefined transition, `=` = stable data; `data:[...]` labels each beat
+
+## How to read
+
+The memory controller asserts ACTIVATE (CS_N + RAS_N low at cycle 1) to open the DRAM row, waits tRCD cycles, then issues a READ command (CS_N + CAS_N low at cycle 16). After CL=16 clock cycles, the DRAM begins driving DQS with a preamble half-clock before the first data beat. The controller captures DQ data on each DQS edge, collecting D0–D7 over 8 beats (BL=8). ODT is asserted before the burst begins to terminate the DQ and DQS lines during the read, suppressing reflections on the stub-heavy DDR4 bus. After D7, DQS and DQ return to high-impedance and ODT de-asserts.

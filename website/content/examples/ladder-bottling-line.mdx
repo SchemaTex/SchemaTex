@@ -1,0 +1,85 @@
+---
+title: Bottling line — fill, cap, label, reject
+description: Sequential fill → cap → label → reject-kick sequence for a beverage bottling PLC — count-based bottle detect with vision-system reject gate.
+diagram: ladder
+standard: IEC 61131-3
+industry: [food-beverage, manufacturing]
+persona: For the food & beverage automation engineer
+complexity: 4
+tags: [ladder, bottling, sequential, fill, cap, label, reject, counter, plc]
+featured: false
+relatedLink:
+  label: Ladder syntax
+  href: /docs/ladder
+status: published
+dsl: |
+  ladder "Bottling Line Control"
+
+  rung 1 "Fill valve — open when bottle present, close on timeout or fault":
+    XIC(BOTTLE_PRESENT_FILL, "IN 1.0", name="Bottle Present at Fill")
+    XIO(FILL_TIMEOUT.DN, "BIT 4.15", name="Fill Timer Done")
+    XIO(LINE_FAULT, "IN 1.7", name="Line Fault")
+    OTE(FILL_VALVE, "OUT 2.0", name="Fill Valve")
+
+  rung 2 "Fill timer — tracks fill dwell time, 3 s preset":
+    XIC(FILL_VALVE, "OUT 2.0", name="Fill Valve Open")
+    TON(FILL_TIMEOUT, "TMR 4.0", name="Fill Dwell Timer", preset=3000)
+
+  rung 3 "Cap station — apply cap when bottle present and cap magazine has stock":
+    XIC(BOTTLE_PRESENT_CAP, "IN 1.1", name="Bottle Present at Capper")
+    XIC(CAP_AVAILABLE, "IN 1.2", name="Cap Magazine Stock")
+    XIO(LINE_FAULT, "IN 1.7", name="Line Fault")
+    OTE(CAPPER_CMD, "OUT 2.1", name="Capper Command")
+
+  rung 4 "Label apply — energize labeler when bottle indexed to label station":
+    XIC(BOTTLE_PRESENT_LABEL, "IN 1.3", name="Bottle Present at Labeler")
+    XIO(LINE_FAULT, "IN 1.7", name="Line Fault")
+    OTE(LABELER_CMD, "OUT 2.2", name="Labeler Command")
+
+  rung 5 "Vision reject latch — set when vision system signals a bad bottle":
+    XIC(VISION_REJECT_SIGNAL, "IN 1.4", name="Vision System Reject")
+    OTL(REJECT_LATCH, "BIT 3.0", name="Reject Latch")
+
+  rung 6 "Reject kicker — fire kicker when latched reject reaches reject station, then clear latch":
+    XIC(REJECT_LATCH, "BIT 3.0", name="Reject Latch")
+    XIC(BOTTLE_AT_REJECT, "IN 1.5", name="Bottle At Reject Station")
+    OTE(REJECT_KICKER, "OUT 2.3", name="Reject Kicker Solenoid")
+
+  rung 7 "Clear reject latch after kicker fires":
+    XIC(REJECT_KICKER, "OUT 2.3", name="Reject Kicker Active")
+    OTU(REJECT_LATCH, "BIT 3.0", name="Reject Latch")
+
+  rung 8 "Production counter — increment on each labeled bottle":
+    XIC(BOTTLE_PRESENT_LABEL, "IN 1.3", name="Bottle Present at Label")
+    XIO(LABEL_PREV, "BIT 3.1", name="Label Station Previous Scan")
+    CTU(PROD_CTU, "CNT 5.0", name="Production Counter", preset=10000)
+
+  rung 9 "Label previous-scan latch — one-shot for counter rising edge":
+    XIC(BOTTLE_PRESENT_LABEL, "IN 1.3", name="Bottle Present at Label")
+    OTE(LABEL_PREV, "BIT 3.1", name="Label Station Previous Scan")
+
+  rung 10 "Shift count alarm — alert supervisor when 10 000 bottles reached":
+    XIC(PROD_CTU.DN, "BIT 5.15", name="Production Counter Done")
+    OTE(SHIFT_ALARM, "OUT 2.4", name="Shift Count Alarm")
+
+  rung 11 "Cap magazine low alarm — alert when no caps available":
+    XIO(CAP_AVAILABLE, "IN 1.2", name="Cap Magazine Stock")
+    OTE(CAP_LOW_ALARM, "OUT 2.5", name="Cap Low Alarm")
+---
+
+## Scenario
+
+A small-format beverage bottling line in a food and beverage plant runs at up to 200 bottles per minute across four processing stations: fill, cap, label, and reject. Each station has an inductive or photoelectric bottle-present sensor wired to a PLC digital input. A machine-vision camera downstream of the label station inspects label placement, fill level, and cap seating — any failure asserts the VISION_REJECT_SIGNAL input, which the PLC latches and carries forward until the bad bottle reaches the physical reject station 600 ms later (accounting for conveyor travel at the current line speed). The reject kicker is a pneumatic solenoid that pushes the bad bottle off the conveyor into a reject bin, then clears the latch. Production counting at the label station gives the shift supervisor a real-time unit count, with a configurable alarm at 10 000 bottles for shift reporting. The fill overtime guard (TON FILL_TIMEOUT, 3 s) closes the fill valve if the bottle is not indexed away within the fill dwell window, preventing overflow and spillage. All output rungs are gated by a master LINE_FAULT bit tied to the safety relay circuit.
+
+## Annotation key
+
+- `XIC(BOTTLE_PRESENT_X, ...)` — photoelectric sensor closes (bit = 1) when a bottle is positioned under the station head
+- `XIO(FILL_TIMEOUT.DN, ...)` — timer Done bit used as a NC contact: the fill valve de-energizes if the timer completes before the bottle indexes away, preventing overflow
+- `XIC(CAP_AVAILABLE, ...)` — discrete input from a cap-magazine stack sensor; the capper will not fire without confirmed cap stock
+- `OTL(REJECT_LATCH, ...)` — latches the reject event at the camera inspection point so the kicker fires at the correct physical station one conveyor pitch later
+- `OTU(REJECT_LATCH, ...)` — clears the latch immediately after the kicker fires (Rung 7) so it is ready for the next reject event
+- `CTU(PROD_CTU, preset=10000)` — Count Up counter; the one-shot pattern (Rungs 8–9 with LABEL_PREV) ensures only one count per bottle regardless of how long the sensor stays asserted
+
+## How to read
+
+Stations operate independently in parallel — the PLC scans all rungs every cycle, so fill, cap, and label can be active simultaneously on different bottles. The fill valve (Rung 1) opens when a bottle arrives and closes either on the 3-second timeout or when the bottle indexes away (sensor drops). The cap and label stations (Rungs 3–4) are simpler momentary outputs: active only while the bottle is present. The reject sequence (Rungs 5–7) is a two-rung latch-and-fire: the camera latches the bad-bottle flag at detection time, and the kicker fires when that same bottle reaches the reject station sensor a conveyor pitch downstream. The production counter (Rungs 8–9) uses the classic XIO-of-previous-scan one-shot to count exactly one rising edge per bottle arrival.

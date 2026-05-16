@@ -1,0 +1,82 @@
+---
+title: Wind farm 34.5 kV collector system
+description: Offshore-style wind farm with 8 turbines on two feeder strings, 34.5 kV collector bus, offshore substation, and 115 kV grid POI per IEEE 1547.
+diagram: sld
+standard: IEEE 1547
+industry: [wind, utility]
+persona: For the wind project electrical engineer
+complexity: 4
+tags: [sld, wind, collector, 34.5kv, turbine, offshore-substation, ieee1547, poi]
+featured: false
+relatedLink:
+  label: SLD syntax
+  href: /docs/sld
+status: published
+dsl: |
+  sld "Wind Farm 34.5 kV Collector System — 24 MW"
+  wt1 = generator [kw: 3000, voltage: 0.69]
+  wt2 = generator [kw: 3000, voltage: 0.69]
+  wt3 = generator [kw: 3000, voltage: 0.69]
+  wt4 = generator [kw: 3000, voltage: 0.69]
+  wt5 = generator [kw: 3000, voltage: 0.69]
+  wt6 = generator [kw: 3000, voltage: 0.69]
+  wt7 = generator [kw: 3000, voltage: 0.69]
+  wt8 = generator [kw: 3000, voltage: 0.69]
+  xfmr_wt1 = transformer [kva: 3500, primary: 0.69, secondary: 34.5]
+  xfmr_wt2 = transformer [kva: 3500, primary: 0.69, secondary: 34.5]
+  xfmr_wt3 = transformer [kva: 3500, primary: 0.69, secondary: 34.5]
+  xfmr_wt4 = transformer [kva: 3500, primary: 0.69, secondary: 34.5]
+  xfmr_wt5 = transformer [kva: 3500, primary: 0.69, secondary: 34.5]
+  xfmr_wt6 = transformer [kva: 3500, primary: 0.69, secondary: 34.5]
+  xfmr_wt7 = transformer [kva: 3500, primary: 0.69, secondary: 34.5]
+  xfmr_wt8 = transformer [kva: 3500, primary: 0.69, secondary: 34.5]
+  feeder_a = bus [voltage: 34.5]
+  feeder_b = bus [voltage: 34.5]
+  coll_bus = bus [voltage: 34.5]
+  offshore_xfmr = transformer [kva: 80000, primary: 34.5, secondary: 115]
+  hv_bus = bus [voltage: 115]
+  poi_sw = disconnect [amps: 1200]
+  grid = utility [label: "Grid 115 kV"]
+  wt1 -> xfmr_wt1
+  wt2 -> xfmr_wt2
+  wt3 -> xfmr_wt3
+  wt4 -> xfmr_wt4
+  wt5 -> xfmr_wt5
+  wt6 -> xfmr_wt6
+  wt7 -> xfmr_wt7
+  wt8 -> xfmr_wt8
+  xfmr_wt1 -> feeder_a
+  xfmr_wt2 -> feeder_a
+  xfmr_wt3 -> feeder_a
+  xfmr_wt4 -> feeder_a
+  xfmr_wt5 -> feeder_b
+  xfmr_wt6 -> feeder_b
+  xfmr_wt7 -> feeder_b
+  xfmr_wt8 -> feeder_b
+  feeder_a -> coll_bus
+  feeder_b -> coll_bus
+  coll_bus -> offshore_xfmr
+  offshore_xfmr -> hv_bus
+  hv_bus -> poi_sw
+  poi_sw -> grid
+---
+
+## Scenario
+
+A wind project electrical engineer prepares the collector system single-line diagram for the utility interconnection application and the engineering report submitted to the transmission system operator (TSO). IEEE 1547-2018 governs the technical requirements for distributed energy resource (DER) interconnection at the point of interconnection (POI), including voltage and frequency ride-through, reactive power capability, and anti-islanding protection. The SLD must show the complete power path from each wind turbine generator (WTG) through the 34.5 kV collector cable system, offshore substation, and HV export cable to the grid POI, enabling the utility's protection engineer to model fault currents and relay coordination.
+
+## Annotation key
+
+- `generator [kw:..., voltage: 0.69]` — wind turbine generator producing 3 MW at low voltage (690 V); type-III DFIG or type-IV full-converter
+- `transformer [kva: 3500, primary: 0.69, secondary: 34.5]` — pad-mount turbine step-up transformer (TST) at the base of each tower; steps 690 V to 34.5 kV for collection
+- `bus [voltage: 34.5]` — 34.5 kV collector feeder string (submarine cable daisy-chaining 4 turbines per string); labeled feeder_a (WTs 1–4) and feeder_b (WTs 5–8)
+- `bus [voltage: 34.5]` — 34.5 kV collector bus on the offshore substation platform aggregating both feeder strings
+- `transformer [kva: 80000, primary: 34.5, secondary: 115]` — 80 MVA offshore substation main power transformer stepping 34.5 kV to 115 kV for the HV export cable
+- `bus [voltage: 115]` — 115 kV HV bus on the offshore substation; connection point for the export cable and protection switchgear
+- `disconnect [amps: 1200]` — POI disconnect switch at the onshore grid connection point; the IEEE 1547 interconnection boundary
+- `utility [label:...]` — 115 kV transmission grid; TSO controls all operations beyond the POI
+- `->` — directed power flow from turbine to grid; all flows are generation (export) during normal operation
+
+## How to read
+
+Each of the eight 3 MW wind turbine generators produces power at 690 V. A dedicated 3.5 MVA step-up transformer at the base of each tower raises the voltage to 34.5 kV for the underwater collection cable. Turbines 1–4 connect in a daisy-chain along Feeder A string; turbines 5–8 connect along Feeder B string. Both 12 MW strings converge at the 34.5 kV collector bus on the offshore substation platform. The 80 MVA offshore main transformer steps the collector voltage to 115 kV for the HV export cable to shore. At the onshore grid connection, the 1200 A POI disconnect switch marks the IEEE 1547 interconnection boundary — the point at which the wind farm's protection system must provide anti-islanding, frequency ride-through, and reactive power response per the interconnection agreement. Total nameplate capacity is 24 MW (8 × 3 MW); the 80 MVA transformer and 115 kV export system are sized with margin for a future second phase.

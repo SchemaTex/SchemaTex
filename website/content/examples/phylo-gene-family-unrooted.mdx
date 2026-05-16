@@ -1,0 +1,39 @@
+---
+title: Gene family — unrooted network
+description: Unrooted phylogenetic network of a multi-domain gene family across six organisms — shows reticulate evolution without assuming an outgroup.
+diagram: phylo
+standard: Newick (unrooted)
+industry: [genomics, bioinformatics]
+persona: For the bioinformatician
+complexity: 4
+tags: [phylo, unrooted, gene-family, reticulate, genomics, bioinformatics, network]
+featured: false
+relatedLink:
+  label: Phylogenetic syntax
+  href: /docs/phylo
+status: published
+dsl: |
+  phylo "MAPK Gene Family — Unrooted Network"
+    layout: unrooted
+    root: midpoint
+    newick: "(Human_MAPK1:0.12,Mouse_MAPK1:0.14,(Drosophila_RK:0.35,(CElegans_MPK1:0.42,(Yeast_FUS3:0.55,Yeast_KSS1:0.52):0.18[&&NHX:B=88]):0.25[&&NHX:B=75]):0.28[&&NHX:B=82],(Arabidopsis_MPK6:0.40,Rice_OsMPK6:0.38):0.22[&&NHX:B=95]);"
+    clade Plant_MPK = (Arabidopsis_MPK6, Rice_OsMPK6) [color: "#43A047", label: "Plant MAPK"]
+    clade Yeast_MAPK = (Yeast_FUS3, Yeast_KSS1) [color: "#FB8C00", label: "Yeast mating MAPK"]
+    scale "substitutions/site"
+---
+
+## Scenario
+
+When studying a conserved gene family such as MAP kinases across eukaryotes — from yeast to plants to mammals — a bioinformatician often cannot assume a single outgroup for rooting, or may suspect horizontal gene transfer or gene duplication events that make an unrooted representation more honest. The unrooted layout presents branch-length relationships without imposing a root hypothesis, letting the data speak.
+
+## Annotation key
+
+- `layout: unrooted` — radial unrooted network; no root implied; branch lengths are proportional to substitution rate
+- `root: midpoint` — midpoint rooting used internally to anchor the layout, but no root node is drawn
+- `[&&NHX:B=88]` — bootstrap support on internal nodes; lower values (75, 82) signal uncertain branching order
+- `clade Plant_MPK = (Arabidopsis_MPK6, Rice_OsMPK6)` — green arc highlights the plant MAPK ortholog pair with strong support (95)
+- `clade Yeast_MAPK = (Yeast_FUS3, Yeast_KSS1)` — orange arc highlights the two yeast mating-pathway MAPKs
+
+## How to read
+
+In an unrooted network, evolutionary relatedness is inferred from branch length and topology, not from left-to-right order. Human and Mouse MAPK1 are closely related (short branches), forming a vertebrate cluster. The plant MAPKs (Arabidopsis and Rice, green arc) cluster with strong bootstrap support. The yeast mating MAPKs (FUS3 and KSS1, orange arc) form a well-supported clade with moderate support for their position among animals, consistent with deep conservation of the core kinase domain. Long branches to *Drosophila* and *C. elegans* indicate accelerated evolutionary rates in these lineages.

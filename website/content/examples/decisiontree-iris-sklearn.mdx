@@ -1,0 +1,40 @@
+---
+title: Iris species classifier (scikit-learn CART)
+description: The classic sklearn Iris CART decision tree — three species, two splits on petal length and width, rendered from a functional ML-tree description.
+diagram: decisiontree
+standard: Breiman CART (1984)
+industry: [ml, education]
+persona: For the data scientist
+complexity: 2
+tags: [cart, sklearn, iris, classification, ml, decision-tree]
+featured: false
+relatedLink:
+  label: Decision tree syntax
+  href: /docs/decisiontree
+status: published
+dsl: |
+  decisiontree:ml "Iris Classifier"
+
+  split "petal length (cm) ≤ 2.45"
+    true leaf "Setosa" [support=50, impurity=0.0, class=setosa]
+    false split "petal width (cm) ≤ 1.75"
+      true leaf "Versicolor" [support=47, impurity=0.168, class=versicolor]
+      false leaf "Virginica" [support=45, impurity=0.043, class=virginica]
+---
+
+## Scenario
+
+The Iris dataset — 150 samples of three species (Iris setosa, versicolor, and virginica) measured across four features — is the canonical teaching example for classification. A CART tree trained with scikit-learn `DecisionTreeClassifier(max_depth=2)` produces exactly this two-level tree. Setosa is perfectly linearly separable on petal length alone; versicolor and virginica require a second split on petal width. The resulting tree achieves ~96% cross-validated accuracy.
+
+## Annotation key
+
+- `split "condition"` — internal node; routes left (`true`) when condition holds, right (`false`) when it does not
+- `true` / `false` — branch direction prefix indicating which child is reached when the split condition evaluates to that boolean
+- `leaf "label"` — terminal classification node
+- `[support=N]` — number of training samples reaching this leaf
+- `[impurity=N]` — Gini impurity at the node (0 = pure, 0.5 = maximally impure for binary)
+- `[class=…]` — majority class label at the leaf
+
+## How to read
+
+Start at the root split. If petal length ≤ 2.45 cm, the sample is classified as **Setosa** immediately (Gini = 0, perfectly pure — all 50 setosa training samples land here). Otherwise, evaluate petal width: ≤ 1.75 cm predicts **Versicolor** (47 samples, Gini = 0.168 — a small number of virginica blur this boundary); > 1.75 cm predicts **Virginica** (45 samples, Gini = 0.043 — nearly pure). This tree is shallow enough to fit on an index card and remains the first model every ML course deploys.

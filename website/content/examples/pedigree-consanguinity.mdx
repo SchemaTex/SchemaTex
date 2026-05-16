@@ -1,0 +1,46 @@
+---
+title: First-cousin marriage — autosomal recessive condition
+description: Consanguineous pedigree with first-cousin union and autosomal recessive disorder — consanguinity bar notation, carrier status, and COI per NSGC clinical convention.
+diagram: pedigree
+standard: NSGC
+industry: [healthcare, genetics]
+persona: For the clinical geneticist
+complexity: 4
+tags: [pedigree, consanguinity, autosomal-recessive, first-cousin, carrier, coi, nsgc]
+featured: false
+relatedLink:
+  label: Pedigree syntax
+  href: /docs/pedigree
+status: published
+dsl: |
+  pedigree "First-Cousin Consanguinity — Autosomal Recessive"
+    I-1 [male, unaffected]
+    I-2 [female, carrier-ar]
+    I-1 -- I-2
+      II-1 [male, carrier-ar]
+      II-2 [female, carrier-ar]
+      II-3 [male, unaffected]
+      II-4 [female, carrier-ar]
+    II-1 -- II-4 [consanguineous]
+      III-1 [female, affected, proband, label: "age 3"]
+      III-2 [male, carrier-ar, label: "age 5"]
+      III-3 [male, unaffected, label: "age 7"]
+---
+
+## Scenario
+
+A clinical geneticist evaluates a 3-year-old girl (III-1, proband) with a suspected autosomal recessive metabolic disorder confirmed on newborn screening and follow-up enzymatic assay. The parents (II-1 and II-4) are first cousins — their mothers are sisters, both daughters of the same founding couple (I-1 and I-2). The grandmother (I-2) is a known carrier. The pedigree demonstrates that a single copy of the mutant allele, carried silently by I-2, reached both parents through two independent descent paths, sharply elevating the probability that both parents are carriers and that offspring receive two copies of the disease allele. The coefficient of inbreeding (COI) for a first-cousin union is 1/16 (6.25%), and for any autosomal recessive condition with carrier rate q, the risk to offspring is substantially increased relative to a random-mating couple.
+
+## Annotation key
+
+- `carrier-ar` — half-filled symbol (bottom half shaded) per NSGC notation for autosomal recessive heterozygous carrier; one normal allele, one mutant allele (Aa)
+- `unaffected` — open symbol; clinically unaffected; may be homozygous normal (AA) or carrier (Aa) — cannot be distinguished without molecular testing
+- `affected` — fully filled symbol; homozygous for the disease allele (aa); proband with confirmed diagnosis
+- `proband` — triangle arrow on III-1, the index case
+- `[consanguineous]` — double horizontal bar between II-1 and II-4; NSGC standard notation for a consanguineous (blood-relative) mating; visually distinct from a normal mating line
+- `label: "age 3"` / `"age 5"` / `"age 7"` — clinical age annotations on Generation III children; useful for surveillance scheduling and sibling testing recommendations
+- I-2 `carrier-ar` — the common ancestor who introduced the mutant allele; both II-1 and II-4 are her biological children, making them first cousins
+
+## How to read
+
+The founding couple (I-1 × I-2) produced four children: II-1, II-2, II-3, and II-4. I-2 is the obligate carrier (one mutant allele). Under autosomal recessive Mendelian transmission, each child of I-1 × I-2 had a 50% chance of inheriting the mutant allele. II-1 and II-4 are both confirmed carriers. Their first-cousin union is marked by the double consanguinity bar. With both parents heterozygous, their offspring face a 25% risk of being homozygous affected (aa), 50% carrier (Aa), and 25% homozygous normal (AA) — identical to any carrier × carrier cross, but the consanguinity structure explains *why* two carriers met: they share a common carrier ancestor. III-1 (proband, age 3) is affected (aa). III-2 (age 5) tested as a carrier. III-3 (age 7) is clinically unaffected; molecular testing to distinguish AA from Aa is recommended before reproductive planning. COI = 1/16 for this first-cousin union.

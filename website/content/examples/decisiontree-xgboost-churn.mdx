@@ -1,0 +1,42 @@
+---
+title: Customer churn prediction tree (XGBoost)
+description: One tree from an XGBoost churn model — days since last login, MRR tier, support tickets — showing how gradient boosting splits differ from CART.
+diagram: decisiontree
+standard: Chen & Guestrin XGBoost (2016)
+industry: [ml, saas]
+persona: For the ML engineer
+complexity: 3
+tags: [xgboost, churn, ml, gradient-boosting, saas, prediction]
+featured: false
+relatedLink:
+  label: Decision tree syntax
+  href: /docs/decisiontree
+status: published
+dsl: |
+  decisiontree:ml "Churn Prediction Tree (XGBoost)"
+
+  split "days_since_login > 21"
+    true split "mrr_tier < 2"
+      true leaf "High churn risk" [score=0.72, class=churn]
+      false leaf "Medium risk — monitor" [score=0.41, class=churn]
+    false split "support_tickets_30d > 3"
+      true leaf "Medium risk — support-driven" [score=0.38, class=churn]
+      false leaf "Low churn risk" [score=0.09, class=retain]
+---
+
+## Scenario
+
+A SaaS company trains an XGBoost churn model on 90 days of product usage data. This is one representative tree from the ensemble, illustrating the three strongest churn signals in the dataset: recency of login (days since last login > 21 is the dominant split), MRR tier (lower-tier accounts churn faster when disengaged), and recent support ticket volume (elevated tickets correlate with frustration even among recently active users). Unlike a standalone CART tree, XGBoost trees output raw scores (log-odds contributions) that are summed across the ensemble before sigmoid transformation — the `score` values shown are per-tree contributions, not final probabilities.
+
+## Annotation key
+
+- `split "condition"` — internal split node; `true` branch when condition holds
+- `true` / `false` — branch direction prefix
+- `leaf "label"` — terminal node with a descriptive risk label
+- `[score=N]` — raw XGBoost leaf score (log-odds contribution from this tree)
+- `[class=…]` — dominant class assignment at this leaf
+- XGBoost does not use Gini/entropy impurity; splits are chosen to maximize second-order gradient gain
+
+## How to read
+
+Start at the root. Accounts with more than 21 days since last login are immediately flagged: if they are also on MRR tier 0 or 1 (lowest-value tiers), the leaf score is 0.72 — the highest churn signal in this tree. High-tier disengaged accounts score 0.41, indicating meaningful but lower risk, consistent with higher switching costs. For recently active accounts (login ≤ 21 days), elevated support tickets (> 3 in 30 days) push score to 0.38 — a product-experience alert — while accounts that are both active and support-quiet score 0.09, the healthiest segment. In production, this tree's scores are summed with hundreds of sibling trees and passed through a sigmoid to yield a final churn probability between 0 and 1.

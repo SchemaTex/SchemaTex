@@ -1,0 +1,70 @@
+---
+title: Data center — 2N redundant UPS and STS
+description: Tier IV-style 2N data center power with dual utility feeds, dual UPS strings, static transfer switch, and A/B rack PDU distribution.
+diagram: sld
+standard: Uptime Institute Tier IV
+industry: [data-center, technology]
+persona: For the critical facility engineer
+complexity: 5
+tags: [sld, data-center, 2n, ups, sts, tier4, redundancy, pdu]
+featured: false
+relatedLink:
+  label: SLD syntax
+  href: /docs/sld
+status: published
+dsl: |
+  sld "2N Data Center Power — Tier IV"
+  util_a = utility [label: "Utility Feed A — 480V 3φ"]
+  util_b = utility [label: "Utility Feed B — 480V 3φ"]
+  genset_a = generator [kw: 1500, voltage: 480]
+  genset_b = generator [kw: 1500, voltage: 480]
+  ats_a = ats [amps: 3000]
+  ats_b = ats [amps: 3000]
+  bus_a = bus [voltage: 480]
+  bus_b = bus [voltage: 480]
+  ups_a = ups [kva: 500]
+  ups_b = ups [kva: 500]
+  sts = load [label: "STS — Static Transfer Switch 400A"]
+  pdu_a1 = panel [label: "PDU A1"]
+  pdu_a2 = panel [label: "PDU A2"]
+  pdu_b1 = panel [label: "PDU B1"]
+  pdu_b2 = panel [label: "PDU B2"]
+  rack = load [label: "Server Racks — Dual Corded (A + B)"]
+  util_a -> ats_a
+  genset_a -> ats_a
+  ats_a -> bus_a
+  bus_a -> ups_a
+  ups_a -> pdu_a1
+  ups_a -> pdu_a2
+  util_b -> ats_b
+  genset_b -> ats_b
+  ats_b -> bus_b
+  bus_b -> ups_b
+  ups_b -> pdu_b1
+  ups_b -> pdu_b2
+  ups_a -> sts
+  ups_b -> sts
+  sts -> rack
+  pdu_a1 -> rack
+  pdu_b1 -> rack
+---
+
+## Scenario
+
+A critical facility engineer documents the power architecture of a Tier IV colocation data hall for client due diligence and for the commissioning authority. Uptime Institute Tier IV requires 2N redundancy — every active component has a full-capacity parallel path, so any single failure leaves loads on a remaining path without switching. The SLD is the primary deliverable for the owner's project requirements (OPR) document, the basis of design (BOD), and the commissioning test plan.
+
+## Annotation key
+
+- `utility [label:...]` — independent utility service entrance feeds (physically separate cable routes and substations for Tier IV)
+- `generator [kw:..., voltage:...]` — on-site diesel generator with N+1 fuel supply; each supports its entire A or B string at 100% load
+- `ats [amps:...]` — automatic transfer switch between utility and generator; positioned upstream of each UPS string
+- `bus [voltage:...]` — 480 V distribution bus internal to each power string (A-side or B-side)
+- `ups [kva:...]` — double-conversion UPS with bypass; battery provides ride-through during generator start-up
+- `load [label: "STS..."]` — static transfer switch; selects between A-side and B-side UPS output in &lt;4 ms for single-corded loads
+- `panel [label: "PDU..."]` — rack-level power distribution unit; feeds dual-corded servers at 208 V single-phase
+- `load [label: "Server Racks..."]` — server racks with dual power supplies connected to both A and B PDUs simultaneously
+- `->` — directed power flow; dual arrows into `rack` represent the two independent supply paths
+
+## How to read
+
+Two completely independent power strings (A and B) run in parallel from utility source to rack. On the A-side: Utility Feed A and Generator A feed ATS-A, which supplies the 480 V A-bus, then UPS-A (500 kVA), then PDU A1 and A2. On the B-side the mirror image runs from Utility Feed B and Generator B. Server racks are dual-corded — one power supply connects to an A-side PDU, the other to a B-side PDU. Either path can carry 100% of rack load independently, satisfying Tier IV's concurrently maintainable and fault-tolerant requirements. The static transfer switch (STS) provides a UPS-backed path for any single-corded appliances; it monitors both UPS outputs and transfers to the healthy path within one quarter-cycle on the preferred source failing.

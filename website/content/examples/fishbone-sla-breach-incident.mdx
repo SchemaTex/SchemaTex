@@ -1,0 +1,68 @@
+---
+title: API SLA breach post-mortem
+description: SRE post-mortem fishbone for a 6-hour API SLA breach — infrastructure, code, process, people, external, and monitoring categories.
+diagram: fishbone
+standard: Ishikawa 1968
+industry: [saas, devops]
+persona: For the SRE lead
+complexity: 3
+tags: [fishbone, sla, incident, post-mortem, sre, api, saas, rca]
+featured: false
+relatedLink:
+  label: Fishbone syntax
+  href: /docs/fishbone
+status: published
+dsl: |
+  fishbone "API SLA Breach Post-Mortem — 6-Hour P99 Latency Incident"
+
+  effect "6-hour API SLA breach — P99 latency sustained above 2,000 ms"
+
+  category infra       "Infrastructure"
+  category code        "Code"
+  category process     "Process"
+  category people      "People"
+  category external    "External"
+  category monitoring  "Monitoring"
+
+  infra : "Database connection pool exhausted — pool size 20, peak demand 85"
+  infra : "Redis OOM — eviction policy set to noeviction in production"
+  infra : "Auto-scaling trigger lag 8 minutes — scale-out too slow for spike"
+  infra : "Read replica replication lag 40 s — queries falling back to primary"
+
+  code : "N+1 query introduced in v2.14.1 release — 47 queries per request"
+  code : "Missing composite index on reports.user_id + reports.created_at"
+  code : "Unbounded pagination — page size limit removed in refactor"
+  code : "Synchronous PDF generation blocking API worker threads"
+
+  process : "Staging database 10× smaller than production — N+1 not detected"
+  process : "No load test step in release pipeline — only unit and integration"
+  process : "Feature flag rollout 100% immediate — no canary stage"
+
+  people : "On-call engineer missed PagerDuty alert — Slack notification silenced"
+  people : "Runbook for connection pool exhaustion not updated after Q2 migration"
+  people : "Escalation path unclear — 40-minute delay before incident commander paged"
+
+  external : "CDN provider BGP reroute added 180 ms baseline latency — not SLA-covered"
+
+  monitoring : "P99 latency alert threshold set to 5,000 ms — too loose to catch breach"
+  monitoring : "No alert on database connection pool depth or wait queue length"
+  monitoring : "Redis memory alert only at 95% — no warning at 80% threshold"
+---
+
+## Scenario
+
+An SRE lead runs a post-mortem blameless review 48 hours after a P1 incident that breached the 99.9% monthly uptime SLA. Six categories of contributing causes are identified by the on-call team and mapped to this fishbone before the incident report is sent to enterprise customers. The diagram becomes the basis for the corrective action roadmap: immediate mitigations, 30-day engineering fixes, and 90-day process changes.
+
+## Annotation key
+
+- **Infrastructure** — platform and configuration decisions made outside the code path
+- **Code** — bugs or regressions introduced in application code
+- **Process** — gaps in the SDLC, release pipeline, or operational procedures
+- **People** — human factors: awareness, communication, skills, and on-call readiness
+- **External** — third-party provider failures outside the team's control; relevant for SLA attribution
+- **Monitoring** — gaps in observability that delayed detection or escalation
+- All causes are recorded without blame; the goal is systemic improvement, not individual accountability
+
+## How to read
+
+The P99 latency breach (sustained above 2,000 ms for 6 hours) sits at the head. Six contributing branches are mapped. The proximate cause was an N+1 query regression in v2.14.1 that overwhelmed the connection pool. The systemic causes were a staging environment 10× undersized for load testing, an auto-scaler too slow to respond, and monitoring thresholds set too conservatively to detect the degradation early. The CDN BGP reroute added a baseline latency penalty that pushed a marginal P99 over the SLA threshold faster than it would have otherwise. Action items with the highest leverage: parity load testing in CI, dynamic connection pool sizing, and a tighter P99 alert at 1,500 ms with a 2-minute sustained window.

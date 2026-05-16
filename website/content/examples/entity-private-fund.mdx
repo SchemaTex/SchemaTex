@@ -1,0 +1,51 @@
+---
+title: Private equity fund structure
+description: "Closed-end PE fund: GP management company, carry vehicle, LP investor classes, and three portfolio company investments — ILPA convention."
+diagram: entity
+standard: ILPA standards
+industry: [private-equity, asset-management]
+persona: For the fund administrator
+complexity: 3
+tags: [entity, private-equity, fund, gp, lp, carry, ilpa, portco]
+featured: false
+relatedLink:
+  label: Entity syntax
+  href: /docs/entity
+status: published
+dsl: |
+  entity-structure "Acme Capital Fund III"
+  entity mgmt_co "GP Management LLC" llc@DE [note: "Registered investment adviser"]
+  entity gp_vehicle "GP Vehicle LLC" llc@DE [note: "General partner entity"]
+  entity carry_vehicle "Carried Interest Vehicle LLC" llc@DE [note: "20% carry — IRC §1061 PFIC"]
+  entity fund "Acme Capital Fund III LP" lp@DE [note: "Closed-end — 10-year term"]
+  entity inst_lps "Institutional LPs" trust@NY [note: "Pensions, endowments — 65%"]
+  entity hni_lps "HNI & Family Office LPs" trust@CA [note: "High-net-worth — 34%"]
+  entity portco_a "Portfolio Co. A" corp@DE [note: "Control — software vertical"]
+  entity portco_b "Portfolio Co. B" corp@DE [note: "Majority — industrial services"]
+  entity portco_c "Portfolio Co. C" corp@DE [note: "Control — healthcare SaaS"]
+  mgmt_co -> gp_vehicle : 100%
+  mgmt_co --> carry_vehicle
+  gp_vehicle -> fund : 1%
+  inst_lps -> fund : 65%
+  hni_lps -> fund : 34%
+  fund -> portco_a : 60%
+  fund -> portco_b : 45%
+  fund -> portco_c : 80%
+---
+
+## Scenario
+
+A fund administrator prepares this entity diagram for the annual ILPA reporting package, limited partner quarterly statement cover page, and auditor workpapers. The ILPA Principles require transparent disclosure of the GP economic structure — specifically the separation of the management company (fee income), GP vehicle (fund economics), and carried interest vehicle (profit participation) — so LPs can assess conflicts of interest and economics independently.
+
+## Annotation key
+
+- `lp@DE` — Delaware limited partnership; the universal vehicle for closed-end PE funds; provides flow-through taxation and LP liability protection
+- `mgmt_co` — registered investment adviser that employs investment professionals and earns the 2% management fee; separate from fund economics
+- `gp_vehicle` — the formal general partner of the fund LP; holds 1% GP commitment and the right to the carried interest
+- `carry_vehicle` — isolated entity for allocating 20% carried interest to individual partners; structured for IRC §1061 (3-year hold to qualify for long-term capital gains) treatment
+- `-->` — management/control relationship without direct equity ownership
+- `portco` ownership percentages — 45–80% reflects control or majority buyout positions typical of a mid-market PE fund
+
+## How to read
+
+The management company owns the GP vehicle, which is the formal 1% general partner of Fund III. Institutional LPs (pensions, endowments) and high-net-worth LPs contribute 99% of capital. The fund deploys into three portfolio companies at control or majority positions: Portfolio Co. A (60%, software), Portfolio Co. B (45%, industrial services, minority-plus-control board rights), and Portfolio Co. C (80%, healthcare SaaS). At exit, each portfolio company sale distributes proceeds through the LP waterfall: return of capital → preferred return (typically 8% IRR hurdle) → GP catch-up → 80/20 profit split. The carried interest vehicle receives the GP's 20% and allocates it to individual partners per their carry agreements.

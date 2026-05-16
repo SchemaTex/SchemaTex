@@ -1,0 +1,38 @@
+---
+title: USB 2.0 full-speed packet
+description: USB 2.0 full-speed SYNC+PID+address+endpoint+CRC5 token packet timing on D+ and D− differential pair — for USB protocol analysis.
+diagram: timing
+standard: USB 2.0 Specification
+industry: [hardware, embedded]
+persona: For the USB protocol engineer
+complexity: 3
+tags: [timing, usb, full-speed, token-packet, differential, sync, pid, crc, protocol]
+featured: false
+relatedLink:
+  label: Timing syntax
+  href: /docs/timing
+status: published
+dsl: |
+  timing "USB 2.0 Full-Speed SOF Token Packet"
+  D_plus:   1010101011========x=====10
+  D_minus:  0101010100========x=====01
+  SE0:      0000000000========x=====11  data: ["SYNC (KJKJKJKK)","PID (SOF 0xA5)","Frame Number (11b)","CRC5 (5b)","EOP","IDLE"]
+---
+
+## Scenario
+
+A USB protocol engineer, USB IP core designer, or embedded systems developer analyzing a USB 2.0 full-speed bus capture needs to understand the bit-level encoding of a Start-of-Frame (SOF) token packet. This diagram shows the NRZI-encoded differential signals on D+ and D− for the mandatory SYNC field, PID byte, 11-bit frame number, 5-bit CRC, and End-of-Packet (EOP) single-ended zero condition.
+
+## Annotation key
+
+- `D_plus` / `D_minus` — USB differential pair; full-speed idle state (J) is D+=1, D−=0; K state is D+=0, D−=1
+- SYNC field — 8-bit alternating KJ sequence ending in KK: `10101010 11` on D+; USB uses NRZI encoding so alternating bits signal the clock
+- `PID` (0xA5) — SOF Packet ID byte `10100101`; transmitted in NRZI, stable during this phase
+- `Frame Number` — 11-bit frame counter (0–2047), incremented each millisecond; stable bus state during each bit
+- `CRC5` — 5-bit CRC over the frame number field, per USB 2.0 §8.3.5
+- `SE0` — single-ended zero: both D+ and D− driven low for 2 bit periods as the End-of-Packet (EOP); followed by J (idle)
+- `x` — transition / undefined bit state during SE0-to-idle edge
+
+## How to read
+
+The packet begins with the host driving an 8-bit SYNC field (KJKJKJKK) that allows the receiver's PLL to lock to the 12 Mbit/s full-speed clock. The PID byte 0xA5 (SOF) follows, identifying the packet type. The 11-bit frame number and 5-bit CRC5 are transmitted LSB-first over 16 bit times. The EOP is signaled by driving both D+ and D− low (SE0) for exactly 2 bit periods, which cannot be confused with data since valid data always has differential drive. After EOP, the host releases both lines to idle (J state: D+=1, D−=0), completing the token packet in approximately 3 µs at full speed.

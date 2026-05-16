@@ -1,0 +1,54 @@
+---
+title: Microservices request flow
+description: API gateway routing a request through auth, rate-limit, and three backend services to a shared DB — LR subgraph layout.
+diagram: flowchart
+standard: ISO 5807:1985
+industry: [saas, backend]
+persona: For the backend engineer
+complexity: 3
+tags: [microservices, api-gateway, request-flow, backend, subgraph]
+featured: false
+relatedLink:
+  label: Flowchart syntax
+  href: /docs/flowchart
+status: published
+dsl: |
+  flowchart LR
+    subgraph "API Layer"
+      client([Client request]) --> gateway[API Gateway]
+      gateway --> auth{Auth valid?}
+      auth -->|No| reject([401 Unauthorized])
+      auth -->|Yes| rate{Rate limit ok?}
+      rate -->|No| throttle([429 Too Many Requests])
+    end
+    subgraph "Services"
+      rate -->|Yes| route{Route by path}
+      route -->|/users| user[User Service]
+      route -->|/orders| order[Order Service]
+      order --> notify[Notification Service]
+    end
+    subgraph "Data"
+      user --> db[(PostgreSQL)]
+      order --> db
+    end
+    user -->|200 response| client
+    order -->|200 response| client
+    db -->|query error| dberr([500 DB Error])
+---
+
+## Scenario
+
+A backend engineer is documenting the runtime topology of a decomposed e-commerce platform so that new team members can trace a request end to end without reading source code. The diagram exposes the two pre-routing gates (authentication and rate limiting) and the downstream fan-out to specialized services, making it clear why a client might receive a 401, 429, or 500 before any business logic executes.
+
+## Annotation key
+
+- `([…])` — stadium; entry points and terminal error/success nodes
+- `{…}` — diamond; routing and policy decision gates
+- `[…]` — rectangle; service or infrastructure processing step
+- `[(…)]` — cylinder; persistent data store
+- `-->|label|` — labeled directed edge showing condition or path name
+- `subgraph "name"` — swimlane grouping API, service, and data tiers
+
+## How to read
+
+Start at *Client request* and follow the arrow into the API Layer subgraph. The request must clear two sequential gates — authentication then rate limiting — before reaching the route diamond. The route diamond dispatches to *User Service* or *Order Service* based on the URL path; an order request additionally triggers the *Notification Service* asynchronously. Both services share the same *PostgreSQL* store; a database error at that layer surfaces as a 500 terminal node independent of which service triggered the query.

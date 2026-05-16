@@ -1,0 +1,36 @@
+---
+title: I²C master read transaction
+description: I²C master-read timing with start condition, 7-bit address + R/W bit, ACK/NAK, and 2-byte data read — for embedded firmware documentation.
+standard: NXP I²C specification
+diagram: timing
+industry: [embedded, hardware]
+persona: For the embedded firmware engineer
+complexity: 3
+tags: [timing, i2c, master-read, ack, nak, embedded, firmware, protocol]
+featured: false
+relatedLink:
+  label: Timing syntax
+  href: /docs/timing
+status: published
+dsl: |
+  timing "I²C Master Read — 2 Bytes"
+  SCL:  1ppppppppppppppppppppppppppp11
+  SDA:  10========10========10======01  data: ["START","0x48 R","ACK","0xAB","ACK","0xCD","NAK","STOP"]
+---
+
+## Scenario
+
+An embedded firmware engineer documents a two-byte I²C master-read transaction — for example, reading two bytes of temperature data from a TMP112 or similar sensor at address 0x48 — for inclusion in a device driver review, BSP documentation, or a hardware bring-up checklist. The timing diagram shows the key protocol phases: START, address frame with R/W bit, ACK handshake, data bytes, and STOP.
+
+## Annotation key
+
+- `SCL` — serial clock line; `p` is one clock pulse (high then low); `1` = sustained high, `0` = sustained low
+- `SDA` — serial data line; `1` = high, `0` = low, `=` = stable (bus driven), value labeled by `data:[...]`
+- `10=...=` pattern on SDA — START condition: SDA falls while SCL is high, followed by address bits held stable during each SCL high phase
+- `ACK` (SDA=0 during 9th SCL pulse) — receiver acknowledges by pulling SDA low
+- `NAK` (SDA=1 during 9th SCL pulse after last byte) — master signals end of read by releasing SDA high
+- `STOP` — SDA rises while SCL is high, signaling bus release
+
+## How to read
+
+The transaction opens with a START condition (SDA falls while SCL is high). The master clocks out a 7-bit device address (0x48) plus a Read bit (R/W=1) over 8 SCL pulses; the addressed slave pulls SDA low during the 9th clock as ACK. The slave then drives the first data byte (0xAB) over 8 clocks; the master ACKs to request more data. The slave drives the second byte (0xCD); the master issues NAK to signal no further bytes are needed. Finally, the master generates a STOP condition (SDA rises while SCL is high), releasing the bus. Both lines return to idle-high.

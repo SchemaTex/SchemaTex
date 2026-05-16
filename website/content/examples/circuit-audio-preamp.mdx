@@ -1,0 +1,51 @@
+---
+title: Microphone preamp with phantom power
+description: Balanced mic preamp circuit with +48V phantom power, differential input pair, and output buffer — the standard studio front-end per IEC 61938.
+diagram: circuit
+standard: IEC 61938 (phantom power)
+industry: [pro-audio, hardware]
+persona: For the audio electronics engineer
+complexity: 4
+tags: [preamp, microphone, phantom-power, balanced, audio, differential, studio]
+featured: false
+relatedLink:
+  label: Circuit syntax
+  href: /docs/circuit
+status: published
+dsl: |
+  circuit "Balanced Mic Preamp with +48V Phantom Power" netlist
+  V48 phantom 0 48V
+  Rph1 phantom xlr2 6.81k
+  Rph2 phantom xlr3 6.81k
+  C1 xlr2 inp 47u
+  C2 xlr3 inn 47u
+  Rterm1 inp 0 6.8k
+  Rterm2 inn 0 6.8k
+  Rg inp inn 390
+  U1 preout inp inn vcc vee instrumentation_amp value="INA217"
+  Rgain_set preout 0 1k
+  Vcc vcc 0 15V
+  Vee 0 vee 15V
+  C3 vcc 0 100n
+  C4 vee 0 100n
+  R_out preout vout 100
+  Cout vout 0 10u
+---
+
+## Scenario
+
+Professional condenser microphones require two things from a preamp: +48 V phantom power delivered over the same XLR cable that carries the audio signal, and a differential (balanced) amplifier input that rejects the noise picked up by the cable. This circuit implements both per IEC 61938. The 6.81 kΩ phantom resistors supply DC bias to the microphone capsule while the coupling capacitors block that DC from the audio path. The INA217 instrumentation amplifier provides a gain of 1 + 6 kΩ/Rg = 100 (40 dB) with better than 80 dB CMRR, rejecting hum induced by long studio cable runs.
+
+## Annotation key
+
+- `Rph1, Rph2 phantom xlr2/3 6.81k` — precision 6.81 kΩ phantom feed resistors (IEC 61938 mandated value); supply equal +48 V to both XLR pins 2 and 3; equal voltage means no differential interference from the DC supply
+- `C1, C2 ... 47u` — 47 μF DC-blocking coupling capacitors (electrolytic, non-polarized in practice); isolate the ±48 V phantom DC from the audio differential input while passing audio frequencies above ~50 Hz
+- `Rterm1, Rterm2 inp/inn 0 6.8k` — 6.8 kΩ input termination resistors to ground; provide a DC return path for bias currents and define the source impedance seen by the INA
+- `Rg inp inn 390` — external gain resistor for the INA217 (390 Ω); sets first-stage gain to 1 + 6 kΩ/390 ≈ 16.4×; combined with second stage total gain ≈ 100×
+- `U1 ... instrumentation_amp value="INA217"` — INA217 audio instrumentation amplifier; ultra-low noise (1 nV/√Hz), dual-supply ±15 V, designed for microphone preamp applications; rejects common-mode noise with >80 dB CMRR
+- `C3, C4 vcc/vee 0 100n` — 100 nF decoupling capacitors on ±15 V rails; bypass high-frequency supply noise close to the IC pins
+- `R_out / Cout` — output series resistor (100 Ω) and coupling capacitor (10 μF); isolate cable capacitance from the op-amp output and block DC from the next stage
+
+## How to read
+
+Phantom power is delivered by the +48 V rail through equal-value resistors to both XLR pins simultaneously. A condenser mic draws typically 5–10 mA DC through this path to polarize its capsule or power its internal JFET buffer. The audio signal is superimposed as a differential AC voltage (pin 2 in-phase, pin 3 out-of-phase) riding on the 48 V DC. Coupling capacitors C1 and C2 pass this AC to the differential inputs of the INA, blocking the 48 V DC entirely. The INA rejects the equal (common-mode) portion of any induced hum and amplifies only the difference — the actual microphone signal. The output is low-impedance buffered through R_out for driving long cable runs to the mixing console.

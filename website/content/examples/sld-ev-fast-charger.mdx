@@ -1,0 +1,62 @@
+---
+title: EV fast-charging site — 350 kW DCFC
+description: Utility to 350 kW DC fast-charging site with service entrance, switchgear, three DCFC dispensers, and make-ready conduit per NEC 625.
+diagram: sld
+standard: NEC 625
+industry: [ev, utility]
+persona: For the EV infrastructure engineer
+complexity: 3
+tags: [sld, ev, dcfc, nec625, charger, switchgear, 480v, fast-charging]
+featured: false
+relatedLink:
+  label: SLD syntax
+  href: /docs/sld
+status: published
+dsl: |
+  sld "EV Fast-Charging Site — 350 kW DCFC"
+  utility = utility [label: "Utility 480V 3φ"]
+  service_entrance = breaker [amps: 1200]
+  meter = meter [label: "Revenue-Grade kWh Meter"]
+  main_sw = breaker [amps: 1000]
+  brk1 = breaker [amps: 350]
+  brk2 = breaker [amps: 350]
+  brk3 = breaker [amps: 125]
+  brk4 = breaker [amps: 350]
+  dcfc1 = load [label: "DCFC Dispenser 1 — 150 kW"]
+  dcfc2 = load [label: "DCFC Dispenser 2 — 150 kW"]
+  dcfc3 = load [label: "DCFC Dispenser 3 — 50 kW"]
+  future1 = load [label: "Make-Ready — 150 kW (future)"]
+  mgmt_panel = panel [label: "Site Management / Network Hub"]
+  utility -> service_entrance
+  service_entrance -> meter
+  meter -> main_sw
+  main_sw -> brk1
+  main_sw -> brk2
+  main_sw -> brk3
+  main_sw -> brk4
+  brk1 -> dcfc1
+  brk2 -> dcfc2
+  brk3 -> dcfc3
+  brk4 -> future1
+  main_sw -> mgmt_panel
+---
+
+## Scenario
+
+An EV infrastructure engineer prepares the electrical permit drawings for a new public DC fast-charging station. The local building department and serving utility require a single-line diagram compliant with NEC Article 625 before issuing the electrical permit and utility service application. The SLD shows the complete power path from the utility point of delivery through the revenue-grade meter, switchgear, branch circuit breakers, and each DCFC dispenser. Conduit stubs for future capacity expansion must appear on the permit drawings so the AHJ approves the raceway sizing upfront, avoiding a costly panel changeout later.
+
+## Annotation key
+
+- `utility` — 480 V three-phase utility point of delivery; transformer and service lateral by the serving utility
+- `breaker [amps: 1200]` — service entrance main breaker; NEC 230.79 requires a service disconnecting means at the building entry
+- `meter [label:...]` — revenue-grade interval kWh meter for utility billing; also feeds demand data to the EVSE network
+- `breaker [amps: 1000]` — main switchgear breaker protecting the DCFC distribution panel; sized at 125% of continuous EVSE load per NEC 625.42
+- `breaker [amps: 350 / 125]` — branch circuit overcurrent protection for each DCFC or Level 2 circuit; NEC 625.42 requires 125% of EVSE nameplate continuous current
+- `load [label: "DCFC Dispenser..."]` — DC fast-charge dispenser producing up to 150 kW at 400–920 V DC (CCS / CHAdeMO / NACS)
+- `load [label: "Make-Ready..."]` — conduit, wire, and breaker space pre-installed for future dispenser; no energized equipment yet
+- `panel [label:...]` — 120 V site management panel powering EVSE network communication modules, canopy lighting, and cameras
+- `->` — directed power flow from utility source to EVSE loads
+
+## How to read
+
+The serving utility delivers 480 V three-phase power to the 1200 A service entrance breaker, the utility demarcation point. Power passes through the revenue-grade kWh meter (metering before the load for accurate billing) then to the 1000 A main switchgear breaker that feeds the DCFC distribution section. Four branch circuit breakers fan out: two 350 A breakers supply the 150 kW dispensers (Dispensers 1 and 2), one 125 A breaker supplies the 50 kW dispenser (Dispenser 3), and one 350 A breaker feeds a make-ready stub — raceway, conductors, and a breaker space held for a future 150 kW unit. The site management panel receives a small 208 V tap from the switchgear for EVSE networking hardware, camera systems, and canopy lighting. Total installed load is 350 kW; service is sized to 560 kW to accommodate the make-ready future load without utility upgrade.

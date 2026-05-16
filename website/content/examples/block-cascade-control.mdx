@@ -1,0 +1,55 @@
+---
+title: Cascade temperature control
+description: Two-loop cascade control for a heat exchanger — outer temperature loop sets the setpoint for the inner flow loop, reducing disturbance rejection time.
+diagram: block
+standard: Ogata control systems
+industry: [industrial, process]
+persona: For the process control engineer
+complexity: 3
+tags: [block, cascade, temperature, flow, heat-exchanger, feedback, process-control]
+featured: false
+relatedLink:
+  label: Block syntax
+  href: /docs/block
+status: published
+dsl: |
+  blockdiagram "Cascade Temperature Control"
+  r_temp = signal("r_temp (temp setpoint)")
+  C_outer = block("Temp Controller C₁(s)") [role: controller]
+  r_flow = signal("r_flow (inner setpoint)")
+  C_inner = block("Flow Controller C₂(s)") [role: controller]
+  valve = block("Valve Actuator") [role: actuator]
+  G_process = block("Heat Exchanger G(s)") [role: plant]
+  y_temp = signal("y_temp (temperature)")
+  y_flow = signal("y_flow (flow)")
+  err_outer = sum(+r_temp, -y_temp)
+  err_inner = sum(+r_flow, -y_flow)
+  in -> r_temp
+  r_temp -> err_outer
+  err_outer -> C_outer
+  C_outer -> r_flow
+  r_flow -> err_inner
+  err_inner -> C_inner
+  C_inner -> valve
+  valve -> G_process
+  G_process -> y_temp
+  G_process -> y_flow
+  y_temp -> err_outer
+  y_flow -> err_inner
+---
+
+## Scenario
+
+Cascade control appears in oil refineries, chemical reactors, and HVAC systems wherever a slow outer variable — temperature — must be decoupled from faster inner disturbances in flow or pressure. The outer loop generates a dynamic setpoint for the inner loop, so steam-flow upsets are rejected by the fast inner controller before they ever disturb the temperature sensor.
+
+## Annotation key
+
+- `err_outer = sum(+r_temp, -y_temp)` — outer summing junction computes temperature error
+- `C_outer` — outer (primary) controller; its output `r_flow` becomes the inner loop's setpoint
+- `err_inner = sum(+r_flow, -y_flow)` — inner summing junction computes flow error
+- `C_inner` / `valve` — inner (secondary) controller driving the valve actuator
+- `G_process -> y_flow` — flow measurement feedback closes the inner loop independently of temperature
+
+## How to read
+
+Follow the signal flow left to right. The operator's temperature setpoint `r_temp` enters the outer summing junction, which subtracts the measured temperature `y_temp` to produce a temperature error. The outer controller `C₁(s)` converts this error into a flow setpoint `r_flow`. The inner loop then tracks `r_flow` through its own summing junction, controller `C₂(s)`, and valve actuator, manipulating steam flow through the heat exchanger. Both feedback paths close independently, letting the inner loop reject flow disturbances roughly ten times faster than the outer loop can respond.

@@ -1,0 +1,53 @@
+---
+title: Aging-in-place caregiver support network
+description: "Ecomap for an 81-year-old woman aging-in-place: family caregivers, home health aide, Medicare, faith community, and senior center connections."
+diagram: ecomap
+standard: Hartman 1978
+industry: [healthcare, social-work, gerontology]
+persona: For the geriatric social worker
+complexity: 2
+tags: [ecomap, elderly, caregiver, aging-in-place, geriatric, medicare, social-work]
+featured: false
+relatedLink:
+  label: Ecomap syntax
+  href: /docs/ecomap
+status: published
+dsl: |
+  ecomap "Margaret, age 81 — Aging-in-Place Assessment"
+    center: client [label: "Margaret, 81"]
+    daughter [label: "Daughter (primary caregiver)", category: family]
+    son [label: "Son (out of state)", category: family]
+    aide [label: "Home Health Aide (3×/wk)", category: health]
+    pcp [label: "Primary Care MD", category: health]
+    cardiologist [label: "Cardiologist", category: health]
+    medicare [label: "Medicare Part A/B", category: financial]
+    church [label: "Grace Lutheran Church", category: spiritual]
+    senior_center [label: "Oak Park Senior Center", category: community]
+    neighbor [label: "Neighbor Mrs. Kim", category: social]
+    daughter === client [label: "daily visits — caregiver burden high"]
+    son --- client [label: "monthly calls — geographic distance"]
+    aide === client [label: "bathing, meals, medication reminders"]
+    pcp <-> client [label: "quarterly — telehealth since 2023"]
+    cardiologist --> client [label: "CHF management — 6-month follow-up"]
+    medicare --> client [label: "covers home health — 60-day cert"]
+    church --> client [label: "weekly visitor volunteer"]
+    senior_center --- client [label: "transport lapsed — no longer attending"]
+    neighbor --> client [label: "grocery errands — informal"]
+---
+
+## Scenario
+
+A geriatric social worker draws this ecomap during a home assessment for Margaret, an 81-year-old living alone with congestive heart failure and early-stage cognitive impairment. The daughter has requested a care plan review because she is the sole in-person caregiver and is showing signs of burnout. The ecomap immediately surfaces two risks: the lapsed senior center connection (a key social resource that has gone dormant) and the son's minimal involvement despite being a potential remote-support resource. It becomes the basis for the care conference agenda.
+
+## Annotation key
+
+- `===` — strong connection; high-quality, frequent, reliable
+- `---` — tenuous connection; infrequent, geographically limited, or at risk of lapsing
+- `-->` — directional support flowing toward Margaret; she is the recipient
+- `<->` — reciprocal relationship; mutual engagement (e.g., PCP telehealth where Margaret actively participates)
+- `[label: "..."]` — edge label adds clinical context: frequency, mode, and quality notes
+- `category: health / financial / spiritual / community / social / family` — determines node color and cluster in the rendered diagram
+
+## How to read
+
+Margaret's strongest support systems are her daughter (strong tie, daily visits) and home health aide (strong tie, three visits per week). Both are showing strain signals: the edge label on daughter notes high caregiver burden. The PCP relationship is reciprocal and active via telehealth; the cardiologist provides directional specialist management. Medicare covers the home health certification (60-day limit — a renewal flag for the social worker). Two systems have weakened: the son's connection is tenuous due to geographic distance, and the senior center connection has lapsed entirely because transport is no longer arranged. Mrs. Kim provides informal grocery support — an unformalized community asset. The care plan recommendation: restore senior center transport, formally engage the son in remote care coordination tasks, and refer the daughter to a caregiver support group.

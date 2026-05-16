@@ -1,0 +1,44 @@
+---
+title: 3-op-amp instrumentation amplifier
+description: Three-op-amp instrumentation amplifier with gain resistor Rg — the standard front-end for differential sensors and biomedical amplifiers.
+diagram: circuit
+standard: IEEE 315
+industry: [biomedical, hardware]
+persona: For the biomedical EE
+complexity: 4
+tags: [opamp, instrumentation-amplifier, differential, biomedical, sensor, gain]
+featured: false
+relatedLink:
+  label: Circuit syntax
+  href: /docs/circuit
+status: published
+dsl: |
+  circuit "3-Op-Amp Instrumentation Amplifier" netlist
+  V_pos vcc 0 15V
+  V_neg 0 vee 15V
+  Vp vp 0 ac 5mV
+  Vn vn 0 ac 0V
+  U1A u1a_out vn u1a_out vcc vee opamp value="OP07"
+  U1B u1b_out vp u1b_out vcc vee opamp value="OP07"
+  Rg u1a_out u1b_out 2k
+  R1a u1a_out mid1 25k
+  R1b mid1 u2_out 25k
+  R2a u1b_out mid2 25k
+  R2b mid2 0 25k
+  U2 u2_out mid1 mid2 vcc vee opamp value="OP07"
+---
+
+## Scenario
+
+The three-op-amp instrumentation amplifier (INA) extracts tiny differential signals — the voltage difference between two inputs — while rejecting common-mode noise that appears on both inputs simultaneously. It is the standard front-end for ECG electrodes, Wheatstone bridge pressure sensors, thermocouple interfaces, and any measurement where the signal source is floating or noisy. Gain = 1 + 50 kΩ/Rg; with Rg = 2 kΩ, Gain = 26.
+
+## Annotation key
+
+- `U1A / U1B` — the two input buffer op-amps; each unity-buffers one differential input while the shared Rg resistor between their outputs sets the gain
+- `Rg u1a_out u1b_out 2k` — single gain-setting resistor; decreasing Rg increases gain (Gain = 1 + 50 kΩ/Rg); this is the only component to change when adjusting gain
+- `R1a, R1b, R2a, R2b` — precision resistor divider network (matched 25 kΩ) forming the differential amplifier around U2; must be tightly matched for high CMRR
+- `U2` — the output difference amplifier stage; subtracts the two buffered outputs and applies the fixed ×1 difference gain; the mid-point taps provide the subtraction node
+
+## How to read
+
+Stage 1 (U1A and U1B) buffers each input terminal independently. The voltage across Rg equals the differential input voltage; because both op-amps force their inverting inputs to match their non-inverting inputs (virtual short), the gain current I = Vdiff/Rg flows through both R1a resistors, so each output shifts by Vdiff × R1/Rg. Stage 2 (U2 with matched R2 network) performs precision subtraction, rejecting any common-mode voltage that rides on both U1A and U1B outputs equally. The result at `u2_out` is the amplified differential signal with common-mode rejection ratios exceeding 100 dB in precision designs.

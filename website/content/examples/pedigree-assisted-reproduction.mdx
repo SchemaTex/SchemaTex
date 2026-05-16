@@ -1,0 +1,43 @@
+---
+title: ART pedigree — IVF, gamete donor, gestational surrogate
+description: Assisted reproduction technology pedigree with egg donor, sperm from intended father, and gestational surrogate — Bennett 2022 / NSGC ART symbols.
+diagram: pedigree
+standard: Bennett 2022 / NSGC ART notation
+industry: [healthcare, reproductive-medicine]
+persona: For the reproductive endocrinologist
+complexity: 4
+tags: [pedigree, art, ivf, egg-donor, surrogate, assisted-reproduction, nsgc, bennett-2022]
+featured: false
+relatedLink:
+  label: Pedigree syntax
+  href: /docs/pedigree
+status: published
+dsl: |
+  pedigree "ART Family — IVF with Egg Donor and Gestational Surrogate"
+    intended_father [male, 1985, unaffected, label: "Intended Father"]
+    intended_mother [female, 1987, unaffected, label: "Intended Mother"]
+    egg_donor [female, 1995, donor, label: "Egg Donor (anon.)"]
+    surrogate [female, 1990, surrogate, label: "Gestational Carrier"]
+    intended_father -- intended_mother
+    egg_donor -- intended_father [donor: egg]
+      embryo_carrier [surrogate: surrogate]
+        child1 [female, 2022, proband, genotype: "Genetic parents: IF + Donor", label: "Daughter"]
+---
+
+## Scenario
+
+A reproductive endocrinologist documents the conception and birth of a daughter (child1, proband) conceived through in-vitro fertilization using the intended father's sperm and an anonymous egg donor's oocyte. The resulting embryo was transferred to and carried by a gestational surrogate (who has no genetic relationship to the child). The intended parents are the legal and social parents. This pedigree structure — required for neonatal records, pediatric genetics intake, and any future reproductive risk counseling — must distinguish four distinct roles: intended mother (social/legal parent, no genetic contribution), intended father (genetic and legal parent), egg donor (genetic contributor, no parental role), and gestational surrogate (gestational carrier, no genetic or legal-parent role). Bennett 2022 ART symbols and NSGC 2008 guidelines both specify distinct visual encoding for each role.
+
+## Annotation key
+
+- `donor` — diamond symbol per Bennett 2022 / NSGC ART notation; used here for the anonymous egg donor; indicates a gamete contributor with no parental legal or social role
+- `surrogate` — designated carrier symbol per Bennett 2022; used for the gestational surrogate; carries the embryo to term but contributes no genetic material and holds no parental legal role
+- `[donor: egg]` — relationship qualifier on the egg donor's coupling line to the intended father's gamete; indicates the nature of the gametic contribution (oocyte)
+- `intended_father -- intended_mother` — standard mating line between the intended (legal/social) parents; no shared genetic offspring line needed for the intended mother since she contributed no gametes
+- `[surrogate: surrogate]` — identifies the gestational carrier for the embryo; child's birth line descends from the surrogate's womb, not from the intended mother
+- `proband` — arrow on child1; the child is the index case for pediatric genetic records
+- `genotype: "Genetic parents: IF + Donor"` — clinical annotation recording the genetic parentage for medical history and future counseling; intended mother's genetic non-contribution is documented explicitly
+
+## How to read
+
+The intended parents (left) are a legally married couple. The intended mother contributed no genetic material; she is represented by an unaffected open circle connected to the intended father by a standard mating line but without a descent line to the child — her parental role is social and legal only. The egg donor (diamond symbol, upper right) contributed the oocyte; she is coupled to the intended father's sperm via a `[donor: egg]` relationship line. The resulting embryo was carried by the gestational surrogate (designated carrier symbol). The child's birth descent line flows from the surrogate, encoding the gestational path. The child inherits genetic material from the intended father and the egg donor only — the genotype annotation makes this explicit for future clinical use. If the child ever presents for her own reproductive genetic counseling, the pedigree immediately distinguishes her genetic risk profile (inherited from intended father + anonymous donor) from the family medical history of her social parents, preventing misattribution of heritable conditions.

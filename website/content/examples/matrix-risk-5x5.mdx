@@ -1,0 +1,69 @@
+---
+title: Risk register — 5×5 heat map (ISO 31000)
+description: ISO 31000 5×5 likelihood × severity risk heat map with 8 project risks plotted — the standard risk-management deliverable for any project charter.
+diagram: matrix
+standard: ISO 31000:2018
+industry: [risk-management, consulting]
+persona: For the project risk manager
+complexity: 3
+tags: [matrix, risk, iso31000, heat-map, likelihood, severity, project]
+featured: false
+relatedLink:
+  label: Matrix syntax
+  href: /docs/matrix
+status: published
+dsl: |
+  matrix "Project Risk Register — ERP Migration"
+  style: heat
+  rows: ["Rare", "Unlikely", "Possible", "Likely", "Almost Certain"]
+  cols: ["Negligible", "Minor", "Moderate", "Major", "Catastrophic"]
+  cell (0,0): low
+  cell (1,0): low
+  cell (2,0): low
+  cell (3,0): low
+  cell (4,0): medium
+  cell (0,1): low
+  cell (1,1): low
+  cell (2,1): medium
+  cell (3,1): medium
+  cell (4,1): high
+  cell (0,2): low
+  cell (1,2): medium
+  cell (2,2): medium
+  cell (3,2): high
+  cell (4,2): extreme
+  cell (0,3): medium
+  cell (1,3): medium
+  cell (2,3): high
+  cell (3,3): extreme
+  cell (4,3): extreme
+  cell (0,4): medium
+  cell (1,4): high
+  cell (2,4): extreme
+  cell (3,4): extreme
+  cell (4,4): extreme
+  dot "Vendor delay" at (2,2)
+  dot "Data breach" at (1,4)
+  dot "Scope creep" at (3,3)
+  dot "Key staff turnover" at (2,3)
+  dot "Integration failure" at (1,3)
+  dot "Budget overrun" at (3,2)
+  dot "Regulatory change" at (0,3)
+  dot "User adoption failure" at (2,4)
+---
+
+## Scenario
+
+A project risk manager is populating the risk section of an ERP migration project charter. ISO 31000:2018 requires that risks be assessed on two independent axes — likelihood of occurrence and severity of consequence — then plotted on a heat map to determine which risks require immediate treatment plans and which can be monitored. This chart will be reviewed at the project steering committee and drives the risk-response budget allocation.
+
+## Annotation key
+
+- `style: heat` — renders a colour-filled grid; cell colour is determined by the risk rating keyword
+- `rows` — likelihood scale, bottom to top: Rare (< 5 % probability), Unlikely (5–20 %), Possible (20–50 %), Likely (50–80 %), Almost Certain (> 80 %)
+- `cols` — consequence / severity scale, left to right: Negligible → Minor → Moderate → Major → Catastrophic
+- Cell ratings: `low` (green) = accept and monitor; `medium` (yellow) = treat or accept with controls; `high` (orange) = treat with priority; `extreme` (red) = immediate treatment required, may require escalation to executive sponsor
+- `dot "Label" at (col, row)` — plots a named risk on the heat map at the rated coordinate; coordinates follow the (severity, likelihood) convention
+
+## How to read
+
+The colour gradient runs from green in the bottom-left (low severity, low likelihood) to red in the top-right (catastrophic, almost certain). Any dot landing in an `extreme` cell (red) must have a documented treatment plan approved before the project can proceed to execution. This chart has three extreme risks: User Adoption Failure (almost certain, catastrophic), Scope Creep (likely, major), and Budget Overrun (possible, major) — the project manager needs mitigations for each before the charter is signed. Data Breach lands in a high cell: a cybersecurity review and data-handling controls should be scoped into the migration plan. Regulatory Change is rated low likelihood but still warrants a monitor because the consequence would be moderate. Vendor Delay and Integration Failure sit in medium territory — contingency buffer in the schedule is the standard treatment.

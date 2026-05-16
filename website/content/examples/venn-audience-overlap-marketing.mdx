@@ -1,0 +1,41 @@
+---
+title: Paid audience overlap — Meta × Google × TikTok
+description: Three ad-platform audience overlap for performance marketing — Meta, Google, and TikTok intersection counts to guide budget allocation.
+diagram: venn
+standard: Venn (1880)
+industry: [marketing, advertising]
+persona: For the performance marketing manager
+complexity: 2
+tags: [venn, audience, meta, google, tiktok, marketing, overlap, paid]
+featured: false
+relatedLink:
+  label: Venn syntax
+  href: /docs/venn
+status: published
+dsl: |
+  venn "Q4 Holiday Campaign — Paid Audience Overlap"
+  set meta "Meta (FB + IG)" [color: "#1877F2"]
+  set google "Google Ads" [color: "#EA4335"]
+  set tiktok "TikTok" [color: "#010101"]
+  meta & google : 18400
+  meta & tiktok : 24700
+  google & tiktok : 9200
+  meta & google & tiktok : 5100
+  meta only : 61000
+  google only : 38500
+  tiktok only : 42300
+---
+
+## Scenario
+
+A performance marketing manager is finalising the Q4 holiday campaign budget across three platforms. The Venn reveals that a meaningful audience of 5,100 users is targetable on all three channels simultaneously — this cohort will see the brand multiple times, so frequency capping is critical. The 61k Meta-exclusive pool is the largest single-platform opportunity, while TikTok's 42k exclusive reach justifies keeping it in the mix even at a higher CPM.
+
+## Annotation key
+
+- `set ID "Label"` — one ad platform per circle
+- `A & B : n` — users reachable on both platforms (multi-touch risk)
+- `A only : n` — users reachable exclusively on one platform
+
+## How to read
+
+Each circle represents the targetable audience on one platform. Intersection counts show users reachable across multiple channels — useful for setting frequency caps and coordinating creative sequencing. The triple intersection (5,100) is the most saturated segment and should receive unified messaging. Exclusive regions show where each platform provides unique incremental reach that the others cannot access.

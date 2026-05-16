@@ -1,0 +1,44 @@
+---
+title: Binary search algorithm
+description: Iterative binary search over a sorted array — the classic CS teaching flowchart, from array + target input to found/not-found output.
+diagram: flowchart
+standard: ISO 5807:1985
+industry: [education, software]
+persona: For the CS teacher
+complexity: 2
+tags: [algorithm, binary-search, teaching, cs, sorted-array, iterative]
+featured: false
+relatedLink:
+  label: Flowchart syntax
+  href: /docs/flowchart
+status: published
+dsl: |
+  flowchart TD
+    input([Input: sorted array A, target T]) --> init[low = 0, high = n − 1]
+    init --> loopcheck{low ≤ high?}
+    loopcheck -->|No| notfound([Return −1 — target not found])
+    loopcheck -->|Yes| mid[mid = floor((low + high) / 2)]
+    mid --> eqcheck{A[mid] == T?}
+    eqcheck -->|Yes| found([Return mid — target found at index mid])
+    eqcheck -->|No| ltcheck{A[mid] < T?}
+    ltcheck -->|Yes — search right half| newlow[low = mid + 1]
+    newlow --> loopcheck
+    ltcheck -->|No — search left half| newhigh[high = mid − 1]
+    newhigh --> loopcheck
+---
+
+## Scenario
+
+A CS teacher is preparing lecture slides on divide-and-conquer algorithms and wants a textbook-quality flowchart students can annotate alongside the pseudocode. The iterative formulation makes the loop invariant — the search space halving each iteration — visually explicit, and the two boundary-update branches give students a concrete mental model for why the algorithm runs in O(log n) time.
+
+## Annotation key
+
+- `([…])` — stadium; algorithm entry with inputs and terminal return values
+- `{…}` — diamond; loop-continuation test and value-comparison decisions
+- `[…]` — rectangle; variable initialization and index update assignments
+- `-->|label|` — branch labels stating the condition outcome and which half is selected
+- Back edges from `newlow` and `newhigh` to `loopcheck` form the iterative loop body
+
+## How to read
+
+The algorithm initializes two index pointers — `low` at zero and `high` at the last index — then enters the main loop gate. If `low` exceeds `high` the search space is exhausted and −1 is returned. Otherwise `mid` is computed as the floor average of the two pointers and the element at that index is compared to the target. An exact match terminates with the index; a mismatch routes to the less-than check, which moves `low` one past `mid` to discard the left half, or moves `high` one below `mid` to discard the right half. Either update sends control back to the loop gate, halving the remaining search space on every iteration.

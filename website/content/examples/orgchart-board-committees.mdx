@@ -1,0 +1,53 @@
+---
+title: Corporate board and committee structure
+description: Public-company board governance — full board with audit, compensation, nominating/governance, and risk subcommittees per SEC requirements.
+diagram: orgchart
+standard: SEC / NYSE governance
+industry: [corporate-governance, legal]
+persona: For the corporate secretary
+complexity: 3
+tags: [orgchart, board, governance, audit, compensation, sec, committee]
+featured: false
+relatedLink:
+  label: Org chart syntax
+  href: /docs/orgchart
+status: published
+dsl: |
+  orgchart "Acme Corp — Board & Committee Structure"
+  chair: "Victoria Harmon" | Board Chair [role: advisor]
+    audit_chair: "Ellen Frost, CPA" | Audit Committee Chair [role: finance]
+      audit_m1: "James Liu" | Audit Committee Member [role: finance]
+      audit_m2: "Priya Mehta" | Audit Committee Member [role: finance]
+    comp_chair: "Thomas Osei" | Compensation Committee Chair [role: hr]
+      comp_m1: "Sarah Nakamura" | Compensation Committee Member [role: hr]
+      comp_m2: "Rafael Dominguez" | Compensation Committee Member [role: hr]
+    nom_chair: "Linda Abramowitz" | Nom. & Governance Chair [role: legal]
+      nom_m1: "Derek Abubakar" | Nom. & Governance Member [role: legal]
+      nom_m2: "Yuki Fernandez" | Nom. & Governance Member [role: legal]
+    risk_chair: "Raj Mehta" | Risk Committee Chair [role: ops]
+      risk_m1: "Cynthia Okonkwo" | Risk Committee Member [role: ops]
+      risk_m2: "Simon Park" | Risk Committee Member [role: ops]
+  board_ceo: "David Park" | CEO (Management) [role: ceo]
+    mgmt_cfo: "Angela Torres" | CFO [role: finance]
+    mgmt_clo: "Marcus Reyes" | Chief Legal Officer [role: legal]
+  board_ceo -.-> audit_chair
+  board_ceo -.-> comp_chair
+  board_ceo -.-> nom_chair
+  board_ceo -.-> risk_chair
+---
+
+## Scenario
+
+The corporate secretary is preparing the annual proxy statement and needs to document the board's committee structure as required by SEC Regulation S-K Item 407 and NYSE Listed Company Rules. The four standing committees — Audit, Compensation, Nominating & Governance, and Risk — each consist entirely of independent directors. The CEO and CFO participate in committee meetings by invitation and report to the relevant committees, but are not members. The dotted lines from the CEO to each committee chair represent this management reporting relationship for operational matters.
+
+## Annotation key
+
+- `chair: "Victoria Harmon" | Board Chair [role: advisor]` — independent chair; non-executive
+- Committee chairs and members use `[role: finance]`, `[role: hr]`, `[role: legal]`, `[role: ops]` to visually distinguish oversight focus
+- `board_ceo: "David Park" | CEO (Management)` — management side; inside-the-box CEO distinct from the independent board
+- `board_ceo -.-> audit_chair` — dotted lines represent management's accountability to each committee, not reporting hierarchy
+- All committee members must be independent directors under SEC Rule 10A-3 (Audit) and NYSE Section 303A
+
+## How to read
+
+The board chart has two distinct clusters. The upper cluster — Board Chair and the four committees — is the governance structure: independent directors exercising fiduciary oversight. The lower cluster — CEO and management — represents the executive team that is accountable to the board. Dotted lines from the CEO to each committee chair indicate that management attends and reports to committees without being members or having voting rights. The Audit Committee chair (Ellen Frost, CPA) satisfies the SEC's financial expert disclosure requirement. NYSE rules require that Compensation and Nom/Gov committees be composed solely of independent directors; the Risk Committee follows the same practice here but is not legally mandated to be fully independent.

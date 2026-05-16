@@ -26,6 +26,67 @@ export interface GeneratedSyntax {
 
 export const EXAMPLES: readonly GeneratedExample[] = [
   {
+    "slug": "block-adaptive-cruise",
+    "diagram": "block",
+    "title": "Automotive adaptive cruise control (ACC)",
+    "description": "Automotive ACC block diagram — radar range/range-rate, safety gap controller, speed controller, and powertrain plant — per ISO 15622.",
+    "standard": "ISO 15622",
+    "tags": [
+      "block",
+      "acc",
+      "adaptive-cruise",
+      "radar",
+      "automotive",
+      "iso15622",
+      "safety",
+      "gap-control"
+    ],
+    "complexity": 4,
+    "featured": false,
+    "dsl": "blockdiagram \"Automotive Adaptive Cruise Control (ACC)\"\nv_set = signal(\"v_set (speed setpoint)\")\nd_set = signal(\"d_set (desired gap)\")\nradar = block(\"Radar Sensor\") [role: sensor]\nd_actual = signal(\"d_actual (measured gap)\")\nv_lead = signal(\"v_lead (lead vehicle speed)\")\nHMI_override = signal(\"HMI override\")\nerr_gap = sum(+d_set, -d_actual)\nC_gap = block(\"Gap Controller\") [role: controller]\nv_ref = signal(\"v_ref (speed reference)\")\nerr_v = sum(+v_ref, -v_ego)\nC_speed = block(\"Speed / Brake Controller\") [role: controller]\na_cmd = signal(\"a_cmd (accel command)\")\nG_powertrain = block(\"Engine + Brake + Vehicle Dynamics\") [role: plant]\nv_ego = signal(\"v_ego (ego speed)\")\nin -> v_set\nin -> d_set\nin -> HMI_override\nradar -> d_actual\nradar -> v_lead\nd_set -> err_gap\nd_actual -> err_gap\nerr_gap -> C_gap\nv_lead -> C_gap\nHMI_override -> C_gap\nC_gap -> v_ref\nv_set -> C_gap\nv_ref -> err_v\nv_ego -> err_v\nerr_v -> C_speed\nHMI_override -> C_speed\nC_speed -> a_cmd\na_cmd -> G_powertrain\nG_powertrain -> v_ego\nv_ego -> err_v",
+    "notes": "## Scenario\n\nISO 15622 defines the functional requirements for adaptive cruise control systems used in passenger cars and light trucks. An ACC system must maintain a safe headway gap to a lead vehicle while respecting the driver's commanded speed limit, handling cut-ins, and supporting driver override at any time. This block diagram represents the top-level functional decomposition that an ADAS systems engineer would draw during concept design.\n\n## Annotation key\n\n- `radar` — radar sensor block; outputs measured gap `d_actual` and lead vehicle speed `v_lead`\n- `err_gap = sum(+d_set, -d_actual)` — gap error: difference between desired and actual following distance\n- `C_gap` — gap controller; receives gap error and lead speed, outputs a speed reference `v_ref` bounded by `v_set`\n- `C_speed` — speed/brake controller; inner loop tracking `v_ref`; also receives HMI override for driver intervention\n- `G_powertrain` — combined powertrain plant: engine torque, brake system, and longitudinal vehicle dynamics\n- `HMI_override` — driver override signal (brake pedal, throttle kick-down, or system disengage)\n\n## How to read\n\nThe driver's desired gap `d_set` and maximum speed `v_set` enter the gap controller, which also reads the radar-measured gap and lead vehicle speed. The gap controller outputs a target speed reference `v_ref` that is always bounded by `v_set`. The inner speed controller then drives the powertrain to track `v_ref`, closing the speed loop with `v_ego` feedback. Driver interventions via HMI override pre-empt both controllers, satisfying the ISO 15622 requirement that the driver always has priority. The two-loop cascade architecture lets the gap outer loop be tuned conservatively for comfort while the speed inner loop responds quickly to transient demands."
+  },
+  {
+    "slug": "block-cascade-control",
+    "diagram": "block",
+    "title": "Cascade temperature control",
+    "description": "Two-loop cascade control for a heat exchanger — outer temperature loop sets the setpoint for the inner flow loop, reducing disturbance rejection time.",
+    "standard": "Ogata control systems",
+    "tags": [
+      "block",
+      "cascade",
+      "temperature",
+      "flow",
+      "heat-exchanger",
+      "feedback",
+      "process-control"
+    ],
+    "complexity": 3,
+    "featured": false,
+    "dsl": "blockdiagram \"Cascade Temperature Control\"\nr_temp = signal(\"r_temp (temp setpoint)\")\nC_outer = block(\"Temp Controller C₁(s)\") [role: controller]\nr_flow = signal(\"r_flow (inner setpoint)\")\nC_inner = block(\"Flow Controller C₂(s)\") [role: controller]\nvalve = block(\"Valve Actuator\") [role: actuator]\nG_process = block(\"Heat Exchanger G(s)\") [role: plant]\ny_temp = signal(\"y_temp (temperature)\")\ny_flow = signal(\"y_flow (flow)\")\nerr_outer = sum(+r_temp, -y_temp)\nerr_inner = sum(+r_flow, -y_flow)\nin -> r_temp\nr_temp -> err_outer\nerr_outer -> C_outer\nC_outer -> r_flow\nr_flow -> err_inner\nerr_inner -> C_inner\nC_inner -> valve\nvalve -> G_process\nG_process -> y_temp\nG_process -> y_flow\ny_temp -> err_outer\ny_flow -> err_inner",
+    "notes": "## Scenario\n\nCascade control appears in oil refineries, chemical reactors, and HVAC systems wherever a slow outer variable — temperature — must be decoupled from faster inner disturbances in flow or pressure. The outer loop generates a dynamic setpoint for the inner loop, so steam-flow upsets are rejected by the fast inner controller before they ever disturb the temperature sensor.\n\n## Annotation key\n\n- `err_outer = sum(+r_temp, -y_temp)` — outer summing junction computes temperature error\n- `C_outer` — outer (primary) controller; its output `r_flow` becomes the inner loop's setpoint\n- `err_inner = sum(+r_flow, -y_flow)` — inner summing junction computes flow error\n- `C_inner` / `valve` — inner (secondary) controller driving the valve actuator\n- `G_process -> y_flow` — flow measurement feedback closes the inner loop independently of temperature\n\n## How to read\n\nFollow the signal flow left to right. The operator's temperature setpoint `r_temp` enters the outer summing junction, which subtracts the measured temperature `y_temp` to produce a temperature error. The outer controller `C₁(s)` converts this error into a flow setpoint `r_flow`. The inner loop then tracks `r_flow` through its own summing junction, controller `C₂(s)`, and valve actuator, manipulating steam flow through the heat exchanger. Both feedback paths close independently, letting the inner loop reject flow disturbances roughly ten times faster than the outer loop can respond."
+  },
+  {
+    "slug": "block-feedforward-disturbance",
+    "diagram": "block",
+    "title": "Feedforward + feedback hybrid control",
+    "description": "Feedforward disturbance compensation with PID feedback — the feedforward path cancels known load changes before they affect the output.",
+    "standard": "Åström & Wittenmark",
+    "tags": [
+      "block",
+      "feedforward",
+      "feedback",
+      "pid",
+      "disturbance",
+      "hybrid",
+      "process-control"
+    ],
+    "complexity": 3,
+    "featured": false,
+    "dsl": "blockdiagram \"Feedforward + Feedback Hybrid Control\"\nr = signal(\"r (setpoint)\")\nd = signal(\"d (measurable disturbance)\")\nC_ff = block(\"Feedforward Model C_ff(s)\") [role: model]\nu_ff = signal(\"u_ff (feedforward action)\")\nC_fb = block(\"PID Controller C_fb(s)\") [role: controller]\nu_fb = signal(\"u_fb (feedback action)\")\nG = block(\"Plant G(s)\") [role: plant]\ny = signal(\"y (output)\")\nerr = sum(+r, -y)\nsum_u = sum(+u_ff, +u_fb)\nin -> r\nin -> d\nd -> C_ff\nC_ff -> u_ff\nr -> err\nerr -> C_fb\nC_fb -> u_fb\nu_ff -> sum_u\nu_fb -> sum_u\nsum_u -> G\nd -> G\nG -> y\ny -> err",
+    "notes": "## Scenario\n\nFeedforward control is used whenever a measurable disturbance — a load change, a feed-rate variation, or an ambient temperature shift — can be modeled and pre-cancelled before it propagates to the output. Pure feedback always reacts after the fact; the feedforward path acts simultaneously with the disturbance, ideally leaving zero steady-state offset for the PID loop to clean up.\n\n## Annotation key\n\n- `d` — measurable disturbance signal; enters both the feedforward model and the plant\n- `C_ff` — feedforward model block; computes the control action needed to cancel `d` at the plant output\n- `C_fb` — PID feedback controller; handles model errors, unmeasured disturbances, and setpoint tracking\n- `sum_u = sum(+u_ff, +u_fb)` — summing junction that adds feedforward and feedback control actions\n- `d -> G` — the disturbance also enters the plant directly, representing the real physical effect\n\n## How to read\n\nThe control signal `u` is the sum of two contributions: the feedforward action `u_ff`, computed directly from the measured disturbance `d` via the inverse plant model `C_ff(s)`, and the feedback action `u_fb` from the PID controller. When the feedforward model is accurate, `u_ff` cancels the disturbance effect at the plant input and the PID sees only residual error, dramatically reducing the load-change transient. The feedback loop remains essential to handle unmeasured disturbances and model inaccuracies."
+  },
+  {
     "slug": "block-pid-loop",
     "diagram": "block",
     "title": "PID control loop",
@@ -42,6 +103,26 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "featured": false,
     "dsl": "blockdiagram \"PID control loop\"\nC = block(\"PID C(s)\") [role: controller]\nG = block(\"Plant G(s)\") [role: plant]\nerr = sum(+r, -y)\nr = signal(\"r (setpoint)\")\ny = signal(\"y (output)\")\nin -> r\nr -> err\nerr -> C\nC -> G\nG -> y\nG -> err",
     "notes": "## Scenario\n\nThe standard closed-loop PID block diagram appears in every control systems textbook (Ogata, Franklin, Åström) and every control system design spec sheet. Schematex renders it from a signal-flow description — not a generic flowchart — using proper summing junction symbols and automatic feedback routing.\n\n## Annotation key\n\n- `block(\"label\") [role: ...]` — transfer function block; `role: controller` and `role: plant` affect visual styling\n- `sum(+r, -y)` — summing junction: adds the `+r` (reference) signal and subtracts the `-y` (output feedback)\n- `signal(\"label\")` — named signal node\n- `G -> err` — the feedback path: plant output `y` routes back to the summing junction\n\n## How to read\n\nThe setpoint `r` enters the summing junction `err`, which subtracts the plant output `y` to compute the error signal. The PID controller `C(s)` processes the error and drives the plant `G(s)`. The plant output `y` is both the system output and the feedback signal. The loop is closed when `G -> err` feeds `y` back to the summing junction."
+  },
+  {
+    "slug": "block-state-space-observer",
+    "diagram": "block",
+    "title": "Plant + Kalman observer (state estimator)",
+    "description": "State-space system with a Kalman filter observer — the observer reconstructs unmeasured states x̂ from noisy output y for a GNC application.",
+    "standard": "Kalman (1960) / modern control",
+    "tags": [
+      "block",
+      "kalman",
+      "observer",
+      "state-space",
+      "gnc",
+      "aerospace",
+      "estimator"
+    ],
+    "complexity": 5,
+    "featured": false,
+    "dsl": "blockdiagram \"State-Space Plant with Kalman Observer\"\nu = signal(\"u (control input)\")\nG_plant = block(\"Plant  A, B, C, D\") [role: plant]\ny = signal(\"y (noisy measurement)\")\ny_hat = signal(\"ŷ (predicted output)\")\nerr_obs = sum(+y, -y_hat)\nK_obs = block(\"Kalman Observer  L\") [role: observer]\nx_hat = signal(\"x̂ (state estimate)\")\nC_mat = block(\"Output Matrix  C\") [role: model]\nK_sf = block(\"State Feedback  −K\") [role: controller]\nin -> u\nu -> G_plant\nG_plant -> y\ny -> err_obs\nC_mat -> y_hat\ny_hat -> err_obs\nerr_obs -> K_obs\nK_obs -> x_hat\nu -> K_obs\nx_hat -> C_mat\nx_hat -> K_sf\nK_sf -> u",
+    "notes": "## Scenario\n\nGNC engineers, roboticists, and aerospace control designers routinely combine a state-space plant model with a Luenberger or Kalman observer to reconstruct full state vectors from partial, noisy measurements. This pattern is foundational in inertial navigation, attitude control, and autonomous vehicle state estimation — anywhere physical states (velocity, attitude rate, position) cannot all be measured directly.\n\n## Annotation key\n\n- `G_plant` — state-space plant defined by matrices A (dynamics), B (input), C (output), D (feedthrough)\n- `K_obs` — Kalman observer (or Luenberger observer) with gain matrix L; corrects the state estimate using the innovation signal\n- `err_obs = sum(+y, -y_hat)` — innovation: difference between measured output and predicted output\n- `C_mat` — output matrix block; maps the estimated state x̂ to predicted output ŷ\n- `K_sf` — state-feedback gain block; computes the control input u = −K x̂\n\n## How to read\n\nThe control input `u` drives both the real plant and the observer's internal model. The plant produces noisy measurement `y`; the observer predicts output `ŷ` from its own state estimate `x̂` via the output matrix `C`. The innovation `y − ŷ` is multiplied by the observer gain `L` and fed back to correct `x̂` continuously. The estimated state `x̂` then drives the state-feedback law `u = −K x̂`, closing the outer control loop. The separation principle guarantees that the observer and controller designs can be carried out independently."
   },
   {
     "slug": "bpmn-incident-response",
@@ -156,6 +237,67 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "notes": "The HC-SR04 is the most common ultrasonic distance sensor in beginner Arduino kits. Four pins, four wires, no driver IC needed. The sensor module is rendered as a blue PCB tile with its four pin labels (VCC / TRIG / ECHO / GND) sitting above the breadboard rows where they plug in.\n\nThe TRIG line is a digital output from the Arduino — pulse it high for 10 µs and the sensor fires an ultrasonic chirp. The ECHO line is a digital input — its high-time, in microseconds, is twice the round-trip distance divided by the speed of sound. Conventional wiring uses yellow for TRIG and green for ECHO so the two signals are visually distinguishable, though the colors carry no electrical meaning."
   },
   {
+    "slug": "circuit-555-astable",
+    "diagram": "circuit",
+    "title": "555 timer — astable LED blinker",
+    "description": "NE555 astable oscillator driving a green LED at ~1 Hz — the classic maker circuit for learning timers, duty cycle, and RC time constants.",
+    "standard": "IEEE 315",
+    "tags": [
+      "555",
+      "timer",
+      "astable",
+      "led",
+      "blinker",
+      "rc",
+      "oscillator",
+      "maker"
+    ],
+    "complexity": 1,
+    "featured": false,
+    "dsl": "circuit \"NE555 Astable LED Blinker (~1 Hz)\" netlist\nV1 vcc 0 9V\nU1 vcc vcc trig out rst ctrl dis thresh gnd 555_timer value=\"NE555\"\nRa dis vcc 10k\nRb dis thresh 68k\nC1 thresh 0 10u\nC2 ctrl 0 10n\nRled out led_a 470\nD1 led_a 0 led value=\"green\"",
+    "notes": "## Scenario\n\nThe NE555 in astable mode is the first timer circuit every maker builds. It free-runs as an oscillator with no external trigger required. Ra and Rb charge capacitor C1; when C1 reaches 2/3 Vcc the 555 discharges it through Rb until it drops to 1/3 Vcc, then the cycle repeats. The result is a square wave at pin OUT that blinks the LED at approximately 1 Hz — visible to the human eye and ideal for learning about RC time constants and duty cycles.\n\n## Annotation key\n\n- `U1 ... 555_timer value=\"NE555\"` — NE555 timer IC; internally contains two comparators, an SR flip-flop, and a discharge transistor; the pin order is vcc, trig, out, rst, ctrl, dis, thresh, gnd\n- `Ra dis vcc 10k` — charge resistor (10 kΩ) from Vcc to the discharge pin; limits charging current during the charging phase\n- `Rb dis thresh 68k` — timing resistor (68 kΩ) between the discharge and threshold pins; used for both charging (with Ra) and discharging; larger Rb gives longer LOW time, controlling duty cycle\n- `C1 thresh 0 10u` — 10 μF timing capacitor that charges and discharges between 1/3 Vcc and 2/3 Vcc; sets the oscillation period T ≈ 0.693 × (Ra + 2Rb) × C1 ≈ 1 s\n- `C2 ctrl 0 10n` — 10 nF bypass capacitor on the control voltage pin (pin 5); filters noise that could modulate the timing thresholds\n- `Rled out led_a 470` — current-limiting resistor (470 Ω) for the LED; limits forward current to ~(9V−2V)/470Ω ≈ 15 mA, a safe brightness level\n- `D1 led_a 0 led value=\"green\"` — green LED (Vf ≈ 2.1 V); illuminates when OUT goes HIGH (~Vcc), dark when OUT is LOW\n\n## How to read\n\nThe circuit oscillates continuously without any external trigger. C1 charges through Ra + Rb toward Vcc. When the voltage at `thresh` crosses 2/3 Vcc the upper comparator sets the flip-flop, pulling `dis` low and allowing C1 to discharge through Rb alone to ground. When the voltage falls below 1/3 Vcc the lower comparator resets the flip-flop, `dis` goes high-impedance, and C1 starts charging again. The output pin (OUT) is HIGH during the charge phase and LOW during discharge. The HIGH period is t_high = 0.693 × (Ra + Rb) × C1 ≈ 0.54 s; the LOW period is t_low = 0.693 × Rb × C1 ≈ 0.47 s. The LED blinks with a duty cycle of ~53%."
+  },
+  {
+    "slug": "circuit-audio-preamp",
+    "diagram": "circuit",
+    "title": "Microphone preamp with phantom power",
+    "description": "Balanced mic preamp circuit with +48V phantom power, differential input pair, and output buffer — the standard studio front-end per IEC 61938.",
+    "standard": "IEC 61938 (phantom power)",
+    "tags": [
+      "preamp",
+      "microphone",
+      "phantom-power",
+      "balanced",
+      "audio",
+      "differential",
+      "studio"
+    ],
+    "complexity": 4,
+    "featured": false,
+    "dsl": "circuit \"Balanced Mic Preamp with +48V Phantom Power\" netlist\nV48 phantom 0 48V\nRph1 phantom xlr2 6.81k\nRph2 phantom xlr3 6.81k\nC1 xlr2 inp 47u\nC2 xlr3 inn 47u\nRterm1 inp 0 6.8k\nRterm2 inn 0 6.8k\nRg inp inn 390\nU1 preout inp inn vcc vee instrumentation_amp value=\"INA217\"\nRgain_set preout 0 1k\nVcc vcc 0 15V\nVee 0 vee 15V\nC3 vcc 0 100n\nC4 vee 0 100n\nR_out preout vout 100\nCout vout 0 10u",
+    "notes": "## Scenario\n\nProfessional condenser microphones require two things from a preamp: +48 V phantom power delivered over the same XLR cable that carries the audio signal, and a differential (balanced) amplifier input that rejects the noise picked up by the cable. This circuit implements both per IEC 61938. The 6.81 kΩ phantom resistors supply DC bias to the microphone capsule while the coupling capacitors block that DC from the audio path. The INA217 instrumentation amplifier provides a gain of 1 + 6 kΩ/Rg = 100 (40 dB) with better than 80 dB CMRR, rejecting hum induced by long studio cable runs.\n\n## Annotation key\n\n- `Rph1, Rph2 phantom xlr2/3 6.81k` — precision 6.81 kΩ phantom feed resistors (IEC 61938 mandated value); supply equal +48 V to both XLR pins 2 and 3; equal voltage means no differential interference from the DC supply\n- `C1, C2 ... 47u` — 47 μF DC-blocking coupling capacitors (electrolytic, non-polarized in practice); isolate the ±48 V phantom DC from the audio differential input while passing audio frequencies above ~50 Hz\n- `Rterm1, Rterm2 inp/inn 0 6.8k` — 6.8 kΩ input termination resistors to ground; provide a DC return path for bias currents and define the source impedance seen by the INA\n- `Rg inp inn 390` — external gain resistor for the INA217 (390 Ω); sets first-stage gain to 1 + 6 kΩ/390 ≈ 16.4×; combined with second stage total gain ≈ 100×\n- `U1 ... instrumentation_amp value=\"INA217\"` — INA217 audio instrumentation amplifier; ultra-low noise (1 nV/√Hz), dual-supply ±15 V, designed for microphone preamp applications; rejects common-mode noise with >80 dB CMRR\n- `C3, C4 vcc/vee 0 100n` — 100 nF decoupling capacitors on ±15 V rails; bypass high-frequency supply noise close to the IC pins\n- `R_out / Cout` — output series resistor (100 Ω) and coupling capacitor (10 μF); isolate cable capacitance from the op-amp output and block DC from the next stage\n\n## How to read\n\nPhantom power is delivered by the +48 V rail through equal-value resistors to both XLR pins simultaneously. A condenser mic draws typically 5–10 mA DC through this path to polarize its capsule or power its internal JFET buffer. The audio signal is superimposed as a differential AC voltage (pin 2 in-phase, pin 3 out-of-phase) riding on the 48 V DC. Coupling capacitors C1 and C2 pass this AC to the differential inputs of the INA, blocking the 48 V DC entirely. The INA rejects the equal (common-mode) portion of any induced hum and amplifies only the difference — the actual microphone signal. The output is low-impedance buffered through R_out for driving long cable runs to the mixing console."
+  },
+  {
+    "slug": "circuit-buck-converter",
+    "diagram": "circuit",
+    "title": "Buck (step-down) SMPS",
+    "description": "Synchronous buck converter with MOSFET switch, catch diode, inductor, and capacitor — produces regulated 3.3V from 12V at up to 3A.",
+    "standard": "IEEE 315",
+    "tags": [
+      "buck",
+      "smps",
+      "power-converter",
+      "mosfet",
+      "inductor",
+      "step-down",
+      "switching"
+    ],
+    "complexity": 4,
+    "featured": false,
+    "dsl": "circuit \"Buck (Step-Down) Converter 12V → 3.3V 3A\" netlist\nVin vin 0 12V\nCin vin 0 100u\nM1 vin sw 0 nmos value=\"IRLZ44N\"\nD1 sw 0 schottky value=\"SS34\"\nL1 sw vout 22u\nCout vout 0 220u\nR1 vout fb 10k\nR2 fb 0 3.83k\nU1 sw gate fb vc vcc 0 dc_dc_converter value=\"LM2576-ADJ\"\nRgate gate sw 10\nVcc vcc 0 12V",
+    "notes": "## Scenario\n\nThe buck converter is the workhouse of modern power electronics, used wherever a microcontroller, FPGA, or digital circuit needs a lower voltage from a higher supply. With Vin = 12 V and a duty cycle D ≈ 27.5%, the output is regulated to 3.3 V — the standard logic voltage for ARM Cortex-M, ESP32, and Raspberry Pi. Switching at 52 kHz (LM2576 internal oscillator) the inductor stores energy during the ON phase and releases it during the OFF phase, achieving efficiencies of 85–92%, far better than a linear regulator's maximum of 3.3/12 = 27.5%.\n\n## Annotation key\n\n- `M1 vin sw 0 nmos value=\"IRLZ44N\"` — N-channel MOSFET high-side switch (IRLZ44N, 55 V, 47 A, Rds_on = 22 mΩ); driven by PWM gate signal; ON for D fraction of each cycle\n- `D1 sw 0 schottky value=\"SS34\"` — Schottky catch diode (SS34, 3 A, 40 V); conducts during the MOSFET OFF phase to provide a freewheeling current path for the inductor; Schottky chosen for low forward voltage (0.4 V) and fast recovery\n- `L1 sw vout 22u` — 22 μH power inductor; stores energy as magnetic flux during ON phase, releases it during OFF phase; the key energy-storage element — larger L = smaller current ripple; rated for 3 A+ DC current without saturation\n- `Cout vout 0 220u` — 220 μF low-ESR output capacitor; filters switching ripple; larger or lower-ESR cap reduces output ripple voltage ΔVout = ΔIL × ESR\n- `R1, R2` — resistor divider (10 kΩ and 3.83 kΩ) from Vout to FB pin; sets output voltage Vout = 1.23 × (1 + R1/R2) ≈ 3.3 V\n- `U1 ... dc_dc_converter value=\"LM2576-ADJ\"` — LM2576-ADJ PWM controller IC; senses FB voltage and adjusts duty cycle to regulate Vout; integrates oscillator, comparator, and driver\n- `Rgate gate sw 10` — 10 Ω gate resistor; limits current during MOSFET switching to reduce EMI and gate ringing\n\n## How to read\n\nWhen M1 turns ON, current ramps up through L1, charging Cout and supplying the load. D1 is reverse-biased and off. When M1 turns OFF, the inductor's magnetic field collapses, inducing a voltage that forward-biases D1 and keeps current flowing through L1 to the load. The feedback divider R1/R2 tells U1's error amplifier whether Vout is above or below the 1.23 V reference. The controller increases duty cycle when Vout droops and decreases it when Vout rises. Energy conversion efficiency is high because M1 switches rather than dissipates: power loss is dominated by I²×Rds_on, diode forward drop, and inductor ESR rather than heat in a pass element."
+  },
+  {
     "slug": "circuit-ce-amplifier",
     "diagram": "circuit",
     "title": "NPN common-emitter amplifier",
@@ -172,6 +314,141 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "featured": false,
     "dsl": "circuit \"CE Amp (netlist)\" netlist\nV1 vcc 0 9V\nRc vcc c 2.2k\nRb vcc b 100k\nQ1 c b e npn\nRe e 0 1k",
     "notes": "## Scenario\n\nThe NPN common-emitter amplifier is the first transistor circuit every electronics student builds. Schematex renders it from a five-line SPICE netlist — the same format used in LTspice, ngspice, and Cadence — with automatic component placement and rail routing, so the diagram matches the hand-drawn textbook version without any manual layout.\n\n## Annotation key\n\n- `circuit \"...\" netlist` — enables netlist parsing mode (SPICE syntax)\n- `V1 vcc 0 9V` — voltage source named V1, positive terminal at node `vcc`, negative at `0` (ground), value 9V\n- `Rc vcc c 2.2k` — resistor Rc between nodes `vcc` and `c` with value 2.2 kΩ\n- `Rb vcc b 100k` — base bias resistor between `vcc` and node `b`\n- `Q1 c b e npn` — NPN BJT transistor: collector=c, base=b, emitter=e\n- `Re e 0 1k` — emitter degeneration resistor between node `e` and ground\n\n## How to read\n\nThe supply rail (Vcc = 9 V) connects to the top of both resistors. Rc is the collector load; the output signal is taken across it. Rb biases the base into the active region. Re provides emitter degeneration for stability. Q1 amplifies a small base current into a large collector-to-emitter current flow. The auto-layout positions Vcc at top, ground at bottom, and Q1 in the center."
+  },
+  {
+    "slug": "circuit-full-wave-rectifier",
+    "diagram": "circuit",
+    "title": "Full-wave bridge rectifier",
+    "description": "Diode bridge rectifier with filter capacitor and voltage regulator — converts AC mains to regulated DC, the power supply used in 90% of wall adapters.",
+    "standard": "IEEE 315",
+    "tags": [
+      "rectifier",
+      "bridge",
+      "diode",
+      "filter",
+      "power-supply",
+      "ac-dc",
+      "smoothing"
+    ],
+    "complexity": 2,
+    "featured": false,
+    "dsl": "circuit \"Full-Wave Bridge Rectifier with Regulator\" netlist\nV1 ac1 ac2 ac 12V\nT1 ac1 ac2 0 sec_p sec_n xfmr value=\"12:1\"\nD1 sec_p rect 0 0 diode value=\"1N4007\"\nD2 0 rect sec_n 0 diode value=\"1N4007\"\nD3 sec_n rect 0 0 diode value=\"1N4007\"\nD4 0 rect sec_p 0 diode value=\"1N4007\"\nC1 rect 0 1000u\nU1 rect vreg 0 reg value=\"LM7812\"\nC2 vreg 0 10u\nRload vreg 0 100",
+    "notes": "## Scenario\n\nThe full-wave bridge rectifier converts both half-cycles of an AC waveform into pulsating DC, then smooths and regulates it. It is the most common power conversion topology — found in every linear bench supply, phone charger, and low-power wall adapter. T1 steps down mains AC; D1–D4 form the H-bridge; C1 smooths the 100 Hz ripple; the LM7812 regulator clamps the output to a stable 12 V regardless of load current up to 1 A.\n\n## Annotation key\n\n- `T1 ... xfmr value=\"12:1\"` — mains transformer stepping down 120 V AC to 12 V AC; isolates the secondary from the live mains\n- `D1–D4 ... diode value=\"1N4007\"` — four 1N4007 silicon rectifier diodes (1 A, 1000 V PIV) arranged as an H-bridge; each conducts on alternate half-cycles, routing both polarities of the AC wave to the positive rail\n- `C1 rect 0 1000u` — 1000 μF bulk filter capacitor; charges to the peak rectified voltage (~16.9 V) and discharges into the load between peaks, limiting ripple; larger capacitance = lower ripple\n- `U1 rect vreg 0 reg value=\"LM7812\"` — three-terminal linear voltage regulator (LM7812); drops excess voltage as heat and outputs a stable 12 V; requires at least 2 V headroom (dropout voltage)\n- `C2 vreg 0 10u` — output bypass capacitor (10 μF) on the regulator output; suppresses high-frequency oscillations and improves transient response\n\n## How to read\n\nDuring the positive AC half-cycle, D1 and D3 conduct, pushing current from `sec_p` through D1 to `rect`, then through the load, and back through D3 to `sec_n`. During the negative half-cycle, D2 and D4 conduct, reversing the secondary but still delivering current in the same direction to `rect`. The result is 100 Hz pulsating DC. C1 holds the voltage near the peak value between pulses. The LM7812 then regulates the rippled DC down to a clean 12 V output. Efficiency is limited by the two forward voltage drops (~1.4 V total across two diodes at once) and heat dissipation in the regulator."
+  },
+  {
+    "slug": "circuit-motor-driver",
+    "diagram": "circuit",
+    "title": "H-bridge DC motor driver",
+    "description": "Dual H-bridge DC motor driver using L298N — forward, reverse, and brake modes via direction pins — for robotics and embedded control.",
+    "standard": "IEEE 315",
+    "tags": [
+      "h-bridge",
+      "motor",
+      "L298N",
+      "driver",
+      "robotics",
+      "pwm",
+      "dc-motor"
+    ],
+    "complexity": 3,
+    "featured": false,
+    "dsl": "circuit \"L298N H-Bridge DC Motor Driver\" netlist\nVM vmot 0 12V\nV5 vcc 0 5V\nC1 vmot 0 100u\nC2 vcc 0 100n\nU1 vmot vcc in1 in2 ena out1 out2 0 generic_ic value=\"L298N\"\nD1 out1 vmot 0 0 diode value=\"1N5819\"\nD2 0 out1 0 0 diode value=\"1N5819\"\nD3 out2 vmot 0 0 diode value=\"1N5819\"\nD4 0 out2 0 0 diode value=\"1N5819\"\nMotor out1 out2 motor value=\"DC 12V 2A\"\nIn1 in1 mcu_in1 port value=\"IN1\"\nIn2 in2 mcu_in2 port value=\"IN2\"\nEna ena mcu_pwm port value=\"ENA PWM\"",
+    "notes": "## Scenario\n\nThe L298N is the standard H-bridge driver for 3 V–46 V DC motors in robotics, CNC, and embedded projects. It contains two full H-bridges (only one used here), each capable of 2 A continuous. Direction is controlled by IN1 and IN2 logic inputs from a microcontroller; speed is controlled by applying PWM to ENA. Forward: IN1=HIGH, IN2=LOW. Reverse: IN1=LOW, IN2=HIGH. Brake: both HIGH or both LOW. The four Schottky diodes protect the bridge transistors from inductive kick-back when the motor coils resist switching.\n\n## Annotation key\n\n- `U1 ... generic_ic value=\"L298N\"` — L298N dual H-bridge driver IC; integrates four NPN Darlington transistors arranged as two full H-bridges; accepts 5 V logic inputs and switches a separate 12 V motor supply; max 46 V, 2 A per channel\n- `VM vmot 0 12V` — motor supply rail (12 V); electrically separate from the logic supply to prevent motor switching noise from corrupting microcontroller operation\n- `C1 vmot 0 100u` — 100 μF bulk decoupling capacitor on the motor supply; absorbs current spikes when the motor switches direction or stalls; prevents VMOT drooping and resetting the microcontroller\n- `C2 vcc 0 100n` — 100 nF ceramic decoupling capacitor on the 5 V logic supply; high-frequency bypass close to the IC logic pins\n- `D1–D4 ... diode value=\"1N5819\"` — four 1N5819 Schottky flyback diodes (1 A, 40 V, low forward voltage); one diode across each motor terminal to VMot and to GND; clamp the inductive spike when the H-bridge transistors switch off, protecting the IC from voltage transients that can exceed 100 V in an unprotected circuit\n- `Motor out1 out2 motor value=\"DC 12V 2A\"` — 12 V DC motor; current flows from OUT1 to OUT2 for forward, OUT2 to OUT1 for reverse; motor speed is proportional to average voltage = Vm × duty_cycle\n- `In1, In2, Ena` — port terminals from the microcontroller; IN1 and IN2 are 5 V logic signals; ENA is the PWM input that modulates average power to the motor\n\n## How to read\n\nThe L298N switches the 12 V motor supply through two transistor pairs. When IN1 is HIGH and IN2 is LOW, the top-left and bottom-right transistors turn on, connecting VMot to OUT1 and OUT2 to GND — motor spins forward. When both transistors of one polarity are off, the motor's inductive winding tries to maintain current flow; without the flyback diodes the resulting voltage spike (Ldi/dt) could reach hundreds of volts and destroy the IC. Schottky diodes D1–D4 provide an immediate return path for this energy back to VMot. PWM on ENA chops the drive voltage at a frequency the motor inductance can filter, giving smooth speed control from 0–100% without resistive power loss."
+  },
+  {
+    "slug": "circuit-opamp-instrumentation",
+    "diagram": "circuit",
+    "title": "3-op-amp instrumentation amplifier",
+    "description": "Three-op-amp instrumentation amplifier with gain resistor Rg — the standard front-end for differential sensors and biomedical amplifiers.",
+    "standard": "IEEE 315",
+    "tags": [
+      "opamp",
+      "instrumentation-amplifier",
+      "differential",
+      "biomedical",
+      "sensor",
+      "gain"
+    ],
+    "complexity": 4,
+    "featured": false,
+    "dsl": "circuit \"3-Op-Amp Instrumentation Amplifier\" netlist\nV_pos vcc 0 15V\nV_neg 0 vee 15V\nVp vp 0 ac 5mV\nVn vn 0 ac 0V\nU1A u1a_out vn u1a_out vcc vee opamp value=\"OP07\"\nU1B u1b_out vp u1b_out vcc vee opamp value=\"OP07\"\nRg u1a_out u1b_out 2k\nR1a u1a_out mid1 25k\nR1b mid1 u2_out 25k\nR2a u1b_out mid2 25k\nR2b mid2 0 25k\nU2 u2_out mid1 mid2 vcc vee opamp value=\"OP07\"",
+    "notes": "## Scenario\n\nThe three-op-amp instrumentation amplifier (INA) extracts tiny differential signals — the voltage difference between two inputs — while rejecting common-mode noise that appears on both inputs simultaneously. It is the standard front-end for ECG electrodes, Wheatstone bridge pressure sensors, thermocouple interfaces, and any measurement where the signal source is floating or noisy. Gain = 1 + 50 kΩ/Rg; with Rg = 2 kΩ, Gain = 26.\n\n## Annotation key\n\n- `U1A / U1B` — the two input buffer op-amps; each unity-buffers one differential input while the shared Rg resistor between their outputs sets the gain\n- `Rg u1a_out u1b_out 2k` — single gain-setting resistor; decreasing Rg increases gain (Gain = 1 + 50 kΩ/Rg); this is the only component to change when adjusting gain\n- `R1a, R1b, R2a, R2b` — precision resistor divider network (matched 25 kΩ) forming the differential amplifier around U2; must be tightly matched for high CMRR\n- `U2` — the output difference amplifier stage; subtracts the two buffered outputs and applies the fixed ×1 difference gain; the mid-point taps provide the subtraction node\n\n## How to read\n\nStage 1 (U1A and U1B) buffers each input terminal independently. The voltage across Rg equals the differential input voltage; because both op-amps force their inverting inputs to match their non-inverting inputs (virtual short), the gain current I = Vdiff/Rg flows through both R1a resistors, so each output shifts by Vdiff × R1/Rg. Stage 2 (U2 with matched R2 network) performs precision subtraction, rejecting any common-mode voltage that rides on both U1A and U1B outputs equally. The result at `u2_out` is the amplified differential signal with common-mode rejection ratios exceeding 100 dB in precision designs."
+  },
+  {
+    "slug": "circuit-opamp-inverting",
+    "diagram": "circuit",
+    "title": "Inverting op-amp amplifier",
+    "description": "Inverting op-amp topology with input resistor Rin, feedback resistor Rf — gain = −Rf/Rin — the first op-amp circuit every EE student builds.",
+    "standard": "IEEE 315",
+    "tags": [
+      "opamp",
+      "inverting",
+      "amplifier",
+      "feedback",
+      "gain",
+      "analog"
+    ],
+    "complexity": 2,
+    "featured": false,
+    "dsl": "circuit \"Inverting Op-Amp Amplifier (Gain = −10)\" netlist\nVin in 0 1V\nRin in inv 10k\nRf out inv 100k\nRbias ninv 0 9.1k\nV_pos vcc 0 15V\nV_neg 0 vee 15V\nU1 out inv ninv vcc vee opamp value=\"LM741\"",
+    "notes": "## Scenario\n\nThe inverting amplifier is the canonical op-amp circuit. A signal at `Vin` is amplified by a gain determined entirely by the ratio of two resistors: Gain = −Rf / Rin = −100 kΩ / 10 kΩ = −10. The negative sign indicates a 180° phase inversion. With Vin = 1 V the output is −10 V. The circuit is used wherever a precise, stable, negative gain is needed — audio mixing consoles, instrumentation signal conditioning, and ADC driver stages.\n\n## Annotation key\n\n- `Rin in inv 10k` — input resistor (10 kΩ) converts the input voltage into a current that flows into the inverting input; sets the input impedance seen by the source\n- `Rf out inv 100k` — feedback resistor (100 kΩ) connects the output back to the inverting input; the ratio Rf/Rin sets the magnitude of gain\n- `Rbias ninv 0 9.1k` — bias-compensation resistor at the non-inverting input; equals Rin ∥ Rf (≈ 9.1 kΩ) to cancel input bias current offset\n- `U1 ... opamp value=\"LM741\"` — op-amp (LM741); virtual-ground principle forces both inputs to the same voltage, so inv ≈ 0 V\n- `V_pos / V_neg` — dual ±15 V supply rails powering the op-amp\n\n## How to read\n\nThe op-amp's non-inverting input is tied to ground through Rbias. By the virtual-ground rule the inverting input is also held at 0 V by negative feedback. Therefore all of Vin appears across Rin, driving a current I = Vin/Rin into the summing node. The same current must flow through Rf (no current enters the ideal op-amp input), so the output adjusts to Vout = −I × Rf = −Vin × (Rf/Rin). Changing only Rf changes the gain without affecting input impedance. Multiple Rin/Vin pairs can be summed into the same node to build a weighted summing amplifier."
+  },
+  {
+    "slug": "circuit-rc-lowpass",
+    "diagram": "circuit",
+    "title": "RC low-pass filter",
+    "description": "First-order RC low-pass filter with −3 dB corner frequency formula — the passive filter taught in every intro electronics course.",
+    "standard": "IEEE 315",
+    "tags": [
+      "rc",
+      "filter",
+      "low-pass",
+      "passive",
+      "frequency",
+      "-3db",
+      "hobbyist"
+    ],
+    "complexity": 1,
+    "featured": false,
+    "dsl": "circuit \"RC Low-Pass Filter (fc = 1 kHz)\" netlist\nVin in 0 ac 1V\nR1 in out 10k\nC1 out 0 15.9n",
+    "notes": "## Scenario\n\nThe RC low-pass filter is the most fundamental passive filter in electronics. It passes low-frequency signals while attenuating frequencies above the corner frequency. With R1 = 10 kΩ and C1 = 15.9 nF the −3 dB corner frequency is exactly 1 kHz, calculated as fc = 1 / (2π × R × C). Below fc the output tracks the input; above fc the output rolls off at −20 dB/decade.\n\n## Annotation key\n\n- `Vin in 0 ac 1V` — AC voltage source: positive terminal at node `in`, negative at ground `0`, amplitude 1 V\n- `R1 in out 10k` — series resistor R1 (10 kΩ) between the input node `in` and the intermediate node `out`; blocks high-frequency current\n- `C1 out 0 15.9n` — shunt capacitor C1 (15.9 nF) from node `out` to ground; its reactance Xc = 1/(2πfC) decreases as frequency rises, diverting high-frequency energy to ground\n\n## How to read\n\nSignal enters at `in` and must pass through R1 before reaching `out`. C1 provides an impedance path to ground in parallel with the output load. At low frequencies C1 looks like an open circuit so nearly all signal appears at `out`. As frequency rises, C1's impedance drops and it shunts an increasing fraction of the signal to ground. At fc = 1 kHz the resistor and capacitor impedances are equal and output power is halved (−3 dB, voltage × 0.707). This RC combination is used everywhere: audio tone shaping, anti-aliasing before ADC inputs, power-supply decoupling, and noise filtering on sensor signals."
+  },
+  {
+    "slug": "decisiontree-buy-vs-lease-ev",
+    "diagram": "decisiontree",
+    "title": "Buy vs. lease an electric vehicle",
+    "description": "Howard-Raiffa expected-value tree for the buy/lease/used-EV decision — with resale probability and incentive chance nodes.",
+    "standard": "Raiffa & Schlaifer (1961)",
+    "tags": [
+      "decision-analysis",
+      "ev",
+      "buy-vs-lease",
+      "expected-value",
+      "consumer"
+    ],
+    "complexity": 3,
+    "featured": false,
+    "dsl": "decisiontree:decision \"EV Acquisition Decision\"\n\ndecision \"Which acquisition path?\"\n  choice \"Buy new EV\"\n    chance \"Federal tax credit eligible?\"\n      prob 0.7 chance \"Resale market in 5yr (w/ credit)\"\n        prob 0.55 end \"Strong resale + credit\" payoff=28500\n        prob 0.45 end \"Weak resale + credit\" payoff=16000\n      prob 0.3 chance \"Resale market in 5yr (no credit)\"\n        prob 0.55 end \"Strong resale, no credit\" payoff=21000\n        prob 0.45 end \"Weak resale, no credit\" payoff=8500\n  choice \"Lease EV 3yr\"\n    end \"Predictable lease cost\" payoff=14000\n  choice \"Buy used EV\"\n    chance \"Battery health ≥ 80%?\"\n      prob 0.6 end \"Good battery — low TCO\" payoff=22000\n      prob 0.4 end \"Battery replacement needed\" payoff=8000",
+    "notes": "## Scenario\n\nA household is choosing between three electric vehicle acquisition paths: buying new (eligible for a $7,500 federal tax credit with 70% probability, depending on income and vehicle MSRP cap), leasing for three years at a fixed all-in cost, or buying used. The buy-new path carries two sequential chance nodes — credit eligibility then a five-year resale market outcome — while used carries battery-health uncertainty. Payoffs represent net five-year economic value (savings versus equivalent ICE ownership, residual value, minus acquisition and maintenance costs).\n\n## Annotation key\n\n- `decision \"…\"` — decision node; actor chooses a branch\n- `choice \"…\"` — label on a decision branch\n- `chance \"…\"` — chance node; nature chooses; `prob N` on children must sum to 1\n- `end \"…\" payoff=N` — terminal leaf with net five-year economic value in dollars\n- `prob N` — probability (0–1) on a chance branch\n- EV rollback: chance = probability-weighted sum; decision = max child EV\n\n## How to read\n\nRoll back from leaves to root. Buy-new EV (with credit branch): 0.55 × 28,500 + 0.45 × 16,000 = **24,075**; without credit: 0.55 × 21,000 + 0.45 × 8,500 = **19,275**. Combined: 0.7 × 24,075 + 0.3 × 19,275 = **22,635**. Lease: flat **14,000**. Used EV: 0.6 × 22,000 + 0.4 × 8,000 = **16,400**. Under these assumptions *Buy new EV* dominates, largely because the 70% credit probability shifts the overall EV substantially upward. Sensitivity analysis on credit eligibility probability and the five-year resale spread is where the real MBA discussion lives."
+  },
+  {
+    "slug": "decisiontree-go-nogo-product",
+    "diagram": "decisiontree",
+    "title": "Product launch go/no-go decision",
+    "description": "Stage-gate launch decision with market-size chance node, competitor-response chance, and NPV terminal values for a PM strategy review.",
+    "standard": "Raiffa & Schlaifer (1961)",
+    "tags": [
+      "launch",
+      "go-nogo",
+      "npv",
+      "strategy",
+      "product",
+      "chance"
+    ],
+    "complexity": 3,
+    "featured": false,
+    "dsl": "decisiontree:decision \"Product Launch Strategy\"\n\ndecision \"Launch strategy?\"\n  choice \"Launch Q1 (full)\"\n    chance \"Market reception\"\n      prob 0.4 chance \"Competitor copies within 6mo? (strong)\"\n        prob 0.5 end \"Strong + copied\" payoff=3200000\n        prob 0.5 end \"Strong + defended\" payoff=5800000\n      prob 0.35 chance \"Competitor copies within 6mo? (moderate)\"\n        prob 0.5 end \"Moderate + copied\" payoff=1400000\n        prob 0.5 end \"Moderate + defended\" payoff=2600000\n      prob 0.25 end \"Weak reception\" payoff=400000\n  choice \"Launch Q3 (scoped)\"\n    chance \"Market reception (scoped)\"\n      prob 0.45 end \"Strong scoped\" payoff=3100000\n      prob 0.35 end \"Moderate scoped\" payoff=1800000\n      prob 0.20 end \"Weak scoped\" payoff=600000\n  choice \"No launch\"\n    end \"Saved development cost\" payoff=900000",
+    "notes": "## Scenario\n\nA PM team is evaluating three paths ahead of an annual planning cycle: a full Q1 launch with the complete feature set, a scoped Q3 launch targeting the highest-confidence segments, and a no-launch option that recovers the estimated development spend. The Q1 full-launch path carries two sequential chance nodes — market reception (strong/moderate/weak) followed, for the non-weak outcomes, by a competitor-response chance (copies vs. defends). Payoffs are five-year NPV estimates in dollars, net of launch and ongoing operating costs.\n\n## Annotation key\n\n- `decision \"…\"` — decision node; PM team chooses a branch\n- `choice \"…\"` — label on a decision branch\n- `chance \"…\"` — chance node; market or competitor behavior; `prob N` sums to 1 per node\n- `end \"…\" payoff=N` — terminal leaf with five-year NPV in dollars\n- `prob N` — probability (0–1) on a chance branch\n- EV rollback: chance = probability-weighted sum; decision = max child EV\n\n## How to read\n\nFor Q1 full launch: strong-reception EV = 0.5 × 3,200,000 + 0.5 × 5,800,000 = **4,500,000**; moderate EV = 0.5 × 1,400,000 + 0.5 × 2,600,000 = **2,000,000**. Full-launch EV = 0.40 × 4,500,000 + 0.35 × 2,000,000 + 0.25 × 400,000 = **2,600,000**. Scoped-Q3 EV = 0.45 × 3,100,000 + 0.35 × 1,800,000 + 0.20 × 600,000 = **2,118,000**. No launch: **900,000**. Q1 full launch produces the highest EV, but the moderate-reception + copied scenario at $1.4M is a painful downside worth stress-testing — reducing competitor copy probability from 0.5 to 0.3 in that branch raises the EV meaningfully and may justify a launch accelerator investment."
   },
   {
     "slug": "decisiontree-investment-analysis",
@@ -192,6 +469,63 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "notes": "## Scenario\n\nA CTO is deciding how to stand up a new data-platform layer: build internally, buy managed SaaS, or take a hybrid. Each path has outcomes with probabilities and net-value estimates. The decision-analysis tree rolls the expected value back to the decision node so the optimal branch is identified automatically.\n\n## Annotation key\n\n- `decision \"…\"` — actor chooses a branch\n- `chance \"…\"` — nature chooses; `prob N` on each child (must sum to 1)\n- `end \"…\" payoff=N` — terminal payoff\n- `choice \"label\"` — label on an outgoing decision branch\n- EV rollback: chance = probability-weighted sum; decision = max child EV\n\n## How to read\n\nEvaluate each branch's expected value. Build in-house: 0.6 × 900k + 0.4 × 150k = **600k**. Managed SaaS: flat **500k**. Hybrid: 0.5 × 700k + 0.5 × 300k = **500k**. Under these estimates the optimal branch is *Build in-house* — the parser flags it on render. The chart's real value is in forcing stakeholders to state probabilities explicitly; sensitivity to them is where the interesting argument happens."
   },
   {
+    "slug": "decisiontree-iris-sklearn",
+    "diagram": "decisiontree",
+    "title": "Iris species classifier (scikit-learn CART)",
+    "description": "The classic sklearn Iris CART decision tree — three species, two splits on petal length and width, rendered from a functional ML-tree description.",
+    "standard": "Breiman CART (1984)",
+    "tags": [
+      "cart",
+      "sklearn",
+      "iris",
+      "classification",
+      "ml",
+      "decision-tree"
+    ],
+    "complexity": 2,
+    "featured": false,
+    "dsl": "decisiontree:ml \"Iris Classifier\"\n\nsplit \"petal length (cm) ≤ 2.45\"\n  true leaf \"Setosa\" [support=50, impurity=0.0, class=setosa]\n  false split \"petal width (cm) ≤ 1.75\"\n    true leaf \"Versicolor\" [support=47, impurity=0.168, class=versicolor]\n    false leaf \"Virginica\" [support=45, impurity=0.043, class=virginica]",
+    "notes": "## Scenario\n\nThe Iris dataset — 150 samples of three species (Iris setosa, versicolor, and virginica) measured across four features — is the canonical teaching example for classification. A CART tree trained with scikit-learn `DecisionTreeClassifier(max_depth=2)` produces exactly this two-level tree. Setosa is perfectly linearly separable on petal length alone; versicolor and virginica require a second split on petal width. The resulting tree achieves ~96% cross-validated accuracy.\n\n## Annotation key\n\n- `split \"condition\"` — internal node; routes left (`true`) when condition holds, right (`false`) when it does not\n- `true` / `false` — branch direction prefix indicating which child is reached when the split condition evaluates to that boolean\n- `leaf \"label\"` — terminal classification node\n- `[support=N]` — number of training samples reaching this leaf\n- `[impurity=N]` — Gini impurity at the node (0 = pure, 0.5 = maximally impure for binary)\n- `[class=…]` — majority class label at the leaf\n\n## How to read\n\nStart at the root split. If petal length ≤ 2.45 cm, the sample is classified as **Setosa** immediately (Gini = 0, perfectly pure — all 50 setosa training samples land here). Otherwise, evaluate petal width: ≤ 1.75 cm predicts **Versicolor** (47 samples, Gini = 0.168 — a small number of virginica blur this boundary); > 1.75 cm predicts **Virginica** (45 samples, Gini = 0.043 — nearly pure). This tree is shallow enough to fit on an index card and remains the first model every ML course deploys."
+  },
+  {
+    "slug": "decisiontree-is-it-mammal",
+    "diagram": "decisiontree",
+    "title": "Is it a mammal? — taxonomy key",
+    "description": "Biology identification key for mammals vs. other vertebrates — warm-blooded, hair, milk — the canonical taxonomy decision tree for K-12 science.",
+    "standard": "Linnaean taxonomy",
+    "tags": [
+      "taxonomy",
+      "mammal",
+      "biology",
+      "classification",
+      "k12",
+      "teaching"
+    ],
+    "complexity": 1,
+    "featured": false,
+    "dsl": "decisiontree:taxonomy \"Is it a mammal?\"\n\nquestion \"Is it a vertebrate?\"\n  no: answer \"Not a mammal (invertebrate)\"\n  yes: question \"Is it warm-blooded?\"\n    no: answer \"Not a mammal (reptile, fish, or amphibian)\"\n    yes: question \"Does it have hair or fur?\"\n      no: answer \"Not a mammal (likely a bird)\"\n      yes: question \"Does the female nurse young with milk?\"\n        no: answer \"Not a mammal\"\n        yes: question \"Does it lay eggs?\"\n          yes: answer \"Monotreme (e.g. platypus, echidna)\"\n          no: question \"Does it have a pouch for young?\"\n            yes: answer \"Marsupial (e.g. kangaroo, opossum)\"\n            no: answer \"Placental mammal\"",
+    "notes": "## Scenario\n\nThis is the classic dichotomous identification key taught in K-12 biology to introduce students to the class Mammalia. Working through four shared mammalian characteristics — vertebrate skeleton, endothermy (warm-bloodedness), hair or fur, and lactation — eliminates all other vertebrate classes before arriving at the three mammalian subclasses: Monotremata (egg-laying), Marsupialia (pouched), and Placentalia (placental). The key is deliberately top-down so students can stop as soon as they reach a leaf, rather than having to memorize all five criteria upfront.\n\n## Annotation key\n\n- `question \"…\"` — internal node; student or teacher evaluates the criterion for the observed animal\n- `answer \"…\"` — terminal classification leaf\n- `yes:` / `no:` — branch taken based on the presence or absence of the stated trait\n- Indentation (2 spaces per level) defines parent-child nesting\n- All five yes-branches must be traversed to reach a placental mammal leaf\n\n## How to read\n\nStart at the root. An earthworm exits immediately at the first node (not a vertebrate). A salmon exits at the second (cold-blooded). A sparrow exits at the third (no hair — feathers instead). A dog passes all four shared-mammal criteria and reaches the egg-laying question: dogs do not lay eggs, and they lack a pouch, so the leaf is *Placental mammal*. A duck-billed platypus passes all mammal criteria but exits at the egg-laying question as a *Monotreme* — making it the classic counterexample teachers use to show students that classification rules encode real biology, not just intuition."
+  },
+  {
+    "slug": "decisiontree-litigation-settle",
+    "diagram": "decisiontree",
+    "title": "Litigation vs. settlement analysis",
+    "description": "Expected-value analysis of settling a $2M breach-of-contract claim vs. going to trial — with verdict probability and appeal chance nodes.",
+    "standard": "Raiffa & Schlaifer (1961)",
+    "tags": [
+      "litigation",
+      "settlement",
+      "legal",
+      "expected-value",
+      "trial",
+      "appeal"
+    ],
+    "complexity": 3,
+    "featured": false,
+    "dsl": "decisiontree:decision \"Litigation Strategy\"\n\ndecision \"Litigation strategy?\"\n  choice \"Settle now\"\n    end \"Settlement payment\" payoff=-350000\n  choice \"Proceed to trial\"\n    chance \"Verdict\"\n      prob 0.55 chance \"Plaintiff appeals? (defense wins)\"\n        prob 0.3 chance \"Appeal outcome\"\n          prob 0.4 end \"Reversed on appeal\" payoff=0\n          prob 0.6 end \"Upheld on appeal\" payoff=-2200000\n        prob 0.7 end \"No appeal — defense prevails\" payoff=0\n      prob 0.45 end \"Plaintiff verdict — damages + fees\" payoff=-2000000",
+    "notes": "## Scenario\n\nA corporate defendant faces a $2 million breach-of-contract claim. Outside counsel has assessed a 55% probability of a defense verdict at trial and a 45% probability of a plaintiff verdict (full damages plus attorney fees). If the defense wins, there is a 30% chance the plaintiff appeals; an appeal resolves with a 40% probability of reversal (cost: zero) and a 60% probability of affirmance, which adds appellate costs bringing total exposure to $2.2M. The client can alternatively settle immediately for $350,000. All payoffs are expressed as costs to the defendant (negative = outflow).\n\n## Annotation key\n\n- `decision \"…\"` — decision node; counsel and client choose the path\n- `choice \"…\"` — label on a decision branch\n- `chance \"…\"` — chance node; court or opposing party behavior; `prob N` sums to 1\n- `end \"…\" payoff=N` — terminal leaf; negative values represent costs to defendant\n- `prob N` — probability (0–1) on a chance branch\n- EV rollback: chance = probability-weighted sum; decision = max child EV (least negative)\n\n## How to read\n\nRoll back from leaves. Appeal-outcome EV: 0.4 × 0 + 0.6 × −2,200,000 = **−1,320,000**. Defense-wins-verdict branch EV: 0.3 × −1,320,000 + 0.7 × 0 = **−396,000**. Trial EV: 0.55 × −396,000 + 0.45 × −2,000,000 = **−1,117,800**. Settlement: **−350,000**. Under these probability estimates, settling for $350,000 is the rational choice — it avoids the −$1.12M expected cost of going to trial. The key sensitivity is the defense-verdict probability: if counsel is more than ~75% confident of winning at trial, the EV of proceeding drops below −350,000 and trial becomes preferred."
+  },
+  {
     "slug": "decisiontree-support-triage",
     "diagram": "decisiontree",
     "title": "Support ticket triage",
@@ -208,6 +542,65 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "featured": true,
     "dsl": "decisiontree \"Customer Support Triage\"\ndirection: top-down\n\nquestion \"Is the service completely down?\"\n  yes: question \"Outage confirmed on status page?\"\n    yes: answer \"Follow incident protocol — page on-call\"\n    no: answer \"Check monitoring — open severity-1 ticket\"\n  no: question \"Is the issue affecting billing?\"\n    yes: answer \"Escalate to billing team — SLA breach risk\"\n    no: question \"Can user reproduce consistently?\"\n      yes: answer \"Collect HAR trace — file bug report\"\n      no: answer \"Ask for screenshot — watch for recurrence\"",
     "notes": "## Scenario\n\nThe support lead bakes this tree into the agent runbook so new hires can triage in week one without a buddy. Three gates — outage, billing, reproducibility — route 90% of tickets deterministically. The remaining 10% (edge cases, multi-category) get flagged for human escalation instead of guessed at.\n\n## Annotation key\n\n- `question \"text\"` — internal decision node\n- `answer \"text\"` — terminal outcome\n- `yes:` / `no:` — branch label\n- Indentation (2 spaces) — parent-child nesting\n\n## How to read\n\nStart at the root. At each `question` node the agent answers yes or no and follows the matching branch. Every path terminates in an `answer` — a concrete next action, not another decision. The tree is deliberately shallow (max depth 3) so agents can hold it in their head; deeper branches would push into a runbook rather than a decision tree."
+  },
+  {
+    "slug": "decisiontree-triage-chest-pain",
+    "diagram": "decisiontree",
+    "title": "ED chest pain triage",
+    "description": "Emergency department chest-pain triage algorithm — HEART score pathway, STEMI/NSTEMI rule-out, and disposition decision for the ED physician.",
+    "standard": "AHA/ACC 2021 Chest Pain Guidelines",
+    "tags": [
+      "triage",
+      "chest-pain",
+      "ed",
+      "stemi",
+      "heart-score",
+      "clinical",
+      "aha"
+    ],
+    "complexity": 4,
+    "featured": false,
+    "dsl": "decisiontree:taxonomy \"ED Chest Pain Triage\"\n\nquestion \"ECG: ST elevation present?\"\n  yes: answer \"Activate cath lab — STEMI protocol\"\n  no: question \"Troponin elevated at 0h or 3h?\"\n    yes: question \"Dynamic troponin rise (≥ 3 ng/L delta)?\"\n      yes: answer \"NSTEMI confirmed — cardiology consult, anticoagulate\"\n      no: answer \"Possible NSTEMI — repeat troponin at 6h\"\n    no: question \"HEART score ≥ 4?\"\n      yes: answer \"High risk — observation unit + stress test or CTA\"\n      no: question \"All low-risk features present?\"\n        yes: answer \"Discharge — outpatient follow-up within 72h\"\n        no: answer \"Observation — shared decision making with patient\"",
+    "notes": "## Scenario\n\nChest pain accounts for roughly 8 million ED visits per year in the United States. The AHA/ACC 2021 Chest Pain Guidelines provide a tiered rule-out pathway: first exclude STEMI via ECG, then use high-sensitivity troponin at 0h and 3h to distinguish NSTEMI from unstable angina or non-cardiac causes, and finally apply the HEART score (History, ECG, Age, Risk factors, Troponin) to stratify remaining patients into high-risk observation vs. safe discharge. This tree encodes the core algorithmic structure for a busy ED attending.\n\n## Annotation key\n\n- `question \"…\"` — internal clinical decision node; physician evaluates the criterion\n- `answer \"…\"` — terminal disposition or action\n- `yes:` / `no:` — branch label indicating the clinical finding\n- HEART score: 0–3 low risk, 4–6 moderate, 7–10 high risk\n- Dynamic troponin: delta ≥ 3 ng/L between 0h and 3h draws meets ESC high-sensitivity criterion\n\n## How to read\n\nEntry is the 12-lead ECG. ST elevation routes directly to cath-lab activation — time is myocardium and no further branching is needed. Absence of ST elevation triggers the troponin pathway: a positive draw at either time point prompts delta assessment to distinguish true NSTEMI from a chronic elevation; a negative troponin advances to HEART score stratification. A score of 4 or higher mandates observation-unit admission with functional testing; a score below 4 with all low-risk clinical features present supports discharge with prompt outpatient follow-up. The final branch — observation with shared decision making — captures the borderline-HEART-score patient where physician judgment, patient preference, and social circumstances all contribute to disposition."
+  },
+  {
+    "slug": "decisiontree-xgboost-churn",
+    "diagram": "decisiontree",
+    "title": "Customer churn prediction tree (XGBoost)",
+    "description": "One tree from an XGBoost churn model — days since last login, MRR tier, support tickets — showing how gradient boosting splits differ from CART.",
+    "standard": "Chen & Guestrin XGBoost (2016)",
+    "tags": [
+      "xgboost",
+      "churn",
+      "ml",
+      "gradient-boosting",
+      "saas",
+      "prediction"
+    ],
+    "complexity": 3,
+    "featured": false,
+    "dsl": "decisiontree:ml \"Churn Prediction Tree (XGBoost)\"\n\nsplit \"days_since_login > 21\"\n  true split \"mrr_tier < 2\"\n    true leaf \"High churn risk\" [score=0.72, class=churn]\n    false leaf \"Medium risk — monitor\" [score=0.41, class=churn]\n  false split \"support_tickets_30d > 3\"\n    true leaf \"Medium risk — support-driven\" [score=0.38, class=churn]\n    false leaf \"Low churn risk\" [score=0.09, class=retain]",
+    "notes": "## Scenario\n\nA SaaS company trains an XGBoost churn model on 90 days of product usage data. This is one representative tree from the ensemble, illustrating the three strongest churn signals in the dataset: recency of login (days since last login > 21 is the dominant split), MRR tier (lower-tier accounts churn faster when disengaged), and recent support ticket volume (elevated tickets correlate with frustration even among recently active users). Unlike a standalone CART tree, XGBoost trees output raw scores (log-odds contributions) that are summed across the ensemble before sigmoid transformation — the `score` values shown are per-tree contributions, not final probabilities.\n\n## Annotation key\n\n- `split \"condition\"` — internal split node; `true` branch when condition holds\n- `true` / `false` — branch direction prefix\n- `leaf \"label\"` — terminal node with a descriptive risk label\n- `[score=N]` — raw XGBoost leaf score (log-odds contribution from this tree)\n- `[class=…]` — dominant class assignment at this leaf\n- XGBoost does not use Gini/entropy impurity; splits are chosen to maximize second-order gradient gain\n\n## How to read\n\nStart at the root. Accounts with more than 21 days since last login are immediately flagged: if they are also on MRR tier 0 or 1 (lowest-value tiers), the leaf score is 0.72 — the highest churn signal in this tree. High-tier disengaged accounts score 0.41, indicating meaningful but lower risk, consistent with higher switching costs. For recently active accounts (login ≤ 21 days), elevated support tickets (> 3 in 30 days) push score to 0.38 — a product-experience alert — while accounts that are both active and support-quiet score 0.09, the healthiest segment. In production, this tree's scores are summed with hundreds of sibling trees and passed through a sigmoid to yield a final churn probability between 0 and 1."
+  },
+  {
+    "slug": "ecomap-elderly-caregiver",
+    "diagram": "ecomap",
+    "title": "Aging-in-place caregiver support network",
+    "description": "Ecomap for an 81-year-old woman aging-in-place: family caregivers, home health aide, Medicare, faith community, and senior center connections.",
+    "standard": "Hartman 1978",
+    "tags": [
+      "ecomap",
+      "elderly",
+      "caregiver",
+      "aging-in-place",
+      "geriatric",
+      "medicare",
+      "social-work"
+    ],
+    "complexity": 2,
+    "featured": false,
+    "dsl": "ecomap \"Margaret, age 81 — Aging-in-Place Assessment\"\n  center: client [label: \"Margaret, 81\"]\n  daughter [label: \"Daughter (primary caregiver)\", category: family]\n  son [label: \"Son (out of state)\", category: family]\n  aide [label: \"Home Health Aide (3×/wk)\", category: health]\n  pcp [label: \"Primary Care MD\", category: health]\n  cardiologist [label: \"Cardiologist\", category: health]\n  medicare [label: \"Medicare Part A/B\", category: financial]\n  church [label: \"Grace Lutheran Church\", category: spiritual]\n  senior_center [label: \"Oak Park Senior Center\", category: community]\n  neighbor [label: \"Neighbor Mrs. Kim\", category: social]\n  daughter === client [label: \"daily visits — caregiver burden high\"]\n  son --- client [label: \"monthly calls — geographic distance\"]\n  aide === client [label: \"bathing, meals, medication reminders\"]\n  pcp <-> client [label: \"quarterly — telehealth since 2023\"]\n  cardiologist --> client [label: \"CHF management — 6-month follow-up\"]\n  medicare --> client [label: \"covers home health — 60-day cert\"]\n  church --> client [label: \"weekly visitor volunteer\"]\n  senior_center --- client [label: \"transport lapsed — no longer attending\"]\n  neighbor --> client [label: \"grocery errands — informal\"]",
+    "notes": "## Scenario\n\nA geriatric social worker draws this ecomap during a home assessment for Margaret, an 81-year-old living alone with congestive heart failure and early-stage cognitive impairment. The daughter has requested a care plan review because she is the sole in-person caregiver and is showing signs of burnout. The ecomap immediately surfaces two risks: the lapsed senior center connection (a key social resource that has gone dormant) and the son's minimal involvement despite being a potential remote-support resource. It becomes the basis for the care conference agenda.\n\n## Annotation key\n\n- `===` — strong connection; high-quality, frequent, reliable\n- `---` — tenuous connection; infrequent, geographically limited, or at risk of lapsing\n- `-->` — directional support flowing toward Margaret; she is the recipient\n- `<->` — reciprocal relationship; mutual engagement (e.g., PCP telehealth where Margaret actively participates)\n- `[label: \"...\"]` — edge label adds clinical context: frequency, mode, and quality notes\n- `category: health / financial / spiritual / community / social / family` — determines node color and cluster in the rendered diagram\n\n## How to read\n\nMargaret's strongest support systems are her daughter (strong tie, daily visits) and home health aide (strong tie, three visits per week). Both are showing strain signals: the edge label on daughter notes high caregiver burden. The PCP relationship is reciprocal and active via telehealth; the cardiologist provides directional specialist management. Medicare covers the home health certification (60-day limit — a renewal flag for the social worker). Two systems have weakened: the son's connection is tenuous due to geographic distance, and the senior center connection has lapsed entirely because transport is no longer arranged. Mrs. Kim provides informal grocery support — an unformalized community asset. The care plan recommendation: restore senior center transport, formally engage the son in remote care coordination tasks, and refer the daughter to a caregiver support group."
   },
   {
     "slug": "ecomap-refugee-resettlement",
@@ -262,6 +655,27 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "notes": "## Scenario\n\nA school-based counselor draws this ecomap during an initial intake session with Marcus, a 15-year-old referred for behavioral issues. The diagram takes under five minutes and immediately shows where Marcus's support is concentrated (peers, soccer team) and where it's fragile (divorced father, every-other-weekend contact).\n\n## Annotation key\n\n- `center: client` — the identified young person\n- `===` — strong connection; `---` — tenuous connection\n- `-->` — mentor/support flows toward client\n- `<->` — reciprocal therapeutic alliance\n- `EOW weekends` — edge label capturing the visitation schedule\n\n## How to read\n\nMarcus's strongest systems are his mother (primary caregiver), school, and soccer peers — all strong ties (===). His father is a tenuous connection (---). The therapist and soccer coach have supportive directional relationships pointing toward Marcus. The soccer team appears to be the central protective factor in this adolescent's life."
   },
   {
+    "slug": "entity-family-office-trust",
+    "diagram": "entity",
+    "title": "Family office — grantor trust + LLC holding",
+    "description": "Multi-generational wealth structure: grantor trust, irrevocable trust, Delaware LLC holding, and operating entities — for the estate planning attorney.",
+    "standard": "ACTEC / IRC §671–677",
+    "tags": [
+      "entity",
+      "family-office",
+      "trust",
+      "grantor",
+      "irrevocable",
+      "llc",
+      "estate-planning",
+      "actec"
+    ],
+    "complexity": 4,
+    "featured": false,
+    "dsl": "entity-structure \"Smith Family Office\"\nentity grantor \"John Smith (Grantor)\" trust@CA\nentity spouse \"Jane Smith (Spouse)\" trust@CA\nentity child1 \"Child 1 (Beneficiary)\" trust@CA\nentity child2 \"Child 2 (Beneficiary)\" trust@CA\nentity rev_trust \"Smith Revocable Living Trust\" trust@CA [note: \"IRC §671 — grantor trust\"]\nentity irrev_trust \"Smith 2021 Irrevocable Trust\" trust@DE [note: \"IRC §677 — completed gift\"]\nentity holding_llc \"Smith Family Holdings LLC\" llc@DE [note: \"Pass-through entity\"]\nentity op_co \"Smith Operating Co. LLC\" llc@CA [note: \"Active trading\"]\nentity re_llc \"Smith RE Holdings LLC\" llc@CA [note: \"Real estate portfolio\"]\nentity invest_acct \"Investment Portfolio\" fund@DE [note: \"Schwab brokerage\"]\ngrantor -> rev_trust : 100%\nspouse --> rev_trust\nrev_trust -> irrev_trust : 100%\nirrev_trust -> holding_llc : 100%\nholding_llc -> op_co : 80%\nholding_llc -> re_llc : 100%\nholding_llc -> invest_acct : 100%\nirrev_trust --> child1\nirrev_trust --> child2",
+    "notes": "## Scenario\n\nAn estate planning attorney drafts this structure for a client family during an initial engagement or annual review. The diagram captures the full wealth architecture in one view: who owns what, which trusts are grantor-taxed versus completed gifts, and which entities pass income through to the family's Schedule K-1s. It is the first document attached to a family office memo, estate plan update, or IRS audit response.\n\n## Annotation key\n\n- `trust@CA / trust@DE` — trust entity in the stated jurisdiction; California for revocable (grantor-state situs), Delaware for irrevocable (favorable trust laws)\n- `->` — equity ownership or trust corpus contribution\n- `-->` — beneficial interest or management control without outright ownership\n- `[note: \"...\"]` — annotates the entity with the controlling IRC section or role\n- `llc@CA / llc@DE` — limited liability company; single-member LLCs disregarded for federal tax\n- `fund@DE` — brokerage account held as an entity interest\n\n## How to read\n\nJohn Smith (grantor) funds the revocable living trust, which is disregarded for income tax purposes under IRC §671 — all income flows to his Form 1040. On death or an intentional gift event, assets transfer to the Delaware irrevocable trust (a completed gift under §677), removing future appreciation from the taxable estate. The irrevocable trust owns 100% of Smith Family Holdings LLC, which in turn holds the operating company (80% — the remaining 20% may be held by key employees or a management LLC), the real estate portfolio, and the investment account. Child 1 and Child 2 are named beneficiaries of the irrevocable trust with no current income rights until distribution events defined in the trust instrument."
+  },
+  {
     "slug": "entity-holding-company",
     "diagram": "entity",
     "title": "Multi-jurisdiction holding company",
@@ -298,6 +712,69 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "notes": "## Scenario\n\nCorporate counsel or a Big Four tax team draws this structure during cross-border M&A due diligence or transfer-pricing documentation. The OECD BEPS framework requires taxpayers to document the substance and economic rationale of every intercompany flow — this diagram is the first attachment to the TP master file and the tax opinion memo.\n\n## Annotation key\n\n- `entity name \"Display Name\" corp@US` — creates an entity node; `corp` is the entity type, `US` is the jurisdiction\n- `corp / llc / fund / trust` — entity type; determines the symbol rendered\n- `@US / @IE / @KY / @NL / @SG` — ISO country code for jurisdiction labeling\n- `[note: \"...\"]` — adds a subsidiary note below the entity name\n- `->` — solid directed line; represents an equity ownership relationship\n- `-~->` — dashed directed line; represents a contractual (non-equity) relationship such as an IP license or intercompany loan\n- `: 100%` — label on a directed edge; shows the ownership percentage\n\n## How to read\n\nThe US parent owns 100% of the Irish holdco, which in turn holds both the Cayman IP entity and the Dutch distribution subsidiary. The dashed arrow from the IP entity to the Dutch entity represents the IP license — royalties flow from the Netherlands up to Cayman, shifting taxable income to a low-rate jurisdiction. Singapore APAC is a parallel branch for Asia-Pacific operations, owned directly by the US parent."
   },
   {
+    "slug": "entity-private-fund",
+    "diagram": "entity",
+    "title": "Private equity fund structure",
+    "description": "Closed-end PE fund: GP management company, carry vehicle, LP investor classes, and three portfolio company investments — ILPA convention.",
+    "standard": "ILPA standards",
+    "tags": [
+      "entity",
+      "private-equity",
+      "fund",
+      "gp",
+      "lp",
+      "carry",
+      "ilpa",
+      "portco"
+    ],
+    "complexity": 3,
+    "featured": false,
+    "dsl": "entity-structure \"Acme Capital Fund III\"\nentity mgmt_co \"GP Management LLC\" llc@DE [note: \"Registered investment adviser\"]\nentity gp_vehicle \"GP Vehicle LLC\" llc@DE [note: \"General partner entity\"]\nentity carry_vehicle \"Carried Interest Vehicle LLC\" llc@DE [note: \"20% carry — IRC §1061 PFIC\"]\nentity fund \"Acme Capital Fund III LP\" lp@DE [note: \"Closed-end — 10-year term\"]\nentity inst_lps \"Institutional LPs\" trust@NY [note: \"Pensions, endowments — 65%\"]\nentity hni_lps \"HNI & Family Office LPs\" trust@CA [note: \"High-net-worth — 34%\"]\nentity portco_a \"Portfolio Co. A\" corp@DE [note: \"Control — software vertical\"]\nentity portco_b \"Portfolio Co. B\" corp@DE [note: \"Majority — industrial services\"]\nentity portco_c \"Portfolio Co. C\" corp@DE [note: \"Control — healthcare SaaS\"]\nmgmt_co -> gp_vehicle : 100%\nmgmt_co --> carry_vehicle\ngp_vehicle -> fund : 1%\ninst_lps -> fund : 65%\nhni_lps -> fund : 34%\nfund -> portco_a : 60%\nfund -> portco_b : 45%\nfund -> portco_c : 80%",
+    "notes": "## Scenario\n\nA fund administrator prepares this entity diagram for the annual ILPA reporting package, limited partner quarterly statement cover page, and auditor workpapers. The ILPA Principles require transparent disclosure of the GP economic structure — specifically the separation of the management company (fee income), GP vehicle (fund economics), and carried interest vehicle (profit participation) — so LPs can assess conflicts of interest and economics independently.\n\n## Annotation key\n\n- `lp@DE` — Delaware limited partnership; the universal vehicle for closed-end PE funds; provides flow-through taxation and LP liability protection\n- `mgmt_co` — registered investment adviser that employs investment professionals and earns the 2% management fee; separate from fund economics\n- `gp_vehicle` — the formal general partner of the fund LP; holds 1% GP commitment and the right to the carried interest\n- `carry_vehicle` — isolated entity for allocating 20% carried interest to individual partners; structured for IRC §1061 (3-year hold to qualify for long-term capital gains) treatment\n- `-->` — management/control relationship without direct equity ownership\n- `portco` ownership percentages — 45–80% reflects control or majority buyout positions typical of a mid-market PE fund\n\n## How to read\n\nThe management company owns the GP vehicle, which is the formal 1% general partner of Fund III. Institutional LPs (pensions, endowments) and high-net-worth LPs contribute 99% of capital. The fund deploys into three portfolio companies at control or majority positions: Portfolio Co. A (60%, software), Portfolio Co. B (45%, industrial services, minority-plus-control board rights), and Portfolio Co. C (80%, healthcare SaaS). At exit, each portfolio company sale distributes proceeds through the LP waterfall: return of capital → preferred return (typically 8% IRR hurdle) → GP catch-up → 80/20 profit split. The carried interest vehicle receives the GP's 20% and allocates it to individual partners per their carry agreements."
+  },
+  {
+    "slug": "entity-qsbs-rollup",
+    "diagram": "entity",
+    "title": "QSBS restructure — §1202 eligible multi-entity",
+    "description": "Pre/post restructure for QSBS eligibility: C-corps per founder, clean C-corp parent, and non-qualifying IP subsidiary excluded from §1202 stack.",
+    "standard": "IRC §1202",
+    "tags": [
+      "entity",
+      "qsbs",
+      "1202",
+      "restructure",
+      "c-corp",
+      "startup",
+      "tax",
+      "esop"
+    ],
+    "complexity": 4,
+    "featured": false,
+    "dsl": "entity-structure \"Acme Inc. — QSBS Stack\"\nentity founder1 \"Founder 1\" trust@CA [note: \"IRC §1202 — original shareholder\"]\nentity founder2 \"Founder 2\" trust@CA [note: \"IRC §1202 — original shareholder\"]\nentity esop_trust \"ESOP Trust\" trust@DE [note: \"IRC §1042 — ESOP rollover\"]\nentity op_corp \"Acme Inc. (C-Corp)\" corp@DE [note: \"QSBS issuer — active business test\"]\nentity ip_sub \"IP HoldCo LLC\" llc@DE [note: \"Non-QSBS — excluded from §1202 stack\"]\nentity saas_sub \"SaaS Operations Inc.\" corp@DE [note: \"QSBS eligible — §1202 subsidiary\"]\nfounder1 -> op_corp : 45%\nfounder2 -> op_corp : 40%\nesop_trust -> op_corp : 15%\nop_corp -> ip_sub : 100%\nop_corp -> saas_sub : 100%",
+    "notes": "## Scenario\n\nA startup tax attorney structures the entity stack before a Series A closing to maximize the founders' §1202 exclusion. The key constraint: QSBS gain exclusion (up to $10M or 10× basis per taxpayer) applies only to original-issue stock in a domestic C-corp that meets the active business test and gross-asset limits at time of issuance. IP holding companies and pass-through entities are excluded. This diagram maps the qualifying versus non-qualifying layers so counsel can confirm clean §1202 eligibility before the closing.\n\n## Annotation key\n\n- `corp@DE` — Delaware C-corporation; the required entity form for §1202 QSBS eligibility\n- `llc@DE` — pass-through LLC; deliberately isolated from the QSBS stack\n- `->` — equity ownership; percentages must reflect the actual cap table at issuance\n- `[note: \"...\"]` — calls out the controlling IRC provision or exclusion rationale\n- `trust@CA` — grantor trusts are treated as individuals for §1202 purposes; eligible holders\n- ESOP at 15% — combined founder + ESOP must stay under §1202 gross-asset ceiling ($50M at issuance)\n\n## How to read\n\nFounders 1 and 2 own 45% and 40% of Acme Inc. directly; the ESOP holds 15%. All three are §1202 eligible holders. Acme Inc. (the QSBS issuer) owns two subsidiaries: the IP HoldCo LLC is intentionally isolated as a pass-through and excluded from the §1202 qualification analysis, while SaaS Operations Inc. is a qualifying C-corp sub that inherits QSBS eligibility through the parent. The dashed exclusion boundary makes it immediately clear to the audit team which entities sit inside and outside the §1202 stack. At exit, gain allocated to qualifying shares in op_corp and saas_sub may be excluded from federal capital gains tax up to the §1202 limits per taxpayer."
+  },
+  {
+    "slug": "entity-real-estate-syndication",
+    "diagram": "entity",
+    "title": "Real estate syndication — GP/LP + SPV per property",
+    "description": "Private real estate syndication: sponsor GP, investor LP interests, and separate SPV per property with senior lender — for the real estate syndicator.",
+    "standard": "SEC Reg D / partnership law",
+    "tags": [
+      "entity",
+      "real-estate",
+      "syndication",
+      "gp",
+      "lp",
+      "spv",
+      "lender",
+      "sec-regd"
+    ],
+    "complexity": 3,
+    "featured": false,
+    "dsl": "entity-structure \"Acme Real Estate Fund I\"\nentity sponsor \"Sponsor LLC\" llc@DE [note: \"Deal originator\"]\nentity gp_entity \"GP Entity LLC\" llc@DE [note: \"1% GP commit + promote\"]\nentity investors \"LP Investors (Reg D 506(b))\" trust@CA [note: \"Accredited investors\"]\nentity fund_lp \"Acme Real Estate Fund I LP\" lp@DE [note: \"Closed-end fund\"]\nentity spv1 \"123 Main St. LLC\" llc@CA [note: \"Multifamily — 48 units\"]\nentity spv2 \"456 Oak Ave. LLC\" llc@TX [note: \"Mixed-use — retail + office\"]\nentity lender1 \"Senior Lender A\" corp@NY [note: \"First lien — 65% LTV\"]\nentity lender2 \"Senior Lender B\" corp@TX [note: \"First lien — 70% LTV\"]\nsponsor -> gp_entity : 100%\ngp_entity -> fund_lp : 1%\ninvestors -> fund_lp : 99%\nfund_lp -> spv1 : 100%\nfund_lp -> spv2 : 100%\nlender1 --> spv1\nlender2 --> spv2",
+    "notes": "## Scenario\n\nA real estate syndicator (sponsor) creates this entity map for the private placement memorandum (PPM) and investor onboarding package. Accredited investors investing under Reg D Rule 506(b) require a clear picture of the ownership stack, fee flows, and lender priority before wiring funds. Each property is isolated in its own SPV to ring-fence liability: a default on one asset cannot trigger cross-collateralization with another.\n\n## Annotation key\n\n- `lp@DE` — Delaware limited partnership; the standard vehicle for real estate funds; LP interests are passive investments\n- `llc@DE / llc@CA / llc@TX` — single-asset SPV LLCs in the property's state for local tax and liability purposes\n- `->` — equity ownership; GP commit is typically 1–5% of the fund to align incentives\n- `-->` — lender relationship (senior debt, not equity); lenders have first-lien priority over LP equity\n- `: 1% / : 99%` — GP/LP economic split; promote (carried interest) typically 20–30% of profits above preferred return\n\n## How to read\n\nThe sponsor controls the GP entity (100%) which holds the 1% general partner interest in the fund, giving the sponsor full management authority and the carried interest promote. LP investors contribute 99% of equity capital as passive limited partners with no management rights. The fund owns each property in its own isolated LLC — 123 Main St. (California multifamily, 48 units) and 456 Oak Ave. (Texas mixed-use). Senior lenders provide non-recourse debt at 65–70% LTV, sitting ahead of all equity in the capital stack. At exit, proceeds flow: lender repayment → LP return of capital → LP preferred return (e.g., 8% IRR) → GP promote on excess profits."
+  },
+  {
     "slug": "entity-series-a-cap-table",
     "diagram": "entity",
     "title": "Series A cap table",
@@ -314,6 +791,27 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "featured": false,
     "dsl": "entity-structure \"Acme Inc. — post Series A\"\nentity acme \"Acme Inc.\" corp@DE\nentity founders \"Founders (2)\" individual\nentity seed \"Seed Fund I\" lp@DE\nentity lead \"Sequoia Series A\" lp@DE\nentity angels \"Angel group\" individual\nentity esop \"Employee Option Pool\" trust@DE\nfounders -> acme : 45%\nseed -> acme : 12%\nlead -> acme : 22%\nangels -> acme : 6%\nesop -> acme : 15%",
     "notes": "## Scenario\n\nA startup attorney or CFO documents the post-Series A ownership table for a 409A valuation, board consent, or investor report. The cap table diagram makes the dilution story visual — founders can immediately see their post-money percentage, and the VC can verify their ownership stake before signing the term sheet.\n\n## Annotation key\n\n- `-> acme : 45%` — ownership arrow with percentage label; all percentages should sum to 100%\n- `individual` — natural person (founder, angel)\n- `lp` — institutional investor entity (fund/LP)\n- `trust` — the ESOP/option pool (typically a Delaware trust or reserved pool)\n- `corp@DE` — the issuer (Delaware C-corp)\n\n## How to read\n\nAcme Inc. (Delaware C-corp) sits at the bottom as the issuer. Five shareholder classes flow down with their ownership arrows: founders at 45%, the lead Series A investor at 22%, the employee option pool at 15%, the seed fund at 12%, and angels at 6%. Percentages sum to 100%, representing a clean fully-diluted cap table on the day of Series A close."
+  },
+  {
+    "slug": "entity-spac-merger",
+    "diagram": "entity",
+    "title": "SPAC de-SPAC merger structure",
+    "description": "SPAC sponsor, trust, target company, PIPE investors, and post-merger pubco — the standard de-SPAC structure per SEC S-4 filing conventions.",
+    "standard": "SEC S-4 / DGCL",
+    "tags": [
+      "entity",
+      "spac",
+      "de-spac",
+      "merger",
+      "pipe",
+      "trust",
+      "sponsor",
+      "sec-s4"
+    ],
+    "complexity": 4,
+    "featured": false,
+    "dsl": "entity-structure \"Acme Acquisition Corp — de-SPAC\"\nentity sponsor \"Sponsor LLC\" llc@DE [note: \"20% founder shares (promote)\"]\nentity spac \"Acme Acquisition Corp (SPAC)\" corp@DE [note: \"NYSE: ACMX — blank-check company\"]\nentity trust \"IPO Proceeds Trust\" fund@DE [note: \"$200M held in trust — T-bills\"]\nentity ipo_investors \"Public IPO Shareholders\" trust@NY [note: \"80% of SPAC shares + warrants\"]\nentity target \"Target Co.\" corp@DE [note: \"Private operating company\"]\nentity merger_sub \"Merger Sub Inc.\" corp@DE [note: \"Wholly-owned — merges into Target\"]\nentity pubco \"Acme Holdings Inc. (PubCo)\" corp@DE [note: \"NYSE: ACMX post-closing\"]\nentity pipe_investors \"PIPE Investors\" trust@NY [note: \"$50M private placement — closing condition\"]\nsponsor -> spac : 20%\nipo_investors -> spac : 80%\ntrust --> spac\nspac -> merger_sub : 100%\nmerger_sub --> target\ntarget -> pubco\nspac -> pubco\npipe_investors -> pubco : 15%",
+    "notes": "## Scenario\n\nAn investment banking analyst drafts this structure diagram for the S-4 registration statement or the investor roadshow deck. The de-SPAC process merges a blank-check company (SPAC) with a private target, taking the target public without a traditional IPO. The diagram must clearly show the pre-closing SPAC structure, the forward-merger mechanics through the merger subsidiary, and the post-closing cap table split among sponsor, public shareholders, and PIPE investors.\n\n## Annotation key\n\n- `corp@DE (SPAC)` — blank-check company with no operating business; formed solely to acquire a target within 18–24 months\n- `fund@DE (Trust)` — IPO proceeds held in a trust account invested in T-bills; released only at closing or redemption\n- `-->` — non-equity structural relationship (trust custodianship; merger mechanics)\n- `merger_sub` — wholly-owned subsidiary of the SPAC that merges into Target; the legal mechanism that makes Target the surviving entity and SPAC shareholders become PubCo shareholders\n- PIPE — Private Investment in Public Equity; committed concurrently with the merger agreement to provide minimum cash certainty if SPAC shareholders redeem\n\n## How to read\n\nPre-closing: the sponsor holds 20% founder shares (the \"promote\"); public IPO shareholders hold 80% of SPAC units plus warrants. The $200M IPO proceeds sit in trust. The SPAC creates a merger subsidiary. At closing: merger sub merges into Target (Target survives), converting Target equity holders into PubCo shareholders; SPAC shareholders who did not redeem become PubCo shareholders; PIPE investors inject $50M for new shares. Post-closing PubCo cap table approximation: legacy Target shareholders ~65%, public SPAC holders ~20%, sponsor ~15% (post-dilution from PIPE and redemptions vary by deal). The NYSE ticker ACMX carries over from SPAC to PubCo."
   },
   {
     "slug": "erd-ecommerce-schema",
@@ -412,6 +910,108 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "notes": "When an operator types a tank-level setpoint into the HMI, you can't just trust the number. Maybe they meant to type 75 and hit 750. Maybe they typed -5 because they were copying from a spec sheet that used a different reference. Maybe the HMI's input field doesn't have validation and the value is whatever bit-pattern the OPC UA bridge happened to land on. The PLC always validates, and the canonical pattern is: clamp to a safe range, then raise an alarm if the requested value was out of range so a human knows to check.\n\n**Network 0 — LIMIT.** `SafeSetpoint = LIMIT(MN: 0.0, IN: DesiredSetpoint, MX: 95.0)` is the clamp. LIMIT takes three REAL inputs and returns a REAL: the value of `IN` if it's in [MN, MX], otherwise MN or MX. Both bounds are inline constants — they render as yellow boxed text at their ports, no wire needed. The downstream control loop reads `SafeSetpoint`, never `DesiredSetpoint` directly. Even if the operator's input is corrupted, the tank can never be commanded outside the physically safe range.\n\n**Network 1 — out-of-range alarm.** `OutOfRange = OR(LT(DesiredSetpoint, 0.0), GT(DesiredSetpoint, 95.0))` is an inline expression that nests two comparison blocks inside an OR. LT (less-than) returns BOOL when its first input is less than the second; GT (greater-than) is the opposite. The OR fires when *either* fires — the operator's value was either too low or too high. The `Alarm = MOVE(OutOfRange.OUT)` then drives whatever HMI alarm channel — a red banner, a Slack notification, a SCADA event log entry.\n\n**Two data types in one diagram.** Look at the wire colors in the rendered SVG: the wire from `DesiredSetpoint` into LIMIT.IN is REAL (orange — IEEE 754 floating-point); the wires from LT.OUT and GT.OUT into OR are BOOL (black). The LIMIT.OUT is also REAL (orange). One of the FBD engine's small but pleasant features: the renderer infers each wire's type from the source port and colors it accordingly, following the TIA Portal convention. If you accidentally wired an INT to a REAL port the colors would mismatch at the junction and you'd notice immediately.\n\n**Why not ladder?** Ladder logic excels at boolean signal routing — contacts in series and parallel feeding into output coils. It has zero affordance for REAL arithmetic and comparison; you'd write the LIMIT expression as a structured-text \"function block\" call inside a ladder rung, which kills the visual semantic. FBD makes the math first-class. For per-scan combinational logic involving any non-BOOL signal, FBD is what the IEC 61131-3 standard expects you to use."
   },
   {
+    "slug": "fishbone-food-safety-recall",
+    "diagram": "fishbone",
+    "title": "Food safety recall — HACCP deviation analysis",
+    "description": "HACCP-based fishbone for a pathogen contamination incident in a ready-to-eat deli meat line — the food safety RCA required before FDA corrective action.",
+    "standard": "HACCP / FDA FSMA",
+    "tags": [
+      "fishbone",
+      "food-safety",
+      "haccp",
+      "recall",
+      "listeria",
+      "fsma",
+      "fda",
+      "rca"
+    ],
+    "complexity": 4,
+    "featured": false,
+    "dsl": "fishbone \"Listeria monocytogenes Contamination RCA — Deli Meat Recall\"\n\neffect \"Lm-positive product — Class I voluntary recall, 48,000 lb affected\"\n\ncategory machine      \"Equipment\"\ncategory method       \"Method\"\ncategory material     \"Material\"\ncategory man          \"Personnel\"\ncategory measurement  \"Measurement\"\ncategory environment  \"Environment\"\n\nmachine : \"Slicer blade guard harboring Listeria in inaccessible niche\"\nmachine : \"Floor drain biofilm not fully removed by routine CIP — design flaw\"\nmachine : \"Condenser drip pan overflow — standing water on RTE processing floor\"\nmachine : \"Conveyor belt splice joint — harborage point not in sanitation SOP\"\n\nmethod : \"Sanitation SOP frequency reduced from daily to 3×/week to cut costs\"\nmethod : \"Pre-operational inspection checklist signed off without physical walk\"\nmethod : \"Master sanitation schedule not updated after equipment line extension\"\nmethod : \"CIP chemical dwell time shortened — insufficient contact time at pH\"\n\nmaterial : \"Incoming raw pork shoulder — positive environmental swab at supplier\"\nmaterial : \"Packaging seal failure — modified atmosphere integrity compromised\"\nmaterial : \"Sanitizer concentration below 200 ppm due to dilution system fault\"\n\nman : \"New overnight sanitation crew — no documented SSOP training on file\"\nman : \"Line supervisor overrode reject hold on positive environmental zone-3 swab\"\nman : \"Sanitation lead position vacant 6 weeks — responsibilities distributed informally\"\n\nmeasurement : \"Environmental swab program quarterly — FSMA §117 requires risk-based frequency\"\nmeasurement : \"Finished product testing not at HACCP CCP for Lm — gap in food safety plan\"\nmeasurement : \"Zone-1 positive swab result not escalated per written recall procedure\"\n\nenvironment : \"Cold room floor drain shared between raw and RTE processing areas\"\nenvironment : \"Floor slope inadequate — pooling adjacent to slicer base\"\nenvironment : \"Condensation on ceiling above packaging line — roof insulation failure\"",
+    "notes": "## Scenario\n\nA food safety quality manager leads a mandatory FDA FSMA corrective action investigation after an environmental monitoring positive for Listeria monocytogenes is linked to shipped product. The six-category fishbone is the required root-cause analysis exhibit in the FDA Form 483 response and the firm's CAPA (Corrective and Preventive Action) submission. The HACCP team must demonstrate systematic analysis — not just the proximate harborage point — to satisfy the agency and prevent further enforcement action.\n\n## Annotation key\n\n- **Equipment** — physical harborage points and design deficiencies that prevent effective sanitation\n- **Method** — sanitation procedure gaps: frequency, dwell time, verification steps\n- **Material** — incoming ingredient risk, sanitizer failure, and packaging integrity\n- **Personnel** — training gaps, unauthorized decision overrides, and staffing vacancies\n- **Measurement** — monitoring program frequency, CCP coverage, and escalation failures\n- **Environment** — facility design, drainage, and condensation factors that enable pathogen persistence\n- Listeria monocytogenes is a persistent environmental pathogen; recall root causes are almost always multi-factorial, not attributable to a single point\n\n## How to read\n\nThe Class I recall (48,000 lb of ready-to-eat deli meat, highest FDA severity) is the effect. The six causal branches reveal the systemic failure: a harborage point in the slicer niche was enabled by a cost-driven reduction in sanitation frequency (method), a new untrained crew that did not physically complete the pre-op inspection (personnel), and an environmental swab program running quarterly instead of the risk-based frequency FSMA requires (measurement). A line supervisor's override of a zone-3 positive swab — which should have triggered a hold and investigation — is the most critical personnel finding and requires immediate CAPA. The corrective action plan must address all six branches; the FDA will reject a response that addresses only the harborage point without the systemic SSOP and training corrective actions."
+  },
+  {
+    "slug": "fishbone-manufacturing-defect",
+    "diagram": "fishbone",
+    "title": "Welding defect root-cause analysis (6M)",
+    "description": "Ishikawa 6M analysis of weld porosity defects in an automotive stamping plant — Machine, Method, Material, Man, Measurement, Mother-Nature.",
+    "standard": "Ishikawa 1968 / ASQ 6M",
+    "tags": [
+      "fishbone",
+      "manufacturing",
+      "welding",
+      "defect",
+      "6m",
+      "ishikawa",
+      "rca",
+      "quality"
+    ],
+    "complexity": 3,
+    "featured": false,
+    "dsl": "fishbone \"Weld Porosity Defect RCA — Automotive Stamping Plant\"\n\neffect \"Weld porosity defects exceeding 2% reject rate\"\n\ncategory machine      \"Machine\"\ncategory method       \"Method\"\ncategory material     \"Material\"\ncategory man          \"Man\"\ncategory measurement  \"Measurement\"\ncategory environment  \"Mother Nature\"\n\nmachine : \"MIG welder calibration drift (±15 A)\"\nmachine : \"Wire feeder speed inconsistent\"\nmachine : \"Contact tip worn — arc instability\"\nmachine : \"Nozzle spatter buildup restricting gas flow\"\n\nmethod : \"Wrong shielding gas mix (75/25 vs. 90/10 required)\"\nmethod : \"Travel speed too fast — insufficient fusion\"\nmethod : \"Pre-heat not applied on thick-gauge stock\"\nmethod : \"Joint gap tolerance not enforced at fit-up\"\n\nmaterial : \"Base metal surface moisture from storage\"\nmaterial : \"Wire spool contamination — oil from feeder\"\nmaterial : \"Wrong filler alloy lot — ER70S-3 vs. ER70S-6\"\nmaterial : \"Galvanized coating not ground off at weld zone\"\n\nman : \"Welder certification lapsed — 18 months overdue\"\nman : \"End-of-shift fatigue — porosity rate 3× higher at hour 10\"\nman : \"Inconsistent torch angle technique across operators\"\n\nmeasurement : \"Porosity inspection gauge not calibrated in 6 months\"\nmeasurement : \"Radiographic sample rate 5% — too low for detection\"\nmeasurement : \"Reject threshold 2% set above ASME Section IX limit\"\n\nenvironment : \"Shop relative humidity exceeding 85% during rainy season\"\nenvironment : \"Wind draft from loading dock door disrupting shielding gas\"",
+    "notes": "## Scenario\n\nA QA engineer facilitates a kaizen event after the stamping plant's monthly weld audit reveals a 2.3% porosity reject rate — above the ASME Section IX contractual limit of 2.0%. The team uses the 6M fishbone to structure a cross-functional root-cause brainstorm before ordering expensive radiographic inspection equipment. The completed diagram is attached to the 8D corrective action report submitted to the OEM customer.\n\n## Annotation key\n\n- `effect \"...\"` — the nonconformance statement; should reference a measurable threshold (2% reject rate) not just a vague symptom\n- 6M categories: **Machine** (equipment), **Method** (process/procedure), **Material** (inputs), **Man** (personnel), **Measurement** (inspection), **Mother Nature** (environment/conditions)\n- Each cause should be specific enough to assign an owner and a verification test\n- Bold causes in the workshop session are those that can be tested and confirmed within one shift\n\n## How to read\n\nThe effect (weld porosity exceeding the 2% limit) sits at the head. Six causal ribs branch from the spine. In the workshop, the team voted: the highest-probability primary causes were shielding gas mix error (Method), welder certification lapse (Man), and wire spool contamination (Material). These became the immediate corrective actions: re-certify all welders, audit gas supply specifications, and implement incoming inspection for wire spools. The environmental causes (humidity, dock-door draft) were addressed with a capital request for a secondary containment curtain — a corrective action assigned to facilities."
+  },
+  {
+    "slug": "fishbone-never-event-surgical",
+    "diagram": "fishbone",
+    "title": "Wrong-site surgery — root-cause analysis",
+    "description": "Joint Commission RCA of a wrong-site surgical never-event using healthcare 5P categories — People, Process, Plant, Policies, Pathogens/External.",
+    "standard": "Joint Commission RCA² Framework",
+    "tags": [
+      "fishbone",
+      "never-event",
+      "rca",
+      "surgery",
+      "patient-safety",
+      "joint-commission"
+    ],
+    "complexity": 4,
+    "featured": false,
+    "dsl": "fishbone \"Wrong-Site Surgery RCA — Joint Commission Required\"\n\neffect \"Wrong-site surgery performed (left knee, consent for right)\"\n\ncategory people    \"People\"\ncategory process   \"Process\"\ncategory plant     \"Plant / Equipment\"\ncategory policy    \"Policies\"\ncategory external  \"External Factors\"\n\npeople : \"Attending surgeon fatigue — 14-hour shift, fourth case\"\npeople : \"Surgical resident did not speak up when site inconsistency noted\"\npeople : \"Circulating nurse unfamiliar with Universal Protocol timeout\"\npeople : \"Pre-op nurse documented laterality from verbal order — not chart\"\n\nprocess : \"Surgical timeout not fully performed — attestation incomplete\"\nprocess : \"Surgeon did not personally mark the operative site pre-scrub\"\nprocess : \"Consent form laterality field left ambiguous (checkboxes not filled)\"\nprocess : \"Imaging hung in OR without laterality verification step\"\n\nplant : \"OR scheduling board displayed outdated version of OR schedule\"\nplant : \"Imaging display system showed prior patient's study for 4 minutes\"\nplant : \"Physical consent document not available in OR — scanned copy only\"\n\npolicy : \"Site-marking policy not enforced — no escalation path for omission\"\npolicy : \"Timeout checklist voluntary for cases under 30 minutes — loophole\"\npolicy : \"No mandatory second-check requirement for laterality by scrub tech\"\n\nexternal : \"Staffing agency circulating nurse — first shift at this facility\"\nexternal : \"OR scheduling system race condition created duplicate booking\"",
+    "notes": "## Scenario\n\nA patient safety officer leads a mandatory Joint Commission Root Cause Analysis² (RCA²) following a wrong-site never-event. The RCA² framework requires the hospital to identify all contributing causes — not just the proximate error — and submit a corrective action plan within 45 days. This fishbone structures the multidisciplinary team's findings across five healthcare-adapted categories. The completed diagram is a required exhibit in the sentinel event report.\n\n## Annotation key\n\n- Healthcare 5P categories: **People** (workforce factors), **Process** (workflow and procedure), **Plant/Equipment** (physical environment and technology), **Policies** (rules and their enforcement), **External Factors** (system or supply factors outside direct control)\n- The Joint Commission distinguishes contributing causes (present but not sufficient alone) from root causes (necessary for the event to occur) — this diagram captures all contributing causes for team review\n- Never-event RCAs must produce at least one strong systemic action (policy or process change), not just individual retraining\n\n## How to read\n\nThe sentinel event (wrong-site surgery on the left knee when consent was for the right) sits at the head. Five causal ribs surface the layered failure: the circulating nurse was agency staff unfamiliar with the Universal Protocol, the timeout was not completed, the surgeon did not mark the site personally, the consent form had an ambiguous laterality field, and the OR imaging system briefly displayed a prior patient's study. No single cause was sufficient — the event required the simultaneous failure of four independent safety barriers. The corrective action plan must address at minimum: mandatory site marking by the attending before scrub, a hard-stop in the EMR if laterality is blank on consent, and mandatory Universal Protocol training before any agency nurse is permitted in an OR."
+  },
+  {
+    "slug": "fishbone-nps-decline",
+    "diagram": "fishbone",
+    "title": "NPS score decline — customer experience RCA",
+    "description": "Fishbone for a 12-point NPS decline over Q3 — product, support, onboarding, pricing, competition, and communication root causes.",
+    "standard": "Ishikawa 1968",
+    "tags": [
+      "fishbone",
+      "nps",
+      "customer-experience",
+      "saas",
+      "rca",
+      "retention",
+      "support"
+    ],
+    "complexity": 3,
+    "featured": false,
+    "dsl": "fishbone \"NPS Decline RCA — Q3 Customer Experience Review\"\n\neffect \"NPS drop: 52 → 40 over Q3 (12-point decline, 186 survey responses)\"\n\ncategory product      \"Product\"\ncategory support      \"Support\"\ncategory onboarding   \"Onboarding\"\ncategory pricing      \"Pricing\"\ncategory competition  \"Competition\"\ncategory comms        \"Communication\"\n\nproduct : \"Three regressions shipped in 6 weeks affecting core workflow\"\nproduct : \"Mobile app performance degraded on Android — P95 render 4.2 s\"\nproduct : \"Top-requested feature cancelled without customer notice\"\nproduct : \"API rate limits tightened — broke integrations for 38 accounts\"\n\nsupport : \"Ticket median first-response rose from 2 h to 9 h in July\"\nsupport : \"Support team understaffed — 2 FTE departed, not backfilled\"\nsupport : \"Chat widget removed — customers routed to email only\"\n\nonboarding : \"New onboarding flow confusing for non-technical admins\"\nonboarding : \"Checklist items not localized for EU customers (GDPR steps missing)\"\nonboarding : \"In-app tours broken after UI redesign — no fallback\"\n\npricing : \"Surprise overage charges not warned in-app before threshold\"\npricing : \"Annual price increase announced with 14-day notice — no grace period\"\npricing : \"Grandfathered plan removed — 120 accounts forced to upgrade\"\n\ncompetition : \"Primary competitor launched feature parity at 20% lower price\"\ncompetition : \"Competitor offered free migration service for churned accounts\"\n\ncomms : \"Status page not updated for 3 hours during August outage\"\ncomms : \"Changelog not published in 6 weeks — users unaware of fixes\"\ncomms : \"Account managers not notified before pricing change announcement\"",
+    "notes": "## Scenario\n\nA customer experience lead presents this fishbone at the Q3 CX review after the Promoter score drops 12 points — from 52 to 40. The NPS survey verbatim comments are coded into six categories matching the fishbone branches. The diagram makes visible what the summary NPS number hides: the decline is not driven by any single factor but by simultaneous failures in product quality, support capacity, and pricing communication. It becomes the brief for the cross-functional Q4 CX recovery sprint.\n\n## Annotation key\n\n- **Product** — regressions, performance problems, cancelled features, and API changes that degraded existing workflows\n- **Support** — response-time degradation, channel reduction, and staffing gaps\n- **Onboarding** — friction for new users that produced early detractors before value was realized\n- **Pricing** — billing surprise and plan changes that damaged trust among tenured accounts\n- **Competition** — market-level factors that amplified every other dissatisfaction\n- **Communication** — information gaps that prevented customers from managing expectations\n\n## How to read\n\nThe 12-point NPS drop (52 → 40) is the effect. The six causal branches reveal a compounding pattern: product quality degraded (regressions, Android performance), support capacity shrank (two FTE departures, longer response times), and two pricing changes created surprise billing — all in the same quarter. Competition amplified the damage by offering a lower-cost alternative at feature parity, giving dissatisfied customers a viable exit. The highest-leverage corrective actions are: restore first-response SLA to under 2 hours (support hire or tier routing), enforce 30-day notice for pricing changes with in-app warnings, and ship a public regression post-mortem to rebuild trust with affected accounts."
+  },
+  {
+    "slug": "fishbone-sla-breach-incident",
+    "diagram": "fishbone",
+    "title": "API SLA breach post-mortem",
+    "description": "SRE post-mortem fishbone for a 6-hour API SLA breach — infrastructure, code, process, people, external, and monitoring categories.",
+    "standard": "Ishikawa 1968",
+    "tags": [
+      "fishbone",
+      "sla",
+      "incident",
+      "post-mortem",
+      "sre",
+      "api",
+      "saas",
+      "rca"
+    ],
+    "complexity": 3,
+    "featured": false,
+    "dsl": "fishbone \"API SLA Breach Post-Mortem — 6-Hour P99 Latency Incident\"\n\neffect \"6-hour API SLA breach — P99 latency sustained above 2,000 ms\"\n\ncategory infra       \"Infrastructure\"\ncategory code        \"Code\"\ncategory process     \"Process\"\ncategory people      \"People\"\ncategory external    \"External\"\ncategory monitoring  \"Monitoring\"\n\ninfra : \"Database connection pool exhausted — pool size 20, peak demand 85\"\ninfra : \"Redis OOM — eviction policy set to noeviction in production\"\ninfra : \"Auto-scaling trigger lag 8 minutes — scale-out too slow for spike\"\ninfra : \"Read replica replication lag 40 s — queries falling back to primary\"\n\ncode : \"N+1 query introduced in v2.14.1 release — 47 queries per request\"\ncode : \"Missing composite index on reports.user_id + reports.created_at\"\ncode : \"Unbounded pagination — page size limit removed in refactor\"\ncode : \"Synchronous PDF generation blocking API worker threads\"\n\nprocess : \"Staging database 10× smaller than production — N+1 not detected\"\nprocess : \"No load test step in release pipeline — only unit and integration\"\nprocess : \"Feature flag rollout 100% immediate — no canary stage\"\n\npeople : \"On-call engineer missed PagerDuty alert — Slack notification silenced\"\npeople : \"Runbook for connection pool exhaustion not updated after Q2 migration\"\npeople : \"Escalation path unclear — 40-minute delay before incident commander paged\"\n\nexternal : \"CDN provider BGP reroute added 180 ms baseline latency — not SLA-covered\"\n\nmonitoring : \"P99 latency alert threshold set to 5,000 ms — too loose to catch breach\"\nmonitoring : \"No alert on database connection pool depth or wait queue length\"\nmonitoring : \"Redis memory alert only at 95% — no warning at 80% threshold\"",
+    "notes": "## Scenario\n\nAn SRE lead runs a post-mortem blameless review 48 hours after a P1 incident that breached the 99.9% monthly uptime SLA. Six categories of contributing causes are identified by the on-call team and mapped to this fishbone before the incident report is sent to enterprise customers. The diagram becomes the basis for the corrective action roadmap: immediate mitigations, 30-day engineering fixes, and 90-day process changes.\n\n## Annotation key\n\n- **Infrastructure** — platform and configuration decisions made outside the code path\n- **Code** — bugs or regressions introduced in application code\n- **Process** — gaps in the SDLC, release pipeline, or operational procedures\n- **People** — human factors: awareness, communication, skills, and on-call readiness\n- **External** — third-party provider failures outside the team's control; relevant for SLA attribution\n- **Monitoring** — gaps in observability that delayed detection or escalation\n- All causes are recorded without blame; the goal is systemic improvement, not individual accountability\n\n## How to read\n\nThe P99 latency breach (sustained above 2,000 ms for 6 hours) sits at the head. Six contributing branches are mapped. The proximate cause was an N+1 query regression in v2.14.1 that overwhelmed the connection pool. The systemic causes were a staging environment 10× undersized for load testing, an auto-scaler too slow to respond, and monitoring thresholds set too conservatively to detect the degradation early. The CDN BGP reroute added a baseline latency penalty that pushed a marginal P99 over the SLA threshold faster than it would have otherwise. Action items with the highest leverage: parity load testing in CI, dynamic connection pool sizing, and a tighter P99 alert at 1,500 ms with a 2-minute sustained window."
+  },
+  {
     "slug": "fishbone-website-traffic",
     "diagram": "fishbone",
     "title": "Website traffic drop root-cause analysis",
@@ -427,6 +1027,63 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "featured": true,
     "dsl": "fishbone \"Fishbone diagram — Website traffic drop\"\n\neffect \"Traffic decline\"\n\ncategory content     \"Content\"\ncategory tech        \"Technical\"\ncategory links       \"Backlinks\"\ncategory ux          \"UX\"\ncategory competition \"Competition\"\ncategory algo        \"Algorithm\"\n\ncontent : \"Publishing frequency down\"\ncontent : \"Content too generic\"\ncontent : \"Keyword gaps\"\ncontent : \"Low-quality AI content\"\n\ntech : \"Core Web Vitals failing\"\ntech : \"Crawl coverage drop\"\ntech : \"Crawler blocked by WAF\"\ntech : \"Missing structured data\"\n\nlinks : \"High-quality backlinks lost\"\nlinks : \"High ratio of low-quality links\"\nlinks : \"Referring domain growth stalled\"\nlinks : \"Low anchor text diversity\"\n\nux : \"Bounce rate rising\"\nux : \"Poor mobile experience\"\nux : \"Slow above-fold load\"\nux : \"Excessive popup ads\"\n\ncompetition : \"New competitors entering\"\ncompetition : \"AI tools replacing search\"\ncompetition : \"Weakening brand recall\"\ncompetition : \"Competitors publishing faster\"\n\nalgo : \"Core Update penalty\"\nalgo : \"Weak E-E-A-T signals\"\nalgo : \"AI Overviews / SGE cutoff\"\nalgo : \"Search intent drift\"",
     "notes": "## Scenario\n\nAn ops lead runs a growth post-mortem after a 30% organic traffic drop. The Ishikawa (fishbone) diagram structures the team's brainstorm into six standard causal categories, preventing the meeting from fixating on the most vocal hypothesis while ignoring systemic causes. The completed diagram becomes the project brief for the remediation sprint.\n\n## Annotation key\n\n- `effect \"...\"` — the problem statement, placed at the fish's head (right side)\n- `category id \"Label\"` — defines a major causal branch (a \"bone\"); use a short `id` to assign causes\n- `id : \"cause text\"` — assigns a cause string to the named category branch\n- Each category renders as a diagonal rib pointing toward the effect\n- Sub-causes (second-order) can be added by nesting if the DSL supports it\n\n## How to read\n\nThe effect (traffic decline) sits at the right. Six causal ribs branch from the spine: Content, Technical, Backlinks, UX, Competition, and Algorithm. Each rib lists four specific hypotheses. In a workshop, the team votes on each cause, color-codes high-confidence ones, and converts the highest-priority items into action items. The diagram serves as both a brainstorming artifact and a living post-mortem document."
+  },
+  {
+    "slug": "flowchart-algo-binary-search",
+    "diagram": "flowchart",
+    "title": "Binary search algorithm",
+    "description": "Iterative binary search over a sorted array — the classic CS teaching flowchart, from array + target input to found/not-found output.",
+    "standard": "ISO 5807:1985",
+    "tags": [
+      "algorithm",
+      "binary-search",
+      "teaching",
+      "cs",
+      "sorted-array",
+      "iterative"
+    ],
+    "complexity": 2,
+    "featured": false,
+    "dsl": "flowchart TD\n  input([Input: sorted array A, target T]) --> init[low = 0, high = n − 1]\n  init --> loopcheck{low ≤ high?}\n  loopcheck -->|No| notfound([Return −1 — target not found])\n  loopcheck -->|Yes| mid[mid = floor((low + high) / 2)]\n  mid --> eqcheck{A[mid] == T?}\n  eqcheck -->|Yes| found([Return mid — target found at index mid])\n  eqcheck -->|No| ltcheck{A[mid] < T?}\n  ltcheck -->|Yes — search right half| newlow[low = mid + 1]\n  newlow --> loopcheck\n  ltcheck -->|No — search left half| newhigh[high = mid − 1]\n  newhigh --> loopcheck",
+    "notes": "## Scenario\n\nA CS teacher is preparing lecture slides on divide-and-conquer algorithms and wants a textbook-quality flowchart students can annotate alongside the pseudocode. The iterative formulation makes the loop invariant — the search space halving each iteration — visually explicit, and the two boundary-update branches give students a concrete mental model for why the algorithm runs in O(log n) time.\n\n## Annotation key\n\n- `([…])` — stadium; algorithm entry with inputs and terminal return values\n- `{…}` — diamond; loop-continuation test and value-comparison decisions\n- `[…]` — rectangle; variable initialization and index update assignments\n- `-->|label|` — branch labels stating the condition outcome and which half is selected\n- Back edges from `newlow` and `newhigh` to `loopcheck` form the iterative loop body\n\n## How to read\n\nThe algorithm initializes two index pointers — `low` at zero and `high` at the last index — then enters the main loop gate. If `low` exceeds `high` the search space is exhausted and −1 is returned. Otherwise `mid` is computed as the floor average of the two pointers and the element at that index is compared to the target. An exact match terminates with the index; a mismatch routes to the less-than check, which moves `low` one past `mid` to discard the left half, or moves `high` one below `mid` to discard the right half. Either update sends control back to the loop gate, halving the remaining search space on every iteration."
+  },
+  {
+    "slug": "flowchart-approval-bpmn",
+    "diagram": "flowchart",
+    "title": "Purchase order approval",
+    "description": "Employee submits PO → manager review → finance approval → payment — BPMN gateway shapes for a business approval workflow.",
+    "standard": "ISO 5807:1985",
+    "tags": [
+      "approval",
+      "bpmn",
+      "purchase-order",
+      "workflow",
+      "finance",
+      "gateway"
+    ],
+    "complexity": 2,
+    "featured": false,
+    "dsl": "flowchart TD\n  submit([Employee submits purchase order]) --> amtcheck{Amount > $10,000?}\n  amtcheck -->|Yes — CFO track| cfo[CFO review queue]\n  amtcheck -->|No — standard track| mgr[Department manager review]\n  mgr --> mapproved{Manager approved?}\n  mapproved -->|No| revise[Request revision from employee]\n  revise --> submit\n  mapproved -->|Yes| cfo\n  cfo --> capproved{CFO approved?}\n  capproved -->|No| reject([Reject PO — notify employee with reason])\n  capproved -->|Yes| finance[Finance processes payment]\n  finance --> vendor[Send payment confirmation to vendor]\n  vendor --> done([PO closed — archived to ERP])",
+    "notes": "## Scenario\n\nA business analyst is documenting a company's purchase order workflow to support an ERP implementation and audit readiness review. The diagram makes explicit the dollar-amount threshold that gates which approval track a PO enters, the revision loop that keeps rejected items in flight rather than discarding them, and the two possible terminal outcomes — closed PO or formal rejection with written rationale.\n\n## Annotation key\n\n- `([…])` — stadium; employee-initiated event and terminal closure or rejection nodes\n- `{…}` — diamond; BPMN-style exclusive gateways branching on amount threshold or approval decision\n- `[…]` — rectangle; human review steps and system actions (payment, notification, archival)\n- `-->|label|` — branch label showing threshold condition or approval outcome\n- Loop from `revise` back to `submit` keeps the PO in flight through the standard track after revision\n\n## How to read\n\nEvery PO enters the amount-check gateway immediately after submission. Orders above ten thousand dollars skip manager review and go directly to the CFO queue; orders at or below the threshold must first receive manager approval. A manager rejection sends the PO back to the employee for revision, which re-enters the same gateway — the amount does not change, so revised orders under the threshold loop through manager review again. Once the CFO approves (either from the high-value track or an escalated standard-track PO), finance executes payment and notifies the vendor, closing the PO in the ERP. A CFO rejection terminates the flow with a formal notice to the employee."
+  },
+  {
+    "slug": "flowchart-auth-flow",
+    "diagram": "flowchart",
+    "title": "OAuth 2.0 authorization code + PKCE",
+    "description": "OAuth 2.0 authorization code flow with PKCE — the recommended grant for SPAs and mobile apps, per RFC 7636.",
+    "standard": "ISO 5807:1985",
+    "tags": [
+      "oauth",
+      "pkce",
+      "authorization-code",
+      "security",
+      "spa",
+      "rfc7636"
+    ],
+    "complexity": 4,
+    "featured": false,
+    "dsl": "flowchart LR\n  subgraph \"Client App\"\n    start([User initiates login]) --> gen[Generate code verifier + SHA-256 challenge]\n    gen --> redirect[Redirect to authorization endpoint with challenge + state]\n    callback[Receive authorization code] --> exchange[POST /token — code + code verifier]\n    tokens[Store access + refresh tokens] --> bearer[Attach Bearer token to API request]\n  end\n  subgraph \"Authorization Server\"\n    redirect --> login[Present login + consent UI]\n    login --> consent{User consents?}\n    consent -->|No| deny([Authorization denied — redirect with error])\n    consent -->|Yes| issue[Issue authorization code — redirect to callback]\n    issue --> callback\n    exchange --> verify{code_challenge matches verifier hash?}\n    verify -->|No| err([400 Bad Request — PKCE mismatch])\n    verify -->|Yes| mint[Mint access token + refresh token]\n    mint --> tokens\n  end\n  subgraph \"Resource Server\"\n    bearer --> validate{Bearer token valid + not expired?}\n    validate -->|No| unauth([401 Unauthorized])\n    validate -->|Yes| data([Return protected resource])\n  end",
+    "notes": "## Scenario\n\nA security engineer is reviewing a team's SPA authentication implementation against RFC 7636 to verify that the implicit grant has been fully removed in favor of authorization code with PKCE. The diagram makes the cryptographic handshake — code verifier generated client-side, challenge sent to the authorization server, verifier submitted at token exchange — visible alongside the three distinct server boundaries, helping reviewers confirm that no secret is ever stored in browser memory.\n\n## Annotation key\n\n- `([…])` — stadium; user-initiated events and terminal success/error responses\n- `{…}` — diamond; server-side validation gates (consent, PKCE hash match, token validity)\n- `[…]` — rectangle; client or server processing steps\n- `subgraph \"…\"` — trust boundary lanes for Client App, Authorization Server, and Resource Server\n- `-->|label|` — branch labels showing consent outcome or validation result\n\n## How to read\n\nThe flow starts in the Client App lane where the application generates a random code verifier and derives its SHA-256 challenge before redirecting the user. In the Authorization Server lane the user authenticates and consents; the server returns an authorization code bound to the challenge. The client then submits the original verifier in the token exchange request — the Authorization Server hashes it and compares it to the stored challenge, rejecting mismatches with a 400. Valid exchanges produce short-lived access and refresh tokens. The Resource Server lane shows the final step: every API call presents the Bearer token and the server validates its signature and expiry before returning data, enforcing a clean separation between authorization and resource access."
   },
   {
     "slug": "flowchart-cicd-pipeline",
@@ -445,6 +1102,62 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "featured": false,
     "dsl": "flowchart TD\n  commit([Push to main]) --> build[Build artifact]\n  build --> unit{Unit tests pass?}\n  unit -->|No| fail([Fail build])\n  unit -->|Yes| scan[Security scan]\n  scan --> vuln{High-severity CVEs?}\n  vuln -->|Yes| fail\n  vuln -->|No| stage[Deploy to staging]\n  stage --> smoke{Smoke tests green?}\n  smoke -->|No| fail\n  smoke -->|Yes| approve{Manual approval?}\n  approve -->|No| wait([Await approver])\n  approve -->|Yes| prod[Deploy to production]\n  prod --> health{Post-deploy health check?}\n  health -->|Yes| done([Release complete])\n  health -->|No| rollback[Automatic rollback]\n  rollback --> done",
     "notes": "## Scenario\n\nA platform engineer is documenting the team's trunk-based pipeline for a new-hire runbook. The diagram makes the four automated gates (tests → scan → smoke → post-deploy health) and the single human gate (manual approval) obvious at a glance, and shows that every failure path terminates the pipeline rather than silently continuing.\n\n## Annotation key\n\n- `([…])` — stadium; start and terminal nodes\n- `{…}` — diamond; automated or manual gate\n- `[…]` — rectangle; build / deploy / scan step\n- `-->|Yes/No|` — branch labels on each gate\n\n## How to read\n\nStart at *Push to main*. Every diamond is a gate — a *No* on any of unit tests, CVE scan, or smoke tests terminates at *Fail build*. Manual approval is the only human gate; it can park the pipeline at *Await approver* without failing. The post-deploy health check guards production: a failure triggers automatic rollback, which still completes at *Release complete* because the rollback itself is a successful outcome."
+  },
+  {
+    "slug": "flowchart-etl-pipeline",
+    "diagram": "flowchart",
+    "title": "ETL data pipeline",
+    "description": "Source extraction through transform, validation, load, and warehouse notification — the standard data-engineering pipeline diagram.",
+    "standard": "ISO 5807:1985",
+    "tags": [
+      "etl",
+      "pipeline",
+      "data",
+      "warehouse",
+      "validation",
+      "transform"
+    ],
+    "complexity": 3,
+    "featured": false,
+    "dsl": "flowchart LR\n  subgraph \"Sources\"\n    pg[(PostgreSQL)] --> extract\n    s3[(S3 bucket)] --> extract\n    api[REST API] --> extract\n  end\n  extract[Extract to raw staging] --> clean[Clean — strip nulls, deduplicate]\n  clean --> normalize[Normalize — cast types, unify schemas]\n  normalize --> enrich[Enrich — join lookup tables]\n  enrich --> validate{Error rate > 1%?}\n  validate -->|Yes| quarantine[Quarantine bad rows]\n  quarantine --> notify[Alert data-quality Slack channel]\n  notify --> retry{Retry batch?}\n  retry -->|Yes| extract\n  retry -->|No| abort([Abort run — log to incident tracker])\n  validate -->|No| load[Load to data warehouse]\n  load --> qcheck[Run row-count and sum reconciliation]\n  qcheck --> passed{Reconciliation passed?}\n  passed -->|No| rollback[Rollback warehouse load]\n  rollback --> abort\n  passed -->|Yes| publish[Publish partition metadata]\n  publish --> downstream([Notify downstream consumers — dbt, BI, ML])",
+    "notes": "## Scenario\n\nA data engineer is documenting a nightly batch ETL job that ingests transactional records from three heterogeneous sources into a central warehouse. The diagram serves as both a runbook and a stakeholder communication artifact, showing data-quality enforcement points that prevent silent corruption from propagating to reporting dashboards and machine-learning feature stores.\n\n## Annotation key\n\n- `([…])` — stadium; terminal run outcomes (abort, notify consumers)\n- `{…}` — diamond; quality gates with quantitative thresholds\n- `[…]` — rectangle; processing steps or system actions\n- `[(…)]` — cylinder; external data stores\n- `subgraph \"Sources\"` — groups the three ingestion connectors into one tier\n- Loop from `retry -->|Yes|` back to `extract` models full-batch reprocessing after quarantine\n\n## How to read\n\nThe pipeline fans in from three source connectors into a single extract step that writes to raw staging. The transform chain — clean, normalize, enrich — runs sequentially; each step narrows and standardizes the data before passing it forward. The validation gate measures the bad-row error rate: if it exceeds one percent, bad rows are quarantined, an alert fires, and the operator decides whether to retry or abort the run. Rows that pass validation are loaded to the warehouse, then verified with a row-count and sum reconciliation; a failed reconciliation triggers a rollback and abort rather than leaving inconsistent data in place. A successful reconciliation publishes partition metadata and fans out notifications to downstream consumers."
+  },
+  {
+    "slug": "flowchart-incident-response",
+    "diagram": "flowchart",
+    "title": "On-call incident response",
+    "description": "SRE on-call decision tree from alert page through triage, escalation, mitigation, and post-mortem — BPMN-shaped TD flow.",
+    "standard": "ISO 5807:1985",
+    "tags": [
+      "incident",
+      "sre",
+      "on-call",
+      "escalation",
+      "mitigation",
+      "postmortem"
+    ],
+    "complexity": 3,
+    "featured": false,
+    "dsl": "flowchart TD\n  page([Alert fires — on-call paged]) --> ack{Acknowledged within 5 min?}\n  ack -->|No| escalate[Escalate to secondary on-call]\n  escalate --> sev\n  ack -->|Yes| sev{Severity assessment}\n  sev -->|SEV1 — customer-facing outage| sev1[Wake CTO + open war room bridge]\n  sev -->|SEV2 — degraded service| sev2[Notify team lead + Slack channel]\n  sev -->|SEV3 — internal only| sev3[Self-resolve within shift]\n  sev1 --> mitigate[Apply mitigation — rollback or hotfix]\n  sev2 --> mitigate\n  sev3 --> mitigate\n  mitigate --> health{Service health restored?}\n  health -->|No| mitigate\n  health -->|Yes| resolved([Incident resolved — close bridge])\n  resolved --> postmortem{SEV1 or SEV2?}\n  postmortem -->|Yes| pm[Write post-mortem within 48 h]\n  postmortem -->|No| log[Log in incident tracker]\n  pm --> done([Done])\n  log --> done",
+    "notes": "## Scenario\n\nAn SRE team uses this flowchart as the canonical on-call runbook embedded in their incident-management wiki. When an alert fires at 3 AM the responder can follow the diagram top to bottom without improvising, ensuring that acknowledgment, severity triage, escalation paths, and post-mortem obligations are never skipped regardless of who is on duty.\n\n## Annotation key\n\n- `([…])` — stadium; trigger events and terminal closure nodes\n- `{…}` — diamond; time-boxed decisions and severity gates\n- `[…]` — rectangle; prescribed human actions (escalate, notify, mitigate, document)\n- `-->|label|` — branch label showing condition or severity band\n- Loop back from `health -->|No|` to `mitigate` represents the retry-until-resolved mitigation cycle\n\n## How to read\n\nThe flow begins the moment an alert fires. The first gate enforces the five-minute acknowledgment SLA; a miss immediately escalates to the secondary responder who then re-enters the severity triage diamond. Severity determines the escalation audience — SEV1 wakes executive leadership, SEV2 notifies the team lead, SEV3 is self-contained. All three paths converge on the mitigation loop, which repeats until health is restored. The final diamond routes only SEV1 and SEV2 incidents to a formal post-mortem; SEV3 incidents close with a tracker log entry."
+  },
+  {
+    "slug": "flowchart-microservices-request",
+    "diagram": "flowchart",
+    "title": "Microservices request flow",
+    "description": "API gateway routing a request through auth, rate-limit, and three backend services to a shared DB — LR subgraph layout.",
+    "standard": "ISO 5807:1985",
+    "tags": [
+      "microservices",
+      "api-gateway",
+      "request-flow",
+      "backend",
+      "subgraph"
+    ],
+    "complexity": 3,
+    "featured": false,
+    "dsl": "flowchart LR\n  subgraph \"API Layer\"\n    client([Client request]) --> gateway[API Gateway]\n    gateway --> auth{Auth valid?}\n    auth -->|No| reject([401 Unauthorized])\n    auth -->|Yes| rate{Rate limit ok?}\n    rate -->|No| throttle([429 Too Many Requests])\n  end\n  subgraph \"Services\"\n    rate -->|Yes| route{Route by path}\n    route -->|/users| user[User Service]\n    route -->|/orders| order[Order Service]\n    order --> notify[Notification Service]\n  end\n  subgraph \"Data\"\n    user --> db[(PostgreSQL)]\n    order --> db\n  end\n  user -->|200 response| client\n  order -->|200 response| client\n  db -->|query error| dberr([500 DB Error])",
+    "notes": "## Scenario\n\nA backend engineer is documenting the runtime topology of a decomposed e-commerce platform so that new team members can trace a request end to end without reading source code. The diagram exposes the two pre-routing gates (authentication and rate limiting) and the downstream fan-out to specialized services, making it clear why a client might receive a 401, 429, or 500 before any business logic executes.\n\n## Annotation key\n\n- `([…])` — stadium; entry points and terminal error/success nodes\n- `{…}` — diamond; routing and policy decision gates\n- `[…]` — rectangle; service or infrastructure processing step\n- `[(…)]` — cylinder; persistent data store\n- `-->|label|` — labeled directed edge showing condition or path name\n- `subgraph \"name\"` — swimlane grouping API, service, and data tiers\n\n## How to read\n\nStart at *Client request* and follow the arrow into the API Layer subgraph. The request must clear two sequential gates — authentication then rate limiting — before reaching the route diamond. The route diamond dispatches to *User Service* or *Order Service* based on the URL path; an order request additionally triggers the *Notification Service* asynchronously. Both services share the same *PostgreSQL* store; a database error at that layer surfaces as a 500 terminal node independent of which service triggered the query."
   },
   {
     "slug": "flowchart-order-fulfillment",
@@ -484,6 +1197,25 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "notes": "## Scenario\n\nA research librarian working with a clinical team produces the PRISMA 2020 flow diagram for an upcoming Cochrane review submission. The journal **requires** the diagram in this exact four-phase structure (Identification → Screening → Eligibility → Included), with the count `(n = …)` shown explicitly in every box and the excluded-with-reasons box itemizing rejection reasons. Authoring this in a DSL (rather than redrawing in Word or BioRender) means the counts can be regenerated as the screening team updates the search.\n\n## Annotation key\n\n- **Subgraphs** name the four PRISMA phases: `subgraph ID [\"Identification\"]`, etc. — the rendered output groups boxes inside a labeled cluster border.\n- **`(n = N)` inline** — keep the count in the same label (PRISMA 2020 requires the count to be visible in every box; inline is the simplest layout that survives wide labels).\n- **`classDef excluded`** + **`class A,B excluded`** — applies the red-tinted class to the \"records excluded\" boxes so the eliminated stream is visually separated from the surviving stream.\n- **Edge labels** (`-->|excluded|`, `-->|met inclusion criteria|`) annotate the screening decision on each fork.\n- **Stadium nodes** (`([\"…\"])`) mark the two terminal outcomes (qualitative synthesis count, meta-analysis count) so readers' eyes land there.\n\n## How to read\n\nTop to bottom, the four phases mirror the PRISMA 2020 template exactly:\n\n1. **Identification** — every database and register the team searched, with raw record counts before deduplication.\n2. **Screening** — after deduplication, records pass through title/abstract screening (most are excluded here), then eligible records advance to full-text retrieval. Records lost at retrieval (paywall, no response from authors) are split into a separate \"not retrieved\" box per PRISMA 2020 reporting requirements.\n3. **Eligibility** — full-text articles are assessed against inclusion/exclusion criteria. Exclusions **must** be itemized with reasons — this is the box reviewers most often flag if missing.\n4. **Included** — final study count for the qualitative synthesis, with a sub-count for studies that contributed to the meta-analysis (not all included studies always do).\n\n## Standard reference\n\nPage MJ, McKenzie JE, Bossuyt PM, et al. *The PRISMA 2020 statement: an updated guideline for reporting systematic reviews.* BMJ 2021;372:n71. The flow-diagram template lives at [prisma-statement.org/prisma-2020-flow-diagram](https://www.prisma-statement.org/prisma-2020-flow-diagram)."
   },
   {
+    "slug": "flowchart-user-onboarding",
+    "diagram": "flowchart",
+    "title": "User onboarding flow",
+    "description": "Signup through email verification, profile setup, first-action tutorial, and activation milestone — a product manager's north-star flow.",
+    "standard": "ISO 5807:1985",
+    "tags": [
+      "onboarding",
+      "activation",
+      "signup",
+      "tutorial",
+      "user-flow",
+      "product"
+    ],
+    "complexity": 2,
+    "featured": false,
+    "dsl": "flowchart TD\n  signup([User submits signup form]) --> email[Send verification email]\n  email --> verified{Email verified?}\n  verified -->|No — after 24 h| resend[Resend verification email]\n  resend --> verified\n  verified -->|Yes| profile[Profile setup wizard]\n  profile --> skipped{Wizard completed?}\n  skipped -->|Skip| tour[Feature tour — 3 tooltip steps]\n  skipped -->|Complete| tour\n  tour --> action{First core action taken?}\n  action -->|No — after 48 h| nudge[Send nudge email with shortcut link]\n  nudge --> action\n  action -->|Yes| activate[Record activation event]\n  activate --> welcome([Welcome milestone reached])",
+    "notes": "## Scenario\n\nA product manager is mapping the critical path from sign-up to activation to align engineering, growth, and design on what \"activated user\" means. The diagram makes every drop-off risk visible — email verification friction, wizard abandonment, and first-action hesitation — so each team can own the metric that corresponds to their part of the funnel.\n\n## Annotation key\n\n- `([…])` — stadium; user-triggered entry and milestone terminal nodes\n- `{…}` — diamond; binary or conditional state checks\n- `[…]` — rectangle; system or product actions (send email, show wizard, record event)\n- `-->|label|` — branch labels showing condition, time trigger, or user choice\n- Loop edges from `resend` and `nudge` model retry cycles that resolve when the user acts\n\n## How to read\n\nThe flow starts at form submission and immediately hits the email verification gate. Users who do not verify within 24 hours loop through a resend step; this loop continues until verification succeeds. Once verified, all users — whether they complete the profile wizard or skip it — enter the three-step feature tour. The first-action gate determines activation: users who have not acted within 48 hours receive a nudge email that links directly to the core feature, shortening the path back into the loop. Activation fires a single analytics event that marks the user as \"activated\" and terminates the onboarding sequence."
+  },
+  {
     "slug": "genogram-brca-cancer",
     "diagram": "genogram",
     "title": "Hereditary cancer (BRCA1) family",
@@ -518,6 +1250,27 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "featured": true,
     "dsl": "genogram \"Familia Isaías\"\n  victor [male, label: \"Víctor Seguel\"]\n  monica [female, label: \"Mónica Barrientos\"]\n  victor ~/~ monica\n    ?\n    isaias [male, 2020, age: 6, label: \"Isaías\", index]\n  pablo_sr [male, label: \"Don Pablo\"]\n  priscila [female, label: \"Doña Priscila\"]\n  pablo_sr -- priscila\n    pablo_jr [male, label: \"Pablo (jr)\"]\n    alanis [female, label: \"Alanis\"]\n    isaias [foster]\n  tio_materno [male, label: \"Tío materno\", sibling-of: monica]\n  victor -physical-abuse-> isaias\n  monica -physical-abuse-> isaias\n  tio_materno -nevermet- isaias",
     "notes": "## Scenario\n\nA foster-care social worker in Chile is preparing the case file for Isaías, a 6-year-old boy removed from his biological parents (Víctor and Mónica) due to physical abuse from both. He currently lives with foster parents Don Pablo and Doña Priscila, who have two biological children of their own. The case file mentions Isaías has siblings whose names and ages are unknown, and a maternal uncle who is a potential reunification resource but currently has no contact.\n\nA judge or psychologist receiving this diagram must, at a glance, correctly conclude:\n\n1. Isaías is the **biological son** of Víctor and Mónica — solid parent-child line down from the bio couple.\n2. He **currently lives** with Don Pablo and Doña Priscila as a foster child — *secondary dotted link* from the foster couple, drawn without pulling Isaías away from his bio-parent position.\n3. He was **removed due to physical abuse** from both bio parents — directional red zigzag arrows.\n4. The **maternal uncle** is Mónica's brother (`sibling-of: monica`) with **no current relationship** to Isaías — dashed bracket between Mónica and Tío + `nevermet` line.\n5. Isaías has **unknown-count siblings** still with the bio parents — single `?` diamond placeholder.\n6. **Isaías is the index person** — concentric outer border highlight.\n\n## Annotation key\n\n- `~/~` — cohabitation ended (never-married); standard for LATAM caseloads where bio parents lived together unmarried and the relationship has broken. Distinct from `-x-` divorce (no marriage) and `-/-` separation (still married).\n- Re-declaring `isaias [foster]` under the foster couple after declaring him under the bio couple → engine treats the second declaration as a **secondary \"current caregiver\" link** (dotted), preserving all attributes from the first declaration.\n- `?` on a child line → a single diamond with `?` glyph meaning \"≥1 siblings, count and identities unknown\" (standard pedigree convention).\n- `[sibling-of: monica]` → places Tío materno on Mónica's generation with a dashed bracket between them, **without** synthesizing phantom maternal grandparents.\n- `-physical-abuse->` → directional red arrow; the `>` indicates the perpetrator (left side) and victim (right side).\n\n## Why this matters\n\nA genogram engine that quietly rendered Isaías as a third biological child of Don Pablo + Doña Priscila — or dropped his sex and label when the `[foster]` redeclaration overwrote the original — would invert the case story. This example exercises every fix from the 2026-04 foster-care brief: dual-parent rendering, same-id merge, sibling-of, cohabiting-ended, and the unknown-siblings placeholder."
+  },
+  {
+    "slug": "genogram-lgbtq-inclusive",
+    "diagram": "genogram",
+    "title": "LGBTQ+-inclusive family — Bennett 2022 symbols",
+    "description": "Three-generation LGBTQ+-affirming genogram with AMAB/AFAB notation, same-sex couple, trans member, and chosen family — Bennett 2022 symbol set.",
+    "standard": "Bennett 2022 (LGBTQ+-inclusive genogram symbols)",
+    "tags": [
+      "genogram",
+      "lgbtq",
+      "trans",
+      "non-binary",
+      "same-sex",
+      "bennett-2022",
+      "inclusive",
+      "chosen-family"
+    ],
+    "complexity": 3,
+    "featured": false,
+    "dsl": "genogram \"Rivera Family — LGBTQ+-Affirming\"\n  gp1 [female, 1945, label: \"Abuela\"]\n  gp2 [male, 1943, label: \"Abuelo\"]\n  gp1 -- gp2\n    parent1 [female, 1972, label: \"Mom\", conditions: depression(half-left, #3498db)]\n    parent2 [male, 1970, label: \"Dad\"]\n  parent1 =/ parent2\n    child1 [male, 1998, index, label: \"Marco\"]\n    child2 [gender: non-binary, 2001, label: \"Sage\"]\n    child3 [female, 2004, label: \"Lucia\"]\n  parent3 [gender: trans-female, 1975, label: \"Valentina\"]\n  parent1 .. parent3\n    child1 [household: parent1]\n    child2 [household: parent1]\n    child3 [household: parent1]\n  chosen1 [male, 1997, label: \"Jordan\"]\n  chosen2 [gender: trans-male, 1999, label: \"River\"]\n  child1 -- chosen1\n  child1 -- chosen2",
+    "notes": "## Scenario\n\nA therapist specializing in LGBTQ+-affirming family therapy draws a three-generation genogram for Marco (age 28, index), who presents with anxiety related to family-of-origin and chosen-family boundary conflicts. Marco's parents divorced when he was a child; his mother, who has a history of depression, is now in a cohabiting same-sex relationship with Valentina, a trans woman. Marco's younger sibling Sage identifies as non-binary. Marco's closest support system is his chosen family: Jordan and River (a trans man), with whom he has a committed three-person partnership. The genogram uses Bennett 2022 LGBTQ+-inclusive symbols so that every family member's gender identity is rendered accurately without forcing binary defaults.\n\n## Annotation key\n\n- `[gender: non-binary]` — triangle symbol per Bennett 2022; used for Sage, who uses they/them pronouns; AMAB/AFAB note can be added as a label\n- `[gender: trans-female]` — circle with arrow-cross overlay per Bennett 2022; used for Valentina (AMAB, identifies as woman)\n- `[gender: trans-male]` — square with arrow overlay per Bennett 2022; used for River (AFAB, identifies as man)\n- `..` — cohabiting (common-law/unmarried) couple line; used for Mom and Valentina's same-sex partnership\n- `=/` — divorced couple; double-slash marks the ended marriage between Mom and Dad\n- `conditions: depression(half-left, #3498db)` — left-half blue fill; indicates Mom's diagnosed major depressive disorder\n- `child1 -- chosen1` / `child1 -- chosen2` — relationship lines from Marco to chosen-family members; rendered without descent lines (no shared children) to distinguish from biological family\n- `[household: parent1]` — all three children reside primarily with Mom\n- `index` — proband arrow on Marco, the presenting client\n\n## How to read\n\nGeneration I (grandparents) shows a traditional married couple. Generation II reflects the divorce and subsequent same-sex remarriage: Mom's depression (blue half-fill) predates the divorce. The cohabiting same-sex couple line (dotted) connects Mom and Valentina; all three children are in Mom's household. Sage's non-binary triangle and River's trans-male square signal that Bennett 2022 symbols are active for this diagram — AMAB/AFAB biological sex at birth is available as label annotation when clinically relevant. Marco's chosen-family relationships (solid lines to Jordan and River, without a descent line) represent his primary adult attachment network. The therapist's clinical task is to help Marco navigate loyalty between these two constellations: the family he grew up in and the family he built."
   },
   {
     "slug": "genogram-medical-history",
@@ -573,6 +1326,88 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "notes": "## Scenario\n\nA teaching example for social work students learning genogram notation. The Potter family is fictional but emotionally rich — death years, a marriage date, cross-family emotional relationships, and three distinct relational patterns (cutoff, hostile, close) all in one diagram.\n\n## Annotation key\n\n- `[male/female, birth_year, death_year, deceased]` — person with death marker\n- `\"m. 1978\"` — marriage date label on the union line\n- `index` — marks Harry as the identified patient (proband)\n- `-cutoff-` — estrangement; drawn as two parallel bars across the relationship line\n- `-hostile-` — conflict; drawn as zigzag line\n- `-close-` — enmeshment/closeness; drawn as double parallel line\n\n## How to read\n\nRead each indented block as a family unit. James and Lily (index generation) both died in 1981. Harry's emotional world is defined by three relational lines: cutoff from Aunt Petunia, hostility toward cousin Dudley, and closeness to his deceased mother."
   },
   {
+    "slug": "genogram-substance-use-3gen",
+    "diagram": "genogram",
+    "title": "Substance use disorder — three-generation pattern",
+    "description": "Three-generation genogram showing alcohol use disorder and opioid dependence inheritance pattern, with emotional cutoffs — for the addiction counselor.",
+    "standard": "McGoldrick 2020",
+    "tags": [
+      "genogram",
+      "substance-use",
+      "alcohol",
+      "opioid",
+      "three-generation",
+      "emotional-cutoff",
+      "addiction"
+    ],
+    "complexity": 3,
+    "featured": false,
+    "dsl": "genogram \"Substance Use — Three-Generation Pattern\"\n  gf [male, 1930, 1995, deceased, label: \"Grandfather\", conditions: alcohol(full, #c0392b)]\n  gm [female, 1935, 2010, deceased, label: \"Grandmother\"]\n  gf -- gm\n    father [male, 1958, label: \"Father\", conditions: alcohol(full, #c0392b) + opioid(half-right, #8e44ad)]\n    aunt [female, 1962, label: \"Aunt\"]\n    uncle [male, 1965, label: \"Uncle\", conditions: alcohol(half-left, #c0392b)]\n  mother [female, 1960, label: \"Mother\"]\n  father ~/~ mother\n    patient [male, 1988, index, label: \"Patient\", conditions: opioid(full, #8e44ad)]\n    sister [female, 1990, label: \"Sister\"]\n    brother [male, 1993, label: \"Brother\", conditions: alcohol(half-left, #c0392b)]\n  patient ~/~ father",
+    "notes": "## Scenario\n\nAn addiction counselor conducts a three-generation substance-use assessment for a 36-year-old male patient (index) presenting for opioid use disorder treatment. The genogram reveals that the patient's grandfather had alcohol use disorder; his father has both alcohol use disorder and opioid dependence; his paternal uncle has alcohol use disorder; and his younger brother is showing early-stage hazardous drinking. The patient reports a conflicted, largely cut-off relationship with his father. This multi-generational pattern helps the counselor identify biological risk factors, model family transmission pathways, and target family-systems interventions alongside pharmacotherapy.\n\n## Annotation key\n\n- `conditions: alcohol(full, #c0392b)` — full red fill; indicates alcohol use disorder (AUD), clinically diagnosed\n- `conditions: opioid(full, #8e44ad)` — full purple fill; indicates opioid use disorder (OUD), clinically diagnosed\n- `conditions: alcohol(full, #c0392b) + opioid(half-right, #8e44ad)` — split fill; father carries both AUD (dominant) and OUD (secondary), encoded side-by-side in right half\n- `conditions: alcohol(half-left, #c0392b)` — left-half fill; uncle and brother show alcohol use disorder without secondary diagnosis\n- `~/~` — conflicted relationship; zigzag line between the patient and his father reflects emotional cutoff with episodic conflict\n- `deceased` — diagonal slash; both grandparents are deceased\n- `index` — proband arrow on the presenting patient\n\n## How to read\n\nTrace the red (alcohol) fill from grandfather → father → uncle → brother: four males across three generations affected by AUD. The purple (opioid) fill first appears in the father (right half) and then dominates the patient (full fill) — reflecting escalation from alcohol-primary to opioid-primary dependence across generations. The conflicted couple line between father and mother explains the household disruption during the patient's adolescence, a documented environmental risk factor. The sister (open circle) is the only Generation III member currently without a substance-use diagnosis, which may reflect protective factors worth exploring. The emotional cutoff between patient and father (~/~) is both a relational wound and a potential barrier to family-involved treatment."
+  },
+  {
+    "slug": "ladder-bottling-line",
+    "diagram": "ladder",
+    "title": "Bottling line — fill, cap, label, reject",
+    "description": "Sequential fill → cap → label → reject-kick sequence for a beverage bottling PLC — count-based bottle detect with vision-system reject gate.",
+    "standard": "IEC 61131-3",
+    "tags": [
+      "ladder",
+      "bottling",
+      "sequential",
+      "fill",
+      "cap",
+      "label",
+      "reject",
+      "counter",
+      "plc"
+    ],
+    "complexity": 4,
+    "featured": false,
+    "dsl": "ladder \"Bottling Line Control\"\n\nrung 1 \"Fill valve — open when bottle present, close on timeout or fault\":\n  XIC(BOTTLE_PRESENT_FILL, \"IN 1.0\", name=\"Bottle Present at Fill\")\n  XIO(FILL_TIMEOUT.DN, \"BIT 4.15\", name=\"Fill Timer Done\")\n  XIO(LINE_FAULT, \"IN 1.7\", name=\"Line Fault\")\n  OTE(FILL_VALVE, \"OUT 2.0\", name=\"Fill Valve\")\n\nrung 2 \"Fill timer — tracks fill dwell time, 3 s preset\":\n  XIC(FILL_VALVE, \"OUT 2.0\", name=\"Fill Valve Open\")\n  TON(FILL_TIMEOUT, \"TMR 4.0\", name=\"Fill Dwell Timer\", preset=3000)\n\nrung 3 \"Cap station — apply cap when bottle present and cap magazine has stock\":\n  XIC(BOTTLE_PRESENT_CAP, \"IN 1.1\", name=\"Bottle Present at Capper\")\n  XIC(CAP_AVAILABLE, \"IN 1.2\", name=\"Cap Magazine Stock\")\n  XIO(LINE_FAULT, \"IN 1.7\", name=\"Line Fault\")\n  OTE(CAPPER_CMD, \"OUT 2.1\", name=\"Capper Command\")\n\nrung 4 \"Label apply — energize labeler when bottle indexed to label station\":\n  XIC(BOTTLE_PRESENT_LABEL, \"IN 1.3\", name=\"Bottle Present at Labeler\")\n  XIO(LINE_FAULT, \"IN 1.7\", name=\"Line Fault\")\n  OTE(LABELER_CMD, \"OUT 2.2\", name=\"Labeler Command\")\n\nrung 5 \"Vision reject latch — set when vision system signals a bad bottle\":\n  XIC(VISION_REJECT_SIGNAL, \"IN 1.4\", name=\"Vision System Reject\")\n  OTL(REJECT_LATCH, \"BIT 3.0\", name=\"Reject Latch\")\n\nrung 6 \"Reject kicker — fire kicker when latched reject reaches reject station, then clear latch\":\n  XIC(REJECT_LATCH, \"BIT 3.0\", name=\"Reject Latch\")\n  XIC(BOTTLE_AT_REJECT, \"IN 1.5\", name=\"Bottle At Reject Station\")\n  OTE(REJECT_KICKER, \"OUT 2.3\", name=\"Reject Kicker Solenoid\")\n\nrung 7 \"Clear reject latch after kicker fires\":\n  XIC(REJECT_KICKER, \"OUT 2.3\", name=\"Reject Kicker Active\")\n  OTU(REJECT_LATCH, \"BIT 3.0\", name=\"Reject Latch\")\n\nrung 8 \"Production counter — increment on each labeled bottle\":\n  XIC(BOTTLE_PRESENT_LABEL, \"IN 1.3\", name=\"Bottle Present at Label\")\n  XIO(LABEL_PREV, \"BIT 3.1\", name=\"Label Station Previous Scan\")\n  CTU(PROD_CTU, \"CNT 5.0\", name=\"Production Counter\", preset=10000)\n\nrung 9 \"Label previous-scan latch — one-shot for counter rising edge\":\n  XIC(BOTTLE_PRESENT_LABEL, \"IN 1.3\", name=\"Bottle Present at Label\")\n  OTE(LABEL_PREV, \"BIT 3.1\", name=\"Label Station Previous Scan\")\n\nrung 10 \"Shift count alarm — alert supervisor when 10 000 bottles reached\":\n  XIC(PROD_CTU.DN, \"BIT 5.15\", name=\"Production Counter Done\")\n  OTE(SHIFT_ALARM, \"OUT 2.4\", name=\"Shift Count Alarm\")\n\nrung 11 \"Cap magazine low alarm — alert when no caps available\":\n  XIO(CAP_AVAILABLE, \"IN 1.2\", name=\"Cap Magazine Stock\")\n  OTE(CAP_LOW_ALARM, \"OUT 2.5\", name=\"Cap Low Alarm\")",
+    "notes": "## Scenario\n\nA small-format beverage bottling line in a food and beverage plant runs at up to 200 bottles per minute across four processing stations: fill, cap, label, and reject. Each station has an inductive or photoelectric bottle-present sensor wired to a PLC digital input. A machine-vision camera downstream of the label station inspects label placement, fill level, and cap seating — any failure asserts the VISION_REJECT_SIGNAL input, which the PLC latches and carries forward until the bad bottle reaches the physical reject station 600 ms later (accounting for conveyor travel at the current line speed). The reject kicker is a pneumatic solenoid that pushes the bad bottle off the conveyor into a reject bin, then clears the latch. Production counting at the label station gives the shift supervisor a real-time unit count, with a configurable alarm at 10 000 bottles for shift reporting. The fill overtime guard (TON FILL_TIMEOUT, 3 s) closes the fill valve if the bottle is not indexed away within the fill dwell window, preventing overflow and spillage. All output rungs are gated by a master LINE_FAULT bit tied to the safety relay circuit.\n\n## Annotation key\n\n- `XIC(BOTTLE_PRESENT_X, ...)` — photoelectric sensor closes (bit = 1) when a bottle is positioned under the station head\n- `XIO(FILL_TIMEOUT.DN, ...)` — timer Done bit used as a NC contact: the fill valve de-energizes if the timer completes before the bottle indexes away, preventing overflow\n- `XIC(CAP_AVAILABLE, ...)` — discrete input from a cap-magazine stack sensor; the capper will not fire without confirmed cap stock\n- `OTL(REJECT_LATCH, ...)` — latches the reject event at the camera inspection point so the kicker fires at the correct physical station one conveyor pitch later\n- `OTU(REJECT_LATCH, ...)` — clears the latch immediately after the kicker fires (Rung 7) so it is ready for the next reject event\n- `CTU(PROD_CTU, preset=10000)` — Count Up counter; the one-shot pattern (Rungs 8–9 with LABEL_PREV) ensures only one count per bottle regardless of how long the sensor stays asserted\n\n## How to read\n\nStations operate independently in parallel — the PLC scans all rungs every cycle, so fill, cap, and label can be active simultaneously on different bottles. The fill valve (Rung 1) opens when a bottle arrives and closes either on the 3-second timeout or when the bottle indexes away (sensor drops). The cap and label stations (Rungs 3–4) are simpler momentary outputs: active only while the bottle is present. The reject sequence (Rungs 5–7) is a two-rung latch-and-fire: the camera latches the bad-bottle flag at detection time, and the kicker fires when that same bottle reaches the reject station sensor a conveyor pitch downstream. The production counter (Rungs 8–9) uses the classic XIO-of-previous-scan one-shot to count exactly one rising edge per bottle arrival."
+  },
+  {
+    "slug": "ladder-conveyor-interlock",
+    "diagram": "ladder",
+    "title": "Multi-conveyor interlock with permissive",
+    "description": "Three-conveyor interlock: downstream conveyor must run before upstream starts — prevents backlog pileup in a warehousing pick-and-pack line.",
+    "standard": "IEC 61131-3",
+    "tags": [
+      "ladder",
+      "interlock",
+      "conveyor",
+      "permissive",
+      "seal-in",
+      "warehouse",
+      "plc"
+    ],
+    "complexity": 3,
+    "featured": false,
+    "dsl": "ladder \"Multi-Conveyor Interlock\"\n\nrung 1 \"Conveyor C (discharge) — start with seal-in\":\n  parallel:\n    branch:\n      XIC(CONV_C_START_PB, \"IN 1.2\", name=\"Conv C Start Button\")\n    branch:\n      XIC(CONV_C_AUX, \"BIT 3.2\", name=\"Conv C Aux Contact\")\n  XIO(CONV_C_STOP_PB, \"IN 1.5\", name=\"Conv C Stop Button\")\n  XIO(ESTOP, \"IN 1.7\", name=\"E-Stop\")\n  OTE(CONV_C_CMD, \"OUT 2.2\", name=\"Conv C Command\")\n\nrung 2 \"Conveyor B — permissive: C must run first\":\n  XIC(CONV_C_RUNNING, \"BIT 3.2\", name=\"Conv C Running\")\n  parallel:\n    branch:\n      XIC(CONV_B_START_PB, \"IN 1.1\", name=\"Conv B Start Button\")\n    branch:\n      XIC(CONV_B_AUX, \"BIT 3.1\", name=\"Conv B Aux Contact\")\n  XIO(CONV_B_STOP_PB, \"IN 1.4\", name=\"Conv B Stop Button\")\n  XIO(ESTOP, \"IN 1.7\", name=\"E-Stop\")\n  OTE(CONV_B_CMD, \"OUT 2.1\", name=\"Conv B Command\")\n\nrung 3 \"Conveyor A (infeed) — permissive: B must run first\":\n  XIC(CONV_B_RUNNING, \"BIT 3.1\", name=\"Conv B Running\")\n  parallel:\n    branch:\n      XIC(CONV_A_START_PB, \"IN 1.0\", name=\"Conv A Start Button\")\n    branch:\n      XIC(CONV_A_AUX, \"BIT 3.0\", name=\"Conv A Aux Contact\")\n  XIO(CONV_A_STOP_PB, \"IN 1.3\", name=\"Conv A Stop Button\")\n  XIO(ESTOP, \"IN 1.7\", name=\"E-Stop\")\n  OTE(CONV_A_CMD, \"OUT 2.0\", name=\"Conv A Command\")\n\nrung 4 \"Aux contact mirror bits for downstream permissive logic\":\n  XIC(CONV_C_CMD, \"OUT 2.2\", name=\"Conv C Command\")\n  OTE(CONV_C_RUNNING, \"BIT 3.2\", name=\"Conv C Running\")",
+    "notes": "## Scenario\n\nIn a warehousing pick-and-pack line, product travels from an infeed conveyor (A) through a sorter (B) to a discharge conveyor (C) that feeds the shipping dock. If the discharge belt stops while upstream belts keep running, product piles up at the transfer points — jams, falls, and potential injury. The IEC 61131-3 permissive interlock pattern solves this by enforcing a downstream-first start sequence: C must be confirmed running before B can start, and B must be confirmed running before A can start. A single E-stop contact (XIO ESTOP, wired normally-closed) threads through all three rungs so any emergency cut kills all belts simultaneously.\n\n## Annotation key\n\n- `XIC(CONV_C_RUNNING, ...)` — the permissive contact: passes only when the downstream conveyor aux bit is true (motor confirmed running via MCC feedback)\n- `XIC(CONV_X_AUX, ...)` — seal-in contact that holds the rung true after the momentary start button releases\n- `XIO(ESTOP, \"IN 1.7\", ...)` — E-stop wired normally-closed; opens on any emergency event, dropping all three OTE coils simultaneously\n- `OTE(CONV_X_CMD, ...)` — energizes the motor starter contactor via the output module\n- Rung 4 mirrors the CMD output bit into a RUNNING status bit used by upstream permissives; in real practice this bit would typically come from an MCC auxiliary contact feedback input rather than a mirrored output bit\n\n## How to read\n\nStart from the discharge end. Press Conv C start (Rung 1): the seal-in closes and CONV_C_RUNNING energizes. Now Rung 2 sees its permissive closed — pressing Conv B start latches B, which enables CONV_B_RUNNING for Rung 3. Finally Rung 3 allows Conv A to start. If any belt trips (aux contact drops) its RUNNING bit clears, immediately dropping the permissive for the next upstream belt and cascading a controlled stop without the operator touching anything."
+  },
+  {
+    "slug": "ladder-elevator-cab",
+    "diagram": "ladder",
+    "title": "Elevator call/destination with door interlock",
+    "description": "Single-cab elevator: call-button latching, door-closed safety interlock, travel permissive, and overtravel limit-switch protection — IEC 61131-3 standard.",
+    "standard": "IEC 61131-3",
+    "tags": [
+      "ladder",
+      "elevator",
+      "door-interlock",
+      "limit-switch",
+      "safety",
+      "latch",
+      "building"
+    ],
+    "complexity": 4,
+    "featured": false,
+    "dsl": "ladder \"Elevator Cab Control\"\n\nrung 1 \"Floor 1 call latch — set on button press, reset when cab arrives\":\n  XIC(FLOOR1_CALL_PB, \"IN 1.0\", name=\"Floor 1 Call Button\")\n  XIO(AT_FLOOR1, \"BIT 3.0\", name=\"Cab At Floor 1\")\n  OTL(FLOOR1_CALL, \"BIT 5.0\", name=\"Floor 1 Call Latch\")\n\nrung 2 \"Floor 1 call reset when cab arrives\":\n  XIC(AT_FLOOR1, \"BIT 3.0\", name=\"Cab At Floor 1\")\n  OTU(FLOOR1_CALL, \"BIT 5.0\", name=\"Floor 1 Call Latch\")\n\nrung 3 \"Floor 2 call latch — set on button press, reset when cab arrives\":\n  XIC(FLOOR2_CALL_PB, \"IN 1.1\", name=\"Floor 2 Call Button\")\n  XIO(AT_FLOOR2, \"BIT 3.1\", name=\"Cab At Floor 2\")\n  OTL(FLOOR2_CALL, \"BIT 5.1\", name=\"Floor 2 Call Latch\")\n\nrung 4 \"Floor 2 call reset when cab arrives\":\n  XIC(AT_FLOOR2, \"BIT 3.1\", name=\"Cab At Floor 2\")\n  OTU(FLOOR2_CALL, \"BIT 5.1\", name=\"Floor 2 Call Latch\")\n\nrung 5 \"Travel UP — permissive: door closed, not at top limit, no overload, floor 2 called\":\n  XIC(FLOOR2_CALL, \"BIT 5.1\", name=\"Floor 2 Call Latch\")\n  XIO(AT_FLOOR2, \"BIT 3.1\", name=\"Already At Floor 2\")\n  XIC(DOOR_CLOSED_SW, \"IN 1.4\", name=\"Door Closed Switch\")\n  XIO(AT_TOP_LIMIT, \"IN 1.5\", name=\"Top Overtravel Limit\")\n  XIO(OVERLOAD, \"IN 1.6\", name=\"Motor Overload\")\n  XIO(EMERG_STOP, \"IN 1.7\", name=\"Emergency Stop\")\n  OTE(TRAVEL_UP, \"OUT 2.0\", name=\"Travel Up Command\")\n\nrung 6 \"Travel DOWN — permissive: door closed, not at bottom limit, no overload, floor 1 called\":\n  XIC(FLOOR1_CALL, \"BIT 5.0\", name=\"Floor 1 Call Latch\")\n  XIO(AT_FLOOR1, \"BIT 3.0\", name=\"Already At Floor 1\")\n  XIC(DOOR_CLOSED_SW, \"IN 1.4\", name=\"Door Closed Switch\")\n  XIO(AT_BOT_LIMIT, \"IN 1.2\", name=\"Bottom Overtravel Limit\")\n  XIO(OVERLOAD, \"IN 1.6\", name=\"Motor Overload\")\n  XIO(EMERG_STOP, \"IN 1.7\", name=\"Emergency Stop\")\n  OTE(TRAVEL_DOWN, \"OUT 2.1\", name=\"Travel Down Command\")\n\nrung 7 \"Door open command — cab stopped at a floor, hold door open 5 s\":\n  XIC(AT_FLOOR, \"BIT 3.2\", name=\"Cab At Any Floor\")\n  XIO(TRAVEL_UP, \"OUT 2.0\", name=\"Travel Up\")\n  XIO(TRAVEL_DOWN, \"OUT 2.1\", name=\"Travel Down\")\n  TON(DOOR_HOLD_TMR, \"TMR 4.0\", name=\"Door Hold Timer\", preset=5000)\n\nrung 8 \"Door open output — energize while timer has not completed\":\n  XIC(AT_FLOOR, \"BIT 3.2\", name=\"Cab At Any Floor\")\n  XIO(DOOR_HOLD_TMR.DN, \"BIT 4.15\", name=\"Door Hold Timer Done\")\n  XIO(TRAVEL_UP, \"OUT 2.0\", name=\"Travel Up\")\n  XIO(TRAVEL_DOWN, \"OUT 2.1\", name=\"Travel Down\")\n  OTE(DOOR_OPEN_CMD, \"OUT 2.2\", name=\"Door Open Command\")\n\nrung 9 \"Safety alarm — emergency stop active or overload tripped\":\n  parallel:\n    branch:\n      XIC(EMERG_STOP, \"IN 1.7\", name=\"Emergency Stop\")\n    branch:\n      XIC(OVERLOAD, \"IN 1.6\", name=\"Motor Overload\")\n  OTE(SAFETY_ALARM, \"OUT 2.3\", name=\"Safety Alarm\")",
+    "notes": "## Scenario\n\nA single-cab, two-floor freight elevator in a light industrial facility must satisfy three layers of safety: mechanical (overtravel limit switches at top and bottom of the shaft), electrical (door-closed interlock wired to the motor contactor permissive circuit), and control logic (emergency stop and overload relay contacts wired through the PLC input module). Call buttons latch so that pressing Floor 2 while the cab is already moving holds the request until the cab arrives and the arrival sensor clears it. The door-closed switch (normally-open, closes when doors are fully seated) is wired in series with both travel commands — the cab physically cannot move with doors open regardless of the PLC output state, and the PLC additionally enforces this in software. Overtravel limit switches (normally-closed, hardwired in series with the motor drive AND through the PLC input) provide dual-channel overtravel protection per EN 81-20.\n\n## Annotation key\n\n- `OTL(FLOORX_CALL, ...)` — latches the call request; the bit remains set even after the button is released\n- `OTU(FLOORX_CALL, ...)` — clears the call latch when the AT_FLOOR sensor confirms arrival\n- `XIC(DOOR_CLOSED_SW, ...)` — door interlock contact; normally-open switch closes only when both door panels are fully seated in the closed position\n- `XIO(AT_TOP_LIMIT, ...)` and `XIO(AT_BOT_LIMIT, ...)` — normally-closed overtravel switches; XIO passes only when the bit is 0 (switch not tripped)\n- `TON(DOOR_HOLD_TMR, preset=5000)` — 5 000 ms (5 s) door-hold timer; door stays open until the timer completes or a new travel command is issued\n- `XIO(EMERG_STOP, ...)` — E-stop wired normally-closed to the input module; a pressed E-stop opens the circuit, drops the input bit to 0, and the XIO contact in travel rungs opens\n\n## How to read\n\nCall buttons latch immediately (Rungs 1 and 3) and unlatch on arrival (Rungs 2 and 4). Travel rungs (5 and 6) are pure permissive gates: they require a pending call, door closure, no overtravel, no overload, and no E-stop — all conditions must be true simultaneously. When the cab arrives at a floor (AT_FLOOR bit set), travel outputs drop, the door-hold timer starts (Rung 7), and the door open command fires (Rung 8) for 5 seconds. After 5 seconds, the door output de-energizes and the door-close mechanism can operate, after which the door-closed switch re-enables travel. Rung 9 provides an independent alarm output for SCADA/BAS notification on any safety event."
+  },
+  {
     "slug": "ladder-mode-selection",
     "diagram": "ladder",
     "title": "System mode selection (Set/Reset)",
@@ -611,6 +1446,88 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "notes": "## Scenario\n\nEvery controls engineer learns the three-wire motor start/stop circuit before writing their first PLC program. It appears verbatim in IEC 61131-3 training materials, Allen-Bradley certification exams, and factory acceptance tests worldwide. The seal-in contact latches the motor ON after the momentary start pushbutton is released — the fundamental pattern for any maintained-output logic.\n\n## Annotation key\n\n- `XIC(tag, address, name=...)` — Examine If Closed: contact passes power when the referenced bit is `1` (true)\n- `XIO(tag, address, name=...)` — Examine If Open: contact passes power when the referenced bit is `0` (false); normal for stop buttons wired N.C.\n- `OTE(tag, address, name=...)` — Output Energize: coil energizes the referenced bit when rung has power\n- `parallel: branch:` — models a parallel contact branch (logical OR)\n- The `MOTOR_AUX` contact in the parallel branch is the seal-in: once the motor output energizes, the aux contact closes and holds the rung true even after the START_PB releases\n\n## How to read\n\nThe rung reads left to right. Power flows if *either* the start button (XIC START_PB) *or* the aux contact (XIC MOTOR_AUX) is closed, *and* the stop button (XIO STOP_PB) is not pressed. When the output coil (OTE MOTOR_CMD) energizes the motor, it also drives the aux contact bit — latching the rung high. Pressing STOP breaks the series path and de-energizes the rung, dropping the motor and the seal-in simultaneously."
   },
   {
+    "slug": "ladder-tank-level-control",
+    "diagram": "ladder",
+    "title": "Tank level control — fill pump with float switch",
+    "description": "Water-treatment tank level controller: high float inhibits fill, low float enables fill pump, with timer-based fill-cycle limiting and alarm.",
+    "standard": "IEC 61131-3",
+    "tags": [
+      "ladder",
+      "tank",
+      "level",
+      "float",
+      "pump",
+      "timer",
+      "alarm",
+      "water-treatment"
+    ],
+    "complexity": 3,
+    "featured": false,
+    "dsl": "ladder \"Tank Level Control\"\n\nrung 1 \"Fill pump — enable when low float set, inhibit at high float\":\n  XIC(FLOAT_LOW, \"IN 1.0\", name=\"Low Float Switch\")\n  XIO(FLOAT_HIGH, \"IN 1.1\", name=\"High Float Switch\")\n  XIO(PUMP_FAULT, \"IN 1.2\", name=\"Pump Fault\")\n  parallel:\n    branch:\n      XIC(PUMP_CMD, \"OUT 2.0\", name=\"Pump Command Seal-In\")\n    branch:\n      XIC(PUMP_AUX, \"BIT 3.0\", name=\"Pump Aux Contact\")\n  OTE(PUMP_CMD, \"OUT 2.0\", name=\"Fill Pump Command\")\n\nrung 2 \"Fill timer — tracks continuous pump run time\":\n  XIC(PUMP_CMD, \"OUT 2.0\", name=\"Fill Pump Running\")\n  TON(FILL_TMR, \"TMR 4.0\", name=\"Fill Cycle Timer\", preset=600000)\n\nrung 3 \"Overtime alarm — pump running too long suggests leak or low supply\":\n  XIC(FILL_TMR.DN, \"BIT 4.15\", name=\"Fill Timer Done\")\n  OTE(FILL_ALARM, \"OUT 2.1\", name=\"Fill Overtime Alarm\")\n\nrung 4 \"Pump start counter — tracks cycle frequency, alarm at 20 starts\":\n  XIC(PUMP_CMD, \"OUT 2.0\", name=\"Pump Command\")\n  XIO(PUMP_PREV, \"BIT 3.1\", name=\"Pump Previous Scan\")\n  CTU(PUMP_CTU, \"CNT 5.0\", name=\"Pump Start Counter\", preset=20)\n\nrung 5 \"Pump previous-scan latch — one-shot rising edge for counter\":\n  XIC(PUMP_CMD, \"OUT 2.0\", name=\"Pump Command\")\n  OTE(PUMP_PREV, \"BIT 3.1\", name=\"Pump Previous Scan\")\n\nrung 6 \"Cycle count alarm — too many starts per hour indicates hunting\":\n  XIC(PUMP_CTU.DN, \"BIT 5.15\", name=\"Pump Counter Done\")\n  OTE(CYCLE_ALARM, \"OUT 2.2\", name=\"Pump Cycle Alarm\")",
+    "notes": "## Scenario\n\nMunicipal and industrial water treatment plants rely on simple float-switch level control for storage and process tanks. The fill pump must start when the tank drops to the low-float setpoint and stop when the high-float setpoint is reached. Two failure modes require alarm coverage: an overtime run (pump exceeds 10 continuous minutes) signals a supply shortage or tank leak; excessive start-stop cycling (more than 20 starts counted in a shift) signals float switch hunting or a check-valve failure that causes the pump to short-cycle. Both alarms feed the SCADA HMI and can page the on-call operator without requiring manual inspection.\n\n## Annotation key\n\n- `XIC(FLOAT_LOW, ...)` — low float switch closes (bit = 1) when water level drops below the low setpoint, enabling the pump\n- `XIO(FLOAT_HIGH, ...)` — high float switch wired normally-closed; opens (bit = 0) when water reaches the high setpoint, breaking the rung and stopping the pump\n- `XIO(PUMP_FAULT, ...)` — motor protection relay wired normally-closed; any thermal or overload trip de-energizes the coil\n- `TON(FILL_TMR, preset=600000)` — Timer On Delay with 600 000 ms (10 min) preset; DN bit sets if the pump runs continuously beyond that duration\n- `CTU(PUMP_CTU, preset=20)` — Count Up counter; incremented on each pump start rising edge via the one-shot PUMP_PREV pattern; DN bit sets at 20 counts\n\n## How to read\n\nRung 1 is the core control: power flows only if the low float is set AND the high float is not yet reached AND no fault exists. The seal-in (PUMP_CMD parallel with PUMP_AUX) holds the pump on after the low float clears due to rising water, until the high float finally opens the rung. Rung 2 starts a 10-minute timer whenever the pump is running; Rung 3 turns on the overtime alarm when that timer completes. Rungs 4–5 form a rising-edge one-shot: PUMP_PREV stores the previous scan state so the counter only increments once per pump start event. Rung 6 alarms when the cycle count reaches 20."
+  },
+  {
+    "slug": "ladder-traffic-light",
+    "diagram": "ladder",
+    "title": "4-way traffic light state machine",
+    "description": "Four-way signalized intersection using sequential timer-based state bits — green/yellow/red cycling with pedestrian walk-button permissive.",
+    "standard": "IEC 61131-3",
+    "tags": [
+      "ladder",
+      "traffic-light",
+      "state-machine",
+      "timer",
+      "pedestrian",
+      "sequential",
+      "municipal"
+    ],
+    "complexity": 4,
+    "featured": false,
+    "dsl": "ladder \"4-Way Traffic Signal\"\n\nrung 1 \"NS green phase — 30 s, then transition to NS yellow\":\n  XIC(NS_GREEN, \"BIT 5.0\", name=\"NS Green State\")\n  TON(NS_GREEN_TMR, \"TMR 4.0\", name=\"NS Green Timer\", preset=30000)\n\nrung 2 \"NS green timer done — clear NS green, set NS yellow\":\n  XIC(NS_GREEN_TMR.DN, \"BIT 4.15\", name=\"NS Green Timer Done\")\n  parallel:\n    branch:\n      OTU(NS_GREEN, \"BIT 5.0\", name=\"NS Green State\")\n    branch:\n      OTL(NS_YELLOW, \"BIT 5.1\", name=\"NS Yellow State\")\n\nrung 3 \"NS yellow phase — 5 s, then transition to EW green\":\n  XIC(NS_YELLOW, \"BIT 5.1\", name=\"NS Yellow State\")\n  TON(NS_YELLOW_TMR, \"TMR 4.1\", name=\"NS Yellow Timer\", preset=5000)\n\nrung 4 \"NS yellow done — clear NS yellow, set EW green\":\n  XIC(NS_YELLOW_TMR.DN, \"BIT 4.31\", name=\"NS Yellow Timer Done\")\n  parallel:\n    branch:\n      OTU(NS_YELLOW, \"BIT 5.1\", name=\"NS Yellow State\")\n    branch:\n      OTL(EW_GREEN, \"BIT 5.2\", name=\"EW Green State\")\n\nrung 5 \"EW green phase — 30 s (or shortened by ped button), then EW yellow\":\n  XIC(EW_GREEN, \"BIT 5.2\", name=\"EW Green State\")\n  TON(EW_GREEN_TMR, \"TMR 4.2\", name=\"EW Green Timer\", preset=30000)\n\nrung 6 \"EW green done — clear EW green, set EW yellow\":\n  XIC(EW_GREEN_TMR.DN, \"BIT 4.47\", name=\"EW Green Timer Done\")\n  parallel:\n    branch:\n      OTU(EW_GREEN, \"BIT 5.2\", name=\"EW Green State\")\n    branch:\n      OTL(EW_YELLOW, \"BIT 5.3\", name=\"EW Yellow State\")\n\nrung 7 \"EW yellow phase — 5 s, then back to NS green\":\n  XIC(EW_YELLOW, \"BIT 5.3\", name=\"EW Yellow State\")\n  TON(EW_YELLOW_TMR, \"TMR 4.3\", name=\"EW Yellow Timer\", preset=5000)\n\nrung 8 \"EW yellow done — clear EW yellow, set NS green (cycle restart)\":\n  XIC(EW_YELLOW_TMR.DN, \"BIT 4.63\", name=\"EW Yellow Timer Done\")\n  parallel:\n    branch:\n      OTU(EW_YELLOW, \"BIT 5.3\", name=\"EW Yellow State\")\n    branch:\n      OTL(NS_GREEN, \"BIT 5.0\", name=\"NS Green State\")\n\nrung 9 \"NS red output — active when not NS green and not NS yellow\":\n  XIO(NS_GREEN, \"BIT 5.0\", name=\"NS Green State\")\n  XIO(NS_YELLOW, \"BIT 5.1\", name=\"NS Yellow State\")\n  OTE(NS_RED_LAMP, \"OUT 2.0\", name=\"NS Red Lamp\")\n\nrung 10 \"EW red output — active when not EW green and not EW yellow\":\n  XIO(EW_GREEN, \"BIT 5.2\", name=\"EW Green State\")\n  XIO(EW_YELLOW, \"BIT 5.3\", name=\"EW Yellow State\")\n  OTE(EW_RED_LAMP, \"OUT 2.3\", name=\"EW Red Lamp\")\n\nrung 11 \"Pedestrian WALK signal — active during EW red (NS phase)\":\n  XIC(NS_GREEN, \"BIT 5.0\", name=\"NS Green State\")\n  XIC(PED_BUTTON, \"IN 1.0\", name=\"Pedestrian Push Button\")\n  OTE(PED_WALK_LAMP, \"OUT 2.6\", name=\"Walk Signal Lamp\")",
+    "notes": "## Scenario\n\nA four-way signalized intersection in a municipal traffic management system runs a fixed-time North-South / East-West phase cycle mandated by the local department of transportation. The PLC program must implement a state-machine cycle — NS green → NS yellow → EW green → EW yellow → repeat — using retentive latched state bits so that a PLC power cycle or scan watchdog reset re-enters the cycle in a known state. Red outputs are derived by Boolean complement: a direction shows red whenever it holds neither a green nor a yellow state bit. The pedestrian walk signal is permitted only during the NS green phase when the push button is pressed, keeping pedestrians out of the EW travel path.\n\n## Annotation key\n\n- `OTL / OTU` — latched Set/Reset coils; state bits persist across PLC scan even if the energizing rung goes false, giving the state machine memory between timer firings\n- `TON(X_TMR, preset=N)` — Timer On Delay; DN bit (`.DN`) asserts after N milliseconds of continuous rung-true; the timer resets automatically when its rung goes false\n- `XIC(X_TMR.DN, ...)` — contacts the timer Done bit to trigger the state transition rung\n- Rungs 9–10 compute red lamps by Boolean complement: if neither green nor yellow state is active, the red lamp energizes — no extra state bit required\n- `XIC(PED_BUTTON, \"IN 1.0\", ...)` — pedestrian push button wired to a digital input; the walk lamp only energizes if both the NS green state is active AND the button is pressed\n\n## How to read\n\nThe state machine cycles through four latched bits: NS_GREEN → NS_YELLOW → EW_GREEN → EW_YELLOW → back to NS_GREEN. Each state bit starts its own TON timer. When the timer's DN bit asserts, a transition rung fires: it unlatches the current state and latches the next. Rungs 9 and 10 are output-only rungs that derive the red lamps from the absence of green and yellow state bits. Rung 11 gates the pedestrian walk signal behind both the NS green state and an explicit button press — pedestrians cannot walk during the EW green phase regardless of button presses."
+  },
+  {
+    "slug": "logic-4bit-comparator",
+    "diagram": "logic",
+    "title": "4-bit magnitude comparator",
+    "description": "4-bit magnitude comparator — generates A>B, A=B, A<B outputs from four A and four B input bits using XOR-based equality detection and cascaded AND/OR logic.",
+    "standard": "IEEE 91",
+    "tags": [
+      "logic",
+      "comparator",
+      "4-bit",
+      "xor",
+      "and",
+      "or",
+      "combinational",
+      "magnitude"
+    ],
+    "complexity": 3,
+    "featured": false,
+    "dsl": "logic \"4-bit Magnitude Comparator\"\ninput A3, A2, A1, A0, B3, B2, B1, B0\noutput GT, EQ, LT\n\neq3 = XNOR(A3, B3)\neq2 = XNOR(A2, B2)\neq1 = XNOR(A1, B1)\neq0 = XNOR(A0, B0)\n\nEQ = AND(eq3, eq2, eq1, eq0)\n\ng3 = AND(A3, NOT(B3))\ng2 = AND(eq3, A2, NOT(B2))\ng1 = AND(eq3, eq2, A1, NOT(B1))\ng0 = AND(eq3, eq2, eq1, A0, NOT(B0))\nGT = OR(g3, g2, g1, g0)\n\nLT = AND(NOT(GT), NOT(EQ))",
+    "notes": "## Scenario\n\nA digital logic student or hardware designer needs the combinational logic that forms the core of a 74HC85-style 4-bit magnitude comparator — a fundamental building block used in address decoders, priority encoders, and ALU condition-code generation. This implementation uses XNOR gates for bit-wise equality detection and a priority-encoded AND-OR tree for the greater-than output, then derives less-than from the complement of the other two outputs.\n\n## Annotation key\n\n- `eq3`–`eq0` — XNOR of each bit pair; XNOR output is 1 when both inputs are equal (0=0 or 1=1)\n- `EQ = AND(eq3, eq2, eq1, eq0)` — all four bit pairs must be equal for A=B\n- `g3` — A>B contribution from MSB: A3=1 and B3=0 (A3 AND NOT B3)\n- `g2`–`g0` — cascaded greater-than terms: bits 3 down to k must be equal, and at position k, Ak=1, Bk=0; priority order ensures the MSB difference dominates\n- `GT = OR(g3, g2, g1, g0)` — A&gt;B if any of the priority-ordered greater-than conditions is true\n- `LT = AND(NOT(GT), NOT(EQ))` — A&lt;B is derived: neither A&gt;B nor A=B; avoids re-implementing the symmetric AND-OR tree\n\n## How to read\n\nThe circuit operates in two independent paths. The equality path XNORs each bit pair and ANDs all four results together — EQ is 1 only when all four bit pairs match. The greater-than path uses a priority tree: the MSB difference (bit 3) overrides all lower bits, bit 2 is evaluated only when bits 3 are equal, and so on down to bit 0. The four AND terms feed an OR gate, producing GT=1 when A is lexicographically greater. LT is then simply the NOR of GT and EQ. This three-output structure matches the SN74LS85 TTL IC and can be cascaded for wider comparisons by connecting the cascade inputs of successive stages."
+  },
+  {
+    "slug": "logic-full-adder-iec",
+    "diagram": "logic",
+    "title": "1-bit full adder — IEC 60617 symbols",
+    "description": "Same 1-bit full adder as the ANSI example but rendered with IEC 60617 rectangular symbols — for European curriculum and DIN standards compliance.",
+    "standard": "IEC 60617",
+    "tags": [
+      "logic",
+      "iec",
+      "full-adder",
+      "iec60617",
+      "rectangular",
+      "din",
+      "european"
+    ],
+    "complexity": 2,
+    "featured": false,
+    "dsl": "logic \"1-bit Full Adder (IEC 60617)\"\nstyle: iec\ninput A, B, Cin\noutput Sum, Cout\ns1 = XOR(A, B)\nSum = XOR(s1, Cin)\nc1 = AND(A, B)\nc2 = AND(s1, Cin)\nCout = OR(c1, c2)",
+    "notes": "## Scenario\n\nEuropean engineering curricula, DIN-standard technical documentation, and IEC-compliant industrial datasheets use the rectangular gate symbols defined in IEC 60617-12 rather than the distinctive curved shapes of IEEE/ANSI 91. A student or engineer trained on European textbooks expects an XOR gate to show a rectangular box with the label \"=1\", an AND with \"&\", and an OR with \"≥1\" — this example produces exactly that representation from the same logical description as the ANSI full adder.\n\n## Annotation key\n\n- `style: iec` — switches all gate symbols from IEEE/ANSI curved shapes to IEC 60617 rectangular boxes with qualifier labels\n- XOR box labeled `=1` — IEC notation: output is 1 when exactly one input is 1 (odd parity)\n- AND box labeled `&` — IEC notation: output is 1 when all inputs are 1\n- OR box labeled `≥1` — IEC notation: output is 1 when one or more inputs are 1\n- Signal names, connections, and intermediate nodes are identical to the ANSI version — only the rendering changes\n\n## How to read\n\nThe logic function is identical to the standard full adder: two XOR gates compute the sum bit (A⊕B⊕Cin) and two AND gates feeding an OR gate compute the carry-out. The IEC rendering places all gates as equal-sized rectangles with standardized qualifier text inside each box. This makes the symbol set visually consistent across an entire schematic and unambiguous for any engineer who has learned from IEC-compliant references. Comparing this diagram to the ANSI version (`logic-full-adder`) illustrates how the same DSL produces output for two international standards by changing a single style flag."
+  },
+  {
     "slug": "logic-full-adder",
     "diagram": "logic",
     "title": "1-bit full adder",
@@ -627,6 +1544,46 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "featured": true,
     "dsl": "logic \"1-bit Full Adder\"\ninput A, B, Cin\noutput Sum, Cout\ns1 = XOR(A, B)\nSum = XOR(s1, Cin)\nc1 = AND(A, B)\nc2 = AND(s1, Cin)\nCout = OR(c1, c2)",
     "notes": "## Scenario\n\nThe 1-bit full adder is the foundational building block of every arithmetic logic unit. Digital logic students derive it in lecture; FPGA engineers instantiate it in RTL. Schematex renders it from a purely functional description — no manual gate placement, no wire routing — making it easy to embed in textbooks, datasheets, or AI-generated hardware documentation.\n\n## Annotation key\n\n- `input A, B, Cin` — declare named input ports\n- `output Sum, Cout` — declare named output ports\n- `s1 = XOR(A, B)` — intermediate signal `s1` is the XOR of inputs A and B\n- `Sum = XOR(s1, Cin)` — the sum bit is the XOR of the partial sum and carry-in\n- `c1 = AND(A, B)` — carry generated when both A and B are 1\n- `c2 = AND(s1, Cin)` — carry propagated when partial sum is 1 and Cin is 1\n- `Cout = OR(c1, c2)` — carry-out is 1 if either generate or propagate carry is active\n\n## How to read\n\nThe diagram renders two XOR gates for the sum path (A⊕B, then ⊕Cin) and two AND gates feeding an OR for the carry-out (the standard generate/propagate structure). The layout is automatically ranked so data flows left to right, inputs on the left edge, outputs on the right. Every 4-bit or 8-bit ripple-carry adder in textbooks is just this circuit chained together."
+  },
+  {
+    "slug": "logic-parity-generator",
+    "diagram": "logic",
+    "title": "Even-parity generator (XOR tree)",
+    "description": "4-bit even-parity generator using a three-level XOR tree — the standard error-detection circuit for serial communication and memory systems.",
+    "standard": "IEEE 91",
+    "tags": [
+      "logic",
+      "parity",
+      "xor-tree",
+      "error-detection",
+      "even-parity",
+      "serial",
+      "communication"
+    ],
+    "complexity": 2,
+    "featured": false,
+    "dsl": "logic \"4-bit Even Parity Generator\"\ninput D3, D2, D1, D0\noutput P\n\nx1 = XOR(D3, D2)\nx2 = XOR(D1, D0)\nP = XOR(x1, x2)",
+    "notes": "## Scenario\n\nParity generation is the simplest form of error detection used in UART serial frames, ECC memory, RAID-3 disk arrays, and CAN bus frames. An even-parity generator outputs a single parity bit P such that the total number of 1s in the data word plus P is always even, allowing the receiver to detect any single-bit error. The XOR tree structure makes this function fast (only two gate levels) and naturally scalable to wider data buses.\n\n## Annotation key\n\n- `x1 = XOR(D3, D2)` — first stage: XOR of the two most-significant data bits; output is 1 when D3 ≠ D2\n- `x2 = XOR(D1, D0)` — first stage: XOR of the two least-significant data bits; output is 1 when D1 ≠ D0\n- `P = XOR(x1, x2)` — second stage: XOR of the two partial-parity results; P=1 when the total number of 1s in D3–D0 is odd, making the combined word (D3,D2,D1,D0,P) even-parity\n- XOR tree depth — log₂(N) gate levels for N input bits; this 4-bit tree has depth 2 (two pipeline stages)\n- Even parity — P=0 when D3+D2+D1+D0 is already even; P=1 when the sum is odd\n\n## How to read\n\nThe circuit fans in from left (inputs D3–D0) to right (output P) across two gate levels. The first level pairs adjacent bit positions into two partial-parity signals x1 and x2. The second level XORs x1 and x2 to produce the final parity bit P. The XOR function is both associative and commutative, so the pairing order does not affect correctness. To extend to an 8-bit parity generator, add a third gate level that XORs the parity of the upper and lower nibbles. The receiver re-computes parity over the received data including P; a non-zero result indicates a single-bit (or any odd number of) transmission error."
+  },
+  {
+    "slug": "logic-sr-latch",
+    "diagram": "logic",
+    "title": "SR latch with NOR gates",
+    "description": "NOR-based SR latch — the fundamental memory element; Set and Reset inputs, Q and Q̄ outputs — the sequential circuit every digital-logic student derives from first principles.",
+    "standard": "IEEE 91",
+    "tags": [
+      "logic",
+      "sr-latch",
+      "nor",
+      "sequential",
+      "memory",
+      "latch",
+      "flip-flop"
+    ],
+    "complexity": 2,
+    "featured": false,
+    "dsl": "logic \"SR Latch (NOR)\"\ninput S, R\noutput Q, Q_bar\n\nQ = NOR(R, Q_bar)\nQ_bar = NOR(S, Q)",
+    "notes": "## Scenario\n\nThe SR (Set-Reset) latch built from two cross-coupled NOR gates is the simplest sequential logic element and the ancestor of every flip-flop, register, and SRAM cell. Digital logic students derive it in the first week of a sequential circuits lecture; VLSI designers recognize it as the core cell in standard-cell libraries. Schematex renders the cross-coupled back-edges automatically, producing the canonical feedback loop without manual wire routing.\n\n## Annotation key\n\n- `Q = NOR(R, Q_bar)` — upper NOR gate: Q is 1 only when R=0 and Q_bar=0; the Q_bar input is the feedback from the lower gate\n- `Q_bar = NOR(S, Q)` — lower NOR gate: Q_bar is 1 only when S=0 and Q=0; the Q input is the feedback from the upper gate\n- Cross-coupled feedback — each gate's output is one of the other gate's inputs; this creates two stable states and one unstable (forbidden) state\n- Set (S=1, R=0): forces Q=1, Q_bar=0; latch remembers this state when S returns to 0\n- Reset (R=1, S=0): forces Q=0, Q_bar=1; latch remembers this state when R returns to 0\n- Hold (S=0, R=0): both NOR gates maintain their current outputs — the circuit stores one bit\n- Forbidden (S=1, R=1): both Q and Q_bar driven to 0; undefined behavior when both inputs return to 0\n\n## How to read\n\nThe two NOR gates form a feedback loop: the output of each gate feeds back as one input of the other. In steady state, exactly one output is high and the other is low. Asserting S (Set) high drives Q_bar to 0, which allows Q to rise to 1, reinforcing Q_bar=0 even after S de-asserts — this is the stored \"1\" state. Asserting R (Reset) high drives Q to 0, which allows Q_bar to rise to 1, storing \"0\". The forbidden condition S=R=1 breaks the mutual exclusion and produces metastable behavior; real designs ensure S and R are never simultaneously asserted. The back-edges in the diagram represent physical wire connections creating the regenerative loop that gives the latch its memory property."
   },
   {
     "slug": "matrix-9-box-talent",
@@ -647,6 +1604,26 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "featured": false,
     "dsl": "matrix 9-box \"Engineering — H1 Talent Review\"\nstyle: table\ncell (0,2) label: \"Enigma\"\ncell (0,2) label: \"Samir K. (sr. eng)\"\ncell (1,2) label: \"Growth Employee\"\ncell (1,2) label: \"Priya R. (eng II)\"\ncell (1,2) label: \"Tomás L. (eng II)\"\ncell (2,2) label: \"Future Leader\"\ncell (2,2) label: \"Maya O. (sr. eng)\"\ncell (0,1) label: \"Dilemma\"\ncell (0,1) label: \"David C. (eng II)\"\ncell (1,1) label: \"Core Player\"\ncell (1,1) label: \"Lin H. (sr. eng)\"\ncell (1,1) label: \"Kofi A. (eng II)\"\ncell (2,1) label: \"High Impact\"\ncell (2,1) label: \"Reina S. (staff)\"\ncell (0,0) label: \"Under-performer\"\ncell (0,0) label: \"— PIP candidate —\"\ncell (1,0) label: \"Effective\"\ncell (1,0) label: \"Jordan P. (eng I)\"\ncell (2,0) label: \"Trusted Pro\"\ncell (2,0) label: \"Elena V. (staff)\"",
     "notes": "## Scenario\n\nA VP of People runs the half-year talent review with eng managers. Each direct report lands in one of nine cells based on **performance** (the x-axis: how they're doing today) and **potential** (the y-axis: how much room they have to grow). The three top-row cells are the succession bench. The three bottom-row cells are the performance-management agenda. The middle row is the steady-state core that holds the org together.\n\n## Annotation key\n\n- `matrix 9-box` — preset 3×3 grid (the canonical nine cell names ship with the template)\n- `style: table` — top-aligned bullet-list rendering inside each cell\n- `cell (col, row) label: \"...\"` — each line adds one bullet to that cell. First line per cell is the canonical role name (Enigma / Future Leader / Core Player / …); subsequent lines list the people in that cell\n- Coordinates: `(0, 0)` is bottom-left (low performance, low potential); `(2, 2)` is top-right (high performance, high potential)\n\n## How to read\n\n**Future Leader** (top-right) is the natural-successor cell — the person you'd promote if a senior role opens tomorrow. **Dilemma** (top-left) and **Enigma** (top-middle-left) are the high-potential / low-performance cells: stuck in the wrong role, or under-coached, or in a bad team-fit — usually a managerial action item, not a performance issue. **Under-performer** (bottom-left) is the only cell that should ever be empty; if it has names, plan the next conversation now.\n\nThe canonical 9-box discipline is to **anchor each calibration discussion on observable evidence** — a recent shipped project, a missed deadline, a mentee promotion. Without that anchor, the grid drifts into bias. The table format is what the calibration committee literally prints and marks up in the room."
+  },
+  {
+    "slug": "matrix-ansoff-growth",
+    "diagram": "matrix",
+    "title": "Ansoff growth matrix",
+    "description": "Ansoff Product/Market matrix for a SaaS company's 3-year growth strategy — four quadrants with labeled strategic initiatives.",
+    "standard": "Ansoff (1957)",
+    "tags": [
+      "matrix",
+      "ansoff",
+      "growth",
+      "strategy",
+      "product",
+      "market",
+      "consulting"
+    ],
+    "complexity": 2,
+    "featured": false,
+    "dsl": "matrix ansoff \"CloudHR — 3-Year Growth Strategy\"\nstyle: quadrant\nx-axis: \"Markets →\"\ny-axis: \"Products →\"\nQ2: \"Market Penetration\"\nQ2: \"Grow enterprise sales team\"\nQ2: \"Launch customer loyalty program\"\nQ2: \"Increase self-serve conversion rate\"\nQ1: \"Market Development\"\nQ1: \"Expand to EMEA region\"\nQ1: \"Enter SMB segment via PLG motion\"\nQ1: \"Launch APAC channel partner program\"\nQ3: \"Product Development\"\nQ3: \"Launch mobile app\"\nQ3: \"Add AI-powered insights module\"\nQ3: \"Build compensation benchmarking add-on\"\nQ4: \"Diversification\"\nQ4: \"Acquire EdTech onboarding startup\"\nQ4: \"Launch learning management module\"",
+    "notes": "## Scenario\n\nA strategy consultant is facilitating a three-year planning session with the CEO and board of CloudHR, a mid-market SaaS HR platform. The Ansoff matrix structures the conversation by risk level: Market Penetration (existing product, existing market) is the lowest-risk quadrant and where most of this year's budget goes; Diversification (new product, new market) is the highest-risk quadrant and requires acquisition or a separate P&L. The chart provides a shared vocabulary for the board before the financial model is presented.\n\n## Annotation key\n\n- `matrix ansoff` — preset quadrant layout with the four Ansoff strategy names; axes flip Products (y) and Markets (x)\n- `style: quadrant` — renders a 2×2 grid with quadrant title headers and bulleted initiative lists\n- `Q2` (top-left) = **Market Penetration**: existing products sold into existing markets — lowest risk, often the highest near-term return\n- `Q1` (top-right) = **Market Development**: existing products pushed into new markets — medium risk; requires go-to-market investment\n- `Q3` (bottom-left) = **Product Development**: new products for existing customers — medium risk; leverages current relationships but requires R&D\n- `Q4` (bottom-right) = **Diversification**: new products for new markets — highest risk; reserved for M&A or strategic bets with a long payback period\n- Multiple `Q2:` / `Q3:` lines stack as a bullet list within the quadrant cell\n\n## How to read\n\nThe Ansoff matrix is a risk-ordering tool, not a prioritisation framework. Read it left-to-right, top-to-bottom as increasing risk. For CloudHR, the near-term revenue plan lives in Market Penetration: growing the existing enterprise sales motion, optimising self-serve conversion, and running a loyalty programme for renewals. Market Development (EMEA expansion, SMB product-led growth, APAC channel) is the 18-month horizon — same product, new buyer segments and geographies. Product Development (mobile app, AI module, compensation benchmarking) requires engineering investment but sells to the known customer base, keeping market-risk low. Diversification — acquiring an EdTech company and launching an LMS — is a 3-year strategic bet that only makes sense if the core business is healthy; the board should treat this quadrant as a separate capital allocation decision, not a line item in the operating budget."
   },
   {
     "slug": "matrix-bcg-portfolio",
@@ -724,6 +1701,46 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "notes": "## Scenario\n\nA newly-promoted engineering manager runs a Johari exercise with her team during a 1:1 retro. She populates the **Open** cell (things both she and the team see); the team adds to **Blind** (things they see that she doesn't); she fills **Hidden** privately; **Unknown** is the open hypothesis space — capabilities and limitations that haven't surfaced yet.\n\nThe table form is the canonical Johari output. Coaches print it on a single page and walk through it with the coachee — a scatter plot of dots would defeat the entire purpose.\n\n## Annotation key\n\n- `matrix johari` — preset axes (Known to Self × Known to Others) with the four window panes\n- `style: table` — flips off axes/grid, places each pane title as a cell header, lists items as bullets\n- `Q1` = Blind (top-right: not known to self, known to others)\n- `Q2` = Open / Arena (top-left: known to self + others)\n- `Q3` = Hidden / Façade (bottom-left: known to self, not to others)\n- `Q4` = Unknown (bottom-right: not known to either — the growth hypothesis space)\n\n## How to read\n\nThe classic Johari coaching prompt: **how do you move items from Hidden → Open** (vulnerability work) **and from Blind → Open** (feedback-acceptance work)? An overstuffed Hidden pane signals psychological-safety debt; an empty Blind pane usually means the team hasn't been asked."
   },
   {
+    "slug": "matrix-rice-bubble",
+    "diagram": "matrix",
+    "title": "RICE feature prioritization (bubble chart)",
+    "description": "RICE-scored feature backlog as a bubble chart — Reach × Impact axes, bubble size = Confidence, color = team — for the product sprint review.",
+    "standard": "Sean McBride RICE framework (Intercom)",
+    "tags": [
+      "matrix",
+      "rice",
+      "prioritization",
+      "bubble",
+      "product",
+      "backlog",
+      "sprint"
+    ],
+    "complexity": 2,
+    "featured": false,
+    "dsl": "matrix \"RICE Prioritization — Q3 Feature Backlog\"\nstyle: bubble\nx-axis: \"Reach (users / quarter) →\"\ny-axis: \"Impact (1–5 scale) →\"\nitem \"SSO integration\" [x: 0.85, y: 0.90, size: 140, color: \"#1E88E5\"]\nitem \"API v2\" [x: 0.65, y: 0.85, size: 110, color: \"#1E88E5\"]\nitem \"Bulk export\" [x: 0.70, y: 0.55, size: 90, color: \"#43A047\"]\nitem \"AI suggestions\" [x: 0.50, y: 0.80, size: 75, color: \"#FB8C00\"]\nitem \"Dark mode\" [x: 0.90, y: 0.40, size: 120, color: \"#43A047\"]\nitem \"Mobile app\" [x: 0.35, y: 0.75, size: 60, color: \"#FB8C00\"]\nitem \"Audit log\" [x: 0.55, y: 0.60, size: 85, color: \"#E53935\"]\nitem \"Custom webhooks\" [x: 0.40, y: 0.50, size: 50, color: \"#E53935\"]",
+    "notes": "## Scenario\n\nA product manager is running the quarterly sprint-planning review and needs to communicate relative feature priority to three engineering teams — growth (blue), platform (green), and integrations (orange). RICE scoring normalises across very different feature sizes: a viral consumer feature with high reach but uncertain impact sits alongside a high-value enterprise feature with narrow reach and high confidence. The bubble chart makes the three-dimensional trade-off visible without a spreadsheet.\n\n## Annotation key\n\n- `style: bubble` — scatter plot; each item becomes a circle placed at (x, y) with area proportional to `size`\n- `x-axis` — Reach: the estimated number of users who will encounter this feature per quarter, normalised 0–1\n- `y-axis` — Impact: the 1–5 scale from the RICE formula (0.25 = minimal, 3 = massive)\n- `size` — stands in for the Confidence score; a bubble sized 140 carries ~95 % confidence, 50 carries ~30 %\n- `color` — team ownership: blue = growth squad, green = platform squad, orange = integrations squad, red = security/compliance team\n- In RICE the full score is `(Reach × Impact × Confidence) / Effort`; this chart compresses the formula to the three bubble dimensions, leaving Effort as a narrative discussion point\n\n## How to read\n\nFeatures in the top-right quadrant (high reach, high impact) are the clear \"do next\" picks — SSO Integration and API v2 land there. Features with large bubbles (high confidence) that sit in the top-right are the easiest approval conversations. A small bubble in the top-right (AI Suggestions) warns that the impact estimate is speculative — the team needs more evidence before committing a full sprint. Dark mode has high reach but low-to-medium impact: a morale feature, not a growth lever. Mobile App and Custom Webhooks sit in the lower-left: either descope them this quarter or assign them to a later planning window. Features owned by the compliance team (red) typically have non-negotiable deadlines that override RICE priority — flag them separately before the sprint-planning final cut."
+  },
+  {
+    "slug": "matrix-risk-5x5",
+    "diagram": "matrix",
+    "title": "Risk register — 5×5 heat map (ISO 31000)",
+    "description": "ISO 31000 5×5 likelihood × severity risk heat map with 8 project risks plotted — the standard risk-management deliverable for any project charter.",
+    "standard": "ISO 31000:2018",
+    "tags": [
+      "matrix",
+      "risk",
+      "iso31000",
+      "heat-map",
+      "likelihood",
+      "severity",
+      "project"
+    ],
+    "complexity": 3,
+    "featured": false,
+    "dsl": "matrix \"Project Risk Register — ERP Migration\"\nstyle: heat\nrows: [\"Rare\", \"Unlikely\", \"Possible\", \"Likely\", \"Almost Certain\"]\ncols: [\"Negligible\", \"Minor\", \"Moderate\", \"Major\", \"Catastrophic\"]\ncell (0,0): low\ncell (1,0): low\ncell (2,0): low\ncell (3,0): low\ncell (4,0): medium\ncell (0,1): low\ncell (1,1): low\ncell (2,1): medium\ncell (3,1): medium\ncell (4,1): high\ncell (0,2): low\ncell (1,2): medium\ncell (2,2): medium\ncell (3,2): high\ncell (4,2): extreme\ncell (0,3): medium\ncell (1,3): medium\ncell (2,3): high\ncell (3,3): extreme\ncell (4,3): extreme\ncell (0,4): medium\ncell (1,4): high\ncell (2,4): extreme\ncell (3,4): extreme\ncell (4,4): extreme\ndot \"Vendor delay\" at (2,2)\ndot \"Data breach\" at (1,4)\ndot \"Scope creep\" at (3,3)\ndot \"Key staff turnover\" at (2,3)\ndot \"Integration failure\" at (1,3)\ndot \"Budget overrun\" at (3,2)\ndot \"Regulatory change\" at (0,3)\ndot \"User adoption failure\" at (2,4)",
+    "notes": "## Scenario\n\nA project risk manager is populating the risk section of an ERP migration project charter. ISO 31000:2018 requires that risks be assessed on two independent axes — likelihood of occurrence and severity of consequence — then plotted on a heat map to determine which risks require immediate treatment plans and which can be monitored. This chart will be reviewed at the project steering committee and drives the risk-response budget allocation.\n\n## Annotation key\n\n- `style: heat` — renders a colour-filled grid; cell colour is determined by the risk rating keyword\n- `rows` — likelihood scale, bottom to top: Rare (< 5 % probability), Unlikely (5–20 %), Possible (20–50 %), Likely (50–80 %), Almost Certain (> 80 %)\n- `cols` — consequence / severity scale, left to right: Negligible → Minor → Moderate → Major → Catastrophic\n- Cell ratings: `low` (green) = accept and monitor; `medium` (yellow) = treat or accept with controls; `high` (orange) = treat with priority; `extreme` (red) = immediate treatment required, may require escalation to executive sponsor\n- `dot \"Label\" at (col, row)` — plots a named risk on the heat map at the rated coordinate; coordinates follow the (severity, likelihood) convention\n\n## How to read\n\nThe colour gradient runs from green in the bottom-left (low severity, low likelihood) to red in the top-right (catastrophic, almost certain). Any dot landing in an `extreme` cell (red) must have a documented treatment plan approved before the project can proceed to execution. This chart has three extreme risks: User Adoption Failure (almost certain, catastrophic), Scope Creep (likely, major), and Budget Overrun (possible, major) — the project manager needs mitigations for each before the charter is signed. Data Breach lands in a high cell: a cybersecurity review and data-handling controls should be scoped into the migration plan. Regulatory Change is rated low likelihood but still warrants a monitor because the consequence would be moderate. Vendor Delay and Integration Failure sit in medium territory — contingency buffer in the schedule is the standard treatment."
+  },
+  {
     "slug": "mindmap-product-launch",
     "diagram": "mindmap",
     "title": "Product launch plan mindmap",
@@ -740,6 +1757,25 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "featured": true,
     "dsl": "mindmap\n\n# Product Launch Plan\n\n## Market readiness\n### Competitive analysis\n- Direct competitors\n- Pricing benchmarks\n### Target segments\n- SMB customers\n- Enterprise pilot\n\n## Engineering\n### Feature freeze\n- Core API complete\n- Edge cases resolved\n### Infrastructure\n- Load testing\n- CDN configuration\n  - Cache rules\n  - Geo routing\n\n## Go-to-market\n- Landing page live\n- Email campaign\n- Press outreach\n  - TechCrunch pitch\n  - Newsletter sponsors\n\n## Success metrics\n- Week 1 signups\n- Activation rate\n- NPS at day 30",
     "notes": "## Scenario\n\nThe launch lead opens the kickoff meeting with this mindmap on a shared whiteboard. Four branches name the four owners (product, engineering, marketing, analytics) and every leaf is a checkable deliverable. The radial layout gives each owner roughly equal visual real estate — no function's work feels like an afterthought.\n\n## Annotation key\n\n- `#` — root (exactly one)\n- `##`, `###` — branch depth; each extra `#` nests one level deeper\n- `-` bullets — leaf items; 2-space indent adds another level\n\n## How to read\n\nStart at the centre. Each `##` heading is a top-level workstream with its own owner. `###` headings group sub-areas; bullet lists capture concrete deliverables. Indented bullets (e.g. *Cache rules* under *CDN configuration*) are sub-tasks owned by the same person who owns the parent. Anything without a bullet-or-heading is not tracked — the mindmap is the source of truth."
+  },
+  {
+    "slug": "mindmap-product-taxonomy",
+    "diagram": "mindmap",
+    "title": "E-commerce product category taxonomy",
+    "description": "Mindmap of a fashion e-commerce catalog hierarchy — Women, Men, Kids, Accessories — for a platform team designing the navigation taxonomy.",
+    "standard": "Google Product Taxonomy",
+    "tags": [
+      "mindmap",
+      "ecommerce",
+      "taxonomy",
+      "product-catalog",
+      "navigation",
+      "fashion"
+    ],
+    "complexity": 2,
+    "featured": false,
+    "dsl": "mindmap\n\n# Fashion Catalog\n\n## Women\n### Tops\n- T-shirts\n- Blouses\n- Sweaters\n### Bottoms\n- Jeans\n- Skirts\n- Shorts\n### Dresses\n- Casual\n- Formal\n### Outerwear\n- Coats\n- Jackets\n### Shoes\n- Heels\n- Sneakers\n- Boots\n\n## Men\n### Tops\n- Shirts\n- T-shirts\n- Hoodies\n### Bottoms\n- Chinos\n- Jeans\n### Outerwear\n- Coats\n- Jackets\n### Shoes\n- Dress shoes\n- Sneakers\n\n## Kids\n### Boys\n- Tops\n- Bottoms\n### Girls\n- Tops\n- Dresses\n### Baby\n- Bodysuits\n- Sleepwear\n\n## Accessories\n### Bags\n- Handbags\n- Backpacks\n### Jewelry\n- Necklaces\n- Earrings\n### Belts\n### Hats\n### Sunglasses",
+    "notes": "## Scenario\n\nA platform product manager is redesigning the site navigation and needs to agree the canonical category taxonomy with merchandising, engineering, and SEO before implementation begins. This mindmap serves as the alignment artifact — every team can confirm their domain is correctly represented before a single URL slug is committed to the database schema. Branches can be reorganised in minutes; refactoring a live taxonomy costs weeks.\n\n## Annotation key\n\n- `#` — root: the catalog name\n- `##` — top-level department (typically the primary nav bar item)\n- `###` — sub-category (facet filter or secondary nav)\n- `-` bullets — leaf-level category types (the URL-slug level)\n\n## How to read\n\nEach `##` branch is a primary department; its `###` children are the sub-category pages a shopper browses to. Leaf bullets are the final filter-level categories that appear in the faceted search panel. Consistent depth across departments signals a balanced taxonomy — a `###` node with only one leaf child is a candidate for flattening to reduce navigation depth and improve page discoverability."
   },
   {
     "slug": "mindmap-quarterly-okrs",
@@ -760,6 +1796,102 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "notes": "## Scenario\n\nThe chief of staff projects this during the Q4 all-hands. Three objectives radiate from the centre; every key result is a leaf with a specific number. The mindmap format reads fast — every person in the company can find their team's objective within three seconds — and it tolerates mid-quarter edits without disturbing other branches.\n\n## Annotation key\n\n- `#` — root; company-level frame\n- `##` — objective (qualitative direction)\n- `###` — key-result cluster\n- `-` bullets — specific measurable KRs\n\n## How to read\n\nThe root names the quarter. The three `##` branches are the objectives — the things that will be judged at the end of the quarter. Each `###` groups key results by theme; the bullets are the actual measurable targets. If a KR can't be reduced to a number, it probably belongs in a planning doc rather than on this mindmap."
   },
   {
+    "slug": "mindmap-research-paper-outline",
+    "diagram": "mindmap",
+    "title": "Literature review topic tree",
+    "description": "Mindmap outlining a ML fairness literature review — research questions, subtopics, key papers — for a PhD student's systematic survey.",
+    "standard": "Buzan (1970s)",
+    "tags": [
+      "mindmap",
+      "literature-review",
+      "research",
+      "phd",
+      "ml-fairness",
+      "survey"
+    ],
+    "complexity": 3,
+    "featured": false,
+    "dsl": "mindmap\n\n# ML Fairness — Literature Review\n\n## Fairness Definitions\n### Statistical\n- Individual fairness\n- Group fairness\n### Causal\n- Counterfactual fairness\n- Path-specific effects\n\n## Bias Sources\n### Data collection\n- Sampling bias\n- Historical bias\n### Label noise\n- Annotator disagreement\n- Proxy labelling\n### Proxy features\n- Correlated attributes\n- Redundant encodings\n\n## Mitigation Techniques\n### Pre-processing\n- Reweighing\n- Resampling\n### In-processing\n- Adversarial debiasing\n- Fairness constraints\n### Post-processing\n- Threshold adjustment\n- Score calibration\n\n## Benchmark Datasets\n- COMPAS recidivism\n- Adult Income (UCI)\n- CelebA facial attributes\n- Drug consumption\n\n## Open Problems\n- Intersectionality\n- Dynamic fairness over time\n- Fairness in generative models",
+    "notes": "## Scenario\n\nA PhD student beginning a systematic survey of machine learning fairness needs to map the intellectual territory before writing a single word of the literature review. This mindmap externalises the topic structure so the advisor can give fast feedback on scope, missing subtopics, and emphasis — far cheaper to reorganise a mindmap than a draft chapter. The five branches correspond to the five sections the final paper will have.\n\n## Annotation key\n\n- `#` — root: the survey title and domain\n- `##` — top-level section of the review\n- `###` — subsection grouping related concepts\n- `-` bullets — atomic concepts, methods, or datasets to cover\n\n## How to read\n\nStart at the centre and follow each branch outward. The two `##` branches on definitions frame the conceptual foundation; bias sources and mitigation techniques form the methodological core; benchmark datasets anchor the empirical evaluation section; open problems motivate the conclusion. Leaves are the unit of work — each bullet corresponds to at least one paper to read and synthesise before the branch is considered covered."
+  },
+  {
+    "slug": "orgchart-board-committees",
+    "diagram": "orgchart",
+    "title": "Corporate board and committee structure",
+    "description": "Public-company board governance — full board with audit, compensation, nominating/governance, and risk subcommittees per SEC requirements.",
+    "standard": "SEC / NYSE governance",
+    "tags": [
+      "orgchart",
+      "board",
+      "governance",
+      "audit",
+      "compensation",
+      "sec",
+      "committee"
+    ],
+    "complexity": 3,
+    "featured": false,
+    "dsl": "orgchart \"Acme Corp — Board & Committee Structure\"\nchair: \"Victoria Harmon\" | Board Chair [role: advisor]\n  audit_chair: \"Ellen Frost, CPA\" | Audit Committee Chair [role: finance]\n    audit_m1: \"James Liu\" | Audit Committee Member [role: finance]\n    audit_m2: \"Priya Mehta\" | Audit Committee Member [role: finance]\n  comp_chair: \"Thomas Osei\" | Compensation Committee Chair [role: hr]\n    comp_m1: \"Sarah Nakamura\" | Compensation Committee Member [role: hr]\n    comp_m2: \"Rafael Dominguez\" | Compensation Committee Member [role: hr]\n  nom_chair: \"Linda Abramowitz\" | Nom. & Governance Chair [role: legal]\n    nom_m1: \"Derek Abubakar\" | Nom. & Governance Member [role: legal]\n    nom_m2: \"Yuki Fernandez\" | Nom. & Governance Member [role: legal]\n  risk_chair: \"Raj Mehta\" | Risk Committee Chair [role: ops]\n    risk_m1: \"Cynthia Okonkwo\" | Risk Committee Member [role: ops]\n    risk_m2: \"Simon Park\" | Risk Committee Member [role: ops]\nboard_ceo: \"David Park\" | CEO (Management) [role: ceo]\n  mgmt_cfo: \"Angela Torres\" | CFO [role: finance]\n  mgmt_clo: \"Marcus Reyes\" | Chief Legal Officer [role: legal]\nboard_ceo -.-> audit_chair\nboard_ceo -.-> comp_chair\nboard_ceo -.-> nom_chair\nboard_ceo -.-> risk_chair",
+    "notes": "## Scenario\n\nThe corporate secretary is preparing the annual proxy statement and needs to document the board's committee structure as required by SEC Regulation S-K Item 407 and NYSE Listed Company Rules. The four standing committees — Audit, Compensation, Nominating & Governance, and Risk — each consist entirely of independent directors. The CEO and CFO participate in committee meetings by invitation and report to the relevant committees, but are not members. The dotted lines from the CEO to each committee chair represent this management reporting relationship for operational matters.\n\n## Annotation key\n\n- `chair: \"Victoria Harmon\" | Board Chair [role: advisor]` — independent chair; non-executive\n- Committee chairs and members use `[role: finance]`, `[role: hr]`, `[role: legal]`, `[role: ops]` to visually distinguish oversight focus\n- `board_ceo: \"David Park\" | CEO (Management)` — management side; inside-the-box CEO distinct from the independent board\n- `board_ceo -.-> audit_chair` — dotted lines represent management's accountability to each committee, not reporting hierarchy\n- All committee members must be independent directors under SEC Rule 10A-3 (Audit) and NYSE Section 303A\n\n## How to read\n\nThe board chart has two distinct clusters. The upper cluster — Board Chair and the four committees — is the governance structure: independent directors exercising fiduciary oversight. The lower cluster — CEO and management — represents the executive team that is accountable to the board. Dotted lines from the CEO to each committee chair indicate that management attends and reports to committees without being members or having voting rights. The Audit Committee chair (Ellen Frost, CPA) satisfies the SEC's financial expert disclosure requirement. NYSE rules require that Compensation and Nom/Gov committees be composed solely of independent directors; the Risk Committee follows the same practice here but is not legally mandated to be fully independent."
+  },
+  {
+    "slug": "orgchart-engineering-dept",
+    "diagram": "orgchart",
+    "title": "Engineering department — platform, product, infra squads",
+    "description": "Engineering org with three squad leads under a VP Eng — platform, product, and infrastructure, with open headcount flagged.",
+    "standard": "HR convention",
+    "tags": [
+      "orgchart",
+      "engineering",
+      "squad",
+      "platform",
+      "infra",
+      "product"
+    ],
+    "complexity": 3,
+    "featured": false,
+    "dsl": "orgchart \"Engineering Department — Q3 Headcount Plan\"\nstaff_pe: \"Diana Okonkwo\" | Staff Principal Engineer [role: engineer]\nvp_eng: \"Sarah Chen\" | VP Engineering [role: cto]\n  platform_lead: \"Marco Rossi\" | Platform Lead [role: engineer]\n    pe1: \"Kenji Watanabe\" | Senior Engineer | Platform [role: engineer]\n    pe2: \"Aaliya Hassan\" | Engineer | Platform [role: engineer]\n    pe3: \"Lucas Ferreira\" | Engineer | Platform [role: engineer]\n    open_sr: open \"TBH\" | Senior Engineer | Platform [role: engineer]\n  product_lead: \"Aisha Okafor\" | Product Eng Lead [role: engineer]\n    pe4: \"Rohan Mehta\" | Senior Engineer | Product [role: engineer]\n    pe5: \"Chloe Martin\" | Engineer | Product [role: engineer]\n    pe6: \"Jae-won Oh\" | Engineer | Product [role: engineer]\n    pe7: \"Fatima Al-Rashid\" | Engineer | Product [role: engineer]\n    draft_staff: draft \"TBH\" | Staff Engineer | Product [role: engineer]\n  infra_lead: \"Dev Patel\" | Infra Lead [role: engineer]\n    ie1: \"Nadia Kowalski\" | Senior SRE [role: engineer]\n    ie2: \"Emre Yilmaz\" | SRE [role: engineer]\n    open_sre: open \"TBH\" | Site Reliability Engineer [role: engineer]\nstaff_pe -.-> platform_lead\nstaff_pe -.-> product_lead\nstaff_pe -.-> infra_lead",
+    "notes": "## Scenario\n\nThe engineering director is presenting the Q3 headcount plan to the CFO. The chart shows three squads — platform, product engineering, and infrastructure — each under a dedicated lead reporting to the VP of Engineering. A Staff Principal Engineer provides technical oversight across all three squads via dotted-line relationships. Two open reqs are actively being recruited (Platform Senior Engineer, SRE), and one Staff Engineer seat in the product squad is planned for Q4 but not yet approved.\n\n## Annotation key\n\n- `vp_eng: \"Sarah Chen\" | VP Engineering [role: cto]` — VP-level node coloured with the cto role style\n- Indentation (2 spaces) — solid-line reporting hierarchy\n- `open \"TBH\"` — approved open requisition, currently recruiting\n- `draft \"TBH\"` — planned headcount, not yet approved or posted\n- `staff_pe -.-> platform_lead` — dotted line; technical authority without HR reporting chain\n\n## How to read\n\nThe tree root is the VP of Engineering. The three squad leads sit at the second level — equal peers in the org, differentiated only by domain. Headcount marked `open` (Platform Senior Eng, SRE) represents approved budget the director is actively spending; `draft` (Product Staff) is the ask for the next planning cycle. The staff principal at the top of the chart is neither the VP's direct report nor a squad lead: the dotted lines to all three leads signal that she sets technical standards and does architecture review across squads without owning any head count."
+  },
+  {
+    "slug": "orgchart-hospital-dept",
+    "diagram": "orgchart",
+    "title": "Hospital clinical department hierarchy",
+    "description": "Hospital clinical org — Chief Medical Officer, department heads, attendings, residents, and nursing leads for a teaching hospital.",
+    "standard": "JCAHO / hospital convention",
+    "tags": [
+      "orgchart",
+      "hospital",
+      "clinical",
+      "physician",
+      "nursing",
+      "hierarchy"
+    ],
+    "complexity": 4,
+    "featured": false,
+    "dsl": "orgchart \"General Hospital — Clinical Leadership\"\ncmo: \"Dr. Patricia Williams\" | Chief Medical Officer [role: medical]\n  chief_med: \"Dr. James Park\" | Chief of Medicine [role: medical]\n    cardio_head: \"Dr. Amara Nwosu\" | Division Chief | Cardiology [role: medical]\n      att_card1: \"Dr. Elena Sousa\" | Attending Physician [role: medical]\n      att_card2: \"Dr. Ravi Gupta\" | Attending Physician [role: medical]\n      res_card1: \"Dr. Yuki Tanaka\" | PGY-3 Resident [role: medical]\n      res_card2: \"Dr. Malik Johnson\" | PGY-2 Resident [role: medical]\n    neuro_head: \"Dr. Ingrid Larsen\" | Division Chief | Neurology [role: medical]\n      att_neuro1: \"Dr. Omar Sharif\" | Attending Physician [role: medical]\n      att_neuro2: \"Dr. Priya Krishnan\" | Attending Physician [role: medical]\n      res_neuro1: \"Dr. Tomás Rivera\" | PGY-3 Resident [role: medical]\n      res_neuro2: \"Dr. Aisha Conteh\" | PGY-2 Resident [role: medical]\n  chief_surg: \"Dr. Amara Diallo\" | Chief of Surgery [role: medical]\n    gen_surg_head: \"Dr. Wei Zhang\" | Division Chief | General Surgery [role: medical]\n      att_gs1: \"Dr. Sofia Reyes\" | Attending Surgeon [role: medical]\n      att_gs2: \"Dr. Kwame Mensah\" | Attending Surgeon [role: medical]\n    ortho_head: \"Dr. Henrik Svensson\" | Division Chief | Orthopedics [role: medical]\n      att_orth1: \"Dr. Nalini Patel\" | Attending Surgeon [role: medical]\n      att_orth2: \"Dr. Seun Adeyemi\" | Attending Surgeon [role: medical]\n  cno: \"Maria Gonzalez, RN, MSN\" | Chief Nursing Officer [role: medical]\n    med_surg_mgr: \"Lisa Park, RN\" | Nurse Manager | Med-Surg [role: medical]\n    icu_mgr: \"Robert Osei, RN\" | ICU Nurse Manager [role: medical]",
+    "notes": "## Scenario\n\nA hospital administrator is preparing a JCAHO accreditation submission and needs to document the clinical governance structure. The chart shows the three-pillar model common to teaching hospitals: Medicine and Surgery under the CMO handle physician credentialing and clinical protocols, while Nursing reports separately to ensure independent oversight of nursing practice standards. Attendings supervise residents directly; residents rotate between divisions but report to their division chief.\n\n## Annotation key\n\n- `[role: medical]` — all clinical staff rendered with the medical colour coding\n- Indentation — solid-line administrative and clinical reporting chain\n- `PGY-2 / PGY-3` — Post-Graduate Year, the standard US resident designation (PGY-1 = intern)\n- `RN, MSN` — inline credentials appended to the name field, common in nursing leadership notation\n- Division Chiefs sit between the department Chief and individual attendings — the standard academic medical centre layer\n\n## How to read\n\nThe CMO owns clinical quality across all departments. Medicine and Surgery are equal pillars — each Chief has autonomous credentialing authority within their specialty. Within Medicine, Cardiology and Neurology each run their own attending–resident teaching structure: attendings carry clinical responsibility; residents operate under supervision with authority expanding by PGY year. Nursing reports up through the CNO rather than through either clinical chief — a deliberate governance separation required by Magnet hospital standards. The two nurse managers (Med-Surg floor, ICU) translate CNO policy to unit-level staffing and care protocols."
+  },
+  {
+    "slug": "orgchart-law-firm-partnership",
+    "diagram": "orgchart",
+    "title": "Law firm partnership structure",
+    "description": "AmLaw 100-style law firm org — equity and non-equity partners, counsel, associates, and professional staff by practice group.",
+    "standard": "NALP convention",
+    "tags": [
+      "orgchart",
+      "law-firm",
+      "partnership",
+      "counsel",
+      "associate",
+      "legal"
+    ],
+    "complexity": 3,
+    "featured": false,
+    "dsl": "orgchart \"Chen & Associates LLP — Partnership Structure\"\nmanaging_partner: \"Robert Chen\" | Managing Partner [role: ceo]\n  corp_chair: \"Jennifer Wu\" | Corporate Practice Chair [role: coo]\n    corp_ep1: \"David Okafor\" | Equity Partner | M&A [role: legal]\n      corp_ep1_sa1: \"Mei-Ling Torres\" | Senior Associate [role: legal]\n      corp_ep1_a1: \"Brendan Nwosu\" | Associate [role: legal]\n      corp_ep1_a2: \"Priya Sharma\" | Associate [role: legal]\n    corp_ep2: \"Simone Beaumont\" | Equity Partner | Securities [role: legal]\n      corp_ep2_sa1: \"Aleksei Volkov\" | Senior Associate [role: legal]\n      corp_ep2_a1: \"Fatou Diallo\" | Associate [role: legal]\n    corp_nep: \"Marcus Tran\" | Non-Equity Partner | Corporate [role: legal]\n      corp_nep_a1: \"Yuna Kim\" | Associate [role: legal]\n      corp_para1: \"Sandra Lopez\" | Paralegal [role: ops]\n  lit_chair: \"Marcus Johnson\" | Litigation Practice Chair [role: coo]\n    lit_ep1: \"Amara Osei\" | Equity Partner | Commercial Lit [role: legal]\n      lit_ep1_sa1: \"Tobias Gruber\" | Senior Associate [role: legal]\n      lit_ep1_a1: \"Chimamanda Eze\" | Associate [role: legal]\n    lit_ep2: \"Hiroshi Nakamura\" | Equity Partner | White Collar [role: legal]\n      lit_ep2_sa1: \"Valentina Cruz\" | Senior Associate [role: legal]\n      lit_ep2_a1: \"Daniel Abioye\" | Associate [role: legal]\n    lit_counsel: \"Rachel Goldstein\" | Counsel | Litigation [role: legal]\n  cfo: \"Dana Kim\" | COO / CFO [role: finance]\n  mkt: \"Alex Torres\" | Chief Marketing Officer [role: ops]",
+    "notes": "## Scenario\n\nThe managing partner is preparing materials for the annual partnership meeting, including the governance deck and lateral-hire pitch collateral. The chart shows the two-track attorney structure common to AmLaw 100 firms: equity partners share in firm profits and have capital accounts; non-equity partners are on fixed compensation; counsel are senior attorneys on a permanent non-partnership track. Associates are levelled as first-through-fifth-year and senior (sixth-plus). Professional staff — COO/CFO and CMO — sit as firm-level directs to the managing partner.\n\n## Annotation key\n\n- `[role: legal]` — attorney nodes; `[role: finance]` and `[role: ops]` — professional staff\n- Equity Partner — profit-sharing, voting interest in firm governance\n- Non-Equity Partner — title parity without capital account; typically earns a fixed bonus-eligible salary\n- Counsel — senior non-partner track: often former partners, domain specialists, or attorneys who opted out of the equity track\n- Senior Associate — sixth year or above; on the partnership evaluation clock\n- `corp_chair` / `lit_chair` — practice group chairs own lateral hiring, billing rate setting, and matter assignment within their group\n\n## How to read\n\nRobert Chen, as managing partner, chairs the firm's executive committee and carries final governance authority. The two practice chairs report to him and run their groups as semi-autonomous profit centres. Within each group, equity partners own client relationships and sign off on fee arrangements; associates bill under partner supervision. The non-equity partner in Corporate adds capacity without diluting the equity pool — a common structure when a client relationship is stable but not large enough to justify a new equity slot. Counsel in Litigation handles specialized motions work that would otherwise require lateral-hiring a lateral partner. The COO/CFO and CMO report directly to the managing partner rather than through a practice chair — they serve the whole firm, not a single group."
+  },
+  {
     "slug": "orgchart-matrix-reporting",
     "diagram": "orgchart",
     "title": "Scale-up with matrix reporting",
@@ -776,6 +1908,26 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "featured": false,
     "dsl": "orgchart \"Scaleup — Matrixed Product Lines\"\nceo: \"Jamie Torres\" | CEO [role: ceo]\n  cto: \"Raj Patel\" | CTO [role: cto]\n    lead_core: \"Priya Nair\" | Eng Lead | Core [role: engineer]\n      eng1: \"Alex Kim\" | Senior Engineer [role: engineer]\n      eng2: \"Jordan Lee\" | Engineer [role: engineer]\n    lead_growth: \"Omar Hassan\" | Eng Lead | Growth [role: engineer]\n      eng3: \"Yuki Tanaka\" | Staff Engineer [role: engineer]\n      eng4: \"Maya Patel\" | Engineer [role: engineer]\n  cpo: \"Ellen Wu\" | CPO [role: cpo]\n    pm_core: \"Tyler Brooks\" | PM | Core [role: product]\n    pm_growth: \"Suki Ito\" | PM | Growth [role: product]\n  cdo: \"Liu Wei\" | CDO [role: design]\n    des_core: \"Ana Rossi\" | Designer | Core [role: design]\n    des_growth: \"Kai Park\" | Designer | Growth [role: design]\npm_core -.-> lead_core\npm_growth -.-> lead_growth\ndes_core -.-> lead_core\ndes_growth -.-> lead_growth",
     "notes": "## Scenario\n\nThe head of engineering is explaining the matrix structure to a new eng lead. Functional managers (CTO, CPO, CDO) own career growth; product-line leads coordinate day-to-day work. The dotted lines from PMs and designers into the two eng leads make this split visible without implying a change in reporting chain.\n\n## Annotation key\n\n- Solid line (indentation) — functional / HR reporting\n- `A -.-> B` — dotted line; secondary / product reporting\n- `[role: …]` — colour-coded by function\n\n## How to read\n\nSolid lines (from indentation) answer \"who owns my performance review and career.\" Dotted lines answer \"whose roadmap am I aligned to this quarter.\" PMs and designers both report functionally into their chiefs but are dotted-lined into the engineering lead whose product line they're embedded in — a typical scale-up pattern that balances functional excellence with product-team velocity."
+  },
+  {
+    "slug": "orgchart-military-squadron",
+    "diagram": "orgchart",
+    "title": "Military squadron command hierarchy",
+    "description": "Air Force fighter squadron org — Squadron Commander, DO, flight leads, and enlisted crew chiefs — with NATO rank notation.",
+    "standard": "NATO rank convention",
+    "tags": [
+      "orgchart",
+      "military",
+      "squadron",
+      "command",
+      "nato",
+      "rank",
+      "air-force"
+    ],
+    "complexity": 3,
+    "featured": false,
+    "dsl": "orgchart \"87th Fighter Squadron — Command Structure\"\ncc: \"Lt Col James Torres\" | Squadron Commander / O-5 [role: ceo]\n  safety_o: \"Capt Priya Singh\" | Safety Officer / O-3 [role: ops]\n  weapons_o: \"Capt Kwame Asante\" | Weapons Officer / O-3 [role: ops]\n  do: \"Maj Elena Voss\" | Director of Operations / O-4 [role: coo]\n    alpha_lead: \"Capt Robert Kim\" | Alpha Flight Lead / O-3 [role: engineer]\n      alpha_p1: \"1Lt Diego Morales\" | Pilot / O-2 [role: engineer]\n      alpha_p2: \"1Lt Anika Osei\" | Pilot / O-2 [role: engineer]\n      alpha_p3: \"2Lt Tomás Ibáñez\" | Pilot / O-1 [role: engineer]\n      alpha_p4: \"2Lt Mei Chen\" | Pilot / O-1 [role: engineer]\n    bravo_lead: \"Capt Fatima Al-Rashidi\" | Bravo Flight Lead / O-3 [role: engineer]\n      bravo_p1: \"1Lt Marcus Webb\" | Pilot / O-2 [role: engineer]\n      bravo_p2: \"1Lt Yuki Tanaka\" | Pilot / O-2 [role: engineer]\n      bravo_p3: \"2Lt Samuel Adeyemi\" | Pilot / O-1 [role: engineer]\n      bravo_p4: \"2Lt Natasha Voronova\" | Pilot / O-1 [role: engineer]\n  sq_supt: \"CMSgt Robert Lee\" | Squadron Superintendent / E-9 [role: ops]\n    mx_section: \"SMSgt Dana Park\" | Maintenance Section Chief / E-8 [role: ops]\n      cc1: \"TSgt Hiroshi Nakamura\" | Crew Chief / E-6 [role: ops]\n      cc2: \"TSgt Amara Diallo\" | Crew Chief / E-6 [role: ops]\n      cc3: \"SSgt Luisa Ferreira\" | Crew Chief / E-5 [role: ops]\n      cc4: \"SSgt Kofi Mensah\" | Crew Chief / E-5 [role: ops]\n      cc5: \"SSgt Ingrid Larsen\" | Crew Chief / E-5 [role: ops]\n      cc6: \"SSgt Brendan Nwosu\" | Crew Chief / E-5 [role: ops]\n      cc7: \"SSgt Valentina Cruz\" | Crew Chief / E-5 [role: ops]\n      cc8: \"SSgt Omar Bashir\" | Crew Chief / E-5 [role: ops]\nadvisor adv1: \"Col Andrea Watanabe\" | Wing Commander / O-6 [role: advisor]",
+    "notes": "## Scenario\n\nThe defense training officer is building a pre-deployment briefing package for NATO coalition partners. The chart uses the standard NATO officer grade notation (O-1 through O-6) and enlisted grade notation (E-5 through E-9) alongside rank titles, making it legible to allied forces regardless of their national naming conventions. The two staff officers (Safety and Weapons) are specialty billets that report directly to the commander — they advise on safety of flight and weapons employment doctrine without commanding pilots. The Wing Commander appears as an external advisor node, reflecting that she exercises authority over the squadron but is not in its internal chain.\n\n## Annotation key\n\n- `/ O-5` appended to title — NATO OF grade (OF-4 equivalent); O-5 = Lieutenant Colonel in USAF convention\n- `/ E-9` — NATO OR grade; E-9 = Chief Master Sergeant, the highest enlisted grade in the USAF\n- `Flight Lead` — the O-3 captain who leads a four-ship element; does not hold a separate command billet\n- `Squadron Superintendent` — senior enlisted advisor to the commander; parallel authority track to the DO for enlisted matters\n- `advisor adv1` — Wing Commander: exercises command over the squadron but is not in the internal org tree\n- Safety Officer and Weapons Officer are staff (special duty) billets shown as direct reports to CC, not in the operations chain\n\n## How to read\n\nThe Squadron Commander (O-5) holds full command authority. Two parallel tracks report to him: the operations track runs through the Director of Operations (O-4) down to two flight leads each commanding four pilots; the enlisted track runs through the Squadron Superintendent (E-9) and Maintenance Section Chief (E-8) to eight crew chiefs responsible for aircraft airworthiness. Safety and Weapons officers are staff advisors — they brief the commander but do not command anyone. The Wing Commander sits outside the squadron tree as its higher headquarters: she can direct the CC but does not appear inside the squadron's internal structure."
   },
   {
     "slug": "orgchart-tech-startup",
@@ -796,6 +1948,27 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "notes": "## Scenario\n\nThe founder is preparing a hiring plan for the next two quarters and uses this chart in a board update. It shows the current team, the one confirmed open req (Frontend Engineer), one planned-but-not-recruiting slot (Staff Engineer backend), and the board advisor relationship. Indentation communicates reporting lines without drawing edges.\n\n## Annotation key\n\n- `id: \"Name\" | \"Title\" | \"Department\"` — a person node\n- Indentation (2 spaces) — reporting hierarchy\n- `open …` / `draft …` — unfilled / planned roles\n- `advisor …` — external board or advisor relationship\n- `[role: …]` — colour-coded by function\n\n## How to read\n\nThe single root is the CEO. Each two-space indent step moves one level down the reporting tree. Two kinds of \"ghost\" slots appear: `open` nodes (Frontend Engineer) are reqs you are actively hiring for; `draft` nodes (Staff Backend) are next-quarter plans. The advisor sits outside the tree — not in the reporting chain but formally associated with the org."
   },
   {
+    "slug": "pedigree-assisted-reproduction",
+    "diagram": "pedigree",
+    "title": "ART pedigree — IVF, gamete donor, gestational surrogate",
+    "description": "Assisted reproduction technology pedigree with egg donor, sperm from intended father, and gestational surrogate — Bennett 2022 / NSGC ART symbols.",
+    "standard": "Bennett 2022 / NSGC ART notation",
+    "tags": [
+      "pedigree",
+      "art",
+      "ivf",
+      "egg-donor",
+      "surrogate",
+      "assisted-reproduction",
+      "nsgc",
+      "bennett-2022"
+    ],
+    "complexity": 4,
+    "featured": false,
+    "dsl": "pedigree \"ART Family — IVF with Egg Donor and Gestational Surrogate\"\n  intended_father [male, 1985, unaffected, label: \"Intended Father\"]\n  intended_mother [female, 1987, unaffected, label: \"Intended Mother\"]\n  egg_donor [female, 1995, donor, label: \"Egg Donor (anon.)\"]\n  surrogate [female, 1990, surrogate, label: \"Gestational Carrier\"]\n  intended_father -- intended_mother\n  egg_donor -- intended_father [donor: egg]\n    embryo_carrier [surrogate: surrogate]\n      child1 [female, 2022, proband, genotype: \"Genetic parents: IF + Donor\", label: \"Daughter\"]",
+    "notes": "## Scenario\n\nA reproductive endocrinologist documents the conception and birth of a daughter (child1, proband) conceived through in-vitro fertilization using the intended father's sperm and an anonymous egg donor's oocyte. The resulting embryo was transferred to and carried by a gestational surrogate (who has no genetic relationship to the child). The intended parents are the legal and social parents. This pedigree structure — required for neonatal records, pediatric genetics intake, and any future reproductive risk counseling — must distinguish four distinct roles: intended mother (social/legal parent, no genetic contribution), intended father (genetic and legal parent), egg donor (genetic contributor, no parental role), and gestational surrogate (gestational carrier, no genetic or legal-parent role). Bennett 2022 ART symbols and NSGC 2008 guidelines both specify distinct visual encoding for each role.\n\n## Annotation key\n\n- `donor` — diamond symbol per Bennett 2022 / NSGC ART notation; used here for the anonymous egg donor; indicates a gamete contributor with no parental legal or social role\n- `surrogate` — designated carrier symbol per Bennett 2022; used for the gestational surrogate; carries the embryo to term but contributes no genetic material and holds no parental legal role\n- `[donor: egg]` — relationship qualifier on the egg donor's coupling line to the intended father's gamete; indicates the nature of the gametic contribution (oocyte)\n- `intended_father -- intended_mother` — standard mating line between the intended (legal/social) parents; no shared genetic offspring line needed for the intended mother since she contributed no gametes\n- `[surrogate: surrogate]` — identifies the gestational carrier for the embryo; child's birth line descends from the surrogate's womb, not from the intended mother\n- `proband` — arrow on child1; the child is the index case for pediatric genetic records\n- `genotype: \"Genetic parents: IF + Donor\"` — clinical annotation recording the genetic parentage for medical history and future counseling; intended mother's genetic non-contribution is documented explicitly\n\n## How to read\n\nThe intended parents (left) are a legally married couple. The intended mother contributed no genetic material; she is represented by an unaffected open circle connected to the intended father by a standard mating line but without a descent line to the child — her parental role is social and legal only. The egg donor (diamond symbol, upper right) contributed the oocyte; she is coupled to the intended father's sperm via a `[donor: egg]` relationship line. The resulting embryo was carried by the gestational surrogate (designated carrier symbol). The child's birth descent line flows from the surrogate, encoding the gestational path. The child inherits genetic material from the intended father and the egg donor only — the genotype annotation makes this explicit for future clinical use. If the child ever presents for her own reproductive genetic counseling, the pedigree immediately distinguishes her genetic risk profile (inherited from intended father + anonymous donor) from the family medical history of her social parents, preventing misattribution of heritable conditions."
+  },
+  {
     "slug": "pedigree-brca1",
     "diagram": "pedigree",
     "title": "BRCA1 hereditary cancer (four-generation)",
@@ -813,6 +1986,26 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "featured": false,
     "dsl": "pedigree \"BRCA1 Family — Hereditary Breast/Ovarian Cancer\"\n  I-1 [male, unaffected]\n  I-2 [female, affected, deceased]\n  I-1 -- I-2\n    II-1 [female, affected]\n    II-2 [male, unaffected]\n    II-3 [female, carrier]\n  II-1 -- II-4 [male, unaffected]\n    III-1 [female, affected, proband]\n    III-2 [male, unaffected]\n    III-3 [female, presymptomatic]\n  II-3 -- II-6 [male, unaffected]\n    III-6 [female, carrier]\n    III-7 [male, unaffected]",
     "notes": "## Scenario\n\nA genetic counselor documents a four-generation BRCA1 pedigree for a patient referred after a personal diagnosis of breast cancer at age 35. The NSGC-standard pedigree distinguishes affected, carrier, and presymptomatic individuals — critical for insurance pre-authorization and cascade testing recommendations for at-risk relatives.\n\n## Annotation key\n\n- `affected` — full fill; individual has been diagnosed with the condition\n- `carrier` — half fill; individual carries the mutation but is currently asymptomatic\n- `presymptomatic` — quarter fill or dot; positive genetic test but no clinical diagnosis yet\n- `proband` — triangle marker; the individual who triggered clinical investigation\n- `deceased` — diagonal slash through the symbol\n\n## How to read\n\nThe pattern of affected females across three generations (I-2, II-1, III-1) is the red flag for hereditary BRCA1. The proband (III-1) is the entry point. Her aunt (II-3) is a carrier who has already passed the mutation to III-6. The presymptomatic sibling (III-3) has tested positive but is not yet diagnosed — she receives enhanced surveillance recommendations."
+  },
+  {
+    "slug": "pedigree-consanguinity",
+    "diagram": "pedigree",
+    "title": "First-cousin marriage — autosomal recessive condition",
+    "description": "Consanguineous pedigree with first-cousin union and autosomal recessive disorder — consanguinity bar notation, carrier status, and COI per NSGC clinical convention.",
+    "standard": "NSGC",
+    "tags": [
+      "pedigree",
+      "consanguinity",
+      "autosomal-recessive",
+      "first-cousin",
+      "carrier",
+      "coi",
+      "nsgc"
+    ],
+    "complexity": 4,
+    "featured": false,
+    "dsl": "pedigree \"First-Cousin Consanguinity — Autosomal Recessive\"\n  I-1 [male, unaffected]\n  I-2 [female, carrier-ar]\n  I-1 -- I-2\n    II-1 [male, carrier-ar]\n    II-2 [female, carrier-ar]\n    II-3 [male, unaffected]\n    II-4 [female, carrier-ar]\n  II-1 -- II-4 [consanguineous]\n    III-1 [female, affected, proband, label: \"age 3\"]\n    III-2 [male, carrier-ar, label: \"age 5\"]\n    III-3 [male, unaffected, label: \"age 7\"]",
+    "notes": "## Scenario\n\nA clinical geneticist evaluates a 3-year-old girl (III-1, proband) with a suspected autosomal recessive metabolic disorder confirmed on newborn screening and follow-up enzymatic assay. The parents (II-1 and II-4) are first cousins — their mothers are sisters, both daughters of the same founding couple (I-1 and I-2). The grandmother (I-2) is a known carrier. The pedigree demonstrates that a single copy of the mutant allele, carried silently by I-2, reached both parents through two independent descent paths, sharply elevating the probability that both parents are carriers and that offspring receive two copies of the disease allele. The coefficient of inbreeding (COI) for a first-cousin union is 1/16 (6.25%), and for any autosomal recessive condition with carrier rate q, the risk to offspring is substantially increased relative to a random-mating couple.\n\n## Annotation key\n\n- `carrier-ar` — half-filled symbol (bottom half shaded) per NSGC notation for autosomal recessive heterozygous carrier; one normal allele, one mutant allele (Aa)\n- `unaffected` — open symbol; clinically unaffected; may be homozygous normal (AA) or carrier (Aa) — cannot be distinguished without molecular testing\n- `affected` — fully filled symbol; homozygous for the disease allele (aa); proband with confirmed diagnosis\n- `proband` — triangle arrow on III-1, the index case\n- `[consanguineous]` — double horizontal bar between II-1 and II-4; NSGC standard notation for a consanguineous (blood-relative) mating; visually distinct from a normal mating line\n- `label: \"age 3\"` / `\"age 5\"` / `\"age 7\"` — clinical age annotations on Generation III children; useful for surveillance scheduling and sibling testing recommendations\n- I-2 `carrier-ar` — the common ancestor who introduced the mutant allele; both II-1 and II-4 are her biological children, making them first cousins\n\n## How to read\n\nThe founding couple (I-1 × I-2) produced four children: II-1, II-2, II-3, and II-4. I-2 is the obligate carrier (one mutant allele). Under autosomal recessive Mendelian transmission, each child of I-1 × I-2 had a 50% chance of inheriting the mutant allele. II-1 and II-4 are both confirmed carriers. Their first-cousin union is marked by the double consanguinity bar. With both parents heterozygous, their offspring face a 25% risk of being homozygous affected (aa), 50% carrier (Aa), and 25% homozygous normal (AA) — identical to any carrier × carrier cross, but the consanguinity structure explains *why* two carriers met: they share a common carrier ancestor. III-1 (proband, age 3) is affected (aa). III-2 (age 5) tested as a carrier. III-3 (age 7) is clinically unaffected; molecular testing to distinguish AA from Aa is recommended before reproductive planning. COI = 1/16 for this first-cousin union."
   },
   {
     "slug": "pedigree-cystic-fibrosis",
@@ -849,6 +2042,26 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "notes": "## Scenario\n\nA genetic counselor documents a three-generation hemophilia A pedigree during a prenatal consultation. The X-linked recessive pattern — carrier females who show no symptoms but pass the mutated allele — must be clearly distinguished from affected males. NSGC standard notation is required for clinical records and insurance pre-authorization.\n\n## Annotation key\n\n- `carrier-x` — female carrier of an X-linked recessive allele; rendered as a circle with a centre dot per NSGC convention\n- `affected` — fully filled symbol; individual expresses the condition\n- `unaffected` — open (unfilled) symbol; no clinical presentation\n- `proband` — the index case who prompted clinical referral (not used here, but add `proband` to any individual)\n- `I-1 -- I-2` followed by indented children — defines a mating pair and their offspring\n\n## How to read\n\nGeneration I: unaffected father, carrier mother. Generation II: one affected son (II-1), one carrier daughter (II-2), two unaffected children. Generation III: carrier daughter II-2 married an unaffected man; they produced another affected son (III-1) and another carrier daughter (III-2) — demonstrating the classic X-linked skip-generation pattern where the trait disappears in daughters only to re-emerge in grandsons."
   },
   {
+    "slug": "pedigree-huntington",
+    "diagram": "pedigree",
+    "title": "Huntington disease — autosomal dominant 3-gen",
+    "description": "Three-generation Huntington disease pedigree — autosomal dominant, late-onset, full penetrance — with predictive genetic testing notation per NSGC.",
+    "standard": "NSGC",
+    "tags": [
+      "pedigree",
+      "huntington",
+      "autosomal-dominant",
+      "late-onset",
+      "genetic-testing",
+      "nsgc",
+      "neurology"
+    ],
+    "complexity": 3,
+    "featured": false,
+    "dsl": "pedigree \"Huntington Disease — Autosomal Dominant\"\n  I-1 [male, unaffected, deceased]\n  I-2 [female, affected, deceased, genotype: \"HTT CAG 42\"]\n  I-1 -- I-2\n    II-1 [male, affected, genotype: \"HTT CAG 42\", label: \"onset age 48\"]\n    II-2 [female, unaffected, genotype: \"HTT CAG 19\"]\n    II-3 [male, affected, genotype: \"HTT CAG 40\"]\n  II-4 [female, unaffected]\n  II-1 -- II-4\n    III-1 [male, proband, genotype: \"HTT CAG 42 — predictive positive\", label: \"age 28\"]\n    III-2 [female, unaffected, label: \"age 25, untested\"]\n  II-5 [female, unaffected]\n  II-3 -- II-5\n    III-3 [female, unaffected, genotype: \"HTT CAG 19\", label: \"age 22\"]\n    III-4 [male, unaffected, label: \"age 18, untested\"]",
+    "notes": "## Scenario\n\nA neurogenetics counselor constructs this pedigree for a 28-year-old man (III-1, proband) who sought predictive genetic testing after his father (II-1) was diagnosed with Huntington disease at age 48. The patient's paternal grandmother (I-2) was also affected. Testing confirmed III-1 carries a fully penetrant expanded allele (CAG 42), placing him at near-certain risk for motor onset, typically in the fourth to fifth decade. His maternal aunt (II-2) tested negative (CAG 19 — within normal range). His paternal uncle (II-3) is also affected (CAG 40 — reduced penetrance boundary). The pedigree is required for multidisciplinary HD clinic records and insurance pre-authorization for neuropsychological surveillance.\n\n## Annotation key\n\n- `affected` — fully filled symbol; individual has received a clinical HD diagnosis with confirmed motor signs\n- `unaffected` — open symbol; no clinical HD diagnosis; may or may not have been tested\n- `deceased` — diagonal slash; I-1 and I-2 are deceased (I-2 died of HD complications)\n- `proband` — triangle arrow; III-1, the index case who prompted genetic testing in this generation\n- `genotype: \"HTT CAG 42\"` — molecular confirmation of an expanded CAG repeat in the HTT gene (≥36 is abnormal; ≥40 is fully penetrant)\n- `genotype: \"HTT CAG 19\"` — normal allele; fewer than 36 CAG repeats; individual is not at risk\n- `genotype: \"HTT CAG 40\"` — fully penetrant expanded allele; II-3 is affected with onset expected\n- `genotype: \"HTT CAG 42 — predictive positive\"` — pre-symptomatic positive test in III-1; no motor signs yet\n- `label: \"onset age 48\"` — clinical annotation on II-1 recording age of HD motor-sign onset\n- `label: \"age 25, untested\"` / `label: \"age 18, untested\"` — at-risk relatives who have not undergone predictive testing; NSGC convention requires noting untested status\n\n## How to read\n\nThe inheritance pattern is autosomal dominant: every child of an affected parent has a 50% risk of inheriting the expanded allele, regardless of sex. I-2 (affected, CAG 42) passed the mutation to two of three children — II-1 (affected, CAG 42) and II-3 (affected, CAG 40); II-2 inherited the normal allele (CAG 19) and is not at risk. III-1 (proband) inherited the expanded allele from II-1 and is currently pre-symptomatic at age 28; motor onset is anticipated in his late 30s to mid-40s. His sister III-2 (age 25) has chosen not to undergo predictive testing — a clinically and ethically valid choice that the counselor must respect and document. III-3 (age 22) tested negative (CAG 19) and has been discharged from surveillance. III-4 (age 18) remains untested. The pedigree supports cascade testing recommendations for all at-risk Generation III members."
+  },
+  {
     "slug": "phylo-bacterial-diversity",
     "diagram": "phylo",
     "title": "Bacterial diversity (ten-taxon tree)",
@@ -865,6 +2078,86 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "featured": false,
     "dsl": "phylo \"Bacterial Diversity\"\n  newick: \"((((Ecoli:0.1,Salmonella:0.12):0.05[&&NHX:B=98],Vibrio:0.2):0.08[&&NHX:B=85],((Bacillus:0.15,Staph:0.18):0.06[&&NHX:B=92],Listeria:0.22):0.1):0.15,((Myco_tb:0.3,Myco_leprae:0.28):0.12[&&NHX:B=100],(Strepto:0.25,Lactobacillus:0.2):0.08[&&NHX:B=78]):0.2);\"\n  clade Gamma = (Ecoli, Salmonella, Vibrio) [color: \"#1E88E5\", label: \"γ-Proteobacteria\"]\n  clade Firmi = (Bacillus, Staph, Listeria, Strepto, Lactobacillus) [color: \"#E53935\", label: \"Firmicutes\"]\n  clade Actino = (Myco_tb, Myco_leprae) [color: \"#43A047\", label: \"Actinobacteria\"]\n  scale \"substitutions/site\"",
     "notes": "## Scenario\n\nA microbiologist or bioinformatician pastes a Newick tree string exported from RAxML, IQ-TREE, or MEGA and immediately gets a publication-ready SVG with clade highlights and a branch-length scale bar — no manual layout required.\n\n## Annotation key\n\n- `newick: \"...\"` — standard Newick format tree string; branch lengths follow `:` after each taxon name\n- `[&&NHX:B=98]` — NHX annotation; `B=` is the bootstrap support value (0–100), rendered on internal nodes\n- `clade id = (taxon, ...)` — defines a named clade by listing its leaf members\n- `[color: \"#hex\", label: \"...\"]` — colors the clade's subtree and adds a labeled arc\n- `scale \"...\"` — draws a calibrated scale bar with the given unit label\n\n## How to read\n\nThe tree shows three major bacterial clades. Blue (γ-Proteobacteria): *E. coli*, *Salmonella*, and *Vibrio* cluster with 98% bootstrap support. Red (Firmicutes): *Bacillus*, *Staph*, *Listeria*, *Streptococcus*, and *Lactobacillus*. Green (Actinobacteria): the two *Mycobacterium* species form a highly supported clade (bootstrap 100). Branch lengths represent substitutions per site — longer branches indicate faster evolutionary rates."
+  },
+  {
+    "slug": "phylo-gene-family-unrooted",
+    "diagram": "phylo",
+    "title": "Gene family — unrooted network",
+    "description": "Unrooted phylogenetic network of a multi-domain gene family across six organisms — shows reticulate evolution without assuming an outgroup.",
+    "standard": "Newick (unrooted)",
+    "tags": [
+      "phylo",
+      "unrooted",
+      "gene-family",
+      "reticulate",
+      "genomics",
+      "bioinformatics",
+      "network"
+    ],
+    "complexity": 4,
+    "featured": false,
+    "dsl": "phylo \"MAPK Gene Family — Unrooted Network\"\n  layout: unrooted\n  root: midpoint\n  newick: \"(Human_MAPK1:0.12,Mouse_MAPK1:0.14,(Drosophila_RK:0.35,(CElegans_MPK1:0.42,(Yeast_FUS3:0.55,Yeast_KSS1:0.52):0.18[&&NHX:B=88]):0.25[&&NHX:B=75]):0.28[&&NHX:B=82],(Arabidopsis_MPK6:0.40,Rice_OsMPK6:0.38):0.22[&&NHX:B=95]);\"\n  clade Plant_MPK = (Arabidopsis_MPK6, Rice_OsMPK6) [color: \"#43A047\", label: \"Plant MAPK\"]\n  clade Yeast_MAPK = (Yeast_FUS3, Yeast_KSS1) [color: \"#FB8C00\", label: \"Yeast mating MAPK\"]\n  scale \"substitutions/site\"",
+    "notes": "## Scenario\n\nWhen studying a conserved gene family such as MAP kinases across eukaryotes — from yeast to plants to mammals — a bioinformatician often cannot assume a single outgroup for rooting, or may suspect horizontal gene transfer or gene duplication events that make an unrooted representation more honest. The unrooted layout presents branch-length relationships without imposing a root hypothesis, letting the data speak.\n\n## Annotation key\n\n- `layout: unrooted` — radial unrooted network; no root implied; branch lengths are proportional to substitution rate\n- `root: midpoint` — midpoint rooting used internally to anchor the layout, but no root node is drawn\n- `[&&NHX:B=88]` — bootstrap support on internal nodes; lower values (75, 82) signal uncertain branching order\n- `clade Plant_MPK = (Arabidopsis_MPK6, Rice_OsMPK6)` — green arc highlights the plant MAPK ortholog pair with strong support (95)\n- `clade Yeast_MAPK = (Yeast_FUS3, Yeast_KSS1)` — orange arc highlights the two yeast mating-pathway MAPKs\n\n## How to read\n\nIn an unrooted network, evolutionary relatedness is inferred from branch length and topology, not from left-to-right order. Human and Mouse MAPK1 are closely related (short branches), forming a vertebrate cluster. The plant MAPKs (Arabidopsis and Rice, green arc) cluster with strong bootstrap support. The yeast mating MAPKs (FUS3 and KSS1, orange arc) form a well-supported clade with moderate support for their position among animals, consistent with deep conservation of the core kinase domain. Long branches to *Drosophila* and *C. elegans* indicate accelerated evolutionary rates in these lineages."
+  },
+  {
+    "slug": "phylo-primate-cladogram",
+    "diagram": "phylo",
+    "title": "Primate cladogram",
+    "description": "Primate cladogram with 10 taxa — equal branch lengths emphasizing topology rather than evolutionary rate — for a physical anthropology or evolution course.",
+    "standard": "Linnaean / cladistic",
+    "tags": [
+      "phylo",
+      "primate",
+      "cladogram",
+      "anthropology",
+      "hominid",
+      "education",
+      "topology"
+    ],
+    "complexity": 2,
+    "featured": false,
+    "dsl": "phylo \"Primate Cladogram\"\n  layout: cladogram\n  root: midpoint\n  newick: \"(((((Human:1,Chimp:1):1,Gorilla:1):1,Orangutan:1):1,(Gibbon:1,Siamang:1):1):1,((Baboon:1,Macaque:1):1,(Spider_monkey:1,Howler_monkey:1):1):1);\"\n  clade Hominidae = (Human, Chimp, Gorilla, Orangutan) [color: \"#1E88E5\", label: \"Hominidae (Great Apes)\"]\n  clade Lesser_apes = (Gibbon, Siamang) [color: \"#E53935\", label: \"Hylobatidae (Lesser Apes)\"]\n  clade Old_World = (Baboon, Macaque) [color: \"#43A047\", label: \"Cercopithecidae (Old World Monkeys)\"]\n  clade New_World = (Spider_monkey, Howler_monkey) [color: \"#FB8C00\", label: \"Atelidae (New World Monkeys)\"]",
+    "notes": "## Scenario\n\nA physical anthropology or human evolution course uses cladograms — topology-only trees with equal branch lengths — to focus students on branching order and shared derived characters (synapomorphies) rather than evolutionary rate. This 10-taxon primate cladogram illustrates the nested hierarchy of ape, monkey, and human lineages in a format suitable for classroom projection, exam handouts, or textbook figures.\n\n## Annotation key\n\n- `layout: cladogram` — equal branch lengths; topology only; no molecular clock implied\n- `clade Hominidae` — blue arc groups the four great ape genera: Homo, Pan, Gorilla, Pongo\n- `clade Lesser_apes` — red arc groups Gibbon and Siamang (Hylobatidae), the sister group to great apes\n- `clade Old_World` — green arc groups Baboon and Macaque (Cercopithecidae); Old World monkeys diverged before apes\n- `clade New_World` — orange arc groups Spider monkey and Howler monkey (Atelidae); New World monkeys are the outgroup to Old World anthropoids\n\n## How to read\n\nReading from the tips inward, the most recently diverged taxa share the most recent common ancestor. Human and Chimpanzee are sister taxa (most recent common ancestor ~6 Ma); Gorilla is the next outgroup (~9 Ma), then Orangutan (~14 Ma). Lesser Apes (Gibbon, Siamang) are the sister group to all great apes. Together, apes (Hominoidea) are nested within the Old World monkey clade (Cercopithecidae) relative to New World monkeys, which form the most distant outgroup among primates shown here. Because this is a cladogram, branch lengths carry no quantitative meaning — only the branching pattern matters."
+  },
+  {
+    "slug": "phylo-sars-cov-2-variants",
+    "diagram": "phylo",
+    "title": "SARS-CoV-2 variant evolution tree",
+    "description": "SARS-CoV-2 variant phylogeny — Alpha through XBB — showing lineage divergence from the Wuhan ancestral sequence, for epidemiology teaching.",
+    "standard": "Newick/NHX (Nextstrain convention)",
+    "tags": [
+      "phylo",
+      "sars-cov2",
+      "covid",
+      "variants",
+      "epidemiology",
+      "nextstrain",
+      "rectangular"
+    ],
+    "complexity": 3,
+    "featured": false,
+    "dsl": "phylo \"SARS-CoV-2 Variant Evolution\"\n  layout: rectangular\n  newick: \"((((BA1_Omicron:0.05,BA2_Omicron:0.04):0.02[&&NHX:B=99],XBB_Omicron:0.07):0.03[&&NHX:B=95],(Delta_B1617:0.12,Kappa_B1617:0.10):0.08[&&NHX:B=90]):0.15[&&NHX:B=85],(Alpha_B117:0.18,Beta_B1351:0.20):0.10[&&NHX:B=88],Wuhan_WH1:0.01);\"\n  clade Omicron = (BA1_Omicron, BA2_Omicron, XBB_Omicron) [color: \"#C62828\", label: \"Omicron (B.1.1.529)\"]\n  clade Delta_clade = (Delta_B1617, Kappa_B1617) [color: \"#1565C0\", label: \"Delta lineage (B.1.617)\"]\n  clade Early_VOC = (Alpha_B117, Beta_B1351) [color: \"#2E7D32\", label: \"Early VOCs (Alpha / Beta)\"]\n  scale \"nucleotide substitutions/site\"",
+    "notes": "## Scenario\n\nAn epidemiologist or public health educator needs to illustrate how SARS-CoV-2 variants of concern diverged from the ancestral Wuhan sequence to explain immune escape, vaccine effectiveness shifts, and the emergence of Omicron sublineages. This tree follows Nextstrain naming conventions and can be updated by swapping in a new Newick string from any phylogenetic inference tool.\n\n## Annotation key\n\n- `Wuhan_WH1:0.01` — ancestral Wuhan sequence placed as outgroup; very short branch reflects minimal divergence from the reference genome\n- `[&&NHX:B=99]` — bootstrap support on internal nodes; values ≥ 95 indicate statistically robust branching\n- `clade Omicron` — red arc groups BA.1, BA.2, and XBB subvariants; high bootstrap (99, 95) confirms monophyletic origin\n- `clade Delta_clade` — blue arc groups the Delta and Kappa sub-lineages of B.1.617\n- `scale \"nucleotide substitutions/site\"` — horizontal scale bar calibrated in nucleotide substitutions per site\n\n## How to read\n\nReading from the root (left) outward, the Wuhan ancestral sequence diverges first. The next split separates Early VOCs (Alpha and Beta, green arc) from the Delta and Omicron lineages. Within the right subtree, Delta (B.1.617) forms its own clade before the Omicron radiation. The Omicron clade (red arc) shows the tightest clustering and highest bootstrap support, consistent with rapid clonal expansion from a single introduction event. Branch lengths encode molecular divergence — the markedly longer Omicron branches reflect the elevated mutation burden relative to Delta and early VOCs."
+  },
+  {
+    "slug": "phylo-vertebrate-evolution",
+    "diagram": "phylo",
+    "title": "Vertebrate evolution — rectangular phylogram",
+    "description": "Rectangular phylogram of 10 vertebrate orders with bootstrap support values, three clade arcs (Actinopterygii, Reptilia, Mammalia), and a branch-length scale bar.",
+    "standard": "Newick/NHX",
+    "tags": [
+      "phylo",
+      "vertebrate",
+      "rectangular",
+      "bootstrap",
+      "clade",
+      "evolution",
+      "education"
+    ],
+    "complexity": 2,
+    "featured": false,
+    "dsl": "phylo \"Vertebrate Evolution\"\n  layout: rectangular\n  newick: \"((((Human:0.05,Chimp:0.06):0.04[&&NHX:B=99],(Mouse:0.15,Rat:0.14):0.08[&&NHX:B=97]):0.2[&&NHX:B=95],(Chicken:0.25,Crocodile:0.28):0.15[&&NHX:B=88]):0.3[&&NHX:B=72],(Zebrafish:0.45,(Salmon:0.5,Coelacanth:0.6):0.1[&&NHX:B=65]):0.4[&&NHX:B=80]);\"\n  clade Mammalia = (Human, Chimp, Mouse, Rat) [color: \"#1E88E5\", label: \"Mammalia\"]\n  clade Reptilia = (Chicken, Crocodile) [color: \"#E53935\", label: \"Reptilia (incl. Aves)\"]\n  clade Actinopterygii = (Zebrafish, Salmon) [color: \"#43A047\", label: \"Actinopterygii\"]\n  scale \"My (million years)\"",
+    "notes": "## Scenario\n\nA high school or undergraduate biology teacher needs a clean, accurate vertebrate phylogeny for a lecture slide or lab handout — one that shows real evolutionary distances, bootstrap support for major clades, and standard clade annotations without requiring access to MEGA or FigTree. Schematex renders the Newick string directly to SVG with colored clade arcs and a calibrated scale bar.\n\n## Annotation key\n\n- `layout: rectangular` — rectangular phylogram; branch lengths are proportional to evolutionary distance (substitutions per site, scaled to million years)\n- `[&&NHX:B=99]` — bootstrap support value on each internal node; values ≥ 95 indicate strong support\n- `clade Mammalia = (Human, Chimp, Mouse, Rat)` — groups the four mammal taxa with a blue arc and label\n- `clade Reptilia = (Chicken, Crocodile)` — highlights the reptile + bird clade (Sauropsida) in red\n- `scale \"My (million years)\"` — draws a calibrated scale bar beneath the tree\n\n## How to read\n\nThe tree is rooted at the base of the vertebrate radiation. The deepest split separates ray-finned fishes (Actinopterygii: Zebrafish, Salmon) from the tetrapod lineage. Within tetrapods, Reptilia (Chicken, Crocodile) diverges first, then Mammalia splits into primates (Human, Chimp) and rodents (Mouse, Rat). Bootstrap values above 95 on the primate and rodent clades confirm strong statistical support. The Coelacanth, a lobe-finned fish, is an outgroup to the ray-finned fishes within the Actinopterygii clade, consistent with its status as a living fossil. Branch lengths are proportional to molecular evolutionary distance."
   },
   {
     "slug": "sfc-bake-cool-concurrent",
@@ -923,6 +2216,48 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "notes": "A modern fulfillment center handles both express (next-day) and standard (3–5 day) shipping on the same physical line, with the same picking robots and the same carrier-pickup conveyor. The only divergence is the boxing step: express boxes are different sizes, use rigid corrugate, and get extra tracking labels. SFC's alternative branch is the right shape for this: one step (picking) splits into two paths (express boxing OR standard boxing) and they converge back to a common end step (carrier pickup).\n\n**Single horizontal bar = alternative.** IEC 61131-3 §6.5.4 uses a **single horizontal line** for alternative (OR-semantic) divergence and convergence. Visually it's the simpler cousin of the double-bar simultaneous fork; semantically it's the opposite — only *one* branch fires per scan, picked by which entry transition's condition evaluates true first under the priority order.\n\n**Priority annotation matters.** Both branches have `[priority: N]` markers — express is priority 1, standard is priority 2. If both `IsExpressShipping` and `IsStandardShipping` were somehow true at the same time (a bug, but a common one in early integration), the priority forces the express path. The renderer puts a small red number near each branch entry to make the priority visible at review time.\n\n**Per-branch entry and exit transitions.** Inside each branch, there are two `transition: ...` lines — the first is the **entry transition** (fires when control reaches the divergence bar; renders between the bar and the first step in that branch), and the second is the **exit transition** (fires when the branch's last step completes; renders between that step and the convergence bar). Most exit transitions are `TRUE` (unconditional) because the *step* itself is what's gating the work — once the step completes, you want to leave the branch. The entry transitions are where the actual decision logic lives.\n\n**Why not flowchart?** A flowchart of this would render the routing as a diamond with two branches and labels on each branch. You'd lose the explicit step semantics — in flowchart, the diamond *is* the decision point and there's no notion of \"the picking step is currently active and the next step depends on shipping type.\" That distinction matters for PLC code: while the picking step is active, the picking robot is physically holding the product, and you need to know exactly when the routing decision happens (at step exit, not step entry) to coordinate the conveyor handoff. SFC's \"step active → transition → next step active\" semantics are what real PLC scan engines do; flowchart's diamond/box semantics are not.\n\n**The shared S_Ship destination.** Both branches converge to S_Ship, where `CarrierPickup` runs. This is one of the strengths of alternative-branch SFC: the post-routing step is shared infrastructure, drawn exactly once. If you moved to multiple destinations (e.g. express has its own carrier door, standard has another), you'd skip the convergence and let each branch end at its own terminal step — also a valid SFC pattern."
   },
   {
+    "slug": "sld-data-center-2n",
+    "diagram": "sld",
+    "title": "Data center — 2N redundant UPS and STS",
+    "description": "Tier IV-style 2N data center power with dual utility feeds, dual UPS strings, static transfer switch, and A/B rack PDU distribution.",
+    "standard": "Uptime Institute Tier IV",
+    "tags": [
+      "sld",
+      "data-center",
+      "2n",
+      "ups",
+      "sts",
+      "tier4",
+      "redundancy",
+      "pdu"
+    ],
+    "complexity": 5,
+    "featured": false,
+    "dsl": "sld \"2N Data Center Power — Tier IV\"\nutil_a = utility [label: \"Utility Feed A — 480V 3φ\"]\nutil_b = utility [label: \"Utility Feed B — 480V 3φ\"]\ngenset_a = generator [kw: 1500, voltage: 480]\ngenset_b = generator [kw: 1500, voltage: 480]\nats_a = ats [amps: 3000]\nats_b = ats [amps: 3000]\nbus_a = bus [voltage: 480]\nbus_b = bus [voltage: 480]\nups_a = ups [kva: 500]\nups_b = ups [kva: 500]\nsts = load [label: \"STS — Static Transfer Switch 400A\"]\npdu_a1 = panel [label: \"PDU A1\"]\npdu_a2 = panel [label: \"PDU A2\"]\npdu_b1 = panel [label: \"PDU B1\"]\npdu_b2 = panel [label: \"PDU B2\"]\nrack = load [label: \"Server Racks — Dual Corded (A + B)\"]\nutil_a -> ats_a\ngenset_a -> ats_a\nats_a -> bus_a\nbus_a -> ups_a\nups_a -> pdu_a1\nups_a -> pdu_a2\nutil_b -> ats_b\ngenset_b -> ats_b\nats_b -> bus_b\nbus_b -> ups_b\nups_b -> pdu_b1\nups_b -> pdu_b2\nups_a -> sts\nups_b -> sts\nsts -> rack\npdu_a1 -> rack\npdu_b1 -> rack",
+    "notes": "## Scenario\n\nA critical facility engineer documents the power architecture of a Tier IV colocation data hall for client due diligence and for the commissioning authority. Uptime Institute Tier IV requires 2N redundancy — every active component has a full-capacity parallel path, so any single failure leaves loads on a remaining path without switching. The SLD is the primary deliverable for the owner's project requirements (OPR) document, the basis of design (BOD), and the commissioning test plan.\n\n## Annotation key\n\n- `utility [label:...]` — independent utility service entrance feeds (physically separate cable routes and substations for Tier IV)\n- `generator [kw:..., voltage:...]` — on-site diesel generator with N+1 fuel supply; each supports its entire A or B string at 100% load\n- `ats [amps:...]` — automatic transfer switch between utility and generator; positioned upstream of each UPS string\n- `bus [voltage:...]` — 480 V distribution bus internal to each power string (A-side or B-side)\n- `ups [kva:...]` — double-conversion UPS with bypass; battery provides ride-through during generator start-up\n- `load [label: \"STS...\"]` — static transfer switch; selects between A-side and B-side UPS output in &lt;4 ms for single-corded loads\n- `panel [label: \"PDU...\"]` — rack-level power distribution unit; feeds dual-corded servers at 208 V single-phase\n- `load [label: \"Server Racks...\"]` — server racks with dual power supplies connected to both A and B PDUs simultaneously\n- `->` — directed power flow; dual arrows into `rack` represent the two independent supply paths\n\n## How to read\n\nTwo completely independent power strings (A and B) run in parallel from utility source to rack. On the A-side: Utility Feed A and Generator A feed ATS-A, which supplies the 480 V A-bus, then UPS-A (500 kVA), then PDU A1 and A2. On the B-side the mirror image runs from Utility Feed B and Generator B. Server racks are dual-corded — one power supply connects to an A-side PDU, the other to a B-side PDU. Either path can carry 100% of rack load independently, satisfying Tier IV's concurrently maintainable and fault-tolerant requirements. The static transfer switch (STS) provides a UPS-backed path for any single-corded appliances; it monitors both UPS outputs and transfers to the healthy path within one quarter-cycle on the preferred source failing."
+  },
+  {
+    "slug": "sld-ev-fast-charger",
+    "diagram": "sld",
+    "title": "EV fast-charging site — 350 kW DCFC",
+    "description": "Utility to 350 kW DC fast-charging site with service entrance, switchgear, three DCFC dispensers, and make-ready conduit per NEC 625.",
+    "standard": "NEC 625",
+    "tags": [
+      "sld",
+      "ev",
+      "dcfc",
+      "nec625",
+      "charger",
+      "switchgear",
+      "480v",
+      "fast-charging"
+    ],
+    "complexity": 3,
+    "featured": false,
+    "dsl": "sld \"EV Fast-Charging Site — 350 kW DCFC\"\nutility = utility [label: \"Utility 480V 3φ\"]\nservice_entrance = breaker [amps: 1200]\nmeter = meter [label: \"Revenue-Grade kWh Meter\"]\nmain_sw = breaker [amps: 1000]\nbrk1 = breaker [amps: 350]\nbrk2 = breaker [amps: 350]\nbrk3 = breaker [amps: 125]\nbrk4 = breaker [amps: 350]\ndcfc1 = load [label: \"DCFC Dispenser 1 — 150 kW\"]\ndcfc2 = load [label: \"DCFC Dispenser 2 — 150 kW\"]\ndcfc3 = load [label: \"DCFC Dispenser 3 — 50 kW\"]\nfuture1 = load [label: \"Make-Ready — 150 kW (future)\"]\nmgmt_panel = panel [label: \"Site Management / Network Hub\"]\nutility -> service_entrance\nservice_entrance -> meter\nmeter -> main_sw\nmain_sw -> brk1\nmain_sw -> brk2\nmain_sw -> brk3\nmain_sw -> brk4\nbrk1 -> dcfc1\nbrk2 -> dcfc2\nbrk3 -> dcfc3\nbrk4 -> future1\nmain_sw -> mgmt_panel",
+    "notes": "## Scenario\n\nAn EV infrastructure engineer prepares the electrical permit drawings for a new public DC fast-charging station. The local building department and serving utility require a single-line diagram compliant with NEC Article 625 before issuing the electrical permit and utility service application. The SLD shows the complete power path from the utility point of delivery through the revenue-grade meter, switchgear, branch circuit breakers, and each DCFC dispenser. Conduit stubs for future capacity expansion must appear on the permit drawings so the AHJ approves the raceway sizing upfront, avoiding a costly panel changeout later.\n\n## Annotation key\n\n- `utility` — 480 V three-phase utility point of delivery; transformer and service lateral by the serving utility\n- `breaker [amps: 1200]` — service entrance main breaker; NEC 230.79 requires a service disconnecting means at the building entry\n- `meter [label:...]` — revenue-grade interval kWh meter for utility billing; also feeds demand data to the EVSE network\n- `breaker [amps: 1000]` — main switchgear breaker protecting the DCFC distribution panel; sized at 125% of continuous EVSE load per NEC 625.42\n- `breaker [amps: 350 / 125]` — branch circuit overcurrent protection for each DCFC or Level 2 circuit; NEC 625.42 requires 125% of EVSE nameplate continuous current\n- `load [label: \"DCFC Dispenser...\"]` — DC fast-charge dispenser producing up to 150 kW at 400–920 V DC (CCS / CHAdeMO / NACS)\n- `load [label: \"Make-Ready...\"]` — conduit, wire, and breaker space pre-installed for future dispenser; no energized equipment yet\n- `panel [label:...]` — 120 V site management panel powering EVSE network communication modules, canopy lighting, and cameras\n- `->` — directed power flow from utility source to EVSE loads\n\n## How to read\n\nThe serving utility delivers 480 V three-phase power to the 1200 A service entrance breaker, the utility demarcation point. Power passes through the revenue-grade kWh meter (metering before the load for accurate billing) then to the 1000 A main switchgear breaker that feeds the DCFC distribution section. Four branch circuit breakers fan out: two 350 A breakers supply the 150 kW dispensers (Dispensers 1 and 2), one 125 A breaker supplies the 50 kW dispenser (Dispenser 3), and one 350 A breaker feeds a make-ready stub — raceway, conductors, and a breaker space held for a future 150 kW unit. The site management panel receives a small 208 V tap from the switchgear for EVSE networking hardware, camera systems, and canopy lighting. Total installed load is 350 kW; service is sized to 560 kW to accommodate the make-ready future load without utility upgrade."
+  },
+  {
     "slug": "sld-generator-ats",
     "diagram": "sld",
     "title": "Generator + ATS backup power",
@@ -939,6 +2274,48 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "featured": true,
     "dsl": "sld \"Utility + Generator Backup\"\nUTIL = utility [voltage: \"480V\", label: \"Utility\"]\nGEN = generator [rating: \"500 kW\", voltage: \"480V\", label: \"Emergency Gen\"]\nATS1 = ats [rating: \"800A\", label: \"ATS-1\"]\nBUS1 = bus [voltage: \"480V\", label: \"Critical Load Bus\"]\nCB1 = breaker [rating: \"200A\"]\nCB2 = breaker [rating: \"200A\"]\nL1 = load [rating: \"100A\", label: \"Critical Load 1\"]\nL2 = load [rating: \"100A\", label: \"Critical Load 2\"]\nUTIL -> ATS1\nGEN -> ATS1\nATS1 -> BUS1\nBUS1 -> CB1\nBUS1 -> CB2\nCB1 -> L1\nCB2 -> L2",
     "notes": "## Scenario\n\nA facility engineer draws this one-line during the design review of a data-center UPS bypass or hospital emergency power system. The single-line diagram (SLD) is the first document a utility inspector or commissioning engineer asks for — it must show every source, switching device, bus, and load path in a single horizontal view without wiring details.\n\n## Annotation key\n\n- `utility` — mains supply; drawn as the IEEE 315 utility symbol (three-line source)\n- `generator` — diesel or gas genset; drawn as rotating-machine circle with winding symbol\n- `ats` — Automatic Transfer Switch; drawn as the NEMA/IEEE transfer-switch symbol\n- `bus` — horizontal bus bar; all connected devices share the same voltage rail\n- `breaker` — molded-case or air circuit breaker; drawn as the IEEE 315 breaker symbol\n- `load` — end-consumer device or feeder\n- `UTIL -> ATS1` — directed line representing the power path from source to device\n\n## How to read\n\nTwo sources (utility and generator) feed into the ATS. The ATS selects the live source and connects it to the 480 V critical load bus. From the bus, two independently-fused circuit breakers (CB1, CB2) feed their respective critical loads. If utility power fails, the ATS senses the loss, the generator starts, and the ATS transfers within seconds — all without interrupting the bus downstream."
+  },
+  {
+    "slug": "sld-hospital-critical",
+    "diagram": "sld",
+    "title": "Hospital critical branch — NFPA 99 three-branch",
+    "description": "Hospital essential electrical system with NFPA 99 life-safety, critical, and equipment branches fed via ATS from utility and generator.",
+    "standard": "NFPA 99 / NFPA 110",
+    "tags": [
+      "sld",
+      "hospital",
+      "nfpa99",
+      "life-safety",
+      "critical-branch",
+      "ats",
+      "generator"
+    ],
+    "complexity": 4,
+    "featured": false,
+    "dsl": "sld \"Hospital Essential Electrical System — NFPA 99\"\nutility = utility [label: \"Normal Power 480V 3φ\"]\ngenset = generator [kw: 500, voltage: 480]\nnormal_bus = bus [voltage: 480]\nats1 = ats [amps: 400]\nats2 = ats [amps: 600]\nats3 = ats [amps: 400]\nbrk_ls = breaker [amps: 400]\nbrk_crit = breaker [amps: 600]\nbrk_equip = breaker [amps: 400]\nls_branch = load [label: \"Life-Safety Branch — Exit Lighting / Egress / Fire Alarm\"]\ncrit_branch = load [label: \"Critical Branch — OR / ICU / Nurse Call\"]\nequip_branch = load [label: \"Equipment Branch — HVAC / Sterilizers / Med Equip\"]\nutility -> normal_bus\nnormal_bus -> ats1\ngenset -> ats1\nats1 -> brk_ls\nbrk_ls -> ls_branch\nnormal_bus -> ats2\ngenset -> ats2\nats2 -> brk_crit\nbrk_crit -> crit_branch\nnormal_bus -> ats3\ngenset -> ats3\nats3 -> brk_equip\nbrk_equip -> equip_branch",
+    "notes": "## Scenario\n\nA hospital electrical engineer prepares the essential electrical system (EES) single-line diagram required for a new patient-care facility's construction permit and Joint Commission inspection. NFPA 99-2021 §6.4 mandates that hospitals classify all loads into three branches of the EES — life-safety, critical, and equipment — each with an automatic transfer switch that independently connects to both the normal utility supply and the on-site emergency generator. The SLD demonstrates code-compliant separation of branches and ensures the AHJ (authority having jurisdiction) can verify that no branch carries loads from a different classification.\n\n## Annotation key\n\n- `utility` — utility normal power source at 480 V three-phase\n- `generator [kw:..., voltage:...]` — on-site diesel or natural-gas emergency generator per NFPA 110 Level 1 (10-second start)\n- `bus [voltage:...]` — 480 V normal-power distribution bus; does not carry EES loads directly\n- `ats [amps:...]` — automatic transfer switch; senses loss of utility and transfers load to generator within 10 s (NFPA 110)\n- `breaker [amps:...]` — branch feeder overcurrent protective device isolating each NFPA 99 branch\n- `load [label:...]` — EES branch terminal representing all panels and sub-feeders in that classification\n- `->` — directed power flow; each ATS receives two upstream feeds (utility and generator) independently\n\n## How to read\n\nUtility normal power feeds the 480 V main bus. All three ATSs draw their normal-source feed from this bus. In parallel, the 500 kW on-site generator feeds the alternate-source input of each ATS independently — this is the NFPA 99 requirement that each branch have its own transfer means. Under normal conditions each ATS passes utility power through its branch breaker to its classified loads. On utility failure, each ATS independently transfers to the generator within 10 seconds. The life-safety branch (400 A) powers egress lighting, exit signs, and fire alarm — the highest-priority loads that must energize first. The critical branch (600 A) serves operating rooms, ICU receptacles, and nurse-call systems. The equipment branch (400 A) supports HVAC serving patient areas, sterilizers, and durable medical equipment. Physical and electrical separation between branches is a NFPA 99 §6.4.2 hard requirement."
+  },
+  {
+    "slug": "sld-industrial-480v-mcc",
+    "diagram": "sld",
+    "title": "Plant 480 V motor control center",
+    "description": "Industrial 480V MCC with a 2000A main breaker, six motor starters and buckets, and a VFD for variable-speed pump — standard factory floor distribution.",
+    "standard": "NEMA ICS-18",
+    "tags": [
+      "sld",
+      "mcc",
+      "industrial",
+      "motor",
+      "vfd",
+      "480v",
+      "nema",
+      "starter",
+      "bucket"
+    ],
+    "complexity": 3,
+    "featured": false,
+    "dsl": "sld \"Plant 480V Motor Control Center — MCC-1\"\nutility_480 = utility [label: \"Utility 480V 3φ\"]\nmain_bkr = breaker [amps: 2000]\nmcc_bus = bus [voltage: 480]\nbrk_p101 = breaker [amps: 150]\nbrk_m201 = breaker [amps: 100]\nbrk_c301 = breaker [amps: 200]\nbrk_vfd = breaker [amps: 125]\nbrk_b401 = breaker [amps: 60]\nbrk_a501 = breaker [amps: 60]\nbrk_plc = breaker [amps: 30]\nmotor_p101 = motor [hp: 75, label: \"Pump Motor P-101\"]\nmotor_m201 = motor [hp: 50, label: \"Conveyor Motor M-201\"]\nmotor_c301 = motor [hp: 100, label: \"Compressor C-301\"]\nvfd1 = load [label: \"VFD — Cooling Tower Fan 60HP\"]\nmotor_b401 = motor [hp: 30, label: \"Blower B-401\"]\nmotor_a501 = motor [hp: 25, label: \"Agitator A-501\"]\nplc_panel = panel [label: \"PLC Control Panel\"]\nutility_480 -> main_bkr\nmain_bkr -> mcc_bus\nmcc_bus -> brk_p101\nbrk_p101 -> motor_p101\nmcc_bus -> brk_m201\nbrk_m201 -> motor_m201\nmcc_bus -> brk_c301\nbrk_c301 -> motor_c301\nmcc_bus -> brk_vfd\nbrk_vfd -> vfd1\nmcc_bus -> brk_b401\nbrk_b401 -> motor_b401\nmcc_bus -> brk_a501\nbrk_a501 -> motor_a501\nmcc_bus -> brk_plc\nbrk_plc -> plc_panel",
+    "notes": "## Scenario\n\nA plant electrical engineer documents Motor Control Center MCC-1 for a process facility expansion. The MCC single-line diagram is required for the electrical permit package, factory acceptance testing (FAT) at the MCC manufacturer's shop, and OSHA 70E arc-flash hazard analysis. NEMA ICS-18 defines the construction and testing standard for low-voltage MCC assemblies; each motor starter or VFD occupies a separate removable unit (bucket) with its own branch circuit breaker. The SLD confirms that motor ratings, breaker sizes, and conductor ampacities are consistent before the MCC is ordered and built.\n\n## Annotation key\n\n- `utility [label:...]` — 480 V three-phase plant distribution feeder supplying the MCC incoming section\n- `breaker [amps: 2000]` — main incoming circuit breaker; isolates the entire MCC from the plant distribution bus\n- `bus [voltage: 480]` — horizontal copper bus bar running the full length of the MCC; feeds all starter and VFD buckets\n- `breaker [amps: N]` — individual motor branch circuit breaker (one per bucket); sized per NEC 430.52 at motor FLA × 250%\n- `motor [hp:..., label:...]` — three-phase induction motor with full-voltage non-reversing (FVNR) starter; hp determines FLA and wire size\n- `load [label: \"VFD...\"]` — variable-frequency drive controlling motor speed for the cooling tower fan; input breaker sized to VFD nameplate input amps\n- `panel [label:...]` — 120/208 V control power panel for PLC I/O, pilot lights, push-button stations, and 24 V DC power supply\n- `->` — directed power flow from MCC bus through breaker to motor or load\n\n## How to read\n\nThe 480 V three-phase utility feeder enters the MCC at the 2000 A main breaker, which serves as the MCC's service disconnecting means and fault interrupter. The main breaker feeds the horizontal MCC bus, from which seven branch circuit breakers distribute power to individual buckets. Five FVNR motor starters drive fixed-speed loads: the 75 HP process pump (P-101), 50 HP conveyor (M-201), 100 HP air compressor (C-301), 30 HP combustion air blower (B-401), and 25 HP tank agitator (A-501). The VFD bucket runs the 60 HP cooling tower fan at variable speed to maintain condenser water setpoint, saving fan energy at part load. The 30 A control power breaker feeds the PLC control panel that sequences all six driven loads and monitors process instruments through the MCC's control wiring."
   },
   {
     "slug": "sld-residential-iec-60364-consumer-unit",
@@ -991,6 +2368,27 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "notes": "## Scenario\n\nA Spanish electrician (or an electrical-engineering student preparing the *Esquema Unifilar* for a course or permit) documents the *Cuadro General de Mando y Protección* (CGMP) of a single-family home. Spain's *Reglamento Electrotécnico para Baja Tensión* (REBT) §ITC-BT-17 is explicit about what the residential single-line must show: the incoming *acometida*, the utility-owned *Interruptor de Control de Potencia* (ICP) inside the meter cabinet, the consumer-owned *Interruptor General Automático* (IGA), one or more residual-current devices (*Diferenciales*), and a per-circuit *Pequeño Interruptor Automático* (PIA / MCB) for every final circuit — typically C1 through C6 in a basic *grado de electrificación básica* dwelling. The same pattern applies across Latin America (ABNT NBR 5410 in Brazil, NMX-J-098 in Mexico) and to most IEC-60364 jurisdictions, in contrast to NEC residential practice where the panel internals would normally live on a separate panel schedule.\n\n## Annotation key\n\n- `utility [voltage:..., label:...]` — *Acometida*: the 230 V single-phase service drop from the distribution network up to the meter cabinet\n- `watthour_meter [label:...]` — *Contador + ICP*: revenue meter and the utility's tamper-sealed power-limiter breaker (25 A here, contracted at 5.75 kW)\n- `breaker [rating:\"…A curva C, …kA\", label: \"IGA\"]` — *Interruptor General Automático*: customer-owned main breaker; REBT requires curve C and ≥ 6 kA breaking capacity for residential\n- `ground_fault [rating: \"…A / 30mA Tipo A\", label: \"Diferencial general\"]` — Type-A residual-current device tripping at 30 mA per ITC-BT-17 §1.2 (Tipo A covers AC + pulsating DC residual currents from electronics and inverter loads)\n- `bus [voltage: \"230V\", label: \"Embarrado CGMP\"]` — common busbar inside the consumer unit; every PIA taps off this rail\n- `breaker [rating:\"…A curva C\", label: \"PIA Cn\"]` — branch-circuit *PIA*: one MCB per final circuit, sized per ITC-BT-25 Table 1 (10 A lighting, 16 A general sockets, 20–25 A kitchen / washer / HVAC)\n- `load [label: \"Cn …\"]` — the final circuit's loads grouped under their REBT circuit designation (C1–C6)\n- `[cable: \"… mm² Cu H07V-K\"]` — conductor cross-sectional area, copper, single-core insulated H07V-K — the canonical cable type for residential indoor wiring per UNE-EN 50525\n\n## How to read\n\nPower enters at the *acometida* and reaches the meter cabinet, where the utility's ICP enforces the contracted 5.75 kW power limit. Past the meter, the customer's CGMP begins: the IGA isolates the whole installation; the *Diferencial general* (40 A, 30 mA, Type A) trips on any earth-leakage fault to protect against electric shock per ITC-BT-24 §4.1; downstream of the differential, the busbar fans out to six branch circuits — lighting (1.5 mm²), general sockets (2.5 mm²), kitchen and oven (6 mm²), high-current appliances such as washer or dishwasher (4 mm²), bathroom and kitchen sockets (2.5 mm²), and the heat-pump / aerotermia (6 mm²). Each branch passes through its own PIA (curve C, sized per ITC-BT-25) before reaching the final circuit, so a fault in any one circuit drops only that circuit, not the whole dwelling. An REBT inspector reads this diagram top-down to verify selectivity (PIA < differential < IGA < ICP) and that conductor sizing matches PIA rating per the §ITC-BT-19 ampacity table."
   },
   {
+    "slug": "sld-solar-pv-commercial",
+    "diagram": "sld",
+    "title": "Commercial rooftop PV — grid-tied with net metering",
+    "description": "200 kW commercial PV array through DC combiners, string inverters, AC disconnect, and bi-directional net-metering connection per NEC 690.",
+    "standard": "NEC 690",
+    "tags": [
+      "sld",
+      "solar",
+      "pv",
+      "nec690",
+      "inverter",
+      "net-metering",
+      "commercial",
+      "rooftop"
+    ],
+    "complexity": 3,
+    "featured": false,
+    "dsl": "sld \"200 kW Commercial Rooftop PV — Grid-Tied\"\npv1 = pv_array [kw: 50]\npv2 = pv_array [kw: 50]\npv3 = pv_array [kw: 50]\npv4 = pv_array [kw: 50]\ncomb1 = combiner [inputs: 2]\ncomb2 = combiner [inputs: 2]\ninv1 = inverter [kw: 100]\ninv2 = inverter [kw: 100]\nac_disco = disconnect [amps: 240]\nmain_bkr = breaker [amps: 250]\nmeter_net = meter [label: \"Bi-directional Net Meter\"]\nutility = utility [label: \"Utility 480V 3φ\"]\nload_service = load [label: \"Facility Loads\"]\npv1 -> comb1\npv2 -> comb1\npv3 -> comb2\npv4 -> comb2\ncomb1 -> inv1\ncomb2 -> inv2\ninv1 -> ac_disco\ninv2 -> ac_disco\nac_disco -> main_bkr\nmain_bkr -> meter_net\nmeter_net -> utility\nmeter_net -> load_service",
+    "notes": "## Scenario\n\nA PV system designer prepares the electrical permit package for a 200 kW grid-tied commercial rooftop installation. Local AHJ and the serving utility both require a signed, stamped single-line diagram per NEC Article 690 before issuing the interconnection agreement and net-metering tariff enrollment. The SLD must show the complete DC-to-grid power path, all overcurrent protection devices, the AC disconnect required by NEC 690.15, and the bi-directional production meter required by the utility's net-metering tariff.\n\n## Annotation key\n\n- `pv_array [kw:...]` — rooftop PV sub-array (strings of series-wired modules); four 50 kW sub-arrays total 200 kW DC\n- `combiner [inputs:...]` — DC combiner box aggregating two sub-arrays per inverter input; includes string-level fusing per NEC 690.9\n- `inverter [kw:...]` — grid-tied string inverter converting DC to 480 V AC three-phase; anti-islanding relay per NEC 690.61\n- `disconnect [amps:...]` — utility-accessible AC disconnect switch required by NEC 690.15; 240 A rated for combined inverter output\n- `breaker [amps:...]` — main production meter breaker; 250 A provides overcurrent protection at the point of common coupling\n- `meter [label:...]` — bi-directional revenue-grade kWh meter recording both production (export) and consumption (import)\n- `utility` — 480 V three-phase utility grid; receives surplus generation during export, supplies deficit during import\n- `load [label:...]` — facility electrical loads consuming PV generation before any surplus reaches the grid\n- `->` — directed DC or AC power flow; flow at net meter is bi-directional (arrow represents the prevailing export direction)\n\n## How to read\n\nFour 50 kW PV sub-arrays pair into two DC combiner boxes, each feeding one 100 kW string inverter. Both inverters merge at the 240 A AC disconnect — the utility-accessible isolation point required by NEC 690.15. The combined 200 kW AC output passes through the 250 A production breaker to the bi-directional net meter. From the net meter, power flows in either direction: when PV generation exceeds facility load, surplus energy exports to the utility grid and the meter records export kWh; when facility load exceeds generation (nights, cloudy days), the utility imports through the same meter. The serving utility reads the net difference for billing under the net-metering tariff, crediting the owner at the retail rate for each kWh exported."
+  },
+  {
     "slug": "sld-substation-13kv",
     "diagram": "sld",
     "title": "13.8 kV utility substation",
@@ -1008,6 +2406,46 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "featured": false,
     "dsl": "sld \"13.8 kV Substation\"\nutility = utility [label: \"Grid 138 kV\"]\nxfmr1 = transformer [kva: 15000, primary: 138, secondary: 13.8]\nbus_hv = bus [voltage: 138]\nbus_mv = bus [voltage: 13.8]\nbrk1 = breaker [amps: 1200]\nbrk2 = breaker [amps: 1200]\nbrk3 = breaker [amps: 1200]\nfeeder1 = load [label: \"Feeder 1\"]\nfeeder2 = load [label: \"Feeder 2\"]\nfeeder3 = load [label: \"Feeder 3\"]\nutility -> bus_hv\nbus_hv -> xfmr1\nxfmr1 -> bus_mv\nbus_mv -> brk1\nbrk1 -> feeder1\nbus_mv -> brk2\nbrk2 -> feeder2\nbus_mv -> brk3\nbrk3 -> feeder3",
     "notes": "## Scenario\n\nA power systems engineer documents a distribution substation design for a utility interconnection application or a facility's electrical permit drawings. The single-line diagram is the first deliverable in any power system project — required by IEEE, NFPA 70E, and utility interconnection standards before detailed engineering begins.\n\n## Annotation key\n\n- `utility = utility [label: \"...\"]` — utility supply source (three-phase symbol)\n- `[type: transformer, kva:..., primary:..., secondary:...]` — step-down transformer with rated kVA and voltage levels\n- `[type: bus, voltage:...]` — horizontal bus bar at the specified voltage level\n- `[type: breaker, amps:...]` — rated circuit breaker\n- `[type: load, label:...]` — load or feeder destination\n- `->` — directed power path from source to load\n\n## How to read\n\nThe 138 kV grid source feeds the high-voltage bus, which connects to the primary of the 15 MVA step-down transformer. The transformer secondary feeds the 13.8 kV medium-voltage bus. Three 1200 A circuit breakers fan out from the MV bus to three distribution feeders — each breaker isolates its feeder independently."
+  },
+  {
+    "slug": "sld-wind-farm-collector",
+    "diagram": "sld",
+    "title": "Wind farm 34.5 kV collector system",
+    "description": "Offshore-style wind farm with 8 turbines on two feeder strings, 34.5 kV collector bus, offshore substation, and 115 kV grid POI per IEEE 1547.",
+    "standard": "IEEE 1547",
+    "tags": [
+      "sld",
+      "wind",
+      "collector",
+      "34.5kv",
+      "turbine",
+      "offshore-substation",
+      "ieee1547",
+      "poi"
+    ],
+    "complexity": 4,
+    "featured": false,
+    "dsl": "sld \"Wind Farm 34.5 kV Collector System — 24 MW\"\nwt1 = generator [kw: 3000, voltage: 0.69]\nwt2 = generator [kw: 3000, voltage: 0.69]\nwt3 = generator [kw: 3000, voltage: 0.69]\nwt4 = generator [kw: 3000, voltage: 0.69]\nwt5 = generator [kw: 3000, voltage: 0.69]\nwt6 = generator [kw: 3000, voltage: 0.69]\nwt7 = generator [kw: 3000, voltage: 0.69]\nwt8 = generator [kw: 3000, voltage: 0.69]\nxfmr_wt1 = transformer [kva: 3500, primary: 0.69, secondary: 34.5]\nxfmr_wt2 = transformer [kva: 3500, primary: 0.69, secondary: 34.5]\nxfmr_wt3 = transformer [kva: 3500, primary: 0.69, secondary: 34.5]\nxfmr_wt4 = transformer [kva: 3500, primary: 0.69, secondary: 34.5]\nxfmr_wt5 = transformer [kva: 3500, primary: 0.69, secondary: 34.5]\nxfmr_wt6 = transformer [kva: 3500, primary: 0.69, secondary: 34.5]\nxfmr_wt7 = transformer [kva: 3500, primary: 0.69, secondary: 34.5]\nxfmr_wt8 = transformer [kva: 3500, primary: 0.69, secondary: 34.5]\nfeeder_a = bus [voltage: 34.5]\nfeeder_b = bus [voltage: 34.5]\ncoll_bus = bus [voltage: 34.5]\noffshore_xfmr = transformer [kva: 80000, primary: 34.5, secondary: 115]\nhv_bus = bus [voltage: 115]\npoi_sw = disconnect [amps: 1200]\ngrid = utility [label: \"Grid 115 kV\"]\nwt1 -> xfmr_wt1\nwt2 -> xfmr_wt2\nwt3 -> xfmr_wt3\nwt4 -> xfmr_wt4\nwt5 -> xfmr_wt5\nwt6 -> xfmr_wt6\nwt7 -> xfmr_wt7\nwt8 -> xfmr_wt8\nxfmr_wt1 -> feeder_a\nxfmr_wt2 -> feeder_a\nxfmr_wt3 -> feeder_a\nxfmr_wt4 -> feeder_a\nxfmr_wt5 -> feeder_b\nxfmr_wt6 -> feeder_b\nxfmr_wt7 -> feeder_b\nxfmr_wt8 -> feeder_b\nfeeder_a -> coll_bus\nfeeder_b -> coll_bus\ncoll_bus -> offshore_xfmr\noffshore_xfmr -> hv_bus\nhv_bus -> poi_sw\npoi_sw -> grid",
+    "notes": "## Scenario\n\nA wind project electrical engineer prepares the collector system single-line diagram for the utility interconnection application and the engineering report submitted to the transmission system operator (TSO). IEEE 1547-2018 governs the technical requirements for distributed energy resource (DER) interconnection at the point of interconnection (POI), including voltage and frequency ride-through, reactive power capability, and anti-islanding protection. The SLD must show the complete power path from each wind turbine generator (WTG) through the 34.5 kV collector cable system, offshore substation, and HV export cable to the grid POI, enabling the utility's protection engineer to model fault currents and relay coordination.\n\n## Annotation key\n\n- `generator [kw:..., voltage: 0.69]` — wind turbine generator producing 3 MW at low voltage (690 V); type-III DFIG or type-IV full-converter\n- `transformer [kva: 3500, primary: 0.69, secondary: 34.5]` — pad-mount turbine step-up transformer (TST) at the base of each tower; steps 690 V to 34.5 kV for collection\n- `bus [voltage: 34.5]` — 34.5 kV collector feeder string (submarine cable daisy-chaining 4 turbines per string); labeled feeder_a (WTs 1–4) and feeder_b (WTs 5–8)\n- `bus [voltage: 34.5]` — 34.5 kV collector bus on the offshore substation platform aggregating both feeder strings\n- `transformer [kva: 80000, primary: 34.5, secondary: 115]` — 80 MVA offshore substation main power transformer stepping 34.5 kV to 115 kV for the HV export cable\n- `bus [voltage: 115]` — 115 kV HV bus on the offshore substation; connection point for the export cable and protection switchgear\n- `disconnect [amps: 1200]` — POI disconnect switch at the onshore grid connection point; the IEEE 1547 interconnection boundary\n- `utility [label:...]` — 115 kV transmission grid; TSO controls all operations beyond the POI\n- `->` — directed power flow from turbine to grid; all flows are generation (export) during normal operation\n\n## How to read\n\nEach of the eight 3 MW wind turbine generators produces power at 690 V. A dedicated 3.5 MVA step-up transformer at the base of each tower raises the voltage to 34.5 kV for the underwater collection cable. Turbines 1–4 connect in a daisy-chain along Feeder A string; turbines 5–8 connect along Feeder B string. Both 12 MW strings converge at the 34.5 kV collector bus on the offshore substation platform. The 80 MVA offshore main transformer steps the collector voltage to 115 kV for the HV export cable to shore. At the onshore grid connection, the 1200 A POI disconnect switch marks the IEEE 1547 interconnection boundary — the point at which the wind farm's protection system must provide anti-islanding, frequency ride-through, and reactive power response per the interconnection agreement. Total nameplate capacity is 24 MW (8 × 3 MW); the 80 MVA transformer and 115 kV export system are sized with margin for a future second phase."
+  },
+  {
+    "slug": "sociogram-criminal-network",
+    "diagram": "sociogram",
+    "title": "Criminal network OSINT sociogram",
+    "description": "Law-enforcement-style network sociogram mapping known associates, informants, and communication links in a hypothetical drug distribution network.",
+    "standard": "Social network analysis (SNA)",
+    "tags": [
+      "sociogram",
+      "criminal-network",
+      "osint",
+      "sna",
+      "intelligence",
+      "organized-crime"
+    ],
+    "complexity": 4,
+    "featured": false,
+    "dsl": "sociogram \"Hypothetical Drug Distribution Network — SNA Training Example\"\n  config: directed = true\n  config: layout = force-directed\n\n  group leadership [label: \"Leadership\", color: \"#B71C1C\"]\n    subjectA; supplierH\n  group associates [label: \"Associates\", color: \"#E57373\"]\n    associateB; associateC; associateD\n  group couriers [label: \"Couriers\", color: \"#FF8A65\"]\n    courierE; courierF; courierG\n  group informants [label: \"Informants\", color: \"#78909C\"]\n    informantI\n\n  subjectA -> associateB [label: \"financial direction\"]\n  subjectA -> associateC\n  subjectA -> associateD\n  associateB -> courierE [label: \"operational tasking\"]\n  associateC -> courierF\n  associateD -> courierG\n  supplierH -> subjectA [label: \"supply chain upstream\"]\n  informantI -> associateB [label: \"link unknown to Subject A\"]\n  associateB <-> associateC [label: \"peer coordination\"]\n  courierE -x> subjectA [label: \"conflict — link severed\"]",
+    "notes": "## Scenario\n\nA law enforcement intelligence analyst builds this network diagram during a link-analysis phase of a drug distribution investigation. Social network analysis (SNA) identifies key nodes — the Subject A hub (a network star with high betweenness centrality), the upstream supplier, and the informant whose connection to Associate B is not yet known to Subject A. The force-directed layout naturally exposes hierarchical structure: leadership cluster at the center, operational associates at mid-distance, couriers at the periphery. All names are fictional; this diagram is a training example for SNA methodology.\n\n**All persons depicted are fictional. This diagram is for analytical methodology illustration only.**\n\n## Annotation key\n\n- `config: directed = true` — edges have direction, representing who directs or tasks whom; asymmetric in criminal hierarchies\n- `config: layout = force-directed` — high-centrality nodes (Subject A, Associate B) naturally gravitate to the center; peripheral nodes (couriers) push to the edge\n- `->` — directed operational link: command, financial, or supply chain relationship\n- `<->` — mutual peer coordination link (both parties confirmed the connection)\n- `-x>` — severed or conflicted link; the connection was documented but terminated\n- `role: star` — node with the highest in-degree or betweenness centrality; primary analytical target\n- `group` color coding — organizational tier in the network hierarchy\n- `[label: \"...\"]` — edge label captures link type from OSINT or documented evidence\n\n## How to read\n\nSubject A is the network star — all three associates (B, C, D) receive direction from Subject A, and the upstream supplier feeds into Subject A exclusively. Each associate tasks a single courier, creating a cell structure that limits lateral exposure. Informant I has a confirmed link to Associate B that is not visible to Subject A — an intelligence asset whose operational security must be protected. The severed link from Courier E to Subject A (conflict edge) represents a documented falling-out and suggests Courier E may be a potential cooperating witness. The force-directed layout clusters the leadership nodes at center and pushes couriers to the periphery, matching the operational distance in the real network hierarchy. In a live investigation, node size would be scaled to betweenness centrality and edge labels would reference the evidentiary source (wire intercept, surveillance log, financial record)."
   },
   {
     "slug": "sociogram-playground-dynamics",
@@ -1046,6 +2484,26 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "notes": "## Scenario\n\nAn engineering manager runs an informal network analysis survey (\"Who do you go to when you're stuck?\") and maps the results to identify knowledge hubs, bridging individuals between seniority tiers, and team members who are drifting toward isolation before performance reviews surface the issue.\n\n## Annotation key\n\n- `group id [label:..., color:...]` — assigns individuals to organizational tiers, color-coded\n- `<->` — mutual influence; both nominated each other\n- `->` — one-way influence nomination\n- `-.-` — weak tie; neither party nominated the other in the survey\n- The force-directed layout clusters mutual-nomination groups and separates isolates\n\n## How to read\n\nAlex and Sam (tech leads) are mutually influential. Alex bridges down to Priya, Sam to Jordan — healthy knowledge flow across tiers. Priya and Kim form a strong senior IC hub. Dev and Nina have only weak ties (--. to the network), suggesting integration risk. Dev's only connection is a weak tie to Lee — a coaching opportunity before the next performance cycle."
   },
   {
+    "slug": "timeline-biography-einstein",
+    "diagram": "timeline",
+    "title": "Albert Einstein — biographical timeline",
+    "description": "Einstein's life from birth through the photoelectric effect, special relativity, Nobel Prize, and Manhattan Project refusal — for science history class.",
+    "standard": "Historical biography convention",
+    "tags": [
+      "timeline",
+      "biography",
+      "einstein",
+      "science",
+      "physics",
+      "relativity",
+      "history"
+    ],
+    "complexity": 2,
+    "featured": false,
+    "dsl": "timeline \"Albert Einstein — Life and Work (1879–1955)\"\nconfig: style = lollipop\n\n1879: \"Born in Ulm, Kingdom of Württemberg, Germany\" [side: below]\n1896: \"Renounces German citizenship — moves to Switzerland\" [side: below]\n1900: \"Graduates ETH Zürich — struggles to find academic post\" [side: below]\n1905: milestone \"Annus Mirabilis — photoelectric effect, special relativity, E=mc²\" [side: above, color: #1565C0]\n1909: \"First academic appointment — University of Zürich\" [side: below]\n1914: \"Moves to Berlin — appointed to Prussian Academy of Sciences\" [side: below]\n1916: milestone \"General Theory of Relativity published\" [side: above, color: #1565C0]\n1919: milestone \"Eddington eclipse confirms gravitational lensing\" [side: above, color: #2E7D32]\n1921: milestone \"Nobel Prize in Physics — photoelectric effect\" [side: above, color: #2E7D32]\n1933: \"Flees Nazi Germany — joins Institute for Advanced Study, Princeton\" [side: below]\n1939: \"Signs letter to FDR warning of German atomic bomb program\" [side: below, color: #B71C1C]\n1952: \"Declines offer of Israeli presidency\" [side: below]\n1955: \"Dies in Princeton, New Jersey, age 76\" [side: below]",
+    "notes": "## Scenario\n\nA science history teacher uses this timeline as the opening slide for a unit on 20th-century physics. The biographical arc — obscure patent clerk to world's most famous scientist in a single decade — is as compelling as the physics itself. Blue diamonds mark the theoretical breakthroughs; green diamonds mark experimental confirmation and institutional recognition; the 1939 red event signals Einstein's ambivalent relationship with the political consequences of his work.\n\n## Annotation key\n\n- `milestone` — career-defining event (diamond marker)\n- Blue diamonds — original theoretical contributions\n- Green diamonds — external recognition and experimental validation\n- Red label — politically significant letter to President Roosevelt warning of nuclear weapons\n\n## How to read\n\nTime flows left to right from 1879 to 1955. The 26 years between birth and the Annus Mirabilis (1905) are the long preparation; the single year 1905 produced four papers that would each individually have earned a place in physics history. The gap between the General Relativity paper (1916) and its experimental confirmation (1919) illustrates the typical lag between theory and observation. Note that the Nobel Prize (1921) was awarded not for relativity but for the photoelectric effect — the prize committee considered relativity too speculative at the time."
+  },
+  {
     "slug": "timeline-company-milestones",
     "diagram": "timeline",
     "title": "Company milestone history",
@@ -1064,6 +2522,47 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "notes": "## Scenario\n\nThe founder drops this into the first page of the fundraising deck. Funding rounds, product GAs, and growth markers alternate above/below the axis, which makes the parallel story — \"we raised capital and shipped on time\" — visible in one glance. Reviewers who only read the top of the page still get the two-line story.\n\n## Annotation key\n\n- `style = lollipop` — dot-on-stick markers alternating above/below axis\n- `milestone` — diamond marker for headline events\n- `[side: above|below]` — explicit placement\n- `[color: #hex]` — colour-code category (fundraising / product / team)\n\n## How to read\n\nTime runs left to right. Each marker is a single dated event; *milestone* markers are the diamond-shaped headline items (fundraising, GAs). Colour carries category: blue = fundraising, purple = product, green = early commercial traction. Events below the axis are supporting context (people, growth stats); events above are the announceable headlines."
   },
   {
+    "slug": "timeline-geologic-eras",
+    "diagram": "timeline",
+    "title": "Geologic time scale — Phanerozoic eon",
+    "description": "Geologic time scale from the Cambrian explosion (541 Ma) to present — era bands with key extinction events per International Commission on Stratigraphy.",
+    "standard": "ICS Geologic Time Scale 2023",
+    "tags": [
+      "timeline",
+      "geology",
+      "geologic-time",
+      "paleozoic",
+      "mesozoic",
+      "cenozoic",
+      "ics",
+      "extinction"
+    ],
+    "complexity": 3,
+    "featured": false,
+    "dsl": "timeline \"Phanerozoic Eon — 541 Ma to Present\"\nconfig: style = lollipop\n\n-541: milestone \"Cambrian explosion — first complex animals\" [side: above, color: #558B2F]\n-488: \"Ordovician begins — marine invertebrates diversify\" [side: below]\n-444: milestone \"End-Ordovician extinction — 85% species lost\" [side: above, color: #B71C1C]\n-419: \"Silurian begins — first vascular land plants\" [side: below]\n-359: milestone \"Late Devonian extinction — 75% species lost\" [side: above, color: #B71C1C]\n-299: \"Permian begins — first reptiles dominant\" [side: below]\n-252: milestone \"End-Permian extinction — Great Dying, 96% marine species lost\" [side: above, color: #B71C1C]\n-201: milestone \"End-Triassic extinction — dinosaurs rise\" [side: above, color: #B71C1C]\n-145: \"Cretaceous begins — flowering plants emerge\" [side: below]\n-66: milestone \"K-Pg extinction — non-avian dinosaurs lost\" [side: above, color: #B71C1C]\n-2.6: \"Pleistocene begins — repeated glacial cycles\" [side: below]\n0: milestone \"Present day\" [side: above, color: #1565C0]",
+    "notes": "## Scenario\n\nAn earth science teacher projects this timeline while introducing the Phanerozoic eon. The negative-year notation (Ma before present) lets students see geological time on a familiar number line. Red extinction diamonds are immediately recognisable as crises that reset evolutionary trajectories; the green Cambrian diamond marks the starting point of complex animal life. Students can see at a glance that mass extinctions are rare but catastrophic, and that the current geological moment is a vanishingly thin sliver at the right edge.\n\n## Annotation key\n\n- Negative numbers — millions of years before present (Ma); e.g. -252 = 252 Ma ago\n- `milestone` — major geological boundary or mass extinction event\n- Red diamonds — mass extinction events per ICS classification\n- Green diamond — Cambrian explosion (origin of animal body plans)\n- Blue diamond — present day reference anchor\n\n## How to read\n\nTime flows left to right from -541 Ma (Cambrian explosion) to 0 (today). The five red diamonds mark the Big Five mass extinctions recognised by the ICS; each wiped out a substantial fraction of species and reset evolutionary trajectories. The longest gap between crises (Ordovician to Devonian: ~75 Ma) shows that life can stabilise for tens of millions of years between upheavals. The entire Cenozoic Era — the age of mammals — occupies only the rightmost 12% of this timeline."
+  },
+  {
+    "slug": "timeline-history-of-ai",
+    "diagram": "timeline",
+    "title": "History of AI — 1950 to 2025",
+    "description": "Lollipop timeline of AI milestones from Turing's 1950 paper through deep learning, LLMs, and AGI debate — for an AI course introduction.",
+    "standard": "Historical convention",
+    "tags": [
+      "timeline",
+      "ai",
+      "history",
+      "milestones",
+      "deep-learning",
+      "llm",
+      "turing"
+    ],
+    "complexity": 2,
+    "featured": false,
+    "dsl": "timeline \"History of Artificial Intelligence — 1950 to 2025\"\nconfig: style = lollipop\n\n1950: milestone \"Turing: Computing Machinery and Intelligence — Turing Test proposed\" [side: above, color: #1565C0]\n1956: \"Dartmouth Conference — field of AI named\" [side: below]\n1966: milestone \"ELIZA chatbot — first natural-language interface\" [side: above, color: #6A1B9A]\n1986: \"Rumelhart & Hinton: backpropagation popularized\" [side: below]\n1997: milestone \"Deep Blue defeats Kasparov at chess\" [side: above, color: #1565C0]\n2006: \"Hinton: deep belief networks — deep learning renaissance\" [side: below]\n2012: milestone \"AlexNet wins ImageNet — top-5 error 15.3%\" [side: above, color: #2E7D32]\n2017: \"Vaswani et al.: Attention Is All You Need\" [side: below]\n2022: milestone \"ChatGPT — 1 million users in 5 days\" [side: above, color: #C62828]\n2024: \"o1 reasoning model — chain-of-thought at inference\" [side: below]\n2025: \"Multimodal frontier: GPT-4o, Claude 3, Gemini Ultra\" [side: below]",
+    "notes": "## Scenario\n\nAn AI course instructor uses this timeline on the first day to give students a 75-year arc before diving into technical content. The lollipop layout alternates above and below the axis so events in the same decade do not collide. Colour separates conceptual foundations (blue), system breakthroughs (green), and societal impact moments (red) — students can immediately see that the field alternated between long winters and sudden step-changes.\n\n## Annotation key\n\n- `milestone` — diamond marker for field-defining events\n- `[side: above|below]` — alternates labels to prevent overlap\n- Blue — foundational theory; Green — benchmark performance leap; Purple — human-machine interaction; Red — public inflection point\n\n## How to read\n\nTime flows left to right from 1950 to 2025. Diamond markers are the headline breakthroughs; round markers are important supporting developments. Notice the 26-year gap between Turing's paper and ELIZA — AI winters were real. The acceleration from 2012 onward is structural: AlexNet, Transformers, and large language models each arrived faster than the last, compressing the time between conceptual proposal and world-scale deployment."
+  },
+  {
     "slug": "timeline-product-launch",
     "diagram": "timeline",
     "title": "Product launch timeline",
@@ -1080,6 +2579,69 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "featured": true,
     "dsl": "timeline \"Platform v2 Launch\"\nconfig: style = gantt\n\n2025-07-01 - 2025-08-15: \"Engineering build\" [category: \"engineering\"]\n2025-07-15 - 2025-08-31: \"Design polish\" [category: \"design\"]\n2025-08-01 - 2025-09-10: \"Marketing collateral\" [category: \"marketing\"]\n2025-08-20: milestone \"Feature freeze\" [color: #E53935]\n2025-08-20 - 2025-09-05: \"QA hardening\" [category: \"engineering\"]\n2025-09-01 - 2025-09-12: \"Press embargo outreach\" [category: \"marketing\"]\n2025-09-15: milestone \"Public launch\" [color: #2E7D32]",
     "notes": "## Scenario\n\nThe launch PM shares this in weekly exec status. Overlapping bars show where workstreams parallelize (design polishing while engineering still builds) and the feature-freeze diamond makes the handoff between build and QA unmissable. The second milestone (public launch) anchors the entire timeline and is the reason every other bar exists.\n\n## Annotation key\n\n- `DATE - DATE: \"Label\"` — range (bar) event\n- `DATE: milestone \"Label\"` — point milestone (diamond)\n- `[category: …]` — group colour in the gantt legend\n- `[color: #hex]` — explicit marker colour\n\n## How to read\n\nTime flows left to right. Horizontal bars are continuous work; diamonds are instantaneous events. Overlapping bars mean two teams are working simultaneously — fine, so long as they coordinate. The red *Feature freeze* marks the transition from net-new work to hardening; any engineering bar extending past it needs an exception. The green *Public launch* is the terminal milestone every other bar is serving."
+  },
+  {
+    "slug": "timeline-product-roadmap-q-planning",
+    "diagram": "timeline",
+    "title": "Q3–Q4 product roadmap",
+    "description": "Two-quarter product roadmap in Gantt-style swimlanes — Engineering, Product, Design, and Marketing tracks for a SaaS company's H2 plan.",
+    "standard": "Product roadmap convention",
+    "tags": [
+      "timeline",
+      "roadmap",
+      "gantt",
+      "swimlane",
+      "product",
+      "q3",
+      "q4",
+      "planning"
+    ],
+    "complexity": 3,
+    "featured": false,
+    "dsl": "timeline \"H2 Product Roadmap — Q3 & Q4 2025\"\nconfig: style = gantt\n\nlane \"Engineering\"\n  2025-07-01 - 2025-07-21: \"Auth refactor\" [category: engineering]\n  2025-08-01 - 2025-09-12: \"API v3\" [category: engineering]\n  2025-10-01 - 2025-10-28: \"Mobile performance\" [category: engineering]\n  2025-11-03 - 2025-12-05: \"Search indexing upgrade\" [category: engineering]\n\nlane \"Product\"\n  2025-07-01 - 2025-07-18: \"Feature discovery sprints\" [category: product]\n  2025-08-01: milestone \"Q3 spec freeze\" [color: #E53935]\n  2025-09-08 - 2025-09-26: \"Q4 planning & prioritization\" [category: product]\n  2025-10-06: milestone \"Q4 spec freeze\" [color: #E53935]\n\nlane \"Design\"\n  2025-07-01 - 2025-08-22: \"Design system v2\" [category: design]\n  2025-10-01 - 2025-10-28: \"Mobile redesign\" [category: design]\n  2025-11-03 - 2025-11-28: \"Onboarding flow refresh\" [category: design]\n\nlane \"Marketing\"\n  2025-07-01 - 2025-08-15: \"Q3 demand-gen campaign\" [category: marketing]\n  2025-09-15: milestone \"Product Hunt launch\" [color: #2E7D32]\n  2025-10-01 - 2025-11-28: \"Q4 ABM outreach\" [category: marketing]\n  2025-11-17: milestone \"Holiday campaign go-live\" [color: #2E7D32]",
+    "notes": "## Scenario\n\nThe head of product presents this Gantt roadmap at the H2 planning offsite. Four swimlanes give each function a dedicated row so it is immediately clear which teams are working in parallel and where dependencies exist. The two spec-freeze diamonds act as forcing functions — everything Engineering needs from Product must land before each red diamond, or the downstream engineering bars shift right.\n\n## Annotation key\n\n- `lane \"Name\"` — swimlane grouping one team's work\n- `DATE - DATE: \"Label\"` — continuous work block (horizontal bar)\n- `DATE: milestone \"Label\"` — instantaneous checkpoint (diamond)\n- `[category: …]` — colour assignment in the legend\n- `[color: #hex]` — explicit milestone colour (red = freeze, green = launch)\n\n## How to read\n\nScan horizontally along a lane to understand one team's H2 workload. Scan vertically at any date to see what all four teams are doing simultaneously. Red diamonds mark spec freezes — if a bar extends past one, it needs an exception. Green diamonds mark external launches — every bar that feeds them must complete before the diamond or the launch slips. Gaps between bars are intentional buffer; bars with no gap indicate a team is at full capacity."
+  },
+  {
+    "slug": "timing-ddr-read",
+    "diagram": "timing",
+    "title": "DDR4 read burst timing",
+    "description": "DDR4 read burst timing — CAS latency, data strobe (DQS), 8-beat DQ burst, and on-die termination (ODT) assertion — for memory subsystem engineers.",
+    "standard": "JEDEC DDR4 (JESD79-4)",
+    "tags": [
+      "timing",
+      "ddr4",
+      "read-burst",
+      "dqs",
+      "cas-latency",
+      "odt",
+      "memory",
+      "jedec"
+    ],
+    "complexity": 4,
+    "featured": false,
+    "dsl": "timing \"DDR4 Read Burst — CL=16, BL=8\"\nCLK:    pppppppppppppppppppp\nCS_N:   10==================\nRAS_N:  10==================\nCAS_N:  ================1===\nWE_N:   1===================\nODT:    00000000000000011111\nDQS:    000000000000000ppppp\nDQ:     zzzzzzzzzzzzzzzx====  data: [\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"D0\",\"D1\",\"D2\",\"D3\"]",
+    "notes": "## Scenario\n\nA memory subsystem engineer, FPGA designer, or PCB layout engineer needs to verify DDR4 command and data timing against the JEDEC JESD79-4 specification during simulation or hardware bring-up. This diagram shows the critical timing relationships between the ACTIVATE command (RAS), the READ command (CAS), CAS latency (CL=16), DQS preamble, the 8-beat DQ burst, and ODT assertion for read termination.\n\n## Annotation key\n\n- `CLK` — differential clock; `p` = one double-data-rate clock cycle; data is transferred on both rising and falling edges\n- `CS_N` / `RAS_N` — ACTIVATE command asserted (both low) at cycle 1 to open the target row\n- `CAS_N` — READ command issued at cycle 16 (CAS_N goes high after assertion); CAS latency (CL=16) is the delay in clock cycles from READ command to first valid data\n- `ODT` — on-die termination enables at the DRAM approximately tAONPD after the READ command to reduce signal reflections during the burst\n- `DQS` — data strobe; preamble (first `p` of DQS) precedes the first data beat; controller samples DQ on each DQS edge\n- `DQ` — data bus; `z` = high-impedance before burst, `x` = undefined transition, `=` = stable data; `data:[...]` labels each beat\n\n## How to read\n\nThe memory controller asserts ACTIVATE (CS_N + RAS_N low at cycle 1) to open the DRAM row, waits tRCD cycles, then issues a READ command (CS_N + CAS_N low at cycle 16). After CL=16 clock cycles, the DRAM begins driving DQS with a preamble half-clock before the first data beat. The controller captures DQ data on each DQS edge, collecting D0–D7 over 8 beats (BL=8). ODT is asserted before the burst begins to terminate the DQ and DQS lines during the read, suppressing reflections on the stub-heavy DDR4 bus. After D7, DQS and DQ return to high-impedance and ODT de-asserts."
+  },
+  {
+    "slug": "timing-i2c-read",
+    "diagram": "timing",
+    "title": "I²C master read transaction",
+    "description": "I²C master-read timing with start condition, 7-bit address + R/W bit, ACK/NAK, and 2-byte data read — for embedded firmware documentation.",
+    "standard": "NXP I²C specification",
+    "tags": [
+      "timing",
+      "i2c",
+      "master-read",
+      "ack",
+      "nak",
+      "embedded",
+      "firmware",
+      "protocol"
+    ],
+    "complexity": 3,
+    "featured": false,
+    "dsl": "timing \"I²C Master Read — 2 Bytes\"\nSCL:  1ppppppppppppppppppppppppppp11\nSDA:  10========10========10======01  data: [\"START\",\"0x48 R\",\"ACK\",\"0xAB\",\"ACK\",\"0xCD\",\"NAK\",\"STOP\"]",
+    "notes": "## Scenario\n\nAn embedded firmware engineer documents a two-byte I²C master-read transaction — for example, reading two bytes of temperature data from a TMP112 or similar sensor at address 0x48 — for inclusion in a device driver review, BSP documentation, or a hardware bring-up checklist. The timing diagram shows the key protocol phases: START, address frame with R/W bit, ACK handshake, data bytes, and STOP.\n\n## Annotation key\n\n- `SCL` — serial clock line; `p` is one clock pulse (high then low); `1` = sustained high, `0` = sustained low\n- `SDA` — serial data line; `1` = high, `0` = low, `=` = stable (bus driven), value labeled by `data:[...]`\n- `10=...=` pattern on SDA — START condition: SDA falls while SCL is high, followed by address bits held stable during each SCL high phase\n- `ACK` (SDA=0 during 9th SCL pulse) — receiver acknowledges by pulling SDA low\n- `NAK` (SDA=1 during 9th SCL pulse after last byte) — master signals end of read by releasing SDA high\n- `STOP` — SDA rises while SCL is high, signaling bus release\n\n## How to read\n\nThe transaction opens with a START condition (SDA falls while SCL is high). The master clocks out a 7-bit device address (0x48) plus a Read bit (R/W=1) over 8 SCL pulses; the addressed slave pulls SDA low during the 9th clock as ACK. The slave then drives the first data byte (0xAB) over 8 clocks; the master ACKs to request more data. The slave drives the second byte (0xCD); the master issues NAK to signal no further bytes are needed. Finally, the master generates a STOP condition (SDA rises while SCL is high), releasing the bus. Both lines return to idle-high."
   },
   {
     "slug": "timing-spi-transaction",
@@ -1102,6 +2664,91 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "notes": "## Scenario\n\nA firmware engineer or hardware designer documents an 8-byte SPI master-to-slave transaction for a device driver review or datasheet. The WaveDrom-compatible syntax means the same DSL can be pasted directly into WaveDrom's online editor or embedded in documentation pipelines.\n\n## Annotation key\n\n- `p` — clock pulse (high period followed by low); each `p` is one clock cycle\n- `1` / `0` — logic high / logic low\n- `=` — data bus: stable data (value unchanged from previous cycle)\n- `x` — don't-care or undefined state (transition state)\n- `z` — high-impedance (floating / tri-state)\n- `data: [...]` — optional data labels for each stable segment, rendered inside the bus bar\n- `CS_N` — active-low chip select; `1` = deselected, `0` = selected\n\n## How to read\n\nThe clock runs for 8 cycles. CS_N goes low at cycle 1 and returns high at cycle 8, framing the transaction. MOSI (master out) sends 8 bytes starting at cycle 1. MISO (slave in) is high-Z for the first 4 cycles (slave preparing the response) then transitions to stable data bytes 5–8. The transaction completes when CS_N de-asserts."
   },
   {
+    "slug": "timing-uart-frame",
+    "diagram": "timing",
+    "title": "UART 8N1 frame timing",
+    "description": "UART 8-bit, no parity, 1 stop bit (8N1) frame timing at 115200 baud — showing idle, start bit, 8 data bits, and stop bit for a firmware datasheet.",
+    "standard": "TIA-232 (RS-232)",
+    "tags": [
+      "timing",
+      "uart",
+      "8n1",
+      "serial",
+      "baud",
+      "start-bit",
+      "stop-bit",
+      "firmware",
+      "rs232"
+    ],
+    "complexity": 2,
+    "featured": false,
+    "dsl": "timing \"UART 8N1 Frame — 115200 baud — 'A' (0x41)\"\nTX:  1 0 1 0 0 0 0 0 1 0 1 1  data: [\"IDLE\",\"START\",\"D0\",\"D1\",\"D2\",\"D3\",\"D4\",\"D5\",\"D6\",\"D7\",\"STOP\",\"IDLE\"]\nRX:  1 0 1 0 0 0 0 0 1 0 1 1  data: [\"IDLE\",\"START\",\"D0\",\"D1\",\"D2\",\"D3\",\"D4\",\"D5\",\"D6\",\"D7\",\"STOP\",\"IDLE\"]",
+    "notes": "## Scenario\n\nA firmware engineer or serial protocol analyst documents an 8N1 UART frame for a device datasheet, a hardware bring-up guide, or a lecture on serial communication. The example transmits the ASCII character 'A' (0x41 = 0100 0001 binary), sent LSB-first as required by the UART standard, at 115200 baud over RS-232 or a 3.3 V CMOS logic-level UART interface.\n\n## Annotation key\n\n- `TX` — transmit line; idle state is logic high (mark); each character = 1 start bit + 8 data bits + 1 stop bit\n- `RX` — receive line; mirrors TX with the same bit encoding, shown here as a loopback for clarity\n- `0` (START) — start bit: always logic low, signals the beginning of a frame; receiver synchronizes its sampling clock here\n- `D0`–`D7` — data bits transmitted LSB-first; 'A' = 0x41 = 0b01000001: D0=1, D1=0, D2=0, D3=0, D4=0, D5=0, D6=1, D7=0\n- `1` (STOP) — stop bit: logic high for at least one bit period, returns the line to idle (mark) state\n- Each character cell = 1 bit period = 1/115200 s ≈ 8.68 µs\n\n## How to read\n\nThe line is idle-high before the frame. The transmitter pulls TX low for exactly one bit period as the start bit, allowing the receiver's UART to detect the falling edge and begin sampling. The eight data bits follow LSB-first: for 'A' (0x41), D0 is 1 (LSB), D1–D5 are 0, D6 is 1, D7 is 0 (MSB). The stop bit returns the line to logic high for one bit period, after which the line remains idle until the next frame. The RX line mirrors TX; in a real system the receiver samples each bit at the center of its bit period, approximately 4.34 µs after the falling edge of the start bit."
+  },
+  {
+    "slug": "timing-usb-packet",
+    "diagram": "timing",
+    "title": "USB 2.0 full-speed packet",
+    "description": "USB 2.0 full-speed SYNC+PID+address+endpoint+CRC5 token packet timing on D+ and D− differential pair — for USB protocol analysis.",
+    "standard": "USB 2.0 Specification",
+    "tags": [
+      "timing",
+      "usb",
+      "full-speed",
+      "token-packet",
+      "differential",
+      "sync",
+      "pid",
+      "crc",
+      "protocol"
+    ],
+    "complexity": 3,
+    "featured": false,
+    "dsl": "timing \"USB 2.0 Full-Speed SOF Token Packet\"\nD_plus:   1010101011========x=====10\nD_minus:  0101010100========x=====01\nSE0:      0000000000========x=====11  data: [\"SYNC (KJKJKJKK)\",\"PID (SOF 0xA5)\",\"Frame Number (11b)\",\"CRC5 (5b)\",\"EOP\",\"IDLE\"]",
+    "notes": "## Scenario\n\nA USB protocol engineer, USB IP core designer, or embedded systems developer analyzing a USB 2.0 full-speed bus capture needs to understand the bit-level encoding of a Start-of-Frame (SOF) token packet. This diagram shows the NRZI-encoded differential signals on D+ and D− for the mandatory SYNC field, PID byte, 11-bit frame number, 5-bit CRC, and End-of-Packet (EOP) single-ended zero condition.\n\n## Annotation key\n\n- `D_plus` / `D_minus` — USB differential pair; full-speed idle state (J) is D+=1, D−=0; K state is D+=0, D−=1\n- SYNC field — 8-bit alternating KJ sequence ending in KK: `10101010 11` on D+; USB uses NRZI encoding so alternating bits signal the clock\n- `PID` (0xA5) — SOF Packet ID byte `10100101`; transmitted in NRZI, stable during this phase\n- `Frame Number` — 11-bit frame counter (0–2047), incremented each millisecond; stable bus state during each bit\n- `CRC5` — 5-bit CRC over the frame number field, per USB 2.0 §8.3.5\n- `SE0` — single-ended zero: both D+ and D− driven low for 2 bit periods as the End-of-Packet (EOP); followed by J (idle)\n- `x` — transition / undefined bit state during SE0-to-idle edge\n\n## How to read\n\nThe packet begins with the host driving an 8-bit SYNC field (KJKJKJKK) that allows the receiver's PLL to lock to the 12 Mbit/s full-speed clock. The PID byte 0xA5 (SOF) follows, identifying the packet type. The 11-bit frame number and 5-bit CRC5 are transmitted LSB-first over 16 bit times. The EOP is signaled by driving both D+ and D− low (SE0) for exactly 2 bit periods, which cannot be confused with data since valid data always has differential drive. After EOP, the host releases both lines to idle (J state: D+=1, D−=0), completing the token packet in approximately 3 µs at full speed."
+  },
+  {
+    "slug": "venn-4-ellipse-gene-sets",
+    "diagram": "venn",
+    "title": "4-way gene-set overlap (Edwards layout)",
+    "description": "Four-way gene-expression overlap across four RNA-seq conditions — stress, heat, drought, salinity — using an Edwards ellipse layout for bioinformatics.",
+    "standard": "Edwards (2004) 4-ellipse layout",
+    "tags": [
+      "venn",
+      "gene-sets",
+      "rna-seq",
+      "edwards",
+      "bioinformatics",
+      "4-way",
+      "expression"
+    ],
+    "complexity": 4,
+    "featured": false,
+    "dsl": "venn \"DEG Overlap — Abiotic Stress Conditions\"\nmode: edwards-4\nset stress \"Oxidative stress\" [color: \"#E53935\"]\nset heat \"Heat shock\" [color: \"#FB8C00\"]\nset drought \"Drought\" [color: \"#43A047\"]\nset salinity \"Salinity\" [color: \"#1E88E5\"]\nstress only : 312\nheat only : 287\ndrought only : 445\nsalinity only : 198\nstress & heat : 89\nstress & drought : 124\nstress & salinity : 67\nheat & drought : 78\nheat & salinity : 45\ndrought & salinity : 102\nstress & heat & drought : 34\nstress & heat & salinity : 22\nstress & drought & salinity : 41\nheat & drought & salinity : 28\nstress & heat & drought & salinity : 15",
+    "notes": "## Scenario\n\nA bioinformatician has run RNA-seq on Arabidopsis seedlings under four abiotic stress treatments and identified differentially expressed genes (DEGs) in each condition. The 4-way Edwards Venn reveals the core stress-response transcriptome — the 15 genes in the quadruple intersection are candidates for broad-spectrum stress-tolerance engineering — while the large drought-exclusive region (445) flags condition-specific regulators worth investigating in a targeted follow-up experiment.\n\n## Annotation key\n\n- `mode: edwards-4` — renders four ellipses at orientations that expose all 15 possible intersections\n- `A & B : n` — gene count in the pairwise intersection of two conditions\n- `A & B & C : n` — gene count shared across three conditions\n- `stress & heat & drought & salinity : n` — core pan-stress regulome\n\n## How to read\n\nEach ellipse represents the DEG set from one treatment; overlapping regions are genes significantly regulated under multiple conditions. Start with the quadruple intersection (15 genes) — these are the most broadly responsive and highest-priority for functional validation. Pairwise intersections reveal mechanistic overlap: oxidative stress and drought share 124 genes, suggesting a shared ROS-signalling component. Large exclusive regions (drought: 445) indicate highly condition-specific transcriptional programs."
+  },
+  {
+    "slug": "venn-audience-overlap-marketing",
+    "diagram": "venn",
+    "title": "Paid audience overlap — Meta × Google × TikTok",
+    "description": "Three ad-platform audience overlap for performance marketing — Meta, Google, and TikTok intersection counts to guide budget allocation.",
+    "standard": "Venn (1880)",
+    "tags": [
+      "venn",
+      "audience",
+      "meta",
+      "google",
+      "tiktok",
+      "marketing",
+      "overlap",
+      "paid"
+    ],
+    "complexity": 2,
+    "featured": false,
+    "dsl": "venn \"Q4 Holiday Campaign — Paid Audience Overlap\"\nset meta \"Meta (FB + IG)\" [color: \"#1877F2\"]\nset google \"Google Ads\" [color: \"#EA4335\"]\nset tiktok \"TikTok\" [color: \"#010101\"]\nmeta & google : 18400\nmeta & tiktok : 24700\ngoogle & tiktok : 9200\nmeta & google & tiktok : 5100\nmeta only : 61000\ngoogle only : 38500\ntiktok only : 42300",
+    "notes": "## Scenario\n\nA performance marketing manager is finalising the Q4 holiday campaign budget across three platforms. The Venn reveals that a meaningful audience of 5,100 users is targetable on all three channels simultaneously — this cohort will see the brand multiple times, so frequency capping is critical. The 61k Meta-exclusive pool is the largest single-platform opportunity, while TikTok's 42k exclusive reach justifies keeping it in the mix even at a higher CPM.\n\n## Annotation key\n\n- `set ID \"Label\"` — one ad platform per circle\n- `A & B : n` — users reachable on both platforms (multi-touch risk)\n- `A only : n` — users reachable exclusively on one platform\n\n## How to read\n\nEach circle represents the targetable audience on one platform. Intersection counts show users reachable across multiple channels — useful for setting frequency caps and coordinating creative sequencing. The triple intersection (5,100) is the most saturated segment and should receive unified messaging. Exclusive regions show where each platform provides unique incremental reach that the others cannot access."
+  },
+  {
     "slug": "venn-customer-segments",
     "diagram": "venn",
     "title": "Customer segment overlap",
@@ -1118,6 +2765,65 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "featured": true,
     "dsl": "venn \"Customer Segments — Q3 2025\"\nset email \"Email subscribers\" [color: \"#1E88E5\"]\nset paid \"Paid users\" [color: \"#E53935\"]\nset mobile \"Mobile app users\" [color: \"#43A047\"]\nemail & paid : 1840\nemail & mobile : 920\npaid & mobile : 2100\nemail & paid & mobile : 650\nemail only : 12400\npaid only : 3200\nmobile only : 8700",
     "notes": "## Scenario\n\nA lifecycle marketer is planning Q4 campaigns and needs to see which audiences overlap before deciding where to spend budget. The 650-strong triple intersection is the highest-LTV segment; the 12.4k email-only group is the biggest conversion opportunity. Putting the numbers on one Venn makes the gaps and overlaps argue for themselves in a 30-second leadership review.\n\n## Annotation key\n\n- `set ID \"Label\"` — declare a circle\n- `A & B : n` — count in the intersection of A and B\n- `A only : n` — count exclusive to A\n\n## How to read\n\nEach circle is a total audience; each overlap is people who belong to multiple audiences. The triple intersection (email ∩ paid ∩ mobile, 650 users) is your most engaged cohort — the obvious group to upsell. The *email only* and *mobile only* exclusive regions are your largest activation opportunities because each represents users who have not yet crossed into the other channels."
+  },
+  {
+    "slug": "venn-euler-taxonomy",
+    "diagram": "venn",
+    "title": "Euler diagram — animal kingdom containment",
+    "description": "Euler containment diagram showing Animals ⊃ Vertebrates ⊃ Mammals ⊃ Primates — a nested subset visualization for biology class.",
+    "standard": "Euler (1768)",
+    "tags": [
+      "euler",
+      "venn",
+      "taxonomy",
+      "mammals",
+      "vertebrates",
+      "biology",
+      "containment"
+    ],
+    "complexity": 1,
+    "featured": false,
+    "dsl": "venn \"Animal Kingdom — Nested Containment\"\nmode: euler\nset animals \"Animals\" [color: \"#43A047\"]\nset vertebrates \"Vertebrates\" [subset-of: animals, color: \"#1E88E5\"]\nset mammals \"Mammals\" [subset-of: vertebrates, color: \"#FB8C00\"]\nset primates \"Primates\" [subset-of: mammals, color: \"#E53935\"]",
+    "notes": "## Scenario\n\nA biology teacher uses this Euler diagram to introduce taxonomic hierarchy on the first day of a classification unit. Unlike a Venn diagram — which implies partial overlap between circles — an Euler diagram shows true containment: every primate is a mammal, every mammal is a vertebrate, and every vertebrate is an animal. Students can immediately see that the sets are nested, not intersecting.\n\n## Annotation key\n\n- `mode: euler` — enables containment (subset) layout instead of partial overlap\n- `subset-of: ID` — declares that this set is fully enclosed within another\n- Nested rings from outermost to innermost: Animals → Vertebrates → Mammals → Primates\n\n## How to read\n\nRead from the outside in. The outermost ring (Animals) contains all others. Each inner ring is a strict subset of the ring enclosing it — no element can be in Primates without also being in Mammals, Vertebrates, and Animals. The space between Vertebrates and Mammals represents vertebrates that are not mammals (fish, amphibians, reptiles, birds). The space between Mammals and Primates represents mammals that are not primates (dogs, cats, whales, bats)."
+  },
+  {
+    "slug": "venn-feature-comparison-tools",
+    "diagram": "venn",
+    "title": "Feature comparison — Notion vs. Obsidian vs. Roam",
+    "description": "Three-way Venn of knowledge-management features across Notion, Obsidian, and Roam Research — for product teams benchmarking a new tool.",
+    "standard": "Venn (1880)",
+    "tags": [
+      "venn",
+      "feature-comparison",
+      "notion",
+      "obsidian",
+      "roam",
+      "product",
+      "competitive"
+    ],
+    "complexity": 2,
+    "featured": false,
+    "dsl": "venn \"Knowledge Management Tools — Feature Overlap\"\nset notion \"Notion\" [color: \"#000000\"]\nset obsidian \"Obsidian\" [color: \"#7C3AED\"]\nset roam \"Roam Research\" [color: \"#3B82F6\"]\nnotion & obsidian : 3\nnotion & roam : 2\nobsidian & roam : 2\nnotion & obsidian & roam : 3\nnotion only : 8\nobsidian only : 6\nroam only : 4",
+    "notes": "## Scenario\n\nA product manager is building a competitive teardown before a roadmap review. Rather than a spreadsheet of checkboxes, the Venn communicates at a glance which features are table stakes (the triple intersection), which are differentiators (exclusive regions), and which signal partnership opportunities or feature gaps. The counts here represent clusters of related capabilities, not raw feature counts.\n\n## Annotation key\n\n- `set ID \"Label\"` — one tool per circle\n- `A & B : n` — number of feature clusters shared by both tools\n- `A only : n` — feature clusters unique to one tool\n\n## How to read\n\nEach circle represents one tool's total feature set grouped into capability clusters. The triple intersection (3 clusters: block-based editing, bidirectional links, tagging) represents the baseline every modern knowledge tool must ship. Notion's exclusive region (8 clusters) reflects its broader collaboration and database surface area. Obsidian's exclusive region (6) reflects its plugin ecosystem and local-first architecture. Roam's exclusive region (4) reflects its outliner-first and daily-notes conventions."
+  },
+  {
+    "slug": "venn-prisma-screening",
+    "diagram": "venn",
+    "title": "PRISMA systematic review — database screening",
+    "description": "Three-database PRISMA deduplication Venn showing PubMed, Embase, and Cochrane overlap counts for a systematic literature review.",
+    "standard": "PRISMA 2020",
+    "tags": [
+      "venn",
+      "prisma",
+      "systematic-review",
+      "literature",
+      "pubmed",
+      "embase"
+    ],
+    "complexity": 2,
+    "featured": false,
+    "dsl": "venn \"Database Screening — PRISMA Deduplication\"\nset pubmed \"PubMed\" [color: \"#1E88E5\"]\nset embase \"Embase\" [color: \"#E53935\"]\nset cochrane \"Cochrane\" [color: \"#43A047\"]\npubmed & embase : 1240\npubmed & cochrane : 340\nembase & cochrane : 280\npubmed & embase & cochrane : 180\npubmed only : 4200\nembase only : 2800\ncochrane only : 620",
+    "notes": "## Scenario\n\nA systematic reviewer searches PubMed, Embase, and Cochrane before title/abstract screening. Before any reading begins, duplicates must be removed — the same paper indexed in multiple databases would inflate the apparent evidence base. This Venn shows where the three databases overlap so the reviewer can report the PRISMA 2020 deduplication step with exact counts and transparently justify why 2,040 records were removed before screening began.\n\n## Annotation key\n\n- `set ID \"Label\"` — one database per circle\n- `A & B : n` — records indexed in both databases (potential duplicates)\n- `A only : n` — records unique to a single database\n\n## How to read\n\nEach circle represents one database's raw retrieval. Overlapping regions are records that appear in more than one source and are the primary deduplication targets. The triple intersection (180) means those papers were found in all three databases simultaneously. After removing all intersections as duplicates, the unique record count is 4 200 + 2 800 + 620 = 7 620 — the number that proceeds to title/abstract screening and is recorded in the PRISMA flow diagram."
   },
   {
     "slug": "venn-programming-paradigms",

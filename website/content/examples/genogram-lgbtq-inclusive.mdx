@@ -1,0 +1,55 @@
+---
+title: LGBTQ+-inclusive family — Bennett 2022 symbols
+description: Three-generation LGBTQ+-affirming genogram with AMAB/AFAB notation, same-sex couple, trans member, and chosen family — Bennett 2022 symbol set.
+diagram: genogram
+standard: Bennett 2022 (LGBTQ+-inclusive genogram symbols)
+industry: [mental-health, social-work]
+persona: For the LGBTQ+-affirming therapist
+complexity: 3
+tags: [genogram, lgbtq, trans, non-binary, same-sex, bennett-2022, inclusive, chosen-family]
+featured: false
+relatedLink:
+  label: Genogram syntax
+  href: /docs/genogram
+status: published
+dsl: |
+  genogram "Rivera Family — LGBTQ+-Affirming"
+    gp1 [female, 1945, label: "Abuela"]
+    gp2 [male, 1943, label: "Abuelo"]
+    gp1 -- gp2
+      parent1 [female, 1972, label: "Mom", conditions: depression(half-left, #3498db)]
+      parent2 [male, 1970, label: "Dad"]
+    parent1 =/ parent2
+      child1 [male, 1998, index, label: "Marco"]
+      child2 [gender: non-binary, 2001, label: "Sage"]
+      child3 [female, 2004, label: "Lucia"]
+    parent3 [gender: trans-female, 1975, label: "Valentina"]
+    parent1 .. parent3
+      child1 [household: parent1]
+      child2 [household: parent1]
+      child3 [household: parent1]
+    chosen1 [male, 1997, label: "Jordan"]
+    chosen2 [gender: trans-male, 1999, label: "River"]
+    child1 -- chosen1
+    child1 -- chosen2
+---
+
+## Scenario
+
+A therapist specializing in LGBTQ+-affirming family therapy draws a three-generation genogram for Marco (age 28, index), who presents with anxiety related to family-of-origin and chosen-family boundary conflicts. Marco's parents divorced when he was a child; his mother, who has a history of depression, is now in a cohabiting same-sex relationship with Valentina, a trans woman. Marco's younger sibling Sage identifies as non-binary. Marco's closest support system is his chosen family: Jordan and River (a trans man), with whom he has a committed three-person partnership. The genogram uses Bennett 2022 LGBTQ+-inclusive symbols so that every family member's gender identity is rendered accurately without forcing binary defaults.
+
+## Annotation key
+
+- `[gender: non-binary]` — triangle symbol per Bennett 2022; used for Sage, who uses they/them pronouns; AMAB/AFAB note can be added as a label
+- `[gender: trans-female]` — circle with arrow-cross overlay per Bennett 2022; used for Valentina (AMAB, identifies as woman)
+- `[gender: trans-male]` — square with arrow overlay per Bennett 2022; used for River (AFAB, identifies as man)
+- `..` — cohabiting (common-law/unmarried) couple line; used for Mom and Valentina's same-sex partnership
+- `=/` — divorced couple; double-slash marks the ended marriage between Mom and Dad
+- `conditions: depression(half-left, #3498db)` — left-half blue fill; indicates Mom's diagnosed major depressive disorder
+- `child1 -- chosen1` / `child1 -- chosen2` — relationship lines from Marco to chosen-family members; rendered without descent lines (no shared children) to distinguish from biological family
+- `[household: parent1]` — all three children reside primarily with Mom
+- `index` — proband arrow on Marco, the presenting client
+
+## How to read
+
+Generation I (grandparents) shows a traditional married couple. Generation II reflects the divorce and subsequent same-sex remarriage: Mom's depression (blue half-fill) predates the divorce. The cohabiting same-sex couple line (dotted) connects Mom and Valentina; all three children are in Mom's household. Sage's non-binary triangle and River's trans-male square signal that Bennett 2022 symbols are active for this diagram — AMAB/AFAB biological sex at birth is available as label annotation when clinically relevant. Marco's chosen-family relationships (solid lines to Jordan and River, without a descent line) represent his primary adult attachment network. The therapist's clinical task is to help Marco navigate loyalty between these two constellations: the family he grew up in and the family he built.

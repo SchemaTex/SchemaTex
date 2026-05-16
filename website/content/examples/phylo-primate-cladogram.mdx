@@ -1,0 +1,40 @@
+---
+title: Primate cladogram
+description: Primate cladogram with 10 taxa — equal branch lengths emphasizing topology rather than evolutionary rate — for a physical anthropology or evolution course.
+diagram: phylo
+standard: Linnaean / cladistic
+industry: [education, anthropology]
+persona: For the physical anthropology teacher
+complexity: 2
+tags: [phylo, primate, cladogram, anthropology, hominid, education, topology]
+featured: false
+relatedLink:
+  label: Phylogenetic syntax
+  href: /docs/phylo
+status: published
+dsl: |
+  phylo "Primate Cladogram"
+    layout: cladogram
+    root: midpoint
+    newick: "(((((Human:1,Chimp:1):1,Gorilla:1):1,Orangutan:1):1,(Gibbon:1,Siamang:1):1):1,((Baboon:1,Macaque:1):1,(Spider_monkey:1,Howler_monkey:1):1):1);"
+    clade Hominidae = (Human, Chimp, Gorilla, Orangutan) [color: "#1E88E5", label: "Hominidae (Great Apes)"]
+    clade Lesser_apes = (Gibbon, Siamang) [color: "#E53935", label: "Hylobatidae (Lesser Apes)"]
+    clade Old_World = (Baboon, Macaque) [color: "#43A047", label: "Cercopithecidae (Old World Monkeys)"]
+    clade New_World = (Spider_monkey, Howler_monkey) [color: "#FB8C00", label: "Atelidae (New World Monkeys)"]
+---
+
+## Scenario
+
+A physical anthropology or human evolution course uses cladograms — topology-only trees with equal branch lengths — to focus students on branching order and shared derived characters (synapomorphies) rather than evolutionary rate. This 10-taxon primate cladogram illustrates the nested hierarchy of ape, monkey, and human lineages in a format suitable for classroom projection, exam handouts, or textbook figures.
+
+## Annotation key
+
+- `layout: cladogram` — equal branch lengths; topology only; no molecular clock implied
+- `clade Hominidae` — blue arc groups the four great ape genera: Homo, Pan, Gorilla, Pongo
+- `clade Lesser_apes` — red arc groups Gibbon and Siamang (Hylobatidae), the sister group to great apes
+- `clade Old_World` — green arc groups Baboon and Macaque (Cercopithecidae); Old World monkeys diverged before apes
+- `clade New_World` — orange arc groups Spider monkey and Howler monkey (Atelidae); New World monkeys are the outgroup to Old World anthropoids
+
+## How to read
+
+Reading from the tips inward, the most recently diverged taxa share the most recent common ancestor. Human and Chimpanzee are sister taxa (most recent common ancestor ~6 Ma); Gorilla is the next outgroup (~9 Ma), then Orangutan (~14 Ma). Lesser Apes (Gibbon, Siamang) are the sister group to all great apes. Together, apes (Hominoidea) are nested within the Old World monkey clade (Cercopithecidae) relative to New World monkeys, which form the most distant outgroup among primates shown here. Because this is a cladogram, branch lengths carry no quantitative meaning — only the branching pattern matters.

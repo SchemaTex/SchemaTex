@@ -1,0 +1,50 @@
+---
+title: Buy vs. lease an electric vehicle
+description: Howard-Raiffa expected-value tree for the buy/lease/used-EV decision — with resale probability and incentive chance nodes.
+diagram: decisiontree
+standard: Raiffa & Schlaifer (1961)
+industry: [consumer-finance, education]
+persona: For the MBA decision-analysis student
+complexity: 3
+tags: [decision-analysis, ev, buy-vs-lease, expected-value, consumer]
+featured: false
+relatedLink:
+  label: Decision tree syntax
+  href: /docs/decisiontree
+status: published
+dsl: |
+  decisiontree:decision "EV Acquisition Decision"
+
+  decision "Which acquisition path?"
+    choice "Buy new EV"
+      chance "Federal tax credit eligible?"
+        prob 0.7 chance "Resale market in 5yr (w/ credit)"
+          prob 0.55 end "Strong resale + credit" payoff=28500
+          prob 0.45 end "Weak resale + credit" payoff=16000
+        prob 0.3 chance "Resale market in 5yr (no credit)"
+          prob 0.55 end "Strong resale, no credit" payoff=21000
+          prob 0.45 end "Weak resale, no credit" payoff=8500
+    choice "Lease EV 3yr"
+      end "Predictable lease cost" payoff=14000
+    choice "Buy used EV"
+      chance "Battery health ≥ 80%?"
+        prob 0.6 end "Good battery — low TCO" payoff=22000
+        prob 0.4 end "Battery replacement needed" payoff=8000
+---
+
+## Scenario
+
+A household is choosing between three electric vehicle acquisition paths: buying new (eligible for a $7,500 federal tax credit with 70% probability, depending on income and vehicle MSRP cap), leasing for three years at a fixed all-in cost, or buying used. The buy-new path carries two sequential chance nodes — credit eligibility then a five-year resale market outcome — while used carries battery-health uncertainty. Payoffs represent net five-year economic value (savings versus equivalent ICE ownership, residual value, minus acquisition and maintenance costs).
+
+## Annotation key
+
+- `decision "…"` — decision node; actor chooses a branch
+- `choice "…"` — label on a decision branch
+- `chance "…"` — chance node; nature chooses; `prob N` on children must sum to 1
+- `end "…" payoff=N` — terminal leaf with net five-year economic value in dollars
+- `prob N` — probability (0–1) on a chance branch
+- EV rollback: chance = probability-weighted sum; decision = max child EV
+
+## How to read
+
+Roll back from leaves to root. Buy-new EV (with credit branch): 0.55 × 28,500 + 0.45 × 16,000 = **24,075**; without credit: 0.55 × 21,000 + 0.45 × 8,500 = **19,275**. Combined: 0.7 × 24,075 + 0.3 × 19,275 = **22,635**. Lease: flat **14,000**. Used EV: 0.6 × 22,000 + 0.4 × 8,000 = **16,400**. Under these assumptions *Buy new EV* dominates, largely because the 70% credit probability shifts the overall EV substantially upward. Sensitivity analysis on credit eligibility probability and the five-year resale spread is where the real MBA discussion lives.

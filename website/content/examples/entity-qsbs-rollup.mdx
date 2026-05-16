@@ -1,0 +1,45 @@
+---
+title: QSBS restructure — §1202 eligible multi-entity
+description: "Pre/post restructure for QSBS eligibility: C-corps per founder, clean C-corp parent, and non-qualifying IP subsidiary excluded from §1202 stack."
+diagram: entity
+standard: IRC §1202
+industry: [startup, tax]
+persona: For the startup tax attorney
+complexity: 4
+tags: [entity, qsbs, 1202, restructure, c-corp, startup, tax, esop]
+featured: false
+relatedLink:
+  label: Entity syntax
+  href: /docs/entity
+status: published
+dsl: |
+  entity-structure "Acme Inc. — QSBS Stack"
+  entity founder1 "Founder 1" trust@CA [note: "IRC §1202 — original shareholder"]
+  entity founder2 "Founder 2" trust@CA [note: "IRC §1202 — original shareholder"]
+  entity esop_trust "ESOP Trust" trust@DE [note: "IRC §1042 — ESOP rollover"]
+  entity op_corp "Acme Inc. (C-Corp)" corp@DE [note: "QSBS issuer — active business test"]
+  entity ip_sub "IP HoldCo LLC" llc@DE [note: "Non-QSBS — excluded from §1202 stack"]
+  entity saas_sub "SaaS Operations Inc." corp@DE [note: "QSBS eligible — §1202 subsidiary"]
+  founder1 -> op_corp : 45%
+  founder2 -> op_corp : 40%
+  esop_trust -> op_corp : 15%
+  op_corp -> ip_sub : 100%
+  op_corp -> saas_sub : 100%
+---
+
+## Scenario
+
+A startup tax attorney structures the entity stack before a Series A closing to maximize the founders' §1202 exclusion. The key constraint: QSBS gain exclusion (up to $10M or 10× basis per taxpayer) applies only to original-issue stock in a domestic C-corp that meets the active business test and gross-asset limits at time of issuance. IP holding companies and pass-through entities are excluded. This diagram maps the qualifying versus non-qualifying layers so counsel can confirm clean §1202 eligibility before the closing.
+
+## Annotation key
+
+- `corp@DE` — Delaware C-corporation; the required entity form for §1202 QSBS eligibility
+- `llc@DE` — pass-through LLC; deliberately isolated from the QSBS stack
+- `->` — equity ownership; percentages must reflect the actual cap table at issuance
+- `[note: "..."]` — calls out the controlling IRC provision or exclusion rationale
+- `trust@CA` — grantor trusts are treated as individuals for §1202 purposes; eligible holders
+- ESOP at 15% — combined founder + ESOP must stay under §1202 gross-asset ceiling ($50M at issuance)
+
+## How to read
+
+Founders 1 and 2 own 45% and 40% of Acme Inc. directly; the ESOP holds 15%. All three are §1202 eligible holders. Acme Inc. (the QSBS issuer) owns two subsidiaries: the IP HoldCo LLC is intentionally isolated as a pass-through and excluded from the §1202 qualification analysis, while SaaS Operations Inc. is a qualifying C-corp sub that inherits QSBS eligibility through the parent. The dashed exclusion boundary makes it immediately clear to the audit team which entities sit inside and outside the §1202 stack. At exit, gain allocated to qualifying shares in op_corp and saas_sub may be excluded from federal capital gains tax up to the §1202 limits per taxpayer.

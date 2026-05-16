@@ -1,0 +1,48 @@
+---
+title: H-bridge DC motor driver
+description: Dual H-bridge DC motor driver using L298N — forward, reverse, and brake modes via direction pins — for robotics and embedded control.
+diagram: circuit
+standard: IEEE 315
+industry: [robotics, embedded]
+persona: For the robotics engineer
+complexity: 3
+tags: [h-bridge, motor, L298N, driver, robotics, pwm, dc-motor]
+featured: false
+relatedLink:
+  label: Circuit syntax
+  href: /docs/circuit
+status: published
+dsl: |
+  circuit "L298N H-Bridge DC Motor Driver" netlist
+  VM vmot 0 12V
+  V5 vcc 0 5V
+  C1 vmot 0 100u
+  C2 vcc 0 100n
+  U1 vmot vcc in1 in2 ena out1 out2 0 generic_ic value="L298N"
+  D1 out1 vmot 0 0 diode value="1N5819"
+  D2 0 out1 0 0 diode value="1N5819"
+  D3 out2 vmot 0 0 diode value="1N5819"
+  D4 0 out2 0 0 diode value="1N5819"
+  Motor out1 out2 motor value="DC 12V 2A"
+  In1 in1 mcu_in1 port value="IN1"
+  In2 in2 mcu_in2 port value="IN2"
+  Ena ena mcu_pwm port value="ENA PWM"
+---
+
+## Scenario
+
+The L298N is the standard H-bridge driver for 3 V–46 V DC motors in robotics, CNC, and embedded projects. It contains two full H-bridges (only one used here), each capable of 2 A continuous. Direction is controlled by IN1 and IN2 logic inputs from a microcontroller; speed is controlled by applying PWM to ENA. Forward: IN1=HIGH, IN2=LOW. Reverse: IN1=LOW, IN2=HIGH. Brake: both HIGH or both LOW. The four Schottky diodes protect the bridge transistors from inductive kick-back when the motor coils resist switching.
+
+## Annotation key
+
+- `U1 ... generic_ic value="L298N"` — L298N dual H-bridge driver IC; integrates four NPN Darlington transistors arranged as two full H-bridges; accepts 5 V logic inputs and switches a separate 12 V motor supply; max 46 V, 2 A per channel
+- `VM vmot 0 12V` — motor supply rail (12 V); electrically separate from the logic supply to prevent motor switching noise from corrupting microcontroller operation
+- `C1 vmot 0 100u` — 100 μF bulk decoupling capacitor on the motor supply; absorbs current spikes when the motor switches direction or stalls; prevents VMOT drooping and resetting the microcontroller
+- `C2 vcc 0 100n` — 100 nF ceramic decoupling capacitor on the 5 V logic supply; high-frequency bypass close to the IC logic pins
+- `D1–D4 ... diode value="1N5819"` — four 1N5819 Schottky flyback diodes (1 A, 40 V, low forward voltage); one diode across each motor terminal to VMot and to GND; clamp the inductive spike when the H-bridge transistors switch off, protecting the IC from voltage transients that can exceed 100 V in an unprotected circuit
+- `Motor out1 out2 motor value="DC 12V 2A"` — 12 V DC motor; current flows from OUT1 to OUT2 for forward, OUT2 to OUT1 for reverse; motor speed is proportional to average voltage = Vm × duty_cycle
+- `In1, In2, Ena` — port terminals from the microcontroller; IN1 and IN2 are 5 V logic signals; ENA is the PWM input that modulates average power to the motor
+
+## How to read
+
+The L298N switches the 12 V motor supply through two transistor pairs. When IN1 is HIGH and IN2 is LOW, the top-left and bottom-right transistors turn on, connecting VMot to OUT1 and OUT2 to GND — motor spins forward. When both transistors of one polarity are off, the motor's inductive winding tries to maintain current flow; without the flyback diodes the resulting voltage spike (Ldi/dt) could reach hundreds of volts and destroy the IC. Schottky diodes D1–D4 provide an immediate return path for this energy back to VMot. PWM on ENA chops the drive voltage at a frequency the motor inductance can filter, giving smooth speed control from 0–100% without resistive power loss.

@@ -1,0 +1,45 @@
+---
+title: ED chest pain triage
+description: Emergency department chest-pain triage algorithm — HEART score pathway, STEMI/NSTEMI rule-out, and disposition decision for the ED physician.
+diagram: decisiontree
+standard: AHA/ACC 2021 Chest Pain Guidelines
+industry: [healthcare, clinical]
+persona: For the emergency physician
+complexity: 4
+tags: [triage, chest-pain, ed, stemi, heart-score, clinical, aha]
+featured: false
+relatedLink:
+  label: Decision tree syntax
+  href: /docs/decisiontree
+status: published
+dsl: |
+  decisiontree:taxonomy "ED Chest Pain Triage"
+
+  question "ECG: ST elevation present?"
+    yes: answer "Activate cath lab — STEMI protocol"
+    no: question "Troponin elevated at 0h or 3h?"
+      yes: question "Dynamic troponin rise (≥ 3 ng/L delta)?"
+        yes: answer "NSTEMI confirmed — cardiology consult, anticoagulate"
+        no: answer "Possible NSTEMI — repeat troponin at 6h"
+      no: question "HEART score ≥ 4?"
+        yes: answer "High risk — observation unit + stress test or CTA"
+        no: question "All low-risk features present?"
+          yes: answer "Discharge — outpatient follow-up within 72h"
+          no: answer "Observation — shared decision making with patient"
+---
+
+## Scenario
+
+Chest pain accounts for roughly 8 million ED visits per year in the United States. The AHA/ACC 2021 Chest Pain Guidelines provide a tiered rule-out pathway: first exclude STEMI via ECG, then use high-sensitivity troponin at 0h and 3h to distinguish NSTEMI from unstable angina or non-cardiac causes, and finally apply the HEART score (History, ECG, Age, Risk factors, Troponin) to stratify remaining patients into high-risk observation vs. safe discharge. This tree encodes the core algorithmic structure for a busy ED attending.
+
+## Annotation key
+
+- `question "…"` — internal clinical decision node; physician evaluates the criterion
+- `answer "…"` — terminal disposition or action
+- `yes:` / `no:` — branch label indicating the clinical finding
+- HEART score: 0–3 low risk, 4–6 moderate, 7–10 high risk
+- Dynamic troponin: delta ≥ 3 ng/L between 0h and 3h draws meets ESC high-sensitivity criterion
+
+## How to read
+
+Entry is the 12-lead ECG. ST elevation routes directly to cath-lab activation — time is myocardium and no further branching is needed. Absence of ST elevation triggers the troponin pathway: a positive draw at either time point prompts delta assessment to distinguish true NSTEMI from a chronic elevation; a negative troponin advances to HEART score stratification. A score of 4 or higher mandates observation-unit admission with functional testing; a score below 4 with all low-risk clinical features present supports discharge with prompt outpatient follow-up. The final branch — observation with shared decision making — captures the borderline-HEART-score patient where physician judgment, patient preference, and social circumstances all contribute to disposition.

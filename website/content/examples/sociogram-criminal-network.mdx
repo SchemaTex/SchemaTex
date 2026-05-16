@@ -1,0 +1,60 @@
+---
+title: Criminal network OSINT sociogram
+description: Law-enforcement-style network sociogram mapping known associates, informants, and communication links in a hypothetical drug distribution network.
+diagram: sociogram
+standard: Social network analysis (SNA)
+industry: [law-enforcement, intelligence]
+persona: For the law enforcement intelligence analyst
+complexity: 4
+tags: [sociogram, criminal-network, osint, sna, intelligence, organized-crime]
+featured: false
+relatedLink:
+  label: Sociogram syntax
+  href: /docs/sociogram
+status: published
+dsl: |
+  sociogram "Hypothetical Drug Distribution Network — SNA Training Example"
+    config: directed = true
+    config: layout = force-directed
+
+    group leadership [label: "Leadership", color: "#B71C1C"]
+      subjectA; supplierH
+    group associates [label: "Associates", color: "#E57373"]
+      associateB; associateC; associateD
+    group couriers [label: "Couriers", color: "#FF8A65"]
+      courierE; courierF; courierG
+    group informants [label: "Informants", color: "#78909C"]
+      informantI
+
+    subjectA -> associateB [label: "financial direction"]
+    subjectA -> associateC
+    subjectA -> associateD
+    associateB -> courierE [label: "operational tasking"]
+    associateC -> courierF
+    associateD -> courierG
+    supplierH -> subjectA [label: "supply chain upstream"]
+    informantI -> associateB [label: "link unknown to Subject A"]
+    associateB <-> associateC [label: "peer coordination"]
+    courierE -x> subjectA [label: "conflict — link severed"]
+---
+
+## Scenario
+
+A law enforcement intelligence analyst builds this network diagram during a link-analysis phase of a drug distribution investigation. Social network analysis (SNA) identifies key nodes — the Subject A hub (a network star with high betweenness centrality), the upstream supplier, and the informant whose connection to Associate B is not yet known to Subject A. The force-directed layout naturally exposes hierarchical structure: leadership cluster at the center, operational associates at mid-distance, couriers at the periphery. All names are fictional; this diagram is a training example for SNA methodology.
+
+**All persons depicted are fictional. This diagram is for analytical methodology illustration only.**
+
+## Annotation key
+
+- `config: directed = true` — edges have direction, representing who directs or tasks whom; asymmetric in criminal hierarchies
+- `config: layout = force-directed` — high-centrality nodes (Subject A, Associate B) naturally gravitate to the center; peripheral nodes (couriers) push to the edge
+- `->` — directed operational link: command, financial, or supply chain relationship
+- `<->` — mutual peer coordination link (both parties confirmed the connection)
+- `-x>` — severed or conflicted link; the connection was documented but terminated
+- `role: star` — node with the highest in-degree or betweenness centrality; primary analytical target
+- `group` color coding — organizational tier in the network hierarchy
+- `[label: "..."]` — edge label captures link type from OSINT or documented evidence
+
+## How to read
+
+Subject A is the network star — all three associates (B, C, D) receive direction from Subject A, and the upstream supplier feeds into Subject A exclusively. Each associate tasks a single courier, creating a cell structure that limits lateral exposure. Informant I has a confirmed link to Associate B that is not visible to Subject A — an intelligence asset whose operational security must be protected. The severed link from Courier E to Subject A (conflict edge) represents a documented falling-out and suggests Courier E may be a potential cooperating witness. The force-directed layout clusters the leadership nodes at center and pushes couriers to the periphery, matching the operational distance in the real network hierarchy. In a live investigation, node size would be scaled to betweenness centrality and edge labels would reference the evidentiary source (wire intercept, surveillance log, financial record).

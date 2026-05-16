@@ -1,0 +1,46 @@
+---
+title: User onboarding flow
+description: Signup through email verification, profile setup, first-action tutorial, and activation milestone — a product manager's north-star flow.
+diagram: flowchart
+standard: ISO 5807:1985
+industry: [saas, product]
+persona: For the product manager
+complexity: 2
+tags: [onboarding, activation, signup, tutorial, user-flow, product]
+featured: false
+relatedLink:
+  label: Flowchart syntax
+  href: /docs/flowchart
+status: published
+dsl: |
+  flowchart TD
+    signup([User submits signup form]) --> email[Send verification email]
+    email --> verified{Email verified?}
+    verified -->|No — after 24 h| resend[Resend verification email]
+    resend --> verified
+    verified -->|Yes| profile[Profile setup wizard]
+    profile --> skipped{Wizard completed?}
+    skipped -->|Skip| tour[Feature tour — 3 tooltip steps]
+    skipped -->|Complete| tour
+    tour --> action{First core action taken?}
+    action -->|No — after 48 h| nudge[Send nudge email with shortcut link]
+    nudge --> action
+    action -->|Yes| activate[Record activation event]
+    activate --> welcome([Welcome milestone reached])
+---
+
+## Scenario
+
+A product manager is mapping the critical path from sign-up to activation to align engineering, growth, and design on what "activated user" means. The diagram makes every drop-off risk visible — email verification friction, wizard abandonment, and first-action hesitation — so each team can own the metric that corresponds to their part of the funnel.
+
+## Annotation key
+
+- `([…])` — stadium; user-triggered entry and milestone terminal nodes
+- `{…}` — diamond; binary or conditional state checks
+- `[…]` — rectangle; system or product actions (send email, show wizard, record event)
+- `-->|label|` — branch labels showing condition, time trigger, or user choice
+- Loop edges from `resend` and `nudge` model retry cycles that resolve when the user acts
+
+## How to read
+
+The flow starts at form submission and immediately hits the email verification gate. Users who do not verify within 24 hours loop through a resend step; this loop continues until verification succeeds. Once verified, all users — whether they complete the profile wizard or skip it — enter the three-step feature tour. The first-action gate determines activation: users who have not acted within 48 hours receive a nudge email that links directly to the core feature, shortening the path back into the loop. Activation fires a single analytics event that marks the user as "activated" and terminates the onboarding sequence.

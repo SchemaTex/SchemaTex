@@ -1,0 +1,39 @@
+---
+title: Vertebrate evolution — rectangular phylogram
+description: Rectangular phylogram of 10 vertebrate orders with bootstrap support values, three clade arcs (Actinopterygii, Reptilia, Mammalia), and a branch-length scale bar.
+diagram: phylo
+standard: Newick/NHX
+industry: [education, biology]
+persona: For the biology teacher
+complexity: 2
+tags: [phylo, vertebrate, rectangular, bootstrap, clade, evolution, education]
+featured: false
+relatedLink:
+  label: Phylogenetic syntax
+  href: /docs/phylo
+status: published
+dsl: |
+  phylo "Vertebrate Evolution"
+    layout: rectangular
+    newick: "((((Human:0.05,Chimp:0.06):0.04[&&NHX:B=99],(Mouse:0.15,Rat:0.14):0.08[&&NHX:B=97]):0.2[&&NHX:B=95],(Chicken:0.25,Crocodile:0.28):0.15[&&NHX:B=88]):0.3[&&NHX:B=72],(Zebrafish:0.45,(Salmon:0.5,Coelacanth:0.6):0.1[&&NHX:B=65]):0.4[&&NHX:B=80]);"
+    clade Mammalia = (Human, Chimp, Mouse, Rat) [color: "#1E88E5", label: "Mammalia"]
+    clade Reptilia = (Chicken, Crocodile) [color: "#E53935", label: "Reptilia (incl. Aves)"]
+    clade Actinopterygii = (Zebrafish, Salmon) [color: "#43A047", label: "Actinopterygii"]
+    scale "My (million years)"
+---
+
+## Scenario
+
+A high school or undergraduate biology teacher needs a clean, accurate vertebrate phylogeny for a lecture slide or lab handout — one that shows real evolutionary distances, bootstrap support for major clades, and standard clade annotations without requiring access to MEGA or FigTree. Schematex renders the Newick string directly to SVG with colored clade arcs and a calibrated scale bar.
+
+## Annotation key
+
+- `layout: rectangular` — rectangular phylogram; branch lengths are proportional to evolutionary distance (substitutions per site, scaled to million years)
+- `[&&NHX:B=99]` — bootstrap support value on each internal node; values ≥ 95 indicate strong support
+- `clade Mammalia = (Human, Chimp, Mouse, Rat)` — groups the four mammal taxa with a blue arc and label
+- `clade Reptilia = (Chicken, Crocodile)` — highlights the reptile + bird clade (Sauropsida) in red
+- `scale "My (million years)"` — draws a calibrated scale bar beneath the tree
+
+## How to read
+
+The tree is rooted at the base of the vertebrate radiation. The deepest split separates ray-finned fishes (Actinopterygii: Zebrafish, Salmon) from the tetrapod lineage. Within tetrapods, Reptilia (Chicken, Crocodile) diverges first, then Mammalia splits into primates (Human, Chimp) and rodents (Mouse, Rat). Bootstrap values above 95 on the primate and rodent clades confirm strong statistical support. The Coelacanth, a lobe-finned fish, is an outgroup to the ray-finned fishes within the Actinopterygii clade, consistent with its status as a living fossil. Branch lengths are proportional to molecular evolutionary distance.

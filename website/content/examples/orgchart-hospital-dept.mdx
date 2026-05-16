@@ -1,0 +1,55 @@
+---
+title: Hospital clinical department hierarchy
+description: Hospital clinical org — Chief Medical Officer, department heads, attendings, residents, and nursing leads for a teaching hospital.
+diagram: orgchart
+standard: JCAHO / hospital convention
+industry: [healthcare]
+persona: For the hospital administrator
+complexity: 4
+tags: [orgchart, hospital, clinical, physician, nursing, hierarchy]
+featured: false
+relatedLink:
+  label: Org chart syntax
+  href: /docs/orgchart
+status: published
+dsl: |
+  orgchart "General Hospital — Clinical Leadership"
+  cmo: "Dr. Patricia Williams" | Chief Medical Officer [role: medical]
+    chief_med: "Dr. James Park" | Chief of Medicine [role: medical]
+      cardio_head: "Dr. Amara Nwosu" | Division Chief | Cardiology [role: medical]
+        att_card1: "Dr. Elena Sousa" | Attending Physician [role: medical]
+        att_card2: "Dr. Ravi Gupta" | Attending Physician [role: medical]
+        res_card1: "Dr. Yuki Tanaka" | PGY-3 Resident [role: medical]
+        res_card2: "Dr. Malik Johnson" | PGY-2 Resident [role: medical]
+      neuro_head: "Dr. Ingrid Larsen" | Division Chief | Neurology [role: medical]
+        att_neuro1: "Dr. Omar Sharif" | Attending Physician [role: medical]
+        att_neuro2: "Dr. Priya Krishnan" | Attending Physician [role: medical]
+        res_neuro1: "Dr. Tomás Rivera" | PGY-3 Resident [role: medical]
+        res_neuro2: "Dr. Aisha Conteh" | PGY-2 Resident [role: medical]
+    chief_surg: "Dr. Amara Diallo" | Chief of Surgery [role: medical]
+      gen_surg_head: "Dr. Wei Zhang" | Division Chief | General Surgery [role: medical]
+        att_gs1: "Dr. Sofia Reyes" | Attending Surgeon [role: medical]
+        att_gs2: "Dr. Kwame Mensah" | Attending Surgeon [role: medical]
+      ortho_head: "Dr. Henrik Svensson" | Division Chief | Orthopedics [role: medical]
+        att_orth1: "Dr. Nalini Patel" | Attending Surgeon [role: medical]
+        att_orth2: "Dr. Seun Adeyemi" | Attending Surgeon [role: medical]
+    cno: "Maria Gonzalez, RN, MSN" | Chief Nursing Officer [role: medical]
+      med_surg_mgr: "Lisa Park, RN" | Nurse Manager | Med-Surg [role: medical]
+      icu_mgr: "Robert Osei, RN" | ICU Nurse Manager [role: medical]
+---
+
+## Scenario
+
+A hospital administrator is preparing a JCAHO accreditation submission and needs to document the clinical governance structure. The chart shows the three-pillar model common to teaching hospitals: Medicine and Surgery under the CMO handle physician credentialing and clinical protocols, while Nursing reports separately to ensure independent oversight of nursing practice standards. Attendings supervise residents directly; residents rotate between divisions but report to their division chief.
+
+## Annotation key
+
+- `[role: medical]` — all clinical staff rendered with the medical colour coding
+- Indentation — solid-line administrative and clinical reporting chain
+- `PGY-2 / PGY-3` — Post-Graduate Year, the standard US resident designation (PGY-1 = intern)
+- `RN, MSN` — inline credentials appended to the name field, common in nursing leadership notation
+- Division Chiefs sit between the department Chief and individual attendings — the standard academic medical centre layer
+
+## How to read
+
+The CMO owns clinical quality across all departments. Medicine and Surgery are equal pillars — each Chief has autonomous credentialing authority within their specialty. Within Medicine, Cardiology and Neurology each run their own attending–resident teaching structure: attendings carry clinical responsibility; residents operate under supervision with authority expanding by PGY year. Nursing reports up through the CNO rather than through either clinical chief — a deliberate governance separation required by Magnet hospital standards. The two nurse managers (Med-Surg floor, ICU) translate CNO policy to unit-level staffing and care protocols.

@@ -1,0 +1,47 @@
+---
+title: Substance use disorder — three-generation pattern
+description: Three-generation genogram showing alcohol use disorder and opioid dependence inheritance pattern, with emotional cutoffs — for the addiction counselor.
+diagram: genogram
+standard: McGoldrick 2020
+industry: [mental-health, addiction]
+persona: For the substance use disorder counselor
+complexity: 3
+tags: [genogram, substance-use, alcohol, opioid, three-generation, emotional-cutoff, addiction]
+featured: false
+relatedLink:
+  label: Genogram syntax
+  href: /docs/genogram
+status: published
+dsl: |
+  genogram "Substance Use — Three-Generation Pattern"
+    gf [male, 1930, 1995, deceased, label: "Grandfather", conditions: alcohol(full, #c0392b)]
+    gm [female, 1935, 2010, deceased, label: "Grandmother"]
+    gf -- gm
+      father [male, 1958, label: "Father", conditions: alcohol(full, #c0392b) + opioid(half-right, #8e44ad)]
+      aunt [female, 1962, label: "Aunt"]
+      uncle [male, 1965, label: "Uncle", conditions: alcohol(half-left, #c0392b)]
+    mother [female, 1960, label: "Mother"]
+    father ~/~ mother
+      patient [male, 1988, index, label: "Patient", conditions: opioid(full, #8e44ad)]
+      sister [female, 1990, label: "Sister"]
+      brother [male, 1993, label: "Brother", conditions: alcohol(half-left, #c0392b)]
+    patient ~/~ father
+---
+
+## Scenario
+
+An addiction counselor conducts a three-generation substance-use assessment for a 36-year-old male patient (index) presenting for opioid use disorder treatment. The genogram reveals that the patient's grandfather had alcohol use disorder; his father has both alcohol use disorder and opioid dependence; his paternal uncle has alcohol use disorder; and his younger brother is showing early-stage hazardous drinking. The patient reports a conflicted, largely cut-off relationship with his father. This multi-generational pattern helps the counselor identify biological risk factors, model family transmission pathways, and target family-systems interventions alongside pharmacotherapy.
+
+## Annotation key
+
+- `conditions: alcohol(full, #c0392b)` — full red fill; indicates alcohol use disorder (AUD), clinically diagnosed
+- `conditions: opioid(full, #8e44ad)` — full purple fill; indicates opioid use disorder (OUD), clinically diagnosed
+- `conditions: alcohol(full, #c0392b) + opioid(half-right, #8e44ad)` — split fill; father carries both AUD (dominant) and OUD (secondary), encoded side-by-side in right half
+- `conditions: alcohol(half-left, #c0392b)` — left-half fill; uncle and brother show alcohol use disorder without secondary diagnosis
+- `~/~` — conflicted relationship; zigzag line between the patient and his father reflects emotional cutoff with episodic conflict
+- `deceased` — diagonal slash; both grandparents are deceased
+- `index` — proband arrow on the presenting patient
+
+## How to read
+
+Trace the red (alcohol) fill from grandfather → father → uncle → brother: four males across three generations affected by AUD. The purple (opioid) fill first appears in the father (right half) and then dominates the patient (full fill) — reflecting escalation from alcohol-primary to opioid-primary dependence across generations. The conflicted couple line between father and mother explains the household disruption during the patient's adolescence, a documented environmental risk factor. The sister (open circle) is the only Generation III member currently without a substance-use diagnosis, which may reflect protective factors worth exploring. The emotional cutoff between patient and father (~/~) is both a relational wound and a potential barrier to family-involved treatment.

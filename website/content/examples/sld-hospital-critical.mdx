@@ -1,0 +1,60 @@
+---
+title: Hospital critical branch — NFPA 99 three-branch
+description: Hospital essential electrical system with NFPA 99 life-safety, critical, and equipment branches fed via ATS from utility and generator.
+diagram: sld
+standard: NFPA 99 / NFPA 110
+industry: [healthcare, facility]
+persona: For the hospital electrical engineer
+complexity: 4
+tags: [sld, hospital, nfpa99, life-safety, critical-branch, ats, generator]
+featured: false
+relatedLink:
+  label: SLD syntax
+  href: /docs/sld
+status: published
+dsl: |
+  sld "Hospital Essential Electrical System — NFPA 99"
+  utility = utility [label: "Normal Power 480V 3φ"]
+  genset = generator [kw: 500, voltage: 480]
+  normal_bus = bus [voltage: 480]
+  ats1 = ats [amps: 400]
+  ats2 = ats [amps: 600]
+  ats3 = ats [amps: 400]
+  brk_ls = breaker [amps: 400]
+  brk_crit = breaker [amps: 600]
+  brk_equip = breaker [amps: 400]
+  ls_branch = load [label: "Life-Safety Branch — Exit Lighting / Egress / Fire Alarm"]
+  crit_branch = load [label: "Critical Branch — OR / ICU / Nurse Call"]
+  equip_branch = load [label: "Equipment Branch — HVAC / Sterilizers / Med Equip"]
+  utility -> normal_bus
+  normal_bus -> ats1
+  genset -> ats1
+  ats1 -> brk_ls
+  brk_ls -> ls_branch
+  normal_bus -> ats2
+  genset -> ats2
+  ats2 -> brk_crit
+  brk_crit -> crit_branch
+  normal_bus -> ats3
+  genset -> ats3
+  ats3 -> brk_equip
+  brk_equip -> equip_branch
+---
+
+## Scenario
+
+A hospital electrical engineer prepares the essential electrical system (EES) single-line diagram required for a new patient-care facility's construction permit and Joint Commission inspection. NFPA 99-2021 §6.4 mandates that hospitals classify all loads into three branches of the EES — life-safety, critical, and equipment — each with an automatic transfer switch that independently connects to both the normal utility supply and the on-site emergency generator. The SLD demonstrates code-compliant separation of branches and ensures the AHJ (authority having jurisdiction) can verify that no branch carries loads from a different classification.
+
+## Annotation key
+
+- `utility` — utility normal power source at 480 V three-phase
+- `generator [kw:..., voltage:...]` — on-site diesel or natural-gas emergency generator per NFPA 110 Level 1 (10-second start)
+- `bus [voltage:...]` — 480 V normal-power distribution bus; does not carry EES loads directly
+- `ats [amps:...]` — automatic transfer switch; senses loss of utility and transfers load to generator within 10 s (NFPA 110)
+- `breaker [amps:...]` — branch feeder overcurrent protective device isolating each NFPA 99 branch
+- `load [label:...]` — EES branch terminal representing all panels and sub-feeders in that classification
+- `->` — directed power flow; each ATS receives two upstream feeds (utility and generator) independently
+
+## How to read
+
+Utility normal power feeds the 480 V main bus. All three ATSs draw their normal-source feed from this bus. In parallel, the 500 kW on-site generator feeds the alternate-source input of each ATS independently — this is the NFPA 99 requirement that each branch have its own transfer means. Under normal conditions each ATS passes utility power through its branch breaker to its classified loads. On utility failure, each ATS independently transfers to the generator within 10 seconds. The life-safety branch (400 A) powers egress lighting, exit signs, and fire alarm — the highest-priority loads that must energize first. The critical branch (600 A) serves operating rooms, ICU receptacles, and nurse-call systems. The equipment branch (400 A) supports HVAC serving patient areas, sterilizers, and durable medical equipment. Physical and electrical separation between branches is a NFPA 99 §6.4.2 hard requirement.

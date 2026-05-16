@@ -1,0 +1,41 @@
+---
+title: Feature comparison — Notion vs. Obsidian vs. Roam
+description: Three-way Venn of knowledge-management features across Notion, Obsidian, and Roam Research — for product teams benchmarking a new tool.
+diagram: venn
+standard: Venn (1880)
+industry: [product, saas]
+persona: For the product manager doing competitive analysis
+complexity: 2
+tags: [venn, feature-comparison, notion, obsidian, roam, product, competitive]
+featured: false
+relatedLink:
+  label: Venn syntax
+  href: /docs/venn
+status: published
+dsl: |
+  venn "Knowledge Management Tools — Feature Overlap"
+  set notion "Notion" [color: "#000000"]
+  set obsidian "Obsidian" [color: "#7C3AED"]
+  set roam "Roam Research" [color: "#3B82F6"]
+  notion & obsidian : 3
+  notion & roam : 2
+  obsidian & roam : 2
+  notion & obsidian & roam : 3
+  notion only : 8
+  obsidian only : 6
+  roam only : 4
+---
+
+## Scenario
+
+A product manager is building a competitive teardown before a roadmap review. Rather than a spreadsheet of checkboxes, the Venn communicates at a glance which features are table stakes (the triple intersection), which are differentiators (exclusive regions), and which signal partnership opportunities or feature gaps. The counts here represent clusters of related capabilities, not raw feature counts.
+
+## Annotation key
+
+- `set ID "Label"` — one tool per circle
+- `A & B : n` — number of feature clusters shared by both tools
+- `A only : n` — feature clusters unique to one tool
+
+## How to read
+
+Each circle represents one tool's total feature set grouped into capability clusters. The triple intersection (3 clusters: block-based editing, bidirectional links, tagging) represents the baseline every modern knowledge tool must ship. Notion's exclusive region (8 clusters) reflects its broader collaboration and database surface area. Obsidian's exclusive region (6) reflects its plugin ecosystem and local-first architecture. Roam's exclusive region (4) reflects its outliner-first and daily-notes conventions.

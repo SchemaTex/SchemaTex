@@ -1,0 +1,68 @@
+---
+title: Automotive adaptive cruise control (ACC)
+description: Automotive ACC block diagram — radar range/range-rate, safety gap controller, speed controller, and powertrain plant — per ISO 15622.
+diagram: block
+standard: ISO 15622
+industry: [automotive, embedded]
+persona: For the automotive systems engineer
+complexity: 4
+tags: [block, acc, adaptive-cruise, radar, automotive, iso15622, safety, gap-control]
+featured: false
+relatedLink:
+  label: Block syntax
+  href: /docs/block
+status: published
+dsl: |
+  blockdiagram "Automotive Adaptive Cruise Control (ACC)"
+  v_set = signal("v_set (speed setpoint)")
+  d_set = signal("d_set (desired gap)")
+  radar = block("Radar Sensor") [role: sensor]
+  d_actual = signal("d_actual (measured gap)")
+  v_lead = signal("v_lead (lead vehicle speed)")
+  HMI_override = signal("HMI override")
+  err_gap = sum(+d_set, -d_actual)
+  C_gap = block("Gap Controller") [role: controller]
+  v_ref = signal("v_ref (speed reference)")
+  err_v = sum(+v_ref, -v_ego)
+  C_speed = block("Speed / Brake Controller") [role: controller]
+  a_cmd = signal("a_cmd (accel command)")
+  G_powertrain = block("Engine + Brake + Vehicle Dynamics") [role: plant]
+  v_ego = signal("v_ego (ego speed)")
+  in -> v_set
+  in -> d_set
+  in -> HMI_override
+  radar -> d_actual
+  radar -> v_lead
+  d_set -> err_gap
+  d_actual -> err_gap
+  err_gap -> C_gap
+  v_lead -> C_gap
+  HMI_override -> C_gap
+  C_gap -> v_ref
+  v_set -> C_gap
+  v_ref -> err_v
+  v_ego -> err_v
+  err_v -> C_speed
+  HMI_override -> C_speed
+  C_speed -> a_cmd
+  a_cmd -> G_powertrain
+  G_powertrain -> v_ego
+  v_ego -> err_v
+---
+
+## Scenario
+
+ISO 15622 defines the functional requirements for adaptive cruise control systems used in passenger cars and light trucks. An ACC system must maintain a safe headway gap to a lead vehicle while respecting the driver's commanded speed limit, handling cut-ins, and supporting driver override at any time. This block diagram represents the top-level functional decomposition that an ADAS systems engineer would draw during concept design.
+
+## Annotation key
+
+- `radar` — radar sensor block; outputs measured gap `d_actual` and lead vehicle speed `v_lead`
+- `err_gap = sum(+d_set, -d_actual)` — gap error: difference between desired and actual following distance
+- `C_gap` — gap controller; receives gap error and lead speed, outputs a speed reference `v_ref` bounded by `v_set`
+- `C_speed` — speed/brake controller; inner loop tracking `v_ref`; also receives HMI override for driver intervention
+- `G_powertrain` — combined powertrain plant: engine torque, brake system, and longitudinal vehicle dynamics
+- `HMI_override` — driver override signal (brake pedal, throttle kick-down, or system disengage)
+
+## How to read
+
+The driver's desired gap `d_set` and maximum speed `v_set` enter the gap controller, which also reads the radar-measured gap and lead vehicle speed. The gap controller outputs a target speed reference `v_ref` that is always bounded by `v_set`. The inner speed controller then drives the powertrain to track `v_ref`, closing the speed loop with `v_ego` feedback. Driver interventions via HMI override pre-empt both controllers, satisfying the ISO 15622 requirement that the driver always has priority. The two-loop cascade architecture lets the gap outer loop be tuned conservatively for comfort while the speed inner loop responds quickly to transient demands.

@@ -1,0 +1,45 @@
+---
+title: Purchase order approval
+description: Employee submits PO → manager review → finance approval → payment — BPMN gateway shapes for a business approval workflow.
+diagram: flowchart
+standard: ISO 5807:1985
+industry: [finance, operations]
+persona: For the business analyst
+complexity: 2
+tags: [approval, bpmn, purchase-order, workflow, finance, gateway]
+featured: false
+relatedLink:
+  label: Flowchart syntax
+  href: /docs/flowchart
+status: published
+dsl: |
+  flowchart TD
+    submit([Employee submits purchase order]) --> amtcheck{Amount > $10,000?}
+    amtcheck -->|Yes — CFO track| cfo[CFO review queue]
+    amtcheck -->|No — standard track| mgr[Department manager review]
+    mgr --> mapproved{Manager approved?}
+    mapproved -->|No| revise[Request revision from employee]
+    revise --> submit
+    mapproved -->|Yes| cfo
+    cfo --> capproved{CFO approved?}
+    capproved -->|No| reject([Reject PO — notify employee with reason])
+    capproved -->|Yes| finance[Finance processes payment]
+    finance --> vendor[Send payment confirmation to vendor]
+    vendor --> done([PO closed — archived to ERP])
+---
+
+## Scenario
+
+A business analyst is documenting a company's purchase order workflow to support an ERP implementation and audit readiness review. The diagram makes explicit the dollar-amount threshold that gates which approval track a PO enters, the revision loop that keeps rejected items in flight rather than discarding them, and the two possible terminal outcomes — closed PO or formal rejection with written rationale.
+
+## Annotation key
+
+- `([…])` — stadium; employee-initiated event and terminal closure or rejection nodes
+- `{…}` — diamond; BPMN-style exclusive gateways branching on amount threshold or approval decision
+- `[…]` — rectangle; human review steps and system actions (payment, notification, archival)
+- `-->|label|` — branch label showing threshold condition or approval outcome
+- Loop from `revise` back to `submit` keeps the PO in flight through the standard track after revision
+
+## How to read
+
+Every PO enters the amount-check gateway immediately after submission. Orders above ten thousand dollars skip manager review and go directly to the CFO queue; orders at or below the threshold must first receive manager approval. A manager rejection sends the PO back to the employee for revision, which re-enters the same gateway — the amount does not change, so revised orders under the threshold loop through manager review again. Once the CFO approves (either from the high-value track or an escalated standard-track PO), finance executes payment and notifies the vendor, closing the PO in the ERP. A CFO rejection terminates the flow with a formal notice to the employee.

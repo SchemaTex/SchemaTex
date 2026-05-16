@@ -1,0 +1,43 @@
+---
+title: Full-wave bridge rectifier
+description: Diode bridge rectifier with filter capacitor and voltage regulator — converts AC mains to regulated DC, the power supply used in 90% of wall adapters.
+diagram: circuit
+standard: IEEE 315
+industry: [education, power-electronics]
+persona: For the power EE student
+complexity: 2
+tags: [rectifier, bridge, diode, filter, power-supply, ac-dc, smoothing]
+featured: false
+relatedLink:
+  label: Circuit syntax
+  href: /docs/circuit
+status: published
+dsl: |
+  circuit "Full-Wave Bridge Rectifier with Regulator" netlist
+  V1 ac1 ac2 ac 12V
+  T1 ac1 ac2 0 sec_p sec_n xfmr value="12:1"
+  D1 sec_p rect 0 0 diode value="1N4007"
+  D2 0 rect sec_n 0 diode value="1N4007"
+  D3 sec_n rect 0 0 diode value="1N4007"
+  D4 0 rect sec_p 0 diode value="1N4007"
+  C1 rect 0 1000u
+  U1 rect vreg 0 reg value="LM7812"
+  C2 vreg 0 10u
+  Rload vreg 0 100
+---
+
+## Scenario
+
+The full-wave bridge rectifier converts both half-cycles of an AC waveform into pulsating DC, then smooths and regulates it. It is the most common power conversion topology — found in every linear bench supply, phone charger, and low-power wall adapter. T1 steps down mains AC; D1–D4 form the H-bridge; C1 smooths the 100 Hz ripple; the LM7812 regulator clamps the output to a stable 12 V regardless of load current up to 1 A.
+
+## Annotation key
+
+- `T1 ... xfmr value="12:1"` — mains transformer stepping down 120 V AC to 12 V AC; isolates the secondary from the live mains
+- `D1–D4 ... diode value="1N4007"` — four 1N4007 silicon rectifier diodes (1 A, 1000 V PIV) arranged as an H-bridge; each conducts on alternate half-cycles, routing both polarities of the AC wave to the positive rail
+- `C1 rect 0 1000u` — 1000 μF bulk filter capacitor; charges to the peak rectified voltage (~16.9 V) and discharges into the load between peaks, limiting ripple; larger capacitance = lower ripple
+- `U1 rect vreg 0 reg value="LM7812"` — three-terminal linear voltage regulator (LM7812); drops excess voltage as heat and outputs a stable 12 V; requires at least 2 V headroom (dropout voltage)
+- `C2 vreg 0 10u` — output bypass capacitor (10 μF) on the regulator output; suppresses high-frequency oscillations and improves transient response
+
+## How to read
+
+During the positive AC half-cycle, D1 and D3 conduct, pushing current from `sec_p` through D1 to `rect`, then through the load, and back through D3 to `sec_n`. During the negative half-cycle, D2 and D4 conduct, reversing the secondary but still delivering current in the same direction to `rect`. The result is 100 Hz pulsating DC. C1 holds the voltage near the peak value between pulses. The LM7812 then regulates the rippled DC down to a clean 12 V output. Efficiency is limited by the two forward voltage drops (~1.4 V total across two diodes at once) and heat dissipation in the regulator.

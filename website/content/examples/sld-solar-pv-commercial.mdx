@@ -1,0 +1,62 @@
+---
+title: Commercial rooftop PV — grid-tied with net metering
+description: 200 kW commercial PV array through DC combiners, string inverters, AC disconnect, and bi-directional net-metering connection per NEC 690.
+diagram: sld
+standard: NEC 690
+industry: [solar, utility]
+persona: For the PV system designer
+complexity: 3
+tags: [sld, solar, pv, nec690, inverter, net-metering, commercial, rooftop]
+featured: false
+relatedLink:
+  label: SLD syntax
+  href: /docs/sld
+status: published
+dsl: |
+  sld "200 kW Commercial Rooftop PV — Grid-Tied"
+  pv1 = pv_array [kw: 50]
+  pv2 = pv_array [kw: 50]
+  pv3 = pv_array [kw: 50]
+  pv4 = pv_array [kw: 50]
+  comb1 = combiner [inputs: 2]
+  comb2 = combiner [inputs: 2]
+  inv1 = inverter [kw: 100]
+  inv2 = inverter [kw: 100]
+  ac_disco = disconnect [amps: 240]
+  main_bkr = breaker [amps: 250]
+  meter_net = meter [label: "Bi-directional Net Meter"]
+  utility = utility [label: "Utility 480V 3φ"]
+  load_service = load [label: "Facility Loads"]
+  pv1 -> comb1
+  pv2 -> comb1
+  pv3 -> comb2
+  pv4 -> comb2
+  comb1 -> inv1
+  comb2 -> inv2
+  inv1 -> ac_disco
+  inv2 -> ac_disco
+  ac_disco -> main_bkr
+  main_bkr -> meter_net
+  meter_net -> utility
+  meter_net -> load_service
+---
+
+## Scenario
+
+A PV system designer prepares the electrical permit package for a 200 kW grid-tied commercial rooftop installation. Local AHJ and the serving utility both require a signed, stamped single-line diagram per NEC Article 690 before issuing the interconnection agreement and net-metering tariff enrollment. The SLD must show the complete DC-to-grid power path, all overcurrent protection devices, the AC disconnect required by NEC 690.15, and the bi-directional production meter required by the utility's net-metering tariff.
+
+## Annotation key
+
+- `pv_array [kw:...]` — rooftop PV sub-array (strings of series-wired modules); four 50 kW sub-arrays total 200 kW DC
+- `combiner [inputs:...]` — DC combiner box aggregating two sub-arrays per inverter input; includes string-level fusing per NEC 690.9
+- `inverter [kw:...]` — grid-tied string inverter converting DC to 480 V AC three-phase; anti-islanding relay per NEC 690.61
+- `disconnect [amps:...]` — utility-accessible AC disconnect switch required by NEC 690.15; 240 A rated for combined inverter output
+- `breaker [amps:...]` — main production meter breaker; 250 A provides overcurrent protection at the point of common coupling
+- `meter [label:...]` — bi-directional revenue-grade kWh meter recording both production (export) and consumption (import)
+- `utility` — 480 V three-phase utility grid; receives surplus generation during export, supplies deficit during import
+- `load [label:...]` — facility electrical loads consuming PV generation before any surplus reaches the grid
+- `->` — directed DC or AC power flow; flow at net meter is bi-directional (arrow represents the prevailing export direction)
+
+## How to read
+
+Four 50 kW PV sub-arrays pair into two DC combiner boxes, each feeding one 100 kW string inverter. Both inverters merge at the 240 A AC disconnect — the utility-accessible isolation point required by NEC 690.15. The combined 200 kW AC output passes through the 250 A production breaker to the bi-directional net meter. From the net meter, power flows in either direction: when PV generation exceeds facility load, surplus energy exports to the utility grid and the meter records export kWh; when facility load exceeds generation (nights, cloudy days), the utility imports through the same meter. The serving utility reads the net difference for billing under the net-metering tariff, crediting the owner at the retail rate for each kWh exported.

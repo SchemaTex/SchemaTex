@@ -1,0 +1,40 @@
+---
+title: SR latch with NOR gates
+description: NOR-based SR latch — the fundamental memory element; Set and Reset inputs, Q and Q̄ outputs — the sequential circuit every digital-logic student derives from first principles.
+diagram: logic
+standard: IEEE 91
+industry: [education, hardware]
+persona: For the digital logic student
+complexity: 2
+tags: [logic, sr-latch, nor, sequential, memory, latch, flip-flop]
+featured: false
+relatedLink:
+  label: Logic gate syntax
+  href: /docs/logic
+status: published
+dsl: |
+  logic "SR Latch (NOR)"
+  input S, R
+  output Q, Q_bar
+
+  Q = NOR(R, Q_bar)
+  Q_bar = NOR(S, Q)
+---
+
+## Scenario
+
+The SR (Set-Reset) latch built from two cross-coupled NOR gates is the simplest sequential logic element and the ancestor of every flip-flop, register, and SRAM cell. Digital logic students derive it in the first week of a sequential circuits lecture; VLSI designers recognize it as the core cell in standard-cell libraries. Schematex renders the cross-coupled back-edges automatically, producing the canonical feedback loop without manual wire routing.
+
+## Annotation key
+
+- `Q = NOR(R, Q_bar)` — upper NOR gate: Q is 1 only when R=0 and Q_bar=0; the Q_bar input is the feedback from the lower gate
+- `Q_bar = NOR(S, Q)` — lower NOR gate: Q_bar is 1 only when S=0 and Q=0; the Q input is the feedback from the upper gate
+- Cross-coupled feedback — each gate's output is one of the other gate's inputs; this creates two stable states and one unstable (forbidden) state
+- Set (S=1, R=0): forces Q=1, Q_bar=0; latch remembers this state when S returns to 0
+- Reset (R=1, S=0): forces Q=0, Q_bar=1; latch remembers this state when R returns to 0
+- Hold (S=0, R=0): both NOR gates maintain their current outputs — the circuit stores one bit
+- Forbidden (S=1, R=1): both Q and Q_bar driven to 0; undefined behavior when both inputs return to 0
+
+## How to read
+
+The two NOR gates form a feedback loop: the output of each gate feeds back as one input of the other. In steady state, exactly one output is high and the other is low. Asserting S (Set) high drives Q_bar to 0, which allows Q to rise to 1, reinforcing Q_bar=0 even after S de-asserts — this is the stored "1" state. Asserting R (Reset) high drives Q to 0, which allows Q_bar to rise to 1, storing "0". The forbidden condition S=R=1 breaks the mutual exclusion and produces metastable behavior; real designs ensure S and R are never simultaneously asserted. The back-edges in the diagram represent physical wire connections creating the regenerative loop that gives the latch its memory property.

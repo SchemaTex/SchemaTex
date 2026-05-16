@@ -1,0 +1,70 @@
+---
+title: Food safety recall — HACCP deviation analysis
+description: HACCP-based fishbone for a pathogen contamination incident in a ready-to-eat deli meat line — the food safety RCA required before FDA corrective action.
+diagram: fishbone
+standard: HACCP / FDA FSMA
+industry: [food-beverage, quality]
+persona: For the food safety quality manager
+complexity: 4
+tags: [fishbone, food-safety, haccp, recall, listeria, fsma, fda, rca]
+featured: false
+relatedLink:
+  label: Fishbone syntax
+  href: /docs/fishbone
+status: published
+dsl: |
+  fishbone "Listeria monocytogenes Contamination RCA — Deli Meat Recall"
+
+  effect "Lm-positive product — Class I voluntary recall, 48,000 lb affected"
+
+  category machine      "Equipment"
+  category method       "Method"
+  category material     "Material"
+  category man          "Personnel"
+  category measurement  "Measurement"
+  category environment  "Environment"
+
+  machine : "Slicer blade guard harboring Listeria in inaccessible niche"
+  machine : "Floor drain biofilm not fully removed by routine CIP — design flaw"
+  machine : "Condenser drip pan overflow — standing water on RTE processing floor"
+  machine : "Conveyor belt splice joint — harborage point not in sanitation SOP"
+
+  method : "Sanitation SOP frequency reduced from daily to 3×/week to cut costs"
+  method : "Pre-operational inspection checklist signed off without physical walk"
+  method : "Master sanitation schedule not updated after equipment line extension"
+  method : "CIP chemical dwell time shortened — insufficient contact time at pH"
+
+  material : "Incoming raw pork shoulder — positive environmental swab at supplier"
+  material : "Packaging seal failure — modified atmosphere integrity compromised"
+  material : "Sanitizer concentration below 200 ppm due to dilution system fault"
+
+  man : "New overnight sanitation crew — no documented SSOP training on file"
+  man : "Line supervisor overrode reject hold on positive environmental zone-3 swab"
+  man : "Sanitation lead position vacant 6 weeks — responsibilities distributed informally"
+
+  measurement : "Environmental swab program quarterly — FSMA §117 requires risk-based frequency"
+  measurement : "Finished product testing not at HACCP CCP for Lm — gap in food safety plan"
+  measurement : "Zone-1 positive swab result not escalated per written recall procedure"
+
+  environment : "Cold room floor drain shared between raw and RTE processing areas"
+  environment : "Floor slope inadequate — pooling adjacent to slicer base"
+  environment : "Condensation on ceiling above packaging line — roof insulation failure"
+---
+
+## Scenario
+
+A food safety quality manager leads a mandatory FDA FSMA corrective action investigation after an environmental monitoring positive for Listeria monocytogenes is linked to shipped product. The six-category fishbone is the required root-cause analysis exhibit in the FDA Form 483 response and the firm's CAPA (Corrective and Preventive Action) submission. The HACCP team must demonstrate systematic analysis — not just the proximate harborage point — to satisfy the agency and prevent further enforcement action.
+
+## Annotation key
+
+- **Equipment** — physical harborage points and design deficiencies that prevent effective sanitation
+- **Method** — sanitation procedure gaps: frequency, dwell time, verification steps
+- **Material** — incoming ingredient risk, sanitizer failure, and packaging integrity
+- **Personnel** — training gaps, unauthorized decision overrides, and staffing vacancies
+- **Measurement** — monitoring program frequency, CCP coverage, and escalation failures
+- **Environment** — facility design, drainage, and condensation factors that enable pathogen persistence
+- Listeria monocytogenes is a persistent environmental pathogen; recall root causes are almost always multi-factorial, not attributable to a single point
+
+## How to read
+
+The Class I recall (48,000 lb of ready-to-eat deli meat, highest FDA severity) is the effect. The six causal branches reveal the systemic failure: a harborage point in the slicer niche was enabled by a cost-driven reduction in sanitation frequency (method), a new untrained crew that did not physically complete the pre-op inspection (personnel), and an environmental swab program running quarterly instead of the risk-based frequency FSMA requires (measurement). A line supervisor's override of a zone-3 positive swab — which should have triggered a hold and investigation — is the most critical personnel finding and requires immediate CAPA. The corrective action plan must address all six branches; the FDA will reject a response that addresses only the harborage point without the systemic SSOP and training corrective actions.

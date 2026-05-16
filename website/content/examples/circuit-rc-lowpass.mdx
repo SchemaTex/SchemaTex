@@ -1,0 +1,34 @@
+---
+title: RC low-pass filter
+description: First-order RC low-pass filter with −3 dB corner frequency formula — the passive filter taught in every intro electronics course.
+diagram: circuit
+standard: IEEE 315
+industry: [education, hardware]
+persona: For the EE student
+complexity: 1
+tags: [rc, filter, low-pass, passive, frequency, -3db, hobbyist]
+featured: false
+relatedLink:
+  label: Circuit syntax
+  href: /docs/circuit
+status: published
+dsl: |
+  circuit "RC Low-Pass Filter (fc = 1 kHz)" netlist
+  Vin in 0 ac 1V
+  R1 in out 10k
+  C1 out 0 15.9n
+---
+
+## Scenario
+
+The RC low-pass filter is the most fundamental passive filter in electronics. It passes low-frequency signals while attenuating frequencies above the corner frequency. With R1 = 10 kΩ and C1 = 15.9 nF the −3 dB corner frequency is exactly 1 kHz, calculated as fc = 1 / (2π × R × C). Below fc the output tracks the input; above fc the output rolls off at −20 dB/decade.
+
+## Annotation key
+
+- `Vin in 0 ac 1V` — AC voltage source: positive terminal at node `in`, negative at ground `0`, amplitude 1 V
+- `R1 in out 10k` — series resistor R1 (10 kΩ) between the input node `in` and the intermediate node `out`; blocks high-frequency current
+- `C1 out 0 15.9n` — shunt capacitor C1 (15.9 nF) from node `out` to ground; its reactance Xc = 1/(2πfC) decreases as frequency rises, diverting high-frequency energy to ground
+
+## How to read
+
+Signal enters at `in` and must pass through R1 before reaching `out`. C1 provides an impedance path to ground in parallel with the output load. At low frequencies C1 looks like an open circuit so nearly all signal appears at `out`. As frequency rises, C1's impedance drops and it shunts an increasing fraction of the signal to ground. At fc = 1 kHz the resistor and capacitor impedances are equal and output power is halved (−3 dB, voltage × 0.707). This RC combination is used everywhere: audio tone shaping, anti-aliasing before ADC inputs, power-supply decoupling, and noise filtering on sensor signals.

@@ -1,0 +1,51 @@
+---
+title: On-call incident response
+description: SRE on-call decision tree from alert page through triage, escalation, mitigation, and post-mortem — BPMN-shaped TD flow.
+diagram: flowchart
+standard: ISO 5807:1985
+industry: [saas, devops]
+persona: For the SRE on-call engineer
+complexity: 3
+tags: [incident, sre, on-call, escalation, mitigation, postmortem]
+featured: false
+relatedLink:
+  label: Flowchart syntax
+  href: /docs/flowchart
+status: published
+dsl: |
+  flowchart TD
+    page([Alert fires — on-call paged]) --> ack{Acknowledged within 5 min?}
+    ack -->|No| escalate[Escalate to secondary on-call]
+    escalate --> sev
+    ack -->|Yes| sev{Severity assessment}
+    sev -->|SEV1 — customer-facing outage| sev1[Wake CTO + open war room bridge]
+    sev -->|SEV2 — degraded service| sev2[Notify team lead + Slack channel]
+    sev -->|SEV3 — internal only| sev3[Self-resolve within shift]
+    sev1 --> mitigate[Apply mitigation — rollback or hotfix]
+    sev2 --> mitigate
+    sev3 --> mitigate
+    mitigate --> health{Service health restored?}
+    health -->|No| mitigate
+    health -->|Yes| resolved([Incident resolved — close bridge])
+    resolved --> postmortem{SEV1 or SEV2?}
+    postmortem -->|Yes| pm[Write post-mortem within 48 h]
+    postmortem -->|No| log[Log in incident tracker]
+    pm --> done([Done])
+    log --> done
+---
+
+## Scenario
+
+An SRE team uses this flowchart as the canonical on-call runbook embedded in their incident-management wiki. When an alert fires at 3 AM the responder can follow the diagram top to bottom without improvising, ensuring that acknowledgment, severity triage, escalation paths, and post-mortem obligations are never skipped regardless of who is on duty.
+
+## Annotation key
+
+- `([…])` — stadium; trigger events and terminal closure nodes
+- `{…}` — diamond; time-boxed decisions and severity gates
+- `[…]` — rectangle; prescribed human actions (escalate, notify, mitigate, document)
+- `-->|label|` — branch label showing condition or severity band
+- Loop back from `health -->|No|` to `mitigate` represents the retry-until-resolved mitigation cycle
+
+## How to read
+
+The flow begins the moment an alert fires. The first gate enforces the five-minute acknowledgment SLA; a miss immediately escalates to the secondary responder who then re-enters the severity triage diamond. Severity determines the escalation audience — SEV1 wakes executive leadership, SEV2 notifies the team lead, SEV3 is self-contained. All three paths converge on the mitigation loop, which repeats until health is restored. The final diamond routes only SEV1 and SEV2 incidents to a formal post-mortem; SEV3 incidents close with a tracker log entry.

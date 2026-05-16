@@ -1,0 +1,65 @@
+---
+title: Tank level control — fill pump with float switch
+description: "Water-treatment tank level controller: high float inhibits fill, low float enables fill pump, with timer-based fill-cycle limiting and alarm."
+diagram: ladder
+standard: IEC 61131-3
+industry: [industrial, water-treatment]
+persona: For the water plant controls engineer
+complexity: 3
+tags: [ladder, tank, level, float, pump, timer, alarm, water-treatment]
+featured: false
+relatedLink:
+  label: Ladder syntax
+  href: /docs/ladder
+status: published
+dsl: |
+  ladder "Tank Level Control"
+
+  rung 1 "Fill pump — enable when low float set, inhibit at high float":
+    XIC(FLOAT_LOW, "IN 1.0", name="Low Float Switch")
+    XIO(FLOAT_HIGH, "IN 1.1", name="High Float Switch")
+    XIO(PUMP_FAULT, "IN 1.2", name="Pump Fault")
+    parallel:
+      branch:
+        XIC(PUMP_CMD, "OUT 2.0", name="Pump Command Seal-In")
+      branch:
+        XIC(PUMP_AUX, "BIT 3.0", name="Pump Aux Contact")
+    OTE(PUMP_CMD, "OUT 2.0", name="Fill Pump Command")
+
+  rung 2 "Fill timer — tracks continuous pump run time":
+    XIC(PUMP_CMD, "OUT 2.0", name="Fill Pump Running")
+    TON(FILL_TMR, "TMR 4.0", name="Fill Cycle Timer", preset=600000)
+
+  rung 3 "Overtime alarm — pump running too long suggests leak or low supply":
+    XIC(FILL_TMR.DN, "BIT 4.15", name="Fill Timer Done")
+    OTE(FILL_ALARM, "OUT 2.1", name="Fill Overtime Alarm")
+
+  rung 4 "Pump start counter — tracks cycle frequency, alarm at 20 starts":
+    XIC(PUMP_CMD, "OUT 2.0", name="Pump Command")
+    XIO(PUMP_PREV, "BIT 3.1", name="Pump Previous Scan")
+    CTU(PUMP_CTU, "CNT 5.0", name="Pump Start Counter", preset=20)
+
+  rung 5 "Pump previous-scan latch — one-shot rising edge for counter":
+    XIC(PUMP_CMD, "OUT 2.0", name="Pump Command")
+    OTE(PUMP_PREV, "BIT 3.1", name="Pump Previous Scan")
+
+  rung 6 "Cycle count alarm — too many starts per hour indicates hunting":
+    XIC(PUMP_CTU.DN, "BIT 5.15", name="Pump Counter Done")
+    OTE(CYCLE_ALARM, "OUT 2.2", name="Pump Cycle Alarm")
+---
+
+## Scenario
+
+Municipal and industrial water treatment plants rely on simple float-switch level control for storage and process tanks. The fill pump must start when the tank drops to the low-float setpoint and stop when the high-float setpoint is reached. Two failure modes require alarm coverage: an overtime run (pump exceeds 10 continuous minutes) signals a supply shortage or tank leak; excessive start-stop cycling (more than 20 starts counted in a shift) signals float switch hunting or a check-valve failure that causes the pump to short-cycle. Both alarms feed the SCADA HMI and can page the on-call operator without requiring manual inspection.
+
+## Annotation key
+
+- `XIC(FLOAT_LOW, ...)` — low float switch closes (bit = 1) when water level drops below the low setpoint, enabling the pump
+- `XIO(FLOAT_HIGH, ...)` — high float switch wired normally-closed; opens (bit = 0) when water reaches the high setpoint, breaking the rung and stopping the pump
+- `XIO(PUMP_FAULT, ...)` — motor protection relay wired normally-closed; any thermal or overload trip de-energizes the coil
+- `TON(FILL_TMR, preset=600000)` — Timer On Delay with 600 000 ms (10 min) preset; DN bit sets if the pump runs continuously beyond that duration
+- `CTU(PUMP_CTU, preset=20)` — Count Up counter; incremented on each pump start rising edge via the one-shot PUMP_PREV pattern; DN bit sets at 20 counts
+
+## How to read
+
+Rung 1 is the core control: power flows only if the low float is set AND the high float is not yet reached AND no fault exists. The seal-in (PUMP_CMD parallel with PUMP_AUX) holds the pump on after the low float clears due to rising water, until the high float finally opens the rung. Rung 2 starts a 10-minute timer whenever the pump is running; Rung 3 turns on the overtime alarm when that timer completes. Rungs 4–5 form a rising-edge one-shot: PUMP_PREV stores the previous scan state so the counter only increments once per pump start event. Rung 6 alarms when the cycle count reaches 20.

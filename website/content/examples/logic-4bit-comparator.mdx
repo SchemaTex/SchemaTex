@@ -1,0 +1,51 @@
+---
+title: 4-bit magnitude comparator
+description: 4-bit magnitude comparator — generates A>B, A=B, A<B outputs from four A and four B input bits using XOR-based equality detection and cascaded AND/OR logic.
+diagram: logic
+standard: IEEE 91
+industry: [education, hardware]
+persona: For the digital logic student
+complexity: 3
+tags: [logic, comparator, 4-bit, xor, and, or, combinational, magnitude]
+featured: false
+relatedLink:
+  label: Logic gate syntax
+  href: /docs/logic
+status: published
+dsl: |
+  logic "4-bit Magnitude Comparator"
+  input A3, A2, A1, A0, B3, B2, B1, B0
+  output GT, EQ, LT
+
+  eq3 = XNOR(A3, B3)
+  eq2 = XNOR(A2, B2)
+  eq1 = XNOR(A1, B1)
+  eq0 = XNOR(A0, B0)
+
+  EQ = AND(eq3, eq2, eq1, eq0)
+
+  g3 = AND(A3, NOT(B3))
+  g2 = AND(eq3, A2, NOT(B2))
+  g1 = AND(eq3, eq2, A1, NOT(B1))
+  g0 = AND(eq3, eq2, eq1, A0, NOT(B0))
+  GT = OR(g3, g2, g1, g0)
+
+  LT = AND(NOT(GT), NOT(EQ))
+---
+
+## Scenario
+
+A digital logic student or hardware designer needs the combinational logic that forms the core of a 74HC85-style 4-bit magnitude comparator — a fundamental building block used in address decoders, priority encoders, and ALU condition-code generation. This implementation uses XNOR gates for bit-wise equality detection and a priority-encoded AND-OR tree for the greater-than output, then derives less-than from the complement of the other two outputs.
+
+## Annotation key
+
+- `eq3`–`eq0` — XNOR of each bit pair; XNOR output is 1 when both inputs are equal (0=0 or 1=1)
+- `EQ = AND(eq3, eq2, eq1, eq0)` — all four bit pairs must be equal for A=B
+- `g3` — A>B contribution from MSB: A3=1 and B3=0 (A3 AND NOT B3)
+- `g2`–`g0` — cascaded greater-than terms: bits 3 down to k must be equal, and at position k, Ak=1, Bk=0; priority order ensures the MSB difference dominates
+- `GT = OR(g3, g2, g1, g0)` — A&gt;B if any of the priority-ordered greater-than conditions is true
+- `LT = AND(NOT(GT), NOT(EQ))` — A&lt;B is derived: neither A&gt;B nor A=B; avoids re-implementing the symmetric AND-OR tree
+
+## How to read
+
+The circuit operates in two independent paths. The equality path XNORs each bit pair and ANDs all four results together — EQ is 1 only when all four bit pairs match. The greater-than path uses a priority tree: the MSB difference (bit 3) overrides all lower bits, bit 2 is evaluated only when bits 3 are equal, and so on down to bit 0. The four AND terms feed an OR gate, producing GT=1 when A is lexicographically greater. LT is then simply the NOR of GT and EQ. This three-output structure matches the SN74LS85 TTL IC and can be cascaded for wider comparisons by connecting the cascade inputs of successive stages.

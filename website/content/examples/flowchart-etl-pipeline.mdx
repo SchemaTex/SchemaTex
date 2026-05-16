@@ -1,0 +1,55 @@
+---
+title: ETL data pipeline
+description: Source extraction through transform, validation, load, and warehouse notification — the standard data-engineering pipeline diagram.
+diagram: flowchart
+standard: ISO 5807:1985
+industry: [data, analytics]
+persona: For the data engineer
+complexity: 3
+tags: [etl, pipeline, data, warehouse, validation, transform]
+featured: false
+relatedLink:
+  label: Flowchart syntax
+  href: /docs/flowchart
+status: published
+dsl: |
+  flowchart LR
+    subgraph "Sources"
+      pg[(PostgreSQL)] --> extract
+      s3[(S3 bucket)] --> extract
+      api[REST API] --> extract
+    end
+    extract[Extract to raw staging] --> clean[Clean — strip nulls, deduplicate]
+    clean --> normalize[Normalize — cast types, unify schemas]
+    normalize --> enrich[Enrich — join lookup tables]
+    enrich --> validate{Error rate > 1%?}
+    validate -->|Yes| quarantine[Quarantine bad rows]
+    quarantine --> notify[Alert data-quality Slack channel]
+    notify --> retry{Retry batch?}
+    retry -->|Yes| extract
+    retry -->|No| abort([Abort run — log to incident tracker])
+    validate -->|No| load[Load to data warehouse]
+    load --> qcheck[Run row-count and sum reconciliation]
+    qcheck --> passed{Reconciliation passed?}
+    passed -->|No| rollback[Rollback warehouse load]
+    rollback --> abort
+    passed -->|Yes| publish[Publish partition metadata]
+    publish --> downstream([Notify downstream consumers — dbt, BI, ML])
+---
+
+## Scenario
+
+A data engineer is documenting a nightly batch ETL job that ingests transactional records from three heterogeneous sources into a central warehouse. The diagram serves as both a runbook and a stakeholder communication artifact, showing data-quality enforcement points that prevent silent corruption from propagating to reporting dashboards and machine-learning feature stores.
+
+## Annotation key
+
+- `([…])` — stadium; terminal run outcomes (abort, notify consumers)
+- `{…}` — diamond; quality gates with quantitative thresholds
+- `[…]` — rectangle; processing steps or system actions
+- `[(…)]` — cylinder; external data stores
+- `subgraph "Sources"` — groups the three ingestion connectors into one tier
+- Loop from `retry -->|Yes|` back to `extract` models full-batch reprocessing after quarantine
+
+## How to read
+
+The pipeline fans in from three source connectors into a single extract step that writes to raw staging. The transform chain — clean, normalize, enrich — runs sequentially; each step narrows and standardizes the data before passing it forward. The validation gate measures the bad-row error rate: if it exceeds one percent, bad rows are quarantined, an alert fires, and the operator decides whether to retry or abort the run. Rows that pass validation are loaded to the warehouse, then verified with a row-count and sum reconciliation; a failed reconciliation triggers a rollback and abort rather than leaving inconsistent data in place. A successful reconciliation publishes partition metadata and fans out notifications to downstream consumers.

@@ -1,0 +1,39 @@
+---
+title: SARS-CoV-2 variant evolution tree
+description: SARS-CoV-2 variant phylogeny — Alpha through XBB — showing lineage divergence from the Wuhan ancestral sequence, for epidemiology teaching.
+diagram: phylo
+standard: Newick/NHX (Nextstrain convention)
+industry: [epidemiology, public-health]
+persona: For the epidemiologist
+complexity: 3
+tags: [phylo, sars-cov2, covid, variants, epidemiology, nextstrain, rectangular]
+featured: false
+relatedLink:
+  label: Phylogenetic syntax
+  href: /docs/phylo
+status: published
+dsl: |
+  phylo "SARS-CoV-2 Variant Evolution"
+    layout: rectangular
+    newick: "((((BA1_Omicron:0.05,BA2_Omicron:0.04):0.02[&&NHX:B=99],XBB_Omicron:0.07):0.03[&&NHX:B=95],(Delta_B1617:0.12,Kappa_B1617:0.10):0.08[&&NHX:B=90]):0.15[&&NHX:B=85],(Alpha_B117:0.18,Beta_B1351:0.20):0.10[&&NHX:B=88],Wuhan_WH1:0.01);"
+    clade Omicron = (BA1_Omicron, BA2_Omicron, XBB_Omicron) [color: "#C62828", label: "Omicron (B.1.1.529)"]
+    clade Delta_clade = (Delta_B1617, Kappa_B1617) [color: "#1565C0", label: "Delta lineage (B.1.617)"]
+    clade Early_VOC = (Alpha_B117, Beta_B1351) [color: "#2E7D32", label: "Early VOCs (Alpha / Beta)"]
+    scale "nucleotide substitutions/site"
+---
+
+## Scenario
+
+An epidemiologist or public health educator needs to illustrate how SARS-CoV-2 variants of concern diverged from the ancestral Wuhan sequence to explain immune escape, vaccine effectiveness shifts, and the emergence of Omicron sublineages. This tree follows Nextstrain naming conventions and can be updated by swapping in a new Newick string from any phylogenetic inference tool.
+
+## Annotation key
+
+- `Wuhan_WH1:0.01` — ancestral Wuhan sequence placed as outgroup; very short branch reflects minimal divergence from the reference genome
+- `[&&NHX:B=99]` — bootstrap support on internal nodes; values ≥ 95 indicate statistically robust branching
+- `clade Omicron` — red arc groups BA.1, BA.2, and XBB subvariants; high bootstrap (99, 95) confirms monophyletic origin
+- `clade Delta_clade` — blue arc groups the Delta and Kappa sub-lineages of B.1.617
+- `scale "nucleotide substitutions/site"` — horizontal scale bar calibrated in nucleotide substitutions per site
+
+## How to read
+
+Reading from the root (left) outward, the Wuhan ancestral sequence diverges first. The next split separates Early VOCs (Alpha and Beta, green arc) from the Delta and Omicron lineages. Within the right subtree, Delta (B.1.617) forms its own clade before the Omicron radiation. The Omicron clade (red arc) shows the tightest clustering and highest bootstrap support, consistent with rapid clonal expansion from a single introduction event. Branch lengths encode molecular divergence — the markedly longer Omicron branches reflect the elevated mutation burden relative to Delta and early VOCs.
