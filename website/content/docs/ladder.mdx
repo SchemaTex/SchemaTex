@@ -47,11 +47,11 @@ rung 1 "Start when button pressed, stop on fault":
 Four rules cover 80% of usage:
 
 1. Start with `ladder`, optionally followed by a quoted title.
-2. Each **rung** begins with `rung N "optional comment":` on its own line.
+2. Each **rung** begins with `rung N "optional comment":` on its own line. The trailing colon is optional.
 3. Elements are listed one per line, indented under the rung — left to right means series (AND logic).
 4. A `parallel:` / `branch:` block introduces OR logic. Every branch holds its own element list.
 
-> Comments must start with `#` on their own line.
+> Comments may start with `#`, `//`, or Mermaid-style `%%` on their own line.
 
 ---
 
@@ -99,6 +99,7 @@ Coils represent output actions — they act on a tag bit when the rung has power
 | `OTL` | Output Latch | Sets bit = 1; **retains** even after rung goes false (latches) |
 | `OTU` | Output Unlatch | Clears bit = 0; retains even after rung goes false |
 | `OTN` | Output Negate | Sets bit = 0 while rung is true; sets to 1 when rung is false |
+| `RES` | Reset | Rockwell / Allen-Bradley counter or timer reset coil |
 
 **Syntax:** identical to contacts — `OTE(tag)`, `OTE(tag, "address")`, `OTE(tag, "address", name="…")`.
 
@@ -227,11 +228,11 @@ rung 1 "Start from either local or remote":
 
 - **Title:** `ladder "Motor Control"` — first line only, quoted string.
 - **Rung number:** required integer after `rung`.
-- **Rung comment:** optional quoted string after the rung number, before the colon: `rung 3 "Run indicator":`.
+- **Rung comment:** optional quoted string after the rung number, before the optional colon: `rung 3 "Run indicator":` or `rung 3 "Run indicator"`.
 - **Tag:** first argument inside the parentheses — displayed below the symbol.
 - **Address:** second positional argument (quoted): `XIC(START_PB, "IN 1.0")`.
 - **Name:** `name="…"` keyword argument — human-readable description displayed above the symbol.
-- **Line comments:** `#` at the start of a line (after leading whitespace). Inline `# …` after an element line is also stripped.
+- **Line comments:** `#`, `//`, or `%%` at the start of a line (after leading whitespace). The same markers also start trailing comments.
 
 ---
 
@@ -251,7 +252,7 @@ rung 1 "Start from either local or remote":
 
 | You wrote | Parser says | Fix |
 |---|---|---|
-| `rung 1` (no colon) | `LadderParseError: element outside of rung` | Rung header must end with `:` — `rung 1:` |
+| `rung 1` (no colon) | Parsed correctly | The trailing colon is optional |
 | `ONF(TAG)` | `LadderParseError: unknown element type "ONF"` | Falling-edge contact is `OSF`, not `ONF` |
 | `parallel:` without `branch:` | Empty parallel block — rung has no element | Add at least one `branch:` inside the `parallel:` |
 | `branch:` before `parallel:` | `LadderParseError: branch: without parallel:` | Always open `parallel:` first |
@@ -270,7 +271,7 @@ document      = header NEWLINE rung+
 header        = "ladder" ( WS quoted-string )? NEWLINE
 quoted-string = '"' any-char-but-quote* '"'
 
-rung          = "rung" WS integer ( WS quoted-string )? ":" NEWLINE
+rung          = "rung" WS integer ( WS quoted-string )? ":"? NEWLINE
                   element+
 
 element       = contact-line
@@ -282,7 +283,7 @@ contact-line  = contact-type "(" tag ( "," arg )* ")" NEWLINE
 contact-type  = "XIC" | "XIO" | "ONS" | "OSF"
 
 coil-line     = coil-type "(" tag ( "," arg )* ")" NEWLINE
-coil-type     = "OTE" | "OTL" | "OTU" | "OTN"
+coil-type     = "OTE" | "OTL" | "OTU" | "OTN" | "RES"
 
 fb-line       = fb-type "(" tag ( "," arg )* ")" NEWLINE
 fb-type       = "TON" | "TOFF" | "TP"
@@ -304,7 +305,7 @@ tag           = [A-Za-z][A-Za-z0-9_]*
 key           = [A-Za-z][A-Za-z0-9_]*
 integer       = [0-9]+
 number        = [0-9]+ ( "." [0-9]+ )?
-comment       = "#" any NEWLINE
+comment       = ( "#" | "//" | "%%" ) any NEWLINE
 ```
 
 Authoritative source: `src/diagrams/ladder/parser.ts`. If this diverges from the parser, the parser wins — please open an issue.
@@ -318,7 +319,7 @@ Schematex ladder logic follows **IEC 61131-3:2013** Part 3 for the Ladder Diagra
 What is implemented today:
 
 - ✅ Four contact types: XIC (NO), XIO (NC), ONS (rising edge), OSF (falling edge)
-- ✅ Four coil types: OTE (output), OTL (latch/set), OTU (unlatch/reset), OTN (negate)
+- ✅ Five coil types: OTE (output), OTL (latch/set), OTU (unlatch/reset), OTN (negate), RES (counter/timer reset)
 - ✅ Three timer function blocks: TON, TOFF, TP with millisecond `PT=` parameter
 - ✅ Three counter function blocks: CTU, CTD, CTUD with integer `PV=` parameter
 - ✅ Math function blocks: ADD, SUB, MUL, DIV, MOV

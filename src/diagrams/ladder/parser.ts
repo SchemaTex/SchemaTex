@@ -11,6 +11,7 @@ import type {
   LadderFBType,
 } from "../../core/types";
 import { matchQuotedTitle } from "../../core/quotes";
+import { didYouMean } from "../../core/dsl-suggest";
 
 export class LadderParseError extends Error {
   constructor(
@@ -25,7 +26,11 @@ export class LadderParseError extends Error {
 }
 
 const CONTACT_TYPES = new Set<LadderContactType>(["XIC", "XIO", "ONS", "OSF"]);
-const COIL_TYPES = new Set<LadderCoilType>(["OTE", "OTL", "OTU", "OTN"]);
+// IEC 61131-3 §6.7 coil types + Rockwell/Allen-Bradley extensions.
+//   OTE/OTL/OTU/OTN — output energize / latch / unlatch / not (IEC + AB)
+//   RES             — counter / timer reset (AB convention; IEC writes `R` on
+//                     a reset rung). Visually a coil with `R` inscribed.
+const COIL_TYPES = new Set<LadderCoilType>(["OTE", "OTL", "OTU", "OTN", "RES"]);
 const FB_TYPES = new Set<LadderFBType>([
   "TON", "TOFF", "TP",
   "CTU", "CTD", "CTUD",
@@ -33,6 +38,12 @@ const FB_TYPES = new Set<LadderFBType>([
   "MOV",
   "EQU", "NEQ", "GRT", "LES", "GEQ", "LEQ",
 ]);
+
+const ALL_ELEMENT_TYPES: string[] = [
+  ...CONTACT_TYPES,
+  ...COIL_TYPES,
+  ...FB_TYPES,
+];
 
 /** Split comma-separated args respecting quoted strings. */
 function splitArgs(s: string): string[] {
@@ -58,14 +69,50 @@ function stripQuotes(v: string): string {
   return t;
 }
 
+/**
+ * Split an element line into op + inner-arg-string, walking paren depth and
+ * respecting double-quoted regions. Replaces the old `^OP\s*\(([^)]*)\)\s*$`
+ * regex which broke on quoted names that themselves contained parens — e.g.
+ * `XIC(SENSOR, name="الحساس (صغير)")` would terminate at the inner `)`.
+ */
+function splitOpAndArgs(line: string): { op: string; inside: string } | null {
+  const opMatch = line.match(/^([A-Z][A-Z0-9_]*)\s*\(/);
+  if (!opMatch) return null;
+  const op = opMatch[1]!;
+  const start = opMatch[0]!.length;
+  let depth = 1;
+  let inQuote = false;
+  let end = -1;
+  for (let i = start; i < line.length; i++) {
+    const ch = line[i]!;
+    if (ch === '"' && line[i - 1] !== "\\") {
+      inQuote = !inQuote;
+      continue;
+    }
+    if (inQuote) continue;
+    if (ch === "(") depth++;
+    else if (ch === ")") {
+      depth--;
+      if (depth === 0) {
+        end = i;
+        break;
+      }
+    }
+  }
+  if (end < 0) return null;
+  // Trailing chars after the closing `)` are only allowed if blank.
+  if (line.slice(end + 1).trim() !== "") return null;
+  return { op, inside: line.slice(start, end) };
+}
+
 /** Parse one element line, e.g. XIC(START), TON(T1, PT=5000), OTE(MOTOR). */
 function parseElement(line: string, lineNo: number): LadderElement {
-  const m = line.match(/^([A-Z][A-Z0-9_]*)\s*\(\s*([^)]*)\s*\)\s*$/);
+  const m = splitOpAndArgs(line);
   if (!m) {
     throw new LadderParseError(`invalid element syntax: ${line}`, lineNo, undefined, line);
   }
-  const op = m[1] as string;
-  const args = splitArgs(m[2]);
+  const op = m.op;
+  const args = splitArgs(m.inside);
   if (args.length === 0 || !args[0]) {
     throw new LadderParseError(`element missing tag: ${line}`, lineNo, undefined, line);
   }
@@ -132,7 +179,12 @@ function parseElement(line: string, lineNo: number): LadderElement {
     return fb;
   }
 
-  throw new LadderParseError(`unknown element type "${op}"`, lineNo, undefined, line);
+  throw new LadderParseError(
+    `unknown element type "${op}"${didYouMean(op, ALL_ELEMENT_TYPES)}`,
+    lineNo,
+    undefined,
+    line
+  );
 }
 
 export function parseLadderDSL(text: string): LadderAST {
@@ -159,7 +211,10 @@ export function parseLadderDSL(text: string): LadderAST {
   for (let i = 0; i < rawLines.length; i++) {
     const raw = rawLines[i];
     const lineNo = i + 1;
-    const stripped = raw.replace(/#.*$/, "");
+    // Strip `#`, `//`, or Mermaid `%%` line comments. Quote-awareness is
+    // overkill here: ladder lines don't carry URL-shaped attributes, and
+    // a literal `#` inside a quoted PLC tag is exceedingly rare.
+    const stripped = raw.replace(/(#|\/\/|%%).*$/, "");
     if (!stripped.trim()) continue;
 
     // indentation = count of leading spaces/tabs (tab = 2)
@@ -178,8 +233,10 @@ export function parseLadderDSL(text: string): LadderAST {
       continue;
     }
 
-    // Rung: rung N "comment":
-    const rungMatch = line.match(/^rung\s+(\d+)(?:\s+"([^"]*)")?\s*:\s*$/i);
+    // Rung: `rung N "comment":` — the trailing colon is optional, since LLMs
+    // routinely emit `rung 1` without it (Mermaid never uses a colon here, so
+    // it's not in the training data). The optional quoted comment is unchanged.
+    const rungMatch = line.match(/^rung\s+(\d+)(?:\s+"([^"]*)")?\s*:?\s*$/i);
     if (rungMatch) {
       finishParallel();
       if (currentRung) {

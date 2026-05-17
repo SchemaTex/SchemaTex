@@ -959,7 +959,7 @@ export interface BlockAST {
 // ── Ladder Logic ─────────────────────────────────────────────
 
 export type LadderContactType = "XIC" | "XIO" | "ONS" | "OSF";
-export type LadderCoilType = "OTE" | "OTL" | "OTU" | "OTN";
+export type LadderCoilType = "OTE" | "OTL" | "OTU" | "OTN" | "RES";
 export type LadderFBType =
   | "TON" | "TOFF" | "TP"         // Timers
   | "CTU" | "CTD" | "CTUD"        // Counters

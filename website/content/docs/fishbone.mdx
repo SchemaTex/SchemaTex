@@ -51,7 +51,7 @@ Four rules cover 80% of usage:
 3. Add causes with `id : "cause text"` on their own lines.
 4. Indent a line by at least 2 spaces and start it with `-` to create a sub-cause (second-order branch) under the preceding cause.
 
-> Comments must start with `#` on their own line.
+> Comments may start with `#`, `//`, or Mermaid-style `%%` on their own line.
 
 ---
 
@@ -118,6 +118,20 @@ trust : "No payment security badge"
 # Style B — compact
 category Pricing: Price-anchoring missing; No annual discount shown; Coupon field too prominent`} height={380} />
 
+**Style C — Mermaid-mindmap shorthand.** A top-level bare line becomes a category,
+and indented `-` items become sibling Level-1 causes under that category:
+
+```txt
+fishbone "Why is the site slow?"
+effect "Page LCP > 4s"
+Content
+  - heavy hero image
+  - too much above-the-fold text
+Tech
+  - JS bundle too large
+  - render-blocking CSS
+```
+
 ---
 
 ## 3. Sub-causes (second-order branches)
@@ -179,7 +193,7 @@ config sides = top
 - **Category label:** `category id "Human-readable name"` — printed on the branch.
 - **Cause text:** quoted `"like this"` or unquoted (spaces allowed in compact style).
 - **Sub-cause text:** after the leading `-`, quoted or unquoted.
-- **Comments:** `#` at the start of a line (after optional leading whitespace). The `#` character inside a double-quoted string is not treated as a comment.
+- **Comments:** `#`, `//`, or `%%` at the start of a line (after optional leading whitespace). The same markers also start trailing comments outside double-quoted strings.
 
 ---
 
@@ -191,7 +205,7 @@ config sides = top
 
 **Strings with spaces** in structured-style cause text should be double-quoted: `code : "N+1 query"`. In compact style (`category Label: ...`) the text runs to the `;` or `,` separator and quoting is optional.
 
-**The `#` character** starts a comment unless inside a double-quoted string.
+**Comment markers** (`#`, `//`, `%%`) start a comment unless inside a double-quoted string.
 
 | Reserved sequence | Context | Alternative |
 |---|---|---|
@@ -212,13 +226,14 @@ config sides = top
 | `config direction = center` | Unknown value — silently ignored, stays `right` | Use `right` or `left` |
 | `config slope = 45` | Out of range (must be 0–3 exclusive); silently ignored | Use a preset (`gentle`, `normal`, `steep`) or a value like `0.5` |
 | `fishbone: "Title"` | Parsed correctly — colon after keyword is optional | Both `fishbone "Title"` and `fishbone: "Title"` work |
+| Mermaid mindmap-style bare category | Parsed as an implicit category | `Content` followed by indented `- item` lines works without `category` |
 
 ---
 
 ## 8. Grammar (EBNF)
 
 ```text
-document       = header (blank | comment | effect | category | config | cause | sub-cause)*
+document       = header (blank | comment | effect | category | config | cause | sub-cause | implicit-category)*
 
 header         = "fishbone" ":"? ( WS quoted-string )? NEWLINE
 effect         = "effect" ":"? WS quoted-string NEWLINE
@@ -228,6 +243,8 @@ config-key     = "direction" | "width" | "height" | "sides"
 config-value   = bare-word | number | quoted-string
 
 category       = "category" WS id WS label-or-compact ( "[" category-attrs "]" )? NEWLINE
+implicit-category
+               = bare-text NEWLINE                         # top-level, no ":"
 
 label-or-compact
                = quoted-string                            # structured form: category id "Label"
@@ -246,7 +263,7 @@ sub-cause      = INDENT≥2 "-" WS cause-text NEWLINE
 compact-causes = compact-cause ( (";" | ",") compact-cause )*
 compact-cause  = quoted-string | bare-text
 
-comment        = "#" any NEWLINE
+comment        = ( "#" | "//" | "%%" ) any NEWLINE
 id             = [a-zA-Z] [a-zA-Z0-9_-]*
 quoted-string  = '"' any-char-but-unescaped-quote* '"'
 ```

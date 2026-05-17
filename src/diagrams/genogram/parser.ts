@@ -137,7 +137,7 @@ export function parseGenogram(text: string): DiagramAST {
 
     const lineText = state.lines[state.currentLine];
     const trimmed = lineText.trim();
-    if (trimmed === "" || trimmed.startsWith("#")) {
+    if (trimmed === "" || trimmed.startsWith("#") || trimmed.startsWith("//") || trimmed.startsWith("%%")) {
       state.currentLine++;
       continue;
     }
@@ -229,7 +229,7 @@ export function parseGenogram(text: string): DiagramAST {
         const childLine = state.lines[state.currentLine];
         const childTrimmed = childLine.trim();
 
-        if (childTrimmed === "" || childTrimmed.startsWith("#")) {
+        if (childTrimmed === "" || childTrimmed.startsWith("#") || childTrimmed.startsWith("//") || childTrimmed.startsWith("%%")) {
           state.currentLine++;
           continue;
         }
@@ -418,7 +418,7 @@ function currentLineText(state: ParserState): string | undefined {
 function skipBlankAndComments(state: ParserState): void {
   while (state.currentLine < state.lines.length) {
     const t = state.lines[state.currentLine].trim();
-    if (t === "" || t.startsWith("#")) {
+    if (t === "" || t.startsWith("#") || t.startsWith("//") || t.startsWith("%%")) {
       state.currentLine++;
     } else {
       break;

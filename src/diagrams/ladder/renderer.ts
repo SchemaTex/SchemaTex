@@ -120,6 +120,7 @@ function renderCoil(node: LadderLayoutNode): string {
   if (c.coilType === "OTL") inner = "S";
   else if (c.coilType === "OTU") inner = "R";
   else if (c.coilType === "OTN") inner = "/";
+  else if (c.coilType === "RES") inner = "R";
   if (inner) {
     pieces.push(text({ x: cx, y: cy + 3, class: "lt-ladder-symbol-label" }, inner));
   }

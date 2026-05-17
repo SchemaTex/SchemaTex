@@ -1,4 +1,5 @@
 import type { DiagramPlugin, RenderConfig } from "../../core/types";
+import { firstContentLine } from "../../core/dsl-preprocess";
 import { parseGenogram } from "./parser";
 import { layoutGenogram } from "./layout";
 import { renderGenogram } from "./renderer";
@@ -12,7 +13,7 @@ export const genogram: DiagramPlugin = {
   type: "genogram",
 
   detect(text: string): boolean {
-    const firstLine = text.trim().split("\n")[0]?.trim().toLowerCase() ?? "";
+    const firstLine = firstContentLine(text)?.toLowerCase() ?? "";
     return firstLine === "genogram" || firstLine.startsWith("genogram ");
   },
 

@@ -300,6 +300,7 @@ subgraph_def    = "subgraph" (IDENTIFIER | quoted_string) direction?
 
 class_def       = "classDef" IDENTIFIER css_props
 class_apply     = "class" IDENTIFIER ("," IDENTIFIER)* IDENTIFIER  # class A,B foo
+                | node_def ":::" IDENTIFIER                        # A[Label]:::foo
 style_def       = "style" IDENTIFIER css_props
 link_style      = "linkStyle" (NUMBER ("," NUMBER)* | "default") css_props
 

@@ -1,4 +1,5 @@
 import type { DiagramPlugin, RenderConfig } from "./types";
+import { parseFrontmatter } from "./dsl-preprocess";
 import { genogram } from "../diagrams/genogram";
 import { ecomap } from "../diagrams/ecomap";
 import { pedigree } from "../diagrams/pedigree";
@@ -107,6 +108,34 @@ function detectPlugin(text: string, config?: SchematexConfig): DiagramPlugin {
 }
 
 /**
+ * Run the Mermaid-compat frontmatter pass and merge any `title:` into the
+ * first header line as a quoted suffix (`flowchart TD` → `flowchart TD "T"`).
+ *
+ * Most per-diagram header regexes already accept a trailing quoted title, or
+ * tolerate trailing tokens. Diagram types whose grammar would reject the
+ * appended title are left alone — the frontmatter is silently dropped rather
+ * than producing a misleading parse error.
+ */
+function preprocess(text: string): string {
+  const { data, body } = parseFrontmatter(text);
+  if (!data.title) return body;
+  // Strip the title here — `data.title` was already unquoted by parseFrontmatter.
+  const safeTitle = data.title.replace(/"/g, '\\"');
+  // Find the first non-blank line in body and append the title if it doesn't
+  // already carry a quoted region.
+  const lines = body.split("\n");
+  for (let i = 0; i < lines.length; i++) {
+    const trimmed = lines[i]!.trim();
+    if (trimmed === "") continue;
+    // Already has a quoted title — frontmatter loses.
+    if (/["“「『«][^"”」』»]+["”」』»]/.test(trimmed)) return body;
+    lines[i] = lines[i]!.replace(/\s*$/, ` "${safeTitle}"`);
+    return lines.join("\n");
+  }
+  return body;
+}
+
+/**
  * Parse DSL text to the diagram's AST and return it as a plain object.
  * Useful for JSON serialization, programmatic inspection, or custom renderers.
  *
@@ -117,20 +146,22 @@ function detectPlugin(text: string, config?: SchematexConfig): DiagramPlugin {
  * ```
  */
 export function parse(text: string, config?: SchematexConfig): unknown {
-  const plugin = detectPlugin(text, config);
-  if (plugin.parse) return plugin.parse(text);
+  const prepared = preprocess(text);
+  const plugin = detectPlugin(prepared, config);
+  if (plugin.parse) return plugin.parse(prepared);
   throw new Error(
     `Diagram type '${plugin.type}' does not yet expose a parse() method.`
   );
 }
 
 export function render(text: string, config?: SchematexConfig): string {
-  const plugin = detectPlugin(text, config);
+  const prepared = preprocess(text);
+  const plugin = detectPlugin(prepared, config);
   const renderConfig: RenderConfig = {
     fontFamily: config?.fontFamily ?? "system-ui, -apple-system, sans-serif",
     fontSize: 12,
     theme: config?.theme ?? "default",
     padding: config?.padding ?? 20,
   };
-  return plugin.render(text, renderConfig);
+  return plugin.render(prepared, renderConfig);
 }

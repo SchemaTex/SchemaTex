@@ -81,6 +81,11 @@ export function parseFishboneDSL(text: string): FishboneAST {
   const categories: CategoryDef[] = [];
   const causesByCategory = new Map<string, FishboneNode[]>();
   let lastLevel1: FishboneNode | null = null;
+  // When a Mermaid-style implicit-category heading is seen, this holds the
+  // category id so a following `- foo` becomes its first Level-1 cause and
+  // a following bare-text line becomes a Level-1 cause under it directly.
+  let implicitActiveCatId: string | null = null;
+  let implicitBulletIndent: number | null = null;
 
   let headerSeen = false;
 
@@ -105,21 +110,51 @@ export function parseFishboneDSL(text: string): FishboneAST {
 
     // Sub-cause (Level 2+): starts with "-" after indent
     if (indent >= 2 && trimmed.startsWith("-")) {
-      if (!lastLevel1) {
-        throw new FishboneParseError(
-          `Sub-cause has no preceding Level-1 cause`,
-          i + 1,
-          trimmed
-        );
-      }
       const subText = stripQuotes(trimmed.slice(1).trim());
       if (!subText) continue;
-      lastLevel1.children.push({ label: subText, children: [] });
-      continue;
+      // Under an implicit category, bullets at the same indentation are
+      // sibling Level-1 causes. Deeper bullets remain sub-causes of the last
+      // Level-1 item.
+      if (
+        implicitActiveCatId &&
+        (implicitBulletIndent === null || indent <= implicitBulletIndent)
+      ) {
+        const bucket = causesByCategory.get(implicitActiveCatId)!;
+        const node: FishboneNode = { label: subText, children: [] };
+        bucket.push(node);
+        lastLevel1 = node;
+        implicitBulletIndent = indent;
+        continue;
+      }
+      if (lastLevel1) {
+        lastLevel1.children.push({ label: subText, children: [] });
+        continue;
+      }
+      // No Level-1 in scope. If an implicit-category heading just declared
+      // a category, promote this `- foo` to be its first Level-1 cause so
+      // bare Mermaid-mindmap shapes like
+      //     Content
+      //       - heavy hero image
+      // parse cleanly.
+      if (implicitActiveCatId) {
+        const bucket = causesByCategory.get(implicitActiveCatId)!;
+        const node: FishboneNode = { label: subText, children: [] };
+        bucket.push(node);
+        lastLevel1 = node;
+        implicitBulletIndent = indent;
+        continue;
+      }
+      throw new FishboneParseError(
+        `Sub-cause has no preceding Level-1 cause`,
+        i + 1,
+        trimmed
+      );
     }
 
     // effect "..."
     if (/^effect\b/i.test(trimmed)) {
+      implicitActiveCatId = null;
+      implicitBulletIndent = null;
       const m = trimmed.match(/^effect\s*:?\s*(.*)$/i);
       if (m) effect = stripQuotes(m[1] ?? "");
       continue;
@@ -127,6 +162,8 @@ export function parseFishboneDSL(text: string): FishboneAST {
 
     // config key = value
     if (/^config\b/i.test(trimmed)) {
+      implicitActiveCatId = null;
+      implicitBulletIndent = null;
       const m = trimmed.match(/^config\s+([a-zA-Z]+)\s*=\s*(.+)$/i);
       if (m) {
         const key = m[1]!.toLowerCase();
@@ -162,6 +199,8 @@ export function parseFishboneDSL(text: string): FishboneAST {
 
     // category <id> "<display>" [color: <hex>]
     if (/^category\b/i.test(trimmed)) {
+      implicitActiveCatId = null;
+      implicitBulletIndent = null;
       const compact = trimmed.match(/^category\s+([^:]+?)\s*:\s*(.+)$/i);
       const structured = trimmed.match(
         /^category\s+([a-zA-Z][\w-]*)\s+("[^"]*"|[^\s[]+)(?:\s*(\[.*\]))?\s*$/i
@@ -228,7 +267,41 @@ export function parseFishboneDSL(text: string): FishboneAST {
       const node: FishboneNode = { label, children: [] };
       bucket.push(node);
       lastLevel1 = node;
+      implicitActiveCatId = null;
+      implicitBulletIndent = null;
       continue;
+    }
+
+    // Implicit category — a top-level (indent 0) line that is neither a
+    // keyword nor a `catId: cause` shorthand. Mermaid mindmap and most LLM
+    // outputs use this shape: bare-word headings on their own line followed
+    // by `-` sub-items. We treat the heading as a category whose label is
+    // the trimmed text, slugified for the id.
+    //
+    // We do NOT seed a synthetic Level-1 cause here. The Sub-cause check
+    // below has been relaxed so that when `lastLevel1` is null but we just
+    // declared an implicit category, `- foo` becomes the first Level-1
+    // cause directly. That keeps the AST clean (no phantom anchor entries
+    // to prune) and avoids breaking the `config causeSide = both` test
+    // which counts causes by index.
+    if (
+      indent === 0 &&
+      !trimmed.startsWith("-") &&
+      !trimmed.includes(":") &&
+      !trimmed.startsWith("[")
+    ) {
+      const label = stripQuotes(trimmed);
+      if (label) {
+        const id = slugify(label);
+        if (!getCat(id)) {
+          categories.push({ id, label });
+          causesByCategory.set(id, []);
+        }
+        implicitActiveCatId = id;
+        implicitBulletIndent = null;
+        lastLevel1 = null;
+        continue;
+      }
     }
 
     // Unknown line — ignore silently to tolerate alien syntax blends
@@ -273,9 +346,14 @@ export function parseFishboneDSL(text: string): FishboneAST {
 function stripComment(s: string): string {
   let out = "";
   let inQuote = false;
-  for (const ch of s) {
+  for (let i = 0; i < s.length; i++) {
+    const ch = s[i]!;
     if (ch === '"') inQuote = !inQuote;
-    if (ch === "#" && !inQuote) break;
+    if (!inQuote) {
+      if (ch === "#") break;
+      if (ch === "/" && s[i + 1] === "/") break;
+      if (ch === "%" && s[i + 1] === "%") break;
+    }
     out += ch;
   }
   return out;

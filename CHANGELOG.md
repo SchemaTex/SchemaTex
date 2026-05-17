@@ -11,6 +11,56 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.4.3] — 2026-05-16
+
+### Fixed — production parser bugs from ChatDiagram 2026-05-15 report
+
+- **Ladder `RES` reset coil now parses.** Rockwell / Allen-Bradley counter-reset
+  was rejected as "unknown element type". Added to `LadderCoilType` and
+  rendered with an inscribed `R` glyph.
+- **Ladder element regex no longer breaks on parens inside quoted names.**
+  `XIC(SENSOR, name="الحساس (صغير)")` previously failed because `[^)]*` stopped
+  at the first inner `)`. Replaced with a balanced-paren scanner.
+- **Ladder `rung N` accepts a trailing colon or none.** LLMs routinely omit it
+  (no Mermaid analogue in their training data); the parser is now tolerant.
+- **SLD residential vocabulary.** Added `mcb`, `mccb`, `rcd`, `rcbo`, `rccb`,
+  `differential`, `diferencial`, `pia`, `iga`, `main_switch`, `isolator`,
+  `disconnector`, `consumer_unit`, `distribution_board`, `panel`,
+  `panelboard` as type aliases mapping to existing IEEE-315 primitives. Each
+  alias preserves its original word as the visible label so REBT / BS 7671 /
+  IEC 60364 diagrams read correctly.
+- **Fishbone accepts implicit category headings.** Mermaid-mindmap-shaped
+  input (`Content\n  - heavy hero image`) now parses without requiring the
+  `category` keyword. Closes 13/13 fishbone errors in the production window.
+- **Flowchart accepts Mermaid `:::className` inline class assignment.**
+  `A[Start]:::myClass` now attaches `myClass` to node A, matching Mermaid
+  semantics. The existing block-form `class A myClass` continues to work.
+- **Pedigree / Ecomap accept `:mode` header suffix and report header
+  errors with the offending text.** `pedigree:autosomal-dominant "Family X"`
+  and `ecomap:strengths "Title"` now parse; the `:mode` value is stashed
+  in `metadata.mode` for future renderer use.
+
+### Added — Mermaid-compatibility scaffolding
+
+- **YAML frontmatter title block.** `---\ntitle: My diagram\n---` at the top
+  of any DSL is now recognized and merged into the diagram's title. Inline
+  titles in the header line win on conflict.
+- **Universal `%%` comment marker.** All parsers touched by this release
+  (genogram, pedigree, ecomap, fishbone, ladder, sld, and flowchart) now skip
+  Mermaid-style `%%` line comments before public diagram detection. Future
+  releases will roll this out to the remaining engines.
+- **"Did you mean…?" suggestions.** New `src/core/dsl-suggest.ts` returns
+  unambiguous Levenshtein-distance-≤2 keyword suggestions. Wired into the
+  ladder "unknown element type" and SLD "unknown node type" errors.
+- **Engine-bug error telemetry.** `extractError()` now tags runtime errors
+  (`ReferenceError`, `TypeError`, `RangeError`) with `[engine bug: …]` and
+  attaches the first stack frame as `source`, distinguishing them from
+  user-input parse errors. Motivated by the 92-occurrence
+  `Cannot access 'x' before initialization` cluster in the production
+  window, where the bare message gave us no way to act.
+
+---
+
 ## [0.4.1] — 2026-05-06
 
 ### Added — matrix `style: table` + new examples
