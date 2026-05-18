@@ -32,6 +32,7 @@ const COMPONENT_TYPES = new Set<CircuitComponentType>([
   "ground", "gnd_signal", "gnd_chassis", "gnd_digital",
   "switch_spst", "switch_spdt", "switch_dpdt", "push_no", "push_nc",
   "relay_coil", "relay_no", "relay_nc",
+  "contactor", "solenoid_valve", "thermal_overload", "disconnect_switch",
   "motor", "speaker", "microphone", "buzzer",
   "ammeter", "voltmeter", "wattmeter", "oscilloscope",
   "wire", "dot", "label", "port", "test_point", "no_connect", "antenna",
@@ -59,6 +60,16 @@ const ALIASES: Record<string, CircuitComponentType> = {
   ntc: "thermistor_ntc",
   ptc: "thermistor_ptc",
   ths: "thermistor_ntc",
+  // Industrial control aliases (IEC letter codes)
+  coil: "relay_coil",
+  relay: "relay_coil",
+  km: "contactor",
+  solenoid: "solenoid_valve",
+  ev: "solenoid_valve",
+  overload: "thermal_overload",
+  thermal: "thermal_overload",
+  disconnect: "disconnect_switch",
+  isolator: "disconnect_switch",
 };
 
 /** Component types that exist as symbols but aren't listed in CircuitComponentType. */
