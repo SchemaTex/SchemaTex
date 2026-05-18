@@ -10,7 +10,7 @@ import type {
   TimelineSide,
   TimelineStyle,
 } from "./types";
-import { parseDate } from "./dates";
+import { parseDate, tryParseDate } from "./dates";
 
 export class TimelineParseError extends Error {
   constructor(
@@ -108,14 +108,32 @@ function splitTopLevel(s: string, sep: string): string[] {
  * date-range separator (space-hyphen-space or `..`) from an intra-date minus.
  */
 function splitDateAndBody(s: string, lineNum: number): { date: string; end?: string; body: string } {
-  // Find unquoted colon that ends the date spec
+  // Find the unquoted colon that separates row-key from body. Prefer a
+  // colon with whitespace on both sides (matching the canonical ` : `
+  // separator) — that way ordinal time-of-day keys like `14:30 : "Standup"`
+  // stay intact instead of splitting at the colon inside the key. Fall
+  // back to the first unquoted colon for back-compat with no-space forms.
   let inQuote = false;
   let colon = -1;
   for (let i = 0; i < s.length; i++) {
     const c = s[i]!;
     if (c === '"') inQuote = !inQuote;
     if (inQuote) continue;
-    if (c === ":") { colon = i; break; }
+    if (c === ":") {
+      const lhsSpace = i === 0 || s[i - 1] === " " || s[i - 1] === "\t";
+      const rhsSpace = i === s.length - 1 || s[i + 1] === " " || s[i + 1] === "\t";
+      if (lhsSpace && rhsSpace) { colon = i; break; }
+    }
+  }
+  if (colon < 0) {
+    // Fallback: first unquoted colon regardless of spacing.
+    inQuote = false;
+    for (let i = 0; i < s.length; i++) {
+      const c = s[i]!;
+      if (c === '"') inQuote = !inQuote;
+      if (inQuote) continue;
+      if (c === ":") { colon = i; break; }
+    }
   }
   if (colon < 0) throw new TimelineParseError(`Expected ':' after date: ${s}`, lineNum);
   const datePart = s.slice(0, colon).trim();
@@ -161,6 +179,9 @@ export function parseTimeline(src: string): TimelineAST {
   let i = 0;
   let autoId = 0;
   const nextId = (prefix: string) => `${prefix}-${++autoId}`;
+  // Shared ordinal counter — incremented whenever a row key fails date
+  // parsing and falls back to a string label.
+  const ordinal = { index: 0 };
 
   // ─── header: `timeline "Title"` or `timeline` ───
   const first = lines[0]!;
@@ -240,7 +261,7 @@ export function parseTimeline(src: string): TimelineAST {
         if (child.indent <= baseIndent && /^(section|track)\b/i.test(child.text)) break;
         if (isTrack && child.indent <= baseIndent) break;
         if (/^note\s*:/i.test(child.text)) { i++; continue; }
-        const parsed = parseEventLine(child.text, child.line, nextId);
+        const parsed = parseEventLine(child.text, child.line, nextId, ordinal);
         if (!parsed) throw new TimelineParseError(`Unrecognized line in ${keyword}: ${child.text}`, child.line);
         parsed.event.trackId = trackId;
         ast.events.push(parsed.event);
@@ -256,7 +277,7 @@ export function parseTimeline(src: string): TimelineAST {
     }
 
     // Otherwise: flat event line
-    const parsed = parseEventLine(text, L.line, nextId);
+    const parsed = parseEventLine(text, L.line, nextId, ordinal);
     if (parsed) {
       ast.events.push(parsed.event);
       i++;
@@ -283,6 +304,26 @@ function safeParseDate(raw: string, line: number): TimelineDate {
     const msg = e instanceof Error ? e.message : String(e);
     throw new TimelineParseError(msg, line);
   }
+}
+
+/**
+ * Parse a row key, falling back to ordinal mode when the token is not a
+ * recognisable date (e.g. "Phase 1", "Q1 2024", "Spring", non-Latin
+ * season names). Ordinal events are positioned in declaration order via
+ * a shared counter; the raw key is preserved as the display label.
+ */
+function parseRowKey(
+  raw: string,
+  ordinal: { index: number }
+): TimelineDate {
+  const parsed = tryParseDate(raw);
+  if (parsed) return parsed;
+  ordinal.index += 1;
+  return {
+    value: ordinal.index,
+    raw,
+    precision: "ordinal",
+  };
 }
 
 function applyConfig(ast: TimelineAST, k: string, v: string, line: number): void {
@@ -325,7 +366,8 @@ function applyConfig(ast: TimelineAST, k: string, v: string, line: number): void
 function parseEventLine(
   text: string,
   line: number,
-  nextId: (p: string) => string
+  nextId: (p: string) => string,
+  ordinal: { index: number }
 ): { event: TimelineEvent; hasNote: boolean } | null {
   const { props, rest } = parseProperties(text, line);
   const { date, end, body } = splitDateAndBody(rest, line);
@@ -350,8 +392,8 @@ function parseEventLine(
     id: nextId("ev"),
     label,
     kind,
-    start: safeParseDate(date, line),
-    end: end ? safeParseDate(end, line) : undefined,
+    start: parseRowKey(date, ordinal),
+    end: end ? parseRowKey(end, ordinal) : undefined,
     icon: props["icon"],
     shape: props["shape"] as TimelineEventShape | undefined,
     color: props["color"],

@@ -35,8 +35,13 @@ export interface TimelineDate {
   value: number;
   /** Original raw string from DSL, for display. */
   raw: string;
-  /** Precision — affects tick granularity + display formatter. */
-  precision: "day" | "month" | "year" | "ma";
+  /**
+   * Precision — affects tick granularity + display formatter. `ordinal`
+   * means the row key did not parse as a date (e.g. "Phase 1", "Q1 2024",
+   * a non-Latin season name): the raw string is shown as the label and
+   * `value` is the row's declaration index for layout-purposes only.
+   */
+  precision: "day" | "month" | "year" | "ma" | "ordinal";
 }
 
 export interface TimelineEvent {

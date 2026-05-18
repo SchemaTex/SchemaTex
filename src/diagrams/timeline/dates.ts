@@ -75,6 +75,20 @@ export function parseDate(raw: string): TimelineDate {
   throw new Error(`Cannot parse date: "${raw}"`);
 }
 
+/**
+ * Non-throwing variant of `parseDate`. Returns `null` when the raw token
+ * cannot be parsed as any of the supported date forms — callers can fall
+ * back to ordinal mode (using the raw string as a row label and the
+ * declaration index for layout positioning).
+ */
+export function tryParseDate(raw: string): TimelineDate | null {
+  try {
+    return parseDate(raw);
+  } catch {
+    return null;
+  }
+}
+
 function daysInYear(y: number): number {
   const leap = (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0;
   return leap ? 366 : 365;
