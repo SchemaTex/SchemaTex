@@ -137,6 +137,55 @@ A -->|no| C[Reject]`);
     expect(cjkW).toBeGreaterThan(latinW);
   });
 
+  // ─── Multi-line label sizing (Track A Unit 1) ────────────────
+  describe("multi-line label sizing", () => {
+    test("<b>/<i> tags do not inflate measured width", () => {
+      const plain = measureLabelWidth("Important");
+      const bold = measureLabelWidth("<b>Important</b>");
+      const italic = measureLabelWidth("<i>Important</i>");
+      const mixed = measureLabelWidth("<b>Bold</b> and <i>italic</i>");
+      expect(bold).toBeCloseTo(plain, 1);
+      expect(italic).toBeCloseTo(plain, 1);
+      expect(mixed).toBeCloseTo(measureLabelWidth("Bold and italic"), 1);
+    });
+
+    test("<br/> width is max-of-lines, not concatenated", () => {
+      const oneLine = measureLabelWidth("aaaaaaaaaaaa");
+      const twoLines = measureLabelWidth("aaaaaaaaaaaa<br/>aaaaaaaaaaaa");
+      // Two-line label of identical lines should measure same width, not 2x
+      expect(twoLines).toBeCloseTo(oneLine, 1);
+    });
+
+    test("<br/> width picks widest line", () => {
+      const w = measureLabelWidth("short<br/>much longer line here");
+      const longerOnly = measureLabelWidth("much longer line here");
+      expect(w).toBeCloseTo(longerOnly, 1);
+    });
+
+    test("node height grows for multi-line <br/> labels", () => {
+      const single = layoutFlowchart(parseFlowchart('flowchart TD\nA["One line"]'));
+      const dual = layoutFlowchart(parseFlowchart('flowchart TD\nA["Line one<br/>Line two"]'));
+      const triple = layoutFlowchart(parseFlowchart('flowchart TD\nA["L1<br/>L2<br/>L3"]'));
+      const hSingle = single.nodes.find((n) => n.node.id === "A")!.height;
+      const hDual = dual.nodes.find((n) => n.node.id === "A")!.height;
+      const hTriple = triple.nodes.find((n) => n.node.id === "A")!.height;
+      // Each extra line adds ~lineHeight (14px). Allow tolerance for rounding.
+      expect(hDual - hSingle).toBeGreaterThanOrEqual(12);
+      expect(hTriple - hDual).toBeGreaterThanOrEqual(12);
+    });
+
+    test("multi-line label combined with <b> renders correct height", () => {
+      const ast = parseFlowchart(
+        'flowchart TD\nA["<b>Total</b><br/>n = 1,234"]'
+      );
+      const r = layoutFlowchart(ast);
+      const n = r.nodes.find((nn) => nn.node.id === "A")!;
+      // Two-line PRISMA-style label: bold header + count. Height must exceed
+      // single-line baseline.
+      expect(n.height).toBeGreaterThan(50);
+    });
+  });
+
   test("parallelogram with long CJK label fits inside slanted body", () => {
     const ast = parseFlowchart(
       "flowchart TD\nP[/基本資料、POMS量表、個人儀式感量表、配戴HRV/]"

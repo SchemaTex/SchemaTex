@@ -100,15 +100,38 @@ function isFullWidth(code: number): boolean {
   return false;
 }
 
-export function measureLabelWidth(label: string): number {
+/** Split a label on <br/> / <br> / \n. Strips inline <b>/<i> tags per line. */
+export function labelLines(label: string): string[] {
+  return String(label)
+    .split(/<br\s*\/?>|\n/i)
+    .map((line) => line.replace(/<\/?[bi]>/gi, ""));
+}
+
+/** Measure one plain-text line (after markup stripping). */
+function measureLineWidth(line: string): number {
   let w = 0;
-  // Iterate by codepoint so astral chars count once.
-  for (const ch of label) {
+  for (const ch of line) {
     const code = ch.codePointAt(0) ?? 0;
     if (isFullWidth(code)) w += FC_CONST.cjkCharWidth;
     else w += FC_CONST.charWidth;
   }
   return w;
+}
+
+/**
+ * Measure the rendered width of a label. Multi-line labels (via `<br/>` or
+ * `\n`) measure as the widest line, NOT the concatenated string. Inline
+ * `<b>` / `<i>` markup is stripped before measurement so emphasis tags do
+ * not inflate node width.
+ */
+export function measureLabelWidth(label: string): number {
+  const lines = labelLines(label);
+  let max = 0;
+  for (const line of lines) {
+    const w = measureLineWidth(line);
+    if (w > max) max = w;
+  }
+  return max;
 }
 
 // ─── Internal working types ────────────────────────────────
@@ -800,7 +823,11 @@ export function layoutFlowchart(ast: FlowchartAST): FlowchartLayoutResult {
       Math.ceil(rawTextW) + FC_CONST.labelHPad * 2
     );
     let shapeW = Math.max(FC_CONST.minNodeWidth, labelW);
-    let shapeH: number = FC_CONST.nodeHeight;
+    // Grow shape height for multi-line labels. lineHeight matches the value
+    // used by core/svg.ts:multilineText (14px) so the rendered tspans fit.
+    const nLines = labelLines(n.label).length;
+    const multilineH = nLines > 1 ? FC_CONST.nodeHeight + (nLines - 1) * 14 : FC_CONST.nodeHeight;
+    let shapeH: number = multilineH;
     if (n.shape === "diamond") {
       // Diamond's inner usable width at y=h/2 equals the full width, but text
       // near the vertical extents is clipped by the rhombus edges. Bump 1.4×
