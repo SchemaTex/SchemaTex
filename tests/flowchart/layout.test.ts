@@ -199,6 +199,81 @@ A -->|no| C[Reject]`);
     expect(usableInner).toBeGreaterThanOrEqual(labelW);
   });
 
+  // ─── Sequential cluster vertical stacking (Track A Unit 2 / issue #01) ─
+  describe("sequential cluster stacking (PRISMA pattern)", () => {
+    test("PRISMA-style cascade resolves to vertical stack", () => {
+      // From docs/issues/01-flowchart-subgraph-lane-cascade.md — d branches
+      // to e (in ELIG) AND f (in INCL), putting both on layer 3. Before the
+      // sequential-cluster fix this triggered lane mode and cascaded the
+      // four clusters diagonally; after the fix INCL shifts down so its
+      // layer range is strictly below ELIG.
+      const ast = parseFlowchart(`flowchart TD
+  subgraph ID [Identification]
+    a[A]
+    b[B]
+  end
+  subgraph SCREEN [Screening]
+    c[C]
+  end
+  subgraph ELIG [Eligibility]
+    d[D]
+    e[E]
+  end
+  subgraph INCL [Included]
+    f[F]
+    g[G]
+  end
+  a --> c
+  b --> c
+  c --> d
+  d --> e
+  d --> f
+  f --> g`);
+      const r = layoutFlowchart(ast);
+      const cs = [...r.clusters].sort((a, b) => a.y - b.y);
+      expect(cs.length).toBe(4);
+      // Clusters must stack top-to-bottom in DSL order without horizontal
+      // cascade: y-spread must dominate x-spread.
+      const xs = cs.map((c) => c.x);
+      const ys = cs.map((c) => c.y);
+      const dx = Math.max(...xs) - Math.min(...xs);
+      const dy = Math.max(...ys) - Math.min(...ys);
+      expect(dy).toBeGreaterThan(dx);
+      // Bboxes must be strictly disjoint vertically (no y-range overlap).
+      for (let i = 0; i < cs.length - 1; i++) {
+        const aBottom = cs[i]!.y + cs[i]!.height;
+        const bTop = cs[i + 1]!.y;
+        expect(bTop).toBeGreaterThanOrEqual(aBottom);
+      }
+    });
+
+    test("parallel sibling clusters (no forward edge) still use lane fallback", () => {
+      // Two top-level subgraphs that share a layer via branching from a
+      // common root but have NO direct edge between them — these are
+      // genuinely parallel pipelines and must NOT be vertically stacked.
+      const ast = parseFlowchart(`flowchart TD
+Start --> L1
+Start --> R1
+subgraph Left [LeftPath]
+  L1
+  L1 --> L2
+end
+subgraph Right [RightPath]
+  R1
+  R1 --> R2
+end`);
+      const r = layoutFlowchart(ast);
+      const cs = r.clusters;
+      expect(cs.length).toBe(2);
+      // Parallel mode: clusters should be side-by-side, so x-spread should
+      // dominate or match y-spread. Stacking them vertically would be
+      // wrong for this topology.
+      const dx = Math.abs(cs[0]!.x - cs[1]!.x);
+      const dy = Math.abs(cs[0]!.y - cs[1]!.y);
+      expect(dx).toBeGreaterThan(dy);
+    });
+  });
+
   test("sequential clusters (TB) keep a centered straight spine", () => {
     // Pre / Intervention / Post each occupy a distinct layer range — lane
     // mode would push each cluster sideways. BK should keep the spine

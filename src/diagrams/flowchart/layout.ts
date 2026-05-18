@@ -776,6 +776,114 @@ function laneBasedXCoords(
  * range, like a multi-phase pipeline) BK gives a clean straight spine
  * and the bboxes wrap naturally with no interference.
  */
+/**
+ * Detect sequential cluster chains and rewrite layerMap to enforce strict
+ * vertical separation between them. A "sequential chain" is a maximal run
+ * of top-level clusters in DSL order where each adjacent pair S_i → S_i+1
+ * has at least one forward edge between their members. The chain heuristic
+ * fires for PRISMA-style top-to-bottom pipelines where branching pushes
+ * later-cluster nodes onto the same DAG layer as earlier-cluster terminals
+ * (the cascade trigger from docs/issues/01).
+ *
+ * For each chain, walk in DSL order and ensure cluster i's min layer >
+ * cluster i-1's max layer; shift the cluster's nodes AND their DAG
+ * descendants by the deficit when needed. Parallel pipelines (no forward
+ * edge between siblings) are NOT shifted — they continue to use the lane
+ * fallback in assignLaneXCoords.
+ */
+function enforceSequentialClusterLayers(
+  ast: FlowchartAST,
+  layerMap: Map<string, number>,
+  edges: LEdge[]
+): void {
+  const sgParent = new Map<string, string | undefined>();
+  for (const sg of ast.subgraphs) {
+    for (const childSg of sg.subgraphs) sgParent.set(childSg, sg.id);
+    if (!sgParent.has(sg.id)) sgParent.set(sg.id, undefined);
+  }
+  const topLevel = ast.subgraphs.filter((sg) => !sgParent.get(sg.id));
+  if (topLevel.length < 2) return;
+
+  const collect = (sgId: string): string[] => {
+    const sg = ast.subgraphs.find((s) => s.id === sgId);
+    if (!sg) return [];
+    const ids = [...sg.children];
+    for (const childSgId of sg.subgraphs) ids.push(...collect(childSgId));
+    return ids;
+  };
+
+  const adjOut = new Map<string, string[]>();
+  for (const e of edges) {
+    if (!adjOut.has(e.from)) adjOut.set(e.from, []);
+    adjOut.get(e.from)!.push(e.to);
+  }
+
+  const hasForwardEdge = (srcSgId: string, dstSgId: string): boolean => {
+    const srcIds = new Set(collect(srcSgId));
+    const dstIds = new Set(collect(dstSgId));
+    for (const id of srcIds) {
+      for (const t of adjOut.get(id) ?? []) {
+        if (dstIds.has(t)) return true;
+      }
+    }
+    return false;
+  };
+
+  // Build maximal sequential chains
+  const chains: string[][] = [];
+  let cur: string[] = [];
+  for (let i = 0; i < topLevel.length; i++) {
+    const sg = topLevel[i]!;
+    if (i === 0 || !hasForwardEdge(topLevel[i - 1]!.id, sg.id)) {
+      if (cur.length > 1) chains.push(cur);
+      cur = [sg.id];
+    } else {
+      cur.push(sg.id);
+    }
+  }
+  if (cur.length > 1) chains.push(cur);
+  if (chains.length === 0) return;
+
+  // Apply shifts per chain
+  for (const chain of chains) {
+    let prevMax = -Infinity;
+    for (const clusterId of chain) {
+      const ids = collect(clusterId);
+      if (ids.length === 0) continue;
+      let curMin = Infinity;
+      let curMax = -Infinity;
+      for (const id of ids) {
+        const l = layerMap.get(id) ?? 0;
+        if (l < curMin) curMin = l;
+        if (l > curMax) curMax = l;
+      }
+      const requiredMin = prevMax === -Infinity ? curMin : prevMax + 1;
+      if (curMin < requiredMin) {
+        const shift = requiredMin - curMin;
+        // Shift cluster nodes + all DAG descendants (so downstream layers
+        // stay consistent with their cluster's new position).
+        const toShift = new Set(ids);
+        const queue = [...ids];
+        while (queue.length > 0) {
+          const u = queue.shift()!;
+          for (const t of adjOut.get(u) ?? []) {
+            if (!toShift.has(t)) {
+              toShift.add(t);
+              queue.push(t);
+            }
+          }
+        }
+        for (const id of toShift) {
+          layerMap.set(id, (layerMap.get(id) ?? 0) + shift);
+        }
+        prevMax = curMax + shift;
+      } else {
+        prevMax = curMax;
+      }
+    }
+  }
+}
+
 function hasOverlappingTopLevelClusters(
   ast: FlowchartAST,
   layerMap: Map<string, number>,
@@ -910,6 +1018,13 @@ export function layoutFlowchart(ast: FlowchartAST): FlowchartLayoutResult {
 
   // ── Phase 2: layer assignment ────────────────────────────
   const layerMap = longestPathLayers(allIds, ledges);
+
+  // ── Phase 2.5: sequential cluster separation (fixes #01) ─
+  // For PRISMA-style sequential top-level clusters (each connected to the
+  // next by a forward edge in DSL order), rewrite layers so each cluster
+  // gets its own strictly-disjoint layer range. Parallel sibling clusters
+  // (no forward edge) are untouched and continue to use the lane fallback.
+  enforceSequentialClusterLayers(ast, layerMap, ledges);
 
   // ── Phase 3: dummy insertion ─────────────────────────────
   let dummyCounter = 0;
