@@ -1,0 +1,56 @@
+---
+title: Online bookstore use case diagram (include + extend)
+description: An e-commerce checkout use case diagram showing «include» chains, an «extend» relationship with a condition and extension point, and the extension-point compartment inside the base ellipse. A primary customer, an external payment gateway, and a supporting warehouse actor.
+diagram: usecase
+standard: OMG UML 2.5.1 §18
+industry: [software, e-commerce, retail, education]
+persona: For the business analyst
+complexity: 2
+tags: [usecase, uml, include, extend, extension-point, requirements]
+featured: true
+relatedLink:
+  label: Use case syntax
+  href: /docs/usecase
+status: published
+dsl: |
+  usecase
+  title: "Online Bookstore — Checkout"
+  system: "Bookstore System"
+
+  actor: Customer
+  actor: "Payment Gateway" as PG (external)
+  actor: "Warehouse Staff" as WH
+
+  usecase: "Browse Catalog" as Browse
+  usecase: "Add to Cart"    as AddCart
+  usecase: "Checkout"       as Checkout {
+    extension point: payment failed
+    extension point: stock depleted
+  }
+  usecase: "Pay"            as Pay
+  usecase: "Validate Card"  as ValidateCard
+  usecase: "Cancel Order"   as Cancel
+  usecase: "Ship Order"     as Ship
+
+  Customer -- Browse
+  Customer -- AddCart
+  Customer -- Checkout
+  Checkout ..> Pay          : «include»
+  Pay      ..> ValidateCard : «include»
+  Pay      -- PG
+  Cancel   <.. Checkout     : «extend» [payment failed] (extension point: payment failed)
+  Ship     -- WH
+  Checkout ..> Ship         : «include»
+---
+
+This is the diagram a business analyst hands to engineering when an online store is being scoped. It uses every relationship in the use case vocabulary, and each one means something precise.
+
+**Three actors on two sides.** `Customer` is the primary actor (left). `Payment Gateway` is `(external)` — a third-party system, drawn as an `«actor»` rectangle on the right. `Warehouse Staff` is a supporting human actor, also on the right. Schematex flanks the subject automatically.
+
+**`«include»` — mandatory composition.** `Checkout ..> Pay` reads "Checkout *includes* Pay": every checkout always runs the payment sub-flow, so the arrow points from the base toward the included use case. The chain continues — `Pay ..> ValidateCard` — so payment always validates the card. Include is the right tool when a step *always* happens and you want to factor it out for reuse. The dashed line, open arrowhead, and `«include»` pill are all UML-standard.
+
+**`«extend»` — optional, conditional behavior.** `Cancel <.. Checkout` reads "Cancel Order *extends* Checkout": cancellation is *optional* behavior that only kicks in under a condition. The `[payment failed]` clause is that condition, and `(extension point: payment failed)` ties it to the named extension point declared inside the Checkout ellipse. Note the arrow still points at the base (Checkout) even though Cancel is written first — that's the UML rule, and Schematex normalises it for you. Extend lines are drawn in the accent color because they're the rarer, more surprising relationship.
+
+**Extension points live in the ellipse.** Because `Checkout` declares `extension point: payment failed` and `stock depleted`, those appear in a compartment below the name, separated by a divider. They're the hooks an `«extend»` relationship can attach to.
+
+The result reads top-to-bottom as a flow: browse → add to cart → checkout, with checkout fanning out into pay (→ validate card, → payment gateway), ship (→ warehouse), and an optional cancel path. That's exactly the scope picture a stakeholder review needs.

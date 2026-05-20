@@ -15,7 +15,8 @@ export type DiagramCluster =
   | "generic"
   | "strategy"
   | "knowledge"
-  | "behavior-modeling";
+  | "behavior-modeling"
+  | "research";
 
 export interface DiagramMeta {
   /** Canonical type id — matches `DiagramType` and plugin keys. */
@@ -260,6 +261,27 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
     cluster: "behavior-modeling",
     standard: "OMG BPMN 2.0.2 / ISO/IEC 19510:2013 visual subset; see 25-BPMN-STANDARD.md",
     syntaxKey: "bpmn",
+  },
+  {
+    type: "usecase",
+    name: "UML use case diagram",
+    tagline: "UML 2.5 use case — actors, use cases, subject boundary, include/extend/generalization.",
+    useWhen:
+      "Use for software-engineering requirements and scope diagrams — 'what does this system do, and for whom'. Actors (stick figures, or `(external)` rectangles for other systems) sit outside a subject boundary; use cases are ellipses inside it. `--` association, `..>` «include» (source includes target), `<..` «extend» (left extends right, with optional `[condition]` and extension points), `--|>` generalization (hollow triangle to parent, between actors or between use cases). Accepts a PlantUML-style inline form (`:Actor:`, `(Use case)`, `as ID`). Distinct from `state` (intra-object behavior, not system scope), `flowchart` (no actor/subject/include-extend semantics), and `bpmn` (how a process executes, not what a system offers).",
+    cluster: "behavior-modeling",
+    standard: "OMG UML 2.5.1 §18 visual subset; see 29-USECASE-STANDARD.md",
+    syntaxKey: "usecase",
+  },
+  // ── Research / evidence synthesis ────────────────────────────
+  {
+    type: "prisma",
+    name: "PRISMA 2020 flow diagram",
+    tagline: "PRISMA 2020 — the mandatory four-row flow diagram for systematic reviews and meta-analyses.",
+    useWhen:
+      "Use whenever the user mentions 'PRISMA', 'systematic review', 'meta-analysis flow', 'scoping review', 'evidence screening', or 'Cochrane review' — this is the dedicated, standards-correct engine (prefer it over a generic flowchart). The author writes record counts and exclusion reasons; the rigid four-row layout (Identification → Screening → Eligibility → Included) is correct by construction, with mandatory `n = …` counts, parallel exclusion side-boxes, and an optional second 'other methods' column (`mode: 2020-dual`). Vocabulary swaps for scoping reviews (`kind: scoping-review`) and IPD (`kind: ipd`). Count arithmetic is validated (`validate-counts: warn|strict|off`). Distinct from `flowchart` (no mandatory stages/counts/exclusion-box convention).",
+    cluster: "research",
+    standard: "PRISMA 2020 (Page MJ et al., BMJ 2021;372:n71); see 28-PRISMA-STANDARD.md",
+    syntaxKey: "prisma",
   },
   // ── Generic process / flow ───────────────────────────────────
   {

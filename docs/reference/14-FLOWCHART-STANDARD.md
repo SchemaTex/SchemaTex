@@ -1036,21 +1036,11 @@ flowchart LR
 
 ---
 
-## 15.5 Domain pattern: PRISMA 2020 systematic review
+## 15.5 Domain pattern: PRISMA 2020 systematic review → use the dedicated `prisma` engine
 
-PRISMA 2020 (Page et al., BMJ 2021) prescribes a fixed four-phase flow diagram for systematic reviews — **Identification → Screening → Eligibility → Included** — and it is required by Cochrane, JAMA, Lancet, and most evidence-synthesis journals. Schematex does **not** ship a dedicated PRISMA engine; the canonical layout is achievable today as a flowchart variant using existing `subgraph` + `class` + `classDef` features. The example `flowchart-prisma-systematic-review.mdx` is the authoritative AI-grounding reference for this pattern.
+> **Superseded.** Schematex now ships a **dedicated `prisma` engine** (see `28-PRISMA-STANDARD.md` and `/docs/prisma`). Earlier guidance here recommended faking a PRISMA diagram with `subgraph` + `classDef` on the flowchart engine; that workaround is **no longer recommended**. The `prisma` engine produces a standards-correct figure by construction (mandatory `n =` counts, parallel exclusion side-boxes, single/dual pipeline, scoping-review & IPD overlays, count-arithmetic validation).
 
-**Mandatory structural elements** (per PRISMA 2020 reporting checklist):
-
-1. Each of the four phases lives inside a named `subgraph`. The renderer draws a labeled cluster border around each, matching the printed PRISMA template.
-2. Every node carries an explicit `(n = N)` count in its label. PRISMA reviewers will reject a diagram where any box's count is missing.
-3. The "records excluded" stream is visually distinguished from the surviving stream — Schematex uses a `classDef excluded` red-tinted class applied via `class A,B,C excluded`.
-4. The eligibility-phase exclusion box itemizes reasons (wrong population / wrong intervention / wrong outcome / abstract-only / etc.) — not just an aggregate count. Inline text with separators is acceptable.
-5. The terminal nodes (qualitative synthesis count + meta-analysis count) use the stadium shape `(["..."])` so reviewers' eyes land on the final included-study count.
-
-**Why no dedicated engine.** PRISMA is a **structural template**, not a new visual language — it shares 100% of its rendering primitives with general flowchart (rect, stadium, subgraph, class). A bespoke engine would duplicate flowchart's layout/routing without adding capability. The discipline lives in the example MDX + this section as the AI-grounding contract.
-
-**LLM prompt rule.** When the user mentions "PRISMA", "systematic review", "meta-analysis flow", "evidence screening", or "Cochrane review" — emit a flowchart DSL modeled on `flowchart-prisma-systematic-review.mdx`. Do not invent a new diagram type.
+**LLM prompt rule.** When the user mentions "PRISMA", "systematic review", "meta-analysis flow", "scoping review", "evidence screening", or "Cochrane review" — emit a **`prisma`** DSL (header line `prisma`), not a flowchart. See the `prisma-*` example MDX files for grounding. The flowchart engine remains appropriate only for non-PRISMA process/decision flows.
 
 ---
 

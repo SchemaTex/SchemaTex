@@ -172,10 +172,7 @@ Good examples to study, by complexity:
 
 Not yet implemented — PRs welcome. Start with the standard doc (Step 1) and open a draft PR before coding.
 
-- **Fishbone / Ishikawa** — cause-and-effect analysis. AST and standard doc are the main unknowns.
 - **Sequence diagram** — UML sequence without depending on PlantUML/Mermaid conventions.
-- **State machine** — UML state chart with hierarchical states.
-- **Gantt** — project scheduling with dependencies and critical path.
 - **Network topology** — L2/L3 network diagrams with device icons.
 
 If you're adding one of these, the standard doc is doing most of the work — don't skimp on it.

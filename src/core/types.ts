@@ -55,7 +55,11 @@ export type DiagramType =
   | "bpmn"       // OMG BPMN 2.0 business process diagram (25-BPMN-STANDARD)
   // IEC 61131-3 visual PLC languages (sister to ladder §10)
   | "fbd"        // Function Block Diagram — IEC 61131-3 §6.4 (23-FBD-STANDARD)
-  | "sfc";       // Sequential Function Chart — IEC 61131-3 §6.5 (24-SFC-STANDARD)
+  | "sfc"        // Sequential Function Chart — IEC 61131-3 §6.5 (24-SFC-STANDARD)
+  // Evidence-synthesis / research reporting
+  | "prisma"    // PRISMA 2020 flow diagram (28-PRISMA-STANDARD)
+  // Structural UML (sister to behavioral §21 state)
+  | "usecase";   // UML 2.5.1 use case diagram (29-USECASE-STANDARD)
 
 export type GenogramMode = "medical" | "heritage";
 

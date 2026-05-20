@@ -11,6 +11,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.5.0] — 2026-05-19
+
+### Added — PRISMA 2020 flow diagram engine (`prisma`)
+
+- **New dedicated `prisma` engine** (`src/diagrams/prisma/`) implementing the PRISMA 2020 flow diagram (Page MJ et al., BMJ 2021;372:n71). Rigid four-row layout (Identification → Screening → Eligibility → Included) that is correct by construction — the author writes record counts and exclusion reasons; the layout, mandatory `n =` fields, and exclusion side-boxes are prescribed. Spec: `28-PRISMA-STANDARD.md`.
+- **Single + dual pipeline.** `mode: 2020-single` (databases & registers only) and `mode: 2020-dual` (adds the "Identification via other methods" column, merged into Screening via a Y-junction). Auto-detects dual when an `other:` block is present.
+- **Canonical column-group layout.** "Records removed before screening" is its own box in the right column; the orange/slate section header is an independent capsule bar spanning the column group (matrix-style), and the left Identification/Screening/Included stage bands are independent capsules that bracket the cards.
+- **Vocabulary overlays.** `kind: scoping-review` (PRISMA-ScR — "sources of evidence"), `kind: ipd` (participants count), `kind: systematic-review` (default).
+- **Optional previous-studies row** for updated reviews, **count-arithmetic validation** (`validate-counts: warn|strict|off`, default warn), and **top-N exclusion-reason aggregation** (top 7 + "Other (n = …)").
+- Registered across `DiagramType`, `src/core/api.ts`, `src/index.ts`, `src/ai/registry.ts` (new `research` cluster), and `SYNTAX_KEYS`. 19 tests in `tests/prisma/`. Docs: `website/content/docs/prisma.mdx`; examples `prisma-systematic-review.mdx` + `prisma-dual-pipeline.mdx`.
+- **Retired the flowchart-based PRISMA workaround.** `flowchart-prisma-systematic-review.mdx` is removed and `14-FLOWCHART-STANDARD.md §15.5` now points LLMs to the dedicated `prisma` engine instead of faking the layout with `subgraph` + `classDef`.
+
+### Changed — Use Case diagram polish (`usecase`)
+
+- **Unified actor anchor.** Every association line from an actor now fans out from a single anchor point (facing-side, torso height) instead of each line exiting the actor box at a different edge point — matching canonical UML rendering.
+- **Aesthetic pass.** Soft blue tinted use-case ellipses, bold names, rounded stick-figure strokes, a quiet rounded subject boundary, and crisper dashed include/extend lines.
+- Added `website/content/docs/usecase.mdx` (the syntax doc was registered in `SYNTAX_KEYS` but missing) and curated example MDX.
+
+---
+
 ## [0.4.3] — 2026-05-16
 
 ### Fixed — production parser bugs from ChatDiagram 2026-05-15 report

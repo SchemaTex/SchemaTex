@@ -83,8 +83,8 @@ export default async function GalleryPage({
           <p className="type-eye mb-3">/ GALLERY</p>
           <div className="mb-4 flex flex-wrap gap-2">
             <span className="ds-badge">{galleryExamples.length} examples</span>
-            <span className="ds-badge">27 diagram types</span>
-            <span className="ds-badge">4 clusters</span>
+            <span className="ds-badge">29 diagram types</span>
+            <span className="ds-badge">6 clusters</span>
           </div>
           <h1
             className="text-3xl font-semibold"

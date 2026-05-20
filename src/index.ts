@@ -41,6 +41,8 @@ export { decisiontree } from "./diagrams/decisiontree";
 export { timeline } from "./diagrams/timeline";
 export { state } from "./diagrams/state";
 export { pid } from "./diagrams/pid";
+export { prisma } from "./diagrams/prisma";
+export { usecase } from "./diagrams/usecase";
 
 export {
   type ThemeName,

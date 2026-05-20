@@ -1,0 +1,61 @@
+---
+title: PRISMA 2020 dual pipeline (databases + other methods)
+description: PRISMA 2020 flow diagram in dual-pipeline mode — identification via databases and registers plus a second column for other methods (citation searching, hand searches, expert recommendations), merged into screening via a Y-junction.
+diagram: prisma
+standard: PRISMA 2020 (Page et al., BMJ 2021;372:n71)
+industry: [healthcare, research, biotech]
+persona: For the systematic-review author
+complexity: 3
+tags: [prisma, systematic-review, dual-pipeline, citation-search, evidence-synthesis, meta-analysis]
+featured: false
+relatedLink:
+  label: PRISMA syntax
+  href: /docs/prisma
+status: published
+dsl: |
+  prisma
+  mode: 2020-dual
+  title: Effect of yoga on chronic back pain — SR
+
+  identification:
+    databases:
+      n: 1234
+      sources: PubMed=600, Embase=450, Cochrane=184
+      duplicates-removed: 254
+    other:
+      n: 56
+      sources: citation-search=30, hand-search=20, expert-recommendation=6
+
+  screening:
+    records-screened: 1036
+    excluded:
+      n: 810
+      reasons: duplicate=120, irrelevant title=560, non-English=130
+    reports-sought: 226
+    reports-not-retrieved: 12
+
+  eligibility:
+    full-text-assessed: 214
+    excluded:
+      n: 191
+      reasons: wrong population=80, wrong intervention=60, wrong outcome=51
+
+  included:
+    studies: 23
+    reports: 25
+---
+
+## Scenario
+
+The 2020 update to PRISMA added a **second identification pathway** for studies found outside formal database searches — citation chasing, hand-searching reference lists, and expert recommendations. Reviewers must report these separately and show both streams merging into a single screening process. The `prisma` engine renders the two columns side by side with a Y-junction merge.
+
+## Annotation key
+
+- **`mode: 2020-dual`** — adds the right-hand "Identification via other methods" column. The engine auto-detects dual mode whenever an `other:` block is present, so the explicit `mode` line is optional here.
+- **`identification.other`** — its own `n:` total and `sources:` breakdown (citation search, hand search, expert recommendation).
+- **`reports-sought:` / `reports-not-retrieved:`** — optional Screening detail lines for the retrieval step.
+- **Y-junction merge** — the databases stream is the trunk; the other-methods stream drops and runs left to join it just above Screening.
+
+## Standard reference
+
+Page MJ, McKenzie JE, Bossuyt PM, et al. *The PRISMA 2020 statement.* BMJ 2021;372:n71, Figure 2 (dual-source variant).

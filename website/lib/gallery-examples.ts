@@ -15,7 +15,9 @@ export type DiagramType =
   | 'block'
   | 'entity'
   | 'fishbone'
-  | 'venn';
+  | 'venn'
+  | 'usecase'
+  | 'prisma';
 
 export type Industry =
   | 'healthcare'
@@ -54,6 +56,8 @@ export const DIAGRAM_LABELS: Record<DiagramType, { label: string; icon: string }
   entity: { label: 'Entity structure', icon: '🏢' },
   fishbone: { label: 'Fishbone', icon: '🐟' },
   venn: { label: 'Venn / Euler', icon: '⊙' },
+  usecase: { label: 'Use case', icon: '🧩' },
+  prisma: { label: 'PRISMA flow', icon: '📊' },
 };
 
 export const INDUSTRY_LABELS: Record<Industry, { label: string; icon: string }> = {
@@ -76,6 +80,8 @@ export const CLUSTER_TO_TYPES: Record<string, DiagramType[]> = {
   'electrical-industrial': ['timing', 'logic', 'circuit', 'ladder', 'sld', 'block'],
   'corporate-legal': ['entity'],
   'causality-analysis': ['fishbone', 'venn'],
+  'software-uml': ['usecase'],
+  research: ['prisma'],
 };
 
 export const CLUSTER_META: Record<string, { label: string; color: string }> = {
@@ -83,6 +89,8 @@ export const CLUSTER_META: Record<string, { label: string; color: string }> = {
   'electrical-industrial': { label: 'Electrical & Industrial', color: 'var(--cat-2)' },
   'corporate-legal':       { label: 'Corporate & Legal',       color: 'var(--cat-3)' },
   'causality-analysis':    { label: 'Causality & Analysis',    color: 'var(--cat-1)' },
+  'software-uml':          { label: 'Software & UML',          color: 'var(--cat-4)' },
+  research:                { label: 'Research',                color: 'var(--cat-5)' },
 };
 
 export function getDiagramCluster(diagram: DiagramType): string {

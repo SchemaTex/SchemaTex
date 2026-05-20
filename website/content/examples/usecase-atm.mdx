@@ -1,0 +1,45 @@
+---
+title: ATM use case diagram (UML)
+description: The canonical software-engineering use case diagram — a Customer and an external Bank system around an ATM, with four withdraw/deposit/balance/transfer use cases. Exercises stick-figure actors, the external-system rectangle, subject sizing, and primary/supporting actor flanking.
+diagram: usecase
+standard: OMG UML 2.5.1 §18
+industry: [software, banking, education]
+persona: For the software engineer
+complexity: 1
+tags: [usecase, uml, requirements, actor, subject]
+featured: true
+relatedLink:
+  label: Use case syntax
+  href: /docs/usecase
+status: published
+dsl: |
+  usecase
+  title: "ATM"
+  system: "ATM System"
+
+  actor: Customer
+  actor: Bank (external)
+
+  usecase: "Withdraw Cash"  as Withdraw
+  usecase: "Deposit Funds"  as Deposit
+  usecase: "Check Balance"  as Check
+  usecase: "Transfer Funds" as Transfer
+
+  Customer -- Withdraw
+  Customer -- Deposit
+  Customer -- Check
+  Customer -- Transfer
+
+  Withdraw -- Bank
+  Deposit  -- Bank
+  Check    -- Bank
+  Transfer -- Bank
+---
+
+The ATM is the hello-world of UML use case diagrams — it appears in nearly every software-engineering textbook because it shows the whole notation with no clutter. The diagram answers "what can you do at an ATM, and who does the work behind the scenes?"
+
+**Two actors, two roles.** `Customer` is the **primary actor** — the human who initiates the interaction — so Schematex places the stick figure on the **left**. `Bank` is declared `(external)`, marking it as another software system rather than a person; it renders as a rectangle carrying the `«actor»` stereotype and is placed on the **right** as a supporting actor. This left-primary / right-supporting convention comes from the Bittner & Spence style guide and matches what reviewers expect to see.
+
+**Four use cases, one subject.** Each `usecase:` becomes an ellipse, and the `system: "ATM System"` header wraps them in a rounded **subject** rectangle with the system name at the top. The subject is sized *after* the use cases are placed, so it always hugs its contents.
+
+**Plain associations.** Every `--` line is an undirected association — a solid line from the actor to the use-case ellipse perimeter. The Customer triggers all four operations; each operation in turn talks to the Bank to settle the transaction. There are no `«include»` or `«extend»` relationships here — that's deliberate. The ATM diagram's job is to establish *scope*, and at this level of detail plain associations are exactly right. Reach for include/extend only when use cases genuinely compose.

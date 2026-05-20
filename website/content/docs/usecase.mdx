@@ -1,0 +1,195 @@
+---
+title: UML Use Case Diagram
+---
+
+## About use case diagrams
+
+A **use case diagram** answers one question every requirements engagement starts with: *what does this system do, and for whom?* Introduced by Ivar Jacobson in 1992 and folded into **[UML](https://www.omg.org/spec/UML/2.5.1/) 2.5.1 §18**, it's the most-taught UML diagram and the lingua franca between product, engineering, and QA. The notation is small — actor stick figures, use-case ellipses, a system boundary, and four line types — but it pins down system scope better than any boxes-and-arrows flowchart.
+
+Schematex implements the UML 2.5.1 visual subset with a single-word `usecase` keyword and a text DSL built for LLM generation — the PlantUML developer experience without the JVM and without the bracket gymnastics. Distinct from **[state](/docs/state)** (intra-object behavior, not system scope), **[flowchart](/docs/flowchart)** (no actor / subject / include-extend semantics), and **[bpmn](/docs/bpmn)** (how a process executes, not what a system offers).
+
+<Playground initial={`usecase
+title: "ATM"
+system: "ATM System"
+
+actor: Customer
+actor: Bank (external)
+
+usecase: "Withdraw Cash"  as Withdraw
+usecase: "Deposit Funds"  as Deposit
+usecase: "Check Balance"  as Check
+
+Customer -- Withdraw
+Customer -- Deposit
+Customer -- Check
+Withdraw -- Bank
+Deposit  -- Bank
+Check    -- Bank`} height={520} />
+
+---
+
+## 1. Your first diagram
+
+Every document starts with the `usecase` keyword, then a header, then declarations and relationships:
+
+```
+usecase
+system: "Library"
+
+actor: Member
+usecase: "Borrow Book" as Borrow
+
+Member -- Borrow
+```
+
+`actor:` declares an actor (a stick figure), `usecase:` declares a use case (an ellipse), and `Member -- Borrow` draws a plain association between them. `system:` wraps the use cases in a labelled **subject** rectangle. The primary actor is placed on the left; supporting actors on the right.
+
+The header accepts:
+
+- `title: "…"` — a heading drawn above the diagram.
+- `system: "…"` — the subject (system boundary) name. Omit it to let the use cases float free (Schematex warns if you omit it with ≥3 use cases).
+- `direction: LR | TB` — default `LR` (actors flank the subject horizontally).
+- `generalization: tree | individual` — whether to merge sibling generalization arrows (default `tree`).
+
+---
+
+## 2. Actors
+
+```
+actor: Customer
+actor: "Payment Gateway" as PG (external)
+actor: "Warehouse Staff" as WH
+actor: Admin (left)
+```
+
+- A bare or `"quoted"` name becomes the label; `as ID` gives it a short identifier for relationships.
+- `(external)` (or `(system)`) renders the actor as a **rectangle with an `«actor»` stereotype** instead of a stick figure — use it for other software systems (payment gateways, third-party APIs).
+- `(business)` adds the Bittner & Spence diagonal slash across the stick figure.
+- `(left)` / `(right)` pins the actor to a side. By default the first actor goes left and the rest go right.
+
+Custom stereotypes go in guillemets after the declaration: `actor: "Audit Service" as Audit (external) «system»`. The parser also accepts ASCII `<<system>>` and normalises it to `«system»`.
+
+---
+
+## 3. Use cases
+
+```
+usecase: "Checkout" as Checkout {
+  extension point: payment failed
+  extension point: stock depleted
+}
+```
+
+A use case is an ellipse sized to fit its text. The optional `{ … }` block lists **extension points** in a compartment below the name, separated by a divider line. Stereotypes work here too: `usecase: "Validate Card" as ValidateCard «secured»`.
+
+---
+
+## 4. Relationships
+
+Four line types connect actors and use cases:
+
+| DSL | Meaning | Rendering |
+|-----|---------|-----------|
+| `A -- B` | association | solid line, no arrow |
+| `A --> B` | directed association | solid line, open arrow at B |
+| `A ..> B` | `A` **includes** `B` | dashed line, open arrow → B, `«include»` pill |
+| `A <.. B` | `A` **extends** `B` | dashed line, open arrow → B (the base), `«extend»` pill |
+| `A --\|> B` | `A` is a specialisation of `B` | solid line, hollow triangle → parent B |
+
+```
+Customer -- Checkout
+Checkout ..> Pay          : «include»
+Pay      ..> ValidateCard : «include»
+Cancel   <.. Checkout     : «extend» [payment failed] (extension point: payment failed)
+```
+
+- **`«include»`** points *toward the included use case* — the reusable behavior `A` always runs. Source includes target.
+- **`«extend»`** points *toward the base* — `A` is the optional behavior, `B` is the base it extends. You can attach a `[condition]` and reference one of the base's `(extension point: …)` entries. (The arrowhead is always drawn toward the base regardless of how you order the endpoints.)
+- An `«extend»` line is drawn in the theme **accent color** so the rarer, more surprising relationship stands out.
+
+The parser rejects the high-confidence mistakes humans and LLMs both make, with the offending line number: association between two actors or two use cases, `include`/`extend` touching an actor, generalization across metaclasses (actor → use case), reused identifiers, and extension-point references that don't exist on the base.
+
+---
+
+## 5. Generalization
+
+`--|>` works between two actors **or** between two use cases (never across the two — that's a hard error):
+
+```
+actor: User as U
+actor: "Premium User" as PU
+PU --|> U
+
+usecase: "Pay by Card"   as PayCard
+usecase: "Pay by PayPal" as PayPaypal
+usecase: "Pay"           as Pay
+PayCard   --|> Pay
+PayPaypal --|> Pay
+```
+
+The arrow carries a **hollow triangle** pointing at the parent. When three or more siblings share one parent, the arrows merge into a single shared head (UML 2.5 Figure 18.5 convention); set `generalization: individual` in the header to keep them separate. Actor hierarchies route as a clean bus on the outer edge of the actor stack.
+
+---
+
+## 6. Multiplicity
+
+Quote a multiplicity string immediately beside the endpoint it belongs to:
+
+```
+Customer "1"    -- "*" Checkout
+Cashier  "1..*" -- "1" Register
+```
+
+---
+
+## 7. PlantUML-style inline form
+
+Coming from PlantUML? The inline declaration form works and mixes freely with the declarative form:
+
+```
+usecase
+:Customer: as C
+(Browse Catalog) as Browse
+(Add to Cart)    as AddCart
+
+C -- Browse
+C -- AddCart
+Browse ..> AddCart : «include»
+```
+
+`:Name:` declares an actor, `(Name)` declares a use case, and `as ID` aliases either. Schematex is *inspired by* PlantUML, not a 1:1 transpiler — multiplicity and relationship syntax differ slightly.
+
+---
+
+## 8. Grammar (EBNF)
+
+```ebnf
+document     = "usecase" NEWLINE header_prop* statement*
+header_prop  = ("title:" | "system:") quoted_string
+             | "direction:" ("LR" | "TB")
+             | "generalization:" ("tree" | "individual")
+
+statement    = actor_decl | usecase_decl | plantuml_inline | relation | note
+
+actor_decl   = "actor" ":" name ("as" IDENT)? actor_kind? stereotype?
+actor_kind   = "(" ("external" | "system" | "business" | "left" | "right") ")"
+usecase_decl = "usecase" ":" quoted ("as" IDENT)? stereotype? extpoints?
+extpoints    = "{" ("extension point:" TEXT)+ "}"
+plantuml_inline = ":" name ":" ("as" IDENT)?      ; actor
+                | "(" name ")" ("as" IDENT)?       ; use case
+
+relation     = endpoint relop endpoint label_clause?
+endpoint     = (IDENT | quoted) multiplicity? | multiplicity? (IDENT | quoted)
+relop        = "--" | "-->" | "..>" | "<.." | "--|>"
+label_clause = ":" stereotype? condition? extpoint_ref?
+stereotype   = "«" TEXT "»" | "<<" TEXT ">>"
+condition    = "[" TEXT "]"
+extpoint_ref = "(extension point:" TEXT ")"
+multiplicity = quoted_string                       ; "1", "*", "0..1", "1..*"
+```
+
+---
+
+## 9. Standard compliance
+
+Schematex follows the OMG **UML 2.5.1 §18 (UseCases)** visual subset and the Bittner & Spence style guide: guillemets (never ASCII `<<>>`) in the rendered SVG, `«include»` toward the included use case, `«extend»` toward the base, hollow-triangle generalization heads, and the `«actor»` stereotype on external-system rectangles. Textual use-case descriptions (Cockburn fully-dressed form), scenario tables, and XMI export are out of scope for a *diagram* renderer. See `docs/reference/29-USECASE-STANDARD.md` for the full specification.

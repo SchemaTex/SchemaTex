@@ -1,0 +1,60 @@
+---
+title: PRISMA 2020 systematic review (single pipeline)
+description: Canonical PRISMA 2020 flow diagram for a systematic review using the dedicated prisma engine — records identified across four databases, deduplicated, screened, assessed for eligibility, and included, with exclusion side-boxes and mandatory n = counts.
+diagram: prisma
+standard: PRISMA 2020 (Page et al., BMJ 2021;372:n71)
+industry: [healthcare, research, biotech]
+persona: For the systematic-review author or research librarian
+complexity: 2
+tags: [prisma, systematic-review, meta-analysis, research, evidence-synthesis, cochrane]
+featured: true
+relatedLink:
+  label: PRISMA syntax
+  href: /docs/prisma
+status: published
+dsl: |
+  prisma
+  mode: 2020-single
+  title: Effect of exercise on chronic low-back pain — SR
+
+  identification:
+    databases:
+      n: 1418
+      sources: PubMed=600, Embase=450, Cochrane=184, Web of Science=184
+      duplicates-removed: 318
+
+  screening:
+    records-screened: 1100
+    excluded:
+      n: 870
+      reasons: irrelevant title=750, non-English=120
+
+  eligibility:
+    full-text-assessed: 230
+    excluded:
+      n: 195
+      reasons: wrong population=80, wrong intervention=60, wrong outcome=55
+
+  included:
+    studies: 35
+    reports: 38
+---
+
+## Scenario
+
+A research librarian produces the PRISMA 2020 flow diagram for a Cochrane review submission. The journal **requires** the diagram in the exact four-row structure — Identification → Screening → Eligibility → Included — with the count `(n = …)` shown in every box and the excluded boxes itemizing reasons. With the dedicated `prisma` engine the librarian writes only counts and reasons; the rigid layout, the "Records removed before screening" side-box, and the exclusion side-boxes are produced automatically and are correct by construction.
+
+## Annotation key
+
+- **`mode: 2020-single`** — one Identification column (databases & registers). Use `mode: 2020-dual` to add the "other methods" column.
+- **`identification.databases`** — `n:` is the mandatory total; `sources:` renders the per-database breakdown; `duplicates-removed:` splits out into the right-column "Records removed before screening" box automatically.
+- **`screening` / `eligibility` `excluded:` blocks** — each has its own `n:` total and an optional `reasons:` breakdown rendered in a side-box to the right, connected by a horizontal arrow.
+- **`included.studies` / `reports`** — one study can yield several reports, so both counts render.
+
+## How to read
+
+Top to bottom mirrors the PRISMA 2020 template exactly. The left capsule bands label the three canonical stages; the orange bar spans the Identification column group. Counts reconcile across stages (1418 − 318 = 1100 screened; 1100 − 870 = 230 assessed; 230 − 195 = 35 included) — the engine warns if they don't.
+
+## Standard reference
+
+Page MJ, McKenzie JE, Bossuyt PM, et al. *The PRISMA 2020 statement: an updated guideline for reporting systematic reviews.* BMJ 2021;372:n71. Template: [prisma-statement.org/prisma-2020-flow-diagram](https://www.prisma-statement.org/prisma-2020-flow-diagram).

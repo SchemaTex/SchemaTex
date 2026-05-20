@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     template: '%s · Schematex',
   },
   description:
-    'Every diagram a doctor, engineer, or lawyer would actually use. Free. Fully open source. Made for AI. 20 industry-standard diagrams (genogram, pedigree, ladder logic, SLD, phylo, fishbone, entity structure, ...) from a text DSL. Pure SVG, zero dependencies.',
+    'Every diagram a doctor, engineer, or lawyer would actually use. Free. Fully open source. Made for AI. 29 industry-standard diagrams (genogram, pedigree, ladder logic, SLD, UML use case, PRISMA, fishbone, entity structure, ...) from a text DSL. Pure SVG, zero dependencies.',
   icons: {
     icon: [
       { url: '/favicon.svg', type: 'image/svg+xml' },
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Schematex — Diagrams doctors, engineers, and lawyers actually use',
     description:
-      'Free. Fully open source. Made for AI. 20 industry-standard diagrams from a text DSL — the ones Mermaid can\'t draw.',
+      'Free. Fully open source. Made for AI. 29 industry-standard diagrams from a text DSL — the ones Mermaid can\'t draw.',
     url: 'https://schematex.js.org',
     siteName: 'Schematex',
     type: 'website',
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Schematex — Diagrams doctors, engineers, and lawyers actually use',
-    description: 'Free. Fully open source. Made for AI. 20 industry-standard diagrams from a text DSL.',
+    description: 'Free. Fully open source. Made for AI. 29 industry-standard diagrams from a text DSL.',
   },
   verification: {
     google: 'UqGz5UGD4MAq8_l-V2YAGTpNqBTOHAOy9IixrLZzzgs',

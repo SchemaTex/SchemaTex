@@ -1,0 +1,232 @@
+---
+title: PRISMA 2020 flow diagram
+---
+
+## About PRISMA flow diagrams
+
+The **PRISMA 2020 flow diagram** (Page MJ et al., *BMJ* 2021;372:n71) is the mandatory figure in every systematic review, meta-analysis, and scoping review published in BMJ, Lancet, JAMA, Cochrane, JBI, and 200+ other journals. It is a *single, rigid, four-row* figure — **Identification → Screening → Eligibility → Included** — with record counts in every box and parallel "excluded" side-boxes.
+
+It is conceptually a flowchart, but the layout, mandatory `n =` fields, and the dual-pipeline variant are *prescribed*. Schematex ships `prisma` as a separate, opinionated engine so the author writes counts and exclusion reasons and the diagram is **correct by construction** — you cannot accidentally omit a count or mis-order a stage. Spec: [`28-PRISMA-STANDARD.md`](https://github.com/victorzhrn/Schematex/blob/main/docs/reference/28-PRISMA-STANDARD.md).
+
+Distinct from [flowchart](/docs/flowchart): a generic flowchart has no notion of mandatory stages, record counts, exclusion side-boxes, or the dual-pipeline merge. Use `prisma` whenever the figure is a PRISMA review flow.
+
+<Playground initial={`prisma
+mode: 2020-single
+title: Effect of exercise on chronic low-back pain — SR
+
+identification:
+  databases:
+    n: 1418
+    sources: PubMed=600, Embase=450, Cochrane=184, Web of Science=184
+    duplicates-removed: 318
+
+screening:
+  records-screened: 1100
+  excluded:
+    n: 870
+    reasons: irrelevant title=750, non-English=120
+
+eligibility:
+  full-text-assessed: 230
+  excluded:
+    n: 195
+    reasons: wrong population=80, wrong intervention=60, wrong outcome=55
+
+included:
+  studies: 35
+  reports: 38`} height={620} />
+
+---
+
+## 1. Your first diagram
+
+The minimum is the four stage blocks. Counts are mandatory; the parser refuses to lay out a diagram with a missing total.
+
+```
+prisma
+
+identification:
+  databases:
+    n: 1000
+
+screening:
+  records-screened: 900
+  excluded:
+    n: 600
+
+eligibility:
+  full-text-assessed: 300
+  excluded:
+    n: 250
+
+included:
+  studies: 50
+```
+
+Indentation is significant — **two spaces per level**, like genogram and SLD. The first non-blank line must be `prisma`. Comments use `#` or `//`.
+
+---
+
+## 2. Meta lines
+
+Top-level `key: value` lines, written before the stage blocks:
+
+```
+prisma
+mode: 2020-single
+kind: systematic-review
+title: My review
+validate-counts: warn
+```
+
+| Key | Values | Default | Meaning |
+|---|---|---|---|
+| `mode` | `2020-single` · `2020-dual` · `2009` | `2020-single` | Single column, or dual ("other methods") column. |
+| `kind` | `systematic-review` · `scoping-review` · `ipd` · `nma` | `systematic-review` | Swaps stage vocabulary (see §6). |
+| `title` | string | — | Rendered above the diagram. |
+| `validate-counts` | `warn` · `strict` · `off` | `warn` | Arithmetic checking (see §7). |
+| `direction` | `TB` / `TD` | `TB` | PRISMA is vertical by standard; horizontal is rejected. |
+
+---
+
+## 3. Identification
+
+The `identification:` block holds a `databases:` sub-block (always) and an optional `other:` sub-block (dual mode).
+
+```
+identification:
+  databases:
+    n: 1418
+    sources: PubMed=600, Embase=450, Cochrane=184
+    duplicates-removed: 318
+    ineligible-automation: 0
+    other-removed: 0
+```
+
+- `n:` — total records identified (**mandatory**).
+- `sources:` — `name=count` pairs, comma-separated. Rendered as an indented breakdown. Names with spaces or punctuation can be quoted: `"Web of Science"=184`.
+- `duplicates-removed:`, `ineligible-automation:`, `other-removed:` — optional removal counts. When any are present they render as a separate **"Records removed before screening"** box in the right column, connected by a horizontal arrow.
+
+Large numbers may use commas: `n: 1,418` is the same as `n: 1418`.
+
+---
+
+## 4. Screening & Eligibility
+
+Both stages carry a main count plus an `excluded:` block. The excluded block has its own `n:` and an optional `reasons:` breakdown.
+
+```
+screening:
+  records-screened: 1100
+  excluded:
+    n: 870
+    reasons: irrelevant title=750, non-English=120
+  reports-sought: 226        # optional
+  reports-not-retrieved: 12  # optional
+
+eligibility:
+  full-text-assessed: 230
+  excluded:
+    n: 195
+    reasons: wrong population=80, wrong intervention=60, wrong outcome=55
+```
+
+`reasons:` are `name=count` pairs. If you list more than 8, the renderer sorts them descending and aggregates the tail as `Other (n = …)` so the side-box stays readable.
+
+---
+
+## 5. Included
+
+```
+included:
+  studies: 35
+  reports: 38          # one study may yield several reports
+  participants: 28741  # PRISMA-IPD only
+```
+
+`studies:` is mandatory. `reports:` and `participants:` are optional extra count lines.
+
+---
+
+## 6. Dual pipeline & review kinds
+
+**Dual pipeline** — the PRISMA 2020 update added a second "Identification via other methods" column (citation searching, hand searches, expert recommendations). Add an `other:` block; the two columns merge into Screening via a Y-junction.
+
+```
+prisma
+mode: 2020-dual
+
+identification:
+  databases:
+    n: 1234
+    duplicates-removed: 254
+  other:
+    n: 56
+    sources: citation-search=30, hand-search=20, expert-recommendation=6
+
+screening:
+  records-screened: 1036
+  excluded:
+    n: 810
+
+eligibility:
+  full-text-assessed: 226
+  excluded:
+    n: 195
+
+included:
+  studies: 31
+```
+
+**Scoping review** — `kind: scoping-review` swaps "studies" → "sources of evidence" and re-labels the stages per Tricco et al. 2018, without changing geometry.
+
+**Updated review** — an optional `previous-studies:` block draws a dashed box on top that feeds into the identification section:
+
+```
+previous-studies:
+  n: 19
+  sources: previous review=19
+```
+
+---
+
+## 7. Count arithmetic validation
+
+With `validate-counts: warn` (default) the engine checks that the counts reconcile across stages — e.g. `databases.n + other.n − duplicates-removed = records-screened`, and that source/reason breakdowns sum to their totals. Mismatches render a small warning under the diagram (also surfaced in the SVG `<desc>` for screen readers).
+
+`validate-counts: strict` turns a mismatch into a parse error with an "off by N" message. `off` skips checking entirely.
+
+---
+
+## 8. Grammar (EBNF)
+
+```
+prisma-document  = "prisma", { meta-line }, stage-block, { stage-block } ;
+meta-line        = ("mode:" | "kind:" | "title:" | "review-id:" | "validate-counts:" | "direction:") value ;
+
+stage-block      = previous-block | identification-block | screening-block | eligibility-block | included-block ;
+
+previous-block       = "previous-studies:" , indent, "n:" int, [ "reports:" int ], { "sources:" pairs } ;
+identification-block = "identification:" , indent,
+                         "databases:" , indent, "n:" int, { "sources:" pairs },
+                           [ "duplicates-removed:" int ], [ "ineligible-automation:" int ], [ "other-removed:" int ],
+                         [ "other:" , indent, "n:" int, { "sources:" pairs } ] ;
+screening-block      = "screening:" , indent, "records-screened:" int,
+                         "excluded:" , indent, "n:" int, { "reasons:" pairs },
+                         [ "reports-sought:" int ], [ "reports-not-retrieved:" int ] ;
+eligibility-block    = "eligibility:" , indent, "full-text-assessed:" int,
+                         "excluded:" , indent, "n:" int, { "reasons:" pairs } ;
+included-block       = "included:" , indent, "studies:" int, [ "reports:" int ], [ "participants:" int ] ;
+
+pairs            = pair, { "," pair } ;
+pair             = (string | quoted) "=" int ;
+int              = digit, { digit | "," } ;     (* commas stripped: 1,234 == 1234 *)
+```
+
+Indentation is two spaces per level. Unknown keys inside a stage block are a parse error, keeping each stage well-defined.
+
+---
+
+## 9. Standard compliance
+
+Follows the **PRISMA 2020 statement** (Page MJ, McKenzie JE, Bossuyt PM, et al. *The PRISMA 2020 statement: an updated guideline for reporting systematic reviews.* BMJ 2021;372:n71) and the reference renderer conventions of the **PRISMA2020 R package** (Haddaway et al. 2022). Scoping-review vocabulary follows **PRISMA-ScR** (Tricco et al. 2018); the participants count follows **PRISMA-IPD** (Stewart et al. 2015). Template: [prisma-statement.org/prisma-2020-flow-diagram](https://www.prisma-statement.org/prisma-2020-flow-diagram).

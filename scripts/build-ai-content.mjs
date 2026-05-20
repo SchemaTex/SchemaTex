@@ -51,6 +51,8 @@ const SYNTAX_KEYS = [
   "bpmn",
   "fbd",
   "sfc",
+  "usecase",
+  "prisma",
 ];
 
 // ─── Minimal YAML-frontmatter parser ─────────────────────────────
