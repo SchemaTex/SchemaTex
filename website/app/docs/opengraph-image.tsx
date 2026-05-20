@@ -1,5 +1,6 @@
 import { existsSync, writeFileSync } from 'node:fs';
 import { NOTO_SANS_BASE64 } from '../(home)/examples/[slug]/_assets/noto-sans-base64';
+import { DIAGRAM_TYPE_COUNT } from '@/lib/diagram-stats';
 
 export const runtime = 'nodejs';
 
@@ -99,7 +100,7 @@ function decorativeGraph(rightX: number): string {
 
 export default async function Image() {
   const description =
-    'Text DSL to SVG — 20+ diagram families for medicine, engineering, and analysis. Free, open source, made for AI.';
+    `Text DSL to SVG — ${DIAGRAM_TYPE_COUNT} diagram families for medicine, engineering, and analysis. Free, open source, made for AI.`;
 
   const titleLines = ['Documentation'];
   const descLines = wrapText(description, 42).split('\n').slice(0, 4);

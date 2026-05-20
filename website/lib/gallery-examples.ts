@@ -13,12 +13,25 @@ export type DiagramType =
   | 'ladder'
   | 'sld'
   | 'block'
+  | 'fbd'
+  | 'sfc'
+  | 'pid'
+  | 'breadboard'
   | 'entity'
+  | 'erd'
   | 'fishbone'
   | 'venn'
+  | 'decisiontree'
+  | 'matrix'
   | 'usecase'
+  | 'bpmn'
+  | 'state'
   | 'prisma'
-  | 'pert';
+  | 'pert'
+  | 'flowchart'
+  | 'mindmap'
+  | 'orgchart'
+  | 'timeline';
 
 export type Industry =
   | 'healthcare'
@@ -54,12 +67,25 @@ export const DIAGRAM_LABELS: Record<DiagramType, { label: string; icon: string }
   ladder: { label: 'Ladder logic', icon: '🪜' },
   sld: { label: 'Single-line', icon: '🔋' },
   block: { label: 'Block diagram', icon: '📦' },
+  fbd: { label: 'Function block', icon: '🧮' },
+  sfc: { label: 'Sequential FC', icon: '🔢' },
+  pid: { label: 'P&ID', icon: '🛢' },
+  breadboard: { label: 'Breadboard', icon: '🍞' },
   entity: { label: 'Entity structure', icon: '🏢' },
+  erd: { label: 'ER diagram', icon: '🗄' },
   fishbone: { label: 'Fishbone', icon: '🐟' },
   venn: { label: 'Venn / Euler', icon: '⊙' },
+  decisiontree: { label: 'Decision tree', icon: '🌳' },
+  matrix: { label: 'Matrix / quadrant', icon: '🔲' },
   usecase: { label: 'Use case', icon: '🧩' },
+  bpmn: { label: 'BPMN', icon: '🔀' },
+  state: { label: 'State diagram', icon: '🔄' },
   prisma: { label: 'PRISMA flow', icon: '📊' },
   pert: { label: 'PERT / CPM', icon: '🗓' },
+  flowchart: { label: 'Flowchart', icon: '🔷' },
+  mindmap: { label: 'Mindmap', icon: '🧠' },
+  orgchart: { label: 'Org chart', icon: '🏛' },
+  timeline: { label: 'Timeline', icon: '📅' },
 };
 
 export const INDUSTRY_LABELS: Record<Industry, { label: string; icon: string }> = {
@@ -79,12 +105,13 @@ export const COMPLEXITY_LABELS: Record<Complexity, string> = {
 
 export const CLUSTER_TO_TYPES: Record<string, DiagramType[]> = {
   relationships: ['genogram', 'ecomap', 'pedigree', 'sociogram', 'phylo'],
-  'electrical-industrial': ['timing', 'logic', 'circuit', 'ladder', 'sld', 'block'],
-  'corporate-legal': ['entity'],
-  'causality-analysis': ['fishbone', 'venn'],
-  'software-uml': ['usecase'],
+  'electrical-industrial': ['timing', 'logic', 'circuit', 'ladder', 'sld', 'block', 'fbd', 'sfc', 'pid', 'breadboard'],
+  'corporate-legal': ['entity', 'erd', 'orgchart'],
+  'causality-analysis': ['fishbone', 'venn', 'decisiontree', 'matrix'],
+  'software-uml': ['usecase', 'bpmn', 'state'],
   research: ['prisma'],
   'project-management': ['pert'],
+  general: ['flowchart', 'mindmap', 'timeline'],
 };
 
 export const CLUSTER_META: Record<string, { label: string; color: string }> = {
@@ -95,6 +122,7 @@ export const CLUSTER_META: Record<string, { label: string; color: string }> = {
   'software-uml':          { label: 'Software & UML',          color: 'var(--cat-4)' },
   research:                { label: 'Research',                color: 'var(--cat-5)' },
   'project-management':    { label: 'Project Management',      color: 'var(--cat-6)' },
+  general:                 { label: 'General',                 color: 'var(--cat-7)' },
 };
 
 export function getDiagramCluster(diagram: DiagramType): string {

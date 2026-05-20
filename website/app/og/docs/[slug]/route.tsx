@@ -3,6 +3,7 @@ import { render } from 'schematex';
 import { NOTO_SANS_BASE64 } from '../../../(home)/examples/[slug]/_assets/noto-sans-base64';
 import { getDocOGEntry } from '@/lib/docs-og-registry';
 import { examplesByDiagram } from '@/lib/examples-source';
+import { DIAGRAM_TYPE_COUNT } from '@/lib/diagram-stats';
 
 export const runtime = 'nodejs';
 
@@ -125,7 +126,7 @@ export async function GET(
   const title = entry?.title ?? 'Documentation';
   const badge = entry?.badge ?? 'DOCS';
   const standard = entry?.standard ??
-    'Text DSL to SVG — 20+ diagram families for medicine, engineering, and analysis.';
+    `Text DSL to SVG — ${DIAGRAM_TYPE_COUNT} diagram families for medicine, engineering, and analysis.`;
 
   let diagramSvg: { body: string; viewBox: string } | null = null;
   if (entry) {

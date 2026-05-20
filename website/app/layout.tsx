@@ -3,6 +3,7 @@ import { RootProvider } from 'fumadocs-ui/provider';
 import type { ReactNode } from 'react';
 import type { Metadata } from 'next';
 import { PlausibleAnalytics } from '@/components/plausible-analytics';
+import { DIAGRAM_TYPE_COUNT } from '@/lib/diagram-stats';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://schematex.js.org'),
@@ -11,7 +12,7 @@ export const metadata: Metadata = {
     template: '%s · Schematex',
   },
   description:
-    'Every diagram a doctor, engineer, or lawyer would actually use. Free. Fully open source. Made for AI. 29 industry-standard diagrams (genogram, pedigree, ladder logic, SLD, UML use case, PRISMA, fishbone, entity structure, ...) from a text DSL. Pure SVG, zero dependencies.',
+    `Every diagram a doctor, engineer, or lawyer would actually use. Free. Fully open source. Made for AI. ${DIAGRAM_TYPE_COUNT} industry-standard diagrams (genogram, pedigree, ladder logic, SLD, UML use case, PRISMA, fishbone, entity structure, ...) from a text DSL. Pure SVG, zero dependencies.`,
   icons: {
     icon: [
       { url: '/favicon.svg', type: 'image/svg+xml' },
@@ -21,7 +22,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Schematex — Diagrams doctors, engineers, and lawyers actually use',
     description:
-      'Free. Fully open source. Made for AI. 29 industry-standard diagrams from a text DSL — the ones Mermaid can\'t draw.',
+      `Free. Fully open source. Made for AI. ${DIAGRAM_TYPE_COUNT} industry-standard diagrams from a text DSL — the ones Mermaid can't draw.`,
     url: 'https://schematex.js.org',
     siteName: 'Schematex',
     type: 'website',
@@ -37,7 +38,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Schematex — Diagrams doctors, engineers, and lawyers actually use',
-    description: 'Free. Fully open source. Made for AI. 29 industry-standard diagrams from a text DSL.',
+    description: `Free. Fully open source. Made for AI. ${DIAGRAM_TYPE_COUNT} industry-standard diagrams from a text DSL.`,
   },
   verification: {
     google: 'UqGz5UGD4MAq8_l-V2YAGTpNqBTOHAOy9IixrLZzzgs',

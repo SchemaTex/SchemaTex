@@ -4,18 +4,19 @@ import { Suspense } from 'react';
 import {
   DIAGRAM_LABELS,
   INDUSTRY_LABELS,
+  CLUSTER_META,
   type GalleryExample,
   type DiagramType,
   type Industry,
 } from '@/lib/gallery-examples';
 import { allExamples } from '@/lib/examples-source';
+import { DIAGRAM_TYPE_COUNT } from '@/lib/diagram-stats';
 import { GalleryGrid } from '@/components/GalleryGrid';
 import { GalleryFilterBar } from '@/components/GalleryFilterBar';
 
 export const metadata: Metadata = {
   title: 'Gallery — the diagrams doctors, engineers, and lawyers actually use',
-  description:
-    '20 real-world Schematex diagrams across healthcare, industrial, legal, education, and research. Every example follows a published standard — copy the DSL, open in playground, ship. Free, fully open source, made for AI.',
+  description: `${allExamples.length} real-world Schematex diagrams across healthcare, industrial, legal, education, and research. Every example follows a published standard — copy the DSL, open in playground, ship. Free, fully open source, made for AI.`,
   alternates: { canonical: 'https://schematex.js.org/gallery' },
 };
 
@@ -83,8 +84,8 @@ export default async function GalleryPage({
           <p className="type-eye mb-3">/ GALLERY</p>
           <div className="mb-4 flex flex-wrap gap-2">
             <span className="ds-badge">{galleryExamples.length} examples</span>
-            <span className="ds-badge">29 diagram types</span>
-            <span className="ds-badge">6 clusters</span>
+            <span className="ds-badge">{DIAGRAM_TYPE_COUNT} diagram types</span>
+            <span className="ds-badge">{Object.keys(CLUSTER_META).length} clusters</span>
           </div>
           <h1
             className="text-3xl font-semibold"
@@ -93,9 +94,9 @@ export default async function GalleryPage({
             The diagrams doctors, engineers, and lawyers actually use.
           </h1>
           <p className="mt-2 max-w-xl text-sm" style={{ color: 'var(--text-muted)' }}>
-            20 real-world Schematex diagrams — clinical genograms, IEC 61131-3 ladder
-            logic, NSGC pedigrees, cap tables, and more. Every one follows a published
-            standard. Copy the DSL, open in playground, ship.
+            {galleryExamples.length} real-world Schematex diagrams — clinical genograms,
+            IEC 61131-3 ladder logic, NSGC pedigrees, cap tables, and more. Every one
+            follows a published standard. Copy the DSL, open in playground, ship.
           </p>
         </div>
       </section>

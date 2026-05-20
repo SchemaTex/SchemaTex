@@ -1,6 +1,7 @@
 import { Playground } from '@/components/Playground';
 import { DiagramIcon } from '@/components/DiagramIcon';
 import { allExamples } from '@/lib/examples-source';
+import { DIAGRAM_TYPE_COUNT } from '@/lib/diagram-stats';
 
 const heroDefault = `genogram "The Smiths"
   john [male, 1950]
@@ -22,7 +23,7 @@ import Link from 'next/link';
 export const metadata = {
   title: 'Playground — paste LLM output, see SVG live',
   description:
-    'Interactive Schematex playground. Edit the text DSL on the left, see the rendered SVG diagram on the right. Made for AI — paste ChatGPT or Claude output, get a professional diagram back. Works for all 29 diagram types.',
+    `Interactive Schematex playground. Edit the text DSL on the left, see the rendered SVG diagram on the right. Made for AI — paste ChatGPT or Claude output, get a professional diagram back. Works for all ${DIAGRAM_TYPE_COUNT} diagram types.`,
   alternates: { canonical: 'https://schematex.js.org/playground' },
 };
 

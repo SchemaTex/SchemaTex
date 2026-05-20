@@ -6,6 +6,7 @@ import { HeroShowcase, type HeroSlide } from '@/components/HeroShowcase';
 import { GithubStarButton } from '@/components/GithubStarButton';
 import { getRepoStats } from '@/lib/github-stats';
 import { allExamples } from '@/lib/examples-source';
+import { DIAGRAM_TYPE_COUNT } from '@/lib/diagram-stats';
 
 export const metadata: Metadata = {
   alternates: { canonical: 'https://schematex.js.org' },
@@ -131,7 +132,7 @@ export default async function HomePage() {
     codeRepository: 'https://github.com/victorzhrn/Schematex',
     license: 'https://spdx.org/licenses/AGPL-3.0-only.html',
     description:
-      'Every diagram a doctor, engineer, or lawyer would actually use. 29 industry-standard diagram types from a text DSL — genogram, pedigree, ladder logic, SLD, FBD, SFC, UML use case, PRISMA, fishbone, entity structure. Free, fully open source, made for AI. Pure SVG, zero dependencies.',
+      `Every diagram a doctor, engineer, or lawyer would actually use. ${DIAGRAM_TYPE_COUNT} industry-standard diagram types from a text DSL — genogram, pedigree, ladder logic, SLD, FBD, SFC, UML use case, PRISMA, fishbone, entity structure. Free, fully open source, made for AI. Pure SVG, zero dependencies.`,
     keywords:
       'genogram, pedigree, ladder logic, single-line diagram, phylogenetic tree, fishbone, entity structure, text to diagram, mermaid alternative, open source diagram library',
   };
@@ -192,8 +193,8 @@ export default async function HomePage() {
             </h1>
 
             <p className="mt-6 max-w-[860px] text-[17px] leading-[1.6] text-fd-muted-foreground">
-              Schematex draws the 29 diagrams doctors, engineers, and lawyers
-              already draw by hand — clinical genograms, IEC&nbsp;61131-3
+              Schematex draws the {DIAGRAM_TYPE_COUNT} diagrams doctors, engineers,
+              and lawyers already draw by hand — clinical genograms, IEC&nbsp;61131-3
               ladder logic, NSGC pedigrees, cap tables. Text DSL in,
               standards-compliant SVG out.
             </p>
@@ -408,7 +409,7 @@ export default async function HomePage() {
 
           <div className="mt-14 grid grid-cols-1 gap-5 md:grid-cols-3">
             <StatCard
-              stat="20"
+              stat={String(DIAGRAM_TYPE_COUNT)}
               unit="FAMILIES"
               title="Diagrams professionals actually use"
               body="Every diagram type implements a published spec — McGoldrick, IEC 61131-3, IEEE 315, NSGC, Newick. Doctors, engineers, and lawyers already draw these by hand; now they can ship them from code."
@@ -522,7 +523,7 @@ export default async function HomePage() {
                     </span>
                     schematex
                   </td>
-                  <td className="px-5 py-3">20 families · spec-cited</td>
+                  <td className="px-5 py-3">{DIAGRAM_TYPE_COUNT} families · spec-cited</td>
                   <td className="px-5 py-3 font-semibold">free</td>
                   <td className="px-5 py-3">✓ (0 deps, npm)</td>
                   <td className="px-5 py-3 font-semibold">designed for it</td>
@@ -615,8 +616,8 @@ export default async function HomePage() {
             Start with a single string.
           </h2>
           <p className="mt-5 text-lg leading-relaxed text-fd-muted-foreground">
-            Open the playground to render any of 29 diagram types live — or
-            browse the gallery for DSL you can copy, paste, and adapt.
+            Open the playground to render any of {DIAGRAM_TYPE_COUNT} diagram types
+            live — or browse the gallery for DSL you can copy, paste, and adapt.
           </p>
           <div className="mt-10 flex flex-wrap justify-center gap-3">
             <Link
