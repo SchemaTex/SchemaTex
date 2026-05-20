@@ -11,6 +11,65 @@ describe("timeline parser", () => {
     expect(ast.events[0]?.label).toBe("Eliezer born");
   });
 
+  // ─── Track A Unit 4: non-date row keys (ordinal mode) ────────
+  describe("ordinal row keys", () => {
+    test("non-date row key does not throw", () => {
+      expect(() => {
+        parseTimeline(`timeline "Roadmap"
+Phase 1 : "Discovery"
+Phase 2 : "Design"
+Phase 3 : "Build"`);
+      }).not.toThrow();
+    });
+
+    test("ordinal keys preserve raw label and assign sequential values", () => {
+      const ast = parseTimeline(`timeline
+Phase 1 : "Discovery"
+Phase 2 : "Design"
+Phase 3 : "Build"`);
+      expect(ast.events).toHaveLength(3);
+      expect(ast.events[0]!.start.precision).toBe("ordinal");
+      expect(ast.events[0]!.start.raw).toBe("Phase 1");
+      expect(ast.events[1]!.start.raw).toBe("Phase 2");
+      // Values are sequential so layout can still sort them.
+      expect(ast.events[1]!.start.value).toBeGreaterThan(ast.events[0]!.start.value);
+      expect(ast.events[2]!.start.value).toBeGreaterThan(ast.events[1]!.start.value);
+    });
+
+    test("multiple colons: only first separates key from body", () => {
+      const ast = parseTimeline(`timeline
+14:30 : "Standup : daily team meeting"`);
+      expect(ast.events).toHaveLength(1);
+      // Key was "14:30" which is not a valid date → ordinal mode preserving it.
+      expect(ast.events[0]!.start.precision).toBe("ordinal");
+      expect(ast.events[0]!.start.raw).toBe("14:30");
+      // Body kept the second colon intact.
+      expect(ast.events[0]!.label).toBe("Standup : daily team meeting");
+    });
+
+    test("mixing date and ordinal keys: both kinds parse", () => {
+      const ast = parseTimeline(`timeline "Mixed"
+2024 : "Real year"
+Phase X : "Ordinal label"
+2025 : "Another real year"`);
+      expect(ast.events).toHaveLength(3);
+      expect(ast.events[0]!.start.precision).toBe("year");
+      expect(ast.events[1]!.start.precision).toBe("ordinal");
+      expect(ast.events[2]!.start.precision).toBe("year");
+    });
+
+    test("ordinal keys inside a section/track work", () => {
+      const ast = parseTimeline(`timeline
+section "Project Phases"
+  Phase 1 : "Discovery"
+  Phase 2 : "Design"`);
+      expect(ast.tracks).toHaveLength(1);
+      expect(ast.events).toHaveLength(2);
+      expect(ast.events[0]!.start.precision).toBe("ordinal");
+      expect(ast.events[0]!.trackId).toBe(ast.tracks[0]!.id);
+    });
+  });
+
   test("track keyword groups events", () => {
     const ast = parseTimeline(`timeline
 track "Generation 1":

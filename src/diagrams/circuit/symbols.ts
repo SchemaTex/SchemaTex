@@ -916,6 +916,130 @@ const terminal_block: SymbolDef = {
   },
 };
 
+// ─── Industrial control / Power electrical (IEC 60617) ───────
+
+// Relay coil — rectangle with diagonal line indicating coil winding.
+// Mechanical-link convention: contacts elsewhere sharing the same label
+// (e.g. K1) are conceptually driven by this coil; rendering of the link
+// itself is deferred to a future enhancement.
+const relay_coil: SymbolDef = {
+  length: 40,
+  anchors: { start: { x: 0, y: 0 }, end: { x: 40, y: 0 } },
+  svg: () =>
+    [
+      lineWire(0, 0, 8, 0),
+      `<rect x="8" y="-10" width="24" height="20" fill="white" ${BODY}/>`,
+      // Diagonal slash inside the box = coil winding indicator
+      `<line x1="8" y1="-10" x2="32" y2="10" ${BODY}/>`,
+      lineWire(32, 0, 40, 0),
+    ].join(""),
+};
+
+// Relay contact normally-open — same as a switch contact but visually
+// paired (small rect indicator above) to mark "controlled by a coil".
+const relay_no: SymbolDef = {
+  length: 40,
+  anchors: { start: { x: 0, y: 0 }, end: { x: 40, y: 0 } },
+  svg: () =>
+    [
+      lineWire(0, 0, 10, 0),
+      `<line x1="10" y1="0" x2="30" y2="-10" ${BODY}/>`,
+      `<circle cx="10" cy="0" r="2" ${FILL}/>`,
+      `<circle cx="30" cy="0" r="2" ${FILL}/>`,
+      // Small dashed bar above to denote actuator-driven (vs hand switch)
+      `<line x1="14" y1="-14" x2="26" y2="-14" stroke-dasharray="2,2" ${BODY}/>`,
+      lineWire(30, 0, 40, 0),
+    ].join(""),
+};
+
+// Relay contact normally-closed — bar drawn across the contact gap.
+const relay_nc: SymbolDef = {
+  length: 40,
+  anchors: { start: { x: 0, y: 0 }, end: { x: 40, y: 0 } },
+  svg: () =>
+    [
+      lineWire(0, 0, 10, 0),
+      `<line x1="10" y1="-10" x2="30" y2="-10" ${BODY}/>`,
+      // NC slash: line crosses both contact endpoints (closed by default)
+      `<line x1="8" y1="2" x2="32" y2="-12" ${BODY}/>`,
+      `<circle cx="10" cy="0" r="2" ${FILL}/>`,
+      `<circle cx="30" cy="0" r="2" ${FILL}/>`,
+      `<line x1="14" y1="-14" x2="26" y2="-14" stroke-dasharray="2,2" ${BODY}/>`,
+      lineWire(30, 0, 40, 0),
+    ].join(""),
+};
+
+// Contactor (KM*) — heavy-load switching, drawn with a bolder contact +
+// horizontal dash row indicating the mechanical bridge.
+const contactor: SymbolDef = {
+  length: 44,
+  anchors: { start: { x: 0, y: 0 }, end: { x: 44, y: 0 } },
+  svg: () =>
+    [
+      lineWire(0, 0, 10, 0),
+      // Two parallel diagonal contacts = double-break (typical of contactors)
+      `<line x1="10" y1="0" x2="30" y2="-10" stroke-width="2.5" ${BODY}/>`,
+      `<line x1="14" y1="2" x2="34" y2="-8" stroke-width="2.5" ${BODY}/>`,
+      `<circle cx="10" cy="0" r="2" ${FILL}/>`,
+      `<circle cx="34" cy="0" r="2" ${FILL}/>`,
+      // Solid bar above = electromagnetic-driven actuator
+      `<line x1="14" y1="-14" x2="30" y2="-14" stroke-width="2" ${BODY}/>`,
+      lineWire(34, 0, 44, 0),
+    ].join(""),
+};
+
+// Solenoid valve (EV*) — rectangle with coil winding indicator and a
+// valve-body arrow pointing along the flow path. Simplified IEC 60617-14.
+const solenoid_valve: SymbolDef = {
+  length: 50,
+  anchors: { start: { x: 0, y: 0 }, end: { x: 50, y: 0 } },
+  svg: () =>
+    [
+      lineWire(0, 0, 8, 0),
+      // Solenoid box on top
+      `<rect x="8" y="-22" width="14" height="12" fill="white" ${BODY}/>`,
+      `<line x1="8" y1="-22" x2="22" y2="-10" ${BODY}/>`,
+      // Valve body (triangle pair = IEC valve symbol)
+      `<polygon points="22,0 38,-8 38,8" fill="white" ${BODY}/>`,
+      `<polygon points="22,0 8,-8 8,8" fill="white" ${BODY}/>`,
+      // Connect solenoid to valve body (actuator line)
+      `<line x1="15" y1="-10" x2="22" y2="0" ${BODY}/>`,
+      lineWire(38, 0, 50, 0),
+    ].join(""),
+};
+
+// Thermal overload relay (F2*) — hashed rectangle with heat-element
+// indicators; the small bent line denotes the bimetal element.
+const thermal_overload: SymbolDef = {
+  length: 40,
+  anchors: { start: { x: 0, y: 0 }, end: { x: 40, y: 0 } },
+  svg: () =>
+    [
+      lineWire(0, 0, 8, 0),
+      `<rect x="8" y="-12" width="24" height="24" fill="white" ${BODY}/>`,
+      // Bimetal element: bent line inside box
+      `<path d="M 12,-6 L 16,4 L 20,-6 L 24,4 L 28,-6" fill="none" ${BODY}/>`,
+      lineWire(32, 0, 40, 0),
+    ].join(""),
+};
+
+// Disconnect switch / isolator (Q1*) — switch with a hollow square at
+// the moving contact end to indicate visible-break disconnect device.
+const disconnect_switch: SymbolDef = {
+  length: 48,
+  anchors: { start: { x: 0, y: 0 }, end: { x: 48, y: 0 } },
+  svg: () =>
+    [
+      lineWire(0, 0, 10, 0),
+      `<line x1="10" y1="0" x2="34" y2="-12" ${BODY}/>`,
+      `<circle cx="10" cy="0" r="2" ${FILL}/>`,
+      // Hollow square at top of arm = visible-isolation indicator
+      `<rect x="30" y="-16" width="8" height="8" fill="white" ${BODY}/>`,
+      `<circle cx="38" cy="0" r="2" ${FILL}/>`,
+      lineWire(38, 0, 48, 0),
+    ].join(""),
+};
+
 // ─── Registry ─────────────────────────────────────────────────
 
 export const SYMBOLS: Partial<Record<CircuitComponentType, SymbolDef>> = {
@@ -973,6 +1097,14 @@ export const SYMBOLS: Partial<Record<CircuitComponentType, SymbolDef>> = {
   terminal_block,
   "555_timer": timer_555,
   voltage_regulator,
+  // Industrial control / power electrical (IEC 60617)
+  relay_coil,
+  relay_no,
+  relay_nc,
+  contactor,
+  solenoid_valve,
+  thermal_overload,
+  disconnect_switch,
   // Lamp reuses buzzer slot? No, needs its own entry but our CircuitComponentType
   // doesn't have "lamp". We map it via parser alias to "buzzer" or add specifically.
 };

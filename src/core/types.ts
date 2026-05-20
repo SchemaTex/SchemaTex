@@ -860,6 +860,12 @@ export type CircuitComponentType =
   | "relay_no"          // Relay contact normally-open (like switch_spst)
   | "relay_nc"          // Relay contact normally-closed (with slash)
 
+  // ── Industrial control / Power electrical (IEC 60617 §07/§14) ──
+  | "contactor"         // Heavy-load switching (KM*) — bold contact + dash actuator
+  | "solenoid_valve"    // Pneumatic / hydraulic control (EV*) — coil + valve symbol
+  | "thermal_overload"  // Motor protection (F2*) — hashed rectangle + heat marks
+  | "disconnect_switch" // Service disconnect / isolator (Q1*) — switch with disconnect bracket
+
   // ── Electromechanical ─────────────────────────────────────────
   | "motor"             // Circle + M + shaft line
   | "speaker"           // Triangle + box + radiating lines
