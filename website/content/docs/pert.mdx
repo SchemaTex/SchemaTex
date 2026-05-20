@@ -1,0 +1,221 @@
+---
+title: PERT / CPM Network
+---
+
+## About PERT charts
+
+A **PERT chart** (Program Evaluation and Review Technique) — and its near-twin **CPM** (Critical Path Method) — is the foundational project-scheduling diagram of modern project management. Born in 1959 (PERT from the US Navy Polaris program, CPM from DuPont), the two converged into the **Activity-on-Node / Precedence Diagramming Method** taught by [PMI's PMBOK Guide](https://www.pmi.org/pmbok-guide-standards). You write the tasks, their durations, and which task depends on which; the schedule — Early Start, Early Finish, Late Start, Late Finish, slack, and the **critical path** — is *computed*.
+
+That last point is what makes Schematex's `pert` engine different from every drag-and-drop "PERT chart maker". Most tools ship a shape library and make you fill the six-field box and compute the critical path with a calculator. Schematex runs the forward pass and backward pass itself and highlights the critical path in red automatically. Distinct from **[flowchart](/docs/flowchart)** (no scheduling), **[timeline](/docs/timeline)** (no critical-path math), and **[bpmn](/docs/bpmn)** (an organisational process, not a one-off project schedule).
+
+<Playground initial={`pert
+title: "Q3 Product Launch"
+unit: days
+
+task A "Market research"     duration: 5
+task B "Design mockups"      duration: 8  after: A
+task C "Backend API"         duration: 15 after: A
+task D "Frontend build"      duration: 10 after: B, C
+task E "QA / testing"        duration: 5  after: D
+task F "Marketing collateral" duration: 7 after: B
+task G "Launch event"        duration: 2  after: E, F`} height={520} />
+
+---
+
+## 1. Your first diagram
+
+Every document starts with the `pert` keyword, an optional header, then one `task` line per activity:
+
+```
+pert
+unit: days
+
+task A "Market research" duration: 5
+task B "Design mockups"  duration: 8 after: A
+task C "Backend API"     duration: 15 after: A
+task D "Frontend build"  duration: 10 after: B, C
+```
+
+Each task carries an `<id>`, a quoted `<label>`, a `duration:`, and an optional `after:` list of predecessors. The engine adds an invisible Start and Finish, runs the schedule, and draws the six-field activity box for every task. You never type ES/EF/LS/LF — they are computed.
+
+The header accepts:
+
+- `title: "…"` — a heading drawn above the diagram.
+- `unit: days | weeks | hours | abstract` — the time unit (default `days`; purely a label, the engine is calendar-agnostic).
+- `direction: LR | TB` — left-to-right (default) or top-to-bottom.
+- `layout: network | timescaled` — the layered network (default) or a time-proportional view (§6).
+- `critical-tolerance: <n>` — slack ≤ this counts as critical (default `0`; set `0.001` for three-point projects).
+- `show-sentinels: true` — draw the synthetic Start / Finish nodes (hidden by default).
+
+---
+
+## 2. The six-field activity box
+
+Every task renders as the canonical 3×2 PERT/CPM rectangle:
+
+```
+┌──────────┬────────────┬──────────┐
+│  ES      │  Duration  │   EF     │
+├──────────┴────────────┴──────────┤
+│         Task Name (ID)           │
+├──────────┬────────────┬──────────┤
+│  LS      │  Slack     │   LF     │
+└──────────┴────────────┴──────────┘
+```
+
+- **ES / EF** — Early Start / Early Finish, from the forward pass.
+- **LS / LF** — Late Start / Late Finish, from the backward pass.
+- **Slack** (total float) = LS − ES = LF − EF. Zero slack means the activity is on the critical path.
+
+Critical activities get a **red border** and a bold `0` slack; the project's critical chain reads as an unbroken red line. Every field is also mirrored onto `data-*` attributes (`data-es`, `data-slack`, `data-critical`, …) so you can query the SVG without re-running the math.
+
+**On the two-colour palette.** A PERT chart is deliberately drawn in just two colours. Red for the critical path is a genuine industry convention — MS Project, Oracle Primavera P6, and PMBOK figures all use it, because "critical vs. not" is the one distinction the diagram exists to surface. Everything else stays a neutral house-blue. Adding more colours would imply categories that PERT's semantics don't have; if you need to group by team or phase, use [swimlanes](#7-swimlanes-tags-classes-and-comments) (`lane:`) instead of colour.
+
+---
+
+## 3. Dependencies (FS / SS / FF / SF + lag/lead)
+
+`after:` takes a comma-separated list of predecessor references. The default relationship is **Finish-to-Start (FS)** — a task starts once its predecessor finishes:
+
+```
+task D "Frontend build" duration: 10 after: B, C
+```
+
+Modern scheduling needs the other three Precedence-Diagramming relationships and **lag** (delay) or **lead** (negative lag):
+
+```
+task B "Stakeholder interviews" duration: 6 after: A SS+1   # start 1d after A starts
+task I "Documentation"          duration: 4 after: D+3      # FS with a 3-day lag
+task J "Translation"            duration: 3 after: I SS-1   # start 1d before I starts (lead)
+task K "Sign-off"               duration: 1 after: I FF     # finishes when I finishes
+task L "Press release"          duration: 2 after: G SF+1   # start-to-finish (rare)
+```
+
+| Form | Meaning |
+|------|---------|
+| `after: A` | Finish-to-Start, no lag (the common case) |
+| `after: A+2` or `after: A+2d` | FS with a 2-unit lag |
+| `after: A SS` / `A FF` / `A SF` | Start-to-Start / Finish-to-Finish / Start-to-Finish |
+| `after: A SS+2d` / `A FF-1d` | any type with lag (`+`) or lead (`-`) |
+
+A lag unit suffix (`d` / `w` / `h`) must match the diagram's `unit:` or be omitted; mixed units are rejected. FS with zero lag is unlabelled; SS/FF/SF always show their type on the edge.
+
+---
+
+## 4. Three-point (PERT) estimation
+
+Write a duration as `O/M/P` (optimistic / most-likely / pessimistic) and the engine computes the beta-distribution expected duration **te = (O + 4M + P) / 6** and the variance **σ² = ((P − O)/6)²**:
+
+```
+pert
+critical-tolerance: 0.01
+task A "Spec"   duration: 2/3/5    # te = 3.17, σ² = 0.25
+task B "Build"  duration: 5/8/14   after: A   # te = 8.50, σ² = 2.25
+task C "Test"   duration: 3/4/6    after: B
+task D "Deploy" duration: 1/2/3    after: C
+```
+
+The Duration field shows `te`; a small `σ=…` annotation appears under the name; and the project-level standard deviation (√ of the summed critical-path variances) is reported in the footer. Use `critical-tolerance: 0.01` so floating-point `te` values don't displace the visible critical path.
+
+---
+
+## 5. Milestones
+
+A milestone is a zero-duration checkpoint, drawn as a diamond. Use the `milestone` flag or `duration: 0`:
+
+```
+task P "Cutover weekend" milestone after: O
+task Q "Go-live"         duration: 0 after: P
+```
+
+---
+
+## 6. Time-scaled layout
+
+`layout: timescaled` switches from the layered network to a network-Gantt hybrid: each activity's **x-position is proportional to its ES** and its **width is proportional to its duration**, with a unit time axis along the bottom. Activities are packed into lanes so nothing overlaps.
+
+```
+pert
+layout: timescaled
+unit: days
+
+task A "Inventory"     duration: 5
+task B "Interviews"    duration: 6  after: A SS+1
+task C "Design"        duration: 10 after: A, B
+task D "Build"         duration: 15 after: C
+task E "Pilot"         duration: 7  after: D
+```
+
+This is a bridge to a Gantt view, not a replacement: there's no calendar, working-time mask, or resource swimlane.
+
+### Activity-on-arrow (`layout: aoa`)
+
+`layout: aoa` renders the older **activity-on-arrow** (ADM) notation you'll find in textbooks and on Investopedia: numbered **event** circles, **activities as labelled arrows**, and dotted **dummy activities** auto-inserted wherever an activity has two or more predecessors. You write the same activity-on-node DSL — Schematex builds the event graph and numbers the events for you.
+
+```
+pert
+layout: aoa
+unit: days
+
+task A "create schedule" duration: 10
+task B "buy hardware"    duration: 5
+task C "programming"     duration: 20 after: A
+task D "installation"    duration: 5  after: B
+task E "conversion"      duration: 15 after: D
+task F "test code"       duration: 20 after: C, E
+task G "write manual"    duration: 15 after: E
+```
+
+AOA is a **legacy** notation (PMBOK 7 dropped it; AON is the modern standard) and it can only express **finish-to-start** logic — SS/FF/SF and lag/lead are flattened to FS with a warning. Use it for teaching, exam prep, or matching an existing textbook figure; use the default `network` (AON) layout for real scheduling.
+
+---
+
+## 7. Swimlanes, tags, classes, and comments
+
+Add `lane: "…"` to any task and the network re-groups into horizontal swimlanes — by responsible team, phase, or owner — while still computing the schedule exactly as before:
+
+```
+task T1 "Support Account Deletion" duration: 3  lane: "Customer Account"
+task T2 "Design a New Theme"        duration: 8  lane: "Shopping Site"
+task T3 "Apply New Theme"           duration: 15 after: T2 lane: "Shopping Site"
+```
+
+Lanes appear in first-declared order, each as a banded row with a label gutter on the left. Swimlanes are a presentation of the same AON network, not a different layout mode — they activate automatically when any task declares a lane.
+
+```
+task X "External vendor work" duration: 10 after: A tags: vendor, external class: secondary
+# this is a comment
+```
+
+`tags:` emit `data-tag="…"` on the node group and `class:` adds a CSS class for downstream theming. `#` and `//` start a comment to end of line.
+
+---
+
+## 8. Grammar (EBNF)
+
+```text
+document    = "pert" NEWLINE header* task+
+header      = "title:" quoted
+            | "unit:" ("days" | "weeks" | "hours" | "abstract")
+            | "direction:" ("LR" | "TB")
+            | "layout:" ("network" | "timescaled" | "aoa")
+            | "critical-tolerance:" number
+            | "show-sentinels:" boolean
+
+task        = "task" IDENT quoted "duration:" duration ("after:" reflist)? "milestone"? attrs?
+            | "task" IDENT quoted "milestone" ("after:" reflist)? attrs?
+duration    = number | number "/" number "/" number          ; deterministic or O/M/P
+reflist     = ref ("," ref)*
+ref         = IDENT (WS deptype)? laglead?
+            | IDENT "+" number unit?                          ; attached FS lag sugar
+deptype     = "FS" | "SS" | "FF" | "SF"
+laglead     = ("+" | "-") number unit?
+unit        = "d" | "w" | "h"
+attrs       = ("tags:" idlist)? ("class:" IDENT)? ("lane:" quoted)?
+```
+
+---
+
+## 9. Standard compliance
+
+Schematex `pert` implements the **Activity-on-Node / Precedence Diagramming Method** per **PMI PMBOK 7** and Moder, Phillips & Davis (1983), with the six-field box convention from Kerzner and Oracle Primavera P6. The forward/backward pass, total slack, critical path, all four PDM dependency types with lag/lead, and three-point estimation (te + variance) are computed exactly. The older **Activity-on-Arrow** notation is available as an opt-in legacy view (`layout: aoa`) for teaching and textbook parity. Out of scope for v0.1: resource leveling / RCPSP, Monte Carlo schedule-risk simulation, calendar-aware durations, and MS Project / Primavera import-export. See `docs/reference/32-PERT-STANDARD.md` for the full specification.

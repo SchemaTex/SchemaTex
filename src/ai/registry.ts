@@ -16,7 +16,8 @@ export type DiagramCluster =
   | "strategy"
   | "knowledge"
   | "behavior-modeling"
-  | "research";
+  | "research"
+  | "project-management";
 
 export interface DiagramMeta {
   /** Canonical type id — matches `DiagramType` and plugin keys. */
@@ -282,6 +283,18 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
     cluster: "research",
     standard: "PRISMA 2020 (Page MJ et al., BMJ 2021;372:n71); see 28-PRISMA-STANDARD.md",
     syntaxKey: "prisma",
+  },
+  // ── Project management / scheduling ──────────────────────────
+  {
+    type: "pert",
+    name: "PERT / CPM network",
+    tagline:
+      "Activity-on-node project schedule that computes ES/EF/LS/LF, slack, and the critical path.",
+    useWhen:
+      "Use whenever the user mentions 'PERT', 'CPM', 'critical path', 'project network', 'precedence diagram', or wants a project schedule from tasks + durations + dependencies. Unlike a flowchart, this engine *computes* the schedule: write `task <id> \"label\" duration: <n> after: <preds>` and it runs the forward/backward pass and returns Early/Late Start & Finish, total slack, project duration, and highlights the critical path in red. Supports PDM dependency types (FS/SS/FF/SF) with lag/lead (`after: A SS+2d`), three-point estimation (`duration: 4/6/10` → te + variance), milestones (`milestone`), swimlanes (`lane: \"Team\"`), a `layout: timescaled` mode (x ∝ ES, width ∝ duration) for a network-Gantt hybrid, and a legacy `layout: aoa` mode (activity-on-arrow: numbered event circles + arrow activities + dummy activities, FS-only). Distinct from `flowchart` (no scheduling), `timeline`/Gantt (no critical-path computation), and `bpmn` (organisational process, not a one-off schedule).",
+    cluster: "project-management",
+    standard: "PMI PMBOK 7 + Moder 1983 (AON/PDM); see 32-PERT-STANDARD.md",
+    syntaxKey: "pert",
   },
   // ── Generic process / flow ───────────────────────────────────
   {

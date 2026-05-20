@@ -1,0 +1,36 @@
+---
+title: PERT swimlanes grouped by team
+description: The same computed activity-on-node schedule, re-grouped into horizontal swimlanes by responsible team (Customer Account, Shopping Site, Shopping Cart, Testing) — the way Visual Paradigm and PMO templates present a project network.
+diagram: pert
+standard: PMI PMBOK 7 + Moder 1983 (AON/PDM)
+industry: [business, software]
+persona: For the delivery lead
+complexity: 2
+tags: [pert, cpm, swimlane, critical-path, project-management]
+featured: false
+relatedLink:
+  label: PERT / CPM syntax
+  href: /docs/pert
+status: published
+dsl: |
+  pert
+  title: "Online Shop Project"
+  unit: days
+
+  task T1 "Support Account Deletion"            duration: 3  lane: "Customer Account"
+  task T2 "Design a New Theme"                   duration: 8  lane: "Shopping Site"
+  task T3 "Apply New Theme to the Site"          duration: 15 after: T2 lane: "Shopping Site"
+  task T4 "Improve Searching"                    duration: 7  after: T3 lane: "Shopping Site"
+  task T5 "Enhance Shopping Cart Functionality"  duration: 8  after: T2 lane: "Shopping Cart"
+  task T6 "Enhance Shopping Cart Checkout"       duration: 6  after: T5 lane: "Shopping Cart"
+  task T7 "Ready Testing Environment"            duration: 2  after: T1, T4, T6 lane: "Testing"
+  task T8 "Test Online Shop"                     duration: 8  after: T7 lane: "Testing"
+---
+
+A flat network answers "what's the critical path?"; a swimlane network also answers "who owns what?". Add `lane: "…"` to any task and the diagram re-groups into horizontal bands — by team, phase, or owner — without changing a single number in the schedule.
+
+**Same engine, different presentation.** This is still pure activity-on-node: the forward/backward pass runs exactly as it would without lanes, so the critical path `T2 → T3 → T4 → T7 → T8` and every slack value are identical to the ungrouped layout. Lanes are a *view*, not a computation — they activate automatically the moment any task declares one.
+
+**Reading the bands.** Lanes appear in first-declared order, each as a banded row with a label gutter on the left. A task sits in the column for its dependency depth but the row for its team, so you can trace both the time order (left to right) and the ownership (top to bottom) at a glance. Dependencies that cross teams — `T1` (Customer Account) and `T4` (Shopping Site) and `T6` (Shopping Cart) all feeding `T7` (Testing) — render as orthogonal connectors hopping between bands, making hand-off points obvious.
+
+**Where this helps.** This is the format PMO templates and tools like Visual Paradigm use for status reviews, because a stakeholder can find their team's row instantly and see what it's waiting on and what's waiting on it.

@@ -1,0 +1,124 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="sx-pert" role="img" aria-label="Software project (AOA)" width="1362" height="242" viewBox="0 0 1362 242" data-diagram-type="pert"><title>PERT network — Software project (AOA)</title>
+<desc>10 activities, project duration 70 days, critical path A → C → F → H → J.</desc>
+<style>.sx-pert { font-family: system-ui, -apple-system, sans-serif; }
+.sx-pert-task .task-box { fill: #fbfdff; stroke: #6f93c4; stroke-width: 1.4; }
+.sx-pert-task .name-band { fill: #e7f0fb; }
+.sx-pert-task.critical .task-box { stroke: #d2604f; stroke-width: 2.2; fill: #fffaf8; }
+.sx-pert-task.critical .name-band { fill: #fbe6e0; }
+.sx-pert-div { stroke: #d4e1f1; stroke-width: 1; }
+.sx-pert-task.critical .sx-pert-div { stroke: #f0d0c7; }
+.sx-pert-field { font-size: 11px; fill: #2c4257; }
+.sx-pert-field-label { font-size: 8px; fill: #8497ad; letter-spacing: 0.3px; }
+.sx-pert-name { font-size: 13px; font-weight: 600; fill: #234567; }
+.sx-pert-task.critical .sx-pert-name { fill: #8a3322; }
+.sx-pert-id { font-size: 10px; fill: #728198; }
+.sx-pert-sigma { font-size: 9px; fill: #8497ad; }
+.sx-pert-task.critical .slack { font-weight: 700; fill: #d2604f; }
+.sx-pert-ms { fill: #e7f0fb; stroke: #6f93c4; stroke-width: 1.4; }
+.sx-pert-task.critical .sx-pert-ms { fill: #fbe6e0; stroke: #d2604f; stroke-width: 2.2; }
+.sx-pert-task .ts-bar { fill: #e7f0fb; stroke: #6f93c4; stroke-width: 1.4; }
+.sx-pert-task.critical .ts-bar { fill: #fbe6e0; stroke: #d2604f; stroke-width: 2.2; }
+.sx-pert-edge { stroke: #9fb0c6; stroke-width: 1.5; fill: none; }
+.sx-pert-edge.critical { stroke: #d2604f; stroke-width: 2.2; }
+.sx-pert-edge-label { font-size: 10px; fill: #2c4257; }
+.sx-pert-edge-label.critical { fill: #d2604f; }
+.sx-pert-edge-halo { fill: #ffffff; opacity: 0.92; }
+.sx-pert-sentinel circle { fill: #eef2f8; stroke: #8497ad; stroke-width: 1.4; }
+.sx-pert-sentinel text { font-size: 10px; fill: #728198; }
+.sx-pert-title { font-size: 16px; font-weight: 700; fill: #0f172a; }
+.sx-pert-lane line { stroke: #d4e1f1; stroke-width: 1; }
+.sx-pert-lane .lane-fill { fill: #f6f9fd; }
+.sx-pert-lane .lane-fill.alt { fill: #eef3fa; }
+.sx-pert-lane-label { font-size: 12px; font-weight: 600; fill: #234567; }
+.sx-pert-axis line { stroke: #aebccf; }
+.sx-pert-axis .baseline { stroke: #8497ad; stroke-width: 1.2; }
+.sx-pert-axis text { font-size: 9px; fill: #728198; }
+.sx-pert-grid { stroke: #e3eaf3; stroke-width: 1; }
+.sx-pert-summary { font-size: 11px; fill: #728198; }
+.sx-pert-summary .crit { fill: #d2604f; font-weight: 600; }
+.sx-pert-aoa-event circle { fill: #e7f0fb; stroke: #6f93c4; stroke-width: 1.6; }
+.sx-pert-aoa-event.critical circle { fill: #fbe6e0; stroke: #d2604f; stroke-width: 2.4; }
+.sx-pert-aoa-event text { font-size: 13px; font-weight: 700; fill: #234567; }
+.sx-pert-aoa-event.critical text { fill: #8a3322; }
+.sx-pert-aoa-arc { stroke: #9fb0c6; stroke-width: 1.6; fill: none; }
+.sx-pert-aoa-arc.critical { stroke: #d2604f; stroke-width: 2.4; }
+.sx-pert-aoa-arc.dummy { stroke: #9fb0c6; stroke-width: 1.3; stroke-dasharray: 5 4; }
+.sx-pert-aoa-name { font-size: 11px; font-weight: 600; fill: #234567; }
+.sx-pert-aoa-name.critical { fill: #d2604f; }
+.sx-pert-aoa-dur { font-size: 10px; fill: #8497ad; }
+.sx-pert-aoa-dur.critical { fill: #d2604f; }</style>
+<defs><marker id="sx-pert-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><polygon points="0,0 10,5 0,10" fill="#9fb0c6"/></marker>
+<marker id="sx-pert-arrow-crit" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><polygon points="0,0 10,5 0,10" fill="#d2604f"/></marker></defs>
+<text x="681" y="26" class="sx-pert-title" text-anchor="middle">Software project (AOA)</text>
+<g class="sx-pert-aoa"><g class="sx-pert-aoa-arcs"><path class="sx-pert-aoa-arc critical" d="M 67.333 136.989 L 188.667 170.011" marker-end="url(#sx-pert-arrow-crit)" data-from="1" data-to="3" data-task="A" data-dummy="false" data-critical="true"/>
+<path class="sx-pert-aoa-arc" d="M 67.333 127.011 L 188.667 93.989" marker-end="url(#sx-pert-arrow)" data-from="1" data-to="2" data-task="B" data-dummy="false" data-critical="false"/>
+<path class="sx-pert-aoa-arc critical" d="M 226 175 L 346 175" marker-end="url(#sx-pert-arrow-crit)" data-from="3" data-to="5" data-task="C" data-dummy="false" data-critical="true"/>
+<path class="sx-pert-aoa-arc" d="M 226 89 L 346 89" marker-end="url(#sx-pert-arrow)" data-from="2" data-to="4" data-task="D" data-dummy="false" data-critical="false"/>
+<path class="sx-pert-aoa-arc" d="M 383.333 93.989 L 504.667 127.011" marker-end="url(#sx-pert-arrow)" data-from="4" data-to="6" data-task="E" data-dummy="false" data-critical="false"/>
+<path class="sx-pert-aoa-arc dummy critical" d="M 384 175 L 662 175" marker-end="url(#sx-pert-arrow-crit)" data-from="5" data-to="8" data-task="" data-dummy="true" data-critical="true"/>
+<path class="sx-pert-aoa-arc dummy" d="M 541.333 136.989 L 662.667 170.011" marker-end="url(#sx-pert-arrow)" data-from="6" data-to="8" data-task="" data-dummy="true" data-critical="false"/>
+<path class="sx-pert-aoa-arc critical" d="M 700 175 L 820 175" marker-end="url(#sx-pert-arrow-crit)" data-from="8" data-to="10" data-task="F" data-dummy="false" data-critical="true"/>
+<path class="sx-pert-aoa-arc" d="M 541.333 127.011 L 662.667 93.989" marker-end="url(#sx-pert-arrow)" data-from="6" data-to="7" data-task="G" data-dummy="false" data-critical="false"/>
+<path class="sx-pert-aoa-arc critical" d="M 857.333 170.011 L 978.667 136.989" marker-end="url(#sx-pert-arrow-crit)" data-from="10" data-to="11" data-task="H" data-dummy="false" data-critical="true"/>
+<path class="sx-pert-aoa-arc" d="M 700 89 L 820 89" marker-end="url(#sx-pert-arrow)" data-from="7" data-to="9" data-task="I" data-dummy="false" data-critical="false"/>
+<path class="sx-pert-aoa-arc dummy critical" d="M 1016 132 L 1136 132" marker-end="url(#sx-pert-arrow-crit)" data-from="11" data-to="12" data-task="" data-dummy="true" data-critical="true"/>
+<path class="sx-pert-aoa-arc dummy" d="M 857.826 91.562 L 1136.174 129.438" marker-end="url(#sx-pert-arrow)" data-from="9" data-to="12" data-task="" data-dummy="true" data-critical="false"/>
+<path class="sx-pert-aoa-arc critical" d="M 1174 132 L 1294 132" marker-end="url(#sx-pert-arrow-crit)" data-from="12" data-to="13" data-task="J" data-dummy="false" data-critical="true"/></g>
+<g class="sx-pert-aoa-labels"><rect class="sx-pert-edge-halo" x="77.5" y="137.5" width="101" height="31" rx="3" ry="3"/>
+<text class="sx-pert-aoa-name critical" x="128" y="149.5" text-anchor="middle">create schedule</text>
+<text class="sx-pert-aoa-dur critical" x="128" y="165.5" text-anchor="middle">10</text>
+<rect class="sx-pert-edge-halo" x="86.8" y="94.5" width="82.4" height="31" rx="3" ry="3"/>
+<text class="sx-pert-aoa-name" x="128" y="106.5" text-anchor="middle">buy hardware</text>
+<text class="sx-pert-aoa-dur" x="128" y="122.5" text-anchor="middle">5</text>
+<rect class="sx-pert-edge-halo" x="247.9" y="159" width="76.2" height="31" rx="3" ry="3"/>
+<text class="sx-pert-aoa-name critical" x="286" y="171" text-anchor="middle">programming</text>
+<text class="sx-pert-aoa-dur critical" x="286" y="187" text-anchor="middle">20</text>
+<rect class="sx-pert-edge-halo" x="244.8" y="73" width="82.4" height="31" rx="3" ry="3"/>
+<text class="sx-pert-aoa-name" x="286" y="85" text-anchor="middle">installation</text>
+<text class="sx-pert-aoa-dur" x="286" y="101" text-anchor="middle">5</text>
+<rect class="sx-pert-edge-halo" x="409" y="94.5" width="70" height="31" rx="3" ry="3"/>
+<text class="sx-pert-aoa-name" x="444" y="106.5" text-anchor="middle">conversion</text>
+<text class="sx-pert-aoa-dur" x="444" y="122.5" text-anchor="middle">15</text>
+<rect class="sx-pert-edge-halo" x="728.1" y="159" width="63.800000000000004" height="31" rx="3" ry="3"/>
+<text class="sx-pert-aoa-name critical" x="760" y="171" text-anchor="middle">test code</text>
+<text class="sx-pert-aoa-dur critical" x="760" y="187" text-anchor="middle">20</text>
+<rect class="sx-pert-edge-halo" x="560.8" y="94.5" width="82.4" height="31" rx="3" ry="3"/>
+<text class="sx-pert-aoa-name" x="602" y="106.5" text-anchor="middle">write manual</text>
+<text class="sx-pert-aoa-dur" x="602" y="122.5" text-anchor="middle">15</text>
+<rect class="sx-pert-edge-halo" x="879.9" y="137.5" width="76.2" height="31" rx="3" ry="3"/>
+<text class="sx-pert-aoa-name critical" x="918" y="149.5" text-anchor="middle">test system</text>
+<text class="sx-pert-aoa-dur critical" x="918" y="165.5" text-anchor="middle">10</text>
+<rect class="sx-pert-edge-halo" x="731.2" y="73" width="57.6" height="31" rx="3" ry="3"/>
+<text class="sx-pert-aoa-name" x="760" y="85" text-anchor="middle">training</text>
+<text class="sx-pert-aoa-dur" x="760" y="101" text-anchor="middle">5</text>
+<rect class="sx-pert-edge-halo" x="1202.1" y="116" width="63.800000000000004" height="31" rx="3" ry="3"/>
+<text class="sx-pert-aoa-name critical" x="1234" y="128" text-anchor="middle">user test</text>
+<text class="sx-pert-aoa-dur critical" x="1234" y="144" text-anchor="middle">10</text></g>
+<g class="sx-pert-aoa-events"><g class="sx-pert-aoa-event critical" data-event="1"><circle cx="49" cy="132" r="19"/>
+<text x="49" y="136.5" text-anchor="middle">1</text></g>
+<g class="sx-pert-aoa-event" data-event="2"><circle cx="207" cy="89" r="19"/>
+<text x="207" y="93.5" text-anchor="middle">2</text></g>
+<g class="sx-pert-aoa-event critical" data-event="3"><circle cx="207" cy="175" r="19"/>
+<text x="207" y="179.5" text-anchor="middle">3</text></g>
+<g class="sx-pert-aoa-event" data-event="4"><circle cx="365" cy="89" r="19"/>
+<text x="365" y="93.5" text-anchor="middle">4</text></g>
+<g class="sx-pert-aoa-event critical" data-event="5"><circle cx="365" cy="175" r="19"/>
+<text x="365" y="179.5" text-anchor="middle">5</text></g>
+<g class="sx-pert-aoa-event" data-event="6"><circle cx="523" cy="132" r="19"/>
+<text x="523" y="136.5" text-anchor="middle">6</text></g>
+<g class="sx-pert-aoa-event" data-event="7"><circle cx="681" cy="89" r="19"/>
+<text x="681" y="93.5" text-anchor="middle">7</text></g>
+<g class="sx-pert-aoa-event critical" data-event="8"><circle cx="681" cy="175" r="19"/>
+<text x="681" y="179.5" text-anchor="middle">8</text></g>
+<g class="sx-pert-aoa-event" data-event="9"><circle cx="839" cy="89" r="19"/>
+<text x="839" y="93.5" text-anchor="middle">9</text></g>
+<g class="sx-pert-aoa-event critical" data-event="10"><circle cx="839" cy="175" r="19"/>
+<text x="839" y="179.5" text-anchor="middle">10</text></g>
+<g class="sx-pert-aoa-event critical" data-event="11"><circle cx="997" cy="132" r="19"/>
+<text x="997" y="136.5" text-anchor="middle">11</text></g>
+<g class="sx-pert-aoa-event critical" data-event="12"><circle cx="1155" cy="132" r="19"/>
+<text x="1155" y="136.5" text-anchor="middle">12</text></g>
+<g class="sx-pert-aoa-event critical" data-event="13"><circle cx="1313" cy="132" r="19"/>
+<text x="1313" y="136.5" text-anchor="middle">13</text></g></g></g>
+<g class="sx-pert-footer"><text class="sx-pert-summary" x="24" y="230" text-anchor="start">Project duration 70 days · 10 tasks · 10 dependencies · 5 critical</text>
+<text class="sx-pert-summary crit" x="1338" y="230" text-anchor="end">Critical path: A → C → F → H → J</text></g></svg>

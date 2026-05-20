@@ -29,7 +29,7 @@
 
 ---
 
-**Schematex** is the open-source rendering engine for the diagrams professionals actually use — medical, electrical, legal, and analytical. 29 diagram families across eight domains:
+**Schematex** is the open-source rendering engine for the diagrams professionals actually use — medical, electrical, legal, and analytical. 30 diagram families across nine domains:
 
 - 👪 **Relationships** — genograms, ecomaps, pedigrees, sociograms, phylogenetic trees
 - ⚡ **Electrical & Industrial** — ladder logic, single-line diagrams, circuit schematics, logic gates, timing, block diagrams, **FBD**, **SFC**, breadboard, **P&ID** (ISA-5.1)
@@ -37,6 +37,7 @@
 - 🐟 **Causality & Analysis** — fishbone / Ishikawa, decision trees (Howard-Raiffa EV · CART/sklearn · taxonomy)
 - 🔄 **Behavior modeling** — UML 2.5 / Harel **state diagrams** (Mermaid-compatible superset), **BPMN 2.0** (OMG), **use case diagrams** (UML 2.5.1 §18)
 - 🗄️ **Data modeling** — ERD crow's-foot notation
+- 🗓️ **Project management** — **PERT / CPM** networks (PMBOK 7) that *compute* the schedule: ES/EF/LS/LF, slack, critical path, three-point estimation, swimlanes, time-scaled layout
 - 📅 **Timelines** — proportional / equidistant / log axis · swimlane · gantt · lollipop · BC dates · geological Ma scale
 
 Mermaid draws generic flowcharts. Schematex draws the diagrams doctors, engineers, and lawyers actually use — a genogram a genetic counselor accepts clinically, ladder logic that maps 1:1 to IEC 61131-3, a cap table that survives a Series A review.
@@ -72,7 +73,7 @@ import { render } from 'schematex/genogram';
 
 ## Gallery
 
-29 diagram types, one unified pipeline. **Try any of these live at [schematex.dev/playground](https://schematex.dev/playground).**
+30 diagram types, one unified pipeline. **Try any of these live at [schematex.dev/playground](https://schematex.dev/playground).**
 
 ### 👪 Genogram — *McGoldrick family-systems standard*
 
@@ -480,6 +481,26 @@ config: style = gantt
 ```
 
 [Timeline syntax →](https://schematex.dev/docs/timeline)
+
+### 🗓️ PERT / CPM — *PMI PMBOK 7 activity-on-node network*
+
+The only text-DSL PERT tool that **computes the schedule**. You write tasks, durations, and dependencies — the engine runs the forward and backward pass and returns Early/Late Start & Finish, total slack, project duration, and the critical path (highlighted in red). Supports FS/SS/FF/SF dependencies with lag/lead, three-point estimation (`te + variance`), milestones, swimlanes (`lane:`), and a time-scaled layout.
+
+```
+pert
+title: "Q3 Product Launch"
+unit: days
+
+task A "Market research"      duration: 5
+task B "Design mockups"       duration: 8  after: A
+task C "Backend API"          duration: 15 after: A
+task D "Frontend build"       duration: 10 after: B, C
+task E "QA / testing"         duration: 5  after: D
+task F "Marketing collateral" duration: 7  after: B
+task G "Launch event"         duration: 2  after: E, F
+```
+
+[PERT / CPM syntax →](https://schematex.dev/docs/pert)
 
 ## Why SchemaTex?
 

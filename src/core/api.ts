@@ -29,6 +29,7 @@ import { fbd } from "../diagrams/fbd";
 import { sfc } from "../diagrams/sfc";
 import { prisma } from "../diagrams/prisma";
 import { usecase } from "../diagrams/usecase";
+import { pert } from "../diagrams/pert";
 
 export interface SchematexConfig {
   type?:
@@ -60,7 +61,8 @@ export interface SchematexConfig {
     | "fbd"
     | "sfc"
     | "prisma"
-    | "usecase";
+    | "usecase"
+    | "pert";
   width?: number;
   height?: number;
   padding?: number;
@@ -98,6 +100,7 @@ const plugins: DiagramPlugin[] = [
   sfc,
   prisma,
   usecase,
+  pert,
 ];
 
 function detectPlugin(text: string, config?: SchematexConfig): DiagramPlugin {
@@ -109,7 +112,7 @@ function detectPlugin(text: string, config?: SchematexConfig): DiagramPlugin {
     if (plugin.detect(text)) return plugin;
   }
   throw new Error(
-    "Cannot detect diagram type. Start your text with 'genogram', 'ecomap', 'pedigree', 'phylo', 'sociogram', 'timing', 'logic', 'circuit', 'blockdiagram', 'ladder', 'sld', 'entity-structure', 'fishbone', 'venn', 'flowchart', 'mindmap', 'matrix', 'orgchart', 'state', 'pid', 'erd', 'breadboard', 'bpmn', 'fbd', 'sfc', 'prisma', or 'usecase'."
+    "Cannot detect diagram type. Start your text with 'genogram', 'ecomap', 'pedigree', 'phylo', 'sociogram', 'timing', 'logic', 'circuit', 'blockdiagram', 'ladder', 'sld', 'entity-structure', 'fishbone', 'venn', 'flowchart', 'mindmap', 'matrix', 'orgchart', 'state', 'pid', 'erd', 'breadboard', 'bpmn', 'fbd', 'sfc', 'prisma', 'usecase', or 'pert'."
   );
 }
 

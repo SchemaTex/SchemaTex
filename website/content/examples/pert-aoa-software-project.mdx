@@ -1,0 +1,41 @@
+---
+title: Activity-on-arrow (AOA) network
+description: The classic textbook PERT notation — numbered event circles, activities as labelled arrows, and dotted dummy activities auto-inserted at multi-predecessor merges. Written in the same activity-on-node DSL; Schematex builds and numbers the event graph.
+diagram: pert
+standard: PMI PMBOK 7 + Moder 1983 — Activity-on-Arrow (ADM, legacy)
+industry: [education, business]
+persona: For the PMP student
+complexity: 2
+tags: [pert, aoa, activity-on-arrow, critical-path, education]
+featured: false
+relatedLink:
+  label: PERT / CPM syntax
+  href: /docs/pert
+status: published
+dsl: |
+  pert
+  title: "Software project (AOA)"
+  layout: aoa
+  unit: days
+
+  task A "create schedule" duration: 10
+  task B "buy hardware"    duration: 5
+  task C "programming"     duration: 20 after: A
+  task D "installation"    duration: 5  after: B
+  task E "conversion"      duration: 15 after: D
+  task F "test code"       duration: 20 after: C, E
+  task G "write manual"    duration: 15 after: E
+  task H "test system"     duration: 10 after: F
+  task I "training"        duration: 5  after: G
+  task J "user test"       duration: 10 after: H, I
+---
+
+Before activity-on-node won, project networks were drawn **activity-on-arrow** (AOA / ADM): the *arrows* are the work and the *nodes* are events — the instants when activities start and finish. It's the form on Investopedia and in older textbooks, and it's what `layout: aoa` produces.
+
+**You still write activity-on-node.** The DSL is identical to every other PERT example — tasks, durations, `after:` dependencies. Schematex converts it: each activity gets a head event, and the events are numbered so every arrow runs from a lower id to a higher one (the classic *i-j* rule).
+
+**Dummy activities.** AOA can't show two activities merging into one without help, so wherever an activity has multiple predecessors a **dummy** (dotted, zero-duration arrow) is inserted. Here `test code` depends on both `programming` and `conversion`, and `user test` on both `test system` and `training` — each merge gets dummies that carry the dependency without representing real work.
+
+**The critical path is still computed.** The forward/backward pass runs on the event graph and the critical activities are drawn as bold red arrows: `create schedule → programming → test code → test system → user test` (70 days).
+
+**One caveat.** AOA can only express finish-to-start logic — there's no way to draw a start-to-start or finish-to-finish relationship as an arrow-between-events. If your network uses SS/FF/SF or lag, those are flattened to FS with a warning. For real scheduling, prefer the default `network` (AON) layout; reach for `aoa` when you need to match a textbook figure.

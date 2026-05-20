@@ -776,7 +776,9 @@ Tracked here for visibility, deferred from v0.1:
 
 **v0.1 — Planned.** AON / PDM with all four dependency types and lag/lead, deterministic and three-point durations, forward pass, backward pass, total slack, critical path, six-field box, milestone diamond, network layout (default) and timescaled layout, three theme presets (`default`, `monochrome`, `dark`), full validation (cycle detection, undefined refs, ordering checks), semantic SVG with `data-*` schedule attributes.
 
-**v0.2+ deferred.** Free slack, groups, notes, Monte Carlo SRA, baseline overlay, resource leveling, calendar-aware durations, MS Project / Primavera adapters. AOA rendering remains explicitly out of scope.
+**v0.1 addendum — AOA implemented as an opt-in legacy view.** Although §4.2 / §15 Q8 originally scoped Activity-on-Arrow out permanently, it ships in v0.1 behind `layout: aoa` (numbered event circles + arrow activities + auto-inserted dummy activities, built by converting the AON model to an event graph). It is finish-to-start only — SS/FF/SF and lag/lead are flattened to FS with a warning — and is intended for teaching / textbook parity, not as the primary notation. AON remains the default and the recommended form.
+
+**v0.2+ deferred.** Free slack, groups, notes, Monte Carlo SRA, baseline overlay, resource leveling, calendar-aware durations, MS Project / Primavera adapters, minimum-dummy AOA optimisation.
 
 ---
 

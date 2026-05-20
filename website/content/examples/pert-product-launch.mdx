@@ -1,0 +1,35 @@
+---
+title: Q3 product launch PERT/CPM network
+description: A seven-task product-launch schedule where the engine computes every Early/Late Start & Finish, total slack, and the critical path (A → C → D → E → G) automatically — the canonical activity-on-node network with the six-field box.
+diagram: pert
+standard: PMI PMBOK 7 + Moder 1983 (AON/PDM)
+industry: [business, software, education]
+persona: For the project manager
+complexity: 2
+tags: [pert, cpm, critical-path, schedule, project-management]
+featured: true
+relatedLink:
+  label: PERT / CPM syntax
+  href: /docs/pert
+status: published
+dsl: |
+  pert
+  title: "Q3 Product Launch"
+  unit: days
+
+  task A "Market research"      duration: 5
+  task B "Design mockups"       duration: 8  after: A
+  task C "Backend API"          duration: 15 after: A
+  task D "Frontend build"       duration: 10 after: B, C
+  task E "QA / testing"         duration: 5  after: D
+  task F "Marketing collateral" duration: 7  after: B
+  task G "Launch event"         duration: 2  after: E, F
+---
+
+This is what separates Schematex's `pert` engine from a drag-and-drop "PERT chart maker": you write only the tasks, durations, and dependencies — the schedule is *computed*.
+
+**The six-field box.** Each activity renders as the canonical 3×2 PERT/CPM rectangle: Early Start / Duration / Early Finish on top, the task name and id in the middle, and Late Start / Slack / Late Finish on the bottom. Those four schedule fields are never typed by hand — a forward pass walks the network to find ES/EF, a backward pass finds LS/LF, and total slack is `LS − ES`.
+
+**The critical path falls out of the math.** Any activity with zero slack is on the critical path and is drawn in red: `A → C → D → E → G`. Here `C` (Backend API, 15 days) is the long pole — it dominates `B` (Design mockups, 8 days) at the `D` merge, so the schedule pivots on the backend, not the design. Change `C` to 6 days and the critical path shifts to run through `B` instead; the render updates because the computation does.
+
+**Parallel work, one merge.** `B` and `C` both start once research finishes, run concurrently, and re-converge at `D` (Frontend build). `F` (Marketing collateral) branches off `B` and carries slack — it can slip several days without moving the launch. The project duration, 37 days, is the maximum Early Finish over the terminal tasks, not simply the last task you declared.

@@ -26,6 +26,7 @@
 | 🏛️ **Business process** | BPMN 2.0 | OMG BPMN 2.0.2 / ISO/IEC 19510:2013 — pools/lanes, events, gateways, sequence + message flows (25-BPMN-STANDARD) |
 | 🧩 **Software / UML** | use case diagram | OMG UML 2.5.1 §18 — actors, use cases, subject boundary, include/extend/generalization (29-USECASE-STANDARD) |
 | 📊 **Research / Evidence synthesis** | PRISMA 2020 flow diagram | PRISMA 2020 (Page et al., BMJ 2021) — mandatory four-row Identification → Screening → Eligibility → Included layout with record counts, exclusion side-boxes, single/dual pipeline, scoping-review & IPD overlays (28-PRISMA-STANDARD) |
+| 🗓️ **Project management** | PERT / CPM network | PMI PMBOK 7 + Moder 1983 — activity-on-node (AON/PDM) scheduling network; the engine computes ES/EF/LS/LF, total slack, project duration, and the critical path. FS/SS/FF/SF dependencies with lag/lead, three-point estimation (te + variance), milestones, swimlanes, and a time-scaled layout (32-PERT-STANDARD) |
 
 **三大价值支柱（value pillars）：**
 

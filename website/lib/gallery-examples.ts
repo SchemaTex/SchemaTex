@@ -17,7 +17,8 @@ export type DiagramType =
   | 'fishbone'
   | 'venn'
   | 'usecase'
-  | 'prisma';
+  | 'prisma'
+  | 'pert';
 
 export type Industry =
   | 'healthcare'
@@ -58,6 +59,7 @@ export const DIAGRAM_LABELS: Record<DiagramType, { label: string; icon: string }
   venn: { label: 'Venn / Euler', icon: '⊙' },
   usecase: { label: 'Use case', icon: '🧩' },
   prisma: { label: 'PRISMA flow', icon: '📊' },
+  pert: { label: 'PERT / CPM', icon: '🗓' },
 };
 
 export const INDUSTRY_LABELS: Record<Industry, { label: string; icon: string }> = {
@@ -82,6 +84,7 @@ export const CLUSTER_TO_TYPES: Record<string, DiagramType[]> = {
   'causality-analysis': ['fishbone', 'venn'],
   'software-uml': ['usecase'],
   research: ['prisma'],
+  'project-management': ['pert'],
 };
 
 export const CLUSTER_META: Record<string, { label: string; color: string }> = {
@@ -91,6 +94,7 @@ export const CLUSTER_META: Record<string, { label: string; color: string }> = {
   'causality-analysis':    { label: 'Causality & Analysis',    color: 'var(--cat-1)' },
   'software-uml':          { label: 'Software & UML',          color: 'var(--cat-4)' },
   research:                { label: 'Research',                color: 'var(--cat-5)' },
+  'project-management':    { label: 'Project Management',      color: 'var(--cat-6)' },
 };
 
 export function getDiagramCluster(diagram: DiagramType): string {

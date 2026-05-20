@@ -43,6 +43,7 @@ export { state } from "./diagrams/state";
 export { pid } from "./diagrams/pid";
 export { prisma } from "./diagrams/prisma";
 export { usecase } from "./diagrams/usecase";
+export { pert } from "./diagrams/pert";
 
 export {
   type ThemeName,

@@ -9,6 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added — PERT / CPM network engine (`pert`)
+
+- **New dedicated `pert` engine** (`src/diagrams/pert/`) implementing the activity-on-node / Precedence Diagramming Method per PMI PMBOK 7 + Moder 1983. Unlike every other text-DSL diagram tool, the engine **computes the schedule**: a forward pass + backward pass return Early/Late Start & Finish, total slack, project duration, and the critical path — the render is downstream of the computation. Spec: `32-PERT-STANDARD.md`.
+- **Six-field activity box** (ES | Duration | EF / Name + id / LS | Slack | LF), the canonical Kerzner / Primavera P6 representation. Every computed field is mirrored onto `data-*` attributes.
+- **Full PDM dependencies** — FS (default), SS, FF, SF — with integer/fractional lag (`after: A+2d`) and lead (`after: A SS-1`). Edge labels render the type + lag (`SS+1d`, `FF`); FS with zero lag stays unlabelled.
+- **Three-point (PERT) estimation** — `duration: O/M/P` computes `te = (O+4M+P)/6` and variance `σ² = ((P−O)/6)²`; the project-level standard deviation over the critical path is reported in the footer.
+- **Milestones** (`milestone` flag or `duration: 0`) as diamonds, optional Start/Finish **sentinels** (`show-sentinels: true`), and **swimlanes** (`lane: "…"`) that band the network by team/phase while keeping the same computed schedule.
+- **Three layouts** — `network` (default; longest-path layering + barycenter ordering, critical path biased straight), `timescaled` (x ∝ ES, width ∝ duration, with a unit time axis and lane packing), and `aoa` (legacy activity-on-arrow: AON→event-graph conversion with auto-inserted dummy activities, numbered event circles, FS-only with a warning on SS/FF/SF/lag).
+- **House-style palette** — soft blue is the resting state; red is reserved as the critical-path accent (border + name band + bold slack), never a full red wash.
+- **Validation** — cycle detection, undefined/duplicate/self-referencing predecessors, three-point ordering (`O ≤ M ≤ P`), unit-suffix matching — all reported with the source line.
+- Registered across `DiagramType`, `src/core/api.ts`, `src/index.ts`, `src/ai/registry.ts` (new `project-management` cluster), and `SYNTAX_KEYS`. 45 tests in `tests/pert/`. Docs: `website/content/docs/pert.mdx`; examples: `pert-product-launch.mdx`, `pert-swimlane-online-shop.mdx`, `pert-three-point-estimation.mdx`, `pert-migration-timescaled.mdx`, `pert-aoa-software-project.mdx`.
+
 ---
 
 ## [0.5.0] — 2026-05-19

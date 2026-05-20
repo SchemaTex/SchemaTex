@@ -53,6 +53,7 @@ const SYNTAX_KEYS = [
   "sfc",
   "usecase",
   "prisma",
+  "pert",
 ];
 
 // ─── Minimal YAML-frontmatter parser ─────────────────────────────

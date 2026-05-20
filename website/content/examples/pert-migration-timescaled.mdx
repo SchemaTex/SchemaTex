@@ -1,0 +1,39 @@
+---
+title: Time-scaled migration plan (network-Gantt)
+description: A data-centre migration in the time-scaled layout — x-position proportional to Early Start, width proportional to duration, with a unit time axis. Exercises start-to-start and finish-to-finish dependencies, lag/lead, a milestone, and lane packing.
+diagram: pert
+standard: PMI PMBOK 7 + Moder 1983 (AON/PDM)
+industry: [business, industrial]
+persona: For the program manager
+complexity: 3
+tags: [pert, cpm, timescaled, gantt, dependencies, milestone]
+featured: false
+relatedLink:
+  label: PERT / CPM syntax
+  href: /docs/pert
+status: published
+dsl: |
+  pert
+  title: "Data-centre migration"
+  unit: days
+  layout: timescaled
+
+  task A "Inventory systems"  duration: 5
+  task B "Stakeholder review" duration: 6  after: A SS+1
+  task C "Vendor selection"   duration: 8  after: A, B
+  task D "Architecture"       duration: 10 after: C
+  task E "Procurement"        duration: 12 after: C+2
+  task F "Code refactor"      duration: 15 after: D
+  task G "Pilot env"          duration: 5  after: E, F FF
+  task H "Pilot run"          duration: 7  after: G
+  task I "Cutover"            milestone    after: H
+  task J "Hypercare"          duration: 5  after: I
+---
+
+`layout: timescaled` is the bridge between the network view and a Gantt chart. Each activity's **x-position is proportional to its Early Start** and its **width is proportional to its duration**, with a unit time axis along the bottom — so distance reads as time.
+
+**Full PDM dependencies.** This network uses every relationship type beyond the default finish-to-start. `B after: A SS+1` is start-to-start with a 1-day lag (stakeholder review begins a day into the inventory). `E after: C+2` is FS with a 2-day lag (procurement waits two days after vendor selection finishes). `G after: ... F FF` is finish-to-finish (the pilot environment must be ready *when* the code refactor finishes, not after it). Each non-FS edge is labelled on the connector (`SS+1d`, `FS+2d`, `FF`).
+
+**Milestones and lane packing.** `Cutover` is declared with the `milestone` flag — a zero-duration checkpoint drawn as a diamond at its scheduled date. To avoid overlaps, activities are greedily packed into horizontal lanes by start time, and task names sit above their bars (Gantt convention) so long labels never overflow a short bar.
+
+**Still computed, still critical-aware.** Even in the time-scaled view the critical path is highlighted in red and slack is shown on each bar. `Procurement` (E) carries 6 days of slack and renders in blue, visibly off the critical chain `A → C → D → F → G → H → I → J`.

@@ -59,7 +59,9 @@ export type DiagramType =
   // Evidence-synthesis / research reporting
   | "prisma"    // PRISMA 2020 flow diagram (28-PRISMA-STANDARD)
   // Structural UML (sister to behavioral §21 state)
-  | "usecase";   // UML 2.5.1 use case diagram (29-USECASE-STANDARD)
+  | "usecase"   // UML 2.5.1 use case diagram (29-USECASE-STANDARD)
+  // Project scheduling networks
+  | "pert";      // PERT / CPM activity-on-node network (32-PERT-STANDARD)
 
 export type GenogramMode = "medical" | "heritage";
 

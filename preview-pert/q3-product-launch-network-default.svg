@@ -1,0 +1,217 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="sx-pert" role="img" aria-label="Q3 Product Launch" width="1212" height="326" viewBox="0 0 1212 326" data-diagram-type="pert"><title>PERT network — Q3 Product Launch</title>
+<desc>7 activities, project duration 37 days, critical path A → C → D → E → G.</desc>
+<style>.sx-pert { font-family: system-ui, -apple-system, sans-serif; }
+.sx-pert-task .task-box { fill: #fbfdff; stroke: #6f93c4; stroke-width: 1.4; }
+.sx-pert-task .name-band { fill: #e7f0fb; }
+.sx-pert-task.critical .task-box { stroke: #d2604f; stroke-width: 2.2; fill: #fffaf8; }
+.sx-pert-task.critical .name-band { fill: #fbe6e0; }
+.sx-pert-div { stroke: #d4e1f1; stroke-width: 1; }
+.sx-pert-task.critical .sx-pert-div { stroke: #f0d0c7; }
+.sx-pert-field { font-size: 11px; fill: #2c4257; }
+.sx-pert-field-label { font-size: 8px; fill: #8497ad; letter-spacing: 0.3px; }
+.sx-pert-name { font-size: 13px; font-weight: 600; fill: #234567; }
+.sx-pert-task.critical .sx-pert-name { fill: #8a3322; }
+.sx-pert-id { font-size: 10px; fill: #728198; }
+.sx-pert-sigma { font-size: 9px; fill: #8497ad; }
+.sx-pert-task.critical .slack { font-weight: 700; fill: #d2604f; }
+.sx-pert-ms { fill: #e7f0fb; stroke: #6f93c4; stroke-width: 1.4; }
+.sx-pert-task.critical .sx-pert-ms { fill: #fbe6e0; stroke: #d2604f; stroke-width: 2.2; }
+.sx-pert-task .ts-bar { fill: #e7f0fb; stroke: #6f93c4; stroke-width: 1.4; }
+.sx-pert-task.critical .ts-bar { fill: #fbe6e0; stroke: #d2604f; stroke-width: 2.2; }
+.sx-pert-edge { stroke: #9fb0c6; stroke-width: 1.5; fill: none; }
+.sx-pert-edge.critical { stroke: #d2604f; stroke-width: 2.2; }
+.sx-pert-edge-label { font-size: 10px; fill: #2c4257; }
+.sx-pert-edge-label.critical { fill: #d2604f; }
+.sx-pert-edge-halo { fill: #ffffff; opacity: 0.92; }
+.sx-pert-sentinel circle { fill: #eef2f8; stroke: #8497ad; stroke-width: 1.4; }
+.sx-pert-sentinel text { font-size: 10px; fill: #728198; }
+.sx-pert-title { font-size: 16px; font-weight: 700; fill: #0f172a; }
+.sx-pert-lane line { stroke: #d4e1f1; stroke-width: 1; }
+.sx-pert-lane .lane-fill { fill: #f6f9fd; }
+.sx-pert-lane .lane-fill.alt { fill: #eef3fa; }
+.sx-pert-lane-label { font-size: 12px; font-weight: 600; fill: #234567; }
+.sx-pert-axis line { stroke: #aebccf; }
+.sx-pert-axis .baseline { stroke: #8497ad; stroke-width: 1.2; }
+.sx-pert-axis text { font-size: 9px; fill: #728198; }
+.sx-pert-grid { stroke: #e3eaf3; stroke-width: 1; }
+.sx-pert-summary { font-size: 11px; fill: #728198; }
+.sx-pert-summary .crit { fill: #d2604f; font-weight: 600; }
+.sx-pert-aoa-event circle { fill: #e7f0fb; stroke: #6f93c4; stroke-width: 1.6; }
+.sx-pert-aoa-event.critical circle { fill: #fbe6e0; stroke: #d2604f; stroke-width: 2.4; }
+.sx-pert-aoa-event text { font-size: 13px; font-weight: 700; fill: #234567; }
+.sx-pert-aoa-event.critical text { fill: #8a3322; }
+.sx-pert-aoa-arc { stroke: #9fb0c6; stroke-width: 1.6; fill: none; }
+.sx-pert-aoa-arc.critical { stroke: #d2604f; stroke-width: 2.4; }
+.sx-pert-aoa-arc.dummy { stroke: #9fb0c6; stroke-width: 1.3; stroke-dasharray: 5 4; }
+.sx-pert-aoa-name { font-size: 11px; font-weight: 600; fill: #234567; }
+.sx-pert-aoa-name.critical { fill: #d2604f; }
+.sx-pert-aoa-dur { font-size: 10px; fill: #8497ad; }
+.sx-pert-aoa-dur.critical { fill: #d2604f; }</style>
+<defs><marker id="sx-pert-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><polygon points="0,0 10,5 0,10" fill="#9fb0c6"/></marker>
+<marker id="sx-pert-arrow-crit" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><polygon points="0,0 10,5 0,10" fill="#d2604f"/></marker></defs>
+<text x="606" y="26" class="sx-pert-title" text-anchor="middle">Q3 Product Launch</text>
+<g class="sx-pert-edges"><path class="sx-pert-edge" d="M 204 171 L 237 171 L 237 233 L 270 233" marker-end="url(#sx-pert-arrow)" data-from="A" data-to="B" data-type="FS" data-lag="0" data-critical="false"/>
+<path class="sx-pert-edge critical" d="M 204 171 L 237 171 L 237 109 L 270 109" marker-end="url(#sx-pert-arrow-crit)" data-from="A" data-to="C" data-type="FS" data-lag="0" data-critical="true"/>
+<path class="sx-pert-edge" d="M 450 233 L 483 233 L 483 109 L 516 109" marker-end="url(#sx-pert-arrow)" data-from="B" data-to="D" data-type="FS" data-lag="0" data-critical="false"/>
+<path class="sx-pert-edge critical" d="M 450 109 L 483 109 L 483 109 L 516 109" marker-end="url(#sx-pert-arrow-crit)" data-from="C" data-to="D" data-type="FS" data-lag="0" data-critical="true"/>
+<path class="sx-pert-edge critical" d="M 696 109 L 729 109 L 729 171 L 762 171" marker-end="url(#sx-pert-arrow-crit)" data-from="D" data-to="E" data-type="FS" data-lag="0" data-critical="true"/>
+<path class="sx-pert-edge" d="M 450 233 L 483 233 L 483 233 L 516 233" marker-end="url(#sx-pert-arrow)" data-from="B" data-to="F" data-type="FS" data-lag="0" data-critical="false"/>
+<path class="sx-pert-edge critical" d="M 942 171 L 975 171 L 975 171 L 1008 171" marker-end="url(#sx-pert-arrow-crit)" data-from="E" data-to="G" data-type="FS" data-lag="0" data-critical="true"/>
+<path class="sx-pert-edge" d="M 696 233 L 852 233 L 852 171 L 1008 171" marker-end="url(#sx-pert-arrow)" data-from="F" data-to="G" data-type="FS" data-lag="0" data-critical="false"/></g>
+<g class="sx-pert-tasks"><g class="sx-pert-task critical" data-id="A" data-es="0" data-ef="5" data-ls="0" data-lf="5" data-slack="0" data-duration="5" data-critical="true"><rect class="task-box" x="24" y="126" width="180" height="90" rx="4" ry="4"/>
+<rect class="name-band" x="24.7" y="148" width="178.6" height="46"/>
+<line class="sx-pert-div" x1="24" y1="148" x2="204" y2="148"/>
+<line class="sx-pert-div" x1="24" y1="194" x2="204" y2="194"/>
+<line class="sx-pert-div" x1="84" y1="126" x2="84" y2="148"/>
+<line class="sx-pert-div" x1="144" y1="126" x2="144" y2="148"/>
+<line class="sx-pert-div" x1="84" y1="194" x2="84" y2="216"/>
+<line class="sx-pert-div" x1="144" y1="194" x2="144" y2="216"/>
+<g><text class="sx-pert-field-label" x="54" y="135" text-anchor="middle">ES</text>
+<text class="sx-pert-field" x="54" y="145" text-anchor="middle">0</text></g>
+<g><text class="sx-pert-field-label" x="114" y="135" text-anchor="middle">DUR</text>
+<text class="sx-pert-field" x="114" y="145" text-anchor="middle">5</text></g>
+<g><text class="sx-pert-field-label" x="174" y="135" text-anchor="middle">EF</text>
+<text class="sx-pert-field" x="174" y="145" text-anchor="middle">5</text></g>
+<g><text class="sx-pert-field" x="54" y="207" text-anchor="middle">0</text>
+<text class="sx-pert-field-label" x="54" y="215" text-anchor="middle">LS</text></g>
+<g><text class="sx-pert-field slack" x="114" y="207" text-anchor="middle">0</text>
+<text class="sx-pert-field-label" x="114" y="215" text-anchor="middle">SLACK</text></g>
+<g><text class="sx-pert-field" x="174" y="207" text-anchor="middle">5</text>
+<text class="sx-pert-field-label" x="174" y="215" text-anchor="middle">LF</text></g>
+<text class="sx-pert-name" x="114" y="167" text-anchor="middle">Market research</text>
+<text class="sx-pert-id" x="114" y="181" text-anchor="middle">A</text></g>
+<g class="sx-pert-task critical" data-id="C" data-es="5" data-ef="20" data-ls="5" data-lf="20" data-slack="0" data-duration="15" data-critical="true"><rect class="task-box" x="270" y="64" width="180" height="90" rx="4" ry="4"/>
+<rect class="name-band" x="270.7" y="86" width="178.6" height="46"/>
+<line class="sx-pert-div" x1="270" y1="86" x2="450" y2="86"/>
+<line class="sx-pert-div" x1="270" y1="132" x2="450" y2="132"/>
+<line class="sx-pert-div" x1="330" y1="64" x2="330" y2="86"/>
+<line class="sx-pert-div" x1="390" y1="64" x2="390" y2="86"/>
+<line class="sx-pert-div" x1="330" y1="132" x2="330" y2="154"/>
+<line class="sx-pert-div" x1="390" y1="132" x2="390" y2="154"/>
+<g><text class="sx-pert-field-label" x="300" y="73" text-anchor="middle">ES</text>
+<text class="sx-pert-field" x="300" y="83" text-anchor="middle">5</text></g>
+<g><text class="sx-pert-field-label" x="360" y="73" text-anchor="middle">DUR</text>
+<text class="sx-pert-field" x="360" y="83" text-anchor="middle">15</text></g>
+<g><text class="sx-pert-field-label" x="420" y="73" text-anchor="middle">EF</text>
+<text class="sx-pert-field" x="420" y="83" text-anchor="middle">20</text></g>
+<g><text class="sx-pert-field" x="300" y="145" text-anchor="middle">5</text>
+<text class="sx-pert-field-label" x="300" y="153" text-anchor="middle">LS</text></g>
+<g><text class="sx-pert-field slack" x="360" y="145" text-anchor="middle">0</text>
+<text class="sx-pert-field-label" x="360" y="153" text-anchor="middle">SLACK</text></g>
+<g><text class="sx-pert-field" x="420" y="145" text-anchor="middle">20</text>
+<text class="sx-pert-field-label" x="420" y="153" text-anchor="middle">LF</text></g>
+<text class="sx-pert-name" x="360" y="105" text-anchor="middle">Backend API</text>
+<text class="sx-pert-id" x="360" y="119" text-anchor="middle">C</text></g>
+<g class="sx-pert-task" data-id="B" data-es="5" data-ef="13" data-ls="12" data-lf="20" data-slack="7" data-duration="8" data-critical="false"><rect class="task-box" x="270" y="188" width="180" height="90" rx="4" ry="4"/>
+<rect class="name-band" x="270.7" y="210" width="178.6" height="46"/>
+<line class="sx-pert-div" x1="270" y1="210" x2="450" y2="210"/>
+<line class="sx-pert-div" x1="270" y1="256" x2="450" y2="256"/>
+<line class="sx-pert-div" x1="330" y1="188" x2="330" y2="210"/>
+<line class="sx-pert-div" x1="390" y1="188" x2="390" y2="210"/>
+<line class="sx-pert-div" x1="330" y1="256" x2="330" y2="278"/>
+<line class="sx-pert-div" x1="390" y1="256" x2="390" y2="278"/>
+<g><text class="sx-pert-field-label" x="300" y="197" text-anchor="middle">ES</text>
+<text class="sx-pert-field" x="300" y="207" text-anchor="middle">5</text></g>
+<g><text class="sx-pert-field-label" x="360" y="197" text-anchor="middle">DUR</text>
+<text class="sx-pert-field" x="360" y="207" text-anchor="middle">8</text></g>
+<g><text class="sx-pert-field-label" x="420" y="197" text-anchor="middle">EF</text>
+<text class="sx-pert-field" x="420" y="207" text-anchor="middle">13</text></g>
+<g><text class="sx-pert-field" x="300" y="269" text-anchor="middle">12</text>
+<text class="sx-pert-field-label" x="300" y="277" text-anchor="middle">LS</text></g>
+<g><text class="sx-pert-field slack" x="360" y="269" text-anchor="middle">7</text>
+<text class="sx-pert-field-label" x="360" y="277" text-anchor="middle">SLACK</text></g>
+<g><text class="sx-pert-field" x="420" y="269" text-anchor="middle">20</text>
+<text class="sx-pert-field-label" x="420" y="277" text-anchor="middle">LF</text></g>
+<text class="sx-pert-name" x="360" y="229" text-anchor="middle">Design mockups</text>
+<text class="sx-pert-id" x="360" y="243" text-anchor="middle">B</text></g>
+<g class="sx-pert-task critical" data-id="D" data-es="20" data-ef="30" data-ls="20" data-lf="30" data-slack="0" data-duration="10" data-critical="true"><rect class="task-box" x="516" y="64" width="180" height="90" rx="4" ry="4"/>
+<rect class="name-band" x="516.7" y="86" width="178.6" height="46"/>
+<line class="sx-pert-div" x1="516" y1="86" x2="696" y2="86"/>
+<line class="sx-pert-div" x1="516" y1="132" x2="696" y2="132"/>
+<line class="sx-pert-div" x1="576" y1="64" x2="576" y2="86"/>
+<line class="sx-pert-div" x1="636" y1="64" x2="636" y2="86"/>
+<line class="sx-pert-div" x1="576" y1="132" x2="576" y2="154"/>
+<line class="sx-pert-div" x1="636" y1="132" x2="636" y2="154"/>
+<g><text class="sx-pert-field-label" x="546" y="73" text-anchor="middle">ES</text>
+<text class="sx-pert-field" x="546" y="83" text-anchor="middle">20</text></g>
+<g><text class="sx-pert-field-label" x="606" y="73" text-anchor="middle">DUR</text>
+<text class="sx-pert-field" x="606" y="83" text-anchor="middle">10</text></g>
+<g><text class="sx-pert-field-label" x="666" y="73" text-anchor="middle">EF</text>
+<text class="sx-pert-field" x="666" y="83" text-anchor="middle">30</text></g>
+<g><text class="sx-pert-field" x="546" y="145" text-anchor="middle">20</text>
+<text class="sx-pert-field-label" x="546" y="153" text-anchor="middle">LS</text></g>
+<g><text class="sx-pert-field slack" x="606" y="145" text-anchor="middle">0</text>
+<text class="sx-pert-field-label" x="606" y="153" text-anchor="middle">SLACK</text></g>
+<g><text class="sx-pert-field" x="666" y="145" text-anchor="middle">30</text>
+<text class="sx-pert-field-label" x="666" y="153" text-anchor="middle">LF</text></g>
+<text class="sx-pert-name" x="606" y="105" text-anchor="middle">Frontend build</text>
+<text class="sx-pert-id" x="606" y="119" text-anchor="middle">D</text></g>
+<g class="sx-pert-task" data-id="F" data-es="13" data-ef="20" data-ls="28" data-lf="35" data-slack="15" data-duration="7" data-critical="false"><rect class="task-box" x="516" y="188" width="180" height="90" rx="4" ry="4"/>
+<rect class="name-band" x="516.7" y="210" width="178.6" height="46"/>
+<line class="sx-pert-div" x1="516" y1="210" x2="696" y2="210"/>
+<line class="sx-pert-div" x1="516" y1="256" x2="696" y2="256"/>
+<line class="sx-pert-div" x1="576" y1="188" x2="576" y2="210"/>
+<line class="sx-pert-div" x1="636" y1="188" x2="636" y2="210"/>
+<line class="sx-pert-div" x1="576" y1="256" x2="576" y2="278"/>
+<line class="sx-pert-div" x1="636" y1="256" x2="636" y2="278"/>
+<g><text class="sx-pert-field-label" x="546" y="197" text-anchor="middle">ES</text>
+<text class="sx-pert-field" x="546" y="207" text-anchor="middle">13</text></g>
+<g><text class="sx-pert-field-label" x="606" y="197" text-anchor="middle">DUR</text>
+<text class="sx-pert-field" x="606" y="207" text-anchor="middle">7</text></g>
+<g><text class="sx-pert-field-label" x="666" y="197" text-anchor="middle">EF</text>
+<text class="sx-pert-field" x="666" y="207" text-anchor="middle">20</text></g>
+<g><text class="sx-pert-field" x="546" y="269" text-anchor="middle">28</text>
+<text class="sx-pert-field-label" x="546" y="277" text-anchor="middle">LS</text></g>
+<g><text class="sx-pert-field slack" x="606" y="269" text-anchor="middle">15</text>
+<text class="sx-pert-field-label" x="606" y="277" text-anchor="middle">SLACK</text></g>
+<g><text class="sx-pert-field" x="666" y="269" text-anchor="middle">35</text>
+<text class="sx-pert-field-label" x="666" y="277" text-anchor="middle">LF</text></g>
+<text class="sx-pert-name" x="606" y="229" text-anchor="middle">Marketing collateral</text>
+<text class="sx-pert-id" x="606" y="243" text-anchor="middle">F</text></g>
+<g class="sx-pert-task critical" data-id="E" data-es="30" data-ef="35" data-ls="30" data-lf="35" data-slack="0" data-duration="5" data-critical="true"><rect class="task-box" x="762" y="126" width="180" height="90" rx="4" ry="4"/>
+<rect class="name-band" x="762.7" y="148" width="178.6" height="46"/>
+<line class="sx-pert-div" x1="762" y1="148" x2="942" y2="148"/>
+<line class="sx-pert-div" x1="762" y1="194" x2="942" y2="194"/>
+<line class="sx-pert-div" x1="822" y1="126" x2="822" y2="148"/>
+<line class="sx-pert-div" x1="882" y1="126" x2="882" y2="148"/>
+<line class="sx-pert-div" x1="822" y1="194" x2="822" y2="216"/>
+<line class="sx-pert-div" x1="882" y1="194" x2="882" y2="216"/>
+<g><text class="sx-pert-field-label" x="792" y="135" text-anchor="middle">ES</text>
+<text class="sx-pert-field" x="792" y="145" text-anchor="middle">30</text></g>
+<g><text class="sx-pert-field-label" x="852" y="135" text-anchor="middle">DUR</text>
+<text class="sx-pert-field" x="852" y="145" text-anchor="middle">5</text></g>
+<g><text class="sx-pert-field-label" x="912" y="135" text-anchor="middle">EF</text>
+<text class="sx-pert-field" x="912" y="145" text-anchor="middle">35</text></g>
+<g><text class="sx-pert-field" x="792" y="207" text-anchor="middle">30</text>
+<text class="sx-pert-field-label" x="792" y="215" text-anchor="middle">LS</text></g>
+<g><text class="sx-pert-field slack" x="852" y="207" text-anchor="middle">0</text>
+<text class="sx-pert-field-label" x="852" y="215" text-anchor="middle">SLACK</text></g>
+<g><text class="sx-pert-field" x="912" y="207" text-anchor="middle">35</text>
+<text class="sx-pert-field-label" x="912" y="215" text-anchor="middle">LF</text></g>
+<text class="sx-pert-name" x="852" y="167" text-anchor="middle">QA / testing</text>
+<text class="sx-pert-id" x="852" y="181" text-anchor="middle">E</text></g>
+<g class="sx-pert-task critical" data-id="G" data-es="35" data-ef="37" data-ls="35" data-lf="37" data-slack="0" data-duration="2" data-critical="true"><rect class="task-box" x="1008" y="126" width="180" height="90" rx="4" ry="4"/>
+<rect class="name-band" x="1008.7" y="148" width="178.6" height="46"/>
+<line class="sx-pert-div" x1="1008" y1="148" x2="1188" y2="148"/>
+<line class="sx-pert-div" x1="1008" y1="194" x2="1188" y2="194"/>
+<line class="sx-pert-div" x1="1068" y1="126" x2="1068" y2="148"/>
+<line class="sx-pert-div" x1="1128" y1="126" x2="1128" y2="148"/>
+<line class="sx-pert-div" x1="1068" y1="194" x2="1068" y2="216"/>
+<line class="sx-pert-div" x1="1128" y1="194" x2="1128" y2="216"/>
+<g><text class="sx-pert-field-label" x="1038" y="135" text-anchor="middle">ES</text>
+<text class="sx-pert-field" x="1038" y="145" text-anchor="middle">35</text></g>
+<g><text class="sx-pert-field-label" x="1098" y="135" text-anchor="middle">DUR</text>
+<text class="sx-pert-field" x="1098" y="145" text-anchor="middle">2</text></g>
+<g><text class="sx-pert-field-label" x="1158" y="135" text-anchor="middle">EF</text>
+<text class="sx-pert-field" x="1158" y="145" text-anchor="middle">37</text></g>
+<g><text class="sx-pert-field" x="1038" y="207" text-anchor="middle">35</text>
+<text class="sx-pert-field-label" x="1038" y="215" text-anchor="middle">LS</text></g>
+<g><text class="sx-pert-field slack" x="1098" y="207" text-anchor="middle">0</text>
+<text class="sx-pert-field-label" x="1098" y="215" text-anchor="middle">SLACK</text></g>
+<g><text class="sx-pert-field" x="1158" y="207" text-anchor="middle">37</text>
+<text class="sx-pert-field-label" x="1158" y="215" text-anchor="middle">LF</text></g>
+<text class="sx-pert-name" x="1098" y="167" text-anchor="middle">Launch event</text>
+<text class="sx-pert-id" x="1098" y="181" text-anchor="middle">G</text></g></g>
+<g class="sx-pert-labels"></g>
+<g class="sx-pert-footer"><text class="sx-pert-summary" x="24" y="314" text-anchor="start">Project duration 37 days · 7 tasks · 8 dependencies · 5 critical</text>
+<text class="sx-pert-summary crit" x="1188" y="314" text-anchor="end">Critical path: A → C → D → E → G</text></g></svg>

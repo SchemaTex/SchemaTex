@@ -1,0 +1,33 @@
+---
+title: Three-point (PERT) estimation with variance
+description: Durations written as optimistic/most-likely/pessimistic (O/M/P). The engine computes the beta-distribution expected duration te = (O+4M+P)/6 per activity, the per-task variance, and the project-level standard deviation along the critical path.
+diagram: pert
+standard: PMI PMBOK 7 — three-point (beta-PERT) estimation
+industry: [business, research, software]
+persona: For the estimator
+complexity: 2
+tags: [pert, three-point, estimation, variance, critical-path]
+featured: false
+relatedLink:
+  label: PERT / CPM syntax
+  href: /docs/pert
+status: published
+dsl: |
+  pert
+  title: "Three-point project"
+  unit: days
+  critical-tolerance: 0.01
+
+  task A "Spec"   duration: 2/3/5
+  task B "Build"  duration: 5/8/14 after: A
+  task C "Test"   duration: 3/4/6  after: B
+  task D "Deploy" duration: 1/2/3  after: C
+---
+
+PERT's original 1959 contribution wasn't the box — it was handling *uncertainty* in durations. Write a duration as `O/M/P` (optimistic / most-likely / pessimistic) and the engine treats it as a beta-PERT estimate.
+
+**Expected duration.** Each three-point activity collapses to its beta-distribution mean **te = (O + 4M + P) / 6**, which is what the Duration field shows. `Build` at `5/8/14` becomes `te = 8.5` — pulled above the most-likely 8 because the pessimistic tail (14) is fatter than the optimistic one (5). The whole forward/backward pass then runs on these `te` values, so the project duration here is ≈ 17.83 days, not an integer.
+
+**Variance and project risk.** Each activity also carries `σ² = ((P − O) / 6)²`, surfaced as a small `σ=…` annotation under the name and on a `data-pert-variance` attribute. Summed over the critical-path activities (under the classical independence assumption), the project standard deviation is ≈ 1.69 days — a one-line risk figure you can quote: "≈68% chance of finishing within ±1.69 days of 17.83."
+
+**Why `critical-tolerance: 0.01`.** Once durations are fractional, accumulated floating-point error can give a truly-critical activity a slack of `0.0000001`. The tolerance treats anything within 0.01 of zero as critical, so the red path stays stable across runs. For all-integer projects you can leave it at the default of `0`.
