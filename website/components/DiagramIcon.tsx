@@ -17,10 +17,20 @@ export type DiagramType =
   | 'flowchart'
   | 'venn'
   | 'orgchart'
-  | 'decision'
+  | 'decisiontree'
   | 'matrix'
   | 'timeline'
-  | 'mindmap';
+  | 'mindmap'
+  | 'bpmn'
+  | 'erd'
+  | 'fbd'
+  | 'sfc'
+  | 'usecase'
+  | 'state'
+  | 'pid'
+  | 'prisma'
+  | 'pert'
+  | 'breadboard';
 
 const ICON_PATHS: Record<DiagramType, React.ReactNode> = {
   genogram: (
@@ -181,7 +191,7 @@ const ICON_PATHS: Record<DiagramType, React.ReactNode> = {
       <path d="M5 17 V20 M3 20 H7 M12 17 V20 M10 20 H14 M19 17 V20 M17 20 H21" />
     </>
   ),
-  decision: (
+  decisiontree: (
     <>
       <path d="M12 3 L16 7 L12 11 L8 7 Z" />
       <path d="M9.5 9 L5 14 M14.5 9 L19 14" />
@@ -223,6 +233,109 @@ const ICON_PATHS: Record<DiagramType, React.ReactNode> = {
       <circle cx="20" cy="3" r="1.3" fill="currentColor" />
       <circle cx="4" cy="21" r="1.3" fill="currentColor" />
       <circle cx="20" cy="21" r="1.3" fill="currentColor" />
+    </>
+  ),
+  bpmn: (
+    <>
+      <circle cx="3.5" cy="12" r="2" />
+      <path d="M5.5 12 H8" />
+      <rect x="8" y="9" width="6.5" height="6" rx="2" />
+      <path d="M14.5 12 H16.2" />
+      <path d="M19 9.2 L21.8 12 L19 14.8 L16.2 12 Z" />
+    </>
+  ),
+  erd: (
+    <>
+      <rect x="2" y="7" width="7" height="10" />
+      <rect x="15" y="7" width="7" height="10" />
+      <path d="M9 12 H12" />
+      <path d="M10.5 10.5 V13.5" />
+      <path d="M12 12 L15 9.5 M12 12 L15 12 M12 12 L15 14.5" />
+    </>
+  ),
+  fbd: (
+    <>
+      <rect x="7" y="6" width="10" height="12" />
+      <path d="M7 9 H17" />
+      <path d="M4 12 H7 M4 15 H7" />
+      <path d="M17 13.5 H20" />
+    </>
+  ),
+  sfc: (
+    <>
+      <rect x="7" y="4" width="10" height="4" />
+      <path d="M12 8 V11" />
+      <path d="M9 11 H15" />
+      <path d="M12 11 V14" />
+      <rect x="7" y="14" width="10" height="4" />
+    </>
+  ),
+  usecase: (
+    <>
+      <circle cx="4" cy="4.5" r="2" />
+      <path d="M4 6.5 V13" />
+      <path d="M1 9 H7" />
+      <path d="M4 13 L1.5 17.5 M4 13 L6.5 17.5" />
+      <ellipse cx="15" cy="11.5" rx="6.5" ry="4" />
+      <path d="M4 11.5 H8.5" />
+    </>
+  ),
+  state: (
+    <>
+      <circle cx="3.5" cy="12" r="1.8" fill="currentColor" />
+      <path d="M5.3 12 H8" />
+      <rect x="8" y="9" width="7" height="6" rx="2.5" />
+      <path d="M15 12 H17" />
+      <circle cx="19.5" cy="12" r="2.4" />
+      <circle cx="19.5" cy="12" r="1" fill="currentColor" />
+    </>
+  ),
+  pid: (
+    <>
+      <rect x="2" y="6" width="6" height="12" rx="3" />
+      <path d="M8 12 H11" />
+      <path d="M11 10 L11 14 L13.5 12 Z" />
+      <path d="M16 10 L16 14 L13.5 12 Z" />
+      <path d="M16 12 H23" />
+      <circle cx="20.5" cy="12" r="2.5" />
+    </>
+  ),
+  prisma: (
+    <>
+      <rect x="2" y="2.5" width="10" height="4" />
+      <rect x="2" y="9.5" width="10" height="4" />
+      <rect x="2" y="16.5" width="10" height="4" />
+      <rect x="15" y="9.5" width="7" height="4" />
+      <path d="M7 6.5 V9.5" />
+      <path d="M7 13.5 V16.5" />
+      <path d="M12 11.5 H15" />
+    </>
+  ),
+  pert: (
+    <>
+      <circle cx="3" cy="12" r="2" />
+      <circle cx="12" cy="6.5" r="2" />
+      <circle cx="12" cy="17.5" r="2" />
+      <circle cx="21" cy="12" r="2" />
+      <path d="M4.8 11 L10.1 7.1 M10.1 7.1 L8.6 7.2 M10.1 7.1 L9.5 8.5" />
+      <path d="M4.8 13 L10.1 16.9 M10.1 16.9 L8.6 16.8 M10.1 16.9 L9.5 15.5" />
+      <path d="M13.9 7.1 L19 11 M19 11 L17.5 10.8 M19 11 L18.1 9.7" />
+      <path d="M13.9 16.9 L19 13 M19 13 L17.5 13.2 M19 13 L18.1 14.3" />
+    </>
+  ),
+  breadboard: (
+    <>
+      <rect x="2" y="4" width="20" height="16" rx="2" />
+      <path d="M2 12 H22" />
+      <circle cx="6" cy="8" r="0.8" fill="currentColor" />
+      <circle cx="10" cy="8" r="0.8" fill="currentColor" />
+      <circle cx="14" cy="8" r="0.8" fill="currentColor" />
+      <circle cx="18" cy="8" r="0.8" fill="currentColor" />
+      <circle cx="6" cy="16" r="0.8" fill="currentColor" />
+      <circle cx="10" cy="16" r="0.8" fill="currentColor" />
+      <circle cx="14" cy="16" r="0.8" fill="currentColor" />
+      <circle cx="18" cy="16" r="0.8" fill="currentColor" />
+      <path d="M6 8 C 10 12, 14 12, 18 16" />
     </>
   ),
 };

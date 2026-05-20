@@ -35,7 +35,7 @@ const CLUSTER_COLOR: Record<string, string> = {
   phylo: 'var(--cat-1)',
   block: 'var(--cat-1)',
   fishbone: 'var(--cat-1)',
-  decision: 'var(--cat-1)',
+  decisiontree: 'var(--cat-1)',
   timing: 'var(--cat-2)',
   logic: 'var(--cat-2)',
   circuit: 'var(--cat-2)',

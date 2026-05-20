@@ -6,6 +6,7 @@ import {
   getDiagramCluster,
   type GalleryExample,
 } from '@/lib/gallery-examples';
+import { DiagramIcon, type DiagramType as DiagramIconType } from '@/components/DiagramIcon';
 
 function safeRender(dsl: string): string {
   try {
@@ -25,12 +26,16 @@ function GalleryCard({ ex }: { ex: GalleryExample }) {
     <article className="gal-card">
       {/* Primary link — card body → example detail page */}
       <Link href={exampleHref} className="flex flex-1 flex-col">
-        {/* Card bar: cluster swatch · diagram type · § standard */}
+        {/* Card bar: diagram icon · diagram type · § standard */}
         <div
           className="flex items-center gap-2 px-3 py-2 font-mono text-xs"
           style={{ borderBottom: '1px solid var(--fill-muted)', color: 'var(--text-muted)' }}
         >
-          <span aria-hidden style={{ color: clusterColor, fontSize: 10 }}>■</span>
+          <DiagramIcon
+            type={ex.diagram as DiagramIconType}
+            size={14}
+            style={{ color: clusterColor, flexShrink: 0 }}
+          />
           <span style={{ color: 'var(--text)' }}>{ex.diagram}</span>
           <span style={{ opacity: 0.4 }}>·</span>
           <span className="truncate">§ {ex.standard}</span>

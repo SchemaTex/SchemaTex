@@ -54,6 +54,12 @@ const STANDARDS_RAIL = [
   'Ishikawa 1968',
   'WaveDrom',
   'ISO 5807',
+  'PRISMA 2020',
+  'OMG BPMN 2.0',
+  'UML 2.5.1',
+  'PMI PMBOK 7',
+  'Chen 1976',
+  'IEC 60617',
 ];
 
 // ───────────────────────────────────────────────────────────────────
