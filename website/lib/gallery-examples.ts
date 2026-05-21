@@ -24,6 +24,7 @@ export type DiagramType =
   | 'decisiontree'
   | 'matrix'
   | 'usecase'
+  | 'sequence'
   | 'bpmn'
   | 'state'
   | 'prisma'
@@ -78,6 +79,7 @@ export const DIAGRAM_LABELS: Record<DiagramType, { label: string; icon: string }
   decisiontree: { label: 'Decision tree', icon: '🌳' },
   matrix: { label: 'Matrix / quadrant', icon: '🔲' },
   usecase: { label: 'Use case', icon: '🧩' },
+  sequence: { label: 'Sequence', icon: '💬' },
   bpmn: { label: 'BPMN', icon: '🔀' },
   state: { label: 'State diagram', icon: '🔄' },
   prisma: { label: 'PRISMA flow', icon: '📊' },
@@ -108,7 +110,7 @@ export const CLUSTER_TO_TYPES: Record<string, DiagramType[]> = {
   'electrical-industrial': ['timing', 'logic', 'circuit', 'ladder', 'sld', 'block', 'fbd', 'sfc', 'pid', 'breadboard'],
   'corporate-legal': ['entity', 'erd', 'orgchart'],
   'causality-analysis': ['fishbone', 'venn', 'decisiontree', 'matrix'],
-  'software-uml': ['usecase', 'bpmn', 'state'],
+  'software-uml': ['usecase', 'sequence', 'bpmn', 'state'],
   research: ['prisma'],
   'project-management': ['pert'],
   general: ['flowchart', 'mindmap', 'timeline'],

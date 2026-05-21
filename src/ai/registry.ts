@@ -273,6 +273,16 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
     standard: "OMG UML 2.5.1 §18 visual subset; see 29-USECASE-STANDARD.md",
     syntaxKey: "usecase",
   },
+  {
+    type: "sequence",
+    name: "UML sequence diagram",
+    tagline: "UML 2.5.1 §17 interaction — lifelines, messages over time, activations, and combined fragments.",
+    useWhen:
+      "Use for time-ordered interactions between participants — API call flows, auth handshakes, distributed protocols, object collaborations, 'who calls whom in what order'. Lifelines run top→bottom; messages run left→right: `->` synchronous (filled head), `->>` asynchronous (open head), `-->` reply (dashed), `-x` lost, `o->` found. `+`/`-` suffixes open/close activation bars; `*Target` creates a participant and `destroy` ends one. All twelve UML combined fragments — `alt`/`opt`/`loop`/`par`/`break`/`critical`/`seq`/`strict`/`neg`/`ignore`/`consider`/`assert` — plus `ref` interaction-use frames. Participant kinds `actor`/`boundary`/`control`/`entity`/`database` render their UML/Jacobson symbols; `«stereotype»` overrides the label. Distinct from `usecase` (system scope, not message order), `state` (one object's modes, not inter-object messages), `bpmn` (organisational process), and `flowchart` (no lifelines/time axis).",
+    cluster: "behavior-modeling",
+    standard: "OMG UML 2.5.1 §17 (Interactions); see 33-SEQUENCE-STANDARD.md",
+    syntaxKey: "sequence",
+  },
   // ── Research / evidence synthesis ────────────────────────────
   {
     type: "prisma",

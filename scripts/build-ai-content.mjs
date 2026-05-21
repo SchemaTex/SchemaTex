@@ -52,6 +52,7 @@ const SYNTAX_KEYS = [
   "fbd",
   "sfc",
   "usecase",
+  "sequence",
   "prisma",
   "pert",
 ];

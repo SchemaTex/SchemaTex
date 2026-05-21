@@ -1,0 +1,228 @@
+---
+title: UML Sequence Diagram
+---
+
+## About sequence diagrams
+
+A **sequence diagram** shows how participants exchange messages **over time**: lifelines run top→bottom, messages run left→right between them, and the vertical axis is order. Defined by **[UML](https://www.omg.org/spec/UML/2.5.1/) 2.5.1 §17 (Interactions)**, it's the diagram engineers reach for to pin down an API call flow, an auth handshake, or a distributed protocol — *who calls whom, in what order, and what comes back*.
+
+Schematex implements the UML notation **natively** — not the PlantUML/Mermaid dialects. Where most tools stop at the common subset (`alt`/`opt`/`loop`/`par`), Schematex carries all **twelve** combined-fragment operators and `ref` interaction-use frames, because those are the parts professionals reach for when an interaction gets real. Distinct from **[usecase](/docs/usecase)** (system scope, not message order), **[state](/docs/state)** (one object's modes, not inter-object messages), and **[bpmn](/docs/bpmn)** (organisational process, not a call sequence).
+
+<Playground initial={`sequence "Login flow"
+  actor User
+  participant Web as "Web App"
+  control Auth
+  database DB
+  User -> Web : submit(credentials)
+  activate Web
+  Web ->+ Auth : verify(credentials)
+  Auth ->+ DB : SELECT user
+  DB --> Auth : row
+  deactivate DB
+  alt [credentials valid]
+    Auth --> Web : token
+    Web --> User : 200 OK
+  else [invalid]
+    Auth --> Web : 401
+    Web --> User : error
+  end
+  deactivate Auth
+  deactivate Web
+  note over User, Web : session cookie set`} height={560} />
+
+---
+
+## 1. Your first diagram
+
+Every document starts with the `sequence` keyword and an optional `"title"`. Participants don't need to be declared — the first time you mention one in a message, it becomes a lifeline:
+
+```
+sequence
+  Alice -> Bob : Authentication Request
+  Bob --> Alice : Authentication Response
+```
+
+Lifelines appear left-to-right in first-use order. `->` is a synchronous call (solid line, filled arrowhead); `-->` is a reply (dashed line, open arrowhead). Text after `:` is the message label.
+
+---
+
+## 2. Participants
+
+Declare a participant explicitly to set its **kind**, give it an **alias**, or fix its **order**:
+
+```
+sequence
+  actor User
+  participant Web as "Web App"
+  boundary LoginUI
+  control Auth
+  entity Account
+  database DB
+  collections Sessions
+  queue Events
+```
+
+| Kind | Rendered as |
+|------|-------------|
+| `participant` (default) | rounded classifier box |
+| `actor` | stick figure |
+| `boundary` / `control` / `entity` | the Jacobson robustness icons (⊢◯ / ◯ with arrow / ◯ with underline) |
+| `database` | cylinder |
+| `collections` / `queue` | box with the kind as a `«stereotype»` |
+
+- `as "Label"` sets the display name (quotes optional; `「…」` CJK quotes accepted).
+- A custom **stereotype** goes in guillemets or ASCII angle brackets after the declaration — it overrides the default label: `actor Printer «system»`, `participant Bus as "Event Bus" <<service>>`.
+
+---
+
+## 3. Messages
+
+The arrow token chooses the UML semantics:
+
+| DSL | Meaning | Rendering |
+|-----|---------|-----------|
+| `A -> B` | synchronous call | solid line, **filled** arrowhead |
+| `A ->> B` | asynchronous signal | solid line, **open** arrowhead |
+| `A --> B` | reply / return | **dashed** line, open arrowhead |
+| `A -x B` | lost message | line ending at a filled circle |
+| `o-> B` | found message | line starting from a filled circle |
+| `A -> A` | self message | bent loop back to the same lifeline |
+
+Whitespace around arrows is optional (`A->B` works), and labels are free text — including a return value, e.g. `aHotel -> aHotel : available(roomId, date): isRoom`.
+
+---
+
+## 4. Activations (execution specifications)
+
+The thin bar on a lifeline shows it is active. Open and close it with explicit statements, or with `+` / `-` suffixes on the messages themselves:
+
+```
+sequence
+  participant Client
+  participant Server
+  Client ->+ Server : request()
+  Server ->> Server : validate()
+  Server -->- Client : response
+```
+
+`+` after the arrow activates the **receiver** on arrival; `-` deactivates the **sender** after the message is sent. The explicit form is `activate X` / `deactivate X`. Overlapping bars on one lifeline nest with a horizontal offset.
+
+---
+
+## 5. Object creation & destruction
+
+```
+sequence
+  participant Factory
+  Factory -> *Worker : «create»
+  Factory -> Worker : work()
+  destroy Worker
+```
+
+Prefix the receiver with `*` to make the message **instantiate** it — the new lifeline's head is drawn at the arrival row, not at the top. `destroy X` ends a lifeline with a ✕ and stops its time axis.
+
+---
+
+## 6. Combined fragments
+
+A combined fragment is a labelled frame around a region. Schematex implements the full UML `InteractionOperatorKind` set:
+
+| Operator | Meaning | Operands |
+|----------|---------|----------|
+| `alt` | alternatives (if/else-if/else) | `else`, each guarded |
+| `opt` | runs iff the guard holds | one, guarded |
+| `loop` | repeat | one; guard may be `(min,max)` |
+| `par` | concurrent operands | `and` |
+| `break` | exceptional exit | one, guarded |
+| `critical` | atomic / no interleaving | one |
+| `seq` / `strict` | weak / strict sequencing | `and` |
+| `neg` | invalid traces (rendered tinted) | one |
+| `ignore` / `consider` | message-set filter `{m1, m2}` | one |
+| `assert` | the only valid continuation | one |
+
+```
+sequence
+  actor User
+  participant API
+  User -> API : GET /resource
+  alt [authorized]
+    API --> User : 200 + body
+  else [forbidden]
+    API --> User : 403
+  end
+```
+
+Guards go in `[brackets]` after the operator (and after `else`). Fragments nest, and inner frames inset automatically so they sit cleanly inside their parent.
+
+---
+
+## 7. Interaction use (`ref`)
+
+Reference another interaction instead of inlining it — the way UML keeps large diagrams composable:
+
+```
+sequence
+  participant A
+  participant B
+  ref over A, B : Establish session
+  A -> B : poll()
+```
+
+`ref over <lifelines> : Name` draws a framed box across the named lifelines. Most tools omit this; it's how real systems decompose long flows.
+
+---
+
+## 8. Notes, dividers, invariants, numbering
+
+```
+sequence
+  autonumber 1 1
+  actor Shopper
+  participant Cart
+  == Phase 1: review ==
+  Shopper -> Cart : view items
+  note over Cart : cart persisted in Redis
+  state Cart : ready
+```
+
+- `note over A` / `note over A, B` / `note left of A` / `note right of A` — folded-corner annotations.
+- `== text ==` — a full-width section divider.
+- `state X : text` — a state-invariant capsule on a lifeline.
+- `autonumber [start] [step]` — prefix every message with an incrementing number.
+
+---
+
+## 9. Grammar (EBNF)
+
+```text
+diagram      = "sequence" [ string ] NEWLINE statement*
+statement    = participant | message | activation | note
+             | fragment | ref | divider | invariant | destroy | autonumber
+
+participant  = kind IDENT ("as" label)? stereotype?
+kind         = "participant" | "actor" | "boundary" | "control"
+             | "entity" | "database" | "collections" | "queue"
+stereotype   = "«" TEXT "»" | "<<" TEXT ">>"
+
+message      = IDENT? act? arrow act? ("*")? IDENT? (":" TEXT)?
+arrow        = "->" | "->>" | "-->" | "-x" | "o->"
+act          = "+" | "-"
+activation   = ("activate" | "deactivate") IDENT
+
+fragment     = ("alt"|"opt"|"loop"|"par"|"break"|"critical"|"seq"
+               |"strict"|"neg"|"ignore"|"consider"|"assert") guard? NEWLINE
+                 statement* (("else"|"and") guard? NEWLINE statement*)* "end"
+guard        = "[" TEXT "]" | "(" NUMBER ("," NUMBER)? ")"
+ref          = "ref" "over" IDENT ("," IDENT)* ":" TEXT
+note         = "note" ("over"|"left of"|"right of") IDENT ("," IDENT)? ":" TEXT
+divider      = "==" TEXT "=="
+invariant    = "state" IDENT ":" TEXT
+destroy      = "destroy" IDENT
+autonumber   = "autonumber" NUMBER? NUMBER?
+```
+
+---
+
+## 10. Standard compliance
+
+Schematex follows the OMG **UML 2.5.1 §17 (Interactions)** notation: synchronous (filled) vs. asynchronous (open) vs. reply (dashed) arrowheads, found/lost message endpoints, execution-specification bars, all twelve combined-fragment operators with guarded operands, `ref` interaction-use frames, and the Jacobson analysis-class icons for `boundary`/`control`/`entity`. Gates, coregion, and time/duration constraints are out of scope for v0.1 (they need new layout primitives) and tracked for a later release. See `docs/reference/33-SEQUENCE-STANDARD.md` for the full specification.

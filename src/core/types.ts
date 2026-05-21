@@ -61,7 +61,9 @@ export type DiagramType =
   // Structural UML (sister to behavioral §21 state)
   | "usecase"   // UML 2.5.1 use case diagram (29-USECASE-STANDARD)
   // Project scheduling networks
-  | "pert";      // PERT / CPM activity-on-node network (32-PERT-STANDARD)
+  | "pert"      // PERT / CPM activity-on-node network (32-PERT-STANDARD)
+  // Behavioral UML (sister to §21 state, §29 usecase)
+  | "sequence";  // UML 2.5.1 §17 sequence / interaction diagram (33-SEQUENCE-STANDARD)
 
 export type GenogramMode = "medical" | "heritage";
 

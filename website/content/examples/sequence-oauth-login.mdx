@@ -1,0 +1,52 @@
+---
+title: OAuth 2.0 authorization-code login
+description: The canonical browser-based sign-in handshake as a UML sequence diagram — redirect to the auth server, user consent, code-for-token exchange, and an alt fragment for the success vs. failure branch, with activation bars tracking who is busy at each step.
+diagram: sequence
+standard: OMG UML 2.5.1 §17 (Interactions)
+industry: [software, business]
+persona: For the backend engineer
+complexity: 2
+tags: [sequence, uml, oauth, authentication, api]
+featured: true
+relatedLink:
+  label: Sequence diagram syntax
+  href: /docs/sequence
+status: published
+dsl: |
+  sequence "OAuth 2.0 Authorization Code"
+    actor User
+    boundary Browser
+    control App as "Web App"
+    participant Auth as "Auth Server"
+    database DB as "User Store"
+
+    User -> Browser : click "Sign in"
+    Browser ->+ App : GET /login
+    App --> Browser : 302 → Auth Server
+    Browser ->+ Auth : GET /authorize
+    Auth --> User : consent screen
+    User -> Auth : approve
+    Auth -->- Browser : 302 + auth code
+
+    Browser ->+ App : GET /callback?code
+    App ->+ Auth : POST /token (code)
+    Auth ->+ DB : load user
+    DB -->- Auth : profile
+    Auth -->- App : access + refresh token
+    alt [token exchange ok]
+      App --> Browser : Set-Cookie: session
+      Browser --> User : signed in
+    else [exchange failed]
+      App --> Browser : 401 Unauthorized
+      Browser --> User : retry
+    end
+    deactivate App
+---
+
+Almost every product ships this flow, and almost every whiteboard drawing of it is subtly wrong about *who is active when*. A sequence diagram makes the call order and the active spans explicit.
+
+**Lifeline kinds carry meaning.** The `boundary` Browser, the `control` App, and the `entity`/`database` user store render as their UML symbols, so a reviewer reads the architecture at a glance: the browser is the UI edge, the app orchestrates, the auth server and store are collaborators.
+
+**Activation bars track the redirect dance.** OAuth bounces the user between the app and the auth server twice. The `+`/`-` suffixes open and close execution-specification bars exactly where each party becomes busy and hands control back — the `Auth -->- Browser` reply both returns the auth code *and* closes the auth server's first activation.
+
+**The branch is a real fragment, not two diagrams.** The `alt` frame captures the success and failure paths in one place: a valid token exchange sets the session cookie; a failed one returns `401`. That is the single most common place sequence diagrams earn their keep — showing the unhappy path next to the happy one instead of hiding it.

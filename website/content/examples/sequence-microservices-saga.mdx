@@ -1,0 +1,56 @@
+---
+title: Microservices order saga
+description: A distributed order-processing saga showing the parts of UML sequence notation that generic tools omit — a ref interaction-use frame, a par fragment for concurrent service calls, asynchronous event-bus messages, and an alt fragment with a compensating rollback on payment failure.
+diagram: sequence
+standard: OMG UML 2.5.1 §17 (Interactions)
+industry: [software, business]
+persona: For the distributed-systems engineer
+complexity: 3
+tags: [sequence, uml, microservices, saga, async, event-driven]
+featured: false
+relatedLink:
+  label: Sequence diagram syntax
+  href: /docs/sequence
+status: published
+dsl: |
+  sequence "Order processing (saga)"
+    actor Customer
+    participant Gateway as "API Gateway"
+    control Orders as "Order Service"
+    participant Payment as "Payment Service"
+    participant Inventory as "Inventory Service"
+    queue Bus as "Event Bus"
+
+    Customer -> Gateway : POST /orders
+    Gateway ->+ Orders : createOrder()
+    ref over Orders, Bus : Validate cart & price
+
+    par
+      Orders ->> Payment : charge(card)
+    and
+      Orders ->> Inventory : reserve(items)
+    end
+
+    alt [payment captured && stock reserved]
+      Payment --> Orders : paid
+      Inventory --> Orders : reserved
+      Orders ->> Bus : OrderConfirmed
+      Orders -->- Gateway : 201 Created
+      Gateway --> Customer : confirmation
+    else [payment failed]
+      Orders ->> Inventory : release(items)
+      Orders ->> Bus : OrderCancelled
+      Orders -->- Gateway : 402 Payment Required
+      Gateway --> Customer : declined
+    end
+---
+
+This is the case that separates a real UML engine from a flowchart with stick figures. A saga is concurrent, asynchronous, and has a compensating path — and Schematex has dedicated notation for each.
+
+**`ref` keeps the diagram composable.** "Validate cart & price" is its own interaction; inlining it here would bury the saga in detail. The `ref over Orders, Bus : …` frame references it instead — notation most text-to-diagram tools simply don't have.
+
+**`par` shows true concurrency.** The order service charges the card and reserves stock *at the same time*. The `par` fragment's two operands say these run concurrently, not in sequence — a distinction a top-to-bottom message list cannot express.
+
+**Async vs. reply arrows are not cosmetic.** `->>` (open head) marks fire-and-forget calls and event-bus publishes; `-->` (dashed) marks the replies that come back. Reading the arrowheads tells you which steps block and which don't.
+
+**The compensation lives in the `alt`.** When payment fails, the second operand *releases* the previously reserved inventory and emits `OrderCancelled` — the saga's rollback, drawn right beside the happy path instead of in a separate diagram.
