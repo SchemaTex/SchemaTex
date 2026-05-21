@@ -1,0 +1,44 @@
+---
+title: Pump with flow control loop (P&ID)
+description: Classic centrifugal pump pulling from an atmospheric tank, with a flow transmitter (FT-101), flow indicating controller (FIC-101), and a fail-closed pneumatic control valve — the minimum viable P&ID that every process engineer recognises at a glance.
+diagram: pid
+standard: ANSI/ISA-5.1-2009 + ISO 10628-1:2014
+industry: [water-treatment, industrial, chemical-processing, utilities]
+persona: For the process engineer
+complexity: 1
+tags: [pid, isa-5.1, flow-control, centrifugal-pump, control-valve, instrument-loop]
+featured: true
+relatedLink:
+  label: P&ID syntax
+  href: /docs/pid
+status: published
+dsl: |
+  pid "Water Pump Flow Control"
+
+  equip T-101 : tank_atm [tag: "Feed Tank"]
+  equip P-101 : pump_centrifugal [tag: "Feed Pump"]
+  equip V-101 : valve_control [actuator: "diaphragm", fail: "FC"]
+  equip V-100 : valve_gate [tag: "Isolation"]
+
+  line L1 from T-101.bottom to P-101.in [size: "4\"", service: "water", type: "process"]
+  line L2 from P-101.out to V-101.in [size: "4\"", service: "water", type: "process"]
+  line L3 from V-101.out to dest [size: "4\"", type: "process"]
+
+  inst FT-101 : field_discrete
+    measures L2
+  inst FIC-101 : cr_shared
+    controls V-101
+
+  line s1 from FT-101 to FIC-101 [type: "electric"]
+  line s2 from FIC-101 to V-101 [type: "pneumatic"]
+---
+
+The pump-with-flow-control loop is to P&ID what the "hello world" program is to software: every process engineer has drawn one, every piping textbook uses it as chapter one, and once you understand it you understand the grammar of every more complex diagram.
+
+**What the diagram shows.** T-101 is an atmospheric tank (dome-roof symbol, open to atmosphere). The centrifugal pump P-101 pulls fluid from the bottom nozzle and pushes it downstream through a 4-inch water service line. The flow transmitter FT-101 — a field-mounted discrete instrument, drawn as a plain circle per ISA-5.1 §4.1 — sits on the discharge line L2 and measures the volumetric flow rate. Its 4–20 mA electric signal travels to FIC-101, the flow indicating controller in the main control room (drawn as a circle with a horizontal line through it, indicating it is panel-mounted and has a display). FIC-101 computes the error between the setpoint and the measured flow and drives V-101, a diaphragm-actuated control valve, open or closed via a pneumatic signal. V-100 is a manual gate valve upstream — the isolation valve you close when you need to pull the pump for maintenance.
+
+**ISA-5.1 signal line types.** The two non-process lines in this diagram are drawn differently from the main pipe: the electric signal between FT-101 and FIC-101 is a dashed line (`stroke-dasharray: 6 4`), and the pneumatic signal between FIC-101 and V-101 is a solid line with small perpendicular slash marks at regular intervals. These are not stylistic choices — they are ISA-5.1 §5.2 mandatory line type codes. An instrument technician reading the diagram needs to know, at a glance, whether a run of wire failed or an air supply pressure dropped. The line type tells them which.
+
+**Fail-safe position.** V-101 is marked `fail: "FC"` — fail-closed. When the air supply to the diaphragm actuator is lost (instrument air header trips, tubing rupture), the spring return pushes the valve shut. This is the correct failure mode for a pump discharge valve: loss of control should stop flow, not open it fully. If this were a cooling-water valve on a reactor, you'd want fail-open instead. The choice of fail position is one of the first decisions in a safety instrumented system review (HAZOP, SIL assessment) and it belongs on the P&ID from day one.
+
+**Why not draw.io.** Process engineers currently draw P&IDs in AutoCAD P&ID, SmartPlant P&ID, or draw.io with stencil libraries — all of which require manual symbol placement and wiring. The Schematex DSL lets you describe the topology and generate a standards-compliant SVG. This is particularly useful when a process is described in prose (from a process description document or a licensor's PFD) and needs to be turned into a P&ID for HAZOP review — the conversion becomes a text transformation task that LLMs can assist with, producing a reviewable first draft rather than a blank canvas.

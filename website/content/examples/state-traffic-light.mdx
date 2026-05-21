@@ -1,0 +1,38 @@
+---
+title: Traffic light (state diagram)
+description: A three-state finite state machine for a traffic signal — Red, Green, Yellow — with timer-driven transitions and a power_off exit to a final state. Introduces UML initial and final pseudo-states, transition labels, and the cyclic structure that makes state diagrams the right tool for reactive systems.
+diagram: state
+standard: OMG UML 2.5.1 §14
+industry: [education, transportation, embedded-systems]
+persona: For the software engineer
+complexity: 1
+tags: [state, uml, fsm, state-machine, embedded, reactive]
+featured: true
+relatedLink:
+  label: State diagram syntax
+  href: /docs/state
+status: published
+dsl: |
+  state "Traffic Light"
+
+  initial i
+  final f
+
+  i -> Red
+  Red -> Green : timer
+  Green -> Yellow : timer
+  Yellow -> Red : timer
+  Red -> f : power_off
+---
+
+The traffic light is to state diagrams what the pump loop is to P&IDs: every textbook uses it, every engineer has drawn it, and if you understand it you understand the grammar of every more complex model.
+
+**Why a state diagram and not a flowchart.** A flowchart for a traffic light would show a loop: start → Red → (timer fires?) → Green → (timer fires?) → Yellow → back to Red. That works for describing an algorithm, but it misses the essential question: *what is the system doing right now?* A state machine makes the current state a first-class concept. The traffic light is not executing a loop — it *is* Red, or it *is* Green. Transitions are events that change what it is. This distinction matters the moment you add complexity: "what happens if a pedestrian button is pressed while we're in Green?" You answer that by looking at the transitions out of Green, not by tracing a flowchart path.
+
+**UML pseudo-states.** The filled black circle (`initial i`) and the bull's-eye circle (`final f`) are pseudo-states — they are not real states the system can dwell in, just notational entry and exit points. The initial pseudo-state shows where the machine starts; the arrow from `i` to Red tells you Red is the first real state. The final pseudo-state shows where the machine terminates. In the traffic light, termination is the `power_off` event from Red — the system shuts down from the Red state only (it wouldn't be safe to power off mid-Green).
+
+**Transition labels.** Each arrow is labeled with the trigger event that causes the transition. `timer` means "the countdown for this phase has elapsed." In a real embedded implementation, this would be a hardware timer interrupt or a software watchdog expiry. Schematex doesn't execute the state machine — it renders the model. The labels are free text; you write exactly what your system calls the event.
+
+**Cyclic structure.** The three main states form a cycle: Red → Green → Yellow → Red. Most state diagrams describing continuous systems have cycles — the system runs until something external stops it. The `power_off` transition is the only way to reach the final state, and it is only modeled on Red because that is the safe state to stop in. If you wanted to model an emergency override (traffic officer stops the light mid-cycle), you would add `power_off` transitions from Green and Yellow too.
+
+**From model to code.** A UML state diagram maps directly to an enum + switch statement, a state table, or a state-machine framework (XState, Boost.MSM, Qt State Machine). The diagram is the specification; the implementation strategy is separate. Generating this diagram from a DSL means you can keep the spec in version control alongside the code, diff it in PRs, and regenerate it from an LLM prompt when requirements change.

@@ -1,0 +1,68 @@
+---
+title: E-commerce order lifecycle (state diagram)
+description: Full order state machine — from Pending through payment routing (choice pseudo-state), composite Processing state with Picking/Packing/Shipped sub-states, delivery, refund, and cancellation paths. Demonstrates composite states, choice pseudo-states, guard conditions, entry actions, and UML notes.
+diagram: state
+standard: OMG UML 2.5.1 §14
+industry: [e-commerce, business, logistics, retail]
+persona: For the software architect
+complexity: 2
+tags: [state, uml, composite, choice, guard, order-management, e-commerce, lifecycle]
+featured: false
+relatedLink:
+  label: State diagram syntax
+  href: /docs/state
+status: published
+dsl: |
+  state "E-Commerce Order Lifecycle"
+
+  initial i
+  i -> Pending
+
+  Pending -> Confirmed : place_order [items_in_stock] / reserveInventory()
+  Pending -> Cancelled : cancel
+
+  choice PayRoute
+  Confirmed -> PayRoute : pay
+  PayRoute -> Processing : [method == "card"]
+  PayRoute -> Processing : [method == "wallet"]
+  PayRoute -> AwaitingTransfer : [method == "bank_transfer"]
+
+  AwaitingTransfer -> Processing : transfer_received [amount_correct]
+  AwaitingTransfer -> Cancelled : transfer_timeout
+
+  composite Processing {
+    initial pi
+    final pf
+
+    pi -> Picking
+    Picking -> Packing : picked / updateWarehouse()
+    Packing -> Shipped : label_printed
+    Shipped -> pf : carrier_confirmed
+  }
+
+  Processing -> Delivered : delivered / notifyCustomer()
+  Processing -> Failed : fulfillment_error
+
+  Delivered -> Refunded : return_request [within_30_days] / initiateRefund()
+  Failed -> Pending : retry [attempt < 3]
+  Failed -> Cancelled : retry [attempt >= 3]
+
+  final f
+  Delivered -> f
+  Refunded -> f
+  Cancelled -> f
+
+  note right_of AwaitingTransfer : SLA: 48 h before timeout.
+---
+
+Order state machines are one of the most common backend design artifacts, and one of the most commonly under-specified. Teams often start with a simple enum (`PENDING / PAID / SHIPPED / DELIVERED`) and then bolt on edge cases over time: partial shipments, payment holds, carrier errors, refund windows. Six months later the enum has twelve values, the transition logic is scattered across three services, and nobody can explain what sequence of events gets an order from `FAILED` to `CANCELLED` versus from `FAILED` back to `PENDING`. A UML state diagram catches all of this upfront.
+
+**Guard conditions on `place_order`.** The transition from `Pending` to `Confirmed` carries `[items_in_stock]` — a guard. Guards are boolean predicates that must be true for the transition to fire even when the trigger event (`place_order`) occurs. If the guard is false, the trigger is silently absorbed and the system stays in `Pending`. In practice this means inventory is checked synchronously during order placement, and the transition only proceeds if stock is available. The action `/ reserveInventory()` fires when the transition does go through, atomically.
+
+**Choice pseudo-state for payment routing.** `PayRoute` is a UML choice pseudo-state (drawn as a diamond). When the `pay` trigger fires from `Confirmed`, the machine immediately evaluates the guards on all outgoing transitions from `PayRoute`. If `method == "card"` or `method == "wallet"`, control goes directly to `Processing`. If `method == "bank_transfer"`, it goes to `AwaitingTransfer` — a waiting state with its own 48-hour SLA note. Choice pseudo-states do not dwell; they route. This is the correct model for "take different paths based on a value computed at runtime."
+
+**Composite state for fulfillment.** `Processing` is a composite state — it contains its own internal state machine with `Picking`, `Packing`, and `Shipped`. From the outside, the system is "in Processing" whether it's picking, packing, or confirming with the carrier. From the inside, the sub-machine tracks exactly where the warehouse is. The composite state has its own `initial` and `final` pseudo-states: the machine enters at `pi` (starts picking) and exits through `pf` (carrier confirmed), which fires the outer transition to `Delivered`. Cross-composite transitions to `Failed` are also valid — a fulfillment error at any sub-state terminates the Processing phase and moves to the outer `Failed` state.
+
+**Retry with bounded attempts.** `Failed` has two outgoing transitions back to `Pending` and `Cancelled`, both triggered by `retry` but guarded on `attempt`. This is the explicit model for "retry up to N times, then give up." Without the state diagram, this logic typically lives in a cron job or a dead-letter queue processor that nobody fully understands. Here it is the specification: anyone reading the diagram knows the retry policy without digging through queue configurations.
+
+**Final state convergence.** `Delivered`, `Refunded`, and `Cancelled` all transition to the same `final` pseudo-state. In implementation, "final" might mean the order record is archived, the event bus receives an `order.closed` event, and no further state transitions are accepted. The model is silent on what happens after final — that's intentional. The state machine is done; downstream processes (analytics, accounting, data retention) are separate concerns.

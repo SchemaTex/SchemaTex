@@ -1,0 +1,64 @@
+---
+title: Reactor feed with multi-loop control and pressure safety (P&ID)
+description: CSTR reactor system with centrifugal pump, shell-and-tube pre-heater, flow control on the feed line, temperature control on the product outlet, and a PSHH pressure switch interlock — four instrument loops in one diagram, covering the core vocabulary of ISA-5.1 P&ID engineering.
+diagram: pid
+standard: ANSI/ISA-5.1-2009 + ISO 10628-1:2014
+industry: [chemical-processing, pharmaceutical, petrochemical, specialty-chemicals]
+persona: For the process engineer
+complexity: 3
+tags: [pid, isa-5.1, reactor, heat-exchanger, multi-loop, pshh, interlock, safety]
+featured: false
+relatedLink:
+  label: P&ID syntax
+  href: /docs/pid
+status: published
+dsl: |
+  pid "High-Pressure Reactor Feed"
+
+  equip T-201 : tank_atm [tag: "Raw Material Tank"]
+  equip P-201 : pump_centrifugal [tag: "Feed Pump P-201A/B"]
+  equip E-201 : hx_shell_tube [tag: "Feed Pre-heater"]
+  equip R-201 : reactor_cstr [tag: "Reactor R-201"]
+  equip V-201 : valve_control [actuator: "diaphragm", fail: "FC"]
+  equip V-202 : valve_control [actuator: "diaphragm", fail: "FO"]
+  equip V-203 : valve_psv [set_pressure: "150 psig"]
+
+  line L1 from T-201.bottom to P-201.in [size: "6\"", service: "feed", type: "process"]
+  line L2 from P-201.out to E-201.shell_in [size: "6\"", service: "feed", type: "process"]
+  line L3 from E-201.shell_out to V-201.in [size: "6\"", service: "feed", type: "process"]
+  line L4 from V-201.out to R-201.in [size: "6\"", service: "feed", type: "process"]
+  line L5 from R-201.out to V-202.in [size: "4\"", service: "product", type: "process"]
+
+  inst FT-201 : field_discrete
+    measures L2
+  inst FIC-201 : cr_shared
+    controls V-201
+
+  inst TT-201 : field_discrete
+    measures R-201
+  inst TIC-201 : cr_shared
+    controls V-202
+
+  inst PT-201 : field_discrete
+    measures R-201
+  inst PSHH-201 : field_discrete
+    measures R-201
+
+  line s1 from FT-201 to FIC-201 [type: "electric"]
+  line s2 from FIC-201 to V-201 [type: "pneumatic"]
+  line s3 from TT-201 to TIC-201 [type: "electric"]
+  line s4 from TIC-201 to V-202 [type: "pneumatic"]
+  line s5 from PT-201 to PSHH-201 [type: "electric"]
+---
+
+Real process plants don't have one control loop — they have a web of them. This diagram shows a CSTR reactor system with four instrument loops and a safety instrument, which is about the minimum complexity for a unit operation that would appear in a HAZOP study. Understanding how to read this diagram cold is a core skill for every process, instrumentation, and safety engineer on the project team.
+
+**The process path.** Raw material is stored in T-201 (atmospheric tank). The centrifugal pump P-201A/B (the A/B suffix is conventional for spared pumps — one online, one standby) pulls from the bottom nozzle and pushes through 6-inch feed line L2 to the shell-and-tube heat exchanger E-201, which pre-heats the feed before it enters the reactor. From E-201, the line continues through the feed control valve V-201 into the reactor R-201. The reactor product exits through L5 and the product control valve V-202.
+
+**Loop 201 — flow control.** FT-201 (flow transmitter, field-mounted) sits on the pump discharge line L2 and sends a 4–20 mA signal to FIC-201 (flow indicating controller, control-room mounted, DCS shared — note the horizontal line through the circle). FIC-201 closes or opens V-201 to maintain the feed flow setpoint. V-201 is fail-closed: if instrument air is lost, the feed to the reactor stops. Starving a reactor on air loss is usually safer than flooding it.
+
+**Loop 201T — temperature control.** TT-201 (temperature transmitter) measures the reactor body temperature and signals TIC-201, which throttles V-202 — the product outlet valve — to regulate residence time and therefore heat generation in the reactor. V-202 is fail-open: losing air means the product continues to drain out, preventing dangerous temperature accumulation inside the vessel. The fail-safe position is always chosen by answering the question: "which state causes less harm if control is lost?"
+
+**Loop 201P — pressure monitoring and safety.** PT-201 is a field-mounted pressure transmitter — it sends the continuous pressure reading to the DCS historian. PSHH-201 is a pressure switch, high-high: a discrete field-mounted device that trips at the maximum allowable working pressure (MAWP). It is wired to the safety interlock system (SIS), not the DCS. The distinction matters: DCS loops control the process; SIS loops protect equipment and people. OSHA PSM (29 CFR 1910.119) requires the two to be functionally independent. V-203 is the pressure safety valve — a spring-loaded valve that opens automatically at the set pressure of 150 psig regardless of any control signal, providing the last line of mechanical protection.
+
+**Why P&ID, not PFD.** A process flow diagram (PFD) shows the same equipment but only the major process streams, mass balances, and operating conditions. A P&ID adds every instrument, every valve, every signal line, and every utility connection — it is the engineering document used by instrument engineers to write I/O lists, by safety engineers to perform HAZOP, and by construction teams to verify field installation. The DSL lets you build this level of detail from text, making it tractable for AI-assisted first drafts and version-controlled review cycles.
