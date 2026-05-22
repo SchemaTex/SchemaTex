@@ -27,6 +27,26 @@ The diagram type is inferred from the first keyword. The output is a plain SVG
 string — safe to inject via `dangerouslySetInnerHTML`, `innerHTML`, or write to
 disk.
 
+## Live previews
+
+`render()` is strict: invalid DSL throws. For an AI canvas or editor preview,
+use the preview API so a parser failure stays visible instead of leaving an
+empty surface.
+
+```ts
+import { renderPreview, renderResult } from 'schematex';
+
+const svg = renderPreview(dsl);
+const state = renderResult(dsl);
+
+preview.innerHTML = state.svg;
+if (!state.ok) console.error(state.diagnostics);
+```
+
+`renderPreview()` always returns SVG. A failed strict render becomes a visible
+diagnostic SVG. Use `renderResult()` when you also need `ok`, `status`, and
+diagnostics for retry or repair logic.
+
 ### Optional frontmatter
 
 Mermaid-style YAML frontmatter is accepted before the DSL body. A `title:` value
@@ -60,11 +80,18 @@ independent.
 
 ## Frameworks
 
-- **React** — drop the SVG string into `dangerouslySetInnerHTML`, or wait for
-  `@schematex/react` (coming soon).
+- **React** — use `<SchematexDiagram />` from `schematex/react`, or inject a
+  strict/preview SVG string yourself. The component shows a diagnostic fallback
+  SVG when its DSL cannot render.
 - **SSR** — Schematex is pure string output, no DOM. Works in Node, edge
   runtimes, Cloudflare Workers, and the browser.
 - **Markdown** — a `remark-schematex` plugin is planned.
+
+```tsx
+import { SchematexDiagram } from 'schematex/react';
+
+<SchematexDiagram dsl={dsl} theme="monochrome" />;
+```
 
 ## Use with AI
 

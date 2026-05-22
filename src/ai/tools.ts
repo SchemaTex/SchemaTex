@@ -4,13 +4,18 @@
  * Pure TypeScript, zero framework deps. Both the Vercel AI SDK adapter
  * (ai-sdk.ts) and the MCP server wrap these functions.
  */
-import { parse, render, type SchematexConfig } from "../core/api";
+import {
+  parseResult,
+  renderResult,
+  type SchematexConfig,
+} from "../core/api";
+import type { SchematexDiagnostic } from "../core/diagnostics";
 import {
   DIAGRAM_REGISTRY,
   getDiagramMeta,
   type DiagramMeta,
 } from "./registry";
-import { extractError, type SchematexValidationError } from "./errors";
+import type { SchematexValidationError } from "./errors";
 import { getExamplesForType, type Example, type GetExamplesOptions } from "./examples";
 import { getSyntaxForType, type SyntaxDoc } from "./syntax";
 
@@ -96,23 +101,33 @@ export function validateDsl(type: string | undefined, dsl: string): ValidateDslR
   const config: SchematexConfig | undefined = type
     ? { type: type as SchematexConfig["type"] }
     : undefined;
-  try {
-    parse(dsl, config);
+  const result = parseResult(dsl, config);
+  if (result.ok) {
     return { ok: true, type: type ?? resolveTypeFromText(dsl) };
-  } catch (err) {
-    return {
-      ok: false,
-      type: type ?? resolveTypeFromText(dsl),
-      errors: [extractError(err)],
-    };
   }
+  return {
+    ok: false,
+    type: type ?? resolveTypeFromText(dsl),
+    errors: result.diagnostics.map(toValidationError),
+  };
 }
 
 // ─── renderDsl ──────────────────────────────────────────────────
 
 export type RenderDslResult =
-  | { ok: true; type: string | null; svg: string }
-  | { ok: false; type: string | null; errors: SchematexValidationError[] };
+  | {
+      ok: true;
+      status: "valid" | "partial";
+      type: string | null;
+      svg: string;
+    }
+  | {
+      ok: false;
+      status: "invalid";
+      type: string | null;
+      svg: string;
+      errors: SchematexValidationError[];
+    };
 
 export function renderDsl(
   type: string | undefined,
@@ -123,16 +138,22 @@ export function renderDsl(
     ...options,
     ...(type ? { type: type as SchematexConfig["type"] } : {}),
   };
-  try {
-    const svg = render(dsl, config);
-    return { ok: true, type: type ?? resolveTypeFromText(dsl), svg };
-  } catch (err) {
+  const result = renderResult(dsl, config);
+  if (result.ok) {
     return {
-      ok: false,
+      ok: true,
+      status: result.status,
       type: type ?? resolveTypeFromText(dsl),
-      errors: [extractError(err)],
+      svg: result.svg,
     };
   }
+  return {
+    ok: false,
+    status: result.status,
+    type: type ?? resolveTypeFromText(dsl),
+    svg: result.svg,
+    errors: result.diagnostics.map(toValidationError),
+  };
 }
 
 // ─── helpers ────────────────────────────────────────────────────
@@ -141,4 +162,16 @@ function resolveTypeFromText(text: string): string | null {
   const first = text.trim().split(/\s+|\n/)[0]?.toLowerCase() ?? "";
   const meta = DIAGRAM_REGISTRY.find((d) => d.type === first);
   return meta?.type ?? null;
+}
+
+function toValidationError(
+  diagnostic: SchematexDiagnostic
+): SchematexValidationError {
+  return {
+    line: diagnostic.line,
+    column: diagnostic.column,
+    source: diagnostic.source,
+    message: diagnostic.message,
+    hint: diagnostic.hint,
+  };
 }

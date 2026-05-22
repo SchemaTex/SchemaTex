@@ -1,5 +1,11 @@
 import type { DiagramPlugin, RenderConfig } from "./types";
 import { parseFrontmatter } from "./dsl-preprocess";
+import {
+  diagnosticFromError,
+  renderDiagnosticSvg,
+  type SchematexParseResult,
+  type SchematexRenderResult,
+} from "./diagnostics";
 import { genogram } from "../diagrams/genogram";
 import { ecomap } from "../diagrams/ecomap";
 import { pedigree } from "../diagrams/pedigree";
@@ -70,6 +76,11 @@ export interface SchematexConfig {
   padding?: number;
   theme?: string;
   fontFamily?: string;
+  /**
+   * `strict` preserves the historical throw-on-error API.
+   * `preview` returns a visible diagnostic SVG instead of an empty surface.
+   */
+  mode?: "strict" | "preview";
 }
 
 const plugins: DiagramPlugin[] = [
@@ -166,9 +177,83 @@ export function parse(text: string, config?: SchematexConfig): unknown {
   );
 }
 
+export function parseResult(
+  text: string,
+  config?: SchematexConfig
+): SchematexParseResult {
+  let plugin: DiagramPlugin | undefined;
+  try {
+    const prepared = preprocess(text);
+    plugin = detectPlugin(prepared, config);
+    if (!plugin.parse) {
+      throw new Error(
+        `Diagram type '${plugin.type}' does not yet expose a parse() method.`
+      );
+    }
+    return {
+      ok: true,
+      status: "valid",
+      type: plugin.type,
+      ast: plugin.parse(prepared),
+      diagnostics: [],
+    };
+  } catch (err) {
+    return {
+      ok: false,
+      status: "invalid",
+      type: plugin?.type ?? config?.type ?? null,
+      diagnostics: [diagnosticFromError(err)],
+    };
+  }
+}
+
 export function render(text: string, config?: SchematexConfig): string {
+  if (config?.mode === "preview") return renderResult(text, config).svg;
+
   const prepared = preprocess(text);
   const plugin = detectPlugin(prepared, config);
+  return renderWithPlugin(prepared, plugin, config);
+}
+
+export function renderResult(
+  text: string,
+  config?: SchematexConfig
+): SchematexRenderResult {
+  let plugin: DiagramPlugin | undefined;
+  try {
+    const prepared = preprocess(text);
+    plugin = detectPlugin(prepared, config);
+    return {
+      ok: true,
+      status: "valid",
+      type: plugin.type,
+      svg: renderWithPlugin(prepared, plugin, config),
+      diagnostics: [],
+    };
+  } catch (err) {
+    const type = plugin?.type ?? config?.type ?? null;
+    const diagnostics = [diagnosticFromError(err)];
+    return {
+      ok: false,
+      status: "invalid",
+      type,
+      svg: renderDiagnosticSvg(diagnostics, type, {
+        fontFamily: config?.fontFamily,
+      }),
+      diagnostics,
+    };
+  }
+}
+
+export function renderPreview(text: string, config?: SchematexConfig): string {
+  return renderResult(text, config).svg;
+}
+
+function renderWithPlugin(
+  prepared: string,
+  plugin: DiagramPlugin,
+  config?: SchematexConfig
+): string {
   const renderConfig: RenderConfig = {
     fontFamily: config?.fontFamily ?? "system-ui, -apple-system, sans-serif",
     fontSize: 12,

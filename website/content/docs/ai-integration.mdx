@@ -36,13 +36,32 @@ Curated real-world DSL examples with scenario notes. Use as few-shot context bef
 Parse-only check. Returns `{ ok: true }` or `{ ok: false, errors: [{line, column, message, source}] }`. **Always call before returning DSL to the user** — agents that self-correct with this loop are dramatically more reliable.
 
 ### `renderDsl({ type?, dsl, theme?, padding? })`
-Render DSL to an SVG string. Returns `{ ok: true, svg }` or `{ ok: false, errors }`.
+Render DSL to an SVG string. Success returns `{ ok: true, status, svg }`.
+Failure returns `{ ok: false, status: 'invalid', svg, errors }`, where `svg` is
+a visible diagnostic fallback instead of an empty preview.
 
 <Callout type="info" title="Do you actually need this tool?">
 **If your app already renders diagrams** (you're using the `schematex` package directly), skip `renderDsl` — have the agent return the validated DSL and render it yourself. Calling the tool just adds an unnecessary round-trip.
 
 **Use `renderDsl` only when** you need the SVG returned inside the conversation itself: Claude Desktop, ChatGPT, Cursor, or any pure chat client that has no rendering pipeline of its own.
 </Callout>
+
+For an in-app AI preview, render the returned DSL with `renderResult()` or
+`renderPreview()`:
+
+```ts
+import { renderResult } from 'schematex';
+
+const result = renderResult(dsl, { type });
+preview.innerHTML = result.svg;
+
+if (!result.ok) {
+  queueRepair(result.diagnostics);
+}
+```
+
+The preview can stay visible while your app still treats `ok: false` as an
+invalid user result for repair, retry, telemetry, or billing policy.
 
 ---
 
@@ -163,7 +182,9 @@ You generate Schematex DSL for diagrams. Always follow this procedure:
 ```ts
 {
   ok: false,
+  status: 'invalid',     // renderDsl only
   type: 'genogram' | null,
+  svg: string,           // renderDsl only: visible diagnostic fallback
   errors: [
     {
       line?: number;        // 1-based, if the parser reported it
@@ -176,7 +197,9 @@ You generate Schematex DSL for diagrams. Always follow this procedure:
 }
 ```
 
-Not all 20 parsers emit line info yet (genogram, pedigree, ecomap, venn, sld, fishbone do today; others return message-only). The shape is stable — `line` is optional.
+Not all parsers emit line info yet (genogram, pedigree, ecomap, venn, sld,
+fishbone do today; others return message-only). The shape is stable — `line` is
+optional.
 
 ---
 

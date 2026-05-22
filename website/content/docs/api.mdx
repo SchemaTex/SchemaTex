@@ -1,27 +1,105 @@
 ---
 title: API reference
-description: Schematex JavaScript/TypeScript API — render() and parse() functions, SchematexConfig options, tree-shakable per-diagram imports.
+description: Schematex JavaScript/TypeScript API — strict render/parse calls, preview-safe result APIs, config options, and tree-shakable imports.
 ---
 
 ## `render(text, config?)`
 
-Renders a DSL string into an SVG string. Dispatches by first keyword.
+Renders a DSL string into an SVG string. Dispatches by first keyword and throws
+when detection, parsing, layout, or rendering fails.
 
 ```ts
 import { render } from 'schematex';
 
-const svg: string = render(text, { theme: 'light' });
+const svg: string = render(text, { theme: 'monochrome' });
 ```
+
+Use the strict API when invalid DSL must stop the workflow, for example during a
+test, export job, or server-side validation gate.
 
 ## `parse(text, config?)`
 
-Parses a DSL string into the typed AST without rendering.
+Parses a DSL string into the typed AST without rendering. This API is also
+strict and throws on invalid DSL.
 
 ```ts
 import { parse } from 'schematex';
 
 const ast = parse(text);
 ```
+
+## Preview-safe rendering
+
+Live editors, AI previews, and chat canvases should not turn a parser failure
+into an empty surface. Use `renderPreview()` when you only need an SVG string:
+
+```ts
+import { renderPreview } from 'schematex';
+
+const svg = renderPreview(text, { type: 'circuit' });
+```
+
+`renderPreview()` always returns SVG. If strict rendering fails, that SVG is a
+visible diagnostic fallback. `render(text, { mode: 'preview' })` is the same
+preview boundary for integrations that already call `render()`.
+
+## Result APIs
+
+Use result APIs when the caller needs both a visible output and validity state:
+
+```ts
+import { parseResult, renderResult } from 'schematex';
+
+const renderState = renderResult(text);
+container.innerHTML = renderState.svg;
+
+if (!renderState.ok) {
+  console.error(renderState.diagnostics);
+}
+
+const parseState = parseResult(text);
+```
+
+`renderResult()` returns `svg`, `diagnostics`, `type`, and a `status` of
+`valid`, `partial`, or `invalid`. Invalid render results still carry a
+diagnostic SVG so the preview remains visible.
+
+`parseResult()` returns either an AST or structured diagnostics without
+throwing. The `partial` status is reserved for parsers that can recover a
+partial AST or partial rendered diagram.
+
+Do not treat "an SVG string exists" as proof that the DSL is valid. Preview
+surfaces should show the SVG and use `ok`, `status`, and `diagnostics` for
+retry, repair, telemetry, or billing decisions.
+
+## Browser and React
+
+The browser subpath exposes strict DOM helpers and preview-safe DOM helpers:
+
+```ts
+import {
+  renderToContainer,
+  renderPreviewToContainer,
+} from 'schematex/browser';
+
+renderToContainer(text, exportContainer);          // strict
+renderPreviewToContainer(text, previewContainer);  // visible fallback
+```
+
+The React component already uses the preview-safe result boundary:
+
+```tsx
+import { SchematexDiagram } from 'schematex/react';
+
+<SchematexDiagram
+  dsl={text}
+  type="circuit"
+  onError={(error) => console.error(error)}
+/>;
+```
+
+`onError` fires on strict parser/layout/render failure before the component
+shows the diagnostic fallback SVG.
 
 ## Tree-shakable imports
 
@@ -37,12 +115,16 @@ import { render } from 'schematex/sociogram';
 
 ```ts
 interface SchematexConfig {
-  theme?: 'light' | 'dark';
+  type?: string;              // optional diagram type override
   width?: number;
   height?: number;
-  // per-diagram options
+  padding?: number;
+  theme?: string;             // e.g. 'default' | 'monochrome' | 'dark'
+  fontFamily?: string;
+  mode?: 'strict' | 'preview';
 }
 ```
 
 See [`src/core/types.ts`](https://github.com/victorzhrn/Schematex/blob/main/src/core/types.ts)
+and [`src/core/api.ts`](https://github.com/victorzhrn/Schematex/blob/main/src/core/api.ts)
 for the complete type definitions.

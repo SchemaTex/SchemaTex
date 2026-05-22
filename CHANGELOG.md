@@ -23,6 +23,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.5.2] — 2026-05-22
+
+### Fixed — parser preview resilience
+
+- **Preview surfaces stay visible when strict parsing or rendering fails.** New
+  `renderPreview()`, `renderResult()`, and `parseResult()` APIs return
+  diagnostic results across every registered diagram type instead of forcing
+  AI/editor canvases to collapse into a blank result.
+- **React, browser, and AI integrations use the non-blank preview boundary.**
+  `<SchematexDiagram />`, browser preview helpers, and AI `renderDsl()` now
+  preserve a diagnostic SVG while still reporting invalid DSL through
+  structured diagnostics.
+- **Circuit netlist explicit `type=` now owns pin order.** A component such as
+  `M_X ... type=motor` no longer inherits MOSFET arity from its `M` ID prefix;
+  canonical netlist pin order follows the selected symbol/type.
+- **Docs cover strict versus preview APIs.** The README, reference overview,
+  website API/getting-started/AI integration docs, and MCP README now describe
+  the result and fallback contracts for preview consumers.
+
+---
+
 ## [0.5.0] — 2026-05-19
 
 ### Added — PRISMA 2020 flow diagram engine (`prisma`)

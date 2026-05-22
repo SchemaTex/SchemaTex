@@ -31,6 +31,7 @@ import type {
   CircuitComponentType,
   CircuitNet,
 } from "../../core/types";
+import { getNetlistPinOrder } from "./symbols";
 
 export class NetlistParseError extends Error {
   constructor(message: string, public readonly line?: number) {
@@ -207,7 +208,7 @@ export function parseNetlist(
     if (kv.type) {
       const t = kv.type.toLowerCase();
       cType = (TYPE_ALIASES[t] ?? t) as CircuitComponentType;
-      pinOrder = defaults?.pins ?? ["p1", "p2"];
+      pinOrder = getNetlistPinOrder(cType) ?? defaults?.pins ?? ["start", "end"];
     } else if (defaults) {
       cType = defaults.type;
       pinOrder = defaults.pins;
@@ -239,6 +240,7 @@ export function parseNetlist(
       const first = tail[0].toLowerCase();
       if (TYPE_ALIASES[first]) {
         cType = TYPE_ALIASES[first];
+        pinOrder = getNetlistPinOrder(cType) ?? pinOrder;
       } else if (
         first === "npn" || first === "pnp" ||
         first === "nmos" || first === "pmos" ||
@@ -247,9 +249,7 @@ export function parseNetlist(
         first === "photodiode"
       ) {
         cType = first as CircuitComponentType;
-        // Rebuild pinOrder for transistor flips (pnp mirrors npn pin names)
-        if (first === "pnp") pinOrder = ["c", "b", "e"];
-        if (first === "pmos" || first === "jfet_p") pinOrder = ["d", "g", "s"];
+        pinOrder = getNetlistPinOrder(cType) ?? pinOrder;
       } else {
         // Treat as value
         valueFromTail = tail.join(" ");

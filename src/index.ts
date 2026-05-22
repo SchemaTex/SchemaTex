@@ -20,7 +20,20 @@
  * ```
  */
 
-export { render, parse, type SchematexConfig } from "./core/api";
+export {
+  render,
+  renderPreview,
+  renderResult,
+  parse,
+  parseResult,
+  type SchematexConfig,
+} from "./core/api";
+export type {
+  SchematexDiagnostic,
+  SchematexParseResult,
+  SchematexRenderResult,
+  SchematexResultStatus,
+} from "./core/diagnostics";
 export { genogram } from "./diagrams/genogram";
 export { ecomap } from "./diagrams/ecomap";
 export { pedigree } from "./diagrams/pedigree";

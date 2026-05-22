@@ -267,6 +267,7 @@ describe("renderDsl", () => {
     expect(result.ok).toBe(false);
     if (!result.ok) {
       expect(result.errors.length).toBeGreaterThan(0);
+      expect(result.svg).toContain("data-schematex-status=\"invalid\"");
     }
   });
 });

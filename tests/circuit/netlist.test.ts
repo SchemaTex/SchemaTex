@@ -20,6 +20,18 @@ N1 a b type=wire`;
     expect(ast.components.find((c) => c.id === "N1")?.componentType).toBe("wire");
   });
 
+  test("explicit motor type uses the motor pins instead of the M-prefix MOSFET pins", () => {
+    const dsl = `circuit "CNC motors" netlist
+M_X drv_x_a drv_x_b type=motor label="X axis"`;
+    const ast = parseCircuit(dsl);
+
+    expect(ast.components.find((c) => c.id === "M_X")?.componentType).toBe("motor");
+    expect(ast.pinMap?.M_X).toEqual({
+      start: "drv_x_a",
+      end: "drv_x_b",
+    });
+  });
+
   // ─── Ground aliases (Case D) ─────────────────────────────────
   describe("ground aliases", () => {
     test("AGND/DGND/EARTH/PE/VSS/COM net names canonicalize to GND", () => {

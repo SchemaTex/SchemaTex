@@ -12,7 +12,11 @@
  * ```
  */
 
-import { render, type SchematexConfig } from "./core/api";
+import {
+  render,
+  renderPreview,
+  type SchematexConfig,
+} from "./core/api";
 
 /**
  * Render DSL text to a live `SVGSVGElement` ready to insert into the DOM.
@@ -21,7 +25,22 @@ export function renderToElement(
   text: string,
   config?: SchematexConfig
 ): SVGSVGElement {
-  const svgString = render(text, config);
+  return svgStringToElement(render(text, config));
+}
+
+/**
+ * Render a live SVG element for an editing/AI-preview surface.
+ *
+ * Invalid DSL is represented as a diagnostic SVG instead of an empty surface.
+ */
+export function renderPreviewToElement(
+  text: string,
+  config?: SchematexConfig
+): SVGSVGElement {
+  return svgStringToElement(renderPreview(text, config));
+}
+
+function svgStringToElement(svgString: string): SVGSVGElement {
   const parser = new DOMParser();
   const doc = parser.parseFromString(svgString, "image/svg+xml");
   const el = doc.documentElement;
@@ -43,4 +62,18 @@ export function renderToContainer(
   container.innerHTML = render(text, config);
 }
 
-export { render, type SchematexConfig } from "./core/api";
+/** Replace a preview container with an SVG or a visible diagnostic fallback. */
+export function renderPreviewToContainer(
+  text: string,
+  container: Element,
+  config?: SchematexConfig
+): void {
+  container.innerHTML = renderPreview(text, config);
+}
+
+export {
+  render,
+  renderPreview,
+  renderResult,
+  type SchematexConfig,
+} from "./core/api";

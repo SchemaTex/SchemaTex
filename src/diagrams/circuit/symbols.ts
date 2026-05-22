@@ -22,6 +22,8 @@ export interface SymbolDef {
   length: number;
   /** Anchor map in rightward orientation. MUST include start + end. */
   anchors: Record<string, PinAnchor>;
+  /** Canonical netlist pin order; falls back to start/end for two-terminal symbols. */
+  netlistPins?: string[];
   /** SVG fragment drawn from (0,0); caller wraps in <g transform="translate()+rotate()">. */
   svg: (label?: string, value?: string, attrs?: Record<string, string>) => string;
 }
@@ -105,6 +107,7 @@ const crystal: SymbolDef = {
 
 const transformer: SymbolDef = {
   length: 60,
+  netlistPins: ["p1", "p2", "s1", "s2"],
   anchors: {
     start: { x: 0, y: 0 },
     end: { x: 60, y: 0 },
@@ -131,6 +134,7 @@ const transformer: SymbolDef = {
 
 const voltage_source: SymbolDef = {
   length: 40,
+  netlistPins: ["plus", "minus"],
   // plus/minus aliases: end = +, start = − (matches on-symbol label)
   anchors: {
     start: { x: 0, y: 0 },
@@ -150,6 +154,7 @@ const voltage_source: SymbolDef = {
 
 const current_source: SymbolDef = {
   length: 40,
+  netlistPins: ["plus", "minus"],
   anchors: {
     start: { x: 0, y: 0 },
     end: { x: 40, y: 0 },
@@ -168,6 +173,7 @@ const current_source: SymbolDef = {
 
 const ac_source: SymbolDef = {
   length: 40,
+  netlistPins: ["plus", "minus"],
   anchors: {
     start: { x: 0, y: 0 },
     end: { x: 40, y: 0 },
@@ -185,6 +191,7 @@ const ac_source: SymbolDef = {
 
 const battery: SymbolDef = {
   length: 24,
+  netlistPins: ["plus", "minus"],
   anchors: {
     start: { x: 0, y: 0 },
     end: { x: 24, y: 0 },
@@ -307,6 +314,7 @@ const photodiode: SymbolDef = {
 
 const npn: SymbolDef = {
   length: 40,
+  netlistPins: ["c", "b", "e"],
   // base at left, collector up-right, emitter down-right
   anchors: {
     start: { x: 0, y: 0 },
@@ -334,6 +342,7 @@ const npn: SymbolDef = {
 
 const pnp: SymbolDef = {
   length: 40,
+  netlistPins: ["c", "b", "e"],
   anchors: {
     start: { x: 0, y: 0 },
     end: { x: 40, y: -16 },
@@ -362,6 +371,7 @@ const pnp: SymbolDef = {
 
 const nmos: SymbolDef = {
   length: 40,
+  netlistPins: ["d", "g", "s"],
   anchors: {
     start: { x: 0, y: 0 },
     end: { x: 40, y: -16 },
@@ -389,6 +399,7 @@ const nmos: SymbolDef = {
 
 const pmos: SymbolDef = {
   length: 40,
+  netlistPins: ["d", "g", "s"],
   anchors: {
     start: { x: 0, y: 0 },
     end: { x: 40, y: -16 },
@@ -416,12 +427,16 @@ const pmos: SymbolDef = {
 
 const jfet_n: SymbolDef = {
   length: 40,
+  netlistPins: ["d", "g", "s"],
   anchors: {
     start: { x: 0, y: 0 },
     end: { x: 40, y: -16 },
     gate: { x: 0, y: 0 },
     drain: { x: 40, y: -16 },
     source: { x: 40, y: 16 },
+    g: { x: 0, y: 0 },
+    d: { x: 40, y: -16 },
+    s: { x: 40, y: 16 },
   },
   svg: () =>
     [
@@ -437,12 +452,16 @@ const jfet_n: SymbolDef = {
 
 const jfet_p: SymbolDef = {
   length: 40,
+  netlistPins: ["d", "g", "s"],
   anchors: {
     start: { x: 0, y: 0 },
     end: { x: 40, y: -16 },
     gate: { x: 0, y: 0 },
     drain: { x: 40, y: -16 },
     source: { x: 40, y: 16 },
+    g: { x: 0, y: 0 },
+    d: { x: 40, y: -16 },
+    s: { x: 40, y: 16 },
   },
   svg: () =>
     [
@@ -460,6 +479,7 @@ const jfet_p: SymbolDef = {
 
 const opamp: SymbolDef = {
   length: 50,
+  netlistPins: ["plus", "minus", "out"],
   anchors: {
     start: { x: 0, y: 0 },
     end: { x: 50, y: 0 },
@@ -479,6 +499,7 @@ const opamp: SymbolDef = {
 
 const comparator: SymbolDef = {
   length: 50,
+  netlistPins: ["plus", "minus", "out"],
   anchors: {
     start: { x: 0, y: 0 },
     end: { x: 50, y: 0 },
@@ -675,6 +696,7 @@ const variable_inductor: SymbolDef = {
 
 const switch_spdt: SymbolDef = {
   length: 50,
+  netlistPins: ["common", "nc", "no"],
   anchors: {
     start: { x: 0, y: 0 },
     end: { x: 50, y: 0 },
@@ -783,6 +805,7 @@ function icSymbol(
   const BODY_W = 80;
   return {
     length: BODY_W,
+    netlistPins: [],
     anchors: {
       start: { x: 0, y: 0 },
       end: { x: BODY_W, y: 0 },
@@ -848,6 +871,7 @@ const timer_555: SymbolDef = (() => {
 
 const voltage_regulator: SymbolDef = {
   length: 60,
+  netlistPins: ["in", "gnd", "out"],
   anchors: {
     start: { x: 0, y: 0 },
     end: { x: 60, y: 0 },
@@ -869,6 +893,7 @@ const voltage_regulator: SymbolDef = {
 
 const potentiometer: SymbolDef = {
   length: 50,
+  netlistPins: ["start", "wiper", "end"],
   anchors: {
     start: { x: 0, y: 0 },
     end: { x: 50, y: 0 },
@@ -886,6 +911,7 @@ const potentiometer: SymbolDef = {
 // `pins="..."`; the static `start`/`end` anchors here are placeholders.
 const terminal_block: SymbolDef = {
   length: 80,
+  netlistPins: [],
   anchors: { start: { x: 0, y: 0 }, end: { x: 80, y: 0 } },
   svg: (label?: string, _value?: string, attrs?: Record<string, string>) => {
     const pinsAttr = attrs?.pins ?? attrs?.terminals ?? "1,2,3,4";
@@ -1116,4 +1142,12 @@ export const EXTRA_SYMBOLS: Record<string, SymbolDef> = {
 
 export function getSymbol(t: string): SymbolDef | undefined {
   return SYMBOLS[t as CircuitComponentType] ?? EXTRA_SYMBOLS[t];
+}
+
+export function getNetlistPinOrder(t: string): string[] | undefined {
+  const sym = getSymbol(t);
+  if (!sym) return undefined;
+  if (sym.netlistPins) return [...sym.netlistPins];
+  if (sym.anchors.start && sym.anchors.end) return ["start", "end"];
+  return Object.keys(sym.anchors);
 }

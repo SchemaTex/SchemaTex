@@ -106,8 +106,10 @@ interface DiagramPlugin {
 ```
 
 **API 入口（`src/core/api.ts`）：**
-- `render(text, config?)` → SVG string（自动检测图表类型）
-- `parse(text, config?)` → AST as `unknown`（JSON 序列化 / 自定义渲染）
+- `render(text, config?)` → strict SVG string；解析/布局失败时 throw（自动检测图表类型）
+- `parse(text, config?)` → strict AST as `unknown`（JSON 序列化 / 自定义渲染）
+- `renderPreview(text, config?)` / `render(text, { mode: "preview" })` → 永远返回 SVG；无法渲染时返回可见 diagnostic SVG，避免 preview surface 变空白
+- `renderResult(text, config?)` / `parseResult(text, config?)` → 返回 `valid | partial | invalid` 状态和结构化 diagnostics，供 AI/编辑器集成保留错误而不是只靠 throw
 
 **Subpath exports：**
 - `schematex/browser` — `renderToElement()` + `renderToContainer()`（需要 DOM）

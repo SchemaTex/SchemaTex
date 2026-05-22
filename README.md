@@ -538,16 +538,24 @@ Written by humans, shaped by what LLMs get wrong.
 
 ```ts
 // Universal entry — auto-detects diagram type from first keyword
-import { render, parse } from 'schematex';
+import { render, renderPreview, renderResult, parse, parseResult } from 'schematex';
 
-const svg = render(text, config?);      // → SVG string
-const ast = parse(text, config?);       // → AST (JSON-serializable)
+const svg = render(text, config?);              // strict → SVG string or throw
+const ast = parse(text, config?);               // strict → AST or throw
+const previewSvg = renderPreview(text, config?); // always → SVG, including a visible diagnostic fallback
+const renderState = renderResult(text, config?); // → SVG + diagnostics + valid/partial/invalid status
+const parseState = parseResult(text, config?);   // → AST or diagnostics without throwing
 
 // Per-diagram tree-shaking
 import { render } from 'schematex/genogram';
 
 // Browser DOM
-import { renderToElement, renderToContainer } from 'schematex/browser';
+import {
+  renderToElement,
+  renderToContainer,
+  renderPreviewToElement,
+  renderPreviewToContainer,
+} from 'schematex/browser';
 container.appendChild(renderToElement(dsl));
 
 // React

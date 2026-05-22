@@ -41,7 +41,7 @@ Example Claude Desktop config (`~/Library/Application Support/Claude/claude_desk
 | `getSyntax` | Compact syntax reference (grammar + rules + inline examples) for one diagram type, ~2–4k tokens |
 | `getExamples` | Curated real-world DSL examples with scenario notes |
 | `validateDsl` | Parse-only check; returns structured errors with line numbers |
-| `renderDsl` | Render DSL → SVG |
+| `renderDsl` | Render DSL → SVG; failed renders return errors plus a visible diagnostic SVG |
 
 ## Recommended agent prompt
 
