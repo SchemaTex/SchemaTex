@@ -13,6 +13,7 @@ export {
   validateDsl,
   renderDsl,
   type DiagramListItem,
+  type GetSyntaxOptions,
   type GetSyntaxResult,
   type GetExamplesResult,
   type ValidateDslResult,
@@ -24,7 +25,9 @@ export type {
   DiagramCluster,
 } from "./registry";
 export { DIAGRAM_REGISTRY, getDiagramMeta, getAllDiagramTypes } from "./registry";
+export { resolveDiagramType } from "./registry";
 
 export type { Example, GetExamplesOptions } from "./examples";
-export type { SyntaxDoc } from "./syntax";
+export type { GenerationProfile } from "./profiles";
+export type { SyntaxDetail, SyntaxDoc } from "./syntax";
 export type { SchematexValidationError } from "./errors";

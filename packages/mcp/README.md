@@ -38,14 +38,14 @@ Example Claude Desktop config (`~/Library/Application Support/Claude/claude_desk
 | Tool | What it does |
 |---|---|
 | `listDiagrams` | List every diagram type with tagline / use-when / standard |
-| `getSyntax` | Compact syntax reference (grammar + rules + inline examples) for one diagram type, ~2–4k tokens |
+| `getSyntax` | Canonical generation syntax by default; request `detail: reference` for the fuller grammar/tutorial |
 | `getExamples` | Curated real-world DSL examples with scenario notes |
 | `validateDsl` | Parse-only check; returns structured errors with line numbers |
 | `renderDsl` | Render DSL → SVG; failed renders return errors plus a visible diagnostic SVG |
 
 ## Recommended agent prompt
 
-> You write Schematex DSL. First call `listDiagrams` to pick a type. Then call `getSyntax` and `getExamples` for that type. Write the DSL, then call `validateDsl` and self-correct on any errors before returning the final DSL to the user.
+> You write Schematex DSL. First call `listDiagrams` to pick a type. Then call `getSyntax` and `getExamples` for that type. Prefer canonical syntax unless an advanced feature requires `getSyntax({ detail: "reference" })`. Write the DSL, pass the selected type to `validateDsl`, and self-correct on any errors before returning the final DSL to the user.
 
 ## License
 

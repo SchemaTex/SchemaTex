@@ -42,15 +42,27 @@ export const schematexTools = {
 
   getSyntax: tool({
     description:
-      "Return a compact syntax reference for one diagram type — rules, grammar (EBNF), and inline examples. Trimmed for LLM consumption (~2,000–4,000 tokens). Call after listDiagrams once you've chosen a type.",
+      "Return syntax for one diagram type. Default `detail: canonical` is the compact first-shot generation path: canonical header, preferred forms, rules, and repair checks. Request `detail: reference` only for advanced forms or imported adapters after choosing a type.",
     inputSchema: z.object({
       type: z
         .string()
         .describe(
           "Diagram type id from listDiagrams (e.g. 'genogram', 'sld', 'fishbone')."
         ),
+      detail: z
+        .enum(["canonical", "reference"])
+        .optional()
+        .describe(
+          "Default `canonical` is best for generation. Use `reference` for the fuller grammar/tutorial."
+        ),
     }),
-    execute: async ({ type }: { type: string }) => getSyntaxImpl(type),
+    execute: async ({
+      type,
+      detail,
+    }: {
+      type: string;
+      detail?: "canonical" | "reference";
+    }) => getSyntaxImpl(type, { detail }),
   }),
 
   getExamples: tool({
@@ -92,13 +104,13 @@ export const schematexTools = {
 
   validateDsl: tool({
     description:
-      "Validate Schematex DSL. Returns { ok: true } or { ok: false, errors: [{line, column, message, source}] }. Call before returning DSL to the user and self-correct on errors.",
+      "Validate Schematex DSL. Pass the selected diagram `type` whenever you know it. Returns { ok: true } or { ok: false, errors: [{line, column, message, source, hint}] }. Call before returning DSL and self-correct on errors.",
     inputSchema: z.object({
       type: z
         .string()
         .optional()
         .describe(
-          "Diagram type. Optional — Schematex auto-detects from the first line if omitted."
+          "Selected diagram type. Optional for adapters/autodetect, but explicit canonical types are more robust."
         ),
       dsl: z.string().describe("The DSL source text to validate."),
     }),
@@ -110,7 +122,10 @@ export const schematexTools = {
     description:
       "Render Schematex DSL to an SVG string. Returns { ok: true, svg } or { ok: false, errors }. Use when the caller needs the actual diagram output, not just validation.",
     inputSchema: z.object({
-      type: z.string().optional().describe("Diagram type (auto-detected if omitted)."),
+      type: z
+        .string()
+        .optional()
+        .describe("Selected diagram type. Prefer passing it once chosen."),
       dsl: z.string().describe("The DSL source text to render."),
       theme: z.string().optional().describe("Theme name, e.g. 'default' or 'dark'."),
       padding: z.number().optional().describe("Outer padding in pixels."),

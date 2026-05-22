@@ -5,7 +5,7 @@ import { renderStateDiagram } from "./renderer";
 export const state: DiagramPlugin = {
   type: "state" as DiagramPlugin["type"],
   detect(text) {
-    return /^\s*state\b/i.test(text);
+    return /^\s*(?:state\b|stateDiagram(?:-v2)?\b)/i.test(text);
   },
   parse: parseStateDiagram,
   render(text, config?: RenderConfig) {

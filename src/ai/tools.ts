@@ -13,11 +13,17 @@ import type { SchematexDiagnostic } from "../core/diagnostics";
 import {
   DIAGRAM_REGISTRY,
   getDiagramMeta,
+  resolveDiagramType,
   type DiagramMeta,
 } from "./registry";
 import type { SchematexValidationError } from "./errors";
 import { getExamplesForType, type Example, type GetExamplesOptions } from "./examples";
-import { getSyntaxForType, type SyntaxDoc } from "./syntax";
+import { getGenerationProfile } from "./profiles";
+import {
+  getSyntaxForType,
+  type SyntaxDetail,
+  type SyntaxDoc,
+} from "./syntax";
 
 // ─── listDiagrams ───────────────────────────────────────────────
 
@@ -50,14 +56,22 @@ export interface GetSyntaxResult {
   syntax: SyntaxDoc;
 }
 
-export function getSyntax(type: string): GetSyntaxResult {
+export interface GetSyntaxOptions {
+  /** `canonical` is the compact first-shot generation surface. */
+  detail?: SyntaxDetail;
+}
+
+export function getSyntax(
+  type: string,
+  opts: GetSyntaxOptions = {}
+): GetSyntaxResult {
   const meta = getDiagramMeta(type);
   if (!meta) {
     throw new Error(
       `Unknown diagram type '${type}'. Call listDiagrams() for valid types.`
     );
   }
-  const syntax = getSyntaxForType(meta.syntaxKey);
+  const syntax = getSyntaxForType(meta.syntaxKey, meta.type, opts.detail);
   if (!syntax) {
     throw new Error(`No syntax doc available for '${type}' (key: ${meta.syntaxKey}).`);
   }
@@ -98,17 +112,20 @@ export type ValidateDslResult =
   | { ok: false; type: string | null; errors: SchematexValidationError[] };
 
 export function validateDsl(type: string | undefined, dsl: string): ValidateDslResult {
+  const resolvedType = type ? resolveDiagramType(type) : undefined;
   const config: SchematexConfig | undefined = type
-    ? { type: type as SchematexConfig["type"] }
+    ? { type: (resolvedType ?? type) as SchematexConfig["type"] }
     : undefined;
   const result = parseResult(dsl, config);
   if (result.ok) {
-    return { ok: true, type: type ?? resolveTypeFromText(dsl) };
+    return { ok: true, type: result.type };
   }
   return {
     ok: false,
-    type: type ?? resolveTypeFromText(dsl),
-    errors: result.diagnostics.map(toValidationError),
+    type: result.type ?? resolvedType ?? resolveTypeFromText(dsl),
+    errors: result.diagnostics.map((diagnostic) =>
+      toValidationError(diagnostic, result.type ?? resolvedType)
+    ),
   };
 }
 
@@ -134,25 +151,28 @@ export function renderDsl(
   dsl: string,
   options: Omit<SchematexConfig, "type"> = {}
 ): RenderDslResult {
+  const resolvedType = type ? resolveDiagramType(type) : undefined;
   const config: SchematexConfig = {
     ...options,
-    ...(type ? { type: type as SchematexConfig["type"] } : {}),
+    ...(type ? { type: (resolvedType ?? type) as SchematexConfig["type"] } : {}),
   };
   const result = renderResult(dsl, config);
   if (result.ok) {
     return {
       ok: true,
       status: result.status,
-      type: type ?? resolveTypeFromText(dsl),
+      type: result.type,
       svg: result.svg,
     };
   }
   return {
     ok: false,
     status: result.status,
-    type: type ?? resolveTypeFromText(dsl),
+    type: result.type ?? resolvedType ?? resolveTypeFromText(dsl),
     svg: result.svg,
-    errors: result.diagnostics.map(toValidationError),
+    errors: result.diagnostics.map((diagnostic) =>
+      toValidationError(diagnostic, result.type ?? resolvedType)
+    ),
   };
 }
 
@@ -160,18 +180,30 @@ export function renderDsl(
 
 function resolveTypeFromText(text: string): string | null {
   const first = text.trim().split(/\s+|\n/)[0]?.toLowerCase() ?? "";
-  const meta = DIAGRAM_REGISTRY.find((d) => d.type === first);
-  return meta?.type ?? null;
+  return resolveDiagramType(first) ?? null;
 }
 
 function toValidationError(
-  diagnostic: SchematexDiagnostic
+  diagnostic: SchematexDiagnostic,
+  type?: string | null
 ): SchematexValidationError {
   return {
     line: diagnostic.line,
     column: diagnostic.column,
     source: diagnostic.source,
     message: diagnostic.message,
-    hint: diagnostic.hint,
+    hint: diagnostic.hint ?? repairHint(type),
   };
+}
+
+function repairHint(type?: string | null): string {
+  const resolved = type ? resolveDiagramType(type) : undefined;
+  const profile = resolved ? getGenerationProfile(resolved) : undefined;
+  const typeHint = profile?.repair[0];
+  return [
+    typeHint,
+    "Fix the reported DSL error, then call validateDsl again before rendering or returning DSL.",
+  ]
+    .filter(Boolean)
+    .join(" ");
 }

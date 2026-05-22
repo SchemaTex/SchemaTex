@@ -24,16 +24,16 @@ Every path exposes the same five tools with identical semantics.
 ### `listDiagrams()`
 Returns all 31 diagram types with tagline, "use when" hint, cluster, and authoritative standard. Call first to pick a type.
 
-### `getSyntax({ type })`
-Compact syntax reference for one diagram — rules, grammar (EBNF), and inline examples. Call after picking a type.
+### `getSyntax({ type, detail? })`
+Canonical syntax for one diagram. Call after picking a type.
 
-The returned content is a **trimmed** slice of the public docs page: `## 1. Your first …` through `## N. Grammar (EBNF)`. Decorative sections (`About`, `Standard compliance`, `Related examples`, `Roadmap`) are dropped at build time — they don't help an LLM generate DSL. Expect **~2,100–3,700 tokens** per call (avg ~2,600, max ~3,700 for `circuit`). If you need the full narrative version, link to `https://schematex.js.org/docs/{type}` directly.
+The default `detail: "canonical"` response is designed for first-shot LLM generation: canonical header, preferred mode, core forms, avoid/repair guidance, and shared generation rules. Use `detail: "reference"` only when the request needs an advanced feature or an imported adapter; that returns the trimmed public docs slice from `## 1.` through the grammar section.
 
 ### `getExamples({ type, limit?, preferFeatured?, maxComplexity? })`
 Curated real-world DSL examples with scenario notes. Use as few-shot context before generation.
 
 ### `validateDsl({ type?, dsl })`
-Parse-only check. Returns `{ ok: true }` or `{ ok: false, errors: [{line, column, message, source}] }`. **Always call before returning DSL to the user** — agents that self-correct with this loop are dramatically more reliable.
+Parse-only check. Returns `{ ok: true }` or `{ ok: false, errors: [{line, column, message, source, hint}] }`. Pass the selected canonical `type` once you know it, and **always call before returning DSL to the user** — agents that self-correct with this loop are dramatically more reliable.
 
 ### `renderDsl({ type?, dsl, theme?, padding? })`
 Render DSL to an SVG string. Success returns `{ ok: true, status, svg }`.
@@ -149,7 +149,7 @@ The single biggest reliability win is making the agent validate its own output a
 
 ```
 1. listDiagrams()                          → pick the right type
-2. getSyntax({ type })                     → learn the grammar
+2. getSyntax({ type })                     → get canonical generation syntax
 3. getExamples({ type, maxComplexity: 2 }) → get few-shot context
 4. write DSL
 5. validateDsl({ type, dsl })
@@ -165,7 +165,8 @@ You generate Schematex DSL for diagrams. Always follow this procedure:
 
 1. If you don't already know which diagram type matches the user's request,
    call listDiagrams and pick the best match.
-2. Call getSyntax for the chosen type. Read it carefully.
+2. Call getSyntax for the chosen type. Stay on the canonical path unless an
+   advanced feature requires getSyntax({ type, detail: "reference" }).
 3. Call getExamples (maxComplexity: 2) for few-shot context.
 4. Write the DSL.
 5. Call validateDsl. If ok:false, read the error's line, column, and message,

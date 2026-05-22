@@ -361,8 +361,26 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
   },
 ] as const;
 
+const TYPE_ALIASES: Readonly<Record<string, DiagramType>> = {
+  block: "blockdiagram",
+  "entity-structure": "entity",
+  graph: "flowchart",
+  statediagram: "state",
+  "statediagram-v2": "state",
+  sequencediagram: "sequence",
+};
+
+export function resolveDiagramType(type: string): DiagramType | undefined {
+  const normalized = type.trim().toLowerCase();
+  return (
+    DIAGRAM_REGISTRY.find((d) => d.type === normalized)?.type ??
+    TYPE_ALIASES[normalized]
+  );
+}
+
 export function getDiagramMeta(type: string): DiagramMeta | undefined {
-  return DIAGRAM_REGISTRY.find((d) => d.type === type);
+  const resolved = resolveDiagramType(type);
+  return DIAGRAM_REGISTRY.find((d) => d.type === resolved);
 }
 
 export function getAllDiagramTypes(): DiagramType[] {

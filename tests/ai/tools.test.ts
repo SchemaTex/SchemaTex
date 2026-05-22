@@ -48,6 +48,8 @@ describe("getSyntax", () => {
   it("returns syntax content for genogram", () => {
     const result = getSyntax("genogram");
     expect(result.type).toBe("genogram");
+    expect(result.syntax.detail).toBe("canonical");
+    expect(result.syntax.content).toContain("# Canonical generation syntax");
     expect(result.syntax.content.length).toBeGreaterThan(500);
     // JSX stripped → no <Playground tags
     expect(result.syntax.content).not.toContain("<Playground");
@@ -62,12 +64,22 @@ describe("getSyntax", () => {
     expect(() => getSyntax("nonexistent")).toThrow(/Unknown diagram type/);
   });
 
-  it("every syntax doc is trimmed — starts at '## 1.' and excludes trailing sections", () => {
+  it("canonical syntax stays on the generation profile by default", () => {
+    for (const entry of listDiagrams()) {
+      const { syntax } = getSyntax(entry.type);
+      expect(syntax.detail).toBe("canonical");
+      expect(syntax.content).toContain("## Generation profile");
+      expect(syntax.content).not.toMatch(/^## 1\. /m);
+    }
+  });
+
+  it("reference syntax is trimmed — starts at '## 1.' and excludes trailing sections", () => {
     // The build-time trim drops the `## About …` prelude and the trailing
     // Standard-compliance / Related-examples / Roadmap sections because they
     // don't help an LLM generate DSL. See scripts/build-ai-content.mjs.
     for (const entry of listDiagrams()) {
-      const { syntax } = getSyntax(entry.type);
+      const { syntax } = getSyntax(entry.type, { detail: "reference" });
+      expect(syntax.detail).toBe("reference");
       expect(syntax.content.startsWith("## 1. "), entry.type).toBe(true);
       expect(syntax.content).not.toMatch(/^## \d+\. Standard compliance/m);
       expect(syntax.content).not.toMatch(/^## \d+\. Related examples/m);
@@ -156,6 +168,34 @@ UTIL -> FOO`
   it("auto-detects type from DSL first-line", () => {
     const result = validateDsl(undefined, "genogram\n  alice [female]");
     expect(result.ok).toBe(true);
+    expect(result.type).toBe("genogram");
+  });
+
+  it("normalises aliases for explicit and detected types", () => {
+    const explicit = validateDsl(
+      "entity-structure",
+      `entity-structure "Ownership"
+entity holdco "HoldCo" corp@US`
+    );
+    expect(explicit.ok).toBe(true);
+    expect(explicit.type).toBe("entity");
+
+    const detected = validateDsl(
+      undefined,
+      `stateDiagram-v2
+[*] --> Running
+Running --> [*] : done`
+    );
+    expect(detected.ok).toBe(true);
+    expect(detected.type).toBe("state");
+  });
+
+  it("adds a repair hint when a parser reports only an error message", () => {
+    const result = validateDsl("flowchart", `flowchart BAD\nA --> B`);
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.errors[0].hint).toMatch(/validateDsl again/i);
+    }
   });
 
   // ─── Pass A: parsers backfilled with line/column ────────────────

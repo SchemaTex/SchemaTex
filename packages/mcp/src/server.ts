@@ -43,17 +43,23 @@ export function createSchematexMcpServer(): McpServer {
     {
       title: "Get diagram syntax reference",
       description:
-        "Return a compact syntax reference for one diagram type — rules, grammar (EBNF), and inline examples. Trimmed for LLM consumption (~2,000–4,000 tokens). Call after listDiagrams once you've chosen a type.",
+        "Return syntax for one diagram type. Default `detail: canonical` is the compact first-shot generation path: canonical header, preferred forms, rules, and repair checks. Request `detail: reference` only for advanced forms or imported adapters after choosing a type.",
       inputSchema: {
         type: z
           .string()
           .describe(
             "Diagram type id from listDiagrams (e.g. 'genogram', 'sld', 'fishbone')."
           ),
+        detail: z
+          .enum(["canonical", "reference"])
+          .optional()
+          .describe(
+            "Default `canonical` is best for generation. Use `reference` for the fuller grammar/tutorial."
+          ),
       },
     },
-    async ({ type }) => ({
-      content: [{ type: "text", text: JSON.stringify(getSyntax(type), null, 2) }],
+    async ({ type, detail }) => ({
+      content: [{ type: "text", text: JSON.stringify(getSyntax(type, { detail }), null, 2) }],
     })
   );
 
@@ -104,13 +110,13 @@ export function createSchematexMcpServer(): McpServer {
     {
       title: "Validate Schematex DSL",
       description:
-        "Validate Schematex DSL. Returns { ok: true } or { ok: false, errors: [{line, column, message, source}] }. Call before returning DSL to the user and self-correct on errors.",
+        "Validate Schematex DSL. Pass the selected diagram `type` whenever you know it. Returns { ok: true } or { ok: false, errors: [{line, column, message, source, hint}] }. Call before returning DSL and self-correct on errors.",
       inputSchema: {
         type: z
           .string()
           .optional()
           .describe(
-            "Diagram type. Optional — Schematex auto-detects from the first line if omitted."
+            "Selected diagram type. Optional for adapters/autodetect, but explicit canonical types are more robust."
           ),
         dsl: z.string().describe("The DSL source text to validate."),
       },
@@ -127,7 +133,10 @@ export function createSchematexMcpServer(): McpServer {
       description:
         "Render Schematex DSL to a diagram. Returns a PNG image (the final artifact — display as-is, do not redraw) plus the original SVG as an embedded resource for editing. On error, returns { ok: false, errors } as text.",
       inputSchema: {
-        type: z.string().optional().describe("Diagram type (auto-detected if omitted)."),
+        type: z
+          .string()
+          .optional()
+          .describe("Selected diagram type. Prefer passing it once chosen."),
         dsl: z.string().describe("The DSL source text to render."),
         theme: z.string().optional().describe("Theme name, e.g. 'default'."),
         padding: z.number().optional().describe("Outer padding in pixels."),
