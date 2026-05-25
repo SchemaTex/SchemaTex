@@ -3,6 +3,7 @@ import type {
   SLDNode,
   SLDNodeType,
   SLDConnection,
+  SLDStandard,
 } from "../../core/types";
 import { matchQuotedTitle } from "../../core/quotes";
 import { didYouMean } from "../../core/dsl-suggest";
@@ -161,6 +162,7 @@ export function parseSLDDSL(text: string): SLDAST {
   const lines = joinBrackets(rawLines);
 
   let title: string | undefined;
+  let standard: SLDStandard | undefined;
   const nodes: SLDNode[] = [];
   const nodeMap = new Map<string, SLDNode>();
   const connections: SLDConnection[] = [];
@@ -170,10 +172,27 @@ export function parseSLDDSL(text: string): SLDAST {
     const line = raw.trim();
     if (!line) continue;
 
-    // Header: sld "title"
+    // Header: sld "title" [standard: iec]
     if (/^sld\b/i.test(line)) {
       const t = matchQuotedTitle(line);
       if (t !== undefined) title = t;
+      const bracket = line.match(/\[([^\]]*)\]/);
+      if (bracket) {
+        for (const [k, v] of splitAttrs(bracket[1])) {
+          if (k.toLowerCase() === "standard") {
+            const s = v.trim().toLowerCase();
+            if (s === "ansi" || s === "iec" || s === "abnt" || s === "as-nzs") {
+              standard = s;
+            } else {
+              throw new SLDParseError(
+                `Unknown standard "${v}". Valid: ansi, iec, abnt, as-nzs`,
+                i + 1,
+                line
+              );
+            }
+          }
+        }
+      }
       continue;
     }
 
@@ -252,5 +271,5 @@ export function parseSLDDSL(text: string): SLDAST {
     throw new SLDParseError("SLD diagram has no nodes");
   }
 
-  return { type: "sld", title, nodes, connections };
+  return { type: "sld", title, standard, nodes, connections };
 }

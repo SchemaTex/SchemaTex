@@ -548,6 +548,16 @@ function propsTokens(propsStr: string): string[] {
   return splitProps(propsStr).map((t) => t.trim().toLowerCase());
 }
 
+function unquote(value: string): string {
+  return value.replace(/^["'“「『]|["'”」』]$/g, "").trim();
+}
+
+/** Extract a 4-digit year from an ISO-ish date string (`1940-03-12` → 1940). */
+function yearOf(value: string): number | undefined {
+  const m = value.match(/(\d{4})/);
+  return m ? parseInt(m[1], 10) : undefined;
+}
+
 function splitProps(propsStr: string): string[] {
   const result: string[] = [];
   let current = "";
@@ -624,6 +634,33 @@ function buildIndividual(
       } else if (key === "death") {
         const deathNum = parseInt(value, 10);
         if (!isNaN(deathNum)) individual.deathYear = deathNum;
+      } else if (key === "dob") {
+        const v = unquote(value);
+        individual.dob = v;
+        const yr = yearOf(v);
+        if (yr !== undefined && individual.birthYear === undefined) {
+          individual.birthYear = yr;
+        }
+      } else if (key === "dod") {
+        const v = unquote(value);
+        individual.dod = v;
+        const yr = yearOf(v);
+        if (yr !== undefined && individual.deathYear === undefined) {
+          individual.deathYear = yr;
+        }
+        if (individual.status === "alive") individual.status = "deceased";
+      } else if (key === "note") {
+        individual.note = unquote(value);
+      } else if (key === "birth") {
+        const v = value.trim().toLowerCase();
+        if (v === "out-of-wedlock" || v === "adopted" || v === "legitimate") {
+          individual.birthStatus = v;
+        } else {
+          throw new ParseError(
+            `Invalid birth status '${value}'. Valid: legitimate, out-of-wedlock, adopted`,
+            lineNum, 1, lineText
+          );
+        }
       } else if (key === "label") {
         individual.label = value.replace(/^"|"$/g, "");
       } else if (key === "sibling-of") {
@@ -647,7 +684,7 @@ function buildIndividual(
       }
     } else {
       throw new ParseError(
-        `Unknown property '${token}'. Valid: male, female, unknown, deceased, stillborn, miscarriage, abortion, adopted, foster, guardian, twin-identical, twin-fraternal, index, unknown-siblings, a 4-digit year, conditions:..., age:N, death:YYYY, label:"...", sibling-of:ID, or key:value`,
+        `Unknown property '${token}'. Valid: male, female, unknown, deceased, stillborn, miscarriage, abortion, adopted, foster, guardian, twin-identical, twin-fraternal, index, unknown-siblings, a 4-digit year, conditions:..., age:N, death:YYYY, dob:"YYYY-MM-DD", dod:"YYYY-MM-DD", note:"...", birth:out-of-wedlock|adopted, label:"...", sibling-of:ID, or key:value`,
         lineNum,
         1,
         lineText
@@ -784,6 +821,10 @@ function mergeIndividual(
     label: mergedLabel,
     birthYear: incoming.birthYear ?? existing.birthYear,
     deathYear: incoming.deathYear ?? existing.deathYear,
+    dob: incoming.dob ?? existing.dob,
+    dod: incoming.dod ?? existing.dod,
+    note: incoming.note ?? existing.note,
+    birthStatus: incoming.birthStatus ?? existing.birthStatus,
     age: incoming.age ?? existing.age,
     conditions: incoming.conditions ?? existing.conditions,
     heritage: incoming.heritage ?? existing.heritage,

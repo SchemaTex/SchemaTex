@@ -2,6 +2,7 @@ import type { DiagramPlugin } from "../../core/types";
 import { firstContentLine } from "../../core/dsl-preprocess";
 import { parseSLDDSL } from "./parser";
 import { renderSLD } from "./renderer";
+import { lintSLD } from "./lint";
 
 export const sld: DiagramPlugin = {
   type: "sld",
@@ -10,6 +11,7 @@ export const sld: DiagramPlugin = {
     return first.startsWith("sld");
   },
   parse: parseSLDDSL,
+  lint: lintSLD,
 
   render(text: string, config): string {
     const ast = parseSLDDSL(text);
@@ -17,6 +19,7 @@ export const sld: DiagramPlugin = {
   },
 };
 
+export { lintSLD, lintSLDAst } from "./lint";
 export { parseSLDDSL } from "./parser";
 export { renderSLD } from "./renderer";
 export { layoutSLD } from "./layout";

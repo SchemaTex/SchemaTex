@@ -24,6 +24,7 @@ import type {
   FlowchartNode,
 } from "../../core/types";
 import { bkXCoords, type BKNode } from "../../core/layered/bk";
+import { ICON_SIZE, ICON_GAP, hasIcon } from "./icons";
 
 // ─── Constants / Defaults ──────────────────────────────────
 
@@ -980,6 +981,12 @@ export function layoutFlowchart(ast: FlowchartAST): FlowchartLayoutResult {
     if (n.shape === "subroutine") {
       // Extra width for the two inner bars
       shapeW = Math.max(shapeW, labelW + 36);
+    }
+    // Icon nodes reserve a band above the label for the glyph. Only icon nodes
+    // are affected — icon-less nodes keep their exact prior dimensions.
+    if (hasIcon(n.icon)) {
+      shapeH += ICON_SIZE + ICON_GAP;
+      shapeW = Math.max(shapeW, ICON_SIZE + 16);
     }
     // In LR, swap so abstract-TB "h" corresponds to flow-direction extent
     // (= user-authored width); output swap restores canonical shape dims.

@@ -47,7 +47,26 @@ function buildCss(t: IT): string {
 .lt-sld-symbol-text { font: 11px sans-serif; fill: ${t.text}; dominant-baseline: middle; }
 .lt-sld-wdg { font: bold 10px sans-serif; fill: ${t.stroke}; dominant-baseline: middle; }
 .lt-sld-bus-label { font: bold 11px sans-serif; fill: ${t.accent}; }
+.lt-sld-standard-badge { font: bold 10px sans-serif; fill: ${t.textMuted}; letter-spacing: 0.3px; }
 `.trim();
+}
+
+/**
+ * Jurisdiction-localised standard badge. ABNT (Brazil) reads in Portuguese;
+ * AS/NZS and IEC use their published designations. ANSI (the default) shows no
+ * badge to keep historical output unchanged.
+ */
+function standardBadge(standard: SLDAST["standard"]): string | undefined {
+  switch (standard) {
+    case "iec":
+      return "Standard: IEC 60617";
+    case "abnt":
+      return "Norma: ABNT NBR 5410 (IEC 60364)";
+    case "as-nzs":
+      return "Standard: AS/NZS 3000 (IEC 60364)";
+    default:
+      return undefined;
+  }
 }
 
 function renderLabels(ln: SLDLayoutNode): string[] {
@@ -186,6 +205,17 @@ export function renderSLD(ast: SLDAST, config?: RenderConfig): string {
     );
   }
 
+  // Standard-compliance badge (top-right), localised for the jurisdiction.
+  const badge = standardBadge(ast.standard);
+  if (badge) {
+    children.push(
+      textEl(
+        { x: width - 14, y: 22, class: "lt-sld-standard-badge", "text-anchor": "end" },
+        badge
+      )
+    );
+  }
+
   const inner: string[] = [];
 
   // Voltage bands (alternating background)
@@ -260,7 +290,8 @@ export function renderSLD(ast: SLDAST, config?: RenderConfig): string {
           ln.nodeType,
           ln.nodeType === "hub"
             ? ln.node.label ?? ln.node.id
-            : (ln.node as SLDNode).deviceNumber
+            : (ln.node as SLDNode).deviceNumber,
+          ast.standard
         ),
       ])
     );

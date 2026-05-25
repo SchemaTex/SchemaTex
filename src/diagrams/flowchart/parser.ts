@@ -644,6 +644,25 @@ export function parseFlowchart(source: string): FlowchartAST {
       continue;
     }
 
+    // ── icon statement: `icon A: server` or `icon A server` ──
+    // A standalone statement (parallel to `class` / `style`) so it never
+    // collides with the `A[label]` shape grammar. Attaches a built-in icon to
+    // the node, rendered above its label.
+    const iconMatch = /^icon\s+(\w[\w-]*)\s*:?\s+([\w-]+)\s*$/.exec(trimmed);
+    if (iconMatch) {
+      const nid = iconMatch[1]!;
+      const iconName = iconMatch[2]!;
+      const existing = nodeMap.get(nid);
+      if (existing) {
+        existing.icon = iconName;
+      } else {
+        const node: FlowchartNode = { id: nid, shape: "rect", label: nid, icon: iconName };
+        nodeMap.set(nid, node);
+        ast.nodes.push(node);
+      }
+      continue;
+    }
+
     // ── class statement: `class A,B className` ───────────────
     const classMatch = /^class\s+([\w,\s]+?)\s+(\w[\w-]*)\s*$/.exec(trimmed);
     if (classMatch) {

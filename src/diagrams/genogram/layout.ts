@@ -384,6 +384,25 @@ interface NodePosition {
 
 const LABEL_HEIGHT = 20;
 const LABEL_GAP = 6;
+const CAPTION_LINE = 13;
+
+/**
+ * Extra vertical space (px) the bottom-label block needs for genealogy
+ * vital-records and note captions, so generations don't collide and bottom
+ * captions aren't clipped. Mirrors the trigger logic in the renderer's
+ * `vitalDatesLine` (full date or birth status → one caption line; note → one
+ * more). Pure year-only / clinical genograms get 0 extra (unchanged layout).
+ */
+function captionExtra(graph: LayoutGraph): number {
+  let maxLines = 0;
+  for (const ind of graph.individuals.values()) {
+    let lines = 0;
+    if (ind.dob || ind.dod || ind.birthStatus) lines++;
+    if (ind.note) lines++;
+    if (lines > maxLines) maxLines = lines;
+  }
+  return maxLines * CAPTION_LINE;
+}
 
 function assignPositions(
   orderedGens: OrderedGeneration[],
@@ -398,7 +417,7 @@ function assignPositions(
   // Family gap = space between separate family units
   const familyGap = nodeWidth + nodeSpacingX * 1.5;
   // Generation Y spacing = node height + label space + vertical gap
-  const genStepY = config.nodeHeight + LABEL_HEIGHT + LABEL_GAP + config.nodeSpacingY;
+  const genStepY = config.nodeHeight + LABEL_HEIGHT + LABEL_GAP + config.nodeSpacingY + captionExtra(graph);
 
   // Pass 1: Initial placement based on generation ordering
   for (const gen of orderedGens) {
@@ -770,7 +789,7 @@ function computeEdges(
 ): LayoutEdge[] {
   const edges: LayoutEdge[] = [];
   const half = config.nodeWidth / 2;
-  const dropY_offset = config.nodeHeight / 2 + LABEL_HEIGHT + LABEL_GAP + config.nodeSpacingY * 0.35;
+  const dropY_offset = config.nodeHeight / 2 + LABEL_HEIGHT + LABEL_GAP + config.nodeSpacingY * 0.35 + captionExtra(graph);
 
   for (const fu of graph.familyUnits) {
     const posA = positions.get(fu.partners[0]);
@@ -952,7 +971,7 @@ function packageResult(
 
   return {
     width: maxX + padding,
-    height: maxY + padding + LABEL_GAP + LABEL_HEIGHT + 10,
+    height: maxY + padding + LABEL_GAP + LABEL_HEIGHT + 10 + captionExtra(graph),
     nodes,
     edges: shiftedEdges,
   };
@@ -960,6 +979,19 @@ function packageResult(
 
 function estimateLabelText(ind: Individual): string {
   const name = ind.label || ind.id;
+  // Genealogy / legal mode: the dates and note live on their own caption lines,
+  // so width is governed by the widest of name / dates / note.
+  if (ind.dob || ind.dod || ind.birthStatus || ind.note) {
+    const candidates = [name];
+    const born = ind.dob ?? (ind.birthYear ? String(ind.birthYear) : undefined);
+    const died = ind.dod ?? (ind.deathYear ? String(ind.deathYear) : undefined);
+    const dateParts: string[] = [];
+    if (born) dateParts.push(`[*] ${born}`);
+    if (died || ind.status === "deceased") dateParts.push(`† ${died ?? ""}`);
+    if (dateParts.length) candidates.push(dateParts.join("  "));
+    if (ind.note) candidates.push(ind.note);
+    return candidates.reduce((a, b) => (b.length > a.length ? b : a), name);
+  }
   if (ind.birthYear && ind.deathYear) return `${name} (${ind.birthYear}–${ind.deathYear})`;
   if (ind.birthYear) return `${name} (b. ${ind.birthYear})`;
   return name;

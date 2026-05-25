@@ -1,4 +1,5 @@
-import type { SLDNodeType } from "../../core/types";
+import type { SLDNodeType, SLDStandard } from "../../core/types";
+import { isIecFamily } from "../../core/types";
 import { el, group, line, path as pathEl, text as textEl } from "../../core/svg";
 
 /**
@@ -454,8 +455,72 @@ function meterSymbol(label: string): string {
   ]);
 }
 
+// ─── IEC 60617 symbol variants ──────────────────────────────
+// Only the devices whose IEC glyph differs recognisably from the IEEE-315
+// (ANSI) form are overridden here. Earth, knife-switch disconnectors, motors,
+// meters, etc. share the same primitive across both standards, so they fall
+// through to the shared renderers below.
+
+/** IEC two-winding transformer: two interlinked circles (vs ANSI coil humps). */
+function transformerSymbolIEC(type: SLDNodeType): string {
+  const pieces: string[] = [
+    el("circle", { cx: 0, cy: -7, r: 11, class: "lt-sld-stroke" }),
+    el("circle", { cx: 0, cy: 7, r: 11, class: "lt-sld-stroke" }),
+    lineEl(0, -24, 0, -18),
+    lineEl(0, 18, 0, 24),
+  ];
+  const { primary, secondary } = windingGlyphs(type);
+  if (primary) pieces.push(textEl({ x: 20, y: -10, class: "lt-sld-wdg", "text-anchor": "start" }, primary));
+  if (secondary) pieces.push(textEl({ x: 20, y: 14, class: "lt-sld-wdg", "text-anchor": "start" }, secondary));
+  return group({}, pieces);
+}
+
+/**
+ * IEC circuit breaker: a contact arm whose fixed contact carries the `×`
+ * breaking-function mark (vs the ANSI contact + quarter-arc).
+ */
+function breakerSymbolIEC(): string {
+  return group({}, [
+    lineEl(0, -18, 0, -10),
+    lineEl(0, 10, 0, 18),
+    // open contact arm pivoting from the bottom terminal
+    line({ x1: -6, y1: 10, x2: 6, y2: -8, class: "lt-sld-stroke-thick" }),
+    // × at the fixed contact
+    line({ x1: -4, y1: -13, x2: 4, y2: -7, class: "lt-sld-stroke" }),
+    line({ x1: 4, y1: -13, x2: -4, y2: -7, class: "lt-sld-stroke" }),
+  ]);
+}
+
+/** IEC fuse: rectangle with a conductor line through the long axis (vs ANSI plain box). */
+function fuseSymbolIEC(): string {
+  return group({}, [
+    el("rect", { x: -5, y: -11, width: 10, height: 22, class: "lt-sld-fill" }),
+    lineEl(0, -11, 0, 11),
+    lineEl(0, -18, 0, -11),
+    lineEl(0, 11, 0, 18),
+  ]);
+}
+
 /** Main entry — render a node symbol at origin. */
-export function renderSymbol(type: SLDNodeType, detail?: string): string {
+export function renderSymbol(
+  type: SLDNodeType,
+  detail?: string,
+  standard?: SLDStandard
+): string {
+  if (isIecFamily(standard)) {
+    switch (type) {
+      case "transformer":
+      case "transformer_dy":
+      case "transformer_yd":
+      case "transformer_yy":
+      case "transformer_dd":
+        return transformerSymbolIEC(type);
+      case "breaker":
+        return breakerSymbolIEC();
+      case "fuse":
+        return fuseSymbolIEC();
+    }
+  }
   switch (type) {
     case "utility": return utilitySymbol();
     case "generator": return generatorSymbol();

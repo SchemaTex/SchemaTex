@@ -146,6 +146,8 @@ function buildStyles(config: RenderConfig): string {
 .schematex-genogram-female .schematex-genogram-shape { fill: ${t.femaleFill}; }
 .schematex-genogram-unknown .schematex-genogram-shape { fill: ${t.unknownFill}; }
 .schematex-genogram-label { font-family: ${config.fontFamily}; font-size: ${config.fontSize}px; text-anchor: middle; fill: ${t.text}; }
+.schematex-genogram-vitals { font-family: ${config.fontFamily}; font-size: ${Math.max(9, config.fontSize - 1)}px; text-anchor: middle; fill: ${t.textMuted}; }
+.schematex-genogram-note { font-family: ${config.fontFamily}; font-size: ${Math.max(9, config.fontSize - 1)}px; font-style: italic; text-anchor: middle; fill: ${t.textMuted}; }
 .schematex-genogram-edge { stroke: ${t.neutral}; stroke-width: ${STROKE_WIDTH.normal}; fill: none; stroke-linecap: round; stroke-linejoin: round; }
 .schematex-genogram-edge-cohabiting path { stroke-dasharray: 6,4; }
 .schematex-genogram-edge-cohabiting-ended path { stroke-dasharray: 6,4; }
@@ -509,18 +511,28 @@ function renderLabels(
   config: RenderConfig
 ): string {
   const labels: string[] = [];
+  const captionStep = config.fontSize + 1;
 
   for (const node of nodes) {
     const ind = node.individual;
     const label = ind.label || ind.id;
     const cx = node.x + node.width / 2;
     const labelY = node.y + node.height + 6 + config.fontSize;
+    const nameText = label.charAt(0).toUpperCase() + label.slice(1);
 
-    let labelText = label.charAt(0).toUpperCase() + label.slice(1);
-    if (ind.birthYear && ind.deathYear) {
-      labelText += ` (${ind.birthYear}–${ind.deathYear})`;
-    } else if (ind.birthYear) {
-      labelText += ` (b. ${ind.birthYear})`;
+    const datesLine = vitalDatesLine(ind);
+    const usesGenealogy = datesLine !== null || !!ind.note;
+
+    // Clinical (McGoldrick) mode keeps the inline `(b. year)` suffix; genealogy
+    // / legal family-tree mode lifts dates onto their own `* … † …` caption line
+    // so they're visibly rendered under the symbol (Arboré-style vital records).
+    let nameLabel = nameText;
+    if (!usesGenealogy) {
+      if (ind.birthYear && ind.deathYear) {
+        nameLabel += ` (${ind.birthYear}–${ind.deathYear})`;
+      } else if (ind.birthYear) {
+        nameLabel += ` (b. ${ind.birthYear})`;
+      }
     }
 
     labels.push(
@@ -531,10 +543,80 @@ function renderLabels(
           class: "schematex-genogram-label",
           "data-individual-id": ind.id,
         },
-        labelText
+        nameLabel
       )
     );
+
+    let lineY = labelY;
+    if (datesLine !== null) {
+      lineY += captionStep;
+      labels.push(
+        text(
+          {
+            x: cx,
+            y: lineY,
+            class: "schematex-genogram-vitals",
+            "data-individual-id": ind.id,
+          },
+          datesLine
+        )
+      );
+    }
+    if (ind.note) {
+      lineY += captionStep;
+      labels.push(
+        text(
+          {
+            x: cx,
+            y: lineY,
+            class: "schematex-genogram-note",
+            "data-individual-id": ind.id,
+          },
+          ind.note
+        )
+      );
+    }
   }
 
   return group({ class: "schematex-genogram-labels" }, labels);
+}
+
+/**
+ * Build the genealogy vital-records caption line, e.g. `* 1940-03-12 † 2018-11-04`.
+ * Returns null when no full date / birth-status / death info applies (clinical
+ * mode keeps the inline year suffix instead). The born glyph encodes German
+ * Ahnentafel birth status: legitimate `*`, out-of-wedlock `(*)`, adopted `[*]`.
+ */
+function vitalDatesLine(ind: {
+  dob?: string;
+  dod?: string;
+  birthYear?: number;
+  deathYear?: number;
+  status?: string;
+  birthStatus?: "legitimate" | "out-of-wedlock" | "adopted";
+}): string | null {
+  const bornText = ind.dob ?? (ind.birthYear ? String(ind.birthYear) : undefined);
+  const diedText = ind.dod ?? (ind.deathYear ? String(ind.deathYear) : undefined);
+  const isDeceased = ind.status === "deceased" || diedText !== undefined;
+
+  // Switch to the dedicated `* … † …` caption only when a year suffix can't
+  // express it: a full ISO date or a legal birth status. Pure year-only
+  // (clinical McGoldrick) individuals keep the inline `(1930–1990)` suffix so
+  // existing genograms render unchanged.
+  const hasFullDate = !!ind.dob || !!ind.dod;
+  if (!hasFullDate && !ind.birthStatus) return null;
+
+  const bornGlyph =
+    ind.birthStatus === "adopted"
+      ? "[*]"
+      : ind.birthStatus === "out-of-wedlock"
+      ? "(*)"
+      : "*";
+
+  const parts: string[] = [];
+  if (bornText) parts.push(`${bornGlyph} ${bornText}`);
+  else if (ind.birthStatus) parts.push(bornGlyph);
+  if (isDeceased) parts.push(diedText ? `† ${diedText}` : "†");
+
+  return parts.length > 0 ? parts.join("  ") : null;
 }

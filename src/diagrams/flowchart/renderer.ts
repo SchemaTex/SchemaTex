@@ -32,6 +32,7 @@ import {
 import { parseFlowchart } from "./parser";
 import { layoutFlowchart, FC_CONST } from "./layout";
 import { shapeSVG } from "./shapes";
+import { renderIcon, hasIcon, ICON_SIZE, ICON_GAP } from "./icons";
 import { resolveFlowchartTheme, type ThemeName } from "../../core/theme";
 
 const CSS_TEMPLATE = (themeName: ThemeName): string => {
@@ -44,6 +45,8 @@ const CSS_TEMPLATE = (themeName: ThemeName): string => {
 .sx-fc-node-diamond { fill: ${t.diamondFill}; stroke: ${t.stroke}; }
 .sx-fc-node-round { fill: ${t.roundFill}; stroke: ${t.stroke}; }
 .sx-fc-node-text { fill: ${t.text}; font: 12px system-ui, -apple-system, "Segoe UI", sans-serif; }
+.sx-fc-icon { stroke: ${t.text}; fill: none; }
+.sx-fc-icon-fill { fill: ${t.text}; stroke: none; }
 /* Semantic class presets (applied via 'class A start') — override shape fills */
 .sx-fc-class-start    > .sx-fc-node { fill: ${c.start.fill}; stroke: ${c.start.stroke}; }
 .sx-fc-class-start    > .sx-fc-node-text { fill: ${c.start.text}; font-weight: 600; }
@@ -126,10 +129,22 @@ function renderCluster(lc: FlowchartLayoutCluster): string {
 function renderNode(ln: FlowchartLayoutNode): string {
   const n: FlowchartNode = ln.node;
   const shapeEl = shapeSVG(n.shape, ln.width, ln.height);
+
+  // Icon nodes: glyph sits in a reserved band at the top, label centred in the
+  // remaining area below. Icon-less nodes keep the label vertically centred.
+  const iconBand = hasIcon(n.icon) ? ICON_SIZE + ICON_GAP : 0;
+  let iconEl = "";
+  if (iconBand > 0) {
+    iconEl = group(
+      { transform: `translate(${fmt(ln.width / 2)} ${fmt(8 + ICON_SIZE / 2)})` },
+      [renderIcon(n.icon!)]
+    );
+  }
+  const labelCy = iconBand > 0 ? iconBand + (ln.height - iconBand) / 2 : ln.height / 2;
   const label = multilineText(
     {
       x: ln.width / 2,
-      y: ln.height / 2,
+      y: labelCy,
       class: "sx-fc-node-text",
       "text-anchor": "middle",
       "dominant-baseline": "central",
@@ -150,7 +165,7 @@ function renderNode(ln: FlowchartLayoutNode): string {
       class: classAttr,
       transform: `translate(${fmt(ln.x)} ${fmt(ln.y)})`,
     },
-    [shapeEl, label, nodeTitle]
+    [shapeEl, iconEl, label, nodeTitle].filter((sEl) => sEl.length > 0)
   );
 }
 
