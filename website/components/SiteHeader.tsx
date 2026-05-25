@@ -10,7 +10,9 @@ import { GithubStarButton } from '@/components/GithubStarButton';
 const NAV_LINKS = [
   { label: 'Docs', href: '/docs' },
   { label: 'Gallery', href: '/gallery' },
+  { label: 'Icons', href: '/icons' },
   { label: 'Playground', href: '/playground' },
+  { label: 'Changelog', href: '/changelog' },
 ];
 
 export function SiteHeader({ version, stars }: { version?: string; stars?: number }) {

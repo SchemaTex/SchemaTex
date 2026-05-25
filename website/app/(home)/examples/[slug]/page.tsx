@@ -4,6 +4,7 @@ import { Playground } from '@/components/Playground';
 import { CopyButton } from '@/components/CopyButton';
 import { allExamples, getExample } from '@/lib/examples-source';
 import { getMDXComponents } from '@/mdx-components';
+import { resolveDiagramType, getDiagramSince } from 'schematex/ai';
 
 export function generateStaticParams() {
   return allExamples.map((e) => ({ slug: e.slug }));
@@ -63,6 +64,8 @@ export default async function ExampleDetailPage({
   if (!ex) notFound();
 
   const MDX = ex.body;
+  const diagramType = resolveDiagramType(ex.diagram);
+  const since = diagramType ? getDiagramSince(diagramType) : null;
   const url = `https://schematex.js.org/examples/${slug}`;
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -108,6 +111,12 @@ export default async function ExampleDetailPage({
           <span>{ex.industry.join(', ')}</span>
           <span className="opacity-40">·</span>
           <span>complexity {ex.complexity}/3</span>
+          {since && (
+            <>
+              <span className="opacity-40">·</span>
+              <span className="font-mono normal-case">since v{since}</span>
+            </>
+          )}
         </div>
         <h1 className="text-balance text-3xl font-semibold tracking-tight text-fd-foreground md:text-4xl">
           {ex.title}
