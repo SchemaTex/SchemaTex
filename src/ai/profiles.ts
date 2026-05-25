@@ -325,6 +325,31 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
     avoid: ["Avoid Mermaid `sequenceDiagram` header; this parser uses `sequence`."],
     repair: ["Unmatched `end`, `else`, or activation statements are validation failures."],
   },
+  petri: {
+    type: "petri",
+    header: 'petri "Title"',
+    mode: "declared places + transitions + arcs",
+    forms: [
+      "place P1 *1",
+      "transition T1",
+      "P1 -> T1",
+      "T1 -> P2",
+      "P3 -> T2 weight: 2",
+    ],
+    prefer: [
+      "Declare every place and transition before any arc references it.",
+      "Use `*n` or `tokens: n` for the initial marking and `weight: n` for arc multiplicity > 1.",
+      "Keep arcs bipartite: every arc goes place→transition or transition→place.",
+    ],
+    avoid: [
+      "Avoid place→place or transition→transition arcs.",
+      "Avoid `-o`/`=>` arcs from a transition; inhibitor and reset arcs are place→transition only.",
+    ],
+    repair: [
+      "An 'unknown node' error means an arc references an undeclared place/transition — declare it first.",
+      "Set the initial marking so the transitions you intend to be enabled actually have enough input tokens.",
+    ],
+  },
 };
 
 export function getGenerationProfile(

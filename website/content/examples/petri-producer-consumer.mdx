@@ -1,0 +1,39 @@
+---
+title: Producer / consumer with a bounded buffer
+description: The bounded-buffer producer/consumer pattern as a Petri net — complementary free/used slot places enforce the buffer size, a timed withdraw transition models the consumer's rate, and place capacity caps the buffer at three slots. Tokens flowing through free→used→free show backpressure as a structural property.
+diagram: petri
+standard: Murata 1989 + Marsan 1995 (GSPN timed transitions)
+industry: [industrial, business]
+persona: For the backend engineer
+complexity: 3
+tags: [petri, concurrency, producer-consumer, bounded-buffer, queueing]
+featured: false
+relatedLink:
+  label: Petri net syntax
+  href: /docs/petri
+status: published
+dsl: |
+  petri "Producer / Consumer (bounded buffer)"
+    place pReady *1 "producer ready"
+    place free *3 "free slots"
+    place used capacity: 3 "used slots"
+    place cReady *1 "consumer ready"
+    transition produce "deposit"
+    transition consume timed rate: 0.8 "withdraw"
+    pReady -> produce
+    free -> produce
+    produce -> used
+    produce -> pReady
+    used -> consume
+    cReady -> consume
+    consume -> free
+    consume -> cReady
+---
+
+A bounded buffer is where queueing theory meets concurrency, and the Petri net version makes the backpressure mechanism explicit instead of hiding it in a counter variable.
+
+**Free and used slots are complementary places.** The `free` place starts with three tokens (three empty slots); `used` starts empty and is capped at `capacity: 3` (the dashed border). Every `produce` firing moves one token free→used; every `consume` firing moves one back used→free. Their sum is invariant — the buffer can never hold more than three items, and that bound is a structural property of the net, not a runtime check.
+
+**A timed consumer.** `consume` is a `timed` transition with a rate (λ = 0.8), rendered as a hollow box — the [GSPN](https://en.wikipedia.org/wiki/Stochastic_Petri_net) convention for a transition that fires after a stochastic delay. That is how you model a consumer that drains the buffer at a finite rate, the seed of any performance analysis.
+
+**Backpressure for free.** When `free` is empty (buffer full), `produce` loses its input token and is no longer enabled — the producer blocks until the consumer frees a slot. No `if buffer.full` branch; the net's enabling rule *is* the backpressure.

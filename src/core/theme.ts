@@ -582,6 +582,101 @@ export function resolveTimelineTheme(name: string): ResolvedTheme<TimelineTokens
   return { ...BASE_THEMES[themeName], ...TIMELINE_TOKENS[themeName] };
 }
 
+// ─── Petri-net Tokens Per Theme ────────────────────────────
+
+/**
+ * Tokens for Petri nets (place/transition nets). Petri net is a CS/maths
+ * formalism, not an IEC/IEEE compliance drawing — so unlike IndustrialTokens it
+ * gets a tasteful colour theme in `default`. The house rule (see
+ * 34-PETRINET-STANDARD §6): body in neutral strokes; green (`positive`) reserved
+ * for "enabled", red (`negative`) reserved for "inhibitor / dead", blue
+ * (`accent`) only for weight/rate annotations. `monochrome` reproduces the
+ * Murata-1989 textbook look faithfully — colour falls back to shape there.
+ */
+export interface PetriTokens {
+  placeFill: string;
+  placeStroke: string;
+  /** Immediate transition: solid bar — the "ink" colour. */
+  transitionBarFill: string;
+  /** Timed transition: hollow box interior. */
+  transitionBoxFill: string;
+  transitionStroke: string;
+  /** Marking dot colour. */
+  tokenFill: string;
+  /** Enabled (fireable) transition highlight. */
+  enabledStroke: string;
+  enabledFill: string;
+  /** Dead / disabled transition. */
+  deadStroke: string;
+  /** Inhibitor + reset arcs. */
+  inhibitorStroke: string;
+  arcStroke: string;
+  weightLabel: string;
+  /** Coloured-token (CPN) palette. */
+  tokenPalette: readonly string[];
+}
+
+const DEFAULT_PETRI: PetriTokens = {
+  placeFill: "#ffffff",
+  placeStroke: "#334155",
+  transitionBarFill: "#334155",
+  transitionBoxFill: "#ffffff",
+  transitionStroke: "#334155",
+  tokenFill: "#0f172a",
+  enabledStroke: "#059669",
+  enabledFill: "#ecfdf5",
+  deadStroke: "#94a3b8",
+  inhibitorStroke: "#dc2626",
+  arcStroke: "#334155",
+  weightLabel: "#2563eb",
+  tokenPalette: DEFAULT_PALETTE,
+};
+
+// Faithful Murata-1989 textbook: pure black/white. Enabled is shown by a bold
+// ring (not green); inhibitor by its hollow-circle head (not red).
+const MONOCHROME_PETRI: PetriTokens = {
+  placeFill: "#ffffff",
+  placeStroke: "#000000",
+  transitionBarFill: "#000000",
+  transitionBoxFill: "#ffffff",
+  transitionStroke: "#000000",
+  tokenFill: "#000000",
+  enabledStroke: "#000000",
+  enabledFill: "none",
+  deadStroke: "#888888",
+  inhibitorStroke: "#000000",
+  arcStroke: "#000000",
+  weightLabel: "#000000",
+  tokenPalette: MONOCHROME_PALETTE,
+};
+
+const DARK_PETRI: PetriTokens = {
+  placeFill: "#313244",
+  placeStroke: "#cdd6f4",
+  transitionBarFill: "#cdd6f4",
+  transitionBoxFill: "#313244",
+  transitionStroke: "#cdd6f4",
+  tokenFill: "#cdd6f4",
+  enabledStroke: "#a6e3a1",
+  enabledFill: "rgba(166,227,161,0.15)",
+  deadStroke: "#6c7086",
+  inhibitorStroke: "#f38ba8",
+  arcStroke: "#cdd6f4",
+  weightLabel: "#89b4fa",
+  tokenPalette: DARK_PALETTE,
+};
+
+export const PETRI_TOKENS: Record<ThemeName, PetriTokens> = {
+  default: DEFAULT_PETRI,
+  monochrome: MONOCHROME_PETRI,
+  dark: DARK_PETRI,
+};
+
+export function resolvePetriTheme(name: string): ResolvedTheme<PetriTokens> {
+  const themeName = (name in BASE_THEMES ? name : "default") as ThemeName;
+  return { ...BASE_THEMES[themeName], ...PETRI_TOKENS[themeName] };
+}
+
 // ─── Theme Resolution ──────────────────────────────────────
 
 export function resolveBaseTheme(name: string): BaseTheme {

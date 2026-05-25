@@ -63,7 +63,9 @@ export type DiagramType =
   // Project scheduling networks
   | "pert"      // PERT / CPM activity-on-node network (32-PERT-STANDARD)
   // Behavioral UML (sister to §21 state, §29 usecase)
-  | "sequence";  // UML 2.5.1 §17 sequence / interaction diagram (33-SEQUENCE-STANDARD)
+  | "sequence"  // UML 2.5.1 §17 sequence / interaction diagram (33-SEQUENCE-STANDARD)
+  // Concurrency / discrete-event formalism
+  | "petri";    // Petri net (place/transition net) — Murata 1989 / ISO-IEC 15909 (34-PETRINET-STANDARD)
 
 export type GenogramMode = "medical" | "heritage";
 

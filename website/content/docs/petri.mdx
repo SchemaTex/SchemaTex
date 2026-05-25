@@ -1,0 +1,160 @@
+---
+title: Petri Net
+---
+
+## About Petri nets
+
+A **Petri net** is the foundational formalism for modelling concurrency, synchronisation, and resource flow in discrete-event systems — invented by [Carl Adam Petri in 1962](https://en.wikipedia.org/wiki/Petri_net) and used continuously since across computer science, control engineering, manufacturing, and business-process modelling. The notation is small and instantly recognisable: a **place** is a circle, a **transition** is a bar, an arc carries a weight, and the dynamic state of the system is a sprinkle of **tokens** sitting in the places.
+
+What makes Schematex's `petri` engine different from a drag-and-drop shape library is that it **understands the dynamics**. It knows a *marking* (which places hold how many tokens), computes which transitions are *enabled* (every input place has at least the arc weight of tokens — highlighted green), and can *fire* a transition to produce the next marking. The render is downstream of the semantics — the same stance **[pert](/docs/pert)** takes toward scheduling. Distinct from **[state diagrams](/docs/state)** (one active state, not a token distribution), **[sfc](/docs/sfc)** (a restricted safe Petri net for PLCs), and **[bpmn](/docs/bpmn)** (whose token semantics are *defined by reduction to* workflow Petri nets).
+
+<Playground initial={`petri "Classic"
+  place P1 *1
+  place P2
+  place P3 *2
+  place P4 *1
+  transition T1
+  transition T2
+  P1 -> T1
+  T1 -> P2
+  T1 -> P3
+  P2 -> T2
+  P3 -> T2
+  T2 -> P4
+  P4 -> T1`} height={420} />
+
+Under the initial marking, **T1** is enabled (its inputs P1 and P4 each hold a token) so it gets the green ring; **T2** is not (P2 is empty). The `P4 -> T1` feedback arc is routed as a back-edge curve.
+
+---
+
+## 1. Your first net
+
+Every document starts with the `petri` keyword and an optional title, then declares **places** and **transitions** before connecting them with **arcs**:
+
+```
+petri "Minimal"
+  place P1 *1
+  transition T1
+  place P2
+  P1 -> T1
+  T1 -> P2
+```
+
+- `place <id>` — a circle. `*1` sets its initial token count (the marking).
+- `transition <id>` — a bar (an event/action).
+- `<a> -> <b>` — a directed arc. Arcs are **bipartite**: every arc goes place→transition or transition→place, never place→place or transition→transition. If you write one wrong, the engine tells you which line.
+
+Unlike some Schematex diagrams, nodes are **not** auto-declared from arcs — because an undeclared id can't be safely typed as a place or a transition. An arc that references an unknown node is a readable error.
+
+---
+
+## 2. Marking & tokens
+
+The **marking** is how many tokens each place holds. Three equivalent ways to set it:
+
+```
+place P1 *3            # *n shorthand
+place P2 tokens: 3     # explicit
+place P3 •••           # literal dots (1–4)
+```
+
+Or set several at once with a `marking:` line:
+
+```
+marking: P1=3, P3=2
+```
+
+Tokens render as dots (up to 4, laid out in a grid) and as a numeral beyond that. Force one style with `tokens: dots | count | auto` (default `auto`).
+
+---
+
+## 3. Transitions: immediate vs timed
+
+```
+transition fast                 # immediate — a solid bar (the default)
+transition slow timed rate: 0.8 # timed — a hollow box with a rate label λ
+```
+
+Immediate transitions fire in zero time and render as the classic filled bar; **timed** transitions (the [GSPN](https://en.wikipedia.org/wiki/Stochastic_Petri_net) convention) render as a hollow box and carry an optional `rate:` (λ). A transition with a `rate:` is treated as timed automatically. `prio: n` sets a priority, and a `[guard]` is rendered as a label (not evaluated in v0.1).
+
+---
+
+## 4. Arc types
+
+Four arc heads cover the standard concurrency vocabulary:
+
+```
+P -> T              # standard arc (filled arrowhead)
+P -> T weight: 2    # weight > 1 is labelled (weight: n or *n)
+P -o T              # inhibitor — enabled only while the place is empty (hollow-circle head)
+P -- T              # read / test — tests presence without consuming (no head)
+P => T              # reset — empties the place when the transition fires (double head)
+```
+
+Inhibitor and reset arcs are **place→transition only** — the parser rejects the reverse direction.
+
+---
+
+## 5. Capacity
+
+A place can be capped. Firing that would overflow it is disabled, and the place is drawn with a dashed border and a `K=n` label:
+
+```
+place Buffer capacity: 3
+```
+
+---
+
+## 6. The dynamics: enabled & fire
+
+The engine computes the semantics on every render:
+
+- **Enabled** transitions (every input satisfied; inhibitor inputs empty; no output would overflow capacity) get a green ring.
+- **Dead** transitions — those that can never fire from the current marking — are muted.
+- A **`fire:`** line replays a firing sequence and renders the *resulting* marking:
+
+```
+petri
+  place P1 *1
+  transition T1
+  place P2
+  transition T2
+  place P3
+  P1 -> T1
+  T1 -> P2
+  P2 -> T2
+  T2 -> P3
+  fire: T1
+```
+
+After firing `T1`, the token has moved P1 → P2, and now **T2** is the enabled transition. The SVG `<desc>` records the marking, the enabled set, and any detected subclass (state machine / marked graph / workflow net).
+
+---
+
+## 7. Layout & themes
+
+```
+layout: lr     # left-to-right (default)
+layout: tb     # top-to-bottom
+```
+
+Places and transitions land on alternating layers automatically; cycles are detected and their feedback arcs routed as back-edge curves. Three themes:
+
+- **`default`** — house blue-grey, with green reserved for *enabled* and red for *inhibitor*.
+- **`monochrome`** — the faithful Murata-1989 textbook look; enabled shows as a doubled black ring (colour falls back to shape).
+- **`dark`** — Catppuccin Mocha.
+
+CJK labels and `「…」` / `"…"` quotes parse cleanly:
+
+```
+petri "生产流程"
+  place 原料 *2 「原材料」
+  transition 加工
+  place 成品
+  原料 -> 加工 weight: 2
+  加工 -> 成品
+```
+
+---
+
+Full specification: [Petri Net Standard Reference](https://github.com/schematex/schematex/blob/main/docs/reference/34-PETRINET-STANDARD.md).

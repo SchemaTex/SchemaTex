@@ -502,6 +502,41 @@ task G "Launch event"         duration: 2  after: E, F
 
 [PERT / CPM syntax →](https://schematex.dev/docs/pert)
 
+---
+
+### ◉ Petri net — *Murata 1989 / ISO-IEC 15909 place-transition net*
+
+The only text-DSL Petri net tool that **understands the dynamics**, not just the shapes. You declare places (circles holding tokens), transitions (bars), and weighted arcs; the engine validates the bipartite structure, computes which transitions are *enabled* under the marking (highlighted green), and can `fire:` a sequence forward to render any reachable marking. Immediate vs. timed transitions, arc weights, capacity, and inhibitor / read / reset arcs — the recognised concurrency vocabulary.
+
+```
+petri "Mutual Exclusion — two processes, one resource"
+  place idleA *1 "A idle"
+  place idleB *1 "B idle"
+  place mutex *1 "resource"
+  place critA "A critical"
+  place critB "B critical"
+  transition enterA
+  transition exitA
+  transition enterB
+  transition exitB
+  idleA -> enterA
+  mutex -> enterA
+  enterA -> critA
+  critA -> exitA
+  exitA -> idleA
+  exitA -> mutex
+  idleB -> enterB
+  mutex -> enterB
+  enterB -> critB
+  critB -> exitB
+  exitB -> idleB
+  exitB -> mutex
+```
+
+![Mutual Exclusion Petri Net](examples/petri/mutual-exclusion.svg)
+
+[Petri net syntax →](https://schematex.dev/docs/petri)
+
 ## Why SchemaTex?
 
 **Generic flowchart tools can't draw professional diagrams.** Every diagram domain has published standards — symbol conventions, layout rules, labelling grammars — and when you ignore them, domain experts reject the output:

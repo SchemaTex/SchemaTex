@@ -214,6 +214,49 @@ acme_inc -> acme_fund : 60%`,
   diana -.- tom
   leo -.- anna`,
   },
+  {
+    file: 'examples/petri/mutual-exclusion.svg',
+    text: `petri "Mutual Exclusion — two processes, one resource"
+  place idleA *1 "A idle"
+  place idleB *1 "B idle"
+  place mutex *1 "resource"
+  place critA "A critical"
+  place critB "B critical"
+  transition enterA
+  transition exitA
+  transition enterB
+  transition exitB
+  idleA -> enterA
+  mutex -> enterA
+  enterA -> critA
+  critA -> exitA
+  exitA -> idleA
+  exitA -> mutex
+  idleB -> enterB
+  mutex -> enterB
+  enterB -> critB
+  critB -> exitB
+  exitB -> idleB
+  exitB -> mutex`,
+  },
+  {
+    file: 'examples/petri/producer-consumer.svg',
+    text: `petri "Producer / Consumer (bounded buffer)"
+  place pReady *1 "producer ready"
+  place free *3 "free slots"
+  place used capacity: 3 "used slots"
+  place cReady *1 "consumer ready"
+  transition produce "deposit"
+  transition consume timed rate: 0.8 "withdraw"
+  pReady -> produce
+  free -> produce
+  produce -> used
+  produce -> pReady
+  used -> consume
+  cReady -> consume
+  consume -> free
+  consume -> cReady`,
+  },
 ];
 
 for (const { file, text } of examples) {

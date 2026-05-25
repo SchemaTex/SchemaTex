@@ -283,6 +283,17 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
     standard: "OMG UML 2.5.1 §17 (Interactions); see 33-SEQUENCE-STANDARD.md",
     syntaxKey: "sequence",
   },
+  {
+    type: "petri",
+    name: "Petri net",
+    tagline:
+      "Place/transition net that computes the dynamics — enabled transitions and token firing, not just shapes.",
+    useWhen:
+      "Use whenever the user mentions 'Petri net', 'place/transition net', 'token', 'marking', 'concurrency model', 'mutual exclusion', 'producer/consumer', or wants to model concurrent resource flow / synchronisation. Declare `place <id> *<tokens>` (circles holding tokens), `transition <id>` (bars — add `timed rate: <λ>` for a GSPN timed transition), and bipartite arcs: `->` standard, `-o` inhibitor (enabled only while the place is empty), `--` read/test, `=>` reset. Arc weight via `weight: n` or `*n`; place limit via `capacity: n`. The engine validates the bipartite structure, applies a `fire: T1, T2` sequence to the initial marking, and highlights which transitions are *enabled* in the result. `layout: lr|tb`. Distinct from `state` (one active state, not a token distribution), `sfc` (a restricted PLC Petri net), `bpmn` (organisational process), and `flowchart` (single thread, no concurrency or marking).",
+    cluster: "behavior-modeling",
+    standard: "Murata 1989 + ISO/IEC 15909-1 (place/transition net); see 34-PETRINET-STANDARD.md",
+    syntaxKey: "petri",
+  },
   // ── Research / evidence synthesis ────────────────────────────
   {
     type: "prisma",

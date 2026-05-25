@@ -37,6 +37,7 @@ import { prisma } from "../diagrams/prisma";
 import { usecase } from "../diagrams/usecase";
 import { pert } from "../diagrams/pert";
 import { sequence } from "../diagrams/sequence";
+import { petri } from "../diagrams/petri";
 
 export interface SchematexConfig {
   type?:
@@ -115,6 +116,7 @@ const plugins: DiagramPlugin[] = [
   usecase,
   pert,
   sequence,
+  petri,
 ];
 
 function detectPlugin(text: string, config?: SchematexConfig): DiagramPlugin {
@@ -126,7 +128,7 @@ function detectPlugin(text: string, config?: SchematexConfig): DiagramPlugin {
     if (plugin.detect(text)) return plugin;
   }
   throw new Error(
-    "Cannot detect diagram type. Start your text with 'genogram', 'ecomap', 'pedigree', 'phylo', 'sociogram', 'timing', 'logic', 'circuit', 'blockdiagram', 'ladder', 'sld', 'entity-structure', 'fishbone', 'venn', 'flowchart', 'mindmap', 'matrix', 'orgchart', 'state', 'pid', 'erd', 'breadboard', 'bpmn', 'fbd', 'sfc', 'prisma', 'usecase', 'pert', or 'sequence'."
+    "Cannot detect diagram type. Start your text with 'genogram', 'ecomap', 'pedigree', 'phylo', 'sociogram', 'timing', 'logic', 'circuit', 'blockdiagram', 'ladder', 'sld', 'entity-structure', 'fishbone', 'venn', 'flowchart', 'mindmap', 'matrix', 'orgchart', 'state', 'pid', 'erd', 'breadboard', 'bpmn', 'fbd', 'sfc', 'prisma', 'usecase', 'pert', 'sequence', or 'petri'."
   );
 }
 
