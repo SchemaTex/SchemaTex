@@ -582,6 +582,214 @@ export function resolveTimelineTheme(name: string): ResolvedTheme<TimelineTokens
   return { ...BASE_THEMES[themeName], ...TIMELINE_TOKENS[themeName] };
 }
 
+// ─── Petri-net Tokens Per Theme ────────────────────────────
+
+/**
+ * Tokens for Petri nets (place/transition nets). Petri net is a CS/maths
+ * formalism, not an IEC/IEEE compliance drawing — so unlike IndustrialTokens it
+ * gets a tasteful colour theme in `default`. The house rule (see
+ * 34-PETRINET-STANDARD §6): body in neutral strokes; green (`positive`) reserved
+ * for "enabled", red (`negative`) reserved for "inhibitor / dead", blue
+ * (`accent`) only for weight/rate annotations. `monochrome` reproduces the
+ * Murata-1989 textbook look faithfully — colour falls back to shape there.
+ */
+export interface PetriTokens {
+  placeFill: string;
+  placeStroke: string;
+  /** Immediate transition: solid bar — the "ink" colour. */
+  transitionBarFill: string;
+  /** Timed transition: hollow box interior. */
+  transitionBoxFill: string;
+  transitionStroke: string;
+  /** Marking dot colour. */
+  tokenFill: string;
+  /** Enabled (fireable) transition highlight. */
+  enabledStroke: string;
+  enabledFill: string;
+  /** Dead / disabled transition. */
+  deadStroke: string;
+  /** Inhibitor + reset arcs. */
+  inhibitorStroke: string;
+  arcStroke: string;
+  weightLabel: string;
+  /** Coloured-token (CPN) palette. */
+  tokenPalette: readonly string[];
+}
+
+const DEFAULT_PETRI: PetriTokens = {
+  placeFill: "#ffffff",
+  placeStroke: "#334155",
+  transitionBarFill: "#334155",
+  transitionBoxFill: "#ffffff",
+  transitionStroke: "#334155",
+  tokenFill: "#0f172a",
+  enabledStroke: "#059669",
+  enabledFill: "#ecfdf5",
+  deadStroke: "#94a3b8",
+  inhibitorStroke: "#dc2626",
+  arcStroke: "#334155",
+  weightLabel: "#2563eb",
+  tokenPalette: DEFAULT_PALETTE,
+};
+
+// Faithful Murata-1989 textbook: pure black/white. Enabled is shown by a bold
+// ring (not green); inhibitor by its hollow-circle head (not red).
+const MONOCHROME_PETRI: PetriTokens = {
+  placeFill: "#ffffff",
+  placeStroke: "#000000",
+  transitionBarFill: "#000000",
+  transitionBoxFill: "#ffffff",
+  transitionStroke: "#000000",
+  tokenFill: "#000000",
+  enabledStroke: "#000000",
+  enabledFill: "none",
+  deadStroke: "#888888",
+  inhibitorStroke: "#000000",
+  arcStroke: "#000000",
+  weightLabel: "#000000",
+  tokenPalette: MONOCHROME_PALETTE,
+};
+
+const DARK_PETRI: PetriTokens = {
+  placeFill: "#313244",
+  placeStroke: "#cdd6f4",
+  transitionBarFill: "#cdd6f4",
+  transitionBoxFill: "#313244",
+  transitionStroke: "#cdd6f4",
+  tokenFill: "#cdd6f4",
+  enabledStroke: "#a6e3a1",
+  enabledFill: "rgba(166,227,161,0.15)",
+  deadStroke: "#6c7086",
+  inhibitorStroke: "#f38ba8",
+  arcStroke: "#cdd6f4",
+  weightLabel: "#89b4fa",
+  tokenPalette: DARK_PALETTE,
+};
+
+export const PETRI_TOKENS: Record<ThemeName, PetriTokens> = {
+  default: DEFAULT_PETRI,
+  monochrome: MONOCHROME_PETRI,
+  dark: DARK_PETRI,
+};
+
+export function resolvePetriTheme(name: string): ResolvedTheme<PetriTokens> {
+  const themeName = (name in BASE_THEMES ? name : "default") as ThemeName;
+  return { ...BASE_THEMES[themeName], ...PETRI_TOKENS[themeName] };
+}
+
+// ─── Network Tokens Per Theme ──────────────────────────────
+// 35-NETWORK-STANDARD §6. Coloured-house family (not forced-mono industrial):
+// device bodies in "network blue", link type by colour in default / line-style
+// + tag in monochrome, logical overlays dashed-tinted.
+
+export interface NetworkTokens {
+  deviceFill: string;
+  deviceStroke: string;
+  deviceAccent: string;
+  cloudFill: string;
+  cloudStroke: string;
+  label: string;
+  subLabel: string;
+  linkCopper: string;
+  linkFiber: string;
+  linkWireless: string;
+  linkSerial: string;
+  linkPoe: string;
+  linkVpn: string;
+  linkLag: string;
+  linkLabel: string;
+  siteStroke: string;
+  subnetStroke: string;
+  subnetFill: string;
+  zoneStroke: string;
+  vlanPalette: readonly string[];
+  warn: string;
+}
+
+const DEFAULT_NETWORK: NetworkTokens = {
+  deviceFill: "#1d6fb8",
+  deviceStroke: "#0f3a5f",
+  deviceAccent: "#bfe0f7",
+  cloudFill: "#ffffff",
+  cloudStroke: "#334155",
+  label: "#0f172a",
+  subLabel: "#64748b",
+  linkCopper: "#334155",
+  linkFiber: "#ea7a17",
+  linkWireless: "#2563eb",
+  linkSerial: "#7c3aed",
+  linkPoe: "#059669",
+  linkVpn: "#0891b2",
+  linkLag: "#334155",
+  linkLabel: "#475569",
+  siteStroke: "#334155",
+  subnetStroke: "#2563eb",
+  subnetFill: "#eff6ff",
+  zoneStroke: "#dc2626",
+  vlanPalette: DEFAULT_PALETTE,
+  warn: "#d97706",
+};
+
+// Clean line-art for print/audit: meaning rides on line-style + text tag, not colour.
+const MONOCHROME_NETWORK: NetworkTokens = {
+  deviceFill: "#ffffff",
+  deviceStroke: "#000000",
+  deviceAccent: "#000000",
+  cloudFill: "#ffffff",
+  cloudStroke: "#000000",
+  label: "#000000",
+  subLabel: "#444444",
+  linkCopper: "#000000",
+  linkFiber: "#000000",
+  linkWireless: "#000000",
+  linkSerial: "#000000",
+  linkPoe: "#000000",
+  linkVpn: "#000000",
+  linkLag: "#000000",
+  linkLabel: "#222222",
+  siteStroke: "#000000",
+  subnetStroke: "#000000",
+  subnetFill: "none",
+  zoneStroke: "#000000",
+  vlanPalette: MONOCHROME_PALETTE,
+  warn: "#000000",
+};
+
+const DARK_NETWORK: NetworkTokens = {
+  deviceFill: "#89b4fa",
+  deviceStroke: "#1e1e2e",
+  deviceAccent: "#1e1e2e",
+  cloudFill: "#313244",
+  cloudStroke: "#cdd6f4",
+  label: "#cdd6f4",
+  subLabel: "#a6adc8",
+  linkCopper: "#cdd6f4",
+  linkFiber: "#fab387",
+  linkWireless: "#89b4fa",
+  linkSerial: "#cba6f7",
+  linkPoe: "#a6e3a1",
+  linkVpn: "#94e2d5",
+  linkLag: "#cdd6f4",
+  linkLabel: "#a6adc8",
+  siteStroke: "#cdd6f4",
+  subnetStroke: "#89b4fa",
+  subnetFill: "rgba(137,180,250,0.12)",
+  zoneStroke: "#f38ba8",
+  vlanPalette: DARK_PALETTE,
+  warn: "#fab387",
+};
+
+export const NETWORK_TOKENS: Record<ThemeName, NetworkTokens> = {
+  default: DEFAULT_NETWORK,
+  monochrome: MONOCHROME_NETWORK,
+  dark: DARK_NETWORK,
+};
+
+export function resolveNetworkTheme(name: string): ResolvedTheme<NetworkTokens> {
+  const themeName = (name in BASE_THEMES ? name : "default") as ThemeName;
+  return { ...BASE_THEMES[themeName], ...NETWORK_TOKENS[themeName] };
+}
+
 // ─── Theme Resolution ──────────────────────────────────────
 
 export function resolveBaseTheme(name: string): BaseTheme {

@@ -3,6 +3,7 @@ import { parseFrontmatter } from "./dsl-preprocess";
 import {
   diagnosticFromError,
   renderDiagnosticSvg,
+  type SchematexDiagnostic,
   type SchematexParseResult,
   type SchematexRenderResult,
 } from "./diagnostics";
@@ -37,6 +38,8 @@ import { prisma } from "../diagrams/prisma";
 import { usecase } from "../diagrams/usecase";
 import { pert } from "../diagrams/pert";
 import { sequence } from "../diagrams/sequence";
+import { petri } from "../diagrams/petri";
+import { network } from "../diagrams/network";
 
 export interface SchematexConfig {
   type?:
@@ -70,7 +73,9 @@ export interface SchematexConfig {
     | "prisma"
     | "usecase"
     | "pert"
-    | "sequence";
+    | "sequence"
+    | "petri"
+    | "network";
   width?: number;
   height?: number;
   padding?: number;
@@ -115,6 +120,8 @@ const plugins: DiagramPlugin[] = [
   usecase,
   pert,
   sequence,
+  petri,
+  network,
 ];
 
 function detectPlugin(text: string, config?: SchematexConfig): DiagramPlugin {
@@ -126,7 +133,7 @@ function detectPlugin(text: string, config?: SchematexConfig): DiagramPlugin {
     if (plugin.detect(text)) return plugin;
   }
   throw new Error(
-    "Cannot detect diagram type. Start your text with 'genogram', 'ecomap', 'pedigree', 'phylo', 'sociogram', 'timing', 'logic', 'circuit', 'blockdiagram', 'ladder', 'sld', 'entity-structure', 'fishbone', 'venn', 'flowchart', 'mindmap', 'matrix', 'orgchart', 'state', 'pid', 'erd', 'breadboard', 'bpmn', 'fbd', 'sfc', 'prisma', 'usecase', 'pert', or 'sequence'."
+    "Cannot detect diagram type. Start your text with 'genogram', 'ecomap', 'pedigree', 'phylo', 'sociogram', 'timing', 'logic', 'circuit', 'blockdiagram', 'ladder', 'sld', 'entity-structure', 'fishbone', 'venn', 'flowchart', 'mindmap', 'matrix', 'orgchart', 'state', 'pid', 'erd', 'breadboard', 'bpmn', 'fbd', 'sfc', 'prisma', 'usecase', 'pert', 'sequence', 'petri', or 'network'."
   );
 }
 
@@ -190,12 +197,14 @@ export function parseResult(
         `Diagram type '${plugin.type}' does not yet expose a parse() method.`
       );
     }
+    const ast = plugin.parse(prepared);
+    const diagnostics = runLint(plugin, prepared);
     return {
       ok: true,
-      status: "valid",
+      status: diagnostics.length > 0 ? "partial" : "valid",
       type: plugin.type,
-      ast: plugin.parse(prepared),
-      diagnostics: [],
+      ast,
+      diagnostics,
     };
   } catch (err) {
     return {
@@ -204,6 +213,19 @@ export function parseResult(
       type: plugin?.type ?? config?.type ?? null,
       diagnostics: [diagnosticFromError(err)],
     };
+  }
+}
+
+/**
+ * Run a plugin's optional lint pass defensively — a lint hook must never break
+ * parsing/rendering, so any throw is swallowed and treated as "no warnings".
+ */
+function runLint(plugin: DiagramPlugin, prepared: string): SchematexDiagnostic[] {
+  if (!plugin.lint) return [];
+  try {
+    return plugin.lint(prepared);
+  } catch {
+    return [];
   }
 }
 
@@ -223,12 +245,14 @@ export function renderResult(
   try {
     const prepared = preprocess(text);
     plugin = detectPlugin(prepared, config);
+    const svg = renderWithPlugin(prepared, plugin, config);
+    const diagnostics = runLint(plugin, prepared);
     return {
       ok: true,
-      status: "valid",
+      status: diagnostics.length > 0 ? "partial" : "valid",
       type: plugin.type,
-      svg: renderWithPlugin(prepared, plugin, config),
-      diagnostics: [],
+      svg,
+      diagnostics,
     };
   } catch (err) {
     const type = plugin?.type ?? config?.type ?? null;

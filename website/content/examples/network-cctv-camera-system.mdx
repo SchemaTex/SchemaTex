@@ -1,0 +1,63 @@
+---
+title: CCTV camera network topology
+description: IP-video surveillance topology — Internet → perimeter firewall → core switch → PoE switches → dome/PTZ/bullet cameras, with the cameras isolated on their own 192.168.20.0/24 subnet and an NVR for recording.
+diagram: network
+standard: Cisco topology icons + IP/CCTV (ONVIF) conventions
+industry: [security, business]
+persona: For the CCTV / security integrator
+complexity: 3
+tags: [cctv, surveillance, ip-camera, nvr, poe, vlan, subnet]
+featured: true
+relatedLink:
+  label: Network syntax
+  href: /docs/network
+status: published
+dsl: |
+  network "Acme HQ — CCTV"
+    layout: tiered
+    internet net "Internet"
+    firewall fw1 "Perimeter FW" tier: edge
+    l3switch core1 "Core SW" tier: core
+    poeswitch poe1 "PoE Switch A" tier: access
+    poeswitch poe2 "PoE Switch B" tier: access
+    nvr nvr1 "Video Recorder"
+    monitor wall1 "Guard Station"
+    subnet cams "192.168.20.0/24" {
+      camera cam1 "Lobby Dome" type: dome ip: 192.168.20.11
+      camera cam2 "Gate PTZ" type: ptz ip: 192.168.20.12
+      camera cam3 "Dock Bullet" type: bullet ip: 192.168.20.13
+      poe1
+      poe2
+    }
+    net -- fw1 : wan "ISP 1Gbps"
+    fw1 -- core1 : fiber 10G
+    core1 -- poe1 : trunk vlan: 20 1G
+    core1 -- poe2 : trunk vlan: 20 1G
+    core1 -- nvr1 : 1G
+    core1 -- wall1
+    poe1 -- cam1 : poe
+    poe1 -- cam2 : poe
+    poe2 -- cam3 : poe
+---
+
+## Scenario
+
+A security integrator is documenting an IP-CCTV install for hand-off. The cameras need their own isolated subnet (so they can't route to the corporate LAN), Power-over-Ethernet from the access switches, and a single NVR recording everything. The diagram has to be **editable and printable** so it can be reused for the next building.
+
+## What the diagram shows
+
+- **The camera subnet** `192.168.20.0/24` is drawn as a dashed boundary enclosing the three cameras and both PoE switches — the cameras' IPs are validated against the CIDR, so a typo'd address is caught, not silently rendered.
+- **Camera body styles** are real silhouettes: `type: dome`, `type: ptz`, and `type: bullet` each render differently, the way an integrator's drawings distinguish them.
+- **PoE links** (`poe`) are drawn in green with a power tag — these carry both data and power to the cameras.
+- **The uplinks** are a trunk carrying VLAN 20 at 1G; the fiber backbone to the core is orange at 10G; the ISP hand-off is a serial/WAN circuit.
+
+## Annotation key
+
+| Element | Meaning |
+|---|---|
+| Dashed blue box | Logical subnet (label = CIDR) |
+| Green link + PoE | Power-over-Ethernet to a camera |
+| Orange link | Fiber uplink |
+| `Trunk · VLAN 20 · 1G` | 802.1Q trunk carrying VLAN 20 at 1 Gbps |
+
+Swap `layout: tiered` for `layout: tree` to get a pure hierarchy, or add more `subnet` / `vlan` boundaries as the install grows.

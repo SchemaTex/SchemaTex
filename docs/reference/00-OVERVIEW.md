@@ -27,6 +27,8 @@
 | 🧩 **Software / UML** | use case diagram · sequence diagram | OMG UML 2.5.1 §18 — actors, use cases, subject boundary, include/extend/generalization (29-USECASE-STANDARD); UML 2.5.1 §17 — lifelines, messages, activations, all 12 combined fragments + `ref` (33-SEQUENCE-STANDARD) |
 | 📊 **Research / Evidence synthesis** | PRISMA 2020 flow diagram | PRISMA 2020 (Page et al., BMJ 2021) — mandatory four-row Identification → Screening → Eligibility → Included layout with record counts, exclusion side-boxes, single/dual pipeline, scoping-review & IPD overlays (28-PRISMA-STANDARD) |
 | 🗓️ **Project management** | PERT / CPM network | PMI PMBOK 7 + Moder 1983 — activity-on-node (AON/PDM) scheduling network; the engine computes ES/EF/LS/LF, total slack, project duration, and the critical path. FS/SS/FF/SF dependencies with lag/lead, three-point estimation (te + variance), milestones, swimlanes, and a time-scaled layout (32-PERT-STANDARD) |
+| ⚙️ **Concurrency / discrete-event** | Petri net (place/transition) | Murata 1989 + ISO/IEC 15909-1 — bipartite places/transitions, token marking, weighted / inhibitor / read / reset arcs, immediate vs timed transitions; the engine validates the structure, fires a sequence, and computes the enabled-transition set (34-PETRINET-STANDARD) |
+| 🖧 **Network / Infrastructure** | network topology (IT / CCTV) | Cisco-convention icons (redrawn) + hierarchical & spine-leaf models + ANSI/TIA-606 cabling colour + ONVIF CCTV roles — typed device catalog, typed annotated links (copper/fiber/wireless/serial/PoE/VPN/LAG with VLAN/speed/port), site/rack/subnet/VLAN boundaries, 8 layout modes; never drops a device/port/link, validates IP-in-subnet & VLAN range (35-NETWORK-STANDARD) |
 
 **三大价值支柱（value pillars）：**
 

@@ -9,6 +9,10 @@
  *   - Renderer: LayoutResult → SVG string
  */
 
+// Type-only import (erased at runtime — no dependency cycle) for the plugin
+// lint hook's return type.
+import type { SchematexDiagnostic } from "./diagnostics";
+
 // ─── AST Types ───────────────────────────────────────────────
 
 export type DiagramType =
@@ -63,7 +67,11 @@ export type DiagramType =
   // Project scheduling networks
   | "pert"      // PERT / CPM activity-on-node network (32-PERT-STANDARD)
   // Behavioral UML (sister to §21 state, §29 usecase)
-  | "sequence";  // UML 2.5.1 §17 sequence / interaction diagram (33-SEQUENCE-STANDARD)
+  | "sequence"  // UML 2.5.1 §17 sequence / interaction diagram (33-SEQUENCE-STANDARD)
+  // Concurrency / discrete-event formalism
+  | "petri"     // Petri net (place/transition net) — Murata 1989 / ISO-IEC 15909 (34-PETRINET-STANDARD)
+  // Network / infrastructure topology
+  | "network";  // Network topology — Cisco-convention icons + hierarchical/spine-leaf layout (35-NETWORK-STANDARD)
 
 export type GenogramMode = "medical" | "heritage";
 
@@ -193,6 +201,23 @@ export interface Individual {
   status: IndividualStatus;
   birthYear?: number;
   deathYear?: number;
+  /**
+   * Full ISO birth date (`"1940-03-12"`) for genealogy / legal family trees.
+   * Backward-compatible with `birthYear`: when present it takes precedence in
+   * the vital-records caption (`* 1940-03-12`). A bare 4-digit year still fills
+   * `birthYear`.
+   */
+  dob?: string;
+  /** Full ISO death date (`"2018-11-04"`), rendered as `† 2018-11-04`. */
+  dod?: string;
+  /** One-line free-text annotation rendered as a small caption under the symbol. */
+  note?: string;
+  /**
+   * Legal/genealogy birth status (German Ahnentafel convention). Modifies the
+   * born glyph in the vital-records caption: `out-of-wedlock` → `(*)`,
+   * `adopted` → `[*]`. Default (legitimate) keeps the plain `*` born glyph.
+   */
+  birthStatus?: "legitimate" | "out-of-wedlock" | "adopted";
   /** Medical/psychological conditions (genogram) or affected traits (pedigree) */
   conditions?: Condition[];
   /** Genetic status for pedigree charts */
@@ -619,6 +644,13 @@ export interface DiagramPlugin {
   render: (text: string, config?: RenderConfig) => string;
   /** Parse DSL text to the diagram's AST (for JSON export / programmatic access). */
   parse?: (text: string) => unknown;
+  /**
+   * Optional non-fatal validation pass. Runs after a successful parse and
+   * returns domain-level warnings (e.g. an incomplete instrument loop) without
+   * blocking rendering. Surfaced through `parseResult` / `renderResult`
+   * diagnostics. Must not throw — return `[]` when there's nothing to flag.
+   */
+  lint?: (text: string) => SchematexDiagnostic[];
 }
 
 export interface LayoutConfig {
@@ -1102,9 +1134,25 @@ export interface SLDConnection {
   label?: string;
 }
 
+/**
+ * Symbol standard for SLD / circuit glyphs. `ansi` (IEEE 315 / ANSI Y32.2) is
+ * the default and preserves historical rendering. `iec` (IEC 60617) switches to
+ * IEC symbol forms. `abnt` (Brazil, NBR 5410) and `as-nzs` (Australia/NZ,
+ * AS/NZS 3000) are IEC 60364-family presets: they reuse the IEC glyphs and add
+ * their own jurisdiction labelling.
+ */
+export type SLDStandard = "ansi" | "iec" | "abnt" | "as-nzs";
+
+/** True for standards that render with the IEC 60617 glyph set. */
+export function isIecFamily(standard: SLDStandard | undefined): boolean {
+  return standard === "iec" || standard === "abnt" || standard === "as-nzs";
+}
+
 export interface SLDAST {
   type: "sld";
   title?: string;
+  /** Symbol standard (default `ansi`). */
+  standard?: SLDStandard;
   nodes: SLDNode[];
   connections: SLDConnection[];
   metadata?: Record<string, string>;

@@ -214,6 +214,116 @@ acme_inc -> acme_fund : 60%`,
   diana -.- tom
   leo -.- anna`,
   },
+  {
+    file: 'examples/petri/mutual-exclusion.svg',
+    text: `petri "Mutual Exclusion — two processes, one resource"
+  place idleA *1 "A idle"
+  place idleB *1 "B idle"
+  place mutex *1 "resource"
+  place critA "A critical"
+  place critB "B critical"
+  transition enterA
+  transition exitA
+  transition enterB
+  transition exitB
+  idleA -> enterA
+  mutex -> enterA
+  enterA -> critA
+  critA -> exitA
+  exitA -> idleA
+  exitA -> mutex
+  idleB -> enterB
+  mutex -> enterB
+  enterB -> critB
+  critB -> exitB
+  exitB -> idleB
+  exitB -> mutex`,
+  },
+  {
+    file: 'examples/petri/producer-consumer.svg',
+    text: `petri "Producer / Consumer (bounded buffer)"
+  place pReady *1 "producer ready"
+  place free *3 "free slots"
+  place used capacity: 3 "used slots"
+  place cReady *1 "consumer ready"
+  transition produce "deposit"
+  transition consume timed rate: 0.8 "withdraw"
+  pReady -> produce
+  free -> produce
+  produce -> used
+  produce -> pReady
+  used -> consume
+  cReady -> consume
+  consume -> free
+  consume -> cReady`,
+  },
+  {
+    file: 'examples/network/cctv-camera-network.svg',
+    text: `network "Acme HQ — CCTV"
+  layout: tiered
+  internet net "Internet"
+  firewall fw1 "Perimeter FW" tier: edge
+  l3switch core1 "Core SW" tier: core
+  poeswitch poe1 "PoE Switch A" tier: access
+  poeswitch poe2 "PoE Switch B" tier: access
+  nvr nvr1 "Video Recorder"
+  monitor wall1 "Guard Station"
+  subnet cams "192.168.20.0/24" {
+    camera cam1 "Lobby Dome" type: dome ip: 192.168.20.11
+    camera cam2 "Gate PTZ" type: ptz ip: 192.168.20.12
+    camera cam3 "Dock Bullet" type: bullet ip: 192.168.20.13
+    poe1
+    poe2
+  }
+  net -- fw1 : wan "ISP 1Gbps"
+  fw1 -- core1 : fiber 10G
+  core1 -- poe1 : trunk vlan: 20 1G
+  core1 -- poe2 : trunk vlan: 20 1G
+  core1 -- nvr1 : 1G
+  core1 -- wall1
+  poe1 -- cam1 : poe
+  poe1 -- cam2 : poe
+  poe2 -- cam3 : poe`,
+  },
+  {
+    file: 'examples/network/enterprise-campus.svg',
+    text: `network "Driscoll Campus"
+  layout: tiered
+  internet inet
+  cloud wan "WAN"
+  firewall fw1 "Core Firewall" tier: edge
+  router er1 "Edge Rtr 1" tier: edge
+  l3switch cs1 "Core SW 1" tier: core
+  l3switch cs2 "Core SW 2" tier: core
+  switch d1 "Dist A" tier: distribution
+  switch d2 "Dist B" tier: distribution
+  serverfarm farm "Server Farm" count: 4
+  a1 a2 a3 : switch tier: access
+  inet -- fw1
+  wan -- er1 : serial
+  fw1 -- cs1 : 10G
+  er1 -- cs2
+  cs1 == cs2 : lag 40G
+  cs1 -- d1
+  cs2 -- d2
+  cs1 -- farm : trunk vlan: 100
+  d1 -- a1
+  d2 -- a2
+  d2 -- a3`,
+  },
+  {
+    file: 'examples/network/spine-leaf-fabric.svg',
+    text: `network "DC Fabric"
+  layout: spine-leaf
+  spines: sp1 sp2
+  leaves: lf1 lf2 lf3 lf4
+  server h1
+  server h2
+  server h3
+  lf1 -- h1 : 25G
+  lf2 -- h2 : 25G
+  lf4 -- h3 : 25G`,
+  },
 ];
 
 for (const { file, text } of examples) {

@@ -17,7 +17,8 @@ export type DiagramCluster =
   | "knowledge"
   | "behavior-modeling"
   | "research"
-  | "project-management";
+  | "project-management"
+  | "network-infrastructure";
 
 export interface DiagramMeta {
   /** Canonical type id — matches `DiagramType` and plugin keys. */
@@ -282,6 +283,29 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
     cluster: "behavior-modeling",
     standard: "OMG UML 2.5.1 §17 (Interactions); see 33-SEQUENCE-STANDARD.md",
     syntaxKey: "sequence",
+  },
+  {
+    type: "petri",
+    name: "Petri net",
+    tagline:
+      "Place/transition net that computes the dynamics — enabled transitions and token firing, not just shapes.",
+    useWhen:
+      "Use whenever the user mentions 'Petri net', 'place/transition net', 'token', 'marking', 'concurrency model', 'mutual exclusion', 'producer/consumer', or wants to model concurrent resource flow / synchronisation. Declare `place <id> *<tokens>` (circles holding tokens), `transition <id>` (bars — add `timed rate: <λ>` for a GSPN timed transition), and bipartite arcs: `->` standard, `-o` inhibitor (enabled only while the place is empty), `--` read/test, `=>` reset. Arc weight via `weight: n` or `*n`; place limit via `capacity: n`. The engine validates the bipartite structure, applies a `fire: T1, T2` sequence to the initial marking, and highlights which transitions are *enabled* in the result. `layout: lr|tb`. Distinct from `state` (one active state, not a token distribution), `sfc` (a restricted PLC Petri net), `bpmn` (organisational process), and `flowchart` (single thread, no concurrency or marking).",
+    cluster: "behavior-modeling",
+    standard: "Murata 1989 + ISO/IEC 15909-1 (place/transition net); see 34-PETRINET-STANDARD.md",
+    syntaxKey: "petri",
+  },
+  // ── Network / infrastructure ─────────────────────────────────
+  {
+    type: "network",
+    name: "Network topology",
+    tagline:
+      "IT / CCTV network topology with Cisco-convention device icons, typed links, subnets/VLANs, and topology-correct layout.",
+    useWhen:
+      "Use whenever the user mentions 'network diagram', 'network topology', 'infrastructure diagram', a 'cámaras / CCTV / camera network', a LAN/WAN/data-center diagram, or wants to lay out routers, switches, firewalls, access points, servers, IP cameras, NVRs, etc. Declare typed devices `<kind> <id> \"label\"` (router, switch, l3switch, firewall, loadbalancer, ap, wlc, gateway, modem, ids, proxy, vpngw, server, serverfarm, pc, laptop, mobile, ipphone, printer, storage, camera (with `type: fixed|bullet|dome|ptz|turret`), nvr, dvr, poeswitch, encoder, monitor, internet, wan, pstn, cloud, lan) and connect with `a -- b` (undirected), `a -> b` (directed), or `a == b` (LAG). After `:` add a link spec: a link type (fiber/wireless/serial/poe/vpn/lag), `trunk`/`access` mode, `vlan: 10,20`, a speed like `1G`/`10G`, and `port: Gi0/1>eth0`. Group devices in nested boundaries: `site`/`rack` (physical) and `subnet`/`vlan`/`zone`/`dmz` (logical) blocks `{ … }`. Choose `layout: tiered` (default; band by `tier: edge|core|distribution|access`), `tree`, `star`, `ring`, `bus`, `mesh`, `spine-leaf` (declare `spines:`/`leaves:` and the mesh is auto-generated), or `manual`. The engine never drops a device/port/link, and validates VLAN range 1–4094 plus device IP-in-subnet-CIDR. Distinct from `flowchart` (no device icons/topology), `c4` (software containers, not physical devices), and `sld` (electrical single-line, not data network).",
+    cluster: "network-infrastructure",
+    standard: "Cisco-convention topology icons + hierarchical/spine-leaf models + ANSI/TIA-606 + ONVIF; see 35-NETWORK-STANDARD.md",
+    syntaxKey: "network",
   },
   // ── Research / evidence synthesis ────────────────────────────
   {

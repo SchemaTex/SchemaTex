@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="sx-net" role="img" aria-label="DC Fabric" width="448" height="439" viewBox="0 0 448 439" data-diagram-type="network"><title>Network diagram — DC Fabric</title>
+<desc>9 devices, 11 links, 0 boundaries. Topology: spine-leaf. Links: 11 copper.</desc>
+<style>.sx-net { font-family: system-ui, -apple-system, sans-serif; }
+.sx-net-body { fill: #1d6fb8; stroke: #0f3a5f; stroke-width: 2; }
+.sx-net-detail { fill: none; stroke: #0f3a5f; stroke-width: 1; }
+.sx-net-glyph { fill: #bfe0f7; stroke: none; }
+.sx-net-glyph-line { fill: none; stroke: #bfe0f7; stroke-width: 1.4; }
+.sx-net-icontext { font: 700 8px sans-serif; fill: #bfe0f7; }
+.sx-net-cloud-body { fill: #ffffff; stroke: #334155; stroke-width: 2; }
+.sx-net-cloudtext { font: 600 13px sans-serif; fill: #0f172a; }
+.sx-net-bus { stroke: #0f3a5f; stroke-width: 4; stroke-linecap: round; }
+.sx-net-label { font: 12px sans-serif; fill: #0f172a; }
+.sx-net-sublabel { font: 10px sans-serif; fill: #64748b; }
+.sx-net-link { fill: none; stroke-width: 2; }
+.sx-net-link-wireless, .sx-net-link-vpn { stroke-dasharray: 5 4; }
+.sx-net-link-lag { stroke-width: 3; }
+.sx-net-linklabel { font: 9px sans-serif; fill: #475569; paint-order: stroke; stroke: #ffffff; stroke-width: 3px; stroke-linejoin: round; }
+.sx-net-port { font: 8px sans-serif; fill: #475569; paint-order: stroke; stroke: #ffffff; stroke-width: 2.5px; stroke-linejoin: round; }
+.sx-net-boundary-site { fill: none; stroke: #334155; stroke-width: 1.5; }
+.sx-net-boundary-rack { fill: none; stroke: #334155; stroke-width: 1.5; stroke-dasharray: 1 2; }
+.sx-net-boundary-subnet, .sx-net-boundary-vlan { fill: #eff6ff; stroke: #2563eb; stroke-width: 1.2; stroke-dasharray: 5 3; }
+.sx-net-boundary-zone, .sx-net-boundary-dmz { fill: none; stroke: #dc2626; stroke-width: 1.2; stroke-dasharray: 5 3; }
+.sx-net-boundary-label { font: 600 10px sans-serif; }
+.sx-net-title { font: 700 16px sans-serif; fill: #0f172a; }</style>
+<text x="224" y="21" class="sx-net-title" text-anchor="middle">DC Fabric</text>
+<g transform="translate(0, 30)"><g class="sx-net-boundaries"></g>
+<g class="sx-net-links"><g class="sx-net-link-g" data-from="lf1" data-to="h1" data-type="copper" data-speed="25G"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="62,218 62,310"/>
+<text class="sx-net-linklabel" x="62" y="261" text-anchor="middle">25G</text></g>
+<g class="sx-net-link-g" data-from="lf2" data-to="h2" data-type="copper" data-speed="25G"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="170,218 170,310"/>
+<text class="sx-net-linklabel" x="170" y="261" text-anchor="middle">25G</text></g>
+<g class="sx-net-link-g" data-from="lf4" data-to="h3" data-type="copper" data-speed="25G"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="386,218 386,310"/>
+<text class="sx-net-linklabel" x="386" y="261" text-anchor="middle">25G</text></g>
+<g class="sx-net-link-g" data-from="sp1" data-to="lf1" data-type="copper"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="151.49,78 80.51,170"/></g>
+<g class="sx-net-link-g" data-from="sp1" data-to="lf2" data-type="copper"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="170,78 170,170"/></g>
+<g class="sx-net-link-g" data-from="sp1" data-to="lf3" data-type="copper"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="188.51,78 259.49,170"/></g>
+<g class="sx-net-link-g" data-from="sp1" data-to="lf4" data-type="copper"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="202,74.74 354,173.26"/></g>
+<g class="sx-net-link-g" data-from="sp2" data-to="lf1" data-type="copper"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="246,74.74 94,173.26"/></g>
+<g class="sx-net-link-g" data-from="sp2" data-to="lf2" data-type="copper"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="259.49,78 188.51,170"/></g>
+<g class="sx-net-link-g" data-from="sp2" data-to="lf3" data-type="copper"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="278,78 278,170"/></g>
+<g class="sx-net-link-g" data-from="sp2" data-to="lf4" data-type="copper"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="296.51,78 367.49,170"/></g></g>
+<g class="sx-net-devices"><g class="sx-net-device" data-id="h1" data-kind="server"><g><rect class="sx-net-body" x="47.28" y="314.32" width="29.44" height="39.36" rx="2" ry="2"/>
+<line class="sx-net-detail" x1="51.28" y1="324.16" x2="72.72" y2="324.16"/>
+<line class="sx-net-detail" x1="51.28" y1="334" x2="72.72" y2="334"/>
+<line class="sx-net-detail" x1="51.28" y1="343.84" x2="72.72" y2="343.84"/>
+<circle class="sx-net-glyph" cx="69.72" cy="320.32" r="1.6"/></g>
+<text class="sx-net-label" x="62" y="375" text-anchor="middle">h1</text></g>
+<g class="sx-net-device" data-id="h2" data-kind="server"><g><rect class="sx-net-body" x="155.28" y="314.32" width="29.44" height="39.36" rx="2" ry="2"/>
+<line class="sx-net-detail" x1="159.28" y1="324.16" x2="180.72" y2="324.16"/>
+<line class="sx-net-detail" x1="159.28" y1="334" x2="180.72" y2="334"/>
+<line class="sx-net-detail" x1="159.28" y1="343.84" x2="180.72" y2="343.84"/>
+<circle class="sx-net-glyph" cx="177.72" cy="320.32" r="1.6"/></g>
+<text class="sx-net-label" x="170" y="375" text-anchor="middle">h2</text></g>
+<g class="sx-net-device" data-id="h3" data-kind="server"><g><rect class="sx-net-body" x="371.28" y="314.32" width="29.44" height="39.36" rx="2" ry="2"/>
+<line class="sx-net-detail" x1="375.28" y1="324.16" x2="396.72" y2="324.16"/>
+<line class="sx-net-detail" x1="375.28" y1="334" x2="396.72" y2="334"/>
+<line class="sx-net-detail" x1="375.28" y1="343.84" x2="396.72" y2="343.84"/>
+<circle class="sx-net-glyph" cx="393.72" cy="320.32" r="1.6"/></g>
+<text class="sx-net-label" x="386" y="375" text-anchor="middle">h3</text></g>
+<g class="sx-net-device" data-id="sp1" data-kind="l3switch"><g><rect class="sx-net-body" x="142.48" y="42" width="55.04" height="24" rx="3" ry="3"/>
+<line class="sx-net-glyph-line" x1="156.24" y1="50.16" x2="183.76" y2="50.16"/><polygon class="sx-net-glyph" points="183.76,50.16 180.25,52.08 180.25,48.24"/>
+<line class="sx-net-glyph-line" x1="183.76" y1="57.84" x2="156.24" y2="57.84"/><polygon class="sx-net-glyph" points="156.24,57.84 159.75,55.92 159.75,59.76"/>
+<line class="sx-net-glyph-line" x1="176.6" y1="50.16" x2="185.41" y2="50.16"/><polygon class="sx-net-glyph" points="185.41,50.16 181.9,52.08 181.9,48.24"/></g>
+<text class="sx-net-label" x="170" y="95" text-anchor="middle">sp1</text></g>
+<g class="sx-net-device" data-id="sp2" data-kind="l3switch"><g><rect class="sx-net-body" x="250.48" y="42" width="55.04" height="24" rx="3" ry="3"/>
+<line class="sx-net-glyph-line" x1="264.24" y1="50.16" x2="291.76" y2="50.16"/><polygon class="sx-net-glyph" points="291.76,50.16 288.25,52.08 288.25,48.24"/>
+<line class="sx-net-glyph-line" x1="291.76" y1="57.84" x2="264.24" y2="57.84"/><polygon class="sx-net-glyph" points="264.24,57.84 267.75,55.92 267.75,59.76"/>
+<line class="sx-net-glyph-line" x1="284.6" y1="50.16" x2="293.41" y2="50.16"/><polygon class="sx-net-glyph" points="293.41,50.16 289.9,52.08 289.9,48.24"/></g>
+<text class="sx-net-label" x="278" y="95" text-anchor="middle">sp2</text></g>
+<g class="sx-net-device" data-id="lf1" data-kind="switch"><g><rect class="sx-net-body" x="34.48" y="182" width="55.04" height="24" rx="3" ry="3"/>
+<line class="sx-net-glyph-line" x1="45.49" y1="189.68" x2="78.51" y2="189.68"/><polygon class="sx-net-glyph" points="78.51,189.68 75,191.6 75,187.76"/>
+<line class="sx-net-glyph-line" x1="78.51" y1="198.32" x2="45.49" y2="198.32"/><polygon class="sx-net-glyph" points="45.49,198.32 49,196.4 49,200.24"/></g>
+<text class="sx-net-label" x="62" y="235" text-anchor="middle">lf1</text></g>
+<g class="sx-net-device" data-id="lf2" data-kind="switch"><g><rect class="sx-net-body" x="142.48" y="182" width="55.04" height="24" rx="3" ry="3"/>
+<line class="sx-net-glyph-line" x1="153.49" y1="189.68" x2="186.51" y2="189.68"/><polygon class="sx-net-glyph" points="186.51,189.68 183,191.6 183,187.76"/>
+<line class="sx-net-glyph-line" x1="186.51" y1="198.32" x2="153.49" y2="198.32"/><polygon class="sx-net-glyph" points="153.49,198.32 157,196.4 157,200.24"/></g>
+<text class="sx-net-label" x="170" y="235" text-anchor="middle">lf2</text></g>
+<g class="sx-net-device" data-id="lf3" data-kind="switch"><g><rect class="sx-net-body" x="250.48" y="182" width="55.04" height="24" rx="3" ry="3"/>
+<line class="sx-net-glyph-line" x1="261.49" y1="189.68" x2="294.51" y2="189.68"/><polygon class="sx-net-glyph" points="294.51,189.68 291,191.6 291,187.76"/>
+<line class="sx-net-glyph-line" x1="294.51" y1="198.32" x2="261.49" y2="198.32"/><polygon class="sx-net-glyph" points="261.49,198.32 265,196.4 265,200.24"/></g>
+<text class="sx-net-label" x="278" y="235" text-anchor="middle">lf3</text></g>
+<g class="sx-net-device" data-id="lf4" data-kind="switch"><g><rect class="sx-net-body" x="358.48" y="182" width="55.04" height="24" rx="3" ry="3"/>
+<line class="sx-net-glyph-line" x1="369.49" y1="189.68" x2="402.51" y2="189.68"/><polygon class="sx-net-glyph" points="402.51,189.68 399,191.6 399,187.76"/>
+<line class="sx-net-glyph-line" x1="402.51" y1="198.32" x2="369.49" y2="198.32"/><polygon class="sx-net-glyph" points="369.49,198.32 373,196.4 373,200.24"/></g>
+<text class="sx-net-label" x="386" y="235" text-anchor="middle">lf4</text></g></g></g></svg>

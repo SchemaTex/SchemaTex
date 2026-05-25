@@ -1,0 +1,46 @@
+---
+title: Spine-leaf data-center fabric
+description: A folded-Clos data-center fabric — two spine switches, four leaf switches fully meshed to the spines automatically, and servers attached to their leaves at 25G.
+diagram: network
+standard: Clos (1953) folded-Clos / spine-leaf fabric
+industry: [datacenter, it]
+persona: For the data-center architect
+complexity: 2
+tags: [spine-leaf, clos, fabric, datacenter, leaf, spine]
+featured: false
+relatedLink:
+  label: Network syntax
+  href: /docs/network
+status: published
+dsl: |
+  network "DC Fabric"
+    layout: spine-leaf
+    spines: sp1 sp2
+    leaves: lf1 lf2 lf3 lf4
+    server h1
+    server h2
+    server h3
+    lf1 -- h1 : 25G
+    lf2 -- h2 : 25G
+    lf4 -- h3 : 25G
+---
+
+## Scenario
+
+A data-center architect wants the fabric drawn without hand-typing every spine-to-leaf cable. In `layout: spine-leaf` mode you declare the spines and leaves, and the engine **auto-meshes every leaf to every spine** — here that's 2 × 4 = 8 generated links — leaving you to add only the host attachments.
+
+## What the diagram shows
+
+- **`spines:` / `leaves:`** declare the two fabric rows. The devices don't need a separate `kind` line — spines become L3 switches, leaves become switches.
+- **Auto-mesh** — every spine↔leaf link is generated; you never type them. Add or remove a leaf and the mesh updates.
+- **Host attachments** — `lf1 -- h1 : 25G` hangs a server below its leaf at 25 Gbps.
+
+## Annotation key
+
+| Element | Meaning |
+|---|---|
+| Top row | Spine switches |
+| Middle row | Leaf switches (fully meshed to spines) |
+| Bottom row | Hosts, under their leaf |
+
+This is the modern east-west fabric; for a traditional north-south campus use `layout: tiered` with `tier:` bands instead.

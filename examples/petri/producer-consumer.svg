@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="sx-petri" role="img" aria-label="Producer / Consumer (bounded buffer)" width="517" height="258" viewBox="0 0 517 258" data-diagram-type="petri"><title>Petri net — Producer / Consumer (bounded buffer)</title>
+<desc>4 places, 2 transitions, 8 arcs. Marking {pReady:1, free:3, cReady:1}. Enabled: produce. Class: marked graph.</desc>
+<style>.sx-petri { font-family: system-ui, -apple-system, sans-serif; }
+.sx-petri-place { fill: #ffffff; stroke: #334155; stroke-width: 2; }
+.sx-petri-place-cap { stroke-dasharray: 4 3; }
+.sx-petri-token { fill: #0f172a; stroke: none; }
+.sx-petri-token-num { font: 600 11px sans-serif; fill: #0f172a; }
+.sx-petri-bar { fill: #334155; stroke: #334155; stroke-width: 2; }
+.sx-petri-box { fill: #ffffff; stroke: #334155; stroke-width: 2; }
+.sx-petri-enabled { fill: #ecfdf5; stroke: #059669; stroke-width: 3; }
+.sx-petri-dead .sx-petri-bar, .sx-petri-dead .sx-petri-box { stroke: #94a3b8; }
+.sx-petri-dead { opacity: 0.7; }
+.sx-petri-label { font: 12px sans-serif; fill: #0f172a; }
+.sx-petri-sublabel { font: italic 10px sans-serif; fill: #475569; }
+.sx-petri-cap { font: 9px sans-serif; fill: #475569; }
+.sx-petri-rate { font: italic 9px sans-serif; fill: #475569; }
+.sx-petri-arc { stroke: #334155; stroke-width: 2; fill: none; }
+.sx-petri-arc-inhibitor, .sx-petri-arc-reset { stroke: #dc2626; }
+.sx-petri-inhibitor-dot { fill: #ffffff; stroke: #dc2626; stroke-width: 2; }
+.sx-petri-weight { font: 600 9px sans-serif; fill: #2563eb; }
+.sx-petri-title { font: 700 16px sans-serif; fill: #0f172a; }</style>
+<defs><marker id="sx-petri-head" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><polygon points="0,0 9,5 0,10" fill="#334155"/></marker>
+<marker id="sx-petri-head-reset" viewBox="0 0 16 10" refX="15" refY="5" markerWidth="13" markerHeight="9" orient="auto-start-reverse"><polygon points="0,0 7,5 0,10" fill="#dc2626"/>
+<polygon points="7,0 14,5 7,10" fill="#dc2626"/></marker></defs>
+<text x="258.5" y="22" class="sx-petri-title" text-anchor="middle">Producer / Consumer (bounded buffer)</text>
+<g transform="translate(0, 32)"><g class="sx-petri-arcs"><g class="sx-petri-arc-g" data-from="pReady" data-to="produce" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 83.4 111 L 153.4 111" marker-end="url(#sx-petri-head)"/></g>
+<g class="sx-petri-arc-g" data-from="free" data-to="produce" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 451.4 84 C 451.4 204 157.4 204 157.4 133" marker-end="url(#sx-petri-head)"/></g>
+<g class="sx-petri-arc-g" data-from="produce" data-to="used" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 161.4 111 L 231.4 111" marker-end="url(#sx-petri-head)"/></g>
+<g class="sx-petri-arc-g" data-from="produce" data-to="pReady" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 157.4 133 C 157.4 204 65.4 204 65.4 129" marker-end="url(#sx-petri-head)"/></g>
+<g class="sx-petri-arc-g" data-from="used" data-to="consume" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 267.4 111 L 337.4 111" marker-end="url(#sx-petri-head)"/></g>
+<g class="sx-petri-arc-g" data-from="cReady" data-to="consume" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 451.4 174 C 451.4 204 350.4 204 350.4 131" marker-end="url(#sx-petri-head)"/></g>
+<g class="sx-petri-arc-g" data-from="consume" data-to="free" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 363.4 105.20792079207922 L 434.9581120894483 73.3255936235131" marker-end="url(#sx-petri-head)"/></g>
+<g class="sx-petri-arc-g" data-from="consume" data-to="cReady" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 363.4 116.79207920792078 L 434.9581120894483 148.6744063764869" marker-end="url(#sx-petri-head)"/></g></g>
+<g class="sx-petri-places"><g class="sx-petri-place-g" data-id="pReady" data-tokens="1"><circle class="sx-petri-place" cx="65.4" cy="111" r="18"/>
+<circle class="sx-petri-token" cx="65.4" cy="111" r="3.5"/>
+<text class="sx-petri-label" x="65.4" y="87" text-anchor="middle">pReady</text>
+<text class="sx-petri-sublabel" x="65.4" y="74" text-anchor="middle">producer ready</text></g>
+<g class="sx-petri-place-g" data-id="free" data-tokens="3"><circle class="sx-petri-place" cx="451.4" cy="66" r="18"/>
+<circle class="sx-petri-token" cx="451.4" cy="60.3" r="3.5"/><circle class="sx-petri-token" cx="445.7" cy="71.7" r="3.5"/><circle class="sx-petri-token" cx="457.09999999999997" cy="71.7" r="3.5"/>
+<text class="sx-petri-label" x="451.4" y="42" text-anchor="middle">free</text>
+<text class="sx-petri-sublabel" x="451.4" y="29" text-anchor="middle">free slots</text></g>
+<g class="sx-petri-place-g" data-id="used" data-tokens="0" data-capacity="3"><circle class="sx-petri-place sx-petri-place-cap" cx="249.4" cy="111" r="18"/>
+
+<text class="sx-petri-label" x="249.4" y="87" text-anchor="middle">used</text>
+<text class="sx-petri-sublabel" x="249.4" y="74" text-anchor="middle">used slots</text>
+<text class="sx-petri-cap" x="270.4" y="138">K=3</text></g>
+<g class="sx-petri-place-g" data-id="cReady" data-tokens="1"><circle class="sx-petri-place" cx="451.4" cy="156" r="18"/>
+<circle class="sx-petri-token" cx="451.4" cy="156" r="3.5"/>
+<text class="sx-petri-label" x="451.4" y="132" text-anchor="middle">cReady</text>
+<text class="sx-petri-sublabel" x="451.4" y="119" text-anchor="middle">consumer ready</text></g></g>
+<g class="sx-petri-transitions"><g class="sx-petri-trans-g" data-id="produce" data-kind="immediate" data-enabled="true"><rect class="sx-petri-enabled" x="149.4" y="85" width="16" height="52" rx="4" ry="4"/>
+<rect class="sx-petri-bar" x="153.4" y="89" width="8" height="44" rx="1" ry="1"/>
+<text class="sx-petri-label" x="157.4" y="83" text-anchor="middle">produce</text>
+<text class="sx-petri-sublabel" x="157.4" y="70" text-anchor="middle">deposit</text></g>
+<g class="sx-petri-trans-g" data-id="consume" data-kind="timed" data-enabled="false"><rect class="sx-petri-box" x="337.4" y="91" width="26" height="40" rx="1" ry="1"/>
+<text class="sx-petri-label" x="350.4" y="85" text-anchor="middle">consume</text>
+<text class="sx-petri-sublabel" x="350.4" y="72" text-anchor="middle">withdraw</text>
+<text class="sx-petri-rate" x="350.4" y="141" text-anchor="middle">λ=0.8</text></g></g></g></svg>

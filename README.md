@@ -29,7 +29,7 @@
 
 ---
 
-**Schematex** is the open-source rendering engine for the diagrams professionals actually use — medical, electrical, legal, and analytical. 31 diagram families across nine domains:
+**Schematex** is the open-source rendering engine for the diagrams professionals actually use — medical, electrical, legal, and analytical. 33 diagram families across ten domains:
 
 - 👪 **Relationships** — genograms, ecomaps, pedigrees, sociograms, phylogenetic trees
 - ⚡ **Electrical & Industrial** — ladder logic, single-line diagrams, circuit schematics, logic gates, timing, block diagrams, **FBD**, **SFC**, breadboard, **P&ID** (ISA-5.1)
@@ -38,6 +38,7 @@
 - 🔄 **Behavior modeling** — UML 2.5 / Harel **state diagrams** (Mermaid-compatible superset), **BPMN 2.0** (OMG), **use case diagrams** (UML 2.5.1 §18), **sequence diagrams** (UML 2.5.1 §17 — all 12 combined fragments + `ref`)
 - 🗄️ **Data modeling** — ERD crow's-foot notation
 - 🗓️ **Project management** — **PERT / CPM** networks (PMBOK 7) that *compute* the schedule: ES/EF/LS/LF, slack, critical path, three-point estimation, swimlanes, time-scaled layout
+- 🖧 **Network & Infrastructure** — **network topology** diagrams (Cisco-convention icons) with device/link/port integrity, IP-CCTV camera systems, three-tier campus, spine-leaf fabric, subnets & VLANs
 - 📅 **Timelines** — proportional / equidistant / log axis · swimlane · gantt · lollipop · BC dates · geological Ma scale
 
 Mermaid draws generic flowcharts. Schematex draws the diagrams doctors, engineers, and lawyers actually use — a genogram a genetic counselor accepts clinically, ladder logic that maps 1:1 to IEC 61131-3, a cap table that survives a Series A review.
@@ -501,6 +502,79 @@ task G "Launch event"         duration: 2  after: E, F
 ```
 
 [PERT / CPM syntax →](https://schematex.dev/docs/pert)
+
+---
+
+### ◉ Petri net — *Murata 1989 / ISO-IEC 15909 place-transition net*
+
+The only text-DSL Petri net tool that **understands the dynamics**, not just the shapes. You declare places (circles holding tokens), transitions (bars), and weighted arcs; the engine validates the bipartite structure, computes which transitions are *enabled* under the marking (highlighted green), and can `fire:` a sequence forward to render any reachable marking. Immediate vs. timed transitions, arc weights, capacity, and inhibitor / read / reset arcs — the recognised concurrency vocabulary.
+
+```
+petri "Mutual Exclusion — two processes, one resource"
+  place idleA *1 "A idle"
+  place idleB *1 "B idle"
+  place mutex *1 "resource"
+  place critA "A critical"
+  place critB "B critical"
+  transition enterA
+  transition exitA
+  transition enterB
+  transition exitB
+  idleA -> enterA
+  mutex -> enterA
+  enterA -> critA
+  critA -> exitA
+  exitA -> idleA
+  exitA -> mutex
+  idleB -> enterB
+  mutex -> enterB
+  enterB -> critB
+  critB -> exitB
+  exitB -> idleB
+  exitB -> mutex
+```
+
+![Mutual Exclusion Petri Net](examples/petri/mutual-exclusion.svg)
+
+[Petri net syntax →](https://schematex.dev/docs/petri)
+
+---
+
+### 🖧 Network topology — *Cisco-convention icons · device / link / port integrity*
+
+The free, text-first, zero-dependency network-diagram engine. Declare typed devices (router, switch, firewall, AP, server, **IP camera / NVR / PoE switch**, …) and typed annotated links (copper / fiber / wireless / serial / **PoE** / VPN / LAG, carrying VLAN / speed / port / mode), group them into sites, racks, subnets and VLANs, and let the engine lay out the topology class correctly — `tiered` (three-tier campus), `star`, `ring`, `bus`, `mesh`, `spine-leaf` (auto-meshed Clos), or `tree`. Unlike an LLM emitting raw Mermaid, it **never drops a device, a port, or a link**, and it validates IP-in-subnet and VLAN ranges.
+
+```
+network "Acme HQ — CCTV"
+  layout: tiered
+  internet net "Internet"
+  firewall fw1 "Perimeter FW" tier: edge
+  l3switch core1 "Core SW" tier: core
+  poeswitch poe1 "PoE Switch A" tier: access
+  poeswitch poe2 "PoE Switch B" tier: access
+  nvr nvr1 "Video Recorder"
+  monitor wall1 "Guard Station"
+  subnet cams "192.168.20.0/24" {
+    camera cam1 "Lobby Dome" type: dome ip: 192.168.20.11
+    camera cam2 "Gate PTZ" type: ptz ip: 192.168.20.12
+    camera cam3 "Dock Bullet" type: bullet ip: 192.168.20.13
+    poe1
+    poe2
+  }
+  net -- fw1 : wan "ISP 1Gbps"
+  fw1 -- core1 : fiber 10G
+  core1 -- poe1 : trunk vlan: 20 1G
+  core1 -- poe2 : trunk vlan: 20 1G
+  core1 -- nvr1 : 1G
+  core1 -- wall1
+  poe1 -- cam1 : poe
+  poe1 -- cam2 : poe
+  poe2 -- cam3 : poe
+```
+
+![CCTV camera network topology](examples/network/cctv-camera-network.svg)
+
+[Network topology syntax →](https://schematex.dev/docs/network)
 
 ## Why SchemaTex?
 

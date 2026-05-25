@@ -55,6 +55,8 @@ const SYNTAX_KEYS = [
   "sequence",
   "prisma",
   "pert",
+  "petri",
+  "network",
 ];
 
 // ─── Minimal YAML-frontmatter parser ─────────────────────────────

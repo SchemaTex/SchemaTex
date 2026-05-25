@@ -1,0 +1,46 @@
+---
+title: Mutual exclusion with a shared resource
+description: The canonical concurrency pattern as a Petri net — two processes competing for a single Mutex token. Either process may enter its critical section, but the shared token guarantees they never do so at the same time. Both entry transitions show as enabled until one fires and consumes the resource.
+diagram: petri
+standard: Murata 1989 / ISO-IEC 15909-1 (place/transition net)
+industry: [industrial, research]
+persona: For the systems engineer
+complexity: 2
+tags: [petri, concurrency, mutual-exclusion, synchronization, formal-methods]
+featured: true
+relatedLink:
+  label: Petri net syntax
+  href: /docs/petri
+status: published
+dsl: |
+  petri "Mutual Exclusion — two processes, one resource"
+    place idleA *1 "A idle"
+    place idleB *1 "B idle"
+    place mutex *1 "resource"
+    place critA "A critical"
+    place critB "B critical"
+    transition enterA
+    transition exitA
+    transition enterB
+    transition exitB
+    idleA -> enterA
+    mutex -> enterA
+    enterA -> critA
+    critA -> exitA
+    exitA -> idleA
+    exitA -> mutex
+    idleB -> enterB
+    mutex -> enterB
+    enterB -> critB
+    critB -> exitB
+    exitB -> idleB
+    exitB -> mutex
+---
+
+Mutual exclusion is the "hello world" of concurrency theory, and a Petri net states it more honestly than a flowchart can: the safety property is a structural fact about a single token, not a comment in the margin.
+
+**One token, two claimants.** The `mutex` place holds exactly one token. Both `enterA` and `enterB` are enabled — each has its process idle *and* the resource available — so the engine rings both green. The moment one fires, it consumes the mutex token, and the other entry transition is no longer enabled. There is no marking in which both `critA` and `critB` hold a token; that invariant is what "mutual exclusion" means.
+
+**Exit returns the resource.** `exitA` / `exitB` put the token back into `mutex` and the process back to idle, so the net cycles forever without ever violating the invariant — a *live* and *safe* net in Petri terminology.
+
+**Why the formalism earns its keep.** Drawn as two side-by-side flowcharts, the shared-resource constraint is invisible. Drawn as a Petri net, it is the single most important node in the diagram. That is the whole pitch: the model carries the property, and the renderer shows you which moves are currently legal.

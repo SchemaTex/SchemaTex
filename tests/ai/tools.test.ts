@@ -14,11 +14,13 @@ import {
 } from "../../src/ai";
 
 describe("listDiagrams", () => {
-  it("returns all 31 diagram types", () => {
+  it("returns all 33 diagram types", () => {
     const list = listDiagrams();
-    expect(list.length).toBe(31);
+    expect(list.length).toBe(33);
     const types = list.map((d) => d.type);
     expect(types).toContain("genogram");
+    expect(types).toContain("petri");
+    expect(types).toContain("network");
     expect(types).toContain("sld");
     expect(types).toContain("fishbone");
     expect(types).toContain("decisiontree");

@@ -57,6 +57,9 @@ export { pid } from "./diagrams/pid";
 export { prisma } from "./diagrams/prisma";
 export { usecase } from "./diagrams/usecase";
 export { pert } from "./diagrams/pert";
+export { sequence } from "./diagrams/sequence";
+export { petri } from "./diagrams/petri";
+export { network } from "./diagrams/network";
 
 export {
   type ThemeName,
@@ -77,4 +80,10 @@ export {
   resolveVennTheme,
   resolveTimelineTheme,
   type TimelineTokens,
+  type PetriTokens,
+  PETRI_TOKENS,
+  resolvePetriTheme,
+  type NetworkTokens,
+  NETWORK_TOKENS,
+  resolveNetworkTheme,
 } from "./core/theme";

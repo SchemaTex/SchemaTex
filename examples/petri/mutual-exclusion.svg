@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="sx-petri" role="img" aria-label="Mutual Exclusion — two processes, one resource" width="817" height="176" viewBox="0 0 817 176" data-diagram-type="petri"><title>Petri net — Mutual Exclusion — two processes, one resource</title>
+<desc>5 places, 4 transitions, 12 arcs. Marking {idleA:1, idleB:1, mutex:1}. Enabled: enterA, enterB.</desc>
+<style>.sx-petri { font-family: system-ui, -apple-system, sans-serif; }
+.sx-petri-place { fill: #ffffff; stroke: #334155; stroke-width: 2; }
+.sx-petri-place-cap { stroke-dasharray: 4 3; }
+.sx-petri-token { fill: #0f172a; stroke: none; }
+.sx-petri-token-num { font: 600 11px sans-serif; fill: #0f172a; }
+.sx-petri-bar { fill: #334155; stroke: #334155; stroke-width: 2; }
+.sx-petri-box { fill: #ffffff; stroke: #334155; stroke-width: 2; }
+.sx-petri-enabled { fill: #ecfdf5; stroke: #059669; stroke-width: 3; }
+.sx-petri-dead .sx-petri-bar, .sx-petri-dead .sx-petri-box { stroke: #94a3b8; }
+.sx-petri-dead { opacity: 0.7; }
+.sx-petri-label { font: 12px sans-serif; fill: #0f172a; }
+.sx-petri-sublabel { font: italic 10px sans-serif; fill: #475569; }
+.sx-petri-cap { font: 9px sans-serif; fill: #475569; }
+.sx-petri-rate { font: italic 9px sans-serif; fill: #475569; }
+.sx-petri-arc { stroke: #334155; stroke-width: 2; fill: none; }
+.sx-petri-arc-inhibitor, .sx-petri-arc-reset { stroke: #dc2626; }
+.sx-petri-inhibitor-dot { fill: #ffffff; stroke: #dc2626; stroke-width: 2; }
+.sx-petri-weight { font: 600 9px sans-serif; fill: #2563eb; }
+.sx-petri-title { font: 700 16px sans-serif; fill: #0f172a; }</style>
+<defs><marker id="sx-petri-head" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><polygon points="0,0 9,5 0,10" fill="#334155"/></marker>
+<marker id="sx-petri-head-reset" viewBox="0 0 16 10" refX="15" refY="5" markerWidth="13" markerHeight="9" orient="auto-start-reverse"><polygon points="0,0 7,5 0,10" fill="#dc2626"/>
+<polygon points="7,0 14,5 7,10" fill="#dc2626"/></marker></defs>
+<text x="408.5" y="22" class="sx-petri-title" text-anchor="middle">Mutual Exclusion — two processes, one resource</text>
+<g transform="translate(0, 32)"><g class="sx-petri-arcs"><g class="sx-petri-arc-g" data-from="idleA" data-to="enterA" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 58.6 70 L 128.6 70" marker-end="url(#sx-petri-head)"/></g>
+<g class="sx-petri-arc-g" data-from="mutex" data-to="enterA" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 408.6 88 C 408.6 122 132.6 122 132.6 92" marker-end="url(#sx-petri-head)"/></g>
+<g class="sx-petri-arc-g" data-from="enterA" data-to="critA" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 136.6 70 L 206.6 70" marker-end="url(#sx-petri-head)"/></g>
+<g class="sx-petri-arc-g" data-from="critA" data-to="exitA" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 242.6 70 L 312.6 70" marker-end="url(#sx-petri-head)"/></g>
+<g class="sx-petri-arc-g" data-from="exitA" data-to="idleA" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 316.6 92 C 316.6 122 40.6 122 40.6 88" marker-end="url(#sx-petri-head)"/></g>
+<g class="sx-petri-arc-g" data-from="exitA" data-to="mutex" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 320.6 70 L 390.6 70" marker-end="url(#sx-petri-head)"/></g>
+<g class="sx-petri-arc-g" data-from="idleB" data-to="enterB" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 776.6 88 C 776.6 122 500.6 122 500.6 92" marker-end="url(#sx-petri-head)"/></g>
+<g class="sx-petri-arc-g" data-from="mutex" data-to="enterB" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 426.6 70 L 496.6 70" marker-end="url(#sx-petri-head)"/></g>
+<g class="sx-petri-arc-g" data-from="enterB" data-to="critB" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 504.6 70 L 574.6 70" marker-end="url(#sx-petri-head)"/></g>
+<g class="sx-petri-arc-g" data-from="critB" data-to="exitB" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 610.6 70 L 680.6 70" marker-end="url(#sx-petri-head)"/></g>
+<g class="sx-petri-arc-g" data-from="exitB" data-to="idleB" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 688.6 70 L 758.6 70" marker-end="url(#sx-petri-head)"/></g>
+<g class="sx-petri-arc-g" data-from="exitB" data-to="mutex" data-type="standard" data-weight="1"><path class="sx-petri-arc" d="M 684.6 92 C 684.6 122 408.6 122 408.6 88" marker-end="url(#sx-petri-head)"/></g></g>
+<g class="sx-petri-places"><g class="sx-petri-place-g" data-id="idleA" data-tokens="1"><circle class="sx-petri-place" cx="40.6" cy="70" r="18"/>
+<circle class="sx-petri-token" cx="40.6" cy="70" r="3.5"/>
+<text class="sx-petri-label" x="40.6" y="46" text-anchor="middle">idleA</text>
+<text class="sx-petri-sublabel" x="40.6" y="33" text-anchor="middle">A idle</text></g>
+<g class="sx-petri-place-g" data-id="idleB" data-tokens="1"><circle class="sx-petri-place" cx="776.6" cy="70" r="18"/>
+<circle class="sx-petri-token" cx="776.6" cy="70" r="3.5"/>
+<text class="sx-petri-label" x="776.6" y="46" text-anchor="middle">idleB</text>
+<text class="sx-petri-sublabel" x="776.6" y="33" text-anchor="middle">B idle</text></g>
+<g class="sx-petri-place-g" data-id="mutex" data-tokens="1"><circle class="sx-petri-place" cx="408.6" cy="70" r="18"/>
+<circle class="sx-petri-token" cx="408.6" cy="70" r="3.5"/>
+<text class="sx-petri-label" x="408.6" y="46" text-anchor="middle">mutex</text>
+<text class="sx-petri-sublabel" x="408.6" y="33" text-anchor="middle">resource</text></g>
+<g class="sx-petri-place-g" data-id="critA" data-tokens="0"><circle class="sx-petri-place" cx="224.6" cy="70" r="18"/>
+
+<text class="sx-petri-label" x="224.6" y="46" text-anchor="middle">critA</text>
+<text class="sx-petri-sublabel" x="224.6" y="33" text-anchor="middle">A critical</text></g>
+<g class="sx-petri-place-g" data-id="critB" data-tokens="0"><circle class="sx-petri-place" cx="592.6" cy="70" r="18"/>
+
+<text class="sx-petri-label" x="592.6" y="46" text-anchor="middle">critB</text>
+<text class="sx-petri-sublabel" x="592.6" y="33" text-anchor="middle">B critical</text></g></g>
+<g class="sx-petri-transitions"><g class="sx-petri-trans-g" data-id="enterA" data-kind="immediate" data-enabled="true"><rect class="sx-petri-enabled" x="124.6" y="44" width="16" height="52" rx="4" ry="4"/>
+<rect class="sx-petri-bar" x="128.6" y="48" width="8" height="44" rx="1" ry="1"/>
+<text class="sx-petri-label" x="132.6" y="42" text-anchor="middle">enterA</text></g>
+<g class="sx-petri-trans-g" data-id="exitA" data-kind="immediate" data-enabled="false"><rect class="sx-petri-bar" x="312.6" y="48" width="8" height="44" rx="1" ry="1"/>
+<text class="sx-petri-label" x="316.6" y="42" text-anchor="middle">exitA</text></g>
+<g class="sx-petri-trans-g" data-id="enterB" data-kind="immediate" data-enabled="true"><rect class="sx-petri-enabled" x="492.6" y="44" width="16" height="52" rx="4" ry="4"/>
+<rect class="sx-petri-bar" x="496.6" y="48" width="8" height="44" rx="1" ry="1"/>
+<text class="sx-petri-label" x="500.6" y="42" text-anchor="middle">enterB</text></g>
+<g class="sx-petri-trans-g" data-id="exitB" data-kind="immediate" data-enabled="false"><rect class="sx-petri-bar" x="680.6" y="48" width="8" height="44" rx="1" ry="1"/>
+<text class="sx-petri-label" x="684.6" y="42" text-anchor="middle">exitB</text></g></g></g></svg>

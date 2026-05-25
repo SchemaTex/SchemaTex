@@ -1,0 +1,60 @@
+---
+title: Three-tier enterprise campus network
+description: Classic Cisco hierarchical campus — Internet/WAN edge, redundant core switches with a LAG uplink, a distribution layer, and an access layer feeding a server farm. The canonical core/distribution/access model.
+diagram: network
+standard: Cisco hierarchical internetworking model (core/distribution/access)
+industry: [enterprise, it]
+persona: For the network engineer
+complexity: 3
+tags: [campus, three-tier, core, distribution, access, lag, enterprise]
+featured: false
+relatedLink:
+  label: Network syntax
+  href: /docs/network
+status: published
+dsl: |
+  network "Driscoll Campus"
+    layout: tiered
+    internet inet
+    cloud wan "WAN"
+    firewall fw1 "Core Firewall" tier: edge
+    router er1 "Edge Rtr 1" tier: edge
+    l3switch cs1 "Core SW 1" tier: core
+    l3switch cs2 "Core SW 2" tier: core
+    switch d1 "Dist A" tier: distribution
+    switch d2 "Dist B" tier: distribution
+    serverfarm farm "Server Farm" count: 4
+    a1 a2 a3 : switch tier: access
+    inet -- fw1
+    wan -- er1 : serial
+    fw1 -- cs1 : 10G
+    er1 -- cs2
+    cs1 == cs2 : lag 40G
+    cs1 -- d1
+    cs2 -- d2
+    cs1 -- farm : trunk vlan: 100
+    d1 -- a1
+    d2 -- a2
+    d2 -- a3
+---
+
+## Scenario
+
+A network engineer is drawing the as-built for a campus that follows Cisco's three-tier hierarchical model. The `tier:` attribute on each device drives the banding, so the diagram lands in the canonical **edge → core → distribution → access** rows automatically — no manual placement.
+
+## What the diagram shows
+
+- **`tier:` banding** — `edge`, `core`, `distribution`, `access` place devices in fixed rows top-to-bottom. Endpoints (the server farm) hang below their switch.
+- **The redundant core** — `cs1 == cs2 : lag 40G` is the EtherChannel uplink, drawn as a double line with a 40G label (`==` is shorthand for a LAG link).
+- **Shorthand** — `a1 a2 a3 : switch tier: access` declares three identical access switches on one line.
+- **The server farm** — `serverfarm ... count: 4` draws a stacked icon labelled ×4.
+
+## Annotation key
+
+| Element | Meaning |
+|---|---|
+| Double line + `40G` | Aggregated link (LAG / EtherChannel) |
+| `tier: core` etc. | Hierarchical band assignment |
+| `Trunk · VLAN 100` | Server-farm uplink trunk |
+
+For a two-tier "collapsed core" just drop the distribution devices; for a data-center fabric use `layout: spine-leaf` instead.
