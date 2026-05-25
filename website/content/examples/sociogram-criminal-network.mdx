@@ -1,0 +1,52 @@
+---
+title: Criminal communication network
+description: Investigative sociogram of a covert organization — weighted command ties between the principal and lieutenants, directed courier and associate links to external contacts, and a weak tie that hints at an unconfirmed connection. The force-directed layout surfaces the command hierarchy and the bridging couriers.
+diagram: sociogram
+standard: Moreno 1934
+industry: [legal-finance]
+persona: For the intelligence analyst
+complexity: 2
+tags: [force-directed, weighted-ties, directed, bridging, command-hierarchy]
+featured: false
+relatedLink:
+  label: Sociogram syntax
+  href: /docs/sociogram
+status: published
+dsl: |
+  sociogram "Operation Sunset - Communication Network"
+    config: layout = force-directed
+    boss [label: "Subject Alpha"]
+    lt1 [label: "Lieutenant 1"]
+    lt2 [label: "Lieutenant 2"]
+    courier1 [label: "Courier A"]
+    courier2 [label: "Courier B"]
+    contact1 [label: "External Contact 1"]
+    contact2 [label: "External Contact 2"]
+    associate1 [label: "Associate 1"]
+    associate2 [label: "Associate 2"]
+    boss <-> lt1 [weight: 4]
+    boss <-> lt2 [weight: 4]
+    lt1 -> courier1
+    lt1 -> courier2
+    lt2 -> associate1
+    lt2 -> associate2
+    courier1 -> contact1 [label: "supplier"]
+    courier2 -> contact2 [label: "distributor"]
+    lt1 <-> lt2 [weight: 2]
+    associate1 -.- courier1
+---
+
+## Scenario
+
+A link-analysis unit reconstructs a covert organization from intercept metadata. The sociogram is the standard deliverable: who talks to whom, how strongly, and in which direction — so the analyst can identify the principal, the lieutenants who insulate him, and the couriers who bridge the organization to outside suppliers.
+
+## Annotation key
+
+- `<-> [weight: N]` — a reciprocal, weighted tie; the heavier `weight: 4` command links between `boss` and the two lieutenants render thicker than the `weight: 2` peer link
+- `->` — a directed contact (one party initiates), used for the courier and associate tasking lines
+- `-> [label: ...]` — a directed tie carrying a role annotation (`supplier`, `distributor`)
+- `-.-` — a weak/unconfirmed tie, drawn dashed: `associate1 -.- courier1` flags a suspected but unverified connection
+
+## How to read
+
+Subject Alpha sits at the center, tied strongly to both lieutenants but never directly to the couriers or external contacts — the classic insulation pattern. Lieutenant 1 controls both couriers, each of whom reaches a single external contact, so the couriers are the bridging nodes whose removal would sever the outside supply. The dashed `associate1 -.- courier1` tie is the lead worth developing: an unconfirmed cross-link between the two lieutenants' sub-networks.

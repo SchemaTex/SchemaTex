@@ -62,6 +62,13 @@ export { petri } from "./diagrams/petri";
 export { network } from "./diagrams/network";
 
 export {
+  type SymbolCatalog,
+  type SymbolCatalogEntry,
+  SYMBOL_CATALOG_TYPES,
+  getSymbolCatalog,
+} from "./symbols-catalog";
+
+export {
   type ThemeName,
   type BaseTheme,
   type PersonTokens,

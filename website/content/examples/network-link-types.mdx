@@ -1,0 +1,37 @@
+---
+title: Every link type on one fabric
+description: A compact topology that exercises the full link vocabulary — fiber with speed and port tags, a LAG bundle, a wireless association, an 802.1Q trunk carrying VLANs, a PoE drop to a camera, and a site-to-site VPN tunnel — each rendered with its own line style.
+diagram: network
+standard: Cisco-convention topology icons + ANSI/TIA-606 labelling
+industry: [industrial, business]
+persona: For the network engineer
+complexity: 2
+tags: [network, links, fiber, lag, vlan, poe, vpn]
+featured: false
+relatedLink:
+  label: Network syntax
+  href: /docs/network
+status: published
+dsl: |
+  network "Link types"
+    layout: tree
+    router core "Core"
+    switch a "Sw A"
+    switch b "Sw B"
+    ap ap1 "AP"
+    server s1
+    camera c1 type: turret
+    vpngw vpn1 "VPN GW"
+    core -- a : fiber 10G port: Gi0/1>Gi1/0/1
+    core -- b : lag 20G
+    a -- ap1 : wireless
+    a -- s1 : trunk vlan: 10,20 1G
+    b -- c1 : poe
+    core -- vpn1 : vpn "site-to-site"
+---
+
+A network diagram is only as useful as the *link* annotations — "are these two switches on fiber or copper, trunk or access, what VLANs, what speed." Schematex encodes all of it after the `:` on a connection, and renders each link type distinctly.
+
+**One line, many semantics.** `fiber 10G port: Gi0/1>Gi1/0/1` draws the orange ticked fiber style and prints both the speed and the two interface names. `lag 20G` thickens the line for a bundled uplink. `wireless` and `vpn` go dashed; `poe` carries power to the camera; `trunk vlan: 10,20` tags the 802.1Q VLAN list.
+
+**Validation comes free.** VLAN ids are range-checked (1–4094) and the engine never silently drops a port, link, or device — if you wrote it, it's on the diagram or it's a reported error.

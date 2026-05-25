@@ -16,6 +16,7 @@ export type DiagramCluster =
   | "strategy"
   | "knowledge"
   | "behavior-modeling"
+  | "concurrency"
   | "research"
   | "project-management"
   | "network-infrastructure";
@@ -267,7 +268,7 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
   {
     type: "usecase",
     name: "UML use case diagram",
-    tagline: "UML 2.5 use case — actors, use cases, subject boundary, include/extend/generalization.",
+    tagline: "UML 2.5.1 use case diagram — captures what a system does and for whom: actors, use cases, a subject boundary, and include/extend/generalization.",
     useWhen:
       "Use for software-engineering requirements and scope diagrams — 'what does this system do, and for whom'. Actors (stick figures, or `(external)` rectangles for other systems) sit outside a subject boundary; use cases are ellipses inside it. `--` association, `..>` «include» (source includes target), `<..` «extend» (left extends right, with optional `[condition]` and extension points), `--|>` generalization (hollow triangle to parent, between actors or between use cases). Accepts a PlantUML-style inline form (`:Actor:`, `(Use case)`, `as ID`). Distinct from `state` (intra-object behavior, not system scope), `flowchart` (no actor/subject/include-extend semantics), and `bpmn` (how a process executes, not what a system offers).",
     cluster: "behavior-modeling",
@@ -277,7 +278,7 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
   {
     type: "sequence",
     name: "UML sequence diagram",
-    tagline: "UML 2.5.1 §17 interaction — lifelines, messages over time, activations, and combined fragments.",
+    tagline: "UML 2.5.1 §17 interaction diagram — shows how participants exchange messages over time (who calls whom, in what order): lifelines, activations, and all twelve combined fragments.",
     useWhen:
       "Use for time-ordered interactions between participants — API call flows, auth handshakes, distributed protocols, object collaborations, 'who calls whom in what order'. Lifelines run top→bottom; messages run left→right: `->` synchronous (filled head), `->>` asynchronous (open head), `-->` reply (dashed), `-x` lost, `o->` found. `+`/`-` suffixes open/close activation bars; `*Target` creates a participant and `destroy` ends one. All twelve UML combined fragments — `alt`/`opt`/`loop`/`par`/`break`/`critical`/`seq`/`strict`/`neg`/`ignore`/`consider`/`assert` — plus `ref` interaction-use frames. Participant kinds `actor`/`boundary`/`control`/`entity`/`database` render their UML/Jacobson symbols; `«stereotype»` overrides the label. Distinct from `usecase` (system scope, not message order), `state` (one object's modes, not inter-object messages), `bpmn` (organisational process), and `flowchart` (no lifelines/time axis).",
     cluster: "behavior-modeling",
@@ -291,7 +292,7 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
       "Place/transition net that computes the dynamics — enabled transitions and token firing, not just shapes.",
     useWhen:
       "Use whenever the user mentions 'Petri net', 'place/transition net', 'token', 'marking', 'concurrency model', 'mutual exclusion', 'producer/consumer', or wants to model concurrent resource flow / synchronisation. Declare `place <id> *<tokens>` (circles holding tokens), `transition <id>` (bars — add `timed rate: <λ>` for a GSPN timed transition), and bipartite arcs: `->` standard, `-o` inhibitor (enabled only while the place is empty), `--` read/test, `=>` reset. Arc weight via `weight: n` or `*n`; place limit via `capacity: n`. The engine validates the bipartite structure, applies a `fire: T1, T2` sequence to the initial marking, and highlights which transitions are *enabled* in the result. `layout: lr|tb`. Distinct from `state` (one active state, not a token distribution), `sfc` (a restricted PLC Petri net), `bpmn` (organisational process), and `flowchart` (single thread, no concurrency or marking).",
-    cluster: "behavior-modeling",
+    cluster: "concurrency",
     standard: "Murata 1989 + ISO/IEC 15909-1 (place/transition net); see 34-PETRINET-STANDARD.md",
     syntaxKey: "petri",
   },
@@ -384,6 +385,62 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
     syntaxKey: "timeline",
   },
 ] as const;
+
+/**
+ * The library version that first shipped each diagram type, sourced from
+ * CHANGELOG.md "Added" entries. Kept as a companion map (rather than a field on
+ * the big registry literal) so the literal stays stable. `since` powers the
+ * version badge on /diagrams and the cross-link to /changelog.
+ */
+export const DIAGRAM_SINCE: Readonly<Record<DiagramType, string>> = {
+  // 0.1.0 — initial release (2026-03-15)
+  genogram: "0.1.0",
+  ecomap: "0.1.0",
+  pedigree: "0.1.0",
+  phylo: "0.1.0",
+  sociogram: "0.1.0",
+  logic: "0.1.0",
+  circuit: "0.1.0",
+  timing: "0.1.0",
+  blockdiagram: "0.1.0",
+  ladder: "0.1.0",
+  sld: "0.1.0",
+  entity: "0.1.0",
+  fishbone: "0.1.0",
+  // 0.1.1 (2026-04-18)
+  flowchart: "0.1.1",
+  venn: "0.1.1",
+  matrix: "0.1.1",
+  mindmap: "0.1.1",
+  orgchart: "0.1.1",
+  // 0.2.0 (2026-04-20)
+  timeline: "0.2.0",
+  decisiontree: "0.2.0",
+  // 0.3.0 (2026-04-29)
+  state: "0.3.0",
+  pid: "0.3.0",
+  // 0.4.0 (2026-05-05)
+  erd: "0.4.0",
+  breadboard: "0.4.0",
+  bpmn: "0.4.0",
+  fbd: "0.4.0",
+  sfc: "0.4.0",
+  // 0.4.3 (2026-05-16) — usecase
+  usecase: "0.4.3",
+  // 0.5.0 (2026-05-19)
+  prisma: "0.5.0",
+  // 0.5.1
+  sequence: "0.5.1",
+  // 0.6.0 — upcoming (committed post-0.5.2, not yet released)
+  pert: "0.6.0",
+  petri: "0.6.0",
+  network: "0.6.0",
+};
+
+export function getDiagramSince(type: string): string | undefined {
+  const resolved = resolveDiagramType(type);
+  return resolved ? DIAGRAM_SINCE[resolved] : undefined;
+}
 
 const TYPE_ALIASES: Readonly<Record<string, DiagramType>> = {
   block: "blockdiagram",

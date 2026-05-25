@@ -1,0 +1,47 @@
+---
+title: Nested feedback loops
+description: A multi-loop control block diagram — an inner loop closes G2·G3 around sensor H1, an outer loop closes the whole forward path around sensor H2 routed over the top, and two summing junctions combine the reference with each feedback signal. The kind of cascaded architecture a generic flowchart can't lay out.
+diagram: block
+standard: Ogata control systems
+industry: [industrial, education]
+persona: For the control systems engineer
+complexity: 3
+tags: [nested-loops, cascade, feedback, summing-junction, sensor, signal-flow]
+featured: false
+relatedLink:
+  label: Block syntax
+  href: /docs/block
+status: published
+dsl: |
+  blockdiagram "Nested Feedback Loops"
+  G1 = block("G1(s)") [role: plant]
+  G2 = block("G2(s)") [role: plant]
+  G3 = block("G3(s)") [role: plant]
+  H1 = block("H1(s)") [role: sensor]
+  H2 = block("H2(s)") [role: sensor, route: above]
+  s1 = sum(+R, -h2)
+  s2 = sum(+a, -h1)
+  in -> s1 ["R(s)"]
+  s1 -> G1 -> s2
+  s2 -> G2 -> G3
+  G3 -> out ["Y(s)"]
+  G2 -> H1
+  H1 -> s2
+  G3 -> H2
+  H2 -> s1
+---
+
+## Scenario
+
+Cascaded and nested control loops are everywhere in real plants — an inner velocity loop inside an outer position loop, an inner current loop inside a speed loop. Textbooks (Ogata, Franklin) draw them as block diagrams with multiple summing junctions and feedback paths that cross over the forward chain. Schematex routes those crossings automatically from a signal-flow description.
+
+## Annotation key
+
+- `block("label") [role: plant|sensor]` — transfer-function block; `role` drives the visual styling so plants and sensors read differently
+- `sum(+R, -h2)` — a summing junction with explicit signs: adds reference `R`, subtracts the outer feedback `h2`
+- `route: above` on `H2` — forces the outer feedback sensor to route over the top of the diagram, keeping the long return path clear of the forward chain
+- `s1 -> G1 -> s2` — chained connections; signal flows left to right through the forward path
+
+## How to read
+
+The inner loop is `G2 → G3 → H1 → s2`: sensor H1 feeds the plant output back to the second summing junction, closing a loop around `G2·G3`. The outer loop is wider — `G3 → H2 → s1` — where H2 (routed above) returns the final output to the first summing junction. The reference `R(s)` enters at `s1`, is corrected by both feedback signals in turn, and the cascaded plants drive `Y(s)`. Two nested loops, one signal-flow spec.
