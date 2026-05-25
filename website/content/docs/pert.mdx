@@ -219,3 +219,17 @@ attrs       = ("tags:" idlist)? ("class:" IDENT)? ("lane:" quoted)?
 ## 9. Standard compliance
 
 Schematex `pert` implements the **Activity-on-Node / Precedence Diagramming Method** per **PMI PMBOK 7** and Moder, Phillips & Davis (1983), with the six-field box convention from Kerzner and Oracle Primavera P6. The forward/backward pass, total slack, critical path, all four PDM dependency types with lag/lead, and three-point estimation (te + variance) are computed exactly. The older **Activity-on-Arrow** notation is available as an opt-in legacy view (`layout: aoa`) for teaching and textbook parity. Out of scope for v0.1: resource leveling / RCPSP, Monte Carlo schedule-risk simulation, calendar-aware durations, and MS Project / Primavera import-export. See `docs/reference/32-PERT-STANDARD.md` for the full specification.
+
+---
+
+## Related examples
+
+Ready-to-use scenarios from the examples gallery:
+
+<RelatedExamples slugs={[
+  'pert-product-launch',
+  'pert-aoa-software-project',
+  'pert-swimlane-online-shop',
+  'pert-three-point-estimation',
+  'pert-migration-timescaled',
+]} />

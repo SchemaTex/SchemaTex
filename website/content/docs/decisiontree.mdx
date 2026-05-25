@@ -8,18 +8,19 @@ A **decision tree** is a branching diagram that represents a sequence of choices
 
 Schematex decision trees cover: (1) **taxonomy mode** — the yes/no question flows used in medical triage ([Turing 1937](https://en.wikipedia.org/wiki/Decision_tree) lineage; now standard in clinical decision support), (2) **decision analysis mode** — the expected-value rollback method developed in management science ([Raiffa & Schlaifer, 1961](https://en.wikipedia.org/wiki/Decision_tree#Decision_analysis)), and (3) **ML mode** — the CART split/leaf format used to visualize scikit-learn and similar trained classifiers ([Breiman et al., 1984](https://en.wikipedia.org/wiki/Decision_tree_learning)).
 
-<Playground initial={`decisiontree "Customer Support Triage"
-direction: top-down
+<Playground initial={`
+  decisiontree "Customer Support Triage"
+  direction: top-down
 
-question "Is the service completely down?"
-  yes: question "Outage confirmed on status page?"
-    yes: answer "Follow incident protocol — page on-call"
-    no: answer "Check monitoring — open severity-1 ticket"
-  no: question "Is the issue affecting billing?"
-    yes: answer "Escalate to billing team — SLA breach risk"
-    no: question "Can user reproduce consistently?"
-      yes: answer "Collect HAR trace — file bug report"
-      no: answer "Ask for screenshot — watch for recurrence"`} height={460} />
+  question "Is the service completely down?"
+    yes: question "Outage confirmed on status page?"
+      yes: answer "Follow incident protocol — page on-call"
+      no: answer "Check monitoring — open severity-1 ticket"
+    no: question "Is the issue affecting billing?"
+      yes: answer "Escalate to billing team — SLA breach risk"
+      no: question "Can user reproduce consistently?"
+        yes: answer "Collect HAR trace — file bug report"
+        no: answer "Ask for screenshot — watch for recurrence"`} height={460} />
 
 ---
 
@@ -27,13 +28,14 @@ question "Is the service completely down?"
 
 The smallest useful decision tree: a root question with two branches.
 
-<Playground initial={`decisiontree "Laptop troubleshoot"
+<Playground initial={`
+  decisiontree "Laptop troubleshoot"
 
-question "Does it power on?"
-  yes: answer "Check display — connect external monitor"
-  no: question "Is the charger light on?"
-    yes: answer "Hold power button 10 s — try again"
-    no: answer "Check outlet and charging cable"`} />
+  question "Does it power on?"
+    yes: answer "Check display — connect external monitor"
+    no: question "Is the charger light on?"
+      yes: answer "Hold power button 10 s — try again"
+      no: answer "Check outlet and charging cable"`} />
 
 Four rules cover 80% of usage:
 
@@ -83,25 +85,27 @@ Best for: troubleshooting guides, FAQs, clinical protocols, product recommendati
 
 Custom labels let you go beyond yes/no for multi-way decisions from one question.
 
-<Playground initial={`decisiontree "Triage — chest pain onset"
+<Playground initial={`
+  decisiontree "Triage — chest pain onset"
 
-q "Onset sudden?"
-  yes: q "ECG changes present?"
-    yes: a "ACS protocol — cardiology consult"
-    no: q "D-dimer elevated?"
-      yes: a "PE workup — CT pulmonary angiography"
-      no: a "Aortic dissection — CT angiography"
-  no: q "Pain reproducible on palpation?"
-    yes: a "Musculoskeletal — NSAIDs, follow-up PCP"
-    no: a "GI / anxiety — further history"`} height={420} />
+  q "Onset sudden?"
+    yes: q "ECG changes present?"
+      yes: a "ACS protocol — cardiology consult"
+      no: q "D-dimer elevated?"
+        yes: a "PE workup — CT pulmonary angiography"
+        no: a "Aortic dissection — CT angiography"
+    no: q "Pain reproducible on palpation?"
+      yes: a "Musculoskeletal — NSAIDs, follow-up PCP"
+      no: a "GI / anxiety — further history"`} height={420} />
 
-<Playground initial={`decisiontree "Pain level triage"
+<Playground initial={`
+  decisiontree "Pain level triage"
 
-question "Reported pain level?"
-  label "Severe (8-10)": answer "Emergency — send to ER immediately"
-  label "Moderate (4-7)": answer "Urgent care — within 2 hours"
-  label "Mild (1-3)": answer "Schedule next available — OTC care"
-  label "None": answer "Monitor — patient may be post-medication"`} height={320} />
+  question "Reported pain level?"
+    label "Severe (8-10)": answer "Emergency — send to ER immediately"
+    label "Moderate (4-7)": answer "Urgent care — within 2 hours"
+    label "Mild (1-3)": answer "Schedule next available — OTC care"
+    label "None": answer "Monitor — patient may be post-medication"`} height={320} />
 
 ---
 
@@ -130,19 +134,20 @@ Best for: investment decisions, build-vs-buy analysis, risk-weighted strategy ev
 
 **Constraint:** probabilities on all direct children of a `chance` node must sum to 1.0 (±0.01). The parser throws a `DTreeParseError` if they do not.
 
-<Playground initial={`decisiontree:decision "Cloud vendor selection"
+<Playground initial={`
+  decisiontree:decision "Cloud vendor selection"
 
-decision "Which vendor?"
-  choice "Build in-house"
-    chance "Project outcome"
-      prob 0.6 end "On-time delivery" payoff=900000
-      prob 0.4 end "Over budget / delayed" payoff=150000
-  choice "Managed SaaS vendor"
-    end "Predictable cost" payoff=500000
-  choice "Hybrid approach"
-    chance "Integration complexity"
-      prob 0.5 end "Smooth integration" payoff=700000
-      prob 0.5 end "Integration rework" payoff=300000`} height={440} />
+  decision "Which vendor?"
+    choice "Build in-house"
+      chance "Project outcome"
+        prob 0.6 end "On-time delivery" payoff=900000
+        prob 0.4 end "Over budget / delayed" payoff=150000
+    choice "Managed SaaS vendor"
+      end "Predictable cost" payoff=500000
+    choice "Hybrid approach"
+      chance "Integration complexity"
+        prob 0.5 end "Smooth integration" payoff=700000
+        prob 0.5 end "Integration rework" payoff=300000`} height={440} />
 
 ---
 
@@ -176,15 +181,16 @@ Best for: explaining trained CART classifiers, model transparency reports, featu
 | `class=name` | leaf | Predicted class name |
 | `value=50` | leaf | Sample count; use `value=[50,30,20]` for class distribution |
 
-<Playground initial={`decisiontree:ml "Iris classification (CART)"
-direction: top-down
-impurity: gini
+<Playground initial={`
+  decisiontree:ml "Iris classification (CART)"
+  direction: top-down
+  impurity: gini
 
-split "Petal length ≤ 2.45" feature=petal_length op="<=" threshold=2.45 samples=150 gini=0.667
-  true leaf "Setosa" class=Iris-setosa value=50 gini=0.0
-  false split "Petal width ≤ 1.75" feature=petal_width op="<=" threshold=1.75 samples=100 gini=0.5
-    true leaf "Versicolor" class=Iris-versicolor value=50 gini=0.0
-    false leaf "Virginica" class=Iris-virginica value=50 gini=0.0`} height={400} />
+  split "Petal length ≤ 2.45" feature=petal_length op="<=" threshold=2.45 samples=150 gini=0.667
+    true leaf "Setosa" class=Iris-setosa value=50 gini=0.0
+    false split "Petal width ≤ 1.75" feature=petal_width op="<=" threshold=1.75 samples=100 gini=0.5
+      true leaf "Versicolor" class=Iris-versicolor value=50 gini=0.0
+      false leaf "Virginica" class=Iris-virginica value=50 gini=0.0`} height={400} />
 
 ---
 
@@ -355,3 +361,14 @@ References:
 - **Collapse/expand interactive markers** — `collapsed: true` on a node to render a triangle placeholder for deep subtrees.
 
 Track in the GitHub issues if you need any of these sooner.
+
+---
+
+## Related examples
+
+Ready-to-use scenarios from the examples gallery:
+
+<RelatedExamples slugs={[
+  'decisiontree-support-triage',
+  'decisiontree-investment-analysis',
+]} />

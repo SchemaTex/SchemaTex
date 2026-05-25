@@ -10,31 +10,32 @@ It is conceptually a flowchart, but the layout, mandatory `n =` fields, and the 
 
 Distinct from [flowchart](/docs/flowchart): a generic flowchart has no notion of mandatory stages, record counts, exclusion side-boxes, or the dual-pipeline merge. Use `prisma` whenever the figure is a PRISMA review flow.
 
-<Playground initial={`prisma
-mode: 2020-single
-title: Effect of exercise on chronic low-back pain — SR
+<Playground initial={`
+  prisma
+  mode: 2020-single
+  title: Effect of exercise on chronic low-back pain — SR
 
-identification:
-  databases:
-    n: 1418
-    sources: PubMed=600, Embase=450, Cochrane=184, Web of Science=184
-    duplicates-removed: 318
+  identification:
+    databases:
+      n: 1418
+      sources: PubMed=600, Embase=450, Cochrane=184, Web of Science=184
+      duplicates-removed: 318
 
-screening:
-  records-screened: 1100
-  excluded:
-    n: 870
-    reasons: irrelevant title=750, non-English=120
+  screening:
+    records-screened: 1100
+    excluded:
+      n: 870
+      reasons: irrelevant title=750, non-English=120
 
-eligibility:
-  full-text-assessed: 230
-  excluded:
-    n: 195
-    reasons: wrong population=80, wrong intervention=60, wrong outcome=55
+  eligibility:
+    full-text-assessed: 230
+    excluded:
+      n: 195
+      reasons: wrong population=80, wrong intervention=60, wrong outcome=55
 
-included:
-  studies: 35
-  reports: 38`} height={620} />
+  included:
+    studies: 35
+    reports: 38`} height={620} />
 
 ---
 
@@ -230,3 +231,14 @@ Indentation is two spaces per level. Unknown keys inside a stage block are a par
 ## 9. Standard compliance
 
 Follows the **PRISMA 2020 statement** (Page MJ, McKenzie JE, Bossuyt PM, et al. *The PRISMA 2020 statement: an updated guideline for reporting systematic reviews.* BMJ 2021;372:n71) and the reference renderer conventions of the **PRISMA2020 R package** (Haddaway et al. 2022). Scoping-review vocabulary follows **PRISMA-ScR** (Tricco et al. 2018); the participants count follows **PRISMA-IPD** (Stewart et al. 2015). Template: [prisma-statement.org/prisma-2020-flow-diagram](https://www.prisma-statement.org/prisma-2020-flow-diagram).
+
+---
+
+## Related examples
+
+Ready-to-use scenarios from the examples gallery:
+
+<RelatedExamples slugs={[
+  'prisma-systematic-review',
+  'prisma-dual-pipeline',
+]} />
