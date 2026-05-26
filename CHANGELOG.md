@@ -7,7 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [Unreleased]
+## [0.6.0] — 2026-05-25
+
+### Changed
+
+- **`petri` reclassified into a new `concurrency` cluster** (was `behavior-modeling`), matching the type-system intent (`Concurrency / discrete-event formalism`) and the docs navigation. Petri nets model concurrent / distributed / asynchronous systems, so they now group on their own in the gallery's by-type view with a dedicated line-glyph.
+- **Clearer registry taglines for `usecase` and `sequence`** — both now lead with purpose (what the diagram is *for*) before the feature list, matching the house definition style.
 
 ### Added — PERT / CPM network engine (`pert`)
 
@@ -20,6 +25,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **House-style palette** — soft blue is the resting state; red is reserved as the critical-path accent (border + name band + bold slack), never a full red wash.
 - **Validation** — cycle detection, undefined/duplicate/self-referencing predecessors, three-point ordering (`O ≤ M ≤ P`), unit-suffix matching — all reported with the source line.
 - Registered across `DiagramType`, `src/core/api.ts`, `src/index.ts`, `src/ai/registry.ts` (new `project-management` cluster), and `SYNTAX_KEYS`. 45 tests in `tests/pert/`. Docs: `website/content/docs/pert.mdx`; examples: `pert-product-launch.mdx`, `pert-swimlane-online-shop.mdx`, `pert-three-point-estimation.mdx`, `pert-migration-timescaled.mdx`, `pert-aoa-software-project.mdx`.
+
+### Added — Petri net engine (`petri`)
+
+- **New dedicated `petri` engine** (`src/diagrams/petri/`) for place/transition nets per Murata 1989 + ISO/IEC 15909-1. Like `pert`, the engine **computes the dynamics**: it validates the bipartite structure, applies a `fire:` sequence to the initial marking, and highlights which transitions are *enabled* in the resulting marking. Spec: `34-PETRINET-STANDARD.md`.
+- **Places, transitions, and four arc types** — `place <id> *<tokens>` circles, `transition <id>` bars (immediate) or `timed rate: <λ>` boxes (GSPN), with standard `->`, inhibitor `-o`, read `--`, and reset `=>` arcs. Weighted arcs (`weight: n` / `*n`) and place `capacity:`.
+- **Subclass detection** — source/sink, workflow-net (van der Aalst), state-machine, and marked-graph structures are recognised and noted in the SVG `<desc>`.
+- **House-style palette** with green reserved for "enabled" and red for "inhibitor/dead"; faithful black-and-white Murata textbook look under `monochrome`. `layout: lr|tb` with cycle-removal back-edge routing.
+- Registered across `DiagramType`, `src/core/api.ts`, `src/index.ts`, `src/ai/registry.ts`, and `SYNTAX_KEYS`. Tests in `tests/petri/`. Docs: `website/content/docs/petri.mdx`; examples: `petri-producer-consumer.mdx`, `petri-mutual-exclusion.mdx`, `petri-classic-net.mdx`, `petri-workflow-net.mdx`, `petri-fire-sequence.mdx`.
+
+### Added — Network topology engine (`network`)
+
+- **New dedicated `network` engine** (`src/diagrams/network/`) for IT / CCTV network topology with Cisco-convention device icons, typed links, subnets/VLANs, and topology-correct layout. Spec: `35-NETWORK-STANDARD.md`.
+- **31 device kinds** (router, switch, l3switch, firewall, loadbalancer, ap, wlc, gateway, server, serverfarm, pc, laptop, mobile, ipphone, printer, storage, camera with `type: fixed|bullet|dome|ptz|turret`, nvr, dvr, poeswitch, encoder, monitor, internet/wan/cloud/pstn, lan, …) connected with `--` (undirected), `->` (directed), or `==` (LAG).
+- **Rich link specs** after `:` — link type (fiber/wireless/serial/poe/vpn/lag), `trunk`/`access`, `vlan:`, speed, and `port: a>b`; each rendered with a distinct line style.
+- **Physical + logical boundaries** — `site`/`rack` (solid) vs `subnet`/`vlan`/`zone`/`dmz` (dashed, tinted) nested blocks. Layouts `tiered` (default), `tree`, `star`, `ring`, `bus`, `mesh`, `spine-leaf`, `manual`. Validates VLAN range 1–4094 and device-IP-in-subnet-CIDR; never drops a device/port/link.
+- Registered across `DiagramType`, `src/core/api.ts`, `src/index.ts`, `src/ai/registry.ts` (new `network-infrastructure` cluster), and `SYNTAX_KEYS`. Tests in `tests/network/`. Docs: `website/content/docs/network.mdx`; examples: `network-cctv-camera-network.mdx`, `network-enterprise-campus.mdx`, `network-spine-leaf-fabric.mdx`, `network-link-types.mdx`, `network-boundaries.mdx`.
 
 ---
 

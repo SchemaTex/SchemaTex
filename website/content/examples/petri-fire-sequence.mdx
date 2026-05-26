@@ -1,0 +1,35 @@
+---
+title: Firing a transition advances the marking
+description: The same three-place net before and after firing — the `fire:` directive replays a transition, so the rendered marking is the state *after* the token moved from P1 to P2, and the engine now highlights T2 as the newly enabled transition.
+diagram: petri
+standard: Murata 1989 (place/transition net firing rule)
+industry: [education]
+persona: For the student
+complexity: 1
+tags: [petri, firing-rule, marking, dynamics, enabled-transitions]
+featured: false
+relatedLink:
+  label: Petri net syntax
+  href: /docs/petri
+status: published
+dsl: |
+  petri "After fire: T1"
+    place P1 *1
+    transition T1
+    place P2
+    transition T2
+    place P3
+    P1 -> T1
+    T1 -> P2
+    P2 -> T2
+    T2 -> P3
+    fire: T1
+---
+
+Most text-to-diagram tools draw a Petri net as static shapes. Schematex *runs* it.
+
+**The firing rule, applied.** The net is declared with one token in `P1`. The `fire: T1` directive tells the engine to apply T1's firing — consume one token from each input place (`P1`), produce one in each output place (`P2`). What you see rendered is the marking **after** that step: the token now sits in `P2`.
+
+**Enablement is recomputed.** With the token in `P2`, `T1` is now dead (its input `P1` is empty) and `T2` is the *enabled* transition (highlighted). Chain more steps — `fire: T1, T2` — to walk the net forward and watch the token travel P1 → P2 → P3.
+
+This is the difference between a drawing and a model: the diagram is a *function of* the computed marking, not something you hand-positioned.

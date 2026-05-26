@@ -20,7 +20,6 @@
   --schematex-stroke-thin: 1;
   --schematex-stroke-normal: 2;
   --schematex-stroke-thick: 3;
-  background: #ffffff;
 }
 .schematex-ecomap-center-shape { fill: #ffffff; stroke: #334155; stroke-width: 3; }
 .schematex-ecomap-center-label { font-family: system-ui, -apple-system, sans-serif; font-size: 14px; text-anchor: middle; dominant-baseline: central; fill: #0f172a; font-weight: 600; }
@@ -33,6 +32,11 @@
 .schematex-ecomap-eco-line-stressful { stroke: #94a3b8; stroke-width: 2; fill: none; stroke-linecap: round; }
 .schematex-ecomap-eco-conn-label { font-family: system-ui, -apple-system, sans-serif; font-size: 10px; text-anchor: middle; fill: #475569; }
 .schematex-ecomap-eco-arrow { fill: #94a3b8; }
+.schematex-ecomap-connection-mesosystem .schematex-ecomap-eco-line,
+.schematex-ecomap-connection-mesosystem .schematex-ecomap-eco-line-parallel,
+.schematex-ecomap-connection-mesosystem .schematex-ecomap-eco-line-weak,
+.schematex-ecomap-connection-mesosystem .schematex-ecomap-eco-line-broken,
+.schematex-ecomap-connection-mesosystem .schematex-ecomap-eco-line-stressful { stroke-opacity: 0.55; }
 .schematex-ecomap-system-family .schematex-ecomap-system-shape { fill: #8D6E6318; stroke: #8D6E63; }
 .schematex-ecomap-system-friends .schematex-ecomap-system-shape { fill: #42A5F518; stroke: #42A5F5; }
 .schematex-ecomap-system-work .schematex-ecomap-system-shape { fill: #66BB6A18; stroke: #66BB6A; }

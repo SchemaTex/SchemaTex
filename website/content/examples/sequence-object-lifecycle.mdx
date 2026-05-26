@@ -1,0 +1,30 @@
+---
+title: Object lifecycle — create, found, lost, destroy
+description: The four UML interaction lifecycle markers in one short diagram — a create message draws its arrow to the new participant's box, a found message starts from a filled circle, a lost message ends at one, and destroy terminates a lifeline with an ✕.
+diagram: sequence
+standard: OMG UML 2.5.1 §17 (Interactions)
+industry: [education]
+persona: For the software engineer
+complexity: 1
+tags: [sequence, uml, create, destroy, found-message, lost-message, lifecycle]
+featured: false
+relatedLink:
+  label: Sequence syntax
+  href: /docs/sequence
+status: published
+dsl: |
+  sequence
+    participant Factory
+    Factory -> *Worker : «create»
+    o-> Worker : external trigger
+    Worker -x : fire-and-forget
+    destroy Worker
+---
+
+UML interactions model not just messages but the *birth and death* of participants — the part most text-to-diagram tools skip. This tiny diagram shows all four markers.
+
+**Create.** `Factory -> *Worker` — the `*` prefix creates `Worker`; its arrow lands on the *side of the new participant's box*, which appears partway down rather than at the top, the UML convention for "instantiated here."
+
+**Found and lost.** `o-> Worker` is a *found* message — it starts from a filled circle, meaning "from outside the modelled scope" (an external trigger). `Worker -x` is a *lost* message — it ends at a circle, a fire-and-forget whose receiver isn't shown.
+
+**Destroy.** `destroy Worker` terminates the lifeline with the ✕ marker, so the diagram shows exactly when the object ceases to exist.

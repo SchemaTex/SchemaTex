@@ -1,0 +1,45 @@
+---
+title: Login flow with an alt fragment
+description: An authentication handshake across an actor, a Jacobson control object, and a database lifeline — synchronous calls open activation bars, a dashed reply returns the row, and an alt combined fragment splits the valid/invalid branches. A note records the session-cookie side effect.
+diagram: sequence
+standard: OMG UML 2.5.1 §17 (Interactions)
+industry: [business, education]
+persona: For the backend engineer
+complexity: 2
+tags: [sequence, uml, authentication, alt-fragment, activation, lifeline-kinds]
+featured: true
+relatedLink:
+  label: Sequence syntax
+  href: /docs/sequence
+status: published
+dsl: |
+  sequence "Login flow"
+    actor User
+    participant Web as "Web App"
+    control Auth
+    database DB
+    User -> Web : submit(credentials)
+    activate Web
+    Web ->+ Auth : verify(credentials)
+    Auth ->+ DB : SELECT user
+    DB --> Auth : row
+    deactivate DB
+    alt [credentials valid]
+      Auth --> Web : token
+      Web --> User : 200 OK
+    else [invalid]
+      Auth --> Web : 401
+      Web --> User : error
+    end
+    deactivate Auth
+    deactivate Web
+    note over User, Web : session cookie set
+---
+
+The canonical "who calls whom, in what order" diagram — and a good tour of the features that separate a UML sequence diagram from a generic flow.
+
+**Lifeline kinds carry meaning.** `actor`, `control`, and `database` render their distinct UML/Jacobson heads (stick figure, circled arrow, cylinder), so the diagram tells you *what kind of thing* each participant is, not just its name.
+
+**Activation and replies.** `->+` opens an activation bar on the callee; `--` draws the dashed reply that returns control (and the `row`). Bars nest, so you can see `Auth` is active while it waits on `DB`.
+
+**Branching is a real fragment.** The `alt` block with its `[credentials valid]` / `[invalid]` guards is a UML *combined fragment*, drawn as a labelled box spanning the lifelines — not two separate arrows you have to mentally group.

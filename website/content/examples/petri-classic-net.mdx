@@ -1,0 +1,38 @@
+---
+title: The classic Petri net — concurrency with feedback
+description: Murata's canonical place/transition net — one transition forks a token into two concurrent branches that a second transition joins, with a feedback place closing the loop. The engine marks which transitions are enabled in the current marking.
+diagram: petri
+standard: Murata 1989 + ISO/IEC 15909-1 (place/transition net)
+industry: [education, research]
+persona: For the systems modeller
+complexity: 2
+tags: [petri, concurrency, fork-join, feedback, enabled-transitions]
+featured: true
+relatedLink:
+  label: Petri net syntax
+  href: /docs/petri
+status: published
+dsl: |
+  petri "Classic"
+    place P1 *1
+    place P2
+    place P3 *2
+    place P4 *1
+    transition T1
+    transition T2
+    P1 -> T1
+    T1 -> P2
+    T1 -> P3
+    P2 -> T2
+    P3 -> T2
+    T2 -> P4
+    P4 -> T1
+---
+
+This is the net you find on the first page of every Petri-net text (Murata's 1989 survey, Wikipedia's figure 1): the smallest diagram that shows concurrency, synchronisation, and feedback at once.
+
+**One fork, one join.** Firing `T1` puts a token into both `P2` and `P3` — two branches now run concurrently. `T2` cannot fire until *both* branches deposit their tokens, so it is a synchronisation point (an AND-join).
+
+**The feedback place closes the loop.** `P4 -> T1` routes the result back as a back-edge, drawn around the layout so the cycle reads cleanly. In the current marking only `T1` is *enabled* (highlighted) — `T2` is dead because `P2` is empty until `T1` fires.
+
+**The render is downstream of the semantics.** Schematex isn't drawing shapes you positioned; it validated the bipartite structure, checked each transition's input places against the marking, and coloured the enabled one.

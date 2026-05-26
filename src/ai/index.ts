@@ -24,8 +24,18 @@ export type {
   DiagramMeta,
   DiagramCluster,
 } from "./registry";
-export { DIAGRAM_REGISTRY, getDiagramMeta, getAllDiagramTypes } from "./registry";
+export {
+  DIAGRAM_REGISTRY,
+  DIAGRAM_SINCE,
+  getDiagramMeta,
+  getAllDiagramTypes,
+  getDiagramSince,
+} from "./registry";
 export { resolveDiagramType } from "./registry";
+
+// Re-export the canonical DiagramType so website / consumers import it from the
+// package instead of redeclaring a drifting copy.
+export type { DiagramType } from "../core/types";
 
 export type { Example, GetExamplesOptions } from "./examples";
 export type { GenerationProfile } from "./profiles";

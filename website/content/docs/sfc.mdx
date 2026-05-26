@@ -10,24 +10,25 @@ In production code, ~10% of networks are written in SFC, but ~100% of nontrivial
 
 Distinct from **[state](/docs/state)** (UML statechart for reactive UIs and lifecycle FSMs): SFC has *cyclic-scan* semantics, double-bordered initial steps, action-block qualifiers (N/S/R/L/D/P), and bar-based branches (single bar = OR, double bar = AND).
 
-<Playground initial={`sfc "Bottle Filling"
+<Playground initial={`
+  sfc "Bottle Filling"
 
-var StartBtn: bool
-var TankLevel: real
-var DoneBtn: bool
+  var StartBtn: bool
+  var TankLevel: real
+  var DoneBtn: bool
 
-step S0 [initial]
-  N FillValve_Closed
+  step S0 [initial]
+    N FillValve_Closed
 
-step S1 [label: "Filling"]
-  N FillValve_Open
+  step S1 [label: "Filling"]
+    N FillValve_Open
 
-step S2 [label: "Done"]
-  N Confirm_Done
+  step S2 [label: "Done"]
+    N Confirm_Done
 
-transition from: S0 to: S1: StartBtn
-transition from: S1 to: S2: TankLevel >= 80.0
-transition from: S2 to: S0: DoneBtn`} height={520} />
+  transition from: S0 to: S1: StartBtn
+  transition from: S1 to: S2: TankLevel >= 80.0
+  transition from: S2 to: S0: DoneBtn`} height={520} />
 
 ---
 
@@ -201,3 +202,15 @@ Variables declared in conditions and actions are not validated — Schematex tre
 - **Active-step runtime indicator** (yellow fill on the currently active step) is deferred — useful for debugging integrations that surface PLC runtime state.
 - **GRAFCET forcing orders** (out-of-scope per IEC 60848-only feature).
 - **Final step** parses with `[final]` but renders with the same double border as initial; the IEC triple-border convention is deferred.
+
+---
+
+## Related examples
+
+Ready-to-use scenarios from the examples gallery:
+
+<RelatedExamples slugs={[
+  'sfc-bottle-filling',
+  'sfc-bake-cool-concurrent',
+  'sfc-order-routing-alt',
+]} />

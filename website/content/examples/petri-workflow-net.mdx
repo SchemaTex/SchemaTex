@@ -1,0 +1,43 @@
+---
+title: Order-fulfilment workflow net (WF-net)
+description: A van der Aalst workflow net — a single source place and single sink place bracket an AND-split/join that runs picking and invoicing concurrently before shipping. The engine detects the WF-net structure and reports it in the SVG description.
+diagram: petri
+standard: van der Aalst 1998 workflow nets (a Murata place/transition net)
+industry: [business]
+persona: For the process analyst
+complexity: 2
+tags: [petri, workflow, wf-net, and-split, business-process]
+featured: false
+relatedLink:
+  label: Petri net syntax
+  href: /docs/petri
+status: published
+dsl: |
+  petri "Order workflow"
+    place in *1 "received"
+    transition split
+    place pick
+    place invoice
+    transition pack
+    transition bill
+    place packed
+    place billed
+    transition ship
+    place out "shipped"
+    in -> split
+    split -> pick
+    split -> invoice
+    pick -> pack
+    invoice -> bill
+    pack -> packed
+    bill -> billed
+    packed -> ship
+    billed -> ship
+    ship -> out
+---
+
+A *workflow net* is the Petri-net dialect business-process people actually use: exactly one **source** place (no incoming arcs — where a case enters) and one **sink** place (no outgoing arcs — where it leaves). Schematex detects this structure and notes it in the diagram's `<desc>`.
+
+**Concurrency by construction.** `split` forks the order into a `pick` branch and an `invoice` branch — warehouse and finance work in parallel. `ship` is the AND-join: it needs both `packed` and `billed`, so an order can't ship before it's been both packed and billed. No status flags, no polling — the net enforces the ordering.
+
+**Why not a flowchart?** A flowchart would draw the same boxes but couldn't express "these two run concurrently and rejoin" without ambiguity. The Petri net's token flow makes the AND-split/join unambiguous and analysable. This is the same reduction BPMN uses internally.

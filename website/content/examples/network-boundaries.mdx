@@ -1,0 +1,45 @@
+---
+title: Physical and logical boundaries in one diagram
+description: A branch-office topology nesting physical containers (a site holding an MDF rack) and logical overlays (a DMZ security zone and a CIDR subnet) — solid borders for physical, dashed tinted borders for logical — so the same devices read correctly in both the cabling and the addressing views.
+diagram: network
+standard: Cisco-convention topology icons + hierarchical campus model
+industry: [business, industrial]
+persona: For the network architect
+complexity: 3
+tags: [network, boundaries, subnet, vlan, dmz, rack, security-zone]
+featured: false
+relatedLink:
+  label: Network syntax
+  href: /docs/network
+status: published
+dsl: |
+  network "Branch Office"
+    layout: tiered
+    internet net
+    site hq "HQ Building" {
+      rack mdf "MDF Rack" {
+        firewall fw1 tier: edge
+        l3switch core1 tier: core
+      }
+    }
+    zone dmz "DMZ" {
+      server web "Web Server"
+    }
+    subnet lan "10.0.10.0/24" {
+      switch a1 tier: access
+      pc u1 "User PC" ip: 10.0.10.50
+    }
+    net -- fw1 : wan
+    fw1 -- web
+    fw1 -- core1 : 10G
+    core1 -- a1 : trunk vlan: 10
+    a1 -- u1
+---
+
+Real network documentation has to answer two different questions at once: *where is this box physically* (which building, which rack) and *what address space / security zone is it in*. Schematex draws both kinds of grouping and distinguishes them visually.
+
+**Physical containers are solid.** `site` and `rack` blocks get solid borders — the HQ building holds an MDF rack holding the firewall and core switch.
+
+**Logical overlays are dashed and tinted.** `zone` (the DMZ) and `subnet` (the `10.0.10.0/24` LAN) get dashed, tinted borders — they group by policy and addressing, not by location. The engine validates that `u1`'s `ip: 10.0.10.50` actually falls inside the subnet's CIDR.
+
+**Tiers still band the layout.** `tier: edge|core|access` keeps the hierarchical top-to-bottom ordering even inside the boundaries, so the diagram reads as a proper three-tier design.

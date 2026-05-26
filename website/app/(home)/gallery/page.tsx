@@ -13,14 +13,17 @@ import { allExamples } from '@/lib/examples-source';
 import { DIAGRAM_TYPE_COUNT } from '@/lib/diagram-stats';
 import { GalleryGrid } from '@/components/GalleryGrid';
 import { GalleryFilterBar } from '@/components/GalleryFilterBar';
+import { GalleryViewTabs, type GalleryView } from '@/components/GalleryViewTabs';
+import { DiagramTypeView } from '@/components/DiagramTypeView';
 
 export const metadata: Metadata = {
   title: 'Gallery — the diagrams doctors, engineers, and lawyers actually use',
-  description: `${allExamples.length} real-world Schematex diagrams across healthcare, industrial, legal, education, and research. Every example follows a published standard — copy the DSL, open in playground, ship. Free, fully open source, made for AI.`,
+  description: `${allExamples.length} real-world Schematex diagrams across healthcare, industrial, legal, education, and research. Browse by use-case or by diagram type — every example follows a published standard. Free, fully open source, made for AI.`,
   alternates: { canonical: 'https://schematex.js.org/gallery' },
 };
 
 interface SearchParamsShape {
+  view?: string;
   type?: string;
   industry?: string;
   q?: string;
@@ -61,6 +64,7 @@ export default async function GalleryPage({
   searchParams: Promise<SearchParamsShape>;
 }) {
   const params = await searchParams;
+  const view: GalleryView = params.view === 'type' ? 'type' : 'usecase';
   const activeDiagram = parseDiagram(params.type);
   const activeIndustry = parseIndustry(params.industry);
   const activeQuery = (params.q ?? '').trim();
@@ -94,36 +98,47 @@ export default async function GalleryPage({
             The diagrams doctors, engineers, and lawyers actually use.
           </h1>
           <p className="mt-2 max-w-xl text-sm" style={{ color: 'var(--text-muted)' }}>
-            {galleryExamples.length} real-world Schematex diagrams — clinical genograms,
-            IEC 61131-3 ladder logic, NSGC pedigrees, cap tables, and more. Every one
-            follows a published standard. Copy the DSL, open in playground, ship.
+            {view === 'type'
+              ? `All ${DIAGRAM_TYPE_COUNT} diagram types, grouped by cluster — each follows a published standard, shows the version it shipped, and renders every example form we test.`
+              : `${galleryExamples.length} real-world Schematex diagrams — clinical genograms, IEC 61131-3 ladder logic, NSGC pedigrees, cap tables, and more. Every one follows a published standard. Copy the DSL, open in playground, ship.`}
           </p>
+          <div className="mt-6">
+            <GalleryViewTabs active={view} />
+          </div>
         </div>
       </section>
 
-      {/* Filter bar + grid */}
-      <section className="px-6 pb-24">
-        <div className="mx-auto max-w-6xl">
-          <Suspense fallback={<div className="py-6" />}>
-            <GalleryFilterBar
-              examples={galleryExamples}
-              totalCount={galleryExamples.length}
-              visibleCount={filtered.length}
-              activeDiagram={activeDiagram}
-              activeIndustry={activeIndustry}
-              activeQuery={activeQuery}
-            />
-          </Suspense>
-
-          <div className="mt-8">
-            {filtered.length > 0 ? (
-              <GalleryGrid examples={filtered} />
-            ) : (
-              <EmptyState />
-            )}
+      {view === 'type' ? (
+        /* By diagram type — the registry-driven catalog */
+        <section className="px-6 pb-24 pt-10">
+          <div className="mx-auto max-w-6xl">
+            <DiagramTypeView />
           </div>
+        </section>
+      ) : (
+        /* By use-case — filter bar + grid */
+        <section className="px-6 pb-24">
+          <div className="mx-auto max-w-6xl">
+            <Suspense fallback={<div className="py-6" />}>
+              <GalleryFilterBar
+                examples={galleryExamples}
+                totalCount={galleryExamples.length}
+                visibleCount={filtered.length}
+                activeDiagram={activeDiagram}
+                activeIndustry={activeIndustry}
+                activeQuery={activeQuery}
+              />
+            </Suspense>
 
-          {filtered.length > 0 && (
+            <div className="mt-8">
+              {filtered.length > 0 ? (
+                <GalleryGrid examples={filtered} />
+              ) : (
+                <EmptyState />
+              )}
+            </div>
+
+            {filtered.length > 0 && (
             <div className="mt-16 rounded-2xl border border-fd-border bg-fd-muted/20 p-8 text-center">
               <h2 className="text-2xl font-semibold tracking-tight">
                 Need a diagram type we don&apos;t cover yet?
@@ -147,9 +162,10 @@ export default async function GalleryPage({
                 </a>
               </div>
             </div>
-          )}
-        </div>
-      </section>
+            )}
+          </div>
+        </section>
+      )}
     </main>
   );
 }

@@ -8,18 +8,19 @@ title: Function Block Diagram (FBD)
 
 Schematex follows the **IEC 61131-3 §6.4** visual conventions with **IEC 60617-12** distinctive symbols (`&` for AND, `≥1` for OR, `=1` for XOR, `1` for NOT/BUF). Wires are colored by data type (BOOL black, INT blue, REAL orange, TIME magenta) following TIA Portal de-facto convention. Sister language to **[ladder](/docs/ladder)** (§6.3, rung-based) and **[sfc](/docs/sfc)** (§6.5, sequence-based); together they form the visual half of IEC 61131-3.
 
-<Playground initial={`fbd "Motor Control"
+<Playground initial={`
+  fbd "Motor Control"
 
-var Start: bool
-var Stop: bool
-var Latch: bool
-var MotorOut: bool
+  var Start: bool
+  var Stop: bool
+  var Latch: bool
+  var MotorOut: bool
 
-network 0 "Start/stop latch":
-  Latch = OR(Start, AND(Latch, ~Stop))
+  network 0 "Start/stop latch":
+    Latch = OR(Start, AND(Latch, ~Stop))
 
-network 1 "Drive output":
-  MotorOut = MOVE(Latch)`} height={420} />
+  network 1 "Drive output":
+    MotorOut = MOVE(Latch)`} height={420} />
 
 ---
 
@@ -182,3 +183,15 @@ The current engine implements the standard-block subset most teams use day-to-da
 - **CTUD** bidirectional counter, **TP** retentive timer (RTO).
 
 If you need any of these now, open an issue or use the `ladder` engine for the full IEC 61131-3 LD subset.
+
+---
+
+## Related examples
+
+Ready-to-use scenarios from the examples gallery:
+
+<RelatedExamples slugs={[
+  'fbd-motor-latch',
+  'fbd-bottle-counter',
+  'fbd-tank-setpoint-limiter',
+]} />

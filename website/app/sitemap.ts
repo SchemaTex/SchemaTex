@@ -11,6 +11,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE}/playground`, priority: 0.9, lastModified: NOW, changeFrequency: 'weekly' },
     { url: `${SITE}/docs`, priority: 0.9, lastModified: NOW, changeFrequency: 'weekly' },
     { url: `${SITE}/gallery`, priority: 0.8, lastModified: NOW, changeFrequency: 'weekly' },
+    { url: `${SITE}/examples`, priority: 0.7, lastModified: NOW, changeFrequency: 'weekly' },
+    { url: `${SITE}/changelog`, priority: 0.6, lastModified: NOW, changeFrequency: 'weekly' },
+    { url: `${SITE}/icons`, priority: 0.6, lastModified: NOW, changeFrequency: 'monthly' },
   ];
   const docPages = source.getPages().map((page) => ({
     url: `${SITE}${page.url}`,
