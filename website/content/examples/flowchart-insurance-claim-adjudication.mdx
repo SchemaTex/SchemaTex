@@ -1,0 +1,60 @@
+---
+title: Insurance claim adjudication
+description: ISO-style flowchart for a claims team triaging coverage, fraud risk, document completeness, manual review, and payment or denial outcomes.
+diagram: flowchart
+standard: ISO 5807:1985
+industry: [insurance, operations]
+persona: For the claims operations lead
+complexity: 3
+tags: [flowchart, insurance, claims, adjudication, manual-review]
+featured: false
+relatedLink:
+  label: Flowchart syntax
+  href: /docs/flowchart
+status: published
+dsl: |
+  flowchart LR
+    start([Claim submitted])
+    intake[/Capture FNOL data/]
+    docs{Documents complete?}
+    request[Request missing documents]
+    coverage{Policy active on loss date?}
+    deny1[Issue coverage denial]
+    fraud{Fraud score high?}
+    review[[Manual SIU review]]
+    liability{Liability accepted?}
+    estimate[Calculate covered amount]
+    approve{Adjuster approval?}
+    pay[(Payment ledger)]
+    denial[Send denial letter]
+    close([Close claim])
+
+    start --> intake
+    intake --> docs
+    docs -->|No| request
+    request -.->|Resubmitted| docs
+    docs -->|Yes| coverage
+    coverage -->|No| deny1
+    deny1 --> close
+    coverage -->|Yes| fraud
+    fraud -->|Yes| review
+    review --> liability
+    fraud -->|No| liability
+    liability -->|No| denial
+    denial --> close
+    liability -->|Yes| estimate
+    estimate --> approve
+    approve -->|Needs changes| estimate
+    approve -->|Approved| pay
+    pay --> close
+---
+
+## Scenario
+
+Claim adjudication is not a straight line. The same claim can bounce for missing documents, route to special investigation, return for estimate changes, or close through denial. A flowchart is appropriate here because the core question is operational routing, not ownership lanes or event semantics.
+
+## Annotation key
+
+- Parallelogram `[/.../]` marks intake data capture.
+- `[[...]]` marks a predefined manual review subprocess.
+- Dotted retry edge shows a resubmission loop without making it the main path.

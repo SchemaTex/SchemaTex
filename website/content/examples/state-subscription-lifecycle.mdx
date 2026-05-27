@@ -1,0 +1,60 @@
+---
+title: SaaS subscription lifecycle
+description: UML statechart for a subscription moving through trial, active service, payment recovery, pause, cancellation, and reactivation.
+diagram: state
+standard: OMG UML 2.5.1
+industry: [software, saas, billing]
+persona: For the SaaS product engineer
+complexity: 3
+tags: [statechart, subscription, billing, lifecycle, guards]
+featured: false
+relatedLink:
+  label: State diagram syntax
+  href: /docs/state
+status: published
+dsl: |
+  state "Subscription Lifecycle" [direction: LR]
+
+  initial start
+  start -> Trialing
+
+  Trialing -> Active : trial_end [payment_method_valid] / startBilling()
+  Trialing -> Incomplete : trial_end [payment_method_missing] / requestPaymentMethod()
+  Trialing -> Cancelled : cancel
+
+  composite Active {
+    entry / provisionWorkspace()
+    exit / syncEntitlements()
+    initial ai
+    ai -> Current
+    Current -> GracePeriod : invoice_failed
+    GracePeriod -> Current : payment_succeeded / restoreAccess()
+    GracePeriod -> PastDue : grace_expired
+    PastDue -> Current : payment_succeeded / clearDunning()
+    final af
+    Current -> af : cancel_at_period_end
+  }
+
+  Active -> Paused : pause [plan_allows_pause] / suspendBilling()
+  Paused -> Active : resume / resumeBilling()
+  Active -> Cancelled : cancel_now / revokeAccess()
+  Incomplete -> Active : payment_method_added / retryInvoice()
+  Incomplete -> Cancelled : expires
+  Active -> Cancelled : period_end
+  Cancelled -> Active : reactivate [within_retention_window] / restoreSubscription()
+
+  final done
+  Cancelled -> done : purge_after_retention
+
+  note right_of Active : Composite state keeps dunning detail inside active service.
+---
+
+## Scenario
+
+Subscription logic is where simple status enums drift out of sync with billing providers. This statechart makes the product contract explicit: trial conversion, incomplete setup, dunning recovery, pause, cancellation, and reactivation are separate transitions with guards and actions.
+
+## Annotation key
+
+- `Active` is a composite state because payment recovery happens while the product is still notionally active.
+- Guard labels such as `[payment_method_valid]` document provider-dependent branching.
+- Entry and exit actions mark entitlement provisioning and sync points.

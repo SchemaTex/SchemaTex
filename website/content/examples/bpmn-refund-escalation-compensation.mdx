@@ -1,0 +1,76 @@
+---
+title: Refund escalation workflow
+description: BPMN process for refund handling across Support, Risk, Finance, and an external payment processor, with SLA timer escalation and customer-facing message flows.
+diagram: bpmn
+standard: OMG BPMN 2.0.2 / ISO/IEC 19510:2013
+industry: [software, finance, support]
+persona: For the process analyst
+complexity: 3
+tags: [bpmn, refund, escalation, timer, finance, support]
+featured: false
+relatedLink:
+  label: BPMN syntax
+  href: /docs/bpmn
+status: published
+dsl: |
+  bpmn
+  direction: LR
+  title: "Refund escalation"
+
+  pool "Customer" blackbox
+  pool "Payment Processor" blackbox
+
+  pool "Merchant" {
+    lane "Support" {
+      S: start message "Refund request"
+      TRIAGE: task user "Triage request"
+      DOCS: gateway xor "Enough evidence?"
+      ASK: task send "Ask for documents"
+      SLA: intermediate timer "48h SLA"
+      ESC: task user "Escalate case"
+    }
+    lane "Risk" {
+      RISK: task user "Risk review"
+      G1: gateway xor "Policy breach?"
+      DENY: task send "Deny refund"
+    }
+    lane "Finance" {
+      CALC: task service "Calculate amount"
+      APPROVE: task user "Approve refund"
+      ISSUE: task send "Issue refund"
+      ENDOK: end message "Refund sent"
+      ENDDENY: end message "Denied"
+    }
+  }
+
+  flows
+  S --> TRIAGE
+  TRIAGE --> DOCS
+  DOCS --? "missing" --> ASK
+  ASK --> SLA
+  SLA --> ESC
+  ESC --> RISK
+  DOCS --* "complete" --> RISK
+  RISK --> G1
+  G1 --? "yes" --> DENY
+  DENY --> ENDDENY
+  G1 --* "no" --> CALC
+  CALC --> APPROVE
+  APPROVE --> ISSUE
+  ISSUE --> ENDOK
+  "Customer" ~~> S : "Refund request"
+  ASK ~~> "Customer" : "Need documents"
+  DENY ~~> "Customer" : "Denial notice"
+  ISSUE ~~> "Payment Processor" : "Refund API"
+  "Payment Processor" ~~> ENDOK : "Refund confirmed"
+---
+
+## Scenario
+
+Refund handling is a process-governance problem: support receives the customer request, risk decides whether policy blocks the refund, finance approves and issues the money movement, and the payment processor confirms settlement. BPMN is the right notation because lanes and message flows are part of the meaning.
+
+## Annotation key
+
+- The `48h SLA` timer event makes escalation a timed process milestone rather than a vague task.
+- Message flows (`~~>`) cross pool boundaries for customer and processor communication.
+- The XOR gateway separates policy denial from the refund issuance path.

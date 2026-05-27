@@ -1,0 +1,58 @@
+---
+title: Zero-trust cloud VPC topology
+description: Network topology for a zero-trust SaaS VPC with VPN entry, DMZ, private application subnet, database subnet, firewall segmentation, and annotated VPN/fiber/trunk links.
+diagram: network
+standard: Cisco-convention topology icons + security-zone topology
+industry: [cloud, security, infrastructure]
+persona: For the cloud network architect
+complexity: 3
+tags: [network, zero-trust, vpc, dmz, vpn, firewall, cloud]
+featured: false
+relatedLink:
+  label: Network syntax
+  href: /docs/network
+status: published
+dsl: |
+  network "Zero-trust SaaS VPC"
+    layout: tiered
+    internet inet "Internet"
+    cloud idp "Identity Provider"
+    vpngw vpn "Client VPN" tier: edge
+    firewall fw "Segmentation FW" tier: edge
+    loadbalancer alb "Public ALB" tier: distribution
+
+    zone dmz "DMZ" {
+      proxy edgeproxy "Reverse Proxy" tier: distribution
+    }
+    subnet appnet "10.20.10.0/24" {
+      server api1 "API 1" ip: 10.20.10.11
+      server api2 "API 2" ip: 10.20.10.12
+    }
+    subnet dbnet "10.20.30.0/24" {
+      storage db "Postgres HA" ip: 10.20.30.20
+    }
+    zone admin "Admin Zone" {
+      laptop admin1 "Admin Laptop"
+    }
+
+    inet -- alb : fiber 10G
+    inet -- vpn : vpn
+    idp -- vpn : vpn "OIDC"
+    vpn -- fw : vpn "device posture"
+    alb -- edgeproxy : 1G
+    edgeproxy -- fw : trunk vlan: 110
+    fw -- api1 : access vlan: 210 1G
+    fw -- api2 : access vlan: 210 1G
+    fw -- db : access vlan: 230 1G
+    admin1 -- vpn : wireless vpn
+---
+
+## Scenario
+
+Zero-trust diagrams need to show both the physical/logical topology and the policy boundary: public traffic reaches only the DMZ, administrators enter through VPN and identity checks, and application servers reach the database through a segmented firewall path.
+
+## Annotation key
+
+- `zone` and `subnet` groups distinguish security policy from IP address space.
+- VPN links are dashed and annotated, making identity/device-posture paths visible.
+- VLAN labels document segmentation at the firewall boundary.

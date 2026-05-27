@@ -1,0 +1,90 @@
+---
+title: Billing ledger and audit trail
+description: Crow's-foot ERD for an immutable SaaS billing ledger with customers, invoices, payments, refunds, ledger entries, and audit events.
+diagram: erd
+standard: Crow's-foot ERD
+industry: [software, finance]
+persona: For the SaaS backend engineer
+complexity: 3
+tags: [erd, billing, ledger, audit-trail, finance, schema]
+featured: false
+relatedLink:
+  label: ERD syntax
+  href: /docs/erd
+status: published
+dsl: |
+  erd
+  title: "Billing Ledger"
+  direction: LR
+
+  table Customer {
+    customer_id uuid PK
+    email varchar UK
+    billing_currency char NN
+  }
+  table Subscription {
+    subscription_id uuid PK
+    customer_id uuid FK -> Customer.customer_id
+    status varchar NN
+    current_period_end timestamptz
+  }
+  table Invoice {
+    invoice_id uuid PK
+    customer_id uuid FK -> Customer.customer_id
+    subscription_id uuid FK -> Subscription.subscription_id
+    number varchar UK
+    total_cents bigint NN
+    status varchar NN
+  }
+  table Payment {
+    payment_id uuid PK
+    invoice_id uuid FK -> Invoice.invoice_id
+    provider_ref varchar UK
+    amount_cents bigint NN
+    captured_at timestamptz
+  }
+  table Refund {
+    refund_id uuid PK
+    payment_id uuid FK -> Payment.payment_id
+    amount_cents bigint NN
+    reason varchar
+  }
+  table LedgerEntry {
+    entry_id uuid PK
+    customer_id uuid FK -> Customer.customer_id
+    invoice_id uuid FK -> Invoice.invoice_id
+    payment_id uuid FK -> Payment.payment_id
+    refund_id uuid FK -> Refund.refund_id
+    entry_type varchar NN
+    amount_cents bigint NN
+    posted_at timestamptz NN
+  }
+  table AuditEvent {
+    event_id uuid PK
+    actor_id uuid
+    entity_type varchar NN
+    entity_id uuid NN
+    action varchar NN
+    created_at timestamptz NN
+  }
+
+  ref Subscription.customer_id many-mandatory -- one-mandatory Customer.customer_id : "belongs to"
+  ref Invoice.customer_id many-mandatory -- one-mandatory Customer.customer_id : "billed to"
+  ref Invoice.subscription_id many-optional .. one-optional Subscription.subscription_id : "for plan"
+  ref Payment.invoice_id many-optional -- one-mandatory Invoice.invoice_id : "settles"
+  ref Refund.payment_id many-optional -- one-mandatory Payment.payment_id : "reverses"
+  ref LedgerEntry.customer_id many-mandatory -- one-mandatory Customer.customer_id : "posts for"
+  ref LedgerEntry.invoice_id many-optional .. one-optional Invoice.invoice_id : "source invoice"
+  ref LedgerEntry.payment_id many-optional .. one-optional Payment.payment_id : "source payment"
+  ref LedgerEntry.refund_id many-optional .. one-optional Refund.refund_id : "source refund"
+---
+
+## Scenario
+
+Billing schemas become risky when money movement and auditability are mixed into mutable order tables. This ERD separates commercial objects from immutable ledger entries, making it clear which facts can change and which entries are accounting evidence.
+
+## Annotation key
+
+- `LedgerEntry` points optionally to invoices, payments, and refunds because each entry has exactly one accounting source.
+- Solid `--` relationships show identifying operational ownership.
+- Dashed `..` relationships show optional audit/source references that should not control the lifecycle of the ledger row.

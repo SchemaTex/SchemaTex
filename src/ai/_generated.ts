@@ -118,6 +118,25 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "notes": "This is the OMG-tutorial *hello world* for BPMN — every BPM textbook and certification course uses some version of it. It's a deceptively rich example: in 12 elements it covers every concept that distinguishes BPMN from a generic flowchart.\n\n**Black-box pool.** The customer's internal process is unknown (and irrelevant) to the pizzeria, so Customer is rendered as an empty rectangle with no flow objects. Schematex enforces this — adding a lane or a task inside a `blackbox` pool fails the parse. Black-box pools exist purely as message-flow endpoints.\n\n**Message flows cross pools, sequence flows do not.** The two `~~>` connectors are dashed with an open arrowhead and a small unfilled circle at the source. That's the *only* legal way information crosses a pool boundary in BPMN. Schematex's parser will reject `A --> \"Customer\"` with a clear error.\n\n**Rework loop.** `D --> C` creates a back-edge. The layout's longest-path layering would normally fail on cycles; Schematex's DFS-based cycle-break tags `D → C` as a back edge, runs longest-path on the remaining DAG, then routes the loop manually. This is exactly how real processes look — quality gates always have a \"go back and redo it\" branch.\n\n**Task markers communicate intent.** `start message` (envelope) means \"wait for an inbound message before starting\"; `task manual` means a person performs the work without software (\"hand-toss the dough\"); `task send` means \"send a message and continue\". An LLM picking markers correctly turns a vague flowchart into a precise process spec."
   },
   {
+    "slug": "bpmn-refund-escalation-compensation",
+    "diagram": "bpmn",
+    "title": "Refund escalation workflow",
+    "description": "BPMN process for refund handling across Support, Risk, Finance, and an external payment processor, with SLA timer escalation and customer-facing message flows.",
+    "standard": "OMG BPMN 2.0.2 / ISO/IEC 19510:2013",
+    "tags": [
+      "bpmn",
+      "refund",
+      "escalation",
+      "timer",
+      "finance",
+      "support"
+    ],
+    "complexity": 3,
+    "featured": false,
+    "dsl": "bpmn\ndirection: LR\ntitle: \"Refund escalation\"\n\npool \"Customer\" blackbox\npool \"Payment Processor\" blackbox\n\npool \"Merchant\" {\n  lane \"Support\" {\n    S: start message \"Refund request\"\n    TRIAGE: task user \"Triage request\"\n    DOCS: gateway xor \"Enough evidence?\"\n    ASK: task send \"Ask for documents\"\n    SLA: intermediate timer \"48h SLA\"\n    ESC: task user \"Escalate case\"\n  }\n  lane \"Risk\" {\n    RISK: task user \"Risk review\"\n    G1: gateway xor \"Policy breach?\"\n    DENY: task send \"Deny refund\"\n  }\n  lane \"Finance\" {\n    CALC: task service \"Calculate amount\"\n    APPROVE: task user \"Approve refund\"\n    ISSUE: task send \"Issue refund\"\n    ENDOK: end message \"Refund sent\"\n    ENDDENY: end message \"Denied\"\n  }\n}\n\nflows\nS --> TRIAGE\nTRIAGE --> DOCS\nDOCS --? \"missing\" --> ASK\nASK --> SLA\nSLA --> ESC\nESC --> RISK\nDOCS --* \"complete\" --> RISK\nRISK --> G1\nG1 --? \"yes\" --> DENY\nDENY --> ENDDENY\nG1 --* \"no\" --> CALC\nCALC --> APPROVE\nAPPROVE --> ISSUE\nISSUE --> ENDOK\n\"Customer\" ~~> S : \"Refund request\"\nASK ~~> \"Customer\" : \"Need documents\"\nDENY ~~> \"Customer\" : \"Denial notice\"\nISSUE ~~> \"Payment Processor\" : \"Refund API\"\n\"Payment Processor\" ~~> ENDOK : \"Refund confirmed\"",
+    "notes": "## Scenario\n\nRefund handling is a process-governance problem: support receives the customer request, risk decides whether policy blocks the refund, finance approves and issues the money movement, and the payment processor confirms settlement. BPMN is the right notation because lanes and message flows are part of the meaning.\n\n## Annotation key\n\n- The `48h SLA` timer event makes escalation a timed process milestone rather than a vague task.\n- Message flows (`~~>`) cross pool boundaries for customer and processor communication.\n- The XOR gateway separates policy denial from the refund issuance path."
+  },
+  {
     "slug": "breadboard-blink-led",
     "diagram": "breadboard",
     "title": "Blink LED on Arduino Uno",
@@ -407,6 +426,25 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "notes": "## Scenario\n\nA startup attorney or CFO documents the post-Series A ownership table for a 409A valuation, board consent, or investor report. The cap table diagram makes the dilution story visual — founders can immediately see their post-money percentage, and the VC can verify their ownership stake before signing the term sheet.\n\n## Annotation key\n\n- `-> acme : 45%` — ownership arrow with percentage label; all percentages should sum to 100%\n- `individual` — natural person (founder, angel)\n- `lp` — institutional investor entity (fund/LP)\n- `trust` — the ESOP/option pool (typically a Delaware trust or reserved pool)\n- `corp@DE` — the issuer (Delaware C-corp)\n\n## How to read\n\nAcme Inc. (Delaware C-corp) sits at the bottom as the issuer. Five shareholder classes flow down with their ownership arrows: founders at 45%, the lead Series A investor at 22%, the employee option pool at 15%, the seed fund at 12%, and angels at 6%. Percentages sum to 100%, representing a clean fully-diluted cap table on the day of Series A close."
   },
   {
+    "slug": "erd-billing-ledger-audit-trail",
+    "diagram": "erd",
+    "title": "Billing ledger and audit trail",
+    "description": "Crow's-foot ERD for an immutable SaaS billing ledger with customers, invoices, payments, refunds, ledger entries, and audit events.",
+    "standard": "Crow's-foot ERD",
+    "tags": [
+      "erd",
+      "billing",
+      "ledger",
+      "audit-trail",
+      "finance",
+      "schema"
+    ],
+    "complexity": 3,
+    "featured": false,
+    "dsl": "erd\ntitle: \"Billing Ledger\"\ndirection: LR\n\ntable Customer {\n  customer_id uuid PK\n  email varchar UK\n  billing_currency char NN\n}\ntable Subscription {\n  subscription_id uuid PK\n  customer_id uuid FK -> Customer.customer_id\n  status varchar NN\n  current_period_end timestamptz\n}\ntable Invoice {\n  invoice_id uuid PK\n  customer_id uuid FK -> Customer.customer_id\n  subscription_id uuid FK -> Subscription.subscription_id\n  number varchar UK\n  total_cents bigint NN\n  status varchar NN\n}\ntable Payment {\n  payment_id uuid PK\n  invoice_id uuid FK -> Invoice.invoice_id\n  provider_ref varchar UK\n  amount_cents bigint NN\n  captured_at timestamptz\n}\ntable Refund {\n  refund_id uuid PK\n  payment_id uuid FK -> Payment.payment_id\n  amount_cents bigint NN\n  reason varchar\n}\ntable LedgerEntry {\n  entry_id uuid PK\n  customer_id uuid FK -> Customer.customer_id\n  invoice_id uuid FK -> Invoice.invoice_id\n  payment_id uuid FK -> Payment.payment_id\n  refund_id uuid FK -> Refund.refund_id\n  entry_type varchar NN\n  amount_cents bigint NN\n  posted_at timestamptz NN\n}\ntable AuditEvent {\n  event_id uuid PK\n  actor_id uuid\n  entity_type varchar NN\n  entity_id uuid NN\n  action varchar NN\n  created_at timestamptz NN\n}\n\nref Subscription.customer_id many-mandatory -- one-mandatory Customer.customer_id : \"belongs to\"\nref Invoice.customer_id many-mandatory -- one-mandatory Customer.customer_id : \"billed to\"\nref Invoice.subscription_id many-optional .. one-optional Subscription.subscription_id : \"for plan\"\nref Payment.invoice_id many-optional -- one-mandatory Invoice.invoice_id : \"settles\"\nref Refund.payment_id many-optional -- one-mandatory Payment.payment_id : \"reverses\"\nref LedgerEntry.customer_id many-mandatory -- one-mandatory Customer.customer_id : \"posts for\"\nref LedgerEntry.invoice_id many-optional .. one-optional Invoice.invoice_id : \"source invoice\"\nref LedgerEntry.payment_id many-optional .. one-optional Payment.payment_id : \"source payment\"\nref LedgerEntry.refund_id many-optional .. one-optional Refund.refund_id : \"source refund\"",
+    "notes": "## Scenario\n\nBilling schemas become risky when money movement and auditability are mixed into mutable order tables. This ERD separates commercial objects from immutable ledger entries, making it clear which facts can change and which entries are accounting evidence.\n\n## Annotation key\n\n- `LedgerEntry` points optionally to invoices, payments, and refunds because each entry has exactly one accounting source.\n- Solid `--` relationships show identifying operational ownership.\n- Dashed `..` relationships show optional audit/source references that should not control the lifecycle of the ledger row."
+  },
+  {
     "slug": "erd-ecommerce-schema",
     "diagram": "erd",
     "title": "E-commerce schema",
@@ -572,6 +610,24 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "featured": false,
     "dsl": "flowchart TD\n  commit([Push to main]) --> build[Build artifact]\n  build --> unit{Unit tests pass?}\n  unit -->|No| fail([Fail build])\n  unit -->|Yes| scan[Security scan]\n  scan --> vuln{High-severity CVEs?}\n  vuln -->|Yes| fail\n  vuln -->|No| stage[Deploy to staging]\n  stage --> smoke{Smoke tests green?}\n  smoke -->|No| fail\n  smoke -->|Yes| approve{Manual approval?}\n  approve -->|No| wait([Await approver])\n  approve -->|Yes| prod[Deploy to production]\n  prod --> health{Post-deploy health check?}\n  health -->|Yes| done([Release complete])\n  health -->|No| rollback[Automatic rollback]\n  rollback --> done",
     "notes": "## Scenario\n\nA platform engineer is documenting the team's trunk-based pipeline for a new-hire runbook. The diagram makes the four automated gates (tests → scan → smoke → post-deploy health) and the single human gate (manual approval) obvious at a glance, and shows that every failure path terminates the pipeline rather than silently continuing.\n\n## Annotation key\n\n- `([…])` — stadium; start and terminal nodes\n- `{…}` — diamond; automated or manual gate\n- `[…]` — rectangle; build / deploy / scan step\n- `-->|Yes/No|` — branch labels on each gate\n\n## How to read\n\nStart at *Push to main*. Every diamond is a gate — a *No* on any of unit tests, CVE scan, or smoke tests terminates at *Fail build*. Manual approval is the only human gate; it can park the pipeline at *Await approver* without failing. The post-deploy health check guards production: a failure triggers automatic rollback, which still completes at *Release complete* because the rollback itself is a successful outcome."
+  },
+  {
+    "slug": "flowchart-insurance-claim-adjudication",
+    "diagram": "flowchart",
+    "title": "Insurance claim adjudication",
+    "description": "ISO-style flowchart for a claims team triaging coverage, fraud risk, document completeness, manual review, and payment or denial outcomes.",
+    "standard": "ISO 5807:1985",
+    "tags": [
+      "flowchart",
+      "insurance",
+      "claims",
+      "adjudication",
+      "manual-review"
+    ],
+    "complexity": 3,
+    "featured": false,
+    "dsl": "flowchart LR\n  start([Claim submitted])\n  intake[/Capture FNOL data/]\n  docs{Documents complete?}\n  request[Request missing documents]\n  coverage{Policy active on loss date?}\n  deny1[Issue coverage denial]\n  fraud{Fraud score high?}\n  review[[Manual SIU review]]\n  liability{Liability accepted?}\n  estimate[Calculate covered amount]\n  approve{Adjuster approval?}\n  pay[(Payment ledger)]\n  denial[Send denial letter]\n  close([Close claim])\n\n  start --> intake\n  intake --> docs\n  docs -->|No| request\n  request -.->|Resubmitted| docs\n  docs -->|Yes| coverage\n  coverage -->|No| deny1\n  deny1 --> close\n  coverage -->|Yes| fraud\n  fraud -->|Yes| review\n  review --> liability\n  fraud -->|No| liability\n  liability -->|No| denial\n  denial --> close\n  liability -->|Yes| estimate\n  estimate --> approve\n  approve -->|Needs changes| estimate\n  approve -->|Approved| pay\n  pay --> close",
+    "notes": "## Scenario\n\nClaim adjudication is not a straight line. The same claim can bounce for missing documents, route to special investigation, return for estimate changes, or close through denial. A flowchart is appropriate here because the core question is operational routing, not ownership lanes or event semantics.\n\n## Annotation key\n\n- Parallelogram `[/.../]` marks intake data capture.\n- `[[...]]` marks a predefined manual review subprocess.\n- Dotted retry edge shows a resubmission loop without making it the main path."
   },
   {
     "slug": "flowchart-order-fulfillment",
@@ -1038,6 +1094,26 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "featured": false,
     "dsl": "network \"DC Fabric\"\n  layout: spine-leaf\n  spines: sp1 sp2\n  leaves: lf1 lf2 lf3 lf4\n  server h1\n  server h2\n  server h3\n  lf1 -- h1 : 25G\n  lf2 -- h2 : 25G\n  lf4 -- h3 : 25G",
     "notes": "## Scenario\n\nA data-center architect wants the fabric drawn without hand-typing every spine-to-leaf cable. In `layout: spine-leaf` mode you declare the spines and leaves, and the engine **auto-meshes every leaf to every spine** — here that's 2 × 4 = 8 generated links — leaving you to add only the host attachments.\n\n## What the diagram shows\n\n- **`spines:` / `leaves:`** declare the two fabric rows. The devices don't need a separate `kind` line — spines become L3 switches, leaves become switches.\n- **Auto-mesh** — every spine↔leaf link is generated; you never type them. Add or remove a leaf and the mesh updates.\n- **Host attachments** — `lf1 -- h1 : 25G` hangs a server below its leaf at 25 Gbps.\n\n## Annotation key\n\n| Element | Meaning |\n|---|---|\n| Top row | Spine switches |\n| Middle row | Leaf switches (fully meshed to spines) |\n| Bottom row | Hosts, under their leaf |\n\nThis is the modern east-west fabric; for a traditional north-south campus use `layout: tiered` with `tier:` bands instead."
+  },
+  {
+    "slug": "network-zero-trust-cloud-vpc",
+    "diagram": "network",
+    "title": "Zero-trust cloud VPC topology",
+    "description": "Network topology for a zero-trust SaaS VPC with VPN entry, DMZ, private application subnet, database subnet, firewall segmentation, and annotated VPN/fiber/trunk links.",
+    "standard": "Cisco-convention topology icons + security-zone topology",
+    "tags": [
+      "network",
+      "zero-trust",
+      "vpc",
+      "dmz",
+      "vpn",
+      "firewall",
+      "cloud"
+    ],
+    "complexity": 3,
+    "featured": false,
+    "dsl": "network \"Zero-trust SaaS VPC\"\n  layout: tiered\n  internet inet \"Internet\"\n  cloud idp \"Identity Provider\"\n  vpngw vpn \"Client VPN\" tier: edge\n  firewall fw \"Segmentation FW\" tier: edge\n  loadbalancer alb \"Public ALB\" tier: distribution\n\n  zone dmz \"DMZ\" {\n    proxy edgeproxy \"Reverse Proxy\" tier: distribution\n  }\n  subnet appnet \"10.20.10.0/24\" {\n    server api1 \"API 1\" ip: 10.20.10.11\n    server api2 \"API 2\" ip: 10.20.10.12\n  }\n  subnet dbnet \"10.20.30.0/24\" {\n    storage db \"Postgres HA\" ip: 10.20.30.20\n  }\n  zone admin \"Admin Zone\" {\n    laptop admin1 \"Admin Laptop\"\n  }\n\n  inet -- alb : fiber 10G\n  inet -- vpn : vpn\n  idp -- vpn : vpn \"OIDC\"\n  vpn -- fw : vpn \"device posture\"\n  alb -- edgeproxy : 1G\n  edgeproxy -- fw : trunk vlan: 110\n  fw -- api1 : access vlan: 210 1G\n  fw -- api2 : access vlan: 210 1G\n  fw -- db : access vlan: 230 1G\n  admin1 -- vpn : wireless vpn",
+    "notes": "## Scenario\n\nZero-trust diagrams need to show both the physical/logical topology and the policy boundary: public traffic reaches only the DMZ, administrators enter through VPN and identity checks, and application servers reach the database through a segmented firewall path.\n\n## Annotation key\n\n- `zone` and `subnet` groups distinguish security policy from IP address space.\n- VPN links are dashed and annotated, making identity/device-posture paths visible.\n- VLAN labels document segmentation at the firewall boundary."
   },
   {
     "slug": "orgchart-matrix-reporting",
@@ -1575,6 +1651,25 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "notes": "UML interactions model not just messages but the *birth and death* of participants — the part most text-to-diagram tools skip. This tiny diagram shows all four markers.\n\n**Create.** `Factory -> *Worker` — the `*` prefix creates `Worker`; its arrow lands on the *side of the new participant's box*, which appears partway down rather than at the top, the UML convention for \"instantiated here.\"\n\n**Found and lost.** `o-> Worker` is a *found* message — it starts from a filled circle, meaning \"from outside the modelled scope\" (an external trigger). `Worker -x` is a *lost* message — it ends at a circle, a fire-and-forget whose receiver isn't shown.\n\n**Destroy.** `destroy Worker` terminates the lifeline with the ✕ marker, so the diagram shows exactly when the object ceases to exist."
   },
   {
+    "slug": "sequence-retry-timeout-circuit-breaker",
+    "diagram": "sequence",
+    "title": "Retry, timeout, and circuit breaker",
+    "description": "UML sequence diagram for a gateway calling a payment service through a circuit breaker, with retry attempts, timeout handling, a break fragment for an open breaker, and an asynchronous fallback event.",
+    "standard": "OMG UML 2.5.1",
+    "tags": [
+      "sequence",
+      "uml",
+      "retry",
+      "timeout",
+      "circuit-breaker",
+      "resilience"
+    ],
+    "complexity": 3,
+    "featured": false,
+    "dsl": "sequence \"Checkout payment resilience\"\n  autonumber 1 1\n  actor Client\n  boundary API as \"Checkout API\"\n  control Breaker as \"Circuit Breaker\"\n  participant Payment as \"Payment Provider\"\n  queue Jobs as \"Fallback Queue\"\n\n  Client ->+ API : POST /checkout/pay\n  API -> Breaker : allowRequest()\n  alt [breaker closed]\n    Breaker --> API : permit\n    loop (1,3)\n      API ->+ Payment : authorize(amount)\n      alt [response before timeout]\n        Payment -->- API : auth result\n        break [authorized]\n          API -->- Client : 200 Authorized\n        end\n      else [timeout]\n        API -> Breaker : recordFailure(timeout)\n        API ->> Jobs : enqueue retry context\n      end\n    end\n    API -->- Client : 202 Pending verification\n  else [breaker open]\n    Breaker --> API : reject\n    API ->> Jobs : enqueue deferred payment\n    API -->- Client : 503 Retry later\n  end",
+    "notes": "## Scenario\n\nA checkout API must protect itself from a slow or failing payment provider. The diagram makes the resilience policy reviewable: the gateway checks the breaker, retries bounded attempts, records timeouts, and falls back to asynchronous recovery instead of blocking the customer forever.\n\n## Annotation key\n\n- `loop (1,3)` documents the bounded retry policy.\n- `alt` separates fast responses, timeouts, and open-breaker rejection.\n- `break [authorized]` exits the retry loop once a successful authorization arrives.\n- `->>` marks asynchronous fallback work queued outside the request path."
+  },
+  {
     "slug": "sfc-bake-cool-concurrent",
     "diagram": "sfc",
     "title": "Bake & cool concurrent batch (SFC)",
@@ -1846,6 +1941,24 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "featured": false,
     "dsl": "state \"E-Commerce Order Lifecycle\"\n\ninitial i\ni -> Pending\n\nPending -> Confirmed : place_order [items_in_stock] / reserveInventory()\nPending -> Cancelled : cancel\n\nchoice PayRoute\nConfirmed -> PayRoute : pay\nPayRoute -> Processing : [method == \"card\"]\nPayRoute -> Processing : [method == \"wallet\"]\nPayRoute -> AwaitingTransfer : [method == \"bank_transfer\"]\n\nAwaitingTransfer -> Processing : transfer_received [amount_correct]\nAwaitingTransfer -> Cancelled : transfer_timeout\n\ncomposite Processing {\n  initial pi\n  final pf\n\n  pi -> Picking\n  Picking -> Packing : picked / updateWarehouse()\n  Packing -> Shipped : label_printed\n  Shipped -> pf : carrier_confirmed\n}\n\nProcessing -> Delivered : delivered / notifyCustomer()\nProcessing -> Failed : fulfillment_error\n\nDelivered -> Refunded : return_request [within_30_days] / initiateRefund()\nFailed -> Pending : retry [attempt < 3]\nFailed -> Cancelled : retry [attempt >= 3]\n\nfinal f\nDelivered -> f\nRefunded -> f\nCancelled -> f\n\nnote right_of AwaitingTransfer : SLA: 48 h before timeout.",
     "notes": "Order state machines are one of the most common backend design artifacts, and one of the most commonly under-specified. Teams often start with a simple enum (`PENDING / PAID / SHIPPED / DELIVERED`) and then bolt on edge cases over time: partial shipments, payment holds, carrier errors, refund windows. Six months later the enum has twelve values, the transition logic is scattered across three services, and nobody can explain what sequence of events gets an order from `FAILED` to `CANCELLED` versus from `FAILED` back to `PENDING`. A UML state diagram catches all of this upfront.\n\n**Guard conditions on `place_order`.** The transition from `Pending` to `Confirmed` carries `[items_in_stock]` — a guard. Guards are boolean predicates that must be true for the transition to fire even when the trigger event (`place_order`) occurs. If the guard is false, the trigger is silently absorbed and the system stays in `Pending`. In practice this means inventory is checked synchronously during order placement, and the transition only proceeds if stock is available. The action `/ reserveInventory()` fires when the transition does go through, atomically.\n\n**Choice pseudo-state for payment routing.** `PayRoute` is a UML choice pseudo-state (drawn as a diamond). When the `pay` trigger fires from `Confirmed`, the machine immediately evaluates the guards on all outgoing transitions from `PayRoute`. If `method == \"card\"` or `method == \"wallet\"`, control goes directly to `Processing`. If `method == \"bank_transfer\"`, it goes to `AwaitingTransfer` — a waiting state with its own 48-hour SLA note. Choice pseudo-states do not dwell; they route. This is the correct model for \"take different paths based on a value computed at runtime.\"\n\n**Composite state for fulfillment.** `Processing` is a composite state — it contains its own internal state machine with `Picking`, `Packing`, and `Shipped`. From the outside, the system is \"in Processing\" whether it's picking, packing, or confirming with the carrier. From the inside, the sub-machine tracks exactly where the warehouse is. The composite state has its own `initial` and `final` pseudo-states: the machine enters at `pi` (starts picking) and exits through `pf` (carrier confirmed), which fires the outer transition to `Delivered`. Cross-composite transitions to `Failed` are also valid — a fulfillment error at any sub-state terminates the Processing phase and moves to the outer `Failed` state.\n\n**Retry with bounded attempts.** `Failed` has two outgoing transitions back to `Pending` and `Cancelled`, both triggered by `retry` but guarded on `attempt`. This is the explicit model for \"retry up to N times, then give up.\" Without the state diagram, this logic typically lives in a cron job or a dead-letter queue processor that nobody fully understands. Here it is the specification: anyone reading the diagram knows the retry policy without digging through queue configurations.\n\n**Final state convergence.** `Delivered`, `Refunded`, and `Cancelled` all transition to the same `final` pseudo-state. In implementation, \"final\" might mean the order record is archived, the event bus receives an `order.closed` event, and no further state transitions are accepted. The model is silent on what happens after final — that's intentional. The state machine is done; downstream processes (analytics, accounting, data retention) are separate concerns."
+  },
+  {
+    "slug": "state-subscription-lifecycle",
+    "diagram": "state",
+    "title": "SaaS subscription lifecycle",
+    "description": "UML statechart for a subscription moving through trial, active service, payment recovery, pause, cancellation, and reactivation.",
+    "standard": "OMG UML 2.5.1",
+    "tags": [
+      "statechart",
+      "subscription",
+      "billing",
+      "lifecycle",
+      "guards"
+    ],
+    "complexity": 3,
+    "featured": false,
+    "dsl": "state \"Subscription Lifecycle\" [direction: LR]\n\ninitial start\nstart -> Trialing\n\nTrialing -> Active : trial_end [payment_method_valid] / startBilling()\nTrialing -> Incomplete : trial_end [payment_method_missing] / requestPaymentMethod()\nTrialing -> Cancelled : cancel\n\ncomposite Active {\n  entry / provisionWorkspace()\n  exit / syncEntitlements()\n  initial ai\n  ai -> Current\n  Current -> GracePeriod : invoice_failed\n  GracePeriod -> Current : payment_succeeded / restoreAccess()\n  GracePeriod -> PastDue : grace_expired\n  PastDue -> Current : payment_succeeded / clearDunning()\n  final af\n  Current -> af : cancel_at_period_end\n}\n\nActive -> Paused : pause [plan_allows_pause] / suspendBilling()\nPaused -> Active : resume / resumeBilling()\nActive -> Cancelled : cancel_now / revokeAccess()\nIncomplete -> Active : payment_method_added / retryInvoice()\nIncomplete -> Cancelled : expires\nActive -> Cancelled : period_end\nCancelled -> Active : reactivate [within_retention_window] / restoreSubscription()\n\nfinal done\nCancelled -> done : purge_after_retention\n\nnote right_of Active : Composite state keeps dunning detail inside active service.",
+    "notes": "## Scenario\n\nSubscription logic is where simple status enums drift out of sync with billing providers. This statechart makes the product contract explicit: trial conversion, incomplete setup, dunning recovery, pause, cancellation, and reactivation are separate transitions with guards and actions.\n\n## Annotation key\n\n- `Active` is a composite state because payment recovery happens while the product is still notionally active.\n- Guard labels such as `[payment_method_valid]` document provider-dependent branching.\n- Entry and exit actions mark entitlement provisioning and sync points."
   },
   {
     "slug": "state-traffic-light",

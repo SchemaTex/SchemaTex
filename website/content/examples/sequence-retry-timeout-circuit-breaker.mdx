@@ -1,0 +1,57 @@
+---
+title: Retry, timeout, and circuit breaker
+description: UML sequence diagram for a gateway calling a payment service through a circuit breaker, with retry attempts, timeout handling, a break fragment for an open breaker, and an asynchronous fallback event.
+diagram: sequence
+standard: OMG UML 2.5.1
+industry: [software, infrastructure]
+persona: For the distributed-systems engineer
+complexity: 3
+tags: [sequence, uml, retry, timeout, circuit-breaker, resilience]
+featured: false
+relatedLink:
+  label: Sequence diagram syntax
+  href: /docs/sequence
+status: published
+dsl: |
+  sequence "Checkout payment resilience"
+    autonumber 1 1
+    actor Client
+    boundary API as "Checkout API"
+    control Breaker as "Circuit Breaker"
+    participant Payment as "Payment Provider"
+    queue Jobs as "Fallback Queue"
+
+    Client ->+ API : POST /checkout/pay
+    API -> Breaker : allowRequest()
+    alt [breaker closed]
+      Breaker --> API : permit
+      loop (1,3)
+        API ->+ Payment : authorize(amount)
+        alt [response before timeout]
+          Payment -->- API : auth result
+          break [authorized]
+            API -->- Client : 200 Authorized
+          end
+        else [timeout]
+          API -> Breaker : recordFailure(timeout)
+          API ->> Jobs : enqueue retry context
+        end
+      end
+      API -->- Client : 202 Pending verification
+    else [breaker open]
+      Breaker --> API : reject
+      API ->> Jobs : enqueue deferred payment
+      API -->- Client : 503 Retry later
+    end
+---
+
+## Scenario
+
+A checkout API must protect itself from a slow or failing payment provider. The diagram makes the resilience policy reviewable: the gateway checks the breaker, retries bounded attempts, records timeouts, and falls back to asynchronous recovery instead of blocking the customer forever.
+
+## Annotation key
+
+- `loop (1,3)` documents the bounded retry policy.
+- `alt` separates fast responses, timeouts, and open-breaker rejection.
+- `break [authorized]` exits the retry loop once a successful authorization arrives.
+- `->>` marks asynchronous fallback work queued outside the request path.
