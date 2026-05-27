@@ -1,0 +1,48 @@
+---
+title: Distillation column with reboiler and condenser
+description: P&ID for a distillation overhead loop with condenser, reflux drum, reflux pump, reboiler, and ISA instrument bubbles.
+diagram: pid
+standard: ANSI/ISA-5.1 + ISO 10628
+industry: [industrial, chemical]
+persona: For the process engineer
+complexity: 3
+tags: [pid, distillation, column, condenser, reboiler, instrumentation]
+featured: false
+relatedLink:
+  label: P&ID syntax
+  href: /docs/pid
+status: published
+dsl: |
+  pid "Distillation Column T-201"
+
+  equip T-201 : column_tray      [tag: "T-201"]
+  equip E-201 : condenser        [tag: "Overhead Condenser"]
+  equip D-201 : vessel_h         [tag: "Reflux Drum"]
+  equip P-201 : pump_centrifugal [tag: "Reflux Pump"]
+  equip E-202 : reboiler         [tag: "Reboiler"]
+  equip PSV-201 : valve_psv      [tag: "PSV-201", set_pressure: "150 psig"]
+
+  line L1 from T-201.top to E-201.shell_in       [size: "8in", service: "overhead vapor", type: "process"]
+  line L2 from E-201.shell_out to D-201.in       [size: "8in", service: "condensate", type: "process"]
+  line L3 from D-201.bottom to P-201.in          [size: "3in", service: "reflux", type: "process"]
+  line L4 from P-201.out to T-201.reflux         [size: "3in", service: "reflux", type: "process"]
+  line L5 from T-201.bottom to E-202.in          [size: "6in", service: "bottoms", type: "process"]
+  line L6 from T-201.top to PSV-201.in           [size: "2in", service: "relief", type: "process_minor"]
+
+  inst PT-201 : field_discrete
+    measures T-201
+  inst LIC-201 : cr_shared
+    measures D-201
+  inst TIC-201 : cr_shared
+    measures T-201
+---
+
+## Scenario
+
+Distillation columns are a canonical P&ID use case because the physical process and the control loops must be legible together. This example shows the main process path and three instrument bubbles without pretending to be a full plant drawing.
+
+## Annotation key
+
+- `equip` lines select ISO process equipment symbols.
+- `line ... from ... to ...` connects equipment ports and carries line tags.
+- `inst` declarations create ISA-5.1 instrument bubbles tied to measured equipment.

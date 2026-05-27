@@ -1,0 +1,40 @@
+---
+title: Assisted reproduction pedigree
+description: Clinical pedigree showing IVF donor and surrogate context with a proband child and clearly separated biological and gestational participants.
+diagram: pedigree
+standard: Bennett 2022
+industry: [healthcare]
+persona: For the genetic counselor
+complexity: 3
+tags: [pedigree, assisted-reproduction, ivf, donor, surrogate, proband]
+featured: false
+relatedLink:
+  label: Pedigree syntax
+  href: /docs/pedigree
+status: published
+dsl: |
+  pedigree "Assisted Reproduction Family"
+    intended_father [male, unaffected]
+    intended_mother [female, unaffected]
+    egg_donor [female, evaluated]
+    surrogate [female, evaluated]
+
+    intended_father -- egg_donor
+      embryo [unknown, pregnancy]
+
+    intended_father -- intended_mother
+      child [female, unaffected, proband]
+
+    surrogate -- intended_father
+      child [female, unaffected, proband]
+---
+
+## Scenario
+
+Assisted reproduction cases need more than a simple parent-child line. This example keeps the clinical pedigree compact while labeling the relevant participants: intended parents, donor, surrogate, embryo, and proband.
+
+## Annotation key
+
+- `pregnancy` marks the embryo node.
+- `evaluated` indicates participants evaluated in the genetics intake.
+- Re-declaring `child` preserves the proband while documenting alternate family context.

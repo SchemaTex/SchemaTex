@@ -1,0 +1,47 @@
+---
+title: Petri net arc types
+description: Petri net showing standard, inhibitor, read, reset, weighted arcs, capacity, and enabled-transition highlighting in one compact control example.
+diagram: petri
+standard: Murata 1989 / ISO-IEC 15909
+industry: [software, industrial]
+persona: For the concurrency engineer
+complexity: 3
+tags: [petri, inhibitor, read-arc, reset-arc, capacity]
+featured: false
+relatedLink:
+  label: Petri net syntax
+  href: /docs/petri
+status: published
+dsl: |
+  petri "Arc Types"
+  layout: lr
+  tokens: auto
+  place Idle *1
+  place Busy
+  place Fault
+  place Permit *1
+  place Buffer capacity: 3 tokens: 2
+  transition Start
+  transition Complete
+  transition Reset
+  Idle -> Start
+  Permit -- Start
+  Fault -o Start
+  Buffer -> Start weight: 2
+  Start -> Busy
+  Busy -> Complete
+  Complete -> Idle
+  Fault => Reset
+  Busy -> Reset
+  Reset -> Idle
+---
+
+## Scenario
+
+Petri nets become much more expressive once arc types carry semantics. This example shows a start transition that requires permission, is inhibited by a fault, consumes two buffer tokens, and can be reset from a fault state.
+
+## Annotation key
+
+- `--` is a read arc: test without consuming.
+- `-o` is an inhibitor arc: enabled only when the place is empty.
+- `=>` is a reset arc: clear the source place when the transition fires.

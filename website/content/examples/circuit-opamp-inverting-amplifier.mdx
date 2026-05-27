@@ -1,0 +1,38 @@
+---
+title: Inverting op-amp amplifier
+description: A practical inverting op-amp stage rendered from a SPICE-style netlist with feedback and input resistors, split supply rails, and a labelled output node.
+diagram: circuit
+standard: IEEE 315
+industry: [hardware, education]
+persona: For the electronics engineer
+complexity: 2
+tags: [op-amp, amplifier, feedback, netlist, analog]
+featured: false
+relatedLink:
+  label: Circuit syntax
+  href: /docs/circuit
+status: published
+dsl: |
+  circuit "Inverting Op-Amp (netlist)" netlist
+  Vin vin 0 AC1V
+  Rin vin inv 10k
+  Rf out inv 100k
+  U1 noninv inv out type=opamp label="U1 TL072"
+  Rbias noninv 0 10k
+  Vp vcc 0 +12V
+  Vn vee 0 -12V
+---
+
+## Scenario
+
+An analog engineer documents a standard inverting gain stage before moving to PCB layout. The two resistors make the gain visible in the schematic: `Rf / Rin = 10`, so the output is an inverted, amplified version of the input.
+
+## Annotation key
+
+- `type=opamp` selects the three-pin op-amp symbol in netlist mode.
+- `Rin` and `Rf` are ordinary SPICE-style resistor lines.
+- `noninv`, `inv`, and `out` are named nets, not pixel coordinates.
+
+## How to read
+
+The input signal enters through `Rin` into the inverting input. `Rf` feeds the output back to the same node, closing the negative feedback loop. The non-inverting input is tied to ground through `Rbias`, giving the stage a stable reference.

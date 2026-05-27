@@ -1,0 +1,36 @@
+---
+title: IEC logic gate gallery
+description: Logic gate gallery using IEC 60617 rectangular symbols for AND, OR, XOR, NAND, NOR, NOT, and special-output buffers.
+diagram: logic
+standard: IEC 60617-12
+industry: [hardware, education]
+persona: For the digital logic instructor
+complexity: 2
+tags: [logic, iec, gate-gallery, ansi-alternative, symbols]
+featured: false
+relatedLink:
+  label: Logic syntax
+  href: /docs/logic
+status: published
+dsl: |
+  logic "IEC Gate Gallery" style: iec
+  input A, B, C, EN
+  output Y_and, Y_or, Y_xor, Y_nand, Y_nor, Y_not, Y_tri
+  Y_and = AND(A, B)
+  Y_or = OR(A, B)
+  Y_xor = XOR(A, B)
+  Y_nand = NAND(A, B)
+  Y_nor = NOR(A, B)
+  Y_not = NOT(C)
+  Y_tri = TRISTATE_BUF(A, EN)
+---
+
+## Scenario
+
+ANSI curved gates are common in US education, but IEC rectangular logic symbols are standard in many international and industrial documents. This example shows the same functional DSL rendered with the IEC style.
+
+## Annotation key
+
+- `style: iec` switches the symbol family for the whole diagram.
+- Gate definitions remain ordinary functional assignments.
+- The gallery includes both basic gates and a special-output buffer.

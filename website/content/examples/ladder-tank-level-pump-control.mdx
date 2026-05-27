@@ -1,0 +1,46 @@
+---
+title: Tank level pump control
+description: Pump control ladder with low-level start, high-level stop, seal-in logic, and a run-delay timer.
+diagram: ladder
+standard: IEC 61131-3
+industry: [industrial, water-treatment]
+persona: For the plant electrician
+complexity: 3
+tags: [ladder, pump, tank, timer, seal-in]
+featured: false
+relatedLink:
+  label: Ladder syntax
+  href: /docs/ladder
+status: published
+dsl: |
+  ladder "Tank Level Pump Control"
+
+  rung 1 "Fill pump seal-in":
+    parallel:
+      branch:
+        XIC(LOW_LEVEL, "IN 1.0", name="Low level")
+      branch:
+        XIC(PUMP_RUN, "OUT 2.0", name="Pump running")
+    XIO(HIGH_LEVEL, "IN 1.1", name="High level")
+    XIO(FAULT, "BIT 3.0", name="Fault clear")
+    OTE(PUMP_RUN, "OUT 2.0", name="Fill pump")
+
+  rung 2 "Run delay proves flow":
+    XIC(PUMP_RUN, "OUT 2.0", name="Pump running")
+    TON(FLOW_DELAY, IN=PUMP_RUN, PT=5000, name="Flow prove delay")
+
+  rung 3 "No-flow alarm after delay":
+    XIC(FLOW_DELAY, "TMR 1.0", name="Delay done")
+    XIO(FLOW_OK, "IN 1.2", name="Flow switch")
+    OTL(FLOW_ALARM, "BIT 3.1", name="No flow alarm")
+---
+
+## Scenario
+
+A fill pump starts when the tank reaches low level, stays on through a seal-in path, and stops at the high-level switch. A timer allows a few seconds for the flow switch to prove flow before latching an alarm.
+
+## Annotation key
+
+- The `parallel:` block is the seal-in path.
+- `TON` is the on-delay timer used as a permissive before declaring no-flow.
+- `OTL` latches the alarm so an operator must acknowledge the failure.

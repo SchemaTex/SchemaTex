@@ -1,0 +1,44 @@
+---
+title: Family office trust structure
+description: Estate-planning entity structure with a grantor, irrevocable trust, trustee LLC, holding company, investment LLCs, and beneficiary distributions.
+diagram: entity
+standard: Trust and estate planning conventions
+industry: [legal-finance]
+persona: For the estate attorney
+complexity: 3
+tags: [entity, trust, family-office, estate-planning, distributions]
+featured: false
+relatedLink:
+  label: Entity syntax
+  href: /docs/entity
+status: published
+dsl: |
+  entity-structure "Family Office Trust"
+  jurisdiction SD "South Dakota" [color: "#2563eb"]
+  jurisdiction DE "Delaware" [color: "#059669"]
+
+  entity grantor "Grantor" individual [role: "Settlor"]
+  entity trust1 "Irrevocable Dynasty Trust" trust@SD [est: "2021-04-01", note: "GST exempt"]
+  entity trustee "Trustee Services LLC" llc@SD [role: "Directed trustee"]
+  entity holdco "Family Holdings, Inc." corp@DE
+  entity realestate "Real Estate LLC" llc@DE
+  entity markets "Marketable Securities LLC" llc@DE
+  entity beneficiary "Children Trust Share" trust@SD
+
+  grantor -> trust1 : contribution
+  trustee ==> trust1 [label: "administrative control"]
+  trust1 -> holdco : 100%
+  holdco -> realestate : 100%
+  holdco -> markets : 100%
+  trust1 --> beneficiary [label: "distributions"]
+---
+
+## Scenario
+
+Estate attorneys often need to explain control, economics, and fiduciary roles on one page. This structure separates voting/control relationships from ownership and beneficiary distributions.
+
+## Annotation key
+
+- `trust` renders as an ellipse, distinct from corporate entities.
+- `==>` marks voting or control without economic ownership.
+- `-->` marks distributions to beneficiaries.

@@ -1,0 +1,38 @@
+---
+title: Bridge rectifier power supply
+description: Four-diode full-wave bridge rectifier with a smoothing capacitor and load resistor, written as a compact electrical netlist.
+diagram: circuit
+standard: IEEE 315
+industry: [hardware, education]
+persona: For the power electronics engineer
+complexity: 2
+tags: [rectifier, diode, power-supply, capacitor, netlist]
+featured: false
+relatedLink:
+  label: Circuit syntax
+  href: /docs/circuit
+status: published
+dsl: |
+  circuit "Bridge Rectifier Supply" netlist
+  V1 ac1 ac2 12Vac
+  D1 ac1 vout 1N4007
+  D2 ac2 vout 1N4007
+  D3 0 ac1 1N4007
+  D4 0 ac2 1N4007
+  C1 vout 0 470u
+  Rload vout 0 1k
+---
+
+## Scenario
+
+A technician needs a quick schematic for the textbook AC-to-DC rectifier: a transformer secondary, four rectifier diodes, a reservoir capacitor, and a load. The netlist form keeps the topology precise while the renderer chooses the schematic placement.
+
+## Annotation key
+
+- `D1` to `D4` are ordinary diode components inferred from the `D` prefix.
+- `0` is the canonical ground net.
+- `C1` smooths the rectified output across `vout` and ground.
+
+## How to read
+
+During each half-cycle, two diodes conduct and steer current into `vout` with the same polarity. The capacitor charges near the peak and supplies the load between peaks, reducing ripple at `Rload`.

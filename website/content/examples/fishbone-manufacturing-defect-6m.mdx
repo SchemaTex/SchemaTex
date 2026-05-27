@@ -1,0 +1,56 @@
+---
+title: Manufacturing defect 6M fishbone
+description: Ishikawa 6M root-cause analysis for a solder joint defect spike on an electronics assembly line.
+diagram: fishbone
+standard: Ishikawa 1968 / ISO 9001 CAPA
+industry: [manufacturing, quality]
+persona: For the quality engineer
+complexity: 3
+tags: [fishbone, 6m, manufacturing, defect, capa]
+featured: false
+relatedLink:
+  label: Fishbone syntax
+  href: /docs/fishbone
+status: published
+dsl: |
+  fishbone "Solder Joint Defect Spike"
+  config density = spacious
+  effect "3.2% solder joint rejects"
+
+  category man "Man"
+  category machine "Machine"
+  category material "Material"
+  category method "Method"
+  category measurement "Measurement"
+  category environment "Environment"
+
+  man : "New operators on night shift"
+    - "Training checklist not signed"
+  man : "Handover notes incomplete"
+
+  machine : "Reflow oven zone 4 drift"
+    - "Thermocouple calibration overdue"
+  machine : "Stencil printer squeegee worn"
+
+  material : "Solder paste past floor life"
+  material : "PCB pads oxidized after storage"
+
+  method : "Stencil aperture undersized"
+  method : "Pick-and-place speed raised"
+
+  measurement : "AOI false accept rate rising"
+  measurement : "X-ray sampling reduced"
+
+  environment : "Humidity above process window"
+  environment : "ESD straps failing audit"
+---
+
+## Scenario
+
+An electronics manufacturer opens a CAPA after solder rejects spike above the control limit. The 6M fishbone forces the team to inspect people, machines, material, method, measurement, and environment before committing to corrective action.
+
+## Annotation key
+
+- `config density = spacious` gives the dense six-category diagram breathing room.
+- Indented `-` lines are sub-causes under the preceding cause.
+- The 6M category names match the manufacturing convention quality teams expect.

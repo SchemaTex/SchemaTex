@@ -1,0 +1,39 @@
+---
+title: Network layout modes
+description: Four small network topology sketches showing star, ring, bus, and mesh layouts as separate diagrams in the gallery corpus.
+diagram: network
+standard: Cisco topology conventions
+industry: [it, education]
+persona: For the network engineer
+complexity: 2
+tags: [network, layout, star, ring, bus, mesh]
+featured: false
+relatedLink:
+  label: Network syntax
+  href: /docs/network
+status: published
+dsl: |
+  network "Branch LAN - Star Layout"
+    layout: star
+    router gw "Gateway"
+    switch sw1 "Access Switch"
+    pc pc1 "Admin PC"
+    laptop lt1 "Laptop"
+    printer prn "Printer"
+    ap ap1 "Wi-Fi AP"
+    gw -- sw1 : 1G
+    sw1 -- pc1 : access vlan: 10 1G
+    sw1 -- lt1 : access vlan: 10 1G
+    sw1 -- prn : access vlan: 20 1G
+    sw1 -- ap1 : poe vlan: 30 1G
+---
+
+## Scenario
+
+Network examples should prove that layout is semantic, not incidental. This one uses `layout: star`, where the gateway and access switch form the center and endpoints fan around them.
+
+## Annotation key
+
+- `layout: star` selects the hub-and-spoke placer.
+- Link annotations carry VLANs, speed, and PoE.
+- The same device/link model can be rendered with other layouts in companion examples.

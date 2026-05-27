@@ -1,0 +1,38 @@
+---
+title: Iris CART decision tree
+description: Machine-learning decision tree for the classic Iris classifier with split thresholds, sample counts, Gini impurity, and class leaves.
+diagram: decisiontree
+standard: CART / scikit-learn plot_tree convention
+industry: [research, education]
+persona: For the data scientist
+complexity: 3
+tags: [decisiontree, ml, cart, iris, gini]
+featured: false
+relatedLink:
+  label: Decision tree syntax
+  href: /docs/decisiontree
+status: published
+dsl: |
+  decisiontree:ml "Iris CART Classifier"
+  direction: top-down
+  impurity: gini
+  classes: setosa, versicolor, virginica
+
+  split "Petal length <= 2.45" feature=petal_length op="<=" threshold=2.45 samples=150 gini=0.667
+    true leaf "Setosa" class=setosa value=50 gini=0.0 samples=50
+    false split "Petal width <= 1.75" feature=petal_width op="<=" threshold=1.75 samples=100 gini=0.5
+      true split "Petal length <= 4.95" feature=petal_length op="<=" threshold=4.95 samples=54 gini=0.168
+        true leaf "Versicolor" class=versicolor value=49 gini=0.04 samples=49
+        false leaf "Virginica" class=virginica value=5 gini=0.32 samples=5
+      false leaf "Virginica" class=virginica value=45 gini=0.0 samples=45
+---
+
+## Scenario
+
+Model explainability often starts with a small tree. This Iris example mirrors the structure exported by CART tools: feature thresholds inside split nodes, impurity metrics, samples, and class-labelled leaves.
+
+## Annotation key
+
+- `decisiontree:ml` selects ML mode.
+- `split` nodes carry `feature`, `threshold`, `samples`, and `gini`.
+- `true` and `false` prefixes define the branch semantics.

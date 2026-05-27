@@ -1,0 +1,60 @@
+---
+title: Combined fragments gallery
+description: UML sequence diagram demonstrating alt, opt, loop, par, critical, and ref frames in one realistic API interaction.
+diagram: sequence
+standard: OMG UML 2.5.1
+industry: [software]
+persona: For the distributed-systems engineer
+complexity: 3
+tags: [sequence, uml, combined-fragments, alt, loop, par]
+featured: false
+relatedLink:
+  label: Sequence diagram syntax
+  href: /docs/sequence
+status: published
+dsl: |
+  sequence "API request with combined fragments"
+    autonumber 1 1
+    actor Client
+    boundary API as "API Gateway"
+    control Auth
+    control Orders
+    database DB
+    queue Events
+
+    Client ->+ API : POST /orders
+    ref over API, Auth : Validate token
+    alt [token valid]
+      API -> Auth : checkScopes()
+      Auth --> API : scopes
+      opt [idempotency key present]
+        API -> DB : lookupRequest(key)
+        DB --> API : previous result?
+      end
+      loop (1,3)
+        API -> Orders : reserveInventory()
+        Orders --> API : reservation result
+      end
+      par
+        API ->> Events : OrderRequested
+      and
+        API -> DB : persistOrder()
+      end
+      critical
+        DB --> API : commit ok
+        API -->- Client : 201 Created
+      end
+    else [token invalid]
+      API -->- Client : 401 Unauthorized
+    end
+---
+
+## Scenario
+
+This is a compact tour of UML sequence constructs that matter in real service diagrams. The request validates auth, checks idempotency, retries a reservation, publishes asynchronously, persists state, and returns a response.
+
+## Annotation key
+
+- `alt`, `opt`, `loop`, `par`, and `critical` are first-class combined fragments.
+- `ref over API, Auth` references a reusable interaction instead of inlining it.
+- `->>` distinguishes asynchronous event publication from blocking calls.

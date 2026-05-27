@@ -1,0 +1,47 @@
+---
+title: Conveyor interlock chain
+description: Three-rung ladder logic for a downstream-first conveyor start sequence with jam permissives and an alarm latch.
+diagram: ladder
+standard: IEC 61131-3
+industry: [industrial, logistics]
+persona: For the controls engineer
+complexity: 3
+tags: [ladder, conveyor, interlock, permissive, alarm]
+featured: false
+relatedLink:
+  label: Ladder syntax
+  href: /docs/ladder
+status: published
+dsl: |
+  ladder "Conveyor Interlock Chain"
+
+  rung 1 "Run downstream conveyor first":
+    XIC(AUTO_MODE, "BIT 1.0", name="Auto mode")
+    XIO(ESTOP_OK, "BIT 1.1", name="E-stop not tripped")
+    XIO(CV2_JAM, "IN 2.2", name="Downstream jam clear")
+    OTE(CV2_RUN, "OUT 4.1", name="Conveyor 2 run")
+
+  rung 2 "Start upstream only when downstream is running":
+    XIC(AUTO_MODE, "BIT 1.0", name="Auto mode")
+    XIC(CV2_RUN, "OUT 4.1", name="CV2 running")
+    XIO(CV1_JAM, "IN 2.1", name="Upstream jam clear")
+    OTE(CV1_RUN, "OUT 4.0", name="Conveyor 1 run")
+
+  rung 3 "Latch jam alarm":
+    parallel:
+      branch:
+        XIC(CV1_JAM, "IN 2.1", name="CV1 jam")
+      branch:
+        XIC(CV2_JAM, "IN 2.2", name="CV2 jam")
+    OTL(JAM_ALARM, "BIT 3.0", name="Jam alarm")
+---
+
+## Scenario
+
+Conveyors are started downstream-first so a running upstream belt never feeds material into a stopped downstream belt. This example shows the interlock directly in the rungs: conveyor 1 cannot run until conveyor 2 is already commanded on.
+
+## Annotation key
+
+- `XIC(CV2_RUN)` is the downstream permissive on the upstream conveyor rung.
+- `XIO(CV1_JAM)` and `XIO(CV2_JAM)` block the run command when a jam bit is true.
+- `OTL(JAM_ALARM)` latches the alarm so it remains visible after the jam sensor clears.

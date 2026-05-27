@@ -1,0 +1,36 @@
+---
+title: I2C read burst timing
+description: WaveDrom-compatible timing diagram for an I2C register read with address, repeated start, data bytes, ACK, and NACK phases.
+diagram: timing
+standard: WaveDrom signal notation
+industry: [hardware, embedded]
+persona: For the firmware engineer
+complexity: 2
+tags: [timing, i2c, waveform, bus, embedded]
+featured: false
+relatedLink:
+  label: Timing syntax
+  href: /docs/timing
+status: published
+dsl: |
+  timing "I2C Read Burst" [hscale: 1.2]
+  [Control]
+  SCL:   pppppppppppp
+  START: 100000100001
+  ---
+  [Bus]
+  SDA:   x==========x  data: ["ADDR+W","ACK","REG","ACK","REP START","ADDR+R","ACK","DATA0","ACK","DATA1","NACK"]
+  ---
+  [Status]
+  BUSY:  111111111110
+---
+
+## Scenario
+
+I2C reads are visually clearer as timing diagrams than as prose. The repeated start and ACK/NACK phases are where firmware and hardware teams most often talk past each other.
+
+## Annotation key
+
+- `[Control]`, `[Bus]`, and `[Status]` group related signals.
+- `p` renders clock pulses.
+- `=` segments carry bus labels from the `data:` list.

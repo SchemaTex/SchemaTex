@@ -1,0 +1,79 @@
+---
+title: Multi-tenant SaaS RBAC schema
+description: Crow's-foot ERD for tenants, users, memberships, roles, permissions, invitations, and audit events in a SaaS workspace product.
+diagram: erd
+standard: Crow's-foot ERD
+industry: [software, business]
+persona: For the SaaS backend engineer
+complexity: 3
+tags: [erd, saas, multitenant, rbac, schema]
+featured: false
+relatedLink:
+  label: ERD syntax
+  href: /docs/erd
+status: published
+dsl: |
+  erd
+  title: "SaaS RBAC"
+  direction: LR
+
+  table Tenant {
+    tenant_id uuid PK
+    name varchar NN
+    plan varchar
+  }
+  table User {
+    user_id uuid PK
+    email varchar UK
+    name varchar
+  }
+  table Membership {
+    tenant_id uuid PK FK -> Tenant.tenant_id
+    user_id uuid PK FK -> User.user_id
+    role_id uuid FK -> Role.role_id
+    status varchar NN
+  }
+  table Role {
+    role_id uuid PK
+    tenant_id uuid FK -> Tenant.tenant_id
+    name varchar NN
+  }
+  table Permission {
+    permission_id uuid PK
+    key varchar UK
+  }
+  table RolePermission {
+    role_id uuid PK FK -> Role.role_id
+    permission_id uuid PK FK -> Permission.permission_id
+  }
+  table Invitation {
+    invitation_id uuid PK
+    tenant_id uuid FK -> Tenant.tenant_id
+    email varchar NN
+  }
+  table AuditEvent {
+    event_id uuid PK
+    tenant_id uuid FK -> Tenant.tenant_id
+    actor_user_id uuid FK -> User.user_id
+  }
+
+  ref Membership.tenant_id many-mandatory -- one-mandatory Tenant.tenant_id : "belongs to"
+  ref Membership.user_id many-mandatory -- one-mandatory User.user_id : "joins"
+  ref Membership.role_id many-optional -- one-mandatory Role.role_id : "has role"
+  ref Role.tenant_id many-mandatory -- one-mandatory Tenant.tenant_id : "scoped to"
+  ref RolePermission.role_id many-mandatory -- one-mandatory Role.role_id
+  ref RolePermission.permission_id many-mandatory -- one-mandatory Permission.permission_id
+  ref Invitation.tenant_id many-optional .. one-mandatory Tenant.tenant_id
+  ref AuditEvent.tenant_id many-mandatory -- one-mandatory Tenant.tenant_id
+  ref AuditEvent.actor_user_id many-optional .. one-optional User.user_id
+---
+
+## Scenario
+
+RBAC schemas are where generic ERD examples stop being useful. A SaaS product needs tenant scoping, composite keys on join tables, optional actor references for system events, and non-identifying edges for nullable audit metadata.
+
+## Annotation key
+
+- `Membership` and `RolePermission` use composite primary keys.
+- `..` marks a non-identifying relationship.
+- FK targets are declared inline and repeated as explicit `ref` lines for crow's-foot cardinality.

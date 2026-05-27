@@ -1,0 +1,37 @@
+---
+title: Litigation case timeline
+description: Lollipop litigation timeline with pleadings, discovery, motions, settlement conference, and trial milestones.
+diagram: timeline
+standard: Legal case chronology convention
+industry: [legal-finance]
+persona: For the litigation attorney
+complexity: 2
+tags: [timeline, litigation, lollipop, legal, milestones]
+featured: false
+relatedLink:
+  label: Timeline syntax
+  href: /docs/timeline
+status: published
+dsl: |
+  timeline "Smith v. Acme - Case Timeline"
+  config: style = lollipop
+
+  2025-01-10: milestone "Complaint filed" [side: above, color: #1565C0]
+  2025-02-07: "Answer due" [side: below]
+  2025-03-01 - 2025-06-30: "Fact discovery" [category: "discovery"]
+  2025-04-15: "Plaintiff deposition" [side: above]
+  2025-05-22: "Expert reports exchanged" [side: below]
+  2025-07-15: milestone "Summary judgment motion" [side: above, color: #C62828]
+  2025-08-20: "Mediation" [side: below]
+  2025-10-06: milestone "Trial setting" [side: above, color: #2E7D32]
+---
+
+## Scenario
+
+Litigation timelines mix hard deadlines, long phases, and high-stakes milestones. The lollipop style keeps single events readable while still allowing discovery to appear as a range.
+
+## Annotation key
+
+- `config: style = lollipop` selects the narrative timeline style.
+- Date ranges render as spans.
+- `milestone` emphasizes critical procedural events.

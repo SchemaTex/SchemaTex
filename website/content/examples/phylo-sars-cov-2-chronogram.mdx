@@ -1,0 +1,31 @@
+---
+title: SARS-CoV-2 variant chronogram
+description: Chronogram-style phylogenetic tree for major SARS-CoV-2 variants with clade highlights and a year scale.
+diagram: phylo
+standard: Newick / phylogram conventions
+industry: [research, healthcare]
+persona: For the bioinformatics educator
+complexity: 3
+tags: [phylo, chronogram, newick, variants, clades]
+featured: false
+relatedLink:
+  label: Phylo syntax
+  href: /docs/phylo
+status: published
+dsl: |
+  phylo "SARS-CoV-2 Variants" [mode: chronogram, layout: rectangular, mrsd: "2023"]
+    newick: "((Alpha:0.45,(Beta:0.35,Gamma:0.38):0.12):0.25,(Delta:0.42,(BA1:0.28,(BA2:0.18,XBB:0.12):0.1):0.22):0.3);"
+    clade VOC = (Alpha, Beta, Gamma, Delta) [color: "#1E88E5", label: "Early VOCs", highlight: branch]
+    clade Omicron = (BA1, BA2, XBB) [color: "#E53935", label: "Omicron lineages", highlight: both]
+    scale "years before 2023"
+---
+
+## Scenario
+
+Chronograms use branch lengths as time. For variant surveillance, that means the horizontal distance conveys approximate divergence time rather than only genetic distance.
+
+## Annotation key
+
+- `mode: chronogram` and `mrsd` tell the renderer how to interpret branch lengths.
+- `clade` highlights named groups from the Newick leaves.
+- `scale` labels the time axis.

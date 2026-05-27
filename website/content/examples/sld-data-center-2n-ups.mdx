@@ -1,0 +1,52 @@
+---
+title: Data center 2N UPS single-line
+description: Single-line diagram for a dual-path data center power train with utility feeds, UPS A/B, static transfer switch, and critical load panels.
+diagram: sld
+standard: IEEE 315 / Uptime Institute topology convention
+industry: [datacenter, industrial]
+persona: For the critical-facility engineer
+complexity: 3
+tags: [sld, data-center, ups, 2n, sts, critical-power]
+featured: false
+relatedLink:
+  label: Single-line syntax
+  href: /docs/sld
+status: published
+dsl: |
+  sld "Data Center 2N UPS"
+  UTIL_A = utility [voltage: "13.8kV", label: "Utility A"]
+  UTIL_B = utility [voltage: "13.8kV", label: "Utility B"]
+  XFMR_A = transformer [rating: "2500 kVA", voltage: "13.8kV/480V", label: "TX-A"]
+  XFMR_B = transformer [rating: "2500 kVA", voltage: "13.8kV/480V", label: "TX-B"]
+  SWGR_A = bus [voltage: "480V", label: "Switchgear A"]
+  SWGR_B = bus [voltage: "480V", label: "Switchgear B"]
+  UPS_A = ups [rating: "1 MW", label: "UPS A"]
+  UPS_B = ups [rating: "1 MW", label: "UPS B"]
+  STS = ats [rating: "1600A", label: "Static Transfer Switch"]
+  PDU_A = load [label: "PDU A"]
+  PDU_B = load [label: "PDU B"]
+  CRIT = load [label: "Critical IT Load"]
+
+  UTIL_A -> XFMR_A
+  UTIL_B -> XFMR_B
+  XFMR_A -> SWGR_A
+  XFMR_B -> SWGR_B
+  SWGR_A -> UPS_A
+  SWGR_B -> UPS_B
+  UPS_A -> STS
+  UPS_B -> STS
+  STS -> PDU_A
+  STS -> PDU_B
+  PDU_A -> CRIT
+  PDU_B -> CRIT
+---
+
+## Scenario
+
+Data centers are sold on redundancy. A 2N power path has two independent sources and UPS chains so either side can carry the critical load. A one-line diagram makes that redundancy auditable.
+
+## Annotation key
+
+- Two utility and transformer paths stay separate until the transfer point.
+- `ups` nodes show the energy-storage conversion stage.
+- The transfer switch feeds two PDUs before the critical IT load.

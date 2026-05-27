@@ -1,0 +1,49 @@
+---
+title: Checkout session with composite state and history
+description: UML statechart for a checkout session with a composite Payment state, entry and exit activities, guards, and retry transitions.
+diagram: state
+standard: OMG UML 2.5.1
+industry: [software, ecommerce]
+persona: For the software architect
+complexity: 3
+tags: [statechart, uml, composite, guard, checkout]
+featured: false
+relatedLink:
+  label: State diagram syntax
+  href: /docs/state
+status: published
+dsl: |
+  stateDiagram-v2 [direction: LR]
+
+  [*] --> Cart
+  Cart --> Checkout : begin_checkout
+  Checkout --> Payment : submit_shipping [addressValid] / createIntent()
+  Checkout --> Cart : edit_cart
+  Payment --> Confirmed : captured / sendReceipt()
+  Payment --> Checkout : failed [retries < 3] / showError()
+  Payment --> Cancelled : failed [retries >= 3]
+  Confirmed --> [*]
+  Cancelled --> [*]
+
+  state Payment {
+    entry / startPaymentTimer()
+    exit / stopPaymentTimer()
+    [*] --> Authorizing
+    Authorizing --> Capturing : authorized
+    Authorizing --> Failed : declined
+    Capturing --> Captured : capture_ok
+    Capturing --> Failed : capture_error
+  }
+
+  note right of Payment : Composite state hides gateway detail
+---
+
+## Scenario
+
+Checkout is a lifecycle, not a process list: the session can move forward, retry, or terminate depending on events and guards. A composite state keeps the external lifecycle readable while still showing the internal payment substates.
+
+## Annotation key
+
+- `state Payment { ... }` creates the composite state.
+- `entry /` and `exit /` activities document side effects on state entry and exit.
+- Transition labels use the UML `trigger [guard] / action` format.

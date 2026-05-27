@@ -1,0 +1,43 @@
+---
+title: Commercial solar PV interconnection
+description: Single-line diagram for a commercial PV array feeding a combiner, inverter, AC disconnect, production meter, and main switchboard.
+diagram: sld
+standard: IEEE 315 / NEC 690
+industry: [renewables, industrial]
+persona: For the solar designer
+complexity: 2
+tags: [sld, solar, pv, inverter, interconnection]
+featured: false
+relatedLink:
+  label: Single-line syntax
+  href: /docs/sld
+status: published
+dsl: |
+  sld "Commercial PV Interconnection"
+  PV1 = solar [rating: "250 kWdc", label: "PV Array"]
+  CMB = hub [rating: "600 Vdc", label: "DC Combiner"]
+  DISC_DC = switch_load [rating: "600 Vdc", label: "DC Disconnect"]
+  INV = load [rating: "200 kWac", label: "Grid-tie Inverter"]
+  DISC_AC = switch_load [rating: "480V 400A", label: "AC Disconnect"]
+  MTR = watthour_meter [label: "Production Meter"]
+  MSB = bus [voltage: "480V", label: "Main Switchboard"]
+  UTIL = utility [voltage: "480V", label: "Utility"]
+
+  PV1 -> CMB [cable: "PV string conductors"]
+  CMB -> DISC_DC
+  DISC_DC -> INV
+  INV -> DISC_AC
+  DISC_AC -> MTR
+  MTR -> MSB
+  UTIL -> MSB
+---
+
+## Scenario
+
+Commercial PV one-lines have a recognizable chain: DC array, combiner, inverter, AC disconnect, meter, and point of interconnection. This example uses standard SLD equipment while preserving PV-specific ratings in labels.
+
+## Annotation key
+
+- `solar` marks the generation source.
+- `hub` stands in for the combiner point.
+- `watthour_meter` captures the production metering requirement.
