@@ -40,7 +40,11 @@ export function GalleryFilterBar({
 
   const [queryInput, setQueryInput] = useState(activeQuery);
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(activeQuery !== '');
   useEffect(() => setQueryInput(activeQuery), [activeQuery]);
+  useEffect(() => {
+    if (activeQuery) setMobileSearchOpen(true);
+  }, [activeQuery]);
 
   const setParam = useCallback(
     (key: string, value: string | null) => {
@@ -81,6 +85,8 @@ export function GalleryFilterBar({
   }, [sheetOpen]);
 
   const clearAll = useCallback(() => {
+    setQueryInput('');
+    setMobileSearchOpen(false);
     router.replace(pathname, { scroll: false });
   }, [router, pathname]);
 
@@ -178,9 +184,9 @@ export function GalleryFilterBar({
       }}
     >
       <div className="mx-auto max-w-6xl flex flex-col gap-3">
-        {/* Row 1: search */}
+        {/* Desktop: search */}
         <div
-          className="flex items-center gap-2 px-3 py-2"
+          className="hidden items-center gap-2 px-3 py-2 md:flex"
           style={{
             border: '1px solid var(--fill-muted)',
             borderRadius: 'var(--r-sm)',
@@ -221,30 +227,119 @@ export function GalleryFilterBar({
           )}
         </div>
 
-        {/* Mobile: Filters button + active pills (hidden on md+) */}
-        <div className="md:hidden flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => setSheetOpen(true)}
-            className={`gal-chip${activeFilterCount > 0 ? ' active' : ''}`}
-            style={{ flexShrink: 0 }}
-          >
-            Filters
-            {activeFilterCount > 0 && <span style={{ opacity: 0.7 }}>{activeFilterCount}</span>}
-            <svg
-              width="10"
-              height="10"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden
+        {/* Mobile: one-line compact controls */}
+        <div className="md:hidden flex flex-col gap-2">
+          <div className="flex min-w-0 items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setSheetOpen(true)}
+              className={`gal-chip${activeFilterCount > 0 ? ' active' : ''}`}
+              style={{ flexShrink: 0, height: 34, paddingInline: 10 }}
             >
-              <polyline points="6 9 12 15 18 9" />
-            </svg>
-          </button>
+              Filters
+              {activeFilterCount > 0 && <span style={{ opacity: 0.7 }}>{activeFilterCount}</span>}
+              <svg
+                width="10"
+                height="10"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden
+              >
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </button>
+
+            {mobileSearchOpen ? (
+              <div
+                className="flex min-w-0 flex-1 items-center gap-2 px-2.5"
+                style={{
+                  height: 34,
+                  border: '1px solid var(--fill-muted)',
+                  borderRadius: 'var(--r-sm)',
+                  background: 'var(--fill)',
+                }}
+              >
+                <svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  style={{ color: 'var(--text-muted)', opacity: 0.6, flexShrink: 0 }}
+                >
+                  <circle cx="11" cy="11" r="7" />
+                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+                <input
+                  autoFocus
+                  type="text"
+                  value={queryInput}
+                  onChange={(e) => setQueryInput(e.target.value)}
+                  placeholder="search…"
+                  className="min-w-0 flex-1 bg-transparent font-mono text-xs focus:outline-none"
+                  style={{ color: 'var(--text)' }}
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (queryInput) setQueryInput('');
+                    else setMobileSearchOpen(false);
+                  }}
+                  className="font-mono text-xs"
+                  style={{ color: 'var(--text-muted)', flexShrink: 0 }}
+                  aria-label={queryInput ? 'Clear search' : 'Close search'}
+                >
+                  ×
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setMobileSearchOpen(true)}
+                className="inline-flex items-center justify-center"
+                style={{
+                  width: 34,
+                  height: 34,
+                  border: '1px solid var(--fill-muted)',
+                  borderRadius: 'var(--r-sm)',
+                  background: activeQuery ? 'var(--text)' : 'var(--bg)',
+                  color: activeQuery ? 'var(--bg)' : 'var(--text-muted)',
+                  flexShrink: 0,
+                }}
+                aria-label="Search examples"
+              >
+                <svg
+                  width="13"
+                  height="13"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <circle cx="11" cy="11" r="7" />
+                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+              </button>
+            )}
+
+            <div
+              className="ml-auto shrink-0 text-right font-mono text-xs leading-none"
+              style={{ color: 'var(--text-muted)' }}
+            >
+              <span style={{ color: 'var(--text)' }}>{visibleCount}</span>
+              <span className="ml-1 hidden min-[360px]:inline">results</span>
+            </div>
+          </div>
+
           {(activeIndustryLabel || activeDiagramLabel) && (
             <div
               className="flex gap-1.5 overflow-x-auto"
@@ -289,7 +384,7 @@ export function GalleryFilterBar({
         </div>
 
         {/* Status bar */}
-        <div className="flex items-center justify-between">
+        <div className="hidden items-center justify-between md:flex">
           <span className="font-mono text-xs" style={{ color: 'var(--text-muted)' }}>
             <span style={{ color: 'var(--text)' }}>{visibleCount}</span>
             {' results'}
