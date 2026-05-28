@@ -370,6 +370,7 @@ ipv4        = number , "." , number , "." , number , "." , number ;
 
 Mirrors the project-wide "Made for AI" pillar — and the P0 we are fixing is *for* AI output:
 
+- **Minimal core first (the 80/20 rule for generation).** A complete diagram needs only `<kind> <id> "label"` device lines plus `a -- b` links — nothing else is mandatory. `layout:`, `tier:`, link types, `vlan:`, `port:`, and `subnet { }` boundaries are all **optional and additive**; they refine a diagram that already renders. Generated DSL should start from the device+link skeleton and add annotations only when the request needs them, because every extra annotation token is one more place to fail. The canonical generation profile (`src/ai/profiles.ts`) deliberately exposes only this minimal surface.
 - **No silent drops — ever.** This is the headline. Every device and port the model declares is rendered; a duplicate id is a **readable error** (`device id "cam1" already declared on line 7`) rather than a clobber. An LLM that emits 30 cameras gets 30 cameras.
 - **Unknown device kind = readable error**, naming the bad kind and the closest valid kind (`unknown device kind "swtich" on line 4 — did you mean "switch"?`). No guessing.
 - **Link to an undeclared id is a readable error** naming the id and line — but a device may be *declared by being referenced inside a group block*, so order-independence holds within a file.

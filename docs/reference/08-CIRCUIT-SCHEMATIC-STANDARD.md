@@ -21,8 +21,10 @@ Circuit schematic 的 layout 与树/图类型有根本不同：
 
 **Schematex 同时支持两种 DSL：**
 
-- **位置式（默认）** — header `circuit "name"`，元件按方向链式排列，通过 `at:` 锚点分支。更直观，更可控。详见 §1–§4。
-- **Netlist（SPICE-subset）** — header `circuit "name" netlist`，声明元件 + nets，自动布局。适合从 SPICE 文件转换、或 AI 生成时使用 EE 工程惯例。详见 §4.5。
+- **Netlist（SPICE-subset）—— 生成场景的推荐路径** — header `circuit "name" netlist`，每行声明一个元件 + 它连接的 nets，引擎自动布局。每行自包含、无需跨行维护"游标"状态，因此**对 LLM 生成最友好**，错误面积最小。详见 §4.5。
+- **位置式（Schemdraw 风格）** — header `circuit "name"`，元件按方向链式排列，通过 `at:` 锚点分支。适合**手工**精确摆位；不建议用于自动生成（要求模型在脑中模拟游标移动）。详见 §1–§4。
+
+> **AI 生成约定**：始终用 netlist 模式。位置式仅保留给人工绘图。
 
 ### 1.2 Passive Components
 

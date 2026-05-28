@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.6.1] — 2026-05-27
+
+### Changed — LLM-friendlier DSL for the highest-failure diagram types
+
+Theme: cut LLM syntax-generation failures by shrinking the surface area each diagram requires, aligning with dominant priors (Mermaid / SPICE), and improving netlist auto-layout. **No breaking changes** — all existing DSL still parses; these are additive and canonical-path changes.
+
+- **`circuit` — netlist is now the recommended generation path.** Canonical syntax (`src/ai/profiles.ts`) and docs lead with the SPICE-style netlist (`circuit "…" netlist`); the positional/cursor mode is reframed as hand-drawing only (it requires tracking a moving cursor across lines, the dominant LLM failure). Added an optional per-component orientation hint **`dir=right|left|up|down`** (Lcapy-style L2 control) that rotates a symbol without affecting connectivity.
+- **`circuit` — netlist auto-layout compaction.** Two-pin components with one pin on ground are now recognised as **shunt legs** and dropped vertically beneath the node they tap; series / multi-pin components stay on a top spine row and spacing is tightened. Footprint: RC low-pass −36%, voltage divider −40%, common-emitter amp −32%; output now follows the conventional schematic idiom instead of one wide row.
+- **`network` — minimal core keeps the cheap structural hints.** Canonical guidance is now: device + link skeleton **plus `layout:` / `tier:`** (recommended — they drive the hierarchy at near-zero cost). The verbose per-link annotations (`vlan:` / `port:` / speed / `trunk`) are demoted to "only when asked" — they don't affect layout and are the main source of generation errors.
+- **`state` — Mermaid `stateDiagram-v2` is now the recommended header/form.** Aligns generation with the dominant training-data prior (`[*]` start/end, `-->` transitions). The native `state "…"` + `initial`/`final` form still works; the parser already accepted both.
+- **`timing` — clock / run-length shorthands.** Added **`NAME: clock N [neg]`** (clock generator) and **`NAME: rle <state>*<count> …`** (run-length) so waveforms no longer require hand-counting characters; both compile to standard WaveDrom wave strings and auto-align length. Invalid wave states now name the offending character and suggest the shorthands.
+
+### Docs
+
+- Rewrote the canonical generation profiles (`src/ai/profiles.ts`), the per-diagram reference tutorials (`circuit`, `network`, `timing` mdx → regenerated `src/ai/_generated.ts`), and the standard specs (`06-TIMING`, `08-CIRCUIT`, `21-STATE`, `35-NETWORK`) to lead with the recommended LLM path.
+
+### Tests
+
+- Added `tests/circuit/autolayout.test.ts` (shunt-drop compaction, dir= override) and `tests/timing/parser.test.ts` (clock / rle / error messages). Full suite: **991 passing**.
+
+---
+
 ## [0.6.0] — 2026-05-25
 
 ### Changed

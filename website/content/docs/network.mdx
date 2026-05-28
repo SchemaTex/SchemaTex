@@ -33,7 +33,39 @@ The cameras sit in a dashed `192.168.20.0/24` subnet (their IPs validated agains
 
 ## 1. Your first diagram
 
-Every document starts with the `network` keyword and an optional title, then declares **devices** before connecting them with **links**:
+A complete network diagram needs only two kinds of line: **device declarations** and **links**. Nothing else is required.
+
+<Playground initial={`network "Tiny LAN"
+router r1 "Edge Router"
+switch sw1 "Core Switch"
+pc pc1 "Workstation"
+r1 -- sw1
+sw1 -- pc1`} height={300} />
+
+That's it — a valid, laid-out diagram. Just two rules:
+
+- `<kind> <id> ["label"]` — a typed device. The kind picks the icon.
+- `<a> -- <b>` — an undirected link between two declared devices.
+
+**Everything else is optional and additive — but not all of it is equal.** Two cheap, high-value structural hints are worth adding whenever hierarchy matters: `layout:` (tiered/tree/star/ring/bus/mesh/spine-leaf) and `tier:` (edge/core/distribution/access). They drive a readable top-down hierarchy at almost no syntax cost:
+
+```
+network "Branch"
+  layout: tiered
+  router r1 "Edge Router" tier: edge
+  l3switch core1 "Core SW" tier: core
+  switch acc1 "Access SW" tier: access
+  pc pc1 "Workstation"
+  r1 -- core1
+  core1 -- acc1
+  acc1 -- pc1
+```
+
+By contrast, the **per-link annotations** — link types (`fiber`/`wireless`/`poe`…), speeds, `vlan:`, `port:`, `trunk`/`access`, and `subnet { }` boundaries — don't affect layout and are where generation most often breaks. Add them only when the request calls for them. Rule of thumb: keep the structural hints, drop the decorative annotations unless asked.
+
+Devices are **not** auto-declared from links — an undeclared id can't be safely typed, so a link to an unknown device is a readable error. Use `;` to put several statements on one line, and `a b c : kind` shorthand to declare several same-kind devices at once.
+
+Once the skeleton works, you can layer on direction and annotations — `->` is a directed link, `==` is a LAG, and anything after `:` is the link spec:
 
 ```
 network "Home"
@@ -44,12 +76,6 @@ network "Home"
   gw -- pc1
   gw -- lt1 : wireless
 ```
-
-- `<kind> <id> ["label"]` — a typed device. The kind picks the icon.
-- `<a> -- <b>` — an undirected link. `->` is directed; `==` is a LAG (aggregated) link.
-- Anything after `:` on a link is the **link spec** (type, mode, VLAN, speed, ports).
-
-Devices are **not** auto-declared from links — an undeclared id can't be safely typed, so a link to an unknown device is a readable error. Use `;` to put several statements on one line, and `a b c : kind` shorthand to declare several same-kind devices at once.
 
 ---
 

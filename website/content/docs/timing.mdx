@@ -18,17 +18,23 @@ MISO:  zzzz====  data: ["","","","","0xFF","0x12","0x34","0x56"]`} height={400} 
 
 ## 1. Your first timing diagram
 
-The smallest useful timing diagram: a clock and one data signal.
+The smallest useful timing diagram: a clock and one data signal. The friendliest way to write it avoids counting characters entirely:
 
 <Playground initial={`timing
-CLK:  pppppppp
+CLK:  clock 8
+RST:  rle 1*2 0*6
 DATA: 0011==00  data: ["A","B"]`} />
 
 Three rules cover 80% of usage:
 
 1. Start with the keyword `timing`, optionally followed by a quoted title and `[hscale: N]`.
-2. Each signal is one line: `NAME: wavestring` — name, colon, then a string of wave characters (no spaces inside the wave).
-3. Add `data: ["val1", "val2"]` after the wave string to label bus segments.
+2. Each signal is one line: `NAME: <wave>` — name, colon, then the waveform. The waveform can be:
+   - **`clock N`** — a clock generator with `N` periods (add `neg` for a negedge clock). No character-counting.
+   - **`rle <state>*<count> …`** — run-length segments, e.g. `rle 1*2 0*6` = `11000000`. Auto-aligns length.
+   - **a raw WaveDrom wave string** — a contiguous run of state characters (no internal spaces) for fine control.
+3. Add `data: ["val1", "val2"]` after a raw wave string to label bus segments.
+
+> **Tip for alignment:** the #1 cause of a broken timing diagram is signals of unequal length. `clock N` and `rle` make every signal's cell count explicit, so they line up. Use raw wave strings only when you need per-cell control.
 
 > Comments must start with `#` on their own line.
 

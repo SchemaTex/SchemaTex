@@ -216,8 +216,12 @@ signal_def      = signal_line
                 | spacer_def
                 | comment
 
-signal_line     = INDENT? name ":" wave_string data_clause? phase_clause? NEWLINE
+signal_line     = INDENT? name ":" wave_spec data_clause? phase_clause? NEWLINE
 name            = IDENTIFIER | quoted_string
+wave_spec       = wave_string | clock_form | rle_form    # AI-friendly shorthands compile to wave_string
+clock_form      = "clock" INT ("neg"|"pos")?             # N clock periods, e.g. `clock 8`
+rle_form        = "rle" rle_seg+                         # run-length, e.g. `rle 1*2 0*6`
+rle_seg         = wave_char "*" INT
 wave_string     = /[01xzpPnNhHlLusd=\.2-9]+/
 data_clause     = "data:" "[" quoted_string ("," quoted_string)* "]"
 phase_clause    = "phase:" FLOAT        # time offset, 0.0–1.0
