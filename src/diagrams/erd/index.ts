@@ -10,7 +10,7 @@ export const erd: DiagramPlugin = {
       if (t.length === 0) continue;
       if (t.startsWith("//") || t.startsWith("#")) continue;
       const first = t.split(/\s+/)[0]?.toLowerCase() ?? "";
-      return first === "erd";
+      return first === "erd" || first === "erdiagram";
     }
     return false;
   },

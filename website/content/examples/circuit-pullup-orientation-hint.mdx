@@ -1,0 +1,46 @@
+---
+title: Pull-up resistor circuit with dir= orientation hint
+description: A netlist-mode circuit that uses the optional dir= orientation hint to draw the pull-up resistor vertically, showing lightweight layout control on top of automatic placement.
+diagram: circuit
+standard: IEEE 315 / IEC 60617
+industry: [electronics, education]
+persona: For the embedded engineer
+complexity: 1
+tags: [netlist, pull-up, dir, orientation, push-button, SPICE]
+featured: false
+relatedLink:
+  label: Circuit syntax
+  href: /docs/circuit
+status: published
+dsl: |
+  circuit "Pull-up + push button" netlist
+  V1 vcc 0 5V
+  R1 vcc sig 10k dir=down
+  SW1 sig 0 type=switch
+  C1 sig 0 100n
+---
+
+## Scenario
+
+An embedded engineer documents a classic active-low input: a pull-up resistor
+holds the signal high, a push button pulls it to ground, and a small capacitor
+debounces it. The connectivity is written as a SPICE-style netlist — the engine
+places everything from the node names — and one optional hint refines the look.
+
+## Annotation key
+
+- **netlist line** — `id node-A node-B value`; components that share a node name
+  are wired together. `0` is ground.
+- **`dir=down`** — the optional orientation hint. `R1` connects `vcc` to `sig`;
+  by default the engine would lay it horizontally, but a pull-up reads best drawn
+  vertically from the supply rail down to the signal node, so `dir=down` rotates
+  just that symbol. Connectivity is unchanged — `dir=` only rotates the glyph.
+- **`type=switch`** — the `SW1` id prefix is ambiguous, so the component type is
+  made explicit.
+
+## How to read
+
+`R1` ties `sig` up to `vcc` (drawn vertically thanks to `dir=down`). `SW1` and the
+debounce cap `C1` both go from `sig` to ground, so the engine recognises them as
+shunt legs and drops them beneath the node. Pressing the button shorts `sig` to
+ground, pulling the input low.

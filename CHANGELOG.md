@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.6.2] — 2026-05-27
+
+### Changed — Mermaid header compatibility for `sequence` and `erd`
+
+Continues the 0.6.1 theme (align generation with the dominant Mermaid prior). Both parsers now accept their Mermaid dialect so an LLM can paste Mermaid in unchanged. **No breaking changes** — the native headers and semantics are untouched.
+
+- **`sequence` — accepts the Mermaid `sequenceDiagram` header.** Under that header the arrow tokens take Mermaid meaning (`->>` synchronous call, `-->>` reply/return, `-)` async, plus `--)`/`--x`); under the native `sequence "Title"` header the long-standing Schematex meaning is preserved (`->>` = async), so existing documents are unaffected. `participant`/`actor`, `Note over A,B:`, activation suffixes, and `loop`/`alt`/`opt`/`par … end` work in both. Canonical profile now recommends `sequenceDiagram`.
+- **`erd` — accepts the Mermaid `erDiagram` header.** Bare relationships (`CUSTOMER ||--o{ ORDER : places`, no `ref` keyword) auto-create their entities, and type-first entity blocks (`ORDER { int id PK }`, KEY ∈ PK/FK/UK) are parsed. The native `erd` header with `table NAME { name type PK }` + `ref …` is unchanged. Canonical profile now recommends `erDiagram`.
+
+### Added — showcase examples
+
+- `timing-clock-rle-shorthand` — synchronous bus read using the `clock N` and `rle <state>*<count>` shorthands (0.6.1 features).
+- `circuit-pullup-orientation-hint` — netlist pull-up circuit demonstrating the `dir=` orientation hint (0.6.1 feature).
+
+### Tests
+
+- Added `tests/sequence/mermaid-compat.test.ts` and `tests/erd/mermaid-compat.test.ts` (header detection, Mermaid arrow/cardinality semantics, native-mode regression guards).
+
+---
+
 ## [0.6.1] — 2026-05-27
 
 ### Changed — LLM-friendlier DSL for the highest-failure diagram types

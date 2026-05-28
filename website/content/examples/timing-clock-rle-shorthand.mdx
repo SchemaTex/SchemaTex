@@ -1,0 +1,46 @@
+---
+title: Timing diagram with clock and run-length shorthands
+description: A synchronous bus-read timing diagram written with the clock and rle shorthands so signals stay aligned without hand-counting wave characters.
+diagram: timing
+standard: WaveDrom / IEEE 1497
+industry: [industrial, education]
+persona: For the digital design engineer
+complexity: 1
+tags: [clock, run-length, rle, WaveDrom, synchronous, bus-read]
+featured: false
+relatedLink:
+  label: Timing syntax
+  href: /docs/timing
+status: published
+dsl: |
+  timing "Synchronous Bus Read"
+  CLK:  clock 8
+  RST:  rle 1*2 0*6
+  EN:   rle 0*2 1*4 0*2
+  DATA: zz====zz  data: ["D0","D1","D2","D3"]
+---
+
+## Scenario
+
+A digital designer documents an 8-cycle synchronous read. Rather than typing
+`pppppppp` for the clock and counting `0`/`1` runs by hand for reset and enable —
+the most common source of misaligned waveforms — the diagram uses the two
+length-explicit shorthands.
+
+## Annotation key
+
+- **`clock N`** — a clock generator with `N` periods. `CLK: clock 8` expands to
+  `pppppppp`; add `neg` for a negedge clock. No character-counting.
+- **`rle <state>*<count> …`** — run-length segments. `RST: rle 1*2 0*6` expands to
+  `11000000`; `EN: rle 0*2 1*4 0*2` expands to `00111100`. Every signal's total
+  cell count is explicit, so the waves line up.
+- **raw wave string** — `DATA: zz====zz` keeps per-cell control where it matters;
+  `data: [...]` labels the four `=` bus segments.
+
+## How to read
+
+The clock runs 8 cycles. Reset is asserted for the first 2 cycles, then drops.
+Enable rises for the middle 4 cycles. The data bus is high-impedance until enable,
+then presents four stable bytes `D0…D3`, returning to high-Z after. Because
+`clock` and `rle` make each signal exactly 8 cells, the edges align without manual
+counting.

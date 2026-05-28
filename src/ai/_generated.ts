@@ -248,6 +248,25 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "notes": "## Scenario\n\nAn analog engineer documents a standard inverting gain stage before moving to PCB layout. The two resistors make the gain visible in the schematic: `Rf / Rin = 10`, so the output is an inverted, amplified version of the input.\n\n## Annotation key\n\n- `type=opamp` selects the three-pin op-amp symbol in netlist mode.\n- `Rin` and `Rf` are ordinary SPICE-style resistor lines.\n- `noninv`, `inv`, and `out` are named nets, not pixel coordinates.\n\n## How to read\n\nThe input signal enters through `Rin` into the inverting input. `Rf` feeds the output back to the same node, closing the negative feedback loop. The non-inverting input is tied to ground through `Rbias`, giving the stage a stable reference."
   },
   {
+    "slug": "circuit-pullup-orientation-hint",
+    "diagram": "circuit",
+    "title": "Pull-up resistor circuit with dir= orientation hint",
+    "description": "A netlist-mode circuit that uses the optional dir= orientation hint to draw the pull-up resistor vertically, showing lightweight layout control on top of automatic placement.",
+    "standard": "IEEE 315 / IEC 60617",
+    "tags": [
+      "netlist",
+      "pull-up",
+      "dir",
+      "orientation",
+      "push-button",
+      "SPICE"
+    ],
+    "complexity": 1,
+    "featured": false,
+    "dsl": "circuit \"Pull-up + push button\" netlist\nV1 vcc 0 5V\nR1 vcc sig 10k dir=down\nSW1 sig 0 type=switch\nC1 sig 0 100n",
+    "notes": "## Scenario\n\nAn embedded engineer documents a classic active-low input: a pull-up resistor\nholds the signal high, a push button pulls it to ground, and a small capacitor\ndebounces it. The connectivity is written as a SPICE-style netlist — the engine\nplaces everything from the node names — and one optional hint refines the look.\n\n## Annotation key\n\n- **netlist line** — `id node-A node-B value`; components that share a node name\n  are wired together. `0` is ground.\n- **`dir=down`** — the optional orientation hint. `R1` connects `vcc` to `sig`;\n  by default the engine would lay it horizontally, but a pull-up reads best drawn\n  vertically from the supply rail down to the signal node, so `dir=down` rotates\n  just that symbol. Connectivity is unchanged — `dir=` only rotates the glyph.\n- **`type=switch`** — the `SW1` id prefix is ambiguous, so the component type is\n  made explicit.\n\n## How to read\n\n`R1` ties `sig` up to `vcc` (drawn vertically thanks to `dir=down`). `SW1` and the\ndebounce cap `C1` both go from `sig` to ground, so the engine recognises them as\nshunt legs and drops them beneath the node. Pressing the button shorts `sig` to\nground, pulling the input low."
+  },
+  {
     "slug": "decisiontree-investment-analysis",
     "diagram": "decisiontree",
     "title": "Investment decision analysis",
@@ -2032,6 +2051,25 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "featured": true,
     "dsl": "timeline \"Platform v2 Launch\"\nconfig: style = gantt\n\n2025-07-01 - 2025-08-15: \"Engineering build\" [category: \"engineering\"]\n2025-07-15 - 2025-08-31: \"Design polish\" [category: \"design\"]\n2025-08-01 - 2025-09-10: \"Marketing collateral\" [category: \"marketing\"]\n2025-08-20: milestone \"Feature freeze\" [color: #E53935]\n2025-08-20 - 2025-09-05: \"QA hardening\" [category: \"engineering\"]\n2025-09-01 - 2025-09-12: \"Press embargo outreach\" [category: \"marketing\"]\n2025-09-15: milestone \"Public launch\" [color: #2E7D32]",
     "notes": "## Scenario\n\nThe launch PM shares this in weekly exec status. Overlapping bars show where workstreams parallelize (design polishing while engineering still builds) and the feature-freeze diamond makes the handoff between build and QA unmissable. The second milestone (public launch) anchors the entire timeline and is the reason every other bar exists.\n\n## Annotation key\n\n- `DATE - DATE: \"Label\"` — range (bar) event\n- `DATE: milestone \"Label\"` — point milestone (diamond)\n- `[category: …]` — group colour in the gantt legend\n- `[color: #hex]` — explicit marker colour\n\n## How to read\n\nTime flows left to right. Horizontal bars are continuous work; diamonds are instantaneous events. Overlapping bars mean two teams are working simultaneously — fine, so long as they coordinate. The red *Feature freeze* marks the transition from net-new work to hardening; any engineering bar extending past it needs an exception. The green *Public launch* is the terminal milestone every other bar is serving."
+  },
+  {
+    "slug": "timing-clock-rle-shorthand",
+    "diagram": "timing",
+    "title": "Timing diagram with clock and run-length shorthands",
+    "description": "A synchronous bus-read timing diagram written with the clock and rle shorthands so signals stay aligned without hand-counting wave characters.",
+    "standard": "WaveDrom / IEEE 1497",
+    "tags": [
+      "clock",
+      "run-length",
+      "rle",
+      "WaveDrom",
+      "synchronous",
+      "bus-read"
+    ],
+    "complexity": 1,
+    "featured": false,
+    "dsl": "timing \"Synchronous Bus Read\"\nCLK:  clock 8\nRST:  rle 1*2 0*6\nEN:   rle 0*2 1*4 0*2\nDATA: zz====zz  data: [\"D0\",\"D1\",\"D2\",\"D3\"]",
+    "notes": "## Scenario\n\nA digital designer documents an 8-cycle synchronous read. Rather than typing\n`pppppppp` for the clock and counting `0`/`1` runs by hand for reset and enable —\nthe most common source of misaligned waveforms — the diagram uses the two\nlength-explicit shorthands.\n\n## Annotation key\n\n- **`clock N`** — a clock generator with `N` periods. `CLK: clock 8` expands to\n  `pppppppp`; add `neg` for a negedge clock. No character-counting.\n- **`rle <state>*<count> …`** — run-length segments. `RST: rle 1*2 0*6` expands to\n  `11000000`; `EN: rle 0*2 1*4 0*2` expands to `00111100`. Every signal's total\n  cell count is explicit, so the waves line up.\n- **raw wave string** — `DATA: zz====zz` keeps per-cell control where it matters;\n  `data: [...]` labels the four `=` bus segments.\n\n## How to read\n\nThe clock runs 8 cycles. Reset is asserted for the first 2 cycles, then drops.\nEnable rises for the middle 4 cycles. The data bus is high-impedance until enable,\nthen presents four stable bytes `D0…D3`, returning to high-Z after. Because\n`clock` and `rle` make each signal exactly 8 cells, the edges align without manual\ncounting."
   },
   {
     "slug": "timing-i2c-read-burst",

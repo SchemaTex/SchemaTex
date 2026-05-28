@@ -284,12 +284,25 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
   },
   erd: {
     type: "erd",
-    header: "erd",
-    mode: "table blocks + named cardinality refs",
-    forms: ["table User { id int PK; email varchar }", "table Order { id int PK; user_id int FK -> User.id }", "ref Order.user_id many-mandatory -- one-mandatory User.id"],
-    prefer: ["Use named cardinality tokens for generated refs.", "Keep FK targets explicit."],
-    avoid: ["Avoid Mermaid cardinality glyphs unless converting Mermaid input."],
-    repair: ["Unknown cardinality tokens and unterminated table blocks fail validation."],
+    header: "erDiagram",
+    mode: "Mermaid erDiagram (recommended for generation)",
+    forms: [
+      "CUSTOMER ||--o{ ORDER : places",
+      "ORDER {",
+      "  int id PK",
+      "  string customerId FK",
+      "}",
+    ],
+    prefer: [
+      "Use Mermaid `erDiagram` syntax: relationships `A <card>--<card> B : label` with crow's-foot glyphs (`||` one, `o{` zero-or-many, `|{` one-or-many, `|o` zero-or-one); entity blocks `NAME { type name KEY }` with attributes **type-first** and KEY ∈ PK/FK/UK.",
+      "Entities are auto-created from relationships; you only need a `{ … }` block to list attributes.",
+      "This matches the dominant training-data prior. The native `erd` header with `table NAME { name type PK }` + `ref … many-mandatory -- one-mandatory …` is also accepted.",
+    ],
+    avoid: ["Do not mix the two header styles; under `erDiagram`, attributes are type-first (`int id PK`), not name-first."],
+    repair: [
+      "Crow's-foot glyph pairs must be valid (`||`, `|o`, `}o`, `}|` on the left; `||`, `o|`, `o{`, `|{` on the right).",
+      "If the header is rejected, use exactly `erDiagram` (or native `erd`).",
+    ],
   },
   breadboard: {
     type: "breadboard",
@@ -356,12 +369,25 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
   },
   sequence: {
     type: "sequence",
-    header: 'sequence "Title"',
-    mode: "participants + messages",
-    forms: ["actor User", 'participant API as "API"', "User -> API : request", "API --> User : response"],
-    prefer: ["Start with participants/messages, then add fragments only if control flow matters."],
-    avoid: ["Avoid Mermaid `sequenceDiagram` header; this parser uses `sequence`."],
-    repair: ["Unmatched `end`, `else`, or activation statements are validation failures."],
+    header: "sequenceDiagram",
+    mode: "Mermaid sequenceDiagram (recommended for generation)",
+    forms: [
+      "participant Alice",
+      "participant Bob",
+      "Alice->>Bob: request",
+      "Bob-->>Alice: response",
+      "Note over Alice,Bob: handshake",
+    ],
+    prefer: [
+      "Use Mermaid `sequenceDiagram` syntax: `->>` is a sync call, `-->>` a reply/return, `-)` async; `participant`/`actor`, `Note over A,B:`, and `loop`/`alt`/`opt`/`par … end` all work.",
+      "This matches the dominant training-data prior; the native `sequence \"Title\"` header (where `->>` means async) is also accepted.",
+      "Add combined fragments only when control flow matters.",
+    ],
+    avoid: ["Do not mix the two header styles; pick `sequenceDiagram` and keep Mermaid arrow meanings throughout."],
+    repair: [
+      "Every fragment (`loop`/`alt`/`opt`/`par`/`break`/`critical`) needs a matching `end`; `else` only inside `alt`.",
+      "If the header is rejected, use exactly `sequenceDiagram` (or `sequence \"Title\"`).",
+    ],
   },
   petri: {
     type: "petri",
