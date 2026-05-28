@@ -77,10 +77,50 @@ export function parseTiming(text: string): TimingAST {
     const sigMatch = line.match(/^([^:]+):\s*(.+)$/);
     if (sigMatch) {
       const name = sigMatch[1].trim();
-      const { wave, data } = splitDataList(sigMatch[2]);
-      if (!VALID_STATES.test(wave)) {
-        throw new TimingParseError(`Invalid wave string "${wave}" for signal ${name}`, lineNo, undefined, line);
+      const rhs = sigMatch[2].trim();
+      const tok = rhs.split(/\s+/);
+      let wave: string;
+      let data: string[] = [];
+
+      if (/^clock$/i.test(tok[0])) {
+        // `NAME: clock 8 [neg]` — N clock periods (no char-counting).
+        const n = Number(tok[1]);
+        if (!Number.isInteger(n) || n < 1) {
+          throw new TimingParseError(
+            `clock needs a positive cycle count, e.g. "${name}: clock 8"`,
+            lineNo, undefined, line
+          );
+        }
+        wave = (/^neg/i.test(tok[2] ?? "") ? "n" : "p").repeat(n);
+      } else if (/^rle$/i.test(tok[0])) {
+        // `NAME: rle 1*2 0*6 x*1` — run-length, each seg is <state>*<count>.
+        wave = "";
+        for (const seg of tok.slice(1)) {
+          const sm = seg.match(/^(.)\*(\d+)$/);
+          if (!sm || !VALID_STATES.test(sm[1])) {
+            throw new TimingParseError(
+              `rle segment must be <state>*<count>, e.g. "1*2 0*6"; got "${seg}"`,
+              lineNo, undefined, line
+            );
+          }
+          wave += sm[1].repeat(Number(sm[2]));
+        }
+      } else {
+        const parsed = splitDataList(rhs);
+        wave = parsed.wave;
+        data = parsed.data;
+        if (!VALID_STATES.test(wave)) {
+          const bad = [...wave].find((c) => !VALID_STATES.test(c));
+          throw new TimingParseError(
+            `Invalid wave string "${wave}" for signal ${name}` +
+              (bad ? ` — "${bad}" is not a valid state` : "") +
+              `. Valid states: 0 1 x z = . p P n N h H l L u d 2-9` +
+              `. Tip: use "clock N" for a clock or "rle 1*2 0*6" for run-length.`,
+            lineNo, undefined, line
+          );
+        }
       }
+
       const signal: TimingSignal = { name, wave, data: data.length ? data : undefined };
       if (currentGroup) currentGroup.signals.push(signal);
       else signals.push(signal);

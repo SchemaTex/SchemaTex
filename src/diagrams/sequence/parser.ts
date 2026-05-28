@@ -62,20 +62,36 @@ const ALL_FRAG = new Set<SeqFragmentOp>([
 ]);
 
 /** Arrow tokens, ordered longest-first so the regex matches greedily. */
-const ARROW_RE = /(-->|->>|o->|-x|->)/;
+const ARROW_RE = /(-->>|--\)|--x|-->|->>|o->|-\)|-x|->)/;
 
-function arrowKind(token: string): SeqArrowKind {
+/**
+ * Map an arrow token to a Schematex arrow kind.
+ *
+ * In Mermaid mode (`sequenceDiagram` header) the tokens follow Mermaid's
+ * conventions — notably `->>` is a *synchronous* call and `-->>` is the reply.
+ * In native mode (`sequence` header) the long-standing Schematex meaning is
+ * kept (`->>` = async) so existing documents are unaffected.
+ */
+function arrowKind(token: string, mermaid: boolean): SeqArrowKind {
   switch (token) {
+    case "-->>":
+      return "reply";
     case "-->":
       return "reply";
-    case "->>":
+    case "--)":
+      return "async";
+    case "-)":
       return "async";
     case "o->":
       return "found";
+    case "->>":
+      return mermaid ? "sync" : "async";
+    case "--x":
+      return mermaid ? "reply" : "lost"; // mermaid keeps the target (styled below)
     case "-x":
-      return "lost";
+      return mermaid ? "sync" : "lost";
     default:
-      return "sync";
+      return "sync"; // "->"
   }
 }
 
@@ -104,6 +120,7 @@ export class SequenceParser {
   private order: string[] = [];
   private byId = new Map<string, SeqParticipant>();
   private warnings: string[] = [];
+  private mermaid = false;
 
   constructor(source: string) {
     this.lines = source.split(/\r?\n/).map((raw, idx) => ({
@@ -166,12 +183,14 @@ export class SequenceParser {
 
   private consumeHeader(): { title?: string } {
     const ln = this.next();
-    if (!ln || !/^sequence\b/i.test(ln.text)) {
+    if (!ln || !/^sequence(?:diagram)?\b/i.test(ln.text)) {
       throw new SequenceParseError(
-        "A sequence diagram must start with the keyword 'sequence'",
+        "A sequence diagram must start with the keyword 'sequence' (or Mermaid 'sequenceDiagram')",
         ln?.n,
       );
     }
+    // Mermaid's `sequenceDiagram` header switches arrow tokens to Mermaid semantics.
+    this.mermaid = /^sequencediagram\b/i.test(ln.text);
     const title = matchQuotedTitle(ln.text);
     return title ? { title } : {};
   }
@@ -430,7 +449,7 @@ export class SequenceParser {
       right = right.slice(1).trim();
     }
 
-    const arrow = arrowKind(token);
+    const arrow = arrowKind(token, this.mermaid);
 
     // create form: right id prefixed with '*'
     let create = false;

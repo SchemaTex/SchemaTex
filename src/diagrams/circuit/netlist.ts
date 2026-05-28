@@ -302,17 +302,26 @@ export function parseNetlist(
 
     pinMap[id] = pins;
 
+    // Optional L2 orientation hint: `dir=`/`orient=` (right|left|up|down).
+    // Absent → auto-layout chooses by role; present → respected verbatim.
+    const dirHint = (kv.dir ?? kv.orient ?? kv.direction)?.toLowerCase();
+    const explicitDir =
+      dirHint === "right" || dirHint === "left" || dirHint === "up" || dirHint === "down"
+        ? dirHint
+        : undefined;
+
     const comp: CircuitComponent = {
       id,
       componentType: cType,
-      direction: "right",
+      direction: explicitDir ?? "right",
       label: kv.label ?? id,
       value: kv.value ?? valueFromTail,
-      attrs: {},
+      attrs: explicitDir ? { dirExplicit: "true" } : {},
     };
     // Propagate extra key=value attrs (skip well-known keys)
     for (const [k, v] of Object.entries(kv)) {
       if (k === "label" || k === "value" || k === "type") continue;
+      if (k === "dir" || k === "orient" || k === "direction") continue;
       comp.attrs![k] = v;
     }
     components.push(comp);

@@ -32,6 +32,8 @@
 
 Schematex 覆盖 Mermaid 的**所有已有特性**，并实现 Mermaid 文档明确不支持的 UML 2.5 元素。Mermaid-style DSL 片段可直接移植（见 §11 兼容性）。
 
+> **AI 生成约定**：推荐直接用 Mermaid `stateDiagram-v2` 语法生成 —— header 用 `stateDiagram-v2`，`[*]` 表示起止伪状态，`-->` 表示转移，`: label` 表示事件/守卫。这与主流训练数据（海量 Mermaid 样本）对齐，比 Schematex 原生 `state "Title"` + `initial`/`final` 形式更不易出错。两种都被解析器接受，但**生成时优先 Mermaid 形式，且不要在同一文件混用两种风格**（例如 `[*]` 与 `initial X` 混写）。canonical 生成 profile（`src/ai/profiles.ts`）已据此把 header 设为 `stateDiagram-v2`。
+
 ---
 
 ## 1. State & Pseudo-State Symbol Set

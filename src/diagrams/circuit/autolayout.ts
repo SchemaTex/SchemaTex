@@ -41,11 +41,11 @@ import type {
   CircuitLayoutResult,
 } from "./layout";
 
-const COL_W = 120; // horizontal spacing per component
-const ROW_H = 100; // vertical spacing per rank
-const RAIL_PAD = 60; // distance from top/bottom rail to component row
-const LEFT_MARGIN = 80;
-const TOP_MARGIN = 60;
+const COL_W = 96; // horizontal spacing per component
+const ROW_H = 80; // vertical spacing per band (spine / shunt / ground)
+const LEFT_MARGIN = 70;
+const TOP_MARGIN = 56;
+const SHUNT_OFFSET = 28; // x nudge when two shunts share a node
 
 export interface RoutedWire {
   netId: string;
@@ -128,77 +128,118 @@ export function layoutCircuitNetlist(ast: CircuitAST): AutoLayoutResult {
   const pinMap = ast.pinMap ?? {};
 
   // ── Step 1: classify ───────────────────────────────────────
-  // MVP ranking: power sources + regular components share the MIDDLE rank
-  // (sources on the left, others to their right). Grounds live on a dedicated
-  // bottom rank so a full-width GND rail can be drawn underneath. This mimics
-  // the standard textbook convention where a vertical source on the left
-  // feeds a horizontal chain of components into a ground at the bottom.
+  // Three bands, top→bottom: the SPINE row (sources on the left feeding a
+  // horizontal chain of series/multi-pin components), a SHUNT band (two-pin
+  // components with exactly one pin on ground drop vertically under the node
+  // they tap, the textbook "shunt leg"), and the GROUND symbols underneath.
+  // This reconstructs the conventional schematic idiom from the netlist instead
+  // of dumping everything into one wide row.
+  const isShunt = (c: CircuitComponent): boolean => {
+    if (isPowerSource(c) || isGround(c)) return false;
+    const pins = pinMap[c.id];
+    if (!pins) return false;
+    const nets = Object.values(pins);
+    return nets.length === 2 && nets.filter((n) => n === "GND").length === 1;
+  };
+
   const powerComps: CircuitComponent[] = [];
   const groundComps: CircuitComponent[] = [];
+  const shuntComps: CircuitComponent[] = [];
   const middleComps: CircuitComponent[] = [];
-
   for (const c of ast.components) {
     if (isPowerSource(c)) powerComps.push(c);
     else if (isGround(c)) groundComps.push(c);
+    else if (isShunt(c)) shuntComps.push(c);
     else middleComps.push(c);
   }
+  const spine = [...powerComps, ...middleComps];
 
-  const ranks: CircuitComponent[][] = [];
-  const mainRank = [...powerComps, ...middleComps];
-  if (mainRank.length) ranks.push(mainRank);
-  if (groundComps.length) ranks.push(groundComps);
-
-  // If classification produced nothing, fall through with one row
-  if (ranks.length === 0) ranks.push(ast.components);
-
-  // ── Step 4: place components on grid ───────────────────────
+  // ── Step 4: place components ───────────────────────────────
   const placed = new Map<string, LaidOutComponent>();
   const items: LaidOutComponent[] = [];
 
-  let maxCols = 0;
-  for (const rank of ranks) maxCols = Math.max(maxCols, rank.length);
-
-  for (let r = 0; r < ranks.length; r++) {
-    const rank = ranks[r];
-    const rowY = TOP_MARGIN + r * (ROW_H + RAIL_PAD);
-    // Center this rank under the widest rank
-    const startX = LEFT_MARGIN + ((maxCols - rank.length) * COL_W) / 2;
-
-    for (let i = 0; i < rank.length; i++) {
-      const comp = rank[i];
-      // For netlist mode, override direction based on role: power sources
-      // face down (plus at bottom, connecting to the middle rank), ground
-      // symbols face up (stem pointing down).
-      const direction = defaultDirection(comp);
-      comp.direction = direction;
-      const rot = rotationOf(direction);
-
-      const sym = getSymbol(comp.componentType);
-      const x = startX + i * COL_W;
-      const y = rowY;
-
-      const worldAnchors: Record<string, PinAnchor> = {};
-      if (sym) {
-        for (const [name, pt] of Object.entries(sym.anchors)) {
-          const rp = rotatePt(pt, rot);
-          worldAnchors[name] = { x: x + rp.x, y: y + rp.y };
-        }
-      } else {
-        worldAnchors.start = { x, y };
-        worldAnchors.end = { x: x + 30, y };
+  const place = (
+    comp: CircuitComponent,
+    x: number,
+    y: number,
+    fallbackDir?: "right" | "left" | "up" | "down"
+  ): LaidOutComponent => {
+    // Honor an explicit L2 hint (`dir=`); else the caller's band default; else role.
+    const direction =
+      comp.attrs?.dirExplicit === "true"
+        ? comp.direction
+        : fallbackDir ?? defaultDirection(comp);
+    comp.direction = direction;
+    const rot = rotationOf(direction);
+    const sym = getSymbol(comp.componentType);
+    const worldAnchors: Record<string, PinAnchor> = {};
+    if (sym) {
+      for (const [name, pt] of Object.entries(sym.anchors)) {
+        const rp = rotatePt(pt, rot);
+        worldAnchors[name] = { x: x + rp.x, y: y + rp.y };
       }
-
-      const laid: LaidOutComponent = {
-        component: comp,
-        x,
-        y,
-        rotation: rot,
-        length: sym?.length ?? 30,
-        anchors: worldAnchors,
-      };
-      items.push(laid);
-      placed.set(comp.id, laid);
+    } else {
+      worldAnchors.start = { x, y };
+      worldAnchors.end = { x: x + 30, y };
     }
+    const laid: LaidOutComponent = {
+      component: comp,
+      x,
+      y,
+      rotation: rot,
+      length: sym?.length ?? 30,
+      anchors: worldAnchors,
+    };
+    items.push(laid);
+    placed.set(comp.id, laid);
+    return laid;
+  };
+
+  if (spine.length === 0 && shuntComps.length === 0) {
+    // Degenerate (e.g. only grounds): keep a single row.
+    ast.components.forEach((comp, i) =>
+      place(comp, LEFT_MARGIN + i * COL_W, TOP_MARGIN)
+    );
+  } else {
+    // Spine row.
+    const spineY = TOP_MARGIN;
+    spine.forEach((comp, i) => place(comp, LEFT_MARGIN + i * COL_W, spineY));
+
+    // Map each signal net to the x of a spine pin on it, so shunts can drop
+    // directly beneath the node they tap.
+    const spinePinX = new Map<string, number>();
+    for (const comp of spine) {
+      const pins = pinMap[comp.id];
+      const laid = placed.get(comp.id);
+      if (!pins || !laid) continue;
+      for (const [pinName, net] of Object.entries(pins)) {
+        if (net === "GND") continue;
+        const a = laid.anchors[pinName];
+        if (a && !spinePinX.has(net)) spinePinX.set(net, a.x);
+      }
+    }
+
+    // Shunt band: each shunt vertical, beneath its tapped node.
+    const shuntY = spineY + ROW_H;
+    const sharedNode = new Map<number, number>();
+    shuntComps.forEach((comp, idx) => {
+      const pins = pinMap[comp.id]!;
+      const sigNet = Object.values(pins).find((n) => n !== "GND");
+      let x =
+        (sigNet !== undefined ? spinePinX.get(sigNet) : undefined) ??
+        LEFT_MARGIN + (spine.length + idx) * COL_W;
+      const used = sharedNode.get(x) ?? 0;
+      sharedNode.set(x, used + 1);
+      x += used * SHUNT_OFFSET;
+      place(comp, x, shuntY, "down");
+    });
+
+    // Ground symbols centered beneath everything.
+    const baseY = shuntComps.length ? shuntY : spineY;
+    const groundY = baseY + ROW_H;
+    const xs = items.map((it) => it.x);
+    const gx = xs.length ? (Math.min(...xs) + Math.max(...xs)) / 2 : LEFT_MARGIN;
+    groundComps.forEach((comp, i) => place(comp, gx + i * COL_W, groundY, "down"));
   }
 
   // ── Step 5: build net → world pin coords ───────────────────

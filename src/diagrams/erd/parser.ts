@@ -103,8 +103,13 @@ export function parseErd(text: string): ErdAst {
   // Header.
   const header = lines[0]!;
   const headerWords = header.text.split(/\s+/);
-  if (headerWords[0]?.toLowerCase() !== "erd") {
-    throw new ErdParseError(`Expected 'erd' header, got: ${header.text}`, header.lineNumber);
+  const h0 = headerWords[0]?.toLowerCase();
+  // Mermaid `erDiagram` paste-compat path (entities auto-create, bare relationships, type-first attrs).
+  if (h0 === "erdiagram") {
+    return parseMermaidErd(lines);
+  }
+  if (h0 !== "erd") {
+    throw new ErdParseError(`Expected 'erd' (or Mermaid 'erDiagram') header, got: ${header.text}`, header.lineNumber);
   }
 
   let i = 1;
@@ -194,6 +199,119 @@ export function parseErd(text: string): ErdAst {
     direction,
     title,
     entities,
+    refs,
+  };
+}
+
+// ─── Mermaid `erDiagram` paste-compat parser ──────────────────
+
+const MERMAID_NAME = /[A-Za-z_][\w-]*/;
+const REL_RE = new RegExp(
+  `^(${MERMAID_NAME.source})\\s+([}|o][o|]|\\|\\||\\|o)(\\.\\.|--|~~)([}|o][{|]|\\|\\||o\\|)\\s+(${MERMAID_NAME.source})\\s*(?::\\s*(.*))?$`
+);
+
+/**
+ * Mermaid: `ENTITY { type name KEY }` — attributes are **type-first**, the
+ * opposite of the native `table` block. KEY ∈ PK | FK | UK.
+ */
+function parseMermaidAttr(raw: string): ErdAttribute {
+  const tokens = raw.trim().split(/\s+/).filter(Boolean);
+  const flags = { pk: false, fk: false, uk: false };
+  const words: string[] = [];
+  for (const tok of tokens) {
+    const u = tok.toUpperCase();
+    if (u === "PK") flags.pk = true;
+    else if (u === "FK") flags.fk = true;
+    else if (u === "UK") flags.uk = true;
+    else words.push(tok);
+  }
+  // type-first: [type, name] — if only one word, treat it as the name.
+  const type = words.length >= 2 ? words[0] : undefined;
+  const name = words.length >= 2 ? words[1]! : (words[0] ?? "");
+  return {
+    name,
+    type,
+    pk: flags.pk || undefined,
+    fk: flags.fk || undefined,
+    uk: flags.uk || undefined,
+    notNull: flags.pk || undefined,
+  };
+}
+
+function parseMermaidErd(lines: RawLine[]): ErdAst {
+  const entityMap = new Map<string, ErdEntity>();
+  const order: string[] = [];
+  const refs: ErdRef[] = [];
+
+  const ensure = (id: string): ErdEntity => {
+    let e = entityMap.get(id);
+    if (!e) {
+      e = { id, name: id, attributes: [] };
+      entityMap.set(id, e);
+      order.push(id);
+    }
+    return e;
+  };
+
+  let i = 1; // skip the `erDiagram` header line
+  while (i < lines.length) {
+    const t = lines[i]!.text;
+    const ln = lines[i]!.lineNumber;
+
+    // Entity block: `NAME {` (multi-line) or `NAME { ... }` (inline).
+    const inlineBlock = new RegExp(`^(${MERMAID_NAME.source})\\s*\\{\\s*(.*?)\\s*\\}$`).exec(t);
+    const openBlock = new RegExp(`^(${MERMAID_NAME.source})\\s*\\{$`).exec(t);
+    if (inlineBlock) {
+      const e = ensure(inlineBlock[1]!);
+      for (const a of inlineBlock[2]!.split(";").map((s) => s.trim()).filter(Boolean)) {
+        e.attributes.push(parseMermaidAttr(a));
+      }
+      i++;
+      continue;
+    }
+    if (openBlock) {
+      const e = ensure(openBlock[1]!);
+      i++;
+      while (i < lines.length && lines[i]!.text !== "}") {
+        e.attributes.push(parseMermaidAttr(lines[i]!.text));
+        i++;
+      }
+      if (i >= lines.length) throw new ErdParseError(`Unterminated entity block '${openBlock[1]}'.`, ln);
+      i++; // consume `}`
+      continue;
+    }
+
+    // Relationship: `A ||--o{ B : label`
+    const rel = REL_RE.exec(t);
+    if (rel) {
+      const [, src, lg, line, rg, tgt, label] = rel;
+      const fromCard = parseMermaidGlyph(lg!, "left");
+      const toCard = parseMermaidGlyph(rg!, "right");
+      if (!fromCard || !toCard) {
+        throw new ErdParseError(`Invalid Mermaid cardinality glyph in: ${t}`, ln);
+      }
+      ensure(src!);
+      ensure(tgt!);
+      refs.push({
+        from: src!,
+        to: tgt!,
+        fromCard,
+        toCard,
+        identifying: line === "--",
+        label: label ? label.trim() : undefined,
+      });
+      i++;
+      continue;
+    }
+
+    throw new ErdParseError(`Unrecognized erDiagram line: ${t}`, ln);
+  }
+
+  return {
+    type: "erd",
+    notation: "crowsfoot",
+    direction: "LR",
+    entities: order.map((id) => entityMap.get(id)!),
     refs,
   };
 }

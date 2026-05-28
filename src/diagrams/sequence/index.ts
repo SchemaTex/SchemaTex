@@ -9,8 +9,8 @@ export const sequence: DiagramPlugin = {
       const t = raw.trim();
       if (!t) continue;
       if (t.startsWith("#") || t.startsWith("//")) continue;
-      // `\b` after "sequence" rejects Mermaid's "sequenceDiagram" header.
-      return /^sequence\b/i.test(t);
+      // Accept both the native `sequence` header and Mermaid's `sequenceDiagram`.
+      return /^sequence(?:diagram)?\b/i.test(t);
     }
     return false;
   },

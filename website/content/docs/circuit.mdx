@@ -6,7 +6,7 @@ title: Circuit schematic
 
 A **circuit schematic** is the standard graphical representation of an electronic circuit — components drawn as standardized symbols, connected by wires, with enough information to build or simulate the circuit. Electronics engineers use them throughout the product lifecycle: from initial concept to PCB layout review and datasheet documentation. Schematex follows **[IEEE Std 315-1975 / ANSI Y32.2](https://standards.ieee.org/ieee/315/738/)** and **[IEC 60617](https://webstore.iec.ch/publication/2765)** for component symbols.
 
-The DSL has two modes: a **positional mode** (components chain in a direction, like Schemdraw) and a **netlist mode** (SPICE-style, with automatic layout). Both produce the same SVG output format.
+The DSL has two modes. **Netlist mode (recommended)** is SPICE-style: you list components and the nodes they connect to, and the engine lays everything out automatically — each line is self-contained, with no spatial state to track. **Positional mode** is for hand-drawing: components chain in a direction like Schemdraw. Both produce the same SVG. **For generated diagrams (e.g. by an LLM), always use netlist mode** — it has by far the smaller error surface.
 
 <Playground initial={`circuit "CE Amp (netlist)" netlist
 V1 vcc 0 9V
@@ -17,23 +17,22 @@ Re e 0 1k`} height={440} />
 
 ---
 
-## 1. A minimal circuit
+## 1. A minimal circuit (netlist mode — recommended)
 
-The smallest useful positional circuit: a voltage source, a resistor, and a ground.
+The smallest useful circuit: a voltage source, a resistor, and a capacitor to ground — an RC low-pass filter.
 
-<Playground initial={`circuit "Voltage divider"
-V1: voltage_source down value="5V"
-wire right
-R1: resistor right value="10k"
-wire right
-ground`} />
+<Playground initial={`circuit "RC Low-Pass" netlist
+V1 in 0 5V
+R1 in out 1k
+C1 out 0 100n`} />
 
-Four rules cover 80% of positional-mode usage:
+Three rules cover ~90% of netlist usage:
 
-1. Start with the keyword `circuit`, optionally followed by a quoted title.
-2. Each component is `id: type direction` — or just `type direction` for anonymous components.
-3. Each component's output end becomes the starting point for the next component (the "cursor").
-4. `at: id.end` (or `at: id.start`) jumps the cursor to any named anchor — use this to branch.
+1. Start with `circuit "Title" netlist` (the `netlist` keyword switches on this mode).
+2. Each line is `componentId nodeA nodeB value` — one component, the two (or more) named nodes it connects to, then its value.
+3. **Two components that share a node name are wired together.** `0`, `gnd`, or `GND` is the ground net (a ground symbol is drawn automatically).
+
+The component-id prefix sets the symbol: `R*`→resistor, `C*`→capacitor, `L*`→inductor, `V*`→voltage source, `D*`→diode, `Q*`→BJT. When the prefix is ambiguous, add `type=` (e.g. `X1 a b type=opamp`). You never compute coordinates — the engine derives placement from the connectivity.
 
 > Comments must start with `#` on their own line.
 
@@ -41,7 +40,32 @@ Four rules cover 80% of positional-mode usage:
 
 ## 2. Components
 
-### 2.1 Positional mode syntax
+### 2.1 Netlist mode syntax
+
+A netlist line has the form:
+
+```
+componentId node... [value] [type=…] [label="…"]
+```
+
+The positional nodes come first; a trailing token that doesn't look like a node becomes the value. Example — a transistor (4 nodes) and a resistor:
+
+```
+Q1 c b e npn        # collector, base, emitter nodes + model
+Rc vcc c 2.2k       # two nodes + value
+```
+
+**Optional orientation hint.** The engine auto-orients symbols by role (sources up, ground down, the rest horizontal). To nudge a single symbol, add `dir=right|left|up|down` — connectivity is unchanged, only the symbol's facing rotates:
+
+```
+C1 out 0 100n dir=down    # draw C1 as a shunt cap hanging to ground
+```
+
+This is the lightweight layout-control layer (like Lcapy's per-component orientation): netlist connectivity does the heavy lifting, `dir=` only refines appearance. For full geometric control, use positional mode below.
+
+### 2.2 Positional mode syntax (hand-drawing)
+
+> Positional mode is for manually laying out a schematic geometrically. **Prefer netlist mode for generated output** — positional mode requires tracking a moving "cursor" across lines, which is error-prone for LLMs.
 
 A named component line has the form:
 
@@ -58,7 +82,7 @@ capacitor down value="100n"
 
 **Direction** is one of `right` (default), `left`, `up`, `down`. It controls which way the component extends from the current cursor position.
 
-### 2.2 Passive components
+### 2.3 Passive components
 
 | DSL type | Description |
 |---|---|
@@ -98,7 +122,7 @@ wire right
 wire right
 T1: transformer right`} height={380} />
 
-### 2.3 Sources and power
+### 2.4 Sources and power
 
 | DSL type | Description |
 |---|---|
@@ -139,7 +163,7 @@ vcc up
 wire down
 gnd_signal down`} height={420} />
 
-### 2.4 Semiconductors — diodes
+### 2.5 Semiconductors — diodes
 
 | DSL type | Description |
 |---|---|
@@ -168,7 +192,7 @@ at: D1.start
 wire left
 ground`} height={280} />
 
-### 2.5 Semiconductors — transistors
+### 2.6 Semiconductors — transistors
 
 | DSL type | Description |
 |---|---|
@@ -204,7 +228,7 @@ wire right
 # P-channel MOSFET
 Q4: pmos right`} height={320} />
 
-### 2.6 Analog ICs and op-amps
+### 2.7 Analog ICs and op-amps
 
 | DSL type | Description |
 |---|---|
@@ -233,7 +257,7 @@ wire right
 # generic IC block
 U3: generic_ic right`} height={320} />
 
-### 2.7 Switches and relays
+### 2.8 Switches and relays
 
 | DSL type | Description |
 |---|---|
@@ -264,7 +288,7 @@ K1: relay_coil right
 wire right
 K2: relay_no right`} height={300} />
 
-### 2.8 Electromechanical and measurement
+### 2.9 Electromechanical and measurement
 
 | DSL type | Description |
 |---|---|
@@ -277,7 +301,7 @@ K2: relay_no right`} height={300} />
 | `wattmeter` | Circle + W |
 | `oscilloscope` | Circle + waveform |
 
-### 2.9 Connectors and annotations
+### 2.10 Connectors and annotations
 
 | DSL type | Description |
 |---|---|
