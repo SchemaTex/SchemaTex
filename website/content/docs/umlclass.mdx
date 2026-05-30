@@ -1,0 +1,192 @@
+---
+title: UML Class Diagram
+---
+
+## About class diagrams
+
+A **class diagram** is the backbone of object-oriented design: it shows the *types* in a system — classes, interfaces, enumerations — their attributes and operations, and the structural relationships between them (inheritance, composition, aggregation, dependency). It is **[UML](https://www.omg.org/spec/UML/2.5.1/) 2.5.1 §9–§11** and the single most-used UML diagram in software documentation.
+
+Schematex implements the UML 2.5.1 visual subset with a single-word `umlclass` keyword and a text DSL built for LLM generation — PlantUML-flavoured, additionally accepting Mermaid `classDiagram` glyph aliases for one-line migration. Standard-correct adornments (a hollow triangle points to the more general classifier; a filled diamond marks the composite end), a **generalization-driven layered layout** (interfaces float to the top, leaf classes sink to the bottom), and zero-dependency embeddable SVG. Distinct from **[erd](/docs/erd)** (models *data* rows, not types) and **[c4](/docs/flowchart)** (architecture, not code-level types).
+
+<Playground initial={`umlclass
+title: "Shapes"
+«interface» Shape {
+  + area() : double
+}
+abstract class AbstractShape {
+  # name : String
+  + area() : double {abstract}
+}
+class Circle {
+  + radius : double
+  + area() : double
+}
+class Square {
+  + side : double
+  + area() : double
+}
+Shape         <|.. AbstractShape
+AbstractShape <|-- Circle
+AbstractShape <|-- Square`} height={560} />
+
+---
+
+## 1. Your first diagram
+
+Every document starts with the `umlclass` keyword (the Mermaid `classDiagram` header is also accepted), then declarations and relationships:
+
+```
+umlclass
+class Account {
+  + id : String
+  - balance : Money
+  + deposit(amount : Money) : void
+}
+class Customer {
+  + name : String
+}
+Customer "1" o-- "*" Account : owns
+```
+
+A `class X { … }` block declares a classifier with a name compartment, an attributes compartment, and an operations compartment. Members on their own lines inside the braces; you can also write the body on a single line (`class Account { + id : String + deposit() }`). The header accepts:
+
+- `title: "…"` — a heading drawn above the diagram.
+- `direction: tb | bt | lr | rl` — rank direction, default `tb` (parents on top).
+- `theme: …` — a theme override.
+
+---
+
+## 2. Classifiers
+
+```
+class Order
+«interface» Repository
+«enumeration» Status
+abstract class Shape
+datatype Money
+primitive int
+```
+
+The five classifier kinds are `class`, `interface`, `enum` (alias `enumeration`), `datatype`, and `primitive`. A `«stereotype»` (or ASCII `<<stereotype>>`) renders above the name; `abstract class` (or the `{abstract}` annotation) renders the name in italics. Use `as` to give a display name that differs from the reference id: `class "Order Service" as OrderSvc`.
+
+---
+
+## 3. Members — attributes & operations
+
+```
+class Account {
+  + id : String
+  - balance : Money = 0
+  / available : Money
+  # owner : Customer
+  ~ region : String
+  + count : int {static}
+  + deposit(amount : Money) : void
+  + transfer(to : Account, amount : Money) : boolean {query}
+}
+```
+
+- **Visibility** glyphs: `+` public, `-` private, `#` protected, `~` package.
+- `: Type` gives the attribute type or operation return type; `= value` a default; `[0..*]` a multiplicity; `/` a derived attribute.
+- `{…}` annotations: `{static}` (renders underlined), `{abstract}` (italic operation), `{readOnly}`, `{query}`, `{ordered}`, …
+- `name : Type`, `name: Type`, and Java-order `Type name` are all accepted and normalised to `name : Type`.
+
+**Enum literals** are bare names inside an `enum` body:
+
+```
+«enumeration» Status {
+  ACTIVE
+  SUSPENDED
+  CLOSED
+}
+```
+
+---
+
+## 4. Relationships
+
+```
+Vehicle <|-- Car            generalization (hollow triangle → parent)
+Shape   <|.. Circle         realization (dashed + hollow triangle → interface)
+Order   *-- LineItem        composition (filled diamond at the whole)
+Customer o-- Address        aggregation (hollow diamond at the whole)
+Service --> Repository      directed association (open arrow → target)
+Service ..> Logger          dependency (dashed + open arrow → supplier)
+A -- B                      plain association (no head)
+```
+
+Reversed forms are accepted and normalised (`Car --|> Vehicle` ≡ `Vehicle <|-- Car`). Whitespace around a connector is optional.
+
+When two or more children share one parent via generalization/realization, the heads are **tree-merged**: one trunk, one shared triangle, per-child legs.
+
+---
+
+## 5. Labels & multiplicity
+
+```
+Customer "1" o-- "0..*" Order : places
+```
+
+A trailing `: label` names the association (drawn at the line midpoint). Quoted ends are multiplicities or role names: `"1"`, `"0..1"`, `"*"`, `"1..*"`. The source end is the left of the connector, the target end the right (after reversed-form normalisation).
+
+---
+
+## 6. Namespaces / packages
+
+Group classifiers into a labelled containment frame:
+
+```
+umlclass
+namespace Platform {
+  namespace Auth {
+    class UserService {
+      + login()
+    }
+  }
+  namespace Data {
+    class Repository {
+      + find()
+    }
+  }
+}
+class Gateway {
+  + route()
+}
+Gateway --> UserService : delegates
+Gateway --> Repository  : delegates
+```
+
+- Blocks **nest** syntactically. Dot-notation auto-creates parents: `namespace Company.Engineering.Backend { … }` creates `Company` and `Company.Engineering` too.
+- An explicit label: `namespace plat["Platform Layer"] { … }`.
+- Each package renders as a frame = the union of its members (and nested sub-frames) + padding + a top label. Namespace bodies must use newlines (one declaration per line).
+
+---
+
+## 7. Mermaid-compatibility forms
+
+For one-line migration from Mermaid `classDiagram`:
+
+```
+classDiagram
+class Repository~T~ {
+  + findAll() List~T~
+  + cache : Map~String,List~int~~
+  + count$
+  + flush()*
+}
+Repository : <<service>>
+Repository : + save(e : T) T
+```
+
+- **Tilde-generics** `List~T~` → `List<T>` (nesting supported: `Map~String,List~int~~` → `Map<String,List<int>>`); also on class names (`class Box~T~`).
+- **Single-line member**: `ClassName : +member` appends a member; `ClassName : <<interface>>` sets the kind/stereotype.
+- **Member classifiers**: trailing `*` = abstract (italic), trailing `$` = static (underlined).
+- **Space-return-type**: `getId() String` needs no colon.
+
+A lone leading `~` is still the package-visibility glyph; tilde-generics only convert balanced `~…~` pairs inside a type, so the two never collide.
+
+---
+
+## 8. Theming & accessibility
+
+All strokes and fills come from theme tokens (no inline styles); CSS classes are prefixed `sx-umlclass-*`. Visibility renders as text glyphs (`+ - # ~`), never coloured icons — standard-faithful and monochrome-safe. Every diagram carries `<title>`/`<desc>` and `data-*` attributes (`data-id`, `data-kind`, `data-from`/`data-to`/`data-kind` on relationships, `data-package-id` on frames) for interactivity.

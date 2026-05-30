@@ -19,7 +19,8 @@ export type DiagramCluster =
   | "concurrency"
   | "research"
   | "project-management"
-  | "network-infrastructure";
+  | "network-infrastructure"
+  | "software-uml";
 
 export interface DiagramMeta {
   /** Canonical type id — matches `DiagramType` and plugin keys. */
@@ -331,6 +332,19 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
     standard: "PMI PMBOK 7 + Moder 1983 (AON/PDM); see 32-PERT-STANDARD.md",
     syntaxKey: "pert",
   },
+  // ── Structural UML ───────────────────────────────────────────
+  {
+    type: "umlclass",
+    name: "UML Class Diagram",
+    tagline:
+      "OMG UML 2.5.1 class diagram — classifiers (class / abstract / interface / enum / datatype / primitive) joined by the six relationship kinds, with visibility, multiplicity, and stereotypes.",
+    useWhen:
+      "Use for OO design — the static type structure of a software system. Declare `class X { + name: T }` / `«interface» Y { + op(): R }` / `«enumeration» Z { A B C }`, then connect with PlantUML-flavoured glyphs: `<|--` generalization (hollow triangle to parent), `<|..` realization (dashed + hollow triangle to interface), `*--` composition (filled diamond at the whole), `o--` aggregation (hollow diamond at the whole), `-->` directed association (open arrow to target), `..>` dependency (dashed + open arrow), `--` plain association. Adornment placement is normalised regardless of which id is typed first (reversed forms accepted). Mermaid `classDiagram` glyphs work as aliases. Layout is generalization-driven (parents on top by default). Distinct from `erd` (data tables + crow's-foot — no visibility/methods/inheritance) and from `entity` (legal/corporate ownership). This is the C4 (§30) Code-level engine.",
+    cluster: "software-uml",
+    standard:
+      "OMG UML 2.5.1 §9–§11 (Classification / Classifiers / Associations) + ISO/IEC 19505-2:2012; see 36-UMLCLASS-STANDARD.md",
+    syntaxKey: "umlclass",
+  },
   // ── Generic process / flow ───────────────────────────────────
   {
     type: "flowchart",
@@ -435,6 +449,8 @@ export const DIAGRAM_SINCE: Readonly<Record<DiagramType, string>> = {
   pert: "0.6.0",
   petri: "0.6.0",
   network: "0.6.0",
+  // 0.6.4
+  umlclass: "0.6.4",
 };
 
 export function getDiagramSince(type: string): string | undefined {

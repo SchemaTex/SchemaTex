@@ -324,6 +324,76 @@ acme_inc -> acme_fund : 60%`,
   lf2 -- h2 : 25G
   lf4 -- h3 : 25G`,
   },
+  {
+    file: 'examples/umlclass/shape-hierarchy.svg',
+    text: `umlclass
+title: "Shapes"
+«interface» Shape {
+  + area() : double
+  + perimeter() : double
+}
+abstract class AbstractShape {
+  # name : String
+  + area() : double {abstract}
+  + describe() : String
+}
+class Circle {
+  + radius : double
+  + area() : double
+}
+class Square {
+  + side : double
+  + area() : double
+}
+Shape         <|.. AbstractShape
+AbstractShape <|-- Circle
+AbstractShape <|-- Square`,
+  },
+  {
+    file: 'examples/umlclass/order-domain.svg',
+    text: `umlclass
+title: "Order domain"
+class Order {
+  - id : String
+  + total : Money {readOnly}
+  + place() : void
+}
+class LineItem {
+  + qty : int
+  + subtotal() : Money
+}
+class Customer { + name : String }
+class Address  { + city : String }
+class TaxPolicy { + rate(c : Country) : Percent }
+Customer "1" -- "*" Order   : places
+Order    *-- "1..*" LineItem : contains
+Customer o-- "0..*" Address : has
+Order    ..> TaxPolicy      : uses`,
+  },
+  {
+    file: 'examples/umlclass/namespaces.svg',
+    text: `umlclass
+title: "Layered packages"
+namespace Platform {
+namespace Auth {
+class UserService {
+  + login()
+  + logout()
+}
+}
+namespace Data {
+class Repository {
+  + find()
+  + save()
+}
+}
+}
+class Gateway {
+  + route()
+}
+Gateway --> UserService : delegates
+Gateway --> Repository  : delegates`,
+  },
 ];
 
 for (const { file, text } of examples) {

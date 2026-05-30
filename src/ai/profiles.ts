@@ -458,6 +458,40 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
       "If the layout looks flat/messy, add `layout: tiered` + `tier:` on infrastructure; if unsure about per-link annotations, drop them — the skeleton always renders.",
     ],
   },
+  umlclass: {
+    type: "umlclass",
+    header: "umlclass",
+    mode: "classifier declarations + relationship lines (PlantUML-flavoured, Mermaid aliases accepted)",
+    forms: [
+      'class Order { + id : String  + place() : void }     (visibility: + - # ~)',
+      '«interface» Shape { + area() : double }              (stereotype above name)',
+      'abstract class AbstractShape { + area() : double {abstract} }',
+      '«enumeration» Suit { HEARTS DIAMONDS CLUBS SPADES } (literals in attr compartment)',
+      'Animal <|-- Dog                                     (generalization — hollow triangle to parent)',
+      'Shape <|.. Circle                                    (realization — dashed + hollow triangle)',
+      'Order *-- "1..*" LineItem : contains                (composition — filled diamond at whole)',
+      'Customer o-- "0..*" Address                          (aggregation — hollow diamond at whole)',
+      'A "1" --> "*" B : owns                               (directed association — open arrow to target)',
+      'X ..> Y                                              (dependency — dashed + open arrow)',
+    ],
+    prefer: [
+      "Single-word keyword is `umlclass` (also accepts `class-diagram` and Mermaid's `classDiagram`).",
+      "Use `class`, `abstract class`, `«interface»`, `«enumeration»`, or any custom `«stereotype»` above the name.",
+      "Members go in `{ … }`; visibility glyphs are `+ - # ~`; `{static}` underlines, `{abstract}` italicises, `/name` marks a derived attribute.",
+      "Multiplicity is the quoted token next to an endpoint: `\"1\"`, `\"0..*\"`, `\"1..*\"`. The line midpoint label after `:` is the association name.",
+      "PlantUML connectors are primary; the Mermaid reversed forms `--|>`, `..|>`, `--*`, `--o` are accepted and normalised.",
+    ],
+    avoid: [
+      "Don't use bare `class` as the diagram keyword — that's a reserved programming-language word, and the engine keyword is `umlclass`.",
+      "Don't put `-->` for dependency: `-->` is *directed association*; dependency is the dashed `..>` (this is a deliberate deviation from PlantUML, matching Mermaid and the usual UML reading).",
+      "Don't declare a classifier with an empty body and `{}` if you want a name-only sketch box — write `class Foo` on its own line.",
+    ],
+    repair: [
+      "A 'malformed relationship' error means no connector glyph was found between two ids — check the line uses one of `<|--` `<|..` `*--` `o--` `-->` `..>` `--` `..`.",
+      "A 'generalization cycle' error means inheritance edges form a loop — fix the parent/child direction of one of the edges named in the cycle.",
+      "If a class appears as a one-line empty box you didn't expect, the parser auto-created it from an arc reference — declare it explicitly or fix the typo in the relationship id.",
+    ],
+  },
 };
 
 export function getGenerationProfile(

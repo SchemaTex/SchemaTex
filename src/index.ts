@@ -60,6 +60,7 @@ export { pert } from "./diagrams/pert";
 export { sequence } from "./diagrams/sequence";
 export { petri } from "./diagrams/petri";
 export { network } from "./diagrams/network";
+export { umlclass } from "./diagrams/umlclass";
 
 export {
   type SymbolCatalog,

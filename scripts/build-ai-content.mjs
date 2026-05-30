@@ -57,6 +57,7 @@ const SYNTAX_KEYS = [
   "pert",
   "petri",
   "network",
+  "umlclass",
 ];
 
 // ─── Minimal YAML-frontmatter parser ─────────────────────────────

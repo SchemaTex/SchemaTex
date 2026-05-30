@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="739" height="416" viewBox="0 0 739 416" role="img" aria-label="Order domain" data-diagram-type="umlclass"><title>Order domain</title>
+<desc>UML class diagram: 5 class; 1 association, 1 composition, 1 aggregation, 1 dependency.</desc>
+<style>.sx-umlclass-bg { fill: #ffffff; }
+.sx-umlclass-box-fill { fill: #ffffff; }
+.sx-umlclass-box-stroke { stroke: #334155; stroke-width: 1.5; fill: none; }
+.sx-umlclass-header-fill { fill: #eef2f7; }
+.sx-umlclass-divider { stroke: #334155; stroke-width: 1; }
+.sx-umlclass-classname { fill: #0f172a; font-size: 13px; font-weight: 700; letter-spacing: -0.01em; }
+.sx-umlclass-classname[data-abstract="true"] { font-style: italic; }
+.sx-umlclass-stereotype { fill: #64748b; font-size: 10px; font-style: italic; }
+.sx-umlclass-member { fill: #0f172a; font-size: 12px; font-weight: 500; }
+.sx-umlclass-member[data-static] { text-decoration: underline; }
+.sx-umlclass-member[data-abstract] { font-style: italic; }
+.sx-umlclass-visibility { fill: #64748b; font-size: 12px; font-weight: 500; }
+.sx-umlclass-rel-line { stroke: #334155; stroke-width: 1.4; fill: none; }
+.sx-umlclass-rel-line[data-dashed="true"] { stroke-dasharray: 5 4; }
+.sx-umlclass-triangle { fill: #ffffff; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-diamond-hollow { fill: #ffffff; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-diamond-filled { fill: #334155; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-arrowhead { fill: none; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-edge-label { fill: #475569; font-size: 10px; font-weight: 500; }
+.sx-umlclass-edge-name { fill: #475569; font-size: 12px; font-style: italic; }
+.sx-umlclass-edge-name-halo { fill: #ffffff; stroke: #ffffff; stroke-width: 6; stroke-linejoin: round; }
+.sx-umlclass-title { fill: #0f172a; font-size: 16px; font-weight: 600; }
+.sx-umlclass-package { fill: rgba(100,116,139,0.06); stroke: #94a3b8; stroke-width: 1; }
+.sx-umlclass-package-label { fill: #475569; font-size: 12px; font-weight: 600; }</style>
+<rect x="0" y="0" width="739" height="416" class="sx-umlclass-bg"/>
+<text x="52" y="40" class="sx-umlclass-title" font-family="system-ui, -apple-system, sans-serif">Order domain</text>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><g class="sx-umlclass-classifier" data-id="Order" data-kind="class"><rect x="134.25" y="32" width="193" height="30" class="sx-umlclass-header-fill"/>
+<rect x="134.25" y="62" width="193" height="98" class="sx-umlclass-box-fill"/>
+<rect x="134.25" y="32" width="193" height="128" class="sx-umlclass-box-stroke"/>
+<line x1="134.25" y1="62" x2="327.25" y2="62" class="sx-umlclass-divider"/>
+<line x1="134.25" y1="122" x2="327.25" y2="122" class="sx-umlclass-divider"/>
+<text x="230.75" y="53" class="sx-umlclass-classname" text-anchor="middle">Order</text>
+<text x="148.25" y="86" class="sx-umlclass-member" data-visibility="private"><tspan class="sx-umlclass-visibility">- </tspan>id: String</text>
+<text x="148.25" y="108" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>total: Money {readOnly}</text>
+<text x="148.25" y="146" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>place(): void</text></g>
+<g class="sx-umlclass-classifier" data-id="LineItem" data-kind="class"><rect x="32" y="238" width="160" height="30" class="sx-umlclass-header-fill"/>
+<rect x="32" y="268" width="160" height="76" class="sx-umlclass-box-fill"/>
+<rect x="32" y="238" width="160" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="32" y1="268" x2="192" y2="268" class="sx-umlclass-divider"/>
+<line x1="32" y1="306" x2="192" y2="306" class="sx-umlclass-divider"/>
+<text x="112" y="259" class="sx-umlclass-classname" text-anchor="middle">LineItem</text>
+<text x="46" y="292" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>qty: int</text>
+<text x="46" y="330" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>subtotal(): Money</text></g>
+<g class="sx-umlclass-classifier" data-id="Customer" data-kind="class"><rect x="507" y="43" width="160" height="30" class="sx-umlclass-header-fill"/>
+<rect x="507" y="73" width="160" height="76" class="sx-umlclass-box-fill"/>
+<rect x="507" y="43" width="160" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="507" y1="73" x2="667" y2="73" class="sx-umlclass-divider"/>
+<line x1="507" y1="111" x2="667" y2="111" class="sx-umlclass-divider"/>
+<text x="587" y="64" class="sx-umlclass-classname" text-anchor="middle">Customer</text>
+<text x="521" y="97" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>name: String</text></g>
+<g class="sx-umlclass-classifier" data-id="Address" data-kind="class"><rect x="507" y="238" width="160" height="30" class="sx-umlclass-header-fill"/>
+<rect x="507" y="268" width="160" height="76" class="sx-umlclass-box-fill"/>
+<rect x="507" y="238" width="160" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="507" y1="268" x2="667" y2="268" class="sx-umlclass-divider"/>
+<line x1="507" y1="306" x2="667" y2="306" class="sx-umlclass-divider"/>
+<text x="587" y="259" class="sx-umlclass-classname" text-anchor="middle">Address</text>
+<text x="521" y="292" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>city: String</text></g>
+<g class="sx-umlclass-classifier" data-id="TaxPolicy" data-kind="class"><rect x="246" y="238" width="207" height="30" class="sx-umlclass-header-fill"/>
+<rect x="246" y="268" width="207" height="76" class="sx-umlclass-box-fill"/>
+<rect x="246" y="238" width="207" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="246" y1="268" x2="453" y2="268" class="sx-umlclass-divider"/>
+<line x1="246" y1="306" x2="453" y2="306" class="sx-umlclass-divider"/>
+<text x="349.5" y="259" class="sx-umlclass-classname" text-anchor="middle">TaxPolicy</text>
+<text x="260" y="330" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>rate(c: Country): Percent</text></g></g>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><g class="sx-umlclass-rel" data-from="Customer" data-to="Order" data-kind="association" data-source-mult="1" data-target-mult="*" data-name="places"><path d="M 587 43 L 587 6 L 230.8 6 L 230.8 32" class="sx-umlclass-rel-line"/>
+
+<text x="587" y="34" class="sx-umlclass-edge-label" text-anchor="middle">1</text>
+<text x="230.75" y="23" class="sx-umlclass-edge-label" text-anchor="middle">*</text>
+<text x="408.875" y="1" class="sx-umlclass-edge-name sx-umlclass-edge-name-halo" text-anchor="middle">places</text>
+<text x="408.875" y="1" class="sx-umlclass-edge-name" text-anchor="middle">places</text></g>
+<g class="sx-umlclass-rel" data-from="Order" data-to="LineItem" data-kind="composition" data-target-mult="1..*" data-name="contains"><path d="M 191.8 180 L 144.3 238" class="sx-umlclass-rel-line"/>
+
+<polygon points="191.77564102564102,160 197.77564102564102,170 191.77564102564102,180 185.77564102564102,170" class="sx-umlclass-diamond-filled"/>
+<text x="144.27564102564102" y="229" class="sx-umlclass-edge-label" text-anchor="middle">1..*</text>
+<text x="168.02564102564102" y="204" class="sx-umlclass-edge-name sx-umlclass-edge-name-halo" text-anchor="middle">contains</text>
+<text x="168.02564102564102" y="204" class="sx-umlclass-edge-name" text-anchor="middle">contains</text></g>
+<g class="sx-umlclass-rel" data-from="Customer" data-to="Address" data-kind="aggregation" data-target-mult="0..*" data-name="has"><path d="M 587 169 L 587 238" class="sx-umlclass-rel-line"/>
+
+<polygon points="587,149 593,159 587,169 581,159" class="sx-umlclass-diamond-hollow"/>
+<text x="587" y="229" class="sx-umlclass-edge-label" text-anchor="middle">0..*</text>
+<text x="587" y="198.5" class="sx-umlclass-edge-name sx-umlclass-edge-name-halo" text-anchor="middle">has</text>
+<text x="587" y="198.5" class="sx-umlclass-edge-name" text-anchor="middle">has</text></g>
+<g class="sx-umlclass-rel" data-from="Order" data-to="TaxPolicy" data-kind="dependency" data-name="uses"><path d="M 269.7 160 L 317.2 227" class="sx-umlclass-rel-line" data-dashed="true"/>
+<path d="M 311.72435897435895 227 L 317.22435897435895 238 L 322.72435897435895 227" class="sx-umlclass-arrowhead"/>
+<text x="293.47435897435895" y="188.5" class="sx-umlclass-edge-name sx-umlclass-edge-name-halo" text-anchor="middle">uses</text>
+<text x="293.47435897435895" y="188.5" class="sx-umlclass-edge-name" text-anchor="middle">uses</text></g></g></svg>

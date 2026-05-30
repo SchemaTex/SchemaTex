@@ -34,7 +34,8 @@ export type DiagramType =
   | 'mindmap'
   | 'orgchart'
   | 'timeline'
-  | 'network';
+  | 'network'
+  | 'umlclass';
 
 export type Industry =
   | 'healthcare'
@@ -92,6 +93,7 @@ export const DIAGRAM_LABELS: Record<DiagramType, { label: string; icon: string }
   orgchart: { label: 'Org chart', icon: '🏛' },
   timeline: { label: 'Timeline', icon: '📅' },
   network: { label: 'Network topology', icon: '🖧' },
+  umlclass: { label: 'UML class', icon: '🧱' },
 };
 
 export const INDUSTRY_LABELS: Record<Industry, { label: string; icon: string }> = {
@@ -114,7 +116,7 @@ export const CLUSTER_TO_TYPES: Record<string, DiagramType[]> = {
   'electrical-industrial': ['timing', 'logic', 'circuit', 'ladder', 'sld', 'block', 'fbd', 'sfc', 'pid', 'breadboard'],
   'corporate-legal': ['entity', 'erd', 'orgchart'],
   'causality-analysis': ['fishbone', 'venn', 'decisiontree', 'matrix'],
-  'software-uml': ['usecase', 'sequence', 'bpmn', 'state', 'petri'],
+  'software-uml': ['umlclass', 'usecase', 'sequence', 'bpmn', 'state', 'petri'],
   research: ['prisma'],
   'project-management': ['pert'],
   'network-infrastructure': ['network'],

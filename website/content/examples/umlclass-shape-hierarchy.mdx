@@ -1,0 +1,54 @@
+---
+title: Shape class hierarchy with an interface
+description: The canonical UML 2.5.1 class diagram — an interface, an abstract base class, and two concrete leaves — showing generalization, realization, and a generalization-driven layered layout where parents float to the top.
+diagram: umlclass
+standard: OMG UML 2.5.1 §9–§11
+industry: [software, education]
+persona: For the OOAD instructor or junior developer
+complexity: 1
+tags: [umlclass, uml, generalization, realization, interface, abstract-class]
+featured: true
+relatedLink:
+  label: UML class diagram syntax
+  href: /docs/umlclass
+status: published
+dsl: |
+  umlclass
+  title: "Shape hierarchy"
+
+  «interface» Shape {
+    + area() : double
+    + perimeter() : double
+  }
+
+  abstract class AbstractShape {
+    # name : String
+    + area() : double {abstract}
+    + perimeter() : double {abstract}
+    + describe() : String
+  }
+
+  class Circle {
+    + radius : double
+    + area() : double
+    + perimeter() : double
+  }
+
+  class Square {
+    + side : double
+    + area() : double
+    + perimeter() : double
+  }
+
+  Shape         <|.. AbstractShape
+  AbstractShape <|-- Circle
+  AbstractShape <|-- Square
+---
+
+## What this shows
+
+The smallest diagram that exercises the three notations every UML primer covers in the first hour: an **interface** (rendered with the `«interface»` keyword), an **abstract class** (rendered in *italics*, with an abstract `area()` operation also in italics), and two concrete leaves.
+
+**Layering is generalization-driven.** Inheritance edges (`<|--`) and realization edges (`<|..`) define the rank hierarchy, so the interface floats to the very top, the abstract base sits below it, and the two concrete classes anchor the bottom — without any author-side layout hints. This is the visual default a UML textbook expects, and it's why a class diagram should not ride a generic flowchart layout.
+
+**Adornments carry the semantics.** Realization is dashed + hollow triangle; generalization is solid + hollow triangle. The two distinctions render identically in `theme: monochrome` because the meaning is in the shape, not the colour — exactly the point of UML 2.5.1.

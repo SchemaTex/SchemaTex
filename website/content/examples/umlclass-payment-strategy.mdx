@@ -1,0 +1,55 @@
+---
+title: Payment strategy pattern with enum + custom stereotype
+description: The Strategy pattern as a UML class diagram — a payment service depending on an interface that three concrete strategies realize, plus an enumeration for the supported methods and a custom «service» stereotype.
+diagram: umlclass
+standard: OMG UML 2.5.1 §9–§11
+industry: [software]
+persona: For the application architect
+complexity: 2
+tags: [umlclass, uml, strategy-pattern, interface, enum, stereotype, dependency]
+featured: false
+relatedLink:
+  label: UML class diagram syntax
+  href: /docs/umlclass
+status: published
+dsl: |
+  umlclass
+  title: "Payment strategy"
+
+  «enumeration» PaymentMethod {
+    CARD
+    BANK_TRANSFER
+    WALLET
+  }
+
+  «interface» PaymentStrategy {
+    + authorize(amount : Money) : AuthResult
+    + capture(auth : AuthResult) : Receipt
+  }
+
+  «service» class CheckoutService {
+    - strategies : Map<PaymentMethod, PaymentStrategy>
+    + pay(method : PaymentMethod, amount : Money) : Receipt
+  }
+
+  class CardStrategy   { + authorize(amount : Money) : AuthResult  + capture(auth : AuthResult) : Receipt }
+  class BankStrategy   { + authorize(amount : Money) : AuthResult  + capture(auth : AuthResult) : Receipt }
+  class WalletStrategy { + authorize(amount : Money) : AuthResult  + capture(auth : AuthResult) : Receipt }
+
+  PaymentStrategy <|.. CardStrategy
+  PaymentStrategy <|.. BankStrategy
+  PaymentStrategy <|.. WalletStrategy
+
+  CheckoutService ..> PaymentStrategy : delegates to
+  CheckoutService ..> PaymentMethod   : selects by
+---
+
+## Reading the diagram
+
+The Strategy pattern is one of the canonical Gang-of-Four examples and is almost always introduced as a UML class diagram for a reason: a single picture says exactly what an interface-based design buys you.
+
+**`«enumeration»` and `«service»` are both stereotypes.** The enum keyword is a standard UML stereotype that swaps the rendering: literals sit in the attribute compartment without visibility glyphs, and there's no operations compartment populated. The `«service»` keyword on `CheckoutService` is a *custom* stereotype — any guillemet-wrapped word above a class name. Custom stereotypes are how teams tag classifiers with their architectural role (`«service»`, `«controller»`, `«entity»`, `«repository»`) without inventing new visual primitives.
+
+**Realization vs dependency at a glance.** The three concrete strategies *realize* the interface — dashed line, hollow triangle, drawn three times pointing at the same interface (a future render pass may merge the triangle heads into a single shared head). The `CheckoutService`'s relationship is a *dependency* — it uses both `PaymentStrategy` and `PaymentMethod` through its public API but does not commit to a structural containment. The dashed-line-with-open-arrow encoding makes the using-relationship visible without implying ownership.
+
+The `Map<PaymentMethod, PaymentStrategy>` attribute type renders inline as text — generic type *names* are part of v0.1; parameterised classifier *boxes* (`List<T>`) are deferred.
