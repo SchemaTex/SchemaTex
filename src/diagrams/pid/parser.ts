@@ -219,13 +219,17 @@ export function parsePid(src: string): PidAST {
       const id = equipMatch[1];
       const tail = equipMatch[2];
       const { rest: typeRest, attrs } = extractAttrs(tail);
-      const equipType = typeRest.trim() as PidEquipType;
-      if (!EQUIP_TYPES.has(equipType)) {
-        throw new PidParseError(`Unknown equipment type '${equipType}'`, ln.line);
-      }
+      const rawEquip = typeRest.trim();
+      // Graceful degradation: an unrecognised equipment type is NOT fatal. Keep
+      // the equipment with the `unknown` sentinel + the raw token so the
+      // renderer draws a flagged placeholder and the lint pass warns. Blanking
+      // the whole P&ID on one bad type word violates the "professionals
+      // actually use" pillar.
+      const known = EQUIP_TYPES.has(rawEquip as PidEquipType);
       equipment.push({
         id,
-        equipType,
+        equipType: known ? (rawEquip as PidEquipType) : "unknown",
+        ...(known ? {} : { rawType: rawEquip }),
         tag: attrs.tag ?? id,
         attrs,
       });
@@ -240,10 +244,10 @@ export function parsePid(src: string): PidAST {
       const toTok = lineMatch[3];
       const tail = lineMatch[4];
       const { attrs } = extractAttrs(tail);
-      const lt = (attrs.type ?? "process") as PidLineType;
-      if (!LINE_TYPES.has(lt)) {
-        throw new PidParseError(`Unknown line type '${lt}'`, ln.line);
-      }
+      const rawLt = (attrs.type ?? "process") as PidLineType;
+      // A line type is a modifier, not a node — an unrecognised one degrades to
+      // the neutral `process` pipe (a line still draws) instead of blanking.
+      const lt = LINE_TYPES.has(rawLt) ? rawLt : "process";
       linesAst.push({
         id,
         from: parseAnchor(fromTok),
@@ -259,14 +263,17 @@ export function parsePid(src: string): PidAST {
     }
 
     // ── inst TAG : category [attrs] ───────────────────────
-    const instMatch = text.match(/^inst\s+([A-Z][A-Z0-9]*-[A-Za-z0-9]+)\s*:\s*(.+)$/);
+    // The tag accepts ISA loop tags with OR without a dash (`FT-101`, `PLC`,
+    // `XV101`) — LLMs frequently emit dashless tags, and rejecting them blanked
+    // the whole diagram.
+    const instMatch = text.match(/^inst\s+([A-Za-z][A-Za-z0-9]*(?:-[A-Za-z0-9]+)?)\s*:\s*(.+)$/);
     if (instMatch) {
       const tag = instMatch[1];
       const { rest: catRest, attrs } = extractAttrs(instMatch[2]);
-      const category = catRest.trim() as PidInstrumentCategory;
-      if (!INST_CATEGORIES.has(category)) {
-        throw new PidParseError(`Unknown instrument category '${category}'`, ln.line);
-      }
+      const rawCat = catRest.trim() as PidInstrumentCategory;
+      // An unrecognised category degrades to a plain field-mounted discrete
+      // bubble rather than blanking — the instrument still draws.
+      const category = INST_CATEGORIES.has(rawCat) ? rawCat : "field_discrete";
       const inst: PidInstrument = {
         tag,
         category,

@@ -560,6 +560,37 @@ export function renderSymbol(
     case "bus": return "";
     case "hub": return hubSymbol(detail);
     case "bus_tie": return busTieSymbol();
+    case "unknown": return placeholderSymbol(detail);
     default: return loadSymbol();
   }
+}
+
+/**
+ * Visibly-flagged placeholder for an unrecognised device type. A dashed box
+ * with a "?" mark — deliberately NOT a real symbol — so an engineer can never
+ * mistake it for a recognised glyph. `detail` carries the raw type token.
+ */
+function placeholderSymbol(detail?: string): string {
+  const w = 40;
+  const h = 30;
+  const parts = [
+    el("rect", {
+      x: -w / 2,
+      y: -h / 2,
+      width: w,
+      height: h,
+      rx: 3,
+      class: "lt-sld-unknown-box",
+    }),
+    textEl({ x: 0, y: 6, "text-anchor": "middle", class: "lt-sld-unknown-mark" }, "?"),
+  ];
+  if (detail) {
+    parts.push(
+      textEl(
+        { x: 0, y: h / 2 + 11, "text-anchor": "middle", class: "lt-sld-unknown-type" },
+        detail.length > 14 ? detail.slice(0, 13) + "…" : detail
+      )
+    );
+  }
+  return group({ class: "lt-sld-unknown" }, parts);
 }

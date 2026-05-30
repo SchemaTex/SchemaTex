@@ -56,6 +56,20 @@ function isTransmitter(tag: string): boolean {
 export function lintPidAst(ast: PidAST): SchematexDiagnostic[] {
   const out: SchematexDiagnostic[] = [];
 
+  // ── Rule 0: unrecognised equipment types ────────────────────────
+  // Kept (drawn as a flagged placeholder) but warned about so the partial
+  // render is analyzable. The engine never silently substitutes a real glyph.
+  for (const eq of ast.equipment) {
+    if (eq.equipType !== "unknown") continue;
+    out.push({
+      severity: "warning",
+      code: "PID_UNKNOWN_EQUIP",
+      message: `equipment "${eq.id}" has unrecognised type "${eq.rawType ?? ""}"; drawn as a flagged placeholder`,
+      hint: `"${eq.rawType ?? ""}" is not an ISA-5.1 / ISO 10628 equipment type. Pick a catalog type (e.g. tank_atm, vessel_v, hx_shell_tube, pump_centrifugal, reactor_cstr). See docs/reference/22-PID-STANDARD.md.`,
+      fatal: false,
+    });
+  }
+
   const instByTag = new Map<string, PidInstrument>();
   for (const inst of ast.instruments) instByTag.set(inst.tag, inst);
 

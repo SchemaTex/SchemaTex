@@ -153,13 +153,15 @@ describe("validateDsl", () => {
     }
   });
 
-  it("returns structured error with line info for bad sld (newly upgraded)", () => {
+  it("returns structured error with line info for a fatal sld error", () => {
+    // Post-L2 an *unknown* type is a non-fatal warning, so to exercise the
+    // structured-error line-info path we use a still-fatal error: a duplicate
+    // node id on line 3.
     const result = validateDsl(
       "sld",
       `sld "test"
 UTIL = utility
-FOO = notatype
-UTIL -> FOO`
+UTIL = breaker`
     );
     expect(result.ok).toBe(false);
     if (!result.ok) {

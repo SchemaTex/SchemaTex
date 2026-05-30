@@ -9,6 +9,8 @@ export interface LogicLayoutNode {
   layer: number;
   geometry?: GateGeometry;
   gateType?: string;
+  /** Original (unrecognised) gate token, set only when `gateType === "unknown"`. */
+  rawType?: string;
   label: string;
   isActiveLow?: boolean;
 }
@@ -187,6 +189,7 @@ export function layoutLogic(ast: LogicGateAST): LogicLayoutResult {
           layer: layerIdx,
           geometry: g,
           gateType: ast.gates.find((gg) => gg.id === id)!.gateType,
+          rawType: ast.gates.find((gg) => gg.id === id)!.rawType,
           label: id,
         };
       }

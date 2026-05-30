@@ -6,7 +6,6 @@ import type {
   SLDStandard,
 } from "../../core/types";
 import { matchQuotedTitle } from "../../core/quotes";
-import { didYouMean } from "../../core/dsl-suggest";
 
 export class SLDParseError extends Error {
   public line?: number;
@@ -225,25 +224,23 @@ export function parseSLDDSL(text: string): SLDAST {
       // Resolve REBT/IEC residential aliases (mcb → breaker, rcbo → ground_fault…)
       // before the canonical-type check.
       const canonical = (TYPE_ALIASES[rawType] ?? rawType) as SLDNodeType;
-      if (!NODE_TYPES.has(canonical)) {
-        const candidates = [
-          ...NODE_TYPES,
-          ...Object.keys(TYPE_ALIASES),
-        ];
-        throw new SLDParseError(
-          `Unknown node type "${nodeMatch[2]}" for "${id}"${didYouMean(rawType, candidates)}`,
-          i + 1,
-          line
-        );
-      }
       if (nodeMap.has(id)) {
         throw new SLDParseError(`Duplicate node id "${id}"`, i + 1, line);
       }
-      const node: SLDNode = { id, nodeType: canonical };
+      // Graceful degradation: an unrecognised type is NOT fatal. We keep the
+      // node with the `unknown` sentinel and preserve the raw token so the
+      // renderer can draw a visibly-flagged placeholder and the lint pass can
+      // surface a warning naming the bad token + a did-you-mean suggestion.
+      // Blanking the whole diagram on one bad word violates the "professionals
+      // actually use" pillar — see docs/issues.
+      const isKnown = NODE_TYPES.has(canonical);
+      const node: SLDNode = isKnown
+        ? { id, nodeType: canonical }
+        : { id, nodeType: "unknown", rawType: nodeMatch[2] };
       // If the user wrote an alias (mcb/rcbo/iga…), preserve the original word
       // as the visible label unless an explicit `label:` attribute overrides
       // it below. This keeps "MCB" / "IGA" markings on the rendered SVG.
-      if (TYPE_ALIASES[rawType]) {
+      if (isKnown && TYPE_ALIASES[rawType]) {
         node.label = rawType.toUpperCase();
       }
       if (nodeMatch[3]) {

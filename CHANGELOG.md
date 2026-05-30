@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.6.3] — 2026-05-29
+
+### Changed — graceful degradation for the highest-failure industrial diagrams (`SLD`, `P&ID`, `logic gate`)
+
+Theme: a single unrecognised type keyword used to throw and **blank the whole diagram** — the dominant production failure for these three families (130 `SLD`, 26 `P&ID`, 7 `logic gate` distinct prod failures). Two layers of fix, **no breaking changes** — all valid DSL renders exactly as before.
+
+- **L1 — the generation profiles now teach the full controlled vocabulary.** `src/ai/profiles.ts` lists the complete equipment / node / gate-type enum for `SLD`, `P&ID`, and `logic gate` in each `prefer` block, so the LLM emits canonical names instead of inventing synonyms. Repair hints gained example mappings (e.g. `exchanger → hx_shell_tube`, `vessel_horizontal → vessel_h`). This is a vocabulary fix, not a hard-coded alias table.
+- **L2 — an unknown type keyword no longer blanks the diagram.** When a parser hits an unrecognised node/equipment/gate **kind**, it keeps the element with an `"unknown"` sentinel + the original `rawType` token instead of throwing. The renderer draws a **visibly-flagged placeholder** (dashed box + `?` + the raw word, accent-coloured) so the output is never silently wrong, and the lint pass emits a non-fatal warning naming the bad token with a did-you-mean suggestion (`SLD_UNKNOWN_DEVICE` / `PID_UNKNOWN_EQUIP` / `LOGIC_UNKNOWN_GATE`). Genuine structural errors (duplicate ids, malformed syntax) stay fatal.
+- **`P&ID` — modifier keywords degrade to a safe default** rather than a placeholder: an unknown line `type:` falls back to `process` and an unknown instrument category to `field_discrete`. The instrument-tag grammar was relaxed to accept dash-less tags (e.g. `inst PLC : cr_shared`).
+
+### Tests
+
+- Added `tests/{sld,pid,logic}/graceful-degradation.test.ts` (17 cases): no-throw parsing, `"unknown"` sentinel + `rawType` preservation, flagged-placeholder markers in the SVG, the three lint warning codes, modifier-default fallback, dash-less `P&ID` tags, and regression guards that fully-known diagrams stay `valid`.
+- Updated `tests/regression/prod-report-2026-05-15.test.ts` and `tests/ai/tools.test.ts` to assert the new degrade-don't-throw contract.
+
+---
+
 ## [0.6.2] — 2026-05-27
 
 ### Changed — Mermaid header compatibility for `sequence` and `erd`

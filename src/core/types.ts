@@ -750,13 +750,18 @@ export type LogicGateType =
   | "MUX" | "DEMUX" | "DECODER" | "ENCODER"
   // ── Sequential complex ─────────────────────────────────────────
   | "COUNTER"        // Generic binary counter (CTR label, CLK/RESET/Q0–Q3)
-  | "SHIFT_REG";     // Generic shift register (SRG label, CLK/SER/Q0–Q7)
+  | "SHIFT_REG"      // Generic shift register (SRG label, CLK/SER/Q0–Q7)
+  // Graceful-degradation sentinel — an unrecognised gate token, drawn as a
+  // flagged placeholder rather than blanking the whole diagram.
+  | "unknown";
 
 export type LogicGateStyle = "ansi" | "iec";
 
 export interface LogicGateNode {
   id: string;
   gateType: LogicGateType;
+  /** Original (unrecognised) gate token, set only when `gateType === "unknown"`. */
+  rawType?: string;
   inputs: string[];          // References to signal ids or gate ids (with ~ for active-low)
   label?: string;
   style?: LogicGateStyle;
@@ -1110,11 +1115,16 @@ export type SLDNodeType =
 
   // ── Metering ──────────────────────────────────────────────────
   | "watthour_meter"    // Energy meter (circle + Wh)
-  | "demand_meter"      // Demand meter (circle + D);
+  | "demand_meter"      // Demand meter (circle + D)
+
+  // ── Graceful-degradation sentinel ─────────────────────────────
+  | "unknown";          // Unrecognised type token — drawn as a flagged placeholder, never silently substituted
 
 export interface SLDNode {
   id: string;
   nodeType: SLDNodeType;
+  /** Original (unrecognised) type token, set only when `nodeType === "unknown"`. */
+  rawType?: string;
   label?: string;
   /** Voltage level e.g. "13.8kV", "480V" */
   voltage?: string;

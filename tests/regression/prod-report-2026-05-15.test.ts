@@ -9,7 +9,7 @@
  * source of truth for the bugs they cover.
  */
 import { describe, it, expect } from "vitest";
-import { parse, render } from "../../src/core/api";
+import { parse, render, renderResult } from "../../src/core/api";
 
 function renderOk(dsl: string, expectInSvg: string[] = []): string {
   const svg = render(dsl);
@@ -100,13 +100,22 @@ util -> iga1
     renderOk(dsl);
   });
 
-  it("unknown type still errors but with a suggestion", () => {
+  it("unknown type degrades to a flagged placeholder with a suggestion (L2)", () => {
+    // Post-L2: an unrecognised type no longer blanks the whole diagram. It is
+    // kept as a visibly-flagged placeholder and the lint pass surfaces a
+    // non-fatal did-you-mean warning instead of a fatal throw.
     const dsl = `sld "typo"
 util = utility
 brk1 = breakerz
 util -> brk1
 `;
-    expect(() => render(dsl)).toThrow(/did you mean/);
+    const res = renderResult(dsl);
+    expect(res.ok).toBe(true);
+    expect(res.status).toBe("partial");
+    expect(res.svg).toContain('data-raw-type="breakerz"');
+    const warn = res.diagnostics.find((d) => d.code === "SLD_UNKNOWN_DEVICE");
+    expect(warn?.fatal).toBe(false);
+    expect(warn?.hint).toMatch(/did you mean/);
   });
 });
 

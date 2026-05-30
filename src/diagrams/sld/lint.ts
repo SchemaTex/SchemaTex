@@ -1,7 +1,23 @@
 import type { SchematexDiagnostic } from "../../core/diagnostics";
 import type { SLDAST, SLDNodeType } from "../../core/types";
 import { isIecFamily } from "../../core/types";
+import { didYouMean } from "../../core/dsl-suggest";
 import { parseSLDDSL } from "./parser";
+
+// Canonical device vocabulary for the did-you-mean suggestion on an unknown
+// type. Kept in sync with NODE_TYPES + TYPE_ALIASES in the parser.
+const KNOWN_DEVICE_WORDS = [
+  "utility", "generator", "solar", "wind", "ups",
+  "transformer", "transformer_dy", "transformer_yd", "transformer_yy",
+  "transformer_dd", "autotransformer", "transformer_3winding",
+  "bus", "bus_tie", "hub",
+  "breaker", "breaker_vacuum", "switch", "switch_load", "ground_switch",
+  "ats", "recloser", "sectionalizer", "fuse", "fuse_cl",
+  "ct", "pt", "relay", "surge_arrester", "ground_fault",
+  "motor", "load", "capacitor_bank", "harmonic_filter", "vfd",
+  "watthour_meter", "demand_meter",
+  "mcb", "mccb", "rcd", "rcbo", "rccb", "isolator", "disconnector", "panel",
+];
 
 /**
  * SLD standard-compatibility lint.
@@ -34,6 +50,22 @@ const ANSI_ONLY: Partial<Record<SLDNodeType, string>> = {
 
 export function lintSLDAst(ast: SLDAST): SchematexDiagnostic[] {
   const out: SchematexDiagnostic[] = [];
+
+  // Unrecognised device types are kept (rendered as a flagged placeholder) but
+  // warned about here so the partial render is analyzable and the engineer gets
+  // a did-you-mean nudge — independent of the chosen standard.
+  for (const node of ast.nodes) {
+    if (node.nodeType !== "unknown") continue;
+    const raw = node.rawType ?? "";
+    out.push({
+      severity: "warning",
+      code: "SLD_UNKNOWN_DEVICE",
+      message: `device "${node.id}" has unrecognised type "${raw}"; drawn as a flagged placeholder`,
+      hint: `"${raw}" is not a known SLD device.${didYouMean(raw.toLowerCase(), KNOWN_DEVICE_WORDS)} See docs/reference for the device catalog.`,
+      fatal: false,
+    });
+  }
+
   if (!isIecFamily(ast.standard)) return out;
 
   const stdName = ast.standard === "abnt" ? "ABNT NBR 5410" : ast.standard === "as-nzs" ? "AS/NZS 3000" : "IEC 60617";

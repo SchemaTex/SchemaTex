@@ -55,6 +55,22 @@ function renderGateBody(
     );
   }
 
+  // Unrecognised gate: stamp a centred "?" so the ANSI box reads as a flagged
+  // placeholder (IEC already centres the "?" via iecLabel above).
+  if (n.gateType === "unknown" && style !== "iec") {
+    out.push(
+      text(
+        {
+          x: g.width / 2,
+          y: g.height / 2 + 6,
+          class: "schematex-logic-gate-iec-label",
+          "text-anchor": "middle",
+        },
+        "?"
+      )
+    );
+  }
+
   // Output bubble
   if (g.outputBubble) {
     const op = g.outputPins[0];
@@ -138,7 +154,7 @@ function renderGateBody(
           class: "schematex-logic-gate-type",
           "text-anchor": "middle",
         },
-        n.gateType ?? ""
+        n.gateType === "unknown" ? n.rawType ?? "?" : n.gateType ?? ""
       )
     );
   }
@@ -283,6 +299,8 @@ export function renderLogic(ast: LogicGateAST, config?: RenderConfig): string {
 .schematex-logic-title { font: bold 14px sans-serif; fill: ${t.text}; }
 .schematex-logic-module { fill: none; stroke: ${t.textMuted}; stroke-width: 1.25; stroke-dasharray: 6 4; }
 .schematex-logic-module-label { font: 11px sans-serif; fill: ${t.textMuted}; font-style: italic; }
+[data-gate-type="unknown"] .schematex-logic-gate-body { stroke: ${t.accent}; stroke-dasharray: 5 3; }
+[data-gate-type="unknown"] .schematex-logic-gate-iec-label { fill: ${t.accent}; }
 `.trim();
 
   const titleSvg = ast.title

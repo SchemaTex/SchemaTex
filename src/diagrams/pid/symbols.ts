@@ -269,6 +269,19 @@ export const GEOMETRY: Record<PidEquipType, SymbolGeometry> = {
     height: 60,
     ports: { in: { x: -18, y: 12 }, out: { x: 18, y: -8 } },
   },
+  // Graceful-degradation placeholder for an unrecognised equipment type.
+  unknown: {
+    width: 70,
+    height: 50,
+    ports: {
+      top: { x: 0, y: -25 },
+      bottom: { x: 0, y: 25 },
+      left: { x: -35, y: 0 },
+      right: { x: 35, y: 0 },
+      in: { x: -35, y: 0 },
+      out: { x: 35, y: 0 },
+    },
+  },
 };
 
 // ── Renderers — each draws around (0,0). ─────────────────────
@@ -284,8 +297,32 @@ function bowtie(): string {
   });
 }
 
-export function renderEquip(type: PidEquipType, label: string): string {
+export function renderEquip(type: PidEquipType, label: string, rawType?: string): string {
   switch (type) {
+    case "unknown": {
+      // Visibly-flagged placeholder: a dashed box with a "?" — deliberately NOT
+      // a real equipment glyph, so an engineer can never mistake it for one.
+      const w = 70;
+      const h = 50;
+      return group({}, [
+        rect({
+          x: -w / 2,
+          y: -h / 2,
+          width: w,
+          height: h,
+          rx: 3,
+          class: "lt-pid-unknown-box",
+        }),
+        text({ x: 0, y: -2, "text-anchor": "middle", class: "lt-pid-unknown-mark" }, "?"),
+        rawType
+          ? text(
+              { x: 0, y: 13, "text-anchor": "middle", class: "lt-pid-unknown-type" },
+              rawType.length > 12 ? rawType.slice(0, 11) + "…" : rawType
+            )
+          : "",
+        text({ x: 0, y: h / 2 + 13, "text-anchor": "middle", class: "lt-pid-equip-tag" }, label),
+      ]);
+    }
     case "tank_atm": {
       const w = 90;
       const h = 90;

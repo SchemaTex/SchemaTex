@@ -53,6 +53,7 @@ export function parseLogic(text: string): LogicGateAST {
   const moduleStack: string[] = [];
   let moduleCounter = 0;
   const explicitOutputFrom = new Map<string, string>();
+  const warnings: string[] = [];
 
   for (const rawLine of lines) {
     // Strip line comments
@@ -119,12 +120,20 @@ export function parseLogic(text: string): LogicGateAST {
     if (gateMatch) {
       const id = gateMatch[1];
       const rawType = gateMatch[2].toUpperCase();
-      if (!GATE_TYPES.has(rawType)) {
-        throw new LogicParseError(`Unknown gate type: ${rawType}`);
-      }
       const gInputs = parseInputList(gateMatch[3]);
       const moduleId = moduleStack[moduleStack.length - 1];
-      gates.push({ id, gateType: rawType as LogicGateType, inputs: gInputs, moduleId });
+      // Graceful degradation: an unrecognised gate is NOT fatal. Keep it with
+      // the `unknown` sentinel + the raw token so the renderer draws a flagged
+      // placeholder and the lint pass warns. Blanking the whole diagram on one
+      // bad gate word is hostile to LLM-generated DSL.
+      if (GATE_TYPES.has(rawType)) {
+        gates.push({ id, gateType: rawType as LogicGateType, inputs: gInputs, moduleId });
+      } else {
+        gates.push({ id, gateType: "unknown", rawType: gateMatch[2], inputs: gInputs, moduleId });
+        warnings.push(
+          `Gate "${id}" has unrecognised type "${gateMatch[2]}"; drawn as a flagged placeholder.`
+        );
+      }
       continue;
     }
   }
@@ -143,7 +152,6 @@ export function parseLogic(text: string): LogicGateAST {
   // Resolve undefined signal references: auto-declare them as inputs and
   // emit a warning. Hard-failing here is hostile to LLM-generated DSL where
   // the model often forgets the explicit `input` line — see playbook.
-  const warnings: string[] = [];
   const known = new Set<string>([
     ...inputs.map((i) => i.id),
     ...gates.map((g) => g.id),

@@ -41,11 +41,16 @@ export type PidEquipType =
   | "valve_butterfly"
   | "valve_check"
   | "valve_control"
-  | "valve_psv";
+  | "valve_psv"
+  // Graceful-degradation sentinel — an unrecognised type token, drawn as a
+  // flagged placeholder rather than blanking the whole diagram.
+  | "unknown";
 
 export interface PidEquipment {
   id: string;
   equipType: PidEquipType;
+  /** Original (unrecognised) type token, set only when `equipType === "unknown"`. */
+  rawType?: string;
   /** Display tag (e.g. "P-101" or "Feed Tank") */
   tag?: string;
   attrs: Record<string, string>;

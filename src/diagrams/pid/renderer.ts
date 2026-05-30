@@ -31,6 +31,10 @@ const STYLE = `
 .lt-pid-line-tag-text { font: 9px ui-monospace, monospace; fill: #1d1d1d; }
 
 .lt-pid-title { font: 600 14px system-ui, sans-serif; fill: #1d1d1d; }
+
+.lt-pid-unknown-box { fill: none; stroke: #c0392b; stroke-width: 1.6; stroke-dasharray: 5 3; }
+.lt-pid-unknown-mark { font: 700 18px system-ui, sans-serif; fill: #c0392b; }
+.lt-pid-unknown-type { font: 9px ui-monospace, monospace; fill: #6a6a6a; }
 `;
 
 const ARROW_ID = "lt-pid-arrow";
@@ -136,16 +140,21 @@ export function renderPid(text: string, config?: RenderConfig): string {
 
 function renderLayout(layout: PidLayoutResult): string {
   const equipNodes = layout.equipment.map((eq) => {
-    const symbol = renderEquip(eq.equip.equipType, eq.equip.tag ?? eq.equip.id);
-    return group(
-      {
-        class: "lt-pid-equip-wrap",
-        "data-id": eq.equip.id,
-        "data-type": eq.equip.equipType,
-        transform: `translate(${eq.cx} ${eq.cy})`,
-      },
-      [symbol]
+    const symbol = renderEquip(
+      eq.equip.equipType,
+      eq.equip.tag ?? eq.equip.id,
+      eq.equip.rawType
     );
+    const wrapAttrs: Record<string, string> = {
+      class: "lt-pid-equip-wrap",
+      "data-id": eq.equip.id,
+      "data-type": eq.equip.equipType,
+      transform: `translate(${eq.cx} ${eq.cy})`,
+    };
+    if (eq.equip.equipType === "unknown" && eq.equip.rawType) {
+      wrapAttrs["data-raw-type"] = eq.equip.rawType;
+    }
+    return group(wrapAttrs, [symbol]);
   });
 
   const instNodes = layout.instruments.map((i) => {

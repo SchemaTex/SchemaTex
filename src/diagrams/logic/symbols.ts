@@ -201,6 +201,20 @@ export function getGateGeometry(
         iecLabel: "D",
       };
     }
+    case "unknown": {
+      // Visibly-flagged placeholder for an unrecognised gate token. A box with
+      // a "?" label — never a real gate shape, so it can't be mistaken for one.
+      const ins = Math.max(inputCount, 1);
+      const inputPins = combPins(ins, 90, 0).map((p) => ({ ...p, x: 0 }));
+      return {
+        width: 90,
+        height: 70,
+        inputPins,
+        outputPins: [{ id: "out", x: 90, y: 35 }],
+        ansiPath: "M 0,0 H 90 V 70 H 0 Z",
+        iecLabel: "?",
+      };
+    }
     default: {
       // Generic box for MUX/DEMUX/DECODER/ENCODER/COUNTER/SHIFT_REG
       const ins = Math.max(inputCount, 2);

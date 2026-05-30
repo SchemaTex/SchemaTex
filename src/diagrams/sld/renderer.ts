@@ -48,6 +48,9 @@ function buildCss(t: IT): string {
 .lt-sld-wdg { font: bold 10px sans-serif; fill: ${t.stroke}; dominant-baseline: middle; }
 .lt-sld-bus-label { font: bold 11px sans-serif; fill: ${t.accent}; }
 .lt-sld-standard-badge { font: bold 10px sans-serif; fill: ${t.textMuted}; letter-spacing: 0.3px; }
+.lt-sld-unknown-box { fill: none; stroke: ${t.accent}; stroke-width: 1.6; stroke-dasharray: 5 3; }
+.lt-sld-unknown-mark { font: bold 16px sans-serif; fill: ${t.accent}; dominant-baseline: middle; }
+.lt-sld-unknown-type { font: 9px ui-monospace, monospace; fill: ${t.textMuted}; }
 `.trim();
 }
 
@@ -279,21 +282,22 @@ export function renderSLD(ast: SLDAST, config?: RenderConfig): string {
       for (const piece of renderLabels(ln)) inner.push(piece);
       continue;
     }
-    const attrs = {
+    const attrs: Record<string, string> = {
       transform: `translate(${ln.x}, ${ln.y})`,
       "data-type": ln.nodeType,
       "data-id": ln.node.id,
     };
+    if (ln.nodeType === "unknown" && ln.node.rawType) {
+      attrs["data-raw-type"] = ln.node.rawType;
+    }
+    const detail =
+      ln.nodeType === "hub"
+        ? ln.node.label ?? ln.node.id
+        : ln.nodeType === "unknown"
+          ? ln.node.rawType
+          : (ln.node as SLDNode).deviceNumber;
     inner.push(
-      group(attrs, [
-        renderSymbol(
-          ln.nodeType,
-          ln.nodeType === "hub"
-            ? ln.node.label ?? ln.node.id
-            : (ln.node as SLDNode).deviceNumber,
-          ast.standard
-        ),
-      ])
+      group(attrs, [renderSymbol(ln.nodeType, detail, ast.standard)])
     );
     for (const piece of renderLabels(ln)) inner.push(piece);
   }
