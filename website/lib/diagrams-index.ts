@@ -47,6 +47,7 @@ const CLUSTER_DISPLAY: Record<DiagramCluster, { label: string; order: number }> 
   relationships:            { label: 'Relationships',            order: 0 },
   'electrical-industrial':  { label: 'Electrical & Industrial',  order: 1 },
   'behavior-modeling':      { label: 'Behavior Modeling',        order: 2 },
+  'software-uml':           { label: 'Software / UML',           order: 2.5 },
   'corporate-legal':        { label: 'Corporate & Legal',        order: 3 },
   'causality-analysis':     { label: 'Causality & Analysis',     order: 4 },
   strategy:                 { label: 'Strategy',                 order: 5 },

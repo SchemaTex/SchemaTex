@@ -25,6 +25,18 @@ const CLUSTER_PATHS: Record<DiagramCluster, React.ReactNode> = {
       <circle cx="18.5" cy="12" r="3" />
     </>
   ),
+  'software-uml': (
+    // Parent class-box ──▷ child class-box, with the hollow generalization
+    // triangle that identifies UML structural diagrams at a glance.
+    <>
+      <rect x="3" y="3" width="8" height="5.5" />
+      <path d="M5 6 H9" />
+      <rect x="13" y="15.5" width="8" height="5.5" />
+      <path d="M15 18.25 H19" />
+      <path d="M17 15.5 L7 11" />
+      <path d="M7 11 L10 9.5 L9 12.5 Z" />
+    </>
+  ),
   concurrency: (
     // Petri net: place (with token) → transition bar → place.
     <>
