@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="478" height="638" viewBox="0 0 478 638" role="img" aria-label="Shapes" data-diagram-type="umlclass"><title>Shapes</title>
+<desc>UML class diagram: 1 interface, 1 abstract, 2 class; 1 realization, 2 generalization; 1 merged inheritance tree.</desc>
+<style>.sx-umlclass-bg { fill: #ffffff; }
+.sx-umlclass-box-fill { fill: #ffffff; }
+.sx-umlclass-box-stroke { stroke: #334155; stroke-width: 1.5; fill: none; }
+.sx-umlclass-header-fill { fill: #eef2f7; }
+.sx-umlclass-divider { stroke: #334155; stroke-width: 1; }
+.sx-umlclass-classname { fill: #0f172a; font-size: 13px; font-weight: 700; letter-spacing: -0.01em; }
+.sx-umlclass-classname[data-abstract="true"] { font-style: italic; }
+.sx-umlclass-stereotype { fill: #64748b; font-size: 10px; font-style: italic; }
+.sx-umlclass-member { fill: #0f172a; font-size: 12px; font-weight: 500; }
+.sx-umlclass-member[data-static] { text-decoration: underline; }
+.sx-umlclass-member[data-abstract] { font-style: italic; }
+.sx-umlclass-visibility { fill: #64748b; font-size: 12px; font-weight: 500; }
+.sx-umlclass-rel-line { stroke: #334155; stroke-width: 1.4; fill: none; }
+.sx-umlclass-rel-line[data-dashed="true"] { stroke-dasharray: 5 4; }
+.sx-umlclass-triangle { fill: #ffffff; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-diamond-hollow { fill: #ffffff; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-diamond-filled { fill: #334155; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-arrowhead { fill: none; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-edge-label { fill: #475569; font-size: 10px; font-weight: 500; }
+.sx-umlclass-edge-name { fill: #475569; font-size: 12px; font-style: italic; }
+.sx-umlclass-edge-name-halo { fill: #ffffff; stroke: #ffffff; stroke-width: 6; stroke-linejoin: round; }
+.sx-umlclass-title { fill: #0f172a; font-size: 16px; font-weight: 600; }
+.sx-umlclass-package { fill: rgba(100,116,139,0.06); stroke: #94a3b8; stroke-width: 1; }
+.sx-umlclass-package-label { fill: #475569; font-size: 12px; font-weight: 600; }</style>
+<rect x="0" y="0" width="478" height="638" class="sx-umlclass-bg"/>
+<text x="52" y="40" class="sx-umlclass-title" font-family="system-ui, -apple-system, sans-serif">Shapes</text>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><g class="sx-umlclass-classifier" data-id="Shape" data-kind="interface"><rect x="89.60972243391086" y="32" width="167" height="46" class="sx-umlclass-header-fill"/>
+<rect x="89.60972243391086" y="78" width="167" height="98" class="sx-umlclass-box-fill"/>
+<rect x="89.60972243391086" y="32" width="167" height="144" class="sx-umlclass-box-stroke"/>
+<line x1="89.60972243391086" y1="78" x2="256.60972243391086" y2="78" class="sx-umlclass-divider"/>
+<line x1="89.60972243391086" y1="116" x2="256.60972243391086" y2="116" class="sx-umlclass-divider"/>
+<text x="173.10972243391086" y="44" class="sx-umlclass-stereotype" text-anchor="middle">«interface»</text>
+<text x="173.10972243391086" y="69" class="sx-umlclass-classname" text-anchor="middle">Shape</text>
+<text x="103.60972243391086" y="140" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>area(): double</text>
+<text x="103.60972243391086" y="162" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>perimeter(): double</text></g>
+<g class="sx-umlclass-classifier" data-id="AbstractShape" data-kind="abstract"><rect x="93.10972243391086" y="254" width="160" height="30" class="sx-umlclass-header-fill"/>
+<rect x="93.10972243391086" y="284" width="160" height="98" class="sx-umlclass-box-fill"/>
+<rect x="93.10972243391086" y="254" width="160" height="128" class="sx-umlclass-box-stroke"/>
+<line x1="93.10972243391086" y1="284" x2="253.10972243391086" y2="284" class="sx-umlclass-divider"/>
+<line x1="93.10972243391086" y1="322" x2="253.10972243391086" y2="322" class="sx-umlclass-divider"/>
+<text x="173.10972243391086" y="275" class="sx-umlclass-classname" text-anchor="middle" data-abstract="true">AbstractShape</text>
+<text x="107.10972243391086" y="308" class="sx-umlclass-member" data-visibility="protected"><tspan class="sx-umlclass-visibility"># </tspan>name: String</text>
+<text x="107.10972243391086" y="346" class="sx-umlclass-member" data-visibility="public" data-abstract="true"><tspan class="sx-umlclass-visibility">+ </tspan>area(): double</text>
+<text x="107.10972243391086" y="368" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>describe(): String</text></g>
+<g class="sx-umlclass-classifier" data-id="Circle" data-kind="class"><rect x="32" y="460" width="160" height="30" class="sx-umlclass-header-fill"/>
+<rect x="32" y="490" width="160" height="76" class="sx-umlclass-box-fill"/>
+<rect x="32" y="460" width="160" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="32" y1="490" x2="192" y2="490" class="sx-umlclass-divider"/>
+<line x1="32" y1="528" x2="192" y2="528" class="sx-umlclass-divider"/>
+<text x="112" y="481" class="sx-umlclass-classname" text-anchor="middle">Circle</text>
+<text x="46" y="514" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>radius: double</text>
+<text x="46" y="552" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>area(): double</text></g>
+<g class="sx-umlclass-classifier" data-id="Square" data-kind="class"><rect x="246" y="460" width="160" height="30" class="sx-umlclass-header-fill"/>
+<rect x="246" y="490" width="160" height="76" class="sx-umlclass-box-fill"/>
+<rect x="246" y="460" width="160" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="246" y1="490" x2="406" y2="490" class="sx-umlclass-divider"/>
+<line x1="246" y1="528" x2="406" y2="528" class="sx-umlclass-divider"/>
+<text x="326" y="481" class="sx-umlclass-classname" text-anchor="middle">Square</text>
+<text x="260" y="514" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>side: double</text>
+<text x="260" y="552" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>area(): double</text></g></g>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><g class="sx-umlclass-rel" data-from="AbstractShape" data-to="Shape" data-kind="realization"><path d="M 173.1 254 L 173.1 190" class="sx-umlclass-rel-line" data-dashed="true"/>
+<polygon points="173.10972243391086,176 164.10972243391086,190 182.10972243391086,190" class="sx-umlclass-triangle"/></g></g>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><g class="sx-umlclass-rel sx-umlclass-rel-tree" data-kind="generalization" data-parent="AbstractShape" data-children="Circle,Square"><path d="M 112 460 L 112 421 L 219 421" class="sx-umlclass-rel-line"/>
+<path d="M 326 460 L 326 421 L 219 421" class="sx-umlclass-rel-line"/>
+<path d="M 219 421 L 219 396" class="sx-umlclass-rel-line"/>
+<polygon points="219,382 210,396 228,396" class="sx-umlclass-triangle"/></g></g></svg>

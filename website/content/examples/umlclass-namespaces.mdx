@@ -1,0 +1,48 @@
+---
+title: Packages and namespaces
+description: Group classifiers into labelled containment frames with namespace blocks — dot-notation auto-creates parent packages, and blocks nest, so a layered architecture reads as nested boxes the way an architect draws it.
+diagram: umlclass
+standard: OMG UML 2.5.1 §9–§11
+industry: [software, education]
+persona: For the architect documenting module boundaries
+complexity: 2
+tags: [umlclass, uml, namespace, package, architecture, mermaid]
+featured: false
+relatedLink:
+  label: UML class diagram syntax
+  href: /docs/umlclass
+status: published
+dsl: |
+  umlclass
+  title: "Layered packages"
+
+  namespace Platform {
+  namespace Auth {
+  class UserService {
+    + login()
+    + logout()
+  }
+  }
+  namespace Data {
+  class Repository {
+    + find()
+    + save()
+  }
+  }
+  }
+
+  class Gateway {
+    + route()
+  }
+
+  Gateway --> UserService : delegates
+  Gateway --> Repository  : delegates
+---
+
+## What this shows
+
+A **`namespace` block** groups its classifiers into a labelled bounding frame. Frames are computed as the **union of their members plus any nested sub-packages**, padded, with a label band on top — the same C4-style containment Schematex uses for the `network` engine's site/zone boundaries. Here `Platform` contains `Auth` and `Data`, each holding one service; `Gateway` lives outside the package and delegates into both.
+
+**Frames never overlap and always enclose.** A package-clustering pass keeps same-package classifiers contiguous within each layout rank, so the frame stays a clean rectangle instead of a ragged shape that swallows unrelated boxes.
+
+**Dot-notation also works.** Writing `namespace Company.Engineering.Backend { … }` auto-creates `Company` and `Company.Engineering` as parent frames, so you can declare a deep package in one line. An explicit label is available too: `namespace plat["Platform Layer"] { … }`.

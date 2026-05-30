@@ -790,6 +790,112 @@ export function resolveNetworkTheme(name: string): ResolvedTheme<NetworkTokens> 
   return { ...BASE_THEMES[themeName], ...NETWORK_TOKENS[themeName] };
 }
 
+// ─── UML Class Diagram Tokens ──────────────────────────────
+// 36-UMLCLASS-STANDARD §6. Coloured-house family (with `c4`, `flowchart`,
+// `sequence`): blue/grey neutrals in default, true black/white in monochrome,
+// Catppuccin in dark. Relationship semantics ride entirely on adornment SHAPE
+// (diamond/triangle/arrow, filled/hollow, solid/dashed) so the diagram is
+// identical in monochrome — see spec §6.5 house-style rule.
+
+export interface UmlClassTokens {
+  /** Classifier box body + borders. */
+  classifierFill: string;
+  classifierStroke: string;
+  /** Name-compartment header band (slightly tinted to set off the name). */
+  headerFill: string;
+  /** Bold class name. */
+  nameText: string;
+  /** «interface» / «enumeration» keyword (muted). */
+  stereotypeText: string;
+  /** Attribute / operation rows. */
+  memberText: string;
+  /** Visibility glyphs (+ - # ~) — slightly muted so names read first. */
+  visibilityText: string;
+  /** Relationship lines + adornments. */
+  relationStroke: string;
+  /** Filled composition diamond + filled arrowheads. */
+  adornmentFill: string;
+  /** Hollow aggregation diamond + hollow triangle interior (= box bg). */
+  adornmentHollowFill: string;
+  /** Edge labels: association name, multiplicity, role. */
+  edgeLabel: string;
+  /** Interface / abstract accent — used sparingly for the «» keyword italic tint. */
+  abstractAccent: string;
+  /** Package/namespace frame fill (use a translucent tint so nested frames stack). */
+  packageFill: string;
+  /** Package/namespace frame border. */
+  packageStroke: string;
+  /** Package/namespace label text. */
+  packageLabel: string;
+}
+
+const DEFAULT_UMLCLASS: UmlClassTokens = {
+  classifierFill: "#ffffff",
+  classifierStroke: "#334155",
+  headerFill: "#eef2f7",
+  nameText: "#0f172a",
+  stereotypeText: "#64748b",
+  memberText: "#0f172a",
+  visibilityText: "#64748b",
+  relationStroke: "#334155",
+  adornmentFill: "#334155",
+  adornmentHollowFill: "#ffffff",
+  edgeLabel: "#475569",
+  abstractAccent: "#2563eb",
+  packageFill: "rgba(100,116,139,0.06)",
+  packageStroke: "#94a3b8",
+  packageLabel: "#475569",
+};
+
+// Faithful UML textbook (Fowler/Booch print stance) — pure black/white. Every
+// distinction that rides on colour in default falls back to shape/weight here.
+const MONOCHROME_UMLCLASS: UmlClassTokens = {
+  classifierFill: "#ffffff",
+  classifierStroke: "#000000",
+  headerFill: "#ffffff",
+  nameText: "#000000",
+  stereotypeText: "#000000",
+  memberText: "#000000",
+  visibilityText: "#000000",
+  relationStroke: "#000000",
+  adornmentFill: "#000000",
+  adornmentHollowFill: "#ffffff",
+  edgeLabel: "#000000",
+  abstractAccent: "#000000",
+  packageFill: "none",
+  packageStroke: "#000000",
+  packageLabel: "#000000",
+};
+
+const DARK_UMLCLASS: UmlClassTokens = {
+  classifierFill: "#313244",
+  classifierStroke: "#cdd6f4",
+  headerFill: "#45475a",
+  nameText: "#cdd6f4",
+  stereotypeText: "#a6adc8",
+  memberText: "#cdd6f4",
+  visibilityText: "#a6adc8",
+  relationStroke: "#cdd6f4",
+  adornmentFill: "#cdd6f4",
+  adornmentHollowFill: "#313244",
+  edgeLabel: "#bac2de",
+  abstractAccent: "#89b4fa",
+  packageFill: "rgba(205,214,244,0.05)",
+  packageStroke: "#6c7086",
+  packageLabel: "#a6adc8",
+};
+
+export const UMLCLASS_TOKENS: Record<ThemeName, UmlClassTokens> = {
+  default: DEFAULT_UMLCLASS,
+  monochrome: MONOCHROME_UMLCLASS,
+  dark: DARK_UMLCLASS,
+};
+
+export function resolveUmlClassTheme(name: string): ResolvedTheme<UmlClassTokens> {
+  const themeName = (name in BASE_THEMES ? name : "default") as ThemeName;
+  return { ...BASE_THEMES[themeName], ...UMLCLASS_TOKENS[themeName] };
+}
+
 // ─── Theme Resolution ──────────────────────────────────────
 
 export function resolveBaseTheme(name: string): BaseTheme {

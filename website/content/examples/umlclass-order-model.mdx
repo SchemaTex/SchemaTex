@@ -1,0 +1,61 @@
+---
+title: Order model — aggregation, composition, and dependency
+description: A small domain model that exercises every relationship-end adornment that confuses first-time UML readers — filled diamond for composition, hollow diamond for aggregation, plain association, and a dashed dependency.
+diagram: umlclass
+standard: OMG UML 2.5.1 §11.5 (Associations)
+industry: [software, business]
+persona: For the domain modeller
+complexity: 2
+tags: [umlclass, uml, composition, aggregation, dependency, multiplicity, static, derived]
+featured: true
+relatedLink:
+  label: UML class diagram syntax
+  href: /docs/umlclass
+status: published
+dsl: |
+  umlclass
+  title: "Order model"
+
+  class Order {
+    - id : String
+    + total : Money       {readOnly}
+    + place() : void
+    + count : int         {static}
+  }
+
+  class LineItem {
+    + qty : int
+    + subtotal() : Money
+  }
+
+  class Customer {
+    + name : String
+  }
+
+  class Address {
+    + city : String
+  }
+
+  class TaxPolicy {
+    + rate(c : Country) : Percent
+  }
+
+  Order    *-- "1..*" LineItem : contains
+  Customer o-- "0..*" Address  : has
+  Customer "1" -- "*" Order    : places
+  Order    ..>  TaxPolicy : uses
+---
+
+## Why the diamonds are not interchangeable
+
+UML's two diamond shapes encode genuinely different lifetime semantics, and they're the single most-confused pair on the notation.
+
+**Composition** (filled diamond) means *the part dies with the whole*: when an `Order` is deleted, its `LineItem`s are deleted with it — the line items have no independent existence. The filled diamond sits at the `Order` (whole) end of `*--`, regardless of which id the author typed first.
+
+**Aggregation** (hollow diamond) means *the part outlives the whole*: an `Address` exists in its own right and a `Customer` aggregating it is just a structural reference — deleting the customer should not delete the address.
+
+**Plain association** (no diamond) is just "these two types are structurally linked" — the line carries multiplicity (`1` ↔ `*`) and a name (`places`) but makes no claim about ownership.
+
+**Dependency** (dashed + open arrow) says `Order` *uses* `TaxPolicy` without holding a reference to it — typically a method parameter or a transient call. The dashed line distinguishes a using-relationship from a structural one at a glance.
+
+The `{readOnly}`, `{static}`, and `{abstract}` property strings render as the standard UML annotations; `count` is underlined to mark it as class-scope.

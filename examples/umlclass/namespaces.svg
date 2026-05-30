@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="550" height="452" viewBox="0 0 550 452" role="img" aria-label="Layered packages" data-diagram-type="umlclass"><title>Layered packages</title>
+<desc>UML class diagram: 3 class; 2 directed.</desc>
+<style>.sx-umlclass-bg { fill: #ffffff; }
+.sx-umlclass-box-fill { fill: #ffffff; }
+.sx-umlclass-box-stroke { stroke: #334155; stroke-width: 1.5; fill: none; }
+.sx-umlclass-header-fill { fill: #eef2f7; }
+.sx-umlclass-divider { stroke: #334155; stroke-width: 1; }
+.sx-umlclass-classname { fill: #0f172a; font-size: 13px; font-weight: 700; letter-spacing: -0.01em; }
+.sx-umlclass-classname[data-abstract="true"] { font-style: italic; }
+.sx-umlclass-stereotype { fill: #64748b; font-size: 10px; font-style: italic; }
+.sx-umlclass-member { fill: #0f172a; font-size: 12px; font-weight: 500; }
+.sx-umlclass-member[data-static] { text-decoration: underline; }
+.sx-umlclass-member[data-abstract] { font-style: italic; }
+.sx-umlclass-visibility { fill: #64748b; font-size: 12px; font-weight: 500; }
+.sx-umlclass-rel-line { stroke: #334155; stroke-width: 1.4; fill: none; }
+.sx-umlclass-rel-line[data-dashed="true"] { stroke-dasharray: 5 4; }
+.sx-umlclass-triangle { fill: #ffffff; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-diamond-hollow { fill: #ffffff; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-diamond-filled { fill: #334155; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-arrowhead { fill: none; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-edge-label { fill: #475569; font-size: 10px; font-weight: 500; }
+.sx-umlclass-edge-name { fill: #475569; font-size: 12px; font-style: italic; }
+.sx-umlclass-edge-name-halo { fill: #ffffff; stroke: #ffffff; stroke-width: 6; stroke-linejoin: round; }
+.sx-umlclass-title { fill: #0f172a; font-size: 16px; font-weight: 600; }
+.sx-umlclass-package { fill: rgba(100,116,139,0.06); stroke: #94a3b8; stroke-width: 1; }
+.sx-umlclass-package-label { fill: #475569; font-size: 12px; font-weight: 600; }</style>
+<rect x="0" y="0" width="550" height="452" class="sx-umlclass-bg"/>
+<text x="52" y="40" class="sx-umlclass-title" font-family="system-ui, -apple-system, sans-serif">Layered packages</text>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><g class="sx-umlclass-package-group" data-package-id="Platform" data-depth="0"><rect x="32" y="132" width="446" height="248" rx="4" class="sx-umlclass-package"/>
+<text x="255" y="148" class="sx-umlclass-package-label" text-anchor="middle">Platform</text></g>
+<g class="sx-umlclass-package-group" data-package-id="Platform.Auth" data-depth="1"><rect x="50" y="174" width="196" height="188" rx="4" class="sx-umlclass-package"/>
+<text x="148" y="190" class="sx-umlclass-package-label" text-anchor="middle">Auth</text></g>
+<g class="sx-umlclass-package-group" data-package-id="Platform.Data" data-depth="1"><rect x="264" y="174" width="196" height="188" rx="4" class="sx-umlclass-package"/>
+<text x="362" y="190" class="sx-umlclass-package-label" text-anchor="middle">Data</text></g></g>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><g class="sx-umlclass-classifier" data-id="UserService" data-kind="class"><rect x="68" y="216" width="160" height="30" class="sx-umlclass-header-fill"/>
+<rect x="68" y="246" width="160" height="98" class="sx-umlclass-box-fill"/>
+<rect x="68" y="216" width="160" height="128" class="sx-umlclass-box-stroke"/>
+<line x1="68" y1="246" x2="228" y2="246" class="sx-umlclass-divider"/>
+<line x1="68" y1="284" x2="228" y2="284" class="sx-umlclass-divider"/>
+<text x="148" y="237" class="sx-umlclass-classname" text-anchor="middle">UserService</text>
+<text x="82" y="308" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>login()</text>
+<text x="82" y="330" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>logout()</text></g>
+<g class="sx-umlclass-classifier" data-id="Repository" data-kind="class"><rect x="282" y="216" width="160" height="30" class="sx-umlclass-header-fill"/>
+<rect x="282" y="246" width="160" height="98" class="sx-umlclass-box-fill"/>
+<rect x="282" y="216" width="160" height="128" class="sx-umlclass-box-stroke"/>
+<line x1="282" y1="246" x2="442" y2="246" class="sx-umlclass-divider"/>
+<line x1="282" y1="284" x2="442" y2="284" class="sx-umlclass-divider"/>
+<text x="362" y="237" class="sx-umlclass-classname" text-anchor="middle">Repository</text>
+<text x="296" y="308" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>find()</text>
+<text x="296" y="330" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>save()</text></g>
+<g class="sx-umlclass-classifier" data-id="Gateway" data-kind="class"><rect x="175" y="32" width="160" height="30" class="sx-umlclass-header-fill"/>
+<rect x="175" y="62" width="160" height="76" class="sx-umlclass-box-fill"/>
+<rect x="175" y="32" width="160" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="175" y1="62" x2="335" y2="62" class="sx-umlclass-divider"/>
+<line x1="175" y1="100" x2="335" y2="100" class="sx-umlclass-divider"/>
+<text x="255" y="53" class="sx-umlclass-classname" text-anchor="middle">Gateway</text>
+<text x="189" y="124" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>route()</text></g></g>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><g class="sx-umlclass-rel" data-from="Gateway" data-to="UserService" data-kind="directed" data-name="delegates"><path d="M 225.9 138 L 183.1 205" class="sx-umlclass-rel-line"/>
+<path d="M 177.6179487179487 205 L 183.1179487179487 216 L 188.6179487179487 205" class="sx-umlclass-arrowhead"/>
+<text x="204.5179487179487" y="166.5" class="sx-umlclass-edge-name sx-umlclass-edge-name-halo" text-anchor="middle">delegates</text>
+<text x="204.5179487179487" y="166.5" class="sx-umlclass-edge-name" text-anchor="middle">delegates</text></g>
+<g class="sx-umlclass-rel" data-from="Gateway" data-to="Repository" data-kind="directed" data-name="delegates"><path d="M 284.1 138 L 326.9 205" class="sx-umlclass-rel-line"/>
+<path d="M 321.3820512820513 205 L 326.8820512820513 216 L 332.3820512820513 205" class="sx-umlclass-arrowhead"/>
+<text x="305.4820512820513" y="166.5" class="sx-umlclass-edge-name sx-umlclass-edge-name-halo" text-anchor="middle">delegates</text>
+<text x="305.4820512820513" y="166.5" class="sx-umlclass-edge-name" text-anchor="middle">delegates</text></g></g></svg>

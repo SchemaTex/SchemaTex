@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.6.4] — 2026-05-30
+
+### Added — UML class diagram engine (`umlclass`)
+
+- **New `umlclass` engine** (`src/diagrams/umlclass/`) for UML 2.5.1 §9–§11 class diagrams — the largest unfilled gap below Mermaid's `classDiagram`. Standard-correct adornments (hollow triangle → parent, filled diamond at the composite end), a **generalization-driven layered layout** (Sugiyama with dummy-node edge routing, so connectors never cross a box), and **tree-merged inheritance heads** (N children of one parent share one trunk + one triangle). Five classifier kinds, all six relationship kinds, visibility glyphs, multiplicity, roles, stereotypes. Spec: `36-UMLCLASS-STANDARD.md`.
+- Accepts the Mermaid `classDiagram` header and glyph aliases for one-line migration (`<|--`, `*--`, `o--`, `-->`, `..>`, `..|>`, `--`, `..`).
+
+### Added — `umlclass` packages/namespaces + Mermaid-compat member forms
+
+- **Namespaces / packages**: `namespace Name { … }` renders a labelled containment frame (union + padding, C4-style). Dot-notation `namespace A.B.C` auto-creates parent packages; blocks nest syntactically; explicit `["Label"]` supported. A package-clustering pass keeps same-package classifiers contiguous so frames stay clean rectangles.
+- **Mermaid member forms**: tilde-generics `List~int~` → `List<int>` (nested + on class names), single-line `Class : +member` / `Class : <<interface>>`, member classifiers `*` (abstract) / `$` (static), and space-return-type `getId() String`. A lone leading `~` stays the package-visibility glyph.
+- **Single-line class bodies** (`class Foo { +a +b }`) now parse correctly (depth-aware member splitter).
+
+### Registered / docs / tests
+
+- Registered across `DiagramType`, `src/core/api.ts`, `src/index.ts`, `src/ai/registry.ts`, `src/ai/profiles.ts`, and `SYNTAX_KEYS`. Theme tokens (incl. package-frame tints) in `src/core/theme.ts`. Tests in `tests/umlclass/`. Docs: `website/content/docs/umlclass.mdx`; examples: `umlclass-shape-hierarchy.mdx`, `umlclass-order-model.mdx`, `umlclass-payment-strategy.mdx`, `umlclass-namespaces.mdx`, `umlclass-generics-mermaid.mdx`.
+
+---
+
 ## [0.6.3] — 2026-05-29
 
 ### Changed — graceful degradation for the highest-failure industrial diagrams (`SLD`, `P&ID`, `logic gate`)

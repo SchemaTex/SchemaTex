@@ -1,0 +1,39 @@
+---
+title: Generics and Mermaid-compatible syntax
+description: A generic repository written in Mermaid classDiagram shorthand — tilde-generics, single-line members, and member classifiers — all rendered with standard-correct adornments, so a Mermaid snippet migrates in one line.
+diagram: umlclass
+standard: OMG UML 2.5.1 §9–§11
+industry: [software]
+persona: For the developer migrating from Mermaid
+complexity: 2
+tags: [umlclass, uml, mermaid, generics, interface, realization]
+featured: false
+relatedLink:
+  label: UML class diagram syntax
+  href: /docs/umlclass
+status: published
+dsl: |
+  classDiagram
+  class Repository~T~ {
+    +findAll() List~T~
+    +findById(id : ID) Optional~T~
+    +cache : Map~String,List~int~~
+    +count$
+    +flush()*
+  }
+  class CrudService
+  CrudService : <<service>>
+  CrudService : +repo : Repository~User~
+  CrudService : +save(e : User) User
+  Repository~T~ <|.. CrudService
+---
+
+## What this shows
+
+The same diagram a developer would paste from a Mermaid `classDiagram`, rendered with Schematex's standard-correct adornments and layered layout.
+
+**Tilde-generics** convert to angle brackets: `List~T~` → `List<T>`, and they nest — `Map~String,List~int~~` → `Map<String,List<int>>`. The generic also works on the class name itself (`class Repository~T~` → `Repository<T>`).
+
+**Single-line members** append to a class: `CrudService : +repo : Repository~User~` adds an attribute, and `CrudService : <<service>>` sets the stereotype — no `{ … }` block required.
+
+**Member classifiers** are the Mermaid suffixes: `flush()*` marks an abstract operation (rendered italic) and `count$` a static member (rendered underlined). Return types may be space-separated (`findAll() List~T~`) the way Mermaid writes them. A lone leading `~` is still the package-visibility glyph, so the two never collide.

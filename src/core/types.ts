@@ -71,7 +71,9 @@ export type DiagramType =
   // Concurrency / discrete-event formalism
   | "petri"     // Petri net (place/transition net) — Murata 1989 / ISO-IEC 15909 (34-PETRINET-STANDARD)
   // Network / infrastructure topology
-  | "network";  // Network topology — Cisco-convention icons + hierarchical/spine-leaf layout (35-NETWORK-STANDARD)
+  | "network"   // Network topology — Cisco-convention icons + hierarchical/spine-leaf layout (35-NETWORK-STANDARD)
+  // Structural UML (sister to behavioral §21 state, §29 usecase, §33 sequence)
+  | "umlclass"; // UML 2.5.1 §9–§11 class diagram — classifiers + 6 relationships (36-UMLCLASS-STANDARD)
 
 export type GenogramMode = "medical" | "heritage";
 
