@@ -16,6 +16,10 @@
 </p>
 
 <p align="center">
+  <strong>English</strong> · <a href="./README.zh-CN.md">简体中文</a>
+</p>
+
+<p align="center">
   <a href="https://www.npmjs.com/package/schematex"><img src="https://img.shields.io/npm/v/schematex.svg?color=cb3837&label=npm" alt="npm"></a>
   <a href="https://bundlephobia.com/package/schematex"><img src="https://img.shields.io/bundlephobia/minzip/schematex?label=gzip" alt="bundle size"></a>
   <img src="https://img.shields.io/badge/deps-0-brightgreen" alt="zero deps">
@@ -29,17 +33,21 @@
 
 ---
 
-**Schematex** is the open-source rendering engine for the diagrams professionals actually use — medical, electrical, legal, and analytical. 33 diagram families across ten domains:
+**Schematex** is the open-source rendering engine for the diagrams professionals actually use — medical, electrical, legal, and analytical. **36 diagram families** spanning medicine, engineering, law, and analysis:
 
 - 👪 **Relationships** — genograms, ecomaps, pedigrees, sociograms, phylogenetic trees
 - ⚡ **Electrical & Industrial** — ladder logic, single-line diagrams, circuit schematics, logic gates, timing, block diagrams, **FBD**, **SFC**, breadboard, **P&ID** (ISA-5.1)
-- 🏢 **Corporate & Legal** — entity structures, cap tables
-- 🐟 **Causality & Analysis** — fishbone / Ishikawa, decision trees (Howard-Raiffa EV · CART/sklearn · taxonomy)
-- 🔄 **Behavior modeling** — UML 2.5 / Harel **state diagrams** (Mermaid-compatible superset), **BPMN 2.0** (OMG), **use case diagrams** (UML 2.5.1 §18), **sequence diagrams** (UML 2.5.1 §17 — all 12 combined fragments + `ref`)
-- 🗄️ **Data modeling** — ERD crow's-foot notation
+- 🔄 **Behavior & process** — UML 2.5 / Harel **state diagrams** (Mermaid-compatible superset), **BPMN 2.0** (OMG), **use case diagrams** (UML 2.5.1 §18), **sequence diagrams** (UML 2.5.1 §17 — all 12 combined fragments + `ref`)
+- 🧩 **Software & data modeling** — **UML class diagrams** (UML 2.5.1 §9–§11, namespaces + 6 relationships), **ERD** crow's-foot notation
+- 🏢 **Corporate & Legal** — entity structures, cap tables, org charts
+- 🐟 **Causality & Analysis** — fishbone / Ishikawa, decision trees (Howard-Raiffa EV · CART/sklearn · taxonomy), Venn / Euler
+- 🛡️ **Risk & Reliability** — **fault trees** (NUREG-0492 / IEC 61025) that *compute* MOCUS minimal cut sets + P(top), **bowtie** barrier-based risk (CCPS / Energy Institute 2018)
 - 🗓️ **Project management** — **PERT / CPM** networks (PMBOK 7) that *compute* the schedule: ES/EF/LS/LF, slack, critical path, three-point estimation, swimlanes, time-scaled layout
 - 🖧 **Network & Infrastructure** — **network topology** diagrams (Cisco-convention icons) with device/link/port integrity, IP-CCTV camera systems, three-tier campus, spine-leaf fabric, subnets & VLANs
+- ◉ **Concurrency** — **Petri nets** (Murata 1989 / ISO-IEC 15909) that *compute* enablement and fire token sequences
+- 🔬 **Research** — **PRISMA 2020** systematic-review flow diagrams
 - 📅 **Timelines** — proportional / equidistant / log axis · swimlane · gantt · lollipop · BC dates · geological Ma scale
+- 🧠 **Knowledge & strategy** — mindmaps, 2×2 / N×M matrices, flowcharts
 
 Mermaid draws generic flowcharts. Schematex draws the diagrams doctors, engineers, and lawyers actually use — a genogram a genetic counselor accepts clinically, ladder logic that maps 1:1 to IEC 61131-3, a cap table that survives a Series A review.
 
@@ -74,7 +82,7 @@ import { render } from 'schematex/genogram';
 
 ## Gallery
 
-31 diagram types, one unified pipeline. **Try any of these live at [schematex.dev/playground](https://schematex.dev/playground).**
+All 36 diagram types share one unified pipeline. A selection is shown below — **try any of them live at [schematex.dev/playground](https://schematex.dev/playground).**
 
 ### 👪 Genogram — *McGoldrick family-systems standard*
 
@@ -575,6 +583,93 @@ network "Acme HQ — CCTV"
 ![CCTV camera network topology](examples/network/cctv-camera-network.svg)
 
 [Network topology syntax →](https://schematex.dev/docs/network)
+
+---
+
+### 📐 UML class diagram — *UML 2.5.1 §9–§11*
+
+Classifiers (class / interface / enum / datatype / primitive), all six relationship kinds with standard-correct adornments, and a **generalization-driven layered layout** where parents float to the top and connectors never cross a box. Namespaces render as nested containment frames. Accepts the Mermaid `classDiagram` glyphs for one-line migration.
+
+```
+umlclass
+title: "Shape hierarchy"
+
+«interface» Shape {
+  + area() : double
+  + perimeter() : double
+}
+
+abstract class AbstractShape {
+  # name : String
+  + area() : double {abstract}
+  + perimeter() : double {abstract}
+  + describe() : String
+}
+
+class Circle {
+  + radius : double
+  + area() : double
+}
+
+class Square {
+  + side : double
+  + area() : double
+}
+
+Shape         <|.. AbstractShape
+AbstractShape <|-- Circle
+AbstractShape <|-- Square
+```
+
+![UML class shape hierarchy](examples/umlclass/shape-hierarchy.svg)
+
+[UML class syntax →](https://schematex.dev/docs/umlclass)
+
+---
+
+### 🛡️ Fault tree — *NUREG-0492 / IEC 61025 · MOCUS*
+
+Reliability fault trees where the engine **computes the answer**: it runs MOCUS to enumerate the minimal cut sets (red boxes), flags single points of failure, and computes the top-event probability. AND domes, OR/XOR shields, k-of-n voting, INHIBIT, PAND.
+
+```
+faulttree "Both pumps fail"
+  analysis: cutsets, probability
+  top T "Both redundant pumps fail" = AND(PA, PB)
+  basic PA "Pump A fails" p: 0.01
+  basic PB "Pump B fails" p: 0.01
+```
+
+![Redundant pump fault tree](examples/faulttree/pump-redundancy.svg)
+
+[Fault tree syntax →](https://schematex.dev/docs/faulttree)
+
+---
+
+### 🎀 Bowtie — *CCPS / Energy Institute 2018 barrier model*
+
+Barrier-based risk management for one major-accident scenario: threats fan in through preventative-barrier chains (left), consequences fan out through mitigative chains (right), around a central top-event knot. **Correct by construction** — a threat or consequence drawn with no barrier is rejected, not silently shown.
+
+```
+bowtie "LPG storage — loss of containment"
+hazard "LPG stored under pressure"
+topevent "Loss of containment"
+threat "Corrosion of vessel wall"
+  prevent "Corrosion-resistant coating"
+  prevent "UT thickness inspection"
+threat "Overpressure during filling"
+  prevent "High-pressure trip (SIL 2)"
+  prevent "Pressure relief valve"
+consequence "Jet fire"
+  mitigate "Gas detection + ESD"
+  mitigate "Deluge / water spray"
+consequence "Vapour cloud explosion"
+  mitigate "Ignition-source control (ATEX)"
+  mitigate "Blast-resistant control room"
+```
+
+![LPG loss-of-containment bowtie](examples/bowtie/lpg-loss-of-containment.svg)
+
+[Bowtie syntax →](https://schematex.dev/docs/bowtie)
 
 ## Why SchemaTex?
 
