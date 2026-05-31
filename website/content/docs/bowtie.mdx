@@ -1,0 +1,151 @@
+---
+title: Bowtie Risk Diagram
+---
+
+## About bowtie diagrams
+
+A **bowtie** is the most recognisable picture in barrier-based risk management: a central **top event** (the moment control of a hazard is lost) with **threats** fanning in from the left through chains of **preventative barriers**, and **consequences** fanning out to the right through chains of **mitigative barriers** — the whole thing shaped like a bow tie. It answers, for one hazard, the two questions a regulator or board actually asks: *what could make this go wrong, and what stops it?* (left), and *if it does go wrong, what happens, and what limits the damage?* (right). Mandated across oil & gas, chemical processing, aviation ([ICAO Doc 9859](https://www.icao.int/) SMS), rail, mining, and healthcare. Codified by **[CCPS / Energy Institute 2018](https://www.aiche.org/ccps)** (*Bow Ties in Risk Management*) and named as a technique by **IEC 31010:2019** §B.4.6.
+
+Schematex's edge here is **not** computation (that is `faulttree`'s and `pert`'s story) — a basic bowtie carries no probabilities. It is two things: a **rigid, correct-by-construction symmetric layout** that no general-purpose box-and-arrow tool produces, and **structural validation of the CCPS/EI barrier rule set** — every threat must reach the top event through ≥ 1 barrier, every consequence must hang off it through ≥ 1 barrier, and every escalation factor must attach to a specific named barrier. A threat with no barrier is *rejected*, not silently drawn.
+
+<Playground initial={`bowtie "LPG storage — loss of containment"
+hazard "LPG stored under pressure"
+topevent "Loss of containment"
+
+threat "Corrosion of vessel wall"
+  prevent "Corrosion-resistant coating"
+  prevent "UT thickness inspection"
+    escalation "Inspection interval too long"
+      barrier "Risk-based inspection scheme"
+
+threat "Overpressure during filling"
+  prevent "High-pressure trip (SIL 2)"
+  prevent "Pressure relief valve"
+
+consequence "Jet fire"
+  mitigate "Gas detection + ESD"
+  mitigate "Deluge / water spray"
+
+consequence "Toxic exposure"
+  mitigate "Personal gas monitors"
+  mitigate "Emergency evacuation plan"`} height={560} />
+
+---
+
+## 1. Your first diagram
+
+Every document starts with the `bowtie` keyword, an optional title, then the hazard, the top event, and the two wings:
+
+```
+bowtie
+topevent "Loss of containment"
+threat "Corrosion"
+  prevent "Inspection programme"
+consequence "Release to atmosphere"
+  mitigate "Gas detection + ESD"
+```
+
+`topevent` declares the single knot at the centre (mandatory, exactly one). Each `threat` starts a left-wing line; each `consequence` ends a right-wing line. A barrier under a `threat` is **preventative** (`prevent`); under a `consequence` it is **mitigative** (`mitigate`). The diagram is laid out symmetrically about the knot — threats fan in from the left, consequences fan out to the right.
+
+The DSL is **indentation-structured** and mirrors the CCPS 7-step build methodology: identify the hazard → the top event → the threats → the consequences → the preventative barriers → the mitigative barriers → the escalation factors.
+
+Header directives (any order):
+
+- `layout: symmetric | compact` — band model (default `symmetric`).
+- `legend: on | off | bottom | top` — the auto-derived colour legend (default on).
+
+---
+
+## 2. Hazard and top event
+
+```
+hazard "Working at height"
+topevent "Person falls from height"
+```
+
+- **`hazard`** — the operation or material with the potential to cause harm: the *context* the bowtie is about (e.g. "Working at height", "Hydrocarbon under pressure"). Optional; renders as a header box above the knot with a tie-line down to it. At most one.
+- **`topevent`** — the moment control of the hazard is **lost** (e.g. "Loss of containment", "Person falls from height"). The knot of the bowtie, drawn as a green circle. **Mandatory, exactly one.**
+
+A hazard is a *thing/activity*, not a failure; the top event is the precise moment of *loss of control* — not a cause, and not yet a consequence.
+
+---
+
+## 3. Threats and consequences
+
+```
+threat "Guardrail removed for access"
+  prevent "Permit-to-work system"
+
+consequence "Fatality"
+  mitigate "Fall-arrest harness + lanyard"
+```
+
+- A **threat** is a credible cause that, *on its own*, could trigger the top event. Each threat is the start of one left-wing line, drawn as an orange box on the left edge.
+- A **consequence** is a credible outcome *of the top event* (not of the threat), drawn as a red box on the right edge.
+
+Threats and consequences may be declared in any interleaved order — the parser groups all left-wing blocks and all right-wing blocks regardless of sequence. A bowtie needs **at least one of each**: a one-wing diagram is a fault tree (see `faulttree`) or an event tree, not a bowtie.
+
+---
+
+## 4. Barriers (the controls in between)
+
+```
+threat "Guardrail removed for access"
+  prevent "Permit-to-work system"
+  prevent "Temporary edge protection"
+  prevent "Spotter / banksman"
+```
+
+A **barrier** is a control that interrupts the threat → top-event path (preventative) or reduces the consequence after the top event (mitigative). Each is a grey box *on the line*. Chains are free length (1..n) — the wing simply extends.
+
+**Barrier order is declaration order**: the first declared is the **outermost** (closest to the threat/consequence, the first line of defence); the last declared is the **innermost** (closest to the knot). This matches the left-to-right reading of a real bowtie. Each barrier carries `data-order` (0 = outermost) and `data-side` (`prevent` / `mitigate`) for downstream interactivity.
+
+When chains differ in length, barriers are **centre-anchored**: the innermost barriers align in a neat column near the knot, and the threat/consequence boxes are ragged by chain depth — reading as defence-in-depth.
+
+---
+
+## 5. Escalation factors
+
+```
+threat "Corrosion"
+  prevent "UT thickness inspection"
+    escalation "Inspection interval too long"
+      barrier "Risk-based inspection scheme"
+```
+
+An **escalation factor** (or degradation factor) is a condition that *degrades a specific barrier's effectiveness* — e.g. "Edge protection not inspected", "Operator fatigue". It attaches to **one** barrier (not to the line) and drops vertically below it as an amber box, joined by a muted "degrades" connector.
+
+An **escalation-factor barrier** is a control placed on the escalation factor itself — it protects the barrier from being degraded (e.g. a pre-use inspection regime). It nests one level deeper, under the escalation factor, and renders as a grey box below it.
+
+Indentation binds the nesting: `prevent`/`mitigate` at 2 spaces, `escalation` at 4, `barrier` at 6.
+
+---
+
+## 6. Correct by construction (the barrier rule set)
+
+Before it draws a single shape, the engine validates the structural half of the CCPS/EI barrier rule set and **refuses to render** on failure — exactly as `prisma` refuses missing counts:
+
+- **Exactly one top event** — zero or several is an error.
+- **Every threat has ≥ 1 preventative barrier** — a bare threat is a Swiss-cheese cartoon, not a bowtie.
+- **Every consequence has ≥ 1 mitigative barrier** — the mirror rule.
+- **Every escalation factor is attached to a barrier** — it cannot float on a line or on the top event.
+- **At least one threat and one consequence** — a one-wing diagram is an FTA or an ETA.
+
+Messages name the offending element and the rule in plain English, e.g. *"Threat 'Corrosion' has no preventative barrier — every threat must reach the top event through at least one barrier (CCPS/EI barrier rule). Add a `prevent` line under it."* This is what separates a real bowtie from a doodle. The engine does **not** judge whether a barrier is truly *effective* or *independent* — that is the analyst's qualitative judgement.
+
+---
+
+## 7. Bowtie vs fault tree
+
+A fully-developed bowtie *is* a fault tree glued to an event tree at the top event: the left wing read backwards is the fault tree whose top event is the bowtie's knot, and the right wing is the event tree that propagates it into consequences. Schematex keeps them as two engines because their use differs:
+
+- **`bowtie`** is qualitative and symmetric — the barrier inventory and the at-a-glance defence-in-depth story; no probability arithmetic.
+- **`faulttree`** is quantitative and Boolean — AND/OR gates, basic-event probabilities, minimal cut sets, a probability rollup.
+
+Where you want the gate-level detail behind a single threat, draw a separate `faulttree`.
+
+---
+
+## 8. Theming
+
+`default` uses the recognised BowTieXP / bowtiemaster palette — **orange threats** (left), **grey barriers** on the line, a **green top-event disc** (centre knot), **red consequences** (right), **amber escalation factors** dropping below — mapped onto Schematex's semantic slots so it stays coherent with `prisma` / `pert` / `petri`. `monochrome` reproduces the regulator-print black-and-white look, where element distinction rides on shape/border + position (escalation factors get a dashed border, the knot a doubled ring) rather than colour. `dark` follows Catppuccin Mocha. All strokes/fills come from `BowtieTokens`; every element carries `data-*` (`data-role`, `data-side`, `data-line`, `data-order`, `data-barrier`) so the structure is inspectable downstream.

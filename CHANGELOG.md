@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.6.6] — 2026-05-30
+
+### Added — Bowtie risk diagram engine (`bowtie`)
+
+- **New `bowtie` engine** (`src/diagrams/bowtie/`) for CCPS / Energy Institute 2018 barrier-based risk management (IEC 31010 §B.4.6, ICAO Doc 9859) — the sibling of `faulttree` in the **Risk & Reliability** cluster. A central **top event** (the knot) with **threats** fanning in from the left through chains of **preventative barriers** and **consequences** fanning out to the right through chains of **mitigative barriers**, shaped like a bow tie. Spec: `38-BOWTIE-STANDARD.md`.
+- **The differentiator is not computation** (bowtie is qualitative — no probability rollup) but a **rigid, correct-by-construction symmetric layout** that no general-purpose box-and-arrow tool produces, plus **structural validation of the CCPS/EI barrier rule set**: every threat must reach the top event through ≥ 1 barrier, every consequence must hang off it through ≥ 1 barrier, every escalation factor must attach to a named barrier — violations are *rejected* with plain-English errors, not silently drawn.
+- **Full element vocabulary**: `hazard` header, `topevent` (green-disc knot), `threat` (orange), `prevent`/`mitigate` barriers (grey, chained, declaration-order = outer→inner), `consequence` (red), `escalation` factor (amber, drops below the barrier it degrades), escalation-factor `barrier`. Indentation-structured DSL mirroring the CCPS 7-step build; CJK quotes accepted.
+- **Bespoke symmetric band model** (not the flowchart DAG engine): wings centred independently about the knot, centre-anchored barrier columns, escalation factors dropping into the whitespace below without breaking line symmetry. Theme: `BowtieTokens` (BowTieXP/bowtiemaster colour scheme in `default`, shape/border-based `monochrome` for regulator print, Catppuccin `dark`).
+
+### Registered / docs / tests
+
+- Registered across `DiagramType`, `src/core/api.ts`, `src/index.ts`, `src/ai/registry.ts`, `src/ai/profiles.ts`, `DIAGRAM_SINCE`, and `SYNTAX_KEYS`. Theme tokens in `src/core/theme.ts`. Icon `assets/icons/bowtie.svg`. Tests in `tests/bowtie/` (TC-1…TC-5: minimal / symmetric fan / defence-in-depth / escalation+EF-barrier / validation failures + CJK + determinism). Docs: `website/content/docs/bowtie.mdx`; examples: `bowtie-lpg-loss-of-containment.mdx`, `bowtie-working-at-height.mdx`, `bowtie-runway-excursion.mdx`, `bowtie-hot-work-fire.mdx`.
+
+---
+
 ## [0.6.5] — 2026-05-30
 
 ### Added — Fault Tree Analysis engine (`faulttree`)

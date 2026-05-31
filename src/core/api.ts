@@ -42,6 +42,7 @@ import { petri } from "../diagrams/petri";
 import { network } from "../diagrams/network";
 import { umlclass } from "../diagrams/umlclass";
 import { faulttree } from "../diagrams/faulttree";
+import { bowtie } from "../diagrams/bowtie";
 
 export interface SchematexConfig {
   type?:
@@ -79,7 +80,8 @@ export interface SchematexConfig {
     | "petri"
     | "network"
     | "umlclass"
-    | "faulttree";
+    | "faulttree"
+    | "bowtie";
   width?: number;
   height?: number;
   padding?: number;
@@ -128,6 +130,7 @@ const plugins: DiagramPlugin[] = [
   network,
   umlclass,
   faulttree,
+  bowtie,
 ];
 
 function detectPlugin(text: string, config?: SchematexConfig): DiagramPlugin {
@@ -139,7 +142,7 @@ function detectPlugin(text: string, config?: SchematexConfig): DiagramPlugin {
     if (plugin.detect(text)) return plugin;
   }
   throw new Error(
-    "Cannot detect diagram type. Start your text with 'genogram', 'ecomap', 'pedigree', 'phylo', 'sociogram', 'timing', 'logic', 'circuit', 'blockdiagram', 'ladder', 'sld', 'entity-structure', 'fishbone', 'venn', 'flowchart', 'mindmap', 'matrix', 'orgchart', 'state', 'pid', 'erd', 'breadboard', 'bpmn', 'fbd', 'sfc', 'prisma', 'usecase', 'pert', 'sequence', 'petri', 'network', or 'umlclass'."
+    "Cannot detect diagram type. Start your text with 'genogram', 'ecomap', 'pedigree', 'phylo', 'sociogram', 'timing', 'logic', 'circuit', 'blockdiagram', 'ladder', 'sld', 'entity-structure', 'fishbone', 'venn', 'flowchart', 'mindmap', 'matrix', 'orgchart', 'state', 'pid', 'erd', 'breadboard', 'bpmn', 'fbd', 'sfc', 'prisma', 'usecase', 'pert', 'sequence', 'petri', 'network', 'umlclass', 'faulttree', or 'bowtie'."
   );
 }
 

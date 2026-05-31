@@ -59,6 +59,7 @@ const SYNTAX_KEYS = [
   "network",
   "umlclass",
   "faulttree",
+  "bowtie",
 ];
 
 // ─── Minimal YAML-frontmatter parser ─────────────────────────────

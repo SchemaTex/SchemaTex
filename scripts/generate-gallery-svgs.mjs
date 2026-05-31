@@ -429,6 +429,72 @@ Gateway --> Repository  : delegates`,
   house HEATER "Heater energised" state: 1
   undeveloped EXT "External fire (not modelled)"`,
   },
+  {
+    file: 'examples/bowtie/lpg-loss-of-containment.svg',
+    text: `bowtie "LPG storage — loss of containment"
+hazard "LPG stored under pressure"
+topevent "Loss of containment"
+threat "Corrosion of vessel wall"
+  prevent "Corrosion-resistant coating"
+  prevent "UT thickness inspection"
+threat "Overpressure during filling"
+  prevent "High-pressure trip (SIL 2)"
+  prevent "Pressure relief valve"
+threat "Mechanical impact (vehicle)"
+  prevent "Bollards / vehicle barriers"
+  prevent "Site speed limit + banksman"
+consequence "Jet fire"
+  mitigate "Gas detection + ESD"
+  mitigate "Deluge / water spray"
+consequence "Vapour cloud explosion"
+  mitigate "Ignition-source control (ATEX)"
+  mitigate "Blast-resistant control room"
+consequence "Toxic / asphyxiation exposure"
+  mitigate "Personal gas monitors"
+  mitigate "Emergency evacuation plan"`,
+  },
+  {
+    file: 'examples/bowtie/working-at-height.svg',
+    text: `bowtie "Working at height"
+hazard "Working at height"
+topevent "Person falls from height"
+threat "Guardrail removed for access"
+  prevent "Permit-to-work system"
+  prevent "Temporary edge protection"
+    escalation "Edge protection not inspected"
+      barrier "Pre-use inspection regime"
+  prevent "Spotter / banksman"
+threat "Fragile roof surface"
+  prevent "Crawling boards + signage"
+  prevent "Roof-access risk assessment"
+consequence "Fatality"
+  mitigate "Fall-arrest harness + lanyard"
+  mitigate "Rescue plan + first aid"
+consequence "Serious injury"
+  mitigate "Safety netting below"
+  mitigate "On-site medic + evacuation"`,
+  },
+  {
+    file: 'examples/bowtie/hot-work-fire.svg',
+    text: `bowtie "Hot work — fire bowtie"
+hazard "Hot work near flammable materials"
+topevent "Ignition of flammable atmosphere"
+threat "Sparks / hot slag"
+  prevent "Hot-work permit"
+  prevent "Fire watch"
+    escalation "Fire watch leaves post early"
+      barrier "Post-work monitoring period (60 min)"
+threat "Static discharge"
+  prevent "Bonding + grounding"
+  prevent "Antistatic PPE"
+consequence "Flash fire"
+  mitigate "Fixed fire suppression"
+    escalation "Suppression isolated for maintenance"
+      barrier "Impairment register + MoC"
+consequence "Asset loss"
+  mitigate "Fire-rated separation"
+  mitigate "Business-continuity plan"`,
+  },
 ];
 
 for (const { file, text } of examples) {

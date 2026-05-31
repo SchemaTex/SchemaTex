@@ -771,6 +771,104 @@ export function resolveReliabilityTheme(name: string): ResolvedTheme<Reliability
   return { ...BASE_THEMES[themeName], ...RELIABILITY_TOKENS[themeName] };
 }
 
+// ─── Bowtie Tokens Per Theme ───────────────────────────────
+// 38-BOWTIE-STANDARD §6. Coloured-house family like prisma/pert/petri, but the
+// field has a strongly-recognised palette (BowTieXP / bowtiemaster.com): orange
+// threats (left), red consequences (right), green top-event disc (centre knot),
+// grey barriers on the line, amber escalation factors dropping below. In
+// monochrome the element distinction rides on shape/border + position (escalation
+// dashed, knot doubled-ring) since regulator submissions are often black-and-white.
+
+export interface BowtieTokens {
+  hazardFill: string;
+  hazardStroke: string;
+  topEventFill: string;
+  topEventStroke: string;
+  threatFill: string;
+  threatStroke: string;
+  barrierFill: string;
+  barrierStroke: string;
+  consequenceFill: string;
+  consequenceStroke: string;
+  escalationFill: string;
+  escalationStroke: string;
+  efBarrierFill: string;
+  lineStroke: string;
+  escalationLineStroke: string;
+  labelText: string;
+}
+
+const DEFAULT_BOWTIE: BowtieTokens = {
+  hazardFill: "#fef9c3",       // pale yellow hazard header (conventional)
+  hazardStroke: "#ca8a04",
+  topEventFill: "#dcfce7",     // green disc knot (bowtiemaster)
+  topEventStroke: "#16a34a",
+  threatFill: "#fed7aa",       // orange threats (de-facto)
+  threatStroke: "#ea580c",
+  barrierFill: "#e5e7eb",      // grey barriers (de-facto)
+  barrierStroke: "#6b7280",
+  consequenceFill: "#fecaca",  // red consequences (de-facto)
+  consequenceStroke: "#dc2626",
+  escalationFill: "#fde68a",   // amber escalation factors (de-facto)
+  escalationStroke: "#d97706",
+  efBarrierFill: "#e5e7eb",
+  lineStroke: "#334155",
+  escalationLineStroke: "#9ca3af",
+  labelText: "#0f172a",
+};
+
+// Regulator-print: colour can't carry meaning, so element distinction rides on
+// shape/border + position (escalation dashed border, knot doubled ring).
+const MONOCHROME_BOWTIE: BowtieTokens = {
+  hazardFill: "#ffffff",
+  hazardStroke: "#000000",
+  topEventFill: "#ffffff",
+  topEventStroke: "#000000",
+  threatFill: "#ffffff",
+  threatStroke: "#000000",
+  barrierFill: "#f2f2f2",
+  barrierStroke: "#000000",
+  consequenceFill: "#ffffff",
+  consequenceStroke: "#000000",
+  escalationFill: "#ffffff",
+  escalationStroke: "#000000",
+  efBarrierFill: "#f2f2f2",
+  lineStroke: "#000000",
+  escalationLineStroke: "#000000",
+  labelText: "#000000",
+};
+
+// Catppuccin Mocha, mirroring DARK_THEME.
+const DARK_BOWTIE: BowtieTokens = {
+  hazardFill: "#45413a",
+  hazardStroke: "#f9e2af",
+  topEventFill: "#a6e3a1",
+  topEventStroke: "#40a02b",
+  threatFill: "#fab387",
+  threatStroke: "#e8a06a",
+  barrierFill: "#9399b2",      // light-grey surface so the single dark label reads
+  barrierStroke: "#6c7086",
+  consequenceFill: "#f38ba8",
+  consequenceStroke: "#e06c85",
+  escalationFill: "#f9e2af",
+  escalationStroke: "#d8bd84",
+  efBarrierFill: "#9399b2",
+  lineStroke: "#cdd6f4",
+  escalationLineStroke: "#7f849c",
+  labelText: "#1e1e2e",
+};
+
+export const BOWTIE_TOKENS: Record<ThemeName, BowtieTokens> = {
+  default: DEFAULT_BOWTIE,
+  monochrome: MONOCHROME_BOWTIE,
+  dark: DARK_BOWTIE,
+};
+
+export function resolveBowtieTheme(name: string): ResolvedTheme<BowtieTokens> {
+  const themeName = (name in BASE_THEMES ? name : "default") as ThemeName;
+  return { ...BASE_THEMES[themeName], ...BOWTIE_TOKENS[themeName] };
+}
+
 // ─── Network Tokens Per Theme ──────────────────────────────
 // 35-NETWORK-STANDARD §6. Coloured-house family (not forced-mono industrial):
 // device bodies in "network blue", link type by colour in default / line-style

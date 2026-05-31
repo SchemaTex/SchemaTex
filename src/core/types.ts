@@ -75,7 +75,8 @@ export type DiagramType =
   // Structural UML (sister to behavioral §21 state, §29 usecase, §33 sequence)
   | "umlclass" // UML 2.5.1 §9–§11 class diagram — classifiers + 6 relationships (36-UMLCLASS-STANDARD)
   // Risk & reliability engineering
-  | "faulttree"; // Fault Tree Analysis — NUREG-0492 / IEC 61025, MOCUS cut sets + P(top) (37-FAULT-TREE-STANDARD)
+  | "faulttree" // Fault Tree Analysis — NUREG-0492 / IEC 61025, MOCUS cut sets + P(top) (37-FAULT-TREE-STANDARD)
+  | "bowtie"; // Bowtie risk diagram — CCPS/EI 2018 barrier-based risk mgmt, symmetric threat→knot→consequence wings (38-BOWTIE-STANDARD)
 
 export type GenogramMode = "medical" | "heritage";
 

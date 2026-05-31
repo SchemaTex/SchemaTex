@@ -1,0 +1,40 @@
+---
+title: Hot work — ignition of flammable atmosphere
+description: A bowtie with escalation factors on both wings — a preventative and a mitigative barrier are each degraded by a named condition with its own escalation-factor barrier, exercising the full element vocabulary.
+diagram: bowtie
+standard: CCPS / Energy Institute 2018
+industry: [engineering, energy]
+persona: For the permit issuer assessing hot-work controls
+complexity: 3
+tags: [bowtie, risk, escalation-factor, hot-work, fire, barrier]
+featured: false
+relatedLink:
+  label: Bowtie syntax
+  href: /docs/bowtie
+status: published
+dsl: |
+  bowtie "Hot work — fire bowtie"
+  hazard "Hot work near flammable materials"
+  topevent "Ignition of flammable atmosphere"
+  threat "Sparks / hot slag"
+    prevent "Hot-work permit"
+    prevent "Fire watch"
+      escalation "Fire watch leaves post early"
+        barrier "Post-work monitoring period (60 min)"
+  threat "Static discharge"
+    prevent "Bonding + grounding"
+    prevent "Antistatic PPE"
+  consequence "Flash fire"
+    mitigate "Fixed fire suppression"
+      escalation "Suppression isolated for maintenance"
+        barrier "Impairment register + MoC"
+  consequence "Asset loss"
+    mitigate "Fire-rated separation"
+    mitigate "Business-continuity plan"
+---
+
+## What this shows
+
+The complete element vocabulary, with **escalation factors on both wings** — because a mitigative barrier can be degraded just as a preventative one can. On the left, the "Fire watch" barrier is defeated if the watch leaves early, controlled by a mandatory post-work monitoring period. On the right, the "Fixed fire suppression" barrier is defeated when isolated for maintenance, controlled by an impairment register and management-of-change.
+
+The left wing is taller than the right (its escalation drops deeper), so it sets the diagram height while the right wing stays centred about the knot. Each escalation hangs into the whitespace between bands on a muted *degrades* connector, never colliding with the next line.

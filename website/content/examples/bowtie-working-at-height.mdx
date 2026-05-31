@@ -1,0 +1,40 @@
+---
+title: Working at height — fall from height
+description: A defence-in-depth bowtie with an escalation factor — a preventative barrier is degraded by a named condition, which is itself controlled by an escalation-factor barrier dropping below the line.
+diagram: bowtie
+standard: CCPS / Energy Institute 2018
+industry: [engineering, construction]
+persona: For the safety officer documenting a working-at-height permit
+complexity: 2
+tags: [bowtie, risk, escalation-factor, defence-in-depth, construction, safety]
+featured: true
+relatedLink:
+  label: Bowtie syntax
+  href: /docs/bowtie
+status: published
+dsl: |
+  bowtie "Working at height"
+  hazard "Working at height"
+  topevent "Person falls from height"
+  threat "Guardrail removed for access"
+    prevent "Permit-to-work system"
+    prevent "Temporary edge protection"
+      escalation "Edge protection not inspected"
+        barrier "Pre-use inspection regime"
+    prevent "Spotter / banksman"
+  threat "Fragile roof surface"
+    prevent "Crawling boards + signage"
+    prevent "Roof-access risk assessment"
+  consequence "Fatality"
+    mitigate "Fall-arrest harness + lanyard"
+    mitigate "Rescue plan + first aid"
+  consequence "Serious injury"
+    mitigate "Safety netting below"
+    mitigate "On-site medic + evacuation"
+---
+
+## What this shows
+
+Two threats, two consequences, multi-barrier chains — and an **escalation factor**, the element that makes a bowtie an honest defence-in-depth model rather than a wish list. The "Temporary edge protection" barrier is degraded by a specific named condition ("Edge protection not inspected", amber), which drops vertically below the barrier on a muted *degrades* connector. That escalation factor is itself controlled by an **escalation-factor barrier** ("Pre-use inspection regime") one level deeper.
+
+Reading order along each line is declaration order: the first barrier is the **outermost** (first line of defence, nearest the threat); the last is the **innermost** (nearest the knot). The escalation hangs into the whitespace below without disturbing the symmetry of the two threat lines.
