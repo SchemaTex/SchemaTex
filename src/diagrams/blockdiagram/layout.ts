@@ -308,6 +308,33 @@ export function layoutBlockDiagram(ast: BlockAST): BlockDiagramLayout {
     });
   }
 
+  // Dangling signal targets: node IDs that appear as edge targets but have no
+  // block / sum / port entry (i.e. they are the `to` of a signal declaration
+  // with no consumer). Create a minimal output-port anchor so the edge is
+  // routed and its label rendered rather than silently dropped.
+  {
+    const knownIds = new Set<string>([
+      ...ast.blocks.map((b) => b.id),
+      ...ast.sums.map((s) => s.id),
+      "in",
+      "out",
+    ]);
+    for (const id of nodeIds) {
+      if (knownIds.has(id)) continue;
+      if ((incoming.get(id)?.length ?? 0) === 0) continue;
+      const sigCol = Math.min(col.get(id) ?? maxFwdCol + 1, colX.length - 1);
+      const x = colX[sigCol] ?? (colX[colX.length - 1] ?? 0) + COL_GAP;
+      nodes.push({
+        kind: "port",
+        id,
+        label: "",   // edge label carries the signal label; blank avoids double-text
+        x,
+        y: forwardY,
+        isInput: false,
+      });
+    }
+  }
+
   // Anchor lookup
   interface Anchor {
     left: { x: number; y: number };
@@ -514,9 +541,13 @@ export function layoutBlockDiagram(ast: BlockAST): BlockDiagramLayout {
     maxBelowRow > 0
       ? FIRST_ROW_OFFSET + (maxBelowRow - 1) * ROW_GAP + 60
       : 100;
+  // `FWD_Y + 170` is a conservative floor that reserves space for feedback
+  // rows. Apply it only when at least one feedback row exists; pure forward
+  // diagrams (no loops) are allowed to be more compact.
+  const hasFeedbackRows = maxBelowRow > 0 || maxAboveRow > 0;
   const height = Math.max(
     forwardY + totalBottomSpace,
-    FWD_Y + 170,
+    hasFeedbackRows ? FWD_Y + 170 : 0,
     totalTopSpace + totalBottomSpace
   );
 

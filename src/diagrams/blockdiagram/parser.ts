@@ -239,21 +239,47 @@ export function parseBlockDiagram(text: string): BlockAST {
       const sig = signals.get(sigId)!;
       const incoming = byTarget.get(sigId) ?? [];
       const outgoing = bySource.get(sigId) ?? [];
-      // For each incoming/outgoing pair, make a merged edge
-      for (const ine of incoming) {
-        for (const oute of outgoing) {
+
+      if (incoming.length > 0 && outgoing.length > 0) {
+        // Full pass-through: merge X→sig + sig→Y into X→Y
+        for (const ine of incoming) {
+          for (const oute of outgoing) {
+            consumed.add(ine);
+            consumed.add(oute);
+            merged.push({
+              from: ine.from,
+              to: oute.to,
+              label: ine.label ?? oute.label ?? sig.label,
+              discrete: sig.discrete || ine.discrete || oute.discrete,
+            });
+          }
+        }
+      } else if (incoming.length > 0) {
+        // Dangling output signal (no consumer): keep the incoming edge but
+        // apply the signal's label so the arrowhead is annotated.
+        for (const ine of incoming) {
           consumed.add(ine);
-          consumed.add(oute);
           merged.push({
             from: ine.from,
+            to: sigId,
+            label: ine.label ?? sig.label,
+            discrete: sig.discrete || ine.discrete,
+          });
+        }
+      } else if (outgoing.length > 0) {
+        // Dangling input signal (no producer): keep the outgoing edge with label.
+        for (const oute of outgoing) {
+          consumed.add(oute);
+          merged.push({
+            from: sigId,
             to: oute.to,
-            label: ine.label ?? oute.label ?? sig.label,
-            discrete: sig.discrete || ine.discrete || oute.discrete,
+            label: oute.label ?? sig.label,
+            discrete: sig.discrete || oute.discrete,
           });
         }
       }
     }
-    // Keep edges not consumed
+    // Keep edges not consumed by any signal merge
     for (const e of connections) {
       if (!consumed.has(e)) merged.push(e);
     }
