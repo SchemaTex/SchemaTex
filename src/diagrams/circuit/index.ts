@@ -1,5 +1,6 @@
 import type { DiagramPlugin } from "../../core/types";
 import { parseCircuit } from "./parser";
+import { lintCircuit } from "./lint";
 import { renderCircuit } from "./renderer";
 
 export const circuit: DiagramPlugin = {
@@ -9,6 +10,7 @@ export const circuit: DiagramPlugin = {
     return first.startsWith("circuit");
   },
   parse: parseCircuit,
+  lint: lintCircuit,
 
   render(text: string, config): string {
     const ast = parseCircuit(text);
@@ -17,6 +19,7 @@ export const circuit: DiagramPlugin = {
 };
 
 export { parseCircuit } from "./parser";
+export { lintCircuit } from "./lint";
 export { parseNetlist } from "./netlist";
 export { renderCircuit } from "./renderer";
 export { layoutCircuit } from "./layout";

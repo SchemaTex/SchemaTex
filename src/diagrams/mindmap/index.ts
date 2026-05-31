@@ -1,5 +1,6 @@
 import type { DiagramPlugin, RenderConfig } from "../../core/types";
 import { parseMindmap } from "./parser";
+import { lintMindmap } from "./lint";
 import { renderMindmap } from "./renderer";
 
 export const mindmap: DiagramPlugin = {
@@ -18,6 +19,7 @@ export const mindmap: DiagramPlugin = {
     return false;
   },
   parse: parseMindmap,
+  lint: lintMindmap,
 
   render(text: string, config?: RenderConfig): string {
     return renderMindmap(text, {
@@ -28,5 +30,6 @@ export const mindmap: DiagramPlugin = {
 };
 
 export { parseMindmap } from "./parser";
+export { lintMindmap } from "./lint";
 export { layoutMindmap } from "./layout";
 export { renderMindmap, renderMindmapAST } from "./renderer";

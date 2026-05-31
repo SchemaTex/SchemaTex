@@ -971,6 +971,15 @@ export interface CircuitAST {
    * Populated by the netlist parser; consumed by the auto-layout engine.
    */
   pinMap?: Record<string, Record<string, string>>;
+  /**
+   * Netlist-only recoverable-input notes. Components given fewer nets than
+   * their pin count are padded with floating no-connect nets and rendered
+   * anyway (rather than throwing). Surfaced as `CIRCUIT_PIN_UNDERSPECIFIED`
+   * lint warnings (status `partial`).
+   */
+  recovered?: {
+    underspecified?: { id: string; type: string; expected: number; got: number }[];
+  };
 }
 
 // ── Block Diagram ────────────────────────────────────────────
@@ -1628,6 +1637,13 @@ export interface MindmapAST {
   themeOverride?: string;
   /** Max wrap width for labels (px). Default 240. From `%% maxLabelWidth:`. */
   maxLabelWidth: number;
+  /**
+   * Set when no explicit `# Title` central topic was found and the parser had
+   * to recover one: `"line"` = adopted the first plain text line as the center;
+   * `"placeholder"` = inserted a synthetic "Mindmap" root over orphan bullets.
+   * Surfaced as a `MINDMAP_SYNTHESIZED_ROOT` lint warning (status `partial`).
+   */
+  rootInferred?: "line" | "placeholder";
 }
 
 export interface MindmapLayoutNode {

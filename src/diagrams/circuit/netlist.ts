@@ -147,6 +147,7 @@ export function parseNetlist(
   const netByName = new Map<string, CircuitNet>();
   const pinMap: Record<string, Record<string, string>> = {};
   let autoGnd = 0;
+  const underspecified: { id: string; type: string; expected: number; got: number }[] = [];
 
   const ensureNet = (name: string): CircuitNet => {
     let n = netByName.get(name);
@@ -279,10 +280,16 @@ export function parseNetlist(
     }
 
     if (netRefs.length < pinOrder.length) {
-      throw new NetlistParseError(
-        `Component ${id} (${cType}) expects ${pinOrder.length} nets, got ${netRefs.length}`,
-        lineIdx + 1
-      );
+      // Degrade rather than blanking the whole schematic: bind the missing pins
+      // to per-component floating "no-connect" nets so the symbol still renders
+      // with its declared connections, and flag it for the lint pass. A common
+      // LLM mistake is to under-specify a multi-terminal part (e.g. a 4-pin
+      // transformer given only 2 nets).
+      const got = netRefs.length;
+      for (let k = got; k < pinOrder.length; k++) {
+        netRefs.push(`${id}_nc${k + 1}`);
+      }
+      underspecified.push({ id, type: cType, expected: pinOrder.length, got });
     }
 
     // Build pinMap entry, binding each pin to a net. Ground net aliases are
@@ -353,7 +360,7 @@ export function parseNetlist(
 
   const nets: CircuitNet[] = Array.from(netByName.values());
 
-  return {
+  const ast: CircuitAST = {
     type: "circuit",
     title,
     components,
@@ -361,4 +368,6 @@ export function parseNetlist(
     pinMap,
     mode: "netlist",
   };
+  if (underspecified.length) ast.recovered = { underspecified };
+  return ast;
 }

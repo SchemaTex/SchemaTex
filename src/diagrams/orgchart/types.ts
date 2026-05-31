@@ -69,6 +69,17 @@ export interface OrgchartAST {
   nodes: OrgchartNode[];
   edges: OrgchartEdge[];
   metadata?: Record<string, string>;
+  /**
+   * Recoverable-input notes recorded during parsing. The parser degrades
+   * instead of throwing — unparseable lines are skipped, duplicate ids dropped,
+   * and nodes referenced only by edges are synthesized — so a renderable chart
+   * is still produced. Surfaced as `partial`-status lint warnings.
+   */
+  recovered?: {
+    unparseableLines?: { line?: number; text: string }[];
+    duplicateIds?: string[];
+    impliedNodes?: string[];
+  };
 }
 
 export interface OrgchartLayoutNode {

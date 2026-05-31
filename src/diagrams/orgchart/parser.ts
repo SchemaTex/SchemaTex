@@ -221,6 +221,11 @@ export function parseOrgchart(text: string): OrgchartAST {
   // Indent stack for hierarchical parent resolution
   const indentStack: Array<{ indent: number; id: string }> = [];
 
+  // Recoverable-input notes — the parser degrades rather than throwing.
+  const unparseableLines: { line?: number; text: string }[] = [];
+  const duplicateIds: string[] = [];
+  const impliedNodes: string[] = [];
+
   for (const rl of rawLines) {
     const line = rl.text;
 
@@ -275,10 +280,14 @@ export function parseOrgchart(text: string): OrgchartAST {
     // Node line
     const parsed = parseNodeLine(line);
     if (!parsed) {
-      throw new OrgchartParseError(`Cannot parse line: ${line}`, rl.line, undefined, line);
+      // Skip-and-warn rather than blanking the whole chart on one bad line.
+      unparseableLines.push({ line: rl.line, text: line });
+      continue;
     }
     if (nodeMap.has(parsed.id)) {
-      throw new OrgchartParseError(`Duplicate node id "${parsed.id}"`, rl.line, undefined, line);
+      // Keep the first declaration; drop the redeclaration with a warning.
+      duplicateIds.push(parsed.id);
+      continue;
     }
 
     const node: OrgchartNode = {
@@ -360,21 +369,32 @@ export function parseOrgchart(text: string): OrgchartAST {
     }
   }
 
-  // Validate edges reference known nodes
+  // Synthesize nodes for ids referenced only by edges. This lets an edge-only
+  // chart (`CEO -> CTO`, Mermaid-style shorthand) render instead of throwing —
+  // the layout builds the hierarchy from report edges, so the implied nodes
+  // slot straight in. Recorded as a warning so the author can declare them.
+  const ensureNode = (id: string): void => {
+    if (nodeMap.has(id)) return;
+    const node: OrgchartNode = { id, name: id, kind: "person", matrix: [] };
+    nodes.push(node);
+    nodeMap.set(id, node);
+    impliedNodes.push(id);
+  };
   for (const e of edges) {
-    if (!nodeMap.has(e.from)) {
-      throw new OrgchartParseError(`Edge references unknown node "${e.from}"`);
-    }
-    if (!nodeMap.has(e.to)) {
-      throw new OrgchartParseError(`Edge references unknown node "${e.to}"`);
-    }
+    ensureNode(e.from);
+    ensureNode(e.to);
   }
 
   if (nodes.length === 0) {
-    throw new OrgchartParseError("Orgchart has no nodes");
+    // Nothing renderable at all (empty / header-only / all-unparseable).
+    throw new OrgchartParseError(
+      unparseableLines.length > 0
+        ? `Orgchart has no parseable nodes (${unparseableLines.length} line(s) could not be read)`
+        : "Orgchart has no nodes"
+    );
   }
 
-  return {
+  const ast: OrgchartAST = {
     type: "orgchart",
     title,
     direction,
@@ -382,4 +402,12 @@ export function parseOrgchart(text: string): OrgchartAST {
     nodes,
     edges,
   };
+  if (unparseableLines.length || duplicateIds.length || impliedNodes.length) {
+    ast.recovered = {
+      ...(unparseableLines.length ? { unparseableLines } : {}),
+      ...(duplicateIds.length ? { duplicateIds } : {}),
+      ...(impliedNodes.length ? { impliedNodes } : {}),
+    };
+  }
+  return ast;
 }

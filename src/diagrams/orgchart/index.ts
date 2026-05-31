@@ -1,5 +1,6 @@
 import type { DiagramPlugin } from "../../core/types";
 import { parseOrgchart } from "./parser";
+import { lintOrgchart } from "./lint";
 import { renderOrgchart } from "./renderer";
 
 export const orgchart: DiagramPlugin = {
@@ -8,6 +9,7 @@ export const orgchart: DiagramPlugin = {
     return /^\s*orgchart\b/i.test(text);
   },
   parse: parseOrgchart,
+  lint: lintOrgchart,
 
   render(text, config) {
     const ast = parseOrgchart(text);
@@ -16,6 +18,7 @@ export const orgchart: DiagramPlugin = {
 };
 
 export { parseOrgchart, OrgchartParseError } from "./parser";
+export { lintOrgchart } from "./lint";
 export { renderOrgchart } from "./renderer";
 export { layoutOrgchart } from "./layout";
 export type * from "./types";

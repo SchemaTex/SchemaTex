@@ -108,8 +108,19 @@ export function getExamples(
 // ─── validateDsl ────────────────────────────────────────────────
 
 export type ValidateDslResult =
-  | { ok: true; type: string | null }
-  | { ok: false; type: string | null; errors: SchematexValidationError[] };
+  | {
+      ok: true;
+      type: string | null;
+      /**
+       * `valid` = parsed cleanly; `partial` = parsed and renderable but the
+       * engine recovered from incomplete/incorrect input (see `warnings`). A
+       * `partial` result still renders — it is NOT a failure.
+       */
+      status: "valid" | "partial";
+      /** Non-fatal lint findings (empty when `status` is `valid`). */
+      warnings: SchematexValidationError[];
+    }
+  | { ok: false; type: string | null; status: "invalid"; errors: SchematexValidationError[] };
 
 export function validateDsl(type: string | undefined, dsl: string): ValidateDslResult {
   const resolvedType = type ? resolveDiagramType(type) : undefined;
@@ -118,11 +129,19 @@ export function validateDsl(type: string | undefined, dsl: string): ValidateDslR
     : undefined;
   const result = parseResult(dsl, config);
   if (result.ok) {
-    return { ok: true, type: result.type };
+    return {
+      ok: true,
+      type: result.type,
+      status: result.status,
+      warnings: result.diagnostics.map((diagnostic) =>
+        toValidationError(diagnostic, result.type)
+      ),
+    };
   }
   return {
     ok: false,
     type: result.type ?? resolvedType ?? resolveTypeFromText(dsl),
+    status: "invalid",
     errors: result.diagnostics.map((diagnostic) =>
       toValidationError(diagnostic, result.type ?? resolvedType)
     ),

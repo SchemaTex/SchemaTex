@@ -247,12 +247,14 @@ Running --> [*] : done`
     }
   });
 
-  it("mindmap parser emits line", () => {
-    // No root H1 → first H2 triggers orphan on line 1.
+  it("mindmap degrades a missing root to a partial render with a warning", () => {
+    // No `#` H1 → the parser recovers a placeholder root rather than throwing.
     const result = validateDsl("mindmap", `## orphan child`);
-    expect(result.ok).toBe(false);
-    if (!result.ok) {
-      expect(result.errors[0].line).toBe(1);
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.status).toBe("partial");
+      expect(result.warnings.length).toBeGreaterThan(0);
+      expect(result.warnings[0].message).toMatch(/central topic|# Title/i);
     }
   });
 
@@ -280,14 +282,16 @@ Running --> [*] : done`
     }
   });
 
-  it("orgchart parser emits line + source", () => {
+  it("orgchart degrades a duplicate id to a partial render with a warning", () => {
+    // Re-declaring an id no longer throws — the first declaration is kept.
     const result = validateDsl(
       "orgchart",
       `orgchart "T"\nA: "Alice" | CEO\nA: "Dup" | CEO`
     );
-    expect(result.ok).toBe(false);
-    if (!result.ok) {
-      expect(result.errors[0].line).toBe(3);
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.status).toBe("partial");
+      expect(result.warnings.some((w) => /duplicate/i.test(w.message))).toBe(true);
     }
   });
 });

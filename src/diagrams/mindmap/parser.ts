@@ -72,6 +72,7 @@ export function parseMindmap(text: string): MindmapAST {
 
   const directives: Directives = { style: "map", maxLabelWidth: DEFAULT_MAX_LABEL_WIDTH };
   let root: MindmapNode | null = null;
+  let rootInferred: "line" | "placeholder" | undefined;
   let idCounter = 0;
   const nextId = () => `n${idCounter++}`;
 
@@ -79,10 +80,25 @@ export function parseMindmap(text: string): MindmapAST {
   const stack: { node: MindmapNode; depth: number }[] = [];
   let lastHeadingDepth = 0;
 
-  const attach = (node: MindmapNode, depth: number, lineNo: number, source: string) => {
+  // Recover a central topic when the DSL has none. A mindmap with one node is
+  // still a meaningful diagram, so the engine degrades to a `partial` render
+  // (flagged by lint) rather than throwing and blanking everything — a common
+  // LLM mistake is to forget the leading `# Title`.
+  const ensurePlaceholderRoot = (): MindmapNode => {
+    if (root) return root;
+    root = makeNode(nextId(), "Mindmap", 0);
+    rootInferred = "placeholder";
+    stack.length = 0;
+    stack.push({ node: root, depth: 0 });
+    lastHeadingDepth = 0;
+    return root;
+  };
+
+  const attach = (node: MindmapNode, depth: number, _lineNo: number, _source: string) => {
     while (stack.length && stack[stack.length - 1].depth >= depth) stack.pop();
-    const parent = stack[stack.length - 1]?.node;
-    if (!parent) throw new MindmapParseError("orphan node — expected root # heading first", lineNo, undefined, source);
+    // No parent on the stack → the DSL opened with a bullet / H2+ before any
+    // root. Insert a synthetic placeholder root and hang the orphan under it.
+    const parent = stack[stack.length - 1]?.node ?? ensurePlaceholderRoot();
     node.depth = parent.depth + 1;
     parent.children.push(node);
     stack.push({ node, depth });
@@ -126,8 +142,21 @@ export function parseMindmap(text: string): MindmapAST {
       attach(node, depth, lineNo, line);
       continue;
     }
+
+    // Plain text line with no `#` and no bullet marker. Legacy behaviour is to
+    // ignore it. But if we have no central topic yet, the most common cause is
+    // an LLM writing the title as a bare line (`My Topic`) instead of `# Title`
+    // — adopt it as the center rather than discarding it and orphaning the rest.
+    if (!root && stack.length === 0) {
+      root = makeNode(nextId(), trimmed, 0);
+      rootInferred = "line";
+      stack.push({ node: root, depth: 0 });
+      lastHeadingDepth = 0;
+      continue;
+    }
   }
 
+  // Only a completely empty / directive-only document has nothing to draw.
   if (!root) throw new MindmapParseError("missing central topic — start with `# Title`");
 
   const ast: MindmapAST = {
@@ -136,6 +165,7 @@ export function parseMindmap(text: string): MindmapAST {
     root,
     maxLabelWidth: directives.maxLabelWidth,
   };
+  if (rootInferred) ast.rootInferred = rootInferred;
   if (directives.themeOverride) ast.themeOverride = directives.themeOverride;
   return ast;
 }
