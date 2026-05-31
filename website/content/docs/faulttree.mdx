@@ -33,7 +33,7 @@ faulttree "Both pumps fail"
   basic PB "Pump B fails" p: 0.01
 ```
 
-`top` declares the single root event and the gate that produces it; `basic` declares a leaf component failure with a probability. The engine computes the minimal cut set ({PA, PB}) and P(top) = 1.0e-4. The DSL is **flat declaration + reference** (not nested by indentation) — a fault tree is a DAG, so a shared event is just referenced by id from several gates.
+`top` declares the single root event and the gate that produces it; `basic` declares a leaf component failure with a probability. The engine computes the minimal cut set `{PA, PB}` and P(top) = 1.0e-4. The DSL is **flat declaration + reference** (not nested by indentation) — a fault tree is a DAG, so a shared event is just referenced by id from several gates.
 
 Header directives:
 
@@ -103,7 +103,7 @@ faulttree "Safety function fails"
   basic L1 "Shared logic solver fails" p: 0.05
 ```
 
-`L1` feeds both channels — it is drawn once per reference with a shared-event mark, but the cut-set engine treats every instance as one Boolean variable. Cut sets are {S1, L1} and {S2, L1}; `prob: exact` subtracts the overlap (L1 counted once over the union), giving 0.004875 rather than the rare-event 0.005.
+`L1` feeds both channels — it is drawn once per reference with a shared-event mark, but the cut-set engine treats every instance as one Boolean variable. Cut sets are `{S1, L1}` and `{S2, L1}`; `prob: exact` subtracts the overlap (L1 counted once over the union), giving 0.004875 rather than the rare-event 0.005.
 
 ---
 
