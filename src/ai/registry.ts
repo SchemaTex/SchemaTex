@@ -20,7 +20,8 @@ export type DiagramCluster =
   | "research"
   | "project-management"
   | "network-infrastructure"
-  | "software-uml";
+  | "software-uml"
+  | "risk-reliability";
 
 export interface DiagramMeta {
   /** Canonical type id — matches `DiagramType` and plugin keys. */
@@ -345,6 +346,18 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
       "OMG UML 2.5.1 §9–§11 (Classification / Classifiers / Associations) + ISO/IEC 19505-2:2012; see 36-UMLCLASS-STANDARD.md",
     syntaxKey: "umlclass",
   },
+  {
+    type: "faulttree",
+    name: "Fault Tree Analysis",
+    tagline:
+      "Deductive top-down reliability analysis — decompose one undesired top event through Boolean AND/OR/voting gates to basic component failures; the engine computes the minimal cut sets and the top-event probability.",
+    useWhen:
+      "Use for safety / reliability analysis: start from one top event and decompose its causes through gates down to basic events with known failure probabilities. Flat declaration wired by id: `top T \"…\" = OR(G1, G2)`, `gate G1 = AND(A, B)`, `basic A \"…\" p: 0.01`. Gates: AND/OR/XOR(a,b,…), VOTING(k/n; …), INHIBIT(x) if cond, PAND(a,b). `house H state: 0|1` switches branches; `undeveloped` for unanalysed causes. The engine *computes* the minimal cut sets (MOCUS) and P(top) (`prob: rare|mcub|exact`) and highlights single points of failure — the differentiator over a shape stencil. Keyword `faulttree` (alias `fta`). Distinct from `logic` (left-right signal netlist), `decisiontree` (expected-value rollback), and `fishbone` (qualitative, unquantified).",
+    cluster: "risk-reliability",
+    standard:
+      "NUREG-0492 Fault Tree Handbook + IEC 61025:2006 + NASA FT Handbook 2002; MOCUS cut sets (Fussell-Vesely 1972); see 37-FAULT-TREE-STANDARD.md",
+    syntaxKey: "faulttree",
+  },
   // ── Generic process / flow ───────────────────────────────────
   {
     type: "flowchart",
@@ -451,6 +464,8 @@ export const DIAGRAM_SINCE: Readonly<Record<DiagramType, string>> = {
   network: "0.6.0",
   // 0.6.4
   umlclass: "0.6.4",
+  // 0.6.5
+  faulttree: "0.6.5",
 };
 
 export function getDiagramSince(type: string): string | undefined {

@@ -41,6 +41,7 @@ import { sequence } from "../diagrams/sequence";
 import { petri } from "../diagrams/petri";
 import { network } from "../diagrams/network";
 import { umlclass } from "../diagrams/umlclass";
+import { faulttree } from "../diagrams/faulttree";
 
 export interface SchematexConfig {
   type?:
@@ -77,7 +78,8 @@ export interface SchematexConfig {
     | "sequence"
     | "petri"
     | "network"
-    | "umlclass";
+    | "umlclass"
+    | "faulttree";
   width?: number;
   height?: number;
   padding?: number;
@@ -125,6 +127,7 @@ const plugins: DiagramPlugin[] = [
   petri,
   network,
   umlclass,
+  faulttree,
 ];
 
 function detectPlugin(text: string, config?: SchematexConfig): DiagramPlugin {

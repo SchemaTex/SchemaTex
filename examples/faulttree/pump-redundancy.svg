@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="280" height="400" viewBox="0 0 280 400" role="img" aria-label="Both pumps fail" data-diagram-type="faulttree"><title>Both pumps fail</title>
+<desc>Fault tree for &quot;Both redundant pumps fail&quot;: 1 top, 2 basic. 1 minimal cut set: {PA, PB}. P(top) = 1.00e-4 (rare).</desc>
+<style>.sx-ft-bg { fill: #ffffff; }
+.sx-ft-event { fill: #eef2f7; stroke: #334155; stroke-width: 2; }
+.sx-ft-event[data-role="top"] { stroke: #1e293b; stroke-width: 2.25; }
+.sx-ft-basic { fill: #ffffff; stroke: #334155; stroke-width: 2; }
+.sx-ft-undeveloped { fill: #e2e8f0; stroke: #334155; stroke-width: 2; }
+.sx-ft-house { fill: #fef9c3; stroke: #334155; stroke-width: 2; }
+.sx-ft-gate { fill: #dcfce7; stroke: #059669; stroke-width: 2; stroke-linejoin: round; }
+.sx-ft-cond { fill: #f1f5f9; stroke: #334155; stroke-width: 1; }
+.sx-ft-pin, .sx-ft-edge { fill: none; stroke: #475569; stroke-width: 2; }
+.sx-ft-shared-mark { fill: none; stroke: #334155; stroke-width: 2; }
+.sx-ft-label { fill: #334155; font-size: 12px; font-weight: 600; }
+.sx-ft-id { fill: #334155; font-size: 10px; font-weight: 700; }
+.sx-ft-cap { fill: #334155; font-size: 9px; }
+.sx-ft-prob { fill: #2563eb; font-size: 9px; font-weight: 600; }
+.sx-ft-gate-label { fill: #059669; font-size: 9px; font-weight: 700; }
+.sx-ft-cond-text { fill: #334155; font-size: 9px; }
+.sx-ft-cutset { fill: rgba(220,38,38,0.05); stroke: #dc2626; stroke-width: 2; }
+.sx-ft-cutset[data-spof="true"] { stroke: #b91c1c; stroke-width: 3; }
+.sx-ft-ptop { fill: #2563eb; font-size: 12px; font-weight: 700; }
+.sx-ft-transfer { fill: #eef2f7; stroke: #334155; stroke-width: 2; }
+.sx-ft-transfer-label { fill: #334155; font-size: 9px; font-weight: 600; }
+.sx-ft-title { fill: #334155; font-size: 16px; font-weight: 700; }</style>
+<rect x="0" y="0" width="280" height="400" class="sx-ft-bg"/>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><text x="30" y="22" class="sx-ft-title" font-family="system-ui, -apple-system, sans-serif">Both pumps fail</text>
+<rect x="50" y="241" width="130" height="56" rx="6" class="sx-ft-cutset" data-cutset="PA,PB" data-cutset-index="0" data-order="2" data-cutset-prob="0.0001"/>
+<g class="sx-ft-edge-g" data-from="T#0" data-to="PA#1"><path d="M 115 182 L 115 215 L 78 215 L 78 248" class="sx-ft-edge"/></g>
+<g class="sx-ft-edge-g" data-from="T#0" data-to="PB#2"><path d="M 115 182 L 115 215 L 152 215 L 152 248" class="sx-ft-edge"/></g>
+<g class="sx-ft-gate-g" data-id="T#0" data-gate="and"><line x1="115" y1="144" x2="115" y2="132" class="sx-ft-pin"/>
+<path d="M 88 182 L 88 163 A 27 19 0 0 1 142 163 L 142 182 Z" class="sx-ft-gate"/></g>
+<g class="sx-ft-event-g" data-id="T" data-role="top"><rect x="30" y="82" width="170" height="50" rx="5" class="sx-ft-event" data-role="top"/>
+<text x="115" y="107" class="sx-ft-label" text-anchor="middle" dominant-baseline="middle"><tspan x="115" dy="-7">Both redundant pumps</tspan><tspan x="115" dy="14">fail</tspan></text></g>
+<g class="sx-ft-event-g" data-id="PA" data-role="basic" data-prob="0.01"><circle cx="78" cy="269" r="21" class="sx-ft-basic"/>
+<text x="78" y="272" class="sx-ft-id" text-anchor="middle">PA</text>
+<text x="78" y="309" class="sx-ft-cap" text-anchor="middle">Pump A fails</text>
+<text x="78" y="322" class="sx-ft-prob" text-anchor="middle">p=0.01</text></g>
+<g class="sx-ft-event-g" data-id="PB" data-role="basic" data-prob="0.01"><circle cx="152" cy="269" r="21" class="sx-ft-basic"/>
+<text x="152" y="272" class="sx-ft-id" text-anchor="middle">PB</text>
+<text x="152" y="309" class="sx-ft-cap" text-anchor="middle">Pump B fails</text>
+<text x="152" y="322" class="sx-ft-prob" text-anchor="middle">p=0.01</text></g>
+<text x="115" y="73" class="sx-ft-ptop" text-anchor="middle">P(top) = 1.00e-4 (rare)</text></g></svg>

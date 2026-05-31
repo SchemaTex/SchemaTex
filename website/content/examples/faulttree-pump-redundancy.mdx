@@ -1,0 +1,27 @@
+---
+title: Redundant pump failure (AND gate)
+description: The smallest quantified fault tree — two redundant pumps in an AND gate, so the system fails only if both fail. One minimal cut set, no single point of failure, with a computed top-event probability.
+diagram: faulttree
+standard: NUREG-0492 / IEC 61025
+industry: [engineering, energy]
+persona: For the reliability engineer sizing redundancy
+complexity: 1
+tags: [faulttree, fta, reliability, and-gate, cut-sets, probability]
+featured: true
+relatedLink:
+  label: Fault tree syntax
+  href: /docs/faulttree
+status: published
+dsl: |
+  faulttree "Both pumps fail"
+    analysis: cutsets, probability
+    top T "Both redundant pumps fail" = AND(PA, PB)
+    basic PA "Pump A fails" p: 0.01
+    basic PB "Pump B fails" p: 0.01
+---
+
+## What this shows
+
+The canonical reliability argument for redundancy. The top event occurs only when **both** pumps fail, so the gate is an **AND** (drawn as the flat-bottomed dome). The engine computes the one **minimal cut set `{PA, PB}`** (order 2, boxed in red) and — because no single component alone causes the top event — reports **no single point of failure**.
+
+**P(top) is computed, not drawn.** With independent basic events, `P(top) ≈ P(PA)·P(PB) = 1.0e-4` (rare-event). Adding a second pump turned two 1-in-100 components into a 1-in-10,000 system — exactly the quantified payoff redundancy is meant to deliver.

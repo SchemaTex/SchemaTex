@@ -394,6 +394,41 @@ class Gateway {
 Gateway --> UserService : delegates
 Gateway --> Repository  : delegates`,
   },
+  {
+    file: 'examples/faulttree/pump-redundancy.svg',
+    text: `faulttree "Both pumps fail"
+  analysis: cutsets, probability
+  top T "Both redundant pumps fail" = AND(PA, PB)
+  basic PA "Pump A fails" p: 0.01
+  basic PB "Pump B fails" p: 0.01`,
+  },
+  {
+    file: 'examples/faulttree/repeated-event.svg',
+    text: `faulttree "Product not removed"
+  analysis: cutsets, probability
+  top T  "Failure to remove product" = OR(G1, G2)
+  gate G1 "Arm jams or collides"      = AND(MSF, G3)
+  gate G2 "Wrong slot commanded"      = OR(CDM, MSF)
+  gate G3 "Loss of position feedback" = OR(ESF, RCF)
+  basic MSF "Manipulator system failure" p: 0.0035
+  basic CDM "Controller command error"   p: 0.0009
+  basic ESF "Encoder sensor failure"     p: 0.0021
+  basic RCF "Resolver cable fault"       p: 0.0012`,
+  },
+  {
+    file: 'examples/faulttree/vessel-rupture.svg',
+    text: `faulttree "Vessel ruptures"
+  analysis: cutsets, probability
+  prob: mcub
+  top TOP "Pressure vessel ruptures" = AND(OVP, RELIEF)
+  gate OVP    "Sustained over-pressure" = INHIBIT(PUMP) if HEATER
+  gate RELIEF "Both reliefs fail"        = VOTING(2/2; PRV_A, PRV_B)
+  basic PUMP  "Pump runaway"   p: 0.004
+  basic PRV_A "Relief A stuck" p: 0.02
+  basic PRV_B "Relief B stuck" p: 0.02
+  house HEATER "Heater energised" state: 1
+  undeveloped EXT "External fire (not modelled)"`,
+  },
 ];
 
 for (const { file, text } of examples) {

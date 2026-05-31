@@ -492,6 +492,39 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
       "If a class appears as a one-line empty box you didn't expect, the parser auto-created it from an arc reference — declare it explicitly or fix the typo in the relationship id.",
     ],
   },
+  faulttree: {
+    type: "faulttree",
+    header: 'faulttree "Title"',
+    mode: "flat event/gate declarations wired by id (top + gates + leaves)",
+    forms: [
+      "analysis: cutsets, probability",
+      'top  T  "System fails" = OR(G1, G2)',
+      'gate G1 "Sub-fault"    = AND(A, B)',
+      'basic A "Component A fails" p: 0.01',
+      "undeveloped EXT \"External cause\"",
+      'house HX "Power on" state: 1',
+      "RELIEF = VOTING(2/3; PRV_A, PRV_B, PRV_C)",
+      "OVP = INHIBIT(PUMP) if HEATER",
+    ],
+    prefer: [
+      "Single-word keyword is `faulttree` (alias `fta`). Declare exactly one `top` event.",
+      "Declare every referenced event before or after use; wire gates by id (the tree is a DAG — a basic event may feed several gates).",
+      "Gate expressions: AND/OR/XOR(a, b, …), VOTING(k/n; …), INHIBIT(x) if cond, PAND(a, b) order: a, b.",
+      "Put `p: 0.001` (or scientific `1e-3`) on basic/undeveloped events; the engine computes minimal cut sets and P(top).",
+      "Use `prob: rare` (default), `mcub`, or `exact`; `house … state: 0|1` switches branches on/off.",
+    ],
+    avoid: [
+      "Don't nest by indentation — fault tree is flat declaration + id reference (so repeated/shared events are unambiguous).",
+      "Don't attach `if <cond>` to anything but INHIBIT (or `order:` to anything but PAND).",
+      "Don't declare more than one `top`, and don't create cycles (a gate may not transitively reference itself).",
+    ],
+    repair: [
+      "'references undefined event' means a gate input id was never declared — add the `basic`/`gate`/… line.",
+      "'must have exactly one top' — keep a single `top`; downgrade the others to `gate`.",
+      "'VOTING k/n: n must equal the number of inputs' — make n match the listed inputs.",
+      "If P(top) shows 'n/a', a basic event in a cut set is missing its `p:`.",
+    ],
+  },
 };
 
 export function getGenerationProfile(

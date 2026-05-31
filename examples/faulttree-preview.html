@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>faulttree — visual review</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: #f5f5f7; color: #0f172a; font-family: -apple-system, system-ui, "Segoe UI", sans-serif; }
+  .wrap { max-width: 1280px; margin: 0 auto; padding: 32px 24px 64px; }
+  header { margin-bottom: 32px; }
+  h1 { font-size: 24px; margin: 0 0 6px; letter-spacing: -0.01em; }
+  header p { color: #64748b; margin: 0; font-size: 14px; }
+  header a { color: #2563eb; text-decoration: none; }
+  .toc { margin: 16px 0 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 6px 12px; font-size: 12px; }
+  .toc a { color: #64748b; text-decoration: none; padding: 4px 8px; background: #fff; border: 1px solid #e2e8f0; border-radius: 6px; }
+  .toc a:hover { color: #2563eb; border-color: #93c5fd; }
+  .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; margin-bottom: 20px; box-shadow: 0 1px 2px rgba(15,23,42,0.04); }
+  .card h2 { font-size: 18px; margin: 0 0 6px; letter-spacing: -0.005em; }
+  .card .note { color: #64748b; font-size: 13px; line-height: 1.55; margin: 0 0 18px; max-width: 940px; }
+  details { margin-top: 14px; }
+  details summary { cursor: pointer; color: #64748b; font-size: 12px; font-family: ui-monospace, "SF Mono", Menlo, monospace; user-select: none; padding: 4px 0; }
+  pre { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px 16px; font-size: 12px; line-height: 1.5; font-family: ui-monospace, "SF Mono", Menlo, monospace; overflow-x: auto; margin: 8px 0 0; color: #0f172a; }
+  .svg-wrap { background: #fafafa; border: 1px solid #f1f5f9; border-radius: 8px; padding: 24px; overflow: auto; }
+  .svg-wrap svg { display: block; max-width: 100%; height: auto; margin: 0 auto; }
+  .err { color: #dc2626; background: #fef2f2; border: 1px solid #fecaca; border-radius: 6px; padding: 10px 14px; font-family: ui-monospace, monospace; font-size: 12px; }
+  footer { color: #94a3b8; font-size: 12px; text-align: center; padding-top: 24px; }
+  footer code { background: #fff; padding: 2px 6px; border-radius: 4px; border: 1px solid #e2e8f0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>faulttree — visual review</h1>
+  <p>Schematex Fault Tree Analysis engine (NUREG-0492 / IEC 61025). The engine <strong>computes the minimal cut sets and P(top)</strong> — the red boxes are computed, not drawn by hand.</p>
+  <ul class="toc">
+    <li><a href="#and">1</a></li>
+    <li><a href="#or-spof">2</a></li>
+    <li><a href="#shared">3</a></li>
+    <li><a href="#full">4</a></li>
+    <li><a href="#exact">5</a></li>
+    <li><a href="#voting-3">6</a></li>
+    <li><a href="#depth">7</a></li>
+    <li><a href="#ref-overheat">8</a></li>
+    <li><a href="#ref-accident">9</a></li>
+    <li><a href="#ref-address">10</a></li>
+    <li><a href="#mono">11</a></li>
+  </ul>
+</header>
+
+<section class="card" id="and">
+  <h2>1 — AND gate (one cut set, no SPOF)</h2>
+  <p class="note">The minimal AND tree: both redundant pumps must fail. One order-2 minimal cut set {PA, PB} boxed in red; no single point of failure; P(top)=P(PA)·P(PB) (rare-event).</p>
+  <div class="svg-wrap"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="280" height="400" viewBox="0 0 280 400" role="img" aria-label="Both pumps fail" data-diagram-type="faulttree"><title>Both pumps fail</title>
+<desc>Fault tree for &quot;Both redundant pumps fail&quot;: 1 top, 2 basic. 1 minimal cut set: {PA, PB}. P(top) = 1.00e-4 (rare).</desc>
+<style>.sx-ft-c0-bg { fill: #ffffff; }
+.sx-ft-c0-event { fill: #eef2f7; stroke: #334155; stroke-width: 2; }
+.sx-ft-c0-event[data-role="top"] { stroke: #1e293b; stroke-width: 2.25; }
+.sx-ft-c0-basic { fill: #ffffff; stroke: #334155; stroke-width: 2; }
+.sx-ft-c0-undeveloped { fill: #e2e8f0; stroke: #334155; stroke-width: 2; }
+.sx-ft-c0-house { fill: #fef9c3; stroke: #334155; stroke-width: 2; }
+.sx-ft-c0-gate { fill: #dcfce7; stroke: #059669; stroke-width: 2; stroke-linejoin: round; }
+.sx-ft-c0-cond { fill: #f1f5f9; stroke: #334155; stroke-width: 1; }
+.sx-ft-c0-pin, .sx-ft-c0-edge { fill: none; stroke: #475569; stroke-width: 2; }
+.sx-ft-c0-shared-mark { fill: none; stroke: #334155; stroke-width: 2; }
+.sx-ft-c0-label { fill: #334155; font-size: 12px; font-weight: 600; }
+.sx-ft-c0-id { fill: #334155; font-size: 10px; font-weight: 700; }
+.sx-ft-c0-cap { fill: #334155; font-size: 9px; }
+.sx-ft-c0-prob { fill: #2563eb; font-size: 9px; font-weight: 600; }
+.sx-ft-c0-gate-label { fill: #059669; font-size: 9px; font-weight: 700; }
+.sx-ft-c0-cond-text { fill: #334155; font-size: 9px; }
+.sx-ft-c0-cutset { fill: rgba(220,38,38,0.05); stroke: #dc2626; stroke-width: 2; }
+.sx-ft-c0-cutset[data-spof="true"] { stroke: #b91c1c; stroke-width: 3; }
+.sx-ft-c0-ptop { fill: #2563eb; font-size: 12px; font-weight: 700; }
+.sx-ft-c0-transfer { fill: #eef2f7; stroke: #334155; stroke-width: 2; }
+.sx-ft-c0-transfer-label { fill: #334155; font-size: 9px; font-weight: 600; }
+.sx-ft-c0-title { fill: #334155; font-size: 16px; font-weight: 700; }</style>
+<rect x="0" y="0" width="280" height="400" class="sx-ft-c0-bg"/>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><text x="30" y="22" class="sx-ft-c0-title" font-family="system-ui, -apple-system, sans-serif">Both pumps fail</text>
+<rect x="50" y="241" width="130" height="56" rx="6" class="sx-ft-c0-cutset" data-cutset="PA,PB" data-cutset-index="0" data-order="2" data-cutset-prob="0.0001"/>
+<g class="sx-ft-c0-edge-g" data-from="T#0" data-to="PA#1"><path d="M 115 182 L 115 215 L 78 215 L 78 248" class="sx-ft-c0-edge"/></g>
+<g class="sx-ft-c0-edge-g" data-from="T#0" data-to="PB#2"><path d="M 115 182 L 115 215 L 152 215 L 152 248" class="sx-ft-c0-edge"/></g>
+<g class="sx-ft-c0-gate-g" data-id="T#0" data-gate="and"><line x1="115" y1="144" x2="115" y2="132" class="sx-ft-c0-pin"/>
+<path d="M 88 182 L 88 163 A 27 19 0 0 1 142 163 L 142 182 Z" class="sx-ft-c0-gate"/></g>
+<g class="sx-ft-c0-event-g" data-id="T" data-role="top"><rect x="30" y="82" width="170" height="50" rx="5" class="sx-ft-c0-event" data-role="top"/>
+<text x="115" y="107" class="sx-ft-c0-label" text-anchor="middle" dominant-baseline="middle"><tspan x="115" dy="-7">Both redundant pumps</tspan><tspan x="115" dy="14">fail</tspan></text></g>
+<g class="sx-ft-c0-event-g" data-id="PA" data-role="basic" data-prob="0.01"><circle cx="78" cy="269" r="21" class="sx-ft-c0-basic"/>
+<text x="78" y="272" class="sx-ft-c0-id" text-anchor="middle">PA</text>
+<text x="78" y="309" class="sx-ft-c0-cap" text-anchor="middle">Pump A fails</text>
+<text x="78" y="322" class="sx-ft-c0-prob" text-anchor="middle">p=0.01</text></g>
+<g class="sx-ft-c0-event-g" data-id="PB" data-role="basic" data-prob="0.01"><circle cx="152" cy="269" r="21" class="sx-ft-c0-basic"/>
+<text x="152" y="272" class="sx-ft-c0-id" text-anchor="middle">PB</text>
+<text x="152" y="309" class="sx-ft-c0-cap" text-anchor="middle">Pump B fails</text>
+<text x="152" y="322" class="sx-ft-c0-prob" text-anchor="middle">p=0.01</text></g>
+<text x="115" y="73" class="sx-ft-c0-ptop" text-anchor="middle">P(top) = 1.00e-4 (rare)</text></g></svg></div>
+  <details>
+    <summary>DSL source</summary>
+    <pre>faulttree "Both pumps fail"
+  analysis: cutsets, probability
+  top T "Both redundant pumps fail" = AND(PA, PB)
+  basic PA "Pump A fails" p: 0.01
+  basic PB "Pump B fails" p: 0.01</pre>
+  </details>
+</section>
+
+<section class="card" id="or-spof">
+  <h2>2 — OR gate (three single points of failure)</h2>
+  <p class="note">Each input alone stops the engine → three order-1 minimal cut sets, each a single point of failure (boxed in the strongest red, tagged data-spof). P(top) ≈ Σ p (rare-event).</p>
+  <div class="svg-wrap"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="301" height="400" viewBox="0 0 301 400" role="img" aria-label="Engine stops" data-diagram-type="faulttree"><title>Engine stops</title>
+<desc>Fault tree for &quot;Engine stops&quot;: 1 top, 3 basic. 3 minimal cut sets: {FUEL}, {IGN}, {SEIZE}. Single points of failure: FUEL, IGN, SEIZE. P(top) = 0.0055 (rare).</desc>
+<style>.sx-ft-c1-bg { fill: #ffffff; }
+.sx-ft-c1-event { fill: #eef2f7; stroke: #334155; stroke-width: 2; }
+.sx-ft-c1-event[data-role="top"] { stroke: #1e293b; stroke-width: 2.25; }
+.sx-ft-c1-basic { fill: #ffffff; stroke: #334155; stroke-width: 2; }
+.sx-ft-c1-undeveloped { fill: #e2e8f0; stroke: #334155; stroke-width: 2; }
+.sx-ft-c1-house { fill: #fef9c3; stroke: #334155; stroke-width: 2; }
+.sx-ft-c1-gate { fill: #dcfce7; stroke: #059669; stroke-width: 2; stroke-linejoin: round; }
+.sx-ft-c1-cond { fill: #f1f5f9; stroke: #334155; stroke-width: 1; }
+.sx-ft-c1-pin, .sx-ft-c1-edge { fill: none; stroke: #475569; stroke-width: 2; }
+.sx-ft-c1-shared-mark { fill: none; stroke: #334155; stroke-width: 2; }
+.sx-ft-c1-label { fill: #334155; font-size: 12px; font-weight: 600; }
+.sx-ft-c1-id { fill: #334155; font-size: 10px; font-weight: 700; }
+.sx-ft-c1-cap { fill: #334155; font-size: 9px; }
+.sx-ft-c1-prob { fill: #2563eb; font-size: 9px; font-weight: 600; }
+.sx-ft-c1-gate-label { fill: #059669; font-size: 9px; font-weight: 700; }
+.sx-ft-c1-cond-text { fill: #334155; font-size: 9px; }
+.sx-ft-c1-cutset { fill: rgba(220,38,38,0.05); stroke: #dc2626; stroke-width: 2; }
+.sx-ft-c1-cutset[data-spof="true"] { stroke: #b91c1c; stroke-width: 3; }
+.sx-ft-c1-ptop { fill: #2563eb; font-size: 12px; font-weight: 700; }
+.sx-ft-c1-transfer { fill: #eef2f7; stroke: #334155; stroke-width: 2; }
+.sx-ft-c1-transfer-label { fill: #334155; font-size: 9px; font-weight: 600; }
+.sx-ft-c1-title { fill: #334155; font-size: 16px; font-weight: 700; }</style>
+<rect x="0" y="0" width="301" height="400" class="sx-ft-c1-bg"/>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><text x="30" y="22" class="sx-ft-c1-title" font-family="system-ui, -apple-system, sans-serif">Engine stops</text>
+<rect x="23" y="241" width="56" height="56" rx="6" class="sx-ft-c1-cutset" data-cutset="FUEL" data-cutset-index="0" data-order="1" data-spof="true" data-cutset-prob="0.002"/>
+<rect x="95" y="239" width="60" height="60" rx="6" class="sx-ft-c1-cutset" data-cutset="IGN" data-cutset-index="1" data-order="1" data-spof="true" data-cutset-prob="0.003"/>
+<rect x="167" y="237" width="64" height="64" rx="6" class="sx-ft-c1-cutset" data-cutset="SEIZE" data-cutset-index="2" data-order="1" data-spof="true" data-cutset-prob="0.0005"/>
+<g class="sx-ft-c1-edge-g" data-from="T#0" data-to="FUEL#1"><path d="M 125 182 L 125 215 L 51 215 L 51 248" class="sx-ft-c1-edge"/></g>
+<g class="sx-ft-c1-edge-g" data-from="T#0" data-to="IGN#2"><path d="M 125 182 L 125 215 L 125 215 L 125 248" class="sx-ft-c1-edge"/></g>
+<g class="sx-ft-c1-edge-g" data-from="T#0" data-to="SEIZE#3"><path d="M 125 182 L 125 215 L 199 215 L 199 248" class="sx-ft-c1-edge"/></g>
+<g class="sx-ft-c1-gate-g" data-id="T#0" data-gate="or"><line x1="125" y1="144" x2="125" y2="132" class="sx-ft-c1-pin"/>
+<path d="M 98 182 Q 125 173 152 182 Q 152 153.5 125 144 Q 98 153.5 98 182 Z" class="sx-ft-c1-gate"/></g>
+<g class="sx-ft-c1-event-g" data-id="T" data-role="top"><rect x="59" y="82" width="132" height="50" rx="5" class="sx-ft-c1-event" data-role="top"/>
+<text x="125" y="107" class="sx-ft-c1-label" text-anchor="middle" dominant-baseline="middle"><tspan x="125" dy="0">Engine stops</tspan></text></g>
+<g class="sx-ft-c1-event-g" data-id="FUEL" data-role="basic" data-prob="0.002"><circle cx="51" cy="269" r="21" class="sx-ft-c1-basic"/>
+<text x="51" y="272" class="sx-ft-c1-id" text-anchor="middle">FUEL</text>
+<text x="51" y="309" class="sx-ft-c1-cap" text-anchor="middle">Fuel starvation</text>
+<text x="51" y="322" class="sx-ft-c1-prob" text-anchor="middle">p=0.002</text></g>
+<g class="sx-ft-c1-event-g" data-id="IGN" data-role="basic" data-prob="0.003"><circle cx="125" cy="269" r="21" class="sx-ft-c1-basic"/>
+<text x="125" y="272" class="sx-ft-c1-id" text-anchor="middle">IGN</text>
+<text x="125" y="309" class="sx-ft-c1-cap" text-anchor="middle">Ignition failure</text>
+<text x="125" y="322" class="sx-ft-c1-prob" text-anchor="middle">p=0.003</text></g>
+<g class="sx-ft-c1-event-g" data-id="SEIZE" data-role="basic" data-prob="0.0005"><circle cx="199" cy="269" r="21" class="sx-ft-c1-basic"/>
+<text x="199" y="272" class="sx-ft-c1-id" text-anchor="middle">SEIZE</text>
+<text x="199" y="309" class="sx-ft-c1-cap" text-anchor="middle">Mechanical seizure</text>
+<text x="199" y="322" class="sx-ft-c1-prob" text-anchor="middle">p=5.00e-4</text></g>
+<text x="125" y="73" class="sx-ft-c1-ptop" text-anchor="middle">P(top) = 0.0055 (rare)</text></g></svg></div>
+  <details>
+    <summary>DSL source</summary>
+    <pre>faulttree "Engine stops"
+  analysis: cutsets, probability
+  top T "Engine stops" = OR(FUEL, IGN, SEIZE)
+  basic FUEL  "Fuel starvation"    p: 0.002
+  basic IGN   "Ignition failure"   p: 0.003
+  basic SEIZE "Mechanical seizure" p: 0.0005</pre>
+  </details>
+</section>
+
+<section class="card" id="shared">
+  <h2>3 — Repeated / shared event (absorption)</h2>
+  <p class="note">MSF feeds BOTH G1 and G2 — drawn twice with the shared-event mark. MOCUS applies absorption: {MSF,ESF} and {MSF,RCF} are dropped as supersets of {MSF}. Minimal cut sets: {MSF}, {CDM} — both SPOFs. This is where naive shape stencils get the math wrong.</p>
+  <div class="svg-wrap"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="519" height="724" viewBox="0 0 519 724" role="img" aria-label="Product not removed" data-diagram-type="faulttree"><title>Product not removed</title>
+<desc>Fault tree for &quot;Failure to remove product&quot;: 1 top, 3 intermediate, 4 basic. 2 minimal cut sets: {CDM}, {MSF}. Single points of failure: CDM, MSF. P(top) = 0.0044 (rare).</desc>
+<style>.sx-ft-c2-bg { fill: #ffffff; }
+.sx-ft-c2-event { fill: #eef2f7; stroke: #334155; stroke-width: 2; }
+.sx-ft-c2-event[data-role="top"] { stroke: #1e293b; stroke-width: 2.25; }
+.sx-ft-c2-basic { fill: #ffffff; stroke: #334155; stroke-width: 2; }
+.sx-ft-c2-undeveloped { fill: #e2e8f0; stroke: #334155; stroke-width: 2; }
+.sx-ft-c2-house { fill: #fef9c3; stroke: #334155; stroke-width: 2; }
+.sx-ft-c2-gate { fill: #dcfce7; stroke: #059669; stroke-width: 2; stroke-linejoin: round; }
+.sx-ft-c2-cond { fill: #f1f5f9; stroke: #334155; stroke-width: 1; }
+.sx-ft-c2-pin, .sx-ft-c2-edge { fill: none; stroke: #475569; stroke-width: 2; }
+.sx-ft-c2-shared-mark { fill: none; stroke: #334155; stroke-width: 2; }
+.sx-ft-c2-label { fill: #334155; font-size: 12px; font-weight: 600; }
+.sx-ft-c2-id { fill: #334155; font-size: 10px; font-weight: 700; }
+.sx-ft-c2-cap { fill: #334155; font-size: 9px; }
+.sx-ft-c2-prob { fill: #2563eb; font-size: 9px; font-weight: 600; }
+.sx-ft-c2-gate-label { fill: #059669; font-size: 9px; font-weight: 700; }
+.sx-ft-c2-cond-text { fill: #334155; font-size: 9px; }
+.sx-ft-c2-cutset { fill: rgba(220,38,38,0.05); stroke: #dc2626; stroke-width: 2; }
+.sx-ft-c2-cutset[data-spof="true"] { stroke: #b91c1c; stroke-width: 3; }
+.sx-ft-c2-ptop { fill: #2563eb; font-size: 12px; font-weight: 700; }
+.sx-ft-c2-transfer { fill: #eef2f7; stroke: #334155; stroke-width: 2; }
+.sx-ft-c2-transfer-label { fill: #334155; font-size: 9px; font-weight: 600; }
+.sx-ft-c2-title { fill: #334155; font-size: 16px; font-weight: 700; }</style>
+<rect x="0" y="0" width="519" height="724" class="sx-ft-c2-bg"/>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><text x="30" y="22" class="sx-ft-c2-title" font-family="system-ui, -apple-system, sans-serif">Product not removed</text>
+<rect x="299" y="403" width="56" height="56" rx="6" class="sx-ft-c2-cutset" data-cutset="CDM" data-cutset-index="0" data-order="1" data-spof="true" data-cutset-prob="0.0009"/>
+<rect x="21" y="401" width="60" height="60" rx="6" class="sx-ft-c2-cutset" data-cutset="MSF" data-cutset-index="1" data-order="1" data-spof="true" data-cutset-prob="0.0035"/>
+<rect x="369" y="399" width="64" height="64" rx="6" class="sx-ft-c2-cutset" data-cutset="MSF" data-cutset-index="2" data-order="1" data-spof="true" data-cutset-prob="0.0035"/>
+<g class="sx-ft-c2-edge-g" data-from="T#0" data-to="G1#1"><path d="M 238.6 182 L 238.6 213 L 113.3 213 L 113.3 244" class="sx-ft-c2-edge"/></g>
+<g class="sx-ft-c2-edge-g" data-from="T#0" data-to="G2#6"><path d="M 238.6 182 L 238.6 213 L 364 213 L 364 244" class="sx-ft-c2-edge"/></g>
+<g class="sx-ft-c2-edge-g" data-from="G1#1" data-to="MSF#2"><path d="M 113.3 344 L 113.3 377 L 51 377 L 51 410" class="sx-ft-c2-edge"/></g>
+<g class="sx-ft-c2-edge-g" data-from="G1#1" data-to="G3#3"><path d="M 113.3 344 L 113.3 375 L 175.5 375 L 175.5 406" class="sx-ft-c2-edge"/></g>
+<g class="sx-ft-c2-edge-g" data-from="G3#3" data-to="ESF#4"><path d="M 175.5 506 L 175.5 539 L 138.5 539 L 138.5 572" class="sx-ft-c2-edge"/></g>
+<g class="sx-ft-c2-edge-g" data-from="G3#3" data-to="RCF#5"><path d="M 175.5 506 L 175.5 539 L 212.5 539 L 212.5 572" class="sx-ft-c2-edge"/></g>
+<g class="sx-ft-c2-edge-g" data-from="G2#6" data-to="CDM#7"><path d="M 364 344 L 364 377 L 327 377 L 327 410" class="sx-ft-c2-edge"/></g>
+<g class="sx-ft-c2-edge-g" data-from="G2#6" data-to="MSF#8"><path d="M 364 344 L 364 377 L 401 377 L 401 410" class="sx-ft-c2-edge"/></g>
+<g class="sx-ft-c2-gate-g" data-id="T#0" data-gate="or"><line x1="238.625" y1="144" x2="238.625" y2="132" class="sx-ft-c2-pin"/>
+<path d="M 211.625 182 Q 238.625 173 265.625 182 Q 265.625 153.5 238.625 144 Q 211.625 153.5 211.625 182 Z" class="sx-ft-c2-gate"/></g>
+<g class="sx-ft-c2-gate-g" data-id="G1#1" data-gate="and"><line x1="113.25" y1="306" x2="113.25" y2="294" class="sx-ft-c2-pin"/>
+<path d="M 86.25 344 L 86.25 325 A 27 19 0 0 1 140.25 325 L 140.25 344 Z" class="sx-ft-c2-gate"/></g>
+<g class="sx-ft-c2-gate-g" data-id="G3#3" data-gate="or"><line x1="175.5" y1="468" x2="175.5" y2="456" class="sx-ft-c2-pin"/>
+<path d="M 148.5 506 Q 175.5 497 202.5 506 Q 202.5 477.5 175.5 468 Q 148.5 477.5 148.5 506 Z" class="sx-ft-c2-gate"/></g>
+<g class="sx-ft-c2-gate-g" data-id="G2#6" data-gate="or"><line x1="364" y1="306" x2="364" y2="294" class="sx-ft-c2-pin"/>
+<path d="M 337 344 Q 364 335 391 344 Q 391 315.5 364 306 Q 337 315.5 337 344 Z" class="sx-ft-c2-gate"/></g>
+<g class="sx-ft-c2-event-g" data-id="T" data-role="top"><rect x="163.625" y="82" width="150" height="50" rx="5" class="sx-ft-c2-event" data-role="top"/>
+<text x="238.625" y="107" class="sx-ft-c2-label" text-anchor="middle" dominant-baseline="middle"><tspan x="238.625" dy="-7">Failure to remove</tspan><tspan x="238.625" dy="14">product</tspan></text></g>
+<g class="sx-ft-c2-event-g" data-id="G1" data-role="intermediate"><rect x="28.25" y="244" width="170" height="50" rx="5" class="sx-ft-c2-event" data-role="intermediate"/>
+<text x="113.25" y="269" class="sx-ft-c2-label" text-anchor="middle" dominant-baseline="middle"><tspan x="113.25" dy="0">Arm jams or collides</tspan></text></g>
+<g class="sx-ft-c2-event-g" data-id="MSF" data-role="basic" data-prob="0.0035" data-shared-id="MSF"><circle cx="51" cy="431" r="21" class="sx-ft-c2-basic"/>
+<line x1="46" y1="447" x2="56" y2="447" class="sx-ft-c2-shared-mark"/>
+<text x="51" y="434" class="sx-ft-c2-id" text-anchor="middle">MSF</text>
+<text x="51" y="471" class="sx-ft-c2-cap" text-anchor="middle">Manipulator system …</text>
+<text x="51" y="484" class="sx-ft-c2-prob" text-anchor="middle">p=0.0035</text></g>
+<g class="sx-ft-c2-event-g" data-id="G3" data-role="intermediate"><rect x="104" y="406" width="143" height="50" rx="5" class="sx-ft-c2-event" data-role="intermediate"/>
+<text x="175.5" y="431" class="sx-ft-c2-label" text-anchor="middle" dominant-baseline="middle"><tspan x="175.5" dy="-7">Loss of position</tspan><tspan x="175.5" dy="14">feedback</tspan></text></g>
+<g class="sx-ft-c2-event-g" data-id="ESF" data-role="basic" data-prob="0.0021"><circle cx="138.5" cy="593" r="21" class="sx-ft-c2-basic"/>
+<text x="138.5" y="596" class="sx-ft-c2-id" text-anchor="middle">ESF</text>
+<text x="138.5" y="633" class="sx-ft-c2-cap" text-anchor="middle">Encoder sensor fail…</text>
+<text x="138.5" y="646" class="sx-ft-c2-prob" text-anchor="middle">p=0.0021</text></g>
+<g class="sx-ft-c2-event-g" data-id="RCF" data-role="basic" data-prob="0.0012"><circle cx="212.5" cy="593" r="21" class="sx-ft-c2-basic"/>
+<text x="212.5" y="596" class="sx-ft-c2-id" text-anchor="middle">RCF</text>
+<text x="212.5" y="633" class="sx-ft-c2-cap" text-anchor="middle">Resolver cable fault</text>
+<text x="212.5" y="646" class="sx-ft-c2-prob" text-anchor="middle">p=0.0012</text></g>
+<g class="sx-ft-c2-event-g" data-id="G2" data-role="intermediate"><rect x="279" y="244" width="170" height="50" rx="5" class="sx-ft-c2-event" data-role="intermediate"/>
+<text x="364" y="269" class="sx-ft-c2-label" text-anchor="middle" dominant-baseline="middle"><tspan x="364" dy="0">Wrong slot commanded</tspan></text></g>
+<g class="sx-ft-c2-event-g" data-id="CDM" data-role="basic" data-prob="0.0009"><circle cx="327" cy="431" r="21" class="sx-ft-c2-basic"/>
+<text x="327" y="434" class="sx-ft-c2-id" text-anchor="middle">CDM</text>
+<text x="327" y="471" class="sx-ft-c2-cap" text-anchor="middle">Controller command …</text>
+<text x="327" y="484" class="sx-ft-c2-prob" text-anchor="middle">p=9.00e-4</text></g>
+<g class="sx-ft-c2-event-g" data-id="MSF" data-role="basic" data-prob="0.0035" data-shared-id="MSF"><circle cx="401" cy="431" r="21" class="sx-ft-c2-basic"/>
+<line x1="396" y1="447" x2="406" y2="447" class="sx-ft-c2-shared-mark"/>
+<text x="401" y="434" class="sx-ft-c2-id" text-anchor="middle">MSF</text>
+<text x="401" y="471" class="sx-ft-c2-cap" text-anchor="middle">Manipulator system …</text>
+<text x="401" y="484" class="sx-ft-c2-prob" text-anchor="middle">p=0.0035</text></g>
+<text x="238.625" y="73" class="sx-ft-c2-ptop" text-anchor="middle">P(top) = 0.0044 (rare)</text></g></svg></div>
+  <details>
+    <summary>DSL source</summary>
+    <pre>faulttree "Product not removed"
+  analysis: cutsets, probability
+  top T  "Failure to remove product" = OR(G1, G2)
+  gate G1 "Arm jams or collides"      = AND(MSF, G3)
+  gate G2 "Wrong slot commanded"      = OR(CDM, MSF)
+  gate G3 "Loss of position feedback" = OR(ESF, RCF)
+  basic MSF "Manipulator system failure" p: 0.0035
+  basic CDM "Controller command error"   p: 0.0009
+  basic ESF "Encoder sensor failure"     p: 0.0021
+  basic RCF "Resolver cable fault"       p: 0.0012</pre>
+  </details>
+</section>
+
+<section class="card" id="full">
+  <h2>4 — Full vocabulary (voting · inhibit · house · undeveloped)</h2>
+  <p class="note">INHIBIT renders as a hexagon with the HEATER conditioning ellipse to its side; HEATER house=1 is absorbed, so OVP reduces to {PUMP}. VOTING 2/2 = PRV_A ∧ PRV_B. Minimal cut set {PUMP, PRV_A, PRV_B} (order 3). EXT (undeveloped diamond) is declared but unconnected — noted in &lt;desc&gt;.</p>
+  <div class="svg-wrap"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="414" height="562" viewBox="0 0 414 562" role="img" aria-label="Vessel ruptures" data-diagram-type="faulttree"><title>Vessel ruptures</title>
+<desc>Fault tree for &quot;Pressure vessel ruptures&quot;: 1 top, 2 intermediate, 3 basic, 1 house, 1 undeveloped. 1 minimal cut set: {PRV_A, PRV_B, PUMP}. P(top) = 1.60e-6 (mcub). Event &quot;EXT&quot; is declared but referenced by no gate (unconnected).</desc>
+<style>.sx-ft-c3-bg { fill: #ffffff; }
+.sx-ft-c3-event { fill: #eef2f7; stroke: #334155; stroke-width: 2; }
+.sx-ft-c3-event[data-role="top"] { stroke: #1e293b; stroke-width: 2.25; }
+.sx-ft-c3-basic { fill: #ffffff; stroke: #334155; stroke-width: 2; }
+.sx-ft-c3-undeveloped { fill: #e2e8f0; stroke: #334155; stroke-width: 2; }
+.sx-ft-c3-house { fill: #fef9c3; stroke: #334155; stroke-width: 2; }
+.sx-ft-c3-gate { fill: #dcfce7; stroke: #059669; stroke-width: 2; stroke-linejoin: round; }
+.sx-ft-c3-cond { fill: #f1f5f9; stroke: #334155; stroke-width: 1; }
+.sx-ft-c3-pin, .sx-ft-c3-edge { fill: none; stroke: #475569; stroke-width: 2; }
+.sx-ft-c3-shared-mark { fill: none; stroke: #334155; stroke-width: 2; }
+.sx-ft-c3-label { fill: #334155; font-size: 12px; font-weight: 600; }
+.sx-ft-c3-id { fill: #334155; font-size: 10px; font-weight: 700; }
+.sx-ft-c3-cap { fill: #334155; font-size: 9px; }
+.sx-ft-c3-prob { fill: #2563eb; font-size: 9px; font-weight: 600; }
+.sx-ft-c3-gate-label { fill: #059669; font-size: 9px; font-weight: 700; }
+.sx-ft-c3-cond-text { fill: #334155; font-size: 9px; }
+.sx-ft-c3-cutset { fill: rgba(220,38,38,0.05); stroke: #dc2626; stroke-width: 2; }
+.sx-ft-c3-cutset[data-spof="true"] { stroke: #b91c1c; stroke-width: 3; }
+.sx-ft-c3-ptop { fill: #2563eb; font-size: 12px; font-weight: 700; }
+.sx-ft-c3-transfer { fill: #eef2f7; stroke: #334155; stroke-width: 2; }
+.sx-ft-c3-transfer-label { fill: #334155; font-size: 9px; font-weight: 600; }
+.sx-ft-c3-title { fill: #334155; font-size: 16px; font-weight: 700; }</style>
+<rect x="0" y="0" width="414" height="562" class="sx-ft-c3-bg"/>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><text x="30" y="22" class="sx-ft-c3-title" font-family="system-ui, -apple-system, sans-serif">Vessel ruptures</text>
+<rect x="68" y="403" width="266" height="56" rx="6" class="sx-ft-c3-cutset" data-cutset="PRV_A,PRV_B,PUMP" data-cutset-index="0" data-order="3" data-cutset-prob="0.0000016000000000000001"/>
+<g class="sx-ft-c3-edge-g" data-from="TOP#0" data-to="OVP#1"><path d="M 182.5 182 L 182.5 213 L 96 213 L 96 244" class="sx-ft-c3-edge"/></g>
+<g class="sx-ft-c3-edge-g" data-from="TOP#0" data-to="RELIEF#3"><path d="M 182.5 182 L 182.5 213 L 269 213 L 269 244" class="sx-ft-c3-edge"/></g>
+<g class="sx-ft-c3-edge-g" data-from="OVP#1" data-to="PUMP#2"><path d="M 96 344 L 96 377 L 96 377 L 96 410" class="sx-ft-c3-edge"/></g>
+<g class="sx-ft-c3-edge-g" data-from="RELIEF#3" data-to="PRV_A#4"><path d="M 269 344 L 269 377 L 232 377 L 232 410" class="sx-ft-c3-edge"/></g>
+<g class="sx-ft-c3-edge-g" data-from="RELIEF#3" data-to="PRV_B#5"><path d="M 269 344 L 269 377 L 306 377 L 306 410" class="sx-ft-c3-edge"/></g>
+<g class="sx-ft-c3-gate-g" data-id="TOP#0" data-gate="and"><line x1="182.5" y1="144" x2="182.5" y2="132" class="sx-ft-c3-pin"/>
+<path d="M 155.5 182 L 155.5 163 A 27 19 0 0 1 209.5 163 L 209.5 182 Z" class="sx-ft-c3-gate"/></g>
+<g class="sx-ft-c3-gate-g" data-id="OVP#1" data-gate="inhibit" data-condition="HEATER"><line x1="96" y1="306" x2="96" y2="294" class="sx-ft-c3-pin"/>
+<path d="M 96 306 L 123 315.5 L 123 334.5 L 96 344 L 69 334.5 L 69 315.5 Z" class="sx-ft-c3-gate"/>
+<line x1="123" y1="325" x2="145" y2="325" class="sx-ft-c3-pin"/>
+<ellipse cx="184" cy="325" rx="39" ry="17" class="sx-ft-c3-cond"/>
+<text x="184" y="325" class="sx-ft-c3-cond-text" text-anchor="middle" dominant-baseline="middle"><tspan x="184" dy="-5.5">Heater</tspan><tspan x="184" dy="11">energised</tspan></text></g>
+<g class="sx-ft-c3-gate-g" data-id="RELIEF#3" data-gate="voting" data-k="2" data-n="2"><line x1="269" y1="306" x2="269" y2="294" class="sx-ft-c3-pin"/>
+<path d="M 242 344 Q 269 335 296 344 Q 296 315.5 269 306 Q 242 315.5 242 344 Z" class="sx-ft-c3-gate"/>
+<text x="269" y="329" class="sx-ft-c3-gate-label" text-anchor="middle">2/2</text></g>
+<g class="sx-ft-c3-event-g" data-id="TOP" data-role="top"><rect x="114.5" y="82" width="136" height="50" rx="5" class="sx-ft-c3-event" data-role="top"/>
+<text x="182.5" y="107" class="sx-ft-c3-label" text-anchor="middle" dominant-baseline="middle"><tspan x="182.5" dy="-7">Pressure vessel</tspan><tspan x="182.5" dy="14">ruptures</tspan></text></g>
+<g class="sx-ft-c3-event-g" data-id="OVP" data-role="intermediate"><rect x="30" y="244" width="132" height="50" rx="5" class="sx-ft-c3-event" data-role="intermediate"/>
+<text x="96" y="269" class="sx-ft-c3-label" text-anchor="middle" dominant-baseline="middle"><tspan x="96" dy="-7">Sustained</tspan><tspan x="96" dy="14">over-pressure</tspan></text></g>
+<g class="sx-ft-c3-event-g" data-id="PUMP" data-role="basic" data-prob="0.004"><circle cx="96" cy="431" r="21" class="sx-ft-c3-basic"/>
+<text x="96" y="434" class="sx-ft-c3-id" text-anchor="middle">PUMP</text>
+<text x="96" y="471" class="sx-ft-c3-cap" text-anchor="middle">Pump runaway</text>
+<text x="96" y="484" class="sx-ft-c3-prob" text-anchor="middle">p=0.004</text></g>
+<g class="sx-ft-c3-event-g" data-id="RELIEF" data-role="intermediate"><rect x="194" y="244" width="150" height="50" rx="5" class="sx-ft-c3-event" data-role="intermediate"/>
+<text x="269" y="269" class="sx-ft-c3-label" text-anchor="middle" dominant-baseline="middle"><tspan x="269" dy="0">Both reliefs fail</tspan></text></g>
+<g class="sx-ft-c3-event-g" data-id="PRV_A" data-role="basic" data-prob="0.02"><circle cx="232" cy="431" r="21" class="sx-ft-c3-basic"/>
+<text x="232" y="434" class="sx-ft-c3-id" text-anchor="middle">PRV_A</text>
+<text x="232" y="471" class="sx-ft-c3-cap" text-anchor="middle">Relief A stuck</text>
+<text x="232" y="484" class="sx-ft-c3-prob" text-anchor="middle">p=0.02</text></g>
+<g class="sx-ft-c3-event-g" data-id="PRV_B" data-role="basic" data-prob="0.02"><circle cx="306" cy="431" r="21" class="sx-ft-c3-basic"/>
+<text x="306" y="434" class="sx-ft-c3-id" text-anchor="middle">PRV_B</text>
+<text x="306" y="471" class="sx-ft-c3-cap" text-anchor="middle">Relief B stuck</text>
+<text x="306" y="484" class="sx-ft-c3-prob" text-anchor="middle">p=0.02</text></g>
+<text x="182.5" y="73" class="sx-ft-c3-ptop" text-anchor="middle">P(top) = 1.60e-6 (mcub)</text></g></svg></div>
+  <details>
+    <summary>DSL source</summary>
+    <pre>faulttree "Vessel ruptures"
+  analysis: cutsets, probability
+  prob: mcub
+  top TOP "Pressure vessel ruptures" = AND(OVP, RELIEF)
+  gate OVP    "Sustained over-pressure" = INHIBIT(PUMP) if HEATER
+  gate RELIEF "Both reliefs fail"        = VOTING(2/2; PRV_A, PRV_B)
+  basic PUMP  "Pump runaway"   p: 0.004
+  basic PRV_A "Relief A stuck" p: 0.02
+  basic PRV_B "Relief B stuck" p: 0.02
+  house HEATER "Heater energised" state: 1
+  undeveloped EXT "External fire (not modelled)"</pre>
+  </details>
+</section>
+
+<section class="card" id="exact">
+  <h2>5 — Exact probability with a shared event</h2>
+  <p class="note">L1 (shared logic solver) is in both channels → cut sets {S1,L1} and {S2,L1}. prob: exact uses inclusion-exclusion: 0.005 − P(S1)P(S2)P(L1) = 0.004875 (rare-event would over-count L1 and report 0.005).</p>
+  <div class="svg-wrap"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="396" height="562" viewBox="0 0 396 562" role="img" aria-label="Safety function fails on demand" data-diagram-type="faulttree"><title>Safety function fails on demand</title>
+<desc>Fault tree for &quot;Safety function fails&quot;: 1 top, 2 intermediate, 3 basic. 2 minimal cut sets: {L1, S1}, {L1, S2}. P(top) = 0.00488 (exact).</desc>
+<style>.sx-ft-c4-bg { fill: #ffffff; }
+.sx-ft-c4-event { fill: #eef2f7; stroke: #334155; stroke-width: 2; }
+.sx-ft-c4-event[data-role="top"] { stroke: #1e293b; stroke-width: 2.25; }
+.sx-ft-c4-basic { fill: #ffffff; stroke: #334155; stroke-width: 2; }
+.sx-ft-c4-undeveloped { fill: #e2e8f0; stroke: #334155; stroke-width: 2; }
+.sx-ft-c4-house { fill: #fef9c3; stroke: #334155; stroke-width: 2; }
+.sx-ft-c4-gate { fill: #dcfce7; stroke: #059669; stroke-width: 2; stroke-linejoin: round; }
+.sx-ft-c4-cond { fill: #f1f5f9; stroke: #334155; stroke-width: 1; }
+.sx-ft-c4-pin, .sx-ft-c4-edge { fill: none; stroke: #475569; stroke-width: 2; }
+.sx-ft-c4-shared-mark { fill: none; stroke: #334155; stroke-width: 2; }
+.sx-ft-c4-label { fill: #334155; font-size: 12px; font-weight: 600; }
+.sx-ft-c4-id { fill: #334155; font-size: 10px; font-weight: 700; }
+.sx-ft-c4-cap { fill: #334155; font-size: 9px; }
+.sx-ft-c4-prob { fill: #2563eb; font-size: 9px; font-weight: 600; }
+.sx-ft-c4-gate-label { fill: #059669; font-size: 9px; font-weight: 700; }
+.sx-ft-c4-cond-text { fill: #334155; font-size: 9px; }
+.sx-ft-c4-cutset { fill: rgba(220,38,38,0.05); stroke: #dc2626; stroke-width: 2; }
+.sx-ft-c4-cutset[data-spof="true"] { stroke: #b91c1c; stroke-width: 3; }
+.sx-ft-c4-ptop { fill: #2563eb; font-size: 12px; font-weight: 700; }
+.sx-ft-c4-transfer { fill: #eef2f7; stroke: #334155; stroke-width: 2; }
+.sx-ft-c4-transfer-label { fill: #334155; font-size: 9px; font-weight: 600; }
+.sx-ft-c4-title { fill: #334155; font-size: 16px; font-weight: 700; }</style>
+<rect x="0" y="0" width="396" height="562" class="sx-ft-c4-bg"/>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><text x="30" y="22" class="sx-ft-c4-title" font-family="system-ui, -apple-system, sans-serif">Safety function fails on demand</text>
+<rect x="31" y="403" width="130" height="56" rx="6" class="sx-ft-c4-cutset" data-cutset="L1,S1" data-cutset-index="0" data-order="2" data-cutset-prob="0.0025000000000000005"/>
+<rect x="103" y="401" width="150" height="60" rx="6" class="sx-ft-c4-cutset" data-cutset="L1,S2" data-cutset-index="1" data-order="2" data-cutset-prob="0.0025000000000000005"/>
+<g class="sx-ft-c4-edge-g" data-from="T#0" data-to="C1#1"><path d="M 178 182 L 178 213 L 96 213 L 96 244" class="sx-ft-c4-edge"/></g>
+<g class="sx-ft-c4-edge-g" data-from="T#0" data-to="C2#4"><path d="M 178 182 L 178 213 L 260 213 L 260 244" class="sx-ft-c4-edge"/></g>
+<g class="sx-ft-c4-edge-g" data-from="C1#1" data-to="S1#2"><path d="M 96 344 L 96 377 L 59 377 L 59 410" class="sx-ft-c4-edge"/></g>
+<g class="sx-ft-c4-edge-g" data-from="C1#1" data-to="L1#3"><path d="M 96 344 L 96 377 L 133 377 L 133 410" class="sx-ft-c4-edge"/></g>
+<g class="sx-ft-c4-edge-g" data-from="C2#4" data-to="S2#5"><path d="M 260 344 L 260 377 L 223 377 L 223 410" class="sx-ft-c4-edge"/></g>
+<g class="sx-ft-c4-edge-g" data-from="C2#4" data-to="L1#6"><path d="M 260 344 L 260 377 L 297 377 L 297 410" class="sx-ft-c4-edge"/></g>
+<g class="sx-ft-c4-gate-g" data-id="T#0" data-gate="or"><line x1="178" y1="144" x2="178" y2="132" class="sx-ft-c4-pin"/>
+<path d="M 151 182 Q 178 173 205 182 Q 205 153.5 178 144 Q 151 153.5 151 182 Z" class="sx-ft-c4-gate"/></g>
+<g class="sx-ft-c4-gate-g" data-id="C1#1" data-gate="and"><line x1="96" y1="306" x2="96" y2="294" class="sx-ft-c4-pin"/>
+<path d="M 69 344 L 69 325 A 27 19 0 0 1 123 325 L 123 344 Z" class="sx-ft-c4-gate"/></g>
+<g class="sx-ft-c4-gate-g" data-id="C2#4" data-gate="and"><line x1="260" y1="306" x2="260" y2="294" class="sx-ft-c4-pin"/>
+<path d="M 233 344 L 233 325 A 27 19 0 0 1 287 325 L 287 344 Z" class="sx-ft-c4-gate"/></g>
+<g class="sx-ft-c4-event-g" data-id="T" data-role="top"><rect x="110" y="82" width="136" height="50" rx="5" class="sx-ft-c4-event" data-role="top"/>
+<text x="178" y="107" class="sx-ft-c4-label" text-anchor="middle" dominant-baseline="middle"><tspan x="178" dy="-7">Safety function</tspan><tspan x="178" dy="14">fails</tspan></text></g>
+<g class="sx-ft-c4-event-g" data-id="C1" data-role="intermediate"><rect x="30" y="244" width="132" height="50" rx="5" class="sx-ft-c4-event" data-role="intermediate"/>
+<text x="96" y="269" class="sx-ft-c4-label" text-anchor="middle" dominant-baseline="middle"><tspan x="96" dy="0">Channel 1 path</tspan></text></g>
+<g class="sx-ft-c4-event-g" data-id="S1" data-role="basic" data-prob="0.05"><circle cx="59" cy="431" r="21" class="sx-ft-c4-basic"/>
+<text x="59" y="434" class="sx-ft-c4-id" text-anchor="middle">S1</text>
+<text x="59" y="471" class="sx-ft-c4-cap" text-anchor="middle">Sensor 1 fails</text>
+<text x="59" y="484" class="sx-ft-c4-prob" text-anchor="middle">p=0.05</text></g>
+<g class="sx-ft-c4-event-g" data-id="L1" data-role="basic" data-prob="0.05" data-shared-id="L1"><circle cx="133" cy="431" r="21" class="sx-ft-c4-basic"/>
+<line x1="128" y1="447" x2="138" y2="447" class="sx-ft-c4-shared-mark"/>
+<text x="133" y="434" class="sx-ft-c4-id" text-anchor="middle">L1</text>
+<text x="133" y="471" class="sx-ft-c4-cap" text-anchor="middle">Shared logic solver…</text>
+<text x="133" y="484" class="sx-ft-c4-prob" text-anchor="middle">p=0.05</text></g>
+<g class="sx-ft-c4-event-g" data-id="C2" data-role="intermediate"><rect x="194" y="244" width="132" height="50" rx="5" class="sx-ft-c4-event" data-role="intermediate"/>
+<text x="260" y="269" class="sx-ft-c4-label" text-anchor="middle" dominant-baseline="middle"><tspan x="260" dy="0">Channel 2 path</tspan></text></g>
+<g class="sx-ft-c4-event-g" data-id="S2" data-role="basic" data-prob="0.05"><circle cx="223" cy="431" r="21" class="sx-ft-c4-basic"/>
+<text x="223" y="434" class="sx-ft-c4-id" text-anchor="middle">S2</text>
+<text x="223" y="471" class="sx-ft-c4-cap" text-anchor="middle">Sensor 2 fails</text>
+<text x="223" y="484" class="sx-ft-c4-prob" text-anchor="middle">p=0.05</text></g>
+<g class="sx-ft-c4-event-g" data-id="L1" data-role="basic" data-prob="0.05" data-shared-id="L1"><circle cx="297" cy="431" r="21" class="sx-ft-c4-basic"/>
+<line x1="292" y1="447" x2="302" y2="447" class="sx-ft-c4-shared-mark"/>
+<text x="297" y="434" class="sx-ft-c4-id" text-anchor="middle">L1</text>
+<text x="297" y="471" class="sx-ft-c4-cap" text-anchor="middle">Shared logic solver…</text>
+<text x="297" y="484" class="sx-ft-c4-prob" text-anchor="middle">p=0.05</text></g>
+<text x="178" y="73" class="sx-ft-c4-ptop" text-anchor="middle">P(top) = 0.00488 (exact)</text></g></svg></div>
+  <details>
+    <summary>DSL source</summary>
+    <pre>faulttree "Safety function fails on demand"
+  analysis: cutsets, probability
+  prob: exact
+  top T "Safety function fails" = OR(C1, C2)
+  gate C1 "Channel 1 path" = AND(S1, L1)
+  gate C2 "Channel 2 path" = AND(S2, L1)
+  basic S1 "Sensor 1 fails" p: 0.05
+  basic S2 "Sensor 2 fails" p: 0.05
+  basic L1 "Shared logic solver fails" p: 0.05</pre>
+  </details>
+</section>
+
+<section class="card" id="voting-3">
+  <h2>6 — k-out-of-n voting (2-of-3 redundancy)</h2>
+  <p class="note">A 2-out-of-3 voted sensor group: the gate expands to OR of all C(3,2)=3 AND-pairs → cut sets {SA,SB}, {SA,SC}, {SB,SC} (each order 2). The classic redundancy-voting pattern.</p>
+  <div class="svg-wrap"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="301" height="400" viewBox="0 0 301 400" role="img" aria-label="Trip signal lost" data-diagram-type="faulttree"><title>Trip signal lost</title>
+<desc>Fault tree for &quot;2oo3 sensor group fails&quot;: 1 top, 3 basic. 3 minimal cut sets: {SA, SB}, {SA, SC}, {SB, SC}. P(top) = 3.00e-4 (rare).</desc>
+<style>.sx-ft-c5-bg { fill: #ffffff; }
+.sx-ft-c5-event { fill: #eef2f7; stroke: #334155; stroke-width: 2; }
+.sx-ft-c5-event[data-role="top"] { stroke: #1e293b; stroke-width: 2.25; }
+.sx-ft-c5-basic { fill: #ffffff; stroke: #334155; stroke-width: 2; }
+.sx-ft-c5-undeveloped { fill: #e2e8f0; stroke: #334155; stroke-width: 2; }
+.sx-ft-c5-house { fill: #fef9c3; stroke: #334155; stroke-width: 2; }
+.sx-ft-c5-gate { fill: #dcfce7; stroke: #059669; stroke-width: 2; stroke-linejoin: round; }
+.sx-ft-c5-cond { fill: #f1f5f9; stroke: #334155; stroke-width: 1; }
+.sx-ft-c5-pin, .sx-ft-c5-edge { fill: none; stroke: #475569; stroke-width: 2; }
+.sx-ft-c5-shared-mark { fill: none; stroke: #334155; stroke-width: 2; }
+.sx-ft-c5-label { fill: #334155; font-size: 12px; font-weight: 600; }
+.sx-ft-c5-id { fill: #334155; font-size: 10px; font-weight: 700; }
+.sx-ft-c5-cap { fill: #334155; font-size: 9px; }
+.sx-ft-c5-prob { fill: #2563eb; font-size: 9px; font-weight: 600; }
+.sx-ft-c5-gate-label { fill: #059669; font-size: 9px; font-weight: 700; }
+.sx-ft-c5-cond-text { fill: #334155; font-size: 9px; }
+.sx-ft-c5-cutset { fill: rgba(220,38,38,0.05); stroke: #dc2626; stroke-width: 2; }
+.sx-ft-c5-cutset[data-spof="true"] { stroke: #b91c1c; stroke-width: 3; }
+.sx-ft-c5-ptop { fill: #2563eb; font-size: 12px; font-weight: 700; }
+.sx-ft-c5-transfer { fill: #eef2f7; stroke: #334155; stroke-width: 2; }
+.sx-ft-c5-transfer-label { fill: #334155; font-size: 9px; font-weight: 600; }
+.sx-ft-c5-title { fill: #334155; font-size: 16px; font-weight: 700; }</style>
+<rect x="0" y="0" width="301" height="400" class="sx-ft-c5-bg"/>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><text x="30" y="22" class="sx-ft-c5-title" font-family="system-ui, -apple-system, sans-serif">Trip signal lost</text>
+<rect x="23" y="241" width="130" height="56" rx="6" class="sx-ft-c5-cutset" data-cutset="SA,SB" data-cutset-index="0" data-order="2" data-cutset-prob="0.0001"/>
+<rect x="21" y="239" width="208" height="60" rx="6" class="sx-ft-c5-cutset" data-cutset="SA,SC" data-cutset-index="1" data-order="2" data-cutset-prob="0.0001"/>
+<rect x="93" y="237" width="138" height="64" rx="6" class="sx-ft-c5-cutset" data-cutset="SB,SC" data-cutset-index="2" data-order="2" data-cutset-prob="0.0001"/>
+<g class="sx-ft-c5-edge-g" data-from="T#0" data-to="SA#1"><path d="M 125 182 L 125 215 L 51 215 L 51 248" class="sx-ft-c5-edge"/></g>
+<g class="sx-ft-c5-edge-g" data-from="T#0" data-to="SB#2"><path d="M 125 182 L 125 215 L 125 215 L 125 248" class="sx-ft-c5-edge"/></g>
+<g class="sx-ft-c5-edge-g" data-from="T#0" data-to="SC#3"><path d="M 125 182 L 125 215 L 199 215 L 199 248" class="sx-ft-c5-edge"/></g>
+<g class="sx-ft-c5-gate-g" data-id="T#0" data-gate="voting" data-k="2" data-n="3"><line x1="125" y1="144" x2="125" y2="132" class="sx-ft-c5-pin"/>
+<path d="M 98 182 Q 125 173 152 182 Q 152 153.5 125 144 Q 98 153.5 98 182 Z" class="sx-ft-c5-gate"/>
+<text x="125" y="167" class="sx-ft-c5-gate-label" text-anchor="middle">2/3</text></g>
+<g class="sx-ft-c5-event-g" data-id="T" data-role="top"><rect x="50" y="82" width="150" height="50" rx="5" class="sx-ft-c5-event" data-role="top"/>
+<text x="125" y="107" class="sx-ft-c5-label" text-anchor="middle" dominant-baseline="middle"><tspan x="125" dy="-7">2oo3 sensor group</tspan><tspan x="125" dy="14">fails</tspan></text></g>
+<g class="sx-ft-c5-event-g" data-id="SA" data-role="basic" data-prob="0.01"><circle cx="51" cy="269" r="21" class="sx-ft-c5-basic"/>
+<text x="51" y="272" class="sx-ft-c5-id" text-anchor="middle">SA</text>
+<text x="51" y="309" class="sx-ft-c5-cap" text-anchor="middle">Sensor A fails</text>
+<text x="51" y="322" class="sx-ft-c5-prob" text-anchor="middle">p=0.01</text></g>
+<g class="sx-ft-c5-event-g" data-id="SB" data-role="basic" data-prob="0.01"><circle cx="125" cy="269" r="21" class="sx-ft-c5-basic"/>
+<text x="125" y="272" class="sx-ft-c5-id" text-anchor="middle">SB</text>
+<text x="125" y="309" class="sx-ft-c5-cap" text-anchor="middle">Sensor B fails</text>
+<text x="125" y="322" class="sx-ft-c5-prob" text-anchor="middle">p=0.01</text></g>
+<g class="sx-ft-c5-event-g" data-id="SC" data-role="basic" data-prob="0.01"><circle cx="199" cy="269" r="21" class="sx-ft-c5-basic"/>
+<text x="199" y="272" class="sx-ft-c5-id" text-anchor="middle">SC</text>
+<text x="199" y="309" class="sx-ft-c5-cap" text-anchor="middle">Sensor C fails</text>
+<text x="199" y="322" class="sx-ft-c5-prob" text-anchor="middle">p=0.01</text></g>
+<text x="125" y="73" class="sx-ft-c5-ptop" text-anchor="middle">P(top) = 3.00e-4 (rare)</text></g></svg></div>
+  <details>
+    <summary>DSL source</summary>
+    <pre>faulttree "Trip signal lost"
+  analysis: cutsets, probability
+  top T "2oo3 sensor group fails" = VOTING(2/3; SA, SB, SC)
+  basic SA "Sensor A fails" p: 0.01
+  basic SB "Sensor B fails" p: 0.01
+  basic SC "Sensor C fails" p: 0.01</pre>
+  </details>
+</section>
+
+<section class="card" id="depth">
+  <h2>7 — Deeper mixed tree (AND/OR over three levels)</h2>
+  <p class="note">A realistic multi-level tree mixing AND and OR gates, exercising the tidy top-down layout and edge routing. Cut sets and P(top) computed across the whole tree.</p>
+  <div class="svg-wrap"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="578" height="724" viewBox="0 0 578 724" role="img" aria-label="Loss of cooling" data-diagram-type="faulttree"><title>Loss of cooling</title>
+<desc>Fault tree for &quot;Loss of reactor cooling&quot;: 1 top, 4 intermediate, 6 basic. 5 minimal cut sets: {DG, GRID}, {PA, PB}, {PA, VB}, {PB, VA}, {VA, VB}. P(top) = 0.0024 (rare).</desc>
+<style>.sx-ft-c6-bg { fill: #ffffff; }
+.sx-ft-c6-event { fill: #eef2f7; stroke: #334155; stroke-width: 2; }
+.sx-ft-c6-event[data-role="top"] { stroke: #1e293b; stroke-width: 2.25; }
+.sx-ft-c6-basic { fill: #ffffff; stroke: #334155; stroke-width: 2; }
+.sx-ft-c6-undeveloped { fill: #e2e8f0; stroke: #334155; stroke-width: 2; }
+.sx-ft-c6-house { fill: #fef9c3; stroke: #334155; stroke-width: 2; }
+.sx-ft-c6-gate { fill: #dcfce7; stroke: #059669; stroke-width: 2; stroke-linejoin: round; }
+.sx-ft-c6-cond { fill: #f1f5f9; stroke: #334155; stroke-width: 1; }
+.sx-ft-c6-pin, .sx-ft-c6-edge { fill: none; stroke: #475569; stroke-width: 2; }
+.sx-ft-c6-shared-mark { fill: none; stroke: #334155; stroke-width: 2; }
+.sx-ft-c6-label { fill: #334155; font-size: 12px; font-weight: 600; }
+.sx-ft-c6-id { fill: #334155; font-size: 10px; font-weight: 700; }
+.sx-ft-c6-cap { fill: #334155; font-size: 9px; }
+.sx-ft-c6-prob { fill: #2563eb; font-size: 9px; font-weight: 600; }
+.sx-ft-c6-gate-label { fill: #059669; font-size: 9px; font-weight: 700; }
+.sx-ft-c6-cond-text { fill: #334155; font-size: 9px; }
+.sx-ft-c6-cutset { fill: rgba(220,38,38,0.05); stroke: #dc2626; stroke-width: 2; }
+.sx-ft-c6-cutset[data-spof="true"] { stroke: #b91c1c; stroke-width: 3; }
+.sx-ft-c6-ptop { fill: #2563eb; font-size: 12px; font-weight: 700; }
+.sx-ft-c6-transfer { fill: #eef2f7; stroke: #334155; stroke-width: 2; }
+.sx-ft-c6-transfer-label { fill: #334155; font-size: 9px; font-weight: 600; }
+.sx-ft-c6-title { fill: #334155; font-size: 16px; font-weight: 700; }</style>
+<rect x="0" y="0" width="578" height="724" class="sx-ft-c6-bg"/>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><text x="30" y="22" class="sx-ft-c6-title" font-family="system-ui, -apple-system, sans-serif">Loss of cooling</text>
+<rect x="368" y="403" width="130" height="56" rx="6" class="sx-ft-c6-cutset" data-cutset="DG,GRID" data-cutset-index="0" data-order="2" data-cutset-prob="0.0015"/>
+<rect x="29" y="563" width="224" height="60" rx="6" class="sx-ft-c6-cutset" data-cutset="PA,PB" data-cutset-index="1" data-order="2" data-cutset-prob="0.0004"/>
+<rect x="27" y="561" width="302" height="64" rx="6" class="sx-ft-c6-cutset" data-cutset="PA,VB" data-cutset-index="2" data-order="2" data-cutset-prob="0.0002"/>
+<rect x="105" y="565" width="146" height="56" rx="6" class="sx-ft-c6-cutset" data-cutset="PB,VA" data-cutset-index="3" data-order="2" data-cutset-prob="0.0002"/>
+<rect x="103" y="563" width="224" height="60" rx="6" class="sx-ft-c6-cutset" data-cutset="VA,VB" data-cutset-index="4" data-order="2" data-cutset-prob="0.0001"/>
+<g class="sx-ft-c6-edge-g" data-from="T#0" data-to="PUMPS#1"><path d="M 305.5 182 L 305.5 213 L 178 213 L 178 244" class="sx-ft-c6-edge"/></g>
+<g class="sx-ft-c6-edge-g" data-from="T#0" data-to="POWER#8"><path d="M 305.5 182 L 305.5 213 L 433 213 L 433 244" class="sx-ft-c6-edge"/></g>
+<g class="sx-ft-c6-edge-g" data-from="PUMPS#1" data-to="TRAIN_A#2"><path d="M 178 344 L 178 375 L 96 375 L 96 406" class="sx-ft-c6-edge"/></g>
+<g class="sx-ft-c6-edge-g" data-from="PUMPS#1" data-to="TRAIN_B#5"><path d="M 178 344 L 178 375 L 260 375 L 260 406" class="sx-ft-c6-edge"/></g>
+<g class="sx-ft-c6-edge-g" data-from="TRAIN_A#2" data-to="PA#3"><path d="M 96 506 L 96 539 L 59 539 L 59 572" class="sx-ft-c6-edge"/></g>
+<g class="sx-ft-c6-edge-g" data-from="TRAIN_A#2" data-to="VA#4"><path d="M 96 506 L 96 539 L 133 539 L 133 572" class="sx-ft-c6-edge"/></g>
+<g class="sx-ft-c6-edge-g" data-from="TRAIN_B#5" data-to="PB#6"><path d="M 260 506 L 260 539 L 223 539 L 223 572" class="sx-ft-c6-edge"/></g>
+<g class="sx-ft-c6-edge-g" data-from="TRAIN_B#5" data-to="VB#7"><path d="M 260 506 L 260 539 L 297 539 L 297 572" class="sx-ft-c6-edge"/></g>
+<g class="sx-ft-c6-edge-g" data-from="POWER#8" data-to="GRID#9"><path d="M 433 344 L 433 377 L 396 377 L 396 410" class="sx-ft-c6-edge"/></g>
+<g class="sx-ft-c6-edge-g" data-from="POWER#8" data-to="DG#10"><path d="M 433 344 L 433 377 L 470 377 L 470 410" class="sx-ft-c6-edge"/></g>
+<g class="sx-ft-c6-gate-g" data-id="T#0" data-gate="or"><line x1="305.5" y1="144" x2="305.5" y2="132" class="sx-ft-c6-pin"/>
+<path d="M 278.5 182 Q 305.5 173 332.5 182 Q 332.5 153.5 305.5 144 Q 278.5 153.5 278.5 182 Z" class="sx-ft-c6-gate"/></g>
+<g class="sx-ft-c6-gate-g" data-id="PUMPS#1" data-gate="and"><line x1="178" y1="306" x2="178" y2="294" class="sx-ft-c6-pin"/>
+<path d="M 151 344 L 151 325 A 27 19 0 0 1 205 325 L 205 344 Z" class="sx-ft-c6-gate"/></g>
+<g class="sx-ft-c6-gate-g" data-id="TRAIN_A#2" data-gate="or"><line x1="96" y1="468" x2="96" y2="456" class="sx-ft-c6-pin"/>
+<path d="M 69 506 Q 96 497 123 506 Q 123 477.5 96 468 Q 69 477.5 69 506 Z" class="sx-ft-c6-gate"/></g>
+<g class="sx-ft-c6-gate-g" data-id="TRAIN_B#5" data-gate="or"><line x1="260" y1="468" x2="260" y2="456" class="sx-ft-c6-pin"/>
+<path d="M 233 506 Q 260 497 287 506 Q 287 477.5 260 468 Q 233 477.5 233 506 Z" class="sx-ft-c6-gate"/></g>
+<g class="sx-ft-c6-gate-g" data-id="POWER#8" data-gate="and"><line x1="433" y1="306" x2="433" y2="294" class="sx-ft-c6-pin"/>
+<path d="M 406 344 L 406 325 A 27 19 0 0 1 460 325 L 460 344 Z" class="sx-ft-c6-gate"/></g>
+<g class="sx-ft-c6-event-g" data-id="T" data-role="top"><rect x="237.5" y="82" width="136" height="50" rx="5" class="sx-ft-c6-event" data-role="top"/>
+<text x="305.5" y="107" class="sx-ft-c6-label" text-anchor="middle" dominant-baseline="middle"><tspan x="305.5" dy="-7">Loss of reactor</tspan><tspan x="305.5" dy="14">cooling</tspan></text></g>
+<g class="sx-ft-c6-event-g" data-id="PUMPS" data-role="intermediate"><rect x="106.5" y="244" width="143" height="50" rx="5" class="sx-ft-c6-event" data-role="intermediate"/>
+<text x="178" y="269" class="sx-ft-c6-label" text-anchor="middle" dominant-baseline="middle"><tspan x="178" dy="-7">Both pump trains</tspan><tspan x="178" dy="14">fail</tspan></text></g>
+<g class="sx-ft-c6-event-g" data-id="TRAIN_A" data-role="intermediate"><rect x="30" y="406" width="132" height="50" rx="5" class="sx-ft-c6-event" data-role="intermediate"/>
+<text x="96" y="431" class="sx-ft-c6-label" text-anchor="middle" dominant-baseline="middle"><tspan x="96" dy="0">Train A fails</tspan></text></g>
+<g class="sx-ft-c6-event-g" data-id="PA" data-role="basic" data-prob="0.02"><circle cx="59" cy="593" r="21" class="sx-ft-c6-basic"/>
+<text x="59" y="596" class="sx-ft-c6-id" text-anchor="middle">PA</text>
+<text x="59" y="633" class="sx-ft-c6-cap" text-anchor="middle">Pump A fails</text>
+<text x="59" y="646" class="sx-ft-c6-prob" text-anchor="middle">p=0.02</text></g>
+<g class="sx-ft-c6-event-g" data-id="VA" data-role="basic" data-prob="0.01"><circle cx="133" cy="593" r="21" class="sx-ft-c6-basic"/>
+<text x="133" y="596" class="sx-ft-c6-id" text-anchor="middle">VA</text>
+<text x="133" y="633" class="sx-ft-c6-cap" text-anchor="middle">Valve A stuck</text>
+<text x="133" y="646" class="sx-ft-c6-prob" text-anchor="middle">p=0.01</text></g>
+<g class="sx-ft-c6-event-g" data-id="TRAIN_B" data-role="intermediate"><rect x="194" y="406" width="132" height="50" rx="5" class="sx-ft-c6-event" data-role="intermediate"/>
+<text x="260" y="431" class="sx-ft-c6-label" text-anchor="middle" dominant-baseline="middle"><tspan x="260" dy="0">Train B fails</tspan></text></g>
+<g class="sx-ft-c6-event-g" data-id="PB" data-role="basic" data-prob="0.02"><circle cx="223" cy="593" r="21" class="sx-ft-c6-basic"/>
+<text x="223" y="596" class="sx-ft-c6-id" text-anchor="middle">PB</text>
+<text x="223" y="633" class="sx-ft-c6-cap" text-anchor="middle">Pump B fails</text>
+<text x="223" y="646" class="sx-ft-c6-prob" text-anchor="middle">p=0.02</text></g>
+<g class="sx-ft-c6-event-g" data-id="VB" data-role="basic" data-prob="0.01"><circle cx="297" cy="593" r="21" class="sx-ft-c6-basic"/>
+<text x="297" y="596" class="sx-ft-c6-id" text-anchor="middle">VB</text>
+<text x="297" y="633" class="sx-ft-c6-cap" text-anchor="middle">Valve B stuck</text>
+<text x="297" y="646" class="sx-ft-c6-prob" text-anchor="middle">p=0.01</text></g>
+<g class="sx-ft-c6-event-g" data-id="POWER" data-role="intermediate"><rect x="358" y="244" width="150" height="50" rx="5" class="sx-ft-c6-event" data-role="intermediate"/>
+<text x="433" y="269" class="sx-ft-c6-label" text-anchor="middle" dominant-baseline="middle"><tspan x="433" dy="0">Loss of all power</tspan></text></g>
+<g class="sx-ft-c6-event-g" data-id="GRID" data-role="basic" data-prob="0.05"><circle cx="396" cy="431" r="21" class="sx-ft-c6-basic"/>
+<text x="396" y="434" class="sx-ft-c6-id" text-anchor="middle">GRID</text>
+<text x="396" y="471" class="sx-ft-c6-cap" text-anchor="middle">Grid power lost</text>
+<text x="396" y="484" class="sx-ft-c6-prob" text-anchor="middle">p=0.05</text></g>
+<g class="sx-ft-c6-event-g" data-id="DG" data-role="basic" data-prob="0.03"><circle cx="470" cy="431" r="21" class="sx-ft-c6-basic"/>
+<text x="470" y="434" class="sx-ft-c6-id" text-anchor="middle">DG</text>
+<text x="470" y="471" class="sx-ft-c6-cap" text-anchor="middle">Diesel gen fails</text>
+<text x="470" y="484" class="sx-ft-c6-prob" text-anchor="middle">p=0.03</text></g>
+<text x="305.5" y="73" class="sx-ft-c6-ptop" text-anchor="middle">P(top) = 0.0024 (rare)</text></g></svg></div>
+  <details>
+    <summary>DSL source</summary>
+    <pre>faulttree "Loss of cooling"
+  analysis: cutsets, probability
+  top T "Loss of reactor cooling" = OR(PUMPS, POWER)
+  gate PUMPS "Both pump trains fail" = AND(TRAIN_A, TRAIN_B)
+  gate TRAIN_A "Train A fails" = OR(PA, VA)
+  gate TRAIN_B "Train B fails" = OR(PB, VB)
+  gate POWER "Loss of all power" = AND(GRID, DG)
+  basic PA "Pump A fails"   p: 0.02
+  basic VA "Valve A stuck"  p: 0.01
+  basic PB "Pump B fails"   p: 0.02
+  basic VB "Valve B stuck"  p: 0.01
+  basic GRID "Grid power lost"    p: 0.05
+  basic DG   "Diesel gen fails"   p: 0.03</pre>
+  </details>
+</section>
+
+<section class="card" id="ref-overheat">
+  <h2>8 — Reference repro: "Water overheating" (Wikipedia FTA)</h2>
+  <p class="note">Reproduces the classic textbook tree (your 2nd reference image): an OR top over an AND sub-fault (F) + a direct booster failure (E) + an OR no-voltage branch (G), with probabilities on every basic event. Confirms AND/OR mix + per-event p + computed cut sets.</p>
+  <div class="svg-wrap"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="534" height="562" viewBox="0 0 534 562" role="img" aria-label="Water overheating" data-diagram-type="faulttree"><title>Water overheating</title>
+<desc>Fault tree for &quot;Water overheating&quot;: 1 top, 2 intermediate, 5 basic. 4 minimal cut sets: {C}, {D}, {E}, {A, B}. Single points of failure: C, D, E. P(top) = 0.371 (rare).</desc>
+<style>.sx-ft-c7-bg { fill: #ffffff; }
+.sx-ft-c7-event { fill: #eef2f7; stroke: #334155; stroke-width: 2; }
+.sx-ft-c7-event[data-role="top"] { stroke: #1e293b; stroke-width: 2.25; }
+.sx-ft-c7-basic { fill: #ffffff; stroke: #334155; stroke-width: 2; }
+.sx-ft-c7-undeveloped { fill: #e2e8f0; stroke: #334155; stroke-width: 2; }
+.sx-ft-c7-house { fill: #fef9c3; stroke: #334155; stroke-width: 2; }
+.sx-ft-c7-gate { fill: #dcfce7; stroke: #059669; stroke-width: 2; stroke-linejoin: round; }
+.sx-ft-c7-cond { fill: #f1f5f9; stroke: #334155; stroke-width: 1; }
+.sx-ft-c7-pin, .sx-ft-c7-edge { fill: none; stroke: #475569; stroke-width: 2; }
+.sx-ft-c7-shared-mark { fill: none; stroke: #334155; stroke-width: 2; }
+.sx-ft-c7-label { fill: #334155; font-size: 12px; font-weight: 600; }
+.sx-ft-c7-id { fill: #334155; font-size: 10px; font-weight: 700; }
+.sx-ft-c7-cap { fill: #334155; font-size: 9px; }
+.sx-ft-c7-prob { fill: #2563eb; font-size: 9px; font-weight: 600; }
+.sx-ft-c7-gate-label { fill: #059669; font-size: 9px; font-weight: 700; }
+.sx-ft-c7-cond-text { fill: #334155; font-size: 9px; }
+.sx-ft-c7-cutset { fill: rgba(220,38,38,0.05); stroke: #dc2626; stroke-width: 2; }
+.sx-ft-c7-cutset[data-spof="true"] { stroke: #b91c1c; stroke-width: 3; }
+.sx-ft-c7-ptop { fill: #2563eb; font-size: 12px; font-weight: 700; }
+.sx-ft-c7-transfer { fill: #eef2f7; stroke: #334155; stroke-width: 2; }
+.sx-ft-c7-transfer-label { fill: #334155; font-size: 9px; font-weight: 600; }
+.sx-ft-c7-title { fill: #334155; font-size: 16px; font-weight: 700; }</style>
+<rect x="0" y="0" width="534" height="562" class="sx-ft-c7-bg"/>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><text x="30" y="22" class="sx-ft-c7-title" font-family="system-ui, -apple-system, sans-serif">Water overheating</text>
+<rect x="317" y="403" width="56" height="56" rx="6" class="sx-ft-c7-cutset" data-cutset="C" data-cutset-index="0" data-order="1" data-spof="true" data-cutset-prob="0.12"/>
+<rect x="389" y="401" width="60" height="60" rx="6" class="sx-ft-c7-cutset" data-cutset="D" data-cutset-index="1" data-order="1" data-spof="true" data-cutset-prob="0.23"/>
+<rect x="215" y="237" width="64" height="64" rx="6" class="sx-ft-c7-cutset" data-cutset="E" data-cutset-index="2" data-order="1" data-spof="true" data-cutset-prob="0.02"/>
+<rect x="47" y="403" width="130" height="56" rx="6" class="sx-ft-c7-cutset" data-cutset="A,B" data-cutset-index="3" data-order="2" data-cutset-prob="0.0015"/>
+<g class="sx-ft-c7-edge-g" data-from="T#0" data-to="F#1"><path d="M 247 182 L 247 213 L 112 213 L 112 244" class="sx-ft-c7-edge"/></g>
+<g class="sx-ft-c7-edge-g" data-from="T#0" data-to="E#4"><path d="M 247 182 L 247 215 L 247 215 L 247 248" class="sx-ft-c7-edge"/></g>
+<g class="sx-ft-c7-edge-g" data-from="T#0" data-to="G#5"><path d="M 247 182 L 247 213 L 382 213 L 382 244" class="sx-ft-c7-edge"/></g>
+<g class="sx-ft-c7-edge-g" data-from="F#1" data-to="A#2"><path d="M 112 344 L 112 377 L 75 377 L 75 410" class="sx-ft-c7-edge"/></g>
+<g class="sx-ft-c7-edge-g" data-from="F#1" data-to="B#3"><path d="M 112 344 L 112 377 L 149 377 L 149 410" class="sx-ft-c7-edge"/></g>
+<g class="sx-ft-c7-edge-g" data-from="G#5" data-to="C#6"><path d="M 382 344 L 382 377 L 345 377 L 345 410" class="sx-ft-c7-edge"/></g>
+<g class="sx-ft-c7-edge-g" data-from="G#5" data-to="D#7"><path d="M 382 344 L 382 377 L 419 377 L 419 410" class="sx-ft-c7-edge"/></g>
+<g class="sx-ft-c7-gate-g" data-id="T#0" data-gate="or"><line x1="247" y1="144" x2="247" y2="132" class="sx-ft-c7-pin"/>
+<path d="M 220 182 Q 247 173 274 182 Q 274 153.5 247 144 Q 220 153.5 220 182 Z" class="sx-ft-c7-gate"/></g>
+<g class="sx-ft-c7-gate-g" data-id="F#1" data-gate="and"><line x1="112" y1="306" x2="112" y2="294" class="sx-ft-c7-pin"/>
+<path d="M 85 344 L 85 325 A 27 19 0 0 1 139 325 L 139 344 Z" class="sx-ft-c7-gate"/></g>
+<g class="sx-ft-c7-gate-g" data-id="G#5" data-gate="or"><line x1="382" y1="306" x2="382" y2="294" class="sx-ft-c7-pin"/>
+<path d="M 355 344 Q 382 335 409 344 Q 409 315.5 382 306 Q 355 315.5 355 344 Z" class="sx-ft-c7-gate"/></g>
+<g class="sx-ft-c7-event-g" data-id="T" data-role="top"><rect x="172" y="82" width="150" height="50" rx="5" class="sx-ft-c7-event" data-role="top"/>
+<text x="247" y="107" class="sx-ft-c7-label" text-anchor="middle" dominant-baseline="middle"><tspan x="247" dy="0">Water overheating</tspan></text></g>
+<g class="sx-ft-c7-event-g" data-id="F" data-role="intermediate"><rect x="30" y="244" width="164" height="50" rx="5" class="sx-ft-c7-event" data-role="intermediate"/>
+<text x="112" y="269" class="sx-ft-c7-label" text-anchor="middle" dominant-baseline="middle"><tspan x="112" dy="-7">Circuit failure and</tspan><tspan x="112" dy="14">no warning lamp</tspan></text></g>
+<g class="sx-ft-c7-event-g" data-id="A" data-role="basic" data-prob="0.05"><circle cx="75" cy="431" r="21" class="sx-ft-c7-basic"/>
+<text x="75" y="434" class="sx-ft-c7-id" text-anchor="middle">A</text>
+<text x="75" y="471" class="sx-ft-c7-cap" text-anchor="middle">Chip failure</text>
+<text x="75" y="484" class="sx-ft-c7-prob" text-anchor="middle">p=0.05</text></g>
+<g class="sx-ft-c7-event-g" data-id="B" data-role="basic" data-prob="0.03"><circle cx="149" cy="431" r="21" class="sx-ft-c7-basic"/>
+<text x="149" y="434" class="sx-ft-c7-id" text-anchor="middle">B</text>
+<text x="149" y="471" class="sx-ft-c7-cap" text-anchor="middle">Warning lamp burned</text>
+<text x="149" y="484" class="sx-ft-c7-prob" text-anchor="middle">p=0.03</text></g>
+<g class="sx-ft-c7-event-g" data-id="E" data-role="basic" data-prob="0.02"><circle cx="247" cy="269" r="21" class="sx-ft-c7-basic"/>
+<text x="247" y="272" class="sx-ft-c7-id" text-anchor="middle">E</text>
+<text x="247" y="309" class="sx-ft-c7-cap" text-anchor="middle">Booster failure</text>
+<text x="247" y="322" class="sx-ft-c7-prob" text-anchor="middle">p=0.02</text></g>
+<g class="sx-ft-c7-event-g" data-id="G" data-role="intermediate"><rect x="300" y="244" width="164" height="50" rx="5" class="sx-ft-c7-event" data-role="intermediate"/>
+<text x="382" y="269" class="sx-ft-c7-label" text-anchor="middle" dominant-baseline="middle"><tspan x="382" dy="0">No voltage at input</tspan></text></g>
+<g class="sx-ft-c7-event-g" data-id="C" data-role="basic" data-prob="0.12"><circle cx="345" cy="431" r="21" class="sx-ft-c7-basic"/>
+<text x="345" y="434" class="sx-ft-c7-id" text-anchor="middle">C</text>
+<text x="345" y="471" class="sx-ft-c7-cap" text-anchor="middle">No burn in network</text>
+<text x="345" y="484" class="sx-ft-c7-prob" text-anchor="middle">p=0.12</text></g>
+<g class="sx-ft-c7-event-g" data-id="D" data-role="basic" data-prob="0.23"><circle cx="419" cy="431" r="21" class="sx-ft-c7-basic"/>
+<text x="419" y="434" class="sx-ft-c7-id" text-anchor="middle">D</text>
+<text x="419" y="471" class="sx-ft-c7-cap" text-anchor="middle">Fuse blown</text>
+<text x="419" y="484" class="sx-ft-c7-prob" text-anchor="middle">p=0.23</text></g>
+<text x="247" y="73" class="sx-ft-c7-ptop" text-anchor="middle">P(top) = 0.371 (rare)</text></g></svg></div>
+  <details>
+    <summary>DSL source</summary>
+    <pre>faulttree "Water overheating"
+  analysis: cutsets, probability
+  top T "Water overheating" = OR(F, E, G)
+  gate F "Circuit failure and no warning lamp" = AND(A, B)
+  gate G "No voltage at input" = OR(C, D)
+  basic E "Booster failure"      p: 0.02
+  basic A "Chip failure"         p: 0.05
+  basic B "Warning lamp burned"  p: 0.03
+  basic C "No burn in network"   p: 0.12
+  basic D "Fuse blown"           p: 0.23</pre>
+  </details>
+</section>
+
+<section class="card" id="ref-accident">
+  <h2>9 — Reference repro: "Accident / Incident" (events + undeveloped)</h2>
+  <p class="note">Reproduces your 4th reference image: an AND top over two «Primary Cause» branches — one OR (with a basic event + an undeveloped diamond), one AND (two basic events). No probabilities → P(top) reported as symbolic (n/a). Confirms basic + undeveloped + nested AND/OR.</p>
+  <div class="svg-wrap"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="404" height="530" viewBox="0 0 404 530" role="img" aria-label="Accident / Incident" data-diagram-type="faulttree"><title>Accident / Incident</title>
+<desc>Fault tree for &quot;Accident / Incident&quot;: 1 top, 2 intermediate, 3 basic, 1 undeveloped. 2 minimal cut sets: {E1, E3, E4}, {E2, E3, E4}.</desc>
+<style>.sx-ft-c8-bg { fill: #ffffff; }
+.sx-ft-c8-event { fill: #eef2f7; stroke: #334155; stroke-width: 2; }
+.sx-ft-c8-event[data-role="top"] { stroke: #1e293b; stroke-width: 2.25; }
+.sx-ft-c8-basic { fill: #ffffff; stroke: #334155; stroke-width: 2; }
+.sx-ft-c8-undeveloped { fill: #e2e8f0; stroke: #334155; stroke-width: 2; }
+.sx-ft-c8-house { fill: #fef9c3; stroke: #334155; stroke-width: 2; }
+.sx-ft-c8-gate { fill: #dcfce7; stroke: #059669; stroke-width: 2; stroke-linejoin: round; }
+.sx-ft-c8-cond { fill: #f1f5f9; stroke: #334155; stroke-width: 1; }
+.sx-ft-c8-pin, .sx-ft-c8-edge { fill: none; stroke: #475569; stroke-width: 2; }
+.sx-ft-c8-shared-mark { fill: none; stroke: #334155; stroke-width: 2; }
+.sx-ft-c8-label { fill: #334155; font-size: 12px; font-weight: 600; }
+.sx-ft-c8-id { fill: #334155; font-size: 10px; font-weight: 700; }
+.sx-ft-c8-cap { fill: #334155; font-size: 9px; }
+.sx-ft-c8-prob { fill: #2563eb; font-size: 9px; font-weight: 600; }
+.sx-ft-c8-gate-label { fill: #059669; font-size: 9px; font-weight: 700; }
+.sx-ft-c8-cond-text { fill: #334155; font-size: 9px; }
+.sx-ft-c8-cutset { fill: rgba(220,38,38,0.05); stroke: #dc2626; stroke-width: 2; }
+.sx-ft-c8-cutset[data-spof="true"] { stroke: #b91c1c; stroke-width: 3; }
+.sx-ft-c8-ptop { fill: #2563eb; font-size: 12px; font-weight: 700; }
+.sx-ft-c8-transfer { fill: #eef2f7; stroke: #334155; stroke-width: 2; }
+.sx-ft-c8-transfer-label { fill: #334155; font-size: 9px; font-weight: 600; }
+.sx-ft-c8-title { fill: #334155; font-size: 16px; font-weight: 700; }</style>
+<rect x="0" y="0" width="404" height="530" class="sx-ft-c8-bg"/>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><text x="30" y="22" class="sx-ft-c8-title" font-family="system-ui, -apple-system, sans-serif">Accident / Incident</text>
+<rect x="32" y="385" width="299" height="56" rx="6" class="sx-ft-c8-cutset" data-cutset="E1,E3,E4" data-cutset-index="0" data-order="3"/>
+<rect x="104" y="382" width="229" height="62" rx="6" class="sx-ft-c8-cutset" data-cutset="E2,E3,E4" data-cutset-index="1" data-order="3"/>
+<g class="sx-ft-c8-edge-g" data-from="T#0" data-to="PC1#1"><path d="M 182 164 L 182 195 L 98 195 L 98 226" class="sx-ft-c8-edge"/></g>
+<g class="sx-ft-c8-edge-g" data-from="T#0" data-to="PC2#4"><path d="M 182 164 L 182 195 L 266 195 L 266 226" class="sx-ft-c8-edge"/></g>
+<g class="sx-ft-c8-edge-g" data-from="PC1#1" data-to="E1#2"><path d="M 98 326 L 98 359 L 60 359 L 60 392" class="sx-ft-c8-edge"/></g>
+<g class="sx-ft-c8-edge-g" data-from="PC1#1" data-to="E2#3"><path d="M 98 326 L 98 358.5 L 135 358.5 L 135 391" class="sx-ft-c8-edge"/></g>
+<g class="sx-ft-c8-edge-g" data-from="PC2#4" data-to="E3#5"><path d="M 266 326 L 266 359 L 229 359 L 229 392" class="sx-ft-c8-edge"/></g>
+<g class="sx-ft-c8-edge-g" data-from="PC2#4" data-to="E4#6"><path d="M 266 326 L 266 359 L 303 359 L 303 392" class="sx-ft-c8-edge"/></g>
+<g class="sx-ft-c8-gate-g" data-id="T#0" data-gate="and"><line x1="182" y1="126" x2="182" y2="114" class="sx-ft-c8-pin"/>
+<path d="M 155 164 L 155 145 A 27 19 0 0 1 209 145 L 209 164 Z" class="sx-ft-c8-gate"/></g>
+<g class="sx-ft-c8-gate-g" data-id="PC1#1" data-gate="or"><line x1="98" y1="288" x2="98" y2="276" class="sx-ft-c8-pin"/>
+<path d="M 71 326 Q 98 317 125 326 Q 125 297.5 98 288 Q 71 297.5 71 326 Z" class="sx-ft-c8-gate"/></g>
+<g class="sx-ft-c8-gate-g" data-id="PC2#4" data-gate="and"><line x1="266" y1="288" x2="266" y2="276" class="sx-ft-c8-pin"/>
+<path d="M 239 326 L 239 307 A 27 19 0 0 1 293 307 L 293 326 Z" class="sx-ft-c8-gate"/></g>
+<g class="sx-ft-c8-event-g" data-id="T" data-role="top"><rect x="100" y="64" width="164" height="50" rx="5" class="sx-ft-c8-event" data-role="top"/>
+<text x="182" y="89" class="sx-ft-c8-label" text-anchor="middle" dominant-baseline="middle"><tspan x="182" dy="0">Accident / Incident</tspan></text></g>
+<g class="sx-ft-c8-event-g" data-id="PC1" data-role="intermediate"><rect x="30" y="226" width="136" height="50" rx="5" class="sx-ft-c8-event" data-role="intermediate"/>
+<text x="98" y="251" class="sx-ft-c8-label" text-anchor="middle" dominant-baseline="middle"><tspan x="98" dy="0">Primary Cause 1</tspan></text></g>
+<g class="sx-ft-c8-event-g" data-id="E1" data-role="basic"><circle cx="60" cy="413" r="21" class="sx-ft-c8-basic"/>
+<text x="60" y="416" class="sx-ft-c8-id" text-anchor="middle">E1</text>
+<text x="60" y="453" class="sx-ft-c8-cap" text-anchor="middle">Event A</text></g>
+<g class="sx-ft-c8-event-g" data-id="E2" data-role="undeveloped"><path d="M 135 391 L 157 413 L 135 435 L 113 413 Z" class="sx-ft-c8-undeveloped"/>
+<text x="135" y="416" class="sx-ft-c8-id" text-anchor="middle">E2</text>
+<text x="135" y="454" class="sx-ft-c8-cap" text-anchor="middle">Event B (undevelope…</text></g>
+<g class="sx-ft-c8-event-g" data-id="PC2" data-role="intermediate"><rect x="198" y="226" width="136" height="50" rx="5" class="sx-ft-c8-event" data-role="intermediate"/>
+<text x="266" y="251" class="sx-ft-c8-label" text-anchor="middle" dominant-baseline="middle"><tspan x="266" dy="0">Primary Cause 2</tspan></text></g>
+<g class="sx-ft-c8-event-g" data-id="E3" data-role="basic"><circle cx="229" cy="413" r="21" class="sx-ft-c8-basic"/>
+<text x="229" y="416" class="sx-ft-c8-id" text-anchor="middle">E3</text>
+<text x="229" y="453" class="sx-ft-c8-cap" text-anchor="middle">Event C</text></g>
+<g class="sx-ft-c8-event-g" data-id="E4" data-role="basic"><circle cx="303" cy="413" r="21" class="sx-ft-c8-basic"/>
+<text x="303" y="416" class="sx-ft-c8-id" text-anchor="middle">E4</text>
+<text x="303" y="453" class="sx-ft-c8-cap" text-anchor="middle">Event D</text></g></g></svg></div>
+  <details>
+    <summary>DSL source</summary>
+    <pre>faulttree "Accident / Incident"
+  analysis: cutsets
+  top T "Accident / Incident" = AND(PC1, PC2)
+  gate PC1 "Primary Cause 1" = OR(E1, E2)
+  gate PC2 "Primary Cause 2" = AND(E3, E4)
+  basic E1 "Event A"
+  undeveloped E2 "Event B (undeveloped)"
+  basic E3 "Event C"
+  basic E4 "Event D"</pre>
+  </details>
+</section>
+
+<section class="card" id="ref-address">
+  <h2>10 — Reference repro: "Bad customer address" (multi-input, undeveloped)</h2>
+  <p class="note">Reproduces your 3rd reference image: a 3-input AND top, each branch an OR/AND over data-source / validation / entry causes, mixing basic events and undeveloped diamonds. Confirms n-ary gates + undeveloped leaves + a wider tree's spacing.</p>
+  <div class="svg-wrap"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="607" height="563" viewBox="0 0 607 563" role="img" aria-label="Bad customer address" data-diagram-type="faulttree"><title>Bad customer address</title>
+<desc>Fault tree for &quot;Bad address for our customer&quot;: 1 top, 3 intermediate, 3 undeveloped, 3 basic. 4 minimal cut sets: {MH, MULTI, NOFIELD, NOVAL}, {MH, MULTI, NOVAL, UNKNOWN}, {MULTI, NOFIELD, NOVAL, SM}, {MULTI, NOVAL, SM, UNKNOWN}. P(top) = 4.32e-5 (rare).</desc>
+<style>.sx-ft-c9-bg { fill: #ffffff; }
+.sx-ft-c9-event { fill: #eef2f7; stroke: #334155; stroke-width: 2; }
+.sx-ft-c9-event[data-role="top"] { stroke: #1e293b; stroke-width: 2.25; }
+.sx-ft-c9-basic { fill: #ffffff; stroke: #334155; stroke-width: 2; }
+.sx-ft-c9-undeveloped { fill: #e2e8f0; stroke: #334155; stroke-width: 2; }
+.sx-ft-c9-house { fill: #fef9c3; stroke: #334155; stroke-width: 2; }
+.sx-ft-c9-gate { fill: #dcfce7; stroke: #059669; stroke-width: 2; stroke-linejoin: round; }
+.sx-ft-c9-cond { fill: #f1f5f9; stroke: #334155; stroke-width: 1; }
+.sx-ft-c9-pin, .sx-ft-c9-edge { fill: none; stroke: #475569; stroke-width: 2; }
+.sx-ft-c9-shared-mark { fill: none; stroke: #334155; stroke-width: 2; }
+.sx-ft-c9-label { fill: #334155; font-size: 12px; font-weight: 600; }
+.sx-ft-c9-id { fill: #334155; font-size: 10px; font-weight: 700; }
+.sx-ft-c9-cap { fill: #334155; font-size: 9px; }
+.sx-ft-c9-prob { fill: #2563eb; font-size: 9px; font-weight: 600; }
+.sx-ft-c9-gate-label { fill: #059669; font-size: 9px; font-weight: 700; }
+.sx-ft-c9-cond-text { fill: #334155; font-size: 9px; }
+.sx-ft-c9-cutset { fill: rgba(220,38,38,0.05); stroke: #dc2626; stroke-width: 2; }
+.sx-ft-c9-cutset[data-spof="true"] { stroke: #b91c1c; stroke-width: 3; }
+.sx-ft-c9-ptop { fill: #2563eb; font-size: 12px; font-weight: 700; }
+.sx-ft-c9-transfer { fill: #eef2f7; stroke: #334155; stroke-width: 2; }
+.sx-ft-c9-transfer-label { fill: #334155; font-size: 9px; font-weight: 600; }
+.sx-ft-c9-title { fill: #334155; font-size: 16px; font-weight: 700; }</style>
+<rect x="0" y="0" width="607" height="563" class="sx-ft-c9-bg"/>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><text x="30" y="22" class="sx-ft-c9-title" font-family="system-ui, -apple-system, sans-serif">Bad customer address</text>
+<rect x="107" y="402" width="350.5" height="58" rx="6" class="sx-ft-c9-cutset" data-cutset="MH,MULTI,NOFIELD,NOVAL" data-cutset-index="0" data-order="4" data-cutset-prob="0.000009600000000000001"/>
+<rect x="105" y="400" width="428.5" height="62" rx="6" class="sx-ft-c9-cutset" data-cutset="MH,MULTI,NOVAL,UNKNOWN" data-cutset-index="1" data-order="4" data-cutset-prob="0.000004800000000000001"/>
+<rect x="27" y="398" width="434.5" height="66" rx="6" class="sx-ft-c9-cutset" data-cutset="MULTI,NOFIELD,NOVAL,SM" data-cutset-index="2" data-order="4" data-cutset-prob="0.0000192"/>
+<rect x="31" y="402" width="500.5" height="58" rx="6" class="sx-ft-c9-cutset" data-cutset="MULTI,NOVAL,SM,UNKNOWN" data-cutset-index="3" data-order="4" data-cutset-prob="0.000009600000000000001"/>
+<g class="sx-ft-c9-edge-g" data-from="T#0" data-to="SRC#1"><path d="M 281.8 182 L 281.8 213 L 98 213 L 98 244" class="sx-ft-c9-edge"/></g>
+<g class="sx-ft-c9-edge-g" data-from="T#0" data-to="STD#4"><path d="M 281.8 182 L 281.8 213 L 280 213 L 280 244" class="sx-ft-c9-edge"/></g>
+<g class="sx-ft-c9-edge-g" data-from="T#0" data-to="ENTRY#7"><path d="M 281.8 182 L 281.8 213 L 465.5 213 L 465.5 244" class="sx-ft-c9-edge"/></g>
+<g class="sx-ft-c9-edge-g" data-from="SRC#1" data-to="SM#2"><path d="M 98 344 L 98 376.5 L 60 376.5 L 60 409" class="sx-ft-c9-edge"/></g>
+<g class="sx-ft-c9-edge-g" data-from="SRC#1" data-to="MH#3"><path d="M 98 344 L 98 376.5 L 136 376.5 L 136 409" class="sx-ft-c9-edge"/></g>
+<g class="sx-ft-c9-edge-g" data-from="STD#4" data-to="NOVAL#5"><path d="M 280 344 L 280 377 L 243 377 L 243 410" class="sx-ft-c9-edge"/></g>
+<g class="sx-ft-c9-edge-g" data-from="STD#4" data-to="MULTI#6"><path d="M 280 344 L 280 377 L 317 377 L 317 410" class="sx-ft-c9-edge"/></g>
+<g class="sx-ft-c9-edge-g" data-from="ENTRY#7" data-to="NOFIELD#8"><path d="M 465.5 344 L 465.5 376.5 L 428.5 376.5 L 428.5 409" class="sx-ft-c9-edge"/></g>
+<g class="sx-ft-c9-edge-g" data-from="ENTRY#7" data-to="UNKNOWN#9"><path d="M 465.5 344 L 465.5 377 L 503.5 377 L 503.5 410" class="sx-ft-c9-edge"/></g>
+<g class="sx-ft-c9-gate-g" data-id="T#0" data-gate="and"><line x1="281.75" y1="144" x2="281.75" y2="132" class="sx-ft-c9-pin"/>
+<path d="M 254.75 182 L 254.75 163 A 27 19 0 0 1 308.75 163 L 308.75 182 Z" class="sx-ft-c9-gate"/></g>
+<g class="sx-ft-c9-gate-g" data-id="SRC#1" data-gate="or"><line x1="98" y1="306" x2="98" y2="294" class="sx-ft-c9-pin"/>
+<path d="M 71 344 Q 98 335 125 344 Q 125 315.5 98 306 Q 71 315.5 71 344 Z" class="sx-ft-c9-gate"/></g>
+<g class="sx-ft-c9-gate-g" data-id="STD#4" data-gate="and"><line x1="280" y1="306" x2="280" y2="294" class="sx-ft-c9-pin"/>
+<path d="M 253 344 L 253 325 A 27 19 0 0 1 307 325 L 307 344 Z" class="sx-ft-c9-gate"/></g>
+<g class="sx-ft-c9-gate-g" data-id="ENTRY#7" data-gate="or"><line x1="465.5" y1="306" x2="465.5" y2="294" class="sx-ft-c9-pin"/>
+<path d="M 438.5 344 Q 465.5 335 492.5 344 Q 492.5 315.5 465.5 306 Q 438.5 315.5 438.5 344 Z" class="sx-ft-c9-gate"/></g>
+<g class="sx-ft-c9-event-g" data-id="T" data-role="top"><rect x="199.75" y="82" width="164" height="50" rx="5" class="sx-ft-c9-event" data-role="top"/>
+<text x="281.75" y="107" class="sx-ft-c9-label" text-anchor="middle" dominant-baseline="middle"><tspan x="281.75" dy="-7">Bad address for our</tspan><tspan x="281.75" dy="14">customer</tspan></text></g>
+<g class="sx-ft-c9-event-g" data-id="SRC" data-role="intermediate"><rect x="30" y="244" width="136" height="50" rx="5" class="sx-ft-c9-event" data-role="intermediate"/>
+<text x="98" y="269" class="sx-ft-c9-label" text-anchor="middle" dominant-baseline="middle"><tspan x="98" dy="-7">Unreliable data</tspan><tspan x="98" dy="14">source</tspan></text></g>
+<g class="sx-ft-c9-event-g" data-id="SM" data-role="undeveloped" data-prob="0.1"><path d="M 60 409 L 82 431 L 60 453 L 38 431 Z" class="sx-ft-c9-undeveloped"/>
+<text x="60" y="434" class="sx-ft-c9-id" text-anchor="middle">SM</text>
+<text x="60" y="472" class="sx-ft-c9-cap" text-anchor="middle">Social media</text>
+<text x="60" y="485" class="sx-ft-c9-prob" text-anchor="middle">p=0.1</text></g>
+<g class="sx-ft-c9-event-g" data-id="MH" data-role="undeveloped" data-prob="0.05"><path d="M 136 409 L 158 431 L 136 453 L 114 431 Z" class="sx-ft-c9-undeveloped"/>
+<text x="136" y="434" class="sx-ft-c9-id" text-anchor="middle">MH</text>
+<text x="136" y="472" class="sx-ft-c9-cap" text-anchor="middle">Mail house</text>
+<text x="136" y="485" class="sx-ft-c9-prob" text-anchor="middle">p=0.05</text></g>
+<g class="sx-ft-c9-event-g" data-id="STD" data-role="intermediate"><rect x="198" y="244" width="164" height="50" rx="5" class="sx-ft-c9-event" data-role="intermediate"/>
+<text x="280" y="269" class="sx-ft-c9-label" text-anchor="middle" dominant-baseline="middle"><tspan x="280" dy="0">No address standard</tspan></text></g>
+<g class="sx-ft-c9-event-g" data-id="NOVAL" data-role="basic" data-prob="0.08"><circle cx="243" cy="431" r="21" class="sx-ft-c9-basic"/>
+<text x="243" y="434" class="sx-ft-c9-id" text-anchor="middle">NOVAL</text>
+<text x="243" y="471" class="sx-ft-c9-cap" text-anchor="middle">No validation rule</text>
+<text x="243" y="484" class="sx-ft-c9-prob" text-anchor="middle">p=0.08</text></g>
+<g class="sx-ft-c9-event-g" data-id="MULTI" data-role="basic" data-prob="0.04"><circle cx="317" cy="431" r="21" class="sx-ft-c9-basic"/>
+<text x="317" y="434" class="sx-ft-c9-id" text-anchor="middle">MULTI</text>
+<text x="317" y="471" class="sx-ft-c9-cap" text-anchor="middle">Multiple source rec…</text>
+<text x="317" y="484" class="sx-ft-c9-prob" text-anchor="middle">p=0.04</text></g>
+<g class="sx-ft-c9-event-g" data-id="ENTRY" data-role="intermediate"><rect x="394" y="244" width="143" height="50" rx="5" class="sx-ft-c9-event" data-role="intermediate"/>
+<text x="465.5" y="269" class="sx-ft-c9-label" text-anchor="middle" dominant-baseline="middle"><tspan x="465.5" dy="0">Data entry error</tspan></text></g>
+<g class="sx-ft-c9-event-g" data-id="NOFIELD" data-role="undeveloped" data-prob="0.06"><path d="M 428.5 409 L 450.5 431 L 428.5 453 L 406.5 431 Z" class="sx-ft-c9-undeveloped"/>
+<text x="428.5" y="434" class="sx-ft-c9-id" text-anchor="middle">NOFIELD</text>
+<text x="428.5" y="472" class="sx-ft-c9-cap" text-anchor="middle">No field validation</text>
+<text x="428.5" y="485" class="sx-ft-c9-prob" text-anchor="middle">p=0.06</text></g>
+<g class="sx-ft-c9-event-g" data-id="UNKNOWN" data-role="basic" data-prob="0.03"><circle cx="503.5" cy="431" r="21" class="sx-ft-c9-basic"/>
+<text x="503.5" y="434" class="sx-ft-c9-id" text-anchor="middle">UNKNOWN</text>
+<text x="503.5" y="471" class="sx-ft-c9-cap" text-anchor="middle">Unknown cause</text>
+<text x="503.5" y="484" class="sx-ft-c9-prob" text-anchor="middle">p=0.03</text></g>
+<text x="281.75" y="73" class="sx-ft-c9-ptop" text-anchor="middle">P(top) = 4.32e-5 (rare)</text></g></svg></div>
+  <details>
+    <summary>DSL source</summary>
+    <pre>faulttree "Bad customer address"
+  analysis: cutsets, probability
+  top T "Bad address for our customer" = AND(SRC, STD, ENTRY)
+  gate SRC   "Unreliable data source" = OR(SM, MH)
+  gate STD   "No address standard"    = AND(NOVAL, MULTI)
+  gate ENTRY "Data entry error"       = OR(NOFIELD, UNKNOWN)
+  undeveloped SM "Social media"          p: 0.10
+  undeveloped MH "Mail house"            p: 0.05
+  basic NOVAL    "No validation rule"    p: 0.08
+  basic MULTI    "Multiple source records" p: 0.04
+  undeveloped NOFIELD "No field validation" p: 0.06
+  basic UNKNOWN  "Unknown cause"         p: 0.03</pre>
+  </details>
+</section>
+
+<section class="card" id="mono">
+  <h2>11 — Monochrome (NUREG-0492 textbook look)</h2>
+  <p class="note">The same tree as #1 under theme: monochrome — pure black/white, faithful to the NUREG-0492 figures. Cut sets fall back from red to shape/weight; the dome (AND) vs shield (OR) shapes carry the gate semantics.</p>
+  <div class="svg-wrap"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="280" height="400" viewBox="0 0 280 400" role="img" aria-label="Both pumps fail" data-diagram-type="faulttree"><title>Both pumps fail</title>
+<desc>Fault tree for &quot;Both redundant pumps fail&quot;: 1 top, 2 basic. 1 minimal cut set: {PA, PB}. P(top) = 1.00e-4 (rare).</desc>
+<style>.sx-ft-c10-bg { fill: #ffffff; }
+.sx-ft-c10-event { fill: #ffffff; stroke: #000000; stroke-width: 2; }
+.sx-ft-c10-event[data-role="top"] { stroke: #000000; stroke-width: 2.25; }
+.sx-ft-c10-basic { fill: #ffffff; stroke: #000000; stroke-width: 2; }
+.sx-ft-c10-undeveloped { fill: #ffffff; stroke: #000000; stroke-width: 2; }
+.sx-ft-c10-house { fill: #ffffff; stroke: #000000; stroke-width: 2; }
+.sx-ft-c10-gate { fill: #ffffff; stroke: #000000; stroke-width: 2; stroke-linejoin: round; }
+.sx-ft-c10-cond { fill: #ffffff; stroke: #000000; stroke-width: 1; }
+.sx-ft-c10-pin, .sx-ft-c10-edge { fill: none; stroke: #000000; stroke-width: 2; }
+.sx-ft-c10-shared-mark { fill: none; stroke: #000000; stroke-width: 2; }
+.sx-ft-c10-label { fill: #000000; font-size: 12px; font-weight: 600; }
+.sx-ft-c10-id { fill: #000000; font-size: 10px; font-weight: 700; }
+.sx-ft-c10-cap { fill: #000000; font-size: 9px; }
+.sx-ft-c10-prob { fill: #000000; font-size: 9px; font-weight: 600; }
+.sx-ft-c10-gate-label { fill: #000000; font-size: 9px; font-weight: 700; }
+.sx-ft-c10-cond-text { fill: #000000; font-size: 9px; }
+.sx-ft-c10-cutset { fill: none; stroke: #000000; stroke-width: 2; }
+.sx-ft-c10-cutset[data-spof="true"] { stroke: #000000; stroke-width: 3; }
+.sx-ft-c10-ptop { fill: #000000; font-size: 12px; font-weight: 700; }
+.sx-ft-c10-transfer { fill: #ffffff; stroke: #000000; stroke-width: 2; }
+.sx-ft-c10-transfer-label { fill: #000000; font-size: 9px; font-weight: 600; }
+.sx-ft-c10-title { fill: #000000; font-size: 16px; font-weight: 700; }</style>
+<rect x="0" y="0" width="280" height="400" class="sx-ft-c10-bg"/>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><text x="30" y="22" class="sx-ft-c10-title" font-family="system-ui, -apple-system, sans-serif">Both pumps fail</text>
+<rect x="50" y="241" width="130" height="56" rx="6" class="sx-ft-c10-cutset" data-cutset="PA,PB" data-cutset-index="0" data-order="2" data-cutset-prob="0.0001"/>
+<g class="sx-ft-c10-edge-g" data-from="T#0" data-to="PA#1"><path d="M 115 182 L 115 215 L 78 215 L 78 248" class="sx-ft-c10-edge"/></g>
+<g class="sx-ft-c10-edge-g" data-from="T#0" data-to="PB#2"><path d="M 115 182 L 115 215 L 152 215 L 152 248" class="sx-ft-c10-edge"/></g>
+<g class="sx-ft-c10-gate-g" data-id="T#0" data-gate="and"><line x1="115" y1="144" x2="115" y2="132" class="sx-ft-c10-pin"/>
+<path d="M 88 182 L 88 163 A 27 19 0 0 1 142 163 L 142 182 Z" class="sx-ft-c10-gate"/></g>
+<g class="sx-ft-c10-event-g" data-id="T" data-role="top"><rect x="30" y="82" width="170" height="50" rx="5" class="sx-ft-c10-event" data-role="top"/>
+<text x="115" y="107" class="sx-ft-c10-label" text-anchor="middle" dominant-baseline="middle"><tspan x="115" dy="-7">Both redundant pumps</tspan><tspan x="115" dy="14">fail</tspan></text></g>
+<g class="sx-ft-c10-event-g" data-id="PA" data-role="basic" data-prob="0.01"><circle cx="78" cy="269" r="21" class="sx-ft-c10-basic"/>
+<text x="78" y="272" class="sx-ft-c10-id" text-anchor="middle">PA</text>
+<text x="78" y="309" class="sx-ft-c10-cap" text-anchor="middle">Pump A fails</text>
+<text x="78" y="322" class="sx-ft-c10-prob" text-anchor="middle">p=0.01</text></g>
+<g class="sx-ft-c10-event-g" data-id="PB" data-role="basic" data-prob="0.01"><circle cx="152" cy="269" r="21" class="sx-ft-c10-basic"/>
+<text x="152" y="272" class="sx-ft-c10-id" text-anchor="middle">PB</text>
+<text x="152" y="309" class="sx-ft-c10-cap" text-anchor="middle">Pump B fails</text>
+<text x="152" y="322" class="sx-ft-c10-prob" text-anchor="middle">p=0.01</text></g>
+<text x="115" y="73" class="sx-ft-c10-ptop" text-anchor="middle">P(top) = 1.00e-4 (rare)</text></g></svg></div>
+  <details>
+    <summary>DSL source</summary>
+    <pre>faulttree "Both pumps fail"
+  analysis: cutsets, probability
+  top T "Both redundant pumps fail" = AND(PA, PB)
+  basic PA "Pump A fails" p: 0.01
+  basic PB "Pump B fails" p: 0.01</pre>
+  </details>
+</section>
+
+<footer>
+  generated by <code>scripts/preview-faulttree.mjs</code> · 2026-05-30 23:21:26 · 11 examples
+</footer>
+</div>
+</body>
+</html>
