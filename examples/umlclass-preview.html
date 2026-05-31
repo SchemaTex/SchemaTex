@@ -1,0 +1,1339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>umlclass — visual review</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: #f5f5f7; color: #0f172a; font-family: -apple-system, system-ui, "Segoe UI", sans-serif; }
+  .wrap { max-width: 1280px; margin: 0 auto; padding: 32px 24px 64px; }
+  header { margin-bottom: 32px; }
+  h1 { font-size: 24px; margin: 0 0 6px; letter-spacing: -0.01em; }
+  header p { color: #64748b; margin: 0; font-size: 14px; }
+  header a { color: #2563eb; text-decoration: none; }
+  header a:hover { text-decoration: underline; }
+  .toc { margin: 16px 0 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 6px 12px; font-size: 12px; }
+  .toc a { color: #64748b; text-decoration: none; padding: 4px 8px; background: #fff; border: 1px solid #e2e8f0; border-radius: 6px; }
+  .toc a:hover { color: #2563eb; border-color: #93c5fd; }
+  .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; margin-bottom: 20px; box-shadow: 0 1px 2px rgba(15,23,42,0.04); }
+  .card h2 { font-size: 18px; margin: 0 0 6px; letter-spacing: -0.005em; }
+  .card .note { color: #64748b; font-size: 13px; line-height: 1.55; margin: 0 0 18px; max-width: 920px; }
+  details { margin-top: 14px; }
+  details summary { cursor: pointer; color: #64748b; font-size: 12px; font-family: ui-monospace, "SF Mono", Menlo, monospace; user-select: none; padding: 4px 0; }
+  details summary:hover { color: #2563eb; }
+  details[open] summary { color: #0f172a; }
+  pre { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px 16px; font-size: 12px; line-height: 1.5; font-family: ui-monospace, "SF Mono", Menlo, monospace; overflow-x: auto; margin: 8px 0 0; color: #0f172a; }
+  .svg-wrap { background: linear-gradient(0deg, #fafafa, #fafafa); border: 1px solid #f1f5f9; border-radius: 8px; padding: 24px; overflow: auto; }
+  .svg-wrap svg { display: block; max-width: 100%; height: auto; margin: 0 auto; }
+  .err { color: #dc2626; background: #fef2f2; border: 1px solid #fecaca; border-radius: 6px; padding: 10px 14px; font-family: ui-monospace, monospace; font-size: 12px; }
+  footer { color: #94a3b8; font-size: 12px; text-align: center; padding-top: 24px; }
+  footer code { background: #fff; padding: 2px 6px; border-radius: 4px; border: 1px solid #e2e8f0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>umlclass — visual review</h1>
+  <p>Schematex UML class diagram engine. Compare with <a href="https://mermaid.js.org/syntax/classDiagram.html" target="_blank">Mermaid's classDiagram</a> rendering of the same input.</p>
+  <ul class="toc">
+    <li><a href="#anatomy">1</a></li>
+    <li><a href="#shapes">2</a></li>
+    <li><a href="#adornments">3</a></li>
+    <li><a href="#kingdom">4</a></li>
+    <li><a href="#strategy">5</a></li>
+    <li><a href="#layered">6</a></li>
+    <li><a href="#ns-platform">7</a></li>
+    <li><a href="#ns-dotted">8</a></li>
+    <li><a href="#mermaid-compat">9</a></li>
+    <li><a href="#ecommerce">10</a></li>
+    <li><a href="#mvc-cycle">11</a></li>
+    <li><a href="#width-stress">12</a></li>
+  </ul>
+</header>
+
+<section class="card" id="anatomy">
+  <h2>1 — Class anatomy (every member kind)</h2>
+  <p class="note">The reference for what a class box looks like: visibility glyphs (+ − # ~), typed attributes, default value, derived `/`, static {static} (underlined), abstract operation (italic), property strings, multi-arg operations, inline generics.</p>
+  <div class="svg-wrap"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="424" height="386" viewBox="0 0 424 386" role="img" aria-label="UML class diagram" data-diagram-type="umlclass"><title>UML class diagram</title>
+<desc>UML class diagram: 1 class.</desc>
+<style>.sx-umlclass-bg { fill: #ffffff; }
+.sx-umlclass-box-fill { fill: #ffffff; }
+.sx-umlclass-box-stroke { stroke: #334155; stroke-width: 1.5; fill: none; }
+.sx-umlclass-header-fill { fill: #eef2f7; }
+.sx-umlclass-divider { stroke: #334155; stroke-width: 1; }
+.sx-umlclass-classname { fill: #0f172a; font-size: 13px; font-weight: 700; letter-spacing: -0.01em; }
+.sx-umlclass-classname[data-abstract="true"] { font-style: italic; }
+.sx-umlclass-stereotype { fill: #64748b; font-size: 10px; font-style: italic; }
+.sx-umlclass-member { fill: #0f172a; font-size: 12px; font-weight: 500; }
+.sx-umlclass-member[data-static] { text-decoration: underline; }
+.sx-umlclass-member[data-abstract] { font-style: italic; }
+.sx-umlclass-visibility { fill: #64748b; font-size: 12px; font-weight: 500; }
+.sx-umlclass-rel-line { stroke: #334155; stroke-width: 1.4; fill: none; }
+.sx-umlclass-rel-line[data-dashed="true"] { stroke-dasharray: 5 4; }
+.sx-umlclass-triangle { fill: #ffffff; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-diamond-hollow { fill: #ffffff; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-diamond-filled { fill: #334155; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-arrowhead { fill: none; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-edge-label { fill: #475569; font-size: 10px; font-weight: 500; }
+.sx-umlclass-edge-name { fill: #475569; font-size: 12px; font-style: italic; }
+.sx-umlclass-edge-name-halo { fill: #ffffff; stroke: #ffffff; stroke-width: 6; stroke-linejoin: round; }
+.sx-umlclass-title { fill: #0f172a; font-size: 16px; font-weight: 600; }
+.sx-umlclass-package { fill: rgba(100,116,139,0.06); stroke: #94a3b8; stroke-width: 1; }
+.sx-umlclass-package-label { fill: #475569; font-size: 12px; font-weight: 600; }</style>
+<rect x="0" y="0" width="424" height="386" class="sx-umlclass-bg"/>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><g class="sx-umlclass-classifier" data-id="Account" data-kind="class"><rect x="32" y="32" width="320" height="30" class="sx-umlclass-header-fill"/>
+<rect x="32" y="62" width="320" height="252" class="sx-umlclass-box-fill"/>
+<rect x="32" y="32" width="320" height="282" class="sx-umlclass-box-stroke"/>
+<line x1="32" y1="62" x2="352" y2="62" class="sx-umlclass-divider"/>
+<line x1="32" y1="232" x2="352" y2="232" class="sx-umlclass-divider"/>
+<text x="192" y="53" class="sx-umlclass-classname" text-anchor="middle">Account</text>
+<text x="46" y="86" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>id: String</text>
+<text x="46" y="108" class="sx-umlclass-member" data-visibility="private"><tspan class="sx-umlclass-visibility">- </tspan>balance: Money = 0</text>
+<text x="46" y="130" class="sx-umlclass-member" data-visibility="protected"><tspan class="sx-umlclass-visibility"># </tspan>owner: Customer</text>
+<text x="46" y="152" class="sx-umlclass-member" data-visibility="package"><tspan class="sx-umlclass-visibility">~ </tspan>region: String</text>
+<text x="46" y="174" class="sx-umlclass-member" data-visibility="public" data-derived="true">/available: Money</text>
+<text x="46" y="196" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>tags: List&lt;String&gt;</text>
+<text x="46" y="218" class="sx-umlclass-member" data-visibility="public" data-static="true"><tspan class="sx-umlclass-visibility">+ </tspan>count: int</text>
+<text x="46" y="256" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>deposit(amount: Money): void</text>
+<text x="46" y="278" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>transfer(to: Account, amount: Money): boo…</text>
+<text x="46" y="300" class="sx-umlclass-member" data-visibility="public" data-abstract="true"><tspan class="sx-umlclass-visibility">+ </tspan>audit(): void</text></g></g>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"></g></svg></div>
+  <details>
+    <summary>DSL source</summary>
+    <pre>umlclass
+class Account {
+  + id : String
+  - balance : Money = 0
+  # owner : Customer
+  ~ region : String
+  / available : Money
+  + tags : List&lt;String&gt;
+  + count : int {static}
+  + deposit(amount : Money) : void
+  + transfer(to : Account, amount : Money) : boolean {query}
+  + audit() : void {abstract}
+}</pre>
+  </details>
+</section>
+
+<section class="card" id="shapes">
+  <h2>2 — Interface + abstract + concrete (tree-merged heads)</h2>
+  <p class="note">Two children of AbstractShape share ONE merged trunk + ONE hollow triangle at the parent — the visible upgrade over Mermaid. Realization (dashed) from the interface, generalization (solid) below.</p>
+  <div class="svg-wrap"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="478" height="638" viewBox="0 0 478 638" role="img" aria-label="Shapes" data-diagram-type="umlclass"><title>Shapes</title>
+<desc>UML class diagram: 1 interface, 1 abstract, 2 class; 1 realization, 2 generalization; 1 merged inheritance tree.</desc>
+<style>.sx-umlclass-bg { fill: #ffffff; }
+.sx-umlclass-box-fill { fill: #ffffff; }
+.sx-umlclass-box-stroke { stroke: #334155; stroke-width: 1.5; fill: none; }
+.sx-umlclass-header-fill { fill: #eef2f7; }
+.sx-umlclass-divider { stroke: #334155; stroke-width: 1; }
+.sx-umlclass-classname { fill: #0f172a; font-size: 13px; font-weight: 700; letter-spacing: -0.01em; }
+.sx-umlclass-classname[data-abstract="true"] { font-style: italic; }
+.sx-umlclass-stereotype { fill: #64748b; font-size: 10px; font-style: italic; }
+.sx-umlclass-member { fill: #0f172a; font-size: 12px; font-weight: 500; }
+.sx-umlclass-member[data-static] { text-decoration: underline; }
+.sx-umlclass-member[data-abstract] { font-style: italic; }
+.sx-umlclass-visibility { fill: #64748b; font-size: 12px; font-weight: 500; }
+.sx-umlclass-rel-line { stroke: #334155; stroke-width: 1.4; fill: none; }
+.sx-umlclass-rel-line[data-dashed="true"] { stroke-dasharray: 5 4; }
+.sx-umlclass-triangle { fill: #ffffff; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-diamond-hollow { fill: #ffffff; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-diamond-filled { fill: #334155; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-arrowhead { fill: none; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-edge-label { fill: #475569; font-size: 10px; font-weight: 500; }
+.sx-umlclass-edge-name { fill: #475569; font-size: 12px; font-style: italic; }
+.sx-umlclass-edge-name-halo { fill: #ffffff; stroke: #ffffff; stroke-width: 6; stroke-linejoin: round; }
+.sx-umlclass-title { fill: #0f172a; font-size: 16px; font-weight: 600; }
+.sx-umlclass-package { fill: rgba(100,116,139,0.06); stroke: #94a3b8; stroke-width: 1; }
+.sx-umlclass-package-label { fill: #475569; font-size: 12px; font-weight: 600; }</style>
+<rect x="0" y="0" width="478" height="638" class="sx-umlclass-bg"/>
+<text x="52" y="40" class="sx-umlclass-title" font-family="system-ui, -apple-system, sans-serif">Shapes</text>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><g class="sx-umlclass-classifier" data-id="Shape" data-kind="interface"><rect x="89.60972243391086" y="32" width="167" height="46" class="sx-umlclass-header-fill"/>
+<rect x="89.60972243391086" y="78" width="167" height="98" class="sx-umlclass-box-fill"/>
+<rect x="89.60972243391086" y="32" width="167" height="144" class="sx-umlclass-box-stroke"/>
+<line x1="89.60972243391086" y1="78" x2="256.60972243391086" y2="78" class="sx-umlclass-divider"/>
+<line x1="89.60972243391086" y1="116" x2="256.60972243391086" y2="116" class="sx-umlclass-divider"/>
+<text x="173.10972243391086" y="44" class="sx-umlclass-stereotype" text-anchor="middle">«interface»</text>
+<text x="173.10972243391086" y="69" class="sx-umlclass-classname" text-anchor="middle">Shape</text>
+<text x="103.60972243391086" y="140" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>area(): double</text>
+<text x="103.60972243391086" y="162" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>perimeter(): double</text></g>
+<g class="sx-umlclass-classifier" data-id="AbstractShape" data-kind="abstract"><rect x="93.10972243391086" y="254" width="160" height="30" class="sx-umlclass-header-fill"/>
+<rect x="93.10972243391086" y="284" width="160" height="98" class="sx-umlclass-box-fill"/>
+<rect x="93.10972243391086" y="254" width="160" height="128" class="sx-umlclass-box-stroke"/>
+<line x1="93.10972243391086" y1="284" x2="253.10972243391086" y2="284" class="sx-umlclass-divider"/>
+<line x1="93.10972243391086" y1="322" x2="253.10972243391086" y2="322" class="sx-umlclass-divider"/>
+<text x="173.10972243391086" y="275" class="sx-umlclass-classname" text-anchor="middle" data-abstract="true">AbstractShape</text>
+<text x="107.10972243391086" y="308" class="sx-umlclass-member" data-visibility="protected"><tspan class="sx-umlclass-visibility"># </tspan>name: String</text>
+<text x="107.10972243391086" y="346" class="sx-umlclass-member" data-visibility="public" data-abstract="true"><tspan class="sx-umlclass-visibility">+ </tspan>area(): double</text>
+<text x="107.10972243391086" y="368" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>describe(): String</text></g>
+<g class="sx-umlclass-classifier" data-id="Circle" data-kind="class"><rect x="32" y="460" width="160" height="30" class="sx-umlclass-header-fill"/>
+<rect x="32" y="490" width="160" height="76" class="sx-umlclass-box-fill"/>
+<rect x="32" y="460" width="160" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="32" y1="490" x2="192" y2="490" class="sx-umlclass-divider"/>
+<line x1="32" y1="528" x2="192" y2="528" class="sx-umlclass-divider"/>
+<text x="112" y="481" class="sx-umlclass-classname" text-anchor="middle">Circle</text>
+<text x="46" y="514" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>radius: double</text>
+<text x="46" y="552" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>area(): double</text></g>
+<g class="sx-umlclass-classifier" data-id="Square" data-kind="class"><rect x="246" y="460" width="160" height="30" class="sx-umlclass-header-fill"/>
+<rect x="246" y="490" width="160" height="76" class="sx-umlclass-box-fill"/>
+<rect x="246" y="460" width="160" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="246" y1="490" x2="406" y2="490" class="sx-umlclass-divider"/>
+<line x1="246" y1="528" x2="406" y2="528" class="sx-umlclass-divider"/>
+<text x="326" y="481" class="sx-umlclass-classname" text-anchor="middle">Square</text>
+<text x="260" y="514" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>side: double</text>
+<text x="260" y="552" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>area(): double</text></g></g>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><g class="sx-umlclass-rel" data-from="AbstractShape" data-to="Shape" data-kind="realization"><path d="M 173.1 254 L 173.1 190" class="sx-umlclass-rel-line" data-dashed="true"/>
+<polygon points="173.10972243391086,176 164.10972243391086,190 182.10972243391086,190" class="sx-umlclass-triangle"/></g></g>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><g class="sx-umlclass-rel sx-umlclass-rel-tree" data-kind="generalization" data-parent="AbstractShape" data-children="Circle,Square"><path d="M 112 460 L 112 421 L 219 421" class="sx-umlclass-rel-line"/>
+<path d="M 326 460 L 326 421 L 219 421" class="sx-umlclass-rel-line"/>
+<path d="M 219 421 L 219 396" class="sx-umlclass-rel-line"/>
+<polygon points="219,382 210,396 228,396" class="sx-umlclass-triangle"/></g></g></svg></div>
+  <details>
+    <summary>DSL source</summary>
+    <pre>umlclass
+title: "Shapes"
+«interface» Shape {
+  + area() : double
+  + perimeter() : double
+}
+abstract class AbstractShape {
+  # name : String
+  + area() : double {abstract}
+  + describe() : String
+}
+class Circle {
+  + radius : double
+  + area() : double
+}
+class Square {
+  + side : double
+  + area() : double
+}
+Shape         &lt;|.. AbstractShape
+AbstractShape &lt;|-- Circle
+AbstractShape &lt;|-- Square</pre>
+  </details>
+</section>
+
+<section class="card" id="adornments">
+  <h2>3 — Composition vs aggregation vs dependency</h2>
+  <p class="note">The adornment showcase: filled diamond (Order composes LineItems — they die together), hollow diamond (Customer aggregates Addresses — independent), dashed open-arrow dependency (Order uses TaxPolicy), plain association with multiplicities.</p>
+  <div class="svg-wrap"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="739" height="416" viewBox="0 0 739 416" role="img" aria-label="Order model" data-diagram-type="umlclass"><title>Order model</title>
+<desc>UML class diagram: 5 class; 1 association, 1 composition, 1 aggregation, 1 dependency.</desc>
+<style>.sx-umlclass-bg { fill: #ffffff; }
+.sx-umlclass-box-fill { fill: #ffffff; }
+.sx-umlclass-box-stroke { stroke: #334155; stroke-width: 1.5; fill: none; }
+.sx-umlclass-header-fill { fill: #eef2f7; }
+.sx-umlclass-divider { stroke: #334155; stroke-width: 1; }
+.sx-umlclass-classname { fill: #0f172a; font-size: 13px; font-weight: 700; letter-spacing: -0.01em; }
+.sx-umlclass-classname[data-abstract="true"] { font-style: italic; }
+.sx-umlclass-stereotype { fill: #64748b; font-size: 10px; font-style: italic; }
+.sx-umlclass-member { fill: #0f172a; font-size: 12px; font-weight: 500; }
+.sx-umlclass-member[data-static] { text-decoration: underline; }
+.sx-umlclass-member[data-abstract] { font-style: italic; }
+.sx-umlclass-visibility { fill: #64748b; font-size: 12px; font-weight: 500; }
+.sx-umlclass-rel-line { stroke: #334155; stroke-width: 1.4; fill: none; }
+.sx-umlclass-rel-line[data-dashed="true"] { stroke-dasharray: 5 4; }
+.sx-umlclass-triangle { fill: #ffffff; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-diamond-hollow { fill: #ffffff; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-diamond-filled { fill: #334155; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-arrowhead { fill: none; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-edge-label { fill: #475569; font-size: 10px; font-weight: 500; }
+.sx-umlclass-edge-name { fill: #475569; font-size: 12px; font-style: italic; }
+.sx-umlclass-edge-name-halo { fill: #ffffff; stroke: #ffffff; stroke-width: 6; stroke-linejoin: round; }
+.sx-umlclass-title { fill: #0f172a; font-size: 16px; font-weight: 600; }
+.sx-umlclass-package { fill: rgba(100,116,139,0.06); stroke: #94a3b8; stroke-width: 1; }
+.sx-umlclass-package-label { fill: #475569; font-size: 12px; font-weight: 600; }</style>
+<rect x="0" y="0" width="739" height="416" class="sx-umlclass-bg"/>
+<text x="52" y="40" class="sx-umlclass-title" font-family="system-ui, -apple-system, sans-serif">Order model</text>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><g class="sx-umlclass-classifier" data-id="Order" data-kind="class"><rect x="134.25" y="32" width="193" height="30" class="sx-umlclass-header-fill"/>
+<rect x="134.25" y="62" width="193" height="98" class="sx-umlclass-box-fill"/>
+<rect x="134.25" y="32" width="193" height="128" class="sx-umlclass-box-stroke"/>
+<line x1="134.25" y1="62" x2="327.25" y2="62" class="sx-umlclass-divider"/>
+<line x1="134.25" y1="122" x2="327.25" y2="122" class="sx-umlclass-divider"/>
+<text x="230.75" y="53" class="sx-umlclass-classname" text-anchor="middle">Order</text>
+<text x="148.25" y="86" class="sx-umlclass-member" data-visibility="private"><tspan class="sx-umlclass-visibility">- </tspan>id: String</text>
+<text x="148.25" y="108" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>total: Money {readOnly}</text>
+<text x="148.25" y="146" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>place(): void</text></g>
+<g class="sx-umlclass-classifier" data-id="LineItem" data-kind="class"><rect x="32" y="238" width="160" height="30" class="sx-umlclass-header-fill"/>
+<rect x="32" y="268" width="160" height="76" class="sx-umlclass-box-fill"/>
+<rect x="32" y="238" width="160" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="32" y1="268" x2="192" y2="268" class="sx-umlclass-divider"/>
+<line x1="32" y1="306" x2="192" y2="306" class="sx-umlclass-divider"/>
+<text x="112" y="259" class="sx-umlclass-classname" text-anchor="middle">LineItem</text>
+<text x="46" y="292" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>qty: int</text>
+<text x="46" y="330" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>subtotal(): Money</text></g>
+<g class="sx-umlclass-classifier" data-id="Customer" data-kind="class"><rect x="507" y="43" width="160" height="30" class="sx-umlclass-header-fill"/>
+<rect x="507" y="73" width="160" height="76" class="sx-umlclass-box-fill"/>
+<rect x="507" y="43" width="160" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="507" y1="73" x2="667" y2="73" class="sx-umlclass-divider"/>
+<line x1="507" y1="111" x2="667" y2="111" class="sx-umlclass-divider"/>
+<text x="587" y="64" class="sx-umlclass-classname" text-anchor="middle">Customer</text>
+<text x="521" y="97" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>name: String</text></g>
+<g class="sx-umlclass-classifier" data-id="Address" data-kind="class"><rect x="507" y="238" width="160" height="30" class="sx-umlclass-header-fill"/>
+<rect x="507" y="268" width="160" height="76" class="sx-umlclass-box-fill"/>
+<rect x="507" y="238" width="160" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="507" y1="268" x2="667" y2="268" class="sx-umlclass-divider"/>
+<line x1="507" y1="306" x2="667" y2="306" class="sx-umlclass-divider"/>
+<text x="587" y="259" class="sx-umlclass-classname" text-anchor="middle">Address</text>
+<text x="521" y="292" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>city: String</text></g>
+<g class="sx-umlclass-classifier" data-id="TaxPolicy" data-kind="class"><rect x="246" y="238" width="207" height="30" class="sx-umlclass-header-fill"/>
+<rect x="246" y="268" width="207" height="76" class="sx-umlclass-box-fill"/>
+<rect x="246" y="238" width="207" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="246" y1="268" x2="453" y2="268" class="sx-umlclass-divider"/>
+<line x1="246" y1="306" x2="453" y2="306" class="sx-umlclass-divider"/>
+<text x="349.5" y="259" class="sx-umlclass-classname" text-anchor="middle">TaxPolicy</text>
+<text x="260" y="330" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>rate(c: Country): Percent</text></g></g>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><g class="sx-umlclass-rel" data-from="Customer" data-to="Order" data-kind="association" data-source-mult="1" data-target-mult="*" data-name="places"><path d="M 587 43 L 587 6 L 230.8 6 L 230.8 32" class="sx-umlclass-rel-line"/>
+
+<text x="587" y="34" class="sx-umlclass-edge-label" text-anchor="middle">1</text>
+<text x="230.75" y="23" class="sx-umlclass-edge-label" text-anchor="middle">*</text>
+<text x="408.875" y="1" class="sx-umlclass-edge-name sx-umlclass-edge-name-halo" text-anchor="middle">places</text>
+<text x="408.875" y="1" class="sx-umlclass-edge-name" text-anchor="middle">places</text></g>
+<g class="sx-umlclass-rel" data-from="Order" data-to="LineItem" data-kind="composition" data-target-mult="1..*" data-name="contains"><path d="M 191.8 180 L 144.3 238" class="sx-umlclass-rel-line"/>
+
+<polygon points="191.77564102564102,160 197.77564102564102,170 191.77564102564102,180 185.77564102564102,170" class="sx-umlclass-diamond-filled"/>
+<text x="144.27564102564102" y="229" class="sx-umlclass-edge-label" text-anchor="middle">1..*</text>
+<text x="168.02564102564102" y="204" class="sx-umlclass-edge-name sx-umlclass-edge-name-halo" text-anchor="middle">contains</text>
+<text x="168.02564102564102" y="204" class="sx-umlclass-edge-name" text-anchor="middle">contains</text></g>
+<g class="sx-umlclass-rel" data-from="Customer" data-to="Address" data-kind="aggregation" data-target-mult="0..*" data-name="has"><path d="M 587 169 L 587 238" class="sx-umlclass-rel-line"/>
+
+<polygon points="587,149 593,159 587,169 581,159" class="sx-umlclass-diamond-hollow"/>
+<text x="587" y="229" class="sx-umlclass-edge-label" text-anchor="middle">0..*</text>
+<text x="587" y="198.5" class="sx-umlclass-edge-name sx-umlclass-edge-name-halo" text-anchor="middle">has</text>
+<text x="587" y="198.5" class="sx-umlclass-edge-name" text-anchor="middle">has</text></g>
+<g class="sx-umlclass-rel" data-from="Order" data-to="TaxPolicy" data-kind="dependency" data-name="uses"><path d="M 269.7 160 L 317.2 227" class="sx-umlclass-rel-line" data-dashed="true"/>
+<path d="M 311.72435897435895 227 L 317.22435897435895 238 L 322.72435897435895 227" class="sx-umlclass-arrowhead"/>
+<text x="293.47435897435895" y="188.5" class="sx-umlclass-edge-name sx-umlclass-edge-name-halo" text-anchor="middle">uses</text>
+<text x="293.47435897435895" y="188.5" class="sx-umlclass-edge-name" text-anchor="middle">uses</text></g></g></svg></div>
+  <details>
+    <summary>DSL source</summary>
+    <pre>umlclass
+title: "Order model"
+class Order {
+  - id : String
+  + total : Money {readOnly}
+  + place() : void
+}
+class LineItem {
+  + qty : int
+  + subtotal() : Money
+}
+class Customer { + name : String }
+class Address  { + city : String }
+class TaxPolicy { + rate(c : Country) : Percent }
+Customer "1" -- "*" Order    : places
+Order    *-- "1..*" LineItem : contains
+Customer o-- "0..*" Address  : has
+Order    ..&gt; TaxPolicy       : uses</pre>
+  </details>
+</section>
+
+<section class="card" id="kingdom">
+  <h2>4 — Deep inheritance (3 layers, parallel tree-merges)</h2>
+  <p class="note">Animal → {Mammal, Bird} → two children each. Stress-tests the layered layout with two simultaneous tree-merges plus a cross-cutting realization to Comparable.</p>
+  <div class="svg-wrap"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="996" height="594" viewBox="0 0 996 594" role="img" aria-label="Animal kingdom" data-diagram-type="umlclass"><title>Animal kingdom</title>
+<desc>UML class diagram: 1 interface, 3 abstract, 4 class; 6 generalization, 1 realization; 3 merged inheritance trees.</desc>
+<style>.sx-umlclass-bg { fill: #ffffff; }
+.sx-umlclass-box-fill { fill: #ffffff; }
+.sx-umlclass-box-stroke { stroke: #334155; stroke-width: 1.5; fill: none; }
+.sx-umlclass-header-fill { fill: #eef2f7; }
+.sx-umlclass-divider { stroke: #334155; stroke-width: 1; }
+.sx-umlclass-classname { fill: #0f172a; font-size: 13px; font-weight: 700; letter-spacing: -0.01em; }
+.sx-umlclass-classname[data-abstract="true"] { font-style: italic; }
+.sx-umlclass-stereotype { fill: #64748b; font-size: 10px; font-style: italic; }
+.sx-umlclass-member { fill: #0f172a; font-size: 12px; font-weight: 500; }
+.sx-umlclass-member[data-static] { text-decoration: underline; }
+.sx-umlclass-member[data-abstract] { font-style: italic; }
+.sx-umlclass-visibility { fill: #64748b; font-size: 12px; font-weight: 500; }
+.sx-umlclass-rel-line { stroke: #334155; stroke-width: 1.4; fill: none; }
+.sx-umlclass-rel-line[data-dashed="true"] { stroke-dasharray: 5 4; }
+.sx-umlclass-triangle { fill: #ffffff; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-diamond-hollow { fill: #ffffff; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-diamond-filled { fill: #334155; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-arrowhead { fill: none; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-edge-label { fill: #475569; font-size: 10px; font-weight: 500; }
+.sx-umlclass-edge-name { fill: #475569; font-size: 12px; font-style: italic; }
+.sx-umlclass-edge-name-halo { fill: #ffffff; stroke: #ffffff; stroke-width: 6; stroke-linejoin: round; }
+.sx-umlclass-title { fill: #0f172a; font-size: 16px; font-weight: 600; }
+.sx-umlclass-package { fill: rgba(100,116,139,0.06); stroke: #94a3b8; stroke-width: 1; }
+.sx-umlclass-package-label { fill: #475569; font-size: 12px; font-weight: 600; }</style>
+<rect x="0" y="0" width="996" height="594" class="sx-umlclass-bg"/>
+<text x="52" y="40" class="sx-umlclass-title" font-family="system-ui, -apple-system, sans-serif">Animal kingdom</text>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><g class="sx-umlclass-classifier" data-id="Comparable" data-kind="interface"><rect x="32" y="32" width="207" height="46" class="sx-umlclass-header-fill"/>
+<rect x="32" y="78" width="207" height="76" class="sx-umlclass-box-fill"/>
+<rect x="32" y="32" width="207" height="122" class="sx-umlclass-box-stroke"/>
+<line x1="32" y1="78" x2="239" y2="78" class="sx-umlclass-divider"/>
+<line x1="32" y1="116" x2="239" y2="116" class="sx-umlclass-divider"/>
+<text x="135.5" y="44" class="sx-umlclass-stereotype" text-anchor="middle">«interface»</text>
+<text x="135.5" y="69" class="sx-umlclass-classname" text-anchor="middle">Comparable</text>
+<text x="46" y="140" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>compareTo(o: Object): int</text></g>
+<g class="sx-umlclass-classifier" data-id="Animal" data-kind="abstract"><rect x="408.92355327247344" y="40" width="160" height="30" class="sx-umlclass-header-fill"/>
+<rect x="408.92355327247344" y="70" width="160" height="76" class="sx-umlclass-box-fill"/>
+<rect x="408.92355327247344" y="40" width="160" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="408.92355327247344" y1="70" x2="568.9235532724734" y2="70" class="sx-umlclass-divider"/>
+<line x1="408.92355327247344" y1="108" x2="568.9235532724734" y2="108" class="sx-umlclass-divider"/>
+<text x="488.92355327247344" y="61" class="sx-umlclass-classname" text-anchor="middle" data-abstract="true">Animal</text>
+<text x="422.92355327247344" y="94" class="sx-umlclass-member" data-visibility="protected"><tspan class="sx-umlclass-visibility"># </tspan>name: String</text>
+<text x="422.92355327247344" y="132" class="sx-umlclass-member" data-visibility="public" data-abstract="true"><tspan class="sx-umlclass-visibility">+ </tspan>makeSound(): void</text></g>
+<g class="sx-umlclass-classifier" data-id="Mammal" data-kind="abstract"><rect x="266.2568866058067" y="232" width="160" height="30" class="sx-umlclass-header-fill"/>
+<rect x="266.2568866058067" y="262" width="160" height="76" class="sx-umlclass-box-fill"/>
+<rect x="266.2568866058067" y="232" width="160" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="266.2568866058067" y1="262" x2="426.2568866058067" y2="262" class="sx-umlclass-divider"/>
+<line x1="266.2568866058067" y1="300" x2="426.2568866058067" y2="300" class="sx-umlclass-divider"/>
+<text x="346.2568866058067" y="253" class="sx-umlclass-classname" text-anchor="middle" data-abstract="true">Mammal</text>
+<text x="280.2568866058067" y="286" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>gestation: int</text></g>
+<g class="sx-umlclass-classifier" data-id="Bird" data-kind="abstract"><rect x="551.5902199391401" y="232" width="160" height="30" class="sx-umlclass-header-fill"/>
+<rect x="551.5902199391401" y="262" width="160" height="76" class="sx-umlclass-box-fill"/>
+<rect x="551.5902199391401" y="232" width="160" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="551.5902199391401" y1="262" x2="711.5902199391401" y2="262" class="sx-umlclass-divider"/>
+<line x1="551.5902199391401" y1="300" x2="711.5902199391401" y2="300" class="sx-umlclass-divider"/>
+<text x="631.5902199391401" y="253" class="sx-umlclass-classname" text-anchor="middle" data-abstract="true">Bird</text>
+<text x="565.5902199391401" y="286" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>wingspan: double</text></g>
+<g class="sx-umlclass-classifier" data-id="Dog" data-kind="class"><rect x="121.78711532719137" y="416" width="160" height="30" class="sx-umlclass-header-fill"/>
+<rect x="121.78711532719137" y="446" width="160" height="76" class="sx-umlclass-box-fill"/>
+<rect x="121.78711532719137" y="416" width="160" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="121.78711532719137" y1="446" x2="281.7871153271914" y2="446" class="sx-umlclass-divider"/>
+<line x1="121.78711532719137" y1="484" x2="281.7871153271914" y2="484" class="sx-umlclass-divider"/>
+<text x="201.78711532719137" y="437" class="sx-umlclass-classname" text-anchor="middle">Dog</text>
+<text x="135.78711532719137" y="508" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>makeSound(): void</text></g>
+<g class="sx-umlclass-classifier" data-id="Cat" data-kind="class"><rect x="335.7871153271914" y="416" width="160" height="30" class="sx-umlclass-header-fill"/>
+<rect x="335.7871153271914" y="446" width="160" height="76" class="sx-umlclass-box-fill"/>
+<rect x="335.7871153271914" y="416" width="160" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="335.7871153271914" y1="446" x2="495.7871153271914" y2="446" class="sx-umlclass-divider"/>
+<line x1="335.7871153271914" y1="484" x2="495.7871153271914" y2="484" class="sx-umlclass-divider"/>
+<text x="415.7871153271914" y="437" class="sx-umlclass-classname" text-anchor="middle">Cat</text>
+<text x="349.7871153271914" y="508" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>makeSound(): void</text></g>
+<g class="sx-umlclass-classifier" data-id="Eagle" data-kind="class"><rect x="549.7871153271914" y="416" width="160" height="30" class="sx-umlclass-header-fill"/>
+<rect x="549.7871153271914" y="446" width="160" height="76" class="sx-umlclass-box-fill"/>
+<rect x="549.7871153271914" y="416" width="160" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="549.7871153271914" y1="446" x2="709.7871153271914" y2="446" class="sx-umlclass-divider"/>
+<line x1="549.7871153271914" y1="484" x2="709.7871153271914" y2="484" class="sx-umlclass-divider"/>
+<text x="629.7871153271914" y="437" class="sx-umlclass-classname" text-anchor="middle">Eagle</text>
+<text x="563.7871153271914" y="508" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>makeSound(): void</text></g>
+<g class="sx-umlclass-classifier" data-id="Penguin" data-kind="class"><rect x="763.7871153271914" y="416" width="160" height="30" class="sx-umlclass-header-fill"/>
+<rect x="763.7871153271914" y="446" width="160" height="76" class="sx-umlclass-box-fill"/>
+<rect x="763.7871153271914" y="416" width="160" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="763.7871153271914" y1="446" x2="923.7871153271914" y2="446" class="sx-umlclass-divider"/>
+<line x1="763.7871153271914" y1="484" x2="923.7871153271914" y2="484" class="sx-umlclass-divider"/>
+<text x="843.7871153271914" y="437" class="sx-umlclass-classname" text-anchor="middle">Penguin</text>
+<text x="777.7871153271914" y="508" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>makeSound(): void</text></g></g>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><g class="sx-umlclass-rel" data-from="Dog" data-to="Comparable" data-kind="realization"><path d="M 182.7 416 L 135.5 285 L 135.5 168" class="sx-umlclass-rel-line" data-dashed="true"/>
+<polygon points="135.5,154 126.5,168 144.5,168" class="sx-umlclass-triangle"/></g></g>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><g class="sx-umlclass-rel sx-umlclass-rel-tree" data-kind="generalization" data-parent="Animal" data-children="Mammal,Bird"><path d="M 346.3 232 L 346.3 189 L 488.9 189" class="sx-umlclass-rel-line"/>
+<path d="M 631.6 232 L 631.6 189 L 488.9 189" class="sx-umlclass-rel-line"/>
+<path d="M 488.9 189 L 488.9 160" class="sx-umlclass-rel-line"/>
+<polygon points="488.9235532724734,146 479.9235532724734,160 497.9235532724734,160" class="sx-umlclass-triangle"/></g>
+<g class="sx-umlclass-rel sx-umlclass-rel-tree" data-kind="generalization" data-parent="Mammal" data-children="Dog,Cat"><path d="M 201.8 416 L 201.8 377 L 308.8 377" class="sx-umlclass-rel-line"/>
+<path d="M 415.8 416 L 415.8 377 L 308.8 377" class="sx-umlclass-rel-line"/>
+<path d="M 308.8 377 L 308.8 352" class="sx-umlclass-rel-line"/>
+<polygon points="308.7871153271914,338 299.7871153271914,352 317.7871153271914,352" class="sx-umlclass-triangle"/></g>
+<g class="sx-umlclass-rel sx-umlclass-rel-tree" data-kind="generalization" data-parent="Bird" data-children="Eagle,Penguin"><path d="M 629.8 416 L 629.8 377 L 701.6 377" class="sx-umlclass-rel-line"/>
+<path d="M 843.8 416 L 843.8 377 L 701.6 377" class="sx-umlclass-rel-line"/>
+<path d="M 701.6 377 L 701.6 352" class="sx-umlclass-rel-line"/>
+<polygon points="701.5902199391401,338 692.5902199391401,352 710.5902199391401,352" class="sx-umlclass-triangle"/></g></g></svg></div>
+  <details>
+    <summary>DSL source</summary>
+    <pre>umlclass
+title: "Animal kingdom"
+«interface» Comparable {
+  + compareTo(o : Object) : int
+}
+abstract class Animal {
+  # name : String
+  + makeSound() : void {abstract}
+}
+abstract class Mammal { + gestation : int }
+abstract class Bird   { + wingspan : double }
+class Dog     { + makeSound() : void }
+class Cat     { + makeSound() : void }
+class Eagle   { + makeSound() : void }
+class Penguin { + makeSound() : void }
+Animal     &lt;|-- Mammal
+Animal     &lt;|-- Bird
+Mammal     &lt;|-- Dog
+Mammal     &lt;|-- Cat
+Bird       &lt;|-- Eagle
+Bird       &lt;|-- Penguin
+Comparable &lt;|.. Dog</pre>
+  </details>
+</section>
+
+<section class="card" id="strategy">
+  <h2>5 — Strategy pattern (enum + stereotypes + realization fan)</h2>
+  <p class="note">Three concrete strategies realize one interface (tree-merged). «service» / «enumeration» / «interface» stereotypes render above the name; dashed dependency for the using relationship.</p>
+  <div class="svg-wrap"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1283" height="654" viewBox="0 0 1283 654" role="img" aria-label="Payment strategy" data-diagram-type="umlclass"><title>Payment strategy</title>
+<desc>UML class diagram: 1 enum, 1 interface, 4 class; 3 realization, 2 dependency; 1 merged inheritance tree.</desc>
+<style>.sx-umlclass-bg { fill: #ffffff; }
+.sx-umlclass-box-fill { fill: #ffffff; }
+.sx-umlclass-box-stroke { stroke: #334155; stroke-width: 1.5; fill: none; }
+.sx-umlclass-header-fill { fill: #eef2f7; }
+.sx-umlclass-divider { stroke: #334155; stroke-width: 1; }
+.sx-umlclass-classname { fill: #0f172a; font-size: 13px; font-weight: 700; letter-spacing: -0.01em; }
+.sx-umlclass-classname[data-abstract="true"] { font-style: italic; }
+.sx-umlclass-stereotype { fill: #64748b; font-size: 10px; font-style: italic; }
+.sx-umlclass-member { fill: #0f172a; font-size: 12px; font-weight: 500; }
+.sx-umlclass-member[data-static] { text-decoration: underline; }
+.sx-umlclass-member[data-abstract] { font-style: italic; }
+.sx-umlclass-visibility { fill: #64748b; font-size: 12px; font-weight: 500; }
+.sx-umlclass-rel-line { stroke: #334155; stroke-width: 1.4; fill: none; }
+.sx-umlclass-rel-line[data-dashed="true"] { stroke-dasharray: 5 4; }
+.sx-umlclass-triangle { fill: #ffffff; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-diamond-hollow { fill: #ffffff; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-diamond-filled { fill: #334155; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-arrowhead { fill: none; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-edge-label { fill: #475569; font-size: 10px; font-weight: 500; }
+.sx-umlclass-edge-name { fill: #475569; font-size: 12px; font-style: italic; }
+.sx-umlclass-edge-name-halo { fill: #ffffff; stroke: #ffffff; stroke-width: 6; stroke-linejoin: round; }
+.sx-umlclass-title { fill: #0f172a; font-size: 16px; font-weight: 600; }
+.sx-umlclass-package { fill: rgba(100,116,139,0.06); stroke: #94a3b8; stroke-width: 1; }
+.sx-umlclass-package-label { fill: #475569; font-size: 12px; font-weight: 600; }</style>
+<rect x="0" y="0" width="1283" height="654" class="sx-umlclass-bg"/>
+<text x="52" y="40" class="sx-umlclass-title" font-family="system-ui, -apple-system, sans-serif">Payment strategy</text>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><g class="sx-umlclass-classifier" data-id="PaymentMethod" data-kind="enum" data-stereotype="enumeration"><rect x="32" y="232" width="160" height="46" class="sx-umlclass-header-fill"/>
+<rect x="32" y="278" width="160" height="120" class="sx-umlclass-box-fill"/>
+<rect x="32" y="232" width="160" height="166" class="sx-umlclass-box-stroke"/>
+<line x1="32" y1="278" x2="192" y2="278" class="sx-umlclass-divider"/>
+<line x1="32" y1="360" x2="192" y2="360" class="sx-umlclass-divider"/>
+<text x="112" y="244" class="sx-umlclass-stereotype" text-anchor="middle">«enumeration»</text>
+<text x="112" y="269" class="sx-umlclass-classname" text-anchor="middle">PaymentMethod</text>
+<text x="46" y="302" class="sx-umlclass-member" data-visibility="public">CARD</text>
+<text x="46" y="324" class="sx-umlclass-member" data-visibility="public">BANK_TRANSFER</text>
+<text x="46" y="346" class="sx-umlclass-member" data-visibility="public">WALLET</text></g>
+<g class="sx-umlclass-classifier" data-id="PaymentStrategy" data-kind="interface"><rect x="441.8817356824875" y="243" width="279" height="46" class="sx-umlclass-header-fill"/>
+<rect x="441.8817356824875" y="289" width="279" height="98" class="sx-umlclass-box-fill"/>
+<rect x="441.8817356824875" y="243" width="279" height="144" class="sx-umlclass-box-stroke"/>
+<line x1="441.8817356824875" y1="289" x2="720.8817356824875" y2="289" class="sx-umlclass-divider"/>
+<line x1="441.8817356824875" y1="327" x2="720.8817356824875" y2="327" class="sx-umlclass-divider"/>
+<text x="581.3817356824875" y="255" class="sx-umlclass-stereotype" text-anchor="middle">«interface»</text>
+<text x="581.3817356824875" y="280" class="sx-umlclass-classname" text-anchor="middle">PaymentStrategy</text>
+<text x="455.8817356824875" y="351" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>authorize(amount: Money): AuthResult</text>
+<text x="455.8817356824875" y="373" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>capture(auth: AuthResult): Receipt</text></g>
+<g class="sx-umlclass-classifier" data-id="CheckoutService" data-kind="class" data-stereotype="service"><rect x="186.69086784124374" y="32" width="320" height="46" class="sx-umlclass-header-fill"/>
+<rect x="186.69086784124374" y="78" width="320" height="76" class="sx-umlclass-box-fill"/>
+<rect x="186.69086784124374" y="32" width="320" height="122" class="sx-umlclass-box-stroke"/>
+<line x1="186.69086784124374" y1="78" x2="506.69086784124374" y2="78" class="sx-umlclass-divider"/>
+<line x1="186.69086784124374" y1="116" x2="506.69086784124374" y2="116" class="sx-umlclass-divider"/>
+<text x="346.69086784124374" y="44" class="sx-umlclass-stereotype" text-anchor="middle">«service»</text>
+<text x="346.69086784124374" y="69" class="sx-umlclass-classname" text-anchor="middle">CheckoutService</text>
+<text x="200.69086784124374" y="102" class="sx-umlclass-member" data-visibility="private"><tspan class="sx-umlclass-visibility">- </tspan>strategies: Map&lt;PaymentMethod, PaymentStr…</text>
+<text x="200.69086784124374" y="140" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>pay(method: PaymentMethod, amount: Money)…</text></g>
+<g class="sx-umlclass-classifier" data-id="CardStrategy" data-kind="class"><rect x="265.34231424331665" y="476" width="279" height="30" class="sx-umlclass-header-fill"/>
+<rect x="265.34231424331665" y="506" width="279" height="76" class="sx-umlclass-box-fill"/>
+<rect x="265.34231424331665" y="476" width="279" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="265.34231424331665" y1="506" x2="544.3423142433167" y2="506" class="sx-umlclass-divider"/>
+<line x1="265.34231424331665" y1="544" x2="544.3423142433167" y2="544" class="sx-umlclass-divider"/>
+<text x="404.84231424331665" y="497" class="sx-umlclass-classname" text-anchor="middle">CardStrategy</text>
+<text x="279.34231424331665" y="568" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>authorize(amount: Money): AuthResult</text></g>
+<g class="sx-umlclass-classifier" data-id="BankStrategy" data-kind="class"><rect x="598.3423142433167" y="476" width="279" height="30" class="sx-umlclass-header-fill"/>
+<rect x="598.3423142433167" y="506" width="279" height="76" class="sx-umlclass-box-fill"/>
+<rect x="598.3423142433167" y="476" width="279" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="598.3423142433167" y1="506" x2="877.3423142433167" y2="506" class="sx-umlclass-divider"/>
+<line x1="598.3423142433167" y1="544" x2="877.3423142433167" y2="544" class="sx-umlclass-divider"/>
+<text x="737.8423142433167" y="497" class="sx-umlclass-classname" text-anchor="middle">BankStrategy</text>
+<text x="612.3423142433167" y="568" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>authorize(amount: Money): AuthResult</text></g>
+<g class="sx-umlclass-classifier" data-id="WalletStrategy" data-kind="class"><rect x="931.3423142433167" y="476" width="279" height="30" class="sx-umlclass-header-fill"/>
+<rect x="931.3423142433167" y="506" width="279" height="76" class="sx-umlclass-box-fill"/>
+<rect x="931.3423142433167" y="476" width="279" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="931.3423142433167" y1="506" x2="1210.3423142433167" y2="506" class="sx-umlclass-divider"/>
+<line x1="931.3423142433167" y1="544" x2="1210.3423142433167" y2="544" class="sx-umlclass-divider"/>
+<text x="1070.8423142433167" y="497" class="sx-umlclass-classname" text-anchor="middle">WalletStrategy</text>
+<text x="945.3423142433167" y="568" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>authorize(amount: Money): AuthResult</text></g></g>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><g class="sx-umlclass-rel" data-from="CheckoutService" data-to="PaymentStrategy" data-kind="dependency" data-name="delegates to"><path d="M 411.2 154 L 505.3 232" class="sx-umlclass-rel-line" data-dashed="true"/>
+<path d="M 499.7657785447868 232 L 505.2657785447868 243 L 510.7657785447868 232" class="sx-umlclass-arrowhead"/>
+<text x="458.2218883694024" y="188" class="sx-umlclass-edge-name sx-umlclass-edge-name-halo" text-anchor="middle">delegates to</text>
+<text x="458.2218883694024" y="188" class="sx-umlclass-edge-name" text-anchor="middle">delegates to</text></g>
+<g class="sx-umlclass-rel" data-from="CheckoutService" data-to="PaymentMethod" data-kind="dependency" data-name="selects by"><path d="M 282.2 154 L 203 239.3" class="sx-umlclass-rel-line" data-dashed="true"/>
+<path d="M 203 233.82598607963848 L 192 239.32598607963848 L 203 244.82598607963848" class="sx-umlclass-arrowhead"/>
+<text x="242.60186874423476" y="191.66299303981924" class="sx-umlclass-edge-name sx-umlclass-edge-name-halo" text-anchor="middle">selects by</text>
+<text x="242.60186874423476" y="191.66299303981924" class="sx-umlclass-edge-name" text-anchor="middle">selects by</text></g></g>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><g class="sx-umlclass-rel sx-umlclass-rel-tree" data-kind="realization" data-parent="PaymentStrategy" data-children="CardStrategy,BankStrategy,WalletStrategy"><path d="M 404.8 476 L 404.8 431.5 L 710.9 431.5" class="sx-umlclass-rel-line" data-dashed="true"/>
+<path d="M 737.8 476 L 737.8 431.5 L 710.9 431.5" class="sx-umlclass-rel-line" data-dashed="true"/>
+<path d="M 1070.8 476 L 1070.8 431.5 L 710.9 431.5" class="sx-umlclass-rel-line" data-dashed="true"/>
+<path d="M 710.9 431.5 L 710.9 401" class="sx-umlclass-rel-line" data-dashed="true"/>
+<polygon points="710.8817356824875,387 701.8817356824875,401 719.8817356824875,401" class="sx-umlclass-triangle"/></g></g></svg></div>
+  <details>
+    <summary>DSL source</summary>
+    <pre>umlclass
+title: "Payment strategy"
+«enumeration» PaymentMethod {
+  CARD
+  BANK_TRANSFER
+  WALLET
+}
+«interface» PaymentStrategy {
+  + authorize(amount : Money) : AuthResult
+  + capture(auth : AuthResult) : Receipt
+}
+«service» class CheckoutService {
+  - strategies : Map&lt;PaymentMethod, PaymentStrategy&gt;
+  + pay(method : PaymentMethod, amount : Money) : Receipt
+}
+class CardStrategy   { + authorize(amount : Money) : AuthResult }
+class BankStrategy   { + authorize(amount : Money) : AuthResult }
+class WalletStrategy { + authorize(amount : Money) : AuthResult }
+PaymentStrategy &lt;|.. CardStrategy
+PaymentStrategy &lt;|.. BankStrategy
+PaymentStrategy &lt;|.. WalletStrategy
+CheckoutService ..&gt; PaymentStrategy : delegates to
+CheckoutService ..&gt; PaymentMethod   : selects by</pre>
+  </details>
+</section>
+
+<section class="card" id="layered">
+  <h2>6 — Layered architecture (dependency chain + stereotypes)</h2>
+  <p class="note">Controller → Service → Repository → Entity. Four custom stereotypes. A pure dependency chain (no inheritance) — tests that the 'source above target' rank rule keeps the call direction reading top-down.</p>
+  <div class="svg-wrap"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="390" height="914" viewBox="0 0 390 914" role="img" aria-label="Layered architecture" data-diagram-type="umlclass"><title>Layered architecture</title>
+<desc>UML class diagram: 4 class; 3 dependency.</desc>
+<style>.sx-umlclass-bg { fill: #ffffff; }
+.sx-umlclass-box-fill { fill: #ffffff; }
+.sx-umlclass-box-stroke { stroke: #334155; stroke-width: 1.5; fill: none; }
+.sx-umlclass-header-fill { fill: #eef2f7; }
+.sx-umlclass-divider { stroke: #334155; stroke-width: 1; }
+.sx-umlclass-classname { fill: #0f172a; font-size: 13px; font-weight: 700; letter-spacing: -0.01em; }
+.sx-umlclass-classname[data-abstract="true"] { font-style: italic; }
+.sx-umlclass-stereotype { fill: #64748b; font-size: 10px; font-style: italic; }
+.sx-umlclass-member { fill: #0f172a; font-size: 12px; font-weight: 500; }
+.sx-umlclass-member[data-static] { text-decoration: underline; }
+.sx-umlclass-member[data-abstract] { font-style: italic; }
+.sx-umlclass-visibility { fill: #64748b; font-size: 12px; font-weight: 500; }
+.sx-umlclass-rel-line { stroke: #334155; stroke-width: 1.4; fill: none; }
+.sx-umlclass-rel-line[data-dashed="true"] { stroke-dasharray: 5 4; }
+.sx-umlclass-triangle { fill: #ffffff; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-diamond-hollow { fill: #ffffff; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-diamond-filled { fill: #334155; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-arrowhead { fill: none; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-edge-label { fill: #475569; font-size: 10px; font-weight: 500; }
+.sx-umlclass-edge-name { fill: #475569; font-size: 12px; font-style: italic; }
+.sx-umlclass-edge-name-halo { fill: #ffffff; stroke: #ffffff; stroke-width: 6; stroke-linejoin: round; }
+.sx-umlclass-title { fill: #0f172a; font-size: 16px; font-weight: 600; }
+.sx-umlclass-package { fill: rgba(100,116,139,0.06); stroke: #94a3b8; stroke-width: 1; }
+.sx-umlclass-package-label { fill: #475569; font-size: 12px; font-weight: 600; }</style>
+<rect x="0" y="0" width="390" height="914" class="sx-umlclass-bg"/>
+<text x="52" y="40" class="sx-umlclass-title" font-family="system-ui, -apple-system, sans-serif">Layered architecture</text>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><g class="sx-umlclass-classifier" data-id="OrderController" data-kind="class" data-stereotype="controller"><rect x="58.5" y="32" width="233" height="46" class="sx-umlclass-header-fill"/>
+<rect x="58.5" y="78" width="233" height="98" class="sx-umlclass-box-fill"/>
+<rect x="58.5" y="32" width="233" height="144" class="sx-umlclass-box-stroke"/>
+<line x1="58.5" y1="78" x2="291.5" y2="78" class="sx-umlclass-divider"/>
+<line x1="58.5" y1="116" x2="291.5" y2="116" class="sx-umlclass-divider"/>
+<text x="175" y="44" class="sx-umlclass-stereotype" text-anchor="middle">«controller»</text>
+<text x="175" y="69" class="sx-umlclass-classname" text-anchor="middle">OrderController</text>
+<text x="72.5" y="140" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>place(req: Request): Response</text>
+<text x="72.5" y="162" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>cancel(id: String): Response</text></g>
+<g class="sx-umlclass-classifier" data-id="OrderService" data-kind="class" data-stereotype="service"><rect x="32" y="254" width="286" height="46" class="sx-umlclass-header-fill"/>
+<rect x="32" y="300" width="286" height="98" class="sx-umlclass-box-fill"/>
+<rect x="32" y="254" width="286" height="144" class="sx-umlclass-box-stroke"/>
+<line x1="32" y1="300" x2="318" y2="300" class="sx-umlclass-divider"/>
+<line x1="32" y1="338" x2="318" y2="338" class="sx-umlclass-divider"/>
+<text x="175" y="266" class="sx-umlclass-stereotype" text-anchor="middle">«service»</text>
+<text x="175" y="291" class="sx-umlclass-classname" text-anchor="middle">OrderService</text>
+<text x="46" y="362" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>createOrder(input: OrderInput): Order</text>
+<text x="46" y="384" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>cancel(id: String): void</text></g>
+<g class="sx-umlclass-classifier" data-id="OrderRepository" data-kind="class" data-stereotype="repository"><rect x="64.59356594085693" y="476" width="220" height="46" class="sx-umlclass-header-fill"/>
+<rect x="64.59356594085693" y="522" width="220" height="98" class="sx-umlclass-box-fill"/>
+<rect x="64.59356594085693" y="476" width="220" height="144" class="sx-umlclass-box-stroke"/>
+<line x1="64.59356594085693" y1="522" x2="284.59356594085693" y2="522" class="sx-umlclass-divider"/>
+<line x1="64.59356594085693" y1="560" x2="284.59356594085693" y2="560" class="sx-umlclass-divider"/>
+<text x="174.59356594085693" y="488" class="sx-umlclass-stereotype" text-anchor="middle">«repository»</text>
+<text x="174.59356594085693" y="513" class="sx-umlclass-classname" text-anchor="middle">OrderRepository</text>
+<text x="78.59356594085693" y="584" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>save(o: Order): Order</text>
+<text x="78.59356594085693" y="606" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>findById(id: String): Order</text></g>
+<g class="sx-umlclass-classifier" data-id="Order" data-kind="class" data-stereotype="entity"><rect x="94.27588367462158" y="698" width="160" height="46" class="sx-umlclass-header-fill"/>
+<rect x="94.27588367462158" y="744" width="160" height="98" class="sx-umlclass-box-fill"/>
+<rect x="94.27588367462158" y="698" width="160" height="144" class="sx-umlclass-box-stroke"/>
+<line x1="94.27588367462158" y1="744" x2="254.27588367462158" y2="744" class="sx-umlclass-divider"/>
+<line x1="94.27588367462158" y1="804" x2="254.27588367462158" y2="804" class="sx-umlclass-divider"/>
+<text x="174.27588367462158" y="710" class="sx-umlclass-stereotype" text-anchor="middle">«entity»</text>
+<text x="174.27588367462158" y="735" class="sx-umlclass-classname" text-anchor="middle">Order</text>
+<text x="108.27588367462158" y="768" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>id: String</text>
+<text x="108.27588367462158" y="790" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>total: Money</text></g></g>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><g class="sx-umlclass-rel" data-from="OrderController" data-to="OrderService" data-kind="dependency" data-name="delegates"><path d="M 175 176 L 175 243" class="sx-umlclass-rel-line" data-dashed="true"/>
+<path d="M 169.5 243 L 175 254 L 180.5 243" class="sx-umlclass-arrowhead"/>
+<text x="175" y="204.5" class="sx-umlclass-edge-name sx-umlclass-edge-name-halo" text-anchor="middle">delegates</text>
+<text x="175" y="204.5" class="sx-umlclass-edge-name" text-anchor="middle">delegates</text></g>
+<g class="sx-umlclass-rel" data-from="OrderService" data-to="OrderRepository" data-kind="dependency" data-name="queries"><path d="M 174.9 398 L 174.7 465" class="sx-umlclass-rel-line" data-dashed="true"/>
+<path d="M 169.2253823924709 465 L 174.7253823924709 476 L 180.2253823924709 465" class="sx-umlclass-arrowhead"/>
+<text x="174.79678297042847" y="426.5" class="sx-umlclass-edge-name sx-umlclass-edge-name-halo" text-anchor="middle">queries</text>
+<text x="174.79678297042847" y="426.5" class="sx-umlclass-edge-name" text-anchor="middle">queries</text></g>
+<g class="sx-umlclass-rel" data-from="OrderRepository" data-to="Order" data-kind="dependency" data-name="persists"><path d="M 174.5 620 L 174.4 687" class="sx-umlclass-rel-line" data-dashed="true"/>
+<path d="M 168.87891576096817 687 L 174.37891576096817 698 L 179.87891576096817 687" class="sx-umlclass-arrowhead"/>
+<text x="174.43472480773926" y="648.5" class="sx-umlclass-edge-name sx-umlclass-edge-name-halo" text-anchor="middle">persists</text>
+<text x="174.43472480773926" y="648.5" class="sx-umlclass-edge-name" text-anchor="middle">persists</text></g></g></svg></div>
+  <details>
+    <summary>DSL source</summary>
+    <pre>umlclass
+title: "Layered architecture"
+«controller» class OrderController {
+  + place(req : Request) : Response
+  + cancel(id : String) : Response
+}
+«service» class OrderService {
+  + createOrder(input : OrderInput) : Order
+  + cancel(id : String) : void
+}
+«repository» class OrderRepository {
+  + save(o : Order) : Order
+  + findById(id : String) : Order
+}
+«entity» class Order {
+  + id : String
+  + total : Money
+}
+OrderController ..&gt; OrderService    : delegates
+OrderService    ..&gt; OrderRepository : queries
+OrderRepository ..&gt; Order           : persists</pre>
+  </details>
+</section>
+
+<section class="card" id="ns-platform">
+  <h2>7 — Namespaces: Platform { Auth, Data } + outside Gateway</h2>
+  <p class="note">NEW: `namespace` blocks → labelled containment frames. Gateway sits outside the Platform package and delegates into UserService (Auth) and Repository (Data). Frames are the union of their members + nested sub-frames, padded.</p>
+  <div class="svg-wrap"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="550" height="452" viewBox="0 0 550 452" role="img" aria-label="Layered packages" data-diagram-type="umlclass"><title>Layered packages</title>
+<desc>UML class diagram: 3 class; 2 directed.</desc>
+<style>.sx-umlclass-bg { fill: #ffffff; }
+.sx-umlclass-box-fill { fill: #ffffff; }
+.sx-umlclass-box-stroke { stroke: #334155; stroke-width: 1.5; fill: none; }
+.sx-umlclass-header-fill { fill: #eef2f7; }
+.sx-umlclass-divider { stroke: #334155; stroke-width: 1; }
+.sx-umlclass-classname { fill: #0f172a; font-size: 13px; font-weight: 700; letter-spacing: -0.01em; }
+.sx-umlclass-classname[data-abstract="true"] { font-style: italic; }
+.sx-umlclass-stereotype { fill: #64748b; font-size: 10px; font-style: italic; }
+.sx-umlclass-member { fill: #0f172a; font-size: 12px; font-weight: 500; }
+.sx-umlclass-member[data-static] { text-decoration: underline; }
+.sx-umlclass-member[data-abstract] { font-style: italic; }
+.sx-umlclass-visibility { fill: #64748b; font-size: 12px; font-weight: 500; }
+.sx-umlclass-rel-line { stroke: #334155; stroke-width: 1.4; fill: none; }
+.sx-umlclass-rel-line[data-dashed="true"] { stroke-dasharray: 5 4; }
+.sx-umlclass-triangle { fill: #ffffff; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-diamond-hollow { fill: #ffffff; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-diamond-filled { fill: #334155; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-arrowhead { fill: none; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-edge-label { fill: #475569; font-size: 10px; font-weight: 500; }
+.sx-umlclass-edge-name { fill: #475569; font-size: 12px; font-style: italic; }
+.sx-umlclass-edge-name-halo { fill: #ffffff; stroke: #ffffff; stroke-width: 6; stroke-linejoin: round; }
+.sx-umlclass-title { fill: #0f172a; font-size: 16px; font-weight: 600; }
+.sx-umlclass-package { fill: rgba(100,116,139,0.06); stroke: #94a3b8; stroke-width: 1; }
+.sx-umlclass-package-label { fill: #475569; font-size: 12px; font-weight: 600; }</style>
+<rect x="0" y="0" width="550" height="452" class="sx-umlclass-bg"/>
+<text x="52" y="40" class="sx-umlclass-title" font-family="system-ui, -apple-system, sans-serif">Layered packages</text>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><g class="sx-umlclass-package-group" data-package-id="Platform" data-depth="0"><rect x="32" y="132" width="446" height="248" rx="4" class="sx-umlclass-package"/>
+<text x="255" y="148" class="sx-umlclass-package-label" text-anchor="middle">Platform</text></g>
+<g class="sx-umlclass-package-group" data-package-id="Platform.Auth" data-depth="1"><rect x="50" y="174" width="196" height="188" rx="4" class="sx-umlclass-package"/>
+<text x="148" y="190" class="sx-umlclass-package-label" text-anchor="middle">Auth</text></g>
+<g class="sx-umlclass-package-group" data-package-id="Platform.Data" data-depth="1"><rect x="264" y="174" width="196" height="188" rx="4" class="sx-umlclass-package"/>
+<text x="362" y="190" class="sx-umlclass-package-label" text-anchor="middle">Data</text></g></g>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><g class="sx-umlclass-classifier" data-id="UserService" data-kind="class"><rect x="68" y="216" width="160" height="30" class="sx-umlclass-header-fill"/>
+<rect x="68" y="246" width="160" height="98" class="sx-umlclass-box-fill"/>
+<rect x="68" y="216" width="160" height="128" class="sx-umlclass-box-stroke"/>
+<line x1="68" y1="246" x2="228" y2="246" class="sx-umlclass-divider"/>
+<line x1="68" y1="284" x2="228" y2="284" class="sx-umlclass-divider"/>
+<text x="148" y="237" class="sx-umlclass-classname" text-anchor="middle">UserService</text>
+<text x="82" y="308" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>login()</text>
+<text x="82" y="330" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>logout()</text></g>
+<g class="sx-umlclass-classifier" data-id="Repository" data-kind="class"><rect x="282" y="216" width="160" height="30" class="sx-umlclass-header-fill"/>
+<rect x="282" y="246" width="160" height="98" class="sx-umlclass-box-fill"/>
+<rect x="282" y="216" width="160" height="128" class="sx-umlclass-box-stroke"/>
+<line x1="282" y1="246" x2="442" y2="246" class="sx-umlclass-divider"/>
+<line x1="282" y1="284" x2="442" y2="284" class="sx-umlclass-divider"/>
+<text x="362" y="237" class="sx-umlclass-classname" text-anchor="middle">Repository</text>
+<text x="296" y="308" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>find()</text>
+<text x="296" y="330" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>save()</text></g>
+<g class="sx-umlclass-classifier" data-id="Gateway" data-kind="class"><rect x="175" y="32" width="160" height="30" class="sx-umlclass-header-fill"/>
+<rect x="175" y="62" width="160" height="76" class="sx-umlclass-box-fill"/>
+<rect x="175" y="32" width="160" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="175" y1="62" x2="335" y2="62" class="sx-umlclass-divider"/>
+<line x1="175" y1="100" x2="335" y2="100" class="sx-umlclass-divider"/>
+<text x="255" y="53" class="sx-umlclass-classname" text-anchor="middle">Gateway</text>
+<text x="189" y="124" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>route()</text></g></g>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><g class="sx-umlclass-rel" data-from="Gateway" data-to="UserService" data-kind="directed" data-name="delegates"><path d="M 225.9 138 L 183.1 205" class="sx-umlclass-rel-line"/>
+<path d="M 177.6179487179487 205 L 183.1179487179487 216 L 188.6179487179487 205" class="sx-umlclass-arrowhead"/>
+<text x="204.5179487179487" y="166.5" class="sx-umlclass-edge-name sx-umlclass-edge-name-halo" text-anchor="middle">delegates</text>
+<text x="204.5179487179487" y="166.5" class="sx-umlclass-edge-name" text-anchor="middle">delegates</text></g>
+<g class="sx-umlclass-rel" data-from="Gateway" data-to="Repository" data-kind="directed" data-name="delegates"><path d="M 284.1 138 L 326.9 205" class="sx-umlclass-rel-line"/>
+<path d="M 321.3820512820513 205 L 326.8820512820513 216 L 332.3820512820513 205" class="sx-umlclass-arrowhead"/>
+<text x="305.4820512820513" y="166.5" class="sx-umlclass-edge-name sx-umlclass-edge-name-halo" text-anchor="middle">delegates</text>
+<text x="305.4820512820513" y="166.5" class="sx-umlclass-edge-name" text-anchor="middle">delegates</text></g></g></svg></div>
+  <details>
+    <summary>DSL source</summary>
+    <pre>umlclass
+title: "Layered packages"
+namespace Platform {
+namespace Auth {
+class UserService {
+  + login()
+  + logout()
+}
+}
+namespace Data {
+class Repository {
+  + find()
+  + save()
+}
+}
+}
+class Gateway {
+  + route()
+}
+Gateway --&gt; UserService : delegates
+Gateway --&gt; Repository  : delegates</pre>
+  </details>
+</section>
+
+<section class="card" id="ns-dotted">
+  <h2>8 — Dot-notation namespaces (auto-created parents)</h2>
+  <p class="note">NEW: `namespace Company.Engineering.Backend` auto-creates Company and Company.Engineering. TechLead lives directly in Engineering and leads a Developer (Backend) + Designer (Frontend). Nested frames stack with a translucent tint.</p>
+  <div class="svg-wrap"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="586" height="532" viewBox="0 0 586 532" role="img" aria-label="Org packages" data-diagram-type="umlclass"><title>Org packages</title>
+<desc>UML class diagram: 3 class; 2 directed.</desc>
+<style>.sx-umlclass-bg { fill: #ffffff; }
+.sx-umlclass-box-fill { fill: #ffffff; }
+.sx-umlclass-box-stroke { stroke: #334155; stroke-width: 1.5; fill: none; }
+.sx-umlclass-header-fill { fill: #eef2f7; }
+.sx-umlclass-divider { stroke: #334155; stroke-width: 1; }
+.sx-umlclass-classname { fill: #0f172a; font-size: 13px; font-weight: 700; letter-spacing: -0.01em; }
+.sx-umlclass-classname[data-abstract="true"] { font-style: italic; }
+.sx-umlclass-stereotype { fill: #64748b; font-size: 10px; font-style: italic; }
+.sx-umlclass-member { fill: #0f172a; font-size: 12px; font-weight: 500; }
+.sx-umlclass-member[data-static] { text-decoration: underline; }
+.sx-umlclass-member[data-abstract] { font-style: italic; }
+.sx-umlclass-visibility { fill: #64748b; font-size: 12px; font-weight: 500; }
+.sx-umlclass-rel-line { stroke: #334155; stroke-width: 1.4; fill: none; }
+.sx-umlclass-rel-line[data-dashed="true"] { stroke-dasharray: 5 4; }
+.sx-umlclass-triangle { fill: #ffffff; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-diamond-hollow { fill: #ffffff; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-diamond-filled { fill: #334155; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-arrowhead { fill: none; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-edge-label { fill: #475569; font-size: 10px; font-weight: 500; }
+.sx-umlclass-edge-name { fill: #475569; font-size: 12px; font-style: italic; }
+.sx-umlclass-edge-name-halo { fill: #ffffff; stroke: #ffffff; stroke-width: 6; stroke-linejoin: round; }
+.sx-umlclass-title { fill: #0f172a; font-size: 16px; font-weight: 600; }
+.sx-umlclass-package { fill: rgba(100,116,139,0.06); stroke: #94a3b8; stroke-width: 1; }
+.sx-umlclass-package-label { fill: #475569; font-size: 12px; font-weight: 600; }</style>
+<rect x="0" y="0" width="586" height="532" class="sx-umlclass-bg"/>
+<text x="52" y="40" class="sx-umlclass-title" font-family="system-ui, -apple-system, sans-serif">Org packages</text>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><g class="sx-umlclass-package-group" data-package-id="Company" data-depth="0"><rect x="32" y="32" width="482" height="428" rx="4" class="sx-umlclass-package"/>
+<text x="273" y="48" class="sx-umlclass-package-label" text-anchor="middle">Company</text></g>
+<g class="sx-umlclass-package-group" data-package-id="Company.Engineering" data-depth="1"><rect x="50" y="74" width="446" height="368" rx="4" class="sx-umlclass-package"/>
+<text x="273" y="90" class="sx-umlclass-package-label" text-anchor="middle">Engineering</text></g>
+<g class="sx-umlclass-package-group" data-package-id="Company.Engineering.Backend" data-depth="2"><rect x="68" y="258" width="196" height="166" rx="4" class="sx-umlclass-package"/>
+<text x="166" y="274" class="sx-umlclass-package-label" text-anchor="middle">Backend</text></g>
+<g class="sx-umlclass-package-group" data-package-id="Company.Engineering.Frontend" data-depth="2"><rect x="282" y="258" width="196" height="166" rx="4" class="sx-umlclass-package"/>
+<text x="380" y="274" class="sx-umlclass-package-label" text-anchor="middle">Frontend</text></g></g>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><g class="sx-umlclass-classifier" data-id="Developer" data-kind="class"><rect x="86" y="300" width="160" height="30" class="sx-umlclass-header-fill"/>
+<rect x="86" y="330" width="160" height="76" class="sx-umlclass-box-fill"/>
+<rect x="86" y="300" width="160" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="86" y1="330" x2="246" y2="330" class="sx-umlclass-divider"/>
+<line x1="86" y1="368" x2="246" y2="368" class="sx-umlclass-divider"/>
+<text x="166" y="321" class="sx-umlclass-classname" text-anchor="middle">Developer</text>
+<text x="100" y="392" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>writeCode()</text></g>
+<g class="sx-umlclass-classifier" data-id="Designer" data-kind="class"><rect x="300" y="300" width="160" height="30" class="sx-umlclass-header-fill"/>
+<rect x="300" y="330" width="160" height="76" class="sx-umlclass-box-fill"/>
+<rect x="300" y="300" width="160" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="300" y1="330" x2="460" y2="330" class="sx-umlclass-divider"/>
+<line x1="300" y1="368" x2="460" y2="368" class="sx-umlclass-divider"/>
+<text x="380" y="321" class="sx-umlclass-classname" text-anchor="middle">Designer</text>
+<text x="314" y="392" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>createMockup()</text></g>
+<g class="sx-umlclass-classifier" data-id="TechLead" data-kind="class"><rect x="193" y="116" width="160" height="30" class="sx-umlclass-header-fill"/>
+<rect x="193" y="146" width="160" height="76" class="sx-umlclass-box-fill"/>
+<rect x="193" y="116" width="160" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="193" y1="146" x2="353" y2="146" class="sx-umlclass-divider"/>
+<line x1="193" y1="184" x2="353" y2="184" class="sx-umlclass-divider"/>
+<text x="273" y="137" class="sx-umlclass-classname" text-anchor="middle">TechLead</text>
+<text x="207" y="208" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>planSprint()</text></g></g>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><g class="sx-umlclass-rel" data-from="TechLead" data-to="Developer" data-kind="directed" data-name="leads"><path d="M 242.2 222 L 196.8 289" class="sx-umlclass-rel-line"/>
+<path d="M 191.32065217391303 289 L 196.82065217391303 300 L 202.32065217391303 289" class="sx-umlclass-arrowhead"/>
+<text x="219.5" y="250.5" class="sx-umlclass-edge-name sx-umlclass-edge-name-halo" text-anchor="middle">leads</text>
+<text x="219.5" y="250.5" class="sx-umlclass-edge-name" text-anchor="middle">leads</text></g>
+<g class="sx-umlclass-rel" data-from="TechLead" data-to="Designer" data-kind="directed" data-name="leads"><path d="M 303.8 222 L 349.2 289" class="sx-umlclass-rel-line"/>
+<path d="M 343.67934782608694 289 L 349.17934782608694 300 L 354.67934782608694 289" class="sx-umlclass-arrowhead"/>
+<text x="326.5" y="250.5" class="sx-umlclass-edge-name sx-umlclass-edge-name-halo" text-anchor="middle">leads</text>
+<text x="326.5" y="250.5" class="sx-umlclass-edge-name" text-anchor="middle">leads</text></g></g></svg></div>
+  <details>
+    <summary>DSL source</summary>
+    <pre>umlclass
+title: "Org packages"
+namespace Company.Engineering.Backend {
+class Developer {
+  +writeCode()
+}
+}
+namespace Company.Engineering.Frontend {
+class Designer {
+  +createMockup()
+}
+}
+namespace Company.Engineering {
+class TechLead {
+  +planSprint()
+}
+}
+TechLead --&gt; Developer : leads
+TechLead --&gt; Designer  : leads</pre>
+  </details>
+</section>
+
+<section class="card" id="mermaid-compat">
+  <h2>9 — Mermaid-compat (generics, single-line, * / $)</h2>
+  <p class="note">NEW: tilde-generics `List~T~`→List&lt;T&gt; (nested `Map~String,List~int~~` too), single-line `Class : +member` / `Class : &lt;&lt;service&gt;&gt;`, member classifiers `flush()*` (abstract) and `count$` (static), and space-return-type `findAll() List~T~`.</p>
+  <div class="svg-wrap"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="337" height="476" viewBox="0 0 337 476" role="img" aria-label="UML class diagram" data-diagram-type="umlclass"><title>UML class diagram</title>
+<desc>UML class diagram: 2 class; 1 realization (1 warning).</desc>
+<style>.sx-umlclass-bg { fill: #ffffff; }
+.sx-umlclass-box-fill { fill: #ffffff; }
+.sx-umlclass-box-stroke { stroke: #334155; stroke-width: 1.5; fill: none; }
+.sx-umlclass-header-fill { fill: #eef2f7; }
+.sx-umlclass-divider { stroke: #334155; stroke-width: 1; }
+.sx-umlclass-classname { fill: #0f172a; font-size: 13px; font-weight: 700; letter-spacing: -0.01em; }
+.sx-umlclass-classname[data-abstract="true"] { font-style: italic; }
+.sx-umlclass-stereotype { fill: #64748b; font-size: 10px; font-style: italic; }
+.sx-umlclass-member { fill: #0f172a; font-size: 12px; font-weight: 500; }
+.sx-umlclass-member[data-static] { text-decoration: underline; }
+.sx-umlclass-member[data-abstract] { font-style: italic; }
+.sx-umlclass-visibility { fill: #64748b; font-size: 12px; font-weight: 500; }
+.sx-umlclass-rel-line { stroke: #334155; stroke-width: 1.4; fill: none; }
+.sx-umlclass-rel-line[data-dashed="true"] { stroke-dasharray: 5 4; }
+.sx-umlclass-triangle { fill: #ffffff; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-diamond-hollow { fill: #ffffff; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-diamond-filled { fill: #334155; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-arrowhead { fill: none; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-edge-label { fill: #475569; font-size: 10px; font-weight: 500; }
+.sx-umlclass-edge-name { fill: #475569; font-size: 12px; font-style: italic; }
+.sx-umlclass-edge-name-halo { fill: #ffffff; stroke: #ffffff; stroke-width: 6; stroke-linejoin: round; }
+.sx-umlclass-title { fill: #0f172a; font-size: 16px; font-weight: 600; }
+.sx-umlclass-package { fill: rgba(100,116,139,0.06); stroke: #94a3b8; stroke-width: 1; }
+.sx-umlclass-package-label { fill: #475569; font-size: 12px; font-weight: 600; }</style>
+<rect x="0" y="0" width="337" height="476" class="sx-umlclass-bg"/>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><g class="sx-umlclass-classifier" data-id="Repository" data-kind="class"><rect x="32" y="32" width="233" height="30" class="sx-umlclass-header-fill"/>
+<rect x="32" y="62" width="233" height="142" class="sx-umlclass-box-fill"/>
+<rect x="32" y="32" width="233" height="172" class="sx-umlclass-box-stroke"/>
+<line x1="32" y1="62" x2="265" y2="62" class="sx-umlclass-divider"/>
+<line x1="32" y1="122" x2="265" y2="122" class="sx-umlclass-divider"/>
+<text x="148.5" y="53" class="sx-umlclass-classname" text-anchor="middle">Repository&lt;T&gt;</text>
+<text x="46" y="86" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>cache: Map&lt;String,List&lt;int&gt;&gt;</text>
+<text x="46" y="108" class="sx-umlclass-member" data-visibility="public" data-static="true"><tspan class="sx-umlclass-visibility">+ </tspan>count</text>
+<text x="46" y="146" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>findAll(): List&lt;T&gt;</text>
+<text x="46" y="168" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>findById(id: ID): Optional&lt;T&gt;</text>
+<text x="46" y="190" class="sx-umlclass-member" data-visibility="public" data-abstract="true"><tspan class="sx-umlclass-visibility">+ </tspan>flush()</text></g>
+<g class="sx-umlclass-classifier" data-id="CrudService" data-kind="class" data-stereotype="service"><rect x="55" y="282" width="187" height="46" class="sx-umlclass-header-fill"/>
+<rect x="55" y="328" width="187" height="76" class="sx-umlclass-box-fill"/>
+<rect x="55" y="282" width="187" height="122" class="sx-umlclass-box-stroke"/>
+<line x1="55" y1="328" x2="242" y2="328" class="sx-umlclass-divider"/>
+<line x1="55" y1="366" x2="242" y2="366" class="sx-umlclass-divider"/>
+<text x="148.5" y="294" class="sx-umlclass-stereotype" text-anchor="middle">«service»</text>
+<text x="148.5" y="319" class="sx-umlclass-classname" text-anchor="middle">CrudService</text>
+<text x="69" y="352" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>repo: Repository&lt;User&gt;</text>
+<text x="69" y="390" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>save(e: User): User</text></g></g>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><g class="sx-umlclass-rel" data-from="CrudService" data-to="Repository" data-kind="realization"><path d="M 148.5 282 L 148.5 218" class="sx-umlclass-rel-line" data-dashed="true"/>
+<polygon points="148.5,204 139.5,218 157.5,218" class="sx-umlclass-triangle"/>
+<text x="148.5" y="235" class="sx-umlclass-edge-label" text-anchor="middle">T</text></g></g></svg></div>
+  <details>
+    <summary>DSL source</summary>
+    <pre>classDiagram
+class Repository~T~ {
+  +findAll() List~T~
+  +findById(id : ID) Optional~T~
+  +cache : Map~String,List~int~~
+  +count$
+  +flush()*
+}
+class CrudService
+CrudService : &lt;&lt;service&gt;&gt;
+CrudService : +repo : Repository~User~
+CrudService : +save(e : User) User
+Repository~T~ &lt;|.. CrudService</pre>
+  </details>
+</section>
+
+<section class="card" id="ecommerce">
+  <h2>10 — Dense interconnected domain (e-commerce)</h2>
+  <p class="note">Customer and Order are hubs with many spokes; Product is a second hub. The 'web, not tree' stress test — many cross-cutting links and multiplicities, now with populated member compartments.</p>
+  <div class="svg-wrap"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1021" height="850" viewBox="0 0 1021 850" role="img" aria-label="E-commerce domain" data-diagram-type="umlclass"><title>E-commerce domain</title>
+<desc>UML class diagram: 10 class; 2 composition, 1 association, 2 aggregation, 6 directed.</desc>
+<style>.sx-umlclass-bg { fill: #ffffff; }
+.sx-umlclass-box-fill { fill: #ffffff; }
+.sx-umlclass-box-stroke { stroke: #334155; stroke-width: 1.5; fill: none; }
+.sx-umlclass-header-fill { fill: #eef2f7; }
+.sx-umlclass-divider { stroke: #334155; stroke-width: 1; }
+.sx-umlclass-classname { fill: #0f172a; font-size: 13px; font-weight: 700; letter-spacing: -0.01em; }
+.sx-umlclass-classname[data-abstract="true"] { font-style: italic; }
+.sx-umlclass-stereotype { fill: #64748b; font-size: 10px; font-style: italic; }
+.sx-umlclass-member { fill: #0f172a; font-size: 12px; font-weight: 500; }
+.sx-umlclass-member[data-static] { text-decoration: underline; }
+.sx-umlclass-member[data-abstract] { font-style: italic; }
+.sx-umlclass-visibility { fill: #64748b; font-size: 12px; font-weight: 500; }
+.sx-umlclass-rel-line { stroke: #334155; stroke-width: 1.4; fill: none; }
+.sx-umlclass-rel-line[data-dashed="true"] { stroke-dasharray: 5 4; }
+.sx-umlclass-triangle { fill: #ffffff; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-diamond-hollow { fill: #ffffff; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-diamond-filled { fill: #334155; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-arrowhead { fill: none; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-edge-label { fill: #475569; font-size: 10px; font-weight: 500; }
+.sx-umlclass-edge-name { fill: #475569; font-size: 12px; font-style: italic; }
+.sx-umlclass-edge-name-halo { fill: #ffffff; stroke: #ffffff; stroke-width: 6; stroke-linejoin: round; }
+.sx-umlclass-title { fill: #0f172a; font-size: 16px; font-weight: 600; }
+.sx-umlclass-package { fill: rgba(100,116,139,0.06); stroke: #94a3b8; stroke-width: 1; }
+.sx-umlclass-package-label { fill: #475569; font-size: 12px; font-weight: 600; }</style>
+<rect x="0" y="0" width="1021" height="850" class="sx-umlclass-bg"/>
+<text x="52" y="40" class="sx-umlclass-title" font-family="system-ui, -apple-system, sans-serif">E-commerce domain</text>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><g class="sx-umlclass-classifier" data-id="Customer" data-kind="class"><rect x="134.25" y="32" width="160" height="30" class="sx-umlclass-header-fill"/>
+<rect x="134.25" y="62" width="160" height="98" class="sx-umlclass-box-fill"/>
+<rect x="134.25" y="32" width="160" height="128" class="sx-umlclass-box-stroke"/>
+<line x1="134.25" y1="62" x2="294.25" y2="62" class="sx-umlclass-divider"/>
+<line x1="134.25" y1="122" x2="294.25" y2="122" class="sx-umlclass-divider"/>
+<text x="214.25" y="53" class="sx-umlclass-classname" text-anchor="middle">Customer</text>
+<text x="148.25" y="86" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>id: String</text>
+<text x="148.25" y="108" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>name: String</text></g>
+<g class="sx-umlclass-classifier" data-id="Cart" data-kind="class"><rect x="32" y="249" width="207" height="30" class="sx-umlclass-header-fill"/>
+<rect x="32" y="279" width="207" height="76" class="sx-umlclass-box-fill"/>
+<rect x="32" y="249" width="207" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="32" y1="279" x2="239" y2="279" class="sx-umlclass-divider"/>
+<line x1="32" y1="317" x2="239" y2="317" class="sx-umlclass-divider"/>
+<text x="135.5" y="270" class="sx-umlclass-classname" text-anchor="middle">Cart</text>
+<text x="46" y="303" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>createdAt: Date</text>
+<text x="46" y="341" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>addItem(p: Product): void</text></g>
+<g class="sx-umlclass-classifier" data-id="Order" data-kind="class"><rect x="563.3333333333333" y="43" width="160" height="30" class="sx-umlclass-header-fill"/>
+<rect x="563.3333333333333" y="73" width="160" height="76" class="sx-umlclass-box-fill"/>
+<rect x="563.3333333333333" y="43" width="160" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="563.3333333333333" y1="73" x2="723.3333333333333" y2="73" class="sx-umlclass-divider"/>
+<line x1="563.3333333333333" y1="111" x2="723.3333333333333" y2="111" class="sx-umlclass-divider"/>
+<text x="643.3333333333333" y="64" class="sx-umlclass-classname" text-anchor="middle">Order</text>
+<text x="577.3333333333333" y="97" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>id: String</text>
+<text x="577.3333333333333" y="135" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>total(): Money</text></g>
+<g class="sx-umlclass-classifier" data-id="OrderLine" data-kind="class"><rect x="347" y="238" width="160" height="30" class="sx-umlclass-header-fill"/>
+<rect x="347" y="268" width="160" height="98" class="sx-umlclass-box-fill"/>
+<rect x="347" y="238" width="160" height="128" class="sx-umlclass-box-stroke"/>
+<line x1="347" y1="268" x2="507" y2="268" class="sx-umlclass-divider"/>
+<line x1="347" y1="328" x2="507" y2="328" class="sx-umlclass-divider"/>
+<text x="427" y="259" class="sx-umlclass-classname" text-anchor="middle">OrderLine</text>
+<text x="361" y="292" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>qty: int</text>
+<text x="361" y="314" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>price: Money</text></g>
+<g class="sx-umlclass-classifier" data-id="Product" data-kind="class"><rect x="141.38884949684143" y="444" width="160" height="30" class="sx-umlclass-header-fill"/>
+<rect x="141.38884949684143" y="474" width="160" height="98" class="sx-umlclass-box-fill"/>
+<rect x="141.38884949684143" y="444" width="160" height="128" class="sx-umlclass-box-stroke"/>
+<line x1="141.38884949684143" y1="474" x2="301.38884949684143" y2="474" class="sx-umlclass-divider"/>
+<line x1="141.38884949684143" y1="534" x2="301.38884949684143" y2="534" class="sx-umlclass-divider"/>
+<text x="221.38884949684143" y="465" class="sx-umlclass-classname" text-anchor="middle">Product</text>
+<text x="155.38884949684143" y="498" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>sku: String</text>
+<text x="155.38884949684143" y="520" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>price: Money</text></g>
+<g class="sx-umlclass-classifier" data-id="Category" data-kind="class"><rect x="57.667065382003784" y="661" width="160" height="30" class="sx-umlclass-header-fill"/>
+<rect x="57.667065382003784" y="691" width="160" height="76" class="sx-umlclass-box-fill"/>
+<rect x="57.667065382003784" y="661" width="160" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="57.667065382003784" y1="691" x2="217.66706538200378" y2="691" class="sx-umlclass-divider"/>
+<line x1="57.667065382003784" y1="729" x2="217.66706538200378" y2="729" class="sx-umlclass-divider"/>
+<text x="137.66706538200378" y="682" class="sx-umlclass-classname" text-anchor="middle">Category</text>
+<text x="71.66706538200378" y="715" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>name: String</text></g>
+<g class="sx-umlclass-classifier" data-id="Payment" data-kind="class"><rect x="775" y="249" width="174" height="30" class="sx-umlclass-header-fill"/>
+<rect x="775" y="279" width="174" height="76" class="sx-umlclass-box-fill"/>
+<rect x="775" y="249" width="174" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="775" y1="279" x2="949" y2="279" class="sx-umlclass-divider"/>
+<line x1="775" y1="317" x2="949" y2="317" class="sx-umlclass-divider"/>
+<text x="862" y="270" class="sx-umlclass-classname" text-anchor="middle">Payment</text>
+<text x="789" y="303" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>amount: Money</text>
+<text x="789" y="341" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>authorize(): boolean</text></g>
+<g class="sx-umlclass-classifier" data-id="Shipment" data-kind="class"><rect x="561" y="249" width="160" height="30" class="sx-umlclass-header-fill"/>
+<rect x="561" y="279" width="160" height="76" class="sx-umlclass-box-fill"/>
+<rect x="561" y="249" width="160" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="561" y1="279" x2="721" y2="279" class="sx-umlclass-divider"/>
+<line x1="561" y1="317" x2="721" y2="317" class="sx-umlclass-divider"/>
+<text x="641" y="270" class="sx-umlclass-classname" text-anchor="middle">Shipment</text>
+<text x="575" y="303" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>tracking: String</text>
+<text x="575" y="341" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>ship(): void</text></g>
+<g class="sx-umlclass-classifier" data-id="Address" data-kind="class"><rect x="355.38884949684143" y="444" width="160" height="30" class="sx-umlclass-header-fill"/>
+<rect x="355.38884949684143" y="474" width="160" height="98" class="sx-umlclass-box-fill"/>
+<rect x="355.38884949684143" y="444" width="160" height="128" class="sx-umlclass-box-stroke"/>
+<line x1="355.38884949684143" y1="474" x2="515.3888494968414" y2="474" class="sx-umlclass-divider"/>
+<line x1="355.38884949684143" y1="534" x2="515.3888494968414" y2="534" class="sx-umlclass-divider"/>
+<text x="435.38884949684143" y="465" class="sx-umlclass-classname" text-anchor="middle">Address</text>
+<text x="369.38884949684143" y="498" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>street: String</text>
+<text x="369.38884949684143" y="520" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>city: String</text></g>
+<g class="sx-umlclass-classifier" data-id="Warehouse" data-kind="class"><rect x="271.6670653820038" y="650" width="160" height="30" class="sx-umlclass-header-fill"/>
+<rect x="271.6670653820038" y="680" width="160" height="98" class="sx-umlclass-box-fill"/>
+<rect x="271.6670653820038" y="650" width="160" height="128" class="sx-umlclass-box-stroke"/>
+<line x1="271.6670653820038" y1="680" x2="431.6670653820038" y2="680" class="sx-umlclass-divider"/>
+<line x1="271.6670653820038" y1="740" x2="431.6670653820038" y2="740" class="sx-umlclass-divider"/>
+<text x="351.6670653820038" y="671" class="sx-umlclass-classname" text-anchor="middle">Warehouse</text>
+<text x="285.6670653820038" y="704" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>location: String</text>
+<text x="285.6670653820038" y="726" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>stock: int</text></g></g>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><g class="sx-umlclass-rel" data-from="Customer" data-to="Cart" data-kind="composition" data-source-mult="1" data-target-mult="1" data-name="owns"><path d="M 189.8 180 L 155.8 249" class="sx-umlclass-rel-line"/>
+
+<polygon points="189.78398058252426,160 195.78398058252426,170 189.78398058252426,180 183.78398058252426,170" class="sx-umlclass-diamond-filled"/>
+<text x="189.78398058252426" y="177" class="sx-umlclass-edge-label" text-anchor="middle">1</text>
+<text x="155.7609223300971" y="240" class="sx-umlclass-edge-label" text-anchor="middle">1</text>
+<text x="172.77245145631068" y="209.5" class="sx-umlclass-edge-name sx-umlclass-edge-name-halo" text-anchor="middle">owns</text>
+<text x="172.77245145631068" y="209.5" class="sx-umlclass-edge-name" text-anchor="middle">owns</text></g>
+<g class="sx-umlclass-rel" data-from="Customer" data-to="Order" data-kind="association" data-source-mult="1" data-target-mult="*" data-name="places"><path d="M 214.3 32 L 214.3 6 L 643.3 6 L 643.3 43" class="sx-umlclass-rel-line"/>
+
+<text x="214.25" y="23" class="sx-umlclass-edge-label" text-anchor="middle">1</text>
+<text x="643.3333333333333" y="34" class="sx-umlclass-edge-label" text-anchor="middle">*</text>
+<text x="428.79166666666663" y="1" class="sx-umlclass-edge-name sx-umlclass-edge-name-halo" text-anchor="middle">places</text>
+<text x="428.79166666666663" y="1" class="sx-umlclass-edge-name" text-anchor="middle">places</text></g>
+<g class="sx-umlclass-rel" data-from="Customer" data-to="Address" data-kind="aggregation" data-source-mult="1" data-target-mult="*" data-name="addresses"><path d="M 238.7 180 L 293 302 L 391.2 444" class="sx-umlclass-rel-line"/>
+
+<polygon points="238.71601941747574,160 244.71601941747574,170 238.71601941747574,180 232.71601941747574,170" class="sx-umlclass-diamond-hollow"/>
+<text x="238.71601941747574" y="177" class="sx-umlclass-edge-label" text-anchor="middle">1</text>
+<text x="391.1515370318033" y="435" class="sx-umlclass-edge-label" text-anchor="middle">*</text>
+<text x="342.07576851590164" y="368" class="sx-umlclass-edge-name sx-umlclass-edge-name-halo" text-anchor="middle">addresses</text>
+<text x="342.07576851590164" y="368" class="sx-umlclass-edge-name" text-anchor="middle">addresses</text></g>
+<g class="sx-umlclass-rel" data-from="Cart" data-to="Product" data-kind="aggregation" data-source-mult="1" data-target-mult="*" data-name="contains"><path d="M 157.6 375 L 194.7 444" class="sx-umlclass-rel-line"/>
+
+<polygon points="157.5976166181194,355 163.5976166181194,365 157.5976166181194,375 151.5976166181194,365" class="sx-umlclass-diamond-hollow"/>
+<text x="157.5976166181194" y="372" class="sx-umlclass-edge-label" text-anchor="middle">1</text>
+<text x="194.70493509005576" y="435" class="sx-umlclass-edge-label" text-anchor="middle">*</text>
+<text x="176.15127585408757" y="404.5" class="sx-umlclass-edge-name sx-umlclass-edge-name-halo" text-anchor="middle">contains</text>
+<text x="176.15127585408757" y="404.5" class="sx-umlclass-edge-name" text-anchor="middle">contains</text></g>
+<g class="sx-umlclass-rel" data-from="Order" data-to="OrderLine" data-kind="composition" data-source-mult="1" data-target-mult="*" data-name="lines"><path d="M 587.7 169 L 494.2 238" class="sx-umlclass-rel-line"/>
+
+<polygon points="587.6747572815533,149 593.6747572815533,159 587.6747572815533,169 581.6747572815533,159" class="sx-umlclass-diamond-filled"/>
+<text x="587.6747572815533" y="166" class="sx-umlclass-edge-label" text-anchor="middle">1</text>
+<text x="494.210355987055" y="229" class="sx-umlclass-edge-label" text-anchor="middle">*</text>
+<text x="540.9425566343041" y="198.5" class="sx-umlclass-edge-name sx-umlclass-edge-name-halo" text-anchor="middle">lines</text>
+<text x="540.9425566343041" y="198.5" class="sx-umlclass-edge-name" text-anchor="middle">lines</text></g>
+<g class="sx-umlclass-rel" data-from="OrderLine" data-to="Product" data-kind="directed" data-source-mult="*" data-target-mult="1" data-name="refers"><path d="M 363.1 366 L 285.3 433" class="sx-umlclass-rel-line"/>
+<path d="M 279.7680418861722 433 L 285.2680418861722 444 L 290.7680418861722 433" class="sx-umlclass-arrowhead"/>
+<text x="363.1208076106692" y="383" class="sx-umlclass-edge-label" text-anchor="middle">*</text>
+<text x="285.2680418861722" y="435" class="sx-umlclass-edge-label" text-anchor="middle">1</text>
+<text x="324.1944247484207" y="394.5" class="sx-umlclass-edge-name sx-umlclass-edge-name-halo" text-anchor="middle">refers</text>
+<text x="324.1944247484207" y="394.5" class="sx-umlclass-edge-name" text-anchor="middle">refers</text></g>
+<g class="sx-umlclass-rel" data-from="Order" data-to="Payment" data-kind="directed" data-source-mult="1" data-target-mult="1" data-name="paidBy"><path d="M 699.6 149 L 805.7 238" class="sx-umlclass-rel-line"/>
+<path d="M 800.2411003236246 238 L 805.7411003236246 249 L 811.2411003236246 238" class="sx-umlclass-arrowhead"/>
+<text x="699.5922330097087" y="166" class="sx-umlclass-edge-label" text-anchor="middle">1</text>
+<text x="805.7411003236246" y="240" class="sx-umlclass-edge-label" text-anchor="middle">1</text>
+<text x="752.6666666666666" y="188.5" class="sx-umlclass-edge-name sx-umlclass-edge-name-halo" text-anchor="middle">paidBy</text>
+<text x="752.6666666666666" y="188.5" class="sx-umlclass-edge-name" text-anchor="middle">paidBy</text></g>
+<g class="sx-umlclass-rel" data-from="Order" data-to="Shipment" data-kind="directed" data-source-mult="1" data-target-mult="1" data-name="shippedVia"><path d="M 642.7 149 L 641.6 238" class="sx-umlclass-rel-line"/>
+<path d="M 636.1003236245955 238 L 641.6003236245955 249 L 647.1003236245955 238" class="sx-umlclass-arrowhead"/>
+<text x="642.7330097087378" y="166" class="sx-umlclass-edge-label" text-anchor="middle">1</text>
+<text x="641.6003236245955" y="240" class="sx-umlclass-edge-label" text-anchor="middle">1</text>
+<text x="642.1666666666666" y="188.5" class="sx-umlclass-edge-name sx-umlclass-edge-name-halo" text-anchor="middle">shippedVia</text>
+<text x="642.1666666666666" y="188.5" class="sx-umlclass-edge-name" text-anchor="middle">shippedVia</text></g>
+<g class="sx-umlclass-rel" data-from="Shipment" data-to="Address" data-kind="directed" data-source-mult="*" data-target-mult="1" data-name="to"><path d="M 588.1 355 L 499.3 433" class="sx-umlclass-rel-line"/>
+<path d="M 493.7680418861722 433 L 499.2680418861722 444 L 504.7680418861722 433" class="sx-umlclass-arrowhead"/>
+<text x="588.1000438025854" y="372" class="sx-umlclass-edge-label" text-anchor="middle">*</text>
+<text x="499.2680418861722" y="435" class="sx-umlclass-edge-label" text-anchor="middle">1</text>
+<text x="543.6840428443788" y="389" class="sx-umlclass-edge-name sx-umlclass-edge-name-halo" text-anchor="middle">to</text>
+<text x="543.6840428443788" y="389" class="sx-umlclass-edge-name" text-anchor="middle">to</text></g>
+<g class="sx-umlclass-rel" data-from="Product" data-to="Category" data-kind="directed" data-source-mult="*" data-target-mult="1" data-name="in"><path d="M 195.4 572 L 159.2 650" class="sx-umlclass-rel-line"/>
+<path d="M 153.7071360523261 650 L 159.2071360523261 661 L 164.7071360523261 650" class="sx-umlclass-arrowhead"/>
+<text x="195.37819812135788" y="589" class="sx-umlclass-edge-label" text-anchor="middle">*</text>
+<text x="159.2071360523261" y="652" class="sx-umlclass-edge-label" text-anchor="middle">1</text>
+<text x="177.292667086842" y="606" class="sx-umlclass-edge-name sx-umlclass-edge-name-halo" text-anchor="middle">in</text>
+<text x="177.292667086842" y="606" class="sx-umlclass-edge-name" text-anchor="middle">in</text></g>
+<g class="sx-umlclass-rel" data-from="Product" data-to="Warehouse" data-kind="directed" data-source-mult="*" data-target-mult="1" data-name="storedIn"><path d="M 261.9 572 L 311.2 639" class="sx-umlclass-rel-line"/>
+<path d="M 305.6922798642834 639 L 311.1922798642834 650 L 316.6922798642834 639" class="sx-umlclass-arrowhead"/>
+<text x="261.8636350145618" y="589" class="sx-umlclass-edge-label" text-anchor="middle">*</text>
+<text x="311.1922798642834" y="641" class="sx-umlclass-edge-label" text-anchor="middle">1</text>
+<text x="286.5279574394226" y="600.5" class="sx-umlclass-edge-name sx-umlclass-edge-name-halo" text-anchor="middle">storedIn</text>
+<text x="286.5279574394226" y="600.5" class="sx-umlclass-edge-name" text-anchor="middle">storedIn</text></g></g></svg></div>
+  <details>
+    <summary>DSL source</summary>
+    <pre>umlclass
+title: "E-commerce domain"
+class Customer { + id : String + name : String }
+class Cart { + createdAt : Date + addItem(p : Product) : void }
+class Order { + id : String + total() : Money }
+class OrderLine { + qty : int + price : Money }
+class Product { + sku : String + price : Money }
+class Category { + name : String }
+class Payment { + amount : Money + authorize() : boolean }
+class Shipment { + tracking : String + ship() : void }
+class Address { + street : String + city : String }
+class Warehouse { + location : String + stock : int }
+Customer "1" *-- "1" Cart     : owns
+Customer "1" -- "*" Order      : places
+Customer "1" o-- "*" Address   : addresses
+Cart "1" o-- "*" Product       : contains
+Order "1" *-- "*" OrderLine    : lines
+OrderLine "*" --&gt; "1" Product  : refers
+Order "1" --&gt; "1" Payment      : paidBy
+Order "1" --&gt; "1" Shipment     : shippedVia
+Shipment "*" --&gt; "1" Address   : to
+Product "*" --&gt; "1" Category   : in
+Product "*" --&gt; "1" Warehouse  : storedIn</pre>
+  </details>
+</section>
+
+<section class="card" id="mvc-cycle">
+  <h2>11 — Bidirectional / cyclic associations (MVC)</h2>
+  <p class="note">Controller ↔ Model ↔ View with mutual references — a common gotcha for graph layouts. We keep source-above-target where possible instead of flipping into nonsense.</p>
+  <div class="svg-wrap"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="351" height="622" viewBox="0 0 351 622" role="img" aria-label="Model-View-Controller" data-diagram-type="umlclass"><title>Model-View-Controller</title>
+<desc>UML class diagram: 3 class; 3 directed, 1 dependency.</desc>
+<style>.sx-umlclass-bg { fill: #ffffff; }
+.sx-umlclass-box-fill { fill: #ffffff; }
+.sx-umlclass-box-stroke { stroke: #334155; stroke-width: 1.5; fill: none; }
+.sx-umlclass-header-fill { fill: #eef2f7; }
+.sx-umlclass-divider { stroke: #334155; stroke-width: 1; }
+.sx-umlclass-classname { fill: #0f172a; font-size: 13px; font-weight: 700; letter-spacing: -0.01em; }
+.sx-umlclass-classname[data-abstract="true"] { font-style: italic; }
+.sx-umlclass-stereotype { fill: #64748b; font-size: 10px; font-style: italic; }
+.sx-umlclass-member { fill: #0f172a; font-size: 12px; font-weight: 500; }
+.sx-umlclass-member[data-static] { text-decoration: underline; }
+.sx-umlclass-member[data-abstract] { font-style: italic; }
+.sx-umlclass-visibility { fill: #64748b; font-size: 12px; font-weight: 500; }
+.sx-umlclass-rel-line { stroke: #334155; stroke-width: 1.4; fill: none; }
+.sx-umlclass-rel-line[data-dashed="true"] { stroke-dasharray: 5 4; }
+.sx-umlclass-triangle { fill: #ffffff; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-diamond-hollow { fill: #ffffff; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-diamond-filled { fill: #334155; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-arrowhead { fill: none; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-edge-label { fill: #475569; font-size: 10px; font-weight: 500; }
+.sx-umlclass-edge-name { fill: #475569; font-size: 12px; font-style: italic; }
+.sx-umlclass-edge-name-halo { fill: #ffffff; stroke: #ffffff; stroke-width: 6; stroke-linejoin: round; }
+.sx-umlclass-title { fill: #0f172a; font-size: 16px; font-weight: 600; }
+.sx-umlclass-package { fill: rgba(100,116,139,0.06); stroke: #94a3b8; stroke-width: 1; }
+.sx-umlclass-package-label { fill: #475569; font-size: 12px; font-weight: 600; }</style>
+<rect x="0" y="0" width="351" height="622" class="sx-umlclass-bg"/>
+<text x="52" y="40" class="sx-umlclass-title" font-family="system-ui, -apple-system, sans-serif">Model-View-Controller</text>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><g class="sx-umlclass-classifier" data-id="Model" data-kind="class"><rect x="78.47462277091915" y="422" width="200" height="30" class="sx-umlclass-header-fill"/>
+<rect x="78.47462277091915" y="452" width="200" height="98" class="sx-umlclass-box-fill"/>
+<rect x="78.47462277091915" y="422" width="200" height="128" class="sx-umlclass-box-stroke"/>
+<line x1="78.47462277091915" y1="452" x2="278.47462277091915" y2="452" class="sx-umlclass-divider"/>
+<line x1="78.47462277091915" y1="490" x2="278.47462277091915" y2="490" class="sx-umlclass-divider"/>
+<text x="178.47462277091915" y="443" class="sx-umlclass-classname" text-anchor="middle">Model</text>
+<text x="92.47462277091915" y="476" class="sx-umlclass-member" data-visibility="private"><tspan class="sx-umlclass-visibility">- </tspan>data: State</text>
+<text x="92.47462277091915" y="514" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>getState(): State</text>
+<text x="92.47462277091915" y="536" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>setState(s: State): void</text></g>
+<g class="sx-umlclass-classifier" data-id="View" data-kind="class"><rect x="85.16666666666669" y="32" width="187" height="30" class="sx-umlclass-header-fill"/>
+<rect x="85.16666666666669" y="62" width="187" height="76" class="sx-umlclass-box-fill"/>
+<rect x="85.16666666666669" y="32" width="187" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="85.16666666666669" y1="62" x2="272.1666666666667" y2="62" class="sx-umlclass-divider"/>
+<line x1="85.16666666666669" y1="100" x2="272.1666666666667" y2="100" class="sx-umlclass-divider"/>
+<text x="178.66666666666669" y="53" class="sx-umlclass-classname" text-anchor="middle">View</text>
+<text x="99.16666666666669" y="86" class="sx-umlclass-member" data-visibility="private"><tspan class="sx-umlclass-visibility">- </tspan>controller: Controller</text>
+<text x="99.16666666666669" y="124" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>render(s: State): void</text></g>
+<g class="sx-umlclass-classifier" data-id="Controller" data-kind="class"><rect x="32" y="216" width="193" height="30" class="sx-umlclass-header-fill"/>
+<rect x="32" y="246" width="193" height="98" class="sx-umlclass-box-fill"/>
+<rect x="32" y="216" width="193" height="128" class="sx-umlclass-box-stroke"/>
+<line x1="32" y1="246" x2="225" y2="246" class="sx-umlclass-divider"/>
+<line x1="32" y1="306" x2="225" y2="306" class="sx-umlclass-divider"/>
+<text x="128.5" y="237" class="sx-umlclass-classname" text-anchor="middle">Controller</text>
+<text x="46" y="270" class="sx-umlclass-member" data-visibility="private"><tspan class="sx-umlclass-visibility">- </tspan>model: Model</text>
+<text x="46" y="292" class="sx-umlclass-member" data-visibility="private"><tspan class="sx-umlclass-visibility">- </tspan>view: View</text>
+<text x="46" y="330" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>handle(a: Action): void</text></g></g>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><g class="sx-umlclass-rel" data-from="Controller" data-to="Model" data-kind="directed" data-name="updates"><path d="M 144 344 L 162.9 411" class="sx-umlclass-rel-line"/>
+<path d="M 157.44852637607048 411 L 162.94852637607048 422 L 168.44852637607048 411" class="sx-umlclass-arrowhead"/>
+<text x="153.48731138545958" y="372.5" class="sx-umlclass-edge-name sx-umlclass-edge-name-halo" text-anchor="middle">updates</text>
+<text x="153.48731138545958" y="372.5" class="sx-umlclass-edge-name" text-anchor="middle">updates</text></g>
+<g class="sx-umlclass-rel" data-from="Controller" data-to="View" data-kind="directed" data-name="refreshes"><path d="M 145 216 L 165 149" class="sx-umlclass-rel-line"/>
+<path d="M 159.53162393162395 149 L 165.03162393162395 138 L 170.53162393162395 149" class="sx-umlclass-arrowhead"/>
+<text x="154.99829059829062" y="177.5" class="sx-umlclass-edge-name sx-umlclass-edge-name-halo" text-anchor="middle">refreshes</text>
+<text x="154.99829059829062" y="177.5" class="sx-umlclass-edge-name" text-anchor="middle">refreshes</text></g>
+<g class="sx-umlclass-rel" data-from="View" data-to="Controller" data-kind="directed" data-name="delegates"><path d="M 165 138 L 145 205" class="sx-umlclass-rel-line"/>
+<path d="M 139.46495726495726 205 L 144.96495726495726 216 L 150.46495726495726 205" class="sx-umlclass-arrowhead"/>
+<text x="154.99829059829062" y="166.5" class="sx-umlclass-edge-name sx-umlclass-edge-name-halo" text-anchor="middle">delegates</text>
+<text x="154.99829059829062" y="166.5" class="sx-umlclass-edge-name" text-anchor="middle">delegates</text></g>
+<g class="sx-umlclass-rel" data-from="Model" data-to="View" data-kind="dependency" data-name="notifies"><path d="M 209.7 422 L 279 280 L 205.9 149" class="sx-umlclass-rel-line" data-dashed="true"/>
+<path d="M 200.43675213675215 149 L 205.93675213675215 138 L 211.43675213675215 149" class="sx-umlclass-arrowhead"/>
+<text x="242.46837606837607" y="209.5" class="sx-umlclass-edge-name sx-umlclass-edge-name-halo" text-anchor="middle">notifies</text>
+<text x="242.46837606837607" y="209.5" class="sx-umlclass-edge-name" text-anchor="middle">notifies</text></g></g></svg></div>
+  <details>
+    <summary>DSL source</summary>
+    <pre>umlclass
+title: "Model-View-Controller"
+class Model {
+  - data : State
+  + getState() : State
+  + setState(s : State) : void
+}
+class View {
+  - controller : Controller
+  + render(s : State) : void
+}
+class Controller {
+  - model : Model
+  - view : View
+  + handle(a : Action) : void
+}
+Controller --&gt; Model      : updates
+Controller --&gt; View       : refreshes
+View       --&gt; Controller : delegates
+Model      ..&gt; View       : notifies</pre>
+  </details>
+</section>
+
+<section class="card" id="width-stress">
+  <h2>12 — Width clamp + truncation</h2>
+  <p class="note">Extremely long member signatures prove the BOX_MAX_W cap and per-row '…' truncation (no box stretches absurdly wide). Generic interface realized + extended.</p>
+  <div class="svg-wrap"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="424" height="660" viewBox="0 0 424 660" role="img" aria-label="Generic repository (width stress)" data-diagram-type="umlclass"><title>Generic repository (width stress)</title>
+<desc>UML class diagram: 1 interface, 2 class; 1 realization, 1 generalization.</desc>
+<style>.sx-umlclass-bg { fill: #ffffff; }
+.sx-umlclass-box-fill { fill: #ffffff; }
+.sx-umlclass-box-stroke { stroke: #334155; stroke-width: 1.5; fill: none; }
+.sx-umlclass-header-fill { fill: #eef2f7; }
+.sx-umlclass-divider { stroke: #334155; stroke-width: 1; }
+.sx-umlclass-classname { fill: #0f172a; font-size: 13px; font-weight: 700; letter-spacing: -0.01em; }
+.sx-umlclass-classname[data-abstract="true"] { font-style: italic; }
+.sx-umlclass-stereotype { fill: #64748b; font-size: 10px; font-style: italic; }
+.sx-umlclass-member { fill: #0f172a; font-size: 12px; font-weight: 500; }
+.sx-umlclass-member[data-static] { text-decoration: underline; }
+.sx-umlclass-member[data-abstract] { font-style: italic; }
+.sx-umlclass-visibility { fill: #64748b; font-size: 12px; font-weight: 500; }
+.sx-umlclass-rel-line { stroke: #334155; stroke-width: 1.4; fill: none; }
+.sx-umlclass-rel-line[data-dashed="true"] { stroke-dasharray: 5 4; }
+.sx-umlclass-triangle { fill: #ffffff; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-diamond-hollow { fill: #ffffff; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-diamond-filled { fill: #334155; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-arrowhead { fill: none; stroke: #334155; stroke-width: 1.4; stroke-linejoin: miter; }
+.sx-umlclass-edge-label { fill: #475569; font-size: 10px; font-weight: 500; }
+.sx-umlclass-edge-name { fill: #475569; font-size: 12px; font-style: italic; }
+.sx-umlclass-edge-name-halo { fill: #ffffff; stroke: #ffffff; stroke-width: 6; stroke-linejoin: round; }
+.sx-umlclass-title { fill: #0f172a; font-size: 16px; font-weight: 600; }
+.sx-umlclass-package { fill: rgba(100,116,139,0.06); stroke: #94a3b8; stroke-width: 1; }
+.sx-umlclass-package-label { fill: #475569; font-size: 12px; font-weight: 600; }</style>
+<rect x="0" y="0" width="424" height="660" class="sx-umlclass-bg"/>
+<text x="52" y="40" class="sx-umlclass-title" font-family="system-ui, -apple-system, sans-serif">Generic repository (width stress)</text>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><g class="sx-umlclass-classifier" data-id="Repository" data-kind="interface"><rect x="75.5" y="32" width="233" height="46" class="sx-umlclass-header-fill"/>
+<rect x="75.5" y="78" width="233" height="120" class="sx-umlclass-box-fill"/>
+<rect x="75.5" y="32" width="233" height="166" class="sx-umlclass-box-stroke"/>
+<line x1="75.5" y1="78" x2="308.5" y2="78" class="sx-umlclass-divider"/>
+<line x1="75.5" y1="116" x2="308.5" y2="116" class="sx-umlclass-divider"/>
+<text x="192" y="44" class="sx-umlclass-stereotype" text-anchor="middle">«interface»</text>
+<text x="192" y="69" class="sx-umlclass-classname" text-anchor="middle">Repository</text>
+<text x="89.5" y="140" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>findAll(): List&lt;T&gt;</text>
+<text x="89.5" y="162" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>findById(id: ID): Optional&lt;T&gt;</text>
+<text x="89.5" y="184" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>save(entity: T): T</text></g>
+<g class="sx-umlclass-classifier" data-id="JpaRepository" data-kind="class"><rect x="32" y="276" width="320" height="30" class="sx-umlclass-header-fill"/>
+<rect x="32" y="306" width="320" height="98" class="sx-umlclass-box-fill"/>
+<rect x="32" y="276" width="320" height="128" class="sx-umlclass-box-stroke"/>
+<line x1="32" y1="306" x2="352" y2="306" class="sx-umlclass-divider"/>
+<line x1="32" y1="344" x2="352" y2="344" class="sx-umlclass-divider"/>
+<text x="192" y="297" class="sx-umlclass-classname" text-anchor="middle">JpaRepository</text>
+<text x="46" y="330" class="sx-umlclass-member" data-visibility="private"><tspan class="sx-umlclass-visibility">- </tspan>entityManager: EntityManager</text>
+<text x="46" y="368" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>saveAndFlush(entity: T): T</text>
+<text x="46" y="390" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>findByExampleWithPagination(example: Exam…</text></g>
+<g class="sx-umlclass-classifier" data-id="CustomerRepository" data-kind="class"><rect x="32" y="482" width="320" height="30" class="sx-umlclass-header-fill"/>
+<rect x="32" y="512" width="320" height="76" class="sx-umlclass-box-fill"/>
+<rect x="32" y="482" width="320" height="106" class="sx-umlclass-box-stroke"/>
+<line x1="32" y1="512" x2="352" y2="512" class="sx-umlclass-divider"/>
+<line x1="32" y1="550" x2="352" y2="550" class="sx-umlclass-divider"/>
+<text x="192" y="503" class="sx-umlclass-classname" text-anchor="middle">CustomerRepository</text>
+<text x="46" y="574" class="sx-umlclass-member" data-visibility="public"><tspan class="sx-umlclass-visibility">+ </tspan>findActiveCustomersByCreatedDateBetween(f…</text></g></g>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><g class="sx-umlclass-rel" data-from="JpaRepository" data-to="Repository" data-kind="realization"><path d="M 192 276 L 192 212" class="sx-umlclass-rel-line" data-dashed="true"/>
+<polygon points="192,198 183,212 201,212" class="sx-umlclass-triangle"/></g>
+<g class="sx-umlclass-rel" data-from="CustomerRepository" data-to="JpaRepository" data-kind="generalization"><path d="M 192 482 L 192 418" class="sx-umlclass-rel-line"/>
+<polygon points="192,404 183,418 201,418" class="sx-umlclass-triangle"/></g></g></svg></div>
+  <details>
+    <summary>DSL source</summary>
+    <pre>umlclass
+title: "Generic repository (width stress)"
+«interface» Repository {
+  + findAll() : List&lt;T&gt;
+  + findById(id : ID) : Optional&lt;T&gt;
+  + save(entity : T) : T
+}
+class JpaRepository {
+  - entityManager : EntityManager
+  + saveAndFlush(entity : T) : T
+  + findByExampleWithPagination(example : Example&lt;T&gt;, pageable : Pageable) : Page&lt;T&gt;
+}
+class CustomerRepository {
+  + findActiveCustomersByCreatedDateBetween(from : Instant, to : Instant) : List&lt;Customer&gt;
+}
+Repository    &lt;|.. JpaRepository
+JpaRepository &lt;|-- CustomerRepository</pre>
+  </details>
+</section>
+
+<footer>
+  generated by <code>scripts/preview-umlclass.mjs</code> · 2026-05-30 15:07:12 · 12 examples
+</footer>
+</div>
+</body>
+</html>
