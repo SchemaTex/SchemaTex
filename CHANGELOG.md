@@ -7,6 +7,50 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.6.8] — 2026-05-31
+
+### Fixed — Block diagram: dangling output signals now render with label
+
+- **`signal("label")` with no consumer** (only incoming edges, no outgoing) was silently dropped: the edge lost its label and the layout discarded it because the target had no anchor. Two fixes: the parser now applies the signal label to the surviving edge, and the layout synthesises a lightweight output-port anchor for any signal ID that is an edge target but not declared as a block/sum/port.
+- **Compact height for pure-forward diagrams**: an unconditional `FWD_Y + 170` height floor overrode the natural canvas height even when there were no feedback rows, producing unnecessarily tall SVGs. The floor now applies only when at least one feedback row is present, reducing the canvas for simple diagrams.
+- Fixes the last non-P&ID pre-existing test failure (`tests/blockdiagram/renderer.test.ts`). The 5 remaining P&ID test failures describe unimplemented layout features (z-order, instrument fan-out, `process_minor` CSS class) tracked in `docs/issues/06-pid-layout-quality.md`.
+
+---
+
+## [0.6.7] — 2026-05-31
+
+### Fixed — Parser tolerance: degrade-not-reject for circuit / orgchart / mindmap
+
+Three engines that hard-threw on common LLM input mistakes now degrade to a `status:"partial"` render with actionable diagnostics instead of returning an orange error card.
+
+- **Circuit** (`src/diagrams/circuit/netlist.ts`): a multi-terminal component given fewer nets than its pin count (e.g. a 4-pin transformer given only 2 nets) no longer throws. Missing pins are padded with floating no-connect nets and the component is rendered; a `CIRCUIT_PIN_UNDERSPECIFIED` lint warning names the shortfall and gives a minimal correct example. New `lint()` hook in `circuit/index.ts`.
+- **Orgchart** (`src/diagrams/orgchart/parser.ts`): unparseable lines are now skipped with an `ORGCHART_UNPARSEABLE_LINE` warning instead of aborting the whole chart. Edge-only (Mermaid-style) input (`CEO -> CTO`) synthesises implied nodes rather than throwing "unknown node" (`ORGCHART_IMPLIED_NODE`). Duplicate node ids keep the first declaration (`ORGCHART_DUPLICATE_ID`). New `lint()` hook in `orgchart/index.ts`.
+- **Mindmap** (`src/diagrams/mindmap/parser.ts`): a missing `# Title` central topic is recovered — the first plain text line is adopted as the centre (`rootInferred:"line"`), or a "Mindmap" placeholder is inserted over top-level bullets (`rootInferred:"placeholder"`). The orphan-node throw is gone. New `lint()` hook in `mindmap/index.ts` surfaces a `MINDMAP_SYNTHESIZED_ROOT` warning.
+
+### Fixed — `validateDsl` now surfaces `status` and `warnings`
+
+- The return type of `validateDsl` is extended: `ok:true` results now carry `status: "valid" | "partial"` and `warnings: SchematexValidationError[]`, so upstream LLMs can see exactly what was recovered and self-correct rather than only seeing a binary pass/fail.
+
+### Fixed — Circuit: 24 declared component types no longer render as `?box`
+
+The following `CircuitComponentType` values were accepted by the parser but had no `SymbolDef`, causing a dashed `?type` placeholder in the output. Real IEC/IEEE-aligned glyphs have been added to `src/diagrams/circuit/symbols.ts`:
+
+| Category | Types added |
+|---|---|
+| Passive variants | `varistor`, `fuse_slow`, `inductor_iron`, `inductor_ferrite`, `ferrite_bead` |
+| Diode variants | `varactor`, `tvs_diode`, `bridge_rectifier` |
+| Bipolar / power semis | `darlington_npn`, `darlington_pnp`, `nmos_depletion`, `igbt`, `scr`, `triac`, `diac` |
+| Optoelectronics | `phototransistor`, `optocoupler` |
+| Analog / IC | `schmitt_buffer`, `tri_state_buffer`, `instrumentation_amp`, `dc_dc_converter` |
+| Switches & connectors | `switch_dpdt`, `oscilloscope`, `port` |
+
+### Tests
+
+- New test suites: `tests/mindmap/degradation.test.ts`, `tests/orgchart/degradation.test.ts`, `tests/circuit/degradation.test.ts` — 35 new passing tests covering degradation paths, lint warnings, and glyph coverage.
+- Updated `tests/ai/tools.test.ts` to assert the new degradation contract (partial render + warnings) instead of the old hard-error expectation.
+
+---
+
 ## [0.6.6] — 2026-05-30
 
 ### Added — Bowtie risk diagram engine (`bowtie`)
