@@ -677,6 +677,100 @@ export function resolvePetriTheme(name: string): ResolvedTheme<PetriTokens> {
   return { ...BASE_THEMES[themeName], ...PETRI_TOKENS[themeName] };
 }
 
+// ─── Reliability Tokens Per Theme ──────────────────────────
+// 37-FAULT-TREE-STANDARD §6. Cluster-shared by fault tree + (sibling) bowtie.
+// Coloured-house family like pert/petri: neutral body; green reserved for gate
+// bodies ("logic proceeds"); red reserved for the computed minimal cut sets /
+// single points of failure; blue only for probability numerals. In monochrome,
+// semantics fall back to shape/weight (bold-dashed cut-set box, dome/shield).
+
+export interface ReliabilityTokens {
+  eventFill: string;
+  eventStroke: string;
+  topEventStroke: string;
+  basicFill: string;
+  basicStroke: string;
+  undevelopedFill: string;
+  houseFill: string;
+  conditionFill: string;
+  gateFill: string;
+  gateStroke: string;
+  edgeStroke: string;
+  probText: string;
+  /** Computed minimal cut sets — red = "this is the risk". Reserved accent. */
+  cutsetStroke: string;
+  cutsetFill: string;
+  /** Single point of failure (order-1 cut set) — strongest red. */
+  spofStroke: string;
+}
+
+const DEFAULT_RELIABILITY: ReliabilityTokens = {
+  eventFill: "#eef2f7",      // soft slate-blue — gives event boxes presence (cool tones pair with the red cut-set accent)
+  eventStroke: "#334155",
+  topEventStroke: "#1e293b",
+  basicFill: "#ffffff",      // white circles read clean inside a red cut-set frame
+  basicStroke: "#334155",
+  undevelopedFill: "#e2e8f0",
+  houseFill: "#fef9c3",
+  conditionFill: "#f1f5f9",
+  gateFill: "#dcfce7",       // green gates ("logic proceeds")
+  gateStroke: "#059669",
+  edgeStroke: "#475569",
+  probText: "#2563eb",
+  cutsetStroke: "#dc2626",
+  cutsetFill: "rgba(220,38,38,0.05)",
+  spofStroke: "#b91c1c",
+};
+
+// Faithful NUREG-0492 textbook: pure black/white. Cut sets shown by a bold
+// dashed box (not red); gate type by dome/shield shape (not fill).
+const MONOCHROME_RELIABILITY: ReliabilityTokens = {
+  eventFill: "#ffffff",
+  eventStroke: "#000000",
+  topEventStroke: "#000000",
+  basicFill: "#ffffff",
+  basicStroke: "#000000",
+  undevelopedFill: "#ffffff",
+  houseFill: "#ffffff",
+  conditionFill: "#ffffff",
+  gateFill: "#ffffff",
+  gateStroke: "#000000",
+  edgeStroke: "#000000",
+  probText: "#000000",
+  cutsetStroke: "#000000",
+  cutsetFill: "none",
+  spofStroke: "#000000",
+};
+
+const DARK_RELIABILITY: ReliabilityTokens = {
+  eventFill: "#313244",
+  eventStroke: "#cdd6f4",
+  topEventStroke: "#cdd6f4",
+  basicFill: "#313244",
+  basicStroke: "#cdd6f4",
+  undevelopedFill: "#45475a",
+  houseFill: "#45413a",
+  conditionFill: "#45475a",
+  gateFill: "rgba(166,227,161,0.18)",
+  gateStroke: "#a6e3a1",
+  edgeStroke: "#cdd6f4",
+  probText: "#89b4fa",
+  cutsetStroke: "#f38ba8",
+  cutsetFill: "rgba(243,139,168,0.12)",
+  spofStroke: "#eba0ac",
+};
+
+export const RELIABILITY_TOKENS: Record<ThemeName, ReliabilityTokens> = {
+  default: DEFAULT_RELIABILITY,
+  monochrome: MONOCHROME_RELIABILITY,
+  dark: DARK_RELIABILITY,
+};
+
+export function resolveReliabilityTheme(name: string): ResolvedTheme<ReliabilityTokens> {
+  const themeName = (name in BASE_THEMES ? name : "default") as ThemeName;
+  return { ...BASE_THEMES[themeName], ...RELIABILITY_TOKENS[themeName] };
+}
+
 // ─── Network Tokens Per Theme ──────────────────────────────
 // 35-NETWORK-STANDARD §6. Coloured-house family (not forced-mono industrial):
 // device bodies in "network blue", link type by colour in default / line-style

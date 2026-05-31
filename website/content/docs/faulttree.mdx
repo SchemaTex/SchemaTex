@@ -1,0 +1,134 @@
+---
+title: Fault Tree Analysis
+---
+
+## About fault trees
+
+A **fault tree** is the most widely deployed reliability/safety technique in regulated engineering: start from one undesired **top event** (a system failure) and decompose it through Boolean **gates** (AND / OR / voting / …) down to **basic events** (component failures) whose probabilities are known. Invented at Bell Labs in 1962 and standardised by **[NUREG-0492](https://www.nrc.gov/docs/ML1007/ML100780465.pdf)** (nuclear), **IEC 61025** (cross-industry), and SAE ARP4761 (aerospace).
+
+Schematex's edge is that the engine **computes the answer**, not just the picture: it runs MOCUS (Fussell-Vesely 1972) to find the **minimal cut sets** — the irreducible failure combinations — and the **top-event probability**, then highlights the cut sets in red (single points of failure in the strongest red). That is the whole point of drawing a fault tree, and it is the same stance `pert` takes toward scheduling and `petri` toward the marking. Distinct from `logic` (left-to-right signal netlist), `decisiontree` (expected-value rollback), and `fishbone` (qualitative, unquantified).
+
+<Playground initial={`faulttree "Product not removed"
+  analysis: cutsets, probability
+  top T  "Failure to remove product" = OR(G1, G2)
+  gate G1 "Arm jams or collides"      = AND(MSF, G3)
+  gate G2 "Wrong slot commanded"      = OR(CDM, MSF)
+  gate G3 "Loss of position feedback" = OR(ESF, RCF)
+  basic MSF "Manipulator system failure" p: 0.0035
+  basic CDM "Controller command error"   p: 0.0009
+  basic ESF "Encoder sensor failure"     p: 0.0021
+  basic RCF "Resolver cable fault"       p: 0.0012`} height={620} />
+
+---
+
+## 1. Your first diagram
+
+Every document starts with the `faulttree` keyword (alias `fta`), an optional title, then a flat list of declarations wired by id:
+
+```
+faulttree "Both pumps fail"
+  analysis: cutsets, probability
+  top T "Both redundant pumps fail" = AND(PA, PB)
+  basic PA "Pump A fails" p: 0.01
+  basic PB "Pump B fails" p: 0.01
+```
+
+`top` declares the single root event and the gate that produces it; `basic` declares a leaf component failure with a probability. The engine computes the minimal cut set `{PA, PB}` and P(top) = 1.0e-4. The DSL is **flat declaration + reference** (not nested by indentation) — a fault tree is a DAG, so a shared event is just referenced by id from several gates.
+
+Header directives:
+
+- `analysis: cutsets, probability` — what to compute (also `pathsets`, `none`).
+- `prob: rare | mcub | exact` — the probability method (default `rare`, a conservative upper bound).
+- `layout: tb | bt` — top-down (default) or bottom-up.
+
+---
+
+## 2. Events
+
+```
+top  T   "System fails"        = OR(A, B)
+gate G1  "Sub-fault"           = AND(A, B)
+basic A  "Component A fails"   p: 0.01
+undeveloped EXT "External fire (not modelled)"
+house HX "Power on"            state: 1
+```
+
+- **`top`** — the one undesired event being analysed (rectangle, emphasised border). Exactly one is required.
+- **`gate`** — an intermediate event that is itself a gate output (rectangle).
+- **`basic`** — a primary component failure, the leaf that carries `p:` (circle).
+- **`undeveloped`** — an event not developed further (diamond); may carry `p:`.
+- **`house`** — a normally-expected event forced `state: 0` or `state: 1` (house glyph) — switches branches of the tree on/off.
+
+Probabilities accept decimals or scientific notation (`p: 0.004` or `p: 1e-6`); `p:` and `prob:` are interchangeable. An event with no probability is treated symbolically (cut sets still computed; P(top) reported as n/a).
+
+---
+
+## 3. Gates
+
+```
+top  T1 = AND(A, B, C)            # all inputs occur
+top  T2 = OR(A, B)                # at least one input occurs
+top  T3 = XOR(A, B)               # exactly one (treated as OR for cut sets)
+top  T4 = VOTING(2/3; A, B, C)    # at least k of n
+gate G1 = INHIBIT(A) if COND      # A occurs AND the condition holds
+gate G2 = PAND(A, B) order: A, B  # A then B (order rendered, AND for cut sets)
+```
+
+Gates are drawn **output-up, inputs-down** (the mirror of a `logic` gate): AND is a flat-bottomed dome, OR/XOR/VOTING a shield, INHIBIT a hexagon. The conditioning event of an `INHIBIT`/`PAND` renders as an ellipse to the side. A gate may reference another gate or any event — and the same basic event may feed several gates (a repeated event).
+
+---
+
+## 4. Computed cut sets & probability
+
+This is the differentiator. With `analysis: cutsets`, the engine runs **MOCUS**: AND gates grow the order of a cut set, OR gates multiply the number of cut sets, then idempotence (`A∧A=A`) and absorption (`X ⊆ Y ⇒ drop Y`) minimise the result.
+
+- Each **minimal cut set** is boxed in red; an **order-1 cut set is a single point of failure** (strongest red, `data-spof`).
+- A **repeated event** (one basic event under several gates) is handled by absorption — the case a naive expander gets wrong.
+- **P(top)** is computed from per-event probabilities: `rare` (Σ cut-set probs, default), `mcub` (1 − ∏(1−P)), or `exact` (inclusion-exclusion, which correctly de-duplicates a shared event). The method is shown next to the top event and noted in `<desc>`.
+- A `house state: 0` can make the top event unsatisfiable — reported as "no cut sets."
+
+---
+
+## 5. Repeated events
+
+```
+faulttree "Safety function fails"
+  analysis: cutsets, probability
+  prob: exact
+  top T "Safety function fails" = OR(C1, C2)
+  gate C1 "Channel 1" = AND(S1, L1)
+  gate C2 "Channel 2" = AND(S2, L1)
+  basic S1 "Sensor 1 fails" p: 0.05
+  basic S2 "Sensor 2 fails" p: 0.05
+  basic L1 "Shared logic solver fails" p: 0.05
+```
+
+`L1` feeds both channels — it is drawn once per reference with a shared-event mark, but the cut-set engine treats every instance as one Boolean variable. Cut sets are `{S1, L1}` and `{S2, L1}`; `prob: exact` subtracts the overlap (L1 counted once over the union), giving 0.004875 rather than the rare-event 0.005.
+
+---
+
+## 6. Transfers
+
+```
+gate OVP "Sustained over-pressure" = INHIBIT(PUMP) if HEATER
+transfer OVP -> "OVP-detail"
+```
+
+A `transfer ID -> "name"` draws the transfer-out triangle below an event whose development lives elsewhere; a matching `transfer "name" = gate_expr` defines that named subtree and is spliced in for cut-set computation. v0.1 resolves transfers in-document.
+
+---
+
+## 7. Validation
+
+The parser fails fast with readable errors so the cut-set math is meaningful:
+
+- exactly one `top` is required (zero or several is an error);
+- a gate referencing an undeclared id reports the id by name;
+- cycles are rejected (a fault tree is a DAG);
+- a probability outside `[0, 1]`, a `VOTING k/n` with `k > n` or `n ≠ input count`, or an `if` condition on a non-INHIBIT/PAND gate are all reported in plain English.
+
+---
+
+## 8. Theming
+
+`default` uses the house palette — soft slate-blue event boxes, **green gates** ("logic proceeds"), **red cut-set boxes** (the computed risk), blue probability numerals, a yellow house. `monochrome` reproduces the NUREG-0492 black-and-white textbook look, where the dome/shield shape (not colour) carries the gate type. All strokes/fills come from `ReliabilityTokens`; every element carries `data-*` (`data-cutset`, `data-spof`, `data-prob`, `data-gate`) so the computed analysis is inspectable downstream.

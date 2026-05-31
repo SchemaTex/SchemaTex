@@ -1,0 +1,32 @@
+---
+title: Water overheating (classic textbook tree)
+description: The canonical introductory fault tree — an OR top over an AND sub-fault and an OR no-voltage branch, with a probability on every basic event. A faithful, quantified reproduction of the standard worked example.
+diagram: faulttree
+standard: NUREG-0492 / IEC 61025
+industry: [engineering, education]
+persona: For the reliability-engineering instructor
+complexity: 2
+tags: [faulttree, fta, and-or, cut-sets, probability, textbook]
+featured: false
+relatedLink:
+  label: Fault tree syntax
+  href: /docs/faulttree
+status: published
+dsl: |
+  faulttree "Water overheating"
+    analysis: cutsets, probability
+    top T "Water overheating" = OR(F, E, G)
+    gate F "Circuit failure and no warning lamp" = AND(A, B)
+    gate G "No voltage at input" = OR(C, D)
+    basic E "Booster failure"      p: 0.02
+    basic A "Chip failure"         p: 0.05
+    basic B "Warning lamp burned"  p: 0.03
+    basic C "No burn in network"   p: 0.12
+    basic D "Fuse blown"           p: 0.23
+---
+
+## What this shows
+
+The fault tree every reliability course opens with, rendered with computed cut sets. The top event **OR**s three branches: an **AND** sub-fault `F` (a circuit failure *and* a dead warning lamp must coincide), a direct booster failure `E`, and an **OR** no-voltage branch `G`.
+
+The minimal cut sets mix orders: `{E}`, `{C}`, `{D}` are order-1 **single points of failure** (any one trips the top event), while `{A, B}` is order-2 (both the chip and the lamp must fail together). Each is boxed in red, single points of failure in the strongest red, and the top-event probability is computed from the per-event values — the deductive, quantified reading a fault tree exists to give.

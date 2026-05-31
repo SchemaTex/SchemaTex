@@ -73,7 +73,9 @@ export type DiagramType =
   // Network / infrastructure topology
   | "network"   // Network topology — Cisco-convention icons + hierarchical/spine-leaf layout (35-NETWORK-STANDARD)
   // Structural UML (sister to behavioral §21 state, §29 usecase, §33 sequence)
-  | "umlclass"; // UML 2.5.1 §9–§11 class diagram — classifiers + 6 relationships (36-UMLCLASS-STANDARD)
+  | "umlclass" // UML 2.5.1 §9–§11 class diagram — classifiers + 6 relationships (36-UMLCLASS-STANDARD)
+  // Risk & reliability engineering
+  | "faulttree"; // Fault Tree Analysis — NUREG-0492 / IEC 61025, MOCUS cut sets + P(top) (37-FAULT-TREE-STANDARD)
 
 export type GenogramMode = "medical" | "heritage";
 

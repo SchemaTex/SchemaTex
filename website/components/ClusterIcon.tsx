@@ -49,6 +49,24 @@ const CLUSTER_PATHS: Record<DiagramCluster, React.ReactNode> = {
       <circle cx="19.25" cy="12" r="2.75" />
     </>
   ),
+  'software-uml': (
+    // Parent class-box ▷ child class-box with the hollow generalization triangle.
+    <>
+      <rect x="3" y="3" width="8" height="5.5" />
+      <path d="M5 6 H9" />
+      <rect x="13" y="15.5" width="8" height="5.5" />
+      <path d="M15 18.25 H19" />
+      <path d="M17 15.5 L7 11" />
+      <path d="M7 11 L10 9.5 L9 12.5 Z" />
+    </>
+  ),
+  'risk-reliability': (
+    // Shield with an AND-gate dome inside — fault-tree / reliability safety.
+    <>
+      <path d="M12 2.5 L20 5.5 V11 C20 16 16.5 19.5 12 21.5 C7.5 19.5 4 16 4 11 V5.5 Z" />
+      <path d="M8.5 14 V11 A3.5 3.5 0 0 1 15.5 11 V14 Z" />
+    </>
+  ),
   'corporate-legal': (
     <>
       <path d="M4 21 V8 L12 3 L20 8 V21" />

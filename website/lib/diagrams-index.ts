@@ -55,6 +55,7 @@ const CLUSTER_DISPLAY: Record<DiagramCluster, { label: string; order: number }> 
   research:                 { label: 'Research',                 order: 7 },
   'project-management':     { label: 'Project Management',       order: 8 },
   concurrency:              { label: 'Concurrency',              order: 8.5 },
+  'risk-reliability':       { label: 'Risk & Reliability',       order: 8.7 },
   'network-infrastructure': { label: 'Network & Infrastructure', order: 9 },
   generic:                  { label: 'General',                  order: 10 },
 };

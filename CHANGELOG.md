@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.6.5] — 2026-05-30
+
+### Added — Fault Tree Analysis engine (`faulttree`)
+
+- **New `faulttree` engine** (`src/diagrams/faulttree/`) for NUREG-0492 / IEC 61025 fault tree analysis, opening a new **Risk & Reliability** cluster. Like `pert` and `petri`, the engine *computes the semantics*: it runs **MOCUS** (Fussell-Vesely 1972) to enumerate the **minimal cut sets** (with idempotence + absorption, so repeated/shared events are handled correctly) and the **top-event probability** (`prob: rare | mcub | exact`), then highlights the cut sets in red and single points of failure in the strongest red. Spec: `37-FAULT-TREE-STANDARD.md`.
+- **Events**: `top` / `gate` (intermediate) rectangles, `basic` circles with `p:`, `undeveloped` diamonds, `house` events with `state: 0|1`, conditioning ellipses. **Gates**: `AND` (dome), `OR`/`XOR` (shield), `VOTING(k/n; …)`, `INHIBIT(x) if cond` (hexagon), `PAND(…) order: …`. Flat declaration wired by id (DAG-friendly); keyword `faulttree` (alias `fta`).
+- **Deterministic tidy top-down layout** with content-sized event boxes; shared leaves duplicated (NUREG convention); cut-set boxes drawn behind nodes. Theme: `ReliabilityTokens` (coloured-house `default`, faithful black/white `monochrome`, Catppuccin `dark`).
+- **Validation**: exactly-one-top, undefined-reference (named), cycle detection, probability range, VOTING bounds, conditioning-gate placement — all readable errors.
+
+### Registered / docs / tests
+
+- Registered across `DiagramType`, `src/core/api.ts`, `src/index.ts`, `src/ai/registry.ts` (new `risk-reliability` cluster), `src/ai/profiles.ts`, `DIAGRAM_SINCE`, and `SYNTAX_KEYS`. Theme tokens in `src/core/theme.ts`. Icon `assets/icons/faulttree.svg`. Tests in `tests/faulttree/` (TC-1…TC-5: AND/OR/absorption/voting+inhibit+house/exact-vs-rare + validation). Docs: `website/content/docs/faulttree.mdx`; examples: `faulttree-pump-redundancy.mdx`, `faulttree-repeated-event.mdx`, `faulttree-vessel-rupture.mdx`, `faulttree-water-overheating.mdx`.
+
+---
+
 ## [0.6.4] — 2026-05-30
 
 ### Added — UML class diagram engine (`umlclass`)

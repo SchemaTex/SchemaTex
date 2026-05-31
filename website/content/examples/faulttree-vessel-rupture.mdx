@@ -1,0 +1,33 @@
+---
+title: Pressure vessel rupture (full vocabulary)
+description: Voting, inhibit, house and undeveloped events in one tree — a 2-of-2 relief group, an over-pressure inhibited by a heater condition, and an order-3 minimal cut set with the tighter MCUB probability.
+diagram: faulttree
+standard: NUREG-0492 / IEC 61025
+industry: [engineering, energy, manufacturing]
+persona: For the process-safety / HAZOP engineer
+complexity: 3
+tags: [faulttree, fta, voting, inhibit, house-event, undeveloped, mcub]
+featured: false
+relatedLink:
+  label: Fault tree syntax
+  href: /docs/faulttree
+status: published
+dsl: |
+  faulttree "Vessel ruptures"
+    analysis: cutsets, probability
+    prob: mcub
+    top TOP "Pressure vessel ruptures" = AND(OVP, RELIEF)
+    gate OVP    "Sustained over-pressure" = INHIBIT(PUMP) if HEATER
+    gate RELIEF "Both reliefs fail"        = VOTING(2/2; PRV_A, PRV_B)
+    basic PUMP  "Pump runaway"   p: 0.004
+    basic PRV_A "Relief A stuck" p: 0.02
+    basic PRV_B "Relief B stuck" p: 0.02
+    house HEATER "Heater energised" state: 1
+    undeveloped EXT "External fire (not modelled)"
+---
+
+## What this shows
+
+The full NUREG-0492 vocabulary in one tree. **INHIBIT** renders as a hexagon with the `HEATER` conditioning event as an ellipse on its side; because `HEATER` is a **house event** forced to `state: 1`, it is absorbed as a constant TRUE and `OVP` reduces to `{PUMP}`. **VOTING `2/2`** is a redundant relief group that fails only when both valves stick.
+
+The single **minimal cut set is `{PUMP, PRV_A, PRV_B}`** (order 3), and `prob: mcub` reports the minimal-cut-set upper bound — tighter than the rare-event default. `EXT` is an **undeveloped event** (diamond) that is declared but referenced by no gate, so it is noted as unconnected in the diagram description. Switching the heater to `state: 0` would prune the over-pressure branch entirely and make the top event unsatisfiable.

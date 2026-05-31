@@ -35,7 +35,8 @@ export type DiagramType =
   | 'orgchart'
   | 'timeline'
   | 'network'
-  | 'umlclass';
+  | 'umlclass'
+  | 'faulttree';
 
 export type Industry =
   | 'healthcare'
@@ -94,6 +95,7 @@ export const DIAGRAM_LABELS: Record<DiagramType, { label: string; icon: string }
   timeline: { label: 'Timeline', icon: '📅' },
   network: { label: 'Network topology', icon: '🖧' },
   umlclass: { label: 'UML class', icon: '🧱' },
+  faulttree: { label: 'Fault tree', icon: '🛡' },
 };
 
 export const INDUSTRY_LABELS: Record<Industry, { label: string; icon: string }> = {
@@ -117,6 +119,7 @@ export const CLUSTER_TO_TYPES: Record<string, DiagramType[]> = {
   'corporate-legal': ['entity', 'erd', 'orgchart'],
   'causality-analysis': ['fishbone', 'venn', 'decisiontree', 'matrix'],
   'software-uml': ['umlclass', 'usecase', 'sequence', 'bpmn', 'state', 'petri'],
+  'risk-reliability': ['faulttree'],
   research: ['prisma'],
   'project-management': ['pert'],
   'network-infrastructure': ['network'],
@@ -129,6 +132,7 @@ export const CLUSTER_META: Record<string, { label: string; color: string }> = {
   'corporate-legal':       { label: 'Corporate & Legal',       color: 'var(--cat-3)' },
   'causality-analysis':    { label: 'Causality & Analysis',    color: 'var(--cat-1)' },
   'software-uml':          { label: 'Software & UML',          color: 'var(--cat-4)' },
+  'risk-reliability':      { label: 'Risk & Reliability',      color: 'var(--cat-4)' },
   research:                { label: 'Research',                color: 'var(--cat-5)' },
   'project-management':    { label: 'Project Management',      color: 'var(--cat-6)' },
   'network-infrastructure': { label: 'Network & Infrastructure', color: 'var(--cat-2)' },

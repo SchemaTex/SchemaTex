@@ -1,0 +1,32 @@
+---
+title: Repeated event with cut-set absorption
+description: A shared basic event feeds two gates — the case naive fault-tree tools get wrong. MOCUS applies absorption so the supersets collapse, leaving two single points of failure that a shape stencil would miss.
+diagram: faulttree
+standard: NUREG-0492 / MOCUS (Fussell-Vesely 1972)
+industry: [engineering, manufacturing]
+persona: For the safety analyst who needs the math right
+complexity: 2
+tags: [faulttree, fta, cut-sets, repeated-event, absorption, spof]
+featured: true
+relatedLink:
+  label: Fault tree syntax
+  href: /docs/faulttree
+status: published
+dsl: |
+  faulttree "Product not removed"
+    analysis: cutsets, probability
+    top T  "Failure to remove product" = OR(G1, G2)
+    gate G1 "Arm jams or collides"      = AND(MSF, G3)
+    gate G2 "Wrong slot commanded"      = OR(CDM, MSF)
+    gate G3 "Loss of position feedback" = OR(ESF, RCF)
+    basic MSF "Manipulator system failure" p: 0.0035
+    basic CDM "Controller command error"   p: 0.0009
+    basic ESF "Encoder sensor failure"     p: 0.0021
+    basic RCF "Resolver cable fault"       p: 0.0012
+---
+
+## What this shows
+
+`MSF` feeds **both** `G1` and `G2` — a *repeated event*, the DAG case that separates a real engine from a shape stencil. It is drawn once per reference with the shared-event mark, but the cut-set engine treats every instance as the same Boolean variable.
+
+**Absorption is the point.** MOCUS first expands the tree to `{MSF, ESF}`, `{MSF, RCF}`, `{MSF}`, `{CDM}`. Because `{MSF}` is itself a cut set (via `G2`), the larger sets `{MSF, ESF}` and `{MSF, RCF}` are *absorbed* — a superset of a cut set is not minimal. The **two minimal cut sets are `{MSF}` and `{CDM}`**, both order-1 **single points of failure** (boxed in the strongest red). A naive expander that forgets absorption would wrongly report four. `P(top) ≈ P(MSF) + P(CDM) = 0.0044`.
