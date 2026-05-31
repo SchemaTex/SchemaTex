@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>bowtie — visual review</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: #f5f5f7; color: #0f172a; font-family: -apple-system, system-ui, "Segoe UI", sans-serif; }
+  .wrap { max-width: 1320px; margin: 0 auto; padding: 32px 24px 64px; }
+  header { margin-bottom: 32px; }
+  h1 { font-size: 24px; margin: 0 0 6px; letter-spacing: -0.01em; }
+  header p { color: #64748b; margin: 0; font-size: 14px; }
+  .toc { margin: 16px 0 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 6px 12px; font-size: 12px; }
+  .toc a { color: #64748b; text-decoration: none; padding: 4px 8px; background: #fff; border: 1px solid #e2e8f0; border-radius: 6px; }
+  .toc a:hover { color: #2563eb; border-color: #93c5fd; }
+  .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; margin-bottom: 20px; box-shadow: 0 1px 2px rgba(15,23,42,0.04); }
+  .card h2 { font-size: 18px; margin: 0 0 6px; letter-spacing: -0.005em; }
+  .card .note { color: #64748b; font-size: 13px; line-height: 1.55; margin: 0 0 18px; max-width: 980px; }
+  details { margin-top: 14px; }
+  details summary { cursor: pointer; color: #64748b; font-size: 12px; font-family: ui-monospace, "SF Mono", Menlo, monospace; user-select: none; padding: 4px 0; }
+  pre { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px 16px; font-size: 12px; line-height: 1.5; font-family: ui-monospace, "SF Mono", Menlo, monospace; overflow-x: auto; margin: 8px 0 0; color: #0f172a; }
+  .svg-wrap { background: #fafafa; border: 1px solid #f1f5f9; border-radius: 8px; padding: 24px; overflow: auto; }
+  .svg-wrap svg { display: block; max-width: 100%; height: auto; margin: 0 auto; }
+  .err { color: #dc2626; background: #fef2f2; border: 1px solid #fecaca; border-radius: 6px; padding: 10px 14px; font-family: ui-monospace, monospace; font-size: 12px; }
+  footer { color: #94a3b8; font-size: 12px; text-align: center; padding-top: 24px; }
+  footer code { background: #fff; padding: 2px 6px; border-radius: 4px; border: 1px solid #e2e8f0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>bowtie — visual review</h1>
+  <p>Schematex Bowtie risk diagram engine (CCPS / Energy Institute 2018 · IEC 31010 §B.4.6). Threats → preventative barriers → top-event knot → mitigative barriers → consequences, with escalation factors degrading specific barriers. <strong>Correct by construction</strong> — the barrier rule set is validated before render.</p>
+  <ul class="toc">
+    <li><a href="#fan">1</a></li>
+    <li><a href="#depth">2</a></li>
+    <li><a href="#escalation">3</a></li>
+    <li><a href="#aviation">4</a></li>
+    <li><a href="#full">5</a></li>
+    <li><a href="#cjk">6</a></li>
+    <li><a href="#mono">7</a></li>
+    <li><a href="#validation">8</a></li>
+  </ul>
+</header>
+
+<section class="card" id="fan">
+  <h2>1 — Process-safety bowtie (the canonical shape)</h2>
+  <p class="note">Three threats fan in through preventative barrier chains, three consequences fan out through mitigative chains, each wing centred about the knot. The hazard header sits above with a tie-line. Multi-barrier chains give the wings depth — this is what a real LPG loss-of-containment bowtie looks like.</p>
+  <div class="svg-wrap"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1212" height="488" viewBox="0 0 1212 488" role="img" aria-label="LPG storage — loss of containment" data-diagram-type="bowtie"><title>LPG storage — loss of containment</title>
+<desc>Bowtie: hazard &quot;LPG stored under pressure&quot;, top event &quot;Loss of containment&quot;; 3 threats, 3 consequences, 12 barriers.</desc>
+<style>.sx-bowtie-c0-bg { fill: #ffffff; }
+.sx-bowtie-c0-line { fill: none; stroke: #334155; stroke-width: 2; }
+.sx-bowtie-c0-arrow { fill: #334155; stroke: none; }
+.sx-bowtie-c0-escalation-line { fill: none; stroke: #9ca3af; stroke-width: 1; }
+.sx-bowtie-c0-hazard { fill: #fef9c3; stroke: #ca8a04; stroke-width: 2; }
+.sx-bowtie-c0-topevent { fill: #dcfce7; stroke: #16a34a; stroke-width: 3; }
+.sx-bowtie-c0-topevent-ring { fill: none; stroke: #16a34a; stroke-width: 1; }
+.sx-bowtie-c0-threat { fill: #fed7aa; stroke: #ea580c; stroke-width: 2; }
+.sx-bowtie-c0-barrier { fill: #e5e7eb; stroke: #6b7280; stroke-width: 2; }
+.sx-bowtie-c0-consequence { fill: #fecaca; stroke: #dc2626; stroke-width: 2; }
+.sx-bowtie-c0-escalation { fill: #fde68a; stroke: #d97706; stroke-width: 2; }
+.sx-bowtie-c0-ef-barrier { fill: #e5e7eb; stroke: #6b7280; stroke-width: 2; }
+.sx-bowtie-c0-label { fill: #0f172a; stroke: none; font-size: 12px; }
+.sx-bowtie-c0-elabel { fill: #0f172a; stroke: none; font-size: 9px; }
+.sx-bowtie-c0-topevent-label { fill: #0f172a; stroke: none; font-size: 11px; font-weight: 700; }
+.sx-bowtie-c0-title { fill: #0f172a; stroke: none; font-size: 16px; font-weight: 700; }
+.sx-bowtie-c0-legend-label { fill: #0f172a; stroke: none; font-size: 9px; }</style>
+<rect x="0" y="0" width="1212" height="488" class="sx-bowtie-c0-bg"/>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><text x="32" y="38" class="sx-bowtie-c0-title" font-family="system-ui, -apple-system, sans-serif">LPG storage — loss of containment</text>
+<line x1="586" y1="110" x2="586" y2="216" class="sx-bowtie-c0-line"/>
+<g class="sx-bowtie-c0-line-g" data-line="T1" data-side="prevent"><path d="M 164 172 L 206 172 L 326 172 L 374 172 L 494 172 L 566 220" class="sx-bowtie-c0-line"/>
+<path d="M 566 220 L 557 215 L 557 225 Z" class="sx-bowtie-c0-arrow"/></g>
+<g class="sx-bowtie-c0-line-g" data-line="T2" data-side="prevent"><path d="M 164 268 L 206 268 L 326 268 L 374 268 L 494 268 L 534 268" class="sx-bowtie-c0-line"/>
+<path d="M 534 268 L 525 263 L 525 273 Z" class="sx-bowtie-c0-arrow"/></g>
+<g class="sx-bowtie-c0-line-g" data-line="T3" data-side="prevent"><path d="M 164 364 L 206 364 L 326 364 L 374 364 L 494 364 L 566 316" class="sx-bowtie-c0-line"/>
+<path d="M 566 316 L 557 311 L 557 321 Z" class="sx-bowtie-c0-arrow"/></g>
+<g class="sx-bowtie-c0-line-g" data-line="C1" data-side="mitigate"><path d="M 606 220 L 678 172 L 798 172 L 846 172 L 966 172 L 1008 172" class="sx-bowtie-c0-line"/>
+<path d="M 606 220 L 597 215 L 597 225 Z" class="sx-bowtie-c0-arrow"/></g>
+<g class="sx-bowtie-c0-line-g" data-line="C2" data-side="mitigate"><path d="M 638 268 L 678 268 L 798 268 L 846 268 L 966 268 L 1008 268" class="sx-bowtie-c0-line"/>
+<path d="M 638 268 L 629 263 L 629 273 Z" class="sx-bowtie-c0-arrow"/></g>
+<g class="sx-bowtie-c0-line-g" data-line="C3" data-side="mitigate"><path d="M 606 316 L 678 364 L 798 364 L 846 364 L 966 364 L 1008 364" class="sx-bowtie-c0-line"/>
+<path d="M 606 316 L 597 311 L 597 321 Z" class="sx-bowtie-c0-arrow"/></g>
+<g class="sx-bowtie-c0-topevent-g" data-role="topevent"><circle cx="586" cy="268" r="52" class="sx-bowtie-c0-topevent"/>
+<text x="586" y="268" class="sx-bowtie-c0-topevent-label" text-anchor="middle" dominant-baseline="middle"><tspan x="586" dy="-6">Loss of</tspan><tspan x="586" dy="12">containment</tspan></text></g>
+<g class="sx-bowtie-c0-hazard-g" data-role="hazard" data-id="hazard"><rect x="476" y="66" width="220" height="44" rx="5" class="sx-bowtie-c0-hazard"/>
+<text x="586" y="88" class="sx-bowtie-c0-label" text-anchor="middle" dominant-baseline="middle"><tspan x="586" dy="0">LPG stored under pressure</tspan></text></g>
+<g class="sx-bowtie-c0-threat-g" data-role="threat" data-id="T1"><rect x="32" y="150" width="132" height="44" rx="5" class="sx-bowtie-c0-threat"/>
+<text x="98" y="172" class="sx-bowtie-c0-label" text-anchor="middle" dominant-baseline="middle"><tspan x="98" dy="-7">Corrosion of</tspan><tspan x="98" dy="14">vessel wall</tspan></text></g>
+<g class="sx-bowtie-c0-barrier-g" data-role="barrier" data-id="T1-b0" data-side="prevent" data-line="T1" data-order="0"><rect x="206" y="150" width="120" height="44" rx="5" class="sx-bowtie-c0-barrier"/>
+<text x="266" y="172" class="sx-bowtie-c0-label" text-anchor="middle" dominant-baseline="middle"><tspan x="266" dy="-7">Corrosion-resistant</tspan><tspan x="266" dy="14">coating</tspan></text></g>
+<g class="sx-bowtie-c0-barrier-g" data-role="barrier" data-id="T1-b1" data-side="prevent" data-line="T1" data-order="1"><rect x="374" y="150" width="120" height="44" rx="5" class="sx-bowtie-c0-barrier"/>
+<text x="434" y="172" class="sx-bowtie-c0-label" text-anchor="middle" dominant-baseline="middle"><tspan x="434" dy="-7">UT thickness</tspan><tspan x="434" dy="14">inspection</tspan></text></g>
+<g class="sx-bowtie-c0-threat-g" data-role="threat" data-id="T2"><rect x="32" y="246" width="132" height="44" rx="5" class="sx-bowtie-c0-threat"/>
+<text x="98" y="268" class="sx-bowtie-c0-label" text-anchor="middle" dominant-baseline="middle"><tspan x="98" dy="-7">Overpressure</tspan><tspan x="98" dy="14">during filling</tspan></text></g>
+<g class="sx-bowtie-c0-barrier-g" data-role="barrier" data-id="T2-b0" data-side="prevent" data-line="T2" data-order="0"><rect x="206" y="246" width="120" height="44" rx="5" class="sx-bowtie-c0-barrier"/>
+<text x="266" y="268" class="sx-bowtie-c0-label" text-anchor="middle" dominant-baseline="middle"><tspan x="266" dy="-7">High-pressure</tspan><tspan x="266" dy="14">trip (SIL 2)</tspan></text></g>
+<g class="sx-bowtie-c0-barrier-g" data-role="barrier" data-id="T2-b1" data-side="prevent" data-line="T2" data-order="1"><rect x="374" y="246" width="120" height="44" rx="5" class="sx-bowtie-c0-barrier"/>
+<text x="434" y="268" class="sx-bowtie-c0-label" text-anchor="middle" dominant-baseline="middle"><tspan x="434" dy="-7">Pressure relief</tspan><tspan x="434" dy="14">valve</tspan></text></g>
+<g class="sx-bowtie-c0-threat-g" data-role="threat" data-id="T3"><rect x="32" y="342" width="132" height="44" rx="5" class="sx-bowtie-c0-threat"/>
+<text x="98" y="364" class="sx-bowtie-c0-label" text-anchor="middle" dominant-baseline="middle"><tspan x="98" dy="-7">Mechanical impact</tspan><tspan x="98" dy="14">(vehicle)</tspan></text></g>
+<g class="sx-bowtie-c0-barrier-g" data-role="barrier" data-id="T3-b0" data-side="prevent" data-line="T3" data-order="0"><rect x="206" y="342" width="120" height="44" rx="5" class="sx-bowtie-c0-barrier"/>
+<text x="266" y="364" class="sx-bowtie-c0-label" text-anchor="middle" dominant-baseline="middle"><tspan x="266" dy="-7">Bollards /</tspan><tspan x="266" dy="14">vehicle barriers</tspan></text></g>
+<g class="sx-bowtie-c0-barrier-g" data-role="barrier" data-id="T3-b1" data-side="prevent" data-line="T3" data-order="1"><rect x="374" y="342" width="120" height="44" rx="5" class="sx-bowtie-c0-barrier"/>
+<text x="434" y="364" class="sx-bowtie-c0-label" text-anchor="middle" dominant-baseline="middle"><tspan x="434" dy="-7">Site speed limit</tspan><tspan x="434" dy="14">+ banksman</tspan></text></g>
+<g class="sx-bowtie-c0-consequence-g" data-role="consequence" data-id="C1"><rect x="1008" y="150" width="132" height="44" rx="5" class="sx-bowtie-c0-consequence"/>
+<text x="1074" y="172" class="sx-bowtie-c0-label" text-anchor="middle" dominant-baseline="middle"><tspan x="1074" dy="0">Jet fire</tspan></text></g>
+<g class="sx-bowtie-c0-barrier-g" data-role="barrier" data-id="C1-b0" data-side="mitigate" data-line="C1" data-order="0"><rect x="678" y="150" width="120" height="44" rx="5" class="sx-bowtie-c0-barrier"/>
+<text x="738" y="172" class="sx-bowtie-c0-label" text-anchor="middle" dominant-baseline="middle"><tspan x="738" dy="-7">Gas detection +</tspan><tspan x="738" dy="14">ESD</tspan></text></g>
+<g class="sx-bowtie-c0-barrier-g" data-role="barrier" data-id="C1-b1" data-side="mitigate" data-line="C1" data-order="1"><rect x="846" y="150" width="120" height="44" rx="5" class="sx-bowtie-c0-barrier"/>
+<text x="906" y="172" class="sx-bowtie-c0-label" text-anchor="middle" dominant-baseline="middle"><tspan x="906" dy="-7">Deluge / water</tspan><tspan x="906" dy="14">spray</tspan></text></g>
+<g class="sx-bowtie-c0-consequence-g" data-role="consequence" data-id="C2"><rect x="1008" y="246" width="132" height="44" rx="5" class="sx-bowtie-c0-consequence"/>
+<text x="1074" y="268" class="sx-bowtie-c0-label" text-anchor="middle" dominant-baseline="middle"><tspan x="1074" dy="-7">Vapour cloud</tspan><tspan x="1074" dy="14">explosion</tspan></text></g>
+<g class="sx-bowtie-c0-barrier-g" data-role="barrier" data-id="C2-b0" data-side="mitigate" data-line="C2" data-order="0"><rect x="678" y="246" width="120" height="44" rx="5" class="sx-bowtie-c0-barrier"/>
+<text x="738" y="268" class="sx-bowtie-c0-label" text-anchor="middle" dominant-baseline="middle"><tspan x="738" dy="-7">Ignition-source</tspan><tspan x="738" dy="14">control (ATEX)</tspan></text></g>
+<g class="sx-bowtie-c0-barrier-g" data-role="barrier" data-id="C2-b1" data-side="mitigate" data-line="C2" data-order="1"><rect x="846" y="246" width="120" height="44" rx="5" class="sx-bowtie-c0-barrier"/>
+<text x="906" y="268" class="sx-bowtie-c0-label" text-anchor="middle" dominant-baseline="middle"><tspan x="906" dy="-7">Blast-resistant</tspan><tspan x="906" dy="14">control room</tspan></text></g>
+<g class="sx-bowtie-c0-consequence-g" data-role="consequence" data-id="C3"><rect x="1008" y="342" width="132" height="44" rx="5" class="sx-bowtie-c0-consequence"/>
+<text x="1074" y="364" class="sx-bowtie-c0-label" text-anchor="middle" dominant-baseline="middle"><tspan x="1074" dy="-14">Toxic /</tspan><tspan x="1074" dy="14">asphyxiation</tspan><tspan x="1074" dy="14">exposure</tspan></text></g>
+<g class="sx-bowtie-c0-barrier-g" data-role="barrier" data-id="C3-b0" data-side="mitigate" data-line="C3" data-order="0"><rect x="678" y="342" width="120" height="44" rx="5" class="sx-bowtie-c0-barrier"/>
+<text x="738" y="364" class="sx-bowtie-c0-label" text-anchor="middle" dominant-baseline="middle"><tspan x="738" dy="-7">Personal gas</tspan><tspan x="738" dy="14">monitors</tspan></text></g>
+<g class="sx-bowtie-c0-barrier-g" data-role="barrier" data-id="C3-b1" data-side="mitigate" data-line="C3" data-order="1"><rect x="846" y="342" width="120" height="44" rx="5" class="sx-bowtie-c0-barrier"/>
+<text x="906" y="364" class="sx-bowtie-c0-label" text-anchor="middle" dominant-baseline="middle"><tspan x="906" dy="-7">Emergency</tspan><tspan x="906" dy="14">evacuation plan</tspan></text></g>
+<g class="sx-bowtie-c0-legend" data-role="legend"><rect x="32" y="424" width="14" height="14" rx="3" class="sx-bowtie-c0-threat"/>
+<text x="52" y="435" class="sx-bowtie-c0-legend-label" font-family="system-ui, -apple-system, sans-serif">Threat</text>
+<rect x="112.4" y="424" width="14" height="14" rx="3" class="sx-bowtie-c0-barrier"/>
+<text x="132.4" y="435" class="sx-bowtie-c0-legend-label" font-family="system-ui, -apple-system, sans-serif">Barrier (prevent / mitigate)</text>
+<rect x="333.6" y="424" width="14" height="14" rx="3" class="sx-bowtie-c0-topevent"/>
+<text x="353.6" y="435" class="sx-bowtie-c0-legend-label" font-family="system-ui, -apple-system, sans-serif">Top event</text>
+<rect x="433.20000000000005" y="424" width="14" height="14" rx="3" class="sx-bowtie-c0-consequence"/>
+<text x="453.20000000000005" y="435" class="sx-bowtie-c0-legend-label" font-family="system-ui, -apple-system, sans-serif">Consequence</text></g></g></svg></div>
+  <details>
+    <summary>DSL source</summary>
+    <pre>bowtie "LPG storage — loss of containment"
+hazard "LPG stored under pressure"
+topevent "Loss of containment"
+threat "Corrosion of vessel wall"
+  prevent "Corrosion-resistant coating"
+  prevent "UT thickness inspection"
+threat "Overpressure during filling"
+  prevent "High-pressure trip (SIL 2)"
+  prevent "Pressure relief valve"
+threat "Mechanical impact (vehicle)"
+  prevent "Bollards / vehicle barriers"
+  prevent "Site speed limit + banksman"
+consequence "Jet fire"
+  mitigate "Gas detection + ESD"
+  mitigate "Deluge / water spray"
+consequence "Vapour cloud explosion"
+  mitigate "Ignition-source control (ATEX)"
+  mitigate "Blast-resistant control room"
+consequence "Toxic / asphyxiation exposure"
+  mitigate "Personal gas monitors"
+  mitigate "Emergency evacuation plan"</pre>
+  </details>
+</section>
+
+<section class="card" id="depth">
+  <h2>2 — Defence in depth (barrier chains ≥ 2)</h2>
+  <p class="note">A threat with three preventative barriers in series and a consequence with two mitigative barriers. Barriers x-step outward from the knot; declaration order = outermost → innermost (Permit-to-work outermost, Spotter nearest the knot).</p>
+  <div class="svg-wrap"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1380" height="356" viewBox="0 0 1380 356" role="img" aria-label="Working at height" data-diagram-type="bowtie"><title>Working at height</title>
+<desc>Bowtie: hazard &quot;Working at height&quot;, top event &quot;Person falls from height&quot;; 1 threat, 1 consequence, 5 barriers.</desc>
+<style>.sx-bowtie-c1-bg { fill: #ffffff; }
+.sx-bowtie-c1-line { fill: none; stroke: #334155; stroke-width: 2; }
+.sx-bowtie-c1-arrow { fill: #334155; stroke: none; }
+.sx-bowtie-c1-escalation-line { fill: none; stroke: #9ca3af; stroke-width: 1; }
+.sx-bowtie-c1-hazard { fill: #fef9c3; stroke: #ca8a04; stroke-width: 2; }
+.sx-bowtie-c1-topevent { fill: #dcfce7; stroke: #16a34a; stroke-width: 3; }
+.sx-bowtie-c1-topevent-ring { fill: none; stroke: #16a34a; stroke-width: 1; }
+.sx-bowtie-c1-threat { fill: #fed7aa; stroke: #ea580c; stroke-width: 2; }
+.sx-bowtie-c1-barrier { fill: #e5e7eb; stroke: #6b7280; stroke-width: 2; }
+.sx-bowtie-c1-consequence { fill: #fecaca; stroke: #dc2626; stroke-width: 2; }
+.sx-bowtie-c1-escalation { fill: #fde68a; stroke: #d97706; stroke-width: 2; }
+.sx-bowtie-c1-ef-barrier { fill: #e5e7eb; stroke: #6b7280; stroke-width: 2; }
+.sx-bowtie-c1-label { fill: #0f172a; stroke: none; font-size: 12px; }
+.sx-bowtie-c1-elabel { fill: #0f172a; stroke: none; font-size: 9px; }
+.sx-bowtie-c1-topevent-label { fill: #0f172a; stroke: none; font-size: 11px; font-weight: 700; }
+.sx-bowtie-c1-title { fill: #0f172a; stroke: none; font-size: 16px; font-weight: 700; }
+.sx-bowtie-c1-legend-label { fill: #0f172a; stroke: none; font-size: 9px; }</style>
+<rect x="0" y="0" width="1380" height="356" class="sx-bowtie-c1-bg"/>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><text x="32" y="38" class="sx-bowtie-c1-title" font-family="system-ui, -apple-system, sans-serif">Working at height</text>
+<line x1="754" y1="110" x2="754" y2="150" class="sx-bowtie-c1-line"/>
+<g class="sx-bowtie-c1-line-g" data-line="T1" data-side="prevent"><path d="M 164 202 L 206 202 L 326 202 L 374 202 L 494 202 L 542 202 L 662 202 L 702 202" class="sx-bowtie-c1-line"/>
+<path d="M 702 202 L 693 197 L 693 207 Z" class="sx-bowtie-c1-arrow"/></g>
+<g class="sx-bowtie-c1-line-g" data-line="C1" data-side="mitigate"><path d="M 806 202 L 846 202 L 966 202 L 1014 202 L 1134 202 L 1176 202" class="sx-bowtie-c1-line"/>
+<path d="M 806 202 L 797 197 L 797 207 Z" class="sx-bowtie-c1-arrow"/></g>
+<g class="sx-bowtie-c1-topevent-g" data-role="topevent"><circle cx="754" cy="202" r="52" class="sx-bowtie-c1-topevent"/>
+<text x="754" y="202" class="sx-bowtie-c1-topevent-label" text-anchor="middle" dominant-baseline="middle"><tspan x="754" dy="-12">Person</tspan><tspan x="754" dy="12">falls from</tspan><tspan x="754" dy="12">height</tspan></text></g>
+<g class="sx-bowtie-c1-hazard-g" data-role="hazard" data-id="hazard"><rect x="644" y="66" width="220" height="44" rx="5" class="sx-bowtie-c1-hazard"/>
+<text x="754" y="88" class="sx-bowtie-c1-label" text-anchor="middle" dominant-baseline="middle"><tspan x="754" dy="0">Working at height</tspan></text></g>
+<g class="sx-bowtie-c1-threat-g" data-role="threat" data-id="T1"><rect x="32" y="180" width="132" height="44" rx="5" class="sx-bowtie-c1-threat"/>
+<text x="98" y="202" class="sx-bowtie-c1-label" text-anchor="middle" dominant-baseline="middle"><tspan x="98" dy="-7">Guardrail removed</tspan><tspan x="98" dy="14">for access</tspan></text></g>
+<g class="sx-bowtie-c1-barrier-g" data-role="barrier" data-id="T1-b0" data-side="prevent" data-line="T1" data-order="0"><rect x="206" y="180" width="120" height="44" rx="5" class="sx-bowtie-c1-barrier"/>
+<text x="266" y="202" class="sx-bowtie-c1-label" text-anchor="middle" dominant-baseline="middle"><tspan x="266" dy="-7">Permit-to-work</tspan><tspan x="266" dy="14">system</tspan></text></g>
+<g class="sx-bowtie-c1-barrier-g" data-role="barrier" data-id="T1-b1" data-side="prevent" data-line="T1" data-order="1"><rect x="374" y="180" width="120" height="44" rx="5" class="sx-bowtie-c1-barrier"/>
+<text x="434" y="202" class="sx-bowtie-c1-label" text-anchor="middle" dominant-baseline="middle"><tspan x="434" dy="-7">Temporary edge</tspan><tspan x="434" dy="14">protection</tspan></text></g>
+<g class="sx-bowtie-c1-barrier-g" data-role="barrier" data-id="T1-b2" data-side="prevent" data-line="T1" data-order="2"><rect x="542" y="180" width="120" height="44" rx="5" class="sx-bowtie-c1-barrier"/>
+<text x="602" y="202" class="sx-bowtie-c1-label" text-anchor="middle" dominant-baseline="middle"><tspan x="602" dy="-7">Spotter /</tspan><tspan x="602" dy="14">banksman</tspan></text></g>
+<g class="sx-bowtie-c1-consequence-g" data-role="consequence" data-id="C1"><rect x="1176" y="180" width="132" height="44" rx="5" class="sx-bowtie-c1-consequence"/>
+<text x="1242" y="202" class="sx-bowtie-c1-label" text-anchor="middle" dominant-baseline="middle"><tspan x="1242" dy="0">Fatality</tspan></text></g>
+<g class="sx-bowtie-c1-barrier-g" data-role="barrier" data-id="C1-b0" data-side="mitigate" data-line="C1" data-order="0"><rect x="846" y="180" width="120" height="44" rx="5" class="sx-bowtie-c1-barrier"/>
+<text x="906" y="202" class="sx-bowtie-c1-label" text-anchor="middle" dominant-baseline="middle"><tspan x="906" dy="-7">Fall-arrest</tspan><tspan x="906" dy="14">harness + lanyard</tspan></text></g>
+<g class="sx-bowtie-c1-barrier-g" data-role="barrier" data-id="C1-b1" data-side="mitigate" data-line="C1" data-order="1"><rect x="1014" y="180" width="120" height="44" rx="5" class="sx-bowtie-c1-barrier"/>
+<text x="1074" y="202" class="sx-bowtie-c1-label" text-anchor="middle" dominant-baseline="middle"><tspan x="1074" dy="-7">Rescue plan +</tspan><tspan x="1074" dy="14">first aid</tspan></text></g>
+<g class="sx-bowtie-c1-legend" data-role="legend"><rect x="32" y="292" width="14" height="14" rx="3" class="sx-bowtie-c1-threat"/>
+<text x="52" y="303" class="sx-bowtie-c1-legend-label" font-family="system-ui, -apple-system, sans-serif">Threat</text>
+<rect x="112.4" y="292" width="14" height="14" rx="3" class="sx-bowtie-c1-barrier"/>
+<text x="132.4" y="303" class="sx-bowtie-c1-legend-label" font-family="system-ui, -apple-system, sans-serif">Barrier (prevent / mitigate)</text>
+<rect x="333.6" y="292" width="14" height="14" rx="3" class="sx-bowtie-c1-topevent"/>
+<text x="353.6" y="303" class="sx-bowtie-c1-legend-label" font-family="system-ui, -apple-system, sans-serif">Top event</text>
+<rect x="433.20000000000005" y="292" width="14" height="14" rx="3" class="sx-bowtie-c1-consequence"/>
+<text x="453.20000000000005" y="303" class="sx-bowtie-c1-legend-label" font-family="system-ui, -apple-system, sans-serif">Consequence</text></g></g></svg></div>
+  <details>
+    <summary>DSL source</summary>
+    <pre>bowtie "Working at height"
+hazard "Working at height"
+topevent "Person falls from height"
+threat "Guardrail removed for access"
+  prevent "Permit-to-work system"
+  prevent "Temporary edge protection"
+  prevent "Spotter / banksman"
+consequence "Fatality"
+  mitigate "Fall-arrest harness + lanyard"
+  mitigate "Rescue plan + first aid"</pre>
+  </details>
+</section>
+
+<section class="card" id="escalation">
+  <h2>3 — Escalation factor with its own barrier</h2>
+  <p class="note">The 'UT thickness inspection' barrier is degraded by an escalation factor ('Inspection interval too long', amber, dropping below it via a muted connector), itself controlled by an escalation-factor barrier ('Risk-based inspection scheme'). The escalation hangs into the whitespace below without breaking the symmetry of the two threat lines.</p>
+  <div class="svg-wrap"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1380" height="496" viewBox="0 0 1380 496" role="img" aria-label="Vessel corrosion bowtie" data-diagram-type="bowtie"><title>Vessel corrosion bowtie</title>
+<desc>Bowtie: hazard &quot;Pressurised vessel — corrosive service&quot;, top event &quot;Loss of containment&quot;; 2 threats, 2 consequences, 9 barriers, 1 escalation factor.</desc>
+<style>.sx-bowtie-c2-bg { fill: #ffffff; }
+.sx-bowtie-c2-line { fill: none; stroke: #334155; stroke-width: 2; }
+.sx-bowtie-c2-arrow { fill: #334155; stroke: none; }
+.sx-bowtie-c2-escalation-line { fill: none; stroke: #9ca3af; stroke-width: 1; }
+.sx-bowtie-c2-hazard { fill: #fef9c3; stroke: #ca8a04; stroke-width: 2; }
+.sx-bowtie-c2-topevent { fill: #dcfce7; stroke: #16a34a; stroke-width: 3; }
+.sx-bowtie-c2-topevent-ring { fill: none; stroke: #16a34a; stroke-width: 1; }
+.sx-bowtie-c2-threat { fill: #fed7aa; stroke: #ea580c; stroke-width: 2; }
+.sx-bowtie-c2-barrier { fill: #e5e7eb; stroke: #6b7280; stroke-width: 2; }
+.sx-bowtie-c2-consequence { fill: #fecaca; stroke: #dc2626; stroke-width: 2; }
+.sx-bowtie-c2-escalation { fill: #fde68a; stroke: #d97706; stroke-width: 2; }
+.sx-bowtie-c2-ef-barrier { fill: #e5e7eb; stroke: #6b7280; stroke-width: 2; }
+.sx-bowtie-c2-label { fill: #0f172a; stroke: none; font-size: 12px; }
+.sx-bowtie-c2-elabel { fill: #0f172a; stroke: none; font-size: 9px; }
+.sx-bowtie-c2-topevent-label { fill: #0f172a; stroke: none; font-size: 11px; font-weight: 700; }
+.sx-bowtie-c2-title { fill: #0f172a; stroke: none; font-size: 16px; font-weight: 700; }
+.sx-bowtie-c2-legend-label { fill: #0f172a; stroke: none; font-size: 9px; }</style>
+<rect x="0" y="0" width="1380" height="496" class="sx-bowtie-c2-bg"/>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><text x="32" y="38" class="sx-bowtie-c2-title" font-family="system-ui, -apple-system, sans-serif">Vessel corrosion bowtie</text>
+<line x1="754" y1="110" x2="754" y2="220" class="sx-bowtie-c2-line"/>
+<g class="sx-bowtie-c2-line-g" data-line="T1" data-side="prevent"><path d="M 164 172 L 206 172 L 326 172 L 374 172 L 494 172 L 542 172 L 662 172 L 734 224" class="sx-bowtie-c2-line"/>
+<path d="M 734 224 L 725 219 L 725 229 Z" class="sx-bowtie-c2-arrow"/></g>
+<g class="sx-bowtie-c2-line-g" data-line="T2" data-side="prevent"><path d="M 332 372 L 374 372 L 494 372 L 542 372 L 662 372 L 734 320" class="sx-bowtie-c2-line"/>
+<path d="M 734 320 L 725 315 L 725 325 Z" class="sx-bowtie-c2-arrow"/></g>
+<g class="sx-bowtie-c2-line-g" data-line="C1" data-side="mitigate"><path d="M 774 224 L 846 224 L 966 224 L 1014 224 L 1134 224 L 1176 224" class="sx-bowtie-c2-line"/>
+<path d="M 774 224 L 765 219 L 765 229 Z" class="sx-bowtie-c2-arrow"/></g>
+<g class="sx-bowtie-c2-line-g" data-line="C2" data-side="mitigate"><path d="M 774 320 L 846 320 L 966 320 L 1014 320 L 1134 320 L 1176 320" class="sx-bowtie-c2-line"/>
+<path d="M 774 320 L 765 315 L 765 325 Z" class="sx-bowtie-c2-arrow"/></g>
+<line x1="434" y1="194" x2="434" y2="222" class="sx-bowtie-c2-escalation-line"/>
+<line x1="434" y1="266" x2="434" y2="282" class="sx-bowtie-c2-escalation-line"/>
+<g class="sx-bowtie-c2-topevent-g" data-role="topevent"><circle cx="754" cy="272" r="52" class="sx-bowtie-c2-topevent"/>
+<text x="754" y="272" class="sx-bowtie-c2-topevent-label" text-anchor="middle" dominant-baseline="middle"><tspan x="754" dy="-6">Loss of</tspan><tspan x="754" dy="12">containment</tspan></text></g>
+<g class="sx-bowtie-c2-hazard-g" data-role="hazard" data-id="hazard"><rect x="644" y="66" width="220" height="44" rx="5" class="sx-bowtie-c2-hazard"/>
+<text x="754" y="88" class="sx-bowtie-c2-label" text-anchor="middle" dominant-baseline="middle"><tspan x="754" dy="-7">Pressurised vessel — corrosive</tspan><tspan x="754" dy="14">service</tspan></text></g>
+<g class="sx-bowtie-c2-threat-g" data-role="threat" data-id="T1"><rect x="32" y="150" width="132" height="44" rx="5" class="sx-bowtie-c2-threat"/>
+<text x="98" y="172" class="sx-bowtie-c2-label" text-anchor="middle" dominant-baseline="middle"><tspan x="98" dy="-7">Corrosion of</tspan><tspan x="98" dy="14">vessel wall</tspan></text></g>
+<g class="sx-bowtie-c2-barrier-g" data-role="barrier" data-id="T1-b0" data-side="prevent" data-line="T1" data-order="0"><rect x="206" y="150" width="120" height="44" rx="5" class="sx-bowtie-c2-barrier"/>
+<text x="266" y="172" class="sx-bowtie-c2-label" text-anchor="middle" dominant-baseline="middle"><tspan x="266" dy="-7">Corrosion-resistant</tspan><tspan x="266" dy="14">coating</tspan></text></g>
+<g class="sx-bowtie-c2-barrier-g" data-role="barrier" data-id="T1-b1" data-side="prevent" data-line="T1" data-order="1"><rect x="374" y="150" width="120" height="44" rx="5" class="sx-bowtie-c2-barrier"/>
+<text x="434" y="172" class="sx-bowtie-c2-label" text-anchor="middle" dominant-baseline="middle"><tspan x="434" dy="-7">UT thickness</tspan><tspan x="434" dy="14">inspection</tspan></text></g>
+<g class="sx-bowtie-c2-escalation-g" data-role="escalation" data-id="T1-b1-x0" data-line="T1" data-barrier="T1-b1"><rect x="368" y="222" width="132" height="44" rx="5" class="sx-bowtie-c2-escalation"/>
+<text x="434" y="244" class="sx-bowtie-c2-elabel" text-anchor="middle" dominant-baseline="middle"><tspan x="434" dy="-6">Inspection</tspan><tspan x="434" dy="12">interval too long</tspan></text></g>
+<g class="sx-bowtie-c2-ef-barrier-g" data-role="ef-barrier" data-id="T1-b1-x0-b0" data-line="T1" data-escalation="T1-b1-x0"><rect x="374" y="282" width="120" height="44" rx="5" class="sx-bowtie-c2-ef-barrier"/>
+<text x="434" y="304" class="sx-bowtie-c2-elabel" text-anchor="middle" dominant-baseline="middle"><tspan x="434" dy="-6">Risk-based</tspan><tspan x="434" dy="12">inspection scheme</tspan></text></g>
+<g class="sx-bowtie-c2-barrier-g" data-role="barrier" data-id="T1-b2" data-side="prevent" data-line="T1" data-order="2"><rect x="542" y="150" width="120" height="44" rx="5" class="sx-bowtie-c2-barrier"/>
+<text x="602" y="172" class="sx-bowtie-c2-label" text-anchor="middle" dominant-baseline="middle"><tspan x="602" dy="-7">Cathodic</tspan><tspan x="602" dy="14">protection</tspan></text></g>
+<g class="sx-bowtie-c2-threat-g" data-role="threat" data-id="T2"><rect x="200" y="350" width="132" height="44" rx="5" class="sx-bowtie-c2-threat"/>
+<text x="266" y="372" class="sx-bowtie-c2-label" text-anchor="middle" dominant-baseline="middle"><tspan x="266" dy="0">Erosion at elbows</tspan></text></g>
+<g class="sx-bowtie-c2-barrier-g" data-role="barrier" data-id="T2-b0" data-side="prevent" data-line="T2" data-order="0"><rect x="374" y="350" width="120" height="44" rx="5" class="sx-bowtie-c2-barrier"/>
+<text x="434" y="372" class="sx-bowtie-c2-label" text-anchor="middle" dominant-baseline="middle"><tspan x="434" dy="0">Flow-rate limit</tspan></text></g>
+<g class="sx-bowtie-c2-barrier-g" data-role="barrier" data-id="T2-b1" data-side="prevent" data-line="T2" data-order="1"><rect x="542" y="350" width="120" height="44" rx="5" class="sx-bowtie-c2-barrier"/>
+<text x="602" y="372" class="sx-bowtie-c2-label" text-anchor="middle" dominant-baseline="middle"><tspan x="602" dy="-7">Erosion-monitoring</tspan><tspan x="602" dy="14">probes</tspan></text></g>
+<g class="sx-bowtie-c2-consequence-g" data-role="consequence" data-id="C1"><rect x="1176" y="202" width="132" height="44" rx="5" class="sx-bowtie-c2-consequence"/>
+<text x="1242" y="224" class="sx-bowtie-c2-label" text-anchor="middle" dominant-baseline="middle"><tspan x="1242" dy="0">Toxic release</tspan></text></g>
+<g class="sx-bowtie-c2-barrier-g" data-role="barrier" data-id="C1-b0" data-side="mitigate" data-line="C1" data-order="0"><rect x="846" y="202" width="120" height="44" rx="5" class="sx-bowtie-c2-barrier"/>
+<text x="906" y="224" class="sx-bowtie-c2-label" text-anchor="middle" dominant-baseline="middle"><tspan x="906" dy="-7">Gas detection +</tspan><tspan x="906" dy="14">ESD</tspan></text></g>
+<g class="sx-bowtie-c2-barrier-g" data-role="barrier" data-id="C1-b1" data-side="mitigate" data-line="C1" data-order="1"><rect x="1014" y="202" width="120" height="44" rx="5" class="sx-bowtie-c2-barrier"/>
+<text x="1074" y="224" class="sx-bowtie-c2-label" text-anchor="middle" dominant-baseline="middle"><tspan x="1074" dy="-7">Emergency</tspan><tspan x="1074" dy="14">evacuation plan</tspan></text></g>
+<g class="sx-bowtie-c2-consequence-g" data-role="consequence" data-id="C2"><rect x="1176" y="298" width="132" height="44" rx="5" class="sx-bowtie-c2-consequence"/>
+<text x="1242" y="320" class="sx-bowtie-c2-label" text-anchor="middle" dominant-baseline="middle"><tspan x="1242" dy="-7">Environmental</tspan><tspan x="1242" dy="14">harm</tspan></text></g>
+<g class="sx-bowtie-c2-barrier-g" data-role="barrier" data-id="C2-b0" data-side="mitigate" data-line="C2" data-order="0"><rect x="846" y="298" width="120" height="44" rx="5" class="sx-bowtie-c2-barrier"/>
+<text x="906" y="320" class="sx-bowtie-c2-label" text-anchor="middle" dominant-baseline="middle"><tspan x="906" dy="-7">Secondary</tspan><tspan x="906" dy="14">containment bund</tspan></text></g>
+<g class="sx-bowtie-c2-barrier-g" data-role="barrier" data-id="C2-b1" data-side="mitigate" data-line="C2" data-order="1"><rect x="1014" y="298" width="120" height="44" rx="5" class="sx-bowtie-c2-barrier"/>
+<text x="1074" y="320" class="sx-bowtie-c2-label" text-anchor="middle" dominant-baseline="middle"><tspan x="1074" dy="-7">Spill response</tspan><tspan x="1074" dy="14">team</tspan></text></g>
+<g class="sx-bowtie-c2-legend" data-role="legend"><rect x="32" y="432" width="14" height="14" rx="3" class="sx-bowtie-c2-threat"/>
+<text x="52" y="443" class="sx-bowtie-c2-legend-label" font-family="system-ui, -apple-system, sans-serif">Threat</text>
+<rect x="112.4" y="432" width="14" height="14" rx="3" class="sx-bowtie-c2-barrier"/>
+<text x="132.4" y="443" class="sx-bowtie-c2-legend-label" font-family="system-ui, -apple-system, sans-serif">Barrier (prevent / mitigate)</text>
+<rect x="333.6" y="432" width="14" height="14" rx="3" class="sx-bowtie-c2-topevent"/>
+<text x="353.6" y="443" class="sx-bowtie-c2-legend-label" font-family="system-ui, -apple-system, sans-serif">Top event</text>
+<rect x="433.20000000000005" y="432" width="14" height="14" rx="3" class="sx-bowtie-c2-consequence"/>
+<text x="453.20000000000005" y="443" class="sx-bowtie-c2-legend-label" font-family="system-ui, -apple-system, sans-serif">Consequence</text>
+<rect x="545.6" y="432" width="14" height="14" rx="3" class="sx-bowtie-c2-escalation"/>
+<text x="565.6" y="443" class="sx-bowtie-c2-legend-label" font-family="system-ui, -apple-system, sans-serif">Escalation factor</text></g></g></svg></div>
+  <details>
+    <summary>DSL source</summary>
+    <pre>bowtie "Vessel corrosion bowtie"
+hazard "Pressurised vessel — corrosive service"
+topevent "Loss of containment"
+threat "Corrosion of vessel wall"
+  prevent "Corrosion-resistant coating"
+  prevent "UT thickness inspection"
+    escalation "Inspection interval too long"
+      barrier "Risk-based inspection scheme"
+  prevent "Cathodic protection"
+threat "Erosion at elbows"
+  prevent "Flow-rate limit"
+  prevent "Erosion-monitoring probes"
+consequence "Toxic release"
+  mitigate "Gas detection + ESD"
+  mitigate "Emergency evacuation plan"
+consequence "Environmental harm"
+  mitigate "Secondary containment bund"
+  mitigate "Spill response team"</pre>
+  </details>
+</section>
+
+<section class="card" id="aviation">
+  <h2>4 — Aviation SMS (ICAO Doc 9859 style)</h2>
+  <p class="note">A non-process-industry bowtie: runway excursion. Shows the vocabulary travels across domains — same threats/barriers/consequences grammar, an aviation hazard.</p>
+  <div class="svg-wrap"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1212" height="488" viewBox="0 0 1212 488" role="img" aria-label="Runway excursion" data-diagram-type="bowtie"><title>Runway excursion</title>
+<desc>Bowtie: hazard &quot;Aircraft landing in adverse conditions&quot;, top event &quot;Runway excursion on landing&quot;; 3 threats, 2 consequences, 8 barriers.</desc>
+<style>.sx-bowtie-c3-bg { fill: #ffffff; }
+.sx-bowtie-c3-line { fill: none; stroke: #334155; stroke-width: 2; }
+.sx-bowtie-c3-arrow { fill: #334155; stroke: none; }
+.sx-bowtie-c3-escalation-line { fill: none; stroke: #9ca3af; stroke-width: 1; }
+.sx-bowtie-c3-hazard { fill: #fef9c3; stroke: #ca8a04; stroke-width: 2; }
+.sx-bowtie-c3-topevent { fill: #dcfce7; stroke: #16a34a; stroke-width: 3; }
+.sx-bowtie-c3-topevent-ring { fill: none; stroke: #16a34a; stroke-width: 1; }
+.sx-bowtie-c3-threat { fill: #fed7aa; stroke: #ea580c; stroke-width: 2; }
+.sx-bowtie-c3-barrier { fill: #e5e7eb; stroke: #6b7280; stroke-width: 2; }
+.sx-bowtie-c3-consequence { fill: #fecaca; stroke: #dc2626; stroke-width: 2; }
+.sx-bowtie-c3-escalation { fill: #fde68a; stroke: #d97706; stroke-width: 2; }
+.sx-bowtie-c3-ef-barrier { fill: #e5e7eb; stroke: #6b7280; stroke-width: 2; }
+.sx-bowtie-c3-label { fill: #0f172a; stroke: none; font-size: 12px; }
+.sx-bowtie-c3-elabel { fill: #0f172a; stroke: none; font-size: 9px; }
+.sx-bowtie-c3-topevent-label { fill: #0f172a; stroke: none; font-size: 11px; font-weight: 700; }
+.sx-bowtie-c3-title { fill: #0f172a; stroke: none; font-size: 16px; font-weight: 700; }
+.sx-bowtie-c3-legend-label { fill: #0f172a; stroke: none; font-size: 9px; }</style>
+<rect x="0" y="0" width="1212" height="488" class="sx-bowtie-c3-bg"/>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><text x="32" y="38" class="sx-bowtie-c3-title" font-family="system-ui, -apple-system, sans-serif">Runway excursion</text>
+<line x1="586" y1="110" x2="586" y2="216" class="sx-bowtie-c3-line"/>
+<g class="sx-bowtie-c3-line-g" data-line="T1" data-side="prevent"><path d="M 164 172 L 206 172 L 326 172 L 374 172 L 494 172 L 566 220" class="sx-bowtie-c3-line"/>
+<path d="M 566 220 L 557 215 L 557 225 Z" class="sx-bowtie-c3-arrow"/></g>
+<g class="sx-bowtie-c3-line-g" data-line="T2" data-side="prevent"><path d="M 164 268 L 206 268 L 326 268 L 374 268 L 494 268 L 534 268" class="sx-bowtie-c3-line"/>
+<path d="M 534 268 L 525 263 L 525 273 Z" class="sx-bowtie-c3-arrow"/></g>
+<g class="sx-bowtie-c3-line-g" data-line="T3" data-side="prevent"><path d="M 332 364 L 374 364 L 494 364 L 566 316" class="sx-bowtie-c3-line"/>
+<path d="M 566 316 L 557 311 L 557 321 Z" class="sx-bowtie-c3-arrow"/></g>
+<g class="sx-bowtie-c3-line-g" data-line="C1" data-side="mitigate"><path d="M 606 220 L 678 220 L 798 220 L 846 220 L 966 220 L 1008 220" class="sx-bowtie-c3-line"/>
+<path d="M 606 220 L 597 215 L 597 225 Z" class="sx-bowtie-c3-arrow"/></g>
+<g class="sx-bowtie-c3-line-g" data-line="C2" data-side="mitigate"><path d="M 606 316 L 678 316 L 798 316 L 840 316" class="sx-bowtie-c3-line"/>
+<path d="M 606 316 L 597 311 L 597 321 Z" class="sx-bowtie-c3-arrow"/></g>
+<g class="sx-bowtie-c3-topevent-g" data-role="topevent"><circle cx="586" cy="268" r="52" class="sx-bowtie-c3-topevent"/>
+<text x="586" y="268" class="sx-bowtie-c3-topevent-label" text-anchor="middle" dominant-baseline="middle"><tspan x="586" dy="-12">Runway</tspan><tspan x="586" dy="12">excursion</tspan><tspan x="586" dy="12">on landing</tspan></text></g>
+<g class="sx-bowtie-c3-hazard-g" data-role="hazard" data-id="hazard"><rect x="476" y="66" width="220" height="44" rx="5" class="sx-bowtie-c3-hazard"/>
+<text x="586" y="88" class="sx-bowtie-c3-label" text-anchor="middle" dominant-baseline="middle"><tspan x="586" dy="-7">Aircraft landing in adverse</tspan><tspan x="586" dy="14">conditions</tspan></text></g>
+<g class="sx-bowtie-c3-threat-g" data-role="threat" data-id="T1"><rect x="32" y="150" width="132" height="44" rx="5" class="sx-bowtie-c3-threat"/>
+<text x="98" y="172" class="sx-bowtie-c3-label" text-anchor="middle" dominant-baseline="middle"><tspan x="98" dy="0">Unstable approach</tspan></text></g>
+<g class="sx-bowtie-c3-barrier-g" data-role="barrier" data-id="T1-b0" data-side="prevent" data-line="T1" data-order="0"><rect x="206" y="150" width="120" height="44" rx="5" class="sx-bowtie-c3-barrier"/>
+<text x="266" y="172" class="sx-bowtie-c3-label" text-anchor="middle" dominant-baseline="middle"><tspan x="266" dy="-14">Stabilised-approach</tspan><tspan x="266" dy="14">gate (go-around</tspan><tspan x="266" dy="14">policy)</tspan></text></g>
+<g class="sx-bowtie-c3-barrier-g" data-role="barrier" data-id="T1-b1" data-side="prevent" data-line="T1" data-order="1"><rect x="374" y="150" width="120" height="44" rx="5" class="sx-bowtie-c3-barrier"/>
+<text x="434" y="172" class="sx-bowtie-c3-label" text-anchor="middle" dominant-baseline="middle"><tspan x="434" dy="-14">Approach</tspan><tspan x="434" dy="14">monitoring +</tspan><tspan x="434" dy="14">callouts</tspan></text></g>
+<g class="sx-bowtie-c3-threat-g" data-role="threat" data-id="T2"><rect x="32" y="246" width="132" height="44" rx="5" class="sx-bowtie-c3-threat"/>
+<text x="98" y="268" class="sx-bowtie-c3-label" text-anchor="middle" dominant-baseline="middle"><tspan x="98" dy="-7">Contaminated</tspan><tspan x="98" dy="14">runway</tspan></text></g>
+<g class="sx-bowtie-c3-barrier-g" data-role="barrier" data-id="T2-b0" data-side="prevent" data-line="T2" data-order="0"><rect x="206" y="246" width="120" height="44" rx="5" class="sx-bowtie-c3-barrier"/>
+<text x="266" y="268" class="sx-bowtie-c3-label" text-anchor="middle" dominant-baseline="middle"><tspan x="266" dy="-7">Runway condition</tspan><tspan x="266" dy="14">reporting (RCR)</tspan></text></g>
+<g class="sx-bowtie-c3-barrier-g" data-role="barrier" data-id="T2-b1" data-side="prevent" data-line="T2" data-order="1"><rect x="374" y="246" width="120" height="44" rx="5" class="sx-bowtie-c3-barrier"/>
+<text x="434" y="268" class="sx-bowtie-c3-label" text-anchor="middle" dominant-baseline="middle"><tspan x="434" dy="-14">Landing</tspan><tspan x="434" dy="14">performance</tspan><tspan x="434" dy="14">assessment</tspan></text></g>
+<g class="sx-bowtie-c3-threat-g" data-role="threat" data-id="T3"><rect x="200" y="342" width="132" height="44" rx="5" class="sx-bowtie-c3-threat"/>
+<text x="266" y="364" class="sx-bowtie-c3-label" text-anchor="middle" dominant-baseline="middle"><tspan x="266" dy="-7">Excessive landing</tspan><tspan x="266" dy="14">speed</tspan></text></g>
+<g class="sx-bowtie-c3-barrier-g" data-role="barrier" data-id="T3-b0" data-side="prevent" data-line="T3" data-order="0"><rect x="374" y="342" width="120" height="44" rx="5" class="sx-bowtie-c3-barrier"/>
+<text x="434" y="364" class="sx-bowtie-c3-label" text-anchor="middle" dominant-baseline="middle"><tspan x="434" dy="-7">Speed/energy</tspan><tspan x="434" dy="14">management SOP</tspan></text></g>
+<g class="sx-bowtie-c3-consequence-g" data-role="consequence" data-id="C1"><rect x="1008" y="198" width="132" height="44" rx="5" class="sx-bowtie-c3-consequence"/>
+<text x="1074" y="220" class="sx-bowtie-c3-label" text-anchor="middle" dominant-baseline="middle"><tspan x="1074" dy="0">Hull damage</tspan></text></g>
+<g class="sx-bowtie-c3-barrier-g" data-role="barrier" data-id="C1-b0" data-side="mitigate" data-line="C1" data-order="0"><rect x="678" y="198" width="120" height="44" rx="5" class="sx-bowtie-c3-barrier"/>
+<text x="738" y="220" class="sx-bowtie-c3-label" text-anchor="middle" dominant-baseline="middle"><tspan x="738" dy="-7">Runway end safety</tspan><tspan x="738" dy="14">area (RESA)</tspan></text></g>
+<g class="sx-bowtie-c3-barrier-g" data-role="barrier" data-id="C1-b1" data-side="mitigate" data-line="C1" data-order="1"><rect x="846" y="198" width="120" height="44" rx="5" class="sx-bowtie-c3-barrier"/>
+<text x="906" y="220" class="sx-bowtie-c3-label" text-anchor="middle" dominant-baseline="middle"><tspan x="906" dy="-7">Arrestor bed</tspan><tspan x="906" dy="14">(EMAS)</tspan></text></g>
+<g class="sx-bowtie-c3-consequence-g" data-role="consequence" data-id="C2"><rect x="840" y="294" width="132" height="44" rx="5" class="sx-bowtie-c3-consequence"/>
+<text x="906" y="316" class="sx-bowtie-c3-label" text-anchor="middle" dominant-baseline="middle"><tspan x="906" dy="-7">Injuries /</tspan><tspan x="906" dy="14">fatalities</tspan></text></g>
+<g class="sx-bowtie-c3-barrier-g" data-role="barrier" data-id="C2-b0" data-side="mitigate" data-line="C2" data-order="0"><rect x="678" y="294" width="120" height="44" rx="5" class="sx-bowtie-c3-barrier"/>
+<text x="738" y="316" class="sx-bowtie-c3-label" text-anchor="middle" dominant-baseline="middle"><tspan x="738" dy="-14">Emergency</tspan><tspan x="738" dy="14">response +</tspan><tspan x="738" dy="14">evacuation</tspan></text></g>
+<g class="sx-bowtie-c3-legend" data-role="legend"><rect x="32" y="424" width="14" height="14" rx="3" class="sx-bowtie-c3-threat"/>
+<text x="52" y="435" class="sx-bowtie-c3-legend-label" font-family="system-ui, -apple-system, sans-serif">Threat</text>
+<rect x="112.4" y="424" width="14" height="14" rx="3" class="sx-bowtie-c3-barrier"/>
+<text x="132.4" y="435" class="sx-bowtie-c3-legend-label" font-family="system-ui, -apple-system, sans-serif">Barrier (prevent / mitigate)</text>
+<rect x="333.6" y="424" width="14" height="14" rx="3" class="sx-bowtie-c3-topevent"/>
+<text x="353.6" y="435" class="sx-bowtie-c3-legend-label" font-family="system-ui, -apple-system, sans-serif">Top event</text>
+<rect x="433.20000000000005" y="424" width="14" height="14" rx="3" class="sx-bowtie-c3-consequence"/>
+<text x="453.20000000000005" y="435" class="sx-bowtie-c3-legend-label" font-family="system-ui, -apple-system, sans-serif">Consequence</text></g></g></svg></div>
+  <details>
+    <summary>DSL source</summary>
+    <pre>bowtie "Runway excursion"
+hazard "Aircraft landing in adverse conditions"
+topevent "Runway excursion on landing"
+threat "Unstable approach"
+  prevent "Stabilised-approach gate (go-around policy)"
+  prevent "Approach monitoring + callouts"
+threat "Contaminated runway"
+  prevent "Runway condition reporting (RCR)"
+  prevent "Landing performance assessment"
+threat "Excessive landing speed"
+  prevent "Speed/energy management SOP"
+consequence "Hull damage"
+  mitigate "Runway end safety area (RESA)"
+  mitigate "Arrestor bed (EMAS)"
+consequence "Injuries / fatalities"
+  mitigate "Emergency response + evacuation"</pre>
+  </details>
+</section>
+
+<section class="card" id="full">
+  <h2>5 — Full vocabulary, both wings degraded</h2>
+  <p class="note">Escalation factors on both a preventative and a mitigative barrier (mitigative barriers can also be degraded). Exercises asymmetric wings — the taller left wing sets the height, the right wing is centred within it.</p>
+  <div class="svg-wrap"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1212" height="496" viewBox="0 0 1212 496" role="img" aria-label="Hot work — fire bowtie" data-diagram-type="bowtie"><title>Hot work — fire bowtie</title>
+<desc>Bowtie: hazard &quot;Hot work near flammable materials&quot;, top event &quot;Ignition of flammable atmosphere&quot;; 2 threats, 2 consequences, 6 barriers, 2 escalation factors.</desc>
+<style>.sx-bowtie-c4-bg { fill: #ffffff; }
+.sx-bowtie-c4-line { fill: none; stroke: #334155; stroke-width: 2; }
+.sx-bowtie-c4-arrow { fill: #334155; stroke: none; }
+.sx-bowtie-c4-escalation-line { fill: none; stroke: #9ca3af; stroke-width: 1; }
+.sx-bowtie-c4-hazard { fill: #fef9c3; stroke: #ca8a04; stroke-width: 2; }
+.sx-bowtie-c4-topevent { fill: #dcfce7; stroke: #16a34a; stroke-width: 3; }
+.sx-bowtie-c4-topevent-ring { fill: none; stroke: #16a34a; stroke-width: 1; }
+.sx-bowtie-c4-threat { fill: #fed7aa; stroke: #ea580c; stroke-width: 2; }
+.sx-bowtie-c4-barrier { fill: #e5e7eb; stroke: #6b7280; stroke-width: 2; }
+.sx-bowtie-c4-consequence { fill: #fecaca; stroke: #dc2626; stroke-width: 2; }
+.sx-bowtie-c4-escalation { fill: #fde68a; stroke: #d97706; stroke-width: 2; }
+.sx-bowtie-c4-ef-barrier { fill: #e5e7eb; stroke: #6b7280; stroke-width: 2; }
+.sx-bowtie-c4-label { fill: #0f172a; stroke: none; font-size: 12px; }
+.sx-bowtie-c4-elabel { fill: #0f172a; stroke: none; font-size: 9px; }
+.sx-bowtie-c4-topevent-label { fill: #0f172a; stroke: none; font-size: 11px; font-weight: 700; }
+.sx-bowtie-c4-title { fill: #0f172a; stroke: none; font-size: 16px; font-weight: 700; }
+.sx-bowtie-c4-legend-label { fill: #0f172a; stroke: none; font-size: 9px; }</style>
+<rect x="0" y="0" width="1212" height="496" class="sx-bowtie-c4-bg"/>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><text x="32" y="38" class="sx-bowtie-c4-title" font-family="system-ui, -apple-system, sans-serif">Hot work — fire bowtie</text>
+<line x1="586" y1="110" x2="586" y2="220" class="sx-bowtie-c4-line"/>
+<g class="sx-bowtie-c4-line-g" data-line="T1" data-side="prevent"><path d="M 164 172 L 206 172 L 326 172 L 374 172 L 494 172 L 566 224" class="sx-bowtie-c4-line"/>
+<path d="M 566 224 L 557 219 L 557 229 Z" class="sx-bowtie-c4-arrow"/></g>
+<g class="sx-bowtie-c4-line-g" data-line="T2" data-side="prevent"><path d="M 332 372 L 374 372 L 494 372 L 566 320" class="sx-bowtie-c4-line"/>
+<path d="M 566 320 L 557 315 L 557 325 Z" class="sx-bowtie-c4-arrow"/></g>
+<g class="sx-bowtie-c4-line-g" data-line="C1" data-side="mitigate"><path d="M 606 224 L 678 172 L 798 172 L 840 172" class="sx-bowtie-c4-line"/>
+<path d="M 606 224 L 597 219 L 597 229 Z" class="sx-bowtie-c4-arrow"/></g>
+<g class="sx-bowtie-c4-line-g" data-line="C2" data-side="mitigate"><path d="M 606 320 L 678 372 L 798 372 L 846 372 L 966 372 L 1008 372" class="sx-bowtie-c4-line"/>
+<path d="M 606 320 L 597 315 L 597 325 Z" class="sx-bowtie-c4-arrow"/></g>
+<line x1="434" y1="194" x2="434" y2="222" class="sx-bowtie-c4-escalation-line"/>
+<line x1="434" y1="266" x2="434" y2="282" class="sx-bowtie-c4-escalation-line"/>
+<line x1="738" y1="194" x2="738" y2="222" class="sx-bowtie-c4-escalation-line"/>
+<line x1="738" y1="266" x2="738" y2="282" class="sx-bowtie-c4-escalation-line"/>
+<g class="sx-bowtie-c4-topevent-g" data-role="topevent"><circle cx="586" cy="272" r="52" class="sx-bowtie-c4-topevent"/>
+<text x="586" y="272" class="sx-bowtie-c4-topevent-label" text-anchor="middle" dominant-baseline="middle"><tspan x="586" dy="-12">Ignition of</tspan><tspan x="586" dy="12">flammable</tspan><tspan x="586" dy="12">atmosphere</tspan></text></g>
+<g class="sx-bowtie-c4-hazard-g" data-role="hazard" data-id="hazard"><rect x="476" y="66" width="220" height="44" rx="5" class="sx-bowtie-c4-hazard"/>
+<text x="586" y="88" class="sx-bowtie-c4-label" text-anchor="middle" dominant-baseline="middle"><tspan x="586" dy="-7">Hot work near flammable</tspan><tspan x="586" dy="14">materials</tspan></text></g>
+<g class="sx-bowtie-c4-threat-g" data-role="threat" data-id="T1"><rect x="32" y="150" width="132" height="44" rx="5" class="sx-bowtie-c4-threat"/>
+<text x="98" y="172" class="sx-bowtie-c4-label" text-anchor="middle" dominant-baseline="middle"><tspan x="98" dy="0">Sparks / hot slag</tspan></text></g>
+<g class="sx-bowtie-c4-barrier-g" data-role="barrier" data-id="T1-b0" data-side="prevent" data-line="T1" data-order="0"><rect x="206" y="150" width="120" height="44" rx="5" class="sx-bowtie-c4-barrier"/>
+<text x="266" y="172" class="sx-bowtie-c4-label" text-anchor="middle" dominant-baseline="middle"><tspan x="266" dy="0">Hot-work permit</tspan></text></g>
+<g class="sx-bowtie-c4-barrier-g" data-role="barrier" data-id="T1-b1" data-side="prevent" data-line="T1" data-order="1"><rect x="374" y="150" width="120" height="44" rx="5" class="sx-bowtie-c4-barrier"/>
+<text x="434" y="172" class="sx-bowtie-c4-label" text-anchor="middle" dominant-baseline="middle"><tspan x="434" dy="0">Fire watch</tspan></text></g>
+<g class="sx-bowtie-c4-escalation-g" data-role="escalation" data-id="T1-b1-x0" data-line="T1" data-barrier="T1-b1"><rect x="368" y="222" width="132" height="44" rx="5" class="sx-bowtie-c4-escalation"/>
+<text x="434" y="244" class="sx-bowtie-c4-elabel" text-anchor="middle" dominant-baseline="middle"><tspan x="434" dy="-6">Fire watch leaves</tspan><tspan x="434" dy="12">post early</tspan></text></g>
+<g class="sx-bowtie-c4-ef-barrier-g" data-role="ef-barrier" data-id="T1-b1-x0-b0" data-line="T1" data-escalation="T1-b1-x0"><rect x="374" y="282" width="120" height="44" rx="5" class="sx-bowtie-c4-ef-barrier"/>
+<text x="434" y="304" class="sx-bowtie-c4-elabel" text-anchor="middle" dominant-baseline="middle"><tspan x="434" dy="-12">Post-work</tspan><tspan x="434" dy="12">monitoring period</tspan><tspan x="434" dy="12">(60 min)</tspan></text></g>
+<g class="sx-bowtie-c4-threat-g" data-role="threat" data-id="T2"><rect x="200" y="350" width="132" height="44" rx="5" class="sx-bowtie-c4-threat"/>
+<text x="266" y="372" class="sx-bowtie-c4-label" text-anchor="middle" dominant-baseline="middle"><tspan x="266" dy="0">Static discharge</tspan></text></g>
+<g class="sx-bowtie-c4-barrier-g" data-role="barrier" data-id="T2-b0" data-side="prevent" data-line="T2" data-order="0"><rect x="374" y="350" width="120" height="44" rx="5" class="sx-bowtie-c4-barrier"/>
+<text x="434" y="372" class="sx-bowtie-c4-label" text-anchor="middle" dominant-baseline="middle"><tspan x="434" dy="-7">Bonding +</tspan><tspan x="434" dy="14">grounding</tspan></text></g>
+<g class="sx-bowtie-c4-consequence-g" data-role="consequence" data-id="C1"><rect x="840" y="150" width="132" height="44" rx="5" class="sx-bowtie-c4-consequence"/>
+<text x="906" y="172" class="sx-bowtie-c4-label" text-anchor="middle" dominant-baseline="middle"><tspan x="906" dy="0">Flash fire</tspan></text></g>
+<g class="sx-bowtie-c4-barrier-g" data-role="barrier" data-id="C1-b0" data-side="mitigate" data-line="C1" data-order="0"><rect x="678" y="150" width="120" height="44" rx="5" class="sx-bowtie-c4-barrier"/>
+<text x="738" y="172" class="sx-bowtie-c4-label" text-anchor="middle" dominant-baseline="middle"><tspan x="738" dy="-7">Fixed fire</tspan><tspan x="738" dy="14">suppression</tspan></text></g>
+<g class="sx-bowtie-c4-escalation-g" data-role="escalation" data-id="C1-b0-x0" data-line="C1" data-barrier="C1-b0"><rect x="672" y="222" width="132" height="44" rx="5" class="sx-bowtie-c4-escalation"/>
+<text x="738" y="244" class="sx-bowtie-c4-elabel" text-anchor="middle" dominant-baseline="middle"><tspan x="738" dy="-12">Suppression</tspan><tspan x="738" dy="12">isolated for</tspan><tspan x="738" dy="12">maintenance</tspan></text></g>
+<g class="sx-bowtie-c4-ef-barrier-g" data-role="ef-barrier" data-id="C1-b0-x0-b0" data-line="C1" data-escalation="C1-b0-x0"><rect x="678" y="282" width="120" height="44" rx="5" class="sx-bowtie-c4-ef-barrier"/>
+<text x="738" y="304" class="sx-bowtie-c4-elabel" text-anchor="middle" dominant-baseline="middle"><tspan x="738" dy="-12">Management-of-change</tspan><tspan x="738" dy="12">+ impairment</tspan><tspan x="738" dy="12">register</tspan></text></g>
+<g class="sx-bowtie-c4-consequence-g" data-role="consequence" data-id="C2"><rect x="1008" y="350" width="132" height="44" rx="5" class="sx-bowtie-c4-consequence"/>
+<text x="1074" y="372" class="sx-bowtie-c4-label" text-anchor="middle" dominant-baseline="middle"><tspan x="1074" dy="0">Asset loss</tspan></text></g>
+<g class="sx-bowtie-c4-barrier-g" data-role="barrier" data-id="C2-b0" data-side="mitigate" data-line="C2" data-order="0"><rect x="678" y="350" width="120" height="44" rx="5" class="sx-bowtie-c4-barrier"/>
+<text x="738" y="372" class="sx-bowtie-c4-label" text-anchor="middle" dominant-baseline="middle"><tspan x="738" dy="-7">Fire-rated</tspan><tspan x="738" dy="14">separation</tspan></text></g>
+<g class="sx-bowtie-c4-barrier-g" data-role="barrier" data-id="C2-b1" data-side="mitigate" data-line="C2" data-order="1"><rect x="846" y="350" width="120" height="44" rx="5" class="sx-bowtie-c4-barrier"/>
+<text x="906" y="372" class="sx-bowtie-c4-label" text-anchor="middle" dominant-baseline="middle"><tspan x="906" dy="-14">Insurance +</tspan><tspan x="906" dy="14">business-continuity</tspan><tspan x="906" dy="14">plan</tspan></text></g>
+<g class="sx-bowtie-c4-legend" data-role="legend"><rect x="32" y="432" width="14" height="14" rx="3" class="sx-bowtie-c4-threat"/>
+<text x="52" y="443" class="sx-bowtie-c4-legend-label" font-family="system-ui, -apple-system, sans-serif">Threat</text>
+<rect x="112.4" y="432" width="14" height="14" rx="3" class="sx-bowtie-c4-barrier"/>
+<text x="132.4" y="443" class="sx-bowtie-c4-legend-label" font-family="system-ui, -apple-system, sans-serif">Barrier (prevent / mitigate)</text>
+<rect x="333.6" y="432" width="14" height="14" rx="3" class="sx-bowtie-c4-topevent"/>
+<text x="353.6" y="443" class="sx-bowtie-c4-legend-label" font-family="system-ui, -apple-system, sans-serif">Top event</text>
+<rect x="433.20000000000005" y="432" width="14" height="14" rx="3" class="sx-bowtie-c4-consequence"/>
+<text x="453.20000000000005" y="443" class="sx-bowtie-c4-legend-label" font-family="system-ui, -apple-system, sans-serif">Consequence</text>
+<rect x="545.6" y="432" width="14" height="14" rx="3" class="sx-bowtie-c4-escalation"/>
+<text x="565.6" y="443" class="sx-bowtie-c4-legend-label" font-family="system-ui, -apple-system, sans-serif">Escalation factor</text></g></g></svg></div>
+  <details>
+    <summary>DSL source</summary>
+    <pre>bowtie "Hot work — fire bowtie"
+hazard "Hot work near flammable materials"
+topevent "Ignition of flammable atmosphere"
+threat "Sparks / hot slag"
+  prevent "Hot-work permit"
+  prevent "Fire watch"
+    escalation "Fire watch leaves post early"
+      barrier "Post-work monitoring period (60 min)"
+threat "Static discharge"
+  prevent "Bonding + grounding"
+consequence "Flash fire"
+  mitigate "Fixed fire suppression"
+    escalation "Suppression isolated for maintenance"
+      barrier "Management-of-change + impairment register"
+consequence "Asset loss"
+  mitigate "Fire-rated separation"
+  mitigate "Insurance + business-continuity plan"</pre>
+  </details>
+</section>
+
+<section class="card" id="cjk">
+  <h2>6 — CJK labels (corner quotes)</h2>
+  <p class="note">Made-for-AI: CJK corner quotes 「…」 are accepted everywhere straight quotes are, since LLMs frequently emit them for Chinese labels. Multi-barrier chains keep the bowtie shape; the layout is identical to the Latin form.</p>
+  <div class="svg-wrap"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1212" height="392" viewBox="0 0 1212 392" role="img" aria-label="高处坠落风险" data-diagram-type="bowtie"><title>高处坠落风险</title>
+<desc>Bowtie: hazard &quot;高处作业&quot;, top event &quot;人员从高处坠落&quot;; 2 threats, 2 consequences, 8 barriers.</desc>
+<style>.sx-bowtie-c5-bg { fill: #ffffff; }
+.sx-bowtie-c5-line { fill: none; stroke: #334155; stroke-width: 2; }
+.sx-bowtie-c5-arrow { fill: #334155; stroke: none; }
+.sx-bowtie-c5-escalation-line { fill: none; stroke: #9ca3af; stroke-width: 1; }
+.sx-bowtie-c5-hazard { fill: #fef9c3; stroke: #ca8a04; stroke-width: 2; }
+.sx-bowtie-c5-topevent { fill: #dcfce7; stroke: #16a34a; stroke-width: 3; }
+.sx-bowtie-c5-topevent-ring { fill: none; stroke: #16a34a; stroke-width: 1; }
+.sx-bowtie-c5-threat { fill: #fed7aa; stroke: #ea580c; stroke-width: 2; }
+.sx-bowtie-c5-barrier { fill: #e5e7eb; stroke: #6b7280; stroke-width: 2; }
+.sx-bowtie-c5-consequence { fill: #fecaca; stroke: #dc2626; stroke-width: 2; }
+.sx-bowtie-c5-escalation { fill: #fde68a; stroke: #d97706; stroke-width: 2; }
+.sx-bowtie-c5-ef-barrier { fill: #e5e7eb; stroke: #6b7280; stroke-width: 2; }
+.sx-bowtie-c5-label { fill: #0f172a; stroke: none; font-size: 12px; }
+.sx-bowtie-c5-elabel { fill: #0f172a; stroke: none; font-size: 9px; }
+.sx-bowtie-c5-topevent-label { fill: #0f172a; stroke: none; font-size: 11px; font-weight: 700; }
+.sx-bowtie-c5-title { fill: #0f172a; stroke: none; font-size: 16px; font-weight: 700; }
+.sx-bowtie-c5-legend-label { fill: #0f172a; stroke: none; font-size: 9px; }</style>
+<rect x="0" y="0" width="1212" height="392" class="sx-bowtie-c5-bg"/>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><text x="32" y="38" class="sx-bowtie-c5-title" font-family="system-ui, -apple-system, sans-serif">高处坠落风险</text>
+<line x1="586" y1="110" x2="586" y2="168" class="sx-bowtie-c5-line"/>
+<g class="sx-bowtie-c5-line-g" data-line="T1" data-side="prevent"><path d="M 164 172 L 206 172 L 326 172 L 374 172 L 494 172 L 566 172" class="sx-bowtie-c5-line"/>
+<path d="M 566 172 L 557 167 L 557 177 Z" class="sx-bowtie-c5-arrow"/></g>
+<g class="sx-bowtie-c5-line-g" data-line="T2" data-side="prevent"><path d="M 164 268 L 206 268 L 326 268 L 374 268 L 494 268 L 566 268" class="sx-bowtie-c5-line"/>
+<path d="M 566 268 L 557 263 L 557 273 Z" class="sx-bowtie-c5-arrow"/></g>
+<g class="sx-bowtie-c5-line-g" data-line="C1" data-side="mitigate"><path d="M 606 172 L 678 172 L 798 172 L 846 172 L 966 172 L 1008 172" class="sx-bowtie-c5-line"/>
+<path d="M 606 172 L 597 167 L 597 177 Z" class="sx-bowtie-c5-arrow"/></g>
+<g class="sx-bowtie-c5-line-g" data-line="C2" data-side="mitigate"><path d="M 606 268 L 678 268 L 798 268 L 846 268 L 966 268 L 1008 268" class="sx-bowtie-c5-line"/>
+<path d="M 606 268 L 597 263 L 597 273 Z" class="sx-bowtie-c5-arrow"/></g>
+<g class="sx-bowtie-c5-topevent-g" data-role="topevent"><circle cx="586" cy="220" r="52" class="sx-bowtie-c5-topevent"/>
+<text x="586" y="220" class="sx-bowtie-c5-topevent-label" text-anchor="middle" dominant-baseline="middle"><tspan x="586" dy="0">人员从高处坠落</tspan></text></g>
+<g class="sx-bowtie-c5-hazard-g" data-role="hazard" data-id="hazard"><rect x="476" y="66" width="220" height="44" rx="5" class="sx-bowtie-c5-hazard"/>
+<text x="586" y="88" class="sx-bowtie-c5-label" text-anchor="middle" dominant-baseline="middle"><tspan x="586" dy="0">高处作业</tspan></text></g>
+<g class="sx-bowtie-c5-threat-g" data-role="threat" data-id="T1"><rect x="32" y="150" width="132" height="44" rx="5" class="sx-bowtie-c5-threat"/>
+<text x="98" y="172" class="sx-bowtie-c5-label" text-anchor="middle" dominant-baseline="middle"><tspan x="98" dy="0">护栏被移除</tspan></text></g>
+<g class="sx-bowtie-c5-barrier-g" data-role="barrier" data-id="T1-b0" data-side="prevent" data-line="T1" data-order="0"><rect x="206" y="150" width="120" height="44" rx="5" class="sx-bowtie-c5-barrier"/>
+<text x="266" y="172" class="sx-bowtie-c5-label" text-anchor="middle" dominant-baseline="middle"><tspan x="266" dy="0">作业许可制度</tspan></text></g>
+<g class="sx-bowtie-c5-barrier-g" data-role="barrier" data-id="T1-b1" data-side="prevent" data-line="T1" data-order="1"><rect x="374" y="150" width="120" height="44" rx="5" class="sx-bowtie-c5-barrier"/>
+<text x="434" y="172" class="sx-bowtie-c5-label" text-anchor="middle" dominant-baseline="middle"><tspan x="434" dy="0">临时边缘防护</tspan></text></g>
+<g class="sx-bowtie-c5-threat-g" data-role="threat" data-id="T2"><rect x="32" y="246" width="132" height="44" rx="5" class="sx-bowtie-c5-threat"/>
+<text x="98" y="268" class="sx-bowtie-c5-label" text-anchor="middle" dominant-baseline="middle"><tspan x="98" dy="0">屋面易碎</tspan></text></g>
+<g class="sx-bowtie-c5-barrier-g" data-role="barrier" data-id="T2-b0" data-side="prevent" data-line="T2" data-order="0"><rect x="206" y="246" width="120" height="44" rx="5" class="sx-bowtie-c5-barrier"/>
+<text x="266" y="268" class="sx-bowtie-c5-label" text-anchor="middle" dominant-baseline="middle"><tspan x="266" dy="0">爬板与警示标识</tspan></text></g>
+<g class="sx-bowtie-c5-barrier-g" data-role="barrier" data-id="T2-b1" data-side="prevent" data-line="T2" data-order="1"><rect x="374" y="246" width="120" height="44" rx="5" class="sx-bowtie-c5-barrier"/>
+<text x="434" y="268" class="sx-bowtie-c5-label" text-anchor="middle" dominant-baseline="middle"><tspan x="434" dy="0">生命线与安全带</tspan></text></g>
+<g class="sx-bowtie-c5-consequence-g" data-role="consequence" data-id="C1"><rect x="1008" y="150" width="132" height="44" rx="5" class="sx-bowtie-c5-consequence"/>
+<text x="1074" y="172" class="sx-bowtie-c5-label" text-anchor="middle" dominant-baseline="middle"><tspan x="1074" dy="0">死亡</tspan></text></g>
+<g class="sx-bowtie-c5-barrier-g" data-role="barrier" data-id="C1-b0" data-side="mitigate" data-line="C1" data-order="0"><rect x="678" y="150" width="120" height="44" rx="5" class="sx-bowtie-c5-barrier"/>
+<text x="738" y="172" class="sx-bowtie-c5-label" text-anchor="middle" dominant-baseline="middle"><tspan x="738" dy="0">防坠落安全带</tspan></text></g>
+<g class="sx-bowtie-c5-barrier-g" data-role="barrier" data-id="C1-b1" data-side="mitigate" data-line="C1" data-order="1"><rect x="846" y="150" width="120" height="44" rx="5" class="sx-bowtie-c5-barrier"/>
+<text x="906" y="172" class="sx-bowtie-c5-label" text-anchor="middle" dominant-baseline="middle"><tspan x="906" dy="0">救援与急救计划</tspan></text></g>
+<g class="sx-bowtie-c5-consequence-g" data-role="consequence" data-id="C2"><rect x="1008" y="246" width="132" height="44" rx="5" class="sx-bowtie-c5-consequence"/>
+<text x="1074" y="268" class="sx-bowtie-c5-label" text-anchor="middle" dominant-baseline="middle"><tspan x="1074" dy="0">重伤</tspan></text></g>
+<g class="sx-bowtie-c5-barrier-g" data-role="barrier" data-id="C2-b0" data-side="mitigate" data-line="C2" data-order="0"><rect x="678" y="246" width="120" height="44" rx="5" class="sx-bowtie-c5-barrier"/>
+<text x="738" y="268" class="sx-bowtie-c5-label" text-anchor="middle" dominant-baseline="middle"><tspan x="738" dy="0">下方安全网</tspan></text></g>
+<g class="sx-bowtie-c5-barrier-g" data-role="barrier" data-id="C2-b1" data-side="mitigate" data-line="C2" data-order="1"><rect x="846" y="246" width="120" height="44" rx="5" class="sx-bowtie-c5-barrier"/>
+<text x="906" y="268" class="sx-bowtie-c5-label" text-anchor="middle" dominant-baseline="middle"><tspan x="906" dy="0">现场急救与送医</tspan></text></g>
+<g class="sx-bowtie-c5-legend" data-role="legend"><rect x="32" y="328" width="14" height="14" rx="3" class="sx-bowtie-c5-threat"/>
+<text x="52" y="339" class="sx-bowtie-c5-legend-label" font-family="system-ui, -apple-system, sans-serif">Threat</text>
+<rect x="112.4" y="328" width="14" height="14" rx="3" class="sx-bowtie-c5-barrier"/>
+<text x="132.4" y="339" class="sx-bowtie-c5-legend-label" font-family="system-ui, -apple-system, sans-serif">Barrier (prevent / mitigate)</text>
+<rect x="333.6" y="328" width="14" height="14" rx="3" class="sx-bowtie-c5-topevent"/>
+<text x="353.6" y="339" class="sx-bowtie-c5-legend-label" font-family="system-ui, -apple-system, sans-serif">Top event</text>
+<rect x="433.20000000000005" y="328" width="14" height="14" rx="3" class="sx-bowtie-c5-consequence"/>
+<text x="453.20000000000005" y="339" class="sx-bowtie-c5-legend-label" font-family="system-ui, -apple-system, sans-serif">Consequence</text></g></g></svg></div>
+  <details>
+    <summary>DSL source</summary>
+    <pre>bowtie 「高处坠落风险」
+hazard 「高处作业」
+topevent 「人员从高处坠落」
+threat 「护栏被移除」
+  prevent 「作业许可制度」
+  prevent 「临时边缘防护」
+threat 「屋面易碎」
+  prevent 「爬板与警示标识」
+  prevent 「生命线与安全带」
+consequence 「死亡」
+  mitigate 「防坠落安全带」
+  mitigate 「救援与急救计划」
+consequence 「重伤」
+  mitigate 「下方安全网」
+  mitigate 「现场急救与送医」</pre>
+  </details>
+</section>
+
+<section class="card" id="mono">
+  <h2>7 — Monochrome (regulator-print look)</h2>
+  <p class="note">The same diagram as #3 under theme: monochrome — colour can't carry meaning in a black-and-white regulator submission, so element distinction rides on shape/border + position: the knot gets a doubled ring, escalation factors a dashed border, and the threat=left / consequence=right positions disambiguate the rest.</p>
+  <div class="svg-wrap"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1380" height="356" viewBox="0 0 1380 356" role="img" aria-label="Working at height" data-diagram-type="bowtie"><title>Working at height</title>
+<desc>Bowtie: hazard &quot;Working at height&quot;, top event &quot;Person falls from height&quot;; 1 threat, 1 consequence, 5 barriers.</desc>
+<style>.sx-bowtie-c6-bg { fill: #ffffff; }
+.sx-bowtie-c6-line { fill: none; stroke: #000000; stroke-width: 2; }
+.sx-bowtie-c6-arrow { fill: #000000; stroke: none; }
+.sx-bowtie-c6-escalation-line { fill: none; stroke: #000000; stroke-width: 1; stroke-dasharray: 4 3; }
+.sx-bowtie-c6-hazard { fill: #ffffff; stroke: #000000; stroke-width: 2; }
+.sx-bowtie-c6-topevent { fill: #ffffff; stroke: #000000; stroke-width: 3; }
+.sx-bowtie-c6-topevent-ring { fill: none; stroke: #000000; stroke-width: 1; }
+.sx-bowtie-c6-threat { fill: #ffffff; stroke: #000000; stroke-width: 2; }
+.sx-bowtie-c6-barrier { fill: #f2f2f2; stroke: #000000; stroke-width: 2; }
+.sx-bowtie-c6-consequence { fill: #ffffff; stroke: #000000; stroke-width: 2; }
+.sx-bowtie-c6-escalation { fill: #ffffff; stroke: #000000; stroke-width: 2; stroke-dasharray: 5 3; }
+.sx-bowtie-c6-ef-barrier { fill: #f2f2f2; stroke: #000000; stroke-width: 2; }
+.sx-bowtie-c6-label { fill: #000000; stroke: none; font-size: 12px; }
+.sx-bowtie-c6-elabel { fill: #000000; stroke: none; font-size: 9px; }
+.sx-bowtie-c6-topevent-label { fill: #000000; stroke: none; font-size: 11px; font-weight: 700; }
+.sx-bowtie-c6-title { fill: #000000; stroke: none; font-size: 16px; font-weight: 700; }
+.sx-bowtie-c6-legend-label { fill: #000000; stroke: none; font-size: 9px; }</style>
+<rect x="0" y="0" width="1380" height="356" class="sx-bowtie-c6-bg"/>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><text x="32" y="38" class="sx-bowtie-c6-title" font-family="system-ui, -apple-system, sans-serif">Working at height</text>
+<line x1="754" y1="110" x2="754" y2="150" class="sx-bowtie-c6-line"/>
+<g class="sx-bowtie-c6-line-g" data-line="T1" data-side="prevent"><path d="M 164 202 L 206 202 L 326 202 L 374 202 L 494 202 L 542 202 L 662 202 L 702 202" class="sx-bowtie-c6-line"/>
+<path d="M 702 202 L 693 197 L 693 207 Z" class="sx-bowtie-c6-arrow"/></g>
+<g class="sx-bowtie-c6-line-g" data-line="C1" data-side="mitigate"><path d="M 806 202 L 846 202 L 966 202 L 1014 202 L 1134 202 L 1176 202" class="sx-bowtie-c6-line"/>
+<path d="M 806 202 L 797 197 L 797 207 Z" class="sx-bowtie-c6-arrow"/></g>
+<g class="sx-bowtie-c6-topevent-g" data-role="topevent"><circle cx="754" cy="202" r="52" class="sx-bowtie-c6-topevent"/>
+<circle cx="754" cy="202" r="48" class="sx-bowtie-c6-topevent-ring"/>
+<text x="754" y="202" class="sx-bowtie-c6-topevent-label" text-anchor="middle" dominant-baseline="middle"><tspan x="754" dy="-12">Person</tspan><tspan x="754" dy="12">falls from</tspan><tspan x="754" dy="12">height</tspan></text></g>
+<g class="sx-bowtie-c6-hazard-g" data-role="hazard" data-id="hazard"><rect x="644" y="66" width="220" height="44" rx="5" class="sx-bowtie-c6-hazard"/>
+<text x="754" y="88" class="sx-bowtie-c6-label" text-anchor="middle" dominant-baseline="middle"><tspan x="754" dy="0">Working at height</tspan></text></g>
+<g class="sx-bowtie-c6-threat-g" data-role="threat" data-id="T1"><rect x="32" y="180" width="132" height="44" rx="5" class="sx-bowtie-c6-threat"/>
+<text x="98" y="202" class="sx-bowtie-c6-label" text-anchor="middle" dominant-baseline="middle"><tspan x="98" dy="-7">Guardrail removed</tspan><tspan x="98" dy="14">for access</tspan></text></g>
+<g class="sx-bowtie-c6-barrier-g" data-role="barrier" data-id="T1-b0" data-side="prevent" data-line="T1" data-order="0"><rect x="206" y="180" width="120" height="44" rx="5" class="sx-bowtie-c6-barrier"/>
+<text x="266" y="202" class="sx-bowtie-c6-label" text-anchor="middle" dominant-baseline="middle"><tspan x="266" dy="-7">Permit-to-work</tspan><tspan x="266" dy="14">system</tspan></text></g>
+<g class="sx-bowtie-c6-barrier-g" data-role="barrier" data-id="T1-b1" data-side="prevent" data-line="T1" data-order="1"><rect x="374" y="180" width="120" height="44" rx="5" class="sx-bowtie-c6-barrier"/>
+<text x="434" y="202" class="sx-bowtie-c6-label" text-anchor="middle" dominant-baseline="middle"><tspan x="434" dy="-7">Temporary edge</tspan><tspan x="434" dy="14">protection</tspan></text></g>
+<g class="sx-bowtie-c6-barrier-g" data-role="barrier" data-id="T1-b2" data-side="prevent" data-line="T1" data-order="2"><rect x="542" y="180" width="120" height="44" rx="5" class="sx-bowtie-c6-barrier"/>
+<text x="602" y="202" class="sx-bowtie-c6-label" text-anchor="middle" dominant-baseline="middle"><tspan x="602" dy="-7">Spotter /</tspan><tspan x="602" dy="14">banksman</tspan></text></g>
+<g class="sx-bowtie-c6-consequence-g" data-role="consequence" data-id="C1"><rect x="1176" y="180" width="132" height="44" rx="5" class="sx-bowtie-c6-consequence"/>
+<text x="1242" y="202" class="sx-bowtie-c6-label" text-anchor="middle" dominant-baseline="middle"><tspan x="1242" dy="0">Fatality</tspan></text></g>
+<g class="sx-bowtie-c6-barrier-g" data-role="barrier" data-id="C1-b0" data-side="mitigate" data-line="C1" data-order="0"><rect x="846" y="180" width="120" height="44" rx="5" class="sx-bowtie-c6-barrier"/>
+<text x="906" y="202" class="sx-bowtie-c6-label" text-anchor="middle" dominant-baseline="middle"><tspan x="906" dy="-7">Fall-arrest</tspan><tspan x="906" dy="14">harness + lanyard</tspan></text></g>
+<g class="sx-bowtie-c6-barrier-g" data-role="barrier" data-id="C1-b1" data-side="mitigate" data-line="C1" data-order="1"><rect x="1014" y="180" width="120" height="44" rx="5" class="sx-bowtie-c6-barrier"/>
+<text x="1074" y="202" class="sx-bowtie-c6-label" text-anchor="middle" dominant-baseline="middle"><tspan x="1074" dy="-7">Rescue plan +</tspan><tspan x="1074" dy="14">first aid</tspan></text></g>
+<g class="sx-bowtie-c6-legend" data-role="legend"><rect x="32" y="292" width="14" height="14" rx="3" class="sx-bowtie-c6-threat"/>
+<text x="52" y="303" class="sx-bowtie-c6-legend-label" font-family="system-ui, -apple-system, sans-serif">Threat</text>
+<rect x="112.4" y="292" width="14" height="14" rx="3" class="sx-bowtie-c6-barrier"/>
+<text x="132.4" y="303" class="sx-bowtie-c6-legend-label" font-family="system-ui, -apple-system, sans-serif">Barrier (prevent / mitigate)</text>
+<rect x="333.6" y="292" width="14" height="14" rx="3" class="sx-bowtie-c6-topevent"/>
+<text x="353.6" y="303" class="sx-bowtie-c6-legend-label" font-family="system-ui, -apple-system, sans-serif">Top event</text>
+<rect x="433.20000000000005" y="292" width="14" height="14" rx="3" class="sx-bowtie-c6-consequence"/>
+<text x="453.20000000000005" y="303" class="sx-bowtie-c6-legend-label" font-family="system-ui, -apple-system, sans-serif">Consequence</text></g></g></svg></div>
+  <details>
+    <summary>DSL source</summary>
+    <pre>bowtie "Working at height"
+hazard "Working at height"
+topevent "Person falls from height"
+threat "Guardrail removed for access"
+  prevent "Permit-to-work system"
+  prevent "Temporary edge protection"
+  prevent "Spotter / banksman"
+consequence "Fatality"
+  mitigate "Fall-arrest harness + lanyard"
+  mitigate "Rescue plan + first aid"</pre>
+  </details>
+</section>
+
+<section class="card" id="validation">
+  <h2>8 — Correct by construction (rejected: bare threat)</h2>
+  <p class="note">The barrier rule set in action: a threat with no preventative barrier is REJECTED with a plain-English error, not silently drawn. This is what separates a real bowtie from a Swiss-cheese doodle.</p>
+  <div class="svg-wrap"><div class="err">parse error (expected for #9): Threat "Corrosion" has no preventative barrier — every threat must reach the top event through at least one barrier (CCPS/EI barrier rule). Add a `prevent` line under it.</div></div>
+  <details>
+    <summary>DSL source</summary>
+    <pre>bowtie
+topevent "Loss of containment"
+threat "Corrosion"
+consequence "Release"
+  mitigate "Gas detection"</pre>
+  </details>
+</section>
+
+<footer>
+  generated by <code>scripts/preview-bowtie.mjs</code> · 2026-05-31 01:36:53 · 8 examples
+</footer>
+</div>
+</body>
+</html>

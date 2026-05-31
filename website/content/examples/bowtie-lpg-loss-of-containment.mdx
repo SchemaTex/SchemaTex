@@ -1,0 +1,43 @@
+---
+title: LPG storage — loss of containment
+description: The canonical process-safety bowtie — three threats fan in through preventative barrier chains, three consequences fan out through mitigative chains, around the central loss-of-containment top event.
+diagram: bowtie
+standard: CCPS / Energy Institute 2018
+industry: [engineering, energy]
+persona: For the process-safety engineer presenting a major-accident scenario
+complexity: 3
+tags: [bowtie, risk, process-safety, barrier, hazard, loss-of-containment]
+featured: true
+relatedLink:
+  label: Bowtie syntax
+  href: /docs/bowtie
+status: published
+dsl: |
+  bowtie "LPG storage — loss of containment"
+  hazard "LPG stored under pressure"
+  topevent "Loss of containment"
+  threat "Corrosion of vessel wall"
+    prevent "Corrosion-resistant coating"
+    prevent "UT thickness inspection"
+  threat "Overpressure during filling"
+    prevent "High-pressure trip (SIL 2)"
+    prevent "Pressure relief valve"
+  threat "Mechanical impact (vehicle)"
+    prevent "Bollards / vehicle barriers"
+    prevent "Site speed limit + banksman"
+  consequence "Jet fire"
+    mitigate "Gas detection + ESD"
+    mitigate "Deluge / water spray"
+  consequence "Vapour cloud explosion"
+    mitigate "Ignition-source control (ATEX)"
+    mitigate "Blast-resistant control room"
+  consequence "Toxic / asphyxiation exposure"
+    mitigate "Personal gas monitors"
+    mitigate "Emergency evacuation plan"
+---
+
+## What this shows
+
+The integrating picture of barrier-based risk management for one major-accident scenario. The **hazard** ("LPG stored under pressure") sits above the central **top event** — the moment control is lost. To the **left**, three credible **threats** each fan in through a chain of **preventative barriers** (grey, on the line) that stop them reaching the knot. To the **right**, three **consequences** each fan out through a chain of **mitigative barriers** that limit the damage if the top event occurs.
+
+This is the shape a process-safety reviewer expects on an A3: defence-in-depth depth on both wings, the knot in the middle, the hazard above. **Correct by construction** — the engine would reject any threat or consequence drawn with no barrier (a Swiss-cheese cartoon), so every line you see genuinely passes through a control.

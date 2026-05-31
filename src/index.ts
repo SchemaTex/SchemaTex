@@ -62,6 +62,7 @@ export { petri } from "./diagrams/petri";
 export { network } from "./diagrams/network";
 export { umlclass } from "./diagrams/umlclass";
 export { faulttree } from "./diagrams/faulttree";
+export { bowtie } from "./diagrams/bowtie";
 
 export {
   type SymbolCatalog,

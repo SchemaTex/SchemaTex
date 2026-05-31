@@ -36,7 +36,8 @@ export type DiagramType =
   | 'timeline'
   | 'network'
   | 'umlclass'
-  | 'faulttree';
+  | 'faulttree'
+  | 'bowtie';
 
 export type Industry =
   | 'healthcare'
@@ -96,6 +97,7 @@ export const DIAGRAM_LABELS: Record<DiagramType, { label: string; icon: string }
   network: { label: 'Network topology', icon: '🖧' },
   umlclass: { label: 'UML class', icon: '🧱' },
   faulttree: { label: 'Fault tree', icon: '🛡' },
+  bowtie: { label: 'Bowtie', icon: '🎀' },
 };
 
 export const INDUSTRY_LABELS: Record<Industry, { label: string; icon: string }> = {
@@ -119,7 +121,7 @@ export const CLUSTER_TO_TYPES: Record<string, DiagramType[]> = {
   'corporate-legal': ['entity', 'erd', 'orgchart'],
   'causality-analysis': ['fishbone', 'venn', 'decisiontree', 'matrix'],
   'software-uml': ['umlclass', 'usecase', 'sequence', 'bpmn', 'state', 'petri'],
-  'risk-reliability': ['faulttree'],
+  'risk-reliability': ['faulttree', 'bowtie'],
   research: ['prisma'],
   'project-management': ['pert'],
   'network-infrastructure': ['network'],

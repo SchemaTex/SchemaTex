@@ -1,0 +1,40 @@
+---
+title: Runway excursion (aviation SMS)
+description: A non-process-industry bowtie — the same threat / barrier / consequence grammar applied to an aviation safety-management scenario, showing the vocabulary travels across domains.
+diagram: bowtie
+standard: ICAO Doc 9859 + CCPS / EI 2018
+industry: [aviation, transport]
+persona: For the airline safety-management-system analyst
+complexity: 3
+tags: [bowtie, risk, aviation, SMS, ICAO, barrier]
+featured: false
+relatedLink:
+  label: Bowtie syntax
+  href: /docs/bowtie
+status: published
+dsl: |
+  bowtie "Runway excursion"
+  hazard "Aircraft landing in adverse conditions"
+  topevent "Runway excursion on landing"
+  threat "Unstable approach"
+    prevent "Stabilised-approach gate (go-around policy)"
+    prevent "Approach monitoring + callouts"
+  threat "Contaminated runway"
+    prevent "Runway condition reporting (RCR)"
+    prevent "Landing performance assessment"
+  threat "Excessive landing speed"
+    prevent "Speed / energy management SOP"
+    prevent "Autobrake selection"
+  consequence "Hull damage"
+    mitigate "Runway end safety area (RESA)"
+    mitigate "Arrestor bed (EMAS)"
+  consequence "Injuries / fatalities"
+    mitigate "Cabin-crew brace + evacuation"
+    mitigate "Airport emergency response"
+---
+
+## What this shows
+
+The bowtie is mandated well beyond process industries — ICAO's Safety Management Manual (Doc 9859) makes it a primary hazard-analysis tool for airlines. The grammar is identical: a **hazard** (landing in adverse conditions), a **top event** (the runway excursion), **threats** that could cause it through preventative barrier chains, and **consequences** limited by mitigative chains.
+
+It reads the same to a non-specialist as a chemical-plant bowtie, which is exactly the point: one A3 puts the entire defence-in-depth story for a single scenario in front of a board or a regulator, regardless of industry.

@@ -525,6 +525,41 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
       "If P(top) shows 'n/a', a basic event in a cut set is missing its `p:`.",
     ],
   },
+  bowtie: {
+    type: "bowtie",
+    header: 'bowtie "Title"',
+    mode: "indentation-structured: hazard + topevent, then threat/consequence blocks with indented barrier chains",
+    forms: [
+      'hazard "Working at height"',
+      'topevent "Person falls from height"',
+      'threat "Guardrail removed for access"',
+      '  prevent "Permit-to-work system"',
+      '  prevent "Temporary edge protection"',
+      '    escalation "Edge protection not inspected"',
+      '      barrier "Pre-use inspection regime"',
+      'consequence "Fatality"',
+      '  mitigate "Fall-arrest harness"',
+    ],
+    prefer: [
+      "Single-word keyword is `bowtie`. Declare exactly one `topevent` (the knot) and an optional `hazard` header.",
+      "Each `threat` needs ≥ 1 indented `prevent` barrier; each `consequence` needs ≥ 1 indented `mitigate` barrier (the engine rejects a bare threat/consequence).",
+      "Barrier order = declaration order (first = outermost, nearest the threat/consequence; last = innermost, nearest the knot).",
+      "`escalation` nests (4 spaces) under the `prevent`/`mitigate` barrier it degrades; an escalation-factor `barrier` nests (6 spaces) under the escalation.",
+      "Bowtie is qualitative — no probabilities. For Boolean gates + cut sets behind one threat, use a separate `faulttree`.",
+    ],
+    avoid: [
+      "Don't put a `prevent` before any `threat`, or a `mitigate` before any `consequence` — they bind to the most recent one.",
+      "Don't leave a threat or consequence with no barrier — that is a Swiss-cheese cartoon, not a bowtie (it is rejected).",
+      "Don't float an `escalation` on its own — it must follow a barrier line.",
+      "Don't declare more than one `topevent` or more than one `hazard`.",
+    ],
+    repair: [
+      "'has no preventative barrier' / 'no mitigative barrier' — add a `prevent`/`mitigate` line under the threat/consequence.",
+      "'not attached to a barrier' — move the `escalation` so it follows a `prevent`/`mitigate` line.",
+      "'needs at least one threat/consequence' — a one-wing diagram is a fault tree or event tree; add the missing wing.",
+      "'exactly one top event' — keep a single `topevent` line.",
+    ],
+  },
 };
 
 export function getGenerationProfile(

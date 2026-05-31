@@ -358,6 +358,18 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
       "NUREG-0492 Fault Tree Handbook + IEC 61025:2006 + NASA FT Handbook 2002; MOCUS cut sets (Fussell-Vesely 1972); see 37-FAULT-TREE-STANDARD.md",
     syntaxKey: "faulttree",
   },
+  {
+    type: "bowtie",
+    name: "Bowtie risk diagram",
+    tagline:
+      "Barrier-based risk management — one hazard's top event (the knot) with threats fanning in through preventative barriers on the left and consequences fanning out through mitigative barriers on the right, the whole shaped like a bow tie.",
+    useWhen:
+      "Use for process-safety / barrier risk analysis (oil & gas, aviation SMS, chemical, rail): one hazard, one top event, the threats that could cause it and the consequences if it happens, with the controls (barriers) in between. Indentation-structured DSL mirrors the CCPS 7-step build: `hazard \"…\"`, `topevent \"…\"`, then each `threat \"…\"` with indented `prevent \"…\"` barrier chain, each `consequence \"…\"` with indented `mitigate \"…\"` chain; `escalation \"…\"` nests under a barrier it degrades, `barrier \"…\"` nests under an escalation. Correct-by-construction: the engine *rejects* a threat/consequence with no barrier and an escalation not attached to a barrier (CCPS/EI barrier rule set). Qualitative — no probability rollup (that is `faulttree`'s job; a bowtie's left wing read backwards IS a fault tree). Distinct from `fishbone` (one-sided causes, no barriers) and `faulttree` (Boolean gates + cut sets, left wing only).",
+    cluster: "risk-reliability",
+    standard:
+      "CCPS / Energy Institute 2018 (Bow Ties in Risk Management) + IEC 31010:2019 §B.4.6 + ICAO Doc 9859; Swiss-cheese lineage (Reason 1990); see 38-BOWTIE-STANDARD.md",
+    syntaxKey: "bowtie",
+  },
   // ── Generic process / flow ───────────────────────────────────
   {
     type: "flowchart",
@@ -466,6 +478,8 @@ export const DIAGRAM_SINCE: Readonly<Record<DiagramType, string>> = {
   umlclass: "0.6.4",
   // 0.6.5
   faulttree: "0.6.5",
+  // 0.6.6
+  bowtie: "0.6.6",
 };
 
 export function getDiagramSince(type: string): string | undefined {
