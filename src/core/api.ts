@@ -155,8 +155,54 @@ function detectPlugin(text: string, config?: SchematexConfig): DiagramPlugin {
  * appended title are left alone — the frontmatter is silently dropped rather
  * than producing a misleading parse error.
  */
+/**
+ * Strip a Markdown code fence wrapping the whole input. LLMs very frequently
+ * wrap their diagram output in ```` ```mermaid … ``` ```` / ```` ``` … ``` ````
+ * fences; left in place the first line (` ```mermaid `) is treated as the
+ * diagram header and the entire diagram fails to detect/parse. We remove a
+ * leading fence line and a trailing fence line independently (so a truncated
+ * artifact with only an opening fence is still recovered). A bare ```` ``` ````
+ * line is never valid diagram syntax, so this is safe; inputs with no fence are
+ * returned untouched.
+ */
+function stripCodeFences(text: string): string {
+  let t = text;
+  t = t.replace(/^\uFEFF?[ \t]*```[A-Za-z0-9_-]*[ \t]*\r?\n/, "");
+  t = t.replace(/\r?\n[ \t]*```[ \t]*$/, "");
+  return t;
+}
+
+/**
+ * Forgive an abbreviated header keyword once the target engine is known.
+ * LLMs routinely shorten the type line (`flow` → flowchart, `org` → orgchart,
+ * `gen` → genogram, `ped` → pedigree, `seq` → sequence, `socio` → sociogram,
+ * `eco` → ecomap). When the first token is a prefix (≥3 chars) of the resolved
+ * diagram type, rewrite just that token to the canonical keyword so the
+ * per-engine header check passes. Headerless grammars (mindmap's `# Title`) and
+ * already-canonical / unrelated first tokens are left untouched.
+ */
+function normalizeHeader(text: string, type: string): string {
+  const lines = text.split("\n");
+  for (let i = 0; i < lines.length; i++) {
+    const trimmed = lines[i]!.trim();
+    if (!trimmed) continue;
+    const m = trimmed.match(/^([A-Za-z][A-Za-z0-9_-]*)/);
+    if (!m) return text;
+    const tok = m[1]!;
+    const lower = tok.toLowerCase();
+    if (lower === type) return text;
+    if (lower.length >= 3 && type.startsWith(lower)) {
+      const idx = lines[i]!.indexOf(tok);
+      lines[i] = lines[i]!.slice(0, idx) + type + lines[i]!.slice(idx + tok.length);
+      return lines.join("\n");
+    }
+    return text;
+  }
+  return text;
+}
+
 function preprocess(text: string): string {
-  const { data, body } = parseFrontmatter(text);
+  const { data, body } = parseFrontmatter(stripCodeFences(text));
   if (!data.title) return body;
   // Strip the title here — `data.title` was already unquoted by parseFrontmatter.
   const safeTitle = data.title.replace(/"/g, '\\"');
@@ -185,8 +231,9 @@ function preprocess(text: string): string {
  * ```
  */
 export function parse(text: string, config?: SchematexConfig): unknown {
-  const prepared = preprocess(text);
-  const plugin = detectPlugin(prepared, config);
+  const prepared0 = preprocess(text);
+  const plugin = detectPlugin(prepared0, config);
+  const prepared = normalizeHeader(prepared0, plugin.type);
   if (plugin.parse) return plugin.parse(prepared);
   throw new Error(
     `Diagram type '${plugin.type}' does not yet expose a parse() method.`
@@ -199,13 +246,14 @@ export function parseResult(
 ): SchematexParseResult {
   let plugin: DiagramPlugin | undefined;
   try {
-    const prepared = preprocess(text);
-    plugin = detectPlugin(prepared, config);
+    const prepared0 = preprocess(text);
+    plugin = detectPlugin(prepared0, config);
     if (!plugin.parse) {
       throw new Error(
         `Diagram type '${plugin.type}' does not yet expose a parse() method.`
       );
     }
+    const prepared = normalizeHeader(prepared0, plugin.type);
     const ast = plugin.parse(prepared);
     const diagnostics = runLint(plugin, prepared);
     return {
@@ -241,8 +289,9 @@ function runLint(plugin: DiagramPlugin, prepared: string): SchematexDiagnostic[]
 export function render(text: string, config?: SchematexConfig): string {
   if (config?.mode === "preview") return renderResult(text, config).svg;
 
-  const prepared = preprocess(text);
-  const plugin = detectPlugin(prepared, config);
+  const prepared0 = preprocess(text);
+  const plugin = detectPlugin(prepared0, config);
+  const prepared = normalizeHeader(prepared0, plugin.type);
   return renderWithPlugin(prepared, plugin, config);
 }
 
@@ -252,8 +301,9 @@ export function renderResult(
 ): SchematexRenderResult {
   let plugin: DiagramPlugin | undefined;
   try {
-    const prepared = preprocess(text);
-    plugin = detectPlugin(prepared, config);
+    const prepared0 = preprocess(text);
+    plugin = detectPlugin(prepared0, config);
+    const prepared = normalizeHeader(prepared0, plugin.type);
     const svg = renderWithPlugin(prepared, plugin, config);
     const diagnostics = runLint(plugin, prepared);
     return {
