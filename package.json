@@ -132,7 +132,7 @@
     "lint": "eslint src/",
     "typecheck": "npm run build:ai && tsc --noEmit",
     "validate:examples": "npm run build && node scripts/validate-examples.mjs",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build && npm run typecheck"
   },
   "keywords": [
     "diagram",
