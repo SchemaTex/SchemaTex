@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.6.10] — 2026-06-02
+
+### Fixed — P&ID layout quality: the 5 long-pending renderer tests now pass
+
+Implemented (not skipped) the five P&ID visual-quality features written in v0.6.4 as acceptance tests and tracked in `docs/issues/06-pid-layout-quality.md`. The full suite is now green (was 100 files pass / 1 fail).
+
+- **Minor-process line class** (`src/diagrams/pid/renderer.ts`): line types now map to explicit CSS classes — `process` → `lt-pid-process`, `process_minor` → `lt-pid-process-min` (was the unstyled `lt-pid-process-minor`).
+- **No-fill guard class**: every line `<path>` now carries a shared `lt-pid-line-path` class (with `.lt-pid-line-path { fill: none; }`), so no line can inherit a fill.
+- **Z-order layering**: render split into ordered groups — process pipes (`lt-pid-process-lines`) behind equipment (`lt-pid-equipment`), with signal lines (`lt-pid-signal-lines`) + instruments above.
+- **Line-mounted instrument placement** (`src/diagrams/pid/layout.ts`): an instrument that `measures`/`controls` a *pipe* (not equipment) now anchors to that pipe's midpoint x instead of a fixed offset.
+- **Instrument fan-out**: fixed the de-overlap sweep so 3+ instruments that collapse onto the same anchor (e.g. several on one vessel) all spread ≥40px apart — previously only the second one moved.
+
+P&ID-engine-internal; no other engine touched. All 21 P&ID tests + the full 1140-test suite pass.
+
+---
+
 ## [0.6.9] — 2026-06-01
 
 ### Added — LLM input recovery: code-fence stripping + abbreviated-header normalization (`src/core/api.ts`)

@@ -27,6 +27,7 @@ const STYLE = `
 .lt-inst-local-line { stroke: #1d1d1d; stroke-width: 1; stroke-dasharray: 2 2; }
 .lt-pid-valve-body { fill: #ffffff; stroke: #1d1d1d; stroke-width: 1.4; }
 
+.lt-pid-line-path { fill: none; }
 .lt-pid-line-tag-bg { fill: #ffffff; stroke: #1d1d1d; stroke-width: 0.6; }
 .lt-pid-line-tag-text { font: 9px ui-monospace, monospace; fill: #1d1d1d; }
 
@@ -39,8 +40,29 @@ const STYLE = `
 
 const ARROW_ID = "lt-pid-arrow";
 
+/** Line-type → CSS class. `process_minor` → `lt-pid-process-min` (matches STYLE). */
+const LINE_CLASS: Record<string, string> = {
+  process: "lt-pid-process",
+  process_minor: "lt-pid-process-min",
+  pneumatic: "lt-pid-pneumatic",
+  electric: "lt-pid-electric",
+  hydraulic: "lt-pid-hydraulic",
+  capillary: "lt-pid-capillary",
+  software: "lt-pid-software",
+  mechanical: "lt-pid-mechanical",
+};
+
+/** Signal (instrument) line types — rendered above equipment in z-order. */
+const SIGNAL_LINE_TYPES = new Set([
+  "pneumatic", "electric", "hydraulic", "capillary", "software", "mechanical",
+]);
+
 function lineClass(t: PidLayoutLine["line"]["lineType"]): string {
-  return `lt-pid-${t.replace("_", "-")}`;
+  return LINE_CLASS[t] ?? `lt-pid-${String(t).replace(/_/g, "-")}`;
+}
+
+function isSignalLine(l: PidLayoutLine): boolean {
+  return SIGNAL_LINE_TYPES.has(l.line.lineType);
 }
 
 function renderLine(l: PidLayoutLine): string {
@@ -48,7 +70,8 @@ function renderLine(l: PidLayoutLine): string {
   const parts: string[] = [
     pathEl({
       d: l.path,
-      class: cls,
+      // Type class + a shared no-fill guard class on every line path.
+      class: `${cls} lt-pid-line-path`,
       "data-line-id": l.line.id,
       "data-service": l.line.service ?? "",
     }),
@@ -239,9 +262,16 @@ function renderLayout(layout: PidLayoutResult): string {
         el("style", {}, STYLE),
       ]),
       titleNode,
+      // Z-order: process pipes behind equipment; signal lines + instruments above.
+      group(
+        { class: "lt-pid-lines lt-pid-process-lines" },
+        layout.lines.filter((l) => !isSignalLine(l)).map(renderLine)
+      ),
       group({ class: "lt-pid-equipment" }, equipNodes),
-      group({ class: "lt-pid-lines" }, layout.lines.map(renderLine)),
-      group({ class: "lt-pid-signals" }, autoSignals),
+      group(
+        { class: "lt-pid-lines lt-pid-signal-lines" },
+        [...layout.lines.filter(isSignalLine).map(renderLine), ...autoSignals]
+      ),
       group({ class: "lt-pid-instruments" }, instNodes),
     ]
   );
