@@ -1,4 +1,4 @@
-const REPO = 'victorzhrn/Schematex';
+const REPO = 'SchemaTex/SchemaTex';
 const NPM_PKG = 'schematex';
 const REVALIDATE = 3600; // 1 hour
 

@@ -1,6 +1,6 @@
 # Schematex website
 
-Landing + docs + examples site for [Schematex](https://github.com/victorzhrn/Schematex).
+Landing + docs + examples site for [Schematex](https://github.com/SchemaTex/SchemaTex).
 
 Built with **Next.js 15** + **Fumadocs** + **Tailwind v4**. Deployed to
 Vercel at [schematex.dev](https://schematex.dev).
