@@ -139,6 +139,28 @@ export function layoutPid(ast: PidAST): PidLayoutResult {
     cursorX += geo.width + EQUIP_GAP_X;
   }
 
+  // 1b. Pre-compute pipe midpoints (equipment→equipment lines only) so that a
+  // line-mounted instrument can anchor to the pipe it measures, not a fixed
+  // offset. Signal lines (instrument→instrument) are excluded — they have no
+  // anchor until instruments are placed.
+  const lineMidById = new Map<string, { x: number; y: number }>();
+  for (const ln of ast.lines) {
+    const from = equipById.get(ln.from.id);
+    const to = equipById.get(ln.to.id);
+    if (!from || !to) continue;
+    const fa = getAnchor(from, ln.from.port, "out");
+    const ta = getAnchor(to, ln.to.port, "in");
+    lineMidById.set(ln.id, { x: (fa.x + ta.x) / 2, y: (fa.y + ta.y) / 2 });
+  }
+  // Resolve a target id (equipment or pipe) to an x anchor, else a fallback.
+  const targetX = (tgt: string, fallback: number): number => {
+    const eq = equipById.get(tgt);
+    if (eq) return eq.cx;
+    const lm = lineMidById.get(tgt);
+    if (lm) return lm.x;
+    return fallback;
+  };
+
   // 2. Place instruments.
   // Field instruments → near their measured equipment (below it).
   // Control-room instruments → above the equipment row (in a virtual control-room band).
@@ -154,21 +176,18 @@ export function layoutPid(ast: PidAST): PidLayoutResult {
     if (inst.category.startsWith("cr_")) {
       // place in CR band; x aligns roughly to the controlled valve or the measured equipment.
       const tgt = inst.controls ?? inst.measures ?? "";
-      const tgtEq = equipById.get(tgt);
-      cx = tgtEq ? tgtEq.cx : PADDING + 80 + crSlot * (INST_RADIUS * 2 + 28);
+      cx = targetX(tgt, PADDING + 80 + crSlot * (INST_RADIUS * 2 + 28));
       cy = crBandY;
       crSlot += 1;
     } else if (inst.category.startsWith("local_")) {
       cy = rowY + maxH / 2 + INST_OFFSET + INST_RADIUS;
       const tgt = inst.measures ?? inst.controls ?? "";
-      const tgtEq = equipById.get(tgt);
-      cx = tgtEq ? tgtEq.cx : PADDING + 80;
+      cx = targetX(tgt, PADDING + 80);
     } else {
-      // field — directly below the related equipment
+      // field — below the equipment or pipe it monitors
       cy = rowY + maxH / 2 + INST_OFFSET;
       const tgt = inst.measures ?? inst.controls ?? "";
-      const tgtEq = equipById.get(tgt);
-      cx = tgtEq ? tgtEq.cx : PADDING + 80;
+      cx = targetX(tgt, PADDING + 80);
     }
 
     const lay: PidLayoutInstrument = {
@@ -181,15 +200,20 @@ export function layoutPid(ast: PidAST): PidLayoutResult {
     instById.set(inst.tag, lay);
   }
 
-  // Avoid overlapping field/local instruments by nudging their x where needed.
-  const sameRow = (a: PidLayoutInstrument, b: PidLayoutInstrument) =>
-    Math.abs(a.cy - b.cy) < INST_RADIUS && Math.abs(a.cx - b.cx) < INST_RADIUS * 2 + 8;
+  // Fan out instruments that share a row (e.g. several instruments on the same
+  // equipment all anchor to its center). Sweep left→right and push each one to
+  // at least INST_FANOUT past the previous on the same row. Comparing against
+  // the *running* position (not the original) is what lets 3+ collapsed
+  // instruments all spread, instead of only the second one moving.
+  const INST_FANOUT = INST_RADIUS * 2 + 12; // 40px ≥ the 38px min separation
+  const sameYRow = (a: PidLayoutInstrument, b: PidLayoutInstrument) =>
+    Math.abs(a.cy - b.cy) < INST_RADIUS;
   const sortedByX = [...instruments].sort((a, b) => a.cx - b.cx);
   for (let i = 1; i < sortedByX.length; i++) {
     const prev = sortedByX[i - 1]!;
     const cur = sortedByX[i]!;
-    if (sameRow(prev, cur)) {
-      cur.cx = prev.cx + INST_RADIUS * 2 + 14;
+    if (sameYRow(prev, cur) && cur.cx < prev.cx + INST_FANOUT) {
+      cur.cx = prev.cx + INST_FANOUT;
     }
   }
 
