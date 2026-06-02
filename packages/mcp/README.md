@@ -49,4 +49,4 @@ Example Claude Desktop config (`~/Library/Application Support/Claude/claude_desk
 
 ## License
 
-AGPL-3.0-only. See the root [Schematex repo](https://github.com/victorzhrn/Schematex) for commercial licensing.
+AGPL-3.0-only. See the root [Schematex repo](https://github.com/SchemaTex/SchemaTex) for commercial licensing.
