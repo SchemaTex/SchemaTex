@@ -1,0 +1,88 @@
+name: Publish
+
+# Auto-publish to npm + cut a GitHub Release when the version in package.json
+# changes on `main`. "Changed" is decided by the source of truth — whether that
+# exact version is already on the npm registry — NOT by diffing the previous
+# commit. That matters here: this repo sometimes lands several commits in one
+# push to main, and a commit-diff check (HEAD vs HEAD~1) silently misses a bump
+# that isn't in the last commit. The registry check is idempotent: re-runs,
+# merge commits, and pushes that don't touch the version all no-op safely.
+on:
+  push:
+    branches: [main]
+
+# id-token: publish with npm provenance (supply-chain attestation; public repo).
+# contents: create the git tag and GitHub Release.
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # full history so release-note generation can diff tags
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: npm
+          registry-url: https://registry.npmjs.org
+
+      - run: npm ci
+
+      # Is this exact version already on npm? If so, nothing to do.
+      - name: Check whether this version is already published
+        id: check
+        run: |
+          set -euo pipefail
+          NAME="$(node -p "require('./package.json').name")"
+          VERSION="$(node -p "require('./package.json').version")"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          if npm view "$NAME@$VERSION" version >/dev/null 2>&1; then
+            echo "Already on npm: $NAME@$VERSION — skipping."
+            echo "should_publish=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "Not on npm yet: $NAME@$VERSION — will publish."
+            echo "should_publish=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      # `prepublishOnly` (build + typecheck) runs automatically inside
+      # `npm publish`, so it is the gate — a build/type error can't ship.
+      # NOTE: the full `npm test` is deliberately NOT in the gate yet: the P&ID
+      # suite (tests/pid/) has known-failing cases tracked in
+      # docs/issues/06-pid-layout-quality.md. Add `npm test` to prepublishOnly
+      # once those are green (or carved out) to gate on tests too.
+      - name: Publish to npm
+        if: steps.check.outputs.should_publish == 'true'
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      # Tag + GitHub Release so every published version is anchored in git too.
+      # Release body comes from this version's CHANGELOG.md section; if that
+      # heading isn't found, fall back to GitHub's commit-based auto-notes.
+      - name: Tag and create GitHub Release
+        if: steps.check.outputs.should_publish == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.check.outputs.version }}
+        run: |
+          set -euo pipefail
+          TAG="v$VERSION"
+          git tag "$TAG"
+          git push origin "$TAG"
+          # Mark alpha/beta/rc versions as pre-releases.
+          PRERELEASE=""
+          case "$VERSION" in
+            *alpha*|*beta*|*rc*) PRERELEASE="--prerelease" ;;
+          esac
+          NOTES="$(awk "/^## \[$VERSION\]/{f=1;next} /^## \[/{f=0} f" CHANGELOG.md)"
+          if [ -n "${NOTES// }" ]; then
+            printf '%s\n' "$NOTES" > /tmp/notes.md
+            gh release create "$TAG" --title "$TAG" --notes-file /tmp/notes.md $PRERELEASE
+          else
+            gh release create "$TAG" --title "$TAG" --generate-notes $PRERELEASE
+          fi
