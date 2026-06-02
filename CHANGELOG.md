@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.6.9] — 2026-06-01
+
+### Added — LLM input recovery: code-fence stripping + abbreviated-header normalization (`src/core/api.ts`)
+
+Two cross-engine `preprocess`/detection passes that recover the most common ways an LLM mangles otherwise-valid DSL, instead of returning "cannot detect diagram type" / a header parse error. Both are pure input rewrites — no per-engine grammar changed.
+
+- **Markdown code-fence stripping.** Input wrapped in ```` ```mermaid … ``` ````, ```` ```schematex … ``` ````, or a bare ```` ``` … ``` ```` fence now has the fence lines removed before detection. Previously the opening fence line (` ```mermaid `) was read as the diagram header and the whole diagram failed to detect. A leading fence line and a trailing fence line are stripped independently, so a truncated artifact with only an opening fence is still recovered; unfenced input is untouched.
+- **Abbreviated-header normalization.** Once the target engine is known, a first-token header that is a prefix (≥3 chars) of the resolved diagram type is rewritten to the canonical keyword — `flow`→`flowchart`, `org`→`orgchart`, `gen`→`genogram`, `ped`→`pedigree`, `seq`→`sequence`, `socio`→`sociogram`, `eco`→`ecomap`. Headerless grammars (mindmap's `# Title`), already-canonical headers, and unrelated first tokens (e.g. flowchart's alternate `graph` keyword) are left untouched.
+- New test suite `tests/core/input-recovery.test.ts` (14 cases across fence stripping, abbreviation recovery, and the two combined).
+
+### Added — Circuit ERC (electrical-rule check) expansion (`src/diagrams/circuit/lint.ts`)
+
+The circuit `lint()` hook grew from the single under-specified-pin warning to a four-rule ERC pass. Every finding is **non-fatal** — the schematic still renders, the result is flagged `partial`, and the author gets an actionable message (degrade-not-reject).
+
+- **`CIRCUIT_DUPLICATE_ID`** — a reference designator declared twice (silently overwrites a pinMap entry). Runs in both positional and netlist modes.
+- **`CIRCUIT_NO_GROUND`** — the circuit has a source (`voltage_source` / `ac_source` / `battery` / `current_source`) but no ground reference anywhere; node voltages are undefined.
+- **`CIRCUIT_FLOATING_NET`** — a net only one pin connects to (dangling node), excluding intentional single-terminal reference symbols (ground / vcc / port / label / test_point / no_connect / antenna) and auto no-connect padding.
+- **`CIRCUIT_NET_TYPO`** — a dangling net whose name is one edit (Levenshtein) from a properly wired net (e.g. `vot` vs `vout`) — surfaced as a likely misspelled connection with a rename suggestion, in place of the generic floating-net warning.
+- Connectivity rules (no-ground / floating / typo) run only in netlist mode, where the net graph is authoritative; duplicate-id runs in both. New tests in `tests/circuit/erc.test.ts` (12 cases).
+
+---
+
 ## [0.6.8] — 2026-05-31
 
 ### Fixed — Block diagram: dangling output signals now render with label
