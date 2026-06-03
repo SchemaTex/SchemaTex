@@ -5,6 +5,7 @@ import {
   DIAGRAM_LABELS,
   INDUSTRY_LABELS,
   CLUSTER_META,
+  resolveUseCase,
   type GalleryExample,
   type DiagramType,
   type Industry,
@@ -39,10 +40,8 @@ function parseIndustry(v: string | undefined): Industry | null {
   return v in INDUSTRY_LABELS ? (v as Industry) : null;
 }
 
-const VALID_INDUSTRIES = new Set(Object.keys(INDUSTRY_LABELS));
-
 function toGalleryExample(ex: (typeof allExamples)[number]): GalleryExample {
-  const industry = (ex.industry.find((i) => VALID_INDUSTRIES.has(i)) ?? 'healthcare') as Industry;
+  const industry = resolveUseCase(ex.industry);
   return {
     slug: ex.slug,
     title: ex.title,

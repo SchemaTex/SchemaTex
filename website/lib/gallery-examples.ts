@@ -11,16 +11,14 @@ import {
   type DiagramCluster,
 } from 'schematex/ai';
 import { CLUSTER_DISPLAY, CLUSTERS_ORDERED } from '@/lib/clusters';
+import { type UseCase, USE_CASE_LABELS, resolveUseCase } from '@/lib/use-cases';
 
 export type { DiagramType };
 
-export type Industry =
-  | 'healthcare'
-  | 'legal-finance'
-  | 'industrial'
-  | 'education'
-  | 'research'
-  | 'business';
+// "Industry" is the gallery's use-case axis — derived from the curated
+// use-case taxonomy (lib/use-cases.ts), not a hand-kept enum.
+export type Industry = UseCase;
+export { resolveUseCase };
 
 export type Complexity = 1 | 2 | 3;
 
@@ -42,14 +40,8 @@ export const DIAGRAM_LABELS: Record<DiagramType, { label: string }> =
     DIAGRAM_REGISTRY.map((m) => [m.type, { label: m.name }]),
   ) as Record<DiagramType, { label: string }>;
 
-export const INDUSTRY_LABELS: Record<Industry, { label: string; icon: string }> = {
-  healthcare: { label: 'Healthcare', icon: '🩺' },
-  'legal-finance': { label: 'Legal & Finance', icon: '⚖️' },
-  industrial: { label: 'Industrial', icon: '🏭' },
-  education: { label: 'Education', icon: '🎓' },
-  research: { label: 'Research', icon: '🔬' },
-  business: { label: 'Business', icon: '💼' },
-};
+// use-case label per id, from the curated taxonomy.
+export const INDUSTRY_LABELS: Record<Industry, { label: string }> = USE_CASE_LABELS;
 
 export const COMPLEXITY_LABELS: Record<Complexity, string> = {
   1: 'Minimal',

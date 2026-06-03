@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import {
   DIAGRAM_LABELS,
@@ -40,6 +40,7 @@ export function GalleryFilterBar({
 
   const [queryInput, setQueryInput] = useState(activeQuery);
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [showAllTypes, setShowAllTypes] = useState(false);
   useEffect(() => setQueryInput(activeQuery), [activeQuery]);
 
   const setParam = useCallback(
@@ -131,6 +132,20 @@ export function GalleryFilterBar({
     count: counts.diagramCounts.get(t) ?? 0,
   }));
 
+  // The diagram axis has many types — keep the desktop row to ~2 lines by
+  // default, expandable. The active chip is always kept visible.
+  const COLLAPSED_TYPE_COUNT = 12;
+  const collapsedDiagramOptions = (() => {
+    if (showAllTypes || diagramOptions.length <= COLLAPSED_TYPE_COUNT) return diagramOptions;
+    const head = diagramOptions.slice(0, COLLAPSED_TYPE_COUNT);
+    if (activeDiagram && !head.some((o) => o.value === activeDiagram)) {
+      const act = diagramOptions.find((o) => o.value === activeDiagram);
+      if (act) head.push(act);
+    }
+    return head;
+  })();
+  const hiddenTypeCount = diagramOptions.length - collapsedDiagramOptions.length;
+
   const industryOptions: ChipOption<Industry>[] = (
     Object.keys(INDUSTRY_LABELS) as Industry[]
   ).map((k) => ({
@@ -143,6 +158,7 @@ export function GalleryFilterBar({
     options: ChipOption<T>[],
     activeValue: T | null,
     paramKey: string,
+    trailing?: ReactNode,
   ) => (
     <div className="flex flex-wrap gap-1.5">
       {options.map((opt) => {
@@ -161,7 +177,19 @@ export function GalleryFilterBar({
           </button>
         );
       })}
+      {trailing}
     </div>
+  );
+
+  const typeToggleChip = (hiddenTypeCount > 0 || showAllTypes) && (
+    <button
+      type="button"
+      className="gal-chip"
+      onClick={() => setShowAllTypes((v) => !v)}
+      style={{ fontStyle: 'italic' }}
+    >
+      {showAllTypes ? 'show less' : `+${hiddenTypeCount} more`}
+    </button>
   );
 
   const activeIndustryLabel = activeIndustry ? INDUSTRY_LABELS[activeIndustry].label : null;
@@ -285,7 +313,7 @@ export function GalleryFilterBar({
         {/* Desktop: DIAGRAM chips */}
         <div className="hidden md:flex items-start gap-3">
           <span className="type-eye shrink-0" style={{ paddingTop: 6 }}>DIAGRAM ·</span>
-          {renderChipGroup(diagramOptions, activeDiagram, 'type')}
+          {renderChipGroup(collapsedDiagramOptions, activeDiagram, 'type', typeToggleChip)}
         </div>
 
         {/* Status bar */}
