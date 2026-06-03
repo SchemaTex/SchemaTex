@@ -63,6 +63,14 @@ export { network } from "./diagrams/network";
 export { umlclass } from "./diagrams/umlclass";
 export { faulttree } from "./diagrams/faulttree";
 export { bowtie } from "./diagrams/bowtie";
+export { eventtree } from "./diagrams/eventtree";
+export { fmea } from "./diagrams/fmea";
+export { causalloop } from "./diagrams/causalloop";
+export { markov } from "./diagrams/markov";
+export { gitgraph } from "./diagrams/gitgraph";
+export { epc } from "./diagrams/epc";
+export { idef0 } from "./diagrams/idef0";
+export { threatmodel } from "./diagrams/threatmodel";
 
 export {
   type SymbolCatalog,

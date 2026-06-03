@@ -1,0 +1,109 @@
+---
+title: Markov Chain
+description: State-transition diagrams where the engine validates the stochastic matrix, classifies states, and computes the stationary or absorption answer.
+---
+
+## About Markov chains
+
+A **Markov chain** models a system that hops between **states** with fixed **transition probabilities**, where the next state depends only on the current one (the *memoryless* property). They underpin reliability modelling, queueing, PageRank, gambler's-ruin, and weather models. The transition probabilities out of each state must sum to 1 (a **row-stochastic** matrix).
+
+Schematex's edge is that the engine **does the linear algebra**, not just the circles-and-arrows. It validates the row-stochastic matrix, classifies states (transient / recurrent / absorbing) via SCC analysis, and computes the **stationary distribution** π or, for absorbing chains, the **absorption probabilities** and expected steps — all dependency-free, hand-written.
+
+<Playground initial={`markov "Weather"
+  Sunny -> Sunny : 0.9
+  Sunny -> Rainy : 0.1
+  Rainy -> Sunny : 0.5
+  Rainy -> Rainy : 0.5`} height={420} />
+
+---
+
+## 1. Your first chain
+
+Start with the `markov` keyword (alias `markovchain`), an optional title, then **probability-weighted transitions**. States are auto-created from the first arc that mentions them:
+
+```
+markov "Weather"
+  Sunny -> Sunny : 0.9
+  Sunny -> Rainy : 0.1
+  Rainy -> Sunny : 0.5
+  Rainy -> Rainy : 0.5
+```
+
+A transition is `FROM -> TO : PROBABILITY`. A self-loop (`Sunny -> Sunny`) is the probability of staying put. Every probability must be in `[0, 1]`, and **the probabilities leaving each state must sum to 1**.
+
+---
+
+## 2. Declaring states
+
+You can declare states explicitly to fix label, order, or mark them absorbing:
+
+```
+markov "Gambler's ruin"
+  state Broke "$0" absorbing
+  state Rich  "$4" absorbing
+  state S1
+  state S2
+  Broke -> Broke : 1
+  Rich  -> Rich  : 1
+  S1 -> Broke : 0.5
+  S1 -> S2 : 0.5
+  S2 -> S1 : 0.5
+  S2 -> Rich : 0.5
+```
+
+`state ID "label" absorbing` — the label is optional; `absorbing` asserts the state is a sink (a self-loop of probability 1). The engine cross-checks the assertion against the matrix.
+
+---
+
+## 3. Directives
+
+```
+layout: layered       # layout mode
+normalize: true        # scale each row to sum to 1 instead of hard-erroring
+analysis: classify, absorbing   # what to compute: classify | absorbing | stationary
+```
+
+- **`normalize: true`** rescales each row to sum to 1 (handy for unnormalised weights like `A -> B : 1`, `A -> C : 1`). Without it, a row that does not sum to 1 is a hard error.
+- **`analysis:`** selects which computations to run and surface.
+
+---
+
+## 4. The computed answer
+
+This is the differentiator. Three hand-written, dependency-free linear-algebra passes:
+
+1. **Matrix assembly + validation** — build P and enforce the row-sum policy (hard error, or rescale under `normalize`).
+2. **State classification** — Tarjan SCC → communicating classes; a class is **recurrent** iff closed, **transient** otherwise; a closed singleton with a probability-1 self-loop is **absorbing**.
+3. **The quantitative answer**:
+   - **Stationary distribution** π (πP = π, Σπ = 1) by power iteration with an exact Gaussian-elimination fallback for periodic chains.
+   - For **absorbing chains**: the fundamental matrix N = (I−Q)⁻¹, absorption probabilities B = N·R, and expected steps to absorption t = N·1.
+
+Transient states, recurrent classes, and absorbing states are rendered distinctly; computed values are carried in `data-*`.
+
+---
+
+## 5. Common mistakes
+
+```
+# WRONG — probability outside [0,1]
+A -> B : 1.5
+
+# WRONG — transition with no probability
+A -> B
+
+# WRONG — rows that don't sum to 1 (without `normalize: true`)
+A -> B : 0.3
+A -> C : 0.3
+```
+
+Every transition needs a probability in `[0, 1]`; each state's outgoing probabilities must sum to 1, or you must set `normalize: true`. An empty chain (no transitions) is rejected.
+
+---
+
+## 6. Standard compliance
+
+The model is a discrete-time, time-homogeneous Markov chain with a row-stochastic transition matrix; classification (transient/recurrent/absorbing), stationary distributions, and absorbing-chain fundamental-matrix analysis follow standard texts (Kemeny & Snell, *Finite Markov Chains*).
+
+## 7. Roadmap
+
+Deferred: continuous-time chains (rate matrices), hidden Markov models, mean-first-passage times, and periodicity reporting.

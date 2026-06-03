@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="890" height="380" viewBox="0 0 890 380" role="img" aria-label="Loss of coolant accident" data-diagram-type="eventtree"><title>Loss of coolant accident</title>
+<desc>Event tree for &quot;Large LOCA&quot; (f₀ = 1.000e-4): 3 functions, 4 sequences. OK: 9.841e-5. Early release: 9.990e-7. Late release: 4.945e-7. Core damage: 1.000e-7. Dominant sequence: &quot;OK&quot; [1s 2s 3s] at 9.841e-5.</desc>
+<style>.sx-et-bg { fill: #ffffff; }
+.sx-et-title { fill: #334155; font-size: 16px; font-weight: 700; }
+.sx-et-header { fill: #334155; font-size: 12px; font-weight: 700; }
+.sx-et-grid { fill: none; stroke: #475569; stroke-width: 1; stroke-dasharray: 4 4; opacity: 0.5; }
+.sx-et-headrule { fill: none; stroke: #334155; stroke-width: 1; }
+.sx-et-ie { fill: none; stroke: #1e293b; stroke-width: 3; }
+.sx-et-ie-label { fill: #334155; font-size: 10px; font-weight: 700; }
+.sx-et-ie-freq { fill: #2563eb; font-size: 9px; font-weight: 600; }
+.sx-et-edge { fill: none; stroke: #475569; stroke-width: 2; }
+.sx-et-edge[data-leg="s"] {}
+.sx-et-leg-label { fill: #334155; font-size: 9px; }
+.sx-et-leg-prob { fill: #2563eb; font-size: 9px; }
+.sx-et-outcome { fill: #334155; font-size: 12px; font-weight: 600; }
+.sx-et-freq { fill: #2563eb; font-size: 10px; font-weight: 600; }
+.sx-et-seqid { fill: #334155; font-size: 9px; opacity: 0.7; }
+.sx-et-dot { fill: #334155; stroke: none; }
+.sx-et-edge[data-dominant="true"] { stroke: #dc2626; stroke-width: 3; }
+.sx-et-outcome[data-dominant="true"] { fill: #b91c1c; }
+.sx-et-freq[data-dominant="true"] { fill: #b91c1c; font-weight: 700; }
+.sx-et-dot[data-dominant="true"] { fill: #b91c1c; }</style>
+<rect x="0" y="0" width="890" height="380" class="sx-et-bg"/>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><text x="28" y="32" class="sx-et-title" font-family="system-ui, -apple-system, sans-serif">Loss of coolant accident</text>
+<text x="60" y="76" class="sx-et-header" text-anchor="middle" data-col="initiating">Initiating Event</text>
+<text x="242" y="76" class="sx-et-header" text-anchor="middle" data-col="function">ECCS injects</text>
+<text x="392" y="76" class="sx-et-header" text-anchor="middle" data-col="function">Containment spray</text>
+<text x="542" y="76" class="sx-et-header" text-anchor="middle" data-col="function">Containment integrity</text>
+<text x="658.8" y="76" class="sx-et-header" text-anchor="middle" data-col="outcome">Outcome</text>
+<text x="778.8" y="76" class="sx-et-header" text-anchor="middle" data-col="frequency">Frequency</text>
+<line x1="28" y1="82" x2="822" y2="82" class="sx-et-headrule"/>
+<line x1="242" y1="88" x2="242" y2="312" class="sx-et-grid"/>
+<line x1="392" y1="88" x2="392" y2="312" class="sx-et-grid"/>
+<line x1="542" y1="88" x2="542" y2="312" class="sx-et-grid"/>
+<g class="sx-et-ie-g" data-id="LOCA"><line x1="28" y1="200" x2="92" y2="200" class="sx-et-ie"/>
+<text x="28" y="190" class="sx-et-ie-label">Large LOCA</text>
+<text x="28" y="216" class="sx-et-ie-freq">f₀ = 1.000e-4</text></g>
+<path d="M 92 200 L 242 200 L 242 172" class="sx-et-edge" data-leg="s" data-fn="A" data-tag="1s"/>
+<text x="167" y="165" class="sx-et-leg-label" text-anchor="middle">Success (1s)</text>
+<text x="167" y="176" class="sx-et-leg-prob" text-anchor="middle">0.999</text>
+<path d="M 242 172 L 392 172 L 392 144" class="sx-et-edge" data-leg="s" data-fn="B" data-tag="2s"/>
+<text x="317" y="137" class="sx-et-leg-label" text-anchor="middle">Success (2s)</text>
+<text x="317" y="148" class="sx-et-leg-prob" text-anchor="middle">0.99</text>
+<path d="M 392 144 L 542 144 L 542 116" class="sx-et-edge" data-leg="s" data-fn="C" data-tag="3s"/>
+<text x="467" y="109" class="sx-et-leg-label" text-anchor="middle">Success (3s)</text>
+<text x="467" y="120" class="sx-et-leg-prob" text-anchor="middle">0.995</text>
+<path d="M 392 144 L 542 144 L 542 172" class="sx-et-edge" data-leg="f" data-fn="C" data-tag="3f"/>
+<text x="467" y="165" class="sx-et-leg-label" text-anchor="middle">Failure (3f)</text>
+<text x="467" y="176" class="sx-et-leg-prob" text-anchor="middle">0.005</text>
+<path d="M 242 172 L 392 172 L 392 228" class="sx-et-edge" data-leg="f" data-fn="B" data-tag="2f"/>
+<text x="317" y="221" class="sx-et-leg-label" text-anchor="middle">Failure (2f)</text>
+<text x="317" y="232" class="sx-et-leg-prob" text-anchor="middle">0.01</text>
+<path d="M 92 200 L 242 200 L 242 284" class="sx-et-edge" data-leg="f" data-fn="A" data-tag="1f"/>
+<text x="167" y="277" class="sx-et-leg-label" text-anchor="middle">Failure (1f)</text>
+<text x="167" y="288" class="sx-et-leg-prob" text-anchor="middle">0.001</text>
+<path d="M 542 116 L 582 116" class="sx-et-edge" data-leg="s" data-fn="__leaf__"/>
+<path d="M 542 172 L 582 172" class="sx-et-edge" data-leg="f" data-fn="__leaf__"/>
+<path d="M 392 228 L 582 228" class="sx-et-edge" data-leg="f" data-fn="__leaf__"/>
+<path d="M 242 284 L 582 284" class="sx-et-edge" data-leg="f" data-fn="__leaf__"/>
+<g class="sx-et-leaf-g" data-seq="1" data-outcome="OK" data-frequency="0.000098406495" data-designator="1s 2s 3s" data-dominant="true"><circle cx="582" cy="116" r="3" class="sx-et-dot" data-dominant="true"/>
+<text x="592" y="112" class="sx-et-outcome" data-dominant="true">OK</text>
+<text x="592" y="128" class="sx-et-freq" data-dominant="true">9.841e-5  ·  1s 2s 3s</text></g>
+<g class="sx-et-leaf-g" data-seq="2" data-outcome="Late release" data-frequency="4.94505e-7" data-designator="1s 2s 3f"><circle cx="582" cy="172" r="3" class="sx-et-dot"/>
+<text x="592" y="168" class="sx-et-outcome">Late release</text>
+<text x="592" y="184" class="sx-et-freq">4.945e-7  ·  1s 2s 3f</text></g>
+<g class="sx-et-leaf-g" data-seq="3" data-outcome="Early release" data-frequency="9.99e-7" data-designator="1s 2f"><circle cx="582" cy="228" r="3" class="sx-et-dot"/>
+<text x="592" y="224" class="sx-et-outcome">Early release</text>
+<text x="592" y="240" class="sx-et-freq">9.990e-7  ·  1s 2f</text></g>
+<g class="sx-et-leaf-g" data-seq="4" data-outcome="Core damage" data-frequency="1e-7" data-designator="1f"><circle cx="582" cy="284" r="3" class="sx-et-dot"/>
+<text x="592" y="280" class="sx-et-outcome">Core damage</text>
+<text x="592" y="296" class="sx-et-freq">1.000e-7  ·  1f</text></g></g></svg>

@@ -1,0 +1,44 @@
+---
+title: Git Flow release history
+description: A realistic Git Flow branch/merge/tag history — develop, a feature branch, a tagged release, and a hotfix merged back to both lines. Mermaid gitGraph syntax, rendered through Schematex's zero-dependency engine.
+diagram: gitgraph
+standard: Mermaid gitGraph dialect
+industry: [software, devops]
+persona: For the engineering lead documenting a workflow
+complexity: 3
+tags: [gitgraph, git-flow, branch, merge, tag, hotfix]
+featured: false
+relatedLink:
+  label: Git graph syntax
+  href: /docs/gitgraph
+status: published
+dsl: |
+  gitGraph
+    commit id: "init"
+    commit id: "scaffold"
+    branch develop
+    checkout develop
+    commit id: "feature scaffold"
+    branch feature/login
+    checkout feature/login
+    commit id: "login UI"
+    commit id: "login API"
+    checkout develop
+    merge feature/login
+    commit id: "polish"
+    checkout main
+    merge develop tag: "v1.0"
+    branch hotfix
+    checkout hotfix
+    commit id: "patch CVE" type: HIGHLIGHT
+    checkout main
+    merge hotfix tag: "v1.0.1"
+    checkout develop
+    merge main
+---
+
+## What this shows
+
+A full Git Flow release cycle, the branching strategy teams adopt to keep a clean trunk. Work forks off `main` into a long-lived `develop`, then into a short-lived `feature/login` branch; the feature merges back to develop, develop merges to `main` as the tagged `v1.0` release. Then a security `hotfix` branches straight off `main`, lands a HIGHLIGHT commit, ships as `v1.0.1`, and is merged back down into develop so the fix isn't lost — the discipline that keeps the two lines from diverging.
+
+The DSL is the Mermaid `gitGraph` dialect verbatim, so existing Mermaid sources port directly. The engine replays the operation list in order to assign each commit to a lane, routes the merge connectors from each branch tip without crossings, renders the patch commit emphasised as a HIGHLIGHT, and draws the version tags as flags — all from a KB-scale, dependency-free bundle.

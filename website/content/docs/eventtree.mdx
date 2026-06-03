@@ -1,0 +1,102 @@
+---
+title: Event Tree Analysis
+description: Inductive forward risk analysis — one initiating event branches success/failure through safety functions to quantified end states.
+---
+
+## About event trees
+
+An **event tree** is the forward, inductive twin of the fault tree. Start from one **initiating event** (a pipe break, a fire, a demand on a safety system) and ask, in order, whether each downstream **safety function** succeeds or fails. Every path through the branching ladder ends at a quantified **outcome** (OK, contained, core damage…). It is the workhorse of nuclear PRA and process QRA, standardised through **IEC 62502** and **[NUREG-0492](https://www.nrc.gov/docs/ML1007/ML100780465.pdf)**-era WASH-1400 practice.
+
+Schematex's edge is the same as the fault tree's: the engine **computes the answer**, not just the ladder. Given the initiating frequency and each function's failure probability, it derives every path frequency (`f₀ · ∏ branch-probabilities`), rolls outcomes up across paths, and highlights the **dominant sequence** in red. draw.io draws a forking ladder and stops; that is a picture, not an analysis.
+
+<Playground initial={`eventtree "Loss of coolant accident"
+  initiating LOCA "Large LOCA" freq: 1e-4
+  function A "ECCS injects"          p: 0.001
+  function B "Containment spray"     p: 0.01
+  function C "Containment integrity" p: 0.005
+  outcome s s s -> "OK"
+  outcome s s f -> "Late release"
+  outcome s f * -> "Early release"
+  outcome f * * -> "Core damage"`} height={560} />
+
+---
+
+## 1. Your first event tree
+
+Every document starts with the `eventtree` keyword (alias `eta`), an optional title, then a flat list of declarations:
+
+```
+eventtree "Smoke detector demand"
+  initiating FIRE "Fire starts" freq: 0.01
+  function D "Detector actuates" p: 0.02
+  function S "Suppression works" p: 0.05
+  outcome s s -> "Controlled"
+  outcome s f -> "Damage, contained"
+  outcome f * -> "Uncontrolled fire"
+```
+
+- **`initiating ID "label" freq: N`** — exactly one. The challenge frequency, accepting decimals or scientific notation (`freq: 0.01` or `freq: 1e-4`).
+- **`function ID "label" p: N`** — one per branch column, **declared left→right in query order**. `p:` is the **failure** probability; the engine derives the success leg as its complement `1 − p` (you never state both).
+- **`outcome <pattern> -> "end state"`** — one realised leaf each.
+
+---
+
+## 2. The s / f / * outcome pattern
+
+Each `outcome` row reads left→right over the function columns:
+
+```
+outcome s s s -> "OK"           # every function succeeds
+outcome s s f -> "Late release" # C fails on the last query
+outcome s f * -> "Early release"# B fails; C is never queried (pruned)
+outcome f * * -> "Core damage"  # A fails; path terminates immediately
+```
+
+- **`s`** — success leg (upper branch).
+- **`f`** — failure leg (lower branch).
+- **`*`** — pruned: the path is not queried here, it runs flat to its leaf.
+
+This is how an event tree avoids being a full balanced 2ⁿ tree: once a function failure makes later questions moot, you write `*` and the sequence terminates early. Two hard rules: a pattern may not be **longer** than the column count, and **once a column is pruned (`*`) every later column must also be `*`** — a path that has terminated cannot resume querying.
+
+---
+
+## 3. Computed path frequencies & outcomes
+
+This is the differentiator. With the failure probabilities and `freq`, the engine computes:
+
+- **Each path frequency** = `f₀ · ∏ branch-probabilities` along its `s`/`f` legs (success legs contribute `1 − p`, failure legs `p`).
+- **Outcome roll-up**: outcomes with the same end-state label are summed across every path that reaches them (every `"Core damage"` leaf adds up).
+- **The dominant sequence** — the largest-frequency path — gets the reserved-red accent, the ETA analogue of the fault tree's single point of failure.
+
+Every leaf carries `data-*` (`data-freq`, `data-outcome`) so the computed numbers are inspectable downstream.
+
+---
+
+## 4. Common mistakes
+
+```
+# WRONG — function with no failure probability
+function A "ECCS"
+
+# WRONG — querying after a pruned column (path already terminated)
+outcome * s -> "bad"
+
+# WRONG — more tokens than declared columns
+function A p: 0.1
+outcome s s -> "ok"
+
+# WRONG — initiating event with no frequency
+initiating LOCA "Large LOCA"
+```
+
+Each is rejected with a plain-English message naming the line. State `p:` as a **failure** probability (small), give the initiating event a `freq:`, keep prunes trailing, and you are correct by construction.
+
+---
+
+## 5. Standard compliance
+
+Form follows IEC 62502 and classical PRA practice (WASH-1400 / NUREG): functions as ordered header columns, the binary success/failure split, complement-derived success legs, and frequency propagation by multiplication. The `monochrome` theme reproduces the textbook black-and-white look; `default` reserves red for the dominant sequence.
+
+## 6. Roadmap
+
+Deferred: linked fault-tree fragments per branch (shared basic events), uncertainty propagation, and consequence-category grouping.

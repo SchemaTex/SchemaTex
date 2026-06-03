@@ -76,7 +76,17 @@ export type DiagramType =
   | "umlclass" // UML 2.5.1 §9–§11 class diagram — classifiers + 6 relationships (36-UMLCLASS-STANDARD)
   // Risk & reliability engineering
   | "faulttree" // Fault Tree Analysis — NUREG-0492 / IEC 61025, MOCUS cut sets + P(top) (37-FAULT-TREE-STANDARD)
-  | "bowtie"; // Bowtie risk diagram — CCPS/EI 2018 barrier-based risk mgmt, symmetric threat→knot→consequence wings (38-BOWTIE-STANDARD)
+  | "bowtie" // Bowtie risk diagram — CCPS/EI 2018 barrier-based risk mgmt, symmetric threat→knot→consequence wings (38-BOWTIE-STANDARD)
+  | "eventtree" // Event Tree Analysis — IEC 62502 / NUREG, computed path frequencies (39-EVENT-TREE-STANDARD)
+  | "fmea" // FMEA — AIAG-VDA / IEC 60812, computed RPN=S×O×D + Action Priority (40-FMEA-STANDARD)
+  // Systems thinking / stochastic
+  | "causalloop" // Causal Loop Diagram — Sterman system dynamics, R/B loop detection (41-CAUSAL-LOOP-STANDARD)
+  | "markov" // Markov chain — stationary distribution + state classification (42-MARKOV-CHAIN-STANDARD)
+  // Software / process engineering
+  | "gitgraph" // Git commit graph — Mermaid gitGraph parity, branch swimlanes (43-GIT-GRAPH-STANDARD)
+  | "epc" // Event-driven Process Chain — ARIS, event/function alternation validation (44-EPC-STANDARD)
+  | "idef0" // IDEF0 function modeling — FIPS PUB 183, ICOM arrow placement (45-IDEF0-STANDARD)
+  | "threatmodel"; // Threat model (DFD + STRIDE) — Shostack per-element mapping + trust-boundary crossing (46-THREAT-MODEL-STRIDE-STANDARD)
 
 export type GenogramMode = "medical" | "heritage";
 

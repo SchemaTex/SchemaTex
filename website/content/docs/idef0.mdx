@@ -1,0 +1,111 @@
+---
+title: IDEF0 Function Model
+description: Structured-analysis activity models — function boxes wired by ICOM arrows (Input/Control/Output/Mechanism), correct by construction.
+---
+
+## About IDEF0
+
+**IDEF0** (Integration Definition for Function Modeling) is the US-federal standard for **functional decomposition** — modelling *what* a system does. Each activity is a box; arrows connect on four fixed sides by role: **I**nput (left), **C**ontrol (top), **O**utput (right), **M**echanism (bottom) — the **ICOM** convention. Standardised as **[FIPS PUB 183](https://www.nist.gov/publications/integration-definition-function-modeling-idef0)** (1993).
+
+Schematex's edge is that the model is **correct by construction**. The arrow's role *is* the box edge it attaches to, so the engine enforces ICOM placement, resolves every reference, assigns decomposition numbers, codes boundary arrows (I1/C1/O1/M1…), and applies the FIPS 3-to-6-box guideline — rejecting a model that violates the standard rather than letting you draw an arrow on the wrong side.
+
+<Playground initial={`idef0 "Manufacture product"
+node A0
+function A1 "Plan production"
+function A2 "Make parts"
+function A3 "Assemble product"
+input     A1 "Sales orders"
+control   A1 "Production schedule"
+A1 -> A2 "Work plan"
+input     A2 "Raw material"
+mechanism A2 "CNC machines"
+A2 -> A3 "Finished parts"
+output    A3 "Product"
+mechanism A3 "Assembly line"`} height={520} />
+
+---
+
+## 1. Your first IDEF0 diagram
+
+Start with the `idef0` keyword, an optional title, an optional `node` (the diagram's node number), then **function boxes** and their **ICOM arrows**:
+
+```
+idef0 "Fill order"
+function A1 "Receive order"
+input     A1 "Customer request"
+control   A1 "Order policy"
+mechanism A1 "Order clerk"
+output    A1 "Confirmed order"
+```
+
+`function ID "name"` declares a box (in declaration order). `node A0` sets the parent node number used to derive child node numbers (A0 → A1..An). FIPS guidance is 3–6 boxes per diagram; outside that range the engine warns.
+
+---
+
+## 2. ICOM boundary arrows
+
+Each keyword pins an arrow to a specific side of a box, and that *is* its role:
+
+```
+input     A1 "Sales orders"        # enters the LEFT edge
+control   A1 "Production schedule" # enters the TOP edge (governs the activity)
+output    A1 "Product"             # leaves the RIGHT edge
+mechanism A1 "CNC machines"        # enters the BOTTOM edge (the resource)
+```
+
+`input`, `control`, and `mechanism` route from the diagram frame **into** the box; `output` routes from the box **out** to the frame. The engine codes these boundary arrows down each edge (I1, I2 / C1 / O1 / M1).
+
+---
+
+## 3. Flow arrows between boxes
+
+A `->` arrow connects two boxes; by default it lands on the target's **input**, but you can name the target's ICOM side:
+
+```
+A1 -> A2 "Work plan"            # box→box; defaults to A2's input
+A2 -> A3.control "Parts spec"   # land on A3's control (top) edge
+input A2 "Raw material" (tunnel) # (tunnel) hides the arrow at this level
+```
+
+- `target.control` / `target.input` / `target.mechanism` picks the landing side.
+- A flow **cannot land on the target's `.output`** — an output leaves a box, it does not enter one.
+- `(tunnel)` marks a tunnelled arrow (suppressed on the parent/child diagram per FIPS).
+
+---
+
+## 4. Computed structural enforcement
+
+This is the differentiator — what makes the model correct where a drawing tool is not:
+
+1. **ICOM placement enforcement** — the role is resolved against the box's geometry side; a malformed role, or a flow asked to *enter* a box via `.output`, is rejected.
+2. **Reference resolution** — every box id named by an arrow must be declared.
+3. **Decomposition numbering** — boxes get contiguous box numbers 1..n (lower-right corner) and node numbers (A0 → A1..An); explicit `#N` numbers are checked for contiguity, range, and duplicates.
+4. **Boundary coding** — boundary arrows are coded I1/C1/O1/M1 down each edge.
+5. **Box-count guideline** — fewer than 3 or more than 6 boxes raises a FIPS-183 warning.
+
+---
+
+## 5. Common mistakes
+
+```
+# WRONG — no idef0 header
+function A1 "x"
+
+# WRONG — a flow landing on the target's output
+A1 -> A2.output "bad"
+
+# WRONG — an unknown ICOM side word
+A1 -> A2.sideways "bad"
+```
+
+The document must start with `idef0`; arrows may target `.input` / `.control` / `.mechanism` only; every referenced box id must be declared. Because the keyword encodes the side, you cannot accidentally draw a control as an input — the standard is enforced, not suggested.
+
+---
+
+## 6. Standard compliance
+
+Notation, ICOM placement, decomposition numbering, boundary coding, tunnelled arrows, and the 3-to-6-box guideline follow FIPS PUB 183 (IDEF0). The `monochrome` theme reproduces the standard's black-and-white box-and-arrow look.
+
+## 7. Roadmap
+
+Deferred: multi-page decomposition splicing (child diagrams), node-tree / FEO pages, and call arrows to referenced models.

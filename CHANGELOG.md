@@ -7,6 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.8.0] — 2026-06-03
+
+### Added — Bucket B: 8 new diagram engines
+
+Eight new `DiagramType`s, each a full engine (parser + layout + renderer + tests) built against its published-standard reference imagery, wired into the registry, plugin list, AI generation profiles, and LLM syntax docs.
+
+- **`eventtree`** — Event Tree Analysis (IEC 62502 / NUREG). Header function columns, success-up/failure-down pruned tree; the engine computes each outcome's path frequency = initiating freq × Π branch probabilities.
+- **`fmea`** — Failure Mode and Effects Analysis (AIAG-VDA / IEC 60812 / SAE J1739). The engine computes RPN = S×O×D and the AIAG-VDA Action Priority, ranks the sheet, and colour-fills the RPN/AP cells by risk. Schematex's first table-shaped diagram.
+- **`causalloop`** — Causal Loop Diagram (Sterman system dynamics). Signed links; the engine detects feedback loops and classifies each reinforcing (R) / balancing (B) by negative-link parity.
+- **`markov`** — Discrete-time Markov chain. The engine computes the stationary distribution (power iteration) and classifies states recurrent/transient/absorbing; absorbing states render with a double ring.
+- **`gitgraph`** — Git commit graph, Mermaid `gitGraph`-compatible. Per-branch swimlanes, hollow merge commits, open-square HIGHLIGHT, branch pills + tags, cherry-pick.
+- **`epc`** — Event-driven Process Chain (ARIS). Red-hexagon events / green-rounded-rect functions / ∧∨× connectors; the engine validates event↔function alternation (an event cannot be the source of an OR/XOR split).
+- **`idef0`** — IDEF0 function model (FIPS PUB 183). ICOM arrow placement (Input-left / Control-top / Output-right / Mechanism-bottom), diagonal box staircase, node numbering; the engine enforces ICOM sides.
+- **`threatmodel`** — DFD + STRIDE threat model (Shostack). Per-element STRIDE mapping (data-store Repudiation conditional on log/audit stores) and trust-boundary-crossing detection. Includes the DFD base notation.
+
+Reference standards documented in `docs/reference/39–46`; syntax tutorials in `website/content/docs/`; gallery examples in `website/content/examples/`. AI bundle now ships 44 syntax docs — all new types discoverable via `listDiagrams` / `getSyntax`.
+
+---
+
+## [0.7.0] — 2026-06-02
+
+### Added — Bucket A: 4 engine-extension modes
+
+New modes on existing engines (no new `DiagramType`), each shipped with docs + gallery examples + AI bundle coverage.
+
+- **phylo → `dendrogram`** — merge-height (cophenetic) layout, rectangular elbows, height axis, and `cut <value>` flat-cluster slicing.
+- **decisiontree → `influence`** — Howard & Matheson influence diagram: compact DAG with decision (rectangle) / chance (oval) / value (octagon) nodes and destination-derived arc semantics.
+- **matrix → `sipoc` + `qfd`** — Six Sigma SIPOC table and the Akao House of Quality with a computed technical-importance row (Σ weight×strength) and a HOW×HOW diamond-cell correlation roof.
+- **mindmap → `futureswheel` + `driver`** — Jerome Glenn concentric-ring consequence map and the IHI aim→drivers→change-ideas tree.
+
+---
+
 ## [0.6.10] — 2026-06-02
 
 ### Fixed — P&ID layout quality: the 5 long-pending renderer tests now pass

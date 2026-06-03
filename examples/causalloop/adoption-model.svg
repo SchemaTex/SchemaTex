@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="427" height="320" viewBox="0 0 427 320" role="img" aria-label="Adoption model" data-diagram-type="causalloop"><title>Adoption model</title>
+<desc>Causal loop diagram &quot;Adoption model&quot;: 3 variables, 4 causal links. 2 feedback loops: 1 reinforcing (R), 1 balancing (B). R1 &quot;Word of mouth&quot; (reinforcing, 0 negative links): Adoption rate → Adopters → Adoption rate. B1 &quot;Market saturation&quot; (balancing, 1 negative link): Adoption rate → Potential adopters → Adoption rate.</desc>
+<style>.sx-cld-bg { fill: #ffffff; }
+.sx-cld-link { fill: none; stroke: #1a1a1a; stroke-width: 2; }
+.sx-cld-arrow { fill: #1a1a1a; stroke: none; }
+.sx-cld-var { fill: #1a1a1a; font-size: 13px; font-weight: 600; }
+.sx-cld-polarity { fill: #1a1a1a; font-size: 14px; font-weight: 700; }
+.sx-cld-link-label { fill: #1a1a1a; font-size: 9px; }
+.sx-cld-delay { stroke: #1a1a1a; stroke-width: 2; }
+.sx-cld-glyph { fill: none; stroke: #1d6fd6; stroke-width: 2; }
+.sx-cld-glyph-head { fill: #1d6fd6; stroke: none; }
+.sx-cld-glyph-label { fill: #1d6fd6; font-size: 12px; font-weight: 700; }
+.sx-cld-glyph-phrase { fill: #1d6fd6; font-size: 10px; font-style: italic; }
+.sx-cld-title { fill: #1a1a1a; font-size: 16px; font-weight: 700; }</style>
+<rect x="0" y="0" width="427" height="320" class="sx-cld-bg"/>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><text x="36" y="20" class="sx-cld-title" font-family="system-ui, -apple-system, sans-serif">Adoption model</text>
+<g class="sx-cld-link-g" data-from="Adoption rate" data-to="Adopters" data-polarity="+"><path d="M 226.51 67 Q 310.56 121.14 315.42 221" class="sx-cld-link"/>
+<polygon points="315.42,221 310.49,212.23 319.48,211.79" class="sx-cld-arrow"/>
+<text x="323.7377666654977" y="213.00826115924525" class="sx-cld-polarity" text-anchor="middle">+</text></g>
+<g class="sx-cld-link-g" data-from="Adopters" data-to="Adoption rate" data-polarity="+"><path d="M 315.42 221 Q 231.36 166.86 226.51 67" class="sx-cld-link"/>
+<polygon points="226.51,67 231.44,75.77 222.45,76.21" class="sx-cld-arrow"/>
+<text x="218.1852817886349" y="82.9917388407547" class="sx-cld-polarity" text-anchor="middle">+</text></g>
+<g class="sx-cld-link-g" data-from="Adoption rate" data-to="Potential adopters" data-polarity="-"><path d="M 211.49 67 Q 127.44 121.14 122.58 221" class="sx-cld-link"/>
+<polygon points="122.58,221 118.52,211.79 127.51,212.23" class="sx-cld-arrow"/>
+<text x="114.2622333345023" y="213.00826115924534" class="sx-cld-polarity" text-anchor="middle">−</text></g>
+<g class="sx-cld-link-g" data-from="Potential adopters" data-to="Adoption rate" data-polarity="+"><path d="M 122.58 221 Q 206.64 166.86 211.49 67" class="sx-cld-link"/>
+<polygon points="211.49,67 215.55,76.21 206.56,75.77" class="sx-cld-arrow"/>
+<text x="219.8147182113651" y="82.9917388407547" class="sx-cld-polarity" text-anchor="middle">+</text></g>
+<g class="sx-cld-glyph-g" data-loop="R1" data-kind="R" data-vars="Adoption rate,Adopters" data-negatives="0" data-circulation="ccw"><path d="M 270.96 128 A 16 16 0 1 0 284.82 136" class="sx-cld-glyph"/>
+<polygon points="284.82,136 291.35,140.31 285.29,143.81" class="sx-cld-glyph-head"/>
+<text x="270.9615242270663" y="149" class="sx-cld-glyph-label" text-anchor="middle">R1</text>
+<text x="270.9615242270663" y="173" class="sx-cld-glyph-phrase" text-anchor="middle">Word of mouth</text></g>
+<g class="sx-cld-glyph-g" data-loop="B1" data-kind="B" data-vars="Adoption rate,Potential adopters" data-negatives="1" data-circulation="ccw"><path d="M 167.04 128 A 16 16 0 1 0 180.89 136" class="sx-cld-glyph"/>
+<polygon points="180.89,136 187.43,140.31 181.36,143.81" class="sx-cld-glyph-head"/>
+<text x="167.03847577293368" y="149.00000000000003" class="sx-cld-glyph-label" text-anchor="middle">B1</text>
+<text x="167.03847577293368" y="173.00000000000003" class="sx-cld-glyph-phrase" text-anchor="middle">Market saturation</text></g>
+<g class="sx-cld-var-g" data-id="Adoption rate"><text x="219" y="58" class="sx-cld-var" text-anchor="middle">Adoption rate</text></g>
+<g class="sx-cld-var-g" data-id="Adopters"><text x="322.92304845413264" y="237.99999999999997" class="sx-cld-var" text-anchor="middle">Adopters</text></g>
+<g class="sx-cld-var-g" data-id="Potential adopters"><text x="115.07695154586739" y="238.00000000000006" class="sx-cld-var" text-anchor="middle">Potential adopters</text></g></g></svg>

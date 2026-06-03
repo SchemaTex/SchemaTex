@@ -1,0 +1,106 @@
+---
+title: Causal Loop Diagram
+description: System-dynamics feedback diagrams — the engine enumerates every feedback loop and classifies it reinforcing or balancing by polarity.
+---
+
+## About causal loop diagrams
+
+A **causal loop diagram** (CLD) is the core mapping tool of **system dynamics** (Jay Forrester, MIT, 1960s): variables connected by signed causal links, where the *feedback loops* — not the individual arrows — explain a system's behaviour. A loop is **reinforcing (R)** when it amplifies change and **balancing (B)** when it counteracts it. The canonical reference is Sterman, *Business Dynamics* (2000).
+
+Schematex's edge is that the engine **finds and classifies the loops for you**. Drawing tools let you place arrows; they don't tell you which loops exist or whether each is reinforcing or balancing. Schematex enumerates every elementary feedback loop (Johnson's algorithm) and applies Sterman's even/odd polarity rule — labelling them R1, B1, R2…
+
+<Playground initial={`causalloop "Sales force flywheel"
+var "Training quality"
+"Training quality" -> "Salesperson skills" : + delay
+"Salesperson skills" -> Revenue : +
+Revenue -> "Training quality" : +
+Revenue -> "Hiring rate" : +
+"Hiring rate" -> "Salesperson skills" : -
+loop R1 "Skill flywheel"
+loop B1 "Dilution"`} height={480} />
+
+---
+
+## 1. Your first causal loop
+
+Start with the `causalloop` keyword (alias `cld`), an optional title, then **signed links**. Variables are auto-created from the links — you rarely declare them:
+
+```
+causalloop "Adoption model"
+"Adoption rate" -> Adopters : +
+Adopters -> "Adoption rate" : +
+loop R1 "Word of mouth"
+```
+
+A link is `SOURCE -> TARGET : POLARITY`. Multi-word variable names are quoted (`"Adoption rate"`); single words need no quotes (`Adopters`). At least one link is required.
+
+---
+
+## 2. Link polarity
+
+Polarity is the sign of the causal influence and is **mandatory** on every link:
+
+```
+A -> B : +          # same direction (more A → more B)
+B -> C : -          # opposite direction (more B → less C)
+A -> B : s          # alias for + (same)
+B -> C : o          # alias for − (opposite)
+C -> D : same       # alias for +
+D -> E : opposite   # alias for −
+A -> B +            # the colon is optional
+```
+
+`+` / `s` / `same` mean *same direction*; `−` / `o` / `opposite` mean *opposite*. A link with no polarity is rejected.
+
+---
+
+## 3. Delays and explicit variables
+
+```
+"Training quality" -> "Salesperson skills" : + delay   # marked delay (∥ hash on the arrow)
+A -> B : + ~delay                                       # the ~delay form also works
+var "Adoption rate"                                     # pin a variable so it isn't auto-created
+loop R1 "Word of mouth"                                 # name/annotate a loop
+```
+
+- **`delay`** / **`~delay`** marks a link as delayed (the system-dynamics hash mark).
+- **`var "name"`** declares a variable explicitly (fixes its label; not auto-created).
+- **`loop ID "phrase"`** attaches a human-readable name to a loop the engine detects.
+
+---
+
+## 4. Computed feedback loops
+
+This is the differentiator. The engine:
+
+1. Builds the **signed directed graph** (nodes = variables, edges = signed links).
+2. Enumerates **every elementary feedback loop** (simple directed cycle) with Johnson's algorithm — deterministically, in declaration order.
+3. **Classifies** each loop by counting negative links:
+   - **even** count (including 0) → **R** (reinforcing); product of signs = +1
+   - **odd** count → **B** (balancing); product of signs = −1
+
+This is exactly Sterman's even/odd rule. Loops are numbered in detection order by kind (R1, B1, R2…) and drawn with their `R`/`B` rotation glyph at the loop centre. Each loop carries `data-loop` and `data-kind`.
+
+---
+
+## 5. Common mistakes
+
+```
+# WRONG — link with no polarity
+A -> B
+
+# WRONG — a diagram with no links at all
+cld
+```
+
+Every link needs a polarity (`: +` or `: -`); a CLD with no links is rejected. Remember polarity is about *direction of change*, not desirability — a link from "deaths" to "population" is still `-` (more deaths → less population) even though deaths are bad.
+
+---
+
+## 6. Standard compliance
+
+Notation follows Sterman, *Business Dynamics* (2000) and standard system-dynamics convention: signed link polarity, delay hash marks, and R/B loop identifiers. The even/odd negative-link rule for loop polarity is the textbook classification, implemented exactly.
+
+## 7. Roadmap
+
+Deferred: stock-and-flow promotion, link-strength weighting, and dominant-loop (loop-eigenvalue) analysis over time.

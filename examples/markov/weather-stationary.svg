@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="sx-markov" role="img" aria-label="Weather" width="422" height="264" viewBox="0 0 422 264" data-diagram-type="markov"><title>Markov chain — Weather</title>
+<desc>2 states, 4 transitions. Classification: 2 recurrent, 0 transient, 0 absorbing. Stationary π: { Sunny=0.833, Rainy=0.167 }.</desc>
+<style>.sx-markov { font-family: system-ui, -apple-system, sans-serif; }
+.sx-markov-state { fill: #f1f5f9; stroke: #334155; stroke-width: 2; }
+.sx-markov-absorb-ring { fill: none; stroke: #2563eb; stroke-width: 2; }
+.sx-markov-state-absorbing { stroke: #2563eb; }
+.sx-markov-state-label { font: 600 13px sans-serif; fill: #0f172a; }
+.sx-markov-state-sublabel { font: 10px sans-serif; fill: #475569; }
+.sx-markov-pi { font: 600 10px sans-serif; fill: #2563eb; }
+.sx-markov-arc { stroke: #94a3b8; stroke-width: 1.6; fill: none; }
+.sx-markov-arc-self { stroke: #94a3b8; stroke-width: 1.6; fill: none; }
+.sx-markov-prob { font: 11px sans-serif; fill: #0f172a; }
+.sx-markov-title { font: 700 16px sans-serif; fill: #0f172a; }</style>
+<defs><marker id="sx-markov-head" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 9 5 L 0 10" fill="none" stroke="#94a3b8" stroke-width="1.4"/></marker></defs>
+<text x="211" y="22" class="sx-markov-title" text-anchor="middle">Weather</text>
+<g transform="translate(0, 32)"><g class="sx-markov-arcs"><g class="sx-markov-arc-g sx-markov-arc-self-g" data-from="Sunny" data-to="Sunny" data-prob="0.9"><path class="sx-markov-arc-self" d="M 90.5 134 C 60.5 152 60.5 80 90.5 98" marker-end="url(#sx-markov-head)"/>
+<text class="sx-markov-prob" x="48" y="119" text-anchor="middle">0.9</text></g>
+<g class="sx-markov-arc-g" data-from="Sunny" data-to="Rainy" data-prob="0.1"><path class="sx-markov-arc" d="M 144.94 108.08 C 177.97 99.04 244.03 99.04 277.06 108.08" marker-end="url(#sx-markov-head)"/>
+<text class="sx-markov-prob" x="211" y="93" text-anchor="middle">0.1</text></g>
+<g class="sx-markov-arc-g" data-from="Rainy" data-to="Sunny" data-prob="0.5"><path class="sx-markov-arc" d="M 277.06 123.92 C 244.03 132.96 177.97 132.96 144.94 123.92" marker-end="url(#sx-markov-head)"/>
+<text class="sx-markov-prob" x="211" y="145" text-anchor="middle">0.5</text></g>
+<g class="sx-markov-arc-g sx-markov-arc-self-g" data-from="Rainy" data-to="Rainy" data-prob="0.5"><path class="sx-markov-arc-self" d="M 331.5 98 C 361.5 80 361.5 152 331.5 134" marker-end="url(#sx-markov-head)"/>
+<text class="sx-markov-prob" x="374" y="119" text-anchor="middle">0.5</text></g></g>
+<g class="sx-markov-states"><g class="sx-markov-state-g" data-id="Sunny" data-class="recurrent" data-pi="0.833"><circle class="sx-markov-state" cx="116" cy="116" r="30"/>
+<text class="sx-markov-state-label" x="116" y="120" text-anchor="middle">Sunny</text>
+<text class="sx-markov-pi" x="116" y="160" text-anchor="middle">π=0.833</text></g>
+<g class="sx-markov-state-g" data-id="Rainy" data-class="recurrent" data-pi="0.167"><circle class="sx-markov-state" cx="306" cy="116" r="30"/>
+<text class="sx-markov-state-label" x="306" y="120" text-anchor="middle">Rainy</text>
+<text class="sx-markov-pi" x="306" y="160" text-anchor="middle">π=0.167</text></g></g></g></svg>

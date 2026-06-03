@@ -43,6 +43,14 @@ import { network } from "../diagrams/network";
 import { umlclass } from "../diagrams/umlclass";
 import { faulttree } from "../diagrams/faulttree";
 import { bowtie } from "../diagrams/bowtie";
+import { eventtree } from "../diagrams/eventtree";
+import { fmea } from "../diagrams/fmea";
+import { causalloop } from "../diagrams/causalloop";
+import { markov } from "../diagrams/markov";
+import { gitgraph } from "../diagrams/gitgraph";
+import { epc } from "../diagrams/epc";
+import { idef0 } from "../diagrams/idef0";
+import { threatmodel } from "../diagrams/threatmodel";
 
 export interface SchematexConfig {
   type?:
@@ -131,6 +139,14 @@ const plugins: DiagramPlugin[] = [
   umlclass,
   faulttree,
   bowtie,
+  eventtree,
+  fmea,
+  causalloop,
+  markov,
+  gitgraph,
+  epc,
+  idef0,
+  threatmodel,
 ];
 
 function detectPlugin(text: string, config?: SchematexConfig): DiagramPlugin {

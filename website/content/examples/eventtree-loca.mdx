@@ -1,0 +1,33 @@
+---
+title: Large LOCA event tree (reactor PRA)
+description: A large-break loss-of-coolant accident branched through four reactor safety functions. The engine computes every sequence frequency from the initiating rate and per-function failure probabilities, then highlights the dominant accident sequence.
+diagram: eventtree
+standard: IEC 62502 / NUREG (WASH-1400)
+industry: [nuclear, engineering]
+persona: For the PRA / reliability engineer
+complexity: 3
+tags: [eventtree, eta, pra, nuclear, sequence-frequency, core-damage]
+featured: false
+relatedLink:
+  label: Event tree syntax
+  href: /docs/eventtree
+status: published
+dsl: |
+  eventtree "Large LOCA"
+    initiating LOCA "Large-break LOCA" freq: 1e-4
+    function RT "Reactor trips" p: 0.001
+    function ECCS "ECCS injection" p: 0.01
+    function CHR "Containment heat removal" p: 0.02
+    function CI "Containment integrity" p: 0.005
+    outcome s s s s -> "OK"
+    outcome s s s f -> "Late release"
+    outcome s s f * -> "Late release"
+    outcome s f * * -> "Early release"
+    outcome f * * * -> "Core damage"
+---
+
+## What this shows
+
+The textbook nuclear probabilistic-risk-assessment (PRA) tree. One initiating event — a large pipe break draining the coolant at a frequency of `1e-4` per year — is asked, left to right, whether each safety function holds: reactor trip, emergency core cooling (ECCS), containment heat removal, then containment integrity. Each `*` prunes a path that has already terminated, so the tree stays compact instead of ballooning to a full 2⁴ ladder.
+
+The engine does the arithmetic an event tree exists to give. It multiplies the initiating frequency by the success leg (`1 − p`) or failure leg (`p`) at each branch to get every sequence frequency, sums the two `"Late release"` leaves into one rolled-up outcome, and paints the largest-frequency path — the dominant accident sequence — in red. That computed answer, not the forking picture, is the deliverable a drawing tool can't produce.
