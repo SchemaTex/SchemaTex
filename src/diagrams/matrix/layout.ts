@@ -1,4 +1,5 @@
 import type { MatrixAST, MatrixPoint } from "./types";
+import { computePunnett, punnettFooter } from "./types";
 
 export interface PlotBox {
   x0: number;
@@ -273,6 +274,70 @@ export function layoutQfd(ast: MatrixAST): QfdLayout {
     weightW,
     howLabelH,
     roofH,
+    footerH,
+  };
+}
+
+/** Punnett-square geometry: a (dim+1)×(dim+1) grid + a ratio-summary footer. */
+export interface PunnettLayout {
+  canvasWidth: number;
+  canvasHeight: number;
+  /** Top-left of the corner (header×header) cell. */
+  x0: number;
+  y0: number;
+  headerW: number;
+  headerH: number;
+  cellW: number;
+  cellH: number;
+  /** Grid dimension = 2^genes (per side). */
+  dim: number;
+  /** Y at which the ratio-summary footer begins. */
+  footerY: number;
+  footerH: number;
+}
+
+const PUNNETT_PAD = 24;
+
+export function layoutPunnett(ast: MatrixAST): PunnettLayout {
+  const pd = ast.punnett;
+  const genes = pd?.genes ?? [];
+  const g = Math.max(1, genes.length);
+  const dim = Math.pow(2, g);
+  const genoChars = g * 2;
+  const cell = Math.max(52, genoChars * 11 + 18);
+  const titleH = ast.title ? 40 : 0;
+  const x0 = PUNNETT_PAD;
+  const y0 = PUNNETT_PAD + titleH;
+  const gridRight = x0 + cell + dim * cell;
+  const gridBottom = y0 + cell + dim * cell;
+  const result = pd && genes.length > 0 ? computePunnett(pd) : null;
+  const phenoLines = result ? Math.max(1, result.phenotypeRatio.length) : 1;
+  const footerY = gridBottom + 18;
+  const footerH = 30 + phenoLines * 22 + 26;
+  // Widen the canvas so the footer summary lines never clip the viewBox.
+  let footerW = 0;
+  if (result) {
+    const f = punnettFooter(result);
+    const longest = Math.max(
+      `Phenotype ratio  ${f.phenotypeRatio}`.length,
+      `Genotype ratio  ${f.genotypeRatio}  —  ${f.genotypeDetail}`.length,
+      ...f.legend.map((p) => `${p.count} × ${p.label}`.length + 4),
+    );
+    footerW = x0 + longest * 6.7 + PUNNETT_PAD;
+  }
+  const canvasWidth = Math.max(gridRight + PUNNETT_PAD, footerW, 360);
+  const canvasHeight = footerY + footerH + PUNNETT_PAD;
+  return {
+    canvasWidth,
+    canvasHeight,
+    x0,
+    y0,
+    headerW: cell,
+    headerH: cell,
+    cellW: cell,
+    cellH: cell,
+    dim,
+    footerY,
     footerH,
   };
 }

@@ -1,10 +1,11 @@
-import type { MatrixAST, MatrixPoint, QfdData, QfdCorrelation } from "./types";
-import { computeQfdImportance } from "./types";
+import type { MatrixAST, MatrixPoint, QfdData, QfdCorrelation, PunnettGene } from "./types";
+import { computeQfdImportance, computePunnett, punnettFooter } from "./types";
 import { parseMatrix } from "./parser";
 import {
   layoutMatrix,
   layoutSipoc,
   layoutQfd,
+  layoutPunnett,
   type MatrixLayoutResult,
   type PointLayout,
 } from "./layout";
@@ -94,6 +95,18 @@ const CSS = `
 .sx-qfd-imp-value { font: 700 13px sans-serif; fill: #1e3a8a; text-anchor: middle; dominant-baseline: central; }
 .sx-qfd-imp-value-top { font: 800 14px sans-serif; fill: #dc2626; text-anchor: middle; dominant-baseline: central; }
 .sx-qfd-dir { font: 700 13px sans-serif; fill: #475569; text-anchor: middle; dominant-baseline: central; }
+.sx-punnett-corner { fill: #f1f5f9; stroke: #94a3b8; stroke-width: 1; }
+.sx-punnett-cornerline { stroke: #cbd5e1; stroke-width: 1; }
+.sx-punnett-corner-p1 { font: 600 11px sans-serif; fill: #1e3a8a; dominant-baseline: hanging; }
+.sx-punnett-corner-p2 { font: 600 11px sans-serif; fill: #1e3a8a; }
+.sx-punnett-header { fill: #e2e8f0; stroke: #94a3b8; stroke-width: 1; }
+.sx-punnett-gamete { font: 700 14px ui-monospace, "SF Mono", Menlo, monospace; fill: #0f172a; text-anchor: middle; dominant-baseline: central; }
+.sx-punnett-cell { stroke: #94a3b8; stroke-width: 1; }
+.sx-punnett-genotype { font: 700 15px ui-monospace, "SF Mono", Menlo, monospace; fill: #0f172a; text-anchor: middle; dominant-baseline: central; }
+.sx-punnett-footer-head { font: 700 13px sans-serif; fill: #111; }
+.sx-punnett-legend { font: 500 12.5px sans-serif; fill: #1f2937; dominant-baseline: central; }
+.sx-punnett-geno-ratio { font: 500 12px sans-serif; fill: #475569; }
+.sx-punnett-hint { font: 500 13px sans-serif; fill: #64748b; text-anchor: middle; }
 `.trim();
 
 function axisArrow(): string {
@@ -1350,9 +1363,155 @@ export function renderQfdAST(ast: MatrixAST): string {
   );
 }
 
+// ─── Punnett square — Mendelian cross ────────────────────────
+
+// Phenotype-class palette (light cell tint + matching legend swatch).
+const PUNNETT_TINTS = ["#dbeafe", "#dcfce7", "#fef9c3", "#fed7aa", "#fae8ff", "#cffafe", "#fee2e2", "#e0e7ff"];
+const PUNNETT_STRONG = ["#2563eb", "#16a34a", "#ca8a04", "#ea580c", "#9333ea", "#0891b2", "#dc2626", "#4f46e5"];
+
+/** Display a parent genotype, dominant allele first per locus, e.g. "RrYy". */
+function genotypeText(parent: string[][], genes: PunnettGene[]): string {
+  return parent
+    .map((pair, i) => {
+      const dom = genes[i]?.dominant;
+      const [a, b] = [pair[0] ?? "", pair[1] ?? ""];
+      return a === dom ? a + b : b === dom ? b + a : a + b;
+    })
+    .join("");
+}
+
+export function renderPunnettAST(ast: MatrixAST): string {
+  const pd = ast.punnett;
+  const lay = layoutPunnett(ast);
+
+  const svgWrap = (body: string[], descText: string): string =>
+    svgRoot(
+      {
+        class: "sx-matrix sx-punnett",
+        "data-diagram-type": "matrix",
+        "data-mode": "punnett",
+        width: lay.canvasWidth,
+        height: lay.canvasHeight,
+        viewBox: `0 0 ${lay.canvasWidth} ${lay.canvasHeight}`,
+        role: "graphics-document",
+      },
+      [
+        titleEl(ast.title ? `Punnett square — ${escapeXml(ast.title)}` : "Punnett square"),
+        descEl(descText),
+        defs([el("style", {}, CSS)]),
+        ...body,
+      ],
+    );
+
+  if (!pd || pd.genes.length === 0) {
+    return svgWrap(
+      [
+        textEl(
+          { x: lay.canvasWidth / 2, y: 44, class: "sx-matrix-title", "text-anchor": "middle" },
+          ast.title ?? "Punnett square",
+        ),
+        textEl({ x: lay.canvasWidth / 2, y: 84, class: "sx-punnett-hint" }, "Add a cross, e.g.  cross: Bb x Bb"),
+      ],
+      "Empty Punnett square — no cross specified",
+    );
+  }
+
+  const result = computePunnett(pd);
+  const phenoColor = new Map<string, { tint: string; strong: string }>();
+  result.phenotypeRatio.forEach((p, i) => {
+    phenoColor.set(p.key, {
+      tint: PUNNETT_TINTS[i % PUNNETT_TINTS.length]!,
+      strong: PUNNETT_STRONG[i % PUNNETT_STRONG.length]!,
+    });
+  });
+
+  const nodes: string[] = [];
+  if (ast.title) {
+    nodes.push(
+      textEl(
+        { x: lay.canvasWidth / 2, y: 24, class: "sx-matrix-title", "text-anchor": "middle" },
+        ast.title,
+      ),
+    );
+  }
+
+  const gx0 = lay.x0 + lay.headerW; // first body-column x
+  const gy0 = lay.y0 + lay.headerH; // first body-row y
+
+  // corner cell: split, parent-1 genotype top-right (columns), parent-2 bottom-left (rows)
+  nodes.push(rect({ x: lay.x0, y: lay.y0, width: lay.headerW, height: lay.headerH, class: "sx-punnett-corner" }));
+  nodes.push(
+    lineEl({ x1: lay.x0, y1: lay.y0, x2: lay.x0 + lay.headerW, y2: lay.y0 + lay.headerH, class: "sx-punnett-cornerline" }),
+  );
+  nodes.push(
+    textEl(
+      { x: lay.x0 + lay.headerW - 6, y: lay.y0 + 8, class: "sx-punnett-corner-p1", "text-anchor": "end" },
+      genotypeText(pd.parent1, pd.genes),
+    ),
+  );
+  nodes.push(
+    textEl(
+      { x: lay.x0 + 6, y: lay.y0 + lay.headerH - 8, class: "sx-punnett-corner-p2", "text-anchor": "start" },
+      genotypeText(pd.parent2, pd.genes),
+    ),
+  );
+
+  // column gamete headers (parent 1)
+  result.gametes1.forEach((g, c) => {
+    const cx = gx0 + c * lay.cellW;
+    nodes.push(rect({ x: cx, y: lay.y0, width: lay.cellW, height: lay.headerH, class: "sx-punnett-header" }));
+    nodes.push(textEl({ x: cx + lay.cellW / 2, y: lay.y0 + lay.headerH / 2, class: "sx-punnett-gamete" }, g));
+  });
+  // row gamete headers (parent 2)
+  result.gametes2.forEach((g, r) => {
+    const cy = gy0 + r * lay.cellH;
+    nodes.push(rect({ x: lay.x0, y: cy, width: lay.headerW, height: lay.cellH, class: "sx-punnett-header" }));
+    nodes.push(textEl({ x: lay.x0 + lay.headerW / 2, y: cy + lay.cellH / 2, class: "sx-punnett-gamete" }, g));
+  });
+
+  // body cells, tinted by phenotype class
+  for (let r = 0; r < result.grid.length; r++) {
+    const row = result.grid[r]!;
+    for (let c = 0; c < row.length; c++) {
+      const cell = row[c]!;
+      const color = phenoColor.get(cell.phenotypeKey)!;
+      const cx = gx0 + c * lay.cellW;
+      const cy = gy0 + r * lay.cellH;
+      nodes.push(rect({ x: cx, y: cy, width: lay.cellW, height: lay.cellH, fill: color.tint, class: "sx-punnett-cell" }));
+      nodes.push(textEl({ x: cx + lay.cellW / 2, y: cy + lay.cellH / 2, class: "sx-punnett-genotype" }, cell.genotype));
+    }
+  }
+
+  // footer — the computed result: phenotype ratio + legend, then genotype ratio
+  const footer = punnettFooter(result);
+  let fy = lay.footerY + 18;
+  nodes.push(
+    textEl({ x: lay.x0, y: fy, class: "sx-punnett-footer-head" }, `Phenotype ratio  ${footer.phenotypeRatio}`),
+  );
+  fy += 22;
+  for (const p of footer.legend) {
+    const color = phenoColor.get(p.key)!;
+    nodes.push(
+      rect({ x: lay.x0, y: fy - 8, width: 14, height: 14, fill: color.tint, stroke: color.strong, "stroke-width": 1.4 }),
+    );
+    nodes.push(textEl({ x: lay.x0 + 22, y: fy, class: "sx-punnett-legend" }, `${p.count} × ${p.label}`));
+    fy += 22;
+  }
+  nodes.push(
+    textEl(
+      { x: lay.x0, y: fy + 4, class: "sx-punnett-geno-ratio" },
+      `Genotype ratio  ${footer.genotypeRatio}  —  ${footer.genotypeDetail}`,
+    ),
+  );
+
+  const descText = `Punnett square — ${pd.genes.length === 1 ? "monohybrid" : pd.genes.length === 2 ? "dihybrid" : `${pd.genes.length}-gene`} cross ${genotypeText(pd.parent1, pd.genes)} × ${genotypeText(pd.parent2, pd.genes)}; phenotype ratio ${footer.phenotypeRatio}`;
+  return svgWrap(nodes, descText);
+}
+
 export function renderMatrixAST(ast: MatrixAST): string {
   if (ast.mode === "sipoc") return renderSipocAST(ast);
   if (ast.mode === "qfd") return renderQfdAST(ast);
+  if (ast.mode === "punnett") return renderPunnettAST(ast);
   const lay = layoutMatrix(ast);
   const needsLegendSpace =
     lay.categories.length > 0 || ast.mode === "correlation";

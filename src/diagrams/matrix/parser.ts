@@ -10,6 +10,7 @@ import type {
   QfdData,
   QfdStrength,
   QfdCorrelation,
+  PunnettGene,
 } from "./types";
 import { resolveTemplate, applyTemplateDefaults } from "./templates";
 
@@ -37,9 +38,16 @@ const DEFAULT_CONFIG: MatrixConfig = {
   margins: false,
 };
 
+interface PunnettScratch {
+  p1raw?: string;
+  p2raw?: string;
+  traits: Record<string, { dominant: string; recessive?: string }>;
+}
+
 interface ParseState {
   ast: MatrixAST;
   pointIdSeq: number;
+  punnett?: PunnettScratch;
 }
 
 function emptyAxis(): MatrixAxis {
@@ -370,6 +378,54 @@ function parseQfdLine(line: string, ast: MatrixAST): boolean {
   return false;
 }
 
+/**
+ * Parse a genotype token like "RrYy" into per-locus allele pairs.
+ * Alleles of one locus share a letter (case-insensitive); case = dominance.
+ * Returns null if malformed (odd length, mismatched letters, non-alpha).
+ */
+function parseGenotype(token: string): { letter: string; alleles: [string, string] }[] | null {
+  const t = token.trim();
+  if (t.length === 0 || t.length % 2 !== 0) return null;
+  const loci: { letter: string; alleles: [string, string] }[] = [];
+  for (let i = 0; i < t.length; i += 2) {
+    const a = t[i]!;
+    const b = t[i + 1]!;
+    if (!/[A-Za-z]/.test(a) || !/[A-Za-z]/.test(b)) return null;
+    if (a.toUpperCase() !== b.toUpperCase()) return null;
+    loci.push({ letter: a.toUpperCase(), alleles: [a, b] });
+  }
+  return loci;
+}
+
+/**
+ * Punnett line forms (mode `punnett`):
+ *   cross: Bb x Bb            (also `parents:`; separator x / × / *)
+ *   trait B: "Brown" / "Blue" (optional phenotype names: dominant / recessive)
+ * Returns true if consumed.
+ */
+function parsePunnettLine(line: string, st: ParseState): boolean {
+  if (!st.punnett) return false;
+  const crossMatch = line.match(/^(?:cross|parents?)\s*:\s*(.+)$/i);
+  if (crossMatch) {
+    const parts = crossMatch[1]!.split(/\s*[x×*]\s*/i);
+    if (parts.length === 2) {
+      st.punnett.p1raw = parts[0]!.trim();
+      st.punnett.p2raw = parts[1]!.trim();
+    }
+    return true;
+  }
+  const traitMatch = line.match(/^trait\s+([A-Za-z])\s*:\s*(.+)$/i);
+  if (traitMatch) {
+    const letter = traitMatch[1]!.toUpperCase();
+    const slash = traitMatch[2]!.split("/");
+    const dominant = stripQuotes(slash[0] ?? "");
+    const recessive = slash[1] !== undefined ? stripQuotes(slash[1]) : undefined;
+    st.punnett.traits[letter] = { dominant, recessive };
+    return true;
+  }
+  return false;
+}
+
 function parseConfigLine(key: string, value: string, ast: MatrixAST): void {
   const k = key.trim().toLowerCase();
   const v = value.trim();
@@ -438,6 +494,16 @@ function parseHeader(line: string, ast: MatrixAST): MatrixTemplate | undefined {
     if (title) ast.title = stripQuotes(title);
     return undefined;
   }
+  // punnett "title"  — Mendelian Punnett-square cross
+  const punnettMatch = rest.match(/^punnett\b\s*(.*)$/i);
+  if (punnettMatch) {
+    ast.mode = "punnett";
+    ast.grid = "NxM";
+    ast.punnett = { genes: [], parent1: [], parent2: [] };
+    const title = punnettMatch[1]!.trim();
+    if (title) ast.title = stripQuotes(title);
+    return undefined;
+  }
 
   // template name + optional title
   const tokenMatch = rest.match(/^([a-zA-Z0-9_-]+)\s*(.*)$/);
@@ -477,6 +543,7 @@ export function parseMatrix(text: string): MatrixAST {
 
     if (/^matrix\b/i.test(line)) {
       templateName = parseHeader(line, st.ast);
+      if (st.ast.mode === "punnett" && !st.punnett) st.punnett = { traits: {} };
       continue;
     }
 
@@ -502,6 +569,7 @@ export function parseMatrix(text: string): MatrixAST {
 
     if (st.ast.mode === "sipoc" && parseSipocLine(line, st.ast)) continue;
     if (st.ast.mode === "qfd" && parseQfdLine(line, st.ast)) continue;
+    if (st.ast.mode === "punnett" && parsePunnettLine(line, st)) continue;
 
     if (/^x-axis\s*:/i.test(line)) {
       st.ast.xAxis = parseAxis(line.replace(/^x-axis\s*:\s*/i, ""));
@@ -627,7 +695,8 @@ export function parseMatrix(text: string): MatrixAST {
     st.ast.mode === "heatmap" ||
     st.ast.mode === "correlation" ||
     st.ast.mode === "sipoc" ||
-    st.ast.mode === "qfd"
+    st.ast.mode === "qfd" ||
+    st.ast.mode === "punnett"
   ) {
     st.ast.grid = "NxM";
   }
@@ -649,6 +718,34 @@ export function parseMatrix(text: string): MatrixAST {
   if (st.ast.mode === "qfd" && st.ast.qfd) {
     st.ast.cols = st.ast.qfd.hows.length;
     st.ast.rows = st.ast.qfd.whats.length;
+  }
+
+  // Punnett: resolve the two parent genotypes into aligned loci + traits.
+  if (st.ast.mode === "punnett" && st.punnett && st.ast.punnett) {
+    const sc = st.punnett;
+    const loci1 = sc.p1raw ? parseGenotype(sc.p1raw) : null;
+    const loci2 = sc.p2raw ? parseGenotype(sc.p2raw) : null;
+    if (loci1 && loci2 && loci1.length > 0) {
+      const genes: PunnettGene[] = loci1.map((l) => {
+        const t = sc.traits[l.letter];
+        return {
+          dominant: l.letter,
+          recessive: l.letter.toLowerCase(),
+          ...(t?.dominant ? { dominantTrait: t.dominant } : {}),
+          ...(t?.recessive ? { recessiveTrait: t.recessive } : {}),
+        };
+      });
+      const parent1 = loci1.map((l) => [l.alleles[0], l.alleles[1]]);
+      // align parent 2's loci to parent 1's order by locus letter
+      const parent2 = genes.map((g) => {
+        const found = loci2.find((l) => l.letter === g.dominant);
+        return found ? [found.alleles[0], found.alleles[1]] : [g.dominant, g.recessive];
+      });
+      st.ast.punnett = { genes, parent1, parent2 };
+      const dim = Math.pow(2, genes.length);
+      st.ast.cols = dim;
+      st.ast.rows = dim;
+    }
   }
 
   return st.ast;

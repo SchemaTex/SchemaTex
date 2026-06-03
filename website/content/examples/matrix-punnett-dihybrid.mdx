@@ -1,0 +1,26 @@
+---
+title: Dihybrid cross Punnett square (9:3:3:1)
+description: A two-gene Punnett square where the engine computes the gametes, the 4×4 offspring grid, and the canonical 9:3:3:1 phenotype ratio — Mendel's pea seed shape × colour cross — with each phenotype class auto-tinted.
+diagram: matrix
+standard: Mendelian genetics (Punnett square)
+industry: [education, genetics, biology]
+persona: For the biology teacher or genetics student predicting offspring ratios
+complexity: 3
+tags: [matrix, punnett, genetics, mendel, dihybrid, biology]
+featured: false
+relatedLink:
+  label: Matrix syntax
+  href: /docs/matrix
+status: published
+dsl: |
+  matrix punnett "Seed shape & colour  (RrYy × RrYy)"
+  cross: RrYy x RrYy
+  trait R: "Round" / "Wrinkled"
+  trait Y: "Yellow" / "Green"
+---
+
+## What this shows
+
+A **Punnett square** predicts the offspring of a genetic cross. You write only the two parental genotypes — the engine does the Mendelian bookkeeping: it enumerates each parent's **gametes** (one allele per gene locus), fills the grid with every gamete combination, and counts the resulting **genotype and phenotype ratios**.
+
+This is a **dihybrid** cross (two genes at once) — Mendel's classic pea experiment crossing seed shape (`R` round dominant / `r` wrinkled) with seed colour (`Y` yellow dominant / `y` green). Two heterozygous parents each produce four gametes (RY, Ry, rY, ry), so the grid is 4×4 = 16 boxes. The engine computes the famous **9:3:3:1** phenotype ratio — 9 round-yellow : 3 wrinkled-yellow : 3 round-green : 1 wrinkled-green — and tints each box by its phenotype class so the ratio is visible at a glance. Case sets dominance (uppercase = dominant), and the optional `trait` lines name each phenotype so the legend reads in plain English.

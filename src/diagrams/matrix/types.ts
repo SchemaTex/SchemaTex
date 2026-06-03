@@ -5,7 +5,7 @@
  * matrix doesn't reuse Individual / Relationship / LayoutNode shapes.
  */
 
-export type MatrixMode = "quadrant" | "heatmap" | "correlation" | "sipoc" | "qfd";
+export type MatrixMode = "quadrant" | "heatmap" | "correlation" | "sipoc" | "qfd" | "punnett";
 
 /** Dot-level for correlation matrix. "strong"=3, "medium"=2, "weak"=1. */
 export type MatrixDotLevel = "strong" | "medium" | "weak";
@@ -195,6 +195,172 @@ export interface MatrixAST {
   sipoc?: SipocData;
   /** QFD House-of-Quality data (qfd mode). */
   qfd?: QfdData;
+  /** Punnett-square genetics data (punnett mode). */
+  punnett?: PunnettData;
+}
+
+// ─── Punnett square (Mendelian genetics) ──────────────────────
+//
+// The differentiator is computation: from two parental genotypes the engine
+// derives the gametes, the offspring grid, and the genotype + phenotype ratios
+// (3:1, 9:3:3:1, …) — the user never types the grid.
+
+/** One gene locus. Allele dominance follows the standard case convention. */
+export interface PunnettGene {
+  /** Uppercase dominant allele symbol, e.g. "A" — also identifies the locus. */
+  dominant: string;
+  /** Lowercase recessive allele symbol, e.g. "a". */
+  recessive: string;
+  /** Optional phenotype name expressed when ≥1 dominant allele is present. */
+  dominantTrait?: string;
+  /** Optional phenotype name for the homozygous-recessive genotype. */
+  recessiveTrait?: string;
+}
+
+export interface PunnettData {
+  /** Loci in declared order. */
+  genes: PunnettGene[];
+  /** Parent 1 (columns): per-locus allele pair, index-aligned with `genes`. */
+  parent1: string[][];
+  /** Parent 2 (rows): per-locus allele pair, index-aligned with `genes`. */
+  parent2: string[][];
+}
+
+export interface PunnettCell {
+  /** Canonical genotype, dominant-first per locus, e.g. "AaBb". */
+  genotype: string;
+  /** Phenotype class key — one char per locus (dominant=upper, recessive=lower). */
+  phenotypeKey: string;
+}
+
+export interface PunnettRatioEntry {
+  key: string;
+  label: string;
+  count: number;
+}
+
+export interface PunnettResult {
+  /** Parent-1 gametes (column headers), with multiplicity. */
+  gametes1: string[];
+  /** Parent-2 gametes (row headers), with multiplicity. */
+  gametes2: string[];
+  /** grid[row][col] over parent2 × parent1 gametes. */
+  grid: PunnettCell[][];
+  genotypeRatio: PunnettRatioEntry[];
+  phenotypeRatio: PunnettRatioEntry[];
+}
+
+/** Enumerate a parent's gametes (one allele copy per locus), multiplicity kept. */
+function gametesOf(parent: string[][]): string[] {
+  let acc: string[] = [""];
+  for (const pair of parent) {
+    const a0 = pair[0] ?? "";
+    const a1 = pair[1] ?? a0;
+    const next: string[] = [];
+    for (const g of acc) {
+      next.push(g + a0);
+      next.push(g + a1);
+    }
+    acc = next;
+  }
+  return acc;
+}
+
+/** Cross two gametes into a canonical genotype + phenotype-class key. */
+function combineGametes(g1: string, g2: string, genes: PunnettGene[]): PunnettCell {
+  let genotype = "";
+  let phenotypeKey = "";
+  for (let i = 0; i < genes.length; i++) {
+    const dom = genes[i]!.dominant;
+    const rec = genes[i]!.recessive;
+    const a = g1[i] ?? rec;
+    const b = g2[i] ?? rec;
+    const hasDom = a === dom || b === dom;
+    // dominant allele written first
+    const pair = a === dom ? [a, b] : b === dom ? [b, a] : [a, b];
+    genotype += pair.join("");
+    phenotypeKey += hasDom ? dom : rec;
+  }
+  return { genotype, phenotypeKey };
+}
+
+function phenotypeLabel(key: string, genes: PunnettGene[]): string {
+  const parts: string[] = [];
+  for (let i = 0; i < genes.length; i++) {
+    const ch = key[i]!;
+    const g = genes[i]!;
+    if (ch === g.dominant) parts.push(g.dominantTrait ?? `${g.dominant}_`);
+    else parts.push(g.recessiveTrait ?? `${g.recessive}${g.recessive}`);
+  }
+  return parts.join(", ");
+}
+
+/**
+ * Compute the full Punnett cross: gametes, offspring grid, and the
+ * genotype + phenotype ratios. Pure + deterministic so it unit-tests in
+ * isolation — this is the Punnett differentiator (the engine computes the
+ * Mendelian outcome rather than asking the user to fill the grid).
+ */
+export function computePunnett(data: PunnettData): PunnettResult {
+  const genes = data.genes;
+  const gametes1 = gametesOf(data.parent1);
+  const gametes2 = gametesOf(data.parent2);
+  const grid: PunnettCell[][] = [];
+  const genoCount = new Map<string, number>();
+  const phenoCount = new Map<string, number>();
+  for (const g2 of gametes2) {
+    const row: PunnettCell[] = [];
+    for (const g1 of gametes1) {
+      const cell = combineGametes(g1, g2, genes);
+      row.push(cell);
+      genoCount.set(cell.genotype, (genoCount.get(cell.genotype) ?? 0) + 1);
+      phenoCount.set(cell.phenotypeKey, (phenoCount.get(cell.phenotypeKey) ?? 0) + 1);
+    }
+    grid.push(row);
+  }
+  const genotypeRatio = [...genoCount.entries()]
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+    .map(([genotype, count]) => ({ key: genotype, label: genotype, count }));
+  const phenotypeRatio = [...phenoCount.entries()]
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+    .map(([key, count]) => ({ key, label: phenotypeLabel(key, genes), count }));
+  return { gametes1, gametes2, grid, genotypeRatio, phenotypeRatio };
+}
+
+function gcd(a: number, b: number): number {
+  return b === 0 ? a : gcd(b, a % b);
+}
+
+/** Reduce a count vector to its lowest-terms colon ratio, e.g. [9,3,3,1] → "9:3:3:1". */
+export function reduceRatio(counts: number[]): string {
+  const divisor = counts.reduce((acc, c) => gcd(acc, c), 0) || 1;
+  return counts.map((c) => c / divisor).join(":");
+}
+
+export interface PunnettFooter {
+  phenotypeRatio: string;
+  legend: PunnettRatioEntry[];
+  genotypeRatio: string;
+  /** Per-genotype breakdown, enumerated only when small enough to stay readable. */
+  genotypeDetail: string;
+}
+
+/**
+ * Footer summary lines shared by the renderer (to draw) and the layout (to
+ * size the canvas), so the two never disagree. The genotype breakdown is
+ * enumerated for the monohybrid case and collapsed to a count beyond that —
+ * a dihybrid has 9 genotypes and a trihybrid 27, which would overflow.
+ */
+export function punnettFooter(result: PunnettResult): PunnettFooter {
+  const enumerate = result.genotypeRatio.length <= 4;
+  return {
+    phenotypeRatio: reduceRatio(result.phenotypeRatio.map((p) => p.count)),
+    legend: result.phenotypeRatio,
+    genotypeRatio: reduceRatio(result.genotypeRatio.map((e) => e.count)),
+    genotypeDetail: enumerate
+      ? result.genotypeRatio.map((e) => `${e.count} ${e.label}`).join(", ")
+      : `${result.genotypeRatio.length} distinct genotypes`,
+  };
 }
 
 /**
