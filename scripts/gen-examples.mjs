@@ -130,6 +130,15 @@ rel (2,2): 9
 roof (0,1): --
 roof (1,2): +`],
 
+  ['examples/matrix/punnett-monohybrid.svg', `matrix punnett "Eye color  (Bb × Bb)"
+cross: Bb x Bb
+trait B: "Brown eyes" / "Blue eyes"`],
+
+  ['examples/matrix/punnett-dihybrid.svg', `matrix punnett "Seed shape & colour  (RrYy × RrYy)"
+cross: RrYy x RrYy
+trait R: "Round" / "Wrinkled"
+trait Y: "Yellow" / "Green"`],
+
   ['examples/mindmap/futureswheel-remote-work.svg', `%% style: futureswheel
 # Remote work becomes default
 ## Less commuting

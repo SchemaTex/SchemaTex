@@ -338,7 +338,44 @@ roof (1,2): +`} height={460} />
 
 ---
 
-## 10. Config options
+## 10. Punnett mode (Mendelian genetics)
+
+A **Punnett square** predicts the offspring of a genetic cross. You write only the two parental genotypes; the engine does the Mendelian bookkeeping — it enumerates each parent's **gametes** (one allele per gene locus), fills the grid with every gamete combination, and **computes the genotype and phenotype ratios**. The user never fills the grid.
+
+```
+matrix punnett "Eye color  (Bb × Bb)"
+cross: Bb x Bb
+trait B: "Brown eyes" / "Blue eyes"
+```
+
+### The cross
+
+| Directive | Form | Meaning |
+|---|---|---|
+| `cross:` | `cross: Bb x Bb` | The two parental genotypes, separated by `x`, `×`, or `*`. `parents:` is an accepted alias. |
+| `trait:` | `trait B: "Dominant" / "Recessive"` | *(optional)* Names the two phenotypes for gene `B`, so the legend reads in plain English instead of `B_` / `bb`. |
+
+**Allele case sets dominance** — this is the standard genetics convention. An uppercase letter is the **dominant** allele, the matching lowercase letter is **recessive**. A genotype groups alleles by letter: `RrYy` is two loci, `R/r` (round/wrinkled) and `Y/y` (yellow/green). One gene is a **monohybrid** cross (2×2 grid), two genes a **dihybrid** (4×4), three a trihybrid (8×8).
+
+### Computed ratios (the differentiator)
+
+The engine derives, from the genotypes alone:
+
+- the **gametes** of each parent — the column and row headers — by taking one allele per locus (so a heterozygote `Bb` yields `B` and `b`);
+- the **offspring grid** — every gamete pairing, written dominant-allele-first (`Bb`, never `bB`);
+- the **phenotype ratio** — boxes grouped by which phenotype they express, reduced to lowest terms. A monohybrid `Bb × Bb` gives the classic **3:1**; a dihybrid `RrYy × RrYy` gives the famous **9:3:3:1**;
+- the **genotype ratio** — e.g. `1:2:1` (1 BB, 2 Bb, 1 bb) for the monohybrid.
+
+Each box is tinted by its phenotype class, and the footer lists the phenotype ratio with a legend plus the genotype ratio.
+
+<Playground initial={`matrix punnett "Seed shape & colour  (RrYy × RrYy)"
+cross: RrYy x RrYy
+trait R: "Round" / "Wrinkled"
+trait Y: "Yellow" / "Green"`} height={520} />
+
+---
+
+## 11. Config options
 
 A `config:` block tunes visual rendering. Each option goes on its own indented line below the `config:` header.
 
@@ -371,7 +408,7 @@ margins: true      # true | false — show Score + Rank margins (correlation mod
 
 ---
 
-## 11. Labels & comments
+## 12. Labels & comments
 
 - **Title:** `matrix "My Title"` or `title: My Title` as a standalone line.
 - **Point label:** the quoted string before `at (…)`.
@@ -388,7 +425,7 @@ x-axis: Low Cost → High Cost   # inline comment after a directive
 
 ---
 
-## 12. Table mode (`style: table`)
+## 13. Table mode (`style: table`)
 
 The default matrix rendering is a **scatter / bubble chart** — points float at (x, y) coordinates. For frameworks where the output is a list of items grouped by quadrant (Eisenhower, Johari, Impact-Effort, 9-box), use `style: table` to switch to a **text-in-cell layout** instead.
 
@@ -452,7 +489,7 @@ Q3: "Reorganize Slack channels"`} height={420} />
 
 ---
 
-## 13. Reserved words & escaping
+## 14. Reserved words & escaping
 
 **Reserved at line start:** `matrix` (header), `x-axis:`, `y-axis:`, `quadrant`, `config:`, `title:`, `rows:`, `cols:`, `grid:`, `axis:`, `margins:`, `cell`. In **SIPOC** mode: `suppliers:`, `inputs:`, `process:`, `outputs:`, `customers:`. In **QFD** mode: `what:`, `how:`, `rel`, `roof`, `normalize:`.
 
@@ -462,7 +499,7 @@ Q3: "Reorganize Slack channels"`} height={420} />
 
 ---
 
-## 14. Common mistakes
+## 15. Common mistakes
 
 | You wrote | Parser says | Fix |
 |---|---|---|
@@ -478,7 +515,7 @@ Q3: "Reorganize Slack channels"`} height={420} />
 
 ---
 
-## 15. Grammar (EBNF)
+## 16. Grammar (EBNF)
 
 ```text
 document     = header directive*
@@ -486,13 +523,14 @@ document     = header directive*
 header       = "matrix" ( template-name | mode-header | title )? NEWLINE
 template-name = "eisenhower"|"impact-effort"|"rice"|"bcg"|"ansoff"|"johari"|"9-box"|"risk-matrix"
 mode-header  = ( "heatmap" | "correlation" ) ( number "x" number )? title?
-             | ( "sipoc" | "qfd" ) title?
+             | ( "sipoc" | "qfd" | "punnett" ) title?
 title        = quoted-string | bare-text
 
 directive    = x-axis | y-axis | quadrant-dir | config-block
              | point | cell | q-short | rows-dir | cols-dir | grid-dir
              | style-dir | title-dir | axis-dir | margins-dir
              | sipoc-col | qfd-what | qfd-how | qfd-rel | qfd-roof | normalize-dir
+             | punnett-cross | punnett-trait
              | comment | blank
 
 # SIPOC mode
@@ -505,6 +543,11 @@ qfd-how      = "how:" WS quoted-string ( WS "dir:" ( "up" | "down" ) )? NEWLINE
 qfd-rel      = "rel" WS "(" number "," number ")" ":" WS ( "9" | "3" | "1" ) NEWLINE  # (row, col)
 qfd-roof     = "roof" WS "(" number "," number ")" ":" WS ( "++" | "+" | "-" | "--" ) NEWLINE  # (how, how)
 normalize-dir = "normalize:" WS "true" NEWLINE
+
+# Punnett (Mendelian genetics) mode
+punnett-cross = ( "cross:" | "parents:" ) WS genotype WS ( "x" | "×" | "*" ) WS genotype NEWLINE
+punnett-trait = "trait" WS letter ":" WS quoted-string WS "/" WS quoted-string NEWLINE  # dominant / recessive
+genotype     = ( letter letter )+   # allele pairs grouped by letter; case = dominance, e.g. "RrYy"
 
 x-axis       = "x-axis:" WS axis-spec NEWLINE
 y-axis       = "y-axis:" WS axis-spec NEWLINE
@@ -547,7 +590,7 @@ Authoritative source: `src/diagrams/matrix/parser.ts`. If this diverges from the
 
 ---
 
-## 16. Standard compliance
+## 17. Standard compliance
 
 Schematex matrix diagrams implement the standard 2×2 quadrant convention used by the **Boston Consulting Group (1970)**, **Eisenhower decision matrix**, **Ansoff growth matrix**, and **Johari Window** frameworks. The 9-box grid follows the **McKinsey/GE talent review** convention (3×3, performance × potential). Heatmap and correlation modes follow no named external standard but use the universal cell-intensity encoding found in tools like Excel conditional formatting and R's `corrplot`.
 
@@ -559,6 +602,7 @@ What is implemented today:
 - ✅ N×M correlation mode
 - ✅ SIPOC mode — five-column Suppliers · Inputs · Process · Outputs · Customers scoping table (Six Sigma DMAIC Define)
 - ✅ QFD / House of Quality mode — WHATs × HOWs grid, 9 / 3 / 1 relationship scale, **computed** technical-importance row (with `normalize: true` percentages), and the HOW × HOW correlation roof (`++` / `+` / `-` / `--`)
+- ✅ Punnett mode — Mendelian cross from two parental genotypes; the engine **computes** the gametes, the offspring grid, and the genotype + phenotype ratios (monohybrid 3:1, dihybrid 9:3:3:1); allele case = dominance; optional `trait` phenotype names; mono/di/trihybrid (2×2 / 4×4 / 8×8)
 - ✅ Eight built-in templates (eisenhower, impact-effort, rice, bcg, ansoff, johari, 9-box, risk-matrix)
 - ✅ Point properties: size, category, color, shape, highlight, note
 - ✅ Reversed axes (`←` / `<-`)
@@ -575,10 +619,11 @@ References:
 - Ansoff, H.I. (1957). "Strategies for Diversification." *Harvard Business Review*.
 - Akao, Y. (1990). *Quality Function Deployment: Integrating Customer Requirements into Product Design.* Productivity Press. (House of Quality)
 - Pyzdek, T. & Keller, P. (2018). *The Six Sigma Handbook* (5th ed.). McGraw-Hill. (SIPOC in DMAIC Define)
+- Punnett, R.C. (1905). *Mendelism.* Macmillan. (the Punnett square); Mendel, G. (1866). "Versuche über Pflanzenhybriden."
 
 ---
 
-## 17. Roadmap
+## 18. Roadmap
 
 **Planned — not yet parseable.** Do not use these in generated DSL today; the parser will reject or ignore them.
 
@@ -602,4 +647,5 @@ Ready-to-use scenarios from the examples gallery:
   'matrix-johari-window',
   'matrix-9-box-talent',
   'matrix-bcg-portfolio',
+  'matrix-punnett-dihybrid',
 ]} />
