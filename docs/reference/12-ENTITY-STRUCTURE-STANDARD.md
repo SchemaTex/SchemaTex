@@ -227,7 +227,7 @@ entity ie-holdco "Acme Ireland" corp@IE
 允许一个 cluster 包含多个 jurisdiction（例如 "Ireland / Cayman IP Structure" 包含 IE + KY entities）：
 
 ```
-cluster "Ireland / Cayman IP" [members: ie-holdco, ie-ip, nl-bv, color: "#059669"]
+cluster "Ireland / Cayman IP" [members: [ie-holdco, ie-ip, nl-bv], color: "#059669"]
 ```
 
 ---

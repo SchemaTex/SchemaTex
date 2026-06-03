@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.8.1] — 2026-06-03
+
+### Fixed — entity `cluster [members: [...]]` no longer fails to parse
+
+The entity-structure grouping primitive `cluster "Name" [members: [id1, id2]]` could not be parsed: any cluster with a `members` list threw `Cannot parse line`. Only `cluster "Name"` (empty) and `cluster "Name" [color: "..."]` (no nested array) worked.
+
+- **Root cause** (`src/diagrams/entity/parser.ts`): the attribute-block regex captured the bracket body with `[^\]]*`, which stops at the *first* `]`. Because `members: [a, b]` contains its own `]`, the match terminated early, the outer bracket never closed, and the whole line fell through to the parse error. The capture now tolerates one level of nested `[...]`, so the members array no longer truncates the attribute block. The downstream `parseProps` / `parseIdList` helpers already handled nesting correctly — only the line-level extraction was broken.
+- **Tests** (`tests/entity/parser.test.ts`, new): the entity engine previously had no parser tests. Added regression coverage for empty / bracketed-members / members+color / color-only clusters, plus an end-to-end render assertion that members actually produce a grouping box.
+
+### Changed
+
+- **AI discoverability** (`src/ai/profiles.ts`): the entity generation profile now lists the `cluster` form and states that `members` must be a bracketed list, so `getSyntax("entity")` surfaces grouping to the model instead of leaving it to guess Mermaid-style `subgraph`.
+- **Docs** (`docs/reference/12-ENTITY-STRUCTURE-STANDARD.md`): the §5.3 mixed-jurisdiction cluster example used the un-bracketed `members: a, b` form, which contradicts the EBNF grammar (`"members:" "[" ID_LIST "]"`) and is not parseable. Corrected to the bracketed form.
+
+---
+
 ## [0.8.0] — 2026-06-03
 
 ### Added — Bucket B: 8 new diagram engines
