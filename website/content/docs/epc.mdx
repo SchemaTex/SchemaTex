@@ -1,0 +1,121 @@
+---
+title: EPC (Event-driven Process Chain)
+description: ARIS business-process diagrams — alternating events and functions wired by AND/OR/XOR connectors, with structural well-formedness validation.
+---
+
+## About EPC
+
+An **Event-driven Process Chain** (EPC) is the business-process notation at the heart of **ARIS** (Scheer, 1990s): a control flow that strictly **alternates events** (passive states — "Order received") and **functions** (active tasks — "Check credit"), routed by **AND / OR / XOR connectors** for splits and joins. It is widely used for SAP process documentation and BPM.
+
+Schematex's edge is **structural validation**. The engine doesn't compute a number (contrast `pert` or `faulttree`); it checks the EPC well-formedness rules — event/function alternation, the *event-cannot-decide* signature rule, single-in/single-out multiplicity, reachability — and highlights violations with AI-readable messages instead of silently drawing a broken model.
+
+<Playground initial={`epc "Credit check"
+  event E1 "Order received"
+  function F1 "Check credit"
+  xor X1
+  event E2 "Credit approved"
+  event E3 "Credit refused"
+  E1 -> F1 -> X1
+  X1 -> E2
+  X1 -> E3`} height={460} />
+
+---
+
+## 1. Your first EPC
+
+Start with the `epc` keyword, an optional title, then declare **nodes by id** and **wire them with arrows**:
+
+```
+epc "Order fulfilment"
+  event E1 "Order received"
+  function F1 "Check credit"
+  event E2 "Credit OK"
+  E1 -> F1 -> E2
+```
+
+Nodes carry an id and an optional quoted label; arrows reference ids. The canonical form declares connectors as nodes (`xor X1`) and wires everything by id — closest to how ARIS stores an EPC.
+
+---
+
+## 2. Node kinds
+
+```
+event E1 "Order received"     # passive state (rounded hexagon)
+function F1 "Check credit"    # active task (rounded rectangle); alias: func
+func F2 "Send invoice"        # `func` is shorthand for `function`
+and  A1                       # AND connector (∧)
+or   O1                       # OR connector (∨)
+xor  X1                       # exclusive-OR connector (×)
+```
+
+A connector fans either way (split or join) depending on its incoming/outgoing arcs, so the same glyph serves both. Connector labels are optional.
+
+---
+
+## 3. Wiring control flow
+
+```
+E1 -> F1 -> X1        # a chain is sugar for the pairwise arcs E1→F1, F1→X1
+X1 -> E2              # connector split into two branches
+X1 -> E3
+F2 -> E2 : sent       # a single arc may carry a ': label'
+```
+
+- A `->` **chain** expands to pairwise edges.
+- A trailing **`: label`** annotates a single arc.
+- An arrow endpoint not yet declared is **auto-created** (and flagged by the validator), so you can sketch fast and clean up later.
+
+```
+epc "Procure-to-pay"
+  layout: tb
+  event E1 "Need identified"
+  function F1 "Create PO"
+  and A1
+  function F2 "Notify supplier"
+  function F3 "Update budget"
+  E1 -> F1 -> A1
+  A1 -> F2
+  A1 -> F3
+```
+
+`layout: tb` lays the chain top-to-bottom (default is also vertical-friendly).
+
+---
+
+## 4. Computed well-formedness
+
+This is the differentiator. The engine validates (flags, doesn't throw):
+
+1. **Bipartite alternation** — events and functions strictly alternate along any path; connectors don't break it.
+2. **Start/end must be events** — a function may not be a start or end node.
+3. **Signature rule** — an *event must not be the source of an OR/XOR split* (a passive event cannot decide); an AND-split after an event is allowed.
+4. **Split/join balancing** — a split of type T should be closed by a join of type T; mismatches are warnings (real EPCs are sometimes unbalanced).
+5. **Single-in / single-out** per event and function — connectors carry the multiplicity.
+6. **Reachability** — every node reachable from a start and reaching an end.
+
+Offending nodes are highlighted with `data-*` flags; the diagram still renders.
+
+---
+
+## 5. Common mistakes
+
+```
+# WRONG — invalid id (must start with a letter)
+event 9bad
+
+# AVOID — redeclaring a node (the first wins, a warning is raised)
+event E1 "first"
+event E1 "second"
+```
+
+Ids must start with a letter; a redeclared node keeps the first definition and warns. Because event→XOR/OR splits are flagged, route a decision through a **function** that produces the decision, then split.
+
+---
+
+## 6. Standard compliance
+
+Notation and rules follow ARIS EPC convention (Scheer), van der Aalst (1999), and Mendling (2008): hexagonal events, rounded-rectangle functions, ∧/∨/× connectors, and the event-cannot-decide signature constraint.
+
+## 7. Roadmap
+
+Deferred: process-interface (off-page) nodes, organisational-unit/data-object lanes (eEPC), and split/join automatic repair suggestions.

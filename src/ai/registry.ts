@@ -423,6 +423,97 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
     standard: "Timeline convention with era bands",
     syntaxKey: "timeline",
   },
+  // ── Risk & reliability (Bucket B) ────────────────────────────
+  {
+    type: "eventtree",
+    name: "Event Tree Analysis",
+    tagline:
+      "Forward-looking risk: one initiating event branches through each safety function into outcome sequences, with computed path frequencies.",
+    useWhen:
+      "Use to propagate the consequences of an initiating event through a chain of barriers/safety functions and quantify each outcome's frequency — the inductive complement to a fault tree and the right wing of a bowtie. Header `eventtree`/`eta`; declare the initiating event with a frequency, the ordered functions with success/failure branch probabilities, and outcome rows with `s`/`f`/`*` patterns. The engine computes path frequency = f_initiating × Π branch-probabilities and flags the dominant sequence.",
+    cluster: "risk-reliability",
+    standard: "IEC 62502:2010 · NUREG/CR-2300 (PRA) · ISO 31010 Annex B; see 39-EVENT-TREE-STANDARD.md",
+    syntaxKey: "eventtree",
+  },
+  {
+    type: "fmea",
+    name: "FMEA (Failure Mode and Effects Analysis)",
+    tagline:
+      "The reliability worksheet that computes its own risk — RPN = S×O×D plus AIAG-VDA Action Priority, ranked and colour-coded.",
+    useWhen:
+      "Use to score and prioritise how each component/process step can fail — severity, occurrence, detection — and decide what to fix first. Header `fmea`; declare item/function → failure mode → effect (with `sev`) → cause (with `occ`) → controls (with `det`). The engine computes RPN = S×O×D and the AIAG-VDA Action Priority (High/Medium/Low), sorts the sheet, and colour-fills the RPN/AP cells by risk. Schematex's first table-shaped diagram.",
+    cluster: "risk-reliability",
+    standard: "AIAG-VDA FMEA Handbook (2019) · IEC 60812:2018 · SAE J1739 · MIL-STD-1629A; see 40-FMEA-STANDARD.md",
+    syntaxKey: "fmea",
+  },
+  // ── Systems thinking / stochastic ────────────────────────────
+  {
+    type: "causalloop",
+    name: "Causal Loop Diagram",
+    tagline:
+      "System-dynamics feedback map — signed causal links the engine reads to classify each loop as reinforcing (R) or balancing (B).",
+    useWhen:
+      "Use for systems thinking / system dynamics: variables connected by `+`/`−` causal links, where the engine detects feedback loops and labels each R (even number of negative links) or B (odd). Header `causalloop`/`cld`; write `A -> B : +` links and optional `loop R1 \"name\"` annotations and `delay` marks. Distinct from `sociogram` (social ties, no polarity) and `flowchart` (process steps).",
+    cluster: "causality-analysis",
+    standard: "Sterman, Business Dynamics (2000) · Meadows, Thinking in Systems; see 41-CAUSAL-LOOP-STANDARD.md",
+    syntaxKey: "causalloop",
+  },
+  {
+    type: "markov",
+    name: "Markov chain",
+    tagline:
+      "Discrete-time Markov chain — circles + probability arcs, with the stationary distribution and recurrent/transient/absorbing classification computed for you.",
+    useWhen:
+      "Use to model a probabilistic state process (reliability/availability, queueing, regime models) where you want the long-run distribution or absorption answer, not just the picture. Header `markov`/`markovchain`; write `S1 -> S2 : 0.3` transitions (each state's out-edges sum to 1). The engine computes the stationary distribution, classifies states, and for absorbing chains the fundamental matrix. Sibling of `state` and `petri`.",
+    cluster: "behavior-modeling",
+    standard: "Norris, Markov Chains (1997) · Kemeny & Snell, Finite Markov Chains; see 42-MARKOV-CHAIN-STANDARD.md",
+    syntaxKey: "markov",
+  },
+  // ── Software / process engineering ───────────────────────────
+  {
+    type: "gitgraph",
+    name: "Git commit graph",
+    tagline:
+      "Branch-and-merge commit history on per-branch swimlanes — Mermaid gitGraph compatible.",
+    useWhen:
+      "Use to visualise a git branching/merging history. Header `gitGraph`; ordered `commit`, `branch <name>`, `checkout <name>`, `merge <name>`, `cherry-pick id: \"…\"`, with `commit id:/tag:/type: HIGHLIGHT|REVERSE`. Mermaid `gitGraph` syntax parity so LLM output is drop-in compatible. Commits sit on per-branch lanes ordered chronologically; merges join lanes.",
+    cluster: "software-uml",
+    standard: "Mermaid gitGraph syntax · git DAG model; see 43-GIT-GRAPH-STANDARD.md",
+    syntaxKey: "gitgraph",
+  },
+  {
+    type: "epc",
+    name: "Event-driven Process Chain (EPC)",
+    tagline:
+      "ARIS business-process notation — alternating events (red hexagons) and functions (green rounded rects) joined by AND/OR/XOR connectors, with the alternation rule validated.",
+    useWhen:
+      "Use for ARIS-style business process modelling (SAP / enterprise BPM). Header `epc`; declare `event`, `function`, connectors `and`/`or`/`xor`, and the control flow between them. The engine validates strict event↔function alternation and connector legality (an event cannot be the source of an OR/XOR split). Distinct from `bpmn` and `flowchart` — a separate published standard with stricter rules.",
+    cluster: "corporate-legal",
+    standard: "ARIS / Keller, Nüttgens & Scheer (1992); see 44-EPC-STANDARD.md",
+    syntaxKey: "epc",
+  },
+  {
+    type: "idef0",
+    name: "IDEF0 function model",
+    tagline:
+      "Federal function-modelling standard — boxes are activities, arrows are positional (the ICOM rule: Input-left, Control-top, Output-right, Mechanism-bottom).",
+    useWhen:
+      "Use to model what a system/process does and its inputs/controls/outputs/mechanisms — systems engineering, defence/government process docs, enterprise architecture. Header `idef0`; declare `function` boxes and ICOM arrows (`input`/`control`/`output`/`mechanism`) plus box→box flows that name the target ICOM side. The engine enforces ICOM placement and assigns node numbers, in a diagonal box staircase.",
+    cluster: "project-management",
+    standard: "FIPS PUB 183 (1993) · SADT (Ross); see 45-IDEF0-STANDARD.md",
+    syntaxKey: "idef0",
+  },
+  {
+    type: "threatmodel",
+    name: "Threat model (DFD + STRIDE)",
+    tagline:
+      "Security data-flow diagram where the engine annotates each element with its applicable STRIDE threats and flags every flow that crosses a trust boundary.",
+    useWhen:
+      "Use for security threat modelling (Microsoft SDL / OWASP Threat Dragon workflow): DFD shapes (external entity, process, data store), labelled data flows, and `boundary` trust zones. Header `threatmodel`/`stride`. The engine maps each element type to its STRIDE categories (external = S,R; process = all six; store = T,I,D + conditional R for logs; flow = T,I,D) and accents flows crossing a trust boundary. Includes the DFD base notation (no separate `dfd` engine).",
+    cluster: "network-infrastructure",
+    standard: "Shostack, Threat Modeling (2014) STRIDE-per-element · Microsoft SDL · base DFD DeMarco/Yourdon; see 46-THREAT-MODEL-STRIDE-STANDARD.md + 31-DFD-STANDARD.md",
+    syntaxKey: "threatmodel",
+  },
 ] as const;
 
 /**
@@ -480,6 +571,15 @@ export const DIAGRAM_SINCE: Readonly<Record<DiagramType, string>> = {
   faulttree: "0.6.5",
   // 0.6.6
   bowtie: "0.6.6",
+  // 0.8.0 — Bucket B (event tree, FMEA, causal loop, Markov, git graph, EPC, IDEF0, threat model)
+  eventtree: "0.8.0",
+  fmea: "0.8.0",
+  causalloop: "0.8.0",
+  markov: "0.8.0",
+  gitgraph: "0.8.0",
+  epc: "0.8.0",
+  idef0: "0.8.0",
+  threatmodel: "0.8.0",
 };
 
 export function getDiagramSince(type: string): string | undefined {

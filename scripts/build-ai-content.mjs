@@ -60,6 +60,14 @@ const SYNTAX_KEYS = [
   "umlclass",
   "faulttree",
   "bowtie",
+  "eventtree",
+  "fmea",
+  "causalloop",
+  "markov",
+  "gitgraph",
+  "epc",
+  "idef0",
+  "threatmodel",
 ];
 
 // ─── Minimal YAML-frontmatter parser ─────────────────────────────

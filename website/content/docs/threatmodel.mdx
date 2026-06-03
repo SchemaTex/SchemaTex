@@ -1,0 +1,122 @@
+---
+title: Threat Model (STRIDE DFD)
+description: Security data-flow diagrams where the engine maps STRIDE threats per element and flags every trust-boundary crossing.
+---
+
+## About threat models
+
+A **threat model** is a security **data-flow diagram** (DFD) annotated with trust boundaries: **external entities** (users, third parties), **processes** (services), **data stores** (databases, logs), and the **flows** between them. Microsoft's **STRIDE** framework — Spoofing, Tampering, Repudiation, Information disclosure, Denial of service, Elevation of privilege — classifies the threats each element faces. The reference is Shostack, *Threat Modeling: Designing for Security* (2014).
+
+Schematex's edge is that the engine **does the STRIDE-per-element analysis**, not just the boxes. It applies the canonical element→threat mapping, conditionally adds Repudiation to log/audit stores, and — most usefully — **flags every flow that crosses a trust boundary**, because that is where spoofing, tampering, and information-disclosure concentrate.
+
+<Playground initial={`threatmodel "Web App"
+external: User
+process 1.1: Web Server
+datastore D1: User DB
+datastore D2: Audit Log
+User -> 1.1 : "HTTPS Request"
+1.1 -> D1 : Lookup
+1.1 -> D2 : Auth Event
+boundary "Internet" { User }
+boundary "DMZ" { 1.1 }
+boundary "Internal" { D1, D2 }`} height={520} />
+
+---
+
+## 1. Your first threat model
+
+Start with the `threatmodel` keyword (alias `stride`), an optional title, then **declare elements** and **wire flows**:
+
+```
+threatmodel "Login flow"
+external: User
+process 1.1: Web Server
+datastore D1: User DB
+User -> 1.1 : "Login request"
+1.1 -> D1 : Lookup
+```
+
+Each element is `kind: ID: Label` (or `kind: Label`, where the id is slugged from the label — `external: Mobile App` becomes id `Mobile_App`). A flow is `SOURCE -> TARGET : label`, and the **label is mandatory** (it names the data crossing).
+
+---
+
+## 2. Element kinds and flows
+
+```
+external: User              # external entity (the attacker's side)
+process 1.1: Web Server     # a process / service
+datastore D1: User DB       # a data store
+datastore D2: Audit log     # a log/audit store (gets conditional Repudiation)
+User -> 1.1 : "HTTPS Request"   # directed flow, quoted or bare label
+1.1 <-> D1 : Read/Write         # <-> expands into two directed flows
+```
+
+- Process ids are often dotted DFD numbers (`1.1`, `2.3`); external/store ids are usually short slugs (`User`, `D1`).
+- A `<->` flow expands into **two** directed flows.
+- A store whose name/id matches `log|audit|journal` (or carries an explicit hint) is treated as a log store.
+
+**Flow rules** the engine enforces: no store→store flows (data stores are passive), no external→external flows, and every endpoint must be a declared element.
+
+---
+
+## 3. Trust boundaries
+
+```
+boundary "Internet"  { User }
+boundary "DMZ"       { 1.1 }
+boundary "Internal"  { D1, D2 }
+```
+
+`boundary "name" { id, id, … }` groups elements into a trust zone. An element may belong to **at most one** boundary; members must be declared. Elements in no boundary share an implicit untrusted zone.
+
+---
+
+## 4. Computed STRIDE analysis
+
+This is the differentiator. The engine applies the **STRIDE-per-element** mapping:
+
+| DFD element     | Threats applied        |
+|-----------------|------------------------|
+| External entity | S, R                   |
+| Process         | S, T, R, I, D, E       |
+| Data store      | T, I, D (+ R if log)   |
+| Data flow       | T, I, D                |
+
+- The data-store **Repudiation** is conditional — added for log / audit / journal stores (the Shostack green "?").
+- **Boundary crossing**: a flow whose endpoints sit in different trust zones is flagged, because that is where Spoofing / Tampering / Information-disclosure concentrate. Two elements in the same (or implicit) zone do not cross.
+
+Each element and flow carries its applicable STRIDE categories in `data-*` so the analysis is inspectable.
+
+---
+
+## 5. Common mistakes
+
+```
+# WRONG — flow with no label
+User -> 1.1
+
+# WRONG — store to store (data stores are passive)
+D1 -> D2 : x
+
+# WRONG — external to external
+A -> B : x
+
+# WRONG — unknown flow endpoint
+P -> Ghost : x
+
+# WRONG — an element in two boundaries
+boundary "A" { P }
+boundary "B" { P }
+```
+
+Every flow needs a label; stores and externals cannot be flow partners with their own kind; endpoints must be declared; an element belongs to at most one trust boundary. Duplicate ids are rejected.
+
+---
+
+## 6. Standard compliance
+
+The element vocabulary, DFD conventions, and the per-element STRIDE table follow Shostack (2014) and the Microsoft Threat Modeling Tool. The conditional log-store Repudiation and trust-boundary-crossing emphasis match the published STRIDE-per-element chart.
+
+## 7. Roadmap
+
+Deferred: DREAD/risk scoring, threat-mitigation linkage, multi-process decomposition (DFD levels), and attack-tree drill-down.

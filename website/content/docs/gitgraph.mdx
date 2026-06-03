@@ -1,0 +1,118 @@
+---
+title: Git Graph
+description: Mermaid-compatible commit-history graphs — branches, merges, tags, cherry-picks — rendered from a replayed sequence of git operations.
+---
+
+## About git graphs
+
+A **git graph** visualises a repository's commit history: a main line of commits, **branches** that fork off, **merges** that bring them back, plus **tags** and **cherry-picks**. It is the standard way to teach branching strategies (Git Flow, trunk-based) and to document a release history. Schematex implements the **Mermaid `gitGraph`** dialect, so existing Mermaid sources render unchanged.
+
+Schematex's edge here is fidelity and a clean, dependency-free layout: it **replays the operation sequence** to assign each commit to a lane, routes branch and merge connectors without crossings, and renders type-styled commit nodes (normal / highlight / reverse) — all from a tiny KB-scale bundle.
+
+<Playground initial={`gitGraph
+  commit id: "init"
+  branch develop
+  checkout develop
+  commit
+  commit tag: "v0.1"
+  checkout main
+  merge develop tag: "v1.0"`} height={360} />
+
+---
+
+## 1. Your first git graph
+
+Start with the `gitGraph` keyword (case-insensitive; a trailing colon is allowed), then one operation per line. The first commit lands on the main branch:
+
+```
+gitGraph
+  commit
+  branch develop
+  checkout develop
+  commit id: "feature work"
+  checkout main
+  merge develop tag: "v1.0"
+```
+
+Every operation runs against the **currently checked-out branch**. `commit` appends to it; `branch` creates a new line from the current commit; `checkout` (alias `switch`) moves the cursor; `merge` brings another branch into the current one.
+
+---
+
+## 2. Operations
+
+```
+commit                         # plain commit on the current branch
+commit id: "init"              # give the commit an explicit id
+commit tag: "v0.1"             # attach a release tag
+commit type: HIGHLIGHT         # NORMAL (default) | HIGHLIGHT | REVERSE
+branch develop                 # fork a branch from the current commit
+branch hotfix order: 3         # pin its lane order
+checkout develop               # switch the cursor (alias: switch)
+merge develop tag: "v1.0"      # merge a branch into the current one
+cherry-pick id: "abc"          # copy a commit onto the current branch
+```
+
+- **`commit`** takes optional `id:`, `tag:`, and `type:` (`NORMAL` / `HIGHLIGHT` / `REVERSE`).
+- **`branch NAME`** takes an optional `order:` to control lane placement.
+- **`checkout` / `switch`** are interchangeable.
+- **`cherry-pick id:`** copies a commit; an optional `parent:` disambiguates a merge commit.
+
+---
+
+## 3. Orientation
+
+The graph defaults to left-to-right. Set the direction inline on the header:
+
+```
+gitGraph TB:
+  commit
+  branch feature
+  checkout feature
+  commit
+  checkout main
+  merge feature
+```
+
+`LR` (default), `TB`, and `BT` are accepted. Config can also be supplied via a leading `%%{init: {'gitGraph': {...}}}%%` directive or a YAML frontmatter `config:` block for Mermaid compatibility (`mainBranchName`, `showCommitLabel`, `rotateCommitLabel`).
+
+---
+
+## 4. How the engine lays it out
+
+Mermaid-compatibility is the differentiator, but the layout is the work:
+
+- The operation list is **replayed in order** to build the commit DAG and assign each commit to its branch lane.
+- Branch lanes are ordered by appearance (overridable with `order:`); merge connectors are routed from the merged branch's tip to the new merge commit.
+- Commit nodes are styled by `type:` — a HIGHLIGHT commit is emphasised, a REVERSE commit marked — and tags render as flags. Cherry-picks draw a dashed copy edge to the source.
+
+Every commit carries `data-*` (branch, id, type) for downstream interaction.
+
+---
+
+## 5. Common mistakes
+
+```
+# WRONG — no gitGraph header
+commit
+commit
+
+# WRONG — unknown operation
+gitGraph
+  rebase main
+
+# WRONG — unknown commit type
+gitGraph
+  commit type: SQUASH
+```
+
+The document must start with `gitGraph`; only `commit` / `branch` / `checkout` / `switch` / `merge` / `cherry-pick` are valid operations; `type:` must be `NORMAL`, `HIGHLIGHT`, or `REVERSE`. `%%` starts a comment, matching Mermaid.
+
+---
+
+## 6. Standard compliance
+
+Syntax tracks the Mermaid `gitGraph` grammar — operation keywords, `id:`/`tag:`/`type:` options, `order:`, the `%%{init}%%` directive, and YAML frontmatter config — so Mermaid sources port directly while rendering through Schematex's zero-dependency engine.
+
+## 7. Roadmap
+
+Deferred: parallel-commit compaction, custom commit themes via classDef, and per-branch colour overrides beyond lane order.
