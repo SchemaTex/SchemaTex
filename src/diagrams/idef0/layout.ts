@@ -36,6 +36,8 @@ export const IDEF0_CONST = {
   /** Length of a boundary stub arrow (from the frame to the box edge). */
   STUB: 70,
   ARROW_HEAD: 9,
+  /** Horizontal lead-in so a feedback arrow enters the input (left) edge cleanly. */
+  FEEDBACK_LEADIN: 28,
   TITLE_H: 30,
   /** Title-block strip height at the page bottom. */
   TITLEBLOCK_H: 34,
@@ -141,12 +143,28 @@ function routeArrow(
   // margin so the arrow never crosses a box. Out the right, up over the top
   // margin, back down into the target side.
   const marginY = C.MARGIN / 2 + C.TITLE_H;
-  const d =
-    `M ${start.x} ${start.y} ` +
-    `L ${start.x + 20} ${start.y} ` +
-    `L ${start.x + 20} ${marginY} ` +
-    `L ${end.x} ${marginY} ` +
-    `L ${end.x} ${end.y}`;
+  let d: string;
+  if (targetSide === "left") {
+    // Input edge: drop down in the margin to the LEFT of the target box, then run
+    // horizontally into its left edge. The arrowhead enters the edge cleanly
+    // instead of falling vertically across the box body.
+    const approachX = end.x - C.FEEDBACK_LEADIN;
+    d =
+      `M ${start.x} ${start.y} ` +
+      `L ${start.x + 20} ${start.y} ` +
+      `L ${start.x + 20} ${marginY} ` +
+      `L ${approachX} ${marginY} ` +
+      `L ${approachX} ${end.y} ` +
+      `L ${end.x} ${end.y}`;
+  } else {
+    // top / bottom: a vertical approach already enters the mandated edge correctly.
+    d =
+      `M ${start.x} ${start.y} ` +
+      `L ${start.x + 20} ${start.y} ` +
+      `L ${start.x + 20} ${marginY} ` +
+      `L ${end.x} ${marginY} ` +
+      `L ${end.x} ${end.y}`;
+  }
   return {
     arrow,
     path: d,

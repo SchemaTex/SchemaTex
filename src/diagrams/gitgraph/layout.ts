@@ -340,9 +340,13 @@ export function layoutGitGraph(ast: GitGraphAst): GitGraphLayout {
       startSeq = 0;
       endSeq = 0;
     }
-    // Extend the start back to the fork point (parent's commit) so the elbow line
-    // visually originates from the lane head region.
-    const startT = timeAt(startSeq) - C.TIME_STEP / 2;
+    // The trunk (root branch — its first commit has no parent) keeps a short
+    // lead-in under its pill. A *branched* lane instead starts exactly at its
+    // first commit: the divergence elbow already connects it to the parent, so a
+    // leading half-step stub would just dangle to the left of the first node.
+    const firstOwn = own[0];
+    const isTrunk = !firstOwn || firstOwn.parents.length === 0;
+    const startT = isTrunk ? timeAt(startSeq) - C.TIME_STEP / 2 : timeAt(startSeq);
     const endT = timeAt(endSeq);
     const c = crossAt(info.lane);
     const head = place(startT, c);

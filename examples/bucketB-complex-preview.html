@@ -1,0 +1,925 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<title>Schematex — Bucket B COMPLEX cases</title>
+<style>
+  body { font: 15px/1.5 -apple-system, system-ui, sans-serif; margin: 0; background: #f8fafc; color: #0f172a; }
+  header { padding: 22px 32px; background: #0f172a; color: #f8fafc; }
+  header h1 { margin: 0; font-size: 19px; }
+  section { padding: 22px 32px; border-bottom: 1px solid #e2e8f0; }
+  section h2 { font-size: 16px; margin: 0 0 14px; }
+  .svgwrap { overflow: auto; background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px; }
+  .svgwrap svg { max-width: 100%; height: auto; }
+  details { margin-top: 10px; }
+  summary { font-size: 11px; color: #64748b; cursor: pointer; }
+  pre { background: #f1f5f9; padding: 10px; border-radius: 6px; font-size: 11px; overflow: auto; }
+</style></head>
+<body>
+  <header><h1>Schematex — Bucket B: complex / stress-test cases</h1></header>
+  
+    <section>
+      <h2>Event tree — 5 functions, multiple pruned outcomes</h2>
+      <div class="svgwrap"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1190" height="492" viewBox="0 0 1190 492" role="img" aria-label="Offshore platform — gas release" data-diagram-type="eventtree"><title>Offshore platform — gas release</title>
+<desc>Event tree for &quot;Gas release&quot; (f₀ = 0.025): 5 functions, 6 sequences. Safe — dispersed: 0.01698. Controlled flare: 0.006221. Escalating jet fire: 6.913e-4. ESD failure — large release: 4.950e-4. Jet fire — no blowdown: 3.638e-4. Undetected release: 2.500e-4. Dominant sequence: &quot;Safe — dispersed&quot; [1s 2s 3s] at 0.01698.</desc>
+<style>.sx-et-bg { fill: #ffffff; }
+.sx-et-title { fill: #334155; font-size: 16px; font-weight: 700; }
+.sx-et-header { fill: #334155; font-size: 12px; font-weight: 700; }
+.sx-et-grid { fill: none; stroke: #475569; stroke-width: 1; stroke-dasharray: 4 4; opacity: 0.5; }
+.sx-et-headrule { fill: none; stroke: #334155; stroke-width: 1; }
+.sx-et-ie { fill: none; stroke: #1e293b; stroke-width: 3; }
+.sx-et-ie-label { fill: #334155; font-size: 10px; font-weight: 700; }
+.sx-et-ie-freq { fill: #2563eb; font-size: 9px; font-weight: 600; }
+.sx-et-edge { fill: none; stroke: #475569; stroke-width: 2; }
+.sx-et-edge[data-leg="s"] {}
+.sx-et-leg-label { fill: #334155; font-size: 9px; }
+.sx-et-leg-prob { fill: #2563eb; font-size: 9px; }
+.sx-et-outcome { fill: #334155; font-size: 12px; font-weight: 600; }
+.sx-et-freq { fill: #2563eb; font-size: 10px; font-weight: 600; }
+.sx-et-seqid { fill: #334155; font-size: 9px; opacity: 0.7; }
+.sx-et-dot { fill: #334155; stroke: none; }
+.sx-et-edge[data-dominant="true"] { stroke: #dc2626; stroke-width: 3; }
+.sx-et-outcome[data-dominant="true"] { fill: #b91c1c; }
+.sx-et-freq[data-dominant="true"] { fill: #b91c1c; font-weight: 700; }
+.sx-et-dot[data-dominant="true"] { fill: #b91c1c; }</style>
+<rect x="0" y="0" width="1190" height="492" class="sx-et-bg"/>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><text x="28" y="32" class="sx-et-title" font-family="system-ui, -apple-system, sans-serif">Offshore platform — gas release</text>
+<text x="60" y="76" class="sx-et-header" text-anchor="middle" data-col="initiating">Initiating Event</text>
+<text x="242" y="76" class="sx-et-header" text-anchor="middle" data-col="function">Gas detection</text>
+<text x="392" y="76" class="sx-et-header" text-anchor="middle" data-col="function">Emergency shutdown</text>
+<text x="542" y="76" class="sx-et-header" text-anchor="middle" data-col="function">Ignition prevented</text>
+<text x="692" y="76" class="sx-et-header" text-anchor="middle" data-col="function">Blowdown / depressurise</text>
+<text x="842" y="76" class="sx-et-header" text-anchor="middle" data-col="function">Firewater deluge</text>
+<text x="958.8" y="76" class="sx-et-header" text-anchor="middle" data-col="outcome">Outcome</text>
+<text x="1078.8" y="76" class="sx-et-header" text-anchor="middle" data-col="frequency">Frequency</text>
+<line x1="28" y1="82" x2="1122" y2="82" class="sx-et-headrule"/>
+<line x1="242" y1="88" x2="242" y2="424" class="sx-et-grid"/>
+<line x1="392" y1="88" x2="392" y2="424" class="sx-et-grid"/>
+<line x1="542" y1="88" x2="542" y2="424" class="sx-et-grid"/>
+<line x1="692" y1="88" x2="692" y2="424" class="sx-et-grid"/>
+<line x1="842" y1="88" x2="842" y2="424" class="sx-et-grid"/>
+<g class="sx-et-ie-g" data-id="REL"><line x1="28" y1="256" x2="92" y2="256" class="sx-et-ie"/>
+<text x="28" y="246" class="sx-et-ie-label">Gas release</text>
+<text x="28" y="272" class="sx-et-ie-freq">f₀ = 0.025</text></g>
+<path d="M 92 256 L 242 256 L 242 228" class="sx-et-edge" data-leg="s" data-fn="DET" data-tag="1s"/>
+<text x="167" y="221" class="sx-et-leg-label" text-anchor="middle">Success (1s)</text>
+<text x="167" y="232" class="sx-et-leg-prob" text-anchor="middle">0.99</text>
+<path d="M 242 228 L 392 228 L 392 200" class="sx-et-edge" data-leg="s" data-fn="ESD" data-tag="2s"/>
+<text x="317" y="193" class="sx-et-leg-label" text-anchor="middle">Success (2s)</text>
+<text x="317" y="204" class="sx-et-leg-prob" text-anchor="middle">0.98</text>
+<path d="M 392 200 L 542 200 L 542 116" class="sx-et-edge" data-leg="s" data-fn="IGN" data-tag="3s"/>
+<text x="467" y="109" class="sx-et-leg-label" text-anchor="middle">Success (3s)</text>
+<text x="467" y="120" class="sx-et-leg-prob" text-anchor="middle">0.7</text>
+<path d="M 392 200 L 542 200 L 542 228" class="sx-et-edge" data-leg="f" data-fn="IGN" data-tag="3f"/>
+<text x="467" y="221" class="sx-et-leg-label" text-anchor="middle">Failure (3f)</text>
+<text x="467" y="232" class="sx-et-leg-prob" text-anchor="middle">0.3</text>
+<path d="M 542 228 L 692 228 L 692 200" class="sx-et-edge" data-leg="s" data-fn="BLW" data-tag="4s"/>
+<text x="617" y="193" class="sx-et-leg-label" text-anchor="middle">Success (4s)</text>
+<text x="617" y="204" class="sx-et-leg-prob" text-anchor="middle">0.95</text>
+<path d="M 692 200 L 842 200 L 842 172" class="sx-et-edge" data-leg="s" data-fn="FIRE" data-tag="5s"/>
+<text x="767" y="165" class="sx-et-leg-label" text-anchor="middle">Success (5s)</text>
+<text x="767" y="176" class="sx-et-leg-prob" text-anchor="middle">0.9</text>
+<path d="M 692 200 L 842 200 L 842 228" class="sx-et-edge" data-leg="f" data-fn="FIRE" data-tag="5f"/>
+<text x="767" y="221" class="sx-et-leg-label" text-anchor="middle">Failure (5f)</text>
+<text x="767" y="232" class="sx-et-leg-prob" text-anchor="middle">0.1</text>
+<path d="M 542 228 L 692 228 L 692 284" class="sx-et-edge" data-leg="f" data-fn="BLW" data-tag="4f"/>
+<text x="617" y="277" class="sx-et-leg-label" text-anchor="middle">Failure (4f)</text>
+<text x="617" y="288" class="sx-et-leg-prob" text-anchor="middle">0.05</text>
+<path d="M 242 228 L 392 228 L 392 340" class="sx-et-edge" data-leg="f" data-fn="ESD" data-tag="2f"/>
+<text x="317" y="333" class="sx-et-leg-label" text-anchor="middle">Failure (2f)</text>
+<text x="317" y="344" class="sx-et-leg-prob" text-anchor="middle">0.02</text>
+<path d="M 92 256 L 242 256 L 242 396" class="sx-et-edge" data-leg="f" data-fn="DET" data-tag="1f"/>
+<text x="167" y="389" class="sx-et-leg-label" text-anchor="middle">Failure (1f)</text>
+<text x="167" y="400" class="sx-et-leg-prob" text-anchor="middle">0.01</text>
+<path d="M 542 116 L 882 116" class="sx-et-edge" data-leg="s" data-fn="__leaf__"/>
+<path d="M 842 172 L 882 172" class="sx-et-edge" data-leg="s" data-fn="__leaf__"/>
+<path d="M 842 228 L 882 228" class="sx-et-edge" data-leg="f" data-fn="__leaf__"/>
+<path d="M 692 284 L 882 284" class="sx-et-edge" data-leg="f" data-fn="__leaf__"/>
+<path d="M 392 340 L 882 340" class="sx-et-edge" data-leg="f" data-fn="__leaf__"/>
+<path d="M 242 396 L 882 396" class="sx-et-edge" data-leg="f" data-fn="__leaf__"/>
+<g class="sx-et-leaf-g" data-seq="1" data-outcome="Safe — dispersed" data-frequency="0.0169785" data-designator="1s 2s 3s" data-dominant="true"><circle cx="882" cy="116" r="3" class="sx-et-dot" data-dominant="true"/>
+<text x="892" y="112" class="sx-et-outcome" data-dominant="true">Safe — dispersed</text>
+<text x="892" y="128" class="sx-et-freq" data-dominant="true">0.01698  ·  1s 2s 3s</text></g>
+<g class="sx-et-leaf-g" data-seq="2" data-outcome="Controlled flare" data-frequency="0.0062214075" data-designator="1s 2s 3f 4s 5s"><circle cx="882" cy="172" r="3" class="sx-et-dot"/>
+<text x="892" y="168" class="sx-et-outcome">Controlled flare</text>
+<text x="892" y="184" class="sx-et-freq">0.006221  ·  1s 2s 3f 4s 5s</text></g>
+<g class="sx-et-leaf-g" data-seq="3" data-outcome="Escalating jet fire" data-frequency="0.0006912675" data-designator="1s 2s 3f 4s 5f"><circle cx="882" cy="228" r="3" class="sx-et-dot"/>
+<text x="892" y="224" class="sx-et-outcome">Escalating jet fire</text>
+<text x="892" y="240" class="sx-et-freq">6.913e-4  ·  1s 2s 3f 4s 5f</text></g>
+<g class="sx-et-leaf-g" data-seq="4" data-outcome="Jet fire — no blowdown" data-frequency="0.000363825" data-designator="1s 2s 3f 4f"><circle cx="882" cy="284" r="3" class="sx-et-dot"/>
+<text x="892" y="280" class="sx-et-outcome">Jet fire — no blowdown</text>
+<text x="892" y="296" class="sx-et-freq">3.638e-4  ·  1s 2s 3f 4f</text></g>
+<g class="sx-et-leaf-g" data-seq="5" data-outcome="ESD failure — large release" data-frequency="0.000495" data-designator="1s 2f"><circle cx="882" cy="340" r="3" class="sx-et-dot"/>
+<text x="892" y="336" class="sx-et-outcome">ESD failure — large release</text>
+<text x="892" y="352" class="sx-et-freq">4.950e-4  ·  1s 2f</text></g>
+<g class="sx-et-leaf-g" data-seq="6" data-outcome="Undetected release" data-frequency="0.00025" data-designator="1f"><circle cx="882" cy="396" r="3" class="sx-et-dot"/>
+<text x="892" y="392" class="sx-et-outcome">Undetected release</text>
+<text x="892" y="408" class="sx-et-freq">2.500e-4  ·  1f</text></g></g></svg></div>
+      <details><summary>DSL</summary><pre>eventtree "Offshore platform — gas release"
+  initiating REL "Gas release" freq: 2.5e-2
+  function DET "Gas detection" p: 0.01
+  function ESD "Emergency shutdown" p: 0.02
+  function IGN "Ignition prevented" p: 0.3
+  function BLW "Blowdown / depressurise" p: 0.05
+  function FIRE "Firewater deluge" p: 0.1
+  outcome s s s * * -> "Safe — dispersed"
+  outcome s s f s s -> "Controlled flare"
+  outcome s s f s f -> "Escalating jet fire"
+  outcome s s f f * -> "Jet fire — no blowdown"
+  outcome s f * * * -> "ESD failure — large release"
+  outcome f * * * * -> "Undetected release"</pre></details>
+    </section>
+    <section>
+      <h2>FMEA — multi-item DFMEA with after-action RPN drop</h2>
+      <div class="svgwrap"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1174" height="384" viewBox="0 0 1174 384" role="img" aria-label="EV Battery Pack DFMEA" data-diagram-type="fmea" data-rank="ap" data-rows="4" data-flagged="2"><title>EV Battery Pack DFMEA</title>
+<desc>FMEA worksheet (design); 4 failure-mode row(s); ranked by AP; highest risk: &quot;Thermal runaway&quot; S10·O3·D6 → RPN 180, AP High (action needed); 2 flagged.</desc>
+<style>.sx-fmea-bg { fill: #ffffff; }
+.sx-fmea-border { fill: none; stroke: #334155; stroke-width: 2; }
+.sx-fmea-cell { fill: #ffffff; stroke: #cbd5e1; stroke-width: 1; }
+.sx-fmea-cell-alt { fill: #f8fafc; }
+.sx-fmea-headcell { fill: #1d4e89; stroke: #cbd5e1; stroke-width: 1; }
+.sx-fmea-band { fill: #e2e8f0; stroke: #cbd5e1; stroke-width: 1; }
+.sx-fmea-band-text { fill: #1e293b; font-size: 10px; font-weight: 700; letter-spacing: 0.06em; }
+.sx-fmea-headtext { fill: #ffffff; font-size: 10px; font-weight: 700; }
+.sx-fmea-text { fill: #0f172a; font-size: 10px; }
+.sx-fmea-risk-text { fill: #ffffff; font-size: 12px; font-weight: 700; }
+.sx-fmea-title { fill: #0f172a; font-size: 16px; font-weight: 700; }
+.sx-fmea-meta { fill: #334155; font-size: 10px; }
+.sx-fmea-legend { fill: #334155; font-size: 10px; font-weight: 600; }
+.sx-fmea-rpn-high { fill: #dc2626; stroke: #cbd5e1; stroke-width: 1; }
+.sx-fmea-rpn-mid { fill: #f59e0b; stroke: #cbd5e1; stroke-width: 1; }
+.sx-fmea-rpn-low { fill: #16a34a; stroke: #cbd5e1; stroke-width: 1; }
+.sx-fmea-ap-high { fill: #dc2626; stroke: #cbd5e1; stroke-width: 1; }
+.sx-fmea-ap-mid { fill: #f59e0b; stroke: #cbd5e1; stroke-width: 1; }
+.sx-fmea-ap-low { fill: #16a34a; stroke: #cbd5e1; stroke-width: 1; }
+.sx-fmea-flag { fill: none; stroke: #b91c1c; stroke-width: 3;  }</style>
+<rect x="0" y="0" width="1174" height="384" class="sx-fmea-bg"/>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><text x="16" y="30" class="sx-fmea-title">EV Battery Pack DFMEA</text>
+<text x="16" y="52" class="sx-fmea-legend">Flag: ap &gt;= High    ·    Rank: AP</text>
+<rect x="414" y="64" width="402" height="20" class="sx-fmea-band"/>
+<text x="615" y="78" class="sx-fmea-band-text" text-anchor="middle">BEFORE ACTION</text>
+<rect x="956" y="64" width="162" height="20" class="sx-fmea-band"/>
+<text x="1037" y="78" class="sx-fmea-band-text" text-anchor="middle">AFTER ACTION</text>
+<rect x="16" y="84" width="28" height="40" class="sx-fmea-headcell"/>
+<text x="30" y="108" class="sx-fmea-headtext" text-anchor="middle">#</text>
+<rect x="44" y="84" width="130" height="40" class="sx-fmea-headcell"/>
+<text x="109" y="101.5" class="sx-fmea-headtext" text-anchor="middle">Item</text>
+<text x="109" y="114.5" class="sx-fmea-headtext" text-anchor="middle">Function</text>
+<rect x="174" y="84" width="120" height="40" class="sx-fmea-headcell"/>
+<text x="234" y="108" class="sx-fmea-headtext" text-anchor="middle">Failure Mode</text>
+<rect x="294" y="84" width="120" height="40" class="sx-fmea-headcell"/>
+<text x="354" y="108" class="sx-fmea-headtext" text-anchor="middle">Effect(s)</text>
+<rect x="414" y="84" width="26" height="40" class="sx-fmea-headcell"/>
+<text x="427" y="108" class="sx-fmea-headtext" text-anchor="middle">S</text>
+<rect x="440" y="84" width="120" height="40" class="sx-fmea-headcell"/>
+<text x="500" y="108" class="sx-fmea-headtext" text-anchor="middle">Cause(s)</text>
+<rect x="560" y="84" width="26" height="40" class="sx-fmea-headcell"/>
+<text x="573" y="108" class="sx-fmea-headtext" text-anchor="middle">O</text>
+<rect x="586" y="84" width="120" height="40" class="sx-fmea-headcell"/>
+<text x="646" y="108" class="sx-fmea-headtext" text-anchor="middle">Current Controls</text>
+<rect x="706" y="84" width="26" height="40" class="sx-fmea-headcell"/>
+<text x="719" y="108" class="sx-fmea-headtext" text-anchor="middle">D</text>
+<rect x="732" y="84" width="38" height="40" class="sx-fmea-headcell"/>
+<text x="751" y="108" class="sx-fmea-headtext" text-anchor="middle">RPN</text>
+<rect x="770" y="84" width="46" height="40" class="sx-fmea-headcell"/>
+<text x="793" y="108" class="sx-fmea-headtext" text-anchor="middle">AP</text>
+<rect x="816" y="84" width="140" height="40" class="sx-fmea-headcell"/>
+<text x="886" y="108" class="sx-fmea-headtext" text-anchor="middle">Recommended Action</text>
+<rect x="956" y="84" width="26" height="40" class="sx-fmea-headcell"/>
+<text x="969" y="108" class="sx-fmea-headtext" text-anchor="middle">S</text>
+<rect x="982" y="84" width="26" height="40" class="sx-fmea-headcell"/>
+<text x="995" y="108" class="sx-fmea-headtext" text-anchor="middle">O</text>
+<rect x="1008" y="84" width="26" height="40" class="sx-fmea-headcell"/>
+<text x="1021" y="108" class="sx-fmea-headtext" text-anchor="middle">D</text>
+<rect x="1034" y="84" width="38" height="40" class="sx-fmea-headcell"/>
+<text x="1053" y="108" class="sx-fmea-headtext" text-anchor="middle">RPN</text>
+<rect x="1072" y="84" width="46" height="40" class="sx-fmea-headcell"/>
+<text x="1095" y="108" class="sx-fmea-headtext" text-anchor="middle">AP</text>
+<rect x="16" y="124" width="28" height="51" class="sx-fmea-cell" data-col="no" data-row="1"/>
+<text x="30" y="153.5" class="sx-fmea-text" text-anchor="middle">1</text>
+<rect x="294" y="124" width="120" height="51" class="sx-fmea-cell" data-col="effect" data-row="1"/>
+<text x="300" y="153.5" class="sx-fmea-text" text-anchor="start">Pack fire</text>
+<rect x="414" y="124" width="26" height="51" class="sx-fmea-cell" data-col="sev" data-row="1"/>
+<text x="427" y="153.5" class="sx-fmea-text" text-anchor="middle">10</text>
+<rect x="440" y="124" width="120" height="51" class="sx-fmea-cell" data-col="cause" data-row="1"/>
+<text x="446" y="153.5" class="sx-fmea-text" text-anchor="start">Internal short</text>
+<rect x="560" y="124" width="26" height="51" class="sx-fmea-cell" data-col="occ" data-row="1"/>
+<text x="573" y="153.5" class="sx-fmea-text" text-anchor="middle">3</text>
+<rect x="586" y="124" width="120" height="51" class="sx-fmea-cell" data-col="controls" data-row="1"/>
+<text x="592" y="147" class="sx-fmea-text" text-anchor="start">D: Cell IR</text>
+<text x="592" y="160" class="sx-fmea-text" text-anchor="start">screening</text>
+<rect x="706" y="124" width="26" height="51" class="sx-fmea-cell" data-col="det" data-row="1"/>
+<text x="719" y="153.5" class="sx-fmea-text" text-anchor="middle">6</text>
+<rect x="732" y="124" width="38" height="51" class="sx-fmea-cell sx-fmea-rpn-high" data-col="rpn" data-row="1" data-risk="rpn-high"/>
+<text x="751" y="153.5" class="sx-fmea-risk-text" text-anchor="middle">180</text>
+<rect x="770" y="124" width="46" height="51" class="sx-fmea-cell sx-fmea-ap-high" data-col="ap" data-row="1" data-risk="ap-high"/>
+<text x="793" y="153.5" class="sx-fmea-risk-text" text-anchor="middle">High</text>
+<rect x="816" y="124" width="140" height="51" class="sx-fmea-cell" data-col="action" data-row="1"/>
+<text x="822" y="140.5" class="sx-fmea-text" text-anchor="start">Add ceramic separator</text>
+<text x="822" y="153.5" class="sx-fmea-text" text-anchor="start">+ fuse</text>
+<text x="822" y="166.5" class="sx-fmea-text" text-anchor="start">Batt. eng · 2026-Q4</text>
+<rect x="956" y="124" width="26" height="51" class="sx-fmea-cell" data-col="rsev" data-row="1"/>
+<text x="969" y="153.5" class="sx-fmea-text" text-anchor="middle">10</text>
+<rect x="982" y="124" width="26" height="51" class="sx-fmea-cell" data-col="rocc" data-row="1"/>
+<text x="995" y="153.5" class="sx-fmea-text" text-anchor="middle">1</text>
+<rect x="1008" y="124" width="26" height="51" class="sx-fmea-cell" data-col="rdet" data-row="1"/>
+<text x="1021" y="153.5" class="sx-fmea-text" text-anchor="middle">4</text>
+<rect x="1034" y="124" width="38" height="51" class="sx-fmea-cell sx-fmea-rpn-mid" data-col="rrpn" data-row="1" data-risk="rpn-mid"/>
+<text x="1053" y="153.5" class="sx-fmea-risk-text" text-anchor="middle">40</text>
+<rect x="1072" y="124" width="46" height="51" class="sx-fmea-cell sx-fmea-ap-high" data-col="rap" data-row="1" data-risk="ap-high"/>
+<text x="1095" y="153.5" class="sx-fmea-risk-text" text-anchor="middle">High</text>
+<rect x="16" y="175" width="28" height="64" class="sx-fmea-cell sx-fmea-cell-alt" data-col="no" data-row="2"/>
+<text x="30" y="211" class="sx-fmea-text" text-anchor="middle">2</text>
+<rect x="294" y="175" width="120" height="64" class="sx-fmea-cell sx-fmea-cell-alt" data-col="effect" data-row="2"/>
+<text x="300" y="211" class="sx-fmea-text" text-anchor="start">Pack fire</text>
+<rect x="414" y="175" width="26" height="64" class="sx-fmea-cell sx-fmea-cell-alt" data-col="sev" data-row="2"/>
+<text x="427" y="211" class="sx-fmea-text" text-anchor="middle">10</text>
+<rect x="440" y="175" width="120" height="64" class="sx-fmea-cell sx-fmea-cell-alt" data-col="cause" data-row="2"/>
+<text x="446" y="211" class="sx-fmea-text" text-anchor="start">Overcharge</text>
+<rect x="560" y="175" width="26" height="64" class="sx-fmea-cell sx-fmea-cell-alt" data-col="occ" data-row="2"/>
+<text x="573" y="211" class="sx-fmea-text" text-anchor="middle">2</text>
+<rect x="586" y="175" width="120" height="64" class="sx-fmea-cell sx-fmea-cell-alt" data-col="controls" data-row="2"/>
+<text x="592" y="191.5" class="sx-fmea-text" text-anchor="start">P: BMS voltage</text>
+<text x="592" y="204.5" class="sx-fmea-text" text-anchor="start">clamp</text>
+<text x="592" y="217.5" class="sx-fmea-text" text-anchor="start">D: Voltage</text>
+<text x="592" y="230.5" class="sx-fmea-text" text-anchor="start">telemetry</text>
+<rect x="706" y="175" width="26" height="64" class="sx-fmea-cell sx-fmea-cell-alt" data-col="det" data-row="2"/>
+<text x="719" y="211" class="sx-fmea-text" text-anchor="middle">3</text>
+<rect x="732" y="175" width="38" height="64" class="sx-fmea-cell sx-fmea-rpn-mid" data-col="rpn" data-row="2" data-risk="rpn-mid"/>
+<text x="751" y="211" class="sx-fmea-risk-text" text-anchor="middle">60</text>
+<rect x="770" y="175" width="46" height="64" class="sx-fmea-cell sx-fmea-ap-high" data-col="ap" data-row="2" data-risk="ap-high"/>
+<text x="793" y="211" class="sx-fmea-risk-text" text-anchor="middle">High</text>
+<rect x="816" y="175" width="140" height="64" class="sx-fmea-cell sx-fmea-cell-alt" data-col="action" data-row="2"/>
+<rect x="956" y="175" width="26" height="64" class="sx-fmea-cell sx-fmea-cell-alt" data-col="rsev" data-row="2"/>
+<rect x="982" y="175" width="26" height="64" class="sx-fmea-cell sx-fmea-cell-alt" data-col="rocc" data-row="2"/>
+<rect x="1008" y="175" width="26" height="64" class="sx-fmea-cell sx-fmea-cell-alt" data-col="rdet" data-row="2"/>
+<rect x="1034" y="175" width="38" height="64" class="sx-fmea-cell sx-fmea-cell-alt" data-col="rrpn" data-row="2"/>
+<rect x="1072" y="175" width="46" height="64" class="sx-fmea-cell sx-fmea-cell-alt" data-col="rap" data-row="2"/>
+<rect x="16" y="239" width="28" height="38" class="sx-fmea-cell" data-col="no" data-row="3"/>
+<text x="30" y="262" class="sx-fmea-text" text-anchor="middle">3</text>
+<rect x="44" y="239" width="130" height="38" class="sx-fmea-cell" data-col="item" data-row="3"/>
+<text x="50" y="255.5" class="sx-fmea-text" text-anchor="start">Busbar</text>
+<text x="50" y="268.5" class="sx-fmea-text" text-anchor="start">— Carry current</text>
+<rect x="174" y="239" width="120" height="38" class="sx-fmea-cell" data-col="mode" data-row="3"/>
+<text x="180" y="262" class="sx-fmea-text" text-anchor="start">Loose joint</text>
+<rect x="294" y="239" width="120" height="38" class="sx-fmea-cell" data-col="effect" data-row="3"/>
+<text x="300" y="262" class="sx-fmea-text" text-anchor="start">Local overheating</text>
+<rect x="414" y="239" width="26" height="38" class="sx-fmea-cell" data-col="sev" data-row="3"/>
+<text x="427" y="262" class="sx-fmea-text" text-anchor="middle">7</text>
+<rect x="440" y="239" width="120" height="38" class="sx-fmea-cell" data-col="cause" data-row="3"/>
+<text x="446" y="255.5" class="sx-fmea-text" text-anchor="start">Vibration</text>
+<text x="446" y="268.5" class="sx-fmea-text" text-anchor="start">loosening</text>
+<rect x="560" y="239" width="26" height="38" class="sx-fmea-cell" data-col="occ" data-row="3"/>
+<text x="573" y="262" class="sx-fmea-text" text-anchor="middle">4</text>
+<rect x="586" y="239" width="120" height="38" class="sx-fmea-cell" data-col="controls" data-row="3"/>
+<text x="592" y="262" class="sx-fmea-text" text-anchor="start">D: Torque audit</text>
+<rect x="706" y="239" width="26" height="38" class="sx-fmea-cell" data-col="det" data-row="3"/>
+<text x="719" y="262" class="sx-fmea-text" text-anchor="middle">5</text>
+<rect x="732" y="239" width="38" height="38" class="sx-fmea-cell sx-fmea-rpn-high" data-col="rpn" data-row="3" data-risk="rpn-high"/>
+<text x="751" y="262" class="sx-fmea-risk-text" text-anchor="middle">140</text>
+<rect x="770" y="239" width="46" height="38" class="sx-fmea-cell sx-fmea-ap-mid" data-col="ap" data-row="3" data-risk="ap-mid"/>
+<text x="793" y="255.5" class="sx-fmea-risk-text" text-anchor="middle">Mediu</text>
+<text x="793" y="268.5" class="sx-fmea-risk-text" text-anchor="middle">m</text>
+<rect x="816" y="239" width="140" height="38" class="sx-fmea-cell" data-col="action" data-row="3"/>
+<rect x="956" y="239" width="26" height="38" class="sx-fmea-cell" data-col="rsev" data-row="3"/>
+<rect x="982" y="239" width="26" height="38" class="sx-fmea-cell" data-col="rocc" data-row="3"/>
+<rect x="1008" y="239" width="26" height="38" class="sx-fmea-cell" data-col="rdet" data-row="3"/>
+<rect x="1034" y="239" width="38" height="38" class="sx-fmea-cell" data-col="rrpn" data-row="3"/>
+<rect x="1072" y="239" width="46" height="38" class="sx-fmea-cell" data-col="rap" data-row="3"/>
+<rect x="16" y="277" width="28" height="51" class="sx-fmea-cell sx-fmea-cell-alt" data-col="no" data-row="4"/>
+<text x="30" y="306.5" class="sx-fmea-text" text-anchor="middle">4</text>
+<rect x="44" y="277" width="130" height="51" class="sx-fmea-cell sx-fmea-cell-alt" data-col="item" data-row="4"/>
+<text x="50" y="293.5" class="sx-fmea-text" text-anchor="start">Cell module</text>
+<text x="50" y="306.5" class="sx-fmea-text" text-anchor="start">— Store energy</text>
+<text x="50" y="319.5" class="sx-fmea-text" text-anchor="start">safely</text>
+<rect x="174" y="277" width="120" height="51" class="sx-fmea-cell sx-fmea-cell-alt" data-col="mode" data-row="4"/>
+<text x="180" y="306.5" class="sx-fmea-text" text-anchor="start">Capacity fade</text>
+<rect x="294" y="277" width="120" height="51" class="sx-fmea-cell sx-fmea-cell-alt" data-col="effect" data-row="4"/>
+<text x="300" y="306.5" class="sx-fmea-text" text-anchor="start">Reduced range</text>
+<rect x="414" y="277" width="26" height="51" class="sx-fmea-cell sx-fmea-cell-alt" data-col="sev" data-row="4"/>
+<text x="427" y="306.5" class="sx-fmea-text" text-anchor="middle">5</text>
+<rect x="440" y="277" width="120" height="51" class="sx-fmea-cell sx-fmea-cell-alt" data-col="cause" data-row="4"/>
+<text x="446" y="306.5" class="sx-fmea-text" text-anchor="start">Calendar ageing</text>
+<rect x="560" y="277" width="26" height="51" class="sx-fmea-cell sx-fmea-cell-alt" data-col="occ" data-row="4"/>
+<text x="573" y="306.5" class="sx-fmea-text" text-anchor="middle">6</text>
+<rect x="586" y="277" width="120" height="51" class="sx-fmea-cell sx-fmea-cell-alt" data-col="controls" data-row="4"/>
+<text x="592" y="306.5" class="sx-fmea-text" text-anchor="start">D: SOH estimator</text>
+<rect x="706" y="277" width="26" height="51" class="sx-fmea-cell sx-fmea-cell-alt" data-col="det" data-row="4"/>
+<text x="719" y="306.5" class="sx-fmea-text" text-anchor="middle">4</text>
+<rect x="732" y="277" width="38" height="51" class="sx-fmea-cell sx-fmea-rpn-high" data-col="rpn" data-row="4" data-risk="rpn-high"/>
+<text x="751" y="306.5" class="sx-fmea-risk-text" text-anchor="middle">120</text>
+<rect x="770" y="277" width="46" height="51" class="sx-fmea-cell sx-fmea-ap-mid" data-col="ap" data-row="4" data-risk="ap-mid"/>
+<text x="793" y="300" class="sx-fmea-risk-text" text-anchor="middle">Mediu</text>
+<text x="793" y="313" class="sx-fmea-risk-text" text-anchor="middle">m</text>
+<rect x="816" y="277" width="140" height="51" class="sx-fmea-cell sx-fmea-cell-alt" data-col="action" data-row="4"/>
+<rect x="956" y="277" width="26" height="51" class="sx-fmea-cell sx-fmea-cell-alt" data-col="rsev" data-row="4"/>
+<rect x="982" y="277" width="26" height="51" class="sx-fmea-cell sx-fmea-cell-alt" data-col="rocc" data-row="4"/>
+<rect x="1008" y="277" width="26" height="51" class="sx-fmea-cell sx-fmea-cell-alt" data-col="rdet" data-row="4"/>
+<rect x="1034" y="277" width="38" height="51" class="sx-fmea-cell sx-fmea-cell-alt" data-col="rrpn" data-row="4"/>
+<rect x="1072" y="277" width="46" height="51" class="sx-fmea-cell sx-fmea-cell-alt" data-col="rap" data-row="4"/>
+<rect x="44" y="124" width="130" height="115" class="sx-fmea-cell" data-col="item" data-row="1"/>
+<text x="50" y="141" class="sx-fmea-text" text-anchor="start">Cell module</text>
+<text x="50" y="154" class="sx-fmea-text" text-anchor="start">— Store energy</text>
+<text x="50" y="167" class="sx-fmea-text" text-anchor="start">safely</text>
+<rect x="174" y="124" width="120" height="115" class="sx-fmea-cell" data-col="mode" data-row="1"/>
+<text x="180" y="141" class="sx-fmea-text" text-anchor="start">Thermal runaway</text>
+<rect x="16" y="124" width="1102" height="51" class="sx-fmea-flag" data-flagged="true" data-rpn="180" data-ap="High"/>
+<rect x="16" y="175" width="1102" height="64" class="sx-fmea-flag" data-flagged="true" data-rpn="60" data-ap="High"/>
+<rect x="16" y="64" width="1102" height="264" class="sx-fmea-border"/></g></svg></div>
+      <details><summary>DSL</summary><pre>fmea "EV Battery Pack DFMEA"
+  rank: ap
+  flag: ap >= High
+  item "Cell module" fn "Store energy safely"
+    mode "Thermal runaway"
+      effect "Pack fire" sev: 10
+      cause "Internal short" occ: 3
+        controls detection: "Cell IR screening" det: 6
+      cause "Overcharge" occ: 2
+        controls prevention: "BMS voltage clamp", detection: "Voltage telemetry" det: 3
+    mode "Capacity fade"
+      effect "Reduced range" sev: 5
+      cause "Calendar ageing" occ: 6
+        controls detection: "SOH estimator" det: 4
+  item "Busbar" fn "Carry current"
+    mode "Loose joint"
+      effect "Local overheating" sev: 7
+      cause "Vibration loosening" occ: 4
+        controls detection: "Torque audit" det: 5
+  action "Thermal runaway" / "Internal short"
+    do: "Add ceramic separator + fuse" owner: "Batt. eng" target: 2026-Q4
+    revised sev: 10 occ: 1 det: 4</pre></details>
+    </section>
+    <section>
+      <h2>Causal loop — engagement system with R + B loops and delays</h2>
+      <div class="svgwrap"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="458" height="387" viewBox="0 0 458 387" role="img" aria-label="Product engagement dynamics" data-diagram-type="causalloop"><title>Product engagement dynamics</title>
+<desc>Causal loop diagram &quot;Product engagement dynamics&quot;: 8 variables, 10 causal links. 3 feedback loops: 1 reinforcing (R), 2 balancing (B). R1 &quot;Viral content&quot; (reinforcing, 0 negative links): New users → Active users → Content created → New users. B1 &quot;Scaling pain&quot; (balancing, 1 negative link): Active users → Server load → Latency → Active users. B2 (balancing, 1 negative link): Active users → Support tickets → Team capacity → Feature velocity → Active users. Loop phrase &quot;Build-grow flywheel&quot; names R2, but no such loop was detected.</desc>
+<style>.sx-cld-bg { fill: #ffffff; }
+.sx-cld-link { fill: none; stroke: #1a1a1a; stroke-width: 2; }
+.sx-cld-arrow { fill: #1a1a1a; stroke: none; }
+.sx-cld-var { fill: #1a1a1a; font-size: 13px; font-weight: 600; }
+.sx-cld-polarity { fill: #1a1a1a; font-size: 14px; font-weight: 700; }
+.sx-cld-link-label { fill: #1a1a1a; font-size: 9px; }
+.sx-cld-delay { stroke: #1a1a1a; stroke-width: 2; }
+.sx-cld-glyph { fill: none; stroke: #1d6fd6; stroke-width: 2; }
+.sx-cld-glyph-head { fill: #1d6fd6; stroke: none; }
+.sx-cld-glyph-label { fill: #1d6fd6; font-size: 12px; font-weight: 700; }
+.sx-cld-glyph-phrase { fill: #1d6fd6; font-size: 10px; font-style: italic; }
+.sx-cld-title { fill: #1a1a1a; font-size: 16px; font-weight: 700; }</style>
+<rect x="0" y="0" width="458" height="387" class="sx-cld-bg"/>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><text x="36" y="20" class="sx-cld-title" font-family="system-ui, -apple-system, sans-serif">Product engagement dynamics</text>
+<g class="sx-cld-link-g" data-from="New users" data-to="Active users" data-polarity="+"><path d="M 214.23 285.46 Q 214.23 176.23 214.23 67" class="sx-cld-link"/>
+<polygon points="214.23,67 218.73,76 209.73,76" class="sx-cld-arrow"/>
+<text x="214.23099629457562" y="78" class="sx-cld-polarity" text-anchor="middle">+</text></g>
+<g class="sx-cld-link-g" data-from="Active users" data-to="Content created" data-polarity="+"><path d="M 208.85 67 Q 125.11 139.32 133.19 249.66" class="sx-cld-link"/>
+<polygon points="133.19,249.66 128.04,241.01 137.02,240.36" class="sx-cld-arrow"/>
+<text x="123.43571588404744" y="242.8531970554928" class="sx-cld-polarity" text-anchor="middle">+</text></g>
+<g class="sx-cld-link-g" data-from="Content created" data-to="New users" data-polarity="+"><path d="M 159.19 275.66 Q 163.14 299.58 182.85 285.46" class="sx-cld-link"/>
+<polygon points="182.85,285.46 178.15,294.36 172.91,287.04" class="sx-cld-arrow"/>
+<text x="173.32848208766194" y="302.77676835208536" class="sx-cld-polarity" text-anchor="middle">+</text></g>
+<g class="sx-cld-link-g" data-from="Active users" data-to="Server load" data-polarity="+"><path d="M 201.23 67 Q 126.22 88.22 105 163.23" class="sx-cld-link"/>
+<polygon points="105,163.23 103.12,153.35 111.78,155.8" class="sx-cld-arrow"/>
+<text x="99.83489645706459" y="153.42440324665307" class="sx-cld-polarity" text-anchor="middle">+</text></g>
+<g class="sx-cld-link-g" data-from="Server load" data-to="Latency" data-polarity="+"><path d="M 97.38 163.23 Q 90.89 125.14 122.42 102.8" class="sx-cld-link"/>
+<polygon points="122.42,102.8 117.67,111.68 112.47,104.33" class="sx-cld-arrow"/>
+<text x="107.46532609747905" y="107.02053692126803" class="sx-cld-polarity" text-anchor="middle">+</text></g>
+<g class="sx-cld-link-g" data-from="Latency" data-to="Active users" data-polarity="-"><path d="M 156.3 78 Q 161.44 53.59 182.85 67" class="sx-cld-link"/>
+<polygon points="182.85,67 172.83,66.04 177.61,58.41" class="sx-cld-arrow"/>
+<text x="172.95907778955402" y="58.10015252738279" class="sx-cld-polarity" text-anchor="middle">−</text></g>
+<g class="sx-cld-link-g" data-from="Active users" data-to="Support tickets" data-polarity="+"><path d="M 245.62 67 Q 265.32 52.89 269.28 76.8" class="sx-cld-link"/>
+<polygon points="269.28,76.8 263.37,68.66 272.25,67.19" class="sx-cld-arrow"/>
+<text x="271.96149755889394" y="64.65560470368175" class="sx-cld-polarity" text-anchor="middle">+</text></g>
+<g class="sx-cld-link-g" data-from="Support tickets" data-to="Team capacity" data-polarity="-"><path d="M 306.05 102.8 Q 337.58 125.14 331.08 163.23" class="sx-cld-link"/>
+<polygon points="331.08,163.23 328.16,153.6 337.03,155.12" class="sx-cld-arrow"/>
+<text x="341.4933379655171" y="156.5038791769302" class="sx-cld-polarity" text-anchor="middle">−</text></g>
+<g class="sx-cld-link-g" data-from="Team capacity" data-to="Feature velocity" data-polarity="+"><path d="M 331.08 189.23 Q 337.58 227.32 306.05 249.66" class="sx-cld-link"/>
+<polygon points="306.05,249.66 310.79,240.79 315.99,248.13" class="sx-cld-arrow"/>
+<text x="320.9966664916721" y="253.44145566788322" class="sx-cld-polarity" text-anchor="middle">+</text></g>
+<g class="sx-cld-link-g" data-from="Feature velocity" data-to="Active users" data-polarity="+"><path d="M 295.28 249.66 Q 303.35 139.32 219.62 67" class="sx-cld-link"/>
+<polygon points="219.62,67 229.37,69.48 223.49,76.29" class="sx-cld-arrow"/>
+<text x="234.15237196172427" y="71.7484550056871" class="sx-cld-polarity" text-anchor="middle">+</text></g>
+<g class="sx-cld-glyph-g" data-loop="R1" data-kind="R" data-vars="New users,Active users,Content created" data-negatives="0" data-circulation="ccw"><path d="M 185.42 189.04 A 16 16 0 1 0 199.28 197.04" class="sx-cld-glyph"/>
+<polygon points="199.28,197.04 205.81,201.35 199.75,204.85" class="sx-cld-glyph-head"/>
+<text x="185.4208741775482" y="210.04111841160298" class="sx-cld-glyph-label" text-anchor="middle">R1</text>
+<text x="185.4208741775482" y="234.04111841160298" class="sx-cld-glyph-phrase" text-anchor="middle">Viral content</text></g>
+<g class="sx-cld-glyph-g" data-loop="B1" data-kind="B" data-vars="Active users,Server load,Latency" data-negatives="1" data-circulation="cw"><path d="M 144.68 90.68 A 16 16 0 1 1 130.82 98.68" class="sx-cld-glyph"/>
+<polygon points="130.82,98.68 130.35,106.49 124.29,102.99" class="sx-cld-glyph-head"/>
+<text x="144.677208746023" y="111.67720874602303" class="sx-cld-glyph-label" text-anchor="middle">B1</text>
+<text x="144.677208746023" y="135.67720874602304" class="sx-cld-glyph-phrase" text-anchor="middle">Scaling pain</text></g>
+<g class="sx-cld-glyph-g" data-loop="B2" data-kind="B" data-vars="Active users,Support tickets,Team capacity,Feature velocity" data-negatives="1" data-circulation="cw"><path d="M 288 129.67 A 16 16 0 1 1 274.15 137.67" class="sx-cld-glyph"/>
+<polygon points="274.15,137.67 273.68,145.49 267.62,141.99" class="sx-cld-glyph-head"/>
+<text x="288.0039285437606" y="150.67324722093173" class="sx-cld-glyph-label" text-anchor="middle">B2</text></g>
+<g class="sx-cld-var-g" data-id="New users"><text x="214.23099629457562" y="302.46199258915124" class="sx-cld-var" text-anchor="middle">New users</text></g>
+<g class="sx-cld-var-g" data-id="Active users"><text x="214.23099629457562" y="58" class="sx-cld-var" text-anchor="middle">Active users</text></g>
+<g class="sx-cld-var-g" data-id="Content created"><text x="127.80062994349345" y="266.6613626456578" class="sx-cld-var" text-anchor="middle">Content created</text></g>
+<g class="sx-cld-var-g" data-id="Server load"><text x="92" y="180.23099629457565" class="sx-cld-var" text-anchor="middle">Server load</text></g>
+<g class="sx-cld-var-g" data-id="Latency"><text x="127.80062994349342" y="93.80062994349345" class="sx-cld-var" text-anchor="middle">Latency</text></g>
+<g class="sx-cld-var-g" data-id="Support tickets"><text x="300.6613626456578" y="93.80062994349345" class="sx-cld-var" text-anchor="middle">Support tickets</text></g>
+<g class="sx-cld-var-g" data-id="Team capacity"><text x="336.46199258915124" y="180.23099629457562" class="sx-cld-var" text-anchor="middle">Team capacity</text></g>
+<g class="sx-cld-var-g" data-id="Feature velocity"><text x="300.6613626456578" y="266.6613626456578" class="sx-cld-var" text-anchor="middle">Feature velocity</text></g></g></svg></div>
+      <details><summary>DSL</summary><pre>causalloop "Product engagement dynamics"
+"New users" -> "Active users" : +
+"Active users" -> "Content created" : +
+"Content created" -> "New users" : +
+"Active users" -> "Server load" : +
+"Server load" -> "Latency" : +
+"Latency" -> "Active users" : -
+"Active users" -> "Support tickets" : +
+"Support tickets" -> "Team capacity" : -
+"Team capacity" -> "Feature velocity" : +
+"Feature velocity" -> "Active users" : +
+loop R1 "Viral content"
+loop B1 "Scaling pain"
+loop R2 "Build-grow flywheel"</pre></details>
+    </section>
+    <section>
+      <h2>Markov — 4-state ergodic chain, stationary π computed</h2>
+      <div class="svgwrap"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="sx-markov" role="img" aria-label="Customer lifecycle" width="415.84776310850236" height="447.84776310850236" viewBox="0 0 415.84776310850236 447.84776310850236" data-diagram-type="markov"><title>Markov chain — Customer lifecycle</title>
+<desc>4 states, 11 transitions. Classification: 4 recurrent, 0 transient, 0 absorbing. Stationary π: { New=0.109, Active=0.364, Churned=0.382, Dormant=0.145 }.</desc>
+<style>.sx-markov { font-family: system-ui, -apple-system, sans-serif; }
+.sx-markov-state { fill: #f1f5f9; stroke: #334155; stroke-width: 2; }
+.sx-markov-absorb-ring { fill: none; stroke: #2563eb; stroke-width: 2; }
+.sx-markov-state-absorbing { stroke: #2563eb; }
+.sx-markov-state-label { font: 600 13px sans-serif; fill: #0f172a; }
+.sx-markov-state-sublabel { font: 10px sans-serif; fill: #475569; }
+.sx-markov-pi { font: 600 10px sans-serif; fill: #2563eb; }
+.sx-markov-arc { stroke: #94a3b8; stroke-width: 1.6; fill: none; }
+.sx-markov-arc-self { stroke: #94a3b8; stroke-width: 1.6; fill: none; }
+.sx-markov-prob { font: 11px sans-serif; fill: #0f172a; }
+.sx-markov-title { font: 700 16px sans-serif; fill: #0f172a; }</style>
+<defs><marker id="sx-markov-head" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 9 5 L 0 10" fill="none" stroke="#94a3b8" stroke-width="1.4"/></marker></defs>
+<text x="207.92388155425118" y="22" class="sx-markov-title" text-anchor="middle">Customer lifecycle</text>
+<g transform="translate(0, 32)"><g class="sx-markov-arcs"><g class="sx-markov-arc-g" data-from="New" data-to="Active" data-prob="0.6"><path class="sx-markov-arc" d="M 224.93 140.71 C 235.17 155.58 260.27 180.68 275.14 190.91" marker-end="url(#sx-markov-head)"/>
+<text class="sx-markov-prob" x="245.4005409571382" y="173.44722215136417" text-anchor="middle">0.6</text></g>
+<g class="sx-markov-arc-g" data-from="New" data-to="Churned" data-prob="0.1"><path class="sx-markov-arc" d="M 216.09 144.87 C 225.01 176.4 225.01 239.45 216.09 270.98" marker-end="url(#sx-markov-head)"/>
+<text class="sx-markov-prob" x="233.92388155425118" y="210.92388155425118" text-anchor="middle">0.1</text></g>
+<g class="sx-markov-arc-g sx-markov-arc-self-g" data-from="New" data-to="New" data-prob="0.3"><path class="sx-markov-arc-self" d="M 189.92 90.5 C 171.92 60.5 243.92 60.5 225.92 90.5" marker-end="url(#sx-markov-head)"/>
+<text class="sx-markov-prob" x="207.92388155425118" y="51" text-anchor="middle">0.3</text></g>
+<g class="sx-markov-arc-g sx-markov-arc-self-g" data-from="Active" data-to="Active" data-prob="0.7"><path class="sx-markov-arc-self" d="M 325.35 189.92 C 355.35 171.92 355.35 243.92 325.35 225.92" marker-end="url(#sx-markov-head)"/>
+<text class="sx-markov-prob" x="367.84776310850236" y="210.92388155425118" text-anchor="middle">0.7</text></g>
+<g class="sx-markov-arc-g" data-from="Active" data-to="Dormant" data-prob="0.2"><path class="sx-markov-arc" d="M 270.98 216.09 C 239.45 225.01 176.4 225.01 144.87 216.09" marker-end="url(#sx-markov-head)"/>
+<text class="sx-markov-prob" x="207.92388155425118" y="236.92388155425118" text-anchor="middle">0.2</text></g>
+<g class="sx-markov-arc-g" data-from="Active" data-to="Churned" data-prob="0.1"><path class="sx-markov-arc" d="M 282.84 232.64 C 272.6 247.5 247.5 272.6 232.64 282.84" marker-end="url(#sx-markov-head)"/>
+<text class="sx-markov-prob" x="262.3711037056153" y="265.3711037056153" text-anchor="middle">0.1</text></g>
+<g class="sx-markov-arc-g" data-from="Dormant" data-to="Active" data-prob="0.3"><path class="sx-markov-arc" d="M 144.87 199.76 C 176.4 190.84 239.45 190.84 270.98 199.76" marker-end="url(#sx-markov-head)"/>
+<text class="sx-markov-prob" x="207.92388155425118" y="184.92388155425118" text-anchor="middle">0.3</text></g>
+<g class="sx-markov-arc-g sx-markov-arc-self-g" data-from="Dormant" data-to="Dormant" data-prob="0.5"><path class="sx-markov-arc-self" d="M 90.5 225.92 C 60.5 243.92 60.5 171.92 90.5 189.92" marker-end="url(#sx-markov-head)"/>
+<text class="sx-markov-prob" x="48" y="210.92388155425118" text-anchor="middle">0.5</text></g>
+<g class="sx-markov-arc-g" data-from="Dormant" data-to="Churned" data-prob="0.2"><path class="sx-markov-arc" d="M 133.01 232.64 C 143.24 247.5 168.34 272.6 183.21 282.84" marker-end="url(#sx-markov-head)"/>
+<text class="sx-markov-prob" x="153.476659402887" y="265.3711037056153" text-anchor="middle">0.2</text></g>
+<g class="sx-markov-arc-g sx-markov-arc-self-g" data-from="Churned" data-to="Churned" data-prob="0.8"><path class="sx-markov-arc-self" d="M 225.92 325.35 C 243.92 355.35 171.92 355.35 189.92 325.35" marker-end="url(#sx-markov-head)"/>
+<text class="sx-markov-prob" x="207.92388155425118" y="370.84776310850236" text-anchor="middle">0.8</text></g>
+<g class="sx-markov-arc-g" data-from="Churned" data-to="New" data-prob="0.2"><path class="sx-markov-arc" d="M 199.76 270.98 C 190.84 239.45 190.84 176.4 199.76 144.87" marker-end="url(#sx-markov-head)"/>
+<text class="sx-markov-prob" x="181.92388155425118" y="210.92388155425118" text-anchor="middle">0.2</text></g></g>
+<g class="sx-markov-states"><g class="sx-markov-state-g" data-id="New" data-class="recurrent" data-pi="0.109"><circle class="sx-markov-state" cx="207.92388155425118" cy="116" r="30"/>
+<text class="sx-markov-state-label" x="207.92388155425118" y="120" text-anchor="middle">New</text>
+<text class="sx-markov-pi" x="207.92388155425118" y="160" text-anchor="middle">π=0.109</text></g>
+<g class="sx-markov-state-g" data-id="Active" data-class="recurrent" data-pi="0.364"><circle class="sx-markov-state" cx="299.84776310850236" cy="207.92388155425118" r="30"/>
+<text class="sx-markov-state-label" x="299.84776310850236" y="211.92388155425118" text-anchor="middle">Active</text>
+<text class="sx-markov-pi" x="299.84776310850236" y="251.92388155425118" text-anchor="middle">π=0.364</text></g>
+<g class="sx-markov-state-g" data-id="Churned" data-class="recurrent" data-pi="0.382"><circle class="sx-markov-state" cx="207.92388155425118" cy="299.84776310850236" r="30"/>
+<text class="sx-markov-state-label" x="207.92388155425118" y="303.84776310850236" text-anchor="middle">Churned</text>
+<text class="sx-markov-pi" x="207.92388155425118" y="343.84776310850236" text-anchor="middle">π=0.382</text></g>
+<g class="sx-markov-state-g" data-id="Dormant" data-class="recurrent" data-pi="0.145"><circle class="sx-markov-state" cx="116" cy="207.92388155425118" r="30"/>
+<text class="sx-markov-state-label" x="116" y="211.92388155425118" text-anchor="middle">Dormant</text>
+<text class="sx-markov-pi" x="116" y="251.92388155425118" text-anchor="middle">π=0.145</text></g></g></g></svg></div>
+      <details><summary>DSL</summary><pre>markov "Customer lifecycle"
+  New -> Active : 0.6
+  New -> Churned : 0.1
+  New -> New : 0.3
+  Active -> Active : 0.7
+  Active -> Dormant : 0.2
+  Active -> Churned : 0.1
+  Dormant -> Active : 0.3
+  Dormant -> Dormant : 0.5
+  Dormant -> Churned : 0.2
+  Churned -> Churned : 0.8
+  Churned -> New : 0.2</pre></details>
+    </section>
+    <section>
+      <h2>Git graph — 4 branches, multiple merges, cherry-pick, tags</h2>
+      <div class="svgwrap"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="804" height="334" viewBox="0 0 804 334" role="img" aria-label="Git commit graph"><title>Git commit graph</title>
+<desc>Git commit graph: 11 commits across 4 branches, 3 merges, orientation LR.</desc>
+<style>.sx-gg-bg { fill: #ffffff; }
+.sx-gg-lane { stroke-width: 3; stroke-linecap: round; opacity: 0.9; }
+.sx-gg-pill { stroke: none; }
+.sx-gg-pill-text { font-size: 12px; font-weight: 700; }
+.sx-gg-edge { fill: none; stroke-width: 2; }
+.sx-gg-edge-merge { stroke-dasharray: none; }
+.sx-gg-node { stroke-width: 2; }
+.sx-gg-dot { stroke: none; }
+.sx-gg-merge { fill: #ffffff; stroke-width: 3; }
+.sx-gg-highlight { fill: none; stroke-width: 3; }
+.sx-gg-reverse-mark { stroke: #ffffff; stroke-width: 2; stroke-linecap: round; }
+.sx-gg-cherry { fill: none; stroke-width: 2; }
+.sx-gg-id { fill: #333333; font-size: 10px; font-weight: 600; }
+.sx-gg-tag { fill: #fff4cc; stroke: #caa83a; stroke-width: 1; }
+.sx-gg-tag-text { fill: #7a5b00; font-size: 9px; font-weight: 700; }
+.sx-gg-c0 { stroke: #3a6ea5; }
+.sx-gg-stroke-c0 { stroke: #3a6ea5; }
+.sx-gg-fill-c0 { fill: #3a6ea5; }
+.sx-gg-ink-c0 { fill: #ffffff; }
+.sx-gg-c1 { stroke: #6aa84f; }
+.sx-gg-stroke-c1 { stroke: #6aa84f; }
+.sx-gg-fill-c1 { fill: #6aa84f; }
+.sx-gg-ink-c1 { fill: #ffffff; }
+.sx-gg-c2 { stroke: #c98a2b; }
+.sx-gg-stroke-c2 { stroke: #c98a2b; }
+.sx-gg-fill-c2 { fill: #c98a2b; }
+.sx-gg-ink-c2 { fill: #ffffff; }
+.sx-gg-c3 { stroke: #a64d79; }
+.sx-gg-stroke-c3 { stroke: #a64d79; }
+.sx-gg-fill-c3 { fill: #a64d79; }
+.sx-gg-ink-c3 { fill: #ffffff; }
+.sx-gg-c4 { stroke: #45818e; }
+.sx-gg-stroke-c4 { stroke: #45818e; }
+.sx-gg-fill-c4 { fill: #45818e; }
+.sx-gg-ink-c4 { fill: #ffffff; }
+.sx-gg-c5 { stroke: #8e7cc3; }
+.sx-gg-stroke-c5 { stroke: #8e7cc3; }
+.sx-gg-fill-c5 { fill: #8e7cc3; }
+.sx-gg-ink-c5 { fill: #ffffff; }
+.sx-gg-c6 { stroke: #cc4125; }
+.sx-gg-stroke-c6 { stroke: #cc4125; }
+.sx-gg-fill-c6 { fill: #cc4125; }
+.sx-gg-ink-c6 { fill: #ffffff; }
+.sx-gg-c7 { stroke: #666666; }
+.sx-gg-stroke-c7 { stroke: #666666; }
+.sx-gg-fill-c7 { fill: #666666; }
+.sx-gg-ink-c7 { fill: #ffffff; }</style>
+<rect x="0" y="0" width="804" height="334" class="sx-gg-bg"/>
+<g class="sx-gg-root" transform="translate(20, 20)" data-diagram-type="gitgraph" font-family="system-ui, -apple-system, sans-serif"><g class="sx-gg-lane-group"><line x1="92" y1="74" x2="680" y2="74" class="sx-gg-lane sx-gg-c0" data-branch="main"/>
+<g class="sx-gg-pill-group" data-branch="main"><rect x="56" y="64" width="44" height="20" rx="10" class="sx-gg-pill sx-gg-fill-c0"/>
+<text x="78" y="74" class="sx-gg-pill-text sx-gg-ink-c0" text-anchor="middle" dominant-baseline="central" font-family="system-ui, -apple-system, sans-serif">main</text></g></g>
+<g class="sx-gg-lane-group"><line x1="176" y1="130" x2="512" y2="130" class="sx-gg-lane sx-gg-c1" data-branch="develop"/>
+<g class="sx-gg-pill-group" data-branch="develop"><rect x="45.5" y="120" width="65" height="20" rx="10" class="sx-gg-pill sx-gg-fill-c1"/>
+<text x="78" y="130" class="sx-gg-pill-text sx-gg-ink-c1" text-anchor="middle" dominant-baseline="central" font-family="system-ui, -apple-system, sans-serif">develop</text></g></g>
+<g class="sx-gg-lane-group"><line x1="232" y1="186" x2="288" y2="186" class="sx-gg-lane sx-gg-c2" data-branch="feature-a"/>
+<g class="sx-gg-pill-group" data-branch="feature-a"><rect x="38.5" y="176" width="79" height="20" rx="10" class="sx-gg-pill sx-gg-fill-c2"/>
+<text x="78" y="186" class="sx-gg-pill-text sx-gg-ink-c2" text-anchor="middle" dominant-baseline="central" font-family="system-ui, -apple-system, sans-serif">feature-a</text></g></g>
+<g class="sx-gg-lane-group">
+<g class="sx-gg-pill-group" data-branch="feature-b"><rect x="38.5" y="232" width="79" height="20" rx="10" class="sx-gg-pill sx-gg-fill-c3"/>
+<text x="78" y="242" class="sx-gg-pill-text sx-gg-ink-c3" text-anchor="middle" dominant-baseline="central" font-family="system-ui, -apple-system, sans-serif">feature-b</text></g></g>
+<path d="M 120 74 C 148 74, 148 130, 176 130" class="sx-gg-edge sx-gg-edge-elbow sx-gg-stroke-c1" fill="none"/>
+<path d="M 176 130 C 204 130, 204 186, 232 186" class="sx-gg-edge sx-gg-edge-elbow sx-gg-stroke-c2" fill="none"/>
+<line x1="176" y1="130" x2="344" y2="130" class="sx-gg-edge sx-gg-edge-straight sx-gg-stroke-c1"/>
+<line x1="232" y1="186" x2="288" y2="186" class="sx-gg-edge sx-gg-edge-straight sx-gg-stroke-c2"/>
+<path d="M 288 186 C 316 186, 316 130, 344 130" class="sx-gg-edge sx-gg-edge-merge sx-gg-stroke-c2" fill="none"/>
+<line x1="344" y1="130" x2="456" y2="130" class="sx-gg-edge sx-gg-edge-straight sx-gg-stroke-c1"/>
+<line x1="120" y1="74" x2="568" y2="74" class="sx-gg-edge sx-gg-edge-straight sx-gg-stroke-c0"/>
+<path d="M 344 130 C 344 186, 400 186, 400 242" class="sx-gg-edge sx-gg-edge-elbow sx-gg-stroke-c3" fill="none"/>
+<line x1="456" y1="130" x2="512" y2="130" class="sx-gg-edge sx-gg-edge-straight sx-gg-stroke-c1"/>
+<path d="M 400 242 C 456 242, 456 130, 512 130" class="sx-gg-edge sx-gg-edge-merge sx-gg-stroke-c3" fill="none"/>
+<path d="M 512 130 C 540 130, 540 74, 568 74" class="sx-gg-edge sx-gg-edge-merge sx-gg-stroke-c1" fill="none"/>
+<line x1="568" y1="74" x2="624" y2="74" class="sx-gg-edge sx-gg-edge-straight sx-gg-stroke-c0"/>
+<line x1="624" y1="74" x2="680" y2="74" class="sx-gg-edge sx-gg-edge-straight sx-gg-stroke-c0"/>
+<g class="sx-gg-commit" data-commit-id="init" data-branch="main" data-seq="0"><circle cx="120" cy="74" r="9" class="sx-gg-node sx-gg-dot sx-gg-fill-c0"/>
+<text x="120" y="91" class="sx-gg-id" text-anchor="start" font-family="system-ui, -apple-system, sans-serif" transform="rotate(45 120 91)">init</text></g>
+<g class="sx-gg-commit" data-commit-id="d1" data-branch="develop" data-seq="1"><circle cx="176" cy="130" r="9" class="sx-gg-node sx-gg-dot sx-gg-fill-c1"/>
+<text x="176" y="147" class="sx-gg-id" text-anchor="start" font-family="system-ui, -apple-system, sans-serif" transform="rotate(45 176 147)">d1</text></g>
+<g class="sx-gg-commit" data-commit-id="a1" data-branch="feature-a" data-seq="2"><circle cx="232" cy="186" r="9" class="sx-gg-node sx-gg-dot sx-gg-fill-c2"/>
+<text x="232" y="203" class="sx-gg-id" text-anchor="start" font-family="system-ui, -apple-system, sans-serif" transform="rotate(45 232 203)">a1</text></g>
+<g class="sx-gg-commit" data-commit-id="a2" data-branch="feature-a" data-seq="3"><circle cx="288" cy="186" r="9" class="sx-gg-node sx-gg-dot sx-gg-fill-c2"/>
+<text x="288" y="203" class="sx-gg-id" text-anchor="start" font-family="system-ui, -apple-system, sans-serif" transform="rotate(45 288 203)">a2</text></g>
+<g class="sx-gg-commit" data-commit-id="1-49dec0f" data-branch="develop" data-seq="4" data-merge="true" data-tag="a-done"><circle cx="344" cy="130" r="9" class="sx-gg-node sx-gg-merge sx-gg-stroke-c1"/>
+<g class="sx-gg-tag-group"><rect x="318.5" y="99" width="51" height="16" rx="3" class="sx-gg-tag"/>
+<text x="344" y="107" class="sx-gg-tag-text" text-anchor="middle" dominant-baseline="central" font-family="system-ui, -apple-system, sans-serif">a-done</text></g>
+<text x="344" y="147" class="sx-gg-id" text-anchor="start" font-family="system-ui, -apple-system, sans-serif" transform="rotate(45 344 147)">1-49dec0f</text></g>
+<g class="sx-gg-commit" data-commit-id="b1" data-branch="feature-b" data-seq="5" data-type="HIGHLIGHT"><rect x="389" y="231" width="22" height="22" rx="2" class="sx-gg-node sx-gg-highlight sx-gg-stroke-c3"/>
+<text x="400" y="259" class="sx-gg-id" text-anchor="start" font-family="system-ui, -apple-system, sans-serif" transform="rotate(45 400 259)">b1</text></g>
+<g class="sx-gg-commit" data-commit-id="d2" data-branch="develop" data-seq="6"><circle cx="456" cy="130" r="9" class="sx-gg-node sx-gg-dot sx-gg-fill-c1"/>
+<text x="456" y="147" class="sx-gg-id" text-anchor="start" font-family="system-ui, -apple-system, sans-serif" transform="rotate(45 456 147)">d2</text></g>
+<g class="sx-gg-commit" data-commit-id="2-d55bb34" data-branch="develop" data-seq="7" data-merge="true"><circle cx="512" cy="130" r="9" class="sx-gg-node sx-gg-merge sx-gg-stroke-c1"/>
+<text x="512" y="147" class="sx-gg-id" text-anchor="start" font-family="system-ui, -apple-system, sans-serif" transform="rotate(45 512 147)">2-d55bb34</text></g>
+<g class="sx-gg-commit" data-commit-id="3-2b38c3a" data-branch="main" data-seq="8" data-merge="true" data-tag="v1.0"><circle cx="568" cy="74" r="9" class="sx-gg-node sx-gg-merge sx-gg-stroke-c0"/>
+<g class="sx-gg-tag-group"><rect x="549" y="43" width="38" height="16" rx="3" class="sx-gg-tag"/>
+<text x="568" y="51" class="sx-gg-tag-text" text-anchor="middle" dominant-baseline="central" font-family="system-ui, -apple-system, sans-serif">v1.0</text></g>
+<text x="568" y="91" class="sx-gg-id" text-anchor="start" font-family="system-ui, -apple-system, sans-serif" transform="rotate(45 568 91)">3-2b38c3a</text></g>
+<g class="sx-gg-commit" data-commit-id="hotfix" data-branch="main" data-seq="9"><circle cx="624" cy="74" r="9" class="sx-gg-node sx-gg-dot sx-gg-fill-c0"/>
+<text x="624" y="91" class="sx-gg-id" text-anchor="start" font-family="system-ui, -apple-system, sans-serif" transform="rotate(45 624 91)">hotfix</text></g>
+<g class="sx-gg-commit" data-commit-id="4-d6578b1" data-branch="main" data-seq="10" data-cherry-pick="b1"><circle cx="680" cy="74" r="9" class="sx-gg-node sx-gg-dot sx-gg-fill-c0"/>
+<circle cx="689" cy="65" r="3" class="sx-gg-cherry sx-gg-stroke-c0"/>
+<text x="680" y="91" class="sx-gg-id" text-anchor="start" font-family="system-ui, -apple-system, sans-serif" transform="rotate(45 680 91)">4-d6578b1</text></g></g></svg></div>
+      <details><summary>DSL</summary><pre>gitGraph
+  commit id: "init"
+  branch develop
+  checkout develop
+  commit id: "d1"
+  branch feature-a
+  checkout feature-a
+  commit id: "a1"
+  commit id: "a2"
+  checkout develop
+  merge feature-a tag: "a-done"
+  branch feature-b
+  checkout feature-b
+  commit id: "b1" type: HIGHLIGHT
+  checkout develop
+  commit id: "d2"
+  merge feature-b
+  checkout main
+  merge develop tag: "v1.0"
+  commit id: "hotfix"
+  cherry-pick id: "b1"</pre></details>
+    </section>
+    <section>
+      <h2>EPC — AND-split parallel work then XOR join</h2>
+      <div class="svgwrap"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="512" height="924" viewBox="0 0 512 924" role="img" aria-label="Claim handling" data-diagram-type="epc"><title>Claim handling</title>
+<desc>Event-driven process chain &quot;Claim handling&quot;: 3 events, 4 functions, 3 connectors. 4 rule violations. Function &quot;Validate claim&quot; is followed by a function &quot;Check policy&quot; — events and functions must strictly alternate. Insert an event between them. Function &quot;Validate claim&quot; is followed by a function &quot;Assess damage&quot; — events and functions must strictly alternate. Insert an event between them. Function &quot;Assess damage&quot; is followed by a function &quot;Decide payout&quot; — events and functions must strictly alternate. Insert an event between them. Function &quot;Check policy&quot; is followed by a function &quot;Decide payout&quot; — events and functions must strictly alternate. Insert an event between them.</desc>
+<style>.sx-epc-bg { fill: #ffffff; }
+.sx-epc-event { fill: #f6a5b8; stroke: #1f2937; stroke-width: 2; stroke-linejoin: round; }
+.sx-epc-func { fill: #86d29a; stroke: #1f2937; stroke-width: 2; }
+.sx-epc-conn { fill: #e5e7eb; stroke: #374151; stroke-width: 2; }
+.sx-epc-node[data-flagged="true"] .sx-epc-event,
+.sx-epc-node[data-flagged="true"] .sx-epc-func,
+.sx-epc-node[data-flagged="true"] .sx-epc-conn { stroke: #dc2626; stroke-width: 3; }
+.sx-epc-flagring { fill: none; stroke: #dc2626; stroke-width: 1; stroke-dasharray: 4 3; }
+.sx-epc-label { fill: #1f2937; font-size: 12px; font-weight: 600; }
+.sx-epc-glyph { fill: #111827; font-size: 17px; font-weight: 700; }
+.sx-epc-edge { fill: none; stroke: #334155; stroke-width: 2; }
+.sx-epc-edge[data-back="true"] { stroke: #94a3b8; stroke-dasharray: 5 4; }
+.sx-epc-arrow { fill: #334155; stroke: none; }
+.sx-epc-arrow-back { fill: #94a3b8; stroke: none; }
+.sx-epc-edge-label { fill: #475569; font-size: 9px; }
+.sx-epc-title { fill: #1f2937; font-size: 16px; font-weight: 700; }</style>
+<defs><marker id="sx-epc-arrowhead" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><polygon points="0,0 10,5 0,10" class="sx-epc-arrow"/></marker>
+<marker id="sx-epc-arrowhead-back" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><polygon points="0,0 10,5 0,10" class="sx-epc-arrow-back"/></marker></defs>
+<rect x="0" y="0" width="512" height="924" class="sx-epc-bg"/>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><text x="28" y="22" class="sx-epc-title" font-family="system-ui, -apple-system, sans-serif">Claim handling</text>
+<g class="sx-epc-edge-g" data-from="E1" data-to="F1"><path d="M 206 116 L 206 172" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead)"/></g>
+<g class="sx-epc-edge-g" data-from="F1" data-to="A1"><path d="M 206 236 L 206 292" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead)"/></g>
+<g class="sx-epc-edge-g" data-from="A1" data-to="F2"><path d="M 194.4005897438798 321.4279395601288 L 137.86666666666667 382" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead)"/></g>
+<g class="sx-epc-edge-g" data-from="A1" data-to="F3"><path d="M 217.5994102561202 321.4279395601288 L 274.1333333333333 382" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead)"/></g>
+<g class="sx-epc-edge-g" data-from="F2" data-to="A2"><path d="M 137.86666666666667 446 L 194.4005897438798 506.5720604398712" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead)"/></g>
+<g class="sx-epc-edge-g" data-from="F3" data-to="A2"><path d="M 274.1333333333333 446 L 217.5994102561202 506.5720604398712" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead)"/></g>
+<g class="sx-epc-edge-g" data-from="A2" data-to="F4"><path d="M 206 536 L 206 592" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead)"/></g>
+<g class="sx-epc-edge-g" data-from="F4" data-to="X1"><path d="M 206 656 L 206 712" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead)"/></g>
+<g class="sx-epc-edge-g" data-from="X1" data-to="E2"><path d="M 194.4227850846592 741.4486181885385 L 138.11 802" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead)"/></g>
+<g class="sx-epc-edge-g" data-from="X1" data-to="E3"><path d="M 217.5772149153408 741.4486181885385 L 273.89 802" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead)"/></g>
+<g class="sx-epc-node" data-id="E1" data-kind="event"><polygon points="145,62 267,62 281,89 267,116 145,116 131,89" class="sx-epc-event"/>
+<text x="206" y="89" class="sx-epc-label" text-anchor="middle" dominant-baseline="middle"><tspan x="206" dy="0">Claim submitted</tspan></text></g>
+<g class="sx-epc-node" data-id="F1" data-kind="function" data-flagged="true"><rect x="126" y="172" width="160" height="64" rx="12" ry="12" class="sx-epc-func"/>
+<text x="206" y="204" class="sx-epc-label" text-anchor="middle" dominant-baseline="middle"><tspan x="206" dy="0">Validate claim</tspan></text>
+<rect x="121" y="167" width="170" height="74" rx="12" class="sx-epc-flagring"/></g>
+<g class="sx-epc-node" data-id="A1" data-kind="connector" data-operator="and"><circle cx="206" cy="309" r="17" class="sx-epc-conn"/>
+<text x="206" y="309" class="sx-epc-glyph" text-anchor="middle" dominant-baseline="central">∧</text></g>
+<g class="sx-epc-node" data-id="F2" data-kind="function" data-flagged="true"><rect x="28" y="382" width="160" height="64" rx="12" ry="12" class="sx-epc-func"/>
+<text x="108" y="414" class="sx-epc-label" text-anchor="middle" dominant-baseline="middle"><tspan x="108" dy="0">Assess damage</tspan></text>
+<rect x="23" y="377" width="170" height="74" rx="12" class="sx-epc-flagring"/></g>
+<g class="sx-epc-node" data-id="F3" data-kind="function" data-flagged="true"><rect x="224" y="382" width="160" height="64" rx="12" ry="12" class="sx-epc-func"/>
+<text x="304" y="414" class="sx-epc-label" text-anchor="middle" dominant-baseline="middle"><tspan x="304" dy="0">Check policy</tspan></text>
+<rect x="219" y="377" width="170" height="74" rx="12" class="sx-epc-flagring"/></g>
+<g class="sx-epc-node" data-id="A2" data-kind="connector" data-operator="and"><circle cx="206" cy="519" r="17" class="sx-epc-conn"/>
+<text x="206" y="519" class="sx-epc-glyph" text-anchor="middle" dominant-baseline="central">∧</text></g>
+<g class="sx-epc-node" data-id="F4" data-kind="function" data-flagged="true"><rect x="126" y="592" width="160" height="64" rx="12" ry="12" class="sx-epc-func"/>
+<text x="206" y="624" class="sx-epc-label" text-anchor="middle" dominant-baseline="middle"><tspan x="206" dy="0">Decide payout</tspan></text>
+<rect x="121" y="587" width="170" height="74" rx="12" class="sx-epc-flagring"/></g>
+<g class="sx-epc-node" data-id="X1" data-kind="connector" data-operator="xor"><circle cx="206" cy="729" r="17" class="sx-epc-conn"/>
+<text x="206" y="729" class="sx-epc-glyph" text-anchor="middle" dominant-baseline="central">×</text></g>
+<g class="sx-epc-node" data-id="E2" data-kind="event"><polygon points="52,802 174,802 188,829 174,856 52,856 38,829" class="sx-epc-event"/>
+<text x="113" y="829" class="sx-epc-label" text-anchor="middle" dominant-baseline="middle"><tspan x="113" dy="0">Claim approved</tspan></text></g>
+<g class="sx-epc-node" data-id="E3" data-kind="event"><polygon points="238,802 360,802 374,829 360,856 238,856 224,829" class="sx-epc-event"/>
+<text x="299" y="829" class="sx-epc-label" text-anchor="middle" dominant-baseline="middle"><tspan x="299" dy="0">Claim rejected</tspan></text></g></g></svg></div>
+      <details><summary>DSL</summary><pre>epc "Claim handling"
+  event E1 "Claim submitted"
+  function F1 "Validate claim"
+  and A1
+  function F2 "Assess damage"
+  function F3 "Check policy"
+  and A2
+  function F4 "Decide payout"
+  xor X1
+  event E2 "Claim approved"
+  event E3 "Claim rejected"
+  E1 -> F1 -> A1
+  A1 -> F2
+  A1 -> F3
+  F2 -> A2
+  F3 -> A2
+  A2 -> F4 -> X1
+  X1 -> E2
+  X1 -> E3</pre></details>
+    </section>
+    <section>
+      <h2>IDEF0 — 5-box decomposition with two feedback loops</h2>
+      <div class="svgwrap"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1330" height="924" viewBox="0 0 1330 924" role="img" aria-label="Operate manufacturing line" data-diagram-type="idef0"><title>Operate manufacturing line</title>
+<desc>IDEF0 function model &quot;Operate manufacturing line&quot; (node A0): 5 functions on a diagonal staircase. ICOM arrows: 7 input, 3 control, 3 mechanism, 1 output. Boxes: 1. Receive materials (A1); 2. Produce parts (A2); 3. Inspect quality (A3); 4. Package output (A4); 5. Handle rework (A5).</desc>
+<style>.sx-idef0-bg { fill: #ffffff; }
+.sx-idef0-frame { fill: none; stroke: #334155; stroke-width: 2; }
+.sx-idef0-box { fill: #f1f5f9; stroke: #334155; stroke-width: 2; }
+.sx-idef0-box-name { fill: #0f172a; font-size: 12px; font-weight: 600; }
+.sx-idef0-box-num { fill: #475569; font-size: 10px; font-weight: 700; }
+.sx-idef0-arrow { fill: none; stroke: #334155; stroke-width: 2; }
+.sx-idef0-arrow[data-margin="true"] { stroke: #2563eb; }
+.sx-idef0-arrow[data-tunneled="true"] { stroke-dasharray: 5 3; }
+.sx-idef0-head { fill: #334155; }
+.sx-idef0-arrow[data-margin="true"] + .sx-idef0-head, .sx-idef0-head[data-margin="true"] { fill: #2563eb; }
+.sx-idef0-label { fill: #0f172a; font-size: 10px; }
+.sx-idef0-icom { fill: #475569; font-size: 9px; font-weight: 700; }
+.sx-idef0-title { fill: #0f172a; font-size: 16px; font-weight: 700; }
+.sx-idef0-meta { fill: #475569; font-size: 10px; }
+.sx-idef0-tb { fill: none; stroke: #334155; stroke-width: 1; }
+.sx-idef0-tb-text { fill: #0f172a; font-size: 10px; }
+.sx-idef0-tb-key { fill: #475569; font-size: 9px; font-weight: 700; }</style>
+<rect x="0" y="0" width="1330" height="924" class="sx-idef0-bg"/>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><text x="110" y="24" class="sx-idef0-title" font-family="system-ui, -apple-system, sans-serif">Operate manufacturing line</text>
+<g class="sx-idef0-arrow-g" data-role="input" data-side="left" data-icom="I1"><path d="M 40 180 L 110 180" class="sx-idef0-arrow"/>
+<polygon points="110,180 119,175.5 119,184.5" class="sx-idef0-head"/>
+<text x="34" y="174" class="sx-idef0-label" text-anchor="end">Raw materials</text>
+<text x="34" y="187" class="sx-idef0-icom" text-anchor="end">I1</text></g>
+<g class="sx-idef0-arrow-g" data-role="control" data-side="top" data-icom="C1"><path d="M 185 70 L 185 140" class="sx-idef0-arrow"/>
+<polygon points="185,140 180.5,149 189.5,149" class="sx-idef0-head"/>
+<text x="185" y="64" class="sx-idef0-label" text-anchor="middle">Production plan</text>
+<text x="185" y="77" class="sx-idef0-icom" text-anchor="middle">C1</text></g>
+<g class="sx-idef0-arrow-g" data-role="mechanism" data-side="bottom" data-icom="M1"><path d="M 185 290 L 185 220" class="sx-idef0-arrow"/>
+<polygon points="185,220 180.5,211 189.5,211" class="sx-idef0-head"/>
+<text x="185" y="304" class="sx-idef0-label" text-anchor="middle">Receiving crew</text>
+<text x="185" y="317" class="sx-idef0-icom" text-anchor="middle">M1</text></g>
+<g class="sx-idef0-arrow-g" data-role="input" data-side="left"><path d="M 260 180 L 300 180 L 300 310 L 340 310" class="sx-idef0-arrow"/>
+<polygon points="340,310 349,305.5 349,314.5" class="sx-idef0-head"/>
+<text x="300" y="174" class="sx-idef0-label" text-anchor="middle">Staged stock</text></g>
+<g class="sx-idef0-arrow-g" data-role="control" data-side="top" data-icom="C2"><path d="M 415 200 L 415 270" class="sx-idef0-arrow"/>
+<polygon points="415,270 410.5,279 419.5,279" class="sx-idef0-head"/>
+<text x="415" y="194" class="sx-idef0-label" text-anchor="middle">Work instructions</text>
+<text x="415" y="207" class="sx-idef0-icom" text-anchor="middle">C2</text></g>
+<g class="sx-idef0-arrow-g" data-role="mechanism" data-side="bottom" data-icom="M2"><path d="M 415 420 L 415 350" class="sx-idef0-arrow"/>
+<polygon points="415,350 410.5,341 419.5,341" class="sx-idef0-head"/>
+<text x="415" y="434" class="sx-idef0-label" text-anchor="middle">CNC cells</text>
+<text x="415" y="447" class="sx-idef0-icom" text-anchor="middle">M2</text></g>
+<g class="sx-idef0-arrow-g" data-role="input" data-side="left"><path d="M 490 310 L 530 310 L 530 440 L 570 440" class="sx-idef0-arrow"/>
+<polygon points="570,440 579,435.5 579,444.5" class="sx-idef0-head"/>
+<text x="530" y="304" class="sx-idef0-label" text-anchor="middle">Made parts</text></g>
+<g class="sx-idef0-arrow-g" data-role="control" data-side="top" data-icom="C3"><path d="M 645 330 L 645 400" class="sx-idef0-arrow"/>
+<polygon points="645,400 640.5,409 649.5,409" class="sx-idef0-head"/>
+<text x="645" y="324" class="sx-idef0-label" text-anchor="middle">Quality spec</text>
+<text x="645" y="337" class="sx-idef0-icom" text-anchor="middle">C3</text></g>
+<g class="sx-idef0-arrow-g" data-role="input" data-side="left"><path d="M 720 440 L 760 440 L 760 570 L 800 570" class="sx-idef0-arrow"/>
+<polygon points="800,570 809,565.5 809,574.5" class="sx-idef0-head"/>
+<text x="760" y="434" class="sx-idef0-label" text-anchor="middle">Passed parts</text></g>
+<g class="sx-idef0-arrow-g" data-role="input" data-side="left"><path d="M 720 440 L 875 440 L 875 700 L 1030 700" class="sx-idef0-arrow"/>
+<polygon points="1030,700 1039,695.5 1039,704.5" class="sx-idef0-head"/>
+<text x="875" y="434" class="sx-idef0-label" text-anchor="middle">Failed parts</text></g>
+<g class="sx-idef0-arrow-g" data-role="input" data-side="left"><path d="M 1180 700 L 1200 700 L 1200 85 L 312 85 L 312 310 L 340 310" class="sx-idef0-arrow" data-margin="true"/>
+<polygon points="340,310 349,305.5 349,314.5" class="sx-idef0-head" data-margin="true"/>
+<text x="770" y="79" class="sx-idef0-label" text-anchor="middle">Reworked parts</text></g>
+<g class="sx-idef0-arrow-g" data-role="mechanism" data-side="bottom" data-icom="M3"><path d="M 1105 810 L 1105 740" class="sx-idef0-arrow"/>
+<polygon points="1105,740 1100.5,731 1109.5,731" class="sx-idef0-head"/>
+<text x="1105" y="824" class="sx-idef0-label" text-anchor="middle">Rework bench</text>
+<text x="1105" y="837" class="sx-idef0-icom" text-anchor="middle">M3</text></g>
+<g class="sx-idef0-arrow-g" data-role="input" data-side="left"><path d="M 950 570 L 970 570 L 970 85 L 82 85 L 82 180 L 110 180" class="sx-idef0-arrow" data-margin="true"/>
+<polygon points="110,180 119,175.5 119,184.5" class="sx-idef0-head" data-margin="true"/>
+<text x="540" y="79" class="sx-idef0-label" text-anchor="middle">Empty totes</text></g>
+<g class="sx-idef0-arrow-g" data-role="output" data-side="right" data-icom="O1"><path d="M 950 570 L 1020 570" class="sx-idef0-arrow"/>
+<polygon points="1020,570 1011,565.5 1011,574.5" class="sx-idef0-head"/>
+<text x="1026" y="564" class="sx-idef0-label" text-anchor="start">Finished goods</text>
+<text x="1026" y="577" class="sx-idef0-icom" text-anchor="start">O1</text></g>
+<g class="sx-idef0-box-g" data-id="A1" data-number="1" data-node="A1"><rect x="110" y="140" width="150" height="80" class="sx-idef0-box"/>
+<text x="185" y="180" class="sx-idef0-box-name" text-anchor="middle" dominant-baseline="middle"><tspan x="185" dy="0">Receive materials</tspan></text>
+<text x="254" y="214" class="sx-idef0-box-num" text-anchor="end">1</text></g>
+<g class="sx-idef0-box-g" data-id="A2" data-number="2" data-node="A2"><rect x="340" y="270" width="150" height="80" class="sx-idef0-box"/>
+<text x="415" y="310" class="sx-idef0-box-name" text-anchor="middle" dominant-baseline="middle"><tspan x="415" dy="0">Produce parts</tspan></text>
+<text x="484" y="344" class="sx-idef0-box-num" text-anchor="end">2</text></g>
+<g class="sx-idef0-box-g" data-id="A3" data-number="3" data-node="A3"><rect x="570" y="400" width="150" height="80" class="sx-idef0-box"/>
+<text x="645" y="440" class="sx-idef0-box-name" text-anchor="middle" dominant-baseline="middle"><tspan x="645" dy="0">Inspect quality</tspan></text>
+<text x="714" y="474" class="sx-idef0-box-num" text-anchor="end">3</text></g>
+<g class="sx-idef0-box-g" data-id="A4" data-number="4" data-node="A4"><rect x="800" y="530" width="150" height="80" class="sx-idef0-box"/>
+<text x="875" y="570" class="sx-idef0-box-name" text-anchor="middle" dominant-baseline="middle"><tspan x="875" dy="0">Package output</tspan></text>
+<text x="944" y="604" class="sx-idef0-box-num" text-anchor="end">4</text></g>
+<g class="sx-idef0-box-g" data-id="A5" data-number="5" data-node="A5"><rect x="1030" y="660" width="150" height="80" class="sx-idef0-box"/>
+<text x="1105" y="700" class="sx-idef0-box-name" text-anchor="middle" dominant-baseline="middle"><tspan x="1105" dy="0">Handle rework</tspan></text>
+<text x="1174" y="734" class="sx-idef0-box-num" text-anchor="end">5</text></g>
+<g class="sx-idef0-titleblock"><rect x="55" y="850" width="1180" height="34" class="sx-idef0-tb"/>
+<line x1="314.6" y1="850" x2="314.6" y2="884" class="sx-idef0-tb"/>
+<line x1="975.4" y1="850" x2="975.4" y2="884" class="sx-idef0-tb"/>
+<text x="61" y="863" class="sx-idef0-tb-key">NODE</text>
+<text x="61" y="877" class="sx-idef0-tb-text">A0</text>
+<text x="320.6" y="863" class="sx-idef0-tb-key">TITLE</text>
+<text x="320.6" y="877" class="sx-idef0-tb-text">Operate manufacturing line</text>
+<text x="981.4" y="863" class="sx-idef0-tb-key">NUMBER</text></g></g></svg></div>
+      <details><summary>DSL</summary><pre>idef0 "Operate manufacturing line"
+node A0
+function A1 "Receive materials"
+function A2 "Produce parts"
+function A3 "Inspect quality"
+function A4 "Package output"
+function A5 "Handle rework"
+input     A1 "Raw materials"
+control   A1 "Production plan"
+mechanism A1 "Receiving crew"
+A1 -> A2 "Staged stock"
+control   A2 "Work instructions"
+mechanism A2 "CNC cells"
+A2 -> A3 "Made parts"
+control   A3 "Quality spec"
+A3 -> A4 "Passed parts"
+A3 -> A5.input "Failed parts"
+A5 -> A2.input "Reworked parts"
+mechanism A5 "Rework bench"
+A4 -> A1.input "Empty totes"
+output    A4 "Finished goods"</pre></details>
+    </section>
+    <section>
+      <h2>Threat model — nested zones, many flows, audit store</h2>
+      <div class="svgwrap"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1041" height="440" viewBox="-20 -20 1041 440" class="schematex schematex-threatmodel" font-family="system-ui, -apple-system, sans-serif" role="img" aria-label="Payments platform — STRIDE"><title>Payments platform — STRIDE</title>
+<desc>STRIDE threat model: 2 external entities, 3 process(es), 2 data store(s), 7 data flow(s). 4 boundary-crossing flow(s): Customer→1.0, 1.0→2.0, 2.0→Bank_API, Bank_API→2.0. Customer (external) → Spoofing, Repudiation. Bank_API (external) → Spoofing, Repudiation. 1.0 (process) → Spoofing, Tampering, Repudiation, Information disclosure, Denial of service, Elevation of privilege. 2.0 (process) → Spoofing, Tampering, Repudiation, Information disclosure, Denial of service, Elevation of privilege. 3.0 (process) → Spoofing, Tampering, Repudiation, Information disclosure, Denial of service, Elevation of privilege. D1 (store) → Tampering, Information disclosure, Denial of service. D2 (store) → Tampering, Repudiation, Information disclosure, Denial of service.</desc>
+<style>.sx-tm-bg { fill: #ffffff; }
+.sx-tm-title { fill: #0f172a; font-size: 16px; font-weight: 700; }
+.sx-tm-external { fill: #f1f5f9; stroke: #334155; stroke-width: 2; }
+.sx-tm-process { fill: #ffffff; stroke: #334155; stroke-width: 2; }
+.sx-tm-store-line { fill: none; stroke: #334155; stroke-width: 2; }
+.sx-tm-store-bg { fill: #ffffff; stroke: none; }
+.sx-tm-label { fill: #0f172a; font-size: 12px; font-weight: 600; }
+.sx-tm-flow { fill: none; stroke: #334155; stroke-width: 2; }
+.sx-tm-flow[data-crossing="true"] { stroke: #c62828; stroke-width: 3; }
+.sx-tm-arrow { fill: #334155; stroke: none; }
+.sx-tm-arrow[data-crossing="true"] { fill: #c62828; }
+.sx-tm-flow-label { fill: #0f172a; font-size: 9px; }
+.sx-tm-flow-label[data-crossing="true"] { fill: #c62828; font-weight: 700; }
+.sx-tm-flow-halo { fill: #ffffff; stroke: none; }
+.sx-tm-boundary { fill: none; stroke: #c62828; stroke-width: 2; stroke-dasharray: 6 4; }
+.sx-tm-boundary-label { fill: #c62828; font-size: 9px; font-weight: 700; }
+.sx-tm-badge { fill: #2563eb; }
+.sx-tm-badge[data-cond-r="true"] { fill: #c62828; }
+.sx-tm-badge-text { fill: #ffffff; font-size: 9px; font-weight: 700; }</style>
+<defs><marker id="sx-tm-mk" markerWidth="9" markerHeight="9" refX="8" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0,0 9,4 0,8" class="sx-tm-arrow"/></marker>
+<marker id="sx-tm-mk-x" markerWidth="9" markerHeight="9" refX="8" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0,0 9,4 0,8" class="sx-tm-arrow" data-crossing="true"/></marker></defs>
+<rect x="0" y="0" width="1041" height="440" class="sx-tm-bg"/>
+<g class="sx-tm-root"><text x="24" y="24" class="sx-tm-title" font-family="system-ui, -apple-system, sans-serif">Payments platform — STRIDE</text>
+<g class="sx-tm-boundary-g" data-boundary="Public"><rect x="6" y="18" width="156" height="118" rx="14" class="sx-tm-boundary"/>
+<text x="14" y="33" class="sx-tm-boundary-label" font-family="system-ui, -apple-system, sans-serif">Public</text></g>
+<g class="sx-tm-boundary-g" data-boundary="DMZ"><rect x="226" y="18" width="116" height="138" rx="14" class="sx-tm-boundary"/>
+<text x="234" y="33" class="sx-tm-boundary-label" font-family="system-ui, -apple-system, sans-serif">DMZ</text></g>
+<g class="sx-tm-boundary-g" data-boundary="Core"><rect x="426" y="18" width="551" height="358" rx="14" class="sx-tm-boundary"/>
+<text x="434" y="33" class="sx-tm-boundary-label" font-family="system-ui, -apple-system, sans-serif">Core</text></g>
+<g class="sx-tm-boundary-g" data-boundary="External"><rect x="606" y="18" width="156" height="118" rx="14" class="sx-tm-boundary"/>
+<text x="614" y="33" class="sx-tm-boundary-label" font-family="system-ui, -apple-system, sans-serif">External</text></g>
+<g class="sx-tm-flow-g" data-from="Customer" data-to="1.0" data-crossing="true"><path d="M 144 91 L 244.05 96" class="sx-tm-flow" marker-end="url(#sx-tm-mk-x)" data-crossing="true"/>
+<rect x="146.82495322244313" y="80.50124766112216" width="94.4" height="13" class="sx-tm-flow-halo"/>
+<text x="194.02495322244312" y="87.50124766112216" text-anchor="middle" dominant-baseline="central" class="sx-tm-flow-label" font-family="system-ui, -apple-system, sans-serif" data-crossing="true">Checkout request</text></g>
+<g class="sx-tm-flow-g" data-from="1.0" data-to="2.0" data-crossing="true"><path d="M 324 98 L 444 98" class="sx-tm-flow" marker-end="url(#sx-tm-mk-x)" data-crossing="true"/>
+<rect x="344.9" y="85" width="78.2" height="13" class="sx-tm-flow-halo"/>
+<text x="384" y="92" text-anchor="middle" dominant-baseline="central" class="sx-tm-flow-label" font-family="system-ui, -apple-system, sans-serif" data-crossing="true">Charge intent</text></g>
+<g class="sx-tm-flow-g" data-from="2.0" data-to="D1"><path d="M 509.73 128.62 L 665.51 314" class="sx-tm-flow" marker-end="url(#sx-tm-mk)"/>
+<rect x="548.5231615558039" y="208.31156225140666" width="78.2" height="13" class="sx-tm-flow-halo"/>
+<text x="587.6231615558039" y="215.31156225140666" text-anchor="middle" dominant-baseline="central" class="sx-tm-flow-label" font-family="system-ui, -apple-system, sans-serif">Tokenise card</text></g>
+<g class="sx-tm-flow-g" data-from="2.0" data-to="3.0"><path d="M 519.05 117.28 L 648.95 188.72" class="sx-tm-flow" marker-end="url(#sx-tm-mk)"/>
+<rect x="553" y="140" width="62" height="13" class="sx-tm-flow-halo"/>
+<text x="584" y="147" text-anchor="middle" dominant-baseline="central" class="sx-tm-flow-label" font-family="system-ui, -apple-system, sans-serif">Post entry</text></g>
+<g class="sx-tm-flow-g" data-from="3.0" data-to="D2"><path d="M 720.34 191.28 L 836.17 138" class="sx-tm-flow" marker-end="url(#sx-tm-mk)"/>
+<rect x="744.5567655753106" y="151.64188783535712" width="67.4" height="13" class="sx-tm-flow-halo"/>
+<text x="778.2567655753106" y="158.64188783535712" text-anchor="middle" dominant-baseline="central" class="sx-tm-flow-label" font-family="system-ui, -apple-system, sans-serif">Audit write</text></g>
+<g class="sx-tm-flow-g" data-from="2.0" data-to="Bank_API" data-crossing="true"><path d="M 523.95 96 L 624 91" class="sx-tm-flow" marker-end="url(#sx-tm-mk-x)" data-crossing="true"/>
+<rect x="545.6750467775569" y="80.50124766112216" width="56.6" height="13" class="sx-tm-flow-halo"/>
+<text x="573.9750467775568" y="87.50124766112216" text-anchor="middle" dominant-baseline="central" class="sx-tm-flow-label" font-family="system-ui, -apple-system, sans-serif" data-crossing="true">Authorise</text></g>
+<g class="sx-tm-flow-g" data-from="Bank_API" data-to="2.0" data-crossing="true"><path d="M 624 91 L 523.95 96" class="sx-tm-flow" marker-end="url(#sx-tm-mk-x)" data-crossing="true"/>
+<rect x="540.2750467775568" y="80.50124766112216" width="67.4" height="13" class="sx-tm-flow-halo"/>
+<text x="573.9750467775568" y="87.50124766112216" text-anchor="middle" dominant-baseline="central" class="sx-tm-flow-label" font-family="system-ui, -apple-system, sans-serif" data-crossing="true">Auth result</text></g>
+<g class="sx-tm-node sx-tm-node-external" data-id="Customer" data-kind="external" data-stride="SR"><rect x="24" y="58" width="120" height="60" class="sx-tm-external"/>
+<text x="84" y="88" text-anchor="middle" dominant-baseline="central" class="sx-tm-label" font-family="system-ui, -apple-system, sans-serif"><tspan x="84" dy="0">Customer</tspan></text>
+<g class="sx-tm-badge-g" data-stride="SR"><rect x="72" y="39" width="24" height="15" rx="4" class="sx-tm-badge"/>
+<text x="84" y="47" text-anchor="middle" dominant-baseline="central" class="sx-tm-badge-text" font-family="system-ui, -apple-system, sans-serif">SR</text></g></g>
+<g class="sx-tm-node sx-tm-node-process" data-id="1.0" data-kind="process" data-stride="STRIDE"><circle cx="284" cy="98" r="40" class="sx-tm-process"/>
+<text x="284" y="98" text-anchor="middle" dominant-baseline="central" class="sx-tm-label" font-family="system-ui, -apple-system, sans-serif"><tspan x="284" dy="-6.5">1.0</tspan><tspan x="284" dy="13">API Gateway</tspan></text>
+<g class="sx-tm-badge-g" data-stride="STRIDE"><rect x="258" y="39" width="52" height="15" rx="4" class="sx-tm-badge"/>
+<text x="284" y="47" text-anchor="middle" dominant-baseline="central" class="sx-tm-badge-text" font-family="system-ui, -apple-system, sans-serif">STRIDE</text></g></g>
+<g class="sx-tm-node sx-tm-node-process" data-id="2.0" data-kind="process" data-stride="STRIDE"><circle cx="484" cy="98" r="40" class="sx-tm-process"/>
+<text x="484" y="98" text-anchor="middle" dominant-baseline="central" class="sx-tm-label" font-family="system-ui, -apple-system, sans-serif"><tspan x="484" dy="-6.5">2.0</tspan><tspan x="484" dy="13">Payment Service</tspan></text>
+<g class="sx-tm-badge-g" data-stride="STRIDE"><rect x="458" y="39" width="52" height="15" rx="4" class="sx-tm-badge"/>
+<text x="484" y="47" text-anchor="middle" dominant-baseline="central" class="sx-tm-badge-text" font-family="system-ui, -apple-system, sans-serif">STRIDE</text></g></g>
+<g class="sx-tm-node sx-tm-node-external" data-id="Bank_API" data-kind="external" data-stride="SR"><rect x="624" y="58" width="120" height="60" class="sx-tm-external"/>
+<text x="684" y="88" text-anchor="middle" dominant-baseline="central" class="sx-tm-label" font-family="system-ui, -apple-system, sans-serif"><tspan x="684" dy="0">Bank API</tspan></text>
+<g class="sx-tm-badge-g" data-stride="SR"><rect x="672" y="39" width="24" height="15" rx="4" class="sx-tm-badge"/>
+<text x="684" y="47" text-anchor="middle" dominant-baseline="central" class="sx-tm-badge-text" font-family="system-ui, -apple-system, sans-serif">SR</text></g></g>
+<g class="sx-tm-node sx-tm-node-process" data-id="3.0" data-kind="process" data-stride="STRIDE"><circle cx="684" cy="208" r="40" class="sx-tm-process"/>
+<text x="684" y="208" text-anchor="middle" dominant-baseline="central" class="sx-tm-label" font-family="system-ui, -apple-system, sans-serif"><tspan x="684" dy="-6.5">3.0</tspan><tspan x="684" dy="13">Ledger Service</tspan></text>
+<g class="sx-tm-badge-g" data-stride="STRIDE"><rect x="658" y="149" width="52" height="15" rx="4" class="sx-tm-badge"/>
+<text x="684" y="157" text-anchor="middle" dominant-baseline="central" class="sx-tm-badge-text" font-family="system-ui, -apple-system, sans-serif">STRIDE</text></g></g>
+<g class="sx-tm-node sx-tm-node-store" data-id="D1" data-kind="store" data-stride="TID"><rect x="609" y="314" width="150" height="44" class="sx-tm-store-bg"/>
+<line x1="609" y1="314" x2="759" y2="314" class="sx-tm-store-line"/>
+<line x1="609" y1="358" x2="759" y2="358" class="sx-tm-store-line"/>
+<text x="684" y="336" text-anchor="middle" dominant-baseline="central" class="sx-tm-label" font-family="system-ui, -apple-system, sans-serif"><tspan x="684" dy="0">Card Vault</tspan></text>
+<g class="sx-tm-badge-g" data-stride="TID"><rect x="668.5" y="295" width="31" height="15" rx="4" class="sx-tm-badge"/>
+<text x="684" y="303" text-anchor="middle" dominant-baseline="central" class="sx-tm-badge-text" font-family="system-ui, -apple-system, sans-serif">TID</text></g></g>
+<g class="sx-tm-node sx-tm-node-store" data-id="D2" data-kind="store" data-stride="TRID"><rect x="809" y="94" width="150" height="44" class="sx-tm-store-bg"/>
+<line x1="809" y1="94" x2="959" y2="94" class="sx-tm-store-line"/>
+<line x1="809" y1="138" x2="959" y2="138" class="sx-tm-store-line"/>
+<text x="884" y="116" text-anchor="middle" dominant-baseline="central" class="sx-tm-label" font-family="system-ui, -apple-system, sans-serif"><tspan x="884" dy="0">Transaction Audit</tspan></text>
+<g class="sx-tm-badge-g" data-stride="TRID"><rect x="865" y="75" width="38" height="15" rx="4" class="sx-tm-badge" data-cond-r="true"/>
+<text x="884" y="83" text-anchor="middle" dominant-baseline="central" class="sx-tm-badge-text" font-family="system-ui, -apple-system, sans-serif">TRID</text></g></g></g></svg></div>
+      <details><summary>DSL</summary><pre>threatmodel "Payments platform — STRIDE"
+external: Customer
+external: Bank API
+process 1.0: API Gateway
+process 2.0: Payment Service
+process 3.0: Ledger Service
+datastore D1: Card Vault
+datastore D2: Transaction Audit Log
+Customer -> 1.0 : Checkout request
+1.0 -> 2.0 : Charge intent
+2.0 -> D1 : Tokenise card
+2.0 -> 3.0 : Post entry
+3.0 -> D2 : Audit write
+2.0 -> Bank API : Authorise
+Bank API -> 2.0 : Auth result
+boundary "Public" { Customer }
+boundary "DMZ" { 1.0 }
+boundary "Core" { 2.0, 3.0, D1, D2 }
+boundary "External" { Bank API }</pre></details>
+    </section>
+</body></html>

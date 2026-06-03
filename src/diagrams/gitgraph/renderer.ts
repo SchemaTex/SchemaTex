@@ -168,7 +168,13 @@ function renderLane(
   const isVertical = layout.ast.orientation !== "LR";
   const ci = b.info.colorIndex;
 
-  const laneLine = isVertical
+  // A single-commit branched lane has zero extent — drawing it would render as a
+  // round-cap nub under the node. Skip the line in that case (the pill + the
+  // divergence/merge curves carry the branch on their own).
+  const hasExtent = Math.abs(b.end - b.start) > 0.5;
+  const laneLine = !hasExtent
+    ? ""
+    : isVertical
     ? svgLine({
         x1: b.cross, y1: b.start, x2: b.cross, y2: b.end,
         class: `sx-gg-lane sx-gg-c${ci}`,
