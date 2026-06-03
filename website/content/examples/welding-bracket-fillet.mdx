@@ -1,0 +1,35 @@
+---
+title: Welded bracket — fillet + V-groove callouts
+description: AWS A2.4 welding callouts on a fabrication drawing — an intermittent double-fillet bracket with a weld-all-around flag, and a full-penetration V-groove butt weld with backing, root opening, and the welding process in the tail.
+diagram: welding
+standard: AWS A2.4 / ISO 2553 welding symbols
+industry: [manufacturing, fabrication, mechanical]
+persona: For the design or manufacturing engineer specifying welded joints
+complexity: 3
+tags: [welding, aws-a2.4, iso-2553, fillet, groove, fabrication]
+featured: false
+relatedLink:
+  label: Welding syntax
+  href: /docs/welding
+status: published
+dsl: |
+  welding "Bracket assembly"
+  joint "gusset to column" {
+    arrow: fillet size=8 len=50 pitch=150
+    other: fillet size=6
+    around
+    field
+    tail: "GMAW"
+  }
+  joint "splice plate (butt)" {
+    arrow: vgroove angle=60 root=3 throat=12 contour=flush finish=G
+    other: backing
+    tail: "SMAW; E7018"
+  }
+---
+
+## What this shows
+
+A **welding symbol** is the standard way a drawing tells a fabricator how to weld a joint — codified by **AWS A2.4** (US) and **ISO 2553** (international). It is a *reference-line skeleton*: a horizontal line, a leader arrow to the joint, and a weld glyph snapped above (other side) or below (arrow side) the line, with dimensions in fixed slots.
+
+The first joint is an **intermittent double fillet** — a `size=8` arrow-side fillet welded `50` long on a `150` pitch, a `size=6` fillet on the other side — carried **all around** the gusset (the open circle at the leader junction) as a **field weld** (the flag), with the **GMAW** process noted in the tail. The second joint is a full-penetration **V-groove butt weld**: a `60°` included angle with a `3 mm` root opening and a `12 mm` effective throat, a **backing** weld on the far side, ground **flush**, welded **SMAW** with **E7018** electrode. Each callout is placed correct-by-construction — the engine owns the skeleton, you describe the weld.

@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.8.1] — 2026-06-03
+
+### Added — `welding` diagram engine (AWS A2.4 / ISO 2553)
+
+A new `DiagramType` for welding-symbol callouts — the only gap in the ⚡ Electrical & Industrial cluster, next to circuit / ladder / SLD. A welding symbol is a fixed-skeleton glyph system (reference line + leader arrow to the joint + weld glyphs snapped above/below with dimensions in fixed slots), so it renders deterministically with no graph layout.
+
+- **`welding`** — full glyph catalog (16 types: fillet · square / V / bevel / U / J / flare-V / flare-bevel grooves · plug · slot · spot · seam · back · backing · surfacing · edge), drawn as original line-art. Dimension slots — size, throat `(E)`, length, length-pitch, count×length, groove angle, root opening. Supplementary symbols — weld-all-around circle, field-weld flag, tail process/spec/NDE, contour (flush / convex / concave) + finish letter. AWS A2.4 single reference line, ISO 2553 System A (solid + dashed dual line, inverted side convention) and System B; arrow / other / `both:` sides; multi-joint vertical stacking. The structural differentiator: AI-readable validation of illegal type/side/dimension combinations (a fillet needs `size`, `angle` is groove-only, `pitch` needs `length`, surfacing is arrow-side only).
+
+Standard documented in `docs/reference/47-WELDING-SYMBOL-STANDARD.md`; syntax tutorial in `website/content/docs/welding.mdx`; gallery example + static SVG in `examples/welding/`. AI bundle now ships 45 syntax docs.
+
+### Added — `matrix → punnett` mode (Mendelian genetics)
+
+A sixth mode on the existing `matrix` engine (no new `DiagramType`). The engine computes the genetics: from two parental genotypes it derives the gametes, the offspring grid, and the genotype + phenotype ratios.
+
+- **matrix → `punnett`** — `cross: Bb x Bb` with allele-case dominance and optional `trait` phenotype names. Computes the canonical ratios — monohybrid **3:1**, dihybrid **9:3:3:1** — reduced to lowest terms, with each box tinted by phenotype class. Mono / di / trihybrid (2×2 / 4×4 / 8×8). Three gallery examples: monohybrid (3:1), test cross (1:1), and dihybrid (9:3:3:1).
+
+---
+
 ## [0.8.0] — 2026-06-03
 
 ### Added — Bucket B: 8 new diagram engines

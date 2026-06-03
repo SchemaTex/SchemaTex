@@ -514,6 +514,17 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
     standard: "Shostack, Threat Modeling (2014) STRIDE-per-element · Microsoft SDL · base DFD DeMarco/Yourdon; see 46-THREAT-MODEL-STRIDE-STANDARD.md + 31-DFD-STANDARD.md",
     syntaxKey: "threatmodel",
   },
+  {
+    type: "welding",
+    name: "Welding symbols",
+    tagline:
+      "AWS A2.4 / ISO 2553 welding callouts — the reference-line skeleton with weld glyphs, dimensions, and supplementary symbols placed correct-by-construction.",
+    useWhen:
+      "Use to annotate a welded joint on an engineering drawing: a horizontal reference line, a leader arrow to the joint, and a weld-symbol glyph above (other side) / below (arrow side) with size, length-pitch, groove angle, root opening, contour + finish. Header `welding [standard: aws|iso-a|iso-b]`; one `joint \"label\" { arrow: … other: … around field tail: … }` block per joint. Full glyph catalog (fillet, all groove types, plug/slot, spot/seam, back/backing, surfacing, edge) + weld-all-around, field flag, and tail process note. Validates illegal type/side/dimension combinations.",
+    cluster: "electrical-industrial",
+    standard: "AWS A2.4:2020 · ISO 2553:2019; see 47-WELDING-SYMBOL-STANDARD.md",
+    syntaxKey: "welding",
+  },
 ] as const;
 
 /**
@@ -580,6 +591,8 @@ export const DIAGRAM_SINCE: Readonly<Record<DiagramType, string>> = {
   epc: "0.8.0",
   idef0: "0.8.0",
   threatmodel: "0.8.0",
+  // 0.8.1 — welding symbols (AWS A2.4 / ISO 2553)
+  welding: "0.8.1",
 };
 
 export function getDiagramSince(type: string): string | undefined {

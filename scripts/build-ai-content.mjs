@@ -68,6 +68,7 @@ const SYNTAX_KEYS = [
   "epc",
   "idef0",
   "threatmodel",
+  "welding",
 ];
 
 // ─── Minimal YAML-frontmatter parser ─────────────────────────────
