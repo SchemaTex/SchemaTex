@@ -1,0 +1,25 @@
+---
+title: Monohybrid cross Punnett square (3:1)
+description: The classic single-gene Punnett square — two heterozygous parents (Bb × Bb) crossed for eye colour. The engine computes the gametes, the 2×2 grid, and the canonical 3:1 dominant-to-recessive phenotype ratio with a 1:2:1 genotype ratio.
+diagram: matrix
+standard: Mendelian genetics (Punnett square)
+industry: [education, genetics, biology]
+persona: For the biology teacher or student learning Mendelian inheritance
+complexity: 1
+tags: [matrix, punnett, genetics, mendel, monohybrid, biology]
+featured: false
+relatedLink:
+  label: Matrix syntax
+  href: /docs/matrix
+status: published
+dsl: |
+  matrix punnett "Eye color  (Bb × Bb)"
+  cross: Bb x Bb
+  trait B: "Brown eyes" / "Blue eyes"
+---
+
+## What this shows
+
+The **monohybrid cross** is where every genetics course starts: one gene, two heterozygous parents. Here both parents are `Bb` for eye colour — `B` (brown) is dominant, `b` (blue) recessive. You write only the cross; the engine does the Mendelian bookkeeping.
+
+Each `Bb` parent makes two gametes, `B` and `b`, so the grid is 2×2. The engine fills it — `BB`, `Bb`, `Bb`, `bb` — and computes the two ratios every student memorises: a **3:1 phenotype ratio** (3 brown-eyed : 1 blue-eyed) and a **1:2:1 genotype ratio** (1 `BB` : 2 `Bb` : 1 `bb`). The single recessive `bb` box is tinted apart from the three dominant boxes, and the `trait` line names the phenotypes so the legend reads in plain English. Allele case sets dominance — uppercase is dominant — so the notation is exactly what a textbook uses.

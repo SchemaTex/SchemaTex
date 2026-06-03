@@ -1380,6 +1380,44 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "notes": "## What this shows\n\nA **Punnett square** predicts the offspring of a genetic cross. You write only the two parental genotypes — the engine does the Mendelian bookkeeping: it enumerates each parent's **gametes** (one allele per gene locus), fills the grid with every gamete combination, and counts the resulting **genotype and phenotype ratios**.\n\nThis is a **dihybrid** cross (two genes at once) — Mendel's classic pea experiment crossing seed shape (`R` round dominant / `r` wrinkled) with seed colour (`Y` yellow dominant / `y` green). Two heterozygous parents each produce four gametes (RY, Ry, rY, ry), so the grid is 4×4 = 16 boxes. The engine computes the famous **9:3:3:1** phenotype ratio — 9 round-yellow : 3 wrinkled-yellow : 3 round-green : 1 wrinkled-green — and tints each box by its phenotype class so the ratio is visible at a glance. Case sets dominance (uppercase = dominant), and the optional `trait` lines name each phenotype so the legend reads in plain English."
   },
   {
+    "slug": "matrix-punnett-monohybrid",
+    "diagram": "matrix",
+    "title": "Monohybrid cross Punnett square (3:1)",
+    "description": "The classic single-gene Punnett square — two heterozygous parents (Bb × Bb) crossed for eye colour. The engine computes the gametes, the 2×2 grid, and the canonical 3:1 dominant-to-recessive phenotype ratio with a 1:2:1 genotype ratio.",
+    "standard": "Mendelian genetics (Punnett square)",
+    "tags": [
+      "matrix",
+      "punnett",
+      "genetics",
+      "mendel",
+      "monohybrid",
+      "biology"
+    ],
+    "complexity": 1,
+    "featured": false,
+    "dsl": "matrix punnett \"Eye color  (Bb × Bb)\"\ncross: Bb x Bb\ntrait B: \"Brown eyes\" / \"Blue eyes\"",
+    "notes": "## What this shows\n\nThe **monohybrid cross** is where every genetics course starts: one gene, two heterozygous parents. Here both parents are `Bb` for eye colour — `B` (brown) is dominant, `b` (blue) recessive. You write only the cross; the engine does the Mendelian bookkeeping.\n\nEach `Bb` parent makes two gametes, `B` and `b`, so the grid is 2×2. The engine fills it — `BB`, `Bb`, `Bb`, `bb` — and computes the two ratios every student memorises: a **3:1 phenotype ratio** (3 brown-eyed : 1 blue-eyed) and a **1:2:1 genotype ratio** (1 `BB` : 2 `Bb` : 1 `bb`). The single recessive `bb` box is tinted apart from the three dominant boxes, and the `trait` line names the phenotypes so the legend reads in plain English. Allele case sets dominance — uppercase is dominant — so the notation is exactly what a textbook uses."
+  },
+  {
+    "slug": "matrix-punnett-testcross",
+    "diagram": "matrix",
+    "title": "Test cross Punnett square (1:1)",
+    "description": "A genetic test cross — crossing an organism of unknown genotype against a homozygous-recessive parent (Bb × bb) to reveal whether it is heterozygous. The engine computes the 1:1 phenotype ratio that signals a heterozygous parent.",
+    "standard": "Mendelian genetics (Punnett square)",
+    "tags": [
+      "matrix",
+      "punnett",
+      "genetics",
+      "mendel",
+      "test-cross",
+      "biology"
+    ],
+    "complexity": 2,
+    "featured": false,
+    "dsl": "matrix punnett \"Test cross  (Bb × bb)\"\ncross: Bb x bb\ntrait B: \"Brown\" / \"Blue\"",
+    "notes": "## What this shows\n\nA **test cross** answers a practical genetics question: an organism shows the dominant trait, but is it `BB` or `Bb`? Cross it against a **homozygous-recessive** partner (`bb`) and read the offspring. You write only the cross; the engine computes the outcome that gives the answer.\n\nThe recessive `bb` parent contributes only `b` gametes, so the offspring genotypes come straight from the unknown parent's gametes. Crossing `Bb × bb` yields a **1:1 phenotype ratio** — half `Bb` (dominant phenotype), half `bb` (recessive) — the tell-tale signature of a heterozygous parent. (A `BB` parent would instead give all dominant offspring.) The engine fills the 2×1 grid, tints the two phenotype classes apart, and reports the 1:1 ratio, so the diagnostic result is immediate."
+  },
+  {
     "slug": "matrix-qfd-coffee-maker",
     "diagram": "matrix",
     "title": "Coffee maker House of Quality",
