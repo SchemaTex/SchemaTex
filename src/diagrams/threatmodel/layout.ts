@@ -46,6 +46,8 @@ export const TM_CONST = {
   BOUNDARY_HEADER: 22,
   /** Reserve at top for the title. */
   TITLE_H: 34,
+  /** Clear gap between the title band and the top of the highest trust boundary. */
+  TITLE_GAP: 10,
 } as const;
 
 interface Sized {
@@ -132,8 +134,15 @@ export function layoutThreatModel(ast: ThreatModelAst): ThreatModelLayout {
   // ── Assign coordinates ──
   const nodes: LaidOutNode[] = [];
   const nodeMap = new Map<string, LaidOutNode>();
-  const x0 = TM_CONST.PAD;
-  const y0 = TM_CONST.PAD + TM_CONST.TITLE_H;
+  // When trust boundaries exist, each inflates BOUNDARY_PAD + BOUNDARY_HEADER
+  // ABOVE / to the LEFT of its topmost / leftmost member. Reserve that room so a
+  // boundary's red frame + label tab never rides up into the title band or clips
+  // the left edge.
+  const boundaryInset = ast.boundaries.length > 0
+    ? TM_CONST.BOUNDARY_PAD + TM_CONST.BOUNDARY_HEADER
+    : 0;
+  const x0 = TM_CONST.PAD + (ast.boundaries.length > 0 ? TM_CONST.BOUNDARY_PAD : 0);
+  const y0 = TM_CONST.PAD + TM_CONST.TITLE_H + (boundaryInset > 0 ? boundaryInset + TM_CONST.TITLE_GAP : 0);
 
   for (let l = 0; l <= maxLayer; l++) {
     const colIds = byLayer.get(l)!;

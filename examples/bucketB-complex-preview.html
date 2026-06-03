@@ -816,7 +816,7 @@ output    A4 "Finished goods"</pre></details>
     </section>
     <section>
       <h2>Threat model — nested zones, many flows, audit store</h2>
-      <div class="svgwrap"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1041" height="440" viewBox="-20 -20 1041 440" class="schematex schematex-threatmodel" font-family="system-ui, -apple-system, sans-serif" role="img" aria-label="Payments platform — STRIDE"><title>Payments platform — STRIDE</title>
+      <div class="svgwrap"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1059" height="490" viewBox="-20 -20 1059 490" class="schematex schematex-threatmodel" font-family="system-ui, -apple-system, sans-serif" role="img" aria-label="Payments platform — STRIDE"><title>Payments platform — STRIDE</title>
 <desc>STRIDE threat model: 2 external entities, 3 process(es), 2 data store(s), 7 data flow(s). 4 boundary-crossing flow(s): Customer→1.0, 1.0→2.0, 2.0→Bank_API, Bank_API→2.0. Customer (external) → Spoofing, Repudiation. Bank_API (external) → Spoofing, Repudiation. 1.0 (process) → Spoofing, Tampering, Repudiation, Information disclosure, Denial of service, Elevation of privilege. 2.0 (process) → Spoofing, Tampering, Repudiation, Information disclosure, Denial of service, Elevation of privilege. 3.0 (process) → Spoofing, Tampering, Repudiation, Information disclosure, Denial of service, Elevation of privilege. D1 (store) → Tampering, Information disclosure, Denial of service. D2 (store) → Tampering, Repudiation, Information disclosure, Denial of service.</desc>
 <style>.sx-tm-bg { fill: #ffffff; }
 .sx-tm-title { fill: #0f172a; font-size: 16px; font-weight: 700; }
@@ -839,69 +839,69 @@ output    A4 "Finished goods"</pre></details>
 .sx-tm-badge-text { fill: #ffffff; font-size: 9px; font-weight: 700; }</style>
 <defs><marker id="sx-tm-mk" markerWidth="9" markerHeight="9" refX="8" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0,0 9,4 0,8" class="sx-tm-arrow"/></marker>
 <marker id="sx-tm-mk-x" markerWidth="9" markerHeight="9" refX="8" refY="4" orient="auto" markerUnits="userSpaceOnUse"><polygon points="0,0 9,4 0,8" class="sx-tm-arrow" data-crossing="true"/></marker></defs>
-<rect x="0" y="0" width="1041" height="440" class="sx-tm-bg"/>
+<rect x="0" y="0" width="1059" height="490" class="sx-tm-bg"/>
 <g class="sx-tm-root"><text x="24" y="24" class="sx-tm-title" font-family="system-ui, -apple-system, sans-serif">Payments platform — STRIDE</text>
-<g class="sx-tm-boundary-g" data-boundary="Public"><rect x="6" y="18" width="156" height="118" rx="14" class="sx-tm-boundary"/>
-<text x="14" y="33" class="sx-tm-boundary-label" font-family="system-ui, -apple-system, sans-serif">Public</text></g>
-<g class="sx-tm-boundary-g" data-boundary="DMZ"><rect x="226" y="18" width="116" height="138" rx="14" class="sx-tm-boundary"/>
-<text x="234" y="33" class="sx-tm-boundary-label" font-family="system-ui, -apple-system, sans-serif">DMZ</text></g>
-<g class="sx-tm-boundary-g" data-boundary="Core"><rect x="426" y="18" width="551" height="358" rx="14" class="sx-tm-boundary"/>
-<text x="434" y="33" class="sx-tm-boundary-label" font-family="system-ui, -apple-system, sans-serif">Core</text></g>
-<g class="sx-tm-boundary-g" data-boundary="External"><rect x="606" y="18" width="156" height="118" rx="14" class="sx-tm-boundary"/>
-<text x="614" y="33" class="sx-tm-boundary-label" font-family="system-ui, -apple-system, sans-serif">External</text></g>
-<g class="sx-tm-flow-g" data-from="Customer" data-to="1.0" data-crossing="true"><path d="M 144 91 L 244.05 96" class="sx-tm-flow" marker-end="url(#sx-tm-mk-x)" data-crossing="true"/>
-<rect x="146.82495322244313" y="80.50124766112216" width="94.4" height="13" class="sx-tm-flow-halo"/>
-<text x="194.02495322244312" y="87.50124766112216" text-anchor="middle" dominant-baseline="central" class="sx-tm-flow-label" font-family="system-ui, -apple-system, sans-serif" data-crossing="true">Checkout request</text></g>
-<g class="sx-tm-flow-g" data-from="1.0" data-to="2.0" data-crossing="true"><path d="M 324 98 L 444 98" class="sx-tm-flow" marker-end="url(#sx-tm-mk-x)" data-crossing="true"/>
-<rect x="344.9" y="85" width="78.2" height="13" class="sx-tm-flow-halo"/>
-<text x="384" y="92" text-anchor="middle" dominant-baseline="central" class="sx-tm-flow-label" font-family="system-ui, -apple-system, sans-serif" data-crossing="true">Charge intent</text></g>
-<g class="sx-tm-flow-g" data-from="2.0" data-to="D1"><path d="M 509.73 128.62 L 665.51 314" class="sx-tm-flow" marker-end="url(#sx-tm-mk)"/>
-<rect x="548.5231615558039" y="208.31156225140666" width="78.2" height="13" class="sx-tm-flow-halo"/>
-<text x="587.6231615558039" y="215.31156225140666" text-anchor="middle" dominant-baseline="central" class="sx-tm-flow-label" font-family="system-ui, -apple-system, sans-serif">Tokenise card</text></g>
-<g class="sx-tm-flow-g" data-from="2.0" data-to="3.0"><path d="M 519.05 117.28 L 648.95 188.72" class="sx-tm-flow" marker-end="url(#sx-tm-mk)"/>
-<rect x="553" y="140" width="62" height="13" class="sx-tm-flow-halo"/>
-<text x="584" y="147" text-anchor="middle" dominant-baseline="central" class="sx-tm-flow-label" font-family="system-ui, -apple-system, sans-serif">Post entry</text></g>
-<g class="sx-tm-flow-g" data-from="3.0" data-to="D2"><path d="M 720.34 191.28 L 836.17 138" class="sx-tm-flow" marker-end="url(#sx-tm-mk)"/>
-<rect x="744.5567655753106" y="151.64188783535712" width="67.4" height="13" class="sx-tm-flow-halo"/>
-<text x="778.2567655753106" y="158.64188783535712" text-anchor="middle" dominant-baseline="central" class="sx-tm-flow-label" font-family="system-ui, -apple-system, sans-serif">Audit write</text></g>
-<g class="sx-tm-flow-g" data-from="2.0" data-to="Bank_API" data-crossing="true"><path d="M 523.95 96 L 624 91" class="sx-tm-flow" marker-end="url(#sx-tm-mk-x)" data-crossing="true"/>
-<rect x="545.6750467775569" y="80.50124766112216" width="56.6" height="13" class="sx-tm-flow-halo"/>
-<text x="573.9750467775568" y="87.50124766112216" text-anchor="middle" dominant-baseline="central" class="sx-tm-flow-label" font-family="system-ui, -apple-system, sans-serif" data-crossing="true">Authorise</text></g>
-<g class="sx-tm-flow-g" data-from="Bank_API" data-to="2.0" data-crossing="true"><path d="M 624 91 L 523.95 96" class="sx-tm-flow" marker-end="url(#sx-tm-mk-x)" data-crossing="true"/>
-<rect x="540.2750467775568" y="80.50124766112216" width="67.4" height="13" class="sx-tm-flow-halo"/>
-<text x="573.9750467775568" y="87.50124766112216" text-anchor="middle" dominant-baseline="central" class="sx-tm-flow-label" font-family="system-ui, -apple-system, sans-serif" data-crossing="true">Auth result</text></g>
-<g class="sx-tm-node sx-tm-node-external" data-id="Customer" data-kind="external" data-stride="SR"><rect x="24" y="58" width="120" height="60" class="sx-tm-external"/>
-<text x="84" y="88" text-anchor="middle" dominant-baseline="central" class="sx-tm-label" font-family="system-ui, -apple-system, sans-serif"><tspan x="84" dy="0">Customer</tspan></text>
-<g class="sx-tm-badge-g" data-stride="SR"><rect x="72" y="39" width="24" height="15" rx="4" class="sx-tm-badge"/>
-<text x="84" y="47" text-anchor="middle" dominant-baseline="central" class="sx-tm-badge-text" font-family="system-ui, -apple-system, sans-serif">SR</text></g></g>
-<g class="sx-tm-node sx-tm-node-process" data-id="1.0" data-kind="process" data-stride="STRIDE"><circle cx="284" cy="98" r="40" class="sx-tm-process"/>
-<text x="284" y="98" text-anchor="middle" dominant-baseline="central" class="sx-tm-label" font-family="system-ui, -apple-system, sans-serif"><tspan x="284" dy="-6.5">1.0</tspan><tspan x="284" dy="13">API Gateway</tspan></text>
-<g class="sx-tm-badge-g" data-stride="STRIDE"><rect x="258" y="39" width="52" height="15" rx="4" class="sx-tm-badge"/>
-<text x="284" y="47" text-anchor="middle" dominant-baseline="central" class="sx-tm-badge-text" font-family="system-ui, -apple-system, sans-serif">STRIDE</text></g></g>
-<g class="sx-tm-node sx-tm-node-process" data-id="2.0" data-kind="process" data-stride="STRIDE"><circle cx="484" cy="98" r="40" class="sx-tm-process"/>
-<text x="484" y="98" text-anchor="middle" dominant-baseline="central" class="sx-tm-label" font-family="system-ui, -apple-system, sans-serif"><tspan x="484" dy="-6.5">2.0</tspan><tspan x="484" dy="13">Payment Service</tspan></text>
-<g class="sx-tm-badge-g" data-stride="STRIDE"><rect x="458" y="39" width="52" height="15" rx="4" class="sx-tm-badge"/>
-<text x="484" y="47" text-anchor="middle" dominant-baseline="central" class="sx-tm-badge-text" font-family="system-ui, -apple-system, sans-serif">STRIDE</text></g></g>
-<g class="sx-tm-node sx-tm-node-external" data-id="Bank_API" data-kind="external" data-stride="SR"><rect x="624" y="58" width="120" height="60" class="sx-tm-external"/>
-<text x="684" y="88" text-anchor="middle" dominant-baseline="central" class="sx-tm-label" font-family="system-ui, -apple-system, sans-serif"><tspan x="684" dy="0">Bank API</tspan></text>
-<g class="sx-tm-badge-g" data-stride="SR"><rect x="672" y="39" width="24" height="15" rx="4" class="sx-tm-badge"/>
-<text x="684" y="47" text-anchor="middle" dominant-baseline="central" class="sx-tm-badge-text" font-family="system-ui, -apple-system, sans-serif">SR</text></g></g>
-<g class="sx-tm-node sx-tm-node-process" data-id="3.0" data-kind="process" data-stride="STRIDE"><circle cx="684" cy="208" r="40" class="sx-tm-process"/>
-<text x="684" y="208" text-anchor="middle" dominant-baseline="central" class="sx-tm-label" font-family="system-ui, -apple-system, sans-serif"><tspan x="684" dy="-6.5">3.0</tspan><tspan x="684" dy="13">Ledger Service</tspan></text>
-<g class="sx-tm-badge-g" data-stride="STRIDE"><rect x="658" y="149" width="52" height="15" rx="4" class="sx-tm-badge"/>
-<text x="684" y="157" text-anchor="middle" dominant-baseline="central" class="sx-tm-badge-text" font-family="system-ui, -apple-system, sans-serif">STRIDE</text></g></g>
-<g class="sx-tm-node sx-tm-node-store" data-id="D1" data-kind="store" data-stride="TID"><rect x="609" y="314" width="150" height="44" class="sx-tm-store-bg"/>
-<line x1="609" y1="314" x2="759" y2="314" class="sx-tm-store-line"/>
-<line x1="609" y1="358" x2="759" y2="358" class="sx-tm-store-line"/>
-<text x="684" y="336" text-anchor="middle" dominant-baseline="central" class="sx-tm-label" font-family="system-ui, -apple-system, sans-serif"><tspan x="684" dy="0">Card Vault</tspan></text>
-<g class="sx-tm-badge-g" data-stride="TID"><rect x="668.5" y="295" width="31" height="15" rx="4" class="sx-tm-badge"/>
-<text x="684" y="303" text-anchor="middle" dominant-baseline="central" class="sx-tm-badge-text" font-family="system-ui, -apple-system, sans-serif">TID</text></g></g>
-<g class="sx-tm-node sx-tm-node-store" data-id="D2" data-kind="store" data-stride="TRID"><rect x="809" y="94" width="150" height="44" class="sx-tm-store-bg"/>
-<line x1="809" y1="94" x2="959" y2="94" class="sx-tm-store-line"/>
-<line x1="809" y1="138" x2="959" y2="138" class="sx-tm-store-line"/>
-<text x="884" y="116" text-anchor="middle" dominant-baseline="central" class="sx-tm-label" font-family="system-ui, -apple-system, sans-serif"><tspan x="884" dy="0">Transaction Audit</tspan></text>
-<g class="sx-tm-badge-g" data-stride="TRID"><rect x="865" y="75" width="38" height="15" rx="4" class="sx-tm-badge" data-cond-r="true"/>
-<text x="884" y="83" text-anchor="middle" dominant-baseline="central" class="sx-tm-badge-text" font-family="system-ui, -apple-system, sans-serif">TRID</text></g></g></g></svg></div>
+<g class="sx-tm-boundary-g" data-boundary="Public"><rect x="24" y="68" width="156" height="118" rx="14" class="sx-tm-boundary"/>
+<text x="32" y="83" class="sx-tm-boundary-label" font-family="system-ui, -apple-system, sans-serif">Public</text></g>
+<g class="sx-tm-boundary-g" data-boundary="DMZ"><rect x="244" y="68" width="116" height="138" rx="14" class="sx-tm-boundary"/>
+<text x="252" y="83" class="sx-tm-boundary-label" font-family="system-ui, -apple-system, sans-serif">DMZ</text></g>
+<g class="sx-tm-boundary-g" data-boundary="Core"><rect x="444" y="68" width="551" height="358" rx="14" class="sx-tm-boundary"/>
+<text x="452" y="83" class="sx-tm-boundary-label" font-family="system-ui, -apple-system, sans-serif">Core</text></g>
+<g class="sx-tm-boundary-g" data-boundary="External"><rect x="624" y="68" width="156" height="118" rx="14" class="sx-tm-boundary"/>
+<text x="632" y="83" class="sx-tm-boundary-label" font-family="system-ui, -apple-system, sans-serif">External</text></g>
+<g class="sx-tm-flow-g" data-from="Customer" data-to="1.0" data-crossing="true"><path d="M 162 141 L 262.05 146" class="sx-tm-flow" marker-end="url(#sx-tm-mk-x)" data-crossing="true"/>
+<rect x="164.82495322244313" y="130.50124766112214" width="94.4" height="13" class="sx-tm-flow-halo"/>
+<text x="212.02495322244312" y="137.50124766112214" text-anchor="middle" dominant-baseline="central" class="sx-tm-flow-label" font-family="system-ui, -apple-system, sans-serif" data-crossing="true">Checkout request</text></g>
+<g class="sx-tm-flow-g" data-from="1.0" data-to="2.0" data-crossing="true"><path d="M 342 148 L 462 148" class="sx-tm-flow" marker-end="url(#sx-tm-mk-x)" data-crossing="true"/>
+<rect x="362.9" y="135" width="78.2" height="13" class="sx-tm-flow-halo"/>
+<text x="402" y="142" text-anchor="middle" dominant-baseline="central" class="sx-tm-flow-label" font-family="system-ui, -apple-system, sans-serif" data-crossing="true">Charge intent</text></g>
+<g class="sx-tm-flow-g" data-from="2.0" data-to="D1"><path d="M 527.73 178.62 L 683.51 364" class="sx-tm-flow" marker-end="url(#sx-tm-mk)"/>
+<rect x="566.5231615558039" y="258.31156225140666" width="78.2" height="13" class="sx-tm-flow-halo"/>
+<text x="605.6231615558039" y="265.31156225140666" text-anchor="middle" dominant-baseline="central" class="sx-tm-flow-label" font-family="system-ui, -apple-system, sans-serif">Tokenise card</text></g>
+<g class="sx-tm-flow-g" data-from="2.0" data-to="3.0"><path d="M 537.05 167.28 L 666.95 238.72" class="sx-tm-flow" marker-end="url(#sx-tm-mk)"/>
+<rect x="571" y="190" width="62" height="13" class="sx-tm-flow-halo"/>
+<text x="602" y="197" text-anchor="middle" dominant-baseline="central" class="sx-tm-flow-label" font-family="system-ui, -apple-system, sans-serif">Post entry</text></g>
+<g class="sx-tm-flow-g" data-from="3.0" data-to="D2"><path d="M 738.34 241.28 L 854.17 188" class="sx-tm-flow" marker-end="url(#sx-tm-mk)"/>
+<rect x="762.5567655753106" y="201.64188783535712" width="67.4" height="13" class="sx-tm-flow-halo"/>
+<text x="796.2567655753106" y="208.64188783535712" text-anchor="middle" dominant-baseline="central" class="sx-tm-flow-label" font-family="system-ui, -apple-system, sans-serif">Audit write</text></g>
+<g class="sx-tm-flow-g" data-from="2.0" data-to="Bank_API" data-crossing="true"><path d="M 541.95 146 L 642 141" class="sx-tm-flow" marker-end="url(#sx-tm-mk-x)" data-crossing="true"/>
+<rect x="563.6750467775569" y="130.50124766112214" width="56.6" height="13" class="sx-tm-flow-halo"/>
+<text x="591.9750467775568" y="137.50124766112214" text-anchor="middle" dominant-baseline="central" class="sx-tm-flow-label" font-family="system-ui, -apple-system, sans-serif" data-crossing="true">Authorise</text></g>
+<g class="sx-tm-flow-g" data-from="Bank_API" data-to="2.0" data-crossing="true"><path d="M 642 141 L 541.95 146" class="sx-tm-flow" marker-end="url(#sx-tm-mk-x)" data-crossing="true"/>
+<rect x="558.2750467775568" y="130.50124766112214" width="67.4" height="13" class="sx-tm-flow-halo"/>
+<text x="591.9750467775568" y="137.50124766112214" text-anchor="middle" dominant-baseline="central" class="sx-tm-flow-label" font-family="system-ui, -apple-system, sans-serif" data-crossing="true">Auth result</text></g>
+<g class="sx-tm-node sx-tm-node-external" data-id="Customer" data-kind="external" data-stride="SR"><rect x="42" y="108" width="120" height="60" class="sx-tm-external"/>
+<text x="102" y="138" text-anchor="middle" dominant-baseline="central" class="sx-tm-label" font-family="system-ui, -apple-system, sans-serif"><tspan x="102" dy="0">Customer</tspan></text>
+<g class="sx-tm-badge-g" data-stride="SR"><rect x="90" y="89" width="24" height="15" rx="4" class="sx-tm-badge"/>
+<text x="102" y="97" text-anchor="middle" dominant-baseline="central" class="sx-tm-badge-text" font-family="system-ui, -apple-system, sans-serif">SR</text></g></g>
+<g class="sx-tm-node sx-tm-node-process" data-id="1.0" data-kind="process" data-stride="STRIDE"><circle cx="302" cy="148" r="40" class="sx-tm-process"/>
+<text x="302" y="148" text-anchor="middle" dominant-baseline="central" class="sx-tm-label" font-family="system-ui, -apple-system, sans-serif"><tspan x="302" dy="-6.5">1.0</tspan><tspan x="302" dy="13">API Gateway</tspan></text>
+<g class="sx-tm-badge-g" data-stride="STRIDE"><rect x="276" y="89" width="52" height="15" rx="4" class="sx-tm-badge"/>
+<text x="302" y="97" text-anchor="middle" dominant-baseline="central" class="sx-tm-badge-text" font-family="system-ui, -apple-system, sans-serif">STRIDE</text></g></g>
+<g class="sx-tm-node sx-tm-node-process" data-id="2.0" data-kind="process" data-stride="STRIDE"><circle cx="502" cy="148" r="40" class="sx-tm-process"/>
+<text x="502" y="148" text-anchor="middle" dominant-baseline="central" class="sx-tm-label" font-family="system-ui, -apple-system, sans-serif"><tspan x="502" dy="-6.5">2.0</tspan><tspan x="502" dy="13">Payment Service</tspan></text>
+<g class="sx-tm-badge-g" data-stride="STRIDE"><rect x="476" y="89" width="52" height="15" rx="4" class="sx-tm-badge"/>
+<text x="502" y="97" text-anchor="middle" dominant-baseline="central" class="sx-tm-badge-text" font-family="system-ui, -apple-system, sans-serif">STRIDE</text></g></g>
+<g class="sx-tm-node sx-tm-node-external" data-id="Bank_API" data-kind="external" data-stride="SR"><rect x="642" y="108" width="120" height="60" class="sx-tm-external"/>
+<text x="702" y="138" text-anchor="middle" dominant-baseline="central" class="sx-tm-label" font-family="system-ui, -apple-system, sans-serif"><tspan x="702" dy="0">Bank API</tspan></text>
+<g class="sx-tm-badge-g" data-stride="SR"><rect x="690" y="89" width="24" height="15" rx="4" class="sx-tm-badge"/>
+<text x="702" y="97" text-anchor="middle" dominant-baseline="central" class="sx-tm-badge-text" font-family="system-ui, -apple-system, sans-serif">SR</text></g></g>
+<g class="sx-tm-node sx-tm-node-process" data-id="3.0" data-kind="process" data-stride="STRIDE"><circle cx="702" cy="258" r="40" class="sx-tm-process"/>
+<text x="702" y="258" text-anchor="middle" dominant-baseline="central" class="sx-tm-label" font-family="system-ui, -apple-system, sans-serif"><tspan x="702" dy="-6.5">3.0</tspan><tspan x="702" dy="13">Ledger Service</tspan></text>
+<g class="sx-tm-badge-g" data-stride="STRIDE"><rect x="676" y="199" width="52" height="15" rx="4" class="sx-tm-badge"/>
+<text x="702" y="207" text-anchor="middle" dominant-baseline="central" class="sx-tm-badge-text" font-family="system-ui, -apple-system, sans-serif">STRIDE</text></g></g>
+<g class="sx-tm-node sx-tm-node-store" data-id="D1" data-kind="store" data-stride="TID"><rect x="627" y="364" width="150" height="44" class="sx-tm-store-bg"/>
+<line x1="627" y1="364" x2="777" y2="364" class="sx-tm-store-line"/>
+<line x1="627" y1="408" x2="777" y2="408" class="sx-tm-store-line"/>
+<text x="702" y="386" text-anchor="middle" dominant-baseline="central" class="sx-tm-label" font-family="system-ui, -apple-system, sans-serif"><tspan x="702" dy="0">Card Vault</tspan></text>
+<g class="sx-tm-badge-g" data-stride="TID"><rect x="686.5" y="345" width="31" height="15" rx="4" class="sx-tm-badge"/>
+<text x="702" y="353" text-anchor="middle" dominant-baseline="central" class="sx-tm-badge-text" font-family="system-ui, -apple-system, sans-serif">TID</text></g></g>
+<g class="sx-tm-node sx-tm-node-store" data-id="D2" data-kind="store" data-stride="TRID"><rect x="827" y="144" width="150" height="44" class="sx-tm-store-bg"/>
+<line x1="827" y1="144" x2="977" y2="144" class="sx-tm-store-line"/>
+<line x1="827" y1="188" x2="977" y2="188" class="sx-tm-store-line"/>
+<text x="902" y="166" text-anchor="middle" dominant-baseline="central" class="sx-tm-label" font-family="system-ui, -apple-system, sans-serif"><tspan x="902" dy="0">Transaction Audit</tspan></text>
+<g class="sx-tm-badge-g" data-stride="TRID"><rect x="883" y="125" width="38" height="15" rx="4" class="sx-tm-badge" data-cond-r="true"/>
+<text x="902" y="133" text-anchor="middle" dominant-baseline="central" class="sx-tm-badge-text" font-family="system-ui, -apple-system, sans-serif">TRID</text></g></g></g></svg></div>
       <details><summary>DSL</summary><pre>threatmodel "Payments platform — STRIDE"
 external: Customer
 external: Bank API
