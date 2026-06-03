@@ -207,7 +207,11 @@ export function parseEntityDSL(text: string): EntityAST {
     }
 
     // cluster "name" [members: [ids], color: "..."]
-    const clusterMatch = line.match(/^cluster\s+"([^"]*)"(?:\s*\[([^\]]*)\])?\s*$/i);
+    // The attribute block is allowed to contain ONE level of nested [...] so the
+    // `members: [a, b]` array does not prematurely terminate the outer bracket.
+    const clusterMatch = line.match(
+      /^cluster\s+"([^"]*)"(?:\s*\[((?:[^\][]|\[[^\]]*\])*)\])?\s*$/i
+    );
     if (clusterMatch) {
       const label = clusterMatch[1];
       const props = clusterMatch[2] ? parseProps(clusterMatch[2]) : {};
