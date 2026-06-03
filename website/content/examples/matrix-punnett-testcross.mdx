@@ -1,0 +1,25 @@
+---
+title: Test cross Punnett square (1:1)
+description: A genetic test cross — crossing an organism of unknown genotype against a homozygous-recessive parent (Bb × bb) to reveal whether it is heterozygous. The engine computes the 1:1 phenotype ratio that signals a heterozygous parent.
+diagram: matrix
+standard: Mendelian genetics (Punnett square)
+industry: [education, genetics, biology]
+persona: For the geneticist or student determining an unknown genotype
+complexity: 2
+tags: [matrix, punnett, genetics, mendel, test-cross, biology]
+featured: false
+relatedLink:
+  label: Matrix syntax
+  href: /docs/matrix
+status: published
+dsl: |
+  matrix punnett "Test cross  (Bb × bb)"
+  cross: Bb x bb
+  trait B: "Brown" / "Blue"
+---
+
+## What this shows
+
+A **test cross** answers a practical genetics question: an organism shows the dominant trait, but is it `BB` or `Bb`? Cross it against a **homozygous-recessive** partner (`bb`) and read the offspring. You write only the cross; the engine computes the outcome that gives the answer.
+
+The recessive `bb` parent contributes only `b` gametes, so the offspring genotypes come straight from the unknown parent's gametes. Crossing `Bb × bb` yields a **1:1 phenotype ratio** — half `Bb` (dominant phenotype), half `bb` (recessive) — the tell-tale signature of a heterozygous parent. (A `BB` parent would instead give all dominant offspring.) The engine fills the 2×1 grid, tints the two phenotype classes apart, and reports the 1:1 ratio, so the diagnostic result is immediate.

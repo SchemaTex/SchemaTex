@@ -134,6 +134,10 @@ roof (1,2): +`],
 cross: Bb x Bb
 trait B: "Brown eyes" / "Blue eyes"`],
 
+  ['examples/matrix/punnett-testcross.svg', `matrix punnett "Test cross  (Bb × bb)"
+cross: Bb x bb
+trait B: "Brown" / "Blue"`],
+
   ['examples/matrix/punnett-dihybrid.svg', `matrix punnett "Seed shape & colour  (RrYy × RrYy)"
 cross: RrYy x RrYy
 trait R: "Round" / "Wrinkled"
