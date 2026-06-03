@@ -71,6 +71,7 @@ export { gitgraph } from "./diagrams/gitgraph";
 export { epc } from "./diagrams/epc";
 export { idef0 } from "./diagrams/idef0";
 export { threatmodel } from "./diagrams/threatmodel";
+export { welding } from "./diagrams/welding";
 
 export {
   type SymbolCatalog,

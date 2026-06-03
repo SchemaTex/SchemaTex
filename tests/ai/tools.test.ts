@@ -14,9 +14,9 @@ import {
 } from "../../src/ai";
 
 describe("listDiagrams", () => {
-  it("returns all 44 diagram types", () => {
+  it("returns all 45 diagram types", () => {
     const list = listDiagrams();
-    expect(list.length).toBe(44);
+    expect(list.length).toBe(45);
     const types = list.map((d) => d.type);
     expect(types).toContain("genogram");
     expect(types).toContain("petri");

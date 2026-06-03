@@ -86,7 +86,8 @@ export type DiagramType =
   | "gitgraph" // Git commit graph — Mermaid gitGraph parity, branch swimlanes (43-GIT-GRAPH-STANDARD)
   | "epc" // Event-driven Process Chain — ARIS, event/function alternation validation (44-EPC-STANDARD)
   | "idef0" // IDEF0 function modeling — FIPS PUB 183, ICOM arrow placement (45-IDEF0-STANDARD)
-  | "threatmodel"; // Threat model (DFD + STRIDE) — Shostack per-element mapping + trust-boundary crossing (46-THREAT-MODEL-STRIDE-STANDARD)
+  | "threatmodel" // Threat model (DFD + STRIDE) — Shostack per-element mapping + trust-boundary crossing (46-THREAT-MODEL-STRIDE-STANDARD)
+  | "welding"; // Welding symbols — AWS A2.4 / ISO 2553 reference-line callouts (47-WELDING-SYMBOL-STANDARD)
 
 export type GenogramMode = "medical" | "heritage";
 

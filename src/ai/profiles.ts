@@ -787,6 +787,40 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
       "'flow needs a label' — add `: \"…\"` to the flow.",
     ],
   },
+  welding: {
+    type: "welding",
+    header: 'welding [standard: aws|iso-a|iso-b]',
+    mode: "reference-line callouts; one joint block per joint, weld glyphs above/below the line",
+    forms: [
+      'welding "Bracket welds"',
+      'joint "bracket to plate" {',
+      "  arrow: fillet size=8 len=50 pitch=150",
+      "  other: fillet size=6",
+      "  around",
+      "  field",
+      '  tail: "GTAW"',
+      "}",
+      'joint "butt weld" {',
+      "  arrow: vgroove angle=60 root=3 throat=12",
+      "  other: backing",
+      "}",
+    ],
+    prefer: [
+      "Keyword `welding`; one `joint \"label\" { … }` block per joint. Put a weld on `arrow:` (arrow side) and/or `other:` (other side); `both:` is shorthand for the same weld on both sides.",
+      "A weldspec is `<type> key=value …`: `size=` (left of symbol), `len=`/`pitch=` (length-pitch, right), `angle=`/`root=` (groove only), `throat=`, `contour=flush|convex|concave`, `finish=G|M|C|R|H|U`.",
+      "Flags on their own line: `around` (weld-all-around), `field` (site weld). Process/spec/NDE goes in `tail: \"GTAW; WPS-12\"`.",
+      "Types: fillet · square · vgroove · bevel · ugroove · jgroove · flarev · flarebevel · plug · slot · spot · seam · back · backing · surfacing · edge.",
+    ],
+    avoid: [
+      "Don't put `angle=` on a fillet/plug/spot — angle is groove-only (the engine warns).",
+      "Don't use `both:` for plug/slot/surfacing — they are single-side; surfacing is arrow-side only.",
+      "Don't give a fillet without `size=`, or a `pitch=` without `len=`.",
+    ],
+    repair: [
+      "'a fillet weld needs a leg size' — add `size=…` to the fillet spec.",
+      "'angle= only applies to groove welds' — drop `angle=`, or change the type to a groove.",
+    ],
+  },
 };
 
 export function getGenerationProfile(

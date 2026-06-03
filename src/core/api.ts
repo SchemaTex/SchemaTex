@@ -51,6 +51,7 @@ import { gitgraph } from "../diagrams/gitgraph";
 import { epc } from "../diagrams/epc";
 import { idef0 } from "../diagrams/idef0";
 import { threatmodel } from "../diagrams/threatmodel";
+import { welding } from "../diagrams/welding";
 
 export interface SchematexConfig {
   type?:
@@ -147,6 +148,7 @@ const plugins: DiagramPlugin[] = [
   epc,
   idef0,
   threatmodel,
+  welding,
 ];
 
 function detectPlugin(text: string, config?: SchematexConfig): DiagramPlugin {
