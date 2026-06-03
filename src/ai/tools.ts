@@ -34,6 +34,10 @@ export interface DiagramListItem {
   useWhen: string;
   cluster: DiagramMeta["cluster"];
   standard: string;
+  /** Other names the same diagram goes by — helps map a user request to a type. */
+  aliases?: readonly string[];
+  /** Use-case / industry / standard search terms (not names). */
+  keywords?: readonly string[];
 }
 
 export function listDiagrams(): DiagramListItem[] {
@@ -44,6 +48,8 @@ export function listDiagrams(): DiagramListItem[] {
     useWhen: d.useWhen,
     cluster: d.cluster,
     standard: d.standard,
+    ...(d.aliases ? { aliases: d.aliases } : {}),
+    ...(d.keywords ? { keywords: d.keywords } : {}),
   }));
 }
 

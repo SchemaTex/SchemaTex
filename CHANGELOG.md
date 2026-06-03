@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.8.3] — 2026-06-03
+
+### Added — diagram `aliases` + `keywords` discoverability metadata (first installment)
+
+Two new optional fields on `DiagramMeta` (`src/ai/registry.ts`) capture the industry terminology each diagram type is searched for under, as structured data instead of prose buried in doc bodies. `aliases` are other *names* the same diagram goes by ("single-line diagram" → `sld`, "cap table" → `entity`); `keywords` are use-case / industry / standard search terms that are not names ("PLC programming", "M&A due diligence"). This is the single source the internal diagram index, on-page "Also known as" lines, SEO metadata, and LLM type routing will all generate from.
+
+- **Populated** for the nine diagram types added since 0.7.0 — `eventtree`, `fmea`, `causalloop`, `markov`, `gitgraph`, `epc`, `idef0`, `threatmodel`, `welding`. The remaining types are tracked for the next installment.
+- **`listDiagrams()`** (`src/ai/tools.ts`) now returns `aliases` / `keywords` when present, so the LLM can map a request like "draw a STRIDE diagram" or "焊接符号" to the right type.
+
+### Fixed — docs navigation drift: 9 diagram pages were unreachable
+
+`website/content/docs/meta.json` had not been updated when the Bucket B engines and `welding` shipped, so `eventtree`, `fmea`, `causalloop`, `markov`, `gitgraph`, `epc`, `idef0`, `threatmodel`, and `welding` had live doc pages that were absent from the sidebar (reachable only by guessing the URL). All nine are now linked under their domain sections.
+
+---
+
 ## [0.8.2] — 2026-06-03
 
 ### Fixed — entity `cluster [members: [...]]` no longer fails to parse

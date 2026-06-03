@@ -38,6 +38,19 @@ export interface DiagramMeta {
   standard: string;
   /** Path to the syntax doc key in the generated content bundle. */
   syntaxKey: string;
+  /**
+   * Other *names* the same diagram goes by — what a user types as the noun
+   * ("single-line diagram" → sld, "cap table" → entity). One canonical CJK
+   * name may be included. Powers the "Also known as" line on doc pages, SEO
+   * synonyms, and LLM type routing. Goal: populate for every type (tracked P1).
+   */
+  aliases?: readonly string[];
+  /**
+   * Search-intent terms that are NOT names — use-cases, industries, standards,
+   * jobs-to-be-done ("PLC programming", "M&A due diligence", "IEC 61131-3").
+   * Powers SEO `keywords` meta + on-site search. Goal: populate every type (P1).
+   */
+  keywords?: readonly string[];
 }
 
 export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
@@ -434,6 +447,17 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
     cluster: "risk-reliability",
     standard: "IEC 62502:2010 · NUREG/CR-2300 (PRA) · ISO 31010 Annex B; see 39-EVENT-TREE-STANDARD.md",
     syntaxKey: "eventtree",
+    aliases: ["Event Tree Analysis", "ETA diagram", "event tree", "事件树分析"],
+    keywords: [
+      "probabilistic risk assessment",
+      "PRA",
+      "safety function",
+      "accident sequence",
+      "barrier analysis",
+      "consequence analysis",
+      "nuclear safety",
+      "IEC 62502",
+    ],
   },
   {
     type: "fmea",
@@ -445,6 +469,24 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
     cluster: "risk-reliability",
     standard: "AIAG-VDA FMEA Handbook (2019) · IEC 60812:2018 · SAE J1739 · MIL-STD-1629A; see 40-FMEA-STANDARD.md",
     syntaxKey: "fmea",
+    aliases: [
+      "FMEA",
+      "Failure Mode and Effects Analysis",
+      "FMECA",
+      "failure mode analysis",
+      "故障模式与影响分析",
+    ],
+    keywords: [
+      "RPN",
+      "risk priority number",
+      "Action Priority",
+      "AIAG-VDA",
+      "DFMEA",
+      "PFMEA",
+      "severity occurrence detection",
+      "reliability engineering",
+      "IEC 60812",
+    ],
   },
   // ── Systems thinking / stochastic ────────────────────────────
   {
@@ -457,6 +499,22 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
     cluster: "causality-analysis",
     standard: "Sterman, Business Dynamics (2000) · Meadows, Thinking in Systems; see 41-CAUSAL-LOOP-STANDARD.md",
     syntaxKey: "causalloop",
+    aliases: [
+      "Causal Loop Diagram",
+      "CLD",
+      "feedback loop diagram",
+      "systems thinking diagram",
+      "因果回路图",
+    ],
+    keywords: [
+      "system dynamics",
+      "reinforcing loop",
+      "balancing loop",
+      "feedback loop",
+      "stock and flow",
+      "Sterman",
+      "Meadows",
+    ],
   },
   {
     type: "markov",
@@ -468,6 +526,21 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
     cluster: "behavior-modeling",
     standard: "Norris, Markov Chains (1997) · Kemeny & Snell, Finite Markov Chains; see 42-MARKOV-CHAIN-STANDARD.md",
     syntaxKey: "markov",
+    aliases: [
+      "Markov chain",
+      "Markov chain diagram",
+      "stochastic state transition diagram",
+      "马尔可夫链",
+    ],
+    keywords: [
+      "stationary distribution",
+      "stochastic process",
+      "transition matrix",
+      "transition probability",
+      "absorbing state",
+      "steady state",
+      "discrete-time",
+    ],
   },
   // ── Software / process engineering ───────────────────────────
   {
@@ -480,6 +553,22 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
     cluster: "software-uml",
     standard: "Mermaid gitGraph syntax · git DAG model; see 43-GIT-GRAPH-STANDARD.md",
     syntaxKey: "gitgraph",
+    aliases: [
+      "Git commit graph",
+      "git graph",
+      "git branch diagram",
+      "branching diagram",
+      "Git 提交图",
+    ],
+    keywords: [
+      "branching strategy",
+      "git history",
+      "merge",
+      "cherry-pick",
+      "GitFlow",
+      "Mermaid gitGraph",
+      "commit history",
+    ],
   },
   {
     type: "epc",
@@ -491,6 +580,21 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
     cluster: "corporate-legal",
     standard: "ARIS / Keller, Nüttgens & Scheer (1992); see 44-EPC-STANDARD.md",
     syntaxKey: "epc",
+    aliases: [
+      "Event-driven Process Chain",
+      "EPC diagram",
+      "ARIS EPC",
+      "事件驱动过程链",
+    ],
+    keywords: [
+      "ARIS",
+      "business process modeling",
+      "SAP",
+      "BPM",
+      "process chain",
+      "enterprise architecture",
+      "Scheer",
+    ],
   },
   {
     type: "idef0",
@@ -502,6 +606,22 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
     cluster: "project-management",
     standard: "FIPS PUB 183 (1993) · SADT (Ross); see 45-IDEF0-STANDARD.md",
     syntaxKey: "idef0",
+    aliases: [
+      "IDEF0",
+      "IDEF0 function model",
+      "SADT diagram",
+      "function model",
+      "ICOM diagram",
+    ],
+    keywords: [
+      "functional modeling",
+      "FIPS 183",
+      "systems engineering",
+      "activity model",
+      "ICOM",
+      "process model",
+      "enterprise architecture",
+    ],
   },
   {
     type: "threatmodel",
@@ -513,6 +633,24 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
     cluster: "network-infrastructure",
     standard: "Shostack, Threat Modeling (2014) STRIDE-per-element · Microsoft SDL · base DFD DeMarco/Yourdon; see 46-THREAT-MODEL-STRIDE-STANDARD.md + 31-DFD-STANDARD.md",
     syntaxKey: "threatmodel",
+    aliases: [
+      "Threat model",
+      "STRIDE diagram",
+      "DFD threat model",
+      "data flow diagram",
+      "DFD",
+      "威胁建模",
+    ],
+    keywords: [
+      "STRIDE",
+      "security threat modeling",
+      "Microsoft SDL",
+      "OWASP Threat Dragon",
+      "trust boundary",
+      "attack surface",
+      "application security",
+      "Shostack",
+    ],
   },
   {
     type: "welding",
@@ -524,6 +662,23 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
     cluster: "electrical-industrial",
     standard: "AWS A2.4:2020 · ISO 2553:2019; see 47-WELDING-SYMBOL-STANDARD.md",
     syntaxKey: "welding",
+    aliases: [
+      "Welding symbols",
+      "weld symbol",
+      "welding callout",
+      "weld joint symbol",
+      "焊接符号",
+    ],
+    keywords: [
+      "AWS A2.4",
+      "ISO 2553",
+      "fillet weld",
+      "groove weld",
+      "weld notation",
+      "engineering drawing",
+      "fabrication",
+      "weld dimensions",
+    ],
   },
 ] as const;
 
