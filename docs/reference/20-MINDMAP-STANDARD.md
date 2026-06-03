@@ -29,6 +29,46 @@ DSL 顶部 `%% style: <mode>` 选择款式，未指定默认 `map`。
 |-------|------|---------|
 | `map` | 中心居中，主干前半右 / 后半左分配，子树向外堆叠 | 头脑风暴、读书笔记、OKR、创意发散（XMind 默认） |
 | `logic-right` | 根在左，全部向右展开的 tidy tree | 大纲、TOC、markmap 迁移、技术文档分解 |
+| `futureswheel` | 中心为枢纽，每个 heading 层级落在自己的同心环上，子节点限制在父节点扇区内，按 order 配色 | Futures Wheel 后果映射、foresight、结构化头脑风暴 |
+| `driver` | aim 在左，向右展开 aim → primary driver → secondary driver / change idea 的 tidy tree | IHI 改进项目、目标-驱动因素-行动分解 |
+
+两款 `map` / `logic-right` 是 XMind 经典视觉；`futureswheel` 与 `driver` 是建立在**同一 markmap-style heading + bullet 输入**之上的两个专业方法论布局（详见 §2.1 / §2.2），由 `%% style:` 选择，不引入新 DSL 语法。
+
+### 2.1 Futures Wheel（`futureswheel`）
+
+> **Reference:** Glenn, Jerome C. (1972) *Futures Wheel* — 由 Jerome Glenn 于 1971/72 年提出的结构化头脑风暴方法，用于推演一个事件 / 趋势的连锁后果。
+
+Futures Wheel 把一个中心事件 / 趋势放在**枢纽（hub）**，围绕它画**同心环**：
+
+- **Hub（`#`）** — 中心事件 / 趋势。
+- **Inner ring（`##`，1st-order）** — 第一级直接后果。
+- **Outer ring（`###` 或 heading 下的 bullet，2nd-order）** — 由第一级后果引发的次级后果。
+- **更外环（更深层级，3rd-order …）** — 继续向外逐环递推。
+
+布局硬约束：
+
+1. **同心环 = 深度**。depth 0 在 hub，depth 1 在第一环，depth N 在第 N 环；向外读 = 沿因果时间向前读。
+2. **扇区约束（sector containment）**。每个子节点被限制在其父节点所占的角度扇区内，整条 branch 不与相邻 branch 交叉。
+3. **按 order 配色（color-coded by order）**。每一环用 branchPalette 中由其根主干继承的颜色，读者一眼可判断某后果距原始事件几步之遥。
+
+映射沿用 §3.1（`#` / `##` / bullet），无新增 DSL；仅 `%% style: futureswheel` 切换。
+
+### 2.2 Driver Diagram（`driver`）
+
+> **Reference:** Institute for Healthcare Improvement (IHI) *Model for Improvement* — driver diagram 是 IHI 改进模型中的规划工具，把一个 aim 拆解为 primary drivers → secondary drivers → change ideas。
+
+Driver Diagram 自左向右读成一棵 tidy tree：
+
+- **Aim（`#`）** — 改进目标，置于最左。
+- **Primary drivers（`##`）** — 推动 aim 的少数高杠杆领域。
+- **Secondary drivers / change ideas（bullet / 更深 heading）** — 落到每个 primary driver 下的具体次级驱动因素与可执行改动。
+
+布局硬约束：
+
+1. **tree level = 列（column）**。aim → primary → secondary / change idea 严格分列，左→右展开（与 `logic-right` 同族的 tidy tree 引擎，语义角色不同）。
+2. **line of sight**。右侧每个 change idea 沿其 driver 连回 aim，可审查"为何这个干预在板上"以及"哪个 driver 还没有 idea"。
+
+映射沿用 §3.1，无新增 DSL；仅 `%% style: driver` 切换。
 
 ---
 
@@ -107,7 +147,7 @@ inline     = bold | italic | code | link | checkbox | plain
 ## 4. AST
 
 ```ts
-type MindmapStyle = "map" | "logic-right";
+type MindmapStyle = "map" | "logic-right" | "futureswheel" | "driver";
 
 // Inline token discriminated union
 type InlineToken =
@@ -587,6 +627,39 @@ interface MindmapTokens {
 - [x] tool-use streaming
 - [ ] parallel tool calls
 ```
+
+### TC-MM-14 · Futures Wheel · 2-order consequence map
+
+```
+%% style: futureswheel
+# Remote work becomes default
+## Less commuting
+- Lower carbon emissions
+- Cheaper city living
+## Distributed teams
+- Async communication norms
+- Global hiring pools
+## Empty offices
+- Commercial real estate slump
+- Repurposed to housing
+```
+
+验证：root 在 hub；3 个 1st-order 后果在内环、按 order 配色；每个 2nd-order bullet 落在父扇区内的外环，不跨相邻 branch。
+
+### TC-MM-15 · Driver Diagram · aim → drivers → change ideas
+
+```
+%% style: driver
+# Reduce 30-day readmissions
+## Reliable discharge process
+- Teach-back at bedside
+- Med reconciliation
+## Timely follow-up
+- Appointment within 7 days
+- Post-discharge phone call
+```
+
+验证：aim 在最左列；2 个 primary driver 在第二列；change ideas 在最右列；右→左每个 idea 连回 aim，左→右 tidy tree 无交叉。
 
 ---
 

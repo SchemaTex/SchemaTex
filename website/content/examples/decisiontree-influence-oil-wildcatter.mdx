@@ -1,0 +1,31 @@
+---
+title: Oil wildcatter (influence diagram)
+description: The canonical decision-analysis teaching problem as a compact influence diagram — a drill decision informed by a seismic test, the uncertain oil state, and the profit objective, wired as a clean acyclic graph instead of an unrolled tree.
+diagram: decisiontree
+standard: Howard & Matheson (1981) influence diagram
+industry: [decision-analysis, education]
+persona: For the decision-analysis instructor
+complexity: 2
+tags: [decisiontree, influence, decision-analysis, dag, oil-and-gas, howard-matheson]
+featured: false
+relatedLink:
+  label: Decision tree syntax
+  href: /docs/decisiontree
+status: published
+dsl: |
+  decisiontree:influence "Oil Wildcatter"
+    decision Drill "Drill?"
+    chance Oil "Oil present"
+    chance Seismic "Seismic test"
+    value Profit "Net profit" utility=42
+    Seismic -> Oil
+    Seismic -> Drill
+    Oil -> Profit
+    Drill -> Profit
+---
+
+## What this shows
+
+The textbook oil-wildcatter problem drawn the way a decision analyst frames it first — as an **influence diagram** rather than a fully unrolled decision tree. One **rectangle** for the drill decision, two **ovals** for the uncertainties (whether oil is present, what the seismic test reads), and one **octagon** for the profit objective. The whole problem is four nodes and four arcs, no matter how many states each variable could take.
+
+The arcs carry the structure. `Seismic -> Drill` is a **dashed informational arc**: the seismic result is observed *before* the drill choice is made — that's the entire reason the test is worth running. `Seismic -> Oil` is a relevance arc (the reading is conditioned on the true oil state), and `Oil -> Profit` plus `Drill -> Profit` are functional arcs feeding the payoff. This mode is deliberately structural — it shows what informs what, without solving for expected value; reach for decision-analysis mode when you want the numbers folded back.

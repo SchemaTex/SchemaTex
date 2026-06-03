@@ -1,0 +1,25 @@
+---
+title: Sample clustering dendrogram (no cut)
+description: A bare hierarchical-clustering dendrogram with internal nodes placed at their merge height and a cluster-distance axis — the plain similarity tree before any flat-cluster threshold is applied.
+diagram: phylo
+standard: Hierarchical clustering (cophenetic height)
+industry: [bioinformatics, education]
+persona: For the data analyst
+complexity: 1
+tags: [phylo, dendrogram, clustering, cophenetic, similarity]
+featured: false
+relatedLink:
+  label: Phylogenetic tree syntax
+  href: /docs/phylo
+status: published
+dsl: |
+  phylo "Sample clustering" [mode: dendrogram]
+    newick: "(((A:1,B:1):2,C:3):2,(D:2,E:2):3);"
+    scale "cluster distance"
+---
+
+## What this shows
+
+The plainest reading of a **hierarchical-clustering dendrogram**: five samples joined bottom-up, with each internal node placed at its **merge height** — the cophenetic distance at which its two child clusters fuse. Leaves align on a shared baseline and a cluster-distance axis runs down the side, so the vertical position of every join tells you how similar the samples beneath it are.
+
+Unlike a cladogram (topology only) or a phylogram (branch length = evolutionary distance), here the height of the merge *is* the message: samples that fuse low are alike, samples that only fuse near the top are distant. This example omits the `cut` directive on purpose — it is the raw similarity tree, before you commit to a threshold that would carve it into flat clusters.

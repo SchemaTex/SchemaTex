@@ -1,0 +1,28 @@
+---
+title: Order fulfilment SIPOC
+description: The one-page scoping table that opens a Six Sigma DMAIC project — Suppliers, Inputs, Process, Outputs, Customers in five fixed columns, pinning down exactly where the process starts and ends before anyone improves it.
+diagram: matrix
+standard: Six Sigma DMAIC
+industry: [quality, manufacturing]
+persona: For the Six Sigma process-improvement lead
+complexity: 2
+tags: [matrix, sipoc, six-sigma, dmaic, process-scoping]
+featured: false
+relatedLink:
+  label: Matrix syntax
+  href: /docs/matrix
+status: published
+dsl: |
+  matrix sipoc "Order fulfilment"
+  suppliers: "Vendor", "Warehouse"
+  inputs: "PO", "Stock levels"
+  process: "Receive order", "Pick", "Pack", "Ship"
+  outputs: "Shipped package", "Invoice"
+  customers: "End customer", "Finance"
+---
+
+## What this shows
+
+A **SIPOC** is the first artifact a Six Sigma team builds in the *Define* phase of DMAIC. It names — in five columns read left to right — everyone and everything the process touches: **S**uppliers hand in **I**nputs, the **P**rocess turns them into **O**utputs, and **C**ustomers receive them. Here the order-fulfilment process runs `Receive order → Pick → Pack → Ship`, fed by purchase orders and stock levels from the vendor and warehouse, and producing a shipped package for the end customer and an invoice for finance.
+
+The point of a SIPOC is boundary-setting before measurement: it forces the team to agree where the process starts, where it ends, and who hands work in and out of it. The five columns always render in canonical S-I-P-O-C order, so the diagram reads correctly even when the blocks are authored out of sequence.

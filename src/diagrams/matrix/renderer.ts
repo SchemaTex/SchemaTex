@@ -1,6 +1,13 @@
-import type { MatrixAST, MatrixPoint } from "./types";
+import type { MatrixAST, MatrixPoint, QfdData, QfdCorrelation } from "./types";
+import { computeQfdImportance } from "./types";
 import { parseMatrix } from "./parser";
-import { layoutMatrix, type MatrixLayoutResult, type PointLayout } from "./layout";
+import {
+  layoutMatrix,
+  layoutSipoc,
+  layoutQfd,
+  type MatrixLayoutResult,
+  type PointLayout,
+} from "./layout";
 import {
   svgRoot,
   group,
@@ -58,6 +65,35 @@ const CSS = `
 .sx-matrix-leader { stroke: #94a3b8; stroke-width: 0.6; opacity: 0.7; fill: none; }
 .sx-matrix-legend-text { font: 500 11px sans-serif; fill: #374151; }
 .sx-matrix-offchart { fill: #ea580c; }
+.sx-sipoc-header { font: 700 13px sans-serif; fill: #fff; text-anchor: middle; dominant-baseline: central; }
+.sx-sipoc-headbox { stroke: #fff; stroke-width: 1; }
+.sx-sipoc-cell { fill: #fff; stroke: #cbd5e1; stroke-width: 1; }
+.sx-sipoc-cell-alt { fill: #f8fafc; stroke: #cbd5e1; stroke-width: 1; }
+.sx-sipoc-process { fill: #eff6ff; stroke: #cbd5e1; stroke-width: 1; }
+.sx-sipoc-item { font: 500 12px sans-serif; fill: #1f2937; text-anchor: middle; dominant-baseline: central; }
+.sx-sipoc-step { font: 600 12px sans-serif; fill: #1e3a8a; text-anchor: middle; dominant-baseline: central; }
+.sx-qfd-grid { stroke: #cbd5e1; stroke-width: 1; fill: none; }
+.sx-qfd-cellbg { fill: #fff; }
+.sx-qfd-cellbg-alt { fill: #f8fafc; }
+.sx-qfd-what { font: 500 12px sans-serif; fill: #1f2937; text-anchor: end; dominant-baseline: central; }
+.sx-qfd-how { font: 500 11.5px sans-serif; fill: #1f2937; }
+.sx-qfd-weight { font: 600 12px sans-serif; fill: #111; text-anchor: middle; dominant-baseline: central; }
+.sx-qfd-weight-head { font: 600 10px sans-serif; fill: #475569; text-anchor: middle; dominant-baseline: central; }
+.sx-qfd-rel-strong { fill: #2563eb; }
+.sx-qfd-rel-medium { fill: #93c5fd; stroke: #2563eb; stroke-width: 1.4; }
+.sx-qfd-rel-weak { fill: none; stroke: #2563eb; stroke-width: 1.4; }
+.sx-qfd-roof-cell { fill: #f8fafc; stroke: #94a3b8; stroke-width: 0.8; }
+.sx-qfd-roof-cell-filled { fill: #eef2ff; stroke: #64748b; stroke-width: 0.9; }
+.sx-qfd-corr { font: 700 13px sans-serif; text-anchor: middle; dominant-baseline: central; }
+.sx-qfd-corr-strong-pos { fill: #15803d; }
+.sx-qfd-corr-pos { fill: #16a34a; }
+.sx-qfd-corr-neg { fill: #dc2626; }
+.sx-qfd-corr-strong-neg { fill: #b91c1c; }
+.sx-qfd-imp-band { fill: #eff6ff; stroke: #cbd5e1; stroke-width: 1; }
+.sx-qfd-imp-head { font: 600 11px sans-serif; fill: #1e3a8a; text-anchor: end; dominant-baseline: central; }
+.sx-qfd-imp-value { font: 700 13px sans-serif; fill: #1e3a8a; text-anchor: middle; dominant-baseline: central; }
+.sx-qfd-imp-value-top { font: 800 14px sans-serif; fill: #dc2626; text-anchor: middle; dominant-baseline: central; }
+.sx-qfd-dir { font: 700 13px sans-serif; fill: #475569; text-anchor: middle; dominant-baseline: central; }
 `.trim();
 
 function axisArrow(): string {
@@ -928,7 +964,395 @@ function renderTitle(ast: MatrixAST, lay: MatrixLayoutResult): string {
   );
 }
 
+// ─── SIPOC ───────────────────────────────────────────────────
+
+const SIPOC_COLUMN_DEFS: ReadonlyArray<{ key: "suppliers" | "inputs" | "process" | "outputs" | "customers"; label: string; color: string }> = [
+  { key: "suppliers", label: "Suppliers", color: "#2563eb" },
+  { key: "inputs", label: "Inputs", color: "#0891b2" },
+  { key: "process", label: "Process", color: "#1e3a8a" },
+  { key: "outputs", label: "Outputs", color: "#0891b2" },
+  { key: "customers", label: "Customers", color: "#2563eb" },
+];
+
+function wrapToLines(textStr: string, maxChars: number, maxLines: number): string[] {
+  const lines = wrapLabel(textStr, maxChars);
+  if (lines.length <= maxLines) return lines;
+  const kept = lines.slice(0, maxLines);
+  kept[maxLines - 1] = kept[maxLines - 1]!.replace(/\s+\S*$/, "") + "…";
+  return kept;
+}
+
+export function renderSipocAST(ast: MatrixAST): string {
+  const sipoc = ast.sipoc ?? { suppliers: [], inputs: [], process: [], outputs: [], customers: [] };
+  const lay = layoutSipoc(ast);
+  const nodes: string[] = [];
+
+  if (ast.title) {
+    nodes.push(
+      textEl(
+        { x: lay.canvasWidth / 2, y: 24, class: "sx-matrix-title", "text-anchor": "middle" },
+        ast.title,
+      ),
+    );
+  }
+
+  const maxChars = Math.max(10, Math.floor((lay.colW - 16) / 6.4));
+
+  SIPOC_COLUMN_DEFS.forEach((def, ci) => {
+    const colX = lay.x0 + ci * lay.colW;
+    // header band
+    nodes.push(
+      rect({
+        x: colX,
+        y: lay.y0,
+        width: lay.colW,
+        height: lay.headerH,
+        fill: def.color,
+        class: "sx-sipoc-headbox",
+      }),
+    );
+    nodes.push(
+      textEl(
+        { x: colX + lay.colW / 2, y: lay.y0 + lay.headerH / 2, class: "sx-sipoc-header" },
+        def.label,
+      ),
+    );
+
+    const items = sipoc[def.key];
+    const isProcess = def.key === "process";
+    const cellNodes: string[] = [];
+    for (let r = 0; r < lay.rows; r++) {
+      const cellY = lay.y0 + lay.headerH + r * lay.rowH;
+      const item = items[r];
+      const cellClass = isProcess
+        ? "sx-sipoc-process"
+        : r % 2 === 0
+          ? "sx-sipoc-cell"
+          : "sx-sipoc-cell-alt";
+      cellNodes.push(
+        rect({ x: colX, y: cellY, width: lay.colW, height: lay.rowH, class: cellClass }),
+      );
+      if (item) {
+        const label = isProcess ? `${r + 1}. ${item}` : item;
+        const lines = wrapToLines(label, maxChars, 2);
+        const lineH = 14;
+        const startY = cellY + lay.rowH / 2 - ((lines.length - 1) * lineH) / 2;
+        for (let i = 0; i < lines.length; i++) {
+          cellNodes.push(
+            textEl(
+              {
+                x: colX + lay.colW / 2,
+                y: startY + i * lineH,
+                class: isProcess ? "sx-sipoc-step" : "sx-sipoc-item",
+              },
+              lines[i]!,
+            ),
+          );
+        }
+      }
+    }
+    nodes.push(
+      group({ class: "sx-sipoc-column", "data-column": def.key }, [
+        titleEl(`${def.label}: ${items.join(", ")}`),
+        ...cellNodes,
+      ]),
+    );
+  });
+
+  return svgRoot(
+    {
+      class: "sx-matrix sx-sipoc",
+      "data-diagram-type": "matrix",
+      "data-mode": "sipoc",
+      width: lay.canvasWidth,
+      height: lay.canvasHeight,
+      viewBox: `0 0 ${lay.canvasWidth} ${lay.canvasHeight}`,
+      role: "graphics-document",
+    },
+    [
+      titleEl(ast.title ? `SIPOC — ${escapeXml(ast.title)}` : "SIPOC diagram"),
+      descEl(
+        `SIPOC scoping table — ${sipoc.suppliers.length} supplier(s), ${sipoc.inputs.length} input(s), ${sipoc.process.length} process step(s), ${sipoc.outputs.length} output(s), ${sipoc.customers.length} customer(s)`,
+      ),
+      defs([el("style", {}, CSS)]),
+      ...nodes,
+    ],
+  );
+}
+
+// ─── QFD — House of Quality ──────────────────────────────────
+
+const CORR_GLYPH: Record<QfdCorrelation, string> = {
+  "++": "●",
+  "+": "○",
+  "-": "−",
+  "--": "✕",
+};
+
+const CORR_CLASS: Record<QfdCorrelation, string> = {
+  "++": "sx-qfd-corr-strong-pos",
+  "+": "sx-qfd-corr-pos",
+  "-": "sx-qfd-corr-neg",
+  "--": "sx-qfd-corr-strong-neg",
+};
+
+const CORR_LABEL: Record<QfdCorrelation, string> = {
+  "++": "strong positive",
+  "+": "positive",
+  "-": "negative",
+  "--": "strong negative",
+};
+
+function renderQfdRelationshipSymbol(strength: 9 | 3 | 1, cx: number, cy: number, r: number): string {
+  if (strength === 9) {
+    // strong: filled bullseye (filled circle inside ring)
+    return group({}, [
+      circle({ cx, cy, r, fill: "none", stroke: "#2563eb", "stroke-width": 1.4 }),
+      circle({ cx, cy, r: r * 0.5, class: "sx-qfd-rel-strong" }),
+    ]);
+  }
+  if (strength === 3) {
+    // medium: open circle
+    return circle({ cx, cy, r, class: "sx-qfd-rel-medium" });
+  }
+  // weak: small triangle
+  const t = r * 0.95;
+  return polygon({
+    points: `${cx},${cy - t} ${cx + t},${cy + t * 0.85} ${cx - t},${cy + t * 0.85}`,
+    class: "sx-qfd-rel-weak",
+  });
+}
+
+export function renderQfdAST(ast: MatrixAST): string {
+  const qfd: QfdData = ast.qfd ?? { whats: [], hows: [], relationships: [], roof: [], normalize: false };
+  const lay = layoutQfd(ast);
+  const importance = computeQfdImportance(qfd);
+  const maxImp = importance.reduce((m, c) => Math.max(m, c.importance), 0);
+  const nodes: string[] = [];
+
+  if (ast.title) {
+    nodes.push(
+      textEl(
+        { x: lay.canvasWidth / 2, y: 24, class: "sx-matrix-title", "text-anchor": "middle" },
+        ast.title,
+      ),
+    );
+  }
+
+  const gridRight = lay.gridX0 + lay.cols * lay.cellW;
+  const gridBottom = lay.gridY0 + lay.rows * lay.cellH;
+
+  // ── Roof: HOW×HOW correlation half-matrix of diamond cells ──
+  //
+  // For N HOWs there are N(N-1)/2 pairwise correlation cells. The upper
+  // triangle is rotated 45° so each cell becomes a diamond (a square turned
+  // on its corner). The diamonds tessellate into a pyramid sitting directly
+  // on top of the HOW column boundaries:
+  //   • horizontal center of pair (i,j) is above the midpoint of columns i, j
+  //   • vertical row = depth = j − i (depth 1 = adjacent pair = bottom row,
+  //     depth N−1 = the i=0/j=N−1 pair = the single apex diamond)
+  // Each diamond has the column pitch (cellW) as its full diagonal width and
+  // height, so the lattice aligns exactly with the columns below.
+  const roofNodes: string[] = [];
+  const half = lay.cellW / 2; // half-diagonal = one diamond's vertical/horizontal half-extent
+  const roofBaseY = lay.gridY0 - lay.howLabelH;
+  // Lookup declared correlations by ordered pair key.
+  const corrByPair = new Map<string, QfdCorrelation>();
+  for (const rc of qfd.roof) {
+    const a = Math.min(rc.a, rc.b);
+    const b = Math.max(rc.a, rc.b);
+    corrByPair.set(`${a},${b}`, rc.correlation);
+  }
+  // Build the full upper-triangular set of diamonds (declared or blank).
+  for (let i = 0; i < lay.cols; i++) {
+    for (let j = i + 1; j < lay.cols; j++) {
+      const depth = j - i; // 1 = adjacent (bottom row)
+      // horizontal center: above the midpoint between column i and column j
+      const cx = lay.gridX0 + ((i + j) / 2 + 0.5) * lay.cellW;
+      // vertical center: row `depth` stacks upward from the base
+      const cy = roofBaseY - (depth - 0.5) * half;
+      const corr = corrByPair.get(`${i},${j}`);
+      const diamond = polygon({
+        points: `${cx},${cy - half} ${cx + half},${cy} ${cx},${cy + half} ${cx - half},${cy}`,
+        class: corr ? "sx-qfd-roof-cell-filled" : "sx-qfd-roof-cell",
+      });
+      const cellChildren: string[] = [
+        titleEl(
+          corr
+            ? `${qfd.hows[i]?.label ?? `HOW ${i}`} ↔ ${qfd.hows[j]?.label ?? `HOW ${j}`}: ${CORR_LABEL[corr]}`
+            : `${qfd.hows[i]?.label ?? `HOW ${i}`} ↔ ${qfd.hows[j]?.label ?? `HOW ${j}`}: no correlation`,
+        ),
+        diamond,
+      ];
+      if (corr) {
+        cellChildren.push(
+          textEl(
+            { x: cx, y: cy, class: `sx-qfd-corr ${CORR_CLASS[corr]}` },
+            CORR_GLYPH[corr],
+          ),
+        );
+      }
+      roofNodes.push(
+        group(
+          {
+            class: "sx-qfd-roof-pair",
+            "data-pair": `${i},${j}`,
+            ...(corr ? { "data-corr": corr } : {}),
+          },
+          cellChildren,
+        ),
+      );
+    }
+  }
+  nodes.push(group({ class: "sx-qfd-roof" }, [titleEl("Roof: engineering correlation matrix"), ...roofNodes]));
+
+  // ── HOW labels (rotated, above grid) ──
+  qfd.hows.forEach((how, ci) => {
+    const cx = lay.gridX0 + (ci + 0.5) * lay.cellW;
+    const baseY = lay.gridY0 - 8;
+    nodes.push(
+      textEl(
+        {
+          x: cx,
+          y: baseY,
+          class: "sx-qfd-how",
+          "text-anchor": "start",
+          transform: `rotate(-60 ${cx} ${baseY})`,
+        },
+        how.label,
+      ),
+    );
+    if (how.direction) {
+      const glyph = how.direction === "up" ? "▲" : how.direction === "down" ? "▼" : "◇";
+      nodes.push(
+        textEl({ x: cx, y: lay.gridY0 - 4, class: "sx-qfd-dir" }, glyph),
+      );
+    }
+  });
+
+  // ── Weight column header ──
+  nodes.push(
+    textEl(
+      { x: lay.gridX0 - lay.weightW / 2, y: lay.gridY0 - 8, class: "sx-qfd-weight-head" },
+      "Wt",
+    ),
+  );
+
+  // ── Grid background bands + lines ──
+  const gridNodes: string[] = [];
+  for (let r = 0; r < lay.rows; r++) {
+    const y = lay.gridY0 + r * lay.cellH;
+    gridNodes.push(
+      rect({
+        x: lay.gridX0,
+        y,
+        width: lay.cols * lay.cellW,
+        height: lay.cellH,
+        class: r % 2 === 0 ? "sx-qfd-cellbg" : "sx-qfd-cellbg-alt",
+      }),
+    );
+  }
+  for (let i = 0; i <= lay.cols; i++) {
+    const x = lay.gridX0 + i * lay.cellW;
+    gridNodes.push(lineEl({ x1: x, y1: lay.gridY0, x2: x, y2: gridBottom, class: "sx-qfd-grid" }));
+  }
+  for (let j = 0; j <= lay.rows; j++) {
+    const y = lay.gridY0 + j * lay.cellH;
+    gridNodes.push(lineEl({ x1: lay.gridX0, y1: y, x2: gridRight, y2: y, class: "sx-qfd-grid" }));
+  }
+  nodes.push(group({ class: "sx-qfd-gridlines" }, gridNodes));
+
+  // ── WHAT labels + weight values ──
+  const whatMaxChars = Math.max(10, Math.floor((lay.whatLabelW - 12) / 6.4));
+  qfd.whats.forEach((what, ri) => {
+    const cy = lay.gridY0 + (ri + 0.5) * lay.cellH;
+    const lines = wrapToLines(what.label, whatMaxChars, 2);
+    const lineH = 13;
+    const startY = cy - ((lines.length - 1) * lineH) / 2;
+    const labelNodes: string[] = lines.map((ln, i) =>
+      textEl({ x: lay.gridX0 - lay.weightW - 8, y: startY + i * lineH, class: "sx-qfd-what" }, ln),
+    );
+    labelNodes.push(
+      textEl({ x: lay.gridX0 - lay.weightW / 2, y: cy, class: "sx-qfd-weight" }, String(what.weight)),
+    );
+    nodes.push(
+      group({ class: "sx-qfd-what-row", "data-what": String(ri) }, [
+        titleEl(`${what.label} (weight ${what.weight})`),
+        ...labelNodes,
+      ]),
+    );
+  });
+
+  // ── Relationship symbols ──
+  const relNodes: string[] = [];
+  const symR = Math.min(lay.cellW, lay.cellH) * 0.3;
+  for (const rel of qfd.relationships) {
+    if (rel.how < 0 || rel.how >= lay.cols || rel.what < 0 || rel.what >= lay.rows) continue;
+    const cx = lay.gridX0 + (rel.how + 0.5) * lay.cellW;
+    const cy = lay.gridY0 + (rel.what + 0.5) * lay.cellH;
+    relNodes.push(
+      group(
+        { class: "sx-qfd-rel", "data-strength": String(rel.strength) },
+        [titleEl(`${qfd.whats[rel.what]?.label ?? ""} × ${qfd.hows[rel.how]?.label ?? ""} = ${rel.strength}`),
+          renderQfdRelationshipSymbol(rel.strength, cx, cy, symR)],
+      ),
+    );
+  }
+  nodes.push(group({ class: "sx-qfd-relationships" }, relNodes));
+
+  // ── Computed technical-importance footer ──
+  const footerNodes: string[] = [];
+  const impRowY = gridBottom;
+  const impH = lay.footerH;
+  footerNodes.push(
+    rect({ x: lay.gridX0, y: impRowY, width: lay.cols * lay.cellW, height: impH, class: "sx-qfd-imp-band" }),
+  );
+  for (let i = 1; i < lay.cols; i++) {
+    const x = lay.gridX0 + i * lay.cellW;
+    footerNodes.push(lineEl({ x1: x, y1: impRowY, x2: x, y2: impRowY + impH, class: "sx-qfd-grid" }));
+  }
+  const footerLabel = qfd.normalize ? "Importance %" : "Technical importance Σ(wt×rel)";
+  footerNodes.push(
+    textEl({ x: lay.gridX0 - 8, y: impRowY + impH / 2, class: "sx-qfd-imp-head" }, footerLabel),
+  );
+  importance.forEach((col) => {
+    const cx = lay.gridX0 + (col.how + 0.5) * lay.cellW;
+    const cy = impRowY + impH / 2;
+    const isTop = col.importance === maxImp && maxImp > 0;
+    const display = qfd.normalize ? `${col.percent}%` : String(col.importance);
+    footerNodes.push(
+      textEl(
+        { x: cx, y: cy, class: isTop ? "sx-qfd-imp-value-top" : "sx-qfd-imp-value" },
+        display,
+      ),
+    );
+  });
+  nodes.push(group({ class: "sx-qfd-importance" }, [titleEl("Computed technical importance per engineering characteristic"), ...footerNodes]));
+
+  return svgRoot(
+    {
+      class: "sx-matrix sx-qfd",
+      "data-diagram-type": "matrix",
+      "data-mode": "qfd",
+      width: lay.canvasWidth,
+      height: lay.canvasHeight,
+      viewBox: `0 0 ${lay.canvasWidth} ${lay.canvasHeight}`,
+      role: "graphics-document",
+    },
+    [
+      titleEl(ast.title ? `QFD House of Quality — ${escapeXml(ast.title)}` : "QFD House of Quality"),
+      descEl(
+        `QFD House of Quality — ${qfd.whats.length} customer requirement(s), ${qfd.hows.length} engineering characteristic(s), ${qfd.relationships.length} relationship(s); technical importance computed per column`,
+      ),
+      defs([el("style", {}, CSS)]),
+      ...nodes,
+    ],
+  );
+}
+
 export function renderMatrixAST(ast: MatrixAST): string {
+  if (ast.mode === "sipoc") return renderSipocAST(ast);
+  if (ast.mode === "qfd") return renderQfdAST(ast);
   const lay = layoutMatrix(ast);
   const needsLegendSpace =
     lay.categories.length > 0 || ast.mode === "correlation";

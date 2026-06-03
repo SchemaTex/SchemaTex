@@ -165,10 +165,14 @@ The `%% style:` directive selects the layout algorithm. Place it before the `#` 
 |---|---|---|
 | `map` (default) | Radial — branches spread in all directions from the center | Brainstorming, concept maps, free-form exploration |
 | `logic-right` | Horizontal tree — all branches extend to the right | Structured outlines, hierarchies, sequential breakdowns |
+| `futureswheel` | Concentric rings — the root at the hub, each heading level on its own ring | Foresight, consequence mapping, structured brainstorming |
+| `driver` | Horizontal tree — aim on the left flowing right through drivers to change ideas | Improvement programs, aim → driver → action breakdowns |
 
 ```
 %% style: map
 %% style: logic-right
+%% style: futureswheel
+%% style: driver
 ```
 
 **`map`** (default) — radial layout, branches spread in all directions from the center. Best for brainstorming and concept maps.
@@ -226,6 +230,40 @@ The `%% style:` directive selects the layout algorithm. Place it before the `#` 
 - Q-learning
 - Policy gradient`} height={460} />
 
+**`futureswheel`** — a [Futures Wheel](https://en.wikipedia.org/wiki/Futures_wheel) (Jerome Glenn, 1971/72), the classic structured-brainstorming format for thinking through consequences. The central event or trend sits at the hub; first-order consequences land on the inner ring, second-order consequences on the next ring out, and so on. Each child stays inside the angular sector of its parent, and every ring is color-coded by order, so a reader can see at a glance how far a ripple is from the original event. Depth maps to rings: `#` is the hub, `##` is the first ring (1st-order), `###` / bullets under a heading push out to the next ring (2nd-order), and deeper levels keep stepping outward.
+
+<Playground initial={`mindmap
+%% style: futureswheel
+
+# Remote work becomes default
+
+## Less commuting
+- Lower carbon emissions
+- Cheaper city living
+
+## Distributed teams
+- Async communication norms
+- Global hiring pools
+
+## Empty offices
+- Commercial real estate slump
+- Repurposed to housing`} height={520} />
+
+**`driver`** — a [Driver Diagram](https://www.ihi.org/resources/tools/driver-diagram), the planning tool from the IHI (Institute for Healthcare Improvement) model for improvement. It reads left to right as a tidy tree: the **aim** on the far left, the **primary drivers** (the few high-leverage areas that move the aim) in the next column, then **secondary drivers** and concrete **change ideas** branching further right. Tree levels map cleanly to the structure: `#` is the aim, `##` are primary drivers, and bullets / deeper headings under each become the secondary drivers and change ideas. Use it whenever you need to show *how* a goal will actually be reached.
+
+<Playground initial={`mindmap
+%% style: driver
+
+# Reduce 30-day readmissions
+
+## Reliable discharge process
+- Teach-back at bedside
+- Med reconciliation
+
+## Timely follow-up
+- Appointment within 7 days
+- Post-discharge phone call`} height={400} />
+
 ---
 
 ## 6. Directives
@@ -234,7 +272,7 @@ Directives are `%%` lines placed **before** the `#` root heading. They configure
 
 | Directive | Values | Default | Effect |
 |---|---|---|---|
-| `%% style: …` | `map`, `logic-right` | `map` | Layout algorithm |
+| `%% style: …` | `map`, `logic-right`, `futureswheel`, `driver` | `map` | Layout algorithm |
 | `%% theme: …` | any string | (none) | Theme override passed to renderer |
 | `%% maxLabelWidth: …` | integer 80–1000 | `240` | Max pixel width before label wraps |
 
@@ -298,7 +336,7 @@ mindmap
 | Two `#` headings | `Error: multiple # center nodes not allowed` | Use exactly one `#` heading as the root |
 | `##Branch` (no space after `##`) | Line is not recognized as a heading; silently skipped | Always put a space: `## Branch` |
 | Bullet indented 3 spaces | Depth = `lastHeadingDepth + 1 + floor(3/2) = lastHeadingDepth + 2` — may create an unexpected level | Use multiples of 2 spaces: 0, 2, 4, 6… |
-| `%% style: radial` | Unknown value silently ignored; layout stays `map` | Use `map` or `logic-right` |
+| `%% style: radial` | Unknown value silently ignored; layout stays `map` | Use `map`, `logic-right`, `futureswheel`, or `driver` |
 | `mindmap` keyword mid-document | Treated as a plain text line (the keyword is only recognized on the very first line) | Place `mindmap` on line 1, before any content |
 | `[ ]text` (no space after bracket) | Checkbox not recognized; rendered as literal `[ ]text` | `[ ] text` — space required after the closing bracket |
 

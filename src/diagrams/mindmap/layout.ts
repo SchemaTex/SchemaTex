@@ -8,6 +8,8 @@ import type {
   MindmapStyle,
 } from "../../core/types";
 import { measureTokens, wrapTokens } from "./inline";
+import { modeOf } from "./modes";
+import { layoutFuturesWheel } from "./futureswheel";
 
 /**
  * Mindmap layout — two XMind-inspired styles:
@@ -388,9 +390,17 @@ function layoutLogicRight(ast: MindmapAST): MindmapLayoutResult {
 // ─── Dispatcher ──────────────────────────────────────────────────────────
 
 export function layoutMindmap(ast: MindmapAST): MindmapLayoutResult {
+  const mode = modeOf(ast);
+  if (mode === "futureswheel") return layoutFuturesWheel(ast);
+  // `driver` is a thin alias of logic-right (left→right tidy tree).
+  if (mode === "driver") return layoutLogicRight(ast);
   const style: MindmapStyle = ast.style;
   if (style === "logic-right") return layoutLogicRight(ast);
   return layoutMap(ast);
 }
 
 export { fontSizeOf, lineHeightOf, LINE_GAP, UNDERLINE_GAP, underlineWidthFor };
+// Re-exported for the Futures Wheel ring layout, which reuses the same label
+// measurement, width budgeting, and canvas padding/normalize conventions.
+export { measureLabel, widthBudget, normalize, PADDING };
+export type { LabelMetrics };

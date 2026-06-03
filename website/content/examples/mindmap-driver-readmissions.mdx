@@ -1,0 +1,30 @@
+---
+title: Driver diagram — reduce 30-day readmissions
+description: An IHI driver diagram that traces a quality-improvement aim left to right through its primary drivers and the concrete change ideas meant to move them.
+diagram: mindmap
+standard: "Driver Diagram: IHI improvement model"
+industry: [healthcare, quality]
+persona: For the quality-improvement lead
+complexity: 2
+tags: [mindmap, driver, quality-improvement, healthcare, aim-driver-change]
+featured: false
+relatedLink:
+  label: Mindmap syntax
+  href: /docs/mindmap
+status: published
+dsl: |
+  %% style: driver
+  # Reduce 30-day readmissions
+  ## Reliable discharge process
+  - Teach-back at bedside
+  - Med reconciliation
+  ## Timely follow-up
+  - Appointment within 7 days
+  - Post-discharge phone call
+---
+
+## What this shows
+
+A **driver diagram** — the planning artifact from the IHI (Institute for Healthcare Improvement) model for improvement. It reads left to right as a tidy tree: the **aim** ("reduce 30-day readmissions") on the far left, the **primary drivers** that move it ("reliable discharge process", "timely follow-up") in the next column, and the concrete **change ideas** — teach-back at the bedside, medication reconciliation, an appointment within 7 days — branching out to the right.
+
+The value is the line of sight it forces. Every change idea on the right traces back through a driver to the aim, so a team can defend *why* each intervention is on the board and spot which drivers still have no ideas attached. It is the ordinary `#` / `##` / `-` mindmap input, rendered as an aim → drivers → change-ideas tree by adding `%% style: driver`.

@@ -1,0 +1,26 @@
+---
+title: Gene expression clusters (cut into flat groups)
+description: A hierarchical-clustering dendrogram of gene-expression samples, sliced at a chosen height so the continuous tree collapses into distinctly colored flat clusters with a dashed threshold line.
+diagram: phylo
+standard: Hierarchical clustering (cophenetic height)
+industry: [bioinformatics, education]
+persona: For the computational biologist
+complexity: 2
+tags: [phylo, dendrogram, clustering, cut, cophenetic, fcluster]
+featured: false
+relatedLink:
+  label: Phylogenetic tree syntax
+  href: /docs/phylo
+status: published
+dsl: |
+  phylo "Gene expression clusters" [mode: dendrogram]
+    newick: "(((A:1,B:1):2,C:3):2,(D:2,E:2):3);"
+    cut 4
+    scale "cluster distance"
+---
+
+## What this shows
+
+The same tree the `phylo` engine draws for evolution, read instead as the output of **hierarchical agglomerative clustering** (Sokal & Michener 1958 — the form `scipy.cluster.hierarchy.dendrogram` produces). Each internal node sits at its **merge height**: the cophenetic distance at which its two child clusters fuse. Leaves align on a common baseline, branches are rectangular elbows, and a height axis lets you read off exactly how far apart any two leaves are before they first share a cluster — `(A, B)` join low and tight, while `(D, E)` only merge with the rest near the top.
+
+The `cut 4` line is what makes this actionable. It slices the tree at height 4: every subtree that fuses below that line becomes one **flat cluster**, each painted a distinct color, with a dashed threshold line drawn across the chart. This is the dendrogram counterpart of choosing `k` clusters in `fcluster` — turning a continuous similarity tree into the discrete groups you actually act on.

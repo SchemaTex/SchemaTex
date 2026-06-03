@@ -6,7 +6,9 @@ import type {
   DTreeImpurity,
   DTreeMode,
   DTreeNode,
+  InfluenceAST,
 } from "./types";
+import { parseInfluence } from "./influence-parser";
 
 export class DTreeParseError extends Error {
   constructor(
@@ -357,7 +359,7 @@ function validateDecision(node: DTreeNode, lineMap: Map<string, number>): void {
 
 // ─── Top-level ───────────────────────────────────────────────
 
-export function parseDecisionTree(src: string): DTreeAST {
+export function parseDecisionTree(src: string): DTreeAST | InfluenceAST {
   idCounter = 0;
   const lines = preprocess(src);
   if (lines.length === 0) throw new DTreeParseError("Empty input");
@@ -367,11 +369,23 @@ export function parseDecisionTree(src: string): DTreeAST {
   const headerMatch = header.text.match(/^decisiontree(?::(\w+))?(?:\s+"([^"]*)")?\s*$/i);
   if (!headerMatch) throw new DTreeParseError(`Invalid header: ${header.text}`, header.line);
   const modeRaw = (headerMatch[1] ?? "taxonomy").toLowerCase();
+  const title = headerMatch[2];
+
+  // Influence diagram (DAG form) — handled by its own self-contained sub-parser.
+  // The `mode: influence` / `layout: influence` config directive is also honoured.
+  const wantsInfluence =
+    modeRaw === "influence" || modeRaw === "id" ||
+    lines.some((l) => /^(mode|layout)\s*:\s*influence\s*$/i.test(l.text));
+  if (wantsInfluence) {
+    // Strip the header line back off; parseInfluence expects only the body.
+    const body = lines.map((l) => l.text).join("\n");
+    return parseInfluence(body, title);
+  }
+
   const mode: DTreeMode =
     modeRaw === "decision" || modeRaw === "da" ? "decision"
     : modeRaw === "ml" ? "ml"
     : "taxonomy";
-  const title = headerMatch[2];
 
   // Config block: lines with `key: value` before the tree body, at indent 0.
   // Tree body starts at the first line whose first token is a recognized node keyword.

@@ -33,3 +33,5 @@ export { parseMindmap } from "./parser";
 export { lintMindmap } from "./lint";
 export { layoutMindmap } from "./layout";
 export { renderMindmap, renderMindmapAST } from "./renderer";
+export { modeOf, type ExtendedMindmapMode } from "./modes";
+export { layoutFuturesWheel, RING_GAP, wheelCenter, maxOrder } from "./futureswheel";

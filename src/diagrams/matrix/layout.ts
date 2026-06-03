@@ -175,6 +175,108 @@ function resolveLabelCollisions(
   }
 }
 
+/** SIPOC geometry: 5 column bands; height grows with the longest column. */
+export interface SipocLayout {
+  canvasWidth: number;
+  canvasHeight: number;
+  x0: number;
+  y0: number;
+  colW: number;
+  headerH: number;
+  rowH: number;
+  rows: number;
+}
+
+const SIPOC_COL_W = 168;
+const SIPOC_X0 = 24;
+const SIPOC_Y0 = 24;
+const SIPOC_HEADER_H = 40;
+const SIPOC_ROW_H = 44;
+
+export function layoutSipoc(ast: MatrixAST): SipocLayout {
+  const rows = Math.max(1, ast.rows);
+  const titleH = ast.title ? 40 : 0;
+  const y0 = SIPOC_Y0 + titleH;
+  const canvasWidth = SIPOC_X0 * 2 + SIPOC_COL_W * 5;
+  const canvasHeight = y0 + SIPOC_HEADER_H + rows * SIPOC_ROW_H + SIPOC_Y0;
+  return {
+    canvasWidth,
+    canvasHeight,
+    x0: SIPOC_X0,
+    y0,
+    colW: SIPOC_COL_W,
+    headerH: SIPOC_HEADER_H,
+    rowH: SIPOC_ROW_H,
+    rows,
+  };
+}
+
+/** QFD House-of-Quality geometry. */
+export interface QfdLayout {
+  canvasWidth: number;
+  canvasHeight: number;
+  /** Top-left of the relationship grid. */
+  gridX0: number;
+  gridY0: number;
+  cellW: number;
+  cellH: number;
+  cols: number;
+  rows: number;
+  /** Width reserved on the left for WHAT labels. */
+  whatLabelW: number;
+  /** Width of the importance-weight column (between WHATs and grid). */
+  weightW: number;
+  /** Height reserved above the grid for HOW labels. */
+  howLabelH: number;
+  /** Height of the slanted roof triangle. */
+  roofH: number;
+  /** Height of the computed technical-importance footer block. */
+  footerH: number;
+}
+
+const QFD_CELL = 46;
+const QFD_WHAT_LABEL_W = 190;
+const QFD_WEIGHT_W = 46;
+const QFD_HOW_LABEL_H = 130;
+const QFD_FOOTER_H = 64;
+const QFD_PAD = 24;
+
+export function layoutQfd(ast: MatrixAST): QfdLayout {
+  const cols = Math.max(1, ast.cols);
+  const rows = Math.max(1, ast.rows);
+  const cellW = QFD_CELL;
+  const cellH = QFD_CELL;
+  const titleH = ast.title ? 40 : 0;
+  // Roof height: half the diagonal of one cell, per HOW column.
+  const roofH = Math.ceil((cellW / 2) * cols) + 8;
+  const whatLabelW = QFD_WHAT_LABEL_W;
+  const weightW = QFD_WEIGHT_W;
+  const howLabelH = QFD_HOW_LABEL_H;
+  const footerH = QFD_FOOTER_H;
+
+  const gridX0 = QFD_PAD + whatLabelW + weightW;
+  const gridY0 = QFD_PAD + titleH + roofH + howLabelH;
+
+  const canvasWidth = gridX0 + cols * cellW + QFD_PAD;
+  const canvasHeight = gridY0 + rows * cellH + footerH + QFD_PAD;
+
+  return {
+    canvasWidth,
+    canvasHeight,
+    gridX0,
+    gridY0,
+    cellW,
+    cellH,
+    cols,
+    rows,
+    whatLabelW,
+    weightW,
+    howLabelH,
+    roofH,
+    footerH,
+  };
+}
+
 export function layoutMatrix(ast: MatrixAST): MatrixLayoutResult {
   const canvasWidth = CANVAS_W;
   const canvasHeight = CANVAS_H;

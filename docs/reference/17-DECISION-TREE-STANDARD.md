@@ -1,6 +1,6 @@
 # 17 — Decision Tree Standard Reference
 
-*Decision tree 图表 — 覆盖三个互相独立的用户场景：决策分析（Howard-Raiffa EV rollback）、ML 决策树可视化（sklearn / XGBoost 训练结果）、分类 / 教学层级树（taxonomy）。一个 DSL，通过 `type:` header 分派三种渲染模式。*
+*Decision tree 图表 — 覆盖互相独立的用户场景：决策分析（Howard-Raiffa EV rollback）、influence diagram（Howard & Matheson 1981 紧凑 DAG，见 §3.4）、ML 决策树可视化（sklearn / XGBoost 训练结果）、分类 / 教学层级树（taxonomy）。一个 DSL，通过 `type:` header / `mode:` directive 分派渲染模式。*
 
 > **References (学科惯例 + 相关标准):**
 > - **Howard, Ronald A. (1966)** *Decision Analysis: Applied Decision Theory*. Stanford — 原始文献定义 square（decision）/ circle（chance）/ triangle（end）三符号约定
@@ -116,6 +116,73 @@ Schematex decision tree 严格遵循下列既定惯例（不发明新符号）�
 - **Branch label = 自定义**（默认 "yes" / "no"，可指定）
 - **Leaf = 叶子**（与内部节点同形状但填充色区分，或加 `<title>` = "leaf"）
 
+### 3.4 Influence Diagram 模式（Howard & Matheson 1981/2005）
+
+> **新增第四模式（structural，非 computational）。** 与 §3.1 的 decision-analysis 模式同源——表达 *同一个* 决策问题——但用 Howard & Matheson 1981 的 **influence diagram** 紧凑形式：一张有向无环图（DAG），每个 decision / 不确定量 / 目标各一个节点，**不随每个变量的状态数展开**。它是决策分析师拿到问题后画的 *第一张* 图，先把结构（谁告知谁、谁影响 payoff）讲清楚，再决定是否 unroll 成 §3.1 的树。
+
+**Origin & 定位**
+
+- 起源：**Howard, R. A. & Matheson, J. E. (1981/2005)** *Influence Diagrams*（重印于 Decision Analysis 2(3), 2005）—— 与 §References 的 Howard 1966 / Raiffa 1968 同一决策分析学脉。
+- 本模式是 **structural**：它 *不* 求解期望值。紧凑图刻意省略了 EV rollback 所需的概率表与 payoff 表。要数字回传，用 §3.1 的 decision-analysis 树。
+
+**Node 分类（三种 + 标准造型）**
+
+| Node kind | Shape | 语义 | DSL |
+|-----------|-------|------|-----|
+| Decision | **矩形** (`<rect>` 直角) | 决策者可控的选择 | `decision Id "label"` |
+| Chance | **椭圆** (`<ellipse>`) | 一个不确定量（世界的某个状态） | `chance Id "label"` |
+| Value | **八边形** (`<polygon>` octagon) | 被优化的目标 / payoff | `value Id "label" utility=N` |
+
+> 造型遵循 influence-diagram 公认约定：decision=矩形，uncertainty=椭圆，value=八边形（standard octagon——本实现已从早期造型更新为标准八边形）。`utility=N` 为 value 节点标注其代表的 payoff。
+
+**Arc 语义（由目的地决定）**
+
+Arc 写作 `Source -> Target`（按 node id），其含义 **从箭头的目的地读出**，与已发布标准一致：
+
+| Arc 进入… | 语义 | 线型 |
+|-----------|------|------|
+| `decision` | **Informational** —— 在决策做出 *之前* 已知 | **虚线**（dashed） |
+| `chance` | **Relevance / conditioning** —— source 条件化该不确定量 | 实线 |
+| `value` | **Functional** —— source 是 payoff 函数的一个参数 | 实线 |
+
+虚线 informational arc 是关键区分点：`Seismic -> Drill` 表示「钻井前先观测到地震测试结果」——这正是让决策值得建模的信息结构。
+
+**DAG，不是 tree**
+
+- 与其它三模式（taxonomy / decision / ml 都是 rooted tree）不同，influence diagram 是 **有向无环图**：一个节点可有多个父节点（如 value 节点同时被 decision 和多个 chance 指入），不存在单一 root。
+- 这正是「紧凑」的来源：decision-analysis 树要为每个 chance 的每个 outcome 画出显式分支（组合爆炸）；influence diagram 每个变量只画一个节点。两者描述 **同一个决策问题**——compact graph vs unrolled tree。
+
+**校验规则（parser 强制）**
+
+- **Acyclicity** —— 图必须无环；`A -> B` 与 `B -> A` 同时出现被拒绝。
+- **≥1 value 节点** —— 没有目标节点的 influence diagram 不构成决策问题，被拒绝。
+- Arc 引用的 node id 必须已声明。
+
+**Header / directive 两种写法**
+
+```
+decisiontree:influence "Oil Wildcatter"     # header 形式
+```
+
+```
+decisiontree "Market Entry"                 # directive 形式
+  mode: influence
+```
+
+**典型例（Oil Wildcatter，Howard & Matheson 教科书经典）**
+
+```
+decisiontree:influence "Oil Wildcatter"
+  decision Drill "Drill?"
+  chance Oil "Oil present"
+  chance Seismic "Seismic test"
+  value Profit "Net profit" utility=42
+  Seismic -> Oil        # relevance: 测试读数条件于真实油层状态
+  Seismic -> Drill      # informational (dashed): 钻井前观测到测试结果
+  Oil -> Profit         # functional
+  Drill -> Profit       # functional
+```
+
 ---
 
 ## 4. Node 类型
@@ -219,6 +286,7 @@ Schematex decision tree 严格遵循下列既定惯例（不发明新符号）�
 
 **Type header** 选择模式：
 - `decisiontree:decision` 或 `decisiontree:da` — 决策分析
+- `decisiontree:influence`（或正文加 `mode: influence`）— influence diagram（紧凑 DAG，见 §3.4）
 - `decisiontree:ml` — ML 可视化
 - `decisiontree:taxonomy` 或 `decisiontree:tax` — 分类树
 - 只写 `decisiontree` 等价于 `decisiontree:taxonomy`（最常见的教学场景）

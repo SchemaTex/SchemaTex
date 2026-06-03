@@ -1,5 +1,11 @@
 import type { MindmapAST, MindmapNode, MindmapStyle } from "../../core/types";
 import { tokenizeInline } from "./inline";
+import {
+  type ExtendedMindmapMode,
+  EXTENDED_MODES,
+  baseStyleFor,
+  setMode,
+} from "./modes";
 
 /**
  * Mindmap DSL parser — markdown-heading + bullet list with inline markdown.
@@ -35,6 +41,8 @@ const DEFAULT_MAX_LABEL_WIDTH = 240;
 
 interface Directives {
   style: MindmapStyle;
+  /** Extended mode (futureswheel / driver) when selected; else mirrors `style`. */
+  mode: ExtendedMindmapMode;
   themeOverride?: string;
   maxLabelWidth: number;
 }
@@ -47,6 +55,13 @@ function parseDirective(line: string, out: Directives): void {
   const val = body.slice(idx + 1).trim();
   if (key === "style" && (VALID_STYLES as readonly string[]).includes(val)) {
     out.style = val as MindmapStyle;
+    out.mode = val as MindmapStyle;
+  } else if (key === "style" && (EXTENDED_MODES as readonly string[]).includes(val)) {
+    // Extended mode (futureswheel/driver): carried out-of-band; `style` holds
+    // the base it renders on. `val` is narrowed by the `.includes` guard above,
+    // so the cast to the literal union is sound (mirrors the base-style branch).
+    out.mode = val as ExtendedMindmapMode;
+    out.style = baseStyleFor(out.mode);
   } else if (key === "theme") {
     out.themeOverride = val;
   } else if (key === "maxlabelwidth") {
@@ -70,7 +85,7 @@ export function parseMindmap(text: string): MindmapAST {
   }
   const lines = allLines;
 
-  const directives: Directives = { style: "map", maxLabelWidth: DEFAULT_MAX_LABEL_WIDTH };
+  const directives: Directives = { style: "map", mode: "map", maxLabelWidth: DEFAULT_MAX_LABEL_WIDTH };
   let root: MindmapNode | null = null;
   let rootInferred: "line" | "placeholder" | undefined;
   let idCounter = 0;
@@ -167,5 +182,7 @@ export function parseMindmap(text: string): MindmapAST {
   };
   if (rootInferred) ast.rootInferred = rootInferred;
   if (directives.themeOverride) ast.themeOverride = directives.themeOverride;
+  // Carry the extended mode (futureswheel / driver) out-of-band on the AST.
+  setMode(ast, directives.mode);
   return ast;
 }

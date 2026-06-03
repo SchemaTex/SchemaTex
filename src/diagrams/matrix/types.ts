@@ -5,7 +5,7 @@
  * matrix doesn't reuse Individual / Relationship / LayoutNode shapes.
  */
 
-export type MatrixMode = "quadrant" | "heatmap" | "correlation";
+export type MatrixMode = "quadrant" | "heatmap" | "correlation" | "sipoc" | "qfd";
 
 /** Dot-level for correlation matrix. "strong"=3, "medium"=2, "weak"=1. */
 export type MatrixDotLevel = "strong" | "medium" | "weak";
@@ -96,6 +96,74 @@ export interface MatrixConfig {
 
 export type MatrixStyle = "default" | "table";
 
+/**
+ * SIPOC scoping table (Six Sigma). Five ordered fixed columns —
+ * Suppliers · Inputs · Process · Outputs · Customers. Each holds an
+ * ordered item list; the Process column carries the high-level steps.
+ */
+export interface SipocData {
+  suppliers: string[];
+  inputs: string[];
+  process: string[];
+  outputs: string[];
+  customers: string[];
+}
+
+/** QFD relationship-matrix symbol set (Akao). 9=strong, 3=medium, 1=weak. */
+export type QfdStrength = 9 | 3 | 1;
+
+/**
+ * QFD roof correlation between two engineering characteristics (HOWs).
+ * "++"=strong positive, "+"=positive, "-"=negative, "--"=strong negative.
+ */
+export type QfdCorrelation = "++" | "+" | "-" | "--";
+
+/** A "WHAT" — a customer requirement row with an importance weight. */
+export interface QfdWhat {
+  label: string;
+  /** Importance weight (any positive scalar; commonly 1–5 or 1–10). */
+  weight: number;
+}
+
+/** A "HOW" — an engineering characteristic column. */
+export interface QfdHow {
+  label: string;
+  /** Optional improvement-direction marker (↑ maximise / ↓ minimise / ○ target). */
+  direction?: "up" | "down" | "target";
+}
+
+/** A relationship cell in the QFD body: row=WHAT index, col=HOW index. */
+export interface QfdRelationship {
+  what: number;
+  how: number;
+  strength: QfdStrength;
+}
+
+/** A roof correlation between HOW i and HOW j (i < j). */
+export interface QfdRoof {
+  a: number;
+  b: number;
+  correlation: QfdCorrelation;
+}
+
+/** A column's computed technical importance (Σ weight×strength) + normalized %. */
+export interface QfdColumnImportance {
+  how: number;
+  /** Σ over WHATs of (weight × relationship strength). */
+  importance: number;
+  /** Share of total importance across all columns, 0..100 (rounded). */
+  percent: number;
+}
+
+export interface QfdData {
+  whats: QfdWhat[];
+  hows: QfdHow[];
+  relationships: QfdRelationship[];
+  roof: QfdRoof[];
+  /** Render the technical-importance bottom row as % of total instead of raw Σ. */
+  normalize: boolean;
+}
+
 export interface MatrixAST {
   type: "matrix";
   title?: string;
@@ -123,4 +191,31 @@ export interface MatrixAST {
   /** Quadrant annotations (Q1..Q4) */
   annotations: MatrixQuadrantAnnotation[];
   config: MatrixConfig;
+  /** SIPOC table data (sipoc mode). */
+  sipoc?: SipocData;
+  /** QFD House-of-Quality data (qfd mode). */
+  qfd?: QfdData;
+}
+
+/**
+ * Compute each HOW column's technical importance = Σ over WHATs of
+ * (weight × relationship strength). The core QFD differentiator: the engine
+ * *computes* the prioritised engineering targets rather than asking for them.
+ *
+ * Pure + deterministic so it can be unit-tested in isolation.
+ */
+export function computeQfdImportance(qfd: QfdData): QfdColumnImportance[] {
+  const raw: number[] = qfd.hows.map(() => 0);
+  for (const r of qfd.relationships) {
+    if (r.how < 0 || r.how >= qfd.hows.length) continue;
+    if (r.what < 0 || r.what >= qfd.whats.length) continue;
+    const w = qfd.whats[r.what]!.weight;
+    raw[r.how]! += w * r.strength;
+  }
+  const total = raw.reduce((acc, v) => acc + v, 0);
+  return raw.map((importance, how) => ({
+    how,
+    importance,
+    percent: total > 0 ? Math.round((importance / total) * 100) : 0,
+  }));
 }

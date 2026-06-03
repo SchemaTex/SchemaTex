@@ -1,4 +1,4 @@
-export type DTreeMode = "decision" | "ml" | "taxonomy";
+export type DTreeMode = "decision" | "ml" | "taxonomy" | "influence";
 
 export type DTreeDirection = "top-down" | "left-right";
 
@@ -115,4 +115,86 @@ export interface DTreeLayoutResult {
   payoffColumnX?: number;
   /** Per-depth rail position (for orthogonal edges — common elbow y/x so siblings align). */
   levelRails?: number[];
+}
+
+// ─── Influence Diagram (Howard & Matheson 1981/2005) ─────────
+//
+// The influence diagram is the compact DAG form of the same decision problem.
+// Unlike a decision tree it is NOT a tree — it is a directed acyclic graph laid
+// out left-to-right, with decision/chance nodes feeding a single value node.
+//
+//   decision node = rectangle
+//   chance/uncertainty node = oval
+//   value/utility node = hexagon
+//   arc into a chance node  = relevance / conditioning
+//   arc into a decision node = information / sequence  (drawn dashed)
+//   arc into the value node  = functional dependence
+//
+// These types are an additive, self-contained sub-model inside the decisiontree
+// folder; they reuse the decision/chance/value node taxonomy but model a graph
+// (nodes + directed arcs) rather than a parent→children tree.
+
+/** Node kind in an influence diagram. */
+export type InfluenceNodeKind = "decision" | "chance" | "value";
+
+export interface InfluenceNode {
+  id: string;
+  kind: InfluenceNodeKind;
+  label: string;
+  /** Optional utility/payoff annotation on a value node. */
+  utility?: number;
+}
+
+export interface InfluenceArc {
+  from: string;
+  to: string;
+  /**
+   * Influence semantics, derived from the destination node kind:
+   *  - "information" → arc into a decision (dashed): what is known when deciding
+   *  - "relevance"   → arc into a chance node: conditioning / dependence
+   *  - "functional"  → arc into the value node: functional dependence
+   */
+  kind: "information" | "relevance" | "functional";
+  /** Optional label on the arc. */
+  label?: string;
+}
+
+export interface InfluenceAST {
+  type: "decisiontree";
+  mode: "influence";
+  title?: string;
+  direction: DTreeDirection;
+  nodes: InfluenceNode[];
+  arcs: InfluenceArc[];
+}
+
+export interface InfluenceLayoutNode {
+  node: InfluenceNode;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  /** Longest-path layer index (0 = leftmost). */
+  layer: number;
+}
+
+export interface InfluenceLayoutArc {
+  from: string;
+  to: string;
+  kind: InfluenceArc["kind"];
+  label?: string;
+  path: string;
+  /** Arrowhead tip + direction for marker rendering. */
+  tip: { x: number; y: number; angle: number };
+  /** Label anchor (midpoint of the arc). */
+  labelAt?: { x: number; y: number };
+}
+
+export interface InfluenceLayoutResult {
+  width: number;
+  height: number;
+  nodes: InfluenceLayoutNode[];
+  arcs: InfluenceLayoutArc[];
+  title?: string;
+  direction: DTreeDirection;
 }
