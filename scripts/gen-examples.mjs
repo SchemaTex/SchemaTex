@@ -263,6 +263,20 @@ User -> 1.1 : HTTPS Request
 boundary "Internet" { User }
 boundary "DMZ" { 1.1, 1.2 }
 boundary "Internal" { D1, D2 }`],
+
+  ['examples/welding/bracket-fillet.svg', `welding "Bracket assembly"
+joint "gusset to column" {
+  arrow: fillet size=8 len=50 pitch=150
+  other: fillet size=6
+  around
+  field
+  tail: "GMAW"
+}
+joint "splice plate (butt)" {
+  arrow: vgroove angle=60 root=3 throat=12 contour=flush finish=G
+  other: backing
+  tail: "SMAW; E7018"
+}`],
 ];
 
 for (const [path, dsl] of examples) {
