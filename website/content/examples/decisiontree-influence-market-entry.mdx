@@ -1,0 +1,32 @@
+---
+title: Market entry (influence diagram)
+description: A go/no-go market-entry decision as a compact influence diagram — demand observed before entering, a competitor response, and the profit objective — using the inline mode directive form.
+diagram: decisiontree
+standard: Howard & Matheson (1981) influence diagram
+industry: [decision-analysis, business-strategy]
+persona: For the strategy analyst framing a go/no-go
+complexity: 2
+tags: [decisiontree, influence, decision-analysis, dag, strategy, go-no-go]
+featured: false
+relatedLink:
+  label: Decision tree syntax
+  href: /docs/decisiontree
+status: published
+dsl: |
+  decisiontree "Market Entry"
+    mode: influence
+    decision Enter "Enter market?"
+    chance Demand "Market demand"
+    chance Competition "Competitor response"
+    value V "Profit" utility=120
+    Demand -> Enter
+    Demand -> V
+    Competition -> V
+    Enter -> V
+---
+
+## What this shows
+
+A classic go/no-go framed as an **influence diagram**, written with the inline `mode: influence` directive (the alternative to the `decisiontree:influence` header). The decision-maker controls one **rectangle** — whether to enter — against two uncertain **ovals**, market demand and the competitor's response, all feeding a single profit **octagon**.
+
+Two arcs land on the decision and the value node from demand. `Demand -> Enter` is a **dashed informational arc**: demand is read before committing to entry, so the choice can react to it. `Demand -> V` and `Competition -> V` are functional arcs — both directly shape profit — while `Enter -> V` ties the chosen action into the payoff. The graph stays acyclic and carries exactly one value node, the two structural rules the engine enforces; it captures the shape of the bet without unrolling every demand-by-competitor branch into a tree.

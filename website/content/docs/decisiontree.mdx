@@ -58,6 +58,7 @@ The mode is set in the header line:
 |---|---|---|
 | `decisiontree` | taxonomy | Yes/no question flows, troubleshooting guides, clinical decision support |
 | `decisiontree:decision` (or `decisiontree:da`) | decision analysis | Investment decisions, risk analysis, expected value calculation |
+| `decisiontree:influence` (or `mode: influence`) | influence diagram | Compact DAG view of a decision problem — structure before unrolling to a tree |
 | `decisiontree:ml` | machine learning | Visualizing trained CART classifiers (scikit-learn, XGBoost, etc.) |
 
 Default direction is `top-down` for taxonomy and ML, `left-right` for decision analysis.
@@ -151,7 +152,89 @@ Best for: investment decisions, build-vs-buy analysis, risk-weighted strategy ev
 
 ---
 
-## 5. Machine learning mode
+## 5. Influence diagram mode
+
+Best for: framing a decision problem **compactly** before you unroll it. Where decision-analysis mode draws every branch of every outcome as an explicit tree, an **influence diagram** ([Howard & Matheson, 1981](https://en.wikipedia.org/wiki/Influence_diagram)) draws the *same* problem as a directed acyclic graph (DAG) of variables and the dependencies between them — one node per decision, uncertainty, and objective, no matter how many states each can take. It is the diagram decision analysts reach for first, because it shows the structure (what informs what, what affects the payoff) without the combinatorial blow-up of a tree.
+
+This mode is **structural, not computational.** Unlike decision-analysis mode, it does not solve for expected value — the compact graph deliberately omits the probability and payoff tables that an EV rollback would need. Use it to communicate and validate the shape of the problem; use decision-analysis mode (section 4) when you want the numbers folded back.
+
+### Header forms
+
+Two equivalent ways to select the mode:
+
+```
+decisiontree:influence "Oil Wildcatter"
+```
+
+or, as a directive on its own line after the header:
+
+```
+decisiontree "Market Entry"
+  mode: influence
+```
+
+### Node keywords
+
+Each node is declared as `kind Id "label"` — an id (used to wire arcs) followed by a quoted display label.
+
+| Keyword | Shape | Meaning |
+|---|---|---|
+| `decision Id "…"` | **rectangle** | A choice the decision-maker controls |
+| `chance Id "…"` | **oval** | An uncertain variable (a state of the world) |
+| `value Id "…"` | **octagon** | The objective / payoff being optimized |
+
+The shapes follow the standard influence-diagram convention: decisions are rectangles, uncertainties are ovals, and the value node is an octagon. Add `utility=N` to a value node to annotate the payoff it represents (`value Profit "Net profit" utility=42`).
+
+### Arcs and their semantics
+
+Arcs are written `Source -> Target` on their own lines, by node id. **An arc's meaning is read from its destination**, exactly as in the published standard:
+
+| Arc into a… | Meaning | Drawn as |
+|---|---|---|
+| `decision` | **Informational** — this is known *before* the decision is made | dashed line |
+| `chance` | **Relevance / conditioning** — the source conditions this uncertainty | solid line |
+| `value` | **Functional** — the source is an argument of the payoff function | solid line |
+
+The dashed informational arc is the one to watch: `Seismic -> Drill` means "the seismic test result is observed before choosing whether to drill," which is precisely what makes the decision worth modelling.
+
+### Validation rules
+
+- The graph must be **acyclic** — a cycle (e.g. `A -> B` and `B -> A`) is rejected.
+- At least **one `value` node** is required; an influence diagram with no objective is not a decision problem.
+- Arcs reference node ids that must be declared.
+
+### Examples
+
+The Oil Wildcatter — the canonical teaching problem. The seismic test result is observed before the drill decision (dashed informational arc `Seismic -> Drill`), the test is relevant to whether oil is actually present (`Seismic -> Oil`), and both the oil state and the drill choice feed the profit (`Oil -> Profit`, `Drill -> Profit`).
+
+<Playground initial={`
+  decisiontree:influence "Oil Wildcatter"
+    decision Drill "Drill?"
+    chance Oil "Oil present"
+    chance Seismic "Seismic test"
+    value Profit "Net profit" utility=42
+    Seismic -> Oil
+    Seismic -> Drill
+    Oil -> Profit
+    Drill -> Profit`} height={360} />
+
+A market-entry decision using the `mode: influence` directive form. Demand is observed before entering (`Demand -> Enter`, informational/dashed) and also drives profit directly, while the competitor's response feeds only the payoff.
+
+<Playground initial={`
+  decisiontree "Market Entry"
+    mode: influence
+    decision Enter "Enter market?"
+    chance Demand "Market demand"
+    chance Competition "Competitor response"
+    value V "Profit" utility=120
+    Demand -> Enter
+    Demand -> V
+    Competition -> V
+    Enter -> V`} height={360} />
+
+---
+
+## 6. Machine learning mode
 
 Best for: explaining trained CART classifiers, model transparency reports, feature importance analysis.
 
@@ -194,7 +277,7 @@ Best for: explaining trained CART classifiers, model transparency reports, featu
 
 ---
 
-## 6. Config options
+## 7. Config options
 
 Config lines appear between the header and the first node. Each is `key: value` (colon, no `config` keyword).
 
@@ -233,7 +316,7 @@ classes: Approved, Denied, Review
 
 ---
 
-## 7. Labels & comments
+## 8. Labels & comments
 
 - **Diagram title:** `decisiontree "Title"` — the quoted string after the header keyword.
 - **Node label:** the quoted string immediately after the node keyword — `question "Is the fee waived?"`.
@@ -244,7 +327,7 @@ classes: Approved, Denied, Review
 
 ---
 
-## 8. Reserved words & escaping
+## 9. Reserved words & escaping
 
 **Reserved node keywords:** `decision`, `chance`, `end`, `outcome`, `choice`, `prob`, `split`, `leaf`, `question`, `q`, `answer`, `a`.
 
@@ -263,7 +346,7 @@ classes: Approved, Denied, Review
 
 ---
 
-## 9. Common mistakes
+## 10. Common mistakes
 
 | You wrote | Parser says | Fix |
 |---|---|---|
@@ -277,7 +360,7 @@ classes: Approved, Denied, Review
 
 ---
 
-## 10. Grammar (EBNF)
+## 11. Grammar (EBNF)
 
 ```text
 document       = header ( config-line )* node
@@ -321,23 +404,26 @@ Authoritative source: `src/diagrams/decisiontree/parser.ts`. If this diverges fr
 
 ---
 
-## 11. Standard compliance
+## 12. Standard compliance
 
-Schematex decision trees cover three established conventions:
+Schematex decision trees cover four established conventions:
 
 **Taxonomy mode** follows the question/answer flowchart conventions common in clinical decision support systems (Arden Syntax lineage) and ISO 9001 troubleshooting procedures.
 
 **Decision analysis mode** follows the expected-value rollback method from management science: decision nodes (square, actor chooses), chance nodes (circle, probabilistic), terminal nodes with payoffs. EV is computed automatically via backward induction (Raiffa & Schlaifer, 1961).
 
+**Influence diagram mode** follows the Howard & Matheson (1981) convention: decision (rectangle), chance (oval), and value (octagon) nodes wired as an acyclic graph, with arc meaning read from the destination (informational into decisions, drawn dashed; relevance into chance; functional into value). It is a structural diagram — it does not solve for EV.
+
 **ML mode** follows the CART (Classification and Regression Trees) split/leaf notation (Breiman et al., 1984) compatible with scikit-learn's `export_text` and `plot_tree` output.
 
 What is implemented today:
 
-- ✅ All three modes: taxonomy, decision analysis, ML
+- ✅ All four modes: taxonomy, decision analysis, influence diagram, ML
 - ✅ Taxonomy: `question`/`q`, `answer`/`a`/`leaf`, `yes:`, `no:`, `label "X":` branch labels
 - ✅ Decision: `decision`, `chance`, `end`/`outcome`, `choice`, `prob`, `payoff=N`, automatic EV rollback
+- ✅ Influence: `decision`/`chance`/`value` nodes, `utility=N`, `Source -> Target` arcs, destination-derived arc semantics, dashed informational arcs, acyclicity + value-node validation
 - ✅ ML: `split`, `leaf`, `true`/`false` branch prefixes, `feature=`, `threshold=`, `gini=`, `entropy=`, `mse=`, `class=`, `value=`
-- ✅ Config: `direction:`, `edgeStyle:`, `impurity:`, `classes:`, `branchLabels:`, `branchLength:`
+- ✅ Config: `direction:`, `edgeStyle:`, `impurity:`, `classes:`, `branchLabels:`, `branchLength:`, `mode:`
 - ⏳ Probability-weighted branch length rendering (`branchLength: probability` parsed but not yet applied visually)
 - ⏳ Sensitivity analysis overlays (tornado chart-style annotations on decision trees)
 - ⏳ Forest / ensemble view — multiple trees side-by-side
@@ -345,12 +431,13 @@ What is implemented today:
 References:
 
 - Raiffa, H. & Schlaifer, R. (1961). *Applied Statistical Decision Theory.* Harvard Business School.
+- Howard, R. A. & Matheson, J. E. (1981/2005). *Influence Diagrams.* Decision Analysis 2(3).
 - Breiman, L. et al. (1984). *Classification and Regression Trees.* Wadsworth.
-- Wikipedia — [Decision tree](https://en.wikipedia.org/wiki/Decision_tree) · [Decision tree learning](https://en.wikipedia.org/wiki/Decision_tree_learning)
+- Wikipedia — [Decision tree](https://en.wikipedia.org/wiki/Decision_tree) · [Influence diagram](https://en.wikipedia.org/wiki/Influence_diagram) · [Decision tree learning](https://en.wikipedia.org/wiki/Decision_tree_learning)
 
 ---
 
-## 12. Roadmap
+## 13. Roadmap
 
 **Planned — not yet parseable.** Do not use these in generated DSL today; the parser will reject or ignore them.
 

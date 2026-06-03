@@ -3,6 +3,7 @@ import type {
   PhyloNode,
   PhyloLayoutNode,
 } from "../../core/types";
+import { isDendrogram, layoutDendrogram } from "./dendrogram";
 
 export interface PhyloLayoutResult {
   width: number;
@@ -12,6 +13,28 @@ export interface PhyloLayoutResult {
   branches: PhyloBranch[];
   ast: PhyloTreeAST;
   scale: number;
+  /** Present only for dendrogram mode — drives the height axis + cut line. */
+  dendrogram?: DendrogramExtras;
+}
+
+/** Dendrogram-only layout metadata (phylo-local; see ./dendrogram.ts). */
+export interface DendrogramExtras {
+  /** Largest merge height in the tree (root's height). */
+  maxHeight: number;
+  /** X pixel of the height-0 baseline (where leaves align). */
+  baselineX: number;
+  /** X pixel of the plot's left edge (root / max height). */
+  plotLeftX: number;
+  /** Pixels per unit of merge height. */
+  scale: number;
+  /** Cut threshold value, when a `cut` directive was given. */
+  cut?: number;
+  /** Number of flat clusters produced by the cut (0 when no cut). */
+  clusterCount: number;
+  /** Leaf id → cluster index (empty when no cut). */
+  leafCluster: Map<string, number>;
+  /** Node id → merge height. */
+  heights: Map<string, number>;
 }
 
 export interface PhyloBranch {
@@ -119,6 +142,10 @@ const PADDING_TOP = 20;
 const PADDING_BOTTOM = 40;
 
 export function layoutPhylo(ast: PhyloTreeAST): PhyloLayoutResult {
+  if (isDendrogram(ast)) {
+    return layoutDendrogram(ast);
+  }
+
   const leaves = collectLeaves(ast.root);
   const numLeaves = leaves.length;
   const tipSpacing = TIP_SPACING;

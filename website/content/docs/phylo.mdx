@@ -149,6 +149,7 @@ Set with `[mode: …]` in the header (or in a `style [mode: …]` line).
 | Phylogram | `phylogram` | Default. Proportional to evolutionary distance (substitutions/site) |
 | Cladogram | `cladogram` | Ignored — tips align; only topology matters |
 | Chronogram | `chronogram` | Proportional to divergence time; all tips align to "present" |
+| Dendrogram | `dendrogram` | Branch length is **merge height** — the distance at which two clusters join |
 
 Chronogram requires branch lengths in units of time plus `[mrsd: "YYYY"]` (most-recent sampling date) in the header so the renderer can align tips to present.
 
@@ -157,6 +158,21 @@ phylo "SARS-CoV-2 variants" [mode: chronogram, mrsd: "2023"]
   newick: "((Alpha:0.5,Delta:0.4):0.3,Omicron:0.8);"
   scale "years"
 ```
+
+**Dendrogram** — the standard output of hierarchical agglomerative clustering, not evolution. Each internal node is placed at its **merge height** (the cophenetic distance at which its two child clusters fuse), all leaves align at a common baseline, and the branches are rectangular elbow connectors. A height axis is drawn so you can read off the distance at which any two leaves first share a cluster. Reach for this mode when the same Newick/indent tree describes a clustering result — gene-expression clusters, sample similarity, survey-response groups — rather than a phylogeny.
+
+Add a `cut <value>` line to slice the tree at a chosen height: every subtree whose merge height falls below the threshold becomes one flat cluster, each colored distinctly, and a dashed threshold line is drawn across the tree at that height. This is the dendrogram equivalent of `fcluster` in scipy — turning a continuous tree into a discrete set of groups.
+
+<Playground initial={`phylo "Gene expression clusters" [mode: dendrogram]
+  newick: "(((A:1,B:1):2,C:3):2,(D:2,E:2):3);"
+  cut 4
+  scale "cluster distance"`} />
+
+Omit `cut` to show the bare dendrogram with no flat-cluster coloring:
+
+<Playground initial={`phylo "Sample clustering" [mode: dendrogram]
+  newick: "(((A:1,B:1):2,C:3):2,(D:2,E:2):3);"
+  scale "cluster distance"`} />
 
 ---
 
@@ -205,7 +221,7 @@ All options go inside `[…]` on the `phylo` header line, or in a `style […]` 
 | Prop | Values | Default | Effect |
 |---|---|---|---|
 | `layout:` | `rectangular`, `slanted`, `circular`, `unrooted` | `rectangular` | Tree layout |
-| `mode:` | `phylogram`, `cladogram`, `chronogram` | `phylogram` | Branch length semantics |
+| `mode:` | `phylogram`, `cladogram`, `chronogram`, `dendrogram` | `phylogram` | Branch length semantics |
 | `unrooted` | (flag) | — | Equivalent to `layout: unrooted` |
 | `branch-width:` | number | `1.5` | Stroke width of branches |
 | `openAngle:` | number (degrees) | `0` | Fan gap for circular layout (0 = full 360°) |
@@ -240,7 +256,7 @@ All options go inside `[…]` on the `phylo` header line, or in a `style […]` 
 
 ```text
 document        = header (blank | comment | newick-line | scale-line
-                    | outgroup-line | clade-line | style-line | indent-line)*
+                    | outgroup-line | clade-line | style-line | cut-line | indent-line)*
 
 header          = "phylo" ( WS quoted-string )? ( WS "[" props "]" )? NEWLINE
 quoted-string   = '"' any-char-but-quote* '"'
@@ -248,6 +264,7 @@ quoted-string   = '"' any-char-but-quote* '"'
 newick-line     = "newick:" WS quoted-newick NEWLINE
 scale-line      = "scale" ( WS quoted-string )? NEWLINE
 outgroup-line   = "outgroup:" WS id NEWLINE
+cut-line        = "cut" WS number NEWLINE       // dendrogram mode: flat-cluster threshold height
 clade-line      = "clade" WS id WS "=" WS "(" id ("," id)* ")"
                     ( WS "[" clade-props "]" )? NEWLINE
 style-line      = "style" WS "[" props "]" NEWLINE
@@ -271,7 +288,7 @@ clade-prop      = "color:" quoted-string
                 | "highlight:" ( "branch" | "background" | "both" )
 
 layout-value    = "rectangular" | "slanted" | "circular" | "unrooted"
-mode-value      = "phylogram" | "cladogram" | "chronogram"
+mode-value      = "phylogram" | "cladogram" | "chronogram" | "dendrogram"
 
 // Newick grammar (embedded, parsed separately)
 newick          = subtree ";"?

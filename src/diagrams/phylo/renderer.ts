@@ -42,12 +42,29 @@ function buildCSS(ast: PhyloTreeAST, t: ResolvedTheme<BiologyTokens>): string {
 .schematex-phylo-clade-label-${c.id} { fill: ${color}; }`;
   });
 
+  // Dendrogram cut-cluster colours. The cluster count is layout-dependent, so
+  // emit one class per palette entry keyed off the biology clade palette; the
+  // layout assigns each cluster an index `cut{i}` that maps to these.
+  const cutColors: string[] = [];
+  if (ast.metadata?.dendrogram === "true" && ast.metadata?.cut !== undefined) {
+    for (let i = 0; i < t.cladeColors.length; i++) {
+      cutColors.push(
+        `.schematex-phylo-clade-cut${i} { stroke: ${t.cladeColors[i % t.cladeColors.length]}; }`
+      );
+    }
+  }
+
   return `
 .schematex-phylo {${cssCustomProperties(t)}
   font-family: system-ui, -apple-system, sans-serif;
 }
 .schematex-phylo-branch { fill: none; stroke: ${t.text}; stroke-width: ${STROKE_WIDTH.normal}; stroke-linecap: round; }
 .schematex-phylo-branch-connector { fill: none; stroke: ${t.text}; stroke-width: ${STROKE_WIDTH.normal}; }
+.schematex-phylo-dendro-axis line { stroke: ${t.text}; stroke-width: ${STROKE_WIDTH.thin}; }
+.schematex-phylo-dendro-axis text { font-size: 10px; fill: ${t.textMuted}; text-anchor: middle; }
+.schematex-phylo-dendro-cut { stroke: ${t.supportBad}; stroke-width: ${STROKE_WIDTH.normal}; stroke-dasharray: 5 4; fill: none; }
+.schematex-phylo-dendro-cut-label { font-size: 10px; fill: ${t.supportBad}; text-anchor: start; }
+${cutColors.join("\n")}
 .schematex-phylo-tip-label { font-size: ${FONT_SIZE.label}px; fill: ${t.text}; dominant-baseline: central; }
 .schematex-phylo-tip-label-italic { font-style: italic; }
 .schematex-phylo-support-label { font-size: ${FONT_SIZE.small}px; fill: ${t.textMuted}; text-anchor: middle; dominant-baseline: auto; }
@@ -183,6 +200,93 @@ function renderCladeBackgrounds(layout: PhyloLayoutResult, t: ResolvedTheme<Biol
   return elements;
 }
 
+// ─── Dendrogram Height Axis + Cut Line ──────────────────────
+
+/** "Nice" step for the height axis so ticks land on round numbers. */
+function niceStep(maxHeight: number, targetTicks: number): number {
+  if (maxHeight <= 0) return 1;
+  const rough = maxHeight / targetTicks;
+  const mag = Math.pow(10, Math.floor(Math.log10(rough)));
+  const norm = rough / mag;
+  let step: number;
+  if (norm < 1.5) step = 1;
+  else if (norm < 3) step = 2;
+  else if (norm < 7) step = 5;
+  else step = 10;
+  return step * mag;
+}
+
+function formatTick(value: number): string {
+  if (value === 0) return "0";
+  if (Math.abs(value) < 0.01) return value.toExponential(0);
+  return String(Math.round(value * 1000) / 1000);
+}
+
+function renderDendrogramAxis(
+  layout: PhyloLayoutResult,
+  t: ResolvedTheme<BiologyTokens>
+): string {
+  const d = layout.dendrogram;
+  if (!d) return "";
+
+  const axisY = layout.height - 28;
+  const elements: string[] = [];
+
+  // Axis baseline from root (left, max height) to tips (right, height 0).
+  elements.push(
+    line({ x1: d.plotLeftX, y1: axisY, x2: d.baselineX, y2: axisY })
+  );
+
+  const step = niceStep(d.maxHeight, 5);
+  for (let h = 0; h <= d.maxHeight + step * 0.001; h += step) {
+    const x = d.baselineX - h * d.scale;
+    elements.push(line({ x1: x, y1: axisY, x2: x, y2: axisY + 4 }));
+    elements.push(
+      text({ x, y: axisY + 16, "text-anchor": "middle" }, formatTick(h))
+    );
+  }
+
+  if (layout.ast.scaleLabel) {
+    elements.push(
+      text(
+        {
+          x: (d.plotLeftX + d.baselineX) / 2,
+          y: axisY + 28,
+          "text-anchor": "middle",
+          "font-size": "9",
+          fill: t.textMuted,
+        },
+        layout.ast.scaleLabel
+      )
+    );
+  }
+
+  return group({ class: "schematex-phylo-dendro-axis" }, elements);
+}
+
+function renderCutLine(layout: PhyloLayoutResult): string {
+  const d = layout.dendrogram;
+  if (!d || d.cut === undefined) return "";
+
+  const x = d.baselineX - d.cut * d.scale;
+  const topY = 8;
+  const bottomY = layout.height - 32;
+
+  return group({}, [
+    line({
+      x1: x,
+      y1: topY,
+      x2: x,
+      y2: bottomY,
+      class: "schematex-phylo-dendro-cut",
+    }),
+    text(
+      { x: x + 4, y: topY + 4, class: "schematex-phylo-dendro-cut-label" },
+      `cut = ${formatTick(d.cut)}`
+    ),
+  ]);
+}
+
 // ─── Main Renderer ──────────────────────────────────────────
 
 export function renderPhylo(layout: PhyloLayoutResult): string {
@@ -290,8 +394,11 @@ export function renderPhylo(layout: PhyloLayoutResult): string {
   // Clade backgrounds
   const cladeBgElements = renderCladeBackgrounds(layout, t);
 
-  // Scale bar
-  const scaleBarEl = renderScaleBar(layout, t, ast.scaleLabel);
+  // Scale bar (phylogram/chronogram) OR dendrogram height axis + cut line.
+  const isDendro = layout.dendrogram !== undefined;
+  const scaleBarEl = isDendro ? "" : renderScaleBar(layout, t, ast.scaleLabel);
+  const dendroAxisEl = isDendro ? renderDendrogramAxis(layout, t) : "";
+  const cutLineEl = isDendro ? renderCutLine(layout) : "";
 
   // Title
   const titleEl = ast.title
@@ -303,9 +410,18 @@ export function renderPhylo(layout: PhyloLayoutResult): string {
 
   // Assemble
   const leafCount = nodes.filter((n) => n.node.isLeaf).length;
+  const isDendrogramMode = layout.dendrogram !== undefined;
+  const descMode = isDendrogramMode ? "dendrogram" : ast.mode;
+  const descTitle = isDendrogramMode ? "Dendrogram" : "Phylogenetic Tree";
+  const cutSuffix =
+    isDendrogramMode && layout.dendrogram?.cut !== undefined
+      ? `, cut at ${layout.dendrogram.cut} into ${layout.dendrogram.clusterCount} clusters`
+      : "";
   const svgContent = [
-    title(`Phylogenetic Tree${ast.title ? `: ${ast.title}` : ""}`),
-    desc(`Phylogenetic tree with ${leafCount} taxa, ${ast.mode} mode, ${ast.layout} layout`),
+    title(`${descTitle}${ast.title ? `: ${ast.title}` : ""}`),
+    desc(
+      `${isDendrogramMode ? "Dendrogram" : "Phylogenetic tree"} with ${leafCount} taxa, ${descMode} mode, ${ast.layout} layout${cutSuffix}`
+    ),
     el("style", {}, css),
   ];
 
@@ -348,6 +464,24 @@ export function renderPhylo(layout: PhyloLayoutResult): string {
       group(
         { transform: transformY ? `translate(0,${transformY})` : undefined },
         [scaleBarEl]
+      )
+    );
+  }
+
+  if (dendroAxisEl) {
+    svgContent.push(
+      group(
+        { transform: transformY ? `translate(0,${transformY})` : undefined },
+        [dendroAxisEl]
+      )
+    );
+  }
+
+  if (cutLineEl) {
+    svgContent.push(
+      group(
+        { transform: transformY ? `translate(0,${transformY})` : undefined },
+        [cutLineEl]
       )
     );
   }

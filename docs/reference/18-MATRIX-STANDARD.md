@@ -14,6 +14,9 @@
 > - **ISO 31000:2018 Risk Management** §6.4 — 5×5 Likelihood × Impact Risk Matrix
 > - **NIST SP 800-30 Rev.1** — 风险热力矩阵等级定义
 > - **Tufte, Edward (1983)** *The Visual Display of Quantitative Information* — bubble size 应 area-proportional，非 radius-proportional
+> - **Akao, Yoji (1990)** *Quality Function Deployment: Integrating Customer Requirements into Product Design*. Productivity Press — House of Quality（WHAT × HOW 矩阵、9/3/1 relationship scale、computed technical importance、correlation roof）
+> - **ASI / Hauser & Clausing (1988)** "The House of Quality". *Harvard Business Review* 66(3) — HoQ 西方传播范式
+> - **Pyzdek, T. & Keller, P. (2018)** *The Six Sigma Handbook* (5th ed.). McGraw-Hill — SIPOC 作为 DMAIC Define 阶段标准 scoping 工具（Suppliers · Inputs · Process · Outputs · Customers）
 > - **Mermaid `quadrantChart`（de-facto baseline 的反例）** — Schematex 需修正其 label overlap、无 label、无 bubble size、仅支持 2×2 的核心缺陷
 >
 > 注：2×2 / 3×3 / 热力矩阵无单一权威标准统管渲染细节，本 standard 综合上述文献 + 主流 SaaS 工具惯例（Miro、Lucidchart、ProductPlan、Notion、Airfocus、Mural），并针对 Mermaid quadrantChart 的已知失败模式给出明确改进点（见 §5 Layout）。
@@ -605,6 +608,133 @@ cell value = likelihood_index * impact_index   # 1..25
 ```
 
 Cell value 决定 heat tint。每 cell 可承载多个 risk item（list），超过 3 个自动 "…+N more" 折叠。
+
+---
+
+## 8B. SIPOC & QFD — structured Six Sigma / quality tables
+
+2×2 / heatmap 之外，matrix engine 承载两类 **结构固定的质量管理表**。它们不是散点也不是 heat ramp，而是行列语义被标准锁死的网格——SIPOC（流程范围界定）和 QFD/House of Quality（需求→工程特性翻译，含 engine 计算）。共享 `matrix` header 与 parser，渲染层分支。
+
+### 8B.1 SIPOC（Six Sigma DMAIC Define）
+
+SIPOC 是 Six Sigma DMAIC *Define* 阶段的第一张图：在度量或改进任何东西之前，先用一页五列表锁定流程边界——「这个流程从哪开始、到哪结束、谁向它交付输入、谁接收输出」。五列固定从左到右：**S**uppliers · **I**nputs · **P**rocess · **O**utputs · **C**ustomers。
+
+**结构：**
+
+| 列 | 语义 | 典型内容 |
+|----|------|---------|
+| Suppliers | 提供输入的实体 | 供应商、上游部门、系统 |
+| Inputs | 进入流程的物料/信息 | PO、原料、数据、库存水位 |
+| Process | 高层步骤序列（4–7 步，非详细流程图） | Receive → Pick → Pack → Ship |
+| Outputs | 流程产出 | 成品、单据、报告 |
+| Customers | 接收产出的实体 | 终端客户、下游部门 |
+
+**DSL：**
+
+```
+matrix sipoc "Order fulfilment"
+suppliers: "Vendor", "Warehouse"
+inputs: "PO", "Stock levels"
+process: "Receive order", "Pick", "Pack", "Ship"
+outputs: "Shipped package", "Invoice"
+customers: "End customer", "Finance"
+```
+
+- Header `matrix sipoc`，可选 quoted title。
+- 五个列指令各自一行：`suppliers:` / `inputs:` / `process:` / `outputs:` / `customers:`。冒号后为 **逗号分隔的 quoted strings**。
+- 每列条目数任意，行在该列内自上而下堆叠。
+- 渲染始终按 canonical **S-I-P-O-C** 列序，与声明顺序无关——LLM 即使乱序输出 block，图仍正确。
+- `process:` 列是高层步骤序列（典型 4–7 步），不展开为详细 flowchart。
+
+### 8B.2 QFD / House of Quality（Akao）
+
+QFD（Quality Function Deployment，Akao 1990）的 House of Quality 把「客户想要什么」翻译成「工程上控制哪些特性来满足」。这是 matrix engine 里 **唯一带计算** 的质量表：engine 计算每个工程特性的 technical importance 排序，并渲染标准的 correlation roof。
+
+**结构：**
+
+| 元素 | 角色 | DSL |
+|------|------|-----|
+| **WHAT**（行） | 客户需求 + 重要度权重（惯例 1–5） | `what: "..." weight: N` |
+| **HOW**（列） | 工程特性 + 优化方向 | `how: "..." dir: up\|down` |
+| **Relationship**（体格 body cell） | HOW 服务 WHAT 的强度，9/3/1 scale | `rel (i, j): 9\|3\|1`（i=row, j=col，0-based） |
+| **Roof**（屋顶 half-matrix） | HOW × HOW 相关性，diamond cells | `roof (i, j): ++\|+\|-\|--`（i,j=两个 how） |
+| **Technical importance**（计算行） | engine 计算的列汇总 | `normalize: true` 切百分比 |
+
+**Relationship strength scale（9/3/1）：**
+
+| 符号 | 含义 |
+|------|------|
+| `9` | Strong relationship |
+| `3` | Medium relationship |
+| `1` | Weak relationship |
+| *(省略 cell)* | No relationship |
+
+此 9/3/1 是 QFD 经典约定——**刻意非线性**，使一个强关系在 importance 汇总时压过多个弱关系。
+
+**Computed technical-importance 算法（核心差异化）：**
+
+```
+importance(j) = Σ over rows i  ( weight(i) × strength(i, j) )
+```
+
+每列向下求和，得 House 底部的 technical-importance 行。它就是 deliverable：告诉团队工程精力该投向哪个特性。
+
+`normalize: true`（自身一行）把每列显示为 **占总和的百分比** 而非原始 sum，便于在权重尺度差异大时读相对优先级。
+
+**示例验证（coffee maker）：**
+
+```
+matrix qfd "Coffee maker"
+what: "Quiet operation" weight: 5
+what: "Brews fast" weight: 3
+what: "Energy efficient" weight: 4
+how: "Fan RPM" dir: down
+how: "Heater watts" dir: up
+how: "Insulation" dir: up
+rel (0,0): 9
+rel (0,2): 3
+rel (1,1): 9
+rel (2,1): 3
+rel (2,2): 9
+roof (0,1): --
+roof (1,2): +
+```
+
+逐列计算：
+- Fan RPM（col 0）= 5×9 = **45**
+- Heater watts（col 1）= 3×9 + 4×3 = 27 + 12 = **39**
+- Insulation（col 2）= 5×3 + 4×9 = 15 + 36 = **51**
+
+→ technical-importance 行 = **45 / 39 / 51**，Insulation 杠杆最高、Heater watts 最低。`normalize: true` → **33% / 29% / 38%**（45/135、39/135、51/135）。
+
+**Roof — HOW × HOW correlation half-matrix：**
+
+Roof 是列上方的三角 half-matrix，每格是一个 **diamond cell**，记录两个 HOW 互相增强还是冲突（团队须调和的 synergy / trade-off）。
+
+| 符号 | 相关性 |
+|------|--------|
+| `++` | Strong positive（改善一个强助另一个） |
+| `+` | Positive |
+| `-` | Negative |
+| `--` | Strong negative（改善一个伤害另一个 = trade-off） |
+| *(省略)* | No correlation |
+
+示例中 `roof (0,1): --` 标记「压低 Fan RPM 同时拉高 Heater watts」是 trade-off；`roof (1,2): +` 标记 Heater watts 与 Insulation 互相增强。Roof 以标准 QFD 斜屋顶网格渲染 diamond 格。
+
+**DSL grammar (EBNF) — SIPOC / QFD 扩展：**
+
+```ebnf
+sipoc_header = "matrix" "sipoc" quoted_string? NEWLINE
+sipoc_col    = ("suppliers:"|"inputs:"|"process:"|"outputs:"|"customers:")
+               quoted_string ("," quoted_string)* NEWLINE
+
+qfd_header   = "matrix" "qfd" quoted_string? NEWLINE
+qfd_what     = "what:" quoted_string "weight:" NUMBER NEWLINE
+qfd_how      = "how:" quoted_string ("dir:" ("up"|"down"))? NEWLINE
+qfd_rel      = "rel" "(" INT "," INT ")" ":" ("9"|"3"|"1") NEWLINE   # (row, col)
+qfd_roof     = "roof" "(" INT "," INT ")" ":" ("++"|"+"|"-"|"--") NEWLINE  # (how, how)
+qfd_norm     = "normalize:" "true" NEWLINE
+```
 
 ---
 

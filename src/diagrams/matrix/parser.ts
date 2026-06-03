@@ -6,6 +6,10 @@ import type {
   MatrixAxis,
   LabelCollisionMode,
   MatrixTemplate,
+  SipocData,
+  QfdData,
+  QfdStrength,
+  QfdCorrelation,
 } from "./types";
 import { resolveTemplate, applyTemplateDefaults } from "./templates";
 
@@ -40,6 +44,38 @@ interface ParseState {
 
 function emptyAxis(): MatrixAxis {
   return { low: "", high: "" };
+}
+
+function emptySipoc(): SipocData {
+  return { suppliers: [], inputs: [], process: [], outputs: [], customers: [] };
+}
+
+function emptyQfd(): QfdData {
+  return { whats: [], hows: [], relationships: [], roof: [], normalize: false };
+}
+
+/** Split a quoted, comma-separated item list: `"A", "B", "C"` → ["A","B","C"]. */
+function parseItemList(raw: string): string[] {
+  return parseNumberList(raw);
+}
+
+/** Map a raw token to a QFD relationship strength (9/3/1), or undefined. */
+function parseStrength(tok: string): QfdStrength | undefined {
+  const t = tok.trim().toLowerCase();
+  if (t === "9" || t === "strong" || t === "●" || t === "◉" || t === "⬤") return 9;
+  if (t === "3" || t === "medium" || t === "○" || t === "◯" || t === "o") return 3;
+  if (t === "1" || t === "weak" || t === "△" || t === "▽" || t === "▲") return 1;
+  return undefined;
+}
+
+/** Map a raw token to a QFD roof correlation, or undefined. */
+function parseCorrelation(tok: string): QfdCorrelation | undefined {
+  const t = tok.trim();
+  if (t === "++" || /^strong\+?$/i.test(t) || t === "◎") return "++";
+  if (t === "+" || /^pos(itive)?$/i.test(t) || t === "○") return "+";
+  if (t === "--" || t === "−−" || /^strong-$/i.test(t) || t === "✕" || t === "✖" || t === "×") return "--";
+  if (t === "-" || t === "−" || /^neg(ative)?$/i.test(t) || t === "✗") return "-";
+  return undefined;
 }
 
 function quadrantToCell(q: 1 | 2 | 3 | 4): { col: number; row: number } {
@@ -219,6 +255,121 @@ function parseCellLine(line: string, st: ParseState): boolean {
   return true;
 }
 
+const SIPOC_KEYS: ReadonlyArray<keyof SipocData> = [
+  "suppliers",
+  "inputs",
+  "process",
+  "outputs",
+  "customers",
+];
+
+/**
+ * SIPOC section line: `suppliers: "A", "B"` (or `supplier:` singular).
+ * Repeated lines for the same column append. Returns true if consumed.
+ */
+function parseSipocLine(line: string, ast: MatrixAST): boolean {
+  if (!ast.sipoc) return false;
+  const m = line.match(/^([a-zA-Z]+)\s*:\s*(.*)$/);
+  if (!m) return false;
+  let key = m[1]!.toLowerCase();
+  // accept singular forms
+  if (key === "supplier") key = "suppliers";
+  else if (key === "input") key = "inputs";
+  else if (key === "output") key = "outputs";
+  else if (key === "customer") key = "customers";
+  const col = SIPOC_KEYS.find((k) => k === key);
+  if (!col) return false;
+  const items = parseItemList(m[2]!);
+  ast.sipoc[col].push(...items);
+  return true;
+}
+
+/**
+ * QFD line forms:
+ *   what: "Quiet operation" weight: 5
+ *   how: "Fan RPM" dir: down
+ *   rel (what, how): 9       (or `cell (how, what) value: 9`)
+ *   roof (i, j): ++
+ *   normalize: true
+ * Returns true if consumed.
+ */
+function parseQfdLine(line: string, ast: MatrixAST): boolean {
+  const qfd = ast.qfd;
+  if (!qfd) return false;
+
+  // normalize toggle
+  const normMatch = line.match(/^normali[sz]e\s*:\s*(.+)$/i);
+  if (normMatch) {
+    const v = normMatch[1]!.trim().toLowerCase();
+    qfd.normalize = v === "true" || v === "on" || v === "1" || v === "percent" || v === "%";
+    return true;
+  }
+
+  // what: "label" weight: N   (weight optional → defaults to 1)
+  const whatMatch = line.match(/^what\s*:\s*(.*)$/i);
+  if (whatMatch) {
+    const q = readQuoted(whatMatch[1]!, 0);
+    if (!q) return true;
+    const rest = whatMatch[1]!.slice(q.next);
+    const wMatch = rest.match(/(?:weight|wt|imp(?:ortance)?)\s*:\s*(-?\d+(?:\.\d+)?)/i);
+    const weight = wMatch ? Number(wMatch[1]) : 1;
+    qfd.whats.push({ label: q.text, weight });
+    return true;
+  }
+
+  // how: "label" dir: up|down|target
+  const howMatch = line.match(/^how\s*:\s*(.*)$/i);
+  if (howMatch) {
+    const q = readQuoted(howMatch[1]!, 0);
+    if (!q) return true;
+    const rest = howMatch[1]!.slice(q.next);
+    const dMatch = rest.match(/(?:dir(?:ection)?|target)\s*:\s*([a-zA-Z↑↓○]+)/i);
+    let direction: "up" | "down" | "target" | undefined;
+    if (dMatch) {
+      const d = dMatch[1]!.toLowerCase();
+      if (d === "up" || d === "max" || d === "maximise" || d === "maximize" || d === "↑") direction = "up";
+      else if (d === "down" || d === "min" || d === "minimise" || d === "minimize" || d === "↓") direction = "down";
+      else if (d === "target" || d === "nominal" || d === "○") direction = "target";
+    }
+    qfd.hows.push(direction ? { label: q.text, direction } : { label: q.text });
+    return true;
+  }
+
+  // rel (what, how): strength   — primary relationship form
+  const relMatch = line.match(/^rel\s*\(\s*(\d+)\s*,\s*(\d+)\s*\)\s*:?\s*(.+)$/i);
+  if (relMatch) {
+    const what = Number(relMatch[1]);
+    const how = Number(relMatch[2]);
+    const strength = parseStrength(relMatch[3]!);
+    if (strength !== undefined) qfd.relationships.push({ what, how, strength });
+    return true;
+  }
+
+  // cell (how, col=how, row=what) compatibility: `cell (how, what) value: 9`
+  const cellMatch = line.match(/^cell\s*\(\s*(\d+)\s*,\s*(\d+)\s*\)\s*(.*)$/i);
+  if (cellMatch) {
+    const how = Number(cellMatch[1]);
+    const what = Number(cellMatch[2]);
+    const valMatch = cellMatch[3]!.match(/value\s*:\s*(\d+)/i);
+    const strength = valMatch ? parseStrength(valMatch[1]!) : undefined;
+    if (strength !== undefined) qfd.relationships.push({ what, how, strength });
+    return true;
+  }
+
+  // roof (i, j): correlation
+  const roofMatch = line.match(/^roof\s*\(\s*(\d+)\s*,\s*(\d+)\s*\)\s*:?\s*(.+)$/i);
+  if (roofMatch) {
+    let a = Number(roofMatch[1]);
+    let b = Number(roofMatch[2]);
+    if (a > b) [a, b] = [b, a];
+    const correlation = parseCorrelation(roofMatch[3]!);
+    if (correlation !== undefined && a !== b) qfd.roof.push({ a, b, correlation });
+    return true;
+  }
+
+  return false;
+}
+
 function parseConfigLine(key: string, value: string, ast: MatrixAST): void {
   const k = key.trim().toLowerCase();
   const v = value.trim();
@@ -265,6 +416,29 @@ function parseHeader(line: string, ast: MatrixAST): MatrixTemplate | undefined {
     if (title) ast.title = stripQuotes(title);
     return undefined;
   }
+  // sipoc "title"  — fixed 5-column Six Sigma scoping table
+  const sipocMatch = rest.match(/^sipoc\b\s*(.*)$/i);
+  if (sipocMatch) {
+    ast.mode = "sipoc";
+    ast.grid = "NxM";
+    ast.cols = 5;
+    ast.rows = 0;
+    ast.sipoc = emptySipoc();
+    const title = sipocMatch[1]!.trim();
+    if (title) ast.title = stripQuotes(title);
+    return undefined;
+  }
+  // qfd "title"  — QFD House of Quality relationship matrix
+  const qfdMatch = rest.match(/^qfd\b\s*(.*)$/i);
+  if (qfdMatch) {
+    ast.mode = "qfd";
+    ast.grid = "NxM";
+    ast.qfd = emptyQfd();
+    const title = qfdMatch[1]!.trim();
+    if (title) ast.title = stripQuotes(title);
+    return undefined;
+  }
+
   // template name + optional title
   const tokenMatch = rest.match(/^([a-zA-Z0-9_-]+)\s*(.*)$/);
   if (tokenMatch) {
@@ -325,6 +499,10 @@ export function parseMatrix(text: string): MatrixAST {
       st.ast.title = stripQuotes(line.replace(/^title\s*:\s*/i, ""));
       continue;
     }
+
+    if (st.ast.mode === "sipoc" && parseSipocLine(line, st.ast)) continue;
+    if (st.ast.mode === "qfd" && parseQfdLine(line, st.ast)) continue;
+
     if (/^x-axis\s*:/i.test(line)) {
       st.ast.xAxis = parseAxis(line.replace(/^x-axis\s*:\s*/i, ""));
       continue;
@@ -436,10 +614,42 @@ export function parseMatrix(text: string): MatrixAST {
   }
 
   // Promote 3x3 / NxM where cols/rows already say so but grid wasn't set
-  if (st.ast.cols === 3 && st.ast.rows === 3 && st.ast.grid !== "NxM") {
+  if (
+    st.ast.cols === 3 &&
+    st.ast.rows === 3 &&
+    st.ast.grid !== "NxM" &&
+    st.ast.mode !== "sipoc" &&
+    st.ast.mode !== "qfd"
+  ) {
     st.ast.grid = "3x3";
   }
-  if (st.ast.mode === "heatmap" || st.ast.mode === "correlation") st.ast.grid = "NxM";
+  if (
+    st.ast.mode === "heatmap" ||
+    st.ast.mode === "correlation" ||
+    st.ast.mode === "sipoc" ||
+    st.ast.mode === "qfd"
+  ) {
+    st.ast.grid = "NxM";
+  }
+
+  // SIPOC: 5 fixed columns; rows = the longest column's item count.
+  if (st.ast.mode === "sipoc" && st.ast.sipoc) {
+    const s = st.ast.sipoc;
+    st.ast.cols = 5;
+    st.ast.rows = Math.max(
+      s.suppliers.length,
+      s.inputs.length,
+      s.process.length,
+      s.outputs.length,
+      s.customers.length,
+    );
+  }
+
+  // QFD: cols = HOWs, rows = WHATs.
+  if (st.ast.mode === "qfd" && st.ast.qfd) {
+    st.ast.cols = st.ast.qfd.hows.length;
+    st.ast.rows = st.ast.qfd.whats.length;
+  }
 
   return st.ast;
 }

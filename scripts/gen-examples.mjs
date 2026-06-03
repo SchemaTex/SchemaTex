@@ -1,5 +1,6 @@
 import { render } from '../dist/index.js';
-import { writeFileSync } from 'fs';
+import { writeFileSync, mkdirSync } from 'fs';
+import { dirname } from 'path';
 
 const examples = [
   ['examples/sociogram/criminal-network.svg', `sociogram "Operation Sunset - Communication Network"
@@ -90,10 +91,70 @@ algo : "Core Update penalty"
 algo : "Weak E-E-A-T signals"
 algo : "SGE traffic diversion"
 algo : "Intent drift"`],
+
+  // ── Bucket A engine-extension showcase (new modes) ──────────────
+  ['examples/phylo/dendrogram-gene-clusters.svg', `phylo "Gene expression clusters" [mode: dendrogram]
+  newick: "(((A:1,B:1):2,C:3):2,(D:2,E:2):3);"
+  cut 4
+  scale "cluster distance"`],
+
+  ['examples/decisiontree/influence-oil-wildcatter.svg', `decisiontree:influence "Oil Wildcatter"
+  decision Drill "Drill?"
+  chance Oil "Oil present"
+  chance Seismic "Seismic test"
+  value Profit "Net profit" utility=42
+  Seismic -> Oil
+  Seismic -> Drill
+  Oil -> Profit
+  Drill -> Profit`],
+
+  ['examples/matrix/sipoc-order-fulfilment.svg', `matrix sipoc "Order fulfilment"
+suppliers: "Vendor", "Warehouse"
+inputs: "PO", "Stock levels"
+process: "Receive order", "Pick", "Pack", "Ship"
+outputs: "Shipped package", "Invoice"
+customers: "End customer", "Finance"`],
+
+  ['examples/matrix/qfd-coffee-maker.svg', `matrix qfd "Coffee maker"
+what: "Quiet operation" weight: 5
+what: "Brews fast" weight: 3
+what: "Energy efficient" weight: 4
+how: "Fan RPM" dir: down
+how: "Heater watts" dir: up
+how: "Insulation" dir: up
+rel (0,0): 9
+rel (0,2): 3
+rel (1,1): 9
+rel (2,1): 3
+rel (2,2): 9
+roof (0,1): --
+roof (1,2): +`],
+
+  ['examples/mindmap/futureswheel-remote-work.svg', `%% style: futureswheel
+# Remote work becomes default
+## Less commuting
+- Lower carbon emissions
+- Cheaper city living
+## Distributed teams
+- Async communication norms
+- Global hiring pools
+## Empty offices
+- Commercial real estate slump
+- Repurposed to housing`],
+
+  ['examples/mindmap/driver-readmissions.svg', `%% style: driver
+# Reduce 30-day readmissions
+## Reliable discharge process
+- Teach-back at bedside
+- Med reconciliation
+## Timely follow-up
+- Appointment within 7 days
+- Post-discharge phone call`],
 ];
 
 for (const [path, dsl] of examples) {
   try {
+    mkdirSync(dirname(path), { recursive: true });
     const svg = render(dsl);
     writeFileSync(path, svg);
     console.log('OK', path, svg.length + 'b');

@@ -223,7 +223,122 @@ The same `cell` syntax applies. `level: strong | medium | weak` is also accepted
 
 ---
 
-## 8. Config options
+## 8. SIPOC mode
+
+A **SIPOC** is the one-page scoping table that opens the *Define* phase of a Six Sigma DMAIC project. It names, in five fixed columns left to right, everyone and everything the process touches: **S**uppliers · **I**nputs · **P**rocess · **O**utputs · **C**ustomers. Before a team measures or improves anything, SIPOC pins down the boundary — "where does this process start, where does it end, and who hands work in and out of it."
+
+```
+matrix sipoc "Order fulfilment"
+suppliers: "Vendor", "Warehouse"
+inputs: "PO", "Stock levels"
+process: "Receive order", "Pick", "Pack", "Ship"
+outputs: "Shipped package", "Invoice"
+customers: "End customer", "Finance"
+```
+
+- Start with `matrix sipoc`, optionally followed by a quoted title.
+- Each of the five columns is its own directive: `suppliers:`, `inputs:`, `process:`, `outputs:`, `customers:`.
+- After the colon, list the entries as **comma-separated quoted strings**. A column may have any number of entries; the rows simply stack top-down inside that column.
+- The `process:` column is the high-level step sequence (typically 4–7 steps) — keep it to the major stages, not a detailed flowchart.
+
+The five columns always render in the canonical S-I-P-O-C order regardless of the order you declare them, so the diagram reads correctly even if an LLM emits the blocks out of sequence.
+
+<Playground initial={`matrix sipoc "Order fulfilment"
+suppliers: "Vendor", "Warehouse"
+inputs: "PO", "Stock levels"
+process: "Receive order", "Pick", "Pack", "Ship"
+outputs: "Shipped package", "Invoice"
+customers: "End customer", "Finance"`} height={360} />
+
+---
+
+## 9. QFD mode (House of Quality)
+
+**Quality Function Deployment (QFD)** — the *House of Quality*, introduced by Yoji Akao — translates what customers want into the engineering characteristics that deliver it. Rows are the **WHATs** (customer requirements, each with an importance weight); columns are the **HOWs** (the measurable engineering characteristics the team controls). The body of the grid records how strongly each HOW serves each WHAT.
+
+The differentiator: the engine **computes** the bottom row for you. Each HOW's *technical importance* is the sum down its column of `weight × relationship strength` — a ranked answer to "which engineering characteristic moves the most customer value, and is therefore worth the most effort." And the roof of the house — a half-matrix of diamond cells above the columns — records whether two HOWs help or fight each other.
+
+```
+matrix qfd "Coffee maker"
+what: "Quiet operation" weight: 5
+what: "Brews fast" weight: 3
+what: "Energy efficient" weight: 4
+how: "Fan RPM" dir: down
+how: "Heater watts" dir: up
+how: "Insulation" dir: up
+rel (0,0): 9
+rel (0,2): 3
+rel (1,1): 9
+rel (2,1): 3
+rel (2,2): 9
+roof (0,1): --
+roof (1,2): +
+```
+
+### WHATs and HOWs
+
+| Directive | Form | Meaning |
+|---|---|---|
+| `what:` | `what: "Label" weight: N` | A customer requirement (one row). `weight:` is its importance, conventionally 1–5. Declaration order is the row order, indexed from 0. |
+| `how:` | `how: "Label" dir: up\|down` | An engineering characteristic (one column). Declaration order is the column order, indexed from 0. `dir:` is the optimization target — `up` = more is better, `down` = less is better. |
+
+### Relationship cells
+
+`rel (i, j): strength` records how strongly column-`j` HOW serves row-`i` WHAT. The index is **(row, column)**, both zero-based.
+
+| Strength | Meaning |
+|---|---|
+| `9` | Strong relationship |
+| `3` | Medium relationship |
+| `1` | Weak relationship |
+| *(omitted)* | No relationship — leave the cell out |
+
+This 9 / 3 / 1 scale is the QFD convention: it is deliberately non-linear so that one strong link outweighs several weak ones when the importance row is summed.
+
+### Computed technical-importance row
+
+The engine sums each column to produce the technical-importance row at the foot of the house:
+
+```
+importance(j) = Σ over rows i  ( weight(i) × strength(i, j) )
+```
+
+For the coffee-maker example above the row computes to **45 / 39 / 51** — Insulation (51) is the highest-leverage characteristic, Heater watts (39) the lowest. This ranking is the deliverable: it tells the team where to spend engineering effort.
+
+Add `normalize: true` (its own line, anywhere in the block) to show each column as a **percentage of the total** instead of a raw sum — for this example, **33% / 29% / 38%**. Percentages make the relative priorities easier to read across very different weight scales.
+
+### The roof — HOW × HOW correlations
+
+The **roof** is the triangular half-matrix sitting above the columns. `roof (i, j): glyph` records whether HOW `i` and HOW `j` reinforce or conflict with each other — the synergies and trade-offs a team must reconcile.
+
+| Glyph | Correlation |
+|---|---|
+| `++` | Strong positive — improving one strongly helps the other |
+| `+` | Positive |
+| `-` | Negative |
+| `--` | Strong negative — improving one hurts the other (a trade-off) |
+| *(omitted)* | No correlation — leave the cell out |
+
+Each roof entry renders as a diamond cell in the standard QFD pitched-roof grid. In the example, `roof (0,1): --` flags that pushing Fan RPM down while pushing Heater watts up is a trade-off, and `roof (1,2): +` flags that Heater watts and Insulation reinforce each other.
+
+<Playground initial={`matrix qfd "Coffee maker"
+what: "Quiet operation" weight: 5
+what: "Brews fast" weight: 3
+what: "Energy efficient" weight: 4
+how: "Fan RPM" dir: down
+how: "Heater watts" dir: up
+how: "Insulation" dir: up
+rel (0,0): 9
+rel (0,2): 3
+rel (1,1): 9
+rel (2,1): 3
+rel (2,2): 9
+roof (0,1): --
+roof (1,2): +`} height={460} />
+
+---
+
+## 10. Config options
 
 A `config:` block tunes visual rendering. Each option goes on its own indented line below the `config:` header.
 
@@ -256,7 +371,7 @@ margins: true      # true | false — show Score + Rank margins (correlation mod
 
 ---
 
-## 9. Labels & comments
+## 11. Labels & comments
 
 - **Title:** `matrix "My Title"` or `title: My Title` as a standalone line.
 - **Point label:** the quoted string before `at (…)`.
@@ -273,7 +388,7 @@ x-axis: Low Cost → High Cost   # inline comment after a directive
 
 ---
 
-## 10. Table mode (`style: table`)
+## 12. Table mode (`style: table`)
 
 The default matrix rendering is a **scatter / bubble chart** — points float at (x, y) coordinates. For frameworks where the output is a list of items grouped by quadrant (Eisenhower, Johari, Impact-Effort, 9-box), use `style: table` to switch to a **text-in-cell layout** instead.
 
@@ -337,9 +452,9 @@ Q3: "Reorganize Slack channels"`} height={420} />
 
 ---
 
-## 11. Reserved words & escaping
+## 13. Reserved words & escaping
 
-**Reserved at line start:** `matrix` (header), `x-axis:`, `y-axis:`, `quadrant`, `config:`, `title:`, `rows:`, `cols:`, `grid:`, `axis:`, `margins:`, `cell`.
+**Reserved at line start:** `matrix` (header), `x-axis:`, `y-axis:`, `quadrant`, `config:`, `title:`, `rows:`, `cols:`, `grid:`, `axis:`, `margins:`, `cell`. In **SIPOC** mode: `suppliers:`, `inputs:`, `process:`, `outputs:`, `customers:`. In **QFD** mode: `what:`, `how:`, `rel`, `roof`, `normalize:`.
 
 **Point lines must start with a quote character** (`"` or `'`). A line that does not start with a quote is not treated as a point.
 
@@ -347,7 +462,7 @@ Q3: "Reorganize Slack channels"`} height={420} />
 
 ---
 
-## 12. Common mistakes
+## 14. Common mistakes
 
 | You wrote | Parser says | Fix |
 |---|---|---|
@@ -363,7 +478,7 @@ Q3: "Reorganize Slack channels"`} height={420} />
 
 ---
 
-## 13. Grammar (EBNF)
+## 15. Grammar (EBNF)
 
 ```text
 document     = header directive*
@@ -371,11 +486,25 @@ document     = header directive*
 header       = "matrix" ( template-name | mode-header | title )? NEWLINE
 template-name = "eisenhower"|"impact-effort"|"rice"|"bcg"|"ansoff"|"johari"|"9-box"|"risk-matrix"
 mode-header  = ( "heatmap" | "correlation" ) ( number "x" number )? title?
+             | ( "sipoc" | "qfd" ) title?
 title        = quoted-string | bare-text
 
 directive    = x-axis | y-axis | quadrant-dir | config-block
              | point | cell | q-short | rows-dir | cols-dir | grid-dir
-             | style-dir | title-dir | axis-dir | margins-dir | comment | blank
+             | style-dir | title-dir | axis-dir | margins-dir
+             | sipoc-col | qfd-what | qfd-how | qfd-rel | qfd-roof | normalize-dir
+             | comment | blank
+
+# SIPOC mode
+sipoc-col    = ( "suppliers:" | "inputs:" | "process:" | "outputs:" | "customers:" )
+               WS quoted-string ( "," quoted-string )* NEWLINE
+
+# QFD / House of Quality mode
+qfd-what     = "what:" WS quoted-string WS "weight:" number NEWLINE
+qfd-how      = "how:" WS quoted-string ( WS "dir:" ( "up" | "down" ) )? NEWLINE
+qfd-rel      = "rel" WS "(" number "," number ")" ":" WS ( "9" | "3" | "1" ) NEWLINE  # (row, col)
+qfd-roof     = "roof" WS "(" number "," number ")" ":" WS ( "++" | "+" | "-" | "--" ) NEWLINE  # (how, how)
+normalize-dir = "normalize:" WS "true" NEWLINE
 
 x-axis       = "x-axis:" WS axis-spec NEWLINE
 y-axis       = "y-axis:" WS axis-spec NEWLINE
@@ -418,7 +547,7 @@ Authoritative source: `src/diagrams/matrix/parser.ts`. If this diverges from the
 
 ---
 
-## 14. Standard compliance
+## 16. Standard compliance
 
 Schematex matrix diagrams implement the standard 2×2 quadrant convention used by the **Boston Consulting Group (1970)**, **Eisenhower decision matrix**, **Ansoff growth matrix**, and **Johari Window** frameworks. The 9-box grid follows the **McKinsey/GE talent review** convention (3×3, performance × potential). Heatmap and correlation modes follow no named external standard but use the universal cell-intensity encoding found in tools like Excel conditional formatting and R's `corrplot`.
 
@@ -428,6 +557,8 @@ What is implemented today:
 - ✅ 3×3 quadrant mode (`9-box` template)
 - ✅ N×M heatmap mode with `level:` and `value:` cells
 - ✅ N×M correlation mode
+- ✅ SIPOC mode — five-column Suppliers · Inputs · Process · Outputs · Customers scoping table (Six Sigma DMAIC Define)
+- ✅ QFD / House of Quality mode — WHATs × HOWs grid, 9 / 3 / 1 relationship scale, **computed** technical-importance row (with `normalize: true` percentages), and the HOW × HOW correlation roof (`++` / `+` / `-` / `--`)
 - ✅ Eight built-in templates (eisenhower, impact-effort, rice, bcg, ansoff, johari, 9-box, risk-matrix)
 - ✅ Point properties: size, category, color, shape, highlight, note
 - ✅ Reversed axes (`←` / `<-`)
@@ -442,10 +573,12 @@ References:
 - Henderson, B. (1970). *The Product Portfolio.* Boston Consulting Group.
 - Covey, S. (1989). *The 7 Habits of Highly Effective People.* (Eisenhower matrix popularization)
 - Ansoff, H.I. (1957). "Strategies for Diversification." *Harvard Business Review*.
+- Akao, Y. (1990). *Quality Function Deployment: Integrating Customer Requirements into Product Design.* Productivity Press. (House of Quality)
+- Pyzdek, T. & Keller, P. (2018). *The Six Sigma Handbook* (5th ed.). McGraw-Hill. (SIPOC in DMAIC Define)
 
 ---
 
-## 15. Roadmap
+## 17. Roadmap
 
 **Planned — not yet parseable.** Do not use these in generated DSL today; the parser will reject or ignore them.
 

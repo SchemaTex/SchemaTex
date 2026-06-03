@@ -14,6 +14,9 @@ import {
 import { parseMindmap } from "./parser";
 import { layoutMindmap, lineHeightOf, UNDERLINE_GAP, underlineWidthFor } from "./layout";
 import { tokensToPlainText } from "./inline";
+import { modeOf } from "./modes";
+import { RING_GAP, wheelCenter, maxOrder } from "./futureswheel";
+import { circle as svgCircle } from "../../core/svg";
 
 type Theme = ResolvedTheme<MindmapTokens>;
 
@@ -193,7 +196,8 @@ function renderNode(
   n: MindmapLayoutNode,
   color: string,
   theme: Theme,
-  fontFamily: string
+  fontFamily: string,
+  orderClass: boolean
 ): string {
   const isRoot = n.node.depth === 0;
   const isMain = n.node.depth === 1;
@@ -239,17 +243,21 @@ function renderNode(
     })
   );
 
-  const cls = isRoot
+  const baseCls = isRoot
     ? "schematex-mindmap-central"
     : isMain
       ? "schematex-mindmap-main"
       : "schematex-mindmap-leaf";
+  // Futures Wheel: add a semantic `mm-order-N` class so nodes can be themed by
+  // consequence order (order 0 = central event, 1 = 1st-order ring, …).
+  const cls = orderClass ? `${baseCls} mm-order-${n.node.depth}` : baseCls;
 
   return group(
     {
       class: cls,
       "data-node-id": n.node.id,
       "data-depth": n.node.depth,
+      "data-order": orderClass ? n.node.depth : undefined,
       "data-branch-idx": n.branchIndex,
     },
     [...decorations, ...children]
@@ -264,8 +272,33 @@ export function renderMindmapAST(
   fontFamily = "system-ui, -apple-system, sans-serif"
 ): string {
   const theme = resolveMindmapTheme(ast.themeOverride ?? themeName);
+  const mode = modeOf(ast);
+  const isWheel = mode === "futureswheel";
   const layout = layoutMindmap(ast);
   const byId = new Map(layout.nodes.map((n) => [n.node.id, n]));
+
+  // Futures Wheel: faint concentric guide circles, one per consequence order,
+  // drawn under everything so the ring banding reads at a glance.
+  const ringSvgs: string[] = [];
+  if (isWheel) {
+    const { cx, cy } = wheelCenter(layout);
+    const rings = maxOrder(layout);
+    for (let order = 1; order <= rings; order++) {
+      ringSvgs.push(
+        svgCircle({
+          cx: cx.toFixed(1),
+          cy: cy.toFixed(1),
+          r: (order * RING_GAP).toFixed(1),
+          fill: "none",
+          stroke: theme.centralFill,
+          "stroke-width": 1,
+          "stroke-dasharray": "3 5",
+          opacity: 0.25,
+          class: `mm-ring mm-ring-${order}`,
+        })
+      );
+    }
+  }
 
   const edgeSvgs: string[] = [];
   for (const e of layout.edges) {
@@ -286,10 +319,13 @@ export function renderMindmapAST(
   const nodeSvgs: string[] = [];
   for (const n of layout.nodes) {
     const color = n.node.depth === 0 ? theme.centralFill : paletteColor(theme, n.branchIndex);
-    nodeSvgs.push(renderNode(n, color, theme, fontFamily));
+    nodeSvgs.push(renderNode(n, color, theme, fontFamily, isWheel));
   }
 
   const title = ast.title ?? tokensToPlainText(ast.root.tokens);
+  const descLabel = isWheel
+    ? `futures-wheel mindmap with ${layout.nodes.length} nodes`
+    : `${layout.style} mindmap with ${layout.nodes.length} nodes`;
 
   return svgRoot(
     {
@@ -301,8 +337,9 @@ export function renderMindmapAST(
     },
     [
       svgTitle(title),
-      svgDesc(`${layout.style} mindmap with ${layout.nodes.length} nodes`),
+      svgDesc(descLabel),
       rect({ x: 0, y: 0, width: layout.width, height: layout.height, fill: theme.bg }),
+      group({ class: "schematex-mindmap-rings", "aria-hidden": "true" }, ringSvgs),
       group({ class: "schematex-mindmap-edges", "aria-hidden": "true" }, edgeSvgs),
       group({ class: "schematex-mindmap-nodes" }, nodeSvgs),
     ]

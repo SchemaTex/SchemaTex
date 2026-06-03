@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="lt-dtree" role="img" aria-label="Oil Wildcatter" width="592" height="244" viewBox="0 0 592 244"><title>Oil Wildcatter</title>
+<desc>Influence diagram with 4 nodes and 4 arcs</desc>
+<style>.lt-dtree { font-family: system-ui, -apple-system, sans-serif; }
+.lt-dtree-title { font: 500 16px sans-serif; fill: #0f172a; }
+.lt-dtree-decision { fill: #dbeafe; stroke: #1d4ed8; stroke-width: 1.6; }
+.lt-dtree-chance { fill: #fef3c7; stroke: #b45309; stroke-width: 1.6; }
+.lt-dtree-value { fill: #dcfce7; stroke: #15803d; stroke-width: 1.6; }
+.lt-dtree-node-label { font: 500 12px sans-serif; fill: #0f172a; text-anchor: middle; dominant-baseline: middle; }
+.lt-dtree-value-util { font: 600 10px "SF Mono", monospace; fill: #475569; text-anchor: middle; }
+.lt-dtree-arc { fill: none; stroke: #334155; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.lt-dtree-arc-information { fill: none; stroke: #334155; stroke-width: 1.6; stroke-dasharray: 5 4; stroke-linecap: round; }
+.lt-dtree-arc-head { fill: #334155; stroke: none; }
+.lt-dtree-arc-label { font: 500 10px sans-serif; fill: #475569; text-anchor: middle; dominant-baseline: middle; }
+.lt-dtree-arc-label-bg { fill: #ffffff; stroke: none; }</style>
+<text x="20" y="24" class="lt-dtree-title">Oil Wildcatter</text>
+<g transform="translate(0, 36)" data-mode="influence"><g><path d="M 153.44 115.64 L 245.48 134.97" class="lt-dtree-arc" data-arc="Seismic-&gt;Oil" data-arc-kind="relevance"/>
+<polygon points="245.48,134.97 236.71,137.02 238.28,129.57" class="lt-dtree-arc-head"/></g>
+<g><path d="M 152.9 91.92 L 260 68.36" class="lt-dtree-arc-information" data-arc="Seismic-&gt;Drill" data-arc-kind="information"/>
+<polygon points="260,68.36 252.85,73.83 251.22,66.4" class="lt-dtree-arc-head"/></g>
+<g><path d="M 350.43 134.88 L 436 116.73" class="lt-dtree-arc" data-arc="Oil-&gt;Profit" data-arc-kind="functional"/>
+<polygon points="436,116.73 428.81,122.14 427.23,114.7" class="lt-dtree-arc-head"/></g>
+<g><path d="M 336 68.44 L 436 90.67" class="lt-dtree-arc" data-arc="Drill-&gt;Profit" data-arc-kind="functional"/>
+<polygon points="436,90.67 427.21,92.61 428.86,85.18" class="lt-dtree-arc-head"/></g>
+<g data-node-id="Seismic" data-node-kind="chance" data-layer="0"><ellipse cx="98" cy="104" rx="62" ry="26" class="lt-dtree-chance"/>
+<text x="98" y="104" class="lt-dtree-node-label">Seismic test</text></g>
+<g data-node-id="Drill" data-node-kind="decision" data-layer="1"><rect x="260" y="36" width="76" height="48" rx="3" ry="3" class="lt-dtree-decision"/>
+<text x="298" y="60" class="lt-dtree-node-label">Drill?</text></g>
+<g data-node-id="Oil" data-node-kind="chance" data-layer="1"><ellipse cx="298" cy="146" rx="58" ry="26" class="lt-dtree-chance"/>
+<text x="298" y="146" class="lt-dtree-node-label">Oil present</text></g>
+<g data-node-id="Profit" data-node-kind="value" data-layer="2"><polygon points="450,77 542,77 556,87 556,121 542,131 450,131 436,121 436,87" class="lt-dtree-value"/>
+<text x="496" y="98" class="lt-dtree-node-label">Net profit</text>
+<text x="496" y="115" class="lt-dtree-value-util">U=42</text></g></g></svg>

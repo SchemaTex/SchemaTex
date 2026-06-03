@@ -14,7 +14,14 @@ import {
 } from "../../core/svg";
 import { resolveBaseTheme, type BaseTheme } from "../../core/theme";
 import { layoutDecisionTree } from "./layout";
-import type { DTreeAST, DTreeLayoutNode, DTreeLayoutResult, DTreeNode } from "./types";
+import { renderInfluence } from "./influence-renderer";
+import type {
+  DTreeAST,
+  DTreeLayoutNode,
+  DTreeLayoutResult,
+  DTreeNode,
+  InfluenceAST,
+} from "./types";
 
 const CLASS_PALETTE = [
   "#0ea5e9", "#10b981", "#f59e0b", "#f43f5e", "#8b5cf6",
@@ -337,7 +344,10 @@ function wrapText(text: string, maxChars: number): string[] {
 
 // ─── Top-level renderer ──────────────────────────────────────
 
-export function renderDecisionTree(ast: DTreeAST, config?: RenderConfig): string {
+export function renderDecisionTree(ast: DTreeAST | InfluenceAST, config?: RenderConfig): string {
+  // InfluenceAST is structurally distinct (node/arc DAG); discriminate on `arcs`
+  // since `mode === "influence"` is also a legal value of DTreeAST.mode.
+  if ("arcs" in ast) return renderInfluence(ast, config);
   const t = resolveBaseTheme(config?.theme ?? "default");
   const layout = layoutDecisionTree(ast);
 

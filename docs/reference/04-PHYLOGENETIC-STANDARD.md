@@ -88,6 +88,44 @@ Schematex 支持 3 种 tree representation，决定 branch length 的视觉含�
 - 用 `[mode: chronogram]` 激活
 - 需要在 Newick 中提供 branch length + `[mrsd: "2026"]`（most recent sampling date）
 
+### 3.4 Dendrogram (Hierarchical Clustering)
+
+Dendrogram 不是进化树——它是**层次聚类**（hierarchical agglomerative clustering）的标准输出（Sokal & Michener 1958；即 `scipy.cluster.hierarchy.dendrogram` 绘制的形状）。用 `[mode: dendrogram]` 激活。复用与其他 mode 完全相同的 Newick / 缩进树输入，但**对节点位置的解释不同**：
+
+- **Internal node 放在它的 merge height（合并高度）** —— 即两个子簇融合时的 **cophenetic distance**（共表型距离）。节点的轴向坐标 = 该节点到 root 的距离（= 子簇融合的高度），而**不是**像 phylogram 那样累加各分支长度后让 tips 自由错落。
+- **所有 leaf 对齐到同一 baseline**（高度 = 0 的那条线），与 cladogram 类似，但原因不同：聚类中每个原始样本都是高度 0 的单点簇。
+- **矩形 elbow 连接线**：父节点在自己的 merge height 上画一条与 baseline 平行的横线跨过两个子簇，再各自垂直落到子节点——经典的 textbook 树状图直角折线，不用斜线。
+- **绘制 height 轴**：一条标注了 cluster distance 单位的坐标轴（`scale "cluster distance"`），让读者能从任意两个 leaf 第一次进入同一个簇的高度上读出它们的距离。
+
+**与 cladogram / phylogram 的区别：**
+
+| | Cladogram | Phylogram | Dendrogram |
+|---|---|---|---|
+| Branch length 含义 | 无（仅拓扑） | 进化距离，从 root 累加 | merge height（合并高度 / cophenetic distance）|
+| Tips 对齐 | 对齐（右边界） | 不对齐（各自累加距离） | 对齐（baseline = 高度 0）|
+| Internal node 轴向位置 | 等距分层 | root 到该节点的累加分支长度 | 子簇融合时的高度 |
+| 语义 | 谁和谁更近（顺序） | 进化分歧量 | 簇之间的相似度（越低越相似）|
+| 轴 | 无 | substitutions/site scale bar | cluster distance 高度轴 |
+
+**`cut <value>` —— 切割成 flat clusters：**
+
+在 dendrogram 模式下加一行 `cut <number>` 会在指定高度水平切一刀（等同于 scipy 的 `fcluster(..., t, criterion='distance')`）：
+
+- 每一个**在阈值以下融合完毕**的子树成为一个 **flat cluster**（扁平簇）。
+- 各 cluster 用不同颜色区分。
+- 在阈值高度画一条**虚线 threshold line** 横跨整棵树，标出切割位置。
+
+这把连续的相似度树离散成一组可直接使用的分组——dendrogram 模式真正"可执行"的输出。
+
+```
+phylo "Gene expression clusters" [mode: dendrogram]
+  newick: "(((A:1,B:1):2,C:3):2,(D:2,E:2):3);"
+  cut 4
+  scale "cluster distance"
+```
+
+不写 `cut` 则渲染裸 dendrogram（无 flat-cluster 着色、无阈值线），仅展示合并高度结构。典型应用：基因表达簇、样本相似度、问卷应答分组等——任何"同一棵树描述的是聚类结果而非系统发育"的场景。
+
 ---
 
 ## 4. Layout Types
@@ -382,16 +420,17 @@ layout_prop    = "layout:" LAYOUT_TYPE
 LAYOUT_TYPE    = "rectangular" | "slanted" | "circular" | "unrooted"
 
 mode_prop      = "mode:" TREE_MODE
-TREE_MODE      = "phylogram" | "cladogram" | "chronogram"
+TREE_MODE      = "phylogram" | "cladogram" | "chronogram" | "dendrogram"
 
 root_prop      = "unrooted"
 misc_prop      = "branch-width:" NUMBER
                | "openAngle:" NUMBER
                | "mrsd:" quoted_string
 
-config         = scale_def | outgroup_def
+config         = scale_def | outgroup_def | cut_def
 scale_def      = "scale" quoted_string? NEWLINE
 outgroup_def   = "outgroup:" IDENTIFIER NEWLINE
+cut_def        = "cut" NUMBER NEWLINE          # dendrogram mode: flat-cluster threshold height
 
 tree_def       = newick_def | indent_def
 newick_def     = "newick:" NEWICK_STRING NEWLINE

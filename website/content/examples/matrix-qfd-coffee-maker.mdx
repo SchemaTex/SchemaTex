@@ -1,0 +1,36 @@
+---
+title: Coffee maker House of Quality
+description: A QFD House of Quality where the engine computes the technical-importance row (45 / 39 / 51) — the ranked answer to which engineering characteristic moves the most customer value — plus the diamond-cell roof that flags trade-offs between characteristics.
+diagram: matrix
+standard: Akao Quality Function Deployment
+industry: [quality, manufacturing]
+persona: For the product engineer translating customer needs into specs
+complexity: 3
+tags: [matrix, qfd, house-of-quality, akao, voice-of-customer]
+featured: false
+relatedLink:
+  label: Matrix syntax
+  href: /docs/matrix
+status: published
+dsl: |
+  matrix qfd "Coffee maker"
+  what: "Quiet operation" weight: 5
+  what: "Brews fast" weight: 3
+  what: "Energy efficient" weight: 4
+  how: "Fan RPM" dir: down
+  how: "Heater watts" dir: up
+  how: "Insulation" dir: up
+  rel (0,0): 9
+  rel (0,2): 3
+  rel (1,1): 9
+  rel (2,1): 3
+  rel (2,2): 9
+  roof (0,1): --
+  roof (1,2): +
+---
+
+## What this shows
+
+The **House of Quality** — the core matrix of Akao's Quality Function Deployment — translates what customers want into the engineering characteristics that deliver it. Customer requirements (**WHATs**) are the rows, each with an importance weight; engineering characteristics (**HOWs**) are the columns; the body cells record how strongly each HOW serves each WHAT on the 9 / 3 / 1 strong-medium-weak scale.
+
+The differentiator is the computed row at the foot of the house: each column's **technical importance** is the sum of `weight × strength` down that column, here **45 / 39 / 51** — so Insulation (51) is the highest-leverage characteristic to invest in and Heater watts (39) the lowest. (Add `normalize: true` to read these as 33% / 29% / 38% instead.) Above the columns, the **roof** is a half-matrix of diamond cells recording HOW-to-HOW correlations: `roof (0,1): --` flags that lowering Fan RPM while raising Heater watts is a trade-off, while `roof (1,2): +` flags that Heater watts and Insulation reinforce each other.

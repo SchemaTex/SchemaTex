@@ -286,6 +286,13 @@ function parseHeaderProps(propsStr: string): {
   branchWidth?: number;
   openAngle?: number;
   mrsd?: string;
+  /**
+   * Dendrogram (hierarchical-clustering) mode flag. Dendrogram is a phylo-local
+   * mode layered on top of the cladogram base `mode`; it is carried in AST
+   * metadata (not the shared `PhyloMode` union) so the dendrogram feature stays
+   * isolated inside the phylo folder.
+   */
+  dendrogram?: boolean;
 } {
   const result: ReturnType<typeof parseHeaderProps> = {
     layout: "rectangular",
@@ -313,6 +320,13 @@ function parseHeaderProps(propsStr: string): {
       case "mode":
         if (["phylogram", "cladogram", "chronogram"].includes(val)) {
           result.mode = val as PhyloMode;
+        } else if (val === "dendrogram") {
+          // Dendrogram is a phylo-local mode (not in the shared PhyloMode
+          // union). It reuses the cladogram base for any code that only knows
+          // the standard modes, and is flagged separately for the dendrogram
+          // layout/renderer.
+          result.mode = "cladogram";
+          result.dendrogram = true;
         }
         break;
       case "branch-width":
@@ -393,6 +407,7 @@ export function parsePhylo(text: string): PhyloTreeAST {
   let root: PhyloNode | null = null;
   let scaleLabel: string | undefined;
   let outgroup: string | undefined;
+  let cut: number | undefined;
   const clades: CladeDef[] = [];
   const indentLines: string[] = [];
   let inIndentTree = false;
@@ -426,6 +441,14 @@ export function parsePhylo(text: string): PhyloTreeAST {
     // Outgroup
     if (trimmed.startsWith("outgroup:")) {
       outgroup = trimmed.slice(9).trim();
+      continue;
+    }
+
+    // Cut line (dendrogram threshold): "cut 1.5" or "cut: 1.5"
+    if (/^cut\b/i.test(trimmed)) {
+      const cutStr = trimmed.replace(/^cut\s*:?\s*/i, "").trim();
+      const cutVal = Number(cutStr);
+      if (!Number.isNaN(cutVal)) cut = cutVal;
       continue;
     }
 
@@ -467,6 +490,13 @@ export function parsePhylo(text: string): PhyloTreeAST {
     throw new PhyloParseError("No tree definition found (newick: or indent tree)");
   }
 
+  // Dendrogram mode + cut threshold are phylo-local concerns carried in
+  // metadata so the dendrogram feature stays inside the phylo folder without
+  // extending the shared PhyloMode union or PhyloTreeAST interface.
+  const metadata: Record<string, string> = {};
+  if (headerProps.dendrogram) metadata.dendrogram = "true";
+  if (cut !== undefined) metadata.cut = String(cut);
+
   return {
     type: "phylo",
     title,
@@ -478,6 +508,6 @@ export function parsePhylo(text: string): PhyloTreeAST {
     scaleLabel,
     mrsd: headerProps.mrsd,
     outgroup,
-    metadata: {},
+    metadata,
   };
 }
