@@ -20,7 +20,7 @@ function GalleryCard({ ex }: { ex: GalleryExample }) {
   const svg = safeRender(ex.dsl);
   const cluster = getDiagramCluster(ex.diagram);
   const clusterColor = CLUSTER_META[cluster]?.color ?? 'var(--text-muted)';
-  const industry = INDUSTRY_LABELS[ex.industry] ?? { label: ex.industry, icon: '📋' };
+  const industry = INDUSTRY_LABELS[ex.industry] ?? { label: ex.industry };
   const exampleHref = `/examples/${ex.slug}`;
   return (
     <article className="gal-card">

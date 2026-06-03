@@ -12,6 +12,7 @@ import {
 } from 'schematex/ai';
 import { allExamples, type Example } from '@/lib/examples-source';
 import { parseChangelog } from '@/lib/changelog';
+import { CLUSTER_DISPLAY } from '@/lib/clusters';
 
 export interface DiagramExampleThumb {
   slug: string;
@@ -41,24 +42,6 @@ export interface DiagramClusterGroup {
   label: string;
   entries: DiagramIndexEntry[];
 }
-
-// Order + label per cluster. Icons come from <ClusterIcon> (no emoji).
-const CLUSTER_DISPLAY: Record<DiagramCluster, { label: string; order: number }> = {
-  relationships:            { label: 'Relationships',            order: 0 },
-  'electrical-industrial':  { label: 'Electrical & Industrial',  order: 1 },
-  'behavior-modeling':      { label: 'Behavior Modeling',        order: 2 },
-  'software-uml':           { label: 'Software / UML',           order: 2.5 },
-  'corporate-legal':        { label: 'Corporate & Legal',        order: 3 },
-  'causality-analysis':     { label: 'Causality & Analysis',     order: 4 },
-  strategy:                 { label: 'Strategy',                 order: 5 },
-  knowledge:                { label: 'Knowledge',                order: 6 },
-  research:                 { label: 'Research',                 order: 7 },
-  'project-management':     { label: 'Project Management',       order: 8 },
-  concurrency:              { label: 'Concurrency',              order: 8.5 },
-  'risk-reliability':       { label: 'Risk & Reliability',       order: 8.7 },
-  'network-infrastructure': { label: 'Network & Infrastructure', order: 9 },
-  generic:                  { label: 'General',                  order: 10 },
-};
 
 const SYMBOL_SHEET_TYPES = new Set<DiagramType>(SYMBOL_CATALOG_TYPES);
 

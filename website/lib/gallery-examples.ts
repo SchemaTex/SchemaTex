@@ -1,59 +1,24 @@
 // Types, label maps, and cluster helpers for the gallery UI.
 // The actual example data lives in content/examples/*.mdx — see lib/examples-source.ts.
+//
+// The diagram list, labels, and clusters are DERIVED from the package registry
+// (schematex/ai) — there is no hand-maintained type list here. Add a diagram to
+// DIAGRAM_REGISTRY and it shows up in the gallery filters automatically.
+import {
+  DIAGRAM_REGISTRY,
+  getDiagramMeta,
+  type DiagramType,
+  type DiagramCluster,
+} from 'schematex/ai';
+import { CLUSTER_DISPLAY, CLUSTERS_ORDERED } from '@/lib/clusters';
+import { type UseCase, USE_CASE_LABELS, resolveUseCase } from '@/lib/use-cases';
 
-export type DiagramType =
-  | 'genogram'
-  | 'ecomap'
-  | 'pedigree'
-  | 'phylo'
-  | 'sociogram'
-  | 'timing'
-  | 'logic'
-  | 'circuit'
-  | 'ladder'
-  | 'sld'
-  | 'block'
-  | 'fbd'
-  | 'sfc'
-  | 'pid'
-  | 'breadboard'
-  | 'entity'
-  | 'erd'
-  | 'fishbone'
-  | 'venn'
-  | 'decisiontree'
-  | 'matrix'
-  | 'usecase'
-  | 'sequence'
-  | 'bpmn'
-  | 'state'
-  | 'prisma'
-  | 'pert'
-  | 'petri'
-  | 'flowchart'
-  | 'mindmap'
-  | 'orgchart'
-  | 'timeline'
-  | 'network'
-  | 'umlclass'
-  | 'faulttree'
-  | 'bowtie'
-  | 'eventtree'
-  | 'fmea'
-  | 'causalloop'
-  | 'markov'
-  | 'gitgraph'
-  | 'epc'
-  | 'idef0'
-  | 'threatmodel';
+export type { DiagramType };
 
-export type Industry =
-  | 'healthcare'
-  | 'legal-finance'
-  | 'industrial'
-  | 'education'
-  | 'research'
-  | 'business';
+// "Industry" is the gallery's use-case axis — derived from the curated
+// use-case taxonomy (lib/use-cases.ts), not a hand-kept enum.
+export type Industry = UseCase;
+export { resolveUseCase };
 
 export type Complexity = 1 | 2 | 3;
 
@@ -69,61 +34,14 @@ export interface GalleryExample {
   hasDetailPage: boolean;
 }
 
-export const DIAGRAM_LABELS: Record<DiagramType, { label: string; icon: string }> = {
-  genogram: { label: 'Genogram', icon: '👪' },
-  ecomap: { label: 'Ecomap', icon: '🌐' },
-  pedigree: { label: 'Pedigree', icon: '🧬' },
-  phylo: { label: 'Phylogenetic', icon: '🌿' },
-  sociogram: { label: 'Sociogram', icon: '🕸' },
-  timing: { label: 'Timing', icon: '⏱' },
-  logic: { label: 'Logic gate', icon: '🔌' },
-  circuit: { label: 'Circuit', icon: '⚡' },
-  ladder: { label: 'Ladder logic', icon: '🪜' },
-  sld: { label: 'Single-line', icon: '🔋' },
-  block: { label: 'Block diagram', icon: '📦' },
-  fbd: { label: 'Function block', icon: '🧮' },
-  sfc: { label: 'Sequential FC', icon: '🔢' },
-  pid: { label: 'P&ID', icon: '🛢' },
-  breadboard: { label: 'Breadboard', icon: '🍞' },
-  entity: { label: 'Entity structure', icon: '🏢' },
-  erd: { label: 'ER diagram', icon: '🗄' },
-  fishbone: { label: 'Fishbone', icon: '🐟' },
-  venn: { label: 'Venn / Euler', icon: '⊙' },
-  decisiontree: { label: 'Decision tree', icon: '🌳' },
-  matrix: { label: 'Matrix / quadrant', icon: '🔲' },
-  usecase: { label: 'Use case', icon: '🧩' },
-  sequence: { label: 'Sequence', icon: '💬' },
-  bpmn: { label: 'BPMN', icon: '🔀' },
-  state: { label: 'State diagram', icon: '🔄' },
-  prisma: { label: 'PRISMA flow', icon: '📊' },
-  pert: { label: 'PERT / CPM', icon: '🗓' },
-  petri: { label: 'Petri net', icon: '◉' },
-  flowchart: { label: 'Flowchart', icon: '🔷' },
-  mindmap: { label: 'Mindmap', icon: '🧠' },
-  orgchart: { label: 'Org chart', icon: '🏛' },
-  timeline: { label: 'Timeline', icon: '📅' },
-  network: { label: 'Network topology', icon: '🖧' },
-  umlclass: { label: 'UML class', icon: '🧱' },
-  faulttree: { label: 'Fault tree', icon: '🛡' },
-  bowtie: { label: 'Bowtie', icon: '🎀' },
-  eventtree: { label: 'Event tree', icon: '🌲' },
-  fmea: { label: 'FMEA', icon: '📋' },
-  causalloop: { label: 'Causal loop', icon: '🔁' },
-  markov: { label: 'Markov chain', icon: '🎲' },
-  gitgraph: { label: 'Git graph', icon: '🔗' },
-  epc: { label: 'EPC', icon: '⚙️' },
-  idef0: { label: 'IDEF0', icon: '🏗' },
-  threatmodel: { label: 'Threat model', icon: '🔐' },
-};
+// label per diagram type, derived from the registry's canonical `name`.
+export const DIAGRAM_LABELS: Record<DiagramType, { label: string }> =
+  Object.fromEntries(
+    DIAGRAM_REGISTRY.map((m) => [m.type, { label: m.name }]),
+  ) as Record<DiagramType, { label: string }>;
 
-export const INDUSTRY_LABELS: Record<Industry, { label: string; icon: string }> = {
-  healthcare: { label: 'Healthcare', icon: '🩺' },
-  'legal-finance': { label: 'Legal & Finance', icon: '⚖️' },
-  industrial: { label: 'Industrial', icon: '🏭' },
-  education: { label: 'Education', icon: '🎓' },
-  research: { label: 'Research', icon: '🔬' },
-  business: { label: 'Business', icon: '💼' },
-};
+// use-case label per id, from the curated taxonomy.
+export const INDUSTRY_LABELS: Record<Industry, { label: string }> = USE_CASE_LABELS;
 
 export const COMPLEXITY_LABELS: Record<Complexity, string> = {
   1: 'Minimal',
@@ -131,35 +49,23 @@ export const COMPLEXITY_LABELS: Record<Complexity, string> = {
   3: 'Advanced',
 };
 
-export const CLUSTER_TO_TYPES: Record<string, DiagramType[]> = {
-  relationships: ['genogram', 'ecomap', 'pedigree', 'sociogram', 'phylo'],
-  'electrical-industrial': ['timing', 'logic', 'circuit', 'ladder', 'sld', 'block', 'fbd', 'sfc', 'pid', 'breadboard'],
-  'corporate-legal': ['entity', 'erd', 'orgchart'],
-  'causality-analysis': ['fishbone', 'venn', 'decisiontree', 'matrix', 'causalloop', 'markov'],
-  'software-uml': ['umlclass', 'usecase', 'sequence', 'bpmn', 'state', 'petri', 'gitgraph', 'epc'],
-  'risk-reliability': ['faulttree', 'bowtie', 'eventtree', 'fmea'],
-  research: ['prisma'],
-  'project-management': ['pert', 'idef0'],
-  'network-infrastructure': ['network', 'threatmodel'],
-  general: ['flowchart', 'mindmap', 'timeline'],
-};
+// cluster id → its diagram types, grouped + ordered straight from the registry.
+export const CLUSTER_TO_TYPES: Record<DiagramCluster, DiagramType[]> = (() => {
+  const map = Object.fromEntries(
+    CLUSTERS_ORDERED.map((c) => [c, [] as DiagramType[]]),
+  ) as Record<DiagramCluster, DiagramType[]>;
+  for (const m of DIAGRAM_REGISTRY) map[m.cluster].push(m.type);
+  return map;
+})();
 
-export const CLUSTER_META: Record<string, { label: string; color: string }> = {
-  relationships:           { label: 'Relationships',           color: 'var(--cat-0)' },
-  'electrical-industrial': { label: 'Electrical & Industrial', color: 'var(--cat-2)' },
-  'corporate-legal':       { label: 'Corporate & Legal',       color: 'var(--cat-3)' },
-  'causality-analysis':    { label: 'Causality & Analysis',    color: 'var(--cat-1)' },
-  'software-uml':          { label: 'Software & UML',          color: 'var(--cat-4)' },
-  'risk-reliability':      { label: 'Risk & Reliability',      color: 'var(--cat-4)' },
-  research:                { label: 'Research',                color: 'var(--cat-5)' },
-  'project-management':    { label: 'Project Management',      color: 'var(--cat-6)' },
-  'network-infrastructure': { label: 'Network & Infrastructure', color: 'var(--cat-2)' },
-  general:                 { label: 'General',                 color: 'var(--cat-7)' },
-};
+export const CLUSTER_META: Record<DiagramCluster, { label: string; color: string }> =
+  Object.fromEntries(
+    (Object.keys(CLUSTER_DISPLAY) as DiagramCluster[]).map((c) => [
+      c,
+      { label: CLUSTER_DISPLAY[c].label, color: CLUSTER_DISPLAY[c].color },
+    ]),
+  ) as Record<DiagramCluster, { label: string; color: string }>;
 
-export function getDiagramCluster(diagram: DiagramType): string {
-  for (const [cluster, types] of Object.entries(CLUSTER_TO_TYPES)) {
-    if ((types as string[]).includes(diagram)) return cluster;
-  }
-  return 'relationships';
+export function getDiagramCluster(diagram: DiagramType): DiagramCluster {
+  return getDiagramMeta(diagram)?.cluster ?? 'generic';
 }
