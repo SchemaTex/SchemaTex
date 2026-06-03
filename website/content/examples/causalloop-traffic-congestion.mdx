@@ -1,0 +1,32 @@
+---
+title: Urban traffic congestion (two balancing loops)
+description: The classic system-dynamics counterintuitive result — widening roads induces demand. The engine enumerates the feedback loops and classifies each reinforcing or balancing by link polarity.
+diagram: causalloop
+standard: Sterman, Business Dynamics (2000)
+industry: [urban-planning, systems-thinking]
+persona: For the policy / planning analyst
+complexity: 2
+tags: [causalloop, cld, system-dynamics, induced-demand, balancing, transit]
+featured: false
+relatedLink:
+  label: Causal loop syntax
+  href: /docs/causalloop
+status: published
+dsl: |
+  causalloop "Urban traffic congestion"
+    "Road capacity" -> "Travel speed" : +
+    "Travel speed" -> "Driving attractiveness" : +
+    "Driving attractiveness" -> "Number of cars" : +
+    "Number of cars" -> Congestion : +
+    Congestion -> "Travel speed" : -
+    Congestion -> "Public transit use" : +
+    "Public transit use" -> "Number of cars" : -
+    loop B1 "Congestion brake"
+    loop B2 "Transit substitution"
+---
+
+## What this shows
+
+The system-dynamics model behind one of the most counterintuitive results in transport policy: widening a road does not durably cut congestion, because faster travel makes driving more attractive, which pulls more cars onto the road until it clogs again. Two balancing loops fight the build-up — congestion itself slows travel and dampens demand, and congestion pushes commuters onto public transit, which removes cars.
+
+The engine classifies the loops by polarity rather than asking you to. It walks the signed graph, enumerates each elementary cycle, and counts the negative links: both feedback loops here carry an odd number of negative links, so both come back **balancing (B)** and are numbered B1, B2. That even/odd classification — Sterman's textbook rule — is the analysis a drawing tool skips, and it is what explains why the system settles back to congestion no matter how much capacity is added.

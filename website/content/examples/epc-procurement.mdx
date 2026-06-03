@@ -1,0 +1,42 @@
+---
+title: Procurement EPC with XOR split
+description: An ARIS event-driven process chain for purchase requisitions, branching on an XOR connector and re-joining on an AND. The engine validates EPC well-formedness — event/function alternation and the event-cannot-decide rule.
+diagram: epc
+standard: ARIS EPC (Scheer)
+industry: [business, sap]
+persona: For the business-process analyst
+complexity: 3
+tags: [epc, aris, business-process, xor, and, control-flow]
+featured: false
+relatedLink:
+  label: EPC syntax
+  href: /docs/epc
+status: published
+dsl: |
+  epc "Purchase requisition"
+    layout: tb
+    event E1 "Material need identified"
+    function F1 "Create requisition"
+    function F2 "Determine source of supply"
+    xor X1
+    event E2 "Stock supplier exists"
+    event E3 "New supplier needed"
+    function F3 "Issue purchase order"
+    function F4 "Run tender process"
+    and A1
+    event E4 "Order dispatched"
+    event E5 "Supplier qualified"
+    E1 -> F1 -> F2 -> X1
+    X1 -> E2
+    X1 -> E3
+    E2 -> F3 -> A1
+    E3 -> F4 -> A1
+    A1 -> E4
+    A1 -> E5
+---
+
+## What this shows
+
+A SAP-style procurement process modelled as an ARIS event-driven process chain (EPC), the notation that strictly alternates passive **events** ("Material need identified") and active **functions** ("Create requisition"). After sourcing, an **XOR** connector splits the flow on a real decision — an existing stock supplier versus a new supplier needing a tender — and the two paths re-converge on an **AND** connector that fans back out to the dispatched order and the qualified-supplier outcome.
+
+EPC's value here is structural validation, not a computed number. The engine checks the well-formedness rules and flags violations rather than silently drawing a broken model: event/function alternation along every path, single-in/single-out multiplicity carried by the connectors, reachability from start to end, and the **event-cannot-decide signature rule** — a passive event may not be the source of an XOR/OR split. That's why the decision routes *through* function `F2` before reaching the XOR, which is the correct ARIS form.

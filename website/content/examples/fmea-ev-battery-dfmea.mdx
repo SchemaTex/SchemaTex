@@ -1,0 +1,43 @@
+---
+title: EV battery pack DFMEA
+description: A design FMEA for an electric-vehicle battery pack. The engine flattens the failure chain, computes RPN = S × O × D, and derives the AIAG-VDA Action Priority — keeping a S10 safety failure High even when its RPN looks low.
+diagram: fmea
+standard: AIAG-VDA FMEA Handbook (2019) / IEC 60812
+industry: [automotive, manufacturing]
+persona: For the design / reliability engineer
+complexity: 3
+tags: [fmea, dfmea, rpn, action-priority, severity, automotive]
+featured: false
+relatedLink:
+  label: FMEA syntax
+  href: /docs/fmea
+status: published
+dsl: |
+  fmea "EV battery pack DFMEA"
+    type: design
+    rank: ap
+    flag: ap >= High
+    number: DFMEA-2026-014
+    item "Cell module" fn "Store and deliver energy"
+      mode "Thermal runaway"
+        effect "Pack fire / occupant injury" sev: 10
+        cause "Internal short from dendrite growth" occ: 3
+          controls prevention: "Cell qualification", detection: "In-line CT scan" det: 4
+        cause "Overcharge past cutoff" occ: 2
+          controls prevention: "BMS voltage clamp", detection: "Redundant voltage sense" det: 3
+      mode "Capacity fade"
+        effect "Reduced range" sev: 6
+        cause "Electrolyte depletion" occ: 5
+          controls detection: "Periodic SOH estimate" det: 6
+    item "Busbar joint" fn "Conduct current between modules"
+      mode "High-resistance connection"
+        effect "Local overheating" sev: 8
+        cause "Loose torque on weld" occ: 4
+          controls detection: "End-of-line resistance test" det: 4
+---
+
+## What this shows
+
+A design FMEA (DFMEA) on the highest-stakes subsystem in an electric vehicle. The nested chain reads item → mode → effect/cause/controls: a cell module that can suffer thermal runaway or capacity fade, and a busbar joint that can go high-resistance. Each effect carries a Severity, each cause an Occurrence, each control the Detection it earns — the three AIAG-VDA 1–10 scales.
+
+The engine computes the priority rather than just tabling it. It flattens to one worksheet row per (item, mode, cause), multiplies RPN = S × O × D, and — the part that matters — derives the AIAG-VDA Action Priority, which is severity-primary. The thermal-runaway row sits at S10·O3·D4 with an RPN of 120; a naive RPN sort would rank it below a noisier low-severity defect, but Action Priority keeps every safety failure (S = 9–10) at **High** regardless. The `flag: ap >= High` directive highlights exactly those rows so the safety-critical work rises to the top.

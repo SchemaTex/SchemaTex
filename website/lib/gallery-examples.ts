@@ -37,7 +37,15 @@ export type DiagramType =
   | 'network'
   | 'umlclass'
   | 'faulttree'
-  | 'bowtie';
+  | 'bowtie'
+  | 'eventtree'
+  | 'fmea'
+  | 'causalloop'
+  | 'markov'
+  | 'gitgraph'
+  | 'epc'
+  | 'idef0'
+  | 'threatmodel';
 
 export type Industry =
   | 'healthcare'
@@ -98,6 +106,14 @@ export const DIAGRAM_LABELS: Record<DiagramType, { label: string; icon: string }
   umlclass: { label: 'UML class', icon: '🧱' },
   faulttree: { label: 'Fault tree', icon: '🛡' },
   bowtie: { label: 'Bowtie', icon: '🎀' },
+  eventtree: { label: 'Event tree', icon: '🌲' },
+  fmea: { label: 'FMEA', icon: '📋' },
+  causalloop: { label: 'Causal loop', icon: '🔁' },
+  markov: { label: 'Markov chain', icon: '🎲' },
+  gitgraph: { label: 'Git graph', icon: '🔗' },
+  epc: { label: 'EPC', icon: '⚙️' },
+  idef0: { label: 'IDEF0', icon: '🏗' },
+  threatmodel: { label: 'Threat model', icon: '🔐' },
 };
 
 export const INDUSTRY_LABELS: Record<Industry, { label: string; icon: string }> = {
@@ -119,12 +135,12 @@ export const CLUSTER_TO_TYPES: Record<string, DiagramType[]> = {
   relationships: ['genogram', 'ecomap', 'pedigree', 'sociogram', 'phylo'],
   'electrical-industrial': ['timing', 'logic', 'circuit', 'ladder', 'sld', 'block', 'fbd', 'sfc', 'pid', 'breadboard'],
   'corporate-legal': ['entity', 'erd', 'orgchart'],
-  'causality-analysis': ['fishbone', 'venn', 'decisiontree', 'matrix'],
-  'software-uml': ['umlclass', 'usecase', 'sequence', 'bpmn', 'state', 'petri'],
-  'risk-reliability': ['faulttree', 'bowtie'],
+  'causality-analysis': ['fishbone', 'venn', 'decisiontree', 'matrix', 'causalloop', 'markov'],
+  'software-uml': ['umlclass', 'usecase', 'sequence', 'bpmn', 'state', 'petri', 'gitgraph', 'epc'],
+  'risk-reliability': ['faulttree', 'bowtie', 'eventtree', 'fmea'],
   research: ['prisma'],
-  'project-management': ['pert'],
-  'network-infrastructure': ['network'],
+  'project-management': ['pert', 'idef0'],
+  'network-infrastructure': ['network', 'threatmodel'],
   general: ['flowchart', 'mindmap', 'timeline'],
 };
 

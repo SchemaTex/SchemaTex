@@ -270,6 +270,44 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "notes": "The HC-SR04 is the most common ultrasonic distance sensor in beginner Arduino kits. Four pins, four wires, no driver IC needed. The sensor module is rendered as a blue PCB tile with its four pin labels (VCC / TRIG / ECHO / GND) sitting above the breadboard rows where they plug in.\n\nThe TRIG line is a digital output from the Arduino — pulse it high for 10 µs and the sensor fires an ultrasonic chirp. The ECHO line is a digital input — its high-time, in microseconds, is twice the round-trip distance divided by the speed of sound. Conventional wiring uses yellow for TRIG and green for ECHO so the two signals are visually distinguishable, though the colors carry no electrical meaning."
   },
   {
+    "slug": "causalloop-growth-engine",
+    "diagram": "causalloop",
+    "title": "Startup growth engine (R and B loops)",
+    "description": "A system-dynamics model of a viral product whose growth is capped by scaling strain. The engine enumerates every feedback loop and classifies each reinforcing (R) or balancing (B) by Sterman's even/odd rule.",
+    "standard": "Sterman, Business Dynamics (2000)",
+    "tags": [
+      "causalloop",
+      "cld",
+      "system-dynamics",
+      "feedback",
+      "reinforcing",
+      "balancing"
+    ],
+    "complexity": 3,
+    "featured": false,
+    "dsl": "causalloop \"Startup growth engine\"\n  \"Active users\" -> \"Word of mouth\" : +\n  \"Word of mouth\" -> \"New signups\" : +\n  \"New signups\" -> \"Active users\" : +\n  \"Active users\" -> \"Server load\" : +\n  \"Server load\" -> \"App performance\" : -\n  \"App performance\" -> \"Active users\" : + delay\n  \"Active users\" -> Revenue : +\n  Revenue -> \"Infra investment\" : +\n  \"Infra investment\" -> \"App performance\" : + delay\n  loop R1 \"Viral flywheel\"\n  loop B1 \"Scaling strain\"",
+    "notes": "## What this shows\n\nThe two-sided story of every viral product. One reinforcing loop drives growth: more active users produce more word of mouth, which drives signups, which adds users — an amplifying cycle. A second, balancing loop pushes back: more users raise server load, which degrades app performance, which (after a delay) loses users. The `delay` markers put the system-dynamics hash mark on the slow legs, where the lag between cause and effect is what makes the system overshoot.\n\nThe engine finds and labels the loops for you, which a drawing tool cannot. It enumerates every elementary cycle in the signed graph with Johnson's algorithm, then applies Sterman's rule — count the negative links, even means reinforcing (R), odd means balancing (B) — and numbers them R1, B1… The growth cycle comes back R (zero negatives), the load cycle B (one negative). The named `loop` declarations attach the human phrasing — \"Viral flywheel\", \"Scaling strain\" — onto the loops the engine detects."
+  },
+  {
+    "slug": "causalloop-traffic-congestion",
+    "diagram": "causalloop",
+    "title": "Urban traffic congestion (two balancing loops)",
+    "description": "The classic system-dynamics counterintuitive result — widening roads induces demand. The engine enumerates the feedback loops and classifies each reinforcing or balancing by link polarity.",
+    "standard": "Sterman, Business Dynamics (2000)",
+    "tags": [
+      "causalloop",
+      "cld",
+      "system-dynamics",
+      "induced-demand",
+      "balancing",
+      "transit"
+    ],
+    "complexity": 2,
+    "featured": false,
+    "dsl": "causalloop \"Urban traffic congestion\"\n  \"Road capacity\" -> \"Travel speed\" : +\n  \"Travel speed\" -> \"Driving attractiveness\" : +\n  \"Driving attractiveness\" -> \"Number of cars\" : +\n  \"Number of cars\" -> Congestion : +\n  Congestion -> \"Travel speed\" : -\n  Congestion -> \"Public transit use\" : +\n  \"Public transit use\" -> \"Number of cars\" : -\n  loop B1 \"Congestion brake\"\n  loop B2 \"Transit substitution\"",
+    "notes": "## What this shows\n\nThe system-dynamics model behind one of the most counterintuitive results in transport policy: widening a road does not durably cut congestion, because faster travel makes driving more attractive, which pulls more cars onto the road until it clogs again. Two balancing loops fight the build-up — congestion itself slows travel and dampens demand, and congestion pushes commuters onto public transit, which removes cars.\n\nThe engine classifies the loops by polarity rather than asking you to. It walks the signed graph, enumerates each elementary cycle, and counts the negative links: both feedback loops here carry an odd number of negative links, so both come back **balancing (B)** and are numbered B1, B2. That even/odd classification — Sterman's textbook rule — is the analysis a drawing tool skips, and it is what explains why the system settles back to congestion no matter how much capacity is added."
+  },
+  {
     "slug": "circuit-bridge-rectifier-supply",
     "diagram": "circuit",
     "title": "Bridge rectifier power supply",
@@ -559,6 +597,25 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "notes": "## Scenario\n\nA startup attorney or CFO documents the post-Series A ownership table for a 409A valuation, board consent, or investor report. The cap table diagram makes the dilution story visual — founders can immediately see their post-money percentage, and the VC can verify their ownership stake before signing the term sheet.\n\n## Annotation key\n\n- `-> acme : 45%` — ownership arrow with percentage label; all percentages should sum to 100%\n- `individual` — natural person (founder, angel)\n- `lp` — institutional investor entity (fund/LP)\n- `trust` — the ESOP/option pool (typically a Delaware trust or reserved pool)\n- `corp@DE` — the issuer (Delaware C-corp)\n\n## How to read\n\nAcme Inc. (Delaware C-corp) sits at the bottom as the issuer. Five shareholder classes flow down with their ownership arrows: founders at 45%, the lead Series A investor at 22%, the employee option pool at 15%, the seed fund at 12%, and angels at 6%. Percentages sum to 100%, representing a clean fully-diluted cap table on the day of Series A close."
   },
   {
+    "slug": "epc-procurement",
+    "diagram": "epc",
+    "title": "Procurement EPC with XOR split",
+    "description": "An ARIS event-driven process chain for purchase requisitions, branching on an XOR connector and re-joining on an AND. The engine validates EPC well-formedness — event/function alternation and the event-cannot-decide rule.",
+    "standard": "ARIS EPC (Scheer)",
+    "tags": [
+      "epc",
+      "aris",
+      "business-process",
+      "xor",
+      "and",
+      "control-flow"
+    ],
+    "complexity": 3,
+    "featured": false,
+    "dsl": "epc \"Purchase requisition\"\n  layout: tb\n  event E1 \"Material need identified\"\n  function F1 \"Create requisition\"\n  function F2 \"Determine source of supply\"\n  xor X1\n  event E2 \"Stock supplier exists\"\n  event E3 \"New supplier needed\"\n  function F3 \"Issue purchase order\"\n  function F4 \"Run tender process\"\n  and A1\n  event E4 \"Order dispatched\"\n  event E5 \"Supplier qualified\"\n  E1 -> F1 -> F2 -> X1\n  X1 -> E2\n  X1 -> E3\n  E2 -> F3 -> A1\n  E3 -> F4 -> A1\n  A1 -> E4\n  A1 -> E5",
+    "notes": "## What this shows\n\nA SAP-style procurement process modelled as an ARIS event-driven process chain (EPC), the notation that strictly alternates passive **events** (\"Material need identified\") and active **functions** (\"Create requisition\"). After sourcing, an **XOR** connector splits the flow on a real decision — an existing stock supplier versus a new supplier needing a tender — and the two paths re-converge on an **AND** connector that fans back out to the dispatched order and the qualified-supplier outcome.\n\nEPC's value here is structural validation, not a computed number. The engine checks the well-formedness rules and flags violations rather than silently drawing a broken model: event/function alternation along every path, single-in/single-out multiplicity carried by the connectors, reachability from start to end, and the **event-cannot-decide signature rule** — a passive event may not be the source of an XOR/OR split. That's why the decision routes *through* function `F2` before reaching the XOR, which is the correct ARIS form."
+  },
+  {
     "slug": "erd-billing-ledger-audit-trail",
     "diagram": "erd",
     "title": "Billing ledger and audit trail",
@@ -631,6 +688,44 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "featured": true,
     "dsl": "erd\ntitle: \"University Schema\"\n\ntable Student {\n  student_id  int       PK\n  name        varchar\n  email       varchar   UK\n  major_id    int       FK -> Major.major_id\n}\n\ntable Major {\n  major_id    int       PK\n  name        varchar\n}\n\ntable Course {\n  course_id   int       PK\n  title       varchar\n  credits     int\n}\n\ntable Enrollment {\n  student_id  int       PK FK -> Student.student_id\n  course_id   int       PK FK -> Course.course_id\n  grade       char\n}\n\nref Student.major_id many-mandatory -- one-mandatory Major.major_id : \"majors in\"\nref Enrollment.student_id many-mandatory -- one-mandatory Student.student_id\nref Enrollment.course_id many-mandatory -- one-mandatory Course.course_id",
     "notes": "The university schema is the canonical introduction to associative entities. The M:N relationship between Student and Course is resolved through Enrollment, which carries the relationship attribute `grade`. Both Student and Course join Enrollment via composite primary keys (each FK column doubles as part of the PK)."
+  },
+  {
+    "slug": "eventtree-flammable-release",
+    "diagram": "eventtree",
+    "title": "Flammable release event tree (process QRA)",
+    "description": "A loss-of-containment release branched through detection, isolation, and ignition. The engine computes each outcome frequency — safe shutdown, jet fire, dispersion, vapour-cloud explosion — and flags the dominant one.",
+    "standard": "IEC 62502 / process QRA",
+    "tags": [
+      "eventtree",
+      "eta",
+      "qra",
+      "loss-of-containment",
+      "ignition",
+      "explosion"
+    ],
+    "complexity": 2,
+    "featured": false,
+    "dsl": "eventtree \"Flammable release\"\n  initiating REL \"Loss of containment\" freq: 0.02\n  function DET \"Gas detection alarms\" p: 0.05\n  function ISO \"Emergency isolation\" p: 0.1\n  function IGN \"No ignition source\" p: 0.3\n  outcome s s s -> \"Safe shutdown\"\n  outcome s s f -> \"Jet fire\"\n  outcome s f * -> \"Large dispersion\"\n  outcome f * * -> \"Vapour cloud explosion\"",
+    "notes": "## What this shows\n\nThe quantitative risk assessment (QRA) event tree a process-safety study runs after a HAZOP flags a credible leak. The initiating event — a flammable release at `0.02` per year — is challenged by three safety functions in order: gas detection, emergency isolation, and the chance of no ignition source. The `IGN` function reads as a *success* when there is no ignition (`s`), so its failure leg `f` is where the fire or explosion lives.\n\nThe value is the computed end-state frequencies. The engine propagates the release frequency through each branch's success/failure probability to size each consequence — safe shutdown, jet fire, large dispersion, vapour-cloud explosion — and accents the dominant sequence in red, the same role the single point of failure plays in a fault tree. That ranked, numeric reading is what turns a forking ladder into an analysis."
+  },
+  {
+    "slug": "eventtree-loca",
+    "diagram": "eventtree",
+    "title": "Large LOCA event tree (reactor PRA)",
+    "description": "A large-break loss-of-coolant accident branched through four reactor safety functions. The engine computes every sequence frequency from the initiating rate and per-function failure probabilities, then highlights the dominant accident sequence.",
+    "standard": "IEC 62502 / NUREG (WASH-1400)",
+    "tags": [
+      "eventtree",
+      "eta",
+      "pra",
+      "nuclear",
+      "sequence-frequency",
+      "core-damage"
+    ],
+    "complexity": 3,
+    "featured": false,
+    "dsl": "eventtree \"Large LOCA\"\n  initiating LOCA \"Large-break LOCA\" freq: 1e-4\n  function RT \"Reactor trips\" p: 0.001\n  function ECCS \"ECCS injection\" p: 0.01\n  function CHR \"Containment heat removal\" p: 0.02\n  function CI \"Containment integrity\" p: 0.005\n  outcome s s s s -> \"OK\"\n  outcome s s s f -> \"Late release\"\n  outcome s s f * -> \"Late release\"\n  outcome s f * * -> \"Early release\"\n  outcome f * * * -> \"Core damage\"",
+    "notes": "## What this shows\n\nThe textbook nuclear probabilistic-risk-assessment (PRA) tree. One initiating event — a large pipe break draining the coolant at a frequency of `1e-4` per year — is asked, left to right, whether each safety function holds: reactor trip, emergency core cooling (ECCS), containment heat removal, then containment integrity. Each `*` prunes a path that has already terminated, so the tree stays compact instead of ballooning to a full 2⁴ ladder.\n\nThe engine does the arithmetic an event tree exists to give. It multiplies the initiating frequency by the success leg (`1 − p`) or failure leg (`p`) at each branch to get every sequence frequency, sums the two `\"Late release\"` leaves into one rolled-up outcome, and paints the largest-frequency path — the dominant accident sequence — in red. That computed answer, not the forking picture, is the deliverable a drawing tool can't produce."
   },
   {
     "slug": "faulttree-pump-redundancy",
@@ -858,6 +953,44 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "notes": "## Scenario\n\nA product ops lead circulates this flowchart during an ops-review meeting to align engineering, customer support, and fulfillment on the single source of truth for what happens when a new order comes in. It surfaces the two decision gates (inventory, payment) and the three exception paths (out-of-stock notification, payment failure with released hold, successful ship with confirmation).\n\n## Annotation key\n\n- `([…])` — stadium / terminal; used for Start and End\n- `{…}` — diamond; decision node\n- `[…]` — rectangle; process step\n- `-->|label|` — edge with a branch label (`Yes` / `No`)\n\n## How to read\n\nStart at the top-left terminal. Inventory check gates the first branch — a \"No\" routes straight to the End after notification. A \"Yes\" reserves stock then hits the payment gate. Payment failure releases the reservation and goes to End; success ships and emails the customer. Every path terminates at the same End node, so nothing dangles."
   },
   {
+    "slug": "fmea-ev-battery-dfmea",
+    "diagram": "fmea",
+    "title": "EV battery pack DFMEA",
+    "description": "A design FMEA for an electric-vehicle battery pack. The engine flattens the failure chain, computes RPN = S × O × D, and derives the AIAG-VDA Action Priority — keeping a S10 safety failure High even when its RPN looks low.",
+    "standard": "AIAG-VDA FMEA Handbook (2019) / IEC 60812",
+    "tags": [
+      "fmea",
+      "dfmea",
+      "rpn",
+      "action-priority",
+      "severity",
+      "automotive"
+    ],
+    "complexity": 3,
+    "featured": false,
+    "dsl": "fmea \"EV battery pack DFMEA\"\n  type: design\n  rank: ap\n  flag: ap >= High\n  number: DFMEA-2026-014\n  item \"Cell module\" fn \"Store and deliver energy\"\n    mode \"Thermal runaway\"\n      effect \"Pack fire / occupant injury\" sev: 10\n      cause \"Internal short from dendrite growth\" occ: 3\n        controls prevention: \"Cell qualification\", detection: \"In-line CT scan\" det: 4\n      cause \"Overcharge past cutoff\" occ: 2\n        controls prevention: \"BMS voltage clamp\", detection: \"Redundant voltage sense\" det: 3\n    mode \"Capacity fade\"\n      effect \"Reduced range\" sev: 6\n      cause \"Electrolyte depletion\" occ: 5\n        controls detection: \"Periodic SOH estimate\" det: 6\n  item \"Busbar joint\" fn \"Conduct current between modules\"\n    mode \"High-resistance connection\"\n      effect \"Local overheating\" sev: 8\n      cause \"Loose torque on weld\" occ: 4\n        controls detection: \"End-of-line resistance test\" det: 4",
+    "notes": "## What this shows\n\nA design FMEA (DFMEA) on the highest-stakes subsystem in an electric vehicle. The nested chain reads item → mode → effect/cause/controls: a cell module that can suffer thermal runaway or capacity fade, and a busbar joint that can go high-resistance. Each effect carries a Severity, each cause an Occurrence, each control the Detection it earns — the three AIAG-VDA 1–10 scales.\n\nThe engine computes the priority rather than just tabling it. It flattens to one worksheet row per (item, mode, cause), multiplies RPN = S × O × D, and — the part that matters — derives the AIAG-VDA Action Priority, which is severity-primary. The thermal-runaway row sits at S10·O3·D4 with an RPN of 120; a naive RPN sort would rank it below a noisier low-severity defect, but Action Priority keeps every safety failure (S = 9–10) at **High** regardless. The `flag: ap >= High` directive highlights exactly those rows so the safety-critical work rises to the top."
+  },
+  {
+    "slug": "fmea-injection-molding-pfmea",
+    "diagram": "fmea",
+    "title": "Injection-moulding PFMEA",
+    "description": "A process FMEA for an injection-moulding line, ranked the legacy way by RPN. The engine computes RPN = S × O × D for every (step, mode, cause) row and flags the ones that breach the 100 threshold.",
+    "standard": "AIAG-VDA FMEA Handbook (2019) / IEC 60812",
+    "tags": [
+      "fmea",
+      "pfmea",
+      "rpn",
+      "process",
+      "manufacturing",
+      "scrap"
+    ],
+    "complexity": 2,
+    "featured": false,
+    "dsl": "fmea \"Injection moulding PFMEA\"\n  type: process\n  rank: rpn\n  flag: rpn > 100\n  item \"Mould fill step\" fn \"Fill cavity with melt\"\n    mode \"Short shot\"\n      effect \"Incomplete part scrapped\" sev: 7\n      cause \"Injection pressure too low\" occ: 5\n        controls prevention: \"Pressure setpoint lock\", detection: \"Vision check\" det: 4\n      cause \"Blocked gate\" occ: 3\n        controls detection: \"Cycle-time monitor\" det: 6\n  item \"Cooling step\" fn \"Solidify part to spec\"\n    mode \"Warpage\"\n      effect \"Out-of-tolerance dimension\" sev: 6\n      cause \"Uneven cooling channel flow\" occ: 6\n        controls detection: \"CMM sampling\" det: 7",
+    "notes": "## What this shows\n\nA process FMEA (PFMEA) following the steps of an injection-moulding line — the fill step and the cooling step — rather than the parts of a product. Each process step gets its failure modes (short shot, warpage), the effect each has on the part, the process causes behind it, and the in-line controls that prevent or detect it.\n\nThis worksheet is ranked the legacy way with `rank: rpn`, so the engine sorts purely on RPN = S × O × D and the `flag: rpn > 100` directive lights up every row above 100 — here the uneven-cooling warpage row at S6·O6·D7 (RPN 252) and the short-shot pressure row at S7·O5·D4 (RPN 140). Each rendered row carries `data-rpn` and `data-ap`, so even on a legacy RPN worksheet the AIAG-VDA Action Priority is still computed and inspectable underneath."
+  },
+  {
     "slug": "genogram-brca-cancer",
     "diagram": "genogram",
     "title": "Hereditary cancer (BRCA1) family",
@@ -945,6 +1078,44 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "featured": false,
     "dsl": "genogram \"The Potter Family\"\n  fleamont [male, 1909, 1979, deceased]\n  euphemia [female, 1920, 1979, deceased]\n  fleamont -- euphemia\n    james [male, 1960, 1981, deceased]\n  mr_evans [male, 1925, deceased]\n  mrs_evans [female, 1928, deceased]\n  mr_evans -- mrs_evans\n    lily [female, 1960, 1981, deceased]\n    petunia [female, 1958]\n  james -- lily \"m. 1978\"\n    harry [male, 1980, index]\n  petunia -- vernon [male, 1951]\n    dudley [male, 1980]\n  harry -cutoff- petunia\n  harry -hostile- dudley\n  harry -close- lily",
     "notes": "## Scenario\n\nA teaching example for social work students learning genogram notation. The Potter family is fictional but emotionally rich — death years, a marriage date, cross-family emotional relationships, and three distinct relational patterns (cutoff, hostile, close) all in one diagram.\n\n## Annotation key\n\n- `[male/female, birth_year, death_year, deceased]` — person with death marker\n- `\"m. 1978\"` — marriage date label on the union line\n- `index` — marks Harry as the identified patient (proband)\n- `-cutoff-` — estrangement; drawn as two parallel bars across the relationship line\n- `-hostile-` — conflict; drawn as zigzag line\n- `-close-` — enmeshment/closeness; drawn as double parallel line\n\n## How to read\n\nRead each indented block as a family unit. James and Lily (index generation) both died in 1981. Harry's emotional world is defined by three relational lines: cutoff from Aunt Petunia, hostility toward cousin Dudley, and closeness to his deceased mother."
+  },
+  {
+    "slug": "gitgraph-release-flow",
+    "diagram": "gitgraph",
+    "title": "Git Flow release history",
+    "description": "A realistic Git Flow branch/merge/tag history — develop, a feature branch, a tagged release, and a hotfix merged back to both lines. Mermaid gitGraph syntax, rendered through Schematex's zero-dependency engine.",
+    "standard": "Mermaid gitGraph dialect",
+    "tags": [
+      "gitgraph",
+      "git-flow",
+      "branch",
+      "merge",
+      "tag",
+      "hotfix"
+    ],
+    "complexity": 3,
+    "featured": false,
+    "dsl": "gitGraph\n  commit id: \"init\"\n  commit id: \"scaffold\"\n  branch develop\n  checkout develop\n  commit id: \"feature scaffold\"\n  branch feature/login\n  checkout feature/login\n  commit id: \"login UI\"\n  commit id: \"login API\"\n  checkout develop\n  merge feature/login\n  commit id: \"polish\"\n  checkout main\n  merge develop tag: \"v1.0\"\n  branch hotfix\n  checkout hotfix\n  commit id: \"patch CVE\" type: HIGHLIGHT\n  checkout main\n  merge hotfix tag: \"v1.0.1\"\n  checkout develop\n  merge main",
+    "notes": "## What this shows\n\nA full Git Flow release cycle, the branching strategy teams adopt to keep a clean trunk. Work forks off `main` into a long-lived `develop`, then into a short-lived `feature/login` branch; the feature merges back to develop, develop merges to `main` as the tagged `v1.0` release. Then a security `hotfix` branches straight off `main`, lands a HIGHLIGHT commit, ships as `v1.0.1`, and is merged back down into develop so the fix isn't lost — the discipline that keeps the two lines from diverging.\n\nThe DSL is the Mermaid `gitGraph` dialect verbatim, so existing Mermaid sources port directly. The engine replays the operation list in order to assign each commit to a lane, routes the merge connectors from each branch tip without crossings, renders the patch commit emphasised as a HIGHLIGHT, and draws the version tags as flags — all from a KB-scale, dependency-free bundle."
+  },
+  {
+    "slug": "idef0-order-fulfilment",
+    "diagram": "idef0",
+    "title": "IDEF0 A0 — fulfil customer order",
+    "description": "An IDEF0 A0 function decomposition with all four ICOM arrow types. Inputs, controls, mechanisms and outputs each pin to a fixed box edge, so the model is correct by construction per FIPS PUB 183.",
+    "standard": "FIPS PUB 183 (IDEF0)",
+    "tags": [
+      "idef0",
+      "icom",
+      "function-model",
+      "decomposition",
+      "fips-183",
+      "structured-analysis"
+    ],
+    "complexity": 3,
+    "featured": false,
+    "dsl": "idef0 \"Fulfil customer order\"\nnode A0\nfunction A1 \"Validate order\"\nfunction A2 \"Pick and pack\"\nfunction A3 \"Ship and invoice\"\ninput     A1 \"Customer order\"\ncontrol   A1 \"Credit policy\"\nmechanism A1 \"Order management system\"\nA1 -> A2 \"Validated order\"\ninput     A2 \"Inventory\"\ncontrol   A2 \"Picking rules\"\nmechanism A2 \"Warehouse staff\"\nA2 -> A3 \"Packed shipment\"\ncontrol   A3 \"Carrier contract\"\nmechanism A3 \"Shipping carrier\"\noutput    A3 \"Delivered order\"\noutput    A3 \"Invoice\"",
+    "notes": "## What this shows\n\nAn IDEF0 A0 diagram — the top-level functional decomposition of an order-fulfilment system — showing all four ICOM arrow roles. Reading the box edges by convention: **I**nputs enter on the left (the customer order, inventory), **C**ontrols govern from the top (credit policy, picking rules, carrier contract), **M**echanisms supply resources from the bottom (the order system, warehouse staff, carrier), and **O**utputs leave on the right (delivered order, invoice). The box-to-box flows (`A1 -> A2 \"Validated order\"`) chain the three activities.\n\nThe differentiator is that the model is correct by construction, not just drawn. Because the arrow keyword *is* the box edge it attaches to, the engine enforces ICOM placement — you cannot accidentally draw a control as an input. It resolves every box reference, assigns decomposition numbers (A0 → A1..A3), codes the boundary arrows down each edge (I1/C1/O1/M1…), and applies the FIPS 3-to-6-box guideline. A flow that tried to *enter* a box via its `.output` edge would be rejected, because an output leaves a box — the standard is enforced, not suggested."
   },
   {
     "slug": "ladder-conveyor-interlock",
@@ -1055,6 +1226,44 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "featured": true,
     "dsl": "logic \"1-bit Full Adder\"\ninput A, B, Cin\noutput Sum, Cout\ns1 = XOR(A, B)\nSum = XOR(s1, Cin)\nc1 = AND(A, B)\nc2 = AND(s1, Cin)\nCout = OR(c1, c2)",
     "notes": "## Scenario\n\nThe 1-bit full adder is the foundational building block of every arithmetic logic unit. Digital logic students derive it in lecture; FPGA engineers instantiate it in RTL. Schematex renders it from a purely functional description — no manual gate placement, no wire routing — making it easy to embed in textbooks, datasheets, or AI-generated hardware documentation.\n\n## Annotation key\n\n- `input A, B, Cin` — declare named input ports\n- `output Sum, Cout` — declare named output ports\n- `s1 = XOR(A, B)` — intermediate signal `s1` is the XOR of inputs A and B\n- `Sum = XOR(s1, Cin)` — the sum bit is the XOR of the partial sum and carry-in\n- `c1 = AND(A, B)` — carry generated when both A and B are 1\n- `c2 = AND(s1, Cin)` — carry propagated when partial sum is 1 and Cin is 1\n- `Cout = OR(c1, c2)` — carry-out is 1 if either generate or propagate carry is active\n\n## How to read\n\nThe diagram renders two XOR gates for the sum path (A⊕B, then ⊕Cin) and two AND gates feeding an OR for the carry-out (the standard generate/propagate structure). The layout is automatically ranked so data flows left to right, inputs on the left edge, outputs on the right. Every 4-bit or 8-bit ripple-carry adder in textbooks is just this circuit chained together."
+  },
+  {
+    "slug": "markov-customer-lifecycle",
+    "diagram": "markov",
+    "title": "Customer lifecycle (ergodic chain, stationary π)",
+    "description": "A SaaS trial → active → churned chain. The engine validates the row-stochastic matrix, confirms the chain is ergodic, and computes the long-run stationary distribution π — the steady-state share of customers in each state.",
+    "standard": "Kemeny & Snell, Finite Markov Chains",
+    "tags": [
+      "markov",
+      "stationary",
+      "ergodic",
+      "lifecycle",
+      "churn",
+      "steady-state"
+    ],
+    "complexity": 2,
+    "featured": false,
+    "dsl": "markov \"Customer lifecycle\"\n  analysis: classify, stationary\n  Trial -> Trial : 0.4\n  Trial -> Active : 0.5\n  Trial -> Churned : 0.1\n  Active -> Active : 0.8\n  Active -> Trial : 0.05\n  Active -> Churned : 0.15\n  Churned -> Churned : 0.7\n  Churned -> Trial : 0.3",
+    "notes": "## What this shows\n\nA SaaS customer modelled as a memoryless hop between three states — Trial, Active, Churned — each month. Every row of probabilities leaving a state sums to 1 (the row-stochastic rule), and because churned customers can re-enter via Trial (`Churned -> Trial : 0.3`), no state is a dead end: the chain is **ergodic**, every state reachable from every other.\n\nThe engine does the linear algebra. It validates the matrix, runs SCC analysis to confirm a single recurrent class with no absorbing sink, then computes the **stationary distribution π** — the long-run share of your customer base sitting in each state once the system settles, independent of where it started. That steady-state answer (and the per-state classification) is carried in `data-*`, and it is the number a churn model exists to produce, not the circles-and-arrows."
+  },
+  {
+    "slug": "markov-gamblers-ruin",
+    "diagram": "markov",
+    "title": "Gambler's ruin (absorbing chain)",
+    "description": "The classic absorbing Markov chain with two sinks. The engine classifies the transient and absorbing states and computes the fundamental matrix — the probability of ending broke vs rich and the expected number of steps to absorption.",
+    "standard": "Kemeny & Snell, Finite Markov Chains",
+    "tags": [
+      "markov",
+      "absorbing",
+      "fundamental-matrix",
+      "gamblers-ruin",
+      "transient",
+      "expected-steps"
+    ],
+    "complexity": 3,
+    "featured": false,
+    "dsl": "markov \"Gambler's ruin\"\n  analysis: classify, absorbing\n  state Broke \"$0\" absorbing\n  state Rich \"$4\" absorbing\n  state S1\n  state S2\n  state S3\n  Broke -> Broke : 1\n  Rich -> Rich : 1\n  S1 -> Broke : 0.5\n  S1 -> S2 : 0.5\n  S2 -> S1 : 0.5\n  S2 -> S3 : 0.5\n  S3 -> S2 : 0.5\n  S3 -> Rich : 0.5",
+    "notes": "## What this shows\n\nThe canonical absorbing Markov chain. A gambler with \\$1, \\$2, or \\$3 (states S1–S3) bets on a fair coin, moving up or down \\$1 each round, and stops only at ruin (\\$0) or the target (\\$4). The two endpoints are declared `absorbing` — once entered, never left (a self-loop of probability 1) — and the engine cross-checks that assertion against the matrix.\n\nThis is where the engine's linear algebra pays off. It classifies S1–S3 as **transient** and Broke/Rich as **absorbing**, then forms the fundamental matrix N = (I − Q)⁻¹ to compute the two answers an absorbing chain is built for: the **absorption probabilities** (starting from each state, the chance of ending broke vs rich — for a fair game, proportional to the distance to each barrier) and the **expected number of steps to absorption**. Those computed values, carried in `data-*`, are the result no drawing tool can give."
   },
   {
     "slug": "matrix-9-box-talent",
@@ -2297,6 +2506,25 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "featured": true,
     "dsl": "state \"Traffic Light\"\n\ninitial i\nfinal f\n\ni -> Red\nRed -> Green : timer\nGreen -> Yellow : timer\nYellow -> Red : timer\nRed -> f : power_off",
     "notes": "The traffic light is to state diagrams what the pump loop is to P&IDs: every textbook uses it, every engineer has drawn it, and if you understand it you understand the grammar of every more complex model.\n\n**Why a state diagram and not a flowchart.** A flowchart for a traffic light would show a loop: start → Red → (timer fires?) → Green → (timer fires?) → Yellow → back to Red. That works for describing an algorithm, but it misses the essential question: *what is the system doing right now?* A state machine makes the current state a first-class concept. The traffic light is not executing a loop — it *is* Red, or it *is* Green. Transitions are events that change what it is. This distinction matters the moment you add complexity: \"what happens if a pedestrian button is pressed while we're in Green?\" You answer that by looking at the transitions out of Green, not by tracing a flowchart path.\n\n**UML pseudo-states.** The filled black circle (`initial i`) and the bull's-eye circle (`final f`) are pseudo-states — they are not real states the system can dwell in, just notational entry and exit points. The initial pseudo-state shows where the machine starts; the arrow from `i` to Red tells you Red is the first real state. The final pseudo-state shows where the machine terminates. In the traffic light, termination is the `power_off` event from Red — the system shuts down from the Red state only (it wouldn't be safe to power off mid-Green).\n\n**Transition labels.** Each arrow is labeled with the trigger event that causes the transition. `timer` means \"the countdown for this phase has elapsed.\" In a real embedded implementation, this would be a hardware timer interrupt or a software watchdog expiry. Schematex doesn't execute the state machine — it renders the model. The labels are free text; you write exactly what your system calls the event.\n\n**Cyclic structure.** The three main states form a cycle: Red → Green → Yellow → Red. Most state diagrams describing continuous systems have cycles — the system runs until something external stops it. The `power_off` transition is the only way to reach the final state, and it is only modeled on Red because that is the safe state to stop in. If you wanted to model an emergency override (traffic officer stops the light mid-cycle), you would add `power_off` transitions from Green and Yellow too.\n\n**From model to code.** A UML state diagram maps directly to an enum + switch statement, a state table, or a state-machine framework (XState, Boost.MSM, Qt State Machine). The diagram is the specification; the implementation strategy is separate. Generating this diagram from a DSL means you can keep the spec in version control alongside the code, diff it in PRs, and regenerate it from an LLM prompt when requirements change."
+  },
+  {
+    "slug": "threatmodel-ecommerce-checkout",
+    "diagram": "threatmodel",
+    "title": "E-commerce checkout threat model (STRIDE)",
+    "description": "A security data-flow diagram for a checkout flow with three trust boundaries. The engine applies the STRIDE-per-element mapping and flags every flow that crosses a trust boundary — where spoofing and tampering concentrate.",
+    "standard": "Microsoft STRIDE / Shostack (2014)",
+    "tags": [
+      "threatmodel",
+      "stride",
+      "dfd",
+      "trust-boundary",
+      "security",
+      "data-flow"
+    ],
+    "complexity": 3,
+    "featured": false,
+    "dsl": "threatmodel \"E-commerce checkout\"\nexternal: Customer\nexternal: Payment Gateway\nprocess 1.0: Web App\nprocess 2.0: Order Service\ndatastore D1: Orders DB\ndatastore D2: Audit Log\nCustomer -> 1.0 : \"HTTPS Checkout\"\n1.0 -> 2.0 : \"Place order\"\n2.0 -> D1 : \"Write order\"\n2.0 -> Payment Gateway : \"Charge card\"\n2.0 -> D2 : \"Order event\"\nboundary \"Internet\" { Customer, Payment_Gateway }\nboundary \"DMZ\" { 1.0 }\nboundary \"Internal\" { 2.0, D1, D2 }",
+    "notes": "## What this shows\n\nA STRIDE threat model of an e-commerce checkout drawn as a data-flow diagram (DFD): two external entities (the customer and a third-party payment gateway), two processes (the web app in the DMZ, the order service internally), and two data stores (the orders database and an audit log). Three trust boundaries partition the system — Internet, DMZ, Internal — and the labelled flows carry the data crossing between them.\n\nThe engine does the STRIDE-per-element analysis, not just the boxes. It applies the canonical mapping — externals get Spoofing/Repudiation, processes get the full S-T-R-I-D-E, stores get Tampering/Information-disclosure/DoS, and the **audit log additionally gets Repudiation** because it matches the log/journal pattern. Most usefully, it **flags every flow that crosses a trust boundary** — the customer→web-app HTTPS request (Internet→DMZ), the order-service→payment-gateway charge (Internal→Internet) — because boundary crossings are where spoofing, tampering, and information disclosure concentrate. Each element and flow carries its applicable STRIDE categories in `data-*`."
   },
   {
     "slug": "timeline-company-milestones",

@@ -1,0 +1,37 @@
+---
+title: Gambler's ruin (absorbing chain)
+description: The classic absorbing Markov chain with two sinks. The engine classifies the transient and absorbing states and computes the fundamental matrix — the probability of ending broke vs rich and the expected number of steps to absorption.
+diagram: markov
+standard: Kemeny & Snell, Finite Markov Chains
+industry: [education, probability]
+persona: For the probability instructor
+complexity: 3
+tags: [markov, absorbing, fundamental-matrix, gamblers-ruin, transient, expected-steps]
+featured: false
+relatedLink:
+  label: Markov chain syntax
+  href: /docs/markov
+status: published
+dsl: |
+  markov "Gambler's ruin"
+    analysis: classify, absorbing
+    state Broke "$0" absorbing
+    state Rich "$4" absorbing
+    state S1
+    state S2
+    state S3
+    Broke -> Broke : 1
+    Rich -> Rich : 1
+    S1 -> Broke : 0.5
+    S1 -> S2 : 0.5
+    S2 -> S1 : 0.5
+    S2 -> S3 : 0.5
+    S3 -> S2 : 0.5
+    S3 -> Rich : 0.5
+---
+
+## What this shows
+
+The canonical absorbing Markov chain. A gambler with \$1, \$2, or \$3 (states S1–S3) bets on a fair coin, moving up or down \$1 each round, and stops only at ruin (\$0) or the target (\$4). The two endpoints are declared `absorbing` — once entered, never left (a self-loop of probability 1) — and the engine cross-checks that assertion against the matrix.
+
+This is where the engine's linear algebra pays off. It classifies S1–S3 as **transient** and Broke/Rich as **absorbing**, then forms the fundamental matrix N = (I − Q)⁻¹ to compute the two answers an absorbing chain is built for: the **absorption probabilities** (starting from each state, the chance of ending broke vs rich — for a fair game, proportional to the distance to each barrier) and the **expected number of steps to absorption**. Those computed values, carried in `data-*`, are the result no drawing tool can give.

@@ -1,0 +1,34 @@
+---
+title: Startup growth engine (R and B loops)
+description: A system-dynamics model of a viral product whose growth is capped by scaling strain. The engine enumerates every feedback loop and classifies each reinforcing (R) or balancing (B) by Sterman's even/odd rule.
+diagram: causalloop
+standard: Sterman, Business Dynamics (2000)
+industry: [business, systems-thinking]
+persona: For the systems-thinking strategist
+complexity: 3
+tags: [causalloop, cld, system-dynamics, feedback, reinforcing, balancing]
+featured: false
+relatedLink:
+  label: Causal loop syntax
+  href: /docs/causalloop
+status: published
+dsl: |
+  causalloop "Startup growth engine"
+    "Active users" -> "Word of mouth" : +
+    "Word of mouth" -> "New signups" : +
+    "New signups" -> "Active users" : +
+    "Active users" -> "Server load" : +
+    "Server load" -> "App performance" : -
+    "App performance" -> "Active users" : + delay
+    "Active users" -> Revenue : +
+    Revenue -> "Infra investment" : +
+    "Infra investment" -> "App performance" : + delay
+    loop R1 "Viral flywheel"
+    loop B1 "Scaling strain"
+---
+
+## What this shows
+
+The two-sided story of every viral product. One reinforcing loop drives growth: more active users produce more word of mouth, which drives signups, which adds users — an amplifying cycle. A second, balancing loop pushes back: more users raise server load, which degrades app performance, which (after a delay) loses users. The `delay` markers put the system-dynamics hash mark on the slow legs, where the lag between cause and effect is what makes the system overshoot.
+
+The engine finds and labels the loops for you, which a drawing tool cannot. It enumerates every elementary cycle in the signed graph with Johnson's algorithm, then applies Sterman's rule — count the negative links, even means reinforcing (R), odd means balancing (B) — and numbers them R1, B1… The growth cycle comes back R (zero negatives), the load cycle B (one negative). The named `loop` declarations attach the human phrasing — "Viral flywheel", "Scaling strain" — onto the loops the engine detects.

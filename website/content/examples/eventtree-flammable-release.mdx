@@ -1,0 +1,31 @@
+---
+title: Flammable release event tree (process QRA)
+description: A loss-of-containment release branched through detection, isolation, and ignition. The engine computes each outcome frequency — safe shutdown, jet fire, dispersion, vapour-cloud explosion — and flags the dominant one.
+diagram: eventtree
+standard: IEC 62502 / process QRA
+industry: [process-safety, oil-gas]
+persona: For the process-safety engineer
+complexity: 2
+tags: [eventtree, eta, qra, loss-of-containment, ignition, explosion]
+featured: false
+relatedLink:
+  label: Event tree syntax
+  href: /docs/eventtree
+status: published
+dsl: |
+  eventtree "Flammable release"
+    initiating REL "Loss of containment" freq: 0.02
+    function DET "Gas detection alarms" p: 0.05
+    function ISO "Emergency isolation" p: 0.1
+    function IGN "No ignition source" p: 0.3
+    outcome s s s -> "Safe shutdown"
+    outcome s s f -> "Jet fire"
+    outcome s f * -> "Large dispersion"
+    outcome f * * -> "Vapour cloud explosion"
+---
+
+## What this shows
+
+The quantitative risk assessment (QRA) event tree a process-safety study runs after a HAZOP flags a credible leak. The initiating event — a flammable release at `0.02` per year — is challenged by three safety functions in order: gas detection, emergency isolation, and the chance of no ignition source. The `IGN` function reads as a *success* when there is no ignition (`s`), so its failure leg `f` is where the fire or explosion lives.
+
+The value is the computed end-state frequencies. The engine propagates the release frequency through each branch's success/failure probability to size each consequence — safe shutdown, jet fire, large dispersion, vapour-cloud explosion — and accents the dominant sequence in red, the same role the single point of failure plays in a fault tree. That ranked, numeric reading is what turns a forking ladder into an analysis.

@@ -1,0 +1,32 @@
+---
+title: Customer lifecycle (ergodic chain, stationary π)
+description: A SaaS trial → active → churned chain. The engine validates the row-stochastic matrix, confirms the chain is ergodic, and computes the long-run stationary distribution π — the steady-state share of customers in each state.
+diagram: markov
+standard: Kemeny & Snell, Finite Markov Chains
+industry: [saas, analytics]
+persona: For the growth / data analyst
+complexity: 2
+tags: [markov, stationary, ergodic, lifecycle, churn, steady-state]
+featured: false
+relatedLink:
+  label: Markov chain syntax
+  href: /docs/markov
+status: published
+dsl: |
+  markov "Customer lifecycle"
+    analysis: classify, stationary
+    Trial -> Trial : 0.4
+    Trial -> Active : 0.5
+    Trial -> Churned : 0.1
+    Active -> Active : 0.8
+    Active -> Trial : 0.05
+    Active -> Churned : 0.15
+    Churned -> Churned : 0.7
+    Churned -> Trial : 0.3
+---
+
+## What this shows
+
+A SaaS customer modelled as a memoryless hop between three states — Trial, Active, Churned — each month. Every row of probabilities leaving a state sums to 1 (the row-stochastic rule), and because churned customers can re-enter via Trial (`Churned -> Trial : 0.3`), no state is a dead end: the chain is **ergodic**, every state reachable from every other.
+
+The engine does the linear algebra. It validates the matrix, runs SCC analysis to confirm a single recurrent class with no absorbing sink, then computes the **stationary distribution π** — the long-run share of your customer base sitting in each state once the system settles, independent of where it started. That steady-state answer (and the per-state classification) is carried in `data-*`, and it is the number a churn model exists to produce, not the circles-and-arrows.

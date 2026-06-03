@@ -1,0 +1,38 @@
+---
+title: Injection-moulding PFMEA
+description: A process FMEA for an injection-moulding line, ranked the legacy way by RPN. The engine computes RPN = S × O × D for every (step, mode, cause) row and flags the ones that breach the 100 threshold.
+diagram: fmea
+standard: AIAG-VDA FMEA Handbook (2019) / IEC 60812
+industry: [manufacturing, plastics]
+persona: For the process / quality engineer
+complexity: 2
+tags: [fmea, pfmea, rpn, process, manufacturing, scrap]
+featured: false
+relatedLink:
+  label: FMEA syntax
+  href: /docs/fmea
+status: published
+dsl: |
+  fmea "Injection moulding PFMEA"
+    type: process
+    rank: rpn
+    flag: rpn > 100
+    item "Mould fill step" fn "Fill cavity with melt"
+      mode "Short shot"
+        effect "Incomplete part scrapped" sev: 7
+        cause "Injection pressure too low" occ: 5
+          controls prevention: "Pressure setpoint lock", detection: "Vision check" det: 4
+        cause "Blocked gate" occ: 3
+          controls detection: "Cycle-time monitor" det: 6
+    item "Cooling step" fn "Solidify part to spec"
+      mode "Warpage"
+        effect "Out-of-tolerance dimension" sev: 6
+        cause "Uneven cooling channel flow" occ: 6
+          controls detection: "CMM sampling" det: 7
+---
+
+## What this shows
+
+A process FMEA (PFMEA) following the steps of an injection-moulding line — the fill step and the cooling step — rather than the parts of a product. Each process step gets its failure modes (short shot, warpage), the effect each has on the part, the process causes behind it, and the in-line controls that prevent or detect it.
+
+This worksheet is ranked the legacy way with `rank: rpn`, so the engine sorts purely on RPN = S × O × D and the `flag: rpn > 100` directive lights up every row above 100 — here the uneven-cooling warpage row at S6·O6·D7 (RPN 252) and the short-shot pressure row at S7·O5·D4 (RPN 140). Each rendered row carries `data-rpn` and `data-ap`, so even on a legacy RPN worksheet the AIAG-VDA Action Priority is still computed and inspectable underneath.

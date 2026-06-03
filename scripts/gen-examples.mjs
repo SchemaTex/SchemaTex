@@ -150,6 +150,106 @@ roof (1,2): +`],
 ## Timely follow-up
 - Appointment within 7 days
 - Post-discharge phone call`],
+
+  // ── Bucket B engines (39–46) ────────────────────────────────────
+  ['examples/eventtree/loca-sequence.svg', `eventtree "Loss of coolant accident"
+  initiating LOCA "Large LOCA" freq: 1e-4
+  function A "ECCS injects" p: 0.001
+  function B "Containment spray" p: 0.01
+  function C "Containment integrity" p: 0.005
+  outcome s s s -> "OK"
+  outcome s s f -> "Late release"
+  outcome s f * -> "Early release"
+  outcome f * * -> "Core damage"`],
+
+  ['examples/fmea/injection-molding-pfmea.svg', `fmea "Injection-Molding PFMEA"
+  type: process
+  rank: rpn
+  flag: rpn > 100
+  item "Mold fill" fn "Fill cavity completely"
+    mode "Short shot"
+      effect "Incomplete part" sev: 7
+      cause "Low injection pressure" occ: 6
+        controls detection: "Visual check" det: 5
+    mode "Flash"
+      effect "Dimensional defect" sev: 5
+      cause "Excess clamp wear" occ: 4
+        controls detection: "Gauge inspection" det: 4`],
+
+  ['examples/causalloop/adoption-model.svg', `causalloop "Adoption model"
+"Adoption rate" -> Adopters : +
+Adopters -> "Adoption rate" : +
+"Adoption rate" -> "Potential adopters" : -
+"Potential adopters" -> "Adoption rate" : +
+loop R1 "Word of mouth"
+loop B1 "Market saturation"`],
+
+  ['examples/markov/weather-stationary.svg', `markov "Weather"
+  Sunny -> Sunny : 0.9
+  Sunny -> Rainy : 0.1
+  Rainy -> Sunny : 0.5
+  Rainy -> Rainy : 0.5`],
+
+  ['examples/gitgraph/feature-branch-flow.svg', `gitGraph
+  commit id: "init"
+  branch develop
+  checkout develop
+  commit id: "d1"
+  commit tag: "v0.1"
+  checkout main
+  merge develop tag: "v1.0"
+  branch feature
+  commit id: "f1" type: HIGHLIGHT
+  checkout main
+  cherry-pick id: "f1"
+  merge feature`],
+
+  ['examples/epc/order-fulfilment.svg', `epc "Order fulfilment"
+  event E1 "Order received"
+  function F1 "Check credit"
+  xor X1
+  event E2 "Credit OK"
+  event E3 "Credit rejected"
+  function F2 "Ship goods"
+  function F3 "Notify customer"
+  event E4 "Order shipped"
+  event E5 "Order cancelled"
+  E1 -> F1 -> X1
+  X1 -> E2
+  X1 -> E3
+  E2 -> F2 -> E4
+  E3 -> F3 -> E5`],
+
+  ['examples/idef0/maintain-spares.svg', `idef0 "Maintain Reparable Spares"
+node A0
+function A1 "Remove and replace"
+function A2 "Schedule into shop"
+function A3 "Inspect or repair"
+function A4 "Monitor and route"
+input     A1 "Failed asset"
+control   A1 "Maintenance policy"
+mechanism A1 "Field crew"
+A1 -> A2 "Removed unit"
+A2 -> A3 "Work order"
+control   A3 "Repair standard"
+mechanism A3 "Shop technicians"
+A3 -> A4 "Repaired unit"
+A4 -> A1.input "Spare"
+output    A4 "Serviceable spare"`],
+
+  ['examples/threatmodel/web-app-stride.svg', `threatmodel "Web App — STRIDE"
+external: User
+process 1.1: Web Server
+process 1.2: Auth Service
+datastore D1: User DB
+datastore D2: Audit Log
+User -> 1.1 : HTTPS Request
+1.1 -> 1.2 : Credentials
+1.2 -> D1 : Lookup
+1.2 -> D2 : Auth Event
+boundary "Internet" { User }
+boundary "DMZ" { 1.1, 1.2 }
+boundary "Internal" { D1, D2 }`],
 ];
 
 for (const [path, dsl] of examples) {

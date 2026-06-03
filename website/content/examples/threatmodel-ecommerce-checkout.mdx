@@ -1,0 +1,37 @@
+---
+title: E-commerce checkout threat model (STRIDE)
+description: A security data-flow diagram for a checkout flow with three trust boundaries. The engine applies the STRIDE-per-element mapping and flags every flow that crosses a trust boundary — where spoofing and tampering concentrate.
+diagram: threatmodel
+standard: Microsoft STRIDE / Shostack (2014)
+industry: [security, ecommerce]
+persona: For the application-security engineer
+complexity: 3
+tags: [threatmodel, stride, dfd, trust-boundary, security, data-flow]
+featured: false
+relatedLink:
+  label: Threat model syntax
+  href: /docs/threatmodel
+status: published
+dsl: |
+  threatmodel "E-commerce checkout"
+  external: Customer
+  external: Payment Gateway
+  process 1.0: Web App
+  process 2.0: Order Service
+  datastore D1: Orders DB
+  datastore D2: Audit Log
+  Customer -> 1.0 : "HTTPS Checkout"
+  1.0 -> 2.0 : "Place order"
+  2.0 -> D1 : "Write order"
+  2.0 -> Payment Gateway : "Charge card"
+  2.0 -> D2 : "Order event"
+  boundary "Internet" { Customer, Payment_Gateway }
+  boundary "DMZ" { 1.0 }
+  boundary "Internal" { 2.0, D1, D2 }
+---
+
+## What this shows
+
+A STRIDE threat model of an e-commerce checkout drawn as a data-flow diagram (DFD): two external entities (the customer and a third-party payment gateway), two processes (the web app in the DMZ, the order service internally), and two data stores (the orders database and an audit log). Three trust boundaries partition the system — Internet, DMZ, Internal — and the labelled flows carry the data crossing between them.
+
+The engine does the STRIDE-per-element analysis, not just the boxes. It applies the canonical mapping — externals get Spoofing/Repudiation, processes get the full S-T-R-I-D-E, stores get Tampering/Information-disclosure/DoS, and the **audit log additionally gets Repudiation** because it matches the log/journal pattern. Most usefully, it **flags every flow that crosses a trust boundary** — the customer→web-app HTTPS request (Internet→DMZ), the order-service→payment-gateway charge (Internal→Internet) — because boundary crossings are where spoofing, tampering, and information disclosure concentrate. Each element and flow carries its applicable STRIDE categories in `data-*`.

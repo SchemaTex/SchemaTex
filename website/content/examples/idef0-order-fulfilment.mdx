@@ -1,0 +1,39 @@
+---
+title: IDEF0 A0 — fulfil customer order
+description: An IDEF0 A0 function decomposition with all four ICOM arrow types. Inputs, controls, mechanisms and outputs each pin to a fixed box edge, so the model is correct by construction per FIPS PUB 183.
+diagram: idef0
+standard: FIPS PUB 183 (IDEF0)
+industry: [business, manufacturing]
+persona: For the business / systems analyst
+complexity: 3
+tags: [idef0, icom, function-model, decomposition, fips-183, structured-analysis]
+featured: false
+relatedLink:
+  label: IDEF0 syntax
+  href: /docs/idef0
+status: published
+dsl: |
+  idef0 "Fulfil customer order"
+  node A0
+  function A1 "Validate order"
+  function A2 "Pick and pack"
+  function A3 "Ship and invoice"
+  input     A1 "Customer order"
+  control   A1 "Credit policy"
+  mechanism A1 "Order management system"
+  A1 -> A2 "Validated order"
+  input     A2 "Inventory"
+  control   A2 "Picking rules"
+  mechanism A2 "Warehouse staff"
+  A2 -> A3 "Packed shipment"
+  control   A3 "Carrier contract"
+  mechanism A3 "Shipping carrier"
+  output    A3 "Delivered order"
+  output    A3 "Invoice"
+---
+
+## What this shows
+
+An IDEF0 A0 diagram — the top-level functional decomposition of an order-fulfilment system — showing all four ICOM arrow roles. Reading the box edges by convention: **I**nputs enter on the left (the customer order, inventory), **C**ontrols govern from the top (credit policy, picking rules, carrier contract), **M**echanisms supply resources from the bottom (the order system, warehouse staff, carrier), and **O**utputs leave on the right (delivered order, invoice). The box-to-box flows (`A1 -> A2 "Validated order"`) chain the three activities.
+
+The differentiator is that the model is correct by construction, not just drawn. Because the arrow keyword *is* the box edge it attaches to, the engine enforces ICOM placement — you cannot accidentally draw a control as an input. It resolves every box reference, assigns decomposition numbers (A0 → A1..A3), codes the boundary arrows down each edge (I1/C1/O1/M1…), and applies the FIPS 3-to-6-box guideline. A flow that tried to *enter* a box via its `.output` edge would be rejected, because an output leaves a box — the standard is enforced, not suggested.
