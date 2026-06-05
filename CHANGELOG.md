@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.9.0] — 2026-06-05
+
+### Added — LLM-emittable grammar cards: all 45 families hardened + single-shot context (PR #35)
+
+The AI-emittability layer (`schematex/ai`) is now the deliberate first-shot generation surface, not just a syntax dump. Every diagram family carries a complete "grammar card" and the package can assemble an inject-ready prompt in one call.
+
+- **`buildPromptContext(type, opts?)`** — new export. Assembles the canonical grammar card + featured worked examples into a single inject-ready string (one call instead of separate `getSyntax` + `getExamples`). Options: `examples` (default 2), `detail`, `preferFeatured`, `maxComplexity`.
+- **All 45 grammar cards hardened** to a uniform bar: concrete `forms`, ≥3 `prefer`/`avoid` hints naming real tokens, and a new compact `keywords` line enumerating each family's full vocabulary. Cards that taught syntax the parser rejects were corrected (e.g. SFC `transition from:/to:`, blockdiagram auto-created ids).
+- **Error-matched repair hints** — `repairHint()` now matches the actual validator diagnostic to the repair entry whose quoted error fragment fits, instead of always returning the first entry. When nothing matches, it no longer attaches a misleading hint — the raw error (already shown) plus a re-validate instruction stands on its own. Repair entries are authored as `'<real error message>' -> <fix>`.
+- **Profile-completeness gate** (`tests/ai/profile-completeness.test.ts`) — a scorecard that scores every family's card across forms/prefer/avoid/repair/examples + featured + core-construct coverage, and hard-fails if any shipped example does not `validateDsl` green. Keeps card quality from drifting as families are added.
+
+---
+
 ## [0.8.3] — 2026-06-03
 
 ### Added — diagram `aliases` + `keywords` discoverability metadata (first installment)
