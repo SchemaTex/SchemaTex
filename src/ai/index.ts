@@ -37,6 +37,12 @@ export { resolveDiagramType } from "./registry";
 // package instead of redeclaring a drifting copy.
 export type { DiagramType } from "../core/types";
 
+export {
+  buildPromptContext,
+  type BuildPromptContextOptions,
+  type PromptContext,
+} from "./prompt-context";
+
 export type { Example, GetExamplesOptions } from "./examples";
 export type { GenerationProfile } from "./profiles";
 export type { SyntaxDetail, SyntaxDoc } from "./syntax";

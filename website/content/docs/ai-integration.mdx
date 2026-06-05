@@ -22,7 +22,7 @@ Schematex ships a tool layer built for LLMs — five tools that let an AI agent 
 Every path exposes the same five tools with identical semantics.
 
 ### `listDiagrams()`
-Returns all 31 diagram types with tagline, "use when" hint, cluster, and authoritative standard. Call first to pick a type.
+Returns all 45 diagram types with tagline, "use when" hint, cluster, and authoritative standard. Call first to pick a type.
 
 ### `getSyntax({ type, detail? })`
 Canonical syntax for one diagram. Call after picking a type.
@@ -89,6 +89,25 @@ The `schematex/ai/sdk` subpath only loads if `ai` and `zod` are installed (both 
 ```ts
 import { listDiagrams, getSyntax, getExamples, validateDsl, renderDsl } from 'schematex/ai';
 ```
+
+### Single-shot generation (no tool loop)
+
+High-volume backends often generate with **one** model call instead of a multi-step tool loop — cheaper and lower latency. For that, `buildPromptContext(type)` assembles the canonical grammar card **and** a featured few-shot example into one inject-ready block, so you don't have to stitch `getSyntax` + `getExamples` together yourself:
+
+```ts
+import { buildPromptContext, validateDsl } from 'schematex/ai';
+
+const ctx = buildPromptContext('genogram');          // grammar card + featured example
+const system = `Generate only Schematex DSL.\n\n${ctx.text}`;
+const dsl = await generate(system, userMessage);     // your single model call
+
+const check = validateDsl('genogram', dsl);          // always gate server-side
+if (!check.ok) {
+  // one repair pass: re-prompt with check.errors[].message + .hint
+}
+```
+
+`buildPromptContext` is pure sugar over `getSyntax({ detail: 'canonical' })` + `getExamples({ preferFeatured: true })` — both remain available if you'd rather compose the prompt yourself. Options: `{ examples?: number, detail?, preferFeatured?, maxComplexity? }`.
 
 ---
 

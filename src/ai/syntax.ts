@@ -55,6 +55,7 @@ function buildCanonicalSyntax(profile: GenerationProfile): string {
     `- Canonical type: \`${profile.type}\``,
     `- Canonical header: \`${profile.header}\``,
     `- Preferred mode: ${profile.mode}`,
+    profile.keywords ? `- Keywords: ${profile.keywords}` : "",
     bulletSection("Core forms", profile.forms),
     bulletSection("Prefer", profile.prefer),
     bulletSection("Avoid by default", profile.avoid),

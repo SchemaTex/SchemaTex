@@ -58,7 +58,7 @@ export const EXAMPLES: readonly GeneratedExample[] = [
       "signal-flow"
     ],
     "complexity": 2,
-    "featured": false,
+    "featured": true,
     "dsl": "blockdiagram \"PID control loop\"\nC = block(\"PID C(s)\") [role: controller]\nG = block(\"Plant G(s)\") [role: plant]\nerr = sum(+r, -y)\nr = signal(\"r (setpoint)\")\ny = signal(\"y (output)\")\nin -> r\nr -> err\nerr -> C\nC -> G\nG -> y\nG -> err",
     "notes": "## Scenario\n\nThe standard closed-loop PID block diagram appears in every control systems textbook (Ogata, Franklin, Åström) and every control system design spec sheet. Schematex renders it from a signal-flow description — not a generic flowchart — using proper summing junction symbols and automatic feedback routing.\n\n## Annotation key\n\n- `block(\"label\") [role: ...]` — transfer function block; `role: controller` and `role: plant` affect visual styling\n- `sum(+r, -y)` — summing junction: adds the `+r` (reference) signal and subtracts the `-y` (output feedback)\n- `signal(\"label\")` — named signal node\n- `G -> err` — the feedback path: plant output `y` routes back to the summing junction\n\n## How to read\n\nThe setpoint `r` enters the summing junction `err`, which subtracts the plant output `y` to compute the error signal. The PID controller `C(s)` processes the error and drives the plant `G(s)`. The plant output `y` is both the system output and the feedback signal. The loop is closed when `G -> err` feeds `y` back to the summing junction."
   },
@@ -284,7 +284,7 @@ export const EXAMPLES: readonly GeneratedExample[] = [
       "balancing"
     ],
     "complexity": 3,
-    "featured": false,
+    "featured": true,
     "dsl": "causalloop \"Startup growth engine\"\n  \"Active users\" -> \"Word of mouth\" : +\n  \"Word of mouth\" -> \"New signups\" : +\n  \"New signups\" -> \"Active users\" : +\n  \"Active users\" -> \"Server load\" : +\n  \"Server load\" -> \"App performance\" : -\n  \"App performance\" -> \"Active users\" : + delay\n  \"Active users\" -> Revenue : +\n  Revenue -> \"Infra investment\" : +\n  \"Infra investment\" -> \"App performance\" : + delay\n  loop R1 \"Viral flywheel\"\n  loop B1 \"Scaling strain\"",
     "notes": "## What this shows\n\nThe two-sided story of every viral product. One reinforcing loop drives growth: more active users produce more word of mouth, which drives signups, which adds users — an amplifying cycle. A second, balancing loop pushes back: more users raise server load, which degrades app performance, which (after a delay) loses users. The `delay` markers put the system-dynamics hash mark on the slow legs, where the lag between cause and effect is what makes the system overshoot.\n\nThe engine finds and labels the loops for you, which a drawing tool cannot. It enumerates every elementary cycle in the signed graph with Johnson's algorithm, then applies Sterman's rule — count the negative links, even means reinforcing (R), odd means balancing (B) — and numbers them R1, B1… The growth cycle comes back R (zero negatives), the load cycle B (one negative). The named `loop` declarations attach the human phrasing — \"Viral flywheel\", \"Scaling strain\" — onto the loops the engine detects."
   },
@@ -321,7 +321,7 @@ export const EXAMPLES: readonly GeneratedExample[] = [
       "netlist"
     ],
     "complexity": 2,
-    "featured": false,
+    "featured": true,
     "dsl": "circuit \"Bridge Rectifier Supply\" netlist\nV1 ac1 ac2 12Vac\nD1 ac1 vout 1N4007\nD2 ac2 vout 1N4007\nD3 0 ac1 1N4007\nD4 0 ac2 1N4007\nC1 vout 0 470u\nRload vout 0 1k",
     "notes": "## Scenario\n\nA technician needs a quick schematic for the textbook AC-to-DC rectifier: a transformer secondary, four rectifier diodes, a reservoir capacitor, and a load. The netlist form keeps the topology precise while the renderer chooses the schematic placement.\n\n## Annotation key\n\n- `D1` to `D4` are ordinary diode components inferred from the `D` prefix.\n- `0` is the canonical ground net.\n- `C1` smooths the rectified output across `vout` and ground.\n\n## How to read\n\nDuring each half-cycle, two diodes conduct and steer current into `vout` with the same polarity. The capacitor charges near the peak and supplies the load between peaks, reducing ripple at `Rload`."
   },
@@ -611,7 +611,7 @@ export const EXAMPLES: readonly GeneratedExample[] = [
       "control-flow"
     ],
     "complexity": 3,
-    "featured": false,
+    "featured": true,
     "dsl": "epc \"Purchase requisition\"\n  layout: tb\n  event E1 \"Material need identified\"\n  function F1 \"Create requisition\"\n  function F2 \"Determine source of supply\"\n  xor X1\n  event E2 \"Stock supplier exists\"\n  event E3 \"New supplier needed\"\n  function F3 \"Issue purchase order\"\n  function F4 \"Run tender process\"\n  and A1\n  event E4 \"Order dispatched\"\n  event E5 \"Supplier qualified\"\n  E1 -> F1 -> F2 -> X1\n  X1 -> E2\n  X1 -> E3\n  E2 -> F3 -> A1\n  E3 -> F4 -> A1\n  A1 -> E4\n  A1 -> E5",
     "notes": "## What this shows\n\nA SAP-style procurement process modelled as an ARIS event-driven process chain (EPC), the notation that strictly alternates passive **events** (\"Material need identified\") and active **functions** (\"Create requisition\"). After sourcing, an **XOR** connector splits the flow on a real decision — an existing stock supplier versus a new supplier needing a tender — and the two paths re-converge on an **AND** connector that fans back out to the dispatched order and the qualified-supplier outcome.\n\nEPC's value here is structural validation, not a computed number. The engine checks the well-formedness rules and flags violations rather than silently drawing a broken model: event/function alternation along every path, single-in/single-out multiplicity carried by the connectors, reachability from start to end, and the **event-cannot-decide signature rule** — a passive event may not be the source of an XOR/OR split. That's why the decision routes *through* function `F2` before reaching the XOR, which is the correct ARIS form."
   },
@@ -723,7 +723,7 @@ export const EXAMPLES: readonly GeneratedExample[] = [
       "core-damage"
     ],
     "complexity": 3,
-    "featured": false,
+    "featured": true,
     "dsl": "eventtree \"Large LOCA\"\n  initiating LOCA \"Large-break LOCA\" freq: 1e-4\n  function RT \"Reactor trips\" p: 0.001\n  function ECCS \"ECCS injection\" p: 0.01\n  function CHR \"Containment heat removal\" p: 0.02\n  function CI \"Containment integrity\" p: 0.005\n  outcome s s s s -> \"OK\"\n  outcome s s s f -> \"Late release\"\n  outcome s s f * -> \"Late release\"\n  outcome s f * * -> \"Early release\"\n  outcome f * * * -> \"Core damage\"",
     "notes": "## What this shows\n\nThe textbook nuclear probabilistic-risk-assessment (PRA) tree. One initiating event — a large pipe break draining the coolant at a frequency of `1e-4` per year — is asked, left to right, whether each safety function holds: reactor trip, emergency core cooling (ECCS), containment heat removal, then containment integrity. Each `*` prunes a path that has already terminated, so the tree stays compact instead of ballooning to a full 2⁴ ladder.\n\nThe engine does the arithmetic an event tree exists to give. It multiplies the initiating frequency by the success leg (`1 − p`) or failure leg (`p`) at each branch to get every sequence frequency, sums the two `\"Late release\"` leaves into one rolled-up outcome, and paints the largest-frequency path — the dominant accident sequence — in red. That computed answer, not the forking picture, is the deliverable a drawing tool can't produce."
   },
@@ -967,7 +967,7 @@ export const EXAMPLES: readonly GeneratedExample[] = [
       "automotive"
     ],
     "complexity": 3,
-    "featured": false,
+    "featured": true,
     "dsl": "fmea \"EV battery pack DFMEA\"\n  type: design\n  rank: ap\n  flag: ap >= High\n  number: DFMEA-2026-014\n  item \"Cell module\" fn \"Store and deliver energy\"\n    mode \"Thermal runaway\"\n      effect \"Pack fire / occupant injury\" sev: 10\n      cause \"Internal short from dendrite growth\" occ: 3\n        controls prevention: \"Cell qualification\", detection: \"In-line CT scan\" det: 4\n      cause \"Overcharge past cutoff\" occ: 2\n        controls prevention: \"BMS voltage clamp\", detection: \"Redundant voltage sense\" det: 3\n    mode \"Capacity fade\"\n      effect \"Reduced range\" sev: 6\n      cause \"Electrolyte depletion\" occ: 5\n        controls detection: \"Periodic SOH estimate\" det: 6\n  item \"Busbar joint\" fn \"Conduct current between modules\"\n    mode \"High-resistance connection\"\n      effect \"Local overheating\" sev: 8\n      cause \"Loose torque on weld\" occ: 4\n        controls detection: \"End-of-line resistance test\" det: 4",
     "notes": "## What this shows\n\nA design FMEA (DFMEA) on the highest-stakes subsystem in an electric vehicle. The nested chain reads item → mode → effect/cause/controls: a cell module that can suffer thermal runaway or capacity fade, and a busbar joint that can go high-resistance. Each effect carries a Severity, each cause an Occurrence, each control the Detection it earns — the three AIAG-VDA 1–10 scales.\n\nThe engine computes the priority rather than just tabling it. It flattens to one worksheet row per (item, mode, cause), multiplies RPN = S × O × D, and — the part that matters — derives the AIAG-VDA Action Priority, which is severity-primary. The thermal-runaway row sits at S10·O3·D4 with an RPN of 120; a naive RPN sort would rank it below a noisier low-severity defect, but Action Priority keeps every safety failure (S = 9–10) at **High** regardless. The `flag: ap >= High` directive highlights exactly those rows so the safety-critical work rises to the top."
   },
@@ -1094,7 +1094,7 @@ export const EXAMPLES: readonly GeneratedExample[] = [
       "hotfix"
     ],
     "complexity": 3,
-    "featured": false,
+    "featured": true,
     "dsl": "gitGraph\n  commit id: \"init\"\n  commit id: \"scaffold\"\n  branch develop\n  checkout develop\n  commit id: \"feature scaffold\"\n  branch feature/login\n  checkout feature/login\n  commit id: \"login UI\"\n  commit id: \"login API\"\n  checkout develop\n  merge feature/login\n  commit id: \"polish\"\n  checkout main\n  merge develop tag: \"v1.0\"\n  branch hotfix\n  checkout hotfix\n  commit id: \"patch CVE\" type: HIGHLIGHT\n  checkout main\n  merge hotfix tag: \"v1.0.1\"\n  checkout develop\n  merge main",
     "notes": "## What this shows\n\nA full Git Flow release cycle, the branching strategy teams adopt to keep a clean trunk. Work forks off `main` into a long-lived `develop`, then into a short-lived `feature/login` branch; the feature merges back to develop, develop merges to `main` as the tagged `v1.0` release. Then a security `hotfix` branches straight off `main`, lands a HIGHLIGHT commit, ships as `v1.0.1`, and is merged back down into develop so the fix isn't lost — the discipline that keeps the two lines from diverging.\n\nThe DSL is the Mermaid `gitGraph` dialect verbatim, so existing Mermaid sources port directly. The engine replays the operation list in order to assign each commit to a lane, routes the merge connectors from each branch tip without crossings, renders the patch commit emphasised as a HIGHLIGHT, and draws the version tags as flags — all from a KB-scale, dependency-free bundle."
   },
@@ -1113,7 +1113,7 @@ export const EXAMPLES: readonly GeneratedExample[] = [
       "structured-analysis"
     ],
     "complexity": 3,
-    "featured": false,
+    "featured": true,
     "dsl": "idef0 \"Fulfil customer order\"\nnode A0\nfunction A1 \"Validate order\"\nfunction A2 \"Pick and pack\"\nfunction A3 \"Ship and invoice\"\ninput     A1 \"Customer order\"\ncontrol   A1 \"Credit policy\"\nmechanism A1 \"Order management system\"\nA1 -> A2 \"Validated order\"\ninput     A2 \"Inventory\"\ncontrol   A2 \"Picking rules\"\nmechanism A2 \"Warehouse staff\"\nA2 -> A3 \"Packed shipment\"\ncontrol   A3 \"Carrier contract\"\nmechanism A3 \"Shipping carrier\"\noutput    A3 \"Delivered order\"\noutput    A3 \"Invoice\"",
     "notes": "## What this shows\n\nAn IDEF0 A0 diagram — the top-level functional decomposition of an order-fulfilment system — showing all four ICOM arrow roles. Reading the box edges by convention: **I**nputs enter on the left (the customer order, inventory), **C**ontrols govern from the top (credit policy, picking rules, carrier contract), **M**echanisms supply resources from the bottom (the order system, warehouse staff, carrier), and **O**utputs leave on the right (delivered order, invoice). The box-to-box flows (`A1 -> A2 \"Validated order\"`) chain the three activities.\n\nThe differentiator is that the model is correct by construction, not just drawn. Because the arrow keyword *is* the box edge it attaches to, the engine enforces ICOM placement — you cannot accidentally draw a control as an input. It resolves every box reference, assigns decomposition numbers (A0 → A1..A3), codes the boundary arrows down each edge (I1/C1/O1/M1…), and applies the FIPS 3-to-6-box guideline. A flow that tried to *enter* a box via its `.output` edge would be rejected, because an output leaves a box — the standard is enforced, not suggested."
   },
@@ -1242,7 +1242,7 @@ export const EXAMPLES: readonly GeneratedExample[] = [
       "steady-state"
     ],
     "complexity": 2,
-    "featured": false,
+    "featured": true,
     "dsl": "markov \"Customer lifecycle\"\n  analysis: classify, stationary\n  Trial -> Trial : 0.4\n  Trial -> Active : 0.5\n  Trial -> Churned : 0.1\n  Active -> Active : 0.8\n  Active -> Trial : 0.05\n  Active -> Churned : 0.15\n  Churned -> Churned : 0.7\n  Churned -> Trial : 0.3",
     "notes": "## What this shows\n\nA SaaS customer modelled as a memoryless hop between three states — Trial, Active, Churned — each month. Every row of probabilities leaving a state sums to 1 (the row-stochastic rule), and because churned customers can re-enter via Trial (`Churned -> Trial : 0.3`), no state is a dead end: the chain is **ergodic**, every state reachable from every other.\n\nThe engine does the linear algebra. It validates the matrix, runs SCC analysis to confirm a single recurrent class with no absorbing sink, then computes the **stationary distribution π** — the long-run share of your customer base sitting in each state once the system settles, independent of where it started. That steady-state answer (and the per-state classification) is carried in `data-*`, and it is the number a churn model exists to produce, not the circles-and-arrows."
   },
@@ -1984,7 +1984,7 @@ export const EXAMPLES: readonly GeneratedExample[] = [
       "color-coding"
     ],
     "complexity": 3,
-    "featured": false,
+    "featured": true,
     "dsl": "phylo \"Bacterial Diversity\"\n  newick: \"((((Ecoli:0.1,Salmonella:0.12):0.05[&&NHX:B=98],Vibrio:0.2):0.08[&&NHX:B=85],((Bacillus:0.15,Staph:0.18):0.06[&&NHX:B=92],Listeria:0.22):0.1):0.15,((Myco_tb:0.3,Myco_leprae:0.28):0.12[&&NHX:B=100],(Strepto:0.25,Lactobacillus:0.2):0.08[&&NHX:B=78]):0.2);\"\n  clade Gamma = (Ecoli, Salmonella, Vibrio) [color: \"#1E88E5\", label: \"γ-Proteobacteria\"]\n  clade Firmi = (Bacillus, Staph, Listeria, Strepto, Lactobacillus) [color: \"#E53935\", label: \"Firmicutes\"]\n  clade Actino = (Myco_tb, Myco_leprae) [color: \"#43A047\", label: \"Actinobacteria\"]\n  scale \"substitutions/site\"",
     "notes": "## Scenario\n\nA microbiologist or bioinformatician pastes a Newick tree string exported from RAxML, IQ-TREE, or MEGA and immediately gets a publication-ready SVG with clade highlights and a branch-length scale bar — no manual layout required.\n\n## Annotation key\n\n- `newick: \"...\"` — standard Newick format tree string; branch lengths follow `:` after each taxon name\n- `[&&NHX:B=98]` — NHX annotation; `B=` is the bootstrap support value (0–100), rendered on internal nodes\n- `clade id = (taxon, ...)` — defines a named clade by listing its leaf members\n- `[color: \"#hex\", label: \"...\"]` — colors the clade's subtree and adds a labeled arc\n- `scale \"...\"` — draws a calibrated scale bar with the given unit label\n\n## How to read\n\nThe tree shows three major bacterial clades. Blue (γ-Proteobacteria): *E. coli*, *Salmonella*, and *Vibrio* cluster with 98% bootstrap support. Red (Firmicutes): *Bacillus*, *Staph*, *Listeria*, *Streptococcus*, and *Lactobacillus*. Green (Actinobacteria): the two *Mycobacterium* species form a highly supported clade (bootstrap 100). Branch lengths represent substitutions per site — longer branches indicate faster evolutionary rates."
   },
@@ -2579,7 +2579,7 @@ export const EXAMPLES: readonly GeneratedExample[] = [
       "data-flow"
     ],
     "complexity": 3,
-    "featured": false,
+    "featured": true,
     "dsl": "threatmodel \"E-commerce checkout\"\nexternal: Customer\nexternal: Payment Gateway\nprocess 1.0: Web App\nprocess 2.0: Order Service\ndatastore D1: Orders DB\ndatastore D2: Audit Log\nCustomer -> 1.0 : \"HTTPS Checkout\"\n1.0 -> 2.0 : \"Place order\"\n2.0 -> D1 : \"Write order\"\n2.0 -> Payment Gateway : \"Charge card\"\n2.0 -> D2 : \"Order event\"\nboundary \"Internet\" { Customer, Payment_Gateway }\nboundary \"DMZ\" { 1.0 }\nboundary \"Internal\" { 2.0, D1, D2 }",
     "notes": "## What this shows\n\nA STRIDE threat model of an e-commerce checkout drawn as a data-flow diagram (DFD): two external entities (the customer and a third-party payment gateway), two processes (the web app in the DMZ, the order service internally), and two data stores (the orders database and an audit log). Three trust boundaries partition the system — Internet, DMZ, Internal — and the labelled flows carry the data crossing between them.\n\nThe engine does the STRIDE-per-element analysis, not just the boxes. It applies the canonical mapping — externals get Spoofing/Repudiation, processes get the full S-T-R-I-D-E, stores get Tampering/Information-disclosure/DoS, and the **audit log additionally gets Repudiation** because it matches the log/journal pattern. Most usefully, it **flags every flow that crosses a trust boundary** — the customer→web-app HTTPS request (Internet→DMZ), the order-service→payment-gateway charge (Internal→Internet) — because boundary crossings are where spoofing, tampering, and information disclosure concentrate. Each element and flow carries its applicable STRIDE categories in `data-*`."
   },
@@ -2652,7 +2652,7 @@ export const EXAMPLES: readonly GeneratedExample[] = [
       "bus-read"
     ],
     "complexity": 1,
-    "featured": false,
+    "featured": true,
     "dsl": "timing \"Synchronous Bus Read\"\nCLK:  clock 8\nRST:  rle 1*2 0*6\nEN:   rle 0*2 1*4 0*2\nDATA: zz====zz  data: [\"D0\",\"D1\",\"D2\",\"D3\"]",
     "notes": "## Scenario\n\nA digital designer documents an 8-cycle synchronous read. Rather than typing\n`pppppppp` for the clock and counting `0`/`1` runs by hand for reset and enable —\nthe most common source of misaligned waveforms — the diagram uses the two\nlength-explicit shorthands.\n\n## Annotation key\n\n- **`clock N`** — a clock generator with `N` periods. `CLK: clock 8` expands to\n  `pppppppp`; add `neg` for a negedge clock. No character-counting.\n- **`rle <state>*<count> …`** — run-length segments. `RST: rle 1*2 0*6` expands to\n  `11000000`; `EN: rle 0*2 1*4 0*2` expands to `00111100`. Every signal's total\n  cell count is explicit, so the waves line up.\n- **raw wave string** — `DATA: zz====zz` keeps per-cell control where it matters;\n  `data: [...]` labels the four `=` bus segments.\n\n## How to read\n\nThe clock runs 8 cycles. Reset is asserted for the first 2 cycles, then drops.\nEnable rises for the middle 4 cycles. The data bus is high-impedance until enable,\nthen presents four stable bytes `D0…D3`, returning to high-Z after. Because\n`clock` and `rle` make each signal exactly 8 cells, the edges align without manual\ncounting."
   },
@@ -2880,7 +2880,7 @@ export const EXAMPLES: readonly GeneratedExample[] = [
       "fabrication"
     ],
     "complexity": 3,
-    "featured": false,
+    "featured": true,
     "dsl": "welding \"Bracket assembly\"\njoint \"gusset to column\" {\n  arrow: fillet size=8 len=50 pitch=150\n  other: fillet size=6\n  around\n  field\n  tail: \"GMAW\"\n}\njoint \"splice plate (butt)\" {\n  arrow: vgroove angle=60 root=3 throat=12 contour=flush finish=G\n  other: backing\n  tail: \"SMAW; E7018\"\n}",
     "notes": "## What this shows\n\nA **welding symbol** is the standard way a drawing tells a fabricator how to weld a joint — codified by **AWS A2.4** (US) and **ISO 2553** (international). It is a *reference-line skeleton*: a horizontal line, a leader arrow to the joint, and a weld glyph snapped above (other side) or below (arrow side) the line, with dimensions in fixed slots.\n\nThe first joint is an **intermittent double fillet** — a `size=8` arrow-side fillet welded `50` long on a `150` pitch, a `size=6` fillet on the other side — carried **all around** the gusset (the open circle at the leader junction) as a **field weld** (the flag), with the **GMAW** process noted in the tail. The second joint is a full-penetration **V-groove butt weld**: a `60°` included angle with a `3 mm` root opening and a `12 mm` effective throat, a **backing** weld on the far side, ground **flush**, welded **SMAW** with **E7018** electrode. Each callout is placed correct-by-construction — the engine owns the skeleton, you describe the weld."
   }
