@@ -58,7 +58,7 @@ export const EXAMPLES: readonly GeneratedExample[] = [
       "signal-flow"
     ],
     "complexity": 2,
-    "featured": false,
+    "featured": true,
     "dsl": "blockdiagram \"PID control loop\"\nC = block(\"PID C(s)\") [role: controller]\nG = block(\"Plant G(s)\") [role: plant]\nerr = sum(+r, -y)\nr = signal(\"r (setpoint)\")\ny = signal(\"y (output)\")\nin -> r\nr -> err\nerr -> C\nC -> G\nG -> y\nG -> err",
     "notes": "## Scenario\n\nThe standard closed-loop PID block diagram appears in every control systems textbook (Ogata, Franklin, Åström) and every control system design spec sheet. Schematex renders it from a signal-flow description — not a generic flowchart — using proper summing junction symbols and automatic feedback routing.\n\n## Annotation key\n\n- `block(\"label\") [role: ...]` — transfer function block; `role: controller` and `role: plant` affect visual styling\n- `sum(+r, -y)` — summing junction: adds the `+r` (reference) signal and subtracts the `-y` (output feedback)\n- `signal(\"label\")` — named signal node\n- `G -> err` — the feedback path: plant output `y` routes back to the summing junction\n\n## How to read\n\nThe setpoint `r` enters the summing junction `err`, which subtracts the plant output `y` to compute the error signal. The PID controller `C(s)` processes the error and drives the plant `G(s)`. The plant output `y` is both the system output and the feedback signal. The loop is closed when `G -> err` feeds `y` back to the summing junction."
   },

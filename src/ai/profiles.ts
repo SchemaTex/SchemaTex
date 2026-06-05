@@ -23,6 +23,12 @@ export interface GenerationProfile {
   header: string;
   /** Short name for the preferred authoring mode when a parser has several. */
   mode: string;
+  /**
+   * Compact one-line vocabulary — the full set of keywords / operators / tokens
+   * the parser accepts, so a single-shot caller sees the whole surface without
+   * fetching the `reference` syntax. Optional.
+   */
+  keywords?: string;
   /** Forms that cover most first-shot generations for this type. */
   forms: readonly string[];
   /** Short grammar choices the model should make by default. */
@@ -148,11 +154,30 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
   blockdiagram: {
     type: "blockdiagram",
     header: 'blockdiagram "Title"',
-    mode: "blocks, sums, signals",
-    forms: ['ctrl = block("PID") [role: controller]', "err = sum(+r, -y)", "err -> ctrl -> plant"],
-    prefer: ["Use named blocks and directed `->` chains."],
-    avoid: ["Avoid unlabeled feedback intent; model the summing junction."],
-    repair: ["Connections must point at declared blocks, sums, signals, or boundary IDs."],
+    mode: "named block/sum/signal decls + directed -> chains",
+    keywords:
+      'ID = block("label") [role:…][route:above|below] · ID = sum(+a, -b) · ID = signal("label") [discrete] · connect ids with -> (chainable a -> b -> c) · in / out boundary ports · edge label ["text"] | roles: controller plant sensor actuator reference disturbance generic',
+    forms: [
+      'C = block("PID C(s)") [role: controller]',
+      'G = block("Plant G(s)") [role: plant]',
+      "err = sum(+r, -y)",
+      "in -> err -> C -> G -> y",
+      "G -> err",
+    ],
+    prefer: [
+      'Declare blocks `ID = block("label") [role: …]`, junctions `ID = sum(+a, -b)`, and signals `ID = signal("label")`, then wire ids with directed `->` (chainable: `a -> b -> c`).',
+      "Model feedback through an explicit `sum(+ref, -fb)` — the signs are visual (+ enters, − subtracts), not computed; send a long return path over the top with `[route: above]` on the sensor block.",
+      'Roles for styling: controller, plant, sensor, actuator, reference, disturbance, generic. Use the auto-provided `in`/`out` ports for the system boundary, and annotate an edge with `["label"]`.',
+    ],
+    avoid: [
+      "An unknown id on a `->` line does NOT error — it silently becomes a stray generic `block`, so a typo'd id creates a phantom box. Keep ids consistent.",
+      "Avoid drawing feedback as a bare reverse arrow with no junction; route it into a `sum(...)` so the loop reads correctly.",
+      'Don\'t quote ids; quotes belong only inside `block("…")` / `signal("…")` labels and edge `["…"]` labels.',
+    ],
+    repair: [
+      "'Invalid connection: <line>' -> a `->` line needs an id on both sides (e.g. `err -> C`); `C ->` or `-> C` alone is rejected.",
+      "Most ids auto-declare, so few lines hard-fail — if a box is unexpectedly empty or duplicated, look for an id typo (see avoid).",
+    ],
   },
   ladder: {
     type: "ladder",
@@ -359,11 +384,34 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
   sfc: {
     type: "sfc",
     header: 'sfc "Title"',
-    mode: "steps + transitions",
-    forms: ["step Idle [initial]", "transition Idle -> Run : Start", "step Run"],
-    prefer: ["Use explicit steps and transitions before alternative/simultaneous branches."],
-    avoid: ["Avoid UML state syntax in SFC output."],
-    repair: ["Every transition step reference must resolve to a declared step."],
+    mode: "steps with indented actions + from:/to: transitions",
+    keywords:
+      'step ID [initial|final|label:"…"] · var NAME: TYPE · transition [id] from: A to: B: COND · jump from: A to: B · alt from: STEP: / sim from: STEP: COND with branch [priority:N]: + merge_to: STEP[: COND] · action line «QUAL Name [T#…]» | qualifiers: N S R L D P P0 P1 SD DS SL (L/D/SD/DS/SL need T#…) | var types: bool int real time timer counter',
+    forms: [
+      "step S0 [initial]",
+      "  N FillValve_Closed",
+      'step S1 [label: "Filling"]',
+      "  N FillValve_Open",
+      "transition from: S0 to: S1: StartBtn",
+      "transition from: S1 to: S0: TankLevel >= 80.0",
+    ],
+    prefer: [
+      'Declare each `step ID [initial|final|label: "…"]` first; put actions on indented lines under the step as `<QUAL> ActionName`.',
+      "Wire steps with `transition from: A to: B: CONDITION` — the condition is free text (e.g. `TankLevel >= 80.0`), stored verbatim, never evaluated.",
+      "Qualifiers are N S R L D P P0 P1 SD DS SL; the timed ones take a literal, e.g. `D Oven_Run T#15m`, `L Cooler_On T#5m`.",
+      "Concurrency: `sim from: STEP: COND` + `branch:` blocks + `merge_to: STEP: COND`. Choice: `alt from: STEP:` + `branch [priority: N]:` (each with `transition: COND`) + `merge_to: STEP`.",
+    ],
+    avoid: [
+      "Don't use arrow transitions like `S0 -> S1 : cond` — SFC only accepts `transition from: S0 to: S1: cond` (a bare arrow line is rejected as 'Unrecognized SFC line').",
+      "Avoid a second `[initial]` step; if none is marked, the first declared step is promoted automatically.",
+      "Don't invent qualifiers — only N/S/R/L/D/P/P0/P1/SD/DS/SL are valid, and L/D/SD/DS/SL need a `T#…` time literal.",
+    ],
+    repair: [
+      "'Transition references unknown step: X' -> declare `step X` (or fix the id) before any transition that names it.",
+      "'Multiple [initial] steps: A and B' -> mark only one step `[initial]`.",
+      "'Unrecognized SFC line: …' -> a transition must be `transition from: A to: B: cond`; an action line must start with a qualifier and sit indented under its step.",
+      "'sim block missing merge_to clause' -> end the branch block with `merge_to: STEP: CONDITION` (alt uses `merge_to: STEP`).",
+    ],
   },
   prisma: {
     type: "prisma",

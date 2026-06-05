@@ -141,3 +141,48 @@ describe("profile completeness gate", () => {
     expect(broken.length, `examples that fail validateDsl:\n  ${detail}`).toBe(0);
   });
 });
+
+// ─── core-construct coverage ────────────────────────────────────────
+// A card is "sufficient" only if the single-shot payload (forms + prefer +
+// keywords + featured example DSL) actually exercises every core construct of
+// the family — not just the trivial case. Specs are defined per family as we
+// harden them; families without a spec are not checked yet.
+interface Construct {
+  label: string;
+  test: RegExp;
+}
+
+const CONSTRUCT_SETS: Record<string, Construct[]> = {
+  sfc: [
+    { label: "step", test: /\bstep\s+\w+/ },
+    { label: "qualified action", test: /(^|\n)\s*(N|S|R|L|D|P|P0|P1|SD|DS|SL)\s+\w/ },
+    { label: "transition from:/to:", test: /transition\s+(?:\w+\s+)?from\s*:/ },
+    { label: "alt|sim branch", test: /\b(alt|sim)\s+from\s*:/ },
+  ],
+  blockdiagram: [
+    { label: "block()", test: /=\s*block\s*\(/ },
+    { label: "sum()", test: /=\s*sum\s*\(/ },
+    { label: "-> connection", test: /->/ },
+  ],
+};
+
+function singleShotPayload(type: string): string {
+  const p = getGenerationProfile(type);
+  const featuredDsl = getExamples(type, { preferFeatured: true, limit: 5 })
+    .examples.filter((e) => e.featured)
+    .map((e) => e.dsl)
+    .join("\n");
+  return [...p.forms, ...p.prefer, p.keywords ?? "", featuredDsl].join("\n");
+}
+
+describe("core-construct coverage (spec'd families)", () => {
+  for (const [type, constructs] of Object.entries(CONSTRUCT_SETS)) {
+    it(`${type}: card + featured examples exercise every core construct`, () => {
+      const text = singleShotPayload(type);
+      const missing = constructs
+        .filter((c) => !c.test.test(text))
+        .map((c) => c.label);
+      expect(missing, `${type} missing constructs: ${missing.join(", ")}`).toEqual([]);
+    });
+  }
+});
