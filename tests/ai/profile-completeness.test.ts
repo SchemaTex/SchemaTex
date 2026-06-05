@@ -35,7 +35,9 @@ interface Audit {
 }
 
 const QUOTED = /['"`][^'"`]{4,}['"`]/; // a quoted phrase of reasonable length
-const HAS_VALUE = /\d|["']/; // a concrete value: a digit or a quoted string
+// "concrete" = a real runnable line, not a bare placeholder: a digit, a quoted
+// string, or DSL structural glyphs (brackets/braces/parens/`#`/`|`/`>>`).
+const HAS_VALUE = /\d|["']|[[\]{}()#|]|>>/;
 const NAMES_TOKEN = /`/; // backtick = names a concrete token/operator
 
 function auditType(type: string): Audit {

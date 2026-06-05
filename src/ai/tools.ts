@@ -211,18 +211,37 @@ function toValidationError(
     column: diagnostic.column,
     source: diagnostic.source,
     message: diagnostic.message,
-    hint: diagnostic.hint ?? repairHint(type),
+    hint: diagnostic.hint ?? repairHint(type, diagnostic.message),
   };
 }
 
-function repairHint(type?: string | null): string {
+function repairHint(type?: string | null, message?: string): string {
   const resolved = type ? resolveDiagramType(type) : undefined;
   const profile = resolved ? getGenerationProfile(resolved) : undefined;
-  const typeHint = profile?.repair[0];
+  // Prefer the repair entry whose quoted error fragment matches the actual
+  // diagnostic; fall back to the first entry. Repair entries are authored as
+  // `'<real error message>' -> <fix>`, so we match on the quoted prefix.
+  const typeHint =
+    (message && profile ? matchRepair(profile.repair, message) : undefined) ??
+    profile?.repair[0];
   return [
     typeHint,
     "Fix the reported DSL error, then call validateDsl again before rendering or returning DSL.",
   ]
     .filter(Boolean)
     .join(" ");
+}
+
+function matchRepair(
+  repairs: readonly string[],
+  message: string
+): string | undefined {
+  for (const r of repairs) {
+    const quoted = r.match(/^['"]([^'"]+)['"]/);
+    if (!quoted) continue;
+    // Stable prefix before any ": X" / ": …" placeholder.
+    const fragment = quoted[1].split(":")[0].trim();
+    if (fragment.length >= 6 && message.includes(fragment)) return r;
+  }
+  return undefined;
 }
