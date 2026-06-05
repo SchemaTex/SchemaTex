@@ -218,12 +218,16 @@ function toValidationError(
 function repairHint(type?: string | null, message?: string): string {
   const resolved = type ? resolveDiagramType(type) : undefined;
   const profile = resolved ? getGenerationProfile(resolved) : undefined;
-  // Prefer the repair entry whose quoted error fragment matches the actual
-  // diagnostic; fall back to the first entry. Repair entries are authored as
-  // `'<real error message>' -> <fix>`, so we match on the quoted prefix.
-  const typeHint =
-    (message && profile ? matchRepair(profile.repair, message) : undefined) ??
-    profile?.repair[0];
+  // Repair entries are authored as `'<real error message>' -> <fix>`. When we
+  // have the actual diagnostic, only attach a repair whose quoted error fragment
+  // genuinely matches it — a non-matching entry targets a *different* error and
+  // would mislead. Fall back to repair[0] only when there is no diagnostic to
+  // match against (the message itself is already shown to the model).
+  const typeHint = message
+    ? profile
+      ? matchRepair(profile.repair, message)
+      : undefined
+    : profile?.repair[0];
   return [
     typeHint,
     "Fix the reported DSL error, then call validateDsl again before rendering or returning DSL.",
