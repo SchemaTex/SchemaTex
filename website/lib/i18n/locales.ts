@@ -140,7 +140,10 @@ export function localizedPath(locale: string, path: string): string {
 }
 
 export function localizedUrl(origin: string, locale: string, path: string): string {
-  return `${origin}${localizedPath(locale, path)}`;
+  const p = localizedPath(locale, path);
+  // Never produce a trailing slash on the bare origin (https://example.com/ →
+  // https://example.com). Canonical and hreflang must agree on the form.
+  return p === '/' ? origin : `${origin}${p}`;
 }
 
 /**
