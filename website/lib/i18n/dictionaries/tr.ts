@@ -95,7 +95,7 @@ const tr: Dictionary = {
   finalCta: {
     heading: 'Tek bir string ile başla.',
     body: (count) =>
-      `${count} diyagram türünden herhangi birini canlı olarak oluşturmak için playground\'ı aç — ya da kopyalayıp yapıştırabileceğin ve uyarlayabileceğin DSL için galeriyi incele.`,
+      `${count} diyagram türünden herhangi birini canlı olarak oluşturmak için playground'ı aç — ya da kopyalayıp yapıştırabileceğin ve uyarlayabileceğin DSL için galeriyi incele.`,
     openPlayground: 'Playground\'ı Aç →',
     browseGallery: 'Galeriyi İncele',
   },

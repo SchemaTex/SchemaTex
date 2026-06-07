@@ -12,7 +12,7 @@ const it: Dictionary = {
   meta: {
     title: 'Schematex — I diagrammi che medici, ingegneri e avvocati usano davvero',
     description: (count) =>
-      `Tutti i diagrammi che un medico, un ingegnere o un avvocato userebbe davvero. Gratuito. Completamente open source. Fatto per l\'IA. ${count} diagrammi standard del settore da un DSL testuale. SVG puro, zero dipendenze.`,
+      `Tutti i diagrammi che un medico, un ingegnere o un avvocato userebbe davvero. Gratuito. Completamente open source. Fatto per l'IA. ${count} diagrammi standard del settore da un DSL testuale. SVG puro, zero dipendenze.`,
   },
   hero: {
     eyebrow: '01 / PRESENTANDO SCHEMATEX · GRATUITO · OPEN SOURCE · FATTO PER L\'IA',
