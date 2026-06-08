@@ -8,6 +8,7 @@ import {
   DEFAULT_LOCALE,
   LIVE_LOCALES,
   isPrefixedLocale,
+  localeDir,
 } from '@/lib/i18n/locales';
 
 // Only emit the live, prefixed locales — never the default (`/en/*` would
@@ -36,14 +37,16 @@ export default async function LangLayout({
   return (
     <>
       <LangSync locale={lang} />
-      <SiteHeader
-        version={version}
-        stars={stars}
-        lang={lang}
-        nav={dict.nav}
-        switcherLabel={dict.localeSwitcher.label}
-      />
-      {children}
+      <div lang={lang} dir={localeDir(lang)} className="contents">
+        <SiteHeader
+          version={version}
+          stars={stars}
+          lang={lang}
+          nav={dict.nav}
+          switcherLabel={dict.localeSwitcher.label}
+        />
+        {children}
+      </div>
     </>
   );
 }
