@@ -295,7 +295,6 @@ export function HomeContent({
                 className="inline-flex h-10 items-center gap-2 px-3 text-sm font-medium text-fd-foreground transition hover:border-[color:var(--accent)]"
                 style={{ background: 'var(--fd-card, #fff)', border: '1px solid var(--fill-muted)', borderRadius: 'var(--r-sm)' }}
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={p.logo} alt={p.name} width={20} height={20} className="size-5 shrink-0" />
                 <span>{p.name}</span>
               </a>
