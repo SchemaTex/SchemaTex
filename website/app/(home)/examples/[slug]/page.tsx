@@ -73,7 +73,6 @@ export default async function ExampleDetailPage({
     headline: ex.title,
     description: ex.description,
     url,
-    image: `${url}/opengraph-image`,
     inLanguage: 'en',
     keywords: [ex.diagram, ex.standard, ...ex.industry, ...ex.tags]
       .filter(Boolean)
