@@ -272,6 +272,38 @@ export function HomeContent({
         </div>
       </section>
 
+      {/* ────────────── USED IN PRODUCTION ────────────── */}
+      <section
+        aria-label="Used in production"
+        className="border-b border-fd-border px-6 py-8"
+        style={{ background: 'var(--fill)' }}
+      >
+        <div className="mx-auto flex max-w-6xl flex-col items-center gap-x-6 gap-y-4 sm:flex-row sm:justify-center">
+          <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-fd-muted-foreground">
+            Used in production by
+          </span>
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            {[
+              { name: 'ChatDiagram', href: 'https://chatdiagram.com', logo: '/logos/chatdiagram.svg' },
+              { name: 'FreeDiagram', href: 'https://freediagram.app', logo: '/logos/freediagram.svg' },
+            ].map((p) => (
+              <a
+                key={p.name}
+                href={p.href}
+                target="_blank"
+                rel="noopener"
+                className="inline-flex h-10 items-center gap-2 px-3 text-sm font-medium text-fd-foreground transition hover:border-[color:var(--accent)]"
+                style={{ background: 'var(--fd-card, #fff)', border: '1px solid var(--fill-muted)', borderRadius: 'var(--r-sm)' }}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={p.logo} alt={p.name} width={20} height={20} className="size-5 shrink-0" />
+                <span>{p.name}</span>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ────────────── PROFESSIONAL USE CASES ────────────── */}
       <section
         aria-labelledby="cases-heading"
