@@ -6,31 +6,56 @@ import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 import { Logo } from '@/components/Logo';
 import { GithubStarButton } from '@/components/GithubStarButton';
+import { LocaleSwitcher } from '@/lib/i18n/LocaleSwitcher';
+import { DEFAULT_LOCALE, localizedPath, type SupportedLocale } from '@/lib/i18n/locales';
 
-const NAV_LINKS = [
-  { label: 'Docs', href: '/docs' },
-  { label: 'Gallery', href: '/gallery' },
-  { label: 'Icons', href: '/icons' },
-  { label: 'Playground', href: '/playground' },
-  { label: 'Changelog', href: '/changelog' },
-];
+// Nav targets are bare English paths (docs/gallery/… aren't translated yet);
+// only the labels localize. Defaults match the English dictionary so callers
+// that don't pass `nav` (the English `(home)` layout) render unchanged.
+const DEFAULT_NAV = {
+  docs: 'Docs',
+  gallery: 'Gallery',
+  icons: 'Icons',
+  playground: 'Playground',
+  changelog: 'Changelog',
+};
 
-export function SiteHeader({ version, stars }: { version?: string; stars?: number }) {
+type NavLabels = typeof DEFAULT_NAV;
+
+export function SiteHeader({
+  version,
+  stars,
+  lang = DEFAULT_LOCALE,
+  nav = DEFAULT_NAV,
+  switcherLabel = 'Language',
+}: {
+  version?: string;
+  stars?: number;
+  lang?: SupportedLocale;
+  nav?: NavLabels;
+  switcherLabel?: string;
+}) {
   const pathname = usePathname() ?? '/';
   const [open, setOpen] = useState(false);
+
+  const navLinks = [
+    { label: nav.docs, href: '/docs' },
+    { label: nav.gallery, href: '/gallery' },
+    { label: nav.icons, href: '/icons' },
+    { label: nav.playground, href: '/playground' },
+    { label: nav.changelog, href: '/changelog' },
+  ];
+  const homeHref = localizedPath(lang, '/');
 
   return (
     <header className="sticky top-0 z-40 border-b border-fd-border bg-fd-background/80 px-6 backdrop-blur">
       <div className="mx-auto flex h-14 max-w-6xl items-center gap-6">
-        <Link href="/" className="font-bold tracking-tight text-fd-foreground">
+        <Link href={homeHref} className="font-bold tracking-tight text-fd-foreground">
           <Logo size={18} />
         </Link>
         <nav className="hidden items-center gap-1 text-sm md:flex">
-          {NAV_LINKS.map((l) => {
-            const active =
-              l.href === '/'
-                ? pathname === '/'
-                : pathname.startsWith(l.href);
+          {navLinks.map((l) => {
+            const active = pathname.startsWith(l.href);
             return (
               <Link
                 key={l.href}
@@ -61,6 +86,9 @@ export function SiteHeader({ version, stars }: { version?: string; stars?: numbe
           <div className="hidden sm:inline-flex">
             <GithubStarButton stars={stars ?? 0} size="sm" />
           </div>
+          <div className="hidden md:inline-flex">
+            <LocaleSwitcher current={lang} variant="header" label={switcherLabel} />
+          </div>
           <ThemeToggle />
           <button
             type="button"
@@ -86,7 +114,7 @@ export function SiteHeader({ version, stars }: { version?: string; stars?: numbe
       {open && (
         <nav className="border-t border-fd-border md:hidden">
           <ul className="mx-auto max-w-6xl py-2">
-            {NAV_LINKS.map((l) => (
+            {navLinks.map((l) => (
               <li key={l.href}>
                 <Link
                   href={l.href}
@@ -97,6 +125,9 @@ export function SiteHeader({ version, stars }: { version?: string; stars?: numbe
                 </Link>
               </li>
             ))}
+            <li className="mt-2 border-t border-fd-border pt-3">
+              <LocaleSwitcher current={lang} variant="footer" label={switcherLabel} />
+            </li>
           </ul>
         </nav>
       )}
