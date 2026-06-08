@@ -69,7 +69,10 @@ export function LocaleSwitcher({
           <ul
             role="listbox"
             aria-label={label}
-            className="absolute bottom-full z-50 mb-2 max-h-72 min-w-[12rem] overflow-auto rounded-md border border-fd-border bg-fd-card py-1 shadow-lg"
+            className={
+              'absolute z-50 max-h-72 min-w-[12rem] overflow-auto rounded-md border border-fd-border bg-fd-card py-1 shadow-lg ' +
+              (variant === 'header' ? 'right-0 top-full mt-2' : 'bottom-full mb-2')
+            }
           >
             {LIVE_LOCALES.map((loc) => (
               <li key={loc}>

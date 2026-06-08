@@ -1,6 +1,6 @@
 import type { Dictionary } from './dictionaries/en';
 import { en } from './dictionaries/en';
-import { DEFAULT_LOCALE, type SupportedLocale } from './locales';
+import type { SupportedLocale } from './locales';
 
 // Lazy per-locale loaders. Only locales with a shipped dictionary appear here;
 // anything else falls back to English (and such a locale should never reach a
@@ -26,6 +26,6 @@ const loaders: Partial<Record<SupportedLocale, () => Promise<Dictionary>>> = {
 };
 
 export async function getDictionary(locale: string): Promise<Dictionary> {
-  const load = loaders[locale as SupportedLocale] ?? loaders[DEFAULT_LOCALE]!;
+  const load = loaders[locale as SupportedLocale] ?? (() => Promise.resolve(en));
   return load();
 }
