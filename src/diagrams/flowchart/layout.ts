@@ -42,12 +42,18 @@ export const FC_CONST = {
   labelHPad: 16,
   minNodeWidth: 72,
   /**
-   * Cap on per-line label width. Until line-wrapping lands, this clamp is
-   * a soft contract: nodes never grow past this, and any overflow becomes
-   * the caller's problem. Set generously so common CJK sentences (≤30
-   * full-width chars) still fit without truncation or text overflow.
+   * Cap on per-line label width. Labels wider than `wrapLabelWidth` are
+   * auto-wrapped first (see `wrapLabel`), so this clamp only bites on
+   * unbreakable single tokens that survive wrapping (URLs, ids).
    */
   maxLabelWidth: 420,
+  /**
+   * Auto-wrap target: a single-line label measuring wider than this is
+   * broken into multiple lines (preferring spaces, falling back to CJK
+   * char boundaries). ≈38 Latin chars / ≈20 full-width chars per line —
+   * keeps prose nodes near a readable 3:1 aspect instead of a 400px strip.
+   */
+  wrapLabelWidth: 260,
   crossingSweepIters: 24,
 } as const;
 
@@ -133,6 +139,68 @@ export function measureLabelWidth(label: string): number {
     if (w > max) max = w;
   }
   return max;
+}
+
+/**
+ * Auto-wrap a node label that renders wider than `FC_CONST.wrapLabelWidth`.
+ *
+ * Conservative on purpose — only single-line, markup-free labels are
+ * touched. Explicit `<br/>`/`\n` breaks mean the author already chose line
+ * boundaries, and inline `<b>`/`<i>` spans cannot be split across the
+ * per-line segment parser in core/svg.ts:multilineText without breaking
+ * styling, so both pass through unchanged.
+ *
+ * Break preference: after a space (the space is consumed) or after any
+ * full-width glyph (CJK prose has no spaces). A single token wider than the
+ * wrap target hard-breaks mid-token rather than overflowing its shape.
+ */
+export function wrapLabel(label: string): string {
+  const text = String(label);
+  if (/<br\s*\/?>|\n/i.test(text)) return label; // author-chosen breaks
+  if (/<\/?[bi]>/i.test(text)) return label; // inline markup — do not split
+  if (measureLineWidth(text) <= FC_CONST.wrapLabelWidth) return label;
+
+  const maxW = FC_CONST.wrapLabelWidth;
+  const lines: string[] = [];
+  let line = "";
+  let lineW = 0;
+  let breakAt = -1; // index into `line` AFTER which we may break
+  let breakIsSpace = false;
+
+  for (const ch of text) {
+    const code = ch.codePointAt(0) ?? 0;
+    const chW = isFullWidth(code) ? FC_CONST.cjkCharWidth : FC_CONST.charWidth;
+
+    if (ch === " " && line.length > 0) {
+      breakAt = line.length; // break before this space, consuming it
+      breakIsSpace = true;
+    }
+
+    if (lineW + chW > maxW && line.length > 0) {
+      if (breakAt > 0) {
+        const head = line.slice(0, breakAt);
+        const tail = line.slice(breakIsSpace ? breakAt + 1 : breakAt);
+        lines.push(head);
+        line = tail;
+      } else {
+        lines.push(line); // unbreakable token — hard break
+        line = "";
+      }
+      lineW = measureLineWidth(line);
+      breakAt = -1;
+      breakIsSpace = false;
+      if (ch === " " && line.length === 0) continue; // never lead with a space
+    }
+
+    line += ch;
+    lineW += chW;
+    if (isFullWidth(code)) {
+      breakAt = line.length; // CJK glyphs are valid break points
+      breakIsSpace = false;
+    }
+  }
+  if (line.length > 0) lines.push(line);
+  return lines.join("\n");
 }
 
 // ─── Internal working types ────────────────────────────────
@@ -921,6 +989,11 @@ function hasOverlappingTopLevelClusters(
 export function layoutFlowchart(ast: FlowchartAST): FlowchartLayoutResult {
   const dir: FlowchartDirection = ast.direction;
   const isHorizontalDir = dir === "LR" || dir === "RL";
+
+  // ── Auto-wrap over-wide labels ───────────────────────────
+  // In-place on the AST (which this function already mutates for implicit
+  // nodes) so sizing below and the renderer both see the wrapped text.
+  for (const n of ast.nodes) n.label = wrapLabel(n.label);
 
   // ── Measure node sizes ───────────────────────────────────
   // Returned w/h are in "abstract TB space" — flow direction is always Y.

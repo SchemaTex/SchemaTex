@@ -1,6 +1,7 @@
 import { describe, test, expect } from "vitest";
 import { parseFlowchart } from "../../src/diagrams/flowchart/parser";
 import {
+  FC_CONST,
   layoutFlowchart,
   measureLabelWidth,
 } from "../../src/diagrams/flowchart/layout";
@@ -183,6 +184,92 @@ A -->|no| C[Reject]`);
       // Two-line PRISMA-style label: bold header + count. Height must exceed
       // single-line baseline.
       expect(n.height).toBeGreaterThan(50);
+    });
+  });
+
+  describe("auto label wrapping", () => {
+    const LONG_LATIN =
+      "Customer submits the online return request form with order number and reason";
+    const LONG_DE =
+      "Kasse ohne Artikel weiterleiten und den Bestand im Warenwirtschaftssystem korrigieren";
+    const LONG_CJK =
+      "為降低不同資料來源及原始訊號品質差異對分析結果之影響本研究針對資料集進行前處理與特徵擷取";
+
+    const layoutSingle = (label: string) => {
+      const r = layoutFlowchart(parseFlowchart(`flowchart TD\nA["${label}"]`));
+      return r.nodes.find((n) => n.node.id === "A")!;
+    };
+
+    test("a long Latin sentence wraps into multiple lines within the wrap width", () => {
+      const n = layoutSingle(LONG_LATIN);
+      const lines = n.node.label.split("\n");
+      expect(lines.length).toBeGreaterThan(1);
+      for (const line of lines) {
+        expect(measureLabelWidth(line)).toBeLessThanOrEqual(
+          FC_CONST.wrapLabelWidth
+        );
+      }
+      // No word is lost or split: rejoining restores the original sentence.
+      expect(lines.join(" ").replace(/\s+/g, " ")).toBe(LONG_LATIN);
+      // The node is no longer a 1-line monster strip.
+      expect(n.width).toBeLessThan(FC_CONST.wrapLabelWidth + 60);
+      expect(n.height).toBeGreaterThan(44);
+    });
+
+    test("German compound words wrap at spaces, never inside a word", () => {
+      const n = layoutSingle(LONG_DE);
+      const lines = n.node.label.split("\n");
+      expect(lines.length).toBeGreaterThan(1);
+      expect(lines.join(" ").replace(/\s+/g, " ")).toBe(LONG_DE);
+      expect(lines.some((l) => l.includes("Warenwirtschaftssystem"))).toBe(
+        true
+      );
+    });
+
+    test("spaceless CJK wraps at character boundaries", () => {
+      const n = layoutSingle(LONG_CJK);
+      const lines = n.node.label.split("\n");
+      expect(lines.length).toBeGreaterThan(1);
+      for (const line of lines) {
+        expect(measureLabelWidth(line)).toBeLessThanOrEqual(
+          FC_CONST.wrapLabelWidth
+        );
+      }
+      expect(lines.join("")).toBe(LONG_CJK);
+    });
+
+    test("labels with explicit <br/> are left untouched", () => {
+      const n = layoutSingle(
+        "first part of a deliberately long line<br/>second"
+      );
+      expect(n.node.label).toContain("<br/>");
+      expect(n.node.label).not.toContain("\n");
+    });
+
+    test("labels with inline <b>/<i> markup are left untouched", () => {
+      const long =
+        "<b>Total records identified from databases and registers combined</b>";
+      const n = layoutSingle(long);
+      expect(n.node.label).toBe(long);
+    });
+
+    test("short labels are untouched", () => {
+      const n = layoutSingle("Done");
+      expect(n.node.label).toBe("Done");
+      expect(n.width).toBeGreaterThanOrEqual(72);
+    });
+
+    test("an unbreakable over-wide token hard-breaks rather than overflowing", () => {
+      const token = "a".repeat(80); // 80 × 6.8px ≈ 544px > wrap width
+      const n = layoutSingle(token);
+      const lines = n.node.label.split("\n");
+      expect(lines.length).toBeGreaterThan(1);
+      for (const line of lines) {
+        expect(measureLabelWidth(line)).toBeLessThanOrEqual(
+          FC_CONST.wrapLabelWidth
+        );
+      }
+      expect(lines.join("")).toBe(token);
     });
   });
 

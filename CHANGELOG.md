@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.9.1] — 2026-06-09
+
+### Added — flowchart auto label wrapping
+
+The long-standing layout TODO ("until line-wrapping lands") is in: node labels measuring wider than the new `FC_CONST.wrapLabelWidth` (260px ≈ 38 Latin / 20 full-width chars) are wrapped automatically instead of growing into a 420px single-line strip and overflowing the shape — the most-reported readability complaint from production flowcharts (truncated/overlapping labels on prose-style nodes).
+
+- **`wrapLabel()`** (`src/diagrams/flowchart/layout.ts`) — greedy line breaking that prefers spaces (consumed at the break), treats every full-width glyph as a valid break point (spaceless CJK prose wraps cleanly), and hard-breaks unbreakable over-wide tokens (URLs, ids) rather than letting them overflow. Applied once at `layoutFlowchart` entry, so sizing, the existing multi-line height growth, and the renderer's `<tspan>` output all see the same wrapped text.
+- **Deliberately conservative**: labels with explicit `<br/>`/`\n` breaks keep the author's line choices, and labels containing inline `<b>`/`<i>` markup pass through untouched (a styled span cannot be split across the per-line segment parser without breaking styling).
+- `FC_CONST.maxLabelWidth` (420) is retained as the final clamp, but now only bites on unbreakable single tokens that survive wrapping.
+
+### Fixed — circuit ERC: conventional rail/port names no longer flagged as floating
+
+`CIRCUIT_FLOATING_NET` was the single largest source of spurious `partial` statuses in production (~3,300 reports in 14 days): textbook schematics deliberately leave supply rails and labeled I/O terminals as single-pin nets — opamp supply wiring is conventionally omitted (`vcc`/`vee` declared only on their sources) and the output node is labeled `out` and left open as a port.
+
+- **`isConventionalOpenNet()`** (`src/diagrams/circuit/lint.ts`) — single-pin nets matching power-rail conventions (`vcc`/`vdd`/`vee`/`vss`/`vref`/… , voltage literals `+5V`/`3.3V`/`3V3`), I/O-port names (`in`/`out`/`vin`/`vout`, numbered variants, `_in`/`_out` compound suffixes like `pwm_in`), or header-broken-out serial/control pins (`sda1`, `tx`, `clk`, `rst`, …) now skip the floating-net and typo checks entirely. Such circuits validate `valid` instead of `partial`.
+- Everything else keeps the full ERC: non-conventional dangling names (`base1`, `gate`) are still flagged, and the one-edit-away `CIRCUIT_NET_TYPO` detection is unchanged.
+
+---
+
 ## [0.9.0] — 2026-06-05
 
 ### Added — LLM-emittable grammar cards: all 45 families hardened + single-shot context (PR #35)
