@@ -48,6 +48,33 @@ const GROUND_TYPES = new Set<CircuitComponentType>([
 /** Auto-synthesized floating no-connect nets from pin under-specification. */
 const NC_NET = /_nc\d+$/;
 
+/**
+ * Net names that are single-pin **by convention** — power-rail flags and
+ * labeled I/O ports. In hand-drawn and EDA schematics alike, supply rails
+ * (VCC/VEE on a source whose consumers are not drawn — opamp supply pins are
+ * conventionally omitted) and labeled open terminals (`out` on the load) are
+ * deliberate, not wiring mistakes. These were the dominant real-world false
+ * positives for CIRCUIT_FLOATING_NET, so they skip the floating/typo checks
+ * entirely; everything else still gets the full ERC.
+ */
+const CONVENTIONAL_OPEN_NET = [
+  // power rails: vcc vdd vee vss vbat vbus vref vcore avcc avdd dvdd dvss agnd dgnd
+  /^(vcc|vdd|vee|vss|vbat|vbus|vref|vcore|avcc|avdd|dvdd|dvss|agnd|dgnd)\d*$/i,
+  // voltage-literal rails: +5V, -12v, 3.3V, 3V3, 1V8
+  /^[+-]?\d+(\.\d+)?v$/i,
+  /^\d+v\d+$/i,
+  // I/O ports: in, out, input, output, vin, vout, io (optionally numbered)
+  /^(v?in|v?out|input|output|io)\d*$/i,
+  // compound port suffixes: pwm_in, sig_out, audio_in2
+  /(^|[_.])(in|out|input|output)\d*$/i,
+  // serial/control pins broken out to headers: sda1, tx, clk, rst …
+  /^(sda|scl|tx|rx|txd|rxd|clk|sck|xtal|mosi|miso|cs|ss|en|rst|reset|nrst|int|irq|pwm)\d*$/i,
+];
+
+function isConventionalOpenNet(id: string): boolean {
+  return CONVENTIONAL_OPEN_NET.some((re) => re.test(id));
+}
+
 function componentIdOfAnchor(anchor: string): string {
   const dot = anchor.lastIndexOf(".");
   return dot < 0 ? anchor : anchor.slice(0, dot);
@@ -149,6 +176,7 @@ export function lintCircuit(text: string): SchematexDiagnostic[] {
     if (net.id === "GND") continue;            // ground rail fans out by nature
     if (NC_NET.test(net.id)) continue;         // already covered by underspecified
     if (net.anchors.length !== 1) continue;
+    if (isConventionalOpenNet(net.id)) continue; // rails/ports are open by design
 
     const comp = compById.get(componentIdOfAnchor(net.anchors[0]));
     if (comp && INTENTIONAL_SINGLE_PIN.has(comp.componentType)) continue;
