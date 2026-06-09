@@ -523,34 +523,6 @@ export function HomeContent({
         </div>
       </section>
 
-      {/* ────────────── USED IN PRODUCTION ────────────── */}
-      <section
-        aria-label="Used in production"
-        className="border-b border-fd-border px-6 py-16"
-      >
-        <div className="mx-auto flex max-w-6xl flex-col items-center gap-4">
-          <p className="type-eye">USED IN PRODUCTION</p>
-          <div className="flex flex-wrap items-center justify-center gap-2.5">
-            {[
-              { name: 'ChatDiagram', href: 'https://chatdiagram.com', logo: '/logos/chatdiagram.svg' },
-              { name: 'FreeDiagram', href: 'https://freediagram.app', logo: '/logos/freediagram.svg' },
-            ].map((p) => (
-              <a
-                key={p.name}
-                href={p.href}
-                target="_blank"
-                rel="noopener"
-                className="ds-badge transition hover:border-[color:var(--accent)] hover:text-fd-foreground"
-                style={{ padding: '6px 12px' }}
-              >
-                <img src={p.logo} alt={p.name} width={16} height={16} className="shrink-0" />
-                {p.name}
-              </a>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* ────────────── FINAL CTA ────────────── */}
       <section
         aria-labelledby="final-heading"
@@ -599,6 +571,26 @@ export function HomeContent({
             <p className="mt-2 max-w-xs text-sm leading-relaxed text-fd-muted-foreground">
               {dict.footer.tagline}
             </p>
+            <div className="mt-5">
+              <p className="type-eye">USED IN PRODUCTION</p>
+              <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-2">
+                {[
+                  { name: 'ChatDiagram', href: 'https://chatdiagram.com', logo: '/logos/chatdiagram.svg' },
+                  { name: 'FreeDiagram', href: 'https://freediagram.app', logo: '/logos/freediagram.svg' },
+                ].map((p) => (
+                  <a
+                    key={p.name}
+                    href={p.href}
+                    target="_blank"
+                    rel="noopener"
+                    className="inline-flex items-center gap-1.5 text-sm text-fd-muted-foreground transition hover:text-fd-foreground"
+                  >
+                    <img src={p.logo} alt={p.name} width={16} height={16} className="shrink-0" />
+                    {p.name}
+                  </a>
+                ))}
+              </div>
+            </div>
           </div>
           <FooterCol
             heading={dict.footer.cols.product.heading}
