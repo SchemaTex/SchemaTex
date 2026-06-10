@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="schematex-bd" viewBox="0 0 800 306" width="800" height="306" role="img" data-diagram-type="blockdiagram"><title>PID Closed-Loop Control System</title>
+<desc>Block diagram with 3 blocks, 1 summing junctions, 6 signals</desc>
+<defs><style>.schematex-bd { font-family: system-ui, -apple-system, sans-serif; }
+.schematex-bd-block { stroke: #333; stroke-width: 2; }
+.schematex-bd-tf { font: italic 14px serif; fill: #111; }
+.schematex-bd-block-name { font: 10px sans-serif; fill: #666; }
+.schematex-bd-sum { fill: #fff; stroke: #333; stroke-width: 2; }
+.schematex-bd-sum-sign { font: bold 11px sans-serif; fill: #333; }
+.schematex-bd-signal { stroke: #333; stroke-width: 2; fill: none; }
+.schematex-bd-signal-discrete { stroke: #333; stroke-width: 2; fill: none; stroke-dasharray: 6 4; }
+.schematex-bd-signal-label { font: italic 12px serif; fill: #333; }
+.schematex-bd-port-label { font: italic 13px serif; fill: #111; }
+.schematex-bd-title { font: bold 15px sans-serif; fill: #111; }
+.schematex-bd-branch { fill: #333; stroke: none; }</style>
+<marker id="lt-bd-arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><polygon points="0 0, 10 4, 0 8" fill="#333"/></marker></defs>
+<text x="400" y="18" text-anchor="middle" class="schematex-bd-title">PID Closed-Loop Control System</text>
+<g transform="translate(0, 26)"><g class="schematex-bd-signals"><path d="M 610 110 L 710 110" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="G" data-to="y"/>
+<text x="660" y="102" text-anchor="middle" class="schematex-bd-signal-label">y(t)</text>
+<path d="M 252 110 L 350 110" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="sum1" data-to="C"/>
+<text x="301" y="102" text-anchor="middle" class="schematex-bd-signal-label">e(t)</text>
+<path d="M 450 110 L 510 110" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="C" data-to="G"/>
+<text x="480" y="102" text-anchor="middle" class="schematex-bd-signal-label">u(t)</text>
+<path d="M 560 137 L 560 220 L 770 220" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="G" data-to="H"/>
+<path d="M 670 220 L 240 220 L 240 122" class="schematex-bd-signal" marker-end="url(#lt-bd-arrow)" data-from="H" data-to="sum1"/>
+<text x="226" y="132" text-anchor="middle" class="schematex-bd-sum-sign">+</text></g>
+<g class="schematex-bd-nodes"><g transform="translate(350, 83)" data-block-id="C" data-block-role="controller"><rect width="100" height="54" fill="#E3F2FD" class="schematex-bd-block" rx="2"/>
+<text x="50" y="32" text-anchor="middle" class="schematex-bd-tf">C(s)</text></g>
+<g transform="translate(510, 83)" data-block-id="G" data-block-role="plant"><rect width="100" height="54" fill="#ffffff" class="schematex-bd-block" rx="2"/>
+<text x="50" y="32" text-anchor="middle" class="schematex-bd-tf">G(s)</text></g>
+<g transform="translate(670, 193)" data-block-id="H" data-block-role="sensor"><rect width="100" height="54" fill="#F3E5F5" class="schematex-bd-block" rx="2"/>
+<text x="50" y="32" text-anchor="middle" class="schematex-bd-tf">H(s)</text></g>
+<g data-sum-id="sum1"><circle cx="240" cy="110" r="12" class="schematex-bd-sum"/></g>
+<g data-port-id="y"><text x="724" y="114" text-anchor="start" class="schematex-bd-port-label"></text></g></g>
+<g class="schematex-bd-branches"><circle cx="610" cy="110" r="3.5" class="schematex-bd-branch"/></g></g></svg>

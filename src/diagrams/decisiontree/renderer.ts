@@ -31,7 +31,7 @@ const CLASS_PALETTE = [
 function buildCss(t: BaseTheme): string {
   return `
 .lt-dtree { font-family: system-ui, -apple-system, sans-serif; }
-.lt-dtree-title { font: 500 16px sans-serif; fill: ${t.text}; }
+.lt-dtree-title { font: 700 16px sans-serif; fill: ${t.text}; }
 .lt-dtree-edge { fill: none; stroke: ${t.stroke}; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
 .lt-dtree-edge-optimal { fill: none; stroke: ${t.positive}; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
 .lt-dtree-edge-leader { fill: none; stroke: ${t.stroke}; stroke-width: 1; stroke-dasharray: 2 2; opacity: 0.55; }
@@ -361,7 +361,7 @@ export function renderDecisionTree(ast: DTreeAST | InfluenceAST, config?: Render
   children.push(el("style", {}, buildCss(t)));
 
   if (ast.title) {
-    children.push(textEl({ x: 20, y: 24, class: "lt-dtree-title" }, ast.title));
+    children.push(textEl({ x: width / 2, y: 24, class: "lt-dtree-title", "text-anchor": "middle" }, ast.title));
   }
 
   const inner: string[] = [];

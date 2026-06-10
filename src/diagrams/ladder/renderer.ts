@@ -34,7 +34,7 @@ function buildCss(t: IT): string {
 .lt-ladder-addr { font: 600 8.5px ui-monospace, monospace; fill: ${t.error}; text-anchor: middle; }
 .lt-ladder-rung-num { font: 10px sans-serif; fill: ${t.textMuted}; text-anchor: end; }
 .lt-ladder-comment { font: italic 10px sans-serif; fill: ${t.textMuted}; }
-.lt-ladder-title { font: bold 15px sans-serif; fill: ${t.text}; }
+.lt-ladder-title { font: 700 16px sans-serif; fill: ${t.text}; }
 .lt-ladder-symbol-label { font: bold 10px sans-serif; fill: ${t.stroke}; text-anchor: middle; }
 `.trim();
 }
@@ -211,7 +211,7 @@ export function renderLadder(ast: LadderAST, config?: RenderConfig): string {
 
   if (ast.title) {
     children.push(
-      text({ x: layout.leftRailX, y: 20, class: "lt-ladder-title" }, ast.title)
+      text({ x: width / 2, y: 20, class: "lt-ladder-title", "text-anchor": "middle" }, ast.title)
     );
   }
 

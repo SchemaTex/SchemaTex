@@ -146,7 +146,7 @@ export function renderCircuit(ast: CircuitAST, config?: RenderConfig): string {
 .schematex-circuit-net-label { font: 600 11px system-ui, sans-serif; fill: ${t.accent}; }
 .schematex-circuit-pol { font: 9px sans-serif; fill: ${t.stroke}; }
 .schematex-circuit-meter { font: bold 12px sans-serif; fill: ${t.stroke}; }
-.schematex-circuit-title { font: bold 14px sans-serif; fill: ${t.text}; }
+.schematex-circuit-title { font: 700 16px sans-serif; fill: ${t.text}; }
 .schematex-circuit-err { stroke: ${t.error}; fill: ${t.error}; }
 `.trim();
 

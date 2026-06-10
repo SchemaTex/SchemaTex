@@ -86,7 +86,7 @@ export function renderBowtieLayout(layout: BowtieLayoutResult, config?: RenderCo
   const inner: string[] = [];
 
   if (ast.title) {
-    inner.push(svgText({ x: C.PAGE_PAD, y: C.PAGE_PAD + 6, class: "sx-bowtie-title", "font-family": fontFamily }, ast.title));
+    inner.push(svgText({ x: width / 2, y: C.PAGE_PAD + 6, class: "sx-bowtie-title", "font-family": fontFamily, "text-anchor": "middle" }, ast.title));
   }
 
   // 1. Hazard tie-line (behind everything).

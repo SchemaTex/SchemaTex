@@ -1,4 +1,5 @@
-import type { BlockAST } from "../../core/types";
+import type { BlockAST, RenderConfig } from "../../core/types";
+import { resolveBlockTheme } from "../../core/theme";
 import { layoutBlockDiagram } from "./layout";
 import {
   svgRoot,
@@ -12,18 +13,8 @@ import {
   desc,
 } from "../../core/svg";
 
-const ROLE_FILL: Record<string, string> = {
-  plant: "#ffffff",
-  controller: "#E3F2FD",
-  sensor: "#F3E5F5",
-  actuator: "#E8F5E9",
-  filter: "#FFF8E1",
-  reference: "#ffffff",
-  disturbance: "#FFF3E0",
-  generic: "#ffffff",
-};
-
-export function renderBlockDiagram(ast: BlockAST): string {
+export function renderBlockDiagram(ast: BlockAST, config?: RenderConfig): string {
+  const t = resolveBlockTheme(config?.theme ?? "default");
   const layout = layoutBlockDiagram(ast);
   const titleOffset = ast.title ? 26 : 0;
   const { width } = layout;
@@ -31,17 +22,17 @@ export function renderBlockDiagram(ast: BlockAST): string {
 
   const css = `
 .schematex-bd { font-family: system-ui, -apple-system, sans-serif; }
-.schematex-bd-block { stroke: #333; stroke-width: 2; }
-.schematex-bd-tf { font: italic 14px serif; fill: #111; }
-.schematex-bd-block-name { font: 10px sans-serif; fill: #666; }
-.schematex-bd-sum { fill: #fff; stroke: #333; stroke-width: 2; }
-.schematex-bd-sum-sign { font: bold 11px sans-serif; fill: #333; }
-.schematex-bd-signal { stroke: #333; stroke-width: 2; fill: none; }
-.schematex-bd-signal-discrete { stroke: #333; stroke-width: 2; fill: none; stroke-dasharray: 6 4; }
-.schematex-bd-signal-label { font: italic 12px serif; fill: #333; }
-.schematex-bd-port-label { font: italic 13px serif; fill: #111; }
-.schematex-bd-title { font: bold 15px sans-serif; fill: #111; }
-.schematex-bd-branch { fill: #333; stroke: none; }
+.schematex-bd-block { stroke: ${t.blockStroke}; stroke-width: 2; }
+.schematex-bd-tf { font: italic 14px serif; fill: ${t.blockText}; }
+.schematex-bd-block-name { font: 10px sans-serif; fill: ${t.blockName}; }
+.schematex-bd-sum { fill: ${t.sumFill}; stroke: ${t.blockStroke}; stroke-width: 2; }
+.schematex-bd-sum-sign { font: bold 11px sans-serif; fill: ${t.signalStroke}; }
+.schematex-bd-signal { stroke: ${t.signalStroke}; stroke-width: 2; fill: none; }
+.schematex-bd-signal-discrete { stroke: ${t.signalStroke}; stroke-width: 2; fill: none; stroke-dasharray: 6 4; }
+.schematex-bd-signal-label { font: italic 12px serif; fill: ${t.signalStroke}; }
+.schematex-bd-port-label { font: italic 13px serif; fill: ${t.blockText}; }
+.schematex-bd-title { font: 700 16px sans-serif; fill: ${t.blockText}; }
+.schematex-bd-branch { fill: ${t.signalStroke}; stroke: none; }
 `.trim();
 
   const arrowDef = el(
@@ -54,7 +45,7 @@ export function renderBlockDiagram(ast: BlockAST): string {
       refY: 4,
       orient: "auto",
     },
-    [el("polygon", { points: "0 0, 10 4, 0 8", fill: "#333" })]
+    [el("polygon", { points: "0 0, 10 4, 0 8", fill: t.signalStroke })]
   );
 
   const nodeSvgs: string[] = [];
@@ -63,7 +54,7 @@ export function renderBlockDiagram(ast: BlockAST): string {
 
   for (const n of layout.nodes) {
     if (n.kind === "block") {
-      const fill = ROLE_FILL[n.role] ?? "#fff";
+      const fill = t.roleFills[n.role] ?? t.roleFills["generic"] ?? "#ffffff";
       nodeSvgs.push(
         group(
           {

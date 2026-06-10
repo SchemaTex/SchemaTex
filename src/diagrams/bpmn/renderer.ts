@@ -28,18 +28,13 @@ import type {
   BpmnLayoutResult,
   RenderConfig,
 } from "../../core/types";
+import { resolveBpmnTheme, type BpmnTokens, type ResolvedTheme } from "../../core/theme";
 import { parseBpmn } from "./parser";
 import { layoutBpmn, BPMN_CONST } from "./layout";
 
 const FONT_FAMILY = "system-ui, -apple-system, 'Segoe UI', sans-serif";
-const STROKE = "#1f2937";
-const STROKE_LIGHT = "#94a3b8";
-const POOL_FILL = "#ffffff";
-const LANE_FILL = "#fafbfc";
-const TASK_FILL = "#ffffff";
-const GATEWAY_FILL = "#fffbeb";
-const EVENT_FILL = "#ffffff";
-const LABEL_BAND_FILL = "#f1f5f9";
+
+type BpmnTheme = ResolvedTheme<BpmnTokens>;
 
 export function renderBpmn(textInput: string, config?: RenderConfig): string {
   const ast = parseBpmn(textInput);
@@ -49,18 +44,19 @@ export function renderBpmn(textInput: string, config?: RenderConfig): string {
 
 export function renderBpmnLayout(
   layout: BpmnLayoutResult,
-  _config?: RenderConfig
+  config?: RenderConfig
 ): string {
   const { width, height, ast } = layout;
+  const t = resolveBpmnTheme(config?.theme ?? "default");
 
   const out: string[] = [];
   out.push(title(ast.title ?? "BPMN diagram"));
   out.push(desc(`BPMN ${ast.direction} — ${ast.pools.length} pool(s), ${layout.objects.length} flow object(s).`));
 
-  out.push(buildDefs());
+  out.push(buildDefs(t));
 
   // Pools
-  for (const pl of layout.pools) out.push(renderPool(pl));
+  for (const pl of layout.pools) out.push(renderPool(pl, t));
 
   // Lanes
   for (const lan of layout.lanes) {
@@ -71,8 +67,8 @@ export function renderBpmnLayout(
           y: lan.y,
           width: lan.width - lan.labelHeight,
           height: lan.height,
-          fill: LANE_FILL,
-          stroke: STROKE,
+          fill: t.laneFill,
+          stroke: t.bpmnStroke,
           "stroke-width": 1,
         }),
         rect({
@@ -80,8 +76,8 @@ export function renderBpmnLayout(
           y: lan.y,
           width: lan.labelHeight,
           height: lan.height,
-          fill: LABEL_BAND_FILL,
-          stroke: STROKE,
+          fill: t.labelBandFill,
+          stroke: t.bpmnStroke,
           "stroke-width": 1,
         }),
         text(
@@ -93,7 +89,7 @@ export function renderBpmnLayout(
             "dominant-baseline": "middle",
             "font-family": FONT_FAMILY,
             "font-size": 12,
-            fill: STROKE,
+            fill: t.bpmnText,
           },
           lan.lane.label
         ),
@@ -102,10 +98,10 @@ export function renderBpmnLayout(
   }
 
   // Sequence/message flows beneath objects so arrowheads sit clean.
-  for (const fl of layout.flows) out.push(renderFlow(fl));
+  for (const fl of layout.flows) out.push(renderFlow(fl, t));
 
   // Objects
-  for (const ol of layout.objects) out.push(renderObject(ol));
+  for (const ol of layout.objects) out.push(renderObject(ol, t));
 
   return svgRoot(
     {
@@ -120,7 +116,7 @@ export function renderBpmnLayout(
 
 // ─── Defs (arrow markers) ──────────────────────────────────────
 
-function buildDefs(): string {
+function buildDefs(t: BpmnTheme): string {
   return defs([
     // Sequence flow — filled triangle.
     el(
@@ -137,7 +133,7 @@ function buildDefs(): string {
       [
         el("path", {
           d: "M 0 0 L 10 5 L 0 10 z",
-          fill: STROKE,
+          fill: t.flowStroke,
         }),
       ]
     ),
@@ -156,8 +152,8 @@ function buildDefs(): string {
       [
         el("path", {
           d: "M 0 0 L 10 5 L 0 10 z",
-          fill: "#ffffff",
-          stroke: STROKE,
+          fill: t.poolFill,
+          stroke: t.msgFlowStroke,
           "stroke-width": 1,
         }),
       ]
@@ -175,7 +171,7 @@ function buildDefs(): string {
         orient: "auto",
       },
       [
-        el("circle", { cx: 5, cy: 5, r: 3, fill: "#ffffff", stroke: STROKE }),
+        el("circle", { cx: 5, cy: 5, r: 3, fill: t.poolFill, stroke: t.msgFlowStroke }),
       ]
     ),
   ]);
@@ -183,7 +179,7 @@ function buildDefs(): string {
 
 // ─── Pool ──────────────────────────────────────────────────────
 
-function renderPool(pl: BpmnLayoutPool): string {
+function renderPool(pl: BpmnLayoutPool, t: BpmnTheme): string {
   const labelCx = pl.labelX + pl.labelWidth / 2;
   const labelCy = pl.labelY + pl.height / 2;
   if (pl.pool.blackbox) {
@@ -193,8 +189,8 @@ function renderPool(pl: BpmnLayoutPool): string {
         y: pl.y,
         width: pl.width,
         height: pl.height,
-        fill: POOL_FILL,
-        stroke: STROKE,
+        fill: t.poolFill,
+        stroke: t.bpmnStroke,
         "stroke-width": 1.5,
       }),
       rect({
@@ -202,8 +198,8 @@ function renderPool(pl: BpmnLayoutPool): string {
         y: pl.y,
         width: pl.labelWidth,
         height: pl.height,
-        fill: LABEL_BAND_FILL,
-        stroke: STROKE,
+        fill: t.labelBandFill,
+        stroke: t.bpmnStroke,
         "stroke-width": 1,
       }),
       text(
@@ -216,7 +212,7 @@ function renderPool(pl: BpmnLayoutPool): string {
           "font-family": FONT_FAMILY,
           "font-size": 13,
           "font-weight": "bold",
-          fill: STROKE,
+          fill: t.bpmnText,
         },
         pl.pool.label
       ),
@@ -228,8 +224,8 @@ function renderPool(pl: BpmnLayoutPool): string {
       y: pl.y,
       width: pl.width,
       height: pl.height,
-      fill: POOL_FILL,
-      stroke: STROKE,
+      fill: t.poolFill,
+      stroke: t.bpmnStroke,
       "stroke-width": 1.5,
     }),
     rect({
@@ -237,8 +233,8 @@ function renderPool(pl: BpmnLayoutPool): string {
       y: pl.y,
       width: pl.labelWidth,
       height: pl.height,
-      fill: LABEL_BAND_FILL,
-      stroke: STROKE,
+      fill: t.labelBandFill,
+      stroke: t.bpmnStroke,
       "stroke-width": 1,
     }),
     text(
@@ -251,7 +247,7 @@ function renderPool(pl: BpmnLayoutPool): string {
         "font-family": FONT_FAMILY,
         "font-size": 13,
         "font-weight": "bold",
-        fill: STROKE,
+        fill: t.bpmnText,
       },
       pl.pool.label
     ),
@@ -260,14 +256,14 @@ function renderPool(pl: BpmnLayoutPool): string {
 
 // ─── Flow object ──────────────────────────────────────────────
 
-function renderObject(ol: BpmnLayoutObject): string {
+function renderObject(ol: BpmnLayoutObject, t: BpmnTheme): string {
   const o = ol.obj;
-  if ("gatewayKind" in o) return renderGateway(ol);
-  if ("marker" in o) return renderActivity(ol);
-  return renderEvent(ol);
+  if ("gatewayKind" in o) return renderGateway(ol, t);
+  if ("marker" in o) return renderActivity(ol, t);
+  return renderEvent(ol, t);
 }
 
-function renderActivity(ol: BpmnLayoutObject): string {
+function renderActivity(ol: BpmnLayoutObject, t: BpmnTheme): string {
   const a = ol.obj as BpmnActivity;
   const isSubproc = a.kind === "subprocess-collapsed";
   const cx = ol.x + ol.width / 2;
@@ -280,8 +276,8 @@ function renderActivity(ol: BpmnLayoutObject): string {
       height: ol.height,
       rx: 10,
       ry: 10,
-      fill: TASK_FILL,
-      stroke: STROKE,
+      fill: t.taskFill,
+      stroke: t.taskStroke,
       "stroke-width": 1.5,
     }),
     multilineText(
@@ -292,7 +288,7 @@ function renderActivity(ol: BpmnLayoutObject): string {
         "dominant-baseline": "middle",
         "font-family": FONT_FAMILY,
         "font-size": 12,
-        fill: STROKE,
+        fill: t.bpmnText,
       },
       a.label,
       14
@@ -300,7 +296,7 @@ function renderActivity(ol: BpmnLayoutObject): string {
   ];
   // Task marker — small icon top-left (8px from edge).
   if (a.kind === "task" && a.marker !== "abstract") {
-    children.push(taskMarker(ol.x + 6, ol.y + 6, a.marker));
+    children.push(taskMarker(ol.x + 6, ol.y + 6, a.marker, t));
   }
   // Collapsed subprocess [+] marker, bottom-center.
   if (isSubproc) {
@@ -313,12 +309,12 @@ function renderActivity(ol: BpmnLayoutObject): string {
         width: 12,
         height: 12,
         fill: "none",
-        stroke: STROKE,
+        stroke: t.bpmnStroke,
         "stroke-width": 1,
       }),
       el("path", {
         d: `M ${mx - 4} ${my} L ${mx + 4} ${my} M ${mx} ${my - 4} L ${mx} ${my + 4}`,
-        stroke: STROKE,
+        stroke: t.bpmnStroke,
         "stroke-width": 1,
       })
     );
@@ -326,16 +322,16 @@ function renderActivity(ol: BpmnLayoutObject): string {
   return group({ class: `schematex-bpmn-task marker-${a.marker}` }, children);
 }
 
-function taskMarker(x: number, y: number, marker: string): string {
+function taskMarker(x: number, y: number, marker: string, t: BpmnTheme): string {
   const cx = x + 7;
   const cy = y + 7;
   if (marker === "user") {
     return el("g", { class: "marker-user" }, [
-      el("circle", { cx, cy: cy - 1, r: 2.5, fill: "none", stroke: STROKE, "stroke-width": 1 }),
+      el("circle", { cx, cy: cy - 1, r: 2.5, fill: "none", stroke: t.bpmnStroke, "stroke-width": 1 }),
       el("path", {
         d: `M ${cx - 5} ${cy + 6} Q ${cx} ${cy + 1} ${cx + 5} ${cy + 6}`,
         fill: "none",
-        stroke: STROKE,
+        stroke: t.bpmnStroke,
         "stroke-width": 1,
       }),
     ]);
@@ -343,25 +339,25 @@ function taskMarker(x: number, y: number, marker: string): string {
   if (marker === "service") {
     // Two overlapping gears (simplified).
     return el("g", { class: "marker-service" }, [
-      el("circle", { cx, cy, r: 4, fill: "none", stroke: STROKE, "stroke-width": 1 }),
-      el("circle", { cx, cy, r: 1.5, fill: STROKE }),
+      el("circle", { cx, cy, r: 4, fill: "none", stroke: t.bpmnStroke, "stroke-width": 1 }),
+      el("circle", { cx, cy, r: 1.5, fill: t.bpmnStroke }),
       el("path", {
         d: `M ${cx} ${cy - 6} L ${cx} ${cy - 4} M ${cx} ${cy + 4} L ${cx} ${cy + 6} M ${cx - 6} ${cy} L ${cx - 4} ${cy} M ${cx + 4} ${cy} L ${cx + 6} ${cy}`,
-        stroke: STROKE,
+        stroke: t.bpmnStroke,
         "stroke-width": 1,
       }),
     ]);
   }
   if (marker === "send") {
     return el("g", { class: "marker-send" }, [
-      el("rect", { x: cx - 5, y: cy - 3, width: 10, height: 7, fill: STROKE }),
-      el("path", { d: `M ${cx - 5} ${cy - 3} L ${cx} ${cy + 1} L ${cx + 5} ${cy - 3}`, stroke: "#ffffff", "stroke-width": 1, fill: "none" }),
+      el("rect", { x: cx - 5, y: cy - 3, width: 10, height: 7, fill: t.bpmnStroke }),
+      el("path", { d: `M ${cx - 5} ${cy - 3} L ${cx} ${cy + 1} L ${cx + 5} ${cy - 3}`, stroke: t.poolFill, "stroke-width": 1, fill: "none" }),
     ]);
   }
   if (marker === "receive") {
     return el("g", { class: "marker-receive" }, [
-      el("rect", { x: cx - 5, y: cy - 3, width: 10, height: 7, fill: "none", stroke: STROKE, "stroke-width": 1 }),
-      el("path", { d: `M ${cx - 5} ${cy - 3} L ${cx} ${cy + 1} L ${cx + 5} ${cy - 3}`, stroke: STROKE, "stroke-width": 1, fill: "none" }),
+      el("rect", { x: cx - 5, y: cy - 3, width: 10, height: 7, fill: "none", stroke: t.bpmnStroke, "stroke-width": 1 }),
+      el("path", { d: `M ${cx - 5} ${cy - 3} L ${cx} ${cy + 1} L ${cx + 5} ${cy - 3}`, stroke: t.bpmnStroke, "stroke-width": 1, fill: "none" }),
     ]);
   }
   if (marker === "manual") {
@@ -370,7 +366,7 @@ function taskMarker(x: number, y: number, marker: string): string {
       el("path", {
         d: `M ${cx - 3} ${cy + 4} L ${cx - 3} ${cy} L ${cx - 1.5} ${cy} L ${cx - 1.5} ${cy - 4} L ${cx} ${cy - 4} L ${cx} ${cy} L ${cx + 1.5} ${cy} L ${cx + 1.5} ${cy + 1} L ${cx + 3} ${cy + 1} L ${cx + 3} ${cy + 4} z`,
         fill: "none",
-        stroke: STROKE,
+        stroke: t.bpmnStroke,
         "stroke-width": 1,
       }),
     ]);
@@ -380,12 +376,12 @@ function taskMarker(x: number, y: number, marker: string): string {
       el("path", {
         d: `M ${cx - 4} ${cy - 5} Q ${cx - 6} ${cy} ${cx - 4} ${cy + 5} L ${cx + 4} ${cy + 5} Q ${cx + 2} ${cy} ${cx + 4} ${cy - 5} z`,
         fill: "none",
-        stroke: STROKE,
+        stroke: t.bpmnStroke,
         "stroke-width": 1,
       }),
       el("path", {
         d: `M ${cx - 2} ${cy - 2} L ${cx + 2} ${cy - 2} M ${cx - 2} ${cy} L ${cx + 2} ${cy} M ${cx - 2} ${cy + 2} L ${cx + 2} ${cy + 2}`,
-        stroke: STROKE,
+        stroke: t.bpmnStroke,
         "stroke-width": 0.8,
       }),
     ]);
@@ -393,7 +389,7 @@ function taskMarker(x: number, y: number, marker: string): string {
   return "";
 }
 
-function renderGateway(ol: BpmnLayoutObject): string {
+function renderGateway(ol: BpmnLayoutObject, t: BpmnTheme): string {
   const g = ol.obj as BpmnGateway;
   const cx = ol.x + ol.width / 2;
   const cy = ol.y + ol.height / 2;
@@ -406,7 +402,7 @@ function renderGateway(ol: BpmnLayoutObject): string {
     inner.push(
       el("path", {
         d: `M ${cx - a} ${cy - a} L ${cx + a} ${cy + a} M ${cx + a} ${cy - a} L ${cx - a} ${cy + a}`,
-        stroke: STROKE,
+        stroke: t.gatewayGlyph,
         "stroke-width": 2.5,
         "stroke-linecap": "round",
       })
@@ -416,7 +412,7 @@ function renderGateway(ol: BpmnLayoutObject): string {
     inner.push(
       el("path", {
         d: `M ${cx - a} ${cy} L ${cx + a} ${cy} M ${cx} ${cy - a} L ${cx} ${cy + a}`,
-        stroke: STROKE,
+        stroke: t.gatewayGlyph,
         "stroke-width": 2.5,
         "stroke-linecap": "round",
       })
@@ -428,7 +424,7 @@ function renderGateway(ol: BpmnLayoutObject): string {
         cy,
         r: r * 0.45,
         fill: "none",
-        stroke: STROKE,
+        stroke: t.gatewayGlyph,
         "stroke-width": 2,
       })
     );
@@ -440,7 +436,7 @@ function renderGateway(ol: BpmnLayoutObject): string {
         cy,
         r: r * 0.55,
         fill: "none",
-        stroke: STROKE,
+        stroke: t.gatewayGlyph,
         "stroke-width": 1,
       })
     );
@@ -454,7 +450,7 @@ function renderGateway(ol: BpmnLayoutObject): string {
       el("polygon", {
         points: pts.join(" "),
         fill: "none",
-        stroke: STROKE,
+        stroke: t.gatewayGlyph,
         "stroke-width": 1.2,
       })
     );
@@ -468,7 +464,7 @@ function renderGateway(ol: BpmnLayoutObject): string {
           "text-anchor": "middle",
           "font-family": FONT_FAMILY,
           "font-size": 11,
-          fill: STROKE,
+          fill: t.bpmnText,
         },
         labelStr
       )
@@ -476,8 +472,8 @@ function renderGateway(ol: BpmnLayoutObject): string {
   return group({ class: `schematex-bpmn-gateway kind-${g.gatewayKind}` }, [
     el("polygon", {
       points,
-      fill: GATEWAY_FILL,
-      stroke: STROKE,
+      fill: t.gatewayFill,
+      stroke: t.gatewayStroke,
       "stroke-width": 1.5,
     }),
     ...inner,
@@ -485,7 +481,7 @@ function renderGateway(ol: BpmnLayoutObject): string {
   ]);
 }
 
-function renderEvent(ol: BpmnLayoutObject): string {
+function renderEvent(ol: BpmnLayoutObject, t: BpmnTheme): string {
   const e = ol.obj as BpmnEvent;
   const cx = ol.x + ol.width / 2;
   const cy = ol.y + ol.height / 2;
@@ -493,14 +489,16 @@ function renderEvent(ol: BpmnLayoutObject): string {
   const isEnd = e.kind === "end";
   const isIntermediate = e.kind === "intermediate";
   const strokeW = isEnd ? 3 : 1.2;
+  const fill = isEnd ? t.endFill : isIntermediate ? t.intermediateFill : t.startFill;
+  const ring = isEnd ? t.endStroke : isIntermediate ? t.intermediateStroke : t.startStroke;
   const children: string[] = [];
   children.push(
     el("circle", {
       cx,
       cy,
       r,
-      fill: EVENT_FILL,
-      stroke: STROKE,
+      fill,
+      stroke: ring,
       "stroke-width": strokeW,
     })
   );
@@ -511,7 +509,7 @@ function renderEvent(ol: BpmnLayoutObject): string {
         cy,
         r: r - 3,
         fill: "none",
-        stroke: STROKE,
+        stroke: ring,
         "stroke-width": 1.2,
       })
     );
@@ -519,9 +517,9 @@ function renderEvent(ol: BpmnLayoutObject): string {
   // Trigger glyph
   const filled = e.throwCatch === "throw" && (isIntermediate || isEnd);
   if (e.trigger === "message") {
-    children.push(messageGlyph(cx, cy, r * 0.55, filled));
+    children.push(messageGlyph(cx, cy, r * 0.55, filled, t));
   } else if (e.trigger === "timer") {
-    children.push(timerGlyph(cx, cy, r * 0.55));
+    children.push(timerGlyph(cx, cy, r * 0.55, t));
   }
   // End-event terminator (none trigger): a thick filled disk indicates terminate
   // — we render plain none-end as just the thick ring (no inner glyph).
@@ -535,7 +533,7 @@ function renderEvent(ol: BpmnLayoutObject): string {
           "text-anchor": "middle",
           "font-family": FONT_FAMILY,
           "font-size": 11,
-          fill: STROKE,
+          fill: t.bpmnText,
         },
         e.label
       )
@@ -544,7 +542,7 @@ function renderEvent(ol: BpmnLayoutObject): string {
   return group({ class: `schematex-bpmn-event kind-${e.kind} trigger-${e.trigger}` }, children);
 }
 
-function messageGlyph(cx: number, cy: number, size: number, filled: boolean): string {
+function messageGlyph(cx: number, cy: number, size: number, filled: boolean, t: BpmnTheme): string {
   const w = size;
   const h = size * 0.7;
   const x = cx - w / 2;
@@ -555,20 +553,20 @@ function messageGlyph(cx: number, cy: number, size: number, filled: boolean): st
       y,
       width: w,
       height: h,
-      fill: filled ? STROKE : "#ffffff",
-      stroke: STROKE,
+      fill: filled ? t.bpmnStroke : t.poolFill,
+      stroke: t.bpmnStroke,
       "stroke-width": 1,
     }),
     el("path", {
       d: `M ${x} ${y} L ${cx} ${y + h * 0.55} L ${x + w} ${y}`,
-      stroke: filled ? "#ffffff" : STROKE,
+      stroke: filled ? t.poolFill : t.bpmnStroke,
       "stroke-width": 1,
       fill: "none",
     }),
   ]);
 }
 
-function timerGlyph(cx: number, cy: number, size: number): string {
+function timerGlyph(cx: number, cy: number, size: number, t: BpmnTheme): string {
   const r = size / 2;
   // Clock outline + 12 / 3 / 6 / 9 ticks + hands.
   const ticks: string[] = [];
@@ -581,12 +579,12 @@ function timerGlyph(cx: number, cy: number, size: number): string {
     ticks.push(`M ${t1x} ${t1y} L ${t2x} ${t2y}`);
   }
   return el("g", { class: "trigger-timer" }, [
-    el("circle", { cx, cy, r, fill: "none", stroke: STROKE, "stroke-width": 1 }),
-    el("path", { d: ticks.join(" "), stroke: STROKE, "stroke-width": 0.8 }),
+    el("circle", { cx, cy, r, fill: "none", stroke: t.bpmnStroke, "stroke-width": 1 }),
+    el("path", { d: ticks.join(" "), stroke: t.bpmnStroke, "stroke-width": 0.8 }),
     // Hands
     el("path", {
       d: `M ${cx} ${cy} L ${cx} ${cy - r * 0.7} M ${cx} ${cy} L ${cx + r * 0.5} ${cy}`,
-      stroke: STROKE,
+      stroke: t.bpmnStroke,
       "stroke-width": 1.2,
       "stroke-linecap": "round",
     }),
@@ -595,7 +593,7 @@ function timerGlyph(cx: number, cy: number, size: number): string {
 
 // ─── Flow rendering ───────────────────────────────────────────
 
-function renderFlow(fl: BpmnLayoutFlow): string {
+function renderFlow(fl: BpmnLayoutFlow, t: BpmnTheme): string {
   const f = fl.flow;
   const isMessage = f.kind === "message";
   const dasharray = isMessage ? "6 4" : undefined;
@@ -605,7 +603,7 @@ function renderFlow(fl: BpmnLayoutFlow): string {
     path({
       d: fl.path,
       fill: "none",
-      stroke: isMessage ? STROKE_LIGHT : STROKE,
+      stroke: isMessage ? t.msgFlowStroke : t.flowStroke,
       "stroke-width": 1.4,
       "stroke-dasharray": dasharray,
       "marker-start": markerStart,
@@ -619,8 +617,8 @@ function renderFlow(fl: BpmnLayoutFlow): string {
       children.push(
         el("polygon", {
           points: diamondPoints(head.x, head.y, 5),
-          fill: "#ffffff",
-          stroke: STROKE,
+          fill: t.poolFill,
+          stroke: t.flowStroke,
           "stroke-width": 1,
         })
       );
@@ -633,7 +631,7 @@ function renderFlow(fl: BpmnLayoutFlow): string {
       children.push(
         el("path", {
           d: `M ${head.x - 4} ${head.y + 4} L ${head.x + 4} ${head.y - 4}`,
-          stroke: STROKE,
+          stroke: t.flowStroke,
           "stroke-width": 1.5,
         })
       );
@@ -649,7 +647,7 @@ function renderFlow(fl: BpmnLayoutFlow): string {
           "text-anchor": "middle",
           "font-family": FONT_FAMILY,
           "font-size": 10,
-          fill: STROKE,
+          fill: t.bpmnText,
         },
         f.label
       )

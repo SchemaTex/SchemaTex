@@ -66,7 +66,7 @@ const CSS_TEMPLATE = (themeName: ThemeName): string => {
 .sx-fc-edge-dotted { stroke-dasharray: 1.5 3; }
 .sx-fc-edge-label { fill: ${t.textMuted}; font: 11px system-ui, -apple-system, "Segoe UI", sans-serif; }
 .sx-fc-edge-label-bg { fill: ${t.bg}; fill-opacity: 0.96; stroke: ${t.neutral}; stroke-width: 0.5; }
-.sx-fc-title { fill: ${t.text}; font: 600 14px system-ui, -apple-system, "Segoe UI", sans-serif; }
+.sx-fc-title { fill: ${t.text}; font: 700 16px system-ui, -apple-system, "Segoe UI", sans-serif; }
 /* Shape sub-elements */
 .sx-fc-node-subline { fill: none; stroke: ${t.stroke}; stroke-width: 1.5; }
 .sx-fc-node-arc { fill: none; stroke: ${t.stroke}; stroke-width: 1.5; }

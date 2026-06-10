@@ -99,7 +99,7 @@ export function renderFaultTreeLayout(layout: FaultTreeLayoutResult, config?: Re
 
   if (ast.title) {
     inner.push(
-      svgText({ x: C.CANVAS_PAD, y: 22, class: "sx-ft-title", "font-family": fontFamily }, ast.title)
+      svgText({ x: width / 2, y: 22, class: "sx-ft-title", "font-family": fontFamily, "text-anchor": "middle" }, ast.title)
     );
   }
 

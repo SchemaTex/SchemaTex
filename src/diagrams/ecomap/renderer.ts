@@ -8,6 +8,7 @@ import type {
 import { svgRoot, el, group, text, title, desc } from "../../core/svg";
 import { cssCustomProperties, resolveBaseTheme, STROKE_WIDTH, type BaseTheme } from "../../core/theme";
 import { applyLegendOverrides, renderLegend } from "../../core/legend";
+import { estimateTextWidth } from "../../core/text-metrics";
 import { buildEcomapLegend } from "./legend";
 
 // ─── Category colors (Hartman standard) ────────────────────
@@ -51,7 +52,7 @@ export function renderEcomap(
   const connectionsStr = renderConnections(layout.edges, centerNode?.individual.id);
   const centerStr = centerNode ? renderCenter(centerNode, config) : "";
   const systemsStr = renderSystems(systemNodes, config);
-  const labelsStr = renderConnectionLabels(layout.edges, t);
+  const labelsStr = renderConnectionLabels(layout.edges, layout.nodes, t);
 
   const layers: string[] = [
     title("Ecomap"),
@@ -152,7 +153,7 @@ function buildStyles(config: RenderConfig, t: BaseTheme): string {
 .schematex-ecomap-eco-line-weak { stroke: ${t.neutral}; stroke-width: ${STROKE_WIDTH.normal}; stroke-dasharray: 6,4; fill: none; stroke-linecap: round; }
 .schematex-ecomap-eco-line-broken { stroke: ${t.neutral}; stroke-width: ${STROKE_WIDTH.normal}; stroke-dasharray: 3,8; fill: none; stroke-linecap: round; }
 .schematex-ecomap-eco-line-stressful { stroke: ${t.neutral}; stroke-width: ${STROKE_WIDTH.normal}; fill: none; stroke-linecap: round; }
-.schematex-ecomap-eco-conn-label { font-family: ${config.fontFamily}; font-size: ${config.fontSize - 2}px; text-anchor: middle; fill: ${t.textMuted}; }
+.schematex-ecomap-eco-conn-label { font-family: ${config.fontFamily}; font-size: ${config.fontSize - 2}px; text-anchor: middle; fill: ${t.textMuted}; paint-order: stroke; stroke: ${t.bg}; stroke-width: 3px; stroke-linejoin: round; }
 .schematex-ecomap-eco-arrow { fill: ${t.neutral}; }
 .schematex-ecomap-connection-mesosystem .schematex-ecomap-eco-line,
 .schematex-ecomap-connection-mesosystem .schematex-ecomap-eco-line-parallel,
@@ -403,23 +404,49 @@ function renderConnections(edges: LayoutEdge[], centerId?: string): string {
 
 // ─── Connection labels ─────────────────────────────────────
 
-function renderConnectionLabels(edges: LayoutEdge[], t: BaseTheme): string {
+function renderConnectionLabels(
+  edges: LayoutEdge[],
+  nodes: LayoutNode[],
+  t: BaseTheme
+): string {
   const elements: string[] = [];
+
+  // A label whose anchor lands inside any node circle gets nudged along its
+  // line (an outer-ring spoke can pass straight through an inner-ring node).
+  const clearsNodes = (x: number, y: number, halfW: number): boolean =>
+    nodes.every((n) => {
+      const r = n.width / 2;
+      const ncx = n.x + r;
+      const ncy = n.y + r;
+      const dx = Math.max(Math.abs(x - ncx) - halfW, 0);
+      const dy = Math.abs(y - ncy);
+      return dx * dx + dy * dy > (r + 4) * (r + 4);
+    });
 
   for (const edge of edges) {
     if (!edge.relationship.label) continue;
     const coords = extractLineCoords(edge.path);
     if (!coords) continue;
 
-    const mx = (coords.x1 + coords.x2) / 2;
-    const my = (coords.y1 + coords.y2) / 2;
+    const labelW = estimateTextWidth(edge.relationship.label, 10) + 12;
+    let lt = 0.5;
+    for (const cand of [0.5, 0.62, 0.38, 0.72, 0.28]) {
+      const x = coords.x1 + (coords.x2 - coords.x1) * cand;
+      const y = coords.y1 + (coords.y2 - coords.y1) * cand;
+      if (clearsNodes(x, y, labelW / 2)) {
+        lt = cand;
+        break;
+      }
+    }
+    const mx = coords.x1 + (coords.x2 - coords.x1) * lt;
+    const my = coords.y1 + (coords.y2 - coords.y1) * lt;
 
     elements.push(
       group({ class: "schematex-ecomap-conn-label-group" }, [
         el("rect", {
-          x: mx - 40,
+          x: mx - labelW / 2,
           y: my - 8,
-          width: 80,
+          width: labelW,
           height: 16,
           rx: 3,
           fill: t.bg,

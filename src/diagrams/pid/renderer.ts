@@ -31,7 +31,7 @@ const STYLE = `
 .lt-pid-line-tag-bg { fill: #ffffff; stroke: #1d1d1d; stroke-width: 0.6; }
 .lt-pid-line-tag-text { font: 9px ui-monospace, monospace; fill: #1d1d1d; }
 
-.lt-pid-title { font: 600 14px system-ui, sans-serif; fill: #1d1d1d; }
+.lt-pid-title { font: 700 16px system-ui, sans-serif; fill: #1d1d1d; }
 
 .lt-pid-unknown-box { fill: none; stroke: #c0392b; stroke-width: 1.6; stroke-dasharray: 5 3; }
 .lt-pid-unknown-mark { font: 700 18px system-ui, sans-serif; fill: #c0392b; }
@@ -231,7 +231,7 @@ function renderLayout(layout: PidLayoutResult): string {
   }
 
   const titleNode = layout.title
-    ? textEl({ x: 16, y: 22, class: "lt-pid-title" }, layout.title)
+    ? textEl({ x: layout.width / 2, y: 22, class: "lt-pid-title", "text-anchor": "middle" }, layout.title)
     : "";
 
   return svgRoot(

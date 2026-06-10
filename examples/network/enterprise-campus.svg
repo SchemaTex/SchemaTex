@@ -6,11 +6,12 @@
 .sx-net-glyph { fill: #bfe0f7; stroke: none; }
 .sx-net-glyph-line { fill: none; stroke: #bfe0f7; stroke-width: 1.4; }
 .sx-net-icontext { font: 700 8px sans-serif; fill: #bfe0f7; }
+.sx-net-icontag { font: 700 8px sans-serif; fill: #64748b; paint-order: stroke; stroke: #ffffff; stroke-width: 2.5px; stroke-linejoin: round; }
 .sx-net-cloud-body { fill: #ffffff; stroke: #334155; stroke-width: 2; }
 .sx-net-cloudtext { font: 600 13px sans-serif; fill: #0f172a; }
 .sx-net-bus { stroke: #0f3a5f; stroke-width: 4; stroke-linecap: round; }
-.sx-net-label { font: 12px sans-serif; fill: #0f172a; }
-.sx-net-sublabel { font: 10px sans-serif; fill: #64748b; }
+.sx-net-label { font: 12px sans-serif; fill: #0f172a; paint-order: stroke; stroke: #ffffff; stroke-width: 3px; stroke-linejoin: round; }
+.sx-net-sublabel { font: 10px sans-serif; fill: #64748b; paint-order: stroke; stroke: #ffffff; stroke-width: 3px; stroke-linejoin: round; }
 .sx-net-link { fill: none; stroke-width: 2; }
 .sx-net-link-wireless, .sx-net-link-vpn { stroke-dasharray: 5 4; }
 .sx-net-link-lag { stroke-width: 3; }
@@ -27,7 +28,7 @@
 <g class="sx-net-links"><g class="sx-net-link-g" data-from="inet" data-to="fw1" data-type="copper"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="104.96,94 114.42,142"/></g>
 <g class="sx-net-link-g" data-from="wan" data-to="er1" data-type="serial"><polyline class="sx-net-link sx-net-link-serial" stroke="#7c3aed" points="249.25,94 244.15,142"/></g>
 <g class="sx-net-link-g" data-from="fw1" data-to="cs1" data-type="copper" data-speed="10G"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="119.73,190 121.07,246"/>
-<text class="sx-net-linklabel" x="120.4" y="215" text-anchor="middle">10G</text></g>
+<text class="sx-net-linklabel" x="120.56" y="221.72" text-anchor="middle">10G</text></g>
 <g class="sx-net-link-g" data-from="er1" data-to="cs2" data-type="copper"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="238.84,190 232.41,246"/></g>
 <g class="sx-net-link-g" data-from="cs1" data-to="cs2" data-type="lag" data-speed="40G"><line class="sx-net-link sx-net-link-lag" stroke="#334155" x1="153.65" y1="271.8" x2="197.65" y2="271.8"/>
 <line class="sx-net-link sx-net-link-lag" stroke="#334155" x1="153.65" y1="268.2" x2="197.65" y2="268.2"/>
@@ -35,7 +36,7 @@
 <g class="sx-net-link-g" data-from="cs1" data-to="d1" data-type="copper"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="107.88,294 75.77,350"/></g>
 <g class="sx-net-link-g" data-from="cs2" data-to="d2" data-type="copper"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="215.88,294 183.77,350"/></g>
 <g class="sx-net-link-g" data-from="cs1" data-to="farm" data-type="copper" data-vlan="100" data-mode="trunk"><polyline class="sx-net-link sx-net-link-copper" stroke="#d97706" points="153.65,290.54 246.65,350.25"/>
-<text class="sx-net-linklabel" x="200.15" y="317.4" text-anchor="middle">Trunk · VLAN 100</text></g>
+<text class="sx-net-linklabel" x="211.31" y="324.56" text-anchor="middle">Trunk · VLAN 100</text></g>
 <g class="sx-net-link-g" data-from="d1" data-to="a1" data-type="copper"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="63.3,398 66.35,454"/></g>
 <g class="sx-net-link-g" data-from="d2" data-to="a2" data-type="copper"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="171.3,398 174.35,454"/></g>
 <g class="sx-net-link-g" data-from="d2" data-to="a3" data-type="copper"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="196.23,398 257.42,454"/></g></g>
@@ -93,7 +94,7 @@
 <line class="sx-net-detail" x1="267.39" y1="371" x2="287.91" y2="371"/>
 <line class="sx-net-detail" x1="267.39" y1="381.66" x2="287.91" y2="381.66"/>
 <circle class="sx-net-glyph" cx="284.91" cy="355.68" r="1.6"/></g>
-<text class="sx-net-icontext" x="314.65" y="401" text-anchor="end">×4</text></g>
+<text class="sx-net-icontag" x="314.65" y="401" text-anchor="end">×4</text></g>
 <text class="sx-net-label" x="283.65" y="420" text-anchor="middle">Server Farm</text></g>
 <g class="sx-net-device" data-id="a1" data-kind="switch" data-tier="access"><g><rect class="sx-net-body" x="40.13" y="466" width="55.04" height="24" rx="3" ry="3"/>
 <line class="sx-net-glyph-line" x1="51.14" y1="473.68" x2="84.16" y2="473.68"/><polygon class="sx-net-glyph" points="84.16,473.68 80.65,475.6 80.65,471.76"/>

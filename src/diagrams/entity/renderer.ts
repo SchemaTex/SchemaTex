@@ -386,7 +386,7 @@ export function renderEntity(ast: EntityAST, config?: RenderConfig): string {
   );
 
   if (ast.title) {
-    children.push(textEl({ x: 20, y: 22, class: "lt-entity-title" }, ast.title));
+    children.push(textEl({ x: width / 2, y: 22, class: "lt-entity-title", "text-anchor": "middle" }, ast.title));
   }
 
   const inner: string[] = [];

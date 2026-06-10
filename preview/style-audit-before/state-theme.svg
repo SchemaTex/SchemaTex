@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="581" height="281" viewBox="0 0 581 281" class="lt-state" data-diagram-type="state"><title>State Diagram — Traffic Light</title>
+<desc>UML 2.5 / Harel statechart rendered by Schematex</desc>
+<defs><marker id="lt-state-arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><polygon points="0,0 10,3 0,6" fill="#2a2a2a"/></marker>
+<style>
+.lt-state-body { fill: #ffffff; stroke: #2a2a2a; stroke-width: 1.6; }
+.lt-state-name { font: 600 12px system-ui, sans-serif; fill: #1a1a1a; }
+.lt-state-div  { stroke: #2a2a2a; stroke-width: 1; }
+.lt-state-activity { font: 11px ui-monospace, monospace; fill: #444; }
+
+.lt-composite-body { fill: #fafafa; stroke: #2a2a2a; stroke-width: 1.6; }
+.lt-composite-title { font: 600 12px system-ui, sans-serif; fill: #1a1a1a; }
+.lt-composite-titlebar { fill: #f0f0f0; stroke: #2a2a2a; stroke-width: 1; }
+.lt-region-div { stroke: #888; stroke-width: 1; stroke-dasharray: 6 4; }
+
+.lt-ps-initial { fill: #1a1a1a; }
+.lt-ps-final-outer { fill: #ffffff; stroke: #1a1a1a; stroke-width: 1.6; }
+.lt-ps-final-inner { fill: #1a1a1a; }
+.lt-ps-choice { fill: #ffffff; stroke: #1a1a1a; stroke-width: 1.6; }
+.lt-ps-junction { fill: #1a1a1a; }
+.lt-ps-bar { fill: #1a1a1a; }
+.lt-ps-history-body { fill: #ffffff; stroke: #1a1a1a; stroke-width: 1.6; }
+.lt-ps-history-text { font: 600 11px serif; fill: #1a1a1a; }
+.lt-ps-terminate { stroke: #1a1a1a; stroke-width: 2; }
+.lt-ps-entrypoint { fill: #ffffff; stroke: #1a1a1a; stroke-width: 1.6; }
+.lt-ps-exitpoint  { fill: #ffffff; stroke: #1a1a1a; stroke-width: 1.6; }
+
+.lt-transition { stroke: #2a2a2a; stroke-width: 1.4; fill: none; }
+.lt-transition-label { font: 11px system-ui, sans-serif; fill: #1a1a1a; }
+.lt-transition-label-bg { fill: #ffffff; opacity: 0.92; }
+
+.lt-note-body { fill: #fff8c5; stroke: #b79400; stroke-width: 1; }
+.lt-note-text { font: 11px system-ui, sans-serif; fill: #2a2a2a; }
+.lt-note-leader { stroke: #b79400; stroke-width: 1; stroke-dasharray: 3 3; fill: none; }
+
+.lt-title { font: 600 14px system-ui, sans-serif; fill: #1a1a1a; }
+</style></defs>
+<text x="16" y="22" class="lt-title">Traffic Light</text>
+<g class="lt-clusters"></g>
+<g class="lt-state-bodies"><g class="lt-state lt-pseudo" data-id="i" data-kind="initial"><circle cx="64" cy="136.5" r="8" class="lt-ps-initial"/></g>
+<g class="lt-state lt-simple" data-id="Red"><rect x="180" y="114.5" width="72" height="44" rx="8" ry="8" class="lt-state-body"/>
+<text x="216" y="140.5" text-anchor="middle" class="lt-state-name">Red</text></g>
+<g class="lt-state lt-simple" data-id="Green"><rect x="332" y="52" width="72" height="44" rx="8" ry="8" class="lt-state-body"/>
+<text x="368" y="78" text-anchor="middle" class="lt-state-name">Green</text></g>
+<g class="lt-state lt-pseudo" data-id="f" data-kind="final"><circle cx="368" cy="217" r="11" class="lt-ps-final-outer"/>
+<circle cx="368" cy="217" r="6" class="lt-ps-final-inner"/></g>
+<g class="lt-state lt-simple" data-id="Yellow"><rect x="484" y="83.25" width="73" height="44" rx="8" ry="8" class="lt-state-body"/>
+<text x="520.5" y="109.25" text-anchor="middle" class="lt-state-name">Yellow</text></g></g>
+<g class="lt-edges"><g class="lt-edge" data-edge-id="t1"><path d="M 72 136.5 L 142 136.5 L 142 136.5 L 180 136.5" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="i" data-to="Red"/></g>
+<g class="lt-edge" data-edge-id="t2"><path d="M 252 136.5 L 290 136.5 L 290 74 L 332 74" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="Red" data-to="Green"/>
+<rect x="296" y="95.25" width="40" height="14" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="296" y="105.25" text-anchor="start" class="lt-transition-label">timer</text></g>
+<g class="lt-edge" data-edge-id="t3"><path d="M 404 74 L 446 74 L 446 105.25 L 484 105.25" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="Green" data-to="Yellow"/>
+<rect x="452" y="79.625" width="40" height="14" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="452" y="89.625" text-anchor="start" class="lt-transition-label">timer</text></g>
+<g class="lt-edge" data-edge-id="t4"><path d="M 252 136.5 L 290 136.5 L 290 136.5 L 368 136.5 L 446 136.5 L 446 105.25 L 484 105.25" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="Yellow" data-to="Red"/>
+<rect x="270" y="118.5" width="40" height="14" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="290" y="128.5" text-anchor="middle" class="lt-transition-label">timer</text></g>
+<g class="lt-edge" data-edge-id="t5"><path d="M 252 136.5 L 290 136.5 L 290 217 L 357 217" class="lt-transition" marker-end="url(#lt-state-arrow)" data-from="Red" data-to="f"/>
+<rect x="296" y="166.75" width="65.6" height="14" rx="2" ry="2" class="lt-transition-label-bg"/>
+<text x="296" y="176.75" text-anchor="start" class="lt-transition-label">power_off</text></g></g>
+<g class="lt-notes"></g></svg>

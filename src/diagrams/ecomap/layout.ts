@@ -7,10 +7,23 @@ import type {
   LayoutNode,
   LayoutEdge,
 } from "../../core/types";
+import { estimateTextWidth } from "../../core/text-metrics";
 
 // ─── Constants ─────────────────────────────────────────────
 
 const CENTER_R = 50;
+/** Renderer paints the center label at fontSize+2 (= 14px), weight 600. */
+const CENTER_LABEL_FONT = 14;
+
+/** Center circle must fit its single-line label — grow beyond CENTER_R when needed. */
+function getCenterRadius(center: Individual): number {
+  const label =
+    center.label !== center.id
+      ? center.label
+      : center.id.charAt(0).toUpperCase() + center.id.slice(1);
+  const w = estimateTextWidth(label, CENTER_LABEL_FONT, { fontWeight: 600 });
+  return Math.max(CENTER_R, Math.ceil(w / 2) + 10);
+}
 const SYS_R = 30;
 const SYS_R_LARGE = 40;
 const SYS_R_SMALL = 20;
@@ -33,18 +46,20 @@ export function layoutEcomap(
   );
   const n = systems.length;
 
+  const centerR = getCenterRadius(center);
+
   if (n === 0) {
-    const size = (CENTER_R + PADDING + LABEL_CLEARANCE) * 2;
+    const size = (centerR + PADDING + LABEL_CLEARANCE) * 2;
     return {
       width: size,
       height: size,
       nodes: [
         {
           id: center.id,
-          x: size / 2 - CENTER_R,
-          y: size / 2 - CENTER_R,
-          width: CENTER_R * 2,
-          height: CENTER_R * 2,
+          x: size / 2 - centerR,
+          y: size / 2 - centerR,
+          width: centerR * 2,
+          height: centerR * 2,
           generation: 0,
           individual: center,
         },
@@ -71,10 +86,10 @@ export function layoutEcomap(
 
   nodes.push({
     id: center.id,
-    x: cx - CENTER_R,
-    y: cy - CENTER_R,
-    width: CENTER_R * 2,
-    height: CENTER_R * 2,
+    x: cx - centerR,
+    y: cy - centerR,
+    width: centerR * 2,
+    height: centerR * 2,
     generation: 0,
     individual: center,
   });

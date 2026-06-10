@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1186" height="252" viewBox="0 0 1186 252" class="schematex-bpmn"><title>Simple service flow</title>
+<desc>BPMN LR — 1 pool(s), 8 flow object(s).</desc>
+<defs><marker id="bpmn-arrow-seq" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#1f2937"/></marker>
+<marker id="bpmn-arrow-msg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#ffffff" stroke="#1f2937" stroke-width="1"/></marker>
+<marker id="bpmn-msg-start" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto"><circle cx="5" cy="5" r="3" fill="#ffffff" stroke="#1f2937"/></marker></defs>
+<g class="schematex-bpmn-pool"><rect x="16" y="16" width="1154" height="220" fill="#ffffff" stroke="#1f2937" stroke-width="1.5"/>
+<rect x="16" y="16" width="26" height="220" fill="#f1f5f9" stroke="#1f2937" stroke-width="1"/>
+<text x="29" y="126" transform="rotate(-90 29 126)" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="13" font-weight="bold" fill="#1f2937">API</text></g>
+<g class="schematex-bpmn-lane"><rect x="64" y="16" width="1106" height="220" fill="#fafbfc" stroke="#1f2937" stroke-width="1"/>
+<rect x="42" y="16" width="22" height="220" fill="#f1f5f9" stroke="#1f2937" stroke-width="1"/>
+<text x="53" y="126" transform="rotate(-90 53 126)" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12" fill="#1f2937">Worker</text></g>
+<g class="schematex-bpmn-flow kind-sequence"><path d="M 185 80 L 223.5 80 L 223.5 80 L 262 80" fill="none" stroke="#1f2937" stroke-width="1.4" marker-end="url(#bpmn-arrow-seq)"/></g>
+<g class="schematex-bpmn-flow kind-sequence"><path d="M 372 80 L 392 80 L 392 80 L 412 80" fill="none" stroke="#1f2937" stroke-width="1.4" marker-end="url(#bpmn-arrow-seq)"/></g>
+<g class="schematex-bpmn-flow kind-sequence"><path d="M 522 80 L 558.5 80 L 558.5 80 L 595 80" fill="none" stroke="#1f2937" stroke-width="1.4" marker-end="url(#bpmn-arrow-seq)"/></g>
+<g class="schematex-bpmn-flow kind-sequence"><path d="M 639 80 L 675.5 80 L 675.5 80 L 712 80" fill="none" stroke="#1f2937" stroke-width="1.4" marker-end="url(#bpmn-arrow-seq)"/></g>
+<g class="schematex-bpmn-flow kind-sequence"><path d="M 639 80 L 675.5 80 L 675.5 172 L 712 172" fill="none" stroke="#1f2937" stroke-width="1.4" marker-end="url(#bpmn-arrow-seq)"/></g>
+<g class="schematex-bpmn-flow kind-sequence"><path d="M 822 80 L 858.5 80 L 858.5 80 L 895 80" fill="none" stroke="#1f2937" stroke-width="1.4" marker-end="url(#bpmn-arrow-seq)"/></g>
+<g class="schematex-bpmn-flow kind-sequence"><path d="M 822 172 L 858.5 172 L 858.5 80 L 895 80" fill="none" stroke="#1f2937" stroke-width="1.4" marker-end="url(#bpmn-arrow-seq)"/></g>
+<g class="schematex-bpmn-flow kind-sequence"><path d="M 939 80 L 994 80 L 994 80 L 1049 80" fill="none" stroke="#1f2937" stroke-width="1.4" marker-end="url(#bpmn-arrow-seq)"/></g>
+<g class="schematex-bpmn-event kind-start trigger-none"><circle cx="167" cy="80" r="18" fill="#ffffff" stroke="#1f2937" stroke-width="1.2"/>
+<text x="167" y="112" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="11" fill="#1f2937">Request</text></g>
+<g class="schematex-bpmn-task marker-service"><rect x="262" y="50" width="110" height="60" rx="10" ry="10" fill="#ffffff" stroke="#1f2937" stroke-width="1.5"/>
+<text x="317" y="80" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12" fill="#1f2937"><tspan x="317" dy="0">Validate</tspan></text>
+<g class="marker-service"><circle cx="275" cy="63" r="4" fill="none" stroke="#1f2937" stroke-width="1"/>
+<circle cx="275" cy="63" r="1.5" fill="#1f2937"/>
+<path d="M 275 57 L 275 59 M 275 67 L 275 69 M 269 63 L 271 63 M 279 63 L 281 63" stroke="#1f2937" stroke-width="1"/></g></g>
+<g class="schematex-bpmn-task marker-service"><rect x="412" y="50" width="110" height="60" rx="10" ry="10" fill="#ffffff" stroke="#1f2937" stroke-width="1.5"/>
+<text x="467" y="80" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12" fill="#1f2937"><tspan x="467" dy="0">Persist</tspan></text>
+<g class="marker-service"><circle cx="425" cy="63" r="4" fill="none" stroke="#1f2937" stroke-width="1"/>
+<circle cx="425" cy="63" r="1.5" fill="#1f2937"/>
+<path d="M 425 57 L 425 59 M 425 67 L 425 69 M 419 63 L 421 63 M 429 63 L 431 63" stroke="#1f2937" stroke-width="1"/></g></g>
+<g class="schematex-bpmn-gateway kind-and"><polygon points="617,58 639,80 617,102 595,80" fill="#fffbeb" stroke="#1f2937" stroke-width="1.5"/>
+<path d="M 606 80 L 628 80 M 617 69 L 617 91" stroke="#1f2937" stroke-width="2.5" stroke-linecap="round"/>
+<text x="617" y="52" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="11" fill="#1f2937">Fan-out</text></g>
+<g class="schematex-bpmn-task marker-service"><rect x="712" y="50" width="110" height="60" rx="10" ry="10" fill="#ffffff" stroke="#1f2937" stroke-width="1.5"/>
+<text x="767" y="80" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12" fill="#1f2937"><tspan x="767" dy="0">Notify</tspan></text>
+<g class="marker-service"><circle cx="725" cy="63" r="4" fill="none" stroke="#1f2937" stroke-width="1"/>
+<circle cx="725" cy="63" r="1.5" fill="#1f2937"/>
+<path d="M 725 57 L 725 59 M 725 67 L 725 69 M 719 63 L 721 63 M 729 63 L 731 63" stroke="#1f2937" stroke-width="1"/></g></g>
+<g class="schematex-bpmn-task marker-service"><rect x="712" y="142" width="110" height="60" rx="10" ry="10" fill="#ffffff" stroke="#1f2937" stroke-width="1.5"/>
+<text x="767" y="172" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12" fill="#1f2937"><tspan x="767" dy="0">Audit log</tspan></text>
+<g class="marker-service"><circle cx="725" cy="155" r="4" fill="none" stroke="#1f2937" stroke-width="1"/>
+<circle cx="725" cy="155" r="1.5" fill="#1f2937"/>
+<path d="M 725 149 L 725 151 M 725 159 L 725 161 M 719 155 L 721 155 M 729 155 L 731 155" stroke="#1f2937" stroke-width="1"/></g></g>
+<g class="schematex-bpmn-gateway kind-and"><polygon points="917,58 939,80 917,102 895,80" fill="#fffbeb" stroke="#1f2937" stroke-width="1.5"/>
+<path d="M 906 80 L 928 80 M 917 69 L 917 91" stroke="#1f2937" stroke-width="2.5" stroke-linecap="round"/>
+<text x="917" y="52" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="11" fill="#1f2937">Join</text></g>
+<g class="schematex-bpmn-event kind-end trigger-none"><circle cx="1067" cy="80" r="18" fill="#ffffff" stroke="#1f2937" stroke-width="3"/>
+<text x="1067" y="112" text-anchor="middle" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="11" fill="#1f2937">Done</text></g></svg>

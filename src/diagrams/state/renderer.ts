@@ -1,5 +1,6 @@
 import { circle, defs, el, escapeXml, group, line, path, polygon, rect, svgRoot, text } from "../../core/svg";
 import type { RenderConfig } from "../../core/types";
+import { resolveStateTheme, type StateTokens, type ResolvedTheme } from "../../core/theme";
 import { layoutStateDiagram } from "./layout";
 import { parseStateDiagram } from "./parser";
 import type {
@@ -14,41 +15,45 @@ import type {
 
 const ARROW_MARKER_ID = "lt-state-arrow";
 
-const STYLE = `
-.lt-state-body { fill: #ffffff; stroke: #2a2a2a; stroke-width: 1.6; }
-.lt-state-name { font: 600 12px system-ui, sans-serif; fill: #1a1a1a; }
-.lt-state-div  { stroke: #2a2a2a; stroke-width: 1; }
-.lt-state-activity { font: 11px ui-monospace, monospace; fill: #444; }
+type StateTheme = ResolvedTheme<StateTokens>;
 
-.lt-composite-body { fill: #fafafa; stroke: #2a2a2a; stroke-width: 1.6; }
-.lt-composite-title { font: 600 12px system-ui, sans-serif; fill: #1a1a1a; }
-.lt-composite-titlebar { fill: #f0f0f0; stroke: #2a2a2a; stroke-width: 1; }
-.lt-region-div { stroke: #888; stroke-width: 1; stroke-dasharray: 6 4; }
+function buildStyle(t: StateTheme): string {
+  return `
+.lt-state-body { fill: ${t.stateFill}; stroke: ${t.stateStroke}; stroke-width: 1.6; }
+.lt-state-name { font: 600 12px system-ui, sans-serif; fill: ${t.stateText}; }
+.lt-state-div  { stroke: ${t.stateStroke}; stroke-width: 1; }
+.lt-state-activity { font: 11px ui-monospace, monospace; fill: ${t.activityText}; }
 
-.lt-ps-initial { fill: #1a1a1a; }
-.lt-ps-final-outer { fill: #ffffff; stroke: #1a1a1a; stroke-width: 1.6; }
-.lt-ps-final-inner { fill: #1a1a1a; }
-.lt-ps-choice { fill: #ffffff; stroke: #1a1a1a; stroke-width: 1.6; }
-.lt-ps-junction { fill: #1a1a1a; }
-.lt-ps-bar { fill: #1a1a1a; }
-.lt-ps-history-body { fill: #ffffff; stroke: #1a1a1a; stroke-width: 1.6; }
-.lt-ps-history-text { font: 600 11px serif; fill: #1a1a1a; }
-.lt-ps-terminate { stroke: #1a1a1a; stroke-width: 2; }
-.lt-ps-entrypoint { fill: #ffffff; stroke: #1a1a1a; stroke-width: 1.6; }
-.lt-ps-exitpoint  { fill: #ffffff; stroke: #1a1a1a; stroke-width: 1.6; }
+.lt-composite-body { fill: ${t.compositeFill}; stroke: ${t.stateStroke}; stroke-width: 1.6; }
+.lt-composite-title { font: 600 12px system-ui, sans-serif; fill: ${t.stateText}; }
+.lt-composite-titlebar { fill: ${t.compositeTitlebar}; stroke: ${t.stateStroke}; stroke-width: 1; }
+.lt-region-div { stroke: ${t.regionDiv}; stroke-width: 1; stroke-dasharray: 6 4; }
 
-.lt-transition { stroke: #2a2a2a; stroke-width: 1.4; fill: none; }
-.lt-transition-label { font: 11px system-ui, sans-serif; fill: #1a1a1a; }
-.lt-transition-label-bg { fill: #ffffff; opacity: 0.92; }
+.lt-ps-initial { fill: ${t.psInk}; }
+.lt-ps-final-outer { fill: ${t.stateFill}; stroke: ${t.psInk}; stroke-width: 1.6; }
+.lt-ps-final-inner { fill: ${t.psInk}; }
+.lt-ps-choice { fill: ${t.stateFill}; stroke: ${t.psInk}; stroke-width: 1.6; }
+.lt-ps-junction { fill: ${t.psInk}; }
+.lt-ps-bar { fill: ${t.psInk}; }
+.lt-ps-history-body { fill: ${t.stateFill}; stroke: ${t.psInk}; stroke-width: 1.6; }
+.lt-ps-history-text { font: 600 11px serif; fill: ${t.psInk}; }
+.lt-ps-terminate { stroke: ${t.psInk}; stroke-width: 2; }
+.lt-ps-entrypoint { fill: ${t.stateFill}; stroke: ${t.psInk}; stroke-width: 1.6; }
+.lt-ps-exitpoint  { fill: ${t.stateFill}; stroke: ${t.psInk}; stroke-width: 1.6; }
 
-.lt-note-body { fill: #fff8c5; stroke: #b79400; stroke-width: 1; }
-.lt-note-text { font: 11px system-ui, sans-serif; fill: #2a2a2a; }
-.lt-note-leader { stroke: #b79400; stroke-width: 1; stroke-dasharray: 3 3; fill: none; }
+.lt-transition { stroke: ${t.transitionStroke}; stroke-width: 1.4; fill: none; }
+.lt-transition-label { font: 11px system-ui, sans-serif; fill: ${t.transitionLabel}; }
+.lt-transition-label-bg { fill: ${t.labelBg}; opacity: 0.92; }
 
-.lt-title { font: 600 14px system-ui, sans-serif; fill: #1a1a1a; }
+.lt-note-body { fill: ${t.noteFill}; stroke: ${t.noteStroke}; stroke-width: 1; }
+.lt-note-text { font: 11px system-ui, sans-serif; fill: ${t.noteText}; }
+.lt-note-leader { stroke: ${t.noteStroke}; stroke-width: 1; stroke-dasharray: 3 3; fill: none; }
+
+.lt-title { font: 700 16px system-ui, sans-serif; fill: ${t.stateText}; }
 `;
+}
 
-function renderArrowMarker(): string {
+function renderArrowMarker(t: StateTheme): string {
   return el(
     "marker",
     {
@@ -60,7 +65,7 @@ function renderArrowMarker(): string {
       orient: "auto",
       markerUnits: "strokeWidth",
     },
-    [polygon({ points: "0,0 10,3 0,6", fill: "#2a2a2a" })]
+    [polygon({ points: "0,0 10,3 0,6", fill: t.transitionStroke })]
   );
 }
 
@@ -320,10 +325,10 @@ function renderNote(n: StateLayoutNote): string {
 
 export function renderStateDiagram(
   ast: StateDiagramAST,
-  _config?: RenderConfig
+  config?: RenderConfig
 ): string {
   const layout = layoutStateDiagram(ast);
-  return renderLayout(layout);
+  return renderLayout(layout, resolveStateTheme(config?.theme ?? "default"));
 }
 
 export function renderState(text: string, config?: RenderConfig): string {
@@ -331,9 +336,9 @@ export function renderState(text: string, config?: RenderConfig): string {
   return renderStateDiagram(ast, config);
 }
 
-function renderLayout(layout: StateLayoutResult): string {
+function renderLayout(layout: StateLayoutResult, t: StateTheme): string {
   const titleNode = layout.title
-    ? text({ x: 16, y: 22, class: "lt-title" }, layout.title)
+    ? text({ x: layout.width / 2, y: 22, class: "lt-title", "text-anchor": "middle" }, layout.title)
     : "";
 
   return svgRoot(
@@ -347,7 +352,7 @@ function renderLayout(layout: StateLayoutResult): string {
     [
       el("title", {}, escapeXml(`State Diagram${layout.title ? " — " + layout.title : ""}`)),
       el("desc", {}, "UML 2.5 / Harel statechart rendered by Schematex"),
-      defs([renderArrowMarker(), el("style", {}, STYLE)]),
+      defs([renderArrowMarker(t), el("style", {}, buildStyle(t))]),
       titleNode,
       // Composite clusters first so simple-state bodies sit on top.
       group({ class: "lt-clusters" }, layout.clusters.map(renderComposite)),

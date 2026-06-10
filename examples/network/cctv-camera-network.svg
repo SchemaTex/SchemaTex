@@ -6,11 +6,12 @@
 .sx-net-glyph { fill: #bfe0f7; stroke: none; }
 .sx-net-glyph-line { fill: none; stroke: #bfe0f7; stroke-width: 1.4; }
 .sx-net-icontext { font: 700 8px sans-serif; fill: #bfe0f7; }
+.sx-net-icontag { font: 700 8px sans-serif; fill: #64748b; paint-order: stroke; stroke: #ffffff; stroke-width: 2.5px; stroke-linejoin: round; }
 .sx-net-cloud-body { fill: #ffffff; stroke: #334155; stroke-width: 2; }
 .sx-net-cloudtext { font: 600 13px sans-serif; fill: #0f172a; }
 .sx-net-bus { stroke: #0f3a5f; stroke-width: 4; stroke-linecap: round; }
-.sx-net-label { font: 12px sans-serif; fill: #0f172a; }
-.sx-net-sublabel { font: 10px sans-serif; fill: #64748b; }
+.sx-net-label { font: 12px sans-serif; fill: #0f172a; paint-order: stroke; stroke: #ffffff; stroke-width: 3px; stroke-linejoin: round; }
+.sx-net-sublabel { font: 10px sans-serif; fill: #64748b; paint-order: stroke; stroke: #ffffff; stroke-width: 3px; stroke-linejoin: round; }
 .sx-net-link { fill: none; stroke-width: 2; }
 .sx-net-link-wireless, .sx-net-link-vpn { stroke-dasharray: 5 4; }
 .sx-net-link-lag { stroke-width: 3; }
@@ -30,13 +31,13 @@
 <g class="sx-net-link-g" data-from="fw1" data-to="core1" data-type="fiber" data-speed="10G"><polyline class="sx-net-link sx-net-link-fiber" stroke="#ea7a17" points="196.15,190 196.15,246"/>
 <line class="sx-net-link sx-net-link-fiber" stroke="#ea7a17" x1="199.15" y1="212.4" x2="193.15" y2="212.4"/>
 <line class="sx-net-link sx-net-link-fiber" stroke="#ea7a17" x1="199.15" y1="220.8" x2="193.15" y2="220.8"/>
-<text class="sx-net-linklabel" x="196.15" y="215" text-anchor="middle">10G</text></g>
+<text class="sx-net-linklabel" x="196.15" y="221.72" text-anchor="middle">10G</text></g>
 <g class="sx-net-link-g" data-from="core1" data-to="poe1" data-type="copper" data-vlan="20" data-speed="1G" data-mode="trunk"><polyline class="sx-net-link sx-net-link-copper" stroke="#475569" points="188.9,294 140.6,454"/>
-<text class="sx-net-linklabel" x="164.75" y="371" text-anchor="middle">Trunk · VLAN 20 · 1G</text></g>
+<text class="sx-net-linklabel" x="175.38" y="335.8" text-anchor="middle">Trunk · VLAN 20 · 1G</text></g>
 <g class="sx-net-link-g" data-from="core1" data-to="poe2" data-type="copper" data-vlan="20" data-speed="1G" data-mode="trunk"><polyline class="sx-net-link sx-net-link-copper" stroke="#475569" points="203.4,294 251.7,454"/>
-<text class="sx-net-linklabel" x="227.55" y="371" text-anchor="middle">Trunk · VLAN 20 · 1G</text></g>
+<text class="sx-net-linklabel" x="244.94" y="428.6" text-anchor="middle">Trunk · VLAN 20 · 1G</text></g>
 <g class="sx-net-link-g" data-from="core1" data-to="nvr1" data-type="copper" data-speed="1G"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="180.93,294 145.42,350"/>
-<text class="sx-net-linklabel" x="163.18" y="319" text-anchor="middle">1G</text></g>
+<text class="sx-net-linklabel" x="158.91" y="325.72" text-anchor="middle">1G</text></g>
 <g class="sx-net-link-g" data-from="core1" data-to="wall1" data-type="copper"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="212.1,294 249.3,350"/></g>
 <g class="sx-net-link-g" data-from="poe1" data-to="cam1" data-type="poe"><polyline class="sx-net-link sx-net-link-poe" stroke="#059669" points="121.62,502 94.23,558"/>
 <text class="sx-net-linklabel" x="107.93" y="527" text-anchor="middle">PoE</text></g>
@@ -65,12 +66,12 @@
 <g class="sx-net-device" data-id="poe1" data-kind="poeswitch" data-tier="access"><g><g><rect class="sx-net-body" x="105.83" y="466" width="55.04" height="24" rx="3" ry="3"/>
 <line class="sx-net-glyph-line" x1="116.84" y1="473.68" x2="149.86" y2="473.68"/><polygon class="sx-net-glyph" points="149.86,473.68 146.35,475.6 146.35,471.76"/>
 <line class="sx-net-glyph-line" x1="149.86" y1="482.32" x2="116.84" y2="482.32"/><polygon class="sx-net-glyph" points="116.84,482.32 120.35,480.4 120.35,484.24"/></g>
-<text class="sx-net-icontext" x="133.35" y="499.44" text-anchor="middle">PoE</text></g>
+<text class="sx-net-icontag" x="133.35" y="499.44" text-anchor="middle">PoE</text></g>
 <text class="sx-net-label" x="133.35" y="519" text-anchor="middle">PoE Switch A</text></g>
 <g class="sx-net-device" data-id="poe2" data-kind="poeswitch" data-tier="access"><g><g><rect class="sx-net-body" x="231.43" y="466" width="55.04" height="24" rx="3" ry="3"/>
 <line class="sx-net-glyph-line" x1="242.44" y1="473.68" x2="275.46" y2="473.68"/><polygon class="sx-net-glyph" points="275.46,473.68 271.95,475.6 271.95,471.76"/>
 <line class="sx-net-glyph-line" x1="275.46" y1="482.32" x2="242.44" y2="482.32"/><polygon class="sx-net-glyph" points="242.44,482.32 245.95,480.4 245.95,484.24"/></g>
-<text class="sx-net-icontext" x="258.95" y="499.44" text-anchor="middle">PoE</text></g>
+<text class="sx-net-icontag" x="258.95" y="499.44" text-anchor="middle">PoE</text></g>
 <text class="sx-net-label" x="258.95" y="519" text-anchor="middle">PoE Switch B</text></g>
 <g class="sx-net-device" data-id="nvr1" data-kind="nvr"><g><rect class="sx-net-body" x="103.96" y="362.96" width="52.48" height="22.08" rx="2" ry="2"/>
 <circle class="sx-net-glyph" cx="115.51" cy="370.03" r="2"/>

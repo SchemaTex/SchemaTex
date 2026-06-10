@@ -17,7 +17,7 @@ import { resolveFishboneTheme } from "../../core/theme";
 
 const CSS = `
 .sx-fb { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
-.sx-fb-title { font: 600 16px sans-serif; fill: #111; }
+.sx-fb-title { font: 700 16px sans-serif; fill: #111; }
 .sx-fb-spine { stroke: var(--schematex-fb-spine, #141413); stroke-width: 2; stroke-linecap: butt; fill: none; }
 .sx-fb-tail { stroke: var(--schematex-fb-spine, #141413); stroke-width: 2; stroke-linecap: round; fill: none; }
 .sx-fb-head { stroke-width: 0.5; }

@@ -18,7 +18,7 @@ import type { OrgchartAST, OrgchartLayoutNode, OrgchartRoleIcon } from "./types"
 function buildCss(t: BaseTheme): string {
   return `
 .lt-org { font-family: system-ui, -apple-system, sans-serif; }
-.lt-org-title { font: 500 16px sans-serif; fill: ${t.text}; }
+.lt-org-title { font: 700 16px sans-serif; fill: ${t.text}; }
 .lt-org-card { fill: ${t.bg}; stroke: ${t.neutral}; stroke-width: 1; }
 .lt-org-card-vacant { fill: ${t.bg}; stroke: ${t.warn}; stroke-width: 1; stroke-dasharray: 4,3; }
 .lt-org-card-draft { fill: ${t.bg}; stroke: ${t.neutral}; stroke-width: 1; stroke-dasharray: 4,3; opacity: 0.7; }
@@ -372,7 +372,7 @@ function renderOrgchartList(
   children.push(el("style", {}, buildCss(t)));
 
   if (ast.title) {
-    children.push(textEl({ x: 20, y: 24, class: "lt-org-title" }, ast.title));
+    children.push(textEl({ x: width / 2, y: 24, class: "lt-org-title", "text-anchor": "middle" }, ast.title));
   }
 
   const inner: string[] = [];
@@ -422,7 +422,7 @@ export function renderOrgchart(ast: OrgchartAST, config?: RenderConfig): string 
   children.push(el("style", {}, buildCss(t)));
 
   if (ast.title) {
-    children.push(textEl({ x: 20, y: 24, class: "lt-org-title" }, ast.title));
+    children.push(textEl({ x: width / 2, y: 24, class: "lt-org-title", "text-anchor": "middle" }, ast.title));
   }
 
   const inner: string[] = [];

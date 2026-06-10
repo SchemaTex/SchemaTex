@@ -5,6 +5,8 @@ const NAME_W = 120;
 const SIG_H = 36;
 const PAD_TOP = 12;
 const PAD_BOT = 12;
+/** Height of the reserved title band when `ast.title` is set. */
+const TITLE_H = 28;
 const PAD_V = 6; // vertical padding inside band for rail spacing
 const DEFAULT_PW = 40;
 const GROUP_LABEL_H = 22;
@@ -266,7 +268,10 @@ export function renderTiming(ast: TimingAST): string {
   const waveAreaW = maxWaveLen * pw;
   const width = NAME_W + waveAreaW + 20;
 
-  let y = PAD_TOP;
+  // Reserve a band above the waveforms when a title is present, so the
+  // centered title never collides with the first signal row.
+  const gridTop = PAD_TOP + (ast.title ? TITLE_H : 0);
+  let y = gridTop;
   const rowYs: number[] = [];
   for (const r of rows) {
     rowYs.push(y);
@@ -286,7 +291,7 @@ export function renderTiming(ast: TimingAST): string {
     gridLines.push(
       el("line", {
         x1: xg,
-        y1: PAD_TOP,
+        y1: gridTop,
         x2: xg,
         y2: height - PAD_BOT,
         class: "schematex-timing-grid",
@@ -385,6 +390,7 @@ export function renderTiming(ast: TimingAST): string {
 .schematex-timing-unknown { stroke: #555; stroke-width: 0.5; }
 .schematex-timing-hiz { stroke: #555; stroke-width: 1.5; stroke-dasharray: 4 3; }
 .schematex-timing-grid { stroke: #eee; stroke-width: 0.5; }
+.schematex-timing-title { font: 700 16px system-ui, -apple-system, sans-serif; fill: #111; }
 `.trim();
 
   return svgRoot(
@@ -408,10 +414,9 @@ export function renderTiming(ast: TimingAST): string {
         ? text(
             {
               x: width / 2,
-              y: 14,
+              y: PAD_TOP + 12,
               "text-anchor": "middle",
               class: "schematex-timing-title",
-              style: "font: bold 13px sans-serif; fill: #333;",
             },
             ast.title
           )
