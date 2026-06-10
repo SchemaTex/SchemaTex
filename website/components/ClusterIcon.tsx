@@ -107,6 +107,17 @@ const CLUSTER_PATHS: Record<DiagramCluster, React.ReactNode> = {
       <path d="M5 7 Q12 10 19 7 M5 17 Q12 14 19 17" />
     </>
   ),
+  architecture: (
+    // Floor plan: outer wall, an interior partition with a doorway gap, and a
+    // quarter-circle door swing — the language of architectural plans.
+    <>
+      <rect x="3" y="4" width="18" height="16" />
+      <path d="M13 4 V10" />
+      <path d="M13 14 V20" />
+      <path d="M13 14 H21" />
+      <path d="M3 20 A5 5 0 0 1 8 15" />
+    </>
+  ),
   generic: (
     <>
       <rect x="3.5" y="4" width="8" height="6" rx="1" />

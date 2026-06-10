@@ -159,7 +159,7 @@ The engine validates what LLMs (and humans) actually get wrong, with errors that
 
 ## 8. Grammar (EBNF)
 
-```ebnf
+```text
 plan      ::= "floorplan" string? ("unit" ("m"|"ft"))? NL statement*
 statement ::= room | extend | north | door | window | opening | furniture | array
 room      ::= "room" id string? placement "size" dims ("fill" color)? ("nolabel")?
