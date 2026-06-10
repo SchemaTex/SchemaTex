@@ -10,8 +10,8 @@ export const matrix: DiagramPlugin = {
   },
   parse: parseMatrix,
 
-  render(text: string): string {
-    return renderMatrix(text);
+  render(text: string, config?): string {
+    return renderMatrix(text, config);
   },
 };
 

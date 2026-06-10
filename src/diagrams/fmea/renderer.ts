@@ -281,7 +281,7 @@ function renderHeaderBlock(layout: FmeaLayoutResult): string[] {
   let y = C.CANVAS_PAD + 14;
 
   if (ast.title) {
-    out.push(svgText({ x: x0, y, class: "sx-fmea-title" }, ast.title));
+    out.push(svgText({ x: layout.width / 2, y, class: "sx-fmea-title", "text-anchor": "middle" }, ast.title));
     y += C.TITLE_H - 8;
   }
 

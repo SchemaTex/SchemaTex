@@ -154,7 +154,7 @@ export function renderEpcLayout(layout: EpcLayoutResult, config?: RenderConfig):
   const inner: string[] = [];
 
   if (ast.title) {
-    inner.push(svgText({ x: C.CANVAS_PAD, y: 22, class: "sx-epc-title", "font-family": fontFamily }, ast.title));
+    inner.push(svgText({ x: layout.width / 2, y: 22, class: "sx-epc-title", "font-family": fontFamily, "text-anchor": "middle" }, ast.title));
   }
 
   // 1. Edges (behind nodes).

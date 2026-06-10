@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="414" height="562" viewBox="0 0 414 562" role="img" aria-label="Vessel ruptures" data-diagram-type="faulttree"><title>Vessel ruptures</title>
+<desc>Fault tree for &quot;Pressure vessel ruptures&quot;: 1 top, 2 intermediate, 3 basic, 1 house. 1 minimal cut set: {PRV_A, PRV_B, PUMP}. P(top) = 1.60e-6 (mcub).</desc>
+<style>.sx-ft-bg { fill: #ffffff; }
+.sx-ft-event { fill: #eef2f7; stroke: #334155; stroke-width: 2; }
+.sx-ft-event[data-role="top"] { stroke: #1e293b; stroke-width: 2.25; }
+.sx-ft-basic { fill: #ffffff; stroke: #334155; stroke-width: 2; }
+.sx-ft-undeveloped { fill: #e2e8f0; stroke: #334155; stroke-width: 2; }
+.sx-ft-house { fill: #fef9c3; stroke: #334155; stroke-width: 2; }
+.sx-ft-gate { fill: #dcfce7; stroke: #059669; stroke-width: 2; stroke-linejoin: round; }
+.sx-ft-cond { fill: #f1f5f9; stroke: #334155; stroke-width: 1; }
+.sx-ft-pin, .sx-ft-edge { fill: none; stroke: #475569; stroke-width: 2; }
+.sx-ft-shared-mark { fill: none; stroke: #334155; stroke-width: 2; }
+.sx-ft-label { fill: #334155; font-size: 12px; font-weight: 600; }
+.sx-ft-id { fill: #334155; font-size: 10px; font-weight: 700; }
+.sx-ft-cap { fill: #334155; font-size: 9px; }
+.sx-ft-prob { fill: #2563eb; font-size: 9px; font-weight: 600; }
+.sx-ft-gate-label { fill: #059669; font-size: 9px; font-weight: 700; }
+.sx-ft-cond-text { fill: #334155; font-size: 9px; }
+.sx-ft-cutset { fill: rgba(220,38,38,0.05); stroke: #dc2626; stroke-width: 2; }
+.sx-ft-cutset[data-spof="true"] { stroke: #b91c1c; stroke-width: 3; }
+.sx-ft-ptop { fill: #2563eb; font-size: 12px; font-weight: 700; }
+.sx-ft-transfer { fill: #eef2f7; stroke: #334155; stroke-width: 2; }
+.sx-ft-transfer-label { fill: #334155; font-size: 9px; font-weight: 600; }
+.sx-ft-title { fill: #334155; font-size: 16px; font-weight: 700; }</style>
+<rect x="0" y="0" width="414" height="562" class="sx-ft-bg"/>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><text x="30" y="22" class="sx-ft-title" font-family="system-ui, -apple-system, sans-serif">Vessel ruptures</text>
+<rect x="68" y="403" width="266" height="56" rx="6" class="sx-ft-cutset" data-cutset="PRV_A,PRV_B,PUMP" data-cutset-index="0" data-order="3" data-cutset-prob="0.0000016000000000000001"/>
+<g class="sx-ft-edge-g" data-from="TOP#0" data-to="OVP#1"><path d="M 182.5 182 L 182.5 213 L 96 213 L 96 244" class="sx-ft-edge"/></g>
+<g class="sx-ft-edge-g" data-from="TOP#0" data-to="RELIEF#3"><path d="M 182.5 182 L 182.5 213 L 269 213 L 269 244" class="sx-ft-edge"/></g>
+<g class="sx-ft-edge-g" data-from="OVP#1" data-to="PUMP#2"><path d="M 96 344 L 96 377 L 96 377 L 96 410" class="sx-ft-edge"/></g>
+<g class="sx-ft-edge-g" data-from="RELIEF#3" data-to="PRV_A#4"><path d="M 269 344 L 269 377 L 232 377 L 232 410" class="sx-ft-edge"/></g>
+<g class="sx-ft-edge-g" data-from="RELIEF#3" data-to="PRV_B#5"><path d="M 269 344 L 269 377 L 306 377 L 306 410" class="sx-ft-edge"/></g>
+<g class="sx-ft-gate-g" data-id="TOP#0" data-gate="and"><line x1="182.5" y1="144" x2="182.5" y2="132" class="sx-ft-pin"/>
+<path d="M 155.5 182 L 155.5 163 A 27 19 0 0 1 209.5 163 L 209.5 182 Z" class="sx-ft-gate"/></g>
+<g class="sx-ft-gate-g" data-id="OVP#1" data-gate="inhibit" data-condition="HEATER"><line x1="96" y1="306" x2="96" y2="294" class="sx-ft-pin"/>
+<path d="M 96 306 L 123 315.5 L 123 334.5 L 96 344 L 69 334.5 L 69 315.5 Z" class="sx-ft-gate"/>
+<line x1="123" y1="325" x2="145" y2="325" class="sx-ft-pin"/>
+<ellipse cx="184" cy="325" rx="39" ry="17" class="sx-ft-cond"/>
+<text x="184" y="325" class="sx-ft-cond-text" text-anchor="middle" dominant-baseline="middle"><tspan x="184" dy="-5.5">Heater</tspan><tspan x="184" dy="11">energised</tspan></text></g>
+<g class="sx-ft-gate-g" data-id="RELIEF#3" data-gate="voting" data-k="2" data-n="2"><line x1="269" y1="306" x2="269" y2="294" class="sx-ft-pin"/>
+<path d="M 242 344 Q 269 335 296 344 Q 296 315.5 269 306 Q 242 315.5 242 344 Z" class="sx-ft-gate"/>
+<text x="269" y="329" class="sx-ft-gate-label" text-anchor="middle">2/2</text></g>
+<g class="sx-ft-event-g" data-id="TOP" data-role="top"><rect x="114.5" y="82" width="136" height="50" rx="5" class="sx-ft-event" data-role="top"/>
+<text x="182.5" y="107" class="sx-ft-label" text-anchor="middle" dominant-baseline="middle"><tspan x="182.5" dy="-7">Pressure vessel</tspan><tspan x="182.5" dy="14">ruptures</tspan></text></g>
+<g class="sx-ft-event-g" data-id="OVP" data-role="intermediate"><rect x="30" y="244" width="132" height="50" rx="5" class="sx-ft-event" data-role="intermediate"/>
+<text x="96" y="269" class="sx-ft-label" text-anchor="middle" dominant-baseline="middle"><tspan x="96" dy="-7">Sustained</tspan><tspan x="96" dy="14">over-pressure</tspan></text></g>
+<g class="sx-ft-event-g" data-id="PUMP" data-role="basic" data-prob="0.004"><circle cx="96" cy="431" r="21" class="sx-ft-basic"/>
+<text x="96" y="434" class="sx-ft-id" text-anchor="middle">PUMP</text>
+<text x="96" y="471" class="sx-ft-cap" text-anchor="middle">Pump runaway</text>
+<text x="96" y="484" class="sx-ft-prob" text-anchor="middle">p=0.004</text></g>
+<g class="sx-ft-event-g" data-id="RELIEF" data-role="intermediate"><rect x="194" y="244" width="150" height="50" rx="5" class="sx-ft-event" data-role="intermediate"/>
+<text x="269" y="269" class="sx-ft-label" text-anchor="middle" dominant-baseline="middle"><tspan x="269" dy="0">Both reliefs fail</tspan></text></g>
+<g class="sx-ft-event-g" data-id="PRV_A" data-role="basic" data-prob="0.02"><circle cx="232" cy="431" r="21" class="sx-ft-basic"/>
+<text x="232" y="434" class="sx-ft-id" text-anchor="middle">PRV_A</text>
+<text x="232" y="471" class="sx-ft-cap" text-anchor="middle">Relief A stuck</text>
+<text x="232" y="484" class="sx-ft-prob" text-anchor="middle">p=0.02</text></g>
+<g class="sx-ft-event-g" data-id="PRV_B" data-role="basic" data-prob="0.02"><circle cx="306" cy="431" r="21" class="sx-ft-basic"/>
+<text x="306" y="434" class="sx-ft-id" text-anchor="middle">PRV_B</text>
+<text x="306" y="471" class="sx-ft-cap" text-anchor="middle">Relief B stuck</text>
+<text x="306" y="484" class="sx-ft-prob" text-anchor="middle">p=0.02</text></g>
+<text x="182.5" y="73" class="sx-ft-ptop" text-anchor="middle">P(top) = 1.60e-6 (mcub)</text></g></svg>

@@ -41,7 +41,7 @@ const WIRE_COLOR_MAP: Record<string, string> = {
 function buildCss(t: BaseTheme): string {
   return `
 .lt-bb { font-family: system-ui, -apple-system, sans-serif; }
-.lt-bb-title { font: 600 16px sans-serif; fill: ${t.text}; }
+.lt-bb-title { font: 700 16px sans-serif; fill: ${t.text}; }
 .lt-bb-substrate { fill: #e7d8b6; stroke: #b08c4f; stroke-width: 1.5; }
 .lt-bb-rail-pos { fill: #fde2e2; stroke: #dc2626; stroke-width: 0.6; }
 .lt-bb-rail-neg { fill: #dde7fa; stroke: #2563eb; stroke-width: 0.6; }
@@ -217,7 +217,7 @@ export function renderBreadboardLayout(layout: BreadboardLayoutResult, config?: 
   const titleStr = layout.ast.title ?? "Breadboard";
 
   const titleNode = layout.ast.title
-    ? textEl({ x: BB_CONST.MARGIN, y: 22, class: "lt-bb-title" }, layout.ast.title)
+    ? textEl({ x: layout.width / 2, y: 22, class: "lt-bb-title", "text-anchor": "middle" }, layout.ast.title)
     : "";
 
   const substrate = renderSubstrate(layout.substrate);

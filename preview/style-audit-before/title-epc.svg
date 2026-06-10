@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="512" height="734" viewBox="0 0 512 734" role="img" aria-label="Order fulfilment" data-diagram-type="epc"><title>Order fulfilment</title>
+<desc>Event-driven process chain &quot;Order fulfilment&quot;: 5 events, 3 functions, 1 connectors. Well-formed.</desc>
+<style>.sx-epc-bg { fill: #ffffff; }
+.sx-epc-event { fill: #f6a5b8; stroke: #1f2937; stroke-width: 2; stroke-linejoin: round; }
+.sx-epc-func { fill: #86d29a; stroke: #1f2937; stroke-width: 2; }
+.sx-epc-conn { fill: #e5e7eb; stroke: #374151; stroke-width: 2; }
+.sx-epc-node[data-flagged="true"] .sx-epc-event,
+.sx-epc-node[data-flagged="true"] .sx-epc-func,
+.sx-epc-node[data-flagged="true"] .sx-epc-conn { stroke: #dc2626; stroke-width: 3; }
+.sx-epc-flagring { fill: none; stroke: #dc2626; stroke-width: 1; stroke-dasharray: 4 3; }
+.sx-epc-label { fill: #1f2937; font-size: 12px; font-weight: 600; }
+.sx-epc-glyph { fill: #111827; font-size: 17px; font-weight: 700; }
+.sx-epc-edge { fill: none; stroke: #334155; stroke-width: 2; }
+.sx-epc-edge[data-back="true"] { stroke: #94a3b8; stroke-dasharray: 5 4; }
+.sx-epc-arrow { fill: #334155; stroke: none; }
+.sx-epc-arrow-back { fill: #94a3b8; stroke: none; }
+.sx-epc-edge-label { fill: #475569; font-size: 9px; }
+.sx-epc-title { fill: #1f2937; font-size: 16px; font-weight: 700; }</style>
+<defs><marker id="sx-epc-arrowhead" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><polygon points="0,0 10,5 0,10" class="sx-epc-arrow"/></marker>
+<marker id="sx-epc-arrowhead-back" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><polygon points="0,0 10,5 0,10" class="sx-epc-arrow-back"/></marker></defs>
+<rect x="0" y="0" width="512" height="734" class="sx-epc-bg"/>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><text x="28" y="22" class="sx-epc-title" font-family="system-ui, -apple-system, sans-serif">Order fulfilment</text>
+<g class="sx-epc-edge-g" data-from="E1" data-to="F1"><path d="M 206 116 L 206 172" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead)"/></g>
+<g class="sx-epc-edge-g" data-from="F1" data-to="X1"><path d="M 206 236 L 206 292" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead)"/></g>
+<g class="sx-epc-edge-g" data-from="X1" data-to="E2"><path d="M 194.4227850846592 321.4486181885385 L 138.11 382" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead)"/></g>
+<g class="sx-epc-edge-g" data-from="X1" data-to="E3"><path d="M 217.5772149153408 321.4486181885385 L 273.89 382" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead)"/></g>
+<g class="sx-epc-edge-g" data-from="E2" data-to="F2"><path d="M 111.82608695652173 436 L 109.3913043478261 492" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead)"/></g>
+<g class="sx-epc-edge-g" data-from="F2" data-to="E4"><path d="M 109.3913043478261 556 L 111.82608695652173 612" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead)"/></g>
+<g class="sx-epc-edge-g" data-from="E3" data-to="F3"><path d="M 300.17391304347825 436 L 302.60869565217394 492" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead)"/></g>
+<g class="sx-epc-edge-g" data-from="F3" data-to="E5"><path d="M 302.60869565217394 556 L 300.17391304347825 612" class="sx-epc-edge" marker-end="url(#sx-epc-arrowhead)"/></g>
+<g class="sx-epc-node" data-id="E1" data-kind="event"><polygon points="145,62 267,62 281,89 267,116 145,116 131,89" class="sx-epc-event"/>
+<text x="206" y="89" class="sx-epc-label" text-anchor="middle" dominant-baseline="middle"><tspan x="206" dy="0">Order received</tspan></text></g>
+<g class="sx-epc-node" data-id="F1" data-kind="function"><rect x="126" y="172" width="160" height="64" rx="12" ry="12" class="sx-epc-func"/>
+<text x="206" y="204" class="sx-epc-label" text-anchor="middle" dominant-baseline="middle"><tspan x="206" dy="0">Check credit</tspan></text></g>
+<g class="sx-epc-node" data-id="X1" data-kind="connector" data-operator="xor"><circle cx="206" cy="309" r="17" class="sx-epc-conn"/>
+<text x="206" y="309" class="sx-epc-glyph" text-anchor="middle" dominant-baseline="central">×</text></g>
+<g class="sx-epc-node" data-id="E2" data-kind="event"><polygon points="52,382 174,382 188,409 174,436 52,436 38,409" class="sx-epc-event"/>
+<text x="113" y="409" class="sx-epc-label" text-anchor="middle" dominant-baseline="middle"><tspan x="113" dy="0">Credit OK</tspan></text></g>
+<g class="sx-epc-node" data-id="E3" data-kind="event"><polygon points="238,382 360,382 374,409 360,436 238,436 224,409" class="sx-epc-event"/>
+<text x="299" y="409" class="sx-epc-label" text-anchor="middle" dominant-baseline="middle"><tspan x="299" dy="0">Credit rejected</tspan></text></g>
+<g class="sx-epc-node" data-id="F2" data-kind="function"><rect x="28" y="492" width="160" height="64" rx="12" ry="12" class="sx-epc-func"/>
+<text x="108" y="524" class="sx-epc-label" text-anchor="middle" dominant-baseline="middle"><tspan x="108" dy="0">Ship goods</tspan></text></g>
+<g class="sx-epc-node" data-id="F3" data-kind="function"><rect x="224" y="492" width="160" height="64" rx="12" ry="12" class="sx-epc-func"/>
+<text x="304" y="524" class="sx-epc-label" text-anchor="middle" dominant-baseline="middle"><tspan x="304" dy="0">Notify customer</tspan></text></g>
+<g class="sx-epc-node" data-id="E4" data-kind="event"><polygon points="52,612 174,612 188,639 174,666 52,666 38,639" class="sx-epc-event"/>
+<text x="113" y="639" class="sx-epc-label" text-anchor="middle" dominant-baseline="middle"><tspan x="113" dy="0">Order shipped</tspan></text></g>
+<g class="sx-epc-node" data-id="E5" data-kind="event"><polygon points="238,612 360,612 374,639 360,666 238,666 224,639" class="sx-epc-event"/>
+<text x="299" y="639" class="sx-epc-label" text-anchor="middle" dominant-baseline="middle"><tspan x="299" dy="0">Order cancelled</tspan></text></g></g></svg>

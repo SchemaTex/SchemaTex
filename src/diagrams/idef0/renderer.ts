@@ -92,7 +92,7 @@ export function renderIdef0Layout(layout: Idef0LayoutResult, config?: RenderConf
   // Title.
   if (ast.title) {
     inner.push(
-      svgText({ x: C.MARGIN, y: 24, class: "sx-idef0-title", "font-family": fontFamily }, ast.title)
+      svgText({ x: layout.width / 2, y: 24, class: "sx-idef0-title", "font-family": fontFamily, "text-anchor": "middle" }, ast.title)
     );
   }
 

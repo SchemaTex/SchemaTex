@@ -35,11 +35,12 @@ function buildCss(t: Theme): string {
 .sx-net-glyph { fill: ${t.deviceAccent}; stroke: none; }
 .sx-net-glyph-line { fill: none; stroke: ${t.deviceAccent}; stroke-width: 1.4; }
 .sx-net-icontext { font: 700 8px sans-serif; fill: ${t.deviceAccent}; }
+.sx-net-icontag { font: 700 8px sans-serif; fill: ${t.subLabel}; paint-order: stroke; stroke: ${t.bg}; stroke-width: 2.5px; stroke-linejoin: round; }
 .sx-net-cloud-body { fill: ${t.cloudFill}; stroke: ${t.cloudStroke}; stroke-width: 2; }
 .sx-net-cloudtext { font: 600 13px sans-serif; fill: ${t.text}; }
 .sx-net-bus { stroke: ${t.deviceStroke}; stroke-width: 4; stroke-linecap: round; }
-.sx-net-label { font: 12px sans-serif; fill: ${t.label}; }
-.sx-net-sublabel { font: 10px sans-serif; fill: ${t.subLabel}; }
+.sx-net-label { font: 12px sans-serif; fill: ${t.label}; paint-order: stroke; stroke: ${t.bg}; stroke-width: 3px; stroke-linejoin: round; }
+.sx-net-sublabel { font: 10px sans-serif; fill: ${t.subLabel}; paint-order: stroke; stroke: ${t.bg}; stroke-width: 3px; stroke-linejoin: round; }
 .sx-net-link { fill: none; stroke-width: 2; }
 .sx-net-link-wireless, .sx-net-link-vpn { stroke-dasharray: 5 4; }
 .sx-net-link-lag { stroke-width: 3; }

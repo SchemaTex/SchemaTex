@@ -65,11 +65,16 @@ export function buildEcomapLegend(ast: DiagramAST): LegendSpec {
   // Stable ordering: sort alphabetically.
   const orderedCats = Array.from(usedCats).sort();
   for (const cat of orderedCats) {
+    const color = CATEGORY_COLORS[cat] ?? "#9ca3af";
     items.push({
       key: `cat.${cat}`,
       label: humanize(cat),
-      kind: "fill",
-      color: CATEGORY_COLORS[cat] ?? "#9ca3af",
+      // WYSIWYG: system nodes draw as circles with a ~9% tint fill and the
+      // category color as stroke — the swatch must match, not show solid color.
+      kind: "shape",
+      shape: "circle",
+      color,
+      fill: `${color}18`,
       section: "systems",
     });
   }

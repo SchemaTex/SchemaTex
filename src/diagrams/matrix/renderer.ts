@@ -23,6 +23,10 @@ import {
   el,
   escapeXml,
 } from "../../core/svg";
+import type { RenderConfig } from "../../core/types";
+import { resolveMatrixTheme, type MatrixTokens, type ResolvedTheme } from "../../core/theme";
+
+type MatrixTheme = ResolvedTheme<MatrixTokens>;
 
 // Category palette (colorblind-friendly set)
 const CATEGORY_COLORS = [
@@ -39,77 +43,79 @@ const HEAT_RAMP = [
   "#f0fdf4", "#bbf7d0", "#fde68a", "#fdba74", "#f87171", "#ef4444", "#b91c1c",
 ];
 
-const CSS = `
+function buildMatrixCss(t: MatrixTheme): string {
+  return `
 .sx-matrix { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
-.sx-matrix-title { font: 600 16px sans-serif; fill: #111; }
-.sx-matrix-grid { stroke: #e5e7eb; stroke-width: 1; fill: none; }
-.sx-matrix-mid { stroke: #9ca3af; stroke-width: 1.2; stroke-dasharray: 4 3; fill: none; }
-.sx-matrix-plot-border { stroke: #374151; stroke-width: 1.2; fill: none; }
-.sx-matrix-axis-label { font: 500 12px sans-serif; fill: #374151; }
-.sx-matrix-axis-end { font: 500 11px sans-serif; fill: #6b7280; }
-.sx-matrix-quad-annot { font: 600 13px sans-serif; fill: #475569; opacity: 0.75; }
-.sx-matrix-quad-desc { font: 400 10.5px sans-serif; fill: #64748b; opacity: 0.85; }
-.sx-matrix-corr-header { font: 600 11.5px sans-serif; fill: #1f2937; text-anchor: middle; }
-.sx-matrix-corr-rowlabel { font: 500 11.5px sans-serif; fill: #1f2937; text-anchor: end; dominant-baseline: central; }
-.sx-matrix-corr-margin { font: 500 11px sans-serif; fill: #374151; text-anchor: middle; dominant-baseline: central; }
-.sx-matrix-corr-margin-best { font: 700 11.5px sans-serif; fill: #111; text-anchor: middle; dominant-baseline: central; }
-.sx-matrix-corr-grid { stroke: #d1d5db; stroke-width: 0.8; fill: none; }
-.sx-matrix-corr-rowbg-a { fill: #f0fdf4; }
-.sx-matrix-corr-rowbg-b { fill: #fff; }
-.sx-matrix-cell-label { font: 500 12px sans-serif; fill: #1f2937; text-anchor: middle; }
-.sx-matrix-cell-title { font: 600 13px sans-serif; fill: #111827; }
-.sx-matrix-cell-subtitle { font: 400 11px sans-serif; fill: #6b7280; }
-.sx-matrix-cell-item { font: 500 12px sans-serif; fill: #1f2937; }
-.sx-matrix-cell-value { font: 600 18px sans-serif; fill: #111; text-anchor: middle; }
+.sx-matrix-title { font: 700 16px sans-serif; fill: ${t.inkStrong}; }
+.sx-matrix-grid { stroke: ${t.gridFaint}; stroke-width: 1; fill: none; }
+.sx-matrix-mid { stroke: ${t.gridStrong}; stroke-width: 1.2; stroke-dasharray: 4 3; fill: none; }
+.sx-matrix-plot-border { stroke: ${t.inkMuted}; stroke-width: 1.2; fill: none; }
+.sx-matrix-axis-label { font: 500 12px sans-serif; fill: ${t.inkMuted}; }
+.sx-matrix-axis-end { font: 500 11px sans-serif; fill: ${t.inkFaint}; }
+.sx-matrix-quad-annot { font: 600 13px sans-serif; fill: ${t.inkMuted}; opacity: 0.75; }
+.sx-matrix-quad-desc { font: 400 10.5px sans-serif; fill: ${t.inkFaint}; opacity: 0.85; }
+.sx-matrix-corr-header { font: 600 11.5px sans-serif; fill: ${t.ink}; text-anchor: middle; }
+.sx-matrix-corr-rowlabel { font: 500 11.5px sans-serif; fill: ${t.ink}; text-anchor: end; dominant-baseline: central; }
+.sx-matrix-corr-margin { font: 500 11px sans-serif; fill: ${t.inkMuted}; text-anchor: middle; dominant-baseline: central; }
+.sx-matrix-corr-margin-best { font: 700 11.5px sans-serif; fill: ${t.inkStrong}; text-anchor: middle; dominant-baseline: central; }
+.sx-matrix-corr-grid { stroke: ${t.grid}; stroke-width: 0.8; fill: none; }
+.sx-matrix-corr-rowbg-a { fill: ${t.surfaceTint}; }
+.sx-matrix-corr-rowbg-b { fill: ${t.surface}; }
+.sx-matrix-cell-label { font: 500 12px sans-serif; fill: ${t.ink}; text-anchor: middle; }
+.sx-matrix-cell-title { font: 600 13px sans-serif; fill: ${t.inkStrong}; }
+.sx-matrix-cell-subtitle { font: 400 11px sans-serif; fill: ${t.inkFaint}; }
+.sx-matrix-cell-item { font: 500 12px sans-serif; fill: ${t.ink}; }
+.sx-matrix-cell-value { font: 600 18px sans-serif; fill: ${t.inkStrong}; text-anchor: middle; }
 .sx-matrix-bubble { stroke-width: 1.5; }
-.sx-matrix-label { font: 500 11px sans-serif; fill: #111827; text-anchor: middle; dominant-baseline: central; pointer-events: none; }
-.sx-matrix-leader { stroke: #94a3b8; stroke-width: 0.6; opacity: 0.7; fill: none; }
-.sx-matrix-legend-text { font: 500 11px sans-serif; fill: #374151; }
-.sx-matrix-offchart { fill: #ea580c; }
-.sx-sipoc-header { font: 700 13px sans-serif; fill: #fff; text-anchor: middle; dominant-baseline: central; }
-.sx-sipoc-headbox { stroke: #fff; stroke-width: 1; }
-.sx-sipoc-cell { fill: #fff; stroke: #cbd5e1; stroke-width: 1; }
-.sx-sipoc-cell-alt { fill: #f8fafc; stroke: #cbd5e1; stroke-width: 1; }
-.sx-sipoc-process { fill: #eff6ff; stroke: #cbd5e1; stroke-width: 1; }
-.sx-sipoc-item { font: 500 12px sans-serif; fill: #1f2937; text-anchor: middle; dominant-baseline: central; }
-.sx-sipoc-step { font: 600 12px sans-serif; fill: #1e3a8a; text-anchor: middle; dominant-baseline: central; }
-.sx-qfd-grid { stroke: #cbd5e1; stroke-width: 1; fill: none; }
-.sx-qfd-cellbg { fill: #fff; }
-.sx-qfd-cellbg-alt { fill: #f8fafc; }
-.sx-qfd-what { font: 500 12px sans-serif; fill: #1f2937; text-anchor: end; dominant-baseline: central; }
-.sx-qfd-how { font: 500 11.5px sans-serif; fill: #1f2937; }
-.sx-qfd-weight { font: 600 12px sans-serif; fill: #111; text-anchor: middle; dominant-baseline: central; }
-.sx-qfd-weight-head { font: 600 10px sans-serif; fill: #475569; text-anchor: middle; dominant-baseline: central; }
-.sx-qfd-rel-strong { fill: #2563eb; }
-.sx-qfd-rel-medium { fill: #93c5fd; stroke: #2563eb; stroke-width: 1.4; }
-.sx-qfd-rel-weak { fill: none; stroke: #2563eb; stroke-width: 1.4; }
-.sx-qfd-roof-cell { fill: #f8fafc; stroke: #94a3b8; stroke-width: 0.8; }
-.sx-qfd-roof-cell-filled { fill: #eef2ff; stroke: #64748b; stroke-width: 0.9; }
+.sx-matrix-label { font: 500 11px sans-serif; fill: ${t.inkStrong}; text-anchor: middle; dominant-baseline: central; pointer-events: none; }
+.sx-matrix-leader { stroke: ${t.gridStrong}; stroke-width: 0.6; opacity: 0.7; fill: none; }
+.sx-matrix-legend-text { font: 500 11px sans-serif; fill: ${t.inkMuted}; }
+.sx-matrix-offchart { fill: ${t.warnDeep}; }
+.sx-sipoc-header { font: 700 13px sans-serif; fill: ${t.onHeader}; text-anchor: middle; dominant-baseline: central; }
+.sx-sipoc-headbox { stroke: ${t.surface}; stroke-width: 1; }
+.sx-sipoc-cell { fill: ${t.surface}; stroke: ${t.gridMid}; stroke-width: 1; }
+.sx-sipoc-cell-alt { fill: ${t.surfaceAlt}; stroke: ${t.gridMid}; stroke-width: 1; }
+.sx-sipoc-process { fill: ${t.accentTint}; stroke: ${t.gridMid}; stroke-width: 1; }
+.sx-sipoc-item { font: 500 12px sans-serif; fill: ${t.ink}; text-anchor: middle; dominant-baseline: central; }
+.sx-sipoc-step { font: 600 12px sans-serif; fill: ${t.accentDeep}; text-anchor: middle; dominant-baseline: central; }
+.sx-qfd-grid { stroke: ${t.gridMid}; stroke-width: 1; fill: none; }
+.sx-qfd-cellbg { fill: ${t.surface}; }
+.sx-qfd-cellbg-alt { fill: ${t.surfaceAlt}; }
+.sx-qfd-what { font: 500 12px sans-serif; fill: ${t.ink}; text-anchor: end; dominant-baseline: central; }
+.sx-qfd-how { font: 500 11.5px sans-serif; fill: ${t.ink}; }
+.sx-qfd-weight { font: 600 12px sans-serif; fill: ${t.inkStrong}; text-anchor: middle; dominant-baseline: central; }
+.sx-qfd-weight-head { font: 600 10px sans-serif; fill: ${t.inkMuted}; text-anchor: middle; dominant-baseline: central; }
+.sx-qfd-rel-strong { fill: ${t.accent}; }
+.sx-qfd-rel-medium { fill: ${t.accentSoft}; stroke: ${t.accent}; stroke-width: 1.4; }
+.sx-qfd-rel-weak { fill: none; stroke: ${t.accent}; stroke-width: 1.4; }
+.sx-qfd-roof-cell { fill: ${t.surfaceAlt}; stroke: ${t.gridStrong}; stroke-width: 0.8; }
+.sx-qfd-roof-cell-filled { fill: ${t.roofFilled}; stroke: ${t.inkFaint}; stroke-width: 0.9; }
 .sx-qfd-corr { font: 700 13px sans-serif; text-anchor: middle; dominant-baseline: central; }
-.sx-qfd-corr-strong-pos { fill: #15803d; }
-.sx-qfd-corr-pos { fill: #16a34a; }
-.sx-qfd-corr-neg { fill: #dc2626; }
-.sx-qfd-corr-strong-neg { fill: #b91c1c; }
-.sx-qfd-imp-band { fill: #eff6ff; stroke: #cbd5e1; stroke-width: 1; }
-.sx-qfd-imp-head { font: 600 11px sans-serif; fill: #1e3a8a; text-anchor: end; dominant-baseline: central; }
-.sx-qfd-imp-value { font: 700 13px sans-serif; fill: #1e3a8a; text-anchor: middle; dominant-baseline: central; }
-.sx-qfd-imp-value-top { font: 800 14px sans-serif; fill: #dc2626; text-anchor: middle; dominant-baseline: central; }
-.sx-qfd-dir { font: 700 13px sans-serif; fill: #475569; text-anchor: middle; dominant-baseline: central; }
-.sx-punnett-corner { fill: #f1f5f9; stroke: #94a3b8; stroke-width: 1; }
-.sx-punnett-cornerline { stroke: #cbd5e1; stroke-width: 1; }
-.sx-punnett-corner-p1 { font: 600 11px sans-serif; fill: #1e3a8a; dominant-baseline: hanging; }
-.sx-punnett-corner-p2 { font: 600 11px sans-serif; fill: #1e3a8a; }
-.sx-punnett-header { fill: #e2e8f0; stroke: #94a3b8; stroke-width: 1; }
-.sx-punnett-gamete { font: 700 14px ui-monospace, "SF Mono", Menlo, monospace; fill: #0f172a; text-anchor: middle; dominant-baseline: central; }
-.sx-punnett-cell { stroke: #94a3b8; stroke-width: 1; }
-.sx-punnett-genotype { font: 700 15px ui-monospace, "SF Mono", Menlo, monospace; fill: #0f172a; text-anchor: middle; dominant-baseline: central; }
-.sx-punnett-footer-head { font: 700 13px sans-serif; fill: #111; }
-.sx-punnett-legend { font: 500 12.5px sans-serif; fill: #1f2937; dominant-baseline: central; }
-.sx-punnett-geno-ratio { font: 500 12px sans-serif; fill: #475569; }
-.sx-punnett-hint { font: 500 13px sans-serif; fill: #64748b; text-anchor: middle; }
+.sx-qfd-corr-strong-pos { fill: ${t.positiveDeep}; }
+.sx-qfd-corr-pos { fill: ${t.positive}; }
+.sx-qfd-corr-neg { fill: ${t.negative}; }
+.sx-qfd-corr-strong-neg { fill: ${t.negativeDeep}; }
+.sx-qfd-imp-band { fill: ${t.accentTint}; stroke: ${t.gridMid}; stroke-width: 1; }
+.sx-qfd-imp-head { font: 600 11px sans-serif; fill: ${t.accentDeep}; text-anchor: end; dominant-baseline: central; }
+.sx-qfd-imp-value { font: 700 13px sans-serif; fill: ${t.accentDeep}; text-anchor: middle; dominant-baseline: central; }
+.sx-qfd-imp-value-top { font: 800 14px sans-serif; fill: ${t.negative}; text-anchor: middle; dominant-baseline: central; }
+.sx-qfd-dir { font: 700 13px sans-serif; fill: ${t.inkMuted}; text-anchor: middle; dominant-baseline: central; }
+.sx-punnett-corner { fill: ${t.cornerFill}; stroke: ${t.gridStrong}; stroke-width: 1; }
+.sx-punnett-cornerline { stroke: ${t.gridMid}; stroke-width: 1; }
+.sx-punnett-corner-p1 { font: 600 11px sans-serif; fill: ${t.accentDeep}; dominant-baseline: hanging; }
+.sx-punnett-corner-p2 { font: 600 11px sans-serif; fill: ${t.accentDeep}; }
+.sx-punnett-header { fill: ${t.headerFill}; stroke: ${t.gridStrong}; stroke-width: 1; }
+.sx-punnett-gamete { font: 700 14px ui-monospace, "SF Mono", Menlo, monospace; fill: ${t.inkStrong}; text-anchor: middle; dominant-baseline: central; }
+.sx-punnett-cell { stroke: ${t.gridStrong}; stroke-width: 1; }
+.sx-punnett-genotype { font: 700 15px ui-monospace, "SF Mono", Menlo, monospace; fill: ${t.inkStrong}; text-anchor: middle; dominant-baseline: central; }
+.sx-punnett-footer-head { font: 700 13px sans-serif; fill: ${t.inkStrong}; }
+.sx-punnett-legend { font: 500 12.5px sans-serif; fill: ${t.ink}; dominant-baseline: central; }
+.sx-punnett-geno-ratio { font: 500 12px sans-serif; fill: ${t.inkMuted}; }
+.sx-punnett-hint { font: 500 13px sans-serif; fill: ${t.inkFaint}; text-anchor: middle; }
 `.trim();
+}
 
-function axisArrow(): string {
+function axisArrow(t: MatrixTheme): string {
   return el(
     "marker",
     {
@@ -121,7 +127,7 @@ function axisArrow(): string {
       markerHeight: 8,
       orient: "auto-start-reverse",
     },
-    [el("path", { d: "M0,0 L10,5 L0,10 z", fill: "#374151" })]
+    [el("path", { d: "M0,0 L10,5 L0,10 z", fill: t.border })]
   );
 }
 
@@ -995,7 +1001,8 @@ function wrapToLines(textStr: string, maxChars: number, maxLines: number): strin
   return kept;
 }
 
-export function renderSipocAST(ast: MatrixAST): string {
+export function renderSipocAST(ast: MatrixAST, config?: RenderConfig): string {
+  const t = resolveMatrixTheme(config?.theme ?? "default");
   const sipoc = ast.sipoc ?? { suppliers: [], inputs: [], process: [], outputs: [], customers: [] };
   const lay = layoutSipoc(ast);
   const nodes: string[] = [];
@@ -1087,7 +1094,7 @@ export function renderSipocAST(ast: MatrixAST): string {
       descEl(
         `SIPOC scoping table — ${sipoc.suppliers.length} supplier(s), ${sipoc.inputs.length} input(s), ${sipoc.process.length} process step(s), ${sipoc.outputs.length} output(s), ${sipoc.customers.length} customer(s)`,
       ),
-      defs([el("style", {}, CSS)]),
+      defs([el("style", {}, buildMatrixCss(t))]),
       ...nodes,
     ],
   );
@@ -1136,7 +1143,8 @@ function renderQfdRelationshipSymbol(strength: 9 | 3 | 1, cx: number, cy: number
   });
 }
 
-export function renderQfdAST(ast: MatrixAST): string {
+export function renderQfdAST(ast: MatrixAST, config?: RenderConfig): string {
+  const t = resolveMatrixTheme(config?.theme ?? "default");
   const qfd: QfdData = ast.qfd ?? { whats: [], hows: [], relationships: [], roof: [], normalize: false };
   const lay = layoutQfd(ast);
   const importance = computeQfdImportance(qfd);
@@ -1357,7 +1365,7 @@ export function renderQfdAST(ast: MatrixAST): string {
       descEl(
         `QFD House of Quality — ${qfd.whats.length} customer requirement(s), ${qfd.hows.length} engineering characteristic(s), ${qfd.relationships.length} relationship(s); technical importance computed per column`,
       ),
-      defs([el("style", {}, CSS)]),
+      defs([el("style", {}, buildMatrixCss(t))]),
       ...nodes,
     ],
   );
@@ -1380,7 +1388,8 @@ function genotypeText(parent: string[][], genes: PunnettGene[]): string {
     .join("");
 }
 
-export function renderPunnettAST(ast: MatrixAST): string {
+export function renderPunnettAST(ast: MatrixAST, config?: RenderConfig): string {
+  const t = resolveMatrixTheme(config?.theme ?? "default");
   const pd = ast.punnett;
   const lay = layoutPunnett(ast);
 
@@ -1398,7 +1407,7 @@ export function renderPunnettAST(ast: MatrixAST): string {
       [
         titleEl(ast.title ? `Punnett square — ${escapeXml(ast.title)}` : "Punnett square"),
         descEl(descText),
-        defs([el("style", {}, CSS)]),
+        defs([el("style", {}, buildMatrixCss(t))]),
         ...body,
       ],
     );
@@ -1508,10 +1517,11 @@ export function renderPunnettAST(ast: MatrixAST): string {
   return svgWrap(nodes, descText);
 }
 
-export function renderMatrixAST(ast: MatrixAST): string {
-  if (ast.mode === "sipoc") return renderSipocAST(ast);
-  if (ast.mode === "qfd") return renderQfdAST(ast);
-  if (ast.mode === "punnett") return renderPunnettAST(ast);
+export function renderMatrixAST(ast: MatrixAST, config?: RenderConfig): string {
+  if (ast.mode === "sipoc") return renderSipocAST(ast, config);
+  if (ast.mode === "qfd") return renderQfdAST(ast, config);
+  if (ast.mode === "punnett") return renderPunnettAST(ast, config);
+  const t = resolveMatrixTheme(config?.theme ?? "default");
   const lay = layoutMatrix(ast);
   const needsLegendSpace =
     lay.categories.length > 0 || ast.mode === "correlation";
@@ -1549,13 +1559,13 @@ export function renderMatrixAST(ast: MatrixAST): string {
       descEl(
         `Matrix diagram${ast.template ? ` (${ast.template} template)` : ""}, ${ast.mode} mode, ${ast.points.length} point(s)`
       ),
-      defs([el("style", {}, CSS), axisArrow()]),
+      defs([el("style", {}, buildMatrixCss(t)), axisArrow(t)]),
       ...body,
     ]
   );
 }
 
-export function renderMatrix(text: string): string {
+export function renderMatrix(text: string, config?: RenderConfig): string {
   const ast = parseMatrix(text);
-  return renderMatrixAST(ast);
+  return renderMatrixAST(ast, config);
 }

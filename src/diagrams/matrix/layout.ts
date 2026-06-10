@@ -1,5 +1,6 @@
 import type { MatrixAST, MatrixPoint } from "./types";
 import { computePunnett, punnettFooter } from "./types";
+import { estimateTextWidth } from "../../core/text-metrics";
 
 export interface PlotBox {
   x0: number;
@@ -238,7 +239,8 @@ export interface QfdLayout {
 const QFD_CELL = 46;
 const QFD_WHAT_LABEL_W = 190;
 const QFD_WEIGHT_W = 46;
-const QFD_HOW_LABEL_H = 130;
+const QFD_HOW_FONT = 11.5;
+const QFD_HOW_ANGLE_SIN = Math.sin((60 * Math.PI) / 180); // labels rotate -60°
 const QFD_FOOTER_H = 64;
 const QFD_PAD = 24;
 
@@ -252,7 +254,15 @@ export function layoutQfd(ast: MatrixAST): QfdLayout {
   const roofH = Math.ceil((cellW / 2) * cols) + 8;
   const whatLabelW = QFD_WHAT_LABEL_W;
   const weightW = QFD_WEIGHT_W;
-  const howLabelH = QFD_HOW_LABEL_H;
+  // HOW-label band: sized to the actual painted extent of the longest rotated
+  // label (it used to be a fixed 130px, which left a dead band between the
+  // roof and short labels). Vertical extent of a -60°-rotated label is
+  // width × sin(60°), plus room for the direction glyph + gap.
+  const maxHowW = Math.max(
+    0,
+    ...(ast.qfd?.hows ?? []).map((h) => estimateTextWidth(h.label, QFD_HOW_FONT))
+  );
+  const howLabelH = Math.max(48, Math.min(220, Math.ceil(maxHowW * QFD_HOW_ANGLE_SIN) + 26));
   const footerH = QFD_FOOTER_H;
 
   const gridX0 = QFD_PAD + whatLabelW + weightW;

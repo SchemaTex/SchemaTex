@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="sx-net" role="img" aria-label="Acme HQ — CCTV" width="392.3" height="717" viewBox="0 0 392.3 717" data-diagram-type="network"><title>Network diagram — Acme HQ — CCTV</title>
+<desc>10 devices, 9 links, 1 boundaries. Topology: hierarchical. Links: 1 serial, 1 fiber, 4 copper, 3 poe.</desc>
+<style>.sx-net { font-family: system-ui, -apple-system, sans-serif; }
+.sx-net-body { fill: #1d6fb8; stroke: #0f3a5f; stroke-width: 2; }
+.sx-net-detail { fill: none; stroke: #0f3a5f; stroke-width: 1; }
+.sx-net-glyph { fill: #bfe0f7; stroke: none; }
+.sx-net-glyph-line { fill: none; stroke: #bfe0f7; stroke-width: 1.4; }
+.sx-net-icontext { font: 700 8px sans-serif; fill: #bfe0f7; }
+.sx-net-cloud-body { fill: #ffffff; stroke: #334155; stroke-width: 2; }
+.sx-net-cloudtext { font: 600 13px sans-serif; fill: #0f172a; }
+.sx-net-bus { stroke: #0f3a5f; stroke-width: 4; stroke-linecap: round; }
+.sx-net-label { font: 12px sans-serif; fill: #0f172a; }
+.sx-net-sublabel { font: 10px sans-serif; fill: #64748b; }
+.sx-net-link { fill: none; stroke-width: 2; }
+.sx-net-link-wireless, .sx-net-link-vpn { stroke-dasharray: 5 4; }
+.sx-net-link-lag { stroke-width: 3; }
+.sx-net-linklabel { font: 9px sans-serif; fill: #475569; paint-order: stroke; stroke: #ffffff; stroke-width: 3px; stroke-linejoin: round; }
+.sx-net-port { font: 8px sans-serif; fill: #475569; paint-order: stroke; stroke: #ffffff; stroke-width: 2.5px; stroke-linejoin: round; }
+.sx-net-boundary-site { fill: none; stroke: #334155; stroke-width: 1.5; }
+.sx-net-boundary-rack { fill: none; stroke: #334155; stroke-width: 1.5; stroke-dasharray: 1 2; }
+.sx-net-boundary-subnet, .sx-net-boundary-vlan { fill: #eff6ff; stroke: #2563eb; stroke-width: 1.2; stroke-dasharray: 5 3; }
+.sx-net-boundary-zone, .sx-net-boundary-dmz { fill: none; stroke: #dc2626; stroke-width: 1.2; stroke-dasharray: 5 3; }
+.sx-net-boundary-label { font: 600 10px sans-serif; }
+.sx-net-title { font: 700 16px sans-serif; fill: #0f172a; }</style>
+<text x="196.15" y="21" class="sx-net-title" text-anchor="middle">Acme HQ — CCTV</text>
+<g transform="translate(0, 30)"><g class="sx-net-boundaries"><g class="sx-net-boundary" data-kind="subnet" data-label="192.168.20.0/24"><rect class="sx-net-boundary-subnet" x="30" y="420" width="332.3" height="237" rx="8" ry="8"/>
+<text class="sx-net-boundary-label" fill="#2563eb" x="42" y="433">192.168.20.0/24</text></g></g>
+<g class="sx-net-links"><g class="sx-net-link-g" data-from="net" data-to="fw1" data-type="serial"><polyline class="sx-net-link sx-net-link-serial" stroke="#7c3aed" points="196.15,94 196.15,142"/>
+<text class="sx-net-linklabel" x="196.15" y="115" text-anchor="middle">ISP 1Gbps</text></g>
+<g class="sx-net-link-g" data-from="fw1" data-to="core1" data-type="fiber" data-speed="10G"><polyline class="sx-net-link sx-net-link-fiber" stroke="#ea7a17" points="196.15,190 196.15,246"/>
+<line class="sx-net-link sx-net-link-fiber" stroke="#ea7a17" x1="199.15" y1="212.4" x2="193.15" y2="212.4"/>
+<line class="sx-net-link sx-net-link-fiber" stroke="#ea7a17" x1="199.15" y1="220.8" x2="193.15" y2="220.8"/>
+<text class="sx-net-linklabel" x="196.15" y="215" text-anchor="middle">10G</text></g>
+<g class="sx-net-link-g" data-from="core1" data-to="poe1" data-type="copper" data-vlan="20" data-speed="1G" data-mode="trunk"><polyline class="sx-net-link sx-net-link-copper" stroke="#475569" points="188.9,294 140.6,454"/>
+<text class="sx-net-linklabel" x="164.75" y="371" text-anchor="middle">Trunk · VLAN 20 · 1G</text></g>
+<g class="sx-net-link-g" data-from="core1" data-to="poe2" data-type="copper" data-vlan="20" data-speed="1G" data-mode="trunk"><polyline class="sx-net-link sx-net-link-copper" stroke="#475569" points="203.4,294 251.7,454"/>
+<text class="sx-net-linklabel" x="227.55" y="371" text-anchor="middle">Trunk · VLAN 20 · 1G</text></g>
+<g class="sx-net-link-g" data-from="core1" data-to="nvr1" data-type="copper" data-speed="1G"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="180.93,294 145.42,350"/>
+<text class="sx-net-linklabel" x="163.18" y="319" text-anchor="middle">1G</text></g>
+<g class="sx-net-link-g" data-from="core1" data-to="wall1" data-type="copper"><polyline class="sx-net-link sx-net-link-copper" stroke="#334155" points="212.1,294 249.3,350"/></g>
+<g class="sx-net-link-g" data-from="poe1" data-to="cam1" data-type="poe"><polyline class="sx-net-link sx-net-link-poe" stroke="#059669" points="121.62,502 94.23,558"/>
+<text class="sx-net-linklabel" x="107.93" y="527" text-anchor="middle">PoE</text></g>
+<g class="sx-net-link-g" data-from="poe1" data-to="cam2" data-type="poe"><polyline class="sx-net-link sx-net-link-poe" stroke="#059669" points="147.12,502 179.23,558"/>
+<text class="sx-net-linklabel" x="163.18" y="527" text-anchor="middle">PoE</text></g>
+<g class="sx-net-link-g" data-from="poe2" data-to="cam3" data-type="poe"><polyline class="sx-net-link sx-net-link-poe" stroke="#059669" points="269.96,502 295.64,558"/>
+<text class="sx-net-linklabel" x="282.8" y="527" text-anchor="middle">PoE</text></g></g>
+<g class="sx-net-devices"><g class="sx-net-device" data-id="net" data-kind="internet"><g><path class="sx-net-cloud-body" d="M 168.65 85.85 C 154.35 85.85 154.35 66.07 168.65 63.75 C 168.65 47.45 192.85 45.13 196.15 59.09 C 199.45 45.13 223.65 47.45 223.65 63.75 C 237.95 66.07 237.95 85.85 223.65 85.85 Z"/>
+<text class="sx-net-cloudtext" x="196.15" y="76.55" text-anchor="middle">Internet</text></g></g>
+<g class="sx-net-device" data-id="fw1" data-kind="firewall" data-tier="edge"><g><rect class="sx-net-body" x="171.19" y="151.12" width="49.92" height="29.76" rx="2" ry="2"/>
+<line class="sx-net-detail" x1="171.19" y1="161.04" x2="221.11" y2="161.04"/>
+<line class="sx-net-detail" x1="171.19" y1="170.96" x2="221.11" y2="170.96"/>
+<line class="sx-net-detail" x1="187.83" y1="151.12" x2="187.83" y2="161.04"/>
+<line class="sx-net-detail" x1="204.47" y1="151.12" x2="204.47" y2="161.04"/>
+<line class="sx-net-detail" x1="179.51" y1="161.04" x2="179.51" y2="170.96"/>
+<line class="sx-net-detail" x1="196.15" y1="161.04" x2="196.15" y2="170.96"/>
+<line class="sx-net-detail" x1="212.79" y1="161.04" x2="212.79" y2="170.96"/>
+<line class="sx-net-detail" x1="187.83" y1="170.96" x2="187.83" y2="180.88"/>
+<line class="sx-net-detail" x1="204.47" y1="170.96" x2="204.47" y2="180.88"/></g>
+<text class="sx-net-label" x="196.15" y="207" text-anchor="middle">Perimeter FW</text></g>
+<g class="sx-net-device" data-id="core1" data-kind="l3switch" data-tier="core"><g><rect class="sx-net-body" x="168.63" y="258" width="55.04" height="24" rx="3" ry="3"/>
+<line class="sx-net-glyph-line" x1="182.39" y1="266.16" x2="209.91" y2="266.16"/><polygon class="sx-net-glyph" points="209.91,266.16 206.4,268.08 206.4,264.24"/>
+<line class="sx-net-glyph-line" x1="209.91" y1="273.84" x2="182.39" y2="273.84"/><polygon class="sx-net-glyph" points="182.39,273.84 185.9,271.92 185.9,275.76"/>
+<line class="sx-net-glyph-line" x1="202.75" y1="266.16" x2="211.56" y2="266.16"/><polygon class="sx-net-glyph" points="211.56,266.16 208.05,268.08 208.05,264.24"/></g>
+<text class="sx-net-label" x="196.15" y="311" text-anchor="middle">Core SW</text></g>
+<g class="sx-net-device" data-id="poe1" data-kind="poeswitch" data-tier="access"><g><g><rect class="sx-net-body" x="105.83" y="466" width="55.04" height="24" rx="3" ry="3"/>
+<line class="sx-net-glyph-line" x1="116.84" y1="473.68" x2="149.86" y2="473.68"/><polygon class="sx-net-glyph" points="149.86,473.68 146.35,475.6 146.35,471.76"/>
+<line class="sx-net-glyph-line" x1="149.86" y1="482.32" x2="116.84" y2="482.32"/><polygon class="sx-net-glyph" points="116.84,482.32 120.35,480.4 120.35,484.24"/></g>
+<text class="sx-net-icontext" x="133.35" y="499.44" text-anchor="middle">PoE</text></g>
+<text class="sx-net-label" x="133.35" y="519" text-anchor="middle">PoE Switch A</text></g>
+<g class="sx-net-device" data-id="poe2" data-kind="poeswitch" data-tier="access"><g><g><rect class="sx-net-body" x="231.43" y="466" width="55.04" height="24" rx="3" ry="3"/>
+<line class="sx-net-glyph-line" x1="242.44" y1="473.68" x2="275.46" y2="473.68"/><polygon class="sx-net-glyph" points="275.46,473.68 271.95,475.6 271.95,471.76"/>
+<line class="sx-net-glyph-line" x1="275.46" y1="482.32" x2="242.44" y2="482.32"/><polygon class="sx-net-glyph" points="242.44,482.32 245.95,480.4 245.95,484.24"/></g>
+<text class="sx-net-icontext" x="258.95" y="499.44" text-anchor="middle">PoE</text></g>
+<text class="sx-net-label" x="258.95" y="519" text-anchor="middle">PoE Switch B</text></g>
+<g class="sx-net-device" data-id="nvr1" data-kind="nvr"><g><rect class="sx-net-body" x="103.96" y="362.96" width="52.48" height="22.08" rx="2" ry="2"/>
+<circle class="sx-net-glyph" cx="115.51" cy="370.03" r="2"/>
+<circle class="sx-net-glyph" cx="124.95" cy="370.03" r="2"/>
+<text class="sx-net-icontext" x="130.2" y="381.73" text-anchor="middle">NVR</text></g>
+<text class="sx-net-label" x="130.2" y="415" text-anchor="middle">Video Recorder</text></g>
+<g class="sx-net-device" data-id="wall1" data-kind="monitor"><g><rect class="sx-net-body" x="238.37" y="354.8" width="53.76" height="26.88" rx="2" ry="2"/>
+<line class="sx-net-detail" x1="265.25" y1="381.68" x2="265.25" y2="388.4"/>
+<line class="sx-net-detail" x1="254.5" y1="396" x2="276" y2="396"/></g>
+<text class="sx-net-label" x="265.25" y="415" text-anchor="middle">Guard Station</text></g>
+<g class="sx-net-device" data-id="cam1" data-kind="camera" data-ip="192.168.20.11" data-type="dome"><g><path class="sx-net-body" d="M 64.58 585.58 A 17.92 17.92 0 0 1 100.42 585.58 Z"/>
+<rect class="sx-net-body" x="61.89" y="585.58" width="41.22" height="5.76" rx="1" ry="1"/>
+<circle class="sx-net-glyph" cx="82.5" cy="579.31" r="5.38"/></g>
+<text class="sx-net-label" x="82.5" y="623" text-anchor="middle">Lobby Dome</text>
+<text class="sx-net-sublabel" x="82.5" y="635" text-anchor="middle">192.168.20.11</text></g>
+<g class="sx-net-device" data-id="cam2" data-kind="camera" data-ip="192.168.20.12" data-type="ptz"><g><path class="sx-net-body" d="M 171.24 586.35 A 21.76 21.76 0 0 1 214.76 586.35 Z"/>
+<rect class="sx-net-body" x="167.98" y="586.35" width="50.05" height="5.76" rx="1" ry="1"/>
+<circle class="sx-net-glyph" cx="193" cy="578.74" r="6.53"/></g>
+<text class="sx-net-label" x="193" y="623" text-anchor="middle">Gate PTZ</text>
+<text class="sx-net-sublabel" x="193" y="635" text-anchor="middle">192.168.20.12</text></g>
+<g class="sx-net-device" data-id="cam3" data-kind="camera" data-ip="192.168.20.13" data-type="bullet"><g><rect class="sx-net-body" x="287.45" y="573.84" width="38.4" height="16.32" rx="8.16" ry="8.16"/>
+<circle class="sx-net-glyph" cx="321.85" cy="582" r="4.57"/>
+<line class="sx-net-detail" x1="306.65" y1="590.16" x2="306.65" y2="597.84"/></g>
+<text class="sx-net-label" x="306.65" y="623" text-anchor="middle">Dock Bullet</text>
+<text class="sx-net-sublabel" x="306.65" y="635" text-anchor="middle">192.168.20.13</text></g></g></g></svg>

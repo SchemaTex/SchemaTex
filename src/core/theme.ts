@@ -1088,6 +1088,432 @@ export function resolveUmlClassTheme(name: string): ResolvedTheme<UmlClassTokens
   return { ...BASE_THEMES[themeName], ...UMLCLASS_TOKENS[themeName] };
 }
 
+// ─── BPMN Tokens Per Theme ─────────────────────────────────
+// Coloured-house family (with flowchart/prisma): BPMN tools (Camunda, Bizagi,
+// Signavio) established a de-facto colour language — green start events, red
+// end events, yellow gateway diamonds, blue-tinted tasks — which `default`
+// adopts in the house tint-fill + 600-stroke pairing. `monochrome` is the pure
+// OMG-spec print look (the standard itself prescribes no colour); `dark` is
+// Catppuccin like the rest of the family.
+
+export interface BpmnTokens {
+  /** Pool body + lane/pool borders + glyph strokes. */
+  bpmnStroke: string;
+  /** Element label text (task names, pool labels, edge labels). */
+  bpmnText: string;
+  poolFill: string;
+  laneFill: string;
+  /** Rotated pool/lane label band. */
+  labelBandFill: string;
+  taskFill: string;
+  taskStroke: string;
+  gatewayFill: string;
+  gatewayStroke: string;
+  /** X / + / O glyph inside the gateway diamond. */
+  gatewayGlyph: string;
+  startFill: string;
+  startStroke: string;
+  endFill: string;
+  endStroke: string;
+  intermediateFill: string;
+  intermediateStroke: string;
+  /** Sequence flows + arrowheads. */
+  flowStroke: string;
+  /** Message flows (dashed, lighter). */
+  msgFlowStroke: string;
+}
+
+const DEFAULT_BPMN: BpmnTokens = {
+  bpmnStroke: "#334155",
+  bpmnText: "#0f172a",
+  poolFill: "#ffffff",
+  laneFill: "#fbfcfe",
+  labelBandFill: "#eef2f7",
+  taskFill: "#eff6ff",      // blue-50 — "work happens here"
+  taskStroke: "#3b82f6",    // blue-500
+  gatewayFill: "#fef3c7",   // amber-100 — de-facto gateway yellow
+  gatewayStroke: "#d97706", // amber-600
+  gatewayGlyph: "#92400e",  // amber-800
+  startFill: "#dcfce7",     // green-100 — de-facto start green
+  startStroke: "#059669",
+  endFill: "#fee2e2",       // red-100 — de-facto end red
+  endStroke: "#dc2626",
+  intermediateFill: "#ffffff",
+  intermediateStroke: "#334155",
+  flowStroke: "#334155",
+  msgFlowStroke: "#94a3b8",
+};
+
+// OMG BPMN 2.0.2 print stance: the spec prescribes shapes, not colours.
+const MONOCHROME_BPMN: BpmnTokens = {
+  bpmnStroke: "#000000",
+  bpmnText: "#000000",
+  poolFill: "#ffffff",
+  laneFill: "#ffffff",
+  labelBandFill: "#f0f0f0",
+  taskFill: "#ffffff",
+  taskStroke: "#000000",
+  gatewayFill: "#ffffff",
+  gatewayStroke: "#000000",
+  gatewayGlyph: "#000000",
+  startFill: "#ffffff",
+  startStroke: "#000000",
+  endFill: "#ffffff",
+  endStroke: "#000000",
+  intermediateFill: "#ffffff",
+  intermediateStroke: "#000000",
+  flowStroke: "#000000",
+  msgFlowStroke: "#555555",
+};
+
+const DARK_BPMN: BpmnTokens = {
+  bpmnStroke: "#cdd6f4",
+  bpmnText: "#cdd6f4",
+  poolFill: "#1e1e2e",
+  laneFill: "#272736",
+  labelBandFill: "#313244",
+  taskFill: "#1e3a5f",
+  taskStroke: "#89b4fa",
+  gatewayFill: "#45413a",
+  gatewayStroke: "#f9e2af",
+  gatewayGlyph: "#f9e2af",
+  startFill: "#1e3a2a",
+  startStroke: "#a6e3a1",
+  endFill: "#3a231f",
+  endStroke: "#f38ba8",
+  intermediateFill: "#313244",
+  intermediateStroke: "#cdd6f4",
+  flowStroke: "#cdd6f4",
+  msgFlowStroke: "#7f849c",
+};
+
+export const BPMN_TOKENS: Record<ThemeName, BpmnTokens> = {
+  default: DEFAULT_BPMN,
+  monochrome: MONOCHROME_BPMN,
+  dark: DARK_BPMN,
+};
+
+export function resolveBpmnTheme(name: string): ResolvedTheme<BpmnTokens> {
+  const themeName = (name in BASE_THEMES ? name : "default") as ThemeName;
+  return { ...BASE_THEMES[themeName], ...BPMN_TOKENS[themeName] };
+}
+
+// ─── State Diagram Tokens Per Theme ────────────────────────
+// UML 2.5 / Harel statechart. Neutral-house family like umlclass: slate body
+// in default (it previously carried two hardcoded blacks, #1a1a1a and #2a2a2a),
+// the conventional sticky-note yellow for UML notes, pure black/white in
+// monochrome, Catppuccin in dark.
+
+export interface StateTokens {
+  stateFill: string;
+  stateStroke: string;
+  stateText: string;
+  /** entry/do/exit activity rows (monospace, muted). */
+  activityText: string;
+  compositeFill: string;
+  compositeTitlebar: string;
+  /** Dashed divider between orthogonal regions. */
+  regionDiv: string;
+  /** Pseudo-state ink: initial/final/junction dots, fork/join bars, H glyph. */
+  psInk: string;
+  transitionStroke: string;
+  transitionLabel: string;
+  /** Backing rect behind transition labels. */
+  labelBg: string;
+  noteFill: string;
+  noteStroke: string;
+  noteText: string;
+}
+
+const DEFAULT_STATE: StateTokens = {
+  stateFill: "#ffffff",
+  stateStroke: "#334155",
+  stateText: "#0f172a",
+  activityText: "#475569",
+  compositeFill: "#f8fafc",
+  compositeTitlebar: "#eef2f7",
+  regionDiv: "#94a3b8",
+  psInk: "#0f172a",
+  transitionStroke: "#334155",
+  transitionLabel: "#0f172a",
+  labelBg: "#ffffff",
+  noteFill: "#fef9c3",
+  noteStroke: "#ca8a04",
+  noteText: "#374151",
+};
+
+const MONOCHROME_STATE: StateTokens = {
+  stateFill: "#ffffff",
+  stateStroke: "#000000",
+  stateText: "#000000",
+  activityText: "#333333",
+  compositeFill: "#ffffff",
+  compositeTitlebar: "#f0f0f0",
+  regionDiv: "#888888",
+  psInk: "#000000",
+  transitionStroke: "#000000",
+  transitionLabel: "#000000",
+  labelBg: "#ffffff",
+  noteFill: "#ffffff",
+  noteStroke: "#000000",
+  noteText: "#000000",
+};
+
+const DARK_STATE: StateTokens = {
+  stateFill: "#313244",
+  stateStroke: "#cdd6f4",
+  stateText: "#cdd6f4",
+  activityText: "#a6adc8",
+  compositeFill: "#272736",
+  compositeTitlebar: "#313244",
+  regionDiv: "#6c7086",
+  psInk: "#cdd6f4",
+  transitionStroke: "#cdd6f4",
+  transitionLabel: "#cdd6f4",
+  labelBg: "#1e1e2e",
+  noteFill: "#45413a",
+  noteStroke: "#f9e2af",
+  noteText: "#cdd6f4",
+};
+
+export const STATE_TOKENS: Record<ThemeName, StateTokens> = {
+  default: DEFAULT_STATE,
+  monochrome: MONOCHROME_STATE,
+  dark: DARK_STATE,
+};
+
+export function resolveStateTheme(name: string): ResolvedTheme<StateTokens> {
+  const themeName = (name in BASE_THEMES ? name : "default") as ThemeName;
+  return { ...BASE_THEMES[themeName], ...STATE_TOKENS[themeName] };
+}
+
+// ─── Matrix Tokens Per Theme ───────────────────────────────
+// Quadrant / heatmap / correlation / SIPOC / QFD / Punnett share one renderer
+// stylesheet; these tokens parameterise it. Data palettes (category colors,
+// heat ramp, quadrant tints) stay renderer-local: they encode data semantics
+// (green→red severity, per-category hue) that hold across themes.
+
+export interface MatrixTokens {
+  /** Strongest text: titles, values, best-margin highlights. */
+  inkStrong: string;
+  /** Body text: cell labels, items. */
+  ink: string;
+  /** Secondary text: axis labels, weight heads, direction glyphs. */
+  inkMuted: string;
+  /** Faintest text: subtitles, axis ends, hints. */
+  inkFaint: string;
+  gridFaint: string;
+  grid: string;
+  gridMid: string;
+  gridStrong: string;
+  /** Plot border + axis arrows. */
+  border: string;
+  surface: string;
+  surfaceAlt: string;
+  /** Correlation alternating row tint. */
+  surfaceTint: string;
+  /** Punnett corner cell. */
+  cornerFill: string;
+  /** Punnett gamete header band. */
+  headerFill: string;
+  accent: string;
+  /** QFD medium-relationship dot fill. */
+  accentSoft: string;
+  /** QFD importance band / SIPOC process column fill. */
+  accentTint: string;
+  /** Deep accent text (importance values, punnett parents, sipoc steps). */
+  accentDeep: string;
+  /** QFD roof declared-cell fill. */
+  roofFilled: string;
+  positive: string;
+  positiveDeep: string;
+  negative: string;
+  negativeDeep: string;
+  /** Off-chart marker. */
+  warnDeep: string;
+  /** Text on saturated SIPOC header boxes. */
+  onHeader: string;
+}
+
+const DEFAULT_MATRIX: MatrixTokens = {
+  inkStrong: "#111827",
+  ink: "#1f2937",
+  inkMuted: "#374151",
+  inkFaint: "#6b7280",
+  gridFaint: "#e5e7eb",
+  grid: "#d1d5db",
+  gridMid: "#cbd5e1",
+  gridStrong: "#94a3b8",
+  border: "#374151",
+  surface: "#ffffff",
+  surfaceAlt: "#f8fafc",
+  surfaceTint: "#f0fdf4",
+  cornerFill: "#f1f5f9",
+  headerFill: "#e2e8f0",
+  accent: "#2563eb",
+  accentSoft: "#93c5fd",
+  accentTint: "#eff6ff",
+  accentDeep: "#1e3a8a",
+  roofFilled: "#eef2ff",
+  positive: "#16a34a",
+  positiveDeep: "#15803d",
+  negative: "#dc2626",
+  negativeDeep: "#b91c1c",
+  warnDeep: "#ea580c",
+  onHeader: "#ffffff",
+};
+
+// Print/clinical: QFD relationship strength falls back to fill-vs-hollow,
+// correlation sign to its glyph — both already shape-encoded.
+const MONOCHROME_MATRIX: MatrixTokens = {
+  inkStrong: "#000000",
+  ink: "#000000",
+  inkMuted: "#333333",
+  inkFaint: "#555555",
+  gridFaint: "#dddddd",
+  grid: "#bbbbbb",
+  gridMid: "#aaaaaa",
+  gridStrong: "#777777",
+  border: "#000000",
+  surface: "#ffffff",
+  surfaceAlt: "#f7f7f7",
+  surfaceTint: "#f0f0f0",
+  cornerFill: "#f0f0f0",
+  headerFill: "#e5e5e5",
+  accent: "#000000",
+  accentSoft: "#bbbbbb",
+  accentTint: "#f0f0f0",
+  accentDeep: "#000000",
+  roofFilled: "#e5e5e5",
+  positive: "#000000",
+  positiveDeep: "#000000",
+  negative: "#000000",
+  negativeDeep: "#000000",
+  warnDeep: "#000000",
+  onHeader: "#ffffff",
+};
+
+const DARK_MATRIX: MatrixTokens = {
+  inkStrong: "#cdd6f4",
+  ink: "#cdd6f4",
+  inkMuted: "#bac2de",
+  inkFaint: "#a6adc8",
+  gridFaint: "#313244",
+  grid: "#45475a",
+  gridMid: "#45475a",
+  gridStrong: "#6c7086",
+  border: "#cdd6f4",
+  surface: "#1e1e2e",
+  surfaceAlt: "#272736",
+  surfaceTint: "rgba(166,227,161,0.08)",
+  cornerFill: "#313244",
+  headerFill: "#45475a",
+  accent: "#89b4fa",
+  accentSoft: "#45557a",
+  accentTint: "#1e3a5f",
+  accentDeep: "#89b4fa",
+  roofFilled: "#2a2a45",
+  positive: "#a6e3a1",
+  positiveDeep: "#a6e3a1",
+  negative: "#f38ba8",
+  negativeDeep: "#f38ba8",
+  warnDeep: "#fab387",
+  onHeader: "#1e1e2e",
+};
+
+export const MATRIX_TOKENS: Record<ThemeName, MatrixTokens> = {
+  default: DEFAULT_MATRIX,
+  monochrome: MONOCHROME_MATRIX,
+  dark: DARK_MATRIX,
+};
+
+export function resolveMatrixTheme(name: string): ResolvedTheme<MatrixTokens> {
+  const themeName = (name in BASE_THEMES ? name : "default") as ThemeName;
+  return { ...BASE_THEMES[themeName], ...MATRIX_TOKENS[themeName] };
+}
+
+// ─── Block Diagram Tokens Per Theme ────────────────────────
+// Control-engineering block diagrams. The default role fills move from the
+// renderer's old Material-Design tints onto the house Tailwind-100 tints so
+// blockdiagram sits in the same colour family as flowchart/bpmn.
+
+export interface BlockTokens {
+  blockStroke: string;
+  /** Transfer-function text, port labels (strong ink). */
+  blockText: string;
+  /** Small role-name caption under the TF. */
+  blockName: string;
+  sumFill: string;
+  /** Signal lines, arrowheads, sum signs, signal labels, branch dots. */
+  signalStroke: string;
+  roleFills: Readonly<Record<string, string>>;
+}
+
+const DEFAULT_BLOCK: BlockTokens = {
+  blockStroke: "#334155",
+  blockText: "#0f172a",
+  blockName: "#64748b",
+  sumFill: "#ffffff",
+  signalStroke: "#334155",
+  roleFills: {
+    plant: "#ffffff",
+    controller: "#dbeafe",
+    sensor: "#f3e8ff",
+    actuator: "#dcfce7",
+    filter: "#fef9c3",
+    reference: "#ffffff",
+    disturbance: "#ffedd5",
+    generic: "#ffffff",
+  },
+};
+
+const MONOCHROME_BLOCK: BlockTokens = {
+  blockStroke: "#000000",
+  blockText: "#000000",
+  blockName: "#333333",
+  sumFill: "#ffffff",
+  signalStroke: "#000000",
+  roleFills: {
+    plant: "#ffffff",
+    controller: "#ffffff",
+    sensor: "#ffffff",
+    actuator: "#ffffff",
+    filter: "#ffffff",
+    reference: "#ffffff",
+    disturbance: "#ffffff",
+    generic: "#ffffff",
+  },
+};
+
+const DARK_BLOCK: BlockTokens = {
+  blockStroke: "#cdd6f4",
+  blockText: "#cdd6f4",
+  blockName: "#a6adc8",
+  sumFill: "#313244",
+  signalStroke: "#cdd6f4",
+  roleFills: {
+    plant: "#313244",
+    controller: "#1e3a5f",
+    sensor: "#2e2a52",
+    actuator: "#1e3a2a",
+    filter: "#3a3326",
+    reference: "#313244",
+    disturbance: "#3a2d1a",
+    generic: "#313244",
+  },
+};
+
+export const BLOCK_TOKENS: Record<ThemeName, BlockTokens> = {
+  default: DEFAULT_BLOCK,
+  monochrome: MONOCHROME_BLOCK,
+  dark: DARK_BLOCK,
+};
+
+export function resolveBlockTheme(name: string): ResolvedTheme<BlockTokens> {
+  const themeName = (name in BASE_THEMES ? name : "default") as ThemeName;
+  return { ...BASE_THEMES[themeName], ...BLOCK_TOKENS[themeName] };
+}
+
 // ─── Theme Resolution ──────────────────────────────────────
 
 export function resolveBaseTheme(name: string): BaseTheme {
@@ -1141,6 +1567,23 @@ export const FONT_SIZE = {
   title: 16,
   label: 12,
   small: 9,
+} as const;
+
+// ─── Diagram Title ─────────────────────────────────────────
+
+/**
+ * House style for the optional diagram title — one look across every family:
+ * 16px / 700, centered on the canvas (`text-anchor: middle` at width/2),
+ * baseline `TITLE.y` from the top of the reserved title band. Layouts that
+ * reserve vertical space for the title should reserve `TITLE.bandH`.
+ */
+export const TITLE = {
+  size: FONT_SIZE.title,
+  weight: 700,
+  /** Baseline y within the title band. */
+  y: 24,
+  /** Total height a layout should reserve above content for the title. */
+  bandH: 40,
 } as const;
 
 // ─── Stroke Widths ─────────────────────────────────────────

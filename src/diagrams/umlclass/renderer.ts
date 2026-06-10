@@ -102,7 +102,7 @@ export function renderUmlClassLayout(layout: UmlClassLayoutResult, config?: Rend
 .sx-umlclass-edge-label { fill: ${theme.edgeLabel}; font-size: ${FONT_SIZE.small + 1}px; font-weight: 500; }
 .sx-umlclass-edge-name { fill: ${theme.edgeLabel}; font-size: ${FONT_SIZE.label}px; font-style: italic; }
 .sx-umlclass-edge-name-halo { fill: ${theme.bg}; stroke: ${theme.bg}; stroke-width: ${UMLCLASS_CONST.EDGE_LABEL_HALO}; stroke-linejoin: round; }
-.sx-umlclass-title { fill: ${theme.nameText}; font-size: ${FONT_SIZE.title}px; font-weight: 600; }
+.sx-umlclass-title { fill: ${theme.nameText}; font-size: ${FONT_SIZE.title}px; font-weight: 700; }
 .sx-umlclass-package { fill: ${theme.packageFill}; stroke: ${theme.packageStroke}; stroke-width: 1; }
 .sx-umlclass-package-label { fill: ${theme.packageLabel}; font-size: ${FONT_SIZE.label}px; font-weight: 600; }
 `.trim()

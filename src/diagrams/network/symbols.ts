@@ -16,6 +16,7 @@ const DET = "sx-net-detail";         // stroke detail lines (deviceStroke), no f
 const GLY = "sx-net-glyph";          // filled glyph/arrow (deviceAccent)
 const GLYL = "sx-net-glyph-line";    // stroked glyph (deviceAccent), no fill
 const ITX = "sx-net-icontext";       // small text inside an icon (deviceAccent)
+const ITAG = "sx-net-icontag";       // small badge outside the icon body (on page bg, haloed)
 const CLOUD = "sx-net-cloud-body";   // cloud abstraction
 const CTX = "sx-net-cloudtext";      // text inside a cloud
 
@@ -74,7 +75,7 @@ function switchBox(b: Box, glyph: "straight" | "circular"): string {
 
 function poeSwitch(b: Box): string {
   const cx = b.x + b.w / 2;
-  return group({}, [switchBox(b, "straight"), textEl({ class: ITX, x: r2(cx), y: r2(b.y + b.h * 0.78 + 8), "text-anchor": "middle" }, "PoE")]);
+  return group({}, [switchBox(b, "straight"), textEl({ class: ITAG, x: r2(cx), y: r2(b.y + b.h * 0.78 + 8), "text-anchor": "middle" }, "PoE")]);
 }
 
 function firewall(b: Box): string {
@@ -139,7 +140,7 @@ function serverFarm(b: Box, d: NetworkDevice): string {
   for (let i = 2; i >= 0; i--) {
     parts.push(server({ x: b.x + i * off, y: b.y - i * off * 0.5, w: b.w - 2 * off, h: b.h - off }));
   }
-  if (d.count) parts.push(textEl({ class: ITX, x: r2(b.x + b.w - 6), y: r2(b.y + b.h - 2), "text-anchor": "end" }, `×${d.count}`));
+  if (d.count) parts.push(textEl({ class: ITAG, x: r2(b.x + b.w - 6), y: r2(b.y + b.h - 2), "text-anchor": "end" }, `×${d.count}`));
   return group({}, parts);
 }
 
@@ -304,8 +305,8 @@ export function iconSize(kind: DeviceKind): { w: number; h: number } {
 export function drawDeviceIcon(d: NetworkDevice, b: Box): string {
   switch (d.kind) {
     case "router": return router(b);
-    case "gateway": return group({}, [router(b), textEl({ class: ITX, x: r2(b.x + b.w / 2), y: r2(b.y + b.h - 1), "text-anchor": "middle" }, "GW")]);
-    case "vpngw": return group({}, [router(b), textEl({ class: ITX, x: r2(b.x + b.w / 2), y: r2(b.y + b.h - 1), "text-anchor": "middle" }, "VPN")]);
+    case "gateway": return group({}, [router(b), textEl({ class: ITAG, x: r2(b.x + b.w / 2), y: r2(b.y + b.h - 1), "text-anchor": "middle" }, "GW")]);
+    case "vpngw": return group({}, [router(b), textEl({ class: ITAG, x: r2(b.x + b.w / 2), y: r2(b.y + b.h - 1), "text-anchor": "middle" }, "VPN")]);
     case "switch": return switchBox(b, "straight");
     case "l3switch": return switchBox(b, "circular");
     case "poeswitch": return poeSwitch(b);

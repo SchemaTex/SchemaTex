@@ -10,9 +10,9 @@ export const blockdiagram: DiagramPlugin = {
   },
   parse: parseBlockDiagram,
 
-  render(text: string): string {
+  render(text: string, config?): string {
     const ast = parseBlockDiagram(text);
-    return renderBlockDiagram(ast);
+    return renderBlockDiagram(ast, config);
   },
 };
 

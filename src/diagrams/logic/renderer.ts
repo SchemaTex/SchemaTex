@@ -296,7 +296,7 @@ export function renderLogic(ast: LogicGateAST, config?: RenderConfig): string {
 .schematex-logic-pin-label { font: 9px sans-serif; fill: ${t.stroke}; }
 .schematex-logic-gate-type { font: 10px sans-serif; fill: ${t.textMuted}; }
 .schematex-logic-gate-iec-label { font: bold 13px sans-serif; fill: ${t.text}; }
-.schematex-logic-title { font: bold 14px sans-serif; fill: ${t.text}; }
+.schematex-logic-title { font: 700 16px sans-serif; fill: ${t.text}; }
 .schematex-logic-module { fill: none; stroke: ${t.textMuted}; stroke-width: 1.25; stroke-dasharray: 6 4; }
 .schematex-logic-module-label { font: 11px sans-serif; fill: ${t.textMuted}; font-style: italic; }
 [data-gate-type="unknown"] .schematex-logic-gate-body { stroke: ${t.accent}; stroke-dasharray: 5 3; }

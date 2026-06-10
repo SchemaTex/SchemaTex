@@ -7,7 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [0.9.1] — 2026-06-09
+## [0.9.2] — 2026-06-09
+
+Style-audit release: a full visual audit of all 45 families (code + rendered output) produced three tiers of fixes. Before/after for every item: `preview/style-audit-fixes.html`.
+
+### Fixed — five renderer bugs visible in any gallery (P0)
+
+- **Sociogram group colors actually render now.** The base `.schematex-sociogram-node` CSS rule set `fill`, which beats per-node `fill=""` presentation attributes by CSS specificity — every node painted accent-blue regardless of its group color, contradicting the legend (girls declared `#EF5350` rendered blue). Nodes now carry the generated `.schematex-sociogram-group-<id>` class (emitted after the base rule, so it wins); role classes (star/isolate/…) keep priority over group color.
+- **Timing title no longer collides with the first waveform.** A `TITLE_H` band is reserved above the grid when `title` is set (and the title style moved from an inline `style=""` to the stylesheet, where it belongs).
+- **Network labels are legible.** Device labels/sublabels and the new icon badges get a `paint-order: stroke` halo so the tiered layout's diagonal links no longer strike through them; the PoE/GW/VPN/×N badges moved from near-invisible `deviceAccent` (pale blue on white) to a haloed `subLabel` class; link annotations are placed by a candidate-position pass that clears device boxes (estimated at full text width via the new core text-metrics) and previously placed labels, degrading gracefully when the corridor is crowded.
+- **QFD roof sits on the matrix again.** The HOW-label band was a fixed 130px, leaving a dead band between the correlation roof and short rotated labels; it is now sized from the actual painted extent of the longest label (`estimateTextWidth × sin 60°`), clamped 48–220px.
+- **Ecomap fits and matches its legend.** The center circle grows to fit its label (was fixed r=50, overflowed by ~6+ chars); connection labels get halos, length-fitted backing rects (was fixed 80px), and the same clear-of-nodes candidate placement; legend swatches switched from solid color chips to WYSIWYG circles (9% tint fill + category-color stroke) matching the actual node rendering.
+
+### Added — `src/core/text-metrics.ts` (P1)
+
+Single text-width estimator for all layouts: char-class weighted sum (full-width CJK = 1.0 em — one Unicode rule for the whole library — narrow/wide Latin classes, bold + monospace factors). Replaces the five divergent per-family estimators as files are touched; matrix QFD, ecomap, and network already consume it. This is the overflow guard for LLM-generated CJK labels.
+
+### Changed — one title style across every family (P1)
+
+New `TITLE` token in `core/theme.ts` (16px / 700 / centered). Previously titles drifted per family — faulttree left-aligned, bowtie/erd/epc ~13px left, flowchart 600/14px centered, prisma 17px, decisiontree/orgchart weight 500, ladder/blockdiagram 15px, pid/state 600/14px. Sixteen families normalized to the house style (gallery pages no longer show three different title treatments side by side). FBD's monospace IEC header style is intentionally exempt.
+
+**Centered on content, not canvas.** Six families (epc, bowtie, eventtree, faulttree, idef0, causalloop) draw the title *inside* a `translate(pad, pad)` content group but were centering it at `width / 2` (canvas center) — so the title landed one padding-width (~20px) right of the actual content. Fixed to `layout.width / 2` (content-area center); threatmodel got the matching fix for its untranslated root. **EPC layout** also reserved the back-edge routing margin (`BACK_MARGIN`) unconditionally, leaving a one-sided whitespace band on acyclic charts that pushed both content and title off-center — now only reserved when loop-back edges exist.
+
+### Changed — BPMN, state, matrix, blockdiagram join the theme system (P2)
+
+The four most-used families that still had hardcoded colors (no dark/monochrome at all) now resolve from `core/theme.ts` with all three presets:
+
+- **`BpmnTokens`** — BPMN gets a *designed* default palette per the de-facto tool colour language (Camunda/Bizagio/Signavio): green start events, red end events, amber gateway diamonds with deep-amber glyphs, blue-tinted tasks, slate pools/flows — replacing the previous all-grey look. `monochrome` is the pure OMG-spec print stance; `dark` is Catppuccin.
+- **`StateTokens`** — unifies the renderer's two hardcoded body blacks (#1a1a1a vs #2a2a2a) onto slate, keeps the conventional sticky-note yellow as a token, adds monochrome + dark.
+- **`MatrixTokens`** — the entire quadrant/heatmap/correlation/SIPOC/QFD/Punnett stylesheet (≈90 hardcoded colors) is parameterised across ~26 semantic tokens; data palettes (category colors, heat ramp, quadrant tints) deliberately stay renderer-local since they encode data semantics that hold across themes.
+- **`BlockTokens`** — role fills move from Material-Design tints onto the house Tailwind-100 tints (controller blue, sensor purple, actuator green, filter yellow, disturbance orange), aligning blockdiagram with flowchart/bpmn; monochrome + dark added.
+
+All regenerated `examples/` SVGs reflect the new styling.
 
 ### Added — flowchart auto label wrapping
 

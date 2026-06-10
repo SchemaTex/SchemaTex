@@ -37,7 +37,7 @@ function buildCss(t: BaseTheme): string {
   // matching the canonical Haddaway template.
   return `
 .prisma { font-family: system-ui, -apple-system, sans-serif; }
-.prisma-title { font: 600 17px sans-serif; fill: ${t.text}; }
+.prisma-title { font: 700 16px sans-serif; fill: ${t.text}; }
 .prisma-subtitle { font: 400 12px sans-serif; fill: ${t.textMuted}; }
 
 .prisma-stage { stroke-width: 1.1; stroke: #90a4ae; }

@@ -163,6 +163,31 @@ group boys [label: "Boys"]
       expect(svg).toContain("Boys");
       expect(svg).toContain("schematex-sociogram-group-label");
     });
+
+    it("applies the per-group class to node circles so group color survives the base CSS rule", () => {
+      const input = `sociogram
+  config: coloring = group
+group boys [label: "Boys", color: "#42A5F5"]
+    tom
+    jack
+group girls [label: "Girls", color: "#EF5350"]
+    anna
+    beth
+tom <-> jack
+anna <-> beth
+tom -.- anna
+`;
+      const svg = renderFromText(input);
+      // The stylesheet emits .schematex-sociogram-group-<id> after the base
+      // node rule; nodes must reference it or the base rule's fill wins.
+      expect(svg).toContain(".schematex-sociogram-group-boys { fill: #42A5F5");
+      expect(svg).toMatch(
+        /<circle[^>]*class="schematex-sociogram-node schematex-sociogram-group-boys"[^>]*data-node-id="tom"/
+      );
+      expect(svg).toMatch(
+        /<circle[^>]*class="schematex-sociogram-node schematex-sociogram-group-girls"[^>]*data-node-id="anna"/
+      );
+    });
   });
 
   describe("CSS styles", () => {

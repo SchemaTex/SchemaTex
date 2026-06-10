@@ -418,16 +418,73 @@ export function layoutNetwork(ast: NetworkAst): NetworkLayoutResult {
   }
 
   // 5. link geometry (straight, clipped to box boundaries)
+  // The label defaults to the midpoint, but on long diagonals the midpoint can
+  // land on an unrelated device (the label zone of a tiered layout). Try a few
+  // positions along the line and keep the first that clears every device box.
+  const labelClearsDevices = (x: number, y: number, halfW: number): boolean => {
+    const margin = 6;
+    for (const b of boxes) {
+      const e = effBox(b);
+      if (
+        x + halfW >= e.left - margin && x - halfW <= e.right + margin &&
+        y + 5 >= e.top - margin && y - 5 <= e.bottom + margin
+      ) {
+        return false;
+      }
+    }
+    return true;
+  };
+
+  // Already-placed link labels, so parallel links (e.g. two trunks fanning out
+  // of one core switch) don't stack their annotations on the same spot.
+  // Assumed extents: ~45px half-width at 9px font, 8px half-height.
+  const placedLabels: Array<{ x: number; y: number }> = [];
+  const labelClearsPlaced = (x: number, y: number): boolean =>
+    placedLabels.every((p) => Math.abs(p.x - x) > 90 || Math.abs(p.y - y) > 16);
+
   const linkGeoms: LinkGeom[] = links.map((link) => {
     const a = boxById.get(link.from)!;
     const b = boxById.get(link.to)!;
     const p1 = edgePoint(a, b.cx, b.cy);
     const p2 = edgePoint(b, a.cx, a.cy);
+    const hasAnnotation = Boolean(
+      link.label || link.speed || link.mode || (link.vlans && link.vlans.length)
+    );
+    let labelT = 0.5;
+    if (hasAnnotation) {
+      // Mirror of the renderer's annotation assembly, for width estimation only.
+      const annLen =
+        (link.mode ? link.mode.length + 3 : 0) +
+        (link.vlans && link.vlans.length ? 6 + link.vlans.join(",").length + 3 : 0) +
+        (link.speed ? link.speed.length + 3 : 0) +
+        (link.label ? link.label.length : 0);
+      const halfW = (annLen * 5.4) / 2;
+      const candidates = [0.5, 0.38, 0.62, 0.28, 0.72, 0.2, 0.8, 0.14, 0.86];
+      const at = (t: number) => ({
+        x: p1.x + (p2.x - p1.x) * t,
+        y: p1.y + (p2.y - p1.y) * t,
+      });
+      const strict = candidates.find((t) => {
+        const p = at(t);
+        return labelClearsDevices(p.x, p.y, halfW) && labelClearsPlaced(p.x, p.y);
+      });
+      // Degrade gracefully: clearing devices matters more than label spacing
+      // (the halo keeps stacked labels legible; a label on a device icon is not).
+      const relaxed = strict ?? candidates.find((t) => {
+        const p = at(t);
+        return labelClearsDevices(p.x, p.y, halfW);
+      });
+      labelT = relaxed ?? 0.5;
+      placedLabels.push({
+        x: p1.x + (p2.x - p1.x) * labelT,
+        y: p1.y + (p2.y - p1.y) * labelT,
+      });
+    }
     return {
       link,
       points: [p1, p2],
-      labelX: (p1.x + p2.x) / 2,
-      labelY: (p1.y + p2.y) / 2,
+      labelX: p1.x + (p2.x - p1.x) * labelT,
+      labelY: p1.y + (p2.y - p1.y) * labelT,
     };
   });
 

@@ -145,8 +145,22 @@ function renderNodes(
   for (const layoutNode of layout.nodes) {
     const { node, x, y, radius, computedRole } = layoutNode;
     const role = computedRole ?? node.role;
-    const cls = getNodeClass(role);
+    let cls = getNodeClass(role);
     const fill = getNodeFill(layoutNode, ast, t);
+
+    // The base `.schematex-sociogram-node` rule sets fill/stroke, which beats a
+    // fill="" presentation attribute by CSS specificity. Group coloring must
+    // therefore ride on the generated per-group class (emitted after the base
+    // rule, so it wins). Role-specific classes keep priority: only plain nodes
+    // get the group class.
+    if (
+      ast.config.coloring === "group" &&
+      node.group &&
+      cls === "schematex-sociogram-node" &&
+      ast.groups.some((g) => g.id === node.group)
+    ) {
+      cls += ` schematex-sociogram-group-${node.group}`;
+    }
 
     const attrs: Record<string, string | number | undefined> = {
       cx: x,
