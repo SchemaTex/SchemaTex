@@ -1,0 +1,36 @@
+---
+title: Fitness center — equipment zones
+description: "A gym floor: a cardio row of treadmills, a free-weights zone with benches and power racks, a mirrored yoga studio of mats, and a locker room — the equipment plan a gym operator hands the installer."
+diagram: floorplan
+standard: Architectural Graphic Standards · US NCS v6
+industry: [fitness, business]
+persona: For the gym operator zoning cardio, free weights, and studio space
+complexity: 3
+tags: [floorplan, gym, fitness, commercial, equipment]
+featured: false
+relatedLink:
+  label: Floor plan syntax
+  href: /docs/floorplan
+status: published
+dsl: |
+  floorplan "Fitness Center" unit m
+  room gym "Gym Floor" at 0,0 size 14x10 nolabel
+  room studio "Yoga Studio" right-of gym size 6x6
+  room locker "Locker Room" right-of gym below studio size 6x4
+  door gym south at 12% width 1.8 type double
+  door between gym studio at 30%
+  door between gym locker at 50%
+  grid treadmill in gym rows 1 cols 5 count 5 area 1.2,1.1 12.8,1.1 itemsize 0.9x2
+  grid weight-bench in gym rows 1 cols 4 count 4 area 2,5.5 8,5.5 itemsize 0.6x1.8
+  grid power-rack in gym rows 1 cols 2 count 2 area 10.5,5.5 12.5,5.5 itemsize 1.4x1.4
+  furniture plant in gym at 0.4,8.6
+  grid yoga-mat in studio rows 2 cols 3 count 6 area 1,1.5 5,4.5 itemsize 0.6x1.8
+  furniture lockers in locker at 0.2,0.3 size 5.6x0.45
+  furniture lockers in locker at 0.2,3.3 size 5.6x0.45
+---
+
+## What this shows
+
+`treadmill`, `weight-bench`, `power-rack`, and `yoga-mat` are the gym symbol set. Three `grid` statements zone the main floor — a cardio row along the north wall, a free-weights bank, and two power racks — while the benches' and racks' loaded-barbell envelopes reserve the lifting clearance.
+
+The mirrored studio is a `grid yoga-mat` (an underlay, like a rug, so nothing collides with it), and the locker room runs two banks of `lockers` — each zone chained off the main floor with `right-of`/`below`.

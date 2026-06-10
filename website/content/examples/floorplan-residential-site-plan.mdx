@@ -1,0 +1,36 @@
+---
+title: Residential site plan — 60 × 100 ft lot
+description: "A plot plan in feet: front and back yards, the house footprint, and a driveway tiled as non-overlapping zones, with two parked cars, four trees, and a patio table — the site view a permit needs."
+diagram: floorplan
+standard: Architectural Graphic Standards · US NCS v6
+industry: [residential, construction]
+persona: For the homeowner or builder sketching a lot for a permit set
+complexity: 3
+tags: [floorplan, site-plan, plot-plan, residential, landscape, parking]
+featured: false
+relatedLink:
+  label: Floor plan syntax
+  href: /docs/floorplan
+status: published
+dsl: |
+  floorplan "Residential Lot — 60 × 100 ft" unit ft
+  room front "Front Yard" at 0,0 size 60x34 fill #eef7e6 nolabel
+  room house "Residence" below front size 38x46
+  room drive "Driveway" right-of house size 22x46 fill #ededed
+  room yard "Back Yard" at 0,80 size 60x20 fill #eef7e6 nolabel
+  door house north at 50% width 3.5
+  door between house drive at 50% width 9 type double
+  furniture tree in front at 7,18 size 8x8
+  furniture tree in front at 45,18 size 8x8
+  furniture car in drive at 3,5 size 7x15
+  furniture car in drive at 12,5 size 7x15
+  furniture tree in yard at 6,7 size 9x9
+  furniture tree in yard at 45,7 size 9x9
+  furniture round-table-4 in yard at 26,7 size 6x6
+---
+
+## What this shows
+
+A site plan has no nested rooms — the lot is **tiled** by non-overlapping zones (`front`, `house`, `drive`, `yard`) that share edges, exactly as the engine models adjacency. The `Residence` footprint stays an empty hatched box, the way a permit set shows the building outline.
+
+`tree` and `car` are sized for the outdoors — trees in feet across the yards, two cars filling the driveway stalls — and `door between house drive` resolves the garage opening onto the shared wall. The engine prints the exterior dimension string in feet-and-inches.

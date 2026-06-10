@@ -1,0 +1,39 @@
+---
+title: Open-plan office — 18 workstations
+description: "A coworking floor: three rows of six L-desk workstations, a conference room and a break area off the open floor, lockers and filing, with double egress and sliding clerestory windows."
+diagram: floorplan
+standard: Architectural Graphic Standards · US NCS v6
+industry: [business, technology]
+persona: For the office manager fitting a team into an open floor before the lease
+complexity: 3
+tags: [floorplan, office, coworking, workspace, commercial, desks]
+featured: false
+relatedLink:
+  label: Floor plan syntax
+  href: /docs/floorplan
+status: published
+dsl: |
+  floorplan "Open-Plan Office — 18 Workstations" unit m
+  room work "Open Workspace" at 0,0 size 16x10
+  room meet "Conference Room" right-of work size 5x5
+  room break "Break Area" right-of work below meet size 5x5
+  door work south at 50% width 1.8 type double
+  door between work meet at 30%
+  door between work break at 30%
+  window work north at 25% width 2 type sliding
+  window work north at 75% width 2 type sliding
+  grid desk-l in work rows 3 cols 6 count 18 area 1.8,1.8 14.2,8.2 itemsize 1.6x1.6
+  furniture lockers in work at 0.2,9.4 size 3x0.45
+  furniture filing-cabinet in work at 14.6,9.2
+  furniture conference-table in meet at 0.9,1.5 size 3.2x1.6
+  furniture smartboard in meet at 0.06,1.5 size 0.12x1.6
+  furniture counter in break at 0.2,0.2 size 4.4x0.6
+  furniture fridge in break at 0.2,1.2
+  furniture round-table-4 in break at 1.7,2.4
+---
+
+## What this shows
+
+Eighteen corner workstations come from one `grid desk-l` — each L-desk draws its own task chair, and the grid's `area` corners are the centres of the first and last desk, so the 2.5 m column pitch leaves a clear circulation lane between rows.
+
+Two service rooms hang off the open floor with `right-of`/`below` chaining; the `conference-table` and `round-table-4` auto-seat their edges, and the validator guarantees nothing — locker run, filing, fridge — strays past a wall or into a desk.

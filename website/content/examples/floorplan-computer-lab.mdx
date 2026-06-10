@@ -1,0 +1,29 @@
+---
+title: Computer lab — 24 stations
+description: "An ICT classroom: a 6×4 grid of desk-chair workstations truncated to exactly 24 seats, an instructor desk, and a wall whiteboard — the seating chart a school IT coordinator hands to facilities."
+diagram: floorplan
+standard: Architectural Graphic Standards · US NCS v6
+industry: [education]
+persona: For the teacher or IT coordinator arranging a computer lab
+complexity: 2
+tags: [floorplan, classroom, computer-lab, education, seating]
+featured: false
+relatedLink:
+  label: Floor plan syntax
+  href: /docs/floorplan
+status: published
+dsl: |
+  floorplan "Computer Lab — 24 Stations" unit m
+  room lab "Computer Lab" at 0,0 size 12x8 nolabel
+  door lab south at 12% width 1.6
+  window lab east at 50% width 4 type sliding
+  furniture whiteboard in lab at 4,0.2 size 4x0.3
+  furniture desk "Instructor" in lab at 0.4,0.9 size 1.6x0.8
+  grid desk-chair in lab rows 4 cols 6 count 24 area 1.4,3.1 10.6,7.3 itemsize 1.4x1.2
+---
+
+## What this shows
+
+A single `grid desk-chair` lays out the lab: six columns, four rows, `count 24` truncating row-major so the last cells are dropped cleanly rather than overflowing. Each `desk-chair` draws a desk with its chair tucked in front.
+
+The `whiteboard` sits flush to the front wall as a thin solid bar, the instructor `desk` anchors the corner, and `window … east type sliding` brings daylight down one side — every piece checked to stay inside the room.

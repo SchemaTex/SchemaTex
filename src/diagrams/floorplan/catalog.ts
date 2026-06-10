@@ -989,6 +989,237 @@ export const FLOORPLAN_SYMBOLS: Record<FurnitureType, SymbolDef> = {
       return parts.join("");
     },
   },
+
+  // ── retail ──
+  // Gondola run: a long fixture with a back-to-back spine and product bays.
+  shelving: {
+    w: 1.8,
+    h: 0.6,
+    draw: (c) => {
+      const parts = [box(c)];
+      parts.push(line({ class: "sx-fp-furn-line", x1: 0, y1: c.px(c.h / 2), x2: c.px(c.w), y2: c.px(c.h / 2) }));
+      const n = Math.max(2, Math.round(c.w / 0.45));
+      for (let i = 1; i < n; i++) {
+        const x = c.px((c.w * i) / n);
+        parts.push(line({ class: "sx-fp-furn-line", x1: x, y1: 0, x2: x, y2: c.px(c.h) }));
+      }
+      return parts.join("");
+    },
+  },
+  // POS counter with a register block and a belt line.
+  checkout: {
+    w: 1.6,
+    h: 0.7,
+    draw: (c) =>
+      [
+        box(c),
+        rect({ class: "sx-fp-furn-solid", x: c.px(c.w - 0.5), y: c.px(0.12), width: c.px(0.34), height: c.px(0.3), rx: c.px(0.04) }),
+        line({ class: "sx-fp-furn-line", x1: c.px(0.12), y1: c.px(c.h * 0.6), x2: c.px(c.w - 0.62), y2: c.px(c.h * 0.6) }),
+      ].join(""),
+  },
+  // Round garment rack: rail circle with radial hanger ticks.
+  "clothing-rack": {
+    w: 1.0,
+    h: 1.0,
+    draw: (c) => {
+      const r = Math.min(c.w, c.h) / 2;
+      const cx = c.w / 2;
+      const cy = c.h / 2;
+      const parts = [
+        circle({ class: "sx-fp-furn-nofill", cx: c.px(cx), cy: c.px(cy), r: c.px(r) }),
+        circle({ class: "sx-fp-furn-dot", cx: c.px(cx), cy: c.px(cy), r: c.px(0.04) }),
+      ];
+      for (const a of [0, 45, 90, 135, 180, 225, 270, 315]) {
+        const rad = (a * Math.PI) / 180;
+        parts.push(
+          line({
+            class: "sx-fp-furn-line",
+            x1: c.px(cx + (r - 0.09) * Math.cos(rad)),
+            y1: c.px(cy + (r - 0.09) * Math.sin(rad)),
+            x2: c.px(cx + r * Math.cos(rad)),
+            y2: c.px(cy + r * Math.sin(rad)),
+          })
+        );
+      }
+      return parts.join("");
+    },
+  },
+  // Changing booth: bench at the back, a mirror strip, a dashed curtain at the opening.
+  "fitting-room": {
+    w: 1.1,
+    h: 1.1,
+    draw: (c) =>
+      [
+        rect({ class: "sx-fp-furn-nofill", x: 0, y: 0, width: c.px(c.w), height: c.px(c.h) }),
+        rect({ class: "sx-fp-furn", x: c.px(0.12), y: c.px(0.12), width: c.px(c.w - 0.24), height: c.px(0.28), rx: c.px(0.04) }),
+        line({ class: "sx-fp-furn-dash", x1: 0, y1: c.px(c.h), x2: c.px(c.w), y2: c.px(c.h) }),
+        rect({ class: "sx-fp-furn-solid", x: c.px(c.w - 0.06), y: c.px(c.h * 0.5), width: c.px(0.04), height: c.px(c.h * 0.35) }),
+      ].join(""),
+  },
+
+  // ── warehouse / industrial ──
+  // Pallet racking: an open frame with bay dividers and cross-bracing.
+  "pallet-rack": {
+    w: 2.7,
+    h: 1.1,
+    draw: (c) => {
+      const parts = [rect({ class: "sx-fp-furn-nofill", x: 0, y: 0, width: c.px(c.w), height: c.px(c.h) })];
+      const bays = Math.max(2, Math.round(c.w / 1.35));
+      for (let i = 0; i < bays; i++) {
+        const x0 = (c.w * i) / bays;
+        const x1 = (c.w * (i + 1)) / bays;
+        if (i > 0) parts.push(line({ class: "sx-fp-furn-line", x1: c.px(x0), y1: 0, x2: c.px(x0), y2: c.px(c.h) }));
+        parts.push(line({ class: "sx-fp-furn-line", x1: c.px(x0), y1: 0, x2: c.px(x1), y2: c.px(c.h) }));
+        parts.push(line({ class: "sx-fp-furn-line", x1: c.px(x1), y1: 0, x2: c.px(x0), y2: c.px(c.h) }));
+      }
+      return parts.join("");
+    },
+  },
+  // Dock door: roll-up door segments with two bumpers at the outer face.
+  "loading-dock": {
+    w: 3.0,
+    h: 0.6,
+    draw: (c) => {
+      const parts = [box(c)];
+      const n = Math.max(3, Math.round(c.w / 0.5));
+      for (let i = 1; i < n; i++) {
+        const x = c.px((c.w * i) / n);
+        parts.push(line({ class: "sx-fp-furn-line", x1: x, y1: 0, x2: x, y2: c.px(c.h) }));
+      }
+      parts.push(rect({ class: "sx-fp-furn-solid", x: c.px(0.12), y: c.px(c.h - 0.12), width: c.px(0.3), height: c.px(0.1) }));
+      parts.push(rect({ class: "sx-fp-furn-solid", x: c.px(c.w - 0.42), y: c.px(c.h - 0.12), width: c.px(0.3), height: c.px(0.1) }));
+      return parts.join("");
+    },
+  },
+  // Counterbalance forklift silhouette: body, mast forks at the front, operator seat.
+  forklift: {
+    w: 1.2,
+    h: 2.2,
+    draw: (c) =>
+      [
+        rect({ class: "sx-fp-furn", x: c.px(0.15), y: c.px(0.42), width: c.px(c.w - 0.3), height: c.px(c.h - 0.72), rx: c.px(0.06) }),
+        rect({ class: "sx-fp-furn-solid", x: c.px(0.25), y: 0, width: c.px(0.12), height: c.px(0.42) }),
+        rect({ class: "sx-fp-furn-solid", x: c.px(c.w - 0.37), y: 0, width: c.px(0.12), height: c.px(0.42) }),
+        circle({ class: "sx-fp-furn-line", cx: c.px(c.w / 2), cy: c.px(c.h - 0.62), r: c.px(0.18) }),
+      ].join(""),
+  },
+
+  // ── salon / spa ──
+  // Styling station: back counter with a mirror strip and a chair facing it.
+  "salon-chair": {
+    w: 0.8,
+    h: 1.4,
+    draw: (c) =>
+      [
+        rect({ class: "sx-fp-furn", x: 0, y: 0, width: c.px(c.w), height: c.px(0.32), rx: c.px(0.03) }),
+        rect({ class: "sx-fp-furn-solid", x: c.px(0.08), y: c.px(0.05), width: c.px(c.w - 0.16), height: c.px(0.05) }),
+        circle({ class: "sx-fp-furn", cx: c.px(c.w / 2), cy: c.px(c.h * 0.64), r: c.px(Math.min(c.w, 0.62) / 2) }),
+        circle({ class: "sx-fp-furn-line", cx: c.px(c.w / 2), cy: c.px(c.h * 0.64), r: c.px(0.08) }),
+      ].join(""),
+  },
+  // Backwash unit: a reclining chair with a wash basin at the head end.
+  "shampoo-bowl": {
+    w: 0.9,
+    h: 1.5,
+    draw: (c) =>
+      [
+        rect({ class: "sx-fp-furn", x: c.px(0.1), y: c.px(0.5), width: c.px(c.w - 0.2), height: c.px(c.h - 0.6), rx: c.px(0.08) }),
+        circle({ class: "sx-fp-furn", cx: c.px(c.w / 2), cy: c.px(0.4), r: c.px(0.32) }),
+        circle({ class: "sx-fp-furn-line", cx: c.px(c.w / 2), cy: c.px(0.4), r: c.px(0.12) }),
+        circle({ class: "sx-fp-furn-dot", cx: c.px(c.w / 2), cy: c.px(0.12), r: c.px(0.04) }),
+      ].join(""),
+  },
+  // Manicure table: a small table with a client and a technician chair.
+  "manicure-table": {
+    w: 1.0,
+    h: 0.5,
+    envelope: [CHAIR_GAP + CHAIR_D, 0, CHAIR_GAP + CHAIR_D, 0],
+    draw: (c) => [box(c), chairAt(c.px, c.w / 2, -CHAIR_GAP, 0), chairAt(c.px, c.w / 2, c.h + CHAIR_GAP, 180)].join(""),
+  },
+
+  // ── gym / fitness ──
+  // Treadmill: a deck with a running belt and a console at the front.
+  treadmill: {
+    w: 0.9,
+    h: 2.0,
+    draw: (c) =>
+      [
+        box(c, "sx-fp-furn", 0.05),
+        rect({ class: "sx-fp-furn-line", x: c.px(0.12), y: c.px(0.5), width: c.px(c.w - 0.24), height: c.px(c.h - 0.65), rx: c.px(0.04) }),
+        rect({ class: "sx-fp-furn-solid", x: c.px(0.1), y: c.px(0.08), width: c.px(c.w - 0.2), height: c.px(0.16), rx: c.px(0.03) }),
+      ].join(""),
+  },
+  // Flat bench with upright posts and a loaded barbell crossing it.
+  "weight-bench": {
+    w: 0.6,
+    h: 1.8,
+    envelope: [0, 0.35, 0, 0.35],
+    draw: (c) =>
+      [
+        rect({ class: "sx-fp-furn", x: c.px(c.w / 2 - 0.12), y: c.px(0.3), width: c.px(0.24), height: c.px(c.h - 0.4), rx: c.px(0.05) }),
+        rect({ class: "sx-fp-furn-solid", x: c.px(0.06), y: c.px(0.18), width: c.px(0.1), height: c.px(0.1) }),
+        rect({ class: "sx-fp-furn-solid", x: c.px(c.w - 0.16), y: c.px(0.18), width: c.px(0.1), height: c.px(0.1) }),
+        line({ class: "sx-fp-furn-line", x1: c.px(-0.3), y1: c.px(0.23), x2: c.px(c.w + 0.3), y2: c.px(0.23) }),
+      ].join(""),
+  },
+  // Power rack: a square frame with four corner posts and a barbell.
+  "power-rack": {
+    w: 1.4,
+    h: 1.4,
+    envelope: [0, 0.3, 0, 0.3],
+    draw: (c) => {
+      const post = 0.14;
+      const corners: Array<[number, number]> = [
+        [0, 0],
+        [c.w - post, 0],
+        [0, c.h - post],
+        [c.w - post, c.h - post],
+      ];
+      const parts = [rect({ class: "sx-fp-furn-nofill", x: 0, y: 0, width: c.px(c.w), height: c.px(c.h) })];
+      for (const [px0, py0] of corners) {
+        parts.push(rect({ class: "sx-fp-furn-solid", x: c.px(px0), y: c.px(py0), width: c.px(post), height: c.px(post) }));
+      }
+      parts.push(line({ class: "sx-fp-furn-line", x1: c.px(-0.28), y1: c.px(c.h * 0.4), x2: c.px(c.w + 0.28), y2: c.px(c.h * 0.4) }));
+      return parts.join("");
+    },
+  },
+  // Exercise mat — an underlay surface, like a rug.
+  "yoga-mat": {
+    w: 0.6,
+    h: 1.8,
+    underlay: true,
+    draw: (c) => rect({ class: "sx-fp-furn-dash", x: 0, y: 0, width: c.px(c.w), height: c.px(c.h), rx: c.px(0.08) }),
+  },
+
+  // ── site / outdoor ──
+  // Tree in plan: a canopy disc with a foliage ring and a trunk dot.
+  tree: {
+    w: 2.0,
+    h: 2.0,
+    draw: (c) => {
+      const r = Math.min(c.w, c.h) / 2;
+      return [
+        circle({ class: "sx-fp-furn", cx: c.px(c.w / 2), cy: c.px(c.h / 2), r: c.px(r) }),
+        circle({ class: "sx-fp-furn-line", cx: c.px(c.w / 2), cy: c.px(c.h / 2), r: c.px(r * 0.6) }),
+        circle({ class: "sx-fp-furn-dot", cx: c.px(c.w / 2), cy: c.px(c.h / 2), r: c.px(0.07) }),
+      ].join("");
+    },
+  },
+  // Car in plan (parking-stall footprint): body, glazing lines, four wheels.
+  car: {
+    w: 1.8,
+    h: 4.4,
+    draw: (c) => {
+      const parts = [rect({ class: "sx-fp-furn", x: c.px(0.12), y: c.px(0.1), width: c.px(c.w - 0.24), height: c.px(c.h - 0.2), rx: c.px(0.35) })];
+      parts.push(line({ class: "sx-fp-furn-line", x1: c.px(0.3), y1: c.px(c.h * 0.26), x2: c.px(c.w - 0.3), y2: c.px(c.h * 0.26) }));
+      parts.push(line({ class: "sx-fp-furn-line", x1: c.px(0.3), y1: c.px(c.h * 0.72), x2: c.px(c.w - 0.3), y2: c.px(c.h * 0.72) }));
+      for (const wy of [c.h * 0.3, c.h * 0.7]) {
+        parts.push(rect({ class: "sx-fp-furn-solid", x: 0, y: c.px(wy - 0.18), width: c.px(0.14), height: c.px(0.36), rx: c.px(0.03) }));
+        parts.push(rect({ class: "sx-fp-furn-solid", x: c.px(c.w - 0.14), y: c.px(wy - 0.18), width: c.px(0.14), height: c.px(0.36), rx: c.px(0.03) }));
+      }
+      return parts.join("");
+    },
+  },
 };
 
 export const FURNITURE_TYPES = Object.keys(FLOORPLAN_SYMBOLS) as readonly FurnitureType[];

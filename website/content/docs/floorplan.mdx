@@ -100,7 +100,7 @@ furniture desk "Teacher" in class at 2,1.5 size 5x2.5 rotate 20
 furniture counter "Cubbies" in class at 6,24.4 size 10x1.2
 ```
 
-The catalog covers four demand clusters (sizes default to industry-standard footprints):
+The catalog spans residential, commercial, and site work (sizes default to industry-standard footprints):
 
 | Cluster | Types |
 | --- | --- |
@@ -108,9 +108,14 @@ The catalog covers four demand clusters (sizes default to industry-standard foot
 | Kitchen / bath | `counter` `wall-cabinet` `kitchen-sink` `stove` `range-hood` `fridge` `dishwasher` `island` `bar-stool` `toilet` `sink` `vanity` `bidet` `urinal` `bathtub` `shower` `washer` `dryer` |
 | Classroom / office | `desk-chair` `desk` `desk-l` `chair` `whiteboard` `smartboard` `bookcase` `cubbies` `filing-cabinet` `lockers` `kidney-table` `round-table-4/6/8/10` `conference-table` |
 | Event / banquet | `banquet-table` `head-table` `stage` `dance-floor` `bar` `dj-booth` `cocktail-table` `podium` `row-chairs` |
+| Retail / warehouse | `shelving` `checkout` `clothing-rack` `fitting-room` `pallet-rack` `loading-dock` `forklift` |
+| Salon / gym | `salon-chair` `shampoo-bowl` `manicure-table` `treadmill` `weight-bench` `power-rack` `yoga-mat` |
 | Stairs / structural | `stairs` `stairs-l` `stairs-u` `spiral-stairs` `elevator` `column` |
+| Site / outdoor | `tree` `car` |
 
-**Auto-seating** is built in: `round-table-8` draws 8 chairs on its circumference (60″ top; `round-table-10` uses 72″), `dining-table` / `banquet-table` / `conference-table` seat both long edges at one chair per 0.65 m, `head-table` seats one side facing the room, and `row-chairs` places a theater strip at 0.55 m pitch. `rug`, `dance-floor`, `counter`, `island`, `wall-cabinet`, `range-hood`, and `ceiling-fan` are underlays/overheads — other furniture can overlap them without a collision warning.
+**Auto-seating** is built in: `round-table-8` draws 8 chairs on its circumference (60″ top; `round-table-10` uses 72″), `dining-table` / `banquet-table` / `conference-table` seat both long edges at one chair per 0.65 m, `head-table` seats one side facing the room, `manicure-table` seats a client and technician chair, and `row-chairs` places a theater strip at 0.55 m pitch. `rug`, `dance-floor`, `yoga-mat`, `counter`, `island`, `wall-cabinet`, `range-hood`, and `ceiling-fan` are underlays/overheads — other furniture can overlap them without a collision warning.
+
+`tree` and `car` are sized for the outdoors (canopy disc, parking-stall footprint), so a **site plan** is just zones tiled as adjacent rooms — front yard, house footprint, driveway, back yard — with trees and parked cars placed on top.
 
 **Stairs** follow the drafting conventions: tread lines at 0.28 m (11″), a direction arrow starting at the lowest tread labeled `UP` (give the item a `"DN"` label for a descending run), and the 45° zigzag break line at the imaginary 4-ft cut plane, with dashed treads beyond. `stairs` is a straight run (orient with `size`/`rotate`), `stairs-l` turns 90° over a landing, `stairs-u` switches back 180°, `spiral-stairs` is a circle with radial treads and a center pole.
 

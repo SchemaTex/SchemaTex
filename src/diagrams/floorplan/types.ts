@@ -124,7 +124,28 @@ export type FurnitureType =
   | "dj-booth"
   | "cocktail-table"
   | "podium"
-  | "row-chairs";
+  | "row-chairs"
+  // retail
+  | "shelving"
+  | "checkout"
+  | "clothing-rack"
+  | "fitting-room"
+  // warehouse / industrial
+  | "pallet-rack"
+  | "loading-dock"
+  | "forklift"
+  // salon / spa
+  | "salon-chair"
+  | "shampoo-bowl"
+  | "manicure-table"
+  // gym / fitness
+  | "treadmill"
+  | "weight-bench"
+  | "power-rack"
+  | "yoga-mat"
+  // site / outdoor
+  | "tree"
+  | "car";
 
 // ─── AST ─────────────────────────────────────────────────────────
 

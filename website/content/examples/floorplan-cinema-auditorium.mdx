@@ -1,0 +1,29 @@
+---
+title: Cinema auditorium — 96 seats
+description: "A movie-theatre layout: two banks of theatre row-chairs (exactly 96 countable seats) with a centre aisle, a full-width screen, and dual egress — the capacity-planning view a venue actually signs off."
+diagram: floorplan
+standard: Architectural Graphic Standards · US NCS v6
+industry: [entertainment, business]
+persona: For the cinema operator checking seat count and egress before a fit-out
+complexity: 2
+tags: [floorplan, cinema, theatre, seating, venue, auditorium]
+featured: false
+relatedLink:
+  label: Floor plan syntax
+  href: /docs/floorplan
+status: published
+dsl: |
+  floorplan "Cinema Auditorium — 96 Seats" unit m
+  room house "Auditorium" at 0,0 size 16x12 nolabel
+  door house south at 10% width 1.6
+  door house south at 90% width 1.6
+  furniture stage "Screen" in house at 1,0.4 size 14x0.5
+  grid row-chairs in house rows 8 cols 1 count 8 area 4.25,2.6 4.25,9.8 itemsize 3.5x0.5
+  grid row-chairs in house rows 8 cols 1 count 8 area 11.75,2.6 11.75,9.8 itemsize 3.5x0.5
+---
+
+## What this shows
+
+Each `row-chairs` strip fills its width with chairs at a 0.55 m theatre pitch, so a 3.5 m strip is six seats; eight rows in two banks make exactly 96. Change `itemsize` width and the seat count follows — the engine never leaves a phantom seat the box can't hold.
+
+The centre aisle is just the gap between the two banks' `area` centre-lines; the `stage` stands in for the screen wall, and the two narrow `door … south` openings are the mandated exits.

@@ -1,0 +1,33 @@
+---
+title: Hotel grand ballroom — 120 guests
+description: "A banquet hall the venue can execute: twelve 60″ rounds auto-seated at ten covers each, a stage, a hatched dance floor, a DJ booth, a buffet line, and a bar — all collision-checked."
+diagram: floorplan
+standard: Architectural Graphic Standards · US NCS v6
+industry: [hospitality, business]
+persona: For the hotel banquet manager laying out a gala the kitchen and AV teams can read
+complexity: 3
+tags: [floorplan, banquet, event, hospitality, ballroom, wedding]
+featured: false
+relatedLink:
+  label: Floor plan syntax
+  href: /docs/floorplan
+status: published
+dsl: |
+  floorplan "Grand Ballroom — 120 Guests" unit m
+  room hall "Grand Ballroom" at 0,0 size 26x18 nolabel
+  door hall south at 20% width 1.8 type double
+  door hall south at 80% width 1.8 type double
+  furniture stage "Stage" in hall at 9,0.3 size 8x2.2
+  furniture dance-floor "Dance Floor" in hall at 10.5,3.4 size 5x5
+  furniture dj-booth in hall at 12,8.8 size 1.4x1
+  furniture bar "Bar" in hall at 22.4,0.4 size 3x1
+  furniture counter "Buffet" in hall at 1,16.8 size 8x0.7
+  grid round-table-10 in hall rows 3 cols 2 count 6 area 2.6,4.8 7.6,14.6 itemsize 2.6x2.6
+  grid round-table-10 in hall rows 3 cols 2 count 6 area 18.4,4.8 23.4,14.6 itemsize 2.6x2.6
+---
+
+## What this shows
+
+Twelve `round-table-10` come from two `grid` statements — each table auto-seats ten chairs on its circumference, and the chair-ring envelope keeps the service aisles honest: pull two tables together and the validator reports the overlap in metres.
+
+The hero pieces — `stage`, the hatched `dance-floor` underlay, `dj-booth`, `bar`, and a `counter` doubling as the buffet line — are placed individually, while the dual `door … south type double` gives the room its two egress points.

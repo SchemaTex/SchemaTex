@@ -1,0 +1,40 @@
+---
+title: Hair salon & spa
+description: "A salon floor: four styling stations, a manicure row, a wash area with two shampoo bowls, reception and a waiting sofa, plus a restroom — the layout a salon owner plans before the lease build."
+diagram: floorplan
+standard: Architectural Graphic Standards · US NCS v6
+industry: [beauty, retail]
+persona: For the salon owner laying out stations and the wash area
+complexity: 3
+tags: [floorplan, salon, spa, beauty, commercial]
+featured: false
+relatedLink:
+  label: Floor plan syntax
+  href: /docs/floorplan
+status: published
+dsl: |
+  floorplan "Hair Salon & Spa" unit m
+  room salon "Salon Floor" at 0,0 size 11x7
+  room wash "Wash Area" right-of salon size 4x4
+  room rest "Restroom" right-of salon below wash size 4x3
+  door salon south at 15% width 1.8 type double
+  door between salon wash at 40%
+  door between salon rest at 50%
+  window salon south at 60% width 3
+  furniture counter "Reception" in salon at 0.3,0.3 size 2.5x0.7
+  furniture sofa "Waiting" in salon at 0.3,1.7
+  furniture plant in salon at 0.3,6.0
+  grid salon-chair in salon rows 1 cols 4 count 4 area 3.6,1.0 9.6,1.0 itemsize 0.8x1.4
+  grid manicure-table in salon rows 1 cols 3 count 3 area 4,5.4 9,5.4 itemsize 1x0.5
+  furniture shampoo-bowl in wash at 0.4,0.3 size 0.9x1.5
+  furniture shampoo-bowl in wash at 1.6,0.3 size 0.9x1.5
+  furniture salon-chair in wash at 2.9,2.2 size 0.8x1.4
+  furniture toilet in rest at 0.2,0.15
+  furniture sink in rest at 1.3,0.15
+---
+
+## What this shows
+
+`salon-chair` (a styling station with its mirror), `shampoo-bowl` (a backwash unit), and `manicure-table` (a table with two facing chairs) are the salon symbol set. Four stations come from one `grid` along the front, a three-seat manicure row from another.
+
+The wash area off the main floor pairs two shampoo bowls; reception, a waiting `sofa`, and a `plant` fill the entry — and the manicure tables' chair envelopes keep the aisle between the rows clear.

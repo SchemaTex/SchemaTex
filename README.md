@@ -673,7 +673,7 @@ consequence "Vapour cloud explosion"
 
 ### 🏠 Floor plan — *Architectural Graphic Standards plan view*
 
-Rooms with real dimensions become poché walls with automatic shared-wall merging; doors get standard swing arcs, windows get glazing lines, and a 74-symbol furniture catalog auto-seats its tables (a `round-table-8` *is* 8 countable chairs). L/T/U-shaped rooms via `extend`, stairs with the UP arrow + cut-plane break line, and validation that catches what LLMs actually get wrong — overlapping rooms, doors on non-shared walls, colliding furniture (chair-ring envelopes included).
+Rooms with real dimensions become poché walls with automatic shared-wall merging; doors get standard swing arcs, windows get glazing lines, and a 93-symbol furniture catalog — residential, kitchen/bath, classroom/office, event/banquet, retail/warehouse, salon/gym, and site/outdoor (`tree`, `car`) — auto-seats its tables (a `round-table-8` *is* 8 countable chairs). L/T/U-shaped rooms via `extend`, stairs with the UP arrow + cut-plane break line, and validation that catches what LLMs actually get wrong — overlapping rooms, doors on non-shared walls, colliding furniture (chair-ring envelopes included).
 
 ```
 floorplan "Two-Bedroom Apartment — 68 m²" unit m

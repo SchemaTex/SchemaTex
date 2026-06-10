@@ -69,7 +69,10 @@ Full vocabulary specified now (DSL/types never change to add more); **v0.1 colum
 **Classroom / office** — all ✅: `desk-chair` (student unit) `desk` (teacher/office, auto chair) `desk-l` (corner workstation) `chair` `whiteboard` (wall-mounted run) `smartboard` `bookcase` `cubbies` (= labeled `counter`) `filing-cabinet` `lockers` `kidney-table` `round-table-4/6/8/10` `conference-table`.
 **Event / banquet** — all ✅ v0.1: `round-table-6` (60″ default) `round-table-8` (60″) `round-table-10` (72″) `banquet-table` (8′ rect, seats both sides) `head-table` `stage` `dance-floor` (diagonal hatch) `bar` `dj-booth` `cocktail-table` (30″ high-top, no chairs) `podium` `row-chairs` (theater seating strip).
 **Stairs / structural** — all ✅: `stairs` `stairs-l` `stairs-u` `spiral-stairs` `elevator` `column`.
-**Deferred** ⬜: gym equipment, retail fixtures, restaurant booths, hospital bed, outdoor/patio (deck, fence, tree, pool) — add by demand evidence.
+**Retail / warehouse** — all ✅ (0.9.3): `shelving` (gondola run, back-to-back spine + bays) `checkout` (POS counter + register) `clothing-rack` (round rail) `fitting-room` (booth + bench + curtain) `pallet-rack` (open frame, X-braced bays) `loading-dock` (roll-up door + bumpers) `forklift`.
+**Salon / gym** — all ✅ (0.9.3): `salon-chair` (styling station + mirror) `shampoo-bowl` (backwash unit) `manicure-table` (auto-seats client + technician) `treadmill` `weight-bench` (auto barbell) `power-rack` `yoga-mat` (underlay).
+**Site / outdoor** — ✅ (0.9.3): `tree` (canopy disc) `car` (parking-stall footprint). A site/plot plan tiles the lot as adjacent zones (front yard · house footprint · driveway · back yard) with trees and cars on top.
+**Deferred** ⬜: restaurant booths, hospital/dental beds & chairs, deck/fence/pool landscape fixtures — add by demand evidence.
 
 Symbols are original line art following AGS plan-view silhouettes (same stance as network vs Cisco icons): thin stroke, white fill, no inline styles, themable via CSS classes (`stx-floorplan-wall`, `stx-floorplan-furniture`, `stx-floorplan-label`, …).
 
@@ -80,6 +83,7 @@ Symbols are original line art following AGS plan-view silhouettes (same stance a
 | `round-table-N` | N chairs auto-distributed on the circumference; default diameter 60″ for N≤8, 72″ for N=10 |
 | `dining-table` / `banquet-table` / `conference-table` | chairs auto-placed per 0.65 m of long edge, both sides |
 | `head-table` | chairs one side only (facing the room) |
+| `manicure-table` | one client chair + one technician chair, facing across the table |
 | `row-chairs` | chairs at fixed 0.55 m pitch along the strip |
 
 ---
