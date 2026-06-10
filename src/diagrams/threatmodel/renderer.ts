@@ -110,7 +110,7 @@ export function renderThreatModelLayout(
   if (layout.ast.title) {
     inner.push(
       svgText(
-        { x: width / 2, y: 24, class: "sx-tm-title", "font-family": fontFamily, "text-anchor": "middle" },
+        { x: layout.width / 2, y: 24, class: "sx-tm-title", "font-family": fontFamily, "text-anchor": "middle" },
         layout.ast.title
       )
     );

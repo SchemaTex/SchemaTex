@@ -90,7 +90,7 @@ export function renderEventTreeLayout(layout: EventTreeLayoutResult, config?: Re
 
   // ── Title ──
   if (ast.title) {
-    inner.push(svgText({ x: width / 2, y: C.CANVAS_PAD + 4, class: "sx-et-title", "font-family": fontFamily, "text-anchor": "middle" }, ast.title));
+    inner.push(svgText({ x: layout.width / 2, y: C.CANVAS_PAD + 4, class: "sx-et-title", "font-family": fontFamily, "text-anchor": "middle" }, ast.title));
   }
 
   // ── Header band (text + a thin rule beneath) ──

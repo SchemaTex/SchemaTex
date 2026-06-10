@@ -105,7 +105,7 @@ export function renderCausalLoopLayout(
   if (ast.title) {
     inner.push(
       svgText(
-        { x: width / 2, y: 20, class: "sx-cld-title", "font-family": fontFamily, "text-anchor": "middle" },
+        { x: layout.width / 2, y: 20, class: "sx-cld-title", "font-family": fontFamily, "text-anchor": "middle" },
         ast.title
       )
     );

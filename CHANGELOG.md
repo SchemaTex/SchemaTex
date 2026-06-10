@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [0.10.0] — 2026-06-09
+## [0.9.2] — 2026-06-09
 
 Style-audit release: a full visual audit of all 45 families (code + rendered output) produced three tiers of fixes. Before/after for every item: `preview/style-audit-fixes.html`.
 
@@ -26,6 +26,8 @@ Single text-width estimator for all layouts: char-class weighted sum (full-width
 ### Changed — one title style across every family (P1)
 
 New `TITLE` token in `core/theme.ts` (16px / 700 / centered). Previously titles drifted per family — faulttree left-aligned, bowtie/erd/epc ~13px left, flowchart 600/14px centered, prisma 17px, decisiontree/orgchart weight 500, ladder/blockdiagram 15px, pid/state 600/14px. Sixteen families normalized to the house style (gallery pages no longer show three different title treatments side by side). FBD's monospace IEC header style is intentionally exempt.
+
+**Centered on content, not canvas.** Six families (epc, bowtie, eventtree, faulttree, idef0, causalloop) draw the title *inside* a `translate(pad, pad)` content group but were centering it at `width / 2` (canvas center) — so the title landed one padding-width (~20px) right of the actual content. Fixed to `layout.width / 2` (content-area center); threatmodel got the matching fix for its untranslated root. **EPC layout** also reserved the back-edge routing margin (`BACK_MARGIN`) unconditionally, leaving a one-sided whitespace band on acyclic charts that pushed both content and title off-center — now only reserved when loop-back edges exist.
 
 ### Changed — BPMN, state, matrix, blockdiagram join the theme system (P2)
 
