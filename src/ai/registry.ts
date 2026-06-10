@@ -21,7 +21,8 @@ export type DiagramCluster =
   | "project-management"
   | "network-infrastructure"
   | "software-uml"
-  | "risk-reliability";
+  | "risk-reliability"
+  | "architecture";
 
 export interface DiagramMeta {
   /** Canonical type id — matches `DiagramType` and plugin keys. */
@@ -680,6 +681,40 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
       "weld dimensions",
     ],
   },
+  {
+    type: "floorplan",
+    name: "Floor plan",
+    tagline:
+      "2D architectural floor plans & space layouts — poch\u00e9 walls with automatic shared-wall merging, door swing arcs, windows, and an auto-seating furniture catalog with collision validation.",
+    useWhen:
+      "Use for any measurable room/space layout: apartments and small homes, classroom seating arrangements, wedding/event floor plans, small shops and offices. Declare rooms with real dimensions (`room living at 0,0 size 5.2x4.2`, `unit m|ft`), chain placement with right-of/below, hang doors/windows on walls (`door between A B at 50%`), and place furniture room-relative \u2014 individually or as `grid`/`row`/`arc` arrays (27-desk classroom, 15 banquet rounds). L/T/U-shaped rooms via `extend`, stairs (straight/L/U/spiral with UP arrow + cut-plane break line), bifold/sliding/pocket doors, casement/sliding/bay windows, north compass. The engine merges shared walls, computes room areas and dimension lines, auto-seats tables, and validates room overlap, non-adjacent doors, and furniture collisions (chair-ring envelopes included). Not for photorealistic renders or CAD construction documents.",
+    cluster: "architecture",
+    standard:
+      "Ramsey & Sleeper Architectural Graphic Standards · US National CAD Standard v6 \u00b7 banquet-industry capacity conventions; see 48-FLOORPLAN-STANDARD.md",
+    syntaxKey: "floorplan",
+    aliases: [
+      "Floor plan",
+      "floorplan",
+      "room layout",
+      "space plan",
+      "seating chart",
+      "classroom layout",
+      "event layout",
+      "\u5e73\u9762\u56fe",
+      "\u6237\u578b\u56fe",
+    ],
+    keywords: [
+      "floor plan",
+      "architecture",
+      "interior layout",
+      "room dimensions",
+      "seating arrangement",
+      "wedding reception layout",
+      "classroom seating",
+      "furniture placement",
+      "space planning",
+    ],
+  },
 ] as const;
 
 /**
@@ -748,6 +783,8 @@ export const DIAGRAM_SINCE: Readonly<Record<DiagramType, string>> = {
   threatmodel: "0.8.0",
   // 0.8.1 — welding symbols (AWS A2.4 / ISO 2553)
   welding: "0.8.1",
+  // 0.9.2
+  floorplan: "0.9.2",
 };
 
 export function getDiagramSince(type: string): string | undefined {

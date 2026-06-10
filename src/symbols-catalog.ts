@@ -14,6 +14,7 @@ import { renderEquip, GEOMETRY as PID_GEOMETRY } from "./diagrams/pid/symbols";
 import { iconNames, renderIcon } from "./diagrams/flowchart/icons";
 import { getGateGeometry } from "./diagrams/logic/symbols";
 import { drawDeviceIcon, iconSize } from "./diagrams/network/symbols";
+import { FLOORPLAN_SYMBOLS } from "./diagrams/floorplan/catalog";
 
 export interface SymbolCatalogEntry {
   id: string;
@@ -228,6 +229,40 @@ function networkCatalog(): SymbolCatalogEntry[] {
   return out.sort((a, b) => a.label.localeCompare(b.label));
 }
 
+// ── Floor plan furniture & fixtures (AGS plan view) ────────────────
+const FLOORPLAN_CSS =
+  ".sx-fp-furn{fill:#ffffff;stroke:#475569;stroke-width:1.2}" +
+  ".sx-fp-furn-nofill{fill:none;stroke:#475569;stroke-width:1.2}" +
+  ".sx-fp-furn-line{fill:none;stroke:#475569;stroke-width:1}" +
+  ".sx-fp-furn-dash{fill:none;stroke:#475569;stroke-width:1;stroke-dasharray:4 3}" +
+  ".sx-fp-furn-dot{fill:#475569;stroke:none}" +
+  ".sx-fp-furn-solid{fill:#334155;stroke:none}" +
+  ".sx-fp-board-inner{fill:#ffffff;stroke:none}" +
+  ".sx-fp-chair{fill:#f1f5f9;stroke:#475569;stroke-width:1}" +
+  ".sx-fp-rug{fill:none;stroke:#94a3b8;stroke-width:1.2;stroke-dasharray:5 4}" +
+  ".sx-fp-hatch{fill:none;stroke:#cbd5e1;stroke-width:1}" +
+  ".sx-fp-furn-text{font-weight:600;font-family:sans-serif;fill:#475569}";
+
+function floorplanCatalog(): SymbolCatalogEntry[] {
+  const scale = 40; // px per meter for the standalone sheet
+  const px = (m: number): number => Math.round(m * scale * 100) / 100;
+  const out: SymbolCatalogEntry[] = [];
+  for (const [id, def] of Object.entries(FLOORPLAN_SYMBOLS)) {
+    const [mt, mr, mb, ml] = def.envelope ?? [0, 0, 0, 0];
+    const pad = 5;
+    const x0 = -px(ml) - pad;
+    const y0 = -px(mt) - pad;
+    const w = px(def.w + ml + mr) + 2 * pad;
+    const h = px(def.h + mt + mb) + 2 * pad;
+    out.push({
+      id,
+      label: humanize(id),
+      svg: svgDoc(`${x0} ${y0} ${w} ${h}`, FLOORPLAN_CSS, def.draw({ w: def.w, h: def.h, px })),
+    });
+  }
+  return out.sort((a, b) => a.label.localeCompare(b.label));
+}
+
 const CATALOGS: Partial<Record<DiagramType, () => SymbolCatalog>> = {
   circuit: () => ({
     type: "circuit",
@@ -264,6 +299,12 @@ const CATALOGS: Partial<Record<DiagramType, () => SymbolCatalog>> = {
     label: "Node icons",
     note: "Inline node icons (servers, databases, cloud, gear…) usable on any flowchart node.",
     entries: flowchartIconCatalog(),
+  }),
+  floorplan: () => ({
+    type: "floorplan",
+    label: "Floor plan furniture & fixtures",
+    note: "AGS plan-view symbols — auto-seated tables, beds, kitchen/bath fixtures, classroom and event/banquet furniture.",
+    entries: floorplanCatalog(),
   }),
 };
 

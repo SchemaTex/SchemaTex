@@ -1543,6 +1543,42 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
       "'pitch= needs a length=' -> add `len=N` alongside `pitch=N` on the same weldspec.",
     ],
   },
+  floorplan: {
+    type: "floorplan",
+    header: 'floorplan "Title" [unit m|ft]',
+    mode: "explicit dimensions + relative room placement; furniture room-relative from each room's top-left",
+    keywords:
+      'room id "Label" at x,y | right-of/left-of/above/below ref [offset n] [align start|center|end] size WxH [fill #hex] [nolabel] · extend <room> at x,y | right-of ref size WxH (L/T/U rooms) · north [deg] · door <room> north|south|east|west | between A B at N% [width n] [hinge left|right] [swing in|out] [type single|double|sliding|pocket|bifold] · window <wallref> at N% [width n] [type fixed|sliding|casement|bay] · opening <wallref|between A B> at N% [width n] · furniture <type> in room at x,y [size WxH] [rotate deg] ["label"] · grid|row <type> in room rows R cols C [count N] area x1,y1 x2,y2 [itemsize WxH] · arc <type> in room count N center x,y radius r from deg to deg · types: bed-double/single/queen/king bunk-bed crib sofa loveseat sectional armchair ottoman coffee-table side-table tv tv-stand fireplace floor-lamp rug wardrobe dresser nightstand bookshelf plant piano piano-upright pool-table ceiling-fan dining-table counter wall-cabinet island kitchen-sink stove range-hood fridge dishwasher bar-stool toilet sink vanity bidet urinal bathtub shower washer dryer stairs stairs-l stairs-u spiral-stairs elevator column desk-chair desk desk-l chair whiteboard smartboard bookcase cubbies filing-cabinet lockers kidney-table round-table-4/6/8/10 conference-table banquet-table head-table stage dance-floor bar dj-booth cocktail-table podium row-chairs',
+    forms: [
+      'floorplan "Two-Bedroom Apartment" unit m',
+      'room living "Living Room" at 0,0 size 5.2x4.2',
+      'room kitchen "Kitchen" right-of living size 3.0x4.2',
+      "door between living kitchen at 35% width 1.2",
+      "window living north at 30% width 1.8",
+      "furniture sofa in living at 0.25,2.9",
+      "grid desk-chair in class rows 5 cols 6 count 27 area 5,8 25,24 itemsize 2x2.5",
+    ],
+    prefer: [
+      "Declare rooms with explicit `size WxH` and chain placement with right-of/below — rooms sharing an edge merge into one wall automatically.",
+      "Use `door between A B` for interior doors (the engine finds the shared wall); use `door <room> <side>` only for exterior walls.",
+      "Furniture `at x,y` is relative to its room's interior top-left corner, in the plan unit.",
+      "Use `grid`/`row`/`arc` for repeated items (desks, banquet tables, ceremony chairs) instead of many `furniture` lines; `count` truncates row-major.",
+      "Round tables auto-seat their chairs (round-table-8 = 8 chairs); dining/banquet/conference tables auto-seat both long edges; leave chair clearance ≥ 0.5 m around tables.",
+      "For L/T/U-shaped rooms, declare the main rectangle then `extend <room> at x,y size WxH` — the extension must share an edge; the engine merges walls and sums the area.",
+      "Stairs are furniture: `furniture stairs in hall at x,y` (also stairs-l, stairs-u, spiral-stairs) — they draw treads, the UP arrow, and the cut-plane break line automatically; label \"DN\" for a descending run.",
+    ],
+    avoid: [
+      "Don't overlap room rectangles — adjacency means edges touch exactly (right-of/below guarantee this).",
+      "Don't place a `door between` rooms that share no edge; the engine rejects it with the measured gap.",
+      "Don't position furniture in absolute plan coordinates — coordinates are room-relative.",
+    ],
+    repair: [
+      "'rooms … overlap by …' -> move the second room with right-of/below placement or shrink its size.",
+      "'rooms share no wall' -> make the rooms adjacent (sizes summing to a shared edge) or hang the door on a wall side instead.",
+      "'extends … outside room' -> reduce the furniture x,y or size; coordinates start at the room's top-left interior corner.",
+      "'overlaps … by … m' (warning) -> spread the grid `area` corners or reduce rows/cols; remember chair rings extend ~0.45 m beyond a table edge.",
+    ],
+  },
 };
 
 export function getGenerationProfile(

@@ -1543,6 +1543,92 @@ export function resolveVennTheme(name: string): ResolvedTheme<VennTokens> {
   return { ...BASE_THEMES[themeName], ...VENN_TOKENS[themeName] };
 }
 
+// ─── Floor Plan Tokens ─────────────────────────────────────
+// 48-FLOORPLAN-STANDARD §4/§8. Architectural plan-view language: near-black
+// wall poché on a light floor, neutral line-art furniture — colour stays
+// reserved for validation accents. Monochrome = pure black-and-white print
+// plan. Floor plans are a print-first paper notation, so there is no dark
+// variant — `dark` resolves to the default light theme (product decision,
+// 2026-06-09).
+
+export interface FloorplanTokens {
+  /** Wall poché (solid fill bands). */
+  wallFill: string;
+  /** Room floor fill (also used to punch opening gaps). */
+  floorFill: string;
+  /** Furniture body stroke / fill. */
+  furnStroke: string;
+  furnFill: string;
+  /** Solid-dark items (TV, board frames) + their light inner panel. */
+  furnSolid: string;
+  boardInner: string;
+  chairFill: string;
+  doorLeaf: string;
+  doorArc: string;
+  windowStroke: string;
+  rugStroke: string;
+  hatchStroke: string;
+  roomName: string;
+  roomArea: string;
+  furnLabel: string;
+  dimStroke: string;
+  dimText: string;
+}
+
+const DEFAULT_FLOORPLAN: FloorplanTokens = {
+  wallFill: "#1e293b",
+  floorFill: "#ffffff",
+  furnStroke: "#475569",
+  furnFill: "#ffffff",
+  furnSolid: "#334155",
+  boardInner: "#ffffff",
+  chairFill: "#f1f5f9",
+  doorLeaf: "#334155",
+  doorArc: "#94a3b8",
+  windowStroke: "#334155",
+  rugStroke: "#94a3b8",
+  hatchStroke: "#cbd5e1",
+  roomName: "#0f172a",
+  roomArea: "#64748b",
+  furnLabel: "#475569",
+  dimStroke: "#94a3b8",
+  dimText: "#64748b",
+};
+
+const MONOCHROME_FLOORPLAN: FloorplanTokens = {
+  wallFill: "#000000",
+  floorFill: "#ffffff",
+  furnStroke: "#000000",
+  furnFill: "#ffffff",
+  furnSolid: "#000000",
+  boardInner: "#ffffff",
+  chairFill: "#ffffff",
+  doorLeaf: "#000000",
+  doorArc: "#555555",
+  windowStroke: "#000000",
+  rugStroke: "#777777",
+  hatchStroke: "#bbbbbb",
+  roomName: "#000000",
+  roomArea: "#444444",
+  furnLabel: "#222222",
+  dimStroke: "#666666",
+  dimText: "#333333",
+};
+
+export const FLOORPLAN_TOKENS: Record<ThemeName, FloorplanTokens> = {
+  default: DEFAULT_FLOORPLAN,
+  monochrome: MONOCHROME_FLOORPLAN,
+  // No dark floor plans — paper notation stays light even in dark mode.
+  dark: DEFAULT_FLOORPLAN,
+};
+
+export function resolveFloorplanTheme(name: string): ResolvedTheme<FloorplanTokens> {
+  // `dark` maps fully to the light default — including the base bg/text —
+  // so a floor plan embedded in a dark page renders as a light "paper" sheet.
+  const themeName: ThemeName = name === "monochrome" ? "monochrome" : "default";
+  return { ...BASE_THEMES[themeName], ...FLOORPLAN_TOKENS[themeName] };
+}
+
 // ─── Genogram Theme Aliases ────────────────────────────────
 
 const GENOGRAM_ALIASES: Record<string, ThemeName> = {
