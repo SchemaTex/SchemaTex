@@ -24,6 +24,7 @@ import {
 } from "../../core/svg";
 import {
   DEFAULT_FONT_FAMILY,
+  TITLE,
   resolveFloorplanTheme,
   type FloorplanTokens,
   type ResolvedTheme,
@@ -40,7 +41,7 @@ const r2 = (n: number): number => Math.round(n * 100) / 100;
 function buildCss(t: Theme): string {
   return `
 .sx-fp { font-family: ${DEFAULT_FONT_FAMILY}; }
-.sx-fp-title { font: 700 16px sans-serif; fill: ${t.text}; }
+.sx-fp-title { font: ${TITLE.weight} ${TITLE.size}px sans-serif; fill: ${t.text}; }
 .sx-fp-wall { fill: ${t.wallFill}; stroke: none; }
 .sx-fp-furn { fill: ${t.furnFill}; stroke: ${t.furnStroke}; stroke-width: 1.2; }
 .sx-fp-furn-nofill { fill: none; stroke: ${t.furnStroke}; stroke-width: 1.2; }
@@ -364,10 +365,13 @@ export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: Rende
   const Y = (m: number): number => px(m + oy);
   const ctx: Ctx = { X, Y, px, t, wallT: lay.wallT };
 
-  const titleH = 30;
+  const titleH = TITLE.bandH;
   const warnH = lay.warnings.length ? lay.warnings.length * 17 + 10 : 0;
   const W = px(lay.bounds.maxX - lay.bounds.minX + band + tail);
   const H = px(lay.bounds.maxY - lay.bounds.minY + band + tail) + titleH + warnH;
+  // house rule (PR #40): center the title on the content, not the canvas —
+  // the leading dim band is wider than the trailing pad
+  const titleX = r2(X((lay.bounds.minX + lay.bounds.maxX) / 2));
 
   // z-order §4.4
   const floors: string[] = [];
@@ -504,7 +508,7 @@ export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: Rende
       descEl(descText),
       el("style", {}, buildCss(t)),
       rect({ fill: t.bg, x: 0, y: 0, width: W, height: H }),
-      textEl({ class: "sx-fp-title", x: r2(W / 2), y: 21, "text-anchor": "middle" }, lay.title),
+      textEl({ class: "sx-fp-title", x: titleX, y: TITLE.y, "text-anchor": "middle" }, lay.title),
       group({ transform: `translate(0,${titleH})` }, [
         group({ class: "sx-fp-floors" }, floors),
         group({ class: "sx-fp-furniture" }, furniture),
