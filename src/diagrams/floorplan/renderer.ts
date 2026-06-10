@@ -82,7 +82,7 @@ function renderErrorPanel(lay: FloorplanLayoutResult, t: Theme): string {
   const w = Math.max(560, ...lines.map((l) => l.length * 6.6 + 48));
   const h = 56 + lines.length * 19;
   return svgRoot(
-    { viewBox: `0 0 ${r2(w)} ${h}`, class: "sx-fp", role: "img" },
+    { viewBox: `0 0 ${r2(w)} ${h}`, width: r2(w), height: h, class: "sx-fp", role: "img" },
     [
       titleEl(lay.title),
       descEl(`Floor plan validation failed with ${lines.length} error${lines.length === 1 ? "" : "s"}.`),
@@ -502,7 +502,7 @@ export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: Rende
     (lay.warnings.length ? ` Warnings: ${lay.warnings.join("; ")}.` : "");
 
   return svgRoot(
-    { viewBox: `0 0 ${W} ${H}`, class: "sx-fp", role: "img" },
+    { viewBox: `0 0 ${W} ${H}`, width: W, height: H, class: "sx-fp", role: "img" },
     [
       titleEl(lay.title),
       descEl(descText),

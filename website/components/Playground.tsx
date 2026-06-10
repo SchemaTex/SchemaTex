@@ -366,7 +366,7 @@ export function Playground({ initial, height = 560, fill = false, syncHash = fal
             </pre>
           ) : svg ? (
             <div
-              className="[&_svg]:block [&_svg]:max-h-full [&_svg]:max-w-full"
+              className="flex h-full w-full items-center justify-center [&_svg]:block [&_svg]:max-h-full [&_svg]:max-w-full"
               style={{ transform: `scale(${zoom / 100})`, transformOrigin: 'center center' }}
               dangerouslySetInnerHTML={{ __html: svg }}
             />
