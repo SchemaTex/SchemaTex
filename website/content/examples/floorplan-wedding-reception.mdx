@@ -1,0 +1,36 @@
+---
+title: Wedding reception — 120 guests
+description: Banquet layout at industry defaults: fifteen 60″ rounds auto-seated with 8 chairs each, head table seating one side, hatched dance floor, and service-aisle spacing that passes collision validation.
+diagram: floorplan
+standard: Architectural Graphic Standards · US NCS v6
+industry: [hospitality, business]
+persona: For the event planner producing a floor plan the venue can execute
+complexity: 3
+tags: [floorplan, wedding, event, banquet, seating]
+featured: false
+relatedLink:
+  label: Floor plan syntax
+  href: /docs/floorplan
+status: published
+dsl: |
+  floorplan "Wedding Reception — 120 Guests" unit m
+  room hall "Grand Ballroom" at 0,0 size 24x16 nolabel
+  door hall south at 15% width 1.8
+  door hall south at 85% width 1.8
+  opening hall west at 50% width 2.4
+  furniture head-table "Head Table" in hall at 9,0.7 size 6x0.9
+  furniture dance-floor "Dance Floor" in hall at 9.5,3 size 5x5
+  grid round-table-8 in hall rows 3 cols 2 count 6 area 2.8,4.2 7,10.9 itemsize 2.3x2.3
+  grid round-table-8 in hall rows 3 cols 2 count 6 area 17,4.2 21.2,10.9 itemsize 2.3x2.3
+  row round-table-8 in hall cols 3 area 8.8,13.4 15.2,13.4 itemsize 2.3x2.3
+  furniture counter "Cake" in hall at 21.6,1 size 1.8x0.7
+  furniture counter "Gifts" in hall at 0.6,1 size 1.8x0.7
+  furniture dj-booth in hall at 16.2,0.8
+  furniture bar in hall at 4.8,14.9 size 3x0.7
+---
+
+## What this shows
+
+Each `round-table-8` draws its 8 chairs on the circumference (60″ top per banquet-industry convention), so 15 tables = 120 covers, countable in the SVG. The two grids and one row place all fifteen tables in three statements.
+
+The collision validator checks **chair-ring envelopes**, not table discs — squeeze the grid `area` by a meter and it names the exact pair of tables that now conflict and by how much. The head table seats one side only, facing the room.

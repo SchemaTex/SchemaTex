@@ -1,0 +1,30 @@
+---
+title: Garden ceremony — semi-circle seating
+description: Outdoor ceremony seating: four concentric chair arcs facing the arch (104 chairs), placed with one arc statement per row.
+diagram: floorplan
+standard: Architectural Graphic Standards · US NCS v6
+industry: [hospitality]
+persona: For the wedding planner staking out ceremony rows on site
+complexity: 2
+tags: [floorplan, wedding, ceremony, semicircle, outdoor]
+featured: false
+relatedLink:
+  label: Floor plan syntax
+  href: /docs/floorplan
+status: published
+dsl: |
+  floorplan "Garden Ceremony — Semi-Circle Seating (104 Chairs)" unit m
+  room lawn "Ceremony Lawn" at 0,0 size 20x13 nolabel
+  furniture stage "Arch" in lawn at 8.5,0.8 size 3x1.4
+  furniture podium in lawn at 6.6,1.2
+  arc chair in lawn count 20 center 10,2.2 radius 4 from 20 to 160
+  arc chair in lawn count 24 center 10,2.2 radius 5 from 20 to 160
+  arc chair in lawn count 28 center 10,2.2 radius 6 from 20 to 160
+  arc chair in lawn count 32 center 10,2.2 radius 7 from 20 to 160
+---
+
+## What this shows
+
+Each row is one `arc chair` statement — count, center, radius, and the 20°–160° sweep — with every chair rotated to face the center. Capacity changes are a `count` edit; the validator's oriented-box collision test keeps adjacent chairs honest even though they're all rotated differently.
+
+This is the "Semi-Circle Wedding Seating" request class verbatim: the input arrives as a chair count and a focal point, which is exactly what the arc primitive takes.

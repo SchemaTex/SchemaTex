@@ -783,8 +783,8 @@ export const DIAGRAM_SINCE: Readonly<Record<DiagramType, string>> = {
   threatmodel: "0.8.0",
   // 0.8.1 — welding symbols (AWS A2.4 / ISO 2553)
   welding: "0.8.1",
-  // 0.9.2
-  floorplan: "0.9.2",
+  // 0.9.3
+  floorplan: "0.9.3",
 };
 
 export function getDiagramSince(type: string): string | undefined {

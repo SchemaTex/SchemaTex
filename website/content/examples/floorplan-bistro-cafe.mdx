@@ -1,0 +1,68 @@
+---
+title: Bistro café — dining, bar, kitchen
+description: A small-business commercial plan: bar with stool row, six auto-seated 4-tops, rotated booth tables, commercial kitchen line, and a restroom pair including an accessible WC.
+diagram: floorplan
+standard: Architectural Graphic Standards · US NCS v6
+industry: [hospitality, retail]
+persona: For the café owner planning covers and service flow before the fit-out
+complexity: 3
+tags: [floorplan, restaurant, cafe, commercial, bar]
+featured: false
+relatedLink:
+  label: Floor plan syntax
+  href: /docs/floorplan
+status: published
+dsl: |
+  floorplan "Bistro Café — Dining · Bar · Kitchen" unit m
+  room dining "Dining Hall" at 0,0 size 9.5x9 nolabel
+  room kitchen "Kitchen" right-of dining size 4.5x5.4
+  room wchall "" at 9.5,5.4 size 4.5x1.1 nolabel
+  room wc1 "WC" at 9.5,6.5 size 2.2x2.5
+  room wc2 "Accessible WC" at 11.7,6.5 size 2.3x2.5
+  
+  door dining south at 25% width 1.8 type double
+  door between dining kitchen at 30%
+  opening between dining wchall at 50% width 0.9
+  door between kitchen wchall at 80% width 0.8
+  door between wchall wc1 at 25%
+  door between wchall wc2 at 75%
+  
+  window dining west at 25% width 2.2
+  window dining west at 65% width 2.2
+  window dining north at 70% width 2.0
+  window kitchen north at 50% width 1.5 type sliding
+  window kitchen east at 30% width 1.2
+  
+  furniture bar "Bar" in dining at 0.4,0.3 size 4.5x0.7
+  row bar-stool in dining cols 5 area 0.8,1.45 4.3,1.45
+  furniture podium "Host" in dining at 0.7,8.2
+  grid round-table-4 in dining rows 2 cols 3 area 1.6,3.3 6.4,5.9 itemsize 1.9x1.9
+  furniture dining-table "Booth" in dining at 7.8,2.2 size 1.6x0.9 rotate 90
+  furniture dining-table "Booth" in dining at 7.8,4.8 size 1.6x0.9 rotate 90
+  furniture cocktail-table in dining at 5.8,0.8
+  furniture cocktail-table in dining at 7.2,0.8
+  furniture plant in dining at 8.9,8.3
+  furniture plant in dining at 5.0,8.4
+  
+  furniture counter in kitchen at 0.15,0.12 size 4.2x0.65
+  furniture wall-cabinet in kitchen at 0.15,0.12 size 4.2x0.35
+  furniture kitchen-sink in kitchen at 0.7,0.15
+  furniture dishwasher in kitchen at 1.5,0.15
+  furniture stove in kitchen at 2.2,0.13
+  furniture range-hood in kitchen at 2.1,0.1 size 0.8x0.55
+  furniture fridge in kitchen at 3.6,1.2 size 0.85x0.8
+  furniture island "Prep" in kitchen at 0.8,3.5 size 2.6x0.9
+  
+  furniture toilet in wc1 at 0.2,0.2
+  furniture sink in wc1 at 1.5,0.2
+  
+  furniture toilet in wc2 at 0.25,0.2
+  furniture urinal in wc2 at 1.5,0.12
+  furniture sink in wc2 at 1.7,1.95
+---
+
+## What this shows
+
+The booth tables are `dining-table … rotate 90` — their auto-seated chairs rotate with them, and the collision check uses the rotated envelopes (separating-axis test), so the validator stays accurate at any angle.
+
+The kitchen shows the commercial line conventions: counter run with dashed wall cabinets over it, range hood over the stove, and a prep island. The restroom pair places a urinal and keeps fixtures clear of the door swings.

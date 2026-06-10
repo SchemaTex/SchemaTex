@@ -1,0 +1,35 @@
+---
+title: 5th-grade classroom — 27 desks
+description: The #1 floor-plan request class: a 32′×26′ classroom seating chart with a 5×6 desk grid truncated row-major to exactly 27 students, in feet-and-inches.
+diagram: floorplan
+standard: Architectural Graphic Standards · US NCS v6
+industry: [education]
+persona: For the teacher arranging seating before the school year
+complexity: 2
+tags: [floorplan, classroom, seating-chart, education, grid]
+featured: false
+relatedLink:
+  label: Floor plan syntax
+  href: /docs/floorplan
+status: published
+dsl: |
+  floorplan "5th Grade Classroom — 27 Desks" unit ft
+  room class "Classroom" at 0,0 size 32x26 nolabel
+  door class east at 12% width 3 hinge right
+  window class west at 15% width 5
+  window class west at 45% width 5
+  window class west at 75% width 5
+  furniture whiteboard in class at 10,0.4 size 14x0.4
+  furniture desk "Teacher" in class at 2,1.5 size 5x2.5
+  grid desk-chair in class rows 5 cols 6 count 27 area 5,7 25,23 itemsize 2x2.5
+  furniture counter "Cubbies" in class at 6,24.4 size 10x1.2
+  furniture counter "Supplies" in class at 19,24.4 size 8x1.2
+  furniture plant in class at 1.2,22.8 size 1.6x1.6
+  furniture rug "Reading Corner" in class at 26.6,7 size 4.6x8
+---
+
+## What this shows
+
+`grid desk-chair … count 27` places a 5×6 grid and drops the last row's tail — exactly how a real 27-student room fills. The `area` corners are item centers, so respacing the whole room is a two-number edit.
+
+`unit ft` makes every number feet: the dimension strings render as 32′/26′ and the (suppressed) room area would be in sq ft. Cubbies and supply counters use the underlay convention so back-row desks may legitimately touch them.
