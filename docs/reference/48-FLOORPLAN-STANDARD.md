@@ -45,27 +45,34 @@
 | Element | Convention (AGS) | v0.1 |
 |---|---|---|
 | `room` | Rectangular space; walls drawn as solid poché (filled) bands centered on the room boundary; adjacent rooms share a single merged wall | ✅ |
+| `extend` | L/T/U-shaped rooms as a union of axis-aligned rects (`extend <room> at x,y size WxH`); extension must share an edge; walls merge along the seam, area sums, label centers on the largest part. Mirrors how pros measure L-rooms (split into rectangles, sum). | ✅ |
+| stairs | `stairs` / `stairs-l` / `stairs-u` / `spiral-stairs` furniture symbols — 0.28 m tread lines, direction arrow from the lowest tread with `UP` (label override for `DN`), 45° zigzag break line at the 4 ft cut plane, dashed treads beyond; landings blank. `elevator` = shaft with X. | ✅ |
 | room label | Name + auto-computed area (m² or sq ft) centered in the room | ✅ |
 | `door` (single swing) | Wall gap + door leaf + quarter-circle swing arc; hinge side and swing direction explicit | ✅ |
 | `door` double / French | Two mirrored quarter-arcs | ✅ |
 | `door` sliding / pocket | Gap with offset parallel leaf line (no arc) | ✅ |
+| `door` bifold | Two tent peaks (closet doors) | ✅ |
 | `opening` / archway | Wall gap with thin jamb lines, no leaf | ✅ |
 | `window` (fixed) | Triple parallel glazing lines across a wall gap | ✅ |
-| window casement/bay/slider variants | AGS variants | ⬜ deferred |
+| `window` sliding / casement / bay | `type` param: two offset panels / fixed + outward swing arc / trapezoid projection with splayed sides | ✅ |
 | `wall` standalone segment (partition not enclosing a room) | Solid band | ⬜ deferred (compose rooms + openings instead) |
-| dimension lines | Overall width/height + per-room segment dims along top/left exteriors; ticks + centered text; ft′in″ formatting under `unit ft` | ✅ |
-| north arrow / compass | Circle + N arrow, optional | ⬜ deferred |
+| dimension lines | Overall width/height + per-room segment dims along top/left exteriors; architectural 45° slash ticks (NCS convention) + centered text; ft′in″ formatting under `unit ft` | ✅ |
+| north arrow / compass | `north [deg]` statement — circle + N arrow at the top-right of the dim band | ✅ |
 | scale bar | Graphic bar, optional | ⬜ deferred |
 
 ### 2.2 Furniture & fixture catalog
 
 Full vocabulary specified now (DSL/types never change to add more); **v0.1 column** = first release. v0.1 deliberately covers the four demand clusters completely: **classroom, event/banquet, residential living, kitchen/bath**.
 
-**Residential / living** — all ✅ v0.1: `bed-double` `bed-single` `bed-queen` `bed-king` `sofa` `loveseat` `armchair` `coffee-table` `tv` `rug` `wardrobe` `dresser` `nightstand` `bookshelf` `plant` `dining-table` (auto-seats chairs by length).
-**Kitchen / bath** — all ✅ v0.1: `counter` (run, dashed front edge) `kitchen-sink` (double-bowl) `stove` (4-burner) `fridge` `dishwasher` `island` `toilet` `sink` (lavatory) `bathtub` `shower` `washer` `dryer`.
-**Classroom / office** — all ✅ v0.1: `desk-chair` (student unit) `desk` (teacher/office, auto chair) `chair` `whiteboard` (wall-mounted run) `smartboard` `bookcase` `cubbies` (= labeled `counter`) `kidney-table` `round-table-4/6/8/10` `conference-table`.
+**Residential / living** — all ✅: `bed-double` `bed-single` `bed-queen` `bed-king` `bunk-bed` `crib` `sofa` `loveseat` `sectional` (L-sofa) `armchair` `ottoman` `coffee-table` `side-table` `tv` `tv-stand` `fireplace` `floor-lamp` `rug` `wardrobe` `dresser` `nightstand` `bookshelf` `plant` `piano` (grand, auto bench) `piano-upright` `pool-table` `ceiling-fan` (overhead, dashed, underlay) `dining-table` (auto-seats chairs by length).
+**Kitchen / bath** — all ✅: `counter` (run, dashed front edge) `wall-cabinet` (dashed — above cut plane) `kitchen-sink` (double-bowl) `stove` (4-burner) `range-hood` (dashed trapezoid) `fridge` `dishwasher` `island` `bar-stool` `toilet` `sink` (lavatory) `vanity` (double-basin) `bidet` `urinal` `bathtub` `shower` `washer` `dryer`.
+**Classroom / office** — all ✅: `desk-chair` (student unit) `desk` (teacher/office, auto chair) `desk-l` (corner workstation) `chair` `whiteboard` (wall-mounted run) `smartboard` `bookcase` `cubbies` (= labeled `counter`) `filing-cabinet` `lockers` `kidney-table` `round-table-4/6/8/10` `conference-table`.
 **Event / banquet** — all ✅ v0.1: `round-table-6` (60″ default) `round-table-8` (60″) `round-table-10` (72″) `banquet-table` (8′ rect, seats both sides) `head-table` `stage` `dance-floor` (diagonal hatch) `bar` `dj-booth` `cocktail-table` (30″ high-top, no chairs) `podium` `row-chairs` (theater seating strip).
-**Deferred** ⬜: piano, pool table, gym equipment, retail fixtures, hospital bed — add post-v0.1 by demand evidence.
+**Stairs / structural** — all ✅: `stairs` `stairs-l` `stairs-u` `spiral-stairs` `elevator` `column`.
+**Retail / warehouse** — all ✅ (0.9.3): `shelving` (gondola run, back-to-back spine + bays) `checkout` (POS counter + register) `clothing-rack` (round rail) `fitting-room` (booth + bench + curtain) `pallet-rack` (open frame, X-braced bays) `loading-dock` (roll-up door + bumpers) `forklift`.
+**Salon / gym** — all ✅ (0.9.3): `salon-chair` (styling station + mirror) `shampoo-bowl` (backwash unit) `manicure-table` (auto-seats client + technician) `treadmill` `weight-bench` (auto barbell) `power-rack` `yoga-mat` (underlay).
+**Site / outdoor** — ✅ (0.9.3): `tree` (canopy disc) `car` (parking-stall footprint). A site/plot plan tiles the lot as adjacent zones (front yard · house footprint · driveway · back yard) with trees and cars on top.
+**Deferred** ⬜: restaurant booths, hospital/dental beds & chairs, deck/fence/pool landscape fixtures — add by demand evidence.
 
 Symbols are original line art following AGS plan-view silhouettes (same stance as network vs Cisco icons): thin stroke, white fill, no inline styles, themable via CSS classes (`stx-floorplan-wall`, `stx-floorplan-furniture`, `stx-floorplan-label`, …).
 
@@ -76,6 +83,7 @@ Symbols are original line art following AGS plan-view silhouettes (same stance a
 | `round-table-N` | N chairs auto-distributed on the circumference; default diameter 60″ for N≤8, 72″ for N=10 |
 | `dining-table` / `banquet-table` / `conference-table` | chairs auto-placed per 0.65 m of long edge, both sides |
 | `head-table` | chairs one side only (facing the room) |
+| `manicure-table` | one client chair + one technician chair, facing across the table |
 | `row-chairs` | chairs at fixed 0.55 m pitch along the strip |
 
 ---
@@ -86,15 +94,17 @@ Header keyword: `floorplan` (unique for `detect()`).
 
 ```ebnf
 plan      ::= "floorplan" string? ("unit" ("m"|"ft"))? NL statement*
-statement ::= room | door | window | opening | furniture | array
+statement ::= room | extend | north | door | window | opening | furniture | array
 room      ::= "room" id string? placement "size" dims ("fill" color)? ("nolabel")?
+extend    ::= "extend" id placement "size" dims        (* L/T/U rooms; must share an edge *)
+north     ::= "north" num?                             (* compass, clockwise deg, default 0 *)
 placement ::= "at" coord
             | ("right-of"|"left-of"|"above"|"below") id ("offset" num)?
             | ("align" ("start"|"center"|"end"))?          (* with relative placement *)
 door      ::= "door" (wallref | "between" id id) "at" pct
               ("width" num)? ("hinge" ("left"|"right"))? ("swing" ("in"|"out"))?
-              ("type" ("single"|"double"|"sliding"|"pocket"))?
-window    ::= "window" wallref "at" pct ("width" num)?
+              ("type" ("single"|"double"|"sliding"|"pocket"|"bifold"))?
+window    ::= "window" wallref "at" pct ("width" num)? ("type" ("fixed"|"sliding"|"casement"|"bay"))?
 opening   ::= "opening" (wallref | "between" id id) "at" pct ("width" num)?
 furniture ::= "furniture" type ("in" id) "at" coord ("size" dims)? ("rotate" num)? string?
 array     ::= ("grid"|"row"|"arc") type "in" id
@@ -110,6 +120,8 @@ Notes for implementers (LLM-ergonomics, learned from the working POC):
 - `door between A B` resolves the shared wall segment automatically and positions at `pct` along the *overlap*, not the full wall — the single biggest ergonomic win over coordinate-based door placement.
 - Comments: `#` to end of line. CJK quotes accepted as ASCII quotes (Schematex house rule).
 - `grid … count N` truncates row-major (27 desks in a 5×6 grid — the real classroom case).
+- `extend` grows a room into an L/T/U shape; side wallrefs (`door living east …`) then position along the **concatenated exterior segments** of that side (interior seams between parts are skipped), and `pct` selects the segment + position deterministically.
+- On a multi-part room, furniture must be covered by the part union — a sofa straddling the notch is an error naming the uncovered m².
 - `arc` places items on a circular arc facing center (semicircle classrooms, ceremony seating).
 
 ### 3.1 Canonical example (compressed)
@@ -146,8 +158,9 @@ grid desk-chair in class rows 5 cols 6 count 27 area 5,7 25,23   # (classroom pl
 | Thing | Default |
 |---|---|
 | Wall thickness | 0.2 m (interior and exterior identical in v0.1) |
-| Door width | 0.9 m exterior / 0.8 m interior (≈ 36″/32″) |
+| Door width | 0.9 m wall-side form / 0.8 m `between` form (≈ 36″/32″) |
 | Window width | 1.2 m |
+| Archway (`opening`) width | 1.0 m |
 | Student desk-chair unit | 0.6 × 0.75 m |
 | Round table 8-top | 1.52 m (60″) + 0.45 m chair ring |
 | Banquet 8′ table | 2.44 × 0.76 m |
@@ -163,7 +176,7 @@ Every error names the offending ids and a fix direction:
 
 1. **Room overlap** — `rooms "bed1" and "bath" overlap by 0.40×2.60 m — move "bath" right-of "bed1" or shrink size`.
 2. **Door/opening between non-adjacent rooms** — `door between "kitchen" and "bed2": rooms share no wall (gap 2.0 m on x-axis)`.
-3. **Furniture collision** — ⚠ the #1 failure mode observed in the POC (3 rounds of manual spacing fixes on the wedding example). Bounding-box check across all placed items *including auto-seated chairs* (use each symbol's chair-ring envelope, not just the table disc): `round-table-8 #4 overlaps round-table-8 #7 by 0.3 m — increase grid area or reduce cols`.
+3. **Furniture collision** — ⚠ the #1 failure mode observed in the POC (3 rounds of manual spacing fixes on the wedding example). Oriented-box (SAT) check across all placed items *including auto-seated chairs* (each symbol declares a chair-ring envelope beyond its nominal box, not just the table disc); plain AABBs false-positive on rotated items — adjacent chairs on a ceremony arc — so the test is exact on the rotated envelope: `round-table-8 #4 overlaps round-table-8 #7 by 0.3 m — increase grid area or reduce cols`. **Underlay exemption:** floor coverings (`rug`, `dance-floor`) and work surfaces (`counter`, `island`) never collide — furniture legitimately sits *on* them (coffee table on rug, sink embedded in counter run).
 4. **Furniture outside room interior** — clamp is wrong (hides intent); error with the overshoot amount.
 5. **Opening wider than wall segment** — clamp + warning.
 6. **Unknown furniture type** — list valid types (existing house pattern).
@@ -174,9 +187,9 @@ Severity: room overlap / non-adjacent door / out-of-room = **error** (render err
 
 ## 7. Canonical Test Cases
 
-1. **Two-bedroom apartment** (residential cluster): 7 rooms via relative placement, 7 doors (incl. `between` + hinge/swing variants), 7 windows, 18 furniture items, ft′in″ off (`unit m`). Asserts: shared-wall merge produces no double-thickness bands; area sum = 68 m² ±0.5; all door arcs inside their owning rooms.
+1. **Two-bedroom apartment** (residential cluster): 7 rooms via relative placement, 7 doors (incl. `between` + hinge/swing variants), 7 windows, 18 furniture items, ft′in″ off (`unit m`). Asserts: shared-wall merge produces no double-thickness bands; area sum = 68.76 m² ±0.1 (the title's "68 m²" is the rounded marketing number); all door arcs inside their owning rooms.
 2. **27-desk classroom** (`unit ft`): `grid … rows 5 cols 6 count 27` truncation; whiteboard run on north wall; dims render as `32'`/`26'`. Asserts: exactly 27 desk-chair groups; truncation drops the *last row's tail*, not random cells.
-3. **120-guest wedding reception**: 15 × `round-table-8` via two grids + one row, `dance-floor`, `head-table`, two south doors. Asserts: 15×8 = 120 chairs total; **no furniture-collision warnings** at the documented spacing; collision warning *does* fire when grid area is shrunk 20% (negative test).
+3. **120-guest wedding reception**: 15 × `round-table-8` via two grids + one row, `dance-floor`, `head-table`, two south doors. Asserts: 15×8 = 120 chairs total; **no furniture-collision warnings** at the documented spacing; collision warning *does* fire when the grid area is squeezed below the chair-ring envelope spacing (negative test).
 4. **Error plan**: overlapping rooms + door between non-adjacent rooms + desk placed outside room → exactly 3 errors, each naming both ids and a quantified overlap/gap.
 5. **Minimal smoke**: one room, one door, one window, no furniture — parses, renders, `<desc>` reports "1 room, 12.0 m²".
 
@@ -187,6 +200,6 @@ Working POC (parser + renderer + the three scenario renders, zero-dep JS): `../C
 ## 8. Non-Goals / Deferred (decided, not forgotten)
 
 - **Auto-layout from adjacency constraints only** ("kitchen next to living, no coordinates") — academic-grade problem (diffusion/MIP); v0.1 is explicit-dims + relative placement, which covers the observed demand. Revisit only with usage evidence.
-- **Non-rectilinear geometry** — diagonal/curved walls, L-shaped rooms native. Workaround: compose rectangles + `opening`.
-- **Multi-floor / stairs**, **electrical-symbol overlay** (NEC outlets/switches — future `circuit` bridge), **HVAC/plumbing runs**, **3D/isometric**, **furniture clearance codes** (ADA/fire egress) — all deferred.
+- **Polygon-vertex rooms** — `extend` (rect union) covers rectilinear L/T/U natively; a `polygon` vertex-list escape hatch (rectilinear-validated, later relaxed to 45°) is reserved syntax for a fast-follow. **Diagonal (45°) walls** = fast-follow; **curved/arc walls** = deferred — evidence: the RPLAN corpus (80k real residential plans) is fully axis-aligned, and RoomSketcher gates curved walls behind its Pro tier. Bay windows (the most common curved-ish feature) are covered by `window … type bay`.
+- **Multi-floor model** (stairs render as correct single-floor symbols with UP/DN + break line; linking floors is deferred), **electrical-symbol overlay** (NEC outlets/switches — future `circuit` bridge), **HVAC/plumbing runs**, **3D/isometric**, **furniture clearance codes** (ADA/fire egress) — all deferred.
 - **Photorealism** — permanently out of scope; that is the image-model lane.

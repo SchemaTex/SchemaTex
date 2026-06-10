@@ -27,6 +27,7 @@ export const CLUSTER_DISPLAY: Record<DiagramCluster, ClusterDisplay> = {
   concurrency:              { label: 'Concurrency',              order: 8.5,  color: 'var(--cat-4)' },
   'risk-reliability':       { label: 'Risk & Reliability',       order: 8.7,  color: 'var(--cat-4)' },
   'network-infrastructure': { label: 'Network & Infrastructure', order: 9,    color: 'var(--cat-2)' },
+  architecture:             { label: 'Architecture & Space',     order: 9.5,  color: 'var(--cat-3)' },
   generic:                  { label: 'General',                  order: 10,   color: 'var(--cat-7)' },
 };
 

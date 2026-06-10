@@ -48,4 +48,5 @@ export const DIAGRAM_ICON_MARKUP: Record<DiagramType, string> = {
   "idef0": "<rect x=\"8\" y=\"8\" width=\"8\" height=\"8\" />\n  <path d=\"M2.5 12 H8\" />\n  <path d=\"M6 10.6 L8 12 L6 13.4\" />\n  <path d=\"M12 2.5 V8\" />\n  <path d=\"M10.6 6 L12 8 L13.4 6\" />\n  <path d=\"M16 12 H21.5\" />\n  <path d=\"M19.5 10.6 L21.5 12 L19.5 13.4\" />\n  <path d=\"M12 21.5 V16\" />\n  <path d=\"M10.6 18 L12 16 L13.4 18\" />",
   "threatmodel": "<rect x=\"2.5\" y=\"5\" width=\"19\" height=\"14\" rx=\"2\" stroke-dasharray=\"2.5 2\" />\n  <circle cx=\"8\" cy=\"12\" r=\"2.8\" />\n  <path d=\"M10.8 12 H16\" />\n  <path d=\"M14.4 10.6 L16 12 L14.4 13.4\" />\n  <path d=\"M16 8.5 H21 M16 15.5 H21\" />",
   "welding": "<path d=\"M3 9 H15\" />\n  <path d=\"M15 9 L20 15\" />\n  <path d=\"M18.6 14.1 L20 15 L19.3 13.4\" />\n  <path d=\"M8.5 9 V13.6 L12.7 9\" />\n  <circle cx=\"15\" cy=\"9\" r=\"1.4\" />",
+  "floorplan": "<rect x=\"3\" y=\"4\" width=\"18\" height=\"16\"/>\n  <path d=\"M13 4 V10\"/>\n  <path d=\"M13 14 V20\"/>\n  <path d=\"M13 14 H21\"/>\n  <path d=\"M3 20 A5 5 0 0 1 8 15\"/>",
 };

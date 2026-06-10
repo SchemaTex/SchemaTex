@@ -87,7 +87,9 @@ export type DiagramType =
   | "epc" // Event-driven Process Chain — ARIS, event/function alternation validation (44-EPC-STANDARD)
   | "idef0" // IDEF0 function modeling — FIPS PUB 183, ICOM arrow placement (45-IDEF0-STANDARD)
   | "threatmodel" // Threat model (DFD + STRIDE) — Shostack per-element mapping + trust-boundary crossing (46-THREAT-MODEL-STRIDE-STANDARD)
-  | "welding"; // Welding symbols — AWS A2.4 / ISO 2553 reference-line callouts (47-WELDING-SYMBOL-STANDARD)
+  | "welding" // Welding symbols — AWS A2.4 / ISO 2553 reference-line callouts (47-WELDING-SYMBOL-STANDARD)
+  // Architectural / space planning
+  | "floorplan"; // Floor plan / space layout — AGS poché walls, door swing arcs, furniture catalog (48-FLOORPLAN-STANDARD)
 
 export type GenogramMode = "medical" | "heritage";
 

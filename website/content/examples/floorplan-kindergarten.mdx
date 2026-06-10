@@ -1,0 +1,45 @@
+---
+title: Kindergarten activity room
+description: "An early-education layout: kidney teaching table with an arc of chairs, three round group tables, circle-time rug, nap cribs, play kitchen, and cubbies + lockers along the south wall."
+diagram: floorplan
+standard: Architectural Graphic Standards · US NCS v6
+industry: [education]
+persona: For the early-childhood teacher arranging activity zones
+complexity: 2
+tags: [floorplan, kindergarten, classroom, education, daycare]
+featured: false
+relatedLink:
+  label: Floor plan syntax
+  href: /docs/floorplan
+status: published
+dsl: |
+  floorplan "Sunshine Kindergarten — Activity Room" unit m
+  room class "Activity Room" at 0,0 size 11x8 nolabel
+  door class south at 12% width 1.0
+  door class east at 55% width 0.9 swing in
+  window class west at 20% width 1.8
+  window class west at 55% width 1.8
+  window class north at 60% width 2.0
+  window class north at 85% width 1.5
+  
+  furniture whiteboard in class at 1.2,0.06 size 2.4x0.12
+  furniture kidney-table "Ms. Lee" in class at 1.0,1.2
+  arc chair in class count 4 center 1.9,1.9 radius 1.35 from 35 to 145
+  grid round-table-4 in class rows 1 cols 3 area 4.6,2.6 9.2,2.6 itemsize 2.1x2.1
+  furniture counter "Play Kitchen" in class at 4.4,0.15 size 1.8x0.55
+  furniture desk "Teacher" in class at 9.3,0.25 size 1.3x0.65
+  furniture rug "Circle Time" in class at 0.5,4.6 size 3.4x2.8
+  furniture bookcase "Library" in class at 0.15,3.6 size 1.3x0.35
+  furniture crib in class at 9.2,5.0
+  furniture crib in class at 10.1,5.0
+  furniture counter "Cubbies" in class at 3.2,7.35 size 4.5x0.55
+  furniture lockers in class at 8.2,7.4 size 2.4x0.45
+  furniture ceiling-fan in class at 5.5,4.0
+  furniture plant in class at 0.25,0.2
+---
+
+## What this shows
+
+The chair arc around the kidney table is one statement — `arc chair … from 35 to 145` — with each chair rotated to face the center. The kidney table itself is the standard early-ed reading-group shape.
+
+Zoning reads at a glance: wet play along the north counter, group tables mid-room, the rug-marked circle-time corner (an underlay, so furniture could sit on it), and the nap corner with cribs kept clear of the east door swing.

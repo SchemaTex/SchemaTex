@@ -671,6 +671,27 @@ consequence "Vapour cloud explosion"
 
 [Bowtie syntax →](https://schematex.dev/docs/bowtie)
 
+### 🏠 Floor plan — *Architectural Graphic Standards plan view*
+
+Rooms with real dimensions become poché walls with automatic shared-wall merging; doors get standard swing arcs, windows get glazing lines, and a 93-symbol furniture catalog — residential, kitchen/bath, classroom/office, event/banquet, retail/warehouse, salon/gym, and site/outdoor (`tree`, `car`) — auto-seats its tables (a `round-table-8` *is* 8 countable chairs). L/T/U-shaped rooms via `extend`, stairs with the UP arrow + cut-plane break line, and validation that catches what LLMs actually get wrong — overlapping rooms, doors on non-shared walls, colliding furniture (chair-ring envelopes included).
+
+```
+floorplan "Two-Bedroom Apartment — 68 m²" unit m
+room living  "Living Room"  at 0,0          size 5.2x4.2
+room kitchen "Kitchen"      right-of living size 3.0x4.2
+room hall    "Hallway"      below living    size 2.0x2.6
+door hall west at 50% width 1.0
+opening between living kitchen at 35% width 1.2
+door between hall living at 50%
+window living north at 30% width 1.8
+furniture sofa in living at 0.25,2.9
+furniture dining-table in kitchen at 0.5,1.7 size 1.5x0.9
+```
+
+![Four-bedroom family home floor plan](examples/floorplan/family-home.svg)
+
+[Floor plan syntax →](https://schematex.dev/docs/floorplan)
+
 ## Why SchemaTex?
 
 **Generic flowchart tools can't draw professional diagrams.** Every diagram domain has published standards — symbol conventions, layout rules, labelling grammars — and when you ignore them, domain experts reject the output:

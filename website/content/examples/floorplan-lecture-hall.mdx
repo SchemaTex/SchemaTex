@@ -1,0 +1,33 @@
+---
+title: Community lecture hall — 96 seats
+description: "Theater-style seating: twelve row-chair strips in two banks with a center aisle (exactly 96 countable seats), stage, podium, smartboard, and double egress doors."
+diagram: floorplan
+standard: Architectural Graphic Standards · US NCS v6
+industry: [education, business]
+persona: For the facilities coordinator capacity-planning an event space
+complexity: 2
+tags: [floorplan, lecture-hall, theater-seating, capacity, event]
+featured: false
+relatedLink:
+  label: Floor plan syntax
+  href: /docs/floorplan
+status: published
+dsl: |
+  floorplan "Community Lecture Hall — 96 Seats" unit m
+  room hall "Lecture Hall" at 0,0 size 14x11 nolabel
+  door hall south at 10% width 1.8 type double
+  door hall south at 90% width 1.8 type double
+  door hall east at 12% width 1.0 swing in
+  window hall west at 25% width 2.2
+  window hall west at 65% width 2.2
+  furniture stage "Stage" in hall at 4.2,0.4 size 5.6x1.6
+  furniture podium in hall at 3.2,0.9
+  furniture smartboard in hall at 5.2,0.06 size 3.6x0.12
+  grid row-chairs in hall rows 6 cols 2 area 3.2,3.2 10.8,8.8 itemsize 4.4x0.5
+---
+
+## What this shows
+
+`grid row-chairs rows 6 cols 2` lays out both seating banks in one statement; each strip auto-places chairs at the 0.55 m theater pitch, so the plan's seat count (8 per strip × 12 = 96) is structural, not decorative — count the chair elements in the SVG.
+
+The two double doors at the rear and the side door give code-style egress, and the aisle width is just the gap between the grid's `area` columns — widen it by editing one x-coordinate.

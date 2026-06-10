@@ -69,6 +69,7 @@ const SYNTAX_KEYS = [
   "idef0",
   "threatmodel",
   "welding",
+  "floorplan",
 ];
 
 // ─── Minimal YAML-frontmatter parser ─────────────────────────────

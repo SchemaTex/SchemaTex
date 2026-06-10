@@ -1,0 +1,34 @@
+---
+title: Distribution warehouse — racking & docks
+description: "An industrial layout: sixteen pallet-rack bays in aisled rows, two loading docks with a forklift in the pick aisle, and a shipping office annex — the warehouse plan a 3PL hands the fit-out crew."
+diagram: floorplan
+standard: Architectural Graphic Standards · US NCS v6
+industry: [logistics, construction]
+persona: For the operations lead racking a warehouse and siting the docks
+complexity: 3
+tags: [floorplan, warehouse, logistics, industrial, racking]
+featured: false
+relatedLink:
+  label: Floor plan syntax
+  href: /docs/floorplan
+status: published
+dsl: |
+  floorplan "Distribution Warehouse" unit m
+  room floor "Warehouse" at 0,0 size 30x18 nolabel
+  room office "Shipping Office" below floor size 8x4
+  door floor south at 45% width 3
+  door floor south at 70% width 3
+  door between floor office at 50%
+  furniture loading-dock in floor at 11,16.6 size 3x0.6
+  furniture loading-dock in floor at 19,16.6 size 3x0.6
+  grid pallet-rack in floor rows 4 cols 4 count 16 area 3,2.5 27,12.5 itemsize 2.7x1.1
+  furniture forklift in floor at 14.4,13.6
+  furniture desk in office at 0.4,0.4 size 1.6x0.8
+  furniture filing-cabinet in office at 6.9,0.4
+---
+
+## What this shows
+
+Sixteen `pallet-rack` bays come from one `grid`, the wide column pitch opening the cross-aisles a forklift needs — and a `forklift` parked in the pick aisle proves the clearance is real, not assumed.
+
+Two `loading-dock` symbols sit on the rear wall above their exterior doors, and a `Shipping Office` annex hangs off the south wall via `below` — an L-shaped building footprint the engine dimensions on the outside.
