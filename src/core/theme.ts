@@ -1629,6 +1629,160 @@ export function resolveFloorplanTheme(name: string): ResolvedTheme<FloorplanToke
   return { ...BASE_THEMES[themeName], ...FLOORPLAN_TOKENS[themeName] };
 }
 
+// ─── Sports Playbook Tokens (multi-sport) ──────────────────
+// 49-SPORTS-PLAYBOOK-STANDARD §7. Coaching diagrams have no ratified colour
+// standard, so Schematex adopts a polished broadcast look: a **green playing
+// surface** (the house default across all three sports), white markings, white
+// offense discs with a navy number, red defenders. Movement reads off line
+// *style* (solid / dashed / wavy / double + arrow / T-bar) so the diagram
+// survives `monochrome` (chalkboard black-on-white). Soccer has no `dark`
+// variant (resolves to default) — handled in the renderer.
+
+export interface PlaybookTokens {
+  /** Playing surface (football field / soccer pitch). */
+  surface: string;
+  /** Alternating mow-stripe tint. */
+  surfaceAlt: string;
+  /** Out-of-bounds band framing the grass surface. */
+  surround: string;
+  /** Basketball hardwood court surface + lines + surround + on-court text. */
+  courtSurface: string;
+  courtLine: string;
+  courtSurround: string;
+  courtText: string;
+  /** Soft markings: yard lines, court lines, pitch lines, hash ticks. */
+  lineSoft: string;
+  /** Bold markings: line of scrimmage, key lines. */
+  lineBold: string;
+  /** Offense disc fill + stroke + interior number/label. */
+  offenseFill: string;
+  offenseStroke: string;
+  offenseLabel: string;
+  /** Goalkeeper accent (soccer). */
+  gkFill: string;
+  /** Defender X glyph + label. */
+  defenseStroke: string;
+  defenseLabel: string;
+  /** Offensive movement ink (run / route / cut / dribble / pass / screen). */
+  moveStroke: string;
+  /** Pre-snap motion (dashed, lighter). */
+  motionStroke: string;
+  /** Shot emphasis. */
+  shotStroke: string;
+  /** Coverage / responsibility zone bubble. */
+  zoneStroke: string;
+  zoneFill: string;
+  /** Ball marker (football brown / soccer ball / basketball). */
+  ballFill: string;
+  /** End-zone tint + goal-line / goalpost accent (football). */
+  endzoneFill: string;
+  goalAccent: string;
+  /** Rim (basketball). */
+  rim: string;
+  /** Yard numbers / on-surface text. */
+  surfaceText: string;
+  /** Down-and-distance + legend text (on the page background). */
+  annotation: string;
+}
+
+const DEFAULT_PLAYBOOK: PlaybookTokens = {
+  surface: "#2f8f4e",         // broadcast grass green
+  surfaceAlt: "#2b8549",      // darker mow stripe
+  surround: "#21683a",        // out-of-bounds grass band
+  courtSurface: "#f1ddba",    // light maple hardwood
+  courtLine: "#b07c40",       // warm court-line brown
+  courtSurround: "#6b4f2c",   // arena apron (mid wood)
+  courtText: "#7a5526",
+  lineSoft: "rgba(255,255,255,0.62)",
+  lineBold: "#ffffff",
+  offenseFill: "#ffffff",
+  offenseStroke: "#13294b",   // navy
+  offenseLabel: "#13294b",
+  gkFill: "#facc15",          // keeper yellow
+  defenseStroke: "#ef4444",   // red
+  defenseLabel: "#fee2e2",
+  moveStroke: "#0b1f3a",      // dark navy ink — reads on green
+  motionStroke: "#e2e8f0",
+  shotStroke: "#f59e0b",      // amber shot
+  zoneStroke: "#fde047",
+  zoneFill: "rgba(253,224,71,0.12)",
+  ballFill: "#7c3a14",
+  endzoneFill: "rgba(255,255,255,0.10)",
+  goalAccent: "#fcd34d",      // goalpost gold
+  rim: "#f97316",
+  surfaceText: "rgba(255,255,255,0.85)",
+  annotation: "#334155",
+};
+
+const MONOCHROME_PLAYBOOK: PlaybookTokens = {
+  surface: "#ffffff",
+  surfaceAlt: "#f6f6f6",
+  surround: "#e6e6e6",
+  courtSurface: "#ffffff",
+  courtLine: "#000000",
+  courtSurround: "#e6e6e6",
+  courtText: "#333333",
+  lineSoft: "#cbcbcb",
+  lineBold: "#000000",
+  offenseFill: "#ffffff",
+  offenseStroke: "#000000",
+  offenseLabel: "#000000",
+  gkFill: "#ffffff",
+  defenseStroke: "#000000",
+  defenseLabel: "#000000",
+  moveStroke: "#000000",
+  motionStroke: "#666666",
+  shotStroke: "#000000",
+  zoneStroke: "#000000",
+  zoneFill: "none",
+  ballFill: "#000000",
+  endzoneFill: "rgba(0,0,0,0.06)",
+  goalAccent: "#000000",
+  rim: "#000000",
+  surfaceText: "#333333",
+  annotation: "#000000",
+};
+
+const DARK_PLAYBOOK: PlaybookTokens = {
+  surface: "#16331f",         // night-game turf
+  surfaceAlt: "#143019",
+  surround: "#0e2415",
+  courtSurface: "#6f5232",    // dim hardwood
+  courtLine: "#caa46a",
+  courtSurround: "#1c140b",
+  courtText: "#caa46a",
+  lineSoft: "rgba(226,240,230,0.45)",
+  lineBold: "#e8f3ec",
+  offenseFill: "#e8f3ec",
+  offenseStroke: "#0b1f3a",
+  offenseLabel: "#0b1f3a",
+  gkFill: "#facc15",
+  defenseStroke: "#f87171",
+  defenseLabel: "#fee2e2",
+  moveStroke: "#0b1f3a",
+  motionStroke: "#cbd5e1",
+  shotStroke: "#fbbf24",
+  zoneStroke: "#fde047",
+  zoneFill: "rgba(253,224,71,0.14)",
+  ballFill: "#cba37a",
+  endzoneFill: "rgba(255,255,255,0.08)",
+  goalAccent: "#fcd34d",
+  rim: "#fb923c",
+  surfaceText: "rgba(232,243,236,0.85)",
+  annotation: "#cdd6f4",
+};
+
+export const PLAYBOOK_TOKENS: Record<ThemeName, PlaybookTokens> = {
+  default: DEFAULT_PLAYBOOK,
+  monochrome: MONOCHROME_PLAYBOOK,
+  dark: DARK_PLAYBOOK,
+};
+
+export function resolvePlaybookTheme(name: string): ResolvedTheme<PlaybookTokens> {
+  const themeName = (name in BASE_THEMES ? name : "default") as ThemeName;
+  return { ...BASE_THEMES[themeName], ...PLAYBOOK_TOKENS[themeName] };
+}
+
 // ─── Genogram Theme Aliases ────────────────────────────────
 
 const GENOGRAM_ALIASES: Record<string, ThemeName> = {

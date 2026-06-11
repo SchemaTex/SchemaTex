@@ -598,6 +598,38 @@ furniture nightstand in bed3 at 0.3,1.1
 furniture wardrobe in bed3 at 2.7,0.15 size 0.5x1.8
 furniture bookshelf in bed3 at 0.3,3.9 size 1.2x0.35`,
   },
+  {
+    file: 'examples/playbook/football-four-verticals.svg',
+    text: `playbook "Four Verticals" sport football
+field down 2 distance 7 los 40
+formation spread
+defense cover-2
+route X go
+route H seam
+route Y seam
+route Z go
+route RB flat right`,
+  },
+  {
+    file: 'examples/playbook/basketball-pick-and-roll.svg',
+    text: `playbook "Spread Pick & Roll" sport basketball
+set spread-pnr
+screen 5 1
+dribble 1 to 11,17
+cut 5 rim
+pass 1 2`,
+  },
+  {
+    file: 'examples/playbook/soccer-counter-attack.svg',
+    text: `playbook "Counter-Attack" sport soccer
+formation 4-3-3
+pass 6 8
+dribble 8 to 66,28
+pass 8 to 96,18
+run 7 to 99,20
+run 9 to 94,36
+run 11 to 95,52`,
+  },
 ];
 
 for (const { file, text } of examples) {

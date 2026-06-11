@@ -1580,6 +1580,38 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
       "'overlaps … by … m' (warning) -> spread the grid `area` corners or reduce rows/cols; remember chair rings extend ~0.45 m beyond a table edge.",
     ],
   },
+  playbook: {
+    type: "playbook",
+    header: 'playbook "Play Name" [sport football]',
+    mode: "formation preset + named routes off the route tree; coordinates in yards (x lateral from ball, y depth off LOS)",
+    keywords:
+      'field down N distance M los YARD hash nfl|college|none · formation i-form|shotgun|singleback|pistol|trips-right|trips-left|spread|empty|pistol|goal-line|wishbone [left|right] · defense 4-3|3-4|nickel|dime|cover-0|cover-1|cover-2|cover-3|cover-4|cover-6 · player id pos[o|c|ol|qb|rb|wr|te|x|dl|lb|db|s] [label "L"] [at x,y] · route PLAYER NAMED [depth] [left|right] · run PLAYER CONCEPT [left|right] · block BLOCKER TARGET · pull LINEMAN left|right · handoff QB BACK · motion PLAYER left|right [yards] · zone at x,y size rxXry "label" · route tree: go/fly/streak slant flat hitch out in/dig curl comeback corner/flag post wheel cross/drag seam screen · run concepts: dive iso power counter sweep toss draw trap · players from a formation use ids QB RB FB C LG RG LT RT Y(TE) X Z H',
+    forms: [
+      'playbook "Slant-Flat" sport football',
+      "field down 1 distance 10 los 35 hash nfl",
+      "formation trips-right",
+      "defense cover-2",
+      "route Z slant",
+      "route H flat",
+      "route X slant",
+      "run RB dive right",
+    ],
+    prefer: [
+      "Start from a `formation` preset — it places all 11 offensive players with standard ids (QB RB FB C LG RG LT RT, TE=Y, receivers X/Z/H). Then assign routes by id.",
+      "Use named routes from the tree (`route Z post`, `route H out 12`) — the optional number is the stem depth in yards off the LOS; an explicit `left`/`right` overrides the natural break side.",
+      "Use `run RB power right` for the ball carrier, `pull LG right` for a pulling lineman, `block FB DE_S` for a key block (T-bar drawn on the target), `handoff QB RB` for the mesh.",
+      "Add `defense cover-2` (or 4-3 / cover-3 …) to drop in 11 defenders + coverage zone bubbles automatically.",
+      "Use `field down 1 distance 10 los 35` for the down-and-distance banner; `hash nfl|college` sets the hash-mark width.",
+    ],
+    avoid: [
+      "Don't hand-place all 22 players with `at` unless you need a non-standard look — the formation/defense presets are far less error-prone.",
+      "Don't invent route names — stick to the tree (go/slant/out/in/curl/comeback/corner/post/flat/hitch/wheel/cross/seam/screen) and run concepts (dive/power/counter/sweep/toss/draw/iso/trap).",
+    ],
+    repair: [
+      "'route on unknown player …' (warning) -> the player id isn't in the formation; check the roster ids (QB RB FB C LG RG LT RT Y X Z H) or add a `player` statement.",
+      "'block … on unknown target …' (warning) -> the block target must be a declared defender id (e.g. DE_S, MLB) — add `defense …` so the defenders exist.",
+    ],
+  },
 };
 
 export function getGenerationProfile(

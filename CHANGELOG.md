@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.9.4] — 2026-06-11
+
+### Added — `playbook`: multi-sport tactics-board engine (49-SPORTS-PLAYBOOK-STANDARD)
+
+A coach's play diagram from one paragraph of text, for the three biggest team sports — **American football** (X&O), **basketball** (half-court sets), and **soccer / association football** (team shapes & movement). Opens the new **Sports & Tactics** cluster. The notation is convention-not-statute, so Schematex takes the AFCA X&O convention + numbered route tree as the football baseline, the FIBA/NBA coaching legend as the basketball baseline, and the IFAB Law 1 pitch + tactics legend as the soccer baseline — and documents deviations.
+
+- **One `SportModule` per sport, shared everything else**: parser, layout resolver, and renderer are sport-agnostic; each sport (`football.ts` / `basketball.ts` / `soccer.ts`) owns its coordinate model, formation/set roster, named-route + landmark resolution, field markings, and legend. A fourth sport is purely additive.
+- **Three real coordinate models**: football in yards (offense attacking up, downfield = +y, ball at origin); basketball in feet (NBA half-court, baseline + hoop at top); soccer in metres (full IFAB 105 × 68 m pitch, attack toward +x, or `view half`).
+- **Players by formation or by hand**: football `formation i-form|shotgun|spread|trips|empty|goal-line|wishbone|…` (+ strength), basketball `set horns|spread-pnr|5-out|1-4-low|box|…`, soccer `formation 4-3-3|4-4-2|4-2-3-1|3-5-2|…`; or place individuals with `player <id> <pos> at x,y label …` for set-pieces.
+- **Movement verbs drawn in each sport's own line style** — and the pass-vs-run convention is *inverted* between sports, honoured rather than flattened: football `route` (route tree) / `run` / `handoff` / `pull` / `block` (solid routes, arrowheads, block T-bars) + dashed throws; basketball `pass` (dashed) / `cut` (solid) / `dribble` (wavy) / `screen` (T-bar) to named landmarks (rim, elbow, wing, corner); soccer `pass` (solid) / `run` (dashed) / `dribble` (wavy) / `shot` (double line). The rendered legend always matches the sport.
+- **Standards-correct surfaces**: football field with 5-yard lines, NFL/NCAA hash marks (`hash nfl|college|none`), LOS, plus the end-zone band + gold goal line + goalposts in the red zone (`goal N`); basketball NBA half-court (lane, FT circle, restricted arc, three-point line, centre circle) on **light maple hardwood — never green**; soccer IFAB pitch (penalty/goal areas, penalty spots + arcs clipped outside the box, centre circle, 1 m corner arcs, goals). The shared renderer frames every surface with an out-of-bounds surround band + boundary line so no field bleeds off the canvas.
+- **Defensive overlays**: football `cover-0/1/2/3/4/6` shells + `4-3/3-4/nickel/dime` fronts; basketball `man` + `zone-2-3/3-2/1-3-1`; soccer `low/mid/high` block lines.
+- **Validation** of the LLM-real mistakes: unknown sport/formation/set/defense/named-route (with the valid set listed), moves referencing undeclared players, malformed coordinates / missing targets.
+- **Theming**: `default` (broadcast green turf for the grass sports, maple hardwood for basketball, navy ink / red defense / gold accents), `monochrome` (print), `dark` (night turf / dim hardwood). **Soccer is daylight-only** — `theme: dark` falls back to the default pitch.
+- **Surfaces**: 15 worked examples (5 per sport — Four Verticals, Mesh, Smash, Power O, Red-Zone Fade; Pick & Roll, Horns, Give & Go, Floppy, Backdoor; 4-3-3 Shape, Build-Up, Overlap, High Press, Counter-Attack), a docs page with playground, three README gallery heroes, a generation profile + registry entry under the new **Sports & Tactics** cluster.
+- Deferred (documented in §11): more sports (hockey/lacrosse/futsal/rugby), animated/multi-frame plays, full defensive fits & blitz paths, set-piece preset libraries, pressing-trigger annotations, auto-spacing of overlapping labels.
+
+---
+
 ## [0.9.3] — 2026-06-09
 
 ### Added — `floorplan`: floor plan / space layout engine (48-FLOORPLAN-STANDARD)

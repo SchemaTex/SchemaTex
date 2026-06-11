@@ -53,6 +53,7 @@ import { idef0 } from "../diagrams/idef0";
 import { threatmodel } from "../diagrams/threatmodel";
 import { welding } from "../diagrams/welding";
 import { floorplan } from "../diagrams/floorplan";
+import { playbook } from "../diagrams/playbook";
 
 export interface SchematexConfig {
   type?:
@@ -92,7 +93,8 @@ export interface SchematexConfig {
     | "umlclass"
     | "faulttree"
     | "bowtie"
-    | "floorplan";
+    | "floorplan"
+    | "playbook";
   width?: number;
   height?: number;
   padding?: number;
@@ -152,6 +154,7 @@ const plugins: DiagramPlugin[] = [
   threatmodel,
   welding,
   floorplan,
+  playbook,
 ];
 
 function detectPlugin(text: string, config?: SchematexConfig): DiagramPlugin {
@@ -163,7 +166,7 @@ function detectPlugin(text: string, config?: SchematexConfig): DiagramPlugin {
     if (plugin.detect(text)) return plugin;
   }
   throw new Error(
-    "Cannot detect diagram type. Start your text with 'genogram', 'ecomap', 'pedigree', 'phylo', 'sociogram', 'timing', 'logic', 'circuit', 'blockdiagram', 'ladder', 'sld', 'entity-structure', 'fishbone', 'venn', 'flowchart', 'mindmap', 'matrix', 'orgchart', 'state', 'pid', 'erd', 'breadboard', 'bpmn', 'fbd', 'sfc', 'prisma', 'usecase', 'pert', 'sequence', 'petri', 'network', 'umlclass', 'faulttree', 'bowtie', or 'floorplan'."
+    "Cannot detect diagram type. Start your text with 'genogram', 'ecomap', 'pedigree', 'phylo', 'sociogram', 'timing', 'logic', 'circuit', 'blockdiagram', 'ladder', 'sld', 'entity-structure', 'fishbone', 'venn', 'flowchart', 'mindmap', 'matrix', 'orgchart', 'state', 'pid', 'erd', 'breadboard', 'bpmn', 'fbd', 'sfc', 'prisma', 'usecase', 'pert', 'sequence', 'petri', 'network', 'umlclass', 'faulttree', 'bowtie', 'floorplan', or 'playbook'."
   );
 }
 

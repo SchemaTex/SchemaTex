@@ -1,0 +1,27 @@
+---
+title: Red Zone — Play-Action Fade
+description: "A goal-line play-action shot showing the end zone, goal line, and goalposts."
+diagram: playbook
+standard: AFCA X&O convention · NFL/NCAA Rule 1 field
+industry: [coaching, american-football]
+persona: For a coach drawing a goal-line scoring play
+complexity: 2
+tags: [football, red-zone, play-action, fade]
+featured: false
+relatedLink:
+  label: Sports playbook syntax
+  href: /docs/playbook
+status: published
+dsl: |
+  playbook "Red Zone — Play-Action Fade" sport football
+  field down 1 distance 5 los 5 goal 5 hash nfl
+  formation i-form right
+  defense cover-1
+  handoff QB RB
+  route Z corner 4
+  route X slant
+  route Y out 3
+  run RB dive right
+---
+
+Inside the 5-yard line the field changes: `goal 5` draws the end zone band, gold goal line, and goalposts. The play fakes the `dive` (`handoff` + `run`) to freeze the linebackers, then throws the back-corner `fade` with a `slant` and `out` as alternatives against `cover-1`.

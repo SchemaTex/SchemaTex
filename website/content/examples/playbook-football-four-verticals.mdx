@@ -1,0 +1,27 @@
+---
+title: Four Verticals (vs Cover 2)
+description: "The Air Raid staple — four receivers run vertical, stretching a two-deep shell until a seam opens."
+diagram: playbook
+standard: AFCA X&O convention · NFL/NCAA Rule 1 field
+industry: [coaching, american-football]
+persona: For a coach installing the base Air Raid pass concept
+complexity: 2
+tags: [football, passing, air-raid, cover-2]
+featured: true
+relatedLink:
+  label: Sports playbook syntax
+  href: /docs/playbook
+status: published
+dsl: |
+  playbook "Four Verticals" sport football
+  field down 2 distance 7 los 40
+  formation spread
+  defense cover-2
+  route X go
+  route H seam
+  route Y seam
+  route Z go
+  route RB flat right
+---
+
+**Four Verticals** floods a two-deep coverage with four vertical threats: the outside receivers run `go` routes up the sidelines while the inner two bend to the `seam`, forcing the two deep safeties to choose. The back leaks to the `flat` as a checkdown. Drawn out of `spread` against `cover-2`, with each route on the football route tree.

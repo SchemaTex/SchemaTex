@@ -49,4 +49,5 @@ export const DIAGRAM_ICON_MARKUP: Record<DiagramType, string> = {
   "threatmodel": "<rect x=\"2.5\" y=\"5\" width=\"19\" height=\"14\" rx=\"2\" stroke-dasharray=\"2.5 2\" />\n  <circle cx=\"8\" cy=\"12\" r=\"2.8\" />\n  <path d=\"M10.8 12 H16\" />\n  <path d=\"M14.4 10.6 L16 12 L14.4 13.4\" />\n  <path d=\"M16 8.5 H21 M16 15.5 H21\" />",
   "welding": "<path d=\"M3 9 H15\" />\n  <path d=\"M15 9 L20 15\" />\n  <path d=\"M18.6 14.1 L20 15 L19.3 13.4\" />\n  <path d=\"M8.5 9 V13.6 L12.7 9\" />\n  <circle cx=\"15\" cy=\"9\" r=\"1.4\" />",
   "floorplan": "<rect x=\"3\" y=\"4\" width=\"18\" height=\"16\"/>\n  <path d=\"M13 4 V10\"/>\n  <path d=\"M13 14 V20\"/>\n  <path d=\"M13 14 H21\"/>\n  <path d=\"M3 20 A5 5 0 0 1 8 15\"/>",
+  "playbook": "<circle cx=\"6\" cy=\"7\" r=\"3\"/>\n  <path d=\"M6 10 Q6 16 12 17 H18\"/>\n  <path d=\"M16 15 L18.5 17 L16 19\"/>\n  <path d=\"M14.5 4 L19 8.5 M19 4 L14.5 8.5\"/>",
 };

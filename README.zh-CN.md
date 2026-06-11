@@ -33,7 +33,7 @@
 
 ---
 
-**Schematex** 是一个开源渲染引擎，专门画那些专业人士**真正在用**的图 —— 医学、电气、法律、分析领域。**36 种图**，覆盖医学、工程、法律与分析：
+**Schematex** 是一个开源渲染引擎，专门画那些专业人士**真正在用**的图 —— 医学、电气、法律、分析领域。**37 种图**，覆盖医学、工程、法律与分析：
 
 - 👪 **关系类** —— 家系图（genogram）、生态图（ecomap）、遗传谱系图（pedigree）、社交图（sociogram）、系统发育树（phylo）
 - ⚡ **电气与工业** —— 梯形图（ladder）、单线图（SLD）、电路原理图（circuit）、逻辑门（logic）、时序图（timing）、方框图（block）、**FBD**、**SFC**、面包板（breadboard）、**P&ID**（ISA-5.1）
@@ -82,7 +82,7 @@ import { render } from 'schematex/genogram';
 
 ## 图库
 
-全部 36 种图共用同一条渲染管线，下面展示其中一部分 —— **在 [schematex.dev/playground](https://schematex.dev/playground) 实时试用任意一种。**
+全部 37 种图共用同一条渲染管线，下面展示其中一部分 —— **在 [schematex.dev/playground](https://schematex.dev/playground) 实时试用任意一种。**
 
 ### 👪 家系图 Genogram —— *McGoldrick 家庭系统标准*
 

@@ -2432,6 +2432,261 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "notes": "Real process plants don't have one control loop — they have a web of them. This diagram shows a CSTR reactor system with four instrument loops and a safety instrument, which is about the minimum complexity for a unit operation that would appear in a HAZOP study. Understanding how to read this diagram cold is a core skill for every process, instrumentation, and safety engineer on the project team.\n\n**The process path.** Raw material is stored in T-201 (atmospheric tank). The centrifugal pump P-201A/B (the A/B suffix is conventional for spared pumps — one online, one standby) pulls from the bottom nozzle and pushes through 6-inch feed line L2 to the shell-and-tube heat exchanger E-201, which pre-heats the feed before it enters the reactor. From E-201, the line continues through the feed control valve V-201 into the reactor R-201. The reactor product exits through L5 and the product control valve V-202.\n\n**Loop 201 — flow control.** FT-201 (flow transmitter, field-mounted) sits on the pump discharge line L2 and sends a 4–20 mA signal to FIC-201 (flow indicating controller, control-room mounted, DCS shared — note the horizontal line through the circle). FIC-201 closes or opens V-201 to maintain the feed flow setpoint. V-201 is fail-closed: if instrument air is lost, the feed to the reactor stops. Starving a reactor on air loss is usually safer than flooding it.\n\n**Loop 201T — temperature control.** TT-201 (temperature transmitter) measures the reactor body temperature and signals TIC-201, which throttles V-202 — the product outlet valve — to regulate residence time and therefore heat generation in the reactor. V-202 is fail-open: losing air means the product continues to drain out, preventing dangerous temperature accumulation inside the vessel. The fail-safe position is always chosen by answering the question: \"which state causes less harm if control is lost?\"\n\n**Loop 201P — pressure monitoring and safety.** PT-201 is a field-mounted pressure transmitter — it sends the continuous pressure reading to the DCS historian. PSHH-201 is a pressure switch, high-high: a discrete field-mounted device that trips at the maximum allowable working pressure (MAWP). It is wired to the safety interlock system (SIS), not the DCS. The distinction matters: DCS loops control the process; SIS loops protect equipment and people. OSHA PSM (29 CFR 1910.119) requires the two to be functionally independent. V-203 is the pressure safety valve — a spring-loaded valve that opens automatically at the set pressure of 150 psig regardless of any control signal, providing the last line of mechanical protection.\n\n**Why P&ID, not PFD.** A process flow diagram (PFD) shows the same equipment but only the major process streams, mass balances, and operating conditions. A P&ID adds every instrument, every valve, every signal line, and every utility connection — it is the engineering document used by instrument engineers to write I/O lists, by safety engineers to perform HAZOP, and by construction teams to verify field installation. The DSL lets you build this level of detail from text, making it tractable for AI-assisted first drafts and version-controlled review cycles."
   },
   {
+    "slug": "playbook-basketball-backdoor",
+    "diagram": "playbook",
+    "title": "Backdoor Cut",
+    "description": "When the defender overplays the passing lane, cut behind him to the rim.",
+    "standard": "FIBA/NBA half-court markings · coaching legend",
+    "tags": [
+      "basketball",
+      "backdoor",
+      "cutting",
+      "Princeton"
+    ],
+    "complexity": 1,
+    "featured": false,
+    "dsl": "playbook \"Backdoor Cut\" sport basketball\nset 5-out\ncut 3 rim\npass 1 to 4,6",
+    "notes": "The **backdoor** punishes a defender who denies the wing too aggressively: the wing `cut`s behind him to the `rim` and the top passes to the cutter (`pass 1 to 4,6`) for an easy finish. A staple of Princeton and motion offense."
+  },
+  {
+    "slug": "playbook-basketball-floppy",
+    "diagram": "playbook",
+    "title": "Floppy Action",
+    "description": "A shooter chooses a single or double screen off the baseline to get open on the wing.",
+    "standard": "FIBA/NBA half-court markings · coaching legend",
+    "tags": [
+      "basketball",
+      "floppy",
+      "off-ball-screens",
+      "shooting"
+    ],
+    "complexity": 3,
+    "featured": false,
+    "dsl": "playbook \"Floppy Action\" sport basketball\nset 1-4-low\nscreen 4 2\nscreen 5 3\ncut 2 lwing\npass 1 2",
+    "notes": "**Floppy** starts a shooter under the basket with a single screen on one side and a double on the other. Reading the defense, the shooter curls off a screen (`screen 4 2`) up to the wing (`cut 2 lwing`) for a catch-and-shoot — `pass 1 2`."
+  },
+  {
+    "slug": "playbook-basketball-give-and-go",
+    "diagram": "playbook",
+    "title": "Give & Go",
+    "description": "The oldest play in basketball — pass, cut to the basket, get it back.",
+    "standard": "FIBA/NBA half-court markings · coaching legend",
+    "tags": [
+      "basketball",
+      "give-and-go",
+      "cutting",
+      "fundamentals"
+    ],
+    "complexity": 1,
+    "featured": false,
+    "dsl": "playbook \"Give & Go\" sport basketball\nset 5-out\npass 1 2\ncut 1 rim\npass 2 1",
+    "notes": "The **give & go** is the first play every player learns: `pass` to a teammate, `cut` hard to the `rim`, and receive the return `pass` for a layup. Shown from a `5-out` alignment so the lane is empty for the cut."
+  },
+  {
+    "slug": "playbook-basketball-horns",
+    "diagram": "playbook",
+    "title": "Horns Twist",
+    "description": "A two-big set at the elbows that creates a ball screen with a re-screen counter.",
+    "standard": "FIBA/NBA half-court markings · coaching legend",
+    "tags": [
+      "basketball",
+      "horns",
+      "ball-screen",
+      "set-play"
+    ],
+    "complexity": 3,
+    "featured": false,
+    "dsl": "playbook \"Horns Twist\" sport basketball\nset horns\nscreen 5 1\ndribble 1 to 11,16\ncut 5 rim\ncut 4 to 0,26\npass 1 3",
+    "notes": "**Horns** places two bigs at the elbows and two shooters in the corners. One big screens for the ball (`screen 5 1`) and rolls to the `rim` while the second pops to the top (`cut 4`), giving the ball-handler a roll-or-pop read plus a corner skip (`pass 1 3`)."
+  },
+  {
+    "slug": "playbook-basketball-pick-and-roll",
+    "diagram": "playbook",
+    "title": "Spread Pick & Roll",
+    "description": "The defining action of modern basketball — a ball screen with four shooters spacing the floor.",
+    "standard": "FIBA/NBA half-court markings · coaching legend",
+    "tags": [
+      "basketball",
+      "pick-and-roll",
+      "spacing",
+      "half-court"
+    ],
+    "complexity": 2,
+    "featured": true,
+    "dsl": "playbook \"Spread Pick & Roll\" sport basketball\nset spread-pnr\nscreen 5 1\ndribble 1 to 11,17\ncut 5 rim\npass 1 2",
+    "notes": "The **pick & roll** is the most-run action in the sport. The big (`screen 5 1`) sets a ball screen, the guard `dribble`s off it, and the screener `cut`s (rolls) to the `rim`. With the other three players spaced behind the arc, help defense leaves a shooter open — `pass 1 2`. Note the basketball legend: dashed = pass, solid = cut, wavy = dribble."
+  },
+  {
+    "slug": "playbook-football-four-verticals",
+    "diagram": "playbook",
+    "title": "Four Verticals (vs Cover 2)",
+    "description": "The Air Raid staple — four receivers run vertical, stretching a two-deep shell until a seam opens.",
+    "standard": "AFCA X&O convention · NFL/NCAA Rule 1 field",
+    "tags": [
+      "football",
+      "passing",
+      "air-raid",
+      "cover-2"
+    ],
+    "complexity": 2,
+    "featured": true,
+    "dsl": "playbook \"Four Verticals\" sport football\nfield down 2 distance 7 los 40\nformation spread\ndefense cover-2\nroute X go\nroute H seam\nroute Y seam\nroute Z go\nroute RB flat right",
+    "notes": "**Four Verticals** floods a two-deep coverage with four vertical threats: the outside receivers run `go` routes up the sidelines while the inner two bend to the `seam`, forcing the two deep safeties to choose. The back leaks to the `flat` as a checkdown. Drawn out of `spread` against `cover-2`, with each route on the football route tree."
+  },
+  {
+    "slug": "playbook-football-mesh",
+    "diagram": "playbook",
+    "title": "Mesh Concept",
+    "description": "Two shallow crossers rub underneath while a corner route clears the top — the classic man-and-zone beater.",
+    "standard": "AFCA X&O convention · NFL/NCAA Rule 1 field",
+    "tags": [
+      "football",
+      "passing",
+      "mesh",
+      "crossers"
+    ],
+    "complexity": 3,
+    "featured": false,
+    "dsl": "playbook \"Mesh Concept\" sport football\nfield down 1 distance 10 los 35\nformation spread\ndefense cover-3\nroute Y drag\nroute H cross\nroute Z corner 12\nroute X hitch\nroute RB flat right",
+    "notes": "**Mesh** sends two receivers on shallow crossing routes (`drag` and `cross`) that brush past each other just over the ball, creating a natural rub against man coverage and a moving window against zone. The `corner` route clears the deep defender and the `hitch` plus `flat` give quick outlets."
+  },
+  {
+    "slug": "playbook-football-power-o",
+    "diagram": "playbook",
+    "title": "Power O",
+    "description": "The most-installed gap run in football — backside guard pulls to lead through the hole.",
+    "standard": "AFCA X&O convention · NFL/NCAA Rule 1 field",
+    "tags": [
+      "football",
+      "run",
+      "power",
+      "gap-scheme"
+    ],
+    "complexity": 3,
+    "featured": false,
+    "dsl": "playbook \"Power O\" sport football\nfield down 1 distance 10 los 35\nformation i-form right\ndefense 4-3\nhandoff QB RB\nrun RB power right\npull LG right\nblock FB DE_S\nroute Z go",
+    "notes": "**Power O** is the foundational gap run: the play-side blocks down, the fullback kicks out the edge, and the backside guard (`pull LG`) wraps through the hole to lead for the back. Drawn from `i-form` against a `4-3` front with the handoff and pulling lineman shown."
+  },
+  {
+    "slug": "playbook-football-red-zone-fade",
+    "diagram": "playbook",
+    "title": "Red Zone — Play-Action Fade",
+    "description": "A goal-line play-action shot showing the end zone, goal line, and goalposts.",
+    "standard": "AFCA X&O convention · NFL/NCAA Rule 1 field",
+    "tags": [
+      "football",
+      "red-zone",
+      "play-action",
+      "fade"
+    ],
+    "complexity": 2,
+    "featured": false,
+    "dsl": "playbook \"Red Zone — Play-Action Fade\" sport football\nfield down 1 distance 5 los 5 goal 5 hash nfl\nformation i-form right\ndefense cover-1\nhandoff QB RB\nroute Z corner 4\nroute X slant\nroute Y out 3\nrun RB dive right",
+    "notes": "Inside the 5-yard line the field changes: `goal 5` draws the end zone band, gold goal line, and goalposts. The play fakes the `dive` (`handoff` + `run`) to freeze the linebackers, then throws the back-corner `fade` with a `slant` and `out` as alternatives against `cover-1`."
+  },
+  {
+    "slug": "playbook-football-smash",
+    "diagram": "playbook",
+    "title": "Smash Concept",
+    "description": "A corner-over-hitch high-low that puts the cornerback in a bind — the textbook Cover 2 beater.",
+    "standard": "AFCA X&O convention · NFL/NCAA Rule 1 field",
+    "tags": [
+      "football",
+      "passing",
+      "smash",
+      "cover-2"
+    ],
+    "complexity": 2,
+    "featured": false,
+    "dsl": "playbook \"Smash Concept\" sport football\nfield down 3 distance 6 los 45\nformation trips right\ndefense cover-2\nroute Z hitch\nroute Y corner 12\nroute X slant\nroute H flat right",
+    "notes": "**Smash** pairs a `hitch` underneath with a `corner` route over the top on the same side. The flat defender can cover one but not both: jump the hitch and the corner is open behind him; sink to the corner and the hitch sits down in front. Shown from `trips right` against `cover-2`."
+  },
+  {
+    "slug": "playbook-soccer-4-3-3-shape",
+    "diagram": "playbook",
+    "title": "4-3-3 Team Shape",
+    "description": "The default possession shape — a back four, a midfield three, and a front three.",
+    "standard": "IFAB Laws of the Game, Law 1 (pitch)",
+    "tags": [
+      "soccer",
+      "formation",
+      "4-3-3",
+      "shape"
+    ],
+    "complexity": 1,
+    "featured": true,
+    "dsl": "playbook \"4-3-3 Team Shape\" sport soccer\nformation 4-3-3",
+    "notes": "A formation on its own draws the **team shape**. The **4-3-3** — four defenders, three midfielders, three forwards — is the modern possession default, giving width through the wingers and a passing triangle in midfield. Players are numbered by position on a full IFAB pitch."
+  },
+  {
+    "slug": "playbook-soccer-build-up",
+    "diagram": "playbook",
+    "title": "Build-Up From the Back",
+    "description": "Playing out of the defensive third — split the centre-backs, invite pressure, pass through the lines.",
+    "standard": "IFAB Laws of the Game, Law 1 (pitch)",
+    "tags": [
+      "soccer",
+      "build-up",
+      "possession",
+      "passing"
+    ],
+    "complexity": 2,
+    "featured": false,
+    "dsl": "playbook \"Build-Up From the Back\" sport soccer\nformation 4-3-3\npass 1 4\npass 4 2\nrun 2 to 40,10\npass 4 6\nrun 6 to 62,24",
+    "notes": "**Building from the back** starts with the keeper (`pass 1 4`) and works the ball through the centre-back and full-back while the pivot drops to receive. Soccer draws passes **solid** and runs **dashed** — note the full-back's overlapping `run` and the pivot turning forward."
+  },
+  {
+    "slug": "playbook-soccer-counter-attack",
+    "diagram": "playbook",
+    "title": "Counter-Attack",
+    "description": "Win it in midfield and go — a vertical pass, a driving carry, and three forwards sprinting in behind.",
+    "standard": "IFAB Laws of the Game, Law 1 (pitch)",
+    "tags": [
+      "soccer",
+      "counter-attack",
+      "transition",
+      "through-ball"
+    ],
+    "complexity": 3,
+    "featured": false,
+    "dsl": "playbook \"Counter-Attack\" sport soccer\nformation 4-3-3\npass 6 8\ndribble 8 to 66,28\npass 8 to 96,18\nrun 7 to 99,20\nrun 9 to 94,36\nrun 11 to 95,52",
+    "notes": "On the **counter**, speed beats numbers. The pivot wins it and finds a midfielder (`pass 6 8`) who carries into space (`dribble`), then releases a `pass` through ball as all three forwards sprint in behind (`run`). The solid pass + dashed runs read instantly as a transition moment."
+  },
+  {
+    "slug": "playbook-soccer-high-press",
+    "diagram": "playbook",
+    "title": "High Press 4-3-3",
+    "description": "Coordinated forward pressure — the front three and a midfielder hunt the ball in the opponent's half.",
+    "standard": "IFAB Laws of the Game, Law 1 (pitch)",
+    "tags": [
+      "soccer",
+      "high-press",
+      "gegenpress",
+      "defending"
+    ],
+    "complexity": 2,
+    "featured": false,
+    "dsl": "playbook \"High Press 4-3-3\" sport soccer\nformation 4-3-3\nrun 9 to 98,34\nrun 7 to 94,20\nrun 11 to 94,48\nrun 8 to 76,40",
+    "notes": "A **high press** wins the ball back near the opponent's goal. The striker leads the press onto the centre-backs while the wingers curve their `run`s to cut the passing lanes to the full-backs, and a midfielder steps up to support — the coordinated forward movement that defines the gegenpress."
+  },
+  {
+    "slug": "playbook-soccer-overlap",
+    "diagram": "playbook",
+    "title": "Overlap & Cross",
+    "description": "The full-back overlaps the winger to get to the byline and deliver a cross into the box.",
+    "standard": "IFAB Laws of the Game, Law 1 (pitch)",
+    "tags": [
+      "soccer",
+      "overlap",
+      "cross",
+      "wide-play"
+    ],
+    "complexity": 3,
+    "featured": false,
+    "dsl": "playbook \"Overlap & Cross\" sport soccer\nview half\nplayer 7 o at 75,12 label 7\nplayer 2 o at 60,15 label 2\nplayer 9 o at 88,30 label 9\nplayer 11 o at 85,52 label 11\nplayer 10 o at 80,38 label 10\ndribble 7 to 82,20\nrun 2 to 90,8\npass 7 to 90,8\npass 2 to 102,34\nrun 9 to 101,31\nrun 11 to 101,40",
+    "notes": "The **overlap** combines the winger and full-back: the winger drives inside (`dribble`) to fix the defender while the full-back `run`s outside and overlaps. The release pass down the line (`pass 7 to 90,8`) sets up a byline cross to the strikers attacking the box. Drawn with `view half` and explicit players for full control."
+  },
+  {
     "slug": "prisma-dual-pipeline",
     "diagram": "prisma",
     "title": "PRISMA 2020 dual pipeline (databases + other methods)",
@@ -3399,5 +3654,9 @@ export const SYNTAX: Readonly<Record<string, GeneratedSyntax>> = {
   "floorplan": {
     "title": "Floor plan",
     "content": "## 1. Your first floor plan\n\nA header, one room, a door, and a window:\n\n```\nfloorplan \"Studio\"\nroom main \"Studio\" at 0,0 size 4x3\ndoor main south at 20%\nwindow main north at 50%\n```\n\nThree rules cover most usage:\n\n1. Start with `floorplan`, an optional quoted title, and `unit m` (default) or `unit ft`. **All numbers are in this unit.**\n2. Rooms are rectangles: `room id \"Label\" at x,y size WxH`. The label and computed area render centered in the room.\n3. Openings hang on walls: a wall reference (`main south`) positions along that wall at a percentage; `between A B` finds the shared wall automatically.\n\n---\n\n## 2. Rooms and placement\n\nPlace the first room at `0,0` and chain the rest relatively — adjacent rooms share an edge exactly, and their walls merge into a single band:\n\n```\nroom living  \"Living Room\" at 0,0 size 5.2x4.2\nroom kitchen \"Kitchen\"     right-of living size 3.0x4.2\nroom hall    \"Hallway\"     below living size 2.0x2.6\nroom bed1    \"Bedroom 1\"   right-of hall size 3.2x2.6\n```\n\n- `right-of` / `left-of` / `above` / `below` snap to the reference room's edge.\n- `align start|center|end` aligns the cross axis (default `start` = top/left edges flush); `offset n` shifts it.\n- `fill #e0f2fe` tints the floor; `nolabel` suppresses the name + area label (single-space plans like classrooms).\n- Coordinates are y-down: `at 0,0` is the top-left corner.\n\n**L/T/U-shaped rooms** use `extend` — declare the main rectangle, then grow it with edge-sharing rectangles. The walls merge along the seam, the area is summed into one number (exactly how professionals measure L-rooms), and the label centers on the largest part:\n\n```\nroom living \"Living Room\" at 0,0 size 5x4\nextend living at 5,2 size 2x2          # L-shape: notch at top-right\n```\n\nAn extension that doesn't touch the room, or overlaps it, is rejected with a quantified error. `north` (optionally `north 30` for rotated plans) adds the compass at the top right.\n\n---\n\n## 3. Doors, windows, openings\n\n```\ndoor hall west at 50% width 1.0 swing in          # exterior door on a wall\ndoor between hall bed1 at 50% hinge right          # interior door on the shared wall\ndoor between bed1 bath at 30% type sliding         # sliding door — no arc\nopening between living kitchen at 35% width 1.2    # archway, no leaf\nwindow living north at 30% width 1.8\n```\n\n- `between A B` resolves the shared wall segment and positions at the percentage **along the overlap** — no coordinates needed. Non-adjacent rooms are rejected with the measured gap.\n- Doors default to 0.9 m wide on exterior walls, 0.8 m on `between` walls; windows default to 1.2 m.\n- `hinge left|right` picks the jamb; `swing in|out` flips the quarter-arc (default swings into the owning room — the first room named).\n- Door `type single|double|sliding|pocket|bifold`: double draws two mirrored arcs; sliding/pocket draw offset leaf lines without an arc; bifold draws the two closet-door tent peaks.\n- Window `type fixed|sliding|casement|bay`: sliding = two offset panels, casement adds the outward swing arc, bay projects a splayed trapezoid outside the wall.\n- Openings clamp to fit their wall segment (with a warning) rather than overflowing.\n\n---\n\n## 4. Furniture\n\nFurniture is placed **relative to its room's interior top-left corner**, with optional `size`, `rotate`, and a label:\n\n```\nfurniture sofa in living at 0.25,2.9\nfurniture desk \"Teacher\" in class at 2,1.5 size 5x2.5 rotate 20\nfurniture counter \"Cubbies\" in class at 6,24.4 size 10x1.2\n```\n\nThe catalog spans residential, commercial, and site work (sizes default to industry-standard footprints):\n\n| Cluster | Types |\n| --- | --- |\n| Residential | `bed-double` `bed-single` `bed-queen` `bed-king` `bunk-bed` `crib` `sofa` `loveseat` `sectional` `armchair` `ottoman` `coffee-table` `side-table` `tv` `tv-stand` `fireplace` `floor-lamp` `rug` `wardrobe` `dresser` `nightstand` `bookshelf` `plant` `piano` `piano-upright` `pool-table` `ceiling-fan` `dining-table` |\n| Kitchen / bath | `counter` `wall-cabinet` `kitchen-sink` `stove` `range-hood` `fridge` `dishwasher` `island` `bar-stool` `toilet` `sink` `vanity` `bidet` `urinal` `bathtub` `shower` `washer` `dryer` |\n| Classroom / office | `desk-chair` `desk` `desk-l` `chair` `whiteboard` `smartboard` `bookcase` `cubbies` `filing-cabinet` `lockers` `kidney-table` `round-table-4/6/8/10` `conference-table` |\n| Event / banquet | `banquet-table` `head-table` `stage` `dance-floor` `bar` `dj-booth` `cocktail-table` `podium` `row-chairs` |\n| Retail / warehouse | `shelving` `checkout` `clothing-rack` `fitting-room` `pallet-rack` `loading-dock` `forklift` |\n| Salon / gym | `salon-chair` `shampoo-bowl` `manicure-table` `treadmill` `weight-bench` `power-rack` `yoga-mat` |\n| Stairs / structural | `stairs` `stairs-l` `stairs-u` `spiral-stairs` `elevator` `column` |\n| Site / outdoor | `tree` `car` |\n\n**Auto-seating** is built in: `round-table-8` draws 8 chairs on its circumference (60″ top; `round-table-10` uses 72″), `dining-table` / `banquet-table` / `conference-table` seat both long edges at one chair per 0.65 m, `head-table` seats one side facing the room, `manicure-table` seats a client and technician chair, and `row-chairs` places a theater strip at 0.55 m pitch. `rug`, `dance-floor`, `yoga-mat`, `counter`, `island`, `wall-cabinet`, `range-hood`, and `ceiling-fan` are underlays/overheads — other furniture can overlap them without a collision warning.\n\n`tree` and `car` are sized for the outdoors (canopy disc, parking-stall footprint), so a **site plan** is just zones tiled as adjacent rooms — front yard, house footprint, driveway, back yard — with trees and parked cars placed on top.\n\n**Stairs** follow the drafting conventions: tread lines at 0.28 m (11″), a direction arrow starting at the lowest tread labeled `UP` (give the item a `\"DN\"` label for a descending run), and the 45° zigzag break line at the imaginary 4-ft cut plane, with dashed treads beyond. `stairs` is a straight run (orient with `size`/`rotate`), `stairs-l` turns 90° over a landing, `stairs-u` switches back 180°, `spiral-stairs` is a circle with radial treads and a center pole.\n\n---\n\n## 5. Arrays — grid, row, arc\n\nRepeated furniture is one statement, not thirty:\n\n```\ngrid desk-chair in class rows 5 cols 6 count 27 area 5,8 25,24 itemsize 2x2.5\nrow round-table-8 in hall cols 3 area 8.8,13.4 15.2,13.4 itemsize 2.3x2.3\narc chair in hall count 13 center 12,8 radius 5 from 200 to 340\n```\n\n- `area x1,y1 x2,y2` gives the first and last item **centers**; items spread evenly between them.\n- `count` truncates **row-major** — 27 desks in a 5×6 grid drops the last row's tail, exactly like a real classroom.\n- `arc` places items on a circular arc facing the center — semicircle classrooms, ceremony seating.\n\n---\n\n## 6. Units, areas, dimension lines\n\n- `unit ft` makes every number feet; dimension lines format as `32'` / `15'1\"` and areas as `sq ft`. Internally everything is metric (1 ft = 0.3048 m).\n- Room areas are **computed by the engine** from the declared geometry, never typed by hand.\n- Dimension lines render outside the plan with architectural slash ticks: overall width + height always, plus per-room segments along the top and left exteriors.\n\n---\n\n## 7. Validation\n\nThe engine validates what LLMs (and humans) actually get wrong, with errors that name the offending elements and a fix direction:\n\n**Errors** (block rendering, shown in an error panel):\n\n- Room overlap — `rooms \"bed1\" and \"bath\" overlap by 0.40×2.60 m — move \"bath\" right-of \"bed1\" or shrink size`\n- Door between non-adjacent rooms — `door between \"kitchen\" and \"bed2\": rooms share no wall (gap 2 m on x-axis)`\n- Furniture outside its room — `furniture sofa #1 extends 1.7 m outside room \"c\" — move it or shrink size`\n\n**Warnings** (render anyway, listed under the plan):\n\n- Furniture collision — bounding boxes including **chair-ring envelopes**, so two banquet rounds whose chairs touch get flagged even when the table tops don't.\n- Opening clamped to fit its wall segment.\n\n---\n\n## 8. Grammar (EBNF)\n\n```text\nplan      ::= \"floorplan\" string? (\"unit\" (\"m\"|\"ft\"))? NL statement*\nstatement ::= room | extend | north | door | window | opening | furniture | array\nroom      ::= \"room\" id string? placement \"size\" dims (\"fill\" color)? (\"nolabel\")?\nextend    ::= \"extend\" id placement \"size\" dims\nnorth     ::= \"north\" num?\nplacement ::= \"at\" coord\n            | (\"right-of\"|\"left-of\"|\"above\"|\"below\") id (\"offset\" num)?\n              (\"align\" (\"start\"|\"center\"|\"end\"))?\ndoor      ::= \"door\" (wallref | \"between\" id id) \"at\" pct\n              (\"width\" num)? (\"hinge\" (\"left\"|\"right\"))? (\"swing\" (\"in\"|\"out\"))?\n              (\"type\" (\"single\"|\"double\"|\"sliding\"|\"pocket\"|\"bifold\"))?\nwindow    ::= \"window\" wallref \"at\" pct (\"width\" num)?\n              (\"type\" (\"fixed\"|\"sliding\"|\"casement\"|\"bay\"))?\nopening   ::= \"opening\" (wallref | \"between\" id id) \"at\" pct (\"width\" num)?\nfurniture ::= \"furniture\" type (\"in\" id) \"at\" coord (\"size\" dims)? (\"rotate\" num)? string?\narray     ::= (\"grid\"|\"row\"|\"arc\") type \"in\" id\n              (\"rows\" int)? (\"cols\" int)? (\"count\" int)?\n              (\"area\" coord coord)? (\"itemsize\" dims)? (\"rotate\" num)?\n              (\"center\" coord)? (\"radius\" num)? (\"from\" num \"to\" num)?\nwallref   ::= id (\"north\"|\"south\"|\"east\"|\"west\")\ncoord     ::= num \",\" num          dims ::= num \"x\" num          pct ::= num \"%\"?\n```\n\nComments run from `#` to end of line. CJK quotes (`“”`) are accepted as ASCII quotes.\n\n---\n\n## Related examples\n\n- [Two-bedroom apartment](/examples#floorplan) — relative placement, 7 doors, full furnishing\n- [27-desk classroom](/examples#floorplan) — `grid … count` truncation, `unit ft`\n- [Wedding reception for 120](/examples#floorplan) — auto-seated banquet rounds, dance floor"
+  },
+  "playbook": {
+    "title": "Sports playbook",
+    "content": "## 1. Your first play\n\nEvery diagram starts with a header naming the **sport**, then a **formation** (which places the players), then **assignments**:\n\n```\nplaybook \"Give & Go\" sport basketball\nset 5-out\npass 1 2\ncut 1 rim\npass 2 1\n```\n\n`pass 1 2` draws a pass from player 1 to player 2; `cut 1 rim` sends player 1 to the rim. Basketball draws passes **dashed** and cuts **solid** — the convention on every coaching whiteboard.\n\n---\n\n## 2. The three sports\n\nPick the sport in the header (`sport football|basketball|soccer`). Each uses its real unit and the conventional coaching viewpoint:\n\n| Sport | Unit | View | Surface |\n|---|---|---|---|\n| `football` | yards | offense at the bottom attacking **up**; downfield = up | green field with yard lines, hashes, end zone |\n| `basketball` | feet | NBA **half-court**; baseline + hoop at the top | light maple hardwood |\n| `soccer` | metres | full **105 × 68 m** pitch (attack toward the right); or `view half` | green pitch with IFAB markings |\n\n---\n\n## 3. Players & formations\n\nThe fastest way to place players is a **formation** (football/soccer) or **set** (basketball):\n\n- **Football** — `formation i-form | shotgun | singleback | pistol | spread | trips | empty | goal-line | wishbone` with optional strength `left`/`right`. Receivers are `X Z H Y` (Y = tight end), backs `QB RB FB`, line `LT LG C RG RT`.\n- **Basketball** — `set horns | 1-4-high | 1-4-low | box | spread-pnr | 4-out | 5-out`. Players are numbered `1`–`5`.\n- **Soccer** — `formation 4-3-3 | 4-4-2 | 4-2-3-1 | 4-5-1 | 4-4-1-1 | 3-5-2 | 3-4-3`. Players are numbered `1` (GK) … `11`.\n\nFor set-pieces or free-form diagrams, place players individually and crop to a half:\n\n```\nplaybook \"Overlap & Cross\" sport soccer\nview half\nplayer 7 o at 75,12 label 7\nplayer 2 o at 60,15 label 2\nplayer 9 o at 88,30 label 9\nplayer 11 o at 85,52 label 11\nplayer 10 o at 80,38 label 10\ndribble 7 to 82,20\nrun 2 to 90,8\npass 7 to 90,8\npass 2 to 102,34\nrun 9 to 101,31\nrun 11 to 101,40\n```\n\n---\n\n## 4. Movement verbs & line styles\n\nThe same line style means different things in different sports — Schematex draws each sport's own convention, and the legend always matches:\n\n| Verb | Football | Basketball | Soccer |\n|---|---|---|---|\n| `pass` | dashed (throw) | **dashed** | **solid** |\n| `run` / `cut` | solid | **solid** (cut) | **dashed** (run) |\n| `dribble` | — | wavy | wavy |\n| `screen` / `block` | T-bar ⊥ | T-bar ⊥ (screen) | T-bar ⊥ |\n| `shot` | — | solid | double line |\n\n**Note the inversion:** basketball draws a pass *dashed* and a cut *solid*; soccer draws a pass *solid* and a run *dashed*. That is how the two coaching communities actually diagram — Schematex honours each.\n\nMove targets can be a **player id**, a **landmark** name, or explicit **coordinates** (`to x,y`).\n\n---\n\n## 5. Football — routes, runs, defense\n\nPass routes use the **route tree**: `go fly streak slant flat hitch out in dig curl comeback corner post wheel cross drag seam`. Run concepts: `dive iso power counter sweep toss draw trap`. Blocking uses `block`, `pull`, and `handoff`. Set `goal N` to draw the end zone and goalposts:\n\n```\nplaybook \"Red Zone — Play-Action Fade\" sport football\nfield down 1 distance 5 los 5 goal 5 hash nfl\nformation i-form right\ndefense cover-1\nhandoff QB RB\nroute Z corner 4\nroute X slant\nroute Y out 3\nrun RB dive right\n```\n\n`defense cover-0/1/2/3/4/6` draws the coverage shell; `defense 4-3 | 3-4 | nickel | dime` sets the front. `hash nfl|college|none` controls the hash marks.\n\n---\n\n## 6. Basketball — sets, landmarks, screens\n\nCuts and passes target **named landmarks** — `rim elbow wing corner short-corner block slot top high-post dunker` (prefix `l`/`r` for left/right). `screen A B` draws a ball-screen (T-bar) for player B; `dribble` is a wavy line:\n\n```\nplaybook \"Spread Pick & Roll\" sport basketball\nset spread-pnr\nscreen 5 1\ndribble 1 to 11,17\ncut 5 rim\npass 1 2\n```\n\n`defense man` matches each defender to a man; `defense zone-2-3 | zone-3-2 | zone-1-3-1` draws a zone front.\n\n---\n\n## 7. Soccer — shapes, runs, build-up\n\nA formation alone draws the team shape. Add `pass` (solid), `run` (dashed), and `dribble` (wavy) to show a phase of play:\n\n```\nplaybook \"Build-Up From the Back\" sport soccer\nformation 4-3-3\npass 1 4\npass 4 2\nrun 2 to 40,10\npass 4 6\nrun 6 to 62,24\n```\n\nLandmarks include `box top-box d penalty-spot near-post far-post six-yard center`. `defense low-block | mid-block | high-press` overlays the opponent's shape. Soccer renders daylight-only — `theme: dark` falls back to the default pitch.\n\n---\n\n## 8. Validation\n\nThe engine rejects the mistakes models actually make and lists the valid options:\n\n- unknown `sport`, `formation` / `set`, `defense`, or named route;\n- a move referencing an undeclared player id;\n- a malformed coordinate or a missing `to` target.\n\nSofter issues (e.g. a zero-length move) render with a warning rather than failing.\n\n---\n\n## 9. Grammar (EBNF)\n\n```ebnf\nplaybook   = \"playbook\" string \"sport\" sport NL { stmt NL } ;\nsport      = \"football\" | \"basketball\" | \"soccer\" ;\nstmt       = field | formation | defense | player | move | zone | \"view\" view ;\nfield      = \"field\" { \"down\" num | \"distance\" num | \"los\" num\n                     | \"goal\" num | \"hash\" hash | \"view\" view } ;\nformation  = ( \"formation\" | \"set\" ) name [ \"left\" | \"right\" ] ;\ndefense    = \"defense\" scheme ;\nplayer     = \"player\" id pos \"at\" coord \"label\" text ;\nmove       = route | run | pass | cut | dribble | screen\n           | shot | motion | handoff | pull | block ;\nroute      = \"route\" id namedRoute [ num ] [ \"left\" | \"right\" ] ;\nrun        = \"run\" id ( concept [ \"left\" | \"right\" ] | \"to\" coord ) ;\npass       = \"pass\" id ( id | landmark | \"to\" coord ) ;\ncut        = \"cut\" id ( landmark | \"to\" coord ) ;\ndribble    = \"dribble\" id \"to\" coord ;\nscreen     = \"screen\" id id ;\nshot       = \"shot\" id [ \"to\" coord ] ;\nzone       = \"zone\" coord coord string ;\ncoord      = num \",\" num ;\nview       = \"full\" | \"half\" ;\nhash       = \"nfl\" | \"college\" | \"none\" ;\n```\n\n---\n\n## Related examples\n\nFive canonical plays per sport ship as examples — Four Verticals, Mesh, Smash, Power O, and a Red-Zone fade for football; Pick & Roll, Horns, Give & Go, Floppy, and a Backdoor cut for basketball; 4-3-3 shape, Build-Up, Overlap, High Press, and Counter-Attack for soccer."
   }
 };

@@ -118,6 +118,16 @@ const CLUSTER_PATHS: Record<DiagramCluster, React.ReactNode> = {
       <path d="M3 20 A5 5 0 0 1 8 15" />
     </>
   ),
+  sports: (
+    // Playbook X&O: an offensive O, a curving movement arrow to its target, and
+    // a defender X — the language of a coach's tactics board.
+    <>
+      <circle cx="6" cy="7" r="3" />
+      <path d="M6 10 Q6 16 12 17 H18" />
+      <path d="M16 15 L18.5 17 L16 19" />
+      <path d="M14.5 4 L19 8.5 M19 4 L14.5 8.5" />
+    </>
+  ),
   generic: (
     <>
       <rect x="3.5" y="4" width="8" height="6" rx="1" />

@@ -22,7 +22,8 @@ export type DiagramCluster =
   | "network-infrastructure"
   | "software-uml"
   | "risk-reliability"
-  | "architecture";
+  | "architecture"
+  | "sports";
 
 export interface DiagramMeta {
   /** Canonical type id — matches `DiagramType` and plugin keys. */
@@ -715,6 +716,39 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
       "space planning",
     ],
   },
+  {
+    type: "playbook",
+    name: "Sports playbook",
+    tagline:
+      "Multi-sport tactics boards from one paragraph of text — American football X&O, basketball half-court sets, and soccer team shapes drawn in coaching-standard notation, each sport on its own correctly-scaled field/court/pitch.",
+    useWhen:
+      "Use to diagram a single play, set, or team shape for American football, basketball, or soccer. Header `playbook \"Title\" sport football|basketball|soccer`. Place players by formation (football `formation i-form|spread|trips|...`, basketball `set horns|spread-pnr|5-out|...`, soccer `formation 4-3-3|4-4-2|...`) or individually with `player`. Draw assignments with movement verbs whose line style is coaching-correct per sport: football `route X go` / `run RB power right` / `block` / `pull` / `handoff` (solid routes, arrowheads, block T-bars) on a yard-scaled field with LOS, hashes, end zone and goalposts; basketball `pass` (dashed) / `cut` (solid) / `dribble` (wavy) / `screen` (T-bar) to named landmarks (rim, elbow, wing, corner) on an NBA half-court; soccer `pass` (solid) / `run` (dashed) / `dribble` (wavy) / `shot` on an IFAB pitch. Optional `defense` overlays man/zone shells. The engine resolves formations, named routes, and landmarks, and renders each sport in its own coordinate model. Not for play-by-play game film, statistics, or league-table graphics.",
+    cluster: "sports",
+    standard:
+      "American Football Coaches Association X&O convention · FIBA/NBA half-court markings · IFAB Laws of the Game pitch (Law 1); see 49-SPORTS-PLAYBOOK-STANDARD.md",
+    syntaxKey: "playbook",
+    aliases: [
+      "Sports playbook",
+      "playbook",
+      "football play",
+      "X and O diagram",
+      "basketball play",
+      "soccer tactics",
+      "战术板",
+      "战术图",
+    ],
+    keywords: [
+      "playbook",
+      "football play",
+      "X's and O's",
+      "basketball play",
+      "pick and roll",
+      "soccer formation",
+      "tactics board",
+      "route tree",
+      "coaching diagram",
+    ],
+  },
 ] as const;
 
 /**
@@ -785,6 +819,8 @@ export const DIAGRAM_SINCE: Readonly<Record<DiagramType, string>> = {
   welding: "0.8.1",
   // 0.9.3
   floorplan: "0.9.3",
+  // 0.9.4 — multi-sport playbook (football X&O / basketball / soccer)
+  playbook: "0.9.4",
 };
 
 export function getDiagramSince(type: string): string | undefined {
