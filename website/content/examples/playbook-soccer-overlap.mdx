@@ -1,0 +1,31 @@
+---
+title: Overlap & Cross
+description: "The full-back overlaps the winger to get to the byline and deliver a cross into the box."
+diagram: playbook
+standard: IFAB Laws of the Game, Law 1 (pitch)
+industry: [coaching, soccer]
+persona: For a coach drilling wide attacking patterns
+complexity: 3
+tags: [soccer, overlap, cross, wide-play]
+featured: false
+relatedLink:
+  label: Sports playbook syntax
+  href: /docs/playbook
+status: published
+dsl: |
+  playbook "Overlap & Cross" sport soccer
+  view half
+  player 7 o at 75,12 label 7
+  player 2 o at 60,15 label 2
+  player 9 o at 88,30 label 9
+  player 11 o at 85,52 label 11
+  player 10 o at 80,38 label 10
+  dribble 7 to 82,20
+  run 2 to 90,8
+  pass 7 to 90,8
+  pass 2 to 102,34
+  run 9 to 101,31
+  run 11 to 101,40
+---
+
+The **overlap** combines the winger and full-back: the winger drives inside (`dribble`) to fix the defender while the full-back `run`s outside and overlaps. The release pass down the line (`pass 7 to 90,8`) sets up a byline cross to the strikers attacking the box. Drawn with `view half` and explicit players for full control.

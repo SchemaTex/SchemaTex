@@ -1,0 +1,24 @@
+---
+title: Floppy Action
+description: "A shooter chooses a single or double screen off the baseline to get open on the wing."
+diagram: playbook
+standard: FIBA/NBA half-court markings · coaching legend
+industry: [coaching, basketball]
+persona: For a coach getting a shooter open off screens
+complexity: 3
+tags: [basketball, floppy, off-ball-screens, shooting]
+featured: false
+relatedLink:
+  label: Sports playbook syntax
+  href: /docs/playbook
+status: published
+dsl: |
+  playbook "Floppy Action" sport basketball
+  set 1-4-low
+  screen 4 2
+  screen 5 3
+  cut 2 lwing
+  pass 1 2
+---
+
+**Floppy** starts a shooter under the basket with a single screen on one side and a double on the other. Reading the defense, the shooter curls off a screen (`screen 4 2`) up to the wing (`cut 2 lwing`) for a catch-and-shoot — `pass 1 2`.

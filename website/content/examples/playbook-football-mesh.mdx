@@ -1,0 +1,27 @@
+---
+title: Mesh Concept
+description: "Two shallow crossers rub underneath while a corner route clears the top — the classic man-and-zone beater."
+diagram: playbook
+standard: AFCA X&O convention · NFL/NCAA Rule 1 field
+industry: [coaching, american-football]
+persona: For a coach teaching a high-low crossing concept
+complexity: 3
+tags: [football, passing, mesh, crossers]
+featured: false
+relatedLink:
+  label: Sports playbook syntax
+  href: /docs/playbook
+status: published
+dsl: |
+  playbook "Mesh Concept" sport football
+  field down 1 distance 10 los 35
+  formation spread
+  defense cover-3
+  route Y drag
+  route H cross
+  route Z corner 12
+  route X hitch
+  route RB flat right
+---
+
+**Mesh** sends two receivers on shallow crossing routes (`drag` and `cross`) that brush past each other just over the ball, creating a natural rub against man coverage and a moving window against zone. The `corner` route clears the deep defender and the `hitch` plus `flat` give quick outlets.

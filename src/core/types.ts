@@ -89,7 +89,9 @@ export type DiagramType =
   | "threatmodel" // Threat model (DFD + STRIDE) — Shostack per-element mapping + trust-boundary crossing (46-THREAT-MODEL-STRIDE-STANDARD)
   | "welding" // Welding symbols — AWS A2.4 / ISO 2553 reference-line callouts (47-WELDING-SYMBOL-STANDARD)
   // Architectural / space planning
-  | "floorplan"; // Floor plan / space layout — AGS poché walls, door swing arcs, furniture catalog (48-FLOORPLAN-STANDARD)
+  | "floorplan" // Floor plan / space layout — AGS poché walls, door swing arcs, furniture catalog (48-FLOORPLAN-STANDARD)
+  // Sports / tactics
+  | "playbook"; // Football playbook — chalkboard X&O notation, route tree, formations, coverage (49-SPORTS-PLAYBOOK-STANDARD)
 
 export type GenogramMode = "medical" | "heritage";
 

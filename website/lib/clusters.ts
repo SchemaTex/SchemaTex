@@ -1,5 +1,5 @@
 // Single source of cluster display data (label · order · accent color) for the
-// 14 DiagramClusters defined in the package registry. Both the /diagrams catalog
+// 15 DiagramClusters defined in the package registry. Both the /diagrams catalog
 // (diagrams-index.ts) and the /gallery filters (gallery-examples.ts) read from
 // here, so there is exactly one cluster taxonomy + naming on the site — adding a
 // cluster to the registry means adding one row here, nothing else drifts.
@@ -28,6 +28,7 @@ export const CLUSTER_DISPLAY: Record<DiagramCluster, ClusterDisplay> = {
   'risk-reliability':       { label: 'Risk & Reliability',       order: 8.7,  color: 'var(--cat-4)' },
   'network-infrastructure': { label: 'Network & Infrastructure', order: 9,    color: 'var(--cat-2)' },
   architecture:             { label: 'Architecture & Space',     order: 9.5,  color: 'var(--cat-3)' },
+  sports:                   { label: 'Sports & Tactics',         order: 9.7,  color: 'var(--cat-0)' },
   generic:                  { label: 'General',                  order: 10,   color: 'var(--cat-7)' },
 };
 

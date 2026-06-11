@@ -33,7 +33,7 @@
 
 ---
 
-**Schematex** is the open-source rendering engine for the diagrams professionals actually use — medical, electrical, legal, and analytical. **36 diagram families** spanning medicine, engineering, law, and analysis:
+**Schematex** is the open-source rendering engine for the diagrams professionals actually use — medical, electrical, legal, and analytical. **37 diagram families** spanning medicine, engineering, law, and analysis:
 
 - 👪 **Relationships** — genograms, ecomaps, pedigrees, sociograms, phylogenetic trees
 - ⚡ **Electrical & Industrial** — ladder logic, single-line diagrams, circuit schematics, logic gates, timing, block diagrams, **FBD**, **SFC**, breadboard, **P&ID** (ISA-5.1)
@@ -82,7 +82,7 @@ import { render } from 'schematex/genogram';
 
 ## Gallery
 
-All 36 diagram types share one unified pipeline. A selection is shown below — **try any of them live at [schematex.dev/playground](https://schematex.dev/playground).**
+All 37 diagram types share one unified pipeline. A selection is shown below — **try any of them live at [schematex.dev/playground](https://schematex.dev/playground).**
 
 ### 👪 Genogram — *McGoldrick family-systems standard*
 
@@ -691,6 +691,25 @@ furniture dining-table in kitchen at 0.5,1.7 size 1.5x0.9
 ![Four-bedroom family home floor plan](examples/floorplan/family-home.svg)
 
 [Floor plan syntax →](https://schematex.dev/docs/floorplan)
+
+### 🏟️ Sports playbook — *coaching X&O notation, three sports*
+
+One paragraph of text becomes a coach's tactics board — for **American football**, **basketball**, or **soccer**. Name a `sport` and a `formation` and the engine places the players; add movement verbs (`route`, `pass`, `cut`, `dribble`, `run`, `screen`, `shot`) and each is drawn in that sport's own coaching-correct line style on its own correctly-scaled field, court, or pitch. Football routes follow the numbered route tree on a yard-scaled field with hashes, end zone, and goalposts; basketball uses named landmarks (rim, elbow, wing) on an NBA half-court drawn on hardwood; soccer plays out on a full IFAB pitch. The pass-vs-run line convention is *inverted* between sports — basketball draws a pass dashed and a cut solid, soccer draws a pass solid and a run dashed — and Schematex honours each, with the legend matching the sport.
+
+```
+playbook "Spread Pick & Roll" sport basketball
+set spread-pnr
+screen 5 1
+dribble 1 to 11,17
+cut 5 rim
+pass 1 2
+```
+
+![Four Verticals football play](examples/playbook/football-four-verticals.svg)
+![Spread Pick & Roll basketball play](examples/playbook/basketball-pick-and-roll.svg)
+![Counter-attack soccer play](examples/playbook/soccer-counter-attack.svg)
+
+[Sports playbook syntax →](https://schematex.dev/docs/playbook)
 
 ## Why SchemaTex?
 

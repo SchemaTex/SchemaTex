@@ -1,0 +1,24 @@
+---
+title: Spread Pick & Roll
+description: "The defining action of modern basketball — a ball screen with four shooters spacing the floor."
+diagram: playbook
+standard: FIBA/NBA half-court markings · coaching legend
+industry: [coaching, basketball]
+persona: For a coach installing spread ball-screen offense
+complexity: 2
+tags: [basketball, pick-and-roll, spacing, half-court]
+featured: true
+relatedLink:
+  label: Sports playbook syntax
+  href: /docs/playbook
+status: published
+dsl: |
+  playbook "Spread Pick & Roll" sport basketball
+  set spread-pnr
+  screen 5 1
+  dribble 1 to 11,17
+  cut 5 rim
+  pass 1 2
+---
+
+The **pick & roll** is the most-run action in the sport. The big (`screen 5 1`) sets a ball screen, the guard `dribble`s off it, and the screener `cut`s (rolls) to the `rim`. With the other three players spaced behind the arc, help defense leaves a shooter open — `pass 1 2`. Note the basketball legend: dashed = pass, solid = cut, wavy = dribble.
