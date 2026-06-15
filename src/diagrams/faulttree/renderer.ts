@@ -31,6 +31,7 @@ import {
   STROKE_WIDTH,
   resolveReliabilityTheme,
 } from "../../core/theme";
+import { formatProbability } from "../../core/format";
 import { parseFaultTree } from "./parser";
 import { layoutFaultTree, eventBox, FAULTTREE_CONST as C } from "./layout";
 import type {
@@ -316,10 +317,11 @@ function summarise(layout: FaultTreeLayoutResult): string {
 
 // ─── Helpers ──────────────────────────────────────────────────
 
+// Shared formatter: 3 sig figs, scientific for tiny values, and — the fix over
+// the old inline version — precision escalates near 1 so P(top) ≈ 1 keeps its
+// nines instead of rounding to "1".
 function fmtProb(n: number): string {
-  if (n === 0) return "0";
-  if (n >= 0.001) return String(parseFloat(n.toPrecision(3)));
-  return n.toExponential(2);
+  return formatProbability(n);
 }
 
 function clip(s: string, n: number): string {
