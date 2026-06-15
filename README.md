@@ -511,6 +511,25 @@ task G "Launch event"         duration: 2  after: E, F
 
 [PERT / CPM syntax →](https://schematex.dev/docs/pert)
 
+#### …and as a Gantt chart — *the one that computes its own critical path*
+
+Start with the `gantt` header (sugar for `pert` + `layout: gantt`). Same scheduler — so the bars are placed from the **computed** ES/EF and the **critical path is drawn in red**, which a hand-placed Gantt (Mermaid) can't do: there you type the dates, here you type dependencies. Calendar date axis (`start:` + `calendar: continuous|5day`), sections (`lane:`), progress overlays (`progress:`), milestones, and a `today:` marker.
+
+```
+gantt "Website Relaunch"
+start: 2026-07-01
+calendar: 5day
+task A "Discovery"      duration: 5  lane: "Plan"
+task B "Wireframes"     duration: 8  after: A   lane: "Design"
+task C "Visual design"  duration: 6  after: B   lane: "Design"  progress: 40%
+task D "Frontend build" duration: 12 after: C   lane: "Build"
+task E "Backend API"    duration: 10 after: A   lane: "Build"
+task F "Integration"    duration: 5  after: D, E lane: "Build"
+task LAUNCH "Go live"   milestone    after: F   lane: "Build"
+```
+
+![Website relaunch Gantt chart](examples/pert/gantt-website-relaunch.svg)
+
 ---
 
 ### ◉ Petri net — *Murata 1989 / ISO-IEC 15909 place-transition net*

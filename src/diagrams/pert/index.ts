@@ -9,7 +9,7 @@ export const pert: DiagramPlugin = {
       const t = raw.trim();
       if (!t) continue;
       if (t.startsWith("#") || t.startsWith("//")) continue;
-      return /^pert\b/i.test(t);
+      return /^(pert|gantt)\b/i.test(t);
     }
     return false;
   },
@@ -24,4 +24,5 @@ export { schedulePert, PertScheduleError } from "./scheduler";
 export { layoutPert, PERT_CONST } from "./layout";
 export { layoutAoa } from "./aoa";
 export { renderPert, renderPertLayout } from "./renderer";
+export { renderGantt } from "./gantt";
 export type * from "./types";

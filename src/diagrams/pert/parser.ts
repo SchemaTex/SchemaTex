@@ -132,8 +132,8 @@ function parseHeaderLine(ln: RawLine, ast: PertAst): boolean {
     }
     case "layout": {
       const l = value.toLowerCase();
-      if (l !== "network" && l !== "timescaled" && l !== "aoa") {
-        throw new PertParseError(`layout must be network, timescaled, or aoa (got '${value}')`, ln.line);
+      if (l !== "network" && l !== "timescaled" && l !== "aoa" && l !== "gantt") {
+        throw new PertParseError(`layout must be network, timescaled, aoa, or gantt (got '${value}')`, ln.line);
       }
       ast.layout = l as PertLayoutMode;
       return true;
@@ -143,6 +143,26 @@ function parseHeaderLine(ln: RawLine, ast: PertAst): boolean {
       return true;
     case "show-sentinels":
       ast.showSentinels = /^(true|yes|on)$/i.test(value);
+      return true;
+    case "start":
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+        throw new PertParseError(`start must be a date 'YYYY-MM-DD' (got '${value}')`, ln.line);
+      }
+      ast.start = value;
+      return true;
+    case "calendar": {
+      const c = value.toLowerCase();
+      if (c !== "continuous" && c !== "5day" && c !== "7day") {
+        throw new PertParseError(`calendar must be continuous, 7day, or 5day (got '${value}')`, ln.line);
+      }
+      ast.calendar = c === "5day" ? "5day" : "continuous";
+      return true;
+    }
+    case "today":
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+        throw new PertParseError(`today must be a date 'YYYY-MM-DD' (got '${value}')`, ln.line);
+      }
+      ast.today = value;
       return true;
     default:
       return false;
@@ -231,7 +251,7 @@ function parseDepRef(raw: string, unit: PertUnit, lineNo: number): PertDependenc
 
 // ─── Task line ───────────────────────────────────────────────────
 
-const KEY_RE = /\b(duration|after|tags|class|lane)\s*:/gi;
+const KEY_RE = /\b(duration|after|tags|class|lane|progress|done)\s*:/gi;
 
 function parseTaskLine(ln: RawLine, ast: PertAst): void {
   const head = ln.text.match(/^task\s+(\S+)\s*(.*)$/i);
@@ -322,6 +342,14 @@ function parseTaskLine(ln: RawLine, ast: PertAst): void {
   const className = values.class ? values.class.trim() : undefined;
   const lane = values.lane ? stripQuotes(values.lane) : undefined;
 
+  const progressRaw = values.progress ?? values.done;
+  let progress: number | undefined;
+  if (progressRaw !== undefined && progressRaw !== "") {
+    const pct = progressRaw.trim().replace(/%$/, "");
+    const n = parseNumber(pct, ln.line, "progress");
+    progress = Math.max(0, Math.min(100, n));
+  }
+
   const task: PertTask = {
     id,
     label,
@@ -335,6 +363,7 @@ function parseTaskLine(ln: RawLine, ast: PertAst): void {
   if (variance !== undefined) task.variance = variance;
   if (className) task.className = className;
   if (lane) task.lane = lane;
+  if (progress !== undefined) task.progress = progress;
   ast.tasks.push(task);
 }
 
@@ -348,19 +377,23 @@ export function parsePert(src: string): PertAst {
     layout: "network",
     criticalTolerance: 0,
     showSentinels: false,
+    calendar: "continuous",
     tasks: [],
     warnings: [],
   };
 
   const lines = preprocess(src);
   if (lines.length === 0) {
-    throw new PertParseError("empty document — expected 'pert' header", 1);
+    throw new PertParseError("empty document — expected 'pert' or 'gantt' header", 1);
   }
   const first = lines[0];
-  if (!/^pert\b/i.test(first.text)) {
-    throw new PertParseError(`first non-comment line must start with 'pert' (got: ${first.text})`, first.line);
+  if (!/^(pert|gantt)\b/i.test(first.text)) {
+    throw new PertParseError(`first non-comment line must start with 'pert' or 'gantt' (got: ${first.text})`, first.line);
   }
-  const inlineTitle = first.text.replace(/^pert\b/i, "").trim();
+  // The `gantt` header keyword is sugar for `pert` + `layout: gantt`.
+  const isGanttHeader = /^gantt\b/i.test(first.text);
+  if (isGanttHeader) ast.layout = "gantt";
+  const inlineTitle = first.text.replace(/^(pert|gantt)\b/i, "").trim();
   if (inlineTitle) {
     const m = inlineTitle.match(/^"([^"]+)"$/) || inlineTitle.match(/^'([^']+)'$/);
     if (m) ast.title = m[1];

@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.9.6] — 2026-06-15
+
+### Added — Gantt charts on the PERT engine (`gantt` / `layout: gantt`)
+
+A real **Gantt chart** that *computes its own schedule*. It extends the existing PERT/CPM engine, so the bars are placed from the computed forward/backward pass (ES/EF) — you type **dependencies, not dates**, and the **critical path is drawn in red**. This is the gap a hand-placed Gantt (Mermaid) leaves open: Mermaid can't compute the critical path or auto-schedule from a dependency graph.
+
+- **`gantt "Title"` header** (sugar for `pert` + `layout: gantt`), or `layout: gantt` on a `pert` document.
+- **Calendar axis**: `start: YYYY-MM-DD` turns the axis into dates (omit for a numeric day-offset axis); `calendar: continuous` (default, spans weekends) or `calendar: 5day` (excludes Sat/Sun). Pure integer date arithmetic (days-from-civil) — deterministic, zero-dependency.
+- **One row per task**, grouped into **sections** by `lane:`; off-critical-path bars drawn in the resting blue with their **slack** annotated, critical bars in red.
+- **`progress: 60%`** completion overlays, **`milestone`** diamonds, dependency connectors, and an optional **`today: YYYY-MM-DD`** marker line.
+- `default` / `monochrome` / `dark` themes. Semantic SVG (`data-id`/`data-es`/`data-ef`/`data-slack`/`data-critical`/`data-progress`).
+- 2 worked examples (website relaunch, construction schedule) + gallery SVG + a Gantt section in the PERT docs; registry/profile updated so `gantt chart` routes here. No new diagram *type* — it's a PERT render mode, so the scheduler, validation, and tests are shared.
+
+---
+
 ## [0.9.5] — 2026-06-15
 
 ### Added — `rbd`: reliability block diagram engine (50-RBD-STANDARD)

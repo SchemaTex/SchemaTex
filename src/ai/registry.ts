@@ -339,14 +339,36 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
   // ── Project management / scheduling ──────────────────────────
   {
     type: "pert",
-    name: "PERT / CPM network",
+    name: "PERT / CPM network & Gantt chart",
     tagline:
-      "Activity-on-node project schedule that computes ES/EF/LS/LF, slack, and the critical path.",
+      "Activity-on-node project schedule that computes ES/EF/LS/LF, slack, and the critical path — rendered as a network, a timescale, or a calendar Gantt.",
     useWhen:
-      "Use whenever the user mentions 'PERT', 'CPM', 'critical path', 'project network', 'precedence diagram', or wants a project schedule from tasks + durations + dependencies. Unlike a flowchart, this engine *computes* the schedule: write `task <id> \"label\" duration: <n> after: <preds>` and it runs the forward/backward pass and returns Early/Late Start & Finish, total slack, project duration, and highlights the critical path in red. Supports PDM dependency types (FS/SS/FF/SF) with lag/lead (`after: A SS+2d`), three-point estimation (`duration: 4/6/10` → te + variance), milestones (`milestone`), swimlanes (`lane: \"Team\"`), a `layout: timescaled` mode (x ∝ ES, width ∝ duration) for a network-Gantt hybrid, and a legacy `layout: aoa` mode (activity-on-arrow: numbered event circles + arrow activities + dummy activities, FS-only). Distinct from `flowchart` (no scheduling), `timeline`/Gantt (no critical-path computation), and `bpmn` (organisational process, not a one-off schedule).",
+      "Use whenever the user mentions 'PERT', 'CPM', 'critical path', 'Gantt chart', 'project schedule', 'project network', 'precedence diagram', or wants a project schedule from tasks + durations + dependencies. Unlike a flowchart, this engine *computes* the schedule: write `task <id> \"label\" duration: <n> after: <preds>` and it runs the forward/backward pass and returns Early/Late Start & Finish, total slack, project duration, and highlights the critical path in red. **For a Gantt chart use the `gantt` header (or `layout: gantt`)** — bars are placed from the computed ES/EF (not typed-in dates, the way Mermaid requires), one task per row, grouped into sections by `lane:`, with a calendar date axis from `start: YYYY-MM-DD` (`calendar: continuous`|`5day` to exclude weekends), `progress: 60%` overlays, `milestone` diamonds, dependency connectors, an optional `today:` marker, and the critical path drawn in red. Supports PDM dependency types (FS/SS/FF/SF) with lag/lead (`after: A SS+2d`), three-point estimation (`duration: 4/6/10` → te + variance), a `layout: timescaled` mode, and a legacy `layout: aoa` mode (activity-on-arrow). Distinct from `flowchart` (no scheduling), `timeline` (no critical-path computation), and `bpmn` (organisational process, not a one-off schedule).",
     cluster: "project-management",
-    standard: "PMI PMBOK 7 + Moder 1983 (AON/PDM); see 32-PERT-STANDARD.md",
+    standard: "PMI PMBOK 7 + Moder 1983 (AON/PDM); Gantt 1910; see 32-PERT-STANDARD.md",
     syntaxKey: "pert",
+    aliases: [
+      "PERT chart",
+      "CPM",
+      "critical path method",
+      "Gantt chart",
+      "gantt",
+      "project schedule",
+      "precedence diagram",
+      "甘特图",
+    ],
+    keywords: [
+      "critical path",
+      "project management",
+      "project schedule",
+      "task dependencies",
+      "gantt chart maker",
+      "project timeline",
+      "forward backward pass",
+      "slack float",
+      "milestone",
+      "PMBOK",
+    ],
   },
   // ── Structural UML ───────────────────────────────────────────
   {

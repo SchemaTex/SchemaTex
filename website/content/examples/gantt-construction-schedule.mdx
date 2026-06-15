@@ -1,0 +1,32 @@
+---
+title: Construction schedule (Gantt, computed critical path)
+description: A residential construction Gantt on a continuous calendar — excavation through handover. The engine computes the critical path (excavation → foundation → framing → electrical → drywall → finishes → handover) and shows the float on the parallel roofing and plumbing trades.
+diagram: pert
+standard: PMI PMBOK 7 (critical path) + Gantt 1910
+industry: [construction, engineering]
+persona: For the site planner sequencing trades
+complexity: 3
+tags: [gantt, pert, cpm, critical-path, construction, project-schedule]
+featured: false
+relatedLink:
+  label: Gantt / PERT syntax
+  href: /docs/pert
+status: published
+dsl: |
+  gantt "Residential Build"
+    start: 2026-09-01
+    calendar: continuous
+    task EXC "Excavation" duration: 6
+    task FND "Foundation" duration: 8 after: EXC
+    task FRM "Framing" duration: 12 after: FND
+    task ROOF "Roofing" duration: 6 after: FRM
+    task ELEC "Electrical" duration: 8 after: FRM
+    task PLMB "Plumbing" duration: 7 after: FRM
+    task DRY "Drywall" duration: 6 after: ELEC, PLMB, ROOF
+    task FIN "Finishes" duration: 10 after: DRY
+    task HAND "Handover" milestone after: FIN
+---
+
+## What this shows
+
+Once framing finishes, three trades — **roofing, electrical, plumbing** — run in parallel, but drywall can't start until all three are done. The engine works out that **electrical** is the longest of the three, so it lands on the critical path while roofing and plumbing carry float (drawn in blue with their slack). The critical chain `Excavation → Foundation → Framing → Electrical → Drywall → Finishes → Handover` is in red, and `Handover` is a milestone diamond. On a `continuous` calendar the bars span weekends; switch to `calendar: 5day` for a working-day timeline.

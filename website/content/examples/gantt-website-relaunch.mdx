@@ -1,0 +1,33 @@
+---
+title: Gantt chart with computed critical path (website relaunch)
+description: A calendar Gantt for a website relaunch — sections, a weekday-only date axis, progress overlays, a milestone, and a today marker. The bars are placed from the engine's computed schedule, so the critical path is highlighted in red and off-path tasks show their slack — something a hand-placed (Mermaid) Gantt can't do.
+diagram: pert
+standard: PMI PMBOK 7 (critical path) + Gantt 1910
+industry: [business, technology]
+persona: For the project manager who wants the schedule computed, not typed
+complexity: 3
+tags: [gantt, pert, cpm, critical-path, project-schedule, milestone, calendar]
+featured: true
+relatedLink:
+  label: Gantt / PERT syntax
+  href: /docs/pert
+status: published
+dsl: |
+  gantt "Website Relaunch"
+    start: 2026-07-01
+    calendar: 5day
+    task A "Discovery" duration: 5 lane: "Plan"
+    task B "Wireframes" duration: 8 after: A lane: "Design"
+    task C "Visual design" duration: 6 after: B lane: "Design" progress: 40%
+    task D "Frontend build" duration: 12 after: C lane: "Build"
+    task E "Backend API" duration: 10 after: A lane: "Build"
+    task F "Integration & QA" duration: 5 after: D, E lane: "Build"
+    task LAUNCH "Go live" milestone after: F lane: "Build"
+    today: 2026-07-20
+---
+
+## What this shows
+
+A real Gantt chart where **you type dependencies, not dates**. Each task declares a duration and what it comes `after:`; the engine runs the forward/backward pass and *places the bars* from the computed Early Start / Early Finish.
+
+**The critical path is computed and drawn in red** — `A → B → C → D → F → Go live`. "Backend API" runs in parallel off the critical path, so it's drawn in the resting blue with its **slack** annotated: you can start it 16 working days late without slipping the launch. The `5day` calendar excludes weekends from the timeline, `lane:` bands the rows into Plan / Design / Build sections, the 40 % progress overlay marks how far Visual design has got, and the dashed **today** line shows where the project stands. This is the differentiator over a typed Gantt: change one duration and the whole schedule — and the critical path — recomputes.
