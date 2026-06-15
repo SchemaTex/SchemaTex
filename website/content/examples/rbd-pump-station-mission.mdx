@@ -1,0 +1,31 @@
+---
+title: Pump station reliability over a 1-year mission (R(t))
+description: A reliability block diagram evaluated at a mission time — two redundant pumps with exponential (MTBF) and Weibull failure distributions. The engine computes R(t) for each block from its distribution and rolls it up to the system reliability at t = 8760 hours.
+diagram: rbd
+standard: IEC 61078 (RBD) + IEC 61810 / MIL-HDBK-217 (R(t))
+industry: [engineering, manufacturing]
+persona: For the reliability engineer sizing a mission
+complexity: 3
+tags: [rbd, reliability, mission-time, mtbf, weibull, redundancy, availability]
+featured: false
+relatedLink:
+  label: RBD syntax
+  href: /docs/rbd
+status: published
+dsl: |
+  rbd "Pump Station — 1-year mission"
+    mission: 8760
+    series {
+      block CTRL "Controller" mtbf=50000
+      parallel {
+        block A "Pump A" mtbf=10000
+        block B "Pump B" weibull=1.5,12000
+      }
+    }
+---
+
+## What this shows
+
+Static reliabilities are the entry point; real RAMS work is **reliability over a mission**. Here `mission: 8760` (one year in hours) turns each block's failure distribution into an **R(t)**: the controller and Pump A use an exponential model from their **MTBF**, while Pump B uses a **Weibull** (β = 1.5, so a gently increasing hazard — wear-out).
+
+**The engine evaluates R(t) per block and composes it.** Pump A's `e^(−8760/10000) ≈ 0.42` and Pump B's `e^(−(8760/12000)^1.5) ≈ 0.54` combine in parallel to ≈ 0.73, then multiply by the controller in series — the headline reads `R(t=8760) = …`. Change the mission time and every figure, and the importance ranking, recomputes. Constant `R=` blocks still work and mix freely with distributions.

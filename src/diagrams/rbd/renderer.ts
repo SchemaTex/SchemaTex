@@ -96,7 +96,7 @@ export function renderRbdLayout(layout: RbdLayoutResult, config?: RenderConfig):
         class: "sx-rbd-rsys",
         "text-anchor": "middle",
       },
-      systemLabel(analysis)
+      systemLabel(analysis, ast.mission)
     )
   );
 
@@ -184,12 +184,17 @@ function renderBlock(b: RbdLayoutBlock): string {
 
 // ─── Text helpers ─────────────────────────────────────────────
 
-export function systemLabel(analysis: RbdAnalysis): string {
+export function systemLabel(analysis: RbdAnalysis, mission?: number): string {
   if (analysis.systemReliability === undefined) {
     const miss = analysis.missing.length > 0 ? ` — missing R on ${analysis.missing.join(", ")}` : "";
     return `System reliability: n/a${miss}`;
   }
-  return `System reliability  R = ${fmtR(analysis.systemReliability)}`;
+  const arg = mission !== undefined ? `(t=${fmtVal(mission)})` : "";
+  return `System reliability  R${arg} = ${fmtR(analysis.systemReliability)}`;
+}
+
+function fmtVal(n: number): string {
+  return String(parseFloat(n.toFixed(2)));
 }
 
 function fmtR(n: number): string {

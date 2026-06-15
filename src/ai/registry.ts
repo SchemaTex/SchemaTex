@@ -518,7 +518,7 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
     tagline:
       "The success-logic diagram that computes its own system reliability — series/parallel/k-of-n reduction, Birnbaum importance, and single-point-of-failure detection.",
     useWhen:
-      "Use to model whether a system *works* from the reliability of its components, and to compute the overall figure — RAMS analysis, redundancy/high-availability design, fault-tolerance trade studies. Header `rbd`; nest `series { … }`, `parallel { … }`, and `kofn k/n { … }` success-logic groups around `block ID \"Label\" R=0.99` leaves (`p=0.01` failure prob or `R=99%` also accepted). The engine computes system reliability (∏ for series, 1−∏(1−Rᵢ) for parallel, exact k-of-n), the Birnbaum reliability-importance of every block, and flags blocks whose failure alone fails the system (SPOF, drawn in red). Sibling of fault tree (§37) in the risk-reliability cluster.",
+      "Use to model whether a system *works* from the reliability of its components, and to compute the overall figure — RAMS analysis, redundancy/high-availability design, fault-tolerance trade studies. Header `rbd`; nest `series { … }`, `parallel { … }`, and `kofn k/n { … }` success-logic groups around `block ID \"Label\" R=0.99` leaves (`p=0.01` failure prob or `R=99%` also accepted). The engine computes system reliability (∏ for series, 1−∏(1−Rᵢ) for parallel, exact k-of-n), the Birnbaum reliability-importance of every block, and flags blocks whose failure alone fails the system (SPOF, drawn in red). For reliability over a mission, add `mission: <t>` and give blocks a distribution — `rate=λ`/`mtbf=N` (exponential) or `weibull=β,η` — and the engine evaluates R(t). Sibling of fault tree (§37) in the risk-reliability cluster.",
     cluster: "risk-reliability",
     standard: "IEC 61078:2016 · MIL-HDBK-338B; see 50-RBD-STANDARD.md",
     syntaxKey: "rbd",
@@ -540,6 +540,10 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
       "Birnbaum importance",
       "single point of failure",
       "fault tolerance",
+      "MTBF",
+      "Weibull",
+      "mission time reliability",
+      "reliability over time",
     ],
   },
   // ── Systems thinking / stochastic ────────────────────────────
