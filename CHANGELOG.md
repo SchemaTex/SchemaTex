@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.9.5] — 2026-06-15
+
+### Added — `rbd`: reliability block diagram engine (50-RBD-STANDARD)
+
+A **reliability block diagram** (IEC 61078) from a paragraph of success logic — the fifth member of the **Risk & Reliability** cluster and the success-space dual of the fault tree. Like the rest of the cluster, the engine **computes the answer**: it doesn't just draw blocks, it reduces the structure to a system reliability, ranks every block by importance, and finds the single points of failure.
+
+- **Brace-nested success logic**: `series { … }`, `parallel { … }`, and `kofn k/n { … }` groups nest freely around `block ID "Label" R=0.99` leaves. Reliability is given as `R=0.99`, failure probability `p=0.01`, or a percentage `R=99%`. A bare top-level block list is treated as a series chain. CJK quotes welcome.
+- **Computation is the differentiator**: system reliability by exact reduction (∏ for series, 1−∏(1−Rᵢ) for parallel, 2ⁿ state enumeration for k-of-n); **Birnbaum reliability importance** Iᴮ(i) = R_sys(Rᵢ=1) − R_sys(Rᵢ=0) for every block (the highest is the improvement target, accented); and **single-point-of-failure** detection (a block where R_sys(Rᵢ=0) = 0, drawn in red). High reliabilities keep their nines — the figure is never rounded up to "1".
+- **Left-to-right layout**: recursive bounding-box packing — series chains wired end-to-end, parallel/k-of-n groups stacked on rails fanning out of a split node and back into a join node, bracketed by input/output terminals. k-of-n groups are labelled `k/n` at the join.
+- **Shared risk-reliability palette**: neutral blocks, blue reliability numerals, red SPOF borders; `monochrome` falls back to border weight (regulator print), `dark` is the Catppuccin variant. Semantic SVG with `data-id`/`data-r`/`data-spof`/`data-critical`.
+- **Validation, not silent failure**: k-of-n threshold clamped to `1..n`, reliability clamped to `0..1`, duplicate ids flagged, missing reliability surfaced as `n/a` (no invented number).
+- Five worked examples (redundant server, dual-channel 1oo2, data-center Tier III, IEC 61511 SIF, fly-by-wire flight control) + full syntax doc + `50-RBD-STANDARD.md`.
+
+---
+
 ## [0.9.4] — 2026-06-11
 
 ### Added — `playbook`: multi-sport tactics-board engine (49-SPORTS-PLAYBOOK-STANDARD)

@@ -45,6 +45,7 @@ import { faulttree } from "../diagrams/faulttree";
 import { bowtie } from "../diagrams/bowtie";
 import { eventtree } from "../diagrams/eventtree";
 import { fmea } from "../diagrams/fmea";
+import { rbd } from "../diagrams/rbd";
 import { causalloop } from "../diagrams/causalloop";
 import { markov } from "../diagrams/markov";
 import { gitgraph } from "../diagrams/gitgraph";
@@ -93,6 +94,7 @@ export interface SchematexConfig {
     | "umlclass"
     | "faulttree"
     | "bowtie"
+    | "rbd"
     | "floorplan"
     | "playbook";
   width?: number;
@@ -146,6 +148,7 @@ const plugins: DiagramPlugin[] = [
   bowtie,
   eventtree,
   fmea,
+  rbd,
   causalloop,
   markov,
   gitgraph,
@@ -166,7 +169,7 @@ function detectPlugin(text: string, config?: SchematexConfig): DiagramPlugin {
     if (plugin.detect(text)) return plugin;
   }
   throw new Error(
-    "Cannot detect diagram type. Start your text with 'genogram', 'ecomap', 'pedigree', 'phylo', 'sociogram', 'timing', 'logic', 'circuit', 'blockdiagram', 'ladder', 'sld', 'entity-structure', 'fishbone', 'venn', 'flowchart', 'mindmap', 'matrix', 'orgchart', 'state', 'pid', 'erd', 'breadboard', 'bpmn', 'fbd', 'sfc', 'prisma', 'usecase', 'pert', 'sequence', 'petri', 'network', 'umlclass', 'faulttree', 'bowtie', 'floorplan', or 'playbook'."
+    "Cannot detect diagram type. Start your text with 'genogram', 'ecomap', 'pedigree', 'phylo', 'sociogram', 'timing', 'logic', 'circuit', 'blockdiagram', 'ladder', 'sld', 'entity-structure', 'fishbone', 'venn', 'flowchart', 'mindmap', 'matrix', 'orgchart', 'state', 'pid', 'erd', 'breadboard', 'bpmn', 'fbd', 'sfc', 'prisma', 'usecase', 'pert', 'sequence', 'petri', 'network', 'umlclass', 'faulttree', 'bowtie', 'rbd', 'floorplan', or 'playbook'."
   );
 }
 

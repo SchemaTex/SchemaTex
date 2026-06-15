@@ -1,0 +1,38 @@
+---
+title: Safety instrumented function (SIF) — emergency shutdown
+description: A reliability block diagram of an IEC 61511 emergency-shutdown loop — 2-of-3 voting pressure transmitters, a redundant logic solver, and 1-out-of-2 shutdown valves. The classic sensor → logic → final-element SIF architecture, with the engine computing the loop reliability.
+diagram: rbd
+standard: IEC 61078 / IEC 61511 (SIF)
+industry: [engineering, manufacturing, energy]
+persona: For the functional-safety engineer verifying a SIL target
+complexity: 3
+tags: [rbd, reliability, safety, sif, sil, iec-61511, k-of-n, 2oo3, 1oo2, redundancy]
+featured: false
+relatedLink:
+  label: RBD syntax
+  href: /docs/rbd
+status: published
+dsl: |
+  rbd "Emergency Shutdown SIF (SIL 2)"
+    series {
+      kofn 2/3 {
+        block PT1 "Pressure Tx 1" R=0.98
+        block PT2 "Pressure Tx 2" R=0.98
+        block PT3 "Pressure Tx 3" R=0.98
+      }
+      parallel {
+        block LS1 "Logic solver A" R=0.999
+        block LS2 "Logic solver B" R=0.999
+      }
+      parallel {
+        block SDV1 "Shutdown valve A" R=0.96
+        block SDV2 "Shutdown valve B" R=0.96
+      }
+    }
+---
+
+## What this shows
+
+The canonical safety-instrumented-function architecture from IEC 61511, laid out as a **series** of three subsystems: **sensing**, **logic**, and **final elements**. Sensing uses **2-out-of-3** voting transmitters (tolerates one failure *and* rejects one spurious trip); the **logic solver** is a redundant pair; the **final elements** are two shutdown valves in a **1-out-of-2** (parallel) arrangement so either can close the line.
+
+**The reliability is computed across the loop.** The engine evaluates the 2oo3 sensor group exactly, the two parallel pairs as `1 − (1−R)²`, and the series chain — giving a loop reliability of **≈ 0.9972**. Because every subsystem is redundant, there's **no single point of failure**, and the importance ranking points at the valves (the lowest-reliability stage) as the place a SIL upgrade buys the most. The success-space companion to the fault tree a safety case also needs.

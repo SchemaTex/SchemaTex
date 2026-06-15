@@ -1,0 +1,35 @@
+---
+title: Dual-channel safety system (redundant chains)
+description: A reliability block diagram of a 1-out-of-2 safety instrumented function — two independent sensor→logic→actuator channels in parallel, each a series chain. Shows how a parallel of series strings removes every single point of failure.
+diagram: rbd
+standard: IEC 61078
+industry: [engineering, manufacturing]
+persona: For the functional-safety engineer proving redundancy
+complexity: 2
+tags: [rbd, reliability, safety, redundancy, 1oo2, series-parallel]
+featured: false
+relatedLink:
+  label: RBD syntax
+  href: /docs/rbd
+status: published
+dsl: |
+  rbd "Dual-channel trip (1oo2)"
+    parallel {
+      series {
+        block S1 "Sensor A" R=0.97
+        block L1 "Logic A" R=0.995
+        block V1 "Valve A" R=0.98
+      }
+      series {
+        block S2 "Sensor B" R=0.97
+        block L2 "Logic B" R=0.995
+        block V2 "Valve B" R=0.98
+      }
+    }
+---
+
+## What this shows
+
+A **1-out-of-2 (1oo2)** safety architecture: two complete sensor→logic→valve channels run in parallel, so the trip still fires if either channel works end-to-end. Each channel is itself a **series** chain — a channel needs all three of its elements.
+
+**Redundancy removes the single points of failure.** Each channel alone has reliability `0.97·0.995·0.98 ≈ 0.946`; in parallel the system reaches `1 − (1−0.946)² ≈ 0.997`. Because no single block's failure drops the system to zero, the engine reports **no single point of failure** — the structural goal of a redundant safety function, proven by computation rather than asserted.

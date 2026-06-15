@@ -671,6 +671,32 @@ consequence "Vapour cloud explosion"
 
 [Bowtie syntax →](https://schematex.dev/docs/bowtie)
 
+---
+
+### 🧱 Reliability block diagram — *IEC 61078 · success logic*
+
+Model whether a system *works* from its components' reliabilities — and the engine **computes the answer**: it reduces the success logic (∏ for series, 1−∏(1−Rᵢ) for parallel, exact k-of-n) to the **system reliability**, derives each block's **Birnbaum importance**, and flags **single points of failure** in red. The success-space dual of the fault tree.
+
+```
+rbd "Redundant Server"
+  series {
+    block PSU "Power Supply" R=0.99
+    parallel {
+      block FAN1 "Fan A" R=0.95
+      block FAN2 "Fan B" R=0.95
+    }
+    kofn 2/3 {
+      block D1 "Disk 1" R=0.97
+      block D2 "Disk 2" R=0.97
+      block D3 "Disk 3" R=0.97
+    }
+  }
+```
+
+![Redundant server reliability block diagram](examples/rbd/redundant-server.svg)
+
+[RBD syntax →](https://schematex.dev/docs/rbd)
+
 ### 🏠 Floor plan — *Architectural Graphic Standards plan view*
 
 Rooms with real dimensions become poché walls with automatic shared-wall merging; doors get standard swing arcs, windows get glazing lines, and a 93-symbol furniture catalog — residential, kitchen/bath, classroom/office, event/banquet, retail/warehouse, salon/gym, and site/outdoor (`tree`, `car`) — auto-seats its tables (a `round-table-8` *is* 8 countable chairs). L/T/U-shaped rooms via `extend`, stairs with the UP arrow + cut-plane break line, and validation that catches what LLMs actually get wrong — overlapping rooms, doors on non-shared walls, colliding furniture (chair-ring envelopes included).

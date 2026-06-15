@@ -1,0 +1,45 @@
+---
+title: Data-center availability (Tier III power, cooling, network, storage)
+description: A four-stage reliability block diagram for a Tier III data center — dual-source power (utility in parallel with a generator-plus-ATS chain), N+1 (2-of-3) CRAC cooling, dual core switches, and mirrored storage. The engine reduces the whole nested structure to one availability figure.
+diagram: rbd
+standard: IEC 61078 / Uptime Institute Tier III
+industry: [technology, engineering]
+persona: For the data-center architect proving an availability target
+complexity: 4
+tags: [rbd, reliability, availability, data-center, redundancy, n-plus-1, k-of-n, series-parallel]
+featured: true
+relatedLink:
+  label: RBD syntax
+  href: /docs/rbd
+status: published
+dsl: |
+  rbd "Data Center Tier III Availability"
+    series {
+      parallel {
+        block UTIL "Utility feed" R=0.999
+        series {
+          block GEN "Diesel generator" R=0.98
+          block ATS "Transfer switch" R=0.995
+        }
+      }
+      kofn 2/3 {
+        block CRAC1 "CRAC unit 1" R=0.97
+        block CRAC2 "CRAC unit 2" R=0.97
+        block CRAC3 "CRAC unit 3" R=0.97
+      }
+      parallel {
+        block SW1 "Core switch A" R=0.995
+        block SW2 "Core switch B" R=0.995
+      }
+      parallel {
+        block ST1 "Storage node A" R=0.99
+        block ST2 "Storage node B" R=0.99
+      }
+    }
+---
+
+## What this shows
+
+A realistic Tier III topology where the whole facility is a **series** of four subsystems, each internally redundant. The **power** stage is the interesting one: the utility feed runs in **parallel** with a backup *chain* — a generator that only helps if its transfer switch also works (a nested `series`). Cooling is **N+1** (`2-of-3` CRAC units), and both the network and storage tiers are mirrored pairs.
+
+**The engine reduces the nesting to one number.** It rolls the generator chain (`0.98 · 0.995`) into the power parallel, evaluates the 2-of-3 cooling exactly, and multiplies the four series stages to a **facility availability of ≈ 0.9972**. No single point of failure survives — every stage has redundancy — and the Birnbaum importance ranks which subsystem to harden first. This is the kind of nested success logic a generic diagram tool draws but never computes.

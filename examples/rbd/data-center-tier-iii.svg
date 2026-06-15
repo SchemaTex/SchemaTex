@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1176" height="385" viewBox="0 0 1176 385" role="img" aria-label="Data Center Tier III Availability" data-diagram-type="rbd"><title>Data Center Tier III Availability</title>
+<desc>Reliability block diagram: 10 blocks. System reliability R = 0.9972. Highest reliability-importance block: CRAC1. No single point of failure — every block has redundancy in the success path.</desc>
+<style>.sx-rbd-bg { fill: #ffffff; }
+.sx-rbd-wire { fill: none; stroke: #475569; stroke-width: 2; }
+.sx-rbd-node { fill: #475569; stroke: none; }
+.sx-rbd-term { fill: #eef2f7; stroke: #334155; stroke-width: 2; }
+.sx-rbd-block { fill: #eef2f7; stroke: #334155; stroke-width: 2; }
+.sx-rbd-block[data-spof="true"] { stroke: #b91c1c; stroke-width: 3; }
+.sx-rbd-block[data-critical="true"] { stroke: #059669; stroke-width: 2.25; }
+.sx-rbd-label { fill: #334155; font-size: 12px; font-weight: 600; }
+.sx-rbd-r { fill: #2563eb; font-size: 9px; font-weight: 600; }
+.sx-rbd-mark { fill: #059669; font-size: 9px; font-weight: 700; }
+.sx-rbd-rsys { fill: #2563eb; font-size: 13px; font-weight: 700; }
+.sx-rbd-title { fill: #334155; font-size: 16px; font-weight: 700; }</style>
+<rect x="0" y="0" width="1176" height="385" class="sx-rbd-bg"/>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><text x="28" y="22" class="sx-rbd-title" font-family="system-ui, -apple-system, sans-serif">Data Center Tier III Availability</text>
+<text x="568" y="50" class="sx-rbd-rsys" text-anchor="middle">System reliability  R = 0.9972</text>
+<path d="M 61.5 181 L 61.5 145 L 190 145" class="sx-rbd-wire"/>
+<path d="M 301 145 L 429.5 145 L 429.5 181" class="sx-rbd-wire"/>
+<path d="M 227 217 L 271 217" class="sx-rbd-wire"/>
+<path d="M 61.5 181 L 61.5 217 L 88 217" class="sx-rbd-wire"/>
+<path d="M 403 217 L 429.5 217 L 429.5 181" class="sx-rbd-wire"/>
+<path d="M 477 181 L 477 109 L 503.5 109" class="sx-rbd-wire"/>
+<path d="M 607.5 109 L 634 109 L 634 181" class="sx-rbd-wire"/>
+<path d="M 477 181 L 477 181 L 503.5 181" class="sx-rbd-wire"/>
+<path d="M 607.5 181 L 634 181 L 634 181" class="sx-rbd-wire"/>
+<path d="M 477 181 L 477 253 L 503.5 253" class="sx-rbd-wire"/>
+<path d="M 607.5 253 L 634 253 L 634 181" class="sx-rbd-wire"/>
+<path d="M 429.5 181 L 477 181" class="sx-rbd-wire"/>
+<path d="M 681.5 181 L 681.5 145 L 708 145" class="sx-rbd-wire"/>
+<path d="M 826 145 L 852.5 145 L 852.5 181" class="sx-rbd-wire"/>
+<path d="M 681.5 181 L 681.5 217 L 708 217" class="sx-rbd-wire"/>
+<path d="M 826 217 L 852.5 217 L 852.5 181" class="sx-rbd-wire"/>
+<path d="M 634 181 L 681.5 181" class="sx-rbd-wire"/>
+<path d="M 900 181 L 900 145 L 926.5 145" class="sx-rbd-wire"/>
+<path d="M 1051.5 145 L 1078 145 L 1078 181" class="sx-rbd-wire"/>
+<path d="M 900 181 L 900 217 L 926.5 217" class="sx-rbd-wire"/>
+<path d="M 1051.5 217 L 1078 217 L 1078 181" class="sx-rbd-wire"/>
+<path d="M 852.5 181 L 900 181" class="sx-rbd-wire"/>
+<path d="M 28 181 L 61.5 181" class="sx-rbd-wire"/>
+<path d="M 1078 181 L 1108 181" class="sx-rbd-wire"/>
+<circle cx="61.5" cy="181" r="3.5" class="sx-rbd-node" data-node="split"/>
+<circle cx="429.5" cy="181" r="3.5" class="sx-rbd-node" data-node="join"/>
+<circle cx="477" cy="181" r="3.5" class="sx-rbd-node" data-node="split"/>
+<circle cx="634" cy="181" r="3.5" class="sx-rbd-node" data-node="join"/>
+<circle cx="681.5" cy="181" r="3.5" class="sx-rbd-node" data-node="split"/>
+<circle cx="852.5" cy="181" r="3.5" class="sx-rbd-node" data-node="join"/>
+<circle cx="900" cy="181" r="3.5" class="sx-rbd-node" data-node="split"/>
+<circle cx="1078" cy="181" r="3.5" class="sx-rbd-node" data-node="join"/>
+<circle cx="28" cy="181" r="6" class="sx-rbd-term" data-node="in"/>
+<circle cx="1108" cy="181" r="6" class="sx-rbd-term" data-node="out"/>
+<text x="640" y="80" class="sx-rbd-mark">2/3</text>
+<g class="sx-rbd-block-g" data-id="UTIL" data-r="0.999"><rect x="190" y="122" width="111" height="46" rx="5" class="sx-rbd-block"/>
+<text x="245.5" y="145" class="sx-rbd-label" text-anchor="middle" dominant-baseline="middle"><tspan x="245.5" dy="0">Utility feed</tspan></text>
+<text x="245.5" y="183" class="sx-rbd-r" text-anchor="middle">R=0.999</text></g>
+<g class="sx-rbd-block-g" data-id="GEN" data-r="0.98"><rect x="88" y="194" width="139" height="46" rx="5" class="sx-rbd-block"/>
+<text x="157.5" y="217" class="sx-rbd-label" text-anchor="middle" dominant-baseline="middle"><tspan x="157.5" dy="0">Diesel generator</tspan></text>
+<text x="157.5" y="255" class="sx-rbd-r" text-anchor="middle">R=0.98</text></g>
+<g class="sx-rbd-block-g" data-id="ATS" data-r="0.995"><rect x="271" y="194" width="132" height="46" rx="5" class="sx-rbd-block"/>
+<text x="337" y="217" class="sx-rbd-label" text-anchor="middle" dominant-baseline="middle"><tspan x="337" dy="0">Transfer switch</tspan></text>
+<text x="337" y="255" class="sx-rbd-r" text-anchor="middle">R=0.995</text></g>
+<g class="sx-rbd-block-g" data-id="CRAC1" data-r="0.97" data-critical="true"><rect x="503.5" y="86" width="104" height="46" rx="5" class="sx-rbd-block" data-critical="true"/>
+<text x="555.5" y="109" class="sx-rbd-label" text-anchor="middle" dominant-baseline="middle"><tspan x="555.5" dy="0">CRAC unit 1</tspan></text>
+<text x="555.5" y="147" class="sx-rbd-r" text-anchor="middle">R=0.97</text></g>
+<g class="sx-rbd-block-g" data-id="CRAC2" data-r="0.97"><rect x="503.5" y="158" width="104" height="46" rx="5" class="sx-rbd-block"/>
+<text x="555.5" y="181" class="sx-rbd-label" text-anchor="middle" dominant-baseline="middle"><tspan x="555.5" dy="0">CRAC unit 2</tspan></text>
+<text x="555.5" y="219" class="sx-rbd-r" text-anchor="middle">R=0.97</text></g>
+<g class="sx-rbd-block-g" data-id="CRAC3" data-r="0.97"><rect x="503.5" y="230" width="104" height="46" rx="5" class="sx-rbd-block"/>
+<text x="555.5" y="253" class="sx-rbd-label" text-anchor="middle" dominant-baseline="middle"><tspan x="555.5" dy="0">CRAC unit 3</tspan></text>
+<text x="555.5" y="291" class="sx-rbd-r" text-anchor="middle">R=0.97</text></g>
+<g class="sx-rbd-block-g" data-id="SW1" data-r="0.995"><rect x="708" y="122" width="118" height="46" rx="5" class="sx-rbd-block"/>
+<text x="767" y="145" class="sx-rbd-label" text-anchor="middle" dominant-baseline="middle"><tspan x="767" dy="0">Core switch A</tspan></text>
+<text x="767" y="183" class="sx-rbd-r" text-anchor="middle">R=0.995</text></g>
+<g class="sx-rbd-block-g" data-id="SW2" data-r="0.995"><rect x="708" y="194" width="118" height="46" rx="5" class="sx-rbd-block"/>
+<text x="767" y="217" class="sx-rbd-label" text-anchor="middle" dominant-baseline="middle"><tspan x="767" dy="0">Core switch B</tspan></text>
+<text x="767" y="255" class="sx-rbd-r" text-anchor="middle">R=0.995</text></g>
+<g class="sx-rbd-block-g" data-id="ST1" data-r="0.99"><rect x="926.5" y="122" width="125" height="46" rx="5" class="sx-rbd-block"/>
+<text x="989" y="145" class="sx-rbd-label" text-anchor="middle" dominant-baseline="middle"><tspan x="989" dy="0">Storage node A</tspan></text>
+<text x="989" y="183" class="sx-rbd-r" text-anchor="middle">R=0.99</text></g>
+<g class="sx-rbd-block-g" data-id="ST2" data-r="0.99"><rect x="926.5" y="194" width="125" height="46" rx="5" class="sx-rbd-block"/>
+<text x="989" y="217" class="sx-rbd-label" text-anchor="middle" dominant-baseline="middle"><tspan x="989" dy="0">Storage node B</tspan></text>
+<text x="989" y="255" class="sx-rbd-r" text-anchor="middle">R=0.99</text></g></g></svg>
