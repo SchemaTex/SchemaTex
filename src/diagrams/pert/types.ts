@@ -10,7 +10,10 @@
 
 export type PertUnit = "days" | "weeks" | "hours" | "abstract";
 export type PertDirection = "LR" | "TB";
-export type PertLayoutMode = "network" | "timescaled" | "aoa";
+export type PertLayoutMode = "network" | "timescaled" | "aoa" | "gantt";
+
+/** Gantt calendar model — how schedule offsets map to dates. */
+export type PertCalendar = "continuous" | "5day";
 
 /** Precedence Diagramming Method dependency types. */
 export type PertDepType = "FS" | "SS" | "FF" | "SF";
@@ -43,8 +46,10 @@ export interface PertTask {
   deps: PertDependency[];
   tags: string[];
   className?: string;
-  /** Swimlane / grouping band (responsible party, phase, …). */
+  /** Swimlane / grouping band (responsible party, phase, …). Gantt: section. */
   lane?: string;
+  /** Gantt percent-complete 0..100 (rendered as a darker fill overlay). */
+  progress?: number;
   /** Source line — used in error messages. */
   line?: number;
 }
@@ -58,6 +63,12 @@ export interface PertAst {
   /** Slack ≤ this value counts as critical. Default 0. */
   criticalTolerance: number;
   showSentinels: boolean;
+  /** Gantt project start date `YYYY-MM-DD`; absent → numeric (unit-offset) axis. */
+  start?: string;
+  /** Gantt calendar model (default "continuous"). "5day" skips Sat/Sun. */
+  calendar: PertCalendar;
+  /** Gantt "today" marker date `YYYY-MM-DD` (optional). */
+  today?: string;
   tasks: PertTask[];
   warnings: string[];
 }

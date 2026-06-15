@@ -631,6 +631,20 @@ run 9 to 94,36
 run 11 to 95,52`,
   },
   {
+    file: 'examples/pert/gantt-website-relaunch.svg',
+    text: `gantt "Website Relaunch"
+  start: 2026-07-01
+  calendar: 5day
+  task A "Discovery" duration: 5 lane: "Plan"
+  task B "Wireframes" duration: 8 after: A lane: "Design"
+  task C "Visual design" duration: 6 after: B lane: "Design" progress: 40%
+  task D "Frontend build" duration: 12 after: C lane: "Build"
+  task E "Backend API" duration: 10 after: A lane: "Build"
+  task F "Integration & QA" duration: 5 after: D, E lane: "Build"
+  task LAUNCH "Go live" milestone after: F lane: "Build"
+  today: 2026-07-20`,
+  },
+  {
     file: 'examples/rbd/redundant-server.svg',
     text: `rbd "Redundant Server"
   series {

@@ -27,6 +27,7 @@ import { resolveBaseTheme, type BaseTheme } from "../../core/theme";
 import { parsePert } from "./parser";
 import { schedulePert } from "./scheduler";
 import { layoutPert, PERT_CONST } from "./layout";
+import { renderGantt } from "./gantt";
 import type {
   PertAoa,
   PertAst,
@@ -522,6 +523,7 @@ const PERT_PAD = 24;
 export function renderPert(textOrAst: string | PertAst, config?: RenderConfig): string {
   const ast = typeof textOrAst === "string" ? parsePert(textOrAst) : textOrAst;
   const schedule = schedulePert(ast);
+  if (ast.layout === "gantt") return renderGantt(ast, schedule, config);
   const layout = layoutPert(ast, schedule);
   return renderPertLayout(layout, config);
 }

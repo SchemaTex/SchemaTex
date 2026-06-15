@@ -1011,10 +1011,10 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
   },
   pert: {
     type: "pert",
-    header: "pert",
-    mode: "AON tasks with computed schedule (ES/EF/LS/LF/slack/critical path)",
+    header: "pert  (or `gantt` for a Gantt chart)",
+    mode: "AON tasks with computed schedule (ES/EF/LS/LF/slack/critical path); render as network, timescaled, or calendar Gantt",
     keywords:
-      'pert · title: "…" · unit: days|weeks|hours|abstract · direction: LR|TB · layout: network|timescaled|aoa · critical-tolerance: N · task ID "label" duration: N|O/M/P [after: ref,…] [milestone] [lane: "Name"] · dependency refs: ID (FS) · ID FS|SS|FF|SF[+N|-N][d|w|h] · ID+N (FS lag sugar)',
+      'pert | gantt · title: "…" · unit: days|weeks|hours|abstract · direction: LR|TB · layout: network|timescaled|aoa|gantt · critical-tolerance: N · gantt-only: start: YYYY-MM-DD · calendar: continuous|5day · today: YYYY-MM-DD · task ID "label" duration: N|O/M/P [after: ref,…] [milestone] [lane: "Section"] [progress: N%] · dependency refs: ID (FS) · ID FS|SS|FF|SF[+N|-N][d|w|h] · ID+N (FS lag sugar)',
     forms: [
       "pert",
       'title: "Q3 Product Launch"',
@@ -1026,11 +1026,20 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
       'task D "Frontend build" duration: 10 after: B, C',
       'task E "QA / testing" duration: 5 after: D',
       'task G "Launch event" duration: 2 after: E',
+      "",
+      "# — or a Gantt chart (same scheduler, calendar bars) —",
+      'gantt "Website Relaunch"',
+      "start: 2026-07-01",
+      "calendar: 5day",
+      'task P "Discovery" duration: 5 lane: "Plan"',
+      'task Q "Build" duration: 12 after: P lane: "Build" progress: 30%',
+      'task R "Go live" milestone after: Q lane: "Build"',
     ],
     prefer: [
       "Each `task ID \"label\" duration: N` is one activity; wire dependencies with `after: A, B` (comma-separated, forward references allowed). The engine computes ES/EF/LS/LF and the critical path — never write those yourself.",
+      "For a Gantt chart, use the `gantt` header (or `layout: gantt`); add `start: YYYY-MM-DD` for a calendar date axis, `calendar: 5day` to exclude weekends, `lane: \"Section\"` to band rows, `progress: 60%` for completion, and `milestone` for diamonds. Bars are placed from the computed schedule — still never type ES/EF.",
       "Use three-point estimation `duration: O/M/P` (e.g. `2/3/5`) for uncertainty — the engine computes `te = (O+4M+P)/6` and variance; add `critical-tolerance: 0.01` when mixing estimate kinds.",
-      "Declare dependency types when needed: `after: A FS`, `after: A SS+2`, `after: B FF-1` (default FS, zero lag); group activities with `lane: \"Team\"`.",
+      "Declare dependency types when needed: `after: A FS`, `after: A SS+2`, `after: B FF-1` (default FS, zero lag).",
     ],
     avoid: [
       "Don't write `ES:`, `EF:`, `LS:`, `LF:`, or `slack:` yourself — they are computed outputs.",

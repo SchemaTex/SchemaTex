@@ -146,7 +146,30 @@ task D "Build"         duration: 15 after: C
 task E "Pilot"         duration: 7  after: D
 ```
 
-This is a bridge to a Gantt view, not a replacement: there's no calendar, working-time mask, or resource swimlane.
+This is the network-flavoured time view; for a calendar Gantt chart with one row per task, use `layout: gantt` (next).
+
+### Gantt chart (`gantt` / `layout: gantt`)
+
+Start a document with the **`gantt`** header (sugar for `pert` + `layout: gantt`) for a calendar Gantt. It is the *same scheduler* — so the bars are placed from the **computed** ES/EF, and the **critical path is drawn in red**, the thing a hand-placed Gantt (Mermaid) can't do: there you type the dates yourself, here you type dependencies and the engine schedules them.
+
+```
+gantt "Website Relaunch"
+start: 2026-07-01
+calendar: 5day
+task A "Discovery"      duration: 5  lane: "Plan"
+task B "Wireframes"     duration: 8  after: A   lane: "Design"
+task C "Visual design"  duration: 6  after: B   lane: "Design"  progress: 40%
+task D "Frontend build" duration: 12 after: C   lane: "Build"
+task E "Backend API"    duration: 10 after: A   lane: "Build"
+task F "Integration"    duration: 5  after: D, E lane: "Build"
+task LAUNCH "Go live"   milestone    after: F   lane: "Build"
+today: 2026-07-20
+```
+
+- **`start: YYYY-MM-DD`** turns the axis into calendar dates (omit it for a numeric day-offset axis).
+- **`calendar: continuous`** (default) spans weekends; **`calendar: 5day`** excludes Sat/Sun from the timeline.
+- **`lane: "…"`** groups tasks into labelled **sections**; **`progress: 60%`** draws a completion overlay; **`milestone`** is a diamond; **`today: YYYY-MM-DD`** drops a marker line.
+- One row per task, in declaration order. Off-critical-path bars are drawn in the resting blue with their **slack** annotated; critical bars are red.
 
 ### Activity-on-arrow (`layout: aoa`)
 
