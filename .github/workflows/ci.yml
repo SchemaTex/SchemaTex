@@ -26,3 +26,9 @@ jobs:
       - run: npm run lint
 
       - run: npm run build
+
+      # Every bundled example DSL must still render.
+      - run: node scripts/validate-examples.mjs
+
+      # Gallery SVGs must match current engine output (no silent drift).
+      - run: npm run gallery:check
