@@ -15,6 +15,7 @@
 import type {
   RbdAnalysis,
   RbdAst,
+  RbdBlock,
   RbdBlockResult,
   RbdStructure,
 } from "./types";
@@ -26,9 +27,13 @@ export function analyseRbd(ast: RbdAst): RbdAnalysis {
   const notes: string[] = [];
   const warnings: string[] = [...ast.warnings];
 
-  // Collect blocks in declaration order, note missing reliabilities.
+  if (ast.mission !== undefined) {
+    notes.push(`Mission time t = ${ast.mission}; block reliabilities with a rate/MTBF/Weibull are evaluated as R(t).`);
+  }
+
+  // Collect blocks in declaration order; resolve R(t) from any distribution.
   const blocks: { id: string; R?: number }[] = [];
-  collectBlocks(ast.root, blocks);
+  collectBlocks(ast.root, blocks, ast.mission, warnings);
   const missing = blocks.filter((b) => b.R === undefined).map((b) => b.id);
 
   // Base system reliability with every block at its declared R.
@@ -48,10 +53,16 @@ export function analyseRbd(ast: RbdAst): RbdAnalysis {
     const rDown = evalStructure(ast.root, down, notes);
     const importance = rUp !== undefined && rDown !== undefined ? rUp - rDown : undefined;
     const isSpof = rDown === 0;
+    // Criticality importance I_C = I_B·(1−Rᵢ)/(1−R_sys) — cheap given Birnbaum.
+    let criticality: number | undefined;
+    if (importance !== undefined && b.R !== undefined && systemReliability < 1) {
+      criticality = (importance * (1 - b.R)) / (1 - systemReliability);
+    }
     return {
       id: b.id,
       ...(b.R !== undefined ? { R: b.R } : {}),
       ...(importance !== undefined ? { importance } : {}),
+      ...(criticality !== undefined ? { criticality } : {}),
       isSpof,
     };
   });
@@ -83,12 +94,32 @@ export function analyseRbd(ast: RbdAst): RbdAnalysis {
 
 // ─── Structure evaluation ─────────────────────────────────────
 
-function collectBlocks(s: RbdStructure, out: { id: string; R?: number }[]): void {
+function collectBlocks(
+  s: RbdStructure,
+  out: { id: string; R?: number }[],
+  mission: number | undefined,
+  warnings: string[],
+): void {
   if (s.kind === "block") {
-    out.push({ id: s.id, ...(s.R !== undefined ? { R: s.R } : {}) });
+    const R = resolveBlockR(s, mission, warnings);
+    out.push({ id: s.id, ...(R !== undefined ? { R } : {}) });
     return;
   }
-  for (const c of s.children) collectBlocks(c, out);
+  for (const c of s.children) collectBlocks(c, out, mission, warnings);
+}
+
+/** Effective reliability of a block: R(t) from its distribution when a mission time is set, else the constant R. */
+export function resolveBlockR(b: RbdBlock, mission: number | undefined, warnings: string[]): number | undefined {
+  if (b.dist) {
+    if (mission === undefined) {
+      warnings.push(`Block "${b.id}" has a failure distribution but no mission time — add 'mission: <t>' to evaluate R(t)${b.R !== undefined ? ", falling back to its constant R" : ""}.`);
+      return b.R;
+    }
+    const t = mission;
+    if (b.dist.kind === "exp") return Math.exp(-b.dist.rate * t);
+    return Math.exp(-Math.pow(t / b.dist.eta, b.dist.beta));
+  }
+  return b.R;
 }
 
 /** Reliability of a structure under an environment id→R. Undefined when any leaf is symbolic. */

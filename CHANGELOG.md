@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.9.7] — 2026-06-15
+
+### Added — RBD time-dependent reliability R(t) + criticality importance
+
+The reliability block diagram now models **reliability over a mission time**, not just static reliabilities — the way RBD is actually used in RAMS work.
+
+- **`mission: <t>`** + a per-block failure distribution: `rate=λ` or `mtbf=N` (exponential, R(t) = e^(−λt)) or `weibull=β,η` (R(t) = e^(−(t/η)^β)). The engine evaluates R(t) per block and rolls it up exactly as for static reliabilities; the headline becomes `R(t=…) = …`. Constant `R=`/`p=` blocks still work and mix freely. A distribution with no `mission:` warns and falls back to the constant `R`. Keep `mission` and rates in consistent time units.
+- **Criticality importance** `I_C(i) = Iᴮ(i)·(1−Rᵢ)/(1−R_sys)` for every block — derived cheaply from the existing Birnbaum computation.
+- New worked example (pump station 1-year mission, MTBF + Weibull) + an R(t) section in the RBD docs.
+
+Deferred: cold/warm standby redundancy with switch reliability (needs per-distribution treatment + identical-unit assumptions — a focused follow-up).
+
+---
+
 ## [0.9.6] — 2026-06-15
 
 ### Added — Gantt charts on the PERT engine (`gantt` / `layout: gantt`)

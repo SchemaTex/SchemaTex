@@ -169,6 +169,63 @@ describe("rbd e2e — via public api", () => {
     expect(svg).not.toMatch(/reliability\s+R = 1\b/);
   });
 
+  // ── Mission-time R(t) ──
+  it("computes exponential R(t) = e^(−λt) from a rate + mission time", () => {
+    const a = analyseRbd(parseAst(`rbd
+  mission: 8760
+  block A rate=0.0001`));
+    expect(a.blocks[0]!.R).toBeCloseTo(Math.exp(-0.876), 6); // λt = 0.876
+  });
+
+  it("treats mtbf as 1/λ exponential", () => {
+    const a = analyseRbd(parseAst(`rbd
+  mission: 8760
+  block A mtbf=10000`));
+    expect(a.blocks[0]!.R).toBeCloseTo(Math.exp(-0.876), 6);
+  });
+
+  it("computes Weibull R(t) = e^(−(t/η)^β)", () => {
+    const a = analyseRbd(parseAst(`rbd
+  mission: 8760
+  block A weibull=2,10000`));
+    expect(a.blocks[0]!.R).toBeCloseTo(Math.exp(-Math.pow(0.876, 2)), 6);
+  });
+
+  it("rolls R(t) up through the structure", () => {
+    const a = analyseRbd(parseAst(`rbd
+  mission: 1000
+  series {
+    block A rate=0.0001
+    parallel { block B rate=0.0002
+               block C rate=0.0002 }
+  }`));
+    const ra = Math.exp(-0.1); // A
+    const rbc = 1 - (1 - Math.exp(-0.2)) ** 2; // parallel B,C
+    expect(a.systemReliability).toBeCloseTo(ra * rbc, 6);
+    const svg = render(`rbd "M"
+  mission: 1000
+  block A rate=0.0001`);
+    expect(svg).toMatch(/R\(t=1000\)/);
+  });
+
+  it("warns and falls back when a distribution has no mission time", () => {
+    const a = analyseRbd(parseAst(`rbd
+  series { block A rate=0.0001 R=0.9
+           block B R=0.8 }`));
+    expect(a.warnings.some((w) => /no mission time/i.test(w))).toBe(true);
+    expect(a.systemReliability).toBeCloseTo(0.72, 10); // A falls back to R=0.9
+  });
+
+  // ── Criticality importance ──
+  it("derives criticality importance for each block", () => {
+    const a = analyseRbd(parseAst(`rbd
+  series { block X R=0.9
+           block Y R=0.8 }`));
+    const x = a.blocks.find((b) => b.id === "X")!;
+    // I_C(X) = I_B·(1−Rx)/(1−Rsys) = 0.8·0.1/0.28
+    expect(x.criticality).toBeCloseTo((0.8 * 0.1) / 0.28, 6);
+  });
+
   // ── Determinism ──
   it("is deterministic across renders", () => {
     const src = `rbd
