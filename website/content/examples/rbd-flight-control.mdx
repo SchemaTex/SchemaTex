@@ -1,0 +1,39 @@
+---
+title: Fly-by-wire flight control (triple-redundant)
+description: A reliability block diagram of a fly-by-wire flight-control system — 2-of-3 voting flight-control computers, triple-redundant hydraulics, and dual electrical buses, all in series. The engine computes the six-nines-class system reliability the architecture is designed to hit.
+diagram: rbd
+standard: IEC 61078 / ARP4761
+industry: [engineering, technology]
+persona: For the avionics reliability engineer sizing redundancy
+complexity: 3
+tags: [rbd, reliability, aerospace, fly-by-wire, redundancy, k-of-n, 2oo3, triple-redundant]
+featured: false
+relatedLink:
+  label: RBD syntax
+  href: /docs/rbd
+status: published
+dsl: |
+  rbd "Fly-by-wire Flight Control"
+    series {
+      kofn 2/3 {
+        block FCC1 "Flight computer 1" R=0.9995
+        block FCC2 "Flight computer 2" R=0.9995
+        block FCC3 "Flight computer 3" R=0.9995
+      }
+      parallel {
+        block HYDG "Hydraulics green" R=0.998
+        block HYDB "Hydraulics blue" R=0.998
+        block HYDY "Hydraulics yellow" R=0.998
+      }
+      parallel {
+        block AC1 "AC bus 1" R=0.999
+        block AC2 "AC bus 2" R=0.999
+      }
+    }
+---
+
+## What this shows
+
+A textbook fly-by-wire architecture, the kind certified under ARP4761: **2-out-of-3** voting flight-control computers (a single computer can fail or disagree without losing control), **three independent hydraulic systems** (the green/blue/yellow split of a modern airliner), and **dual electrical buses** — all in **series** because the aircraft needs computing, hydraulics, and power simultaneously.
+
+**The architecture's whole point is a number, and the engine computes it.** Each subsystem is driven so close to 1 that the product still lands at a system reliability of **≈ 0.999998** — and Schematex prints the nines rather than rounding to "1", because in this domain the nines *are* the answer. No single point of failure remains, which is exactly the design intent the diagram now proves rather than merely asserts.

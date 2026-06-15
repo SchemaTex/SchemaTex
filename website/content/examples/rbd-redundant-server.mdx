@@ -1,0 +1,35 @@
+---
+title: Redundant server reliability (series + parallel + k-of-n)
+description: A computed reliability block diagram for a server — a single power supply in series with a redundant fan pair and a 2-of-3 disk array. The engine reduces the success logic to one system-reliability figure and flags the power supply as the single point of failure.
+diagram: rbd
+standard: IEC 61078
+industry: [engineering, technology]
+persona: For the reliability engineer sizing redundancy
+complexity: 2
+tags: [rbd, reliability, redundancy, series-parallel, k-of-n, spof, availability]
+featured: true
+relatedLink:
+  label: RBD syntax
+  href: /docs/rbd
+status: published
+dsl: |
+  rbd "Redundant Server"
+    series {
+      block PSU "Power Supply" R=0.99
+      parallel {
+        block FAN1 "Fan A" R=0.95
+        block FAN2 "Fan B" R=0.95
+      }
+      kofn 2/3 {
+        block D1 "Disk 1" R=0.97
+        block D2 "Disk 2" R=0.97
+        block D3 "Disk 3" R=0.97
+      }
+    }
+---
+
+## What this shows
+
+The three building blocks of reliability success logic in one diagram. The **single power supply** sits in series — everything depends on it. The **two fans** are in parallel, so the cooling subsystem survives either one failing. The **three disks** form a **2-of-3** array that tolerates one loss.
+
+**The number is computed, not drawn.** The engine reduces each group — fans to `1 − 0.05² = 0.9975`, the disk array to `3·0.97²·0.03 + 0.97³ = 0.99735`, then multiplies the series chain — to a **system reliability of ≈ 0.9849**. It also derives each block's Birnbaum importance and flags the **power supply as the single point of failure** (red border): with no redundancy in series, its failure alone takes down the whole system, and it carries the highest importance — the first place to add redundancy.

@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="660" height="385" viewBox="0 0 660 385" role="img" aria-label="Redundant Server" data-diagram-type="rbd"><title>Redundant Server</title>
+<desc>Reliability block diagram: 6 blocks. System reliability R = 0.98491. Single point of failure: PSU. Highest reliability-importance block: PSU.</desc>
+<style>.sx-rbd-bg { fill: #ffffff; }
+.sx-rbd-wire { fill: none; stroke: #475569; stroke-width: 2; }
+.sx-rbd-node { fill: #475569; stroke: none; }
+.sx-rbd-term { fill: #eef2f7; stroke: #334155; stroke-width: 2; }
+.sx-rbd-block { fill: #eef2f7; stroke: #334155; stroke-width: 2; }
+.sx-rbd-block[data-spof="true"] { stroke: #b91c1c; stroke-width: 3; }
+.sx-rbd-block[data-critical="true"] { stroke: #059669; stroke-width: 2.25; }
+.sx-rbd-label { fill: #334155; font-size: 12px; font-weight: 600; }
+.sx-rbd-r { fill: #2563eb; font-size: 9px; font-weight: 600; }
+.sx-rbd-mark { fill: #059669; font-size: 9px; font-weight: 700; }
+.sx-rbd-rsys { fill: #2563eb; font-size: 13px; font-weight: 700; }
+.sx-rbd-title { fill: #334155; font-size: 16px; font-weight: 700; }</style>
+<rect x="0" y="0" width="660" height="385" class="sx-rbd-bg"/>
+<g transform="translate(20, 20)" font-family="system-ui, -apple-system, sans-serif"><text x="28" y="22" class="sx-rbd-title" font-family="system-ui, -apple-system, sans-serif">Redundant Server</text>
+<text x="310" y="50" class="sx-rbd-rsys" text-anchor="middle">System reliability  R = 0.98491</text>
+<path d="M 216.5 181 L 216.5 145 L 243 145" class="sx-rbd-wire"/>
+<path d="M 339 145 L 365.5 145 L 365.5 181" class="sx-rbd-wire"/>
+<path d="M 216.5 181 L 216.5 217 L 243 217" class="sx-rbd-wire"/>
+<path d="M 339 217 L 365.5 217 L 365.5 181" class="sx-rbd-wire"/>
+<path d="M 169 181 L 216.5 181" class="sx-rbd-wire"/>
+<path d="M 413 181 L 413 109 L 439.5 109" class="sx-rbd-wire"/>
+<path d="M 535.5 109 L 562 109 L 562 181" class="sx-rbd-wire"/>
+<path d="M 413 181 L 413 181 L 439.5 181" class="sx-rbd-wire"/>
+<path d="M 535.5 181 L 562 181 L 562 181" class="sx-rbd-wire"/>
+<path d="M 413 181 L 413 253 L 439.5 253" class="sx-rbd-wire"/>
+<path d="M 535.5 253 L 562 253 L 562 181" class="sx-rbd-wire"/>
+<path d="M 365.5 181 L 413 181" class="sx-rbd-wire"/>
+<path d="M 28 181 L 58 181" class="sx-rbd-wire"/>
+<path d="M 562 181 L 592 181" class="sx-rbd-wire"/>
+<circle cx="216.5" cy="181" r="3.5" class="sx-rbd-node" data-node="split"/>
+<circle cx="365.5" cy="181" r="3.5" class="sx-rbd-node" data-node="join"/>
+<circle cx="413" cy="181" r="3.5" class="sx-rbd-node" data-node="split"/>
+<circle cx="562" cy="181" r="3.5" class="sx-rbd-node" data-node="join"/>
+<circle cx="28" cy="181" r="6" class="sx-rbd-term" data-node="in"/>
+<circle cx="592" cy="181" r="6" class="sx-rbd-term" data-node="out"/>
+<text x="568" y="80" class="sx-rbd-mark">2/3</text>
+<g class="sx-rbd-block-g" data-id="PSU" data-r="0.99" data-spof="true" data-critical="true"><rect x="58" y="158" width="111" height="46" rx="5" class="sx-rbd-block" data-spof="true"/>
+<text x="113.5" y="181" class="sx-rbd-label" text-anchor="middle" dominant-baseline="middle"><tspan x="113.5" dy="0">Power Supply</tspan></text>
+<text x="113.5" y="219" class="sx-rbd-r" text-anchor="middle">R=0.99</text></g>
+<g class="sx-rbd-block-g" data-id="FAN1" data-r="0.95"><rect x="243" y="122" width="96" height="46" rx="5" class="sx-rbd-block"/>
+<text x="291" y="145" class="sx-rbd-label" text-anchor="middle" dominant-baseline="middle"><tspan x="291" dy="0">Fan A</tspan></text>
+<text x="291" y="183" class="sx-rbd-r" text-anchor="middle">R=0.95</text></g>
+<g class="sx-rbd-block-g" data-id="FAN2" data-r="0.95"><rect x="243" y="194" width="96" height="46" rx="5" class="sx-rbd-block"/>
+<text x="291" y="217" class="sx-rbd-label" text-anchor="middle" dominant-baseline="middle"><tspan x="291" dy="0">Fan B</tspan></text>
+<text x="291" y="255" class="sx-rbd-r" text-anchor="middle">R=0.95</text></g>
+<g class="sx-rbd-block-g" data-id="D1" data-r="0.97"><rect x="439.5" y="86" width="96" height="46" rx="5" class="sx-rbd-block"/>
+<text x="487.5" y="109" class="sx-rbd-label" text-anchor="middle" dominant-baseline="middle"><tspan x="487.5" dy="0">Disk 1</tspan></text>
+<text x="487.5" y="147" class="sx-rbd-r" text-anchor="middle">R=0.97</text></g>
+<g class="sx-rbd-block-g" data-id="D2" data-r="0.97"><rect x="439.5" y="158" width="96" height="46" rx="5" class="sx-rbd-block"/>
+<text x="487.5" y="181" class="sx-rbd-label" text-anchor="middle" dominant-baseline="middle"><tspan x="487.5" dy="0">Disk 2</tspan></text>
+<text x="487.5" y="219" class="sx-rbd-r" text-anchor="middle">R=0.97</text></g>
+<g class="sx-rbd-block-g" data-id="D3" data-r="0.97"><rect x="439.5" y="230" width="96" height="46" rx="5" class="sx-rbd-block"/>
+<text x="487.5" y="253" class="sx-rbd-label" text-anchor="middle" dominant-baseline="middle"><tspan x="487.5" dy="0">Disk 3</tspan></text>
+<text x="487.5" y="291" class="sx-rbd-r" text-anchor="middle">R=0.97</text></g></g></svg>

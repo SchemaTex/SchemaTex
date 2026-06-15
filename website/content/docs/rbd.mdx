@@ -1,0 +1,93 @@
+---
+title: Reliability Block Diagram
+---
+
+## About reliability block diagrams
+
+A **reliability block diagram (RBD)** shows the **success logic** of a system: each component is a block on a path from an input node to an output node, and the system *works* as long as an unbroken path of working blocks connects the two. Components in **series** all have to work; components in **parallel** give redundancy (any one suffices); a **k-of-n** group works when at least *k* of its *n* members do. It is the standard tool of RAMS (reliability, availability, maintainability, safety) engineering, defined by **[IEC 61078:2016](https://webstore.iec.ch/publication/24566)** and MIL-HDBK-338B.
+
+Schematex's edge is that the engine **computes the answer**, not just the picture: from the per-block reliabilities it reduces the structure to the **system reliability** (∏ for series, 1−∏(1−Rᵢ) for parallel, exact enumeration for k-of-n), derives the **Birnbaum reliability importance** of every block (which one moves the needle most), and flags **single points of failure** — blocks whose failure alone fails the system — in red. That is the same stance `faulttree` takes toward cut sets and `pert` toward scheduling. RBD is the success-space dual of the fault tree's failure-space.
+
+<Playground initial={`rbd "Redundant Server"
+  series {
+    block PSU "Power Supply" R=0.99
+    parallel {
+      block FAN1 "Fan A" R=0.95
+      block FAN2 "Fan B" R=0.95
+    }
+    kofn 2/3 {
+      block D1 "Disk 1" R=0.97
+      block D2 "Disk 2" R=0.97
+      block D3 "Disk 3" R=0.97
+    }
+  }`} height={520} />
+
+---
+
+## 1. Your first diagram
+
+Every document starts with the `rbd` keyword (alias `reliability`), an optional title, then nested success-logic groups around `block` leaves:
+
+```
+rbd "Two redundant pumps"
+  parallel {
+    block A "Pump A" R=0.9
+    block B "Pump B" R=0.9
+  }
+```
+
+The engine draws the two pumps on parallel rails between a split node and a join node, computes the system reliability `1 − (1−0.9)(1−0.9) = 0.99`, and prints it as the headline. A bare top-level list of blocks (no outer group) is treated as a **series** chain.
+
+## 2. Blocks
+
+A `block` is one component on a success path:
+
+```
+block ID "Label" R=0.99
+```
+
+- `ID` — a short identifier (shown when no label is given).
+- `"Label"` — an optional display name (CJK quotes welcome).
+- Reliability is given as **`R=0.99`** (reliability/availability), **`p=0.01`** (probability of *failure*, → R = 1−p), or a percentage **`R=99%`**. A block with no reliability leaves the system figure symbolic (`n/a`).
+
+## 3. Success-logic groups
+
+Groups nest freely, so you can model redundant chains, voting banks, and standby pairs:
+
+| Group | Succeeds when | Reliability |
+|-------|---------------|-------------|
+| `series { … }` | **every** child works | ∏ Rᵢ |
+| `parallel { … }` | **any** child works | 1 − ∏(1 − Rᵢ) |
+| `kofn k/n { … }` | **≥ k of n** children work | exact state enumeration |
+
+```
+series {
+  block CTRL "Controller" R=0.995
+  parallel {
+    series { block P1 "Path 1 sensor" R=0.97
+             block A1 "Path 1 actuator" R=0.98 }
+    series { block P2 "Path 2 sensor" R=0.97
+             block A2 "Path 2 actuator" R=0.98 }
+  }
+}
+```
+
+## 4. Computed reliability, importance & SPOF
+
+After parsing, the engine computes:
+
+- **System reliability** — the headline figure, by recursive series/parallel/k-of-n reduction.
+- **Birnbaum importance** `Iᴮ(i) = R_sys(Rᵢ=1) − R_sys(Rᵢ=0)` for every block; the highest-importance block (the improvement target) is accented.
+- **Single points of failure** — any block where `R_sys(Rᵢ=0) = 0` (its failure alone fails the system) is drawn with a red border. A non-redundant block in series is always a SPOF.
+
+## 5. Validation
+
+The parser reports non-fatal warnings rather than failing:
+
+- a `kofn k/n` threshold with `k > n` is clamped to `n` (and `k < 1` to `1`);
+- a reliability outside `0..1` is clamped;
+- a duplicate block id is flagged.
+
+## 6. Theming
+
+`theme: default` uses the shared risk-reliability palette (neutral blocks, blue reliability numerals, red single-point-of-failure borders). `theme: monochrome` renders a black-and-white print version (SPOF by border weight); `theme: dark` is the Catppuccin dark variant.

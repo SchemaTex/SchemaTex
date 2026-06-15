@@ -630,6 +630,48 @@ run 7 to 99,20
 run 9 to 94,36
 run 11 to 95,52`,
   },
+  {
+    file: 'examples/rbd/redundant-server.svg',
+    text: `rbd "Redundant Server"
+  series {
+    block PSU "Power Supply" R=0.99
+    parallel {
+      block FAN1 "Fan A" R=0.95
+      block FAN2 "Fan B" R=0.95
+    }
+    kofn 2/3 {
+      block D1 "Disk 1" R=0.97
+      block D2 "Disk 2" R=0.97
+      block D3 "Disk 3" R=0.97
+    }
+  }`,
+  },
+  {
+    file: 'examples/rbd/data-center-tier-iii.svg',
+    text: `rbd "Data Center Tier III Availability"
+  series {
+    parallel {
+      block UTIL "Utility feed" R=0.999
+      series {
+        block GEN "Diesel generator" R=0.98
+        block ATS "Transfer switch" R=0.995
+      }
+    }
+    kofn 2/3 {
+      block CRAC1 "CRAC unit 1" R=0.97
+      block CRAC2 "CRAC unit 2" R=0.97
+      block CRAC3 "CRAC unit 3" R=0.97
+    }
+    parallel {
+      block SW1 "Core switch A" R=0.995
+      block SW2 "Core switch B" R=0.995
+    }
+    parallel {
+      block ST1 "Storage node A" R=0.99
+      block ST2 "Storage node B" R=0.99
+    }
+  }`,
+  },
 ];
 
 for (const { file, text } of examples) {

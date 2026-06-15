@@ -490,6 +490,36 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
       "IEC 60812",
     ],
   },
+  {
+    type: "rbd",
+    name: "Reliability Block Diagram (RBD)",
+    tagline:
+      "The success-logic diagram that computes its own system reliability — series/parallel/k-of-n reduction, Birnbaum importance, and single-point-of-failure detection.",
+    useWhen:
+      "Use to model whether a system *works* from the reliability of its components, and to compute the overall figure — RAMS analysis, redundancy/high-availability design, fault-tolerance trade studies. Header `rbd`; nest `series { … }`, `parallel { … }`, and `kofn k/n { … }` success-logic groups around `block ID \"Label\" R=0.99` leaves (`p=0.01` failure prob or `R=99%` also accepted). The engine computes system reliability (∏ for series, 1−∏(1−Rᵢ) for parallel, exact k-of-n), the Birnbaum reliability-importance of every block, and flags blocks whose failure alone fails the system (SPOF, drawn in red). Sibling of fault tree (§37) in the risk-reliability cluster.",
+    cluster: "risk-reliability",
+    standard: "IEC 61078:2016 · MIL-HDBK-338B; see 50-RBD-STANDARD.md",
+    syntaxKey: "rbd",
+    aliases: [
+      "RBD",
+      "Reliability Block Diagram",
+      "reliability diagram",
+      "availability block diagram",
+      "可靠性框图",
+    ],
+    keywords: [
+      "IEC 61078",
+      "system reliability",
+      "redundancy",
+      "series parallel",
+      "k-out-of-n",
+      "high availability",
+      "RAMS",
+      "Birnbaum importance",
+      "single point of failure",
+      "fault tolerance",
+    ],
+  },
   // ── Systems thinking / stochastic ────────────────────────────
   {
     type: "causalloop",
@@ -821,6 +851,8 @@ export const DIAGRAM_SINCE: Readonly<Record<DiagramType, string>> = {
   floorplan: "0.9.3",
   // 0.9.4 — multi-sport playbook (football X&O / basketball / soccer)
   playbook: "0.9.4",
+  // 0.10.0 — reliability block diagram (IEC 61078)
+  rbd: "0.10.0",
 };
 
 export function getDiagramSince(type: string): string | undefined {
