@@ -132,6 +132,8 @@
     "lint": "eslint src/",
     "typecheck": "npm run build:ai && tsc --noEmit",
     "validate:examples": "npm run build && node scripts/validate-examples.mjs",
+    "gallery": "node scripts/generate-gallery-svgs.mjs",
+    "gallery:check": "node scripts/generate-gallery-svgs.mjs && git diff --exit-code -- examples/",
     "prepublishOnly": "npm run build && npm run typecheck"
   },
   "keywords": [
