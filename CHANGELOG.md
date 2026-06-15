@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [0.10.0] — 2026-06-15
+## [0.9.5] — 2026-06-15
 
 ### Added — `rbd`: reliability block diagram engine (50-RBD-STANDARD)
 

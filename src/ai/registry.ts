@@ -851,8 +851,8 @@ export const DIAGRAM_SINCE: Readonly<Record<DiagramType, string>> = {
   floorplan: "0.9.3",
   // 0.9.4 — multi-sport playbook (football X&O / basketball / soccer)
   playbook: "0.9.4",
-  // 0.10.0 — reliability block diagram (IEC 61078)
-  rbd: "0.10.0",
+  // 0.9.5 — reliability block diagram (IEC 61078)
+  rbd: "0.9.5",
 };
 
 export function getDiagramSince(type: string): string | undefined {
