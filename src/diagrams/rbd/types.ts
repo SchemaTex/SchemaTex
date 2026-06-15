@@ -13,6 +13,15 @@
 
 export type RbdGroupKind = "series" | "parallel" | "kofn";
 
+/**
+ * Time-to-failure distribution for mission-time R(t) computation.
+ *   exp:     R(t) = e^(−λt)        (constant hazard; λ = rate, MTBF = 1/λ)
+ *   weibull: R(t) = e^(−(t/η)^β)   (β = shape, η = scale/characteristic life)
+ */
+export type RbdDist =
+  | { kind: "exp"; rate: number }
+  | { kind: "weibull"; beta: number; eta: number };
+
 /** A leaf block — one component on a reliability success path. */
 export interface RbdBlock {
   kind: "block";
@@ -21,6 +30,8 @@ export interface RbdBlock {
   label?: string;
   /** Reliability/availability 0..1 (given directly or derived from `p`). Undefined = symbolic. */
   R?: number;
+  /** Time-to-failure distribution; with a `mission` time the engine derives R(t). */
+  dist?: RbdDist;
 }
 
 /** A success-logic grouping of child structures. */
@@ -42,6 +53,8 @@ export interface RbdAst {
   title?: string;
   /** Root structure — a bare top-level block list is wrapped in an implicit series. */
   root: RbdStructure;
+  /** Mission time `t` (consistent time units with block `rate`/`mtbf`/`weibull`). */
+  mission?: number;
   /** Non-fatal parser warnings (duplicate ids, k>n clamped, …). */
   warnings: string[];
   metadata?: Record<string, string>;
@@ -58,6 +71,12 @@ export interface RbdBlockResult {
    * when the system reliability is symbolic (some block lacks an R).
    */
   importance?: number;
+  /**
+   * Criticality importance I_C(i) = Iᴮ(i)·(1−Rᵢ)/(1−R_sys): the probability that
+   * block i is failed *and* critical to the system, given the system is failed.
+   * Cheap to derive once Birnbaum is known; undefined when R_sys is 1 or symbolic.
+   */
+  criticality?: number;
   /** True when R_sys(Rᵢ=0) = 0 — this block's failure alone fails the system. */
   isSpof: boolean;
 }

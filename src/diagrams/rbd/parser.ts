@@ -14,7 +14,7 @@
  * unambiguous (it stops at the next keyword / brace).
  */
 
-import type { RbdAst, RbdBlock, RbdGroup, RbdStructure } from "./types";
+import type { RbdAst, RbdBlock, RbdDist, RbdGroup, RbdStructure } from "./types";
 
 /** Fold CJK / curly quote pairs to straight quotes so the tokenizer is simple. */
 function normalizeQuotes(text: string): string {
@@ -83,22 +83,29 @@ export function parseRbd(text: string): RbdAst {
 
     let label: string | undefined;
     let R: number | undefined;
+    let dist: RbdDist | undefined;
 
     // Optional quoted label immediately after the id.
     if (peek()?.t === "string") {
       label = (tokens[pos++] as { t: "string"; v: string }).v;
     }
-    // Attribute words: R=…, p=…, prob=…, or a bare numeric reliability.
+    // Attribute words: R/p/prob/q, rate/mtbf/mttf, weibull, or a bare reliability.
     while (peek()?.t === "word") {
       const w = (peek() as { t: "word"; v: string }).v;
       const attr = parseAttr(w);
       if (!attr) break; // next keyword / id — end of this block
       pos++;
-      if (attr.key === "p") R = clamp01(1 - attr.value, w, warnings);
-      else R = clamp01(attr.value, w, warnings);
+      if (attr.kind === "dist") dist = attr.dist;
+      else R = clamp01(attr.failure ? 1 - attr.value : attr.value, w, warnings);
     }
 
-    return { kind: "block", id, ...(label !== undefined ? { label } : {}), ...(R !== undefined ? { R } : {}) };
+    return {
+      kind: "block",
+      id,
+      ...(label !== undefined ? { label } : {}),
+      ...(R !== undefined ? { R } : {}),
+      ...(dist !== undefined ? { dist } : {}),
+    };
   };
 
   const parseGroup = (kwRaw: string): RbdGroup => {
@@ -182,10 +189,20 @@ export function parseRbd(text: string): RbdAst {
     root = { kind: "series", children: top };
   }
 
+  let mission: number | undefined;
+  if (metadata.mission !== undefined) {
+    const v = parseFloat(metadata.mission);
+    if (!Number.isFinite(v) || v < 0) {
+      throw new RbdParseError(`mission time must be a non-negative number (got '${metadata.mission}')`);
+    }
+    mission = v;
+  }
+
   return {
     type: "rbd",
     ...(title ? { title } : {}),
     root,
+    ...(mission !== undefined ? { mission } : {}),
     warnings,
     ...(Object.keys(metadata).length > 0 ? { metadata } : {}),
   };
@@ -234,11 +251,10 @@ function stripBodyDirectives(body: string, metadata: Record<string, string>): st
   return body
     .split("\n")
     .filter((line) => {
-      const m = line.match(/^\s*(title|standard|note)\s*:\s*(.+)$/i);
+      const m = line.match(/^\s*(title|standard|note|mission)\s*:\s*(.+)$/i);
       if (m) {
         const key = m[1]!.toLowerCase();
-        if (key !== "title") metadata[key] = m[2]!.trim();
-        else metadata.title = m[2]!.trim();
+        metadata[key] = m[2]!.trim();
         return false;
       }
       return true;
@@ -252,21 +268,48 @@ function extractQuoted(s: string): string | undefined {
   return s.length > 0 ? s.trim() : undefined;
 }
 
-interface Attr { key: "R" | "p"; value: number }
+type ParsedAttr =
+  | { kind: "R"; value: number; failure: boolean }
+  | { kind: "dist"; dist: RbdDist };
 
-/** Parse `R=0.99`, `p=1%`, `prob:0.9`, or a bare number (→ R). Returns null for non-attrs. */
-function parseAttr(w: string): Attr | null {
+/**
+ * Parse one block attribute word:
+ *   R=0.99 | p=1% | prob:0.9 | q=0.01  → constant reliability
+ *   rate=0.001 | mtbf=1000 | mttf=1000 → exponential distribution
+ *   weibull=2,1500                     → Weibull(shape, scale)
+ *   bare number                        → reliability
+ * Returns null for a non-attribute word (ends the block's attribute run).
+ */
+function parseAttr(w: string): ParsedAttr | null {
+  const wb = w.match(/^weibull\s*[=:]\s*(.+)$/i);
+  if (wb) {
+    const parts = wb[1]!.split(",").map((s) => parseFloat(s.trim()));
+    if (parts.length === 2 && parts.every((x) => Number.isFinite(x) && x > 0)) {
+      return { kind: "dist", dist: { kind: "weibull", beta: parts[0]!, eta: parts[1]! } };
+    }
+    return null;
+  }
+  const rt = w.match(/^rate\s*[=:]\s*(.+)$/i);
+  if (rt) {
+    const v = parseFloat(rt[1]!.trim());
+    return Number.isFinite(v) && v >= 0 ? { kind: "dist", dist: { kind: "exp", rate: v } } : null;
+  }
+  const mt = w.match(/^(mtbf|mttf)\s*[=:]\s*(.+)$/i);
+  if (mt) {
+    const v = parseFloat(mt[2]!.trim());
+    return Number.isFinite(v) && v > 0 ? { kind: "dist", dist: { kind: "exp", rate: 1 / v } } : null;
+  }
   const m = w.match(/^(R|r|p|prob|q)\s*[=:]\s*(.+)$/);
   if (m) {
     const key = m[1]!.toLowerCase();
     const value = parseNum(m[2]!);
     if (value === undefined) return null;
     // q (unreliability) and p (failure prob) both mean "probability of failure".
-    return { key: key === "p" || key === "q" ? "p" : "R", value };
+    return { kind: "R", value, failure: key === "p" || key === "q" };
   }
   // Bare numeric → reliability.
   const bare = parseNum(w);
-  if (bare !== undefined) return { key: "R", value: bare };
+  if (bare !== undefined) return { kind: "R", value: bare, failure: false };
   return null;
 }
 

@@ -78,9 +78,31 @@ After parsing, the engine computes:
 
 - **System reliability** — the headline figure, by recursive series/parallel/k-of-n reduction.
 - **Birnbaum importance** `Iᴮ(i) = R_sys(Rᵢ=1) − R_sys(Rᵢ=0)` for every block; the highest-importance block (the improvement target) is accented.
+- **Criticality importance** `I_C(i) = Iᴮ(i)·(1−Rᵢ)/(1−R_sys)` — the probability block i is failed *and* critical, given the system is failed.
 - **Single points of failure** — any block where `R_sys(Rᵢ=0) = 0` (its failure alone fails the system) is drawn with a red border. A non-redundant block in series is always a SPOF.
 
-## 5. Validation
+## 5. Time-dependent reliability — R(t)
+
+A static `R=` is the entry point; in practice reliability is a function of mission time. Set a **`mission: <t>`** and give blocks a failure distribution instead of a constant — the engine evaluates **R(t)** and rolls it up exactly as before. Use **consistent time units** across `mission` and the rates.
+
+| Block attribute | Model | R(t) |
+|-----------------|-------|------|
+| `rate=0.0001` | exponential (constant hazard λ) | e^(−λt) |
+| `mtbf=10000` | exponential (λ = 1/MTBF) | e^(−t/MTBF) |
+| `weibull=2,10000` | Weibull(β shape, η scale) | e^(−(t/η)^β) |
+
+```
+rbd "Pump station — 1-year mission"
+  mission: 8760            # hours
+  parallel {
+    block A "Pump A" mtbf=10000
+    block B "Pump B" weibull=1.5,12000
+  }
+```
+
+The headline becomes `R(t=8760) = …`. A block with a distribution but no `mission:` warns and falls back to its constant `R=` (if any).
+
+## 6. Validation
 
 The parser reports non-fatal warnings rather than failing:
 
@@ -88,6 +110,6 @@ The parser reports non-fatal warnings rather than failing:
 - a reliability outside `0..1` is clamped;
 - a duplicate block id is flagged.
 
-## 6. Theming
+## 7. Theming
 
 `theme: default` uses the shared risk-reliability palette (neutral blocks, blue reliability numerals, red single-point-of-failure borders). `theme: monochrome` renders a black-and-white print version (SPOF by border weight); `theme: dark` is the Catppuccin dark variant.

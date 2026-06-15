@@ -1311,7 +1311,7 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
     header: 'rbd "Title"',
     mode: "brace-nested success logic: series/parallel/kofn groups wrapping `block` leaves",
     keywords:
-      "header: rbd | reliability · groups: series { … } | parallel { … } | kofn k/n { … } (nestable) · leaf: block ID \"Label\" R=0.99 (also p=0.01 failure prob, or R=99%) · engine computes system reliability + Birnbaum importance + SPOF",
+      "header: rbd | reliability · groups: series { … } | parallel { … } | kofn k/n { … } (nestable) · leaf: block ID \"Label\" R=0.99 (also p=0.01 failure prob, R=99%) · time-dependent: mission: <t> + block rate=λ | mtbf=N | weibull=β,η → R(t) · engine computes system reliability + Birnbaum & criticality importance + SPOF",
     forms: [
       'rbd "Redundant Server"',
       "series {",
@@ -1333,6 +1333,7 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
       "Use `parallel { … }` for full redundancy and `kofn 2/3 { … }` for k-out-of-n voting redundancy.",
       "Groups nest freely — e.g. a `parallel` of two `series` strings models redundant chains.",
       "A bare top-level list of blocks (no outer group) is treated as a series chain.",
+      "For reliability over a mission, add `mission: <t>` and give blocks a distribution — `rate=λ` or `mtbf=N` (exponential) or `weibull=β,η` — and the engine computes R(t); keep mission and rates in the same time units.",
     ],
     avoid: [
       "Don't omit the `block` keyword's reliability if you want a number — a block with no R leaves the system reliability symbolic.",
