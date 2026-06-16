@@ -73,6 +73,7 @@ export { idef0 } from "./diagrams/idef0";
 export { threatmodel } from "./diagrams/threatmodel";
 export { welding } from "./diagrams/welding";
 export { rbd } from "./diagrams/rbd";
+export { comparison } from "./diagrams/comparison";
 
 export {
   type SymbolCatalog,

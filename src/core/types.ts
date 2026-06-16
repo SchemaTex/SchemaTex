@@ -80,6 +80,7 @@ export type DiagramType =
   | "eventtree" // Event Tree Analysis — IEC 62502 / NUREG, computed path frequencies (39-EVENT-TREE-STANDARD)
   | "fmea" // FMEA — AIAG-VDA / IEC 60812, computed RPN=S×O×D + Action Priority (40-FMEA-STANDARD)
   | "rbd" // Reliability Block Diagram — IEC 61078, computed system reliability (series/parallel/k-of-n) + Birnbaum importance + SPOF (50-RBD-STANDARD)
+  | "comparison" // Comparison & decision — T-chart / pros-cons / comparison matrix / Pugh decision matrix (computed weighted winner) / Thinking-Maps double-bubble (51-COMPARISON-STANDARD)
   // Systems thinking / stochastic
   | "causalloop" // Causal Loop Diagram — Sterman system dynamics, R/B loop detection (41-CAUSAL-LOOP-STANDARD)
   | "markov" // Markov chain — stationary distribution + state classification (42-MARKOV-CHAIN-STANDARD)

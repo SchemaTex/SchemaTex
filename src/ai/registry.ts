@@ -546,6 +546,46 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
       "reliability over time",
     ],
   },
+  {
+    type: "comparison",
+    name: "Comparison & Decision Matrix",
+    tagline:
+      "One engine for compare-and-contrast — T-chart, pros/cons, comparison matrix, and the Pugh decision matrix that computes its own winner.",
+    useWhen:
+      "Use to put options side by side and, when there are weighted criteria, to *decide*. Header `comparison \"Title\"` (or `tchart` / `pugh`) with `mode:` — `tchart` (2–N bullet columns, also Y-chart), `pros-cons` (green ✓ / red ✗ valence), `matrix` (options × criteria grid; cells take text or yes/no/partial marks), `decision`/`pugh` (criteria carry `weight:`, each option a numeric score, and the engine computes every option's weighted total Σ(w·s), ranks them, and highlights the winner — Stuart Pugh / ASQ concept selection), or `double-bubble` (Thinking Maps compare/contrast: shared traits in the middle, unique ones fanning out). Distinct from `matrix` (the 2×2 / BCG / quadrant engine, which *positions* items on two axes) — this one lays out a *table* and computes the decision.",
+    cluster: "strategy",
+    standard:
+      "Pugh, Total Design (1991) controlled convergence · ASQ decision matrix · Hyerle Thinking Maps (double-bubble) · K-12 graphic-organizer convention; see 51-COMPARISON-STANDARD.md",
+    syntaxKey: "comparison",
+    aliases: [
+      "comparison chart",
+      "comparison table",
+      "T-chart",
+      "Y-chart",
+      "pros and cons",
+      "pros/cons",
+      "decision matrix",
+      "Pugh matrix",
+      "weighted scoring matrix",
+      "double bubble map",
+      "compare and contrast",
+      "对比图",
+      "决策矩阵",
+    ],
+    keywords: [
+      "compare options",
+      "concept selection",
+      "controlled convergence",
+      "weighted scoring",
+      "vendor selection",
+      "feature comparison",
+      "pros cons list",
+      "graphic organizer",
+      "Thinking Maps",
+      "decision making",
+      "trade study",
+    ],
+  },
   // ── Systems thinking / stochastic ────────────────────────────
   {
     type: "causalloop",
@@ -879,6 +919,8 @@ export const DIAGRAM_SINCE: Readonly<Record<DiagramType, string>> = {
   playbook: "0.9.4",
   // 0.9.5 — reliability block diagram (IEC 61078)
   rbd: "0.9.5",
+  // 0.9.8 — comparison & decision matrix (Pugh / pros-cons / T-chart / double-bubble)
+  comparison: "0.9.8",
 };
 
 export function getDiagramSince(type: string): string | undefined {

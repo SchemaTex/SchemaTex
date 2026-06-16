@@ -33,7 +33,7 @@
 
 ---
 
-**Schematex** is the open-source rendering engine for the diagrams professionals actually use — medical, electrical, legal, and analytical. **37 diagram families** spanning medicine, engineering, law, and analysis:
+**Schematex** is the open-source rendering engine for the diagrams professionals actually use — medical, electrical, legal, and analytical. **49 diagram families** spanning medicine, engineering, law, and analysis:
 
 - 👪 **Relationships** — genograms, ecomaps, pedigrees, sociograms, phylogenetic trees
 - ⚡ **Electrical & Industrial** — ladder logic, single-line diagrams, circuit schematics, logic gates, timing, block diagrams, **FBD**, **SFC**, breadboard, **P&ID** (ISA-5.1)
@@ -47,7 +47,7 @@
 - ◉ **Concurrency** — **Petri nets** (Murata 1989 / ISO-IEC 15909) that *compute* enablement and fire token sequences
 - 🔬 **Research** — **PRISMA 2020** systematic-review flow diagrams
 - 📅 **Timelines** — proportional / equidistant / log axis · swimlane · gantt · lollipop · BC dates · geological Ma scale
-- 🧠 **Knowledge & strategy** — mindmaps, 2×2 / N×M matrices, flowcharts
+- 🧠 **Knowledge & strategy** — mindmaps, 2×2 / N×M matrices, flowcharts, **comparison & decision matrices** (Pugh / ASQ weighted scoring that *computes* the winner · pros-cons · T-chart / Y-chart · Thinking-Maps double-bubble)
 
 Mermaid draws generic flowcharts. Schematex draws the diagrams doctors, engineers, and lawyers actually use — a genogram a genetic counselor accepts clinically, ladder logic that maps 1:1 to IEC 61131-3, a cap table that survives a Series A review.
 
@@ -82,7 +82,7 @@ import { render } from 'schematex/genogram';
 
 ## Gallery
 
-All 37 diagram types share one unified pipeline. A selection is shown below — **try any of them live at [schematex.dev/playground](https://schematex.dev/playground).**
+All 49 diagram types share one unified pipeline. A selection is shown below — **try any of them live at [schematex.dev/playground](https://schematex.dev/playground).**
 
 ### 👪 Genogram — *McGoldrick family-systems standard*
 
@@ -755,6 +755,46 @@ pass 1 2
 ![Counter-attack soccer play](examples/playbook/soccer-counter-attack.svg)
 
 [Sports playbook syntax →](https://schematex.dev/docs/playbook)
+
+### 🧭 Comparison & decision matrix — *Pugh 1991 controlled convergence · ASQ weighted scoring · Thinking Maps*
+
+One engine for the whole "put options side by side and decide" family — five modes selected with `mode:`. The flagship is **`decision` (alias `pugh`)**: criteria carry a `weight:`, each option a numeric score, and the **engine computes** every option's weighted total Σ(weight × score), ranks them, highlights the winner, and shows **vs-datum** deltas against an optional `baseline:`. You never type the totals — getting one score wrong changes the computed winner. The same *"engine computes the answer"* stance as PERT (schedule), Fault Tree (cut sets), and RBD (system reliability). The other modes — **`matrix`** (options × criteria grid with ✓/✗/~ marks), **`tchart`/`ychart`** (compare/contrast column cards), **`pros-cons`** (green ✓ / red ✗ valence), and **`double-bubble`** (Thinking-Maps compare/contrast with unique traits fanned radially around each centre) — share the same parser and theme. Explicitly distinct from `matrix` (§18, the 2×2 / BCG quadrant *positioning* engine): this one lays out a **table** and computes the decision.
+
+```
+comparison "Selecting a CI/CD platform"
+mode: decision
+baseline: "Jenkins"
+option "GitHub Actions"
+option "GitLab CI"
+option "CircleCI"
+option "Jenkins"
+criterion "Ease of setup" weight: 5
+  GitHub Actions: 5
+  GitLab CI: 4
+  CircleCI: 4
+  Jenkins: 2
+criterion "Build speed" weight: 4
+  GitHub Actions: 4
+  GitLab CI: 4
+  CircleCI: 5
+  Jenkins: 3
+criterion "Cost at our scale" weight: 4
+  GitHub Actions: 4
+  GitLab CI: 3
+  CircleCI: 3
+  Jenkins: 5
+criterion "Self-host control" weight: 2
+  GitHub Actions: 2
+  GitLab CI: 5
+  CircleCI: 2
+  Jenkins: 5
+```
+
+![CI/CD decision matrix — Pugh weighted scoring](examples/comparison/cicd-decision-matrix.svg)
+![Cloud provider comparison matrix](examples/comparison/cloud-feature-matrix.svg)
+![Plant cell vs animal cell — Thinking-Maps double-bubble](examples/comparison/cell-double-bubble.svg)
+
+[Comparison syntax →](https://schematex.dev/docs/comparison)
 
 ## Why SchemaTex?
 

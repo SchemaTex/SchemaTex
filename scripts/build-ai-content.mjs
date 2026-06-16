@@ -72,6 +72,7 @@ const SYNTAX_KEYS = [
   "floorplan",
   "playbook",
   "rbd",
+  "comparison",
 ];
 
 // ─── Minimal YAML-frontmatter parser ─────────────────────────────

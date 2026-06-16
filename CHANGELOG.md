@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.9.8] — 2026-06-15
+
+### Added — Comparison & decision-matrix engine (`comparison`)
+
+One new engine for the highest-frequency "put things side by side and decide" request — five modes from a single unified DSL, opening the **Knowledge & Strategy** cluster. The header is `comparison "Title"` (aliases `tchart` / `pugh`); `mode:` selects the form.
+
+- **`decision` / `pugh` — the computational centrepiece.** Stuart Pugh's controlled-convergence method (ASQ / Six-Sigma concept selection): each criterion carries a `weight:`, each option a numeric score, and **the engine computes** every option's weighted total Σ(weight × score), ranks them, highlights the winner, and shows **vs-datum deltas** against an optional `baseline:`. You never type the totals — getting a score wrong changes the computed winner. Same "engine computes the answer" stance as `pert` and `faulttree`.
+- **`matrix`** — options × criteria comparison grid; cells take `yes` / `no` / `partial` marks (→ ✓ / ✗ / ~) or free text. A typo'd option name is flagged, not silently dropped.
+- **`tchart` / `ychart`** — 2–N compare/contrast columns, rendered as **distinct rounded cards** with per-column coloured headers.
+- **`pros-cons`** — green ✓ / red ✗ valence with pill headers and circular badges.
+- **`double-bubble`** — the Thinking-Maps compare/contrast organizer: two side-coloured centres, shared traits in the middle tied to both, unique traits **fanned radially** around each centre.
+- Distinct from [`matrix`](https://schematex.dev/docs/matrix) (the 2×2 / BCG / quadrant engine that *positions* items on two axes) — `comparison` lays out a **table** and computes the decision.
+- Unified keyword DSL (header aliases, pipe-form cells, mode inference, CJK quotes); `default` / `monochrome` / `dark` themes; semantic SVG (`data-diagram-type` / `data-mode` / `data-variant`). Validates the missing-column / no-option / wrong-mode / undeclared-option / out-of-set-baseline errors LLMs make.
+- Reference standard ([51-COMPARISON-STANDARD.md](docs/reference/51-COMPARISON-STANDARD.md)), syntax docs, 3 worked website examples, 4 gallery SVGs, AI profile + registry entry, and a domain icon. 23 e2e tests covering the computation, tie-ranking, cell parsing, and per-mode validation.
+
+Deferred: classic Pugh +/0/− symbol scoring, score-heat cell shading, normalised-percent view, and the other Thinking-Maps (bubble / brace / bridge).
+
+---
+
 ## [0.9.7] — 2026-06-15
 
 ### Added — RBD time-dependent reliability R(t) + criticality importance
@@ -18,6 +37,10 @@ The reliability block diagram now models **reliability over a mission time**, no
 - New worked example (pump station 1-year mission, MTBF + Weibull) + an R(t) section in the RBD docs.
 
 Deferred: cold/warm standby redundancy with switch reliability (needs per-distribution treatment + identical-unit assumptions — a focused follow-up).
+
+### Fixed — fault-tree top-event probability no longer collapses to `1`
+
+A high `P(top)` such as `0.9999` rendered as `1`, hiding the nines that matter. The fault-tree renderer's inline `toPrecision(3)` was replaced with a shared `core/format.ts` `formatProbability()` (3 significant figures mid-range, scientific below `0.001`, escalating precision near 1 so a sub-1 value never shows as `1`) — the same near-1 rule already used for RBD's `R`. (#48)
 
 ---
 

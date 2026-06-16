@@ -1,0 +1,45 @@
+---
+title: Cloud providers — feature comparison matrix
+description: An options × criteria comparison grid mixing yes/partial marks with free-text cells — the kind of feature table no quadrant chart can express.
+diagram: comparison
+standard: ASQ comparison matrix · graphic-organizer convention
+industry: [software, product]
+persona: For the architect picking a cloud for a new workload
+complexity: 2
+tags: [comparison, matrix, feature-comparison, cloud]
+featured: false
+relatedLink:
+  label: Comparison syntax
+  href: /docs/comparison
+status: published
+dsl: |
+  comparison "Cloud provider — managed services"
+  mode: matrix
+  option "AWS"
+  option "GCP"
+  option "Azure"
+  criterion "Free tier"
+    AWS: "12 months"
+    GCP: "Always-free"
+    Azure: "12 months"
+  criterion "Managed Postgres"
+    AWS: yes
+    GCP: yes
+    Azure: yes
+  criterion "Serverless GPU"
+    AWS: partial
+    GCP: yes
+    Azure: partial
+  criterion "Spot discount"
+    AWS: "up to 90%"
+    GCP: "up to 91%"
+    Azure: "up to 90%"
+  criterion "On-prem hybrid"
+    AWS: partial
+    GCP: partial
+    Azure: yes
+---
+
+## What this shows
+
+A straight side-by-side feature table — options across the top, criteria down the side. Cells mix **marks** (`yes` → ✓ green, `partial` → ~ amber) with **free text** (`"up to 90%"`), so one grid carries both capability flags and figures. The option name on each cell line must match a declared `option`; a typo is flagged in the diagnostics rather than silently dropped.

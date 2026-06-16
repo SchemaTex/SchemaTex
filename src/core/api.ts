@@ -46,6 +46,7 @@ import { bowtie } from "../diagrams/bowtie";
 import { eventtree } from "../diagrams/eventtree";
 import { fmea } from "../diagrams/fmea";
 import { rbd } from "../diagrams/rbd";
+import { comparison } from "../diagrams/comparison";
 import { causalloop } from "../diagrams/causalloop";
 import { markov } from "../diagrams/markov";
 import { gitgraph } from "../diagrams/gitgraph";
@@ -149,6 +150,7 @@ const plugins: DiagramPlugin[] = [
   eventtree,
   fmea,
   rbd,
+  comparison,
   causalloop,
   markov,
   gitgraph,

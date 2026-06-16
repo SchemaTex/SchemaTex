@@ -686,6 +686,97 @@ run 11 to 95,52`,
     }
   }`,
   },
+  {
+    file: 'examples/comparison/cicd-decision-matrix.svg',
+    text: `comparison "Selecting a CI/CD platform"
+mode: decision
+baseline: "Jenkins"
+option "GitHub Actions"
+option "GitLab CI"
+option "CircleCI"
+option "Jenkins"
+criterion "Ease of setup" weight: 5
+  GitHub Actions: 5
+  GitLab CI: 4
+  CircleCI: 4
+  Jenkins: 2
+criterion "Build speed" weight: 4
+  GitHub Actions: 4
+  GitLab CI: 4
+  CircleCI: 5
+  Jenkins: 3
+criterion "Cost at our scale" weight: 4
+  GitHub Actions: 4
+  GitLab CI: 3
+  CircleCI: 3
+  Jenkins: 5
+criterion "Ecosystem / marketplace" weight: 3
+  GitHub Actions: 5
+  GitLab CI: 3
+  CircleCI: 3
+  Jenkins: 4
+criterion "Self-host control" weight: 2
+  GitHub Actions: 2
+  GitLab CI: 5
+  CircleCI: 2
+  Jenkins: 5`,
+  },
+  {
+    file: 'examples/comparison/cloud-feature-matrix.svg',
+    text: `comparison "Cloud provider — managed services"
+mode: matrix
+option "AWS"
+option "GCP"
+option "Azure"
+criterion "Free tier"
+  AWS: "12 months"
+  GCP: "Always-free"
+  Azure: "12 months"
+criterion "Managed Postgres"
+  AWS: yes
+  GCP: yes
+  Azure: yes
+criterion "Serverless GPU"
+  AWS: partial
+  GCP: yes
+  Azure: partial
+criterion "Spot discount"
+  AWS: "up to 90%"
+  GCP: "up to 91%"
+  Azure: "up to 90%"
+criterion "On-prem hybrid"
+  AWS: partial
+  GCP: partial
+  Azure: yes`,
+  },
+  {
+    file: 'examples/comparison/microservices-pros-cons.svg',
+    text: `comparison "Migrate the monolith to microservices?"
+mode: pros-cons
+pro "Independent team deploys, no release train"
+pro "Scale hot paths in isolation"
+pro "Fault isolation between services"
+con "Distributed-systems complexity (tracing, retries)"
+con "Operational + infra cost goes up"
+con "Network latency across service hops"
+con "Harder local dev + end-to-end testing"`,
+  },
+  {
+    file: 'examples/comparison/cell-double-bubble.svg',
+    text: `comparison "Plant cell vs Animal cell"
+mode: double-bubble
+left "Plant cell"
+right "Animal cell"
+shared "Has a nucleus"
+shared "Mitochondria"
+shared "Cell membrane"
+left-only "Cell wall"
+left-only "Chloroplasts"
+left-only "Large central vacuole"
+right-only "Centrioles"
+right-only "Lysosomes"
+right-only "Many small vacuoles"`,
+  },
 ];
 
 for (const { file, text } of examples) {

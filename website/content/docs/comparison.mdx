@@ -1,0 +1,150 @@
+---
+title: Comparison & Decision Matrix
+---
+
+## About comparison diagrams
+
+**comparison** is one engine for the whole "put things side by side and decide" family. Pick a `mode:` and the same DSL renders five different professional artifacts:
+
+- **`tchart`** — 2–N labelled columns of bullet points (the classic compare/contrast T-chart; three columns gives a Y-chart).
+- **`pros-cons`** — a two-column list with green ✓ / red ✗ valence.
+- **`matrix`** — an options × criteria grid; cells take free text or `yes` / `no` / `partial` marks.
+- **`decision`** (alias header `pugh`) — the **weighted decision matrix**: each criterion carries a `weight:`, each option a numeric score, and **the engine computes** every option's weighted total Σ(weight × score), ranks them, and highlights the winner. This is Stuart Pugh's controlled-convergence method (ASQ / Six-Sigma concept selection) — the same "engine computes the answer" stance as `pert` and `faulttree`.
+- **`double-bubble`** — the Thinking-Maps compare/contrast organizer: two centres, shared traits in the middle, unique traits fanning out.
+
+> **Not to be confused with [`matrix`](/docs/matrix).** That engine *positions* items on two continuous axes (Eisenhower, BCG, impact–effort). `comparison` lays out a **table** and, in `decision` mode, **computes the decision**. They are the two halves people conflate.
+
+<Playground initial={`comparison "Selecting a CI/CD platform"
+mode: decision
+baseline: "Jenkins"
+option "GitHub Actions"
+option "GitLab CI"
+option "Jenkins"
+criterion "Ease of setup" weight: 5
+  GitHub Actions: 5
+  GitLab CI: 4
+  Jenkins: 2
+criterion "Build speed" weight: 4
+  GitHub Actions: 4
+  GitLab CI: 4
+  Jenkins: 3
+criterion "Cost at our scale" weight: 4
+  GitHub Actions: 4
+  GitLab CI: 3
+  Jenkins: 5
+criterion "Self-host control" weight: 2
+  GitHub Actions: 2
+  GitLab CI: 5
+  Jenkins: 5`} />
+
+## 1. Header and mode
+
+The header keyword is `comparison` (aliases `compare`, `vs`). The header keywords `tchart` and `pugh` set the mode directly. Otherwise choose with the `mode:` directive:
+
+```
+comparison "Title"
+mode: tchart | pros-cons | matrix | decision | double-bubble
+legend: on | off
+```
+
+If you omit `mode:`, it is inferred from the keywords you use — but generating it explicitly is more reliable.
+
+## 2. T-chart (and Y-chart)
+
+Declare each `column`, then list its points with `-` bullets. Three columns reads as a Y-chart.
+
+```
+tchart "TCP vs UDP"
+column "TCP"
+- Connection-oriented (handshake)
+- Guaranteed, ordered delivery
+column "UDP"
+- Connectionless, fire-and-forget
+- Minimal header, low latency
+```
+
+## 3. Pros / cons
+
+```
+comparison "Migrate to microservices?"
+mode: pros-cons
+pro "Independent team deploys"
+pro "Scale hot paths in isolation"
+con "Distributed-systems complexity"
+con "Operational + infra cost goes up"
+```
+
+`pro` lines fill the green column, `con` the red — order independent.
+
+## 4. Comparison matrix
+
+Declare every `option` (the columns), then each `criterion` (a row) with one indented `OptionName: value` cell per option. Cell values: `yes` / `no` / `partial` render as ✓ / ✗ / ~, numbers are scores, quoted text is shown verbatim. The option name must match an `option` exactly (a typo is flagged, not dropped).
+
+```
+comparison "Cloud provider — managed services"
+mode: matrix
+option "AWS"
+option "GCP"
+option "Azure"
+criterion "Free tier"
+  AWS: "12 months"
+  GCP: "Always-free"
+  Azure: "12 months"
+criterion "Managed Postgres"
+  AWS: yes
+  GCP: yes
+  Azure: partial
+```
+
+A compact pipe form is also accepted: `criterion "Free tier" | "12 months" | "Always-free" | "12 months"` (positional to option order).
+
+## 5. Decision matrix (computed)
+
+Add a `weight:` to each criterion and a numeric score to each cell. The engine appends a **Weighted total** row, ranks the options (`#1`, `#2`, …), and highlights the winner. Add `baseline: "Option"` for a Pugh datum — that column is shaded and a **vs datum** delta row is added.
+
+```
+pugh "Database for the new service"
+baseline: "PostgreSQL"
+option "PostgreSQL"
+option "MongoDB"
+option "DynamoDB"
+criterion "Query flexibility" weight: 5
+  PostgreSQL: 5
+  MongoDB: 3
+  DynamoDB: 2
+criterion "Horizontal scaling" weight: 4
+  PostgreSQL: 3
+  MongoDB: 4
+  DynamoDB: 5
+criterion "Operational cost" weight: 3
+  PostgreSQL: 4
+  MongoDB: 3
+  DynamoDB: 3
+```
+
+You never write the totals — the engine computes Σ(weight × score), so getting a score wrong changes the computed winner.
+
+## 6. Double-bubble (compare & contrast)
+
+```
+comparison "Plant cell vs Animal cell"
+mode: double-bubble
+left "Plant cell"
+right "Animal cell"
+shared "Has a nucleus"
+shared "Mitochondria"
+left-only "Cell wall"
+left-only "Chloroplasts"
+right-only "Centrioles"
+right-only "Lysosomes"
+```
+
+`shared` traits sit in the middle, connected to both centres; `left-only` / `right-only` fan out to their own centre.
+
+## 7. Themes
+
+`default` is the house blue with green/red/amber valence; `monochrome` drops colour (valence rides on ✓/✗/~, the winner on a heavy border) for B&W print; `dark` is Catppuccin.
+
+## Standard
+
+Pugh, *Total Design* (1991) controlled convergence · ASQ decision matrix · Hyerle Thinking Maps (double-bubble) · K-12 graphic-organizer convention. See `docs/reference/51-COMPARISON-STANDARD.md`.
