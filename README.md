@@ -47,7 +47,7 @@
 - ◉ **Concurrency** — **Petri nets** (Murata 1989 / ISO-IEC 15909) that *compute* enablement and fire token sequences
 - 🔬 **Research** — **PRISMA 2020** systematic-review flow diagrams
 - 📅 **Timelines** — proportional / equidistant / log axis · swimlane · gantt · lollipop · BC dates · geological Ma scale
-- 🧠 **Knowledge & strategy** — mindmaps, 2×2 / N×M matrices, flowcharts
+- 🧠 **Knowledge & strategy** — mindmaps, 2×2 / N×M matrices, flowcharts, **comparison & decision matrices** (Pugh / ASQ weighted scoring that *computes* the winner · pros-cons · T-chart / Y-chart · Thinking-Maps double-bubble)
 
 Mermaid draws generic flowcharts. Schematex draws the diagrams doctors, engineers, and lawyers actually use — a genogram a genetic counselor accepts clinically, ladder logic that maps 1:1 to IEC 61131-3, a cap table that survives a Series A review.
 

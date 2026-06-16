@@ -1,0 +1,54 @@
+---
+title: CI/CD platform — decision matrix
+description: A Pugh weighted-decision matrix where the engine computes each option's weighted total, ranks them, and highlights the winner — with Jenkins as the datum baseline.
+diagram: comparison
+standard: Pugh, Total Design (1991) · ASQ decision matrix
+industry: [software, engineering]
+persona: For the staff engineer running a platform trade study
+complexity: 3
+tags: [comparison, decision-matrix, pugh, weighted-scoring, trade-study]
+featured: true
+relatedLink:
+  label: Comparison syntax
+  href: /docs/comparison
+status: published
+dsl: |
+  comparison "Selecting a CI/CD platform"
+  mode: decision
+  baseline: "Jenkins"
+  option "GitHub Actions"
+  option "GitLab CI"
+  option "CircleCI"
+  option "Jenkins"
+  criterion "Ease of setup" weight: 5
+    GitHub Actions: 5
+    GitLab CI: 4
+    CircleCI: 4
+    Jenkins: 2
+  criterion "Build speed" weight: 4
+    GitHub Actions: 4
+    GitLab CI: 4
+    CircleCI: 5
+    Jenkins: 3
+  criterion "Cost at our scale" weight: 4
+    GitHub Actions: 4
+    GitLab CI: 3
+    CircleCI: 3
+    Jenkins: 5
+  criterion "Ecosystem / marketplace" weight: 3
+    GitHub Actions: 5
+    GitLab CI: 3
+    CircleCI: 3
+    Jenkins: 4
+  criterion "Self-host control" weight: 2
+    GitHub Actions: 2
+    GitLab CI: 5
+    CircleCI: 2
+    Jenkins: 5
+---
+
+## What this shows
+
+This is the engine's differentiator. You declare the **options** (columns), the weighted **criteria** (rows), and a score per cell — and you stop there. The **Weighted total** row, the `#1`…`#4` ranks, the green winner, and the **vs datum** deltas against Jenkins are all *computed* (Σ of weight × score), not typed in. Change one score and the winner can flip. That is Stuart Pugh's controlled-convergence method — the same "the engine computes the answer" stance as `pert` (schedule) and `faulttree` (cut sets).
+
+The `baseline: "Jenkins"` line marks the Pugh datum: that column is shaded and every other option shows its margin over it.

@@ -869,6 +869,214 @@ export function resolveBowtieTheme(name: string): ResolvedTheme<BowtieTokens> {
   return { ...BASE_THEMES[themeName], ...BOWTIE_TOKENS[themeName] };
 }
 
+// ─── Comparison (comparison) tokens ────────────────────────────
+
+/**
+ * Tokens for the comparison family (T-chart / pros-cons / comparison matrix /
+ * decision matrix / double-bubble). House blue for headers; green/red/amber
+ * carry the pros-cons and yes/no/partial valence; green also flags the computed
+ * decision-matrix winner. Monochrome drops colour — valence rides on the glyph
+ * (✓/✗/~) and the winner on a heavy border — so it prints on a B&W copier.
+ */
+export interface ComparisonTokens {
+  headerFill: string;
+  headerStroke: string;
+  headerText: string;
+  rowHeaderFill: string;
+  cellFill: string;
+  cellAltFill: string;
+  cellStroke: string;
+  cellText: string;
+  gridStroke: string;
+  /** T-chart column-header palette (cycled per column) + its text colour. */
+  columnColors: readonly string[];
+  columnText: string;
+  /** T-chart column card surface + faint row divider. */
+  cardFill: string;
+  cardStroke: string;
+  rowDivider: string;
+  posFill: string;
+  posText: string;
+  negFill: string;
+  negText: string;
+  warnFill: string;
+  warnText: string;
+  winnerFill: string;
+  winnerStroke: string;
+  winnerText: string;
+  totalFill: string;
+  baselineFill: string;
+  tagText: string;
+  captionText: string;
+  /** pros-cons strong header pills + circular badges. */
+  pillPosFill: string;
+  pillNegFill: string;
+  pillText: string;
+  badgeText: string;
+  /** double-bubble palette — centres differ by side; uniques tie to their centre. */
+  dbLeftCenterFill: string;
+  dbLeftCenterText: string;
+  dbRightCenterFill: string;
+  dbRightCenterText: string;
+  dbSharedFill: string;
+  dbSharedText: string;
+  dbLeftFill: string;
+  dbLeftText: string;
+  dbRightFill: string;
+  dbRightText: string;
+  dbStroke: string;
+  connectorStroke: string;
+}
+
+const DEFAULT_COMPARISON: ComparisonTokens = {
+  headerFill: "#1e3a8a",
+  headerStroke: "#1e3a8a",
+  headerText: "#ffffff",
+  rowHeaderFill: "#eef2ff",
+  cellFill: "#ffffff",
+  cellAltFill: "#f8fafc",
+  cellStroke: "#cbd5e1",
+  cellText: "#0f172a",
+  gridStroke: "#cbd5e1",
+  columnColors: ["#1d4ed8", "#0e7490", "#7c3aed", "#c2410c", "#15803d", "#be185d"],
+  columnText: "#ffffff",
+  cardFill: "#ffffff",
+  cardStroke: "#e2e8f0",
+  rowDivider: "#eef2f6",
+  posFill: "#dcfce7",
+  posText: "#15803d",
+  negFill: "#fee2e2",
+  negText: "#b91c1c",
+  warnFill: "#fef9c3",
+  warnText: "#a16207",
+  winnerFill: "#bbf7d0",
+  winnerStroke: "#16a34a",
+  winnerText: "#14532d",
+  totalFill: "#e2e8f0",
+  baselineFill: "#dbeafe",
+  tagText: "#64748b",
+  captionText: "#334155",
+  pillPosFill: "#16a34a",
+  pillNegFill: "#e11d48",
+  pillText: "#ffffff",
+  badgeText: "#ffffff",
+  dbLeftCenterFill: "#1d4ed8",
+  dbLeftCenterText: "#ffffff",
+  dbRightCenterFill: "#0e7490",
+  dbRightCenterText: "#ffffff",
+  dbSharedFill: "#65a30d",
+  dbSharedText: "#ffffff",
+  dbLeftFill: "#dbeafe",
+  dbLeftText: "#1e3a8a",
+  dbRightFill: "#cffafe",
+  dbRightText: "#155e75",
+  dbStroke: "#ffffff",
+  connectorStroke: "#94a3b8",
+};
+
+const MONOCHROME_COMPARISON: ComparisonTokens = {
+  headerFill: "#000000",
+  headerStroke: "#000000",
+  headerText: "#ffffff",
+  rowHeaderFill: "#f0f0f0",
+  cellFill: "#ffffff",
+  cellAltFill: "#f7f7f7",
+  cellStroke: "#000000",
+  cellText: "#000000",
+  gridStroke: "#000000",
+  columnColors: ["#000000"],
+  columnText: "#ffffff",
+  cardFill: "#ffffff",
+  cardStroke: "#000000",
+  rowDivider: "#cccccc",
+  posFill: "#ffffff",
+  posText: "#000000",
+  negFill: "#ffffff",
+  negText: "#000000",
+  warnFill: "#ffffff",
+  warnText: "#000000",
+  winnerFill: "#e8e8e8",
+  winnerStroke: "#000000",
+  winnerText: "#000000",
+  totalFill: "#e8e8e8",
+  baselineFill: "#f0f0f0",
+  tagText: "#555555",
+  captionText: "#000000",
+  pillPosFill: "#000000",
+  pillNegFill: "#000000",
+  pillText: "#ffffff",
+  badgeText: "#ffffff",
+  dbLeftCenterFill: "#000000",
+  dbLeftCenterText: "#ffffff",
+  dbRightCenterFill: "#000000",
+  dbRightCenterText: "#ffffff",
+  dbSharedFill: "#d9d9d9",
+  dbSharedText: "#000000",
+  dbLeftFill: "#ffffff",
+  dbLeftText: "#000000",
+  dbRightFill: "#ffffff",
+  dbRightText: "#000000",
+  dbStroke: "#000000",
+  connectorStroke: "#000000",
+};
+
+const DARK_COMPARISON: ComparisonTokens = {
+  headerFill: "#89b4fa",
+  headerStroke: "#89b4fa",
+  headerText: "#1e1e2e",
+  rowHeaderFill: "#313244",
+  cellFill: "#1e1e2e",
+  cellAltFill: "#252537",
+  cellStroke: "#45475a",
+  cellText: "#cdd6f4",
+  gridStroke: "#45475a",
+  columnColors: ["#89b4fa", "#94e2d5", "#cba6f7", "#fab387", "#a6e3a1", "#f5c2e7"],
+  columnText: "#1e1e2e",
+  cardFill: "#181825",
+  cardStroke: "#313244",
+  rowDivider: "#313244",
+  posFill: "#2d4a36",
+  posText: "#a6e3a1",
+  negFill: "#4a2d33",
+  negText: "#f38ba8",
+  warnFill: "#4a452d",
+  warnText: "#f9e2af",
+  winnerFill: "#3a5a44",
+  winnerStroke: "#a6e3a1",
+  winnerText: "#a6e3a1",
+  totalFill: "#313244",
+  baselineFill: "#2a3a55",
+  tagText: "#7f849c",
+  captionText: "#bac2de",
+  pillPosFill: "#40a02b",
+  pillNegFill: "#e06c85",
+  pillText: "#ffffff",
+  badgeText: "#1e1e2e",
+  dbLeftCenterFill: "#89b4fa",
+  dbLeftCenterText: "#1e1e2e",
+  dbRightCenterFill: "#94e2d5",
+  dbRightCenterText: "#1e1e2e",
+  dbSharedFill: "#a6e3a1",
+  dbSharedText: "#1e1e2e",
+  dbLeftFill: "#313244",
+  dbLeftText: "#cdd6f4",
+  dbRightFill: "#3a3a4f",
+  dbRightText: "#cdd6f4",
+  dbStroke: "#45475a",
+  connectorStroke: "#6c7086",
+};
+
+export const COMPARISON_TOKENS: Record<ThemeName, ComparisonTokens> = {
+  default: DEFAULT_COMPARISON,
+  monochrome: MONOCHROME_COMPARISON,
+  dark: DARK_COMPARISON,
+};
+
+export function resolveComparisonTheme(name: string): ResolvedTheme<ComparisonTokens> {
+  const themeName = (name in BASE_THEMES ? name : "default") as ThemeName;
+  return { ...BASE_THEMES[themeName], ...COMPARISON_TOKENS[themeName] };
+}
+
 // ─── Network Tokens Per Theme ──────────────────────────────
 // 35-NETWORK-STANDARD §6. Coloured-house family (not forced-mono industrial):
 // device bodies in "network blue", link type by colour in default / line-style

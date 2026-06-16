@@ -381,6 +381,59 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "notes": "## Scenario\n\nAn embedded engineer documents a classic active-low input: a pull-up resistor\nholds the signal high, a push button pulls it to ground, and a small capacitor\ndebounces it. The connectivity is written as a SPICE-style netlist — the engine\nplaces everything from the node names — and one optional hint refines the look.\n\n## Annotation key\n\n- **netlist line** — `id node-A node-B value`; components that share a node name\n  are wired together. `0` is ground.\n- **`dir=down`** — the optional orientation hint. `R1` connects `vcc` to `sig`;\n  by default the engine would lay it horizontally, but a pull-up reads best drawn\n  vertically from the supply rail down to the signal node, so `dir=down` rotates\n  just that symbol. Connectivity is unchanged — `dir=` only rotates the glyph.\n- **`type=switch`** — the `SW1` id prefix is ambiguous, so the component type is\n  made explicit.\n\n## How to read\n\n`R1` ties `sig` up to `vcc` (drawn vertically thanks to `dir=down`). `SW1` and the\ndebounce cap `C1` both go from `sig` to ground, so the engine recognises them as\nshunt legs and drops them beneath the node. Pressing the button shorts `sig` to\nground, pulling the input low."
   },
   {
+    "slug": "comparison-cell-double-bubble",
+    "diagram": "comparison",
+    "title": "Plant vs animal cell — double-bubble",
+    "description": "A Thinking-Maps double-bubble compare/contrast organizer — shared traits in the middle connected to both centres, unique traits fanning out.",
+    "standard": "Hyerle, Thinking Maps (1996)",
+    "tags": [
+      "comparison",
+      "double-bubble",
+      "thinking-maps",
+      "education",
+      "compare-contrast"
+    ],
+    "complexity": 1,
+    "featured": false,
+    "dsl": "comparison \"Plant cell vs Animal cell\"\nmode: double-bubble\nleft \"Plant cell\"\nright \"Animal cell\"\nshared \"Has a nucleus\"\nshared \"Mitochondria\"\nshared \"Cell membrane\"\nleft-only \"Cell wall\"\nleft-only \"Chloroplasts\"\nleft-only \"Large central vacuole\"\nright-only \"Centrioles\"\nright-only \"Lysosomes\"\nright-only \"Many small vacuoles\"",
+    "notes": "## What this shows\n\nThe Double-Bubble Map is the standard Thinking-Maps organizer for compare/contrast. The two subjects sit as centres; **shared** attributes go in the middle column and connect to *both* centres; attributes unique to each side fan out and connect only to their own centre. The rigid five-column geometry is produced automatically — you just list what is shared and what is unique."
+  },
+  {
+    "slug": "comparison-cicd-decision-matrix",
+    "diagram": "comparison",
+    "title": "CI/CD platform — decision matrix",
+    "description": "A Pugh weighted-decision matrix where the engine computes each option's weighted total, ranks them, and highlights the winner — with Jenkins as the datum baseline.",
+    "standard": "Pugh, Total Design (1991) · ASQ decision matrix",
+    "tags": [
+      "comparison",
+      "decision-matrix",
+      "pugh",
+      "weighted-scoring",
+      "trade-study"
+    ],
+    "complexity": 3,
+    "featured": true,
+    "dsl": "comparison \"Selecting a CI/CD platform\"\nmode: decision\nbaseline: \"Jenkins\"\noption \"GitHub Actions\"\noption \"GitLab CI\"\noption \"CircleCI\"\noption \"Jenkins\"\ncriterion \"Ease of setup\" weight: 5\n  GitHub Actions: 5\n  GitLab CI: 4\n  CircleCI: 4\n  Jenkins: 2\ncriterion \"Build speed\" weight: 4\n  GitHub Actions: 4\n  GitLab CI: 4\n  CircleCI: 5\n  Jenkins: 3\ncriterion \"Cost at our scale\" weight: 4\n  GitHub Actions: 4\n  GitLab CI: 3\n  CircleCI: 3\n  Jenkins: 5\ncriterion \"Ecosystem / marketplace\" weight: 3\n  GitHub Actions: 5\n  GitLab CI: 3\n  CircleCI: 3\n  Jenkins: 4\ncriterion \"Self-host control\" weight: 2\n  GitHub Actions: 2\n  GitLab CI: 5\n  CircleCI: 2\n  Jenkins: 5",
+    "notes": "## What this shows\n\nThis is the engine's differentiator. You declare the **options** (columns), the weighted **criteria** (rows), and a score per cell — and you stop there. The **Weighted total** row, the `#1`…`#4` ranks, the green winner, and the **vs datum** deltas against Jenkins are all *computed* (Σ of weight × score), not typed in. Change one score and the winner can flip. That is Stuart Pugh's controlled-convergence method — the same \"the engine computes the answer\" stance as `pert` (schedule) and `faulttree` (cut sets).\n\nThe `baseline: \"Jenkins\"` line marks the Pugh datum: that column is shaded and every other option shows its margin over it."
+  },
+  {
+    "slug": "comparison-cloud-feature-matrix",
+    "diagram": "comparison",
+    "title": "Cloud providers — feature comparison matrix",
+    "description": "An options × criteria comparison grid mixing yes/partial marks with free-text cells — the kind of feature table no quadrant chart can express.",
+    "standard": "ASQ comparison matrix · graphic-organizer convention",
+    "tags": [
+      "comparison",
+      "matrix",
+      "feature-comparison",
+      "cloud"
+    ],
+    "complexity": 2,
+    "featured": false,
+    "dsl": "comparison \"Cloud provider — managed services\"\nmode: matrix\noption \"AWS\"\noption \"GCP\"\noption \"Azure\"\ncriterion \"Free tier\"\n  AWS: \"12 months\"\n  GCP: \"Always-free\"\n  Azure: \"12 months\"\ncriterion \"Managed Postgres\"\n  AWS: yes\n  GCP: yes\n  Azure: yes\ncriterion \"Serverless GPU\"\n  AWS: partial\n  GCP: yes\n  Azure: partial\ncriterion \"Spot discount\"\n  AWS: \"up to 90%\"\n  GCP: \"up to 91%\"\n  Azure: \"up to 90%\"\ncriterion \"On-prem hybrid\"\n  AWS: partial\n  GCP: partial\n  Azure: yes",
+    "notes": "## What this shows\n\nA straight side-by-side feature table — options across the top, criteria down the side. Cells mix **marks** (`yes` → ✓ green, `partial` → ~ amber) with **free text** (`\"up to 90%\"`), so one grid carries both capability flags and figures. The option name on each cell line must match a declared `option`; a typo is flagged in the diagnostics rather than silently dropped."
+  },
+  {
     "slug": "decisiontree-influence-market-entry",
     "diagram": "decisiontree",
     "title": "Market entry (influence diagram)",
@@ -3825,5 +3878,9 @@ export const SYNTAX: Readonly<Record<string, GeneratedSyntax>> = {
   "rbd": {
     "title": "Reliability Block Diagram",
     "content": "## 1. Your first diagram\n\nEvery document starts with the `rbd` keyword (alias `reliability`), an optional title, then nested success-logic groups around `block` leaves:\n\n```\nrbd \"Two redundant pumps\"\n  parallel {\n    block A \"Pump A\" R=0.9\n    block B \"Pump B\" R=0.9\n  }\n```\n\nThe engine draws the two pumps on parallel rails between a split node and a join node, computes the system reliability `1 − (1−0.9)(1−0.9) = 0.99`, and prints it as the headline. A bare top-level list of blocks (no outer group) is treated as a **series** chain.\n\n## 2. Blocks\n\nA `block` is one component on a success path:\n\n```\nblock ID \"Label\" R=0.99\n```\n\n- `ID` — a short identifier (shown when no label is given).\n- `\"Label\"` — an optional display name (CJK quotes welcome).\n- Reliability is given as **`R=0.99`** (reliability/availability), **`p=0.01`** (probability of *failure*, → R = 1−p), or a percentage **`R=99%`**. A block with no reliability leaves the system figure symbolic (`n/a`).\n\n## 3. Success-logic groups\n\nGroups nest freely, so you can model redundant chains, voting banks, and standby pairs:\n\n| Group | Succeeds when | Reliability |\n|-------|---------------|-------------|\n| `series { … }` | **every** child works | ∏ Rᵢ |\n| `parallel { … }` | **any** child works | 1 − ∏(1 − Rᵢ) |\n| `kofn k/n { … }` | **≥ k of n** children work | exact state enumeration |\n\n```\nseries {\n  block CTRL \"Controller\" R=0.995\n  parallel {\n    series { block P1 \"Path 1 sensor\" R=0.97\n             block A1 \"Path 1 actuator\" R=0.98 }\n    series { block P2 \"Path 2 sensor\" R=0.97\n             block A2 \"Path 2 actuator\" R=0.98 }\n  }\n}\n```\n\n## 4. Computed reliability, importance & SPOF\n\nAfter parsing, the engine computes:\n\n- **System reliability** — the headline figure, by recursive series/parallel/k-of-n reduction.\n- **Birnbaum importance** `Iᴮ(i) = R_sys(Rᵢ=1) − R_sys(Rᵢ=0)` for every block; the highest-importance block (the improvement target) is accented.\n- **Criticality importance** `I_C(i) = Iᴮ(i)·(1−Rᵢ)/(1−R_sys)` — the probability block i is failed *and* critical, given the system is failed.\n- **Single points of failure** — any block where `R_sys(Rᵢ=0) = 0` (its failure alone fails the system) is drawn with a red border. A non-redundant block in series is always a SPOF.\n\n## 5. Time-dependent reliability — R(t)\n\nA static `R=` is the entry point; in practice reliability is a function of mission time. Set a **`mission: <t>`** and give blocks a failure distribution instead of a constant — the engine evaluates **R(t)** and rolls it up exactly as before. Use **consistent time units** across `mission` and the rates.\n\n| Block attribute | Model | R(t) |\n|-----------------|-------|------|\n| `rate=0.0001` | exponential (constant hazard λ) | e^(−λt) |\n| `mtbf=10000` | exponential (λ = 1/MTBF) | e^(−t/MTBF) |\n| `weibull=2,10000` | Weibull(β shape, η scale) | e^(−(t/η)^β) |\n\n```\nrbd \"Pump station — 1-year mission\"\n  mission: 8760            # hours\n  parallel {\n    block A \"Pump A\" mtbf=10000\n    block B \"Pump B\" weibull=1.5,12000\n  }\n```\n\nThe headline becomes `R(t=8760) = …`. A block with a distribution but no `mission:` warns and falls back to its constant `R=` (if any).\n\n## 6. Validation\n\nThe parser reports non-fatal warnings rather than failing:\n\n- a `kofn k/n` threshold with `k > n` is clamped to `n` (and `k < 1` to `1`);\n- a reliability outside `0..1` is clamped;\n- a duplicate block id is flagged.\n\n## 7. Theming\n\n`theme: default` uses the shared risk-reliability palette (neutral blocks, blue reliability numerals, red single-point-of-failure borders). `theme: monochrome` renders a black-and-white print version (SPOF by border weight); `theme: dark` is the Catppuccin dark variant."
+  },
+  "comparison": {
+    "title": "Comparison & Decision Matrix",
+    "content": "## 1. Header and mode\n\nThe header keyword is `comparison` (aliases `compare`, `vs`). The header keywords `tchart` and `pugh` set the mode directly. Otherwise choose with the `mode:` directive:\n\n```\ncomparison \"Title\"\nmode: tchart | pros-cons | matrix | decision | double-bubble\nlegend: on | off\n```\n\nIf you omit `mode:`, it is inferred from the keywords you use — but generating it explicitly is more reliable.\n\n## 2. T-chart (and Y-chart)\n\nDeclare each `column`, then list its points with `-` bullets. Three columns reads as a Y-chart.\n\n```\ntchart \"TCP vs UDP\"\ncolumn \"TCP\"\n- Connection-oriented (handshake)\n- Guaranteed, ordered delivery\ncolumn \"UDP\"\n- Connectionless, fire-and-forget\n- Minimal header, low latency\n```\n\n## 3. Pros / cons\n\n```\ncomparison \"Migrate to microservices?\"\nmode: pros-cons\npro \"Independent team deploys\"\npro \"Scale hot paths in isolation\"\ncon \"Distributed-systems complexity\"\ncon \"Operational + infra cost goes up\"\n```\n\n`pro` lines fill the green column, `con` the red — order independent.\n\n## 4. Comparison matrix\n\nDeclare every `option` (the columns), then each `criterion` (a row) with one indented `OptionName: value` cell per option. Cell values: `yes` / `no` / `partial` render as ✓ / ✗ / ~, numbers are scores, quoted text is shown verbatim. The option name must match an `option` exactly (a typo is flagged, not dropped).\n\n```\ncomparison \"Cloud provider — managed services\"\nmode: matrix\noption \"AWS\"\noption \"GCP\"\noption \"Azure\"\ncriterion \"Free tier\"\n  AWS: \"12 months\"\n  GCP: \"Always-free\"\n  Azure: \"12 months\"\ncriterion \"Managed Postgres\"\n  AWS: yes\n  GCP: yes\n  Azure: partial\n```\n\nA compact pipe form is also accepted: `criterion \"Free tier\" | \"12 months\" | \"Always-free\" | \"12 months\"` (positional to option order).\n\n## 5. Decision matrix (computed)\n\nAdd a `weight:` to each criterion and a numeric score to each cell. The engine appends a **Weighted total** row, ranks the options (`#1`, `#2`, …), and highlights the winner. Add `baseline: \"Option\"` for a Pugh datum — that column is shaded and a **vs datum** delta row is added.\n\n```\npugh \"Database for the new service\"\nbaseline: \"PostgreSQL\"\noption \"PostgreSQL\"\noption \"MongoDB\"\noption \"DynamoDB\"\ncriterion \"Query flexibility\" weight: 5\n  PostgreSQL: 5\n  MongoDB: 3\n  DynamoDB: 2\ncriterion \"Horizontal scaling\" weight: 4\n  PostgreSQL: 3\n  MongoDB: 4\n  DynamoDB: 5\ncriterion \"Operational cost\" weight: 3\n  PostgreSQL: 4\n  MongoDB: 3\n  DynamoDB: 3\n```\n\nYou never write the totals — the engine computes Σ(weight × score), so getting a score wrong changes the computed winner.\n\n## 6. Double-bubble (compare & contrast)\n\n```\ncomparison \"Plant cell vs Animal cell\"\nmode: double-bubble\nleft \"Plant cell\"\nright \"Animal cell\"\nshared \"Has a nucleus\"\nshared \"Mitochondria\"\nleft-only \"Cell wall\"\nleft-only \"Chloroplasts\"\nright-only \"Centrioles\"\nright-only \"Lysosomes\"\n```\n\n`shared` traits sit in the middle, connected to both centres; `left-only` / `right-only` fan out to their own centre.\n\n## 7. Themes\n\n`default` is the house blue with green/red/amber valence; `monochrome` drops colour (valence rides on ✓/✗/~, the winner on a heavy border) for B&W print; `dark` is Catppuccin.\n\n## Standard\n\nPugh, *Total Design* (1991) controlled convergence · ASQ decision matrix · Hyerle Thinking Maps (double-bubble) · K-12 graphic-organizer convention. See `docs/reference/51-COMPARISON-STANDARD.md`."
   }
 };
