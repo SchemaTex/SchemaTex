@@ -38,6 +38,10 @@ The reliability block diagram now models **reliability over a mission time**, no
 
 Deferred: cold/warm standby redundancy with switch reliability (needs per-distribution treatment + identical-unit assumptions — a focused follow-up).
 
+### Fixed — fault-tree top-event probability no longer collapses to `1`
+
+A high `P(top)` such as `0.9999` rendered as `1`, hiding the nines that matter. The fault-tree renderer's inline `toPrecision(3)` was replaced with a shared `core/format.ts` `formatProbability()` (3 significant figures mid-range, scientific below `0.001`, escalating precision near 1 so a sub-1 value never shows as `1`) — the same near-1 rule already used for RBD's `R`. (#48)
+
 ---
 
 ## [0.9.6] — 2026-06-15
