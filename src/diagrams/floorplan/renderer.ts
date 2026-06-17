@@ -55,6 +55,7 @@ function buildCss(t: Theme): string {
 .sx-fp-hatch { fill: none; stroke: ${t.hatchStroke}; stroke-width: 1; }
 .sx-fp-furn-text { font-weight: 600; font-family: sans-serif; fill: ${t.furnLabel}; paint-order: stroke; stroke: ${t.floorFill}; stroke-width: 2.5px; stroke-linejoin: round; }
 .sx-fp-furn-label { font: 11px sans-serif; fill: ${t.furnLabel}; paint-order: stroke; stroke: ${t.floorFill}; stroke-width: 3px; stroke-linejoin: round; }
+.sx-fp-seat-name { font-family: sans-serif; fill: ${t.furnLabel}; paint-order: stroke; stroke: ${t.floorFill}; stroke-width: 2px; stroke-linejoin: round; }
 .sx-fp-door-leaf { fill: none; stroke: ${t.doorLeaf}; stroke-width: 1.6; }
 .sx-fp-door-arc { fill: none; stroke: ${t.doorArc}; stroke-width: 1; }
 .sx-fp-window { fill: none; stroke: ${t.windowStroke}; stroke-width: 1.3; }
@@ -414,7 +415,7 @@ export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: Rende
     const cx = r2(X(it.x) + wpx / 2);
     const cy = r2(Y(it.y) + hpx / 2);
     const rot = Math.round(it.rotate * 10) / 10;
-    const children = [def.draw({ w: it.w, h: it.h, px, label: it.label })];
+    const children = [def.draw({ w: it.w, h: it.h, px, label: it.label, seats: it.seats })];
     if (warnSet.has(idx)) {
       children.push(rect({ class: "sx-fp-warn-item", x: -1, y: -1, width: r2(wpx + 2), height: r2(hpx + 2) }));
     }

@@ -1,0 +1,38 @@
+---
+title: Restaurant — dining room + commercial kitchen
+description: "A restaurant floor plan with the back-of-house most tools skip: booths and named tables out front, a commercial kitchen line (range, prep tables, three-compartment sink, walk-in cooler, fryer) behind the pass."
+diagram: floorplan
+standard: Architectural Graphic Standards · US NCS v6
+industry: [hospitality, business]
+persona: For the restaurateur or kitchen consultant laying out front- and back-of-house together
+complexity: 3
+tags: [floorplan, restaurant, commercial-kitchen, hospitality]
+featured: false
+relatedLink:
+  label: Floor plan syntax
+  href: /docs/floorplan
+status: published
+dsl: |
+  floorplan "Bistro — Floor + Kitchen" unit m
+  room dining "Dining Room" at 0,0 size 9x7
+  room kitchen "Kitchen" right-of dining size 6x7
+  opening between dining kitchen at 50% width 1.2
+  door dining south at 20% width 1.0
+  furniture booth "B1" in dining at 0.3,0.4
+  furniture booth "B2" in dining at 0.3,2.6
+  furniture booth "B3" in dining at 0.3,4.8
+  furniture round-table-4 "1" in dining at 3.4,1 seats "Ann" "Ben"
+  furniture round-table-4 "2" in dining at 6.2,1 seats "Cy" "Di"
+  furniture round-table-4 "3" in dining at 3.4,4.2 seats "Ed" "Fay"
+  furniture range in kitchen at 0.4,0.4
+  furniture fryer in kitchen at 1.6,0.4
+  furniture prep-table in kitchen at 0.4,2.2
+  furniture commercial-sink in kitchen at 0.4,4.6
+  furniture walk-in in kitchen at 3.2,4.5
+---
+
+## What this shows
+
+Front-of-house mixes `booth` (two facing benches with a table between) and named `round-table-4` covers; back-of-house uses the restaurant/commercial-kitchen catalog that general floor-plan tools omit: `range` (commercial six-burner over an oven), `prep-table` (stainless work table with a dashed under-shelf), `commercial-sink` (the three-compartment ware-washing sink health codes require), `walk-in` (the insulated double-wall cooler with its door), and `fryer`.
+
+The `opening between dining kitchen` resolves the shared wall automatically and punches the pass-through; area labels and exterior dimensions come for free. This is the `restaurant floor plan` / `commercial kitchen layout` request — the head commercial-floorplan search terms — answered from one paragraph of text.

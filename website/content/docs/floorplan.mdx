@@ -110,10 +110,20 @@ The catalog spans residential, commercial, and site work (sizes default to indus
 | Event / banquet | `banquet-table` `head-table` `stage` `dance-floor` `bar` `dj-booth` `cocktail-table` `podium` `row-chairs` |
 | Retail / warehouse | `shelving` `checkout` `clothing-rack` `fitting-room` `pallet-rack` `loading-dock` `forklift` |
 | Salon / gym | `salon-chair` `shampoo-bowl` `manicure-table` `treadmill` `weight-bench` `power-rack` `yoga-mat` |
+| Restaurant / commercial kitchen | `booth` `prep-table` `range` `walk-in` `commercial-sink` `fryer` |
 | Stairs / structural | `stairs` `stairs-l` `stairs-u` `spiral-stairs` `elevator` `column` |
 | Site / outdoor | `tree` `car` |
 
 **Auto-seating** is built in: `round-table-8` draws 8 chairs on its circumference (60″ top; `round-table-10` uses 72″), `dining-table` / `banquet-table` / `conference-table` seat both long edges at one chair per 0.65 m, `head-table` seats one side facing the room, `manicure-table` seats a client and technician chair, and `row-chairs` places a theater strip at 0.55 m pitch. `rug`, `dance-floor`, `yoga-mat`, `counter`, `island`, `wall-cabinet`, `range-hood`, and `ceiling-fan` are underlays/overheads — other furniture can overlap them without a collision warning.
+
+**Seating charts** — name the occupants of any auto-seating table with a `seats` clause, and the engine writes each name onto its chair (in placement order: round tables clockwise from the top; rectangular tables fill the top edge left-to-right, then the bottom edge). This turns a venue floor plan into the seating chart guests actually read:
+
+```
+furniture round-table-8 "Table 3" in hall at 11,4 seats "Alice" "Bob" "Carol" "Dave"
+furniture head-table "Head Table" in hall at 5,0.6 size 6x0.9 seats "Bride" "Groom"
+```
+
+Extra chairs without a name stay empty; extra names past the chair count are ignored. CJK-quoted names (`seats "张伟" "李娜"`) work like every other label. Names read horizontally, so keep the table unrotated for a clean chart.
 
 `tree` and `car` are sized for the outdoors (canopy disc, parking-stall footprint), so a **site plan** is just zones tiled as adjacent rooms — front yard, house footprint, driveway, back yard — with trees and parked cars placed on top.
 
@@ -179,7 +189,7 @@ door      ::= "door" (wallref | "between" id id) "at" pct
 window    ::= "window" wallref "at" pct ("width" num)?
               ("type" ("fixed"|"sliding"|"casement"|"bay"))?
 opening   ::= "opening" (wallref | "between" id id) "at" pct ("width" num)?
-furniture ::= "furniture" type ("in" id) "at" coord ("size" dims)? ("rotate" num)? string?
+furniture ::= "furniture" type ("in" id) "at" coord ("size" dims)? ("rotate" num)? string? ("seats" string+)?
 array     ::= ("grid"|"row"|"arc") type "in" id
               ("rows" int)? ("cols" int)? ("count" int)?
               ("area" coord coord)? ("itemsize" dims)? ("rotate" num)?
