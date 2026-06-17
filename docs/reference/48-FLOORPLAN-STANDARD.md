@@ -71,8 +71,9 @@ Full vocabulary specified now (DSL/types never change to add more); **v0.1 colum
 **Stairs / structural** — all ✅: `stairs` `stairs-l` `stairs-u` `spiral-stairs` `elevator` `column`.
 **Retail / warehouse** — all ✅ (0.9.3): `shelving` (gondola run, back-to-back spine + bays) `checkout` (POS counter + register) `clothing-rack` (round rail) `fitting-room` (booth + bench + curtain) `pallet-rack` (open frame, X-braced bays) `loading-dock` (roll-up door + bumpers) `forklift`.
 **Salon / gym** — all ✅ (0.9.3): `salon-chair` (styling station + mirror) `shampoo-bowl` (backwash unit) `manicure-table` (auto-seats client + technician) `treadmill` `weight-bench` (auto barbell) `power-rack` `yoga-mat` (underlay).
+**Restaurant / commercial kitchen** — ✅ (0.9.9): `booth` (two facing benches + table between, restaurant booth) `prep-table` (stainless work table, dashed under-shelf) `range` (commercial 6-burner + oven) `walk-in` (insulated double-wall cooler/freezer + door) `commercial-sink` (three-compartment sink) `fryer` (twin fry vats). Targets `restaurant floor plan` / `commercial kitchen layout` (Google Ads US: ~2.4K / ~850 mo, the head commercial-floorplan terms).
 **Site / outdoor** — ✅ (0.9.3): `tree` (canopy disc) `car` (parking-stall footprint). A site/plot plan tiles the lot as adjacent zones (front yard · house footprint · driveway · back yard) with trees and cars on top.
-**Deferred** ⬜: restaurant booths, hospital/dental beds & chairs, deck/fence/pool landscape fixtures — add by demand evidence.
+**Deferred** ⬜: hospital/dental beds & chairs, deck/fence/pool landscape fixtures — add by demand evidence.
 
 Symbols are original line art following AGS plan-view silhouettes (same stance as network vs Cisco icons): thin stroke, white fill, no inline styles, themable via CSS classes (`stx-floorplan-wall`, `stx-floorplan-furniture`, `stx-floorplan-label`, …).
 
@@ -85,6 +86,16 @@ Symbols are original line art following AGS plan-view silhouettes (same stance a
 | `head-table` | chairs one side only (facing the room) |
 | `manicure-table` | one client chair + one technician chair, facing across the table |
 | `row-chairs` | chairs at fixed 0.55 m pitch along the strip |
+
+### 2.4 Per-seat occupant names — the seating chart (0.9.9)
+
+Any auto-seating table accepts a `seats "Name" "Name" …` clause that writes an occupant onto each chair, turning a venue floor plan into the **seating chart** guests read off the wall. This is the deliverable behind the highest-volume untapped term in the cluster — `wedding seating chart` / `seating chart maker` (Google Ads US ~40K/mo combined) — which no text→SVG engine produces.
+
+- **Order** follows the chair geometry: round tables clockwise from the 12-o'clock seat; rectangular tables fill the whole top edge left-to-right, then the whole bottom edge.
+- **Mismatch is forgiving** (LLM-ergonomic): fewer names than chairs leaves the remaining chairs empty; more names than chairs ignores the overflow — never an error.
+- **CJK quotes** are normalised like every label (`seats "张伟" "李娜"`).
+- Named tables are placed as individual `furniture` statements (a seating chart names each table's guests), not via `grid`/`row` arrays.
+- Names render horizontally (upright); rotate the table only when legibility allows.
 
 ---
 
@@ -106,7 +117,7 @@ door      ::= "door" (wallref | "between" id id) "at" pct
               ("type" ("single"|"double"|"sliding"|"pocket"|"bifold"))?
 window    ::= "window" wallref "at" pct ("width" num)? ("type" ("fixed"|"sliding"|"casement"|"bay"))?
 opening   ::= "opening" (wallref | "between" id id) "at" pct ("width" num)?
-furniture ::= "furniture" type ("in" id) "at" coord ("size" dims)? ("rotate" num)? string?
+furniture ::= "furniture" type ("in" id) "at" coord ("size" dims)? ("rotate" num)? string? ("seats" string+)?
 array     ::= ("grid"|"row"|"arc") type "in" id
               ("rows" int)? ("cols" int)? ("count" int)?
               ("area" coord coord)? ("itemsize" dims)? ("rotate" num)?

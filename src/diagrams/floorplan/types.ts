@@ -143,6 +143,13 @@ export type FurnitureType =
   | "weight-bench"
   | "power-rack"
   | "yoga-mat"
+  // restaurant / commercial kitchen
+  | "booth"
+  | "prep-table"
+  | "range"
+  | "walk-in"
+  | "commercial-sink"
+  | "fryer"
   // site / outdoor
   | "tree"
   | "car";
@@ -223,6 +230,13 @@ export interface FloorplanFurniture {
   /** Rotation in degrees, clockwise, around the symbol center. */
   rotate: number;
   label?: string;
+  /**
+   * Per-seat occupant names (`seats "Alice" "Bob" …`) for tables that
+   * auto-seat chairs (round/banquet/conference/dining/head tables). Names map
+   * to chairs in placement order; extra chairs render empty, extra names are
+   * ignored. Turns a venue plan into an actual seating chart (§2.5).
+   */
+  seats?: string[];
   line?: number;
 }
 
@@ -328,6 +342,8 @@ export interface ItemGeom {
   /** Rotation degrees clockwise about the box center. */
   rotate: number;
   label?: string;
+  /** Per-seat occupant names, mapped to auto-seated chairs in placement order. */
+  seats?: string[];
   roomId: string;
   /** Sequence number within its type (for warning messages: "round-table-8 #4"). */
   seq: number;
@@ -390,6 +406,8 @@ export interface SymbolDrawCtx {
   px: PxFn;
   /** Item label, for symbols that render it themselves (stairs UP/DN). */
   label?: string;
+  /** Per-seat occupant names for auto-seating tables (§2.5). */
+  seats?: string[];
 }
 
 export interface SymbolDef {

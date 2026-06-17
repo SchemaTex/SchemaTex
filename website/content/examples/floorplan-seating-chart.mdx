@@ -1,0 +1,32 @@
+---
+title: Wedding seating chart — named guests
+description: "A seating chart, not just a venue plan: every chair carries its guest's name. Six round tables and a head table, named with the `seats` clause; the engine writes each name onto its chair in seating order, including CJK names."
+diagram: floorplan
+standard: Architectural Graphic Standards · US NCS v6
+industry: [hospitality, business]
+persona: For the wedding planner who needs the chart guests read, not just a room layout
+complexity: 3
+tags: [floorplan, wedding, event, seating, seating-chart]
+featured: false
+relatedLink:
+  label: Floor plan syntax
+  href: /docs/floorplan
+status: published
+dsl: |
+  floorplan "Wedding Seating Chart" unit m
+  room hall "Grand Ballroom" at 0,0 size 17x13 nolabel
+  door hall south at 50% width 1.8
+  furniture head-table "Head Table" in hall at 5.5,0.6 size 6x0.9 seats "Bride" "Groom" "Mom" "Dad" "MOH" "Best Man"
+  furniture round-table-8 "Table 1" in hall at 1,3.6 seats "Alice" "Bob" "Carol" "Dave" "Eve" "Frank" "Grace" "Heidi"
+  furniture round-table-8 "Table 2" in hall at 7,3.6 seats "Ivan" "Judy" "Mallory" "Niaj" "Olivia" "Peggy"
+  furniture round-table-8 "Table 3" in hall at 13,3.6 seats "张伟" "李娜" "王芳" "刘洋"
+  furniture round-table-8 "Table 4" in hall at 1,8.4 seats "Quinn" "Rupert" "Sybil" "Trent" "Uma" "Vera"
+  furniture round-table-8 "Table 5" in hall at 7,8.4 seats "Walt" "Xena" "Yuki" "Zane"
+  furniture dance-floor "Dance Floor" in hall at 12,8 size 4.5x4.5
+---
+
+## What this shows
+
+Each table is an individual `furniture` statement with a `seats "…"` clause, so the engine writes guest names onto the chairs in seating order — round tables clockwise from the top, the head table along its single facing edge. That is the difference between a *venue plan* (where the tables go) and a *seating chart* (who sits where), which is the deliverable guests actually read off the easel.
+
+Names map to chairs one-for-one: **Table 3** lists four guests on an eight-chair round, so four chairs are named and four stay empty — no error. CJK names (`张伟`, `李娜`) are quoted like any label. Because names render horizontally, the tables are left unrotated.

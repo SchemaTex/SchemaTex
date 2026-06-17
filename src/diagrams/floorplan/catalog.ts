@@ -41,15 +41,45 @@ function chairAt(px: (m: number) => number, cx: number, cy: number, deg: number)
   return el("g", { transform: `translate(${px(cx)},${px(cy)}) rotate(${rot})` }, [body]);
 }
 
-/** Chairs along the top and/or bottom edge of a w-wide table at 0.65 m pitch. */
-function edgeChairs(c: SymbolDrawCtx, top: boolean, bottom: boolean): string {
+/**
+ * Occupant name centered on a seat (§2.5). Upright text regardless of seat
+ * angle — reads left-to-right around the table; the symbol is drawn before
+ * any item rotation, so names stay horizontal for unrotated tables (the
+ * seating-chart norm). Empty/undefined names render nothing.
+ */
+function seatName(c: SymbolDrawCtx, cx: number, cy: number, name: string | undefined): string {
+  if (!name) return "";
+  return textEl(
+    {
+      class: "sx-fp-seat-name",
+      x: c.px(cx),
+      y: c.px(cy),
+      "text-anchor": "middle",
+      "dominant-baseline": "central",
+      "font-size": c.px(0.17),
+    },
+    name
+  );
+}
+
+/**
+ * Chairs along the top and/or bottom edge of a w-wide table at 0.65 m pitch.
+ * When `seats` is given, occupant names are placed on each chair in order:
+ * the whole top row left-to-right, then the whole bottom row left-to-right.
+ */
+function edgeChairs(c: SymbolDrawCtx, top: boolean, bottom: boolean, seats?: string[]): string {
   const n = Math.max(1, Math.round(c.w / 0.65));
   const out: string[] = [];
-  for (let i = 0; i < n; i++) {
-    const cx = ((i + 0.5) / n) * c.w;
-    if (top) out.push(chairAt(c.px, cx, -CHAIR_GAP, 0));
-    if (bottom) out.push(chairAt(c.px, cx, c.h + CHAIR_GAP, 180));
-  }
+  let s = 0;
+  const row = (cy: number, deg: number): void => {
+    for (let i = 0; i < n; i++) {
+      const cx = ((i + 0.5) / n) * c.w;
+      out.push(chairAt(c.px, cx, cy, deg));
+      if (seats) out.push(seatName(c, cx, cy, seats[s++]));
+    }
+  };
+  if (top) row(-CHAIR_GAP, 0);
+  if (bottom) row(c.h + CHAIR_GAP, 180);
   return out.join("");
 }
 
@@ -149,6 +179,7 @@ function roundTable(seats: number, diaM: number): SymbolDef {
         const px0 = cx + (r + ring * 0.55) * Math.cos(a);
         const py0 = cy + (r + ring * 0.55) * Math.sin(a);
         parts.push(chairAt(c.px, px0, py0, (a * 180) / Math.PI + 90));
+        if (c.seats) parts.push(seatName(c, px0, py0, c.seats[i]));
       }
       return parts.join("");
     },
@@ -156,7 +187,7 @@ function roundTable(seats: number, diaM: number): SymbolDef {
 }
 
 function tableDraw(top: boolean, bottom: boolean) {
-  return (c: SymbolDrawCtx): string => box(c) + edgeChairs(c, top, bottom);
+  return (c: SymbolDrawCtx): string => box(c) + edgeChairs(c, top, bottom, c.seats);
 }
 
 // ─── Stairs (research-backed conventions, spec §2.4) ─────────────
@@ -1189,6 +1220,121 @@ export const FLOORPLAN_SYMBOLS: Record<FurnitureType, SymbolDef> = {
     h: 1.8,
     underlay: true,
     draw: (c) => rect({ class: "sx-fp-furn-dash", x: 0, y: 0, width: c.px(c.w), height: c.px(c.h), rx: c.px(0.08) }),
+  },
+
+  // ── restaurant / commercial kitchen ──
+  // Restaurant booth: two facing benches (chair fill) with a table between.
+  // Default seats 4 (two per bench); benches are not auto-named seats.
+  booth: {
+    w: 1.4,
+    h: 1.6,
+    envelope: [0, 0, 0, 0],
+    draw: (c) => {
+      const benchH = Math.min(0.45, c.h * 0.28);
+      const inset = c.w * 0.12;
+      return [
+        rect({ class: "sx-fp-chair", x: 0, y: 0, width: c.px(c.w), height: c.px(benchH), rx: c.px(0.06) }),
+        rect({ class: "sx-fp-chair", x: 0, y: c.px(c.h - benchH), width: c.px(c.w), height: c.px(benchH), rx: c.px(0.06) }),
+        rect({
+          class: "sx-fp-furn",
+          x: c.px(inset),
+          y: c.px(benchH + 0.06),
+          width: c.px(c.w - 2 * inset),
+          height: c.px(Math.max(0.1, c.h - 2 * benchH - 0.12)),
+          rx: c.px(0.04),
+        }),
+      ].join("");
+    },
+  },
+  // Stainless prep / work table: solid top with a dashed under-shelf outline.
+  "prep-table": {
+    w: 1.5,
+    h: 0.75,
+    draw: (c) =>
+      box(c) +
+      rect({
+        class: "sx-fp-furn-dash",
+        x: c.px(0.08),
+        y: c.px(0.08),
+        width: c.px(Math.max(0.1, c.w - 0.16)),
+        height: c.px(Math.max(0.1, c.h - 0.16)),
+      }),
+  },
+  // Commercial range: 6 burners (2 rows × 3 cols) over an oven (front line).
+  range: {
+    w: 0.9,
+    h: 0.85,
+    draw: (c) => {
+      const parts = [box(c)];
+      const r = Math.min(c.w / 6, c.h / 8);
+      for (let row = 0; row < 2; row++) {
+        for (let col = 0; col < 3; col++) {
+          const cx = ((col + 0.5) / 3) * c.w;
+          const cy = ((row + 0.5) / 4) * c.h;
+          parts.push(circle({ class: "sx-fp-furn-line", cx: c.px(cx), cy: c.px(cy), r: c.px(r) }));
+        }
+      }
+      parts.push(line({ class: "sx-fp-furn-line", x1: 0, y1: c.px(c.h * 0.62), x2: c.px(c.w), y2: c.px(c.h * 0.62) }));
+      return parts.join("");
+    },
+  },
+  // Walk-in cooler/freezer: insulated double-wall box with a door gap + label.
+  "walk-in": {
+    w: 2.4,
+    h: 2.0,
+    draw: (c) => {
+      const t = Math.min(0.12, c.w * 0.06);
+      const doorW = Math.min(0.9, c.w * 0.4);
+      const parts = [
+        box(c),
+        rect({
+          class: "sx-fp-furn-line",
+          x: c.px(t),
+          y: c.px(t),
+          width: c.px(Math.max(0.1, c.w - 2 * t)),
+          height: c.px(Math.max(0.1, c.h - 2 * t)),
+        }),
+        // door gap on the bottom wall + a hinged leaf
+        rect({ class: "sx-fp-furn-solid", x: c.px((c.w - doorW) / 2), y: c.px(c.h - t), width: c.px(doorW), height: c.px(t) }),
+        line({
+          class: "sx-fp-door-leaf",
+          x1: c.px((c.w - doorW) / 2),
+          y1: c.px(c.h),
+          x2: c.px((c.w - doorW) / 2),
+          y2: c.px(c.h + doorW * 0.6),
+        }),
+        glyphText(c, "WALK-IN"),
+      ];
+      return parts.join("");
+    },
+  },
+  // Three-compartment commercial sink: three basins + a faucet dot per basin.
+  "commercial-sink": {
+    w: 1.8,
+    h: 0.6,
+    draw: (c) => {
+      const parts = [box(c)];
+      const gap = c.w * 0.04;
+      const bw = (c.w - 4 * gap) / 3;
+      for (let i = 0; i < 3; i++) {
+        const bx = gap + i * (bw + gap);
+        parts.push(rect({ class: "sx-fp-furn-line", x: c.px(bx), y: c.px(c.h * 0.18), width: c.px(bw), height: c.px(c.h * 0.64), rx: c.px(0.03) }));
+        parts.push(circle({ class: "sx-fp-furn-dot", cx: c.px(bx + bw / 2), cy: c.px(c.h * 0.12), r: c.px(0.04) }));
+      }
+      return parts.join("");
+    },
+  },
+  // Deep fryer: two fry vats with handles.
+  fryer: {
+    w: 0.4,
+    h: 0.8,
+    draw: (c) => {
+      const parts = [box(c)];
+      for (const cy of [c.h * 0.28, c.h * 0.72]) {
+        parts.push(rect({ class: "sx-fp-furn-line", x: c.px(c.w * 0.18), y: c.px(cy - c.h * 0.16), width: c.px(c.w * 0.64), height: c.px(c.h * 0.32), rx: c.px(0.02) }));
+      }
+      return parts.join("");
+    },
   },
 
   // ── site / outdoor ──

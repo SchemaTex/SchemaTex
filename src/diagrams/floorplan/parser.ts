@@ -272,7 +272,16 @@ function parseFurniture(tok: Tok[], ast: FloorplanAst, ln: number): void {
       f.y = c.y;
     } else if (t.word === "size") f.size = parseDims(tok.shift(), "size", ln);
     else if (t.word === "rotate") f.rotate = parseNum(tok.shift(), "rotate", ln);
-    else throw new FloorplanParseError(`furniture: unexpected token "${t.word}"`, ln);
+    else if (t.word === "seats") {
+      // `seats "Alice" "Bob" …` — consume consecutive quoted names. An empty
+      // string ("") leaves that seat blank (skip a guest without shifting).
+      const names: string[] = [];
+      while (isStr(tok[0])) names.push((tok.shift() as { str: string }).str);
+      if (names.length === 0) {
+        throw new FloorplanParseError(`"seats" expects one or more quoted names`, ln);
+      }
+      f.seats = names;
+    } else throw new FloorplanParseError(`furniture: unexpected token "${t.word}"`, ln);
   }
   ast.furniture.push(f);
 }

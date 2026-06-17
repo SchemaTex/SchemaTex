@@ -475,12 +475,13 @@ export function layoutFloorplan(ast: FloorplanAst): FloorplanLayoutResult {
     w: number,
     h: number,
     rotate: number,
-    label?: string
+    label?: string,
+    seats?: string[]
   ): void => {
     const room = rooms[roomIdx]!;
     const seq = (seqByType.get(type) ?? 0) + 1;
     seqByType.set(type, seq);
-    items.push({ type, x: room.x + localX, y: room.y + localY, w, h, rotate, label, roomId: room.id, seq });
+    items.push({ type, x: room.x + localX, y: room.y + localY, w, h, rotate, label, seats, roomId: room.id, seq });
   };
   const roomIdxOf = (stmt: string, roomId: string | undefined, line: number | undefined): number | undefined => {
     if (!roomId) {
@@ -501,7 +502,7 @@ export function layoutFloorplan(ast: FloorplanAst): FloorplanLayoutResult {
     if (idx === undefined) continue;
     const w = f.size ? f.size.w * u : def.w;
     const h = f.size ? f.size.h * u : def.h;
-    place(f.type, idx, f.x * u, f.y * u, w, h, f.rotate, f.label);
+    place(f.type, idx, f.x * u, f.y * u, w, h, f.rotate, f.label, f.seats);
   }
 
   for (const a of ast.arrays) {
