@@ -93,6 +93,7 @@ const es: Dictionary = {
     fullDocs: 'Documentación completa →',
   },
   finalCta: {
+    starNote: "Gratis y de código abierto: una estrella ayuda a que otros desarrolladores lo encuentren.",
     heading: 'Empieza con una sola cadena.',
     body: (count) =>
       `Abre el playground para renderizar cualquiera de los ${count} tipos de diagramas en vivo — o navega la galería para DSL que puedes copiar, pegar y adaptar.`,

@@ -93,6 +93,7 @@ const tr: Dictionary = {
     fullDocs: 'Tam belgeler →',
   },
   finalCta: {
+    starNote: "Ücretsiz ve açık kaynak — bir yıldız diğer geliştiricilerin onu bulmasına yardımcı olur.",
     heading: 'Tek bir string ile başla.',
     body: (count) =>
       `${count} diyagram türünden herhangi birini canlı olarak oluşturmak için playground'ı aç — ya da kopyalayıp yapıştırabileceğin ve uyarlayabileceğin DSL için galeriyi incele.`,

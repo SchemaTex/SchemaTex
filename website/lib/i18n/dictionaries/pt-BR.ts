@@ -93,6 +93,7 @@ const ptBR: Dictionary = {
     fullDocs: 'Documentação completa →',
   },
   finalCta: {
+    starNote: "Grátis e de código aberto — uma estrela ajuda outros desenvolvedores a encontrá-lo.",
     heading: 'Comece com uma única string.',
     body: (count) =>
       `Abra o playground para renderizar qualquer um dos ${count} tipos de diagramas ao vivo — ou navegue na galeria para DSL que você pode copiar, colar e adaptar.`,

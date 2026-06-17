@@ -93,6 +93,7 @@ const it: Dictionary = {
     fullDocs: 'Documentazione completa →',
   },
   finalCta: {
+    starNote: "Gratuito e open source: una stella aiuta altri sviluppatori a trovarlo.",
     heading: 'Inizia con una singola stringa.',
     body: (count) =>
       `Apri il playground per renderizzare uno qualsiasi dei ${count} tipi di diagrammi in tempo reale — o sfoglia la galleria per DSL da copiare, incollare e adattare.`,

@@ -93,6 +93,7 @@ const ja: Dictionary = {
     fullDocs: 'ドキュメント全文 →',
   },
   finalCta: {
+    starNote: "無料・オープンソース — スターを付けると、ほかの開発者が見つけやすくなります。",
     heading: '1つの文字列から始めましょう。',
     body: (count) =>
       `Playgroundを開いて${count}種類の図解をライブでレンダリング — またはギャラリーでDSLをコピー・貼り付け・アレンジしてみてください。`,

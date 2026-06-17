@@ -134,6 +134,67 @@ body {
   .marquee-track { animation: none; }
 }
 
+/* Star glyph — base; needed for transforms to apply. */
+.star-glyph {
+  display: inline-block;
+  transform-origin: center;
+}
+
+/* Click feedback — a single, restrained pop (no particles). */
+@keyframes star-pop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.6) rotate(12deg); }
+  100% { transform: scale(1) rotate(0); }
+}
+.star-pop {
+  display: inline-block;
+  animation: star-pop .45s cubic-bezier(.34, 1.56, .64, 1);
+}
+
+/* Hover wiggle — a playful shake when the user points at any star button. */
+@keyframes star-wiggle {
+  0%, 100% { transform: rotate(0) scale(1); }
+  20% { transform: rotate(-18deg) scale(1.2); }
+  45% { transform: rotate(14deg) scale(1.2); }
+  70% { transform: rotate(-7deg) scale(1.1); }
+}
+.group:hover .star-glyph {
+  animation: star-wiggle .5s ease-in-out;
+}
+
+/* Idle twinkle — a slow sparkle to draw the eye on the prominent CTA stars
+   only (not the header, which is always on screen). */
+@keyframes star-twinkle {
+  0%, 92%, 100% { transform: scale(1); filter: none; }
+  96% { transform: scale(1.22); filter: drop-shadow(0 0 4px var(--warn)); }
+}
+.star-twinkle-idle {
+  animation: star-twinkle 3.4s ease-in-out infinite;
+}
+/* Hover wiggle wins over the idle twinkle when both could apply. */
+.group:hover .star-twinkle-idle {
+  animation: star-wiggle .5s ease-in-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .star-pop,
+  .star-twinkle-idle,
+  .group:hover .star-glyph,
+  .group:hover .star-twinkle-idle { animation: none; }
+}
+
+/* Docs star banner — quiet fade-up entrance, dismissible. */
+@keyframes star-banner-in {
+  0% { opacity: 0; transform: translateY(12px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+.star-banner-in {
+  animation: star-banner-in .4s ease-out;
+}
+@media (prefers-reduced-motion: reduce) {
+  .star-banner-in { animation: none; }
+}
+
 /* Eyebrow — mono 12px with tracking, used for section labels. */
 .type-eye {
   font-family: var(--mono);

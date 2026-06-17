@@ -113,6 +113,7 @@ const zhHans: Dictionary = {
   },
 
   finalCta: {
+    starNote: "完全免费、开源 —— 一个 star 能帮更多开发者发现它。",
     heading: '从一个字符串开始。',
     body: (count: number) =>
       `打开编辑器，实时渲染 ${count} 种图中的任意一种——或浏览示例库，复制、粘贴、改用现成的 DSL。`,

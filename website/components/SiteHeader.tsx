@@ -84,7 +84,7 @@ export function SiteHeader({
             {version && <span>{`v${version}`}</span>}
           </a>
           <div className="hidden sm:inline-flex">
-            <GithubStarButton stars={stars ?? 0} size="sm" />
+            <GithubStarButton stars={stars ?? 0} size="sm" source="header" />
           </div>
           <div className="hidden md:inline-flex">
             <LocaleSwitcher current={lang} variant="header" label={switcherLabel} />

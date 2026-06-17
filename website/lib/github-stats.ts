@@ -1,4 +1,6 @@
-const REPO = 'SchemaTex/SchemaTex';
+import { REPO_SLUG } from '@/lib/repo';
+
+const REPO = REPO_SLUG;
 const NPM_PKG = 'schematex';
 const REVALIDATE = 3600; // 1 hour
 

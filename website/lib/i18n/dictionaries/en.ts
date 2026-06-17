@@ -128,6 +128,7 @@ export const en = {
 
   // ── Final CTA ──
   finalCta: {
+    starNote: "Free & open source — a star helps other developers find it.",
     heading: 'Start with a single string.',
     body: (count: number) =>
       `Open the playground to render any of ${count} diagram types live — or browse the gallery for DSL you can copy, paste, and adapt.`,

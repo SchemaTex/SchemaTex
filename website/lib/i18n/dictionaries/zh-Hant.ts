@@ -93,6 +93,7 @@ const zhHant: Dictionary = {
     fullDocs: '完整文件 →',
   },
   finalCta: {
+    starNote: "完全免費、開源 —— 一個 star 能幫更多開發者發現它。",
     heading: '從一個字串開始。',
     body: (count) =>
       `開啟 Playground，即時渲染 ${count} 種圖表——或瀏覽圖庫，複製、貼上並修改 DSL。`,

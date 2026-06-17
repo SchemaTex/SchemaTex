@@ -5,6 +5,7 @@ import dynamic from 'next/dynamic';
 import { render } from 'schematex';
 import { svgToPngBlob, downloadBlob, printSvgAsPdf } from 'schematex/export';
 import { DiagramFrame } from './DiagramFrame';
+import { PlaygroundStarNudge } from './PlaygroundStarNudge';
 
 const MonacoEditor = dynamic(() => import('@monaco-editor/react'), {
   ssr: false,
@@ -26,6 +27,8 @@ interface PlaygroundProps {
    * on mount — causing every Playground on the page to show the same DSL.
    */
   syncHash?: boolean;
+  /** GitHub star count, for the success nudge on the dedicated playground. */
+  stars?: number;
 }
 
 const TYPE_META: Record<string, { name: string; std: string }> = {
@@ -92,7 +95,7 @@ function formatBytes(n: number): string {
   return `${(n / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-export function Playground({ initial, height = 560, fill = false, syncHash = false }: PlaygroundProps) {
+export function Playground({ initial, height = 560, fill = false, syncHash = false, stars = 0 }: PlaygroundProps) {
   const [text, setText] = useState(initial);
   const [debounced, setDebounced] = useState(initial);
   const [copyState, setCopyState] = useState<'idle' | 'done'>('idle');
@@ -371,6 +374,7 @@ export function Playground({ initial, height = 560, fill = false, syncHash = fal
               dangerouslySetInnerHTML={{ __html: svg }}
             />
           ) : null}
+          {syncHash && <PlaygroundStarNudge stars={stars} active={!!svg && !error} />}
           </div>
         </div>
       </div>

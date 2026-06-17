@@ -3,6 +3,7 @@ import { render } from 'schematex';
 import { CopyButton } from '@/components/CopyButton';
 import { HeroShowcase, type HeroSlide } from '@/components/HeroShowcase';
 import { GithubStarButton } from '@/components/GithubStarButton';
+import { REPO_URL } from '@/lib/repo';
 import { LocaleSwitcher } from '@/lib/i18n/LocaleSwitcher';
 import { localizedPath, type SupportedLocale } from '@/lib/i18n/locales';
 import type { Dictionary } from '@/lib/i18n/dictionaries/en';
@@ -141,7 +142,7 @@ export function HomeContent({
     offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
     url: 'https://schematex.js.org',
     downloadUrl: 'https://www.npmjs.com/package/schematex',
-    codeRepository: 'https://github.com/victorzhrn/Schematex',
+    codeRepository: REPO_URL,
     license: 'https://spdx.org/licenses/AGPL-3.0-only.html',
     description:
       `Every diagram a doctor, engineer, or lawyer would actually use. ${DIAGRAM_TYPE_COUNT} industry-standard diagram types from a text DSL — genogram, pedigree, ladder logic, SLD, FBD, SFC, UML use case, PRISMA, fishbone, entity structure. Free, fully open source, made for AI. Pure SVG, zero dependencies.`,
@@ -238,7 +239,7 @@ export function HomeContent({
                 <span>npm i schematex</span>
                 <CopyButton variant="ghost" text="npm install schematex" label={dict.common.copy} />
               </div>
-              <GithubStarButton stars={stars} />
+              <GithubStarButton stars={stars} source="hero" />
               <Link
                 href="/docs"
                 className="inline-flex h-10 items-center px-2 font-mono text-xs text-fd-muted-foreground transition hover:text-fd-foreground"
@@ -542,7 +543,7 @@ export function HomeContent({
           <p className="mt-5 text-lg leading-relaxed text-fd-muted-foreground">
             {dict.finalCta.body(DIAGRAM_TYPE_COUNT)}
           </p>
-          <div className="mt-10 flex flex-wrap justify-center gap-3">
+          <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
             <Link
               href="/playground"
               className="inline-flex items-center gap-1.5 px-6 py-3 text-sm font-medium transition hover:opacity-95"
@@ -557,7 +558,9 @@ export function HomeContent({
             >
               {dict.finalCta.browseGallery}
             </Link>
+            <GithubStarButton stars={stars} source="final_cta" />
           </div>
+          <p className="mt-5 text-sm text-fd-muted-foreground">{dict.finalCta.starNote}</p>
         </div>
       </section>
 
@@ -611,9 +614,9 @@ export function HomeContent({
           <FooterCol
             heading={dict.footer.cols.community.heading}
             links={[
-              { label: dict.footer.cols.community.github, href: 'https://github.com/victorzhrn/Schematex', external: true },
+              { label: dict.footer.cols.community.github, href: REPO_URL, external: true },
               { label: dict.footer.cols.community.npm, href: 'https://www.npmjs.com/package/schematex', external: true },
-              { label: dict.footer.cols.community.contributing, href: 'https://github.com/victorzhrn/Schematex/blob/main/CONTRIBUTING.md', external: true },
+              { label: dict.footer.cols.community.contributing, href: `${REPO_URL}/blob/main/CONTRIBUTING.md`, external: true },
             ]}
           />
         </div>

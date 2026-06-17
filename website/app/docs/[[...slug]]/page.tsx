@@ -3,6 +3,8 @@ import { DocsPage, DocsBody, DocsDescription, DocsTitle } from 'fumadocs-ui/page
 import { notFound } from 'next/navigation';
 import { getMDXComponents } from '@/mdx-components';
 import { getDocOGEntry } from '@/lib/docs-og-registry';
+import { DocsStarCard } from '@/components/DocsStarCard';
+import { getRepoStats } from '@/lib/github-stats';
 
 export default async function Page(props: { params: Promise<{ slug?: string[] }> }) {
   const params = await props.params;
@@ -10,6 +12,7 @@ export default async function Page(props: { params: Promise<{ slug?: string[] }>
   if (!page) notFound();
 
   const MDX = page.data.body;
+  const { stars } = await getRepoStats();
 
   return (
     <DocsPage toc={page.data.toc} full={page.data.full}>
@@ -17,6 +20,7 @@ export default async function Page(props: { params: Promise<{ slug?: string[] }>
       <DocsDescription>{page.data.description}</DocsDescription>
       <DocsBody>
         <MDX components={getMDXComponents()} />
+        <DocsStarCard stars={stars} />
       </DocsBody>
     </DocsPage>
   );

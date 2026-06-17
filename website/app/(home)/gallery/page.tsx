@@ -16,6 +16,7 @@ import { GalleryGrid } from '@/components/GalleryGrid';
 import { GalleryFilterBar } from '@/components/GalleryFilterBar';
 import { GalleryViewTabs, type GalleryView } from '@/components/GalleryViewTabs';
 import { DiagramTypeView } from '@/components/DiagramTypeView';
+import { REPO_URL } from '@/lib/repo';
 
 export const metadata: Metadata = {
   title: 'Gallery — the diagrams doctors, engineers, and lawyers actually use',
@@ -154,7 +155,7 @@ export default async function GalleryPage({
                   Try the playground →
                 </Link>
                 <a
-                  href="https://github.com/victorzhrn/Schematex/issues"
+                  href={`${REPO_URL}/issues`}
                   className="rounded-lg border border-fd-border bg-fd-card px-4 py-2 text-sm font-medium text-fd-foreground transition hover:border-fd-primary"
                 >
                   Request a diagram type

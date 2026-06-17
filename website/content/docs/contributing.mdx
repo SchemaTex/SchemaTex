@@ -18,7 +18,7 @@ Text (DSL) ──► Parser ──► AST ──► Layout ──► LayoutResul
 
 - **Parser** — hand-written recursive descent; no parser generators, no dependencies.
 - **Layout** — pure functions over the AST that produce absolute geometry. Deterministic, no randomness.
-- **Renderer** — string-building SVG via [`src/core/svg.ts`](https://github.com/victorzhrn/Schematex/blob/main/src/core/svg.ts); no DOM, SSR-safe.
+- **Renderer** — string-building SVG via [`src/core/svg.ts`](https://github.com/SchemaTex/SchemaTex/blob/main/src/core/svg.ts); no DOM, SSR-safe.
 
 Small diagrams (e.g. timing) may fuse layout into the renderer. Complex diagrams (genogram, SLD) must keep them separate and tested independently.
 
@@ -27,9 +27,9 @@ Small diagrams (e.g. timing) may fuse layout into the renderer. Complex diagrams
 ## 2. Hard Constraints (non-negotiable)
 
 1. **Zero runtime dependencies.** No D3, no dagre, no parser generators. Hand-write everything.
-2. **Strict TypeScript.** No `any`, no un-commented `as`. Types in [`src/core/types.ts`](https://github.com/victorzhrn/Schematex/blob/main/src/core/types.ts) are the spec.
+2. **Strict TypeScript.** No `any`, no un-commented `as`. Types in [`src/core/types.ts`](https://github.com/SchemaTex/SchemaTex/blob/main/src/core/types.ts) are the spec.
 3. **Semantic SVG.** Every rendered diagram must include `<title>`, `<desc>`, CSS classes for theming, and `data-*` attributes for interactivity. No inline styles.
-4. **Use the SVG builder.** Never concatenate raw SVG strings — use [`src/core/svg.ts`](https://github.com/victorzhrn/Schematex/blob/main/src/core/svg.ts).
+4. **Use the SVG builder.** Never concatenate raw SVG strings — use [`src/core/svg.ts`](https://github.com/SchemaTex/SchemaTex/blob/main/src/core/svg.ts).
 5. **Test-first layout.** Write failing layout tests before writing the layout code.
 6. **Standards-compliant.** Each diagram implements a published domain standard — not our invention. Cite the reference in the standard doc (IEEE, IEC, ISO, McGoldrick, etc.).
 
@@ -115,7 +115,7 @@ Never `'<svg>' + ... + '</svg>'`.
 
 ### Step 6 — Register the plugin
 
-Edit [`src/core/api.ts`](https://github.com/victorzhrn/Schematex/blob/main/src/core/api.ts):
+Edit [`src/core/api.ts`](https://github.com/SchemaTex/SchemaTex/blob/main/src/core/api.ts):
 
 1. Import `{ myType }` from `../diagrams/mytype`.
 2. Add it to the `plugins[]` array.
@@ -135,16 +135,16 @@ All four must pass. If `dts` fails on unused locals, fix them — don't suppress
 
 ### Step 8 — Wire into the website
 
-1. **Gallery tile** — add an entry to [`website/lib/gallery-data.ts`](https://github.com/victorzhrn/Schematex/blob/main/website/lib/gallery-data.ts). The `dsl` field must parse — validate with `node scripts/validate-gallery.mjs`.
-2. **Static SVG** — add an entry to [`scripts/generate-gallery-svgs.mjs`](https://github.com/victorzhrn/Schematex/blob/main/scripts/generate-gallery-svgs.mjs) and run it. The generated SVG ships with the repo and is referenced from the README.
+1. **Gallery tile** — add an entry to [`website/lib/gallery-data.ts`](https://github.com/SchemaTex/SchemaTex/blob/main/website/lib/gallery-data.ts). The `dsl` field must parse — validate with `node scripts/validate-gallery.mjs`.
+2. **Static SVG** — add an entry to [`scripts/generate-gallery-svgs.mjs`](https://github.com/SchemaTex/SchemaTex/blob/main/scripts/generate-gallery-svgs.mjs) and run it. The generated SVG ships with the repo and is referenced from the README.
 3. **Docs page** — create `website/content/docs/{type}.mdx` with a `<Playground initial={…}>` and the body of the standard doc inlined.
 4. **Example page (optional)** — for a real-world case study, add `website/content/examples/{slug}.mdx`.
 5. **README** — add a row to the gallery table with the generated SVG.
 
 ### Step 9 — Update the top-level docs
 
-- [`README.md`](https://github.com/victorzhrn/Schematex/blob/main/README.md) — gallery row.
-- [`CLAUDE.md`](https://github.com/victorzhrn/Schematex/blob/main/CLAUDE.md) — "Completed" list at the bottom.
+- [`README.md`](https://github.com/SchemaTex/SchemaTex/blob/main/README.md) — gallery row.
+- [`CLAUDE.md`](https://github.com/SchemaTex/SchemaTex/blob/main/CLAUDE.md) — "Completed" list at the bottom.
 - [`docs/reference/00-OVERVIEW.md`](/docs) — status table.
 
 ---
@@ -153,7 +153,7 @@ All four must pass. If `dts` fails on unused locals, fix them — don't suppress
 
 - **Forgetting `detect()`** — if two plugins both return `true`, the first one wins. Make your header keyword unique.
 - **Coordinate drift** — layout tests that use relative numbers (`width / 2 + padding`) mask bugs. Assert on concrete expected values.
-- **Inline `style=` attributes** — blocked by the semantic-SVG rule. Use CSS classes and expose them as theme tokens in [`src/core/theme.ts`](https://github.com/victorzhrn/Schematex/blob/main/src/core/theme.ts).
+- **Inline `style=` attributes** — blocked by the semantic-SVG rule. Use CSS classes and expose them as theme tokens in [`src/core/theme.ts`](https://github.com/SchemaTex/SchemaTex/blob/main/src/core/theme.ts).
 - **Runtime deps creeping in** — if you think you need one, open an issue first. The answer is almost always "hand-write a 30-line version."
 - **Gallery DSL stubs that don't parse** — run `node scripts/validate-gallery.mjs` before committing. This script exists precisely because it kept happening.
 
@@ -165,10 +165,10 @@ Good examples to study, by complexity:
 
 | Complexity | Plugin | Study for |
 |-----------|--------|-----------|
-| Minimal | [`timing`](https://github.com/victorzhrn/Schematex/tree/main/src/diagrams/timing) | Parser + renderer only, no separate layout. |
-| Medium | [`ecomap`](https://github.com/victorzhrn/Schematex/tree/main/src/diagrams/ecomap) | Clean AST → layout → renderer split. |
-| Advanced | [`genogram`](https://github.com/victorzhrn/Schematex/tree/main/src/diagrams/genogram) | Generational layout, multi-pass routing, rich symbol set. |
-| Advanced | [`sld`](https://github.com/victorzhrn/Schematex/tree/main/src/diagrams/sld) | Voltage-level banding, bus routing, device clustering. |
+| Minimal | [`timing`](https://github.com/SchemaTex/SchemaTex/tree/main/src/diagrams/timing) | Parser + renderer only, no separate layout. |
+| Medium | [`ecomap`](https://github.com/SchemaTex/SchemaTex/tree/main/src/diagrams/ecomap) | Clean AST → layout → renderer split. |
+| Advanced | [`genogram`](https://github.com/SchemaTex/SchemaTex/tree/main/src/diagrams/genogram) | Generational layout, multi-pass routing, rich symbol set. |
+| Advanced | [`sld`](https://github.com/SchemaTex/SchemaTex/tree/main/src/diagrams/sld) | Voltage-level banding, bus routing, device clustering. |
 
 ---
 

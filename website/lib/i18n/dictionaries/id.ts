@@ -93,6 +93,7 @@ const id: Dictionary = {
     fullDocs: 'Dokumentasi lengkap →',
   },
   finalCta: {
+    starNote: "Gratis & open source — sebuah bintang membantu developer lain menemukannya.",
     heading: 'Mulai dengan satu string.',
     body: (count) =>
       `Buka playground untuk merender salah satu dari ${count} jenis diagram secara langsung — atau telusuri galeri untuk DSL yang bisa Anda salin, tempel, dan adaptasi.`,

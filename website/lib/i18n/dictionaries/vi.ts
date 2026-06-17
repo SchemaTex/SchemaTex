@@ -93,6 +93,7 @@ const vi: Dictionary = {
     fullDocs: 'Tài liệu đầy đủ →',
   },
   finalCta: {
+    starNote: "Miễn phí & mã nguồn mở — một ngôi sao giúp các lập trình viên khác tìm thấy nó.",
     heading: 'Bắt đầu với một chuỗi duy nhất.',
     body: (count) =>
       `Mở playground để render bất kỳ ${count} loại sơ đồ nào trực tiếp — hoặc duyệt thư viện để tìm DSL bạn có thể sao chép, dán và tùy chỉnh.`,

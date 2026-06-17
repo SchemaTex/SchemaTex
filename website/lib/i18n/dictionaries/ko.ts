@@ -93,6 +93,7 @@ const ko: Dictionary = {
     fullDocs: '전체 문서 →',
   },
   finalCta: {
+    starNote: "무료 · 오픈소스 — 스타를 누르면 다른 개발자들이 더 쉽게 찾을 수 있어요.",
     heading: '단 하나의 문자열로 시작하세요.',
     body: (count) =>
       `Playground를 열어 ${count}가지 다이어그램 타입을 실시간으로 렌더링하거나 — 갤러리에서 복사, 붙여넣기, 수정할 수 있는 DSL을 확인해 보세요.`,

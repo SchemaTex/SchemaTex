@@ -2,6 +2,7 @@ import { Playground } from '@/components/Playground';
 import { DiagramIcon } from '@/components/DiagramIcon';
 import { allExamples } from '@/lib/examples-source';
 import { DIAGRAM_TYPE_COUNT } from '@/lib/diagram-stats';
+import { getRepoStats } from '@/lib/github-stats';
 
 const heroDefault = `genogram "The Smiths"
   john [male, 1950]
@@ -52,6 +53,7 @@ export default async function PlaygroundPage({
   const { example } = await searchParams;
   const active = galleryExamples.find((ex) => ex.slug === example);
   const initial = active?.dsl ?? heroDefault;
+  const { stars } = await getRepoStats();
 
   return (
     <div className="mx-auto max-w-6xl px-6 pb-16 pt-12">
@@ -142,7 +144,7 @@ export default async function PlaygroundPage({
       </div>
 
       {/* Editor panel */}
-      <Playground key={example ?? 'default'} initial={initial} height={640} syncHash />
+      <Playground key={example ?? 'default'} initial={initial} height={640} syncHash stars={stars} />
     </div>
   );
 }

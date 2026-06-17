@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { Logo } from '@/components/Logo';
+import { REPO_URL } from '@/lib/repo';
 
 export default function AppLayout({ children }: { children: ReactNode }) {
   return (
@@ -22,7 +23,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
             Docs
           </Link>
           <a
-            href="https://github.com/victorzhrn/Schematex"
+            href={REPO_URL}
             target="_blank"
             rel="noopener noreferrer"
             className="text-fd-muted-foreground hover:text-fd-foreground"
