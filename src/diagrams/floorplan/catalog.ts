@@ -16,6 +16,7 @@
  */
 
 import { circle, el, line, path, polygon, rect, text as textEl } from "../../core/svg";
+import { estimateTextWidth } from "../../core/text-metrics";
 import type { FurnitureType, SymbolDef, SymbolDrawCtx } from "./types";
 
 // Chair footprint (m): seat width × depth, used by all auto-seating.
@@ -41,14 +42,26 @@ function chairAt(px: (m: number) => number, cx: number, cy: number, deg: number)
   return el("g", { transform: `translate(${px(cx)},${px(cy)}) rotate(${rot})` }, [body]);
 }
 
+/** Default / minimum seat-name font size (meters). */
+const SEAT_FS = 0.17;
+const SEAT_FS_MIN = 0.085;
+
 /**
  * Occupant name centered on a seat (§2.5). Upright text regardless of seat
  * angle — reads left-to-right around the table; the symbol is drawn before
  * any item rotation, so names stay horizontal for unrotated tables (the
  * seating-chart norm). Empty/undefined names render nothing.
+ *
+ * The font auto-shrinks so the name fits `slotW` (the neighbour-to-neighbour
+ * seat spacing, meters) — long names on tightly-pitched edge tables (head /
+ * banquet) scale down instead of overlapping the next seat; short names keep
+ * the default size. Floored at `SEAT_FS_MIN` so it never vanishes.
  */
-function seatName(c: SymbolDrawCtx, cx: number, cy: number, name: string | undefined): string {
+function seatName(c: SymbolDrawCtx, cx: number, cy: number, name: string | undefined, slotW: number): string {
   if (!name) return "";
+  const unitW = estimateTextWidth(name, 1); // width at fontSize = 1 m
+  let fs = SEAT_FS;
+  if (unitW > 0 && unitW * fs > slotW) fs = Math.max(SEAT_FS_MIN, slotW / unitW);
   return textEl(
     {
       class: "sx-fp-seat-name",
@@ -56,7 +69,7 @@ function seatName(c: SymbolDrawCtx, cx: number, cy: number, name: string | undef
       y: c.px(cy),
       "text-anchor": "middle",
       "dominant-baseline": "central",
-      "font-size": c.px(0.17),
+      "font-size": c.px(fs),
     },
     name
   );
@@ -69,13 +82,14 @@ function seatName(c: SymbolDrawCtx, cx: number, cy: number, name: string | undef
  */
 function edgeChairs(c: SymbolDrawCtx, top: boolean, bottom: boolean, seats?: string[]): string {
   const n = Math.max(1, Math.round(c.w / 0.65));
+  const slotW = (c.w / n) * 0.96; // seat pitch, minus a hair of breathing room
   const out: string[] = [];
   let s = 0;
   const row = (cy: number, deg: number): void => {
     for (let i = 0; i < n; i++) {
       const cx = ((i + 0.5) / n) * c.w;
       out.push(chairAt(c.px, cx, cy, deg));
-      if (seats) out.push(seatName(c, cx, cy, seats[s++]));
+      if (seats) out.push(seatName(c, cx, cy, seats[s++], slotW));
     }
   };
   if (top) row(-CHAIR_GAP, 0);
@@ -173,13 +187,15 @@ function roundTable(seats: number, diaM: number): SymbolDef {
       const r = half - ring;
       const cx = c.w / 2;
       const cy = c.h / 2;
+      // chord between adjacent seats on the chair ring = the no-overlap slot
+      const slotW = 2 * (r + ring * 0.55) * Math.sin(Math.PI / seats);
       const parts = [circle({ class: "sx-fp-furn", cx: c.px(cx), cy: c.px(cy), r: c.px(r) })];
       for (let i = 0; i < seats; i++) {
         const a = (i / seats) * 2 * Math.PI - Math.PI / 2;
         const px0 = cx + (r + ring * 0.55) * Math.cos(a);
         const py0 = cy + (r + ring * 0.55) * Math.sin(a);
         parts.push(chairAt(c.px, px0, py0, (a * 180) / Math.PI + 90));
-        if (c.seats) parts.push(seatName(c, px0, py0, c.seats[i]));
+        if (c.seats) parts.push(seatName(c, px0, py0, c.seats[i], slotW));
       }
       return parts.join("");
     },

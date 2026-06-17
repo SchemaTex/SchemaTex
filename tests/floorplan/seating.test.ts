@@ -53,6 +53,17 @@ describe("floorplan — per-seat names (§2.5)", () => {
     expect(plain).not.toContain('class="sx-fp-seat-name"');
   });
 
+  it("auto-shrinks the font for a long name so it does not overflow its seat", () => {
+    const fs = (svg: string): number => {
+      const m = /class="sx-fp-seat-name"[^>]*font-size="([\d.]+)"/.exec(svg);
+      return m ? Number(m[1]) : NaN;
+    };
+    const short = renderFloorplan(`${head}furniture banquet-table in hall at 1,1 size 2.4x0.8 seats "Al"`);
+    const long = renderFloorplan(`${head}furniture banquet-table in hall at 1,1 size 2.4x0.8 seats "Maximilian Alexander"`);
+    expect(fs(long)).toBeLessThan(fs(short)); // long name scaled down
+    expect(fs(short)).toBeGreaterThan(0);
+  });
+
   it("a named seating chart renders with zero errors and zero collision warnings", () => {
     const lay = layoutFloorplan(
       parseFloorplan(
