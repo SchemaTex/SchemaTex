@@ -16,9 +16,18 @@ const withPlausibleProxyWrapper = withPlausibleProxy({
   customDomain: 'https://plausible.ideamarketfit.com',
 });
 
+const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
+
 /** @type {import('next').NextConfig} */
 const config = {
   reactStrictMode: true,
+  async rewrites() {
+    if (!GA_ID) return [];
+    return [
+      { source: '/js/gtag.js', destination: `https://www.googletagmanager.com/gtag/js?id=${GA_ID}` },
+      { source: '/g/collect', destination: 'https://www.google-analytics.com/g/collect' },
+    ];
+  },
   transpilePackages: ['schematex'],
   serverExternalPackages: ['@resvg/resvg-js'],
   outputFileTracingIncludes: {

@@ -65,7 +65,7 @@ export function CookieConsentGA() {
       {GA_ID && consent === 'granted' && (
         <>
           <Script
-            src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
+            src="/js/gtag.js"
             strategy="afterInteractive"
           />
           <Script id="google-analytics" strategy="afterInteractive">
@@ -73,7 +73,7 @@ export function CookieConsentGA() {
               window.dataLayer = window.dataLayer || [];
               function gtag(){dataLayer.push(arguments);}
               gtag('js', new Date());
-              gtag('config', '${GA_ID}');
+              gtag('config', '${GA_ID}', { transport_url: location.origin });
             `}
           </Script>
         </>
