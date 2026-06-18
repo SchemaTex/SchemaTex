@@ -3,6 +3,7 @@ import { RootProvider } from 'fumadocs-ui/provider';
 import type { ReactNode } from 'react';
 import type { Metadata } from 'next';
 import { PlausibleAnalytics } from '@/components/plausible-analytics';
+import { CookieConsentGA } from '@/components/CookieConsentGA';
 import { DIAGRAM_TYPE_COUNT } from '@/lib/diagram-stats';
 
 export const metadata: Metadata = {
@@ -62,6 +63,7 @@ export default function Layout({ children }: { children: ReactNode }) {
         >
           {children}
         </RootProvider>
+        <CookieConsentGA />
       </body>
     </html>
   );
