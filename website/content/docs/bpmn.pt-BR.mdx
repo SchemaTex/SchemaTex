@@ -1,0 +1,240 @@
+---
+title: BPMN / Processo de Negócio
+---
+
+## Sobre diagramas BPMN
+
+Um **diagrama BPMN** documenta um processo de negócio — as atividades, decisões, eventos e trocas de mensagens que acontecem entre papéis, departamentos e sistemas. É a notação dominante em BPM corporativo, auditorias ISO-9001 / SOX e ferramentas de process mining. A *única* serialização oficial é BPMN 2.0 XML, que é verbosa e hostil à geração por LLM; o Schematex fornece um DSL textual compacto que produz um subconjunto visual em conformidade.
+
+O Schematex implementa OMG **BPMN 2.0.2 / ISO/IEC 19510:2013** para os elementos que analistas de negócios do mundo real realmente desenham: pools, lanes, eventos (início / intermediário / fim com gatilhos none / message / timer), atividades (tasks com marcadores + subprocessos recolhidos), gateways (XOR / OR / AND / baseado em evento), e fluxos de sequência / condicional / padrão / mensagem.
+
+> **Nota** — O Schematex é uma biblioteca de renderização, não um engine de execução de processos. Não há simulação de token, nenhuma viagem de ida e volta em XML e nenhuma camada DI (Diagram Interchange). A v0.1 cobre o subconjunto visual que a maioria das equipes usa; eventos de contorno, subprocessos expandidos e os tipos de gatilho raros (cancel / compensation / escalation / signal / link) estão adiados para v0.2+.
+
+<Playground initial={`bpmn
+direction: LR
+title: "Loan Application Approval"
+
+pool "Bank" {
+  lane "Clerk" {
+    A: start "Application received"
+    B: task user "Check completeness"
+    G1: gateway xor "Complete?"
+  }
+  lane "Underwriter" {
+    C: task service "Risk score"
+    D: task user "Underwriter review"
+    G2: gateway xor "Decision"
+    E: end "Approved"
+    F: end "Rejected"
+  }
+}
+
+flows
+A --> B
+B --> G1
+G1 --? "yes" --> C
+G1 --* "no" --> F
+C --> D
+D --> G2
+G2 --? "approve" --> E
+G2 --* "reject" --> F`} height={420} />
+
+---
+
+## 1. Seu primeiro diagrama BPMN
+
+Três seções: um header `bpmn` de uma linha, um ou mais blocos `pool { … }`, e um bloco `flows`. Dentro de cada pool você coloca blocos `lane { … }`, e dentro de cada lane você lista objetos de fluxo como `id: tipo "rótulo"`.
+
+<Playground initial={`bpmn
+pool "Service" {
+  lane "Worker" {
+    A: start "Request"
+    B: task service "Process"
+    F: end "Done"
+  }
+}
+
+flows
+A --> B
+B --> F`} />
+
+Todo objeto de fluxo começa com um **id**, dois-pontos, o **tipo**, uma sub-palavra-chave opcional (gatilho / marcador / tipo de gateway) e um **rótulo** entre aspas. Os ids são referenciados pelas linhas de fluxo.
+
+---
+
+## 2. Pools e lanes
+
+Um **pool** representa um participante — uma organização, um departamento ou um sistema. Uma **lane** subdivide um pool em papéis. O rótulo do pool é renderizado rotacionado 90° na borda esquerda de um pool horizontal.
+
+```
+pool "Customer" blackbox          // pool caixa-preta — sem fluxo interno
+pool "Bank" {
+  lane "Clerk" { … }
+  lane "Underwriter" { … }
+}
+```
+
+Um **pool caixa-preta** é um participante cujo processo interno você não modela — tipicamente um cliente ou parceiro externo. Pools caixa-preta devem conter zero objetos de fluxo (o Schematex impõe isso no parser).
+
+O fluxo de sequência (`-->`) **não é permitido** cruzar fronteiras de pool. Use um fluxo de mensagem (`~~>`) para comunicação entre pools.
+
+---
+
+## 3. Eventos
+
+Eventos são círculos. O peso do traço codifica o papel no ciclo de vida:
+
+| Tipo | Traço | DSL |
+|---|---|---|
+| Início | fino (1px) | `start` |
+| Intermediário | anel duplo fino | `intermediate` |
+| Fim | grosso (3px) | `end` |
+
+A palavra-chave opcional **trigger** adiciona um glifo interno. A v0.1 suporta os três gatilhos mais comuns — `none` (sem glifo), `message` (envelope) e `timer` (mostrador de relógio):
+
+```
+A: start                       // gatilho none
+A: start message "Inbound"     // message-catch (envelope não preenchido)
+T: intermediate timer "60 min" // timer (mostrador de relógio)
+F: end "Done"
+```
+
+Glifo preenchido = **throw**, glifo não preenchido = **catch**. O Schematex escolhe o preenchimento correto automaticamente com base no tipo de evento.
+
+---
+
+## 4. Atividades — tasks e subprocessos
+
+Atividades são retângulos arredondados. As duas formas da v0.1 são `task` e um subprocess **recolhido** (o marcador `+` indica detalhe expansível):
+
+```
+B: task "Generic abstract task"
+U: task user "User decides"
+S: task service "API call"
+SE: task send "Send email"
+RE: task receive "Wait for reply"
+M: task manual "Hand-stamp the form"
+SC: task script "Run rule engine"
+
+X: subprocess "Verify identity" collapsed
+```
+
+O **marcador de task** (ícone pequeno no canto superior esquerdo) comunica *quem ou o quê* realiza o trabalho — uma pessoa (`user`), um serviço de software (`service`), uma mensagem de saída (`send`), uma espera de entrada (`receive`), uma etapa manual fora do sistema (`manual`) ou um script automatizado (`script`). Em caso de dúvida, omita o marcador — ele usa abstract como padrão.
+
+---
+
+## 5. Gateways
+
+Gateways são losangos. O glifo interno codifica a semântica de ramificação:
+
+| Tipo | Glifo | Significado | DSL |
+|---|---|---|---|
+| Exclusivo (XOR) | **X** | Tome exatamente um ramo de saída (baseado em dados) | `gateway xor` |
+| Inclusivo (OR) | **O** | Tome um ou mais ramos de saída | `gateway or` |
+| Paralelo (AND) | **+** | Tome todos os ramos de saída concorrentemente | `gateway and` |
+| Baseado em evento | pentágono em círculo | Escolha o ramo cujo evento disparar primeiro | `gateway event` |
+
+O Schematex usa o **glifo X** de Bruce Silver para XOR por padrão — é a convenção que auditorias BPMN reais esperam. A maioria dos diagramas usa XOR (ramificação de dados) e AND (divisão / junção paralela); OR é raro e o baseado em evento aparece principalmente em modelos de condição de corrida.
+
+---
+
+## 6. Conectores
+
+Quatro tipos de conector. Três deles ficam dentro de um pool; apenas o fluxo de mensagem pode cruzar fronteiras de pool.
+
+```
+A --> B                  // fluxo de sequência (padrão)
+G --? "yes" --> C        // sequência condicional (rótulo é uma guarda)
+G --* "default" --> D    // fluxo padrão (um por gateway, no máximo)
+"Customer" ~~> A : "Submit application"   // fluxo de mensagem
+E ~~> "Customer" : "Notify approval"      // fluxo de mensagem de volta
+```
+
+- `-->` é o principal — linha sólida + ponta de seta triangular preenchida.
+- `--? "rótulo" -->` adiciona um losango pequeno não preenchido na fonte. Use quando sair de uma atividade *diretamente* em um resultado guardado. (Em um gateway, o rótulo condicional é suficiente; o glifo de losango não é desenhado.)
+- `--* "rótulo" -->` adiciona uma marca de barra na fonte. **Máximo de um fluxo padrão por gateway** — o Schematex impõe isso.
+- `~~>` é tracejado com uma ponta de seta aberta e um pequeno círculo não preenchido na fonte. A fonte ou o destino pode ser um **nome de pool** entre aspas (para participantes caixa-preta) ou um id de objeto.
+
+---
+
+## 7. Validação
+
+O parser rejeita diagramas que violam a semântica BPMN, com erros numerados por linha:
+
+| Regra | Erro |
+|---|---|
+| Fluxo de sequência cruza pool | `sequence flow 'A --> B' crosses pool boundary — use message flow (~~>)` |
+| Fluxo de mensagem dentro de um pool | `message flow 'A ~~> B' must cross pool boundaries` |
+| Pool caixa-preta tem internos | `black-box pool "X" cannot contain lanes` |
+| Dois fluxos padrão do mesmo gateway | `gateway 'G' has 2 default flows (max 1)` |
+| Id duplicado dentro de um pool | `duplicate id 'A'` |
+| Fonte / destino desconhecido | `unknown source 'X' in sequence flow` |
+
+Essas verificações ocorrem durante o parse, então um LLM recebe um sinal utilizável antes do passo de layout.
+
+---
+
+## 8. Exemplo maior — pedido de pizza com cliente caixa-preta
+
+Um tutorial BPMN canônico: um cliente externo (cujo processo não modelamos) faz um pedido a uma pizzaria dividida em lanes de Atendente / Cozinheiro / Entrega, com um loop de retrabalho na verificação de qualidade do cozinheiro.
+
+<Playground initial={`bpmn
+direction: LR
+title: "Pizza order"
+
+pool "Customer" blackbox
+
+pool "Pizzeria" {
+  lane "Clerk" {
+    A: start message "Order received"
+    B: task user "Take order"
+  }
+  lane "Chef" {
+    C: task manual "Make pizza"
+    G1: gateway xor "Pizza ok?"
+    D: task manual "Rework"
+  }
+  lane "Delivery" {
+    E: task send "Deliver"
+    F: end "Done"
+  }
+}
+
+flows
+A --> B
+B --> C
+C --> G1
+G1 --? "yes" --> E
+G1 --* "no" --> D
+D --> C
+E --> F
+"Customer" ~~> A : "Place order"
+E ~~> "Customer" : "Pizza delivered"`} height={520} />
+
+O loop de retrabalho (`D --> C`) cria uma aresta de retorno que o detector de ciclo do layout detecta via DFS — o longest-path layering então prossegue no DAG forward para que as colunas permaneçam coerentes.
+
+---
+
+## 9. Limitações da v0.1
+
+Esses itens estão adiados para uma versão futura. Se seu diagrama precisar de um, abra uma issue com o caso de uso:
+
+- **Eventos de contorno** — eventos anexados à borda de uma atividade (timer, error, escalation, compensation). Atualmente você precisa modelar o contorno como um evento intermediário flutuante com fluxos manuais.
+- **Subprocessos expandidos** — `subprocess` recolhido funciona; blocos inline expandidos (`subprocess "X" { … }`) estão adiados.
+- **Gatilhos de evento raros** — error / escalation / cancel / compensation / signal / link / conditional / multiple / parallel-multiple. Use `none` ou `message` como placeholder.
+- **Transação / call activities** — renderizadas como tasks normais na v0.1.
+- **Marcadores de loop e multi-instância** — glifos de atividade no centro inferior; adiados.
+- **Artifacts** — data object / data store / group / text annotation. Adiados.
+- **Importação / exportação BPMN 2.0 XML** — fora do escopo. O Schematex calcula o layout a partir do DSL; sem camada DI para viagem de ida e volta.
+
+---
+
+## Exemplos relacionados
+
+Cenários prontos para uso da galeria de exemplos:
+
+<RelatedExamples slugs={[
+  'bpmn-loan-approval',
+  'bpmn-pizza-order',
+  'bpmn-incident-response',
+]} />

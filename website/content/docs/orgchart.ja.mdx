@@ -1,0 +1,368 @@
+---
+title: 組織図
+---
+
+## 組織図について
+
+**組織図**（organizational chart）は、組織の公式な報告関係をマッピングします。誰が誰を管理し、どのチームがどのリーダーの下にあり、未充足のポジションや外部アドバイザーがどこに位置するかを示します。HR チームは人員計画時に参照し、創業者は取締役会前に使用し、運営管理者は組織再編時に配布します。汎用のフローチャートとは異なり、組織図は人物（およびポジション）を主要なエンティティとして扱い、階層はインデントや明示的なエッジでエンコードされます。
+
+Schematex は、空きポジション・マトリックス（点線）報告・アシスタント関係の拡張を含む一般的な組織図の慣習に従っています。組織図に単一の ISO 標準はなく、ここで実装されている慣習は HR の実践とソフトウェア業界の規範から引用しています。学術的な背景については [Fayol (1916)](https://en.wikipedia.org/wiki/Henri_Fayol) と [Wikipedia の組織図記事](https://en.wikipedia.org/wiki/Organizational_chart) を参照してください。
+
+<Playground initial={`orgchart "Acme Corp — Q3 2025"
+ceo: "Jamie Torres" | CEO [role: ceo]
+  cto: "Raj Patel" | CTO [role: cto]
+    lead_fe: "Priya Nair" | Engineering Lead | Frontend [role: engineer]
+      eng1: "Alex Kim" | Senior Engineer [role: engineer]
+      eng2: "Jordan Lee" | Engineer [role: engineer, status: new]
+      open1: open "TBH" | Frontend Engineer [role: engineer]
+    lead_be: "Omar Hassan" | Engineering Lead | Backend [role: engineer]
+      eng3: "Yuki Tanaka" | Staff Engineer [role: engineer]
+      draft1: draft "TBH" | Senior Engineer [role: engineer]
+  cfo: "Maria Santos" | CFO [role: cfo]
+    fin1: "Nour Ahmed" | Finance Manager [role: ops]
+  cpo: "Ellen Wu" | CPO [role: cpo]
+    pm1: "Tyler Brooks" | Product Lead | Core [role: product]
+    pm2: "Suki Ito" | Product Lead | Growth [role: product]
+advisor adv1: "Dr. Alan Ford" | Board Advisor [role: advisor]
+pm1 -.-> lead_fe
+pm2 -.-> lead_be`} height={520} />
+
+---
+
+## 1. はじめての組織図
+
+最小限の実用的な組織図：1つの空きポジションを含む3階層の階層構造。
+
+<Playground initial={`orgchart "Engineering Team"
+cto: "Wei Zhang" | CTO [role: cto]
+  lead: "Sam Obi" | Engineering Lead [role: engineer]
+    eng: "Ana Rossi" | Engineer [role: engineer]
+    open1: open "TBH" | Engineer [role: engineer]`} />
+
+以下の4つのルールで利用の80%をカバーできます。
+
+1. キーワード `orgchart` で始め、オプションで引用符付きタイトルを続けます。
+2. 各人物は**ノード** — `id: "Name" | "Title" | "Department" [props]`。`|` で名前、タイトル、部署のフィールドを区切ります。
+3. **インデントが階層を決定します** — スペース2つ（以上）を増やすごとに、ノードが直上の最も少ないインデントのノードの1段深い子になります。
+4. 空きポジションは `open id:` または `draft id:` で宣言し、外部アドバイザーは `advisor id:` で宣言します。
+
+> コメントは単独行の `#` で始める必要があります（インラインの末尾 `//` も削除されます）。
+
+---
+
+## 2. ノード
+
+ノード行の形式は `[kind] id: fields [props]` です。`id` は `[A-Za-z][A-Za-z0-9_-]*` にマッチする必要があります。
+
+### 2.1 フィールド（パイプ区切り）
+
+`:` の後、オプションの `[props]` ブロックの前の部分が `|` で分割されます。
+
+```
+alice: "Alice Zhang"                                # name only
+alice: "Alice Zhang" | "VP Engineering"             # name + title
+alice: "Alice Zhang" | "VP Eng" | "Platform"        # name + title + department
+alice: "Alice Zhang" | "VP Eng" | "Platform" | "x@co.com"  # + info line
+```
+
+| 位置 | 内容 | 備考 |
+|---|---|---|
+| 1番目 | 名前 | 引用符あり/なし |
+| 2番目 | タイトル/職位 | オプション |
+| 3番目 | 部署 | オプション |
+| 4番目 | 情報行 | オプション。`note:`、`email:`、`phone:`、`location:` プロパティでも設定可能 |
+
+<Playground initial={`orgchart "Field count demo"
+alice: "Alice"
+  bob: "Bob" | "CTO"
+    carol: "Carol" | "Engineer" | "Engineering"
+    dave: "Dave" | "VP Sales" | "Sales" | "dave@co.com"`} height={300} />
+
+### 2.2 ノードの種類
+
+ID の前のオプションの**種類キーワード**でノードの描画方法が変わります。
+
+| キーワード | 種類 | 意味 |
+|---|---|---|
+| *（なし）* | `person` | 通常の人物 |
+| `role`、`open` | `role` | 空き/未充足ポジション |
+| `draft`、`tbh` | `draft` | 計画中のポジション（積極採用中ではない）|
+| `advisor`、`external` | `advisor` | 外部アドバイザー、取締役、コントラクター |
+
+<Playground initial={`orgchart "Node kinds"
+ceo: "Jordan Kim" | CEO [role: ceo]
+  eng_lead: "Priya Nair" | Engineering Lead [role: engineer]
+    open eng_open: "TBH" | Senior Engineer [role: engineer]
+    draft eng_draft: "TBH" | Staff Engineer [role: engineer]
+  advisor adv1: "Dr. Lee" | Board Advisor [role: advisor]`} height={320} />
+
+### 2.3 ノードプロパティ
+
+プロパティはノード行の末尾の `[key: value, …]` に記述します。
+
+| プロパティ | 値 | 効果 |
+|---|---|---|
+| `role:` | 下表参照 | アバターに表示されるロールアイコン |
+| `icon:` | `role:` と同じ | `role:` のエイリアス |
+| `department:` | テキスト | 部署フィールドをオーバーライド |
+| `status:` | `new` \| `leaving` \| `on-leave` | カードのステータスピル |
+| `avatar-color:` | 16進カラー（例：`"#7B1FA2"`）| アバターの背景色 |
+| `gender:` | `male` \| `female` | アバターシルエット（ロールアイコンが設定されていない場合に使用）|
+| `note:` | テキスト | 情報行（最初のものが優先）|
+| `email:` | テキスト | 情報行 |
+| `phone:` | テキスト | 情報行 |
+| `location:` | テキスト | 情報行 |
+| `assistant-of:` | ノード ID | このノードを指定ノードのアシスタントとして描画 |
+| `matrix:` | スペースまたはカンマ区切りのノード ID | それらのノードからこのノードへ点線マトリックスラインを追加 |
+| `reports:` | ノード ID | インデントの代わりに明示的な親を設定 |
+| `open` | *（単独フラグ）* | ノードをオープン扱いにする。`role` 種類キーワードと同等 |
+| `draft` または `tbh` | *（単独フラグ）* | ノードをドラフト扱いにする。`draft` 種類キーワードと同等 |
+| `external` | *（単独フラグ）* | ノードを外部扱いにする。`advisor` 種類キーワードと同等 |
+
+**ロールアイコン** — `role:` の値が表示アイコンに対応します。受け付けるキーワード（大文字・小文字不問）：
+
+| キーワード | アイコン |
+|---|---|
+| `ceo` | CEO |
+| `cto` | CTO |
+| `cfo` | CFO |
+| `coo` | COO |
+| `cmo` | CMO |
+| `cpo` | CPO |
+| `vp` | VP |
+| `engineer`、`engineering` | Engineer |
+| `designer`、`design` | Designer |
+| `sales` | Sales |
+| `hr` | HR |
+| `legal` | Legal |
+| `ops`、`operations` | Ops |
+| `marketing` | Marketing |
+| `product` | Product |
+| `data` | Data |
+| `advisor` | Advisor |
+| `intern` | Intern |
+| `vacant` | Vacant |
+
+<Playground initial={`orgchart "People directory"
+ceo: "Jamie Torres" | CEO [role: ceo, avatar-color: "#1E88E5"]
+  cto: "Raj Patel" | CTO [role: cto]
+    eng1: "Priya Nair" | Staff Engineer [role: engineer, status: new]
+    eng2: "Jordan Lee" | Senior Engineer [role: engineer]
+  cfo: "Maria Santos" | CFO [role: cfo]
+    fin1: "Nour Ahmed" | Finance Manager [role: ops, status: on-leave]
+  advisor adv1: "Dr. Alan Ford" | Board Advisor [role: advisor]
+  draft draft1: "TBH" | General Counsel [role: legal]`} height={380} />
+
+---
+
+## 3. 階層
+
+階層は**インデント**で表現します。最も一般的なパターンです。各ノードはその上でインデントが小さいノードの子になります。タブはスペース2つとして扱われます。
+
+```
+ceo: "CEO"
+  cto: "CTO"           # child of ceo (indent 2)
+    eng: "Engineer"    # child of cto (indent 4)
+  cfo: "CFO"           # child of ceo (indent 2, same level as cto)
+```
+
+または、`reports:` プロパティを使って、インデントに関係なく親を明示的に設定することもできます。
+
+```
+orgchart "Flat file"
+ceo: "CEO"
+cto: "CTO" [reports: ceo]
+eng: "Engineer" [reports: cto]
+```
+
+<Playground initial={`orgchart "Series A Startup"
+ceo: "Lena Brandt" | CEO [role: ceo]
+  cto: "James Osei" | CTO [role: cto]
+    be: "Platform Lead" | Engineering [role: engineer]
+      be1: "Fatima Al-Rashid" | Backend Engineer [role: engineer]
+      be2: "Marco Ricci" | Backend Engineer [role: engineer]
+    fe: "Frontend Lead" | Engineering [role: engineer]
+      fe1: "Yumi Tanaka" | Frontend Engineer [role: engineer, status: new]
+      open_fe: open "TBH" | Frontend Engineer [role: engineer]
+  cpo: "Diana Russo" | CPO [role: cpo]
+    pm1: "Chris Obi" | Product Manager [role: product]
+  cmo: "Kai Nakamura" | CMO [role: cmo]
+    mkt1: draft "TBH" | Growth Marketer [role: marketing]`} height={480} />
+
+---
+
+## 4. エッジ
+
+エッジには2種類あります。ほとんどの報告ラインはインデント階層から自動的に生成されます。明示的に書くことも、マトリックス（点線）ラインを追加することもできます。
+
+| 演算子 | エッジの種類 | 意味 |
+|---|---|---|
+| `from -> to` | `report` | 実線の報告ライン |
+| `from -.-> to` | `matrix` | 点線のマトリックス（間接）報告ライン |
+
+明示的なエッジは、両方のノード ID がすでに宣言されている必要があります。インデントで既に示されている同じ関係は、明示的に `report` エッジを書いても重複しません。
+
+エッジラベルもサポートされています。
+
+```
+pm1 -.-> design [label: "product partnership"]
+```
+
+<Playground initial={`orgchart "Matrix org"
+config: direction = LR
+cpo: "Ellen Wu" | CPO [role: cpo]
+  pm_core: "Core PM" | Product Manager [role: product]
+  pm_growth: "Growth PM" | Product Manager [role: product]
+  design: "Suki Ito" | Design Lead [role: designer]
+  data_lead: "Ben Park" | Data Lead [role: data]
+pm_core -.-> design [label: "design partner"]
+pm_growth -.-> design
+pm_growth -.-> data_lead`} height={320} />
+
+---
+
+## 5. 設定
+
+`config:` 行でレイアウトと方向を調整します。各行を独立した行に記述します。
+
+| 設定キー | 値 | デフォルト | 効果 |
+|---|---|---|---|
+| `direction` | `TD`、`LR` | `TD` | トップダウンまたは左から右への流れ |
+| `layout` | `tree`、`list`、`directory`、`compact` | `tree` | ビジュアルレイアウトモード |
+
+**レイアウトの注意：**
+- `tree` — 分岐コネクターを持つ標準的な階層ツリー。ほとんどの組織図に最適。
+- `list` / `directory` / `compact` — コンパクトなインデント付きディレクトリビュー。ツリーの分岐が扱いにくくなる大人数リストに適しています。
+
+**ツリーレイアウト**（デフォルト）— 分岐コネクターと部署カラーコーディングを持つアバターカード。〜30人以下のチームに最適。
+
+<Playground initial={`orgchart "Acme Engineering — tree"
+cto: "Wei Zhang" | CTO [role: cto]
+  platform: "Platform Lead" | Engineering [role: engineer]
+    p1: "Amara Diallo" | Staff Engineer [role: engineer]
+    p2: "Ben Novak" | Senior Engineer [role: engineer]
+    p3: draft "TBH" | Engineer [role: engineer]
+  growth: "Growth Lead" | Engineering [role: engineer, status: new]
+    g1: "Fatima Al-Rashid" | Senior Engineer [role: engineer]
+    g2: "Marco Ricci" | Engineer [role: engineer]`} height={400} />
+
+**リストレイアウト** — インデントガイド付きのコンパクトなディレクトリ行。ツリーの分岐が扱いにくくなる大チームに最適。
+
+<Playground initial={`orgchart "Engineering Directory — list"
+config: layout = list
+cto: "Wei Zhang" | CTO [role: cto]
+  platform: "Platform Team"
+    p1: "Amara Diallo" | Staff Eng [role: engineer]
+    p2: "Ben Novak" | Senior Eng [role: engineer]
+    p3: draft "TBH" | Engineer [role: engineer]
+  growth: "Growth Team"
+    g1: "Fatima Al-Rashid" | Senior Eng [role: engineer, status: new]
+    g2: "Marco Ricci" | Engineer [role: engineer, status: leaving]`} height={360} />
+
+---
+
+## 6. ラベルとコメント
+
+- **タイトル：** `orgchart "Acme Corp"` — 最初の行のみ。
+- **名前フィールド：** コロンの後の最初のパイプ区切りフィールド。引用符あり（`"Alice Zhang"`）または引用符なし（`Alice`）。
+- **タイトル/部署フィールド：** 2番目と3番目のパイプ区切りフィールド。
+- **情報行：** 4番目のパイプ区切りフィールド、または `note:`、`email:`、`phone:`、`location:` プロパティで設定。最初に見つかったものが優先。
+- **コメント：** 行頭（先頭スペースの後）の `#`。インラインの `//` も削除されます。
+
+---
+
+## 7. 予約語とエスケープ
+
+**行頭の予約語：** `orgchart`（ヘッダー）、`config:`、`role`、`open`、`draft`、`tbh`、`advisor`、`external`。
+
+**予約演算子トークン** — ID 内でこれらのシーケンスを避けてください：`->`、`-.->`.
+
+**ID ルール：** `[A-Za-z][A-Za-z0-9_-]*` にマッチする必要があります。スペースを含む名前は、ID ではなく引用符付き名前フィールドに入れてください。
+
+**スペースを含む props 値**（例：`department: "Platform Eng"`）はダブルクォートで囲む必要があります。
+
+---
+
+## 8. よくある間違い
+
+| 書いた内容 | パーサーの応答 | 修正方法 |
+|---|---|---|
+| `alice: Alice Zhang`（スペースを含む名前を引用符なしで記述）| `Alice` が名前としてパースされ、`Zhang` は失われるか誤読される | 名前を引用符で囲む：`alice: "Alice Zhang"` |
+| `open1 open: "TBH"` | ID の後の `open` は種類キーワードではなく、ID 正規表現に失敗 | 種類キーワードを先頭に：`open open1: "TBH"` |
+| どちらのノードも宣言前の `alice -> bob` | `OrgchartParseError: Edge references unknown node` | ノードを先に宣言し、エッジは末尾に記述する |
+| `config: direction = top-down` | 不明な値は無視され、direction は `TD` のまま | `TD` または `LR` を使用する |
+| `config: layout = compact` | 受け付け — `list` レイアウトにマップされる | 正しい。`compact`、`directory`、`list` はすべて機能する |
+| `alice [matrix: bob charlie]` | `matrix:` のスペース区切り ID — 両方が追加される | カンマでも機能：`matrix: "bob, charlie"` |
+| スペースを含むノード ID：`fe lead` | パーサーは `fe` を ID として取得し、`lead` は失敗 | アンダースコアを使用：`fe_lead` |
+| 重複 ID | `OrgchartParseError: Duplicate node id` | 各ノードに一意の ID が必要 |
+
+---
+
+## 9. 文法（EBNF）
+
+```text
+document       = header (blank | comment | config | edge | node)*
+
+header         = "orgchart" ( WS quoted-string )? NEWLINE
+quoted-string  = '"' any-char-but-quote* '"'
+
+config         = "config" WS ":" WS key WS "=" WS value NEWLINE
+key            = "direction" | "layout"
+
+node           = INDENT* kind? id ":" WS fields ( "[" node-attrs "]" )? NEWLINE
+kind           = "role" | "open" | "draft" | "tbh" | "advisor" | "external" | "person"
+fields         = field ( "|" field )*
+field          = quoted-string | unquoted-text
+node-attrs     = node-attr ("," node-attr)*
+node-attr      = "role:" role-keyword
+               | "icon:" role-keyword
+               | "department:" text
+               | "status:" ( "new" | "leaving" | "on-leave" )
+               | "avatar-color:" quoted-hex
+               | "gender:" ( "male" | "female" )
+               | "note:" text
+               | "email:" text
+               | "phone:" text
+               | "location:" text
+               | "assistant-of:" id
+               | "matrix:" id-list
+               | "reports:" id
+               | bare-flag
+
+bare-flag      = "open" | "draft" | "tbh" | "external"
+
+edge           = id WS edge-op WS id ( "[" edge-attrs "]" )? NEWLINE
+edge-op        = "->" | ".->"  // -.-> for matrix
+edge-attrs     = "label:" quoted-string
+
+id             = [A-Za-z] [A-Za-z0-9_-]*
+comment        = ( "#" | "//" ) any NEWLINE
+```
+
+権威ある情報源：`src/diagrams/orgchart/parser.ts`。このドキュメントとパーサーが乖離している場合、パーサーが優先されます。Issue を立ててください。
+
+---
+
+## 10. ロードマップ
+
+**計画中 — 現在はパース不可。** 生成する DSL でこれらを使用しないでください。パーサーが拒否または無視します。
+
+- **`assistant-of:` の視覚的レンダリング** — プロパティはパースされ AST に格納されますが、レンダラーはまだアシスタントのエルボーコネクターを描画しません。
+- **設定 `coloring`** — 部署ベースのカラーテーマ（`coloring: department`）。
+- **設定 `compact` サイズ段階** — 明示的なカードサイズ制御（`size: small | medium | large`）。
+- **`span:` ノード幅** — ツリーレイアウトで複数の兄弟列にまたがるノード。
+- **写真 / アバター URL** — `avatar: "https://…"` で実際の顔写真を表示。
+- **HRIS フォーマットへのエクスポート** — SVG に加えて JSON/CSV 構造化出力。
+
+早急に必要な場合は GitHub の Issue でトラッキングしてください。
+
+---
+
+## 関連サンプル
+
+サンプルギャラリーから使用可能なシナリオ：
+
+<RelatedExamples slugs={[
+  'orgchart-tech-startup',
+  'orgchart-matrix-reporting',
+]} />

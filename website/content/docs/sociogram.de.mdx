@@ -1,0 +1,421 @@
+---
+title: Soziogramm
+---
+
+## Über Soziogramme
+
+Ein **Soziogramm** bildet das Geflecht aus Wahlen, Ablehnungen und Allianzen *innerhalb* einer Gruppe ab – wer wen mag, wer isoliert ist, wo Cliquen entstehen. Jacob Moreno führte die Methode 1934 als klinisches Werkzeug für die Gruppentherapie ein; seitdem wird sie von Lehrern (zur Erkennung von Ausgrenzung und Mobbing), HR-Teams (informelle Einflussanalyse) und Organisationsforschern eingesetzt. Im Gegensatz zu einer Ecomap, die sich auf das externe Umfeld einer Person konzentriert, behandelt ein Soziogramm jedes Mitglied der Gruppe symmetrisch.
+
+Schematex folgt den **[Moreno (1934) Soziometrie-Konventionen](https://en.wikipedia.org/wiki/Sociometry)** für Knotenrollen und Kantentypen, erweitert durch moderne Notationen der sozialen Netzwerkanalyse für Valenz, Richtung und Gewicht. Diese Seite dokumentiert, was der Parser heute akzeptiert.
+
+<Playground initial={`sociogram "Group Therapy — Week 6"
+  config: layout = circular
+  therapist [label: "Dr. Park", role: star]
+  james [label: "James"]
+  maria [label: "Maria"]
+  lee [label: "Lee"]
+  sarah [label: "Sarah"]
+  tom [label: "Tom"]
+  nina [label: "Nina"]
+  james -> therapist
+  james <-> maria [weight: 3, label: "strong bond"]
+  james -> lee
+  maria -> therapist
+  maria -> sarah
+  lee -> therapist
+  lee -x> nina [label: "tension"]
+  sarah <-> nina
+  sarah -> therapist
+  tom -> therapist
+  tom -.- nina
+  nina -> maria`} height={520} />
+
+---
+
+## 1. Ihr erstes Soziogramm
+
+Das kleinste nützliche Soziogramm: vier Personen, drei verschiedene Beziehungstypen.
+
+<Playground initial={`sociogram "Study group"
+  alice [label: "Alice"]
+  bob [label: "Bob"]
+  carol [label: "Carol"]
+  dave [label: "Dave"]
+  alice <-> bob [label: "lab partners"]
+  carol -> alice
+  dave -x> bob [label: "rivalry"]`} />
+
+Vier Regeln decken 80 % der Anwendungsfälle ab:
+
+1. Beginnen Sie mit dem Schlüsselwort `sociogram`, optional gefolgt von einem zitierten Titel.
+2. Jede Person ist ein **Knoten** – explizit mit `id [label: "…"]` deklariert oder automatisch erstellt, wenn sie zum ersten Mal in einer Kante erscheint.
+3. Verbinden Sie zwei Knoten mit einem **Kanten-Operator** – `<->` (gegenseitig), `->` (einseitig), `-x>` (Ablehnung), `-.-` (neutral). Siehe §3.
+4. Deklarieren Sie optional **Gruppen** und **config**-Zeilen zur Steuerung von Layout und Farbe.
+
+> Kommentare müssen mit `#` auf einer eigenen Zeile beginnen.
+
+---
+
+## 2. Knoten
+
+Eine Knotenzeile lautet `id [attr: value, …]`. Knoten werden auch implizit erstellt, wenn sie zum ersten Mal in einer Kante referenziert werden – aber die explizite Deklaration ermöglicht das Setzen von Labels, Gruppen und Rollen.
+
+**ID-Regeln.** Muss `[a-zA-Z][a-zA-Z0-9_-]*` entsprechen. Die ID wird intern verwendet; das `label:`-Attribut legt den Anzeigenamen fest.
+
+**Knotenattribute:**
+
+| Attribut | Werte | Wirkung |
+|---|---|---|
+| `label: "…"` | Zeichenkette in Anführungszeichen | Anzeigename (Standard: die ID) |
+| `group: id` | Gruppen-ID | Ordnet den Knoten einer Gruppe zur Farbgebung zu |
+| `role: …` | `star`, `isolate`, `bridge`, `neglectee`, `rejected` | Explizite soziometrische Rollenannotation |
+| `size: …` | `small`, `medium`, `large` | Knotengrößen-Override |
+
+<Playground initial={`sociogram "Group roles demo"
+  config: layout = circular
+  dr_park [label: "Dr. Park", role: star]
+  james [label: "James"]
+  nina [label: "Nina", role: neglectee]
+  loner [label: "Alex", role: isolate]
+  bridge [label: "Sam", role: bridge, size: large]
+  james -> dr_park
+  james -> bridge
+  bridge -> dr_park
+  bridge -> nina
+  nina -> james`} />
+
+---
+
+## 3. Kanten
+
+Eine Kantenzeile lautet `leftId OP rightId`, optional gefolgt von `[label: "…", weight: N]`. Beide IDs werden automatisch als Knoten registriert, wenn sie noch nicht deklariert sind.
+
+### 3.1 Richtung und Valenz
+
+<Playground initial={`sociogram "Edge types"
+  config: layout = circular
+  a [label: "A"]
+  b [label: "B"]
+  c [label: "C"]
+  d [label: "D"]
+  e [label: "E"]
+  f [label: "F"]
+  # Positive
+  a -> b [label: "chose B"]
+  b <-> c [label: "mutual"]
+  # Negative
+  c -x> d [label: "rejects D"]
+  d <x-> e [label: "mutual reject"]
+  # Neutral
+  e -.- f [label: "indifferent"]
+  f <.-> a [label: "mutual neutral"]`} />
+
+| Operator | Richtung | Valenz | Bedeutung |
+|---|---|---|---|
+| `A -> B` | einseitig | positiv | A wählt B |
+| `A <- B` | einseitig | positiv | B wählt A (entspricht `B -> A`) |
+| `A <-> B` | gegenseitig | positiv | Beide wählen einander |
+| `A -- B` | ungerichtet | positiv | Beziehung bekannt; Richtung nicht erfasst |
+| `A -x> B` | einseitig | negativ | A lehnt B ab |
+| `A <x- B` | einseitig | negativ | B lehnt A ab |
+| `A <x-> B` | gegenseitig | negativ | Gegenseitige Ablehnung |
+| `A -x- B` | ungerichtet | negativ | Konflikt; Richtung unbekannt |
+| `A -.> B` | einseitig | neutral | A ist B gegenüber gleichgültig |
+| `A <.-> B` | gegenseitig | neutral | Gegenseitige Gleichgültigkeit |
+| `A -.- B` | ungerichtet | neutral | Neutrale Beziehung |
+
+### 3.2 Gewicht / Stärke
+
+Höheres Gewicht = dickere Linie. Verwenden Sie die Kurzschreibweise oder überschreiben Sie explizit mit `[weight: N]`.
+
+| Gewicht | Kurzschreibweise | Richtung | Bedeutung |
+|---|---|---|---|
+| 2 (Standard) | `->` `<->` `--` `-x>` `-.-` | beliebig | Standardverbindung |
+| 3 | `==>` `<==` `<==>` `===` | einseitig / gegenseitig / ungerichtet | Stark |
+| 4 | `===>` `<===` `<===>` | einseitig / gegenseitig | Sehr stark |
+| benutzerdefiniert | `[weight: N]` | — | Beliebige ganze Zahl |
+
+<Playground initial={`sociogram "Relationship strengths"
+  config: layout = circular
+  a [label: "A"]
+  b [label: "B"]
+  c [label: "C"]
+  d [label: "D"]
+  a -> b [label: "weight 2 (default)"]
+  b ==> c [label: "weight 3 (strong)"]
+  c ===> d [label: "weight 4 (very strong)"]
+  d -> a [weight: 1, label: "weight 1 (weak)"]`} />
+
+### 3.3 Kantenbeschriftungen
+
+`A -> B [label: "best friend"]` – das Label erscheint auf der Verbindungslinie.
+
+---
+
+## 4. Gruppen
+
+Ein `group`-Block fasst Knoten zu einer benannten Untergruppe für Farbgebung und Layout-Clustering zusammen.
+
+**Gruppen-Syntax:**
+- `group id [label: "…", color: "#hex"]` – die Gruppen-Kopfzeile.
+- Mitgliedszeilen folgen, jeweils mit mindestens **4 Leerzeichen** eingerückt, ein Knoten pro Zeile.
+- Eine nicht eingerückte Zeile (oder die nächste `group`) schließt die aktuelle Gruppe.
+- Mitglieder können eigene Eigenschaften tragen: `anna [label: "Anna K.", size: large]`.
+
+Knoten können auch inline zugewiesen werden: `alice [group: girls]`.
+
+<Playground initial={`sociogram "Classroom dynamics"
+  config: layout = force-directed
+  group boys [label: "Boys", color: "#42A5F5"]
+    tom [label: "Tom"]
+    jack [label: "Jack"]
+    mike [label: "Mike"]
+    leo [label: "Leo"]
+  group girls [label: "Girls", color: "#EF5350"]
+    anna [label: "Anna"]
+    beth [label: "Beth"]
+    chloe [label: "Chloe"]
+    diana [label: "Diana"]
+  tom <-> jack
+  anna <-> beth
+  anna <-> chloe
+  beth <-> chloe
+  mike -x> leo [label: "conflict"]
+  diana -> anna
+  tom -> anna [label: "cross-group"]`} />
+
+---
+
+## 5. Konfiguration
+
+`config:`-Zeilen steuern Layout und visuelle Kodierung. Jede steht auf einer eigenen Zeile.
+
+| Config-Schlüssel | Werte | Standard | Wirkung |
+|---|---|---|---|
+| `layout` | `circular`, `force-directed`, `concentric` | `circular` | Platzierungsalgorithmus |
+| `sizing` | `uniform`, `in-degree`, `betweenness` | `uniform` | Knotengröße nach Metrik |
+| `coloring` | `default`, `group`, `role` | `default` | Knotenfarbschema |
+| `highlight` | Kommaliste: `stars`, `isolates`, `cliques` | `stars,isolates` | Welche Muster annotiert werden |
+
+**Layout-Hinweise:**
+- `circular` – Knoten gleichmäßig auf einem Ring verteilt. Am besten für kleine Gruppen (≤15).
+- `force-directed` – Federmodell; Cluster entstehen automatisch. Am besten für mittelgroße Gruppen mit deutlichen Untergruppen.
+- `concentric` – innere Ringe halten Knoten mit hohem Eingangsgrad. Am besten zur Darstellung von Kern-Peripherie-Strukturen.
+
+**Circular** – einheitliche Ringplatzierung; jeder Knoten gleich sichtbar. Am besten für kleine, eng verbundene Gruppen.
+
+<Playground initial={`sociogram "Therapy group — circular"
+  config: layout = circular
+  dr_park [label: "Dr. Park", role: star]
+  james [label: "James"]
+  maria [label: "Maria"]
+  lee [label: "Lee"]
+  sarah [label: "Sarah"]
+  tom [label: "Tom"]
+  nina [label: "Nina", role: neglectee]
+  james -> dr_park
+  james <-> maria [weight: 3]
+  james -> lee
+  maria -> dr_park
+  lee -> dr_park
+  lee -x> nina
+  sarah <-> nina
+  sarah -> dr_park
+  tom -> dr_park
+  nina -> maria`} height={460} />
+
+**Force-directed** – Federkräfte ziehen verbundene Knoten zusammen und stoßen nicht verbundene auseinander. Untergruppen clustern sich organisch.
+
+<Playground initial={`sociogram "Classroom dynamics — force-directed"
+  config: layout = force-directed
+  group boys [label: "Boys", color: "#42A5F5"]
+    tom [label: "Tom"]
+    jack [label: "Jack"]
+    mike [label: "Mike"]
+    leo [label: "Leo"]
+  group girls [label: "Girls", color: "#EF5350"]
+    anna [label: "Anna"]
+    beth [label: "Beth"]
+    chloe [label: "Chloe"]
+    diana [label: "Diana"]
+  tom <-> jack
+  anna <-> beth
+  anna <-> chloe
+  beth <-> chloe
+  mike -x> leo [label: "conflict"]
+  diana -> anna
+  tom -> anna [label: "cross-group"]
+  jack -> beth`} height={460} />
+
+**Concentric** – Knoten nach Eingangsgrad sortiert; Knoten mit hoher Zentralität erscheinen auf inneren Ringen, periphere Knoten auf äußeren Ringen.
+
+<Playground initial={`sociogram "Informal influence — concentric"
+  config: layout = concentric
+  config: sizing = in-degree
+  vp [label: "VP Eng"]
+  lead_a [label: "Lead A"]
+  lead_b [label: "Lead B"]
+  alice [label: "Alice"]
+  bob [label: "Bob"]
+  carol [label: "Carol"]
+  dave [label: "Dave"]
+  alice -> lead_a
+  bob -> lead_a
+  carol -> lead_a
+  carol -> lead_b
+  dave -> lead_b
+  lead_a -> vp
+  lead_b -> vp
+  alice <-> bob
+  carol <-> dave`} height={460} />
+
+---
+
+## 6. Soziometrische Rollen
+
+Der Parser speichert Rollenannotationen auf Knoten. Der Renderer nutzt sie zur Anwendung visueller Abzeichen – ein Stern-Marker für `star`, ein gestrichelter Rahmen für `isolate` und so weiter.
+
+| Rolle | Bedeutung |
+|---|---|
+| `star` | Zentrale Figur, von vielen gewählt (hoher Eingangsgrad) |
+| `isolate` | Keine Verbindungen ein oder aus |
+| `neglectee` | Wendet sich an andere, erhält aber keine Wahlen |
+| `rejected` | Erhält Ablehnungskanten von mehreren Mitgliedern |
+| `bridge` | Verbindet zwei ansonsten getrennte Cluster |
+
+<Playground initial={`sociogram "Role annotations"
+  config: layout = circular
+  center [label: "Maria", role: star]
+  bridge_node [label: "Sam", role: bridge]
+  newcomer [label: "New Kid", role: neglectee]
+  loner [label: "Alex", role: isolate]
+  outcast [label: "Pat", role: rejected]
+  center <-> bridge_node
+  bridge_node -> outcast
+  newcomer -> center
+  newcomer -> bridge_node
+  center -x> outcast
+  bridge_node -x> outcast`} />
+
+---
+
+## 7. Beschriftungen & Kommentare
+
+- **Titel:** `sociogram "Study group"` – nur erste Zeile.
+- **Knotenbezeichnung:** `alice [label: "Alice K."]`.
+- **Gruppenbezeichnung:** `group boys [label: "Boys"]`.
+- **Kantenbeschriftung:** `alice -> bob [label: "lab partners"]`.
+- **Kommentare:** `#` am Anfang einer Zeile (nach führenden Leerzeichen).
+
+---
+
+## 8. Reservierte Wörter & Escaping
+
+**Am Zeilenanfang reserviert:** `sociogram` (Header), `group`, `config:`.
+
+**Reservierte Operator-Token** – vermeiden Sie diese Zeichenfolgen innerhalb von IDs: `->`, `<-`, `<->`, `--`, `===`, `==>`, `<==`, `<===>`, `-x>`, `<x-`, `-x-`, `<x->`, `-.>`, `<.->`, `-.-`.
+
+**Zeichenketten mit Leerzeichen** müssen in `label:`- und `color:`-Werten in doppelten Anführungszeichen stehen.
+
+---
+
+## 9. Häufige Fehler
+
+| Geschrieben | Parser-Meldung | Korrektur |
+|---|---|---|
+| `tom; jack; mike` auf einer Gruppenzeile | `tom;` schlägt beim ID-Regex fehl – wird stillschweigend ignoriert | Ein Knoten pro Zeile, jeweils mit ≥4 Leerzeichen eingerückt |
+| Gruppenelemente mit 2 Leerzeichen eingerückt | Nicht als Gruppenelemente behandelt (Parser erfordert ≥4) | 4+ Leerzeichen Einrückung verwenden |
+| `alice <> bob` | Kein passender Operator – nicht als Kante geparst | `<->` für gegenseitig positiv verwenden |
+| `config: layout = grid` | Unbekannter Wert wird stillschweigend ignoriert; Layout bleibt `circular` | `circular`, `force-directed` oder `concentric` verwenden |
+| Knoten mit Leerzeichen in der ID: `dr park` | Parser nimmt `dr` als ID und `park` als abgesprengtes Token | Unterstrich verwenden: `dr_park [label: "Dr. Park"]` |
+
+---
+
+## 10. Grammatik (EBNF)
+
+```text
+document       = header (blank | comment | config | group-block | edge | node)*
+
+header         = "sociogram" ( WS quoted-string )? NEWLINE
+quoted-string  = '"' any-char-but-quote* '"'
+
+config         = "config:" WS key WS "=" WS value NEWLINE
+key            = "layout" | "sizing" | "coloring" | "highlight"
+
+group-block    = "group" WS id ( "[" group-attrs "]" )? NEWLINE
+                   ( INDENT≥4 member-line )*
+member-line    = id ( "[" node-attrs "]" )? NEWLINE
+group-attrs    = group-attr ("," group-attr)*
+group-attr     = "label:" quoted-string | "color:" quoted-string
+
+node           = id ( "[" node-attrs "]" )? NEWLINE
+node-attrs     = node-attr ("," node-attr)*
+node-attr      = "label:" quoted-string
+               | "group:" id
+               | "role:" role
+               | "size:" ("small" | "medium" | "large")
+
+edge           = id WS op WS id ( "[" edge-attrs "]" )? NEWLINE
+edge-attrs     = edge-attr ("," edge-attr)*
+edge-attr      = "label:" quoted-string | "weight:" number
+
+op             = // positive
+                 "<===>" | "===>" | "<==="
+               | "<==>"|"==>"|"<=="
+               | "===" | "<->" | "->" | "<-" | "--"
+               // negative
+               | "<x->" | "-x>" | "<x-" | "-x-"
+               // neutral
+               | "<.->" | "-\.>" | "-.-"
+
+role           = "star" | "isolate" | "bridge" | "neglectee" | "rejected"
+id             = [a-zA-Z] [a-zA-Z0-9_-]*
+comment        = "#" any NEWLINE
+```
+
+Maßgebliche Quelle: `src/diagrams/sociogram/parser.ts`. Falls dies vom Parser abweicht, hat der Parser Vorrang – bitte öffnen Sie ein Issue.
+
+---
+
+## 11. Standardkonformität
+
+Schematex-Soziogramme folgen den **Moreno (1934) Soziometrie**-Konventionen für Knotenrollen (star, isolate, neglectee) und gerichtete Wahlsemantik. Das Kantenkoperat-Set ist mit Valenz (positiv / negativ / neutral) und Gewichtsstufen nach moderner sozialer Netzwerkanalyse-Praxis erweitert (Hanneman & Riddle, 2005).
+
+Was heute implementiert ist:
+
+- ✅ Gerichtete, gegenseitige und ungerichtete Kanten
+- ✅ Positive, negative und neutrale Valenz-Operatoren
+- ✅ Vier Gewichtsstufen (1–4) mit Kurzschreibweise und `[weight: N]`
+- ✅ Gruppen mit Farbe
+- ✅ Knotenrollendeklarationen (`star`, `isolate`, `bridge`, `neglectee`, `rejected`)
+- ✅ Drei Layouts: circular, force-directed, concentric
+- ✅ Drei Größenmodi: uniform, in-degree, betweenness
+- ⏳ Automatisch erkannte Clique-Hervorhebung – schattierte konvexe Hülle (siehe §13)
+- ⏳ Social-Atom-Ansicht (ego-zentriertes Layout)
+
+Referenzen:
+
+- Moreno, J.L. (1934). *Who Shall Survive? Foundations of Sociometry, Group Psychotherapy and Sociodrama.* Beacon House.
+- Hanneman, R.A. & Riddle, M. (2005). *Introduction to Social Network Methods.* UC Riverside.
+
+---
+
+## 12. Verwandte Beispiele
+
+<RelatedExamples slugs={[
+  'sociogram-playground-dynamics',
+  'sociogram-team-influence',
+]} />
+
+---
+
+## 13. Roadmap
+
+**Geplant – noch nicht parsebar.** Verwenden Sie diese heute nicht in generiertem DSL; der Parser wird sie ablehnen oder ignorieren.
+
+- **Automatisch erkannte Clique-Hervorhebung** – schattierte konvexe Hülle um Untergruppen mit gegenseitiger Wahl von ≥3 Mitgliedern.
+- **Automatische Bridge-Erkennung** – `role: bridge` wird aus der Betweenness-Zentralität abgeleitet, ohne explizite Deklaration.
+- **Social-Atom-Ansicht** – ego-zentriertes Layout, bei dem ein nominierter Knoten im Mittelpunkt steht.
+- **Reziprozitätsmatrix-Export** – strukturierte Tabellenausgabe neben dem Diagramm.
+
+Verfolgen Sie die GitHub-Issues, wenn Sie eines davon früher benötigen.

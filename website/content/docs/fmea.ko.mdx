@@ -1,0 +1,119 @@
+---
+title: FMEA 워크시트
+description: 고장 모드 및 영향 분석 — 엔진이 중첩된 항목 → 모드 → 영향/원인 트리에서 RPN과 AIAG-VDA 조치 우선순위를 계산합니다.
+---
+
+## FMEA란
+
+**FMEA**(Failure Mode and Effects Analysis, 고장 모드 및 영향 분석)는 제조업에서 가장 널리 사용되는 사전적 신뢰성 기법입니다. 시스템의 각 부분에 대해 어떻게 고장날 수 있는지(**고장 모드**), 각 고장이 무엇을 야기하는지(**영향**), 왜 발생하는지(**원인**), 어떻게 감지되는지(**관리 방법**)를 나열합니다. 각 행은 1–10 척도의 세 가지 — **심각도(Severity)**, **발생도(Occurrence)**, **검출도(Detection)** — 로 평가되고 우선순위가 매겨집니다. **AIAG-VDA FMEA Handbook (2019)** 및 **IEC 60812** 에 의해 표준화되어 있습니다.
+
+Schematex의 차별점은 단순히 표를 그리는 것에 그치지 않고 엔진이 **우선순위를 계산**한다는 것입니다. 고장 체인을 (항목, 모드, 원인)별 하나의 워크시트 행으로 평탄화하고, **RPN = S × O × D** 를 계산하며, 핵심인 AIAG-VDA **조치 우선순위(Action Priority)**(심각도 우선 밴드)를 산출합니다. 이는 단순 RPN 정렬이 만들어내는 오류를 의도적으로 수정합니다: S10·O2·D3인 에어백 고장은 RPN(60)이 낮아 보이더라도 *High* 입니다.
+
+<Playground initial={`fmea "Brake system DFMEA"
+  type: design
+  rank: ap
+  flag: ap >= High
+  item "Master cylinder" fn "Generate hydraulic pressure"
+    mode "Internal seal leak"
+      effect "Loss of braking" sev: 9
+      cause "Seal material degradation" occ: 3
+        controls prevention: "Material spec", detection: "Bench test" det: 4
+      cause "Contamination" occ: 2
+        controls detection: "Fluid analysis" det: 5`} height={520} />
+
+---
+
+## 1. 첫 번째 워크시트
+
+모든 문서는 `fmea` 로 시작하고, 선택적 제목, 선택적 지시어, 그리고 **중첩된** 고장 체인이 뒤따릅니다. 구조는 들여쓰기 깊이가 아니라 키워드로 결정됩니다:
+
+```
+fmea "Pump DFMEA"
+  item "Impeller" fn "Move fluid"
+    mode "No flow"
+      effect "Process stops" sev: 8
+      cause "Impeller wear" occ: 4
+        controls detection: "Flow sensor" det: 5
+```
+
+- **`item "name" fn "function"`** — 부품과 그 기능. `fn` 은 선택 사항입니다.
+- **`mode "failure mode"`** — 해당 기능이 고장나는 방식. 항목 하나에 여러 개를 가질 수 있습니다.
+- **`effect "consequence" sev: 1..10`** — 고장이 야기하는 결과; 자체 **심각도** 를 가집니다. 모드 하나에 여러 개를 가질 수 있으며(엔진은 해당 모드의 모든 행에 *가장 나쁜* 값을 사용합니다).
+- **`cause "root cause" occ: 1..10`** — 발생 이유; **발생도** 를 가집니다.
+- **`controls prevention: "…", detection: "…" det: 1..10`** — 현재 관리 방법과 그에 따른 **검출도** 평가. 관리 방법이 없으면 검출도는 기본값 **10**(검출 불가)으로 설정됩니다.
+
+세 가지 평가 값은 모두 1–10의 정수이며, 이 범위를 벗어나면 거부됩니다.
+
+---
+
+## 2. 헤더 지시어
+
+```
+type: design          # design (dfmea) | process (pfmea) | msr
+rank: ap              # ap (default) | rpn — 정렬/우선순위 키
+flag: ap >= High      # 또는 `rpn > 100` — 임계값을 초과하는 행 강조
+number: FMEA-2026-014 # 자유 메타데이터: number/team/author/date/revision/dept/process/product
+```
+
+`rank` 는 행의 우선순위 기준을 선택하며, `flag` 는 임계값을 초과하는 행을 강조합니다(`ap >= High` / `ap == High`, 또는 `rpn > 100` / `rpn >= 120`).
+
+---
+
+## 3. 계산된 RPN 및 조치 우선순위
+
+이것이 차별점입니다. 중첩된 AST에서 엔진은:
+
+1. (항목, 모드, 원인)별 하나의 행으로 **평탄화**합니다; 모드의 가장 나쁜 영향 심각도가 해당 모드의 모든 행을 지배합니다.
+2. **RPN = S × O × D** (1–1000).
+3. AIAG-VDA 밴드 구조에 따른 **조치 우선순위** — **심각도가 주요 축**, 발생도가 두 번째, 검출도가 세 번째. S = 9–10(안전/규제)은 *모든* O와 D 값에서 High; 중간 심각도는 발생도가 낮아짐에 따라 High→Medium→Low로 낮아집니다.
+4. 선택한 키로 **정렬**합니다. `ap` 의 경우: High > Medium > Low, 동점일 때는 심각도 다음 RPN 순으로 — RPN만으로는 절대 정렬하지 않으며, 그렇게 하면 AP가 수정하도록 설계된 오류가 다시 발생합니다.
+5. 임계값을 초과하는 행을 **플래그** 표시합니다.
+
+각 행에는 `data-rpn` 과 `data-ap` 가 포함되어 계산된 우선순위를 검사할 수 있습니다.
+
+---
+
+## 4. 사후 조치 후속 작업
+
+시정 조치와 수정된 평가값을 기록하여 사전/사후 델타를 보여줍니다:
+
+```
+fmea "Brake DFMEA"
+  item "MC"
+    mode "Seal leak"
+      effect "Loss of braking" sev: 9
+      cause "Degradation" occ: 3 det: 4
+  action "Seal leak" / "Degradation"
+    do: "Upgrade seal to EPDM" owner: "J. Lee" target: 2026-Q3
+    revised sev: 9 occ: 1 det: 4
+```
+
+`action "Mode" / "Cause"` 는 인용된 모드와 (선택적) 원인으로 체인을 대상으로 지정합니다; `do:` 는 권고 사항이며; `revised sev/occ/det` 은 사후 조치 RPN과 AP를 재계산하여 엔진이 리스크 감소를 보고할 수 있게 합니다.
+
+---
+
+## 5. 자주 발생하는 실수
+
+```
+# WRONG — rating out of the 1..10 band
+effect "Leak" sev: 11
+
+# WRONG — mode before any item
+mode "orphan mode"
+
+# WRONG — effect before any mode
+item "x"
+  effect "e" sev: 3
+```
+
+평가값은 1–10의 정수여야 합니다; 고장 체인은 반드시 `item → mode → effect/cause` 순으로 중첩되어야 합니다; 순서를 벗어난 키워드는 이름과 함께 거부됩니다. 관리 방법이 검출도를 평가하지 않으면 검출도는 자동으로 10으로 기본 설정됩니다 — 검출 관리가 있을 때는 원인 또는 해당 `controls` 에 `det:` 를 명시하십시오.
+
+---
+
+## 6. 표준 준수
+
+고장 체인과 심각도/발생도/검출도 척도는 AIAG-VDA FMEA Handbook (2019) 및 IEC 60812를 따릅니다. 조치 우선순위는 공개된 밴드 *구조*(심각도 우선)를 구현하며, 유료 원문 1000셀 표를 그대로 구현한 것은 아닙니다. RPN은 레거시 워크시트를 위해 `rank: rpn` 으로 여전히 사용 가능합니다.
+
+## 7. 로드맵
+
+연기됨: 정확한 AIAG-VDA AP/MSR 의사결정 표, 다중 영향-원인 가중치, 구조/기능 트리 뷰.

@@ -1,0 +1,365 @@
+---
+title: 논리 게이트 다이어그램
+---
+
+## 논리 게이트 다이어그램이란
+
+**논리 게이트 다이어그램**은 불리언 함수가 하드웨어에서 어떻게 구현되는지 보여줍니다 — 입력이 조합 게이트와 플립플롭을 통해 왼쪽에서 오른쪽으로 흘러 출력을 생성합니다. 디지털 설계 엔지니어는 RTL 의도를 문서화하고, 게이트 수준 넷리스트를 검증하며, 불리언 대수를 교육하는 데 사용합니다. Schematex는 **[IEEE Std 91-1984 / ANSI Y32.14](https://standards.ieee.org/ieee/91/749/)** (독특한 형태의 ANSI 기호, 미국 기본값)와 **[IEC 60617-12](https://webstore.iec.ch/publication/2765)** (균일한 직사각형 기호, 국제 기본값)에서 기호 세트를 가져오며, 다이어그램별로 선택 가능합니다.
+
+DSL은 함수형입니다: 신호를 선언하고 각 게이트의 입력을 이름으로 기술합니다. 레이아웃과 배선은 의존성 그래프에서 자동으로 계산됩니다 — 수동 좌표는 필요하지 않습니다.
+
+<Playground initial={`logic "1-bit Full Adder" style: ansi
+input A, B, Cin
+output Sum, Cout
+# XOR stage — sum bits
+s1 = XOR(A, B)
+Sum = XOR(s1, Cin)
+# AND/OR stage — carry
+c1 = AND(A, B)
+c2 = AND(s1, Cin)
+Cout = OR(c1, c2)`} height={440} />
+
+---
+
+## 1. 첫 번째 논리 게이트 다이어그램
+
+가장 작고 유용한 다이어그램: 입력 둘, 게이트 하나, 출력 하나.
+
+<Playground initial={`logic "NAND check"
+input A, B
+output F
+F = NAND(A, B)`} />
+
+네 가지 규칙으로 전체 사용법의 80%를 커버할 수 있습니다.
+
+1. 키워드 `logic` 으로 시작하며, 선택적으로 따옴표 제목과 `style: ansi` 또는 `style: iec` 가 뒤따릅니다.
+2. `input` 과 `output` 줄로 포트를 선언합니다 — 쉼표로 구분된 신호 이름.
+3. 각 게이트는 `id = GATE_TYPE(input1, input2, …)` 형식입니다. `id` 는 명명된 신호 와이어가 됩니다.
+4. 게이트 `id` 와 일치하는 `output` 이름은 자동으로 연결됩니다; 이름이 다를 때는 `OUTPUT <- gate_id` 를 사용합니다.
+
+> 주석은 자체 줄에서 `#` 또는 `--` 로 시작해야 합니다 (또는 게이트 줄의 마지막 토큰 뒤에).
+
+---
+
+## 2. 게이트 유형
+
+### 2.1 조합 게이트
+
+| DSL 키워드 | 함수 | ANSI 형태 | IEC 기호 |
+|---|---|---|---|
+| `AND` | A · B | D형 몸체 | 직사각형 + `&` |
+| `OR` | A + B | 곡선 몸체 | 직사각형 + `≥1` |
+| `NOT` | Ā | 삼각형 + 버블 | 직사각형 + `1` + 버블 |
+| `NAND` | ¬(A · B) | AND + 버블 | 직사각형 + `&` + 버블 |
+| `NOR` | ¬(A + B) | OR + 버블 | 직사각형 + `≥1` + 버블 |
+| `XOR` | A ⊕ B | OR + 추가 호선 | 직사각형 + `=1` |
+| `XNOR` | ¬(A ⊕ B) | XOR + 버블 | 직사각형 + `=1` + 버블 |
+| `BUF` | A (버퍼) | 삼각형, 버블 없음 | 직사각형 + `1` |
+
+<Playground initial={`logic "Gate gallery" style: ansi
+input A, B, C
+output Y_and, Y_or, Y_xor, Y_nand, Y_not
+Y_and = AND(A, B)
+Y_or = OR(A, B)
+Y_xor = XOR(A, B)
+Y_nand = NAND(A, B)
+Y_not = NOT(C)`} height={420} />
+
+### 2.2 특수 출력 버퍼
+
+| DSL 키워드 | 함수 |
+|---|---|
+| `TRISTATE_BUF` | 3상태 버퍼 — 인에이블이 낮을 때 Z 출력 |
+| `TRISTATE_INV` | 3상태 반전 버퍼 |
+| `OPEN_DRAIN` | 오픈 드레인 / 오픈 컬렉터 출력 (외부 풀업 필요) |
+| `SCHMITT` | 슈미트 트리거 — 몸체 내부에 히스테리시스 기호 |
+
+<Playground initial={`logic "Special buffers" style: ansi
+input A, EN
+output Y_tri, Y_od, Y_sch
+Y_tri = TRISTATE_BUF(A, EN)
+Y_od = OPEN_DRAIN(A)
+Y_sch = SCHMITT(A)`} height={340} />
+
+### 2.3 플립플롭 및 래치
+
+| DSL 키워드 | 유형 | 주요 핀 |
+|---|---|---|
+| `DFF` | D 플립플롭 (엣지 트리거) | D, CLK, Q, Q̄ |
+| `JKFF` | JK 플립플롭 | J, K, CLK, Q, Q̄ |
+| `SRFF` | SR 플립플롭 | S, R, CLK, Q, Q̄ |
+| `TFF` | T (토글) 플립플롭 | T, CLK, Q, Q̄ |
+| `LATCH_SR` | SR 래치 (레벨 감지, 클록 없음) | S, R, Q, Q̄ |
+| `LATCH_D` | D 래치 (인에이블=1일 때 투명) | D, EN, Q, Q̄ |
+
+<Playground initial={`logic "Flip-flop gallery" style: ansi
+input D, J, K, CLK, EN
+output Q_dff, Q_jk, Q_latch
+Q_dff = DFF(D, CLK)
+Q_jk = JKFF(J, K, CLK)
+Q_latch = LATCH_D(D, EN)`} height={420} />
+
+### 2.4 복잡 조합 회로
+
+| DSL 키워드 | 함수 |
+|---|---|
+| `MUX` | 멀티플렉서 |
+| `DEMUX` | 디멀티플렉서 |
+| `DECODER` | 바이너리 디코더 |
+| `ENCODER` | 우선순위 인코더 |
+
+<Playground initial={`logic "Combinational MSI" style: ansi
+input A, B, S
+output Y_mux, Y_dec
+Y_mux = MUX(A, B, S)
+Y_dec = DECODER(A, B)`} height={340} />
+
+### 2.5 순차 복잡 회로
+
+| DSL 키워드 | 함수 |
+|---|---|
+| `COUNTER` | 범용 바이너리 카운터 (`CTR` 레이블, CLK/RESET/Q0–Q3) |
+| `SHIFT_REG` | 범용 시프트 레지스터 (`SRG` 레이블, CLK/SER/Q0–Q7) |
+
+<Playground initial={`logic "Sequential MSI" style: ansi
+input DATA, CLK, RESET
+output Q_cnt, Q_sr
+Q_cnt = COUNTER(CLK, RESET)
+Q_sr = SHIFT_REG(DATA, CLK)`} height={340} />
+
+---
+
+## 3. 입력과 출력
+
+### 3.1 포트 선언
+
+```
+input A, B, Cin          # 세 개의 입력 포트
+output Sum, Cout         # 두 개의 출력 포트
+```
+
+`input` 또는 `output` 목록의 각 이름은 다이어그램 전체에서 사용 가능한 명명된 신호 와이어가 됩니다.
+
+### 3.2 액티브 로우 입력
+
+입력 목록에서 신호 이름 앞에 `~` 를 붙이면 액티브 로우로 표시됩니다. 렌더러는 포트 기호에 버블을 그립니다.
+
+```
+input ~nRESET, CLK, DATA
+```
+
+액티브 로우 표기는 게이트 입력 목록 내에서도 작동합니다:
+
+```
+g1 = AND(~nRESET, CLK)
+```
+
+### 3.3 출력과 게이트 연결
+
+출력 ID가 게이트 ID와 일치하면 연결이 암묵적으로 이루어집니다:
+
+```
+output Sum        # Sum이 게이트 id이기도 함 → 자동 연결
+Sum = XOR(s1, Cin)
+```
+
+이름이 다를 경우 명시적 할당 연산자를 사용합니다:
+
+```
+output F
+q1 = NOR(A, B)
+F <- q1           # F는 q1의 출력에서 가져옴
+```
+
+<Playground initial={`logic "SR latch from NOR gates"
+input S, R
+output Q, Qn
+q_gate = NOR(R, Qn)
+qn_gate = NOR(S, Q)
+Q <- q_gate
+Qn <- qn_gate`} height={300} />
+
+---
+
+## 4. 기호 스타일
+
+헤더 줄의 `style:` 옵션으로 기호 표준을 선택합니다. 다이어그램의 모든 게이트에 적용됩니다.
+
+| 값 | 표준 | 사용 시기 |
+|---|---|---|
+| `ansi` (기본값) | IEEE Std 91 — 독특한 곡선 형태 | 미국 교육, 하드웨어 문서 |
+| `iec` | IEC 60617-12 — 균일한 직사각형 + 기능 레이블 | 국제, 유럽 산업 |
+
+```
+logic "ALU slice" style: iec
+```
+
+<Playground initial={`logic "1-bit Full Adder" style: iec
+input A, B, Cin
+output Sum, Cout
+# XOR stage — sum bits
+s1 = XOR(A, B)
+Sum = XOR(s1, Cin)
+# AND/OR stage — carry
+c1 = AND(A, B)
+c2 = AND(s1, Cin)
+Cout = OR(c1, c2)`} height={440} />
+
+<Playground initial={`logic "Gate gallery — IEC style" style: iec
+input A, B, C
+output Y_and, Y_or, Y_xor, Y_nand, Y_not
+Y_and = AND(A, B)
+Y_or = OR(A, B)
+Y_xor = XOR(A, B)
+Y_nand = NAND(A, B)
+Y_not = NOT(C)`} height={420} />
+
+---
+
+## 5. 모듈 블록
+
+`module` 을 사용하여 게이트를 레이블이 붙은 서브 회로 박스로 그룹화합니다. 모듈 블록은 계층적 설계를 문서화하는 데 유용합니다 — 각 모듈은 멤버 게이트 주위에 이름이 붙은 직사각형으로 렌더링됩니다.
+
+```
+logic "Hierarchical adder"
+input A, B, Cin
+output Sum, Cout
+
+module "Half Adder" {
+  s1 = XOR(A, B)
+  c1 = AND(A, B)
+}
+
+Sum = XOR(s1, Cin)
+Cout = OR(c1, AND(s1, Cin))
+```
+
+모듈 문법 규칙:
+- `module "Label" {` — 모듈을 엽니다 (따옴표 레이블 또는 단순 식별자). `{` 는 반드시 `module` 과 같은 줄에 있어야 합니다.
+- 자체 줄의 `}` 가 가장 최근에 열린 모듈을 닫습니다.
+- 모듈은 중첩될 수 있습니다.
+
+---
+
+## 6. 레이블 및 주석
+
+- **다이어그램 제목:** `logic "Full Adder"` — 첫 번째 줄에만.
+- **게이트 신호 이름:** `id = GATE(…)` 의 `id` 는 게이트 이름이자 출력 와이어 이름입니다.
+- **출력 레이블:** `output Sum` — 출력 포트 레이블은 기본적으로 신호 이름과 일치합니다.
+- **액티브 로우 마커:** 포트 또는 게이트 입력에 `~` 접두사.
+- **주석:** 줄 시작에 `#` 또는 `--`, 또는 줄의 마지막 의미 있는 토큰 뒤.
+
+---
+
+## 7. 예약어 및 이스케이핑
+
+**줄 시작에 예약된 키워드:** `logic` (헤더), `input`, `output`, `module`, `}`.
+
+**예약된 연산자 토큰** — 신호 이름 안에서 피하십시오: `=`, `(`, `)`, `,`, `<-`, `~`.
+
+**신호 이름 규칙:** `[a-zA-Z_][a-zA-Z0-9_]*` 와 일치해야 합니다. 소문자와 대문자 모두 허용됩니다; 게이트 타입 키워드(`AND`, `OR` 등)는 파서에서 대소문자를 구분하지 않습니다.
+
+---
+
+## 8. 자주 발생하는 실수
+
+| 작성한 내용 | 파서의 반응 | 해결 방법 |
+|---|---|---|
+| `f = and(A, B)` (소문자 게이트) | 허용됨 — 게이트 타입은 대소문자 구분 없음 | `AND` 와 `and` 모두 작동 |
+| `output F` 후 `F <- q1` (q1 미선언) | `LogicParseError: Unknown signal "q1"` | 참조 전에 `q1` 을 게이트로 선언 |
+| `input A B C` (공백, 쉼표 없음) | 파서가 `A` 만 가져옴; `B` 와 `C` 는 무시됨 | 쉼표 사용: `input A, B, C` |
+| `F = BUFFER(A)` | `LogicParseError: Unknown gate type: BUFFER` | `BUF` 사용 |
+| `module FullAdder {` (`{` 중괄호 없음) | 모듈 패턴과 일치하지 않음 — 자동으로 건너뜀 | 여는 `{` 는 반드시 `module` 과 같은 줄에 있어야 함 |
+| 헤더의 `style: IEEE` | 알 수 없는 스타일 값 — 자동으로 `ansi` 로 기본 설정 | `style: ansi` 또는 `style: iec` 사용 |
+
+---
+
+## 9. 문법 (EBNF)
+
+```text
+document    = header statement*
+
+header      = "logic" ( WS quoted-string )? ( WS "style:" WS style )? NEWLINE
+style       = "ansi" | "iec"
+quoted-string = '"' any-char-but-quote* '"'
+
+statement   = blank | comment | input-decl | output-decl | gate-def | assign | module-block
+
+comment     = ( "#" | "--" ) any NEWLINE
+
+input-decl  = "input" WS port-list NEWLINE
+output-decl = "output" WS port-list NEWLINE
+port-list   = port-id ( "," WS? port-id )*
+port-id     = "~"? id
+
+gate-def    = id WS "=" WS gate-type "(" input-list ")" NEWLINE
+input-list  = ( "~"? id ) ( "," WS? ( "~"? id ) )*
+
+assign      = id WS "<-" WS id NEWLINE
+
+module-block = module-open ( statement | module-block )* module-close
+module-open  = "module" WS ( quoted-string | id ) WS? "{" NEWLINE
+module-close = "}" NEWLINE
+
+gate-type   = "AND" | "OR" | "NOT" | "NAND" | "NOR" | "XOR" | "XNOR" | "BUF"
+            | "TRISTATE_BUF" | "TRISTATE_INV" | "OPEN_DRAIN" | "SCHMITT"
+            | "DFF" | "JKFF" | "SRFF" | "TFF"
+            | "LATCH_SR" | "LATCH_D"
+            | "MUX" | "DEMUX" | "DECODER" | "ENCODER"
+            | "COUNTER" | "SHIFT_REG"
+            // all case-insensitive
+
+id          = [a-zA-Z_] [a-zA-Z0-9_]*
+```
+
+권위 있는 소스: `src/diagrams/logic/parser.ts`. 이 문서가 파서와 다를 경우 파서가 우선합니다 — 이슈를 열어주십시오.
+
+---
+
+## 10. 표준 준수
+
+Schematex 논리 게이트 다이어그램은 **IEEE Std 91-1984 / ANSI Y32.14** (독특한 형태 기호)와 **IEC 60617-12** (기능 한정자가 있는 직사각형 기호)를 따릅니다.
+
+현재 구현된 내용:
+
+- ✅ 8가지 조합 게이트 모두: AND, OR, NOT, NAND, NOR, XOR, XNOR, BUF
+- ✅ 특수 출력 버퍼: TRISTATE_BUF, TRISTATE_INV, OPEN_DRAIN, SCHMITT
+- ✅ 네 가지 엣지 트리거 플립플롭: DFF, JKFF, SRFF, TFF
+- ✅ 두 가지 래치: LATCH_SR, LATCH_D
+- ✅ 조합 MSI: MUX, DEMUX, DECODER, ENCODER
+- ✅ 순차 MSI: COUNTER, SHIFT_REG
+- ✅ 입력과 포트에서 액티브 로우(`~`) 표기
+- ✅ 다이어그램별로 선택 가능한 ANSI 및 IEC 기호 스타일
+- ✅ 모듈 그룹화 블록
+- ✅ 자동 DAG 레이아웃 (위상 정렬, 왼쪽에서 오른쪽 신호 흐름)
+- ⏳ 명시적 팬아웃 와이어 라우팅 (접합점 점이 있는 공유 넷)
+- ⏳ 멀티비트 버스 표기 (`/N` 슬래시 주석)
+- ⏳ 플립플롭의 액티브 로우 클록 입력
+
+참고 자료:
+
+- IEEE Std 91-1984 / ANSI Y32.14: *IEEE Standard Graphic Symbols for Logic Functions*
+- IEEE Std 91a-1991: Supplement to IEEE Std 91
+- IEC 60617-12: *Graphical symbols for diagrams — binary logic elements*
+
+---
+
+## 11. 관련 예제
+
+<RelatedExamples slugs={[
+  'logic-full-adder',
+]} />
+
+---
+
+## 12. 로드맵
+
+**계획됨 — 아직 파싱 불가.** 현재 생성된 DSL에 이를 사용하지 마십시오; 파서가 거부하거나 무시합니다.
+
+- **명시적 팬아웃 / 접합점** — 여러 게이트 입력이 공유하는 명명된 와이어, 분기점에 접합점 점으로 렌더링.
+- **멀티비트 버스 표기** — 와이어의 N비트 신호 그룹을 나타내는 `bus N` 주석.
+- **액티브 로우 클록** — 플립플롭 입력 목록의 `~CLK` 가 클록 삼각형에 버블을 렌더링.
+- **피드백 아크** — 게이트 출력에서 이전 게이트 입력으로 돌아가는 명시적 와이어, 주 신호 경로 위로 라우팅.
+- **파라미터화된 게이트 팬인** — `AND(A, B, C, D)` 가 4입력 AND 게이트를 직접 렌더링.
+
+더 빨리 필요한 기능이 있으면 GitHub 이슈에서 추적하십시오.

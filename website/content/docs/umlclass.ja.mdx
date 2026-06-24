@@ -1,0 +1,192 @@
+---
+title: UML クラス図
+---
+
+## クラス図とは
+
+**クラス図**はオブジェクト指向設計の根幹です：システム内の*型*——クラス・インターフェース・列挙型——その属性と操作、そしてそれらの間の構造的な関係（継承・コンポジション・集約・依存）を示します。**[UML](https://www.omg.org/spec/UML/2.5.1/) 2.5.1 §9–§11** で定義されており、ソフトウェア文書化で最もよく使われる UML 図です。
+
+Schematex は UML 2.5.1 ビジュアルサブセットを単一キーワード `umlclass` と LLM 生成向けに設計されたテキスト DSL で実装しています——PlantUML フレーバーで、1行での移行のために Mermaid `classDiagram` のグリフエイリアスも受け付けます。標準に忠実な装飾（中空の三角形はより一般的な分類子を指す；塗りつぶされたダイアモンドはコンポジット端をマーク）、**一般化駆動の階層化レイアウト**（インターフェースは上に浮かび、リーフクラスは下に沈む）、依存関係ゼロで埋め込み可能な SVG。**[erd](/docs/erd)**（型ではなく*データ*行をモデル化）や**[c4](/docs/flowchart)**（コードレベルの型ではなくアーキテクチャ）とは異なります。
+
+<Playground initial={`umlclass
+title: "Shapes"
+«interface» Shape {
+  + area() : double
+}
+abstract class AbstractShape {
+  # name : String
+  + area() : double {abstract}
+}
+class Circle {
+  + radius : double
+  + area() : double
+}
+class Square {
+  + side : double
+  + area() : double
+}
+Shape         <|.. AbstractShape
+AbstractShape <|-- Circle
+AbstractShape <|-- Square`} height={560} />
+
+---
+
+## 1. 最初の図
+
+すべてのドキュメントは `umlclass` キーワード（Mermaid の `classDiagram` ヘッダーも受け付けられます）で始まり、続いて宣言と関係を記述します：
+
+```
+umlclass
+class Account {
+  + id : String
+  - balance : Money
+  + deposit(amount : Money) : void
+}
+class Customer {
+  + name : String
+}
+Customer "1" o-- "*" Account : owns
+```
+
+`class X { … }` ブロックは、名前コンパートメント・属性コンパートメント・操作コンパートメントを持つ分類子を宣言します。メンバーは中括弧内の各行に記述し、単一行でボディを記述することもできます（`class Account { + id : String + deposit() }`）。ヘッダーには以下が指定できます：
+
+- `title: "…"` — 図の上部に描かれる見出し。
+- `direction: tb | bt | lr | rl` — ランク方向、デフォルトは `tb`（親が上）。
+- `theme: …` — テーマのオーバーライド。
+
+---
+
+## 2. 分類子
+
+```
+class Order
+«interface» Repository
+«enumeration» Status
+abstract class Shape
+datatype Money
+primitive int
+```
+
+5つの分類子の種類は `class`、`interface`、`enum`（エイリアス `enumeration`）、`datatype`、`primitive` です。`«stereotype»`（または ASCII `<<stereotype>>`）は名前の上にレンダリングされます；`abstract class`（または `{abstract}` アノテーション）は名前をイタリックでレンダリングします。参照 id とは異なる表示名を付けるには `as` を使います：`class "Order Service" as OrderSvc`。
+
+---
+
+## 3. メンバー——属性と操作
+
+```
+class Account {
+  + id : String
+  - balance : Money = 0
+  / available : Money
+  # owner : Customer
+  ~ region : String
+  + count : int {static}
+  + deposit(amount : Money) : void
+  + transfer(to : Account, amount : Money) : boolean {query}
+}
+```
+
+- **可視性**グリフ：`+` パブリック、`-` プライベート、`#` プロテクテッド、`~` パッケージ。
+- `: Type` で属性の型または操作の戻り型を指定；`= value` でデフォルト値；`[0..*]` で多重度；`/` で派生属性。
+- `{…}` アノテーション：`{static}`（アンダーラインでレンダリング）、`{abstract}`（イタリック操作）、`{readOnly}`、`{query}`、`{ordered}` など。
+- `name : Type`、`name: Type`、Java 順の `Type name` はすべて受け付けられ、`name : Type` に正規化されます。
+
+**列挙型リテラル**は `enum` ボディ内の裸の名前です：
+
+```
+«enumeration» Status {
+  ACTIVE
+  SUSPENDED
+  CLOSED
+}
+```
+
+---
+
+## 4. 関係
+
+```
+Vehicle <|-- Car            汎化（中空三角形 → 親）
+Shape   <|.. Circle         実現（破線 + 中空三角形 → インターフェース）
+Order   *-- LineItem        コンポジション（全体側に塗りつぶされたダイアモンド）
+Customer o-- Address        集約（全体側に中空ダイアモンド）
+Service --> Repository      有向関連（開いた矢印 → ターゲット）
+Service ..> Logger          依存（破線 + 開いた矢印 → サプライヤー）
+A -- B                      単純な関連（矢印頭なし）
+```
+
+逆の形式も受け付けられ正規化されます（`Car --|> Vehicle` は `Vehicle <|-- Car` と同等）。コネクターの周囲のホワイトスペースはオプションです。
+
+2つ以上の子が汎化 / 実現を通して1つの親を共有する場合、ヘッドは**ツリーマージ**されます：1つのトランク、1つの共有三角形、子ごとのレッグ。
+
+---
+
+## 5. ラベルと多重度
+
+```
+Customer "1" o-- "0..*" Order : places
+```
+
+末尾の `: label` で関連に名前を付けます（行の中点に描画）。引用符付きの端は多重度またはロール名です：`"1"`、`"0..1"`、`"*"`、`"1..*"`。ソース端はコネクターの左側、ターゲット端は右側です（逆形式の正規化後）。
+
+---
+
+## 6. ネームスペース / パッケージ
+
+分類子をラベル付きの格納フレームにグループ化します：
+
+```
+umlclass
+namespace Platform {
+  namespace Auth {
+    class UserService {
+      + login()
+    }
+  }
+  namespace Data {
+    class Repository {
+      + find()
+    }
+  }
+}
+class Gateway {
+  + route()
+}
+Gateway --> UserService : delegates
+Gateway --> Repository  : delegates
+```
+
+- ブロックは構文的に**ネスト**します。ドット表記は親を自動作成します：`namespace Company.Engineering.Backend { … }` は `Company` と `Company.Engineering` も作成します。
+- 明示的なラベル：`namespace plat["Platform Layer"] { … }`。
+- 各パッケージはフレーム = そのメンバー（およびネストされたサブフレーム）の和 + パディング + 上部ラベルとしてレンダリングされます。ネームスペースボディは改行を使う必要があります（1行1宣言）。
+
+---
+
+## 7. Mermaid 互換形式
+
+Mermaid の `classDiagram` からの1行移行のために：
+
+```
+classDiagram
+class Repository~T~ {
+  + findAll() List~T~
+  + cache : Map~String,List~int~~
+  + count$
+  + flush()*
+}
+Repository : <<service>>
+Repository : + save(e : T) T
+```
+
+- **チルダジェネリクス** `List~T~` → `List<T>`（ネストをサポート：`Map~String,List~int~~` → `Map<String,List<int>>`）；クラス名でも使用可（`class Box~T~`）。
+- **単一行メンバー**：`ClassName : +member` でメンバーを追加；`ClassName : <<interface>>` で種類 / ステレオタイプを設定。
+- **メンバー分類子**：末尾の `*` = abstract（イタリック）、末尾の `$` = static（アンダーライン）。
+- **スペース付き戻り型**：`getId() String` はコロン不要。
+
+先頭の単独の `~` は依然としてパッケージ可視性グリフです；チルダジェネリクスは型内のバランスの取れた `~…~` ペアのみを変換するため、2つが衝突することはありません。
+
+---
+
+## 8. テーマとアクセシビリティ
+
+すべてのストロークとフィルはテーマトークンから来ます（インラインスタイルなし）；CSS クラスには `sx-umlclass-*` のプレフィックスが付きます。可視性はテキストグリフ（`+ - # ~`）としてレンダリングされ、色付きアイコンは使用しません——標準に忠実でモノクロ対応。すべての図は `<title>`/`<desc>` と `data-*` 属性（`data-id`、`data-kind`、関係には `data-from`/`data-to`/`data-kind`、フレームには `data-package-id`）を持ち、インタラクティビティに対応しています。

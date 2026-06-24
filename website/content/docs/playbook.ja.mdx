@@ -1,0 +1,185 @@
+---
+title: スポーツプレイブック
+description: Schematex のスポーツプレイブックエンジンを使って、アメリカンフットボール・バスケットボール・サッカーのプレー図をテキスト DSL から生成する方法を解説します。
+---
+
+## スポーツプレイブックについて
+
+**スポーツプレイブック**は、コーチが 1 つのプレー・セット・チームフォーメーションを図示したもので、選手をドット、動きをラインで表し、すべてのコーチが一目で読み取れる記法で描かれます。Schematex は、3 大チームスポーツのプレーをテキストから生成します：**アメリカンフットボール**（X&O プレー図）、**バスケットボール**（ハーフコートセット）、**サッカー / アソシエーションフットボール**（チームフォーメーションと動きのパターン）。各スポーツは、それぞれのコーチング標準の記法で、正確なスケールのフィールド・コート・ピッチ上に描かれます。
+
+スポーツとフォーメーションを指定すれば、エンジンが選手を配置します。動詞（`route`、`pass`、`cut`、`dribble`、`run`、`screen`、`shot`）を追加すると、エンジンがそのスポーツのコーチが実際に使うラインスタイルで描画します。画像生成と異なり、出力は*編集可能*です。4 人目のレシーバーの追加やスクリーンの移動も 1 行の変更で済みます。
+
+<Playground initial={`playbook "Four Verticals" sport football
+field down 2 distance 7 los 40
+formation spread
+defense cover-2
+route X go
+route H seam
+route Y seam
+route Z go
+route RB flat right`} height={460} />
+
+---
+
+## 1. はじめてのプレー
+
+すべての図は、**スポーツ**を指定するヘッダーで始まり、次に**フォーメーション**（選手を配置する）、そして**アサインメント**を続けます。
+
+<Playground initial={`playbook "Give & Go" sport basketball
+set 5-out
+pass 1 2
+cut 1 rim
+pass 2 1`} height={420} />
+
+`pass 1 2` は選手 1 から選手 2 へのパスを描き、`cut 1 rim` は選手 1 をリムへ走らせます。バスケットボールではパスを**破線**、カットを**実線**で描きます。これはすべてのコーチングホワイトボードで使われる表記法です。
+
+---
+
+## 2. 3 つのスポーツ
+
+ヘッダーでスポーツを選択します（`sport football|basketball|soccer`）。各スポーツはそれぞれの単位と標準的なコーチング視点を使用します。
+
+| スポーツ | 単位 | 視点 | フィールド |
+|---|---|---|---|
+| `football` | ヤード | オフェンスが下、攻撃方向が**上**；ダウンフィールド = 上 | ヤードライン・ハッシュマーク・エンドゾーン付き緑フィールド |
+| `basketball` | フィート | NBA **ハーフコート**；ベースライン＋フープが上 | ライトメープルのハードウッド |
+| `soccer` | メートル | **105 × 68 m** フルピッチ（右方向へ攻撃）；または `view half` | IFAB マーキング付き緑ピッチ |
+
+---
+
+## 3. 選手とフォーメーション
+
+選手を最速で配置するには**フォーメーション**（フットボール / サッカー）または**セット**（バスケットボール）を使用します。
+
+- **フットボール** — `formation i-form | shotgun | singleback | pistol | spread | trips | empty | goal-line | wishbone`、オプションで `left`/`right` ストレングス。レシーバーは `X Z H Y`（Y = タイトエンド）、バックスは `QB RB FB`、ラインは `LT LG C RG RT`。
+- **バスケットボール** — `set horns | 1-4-high | 1-4-low | box | spread-pnr | 4-out | 5-out`。選手は `1`〜`5` で番号付け。
+- **サッカー** — `formation 4-3-3 | 4-4-2 | 4-2-3-1 | 4-5-1 | 4-4-1-1 | 3-5-2 | 3-4-3`。選手は `1`（GK）〜`11` で番号付け。
+
+セットピースやフリーフォーム図では、選手を個別に配置してハーフにトリミングできます。
+
+<Playground initial={`playbook "Overlap & Cross" sport soccer
+view half
+player 7 o at 75,12 label 7
+player 2 o at 60,15 label 2
+player 9 o at 88,30 label 9
+player 11 o at 85,52 label 11
+player 10 o at 80,38 label 10
+dribble 7 to 82,20
+run 2 to 90,8
+pass 7 to 90,8
+pass 2 to 102,34
+run 9 to 101,31
+run 11 to 101,40`} height={420} />
+
+---
+
+## 4. 動詞とラインスタイル
+
+同じラインスタイルでもスポーツによって意味が異なります。Schematex は各スポーツ固有の表記法を描画し、凡例も常に一致します。
+
+| 動詞 | フットボール | バスケットボール | サッカー |
+|---|---|---|---|
+| `pass` | 破線（スロー） | **破線** | **実線** |
+| `run` / `cut` | 実線 | **実線**（カット） | **破線**（ラン） |
+| `dribble` | — | 波線 | 波線 |
+| `screen` / `block` | T バー ⊥ | T バー ⊥（スクリーン） | T バー ⊥ |
+| `shot` | — | 実線 | 二重線 |
+
+**反転に注意：** バスケットボールではパスが*破線*でカットが*実線*；サッカーではパスが*実線*でランが*破線*。これが 2 つのコーチングコミュニティの実際の図の描き方であり、Schematex はそれぞれを尊重します。
+
+移動先のターゲットは**選手 ID**、**ランドマーク**名、または明示的な**座標**（`to x,y`）を指定できます。
+
+---
+
+## 5. フットボール：ルート、ラン、ディフェンス
+
+パスルートは**ルートツリー**を使用します：`go fly streak slant flat hitch out in dig curl comeback corner post wheel cross drag seam`。ランのコンセプト：`dive iso power counter sweep toss draw trap`。ブロッキングには `block`、`pull`、`handoff` を使います。`goal N` を設定してエンドゾーンとゴールポストを描きます。
+
+<Playground initial={`playbook "Red Zone — Play-Action Fade" sport football
+field down 1 distance 5 los 5 goal 5 hash nfl
+formation i-form right
+defense cover-1
+handoff QB RB
+route Z corner 4
+route X slant
+route Y out 3
+run RB dive right`} height={460} />
+
+`defense cover-0/1/2/3/4/6` でカバレッジシェルを描き；`defense 4-3 | 3-4 | nickel | dime` でフロントを設定します。`hash nfl|college|none` でハッシュマークを制御します。
+
+---
+
+## 6. バスケットボール：セット、ランドマーク、スクリーン
+
+カットとパスは**名前付きランドマーク**をターゲットにします。`rim elbow wing corner short-corner block slot top high-post dunker`（左右を区別するには `l`/`r` プレフィックスを付ける）。`screen A B` は選手 B のためのボールスクリーン（T バー）を描き；`dribble` は波線です。
+
+<Playground initial={`playbook "Spread Pick & Roll" sport basketball
+set spread-pnr
+screen 5 1
+dribble 1 to 11,17
+cut 5 rim
+pass 1 2`} height={440} />
+
+`defense man` は各ディフェンダーをマンマークに割り当て；`defense zone-2-3 | zone-3-2 | zone-1-3-1` でゾーンフロントを描きます。
+
+---
+
+## 7. サッカー：フォーメーション、ラン、ビルドアップ
+
+フォーメーションだけでチームフォーメーションを描けます。`pass`（実線）、`run`（破線）、`dribble`（波線）を追加してプレーのフェーズを表現します。
+
+<Playground initial={`playbook "Build-Up From the Back" sport soccer
+formation 4-3-3
+pass 1 4
+pass 4 2
+run 2 to 40,10
+pass 4 6
+run 6 to 62,24`} height={440} />
+
+ランドマークには `box top-box d penalty-spot near-post far-post six-yard center` が含まれます。`defense low-block | mid-block | high-press` で相手のフォーメーションをオーバーレイします。サッカーは昼光専用レンダリングのため、`theme: dark` はデフォルトピッチにフォールバックします。
+
+---
+
+## 8. バリデーション
+
+エンジンはモデルが実際に犯しやすいミスを検出して、有効なオプションをリスト表示します。
+
+- 未知の `sport`、`formation` / `set`、`defense`、または名前付きルート；
+- 未宣言の選手 ID を参照する移動；
+- 不正な座標や `to` ターゲットの欠落。
+
+軽微な問題（例：長さゼロの移動）はエラーではなく警告としてレンダリングされます。
+
+---
+
+## 9. 文法（EBNF）
+
+```text
+playbook   = "playbook" string "sport" sport NL { stmt NL } ;
+sport      = "football" | "basketball" | "soccer" ;
+stmt       = field | formation | defense | player | move | zone | "view" view ;
+field      = "field" { "down" num | "distance" num | "los" num
+                     | "goal" num | "hash" hash | "view" view } ;
+formation  = ( "formation" | "set" ) name [ "left" | "right" ] ;
+defense    = "defense" scheme ;
+player     = "player" id pos "at" coord "label" text ;
+move       = route | run | pass | cut | dribble | screen
+           | shot | motion | handoff | pull | block ;
+route      = "route" id namedRoute [ num ] [ "left" | "right" ] ;
+run        = "run" id ( concept [ "left" | "right" ] | "to" coord ) ;
+pass       = "pass" id ( id | landmark | "to" coord ) ;
+cut        = "cut" id ( landmark | "to" coord ) ;
+dribble    = "dribble" id "to" coord ;
+screen     = "screen" id id ;
+shot       = "shot" id [ "to" coord ] ;
+zone       = "zone" coord coord string ;
+coord      = num "," num ;
+view       = "full" | "half" ;
+hash       = "nfl" | "college" | "none" ;
+```
+
+---
+
+## 関連サンプル
+
+各スポーツごとに 5 つの標準的なプレーがサンプルとして用意されています。フットボール：Four Verticals、Mesh、Smash、Power O、レッドゾーンフェード；バスケットボール：Pick & Roll、Horns、Give & Go、Floppy、バックドアカット；サッカー：4-3-3 フォーメーション、Build-Up、オーバーラップ、ハイプレス、カウンターアタック。

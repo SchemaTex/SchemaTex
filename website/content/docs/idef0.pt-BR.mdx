@@ -1,0 +1,111 @@
+---
+title: Modelo Funcional IDEF0
+description: Modelos de atividade de análise estruturada — caixas de função conectadas por setas ICOM (Input/Control/Output/Mechanism), corretos por construção.
+---
+
+## Sobre IDEF0
+
+**IDEF0** (Integration Definition for Function Modeling) é o padrão federal dos EUA para **decomposição funcional** — modelagem do *que* um sistema faz. Cada atividade é uma caixa; setas se conectam em quatro lados fixos por papel: **I**nput (esquerda), **C**ontrol (topo), **O**utput (direita), **M**echanism (baixo) — a convenção **ICOM**. Padronizado como **[FIPS PUB 183](https://www.nist.gov/publications/integration-definition-function-modeling-idef0)** (1993).
+
+O diferencial do Schematex é que o modelo é **correto por construção**. O papel da seta *é* a borda da caixa à qual ela se conecta, portanto o engine impõe o posicionamento ICOM, resolve cada referência, atribui números de decomposição, codifica setas de limite (I1/C1/O1/M1…) e aplica a diretriz FIPS de 3 a 6 caixas — rejeitando um modelo que viola o padrão em vez de permitir que você desenhe uma seta no lado errado.
+
+<Playground initial={`idef0 "Manufacture product"
+node A0
+function A1 "Plan production"
+function A2 "Make parts"
+function A3 "Assemble product"
+input     A1 "Sales orders"
+control   A1 "Production schedule"
+A1 -> A2 "Work plan"
+input     A2 "Raw material"
+mechanism A2 "CNC machines"
+A2 -> A3 "Finished parts"
+output    A3 "Product"
+mechanism A3 "Assembly line"`} height={520} />
+
+---
+
+## 1. Seu primeiro diagrama IDEF0
+
+Comece com a palavra-chave `idef0`, um título opcional, um `node` opcional (o número de nó do diagrama) e, em seguida, **caixas de função** e suas **setas ICOM**:
+
+```
+idef0 "Fill order"
+function A1 "Receive order"
+input     A1 "Customer request"
+control   A1 "Order policy"
+mechanism A1 "Order clerk"
+output    A1 "Confirmed order"
+```
+
+`function ID "name"` declara uma caixa (na ordem de declaração). `node A0` define o número de nó pai usado para derivar os números de nó filho (A0 → A1..An). A diretriz FIPS é de 3 a 6 caixas por diagrama; fora desse intervalo, o engine emite um aviso.
+
+---
+
+## 2. Setas de limite ICOM
+
+Cada palavra-chave fixa uma seta em um lado específico de uma caixa, e isso *é* seu papel:
+
+```
+input     A1 "Sales orders"        # entra pela borda ESQUERDA
+control   A1 "Production schedule" # entra pela borda SUPERIOR (governa a atividade)
+output    A1 "Product"             # sai pela borda DIREITA
+mechanism A1 "CNC machines"        # entra pela borda INFERIOR (o recurso)
+```
+
+`input`, `control` e `mechanism` roteiam do frame do diagrama **para dentro** da caixa; `output` roteia da caixa **para fora** em direção ao frame. O engine codifica essas setas de limite ao longo de cada borda (I1, I2 / C1 / O1 / M1).
+
+---
+
+## 3. Setas de fluxo entre caixas
+
+Uma seta `->` conecta duas caixas; por padrão, ela chega ao **input** do alvo, mas você pode nomear o lado ICOM do alvo:
+
+```
+A1 -> A2 "Work plan"            # caixa→caixa; padrão é o input de A2
+A2 -> A3.control "Parts spec"   # chega à borda de control (topo) de A3
+input A2 "Raw material" (tunnel) # (tunnel) oculta a seta nesse nível
+```
+
+- `target.control` / `target.input` / `target.mechanism` escolhe o lado de chegada.
+- Um fluxo **não pode chegar ao `.output` do alvo** — um output sai de uma caixa, não entra.
+- `(tunnel)` marca uma seta tunelada (suprimida no diagrama pai/filho per FIPS).
+
+---
+
+## 4. Imposição estrutural calculada
+
+Este é o diferencial — o que torna o modelo correto onde uma ferramenta de desenho não é:
+
+1. **Imposição de posicionamento ICOM** — o papel é resolvido em relação ao lado geométrico da caixa; um papel malformado, ou um fluxo solicitado para *entrar* em uma caixa via `.output`, é rejeitado.
+2. **Resolução de referências** — todo id de caixa nomeado por uma seta deve ser declarado.
+3. **Numeração de decomposição** — as caixas recebem números contíguos 1..n (canto inferior direito) e números de nó (A0 → A1..An); números explícitos `#N` são verificados quanto à contiguidade, intervalo e duplicatas.
+4. **Codificação de limite** — setas de limite são codificadas I1/C1/O1/M1 ao longo de cada borda.
+5. **Diretriz de contagem de caixas** — menos de 3 ou mais de 6 caixas gera um aviso FIPS-183.
+
+---
+
+## 5. Erros comuns
+
+```
+# ERRADO — sem cabeçalho idef0
+function A1 "x"
+
+# ERRADO — fluxo chegando ao output do alvo
+A1 -> A2.output "bad"
+
+# ERRADO — palavra de lado ICOM desconhecida
+A1 -> A2.sideways "bad"
+```
+
+O documento deve começar com `idef0`; setas só podem apontar para `.input` / `.control` / `.mechanism`; todo id de caixa referenciado deve ser declarado. Como a palavra-chave codifica o lado, você não pode acidentalmente desenhar um control como um input — o padrão é imposto, não sugerido.
+
+---
+
+## 6. Conformidade com o padrão
+
+Notação, posicionamento ICOM, numeração de decomposição, codificação de limite, setas tuneladas e a diretriz de 3 a 6 caixas seguem o FIPS PUB 183 (IDEF0). O tema `monochrome` reproduz a aparência padrão de caixas e setas em preto e branco.
+
+## 7. Roadmap
+
+Adiado: junção de decomposição em múltiplas páginas (diagramas filho), páginas de árvore de nós / FEO e setas de chamada para modelos referenciados.

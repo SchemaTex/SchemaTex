@@ -1,0 +1,362 @@
+---
+title: 래더 로직
+---
+
+## 래더 로직 다이어그램이란
+
+**래더 로직**은 프로그래머블 로직 컨트롤러(PLC) — 공장 자동화, HVAC 시스템, 컨베이어 라인, 공정 장비를 제어하는 산업용 컴퓨터 — 의 제어 프로그램을 기술하는 데 사용되는 그래픽 프로그래밍 언어입니다. 이름은 다이어그램의 외관에서 유래합니다: 두 개의 수직 전원 레일(rail)이 수평 런(rung)으로 연결되어 있으며, 각 런은 하나의 조건-동작 규칙을 표현합니다. 전기기사와 제어 엔지니어들이 이미 알고 있던 릴레이 접점 회로도와 유사하기 때문에 채택되었습니다.
+
+Schematex는 PLC 프로그래밍 언어의 국제 표준인 **[IEC 61131-3:2013](https://en.wikipedia.org/wiki/IEC_61131-3)** 과 북미 산업 현장에서 흔히 사용되는 Allen-Bradley(Rockwell) 태그 주소 명명 규약을 따릅니다. 이 페이지에서는 현재 파서가 지원하는 문법을 설명합니다.
+
+<Playground initial={`ladder "Motor Start/Stop"
+rung 1 "Seal-in circuit":
+  parallel:
+    branch:
+      XIC(START_PB, "IN 1.0", name="Start Button")
+    branch:
+      XIC(MOTOR_AUX, "BIT 3.0", name="Aux Contact")
+  XIO(STOP_PB, "IN 1.1", name="Stop Button")
+  OTE(MOTOR_CMD, "OUT 2.0", name="Motor Command")
+rung 2 "Mode select with Set/Reset":
+  XIC(AUTO_HMIPB, "BIT 5.10", name="Auto Mode Button")
+  XIO(SYS_FAULT, "BIT 3.0", name="System Fault")
+  parallel:
+    branch:
+      OTL(SYS_AUTO, "BIT 3.1", name="System Auto Mode")
+    branch:
+      OTU(SYS_MANUAL, "BIT 3.2", name="System Manual Mode")
+rung 3 "Run timer":
+  XIC(MOTOR_CMD)
+  TON(RUN_TMR, PT=5000)
+rung 4 "Alarm on cycle complete":
+  XIC(CYCLE_DONE, "BIT 4.0", name="Cycle Done")
+  OTN(ALARM_OUT, "OUT 2.5", name="Alarm Output")`} height={500} />
+
+---
+
+## 1. 첫 번째 래더 다이어그램
+
+가장 작고 유용한 래더 프로그램: 런 하나, 접점 둘, 코일 하나.
+
+<Playground initial={`ladder "First Rung"
+rung 1 "Start when button pressed, stop on fault":
+  XIC(START_PB)
+  XIO(FAULT)
+  OTE(MOTOR_RUN)`} />
+
+네 가지 규칙으로 전체 사용법의 80%를 커버할 수 있습니다.
+
+1. `ladder` 로 시작하며, 선택적으로 따옴표로 묶인 제목이 뒤따릅니다.
+2. 각 **런**은 별도 줄에 `rung N "선택적 주석":` 으로 시작합니다. 뒤의 콜론은 선택 사항입니다.
+3. 요소는 런 아래에 들여쓰기하여 줄마다 하나씩 나열합니다 — 왼쪽에서 오른쪽 순서는 직렬(AND 로직)을 의미합니다.
+4. `parallel:` / `branch:` 블록은 OR 로직을 도입합니다. 각 브랜치는 자체 요소 목록을 가집니다.
+
+> 주석은 자체 줄에서 `#`, `//`, 또는 Mermaid 스타일의 `%%` 로 시작할 수 있습니다.
+
+---
+
+## 2. 접점
+
+접점은 입력 조건을 나타냅니다 — 연결된 비트가 접점 유형과 일치할 때 전력을 통과시킵니다.
+
+| 유형 | 이름 | 전력 통과 조건 |
+|---|---|---|
+| `XIC` | Examine If Closed | 태그 비트 = 1 (상시 열림) |
+| `XIO` | Examine If Open | 태그 비트 = 0 (상시 닫힘) |
+| `ONS` | One-Shot Rising | 태그가 0 → 1 전환 (상승 엣지, 스캔 1회) |
+| `OSF` | One-Shot Falling | 태그가 1 → 0 전환 (하강 엣지, 스캔 1회) |
+
+**문법:**
+
+```
+XIC(tag)
+XIC(tag, "address")
+XIC(tag, "address", name="Description")
+XIC(tag, address="address", name="Description")
+```
+
+- `tag` — 필수. PLC 태그 이름 (접점 기호 아래에 표시됨).
+- `"address"` — 선택적 위치 인수. I/O 주소 (예: `"IN 1.0"`, `"BIT 3.1"`).
+- `name="…"` — 선택적 키-값 인수. 기호 위에 표시되는 사람이 읽을 수 있는 설명.
+
+<Playground initial={`ladder "Contact types"
+rung 1 "All four contact types":
+  XIC(START_PB, "IN 1.0", name="Start Button")
+  XIO(E_STOP, "IN 1.5", name="Emergency Stop NC")
+  ONS(PULSE_IN, "BIT 5.0", name="One-Shot Rising")
+  OSF(RESET_SIG, "BIT 5.1", name="One-Shot Falling")
+  OTE(OUT_RLY, "OUT 2.0", name="Output Relay")`} />
+
+---
+
+## 3. 코일
+
+코일은 출력 동작을 나타냅니다 — 런에 전력 흐름이 있을 때 태그 비트에 작용합니다.
+
+| 유형 | 이름 | 태그 비트에 대한 효과 |
+|---|---|---|
+| `OTE` | Output Energize | 런이 참일 때 비트 = 1로 설정; 런이 거짓이면 0으로 해제 |
+| `OTL` | Output Latch | 비트 = 1로 설정; 런이 거짓이 된 후에도 **유지** (래치) |
+| `OTU` | Output Unlatch | 비트 = 0으로 해제; 런이 거짓이 된 후에도 유지 |
+| `OTN` | Output Negate | 런이 참일 때 비트 = 0으로 설정; 런이 거짓이면 1로 설정 |
+| `RES` | Reset | Rockwell / Allen-Bradley 카운터 또는 타이머 리셋 코일 |
+
+**문법:** 접점과 동일 — `OTE(tag)`, `OTE(tag, "address")`, `OTE(tag, "address", name="…")`.
+
+`OTL` 과 `OTU` 는 쌍으로 사용하여 Set/Reset 플립플롭을 만듭니다. 마지막으로 쓴 런이 이깁니다.
+
+<Playground initial={`ladder "Set-Reset latch"
+rung 1 "Set on start":
+  XIC(START_PB, "IN 1.0", name="Start")
+  OTL(MOTOR_ON, "BIT 3.0", name="Motor Latch")
+rung 2 "Reset on stop or fault":
+  parallel:
+    branch:
+      XIC(STOP_PB, "IN 1.1", name="Stop")
+    branch:
+      XIC(E_STOP, "IN 1.5", name="E-Stop")
+  OTU(MOTOR_ON, "BIT 3.0", name="Motor Latch")`} />
+
+---
+
+## 4. 펑션 블록
+
+펑션 블록은 타이머, 카운터, 수학 연산, 비교 연산을 수행합니다. 런 내에 인라인으로 나타나며, 필수 태그 인수 뒤에 키워드 파라미터를 가집니다.
+
+### 4.1 타이머
+
+| 유형 | 이름 | 주요 파라미터 |
+|---|---|---|
+| `TON` | Timer On-Delay | `PT=` 프리셋 시간 (밀리초) |
+| `TOFF` | Timer Off-Delay | `PT=` 프리셋 시간 (밀리초) |
+| `TP` | Timer Pulse | `PT=` 프리셋 시간 (밀리초) |
+
+```
+TON(timer_tag, PT=5000)
+```
+
+타이머 태그는 경과 시간을 저장합니다. 타이머의 `Q` 비트(완료 출력)는 다운스트림 접점에서 태그 이름으로 접근합니다.
+
+### 4.2 카운터
+
+| 유형 | 이름 | 주요 파라미터 |
+|---|---|---|
+| `CTU` | Count Up | `PV=` 프리셋 값 (정수) |
+| `CTD` | Count Down | `PV=` 프리셋 값 |
+| `CTUD` | Count Up/Down | `PV=` 프리셋 값 |
+
+```
+CTU(cycle_counter, PV=100)
+```
+
+### 4.3 수학 연산
+
+| 유형 | 연산 |
+|---|---|
+| `ADD` | 덧셈 |
+| `SUB` | 뺄셈 |
+| `MUL` | 곱셈 |
+| `DIV` | 나눗셈 |
+| `MOV` | 이동 (복사) |
+
+```
+ADD(result_tag, IN1=setpoint, IN2=offset)
+MOV(dest_tag, IN1=source_tag)
+```
+
+### 4.4 비교 연산
+
+| 유형 | 의미 |
+|---|---|
+| `EQU` | 같음 |
+| `NEQ` | 같지 않음 |
+| `GRT` | 초과 |
+| `LES` | 미만 |
+| `GEQ` | 이상 |
+| `LEQ` | 이하 |
+
+```
+EQU(compare_tag, IN1=speed_actual, IN2=speed_setpoint)
+```
+
+<Playground initial={`ladder "Timer and counter"
+rung 1 "Start run timer":
+  XIC(MOTOR_CMD, "BIT 3.0", name="Motor Running")
+  TON(RUN_TIMER, PT=10000)
+rung 2 "Count completed cycles":
+  XIC(CYCLE_SENSOR, "IN 2.0", name="Cycle Sensor")
+  CTU(PART_COUNT, PV=500)
+rung 3 "Alarm when batch complete":
+  XIC(PART_COUNT, name="Count Done")
+  OTE(BATCH_ALARM, "OUT 3.0", name="Batch Complete Alarm")`} />
+
+---
+
+## 5. 병렬 브랜치
+
+`parallel:` 블록은 OR 로직을 도입합니다 — **어느 브랜치든** 전도되면 런에 전력이 공급됩니다. 각 브랜치는 요소가 아래에 들여쓰기된 `branch:` 서브블록입니다.
+
+```
+parallel:
+  branch:
+    XIC(LOCAL_START)
+  branch:
+    XIC(REMOTE_START)
+```
+
+`parallel:` 내의 브랜치들은 동시에 평가됩니다. 블록은 `parallel:` 이전의 들여쓰기 수준으로 돌아오면 닫힙니다.
+
+**규칙:**
+- `parallel:` 은 런 내부에 나타나야 합니다.
+- `branch:` 는 `parallel:` 내부에 나타나야 합니다 — 단독으로 사용하면 `LadderParseError` 가 발생합니다.
+- 각 브랜치는 하나 이상의 요소를 가집니다.
+- `parallel:` 블록 뒤의 요소들은 해당 블록과 직렬(AND 로직)입니다.
+
+<Playground initial={`ladder "Parallel OR logic"
+rung 1 "Start from either local or remote":
+  parallel:
+    branch:
+      XIC(LOCAL_START, "IN 1.0", name="Local Start")
+    branch:
+      XIC(REMOTE_START, "BIT 5.2", name="Remote Start")
+  XIO(STOP_ALL, "IN 1.5", name="Stop All")
+  OTE(CONVEYOR, "OUT 2.0", name="Conveyor Run")`} />
+
+---
+
+## 6. 레이블 및 주석
+
+- **제목:** `ladder "Motor Control"` — 첫 번째 줄에만, 따옴표 문자열.
+- **런 번호:** `rung` 뒤에 오는 필수 정수.
+- **런 주석:** 런 번호 뒤, 선택적 콜론 앞에 오는 선택적 따옴표 문자열: `rung 3 "Run indicator":` 또는 `rung 3 "Run indicator"`.
+- **태그:** 괄호 안의 첫 번째 인수 — 기호 아래에 표시됩니다.
+- **주소:** 두 번째 위치 인수 (따옴표): `XIC(START_PB, "IN 1.0")`.
+- **이름:** `name="…"` 키워드 인수 — 기호 위에 표시되는 사람이 읽을 수 있는 설명.
+- **줄 주석:** 줄 시작(앞쪽 공백 이후)에 `#`, `//`, 또는 `%%`. 동일한 마커가 뒤에 오는 주석도 시작합니다.
+
+---
+
+## 7. 예약어 및 이스케이핑
+
+**줄 시작에 예약된 키워드 (대소문자 구분 없음):** `ladder`, `rung`, `parallel:`, `branch:`.
+
+**요소 이름**은 모두 대문자 ASCII: `XIC`, `XIO`, `ONS`, `OSF`, `OTE`, `OTL`, `OTU`, `OTN`, `TON`, `TOFF`, `TP`, `CTU`, `CTD`, `CTUD`, `ADD`, `SUB`, `MUL`, `DIV`, `MOV`, `EQU`, `NEQ`, `GRT`, `LES`, `GEQ`, `LEQ`.
+
+**태그 ID** — `[A-Z][A-Z0-9_]*` 와 일치해야 합니다 (파서는 요소 이름 접두사로 `[A-Z][A-Z0-9_]*` 를 매칭합니다). 소문자 태그는 괄호 안에서 허용됩니다.
+
+주소 또는 이름 인수의 **따옴표 문자열**은 큰따옴표 `"…"` 를 사용해야 합니다.
+
+---
+
+## 8. 자주 발생하는 실수
+
+| 작성한 내용 | 파서의 반응 | 해결 방법 |
+|---|---|---|
+| `rung 1` (콜론 없음) | 올바르게 파싱됨 | 뒤의 콜론은 선택 사항 |
+| `ONF(TAG)` | `LadderParseError: unknown element type "ONF"` | 하강 엣지 접점은 `OSF`, `ONF` 가 아님 |
+| `branch:` 없는 `parallel:` | 빈 병렬 블록 — 런에 요소 없음 | `parallel:` 내부에 적어도 하나의 `branch:` 추가 |
+| `parallel:` 이전의 `branch:` | `LadderParseError: branch: without parallel:` | 항상 `parallel:` 을 먼저 열 것 |
+| `OTE()` — 태그 없음 | `LadderParseError: element missing tag` | 태그 필수: `OTE(MY_TAG)` |
+| `var StartBtn: bool` (변수 선언) | `LadderParseError: invalid element syntax` | 변수 선언 없음 — 태그를 직접 사용 |
+| 빈 런 (`rung N:` 뒤에 요소 없음) | `LadderParseError: Rung N: empty rung` | 각 런에 적어도 하나의 요소 추가 |
+| `TON(T1, T#5s)` | `LadderParseError: invalid element syntax` (T#은 유효한 숫자가 아님) | 밀리초 정수 사용: `TON(T1, PT=5000)` |
+
+---
+
+## 9. 문법 (EBNF)
+
+```text
+document      = header NEWLINE rung+
+
+header        = "ladder" ( WS quoted-string )? NEWLINE
+quoted-string = '"' any-char-but-quote* '"'
+
+rung          = "rung" WS integer ( WS quoted-string )? ":"? NEWLINE
+                  element+
+
+element       = contact-line
+              | coil-line
+              | fb-line
+              | parallel-block
+
+contact-line  = contact-type "(" tag ( "," arg )* ")" NEWLINE
+contact-type  = "XIC" | "XIO" | "ONS" | "OSF"
+
+coil-line     = coil-type "(" tag ( "," arg )* ")" NEWLINE
+coil-type     = "OTE" | "OTL" | "OTU" | "OTN" | "RES"
+
+fb-line       = fb-type "(" tag ( "," arg )* ")" NEWLINE
+fb-type       = "TON" | "TOFF" | "TP"
+              | "CTU" | "CTD" | "CTUD"
+              | "ADD" | "SUB" | "MUL" | "DIV" | "MOV"
+              | "EQU" | "NEQ" | "GRT" | "LES" | "GEQ" | "LEQ"
+
+arg           = quoted-string             // positional (address)
+              | key "=" quoted-string     // keyword (e.g. name="…")
+              | key "=" number            // keyword (e.g. PT=5000)
+
+parallel-block = INDENT≥2 "parallel:" NEWLINE
+                   ( INDENT branch-block )+
+
+branch-block   = "branch:" NEWLINE
+                   ( INDENT element )+
+
+tag           = [A-Za-z][A-Za-z0-9_]*
+key           = [A-Za-z][A-Za-z0-9_]*
+integer       = [0-9]+
+number        = [0-9]+ ( "." [0-9]+ )?
+comment       = ( "#" | "//" | "%%" ) any NEWLINE
+```
+
+권위 있는 소스: `src/diagrams/ladder/parser.ts`. 이 문서가 파서와 다를 경우 파서가 우선합니다 — 이슈를 열어주십시오.
+
+---
+
+## 10. 표준 준수
+
+Schematex 래더 로직은 래더 다이어그램 언어에 관한 **IEC 61131-3:2013** Part 3과 북미 PLC 관행에서 흔히 사용되는 **Allen-Bradley(Rockwell) 태그-주소-이름** 규약을 따릅니다.
+
+현재 구현된 내용:
+
+- ✅ 네 가지 접점 유형: XIC (NO), XIO (NC), ONS (상승 엣지), OSF (하강 엣지)
+- ✅ 다섯 가지 코일 유형: OTE (출력), OTL (래치/set), OTU (언래치/reset), OTN (반전), RES (카운터/타이머 리셋)
+- ✅ 세 가지 타이머 펑션 블록: TON, TOFF, TP (밀리초 `PT=` 파라미터 포함)
+- ✅ 세 가지 카운터 펑션 블록: CTU, CTD, CTUD (정수 `PV=` 파라미터 포함)
+- ✅ 수학 연산 펑션 블록: ADD, SUB, MUL, DIV, MOV
+- ✅ 비교 연산 펑션 블록: EQU, NEQ, GRT, LES, GEQ, LEQ
+- ✅ OR 로직을 위한 병렬 / 브랜치 블록
+- ✅ Allen-Bradley Studio 5000 규약에 따른 태그, 주소, 이름 주석
+- ⏳ 보전성 타이머 (RTO) — 표준에 있으나 파서에 미구현
+- ⏳ Jump(JMP) / Label(LBL) 명령
+- ⏳ Master Control Reset(MCR) 영역
+- ⏳ 즉시 I/O 명령 (IIN, IOT)
+- ⏳ 런에 내장된 Structured Text 또는 Function Block Diagram 요소
+
+참고 자료:
+
+- IEC 61131-3:2013 — *Programmable controllers, Part 3: Programming languages*
+- NEMA ICS 1-2009 — *General Standards for Industrial Control and Systems*
+- Rockwell Automation Studio 5000 Logix Designer — [Ladder Diagram Programming Manual](https://literature.rockwellautomation.com/)
+
+---
+
+## 11. 관련 예제
+
+<RelatedExamples slugs={[
+  'ladder-motor-start-stop',
+  'ladder-mode-selection',
+]} />
+
+---
+
+## 12. 로드맵
+
+**계획됨 — 아직 파싱 불가.** 현재 생성된 DSL에 이를 사용하지 마십시오; 파서가 거부하거나 무시합니다.
+
+- **보전성 타이머 On (RTO)** — 전원 손실 후에도 경과 시간을 유지하는 타이머; 별도의 리셋 접점이 필요합니다.
+- **Jump(JMP) / Label(LBL)** — 레이블이 붙은 런으로 분기하여 조건부로 로직을 건너뜀; 대형 프로그램의 성능 향상에 사용됩니다.
+- **Master Control Reset(MCR) 영역** — MCR 입력이 거짓일 때 모든 비보전성 출력을 비활성화하는 괄호로 묶인 영역.
+- **런 내 Structured Text** — 인라인 표현식 평가 (예: `CALC(result = a * b + c)`).
+- **즉시 I/O (IIN / IOT)** — 시간이 중요한 제어를 위해 프로그램 중간에 I/O 스캔을 강제 실행.
+
+더 빨리 필요한 기능이 있으면 GitHub 이슈에서 추적하십시오.

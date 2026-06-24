@@ -1,0 +1,151 @@
+---
+title: 보타이 위험 다이어그램
+---
+
+## 보타이 다이어그램이란
+
+**보타이**는 장벽 기반 위험 관리에서 가장 잘 알려진 그림입니다: 중앙의 **최상위 사건** (위험 통제가 상실되는 순간)을 중심으로 **위협**이 왼쪽에서 **예방 장벽** 체인을 통해 들어오고, **결과**가 오른쪽으로 **완화 장벽** 체인을 통해 나갑니다 — 전체적으로 나비 넥타이 모양입니다. 이 다이어그램은 하나의 위험에 대해 규제 기관이나 이사회가 실제로 묻는 두 가지 질문에 답합니다: *무엇이 잘못될 수 있고, 무엇이 막는가?* (왼쪽), 그리고 *잘못되면 어떻게 되고, 무엇이 피해를 제한하는가?* (오른쪽). 석유 및 가스, 화학 처리, 항공([ICAO Doc 9859](https://www.icao.int/) SMS), 철도, 광업, 의료 분야에서 의무적으로 사용됩니다. **[CCPS / Energy Institute 2018](https://www.aiche.org/ccps)** (*Bow Ties in Risk Management*)에 의해 체계화되고 **IEC 31010:2019** §B.4.6에서 기법으로 명명되었습니다.
+
+Schematex의 이 분야에서의 강점은 **계산이 아닙니다** (그것은 `faulttree`와 `pert`의 영역입니다) — 기본 보타이는 확률을 포함하지 않습니다. 두 가지입니다: 어떤 범용 박스-화살표 도구도 생성할 수 없는 **엄격하고 올바르게 구성된 대칭 레이아웃**, 그리고 **CCPS/EI 장벽 규칙 세트의 구조적 검증** — 모든 위협은 ≥ 1개의 장벽을 통해 최상위 사건에 도달해야 하고, 모든 결과는 ≥ 1개의 장벽을 통해 걸려야 하며, 모든 에스컬레이션 요소는 특정 명명된 장벽에 연결되어야 합니다. 장벽이 없는 위협은 자동으로 그려지지 않고 *거부됩니다*.
+
+<Playground initial={`bowtie "LPG storage — loss of containment"
+hazard "LPG stored under pressure"
+topevent "Loss of containment"
+
+threat "Corrosion of vessel wall"
+  prevent "Corrosion-resistant coating"
+  prevent "UT thickness inspection"
+    escalation "Inspection interval too long"
+      barrier "Risk-based inspection scheme"
+
+threat "Overpressure during filling"
+  prevent "High-pressure trip (SIL 2)"
+  prevent "Pressure relief valve"
+
+consequence "Jet fire"
+  mitigate "Gas detection + ESD"
+  mitigate "Deluge / water spray"
+
+consequence "Toxic exposure"
+  mitigate "Personal gas monitors"
+  mitigate "Emergency evacuation plan"`} height={560} />
+
+---
+
+## 1. 첫 번째 다이어그램
+
+모든 문서는 `bowtie` 키워드, 선택적 제목, 그 다음 위험, 최상위 사건, 두 날개로 시작합니다:
+
+```
+bowtie
+topevent "Loss of containment"
+threat "Corrosion"
+  prevent "Inspection programme"
+consequence "Release to atmosphere"
+  mitigate "Gas detection + ESD"
+```
+
+`topevent`는 중앙의 단일 매듭을 선언합니다 (필수, 정확히 하나). 각 `threat`는 왼쪽 날개 선을 시작하고; 각 `consequence`는 오른쪽 날개 선을 끝냅니다. `threat` 아래의 장벽은 **예방적** (`prevent`)이고; `consequence` 아래는 **완화적** (`mitigate`)입니다. 다이어그램은 매듭을 중심으로 대칭적으로 배치됩니다 — 위협이 왼쪽에서 들어오고, 결과가 오른쪽으로 나갑니다.
+
+DSL은 **들여쓰기 구조**이며 CCPS 7단계 구축 방법론을 반영합니다: 위험 식별 → 최상위 사건 → 위협 → 결과 → 예방 장벽 → 완화 장벽 → 에스컬레이션 요소.
+
+헤더 지시문 (순서 무관):
+
+- `layout: symmetric | compact` — 밴드 모델 (기본값 `symmetric`).
+- `legend: on | off | bottom | top` — 자동 파생된 색상 범례 (기본값 on).
+
+---
+
+## 2. 위험과 최상위 사건
+
+```
+hazard "Working at height"
+topevent "Person falls from height"
+```
+
+- **`hazard`** — 피해를 일으킬 가능성이 있는 작업 또는 재료: 보타이가 다루는 *맥락* (예: "고소 작업", "압력하 탄화수소"). 선택 사항; 매듭 위에 헤더 박스로 렌더링되고 아래로 연결선이 그려집니다. 최대 하나.
+- **`topevent`** — 위험의 통제가 **상실**되는 순간 (예: "봉쇄 실패", "사람이 높이에서 추락"). 녹색 원으로 그려지는 보타이의 매듭. **필수, 정확히 하나.**
+
+위험은 *사물/활동*이지 실패가 아닙니다; 최상위 사건은 *통제 상실*의 정확한 순간입니다 — 원인이 아니며, 아직 결과도 아닙니다.
+
+---
+
+## 3. 위협과 결과
+
+```
+threat "Guardrail removed for access"
+  prevent "Permit-to-work system"
+
+consequence "Fatality"
+  mitigate "Fall-arrest harness + lanyard"
+```
+
+- **위협**은 *그 자체로* 최상위 사건을 유발할 수 있는 신뢰할 수 있는 원인입니다. 각 위협은 왼쪽 가장자리에 주황색 박스로 그려지는 하나의 왼쪽 날개 선의 시작입니다.
+- **결과**는 (위협이 아닌) *최상위 사건*의 신뢰할 수 있는 결과이며, 오른쪽 가장자리에 빨간색 박스로 그려집니다.
+
+위협과 결과는 어떤 순서로든 선언할 수 있습니다 — 파서는 순서에 관계없이 모든 왼쪽 날개 블록과 모든 오른쪽 날개 블록을 그룹화합니다. 보타이는 **각각 하나 이상**이 필요합니다: 한쪽 날개만 있는 다이어그램은 fault tree(`faulttree` 참조) 또는 이벤트 트리이지, 보타이가 아닙니다.
+
+---
+
+## 4. 장벽 (사이의 통제 요소)
+
+```
+threat "Guardrail removed for access"
+  prevent "Permit-to-work system"
+  prevent "Temporary edge protection"
+  prevent "Spotter / banksman"
+```
+
+**장벽**은 위협 → 최상위 사건 경로를 차단(예방적)하거나 최상위 사건 이후 결과를 줄이는(완화적) 통제 요소입니다. 각각은 *선 위에* 회색 박스로 표시됩니다. 체인 길이는 자유롭습니다 (1..n) — 날개가 단순히 연장됩니다.
+
+**장벽 순서는 선언 순서입니다**: 첫 번째로 선언된 것이 **가장 바깥쪽** (위협/결과에 가장 가까운, 첫 번째 방어선)이고; 마지막으로 선언된 것이 **가장 안쪽** (매듭에 가장 가까운)입니다. 이것은 실제 보타이의 왼쪽에서 오른쪽으로의 읽기 방식과 일치합니다. 각 장벽에는 하위 상호작용을 위해 `data-order` (0 = 가장 바깥쪽)와 `data-side` (`prevent` / `mitigate`)가 있습니다.
+
+체인 길이가 다를 때, 장벽은 **중앙 정렬**됩니다: 가장 안쪽 장벽이 매듭 근처에 깔끔한 열로 정렬되고, 위협/결과 박스는 체인 깊이에 따라 들쭉날쭉합니다 — 다층 방어로 읽힙니다.
+
+---
+
+## 5. 에스컬레이션 요소
+
+```
+threat "Corrosion"
+  prevent "UT thickness inspection"
+    escalation "Inspection interval too long"
+      barrier "Risk-based inspection scheme"
+```
+
+**에스컬레이션 요소** (또는 저하 요소)는 *특정 장벽의 효과를 저하시키는* 조건입니다 — 예: "가장자리 보호가 검사되지 않음", "운영자 피로". 하나의 장벽(선이 아님)에 연결되며 완화된 "저하시킴" 연결선으로 연결된 호박색 박스로 수직 아래에 위치합니다.
+
+**에스컬레이션 요소 장벽**은 에스컬레이션 요소 자체에 배치된 통제 요소입니다 — 장벽이 저하되는 것을 보호합니다(예: 사전 사용 검사 체계). 에스컬레이션 요소 아래에 한 단계 더 들여쓰여 있으며, 그 아래에 회색 박스로 렌더링됩니다.
+
+들여쓰기가 중첩을 결정합니다: `prevent`/`mitigate`는 2칸, `escalation`은 4칸, `barrier`는 6칸.
+
+---
+
+## 6. 올바르게 구성됨 (장벽 규칙 세트)
+
+단일 모양을 그리기 전에, 엔진은 CCPS/EI 장벽 규칙 세트의 구조적 절반을 검증하고 실패 시 **렌더링을 거부합니다** — `prisma`가 누락된 카운트를 거부하는 것과 정확히 같습니다:
+
+- **정확히 하나의 최상위 사건** — 0개 또는 여러 개는 오류입니다.
+- **모든 위협에 ≥ 1개의 예방 장벽** — 장벽 없는 위협은 스위스 치즈 만화이지 보타이가 아닙니다.
+- **모든 결과에 ≥ 1개의 완화 장벽** — 거울 규칙.
+- **모든 에스컬레이션 요소는 장벽에 연결됨** — 선이나 최상위 사건에 떠 있을 수 없습니다.
+- **하나 이상의 위협과 하나의 결과** — 한쪽 날개 다이어그램은 FTA 또는 ETA입니다.
+
+메시지는 위반 요소와 규칙을 영어로 명명합니다, 예: *"Threat 'Corrosion' has no preventative barrier — every threat must reach the top event through at least one barrier (CCPS/EI barrier rule). Add a `prevent` line under it."* 이것이 실제 보타이를 낙서와 구분하는 것입니다. 엔진은 장벽이 진정으로 *효과적*인지 또는 *독립적*인지 판단하지 않습니다 — 그것은 분석가의 질적 판단입니다.
+
+---
+
+## 7. 보타이 vs fault tree
+
+완전히 개발된 보타이는 최상위 사건에서 fault tree와 이벤트 트리가 결합된 것입니다: 거꾸로 읽은 왼쪽 날개는 보타이 매듭이 최상위 사건인 fault tree이고, 오른쪽 날개는 그것을 결과로 전파하는 이벤트 트리입니다. Schematex는 사용 방식이 다르기 때문에 두 엔진을 분리하여 유지합니다:
+
+- **`bowtie`**는 질적이고 대칭적입니다 — 장벽 인벤토리와 한눈에 보이는 다층 방어 이야기; 확률 계산 없음.
+- **`faulttree`**는 정량적이고 불리언입니다 — AND/OR 게이트, 기본 이벤트 확률, 최소 컷 집합, 확률 롤업.
+
+단일 위협 뒤의 게이트 수준 상세 내용이 필요한 경우, 별도의 `faulttree`를 그리세요.
+
+---
+
+## 8. 테마 설정
+
+`default`는 잘 알려진 BowTieXP / bowtiemaster 팔레트를 사용합니다 — **주황색 위협** (왼쪽), 선 위의 **회색 장벽**, 중앙 **녹색 최상위 사건 디스크** (매듭), **빨간색 결과** (오른쪽), 아래로 내려오는 **호박색 에스컬레이션 요소** — Schematex의 시맨틱 슬롯에 매핑되어 `prisma` / `pert` / `petri`와 일관성을 유지합니다. `monochrome`은 규제 기관 인쇄용 흑백 외관을 재현하며, 요소 구분은 색상 대신 모양/테두리 + 위치에 의존합니다 (에스컬레이션 요소는 점선 테두리를, 매듭은 이중 링을 가짐). `dark`는 Catppuccin Mocha를 따릅니다. 모든 획/채우기는 `BowtieTokens`에서 가져옵니다; 모든 요소에는 `data-*` (`data-role`, `data-side`, `data-line`, `data-order`, `data-barrier`)가 있어 구조를 하위에서 검사할 수 있습니다.

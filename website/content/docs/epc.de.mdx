@@ -1,0 +1,121 @@
+---
+title: EPC (Ereignisgesteuerte Prozesskette)
+description: ARIS-Geschäftsprozessdiagramme — abwechselnde Ereignisse und Funktionen, verbunden durch UND/ODER/EXKLUSIV-ODER-Konnektoren, mit struktureller Wohlgeformtheitsvalidierung.
+---
+
+## Über EPC
+
+Eine **Ereignisgesteuerte Prozesskette** (EPC) ist die Geschäftsprozessnotation im Kern von **ARIS** (Scheer, 1990er Jahre): ein Kontrollfluss, der strikt **Ereignisse** (passive Zustände — „Auftrag eingegangen") und **Funktionen** (aktive Aufgaben — „Bonität prüfen") abwechselt, geleitet durch **UND / ODER / EXKLUSIV-ODER-Konnektoren** für Splits und Joins. Sie wird verbreitet für SAP-Prozessdokumentation und BPM eingesetzt.
+
+Der Vorteil von Schematex liegt in der **strukturellen Validierung**. Die Engine berechnet keine Zahl (im Gegensatz zu `pert` oder `faulttree`); sie überprüft die EPC-Wohlgeformtheitsregeln — Ereignis/Funktion-Alternierung, die Signatur-Regel *Ereignis kann nicht entscheiden*, Ein-/Ausgabe-Multiplizität, Erreichbarkeit — und markiert Verletzungen mit KI-lesbaren Meldungen, anstatt stillschweigend ein fehlerhaftes Modell zu zeichnen.
+
+<Playground initial={`epc "Credit check"
+  event E1 "Order received"
+  function F1 "Check credit"
+  xor X1
+  event E2 "Credit approved"
+  event E3 "Credit refused"
+  E1 -> F1 -> X1
+  X1 -> E2
+  X1 -> E3`} height={460} />
+
+---
+
+## 1. Ihre erste EPC
+
+Beginnen Sie mit dem Schlüsselwort `epc`, einem optionalen Titel, dann deklarieren Sie **Knoten per ID** und **verdrahten Sie sie mit Pfeilen**:
+
+```
+epc "Auftragserfüllung"
+  event E1 "Auftrag eingegangen"
+  function F1 "Bonität prüfen"
+  event E2 "Bonität OK"
+  E1 -> F1 -> E2
+```
+
+Knoten tragen eine ID und eine optionale Bezeichnung in Anführungszeichen; Pfeile referenzieren IDs. Die kanonische Form deklariert Konnektoren als Knoten (`xor X1`) und verdrahtet alles per ID — am nächsten daran, wie ARIS eine EPC speichert.
+
+---
+
+## 2. Knotenarten
+
+```
+event E1 "Auftrag eingegangen"     # passiver Zustand (abgerundetes Hexagon)
+function F1 "Bonität prüfen"       # aktive Aufgabe (abgerundetes Rechteck); Alias: func
+func F2 "Rechnung senden"          # `func` ist Kurzform für `function`
+and  A1                            # UND-Konnektor (∧)
+or   O1                            # ODER-Konnektor (∨)
+xor  X1                            # EXKLUSIV-ODER-Konnektor (×)
+```
+
+Ein Konnektor verzweigt in beide Richtungen (Split oder Join), abhängig von seinen eingehenden/ausgehenden Bögen, sodass dasselbe Symbol für beides dient. Konnektor-Beschriftungen sind optional.
+
+---
+
+## 3. Kontrollfluss verdrahten
+
+```
+E1 -> F1 -> X1        # eine Kette ist Kurzform für die paarweisen Bögen E1→F1, F1→X1
+X1 -> E2              # Konnektor-Split in zwei Äste
+X1 -> E3
+F2 -> E2 : gesendet   # ein einzelner Bogen kann eine ': Beschriftung' tragen
+```
+
+- Eine `->` **Kette** expandiert zu paarweisen Kanten.
+- Eine nachgestellte **`: Beschriftung`** annotiert einen einzelnen Bogen.
+- Ein Pfeilendpunkt, der noch nicht deklariert ist, wird **automatisch erstellt** (und vom Validator markiert), sodass Sie schnell skizzieren und später bereinigen können.
+
+```
+epc "Procure-to-pay"
+  layout: tb
+  event E1 "Need identified"
+  function F1 "Create PO"
+  and A1
+  function F2 "Notify supplier"
+  function F3 "Update budget"
+  E1 -> F1 -> A1
+  A1 -> F2
+  A1 -> F3
+```
+
+`layout: tb` legt die Kette von oben nach unten an (Standard ist ebenfalls vertikalfreundlich).
+
+---
+
+## 4. Berechnete Wohlgeformtheit
+
+Dies ist das Alleinstellungsmerkmal. Die Engine validiert (markiert, wirft keine Ausnahmen):
+
+1. **Bipartite Alternierung** — Ereignisse und Funktionen wechseln sich entlang jedes Pfades strikt ab; Konnektoren unterbrechen dies nicht.
+2. **Start/End müssen Ereignisse sein** — eine Funktion darf kein Start- oder Endknoten sein.
+3. **Signatur-Regel** — ein *Ereignis darf nicht Quelle eines ODER/EXKLUSIV-ODER-Splits sein* (ein passives Ereignis kann nicht entscheiden); ein UND-Split nach einem Ereignis ist erlaubt.
+4. **Split/Join-Ausgleich** — ein Split vom Typ T sollte durch einen Join vom Typ T geschlossen werden; Abweichungen sind Warnungen (reale EPCs sind manchmal unausgeglichen).
+5. **Ein-/Ausgabe pro Ereignis und Funktion** — Konnektoren tragen die Multiplizität.
+6. **Erreichbarkeit** — jeder Knoten muss von einem Start aus erreichbar sein und ein Ende erreichen.
+
+Betroffene Knoten werden mit `data-*`-Flags markiert; das Diagramm wird trotzdem gerendert.
+
+---
+
+## 5. Häufige Fehler
+
+```
+# FALSCH — ungültige ID (muss mit einem Buchstaben beginnen)
+event 9bad
+
+# VERMEIDEN — Neudeklaration eines Knotens (die erste gewinnt, eine Warnung wird ausgegeben)
+event E1 "erste"
+event E1 "zweite"
+```
+
+IDs müssen mit einem Buchstaben beginnen; ein neu deklarierter Knoten behält die erste Definition und gibt eine Warnung aus. Da Ereignis→XOR/ODER-Splits markiert werden, führen Sie eine Entscheidung durch eine **Funktion**, die die Entscheidung produziert, und teilen Sie dann auf.
+
+---
+
+## 6. Normkonformität
+
+Notation und Regeln folgen der ARIS-EPC-Konvention (Scheer), van der Aalst (1999) und Mendling (2008): hexagonale Ereignisse, abgerundete Rechteck-Funktionen, ∧/∨/×-Konnektoren und die Signatureinschränkung „Ereignis kann nicht entscheiden".
+
+## 7. Roadmap
+
+Zurückgestellt: Prozessschnittstellen-(Off-Page-)Knoten, Organisationseinheits-/Datenobjekt-Bahnen (eEPC) und automatische Reparaturvorschläge für Split/Join.

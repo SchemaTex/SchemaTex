@@ -1,0 +1,216 @@
+---
+title: Sequential Function Chart (SFC)
+---
+
+## Sobre Sequential Function Charts
+
+**Sequential Function Chart (SFC)** é a **visão de máquina de estados** de um programa PLC cíclico — o que está acontecendo *agora* e o que dispara a *próxima* fase. É a quinta linguagem definida pela **[IEC 61131-3:2013 §6.5](https://en.wikipedia.org/wiki/Sequential_function_chart)** e o subconjunto de engenharia da **IEC 60848 GRAFCET**. Enquanto **[ladder](/docs/ladder)** e **[fbd](/docs/fbd)** descrevem lógica combinacional por varredura, o SFC descreve o sequenciamento temporal entre eles: qual passo está ativo, quando ocorre a transferência e o que roda em paralelo.
+
+Em código de produção, ~10% das redes são escritas em SFC, mas ~100% das máquinas sequenciais não triviais têm pelo menos um diagrama SFC — reatores de batelada, células robóticas, linhas de embalagem, estações de montagem. Até agora não havia uma DSL SFC open-source de qualidade: as IDEs dos fabricantes (Studio 5000, TIA Portal, CODESYS) eram a única opção. O Schematex oferece um subconjunto SFC da IEC 61131-3 projetado para geração por IA.
+
+Distinto de **[state](/docs/state)** (statechart UML para UIs reativas e FSMs de ciclo de vida): o SFC tem semântica de *varredura cíclica*, passos iniciais com borda dupla, qualificadores de bloco de ação (N/S/R/L/D/P) e ramificações baseadas em barras (barra simples = OR, barra dupla = AND).
+
+<Playground initial={`
+  sfc "Bottle Filling"
+
+  var StartBtn: bool
+  var TankLevel: real
+  var DoneBtn: bool
+
+  step S0 [initial]
+    N FillValve_Closed
+
+  step S1 [label: "Filling"]
+    N FillValve_Open
+
+  step S2 [label: "Done"]
+    N Confirm_Done
+
+  transition from: S0 to: S1: StartBtn
+  transition from: S1 to: S2: TankLevel >= 80.0
+  transition from: S2 to: S0: DoneBtn`} height={520} />
+
+---
+
+## 1. Seu primeiro diagrama
+
+Dois passos, uma transição e um marcador inicial:
+
+```
+sfc
+step S0 [initial]
+step S1
+transition from: S0 to: S1: Trigger
+```
+
+`S0` é renderizado como um **retângulo com borda dupla** (convenção IEC de passo inicial); `S1` como um retângulo com borda simples. Entre eles há uma **barra de transição** horizontal com o texto de condição `Trigger` à sua direita.
+
+Se você esquecer o `[initial]`, o primeiro passo declarado é promovido automaticamente a inicial.
+
+---
+
+## 2. Passos
+
+```
+step S_Filling [label: "Filling tank"]
+  N FillValve_Open
+  D Mixer_Run T#30s
+  P StartChime
+```
+
+Um passo tem:
+
+- Um **id** (único no diagrama) — usado em transições e saltos.
+- Um `[label: "..."]` opcional para exibição.
+- Um `[initial]` opcional (apenas um permitido) ou `[final]` (passo de parada do fabricante, três bordas).
+- Zero ou mais **blocos de ação**, indentados um nível, cada um com uma letra qualificadora.
+
+---
+
+## 3. Transições
+
+Uma **transição** declara um link direcionado entre dois passos com uma condição booleana:
+
+```
+transition from: S0 to: S1: StartBtn
+transition from: S1 to: S2: TankLevel >= 80.0 AND NOT EmergencyStop
+transition T_Reset from: S5 to: S0: ResetBtn
+```
+
+O texto da condição é opaco — o Schematex o armazena literalmente e o renderiza ao lado da barra. Toda transição deve ter uma condição não vazia; use `TRUE` para links incondicionais.
+
+Transições cujos `from` e `to` são adjacentes linearmente no corpo são renderizadas como barras inline entre os passos. Transições cujo par *não* é adjacente linearmente (por exemplo, um salto de volta a um passo anterior) são renderizadas como **setas de margem** à esquerda ou à direita do diagrama.
+
+---
+
+## 4. Qualificadores de ação
+
+As ações são anexadas ao lado direito de um passo e executadas de acordo com sua letra qualificadora:
+
+| Qualificador | Comportamento |
+|---|---|
+| `N` | Ativo enquanto o passo estiver ativo (o mais comum) |
+| `S` | Armazenado — definido como verdadeiro na entrada, permanece até o `R` correspondente |
+| `R` | Reset — limpa uma ação previamente armazenada |
+| `L` | Limitado no tempo — ativo até T após a entrada no passo |
+| `D` | Com atraso — ativado T após a entrada |
+| `P` | Pulso — verdadeiro por apenas uma varredura do PLC |
+| `P0` | Pulso na desativação (Siemens) |
+| `P1` | Sinônimo de `P` (Siemens) |
+| `SD` | Armazenado e com atraso |
+| `DS` | Com atraso e armazenado |
+| `SL` | Armazenado e limitado no tempo |
+
+Qualificadores parametrizados por tempo (L, D, SD, DS, SL) recebem um literal de duração:
+
+```
+step S1
+  L LimitedRun T#5s
+  D DelayedRun T#2s
+```
+
+---
+
+## 5. Ramificações alternativas (barra simples — OR)
+
+Apenas **uma** ramificação é executada por varredura, escolhida pela condição de transição:
+
+```
+step S0 [initial]
+step S_Pick
+
+alt from: S_Pick:
+  branch [priority: 1]:
+    transition: IsExpressShipping
+    step S_Express
+      N PrepExpressBox
+    transition: TRUE
+  branch [priority: 2]:
+    transition: IsStandardShipping
+    step S_Standard
+      N PrepStandardBox
+    transition: TRUE
+merge_to: S_Ship
+
+step S_Ship
+
+transition from: S0 to: S_Pick: ProductOrdered
+transition from: S_Ship to: S0: Shipped
+```
+
+As linhas horizontais simples acima e abaixo das ramificações são as barras de divergência e convergência. Cada ramificação começa com sua **transição de entrada** (entre a barra de divergência e o primeiro passo) e termina com uma **transição de saída** (entre o último passo e a barra de convergência).
+
+---
+
+## 6. Ramificações simultâneas (barra dupla — AND)
+
+**Todas** as ramificações são executadas concorrentemente; o diagrama aguarda na convergência até que cada ramificação termine:
+
+```
+sim from: S_Heat: TRUE
+  branch:
+    step S_Bake
+      D Oven_Run T#15m
+  branch:
+    step S_Cool
+      L Cooler_On T#5m
+merge_to: S_Done: Bake_Done AND Cool_Done
+```
+
+As duas linhas horizontais paralelas (com espaçamento de 4px) acima e abaixo das ramificações são as barras simultâneas. A **transição compartilhada acima** (`TRUE` aqui) dispara a divergência; a **transição compartilhada abaixo** (`Bake_Done AND Cool_Done`) é verificada antes de a convergência ocorrer.
+
+---
+
+## 7. Saltos (loops)
+
+Uma transição cujo alvo é um passo anterior é renderizada como uma seta de margem:
+
+```
+step S0 [initial]
+step S1
+step S2
+transition from: S0 to: S1: A
+transition from: S1 to: S2: B
+transition T_Reset from: S2 to: S0: ResetBtn
+transition from: S2 to: S1: NOT ResetBtn
+```
+
+O avanço `S2 → S1` (back-edge) recebe a seta de margem à direita; o salto `T_Reset` de volta para `S0` vai à esquerda. Cada seta de margem exibe o id de destino e a condição.
+
+---
+
+## 8. Variáveis
+
+Reutilizadas de `ladder` e `fbd`:
+
+```
+var StartBtn: bool
+var TankLevel: real
+var BakeReady: bool
+var Counter: counter
+var T1: timer
+```
+
+Variáveis declaradas em condições e ações não são validadas — o Schematex trata o texto do corpo de condição/ação como strings opacas, da mesma forma que `state` lida com guards e ações.
+
+---
+
+## 9. Limitações da v0.1
+
+- **Ramificações aninhadas** (alt dentro de sim, sim dentro de alt) são parseadas, mas as heurísticas de layout para colapso são básicas; ninhos profundos podem se sobrepor.
+- **Conectores tracejados de par de ação S/R** (que vinculam visualmente uma ação `S` ao seu `R` correspondente em outro lugar) são adiados.
+- **Indicador de passo ativo em tempo de execução** (preenchimento amarelo no passo atualmente ativo) é adiado — útil para depurar integrações que expõem o estado de tempo de execução do PLC.
+- **Ordens de forçamento GRAFCET** (fora do escopo — recurso exclusivo da IEC 60848).
+- **Passo final** é parseado com `[final]`, mas renderizado com a mesma borda dupla do inicial; a convenção de borda tripla da IEC é adiada.
+
+---
+
+## Exemplos relacionados
+
+Cenários prontos para uso da galeria de exemplos:
+
+<RelatedExamples slugs={[
+  'sfc-bottle-filling',
+  'sfc-bake-cool-concurrent',
+  'sfc-order-routing-alt',
+]} />

@@ -1,0 +1,461 @@
+---
+title: Diagramme d'arbre de décision
+---
+
+## À propos des arbres de décision
+
+Un **arbre de décision** est un diagramme ramifié qui représente une séquence de choix et leurs conséquences sous forme d'arbre enraciné : chaque nœud interne est une question ou une décision, chaque arête est une réponse ou une action, et chaque feuille est un résultat. Le format apparaît dans trois pratiques assez différentes — les organigrammes de dépannage et les règles de décision cliniques (arbres taxonomiques), l'analyse de risque et d'investissement utilisant la valeur attendue (analyse de décision), et l'inspection de modèles d'apprentissage automatique (arbres de classification). Malgré les différences de surface, les trois partagent la même structure d'arbre, ce qui explique pourquoi Schematex les encode sous un seul mot-clé avec un sélecteur de mode.
+
+Les arbres de décision Schematex couvrent : (1) le **mode taxonomique** — les flux de questions oui/non utilisés dans le triage médical (lignée [Turing 1937](https://en.wikipedia.org/wiki/Decision_tree) ; maintenant standard dans l'aide à la décision clinique), (2) le **mode analyse de décision** — la méthode de repli de la valeur attendue développée en sciences de gestion ([Raiffa & Schlaifer, 1961](https://en.wikipedia.org/wiki/Decision_tree#Decision_analysis)), et (3) le **mode ML** — le format de fractionnement/feuille CART utilisé pour visualiser les classificateurs entraînés scikit-learn et similaires ([Breiman et al., 1984](https://en.wikipedia.org/wiki/Decision_tree_learning)).
+
+<Playground initial={`
+  decisiontree "Customer Support Triage"
+  direction: top-down
+
+  question "Is the service completely down?"
+    yes: question "Outage confirmed on status page?"
+      yes: answer "Follow incident protocol — page on-call"
+      no: answer "Check monitoring — open severity-1 ticket"
+    no: question "Is the issue affecting billing?"
+      yes: answer "Escalate to billing team — SLA breach risk"
+      no: question "Can user reproduce consistently?"
+        yes: answer "Collect HAR trace — file bug report"
+        no: answer "Ask for screenshot — watch for recurrence"`} height={460} />
+
+---
+
+## 1. Votre premier arbre de décision
+
+L'arbre de décision utile minimal : une question racine avec deux branches.
+
+<Playground initial={`
+  decisiontree "Laptop troubleshoot"
+
+  question "Does it power on?"
+    yes: answer "Check display — connect external monitor"
+    no: question "Is the charger light on?"
+      yes: answer "Hold power button 10 s — try again"
+      no: answer "Check outlet and charging cable"`} />
+
+Quatre règles couvrent 80 % de l'usage :
+
+1. Commencez par `decisiontree`, optionnellement avec `:mode` et un titre entre guillemets.
+2. Chaque nœud question utilise `question "texte"` (ou raccourci `q "texte"`).
+3. Chaque réponse/feuille utilise `answer "texte"` (ou `a "texte"` ou `leaf "texte"`).
+4. Les étiquettes de branche — `yes:`, `no:`, ou un `label "X":` personnalisé — précèdent le nœud enfant sur la même ligne.
+
+L'indentation contrôle l'imbrication : chaque niveau ajoute 2 espaces. L'analyseur calcule les relations parent-enfant à partir de la profondeur d'indentation.
+
+> Les commentaires doivent commencer par `#` ou `//` sur leur propre ligne.
+
+---
+
+## 2. Modes
+
+Le mode est défini dans la ligne d'en-tête :
+
+| En-tête | Mode | Utilisé pour |
+|---|---|---|
+| `decisiontree` | taxonomique | Flux de questions oui/non, guides de dépannage, aide à la décision clinique |
+| `decisiontree:decision` (ou `decisiontree:da`) | analyse de décision | Décisions d'investissement, analyse de risque, calcul de valeur attendue |
+| `decisiontree:influence` (ou `mode: influence`) | diagramme d'influence | Vue DAG compacte d'un problème de décision — structure avant dépliage en arbre |
+| `decisiontree:ml` | apprentissage automatique | Visualisation des classificateurs CART entraînés (scikit-learn, XGBoost, etc.) |
+
+La direction par défaut est `top-down` pour les modes taxonomique et ML, `left-right` pour l'analyse de décision.
+
+---
+
+## 3. Mode taxonomique
+
+Idéal pour : guides de dépannage, FAQ, protocoles cliniques, flux de recommandation de produits.
+
+### Mots-clés de nœuds
+
+| Mot-clé | Alias | Signification |
+|---|---|---|
+| `question "…"` | `q "…"` | Nœud interne — une question avec des enfants |
+| `answer "…"` | `a "…"`, `leaf "…"` | Nœud feuille — un résultat terminal |
+
+### Étiquettes de branches
+
+| Syntaxe | Signification |
+|---|---|
+| `yes: question "…"` | Branche étiquetée « yes » |
+| `no: answer "…"` | Branche étiquetée « no » |
+| `label "Texte personnalisé": answer "…"` | Branche avec toute étiquette personnalisée |
+
+Les étiquettes personnalisées vous permettent d'aller au-delà du oui/non pour les décisions à plusieurs voies à partir d'une même question.
+
+<Playground initial={`
+  decisiontree "Triage — chest pain onset"
+
+  q "Onset sudden?"
+    yes: q "ECG changes present?"
+      yes: a "ACS protocol — cardiology consult"
+      no: q "D-dimer elevated?"
+        yes: a "PE workup — CT pulmonary angiography"
+        no: a "Aortic dissection — CT angiography"
+    no: q "Pain reproducible on palpation?"
+      yes: a "Musculoskeletal — NSAIDs, follow-up PCP"
+      no: a "GI / anxiety — further history"`} height={420} />
+
+<Playground initial={`
+  decisiontree "Pain level triage"
+
+  question "Reported pain level?"
+    label "Severe (8-10)": answer "Emergency — send to ER immediately"
+    label "Moderate (4-7)": answer "Urgent care — within 2 hours"
+    label "Mild (1-3)": answer "Schedule next available — OTC care"
+    label "None": answer "Monitor — patient may be post-medication"`} height={320} />
+
+---
+
+## 4. Mode analyse de décision
+
+Idéal pour : décisions d'investissement, analyse construire-ou-acheter, évaluation de stratégie pondérée par le risque.
+
+### Mots-clés de nœuds
+
+| Mot-clé | Alias | Signification |
+|---|---|---|
+| `decision "…"` | — | Nœud de décision — l'acteur choisit une branche |
+| `chance "…"` | — | Nœud aléatoire — un résultat incertain |
+| `end "…"` | `outcome "…"` | Nœud terminal — gain final |
+
+### Mots-clés de branches
+
+| Mot-clé | Signification |
+|---|---|
+| `choice "étiquette"` | Nomme la branche entrante depuis un nœud de décision |
+| `prob N` | Définit la probabilité (0–1) sur la branche entrante depuis un nœud aléatoire |
+
+### Attribut de gain
+
+`payoff=N` sur n'importe quel nœud définit la valeur de gain. Sur les nœuds `end` / `outcome`, il définit la valeur terminale. L'analyseur exécute automatiquement le repli de la valeur attendue : la VE de chaque nœud `chance` est la somme pondérée par les probabilités des VE de ses enfants ; la VE de chaque nœud `decision` est la VE maximale des enfants, et la branche optimale est signalée.
+
+**Contrainte :** les probabilités sur tous les enfants directs d'un nœud `chance` doivent sommer à 1,0 (±0,01). L'analyseur lève une `DTreeParseError` si ce n'est pas le cas.
+
+<Playground initial={`
+  decisiontree:decision "Cloud vendor selection"
+
+  decision "Which vendor?"
+    choice "Build in-house"
+      chance "Project outcome"
+        prob 0.6 end "On-time delivery" payoff=900000
+        prob 0.4 end "Over budget / delayed" payoff=150000
+    choice "Managed SaaS vendor"
+      end "Predictable cost" payoff=500000
+    choice "Hybrid approach"
+      chance "Integration complexity"
+        prob 0.5 end "Smooth integration" payoff=700000
+        prob 0.5 end "Integration rework" payoff=300000`} height={440} />
+
+---
+
+## 5. Mode diagramme d'influence
+
+Idéal pour : cadrer un problème de décision **de façon compacte** avant de le déplier. Là où le mode analyse de décision dessine chaque branche de chaque résultat sous forme d'arbre explicite, un **diagramme d'influence** ([Howard & Matheson, 1981](https://en.wikipedia.org/wiki/Influence_diagram)) dessine le *même* problème sous forme de graphe acyclique dirigé (DAG) de variables et des dépendances entre elles — un nœud par décision, incertitude et objectif, quel que soit le nombre d'états que chacun peut prendre. C'est le diagramme que les analystes de décision utilisent en premier, car il montre la structure (ce qui informe quoi, ce qui affecte le gain) sans l'explosion combinatoire d'un arbre.
+
+Ce mode est **structurel, pas computationnel.** Contrairement au mode analyse de décision, il ne résout pas la valeur attendue — le graphe compact omet délibérément les tables de probabilités et de gains dont un repli de VE aurait besoin. Utilisez-le pour communiquer et valider la forme du problème ; utilisez le mode analyse de décision (section 4) lorsque vous voulez les chiffres repliés.
+
+### Formes d'en-tête
+
+Deux façons équivalentes de sélectionner le mode :
+
+```
+decisiontree:influence "Oil Wildcatter"
+```
+
+ou, sous forme de directive sur sa propre ligne après l'en-tête :
+
+```
+decisiontree "Market Entry"
+  mode: influence
+```
+
+### Mots-clés de nœuds
+
+Chaque nœud est déclaré comme `type Id "étiquette"` — un identifiant (utilisé pour câbler les arcs) suivi d'une étiquette d'affichage entre guillemets.
+
+| Mot-clé | Forme | Signification |
+|---|---|---|
+| `decision Id "…"` | **rectangle** | Un choix que le décideur contrôle |
+| `chance Id "…"` | **ovale** | Une variable incertaine (un état du monde) |
+| `value Id "…"` | **octogone** | L'objectif / le gain à optimiser |
+
+Les formes suivent la convention standard des diagrammes d'influence : les décisions sont des rectangles, les incertitudes des ovales, et le nœud de valeur un octogone. Ajoutez `utility=N` à un nœud de valeur pour annoter le gain qu'il représente (`value Profit "Bénéfice net" utility=42`).
+
+### Arcs et leur sémantique
+
+Les arcs sont écrits `Source -> Cible` sur leurs propres lignes, par identifiant de nœud. **La signification d'un arc se lit à partir de sa destination**, exactement comme dans la norme publiée :
+
+| Arc vers un… | Signification | Dessiné en |
+|---|---|---|
+| `decision` | **Informationnel** — ceci est connu *avant* que la décision soit prise | ligne pointillée |
+| `chance` | **Pertinence / conditionnement** — la source conditionne cette incertitude | ligne continue |
+| `value` | **Fonctionnel** — la source est un argument de la fonction de gain | ligne continue |
+
+L'arc informationnel pointillé est à surveiller : `Seismic -> Drill` signifie « le résultat du test sismique est observé avant de choisir s'il faut forer », ce qui est précisément ce qui rend la décision intéressante à modéliser.
+
+### Règles de validation
+
+- Le graphe doit être **acyclique** — un cycle (ex. `A -> B` et `B -> A`) est rejeté.
+- Au moins **un nœud `value`** est requis ; un diagramme d'influence sans objectif n'est pas un problème de décision.
+- Les arcs référencent des identifiants de nœuds qui doivent être déclarés.
+
+### Exemples
+
+L'Oil Wildcatter — le problème pédagogique canonique. Le résultat du test sismique est observé avant la décision de forage (arc informationnel pointillé `Seismic -> Drill`), le test est pertinent pour savoir si du pétrole est réellement présent (`Seismic -> Oil`), et l'état du pétrole et le choix de forage alimentent tous deux le profit (`Oil -> Profit`, `Drill -> Profit`).
+
+<Playground initial={`
+  decisiontree:influence "Oil Wildcatter"
+    decision Drill "Drill?"
+    chance Oil "Oil present"
+    chance Seismic "Seismic test"
+    value Profit "Net profit" utility=42
+    Seismic -> Oil
+    Seismic -> Drill
+    Oil -> Profit
+    Drill -> Profit`} height={360} />
+
+Une décision d'entrée sur le marché utilisant la forme de directive `mode: influence`. La demande est observée avant l'entrée (`Demand -> Enter`, informationnel/pointillé) et alimente également directement le profit, tandis que la réponse du concurrent n'alimente que le gain.
+
+<Playground initial={`
+  decisiontree "Market Entry"
+    mode: influence
+    decision Enter "Enter market?"
+    chance Demand "Market demand"
+    chance Competition "Competitor response"
+    value V "Profit" utility=120
+    Demand -> Enter
+    Demand -> V
+    Competition -> V
+    Enter -> V`} height={360} />
+
+---
+
+## 6. Mode apprentissage automatique
+
+Idéal pour : expliquer les classificateurs CART entraînés, rapports de transparence des modèles, analyse de l'importance des variables.
+
+### Mots-clés de nœuds
+
+| Mot-clé | Signification |
+|---|---|
+| `split "…"` | Nœud de fractionnement interne — contient un test de variable |
+| `leaf "…"` | Nœud feuille — classe ou valeur de régression |
+
+### Préfixes de branches
+
+`true` et `false` précèdent les nœuds enfants pour indiquer quelle branche chaque enfant représente.
+
+### Propriétés (clé=valeur, sans deux-points, sans guillemets autour des valeurs)
+
+| Propriété | S'applique à | Signification |
+|---|---|---|
+| `feature=nom` | split | Nom de la variable utilisée au fractionnement |
+| `op="<="` | split | Opérateur de comparaison (entre guillemets si contient des caractères spéciaux) |
+| `threshold=5.9` | split | Valeur seuil du fractionnement |
+| `samples=150` | split, leaf | Nombre d'échantillons à ce nœud |
+| `gini=0.5` | split, leaf | Impureté de Gini |
+| `entropy=0.5` | split, leaf | Impureté d'entropie |
+| `mse=0.3` | split, leaf | Erreur quadratique moyenne (régression) |
+| `gain=0.2` | split, leaf | Gain d'information |
+| `class=nom` | leaf | Nom de la classe prédite |
+| `value=50` | leaf | Nombre d'échantillons ; utilisez `value=[50,30,20]` pour la distribution de classes |
+
+<Playground initial={`
+  decisiontree:ml "Iris classification (CART)"
+  direction: top-down
+  impurity: gini
+
+  split "Petal length ≤ 2.45" feature=petal_length op="<=" threshold=2.45 samples=150 gini=0.667
+    true leaf "Setosa" class=Iris-setosa value=50 gini=0.0
+    false split "Petal width ≤ 1.75" feature=petal_width op="<=" threshold=1.75 samples=100 gini=0.5
+      true leaf "Versicolor" class=Iris-versicolor value=50 gini=0.0
+      false leaf "Virginica" class=Iris-virginica value=50 gini=0.0`} height={400} />
+
+---
+
+## 7. Options de configuration
+
+Les lignes de configuration apparaissent entre l'en-tête et le premier nœud. Chacune est `clé: valeur` (deux-points, sans mot-clé `config`).
+
+### Configuration partagée (tous les modes)
+
+| Clé | Valeurs | Par défaut | Effet |
+|---|---|---|---|
+| `direction:` | `top-down`, `left-right` | `top-down` (taxonomique/ML), `left-right` (décision) | Direction de disposition |
+| `edgeStyle:` (ou `edge-style:`) | `diagonal`, `orthogonal`, `bracket` | selon le mode | Style de dessin des arêtes |
+
+### Configuration taxonomique
+
+| Clé | Valeurs | Par défaut | Effet |
+|---|---|---|---|
+| `branchLabels:` (ou `branch-labels:`) | `boolean`, `relation` | `boolean` | Style des étiquettes de branches |
+
+### Configuration analyse de décision
+
+| Clé | Valeurs | Par défaut | Effet |
+|---|---|---|---|
+| `branchLength:` (ou `branch-length:`) | `probability` | désactivé | Mettre à l'échelle la longueur des branches proportionnellement à la probabilité |
+
+### Configuration ML
+
+| Clé | Valeurs | Par défaut | Effet |
+|---|---|---|---|
+| `impurity:` | `gini`, `entropy`, `mse`, `gain` | `gini` | Métrique d'impureté affichée sur les nœuds |
+| `classes:` | liste séparée par des virgules | — | Noms des étiquettes de classes pour l'affichage |
+
+```
+decisiontree:ml "Loan classifier"
+direction: top-down
+impurity: gini
+classes: Approved, Denied, Review
+```
+
+---
+
+## 8. Étiquettes et commentaires
+
+- **Titre du diagramme :** `decisiontree "Titre"` — la chaîne entre guillemets après le mot-clé d'en-tête.
+- **Étiquette de nœud :** la chaîne entre guillemets immédiatement après le mot-clé de nœud — `question "Le frais est-il exonéré ?"`.
+- **Étiquette de branche :** `yes:`, `no:`, ou `label "Personnalisé":` avant le nœud enfant — sur la même ligne que l'enfant.
+- **Gain :** `payoff=250000` à la fin d'une ligne de nœud décision/fin.
+- **Propriétés ML :** jetons `clé=valeur` après la chaîne d'étiquette du nœud (sans crochets `[…]`, sans deux-points).
+- **Commentaires :** `#` ou `//` au début d'une ligne (après les espaces initiaux optionnels). Seuls les commentaires sur une ligne complète sont pris en charge — les commentaires en ligne à la fin ne le sont pas.
+
+---
+
+## 9. Mots réservés et échappement
+
+**Mots-clés de nœuds réservés :** `decision`, `chance`, `end`, `outcome`, `choice`, `prob`, `split`, `leaf`, `question`, `q`, `answer`, `a`.
+
+**Préfixes de branches réservés :** `yes:`, `no:`, `true`, `false`, `label`.
+
+**Formes d'en-tête réservées :** `decisiontree`, `decisiontree:decision`, `decisiontree:da`, `decisiontree:ml`.
+
+**Les chaînes avec des espaces** doivent être entre double guillemets : `question "Chiffre d'affaires annuel > 1 M€ ?"`. Les étiquettes de nœuds, les étiquettes de branches avec la syntaxe `label "…":`, et le titre du diagramme nécessitent tous des guillemets doubles.
+
+| Jeton réservé | Contexte | Remarques |
+|---|---|---|
+| `yes:` / `no:` | Début de ligne en mode taxonomique | Ne peut pas être utilisé comme étiquette — utilisez `label "yes":` si vous avez besoin du texte littéral « yes » |
+| `true` / `false` | Début de ligne en mode ML | Ne peut pas être une étiquette de nœud |
+| `choice` | Début de ligne en mode décision | Agit comme enveloppe de branche, pas comme nœud |
+| `prob` | Début de ligne en mode décision | Doit être suivi d'un nombre |
+
+---
+
+## 10. Erreurs courantes
+
+| Ce que vous avez écrit | Ce que dit l'analyseur | Correction |
+|---|---|---|
+| `yes: "Approuver"` (sans mot-clé de nœud) | `DTreeParseError: Missing taxonomy node kind` | `yes: answer "Approuver"` |
+| Probabilités sur les enfants `chance` dont la somme est 0,8 | `DTreeParseError: probabilities do not sum to 1.0` | Ajustez pour que toutes les valeurs `prob` somment exactement à 1,0 (±0,01) |
+| `question "texte"` avec un enfant au même niveau d'indentation | L'enfant n'est pas analysé comme enfant — devient un frère | Indentez les enfants de 2 espaces de plus que le parent |
+| `config direction = top-down` (avec le mot-clé `config`) | `config` est un mot-clé fishbone — non reconnu ici | Utilisez `direction: top-down` (sans préfixe `config`) |
+| `feature = petal_length` (espaces autour de `=`) | Analysé comme des jetons séparés ; propriété non reconnue | Sans espaces : `feature=petal_length` |
+| `[payoff: 500000]` syntaxe entre crochets | Non reconnu — l'analyseur ignore les crochets pour le gain | Utilisez `payoff=500000` (sans crochets, sans espaces autour de `=`) |
+| `decisiontree:taxonomy` | `DTreeParseError: Invalid header` | Utilisez `decisiontree` (sans suffixe de mode pour le mode taxonomique) |
+
+---
+
+## 11. Grammaire (EBNF)
+
+```text
+document       = header ( config-line )* node
+
+header         = "decisiontree" ( ":" mode )? ( WS quoted-string )? NEWLINE
+mode           = "decision" | "da" | "ml"
+                 // omis → taxonomique
+
+config-line    = config-key ":" WS config-value NEWLINE
+config-key     = "direction" | "edgeStyle" | "edge-style"
+               | "branchLabels" | "branch-labels"
+               | "branchLength" | "branch-length"
+               | "impurity" | "classes"
+
+// ── Mode taxonomique ───────────────────────────────
+node           = ( branch-prefix WS )? tax-node ( WS "[" tax-attrs "]" )? NEWLINE
+                   INDENT child-node*
+tax-node       = ( "question" | "q" ) WS quoted-string
+               | ( "answer" | "a" | "leaf" ) WS quoted-string
+branch-prefix  = "yes:" | "no:" | "label" WS quoted-string ":"
+
+// ── Mode analyse de décision ───────────────────────
+da-node        = "decision" WS quoted-string NEWLINE INDENT da-child+
+               | "chance" WS quoted-string NEWLINE INDENT da-prob-child+
+               | ( "end" | "outcome" ) WS quoted-string ( WS "payoff=" number )? NEWLINE
+da-child       = "choice" WS quoted-string NEWLINE INDENT da-node
+da-prob-child  = "prob" WS number WS da-node    // prob, valeur et enfant sur une ligne
+
+// ── Mode ML ──────────────────────────────────────
+ml-node        = ( "true" | "false" )? ml-kind WS quoted-string ml-prop* NEWLINE
+                   INDENT ml-child*
+                 // "true"/"false" et ml-kind doivent être sur la même ligne
+ml-kind        = "split" | "leaf"
+ml-prop        = WS key "=" value     // sans espaces autour de "="
+
+comment        = ( "#" | "//" ) any NEWLINE
+quoted-string  = '"' any-char-but-quote* '"'
+```
+
+Source faisant autorité : `src/diagrams/decisiontree/parser.ts`. En cas de divergence avec l'analyseur, l'analyseur l'emporte — veuillez ouvrir un ticket.
+
+---
+
+## 12. Conformité aux normes
+
+Les arbres de décision Schematex couvrent quatre conventions établies :
+
+Le **mode taxonomique** suit les conventions d'organigramme question/réponse courantes dans les systèmes d'aide à la décision clinique (lignée de syntaxe Arden) et les procédures de dépannage ISO 9001.
+
+Le **mode analyse de décision** suit la méthode de repli de la valeur attendue issue des sciences de gestion : nœuds de décision (carré, l'acteur choisit), nœuds de hasard (cercle, probabiliste), nœuds terminaux avec gains. La VE est calculée automatiquement via l'induction à rebours (Raiffa & Schlaifer, 1961).
+
+Le **mode diagramme d'influence** suit la convention Howard & Matheson (1981) : nœuds de décision (rectangle), de hasard (ovale) et de valeur (octogone) câblés en graphe acyclique, avec la signification de l'arc lue à partir de la destination (informationnel vers les décisions, dessiné en pointillé ; pertinence vers le hasard ; fonctionnel vers la valeur). C'est un diagramme structurel — il ne résout pas la VE.
+
+Le **mode ML** suit la notation de fractionnement/feuille CART (Classification and Regression Trees) (Breiman et al., 1984) compatible avec `export_text` et `plot_tree` de scikit-learn.
+
+Ce qui est implémenté aujourd'hui :
+
+- ✅ Les quatre modes : taxonomique, analyse de décision, diagramme d'influence, ML
+- ✅ Taxonomique : `question`/`q`, `answer`/`a`/`leaf`, `yes:`, `no:`, étiquettes de branche `label "X":`
+- ✅ Décision : `decision`, `chance`, `end`/`outcome`, `choice`, `prob`, `payoff=N`, repli EV automatique
+- ✅ Influence : nœuds `decision`/`chance`/`value`, `utility=N`, arcs `Source -> Cible`, sémantique d'arc dérivée de la destination, arcs informationnels pointillés, validation acyclicité + nœud-valeur
+- ✅ ML : `split`, `leaf`, préfixes de branche `true`/`false`, `feature=`, `threshold=`, `gini=`, `entropy=`, `mse=`, `class=`, `value=`
+- ✅ Config : `direction:`, `edgeStyle:`, `impurity:`, `classes:`, `branchLabels:`, `branchLength:`, `mode:`
+- ⏳ Rendu visuel de longueur de branche pondérée par la probabilité (`branchLength: probability` analysé mais pas encore appliqué visuellement)
+- ⏳ Superpositions d'analyse de sensibilité (annotations de type diagramme en tornade sur les arbres de décision)
+- ⏳ Vue forêt / ensemble — plusieurs arbres côte à côte
+
+Références :
+
+- Raiffa, H. & Schlaifer, R. (1961). *Applied Statistical Decision Theory.* Harvard Business School.
+- Howard, R. A. & Matheson, J. E. (1981/2005). *Influence Diagrams.* Decision Analysis 2(3).
+- Breiman, L. et al. (1984). *Classification and Regression Trees.* Wadsworth.
+- Wikipedia — [Decision tree](https://en.wikipedia.org/wiki/Decision_tree) · [Influence diagram](https://en.wikipedia.org/wiki/Influence_diagram) · [Decision tree learning](https://en.wikipedia.org/wiki/Decision_tree_learning)
+
+---
+
+## 13. Feuille de route
+
+**Prévu — pas encore analysable.** Ne l'utilisez pas dans le DSL généré aujourd'hui ; l'analyseur le rejettera ou l'ignorera.
+
+- **Rendu visuel `branchLength: probability`** — la clé de configuration est analysée mais le moteur de disposition ne met pas encore à l'échelle les longueurs de branches par probabilité.
+- **Analyse de sensibilité / tornade** — bloc `sensitivity:` annotant quelles valeurs `prob` affectent le plus la VE finale.
+- **Annotations d'export** — sortie en tableau structuré (matrice de décision) aux côtés du SVG du diagramme.
+- **Vue forêt** — mot-clé `forest` enveloppant plusieurs blocs `decisiontree` dans une disposition de comparaison côte à côte.
+- **Marqueurs interactifs de réduction/expansion** — `collapsed: true` sur un nœud pour rendre un espace réservé triangulaire pour les sous-arbres profonds.
+
+Suivez dans les tickets GitHub si vous avez besoin de l'une de ces fonctionnalités plus tôt.
+
+---
+
+## Exemples associés
+
+Scénarios prêts à l'emploi issus de la galerie d'exemples :
+
+<RelatedExamples slugs={[
+  'decisiontree-support-triage',
+  'decisiontree-investment-analysis',
+]} />

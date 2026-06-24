@@ -43,7 +43,6 @@ export default async function LangLayout({
           stars={stars}
           lang={lang}
           nav={dict.nav}
-          switcherLabel={dict.localeSwitcher.label}
         />
         {children}
       </div>

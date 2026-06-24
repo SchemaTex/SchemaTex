@@ -1,0 +1,162 @@
+---
+title: 焊接符号图（Welding symbol diagram）
+---
+
+## 关于焊接符号
+
+**焊接符号**告诉制作者如何焊接一个接头：焊接类型、在哪一侧、多大、多长，以及如何完工。这个符号由**参考线骨架**构成——一条水平线、一个指向接头的引线箭头，以及固定在线上或线下的小型焊接符号字形——由 **AWS A2.4**（美国）与 **ISO 2553**（国际）标准化。Schematex 正确地依规格绘制骨架：你描述焊缝，引擎定位每个字形、尺寸与补充符号。
+
+这是一种*固定骨架*符号，而非图形——没有需要解决的布局问题，因此每次都能确定性地渲染。
+
+<Playground initial={`welding "Bracket welds"
+joint "bracket to plate" {
+  arrow: fillet size=8 len=50 pitch=150
+  other: fillet size=6
+  around
+  tail: "GMAW"
+}`} height={260} />
+
+---
+
+## 1. 第一个焊接符号
+
+最小的实用标注：一个标题、一个接头、一个箭头侧焊缝。
+
+```
+welding "Bracket"
+joint "bracket to plate" {
+  arrow: fillet size=8
+}
+```
+
+三条规则涵盖大多数使用场景：
+
+1. 以 `welding` 开头，可选择加上 `standard: aws | iso-a | iso-b`（默认 `aws`）与引号标题。
+2. 每个接头是一个 `joint "label" { … }` 块。在 `arrow:`（箭头侧）和／或 `other:`（另一侧）放置焊缝。
+3. 焊缝规格是类型后接 `key=value` 尺寸——`fillet size=8`、`vgroove angle=60 root=3`。
+
+---
+
+## 2. 侧面——箭头侧、另一侧、两侧
+
+接头可以在箭头侧、另一侧或两侧焊接。
+
+```
+joint "double fillet" {
+  both: fillet size=6        # 两侧相同焊缝
+}
+joint "asymmetric" {
+  arrow: fillet size=8       # 仅箭头侧
+  other: vgroove angle=60    # 另一侧使用不同焊缝
+}
+```
+
+- **AWS**（默认）：箭头侧字形绘制于参考线**下方**，另一侧字形绘制于**上方**。
+- **ISO-A**（`standard: iso-a`）：显示**虚线伴随线**；箭头侧焊缝附在实线上，另一侧焊缝附在虚线上。对称的 `both:` 焊缝省略虚线。
+
+---
+
+## 3. 焊缝类型
+
+| 类型 | 字形 | 类型 | 字形 |
+|---|---|---|---|
+| `fillet` | 三角形 | `plug` / `slot` | 矩形 |
+| `square` | 平行垂直线 | `spot` | 线上圆形 |
+| `vgroove` | V 形 | `seam` | 圆形加线 |
+| `bevel` | 半 V 形 | `back` / `backing` | 半圆形 |
+| `ugroove` | U 形 | `surfacing` | 堆积隆起 |
+| `jgroove` | 半 U 形 | `edge` | 高垂直线 |
+| `flarev` / `flarebevel` | 曲线坡口 | | |
+
+别名：`v`→`vgroove`、`u`→`ugroove`、`j`→`jgroove`、`flare-v`→`flarev`。
+
+---
+
+## 4. 尺寸
+
+尺寸沿着参考线在固定的槽位读取。
+
+```
+joint "groove" {
+  arrow: vgroove angle=60 root=3 throat=12 len=50 pitch=150
+}
+```
+
+| 键 | 槽位 | 含义 |
+|---|---|---|
+| `size=` | 符号左侧 | 角焊脚长／坡口深度／塞孔直径 |
+| `throat=` | 左侧，括号内 | 有效喉深 `(E)` |
+| `len=` | 符号右侧 | 焊缝长度 |
+| `pitch=` | 右侧（配合 `len`） | 间歇式中心间距 → `len-pitch` |
+| `count=` | 右侧（ISO） | 增量数量 → `count×len (pitch)` |
+| `angle=` | 开口处 | 坡口包含角度（仅坡口类型） |
+| `root=` | 符号与线之间 | 根部开口／间隙 |
+| `contour=` | 符号上方 | `flush`（平）、`convex`（凸）、`concave`（凹弧） |
+| `finish=` | 轮廓上方 | 完工方法字母 `G`/`M`/`C`/`R`/`H`/`U` |
+
+---
+
+## 5. 补充符号
+
+```
+joint "post base" {
+  arrow: fillet size=10
+  around            # 周围焊接——接合点的开圆
+  field             # 现场／工地焊接——指向尾部的实心旗帜
+  tail: "GTAW; WPS-12"   # 工艺 / 规格 / NDE 方法
+}
+```
+
+<Playground initial={`welding
+joint "butt weld" {
+  arrow: vgroove angle=60 root=3 throat=12
+  other: backing
+  tail: "SMAW; E7018"
+}`} height={240} />
+
+---
+
+## 6. 标准合规性
+
+Schematex 焊接图实现了 **AWS A2.4:2020**（单参考线）与 **ISO 2553:2019** A 系统（双实线加虚线）及 B 系统。
+
+- ✅ 完整字形目录——角焊缝、方形／V 形／斜坡／U 形／J 形／扩口 V 形／扩口斜坡坡口、塞孔、开槽、点焊、缝焊、背面焊缝、背垫、堆焊、边缘焊缝
+- ✅ 尺寸槽位——大小、喉深 `(E)`、长度、长度-间距、数量×长度、坡口角度、根部开口
+- ✅ 补充符号——周围焊接圆、现场焊接旗帜、尾部工艺/规格/NDE、轮廓加完工
+- ✅ 箭头侧／另一侧／两侧，遵循各标准惯例
+- ✅ AI 可读的非法类型/侧面/尺寸组合验证
+- ⏳ 组合焊缝加 NDE 符号（NDE 目前为尾部文字）
+- ⏳ 准备件的箭头折断；交错式间歇偏移；熔透／消耗性嵌入字形
+
+参考文献：
+
+- American Welding Society (2020). *AWS A2.4: Standard Symbols for Welding, Brazing, and Nondestructive Examination.*
+- ISO 2553:2019. *Welding and allied processes — Symbolic representation on drawings — Welded joints.*
+
+---
+
+## 7. 语法（EBNF）
+
+```text
+document  = "welding" ( "standard:" std )? title? NEWLINE joint*
+std       = "aws" | "iso-a" | "iso-b"
+joint     = "joint" title? "{" directive* "}"
+directive = ( "arrow:" | "other:" | "both:" ) weldspec
+          | "around" | "field"
+          | "tail:" quoted-string
+weldspec  = type ( WS key "=" value )*
+type      = "fillet"|"square"|"vgroove"|"bevel"|"ugroove"|"jgroove"
+          | "flarev"|"flarebevel"|"plug"|"slot"|"spot"|"seam"
+          | "back"|"backing"|"surfacing"|"edge"
+key       = "size"|"len"|"pitch"|"count"|"angle"|"root"|"throat"|"contour"|"finish"
+```
+
+权威来源：`src/diagrams/welding/parser.ts`。
+
+---
+
+## 相关示例
+
+<RelatedExamples slugs={[
+  'welding-bracket-fillet',
+]} />

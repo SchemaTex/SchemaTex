@@ -1,0 +1,295 @@
+---
+title: エコマップ（Ecomap）
+---
+
+## エコマップについて
+
+「エコマップ」（ecomap）は、中心に個人または家族を置き、その周囲に外部システムのネットワーク — 拡大家族、学校、教会、クリニック、雇用主、サポートグループ — を配置した 1 枚の図です。各接続線は関係の*質*（強い、希薄な、ストレス的）と*方向*（誰が与え、誰が受け取るか）を記録します。ソーシャルワーカー、スクールカウンセラー、ケースマネージャー、地域保健師は、クライアントがどこに支えを持ち、セーフティネットが薄い部分はどこかを一目で把握するためにエコマップを使用します。
+
+Schematex は **[Hartman (1978) エコマップモデル](https://journals.sagepub.com/doi/10.1177/104438947805900803)** に従います — この表記法を紹介したオリジナルの *Social Casework* 論文 — 現代の臨床ソーシャルワーク実践の慣習で拡張されています。背景については [Wikipedia: Ecomap](https://en.wikipedia.org/wiki/Ecomap) を参照してください。このページは今日のパーサーが受け付けるものを文書化しています。
+
+<Playground initial={`ecomap "Nguyen Family Resettlement"
+  center: family [label: "Nguyen Family"]
+  resettlement [label: "IRC Office", category: government]
+  school [label: "Lincoln Elementary", category: education]
+  clinic [label: "Community Clinic", category: health]
+  caseworker [label: "Ms. Patel", category: mental-health]
+  temple [label: "Vietnamese Temple", category: cultural]
+  neighbors [label: "Sponsor Family", category: community]
+  employer [label: "Warehouse Job", category: work]
+  family === resettlement [label: "active case"]
+  family === school
+  clinic --> family [label: "vaccinations"]
+  caseworker <-> family [label: "weekly"]
+  family === temple [label: "anchor"]
+  neighbors === family [label: "housing host"]
+  family --- employer [label: "new, part-time"]`} height={520} />
+
+---
+
+## 1. 最初のエコマップ
+
+最小限の実用的なエコマップ：1 つの中心と 3 つの外部システム。
+
+<Playground initial={`ecomap
+  center: client [label: "Maria"]
+  mom [label: "Mother", category: family]
+  work [label: "Tech Corp", category: work]
+  therapist [label: "Dr. Patel", category: mental-health]
+  mom === client
+  work --- client
+  therapist <-> client [label: "weekly"]`} />
+
+使用法の 80% をカバーする 4 つのルール：
+
+1. キーワード `ecomap` で始めます。オプションでクォートされたタイトル。
+2. 中心を独自の行で宣言します：`center: id [label: "…"]`。ダイアグラムごとに中心は 1 つだけです。
+3. 各外部システムを独自の行で宣言します：`id [label: "…", category: …]`。
+4. 宣言された任意の 2 つの ID を **接続演算子** で接続します — `===`（強い）、`---`（普通）、`<->`（双方向）など。完全なテーブルはセクション 3 を参照。末尾の `[label: "…"]` でエッジラベルを追加します。
+
+> コメントは `#`、`//`、または Mermaid スタイルの `%%` で始まる独立した行でなければなりません。インラインの末尾コメントはパーサーを壊します。
+
+---
+
+## 2. 中心と外部システム
+
+すべてのエコマップには 1 つの**中心**と任意の数の**外部システム**があります。両方とも同じ `id [attrs]` 構文を使用します。唯一の違いは `center:` プレフィックスです。
+
+**ID のルール。** `[a-zA-Z][a-zA-Z0-9_-]*` に一致する必要があります。ID は大文字小文字を区別しません。元のトークンはデフォルトラベルとして保持されます。
+
+**今日のパーサーが受け付ける属性：**
+
+| 属性 | 値 | 効果 |
+|---|---|---|
+| `label:"…"` | 任意のクォートされた文字列 | 表示ラベルの上書き |
+| `category:…` | セクション 2.1 を参照 | システムノードの色 / グルーピング |
+| `size:…` | `small`、`medium`、`large` | ノードサイズ |
+| `importance:…` | `major`、`moderate`、`minor` | 視覚的な重み |
+| `sector:…` | `top`、`right`、`bottom`、`left` | システムが中心のどちら側に位置するかのヒント |
+| `age:N` | 例：`age:34` | 個人タイプの中心の内部に表示される年齢 |
+| `male` / `female` / `unknown` | フラグ | 個人タイプの中心の性別 |
+
+### 2.1 システムカテゴリー
+
+カテゴリーは外部システムをその生活領域で色分けします。パーサーは任意の文字列を受け付けます — これらはレンダラーがテーマパレットを持っている値です：
+
+| カテゴリー | 典型的な例 |
+|---|---|
+| `family` | 拡大家族、義理の家族、従兄弟 |
+| `friends` | 友人、隣人 |
+| `work` | 雇用主、同僚 |
+| `education` | 学校、大学、訓練プログラム |
+| `health` | かかりつけ医、専門医、病院 |
+| `mental-health` | セラピスト、精神科医、サポートグループ |
+| `religion` | 教会、寺院、宗教コミュニティ |
+| `recreation` | スポーツ、趣味、クラブ |
+| `legal` | 弁護士、仮釈放、裁判所 |
+| `government` | 社会サービス、住宅、移民 |
+| `financial` | 銀行、給付金、経済的支援 |
+| `community` | 地域グループ、スポンサー |
+| `cultural` | 文化/民族組織 |
+| `substance` | リカバリープログラム、またはネガティブな場合は現役使用源 |
+| `technology` | オンラインコミュニティ、サポートフォーラム |
+| `pet` | ペット、補助動物 |
+
+<Playground initial={`ecomap
+  center: client [label: "Marcus, age 15"]
+  mom [label: "Mother", category: family]
+  dad [label: "Father (divorced)", category: family]
+  school [label: "East High School", category: education]
+  coach [label: "Soccer Coach", category: community]
+  therapist [label: "Ms. Chen", category: mental-health]
+  mom === client
+  dad --- client [label: "EOW weekends"]
+  school === client
+  coach --> client [label: "mentor"]
+  therapist <-> client [label: "weekly"]`} />
+
+---
+
+## 3. 接続
+
+接続は 1 行：`fromId OP toId` の後にオプションで `[label: "…"]`。両方の ID がすでに宣言されている必要があります（中心も含む）。
+
+### 3.1 関係品質演算子
+
+| 演算子 | タイプ | 意味 |
+|---|---|---|
+| `===` | 強い | 親密、支持的、高頻度 |
+| `==` | 中程度 | ポジティブ、中程度の関与 |
+| `---` | 普通 | 中立 / 平均的 |
+| `- -` | 弱い | 希薄、脆弱、初期段階 |
+| `~~~` | ストレス的 | ストレスのある関係 |
+| `~=~` | ストレス的-強い | 親密*かつ*ストレス的 |
+| `~x~` | 対立的 | 能動的な対立 |
+| `-/-` | 破綻 | 断絶、疎遠、カットオフ |
+
+### 3.2 エネルギーフロー演算子
+
+強いまたは普通の線に矢印の方向を重ねます：
+
+| 演算子 | 意味 |
+|---|---|
+| `-->` | 一方向：エネルギーが中心からシステムへ流れる |
+| `<--` | 一方向：エネルギーがシステムから中心へ流れる |
+| `<->` | 相互 / 双方向 |
+| `===>` | 強い一方向流出（消耗する）|
+| `<===` | 強い一方向流入（養う）|
+| `<=>` | 強い相互 |
+| `==>` | 中程度の一方向流出 |
+| `<==` | 中程度の一方向流入 |
+
+パーサーは方向を正規化するため、矢印は中心に対して相対的に読まれます。`family === resettlement` と書いても `resettlement === family` と書いても同じダイアグラムが生成されます。`clinic --> family` と `family <-- clinic` も同様に、診療所*から*家族へ向かう同じ矢印を生成します。
+
+<Playground initial={`ecomap
+  center: client [label: "Rosa"]
+  mom [category: family]
+  ex [category: family]
+  aa [label: "AA Group", category: substance]
+  job [label: "Warehouse", category: work]
+  mom === client [label: "daily calls"]
+  ex ~x~ client [label: "custody disputes"]
+  aa <== client [label: "sponsor support"]
+  job - - client [label: "unstable hours"]`} />
+
+### 3.3 エッジラベル
+
+末尾の `[label: "…"]` は接続行が受け付ける唯一の属性です。スケジュール、性質、または短いメモをここに入れます：
+
+```
+family === temple [label: "weekly service"]
+clinic --> family [label: "vaccinations"]
+caseworker <-> family [label: "every Tuesday"]
+```
+
+---
+
+## 4. ラベルとコメント
+
+- **タイトル：** `ecomap "Nguyen Family"` — 最初の行のみ。
+- **ノードラベルの上書き：** `family [label: "The Nguyens"]`。
+- **エッジラベル：** 接続行の末尾の `[label: "…"]`。
+- **モードサフィックス：** `ecomap:strengths "Smith family"` は受け付けられます。サフィックスは `metadata.mode` として保存されます。現在のレンダラーはこれを無視します。
+- **コメント：** 行の先頭（先頭の空白の後）の `#`、`//`、または `%%`。インラインの末尾コメントは**サポートされていません**。
+
+```
+ecomap "Marcus Intake"
+  # caseworker's notes — fine
+  // also fine
+  %% Mermaid-style comments are fine
+  mom [category: family]   # ← THIS trailing comment breaks the parser
+```
+
+---
+
+## 5. 予約語とエスケープ
+
+**行頭で予約済み：** `ecomap`、`center:`。
+
+**予約演算子トークン** — 行内でこれらのシーケンスを ID 内で使用しないでください：
+`===`、`==`、`---`、`- -`、`~~~`、`~=~`、`~x~`、`-/-`、およびセクション 3.2 にリストされた方向バリアント。
+
+**スペースを含む文字列**はダブルクォートが必要です：タイトルと任意のラベル。シングルクォートとバッククォートは認識されません。
+
+---
+
+## 6. よくあるミス
+
+実際のパーサーエラー、何がトリガーするか、修正方法。
+
+| 記述した内容 | パーサーの反応 | 修正方法 |
+|---|---|---|
+| `family -- school` | `Unexpected: family -- school` | エコマップは `===`/`---`/`<->` などを使用します。`--` はジェノグラム/系図の演算子です |
+| `family === school`（`school` が未宣言）| サイレントで空の `school` ノードを作成（ラベル/カテゴリーなし）| 接続行の前にシステムを宣言してください |
+| `center:` が一切ない | レンダリングされるが視覚的な中心アンカーがない | すべてのエコマップには正確に 1 つの `center:` 行が必要です |
+| 2 つの `center:` 行 | 最初のものだけが中心として扱われ、2 番目は通常のシステムになる | 1 つを選んでください |
+| `family==school`（スペースなし）| `Unexpected: family==school` | 演算子には各側にスペースが必要です |
+| `family === school [weekly]` | 裸のトークン `weekly` がプロパティフラグとして解析され、ラベルは表示されない | `[label: "weekly"]` を使用 |
+| `family === school # daily` | 末尾の `#` が行の一部として消費される | コメントを上に移動してください |
+
+---
+
+## 7. 文法（EBNF）
+
+```text
+document       = header (blank | comment | center | system | connection)*
+
+header         = "ecomap" ( ":" mode )? ( WS quoted-string )? NEWLINE
+mode           = [A-Za-z] [A-Za-z0-9_-]*
+quoted-string  = '"' any-char-but-quote* '"'
+
+center         = "center:" WS id ( "[" attrs "]" )? NEWLINE
+system         = id ( "[" attrs "]" )? NEWLINE
+connection     = id WS op WS id ( WS "[" "label:" quoted-string "]" )? NEWLINE
+
+op             = "===" | "==" | "---" | "- -" | "~~~" | "~=~" | "~x~" | "-/-"
+               | "===>" | "<===" | "<=>" | "==>" | "<=="
+               | "-->" | "<--" | "<->"
+
+id             = [a-zA-Z] [a-zA-Z0-9_-]*
+attrs          = attr ("," attr)*
+attr           = "label" ":" quoted-string
+               | "category" ":" category
+               | "size" ":" ("small" | "medium" | "large")
+               | "importance" ":" ("major" | "moderate" | "minor")
+               | "sector" ":" ("top" | "right" | "bottom" | "left")
+               | "age" ":" digits
+               | "male" | "female" | "unknown"
+               | key ":" value                  // custom, stored as metadata
+
+category       = "family" | "friends" | "work" | "education" | "health"
+               | "mental-health" | "religion" | "recreation" | "legal"
+               | "government" | "financial" | "community" | "cultural"
+               | "substance" | "technology" | "pet" | "other"
+
+comment        = ( "#" | "//" | "%%" ) any NEWLINE
+```
+
+権威ある情報源：`src/diagrams/ecomap/parser.ts`。これがパーサーと異なる場合、パーサーが優先されます — イシューを開いてください。
+
+---
+
+## 8. 標準準拠
+
+Schematex のエコマップはコア表記について **Hartman (1978), *Diagrammatic Assessment of Family Relationships*** に従います：外部システムに囲まれた境界付きの中心、品質と方向性の両方をエンコードした接続線。カテゴリーパレットと拡張された演算子セット（ストレス的-強い、相互矢印）は現代の臨床ソーシャルワークと看護研究の慣習に従います。
+
+現在実装済みの内容：
+
+- ✅ 中心 + 外部システム放射状構造
+- ✅ 8 つの品質演算子（強い / 中程度 / 普通 / 弱い / ストレス的 / ストレス的-強い / 対立的 / 破綻）
+- ✅ 8 つの方向演算子（一方向と相互、3 つの強度で）
+- ✅ カテゴリー色分け（17 カテゴリー）
+- ✅ エッジラベル
+- ⏳ 中心として埋め込まれたミニジェノグラム（セクション 10 を参照）
+- ⏳ 現在の 4 つの基本方位を超えたセクターベースのレイアウトヒント
+
+参考文献：
+
+- Hartman, A. (1978). Diagrammatic assessment of family relationships. *Social Casework*, 59(8), 465–476.
+- Ray, R.A. & Street, A.F. (2005). Ecomapping: An innovative research tool for nurses. *Journal of Advanced Nursing*, 50(5), 545–552.
+- Rempel, G.R., Neufeld, A., & Kushner, K.E. (2007). Interactive use of genograms and ecomaps in family caregiving research. *Journal of Family Nursing*, 13(4), 403–419.
+
+---
+
+## 9. 関連例
+
+サンプルギャラリーからすぐに使えるシナリオ：
+
+<RelatedExamples slugs={[
+  'ecomap-refugee-resettlement',
+  'ecomap-teen-client',
+  'ecomap-substance-recovery',
+]} />
+
+---
+
+## 10. ロードマップ
+
+**計画中 — まだ解析できません。** 今日の生成 DSL では使用しないでください。パーサーが拒否または静かに無視します。
+
+- **中心としての埋め込みミニジェノグラム** — `center:` ノード内でフル家族ブロックを宣言（インデントされたカップルと子供）することで、中心を単一の形状ではなく小さなジェノグラムにします。パーサーは現在、`center:` 下のインデントされたコンテンツをスキップされた行として読み取ります。
+- **カテゴリーごとのデフォルト矢印意味論** — 例：`health` システム（受信）と `work` システム（送信）の自動方向矢印。
+- **複数の中心** — 一部のシステムを共有する 2 人のクライアントのエコマップ。
+- **カスタム色の上書き** — システムまたは接続の `[color: "#…"]`。
+
+早急にこれらが必要な場合は GitHub イシューで追跡してください。

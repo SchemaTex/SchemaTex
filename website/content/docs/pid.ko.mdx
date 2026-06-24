@@ -1,0 +1,361 @@
+---
+title: P&ID (배관 및 계장도)
+---
+
+## P&ID에 대하여
+
+**배관 및 계장도(P&ID)**는 공정 플랜트의 엔지니어링 "배선도"입니다. 모든 용기(vessel), 펌프, 열교환기, 밸브, 계기 루프가 표준화된 기호로 그려지고, 배관 및 신호 라인으로 연결됩니다. 공정 엔지니어, 제어 엔지니어, HSE 감사관은 모두 동일한 P&ID를 통해 플랜트를 설계하고, 시운전하며, 위험성 검토(HAZOP)를 수행하고, 생산을 운영합니다. P&ID는 OSHA PSM 및 EPA RMP에 따라 화학, 석유화학, 제약, 수처리, 발전 프로젝트에서 법적으로 요구되는 엔지니어링 납품물입니다.
+
+Schematex는 **[ANSI/ISA-5.1-2009](https://www.isa.org/products/ansi-isa-5-1-2009-instrumentation-symbols-and-iden)** 기호 카탈로그(계기 버블, 태그 문자 코드, 신호 라인 유형)와 **[ISO 10628-1:2014](https://www.iso.org/standard/51840.html)**(용기, 컬럼, 펌프, 열교환기)의 장치 기호를 구현합니다. DSL은 LLM이 공정 설명으로부터 제어 루프 P&ID를 한 번에 생성할 수 있도록 의도적으로 간결하게 설계되었습니다.
+
+<Playground initial={`pid "Pump with Flow Control"
+
+equip T-101 : tank_atm           [tag: "Feed Tank"]
+equip P-101 : pump_centrifugal   [tag: "P-101"]
+equip V-101 : valve_control      [tag: "V-101"]
+equip F-101 : filter             [tag: "Filter"]
+equip V-201 : vessel_v           [tag: "V-201"]
+
+line L1 from T-101.bottom to P-101.in  [size: "4\\"", service: "water", type: "process"]
+line L2 from P-101.out    to V-101.in  [size: "4\\"", type: "process"]
+line L3 from V-101.out    to F-101.in  [size: "4\\"", type: "process"]
+line L4 from F-101.out    to V-201.in  [size: "4\\"", type: "process"]
+
+inst FT-101 : field_discrete
+  measures P-101
+inst FIC-101 : cr_shared
+  controls V-101`} height={420} />
+
+---
+
+## 1. 첫 번째 P&ID
+
+최소한의 P&ID는 장치 하나와 공정 라인 하나로 구성됩니다.
+
+<Playground initial={`pid
+
+equip T-1 : tank_atm
+equip P-1 : pump_centrifugal
+equip V-1 : vessel_v
+
+line L1 from T-1.bottom to P-1.in [size: "2\\"", type: "process"]
+line L2 from P-1.out    to V-1.in [size: "2\\"", type: "process"]`} />
+
+세 가지 규칙으로 80%의 사용 사례를 처리할 수 있습니다.
+
+1. 문서를 `pid`로 시작합니다 (선택적 제목과 `[direction: LR]` 속성).
+2. 각 장치를 선언합니다: `equip <ID> : <type> [tag: "label"]`.
+3. `line <ID> from <equip>.<port> to <equip>.<port> [type: "process", size: "4\""]`로 연결합니다.
+
+계기(Instrumentation)는 `inst <TAG> : <category>`와 들여쓰기된 `measures` / `controls` 절로 별도 추가합니다.
+
+> 주석은 줄 시작에 `#`을 사용합니다.
+
+---
+
+## 2. 장치(Equipment)
+
+`equip` 구문은 공정 장치를 선언합니다. 카탈로그는 ISO 10628 / ISA-5.1 관례를 따릅니다.
+
+```
+equip T-101 : tank_atm [tag: "Feed Tank"]
+equip P-101 : pump_centrifugal
+equip E-201 : hx_shell_tube [tag: "Overhead Cond"]
+equip T-201 : column_tray [tag: "Stripper"]
+```
+
+### 2.1 장치 카탈로그
+
+| 유형 | 기호 | 용도 |
+|---|---|---|
+| `tank_atm` | 원통 + 돔 상단 | 대기압 저장 탱크 |
+| `tank_cone_roof` | 원통 + 원뿔 지붕 | 원뿔 지붕 저장 탱크 |
+| `vessel_v` | 수직 캡슐 | 수직 압력 용기 |
+| `vessel_h` | 수평 캡슐 | 수평 압력 용기 |
+| `sphere` | 채워진 원 | LPG/암모니아 구형 탱크 |
+| `column_tray` | 키 큰 캡슐 + 수평 트레이 선 | 증류 트레이 컬럼 |
+| `column_packed` | 키 큰 캡슐 + 격자 무늬 | 충전 흡수 컬럼 |
+| `hx_shell_tube` | 수평 캡슐 + 튜브 다발 | 쉘-튜브형 열교환기 |
+| `hx_air_cooled` | 직사각형 + 팬 원 | 공냉식(핀-팬) 냉각기 |
+| `reboiler` | 캡슐 + 평행 튜브 선 | 케틀 리보일러 |
+| `condenser` | 수평 캡슐 + 튜브 | 오버헤드 응축기 |
+| `pump_centrifugal` | 원 + 오른쪽 삼각형 출구 | 원심 펌프 |
+| `pump_pd` | 원 + 내부 기어 | 용적형 펌프 |
+| `compressor` | 사다리꼴 (오른쪽이 좁음) | 원심 압축기 |
+| `blower` | 원 + 3-블레이드 팬 | 송풍기/팬 |
+| `reactor_cstr` | 수직 캡슐 + 교반기 | 교반 탱크 반응기 (CSTR) |
+| `reactor_pfr` | 수평 캡슐 + 충전층 점 | 플러그 흐름/고정층 반응기 |
+| `filter` | 직사각형 + 대각선 해치 | 필터 |
+| `cyclone` | 원통 + 원뿔 하단 | 사이클론 분리기 |
+| `flare` | 키 큰 스택 + 화염 | 플레어 스택 |
+| `cooling_tower` | 모래시계 | 유인 통풍식 냉각탑 |
+
+### 2.2 밸브 카탈로그
+
+밸브는 배관 라인에 위치하는 장치입니다. 유형별 액추에이터 장식이 있는 `bowtie` 스타일로 렌더링됩니다.
+
+| 유형 | 장식 | 용도 |
+|---|---|---|
+| `valve_gate` | 일반 보타이 | 수동 개폐 (전체 유로) |
+| `valve_ball` | 보타이 + 채워진 중심 원 | 수동 개폐 (1/4 회전) |
+| `valve_globe` | 보타이 + 상단 소형 원 | 수동 유량 제어 |
+| `valve_butterfly` | 보타이 + 중심 수직선 | 1/4 회전 스로틀 |
+| `valve_check` | 보타이 + 호 | 역지 밸브 |
+| `valve_control` | 보타이 + 다이어프램 액추에이터 | 공압 제어 밸브 (FIC와 쌍) |
+| `valve_psv` | 보타이 + 45° 출구 + 스프링 스택 | 압력 안전 릴리프 밸브 |
+
+```
+equip V-101 : valve_control [tag: "V-101 (FC)"]
+equip V-303 : valve_psv     [tag: "V-303 · 150 psig"]
+```
+
+---
+
+## 3. 배관 및 신호 라인
+
+`line` 구문은 두 앵커 포인트(장치 포트 또는 계기 태그)를 연결합니다.
+
+```
+line L1 from T-101.bottom to P-101.in  [size: "4\"", service: "water", type: "process"]
+line s1 from FT-101 to FIC-101         [type: "electric"]
+line s2 from FIC-101 to V-101          [type: "pneumatic"]
+```
+
+### 3.1 앵커 구문
+
+라인의 각 끝은 다음 중 하나입니다.
+- `<equip-id>.<port>` — §2.2의 포트 이름 (`in`, `out`, `top`, `bottom`, `feed`, `shell_in`, `tube_out`, `reflux` 등)
+- `<equip-id>` — 포트 생략; 장치 패밀리에 따라 `in`(대상) / `out`(소스)으로 기본값 설정
+- `<inst-tag>` — 계기 버블 중심 (신호 라인)
+
+### 3.2 라인 유형 (ISA-5.1 §5)
+
+| `type:` | 선 스타일 | 용도 |
+|---|---|---|
+| `process` | 실선, 굵음 | 주요 공정 라인 (기본값) |
+| `process_minor` | 실선, 가늠 | 보조/유틸리티 |
+| `pneumatic` | 실선 + 대각선 눈금 | 공기 액추에이터 신호 |
+| `electric` | 긴 점선 | 전기/4–20 mA 신호 |
+| `hydraulic` | 긴 점선 + 일시정지 | 유압 액추에이터 |
+| `capillary` | 점선 (원형 캡) | 충전 시스템 온도 |
+| `software` | 짧은 점선, 연함 | DCS/PLC 내부 데이터 링크 |
+| `mechanical` | 혼합 대시 | 기계적 연결 |
+
+### 3.3 라인 태그
+
+표준 PIP PIC001 태그 형식은 `<size>"-<service>-<sequence>-<spec>`입니다. `tag:` 속성으로 전달하면 렌더러가 라인 중간 지점에 흰색 배경의 작은 태그 직사각형을 배치합니다.
+
+```
+line L1 from T-101.bottom to P-101.in [size: "4\"", service: "PG", tag: "4\"-PG-101-A1B"]
+```
+
+---
+
+## 4. 계기(Instrumentation) (ISA-5.1 §4)
+
+`inst` 구문은 계기 버블을 선언합니다. **태그**는 ISA 문자 코드 관례를 사용합니다. 첫 번째 문자는 *측정 변수*, 이후 문자는 *수정자*와 *기능*입니다.
+
+```
+inst FT-101  : field_discrete         %% 유량 송신기, 루프 101
+inst FIC-101 : cr_shared              %% 유량 지시 제어기 (DCS)
+inst PSHH-301: cr_plc                 %% 압력 스위치 고고(High-High) (PLC)
+inst LIC-201 : cr_shared
+  measures D-201
+  controls V-202
+```
+
+### 4.1 문자 코드 (첫 번째 문자)
+
+가장 많이 사용되는 것: `F` 유량 · `L` 레벨 · `P` 압력 · `T` 온도 · `A` 분석 · `S` 속도 · `H` 수동 · `Y` 이벤트/상태. 전체 목록은 ISA-5.1 Table 1에 있습니다.
+
+### 4.2 기능 수정자
+
+`I` 지시기 · `R` 기록기 · `C` 제어기 · `T` 송신기 · `E` 소자 · `V` 밸브 · `S` 스위치 · `A` 경보 · `H`/`L` 고/저. 다중 문자 태그로 조합합니다: `FIC` = 유량 지시 제어기; `PSHH` = 압력 스위치 고고.
+
+### 4.3 버블 카테고리
+
+ISA-5.1은 **위치**(계기가 있는 곳)와 **유형**(아날로그 vs. 공유 vs. 컴퓨터 vs. PLC)을 구분합니다. Schematex는 가장 일반적인 네 가지 조합을 구현합니다.
+
+| 카테고리 | 버블 모양 | 용도 |
+|---|---|---|
+| `field_discrete` | 일반 원 | 현장 설치 아날로그 계기 (FT, PT) |
+| `cr_shared` | 원 + 수평선 + 내접 육각형 | DCS 제어 HMI 디스플레이 |
+| `cr_computer` | 원 + 수평선 + 내접 다이아몬드 | 컴퓨터 기능 (FY, 계산) |
+| `cr_plc` | 원 + 수평선 + 내접 정사각형 | PLC 구동 로직 |
+
+`field_*` 변형은 수평 중심선을 생략합니다. `local_*` 변형은 점선 중심선을 사용합니다. `cr_*` 변형은 "주 제어반 — 전면"을 나타내는 실선 중심선을 사용합니다.
+
+### 4.4 measures / controls
+
+`inst` 선언 아래 들여쓰기:
+
+| 절 | 효과 |
+|---|---|
+| `measures <equip-id>` | 장치에서 버블까지 자동 라우팅된 점선-전기 신호 라인 |
+| `controls <equip-id>` | 버블에서 장치까지 자동 라우팅된 공압 신호 라인 (일반적으로 `valve_control`) |
+
+```
+inst FT-101 : field_discrete
+  measures P-101
+inst FIC-101 : cr_shared
+  controls V-101
+```
+
+이 자동 신호들은 명시적인 `line` 구문과 독립적입니다. 관계 유형에 따라 적절한 신호 라인 스타일로 렌더링됩니다.
+
+---
+
+## 5. 레이아웃 방향
+
+기본 방향은 **`LR`**(좌→우)입니다. 공정 원료는 왼쪽에서 들어오고 제품은 오른쪽으로 나옵니다. 헤더에서 변경할 수 있습니다.
+
+```
+pid "Distillation Tower" [direction: TB]
+
+equip T-201 : column_tray
+…
+```
+
+MVP 레이아웃은 선언 순서대로 주 방향을 따라 장치를 배치하고 맨해튼 신호 라인 라우팅을 사용합니다. **다중 행/병렬 흐름 레이아웃과 T 분기는 로드맵 항목입니다** — §9 참조.
+
+---
+
+## 6. 작업 예제: 증류 컬럼
+
+오버헤드 응축기 루프, 리보일러, 환류 드럼, 계기가 있는 실제 예제:
+
+<Playground initial={`pid "Distillation T-201"
+
+equip T-201 : column_tray         [tag: "T-201"]
+equip E-201 : condenser           [tag: "Overhead Cond"]
+equip D-201 : vessel_h            [tag: "Reflux Drum"]
+equip P-201 : pump_centrifugal    [tag: "Reflux Pump"]
+equip E-202 : reboiler            [tag: "Reboiler"]
+
+line L1 from T-201.top    to E-201.shell_in  [size: "8\\"", service: "vapor",  type: "process"]
+line L2 from E-201.shell_out to D-201.in    [size: "8\\"", type: "process"]
+line L3 from D-201.bottom to P-201.in       [size: "3\\"", type: "process"]
+line L4 from P-201.out    to T-201.reflux   [size: "3\\"", type: "process"]
+line L5 from T-201.bottom to E-202.in       [size: "6\\"", type: "process"]
+
+inst PT-201  : field_discrete
+  measures T-201
+inst LIC-201 : cr_shared
+  measures D-201
+inst TIC-201 : cr_shared
+  measures T-201`} height={520} />
+
+---
+
+## 7. 문법 (EBNF)
+
+```text
+document    = header statement*
+header      = "pid" ( title )? ( "[" attrs "]" )? NEWLINE
+attrs       = attr ("," attr)*
+attr        = "direction:" ("LR" | "TB")
+            | "units:" ("imperial" | "metric")
+
+statement   = comment
+            | equipment-decl
+            | line-decl
+            | instrument-decl
+
+equipment-decl = "equip" ID ":" equip-type ( "[" attr-list "]" )? NEWLINE
+equip-type     = "tank_atm" | "tank_cone_roof"
+               | "vessel_v" | "vessel_h" | "sphere"
+               | "column_tray" | "column_packed"
+               | "hx_shell_tube" | "hx_air_cooled" | "reboiler" | "condenser"
+               | "pump_centrifugal" | "pump_pd"
+               | "compressor" | "blower"
+               | "reactor_cstr" | "reactor_pfr"
+               | "filter" | "cyclone" | "flare" | "cooling_tower"
+               | "valve_gate" | "valve_ball" | "valve_globe" | "valve_butterfly"
+               | "valve_check" | "valve_control" | "valve_psv"
+
+line-decl   = "line" ID "from" anchor "to" anchor ( "[" attr-list "]" )? NEWLINE
+anchor      = ID ( "." port )?
+port        = "in" | "out" | "top" | "bottom" | "left" | "right"
+            | "feed" | "reflux" | "shell_in" | "shell_out"
+            | "tube_in" | "tube_out" | "vapor_out" | "liquid_out"
+            | "bottom_return"
+
+instrument-decl = "inst" tag ":" inst-category ( "[" attr-list "]" )? NEWLINE
+                  ( indented "measures" anchor NEWLINE )*
+                  ( indented "controls" ID NEWLINE )*
+tag             = letter-code "-" loop-num     %% e.g., "FIC-101"
+inst-category   = "field_discrete" | "field_shared" | "field_computer" | "field_plc"
+                | "cr_discrete"    | "cr_shared"    | "cr_computer"    | "cr_plc"
+                | "local_discrete" | "local_shared"
+
+attr-list   = attr ("," attr)*
+attr        = key ":" value
+key         = "tag" | "size" | "service" | "type" | "set_pressure"
+            | "actuator" | "fail" | "trays" | …
+value       = quoted-string | bare-word
+
+ID          = [A-Za-z] [A-Za-z0-9_-]*
+```
+
+권위 있는 원본: `src/diagrams/pid/parser.ts`. 이 문서와 파서가 다를 경우, 파서가 우선합니다 — 이슈를 열어 주십시오.
+
+---
+
+## 8. 표준 준수
+
+현재 구현된 내용 (P0 MVP):
+
+- ✅ 22가지 공정 장치 기호 (용기, 컬럼, 펌프, 열교환기, 반응기, 분리기, 플레어, 냉각탑)
+- ✅ 7가지 밸브 기호 (게이트, 볼, 글로브, 버터플라이, 체크, 다이어프램 액추에이터 제어 밸브, 대각선 출구+스프링 PSV)
+- ✅ ISA-5.1 버블 변형 8가지 = 4가지 계기 버블 카테고리 × 2가지 위치 클래스 (현장/제어반 × 이산/공유/컴퓨터/PLC)
+- ✅ ISA 문자 코드 태그 파싱 (`FT-101`, `LIC-203`, `PSHH-301`)
+- ✅ 8가지 라인 유형 스타일 (process / process_minor / pneumatic / electric / hydraulic / capillary / software / mechanical)
+- ✅ 자동 라우팅 `measures` 및 `controls` 신호 라인
+- ✅ 라인 태그를 라인 중간 지점의 흰색 배경 직사각형으로 렌더링
+- ✅ 맨해튼 라우팅, 단일 행 장치 레이아웃
+
+**아직 구현되지 않은 것** (로드맵 참조):
+
+- ⏳ 다중 행/병렬 흐름 배치 (예: 믹서로 합쳐지는 두 개의 펌프)
+- ⏳ T 분기 및 분기 배관
+- ⏳ 교차 감지 (배관 교차 시 점프 호)
+- ⏳ 함수 블록 오버레이 (Σ 가산기, PID, 선택기)
+- ⏳ 인터록 다이아몬드 및 허가 원 (ISA-5.06)
+- ⏳ 열선 추적/재킷 라인 장식
+- ⏳ 리듀서 (동심/편심) 인라인
+- ⏳ 용기 노즐 주석
+
+참고 문헌:
+
+- ANSI/ISA-5.1-2009 — *Instrumentation Symbols and Identification* (미국 표준)
+- ISO 10628-1:2014 — *Diagrams for the chemical and petrochemical industry* (국제 표준)
+- ISA-5.06.01-2007 — *Functional Requirements Documentation for Control Software*
+- PIP PIC001 — Piping & Instrumentation Diagram Documentation Criteria (산업 보충)
+
+---
+
+## 9. 로드맵
+
+MVP P&ID는 단일 선형 제어 루프(탱크 → 펌프 → 제어 밸브 → 계기)를 다룹니다. 실제 플랜트는 2D 배치와 T 분기가 필요합니다. v0.4에서 계획된 것:
+
+- **DSL 확장**: 다중 흐름 레이아웃을 위한 `equip ... [row: 0, col: 2]` 레인/격자 힌트
+- **`tee` 기본 요소**: 공정 라인의 3방향 분기를 표현하는 `tee T1 on L1`
+- **`junction` 기본 요소**: 배관 연결을 위한 ISA 접합 점
+- **교차 감지**: 두 배관이 교차할 때, 아래쪽에 작은 호 범프를 렌더링
+- **함수 블록**: `Σ` 가산기, `PID` 제어기, `LS`/`HS` 저/고 선택기
+- **인터록 기호**: `interlock I-301` 다이아몬드, `permissive P-202` 원
+- **리듀서 인라인**: 라인 장식으로서의 동심/편심 리듀서
+- **노즐 목록**: 용기 기호의 측면 포트 주석 (`N1`, `N2`, …)
+
+현재는 단일 루프 제어 계통이 기본으로 깔끔하게 렌더링됩니다. 복잡한 다중 스트림 P&ID는 수동 위치 힌트가 필요합니다(미구현).
+
+---
+
+## 관련 예제
+
+예제 갤러리에서 바로 사용할 수 있는 시나리오:
+
+<RelatedExamples slugs={[
+  'pid-pump-flow-control',
+  'pid-reactor-feed-system',
+]} />

@@ -1,0 +1,258 @@
+---
+title: Red PERT / CPM
+---
+
+## Acerca de los gráficos PERT
+
+Un **gráfico PERT** (Program Evaluation and Review Technique) — y su gemelo cercano **CPM** (Critical Path Method) — es el diagrama de planificación de proyectos fundamental de la gestión de proyectos moderna. Nacidos en 1959 (PERT del programa Polaris de la Marina de EE.UU., CPM de DuPont), los dos convergieron en el **Método de Diagramación de Precedencia / Actividad-en-Nodo** enseñado por la [Guía PMBOK del PMI](https://www.pmi.org/pmbok-guide-standards). Escribes las tareas, sus duraciones y qué tarea depende de cuál; el cronograma — Inicio Temprano, Fin Temprano, Inicio Tardío, Fin Tardío, holgura y la **ruta crítica** — se *calcula*.
+
+Ese último punto es lo que hace diferente al motor `pert` de Schematex de cualquier "creador de gráficos PERT" de arrastrar y soltar. La mayoría de las herramientas incluyen una biblioteca de formas y te hacen rellenar la caja de seis campos y calcular la ruta crítica con una calculadora. Schematex ejecuta el paso hacia adelante y el paso hacia atrás por sí mismo y resalta la ruta crítica en rojo automáticamente. Se distingue de **[flowchart](/docs/flowchart)** (sin planificación), **[timeline](/docs/timeline)** (sin cálculo de ruta crítica) y **[bpmn](/docs/bpmn)** (un proceso organizacional, no un cronograma de proyecto único).
+
+<Playground initial={`pert
+title: "Q3 Product Launch"
+unit: days
+
+task A "Market research"     duration: 5
+task B "Design mockups"      duration: 8  after: A
+task C "Backend API"         duration: 15 after: A
+task D "Frontend build"      duration: 10 after: B, C
+task E "QA / testing"        duration: 5  after: D
+task F "Marketing collateral" duration: 7 after: B
+task G "Launch event"        duration: 2  after: E, F`} height={520} />
+
+---
+
+## 1. Tu primer diagrama
+
+Todo documento comienza con la palabra clave `pert`, un encabezado opcional, luego una línea `task` por actividad:
+
+```
+pert
+unit: days
+
+task A "Market research" duration: 5
+task B "Design mockups"  duration: 8 after: A
+task C "Backend API"     duration: 15 after: A
+task D "Frontend build"  duration: 10 after: B, C
+```
+
+Cada tarea lleva un `<id>`, una `<etiqueta>` entre comillas, una `duration:` y una lista opcional `after:` de predecesores. El motor agrega un Start y Finish invisibles, ejecuta el cronograma y dibuja la caja de actividad de seis campos para cada tarea. Nunca escribes ES/EF/LS/LF — se calculan.
+
+El encabezado acepta:
+
+- `title: "…"` — un título dibujado encima del diagrama.
+- `unit: days | weeks | hours | abstract` — la unidad de tiempo (predeterminado `days`; puramente una etiqueta, el motor es agnóstico al calendario).
+- `direction: LR | TB` — de izquierda a derecha (predeterminado) o de arriba hacia abajo.
+- `layout: network | timescaled` — la red en capas (predeterminado) o una vista proporcional al tiempo (§6).
+- `critical-tolerance: <n>` — la holgura ≤ esto se considera crítica (predeterminado `0`; establece `0.001` para proyectos de tres puntos).
+- `show-sentinels: true` — dibuja los nodos sintéticos Start / Finish (ocultos de forma predeterminada).
+
+---
+
+## 2. La caja de actividad de seis campos
+
+Cada tarea se renderiza como el rectángulo canónico PERT/CPM de 3×2:
+
+```
+┌──────────┬────────────┬──────────┐
+│  ES      │  Duration  │   EF     │
+├──────────┴────────────┴──────────┤
+│         Task Name (ID)           │
+├──────────┬────────────┬──────────┤
+│  LS      │  Slack     │   LF     │
+└──────────┴────────────┴──────────┘
+```
+
+- **ES / EF** — Inicio Temprano / Fin Temprano, del paso hacia adelante.
+- **LS / LF** — Inicio Tardío / Fin Tardío, del paso hacia atrás.
+- **Slack** (flotación total) = LS − ES = LF − EF. Holgura cero significa que la actividad está en la ruta crítica.
+
+Las actividades críticas obtienen un **borde rojo** y un `0` de holgura en negrita; la cadena crítica del proyecto se lee como una línea roja ininterrumpida. Cada campo también se refleja en atributos `data-*` (`data-es`, `data-slack`, `data-critical`, …) para que puedas consultar el SVG sin volver a ejecutar los cálculos.
+
+**Sobre la paleta de dos colores.** Un gráfico PERT se dibuja deliberadamente en solo dos colores. El rojo para la ruta crítica es una convención real de la industria — MS Project, Oracle Primavera P6 y las figuras del PMBOK lo usan, porque "crítico vs. no crítico" es la única distinción que el diagrama existe para mostrar. Todo lo demás permanece en el azul neutro de la paleta. Agregar más colores implicaría categorías que la semántica de PERT no tiene; si necesitas agrupar por equipo o fase, usa [swimlanes](#7-swimlanes-tags-classes-and-comments) (`lane:`) en lugar de color.
+
+---
+
+## 3. Dependencias (FS / SS / FF / SF + lag/lead)
+
+`after:` toma una lista separada por comas de referencias de predecesores. La relación predeterminada es **Finish-to-Start (FS)** — una tarea comienza una vez que su predecesor termina:
+
+```
+task D "Frontend build" duration: 10 after: B, C
+```
+
+La planificación moderna necesita los otros tres tipos de relaciones del Método de Diagramación de Precedencia y **lag** (retraso) o **lead** (adelanto, lag negativo):
+
+```
+task B "Stakeholder interviews" duration: 6 after: A SS+1   # start 1d after A starts
+task I "Documentation"          duration: 4 after: D+3      # FS with a 3-day lag
+task J "Translation"            duration: 3 after: I SS-1   # start 1d before I starts (lead)
+task K "Sign-off"               duration: 1 after: I FF     # finishes when I finishes
+task L "Press release"          duration: 2 after: G SF+1   # start-to-finish (rare)
+```
+
+| Forma | Significado |
+|------|---------|
+| `after: A` | Finish-to-Start, sin lag (el caso común) |
+| `after: A+2` o `after: A+2d` | FS con un lag de 2 unidades |
+| `after: A SS` / `A FF` / `A SF` | Start-to-Start / Finish-to-Finish / Start-to-Finish |
+| `after: A SS+2d` / `A FF-1d` | cualquier tipo con lag (`+`) o lead (`-`) |
+
+Un sufijo de unidad de lag (`d` / `w` / `h`) debe coincidir con la `unit:` del diagrama o omitirse; las unidades mixtas se rechazan. FS con lag cero no tiene etiqueta; SS/FF/SF siempre muestran su tipo en la arista.
+
+---
+
+## 4. Estimación de tres puntos (PERT)
+
+Escribe una duración como `O/M/P` (optimista / más probable / pesimista) y el motor calcula la duración esperada de distribución beta **te = (O + 4M + P) / 6** y la varianza **σ² = ((P − O)/6)²**:
+
+```
+pert
+critical-tolerance: 0.01
+task A "Spec"   duration: 2/3/5    # te = 3.17, σ² = 0.25
+task B "Build"  duration: 5/8/14   after: A   # te = 8.50, σ² = 2.25
+task C "Test"   duration: 3/4/6    after: B
+task D "Deploy" duration: 1/2/3    after: C
+```
+
+El campo de Duración muestra `te`; una pequeña anotación `σ=…` aparece bajo el nombre; y la desviación estándar a nivel de proyecto (√ de las varianzas de la ruta crítica sumadas) se reporta en el pie de página. Usa `critical-tolerance: 0.01` para que los valores de `te` con punto flotante no desplacen la ruta crítica visible.
+
+---
+
+## 5. Hitos
+
+Un hito es un punto de control de duración cero, dibujado como un diamante. Usa la bandera `milestone` o `duration: 0`:
+
+```
+task P "Cutover weekend" milestone after: O
+task Q "Go-live"         duration: 0 after: P
+```
+
+---
+
+## 6. Diseño a escala de tiempo
+
+`layout: timescaled` cambia de la red en capas a un híbrido red-Gantt: la **posición x de cada actividad es proporcional a su ES** y su **ancho es proporcional a su duración**, con un eje de tiempo unitario en la parte inferior. Las actividades se empaquetan en carriles para que nada se superponga.
+
+```
+pert
+layout: timescaled
+unit: days
+
+task A "Inventory"     duration: 5
+task B "Interviews"    duration: 6  after: A SS+1
+task C "Design"        duration: 10 after: A, B
+task D "Build"         duration: 15 after: C
+task E "Pilot"         duration: 7  after: D
+```
+
+Esta es la vista de tiempo al estilo red; para un diagrama de Gantt de calendario con una fila por tarea, usa `layout: gantt` (siguiente).
+
+### Diagrama de Gantt (`gantt` / `layout: gantt`)
+
+Comienza un documento con el encabezado **`gantt`** (atajo para `pert` + `layout: gantt`) para un Gantt de calendario. Es el *mismo planificador* — por lo que las barras se colocan desde el ES/EF **calculado**, y la **ruta crítica se dibuja en rojo**, algo que un Gantt colocado a mano (Mermaid) no puede hacer: allí escribes las fechas tú mismo, aquí escribes dependencias y el motor las planifica.
+
+```
+gantt "Website Relaunch"
+start: 2026-07-01
+calendar: 5day
+task A "Discovery"      duration: 5  lane: "Plan"
+task B "Wireframes"     duration: 8  after: A   lane: "Design"
+task C "Visual design"  duration: 6  after: B   lane: "Design"  progress: 40%
+task D "Frontend build" duration: 12 after: C   lane: "Build"
+task E "Backend API"    duration: 10 after: A   lane: "Build"
+task F "Integration"    duration: 5  after: D, E lane: "Build"
+task LAUNCH "Go live"   milestone    after: F   lane: "Build"
+today: 2026-07-20
+```
+
+- **`start: YYYY-MM-DD`** convierte el eje en fechas de calendario (omítelo para un eje de desplazamiento numérico de días).
+- **`calendar: continuous`** (predeterminado) abarca los fines de semana; **`calendar: 5day`** excluye sáb/dom de la línea de tiempo.
+- **`lane: "…"`** agrupa tareas en **secciones** etiquetadas; **`progress: 60%`** dibuja una superposición de completitud; **`milestone`** es un diamante; **`today: YYYY-MM-DD`** coloca una línea marcadora.
+- Una fila por tarea, en orden de declaración. Las barras fuera de la ruta crítica se dibujan en el azul de descanso con su **holgura** anotada; las barras críticas son rojas.
+
+### Actividad-en-flecha (`layout: aoa`)
+
+`layout: aoa` renderiza la notación más antigua de **actividad-en-flecha** (ADM) que encontrarás en libros de texto e Investopedia: círculos de **eventos** numerados, **actividades como flechas etiquetadas**, y **actividades ficticias** punteadas insertadas automáticamente donde una actividad tiene dos o más predecesores. Escribes el mismo DSL de actividad-en-nodo — Schematex construye el grafo de eventos y numera los eventos por ti.
+
+```
+pert
+layout: aoa
+unit: days
+
+task A "create schedule" duration: 10
+task B "buy hardware"    duration: 5
+task C "programming"     duration: 20 after: A
+task D "installation"    duration: 5  after: B
+task E "conversion"      duration: 15 after: D
+task F "test code"       duration: 20 after: C, E
+task G "write manual"    duration: 15 after: E
+```
+
+AOA es una notación **heredada** (PMBOK 7 la eliminó; AON es el estándar moderno) y solo puede expresar lógica **finish-to-start** — SS/FF/SF y lag/lead se aplanan a FS con una advertencia. Úsala para enseñanza, preparación de exámenes o para coincidir con una figura de un libro de texto existente; usa el diseño `network` predeterminado (AON) para planificación real.
+
+---
+
+## 7. Swimlanes, etiquetas, clases y comentarios
+
+Agrega `lane: "…"` a cualquier tarea y la red se reorganiza en swimlanes horizontales — por equipo responsable, fase o propietario — mientras sigue calculando el cronograma exactamente como antes:
+
+```
+task T1 "Support Account Deletion" duration: 3  lane: "Customer Account"
+task T2 "Design a New Theme"        duration: 8  lane: "Shopping Site"
+task T3 "Apply New Theme"           duration: 15 after: T2 lane: "Shopping Site"
+```
+
+Los carriles aparecen en el orden en que se declararon primero, cada uno como una fila con banda y una canaleta de etiqueta en la izquierda. Los swimlanes son una presentación de la misma red AON, no un modo de diseño diferente — se activan automáticamente cuando cualquier tarea declara un carril.
+
+```
+task X "External vendor work" duration: 10 after: A tags: vendor, external class: secondary
+# this is a comment
+```
+
+`tags:` emite `data-tag="…"` en el grupo del nodo y `class:` agrega una clase CSS para tematización posterior. `#` y `//` inician un comentario hasta el final de la línea.
+
+---
+
+## 8. Gramática (EBNF)
+
+```text
+document    = "pert" NEWLINE header* task+
+header      = "title:" quoted
+            | "unit:" ("days" | "weeks" | "hours" | "abstract")
+            | "direction:" ("LR" | "TB")
+            | "layout:" ("network" | "timescaled" | "aoa")
+            | "critical-tolerance:" number
+            | "show-sentinels:" boolean
+
+task        = "task" IDENT quoted "duration:" duration ("after:" reflist)? "milestone"? attrs?
+            | "task" IDENT quoted "milestone" ("after:" reflist)? attrs?
+duration    = number | number "/" number "/" number          ; deterministic or O/M/P
+reflist     = ref ("," ref)*
+ref         = IDENT (WS deptype)? laglead?
+            | IDENT "+" number unit?                          ; attached FS lag sugar
+deptype     = "FS" | "SS" | "FF" | "SF"
+laglead     = ("+" | "-") number unit?
+unit        = "d" | "w" | "h"
+attrs       = ("tags:" idlist)? ("class:" IDENT)? ("lane:" quoted)?
+```
+
+---
+
+## 9. Cumplimiento de estándares
+
+Schematex `pert` implementa el **Método de Actividad-en-Nodo / Diagramación de Precedencia** según **PMI PMBOK 7** y Moder, Phillips & Davis (1983), con la convención de caja de seis campos de Kerzner y Oracle Primavera P6. El paso hacia adelante/atrás, la holgura total, la ruta crítica, los cuatro tipos de dependencia PDM con lag/lead y la estimación de tres puntos (te + varianza) se calculan exactamente. La notación más antigua de **Actividad-en-Flecha** está disponible como vista heredada opcional (`layout: aoa`) para enseñanza y paridad con libros de texto. Fuera del alcance para v0.1: nivelación de recursos / RCPSP, simulación de riesgo de cronograma Monte Carlo, duraciones con calendario, e importación/exportación de MS Project / Primavera. Ver `docs/reference/32-PERT-STANDARD.md` para la especificación completa.
+
+---
+
+## Ejemplos relacionados
+
+Escenarios listos para usar de la galería de ejemplos:
+
+<RelatedExamples slugs={[
+  'pert-product-launch',
+  'pert-aoa-software-project',
+  'pert-swimlane-online-shop',
+  'pert-three-point-estimation',
+  'pert-migration-timescaled',
+]} />

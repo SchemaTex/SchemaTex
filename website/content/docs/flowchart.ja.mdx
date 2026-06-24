@@ -1,0 +1,414 @@
+---
+title: フローチャート
+---
+
+## フローチャートについて
+
+**フローチャート**は、標準化された記号セットと矢印を使って、プロセスのステップ — 判断、操作、入力、出力、それらの間のパス — をマッピングします。エンジニアはアルゴリズムの仕様に、ビジネスアナリストはワークフローの文書化に、品質チームは故障モードの追跡に使用します。あらゆる産業において最も広く理解されている技術的ダイアグラムの一つです。
+
+Schematexはフローチャートの形状に**[ISO 5807:1985](https://www.iso.org/standard/11955.html)**の記号規約に従い、既存のMermaidフローチャートを直接移植できるよう**[Mermaid互換](https://mermaid.js.org/syntax/flowchart.html)**のDSLを使用します。このページはパーサーが現在受け付けるものを文書化します。
+
+<Playground initial={`flowchart LR
+  start([New order received])
+  start --> validate{Inventory available?}
+  validate -->|Yes| reserve[Reserve items]
+  validate -->|No| notify[Notify customer]
+  notify --> done([End])
+  reserve --> payment{Payment authorized?}
+  payment -->|Yes| ship[Ship order]
+  payment -->|No| cancel[Cancel & release]
+  ship --> confirm[Send confirmation email]
+  confirm --> done
+  cancel --> done`} height={420} />
+
+---
+
+## 1. 最初のフローチャート
+
+最小限の実用的フローチャート：2つの結果を持つ判断。
+
+<Playground initial={`flowchart TD
+  A([Start]) --> B{File exists?}
+  B -->|Yes| C[Read file]
+  B -->|No| D[Return error]
+  C --> E([Done])`} />
+
+80%の用途をカバーする4つのルール：
+
+1. `flowchart` で始め、方向を続ける：`TD`、`LR`、`BT`、または `RL`。
+2. 各ノードは `ID[ラベル]` — 形状括弧がノードタイプを決定（§2参照）。
+3. ノードを `-->` で接続。パイプ文字の間にラベルを追加：`-->|Yes|`。
+4. ノードはエッジで最初に参照された時に自動作成されますが、明示的な宣言によって形状とラベルを独立して設定できます。
+
+> コメントは独立した行に `%%` で始めます。
+
+---
+
+## 2. ノードの形状
+
+各ノードの形状は `ID<括弧>ラベル<括弧>` と書きます。IDは文字で始まり、文字、数字、`_`、`-` を含むことができます。
+
+| 構文 | 形状 | 一般的な用途 |
+|---|---|---|
+| `A[Label]` | 矩形 | 処理ステップ、操作 |
+| `A(Label)` | 角丸矩形 | サブプロセス、ソフトステップ |
+| `A([Label])` | スタジアム（ピル） | 開始 / 終了端子 |
+| `A{Label}` | ダイヤモンド | 判断 / 条件 |
+| `A{{Label}}` | 六角形 | 準備、設定 |
+| `A[[Label]]` | サブルーチン | 定義済みプロセス |
+| `A[(Label)]` | シリンダー | データベース、ストレージ |
+| `A((Label))` | 円 | コネクター、接合点 |
+| `A(((Label)))` | 二重円 | 終了状態 |
+| `A[/Label/]` | 平行四辺形 | 入力 / 出力 |
+| `A[\Label\]` | 平行四辺形（代替） | 手動操作 |
+| `A[/Label\]` | 台形 | 手動入力 |
+| `A[\Label/]` | 台形（代替） | ページ外コネクター |
+| `A>Label]` | 非対称 | タグ、注釈 |
+
+<Playground initial={`flowchart TD
+  t([Terminal / stadium])
+  r[Rectangle process]
+  d{Diamond decision}
+  p[/Parallelogram input/]
+  db[(Cylinder database)]
+  sub[[Subroutine]]
+  t --> r --> d
+  d -->|branch A| p
+  d -->|branch B| db
+  p --> sub
+  db --> sub`} height={440} />
+
+---
+
+## 3. エッジ
+
+エッジは2つのノードを接続します。コネクター記号によって視覚的なスタイルとラベルや矢印の有無が決まります。
+
+### 3.1 エッジの種類
+
+<Playground initial={`flowchart TD
+  A --> B
+  C --- D
+  E -.-> F
+  G ==> H
+  I <--> J
+  K --x L
+  M --o N`} height={380} />
+
+| 構文 | スタイル | 矢印 | 一般的な用途 |
+|---|---|---|---|
+| `A --> B` | ソリッド | 矢印 | 通常フロー |
+| `A --- B` | ソリッド | なし | 関連付け、無向リンク |
+| `A -.-> B` | 点線 | 矢印 | オプション / 非同期パス |
+| `A ==> B` | 太線 | 矢印 | クリティカル / 主要パス |
+| `A <--> B` | ソリッド | 両端 | 双方向フロー |
+| `A --x B` | ソリッド | クロス | ブロック / 拒否パス |
+| `A --o B` | ソリッド | 円 | 集約 / 合成 |
+
+### 3.2 エッジラベル
+
+2つの構文でエッジにラベルを付けられます。
+
+**パイプラベル** — 矢印の直後に `|` 文字の間に置く：
+```
+A -->|Yes| B
+A -.->|optional| B
+A ==>|critical| B
+```
+
+**インラインラベル** — ダッシュの間、矢印文字の前にテキストを置く：
+```
+A -- success --> B
+A -- error --x C
+```
+
+どちらも同じ結果を生成します。パイプラベルはMermaidツールとダイアグラムを共有する際により一般的です。
+
+<Playground initial={`flowchart TD
+  req[Request received]
+  req -->|valid| proc[Process]
+  req -->|invalid| err[Return 400]
+  proc -- success --> ok([Done])
+  proc -.->|timeout| retry[Retry queue]
+  retry ==>|max retries| dead[(Dead letter)]`} height={380} />
+
+### 3.3 チェーン
+
+3つ以上のノードを1行で接続：
+
+```
+A --> B --> C --> D
+```
+
+これは3つの別々のエッジ文と同等です。
+
+### 3.4 `&` でのファンアウト
+
+`&` を使って矢印の両側に複数のノードを含める。パーサーはエッジの完全な直積を生成します：
+
+```
+A & B --> C        %% A→C と B→C
+A --> B & C        %% A→B と A→C
+A & B --> C & D    %% 4つのエッジ: A→C, A→D, B→C, B→D
+```
+
+<Playground initial={`flowchart LR
+  deploy[Deploy service]
+  smoke[Smoke test]
+  health[Health check]
+  notify_slack[Slack alert]
+  notify_email[Email alert]
+  deploy --> smoke & health
+  smoke & health -->|fail| notify_slack & notify_email`} height={300} />
+
+---
+
+## 4. サブグラフ
+
+`subgraph` は関連するノードをラベル付きのクラスターに可視境界でグループ化します。
+
+```
+subgraph "Title"
+  A --> B
+end
+```
+
+3つのサブグラフヘッダー形式が受け付けられます：
+
+| 形式 | ID | ラベル |
+|---|---|---|
+| `subgraph "My Group"` | 自動生成 | `My Group` |
+| `subgraph sg1 "My Group"` | `sg1` | `My Group` |
+| `subgraph sg1 [My Group]` | `sg1` | `My Group` |
+
+サブグラフは独自の `direction` オーバーライドを持てます：
+
+```
+subgraph sg1 "Frontend"
+  direction LR
+  ui[React App] --> api[API Client]
+end
+```
+
+<Playground initial={`flowchart TB
+  subgraph ingestion [Ingestion]
+    raw[/Raw events/] --> parse[Parse & validate]
+    parse --> enrich[Enrich]
+  end
+  subgraph storage [Storage]
+    dw[(Data warehouse)]
+    cache[(Redis cache)]
+  end
+  enrich --> dw
+  enrich --> cache
+  dw --> report[Generate report]`} height={420} />
+
+---
+
+## 5. スタイリング
+
+### 5.1 セマンティッククラス
+
+テーマレベルの視覚的グループ化のためにノードにCSSクラス名を割り当てます。クラスは `classDef` で定義され、`class` で適用されます。Mermaidのインラインクラス構文も受け付けられます：`A[Start]:::critical`。
+
+```
+classDef danger fill:#f9c,stroke:#c00
+classDef safe fill:#cfc,stroke:#090
+class errorNode danger
+class successNode safe
+B[Review]:::danger
+```
+
+### 5.2 ノードごとのスタイルオーバーライド
+
+```
+style nodeId fill:#f9f,stroke:#333,stroke-width:4px
+```
+
+標準のCSSプロパティ名を受け付けます。複数のプロパティはカンマ区切りです。
+
+### 5.3 エッジごとのスタイルオーバーライド
+
+`linkStyle` はエッジを**宣言インデックス**（ソースに現れる順序で0ベース）でターゲットします。カンマ区切りの複数インデックスで同じプロパティを複数のエッジに適用できます：
+
+```
+flowchart TD
+  A --> B
+  B ==> C
+  B -.-> D
+  C --> E
+  D --> E
+  linkStyle 1 stroke:#d32f2f,stroke-width:4px
+  linkStyle 2,4 stroke:#f57c00,stroke-dasharray:5 5
+```
+
+クリティカルパスのハイライトや代替フローの区別に使用します。
+
+### 5.4 インラインラベルのフォーマット
+
+ノードラベルは3つのインラインフォーマットタグを受け付けます：
+
+| タグ | 効果 |
+|---|---|
+| `<br/>` または `<br>` | 改行 |
+| `<b>…</b>` | 太字 |
+| `<i>…</i>` | イタリック |
+
+```
+flowchart TD
+  M1["0 \| 0<br/><b>START</b>"]
+  M2["4 \| 4<br/><b>Phase 1</b><br/><i>est. 4h</i>"]
+  M1 --> M2
+```
+
+タグはネストして行の途中で混在させることができます（`Hello <b>world</b>!`）。エッジラベルは1行であり、現在これらのタグをサポートしていません。
+
+---
+
+## 6. ラベルとコメント
+
+- **方向：** `flowchart TD` — `flowchart` または `graph` の後の最初のトークン。`TD` と `TB` は同等。
+- **タイトル：** `flowchart LR "My diagram"` — 方向の後のオプションの引用符付き文字列。
+- **エッジラベル：** パイプ構文 `-->|label|` またはインライン `-- label -->`。
+- **コメント：** 行頭（先頭の空白の後）の `%%`。
+
+```
+flowchart LR
+%% これはコメント — パーサーが無視する
+A[Step 1] --> B[Step 2]  %% インライン %% はサポートされません — 行頭の %% のみ
+```
+
+---
+
+## 7. 予約語とエスケープ
+
+**行頭に予約：** `flowchart`、`graph`（ヘッダー）、`subgraph`、`end`、`direction`、`class`、`classDef`、`style`、`linkStyle`。
+
+**予約IDの文字：** IDは `[A-Za-z0-9_-]` に一致し、文字で始まります。ノードIDにスペースや演算子文字を使用しないでください。
+
+**IDの内部で避けるべき演算子トークン：** `-->`、`---`、`-.->` 、`==>`、`<-->`、`--x`、`--o`、`|`、`&`。
+
+**特殊文字を含むラベル：** ラベルは形状括弧の内側のすべてです。ラベル内の特殊文字はそのままサポートされます — 曖昧になる括弧/中括弧は対応する閉じトークンで閉じられます。
+
+---
+
+## 8. よくある間違い
+
+| あなたが書いた内容 | パーサーのメッセージ | 修正方法 |
+|---|---|---|
+| 方向なしの `flowchart` | 方向はデフォルトで `TB` | 方向を追加：`flowchart TD` |
+| 形状宣言前の `A --> B` | 動作します — ノードはIDをラベルとする矩形として作成 | 非矩形の形状が必要な場合は明示的に宣言：`A([Start])` |
+| `A[Label with [brackets]]` | 内側の `]` が形状を早期に閉じる | ラベル内にネストした括弧を避ける |
+| `subgraph My Group`（引用符なし、スペースあり） | パーサーは `My` をサブグラフIDとし、`Group` を不明トークンとして扱う | 引用符で囲む：`subgraph "My Group"` |
+| コードの後の行中に `%% comment` | インラインコメントはサポートされない；`%%` は行頭でなければならない | コメントを独立した行に移動する |
+| `A --> B --> C` と `A --> B` の混在 | チェーンは加算的 — 重複エッジが現れることがある | 同じペアには両方ではなくチェーンまたは別々の行を使用 |
+| サブグラフ外の `direction LR` | 暗黙に無視 — `direction` オーバーライドは `subgraph … end` の内側にのみ適用 | `flowchart` ヘッダー行に方向を設定 |
+
+---
+
+## 9. 文法（EBNF）
+
+```text
+document       = header (blank | comment | subgraph-block | direction-stmt
+                        | class-stmt | classdef-stmt | style-stmt
+                        | linkstyle-stmt | chain-stmt)*
+
+header         = ("flowchart" | "graph") ( WS direction )? ( WS title )? NEWLINE
+direction      = "TD" | "TB" | "BT" | "LR" | "RL"
+title          = '"' any-char-but-quote* '"' | bare-word
+
+subgraph-block = "subgraph" ( WS subgraph-header )? NEWLINE
+                   ( WS? "direction" WS direction NEWLINE )?
+                   statement*
+                 "end" NEWLINE
+subgraph-header = id WS "[" label "]"
+                | id WS quoted-string
+                | quoted-string
+                | id
+
+chain-stmt     = node-group ( WS edge-op WS pipe-label? WS node-group )* NEWLINE
+node-group     = node-ref ( WS "&" WS node-ref )*
+node-ref       = id shape-suffix?
+shape-suffix   = "[" label "]"          %% rect
+               | "(" label ")"          %% round
+               | "([" label "])"        %% stadium
+               | "{" label "}"          %% diamond
+               | "{{" label "}}"        %% hexagon
+               | "[[" label "]]"        %% subroutine
+               | "[(" label ")]"        %% cylinder
+               | "((" label "))"        %% circle
+               | "(((" label ")))"      %% double-circle
+               | "[/" label "/]"        %% parallelogram
+               | "[\" label "\]"        %% parallelogram-alt
+               | "[/" label "\]"        %% trapezoid
+               | "[\" label "/]"        %% trapezoid-alt
+               | ">" label "]"          %% asymmetric
+
+edge-op        = "-->" | "---" | "-."-".->" | "==>" | "<-->" | "--x" | "--o"
+               | inline-label variants of the above
+pipe-label     = "|" text "|"
+
+class-stmt     = "class" WS id-list WS class-name NEWLINE
+               | node-ref ":::" class-name NEWLINE         # Mermaid inline form
+classdef-stmt  = "classDef" WS class-name WS css-props NEWLINE
+style-stmt     = "style" WS id WS css-props NEWLINE
+linkstyle-stmt = "linkStyle" WS index-list WS css-props NEWLINE
+index-list     = NUMBER ( "," NUMBER )* | "default"
+
+comment        = "%%" any NEWLINE
+id             = [A-Za-z] [A-Za-z0-9_-]*
+```
+
+権威ある情報源：`src/diagrams/flowchart/parser.ts`。これがパーサーと異なる場合は、パーサーが優先されます — issueを開いてください。
+
+---
+
+## 10. 標準準拠
+
+SchematexのフローチャートはISO 5807:1985の記号規約に従います。DSL構文はいずれかのツールで作成したダイアグラムを他のツールでも使用できるよう、**[Mermaidフローチャート](https://mermaid.js.org/syntax/flowchart.html)**との互換性を意図的に備えています。
+
+現在実装されているもの：
+
+- ✅ 5つのすべての方向：`TD`、`TB`、`BT`、`LR`、`RL`
+- ✅ 13のノード形状（矩形から非対称まで）
+- ✅ 7種類のエッジ：ソリッド、矢印なし、点線、太線、双方向、クロス、丸端
+- ✅ パイプラベル（`-->|text|`）とインラインラベル（`-- text -->`）
+- ✅ エッジチェーン（`A --> B --> C`）
+- ✅ `&` でのファンアウト（直積エッジ）
+- ✅ オプションのID、ラベル、サブグラフごとの方向を持つサブグラフ
+- ✅ `classDef` / `class` セマンティックグループ化
+- ✅ Mermaidインラインノードクラス：`A[Label]:::className`
+- ✅ ノードごとの `style` CSSオーバーライド
+- ✅ `linkStyle` レンダリング — `linkStyle 1,5,6 stroke:#f00,stroke-width:4px` が宣言順序で一致するエッジにCSSを適用
+- ✅ ノードラベルのインライン `<b>` / `<i>`（既存の `<br/>` 改行と組み合わせ）
+- ⏳ 13種類すべての形状レンダリング — M1はrect/round/stadium/diamond/parallelogramを完全にレンダリング；残りの形状はrectにフォールバック
+- ⏳ スイムレーンレイアウトバリアント
+
+参考文献：
+
+- ISO 5807:1985 — *情報処理 — データ、プログラムおよびシステムのフローチャート、プログラムネットワークチャートおよびシステムリソースチャートのための文書記号と規約*
+- Mermaidフローチャートドキュメント — https://mermaid.js.org/syntax/flowchart.html
+
+---
+
+## 11. ロードマップ
+
+**計画中 — まだ解析不可。** 今日の生成DSLではこれらを使用しないでください；パーサーが拒否または無視します。
+
+- **13種類すべての形状の完全なレンダリング** — サブルーチン、シリンダー、円、二重円、六角形、非対称、台形、平行四辺形（代替）はM1でrectにフォールバック。
+- **スイムレーンレイアウト** — アクターやシステムごとにノードをグループ化する水平バンド（MermaidのサブグラフとLRルート内のdirection TBの組み合わせ）。
+- **`%%{init: {…}}%%` initブロック** — Mermaid互換のテーマおよびレイアウト初期化ブロック。
+- **ラベルのMarkdownフォーマット** — `**bold**` / `*italic*` Markdown構文（HTML `<b>`/`<i>` はすでに機能 — §5参照）。
+
+これらが早急に必要な場合はGitHub issuesで追跡してください。
+
+---
+
+## 関連例
+
+サンプルギャラリーからすぐに使えるシナリオ：
+
+<RelatedExamples slugs={[
+  'flowchart-order-fulfillment',
+  'flowchart-cicd-pipeline',
+]} />

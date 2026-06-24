@@ -1,0 +1,122 @@
+---
+title: Modelo de amenazas (STRIDE DFD)
+description: Diagramas de flujo de datos de seguridad donde el motor mapea las amenazas STRIDE por elemento y señala cada cruce de frontera de confianza.
+---
+
+## Sobre los modelos de amenazas
+
+Un **modelo de amenazas** es un **diagrama de flujo de datos** (DFD) de seguridad anotado con fronteras de confianza: **entidades externas** (usuarios, terceros), **procesos** (servicios), **almacenes de datos** (bases de datos, registros) y los **flujos** entre ellos. El marco **STRIDE** de Microsoft — Spoofing (suplantación), Tampering (manipulación), Repudiation (repudio), Information disclosure (divulgación de información), Denial of service (denegación de servicio), Elevation of privilege (elevación de privilegios) — clasifica las amenazas que enfrenta cada elemento. La referencia es Shostack, *Threat Modeling: Designing for Security* (2014).
+
+La ventaja de Schematex es que el motor **realiza el análisis STRIDE por elemento**, no solo dibuja las cajas. Aplica el mapeo canónico elemento→amenaza, agrega condicionalmente Repudiation a los almacenes de registros/auditoría y — lo más útil — **señala cada flujo que cruza una frontera de confianza**, porque ahí es donde se concentran la suplantación, la manipulación y la divulgación de información.
+
+<Playground initial={`threatmodel "Web App"
+external: User
+process 1.1: Web Server
+datastore D1: User DB
+datastore D2: Audit Log
+User -> 1.1 : "HTTPS Request"
+1.1 -> D1 : Lookup
+1.1 -> D2 : Auth Event
+boundary "Internet" { User }
+boundary "DMZ" { 1.1 }
+boundary "Internal" { D1, D2 }`} height={520} />
+
+---
+
+## 1. Tu primer modelo de amenazas
+
+Comienza con la palabra clave `threatmodel` (alias `stride`), un título opcional, luego **declara los elementos** y **conecta los flujos**:
+
+```
+threatmodel "Login flow"
+external: User
+process 1.1: Web Server
+datastore D1: User DB
+User -> 1.1 : "Login request"
+1.1 -> D1 : Lookup
+```
+
+Cada elemento es `tipo: ID: Etiqueta` (o `tipo: Etiqueta`, donde el id se genera a partir de la etiqueta — `external: Mobile App` se convierte en id `Mobile_App`). Un flujo es `ORIGEN -> DESTINO : etiqueta`, y la **etiqueta es obligatoria** (nombra los datos que cruzan).
+
+---
+
+## 2. Tipos de elementos y flujos
+
+```
+external: User              # entidad externa (el lado del atacante)
+process 1.1: Web Server     # un proceso / servicio
+datastore D1: User DB       # un almacén de datos
+datastore D2: Audit log     # un almacén de registro/auditoría (obtiene Repudiation condicional)
+User -> 1.1 : "HTTPS Request"   # flujo dirigido, etiqueta entre comillas o sin ellas
+1.1 <-> D1 : Read/Write         # <-> se expande en dos flujos dirigidos
+```
+
+- Los IDs de proceso suelen ser números DFD con puntos (`1.1`, `2.3`); los IDs de externo/almacén suelen ser slugs cortos (`User`, `D1`).
+- Un flujo `<->` se expande en **dos** flujos dirigidos.
+- Un almacén cuyo nombre/id coincide con `log|audit|journal` (o que lleva una pista explícita) se trata como almacén de registro.
+
+**Reglas de flujo** que aplica el motor: no puede haber flujos almacén→almacén (los almacenes de datos son pasivos), no puede haber flujos externo→externo, y cada extremo debe ser un elemento declarado.
+
+---
+
+## 3. Fronteras de confianza
+
+```
+boundary "Internet"  { User }
+boundary "DMZ"       { 1.1 }
+boundary "Internal"  { D1, D2 }
+```
+
+`boundary "nombre" { id, id, … }` agrupa elementos en una zona de confianza. Un elemento puede pertenecer a **como máximo una** frontera; los miembros deben estar declarados. Los elementos sin frontera comparten una zona implícita no confiable.
+
+---
+
+## 4. Análisis STRIDE calculado
+
+Este es el diferenciador. El motor aplica el mapeo **STRIDE por elemento**:
+
+| Elemento DFD     | Amenazas aplicadas        |
+|-----------------|------------------------|
+| Entidad externa | S, R                   |
+| Proceso         | S, T, R, I, D, E       |
+| Almacén de datos | T, I, D (+ R si es registro) |
+| Flujo de datos  | T, I, D                |
+
+- El **Repudio** del almacén de datos es condicional — se agrega para almacenes de registro / auditoría / journal (el "?" verde de Shostack).
+- **Cruce de frontera**: un flujo cuyos extremos están en diferentes zonas de confianza se señala, porque ahí es donde se concentran Spoofing / Tampering / Information-disclosure. Dos elementos en la misma zona (o en la zona implícita) no cruzan.
+
+Cada elemento y flujo lleva sus categorías STRIDE aplicables en atributos `data-*` para que el análisis sea inspeccionable.
+
+---
+
+## 5. Errores comunes
+
+```
+# INCORRECTO — flujo sin etiqueta
+User -> 1.1
+
+# INCORRECTO — almacén a almacén (los almacenes de datos son pasivos)
+D1 -> D2 : x
+
+# INCORRECTO — externo a externo
+A -> B : x
+
+# INCORRECTO — extremo de flujo desconocido
+P -> Ghost : x
+
+# INCORRECTO — un elemento en dos fronteras
+boundary "A" { P }
+boundary "B" { P }
+```
+
+Todo flujo necesita una etiqueta; los almacenes y los externos no pueden ser socios de flujo con su mismo tipo; los extremos deben estar declarados; un elemento pertenece a como máximo una frontera de confianza. Los IDs duplicados se rechazan.
+
+---
+
+## 6. Conformidad con el estándar
+
+El vocabulario de elementos, las convenciones DFD y la tabla STRIDE por elemento siguen a Shostack (2014) y la Herramienta de Modelado de Amenazas de Microsoft. El Repudio condicional del almacén de registros y el énfasis en el cruce de fronteras de confianza coinciden con el diagrama STRIDE por elemento publicado.
+
+## 7. Hoja de ruta
+
+Diferido: puntuación DREAD/riesgo, vinculación de mitigación de amenazas, descomposición multiproceso (niveles DFD) y análisis en profundidad con árbol de ataque.

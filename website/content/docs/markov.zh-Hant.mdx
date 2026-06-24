@@ -1,0 +1,109 @@
+---
+title: 馬可夫鏈
+description: 狀態轉移圖——引擎驗證隨機矩陣、分類狀態，並計算穩態分佈或吸收答案。
+---
+
+## 關於馬可夫鏈
+
+**馬可夫鏈**（Markov chain）建模一個在**狀態**之間以固定**轉移概率**跳躍的系統，其中下一個狀態只取決於當前狀態（即*無記憶性*）。它們是可靠性建模、排隊理論、PageRank、賭徒破產問題和天氣預報模型的基礎。從每個狀態出發的轉移概率之和必須等於 1（即**行隨機矩陣**）。
+
+Schematex 的優勢在於引擎**自己做線性代數**，而不只是畫圓圈和箭頭。它驗證行隨機矩陣、透過 SCC 分析分類狀態（瞬態 / 常返 / 吸收），並計算**穩態分佈** π，或者對於吸收鏈，計算**吸收概率**和預期步數——全部無相依性，手工撰寫。
+
+<Playground initial={`markov "Weather"
+  Sunny -> Sunny : 0.9
+  Sunny -> Rainy : 0.1
+  Rainy -> Sunny : 0.5
+  Rainy -> Rainy : 0.5`} height={420} />
+
+---
+
+## 1. 你的第一條鏈
+
+以 `markov` 關鍵字（別名 `markovchain`）開頭，加上可選標題，然後是**帶概率權重的轉移**。狀態從第一個提及它們的弧自動建立：
+
+```
+markov "Weather"
+  Sunny -> Sunny : 0.9
+  Sunny -> Rainy : 0.1
+  Rainy -> Sunny : 0.5
+  Rainy -> Rainy : 0.5
+```
+
+轉移的格式為 `FROM -> TO : PROBABILITY`。自迴圈（`Sunny -> Sunny`）是留在原地的概率。每個概率必須在 `[0, 1]` 範圍內，且**每個狀態的離開概率之和必須等於 1**。
+
+---
+
+## 2. 宣告狀態
+
+你可以明確宣告狀態以固定標籤、順序，或標記其為吸收狀態：
+
+```
+markov "Gambler's ruin"
+  state Broke "$0" absorbing
+  state Rich  "$4" absorbing
+  state S1
+  state S2
+  Broke -> Broke : 1
+  Rich  -> Rich  : 1
+  S1 -> Broke : 0.5
+  S1 -> S2 : 0.5
+  S2 -> S1 : 0.5
+  S2 -> Rich : 0.5
+```
+
+`state ID "label" absorbing` — 標籤可選；`absorbing` 斷言該狀態是一個匯點（概率為 1 的自迴圈）。引擎會對照矩陣交叉驗證此斷言。
+
+---
+
+## 3. 指令
+
+```
+layout: layered       # layout mode
+normalize: true        # scale each row to sum to 1 instead of hard-erroring
+analysis: classify, absorbing   # what to compute: classify | absorbing | stationary
+```
+
+- **`normalize: true`** 將每行重新縮放以使總和為 1（方便非正規化的權重，例如 `A -> B : 1`、`A -> C : 1`）。若不設定，行的總和不等於 1 時會產生硬性錯誤。
+- **`analysis:`** 選擇要執行和呈現的計算內容。
+
+---
+
+## 4. 計算答案
+
+這是差異化優勢。三個手工撰寫、無相依性的線性代數步驟：
+
+1. **矩陣組裝 + 驗證** — 建立 P 並執行行和策略（硬性錯誤，或在 `normalize` 下重新縮放）。
+2. **狀態分類** — Tarjan SCC → 互通類別；一個類別若是封閉的則為**常返**，否則為**瞬態**；帶有概率為 1 的自迴圈的封閉單例為**吸收**狀態。
+3. **定量答案**：
+   - **穩態分佈** π（πP = π，Σπ = 1），透過冪次迭代求解，對週期性鏈有精確的高斯消去回退。
+   - 對於**吸收鏈**：基本矩陣 N = (I−Q)⁻¹、吸收概率 B = N·R，以及到達吸收的預期步數 t = N·1。
+
+瞬態狀態、常返類別和吸收狀態各有不同的渲染方式；計算值存儲在 `data-*` 中。
+
+---
+
+## 5. 常見錯誤
+
+```
+# WRONG — probability outside [0,1]
+A -> B : 1.5
+
+# WRONG — transition with no probability
+A -> B
+
+# WRONG — rows that don't sum to 1 (without `normalize: true`)
+A -> B : 0.3
+A -> C : 0.3
+```
+
+每個轉移都需要一個在 `[0, 1]` 範圍內的概率；每個狀態的出發概率之和必須等於 1，否則必須設定 `normalize: true`。空鏈（無轉移）會被拒絕。
+
+---
+
+## 6. 標準合規性
+
+模型是一個帶有行隨機轉移矩陣的離散時間、時間齊次馬可夫鏈；分類（瞬態/常返/吸收）、穩態分佈，以及吸收鏈的基本矩陣分析遵循標準教材（Kemeny & Snell，*Finite Markov Chains*）。
+
+## 7. 路線圖
+
+延後實作：連續時間鏈（速率矩陣）、隱馬可夫模型、平均首次通過時間，以及週期性報告。

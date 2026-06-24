@@ -1,0 +1,297 @@
+---
+title: 韦恩图／欧拉图（Venn / Euler diagram）
+---
+
+## 关于韦恩图与欧拉图
+
+**韦恩图（Venn diagram）**使用重叠的圆来显示一组集合之间所有可能的逻辑关系——无论每个交集中是否实际包含元素。**欧拉图（Euler diagram）**是更通用的形式：只在关系实际存在时绘制圆，因此完全包含在另一个集合中的集合以嵌套圆表示，两个不相交的集合则完全不重叠。John Venn 于 1880 年提出了固定重叠形式；Leonhard Euler 在 1760 年代描述了通用的集合包含形式。
+
+教育工作者用它来教授集合论；数据分析师用它来显示各客群之间的受众重叠（电子邮件名单 ∩ 移动用户 ∩ 付费订阅者）；生物学、语言学与医学领域的研究人员用欧拉图来映射分类或概念层次结构。Schematex 以一套 DSL 支持所有四种常见的使用模式——声明式计数、元素枚举、区域标签，以及欧拉子集／不相交／重叠关系——并可在单一图表中混合使用。请参阅 [Wikipedia 关于韦恩图](https://en.wikipedia.org/wiki/Venn_diagram)与[欧拉图](https://en.wikipedia.org/wiki/Euler_diagram)的文章以了解背景知识。
+
+<Playground initial={`venn "Customer Segments — Q3 2025"
+set email "Email subscribers" [color: "#1E88E5"]
+set paid "Paid users" [color: "#E53935"]
+set mobile "Mobile app users" [color: "#43A047"]
+email & paid : 1840
+email & mobile : 920
+paid & mobile : 2100
+email & paid & mobile : 650
+email only : 12400
+paid only : 3200
+mobile only : 8700`} height={480} />
+
+---
+
+## 1. 第一个韦恩图
+
+最小的实用图：两个集合、一个重叠，两个独有区域。
+
+<Playground initial={`venn "Support channels"
+set A "Email support" [color: "#1E88E5"]
+set B "Live chat" [color: "#E53935"]
+A & B : 320
+A only : 1450
+B only : 890`} />
+
+四条规则涵盖 80% 的使用场景：
+
+1. 以 `venn` 开头，后面可接一个引号标题。
+2. 以 `set ID "Label"` 声明每个**集合**——id 供内部使用，标签显示于图中。
+3. 使用 `A & B : value` 为交集指定值，使用 `A only : value` 为独有区域指定值。
+4. 以 `config:` 行配置外观；图表模式（`venn` 与 `euler`）可以明确设置或留为 `auto`。
+
+> 注释必须以 `#` 开头，独立成一行。
+
+---
+
+## 2. 集合
+
+集合声明在图中创建一个圆。
+
+```
+set ID "Label" [color: "#hex"]
+```
+
+| 部分 | 必填 | 备注 |
+|---|---|---|
+| `ID` | 是 | 必须符合 `[A-Za-z][A-Za-z0-9_-]*` |
+| `"Label"` | 是 | 显示于圆上的引号字符串 |
+| `[color: "#hex"]` | 否 | 覆盖此集合的填充颜色 |
+
+集合必须在区域或关系行中被引用之前声明。
+
+<Playground initial={`venn "Programming paradigms"
+set oop "Object-Oriented" [color: "#1E88E5"]
+set fp "Functional" [color: "#E53935"]
+set logic "Logic" [color: "#43A047"]
+oop & fp : 180
+oop & logic : 45
+fp & logic : 90
+oop & fp & logic : 12
+oop only : 620
+fp only : 340
+logic only : 95`} height={440} />
+
+---
+
+## 3. 区域
+
+区域为交集或独有区域指定一个值。四种 DSL 模式可在一个图中混合使用。
+
+### 3.1 声明式模式——计数与百分比
+
+为命名区域指定数字或百分比。区域键可以是以 `&` 分隔的集合 id 列表（用于交集），或 `ID only`（用于不被其他任何集合覆盖的部分）。
+
+```
+A & B : 320          # 整数计数
+A & B & C : 45       # 三路交集
+A only : 1450        # A 减去所有其他集合
+A & B : 18.5%        # 百分比值
+```
+
+<Playground initial={`venn "Market research"
+set aware "Awareness" [color: "#7B1FA2"]
+set consider "Consideration" [color: "#0288D1"]
+set convert "Conversion" [color: "#388E3C"]
+aware & consider : 3400
+consider & convert : 890
+aware & convert : 210
+aware & consider & convert : 150
+aware only : 18200
+consider only : 2100
+convert only : 540`} height={440} />
+
+### 3.2 区域标签（文字）
+
+使用 `region` 关键字前缀，并指定引号字符串而非数字。字符串渲染于区域内。
+
+```
+region A & B : "Nurture"
+region B & C : "Convert"
+region A & B & C : "Loyal customer"
+```
+
+<Playground initial={`venn "Go-to-market funnel"
+set A "Awareness" [color: "#7B1FA2"]
+set B "Consideration" [color: "#0288D1"]
+set C "Purchase" [color: "#388E3C"]
+region A & B : "Nurture"
+region B & C : "Convert"
+region A only : "Cold audience"
+region A & B & C : "Loyal"
+region C only : "Direct buyers"`} height={440} />
+
+### 3.3 枚举模式——元素列表
+
+列出每个集合的实际元素。Schematex 自动计算所有交集。
+
+```
+ID = { element1, element2, element3 }
+```
+
+元素以逗号分隔的裸词或引号字符串表示。枚举集合不需要显式的 `set` 声明——声明是隐式的。
+
+<Playground initial={`venn "Full-stack team skills"
+Frontend = { React, TypeScript, CSS, Jest, Webpack }
+Backend  = { TypeScript, Node.js, PostgreSQL, Jest, Redis }
+DevOps   = { Docker, Kubernetes, PostgreSQL, Terraform, Redis }`} height={440} />
+
+---
+
+## 4. 欧拉关系
+
+欧拉关系表达结构性的包含或分离——一个集合是另一个集合的子集、两个集合完全不相交，或它们仅部分重叠。它们必须引用已用 `set` 声明的集合 id。
+
+```
+from subset to    # from 完全在 to 内部（也可用 "in"）
+from in to        # "subset" 的别名
+from disjoint to  # from 与 to 不重叠
+from overlap to   # from 与 to 部分重叠（明确指定——对不相关集合而言是默认值）
+```
+
+<Playground initial={`venn "Biology taxonomy"
+set animals "Animals"
+set vertebrates "Vertebrates"
+set mammals "Mammals"
+set birds "Birds"
+set fish "Fish"
+vertebrates subset animals
+mammals subset vertebrates
+birds subset vertebrates
+fish subset vertebrates
+mammals disjoint birds
+mammals disjoint fish
+birds disjoint fish`} height={440} />
+
+| 关键字 | 别名 | 含义 |
+|---|---|---|
+| `subset` | `in` | `from` 完全包含于 `to` 内 |
+| `disjoint` | — | `from` 与 `to` 不相交 |
+| `overlap` | — | `from` 与 `to` 相交，但互不包含 |
+
+---
+
+## 5. 配置
+
+`config:` 行调整图表行为，每个设置独立成一行。
+
+| 配置键 | 值 | 默认 | 效果 |
+|---|---|---|---|
+| `diagram` | `venn`、`euler`、`auto` | `auto` | 强制韦恩图（所有圆固定）或欧拉图（子集嵌套）。`auto` 根据欧拉关系的存在自动推断。 |
+| `proportional` | `true`、`false` | `false` | 依区域计数值缩放圆的面积 |
+| `showCounts` | `true`、`false` | `auto` | 始终显示 / 从不显示计数标签。`auto` 在提供计数时显示。 |
+| `showPercent` | `true`、`false` | `false` | 以总计的百分比显示每个区域的值 |
+| `palette` | `default`、`brand`、`monochrome` | `default` | 集合的色彩调色板（被每个集合的 `color:` 覆盖） |
+| `blendMode` | `multiply`、`screen`、`none` | `multiply` | 重叠填充颜色的混合方式 |
+
+配置也可以行内写在标题行：`venn "Title" [proportional: true, showPercent: true]`。
+
+```
+venn "Segment overlap"
+config: proportional = true
+config: showPercent = true
+config: blendMode = screen
+```
+
+**布局选择：**
+
+- `layout venn` — `config: diagram = venn` 的替代形式（解析结果相同）。
+- `layout euler` — `config: diagram = euler` 的替代形式。
+- `layout auto` — `config: diagram = auto` 的替代形式。
+
+---
+
+## 6. 标签与注释
+
+- **标题：**`venn "My diagram"` — 仅限第一行。
+- **集合标签：**`set A "Email subscribers"` — `set` 行上的引号字符串。
+- **区域值：**指定于 `:` 后的整数、百分比、引号字符串或元素列表。
+- **注释：**`#` 位于行首（前方可有空白）。
+
+---
+
+## 7. 保留字与转义
+
+**行首保留字：**`venn`（标题）、`set`、`config:`、`layout`、`region`。
+
+**区域键中的保留运算符：**`&`（交集）、`only`（独有区域）。
+
+**欧拉关系关键字：**`subset`、`in`、`disjoint`、`overlap`——不可用作集合 id。
+
+**ID 规则：**必须符合 `[A-Za-z][A-Za-z0-9_-]*`。含空格的标签放在引号 `"Label"` 字段中。
+
+---
+
+## 8. 常见错误
+
+| 你写了什么 | 解析器的反应 | 修正方式 |
+|---|---|---|
+| `A & B : 320` 在 `set A …` 与 `set B …` 之前 | `VennParseError: unknown set id "A" in region key` | 先用 `set` 声明集合，再在区域行中引用它们 |
+| `dogs subset mammals` 在 `set dogs …` 之前 | `VennParseError: unknown set "dogs" in relation` | 先声明集合，再写欧拉关系 |
+| `set A Email subscribers`（含空格的未引号标签） | 解析错误——标签必须是引号字符串 | 加上引号：`set A "Email subscribers"` |
+| `A & B = 320`（等号代替冒号） | 行不符合区域模式；解析错误 | 使用冒号：`A & B : 320` |
+| `Frontend = { React TypeScript }`（无逗号） | `React TypeScript` 被视为一个元素 | 以逗号分隔：`Frontend = { React, TypeScript }` |
+| `config: mode = venn` | `mode` 不是被识别的键（正确键为 `diagram`） | 使用 `config: diagram = venn` |
+| 混合枚举集合与显式的 `A & B :` 区域 | 枚举自动推导只在 `regions.length === 0` 时执行 | 每个图表使用一种样式，或显式加入所有区域 |
+
+---
+
+## 9. 语法（EBNF）
+
+```text
+document       = header (blank | comment | config | layout-stmt | set-decl | enum-decl | euler-rel | region)*
+
+header         = "venn" ( ":"? WS quoted-string )? ( WS "[" config-props "]" )? NEWLINE
+quoted-string  = '"' any-char-but-quote* '"'
+
+config         = "config" WS ":" WS config-key WS "=" WS config-value NEWLINE
+config-key     = "diagram" | "proportional" | "palette" | "blendMode" | "showCounts" | "showPercent"
+
+layout-stmt    = "layout" WS ( "venn" | "euler" | "auto" ) NEWLINE
+
+set-decl       = "set" WS id WS quoted-string ( WS "[" set-props "]" )? NEWLINE
+set-props      = "color:" quoted-hex | "fill:" quoted-hex
+
+enum-decl      = id WS "=" WS "{" element-list "}" NEWLINE
+element-list   = element ( "," element )*
+element        = quoted-string | bare-word
+
+euler-rel      = id WS euler-op WS id NEWLINE
+euler-op       = "subset" | "in" | "disjoint" | "overlap"
+
+region         = "region"? WS region-key WS ":" WS region-value NEWLINE
+region-key     = id WS "only"
+               | id ( WS "&" WS id )+
+region-value   = integer | percent | quoted-string | "[" element-list "]"
+
+percent        = number "%"
+id             = [A-Za-z] [A-Za-z0-9_-]*
+comment        = "#" any NEWLINE
+```
+
+权威来源：`src/diagrams/venn/parser.ts`。若此文件与解析器有所出入，以解析器为准——请提交 issue 反馈。
+
+---
+
+## 10. 路线图
+
+**已规划——目前尚无法解析。**请勿在今日生成的 DSL 中使用以下功能；解析器会拒绝或忽略它们。
+
+- **三路与 N 路欧拉嵌套** — 渲染器目前在韦恩图模式下最多支持 3 个集合；具有复杂包含关系的大型欧拉图尚未完全布局。
+- **`fill:` 颜色别名** — `set` 上的 `fill:` 属性被解析器接受（作为 `color:` 的别名），但渲染器目前只使用 `color:`。
+- **区域上的 `label:`** — `region A & B [label: "Core"]` 语法，用于分离标签与值。
+- **面积比例欧拉图** — `proportional: true` 目前只影响韦恩图模式；欧拉包含布局忽略此标志。
+- **`and` 关键字** — 自然语言的 `A and B : 120` 作为 `A & B : 120` 的别名。
+
+如需提前实现以上功能，请在 GitHub issues 中跟踪进度。
+
+---
+
+## 相关示例
+
+示例库中的即用场景：
+
+<RelatedExamples slugs={[
+  'venn-customer-segments',
+  'venn-programming-paradigms',
+]} />

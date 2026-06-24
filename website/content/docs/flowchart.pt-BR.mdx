@@ -1,0 +1,414 @@
+---
+title: Fluxograma
+---
+
+## Sobre fluxogramas
+
+Um **fluxograma** mapeia as etapas de um processo — decisões, operações, entradas, saídas e os caminhos entre elas — usando um conjunto padronizado de símbolos conectados por setas. Engenheiros os utilizam para especificar algoritmos; analistas de negócios, para documentar fluxos de trabalho; equipes de qualidade, para rastrear modos de falha. São uns dos diagramas técnicos mais universalmente compreendidos em todos os setores.
+
+O Schematex segue as convenções de símbolos do **[ISO 5807:1985](https://www.iso.org/standard/11955.html)** para formas de fluxograma e usa uma DSL **[compatível com Mermaid](https://mermaid.js.org/syntax/flowchart.html)** para que fluxogramas Mermaid existentes possam ser transferidos diretamente. Esta página documenta o que o parser aceita atualmente.
+
+<Playground initial={`flowchart LR
+  start([New order received])
+  start --> validate{Inventory available?}
+  validate -->|Yes| reserve[Reserve items]
+  validate -->|No| notify[Notify customer]
+  notify --> done([End])
+  reserve --> payment{Payment authorized?}
+  payment -->|Yes| ship[Ship order]
+  payment -->|No| cancel[Cancel & release]
+  ship --> confirm[Send confirmation email]
+  confirm --> done
+  cancel --> done`} height={420} />
+
+---
+
+## 1. Seu primeiro fluxograma
+
+O menor fluxograma útil: uma decisão com dois resultados.
+
+<Playground initial={`flowchart TD
+  A([Start]) --> B{File exists?}
+  B -->|Yes| C[Read file]
+  B -->|No| D[Return error]
+  C --> E([Done])`} />
+
+Quatro regras cobrem 80% do uso:
+
+1. Comece com `flowchart` seguido de uma direção: `TD`, `LR`, `BT` ou `RL`.
+2. Cada nó é `ID[Rótulo]` — os colchetes de forma determinam o tipo do nó (veja §2).
+3. Conecte nós com `-->`. Adicione um rótulo entre caracteres de pipe: `-->|Yes|`.
+4. Os nós são criados automaticamente quando referenciados pela primeira vez em uma aresta — mas declarações explícitas permitem definir formas e rótulos de forma independente.
+
+> Comentários começam com `%%` em sua própria linha.
+
+---
+
+## 2. Formas de nós
+
+Cada forma de nó é escrita como `ID<colchetes>Rótulo<colchetes>`. O ID deve começar com uma letra e pode conter letras, dígitos, `_` e `-`.
+
+| Sintaxe | Forma | Uso típico |
+|---|---|---|
+| `A[Label]` | Retângulo | Etapa de processo, operação |
+| `A(Label)` | Retângulo arredondado | Sub-processo, etapa suave |
+| `A([Label])` | Estádio (pílula) | Terminal de início / fim |
+| `A{Label}` | Losango | Decisão / condição |
+| `A{{Label}}` | Hexágono | Preparação, configuração |
+| `A[[Label]]` | Sub-rotina | Processo predefinido |
+| `A[(Label)]` | Cilindro | Banco de dados, armazenamento |
+| `A((Label))` | Círculo | Conector, junção |
+| `A(((Label)))` | Círculo duplo | Estado final |
+| `A[/Label/]` | Paralelogramo | Entrada / saída |
+| `A[\Label\]` | Paralelogramo (alt) | Operação manual |
+| `A[/Label\]` | Trapézio | Entrada manual |
+| `A[\Label/]` | Trapézio (alt) | Conector fora de página |
+| `A>Label]` | Assimétrico | Tag, anotação |
+
+<Playground initial={`flowchart TD
+  t([Terminal / stadium])
+  r[Rectangle process]
+  d{Diamond decision}
+  p[/Parallelogram input/]
+  db[(Cylinder database)]
+  sub[[Subroutine]]
+  t --> r --> d
+  d -->|branch A| p
+  d -->|branch B| db
+  p --> sub
+  db --> sub`} height={440} />
+
+---
+
+## 3. Arestas
+
+Uma aresta conecta dois nós. O símbolo do conector determina o estilo visual e se há rótulo ou ponta de seta.
+
+### 3.1 Tipos de aresta
+
+<Playground initial={`flowchart TD
+  A --> B
+  C --- D
+  E -.-> F
+  G ==> H
+  I <--> J
+  K --x L
+  M --o N`} height={380} />
+
+| Sintaxe | Estilo | Seta | Uso típico |
+|---|---|---|---|
+| `A --> B` | Sólida | Seta | Fluxo normal |
+| `A --- B` | Sólida | Nenhuma | Associação, link não direcionado |
+| `A -.-> B` | Pontilhada | Seta | Caminho opcional / assíncrono |
+| `A ==> B` | Grossa | Seta | Caminho crítico / primário |
+| `A <--> B` | Sólida | Ambas as pontas | Fluxo bidirecional |
+| `A --x B` | Sólida | Cruz | Caminho bloqueado / rejeitado |
+| `A --o B` | Sólida | Círculo | Agregação / composição |
+
+### 3.2 Rótulos de aresta
+
+Duas sintaxes adicionam um rótulo a uma aresta:
+
+**Rótulo pipe** — colocado entre caracteres `|` diretamente após a seta:
+```
+A -->|Yes| B
+A -.->|optional| B
+A ==>|critical| B
+```
+
+**Rótulo inline** — texto colocado entre os traços, antes do caractere de seta:
+```
+A -- success --> B
+A -- error --x C
+```
+
+Ambos produzem resultados idênticos. O rótulo pipe é mais comum ao compartilhar um diagrama com ferramentas Mermaid.
+
+<Playground initial={`flowchart TD
+  req[Request received]
+  req -->|valid| proc[Process]
+  req -->|invalid| err[Return 400]
+  proc -- success --> ok([Done])
+  proc -.->|timeout| retry[Retry queue]
+  retry ==>|max retries| dead[(Dead letter)]`} height={380} />
+
+### 3.3 Cadeias
+
+Conecte três ou mais nós em uma única linha:
+
+```
+A --> B --> C --> D
+```
+
+Isso é equivalente a três declarações de aresta separadas.
+
+### 3.4 Fan-out com `&`
+
+Use `&` para incluir vários nós em qualquer lado de uma seta. O parser gera o produto cruzado completo de arestas:
+
+```
+A & B --> C        %% A→C e B→C
+A --> B & C        %% A→B e A→C
+A & B --> C & D    %% quatro arestas: A→C, A→D, B→C, B→D
+```
+
+<Playground initial={`flowchart LR
+  deploy[Deploy service]
+  smoke[Smoke test]
+  health[Health check]
+  notify_slack[Slack alert]
+  notify_email[Email alert]
+  deploy --> smoke & health
+  smoke & health -->|fail| notify_slack & notify_email`} height={300} />
+
+---
+
+## 4. Subgráficos
+
+Um `subgraph` agrupa nós relacionados em um cluster rotulado com uma borda visível.
+
+```
+subgraph "Title"
+  A --> B
+end
+```
+
+Três formas de cabeçalho de subgráfico são aceitas:
+
+| Forma | ID | Rótulo |
+|---|---|---|
+| `subgraph "My Group"` | gerado automaticamente | `My Group` |
+| `subgraph sg1 "My Group"` | `sg1` | `My Group` |
+| `subgraph sg1 [My Group]` | `sg1` | `My Group` |
+
+Subgráficos podem ter sua própria substituição de `direction`:
+
+```
+subgraph sg1 "Frontend"
+  direction LR
+  ui[React App] --> api[API Client]
+end
+```
+
+<Playground initial={`flowchart TB
+  subgraph ingestion [Ingestion]
+    raw[/Raw events/] --> parse[Parse & validate]
+    parse --> enrich[Enrich]
+  end
+  subgraph storage [Storage]
+    dw[(Data warehouse)]
+    cache[(Redis cache)]
+  end
+  enrich --> dw
+  enrich --> cache
+  dw --> report[Generate report]`} height={420} />
+
+---
+
+## 5. Estilização
+
+### 5.1 Classes semânticas
+
+Atribua nomes de classes CSS aos nós para agrupamento visual em nível de tema. As classes são definidas com `classDef` e aplicadas com `class`. A sintaxe de classe inline do Mermaid também é aceita: `A[Start]:::critical`.
+
+```
+classDef danger fill:#f9c,stroke:#c00
+classDef safe fill:#cfc,stroke:#090
+class errorNode danger
+class successNode safe
+B[Review]:::danger
+```
+
+### 5.2 Substituições de estilo por nó
+
+```
+style nodeId fill:#f9f,stroke:#333,stroke-width:4px
+```
+
+Aceita nomes de propriedades CSS padrão. Múltiplas propriedades são separadas por vírgula.
+
+### 5.3 Substituições de estilo por aresta
+
+`linkStyle` tem como alvo arestas pelo seu **índice de declaração** (base 0, na ordem em que aparecem no fonte). Índices múltiplos separados por vírgula aplicam as mesmas propriedades a várias arestas:
+
+```
+flowchart TD
+  A --> B
+  B ==> C
+  B -.-> D
+  C --> E
+  D --> E
+  linkStyle 1 stroke:#d32f2f,stroke-width:4px
+  linkStyle 2,4 stroke:#f57c00,stroke-dasharray:5 5
+```
+
+Use isso para destacar um caminho crítico ou distinguir um fluxo alternativo.
+
+### 5.4 Formatação inline de rótulos
+
+Rótulos de nós aceitam três tags de formatação inline:
+
+| Tag | Efeito |
+|---|---|
+| `<br/>` ou `<br>` | Quebra de linha |
+| `<b>…</b>` | Negrito |
+| `<i>…</i>` | Itálico |
+
+```
+flowchart TD
+  M1["0 \| 0<br/><b>START</b>"]
+  M2["4 \| 4<br/><b>Phase 1</b><br/><i>est. 4h</i>"]
+  M1 --> M2
+```
+
+Tags podem ser aninhadas e misturadas no meio de uma linha (`Hello <b>world</b>!`). Rótulos de arestas são de linha única e atualmente não suportam essas tags.
+
+---
+
+## 6. Rótulos e comentários
+
+- **Direção:** `flowchart TD` — primeiro token após `flowchart` ou `graph`. `TD` e `TB` são equivalentes.
+- **Título:** `flowchart LR "My diagram"` — string entre aspas opcional após a direção.
+- **Rótulos de aresta:** sintaxe pipe `-->|label|` ou inline `-- label -->`.
+- **Comentários:** `%%` no início de uma linha (após espaços em branco iniciais).
+
+```
+flowchart LR
+%% Este é um comentário — ignorado pelo parser
+A[Step 1] --> B[Step 2]  %% %% inline NÃO é suportado — apenas %% no início da linha
+```
+
+---
+
+## 7. Palavras reservadas e escape
+
+**Reservadas no início de linha:** `flowchart`, `graph` (cabeçalho), `subgraph`, `end`, `direction`, `class`, `classDef`, `style`, `linkStyle`.
+
+**Caracteres reservados em IDs:** IDs correspondem a `[A-Za-z0-9_-]` começando com uma letra. Não use espaços ou caracteres de operador em IDs de nós.
+
+**Tokens de operador a evitar dentro de IDs:** `-->`, `---`, `-.->`, `==>`, `<-->`, `--x`, `--o`, `|`, `&`.
+
+**Rótulos com caracteres especiais:** O rótulo é tudo que está dentro dos colchetes de forma. Caracteres especiais são suportados dentro de rótulos como estão — colchetes/chaves que seriam ambíguos são fechados pelo token de fechamento correspondente.
+
+---
+
+## 8. Erros comuns
+
+| Você escreveu | O parser diz | Correção |
+|---|---|---|
+| `flowchart` sem direção | Direção padrão para `TB` | Adicione uma direção: `flowchart TD` |
+| `A --> B` antes de declarar formas | Funciona — nós criados como retângulos com o ID como rótulo | Declare explicitamente quando precisar de uma forma não retangular: `A([Start])` |
+| `A[Label with [brackets]]` | `]` interno fecha a forma prematuramente | Evite colchetes aninhados em rótulos |
+| `subgraph My Group` (sem aspas, com espaço) | O parser toma `My` como id do subgráfico, `Group` como token desconhecido | Use aspas: `subgraph "My Group"` |
+| `%% comment` no meio de linha após código | Comentários inline não são suportados; `%%` deve estar no início da linha | Mova comentários para sua própria linha |
+| `A --> B --> C` misturado com `A --> B` | Cadeias são aditivas — arestas duplicadas podem aparecer | Use cadeias OU linhas separadas, não ambas para o mesmo par |
+| `direction LR` fora de um subgráfico | Silenciosamente ignorado — substituição de `direction` só se aplica dentro de `subgraph … end` | Defina a direção na linha de cabeçalho do `flowchart` |
+
+---
+
+## 9. Gramática (EBNF)
+
+```text
+document       = header (blank | comment | subgraph-block | direction-stmt
+                        | class-stmt | classdef-stmt | style-stmt
+                        | linkstyle-stmt | chain-stmt)*
+
+header         = ("flowchart" | "graph") ( WS direction )? ( WS title )? NEWLINE
+direction      = "TD" | "TB" | "BT" | "LR" | "RL"
+title          = '"' any-char-but-quote* '"' | bare-word
+
+subgraph-block = "subgraph" ( WS subgraph-header )? NEWLINE
+                   ( WS? "direction" WS direction NEWLINE )?
+                   statement*
+                 "end" NEWLINE
+subgraph-header = id WS "[" label "]"
+                | id WS quoted-string
+                | quoted-string
+                | id
+
+chain-stmt     = node-group ( WS edge-op WS pipe-label? WS node-group )* NEWLINE
+node-group     = node-ref ( WS "&" WS node-ref )*
+node-ref       = id shape-suffix?
+shape-suffix   = "[" label "]"          %% rect
+               | "(" label ")"          %% round
+               | "([" label "])"        %% stadium
+               | "{" label "}"          %% diamond
+               | "{{" label "}}"        %% hexagon
+               | "[[" label "]]"        %% subroutine
+               | "[(" label ")]"        %% cylinder
+               | "((" label "))"        %% circle
+               | "(((" label ")))"      %% double-circle
+               | "[/" label "/]"        %% parallelogram
+               | "[\" label "\]"        %% parallelogram-alt
+               | "[/" label "\]"        %% trapezoid
+               | "[\" label "/]"        %% trapezoid-alt
+               | ">" label "]"          %% asymmetric
+
+edge-op        = "-->" | "---" | "-."-".->" | "==>" | "<-->" | "--x" | "--o"
+               | inline-label variants of the above
+pipe-label     = "|" text "|"
+
+class-stmt     = "class" WS id-list WS class-name NEWLINE
+               | node-ref ":::" class-name NEWLINE         # Mermaid inline form
+classdef-stmt  = "classDef" WS class-name WS css-props NEWLINE
+style-stmt     = "style" WS id WS css-props NEWLINE
+linkstyle-stmt = "linkStyle" WS index-list WS css-props NEWLINE
+index-list     = NUMBER ( "," NUMBER )* | "default"
+
+comment        = "%%" any NEWLINE
+id             = [A-Za-z] [A-Za-z0-9_-]*
+```
+
+Fonte autoritativa: `src/diagrams/flowchart/parser.ts`. Se houver divergência com o parser, o parser prevalece — abra uma issue.
+
+---
+
+## 10. Conformidade com o padrão
+
+Os fluxogramas do Schematex seguem as convenções de símbolos do **ISO 5807:1985**. A sintaxe DSL é intencionalmente compatível com **[Mermaid flowchart](https://mermaid.js.org/syntax/flowchart.html)** para que diagramas criados em uma ferramenta possam ser usados na outra.
+
+O que está implementado hoje:
+
+- ✅ Todas as cinco direções: `TD`, `TB`, `BT`, `LR`, `RL`
+- ✅ 13 formas de nó (de rect até assimétrico)
+- ✅ 7 tipos de aresta: sólida, sem seta, pontilhada, grossa, bidirecional, cruzada, com extremidade redonda
+- ✅ Rótulos pipe (`-->|text|`) e rótulos inline (`-- text -->`)
+- ✅ Cadeias de arestas (`A --> B --> C`)
+- ✅ Fan-out com `&` (arestas em produto cruzado)
+- ✅ Subgráficos com id opcional, rótulo e direção por subgráfico
+- ✅ Agrupamento semântico com `classDef` / `class`
+- ✅ Classes inline de nós Mermaid: `A[Label]:::className`
+- ✅ Substituições CSS `style` por nó
+- ✅ Renderização `linkStyle` — `linkStyle 1,5,6 stroke:#f00,stroke-width:4px` aplica CSS às arestas correspondentes por ordem de declaração
+- ✅ `<b>` / `<i>` inline em rótulos de nós (combinados com `<br/>` existente para quebras de linha)
+- ⏳ Renderização de forma para todas as 13 formas — M1 renderiza completamente rect/round/stadium/diamond/parallelogram; as formas restantes recuam para rect
+- ⏳ Variante de layout com swim-lane
+
+Referências:
+
+- ISO 5807:1985 — *Information processing — Documentation symbols and conventions for data, program and system flowcharts, program network charts and system resources charts*
+- Documentação de flowchart do Mermaid — https://mermaid.js.org/syntax/flowchart.html
+
+---
+
+## 11. Roadmap
+
+**Planejado — ainda não parseável.** Não use esses recursos em DSL gerado hoje; o parser irá rejeitá-los ou ignorá-los.
+
+- **Renderização completa de forma para todas as 13 formas** — subroutine, cylinder, circle, double-circle, hexagon, asymmetric, trapezoid e parallelogram-alt recuam para rect no M1.
+- **Layout com swim-lane** — faixas horizontais agrupando nós por ator ou sistema (Mermaid `subgraph` com `direction TB` dentro de raiz `LR`).
+- **Bloco `%%{init: {…}}%%`** — bloco de inicialização de tema e layout compatível com Mermaid.
+- **Formatação Markdown em rótulos** — sintaxe markdown `**bold**` / `*italic*` (HTML `<b>`/`<i>` já funciona — veja §5).
+
+Acompanhe as issues do GitHub se precisar de algum desses recursos mais cedo.
+
+---
+
+## Exemplos relacionados
+
+Cenários prontos para uso da galeria de exemplos:
+
+<RelatedExamples slugs={[
+  'flowchart-order-fulfillment',
+  'flowchart-cicd-pipeline',
+]} />

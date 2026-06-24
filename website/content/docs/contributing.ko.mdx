@@ -1,0 +1,185 @@
+---
+title: 새로운 다이어그램 유형 기여하기
+description: Schematex에 새로운 다이어그램 플러그인을 추가하는 단계별 가이드 — 표준 명세부터 공개된 웹사이트 예제까지.
+---
+
+
+> Schematex에 새로운 다이어그램 플러그인을 추가하는 단계별 가이드 — 표준 명세부터 공개된 웹사이트 예제까지. 전체 아키텍처는 먼저 [`00-OVERVIEW.md`](/docs)를 읽어보세요.
+
+---
+
+## 1. 파이프라인
+
+모든 다이어그램 유형은 동일한 파이프라인을 따릅니다:
+
+```
+Text (DSL) ──► Parser ──► AST ──► Layout ──► LayoutResult ──► Renderer ──► SVG
+```
+
+- **Parser** — 직접 작성한 재귀 하강 파서; 파서 생성기 없음, 의존성 없음.
+- **Layout** — 절대적인 기하학을 생성하는 AST 위의 순수 함수. 결정론적이며 무작위성 없음.
+- **Renderer** — [`src/core/svg.ts`](https://github.com/SchemaTex/SchemaTex/blob/main/src/core/svg.ts)를 통한 문자열 빌딩 SVG; DOM 없음, SSR 안전.
+
+작은 다이어그램(예: timing)은 레이아웃을 렌더러에 통합할 수 있습니다. 복잡한 다이어그램(genogram, SLD)은 둘을 분리하여 독립적으로 테스트해야 합니다.
+
+---
+
+## 2. 하드 제약 조건 (협상 불가)
+
+1. **런타임 의존성 없음.** D3 없음, dagre 없음, 파서 생성기 없음. 모든 것을 직접 작성합니다.
+2. **엄격한 TypeScript.** `any` 없음, 주석 없는 `as` 없음. [`src/core/types.ts`](https://github.com/SchemaTex/SchemaTex/blob/main/src/core/types.ts)의 타입이 명세입니다.
+3. **시맨틱 SVG.** 모든 렌더링된 다이어그램에는 `<title>`, `<desc>`, 테마 적용을 위한 CSS 클래스, 상호작용을 위한 `data-*` 속성이 포함되어야 합니다. 인라인 스타일 없음.
+4. **SVG 빌더 사용.** SVG 문자열을 절대 연결하지 마세요 — [`src/core/svg.ts`](https://github.com/SchemaTex/SchemaTex/blob/main/src/core/svg.ts)를 사용하세요.
+5. **테스트 우선 레이아웃.** 레이아웃 코드를 작성하기 전에 실패하는 레이아웃 테스트를 먼저 작성하세요.
+6. **표준 준수.** 각 다이어그램은 공개된 도메인 표준을 구현합니다 — 우리의 발명이 아닙니다. 표준 문서에 참조를 인용하세요 (IEEE, IEC, ISO, McGoldrick 등).
+
+---
+
+## 3. 단계별 체크리스트
+
+### 단계 1 — 표준 문서 작성
+
+`docs/reference/NN-{TYPE}-STANDARD.md`를 생성합니다 (다음 빈 번호 사용). 다음 내용이 포함되어야 합니다:
+
+- 범위 및 참조 (IEEE / IEC / 발표된 논문).
+- ASCII/Unicode 참조가 있는 기호 테이블.
+- DSL 문법 (EBNF 또는 동등한 형식).
+- 레이아웃 규칙 (축, 정렬, 간격).
+- 예상 렌더링 설명이 있는 3–5개의 표준 테스트 케이스.
+
+템플릿으로 [`06-TIMING-STANDARD.md`](/docs/timing) 또는 [`11-SINGLE-LINE-STANDARD.md`](/docs/sld)를 참조하세요.
+
+### 단계 2 — `src/core/types.ts`에 AST 타입 추가
+
+타입이 명세입니다. 코드를 작성하기 전에 다음을 확정하세요:
+
+- `DiagramType` 리터럴 — `types.ts`의 유니온을 확장합니다.
+- AST 형태: 노드, 엣지, 메타데이터, 다이어그램별 필드.
+- LayoutResult 형태 (위치, 크기, 계산된 라우팅).
+
+검토자가 계약을 별도로 비판할 수 있도록 이것을 자체 커밋으로 제출하세요.
+
+### 단계 3 — 플러그인 디렉토리 스캐폴딩
+
+```
+src/diagrams/{type}/
+  index.ts       # DiagramPlugin export
+  parser.ts      # text → AST
+  layout.ts      # AST → LayoutResult   (optional; skip for simple diagrams)
+  renderer.ts    # LayoutResult → SVG string
+```
+
+`index.ts`는 항상 다음과 같은 형태입니다:
+
+```ts
+import type { DiagramPlugin } from "../../core/types";
+import { parseMyType } from "./parser";
+import { renderMyType } from "./renderer";
+
+export const myType: DiagramPlugin = {
+  type: "mytype",
+  detect(text) {
+    const first = text.trim().split("\n")[0]?.trim().toLowerCase() ?? "";
+    return first.startsWith("mytype");
+  },
+  render(text) {
+    const ast = parseMyType(text);
+    return renderMyType(ast);
+  },
+};
+```
+
+### 단계 4 — 먼저 테스트 작성
+
+```
+tests/{type}/
+  parser.test.ts
+  layout.test.ts
+  renderer.test.ts
+  e2e.test.ts      # full text → SVG, snapshot string for stability
+```
+
+표준 문서에서 확정한 모든 테스트 케이스를 커버하세요. 레이아웃 테스트는 절대 좌표를 주장해야 합니다 — 이것이 회귀를 잡아냅니다.
+
+### 단계 5 — parser → layout → renderer 구현
+
+테스트를 따르세요. 각 모듈을 순수하게 유지하세요 — 파서는 문자열을 받아 AST를 반환하고, 레이아웃은 AST를 받아 기하학을 반환하고, 렌더러는 기하학을 받아 문자열을 반환합니다.
+
+SVG 빌더를 사용하세요:
+
+```ts
+import { svg, g, rect, text } from "../../core/svg";
+```
+
+절대 `'<svg>' + ... + '</svg>'`를 사용하지 마세요.
+
+### 단계 6 — 플러그인 등록
+
+[`src/core/api.ts`](https://github.com/SchemaTex/SchemaTex/blob/main/src/core/api.ts)를 편집합니다:
+
+1. `../diagrams/mytype`에서 `{ myType }`을 가져옵니다.
+2. `plugins[]` 배열에 추가합니다.
+3. `SchematexConfig.type` 리터럴 유니온을 확장합니다.
+4. 새 키워드와 함께 `detectPlugin` 오류 메시지를 업데이트합니다.
+
+### 단계 7 — 품질 게이트
+
+```bash
+npm run typecheck
+npm run test
+npm run lint
+npm run build
+```
+
+네 가지 모두 통과해야 합니다. `dts`가 미사용 로컬에서 실패하면 수정하세요 — 억제하지 마세요.
+
+### 단계 8 — 웹사이트에 연결
+
+1. **갤러리 타일** — [`website/lib/gallery-data.ts`](https://github.com/SchemaTex/SchemaTex/blob/main/website/lib/gallery-data.ts)에 항목을 추가합니다. `dsl` 필드는 파싱 가능해야 합니다 — `node scripts/validate-gallery.mjs`로 검증하세요.
+2. **정적 SVG** — [`scripts/generate-gallery-svgs.mjs`](https://github.com/SchemaTex/SchemaTex/blob/main/scripts/generate-gallery-svgs.mjs)에 항목을 추가하고 실행합니다. 생성된 SVG는 레포와 함께 제공되며 README에서 참조됩니다.
+3. **문서 페이지** — `<Playground initial={…}>`와 표준 문서 본문이 인라인된 `website/content/docs/{type}.mdx`를 만듭니다.
+4. **예제 페이지 (선택 사항)** — 실제 사용 사례 연구를 위해 `website/content/examples/{slug}.mdx`를 추가합니다.
+5. **README** — 생성된 SVG와 함께 갤러리 테이블에 행을 추가합니다.
+
+### 단계 9 — 최상위 문서 업데이트
+
+- [`README.md`](https://github.com/SchemaTex/SchemaTex/blob/main/README.md) — 갤러리 행.
+- [`CLAUDE.md`](https://github.com/SchemaTex/SchemaTex/blob/main/CLAUDE.md) — 하단의 "완료됨" 목록.
+- [`docs/reference/00-OVERVIEW.md`](/docs) — 상태 테이블.
+
+---
+
+## 4. 일반적인 함정
+
+- **`detect()` 잊기** — 두 플러그인이 모두 `true`를 반환하면 첫 번째가 이깁니다. 헤더 키워드를 고유하게 만드세요.
+- **좌표 드리프트** — 상대적인 숫자(`width / 2 + padding`)를 사용하는 레이아웃 테스트는 버그를 숨깁니다. 구체적인 예상 값을 주장하세요.
+- **인라인 `style=` 속성** — 시맨틱 SVG 규칙에 의해 차단됩니다. CSS 클래스를 사용하고 [`src/core/theme.ts`](https://github.com/SchemaTex/SchemaTex/blob/main/src/core/theme.ts)에서 테마 토큰으로 노출하세요.
+- **런타임 의존성 스며들기** — 필요하다고 생각되면 먼저 이슈를 여세요. 거의 항상 "30줄 버전을 직접 작성하세요"라는 답이 나옵니다.
+- **파싱되지 않는 갤러리 DSL 스텁** — 커밋하기 전에 `node scripts/validate-gallery.mjs`를 실행하세요. 이 스크립트는 계속 발생했기 때문에 존재합니다.
+
+---
+
+## 5. 참조 플러그인
+
+복잡성별로 공부하기 좋은 예제:
+
+| 복잡도 | 플러그인 | 공부 목적 |
+|-----------|--------|-----------|
+| 최소 | [`timing`](https://github.com/SchemaTex/SchemaTex/tree/main/src/diagrams/timing) | 파서 + 렌더러만, 별도 레이아웃 없음. |
+| 중간 | [`ecomap`](https://github.com/SchemaTex/SchemaTex/tree/main/src/diagrams/ecomap) | 깔끔한 AST → 레이아웃 → 렌더러 분리. |
+| 고급 | [`genogram`](https://github.com/SchemaTex/SchemaTex/tree/main/src/diagrams/genogram) | 세대 레이아웃, 멀티패스 라우팅, 풍부한 기호 세트. |
+| 고급 | [`sld`](https://github.com/SchemaTex/SchemaTex/tree/main/src/diagrams/sld) | 전압 레벨 밴딩, 버스 라우팅, 디바이스 클러스터링. |
+
+---
+
+## 6. 로드맵의 후보 다이어그램
+
+아직 구현되지 않음 — PR 환영합니다. 표준 문서(단계 1)로 시작하고 코딩 전에 드래프트 PR을 여세요.
+
+- **Fishbone / Ishikawa** — 원인-결과 분석. AST와 표준 문서가 주요 미지수입니다.
+- **Sequence diagram** — PlantUML/Mermaid 관례에 의존하지 않는 UML 시퀀스.
+- **State machine** — 계층적 상태가 있는 UML 상태 차트.
+- **Gantt** — 의존성과 크리티컬 패스가 있는 프로젝트 스케줄링.
+- **Network topology** — 디바이스 아이콘이 있는 L2/L3 네트워크 다이어그램.
+
+이 중 하나를 추가하는 경우, 표준 문서가 작업의 대부분을 차지합니다 — 소홀히 하지 마세요.

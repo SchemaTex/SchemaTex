@@ -1,0 +1,348 @@
+---
+title: 家系図（ペディグリー）
+---
+
+## ペディグリーについて
+
+**ペディグリーチャート**は、臨床遺伝学において、単一の疾患（または少数の関連する疾患）を複数世代にわたって家族内で追跡するための標準化された図です。感情的・社会的な文脈を記録するジェノグラムとは異なり、ペディグリーは純粋に構造的です。誰が罹患しているか、誰がキャリアか、誰が検査を受けたか、誰がインデックスケースかを記録します。遺伝カウンセラー、臨床遺伝学者、紹介医が遺伝パターン、再発リスク、そして家族内で他に検査を提供すべき人を判断するために使用します。
+
+Schematex は**[Bennett et al. (2022) NSGC 推奨事項](https://onlinelibrary.wiley.com/doi/10.1002/jgc4.1621)**に従っています。これは全米遺伝カウンセラー協会の最新更新版であり、1995年および2008年の改訂版に取って代わります。背景については [Wikipedia: Pedigree chart](https://en.wikipedia.org/wiki/Pedigree_chart) を参照してください。このページでは、現在パーサーが受け付ける構文を説明します。
+
+<Playground initial={`pedigree "BRCA1 — Hereditary Breast/Ovarian Cancer"
+  I-1 [male, unaffected]
+  I-2 [female, affected, deceased]
+  I-1 -- I-2
+    II-1 [female, affected]
+    II-2 [male, unaffected]
+    II-3 [female, carrier]
+  II-1 -- II-4 [male, unaffected]
+    III-1 [female, affected, proband]
+    III-2 [male, unaffected]
+    III-3 [female, presymptomatic]
+  II-3 -- II-6 [male, unaffected]
+    III-6 [female, carrier]
+    III-7 [male, unaffected]`} height={520} />
+
+---
+
+## 1. はじめてのペディグリー
+
+最小限の臨床的に有用なペディグリー：両親とその罹患した子供。
+
+<Playground initial={`pedigree
+  I-1 [male, carrier]
+  I-2 [female, carrier]
+  I-1 -- I-2
+    II-1 [male, affected, proband]
+    II-2 [female, unaffected]`} />
+
+以下の4つのルールで利用の80%をカバーできます。
+
+1. キーワード `pedigree` で始め、オプションで引用符付きタイトルを続けます。
+2. 各個人を独立した行で宣言します：`id [属性]`。慣例的に ID は `I-1`、`II-3` 等 — ローマ数字の世代、ダッシュ、世代内の位置。
+3. 2つの個人を**カップル演算子**で接続します — `--`（配偶）、`==`（血族婚）、`-/-`（別居）、`~`（子なし）。§4参照。
+4. カップル行の**下にインデント**して子供を追加します。より深いインデントであれば何でも機能します。スペース2つが慣例です。
+
+> コメントは単独行で `#`、`//`、または Mermaid スタイルの `%%` で始める必要があります。末尾インラインコメントはパーサーを壊します。
+
+---
+
+## 2. 個人
+
+個人の行は `id [attr1, attr2, …]` です。属性はカンマ区切りで、順序不問、すべてオプションです。
+
+**ID ルール。** `[a-zA-Z][a-zA-Z0-9_-]*` にマッチする必要があります。ID は内部では大文字・小文字を区別しませんが、元のケーシングを表示ラベルとして保持します（`label:"…"` でオーバーライド可能）。
+
+**現在パーサーが受け付ける属性：**
+
+| 属性 | 値 | 効果 |
+|---|---|---|
+| 性別 | `male`、`female`、`unknown`、`amab`、`afab`、`uaab` | 形状：正方形、円、菱形（§3参照）|
+| 遺伝的状態 | `unaffected`、`affected`、`carrier`、`carrier-x`、`obligate-carrier`、`presymptomatic` | 塗りつぶし/内部マーカー（§3参照）|
+| マーカー | `proband`、`consultand`、`evaluated` | 矢印と文字のアノテーション（§3.3参照）|
+| 生命状態 | `deceased`、`stillborn`、`pregnancy`、`sab`、`tab`、`ectopic` | ビジュアル修飾子 |
+| 生年 | 4桁の数字（例：`1958`）| 形状の下に表示 |
+| `label:"…"` | 任意の引用符付き文字列 | 表示ラベルのオーバーライド |
+| `affected: trait1+trait2` | §5参照 | 複数形質の四分円塗りつぶし |
+
+<Playground initial={`pedigree
+  I-1 [male, 1942, deceased]
+  I-2 [female, 1945, affected, deceased]
+  II-1 [female, affected, proband, label: "Jane (42)"]
+  II-2 [male, evaluated]
+  II-3 [female, presymptomatic]`} />
+
+---
+
+## 3. 形状、状態、マーカー
+
+### 3.1 形状（Bennett 2022）
+
+| ビジュアル | 性別値 | 意味 |
+|---|---|---|
+| ☐ 正方形 | `male` または `amab` | 出生時男性割り当て |
+| ○ 円 | `female` または `afab` | 出生時女性割り当て |
+| ◇ 菱形 | `unknown`、`uaab`、または省略 | 不明 / 性分化疾患 / 非開示 / 胎児 |
+
+Bennett 2022 では、正方形と円が**出生時割り当て性別**を表し、性自認ではないことが明確化されました。性自認が異なる場合は、ラベルに記録してください（`[female, label: "Trans man (AFAB)"]`）。形状は変更しません。
+
+### 3.2 遺伝的状態（塗りつぶし）
+
+| 状態 | 意味 |
+|---|---|
+| （デフォルト、状態トークンなし）| 未罹患 — 空の形状 |
+| `unaffected` | 明示的な未罹患 |
+| `affected` | 完全に塗りつぶされた形状 |
+| `carrier` | 半分塗りつぶし — 常染色体性キャリア |
+| `carrier-x` | 中央の点 — X連鎖キャリア女性 |
+| `obligate-carrier` | 中央の点 — ペディグリー構造から推定 |
+| `presymptomatic` | 形状を縦線が貫通 — 検査陽性だが臨床症状なし |
+
+<Playground initial={`pedigree
+  I-1 [male, unaffected]
+  I-2 [female, affected]
+  I-3 [female, carrier]
+  I-4 [female, carrier-x]
+  I-5 [male, obligate-carrier]
+  I-6 [female, presymptomatic]`} />
+
+### 3.3 マーカー
+
+| マーカー | 意味 |
+|---|---|
+| `proband` | 矢印＋「P」— 紹介のきっかけとなったインデックスケース |
+| `consultand` | 矢印＋「C」— 遺伝カウンセリングを求めた人 |
+| `evaluated` | 「E」— 評価済みだが陽性所見なし |
+
+### 3.4 生命状態
+
+| 値 | 意味 |
+|---|---|
+| `deceased` | 形状を斜線が横断 |
+| `stillborn` | 小さな形状＋「SB」ラベル |
+| `pregnancy` | 形状＋「P」ラベル、または性別不明の場合は菱形 |
+| `sab` | 小さな三角形 — 自然流産 |
+| `tab` | バー付きの小さな三角形 — 人工妊娠中絶 |
+| `ectopic` | 小さな三角形＋「ECT」ラベル |
+
+複数のトークンを組み合わせられます：`[female, affected, deceased]`、`[male, sab]`、`[unknown, pregnancy, presymptomatic]`。
+
+---
+
+## 4. カップルと子供
+
+### 4.1 カップル演算子
+
+パーサーはこの順序で試行します。最初に一致したものが採用されます — `-/-` は `--` より優先されます。
+
+| 演算子 | 種類 | 例 | 意味 |
+|---|---|---|---|
+| `-/-` | 別居 | `a -/- b` | もはや一緒でない配偶ペア |
+| `==` | 血族婚 | `a == b` | 血縁による結合（臨床的に重要）|
+| `--` | 婚姻 | `a -- b` | 子供のいる配偶ペア |
+| `~` | 同棲 | `a ~ b` | 子供のいないパートナー |
+
+### 4.2 右側のインライン個人
+
+右側の個人がまだ宣言されていない場合、インプレースで宣言できます。
+
+<Playground initial={`pedigree
+  I-1 [female, carrier]
+  I-1 -- I-2 [male, unaffected]
+    II-1 [female, affected, proband]
+    II-2 [male, carrier]`} />
+
+### 4.3 子供（カップル行の下にインデント）
+
+カップル行の下のインデント = 「これらはこのカップルの子供です」。カップルのインデントより深ければどんなインデントでも機能します。スペース2つが慣例です。
+
+<Playground initial={`pedigree "Cystic Fibrosis — autosomal recessive"
+  I-1 [male, carrier]
+  I-2 [female, carrier]
+  I-1 -- I-2
+    II-1 [male, affected, proband]
+    II-2 [female, carrier]
+    II-3 [male, unaffected]`} />
+
+### 4.4 血族婚
+
+血族婚は二重線でレンダリングされ、視覚的に明示する必要があります。多くのペディグリーで最も重要な情報です。
+
+<Playground initial={`pedigree "Consanguineous union"
+  I-1 [male, carrier]
+  I-2 [female, unaffected]
+  I-1 -- I-2
+    II-1 [male, carrier]
+  I-3 [male, unaffected]
+  I-4 [female, carrier]
+  I-3 -- I-4
+    II-3 [female, carrier]
+  II-1 == II-3
+    III-1 [male, affected, proband]`} />
+
+---
+
+## 5. 複数形質ペディグリー
+
+複数の遺伝性疾患を持つ家族の場合、`legend:` 行を使って形状のどの四分円がどの形質を表すかを定義し、個人に `affected: trait1+trait2` でタグを付けます。
+
+```
+pedigree "Cancer Family Syndrome"
+  legend: breast = "Breast cancer" (fill: quad-tl)
+  legend: ovarian = "Ovarian cancer" (fill: quad-tr)
+  legend: prostate = "Prostate cancer" (fill: quad-bl)
+  legend: colon = "Colon cancer" (fill: quad-br)
+
+  I-1 [male, affected: prostate, deceased]
+  I-2 [female, affected: breast, deceased]
+  I-1 -- I-2
+    II-1 [female, affected: breast+ovarian]
+    II-2 [male, unaffected]
+```
+
+**凡例の構文：** `legend: id = "Human label" (fill: POSITION)`。
+
+| `fill` の位置 | 領域 |
+|---|---|
+| `full` | 形状全体（`(fill: …)` を省略した場合のデフォルト）|
+| `quad-tl` / `quad-tr` / `quad-bl` / `quad-br` | 左上 / 右上 / 左下 / 右下の四分円 |
+| `half-left` / `half-right` / `half-top` / `half-bottom` | 形状の半分 |
+
+個人には凡例の形質 ID を使用します：`[affected: breast]`、`[affected: breast+ovarian]`。`+` で形質を結合し、四分円が累積的に塗りつぶされます。
+
+---
+
+## 6. ラベルとコメント
+
+- **タイトル：** `pedigree "BRCA1 Family"` — 最初の行のみ。
+- **個人ラベルのオーバーライド：** `II-1 [female, affected, label: "Jane Smith (42)"]`。
+- **凡例エントリ：** `legend: id = "Label" (fill: POSITION)` — §5参照。
+- **モードサフィックス：** `pedigree:autosomal-dominant "Family X"` は受け付けられます。サフィックスは `metadata.mode` として格納されます。現在のレンダラーはこれを無視します。
+- **コメント：** 行頭（先頭スペースの後）の `#`、`//`、または `%%`。末尾インラインコメントは**サポートされていません**。
+
+---
+
+## 7. 予約語とエスケープ
+
+**行頭の予約語：** `pedigree`（ヘッダー）、`legend:`（凡例エントリ）。
+
+**行内の予約演算子トークン** — ID 内でこれらのシーケンスを避けてください：`--`、`==`、`-/-`、`~`。
+
+**`[…]` 内の予約属性トークン** — パーサーは位置に関係なくこれらを解釈します：性別トークン（`male`、`female`、`unknown`、`amab`、`afab`、`uaab`）、遺伝的状態（`affected`、`carrier`、`carrier-x`、`obligate-carrier`、`presymptomatic`、`unaffected`）、マーカー（`proband`、`consultand`、`evaluated`）、生命状態（`deceased`、`stillborn`、`pregnancy`、`sab`、`tab`、`ectopic`）。
+
+**スペースを含む文字列**はダブルクォートで囲む必要があります。シングルクォートとバックティックは認識されません。
+
+---
+
+## 8. よくある間違い
+
+実際のパーサーエラー、何がトリガーになるか、そして修正方法。
+
+| 書いた内容 | パーサーの応答 | 修正方法 |
+|---|---|---|
+| `II-4` を未宣言の状態での `II-1 -- II-4` | `Unknown individual 'II-4'` | 上で `II-4` を宣言するか、インライン形式を使用：`II-1 -- II-4 [male, unaffected]` |
+| `II-1 [nonbinary]` | カスタムプロパティとしてサイレントに格納され、形状は菱形のまま | Bennett 2022 は割り当て性別と性自認を区別しています — `amab`/`afab`/`uaab` を使い、性自認は `label:` に記録する |
+| `II-3 [twin-mz]` | カスタムプロパティとして格納され、双生児ラインは描画されない | 双生児記法は §10 ロードマップ |
+| **同じインデントの** `I-1 -- I-2` に続く `II-1 [male]` | 子供は子孫としてではなく、新しいトップレベル個人としてパースされる | 子供行をカップル行より深くインデントする |
+| 一致する `legend:` がない `I-1 [affected: breast]` | 形質 ID は格納されるが凡例キー付きの塗りつぶしは描画されない | 上に `legend: breast = "…" (fill: quad-tl)` を追加する |
+| `II-1[affected]`（スペースなし、属性分割なし）| 単一トークンでは機能するが、2番目の属性が追加されると壊れる | 常に `id` と `[…]` をスペースで区切る |
+| `pedigree` ヘッダーなしで `I-1 [male]` が1行目 | `Expected "pedigree" header` | `pedigree` または `pedigree "Title"` で始める |
+
+---
+
+## 9. 文法（EBNF）
+
+```text
+document       = header (blank | comment | legend | individual | couple-block)*
+
+header         = "pedigree" ( ":" mode )? ( WS quoted-string )? NEWLINE
+mode           = [A-Za-z] [A-Za-z0-9_-]*
+quoted-string  = '"' any-char-but-quote* '"'
+
+legend         = INDENT "legend:" WS id WS "=" WS quoted-string
+                   ( WS "(" "fill:" fill-value ")" )? NEWLINE
+
+individual     = INDENT id ( "[" attrs "]" )? NEWLINE
+couple-block   = INDENT id WS coupleOp WS right-side NEWLINE
+                   ( deeper-indent child )*
+child          = INDENT id ( "[" attrs "]" )? NEWLINE
+right-side     = id ( "[" attrs "]" )?
+
+coupleOp       = "-/-" | "==" | "--" | "~"
+
+id             = [a-zA-Z] [a-zA-Z0-9_-]*
+attrs          = attr ("," attr)*
+attr           = sex
+               | genetic-status
+               | marker
+               | life-status
+               | digit digit digit digit                         // birth year
+               | "label" ":" quoted-string
+               | "affected" ":" trait-id ( "+" trait-id )*
+               | key ":" value                                    // custom
+
+sex            = "male" | "female" | "unknown" | "amab" | "afab" | "uaab"
+genetic-status = "unaffected" | "affected" | "carrier" | "carrier-x"
+               | "obligate-carrier" | "presymptomatic"
+marker         = "proband" | "consultand" | "evaluated"
+life-status    = "deceased" | "stillborn" | "pregnancy"
+               | "sab" | "tab" | "ectopic"
+fill-value     = "full" | "half-left" | "half-right" | "half-top" | "half-bottom"
+               | "quad-tl" | "quad-tr" | "quad-bl" | "quad-br"
+
+comment        = INDENT ( "#" | "//" | "%%" ) any NEWLINE
+```
+
+権威ある情報源：`src/diagrams/pedigree/parser.ts`。このドキュメントとパーサーが乖離している場合、パーサーが優先されます。Issue を立ててください。
+
+---
+
+## 10. 標準準拠
+
+Schematex のペディグリーは、形状のセマンティクス、状態の塗りつぶし、プロバンド/コンサルタントの慣習について、**Bennett, R.L. et al. (2022), *The evolving pedigree: Updating to reflect modern family structures, sex, and gender*** に従っています。以前の改訂版（Bennett 1995、2008）は古典的なサブセットの有効な参照として残ります。
+
+現在実装済みのものと標準の比較：
+
+- ✅ コア形状（正方形 / 円 / 菱形）と Bennett 2022 の AMAB/AFAB/UAAB セマンティクス
+- ✅ 完全な遺伝的状態セット（affected / carrier / carrier-x / obligate-carrier / presymptomatic / unaffected）
+- ✅ プロバンド、コンサルタント、評価済みマーカー
+- ✅ 生命状態修飾子（deceased, stillborn, pregnancy, SAB, TAB, ectopic）
+- ✅ カップル演算子：配偶 / 別居 / 血族婚 / 子なし
+- ✅ `legend:` エントリによる複数形質四分円塗りつぶし
+- ⏳ 双生児記法（一卵性 / 二卵性 / 卵性不明）
+- ⏳ 養子縁組（養子入り / 養子出し）のブラケット記法
+- ⏳ 生殖補助（卵子提供 / 精子提供 / 胚提供、代理母、体外受精）
+- ⏳ 子なし選択および不妊のマーカー
+
+参考文献：
+
+- Bennett, R.L., French, K.S., Resta, R.G., & Austin, J. (2022). *Practice resource-focused revision: Standardized pedigree nomenclature update centered on sex and gender inclusivity.* Journal of Genetic Counseling, 31(6), 1238–1249.
+- Bennett, R.L., Steinhaus French, K., Resta, R.G., & Doyle, D.L. (2008). Standardized human pedigree nomenclature: Update and assessment. *J Genet Couns*, 17(5), 424–433.
+- Bennett, R.L. et al. (1995). Recommendations for standardized human pedigree nomenclature. *Am J Hum Genet*, 56(3), 745–752.
+
+---
+
+## 11. 関連サンプル
+
+サンプルギャラリーから使用可能なシナリオ：
+
+<RelatedExamples slugs={[
+  'pedigree-brca1',
+  'pedigree-cystic-fibrosis',
+  'pedigree-hemophilia',
+]} />
+
+---
+
+## 12. ロードマップ
+
+**計画中 — 現在はパース不可。** 生成する DSL でこれらを使用しないでください。パーサーが拒否するか、未使用のカスタムプロパティとして格納されます。
+
+- **双生児記法** — `twin-mz`（一卵性）、`twin-dz`（二卵性）、`twin-unknown`。
+- **養子縁組ブラケット** — `adopted-in`、`adopted-out`（ブラケット付き形状、生物学的親への点線）。
+- **生殖補助** — `donor-egg`、`donor-sperm`、`donor-embryo`、`surrogate`、およびカップル行への `ivf` アノテーション。
+- **子なしマーカー** — `no-children`（選択による）と `infertile` のドロップラインアノテーション。
+- **性自認アノテーション** — `label:` に詰め込むのではなく、性別とは別の構造的属性。
+- **三つ子以上の出生** — `triplet-mz`、`triplet-dz`。
+
+早急に必要な場合は GitHub の Issue でトラッキングしてください。

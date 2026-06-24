@@ -1,0 +1,367 @@
+---
+title: エンティティ構造ダイアグラム（Entity Structure Diagram）
+---
+
+## エンティティ構造ダイアグラムについて
+
+「エンティティ構造ダイアグラム」（entity structure diagram）は、組織や個人の間の法的・経済的な関係をマッピングします — 誰が何を、どのエンティティ形態を通じて、どの管轄で所有しているか。企業弁護士はホールディング構造と子会社チェーンを文書化するために使用します。税務アドバイザーは国境を越えた IP ライセンスフローと移転価格の取り決めを示すために描きます。スタートアップ弁護士はキャップテーブルと取締役会の同意書のために作成します。遺産プランナーは委託者-信託-受益者の取り決めを示すために使用します。このダイアグラムは M&A デューデリジェンスプロセスで最初に要求される文書であり、OECD 移転価格マスターファイルの標準的な添付資料です。
+
+Schematex は **SEC Regulation S-K Exhibit 21**（子会社開示）、**IRS Form 8832** エンティティ分類、**ISO 3166-1** 管轄コード、**ISO 20275** 法的エンティティ形態、ビッグ 4 税務メモの慣習から合成された実務家の慣習に従います。エンティティタイプは異なる形状にマッピングされます（法人には矩形、LLC には角丸矩形、トラストには楕円）。読者は法的形態を一目で識別できます。このページは今日のパーサーが受け付けるものを文書化しています。
+
+<Playground initial={`entity-structure "Acme Global Holdings"
+entity parent "Acme Global, Inc." corp@US [note: "Ultimate Parent"]
+entity ie-holdco "Acme Ireland Holdings" corp@IE
+entity ie-ip "Acme IP Ltd" corp@KY [note: "Holds group IP"]
+entity nl-bv "Acme EU Distribution" llc@NL
+entity sg-apac "Acme APAC Trading" corp@SG
+entity esop "Employee Option Pool" pool
+parent -> ie-holdco : 100%
+ie-holdco -> ie-ip : 100%
+ie-holdco -> nl-bv : 100%
+ie-ip -~-> nl-bv [label: "IP License · royalty"]
+parent -> sg-apac : 100%
+esop -.-> ie-holdco`} height={480} />
+
+---
+
+## 1. 最初のエンティティ構造
+
+最小限の実用的なエンティティ構造：親会社が 2 つの子会社を所有。
+
+<Playground initial={`entity-structure "Simple holding"
+entity holdco "Holdco LLC" llc@DE
+entity opco "OpCo Inc." corp@DE
+entity sub_uk "UK Sub Ltd." llc@UK
+holdco -> opco : 100%
+holdco -> sub_uk : 100%`} />
+
+使用法の 80% をカバーする 4 つのルール：
+
+1. `entity-structure` で始めます。オプションでクォートされたタイトル。
+2. 各法的エンティティはノードです：`entity ID "表示名" type` — タイプが形状を決定します。
+3. エンティティを `->` で接続します。所有割合のラベルを付けるには `: pct` を追加します：`parent -> child : 60%`。
+4. タイプの後に `@jurisdiction` を追加して管轄バッジを表示します：`corp@DE`。
+
+> コメントは単独行で `#` で始める必要があります。
+
+---
+
+## 2. エンティティタイプ
+
+エンティティタイプはそのノードにレンダリングされる形状を決定します。Schematex は一般的なエイリアスをカノニカルなタイプにマッピングします。
+
+| カノニカルタイプ | 受け付けるエイリアス | レンダリング形状 | 典型的な使用 |
+|---|---|---|---|
+| `corp` | `corporation`、`inc` | 矩形（シャープなコーナー）| C 法人、S 法人、Ltd.、SA、AG |
+| `llc` | `llp`、`gmbh`、`bv` | 角丸矩形 | LLC、LLP、GmbH、BV |
+| `lp` | `lllp`、`fund` | ノッチ付き矩形 | LP、LLLP、投資ファンド |
+| `trust` | — | 楕円 | 家族信託、法定信託 |
+| `individual` | `person` | 円 | 創業者、委託者、自然人 |
+| `foundation` | `npo` | 五角形（盾形）| 非営利、慈善財団 |
+| `disregarded` | `branch` | 破線矩形 | 無視エンティティ、外国支店 |
+| `pool` | — | 破線角丸矩形 | オプションプール、ESOP、未発行株式 |
+| `placeholder` | `tbf` | 破線矩形（薄い）| 設立予定エンティティ、買収ターゲット |
+
+**エンティティ構文：**
+
+```
+entity ID "Display Name" type
+entity ID "Display Name" type@JURISDICTION
+entity ID "Display Name" type@JURISDICTION [properties]
+```
+
+**ID のルール。** 文字で始まり、文字、数字、アンダースコア、ハイフンが続く必要があります：`[A-Za-z][A-Za-z0-9_-]*`。
+
+<Playground initial={`entity-structure "Entity type shapes"
+entity c1 "Delaware C-Corp" corp@DE
+entity l1 "California LLC" llc@CA
+entity p1 "Cayman Fund LP" lp@KY
+entity t1 "Family Trust" trust@SD
+entity i1 "Jane Smith" individual
+entity f1 "Acme Foundation" foundation
+entity d1 "Irish Branch" disregarded@IE
+entity pool1 "ESOP Pool" pool
+entity tbf1 "Acquisition Target" placeholder
+c1 -> l1 : 100%
+c1 -> p1 : 80%
+c1 -> f1
+i1 -> t1
+t1 -> c1 : 100%`} height={480} />
+
+---
+
+## 3. ノードプロパティ
+
+`[…]` 内のオプションのプロパティは、レンダリングされたノードに表示される追加のコンテキストでエンティティにアノテーションを付けます。
+
+| プロパティ | 構文 | 効果 |
+|---|---|---|
+| `status: new` | `new`、`eliminated`、`modified`、`normal` | トランザクションステップダイアグラムの視覚的バッジ |
+| `tax: ccorp` | クォートされた文字列 | エンティティ名の下に表示される税分類ラベル |
+| `role: "Grantor"` | クォートされた文字列 | 役割ラベル（個人と受託者用）|
+| `note: "…"` | クォートされた文字列 | ノード内に表示される小さなメモ |
+| `est: "2024-03-15"` | クォートされた文字列 | 設立日 |
+
+予約セット（`status`、`tax`、`role`、`note`、`est`）に含まれないキーはカスタムプロパティとして保存されます。
+
+```
+entity alice "Alice Chen" individual [role: "Founder & CEO"]
+entity trust1 "Smith Irrevocable Trust" trust@SD [est: "2019-06-01", note: "Spendthrift provisions"]
+entity opco "OpCo, Inc." corp@DE [status: new, tax: ccorp]
+```
+
+---
+
+## 4. 管轄
+
+エンティティタイプの後に `@CODE` を追加して、ノードに管轄バッジを表示します。コードは 2〜3 文字の文字列 — ISO 3166-1 alpha-2 国コードと米国の州略称の両方が受け付けられます。
+
+```
+entity parent "Parent Corp" corp@US
+entity ie_sub "Ireland Sub" corp@IE
+entity ky_fund "Cayman Fund" lp@KY
+entity de_llc "Delaware LLC" llc@DE
+```
+
+一般的なコード：`US` 米国 · `DE` デラウェア州 · `CA` カリフォルニア州 · `NY` ニューヨーク州 · `UK` 英国 · `IE` アイルランド · `NL` オランダ · `KY` ケイマン諸島 · `SG` シンガポール · `HK` 香港 · `JP` 日本 · `BM` バミューダ · `VG` 英領バージン諸島 · `CH` スイス · `LU` ルクセンブルク · `SD` サウスダコタ州。
+
+`@DE` は（米国の法的コンテキストで最も一般的な）デラウェアとしてデフォルト解決されます。
+
+### 管轄クラスター
+
+`jurisdiction CODE "Name" [color: "#hex"]` で管轄を宣言し、そのコードを共有するすべてのエンティティをダイアグラム上のラベル付き破線ボーダーのクラスター領域にグループ化します。
+
+```
+jurisdiction US "United States" [color: "#3b82f6"]
+jurisdiction IE "Ireland" [color: "#059669"]
+```
+
+エンティティの `@CODE` が宣言された `jurisdiction` と一致する場合、そのエンティティは自動的にそのクラスター内に配置されます。`jurisdiction` が宣言されていない場合、バッジは表示されますがクラスター領域は描かれません。
+
+<Playground initial={`entity-structure "IP holding structure"
+jurisdiction US "United States" [color: "#3b82f6"]
+jurisdiction IE "Ireland" [color: "#059669"]
+jurisdiction KY "Cayman Islands" [color: "#d97706"]
+entity parent "TopCo, Inc." corp@US
+entity ie_hold "Ireland Holdings" corp@IE
+entity ie_ip "IP HoldCo" corp@KY [note: "Group IP"]
+entity ie_op "EU Opco" llc@IE
+parent -> ie_hold : 100%
+ie_hold -> ie_ip : 100%
+ie_hold -> ie_op : 100%
+ie_ip -~-> ie_op [label: "IP License"]`} height={440} />
+
+### 手動クラスター
+
+`cluster "Label" [members: [id1, id2], color: "#hex"]` を使用して、同じ管轄コードを共有しないエンティティをグループ化します。
+
+```
+cluster "Ireland / Cayman IP" [members: [ie_ip, nl_bv], color: "#059669"]
+```
+
+---
+
+## 5. 所有エッジ
+
+エッジ行は演算子で 2 つのエンティティ ID を接続します。演算子がラインスタイルと視覚的な意味論を決定します。
+
+| 演算子 | レンダリング | 意味 |
+|---|---|---|
+| `->` | 実線矢印 | 株式所有（デフォルト）|
+| `==>` | 二重線矢印 | 議決権のみの支配（経済的利益なし）|
+| `-.->` | 灰色の破線矢印 | オプションプール / 条件付き所有 |
+| `-~->` | 紫の破線矢印 | IP ライセンス、管理契約、グループ内サービス |
+| `-->` | 緑の破線矢印 | 分配（信託から受益者へ）|
+
+**所有割合：** ターゲット ID の後に `: pct` を追加します。
+
+```
+parent -> subsidiary : 60%
+```
+
+**株式クラス：** `[class: "Series A Pref"]` を追加してエッジに株式クラスラベルを付けます。
+
+```
+vc -> startup : 22% [class: "Series A Pref"]
+```
+
+**非株式ラベル：** ライセンスまたは分配エッジの説明的なエッジテキストには `[label: "…"]` を使用します。
+
+```
+ip_co -~-> opco [label: "IP License · royalty"]
+trust --> beneficiary [label: "Discretionary distributions"]
+```
+
+**組み合わせ：** `class:` と `label:` は一緒に使用できます。
+
+```
+fund -> portfolio : 35% [class: "Common", label: "Post-Series B"]
+```
+
+<Playground initial={`entity-structure "Mixed edge types"
+entity holdco "HoldCo LLC" llc@DE
+entity opco "OpCo Inc." corp@DE
+entity ip_co "IP Ltd" corp@KY
+entity fund "Growth Fund" lp@DE
+entity esop "ESOP Pool" pool
+entity trust1 "Family Trust" trust@SD
+entity founder "J. Smith" individual
+# Equity ownership
+holdco -> opco : 100%
+holdco -> ip_co : 100%
+# IP license (non-equity)
+ip_co -~-> opco [label: "Exclusive license"]
+# Option pool (dashed)
+esop -.-> opco : 10%
+# Voting control
+fund ==> holdco
+# Trust distribution
+trust1 --> founder [label: "Income distributions"]
+founder -> trust1 : 100%`} height={500} />
+
+---
+
+## 6. ラベルとコメント
+
+- **タイトル：** `entity-structure "Acme Holdings"` — 最初の行、クォートあり。
+- **エンティティ表示名：** `entity ID "Name" type` のクォートされた文字列 — ノード内に表示。
+- **管轄バッジ：** タイプの後の `@CODE` — 2〜3 文字のコードがノードの角に表示。
+- **ノードプロパティ：** `[note: "…", role: "…", status: new, …]` — ノード内のアノテーション。
+- **エッジ割合：** ターゲット ID の後の `: pct` — 所有矢印に表示。
+- **エッジクラス：** `[class: "…"]` — 矢印上の株式クラスラベル。
+- **エッジラベル：** `[label: "…"]` — 矢印上の説明テキスト。
+- **コメント：** 行の先頭（先頭の空白の後）の `#`。ブラケットブロック内のインラインの末尾 `#` コメントも除去されます。
+
+---
+
+## 7. 予約語とエスケープ
+
+**行頭で予約済み：** `entity-structure`（ヘッダ）、`entity`、`jurisdiction`、`cluster`。
+
+**エンティティタイプキーワード** — これらの文字列はエンティティタイプとして解析され、エンティティ ID として使用してはなりません：`corp`、`corporation`、`inc`、`llc`、`llp`、`gmbh`、`bv`、`lp`、`lllp`、`fund`、`trust`、`individual`、`person`、`foundation`、`npo`、`disregarded`、`branch`、`pool`、`placeholder`、`tbf`。
+
+**エッジ演算子トークン** — ID 内でこれらのシーケンスを避けてください：`->`、`==>`、`-.->`、`-~->`、`-->`。
+
+**スペースを含む文字列**は表示名、メモ、役割ラベル、色の値でダブルクォートが必要です。
+
+**管轄コード**はソースでは大文字小文字を区別しませんが、大文字に正規化されます：`@de` と `@DE` は同等です。
+
+---
+
+## 8. よくあるミス
+
+| 記述した内容 | パーサーの反応 | 修正方法 |
+|---|---|---|
+| `entity acme Acme Inc. corp@DE`（名前がクォートなし）| パース失敗 — 名前はクォートが必要 | `entity acme "Acme Inc." corp@DE` |
+| `acme -> sub [50%]`（ブラケット内のパーセント）| `50%` がプロパティキーとして認識されない | `acme -> sub : 50%`（コロンとパーセント、ブラケットの外）|
+| `entity acme "Acme" Ltd@DE` | `Ltd` は認識されたタイプキーワードではない | `corp` または `llc` を使用。`Ltd` はエイリアステーブルにない |
+| `acme -> unknown_id : 100%` | `EntityParseError: Edge references unknown entity "unknown_id"` | エッジで使用する前にすべてのエンティティを宣言してください |
+| `cluster "US entities" [ids: [a, b]]` | `ids:` は認識されない。プロパティはサイレントに無視される | `members: [a, b]` を使用 |
+| `jurisdiction DE "Delaware"` の後 `entity co "Co" corp@DE` | `co` の周りにクラスターが描かれる — 正しい。ただし米国コンテキストの `@DE` はデラウェアであり、ドイツではない | デラウェアには `@DE` を使用。`@DEU` は無効 — 曖昧さの回避策はない。意図を `note:` で文書化する |
+| `entity x "X" corp [status: pending]` | `pending` は有効なステータスではない — プロパティはカスタムプロパティとしてサイレントに保存される | `new`、`eliminated`、`modified`、または `normal` を使用 |
+
+---
+
+## 9. 文法（EBNF）
+
+```text
+document        = header (blank | comment | jurisdiction-def | cluster-def | entity-def | edge)*
+
+header          = "entity-structure" ( WS quoted-string )? NEWLINE
+quoted-string   = '"' any-char-but-quote* '"'
+
+jurisdiction-def = "jurisdiction" CODE WS quoted-string ( "[" jur-attrs "]" )? NEWLINE
+jur-attrs        = jur-attr ("," jur-attr)*
+jur-attr         = "color:" quoted-string
+
+cluster-def     = "cluster" WS quoted-string ( "[" cluster-attrs "]" )? NEWLINE
+cluster-attrs   = cluster-attr ("," cluster-attr)*
+cluster-attr    = "members:" "[" id ("," id)* "]"
+                | "color:" quoted-string
+
+entity-def      = "entity" WS id WS quoted-string WS entity-type ( "@" CODE )?
+                  ( "[" entity-attrs "]" )? NEWLINE
+entity-attrs    = entity-attr ("," entity-attr)*
+entity-attr     = "status:" status
+                | "tax:" quoted-string
+                | "role:" quoted-string
+                | "note:" quoted-string
+                | "est:" quoted-string
+                | key ":" quoted-string        # custom property
+
+entity-type     = "corp" | "corporation" | "inc"
+                | "llc" | "llp" | "gmbh" | "bv"
+                | "lp" | "lllp" | "fund"
+                | "trust"
+                | "individual" | "person"
+                | "foundation" | "npo"
+                | "disregarded" | "branch"
+                | "pool"
+                | "placeholder" | "tbf"
+
+edge            = id WS op WS id ( ":" WS pct-text )? ( "[" edge-attrs "]" )? NEWLINE
+op              = "->" | "==>" | "-.->" | "-~->" | "-->"
+pct-text        = any text up to "[" or end of line   # e.g. "100%" or "V 75% / E 50%"
+
+edge-attrs      = edge-attr ("," edge-attr)*
+edge-attr       = "class:" quoted-string
+                | "label:" quoted-string
+
+status          = "new" | "eliminated" | "modified" | "normal"
+CODE            = [A-Za-z]{2,3}
+id              = [A-Za-z] [A-Za-z0-9_-]*
+comment         = "#" any NEWLINE
+```
+
+権威ある情報源：`src/diagrams/entity/parser.ts`。これがパーサーと異なる場合、パーサーが優先されます — イシューを開いてください。
+
+---
+
+## 10. 標準準拠
+
+Schematex のエンティティ構造ダイアグラムは以下の慣習を統合します：
+
+- **SEC Regulation S-K, Item 601(b)(21)** — Exhibit 21 子会社開示慣習
+- **IRS Form 8832** — C 法人 / パス・スルー / 無視エンティティの分類
+- **ISO 3166-1 alpha-2** — ノードバッジの管轄コード
+- **ISO 20275:2017** — Legal Entity Identifier（LEI）エンティティ形態分類
+- **OECD 移転価格ガイドライン（2022 年）** — 国境を越えた IP ライセンスとロイヤルティフローの慣習
+- **ビッグ 4 税務メモの慣習**（EY / PwC / KPMG / Deloitte）— 国境を越えた構造ダイアグラムのデファクト標準
+
+現在実装済みの内容：
+
+- ✅ 9 つのエンティティタイプと異なる形状：`corp`、`llc`、`lp`、`trust`、`individual`、`foundation`、`disregarded`、`pool`、`placeholder`
+- ✅ タイプエイリアス：`corporation`、`inc`、`llp`、`gmbh`、`bv`、`lllp`、`fund`、`person`、`npo`、`branch`、`tbf`
+- ✅ 5 つのエッジ演算子：`->`（所有）、`==>`（議決権）、`-.->`（プール）、`-~->`（ライセンス）、`-->`（分配）
+- ✅ 所有割合ラベル（`: pct`）と株式クラス（`[class: "…"]`）
+- ✅ 管轄バッジ（`@CODE`）と ISO 3166-1 および米国州コード
+- ✅ 管轄クラスター領域（`@CODE` による破線ボーダーのグルーピング）
+- ✅ 手動クラスター（`cluster "…" [members: […]]`）
+- ✅ ノードプロパティ：`status`、`tax`、`role`、`note`、`est`、カスタムキーバリューペア
+- ⏳ V/E 分割割合 — `V 75% / E 50%` は `percentage` 文字列に保存されているが、2 行ラベルとしてのレンダリングは未実装
+- ⏳ トランザクションステップ差分レンダリング — `status: new` / `eliminated` / `modified` は保存されているが視覚的な差分バッジは未レンダリング
+- ⏳ インライン株式数アノテーション — パーセントと並んだ `100 shares Common`
+
+---
+
+## 11. 関連例
+
+<RelatedExamples slugs={[
+  'entity-holding-company',
+  'entity-international-tax',
+  'entity-series-a-cap-table',
+]} />
+
+---
+
+## 12. ロードマップ
+
+**計画中 — まだ解析できません。** 今日の生成 DSL では使用しないでください。パーサーが拒否または無視します。
+
+- **V/E 分割レンダリング** — 1 つのエッジ上の `V 75% / E 50%`。議決権割合と経済的割合を区別する 2 行の割合ラベルとして表示。
+- **トランザクションステップ差分バッジ** — `status: new` は緑の "NEW" バッジをレンダリング。`status: eliminated` は赤い取り消し線をレンダリング。1 つのダイアグラムでの M&A 前後の構造比較に使用。
+- **株式数アノテーション** — 資本政策表の正確な株式数を取得するための割合と並んだ `-> sub : 100 shares Common`。
+- **双方向所有** — 相互所有（2 つのエンティティが互いを保有）のための明示的な `<->` エッジ、煩雑さを避けるための S 字カーブルーティング。
+- **凡例ブロック** — 形状からエンティティタイプへ、演算子から関係タイプへのマッピングを示す自動生成凡例。
+
+早急にこれらが必要な場合は GitHub イシューで追跡してください。

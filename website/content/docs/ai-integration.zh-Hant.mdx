@@ -1,0 +1,233 @@
+---
+title: 在 AI 中使用 Schematex
+description: 透過 Vercel AI SDK、託管 MCP 端點或 @schematex/mcp npm 套件，將 Schematex 整合到 AI 代理中。
+---
+
+<MCPConnectCard />
+
+## TL;DR
+
+Schematex 內建了專為 LLM 設計的工具層——五個工具讓 AI 代理能**探索**圖表類型、**學習**語法、**查看**精選範例、**驗證**自己的輸出，並**渲染** SVG。三種整合路徑，使用相同的工具：
+
+| 路徑 | 使用時機 | 安裝方式 |
+|---|---|---|
+| **Vercel AI SDK** | 在 Next.js / Node 應用程式中建構自己的 AI 功能 | `npm i schematex ai zod` |
+| **Hosted MCP** | 連接 Claude Desktop、ChatGPT、Cursor、Windsurf | 將客戶端指向 `https://schematex.js.org/mcp` |
+| **Local stdio MCP** | 離線 / 自訂主機 | `npx @schematex/mcp` |
+
+---
+
+## 五個工具
+
+每條路徑都提供語義完全相同的五個工具。
+
+### `listDiagrams()`
+返回所有 45 種圖表類型，包含標語、「使用時機」提示、群集和權威標準。首先呼叫以選擇類型。
+
+### `getSyntax({ type, detail? })`
+取得某種圖表的標準語法。選擇類型後呼叫。
+
+預設的 `detail: "canonical"` 回應是為首次 LLM 生成而設計的：標準標頭、偏好模式、核心形式、避免／修復指引，以及共用生成規則。僅在請求需要進階功能或匯入介面卡時使用 `detail: "reference"`；這會從 `## 1.` 到語法區段返回精簡的公開文件片段。
+
+### `getExamples({ type, limit?, preferFeatured?, maxComplexity? })`
+精選的真實 DSL 範例，附帶情境說明。在生成前作為 few-shot 上下文使用。
+
+### `validateDsl({ type?, dsl })`
+僅做解析檢查。返回 `{ ok: true }` 或 `{ ok: false, errors: [{line, column, message, source, hint}] }`。一旦知道類型就傳入所選的標準 `type`，並且**在將 DSL 返回給使用者之前一定要呼叫**——使用此循環進行自我修正的代理可靠性大幅提升。
+
+### `renderDsl({ type?, dsl, theme?, padding? })`
+將 DSL 渲染為 SVG 字串。成功時返回 `{ ok: true, status, svg }`。
+失敗時返回 `{ ok: false, status: 'invalid', svg, errors }`，其中 `svg` 是
+可見的診斷備用圖，而非空白預覽。
+
+<Callout type="info" title="你真的需要這個工具嗎？">
+**如果你的應用程式已經渲染圖表**（你直接使用 `schematex` 套件），請略過 `renderDsl`——讓代理返回已驗證的 DSL，然後自行渲染。呼叫此工具只是增加了不必要的來回次數。
+
+**只有在以下情況才使用 `renderDsl`**：你需要在對話本身中返回 SVG：Claude Desktop、ChatGPT、Cursor，或任何沒有自己渲染流程的純聊天客戶端。
+</Callout>
+
+若要在應用程式內 AI 預覽，請使用 `renderResult()` 或 `renderPreview()` 渲染返回的 DSL：
+
+```ts
+import { renderResult } from 'schematex';
+
+const result = renderResult(dsl, { type });
+preview.innerHTML = result.svg;
+
+if (!result.ok) {
+  queueRepair(result.diagnostics);
+}
+```
+
+預覽可以持續顯示，同時你的應用程式仍將 `ok: false` 視為需要修復、重試、遙測或計費政策的無效使用者結果。
+
+---
+
+## 路徑一——Vercel AI SDK（應用程式內）
+
+在 Next.js / Node 應用程式中新增 Schematex 生成功能的最快方式。
+
+```ts
+import { streamText } from 'ai';
+import { schematexTools } from 'schematex/ai/sdk';
+
+const result = streamText({
+  model: 'anthropic/claude-opus-4-7',
+  tools: schematexTools,
+  maxSteps: 5,
+  system: `You write Schematex DSL. First call listDiagrams to pick a type.
+Then call getSyntax and getExamples for that type. Write the DSL, then
+call validateDsl and self-correct on errors before returning to the user.`,
+  prompt: userMessage,
+});
+```
+
+`schematex/ai/sdk` 子路徑只在安裝了 `ai` 和 `zod` 的情況下載入（兩者都是選用的對等依賴）。如果你不使用 AI SDK，請從 `schematex/ai` 匯入純函式並連接到任何框架：
+
+```ts
+import { listDiagrams, getSyntax, getExamples, validateDsl, renderDsl } from 'schematex/ai';
+```
+
+### 單次生成（無工具循環）
+
+高流量後端通常用**一次**模型呼叫來生成，而不是多步驟工具循環——成本更低、延遲更少。為此，`buildPromptContext(type)` 將標準語法卡**和**精選的 few-shot 範例組合成一個即可注入的區塊，省去你手動拼接 `getSyntax` + `getExamples` 的麻煩：
+
+```ts
+import { buildPromptContext, validateDsl } from 'schematex/ai';
+
+const ctx = buildPromptContext('genogram');          // grammar card + featured example
+const system = `Generate only Schematex DSL.\n\n${ctx.text}`;
+const dsl = await generate(system, userMessage);     // your single model call
+
+const check = validateDsl('genogram', dsl);          // always gate server-side
+if (!check.ok) {
+  // one repair pass: re-prompt with check.errors[].message + .hint
+}
+```
+
+`buildPromptContext` 是 `getSyntax({ detail: 'canonical' })` + `getExamples({ preferFeatured: true })` 的純語法糖——兩者仍然可以單獨使用，如果你想自己組合提示詞。選項：`{ examples?: number, detail?, preferFeatured?, maxComplexity? }`。
+
+---
+
+## 路徑二——Hosted MCP（零安裝）
+
+Schematex MCP 伺服器託管於：
+
+```
+https://schematex.js.org/mcp
+```
+
+任何支援 HTTP JSON-RPC 的 MCP 客戶端都可以連接。無需安裝，無需本地程序，始終與最新的 schematex 版本保持同步。
+
+### Claude.ai（網頁版）
+
+使用本頁頂部的連接區塊——點一下即開啟連接器對話框，貼上 URL，完成。連接器隨後會出現在「設定 → 連接器」下，並在每次對話中可用。
+
+### Claude Desktop（桌面版）
+
+設定 → 連接器 → 新增自訂連接器 → 貼上 `https://schematex.js.org/mcp`。
+
+### ChatGPT / Cursor / Windsurf
+
+按照你的客戶端的「新增 MCP 伺服器」流程，使用上方 URL 的 HTTP 傳輸。
+
+---
+
+## 路徑三——Local stdio MCP
+
+用於離線開發或只支援 stdio 傳輸的客戶端。
+
+```bash
+npm i -g @schematex/mcp
+# or
+npx @schematex/mcp
+```
+
+### Claude Desktop 設定
+
+`~/Library/Application Support/Claude/claude_desktop_config.json`：
+
+```json
+{
+  "mcpServers": {
+    "schematex": {
+      "command": "npx",
+      "args": ["-y", "@schematex/mcp"]
+    }
+  }
+}
+```
+
+---
+
+## 建議的代理循環
+
+提升可靠性最有效的單一方法，是讓代理驗證自己的輸出並自我修正。
+
+```
+1. listDiagrams()                          → pick the right type
+2. getSyntax({ type })                     → get canonical generation syntax
+3. getExamples({ type, maxComplexity: 2 }) → get few-shot context
+4. write DSL
+5. validateDsl({ type, dsl })
+   ├─ ok:    return DSL to user
+   └─ error: read line/column/message, fix, goto 5
+6. (optional) renderDsl({ type, dsl })     → return SVG (skip if app renders natively)
+```
+
+實作此循環的簡單系統提示詞：
+
+```
+You generate Schematex DSL for diagrams. Always follow this procedure:
+
+1. If you don't already know which diagram type matches the user's request,
+   call listDiagrams and pick the best match.
+2. Call getSyntax for the chosen type. Stay on the canonical path unless an
+   advanced feature requires getSyntax({ type, detail: "reference" }).
+3. Call getExamples (maxComplexity: 2) for few-shot context.
+4. Write the DSL.
+5. Call validateDsl. If ok:false, read the error's line, column, and message,
+   fix the DSL, and call validateDsl again. Repeat up to 3 times.
+6. Return the validated DSL to the user, inside a ```schematex code block.
+```
+
+---
+
+## 錯誤結構
+
+`validateDsl` 和 `renderDsl` 失敗時返回結構化錯誤：
+
+```ts
+{
+  ok: false,
+  status: 'invalid',     // renderDsl only
+  type: 'genogram' | null,
+  svg: string,           // renderDsl only: visible diagnostic fallback
+  errors: [
+    {
+      line?: number;        // 1-based, if the parser reported it
+      column?: number;
+      source?: string;      // the offending line text
+      message: string;      // human-readable
+      hint?: string;
+    }
+  ]
+}
+```
+
+目前並非所有解析器都會輸出行號資訊（genogram、pedigree、ecomap、venn、sld、fishbone 目前支援；其他僅返回訊息）。結構是穩定的——`line` 是選用欄位。
+
+---
+
+## 準備好試試了嗎？
+
+<MCPConnectCard
+  title="Add Schematex to Claude — it takes 10 seconds"
+  description="Hosted MCP. No install, no local process. The connector stays up to date with every Schematex release."
+/>
+
+---
+
+## 授權說明
+
+Schematex 採用 AGPL-3.0 授權。如需閉源商業整合，請聯絡 victor&#64;mymap.ai 取得商業授權。

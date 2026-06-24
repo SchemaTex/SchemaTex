@@ -1,0 +1,216 @@
+---
+title: 순차 기능 차트 (SFC)
+---
+
+## 순차 기능 차트란
+
+**순차 기능 차트(Sequential Function Chart, SFC)**는 주기적 PLC 프로그램의 **상태 머신 뷰**입니다. 현재 어떤 단계가 실행 중인지, 그리고 어떤 조건이 다음 단계로의 전환을 유발하는지를 표현합니다. SFC는 **[IEC 61131-3:2013 §6.5](https://en.wikipedia.org/wiki/Sequential_function_chart)**에서 정의된 다섯 번째 언어이며, **IEC 60848 GRAFCET**의 엔지니어링 하위 집합입니다. **[ladder](/docs/ladder)**와 **[fbd](/docs/fbd)**가 스캔 단위의 조합 논리를 기술한다면, SFC는 그 위에서 동작하는 시간적 순서를 기술합니다. 어떤 스텝이 활성화되어 있는지, 언제 다음으로 넘어가는지, 어떤 동작이 병렬로 실행되는지를 표현합니다.
+
+실제 생산 코드에서 SFC로 작성되는 네트워크 비율은 약 10%이지만, 비순차적이지 않은 시퀀셜 머신이라면 거의 100%가 SFC 차트를 한 장 이상 포함합니다. 배치 반응기, 로봇 셀, 포장 라인, 조립 스테이션 등이 대표적입니다. 지금까지 오픈 소스 SFC DSL은 마땅한 것이 없었으며, Studio 5000, TIA Portal, CODESYS 같은 벤더 IDE만이 유일한 선택지였습니다. Schematex는 AI 생성을 위해 설계된 IEC 61131-3 SFC 하위 집합을 제공합니다.
+
+**[state](/docs/state)**(반응형 UI 및 생명 주기 FSM을 위한 UML 상태 차트)와의 차이점: SFC는 *순환 스캔* 시맨틱, 이중 테두리 초기 스텝, 액션 블록 한정자(N/S/R/L/D/P), 그리고 바(bar) 기반 분기(단일 바 = OR, 이중 바 = AND)를 사용합니다.
+
+<Playground initial={`
+  sfc "Bottle Filling"
+
+  var StartBtn: bool
+  var TankLevel: real
+  var DoneBtn: bool
+
+  step S0 [initial]
+    N FillValve_Closed
+
+  step S1 [label: "Filling"]
+    N FillValve_Open
+
+  step S2 [label: "Done"]
+    N Confirm_Done
+
+  transition from: S0 to: S1: StartBtn
+  transition from: S1 to: S2: TankLevel >= 80.0
+  transition from: S2 to: S0: DoneBtn`} height={520} />
+
+---
+
+## 1. 첫 번째 차트
+
+두 개의 스텝, 하나의 트랜지션, 그리고 초기 마커:
+
+```
+sfc
+step S0 [initial]
+step S1
+transition from: S0 to: S1: Trigger
+```
+
+`S0`은 **이중 테두리 사각형**(IEC 초기 스텝 표기 방식)으로, `S1`은 단일 테두리 사각형으로 렌더링됩니다. 두 스텝 사이에는 수평 **트랜지션 바**가 있으며, 조건 텍스트 `Trigger`가 오른쪽에 표시됩니다.
+
+`[initial]`을 지정하지 않으면 첫 번째로 선언된 스텝이 자동으로 초기 스텝으로 승격됩니다.
+
+---
+
+## 2. 스텝
+
+```
+step S_Filling [label: "Filling tank"]
+  N FillValve_Open
+  D Mixer_Run T#30s
+  P StartChime
+```
+
+스텝은 다음으로 구성됩니다.
+
+- **id** (차트 내 고유값) — 트랜지션 및 점프에서 사용됩니다.
+- 선택적 `[label: "..."]` — 표시명.
+- 선택적 `[initial]`(하나만 허용) 또는 `[final]`(벤더의 정지 스텝, 삼중 테두리).
+- 한 수준 들여쓴 **액션 블록** 0개 이상, 각각 한정자 문자를 가집니다.
+
+---
+
+## 3. 트랜지션
+
+**트랜지션**은 불리언 조건과 함께 두 스텝 간의 방향성 있는 연결을 선언합니다.
+
+```
+transition from: S0 to: S1: StartBtn
+transition from: S1 to: S2: TankLevel >= 80.0 AND NOT EmergencyStop
+transition T_Reset from: S5 to: S0: ResetBtn
+```
+
+조건 텍스트는 불투명합니다. Schematex는 이를 그대로 저장하고 바 옆에 렌더링합니다. 모든 트랜지션은 비어 있지 않은 조건을 가져야 합니다. 무조건부 연결에는 `TRUE`를 사용하십시오.
+
+`from`과 `to`가 본문에서 선형으로 인접한 트랜지션은 스텝들 사이에 인라인 바로 렌더링됩니다. 선형으로 인접하지 않은 쌍(예: 이전 스텝으로의 점프)은 차트의 좌측 또는 우측에 **마진 화살표**로 렌더링됩니다.
+
+---
+
+## 4. 액션 한정자
+
+액션은 스텝의 오른쪽에 부착되며, 한정자 문자에 따라 실행됩니다.
+
+| 한정자 | 동작 |
+|---|---|
+| `N` | 스텝이 활성인 동안 실행 (가장 일반적) |
+| `S` | 저장(Stored) — 진입 시 true로 설정되고, 대응하는 `R`이 나올 때까지 유지 |
+| `R` | 리셋(Reset) — 이전에 저장된 액션을 초기화 |
+| `L` | 시간 제한(Time-Limited) — 스텝 진입 후 T 시간까지만 활성 |
+| `D` | 시간 지연(Time-Delayed) — 진입 후 T 시간이 지나서 활성화 |
+| `P` | 펄스(Pulse) — PLC 스캔 한 번 동안만 true |
+| `P0` | 비활성화 시 펄스 (Siemens) |
+| `P1` | `P`의 동의어 (Siemens) |
+| `SD` | 저장 및 지연 |
+| `DS` | 지연 및 저장 |
+| `SL` | 저장 및 시간 제한 |
+
+시간 매개변수화된 한정자(L, D, SD, DS, SL)는 지속 시간 리터럴을 사용합니다.
+
+```
+step S1
+  L LimitedRun T#5s
+  D DelayedRun T#2s
+```
+
+---
+
+## 5. 대안 분기 (단일 바 — OR)
+
+스캔당 **하나의** 분기만 실행되며, 트랜지션 조건에 의해 선택됩니다.
+
+```
+step S0 [initial]
+step S_Pick
+
+alt from: S_Pick:
+  branch [priority: 1]:
+    transition: IsExpressShipping
+    step S_Express
+      N PrepExpressBox
+    transition: TRUE
+  branch [priority: 2]:
+    transition: IsStandardShipping
+    step S_Standard
+      N PrepStandardBox
+    transition: TRUE
+merge_to: S_Ship
+
+step S_Ship
+
+transition from: S0 to: S_Pick: ProductOrdered
+transition from: S_Ship to: S0: Shipped
+```
+
+분기 위아래의 단일 수평 선이 각각 발산 바(divergence bar)와 수렴 바(convergence bar)입니다. 각 분기는 **진입 트랜지션**(발산 바와 첫 번째 스텝 사이)으로 시작하고 **종료 트랜지션**(마지막 스텝과 수렴 바 사이)으로 끝납니다.
+
+---
+
+## 6. 동시 분기 (이중 바 — AND)
+
+**모든** 분기가 동시에 실행되며, 모든 분기가 완료될 때까지 차트는 수렴 지점에서 대기합니다.
+
+```
+sim from: S_Heat: TRUE
+  branch:
+    step S_Bake
+      D Oven_Run T#15m
+  branch:
+    step S_Cool
+      L Cooler_On T#5m
+merge_to: S_Done: Bake_Done AND Cool_Done
+```
+
+분기 위아래의 두 개의 수평 평행선(간격 4px)이 동시 바입니다. 상단의 공유 **트랜지션**(여기서는 `TRUE`)이 발산을 유발하고, 하단의 공유 **트랜지션**(`Bake_Done AND Cool_Done`)이 수렴 발생 전에 확인됩니다.
+
+---
+
+## 7. 점프 (루프)
+
+대상이 이전 스텝인 트랜지션은 마진 화살표로 렌더링됩니다.
+
+```
+step S0 [initial]
+step S1
+step S2
+transition from: S0 to: S1: A
+transition from: S1 to: S2: B
+transition T_Reset from: S2 to: S0: ResetBtn
+transition from: S2 to: S1: NOT ResetBtn
+```
+
+전방 `S2 → S1`(역방향 엣지)은 우측 마진 화살표로, `T_Reset`의 `S0`으로의 점프는 좌측으로 표시됩니다. 각 마진 화살표에는 대상 id와 조건이 표시됩니다.
+
+---
+
+## 8. 변수
+
+`ladder`와 `fbd`에서 재사용됩니다.
+
+```
+var StartBtn: bool
+var TankLevel: real
+var BakeReady: bool
+var Counter: counter
+var T1: timer
+```
+
+조건 및 액션에서 선언된 변수는 유효성 검사가 이루어지지 않습니다. Schematex는 조건/액션 본문 텍스트를 불투명한 문자열로 처리하며, 이는 `state`가 가드 및 액션을 처리하는 방식과 동일합니다.
+
+---
+
+## 9. v0.1 제한 사항
+
+- **중첩 분기**(alt-in-sim, sim-in-alt)는 파싱되지만, 레이아웃 축소 휴리스틱이 기본적이므로 깊은 중첩은 겹칠 수 있습니다.
+- **S/R 액션 쌍의 점선 연결자**(S 액션과 다른 곳의 대응하는 R을 시각적으로 연결)는 지연되었습니다.
+- **활성 스텝 런타임 표시기**(현재 활성 스텝의 노란색 채우기)는 지연되었습니다. PLC 런타임 상태를 표면화하는 디버깅 통합에 유용합니다.
+- **GRAFCET 강제 명령**(IEC 60848 전용 기능으로 범위 외).
+- **최종 스텝**은 `[final]`로 파싱되지만 초기 스텝과 동일한 이중 테두리로 렌더링됩니다. IEC 삼중 테두리 표기 방식은 지연되었습니다.
+
+---
+
+## 관련 예제
+
+예제 갤러리의 바로 사용 가능한 시나리오:
+
+<RelatedExamples slugs={[
+  'sfc-bottle-filling',
+  'sfc-bake-cool-concurrent',
+  'sfc-order-routing-alt',
+]} />

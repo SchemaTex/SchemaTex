@@ -1,0 +1,399 @@
+---
+title: タイムライン図
+---
+
+## タイムライン図とは
+
+**タイムライン図**は、時系列の関係が一目でわかるよう、共有された時間軸に沿ってイベントを配置します。プロジェクトマネージャーはスプリントスケジュールとマイルストーンの表示に使用し、歴史家は発見を文脈の中に位置付けるために使用し、ジャーナリストはイベントの順序を再構成するために使用し、臨床研究者は治療経過をマッピングするために使用します。この視覚的な形式には単一の管理標準はありませんが、慣例は普遍的です：時間は左から右に流れ、イベントは日付にマークされ、スパンは期間を示します。
+
+Schematex は3つの視覚スタイルでタイムラインをレンダリングします——**swimlane**（軸の上下にイベントを配置）、**gantt**（水平の期間バー、プロジェクトスケジューリングに便利）、**lollipop**（棒の上のドットマーカー、歴史的回顧に便利）。3つはすべて同じ DSL を共有し、`style` 設定キーで切り替えます。
+
+<Playground initial={`timeline "History of the Web"
+config: style = lollipop
+
+1991: "World Wide Web — Berners-Lee"
+1993: milestone "Mosaic browser" [side: above, color: #1565C0]
+1995: "JavaScript — Brendan Eich" [side: below]
+1998: milestone "Google founded" [side: above, color: #E53935]
+2004: "Facebook launches" [side: below]
+2007: milestone "iPhone — mobile web era" [color: #2E7D32, side: above]
+2009: "Node.js — server-side JavaScript" [side: below]
+2015: milestone "ES6 / React mainstream" [side: above, color: #6A1B9A]
+2022: "ChatGPT — AI era begins" [side: below]`} height={460} />
+
+---
+
+## 1. 最初のタイムライン
+
+最小限の実用的なタイムライン：タイトル、2つの通常イベント、1つのマイルストーン。
+
+<Playground initial={`timeline "Product Launch"
+2024-06-01: "Development complete"
+2024-08-15: "Closed beta"
+2024-09-01: milestone "Public launch"`} />
+
+4つのルールで使用例の80%をカバーできます：
+
+1. キーワード `timeline` で始め、必要に応じて引用符付きのタイトルを続けます。
+2. 各イベントは `DATE: "Label"` ——日付、コロン、引用符付きラベル。ラベルの前に `milestone` キーワードを付けるとマイルストーンとしてマークされます。
+3. 日付範囲は `DATE - DATE:` または `DATE .. DATE:`（どちらも同等）を使用します。
+4. 引用符付きラベルの後に `[key: value]` プロパティを追加して、色・側面配置・形状・カテゴリを設定します。
+
+> コメントは独立した行で `#` または `//` から始める必要があります。
+
+---
+
+## 2. イベント
+
+イベント行は、ある時点（またはスパン全体）にラベル付きマーカーを配置します。
+
+### 2.1 ポイントイベント
+
+```
+2024-09-15: "Conference keynote"
+```
+
+### 2.2 範囲イベント
+
+```
+2024-06-01 - 2024-08-31: "Q3 development sprint"
+2024-06-01 .. 2024-08-31: "Q3 development sprint"
+```
+
+両方のセパレーター（スペースで囲まれた `-`、または `..`）は同等です。
+
+### 2.3 マイルストーン
+
+```
+2024-09-01: milestone "Public launch"
+```
+
+引用符付きラベルの前の `milestone` キーワードで、マーカーをダイアモンド形状に切り替えます。
+
+### 2.4 イベントプロパティ
+
+プロパティは引用符付きラベルの後、改行の前に `[key: value, …]` として記述します。
+
+| プロパティ | 値 | 意味 |
+|---|---|---|
+| `color:` | hex 文字列 | このマーカーまたはバーのカスタムカラー |
+| `side:` | `above` \| `below` | 軸の上または下への配置を強制（swimlane / lollipop） |
+| `icon:` | 任意のテキスト（例：絵文字） | イベントと共に表示されるアイコン |
+| `shape:` | `circle` \| `square` \| `diamond` \| `star` \| `flag` | ポイントマーカーの形状 |
+| `category:` | 引用符付き文字列 | グループラベル——gantt 凡例で色を制御 |
+
+```
+2024-09-01: milestone "Launch day" [color: #E53935, side: above]
+2024-07-15: "Beta ships" [icon: 🚀, category: "product"]
+```
+
+<Playground initial={`timeline "Engineering Milestones"
+config: style = lollipop
+
+2024-01-08: "Sprint planning complete"
+2024-02-14: milestone "Design system shipped" [side: above, color: #1565C0]
+2024-03-22: "Incident — 4h outage" [icon: ⚠️]
+2024-04-01 - 2024-06-30: "API v2 build"
+2024-07-01: milestone "API v2 GA" [side: above, color: #2E7D32]`} height={380} />
+
+---
+
+## 3. 日付フォーマット
+
+すべての日付フォーマットは、イベント・エラ・範囲など、日付が期待される場所であればどこでも使用できます。
+
+| フォーマット | 例 | 備考 |
+|---|---|---|
+| 完全な日付 | `2024-09-15` | 日精度；`YYYY-MM-DD` |
+| 年-月 | `2024-09` | 月精度 |
+| 年 | `2024` | 年精度 |
+| クォーター | `2024-Q3` | そのクォーターの始まりにマップ |
+| 紀元前年（負の数） | `-753` | 紀元前753年 |
+| 紀元前年（サフィックス） | `753BC` または `753BCE` | `-753` と同じ |
+| 地質学的 | `65Ma`、`4.6Ga`、`12ka` | 百万年 / 10億年 / 千年前 |
+
+<Playground initial={`timeline "Age of Earth"
+config: style = lollipop
+config: scale = log
+
+4600Ma: "Earth forms"
+540Ma: "Cambrian explosion"
+252Ma: milestone "Permian extinction — 96% of species lost"
+66Ma: milestone "K-Pg extinction — end of non-avian dinosaurs"
+3Ma: "Earliest stone tools (Lomekwi)"
+0: "Present day"`} height={340} />
+
+---
+
+## 4. エラ（背景スパン）
+
+`era` 行は時間軸を横切るシェーディングされた背景バンドを描画します。常に日付範囲が必要です。
+
+```
+era 2020 - 2022: "Foundation Phase"
+era 2022 .. 2025: "Growth Phase" [color: #E8F5E9]
+```
+
+`[color: …]` プロパティはオプションです。重なるエラは自動的に別々のバンドに積み重ねられます。
+
+<Playground initial={`timeline "Company History"
+config: style = swimlane
+
+era 2019..2021: "Early Stage" [color: #FFF8E1]
+era 2021..2024: "Series A & B" [color: #E8F5E9]
+
+2019-03-01: "Founded"
+2019-11-15: "First paying customer"
+2020-05-01: milestone "Product-market fit" [side: above]
+2021-02-10: "Series A — $8M"
+2022-09-01: "Series B — $30M"
+2023-06-15: milestone "Profitability" [color: #1B5E20]`} height={380} />
+
+---
+
+## 5. トラック（swimlane グループ化）
+
+`track` ブロックは関連するイベントを名前付き swimlane にグループ化します。インデント（2スペース）されたイベント行がトラックに属します。
+
+```
+track "Engineering":
+  2024-01-15 - 2024-03-31: "API design"
+  2024-04-01 - 2024-07-31: "Implementation"
+
+track "Marketing":
+  2024-06-01: "Campaign kick-off"
+  2024-09-01: milestone "Launch campaign" [color: #1B5E20]
+```
+
+トラックは `gantt` スタイルで最も有用で、各トラックが独自のラベル付き行になります。
+
+<Playground initial={`timeline "Q3 Project Plan"
+config: style = gantt
+
+track "Backend":
+  2024-07-01 - 2024-08-15: "Database migration"
+  2024-08-16 - 2024-09-30: "API hardening"
+
+track "Frontend":
+  2024-07-01 - 2024-08-31: "New design system"
+  2024-09-01 - 2024-09-30: "Integration & QA"
+
+track "DevOps":
+  2024-07-15 - 2024-08-01: "Staging environment"
+  2024-09-30: milestone "Go-live" [color: #2E7D32]`} height={380} />
+
+---
+
+## 6. ノート
+
+イベントの下にインデントされた `note:` 行でツールチップアノテーションを付加できます。
+
+```
+2024-06-01: "Beta launch"
+  note: "First external users; NPS target 40+"
+```
+
+ノートはフラットイベントとトラック内のイベントの両方で動作します。
+
+---
+
+## 7. 設定
+
+`config:` 行でレイアウトと視覚スタイルを調整します。各行は `config: key = value` の形式で独立した行です。
+
+| キー | 値 | デフォルト | 効果 |
+|---|---|---|---|
+| `style` | `swimlane` \| `gantt` \| `lollipop` | `swimlane` | 視覚的レンダリングモード |
+| `orientation` | `horizontal` \| `vertical` | `horizontal` | 軸の方向 |
+| `scale` | `proportional` \| `equidistant` \| `log` | `proportional` | 時間をスクリーンスペースにマップする方法 |
+| `axis` | `bottom` \| `center` | `bottom` | 時間軸の描画位置 |
+
+**スタイルの注意事項：**
+- `swimlane` — イベントが水平軸の上下に交互に配置；`side:` でイベントごとの配置を制御。エラが色付きの背景バンドを追加。ロードマップや人物伝に最適。
+- `gantt` — 各名前付きトラックが水平バーレーンになる；マイルストーンがバーの上にピンとして表示。`gantt-project` はエイリアス。プロジェクトスケジューリングに最適。
+- `lollipop` — 中心軸に交互のステムにラベル付きカードが配置。まばらで記憶に残るイベントの歴史的回顧に最適。
+
+**Swimlane** — ロードマップ、製品タイムライン、人物伝。エラが色のバンドを追加；イベントが上下に交互に配置されます。
+
+<Playground initial={`timeline "SaaS Platform Roadmap"
+config: style = swimlane
+
+era 2024-Q1..2024-Q2: "Foundation" [color: #E3F2FD]
+era 2024-Q3..2024-Q4: "Growth" [color: #E8F5E9]
+
+2024-01-15: "Kick-off & team onboarding"
+2024-02-01: milestone "Architecture sign-off" [side: above]
+2024-03-01 - 2024-05-31: "API v2 build"
+2024-04-10: "Security audit" [color: #F9A825]
+2024-06-30: milestone "Beta launch" [side: above]
+2024-07-01 - 2024-09-30: "Performance & scaling"
+2024-10-15: milestone "General availability" [color: #2E7D32]`} height={460} />
+
+**Gantt** — 水平の期間バーとマイルストーンピンを持つ並行トラック。プロジェクトスケジューリングに最適。
+
+<Playground initial={`timeline "Product Launch — Q4"
+config: style = gantt
+
+track "Engineering":
+  2024-10-01 - 2024-11-15: "Feature freeze & hardening"
+  2024-11-16 - 2024-11-30: "Load testing"
+
+track "Design":
+  2024-10-01 - 2024-10-31: "Final UI polish"
+  2024-11-01 - 2024-11-14: "Asset delivery"
+
+track "Marketing":
+  2024-10-15 - 2024-11-14: "Campaign prep"
+  2024-11-15 - 2024-11-30: "Launch campaign"
+  2024-12-01: milestone "Launch day" [color: #2E7D32]`} height={400} />
+
+**Lollipop** — 中心軸に交互のカードを持つまばらなマイルストーン。歴史的回顧とブランドストーリーに最適。
+
+<Playground initial={`timeline "History of Computing"
+config: style = lollipop
+config: scale = equidistant
+
+1936: "Turing — On Computable Numbers"
+1945: "ENIAC — first general-purpose computer"
+1969: "ARPANET"
+1971: milestone "Intel 4004 microprocessor" [side: above]
+1976: "Apple I"
+1991: "World Wide Web (Berners-Lee)"
+2007: milestone "iPhone" [color: #1565C0, side: above]`} height={380} />
+
+---
+
+## 8. ラベルとコメント
+
+- **タイトル：** `timeline "My Title"` — 最初の行のみ。
+- **イベントラベル：** コロンの後の引用符付き文字列：`DATE: "Label"`。
+- **マイルストーンラベル：** `DATE: milestone "Label"`。
+- **エララベル：** `era DATE - DATE: "Label"`。
+- **トラック名：** `track "Name":`。
+- **ノート：** `note: "text"` をイベントの下にインデント。
+- **コメント：** `#` または `//` を行頭に記述（先頭のホワイトスペースの後）。
+
+---
+
+## 9. 予約語とエスケープ
+
+**行頭の予約語：** `timeline`（ヘッダー）、`config:`、`era`、`track`、`note:`。
+
+**日付範囲セパレーター：** ` - `（スペース-ハイフン-スペース）と `..` — コロンの前に現れるラベルテキスト内ではこれらのシーケンスを避けてください。
+
+**負の整数としての紀元前年：** `-753` は紀元前753年です。パーサーは周囲のホワイトスペースを確認して負の符号を範囲セパレーターと区別します——` - `（スペースあり）は範囲；`-753`（コロンの後にリードスペースなし）は紀元前年です。
+
+**プロパティブロック：** `[key: value]` は同じ行の引用符付きラベルの*後*に記述する必要があります。閉じる `]` が必要です；閉じられていない括弧はパースエラーを引き起こします。
+
+---
+
+## 10. よくある間違い
+
+| 記述した内容 | パーサーの反応 | 修正方法 |
+|---|---|---|
+| `2024-06-01: Launch day`（引用符なしラベル） | イベントとして認識されない — `TimelineParseError` | ラベルを引用符で囲む：`2024-06-01: "Launch day"` |
+| `2024-06 - 2024-09: "Q3"`（年-月範囲） | 正常にパース | これは動作します——すべての日付フォーマットが範囲で有効 |
+| `era 2024: "Whole year"`（範囲なし） | `TimelineParseError: era requires a date range` | 範囲を使用：`era 2024 - 2024: "Whole year"` |
+| `track "Backend"`（コロンなし） | `TimelineParseError: Expected ':' after track name` | コロンを追加：`track "Backend":` |
+| `2024-01-01: "Event" [side: left]` | `side: left` は暗黙的に無視；有効なのは `above` と `below` のみ | `side: above` または `side: below` を使用 |
+| `config: style = Gantt`（大文字 G） | `TimelineParseError: Invalid style: Gantt` | 小文字を使用：`config: style = gantt` |
+| `2024-01-01-2024-03-31: "Q1"`（`-` の周囲にスペースなし） | パーサーが `2024-01-01-2024` を日付として読み取り——失敗 | スペースを使用：`2024-01-01 - 2024-03-31:` または `..`：`2024-01-01..2024-03-31:` |
+| トラックなしのインデントされたイベント | `track "Name":` ブロックの外にある timeline ヘッダーの下のインデントされた行——フラットイベントとしてパース | `track "Name":` ブロック内のイベントのみインデント |
+
+---
+
+## 11. 文法（EBNF）
+
+```text
+document     = header ( blank | comment | config | era | track | event )*
+
+header       = "timeline" ( WS quoted-string )? NEWLINE
+quoted-string = '"' any-char-but-quote* '"'
+
+config       = "config:" WS key WS "=" WS value NEWLINE
+key          = "style" | "orientation" | "scale" | "axis"
+
+era          = "era" WS date-range ":" WS quoted-string ( WS props )? NEWLINE
+track        = "track" WS quoted-string ":" NEWLINE
+                 ( INDENT≥2 event | INDENT≥2 note )*
+
+event        = date-spec ":" WS event-body ( WS props )? NEWLINE
+               ( INDENT note )?
+event-body   = ( "milestone" WS )? quoted-string
+date-spec    = date ( ( " - " | ".." ) date )?
+
+note         = "note:" WS quoted-string NEWLINE
+
+props        = "[" prop-list "]"
+prop-list    = prop ( "," prop )*
+prop         = key ":" WS value
+             | key ":" WS quoted-string
+
+date         = iso-date | year-month | year | quarter | bc-year | geological
+iso-date     = digit{4} "-" digit{2} "-" digit{2}
+year-month   = digit{4} "-" digit{2}
+year         = "-"? digit{1,5}
+quarter      = digit{4} "-"? "Q" [1-4]
+bc-year      = digit+ ( "BC" | "BCE" )
+geological   = number ( "Ma" | "Ga" | "ka" )
+
+comment      = ( "#" | "//" ) any NEWLINE
+```
+
+権威ある情報源：`src/diagrams/timeline/parser.ts`。パーサーとの相違がある場合は、パーサーが優先されます——Issue を作成してください。
+
+---
+
+## 12. 標準準拠
+
+タイムライン図には単一の管理標準はありません。Schematex は確立された可視化の慣例に従っています：
+
+- **Swimlane スタイル** — 学術的歴史学とプロジェクト管理（PMI PMBOK）で使用される水平タイムラインの慣例から採用。
+- **Gantt スタイル** — Henry Gantt (1910–1915) が導入した Gantt チャートの形式に従う；トラックごとのバーレイアウトは ISO 21500 プロジェクトスケジューリング慣例に一致。
+- **Lollipop スタイル** — データジャーナリズムとインフォグラフィックスで一般的なドットプロット / ステムプロットの慣例に従う。
+
+現在実装されているもの：
+
+- ✅ 3つの視覚スタイル：swimlane、gantt、lollipop
+- ✅ 水平および垂直方向
+- ✅ 3つのスケールモード：proportional、equidistant、log
+- ✅ ポイントイベント、範囲イベント（バー）、マイルストーンマーカー
+- ✅ エラ（背景シェーディングバンド）
+- ✅ 名前付きトラック（swimlane 行）
+- ✅ イベントノート
+- ✅ 6つの日付フォーマット：完全な日付、年-月、年、クォーター、紀元前年、地質学的（Ma/Ga/ka）
+- ✅ イベントプロパティ：color、side、icon、shape、category
+- ⏳ 垂直方向レンダリング（パース済み、レイアウトは未実装）
+- ⏳ `log` スケールレンダリング（パース済み、現在は proportional として扱う）
+- ⏳ カスタムフォーマット文字列を使った軸目盛りラベル
+- ⏳ イベントコネクター（関連するイベント間の矢印）
+
+参考文献：
+
+- Gantt, H.L. (1910). *Work, Wages, and Profits.* Engineering Magazine.
+- Tufte, E.R. (1983). *The Visual Display of Quantitative Information.* — スモールマルチプルとしてのタイムライン。
+
+---
+
+## 13. ロードマップ
+
+**計画中 — まだパース不可。** 現在生成された DSL ではこれらを使用しないでください；パーサーが拒否または無視します。
+
+- **イベントコネクター** — 時間を越えて2つのイベントをリンクする `connect ev1 -> ev2 [label: "causes"]` 矢印。
+- **繰り返し / 再発** — 定期的なイベントのための `every 2024-Q1 .. 2024-Q4 monthly: "Sprint review"`。
+- **軸目盛りフォーマット** — 軸上のカスタム日付表示のための `config: tickFormat = "%b %Y"`。
+- **垂直方向** — 垂直軸の左右にイベントを配置する `config: orientation = vertical`（パース済み；レンダリングは保留）。
+- **対数スケール** — 近年を圧縮する必要がある地質学的またはディープヒストリースパンのための `config: scale = log`（パース済み；レイアウトは保留）。
+
+これらのどれかが早急に必要な場合は GitHub Issues でトラックしてください。
+
+---
+
+## 関連する例
+
+サンプルギャラリーからすぐに使えるシナリオ：
+
+<RelatedExamples slugs={[
+  'timeline-product-launch',
+  'timeline-company-milestones',
+]} />

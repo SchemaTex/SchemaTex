@@ -1,0 +1,362 @@
+---
+title: 梯形图逻辑
+---
+
+## 关于梯形图
+
+**梯形图**（Ladder logic）是用于描述可编程逻辑控制器（PLC）控制程序的图形化编程语言——PLC 是运行工厂自动化、HVAC 系统、传送带生产线和工艺设备的工业计算机，遍布全球。该名称来自图形外观：两条垂直的电源轨（rails）由水平的梯级（rungs）连接，每个梯级表达一条条件到动作的规则。电气工程师和控制工程师采用这种格式，因为它与他们已熟知的继电器接点原理图相对应。
+
+Schematex 遵循 **[IEC 61131-3:2013](https://en.wikipedia.org/wiki/IEC_61131-3)**，即 PLC 编程语言的国际标准，并使用北美工业实践中常见的 Allen-Bradley（Rockwell）标签地址命名惯例。本页面记录了解析器目前接受的内容。
+
+<Playground initial={`ladder "Motor Start/Stop"
+rung 1 "Seal-in circuit":
+  parallel:
+    branch:
+      XIC(START_PB, "IN 1.0", name="Start Button")
+    branch:
+      XIC(MOTOR_AUX, "BIT 3.0", name="Aux Contact")
+  XIO(STOP_PB, "IN 1.1", name="Stop Button")
+  OTE(MOTOR_CMD, "OUT 2.0", name="Motor Command")
+rung 2 "Mode select with Set/Reset":
+  XIC(AUTO_HMIPB, "BIT 5.10", name="Auto Mode Button")
+  XIO(SYS_FAULT, "BIT 3.0", name="System Fault")
+  parallel:
+    branch:
+      OTL(SYS_AUTO, "BIT 3.1", name="System Auto Mode")
+    branch:
+      OTU(SYS_MANUAL, "BIT 3.2", name="System Manual Mode")
+rung 3 "Run timer":
+  XIC(MOTOR_CMD)
+  TON(RUN_TMR, PT=5000)
+rung 4 "Alarm on cycle complete":
+  XIC(CYCLE_DONE, "BIT 4.0", name="Cycle Done")
+  OTN(ALARM_OUT, "OUT 2.5", name="Alarm Output")`} height={500} />
+
+---
+
+## 1. 你的第一张梯形图
+
+最小可用的梯形图程序：一个梯级，两个接点，一个线圈。
+
+<Playground initial={`ladder "First Rung"
+rung 1 "Start when button pressed, stop on fault":
+  XIC(START_PB)
+  XIO(FAULT)
+  OTE(MOTOR_RUN)`} />
+
+四条规则涵盖 80% 的使用场景：
+
+1. 以 `ladder` 开头，后面可选一个带引号的标题。
+2. 每个**梯级**以 `rung N "可选注释":` 独占一行开始。末尾的冒号可省略。
+3. 元素每行一个，缩进在梯级下方——从左到右表示串联（AND 逻辑）。
+4. `parallel:` / `branch:` 块引入并联（OR 逻辑）。每个分支包含自己的元素列表。
+
+> 注释可以用 `#`、`//` 或 Mermaid 风格的 `%%` 开头，独占一行。
+
+---
+
+## 2. 接点
+
+接点表示输入条件——当关联的位与接点类型匹配时，接点通过电流。
+
+| 类型 | 名称 | 通过电流的条件 |
+|---|---|---|
+| `XIC` | 检查闭合（Examine If Closed） | 标签位 = 1（常开） |
+| `XIO` | 检查断开（Examine If Open） | 标签位 = 0（常闭） |
+| `ONS` | 上升沿单次触发（One-Shot Rising） | 标签从 0 → 1 跳变（上升沿，仅一个扫描周期） |
+| `OSF` | 下降沿单次触发（One-Shot Falling） | 标签从 1 → 0 跳变（下降沿，仅一个扫描周期） |
+
+**语法：**
+
+```
+XIC(tag)
+XIC(tag, "address")
+XIC(tag, "address", name="Description")
+XIC(tag, address="address", name="Description")
+```
+
+- `tag` — 必填。PLC 标签名称（显示在接点符号下方）。
+- `"address"` — 可选的第二个位置参数。I/O 地址（如 `"IN 1.0"`、`"BIT 3.1"`）。
+- `name="…"` — 可选的键值参数。人类可读的描述（显示在符号上方）。
+
+<Playground initial={`ladder "Contact types"
+rung 1 "All four contact types":
+  XIC(START_PB, "IN 1.0", name="Start Button")
+  XIO(E_STOP, "IN 1.5", name="Emergency Stop NC")
+  ONS(PULSE_IN, "BIT 5.0", name="One-Shot Rising")
+  OSF(RESET_SIG, "BIT 5.1", name="One-Shot Falling")
+  OTE(OUT_RLY, "OUT 2.0", name="Output Relay")`} />
+
+---
+
+## 3. 线圈
+
+线圈表示输出动作——当梯级有电流流过时，对标签位执行操作。
+
+| 类型 | 名称 | 对标签位的效果 |
+|---|---|---|
+| `OTE` | 输出励磁（Output Energize） | 梯级为真时置位 = 1；梯级为假时清零 = 0 |
+| `OTL` | 输出锁存（Output Latch） | 置位 = 1；梯级变为假后**保持**（锁存） |
+| `OTU` | 输出解锁（Output Unlatch） | 清零 = 0；梯级变为假后保持 |
+| `OTN` | 输出取反（Output Negate） | 梯级为真时置位 = 0；梯级为假时置位 = 1 |
+| `RES` | 复位（Reset） | Rockwell / Allen-Bradley 计数器或定时器复位线圈 |
+
+**语法：** 与接点相同——`OTE(tag)`、`OTE(tag, "address")`、`OTE(tag, "address", name="…")`。
+
+`OTL` 和 `OTU` 成对使用，构成置位/复位触发器。最后写入的梯级获胜。
+
+<Playground initial={`ladder "Set-Reset latch"
+rung 1 "Set on start":
+  XIC(START_PB, "IN 1.0", name="Start")
+  OTL(MOTOR_ON, "BIT 3.0", name="Motor Latch")
+rung 2 "Reset on stop or fault":
+  parallel:
+    branch:
+      XIC(STOP_PB, "IN 1.1", name="Stop")
+    branch:
+      XIC(E_STOP, "IN 1.5", name="E-Stop")
+  OTU(MOTOR_ON, "BIT 3.0", name="Motor Latch")`} />
+
+---
+
+## 4. 功能块
+
+功能块执行定时器、计数器、数学运算和比较操作。它们内联出现在梯级中，在必填的标签参数之后带有关键字参数。
+
+### 4.1 定时器
+
+| 类型 | 名称 | 关键参数 |
+|---|---|---|
+| `TON` | 接通延时定时器（Timer On-Delay） | `PT=` 预设时间（毫秒） |
+| `TOFF` | 断开延时定时器（Timer Off-Delay） | `PT=` 预设时间（毫秒） |
+| `TP` | 脉冲定时器（Timer Pulse） | `PT=` 预设时间（毫秒） |
+
+```
+TON(timer_tag, PT=5000)
+```
+
+定时器标签存储已过去的时间。定时器的 `Q` 位（完成输出）通过下游接点的标签名访问。
+
+### 4.2 计数器
+
+| 类型 | 名称 | 关键参数 |
+|---|---|---|
+| `CTU` | 加计数（Count Up） | `PV=` 预设值（整数） |
+| `CTD` | 减计数（Count Down） | `PV=` 预设值 |
+| `CTUD` | 加减计数（Count Up/Down） | `PV=` 预设值 |
+
+```
+CTU(cycle_counter, PV=100)
+```
+
+### 4.3 数学运算
+
+| 类型 | 操作 |
+|---|---|
+| `ADD` | 加法 |
+| `SUB` | 减法 |
+| `MUL` | 乘法 |
+| `DIV` | 除法 |
+| `MOV` | 传送（复制） |
+
+```
+ADD(result_tag, IN1=setpoint, IN2=offset)
+MOV(dest_tag, IN1=source_tag)
+```
+
+### 4.4 比较
+
+| 类型 | 含义 |
+|---|---|
+| `EQU` | 等于 |
+| `NEQ` | 不等于 |
+| `GRT` | 大于 |
+| `LES` | 小于 |
+| `GEQ` | 大于等于 |
+| `LEQ` | 小于等于 |
+
+```
+EQU(compare_tag, IN1=speed_actual, IN2=speed_setpoint)
+```
+
+<Playground initial={`ladder "Timer and counter"
+rung 1 "Start run timer":
+  XIC(MOTOR_CMD, "BIT 3.0", name="Motor Running")
+  TON(RUN_TIMER, PT=10000)
+rung 2 "Count completed cycles":
+  XIC(CYCLE_SENSOR, "IN 2.0", name="Cycle Sensor")
+  CTU(PART_COUNT, PV=500)
+rung 3 "Alarm when batch complete":
+  XIC(PART_COUNT, name="Count Done")
+  OTE(BATCH_ALARM, "OUT 3.0", name="Batch Complete Alarm")`} />
+
+---
+
+## 5. 并联分支
+
+`parallel:` 块引入 OR 逻辑——任意**分支**导通时梯级即有电流。每个分支是一个 `branch:` 子块，其元素缩进在其下方。
+
+```
+parallel:
+  branch:
+    XIC(LOCAL_START)
+  branch:
+    XIC(REMOTE_START)
+```
+
+`parallel:` 中的分支同时求值。当缩进返回到 `parallel:` 之前的级别时，块关闭。
+
+**规则：**
+- `parallel:` 必须出现在梯级内部。
+- `branch:` 必须出现在 `parallel:` 内部——单独使用会抛出 `LadderParseError`。
+- 每个分支包含一个或多个元素。
+- `parallel:` 块之后的元素与其串联（AND 逻辑）。
+
+<Playground initial={`ladder "Parallel OR logic"
+rung 1 "Start from either local or remote":
+  parallel:
+    branch:
+      XIC(LOCAL_START, "IN 1.0", name="Local Start")
+    branch:
+      XIC(REMOTE_START, "BIT 5.2", name="Remote Start")
+  XIO(STOP_ALL, "IN 1.5", name="Stop All")
+  OTE(CONVEYOR, "OUT 2.0", name="Conveyor Run")`} />
+
+---
+
+## 6. 标签与注释
+
+- **标题：** `ladder "Motor Control"` — 仅限第一行，带引号的字符串。
+- **梯级编号：** `rung` 之后的必填整数。
+- **梯级注释：** 梯级编号之后、可选冒号之前的可选带引号字符串：`rung 3 "Run indicator":` 或 `rung 3 "Run indicator"`。
+- **标签：** 括号内的第一个参数——显示在符号下方。
+- **地址：** 第二个位置参数（带引号）：`XIC(START_PB, "IN 1.0")`。
+- **名称：** `name="…"` 关键字参数——显示在符号上方的人类可读描述。
+- **行注释：** `#`、`//` 或 `%%`，位于行首（前导空白之后）。这些标记也可以开始尾部注释。
+
+---
+
+## 7. 保留字与转义
+
+**行首保留字（不区分大小写）：** `ladder`、`rung`、`parallel:`、`branch:`。
+
+**元素名称**均为大写 ASCII：`XIC`、`XIO`、`ONS`、`OSF`、`OTE`、`OTL`、`OTU`、`OTN`、`TON`、`TOFF`、`TP`、`CTU`、`CTD`、`CTUD`、`ADD`、`SUB`、`MUL`、`DIV`、`MOV`、`EQU`、`NEQ`、`GRT`、`LES`、`GEQ`、`LEQ`。
+
+**标签 ID** — 必须匹配 `[A-Z][A-Z0-9_]*`（解析器匹配 `[A-Z][A-Z0-9_]*` 作为元素名称前缀）。括号内的小写标签也被接受。
+
+**带引号的字符串**（地址或名称参数）必须使用双引号 `"…"`。
+
+---
+
+## 8. 常见错误
+
+| 你写的 | 解析器报错 | 修复方法 |
+|---|---|---|
+| `rung 1`（无冒号） | 正确解析 | 末尾冒号可省略 |
+| `ONF(TAG)` | `LadderParseError: unknown element type "ONF"` | 下降沿接点是 `OSF`，不是 `ONF` |
+| `parallel:` 内没有 `branch:` | 空并联块——梯级无元素 | 在 `parallel:` 内添加至少一个 `branch:` |
+| `branch:` 在 `parallel:` 之前 | `LadderParseError: branch: without parallel:` | 始终先打开 `parallel:` |
+| `OTE()`（无标签） | `LadderParseError: element missing tag` | 标签必填：`OTE(MY_TAG)` |
+| `var StartBtn: bool`（变量声明） | `LadderParseError: invalid element syntax` | 不支持变量声明——直接使用标签 |
+| 空梯级（`rung N:` 后无元素） | `LadderParseError: Rung N: empty rung` | 为每个梯级添加至少一个元素 |
+| `TON(T1, T#5s)` | `LadderParseError: invalid element syntax`（T# 不是有效数字） | 使用毫秒整数：`TON(T1, PT=5000)` |
+
+---
+
+## 9. 语法（EBNF）
+
+```text
+document      = header NEWLINE rung+
+
+header        = "ladder" ( WS quoted-string )? NEWLINE
+quoted-string = '"' any-char-but-quote* '"'
+
+rung          = "rung" WS integer ( WS quoted-string )? ":"? NEWLINE
+                  element+
+
+element       = contact-line
+              | coil-line
+              | fb-line
+              | parallel-block
+
+contact-line  = contact-type "(" tag ( "," arg )* ")" NEWLINE
+contact-type  = "XIC" | "XIO" | "ONS" | "OSF"
+
+coil-line     = coil-type "(" tag ( "," arg )* ")" NEWLINE
+coil-type     = "OTE" | "OTL" | "OTU" | "OTN" | "RES"
+
+fb-line       = fb-type "(" tag ( "," arg )* ")" NEWLINE
+fb-type       = "TON" | "TOFF" | "TP"
+              | "CTU" | "CTD" | "CTUD"
+              | "ADD" | "SUB" | "MUL" | "DIV" | "MOV"
+              | "EQU" | "NEQ" | "GRT" | "LES" | "GEQ" | "LEQ"
+
+arg           = quoted-string             // positional (address)
+              | key "=" quoted-string     // keyword (e.g. name="…")
+              | key "=" number            // keyword (e.g. PT=5000)
+
+parallel-block = INDENT≥2 "parallel:" NEWLINE
+                   ( INDENT branch-block )+
+
+branch-block   = "branch:" NEWLINE
+                   ( INDENT element )+
+
+tag           = [A-Za-z][A-Za-z0-9_]*
+key           = [A-Za-z][A-Za-z0-9_]*
+integer       = [0-9]+
+number        = [0-9]+ ( "." [0-9]+ )?
+comment       = ( "#" | "//" | "%%" ) any NEWLINE
+```
+
+权威来源：`src/diagrams/ladder/parser.ts`。如果此处内容与解析器不一致，以解析器为准——请提交 issue。
+
+---
+
+## 10. 标准合规性
+
+Schematex 梯形图逻辑遵循 **IEC 61131-3:2013** 第 3 部分的梯形图语言，并使用北美 PLC 实践中常见的 **Allen-Bradley（Rockwell）标签地址命名**惯例。
+
+当前已实现内容：
+
+- ✅ 四种接点类型：XIC（常开）、XIO（常闭）、ONS（上升沿）、OSF（下降沿）
+- ✅ 五种线圈类型：OTE（输出）、OTL（锁存/置位）、OTU（解锁/复位）、OTN（取反）、RES（计数器/定时器复位）
+- ✅ 三种定时器功能块：TON、TOFF、TP，带毫秒 `PT=` 参数
+- ✅ 三种计数器功能块：CTU、CTD、CTUD，带整数 `PV=` 参数
+- ✅ 数学功能块：ADD、SUB、MUL、DIV、MOV
+- ✅ 比较功能块：EQU、NEQ、GRT、LES、GEQ、LEQ
+- ✅ 并联 / 分支块，实现 OR 逻辑
+- ✅ 按 Allen-Bradley Studio 5000 惯例的标签、地址和名称注释
+- ⏳ 保持型定时器（RTO）——标准中有；解析器尚未实现
+- ⏳ 跳转（JMP）/ 标号（LBL）指令
+- ⏳ 主控复位（MCR）区域
+- ⏳ 立即 I/O 指令（IIN、IOT）
+- ⏳ 梯级中嵌入结构化文本或功能块图元素
+
+参考资料：
+
+- IEC 61131-3:2013 — *可编程控制器，第 3 部分：编程语言*
+- NEMA ICS 1-2009 — *工业控制与系统通用标准*
+- Rockwell Automation Studio 5000 Logix Designer — [梯形图编程手册](https://literature.rockwellautomation.com/)
+
+---
+
+## 11. 相关示例
+
+<RelatedExamples slugs={[
+  'ladder-motor-start-stop',
+  'ladder-mode-selection',
+]} />
+
+---
+
+## 12. 路线图
+
+**计划中——当前尚不可解析。** 请勿在生成的 DSL 中使用这些内容；解析器会拒绝或忽略它们。
+
+- **保持型接通定时器（RTO）** — 在断电时保持已用时间的定时器；需要单独的复位接点。
+- **跳转（JMP）/ 标号（LBL）** — 有条件地跳转到带标号的梯级以跳过逻辑；用于大型程序以提升性能。
+- **主控复位（MCR）区域** — 一个括号区域，当 MCR 输入为假时，所有非保持型输出均断电。
+- **梯级中的结构化文本** — 内联表达式求值（如 `CALC(result = a * b + c)`）。
+- **立即 I/O（IIN / IOT）** — 在程序中途强制 I/O 扫描，用于时间关键型控制。
+
+如果你急需上述功能，请在 GitHub issues 中跟踪进度。

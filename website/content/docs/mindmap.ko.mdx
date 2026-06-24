@@ -1,0 +1,402 @@
+---
+title: Mind map
+---
+
+## Mind map이란
+
+**Mind map**은 중심 주제를 둘러싸고 아이디어를 방사형으로 구성하는 다이어그램으로, 하위 주제와 세부 내용으로 가지를 뻗어나갑니다. Tony Buzan이 1970년대에 필기와 브레인스토밍 도구로 이 형식을 대중화했으며, 이후 교육, 프로젝트 계획, 회의 진행, 지식 관리 등에서 널리 활용되고 있습니다. 핵심 통찰은 비선형 가지 구조가 연상적 사고 방식을 반영한다는 것입니다. 개요 작성보다 빠르고, 자유 필기보다 구조적입니다.
+
+Schematex의 mind map은 [markmap](https://markmap.js.org/)에서 영감을 받은 **Markdown 제목 + 글머리 목록** DSL을 사용합니다. 대부분의 사용자가 이미 익숙한 형식입니다. 레이아웃 스타일은 두 가지입니다: 고전적인 방사형 **map**(모든 방향으로 가지 확장)과 **logic-right** 수평 트리. 이 페이지는 현재 파서가 허용하는 내용을 설명합니다.
+
+<Playground initial={`mindmap
+
+# Product Launch Plan
+
+## Market readiness
+### Competitive analysis
+- Direct competitors
+- Pricing benchmarks
+### Target segments
+- SMB customers
+- Enterprise pilot
+
+## Engineering
+### Feature freeze
+- Core API complete
+- Edge cases resolved
+### Infrastructure
+- Load testing
+- CDN configuration
+  - Cache rules
+  - Geo routing
+
+## Go-to-market
+- Landing page live
+- Email campaign
+- Press outreach
+  - TechCrunch pitch
+  - Newsletter sponsors
+
+## Success metrics
+- Week 1 signups
+- Activation rate
+- NPS at day 30`} height={500} />
+
+---
+
+## 1. 첫 번째 mind map 만들기
+
+가장 간단한 mind map: 두 개의 가지와 하나의 하위 항목이 있는 중심 주제.
+
+<Playground initial={`mindmap
+
+# Team retrospective
+
+## What went well
+- Clear sprint goals
+- Good test coverage
+
+## What to improve
+- Slower PR reviews
+  - Add a review SLA`} />
+
+80%의 사용 사례를 커버하는 네 가지 규칙:
+
+1. 별도 줄에 선택적 `mindmap` 키워드로 시작한 후 빈 줄을 추가합니다.
+2. 루트는 단일 `#` 제목입니다. 정확히 하나만 허용됩니다.
+3. `##`, `###` 등 더 깊은 제목을 사용해 가지 깊이를 설정합니다. 제목 레벨이 트리 깊이와 같습니다.
+4. `-`, `*`, `+` 글머리를 사용해 제목 아래에 하위 항목을 추가합니다. 2칸 들여쓰기마다 깊이가 하나씩 증가합니다.
+
+> 주석은 지원되지 않습니다. `%%` 지시어는 구성 전용으로 `#` 루트 앞에만 사용합니다.
+
+---
+
+## 2. 제목과 깊이
+
+제목 레벨은 트리 깊이에 직접 매핑됩니다. `#`은 항상 루트(깊이 0)입니다. `##`는 깊이 1, `###`는 깊이 2, 최대 `######`(깊이 5)까지 사용할 수 있습니다.
+
+```
+mindmap
+
+# Root
+## Branch A         ← 깊이 1
+### Sub-branch      ← 깊이 2
+#### Leaf           ← 깊이 3
+## Branch B
+```
+
+제목은 레벨을 건너뛸 수 있습니다. `##` 다음에 `####`가 오는 것은 유효하며 깊이 3의 노드를 생성합니다. 트리 깊이는 이전 제목이 아닌 루트 기준으로 계산됩니다.
+
+---
+
+## 3. 글머리
+
+글머리는 제목 가지를 더 세부적으로 확장합니다. `-`, `*`, `+` 모두 글머리 마커로 허용됩니다. **2칸 들여쓰기**마다 감싸는 제목 기준으로 깊이가 한 레벨씩 증가합니다.
+
+```
+## Risks
+- Technical complexity         ← 깊이 2 (## Risks 아래 한 레벨)
+  - Legacy integrations        ← 깊이 3 (2칸 들여쓰기)
+    - Auth service             ← 깊이 4 (4칸 들여쓰기)
+- Team availability            ← 다시 깊이 2
+```
+
+<Playground initial={`mindmap
+
+# Book outline
+
+## Chapter 1 — Introduction
+- Why this matters
+  - Historical context
+  - Current state
+- What you will learn
+
+## Chapter 2 — Core concepts
+- Concept A
+  - Definition
+  - Examples
+- Concept B
+  - Definition
+  - Worked example
+    - Step-by-step walkthrough`} height={440} />
+
+---
+
+## 4. 인라인 서식
+
+노드 레이블은 Markdown 인라인 서식의 일부를 지원합니다. 파서가 파싱 시점에 레이블을 토큰화하며, 렌더러가 이 토큰을 사용해 스타일이 적용된 텍스트를 생성합니다.
+
+| 문법 | 효과 | 예시 |
+|---|---|---|
+| `**text**` | 굵게 | `**Critical path**` |
+| `*text*` | 기울임 | `*optional*` |
+| `` `code` `` | 모노스페이스 코드 | `` `npm install` `` |
+| `[text](url)` | 링크 | `[RFC 7519](https://tools.ietf.org/html/rfc7519)` |
+| `[ ] item` | 미완료 체크 | `[ ] Write tests` |
+| `[x] item` | 완료 체크 | `[x] Design review` |
+
+체크박스는 레이블의 맨 앞(다른 텍스트 앞)에 위치해야 합니다. 인라인 서식은 중첩 가능합니다: `**[bold link](url)**`.
+
+<Playground initial={`mindmap
+
+# Sprint 24 review
+
+## Completed
+- [x] **Auth redesign** — JWT + refresh tokens
+- [x] API rate limiting \`per-user\`
+- [x] [Error budget dashboard](https://metrics.example.com)
+
+## In progress
+- [ ] *Mobile push notifications*
+  - [ ] iOS APNs integration
+  - [ ] Android FCM setup
+
+## Blocked
+- [ ] **Payment webhook** — waiting on Stripe team
+  - *Escalated to account manager*`} height={420} />
+
+---
+
+## 5. 레이아웃 스타일
+
+`%% style:` 지시어로 레이아웃 알고리즘을 선택합니다. `#` 루트 제목 앞에 배치합니다.
+
+| 스타일 | 레이아웃 | 최적 용도 |
+|---|---|---|
+| `map` (기본) | 방사형 — 중심에서 모든 방향으로 가지 확장 | 브레인스토밍, 개념 지도, 자유 탐색 |
+| `logic-right` | 수평 트리 — 모든 가지가 오른쪽으로 확장 | 구조화된 개요, 계층 구조, 순차적 분류 |
+| `futureswheel` | 동심원 — 루트가 중심에, 각 제목 레벨이 별도 링에 배치 | 미래 예측, 결과 매핑, 구조적 브레인스토밍 |
+| `driver` | 수평 트리 — 왼쪽의 목표에서 드라이버를 거쳐 변화 아이디어로 흐름 | 개선 프로그램, 목표 → 드라이버 → 액션 분류 |
+
+```
+%% style: map
+%% style: logic-right
+%% style: futureswheel
+%% style: driver
+```
+
+**`map`** (기본) — 방사형 레이아웃, 중심에서 모든 방향으로 가지 확산. 브레인스토밍과 개념 지도에 최적.
+
+<Playground initial={`mindmap
+
+# Machine learning
+
+## Supervised
+### Classification
+- Decision tree
+- SVM
+- Neural net
+### Regression
+- Linear
+- Gradient boosting
+
+## Unsupervised
+### Clustering
+- K-means
+- DBSCAN
+### Reduction
+- PCA
+- t-SNE
+
+## Reinforcement
+- Q-learning
+- Policy gradient`} height={480} />
+
+**`logic-right`** — 수평 트리, 모든 가지가 오른쪽으로 확장. 구조화된 개요와 순차적 계층 구조에 최적.
+
+<Playground initial={`mindmap
+%% style: logic-right
+
+# Machine learning
+
+## Supervised
+### Classification
+- Decision tree
+- SVM
+- Neural net
+### Regression
+- Linear
+- Gradient boosting
+
+## Unsupervised
+### Clustering
+- K-means
+- DBSCAN
+### Reduction
+- PCA
+- t-SNE
+
+## Reinforcement
+- Q-learning
+- Policy gradient`} height={460} />
+
+**`futureswheel`** — [Futures Wheel](https://en.wikipedia.org/wiki/Futures_wheel)(Jerome Glenn, 1971/72)은 결과를 생각하는 구조적 브레인스토밍 형식입니다. 중앙 사건 또는 트렌드가 허브에 위치하고, 1차 결과가 내부 링에, 2차 결과가 그 다음 링에 배치됩니다. 각 자식은 부모의 각도 범위 안에 유지되며, 모든 링은 순서에 따라 색상 코딩됩니다. 깊이는 링에 매핑됩니다: `#`는 허브, `##`는 첫 번째 링(1차 결과), `###`/제목 아래 글머리는 다음 링(2차 결과)으로 계속 확장됩니다.
+
+<Playground initial={`mindmap
+%% style: futureswheel
+
+# Remote work becomes default
+
+## Less commuting
+- Lower carbon emissions
+- Cheaper city living
+
+## Distributed teams
+- Async communication norms
+- Global hiring pools
+
+## Empty offices
+- Commercial real estate slump
+- Repurposed to housing`} height={520} />
+
+**`driver`** — [Driver Diagram](https://www.ihi.org/resources/tools/driver-diagram)은 IHI(Institute for Healthcare Improvement)의 개선 모델에서 온 계획 도구입니다. 왼쪽에서 오른쪽으로 트리 구조로 읽힙니다: 왼쪽 끝의 **목표**, 다음 열의 **1차 드라이버**(목표를 움직이는 고영향 영역), 이후 **2차 드라이버**와 구체적인 **변화 아이디어**로 이어집니다. 트리 레벨은 구조에 깔끔하게 매핑됩니다: `#`는 목표, `##`는 1차 드라이버, 하위 글머리와 더 깊은 제목은 2차 드라이버와 변화 아이디어가 됩니다. 목표가 실제로 달성되는 *방법*을 보여줄 때 유용합니다.
+
+<Playground initial={`mindmap
+%% style: driver
+
+# Reduce 30-day readmissions
+
+## Reliable discharge process
+- Teach-back at bedside
+- Med reconciliation
+
+## Timely follow-up
+- Appointment within 7 days
+- Post-discharge phone call`} height={400} />
+
+---
+
+## 6. 지시어
+
+지시어는 `#` 루트 제목 **앞에** 위치하는 `%%` 줄입니다. 다이어그램 전체를 구성합니다.
+
+| 지시어 | 값 | 기본값 | 효과 |
+|---|---|---|---|
+| `%% style: …` | `map`, `logic-right`, `futureswheel`, `driver` | `map` | 레이아웃 알고리즘 |
+| `%% theme: …` | 임의 문자열 | (없음) | 렌더러에 전달되는 테마 재정의 |
+| `%% maxLabelWidth: …` | 정수 80–1000 | `240` | 레이블이 줄 바꿈되기 전 최대 픽셀 너비 |
+
+```
+mindmap
+%% style: logic-right
+%% maxLabelWidth: 320
+
+# Wide label root
+```
+
+<Playground initial={`mindmap
+%% style: logic-right
+%% maxLabelWidth: 200
+
+# Schematex features
+
+## DSL-first design
+- One keyword per diagram
+- AI-friendly syntax
+- CJK support
+
+## Zero dependencies
+- Hand-written parser
+- No D3, no dagre
+- ~KB-level bundle
+
+## Standards-compliant
+- IEEE for logic gates
+- IEC for circuits
+- McGoldrick for genograms`} height={360} />
+
+---
+
+## 7. 레이블과 주석
+
+- **루트 제목:** `#` 루트 제목 줄 이후의 텍스트.
+- **가지 레이블:** `##`, `###` 등 이후의 텍스트.
+- **글머리 레이블:** `- ` / `* ` / `+ ` 마커 이후의 텍스트.
+- **인라인 서식:** `**bold**`, `*italic*`, `` `code` ``, `[text](url)`, `[ ]` / `[x]`.
+- **주석:** 본문에서는 지원되지 않습니다. 구성에는 `#` 루트 앞의 `%%` 지시어를 사용합니다. 본문의 `%%` 줄은 지시어로 처리됩니다(인식되지 않으면 자동으로 무시됨).
+
+---
+
+## 8. 예약어와 이스케이프
+
+**문서 시작 시 예약:** `mindmap` (선택적 키워드)와 `%%` (지시어 접두사).
+
+**루트로 예약:** 정확히 하나의 `#` 제목; 두 번째 `#` 제목은 파싱 오류를 발생시킵니다.
+
+**글머리 마커:** `-`, `*`, `+` 다음에 공백. 레이블 텍스트 안에서 공백 없이 나오는 `*`는 이탤릭 마커로 처리됩니다.
+
+**인라인 충돌:** `[ ]` 또는 `[x] `로 시작하는 레이블은 Markdown 링크가 아닌 체크박스로 파싱됩니다. `[`로 시작하는 레이블이 필요하면 `\[`로 작성합니다. 백슬래시가 대괄호를 이스케이프합니다.
+
+---
+
+## 9. 자주 발생하는 실수
+
+| 작성한 내용 | 파서 반응 | 수정 방법 |
+|---|---|---|
+| `#` 제목 두 개 | `Error: multiple # center nodes not allowed` | 정확히 하나의 `#` 제목만 루트로 사용 |
+| `##Branch` (`##` 이후 공백 없음) | 줄이 제목으로 인식되지 않아 자동 무시 | 항상 공백 추가: `## Branch` |
+| 3칸 들여쓰기된 글머리 | 깊이 = `lastHeadingDepth + 1 + floor(3/2) = lastHeadingDepth + 2` — 예상치 못한 레벨 생성 가능 | 2의 배수 공백 사용: 0, 2, 4, 6… |
+| `%% style: radial` | 알 수 없는 값으로 무시; 레이아웃이 `map`으로 유지됨 | `map`, `logic-right`, `futureswheel`, 또는 `driver` 사용 |
+| 문서 중간에 `mindmap` 키워드 | 일반 텍스트 줄로 처리 (키워드는 첫 번째 줄에서만 인식) | `mindmap`을 1번 줄에 배치, 내용 앞에 |
+| `[ ]text` (대괄호 이후 공백 없음) | 체크박스 미인식; `[ ]text`로 그대로 렌더링 | `[ ] text` — 닫는 대괄호 이후 공백 필요 |
+
+---
+
+## 10. 문법 (EBNF)
+
+```text
+document       = ("mindmap" NEWLINE)? (blank | directive)* node*
+
+directive      = "%%" WS key ":" WS value NEWLINE
+key            = "style" | "theme" | "maxlabelwidth"
+
+node           = heading | bullet
+heading        = INDENT? "#"+ SPACE label NEWLINE
+bullet         = SPACE* bullet-marker SPACE label NEWLINE
+bullet-marker  = "-" | "*" | "+"
+
+label          = inline-token*
+inline-token   = checkbox
+               | "**" inline-token* "**"
+               | "*" inline-token* "*"
+               | "`" code-text "`"
+               | "[" inline-token* "]" "(" url ")"
+               | plain-text
+
+checkbox       = "[ ]" SPACE | "[x]" SPACE | "[X]" SPACE
+
+INDENT         = WS*    %% headings may have leading whitespace (ignored)
+SPACE          = " " | "\t"
+```
+
+**깊이 규칙:**
+- 제목 `#` → 깊이 0 (루트)
+- 제목 `##` → 깊이 1, `###` → 깊이 2, 이하 동일
+- `n`개의 선행 공백이 있는 글머리 → 깊이 = `lastHeadingDepth + 1 + floor(n / 2)`
+
+권위 있는 소스: `src/diagrams/mindmap/parser.ts`. 이 문서와 파서가 다를 경우 파서가 우선입니다 — 이슈를 열어주세요.
+
+---
+
+## 11. 로드맵
+
+**계획 중 — 아직 파싱 불가.** 오늘 생성된 DSL에서 이것들을 사용하지 마세요; 파서가 거부하거나 무시합니다.
+
+- **`%%{init: {…}}%%` 블록** — Mermaid 스타일 init 블록으로 테마/구성 설정; 현재는 `%%` 줄 지시어만 지원됩니다.
+- **자동 번호 매기기 가지** — `%% numbering: true`로 각 가지에 1., 1.1. 등의 접두사 추가.
+- **콜아웃 / 노트 노드** — 임의 노드에 플로팅 주석 상자를 연결하는 특수 마커.
+- **이미지 노드** — 인라인 이미지로 렌더링되는 전체 노드 레이블로서의 `![alt](url)`.
+- **접힌 가지** — `%% collapsed: branchId`로 서브트리를 단일 접힌 표시자로 렌더링.
+
+더 빨리 필요하다면 GitHub 이슈에서 추적하세요.
+
+---
+
+## 관련 예시
+
+예시 갤러리에서 바로 사용 가능한 시나리오:
+
+<RelatedExamples slugs={[
+  'mindmap-product-launch',
+  'mindmap-quarterly-okrs',
+]} />

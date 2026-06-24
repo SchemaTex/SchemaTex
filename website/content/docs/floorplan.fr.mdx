@@ -1,0 +1,209 @@
+---
+title: Plan d'étage
+---
+
+## À propos des plans d'étage
+
+Un **plan d'étage** est la vue architecturale 2D standard d'un espace : des pièces avec de vraies dimensions, des murs dessinés comme des bandes pleines de **poché**, des portes avec des arcs de quart de cercle, des fenêtres comme des lignes de vitrage, et du mobilier sous forme de symboles en vue de plan — le langage visuel documenté dans les *Architectural Graphic Standards* et utilisé par chaque ensemble de plans professionnels. Schematex le rend à partir de texte : vous déclarez des pièces, des ouvertures et du mobilier avec de vraies mesures ; le moteur fusionne les murs partagés, calcule les surfaces des pièces, dessine des lignes de cote, place automatiquement les sièges aux tables et valide la géométrie.
+
+Contrairement aux générateurs d'images, la sortie est *mesurable et modifiable* — chaque pièce est un élément étiqueté avec sa surface calculée, et l'ajout d'une quatrième rangée de bureaux est une modification d'une seule ligne.
+
+<Playground initial={`floorplan "Studio Apartment" unit m
+room main   "Living / Sleeping" at 0,0 size 5.2x4.0
+room bath   "Bath"   right-of main size 2.0x2.2
+room kitchen "Kitchenette" right-of main align end size 2.0x1.8
+door main south at 15% width 0.9
+door between main bath at 50%
+opening between main kitchen at 50% width 1.2
+window main north at 30% width 1.8
+furniture bed-double in main at 3.4,0.3
+furniture sofa in main at 0.2,3.0
+furniture toilet in bath at 0.2,0.2
+furniture sink in bath at 1.3,0.2
+furniture counter in kitchen at 0.15,1.05 size 1.7x0.6
+furniture kitchen-sink in kitchen at 0.6,1.05`} height={420} />
+
+---
+
+## 1. Votre premier plan d'étage
+
+Un en-tête, une pièce, une porte et une fenêtre :
+
+```
+floorplan "Studio"
+room main "Studio" at 0,0 size 4x3
+door main south at 20%
+window main north at 50%
+```
+
+Trois règles couvrent la plupart des usages :
+
+1. Commencez par `floorplan`, un titre optionnel entre guillemets, et `unit m` (par défaut) ou `unit ft`. **Tous les nombres sont dans cette unité.**
+2. Les pièces sont des rectangles : `room id "Label" at x,y size LxH`. L'étiquette et la surface calculée s'affichent centrées dans la pièce.
+3. Les ouvertures sont accrochées aux murs : une référence de mur (`main south`) positionne le long de ce mur à un pourcentage ; `between A B` trouve le mur partagé automatiquement.
+
+---
+
+## 2. Pièces et placement
+
+Placez la première pièce à `0,0` et enchaînez les autres de façon relative — les pièces adjacentes partagent un bord exactement, et leurs murs fusionnent en une seule bande :
+
+```
+room living  "Living Room" at 0,0 size 5.2x4.2
+room kitchen "Kitchen"     right-of living size 3.0x4.2
+room hall    "Hallway"     below living size 2.0x2.6
+room bed1    "Bedroom 1"   right-of hall size 3.2x2.6
+```
+
+- `right-of` / `left-of` / `above` / `below` s'accrochent au bord de la pièce de référence.
+- `align start|center|end` aligne l'axe transversal (par défaut `start` = bords supérieur/gauche alignés) ; `offset n` le décale.
+- `fill #e0f2fe` teinte le sol ; `nolabel` supprime l'étiquette nom + surface (plans à espace unique comme les salles de classe).
+- Les coordonnées sont y-vers-le-bas : `at 0,0` est le coin supérieur gauche.
+
+**Les pièces en forme de L/T/U** utilisent `extend` — déclarez le rectangle principal, puis agrandissez-le avec des rectangles partageant un bord. Les murs fusionnent le long du joint, la surface est additionnée en un seul nombre (exactement comme les professionnels mesurent les pièces en L), et l'étiquette se centre sur la partie la plus grande :
+
+```
+room living "Living Room" at 0,0 size 5x4
+extend living at 5,2 size 2x2          # forme en L : encoche en haut à droite
+```
+
+Une extension qui ne touche pas la pièce, ou qui la chevauche, est rejetée avec une erreur quantifiée. `north` (optionnellement `north 30` pour les plans pivotés) ajoute la rose des vents en haut à droite.
+
+---
+
+## 3. Portes, fenêtres, ouvertures
+
+```
+door hall west at 50% width 1.0 swing in          # porte extérieure sur un mur
+door between hall bed1 at 50% hinge right          # porte intérieure sur le mur partagé
+door between bed1 bath at 30% type sliding         # porte coulissante — pas d'arc
+opening between living kitchen at 35% width 1.2    # arcade, pas de vantail
+window living north at 30% width 1.8
+```
+
+- `between A B` résout le segment de mur partagé et se positionne au pourcentage **le long du chevauchement** — pas de coordonnées nécessaires. Les pièces non adjacentes sont rejetées avec l'écart mesuré.
+- Les portes ont une largeur par défaut de 0,9 m sur les murs extérieurs, 0,8 m sur les murs `between` ; les fenêtres ont 1,2 m par défaut.
+- `hinge left|right` choisit le montant ; `swing in|out` inverse l'arc de quart de cercle (par défaut, ouverture vers la pièce propriétaire — la première pièce nommée).
+- Type de porte `type single|double|sliding|pocket|bifold` : double dessine deux arcs en miroir ; sliding/pocket dessinent des lignes de vantail décalées sans arc ; bifold dessine les deux pointes de tente de porte de placard.
+- Type de fenêtre `type fixed|sliding|casement|bay` : sliding = deux panneaux décalés, casement ajoute l'arc de pivotement vers l'extérieur, bay projette un trapèze évasé en dehors du mur.
+- Les ouvertures sont ajustées pour tenir dans leur segment de mur (avec un avertissement) plutôt que de déborder.
+
+---
+
+## 4. Mobilier
+
+Le mobilier est placé **par rapport au coin intérieur supérieur gauche de sa pièce**, avec `size`, `rotate` et une étiquette optionnels :
+
+```
+furniture sofa in living at 0.25,2.9
+furniture desk "Teacher" in class at 2,1.5 size 5x2.5 rotate 20
+furniture counter "Cubbies" in class at 6,24.4 size 10x1.2
+```
+
+Le catalogue couvre l'habitat, le commerce et les aménagements extérieurs (les tailles ont des empreintes standard du secteur par défaut) :
+
+| Cluster | Types |
+| --- | --- |
+| Résidentiel | `bed-double` `bed-single` `bed-queen` `bed-king` `bunk-bed` `crib` `sofa` `loveseat` `sectional` `armchair` `ottoman` `coffee-table` `side-table` `tv` `tv-stand` `fireplace` `floor-lamp` `rug` `wardrobe` `dresser` `nightstand` `bookshelf` `plant` `piano` `piano-upright` `pool-table` `ceiling-fan` `dining-table` |
+| Cuisine / salle de bain | `counter` `wall-cabinet` `kitchen-sink` `stove` `range-hood` `fridge` `dishwasher` `island` `bar-stool` `toilet` `sink` `vanity` `bidet` `urinal` `bathtub` `shower` `washer` `dryer` |
+| Salle de classe / bureau | `desk-chair` `desk` `desk-l` `chair` `whiteboard` `smartboard` `bookcase` `cubbies` `filing-cabinet` `lockers` `kidney-table` `round-table-4/6/8/10` `conference-table` |
+| Événementiel / banquet | `banquet-table` `head-table` `stage` `dance-floor` `bar` `dj-booth` `cocktail-table` `podium` `row-chairs` |
+| Commerce / entrepôt | `shelving` `checkout` `clothing-rack` `fitting-room` `pallet-rack` `loading-dock` `forklift` |
+| Salon / salle de sport | `salon-chair` `shampoo-bowl` `manicure-table` `treadmill` `weight-bench` `power-rack` `yoga-mat` |
+| Restaurant / cuisine professionnelle | `booth` `prep-table` `range` `walk-in` `commercial-sink` `fryer` |
+| Escaliers / structurel | `stairs` `stairs-l` `stairs-u` `spiral-stairs` `elevator` `column` |
+| Extérieur / site | `tree` `car` |
+
+**La disposition automatique des sièges** est intégrée : `round-table-8` dessine 8 chaises sur sa circonférence (plateau 60″ ; `round-table-10` utilise 72″), `dining-table` / `banquet-table` / `conference-table` placent des chaises sur les deux longs bords à raison d'une chaise par 0,65 m, `head-table` place une rangée face à la salle, `manicure-table` place un client et un technicien, et `row-chairs` place une rangée de théâtre à un pas de 0,55 m. `rug`, `dance-floor`, `yoga-mat`, `counter`, `island`, `wall-cabinet`, `range-hood` et `ceiling-fan` sont des revêtements/éléments en hauteur — les autres meubles peuvent les chevaucher sans avertissement de collision.
+
+**Plans de table** — nommez les occupants de tout table avec placement automatique via une clause `seats`, et le moteur inscrit chaque nom sur sa chaise (dans l'ordre de placement : tables rondes dans le sens horaire depuis le haut ; tables rectangulaires remplissent le bord supérieur de gauche à droite, puis le bord inférieur). Cela transforme le plan d'une salle en le plan de table que les invités lisent réellement :
+
+```
+furniture round-table-8 "Table 3" in hall at 11,4 seats "Alice" "Bob" "Carol" "Dave"
+furniture head-table "Head Table" in hall at 5,0.6 size 6x0.9 seats "Bride" "Groom"
+```
+
+Les chaises sans nom restent vides ; les noms supplémentaires au-delà du nombre de chaises sont ignorés. Les noms entre guillemets CJK (`seats "张伟" "李娜"`) fonctionnent comme toute autre étiquette. Les noms s'affichent horizontalement, donc gardez la table non pivotée pour un plan propre.
+
+`tree` et `car` sont dimensionnés pour l'extérieur (disque de canopée, empreinte de place de stationnement), donc un **plan de site** est simplement des zones carrelées comme des pièces adjacentes — jardin de devant, empreinte de la maison, allée, jardin de derrière — avec des arbres et des voitures garées placés dessus.
+
+**Les escaliers** suivent les conventions de dessin : lignes de marches à 0,28 m (11″), une flèche de direction partant de la marche la plus basse étiquetée `UP` (donnez un label `"DN"` à l'élément pour une volée descendante), et la ligne de coupe en zigzag à 45° au plan de coupe imaginaire de 4 pieds, avec des marches en pointillés au-delà. `stairs` est une volée droite (orientez avec `size`/`rotate`), `stairs-l` tourne à 90° sur un palier, `stairs-u` fait demi-tour à 180°, `spiral-stairs` est un cercle avec des marches radiales et un poteau central.
+
+---
+
+## 5. Tableaux — grille, rangée, arc
+
+Le mobilier répété est une seule déclaration, pas trente :
+
+```
+grid desk-chair in class rows 5 cols 6 count 27 area 5,8 25,24 itemsize 2x2.5
+row round-table-8 in hall cols 3 area 8.8,13.4 15.2,13.4 itemsize 2.3x2.3
+arc chair in hall count 13 center 12,8 radius 5 from 200 to 340
+```
+
+- `area x1,y1 x2,y2` donne les **centres** du premier et du dernier élément ; les éléments se répartissent équitablement entre eux.
+- `count` tronque **en ligne principale** — 27 bureaux dans une grille 5×6 supprime la queue de la dernière rangée, exactement comme dans une vraie salle de classe.
+- `arc` place les éléments sur un arc circulaire orientés vers le centre — salles de classe en demi-cercle, places assises pour les cérémonies.
+
+---
+
+## 6. Unités, surfaces, lignes de cote
+
+- `unit ft` rend chaque nombre en pieds ; les lignes de cote sont formatées en `32'` / `15'1"` et les surfaces en `sq ft`. En interne, tout est en métrique (1 ft = 0,3048 m).
+- Les surfaces des pièces sont **calculées par le moteur** à partir de la géométrie déclarée, jamais saisies manuellement.
+- Les lignes de cote s'affichent à l'extérieur du plan avec des tirets d'architecte : largeur + hauteur totales toujours, plus des segments par pièce le long des extérieurs supérieur et gauche.
+
+---
+
+## 7. Validation
+
+Le moteur valide ce que les LLM (et les humains) se trompent réellement, avec des erreurs nommant les éléments fautifs et indiquant la correction :
+
+**Erreurs** (bloquent le rendu, affichées dans un panneau d'erreur) :
+
+- Chevauchement de pièces — `rooms "bed1" and "bath" overlap by 0.40×2.60 m — move "bath" right-of "bed1" or shrink size`
+- Porte entre pièces non adjacentes — `door between "kitchen" and "bed2": rooms share no wall (gap 2 m on x-axis)`
+- Mobilier hors de sa pièce — `furniture sofa #1 extends 1.7 m outside room "c" — move it or shrink size`
+
+**Avertissements** (rendu quand même, listés sous le plan) :
+
+- Collision de mobilier — boîtes englobantes incluant les **enveloppes d'anneau de chaises**, de sorte que deux banquettes rondes dont les chaises se touchent sont signalées même lorsque les plateaux ne se touchent pas.
+- Ouverture ajustée pour tenir dans son segment de mur.
+
+---
+
+## 8. Grammaire (EBNF)
+
+```text
+plan      ::= "floorplan" string? ("unit" ("m"|"ft"))? NL statement*
+statement ::= room | extend | north | door | window | opening | furniture | array
+room      ::= "room" id string? placement "size" dims ("fill" color)? ("nolabel")?
+extend    ::= "extend" id placement "size" dims
+north     ::= "north" num?
+placement ::= "at" coord
+            | ("right-of"|"left-of"|"above"|"below") id ("offset" num)?
+              ("align" ("start"|"center"|"end"))?
+door      ::= "door" (wallref | "between" id id) "at" pct
+              ("width" num)? ("hinge" ("left"|"right"))? ("swing" ("in"|"out"))?
+              ("type" ("single"|"double"|"sliding"|"pocket"|"bifold"))?
+window    ::= "window" wallref "at" pct ("width" num)?
+              ("type" ("fixed"|"sliding"|"casement"|"bay"))?
+opening   ::= "opening" (wallref | "between" id id) "at" pct ("width" num)?
+furniture ::= "furniture" type ("in" id) "at" coord ("size" dims)? ("rotate" num)? string? ("seats" string+)?
+array     ::= ("grid"|"row"|"arc") type "in" id
+              ("rows" int)? ("cols" int)? ("count" int)?
+              ("area" coord coord)? ("itemsize" dims)? ("rotate" num)?
+              ("center" coord)? ("radius" num)? ("from" num "to" num)?
+wallref   ::= id ("north"|"south"|"east"|"west")
+coord     ::= num "," num          dims ::= num "x" num          pct ::= num "%"?
+```
+
+Les commentaires vont de `#` jusqu'à la fin de la ligne. Les guillemets CJK (`""`) sont acceptés comme guillemets ASCII.
+
+---
+
+## Exemples associés
+
+- [Appartement deux chambres](/examples#floorplan) — placement relatif, 7 portes, ameublement complet
+- [Salle de classe de 27 bureaux](/examples#floorplan) — troncature `grid … count`, `unit ft`
+- [Réception de mariage pour 120 personnes](/examples#floorplan) — banquettes rondes avec placement automatique, piste de danse

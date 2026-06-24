@@ -1,0 +1,197 @@
+---
+title: 功能块图（FBD）
+---
+
+## 关于功能块图
+
+**功能块图（FBD）**是**[IEC 61131-3:2013](https://en.wikipedia.org/wiki/IEC_61131-3)**（工业自动化国际标准）定义的五种 PLC 编程语言之一。它是生产代码中使用量第二高的 PLC 语言（仅次于梯形图），也是当程序片段以**数据流**方式表达比继电器梯级更直观时的首选。AND/OR 逻辑、定时器（TON/TOF/TP）、计数器（CTU/CTD）、比较（EQ/NE/GT/GE/LT/LE）、数学运算（ADD/SUB/MUL/DIV/MOVE）、沿检测（R\_TRIG/F\_TRIG）、双稳态锁存器（SR/RS）——所有这些均以具名端口的方块形式从左到右连线渲染。
+
+Schematex 遵循 **IEC 61131-3 §6.4** 视觉规范，并使用 **IEC 60617-12** 特征符号（`&` 表示 AND，`≥1` 表示 OR，`=1` 表示 XOR，`1` 表示 NOT/BUF）。导线按数据类型着色（BOOL 黑色、INT 蓝色、REAL 橙色、TIME 品红色），遵循 TIA Portal 事实标准。它与**[梯形图](/docs/ladder)**（§6.3，梯级式）和**[sfc](/docs/sfc)**（§6.5，顺序式）同属姊妹语言；三者共同构成 IEC 61131-3 的可视化编程部分。
+
+<Playground initial={`
+  fbd "Motor Control"
+
+  var Start: bool
+  var Stop: bool
+  var Latch: bool
+  var MotorOut: bool
+
+  network 0 "Start/stop latch":
+    Latch = OR(Start, AND(Latch, ~Stop))
+
+  network 1 "Drive output":
+    MotorOut = MOVE(Latch)`} height={420} />
+
+---
+
+## 1. 第一个 FBD 网络
+
+最小的可用 FBD 网络：一个功能块、两个输入、一个输出。
+
+```
+fbd
+network 0:
+  Out = AND(A, B)
+```
+
+`A` 和 `B` 自动声明为 BOOL 输入（左侧端点），`Out` 自动连线到 AND 块的 `OUT` 端口（右侧端点）。功能块位于它们之间，带有端口引脚和标签。
+
+---
+
+## 2. 变量
+
+在任何网络之前声明变量。每个变量包含名称、IEC 数据类型以及可选的初始值。
+
+```
+fbd "Tank Control"
+
+var StartBtn: bool
+var TankLevel: real
+var SetPoint: real = 80.0
+var DwellTimer: timer
+var Pulse: counter
+```
+
+支持的类型：`bool`、`int`、`dint`、`uint`、`udint`、`real`、`lreal`、`time`、`date`、`tod`、`string`、`wstring`、`byte`、`word`、`dword`、`timer`、`counter`。其他任何标识符均视为用户自定义功能块类型。
+
+可选的作用域前缀（默认为局部变量）：`var_input`、`var_output`、`var_in_out`、`var_global`、`var_external`。
+
+---
+
+## 3. 网络
+
+一个**网络**是一段独立的数据流，在网络内部从左到右求值；各网络之间按程序扫描顺序从上到下依次求值。
+
+```
+network 0 "Start latch":
+  ...
+
+network 1:
+  ...
+```
+
+编号是可选的——若省略，网络将自动编号。标题（引号内）显示在网络框架的左上角。
+
+---
+
+## 4. 功能块调用——内联表达式记法
+
+编写组合逻辑网络最清晰的方式是写成单个嵌套表达式：
+
+```
+network 0:
+  Out = OR(A, AND(B, ~C))
+```
+
+解析器构建调用树：外层 OR 的输入 1 接 `A`，输入 2 接 AND 的结果；AND 接 `B` 和取反的 `C`。渲染器从左到右依次排列（输入在第 0 层，AND 在第 1 层，OR 在第 2 层，输出在第 3 层）。
+
+`~C` 在输入端口添加一个**取反气泡**（小空心圆）——相当于在该导线上插入一个 NOT 块，但更简洁。
+
+---
+
+## 5. 功能块调用——实例命名记法
+
+当需要从其他地方引用某个功能块的输出时，为其指定一个实例标签：
+
+```
+network 0:
+  Pulse = R_TRIG(CLK: Sensor)
+  Count = CTU(CU: Pulse.Q, R: Reset, PV: 100)
+  Done  = GE(IN1: Count.CV, IN2: 100)
+```
+
+`Pulse.Q`、`Count.CV` 引用命名实例的输出端口。实例标签以斜体显示在功能块标题上方。
+
+参数列表支持**命名端口**（`CU: Pulse.Q`）或**位置参数**（`CTU(Pulse.Q, Reset, 100)`）——推荐使用命名方式，当需要跳过某个端口时也必须使用命名方式。
+
+---
+
+## 6. 内联常量
+
+输入端口可直接接受字面量，无需连线：
+
+```
+network 0:
+  Dwell = TON(IN: BottleSensor, PT: T#50ms)
+  Cap   = LIMIT(MN: 0.0, IN: Setpoint, MX: 95.0)
+  Mode  = SEL(G: ManualSwitch, IN0: AutoMode, IN1: ManualMode)
+```
+
+`T#50ms`、`0.0`、`95.0` 以小黄色方框文本形式渲染在各自端口的左侧。时间字面量遵循 IEC 61131-3 格式：`T#10ms`、`T#5s`、`T#3m20s`、`T#1h`。布尔值为 `true` / `false`（不区分大小写）。
+
+---
+
+## 7. 标准功能块库
+
+| 类别 | 功能块 |
+|---|---|
+| 布尔逻辑 | `AND`、`OR`、`NOT`、`NAND`、`NOR`、`XOR`、`XNOR`、`BUF` |
+| 沿检测 | `R_TRIG`、`F_TRIG` |
+| 双稳态 | `SR`、`RS` |
+| 定时器 | `TON`、`TOF`、`TP` |
+| 计数器 | `CTU`、`CTD` |
+| 数学运算 | `ADD`、`SUB`、`MUL`、`DIV`、`MOD`、`ABS`、`NEG`、`MOVE` |
+| 比较 | `EQ`、`NE`、`GT`、`GE`、`LT`、`LE` |
+| 选择 | `SEL`、`MUX`、`MAX`、`MIN`、`LIMIT` |
+
+AND、OR、NAND、NOR、ADD、MUL、MAX、MIN 接受任意数量的输入（默认 2 个）。传入额外位置参数或使用 `[inputs: N]` 可扩展输入数量。
+
+```
+network 0:
+  All4 = AND(A, B, C, D)
+  Sum  = ADD(X, Y, Z)
+```
+
+---
+
+## 8. 完整示例——瓶子计数器
+
+```
+fbd "Bottle Counter"
+
+var ConveyorRunning: bool
+var BottleSensor: bool
+var BatchDone: bool
+var BatchSize: counter
+var DwellTimer: timer
+
+network 0 "Debounce sensor with 50ms dwell":
+  Dwell = TON(IN: BottleSensor, PT: T#50ms)
+
+network 1 "Count one bottle on rising edge of debounced signal":
+  Pulse     = R_TRIG(CLK: Dwell.Q)
+  BatchSize = CTU(CU: Pulse.Q, R: BatchDone, PV: 24)
+
+network 2 "Batch done":
+  BatchDone = MOVE(BatchSize.Q)
+```
+
+三个网络：去抖 → 沿检测 → 计数 → 标志位。每个网络是一个有向无环图；渲染器通过曼哈顿路径进行走线。
+
+---
+
+## 9. v0.1 已知限制
+
+当前引擎实现了大多数团队日常使用的标准功能块子集。以下功能暂缓实现，将在后续版本中添加：
+
+- **EN/ENO 能流轨**（`[en]` 块属性，`[rail: on]` 标头）——在网络顶部添加使能轨，这是 Studio 5000 / TIA Portal 的厂商规范。
+- **用户自定义功能块**，支持 `pins_in:` / `pins_out:` 声明——用于自定义电机控制器、PID 实例等。
+- **页面连接器**（`connector_out` / `connector_in`）——用于跨页面连线。
+- **位串运算块**（SHL、SHR、ROL、ROR、AND_BIT、OR_BIT 等）。
+- **扩展数学函数**（SQRT、LN、LOG、EXP、SIN、COS、TAN、ASIN、ACOS、ATAN）。
+- **ANSI 特征形状模式**（`[shape: ansi]`）——`logic` 引擎已为纯布尔图提供此功能。
+- **CTUD** 双向计数器、**RTO** 保持定时器。
+
+如果您目前需要以上功能，请提 issue，或使用 `ladder` 引擎获取完整的 IEC 61131-3 LD 子集。
+
+---
+
+## 相关示例
+
+来自示例库的可直接使用场景：
+
+<RelatedExamples slugs={[
+  'fbd-motor-latch',
+  'fbd-bottle-counter',
+  'fbd-tank-setpoint-limiter',
+]} />

@@ -1,0 +1,92 @@
+---
+title: はじめに
+description: Schematexをインストールして、1分以内に最初の図を描画しましょう。
+---
+
+## インストール
+
+```bash
+npm install schematex
+```
+
+## 描画
+
+```ts
+import { render } from 'schematex';
+
+const svg = render(`
+genogram "Smiths"
+  john [male, 1950]
+  mary [female, 1952]
+  john -- mary
+    alice [female, 1975, index]
+`);
+```
+
+図の種類は最初のキーワードから自動推定されます。出力は純粋なSVG文字列で、`dangerouslySetInnerHTML`・`innerHTML` で直接注入するか、ディスクに書き出せます。
+
+## ライブプレビュー
+
+`render()` はストリクトモードです。DSLが無効な場合はエラーをスローします。AIキャンバスやエディタプレビューでは、解析エラーを空白ではなく表示するため、プレビューAPIを使用してください。
+
+```ts
+import { renderPreview, renderResult } from 'schematex';
+
+const svg = renderPreview(dsl);
+const state = renderResult(dsl);
+
+preview.innerHTML = state.svg;
+if (!state.ok) console.error(state.diagnostics);
+```
+
+`renderPreview()` は常にSVGを返します。ストリクトレンダリングが失敗した場合、可視の診断SVGを生成します。`ok`・`status`・診断情報（再試行や修正ロジック用）が同時に必要なときは `renderResult()` を使用してください。
+
+### オプションのfrontmatter
+
+DSL本文の前にMermaid形式のYAML frontmatterを追加できます。`title:` の値は図のタイトルに統合されます（タイトル行自体が未指定の場合）。
+
+```txt
+---
+title: Smith Family
+---
+genogram
+  john [male, 1950]
+```
+
+図の種類が検出される前に、先頭の空行や純粋なコメント行はスキップされます。v0.4.3のMermaid互換パーサーでは、`%%` が行コメントマーカーとして扱われます。
+
+## ツリーシェイキング（オンデマンドインポート）
+
+必要な部分だけをインポートできます。
+
+```ts
+import { render } from 'schematex/genogram';
+import { render } from 'schematex/ladder';
+import { render } from 'schematex/sld';
+```
+
+各サブモジュールには独立したparser / layout / rendererがあり、完全に独立しています。
+
+## フレームワーク統合
+
+- **React** — `schematex/react` の `<SchematexDiagram />` を使用するか、ストリクト/プレビューモードのSVG文字列を自分で注入してください。DSLがレンダリングできない場合、診断フォールバックSVGを表示します。
+- **SSR** — SchematexはDOM非依存の純粋な文字列を出力します。Node.js、エッジランタイム、Cloudflare Workers、ブラウザ環境に対応しています。
+- **Markdown** — `remark-schematex` プラグインは計画中です。
+
+```tsx
+import { SchematexDiagram } from 'schematex/react';
+
+<SchematexDiagram dsl={dsl} theme="monochrome" />;
+```
+
+## AIとの連携
+
+SchematexはLLM向けに設計されています。ホスト型MCPサーバーにより、Claudeがバリデーション済みの標準準拠DSLを自律的に生成できます。設定は不要です。
+
+<MCPConnectCard size="compact" />
+
+→ 独自のAI機能を構築したい場合は **[SchematexをAIで使う](/docs/ai-integration)** をご覧ください。Vercel AI SDKアダプター、5つのツール、推奨される自己修正エージェントループを解説しています。
+
+## 次のステップ
+
+サイドバーから使用したい図の種類を選択し、対応する構文ガイドをお読みください。

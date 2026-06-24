@@ -1,0 +1,151 @@
+---
+title: ボウタイリスクダイアグラム
+---
+
+## ボウタイダイアグラムについて
+
+**ボウタイ**（bowtie）はバリアベースのリスクマネジメントで最もよく知られた図です：中央に**トップイベント**（ハザードの制御を失う瞬間）があり、左側から**脅威**が**予防バリア**のチェーンを通じて集まり、右側へ**結果**が**緩和バリア**のチェーンを通じて広がります — 全体の形がちょうど蝶ネクタイに似ています。これは 1 つのハザードについて、規制当局や取締役会が実際に問う 2 つの問いに答えます：*何が問題を引き起こすのか、そして何が防ぐのか?*（左側）と、*問題が発生した場合、何が起こるのか、そして何が被害を制限するのか?*（右側）。石油・ガス、化学プロセス、航空（[ICAO Doc 9859](https://www.icao.int/) SMS）、鉄道、鉱業、ヘルスケアで義務付けられています。**[CCPS / Energy Institute 2018](https://www.aiche.org/ccps)**（*Bow Ties in Risk Management*）で体系化され、**IEC 31010:2019** §B.4.6 でも技法として取り上げられています。
+
+Schematex の優位性は**計算**にあるわけではありません（それは `faulttree` と `pert` の役割）— 基本的なボウタイに確率はありません。優位性は 2 点あります：汎用のボックス・矢印ツールでは生成できない**正確で構造的に正しい対称レイアウト**、そして**CCPS/EI バリアルールセットの構造検証** — すべての脅威は ≥ 1 個のバリアを通じてトップイベントに到達しなければならず、すべての結果は ≥ 1 個のバリアを通じてそこから出なければならず、すべてのエスカレーション要因は特定の名前付きバリアに付属しなければなりません。バリアのない脅威は*黙って描画せず、拒否されます*。
+
+<Playground initial={`bowtie "LPG storage — loss of containment"
+hazard "LPG stored under pressure"
+topevent "Loss of containment"
+
+threat "Corrosion of vessel wall"
+  prevent "Corrosion-resistant coating"
+  prevent "UT thickness inspection"
+    escalation "Inspection interval too long"
+      barrier "Risk-based inspection scheme"
+
+threat "Overpressure during filling"
+  prevent "High-pressure trip (SIL 2)"
+  prevent "Pressure relief valve"
+
+consequence "Jet fire"
+  mitigate "Gas detection + ESD"
+  mitigate "Deluge / water spray"
+
+consequence "Toxic exposure"
+  mitigate "Personal gas monitors"
+  mitigate "Emergency evacuation plan"`} height={560} />
+
+---
+
+## 1. 最初のダイアグラム
+
+すべてのドキュメントは `bowtie` キーワード、オプションのタイトル、ハザード、トップイベント、そして 2 つの翼から始まります：
+
+```
+bowtie
+topevent "Loss of containment"
+threat "Corrosion"
+  prevent "Inspection programme"
+consequence "Release to atmosphere"
+  mitigate "Gas detection + ESD"
+```
+
+`topevent` は中央の結び目（必須、ちょうど 1 個）を宣言します。各 `threat` が左翼の線を始め、各 `consequence` が右翼の線を終わらせます。`threat` の下のバリアは**予防的**（`prevent`）、`consequence` の下のバリアは**緩和的**（`mitigate`）です。ダイアグラムは結び目について対称的にレイアウトされます — 脅威は左からファンイン、結果は右へファンアウト。
+
+DSL は**インデント構造**を持ち、CCPS 7 ステップ構築方法論を反映しています：ハザードを特定 → トップイベント → 脅威 → 結果 → 予防バリア → 緩和バリア → エスカレーション要因。
+
+ヘッダーディレクティブ（任意の順序）：
+
+- `layout: symmetric | compact` — バンドモデル（デフォルト `symmetric`）。
+- `legend: on | off | bottom | top` — 自動導出カラーレジェンド（デフォルト on）。
+
+---
+
+## 2. ハザードとトップイベント
+
+```
+hazard "Working at height"
+topevent "Person falls from height"
+```
+
+- **`hazard`** — 危害を引き起こす可能性のある作業または材料：このボウタイが対象とする*コンテキスト*（例：「高所作業」、「圧力下の炭化水素」）。オプション；結び目の上にヘッダーボックスとして描画され、結び目への接続線が引かれます。最大 1 個。
+- **`topevent`** — ハザードの制御が**失われる**瞬間（例：「封じ込め喪失」、「高所からの落下」）。緑色の円として描かれるボウタイの結び目。**必須、ちょうど 1 個。**
+
+ハザードは*もの・活動*であり、失敗ではありません；トップイベントは*制御を失う*正確な瞬間 — 原因でも結果でもありません。
+
+---
+
+## 3. 脅威と結果
+
+```
+threat "Guardrail removed for access"
+  prevent "Permit-to-work system"
+
+consequence "Fatality"
+  mitigate "Fall-arrest harness + lanyard"
+```
+
+- **脅威**（threat）は、*単独で*トップイベントを引き起こす可能性がある信憑性のある原因です。各脅威は左端のオレンジ色のボックスとして描画される左翼の線の始点です。
+- **結果**（consequence）は*トップイベントの*（脅威ではなく）信憑性のある結果で、右端の赤色のボックスとして描画されます。
+
+脅威と結果は任意の交互の順序で宣言できます — パーサーはシーケンスに関係なく、すべての左翼ブロックとすべての右翼ブロックをグループ化します。ボウタイには**少なくとも 1 個ずつ**必要です：片翼だけのダイアグラムはフォールトツリー（`faulttree` を参照）またはイベントツリーであり、ボウタイではありません。
+
+---
+
+## 4. バリア（間にあるコントロール）
+
+```
+threat "Guardrail removed for access"
+  prevent "Permit-to-work system"
+  prevent "Temporary edge protection"
+  prevent "Spotter / banksman"
+```
+
+**バリア**（barrier）は、脅威 → トップイベントのパスを遮る（予防的）か、トップイベント後の結果を軽減する（緩和的）コントロールです。各バリアは*線上の*灰色のボックスです。チェーンの長さは自由（1..n）— 翼は単純に延びます。
+
+**バリアの順序は宣言順序**です：最初に宣言されたものが**最外部**（脅威・結果に最も近い、最初の防衛ライン）で、最後に宣言されたものが**最内部**（結び目に最も近い）です。これは実際のボウタイの左から右への読み方に一致します。各バリアには `data-order`（0 = 最外部）と `data-side`（`prevent` / `mitigate`）が付きます。
+
+チェーンの長さが異なる場合、バリアは**中央揃え**されます：最内部のバリアが結び目の近くに整然とした列で並び、脅威・結果ボックスはチェーンの深さによって参差になります — 多層防衛として読めます。
+
+---
+
+## 5. エスカレーション要因
+
+```
+threat "Corrosion"
+  prevent "UT thickness inspection"
+    escalation "Inspection interval too long"
+      barrier "Risk-based inspection scheme"
+```
+
+**エスカレーション要因**（escalation factor、または劣化要因）は、*特定のバリアの有効性を劣化させる*条件です — 例：「点検間隔が長すぎる」、「オペレーターの疲労」。**1 つの**バリア（線ではなく）に付属し、薄い「劣化」コネクターで接続されてその下に琥珀色のボックスとして垂直に降ります。
+
+**エスカレーション要因バリア**は、エスカレーション要因自体に配置されるコントロールです — バリアが劣化することを防ぎます（例：事前使用点検体制）。エスカレーション要因の 1 レベル下にネストされ、その下の灰色のボックスとして描画されます。
+
+インデントがネストを決定します：`prevent`/`mitigate` は 2 スペース、`escalation` は 4 スペース、`barrier` は 6 スペース。
+
+---
+
+## 6. 構造的に正しいダイアグラム（バリアルールセット）
+
+エンジンは 1 つの形状を描く前に CCPS/EI バリアルールセットの構造的な部分を検証し、失敗すると**レンダリングを拒否します** — `prisma` がカウント不足を拒否するのと同様に：
+
+- **トップイベントはちょうど 1 個** — ゼロまたは複数はエラー。
+- **すべての脅威は ≥ 1 個の予防バリアを持つ** — バリアのない脅威はスイスチーズの漫画であり、ボウタイではない。
+- **すべての結果は ≥ 1 個の緩和バリアを持つ** — 左右対称のルール。
+- **すべてのエスカレーション要因はバリアに付属している** — 線やトップイベントに浮かんでいることはできない。
+- **少なくとも 1 個の脅威と 1 個の結果** — 片翼のダイアグラムは FTA または ETA。
+
+メッセージは問題のある要素とルールを平易な英語で示します。例：*"Threat 'Corrosion' has no preventative barrier — every threat must reach the top event through at least one barrier (CCPS/EI barrier rule). Add a `prevent` line under it."* これが本物のボウタイとただの落書きを分けるものです。エンジンはバリアが本当に*効果的*か*独立している*かを判断しません — それはアナリストの定性的な判断です。
+
+---
+
+## 7. ボウタイ vs フォールトツリー
+
+完全に発展したボウタイは、フォールトツリーをイベントツリーにトップイベントで接着したものです：左翼を逆から読むとボウタイの結び目をトップイベントとするフォールトツリーになり、右翼は結果へと伝播するイベントツリーになります。Schematex はこれらを 2 つのエンジンとして分けています。使い方が異なるからです：
+
+- **`bowtie`** は定性的で対称 — バリアインベントリと一目でわかる多層防衛の全体像；確率計算なし。
+- **`faulttree`** は定量的でブール — AND/OR ゲート、基本事象確率、最小カットセット、確率ロールアップ。
+
+1 つの脅威の背後にあるゲートレベルの詳細が必要な場合は、別途 `faulttree` を描いてください。
+
+---
+
+## 8. テーマ
+
+`default` は認識されている BowTieXP / bowtiemaster パレットを使用します — **オレンジの脅威**（左）、線上の**灰色のバリア**、**緑のトップイベントディスク**（中央の結び目）、**赤の結果**（右）、下に垂れる**琥珀色のエスカレーション要因** — これらは Schematex のセマンティックスロットにマッピングされ、`prisma` / `pert` / `petri` と一貫して調和しています。`monochrome` は規制当局向け印刷の白黒を再現し、要素の区別は色ではなく形状・ボーダー・位置で行います（エスカレーション要因は破線ボーダー、結び目は二重リング）。`dark` は Catppuccin Mocha に従います。すべてのストローク・塗りは `BowtieTokens` から来ており、すべての要素に `data-*`（`data-role`、`data-side`、`data-line`、`data-order`、`data-barrier`）が付いているため、構造を下流で検査できます。

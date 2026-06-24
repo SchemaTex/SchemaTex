@@ -1,0 +1,174 @@
+---
+title: Petri 网
+---
+
+## 关于 Petri 网
+
+**Petri 网**是对离散事件系统中并发、同步和资源流进行建模的基础形式语言——由 [Carl Adam Petri 于 1962 年发明](https://en.wikipedia.org/wiki/Petri_net)，此后在计算机科学、控制工程、制造业和业务流程建模中持续应用至今。其表示法简洁、辨识度高：**库所（place）**是圆形，**变迁（transition）**是矩形条，弧带有权重，系统的动态状态则由散落在库所中的**托肯（token）**表示。
+
+Schematex 的 `petri` 引擎与拖放式形状库的不同之处在于，它**理解动态语义**。它了解*标识（marking）*（哪些库所持有多少个托肯），计算哪些变迁被*使能*（每个输入库所持有的托肯数至少达到弧权重——以绿色高亮显示），并可*触发*变迁以产生下一个标识。渲染结果是语义下游的产物——与 **[pert](/docs/pert)** 对待调度的立场一致。与**[状态图](/docs/state)**（一个活跃状态，而非托肯分布）、**[sfc](/docs/sfc)**（用于 PLC 的受限安全 Petri 网）和**[bpmn](/docs/bpmn)**（其托肯语义*通过归约到*工作流 Petri 网来定义）截然不同。
+
+<Playground initial={`petri "Classic"
+  place P1 *1
+  place P2
+  place P3 *2
+  place P4 *1
+  transition T1
+  transition T2
+  P1 -> T1
+  T1 -> P2
+  T1 -> P3
+  P2 -> T2
+  P3 -> T2
+  T2 -> P4
+  P4 -> T1`} height={420} />
+
+在初始标识下，**T1** 被使能（其输入 P1 和 P4 各持有一个托肯），因此显示绿色圆环；**T2** 未被使能（P2 为空）。`P4 -> T1` 反馈弧路由为回边曲线。
+
+---
+
+## 1. 第一张 Petri 网
+
+每个文档以 `petri` 关键字和可选标题开头，然后在连接弧之前声明**库所**和**变迁**：
+
+```
+petri "Minimal"
+  place P1 *1
+  transition T1
+  place P2
+  P1 -> T1
+  T1 -> P2
+```
+
+- `place <id>` — 圆形。`*1` 设置初始托肯数（标识）。
+- `transition <id>` — 矩形条（事件/动作）。
+- `<a> -> <b>` — 有向弧。弧是**二部图**：每条弧从库所到变迁或从变迁到库所，不能库所到库所或变迁到变迁。如果写错，引擎会告诉你是哪一行。
+
+与某些 Schematex 图表不同，节点**不会**从弧中自动声明——因为未声明的 id 无法安全地被识别为库所还是变迁。引用未知节点的弧会产生可读性良好的错误提示。
+
+---
+
+## 2. 标识与托肯
+
+**标识**是每个库所持有的托肯数。设置方式有三种等价形式：
+
+```
+place P1 *3            # *n shorthand
+place P2 tokens: 3     # explicit
+place P3 •••           # literal dots (1–4)
+```
+
+或用 `marking:` 行一次性设置多个：
+
+```
+marking: P1=3, P3=2
+```
+
+托肯以点的形式渲染（最多 4 个，排列成网格），超过后以数字表示。通过 `tokens: dots | count | auto`（默认 `auto`）强制指定一种样式。
+
+---
+
+## 3. 变迁：立即型与定时型
+
+```
+transition fast                 # immediate — a solid bar (the default)
+transition slow timed rate: 0.8 # timed — a hollow box with a rate label λ
+```
+
+立即变迁在零时间内触发，渲染为经典实心矩形条；**定时**变迁（[GSPN](https://en.wikipedia.org/wiki/Stochastic_Petri_net) 惯例）渲染为空心方框并带有可选的 `rate:`（λ）。带有 `rate:` 的变迁自动被视为定时型。`prio: n` 设置优先级，`[guard]` 渲染为标签（v0.1 中不求值）。
+
+---
+
+## 4. 弧类型
+
+四种弧头涵盖标准并发词汇：
+
+```
+P -> T              # standard arc (filled arrowhead)
+P -> T weight: 2    # weight > 1 is labelled (weight: n or *n)
+P -o T              # inhibitor — enabled only while the place is empty (hollow-circle head)
+P -- T              # read / test — tests presence without consuming (no head)
+P => T              # reset — empties the place when the transition fires (double head)
+```
+
+抑止弧和复位弧仅限**库所→变迁**方向——解析器会拒绝反向方向。
+
+---
+
+## 5. 容量
+
+库所可以设置上限。会导致溢出的触发被禁用，该库所以虚线边框和 `K=n` 标签绘制：
+
+```
+place Buffer capacity: 3
+```
+
+---
+
+## 6. 动态语义：使能与触发
+
+引擎在每次渲染时计算语义：
+
+- **使能**变迁（每个输入均满足；抑止输入为空；不会导致输出溢出容量）显示绿色圆环。
+- **死亡**变迁——从当前标识永远无法触发的变迁——以静音方式显示。
+- **`fire:`** 行重放一个触发序列并渲染*结果*标识：
+
+```
+petri
+  place P1 *1
+  transition T1
+  place P2
+  transition T2
+  place P3
+  P1 -> T1
+  T1 -> P2
+  P2 -> T2
+  T2 -> P3
+  fire: T1
+```
+
+触发 `T1` 后，托肯从 P1 移动到 P2，此时 **T2** 是被使能的变迁。SVG 的 `<desc>` 记录了标识、使能集以及检测到的任何子类（状态机 / 有标记图 / 工作流网）。
+
+---
+
+## 7. 布局与主题
+
+```
+layout: lr     # left-to-right (default)
+layout: tb     # top-to-bottom
+```
+
+库所和变迁自动落在交替的层上；检测到的环路弧路由为回边曲线。三种主题：
+
+- **`default`** — 品牌蓝灰色，绿色保留给*使能*，红色保留给*抑止*。
+- **`monochrome`** — 忠实还原 Murata-1989 教科书外观；使能以加倍的黑色圆环显示（颜色退回为形状区分）。
+- **`dark`** — Catppuccin Mocha。
+
+CJK 标签和 `「…」` / `"…"` 引号可正常解析：
+
+```
+petri "生产流程"
+  place 原料 *2 「原材料」
+  transition 加工
+  place 成品
+  原料 -> 加工 weight: 2
+  加工 -> 成品
+```
+
+---
+
+完整规格：[Petri 网标准参考](https://github.com/schematex/schematex/blob/main/docs/reference/34-PETRINET-STANDARD.md)。
+
+---
+
+## 相关示例
+
+来自示例库的即用场景：
+
+<RelatedExamples slugs={[
+  'petri-classic-net',
+  'petri-mutual-exclusion',
+  'petri-fire-sequence',
+  'petri-workflow-net',
+  'petri-producer-consumer',
+]} />

@@ -1,0 +1,118 @@
+---
+title: Git Graph（ギットグラフ）
+description: Mermaid互換のコミット履歴グラフ——ブランチ、マージ、タグ、チェリーピック——git操作のシーケンスを再生してレンダリングします。
+---
+
+## Git graphについて
+
+**git graph** はリポジトリのコミット履歴を可視化します：コミットのメインライン、分岐する**ブランチ**、それらを統合する**マージ**、さらに**タグ**と**チェリーピック**。分岐戦略（Git Flow、トランクベース開発）を教え、リリース履歴を文書化するための標準的な方法です。Schematex は **Mermaid の `gitGraph` ダイアレクト**を実装しているため、既存のMermaidソースがそのままレンダリングされます。
+
+Schematexの強みは忠実性とクリーンな依存性なしのレイアウトにあります：**操作シーケンスを再生**して各コミットをレーンに割り当て、ブランチとマージのコネクターをクロスなしでルーティングし、タイプに応じたスタイルのコミットノード（通常 / ハイライト / リバース）をレンダリングします——これらすべてがKBスケールの小さなバンドルから実現されます。
+
+<Playground initial={`gitGraph
+  commit id: "init"
+  branch develop
+  checkout develop
+  commit
+  commit tag: "v0.1"
+  checkout main
+  merge develop tag: "v1.0"`} height={360} />
+
+---
+
+## 1. 最初のgit graph
+
+`gitGraph` キーワード（大文字・小文字を区別しない；末尾のコロンも許可）で始め、1行に1つの操作を記述します。最初のコミットはmainブランチに配置されます：
+
+```
+gitGraph
+  commit
+  branch develop
+  checkout develop
+  commit id: "feature work"
+  checkout main
+  merge develop tag: "v1.0"
+```
+
+すべての操作は**現在チェックアウトされているブランチ**に対して実行されます。`commit` はそれに追加し、`branch` は現在のコミットから新しいラインを作成し、`checkout`（エイリアス `switch`）はカーソルを移動し、`merge` は別のブランチを現在のものに統合します。
+
+---
+
+## 2. 操作
+
+```
+commit                         # 現在のブランチへの通常のコミット
+commit id: "init"              # コミットに明示的なIDを付与
+commit tag: "v0.1"             # リリースタグを付与
+commit type: HIGHLIGHT         # NORMAL（デフォルト）| HIGHLIGHT | REVERSE
+branch develop                 # 現在のコミットからブランチをフォーク
+branch hotfix order: 3         # レーンの順序を固定
+checkout develop               # カーソルを切り替え（エイリアス：switch）
+merge develop tag: "v1.0"      # ブランチを現在のものにマージ
+cherry-pick id: "abc"          # 現在のブランチにコミットをコピー
+```
+
+- **`commit`** はオプションで `id:`、`tag:`、`type:`（`NORMAL` / `HIGHLIGHT` / `REVERSE`）を受け取ります。
+- **`branch NAME`** はレーン配置を制御するオプションの `order:` を受け取ります。
+- **`checkout` / `switch`** は互換性があります。
+- **`cherry-pick id:`** はコミットをコピーします。オプションの `parent:` でマージコミットを明確にできます。
+
+---
+
+## 3. 向き
+
+グラフはデフォルトで左から右です。ヘッダーにインラインで方向を設定します：
+
+```
+gitGraph TB:
+  commit
+  branch feature
+  checkout feature
+  commit
+  checkout main
+  merge feature
+```
+
+`LR`（デフォルト）、`TB`、`BT` が受け入れられます。設定は先頭の `%%{init: {'gitGraph': {...}}}%%` ディレクティブまたはMermaid互換のYAMLフロントマター `config:` ブロックでも指定できます（`mainBranchName`、`showCommitLabel`、`rotateCommitLabel`）。
+
+---
+
+## 4. エンジンのレイアウト方法
+
+Mermaid互換性が差別化要因ですが、レイアウトこそが本質的な作業です：
+
+- 操作リストは**順番に再生**されてコミットDAGを構築し、各コミットをブランチレーンに割り当てます。
+- ブランチレーンは出現順に並べられ（`order:` で上書き可能）、マージコネクターはマージされたブランチの先端から新しいマージコミットへルーティングされます。
+- コミットノードは `type:` によってスタイルが決まり——HIGHLIGHTコミットは強調され、REVERSEコミットはマーク付き——タグはフラグとしてレンダリングされます。チェリーピックはソースへの破線コピーエッジを描画します。
+
+各コミットはダウンストリームのインタラクションのために `data-*`（ブランチ、ID、タイプ）を保持します。
+
+---
+
+## 5. よくある間違い
+
+```
+# 間違い — gitGraphヘッダーなし
+commit
+commit
+
+# 間違い — 不明な操作
+gitGraph
+  rebase main
+
+# 間違い — 不明なコミットタイプ
+gitGraph
+  commit type: SQUASH
+```
+
+ドキュメントは `gitGraph` で始まる必要があります。有効な操作は `commit` / `branch` / `checkout` / `switch` / `merge` / `cherry-pick` のみです。`type:` は `NORMAL`、`HIGHLIGHT`、`REVERSE` のいずれかである必要があります。`%%` はMermaidに合わせてコメントを開始します。
+
+---
+
+## 6. 標準への準拠
+
+構文はMermaidの `gitGraph` 文法を追跡します——操作キーワード、`id:`/`tag:`/`type:` オプション、`order:`、`%%{init}%%` ディレクティブ、YAMLフロントマター設定——Schematexのゼロ依存エンジンでレンダリングしながら、Mermaidソースを直接移植できます。
+
+## 7. ロードマップ
+
+保留中：並列コミットのコンパクション、classDef によるカスタムコミットテーマ、レーン順序を超えたブランチ別のカラー上書き。

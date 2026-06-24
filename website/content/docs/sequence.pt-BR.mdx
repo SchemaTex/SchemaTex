@@ -1,0 +1,241 @@
+---
+title: Diagrama de Sequência UML
+---
+
+## Sobre diagramas de sequência
+
+Um **diagrama de sequência** mostra como os participantes trocam mensagens **ao longo do tempo**: as linhas de vida correm de cima para baixo, as mensagens correm da esquerda para a direita entre elas, e o eixo vertical representa a ordem. Definido pelo **[UML](https://www.omg.org/spec/UML/2.5.1/) 2.5.1 §17 (Interações)**, é o diagrama que os engenheiros buscam para fixar um fluxo de chamadas de API, um handshake de autenticação ou um protocolo distribuído — *quem chama quem, em que ordem e o que retorna*.
+
+O Schematex implementa a notação UML completa e, para geração, também **aceita o dialeto `sequenceDiagram` do Mermaid** — cole o código Mermaid sem alterações e ele é renderizado. Sob o cabeçalho `sequenceDiagram`, as setas têm o significado Mermaid (`->>` chamada síncrona, `-->>` resposta, `-)` assíncrona); sob o cabeçalho nativo `sequence "Title"`, o significado histórico do Schematex é mantido (`->>` = assíncrona). Onde a maioria das ferramentas para no subconjunto comum (`alt`/`opt`/`loop`/`par`), o Schematex suporta todos os **doze** operadores de fragmento combinado e frames `ref` de uso de interação, porque são exatamente essas partes que os profissionais precisam quando uma interação se torna real. Distinto de **[usecase](/docs/usecase)** (escopo do sistema, não ordem de mensagens), **[state](/docs/state)** (modos de um único objeto, não mensagens entre objetos) e **[bpmn](/docs/bpmn)** (processo organizacional, não uma sequência de chamadas).
+
+<Playground initial={`sequence "Login flow"
+  actor User
+  participant Web as "Web App"
+  control Auth
+  database DB
+  User -> Web : submit(credentials)
+  activate Web
+  Web ->+ Auth : verify(credentials)
+  Auth ->+ DB : SELECT user
+  DB --> Auth : row
+  deactivate DB
+  alt [credentials valid]
+    Auth --> Web : token
+    Web --> User : 200 OK
+  else [invalid]
+    Auth --> Web : 401
+    Web --> User : error
+  end
+  deactivate Auth
+  deactivate Web
+  note over User, Web : session cookie set`} height={560} />
+
+---
+
+## 1. Seu primeiro diagrama
+
+Todo documento começa com a palavra-chave `sequence` e um `"title"` opcional. Os participantes não precisam ser declarados — na primeira vez que você menciona um em uma mensagem, ele se torna uma linha de vida:
+
+```
+sequence
+  Alice -> Bob : Authentication Request
+  Bob --> Alice : Authentication Response
+```
+
+As linhas de vida aparecem da esquerda para a direita na ordem de primeiro uso. `->` é uma chamada síncrona (linha sólida, seta preenchida); `-->` é uma resposta (linha tracejada, seta aberta). O texto após `:` é o rótulo da mensagem.
+
+---
+
+## 2. Participantes
+
+Declare um participante explicitamente para definir seu **tipo**, dar-lhe um **alias** ou fixar sua **ordem**:
+
+```
+sequence
+  actor User
+  participant Web as "Web App"
+  boundary LoginUI
+  control Auth
+  entity Account
+  database DB
+  collections Sessions
+  queue Events
+```
+
+| Tipo | Renderizado como |
+|------|-----------------|
+| `participant` (padrão) | caixa classificadora arredondada |
+| `actor` | figura de palito |
+| `boundary` / `control` / `entity` | ícones de robustez de Jacobson (⊢◯ / ◯ com seta / ◯ com sublinhado) |
+| `database` | cilindro |
+| `collections` / `queue` | caixa com o tipo como `«stereotype»` |
+
+- `as "Label"` define o nome de exibição (aspas opcionais; aspas CJK `「…」` aceitas).
+- Um **estereótipo** personalizado vai em guillemets ou colchetes angulares ASCII após a declaração — substitui o rótulo padrão: `actor Printer «system»`, `participant Bus as "Event Bus" <<service>>`.
+
+---
+
+## 3. Mensagens
+
+O token de seta define a semântica UML:
+
+| DSL | Significado | Renderização |
+|-----|-------------|--------------|
+| `A -> B` | chamada síncrona | linha sólida, seta **preenchida** |
+| `A ->> B` | sinal assíncrono | linha sólida, seta **aberta** |
+| `A --> B` | resposta / retorno | linha **tracejada**, seta aberta |
+| `A -x B` | mensagem perdida | linha terminando em círculo preenchido |
+| `o-> B` | mensagem encontrada | linha começando de um círculo preenchido |
+| `A -> A` | mensagem para si mesmo | loop curvado de volta à mesma linha de vida |
+
+Espaços ao redor das setas são opcionais (`A->B` funciona), e os rótulos são texto livre — inclusive um valor de retorno, ex.: `aHotel -> aHotel : available(roomId, date): isRoom`.
+
+---
+
+## 4. Ativações (especificações de execução)
+
+A barra fina em uma linha de vida mostra que ela está ativa. Abra e feche-a com instruções explícitas ou com sufixos `+` / `-` nas próprias mensagens:
+
+```
+sequence
+  participant Client
+  participant Server
+  Client ->+ Server : request()
+  Server ->> Server : validate()
+  Server -->- Client : response
+```
+
+`+` após a seta ativa o **receptor** na chegada; `-` desativa o **remetente** após o envio da mensagem. A forma explícita é `activate X` / `deactivate X`. Barras sobrepostas em uma linha de vida se aninham com um deslocamento horizontal.
+
+---
+
+## 5. Criação e destruição de objetos
+
+```
+sequence
+  participant Factory
+  Factory -> *Worker : «create»
+  Factory -> Worker : work()
+  destroy Worker
+```
+
+Prefixe o receptor com `*` para que a mensagem o **instancie** — o cabeçalho da nova linha de vida é desenhado na linha de chegada, não no topo. `destroy X` termina uma linha de vida com um ✕ e para seu eixo de tempo.
+
+---
+
+## 6. Fragmentos combinados
+
+Um fragmento combinado é um frame rotulado ao redor de uma região. O Schematex implementa o conjunto completo `InteractionOperatorKind` do UML:
+
+| Operador | Significado | Operandos |
+|----------|-------------|-----------|
+| `alt` | alternativas (if/else-if/else) | `else`, cada um com guarda |
+| `opt` | executa apenas se a guarda for verdadeira | um, com guarda |
+| `loop` | repetição | um; guarda pode ser `(min,max)` |
+| `par` | operandos concorrentes | `and` |
+| `break` | saída excepcional | um, com guarda |
+| `critical` | atômico / sem intercalação | um |
+| `seq` / `strict` | sequenciamento fraco / estrito | `and` |
+| `neg` | traços inválidos (renderizados com tonalidade) | um |
+| `ignore` / `consider` | filtro de conjunto de mensagens `{m1, m2}` | um |
+| `assert` | a única continuação válida | um |
+
+```
+sequence
+  actor User
+  participant API
+  User -> API : GET /resource
+  alt [authorized]
+    API --> User : 200 + body
+  else [forbidden]
+    API --> User : 403
+  end
+```
+
+As guardas vão entre `[colchetes]` após o operador (e após `else`). Os fragmentos se aninham, e os frames internos se recuam automaticamente para ficarem limpos dentro do frame pai.
+
+---
+
+## 7. Uso de interação (`ref`)
+
+Referencie outra interação em vez de incorporá-la — a forma como o UML mantém diagramas grandes composíveis:
+
+```
+sequence
+  participant A
+  participant B
+  ref over A, B : Establish session
+  A -> B : poll()
+```
+
+`ref over <lifelines> : Name` desenha uma caixa emoldurada através das linhas de vida nomeadas. A maioria das ferramentas omite isso; é como sistemas reais decompõem fluxos longos.
+
+---
+
+## 8. Notas, divisores, invariantes, numeração
+
+```
+sequence
+  autonumber 1 1
+  actor Shopper
+  participant Cart
+  == Phase 1: review ==
+  Shopper -> Cart : view items
+  note over Cart : cart persisted in Redis
+  state Cart : ready
+```
+
+- `note over A` / `note over A, B` / `note left of A` / `note right of A` — anotações com canto dobrado.
+- `== text ==` — um divisor de seção de largura total.
+- `state X : text` — uma cápsula de invariante de estado em uma linha de vida.
+- `autonumber [start] [step]` — prefixe cada mensagem com um número incremental.
+
+---
+
+## 9. Gramática (EBNF)
+
+```text
+diagram      = "sequence" [ string ] NEWLINE statement*
+statement    = participant | message | activation | note
+             | fragment | ref | divider | invariant | destroy | autonumber
+
+participant  = kind IDENT ("as" label)? stereotype?
+kind         = "participant" | "actor" | "boundary" | "control"
+             | "entity" | "database" | "collections" | "queue"
+stereotype   = "«" TEXT "»" | "<<" TEXT ">>"
+
+message      = IDENT? act? arrow act? ("*")? IDENT? (":" TEXT)?
+arrow        = "->" | "->>" | "-->" | "-x" | "o->"
+act          = "+" | "-"
+activation   = ("activate" | "deactivate") IDENT
+
+fragment     = ("alt"|"opt"|"loop"|"par"|"break"|"critical"|"seq"
+               |"strict"|"neg"|"ignore"|"consider"|"assert") guard? NEWLINE
+                 statement* (("else"|"and") guard? NEWLINE statement*)* "end"
+guard        = "[" TEXT "]" | "(" NUMBER ("," NUMBER)? ")"
+ref          = "ref" "over" IDENT ("," IDENT)* ":" TEXT
+note         = "note" ("over"|"left of"|"right of") IDENT ("," IDENT)? ":" TEXT
+divider      = "==" TEXT "=="
+invariant    = "state" IDENT ":" TEXT
+destroy      = "destroy" IDENT
+autonumber   = "autonumber" NUMBER? NUMBER?
+```
+
+---
+
+## 10. Conformidade com padrões
+
+O Schematex segue a notação **UML 2.5.1 §17 (Interações)** da OMG: setas de cabeça preenchida (síncrona) vs. aberta (assíncrona) vs. tracejada (resposta), endpoints de mensagem encontrada/perdida, barras de especificação de execução, todos os doze operadores de fragmento combinado com operandos com guarda, frames `ref` de uso de interação e os ícones de classe de análise de Jacobson para `boundary`/`control`/`entity`. Gates, corregião e restrições de tempo/duração estão fora do escopo da v0.1 (precisam de novas primitivas de layout) e estão planejados para uma versão futura. Consulte `docs/reference/33-SEQUENCE-STANDARD.md` para a especificação completa.
+
+---
+
+## Exemplos relacionados
+
+Cenários prontos para uso da galeria de exemplos:
+
+<RelatedExamples slugs={[
+  'sequence-login-flow',
+  'sequence-oauth-login',
+  'sequence-object-lifecycle',
+  'sequence-microservices-saga',
+]} />

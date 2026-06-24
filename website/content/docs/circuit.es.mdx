@@ -1,0 +1,621 @@
+---
+title: Esquemático de circuito
+---
+
+## Acerca de los esquemáticos de circuito
+
+Un **esquemático de circuito** es la representación gráfica estándar de un circuito electrónico — componentes dibujados como símbolos estandarizados, conectados por cables, con suficiente información para construir o simular el circuito. Los ingenieros electrónicos los usan a lo largo del ciclo de vida del producto: desde el concepto inicial hasta la revisión del layout PCB y la documentación de hojas de datos. Schematex sigue **[IEEE Std 315-1975 / ANSI Y32.2](https://standards.ieee.org/ieee/315/738/)** e **[IEC 60617](https://webstore.iec.ch/publication/2765)** para los símbolos de los componentes.
+
+El DSL tiene dos modos. El **modo netlist (recomendado)** es al estilo SPICE: se listan los componentes y los nodos a los que se conectan, y el motor dispone todo automáticamente — cada línea es autónoma, sin estado espacial que rastrear. El **modo posicional** es para dibujo manual: los componentes se encadenan en una dirección como en Schemdraw. Ambos producen el mismo SVG. **Para diagramas generados (por ejemplo, por un LLM), use siempre el modo netlist** — tiene con mucho la menor superficie de error.
+
+<Playground initial={`circuit "CE Amp (netlist)" netlist
+V1 vcc 0 9V
+Rc vcc c 2.2k
+Rb vcc b 100k
+Q1 c b e npn
+Re e 0 1k`} height={440} />
+
+---
+
+## 1. Un circuito mínimo (modo netlist — recomendado)
+
+El circuito útil más pequeño: una fuente de tensión, una resistencia y un condensador a tierra — un filtro pasa-bajos RC.
+
+<Playground initial={`circuit "RC Low-Pass" netlist
+V1 in 0 5V
+R1 in out 1k
+C1 out 0 100n`} />
+
+Tres reglas cubren aproximadamente el 90% del uso de netlist:
+
+1. Empiece con `circuit "Título" netlist` (la palabra clave `netlist` activa este modo).
+2. Cada línea es `componenteId nodoA nodoB valor` — un componente, los dos (o más) nodos con nombre a los que se conecta, y luego su valor.
+3. **Dos componentes que comparten un nombre de nodo están cableados entre sí.** `0`, `gnd` o `GND` es el nodo de tierra (se dibuja un símbolo de tierra automáticamente).
+
+El prefijo del identificador de componente establece el símbolo: `R*`→resistencia, `C*`→condensador, `L*`→inductor, `V*`→fuente de tensión, `D*`→diodo, `Q*`→BJT. Cuando el prefijo es ambiguo, añada `type=` (por ejemplo, `X1 a b type=opamp`). Nunca se calculan coordenadas — el motor deduce la posición a partir de la conectividad.
+
+> Los comentarios deben comenzar con `#` en su propia línea.
+
+---
+
+## 2. Componentes
+
+### 2.1 Sintaxis del modo netlist
+
+Una línea netlist tiene la forma:
+
+```
+componentId node... [value] [type=…] [label="…"]
+```
+
+Los nodos posicionales van primero; un token al final que no parece un nodo se convierte en el valor. Ejemplo — un transistor (4 nodos) y una resistencia:
+
+```
+Q1 c b e npn        # collector, base, emitter nodes + model
+Rc vcc c 2.2k       # two nodes + value
+```
+
+**Indicación de orientación opcional.** El motor orienta automáticamente los símbolos según su función (fuentes hacia arriba, tierra hacia abajo, el resto horizontal). Para ajustar un símbolo individual, añada `dir=right|left|up|down` — la conectividad no cambia, solo rota la orientación del símbolo:
+
+```
+C1 out 0 100n dir=down    # draw C1 as a shunt cap hanging to ground
+```
+
+Esta es la capa de control de layout ligero (como la orientación por componente de Lcapy): la conectividad netlist hace el trabajo pesado, `dir=` solo refina la apariencia. Para control geométrico completo, use el modo posicional que se describe más abajo.
+
+### 2.2 Sintaxis del modo posicional (dibujo manual)
+
+> El modo posicional es para disponer manualmente un esquemático de forma geométrica. **Prefiera el modo netlist para la salida generada** — el modo posicional requiere rastrear un "cursor" en movimiento entre líneas, lo que es propenso a errores para los LLMs.
+
+Una línea de componente con nombre tiene la forma:
+
+```
+id: type direction [value="…"] [label="…"]
+```
+
+Un componente anónimo omite el prefijo `id:` — el parser asigna un ID automático.
+
+```
+R1: resistor right value="4.7k" label="R1"
+capacitor down value="100n"
+```
+
+La **dirección** es una de `right` (predeterminado), `left`, `up`, `down`. Controla hacia dónde se extiende el componente desde la posición actual del cursor.
+
+### 2.3 Componentes pasivos
+
+| Tipo DSL | Descripción |
+|---|---|
+| `resistor` | Zigzag (ANSI) o rectángulo (IEC) |
+| `potentiometer` | Resistencia + flecha de cursor, 3 pines |
+| `rheostat` | Resistencia variable de 2 pines |
+| `thermistor_ntc` | Termistor NTC (también: `therm`, `ntc`) |
+| `thermistor_ptc` | Termistor PTC (también: `ptc`) |
+| `ldr` | Resistencia dependiente de la luz |
+| `varistor` | Resistencia dependiente de la tensión |
+| `fuse` | Fusible estándar |
+| `fuse_slow` | Fusible de acción lenta (designación `T`) |
+| `capacitor` | Condensador no polar |
+| `electrolytic_cap` | Condensador polar/electrolítico (también: `ecap`) |
+| `variable_cap` | Condensador variable |
+| `inductor` | Inductor de núcleo de aire |
+| `inductor_iron` | Inductor de núcleo de hierro |
+| `inductor_ferrite` | Inductor de núcleo de ferrita |
+| `variable_inductor` | Inductor variable |
+| `ferrite_bead` | Perla de ferrita EMI |
+| `crystal` | Oscilador de cristal de cuarzo (también: `xtal`) |
+| `transformer` | Bobinas acopladas (también: `xfmr`) |
+
+<Playground initial={`circuit "Passive components gallery"
+# Row 1: resistor → capacitor → inductor
+R1: resistor right value="1k"
+wire right
+C1: capacitor right value="100n"
+wire right
+L1: inductor right value="10u"
+# Row 2: crystal and transformer, offset below
+at: R1.start
+wire down
+wire down
+X1: crystal right
+wire right
+wire right
+T1: transformer right`} height={380} />
+
+### 2.4 Fuentes y alimentación
+
+| Tipo DSL | Descripción |
+|---|---|
+| `voltage_source` | Círculo + polaridad (también: `vsource`) |
+| `current_source` | Círculo + flecha (también: `isource`) |
+| `ac_source` | Círculo + símbolo sinusoidal (también: `acsource`) |
+| `battery` | Líneas terminales largas/cortas alternas |
+| `vcc` | Flecha de rail de alimentación (apuntando hacia arriba) |
+| `ground` | Tierra de red — 3 líneas decrecientes (también: `gnd`) |
+| `gnd_signal` | Tierra de señal — triángulo sólido |
+| `gnd_chassis` | Tierra de chasis |
+| `gnd_digital` | Tierra digital |
+
+<Playground initial={`circuit "Sources and power gallery"
+# voltage source with ground
+V1: voltage_source down value="5V"
+wire down
+ground
+at: V1.start
+wire right
+wire right
+# battery
+B1: battery down value="9V"
+wire down
+ground
+at: B1.start
+wire right
+wire right
+# ac source
+A1: ac_source down value="120V"
+wire down
+ground
+at: A1.start
+wire right
+wire right
+# vcc rail
+vcc up
+wire down
+gnd_signal down`} height={420} />
+
+### 2.5 Semiconductores — diodos
+
+| Tipo DSL | Descripción |
+|---|---|
+| `diode` | Triángulo + barra de cátodo |
+| `zener` | Diodo + barra de cátodo doblada |
+| `schottky` | Diodo + barra en S |
+| `led` | Diodo + flechas de emisión hacia afuera |
+| `photodiode` | Diodo + flechas de luz hacia adentro |
+| `varactor` | Diodo + condensador variable |
+| `tvs_diode` | TVS bidireccional (dos barras dobladas) |
+| `bridge_rectifier` | Puente de 4 diodos, 4 pines |
+
+<Playground initial={`circuit "Diode types gallery"
+D1: diode right
+wire right
+D2: zener right
+wire right
+D3: led right
+wire right
+D4: schottky right
+wire right
+D5: photodiode right
+wire right
+ground
+at: D1.start
+wire left
+ground`} height={280} />
+
+### 2.6 Semiconductores — transistores
+
+| Tipo DSL | Descripción |
+|---|---|
+| `npn` | BJT NPN (también: `transistor`, `bjt_npn`) |
+| `pnp` | BJT PNP (también: `bjt_pnp`) |
+| `darlington_npn` | Par Darlington NPN |
+| `darlington_pnp` | Par Darlington PNP |
+| `nmos` | MOSFET de enriquecimiento canal N (también: `mosfet_n`) |
+| `pmos` | MOSFET de enriquecimiento canal P (también: `mosfet_p`) |
+| `nmos_depletion` | MOSFET de agotamiento canal N |
+| `jfet_n` | JFET canal N |
+| `jfet_p` | JFET canal P |
+| `igbt` | IGBT |
+| `scr` | SCR / tiristor |
+| `triac` | TRIAC |
+| `diac` | DIAC |
+| `phototransistor` | NPN con flechas de luz |
+| `optocoupler` | LED + fototransistor en caja de aislamiento |
+
+<Playground initial={`circuit "Transistor types gallery"
+# NPN BJT
+Q1: npn right
+wire right
+wire right
+# PNP BJT
+Q2: pnp right
+wire right
+wire right
+# N-channel MOSFET
+Q3: nmos right
+wire right
+wire right
+# P-channel MOSFET
+Q4: pmos right`} height={320} />
+
+### 2.7 ICs analógicos y amplificadores operacionales
+
+| Tipo DSL | Descripción |
+|---|---|
+| `opamp` | Triángulo: entradas +/−, salida |
+| `comparator` | Misma forma, salida de colector abierto |
+| `schmitt_buffer` | Buffer + símbolo de histéresis |
+| `tri_state_buffer` | Buffer + pin de habilitación |
+| `instrumentation_amp` | Bloque INA de tres op-amps |
+| `generic_ic` | Rectángulo configurable con pines etiquetados (también: `ic`) |
+| `voltage_regulator` | Bloque de 3 terminales: IN/GND/OUT (también: `reg`) |
+| `dc_dc_converter` | Bloque de 2 puertos con etiqueta DC/DC |
+| `555_timer` | Bloque de patillaje del 555 de 8 pines (también: `timer555`) |
+
+<Playground initial={`circuit "Analog IC gallery"
+# op-amp with input/output wires
+wire right
+U1: opamp right
+wire right
+wire right
+wire right
+# comparator
+U2: comparator right
+wire right
+wire right
+wire right
+# generic IC block
+U3: generic_ic right`} height={320} />
+
+### 2.8 Interruptores y relés
+
+| Tipo DSL | Descripción |
+|---|---|
+| `switch_spst` | Un polo, un tiro |
+| `switch_spdt` | Un polo, dos tiros |
+| `switch_dpdt` | Dos polos, dos tiros |
+| `push_no` | Pulsador normalmente abierto |
+| `push_nc` | Pulsador normalmente cerrado |
+| `relay_coil` | Bobina de relé (rectángulo de 2 pines) |
+| `relay_no` | Contacto de relé normalmente abierto |
+| `relay_nc` | Contacto de relé normalmente cerrado |
+
+<Playground initial={`circuit "Switch and relay gallery"
+# SPST switch
+S1: switch_spst right
+wire right
+wire right
+# SPDT switch
+S2: switch_spdt right
+wire right
+wire right
+# normally-open push button
+S3: push_no right
+wire right
+wire right
+# relay coil + contact pair
+K1: relay_coil right
+wire right
+K2: relay_no right`} height={300} />
+
+### 2.9 Electromecánicos y medición
+
+| Tipo DSL | Descripción |
+|---|---|
+| `motor` | Círculo + M |
+| `speaker` | Cono + caja |
+| `microphone` | Símbolo de cápsula |
+| `buzzer` | Zumbador piezoeléctrico |
+| `ammeter` | Círculo + A |
+| `voltmeter` | Círculo + V |
+| `wattmeter` | Círculo + W |
+| `oscilloscope` | Círculo + forma de onda |
+
+### 2.10 Conectores y anotaciones
+
+| Tipo DSL | Descripción |
+|---|---|
+| `wire` | Segmento de cable simple |
+| `dot` | Punto de unión (marcador de unión en T) |
+| `label` | Etiqueta de red / bandera |
+| `port` | Puerto con nombre (círculo hueco) |
+| `test_point` | Marcador TP |
+| `no_connect` | X — pin intencionalmente no conectado |
+| `antenna` | Stub de antena |
+
+<Playground initial={`circuit "Passive components"
+R1: resistor right value="1k" label="R1"
+wire right
+C1: capacitor down value="100n" label="C1"
+wire down
+ground
+at: R1.start
+wire up
+battery up label="9V"`} height={360} />
+
+---
+
+## 3. Cableado y ramificación
+
+### 3.1 Segmentos de cable
+
+`wire direction [N]` dibuja un cable desde el cursor actual en la dirección indicada. Un número opcional establece la longitud en píxeles.
+
+```
+wire right
+wire down 40
+wire left 20
+```
+
+### 3.2 Salto del cursor con `at:`
+
+`at: id.end` mueve el cursor a un ancla con nombre sin dibujar nada. Úselo para ramificar desde un componente colocado previamente.
+
+```
+R1: resistor right value="10k"
+at: R1.end
+C1: capacitor down value="100n"
+```
+
+Sufijos de ancla con nombre: `end`, `start`. Los componentes conservan su ID en todo el diagrama, por lo que puede volver a cualquier componente colocado previamente.
+
+### 3.3 Puntos de unión
+
+Coloque un `dot` (o use `net NAME: dot`) para marcar una unión en T — un punto donde se encuentran tres o más cables. Sin un punto, los cables cruzados se dibujan como un cruce (sin conexión).
+
+```
+R1: resistor right
+dot
+wire right           # continues from R1.end
+at: R1.end
+C1: capacitor down   # branches down from the same point
+```
+
+### 3.4 Redes con nombre
+
+`net NAME` declara una red con nombre. `net NAME: dot` declara la red y coloca un punto de unión en el cursor actual, recordando esa ubicación. Posteriormente, `at: NAME` vuelve al ancla de esa red.
+
+```
+net VOUT: dot
+R2: resistor right value="10k"
+at: VOUT
+C1: capacitor down value="470n"
+```
+
+### 3.5 Etiquetas de red
+
+`label "text" direction?` coloca una etiqueta de texto en la posición actual del cursor. Las etiquetas no avanzan el cursor. Son útiles para nombrar rails de alimentación o conexiones entre hojas.
+
+```
+label "VCC" up
+label "GND" down
+```
+
+<Playground initial={`circuit "RC filter"
+V1: voltage_source down value="5V"
+wire right
+R1: resistor right value="1k" label="R1"
+net OUT: dot
+wire right
+label "Vout" right
+at: OUT
+C1: capacitor down value="100n" label="C1"
+wire down
+ground`} height={380} />
+
+---
+
+## 4. Modo netlist
+
+Añada `netlist` después del título en la línea de encabezado para cambiar al análisis de netlist al estilo SPICE. El motor de auto-layout calcula las posiciones de los componentes a partir de la conectividad de la red.
+
+```
+circuit "Low-pass filter" netlist
+```
+
+### 4.1 Formato de línea netlist
+
+Cada línea es: `ID net1 net2 [net3…] [value] [key=value…]`
+
+- **ID** — identificador de componente. La primera letra determina el tipo predeterminado (convención de prefijo SPICE).
+- **net1, net2, …** — nombres de red a los que se conectan los pines. Los nombres de red que coinciden con `0`, `gnd`, `ground`, `earth`, `pe`, `agnd`, `dgnd`, `gnda`, `gndd`, `vss` o `com` (sin distinción de mayúsculas/minúsculas, con sufijo `_<palabra>` o numérico opcional — por ejemplo, `gnd_ref`, `AGND_DIG`, `EARTH1`) se canonicalizan todos a la red de tierra.
+- **value** (token simple opcional) — valor del componente o nombre del modelo.
+- **key=value** (opcional) — anulaciones de `label=`, `value=`, `type=`.
+
+### 4.2 Prefijo SPICE → tipo de componente
+
+| Prefijo | Tipo predeterminado | Orden de pines |
+|---|---|---|
+| `R` | `resistor` | p1, p2 |
+| `C` | `capacitor` | p1, p2 |
+| `L` | `inductor` | p1, p2 |
+| `D` | `diode` | ánodo (inicio), cátodo (fin) |
+| `V` | `voltage_source` | más, menos |
+| `I` | `current_source` | más, menos |
+| `Q` | `npn` | c, b, e |
+| `M` | `nmos` | d, g, s |
+| `J` | `jfet_n` | d, g, s |
+| `S` | `switch_spst` | p1, p2 |
+| `F` | `fuse` | p1, p2 |
+| `B` | `battery` | más, menos |
+| `K` | `relay_coil` | p1, p2 |
+| `U`, `X` | `generic_ic` | personalizado mediante `pins=` |
+| `W` | `wire` | inicio, fin |
+| `T` | `terminal_block` | personalizado mediante `pins=` (también `type=junction_box`) |
+
+> **Alcance:** el circuito de Schematex cubre **únicamente esquemáticos eléctricos** (IEEE 315 / IEC 60617). Los esquemáticos hidráulicos y neumáticos (ISO 1219) utilizan una gramática visual fundamentalmente diferente — envolventes de válvulas direccionales, símbolos de cilindros, estilos de línea para presión/retorno/drenaje — y no son compatibles con este motor. Los prefijos hidráulicos como `EV*` (electroválvula), `BOMBA*` (bomba), `TANK*`, `DIPOSIT*` serán rechazados con un error de "no se puede inferir el tipo".
+
+### 4.3 Anulación del modelo de transistor
+
+Para las líneas `Q`, un nombre de modelo al final anula el tipo:
+
+```
+Q1 c b e npn      # NPN BJT
+Q2 c b e pnp      # PNP BJT
+M1 d g s nmos     # N-channel MOSFET
+M2 d g s pmos     # P-channel MOSFET
+```
+
+Para las líneas `D`, de manera similar:
+
+```
+D1 anode cathode zener
+D2 anode cathode led
+D3 anode cathode schottky
+D4 anode cathode photodiode
+```
+
+### 4.4 Ejemplo de netlist
+
+<Playground initial={`circuit "CE Amp (netlist)" netlist
+V1 vcc 0 9V
+Rc vcc c 2.2k
+Rb vcc b 100k
+Q1 c b e npn
+Re e 0 1k`} height={420} />
+
+---
+
+## 5. Atributos
+
+Tanto el modo posicional como el modo netlist aceptan estos atributos clave=valor:
+
+| Atributo | Aceptado por | Efecto |
+|---|---|---|
+| `label="…"` | todos los componentes | Etiqueta de visualización (designador de referencia) |
+| `value="…"` | todos los componentes | Anotación de valor (1kΩ, 100nF, 5V) |
+| `at=id.end` | componentes posicionales | Inicia este componente en un ancla con nombre |
+| `length=N` | `wire`, algunos pasivos | Longitud en píxeles |
+
+En modo posicional, `at=` dentro de la línea del componente equivale a una línea `at:` precedente:
+
+```
+C1: capacitor down at=R1.end value="100n"
+```
+
+---
+
+## 6. Etiquetas y comentarios
+
+- **Título del diagrama:** `circuit "RC Filter"` — solo en la primera línea.
+- **Etiqueta del componente:** atributo `label="R1"` — designador de referencia que aparece junto al símbolo.
+- **Anotación de valor:** `value="4.7k"` — se muestra junto o debajo del componente.
+- **Etiqueta de red:** `label "VOUT" right` — bandera de red independiente en el cursor actual.
+- **Comentarios:** `#` al inicio de una línea (después de los espacios iniciales).
+
+---
+
+## 7. Palabras reservadas y escape
+
+**Reservadas al inicio de línea (posicional):** `circuit` (encabezado), `at:`, `net`, `wire`, `label`.
+
+**Reservadas en modo netlist:** se aplican las mismas reglas de encabezado; todas las demás líneas son líneas de componentes SPICE.
+
+**Alias de red de tierra (solo netlist):** `0`, `gnd`, `GND`, `Gnd`, `ground`, `Ground` — todos tratados como el mismo nodo.
+
+**Los IDs de componentes** deben coincidir con `[a-zA-Z_][a-zA-Z0-9_]*`. Los espacios en los valores deben ir entre comillas: `value="10 kΩ"`.
+
+---
+
+## 8. Errores comunes
+
+| Usted escribió | El parser dice | Solución |
+|---|---|---|
+| `resistor right 1k` (valor sin `value=`) | `1k` se analiza como un indicador de atributo desconocido y se ignora | Use `value="1k"`: `resistor right value="1k"` |
+| `at: R1.center` | `center` no es un sufijo de ancla reconocido — el cursor permanece en la posición actual | Use `at: R1.end` o `at: R1.start` |
+| `wire 40` (sin dirección) | La dirección toma el valor predeterminado `right`; la longitud `40` se acepta | Se recomienda la dirección explícita: `wire right 40` |
+| `R1 vcc out 10k` en modo posicional | La línea coincide con el patrón de tipo simple; `R1` se lee como nombre de tipo y falla la búsqueda | En modo posicional, use `R1: resistor right value="10k"` |
+| `Q1 c b e` (netlist, sin modelo) | El tipo toma el valor predeterminado `npn` del prefijo `Q` — correcto | OK; añada `npn` explícitamente para mayor claridad |
+| `net OUT` y luego `at: OUT` sin `net OUT: dot` | La red `OUT` existe pero no tiene ancla; el salto no tiene destino | Use `net OUT: dot` para registrar la posición del cursor |
+| `label VCC up` (etiqueta sin comillas) | `VCC` se analiza como un token de dirección, luego `up` — el texto de la etiqueta se pierde | Ponga el texto entre comillas: `label "VCC" up` |
+
+---
+
+## 9. Gramática (EBNF)
+
+```text
+document        = header statement*
+
+-- Positional mode --
+header          = "circuit" ( WS quoted-string )? NEWLINE
+statement       = blank | comment | component | wire | at | net-decl | label-stmt
+
+component       = ( id ":" WS )? type WS direction? attrs* NEWLINE
+wire            = "wire" ( WS direction )? ( WS integer )? NEWLINE
+at              = "at:" WS anchor NEWLINE
+anchor          = id "." ( "start" | "end" )
+                | id                          // net name anchor
+
+net-decl        = "net" WS id NEWLINE         // declare net only
+                | "net" WS id ":" WS "dot" NEWLINE  // declare + place dot
+
+label-stmt      = "label" WS quoted-string ( WS direction )? NEWLINE
+
+component-attr  = "value=" quoted-string
+                | "label=" quoted-string
+                | "at=" anchor
+                | "length=" integer
+
+direction       = "right" | "left" | "up" | "down"
+type            = // any value from §2 component tables
+
+-- Netlist mode --
+netlist-header  = "circuit" ( WS quoted-string )? WS "netlist" NEWLINE
+netlist-stmt    = id WS net-ref+ ( WS kv-pair )* NEWLINE
+                | comment
+net-ref         = id | "0"                    // net name or ground alias
+kv-pair         = id "=" ( quoted-string | bare-value )
+
+id              = [a-zA-Z_] [a-zA-Z0-9_]*
+integer         = [0-9]+
+quoted-string   = '"' any-char-but-quote* '"'
+comment         = "#" any NEWLINE
+```
+
+Fuente autorizada: `src/diagrams/circuit/parser.ts` y `src/diagrams/circuit/netlist.ts`. Si esto diverge del parser, el parser tiene precedencia — por favor, abra un issue.
+
+---
+
+## 10. Conformidad con estándares
+
+Los esquemáticos de circuito de Schematex siguen **IEEE Std 315-1975 / ANSI Y32.2** para las formas de los símbolos de componentes e **IEC 60617** para las variantes internacionales. La sintaxis netlist sigue las convenciones de prefijo de **SPICE** (Berkeley SPICE3 / LTspice / ngspice).
+
+Lo que está implementado hoy:
+
+- ✅ Conjunto completo de componentes pasivos: variantes de resistencias, condensadores, inductores, cristal, transformador
+- ✅ Fuentes y alimentación: fuente de tensión, fuente de corriente, fuente AC, batería, VCC, cuatro estilos de tierra
+- ✅ Familia de diodos: diodo, zener, schottky, LED, fotodiodo, varactor, TVS, puente rectificador
+- ✅ BJTs: NPN, PNP, Darlington NPN/PNP
+- ✅ FETs: NMOS/PMOS de enriquecimiento, NMOS de agotamiento, JFET canal N/P
+- ✅ Semiconductores de potencia: IGBT, SCR, TRIAC, DIAC
+- ✅ Optoelectrónica: fototransistor, optoacoplador
+- ✅ ICs analógicos: op-amp, comparador, buffer Schmitt, buffer tri-state, INA, IC genérico, regulador de tensión, convertidor DC-DC, temporizador 555
+- ✅ Interruptores: SPST, SPDT, DPDT, pulsador-NA, pulsador-NC
+- ✅ Relés: bobina, contacto NA, contacto NC
+- ✅ Electromecánicos: motor, altavoz, micrófono, zumbador
+- ✅ Medición: amperímetro, voltímetro, vatímetro, osciloscopio
+- ✅ Anotaciones: cable, punto, etiqueta, puerto, punto de prueba, sin-conexión, antena
+- ✅ DSL posicional: encadenamiento de direcciones, ramificación `at:`, declaraciones `net`
+- ✅ DSL netlist: mapeo de prefijos SPICE, anulaciones de modelos, síntesis automática de tierra
+- ⏳ `at:` a nivel de pin para pines con nombre en BJT/FET/op-amp (base, colector, más, menos, salida)
+- ⏳ Cables con enrutado automático en modo posicional (enrutamiento alrededor de los símbolos colocados)
+- ⏳ Cables de bus con anotación de ancho de bit (barra `/8`)
+
+Referencias:
+
+- IEEE Std 315-1975 (ANSI Y32.2): *Graphic Symbols for Electrical and Electronics Diagrams*
+- IEC 60617: *Graphical symbols for diagrams*
+- SPICE3 User's Manual, UC Berkeley — convenciones de formato de línea netlist
+
+---
+
+## 11. Ejemplos relacionados
+
+<RelatedExamples slugs={[
+  'circuit-ce-amplifier',
+]} />
+
+---
+
+## 12. Hoja de ruta
+
+**Planificado — aún no analizable.** No use estos elementos en DSL generado hoy; el parser los rechazará o ignorará.
+
+- **Anclas de pin con nombre para componentes multipín** — `at: Q1.base`, `at: U1.out`, `at: U1.plus` para que los bucles de retroalimentación de op-amp y BJT puedan cablearse sin largos desvíos de `wire`.
+- **Cable de bus** — `wire right bus=8` que dibuja un cable grueso con una anotación de barra de ancho de bit `/8`.
+- **Cables con enrutado automático** — `connect R1.end U1.minus` que permite al motor enrutar el cable alrededor de los símbolos colocados.
+- **Atributos `flip` y `reverse`** — refleja o invierte la polaridad/orientación de un componente a lo largo del eje de dirección.
+- **Estilo de cable `dashed`** — línea discontinua para blindajes RF, agrupaciones de cables o conexiones virtuales.
+- **Hojas jerárquicas** — `module "name" { … }` agrupando de manera análoga a los módulos de puertas lógicas, para documentar esquemáticos de varias hojas.
+
+Haga seguimiento en los issues de GitHub si necesita alguno de estos antes.

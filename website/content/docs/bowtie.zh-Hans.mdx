@@ -1,0 +1,151 @@
+---
+title: 蝴蝶结风险图（Bowtie Risk Diagram）
+---
+
+## 关于 bowtie 图
+
+**bowtie**（蝴蝶结）是屏障式风险管理中最具代表性的图形：一个中央**顶层事件**（失去危害控制的时刻），左侧是**威胁**通过**预防屏障**链向内汇聚，右侧是**后果**通过**缓解屏障**链向外发散——整体形状如同一个蝴蝶结。它针对单一危害回答监管机构或董事会真正关心的两个问题：*什么可能导致事故，什么阻止它？*（左侧），以及*如果事故发生，会有什么影响，什么限制损害？*（右侧）。已在石油天然气、化工、航空（[ICAO Doc 9859](https://www.icao.int/) SMS）、铁路、采矿和医疗保健领域被强制采用。由 **[CCPS / Energy Institute 2018](https://www.aiche.org/ccps)**（*Bow Ties in Risk Management*）编纂，并由 **IEC 31010:2019** §B.4.6 作为技术手段列名。
+
+Schematex 的优势**不是**计算（那是 `faulttree` 和 `pert` 的强项）——基本的 bowtie 不带概率。它有两个特点：**严格、构造即正确的对称布局**（通用的框线连接工具无法产生），以及 **CCPS/EI 屏障规则集的结构验证**——每个威胁必须通过至少 1 个屏障到达顶层事件，每个后果必须通过至少 1 个屏障挂在其下，每个升级因素必须附加到特定的命名屏障。没有屏障的威胁会被*拒绝*，而不是静默绘制。
+
+<Playground initial={`bowtie "LPG storage — loss of containment"
+hazard "LPG stored under pressure"
+topevent "Loss of containment"
+
+threat "Corrosion of vessel wall"
+  prevent "Corrosion-resistant coating"
+  prevent "UT thickness inspection"
+    escalation "Inspection interval too long"
+      barrier "Risk-based inspection scheme"
+
+threat "Overpressure during filling"
+  prevent "High-pressure trip (SIL 2)"
+  prevent "Pressure relief valve"
+
+consequence "Jet fire"
+  mitigate "Gas detection + ESD"
+  mitigate "Deluge / water spray"
+
+consequence "Toxic exposure"
+  mitigate "Personal gas monitors"
+  mitigate "Emergency evacuation plan"`} height={560} />
+
+---
+
+## 1. 第一个图表
+
+每个文档以 `bowtie` 关键字开头，后接可选的标题，然后是危害、顶层事件和两翼：
+
+```
+bowtie
+topevent "Loss of containment"
+threat "Corrosion"
+  prevent "Inspection programme"
+consequence "Release to atmosphere"
+  mitigate "Gas detection + ESD"
+```
+
+`topevent` 声明中央唯一的节点（必填，且只能有一个）。每个 `threat` 开始一条左翼线；每个 `consequence` 结束一条右翼线。在 `threat` 下的屏障是**预防性的**（`prevent`）；在 `consequence` 下的是**缓解性的**（`mitigate`）。图表以节点为中心对称布局——威胁从左侧汇入，后果从右侧发散。
+
+DSL 采用**缩进结构**，与 CCPS 七步构建方法论相呼应：识别危害 → 顶层事件 → 威胁 → 后果 → 预防屏障 → 缓解屏障 → 升级因素。
+
+标头指令（任意顺序）：
+
+- `layout: symmetric | compact` — 带状模型（默认 `symmetric`）。
+- `legend: on | off | bottom | top` — 自动派生的颜色图例（默认开启）。
+
+---
+
+## 2. 危害与顶层事件
+
+```
+hazard "Working at height"
+topevent "Person falls from height"
+```
+
+- **`hazard`** — 具有造成伤害潜力的操作或物料：bowtie 的*背景*（例如「高空作业」、「高压碳氢化合物」）。可选；渲染为节点上方的标题框，并有连线向下指向它。最多一个。
+- **`topevent`** — 失去危害控制的**时刻**（例如「失去围阻」、「人员从高处坠落」）。bowtie 的节点，绘制为绿色圆圈。**必填，且只能有一个。**
+
+危害是一种*事物／活动*，而非失效；顶层事件是*失去控制*的精确时刻——不是原因，也还不是后果。
+
+---
+
+## 3. 威胁与后果
+
+```
+threat "Guardrail removed for access"
+  prevent "Permit-to-work system"
+
+consequence "Fatality"
+  mitigate "Fall-arrest harness + lanyard"
+```
+
+- **威胁**是一种可信的原因，*单独*就能触发顶层事件。每个威胁是一条左翼线的起点，在左缘绘制为橙色方块。
+- **后果**是*顶层事件*（非威胁）的可信结果，在右缘绘制为红色方块。
+
+威胁和后果可以交错顺序声明——解析器无论顺序如何都会将左翼方块和右翼方块分组。一个 bowtie 需要**至少各一个**：单翼图是故障树（见 `faulttree`）或事件树，而非 bowtie。
+
+---
+
+## 4. 屏障（中间的控制措施）
+
+```
+threat "Guardrail removed for access"
+  prevent "Permit-to-work system"
+  prevent "Temporary edge protection"
+  prevent "Spotter / banksman"
+```
+
+**屏障**是中断威胁 → 顶层事件路径的控制措施（预防性），或在顶层事件发生后降低后果（缓解性）。每个都是*线上*的灰色方块。链的长度自由（1..n）——翼只是延伸。
+
+**屏障顺序为声明顺序**：第一个声明的是**最外层**（最靠近威胁／后果，第一道防线）；最后声明的是**最内层**（最靠近节点）。这与真实 bowtie 的从左到右阅读相符。每个屏障带有 `data-order`（0 = 最外层）和 `data-side`（`prevent` / `mitigate`）供下游交互使用。
+
+当链长度不同时，屏障采用**居中对齐**：最内层屏障整齐地排列在节点附近的一列，威胁／后果方块则按链深度参差排列——体现出纵深防御的层次感。
+
+---
+
+## 5. 升级因素
+
+```
+threat "Corrosion"
+  prevent "UT thickness inspection"
+    escalation "Inspection interval too long"
+      barrier "Risk-based inspection scheme"
+```
+
+**升级因素**（或退化因素）是*削弱特定屏障效能*的条件——例如「未定期检查边缘防护」、「操作员疲劳」。它附加到**一个**屏障（而非线路）上，垂直向下显示为琥珀色方块，并以淡化的「削弱」连接线相连。
+
+**升级因素屏障**是放置在升级因素本身的控制措施——它保护屏障不被削弱（例如使用前检查制度）。它再多嵌套一层，在升级因素之下，渲染为其下方的灰色方块。
+
+缩进绑定嵌套关系：`prevent`／`mitigate` 缩进 2 格，`escalation` 缩进 4 格，`barrier` 缩进 6 格。
+
+---
+
+## 6. 构造即正确（屏障规则集）
+
+在绘制任何形状之前，引擎会验证 CCPS/EI 屏障规则集的结构部分，并在失败时**拒绝渲染**——就像 `prisma` 拒绝缺少计数一样：
+
+- **顶层事件恰好一个** — 零个或多个都是错误。
+- **每个威胁有 ≥ 1 个预防屏障** — 没有屏障的威胁是瑞士奶酪漫画，而非 bowtie。
+- **每个后果有 ≥ 1 个缓解屏障** — 镜像规则。
+- **每个升级因素附加到一个屏障** — 它不能悬浮在线上或顶层事件上。
+- **至少一个威胁和一个后果** — 单翼图是 FTA 或 ETA。
+
+错误信息会用白话英文指明违规元素和规则，例如 *"Threat 'Corrosion' has no preventative barrier — every threat must reach the top event through at least one barrier (CCPS/EI barrier rule). Add a `prevent` line under it."* 这正是真正的 bowtie 与草图的区别。引擎**不**判断屏障是否真正*有效*或*独立*——那是分析师的定性判断。
+
+---
+
+## 7. Bowtie 与故障树
+
+完整发展的 bowtie *就是*在顶层事件处将故障树与事件树粘合在一起：左翼反向读取是以 bowtie 节点为顶层事件的故障树，右翼是将其传播为后果的事件树。Schematex 将它们保持为两个引擎，因为它们的用途不同：
+
+- **`bowtie`** 是定性的和对称的——屏障清单和一目了然的纵深防御故事；无概率运算。
+- **`faulttree`** 是定量的和布尔的——AND／OR 门、基本事件概率、最小截断集、概率汇总。
+
+当需要单一威胁背后的门级细节时，请另外绘制一个 `faulttree`。
+
+---
+
+## 8. 主题
+
+`default` 使用公认的 BowTieXP／bowtiemaster 配色方案——**橙色威胁**（左）、线上**灰色屏障**、**绿色顶层事件圆盘**（中央节点）、**红色后果**（右）、**琥珀色升级因素**下挂——映射到 Schematex 的语义槽位，以便与 `prisma` / `pert` / `petri` 保持一致。`monochrome` 再现监管机构打印的黑白外观，元素区分依靠形状／边框 + 位置（升级因素使用虚线边框，节点使用双圆环）而非颜色。`dark` 遵循 Catppuccin Mocha。所有笔触／填充来自 `BowtieTokens`；每个元素带有 `data-*`（`data-role`、`data-side`、`data-line`、`data-order`、`data-barrier`），使结构可供下游检查。

@@ -1,0 +1,122 @@
+---
+title: Threat Model (STRIDE DFD)
+description: Diagrammes de flux de données de sécurité où le moteur cartographie les menaces STRIDE par élément et signale chaque croisement de frontière de confiance.
+---
+
+## À propos des modèles de menaces
+
+Un **modèle de menaces** est un **diagramme de flux de données** (DFD) de sécurité annoté avec des frontières de confiance : des **entités externes** (utilisateurs, tiers), des **processus** (services), des **entrepôts de données** (bases de données, journaux), et les **flux** entre eux. Le cadre **STRIDE** de Microsoft — Spoofing, Tampering, Repudiation, Information disclosure, Denial of service, Elevation of privilege — classe les menaces que chaque élément encourt. La référence est Shostack, *Threat Modeling: Designing for Security* (2014).
+
+L'avantage de Schematex est que le moteur **effectue l'analyse STRIDE par élément**, pas seulement les boîtes. Il applique le mappage canonique élément→menace, ajoute conditionnellement la Répudiation aux entrepôts de journaux/audit, et — surtout — **signale chaque flux qui franchit une frontière de confiance**, car c'est là que se concentrent le spoofing, le tampering et la divulgation d'informations.
+
+<Playground initial={`threatmodel "Web App"
+external: User
+process 1.1: Web Server
+datastore D1: User DB
+datastore D2: Audit Log
+User -> 1.1 : "HTTPS Request"
+1.1 -> D1 : Lookup
+1.1 -> D2 : Auth Event
+boundary "Internet" { User }
+boundary "DMZ" { 1.1 }
+boundary "Internal" { D1, D2 }`} height={520} />
+
+---
+
+## 1. Votre premier modèle de menaces
+
+Commencez par le mot-clé `threatmodel` (alias `stride`), un titre optionnel, puis **déclarez les éléments** et **câblez les flux** :
+
+```
+threatmodel "Login flow"
+external: User
+process 1.1: Web Server
+datastore D1: User DB
+User -> 1.1 : "Login request"
+1.1 -> D1 : Lookup
+```
+
+Chaque élément est `type: ID: Étiquette` (ou `type: Étiquette`, où l'identifiant est dérivé du slug de l'étiquette — `external: Mobile App` devient l'identifiant `Mobile_App`). Un flux est `SOURCE -> CIBLE : étiquette`, et l'**étiquette est obligatoire** (elle nomme les données qui transitent).
+
+---
+
+## 2. Types d'éléments et flux
+
+```
+external: User              # entité externe (le côté de l'attaquant)
+process 1.1: Web Server     # un processus / service
+datastore D1: User DB       # un entrepôt de données
+datastore D2: Audit log     # un entrepôt de journaux/audit (reçoit la Répudiation conditionnelle)
+User -> 1.1 : "HTTPS Request"   # flux orienté, étiquette entre guillemets ou sans
+1.1 <-> D1 : Read/Write         # <-> se développe en deux flux orientés
+```
+
+- Les identifiants de processus sont souvent des numéros DFD pointés (`1.1`, `2.3`) ; les identifiants d'entités externes/entrepôts sont généralement de courts slugs (`User`, `D1`).
+- Un flux `<->` se développe en **deux** flux orientés.
+- Un entrepôt dont le nom/identifiant correspond à `log|audit|journal` (ou porte un indice explicite) est traité comme un entrepôt de journaux.
+
+**Règles de flux** appliquées par le moteur : pas de flux entrepôt→entrepôt (les entrepôts de données sont passifs), pas de flux externe→externe, et chaque point final doit être un élément déclaré.
+
+---
+
+## 3. Frontières de confiance
+
+```
+boundary "Internet"  { User }
+boundary "DMZ"       { 1.1 }
+boundary "Internal"  { D1, D2 }
+```
+
+`boundary "nom" { id, id, … }` regroupe les éléments dans une zone de confiance. Un élément peut appartenir à **au plus une** frontière ; les membres doivent être déclarés. Les éléments sans frontière partagent une zone implicite non fiable.
+
+---
+
+## 4. Analyse STRIDE calculée
+
+C'est le point différenciant. Le moteur applique le mappage **STRIDE par élément** :
+
+| Élément DFD       | Menaces appliquées        |
+|-------------------|---------------------------|
+| Entité externe    | S, R                      |
+| Processus         | S, T, R, I, D, E          |
+| Entrepôt de données | T, I, D (+ R si journal) |
+| Flux de données   | T, I, D                   |
+
+- La **Répudiation** de l'entrepôt de données est conditionnelle — ajoutée pour les entrepôts de journaux / audit / journal (le « ? » vert de Shostack).
+- **Franchissement de frontière** : un flux dont les points finaux se trouvent dans des zones de confiance différentes est signalé, car c'est là que se concentrent le Spoofing / Tampering / Information-disclosure. Deux éléments dans la même zone (ou implicite) ne franchissent pas de frontière.
+
+Chaque élément et flux porte ses catégories STRIDE applicables dans des attributs `data-*` afin que l'analyse soit inspectable.
+
+---
+
+## 5. Erreurs courantes
+
+```
+# FAUX — flux sans étiquette
+User -> 1.1
+
+# FAUX — entrepôt vers entrepôt (les entrepôts de données sont passifs)
+D1 -> D2 : x
+
+# FAUX — externe vers externe
+A -> B : x
+
+# FAUX — point final de flux inconnu
+P -> Ghost : x
+
+# FAUX — un élément dans deux frontières
+boundary "A" { P }
+boundary "B" { P }
+```
+
+Chaque flux doit avoir une étiquette ; les entrepôts et les entités externes ne peuvent pas être des partenaires de flux de leur propre type ; les points finaux doivent être déclarés ; un élément appartient à au plus une frontière de confiance. Les identifiants dupliqués sont rejetés.
+
+---
+
+## 6. Conformité aux normes
+
+Le vocabulaire des éléments, les conventions DFD et le tableau STRIDE par élément suivent Shostack (2014) et le Microsoft Threat Modeling Tool. La Répudiation conditionnelle des entrepôts de journaux et l'accent mis sur le franchissement de frontières de confiance correspondent au tableau STRIDE par élément publié.
+
+## 7. Feuille de route
+
+Différé : notation DREAD/risque, lien menace-atténuation, décomposition multi-processus (niveaux DFD), et exploration par arbre d'attaque.

@@ -1,0 +1,109 @@
+---
+title: Markov-Kette
+description: Zustandsübergangsdiagramme, bei denen die Engine die stochastische Matrix validiert, Zustände klassifiziert und die stationäre oder Absorptionsantwort berechnet.
+---
+
+## Über Markov-Ketten
+
+Eine **Markov-Kette** modelliert ein System, das zwischen **Zuständen** mit festen **Übergangswahrscheinlichkeiten** wechselt, wobei der nächste Zustand nur vom aktuellen abhängt (die *gedächtnislose* Eigenschaft). Sie sind die Grundlage für Zuverlässigkeitsmodellierung, Warteschlangen, PageRank, Ruin-Probleme des Spielers und Wettermodelle. Die Übergangswahrscheinlichkeiten aus jedem Zustand müssen sich zu 1 summieren (eine **zeilenstochastische** Matrix).
+
+Schematex's Vorteil ist, dass die Engine **die lineare Algebra übernimmt**, nicht nur die Kreise-und-Pfeile-Darstellung. Sie validiert die zeilenstochastische Matrix, klassifiziert Zustände (transient / rekurrent / absorbierend) mittels SCC-Analyse und berechnet die **stationäre Verteilung** π oder, für absorbierende Ketten, die **Absorptionswahrscheinlichkeiten** und erwartete Schritte – alles abhängigkeitsfrei, handgeschrieben.
+
+<Playground initial={`markov "Weather"
+  Sunny -> Sunny : 0.9
+  Sunny -> Rainy : 0.1
+  Rainy -> Sunny : 0.5
+  Rainy -> Rainy : 0.5`} height={420} />
+
+---
+
+## 1. Ihre erste Kette
+
+Beginnen Sie mit dem Schlüsselwort `markov` (Alias `markovchain`), einem optionalen Titel, dann **wahrscheinlichkeitsgewichteten Übergängen**. Zustände werden automatisch aus dem ersten Bogen erstellt, der sie erwähnt:
+
+```
+markov "Weather"
+  Sunny -> Sunny : 0.9
+  Sunny -> Rainy : 0.1
+  Rainy -> Sunny : 0.5
+  Rainy -> Rainy : 0.5
+```
+
+Ein Übergang ist `VON -> ZU : WAHRSCHEINLICHKEIT`. Eine Selbstschleife (`Sunny -> Sunny`) ist die Wahrscheinlichkeit, im aktuellen Zustand zu bleiben. Jede Wahrscheinlichkeit muss in `[0, 1]` liegen, und **die Wahrscheinlichkeiten, die jeden Zustand verlassen, müssen sich zu 1 summieren**.
+
+---
+
+## 2. Zustände deklarieren
+
+Sie können Zustände explizit deklarieren, um Label, Reihenfolge festzulegen oder sie als absorbierend zu markieren:
+
+```
+markov "Gambler's ruin"
+  state Broke "$0" absorbing
+  state Rich  "$4" absorbing
+  state S1
+  state S2
+  Broke -> Broke : 1
+  Rich  -> Rich  : 1
+  S1 -> Broke : 0.5
+  S1 -> S2 : 0.5
+  S2 -> S1 : 0.5
+  S2 -> Rich : 0.5
+```
+
+`state ID "label" absorbing` — das Label ist optional; `absorbing` bestätigt, dass der Zustand eine Senke ist (eine Selbstschleife mit Wahrscheinlichkeit 1). Die Engine prüft die Behauptung gegen die Matrix.
+
+---
+
+## 3. Direktiven
+
+```
+layout: layered       # Layout-Modus
+normalize: true        # jede Zeile auf Summe 1 skalieren statt Hardfehler
+analysis: classify, absorbing   # was berechnet werden soll: classify | absorbing | stationary
+```
+
+- **`normalize: true`** skaliert jede Zeile so, dass sie sich zu 1 summiert (praktisch für nicht-normalisierte Gewichte wie `A -> B : 1`, `A -> C : 1`). Ohne dies ist eine Zeile, die sich nicht zu 1 summiert, ein harter Fehler.
+- **`analysis:`** wählt, welche Berechnungen durchgeführt und ausgegeben werden sollen.
+
+---
+
+## 4. Die berechnete Antwort
+
+Dies ist das Unterscheidungsmerkmal. Drei handgeschriebene, abhängigkeitsfreie lineare-Algebra-Durchläufe:
+
+1. **Matrix-Aufbau + Validierung** — P aufbauen und die Zeilensummen-Richtlinie durchsetzen (harter Fehler oder Umskalierung unter `normalize`).
+2. **Zustandsklassifikation** — Tarjan SCC → kommunizierende Klassen; eine Klasse ist **rekurrent** genau dann wenn geschlossen, sonst **transient**; ein geschlossenes Singleton mit einer Selbstschleife der Wahrscheinlichkeit 1 ist **absorbierend**.
+3. **Die quantitative Antwort**:
+   - **Stationäre Verteilung** π (πP = π, Σπ = 1) durch Potenziteration mit einem genauen Gauß-Eliminierungs-Fallback für periodische Ketten.
+   - Für **absorbierende Ketten**: die Fundamentalmatrix N = (I−Q)⁻¹, Absorptionswahrscheinlichkeiten B = N·R und erwartete Schritte bis zur Absorption t = N·1.
+
+Transiente Zustände, rekurrente Klassen und absorbierende Zustände werden unterschiedlich gerendert; berechnete Werte werden in `data-*` gespeichert.
+
+---
+
+## 5. Häufige Fehler
+
+```
+# FALSCH — Wahrscheinlichkeit außerhalb [0,1]
+A -> B : 1.5
+
+# FALSCH — Übergang ohne Wahrscheinlichkeit
+A -> B
+
+# FALSCH — Zeilen, die sich nicht zu 1 summieren (ohne `normalize: true`)
+A -> B : 0.3
+A -> C : 0.3
+```
+
+Jeder Übergang benötigt eine Wahrscheinlichkeit in `[0, 1]`; die abgehenden Wahrscheinlichkeiten jedes Zustands müssen sich zu 1 summieren, oder Sie müssen `normalize: true` setzen. Eine leere Kette (keine Übergänge) wird abgelehnt.
+
+---
+
+## 6. Standardkonformität
+
+Das Modell ist eine diskrete, zeitlich homogene Markov-Kette mit einer zeilenstochastischen Übergangsmatrix; Klassifikation (transient/rekurrent/absorbierend), stationäre Verteilungen und Fundamentalmatrix-Analyse für absorbierende Ketten folgen Standardwerken (Kemeny & Snell, *Finite Markov Chains*).
+
+## 7. Roadmap
+
+Zurückgestellt: stetige Ketten (Ratenmatrizen), verdeckte Markov-Modelle, mittlere Erstpassagezeiten und Periodizitätsbericht.

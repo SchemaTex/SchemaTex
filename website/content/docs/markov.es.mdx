@@ -1,0 +1,109 @@
+---
+title: Cadena de Markov
+description: Diagramas de transición de estados donde el motor valida la matriz estocástica, clasifica los estados y calcula la distribución estacionaria o la respuesta de absorción.
+---
+
+## Acerca de las cadenas de Markov
+
+Una **cadena de Markov** modela un sistema que salta entre **estados** con **probabilidades de transición** fijas, donde el siguiente estado depende únicamente del actual (la propiedad de *falta de memoria*). Sustentan el modelado de confiabilidad, colas, PageRank, la ruina del jugador y modelos meteorológicos. Las probabilidades de transición que salen de cada estado deben sumar 1 (una matriz **fila-estocástica**).
+
+La ventaja de Schematex es que el motor **realiza el álgebra lineal**, no solo los círculos y flechas. Valida la matriz fila-estocástica, clasifica los estados (transitorios / recurrentes / absorbentes) mediante análisis SCC, y calcula la **distribución estacionaria** π o, para cadenas absorbentes, las **probabilidades de absorción** y los pasos esperados — todo sin dependencias, escrito a mano.
+
+<Playground initial={`markov "Weather"
+  Sunny -> Sunny : 0.9
+  Sunny -> Rainy : 0.1
+  Rainy -> Sunny : 0.5
+  Rainy -> Rainy : 0.5`} height={420} />
+
+---
+
+## 1. Tu primera cadena
+
+Comienza con la palabra clave `markov` (alias `markovchain`), un título opcional, luego **transiciones ponderadas por probabilidad**. Los estados se crean automáticamente desde el primer arco que los menciona:
+
+```
+markov "Weather"
+  Sunny -> Sunny : 0.9
+  Sunny -> Rainy : 0.1
+  Rainy -> Sunny : 0.5
+  Rainy -> Rainy : 0.5
+```
+
+Una transición es `DESDE -> HACIA : PROBABILIDAD`. Un bucle propio (`Sunny -> Sunny`) es la probabilidad de permanecer en el mismo estado. Cada probabilidad debe estar en `[0, 1]`, y **las probabilidades que salen de cada estado deben sumar 1**.
+
+---
+
+## 2. Declarar estados
+
+Puedes declarar estados explícitamente para fijar etiqueta, orden o marcarlos como absorbentes:
+
+```
+markov "Gambler's ruin"
+  state Broke "$0" absorbing
+  state Rich  "$4" absorbing
+  state S1
+  state S2
+  Broke -> Broke : 1
+  Rich  -> Rich  : 1
+  S1 -> Broke : 0.5
+  S1 -> S2 : 0.5
+  S2 -> S1 : 0.5
+  S2 -> Rich : 0.5
+```
+
+`state ID "label" absorbing` — la etiqueta es opcional; `absorbing` afirma que el estado es un sumidero (un bucle propio de probabilidad 1). El motor verifica la afirmación contra la matriz.
+
+---
+
+## 3. Directivas
+
+```
+layout: layered       # modo de diseño
+normalize: true        # escala cada fila para que sume 1 en lugar de generar un error
+analysis: classify, absorbing   # qué calcular: classify | absorbing | stationary
+```
+
+- **`normalize: true`** reescala cada fila para que sume 1 (útil para pesos no normalizados como `A -> B : 1`, `A -> C : 1`). Sin esto, una fila que no suma 1 es un error grave.
+- **`analysis:`** selecciona qué cálculos ejecutar y mostrar.
+
+---
+
+## 4. La respuesta calculada
+
+Este es el diferenciador. Tres pasadas de álgebra lineal escritas a mano, sin dependencias:
+
+1. **Ensamblaje de matriz + validación** — construye P y aplica la política de suma de filas (error grave, o reescalar con `normalize`).
+2. **Clasificación de estados** — SCC de Tarjan → clases comunicantes; una clase es **recurrente** si y solo si es cerrada, **transitoria** en caso contrario; un singleton cerrado con un bucle propio de probabilidad 1 es **absorbente**.
+3. **La respuesta cuantitativa**:
+   - **Distribución estacionaria** π (πP = π, Σπ = 1) por iteración de potencia con un respaldo de eliminación gaussiana exacta para cadenas periódicas.
+   - Para **cadenas absorbentes**: la matriz fundamental N = (I−Q)⁻¹, probabilidades de absorción B = N·R, y pasos esperados hasta la absorción t = N·1.
+
+Los estados transitorios, las clases recurrentes y los estados absorbentes se renderizan de forma diferenciada; los valores calculados se almacenan en `data-*`.
+
+---
+
+## 5. Errores comunes
+
+```
+# INCORRECTO — probabilidad fuera de [0,1]
+A -> B : 1.5
+
+# INCORRECTO — transición sin probabilidad
+A -> B
+
+# INCORRECTO — filas que no suman 1 (sin `normalize: true`)
+A -> B : 0.3
+A -> C : 0.3
+```
+
+Cada transición necesita una probabilidad en `[0, 1]`; las probabilidades de salida de cada estado deben sumar 1, o debes establecer `normalize: true`. Una cadena vacía (sin transiciones) es rechazada.
+
+---
+
+## 6. Conformidad con el estándar
+
+El modelo es una cadena de Markov de tiempo discreto y tiempo homogéneo con una matriz de transición fila-estocástica; la clasificación (transitorio/recurrente/absorbente), las distribuciones estacionarias y el análisis de matriz fundamental de cadenas absorbentes siguen textos estándar (Kemeny & Snell, *Finite Markov Chains*).
+
+## 7. Hoja de ruta
+
+Diferido: cadenas de tiempo continuo (matrices de tasas), modelos ocultos de Markov, tiempos medios de primer paso y reportes de periodicidad.

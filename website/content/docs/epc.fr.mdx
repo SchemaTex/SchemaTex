@@ -1,0 +1,121 @@
+---
+title: EPC (Chaîne de processus pilotée par les événements)
+description: Diagrammes de processus métier ARIS — alternance stricte d'événements et de fonctions reliés par des connecteurs AND/OR/XOR, avec validation de la cohérence structurelle.
+---
+
+## À propos de l'EPC
+
+Une **chaîne de processus pilotée par les événements** (EPC) est la notation de processus métier au cœur d'**ARIS** (Scheer, années 1990) : un flux de contrôle qui **alterne strictement des événements** (états passifs — « Commande reçue ») et des **fonctions** (tâches actives — « Vérifier le crédit »), acheminés par des **connecteurs AND / OR / XOR** pour les divisions et les jonctions. Elle est largement utilisée pour la documentation des processus SAP et la gestion des processus métier (BPM).
+
+L'avantage de Schematex réside dans la **validation structurelle**. Le moteur ne calcule pas un résultat numérique (contrairement à `pert` ou `faulttree`) ; il vérifie les règles de cohérence EPC — alternance événement/fonction, la règle de signature *un événement ne peut pas décider*, la multiplicité un-entrant/un-sortant, l'accessibilité — et met en évidence les violations avec des messages lisibles par les LLM plutôt que de dessiner silencieusement un modèle incorrect.
+
+<Playground initial={`epc "Credit check"
+  event E1 "Order received"
+  function F1 "Check credit"
+  xor X1
+  event E2 "Credit approved"
+  event E3 "Credit refused"
+  E1 -> F1 -> X1
+  X1 -> E2
+  X1 -> E3`} height={460} />
+
+---
+
+## 1. Votre premier EPC
+
+Commencez par le mot-clé `epc`, un titre optionnel, puis déclarez les **nœuds par identifiant** et **connectez-les avec des flèches** :
+
+```
+epc "Order fulfilment"
+  event E1 "Order received"
+  function F1 "Check credit"
+  event E2 "Credit OK"
+  E1 -> F1 -> E2
+```
+
+Les nœuds portent un identifiant et une étiquette optionnelle entre guillemets ; les flèches référencent les identifiants. La forme canonique déclare les connecteurs comme des nœuds (`xor X1`) et relie tout par identifiant — c'est la manière dont ARIS stocke un EPC.
+
+---
+
+## 2. Types de nœuds
+
+```
+event E1 "Order received"     # état passif (hexagone arrondi)
+function F1 "Check credit"    # tâche active (rectangle arrondi) ; alias : func
+func F2 "Send invoice"        # `func` est un raccourci pour `function`
+and  A1                       # connecteur AND (∧)
+or   O1                       # connecteur OR (∨)
+xor  X1                       # connecteur OU exclusif (×)
+```
+
+Un connecteur peut se diviser ou se rejoindre selon ses arcs entrants/sortants, le même glyphe sert dans les deux sens. Les étiquettes des connecteurs sont optionnelles.
+
+---
+
+## 3. Câblage du flux de contrôle
+
+```
+E1 -> F1 -> X1        # une chaîne est un raccourci pour les arcs pairés E1→F1, F1→X1
+X1 -> E2              # division du connecteur en deux branches
+X1 -> E3
+F2 -> E2 : sent       # un arc peut porter un ': label'
+```
+
+- Une **chaîne** `->` se développe en arêtes pairées.
+- Un **`: label`** en fin de ligne annote un arc unique.
+- Un point terminal de flèche non encore déclaré est **créé automatiquement** (et signalé par le validateur), vous pouvez ainsi esquisser rapidement et nettoyer plus tard.
+
+```
+epc "Procure-to-pay"
+  layout: tb
+  event E1 "Need identified"
+  function F1 "Create PO"
+  and A1
+  function F2 "Notify supplier"
+  function F3 "Update budget"
+  E1 -> F1 -> A1
+  A1 -> F2
+  A1 -> F3
+```
+
+`layout: tb` dispose la chaîne de haut en bas (la valeur par défaut est également orientée verticalement).
+
+---
+
+## 4. Cohérence structurelle calculée
+
+C'est ici que Schematex se distingue. Le moteur valide (signale, sans lever d'exception) :
+
+1. **Alternance bipartite** — les événements et les fonctions alternent strictement sur tout chemin ; les connecteurs ne rompent pas cette alternance.
+2. **Le début/la fin doivent être des événements** — une fonction ne peut pas être un nœud de début ou de fin.
+3. **Règle de signature** — *un événement ne doit pas être la source d'une division OR/XOR* (un événement passif ne peut pas décider) ; une division AND après un événement est autorisée.
+4. **Équilibre division/jonction** — une division de type T doit être fermée par une jonction de type T ; les discordances sont des avertissements (les vrais EPC sont parfois déséquilibrés).
+5. **Un entrant / un sortant** par événement et par fonction — les connecteurs portent la multiplicité.
+6. **Accessibilité** — chaque nœud est accessible depuis un début et atteint une fin.
+
+Les nœuds fautifs sont mis en évidence avec des attributs `data-*` ; le diagramme est quand même rendu.
+
+---
+
+## 5. Erreurs courantes
+
+```
+# INCORRECT — identifiant invalide (doit commencer par une lettre)
+event 9bad
+
+# À ÉVITER — redéclaration d'un nœud (la première définition est conservée, un avertissement est émis)
+event E1 "first"
+event E1 "second"
+```
+
+Les identifiants doivent commencer par une lettre ; un nœud redéclaré conserve la première définition et génère un avertissement. Comme les divisions événement→XOR/OR sont signalées, acheminez une décision à travers une **fonction** qui produit la décision, puis divisez.
+
+---
+
+## 6. Conformité aux normes
+
+La notation et les règles suivent la convention ARIS EPC (Scheer), van der Aalst (1999) et Mendling (2008) : événements hexagonaux, fonctions en rectangle arrondi, connecteurs ∧/∨/×, et la contrainte de signature stipulant qu'un événement ne peut pas décider.
+
+## 7. Feuille de route
+
+Différé : nœuds d'interface de processus (hors-page), couloirs d'unité organisationnelle/objet-données (eEPC), et suggestions de réparation automatique des divisions/jonctions.

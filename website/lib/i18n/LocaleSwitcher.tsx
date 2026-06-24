@@ -22,10 +22,12 @@ export function LocaleSwitcher({
   current,
   variant = 'footer',
   label = 'Language',
+  locales = LIVE_LOCALES,
 }: {
   current: SupportedLocale;
   variant?: 'footer' | 'header';
   label?: string;
+  locales?: readonly SupportedLocale[];
 }) {
   const pathname = usePathname() ?? '/';
   const router = useRouter();
@@ -74,7 +76,7 @@ export function LocaleSwitcher({
               (variant === 'header' ? 'right-0 top-full mt-2' : 'bottom-full mb-2')
             }
           >
-            {LIVE_LOCALES.map((loc) => (
+            {locales.map((loc) => (
               <li key={loc}>
                 <button
                   type="button"

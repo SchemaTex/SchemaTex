@@ -1,0 +1,241 @@
+---
+title: UML-Sequenzdiagramm
+---
+
+## Über Sequenzdiagramme
+
+Ein **Sequenzdiagramm** zeigt, wie Teilnehmer **im zeitlichen Verlauf** Nachrichten austauschen: Lebenslinien verlaufen von oben nach unten, Nachrichten von links nach rechts, und die vertikale Achse entspricht der zeitlichen Reihenfolge. Definiert durch **[UML](https://www.omg.org/spec/UML/2.5.1/) 2.5.1 §17 (Interactions)**, ist es das Diagramm, das Entwickler verwenden, um einen API-Aufruffluss, einen Auth-Handshake oder ein verteiltes Protokoll zu beschreiben — *wer wen in welcher Reihenfolge aufruft und was zurückkommt*.
+
+Schematex implementiert die vollständige UML-Notation und akzeptiert für die Generierung auch **den Mermaid-`sequenceDiagram`-Dialekt** — Mermaid-Quelltext kann unverändert eingefügt werden und wird direkt gerendert. Unter dem `sequenceDiagram`-Header haben Pfeile Mermaid-Bedeutung (`->>` synchroner Aufruf, `-->>` Antwort, `-)` asynchron); unter dem nativen `sequence "Title"`-Header gilt die ursprüngliche Schematex-Bedeutung (`->>` = asynchron). Während die meisten Werkzeuge beim häufigen Teilsatz aufhören (`alt`/`opt`/`loop`/`par`), unterstützt Schematex alle **zwölf** Combined-Fragment-Operatoren sowie `ref`-Interaction-Use-Frames — denn genau diese Elemente werden benötigt, wenn eine Interaktion komplex wird. Abzugrenzen von **[usecase](/docs/usecase)** (Systemumfang, nicht Nachrichtenreihenfolge), **[state](/docs/state)** (Zustände eines einzelnen Objekts, keine objektübergreifenden Nachrichten) und **[bpmn](/docs/bpmn)** (organisatorischer Prozess, keine Aufrufsequenz).
+
+<Playground initial={`sequence "Login flow"
+  actor User
+  participant Web as "Web App"
+  control Auth
+  database DB
+  User -> Web : submit(credentials)
+  activate Web
+  Web ->+ Auth : verify(credentials)
+  Auth ->+ DB : SELECT user
+  DB --> Auth : row
+  deactivate DB
+  alt [credentials valid]
+    Auth --> Web : token
+    Web --> User : 200 OK
+  else [invalid]
+    Auth --> Web : 401
+    Web --> User : error
+  end
+  deactivate Auth
+  deactivate Web
+  note over User, Web : session cookie set`} height={560} />
+
+---
+
+## 1. Das erste Diagramm
+
+Jedes Dokument beginnt mit dem Schlüsselwort `sequence` und einem optionalen `"title"`. Teilnehmer müssen nicht vorab deklariert werden — beim ersten Auftreten in einer Nachricht wird automatisch eine Lebenslinie erzeugt:
+
+```
+sequence
+  Alice -> Bob : Authentication Request
+  Bob --> Alice : Authentication Response
+```
+
+Lebenslinien erscheinen von links nach rechts in der Reihenfolge ihrer ersten Verwendung. `->` ist ein synchroner Aufruf (durchgezogene Linie, gefüllte Pfeilspitze); `-->` ist eine Antwort (gestrichelte Linie, offene Pfeilspitze). Der Text nach `:` ist die Nachrichtenbeschriftung.
+
+---
+
+## 2. Teilnehmer
+
+Ein Teilnehmer wird explizit deklariert, um seinen **Typ** festzulegen, einen **Alias** zu vergeben oder seine **Reihenfolge** zu fixieren:
+
+```
+sequence
+  actor User
+  participant Web as "Web App"
+  boundary LoginUI
+  control Auth
+  entity Account
+  database DB
+  collections Sessions
+  queue Events
+```
+
+| Typ | Darstellung |
+|------|-------------|
+| `participant` (Standard) | abgerundetes Classifier-Rechteck |
+| `actor` | Strichmännchen |
+| `boundary` / `control` / `entity` | Jacobson-Robustness-Icons (⊢◯ / ◯ mit Pfeil / ◯ mit Unterstrich) |
+| `database` | Zylinder |
+| `collections` / `queue` | Rechteck mit dem Typ als `«stereotype»` |
+
+- `as "Label"` legt den Anzeigenamen fest (Anführungszeichen optional; `「…」` CJK-Anführungszeichen werden akzeptiert).
+- Ein benutzerdefiniertes **Stereotype** wird in Guillemets oder ASCII-Spitzklammern nach der Deklaration angegeben — es überschreibt die Standardbeschriftung: `actor Printer «system»`, `participant Bus as "Event Bus" <<service>>`.
+
+---
+
+## 3. Nachrichten
+
+Das Pfeiltoken bestimmt die UML-Semantik:
+
+| DSL | Bedeutung | Darstellung |
+|-----|---------|-----------|
+| `A -> B` | synchroner Aufruf | durchgezogene Linie, **gefüllte** Pfeilspitze |
+| `A ->> B` | asynchrones Signal | durchgezogene Linie, **offene** Pfeilspitze |
+| `A --> B` | Antwort / Rückgabe | **gestrichelte** Linie, offene Pfeilspitze |
+| `A -x B` | verlorene Nachricht | Linie mit gefülltem Kreis am Ende |
+| `o-> B` | gefundene Nachricht | Linie mit gefülltem Kreis am Anfang |
+| `A -> A` | Selbstnachricht | gebogene Schleife zur gleichen Lebenslinie |
+
+Leerzeichen um Pfeile herum sind optional (`A->B` funktioniert), und Beschriftungen sind Freitext — einschließlich eines Rückgabewerts, z. B. `aHotel -> aHotel : available(roomId, date): isRoom`.
+
+---
+
+## 4. Aktivierungen (Execution Specifications)
+
+Der schmale Balken auf einer Lebenslinie zeigt an, dass diese aktiv ist. Er wird mit expliziten Anweisungen oder mit den Suffixen `+` / `-` an den Nachrichten selbst geöffnet und geschlossen:
+
+```
+sequence
+  participant Client
+  participant Server
+  Client ->+ Server : request()
+  Server ->> Server : validate()
+  Server -->- Client : response
+```
+
+`+` nach dem Pfeil aktiviert den **Empfänger** beim Eintreffen; `-` deaktiviert den **Sender** nach dem Versenden. Die explizite Form lautet `activate X` / `deactivate X`. Überlappende Balken auf einer Lebenslinie werden mit einem horizontalen Versatz verschachtelt.
+
+---
+
+## 5. Objekterzeugung und -vernichtung
+
+```
+sequence
+  participant Factory
+  Factory -> *Worker : «create»
+  Factory -> Worker : work()
+  destroy Worker
+```
+
+Ein `*`-Präfix vor dem Empfänger bewirkt, dass die Nachricht ihn **instanziiert** — der Kopf der neuen Lebenslinie wird in der Ankunftszeile gezeichnet, nicht oben. `destroy X` beendet eine Lebenslinie mit einem ✕ und stoppt ihre Zeitachse.
+
+---
+
+## 6. Combined Fragments
+
+Ein Combined Fragment ist ein beschrifteter Rahmen um einen Bereich. Schematex implementiert den vollständigen UML-`InteractionOperatorKind`-Satz:
+
+| Operator | Bedeutung | Operanden |
+|----------|---------|----------|
+| `alt` | Alternativen (if/else-if/else) | `else`, jeweils mit Guard |
+| `opt` | wird nur ausgeführt, wenn der Guard gilt | einer, mit Guard |
+| `loop` | Wiederholung | einer; Guard kann `(min,max)` sein |
+| `par` | parallele Operanden | `and` |
+| `break` | Ausnahmeabbruch | einer, mit Guard |
+| `critical` | atomar / keine Verschachtelung | einer |
+| `seq` / `strict` | schwache / strikte Sequenzierung | `and` |
+| `neg` | ungültige Traces (getönt dargestellt) | einer |
+| `ignore` / `consider` | Nachrichtenmengenfilter `{m1, m2}` | einer |
+| `assert` | einzig gültige Fortsetzung | einer |
+
+```
+sequence
+  actor User
+  participant API
+  User -> API : GET /resource
+  alt [authorized]
+    API --> User : 200 + body
+  else [forbidden]
+    API --> User : 403
+  end
+```
+
+Guards stehen in `[eckigen Klammern]` nach dem Operator (und nach `else`). Fragments können verschachtelt werden; innere Rahmen werden automatisch eingerückt, sodass sie sauber innerhalb des übergeordneten Rahmens liegen.
+
+---
+
+## 7. Interaction Use (`ref`)
+
+Statt einer Interaktion inline wird auf eine andere verwiesen — so hält UML große Diagramme komposierbar:
+
+```
+sequence
+  participant A
+  participant B
+  ref over A, B : Establish session
+  A -> B : poll()
+```
+
+`ref over <lifelines> : Name` zeichnet einen Rahmen über die genannten Lebenslinien. Die meisten Werkzeuge lassen dies aus; es ist der Mechanismus, mit dem reale Systeme lange Abläufe aufteilen.
+
+---
+
+## 8. Notizen, Trennlinien, Invarianten, Nummerierung
+
+```
+sequence
+  autonumber 1 1
+  actor Shopper
+  participant Cart
+  == Phase 1: review ==
+  Shopper -> Cart : view items
+  note over Cart : cart persisted in Redis
+  state Cart : ready
+```
+
+- `note over A` / `note over A, B` / `note left of A` / `note right of A` — Anmerkungen mit gefaltetem Eck.
+- `== text ==` — ein Abschnittstrennbalken über die gesamte Breite.
+- `state X : text` — eine Zustandsinvarianten-Kapsel auf einer Lebenslinie.
+- `autonumber [start] [step]` — versieht jede Nachricht mit einer fortlaufenden Nummer.
+
+---
+
+## 9. Grammatik (EBNF)
+
+```text
+diagram      = "sequence" [ string ] NEWLINE statement*
+statement    = participant | message | activation | note
+             | fragment | ref | divider | invariant | destroy | autonumber
+
+participant  = kind IDENT ("as" label)? stereotype?
+kind         = "participant" | "actor" | "boundary" | "control"
+             | "entity" | "database" | "collections" | "queue"
+stereotype   = "«" TEXT "»" | "<<" TEXT ">>"
+
+message      = IDENT? act? arrow act? ("*")? IDENT? (":" TEXT)?
+arrow        = "->" | "->>" | "-->" | "-x" | "o->"
+act          = "+" | "-"
+activation   = ("activate" | "deactivate") IDENT
+
+fragment     = ("alt"|"opt"|"loop"|"par"|"break"|"critical"|"seq"
+               |"strict"|"neg"|"ignore"|"consider"|"assert") guard? NEWLINE
+                 statement* (("else"|"and") guard? NEWLINE statement*)* "end"
+guard        = "[" TEXT "]" | "(" NUMBER ("," NUMBER)? ")"
+ref          = "ref" "over" IDENT ("," IDENT)* ":" TEXT
+note         = "note" ("over"|"left of"|"right of") IDENT ("," IDENT)? ":" TEXT
+divider      = "==" TEXT "=="
+invariant    = "state" IDENT ":" TEXT
+destroy      = "destroy" IDENT
+autonumber   = "autonumber" NUMBER? NUMBER?
+```
+
+---
+
+## 10. Standardkonformität
+
+Schematex folgt der OMG-**UML 2.5.1 §17 (Interactions)**-Notation: synchrone (gefüllt) vs. asynchrone (offen) vs. Antwort-Pfeilspitzen (gestrichelt), Found/Lost-Message-Endpunkte, Execution-Specification-Balken, alle zwölf Combined-Fragment-Operatoren mit bewachten Operanden, `ref`-Interaction-Use-Frames sowie die Jacobson-Analyse-Klassen-Icons für `boundary`/`control`/`entity`. Gates, Coregion und Zeit-/Dauer-Constraints liegen außerhalb des Umfangs von v0.1 (sie erfordern neue Layout-Primitive) und sind für ein späteres Release vorgemerkt. Die vollständige Spezifikation findet sich in `docs/reference/33-SEQUENCE-STANDARD.md`.
+
+---
+
+## Verwandte Beispiele
+
+Einsatzbereite Szenarien aus der Beispielgalerie:
+
+<RelatedExamples slugs={[
+  'sequence-login-flow',
+  'sequence-oauth-login',
+  'sequence-object-lifecycle',
+  'sequence-microservices-saga',
+]} />

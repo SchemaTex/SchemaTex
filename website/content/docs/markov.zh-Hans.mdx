@@ -1,0 +1,109 @@
+---
+title: 马尔可夫链
+description: 状态转移图——引擎验证随机矩阵、分类状态，并计算稳态分布或吸收答案。
+---
+
+## 关于马尔可夫链
+
+**马尔可夫链**（Markov chain）建模一个在**状态**之间以固定**转移概率**跳转的系统，其中下一个状态只取决于当前状态（即*无记忆性*）。它们是可靠性建模、排队理论、PageRank、赌徒破产问题和天气预报模型的基础。从每个状态出发的转移概率之和必须等于 1（即**行随机矩阵**）。
+
+Schematex 的优势在于引擎**自己做线性代数**，而不只是画圆圈和箭头。它验证行随机矩阵、通过 SCC 分析分类状态（瞬态 / 常返 / 吸收），并计算**稳态分布** π，或者对于吸收链，计算**吸收概率**和预期步数——全部无外部依赖，手工编写。
+
+<Playground initial={`markov "Weather"
+  Sunny -> Sunny : 0.9
+  Sunny -> Rainy : 0.1
+  Rainy -> Sunny : 0.5
+  Rainy -> Rainy : 0.5`} height={420} />
+
+---
+
+## 1. 你的第一条链
+
+以 `markov` 关键字（别名 `markovchain`）开头，加上可选标题，然后是**带概率权重的转移**。状态从第一个提及它们的弧自动创建：
+
+```
+markov "Weather"
+  Sunny -> Sunny : 0.9
+  Sunny -> Rainy : 0.1
+  Rainy -> Sunny : 0.5
+  Rainy -> Rainy : 0.5
+```
+
+转移的格式为 `FROM -> TO : PROBABILITY`。自循环（`Sunny -> Sunny`）是留在原地的概率。每个概率必须在 `[0, 1]` 范围内，且**每个状态的离开概率之和必须等于 1**。
+
+---
+
+## 2. 声明状态
+
+你可以显式声明状态以固定标签、顺序，或将其标记为吸收状态：
+
+```
+markov "Gambler's ruin"
+  state Broke "$0" absorbing
+  state Rich  "$4" absorbing
+  state S1
+  state S2
+  Broke -> Broke : 1
+  Rich  -> Rich  : 1
+  S1 -> Broke : 0.5
+  S1 -> S2 : 0.5
+  S2 -> S1 : 0.5
+  S2 -> Rich : 0.5
+```
+
+`state ID "label" absorbing` — 标签可选；`absorbing` 断言该状态是一个汇点（概率为 1 的自循环）。引擎会对照矩阵交叉验证此断言。
+
+---
+
+## 3. 指令
+
+```
+layout: layered       # layout mode
+normalize: true        # scale each row to sum to 1 instead of hard-erroring
+analysis: classify, absorbing   # what to compute: classify | absorbing | stationary
+```
+
+- **`normalize: true`** 将每行重新缩放以使总和为 1（方便非规范化的权重，例如 `A -> B : 1`、`A -> C : 1`）。若不设置，行的总和不等于 1 时会产生硬性错误。
+- **`analysis:`** 选择要执行和呈现的计算内容。
+
+---
+
+## 4. 计算答案
+
+这是差异化优势。三个手工编写、无外部依赖的线性代数步骤：
+
+1. **矩阵组装 + 验证** — 构建 P 并执行行和策略（硬性错误，或在 `normalize` 下重新缩放）。
+2. **状态分类** — Tarjan SCC → 互通类别；一个类别若是封闭的则为**常返**，否则为**瞬态**；带有概率为 1 的自循环的封闭单例为**吸收**状态。
+3. **定量答案**：
+   - **稳态分布** π（πP = π，Σπ = 1），通过幂迭代求解，对周期性链有精确的高斯消元回退。
+   - 对于**吸收链**：基本矩阵 N = (I−Q)⁻¹、吸收概率 B = N·R，以及到达吸收的预期步数 t = N·1。
+
+瞬态状态、常返类别和吸收状态各有不同的渲染方式；计算值存储在 `data-*` 中。
+
+---
+
+## 5. 常见错误
+
+```
+# WRONG — probability outside [0,1]
+A -> B : 1.5
+
+# WRONG — transition with no probability
+A -> B
+
+# WRONG — rows that don't sum to 1 (without `normalize: true`)
+A -> B : 0.3
+A -> C : 0.3
+```
+
+每个转移都需要一个在 `[0, 1]` 范围内的概率；每个状态的出发概率之和必须等于 1，否则必须设置 `normalize: true`。空链（无转移）会被拒绝。
+
+---
+
+## 6. 标准合规性
+
+模型是一个带有行随机转移矩阵的离散时间、时间齐次马尔可夫链；分类（瞬态/常返/吸收）、稳态分布，以及吸收链的基本矩阵分析遵循标准教材（Kemeny & Snell，*Finite Markov Chains*）。
+
+## 7. 路线图
+
+延后实现：连续时间链（速率矩阵）、隐马尔可夫模型、平均首次通过时间，以及周期性报告。

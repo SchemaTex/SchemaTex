@@ -1,0 +1,368 @@
+---
+title: Organigrama
+---
+
+## Acerca de los organigramas
+
+Un **organigrama** (gráfico organizacional) mapea la estructura formal de reporte de una organización — quién gestiona a quién, qué equipos pertenecen a qué líderes, y dónde encajan los puestos vacantes y los asesores externos. Los equipos de RRHH los usan durante la planificación de personal; los fundadores los usan antes de las reuniones con el consejo; los gerentes de operaciones los distribuyen durante las reestructuraciones. A diferencia de un diagrama de flujo genérico, un organigrama trata a las personas (y posiciones) como las entidades primarias, con la jerarquía codificada por sangría o aristas explícitas.
+
+Schematex sigue las convenciones generales de organigramas con extensiones para posiciones abiertas/vacantes, reporte matricial (línea punteada) y relaciones de asistente. No existe un único estándar ISO para organigramas; las convenciones implementadas aquí se derivan de la práctica de RRHH y las normas de la industria del software. Para el contexto académico autoritativo consulta [Fayol (1916)](https://en.wikipedia.org/wiki/Henri_Fayol) y el [artículo de Wikipedia sobre organigramas](https://en.wikipedia.org/wiki/Organizational_chart).
+
+<Playground initial={`orgchart "Acme Corp — Q3 2025"
+ceo: "Jamie Torres" | CEO [role: ceo]
+  cto: "Raj Patel" | CTO [role: cto]
+    lead_fe: "Priya Nair" | Engineering Lead | Frontend [role: engineer]
+      eng1: "Alex Kim" | Senior Engineer [role: engineer]
+      eng2: "Jordan Lee" | Engineer [role: engineer, status: new]
+      open1: open "TBH" | Frontend Engineer [role: engineer]
+    lead_be: "Omar Hassan" | Engineering Lead | Backend [role: engineer]
+      eng3: "Yuki Tanaka" | Staff Engineer [role: engineer]
+      draft1: draft "TBH" | Senior Engineer [role: engineer]
+  cfo: "Maria Santos" | CFO [role: cfo]
+    fin1: "Nour Ahmed" | Finance Manager [role: ops]
+  cpo: "Ellen Wu" | CPO [role: cpo]
+    pm1: "Tyler Brooks" | Product Lead | Core [role: product]
+    pm2: "Suki Ito" | Product Lead | Growth [role: product]
+advisor adv1: "Dr. Alan Ford" | Board Advisor [role: advisor]
+pm1 -.-> lead_fe
+pm2 -.-> lead_be`} height={520} />
+
+---
+
+## 1. Tu primer organigrama
+
+El organigrama más simple y útil: una jerarquía de tres niveles con un puesto vacante.
+
+<Playground initial={`orgchart "Engineering Team"
+cto: "Wei Zhang" | CTO [role: cto]
+  lead: "Sam Obi" | Engineering Lead [role: engineer]
+    eng: "Ana Rossi" | Engineer [role: engineer]
+    open1: open "TBH" | Engineer [role: engineer]`} />
+
+Cuatro reglas cubren el 80% de los casos de uso:
+
+1. Comienza con la palabra clave `orgchart`, opcionalmente seguida de un título entre comillas.
+2. Cada persona es un **nodo** — `id: "Nombre" | "Título" | "Departamento" [props]`. El `|` separa los campos de nombre, título y departamento.
+3. **La sangría determina la jerarquía** — cada dos (o más) espacios adicionales mueven un nodo un nivel más profundo bajo el nodo menos sangrado más cercano por encima.
+4. Declara puestos vacantes con `open id:` o `draft id:`, y asesores externos con `advisor id:`.
+
+> Los comentarios deben comenzar con `#` en su propia línea (los `//` en línea al final también se eliminan).
+
+---
+
+## 2. Nodos
+
+Una línea de nodo tiene la forma `[kind] id: fields [props]`. El `id` debe coincidir con `[A-Za-z][A-Za-z0-9_-]*`.
+
+### 2.1 Campos (separados por barra vertical)
+
+La parte después de `:` y antes del bloque opcional `[props]` se divide por `|`:
+
+```
+alice: "Alice Zhang"                                # name only
+alice: "Alice Zhang" | "VP Engineering"             # name + title
+alice: "Alice Zhang" | "VP Eng" | "Platform"        # name + title + department
+alice: "Alice Zhang" | "VP Eng" | "Platform" | "x@co.com"  # + info line
+```
+
+| Posición | Contenido | Notas |
+|---|---|---|
+| 1ª | Nombre | Entre comillas o sin ellas |
+| 2ª | Título / nivel de cargo | Opcional |
+| 3ª | Departamento | Opcional |
+| 4ª | Línea de información | Opcional; también configurable via `note:`, `email:`, `phone:`, `location:` props |
+
+<Playground initial={`orgchart "Field count demo"
+alice: "Alice"
+  bob: "Bob" | "CTO"
+    carol: "Carol" | "Engineer" | "Engineering"
+    dave: "Dave" | "VP Sales" | "Sales" | "dave@co.com"`} height={300} />
+
+### 2.2 Tipos de nodos
+
+La **palabra clave de tipo** opcional antes del id cambia cómo se renderiza el nodo:
+
+| Palabra(s) clave | Tipo | Significado |
+|---|---|---|
+| *(ninguno)* | `person` | Persona regular |
+| `role`, `open` | `role` | Posición abierta / vacante |
+| `draft`, `tbh` | `draft` | Posición planificada, no en reclutamiento activo |
+| `advisor`, `external` | `advisor` | Asesor externo, miembro del consejo o contratista |
+
+<Playground initial={`orgchart "Node kinds"
+ceo: "Jordan Kim" | CEO [role: ceo]
+  eng_lead: "Priya Nair" | Engineering Lead [role: engineer]
+    open eng_open: "TBH" | Senior Engineer [role: engineer]
+    draft eng_draft: "TBH" | Staff Engineer [role: engineer]
+  advisor adv1: "Dr. Lee" | Board Advisor [role: advisor]`} height={320} />
+
+### 2.3 Propiedades de los nodos
+
+Las propiedades van en `[key: value, …]` al final de una línea de nodo.
+
+| Propiedad | Valores | Efecto |
+|---|---|---|
+| `role:` | ver tabla abajo | Icono de rol mostrado en el avatar |
+| `icon:` | igual que `role:` | Alias de `role:` |
+| `department:` | texto | Anula el campo de departamento |
+| `status:` | `new` \| `leaving` \| `on-leave` | Píldora de estado en la tarjeta |
+| `avatar-color:` | color hex (ej. `"#7B1FA2"`) | Color de fondo del avatar |
+| `gender:` | `male` \| `female` | Silueta del avatar (usada cuando no hay icono de rol) |
+| `note:` | texto | Línea de información (gana la primera encontrada) |
+| `email:` | texto | Línea de información |
+| `phone:` | texto | Línea de información |
+| `location:` | texto | Línea de información |
+| `assistant-of:` | id de nodo | Renderiza este nodo como asistente del nodo nombrado |
+| `matrix:` | ids de nodo separados por espacio o coma | Agrega líneas matriciales punteadas desde esos nodos hacia este |
+| `reports:` | id de nodo | Anulación explícita de padre (en lugar de sangría) |
+| `open` | *(bandera simple)* | Marca el nodo como abierto; equivalente a usar la palabra clave de tipo `role` |
+| `draft` o `tbh` | *(bandera simple)* | Marca el nodo como borrador; equivalente a la palabra clave `draft` |
+| `external` | *(bandera simple)* | Marca el nodo como externo; equivalente a `advisor` |
+
+**Iconos de rol** — el valor de `role:` se resuelve en un icono de visualización. Palabras clave aceptadas (sin distinción de mayúsculas/minúsculas):
+
+| Palabras clave | Icono |
+|---|---|
+| `ceo` | CEO |
+| `cto` | CTO |
+| `cfo` | CFO |
+| `coo` | COO |
+| `cmo` | CMO |
+| `cpo` | CPO |
+| `vp` | VP |
+| `engineer`, `engineering` | Engineer |
+| `designer`, `design` | Designer |
+| `sales` | Sales |
+| `hr` | HR |
+| `legal` | Legal |
+| `ops`, `operations` | Ops |
+| `marketing` | Marketing |
+| `product` | Product |
+| `data` | Data |
+| `advisor` | Advisor |
+| `intern` | Intern |
+| `vacant` | Vacant |
+
+<Playground initial={`orgchart "People directory"
+ceo: "Jamie Torres" | CEO [role: ceo, avatar-color: "#1E88E5"]
+  cto: "Raj Patel" | CTO [role: cto]
+    eng1: "Priya Nair" | Staff Engineer [role: engineer, status: new]
+    eng2: "Jordan Lee" | Senior Engineer [role: engineer]
+  cfo: "Maria Santos" | CFO [role: cfo]
+    fin1: "Nour Ahmed" | Finance Manager [role: ops, status: on-leave]
+  advisor adv1: "Dr. Alan Ford" | Board Advisor [role: advisor]
+  draft draft1: "TBH" | General Counsel [role: legal]`} height={380} />
+
+---
+
+## 3. Jerarquía
+
+La jerarquía se expresa mediante **sangría** — el patrón más común. Cada nodo se convierte en hijo del nodo más cercano por encima con una sangría menor. Las tabulaciones se tratan como dos espacios.
+
+```
+ceo: "CEO"
+  cto: "CTO"           # child of ceo (indent 2)
+    eng: "Engineer"    # child of cto (indent 4)
+  cfo: "CFO"           # child of ceo (indent 2, same level as cto)
+```
+
+Alternativamente, usa la propiedad `reports:` para establecer un padre de forma explícita independientemente de la sangría:
+
+```
+orgchart "Flat file"
+ceo: "CEO"
+cto: "CTO" [reports: ceo]
+eng: "Engineer" [reports: cto]
+```
+
+<Playground initial={`orgchart "Series A Startup"
+ceo: "Lena Brandt" | CEO [role: ceo]
+  cto: "James Osei" | CTO [role: cto]
+    be: "Platform Lead" | Engineering [role: engineer]
+      be1: "Fatima Al-Rashid" | Backend Engineer [role: engineer]
+      be2: "Marco Ricci" | Backend Engineer [role: engineer]
+    fe: "Frontend Lead" | Engineering [role: engineer]
+      fe1: "Yumi Tanaka" | Frontend Engineer [role: engineer, status: new]
+      open_fe: open "TBH" | Frontend Engineer [role: engineer]
+  cpo: "Diana Russo" | CPO [role: cpo]
+    pm1: "Chris Obi" | Product Manager [role: product]
+  cmo: "Kai Nakamura" | CMO [role: cmo]
+    mkt1: draft "TBH" | Growth Marketer [role: marketing]`} height={480} />
+
+---
+
+## 4. Aristas
+
+Existen dos tipos de aristas. La mayoría de las líneas de reporte provienen automáticamente de la jerarquía de sangría. También puedes escribirlas explícitamente — o agregar líneas matriciales (punteadas).
+
+| Operador | Tipo de arista | Significado |
+|---|---|---|
+| `from -> to` | `report` | Línea sólida de reporte |
+| `from -.-> to` | `matrix` | Línea punteada matricial (reporte indirecto) |
+
+Las aristas explícitas requieren que ambos ids de nodo estén ya declarados. Una arista `report` creada explícitamente no se duplica si la misma relación ya está implícita por la sangría.
+
+Se admiten etiquetas en las aristas:
+
+```
+pm1 -.-> design [label: "product partnership"]
+```
+
+<Playground initial={`orgchart "Matrix org"
+config: direction = LR
+cpo: "Ellen Wu" | CPO [role: cpo]
+  pm_core: "Core PM" | Product Manager [role: product]
+  pm_growth: "Growth PM" | Product Manager [role: product]
+  design: "Suki Ito" | Design Lead [role: designer]
+  data_lead: "Ben Park" | Data Lead [role: data]
+pm_core -.-> design [label: "design partner"]
+pm_growth -.-> design
+pm_growth -.-> data_lead`} height={320} />
+
+---
+
+## 5. Configuración
+
+Las líneas `config:` ajustan el diseño y la orientación. Cada una va en su propia línea.
+
+| Clave de configuración | Valores | Predeterminado | Efecto |
+|---|---|---|---|
+| `direction` | `TD`, `LR` | `TD` | Flujo de arriba hacia abajo o de izquierda a derecha |
+| `layout` | `tree`, `list`, `directory`, `compact` | `tree` | Modo de diseño visual |
+
+**Notas de diseño:**
+- `tree` — árbol jerárquico estándar con conectores ramificados. Ideal para la mayoría de los organigramas.
+- `list` / `directory` / `compact` — vista de directorio compacto con sangría. Bueno para listas de personal grandes donde la ramificación del árbol se vuelve complicada.
+
+**Diseño árbol** (predeterminado) — tarjetas de avatar con conectores ramificados y codificación de colores por departamento. Ideal para equipos de hasta ~30 personas.
+
+<Playground initial={`orgchart "Acme Engineering — tree"
+cto: "Wei Zhang" | CTO [role: cto]
+  platform: "Platform Lead" | Engineering [role: engineer]
+    p1: "Amara Diallo" | Staff Engineer [role: engineer]
+    p2: "Ben Novak" | Senior Engineer [role: engineer]
+    p3: draft "TBH" | Engineer [role: engineer]
+  growth: "Growth Lead" | Engineering [role: engineer, status: new]
+    g1: "Fatima Al-Rashid" | Senior Engineer [role: engineer]
+    g2: "Marco Ricci" | Engineer [role: engineer]`} height={400} />
+
+**Diseño lista** — filas de directorio compactas con guías de sangría. Ideal para equipos grandes donde la ramificación del árbol se vuelve complicada.
+
+<Playground initial={`orgchart "Engineering Directory — list"
+config: layout = list
+cto: "Wei Zhang" | CTO [role: cto]
+  platform: "Platform Team"
+    p1: "Amara Diallo" | Staff Eng [role: engineer]
+    p2: "Ben Novak" | Senior Eng [role: engineer]
+    p3: draft "TBH" | Engineer [role: engineer]
+  growth: "Growth Team"
+    g1: "Fatima Al-Rashid" | Senior Eng [role: engineer, status: new]
+    g2: "Marco Ricci" | Engineer [role: engineer, status: leaving]`} height={360} />
+
+---
+
+## 6. Etiquetas y comentarios
+
+- **Título:** `orgchart "Acme Corp"` — solo en la primera línea.
+- **Campo de nombre:** primer campo delimitado por barra vertical después de los dos puntos; puede estar entre comillas (`"Alice Zhang"`) o sin ellas (`Alice`).
+- **Campos de título/departamento:** segundo y tercer campos delimitados por barra vertical.
+- **Línea de información:** cuarto campo delimitado por barra vertical, o establecido via `note:`, `email:`, `phone:` o `location:` props. Gana el primero encontrado.
+- **Comentarios:** `#` al inicio de una línea (después de los espacios iniciales). Los `//` en línea también se eliminan.
+
+---
+
+## 7. Palabras reservadas y escape
+
+**Reservadas al inicio de línea:** `orgchart` (encabezado), `config:`, `role`, `open`, `draft`, `tbh`, `advisor`, `external`.
+
+**Tokens de operadores reservados** — evita estas secuencias dentro de los ids: `->`, `.->`
+
+**Reglas de ID:** debe coincidir con `[A-Za-z][A-Za-z0-9_-]*`. Los nombres con espacios van en el campo de nombre entre comillas, no en el id.
+
+**Cadenas con espacios** en los valores de props (ej. `department: "Platform Eng"`) deben ir entre comillas dobles.
+
+---
+
+## 8. Errores comunes
+
+| Lo que escribiste | El analizador dice | Corrección |
+|---|---|---|
+| `alice: Alice Zhang` (nombre sin comillas con espacio) | Analiza `Alice` como el nombre; `Zhang` se pierde o se malinterpreta | Pon el nombre entre comillas: `alice: "Alice Zhang"` |
+| `open1 open: "TBH"` | `open` después del id no es una palabra clave de tipo; falla la expresión regular del id | La palabra clave de tipo va primero: `open open1: "TBH"` |
+| `alice -> bob` antes de que se declare alguno de los nodos | `OrgchartParseError: Edge references unknown node` | Declara los nodos primero, luego escribe las aristas al final |
+| `config: direction = top-down` | Valor desconocido ignorado; la dirección permanece como `TD` | Usa `TD` o `LR` |
+| `config: layout = compact` | Aceptado — se mapea al diseño `list` | Correcto; `compact`, `directory` y `list` funcionan todos |
+| `alice [matrix: bob charlie]` | Ids separados por espacio en `matrix:` — ambos se agregan | También funciona con comas: `matrix: "bob, charlie"` |
+| Id de nodo con espacio: `fe lead` | El analizador toma `fe` como el id; `lead` falla | Usa guion bajo: `fe_lead` |
+| Id duplicado | `OrgchartParseError: Duplicate node id` | Cada nodo necesita un id único |
+
+---
+
+## 9. Gramática (EBNF)
+
+```text
+document       = header (blank | comment | config | edge | node)*
+
+header         = "orgchart" ( WS quoted-string )? NEWLINE
+quoted-string  = '"' any-char-but-quote* '"'
+
+config         = "config" WS ":" WS key WS "=" WS value NEWLINE
+key            = "direction" | "layout"
+
+node           = INDENT* kind? id ":" WS fields ( "[" node-attrs "]" )? NEWLINE
+kind           = "role" | "open" | "draft" | "tbh" | "advisor" | "external" | "person"
+fields         = field ( "|" field )*
+field          = quoted-string | unquoted-text
+node-attrs     = node-attr ("," node-attr)*
+node-attr      = "role:" role-keyword
+               | "icon:" role-keyword
+               | "department:" text
+               | "status:" ( "new" | "leaving" | "on-leave" )
+               | "avatar-color:" quoted-hex
+               | "gender:" ( "male" | "female" )
+               | "note:" text
+               | "email:" text
+               | "phone:" text
+               | "location:" text
+               | "assistant-of:" id
+               | "matrix:" id-list
+               | "reports:" id
+               | bare-flag
+
+bare-flag      = "open" | "draft" | "tbh" | "external"
+
+edge           = id WS edge-op WS id ( "[" edge-attrs "]" )? NEWLINE
+edge-op        = "->" | ".->"  // -.-> for matrix
+edge-attrs     = "label:" quoted-string
+
+id             = [A-Za-z] [A-Za-z0-9_-]*
+comment        = ( "#" | "//" ) any NEWLINE
+```
+
+Fuente autoritativa: `src/diagrams/orgchart/parser.ts`. Si esto diverge del analizador, el analizador tiene prioridad — por favor, abre un issue.
+
+---
+
+## 10. Hoja de ruta
+
+**Planificado — aún no se puede analizar.** No uses esto en DSL generado hoy; el analizador lo rechazará o ignorará.
+
+- **Renderizado visual de `assistant-of:`** — la propiedad se analiza y almacena en el AST pero el renderizador aún no dibuja el conector de codo de asistente.
+- **Config `coloring`** — temas de colores basados en departamento (`coloring: department`).
+- **Niveles de tamaño `compact` de config** — control explícito del tamaño de tarjeta (`size: small | medium | large`).
+- **Ancho de nodo `span:`** — hacer que un nodo abarque varias columnas de hermanos en el diseño de árbol.
+- **Foto / URL de avatar** — `avatar: "https://…"` para mostrar una foto real.
+- **Exportar a formatos HRIS** — salida estructurada JSON/CSV junto con el SVG.
+
+Realiza seguimiento en los issues de GitHub si necesitas alguno de estos antes.
+
+---
+
+## Ejemplos relacionados
+
+Escenarios listos para usar de la galería de ejemplos:
+
+<RelatedExamples slugs={[
+  'orgchart-tech-startup',
+  'orgchart-matrix-reporting',
+]} />

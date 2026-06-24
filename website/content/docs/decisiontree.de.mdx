@@ -1,0 +1,461 @@
+---
+title: Entscheidungsbaum-Diagramm
+---
+
+## Über Entscheidungsbäume
+
+Ein **Entscheidungsbaum** ist ein Verzweigungsdiagramm, das eine Folge von Entscheidungen und deren Konsequenzen als verwurzelten Baum darstellt: Jeder innere Knoten ist eine Frage oder Entscheidung, jede Kante ist eine Antwort oder Aktion, und jedes Blatt ist ein Ergebnis. Das Format taucht in drei recht unterschiedlichen Bereichen auf — Fehlerbehebungs-Flussdiagramme und klinische Entscheidungsregeln (Taxonomiebäume), Risiko- und Investitionsanalysen mit Erwartungswertberechnung (Entscheidungsanalyse) und Inspektion von Machine-Learning-Modellen (Klassifizierungsbäume). Trotz unterschiedlicher Erscheinung teilen alle drei dieselbe Baumstruktur, weshalb Schematex sie unter einem einzigen Schlüsselwort mit Modus-Selektor zusammenfasst.
+
+Schematex-Entscheidungsbäume umfassen: (1) **Taxonomiemodus** — die Ja/Nein-Frageabläufe aus der medizinischen Triage ([Turing 1937](https://en.wikipedia.org/wiki/Decision_tree)-Linie; heute Standard in klinischen Entscheidungsunterstützungssystemen), (2) **Entscheidungsanalysemodus** — die Rollback-Methode mit Erwartungswert aus den Managementwissenschaften ([Raiffa & Schlaifer, 1961](https://en.wikipedia.org/wiki/Decision_tree#Decision_analysis)), und (3) **ML-Modus** — das CART-Split/Leaf-Format zur Visualisierung von scikit-learn und ähnlich trainierten Klassifikatoren ([Breiman et al., 1984](https://en.wikipedia.org/wiki/Decision_tree_learning)).
+
+<Playground initial={`
+  decisiontree "Customer Support Triage"
+  direction: top-down
+
+  question "Is the service completely down?"
+    yes: question "Outage confirmed on status page?"
+      yes: answer "Follow incident protocol — page on-call"
+      no: answer "Check monitoring — open severity-1 ticket"
+    no: question "Is the issue affecting billing?"
+      yes: answer "Escalate to billing team — SLA breach risk"
+      no: question "Can user reproduce consistently?"
+        yes: answer "Collect HAR trace — file bug report"
+        no: answer "Ask for screenshot — watch for recurrence"`} height={460} />
+
+---
+
+## 1. Ihr erster Entscheidungsbaum
+
+Der kleinste sinnvolle Entscheidungsbaum: eine Wurzelfrage mit zwei Ästen.
+
+<Playground initial={`
+  decisiontree "Laptop troubleshoot"
+
+  question "Does it power on?"
+    yes: answer "Check display — connect external monitor"
+    no: question "Is the charger light on?"
+      yes: answer "Hold power button 10 s — try again"
+      no: answer "Check outlet and charging cable"`} />
+
+Vier Regeln decken 80 % der Nutzungsfälle ab:
+
+1. Beginnen Sie mit `decisiontree`, optional mit `:modus` und einem Titel in Anführungszeichen.
+2. Jeder Frageknoten verwendet `question "text"` (oder Kurzform `q "text"`).
+3. Jedes Antwort-/Blattknoten verwendet `answer "text"` (oder `a "text"` oder `leaf "text"`).
+4. Ast-Bezeichnungen — `yes:`, `no:` oder ein benutzerdefiniertes `label "X":` — werden dem Kindknoten in derselben Zeile vorangestellt.
+
+Einrückung steuert die Verschachtelung: Jede Ebene fügt 2 Leerzeichen hinzu. Der Parser berechnet Eltern-Kind-Beziehungen aus der Einrücktiefe.
+
+> Kommentare müssen mit `#` oder `//` am Anfang einer eigenen Zeile stehen.
+
+---
+
+## 2. Modi
+
+Der Modus wird in der Kopfzeile festgelegt:
+
+| Kopfzeile | Modus | Verwendung |
+|---|---|---|
+| `decisiontree` | Taxonomie | Ja/Nein-Frageabläufe, Fehlerbehebungsanleitungen, klinische Entscheidungsunterstützung |
+| `decisiontree:decision` (oder `decisiontree:da`) | Entscheidungsanalyse | Investitionsentscheidungen, Risikoanalyse, Erwartungswertberechnung |
+| `decisiontree:influence` (oder `mode: influence`) | Einflussdiagramm | Kompakte DAG-Ansicht eines Entscheidungsproblems — Struktur vor der Entfaltung zum Baum |
+| `decisiontree:ml` | Machine Learning | Visualisierung trainierter CART-Klassifikatoren (scikit-learn, XGBoost, usw.) |
+
+Die Standardrichtung ist `top-down` für Taxonomie und ML, `left-right` für die Entscheidungsanalyse.
+
+---
+
+## 3. Taxonomiemodus
+
+Geeignet für: Fehlerbehebungsanleitungen, FAQs, klinische Protokolle, Produktempfehlungsabläufe.
+
+### Knoten-Schlüsselwörter
+
+| Schlüsselwort | Aliase | Bedeutung |
+|---|---|---|
+| `question "…"` | `q "…"` | Innerer Knoten — eine Frage mit Kindknoten |
+| `answer "…"` | `a "…"`, `leaf "…"` | Blattknoten — ein terminales Ergebnis |
+
+### Ast-Bezeichnungen
+
+| Syntax | Bedeutung |
+|---|---|
+| `yes: question "…"` | Ast mit der Bezeichnung „yes" |
+| `no: answer "…"` | Ast mit der Bezeichnung „no" |
+| `label "Benutzerdefinierter Text": answer "…"` | Ast mit beliebiger benutzerdefinierter Bezeichnung |
+
+Benutzerdefinierte Bezeichnungen erlauben Mehrfachentscheidungen aus einer Frage, die über Ja/Nein hinausgehen.
+
+<Playground initial={`
+  decisiontree "Triage — chest pain onset"
+
+  q "Onset sudden?"
+    yes: q "ECG changes present?"
+      yes: a "ACS protocol — cardiology consult"
+      no: q "D-dimer elevated?"
+        yes: a "PE workup — CT pulmonary angiography"
+        no: a "Aortic dissection — CT angiography"
+    no: q "Pain reproducible on palpation?"
+      yes: a "Musculoskeletal — NSAIDs, follow-up PCP"
+      no: a "GI / anxiety — further history"`} height={420} />
+
+<Playground initial={`
+  decisiontree "Pain level triage"
+
+  question "Reported pain level?"
+    label "Severe (8-10)": answer "Emergency — send to ER immediately"
+    label "Moderate (4-7)": answer "Urgent care — within 2 hours"
+    label "Mild (1-3)": answer "Schedule next available — OTC care"
+    label "None": answer "Monitor — patient may be post-medication"`} height={320} />
+
+---
+
+## 4. Entscheidungsanalysemodus
+
+Geeignet für: Investitionsentscheidungen, Build-vs-Buy-Analysen, risikogewichtete Strategiebewertung.
+
+### Knoten-Schlüsselwörter
+
+| Schlüsselwort | Aliase | Bedeutung |
+|---|---|---|
+| `decision "…"` | — | Entscheidungsknoten — der Akteur wählt einen Ast |
+| `chance "…"` | — | Zufallsknoten — ein unsicheres Ergebnis |
+| `end "…"` | `outcome "…"` | Terminalknoten — endgültige Auszahlung |
+
+### Ast-Schlüsselwörter
+
+| Schlüsselwort | Bedeutung |
+|---|---|
+| `choice "bezeichnung"` | Benennt den eingehenden Ast von einem Entscheidungsknoten |
+| `prob N` | Legt die Wahrscheinlichkeit (0–1) des eingehenden Astes von einem Zufallsknoten fest |
+
+### Auszahlungsattribut
+
+`payoff=N` an einem beliebigen Knoten legt den Auszahlungswert fest. Bei `end`- / `outcome`-Knoten definiert es den Terminalwert. Der Parser führt automatisch das Erwartungswert-Rollback durch: Der Erwartungswert jedes `chance`-Knotens ist die wahrscheinlichkeitsgewichtete Summe der Erwartungswerte seiner Kinder; der Erwartungswert jedes `decision`-Knotens ist der maximale Erwartungswert der Kinder, und der optimale Ast wird markiert.
+
+**Einschränkung:** Die Wahrscheinlichkeiten aller direkten Kinder eines `chance`-Knotens müssen sich auf 1,0 (±0,01) summieren. Der Parser wirft einen `DTreeParseError`, wenn dies nicht der Fall ist.
+
+<Playground initial={`
+  decisiontree:decision "Cloud vendor selection"
+
+  decision "Which vendor?"
+    choice "Build in-house"
+      chance "Project outcome"
+        prob 0.6 end "On-time delivery" payoff=900000
+        prob 0.4 end "Over budget / delayed" payoff=150000
+    choice "Managed SaaS vendor"
+      end "Predictable cost" payoff=500000
+    choice "Hybrid approach"
+      chance "Integration complexity"
+        prob 0.5 end "Smooth integration" payoff=700000
+        prob 0.5 end "Integration rework" payoff=300000`} height={440} />
+
+---
+
+## 5. Einflussdiagramm-Modus
+
+Geeignet für: die **kompakte** Rahmung eines Entscheidungsproblems, bevor es entfaltet wird. Während der Entscheidungsanalysemodus jeden Ast jedes Ergebnisses als expliziten Baum zeichnet, stellt ein **Einflussdiagramm** ([Howard & Matheson, 1981](https://en.wikipedia.org/wiki/Influence_diagram)) dasselbe Problem als gerichteten azyklischen Graphen (DAG) von Variablen und deren Abhängigkeiten dar — ein Knoten pro Entscheidung, Unsicherheit und Zielgröße, unabhängig davon, wie viele Zustände jede annehmen kann. Es ist das Diagramm, zu dem Entscheidungsanalysten zuerst greifen, da es die Struktur (was beeinflusst was, was beeinflusst die Auszahlung) ohne die kombinatorische Explosion eines Baumes zeigt.
+
+Dieser Modus ist **strukturell, nicht rechnerisch.** Anders als der Entscheidungsanalysemodus löst er nicht den Erwartungswert — der kompakte Graph lässt absichtlich die Wahrscheinlichkeits- und Auszahlungstabellen weg, die ein EV-Rollback benötigen würde. Verwenden Sie ihn zur Kommunikation und Validierung der Problemstruktur; verwenden Sie den Entscheidungsanalysemodus (Abschnitt 4), wenn Sie die Zahlen berechnet haben möchten.
+
+### Kopfzeilenformen
+
+Zwei gleichwertige Wege zur Moduswahl:
+
+```
+decisiontree:influence "Oil Wildcatter"
+```
+
+oder als Direktive in einer eigenen Zeile nach der Kopfzeile:
+
+```
+decisiontree "Market Entry"
+  mode: influence
+```
+
+### Knoten-Schlüsselwörter
+
+Jeder Knoten wird als `art Id "bezeichnung"` deklariert — eine ID (zur Verdrahtung von Bögen) gefolgt von einer Anzeigebezeichnung in Anführungszeichen.
+
+| Schlüsselwort | Form | Bedeutung |
+|---|---|---|
+| `decision Id "…"` | **Rechteck** | Eine Wahl, die der Entscheidungsträger kontrolliert |
+| `chance Id "…"` | **Oval** | Eine unsichere Variable (Weltzustand) |
+| `value Id "…"` | **Oktagon** | Die Zielgröße / Auszahlung, die optimiert wird |
+
+Die Formen folgen der Standard-Einflussdiagramm-Konvention: Entscheidungen sind Rechtecke, Unsicherheiten sind Ovale, und der Wertknoten ist ein Oktagon. Fügen Sie `utility=N` zu einem Wertknoten hinzu, um die dargestellte Auszahlung zu annotieren (`value Profit "Nettogewinn" utility=42`).
+
+### Bögen und ihre Semantik
+
+Bögen werden als `Quelle -> Ziel` in eigenen Zeilen, über Knoten-IDs, geschrieben. **Die Bedeutung eines Bogens ergibt sich aus seinem Ziel**, genau wie im veröffentlichten Standard:
+
+| Bogen in einen… | Bedeutung | Dargestellt als |
+|---|---|---|
+| `decision` | **Informational** — dies ist *vor* der Entscheidung bekannt | gestrichelte Linie |
+| `chance` | **Relevanz / Konditionierung** — die Quelle konditioniert diese Unsicherheit | durchgezogene Linie |
+| `value` | **Funktional** — die Quelle ist ein Argument der Auszahlungsfunktion | durchgezogene Linie |
+
+Der gestrichelte Informationsbogen ist der wichtigste: `Seismik -> Bohren` bedeutet „das Seismikergebnis wird beobachtet, bevor entschieden wird, ob gebohrt wird", was genau das ist, was die Entscheidung modellierenswert macht.
+
+### Validierungsregeln
+
+- Der Graph muss **azyklisch** sein — ein Zyklus (z. B. `A -> B` und `B -> A`) wird abgelehnt.
+- Mindestens **ein `value`-Knoten** ist erforderlich; ein Einflussdiagramm ohne Zielgröße ist kein Entscheidungsproblem.
+- Bögen referenzieren Knoten-IDs, die deklariert sein müssen.
+
+### Beispiele
+
+Der Oil Wildcatter — das kanonische Lehrproblem. Das Seismikergebnis wird vor der Bohrentscheidung beobachtet (gestrichelter Informationsbogen `Seismic -> Drill`), der Test ist relevant für das tatsächliche Vorhandensein von Öl (`Seismic -> Oil`), und sowohl der Ölzustand als auch die Bohrentscheidung fließen in den Gewinn ein (`Oil -> Profit`, `Drill -> Profit`).
+
+<Playground initial={`
+  decisiontree:influence "Oil Wildcatter"
+    decision Drill "Drill?"
+    chance Oil "Oil present"
+    chance Seismic "Seismic test"
+    value Profit "Net profit" utility=42
+    Seismic -> Oil
+    Seismic -> Drill
+    Oil -> Profit
+    Drill -> Profit`} height={360} />
+
+Eine Markteintrittsentscheidung unter Verwendung der `mode: influence`-Direktiv-Form. Die Nachfrage wird vor dem Markteintritt beobachtet (`Demand -> Enter`, informational/gestrichelt) und treibt auch direkt den Gewinn an, während die Wettbewerberreaktion nur die Auszahlung beeinflusst.
+
+<Playground initial={`
+  decisiontree "Market Entry"
+    mode: influence
+    decision Enter "Enter market?"
+    chance Demand "Market demand"
+    chance Competition "Competitor response"
+    value V "Profit" utility=120
+    Demand -> Enter
+    Demand -> V
+    Competition -> V
+    Enter -> V`} height={360} />
+
+---
+
+## 6. Machine-Learning-Modus
+
+Geeignet für: Erklärung trainierter CART-Klassifikatoren, Modelltransparenzberichte, Feature-Importance-Analysen.
+
+### Knoten-Schlüsselwörter
+
+| Schlüsselwort | Bedeutung |
+|---|---|
+| `split "…"` | Innerer Split-Knoten — enthält einen Feature-Test |
+| `leaf "…"` | Blattknoten — Klasse oder Regressionswert |
+
+### Ast-Präfixe
+
+`true` und `false` werden Kindknoten vorangestellt, um zu markieren, welcher Ast jedes Kind darstellt.
+
+### Eigenschaften (Schlüssel=Wert, kein Doppelpunkt, keine Anführungszeichen um Werte)
+
+| Eigenschaft | Gilt für | Bedeutung |
+|---|---|---|
+| `feature=name` | split | Name des am Split verwendeten Features |
+| `op="<="` | split | Vergleichsoperator (in Anführungszeichen, wenn Sonderzeichen enthalten) |
+| `threshold=5.9` | split | Split-Schwellenwert |
+| `samples=150` | split, leaf | Anzahl der Stichproben in diesem Knoten |
+| `gini=0.5` | split, leaf | Gini-Unreinheit |
+| `entropy=0.5` | split, leaf | Entropie-Unreinheit |
+| `mse=0.3` | split, leaf | Mittlerer quadratischer Fehler (Regression) |
+| `gain=0.2` | split, leaf | Informationsgewinn |
+| `class=name` | leaf | Name der vorhergesagten Klasse |
+| `value=50` | leaf | Stichprobenanzahl; `value=[50,30,20]` für Klassenverteilung |
+
+<Playground initial={`
+  decisiontree:ml "Iris classification (CART)"
+  direction: top-down
+  impurity: gini
+
+  split "Petal length ≤ 2.45" feature=petal_length op="<=" threshold=2.45 samples=150 gini=0.667
+    true leaf "Setosa" class=Iris-setosa value=50 gini=0.0
+    false split "Petal width ≤ 1.75" feature=petal_width op="<=" threshold=1.75 samples=100 gini=0.5
+      true leaf "Versicolor" class=Iris-versicolor value=50 gini=0.0
+      false leaf "Virginica" class=Iris-virginica value=50 gini=0.0`} height={400} />
+
+---
+
+## 7. Konfigurationsoptionen
+
+Konfigurationszeilen stehen zwischen der Kopfzeile und dem ersten Knoten. Jede hat die Form `schlüssel: wert` (Doppelpunkt, kein `config`-Schlüsselwort).
+
+### Gemeinsame Konfiguration (alle Modi)
+
+| Schlüssel | Werte | Standard | Wirkung |
+|---|---|---|---|
+| `direction:` | `top-down`, `left-right` | `top-down` (Taxonomie/ML), `left-right` (Entscheidung) | Layout-Richtung |
+| `edgeStyle:` (oder `edge-style:`) | `diagonal`, `orthogonal`, `bracket` | modusabhängig | Kantendarstellungsstil |
+
+### Taxonomie-Konfiguration
+
+| Schlüssel | Werte | Standard | Wirkung |
+|---|---|---|---|
+| `branchLabels:` (oder `branch-labels:`) | `boolean`, `relation` | `boolean` | Stil der Ast-Bezeichnungen |
+
+### Entscheidungsanalyse-Konfiguration
+
+| Schlüssel | Werte | Standard | Wirkung |
+|---|---|---|---|
+| `branchLength:` (oder `branch-length:`) | `probability` | aus | Astlänge proportional zur Wahrscheinlichkeit skalieren |
+
+### ML-Konfiguration
+
+| Schlüssel | Werte | Standard | Wirkung |
+|---|---|---|---|
+| `impurity:` | `gini`, `entropy`, `mse`, `gain` | `gini` | An Knoten angezeigte Unreinheitsmetrik |
+| `classes:` | kommagetrennte Liste | — | Klassenbezeichnungsnamen zur Anzeige |
+
+```
+decisiontree:ml "Kreditklassifikator"
+direction: top-down
+impurity: gini
+classes: Genehmigt, Abgelehnt, Überprüfung
+```
+
+---
+
+## 8. Beschriftungen & Kommentare
+
+- **Diagrammtitel:** `decisiontree "Titel"` — die Zeichenkette in Anführungszeichen nach dem Kopfzeilen-Schlüsselwort.
+- **Knotenbezeichnung:** die Zeichenkette in Anführungszeichen direkt nach dem Knoten-Schlüsselwort — `question "Ist die Gebühr erlassen?"`.
+- **Astbezeichnung:** `yes:`, `no:` oder `label "Benutzerdefiniert":` vor dem Kindknoten — in derselben Zeile wie das Kind.
+- **Auszahlung:** `payoff=250000` am Ende einer Entscheidungs-/End-Knotenzeile.
+- **ML-Eigenschaften:** `schlüssel=wert`-Token nach der Bezeichnungszeichenkette des Knotens (keine `[…]`-Klammern, keine Doppelpunkte).
+- **Kommentare:** `#` oder `//` am Anfang einer Zeile (nach optionalem führendem Leerzeichen). Nur vollzeilige Kommentare werden unterstützt — nachgestellte Inline-Kommentare sind nicht möglich.
+
+---
+
+## 9. Reservierte Wörter & Maskierung
+
+**Reservierte Knoten-Schlüsselwörter:** `decision`, `chance`, `end`, `outcome`, `choice`, `prob`, `split`, `leaf`, `question`, `q`, `answer`, `a`.
+
+**Reservierte Ast-Präfixe:** `yes:`, `no:`, `true`, `false`, `label`.
+
+**Reservierte Kopfzeilenformen:** `decisiontree`, `decisiontree:decision`, `decisiontree:da`, `decisiontree:ml`.
+
+**Zeichenketten mit Leerzeichen** müssen in doppelte Anführungszeichen gesetzt werden: `question "Jahresumsatz > $1M?"`. Knotenbezeichnungen, Astbezeichnungen aus der `label "…":`-Syntax und der Diagrammtitel erfordern doppelte Anführungszeichen.
+
+| Reserviertes Token | Kontext | Hinweise |
+|---|---|---|
+| `yes:` / `no:` | Zeilenanfang in Taxonomie | Kann nicht als Bezeichnung verwendet werden — verwenden Sie `label "yes":`, wenn Sie den Literaltext „yes" benötigen |
+| `true` / `false` | Zeilenanfang im ML-Modus | Kann keine Knotenbezeichnung sein |
+| `choice` | Zeilenanfang im Entscheidungsmodus | Fungiert als Ast-Wrapper, nicht als Knoten |
+| `prob` | Zeilenanfang im Entscheidungsmodus | Muss von einer Zahl gefolgt werden |
+
+---
+
+## 10. Häufige Fehler
+
+| Sie haben geschrieben | Der Parser meldet | Lösung |
+|---|---|---|
+| `yes: "Genehmigen"` (kein Knoten-Schlüsselwort) | `DTreeParseError: Missing taxonomy node kind` | `yes: answer "Genehmigen"` |
+| Wahrscheinlichkeiten bei `chance`-Kindern summieren sich auf 0,8 | `DTreeParseError: probabilities do not sum to 1.0` | Anpassen, sodass alle `prob`-Werte sich genau auf 1,0 (±0,01) summieren |
+| `question "text"` mit einem Kind auf derselben Einrückebene | Kind wird nicht als Kind geparst — wird zum Geschwisterknoten | Kinder um 2 weitere Leerzeichen als das Elternelement einrücken |
+| `config direction = top-down` (mit `config`-Schlüsselwort) | `config` ist ein Fishbone-Schlüsselwort — hier nicht erkannt | Verwenden Sie `direction: top-down` (kein `config`-Präfix) |
+| `feature = petal_length` (Leerzeichen um `=`) | Als separate Token geparst; Eigenschaft nicht erkannt | Kein Leerzeichen: `feature=petal_length` |
+| `[payoff: 500000]` Klammer-Syntax | Nicht erkannt — Parser ignoriert Klammern für Auszahlung | Verwenden Sie `payoff=500000` (keine Klammern, kein Leerzeichen um `=`) |
+| `decisiontree:taxonomy` | `DTreeParseError: Invalid header` | Verwenden Sie `decisiontree` (kein Modus-Suffix für Taxonomie) |
+
+---
+
+## 11. Grammatik (EBNF)
+
+```text
+document       = header ( config-line )* node
+
+header         = "decisiontree" ( ":" mode )? ( WS quoted-string )? NEWLINE
+mode           = "decision" | "da" | "ml"
+                 // weggelassen → Taxonomie
+
+config-line    = config-key ":" WS config-value NEWLINE
+config-key     = "direction" | "edgeStyle" | "edge-style"
+               | "branchLabels" | "branch-labels"
+               | "branchLength" | "branch-length"
+               | "impurity" | "classes"
+
+// ── Taxonomiemodus ──────────────────────────────
+node           = ( branch-prefix WS )? tax-node ( WS "[" tax-attrs "]" )? NEWLINE
+                   INDENT child-node*
+tax-node       = ( "question" | "q" ) WS quoted-string
+               | ( "answer" | "a" | "leaf" ) WS quoted-string
+branch-prefix  = "yes:" | "no:" | "label" WS quoted-string ":"
+
+// ── Entscheidungsanalysemodus ─────────────────────
+da-node        = "decision" WS quoted-string NEWLINE INDENT da-child+
+               | "chance" WS quoted-string NEWLINE INDENT da-prob-child+
+               | ( "end" | "outcome" ) WS quoted-string ( WS "payoff=" number )? NEWLINE
+da-child       = "choice" WS quoted-string NEWLINE INDENT da-node
+da-prob-child  = "prob" WS number WS da-node    // prob, Wert und Kind in einer Zeile
+
+// ── ML-Modus ───────────────────────────────────
+ml-node        = ( "true" | "false" )? ml-kind WS quoted-string ml-prop* NEWLINE
+                   INDENT ml-child*
+                 // "true"/"false" und ml-kind müssen in derselben Zeile stehen
+ml-kind        = "split" | "leaf"
+ml-prop        = WS key "=" value     // kein Leerzeichen um "="
+
+comment        = ( "#" | "//" ) any NEWLINE
+quoted-string  = '"' any-char-but-quote* '"'
+```
+
+Maßgebliche Quelle: `src/diagrams/decisiontree/parser.ts`. Wenn diese Dokumentation vom Parser abweicht, hat der Parser Vorrang — bitte öffnen Sie ein Issue.
+
+---
+
+## 12. Normkonformität
+
+Schematex-Entscheidungsbäume decken vier etablierte Konventionen ab:
+
+Der **Taxonomiemodus** folgt den Frage/Antwort-Flussdiagramm-Konventionen, die in klinischen Entscheidungsunterstützungssystemen (Arden-Syntax-Linie) und ISO-9001-Fehlerbehebungsverfahren verbreitet sind.
+
+Der **Entscheidungsanalysemodus** folgt der Erwartungswert-Rollback-Methode aus den Managementwissenschaften: Entscheidungsknoten (quadratisch, Akteur wählt), Zufallsknoten (kreisförmig, probabilistisch), Terminalknoten mit Auszahlungen. Der EV wird automatisch über rückwärtige Induktion berechnet (Raiffa & Schlaifer, 1961).
+
+Der **Einflussdiagramm-Modus** folgt der Howard & Matheson (1981)-Konvention: Entscheidungs- (Rechteck), Zufalls- (Oval) und Wert- (Oktagon)-Knoten werden als azyklischer Graph verdrahtet, wobei die Bogenbedeutung aus dem Ziel abgeleitet wird (informational in Entscheidungen, gestrichelt gezeichnet; Relevanz in Zufall; funktional in Wert). Es ist ein strukturelles Diagramm — es löst nicht den EV.
+
+Der **ML-Modus** folgt der CART-Notation (Classification and Regression Trees) Split/Leaf (Breiman et al., 1984), kompatibel mit scikit-learns `export_text` und `plot_tree`-Ausgabe.
+
+Was heute implementiert ist:
+
+- ✅ Alle vier Modi: Taxonomie, Entscheidungsanalyse, Einflussdiagramm, ML
+- ✅ Taxonomie: `question`/`q`, `answer`/`a`/`leaf`, `yes:`, `no:`, `label "X":`-Astbezeichnungen
+- ✅ Entscheidung: `decision`, `chance`, `end`/`outcome`, `choice`, `prob`, `payoff=N`, automatisches EV-Rollback
+- ✅ Einfluss: `decision`/`chance`/`value`-Knoten, `utility=N`, `Quelle -> Ziel`-Bögen, zielabgeleitete Bogensemantik, gestrichelte Informationsbögen, Azyklizitäts- + Wertknoten-Validierung
+- ✅ ML: `split`, `leaf`, `true`/`false`-Ast-Präfixe, `feature=`, `threshold=`, `gini=`, `entropy=`, `mse=`, `class=`, `value=`
+- ✅ Konfiguration: `direction:`, `edgeStyle:`, `impurity:`, `classes:`, `branchLabels:`, `branchLength:`, `mode:`
+- ⏳ Wahrscheinlichkeitsgewichtete Ast-Längen-Darstellung (`branchLength: probability` wird geparst, aber noch nicht visuell angewendet)
+- ⏳ Sensitivitätsanalyse-Overlays (Tornadokarten-ähnliche Annotationen an Entscheidungsbäumen)
+- ⏳ Forest / Ensemble-Ansicht — mehrere Bäume nebeneinander
+
+Referenzen:
+
+- Raiffa, H. & Schlaifer, R. (1961). *Applied Statistical Decision Theory.* Harvard Business School.
+- Howard, R. A. & Matheson, J. E. (1981/2005). *Influence Diagrams.* Decision Analysis 2(3).
+- Breiman, L. et al. (1984). *Classification and Regression Trees.* Wadsworth.
+- Wikipedia — [Decision tree](https://en.wikipedia.org/wiki/Decision_tree) · [Influence diagram](https://en.wikipedia.org/wiki/Influence_diagram) · [Decision tree learning](https://en.wikipedia.org/wiki/Decision_tree_learning)
+
+---
+
+## 13. Roadmap
+
+**Geplant — noch nicht parsierbar.** Verwenden Sie diese nicht in generiertem DSL; der Parser wird sie zurückweisen oder ignorieren.
+
+- **`branchLength: probability`-Visualdarstellung** — der Konfigurationsschlüssel wird geparst, aber die Layout-Engine skaliert Astlängen noch nicht nach Wahrscheinlichkeit.
+- **Sensitivitäts-/Tornado-Analyse** — `sensitivity:`-Block, der annotiert, welche `prob`-Werte den endgültigen EV am stärksten beeinflussen.
+- **Export-Annotationen** — strukturierte Tabellenausgabe (Entscheidungsmatrix) neben dem Diagramm-SVG.
+- **Forest-Ansicht** — `forest`-Schlüsselwort, das mehrere `decisiontree`-Blöcke in einem nebeneinander angeordneten Vergleichslayout zusammenfasst.
+- **Interaktive Einklappen/Ausklappen-Markierungen** — `collapsed: true` an einem Knoten, um einen dreieckigen Platzhalter für tiefe Teilbäume zu rendern.
+
+Verfolgen Sie den Fortschritt in den GitHub-Issues, wenn Sie diese Funktionen früher benötigen.
+
+---
+
+## Verwandte Beispiele
+
+Sofort verwendbare Szenarien aus der Beispielgalerie:
+
+<RelatedExamples slugs={[
+  'decisiontree-support-triage',
+  'decisiontree-investment-analysis',
+]} />

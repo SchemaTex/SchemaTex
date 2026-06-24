@@ -1,0 +1,162 @@
+---
+title: 용접 기호 다이어그램
+---
+
+## 용접 기호란
+
+**용접 기호**는 제작자에게 이음부를 어떻게 용접해야 하는지 정확히 알려줍니다: 용접 종류, 어느 쪽 면에, 크기, 길이, 마감 방법. 표기법은 **기준선 골격** — 수평선, 이음부를 가리키는 지시 화살표, 선 위나 아래에 스냅되는 작은 용접 기호 글리프 — 으로 구성되며, **AWS A2.4**(미국)와 **ISO 2553**(국제 표준)으로 표준화되어 있습니다. Schematex는 이 골격을 정확하게 그립니다: 용접을 기술하면 엔진이 모든 글리프, 치수, 보조 기호를 배치합니다.
+
+이것은 그래프가 아닌 *고정 골격* 표기법입니다 — 레이아웃을 풀 필요가 없으므로 매번 결정론적으로 렌더링됩니다.
+
+<Playground initial={`welding "Bracket welds"
+joint "bracket to plate" {
+  arrow: fillet size=8 len=50 pitch=150
+  other: fillet size=6
+  around
+  tail: "GMAW"
+}`} height={260} />
+
+---
+
+## 1. 첫 번째 용접
+
+가장 작고 유용한 콜아웃: 헤더, 이음부 하나, 화살표 쪽 용접 하나.
+
+```
+welding "Bracket"
+joint "bracket to plate" {
+  arrow: fillet size=8
+}
+```
+
+대부분의 사용 사례를 커버하는 세 가지 규칙:
+
+1. `welding`으로 시작하고, 선택적으로 `standard: aws | iso-a | iso-b`(기본값 `aws`)와 따옴표로 감싼 제목을 붙입니다.
+2. 각 이음부는 `joint "레이블" { … }` 블록입니다. `arrow:`(화살표 쪽)와/또는 `other:`(반대 쪽)에 용접을 배치합니다.
+3. 용접 사양은 타입 뒤에 `key=value` 치수를 작성합니다 — `fillet size=8`, `vgroove angle=60 root=3`.
+
+---
+
+## 2. 면 — 화살표, 반대, 양쪽
+
+이음부는 화살표 쪽, 반대 쪽, 또는 양쪽에 용접됩니다.
+
+```
+joint "double fillet" {
+  both: fillet size=6        # 양쪽에 동일한 용접
+}
+joint "asymmetric" {
+  arrow: fillet size=8       # 화살표 쪽만
+  other: vgroove angle=60    # 반대 쪽은 다른 용접
+}
+```
+
+- **AWS**(기본값): 화살표 쪽 글리프는 기준선 **아래**에, 반대 쪽 글리프는 **위**에 그려집니다.
+- **ISO-A**(`standard: iso-a`): **점선 보조선**이 추가됩니다. 화살표 쪽 용접은 실선에, 반대 쪽 용접은 점선에 연결됩니다. 대칭 `both:` 용접은 점선을 생략합니다.
+
+---
+
+## 3. 용접 타입
+
+| 타입 | 글리프 | 타입 | 글리프 |
+|------|--------|------|--------|
+| `fillet` | 삼각형 | `plug` / `slot` | 직사각형 |
+| `square` | 평행 수직선 | `spot` | 선 위의 원 |
+| `vgroove` | V자 | `seam` | 원 + 선 |
+| `bevel` | 반V자 | `back` / `backing` | 반원 |
+| `ugroove` | U자 | `surfacing` | 빌드업 돌기 |
+| `jgroove` | 반U자 | `edge` | 높은 수직선 |
+| `flarev` / `flarebevel` | 곡선 홈 | | |
+
+별칭: `v`→`vgroove`, `u`→`ugroove`, `j`→`jgroove`, `flare-v`→`flarev`.
+
+---
+
+## 4. 치수
+
+치수는 기준선을 따라 고정된 슬롯에 읽힙니다.
+
+```
+joint "groove" {
+  arrow: vgroove angle=60 root=3 throat=12 len=50 pitch=150
+}
+```
+
+| 키 | 슬롯 | 의미 |
+|----|------|------|
+| `size=` | 기호 왼쪽 | 필릿 다리 / 홈 깊이 / 플러그 직경 |
+| `throat=` | 왼쪽, 괄호 안 | 유효 목두께 `(E)` |
+| `len=` | 기호 오른쪽 | 용접 길이 |
+| `pitch=` | 오른쪽 (`len`과 함께) | 단속 중심 간격 → `len-pitch` |
+| `count=` | 오른쪽 (ISO) | 증분 횟수 → `count×len (pitch)` |
+| `angle=` | 개구부에서 | 홈 포함 각도 (홈 타입만) |
+| `root=` | 기호와 선 사이 | 루트 개구부 / 간격 |
+| `contour=` | 기호 위 | `flush`(바), `convex`, `concave`(호) |
+| `finish=` | 윤곽선 위 | 마감 방법 문자 `G`/`M`/`C`/`R`/`H`/`U` |
+
+---
+
+## 5. 보조 기호
+
+```
+joint "post base" {
+  arrow: fillet size=10
+  around            # 전체 둘레 용접 — 교차점의 열린 원
+  field             # 현장 / 사이트 용접 — 꼬리를 가리키는 채워진 깃발
+  tail: "GTAW; WPS-12"   # 공정 / 사양 / NDE 방법
+}
+```
+
+<Playground initial={`welding
+joint "butt weld" {
+  arrow: vgroove angle=60 root=3 throat=12
+  other: backing
+  tail: "SMAW; E7018"
+}`} height={240} />
+
+---
+
+## 6. 표준 준수
+
+Schematex 용접 다이어그램은 **AWS A2.4:2020**(단일 기준선)과 **ISO 2553:2019** System A(이중 실선+점선) 및 B를 구현합니다.
+
+- ✅ 전체 글리프 카탈로그 — 필릿, 사각/V/베벨/U/J/플레어-V/플레어-베벨 홈, 플러그, 슬롯, 스팟, 심, 백, 배킹, 살올림, 엣지
+- ✅ 치수 슬롯 — 크기, 목두께 `(E)`, 길이, 길이-간격, 횟수×길이, 홈 각도, 루트 개구부
+- ✅ 보조 기호 — 전체 둘레 용접 원, 현장 용접 깃발, 꼬리 공정/사양/NDE, 윤곽선 + 마감
+- ✅ 표준별 관례에 따른 화살표 쪽 / 반대 쪽 / 양쪽
+- ✅ 불법적인 타입/면/치수 조합의 AI 가독성 검증
+- ⏳ 결합 용접 + NDE 기호 (NDE는 현재 꼬리 텍스트)
+- ⏳ 준비된 부재의 화살표 꺾임; 엇갈린 단속 오프셋; 용융 관통 / 소모성 인서트 글리프
+
+참고 문헌:
+
+- American Welding Society (2020). *AWS A2.4: Standard Symbols for Welding, Brazing, and Nondestructive Examination.*
+- ISO 2553:2019. *Welding and allied processes — Symbolic representation on drawings — Welded joints.*
+
+---
+
+## 7. 문법 (EBNF)
+
+```text
+document  = "welding" ( "standard:" std )? title? NEWLINE joint*
+std       = "aws" | "iso-a" | "iso-b"
+joint     = "joint" title? "{" directive* "}"
+directive = ( "arrow:" | "other:" | "both:" ) weldspec
+          | "around" | "field"
+          | "tail:" quoted-string
+weldspec  = type ( WS key "=" value )*
+type      = "fillet"|"square"|"vgroove"|"bevel"|"ugroove"|"jgroove"
+          | "flarev"|"flarebevel"|"plug"|"slot"|"spot"|"seam"
+          | "back"|"backing"|"surfacing"|"edge"
+key       = "size"|"len"|"pitch"|"count"|"angle"|"root"|"throat"|"contour"|"finish"
+```
+
+공식 소스: `src/diagrams/welding/parser.ts`.
+
+---
+
+## 관련 예제
+
+<RelatedExamples slugs={[
+  'welding-bracket-fillet',
+]} />

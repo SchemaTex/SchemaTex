@@ -1,0 +1,82 @@
+---
+title: 介绍
+description: 每一种医生、工程师或律师真正会用的图表。免费、完全开源、为 AI 而生。从文本 DSL 到行业标准 SVG——从族谱到故障树，一气呵成。
+---
+
+**Schematex** 能渲染医生、工程师和律师真正在用的每一种图表——临床族谱、IEC 61131-3 梯形图、NSGC 家系图、IEEE 315 单线图、股权表等等。输入一段文本 DSL，输出符合行业标准的 SVG。
+
+**免费、完全开源、为 AI 而生。** AGPL-3.0 协议，零运行时依赖，DSL 专门针对 LLM 的写作方式设计——把 ChatGPT 或 Claude 的输出直接粘贴进来，第一次就能得到专业图表。
+
+## 能画什么？
+
+<DiagramCatalog />
+
+## 快速示例
+
+<Playground initial={`genogram "The Smiths"
+  john [male, 1950]
+  mary [female, 1952]
+  john -- mary
+    alice [female, 1975, index]
+    bob [male, 1978]
+  alice -close- mary`} />
+
+## 与 AI 配合使用
+
+Schematex 内置了专为 LLM 设计的工具层。把托管的 MCP 服务器连接到 Claude.ai，10 秒内就能让它在任意对话中生成经过校验的图表——无需安装，无需配置。
+
+<MCPConnectCard size="compact" />
+
+或者基于 Vercel AI SDK 构建你自己的 AI 功能。详见 **[在 AI 中使用 Schematex](/docs/ai-integration)**。
+
+## 下一步
+
+- [快速上手](/docs/getting-started) — 安装、导入、渲染
+- [在 AI 中使用 Schematex](/docs/ai-integration) — MCP + Vercel AI SDK + 代理循环
+- [Playground](/playground) — 在线试用任意图表类型
+- [API 参考](/docs/api)
+
+---
+
+## 工作原理
+
+每种图表类型都遵循相同的处理管线：
+
+```
+文本 DSL ──→ Parser ──→ AST ──→ Layout Engine ──→ LayoutResult ──→ SVG Renderer ──→ SVG 字符串
+```
+
+每种图表都实现了一个 `DiagramPlugin`，包含四个方法：
+
+```ts
+interface DiagramPlugin {
+  detect(text: string): boolean;           // 自动识别图表类型
+  parse(text: string): DiagramAST;         // 文本 → 类型化 AST
+  layout(ast, config): LayoutResult;       // AST → 定位后的节点与边
+  render(layout, config): string;          // LayoutResult → SVG 字符串
+}
+```
+
+布局算法针对各领域量身定制——族谱使用基于代际的分层布局，ecomap 使用径向/极坐标布局，逻辑门使用 DAG 拓扑排序，梯形图使用固定母线布局。通用布局引擎（如 dagre、ELK）无法为这些图表类型生成符合标准的输出。
+
+---
+
+## 设计原则
+
+1. **专业人士真正在用的图表** — 每种图表类型都实现了已发布的领域规范：McGoldrick 2020（族谱）、Hartman 1978（ecomap）、Bennett 2022（家系图）、Moreno 1934（社会计量图）、IEEE Std 91（逻辑门）、IEC 61131-3（梯形图）、IEEE 315（单线图）等。
+2. **免费且完全开源** — AGPL-3.0 协议，零运行时依赖（无 D3、无 dagre、无 parser generator），全部手写实现。体积小，无供应链风险。商业用途可申请商业授权。
+3. **为 AI 而生** — DSL 围绕 LLM 的实际写作方式设计（支持 CJK 引号、嵌套歧义容错、AI 可读错误信息）。把 ChatGPT 或 Claude 的输出粘贴进来，第一次就能得到专业图表。
+4. **语义化 SVG 输出** — 每个 SVG 都包含用于无障碍访问的 `<title>` 和 `<desc>`、用于主题定制的 CSS 类，以及用于交互的 `data-*` 属性。
+
+---
+
+## 主题
+
+三套内置预设：`default`（蓝灰色）、`monochrome`（黑白/打印版）、`dark`（Catppuccin Mocha 配色）。
+
+通过注入每个 SVG `<style>` 块中的 CSS 自定义属性来覆盖任意 token：
+
+```css
+--schematex-stroke: #1a1a1a;
+--schematex-fill: #f5f5f5;
+```

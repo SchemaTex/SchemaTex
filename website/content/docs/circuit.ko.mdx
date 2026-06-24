@@ -1,0 +1,621 @@
+---
+title: 회로 도식
+---
+
+## 회로 도식이란
+
+**회로 도식**은 전자 회로의 표준 그래픽 표현입니다 — 표준화된 기호로 그린 부품들이 와이어로 연결되어 회로를 구성하거나 시뮬레이션하기에 충분한 정보를 담습니다. 전자 엔지니어들은 초기 개념 설계부터 PCB 레이아웃 검토, 데이터시트 문서화에 이르기까지 제품 수명 주기 전반에 걸쳐 도식을 사용합니다. Schematex는 부품 기호 형태에 대해 **[IEEE Std 315-1975 / ANSI Y32.2](https://standards.ieee.org/ieee/315/738/)** 및 **[IEC 60617](https://webstore.iec.ch/publication/2765)**을 따릅니다.
+
+DSL에는 두 가지 모드가 있습니다. **넷리스트 모드(권장)**는 SPICE 스타일입니다: 부품과 연결되는 노드를 나열하면 엔진이 자동으로 모든 것을 배치합니다 — 각 줄이 독립적이며 공간 상태를 추적할 필요가 없습니다. **위치 모드**는 수동 드로잉 용입니다: 부품이 Schemdraw처럼 방향에 따라 체인으로 연결됩니다. 두 모드 모두 동일한 SVG를 생성합니다. **LLM 등이 생성하는 다이어그램의 경우 항상 넷리스트 모드를 사용하십시오** — 오류 발생 가능성이 훨씬 낮습니다.
+
+<Playground initial={`circuit "CE Amp (netlist)" netlist
+V1 vcc 0 9V
+Rc vcc c 2.2k
+Rb vcc b 100k
+Q1 c b e npn
+Re e 0 1k`} height={440} />
+
+---
+
+## 1. 최소한의 회로 (넷리스트 모드 — 권장)
+
+가장 작고 유용한 회로: 전압 소스, 저항, 그라운드에 연결된 커패시터 — RC 저역 통과 필터입니다.
+
+<Playground initial={`circuit "RC Low-Pass" netlist
+V1 in 0 5V
+R1 in out 1k
+C1 out 0 100n`} />
+
+세 가지 규칙으로 넷리스트 사용의 약 90%를 다룰 수 있습니다.
+
+1. `circuit "Title" netlist`로 시작합니다(`netlist` 키워드로 이 모드 활성화).
+2. 각 줄은 `componentId nodeA nodeB value` — 하나의 부품, 연결되는 두 개(또는 그 이상)의 명명된 노드, 그리고 값입니다.
+3. **같은 노드 이름을 공유하는 두 부품은 서로 연결됩니다.** `0`, `gnd`, 또는 `GND`는 그라운드 넷입니다(그라운드 기호가 자동으로 그려짐).
+
+부품 ID 접두사가 기호를 결정합니다: `R*`→저항, `C*`→커패시터, `L*`→인덕터, `V*`→전압 소스, `D*`→다이오드, `Q*`→BJT. 접두사가 모호한 경우 `type=`을 추가합니다(예: `X1 a b type=opamp`). 좌표를 직접 계산할 필요가 없습니다 — 엔진이 연결성에서 배치를 도출합니다.
+
+> 주석은 독립된 줄에서 `#`으로 시작해야 합니다.
+
+---
+
+## 2. 부품
+
+### 2.1 넷리스트 모드 문법
+
+넷리스트 줄의 형식:
+
+```
+componentId node... [value] [type=…] [label="…"]
+```
+
+위치 기반 노드가 먼저 옵니다. 노드처럼 보이지 않는 마지막 토큰이 값이 됩니다. 예시 — 트랜지스터(4개 노드)와 저항:
+
+```
+Q1 c b e npn        # 컬렉터, 베이스, 이미터 노드 + 모델
+Rc vcc c 2.2k       # 두 노드 + 값
+```
+
+**선택적 방향 힌트.** 엔진은 역할에 따라 기호를 자동 배향합니다(소스는 위, 그라운드는 아래, 나머지는 수평). 단일 기호를 조정하려면 `dir=right|left|up|down`을 추가합니다 — 연결성은 변하지 않고 기호의 방향만 회전합니다.
+
+```
+C1 out 0 100n dir=down    # C1을 그라운드 방향 션트 커패시터로 그리기
+```
+
+이것은 경량 레이아웃 제어 레이어입니다(Lcapy의 부품별 방향과 유사): 넷리스트 연결성이 주된 역할을 하고, `dir=`은 외관만 세밀하게 조정합니다. 완전한 기하학적 제어가 필요하다면 아래의 위치 모드를 사용하십시오.
+
+### 2.2 위치 모드 문법 (수동 드로잉)
+
+> 위치 모드는 도식을 기하학적으로 수동 배치할 때 사용합니다. **생성된 출력에는 넷리스트 모드를 권장합니다** — 위치 모드는 줄 간에 이동하는 "커서"를 추적해야 하며, LLM에게 오류가 발생하기 쉽습니다.
+
+명명된 부품 줄의 형식:
+
+```
+id: type direction [value="…"] [label="…"]
+```
+
+익명 부품은 `id:` 접두사를 생략합니다 — 파서가 자동 ID를 할당합니다.
+
+```
+R1: resistor right value="4.7k" label="R1"
+capacitor down value="100n"
+```
+
+**방향**은 `right`(기본), `left`, `up`, `down` 중 하나입니다. 현재 커서 위치에서 부품이 어느 방향으로 뻗는지를 제어합니다.
+
+### 2.3 수동 소자
+
+| DSL 타입 | 설명 |
+|---|---|
+| `resistor` | 지그재그(ANSI) 또는 직사각형(IEC) |
+| `potentiometer` | 저항 + 와이퍼 화살표, 3핀 |
+| `rheostat` | 2핀 가변 저항 |
+| `thermistor_ntc` | NTC 서미스터 (별칭: `therm`, `ntc`) |
+| `thermistor_ptc` | PTC 서미스터 (별칭: `ptc`) |
+| `ldr` | 광의존성 저항 |
+| `varistor` | 전압 의존성 저항 |
+| `fuse` | 표준 퓨즈 |
+| `fuse_slow` | 지연 퓨즈 (`T` 지정) |
+| `capacitor` | 비극성 커패시터 |
+| `electrolytic_cap` | 극성/전해 커패시터 (별칭: `ecap`) |
+| `variable_cap` | 가변 커패시터 |
+| `inductor` | 공심 인덕터 |
+| `inductor_iron` | 철심 인덕터 |
+| `inductor_ferrite` | 페라이트 코어 인덕터 |
+| `variable_inductor` | 가변 인덕터 |
+| `ferrite_bead` | EMI 페라이트 비드 |
+| `crystal` | 수정 발진기 (별칭: `xtal`) |
+| `transformer` | 결합 코일 (별칭: `xfmr`) |
+
+<Playground initial={`circuit "Passive components gallery"
+# Row 1: resistor → capacitor → inductor
+R1: resistor right value="1k"
+wire right
+C1: capacitor right value="100n"
+wire right
+L1: inductor right value="10u"
+# Row 2: crystal and transformer, offset below
+at: R1.start
+wire down
+wire down
+X1: crystal right
+wire right
+wire right
+T1: transformer right`} height={380} />
+
+### 2.4 소스 및 전원
+
+| DSL 타입 | 설명 |
+|---|---|
+| `voltage_source` | 원 + 극성 (별칭: `vsource`) |
+| `current_source` | 원 + 화살표 (별칭: `isource`) |
+| `ac_source` | 원 + 사인 기호 (별칭: `acsource`) |
+| `battery` | 교호 장/단 단자 선 |
+| `vcc` | 전원 레일 화살표 (위쪽 방향) |
+| `ground` | 어스 그라운드 — 3개의 점차 짧아지는 선 (별칭: `gnd`) |
+| `gnd_signal` | 신호 그라운드 — 실선 삼각형 |
+| `gnd_chassis` | 섀시 그라운드 |
+| `gnd_digital` | 디지털 그라운드 |
+
+<Playground initial={`circuit "Sources and power gallery"
+# voltage source with ground
+V1: voltage_source down value="5V"
+wire down
+ground
+at: V1.start
+wire right
+wire right
+# battery
+B1: battery down value="9V"
+wire down
+ground
+at: B1.start
+wire right
+wire right
+# ac source
+A1: ac_source down value="120V"
+wire down
+ground
+at: A1.start
+wire right
+wire right
+# vcc rail
+vcc up
+wire down
+gnd_signal down`} height={420} />
+
+### 2.5 반도체 — 다이오드
+
+| DSL 타입 | 설명 |
+|---|---|
+| `diode` | 삼각형 + 캐소드 바 |
+| `zener` | 다이오드 + 구부러진 캐소드 바 |
+| `schottky` | 다이오드 + S-바 |
+| `led` | 다이오드 + 외향 발광 화살표 |
+| `photodiode` | 다이오드 + 내향 빛 화살표 |
+| `varactor` | 다이오드 + 가변 커패시터 |
+| `tvs_diode` | 양방향 TVS (두 개의 구부러진 바) |
+| `bridge_rectifier` | 4-다이오드 브리지, 4핀 |
+
+<Playground initial={`circuit "Diode types gallery"
+D1: diode right
+wire right
+D2: zener right
+wire right
+D3: led right
+wire right
+D4: schottky right
+wire right
+D5: photodiode right
+wire right
+ground
+at: D1.start
+wire left
+ground`} height={280} />
+
+### 2.6 반도체 — 트랜지스터
+
+| DSL 타입 | 설명 |
+|---|---|
+| `npn` | NPN BJT (별칭: `transistor`, `bjt_npn`) |
+| `pnp` | PNP BJT (별칭: `bjt_pnp`) |
+| `darlington_npn` | NPN 달링턴 쌍 |
+| `darlington_pnp` | PNP 달링턴 쌍 |
+| `nmos` | N채널 MOSFET 증가형 (별칭: `mosfet_n`) |
+| `pmos` | P채널 MOSFET 증가형 (별칭: `mosfet_p`) |
+| `nmos_depletion` | N채널 MOSFET 공핍형 |
+| `jfet_n` | N채널 JFET |
+| `jfet_p` | P채널 JFET |
+| `igbt` | IGBT |
+| `scr` | SCR / 사이리스터 |
+| `triac` | TRIAC |
+| `diac` | DIAC |
+| `phototransistor` | 빛 화살표가 있는 NPN |
+| `optocoupler` | 절연 박스 내 LED + 포토트랜지스터 |
+
+<Playground initial={`circuit "Transistor types gallery"
+# NPN BJT
+Q1: npn right
+wire right
+wire right
+# PNP BJT
+Q2: pnp right
+wire right
+wire right
+# N-channel MOSFET
+Q3: nmos right
+wire right
+wire right
+# P-channel MOSFET
+Q4: pmos right`} height={320} />
+
+### 2.7 아날로그 IC 및 연산 증폭기
+
+| DSL 타입 | 설명 |
+|---|---|
+| `opamp` | 삼각형: +/− 입력, 출력 |
+| `comparator` | 동일한 형태, 오픈 컬렉터 출력 |
+| `schmitt_buffer` | 버퍼 + 히스테리시스 기호 |
+| `tri_state_buffer` | 버퍼 + 인에이블 핀 |
+| `instrumentation_amp` | 3-연산 증폭기 INA 블록 |
+| `generic_ic` | 레이블이 붙은 핀이 있는 구성 가능한 직사각형 (별칭: `ic`) |
+| `voltage_regulator` | 3단자 블록: IN/GND/OUT (별칭: `reg`) |
+| `dc_dc_converter` | DC/DC 레이블이 있는 2-포트 블록 |
+| `555_timer` | 8핀 555 핀아웃 블록 (별칭: `timer555`) |
+
+<Playground initial={`circuit "Analog IC gallery"
+# op-amp with input/output wires
+wire right
+U1: opamp right
+wire right
+wire right
+wire right
+# comparator
+U2: comparator right
+wire right
+wire right
+wire right
+# generic IC block
+U3: generic_ic right`} height={320} />
+
+### 2.8 스위치 및 릴레이
+
+| DSL 타입 | 설명 |
+|---|---|
+| `switch_spst` | 단극 단투 |
+| `switch_spdt` | 단극 쌍투 |
+| `switch_dpdt` | 쌍극 쌍투 |
+| `push_no` | 푸시 버튼 상시 개방 |
+| `push_nc` | 푸시 버튼 상시 폐쇄 |
+| `relay_coil` | 릴레이 코일 (2핀 직사각형) |
+| `relay_no` | 릴레이 접점 상시 개방 |
+| `relay_nc` | 릴레이 접점 상시 폐쇄 |
+
+<Playground initial={`circuit "Switch and relay gallery"
+# SPST switch
+S1: switch_spst right
+wire right
+wire right
+# SPDT switch
+S2: switch_spdt right
+wire right
+wire right
+# normally-open push button
+S3: push_no right
+wire right
+wire right
+# relay coil + contact pair
+K1: relay_coil right
+wire right
+K2: relay_no right`} height={300} />
+
+### 2.9 전기기계 및 측정
+
+| DSL 타입 | 설명 |
+|---|---|
+| `motor` | 원 + M |
+| `speaker` | 콘 + 박스 |
+| `microphone` | 캡슐 기호 |
+| `buzzer` | 피에조 버저 |
+| `ammeter` | 원 + A |
+| `voltmeter` | 원 + V |
+| `wattmeter` | 원 + W |
+| `oscilloscope` | 원 + 파형 |
+
+### 2.10 커넥터 및 주석
+
+| DSL 타입 | 설명 |
+|---|---|
+| `wire` | 일반 와이어 세그먼트 |
+| `dot` | 접합 점 (T-접합 마커) |
+| `label` | 넷 레이블 / 플래그 |
+| `port` | 명명된 포트 (속이 빈 원) |
+| `test_point` | TP 마커 |
+| `no_connect` | X — 의도적으로 연결되지 않은 핀 |
+| `antenna` | 안테나 스텁 |
+
+<Playground initial={`circuit "Passive components"
+R1: resistor right value="1k" label="R1"
+wire right
+C1: capacitor down value="100n" label="C1"
+wire down
+ground
+at: R1.start
+wire up
+battery up label="9V"`} height={360} />
+
+---
+
+## 3. 배선 및 분기
+
+### 3.1 와이어 세그먼트
+
+`wire direction [N]`은 현재 커서에서 주어진 방향으로 와이어를 그립니다. 선택적 숫자는 픽셀 단위의 길이를 설정합니다.
+
+```
+wire right
+wire down 40
+wire left 20
+```
+
+### 3.2 `at:`로 커서 이동
+
+`at: id.end`는 아무것도 그리지 않고 커서를 명명된 앵커로 이동합니다. 이전에 배치된 부품에서 분기할 때 사용합니다.
+
+```
+R1: resistor right value="10k"
+at: R1.end
+C1: capacitor down value="100n"
+```
+
+명명된 앵커 접미사: `end`, `start`. 부품은 다이어그램 전체에서 ID를 유지하므로 이전에 배치된 부품으로 다시 이동할 수 있습니다.
+
+### 3.3 접합 점
+
+`dot`(또는 `net NAME: dot`)을 배치하여 T-접합 — 세 개 이상의 와이어가 만나는 지점 — 을 표시합니다. 점 없이 교차하는 와이어는 크로스오버(연결 없음)로 그려집니다.
+
+```
+R1: resistor right
+dot
+wire right           # R1.end에서 계속
+at: R1.end
+C1: capacitor down   # 동일한 지점에서 아래로 분기
+```
+
+### 3.4 명명된 넷
+
+`net NAME`은 명명된 넷을 선언합니다. `net NAME: dot`은 넷을 선언하고 현재 커서에 접합 점을 배치하며, 해당 위치를 기억합니다. 나중에 `at: NAME`으로 해당 넷의 앵커로 이동합니다.
+
+```
+net VOUT: dot
+R2: resistor right value="10k"
+at: VOUT
+C1: capacitor down value="470n"
+```
+
+### 3.5 넷 레이블
+
+`label "text" direction?`은 현재 커서 위치에 텍스트 레이블을 배치합니다. 레이블은 커서를 이동하지 않습니다. 전원 레일이나 시트 간 연결에 이름을 붙이는 데 유용합니다.
+
+```
+label "VCC" up
+label "GND" down
+```
+
+<Playground initial={`circuit "RC filter"
+V1: voltage_source down value="5V"
+wire right
+R1: resistor right value="1k" label="R1"
+net OUT: dot
+wire right
+label "Vout" right
+at: OUT
+C1: capacitor down value="100n" label="C1"
+wire down
+ground`} height={380} />
+
+---
+
+## 4. 넷리스트 모드
+
+헤더 줄의 제목 뒤에 `netlist`를 추가하여 SPICE 스타일 넷리스트 파싱으로 전환합니다. 자동 레이아웃 엔진이 넷 연결성에서 부품 위치를 계산합니다.
+
+```
+circuit "Low-pass filter" netlist
+```
+
+### 4.1 넷리스트 줄 형식
+
+각 줄은: `ID net1 net2 [net3…] [value] [key=value…]`
+
+- **ID** — 부품 식별자. 첫 글자가 기본 타입을 결정합니다(SPICE 접두사 관례).
+- **net1, net2, …** — 핀이 연결되는 넷 이름. `0`, `gnd`, `ground`, `earth`, `pe`, `agnd`, `dgnd`, `gnda`, `gndd`, `vss`, 또는 `com`(대소문자 무관, 선택적 `_<word>` 또는 숫자 접미사 포함 — 예: `gnd_ref`, `AGND_DIG`, `EARTH1`)과 일치하는 넷 이름은 모두 그라운드 넷으로 정규화됩니다.
+- **value** (선택적 베어 토큰) — 부품 값 또는 모델 이름.
+- **key=value** (선택적) — `label=`, `value=`, `type=` 재정의.
+
+### 4.2 SPICE 접두사 → 부품 타입
+
+| 접두사 | 기본 타입 | 핀 순서 |
+|---|---|---|
+| `R` | `resistor` | p1, p2 |
+| `C` | `capacitor` | p1, p2 |
+| `L` | `inductor` | p1, p2 |
+| `D` | `diode` | 애노드(시작), 캐소드(끝) |
+| `V` | `voltage_source` | 양극, 음극 |
+| `I` | `current_source` | 양극, 음극 |
+| `Q` | `npn` | c, b, e |
+| `M` | `nmos` | d, g, s |
+| `J` | `jfet_n` | d, g, s |
+| `S` | `switch_spst` | p1, p2 |
+| `F` | `fuse` | p1, p2 |
+| `B` | `battery` | 양극, 음극 |
+| `K` | `relay_coil` | p1, p2 |
+| `U`, `X` | `generic_ic` | `pins=`를 통한 커스텀 |
+| `W` | `wire` | 시작, 끝 |
+| `T` | `terminal_block` | `pins=`를 통한 커스텀 (별칭: `type=junction_box`) |
+
+> **범위:** Schematex circuit은 **전기 도식만** 지원합니다(IEEE 315 / IEC 60617). 유압 및 공압 도식(ISO 1219)은 근본적으로 다른 시각적 문법을 사용합니다 — 방향성 밸브 엔벨로프, 실린더 기호, 압력/리턴/드레인을 위한 선 스타일 — 이 엔진에서는 지원되지 않습니다. `EV*`(전자 밸브), `BOMBA*`(펌프), `TANK*`, `DIPOSIT*` 같은 유압 접두사는 "타입을 추론할 수 없음" 오류로 거부됩니다.
+
+### 4.3 트랜지스터 모델 재정의
+
+`Q` 줄에서 마지막 모델 이름이 타입을 재정의합니다.
+
+```
+Q1 c b e npn      # NPN BJT
+Q2 c b e pnp      # PNP BJT
+M1 d g s nmos     # N채널 MOSFET
+M2 d g s pmos     # P채널 MOSFET
+```
+
+`D` 줄에서도 마찬가지입니다.
+
+```
+D1 anode cathode zener
+D2 anode cathode led
+D3 anode cathode schottky
+D4 anode cathode photodiode
+```
+
+### 4.4 넷리스트 예시
+
+<Playground initial={`circuit "CE Amp (netlist)" netlist
+V1 vcc 0 9V
+Rc vcc c 2.2k
+Rb vcc b 100k
+Q1 c b e npn
+Re e 0 1k`} height={420} />
+
+---
+
+## 5. 속성
+
+위치 모드와 넷리스트 모드 모두 다음 key=value 속성을 허용합니다.
+
+| 속성 | 허용 대상 | 효과 |
+|---|---|---|
+| `label="…"` | 모든 부품 | 표시 레이블 (참조 지정자) |
+| `value="…"` | 모든 부품 | 값 주석 (1kΩ, 100nF, 5V) |
+| `at=id.end` | 위치 부품 | 명명된 앵커에서 이 부품 시작 |
+| `length=N` | `wire`, 일부 수동 소자 | 픽셀 단위 길이 |
+
+위치 모드에서 부품 줄 내의 `at=`은 앞선 `at:` 줄과 동일합니다.
+
+```
+C1: capacitor down at=R1.end value="100n"
+```
+
+---
+
+## 6. 레이블 및 주석
+
+- **다이어그램 제목:** `circuit "RC Filter"` — 첫 줄에만.
+- **부품 레이블:** `label="R1"` 속성 — 기호 옆에 표시되는 참조 지정자.
+- **값 주석:** `value="4.7k"` — 부품 옆 또는 아래에 표시.
+- **넷 레이블:** `label "VOUT" right` — 현재 커서에 독립적인 넷 플래그.
+- **주석:** 줄 시작에 `#`(앞의 공백 이후).
+
+---
+
+## 7. 예약어 및 이스케이프
+
+**줄 시작 예약어(위치 모드):** `circuit`(헤더), `at:`, `net`, `wire`, `label`.
+
+**넷리스트 모드 예약어:** 동일한 헤더 규칙 적용; 나머지 줄은 모두 SPICE 부품 줄입니다.
+
+**그라운드 넷 별칭(넷리스트 전용):** `0`, `gnd`, `GND`, `Gnd`, `ground`, `Ground` — 모두 같은 노드로 처리됩니다.
+
+**부품 ID**는 `[a-zA-Z_][a-zA-Z0-9_]*`와 일치해야 합니다. 값의 공백은 따옴표로 묶어야 합니다: `value="10 kΩ"`.
+
+---
+
+## 8. 흔한 실수
+
+| 작성한 내용 | 파서 오류 | 수정 방법 |
+|---|---|---|
+| `resistor right 1k` (`value=` 없이 베어 값) | `1k`가 알 수 없는 속성 플래그로 파싱되어 무시됨 | `value="1k"` 사용: `resistor right value="1k"` |
+| `at: R1.center` | `center`는 인식되는 앵커 접미사가 아님 — 커서가 현재 위치에 머무름 | `at: R1.end` 또는 `at: R1.start` 사용 |
+| `wire 40` (방향 없음) | 방향이 `right`로 기본 설정됨; 길이 `40`은 허용됨 | 명시적 방향 권장: `wire right 40` |
+| 위치 모드에서 `R1 vcc out 10k` | 줄이 베어 타입 패턴과 일치; `R1`이 타입 이름으로 읽혀 실패 | 위치 모드에서는 `R1: resistor right value="10k"` 사용 |
+| `Q1 c b e` (넷리스트, 모델 없음) | `Q` 접두사에서 타입이 `npn`으로 기본 설정됨 — 올바름 | 괜찮습니다; 명확성을 위해 `npn`을 명시적으로 추가 |
+| `net OUT` 이후 `net OUT: dot` 없이 `at: OUT` | `OUT` 넷은 존재하지만 앵커가 없음; 이동할 목적지가 없음 | 커서 위치를 등록하려면 `net OUT: dot` 사용 |
+| `label VCC up` (따옴표 없는 레이블) | `VCC`가 방향 토큰으로 파싱됨, 그 다음 `up` — 레이블 텍스트 손실 | 텍스트를 따옴표로 묶기: `label "VCC" up` |
+
+---
+
+## 9. 문법 (EBNF)
+
+```text
+document        = header statement*
+
+-- 위치 모드 --
+header          = "circuit" ( WS quoted-string )? NEWLINE
+statement       = blank | comment | component | wire | at | net-decl | label-stmt
+
+component       = ( id ":" WS )? type WS direction? attrs* NEWLINE
+wire            = "wire" ( WS direction )? ( WS integer )? NEWLINE
+at              = "at:" WS anchor NEWLINE
+anchor          = id "." ( "start" | "end" )
+                | id                          // 넷 이름 앵커
+
+net-decl        = "net" WS id NEWLINE         // 넷만 선언
+                | "net" WS id ":" WS "dot" NEWLINE  // 선언 + 점 배치
+
+label-stmt      = "label" WS quoted-string ( WS direction )? NEWLINE
+
+component-attr  = "value=" quoted-string
+                | "label=" quoted-string
+                | "at=" anchor
+                | "length=" integer
+
+direction       = "right" | "left" | "up" | "down"
+type            = // §2 부품 표의 모든 값
+
+-- 넷리스트 모드 --
+netlist-header  = "circuit" ( WS quoted-string )? WS "netlist" NEWLINE
+netlist-stmt    = id WS net-ref+ ( WS kv-pair )* NEWLINE
+                | comment
+net-ref         = id | "0"                    // 넷 이름 또는 그라운드 별칭
+kv-pair         = id "=" ( quoted-string | bare-value )
+
+id              = [a-zA-Z_] [a-zA-Z0-9_]*
+integer         = [0-9]+
+quoted-string   = '"' any-char-but-quote* '"'
+comment         = "#" any NEWLINE
+```
+
+권위 있는 소스: `src/diagrams/circuit/parser.ts` 및 `src/diagrams/circuit/netlist.ts`. 파서와 다를 경우 파서가 우선합니다 — 이슈를 열어주십시오.
+
+---
+
+## 10. 표준 준수
+
+Schematex 회로 도식은 부품 기호 형태에 대해 **IEEE Std 315-1975 / ANSI Y32.2**, 국제 변형에 대해 **IEC 60617**을 따릅니다. 넷리스트 문법은 **SPICE** 접두사 관례(Berkeley SPICE3 / LTspice / ngspice)를 따릅니다.
+
+현재 구현된 항목:
+
+- ✅ 완전한 수동 소자 세트: 저항 변형, 커패시터 변형, 인덕터 변형, 수정, 변압기
+- ✅ 소스 및 전원: 전압 소스, 전류 소스, AC 소스, 배터리, VCC, 4가지 그라운드 스타일
+- ✅ 다이오드 계열: 다이오드, 제너, 쇼트키, LED, 포토다이오드, 배랙터, TVS, 브리지 정류기
+- ✅ BJT: NPN, PNP, 달링턴 NPN/PNP
+- ✅ FET: NMOS/PMOS 증가형, NMOS 공핍형, N/P채널 JFET
+- ✅ 전력 반도체: IGBT, SCR, TRIAC, DIAC
+- ✅ 광전자: 포토트랜지스터, 옵토커플러
+- ✅ 아날로그 IC: 연산 증폭기, 비교기, 슈미트 버퍼, 3상태 버퍼, INA, 범용 IC, 전압 레귤레이터, DC-DC 컨버터, 555 타이머
+- ✅ 스위치: SPST, SPDT, DPDT, 푸시-NO, 푸시-NC
+- ✅ 릴레이: 코일, NO 접점, NC 접점
+- ✅ 전기기계: 모터, 스피커, 마이크, 버저
+- ✅ 측정: 전류계, 전압계, 전력계, 오실로스코프
+- ✅ 주석: 와이어, 점, 레이블, 포트, 테스트 포인트, 무연결, 안테나
+- ✅ 위치 DSL: 방향 체인, `at:` 분기, `net` 선언
+- ✅ 넷리스트 DSL: SPICE 접두사 매핑, 모델 재정의, 자동 그라운드 합성
+- ⏳ BJT/FET/연산 증폭기 명명된 핀(베이스, 컬렉터, 양극, 음극, 출력)에 대한 핀 수준 `at:`
+- ⏳ 위치 모드에서의 자동 라우팅 와이어(배치된 기호 주변 라우팅)
+- ⏳ 비트 폭 주석이 있는 버스 와이어(`/8` 슬래시)
+
+참고 문헌:
+
+- IEEE Std 315-1975 (ANSI Y32.2): *Graphic Symbols for Electrical and Electronics Diagrams*
+- IEC 60617: *Graphical symbols for diagrams*
+- SPICE3 User's Manual, UC Berkeley — 넷리스트 줄 형식 관례
+
+---
+
+## 11. 관련 예시
+
+<RelatedExamples slugs={[
+  'circuit-ce-amplifier',
+]} />
+
+---
+
+## 12. 로드맵
+
+**계획됨 — 아직 파싱 불가.** 오늘 생성된 DSL에서 이것들을 사용하지 마십시오; 파서가 거부하거나 무시합니다.
+
+- **다핀 부품을 위한 명명된 핀 앵커** — `at: Q1.base`, `at: U1.out`, `at: U1.plus`로 긴 `wire` 우회 없이 연산 증폭기 및 BJT 피드백 루프를 배선할 수 있습니다.
+- **버스 와이어** — `/8` 비트 폭 슬래시 주석이 있는 굵은 와이어를 그리는 `wire right bus=8`.
+- **자동 라우팅 와이어** — 엔진이 배치된 기호 주변으로 와이어를 라우팅하는 `connect R1.end U1.minus`.
+- **`flip` 및 `reverse` 속성** — 방향 축을 따라 부품의 극성/방향을 미러 또는 반전.
+- **`dashed` 와이어 스타일** — RF 차폐, 케이블 묶음 또는 가상 연결에 사용하는 점선.
+- **계층적 시트** — 멀티 시트 도식 문서화를 위해 로직 게이트 모듈과 유사하게 그룹화하는 `module "name" { … }`.
+
+더 빨리 필요하다면 GitHub 이슈에서 추적하십시오.

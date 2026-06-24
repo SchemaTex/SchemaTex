@@ -1,0 +1,316 @@
+---
+title: フィッシュボーンダイアグラム
+---
+
+## フィッシュボーンダイアグラムについて
+
+**フィッシュボーンダイアグラム**（石川ダイアグラムまたは特性要因図とも呼ばれる）は、問題の潜在的な原因を「結果」（問題の記述）で終わる水平方向の背骨にマッピングします。各主要分岐は原因のカテゴリを表し、副分岐には寄与する詳細が付きます。石川馨は1968年に製造業の品質管理ツールとしてこの手法を導入しました。以来、根本原因分析のための構造化されたブレインストーミング手法として、医療、ソフトウェアエンジニアリング、ビジネスオペレーションにも広まっています。チームはレトロスペクティブ、DMAIC改善フェーズ、インシデントポストモーテムでこれを使い、最も声の大きな仮説への早期固執を防ぎます。
+
+Schematexは**石川（1968年）**の特性要因図の規約に従い、標準的な6M製造カテゴリ（Man、Machine、Material、Method、Measurement、Mother Nature/Environment）とそのサービス版バリアント（People、Process、Place、Policy、Procedures、Patron）をサポートします。2種類の記述スタイル — 構造化スタイルとコンパクトスタイル — は1つのドキュメント内で混在させることができます。外部参考文献：[石川馨 — Guide to Quality Control (1968)](https://en.wikipedia.org/wiki/Ishikawa_diagram) · [ASQ Cause-and-Effect Diagram](https://asq.org/quality-resources/cause-analysis-tools/fishbone) · [ISO 9001:2015 §10.2 — 是正処置](https://www.iso.org/standard/62085.html)。
+
+<Playground initial={`fishbone "Solder Joint Defect Rate — Root Cause Analysis"
+effect "3.2% solder joint failure rate"
+category man "Man"
+category machine "Machine"
+category material "Material"
+category method "Method"
+category meas "Measurement"
+category env "Environment"
+man : "Operator training gap"
+man : "Shift handover not documented"
+machine : "Reflow oven temp drift"
+machine : "Squeegee blade worn"
+material : "Solder paste past shelf life"
+material : "PCB pad oxidation"
+method : "Stencil aperture undersized"
+method : "Pick-and-place speed too high"
+meas : "AOI false-accept rate rising"
+env : "Humidity spike in Q3"
+env : "ESD grounding gaps"`} height={460} />
+
+---
+
+## 1. 最初のフィッシュボーン
+
+最小限の実用的フィッシュボーン：3つのカテゴリ、各1つの原因、1つに副原因あり。
+
+<Playground initial={`fishbone "API latency spike"
+effect "P99 > 2 s after deploy"
+category code "Code"
+category infra "Infra"
+category data "Data"
+code : "N+1 query in new endpoint"
+  - "Missing eager-load on orders"
+infra : "DB connection pool exhausted"
+data : "Index missing on accounts table"`} />
+
+80%の用途をカバーする4つのルール：
+
+1. `fishbone` で始め、任意で引用符付きタイトルを続ける。
+2. 各分岐を `category id "Label"` で宣言する — `id` は内部の短いキー、`"Label"` がダイアグラムに印刷される。
+3. `id : "原因テキスト"` を独立した行に書いて原因を追加する。
+4. 少なくとも2スペースのインデントで行を始め、`-` から始めると直前の原因の下に副原因（二次分岐）を作成できる。
+
+> コメントは `#`、`//`、またはMermaid風の `%%` で独立した行に始めることができます。
+
+---
+
+## 2. 構成要素
+
+### 背骨と結果
+
+`effect "問題記述"` は魚の頭にテキストを配置します。`effect` が省略された場合、パーサーはダイアグラムのタイトルにフォールバックします。
+
+```
+fishbone "Title"
+effect "Specific problem statement"
+```
+
+頭はデフォルトで右側に配置されます（`config direction = right`）。`config direction = left` で左右を反転できます。
+
+### カテゴリ（主要な骨）
+
+`category id "Label"` は分岐を宣言します。`id` は内部的に原因を割り当てるために使用され、引用符付きの `"Label"` がダイアグラムに表示されます。
+
+カテゴリは `[…]` 内のオプションプロパティも受け付けます：
+
+| プロパティ | 値 | 効果 |
+|---|---|---|
+| `color: "#hex"` | 16進数カラー文字列 | 分岐とラベルの色 |
+| `side: top` / `side: bottom` | `top`、`bottom` | この分岐を上または下のレールに強制（デフォルト：交互） |
+| `order: N` | 整数 | そのレール内の位置 — 数値が小さいほど尾に近い |
+
+```
+category rework "Rework" [color: "#E53935", side: top, order: 1]
+```
+
+### 原因（細かい骨）
+
+2つのスタイルが受け付けられ、1つのダイアグラム内で混在させることができます。
+
+**スタイルA — 構造化。** まずカテゴリを宣言し、`id : "テキスト"` で原因を割り当てる：
+
+```
+category code "Code"
+category infra "Infra"
+code : "N+1 query in endpoint"
+code : "Missing cache layer"
+infra : "Auto-scaling lag"
+```
+
+**スタイルB — コンパクト。** カテゴリラベルと原因を1行にまとめ、`;` または `,` で区切る：
+
+```
+category Code: N+1 query; Missing cache; Synchronous call
+category Infra: Auto-scaling lag; CDN misconfigured
+```
+
+コンパクトスタイルでは `id` はラベルテキストから自動導出されます（小文字化、スペース → ハイフン）。原因テキストへの引用符はオプションです。
+
+<Playground initial={`fishbone "Conversion rate drop"
+effect "Checkout conversion -12% MoM"
+# Style A — structured
+category ux "UX"
+category trust "Trust"
+ux : "Confusing multi-step form"
+ux : "Slow page on mobile"
+trust : "No payment security badge"
+# Style B — compact
+category Pricing: Price-anchoring missing; No annual discount shown; Coupon field too prominent`} height={380} />
+
+**スタイルC — Mermaidマインドマップ略記法。** 最上位の裸の行がカテゴリになり、インデントされた `-` 項目がそのカテゴリの下のレベル1原因の兄弟になります：
+
+```txt
+fishbone "Why is the site slow?"
+effect "Page LCP > 4s"
+Content
+  - heavy hero image
+  - too much above-the-fold text
+Tech
+  - JS bundle too large
+  - render-blocking CSS
+```
+
+---
+
+## 3. 副原因（二次分岐）
+
+レベル1の原因の後に少なくとも2スペースインデントして `-` 行を書くと、その副原因を付けられます。`-` ダッシュは構文の一部であり、テキストはその後に続きます。
+
+```
+method : "Stencil aperture undersized"
+  - "Tolerance spec from 2018 board revision"
+  - "No re-validation after material change"
+method : "Pick-and-place speed too high"
+  - "Speed limit lifted during overtime run"
+```
+
+副原因は親のリブから分岐する短く細い小枝として表示されます。
+
+<Playground initial={`fishbone "Medication error increase"
+effect "Errors up 18% in Q3"
+category process "Process"
+category people "People"
+process : "CPOE alert fatigue"
+  - "47 non-critical alerts per shift"
+  - "Override too easy — one click"
+process : "5-Rights verification skipped"
+  - "No barcode scanner at bedside"
+people : "Float staff unfamiliar with unit"
+  - "No unit-specific orientation checklist"
+people : "Handoff communication gaps"`} height={420} />
+
+---
+
+## 4. 設定オプション
+
+`config key = value` 行はヘッダーの後であればどこでも記述できます。不明なキーと値は暗黙に無視されます。
+
+| 設定キー | 値 | デフォルト | 効果 |
+|---|---|---|---|
+| `direction` | `right` / `left`（`ltr` / `rtl` も可） | `right` | 結果の頭がどちら側に表示されるか |
+| `sides` | `both`、`top`、`bottom` | `both` | 背骨のどちら半分に分岐をホストするか |
+| `density` | `compact`、`normal`、`spacious` | `normal` | リブ間のスペース — 重複前に何個の分岐が収まるかに影響 |
+| `slope`（または `ribslope`）| `gentle`、`normal`、`steep`、または数値（0–3） | `normal`（0.6） | リブの角度 — 浅い対急峻な斜め |
+| `causeside`（または `cause-side`）| `head`、`tail`、`both` | `head` | リブのどちら側に副原因が分岐するか |
+| `width` | 整数px | 自動 | キャンバス幅を上書き |
+| `height` | 整数px | 自動 | キャンバス高さを上書き |
+
+```
+config direction = left
+config density = compact
+config slope = gentle
+config sides = top
+```
+
+---
+
+## 5. ラベルとコメント
+
+- **ダイアグラムタイトル：** `fishbone "Website Traffic Drop"` — 1行目、オプション。
+- **結果ラベル：** `effect "30% organic traffic decline"` — 魚の頭の問題。
+- **カテゴリラベル：** `category id "Human-readable name"` — 分岐に印刷される。
+- **原因テキスト：** `"こんなふうに"` 引用符付き、または引用符なし（コンパクトスタイルではスペース許可）。
+- **副原因テキスト：** 先頭の `-` の後、引用符付きまたはなし。
+- **コメント：** `#`、`//`、または `%%` を行の先頭（オプションで先頭の空白の後）に置く。同じマーカーは二重引用符文字列の外側の末尾コメントも始めます。
+
+---
+
+## 6. 予約語とエスケープ
+
+**行頭に予約：** `fishbone`（ヘッダー）、`effect`、`category`、`config`。
+
+**`-` プレフィックス**はインデントされた行の副原因マーカーとして予約されています。原因テキストの先頭にリテラルのハイフンダッシュを含めるには、引用符で囲みます：`code : "- old deprecated path"`。
+
+**スペースを含む文字列**は構造化スタイルの原因テキストでは二重引用符で囲むべきです：`code : "N+1 query"`。コンパクトスタイル（`category Label: ...`）ではテキストは `;` または `,` 区切り文字まで続くため引用符はオプションです。
+
+**コメントマーカー**（`#`、`//`、`%%`）は二重引用符文字列の内側でない限りコメントを開始します。
+
+| 予約シーケンス | コンテキスト | 代替 |
+|---|---|---|
+| 行頭の `#` | コメントマーカー | `#` がコンテンツの一部の場合はテキストを引用符で囲む |
+| ≥2スペースインデント後の先頭 `-` | 副原因マーカー | 引用符：`- "- text with dash"` |
+| `category`、`effect`、`config`、`fishbone` | 行頭キーワード | カテゴリIDとして使用不可 |
+
+---
+
+## 7. よくある間違い
+
+| あなたが書いた内容 | パーサーのメッセージ | 修正方法 |
+|---|---|---|
+| `cause1 : "text"`（事前の `category cause1` なし） | `FishboneParseError: Unknown category "cause1"` | 原因を割り当てる前に `category cause1 "Label"` を宣言する |
+| ファイルの先頭に `- "sub-cause"`（直前のレベル1原因なし） | `FishboneParseError: Sub-cause … has no preceding Level-1 cause` | `id : "cause"` 行のすぐ後に副原因行を置く |
+| 1スペースインデントのみの `- "sub-cause"` | 副原因ではなく原因行として扱われる | 少なくとも2スペースのインデントを使用する |
+| `category Code: cause one, cause two` | コンパクトスタイルとして解析 — `,` と `;` はどちらも区切り文字 | 意図した動作；どちらの区切り文字も機能する |
+| `config direction = center` | 不明な値 — 暗黙に無視され `right` のまま | `right` または `left` を使用する |
+| `config slope = 45` | 範囲外（0–3の間でなければならない）；暗黙に無視 | プリセット（`gentle`、`normal`、`steep`）または `0.5` のような値を使用する |
+| `fishbone: "Title"` | 正しく解析 — キーワード後のコロンはオプション | `fishbone "Title"` と `fishbone: "Title"` のどちらも機能する |
+| Mermaidマインドマップ風の裸のカテゴリ | 暗黙のカテゴリとして解析 | `Content` の後にインデントされた `- item` 行が `category` なしで機能する |
+
+---
+
+## 8. 文法（EBNF）
+
+```text
+document       = header (blank | comment | effect | category | config | cause | sub-cause | implicit-category)*
+
+header         = "fishbone" ":"? ( WS quoted-string )? NEWLINE
+effect         = "effect" ":"? WS quoted-string NEWLINE
+config         = "config" WS config-key WS "=" WS config-value NEWLINE
+config-key     = "direction" | "width" | "height" | "sides"
+               | "slope" | "ribslope" | "density" | "causeside" | "cause-side"
+config-value   = bare-word | number | quoted-string
+
+category       = "category" WS id WS label-or-compact ( "[" category-attrs "]" )? NEWLINE
+implicit-category
+               = bare-text NEWLINE                         # top-level, no ":"
+
+label-or-compact
+               = quoted-string                            # structured form: category id "Label"
+               | id WS ":" WS compact-causes             # compact form: category Label: cause; cause
+
+category-attrs = category-attr ("," category-attr)*
+category-attr  = "color:" quoted-string
+               | "side:" ( "top" | "bottom" )
+               | "order:" integer
+
+cause          = id WS ":" WS cause-text NEWLINE         # structured form
+cause-text     = quoted-string | bare-text
+
+sub-cause      = INDENT≥2 "-" WS cause-text NEWLINE
+
+compact-causes = compact-cause ( (";" | ",") compact-cause )*
+compact-cause  = quoted-string | bare-text
+
+comment        = ( "#" | "//" | "%%" ) any NEWLINE
+id             = [a-zA-Z] [a-zA-Z0-9_-]*
+quoted-string  = '"' any-char-but-unescaped-quote* '"'
+```
+
+権威ある情報源：`src/diagrams/fishbone/parser.ts`。これがパーサーと異なる場合は、パーサーが優先されます — issueを開いてください。
+
+---
+
+## 9. 標準準拠
+
+Schematexのフィッシュボーンダイアグラムは**石川（1968年）**の特性要因図の規約に従います：ラベル付きの頭（結果）と主要な原因カテゴリの斜め方向のリブを持つ水平方向の背骨、そして各リブに付く細かい骨（個別の原因）。二層の階層（カテゴリ → 原因 → 副原因）は、Six Sigma DMAICおよびISO 9001是正処置ワークフローで使用される従来の「5つのなぜ」のドリルダウン深度と一致します。
+
+現在実装されているもの：
+
+- ✅ 構造化スタイル：`category id "Label"` + `id : "cause"`
+- ✅ コンパクトスタイル：`category Label: cause; cause; cause`
+- ✅ 副原因（レベル2）インデントされた `-` プレフィックスによる
+- ✅ カテゴリごとの色とサイドの上書き
+- ✅ `direction`、`density`、`slope`、`sides`、`causeside` 設定
+- ✅ オプションの明示的な `width` / `height`
+- ⏳ レベル3以上の副副原因（パーサーは子を格納するがレンダラーは深さ2でクリップ）
+- ⏳ 標準カテゴリセットの自動提案（6M、8P、5P）
+- ⏳ カテゴリごとの `order` レンダリング（解析済みだがレイアウトエンジンにはまだ未適用）
+
+参考文献：
+
+- 石川馨（1968年）．*品質管理入門*．JUSE出版。
+- ASQ — [Cause-and-Effect (Fishbone) Diagram](https://asq.org/quality-resources/cause-analysis-tools/fishbone)
+- ISO 9001:2015 §10.2 — 不適合及び是正処置
+
+---
+
+## 10. 関連例
+
+<RelatedExamples slugs={[
+  'fishbone-website-traffic',
+]} />
+
+---
+
+## 11. ロードマップ
+
+**計画中 — まだ解析不可。** 今日の生成DSLではこれらを使用しないでください；パーサーが拒否または無視します。
+
+- **レベル3の副副原因** — 3番目のインデント層；ASTの構造はサポートしているが、レンダラーは現在レベル2で止まっている。
+- **カテゴリごとの `causeside` 上書き** — グローバルではなく個別のカテゴリに `cause-side` を設定。
+- **標準カテゴリの自動提案** — 標準的な製造またはサービスカテゴリ名を事前入力する `template: 6M` / `template: 8P` 略記法。
+- **凡例ブロック** — ダイアグラムの横に表示されるカラーコーディングキーを宣言する `legend` キーワード。
+- **`metadata:` ブロック** — コーナー注釈に表示される構造化キーバリューメタデータ（ファシリテーター、日付、改訂版）。
+
+これらが早急に必要な場合はGitHub issuesで追跡してください。

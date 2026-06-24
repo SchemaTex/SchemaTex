@@ -1,0 +1,402 @@
+---
+title: Carte mentale
+---
+
+## À propos des cartes mentales
+
+Une **carte mentale** est un diagramme radial qui organise des idées autour d'un sujet central, se ramifiant vers des sous-thèmes et des détails. Tony Buzan a popularisé ce format dans les années 1970 comme outil de prise de notes et de remue-méninges ; la méthode a depuis été largement adoptée dans l'éducation, la planification de projets, l'animation de réunions et la gestion des connaissances. L'idée clé est que la ramification non linéaire reflète le fonctionnement de la pensée associative — plus rapide que la structuration par plan, plus organisée que l'écriture libre.
+
+Les cartes mentales Schematex utilisent un DSL de type **titre Markdown + liste à puces** inspiré de [markmap](https://markmap.js.org/) — un format que la plupart des gens connaissent déjà. Deux styles de disposition sont disponibles : la **carte** radiale classique (branches dans toutes les directions) et un arbre horizontal **logic-right**. Cette page documente ce que le parseur accepte aujourd'hui.
+
+<Playground initial={`mindmap
+
+# Product Launch Plan
+
+## Market readiness
+### Competitive analysis
+- Direct competitors
+- Pricing benchmarks
+### Target segments
+- SMB customers
+- Enterprise pilot
+
+## Engineering
+### Feature freeze
+- Core API complete
+- Edge cases resolved
+### Infrastructure
+- Load testing
+- CDN configuration
+  - Cache rules
+  - Geo routing
+
+## Go-to-market
+- Landing page live
+- Email campaign
+- Press outreach
+  - TechCrunch pitch
+  - Newsletter sponsors
+
+## Success metrics
+- Week 1 signups
+- Activation rate
+- NPS at day 30`} height={500} />
+
+---
+
+## 1. Votre première carte mentale
+
+La carte mentale la plus simple utile : un sujet central avec deux branches, dont l'une avec un sous-élément.
+
+<Playground initial={`mindmap
+
+# Team retrospective
+
+## What went well
+- Clear sprint goals
+- Good test coverage
+
+## What to improve
+- Slower PR reviews
+  - Add a review SLA`} />
+
+Quatre règles couvrent 80 % des usages :
+
+1. Commencez avec le mot-clé optionnel `mindmap` sur sa propre ligne, puis une ligne vide.
+2. La racine est le titre `#` unique — un seul est autorisé.
+3. Utilisez `##`, `###` et des titres plus profonds pour définir la profondeur des branches. Le niveau de titre est égal à la profondeur dans l'arbre.
+4. Utilisez des puces `-`, `*` ou `+` pour ajouter des sous-éléments sous n'importe quel titre. Chaque indentation de 2 espaces ajoute un niveau de profondeur supplémentaire.
+
+> Les commentaires ne sont pas pris en charge. Utilisez les directives `%%` (avant le titre `#` racine) uniquement pour la configuration.
+
+---
+
+## 2. Titres et profondeur
+
+Le niveau de titre correspond directement à la profondeur dans l'arbre. `#` est toujours la racine (profondeur 0). `##` est la profondeur 1. `###` est la profondeur 2, et ainsi de suite jusqu'à `######` (profondeur 5).
+
+```
+mindmap
+
+# Racine
+## Branche A         ← profondeur 1
+### Sous-branche      ← profondeur 2
+#### Feuille           ← profondeur 3
+## Branche B
+```
+
+Les titres peuvent sauter des niveaux — `####` après `##` est valide et produit un nœud à la profondeur 3. La profondeur de l'arbre est relative à la racine, pas au titre précédent.
+
+---
+
+## 3. Puces
+
+Les puces étendent une branche de titre avec des détails supplémentaires. N'importe lequel des caractères `-`, `*` ou `+` est accepté comme marqueur de puce. Chaque **2 espaces** d'indentation ajoute un niveau de profondeur par rapport au titre englobant.
+
+```
+## Risques
+- Complexité technique         ← profondeur 2 (un niveau sous ## Risques)
+  - Intégrations héritées        ← profondeur 3 (2 espaces d'indentation)
+    - Service d'authentification             ← profondeur 4 (4 espaces d'indentation)
+- Disponibilité de l'équipe            ← profondeur 2 à nouveau
+```
+
+<Playground initial={`mindmap
+
+# Book outline
+
+## Chapter 1 — Introduction
+- Why this matters
+  - Historical context
+  - Current state
+- What you will learn
+
+## Chapter 2 — Core concepts
+- Concept A
+  - Definition
+  - Examples
+- Concept B
+  - Definition
+  - Worked example
+    - Step-by-step walkthrough`} height={440} />
+
+---
+
+## 4. Formatage en ligne
+
+Les étiquettes de nœuds prennent en charge un sous-ensemble du formatage en ligne Markdown. Le parseur tokenise les étiquettes au moment de l'analyse ; le rendu utilise les tokens pour émettre du texte stylisé.
+
+| Syntaxe | Effet | Exemple |
+|---|---|---|
+| `**texte**` | Gras | `**Chemin critique**` |
+| `*texte*` | Italique | `*optionnel*` |
+| `` `code` `` | Code monospace | `` `npm install` `` |
+| `[texte](url)` | Lien | `[RFC 7519](https://tools.ietf.org/html/rfc7519)` |
+| `[ ] élément` | Tâche non cochée | `[ ] Écrire les tests` |
+| `[x] élément` | Tâche cochée | `[x] Revue de conception` |
+
+La case à cocher doit être au tout début de l'étiquette (avant tout autre texte). Le formatage en ligne peut être imbriqué : `**[lien gras](url)**`.
+
+<Playground initial={`mindmap
+
+# Sprint 24 review
+
+## Completed
+- [x] **Auth redesign** — JWT + refresh tokens
+- [x] API rate limiting \`per-user\`
+- [x] [Error budget dashboard](https://metrics.example.com)
+
+## In progress
+- [ ] *Mobile push notifications*
+  - [ ] iOS APNs integration
+  - [ ] Android FCM setup
+
+## Blocked
+- [ ] **Payment webhook** — waiting on Stripe team
+  - *Escalated to account manager*`} height={420} />
+
+---
+
+## 5. Styles de disposition
+
+La directive `%% style:` sélectionne l'algorithme de disposition. Placez-la avant le titre `#` racine.
+
+| Style | Disposition | Idéal pour |
+|---|---|---|
+| `map` (défaut) | Radial — les branches se dispersent dans toutes les directions depuis le centre | Remue-méninges, cartes conceptuelles, exploration libre |
+| `logic-right` | Arbre horizontal — toutes les branches s'étendent vers la droite | Plans structurés, hiérarchies, décompositions séquentielles |
+| `futureswheel` | Anneaux concentriques — la racine au centre, chaque niveau de titre sur son propre anneau | Prospective, cartographie des conséquences, remue-méninges structuré |
+| `driver` | Arbre horizontal — l'objectif à gauche, flux vers la droite via les leviers jusqu'aux idées de changement | Programmes d'amélioration, décompositions objectif → levier → action |
+
+```
+%% style: map
+%% style: logic-right
+%% style: futureswheel
+%% style: driver
+```
+
+**`map`** (défaut) — disposition radiale, les branches se dispersent dans toutes les directions depuis le centre. Idéal pour le remue-méninges et les cartes conceptuelles.
+
+<Playground initial={`mindmap
+
+# Machine learning
+
+## Supervised
+### Classification
+- Decision tree
+- SVM
+- Neural net
+### Regression
+- Linear
+- Gradient boosting
+
+## Unsupervised
+### Clustering
+- K-means
+- DBSCAN
+### Reduction
+- PCA
+- t-SNE
+
+## Reinforcement
+- Q-learning
+- Policy gradient`} height={480} />
+
+**`logic-right`** — arbre horizontal, toutes les branches s'étendent vers la droite. Idéal pour les plans structurés et les hiérarchies séquentielles.
+
+<Playground initial={`mindmap
+%% style: logic-right
+
+# Machine learning
+
+## Supervised
+### Classification
+- Decision tree
+- SVM
+- Neural net
+### Regression
+- Linear
+- Gradient boosting
+
+## Unsupervised
+### Clustering
+- K-means
+- DBSCAN
+### Reduction
+- PCA
+- t-SNE
+
+## Reinforcement
+- Q-learning
+- Policy gradient`} height={460} />
+
+**`futureswheel`** — une [Roue des futurs](https://en.wikipedia.org/wiki/Futures_wheel) (Jerome Glenn, 1971/72), le format classique de remue-méninges structuré pour réfléchir aux conséquences. L'événement ou la tendance centrale se trouve au centre ; les conséquences de premier ordre atterrissent sur l'anneau intérieur, les conséquences de second ordre sur l'anneau suivant, et ainsi de suite. Chaque enfant reste dans le secteur angulaire de son parent, et chaque anneau est codé par couleur par ordre, de sorte qu'un lecteur peut voir d'un coup d'œil à quelle distance du premier événement une onde est. La profondeur correspond aux anneaux : `#` est le centre, `##` est le premier anneau (1er ordre), `###` / les puces sous un titre poussent vers le prochain anneau (2e ordre), et les niveaux plus profonds continuent de s'étendre vers l'extérieur.
+
+<Playground initial={`mindmap
+%% style: futureswheel
+
+# Remote work becomes default
+
+## Less commuting
+- Lower carbon emissions
+- Cheaper city living
+
+## Distributed teams
+- Async communication norms
+- Global hiring pools
+
+## Empty offices
+- Commercial real estate slump
+- Repurposed to housing`} height={520} />
+
+**`driver`** — un [Diagramme de leviers](https://www.ihi.org/resources/tools/driver-diagram), l'outil de planification du modèle d'amélioration de l'IHI (Institute for Healthcare Improvement). Il se lit de gauche à droite comme un arbre ordonné : l'**objectif** à l'extrême gauche, les **leviers primaires** (les quelques domaines à fort levier qui font avancer l'objectif) dans la colonne suivante, puis les **leviers secondaires** et les **idées de changement** concrètes qui se ramifient plus à droite. Les niveaux de l'arbre correspondent proprement à la structure : `#` est l'objectif, `##` sont les leviers primaires, et les puces / titres plus profonds sous chacun deviennent les leviers secondaires et les idées de changement. Utilisez-le chaque fois que vous devez montrer *comment* un objectif sera réellement atteint.
+
+<Playground initial={`mindmap
+%% style: driver
+
+# Reduce 30-day readmissions
+
+## Reliable discharge process
+- Teach-back at bedside
+- Med reconciliation
+
+## Timely follow-up
+- Appointment within 7 days
+- Post-discharge phone call`} height={400} />
+
+---
+
+## 6. Directives
+
+Les directives sont des lignes `%%` placées **avant** le titre `#` racine. Elles configurent le diagramme globalement.
+
+| Directive | Valeurs | Défaut | Effet |
+|---|---|---|---|
+| `%% style: …` | `map`, `logic-right`, `futureswheel`, `driver` | `map` | Algorithme de disposition |
+| `%% theme: …` | toute chaîne | (aucun) | Remplacement de thème transmis au rendu |
+| `%% maxLabelWidth: …` | entier 80–1000 | `240` | Largeur maximale en pixels avant retour à la ligne de l'étiquette |
+
+```
+mindmap
+%% style: logic-right
+%% maxLabelWidth: 320
+
+# Wide label root
+```
+
+<Playground initial={`mindmap
+%% style: logic-right
+%% maxLabelWidth: 200
+
+# Schematex features
+
+## DSL-first design
+- One keyword per diagram
+- AI-friendly syntax
+- CJK support
+
+## Zero dependencies
+- Hand-written parser
+- No D3, no dagre
+- ~KB-level bundle
+
+## Standards-compliant
+- IEEE for logic gates
+- IEC for circuits
+- McGoldrick for genograms`} height={360} />
+
+---
+
+## 7. Étiquettes et commentaires
+
+- **Titre racine :** le texte après `#` sur la ligne du titre racine.
+- **Étiquettes de branches :** le texte après `##`, `###`, etc.
+- **Étiquettes de puces :** le texte après le marqueur `- ` / `* ` / `+ `.
+- **Formatage en ligne :** `**gras**`, `*italique*`, `` `code` ``, `[texte](url)`, `[ ]` / `[x]`.
+- **Commentaires :** non pris en charge dans le corps. Utilisez les directives `%%` avant le titre `#` racine pour la configuration ; les lignes `%%` dans le corps sont traitées comme des directives (silencieusement ignorées si non reconnues).
+
+---
+
+## 8. Mots réservés et échappement
+
+**Réservé en début de document :** `mindmap` (mot-clé optionnel) et `%%` (préfixe de directive).
+
+**Réservé comme racine :** exactement un titre `#` ; un deuxième titre `#` provoque une erreur d'analyse.
+
+**Marqueurs de puces :** `-`, `*`, `+` suivis d'un espace. Un `*` non suivi d'un espace est traité comme un marqueur d'italique s'il apparaît dans le texte de l'étiquette.
+
+**Conflits en ligne :** une étiquette commençant par `[ ]` ou `[x] ` est analysée comme une case à cocher, pas comme un lien Markdown. Si vous avez besoin d'une étiquette qui commence littéralement par `[`, écrivez `\[` — la barre oblique inverse échappe le crochet.
+
+---
+
+## 9. Erreurs courantes
+
+| Ce que vous avez écrit | Ce que dit le parseur | Correction |
+|---|---|---|
+| Deux titres `#` | `Error: multiple # center nodes not allowed` | Utilisez exactement un titre `#` comme racine |
+| `##Branche` (pas d'espace après `##`) | La ligne n'est pas reconnue comme un titre ; silencieusement ignorée | Mettez toujours un espace : `## Branche` |
+| Puce indentée de 3 espaces | Profondeur = `lastHeadingDepth + 1 + floor(3/2) = lastHeadingDepth + 2` — peut créer un niveau inattendu | Utilisez des multiples de 2 espaces : 0, 2, 4, 6… |
+| `%% style: radial` | Valeur inconnue silencieusement ignorée ; la disposition reste `map` | Utilisez `map`, `logic-right`, `futureswheel` ou `driver` |
+| Mot-clé `mindmap` au milieu du document | Traité comme une ligne de texte ordinaire (le mot-clé n'est reconnu qu'en toute première ligne) | Placez `mindmap` à la ligne 1, avant tout contenu |
+| `[ ]texte` (pas d'espace après le crochet) | Case à cocher non reconnue ; rendu comme littéral `[ ]texte` | `[ ] texte` — un espace est requis après le crochet fermant |
+
+---
+
+## 10. Grammaire (EBNF)
+
+```text
+document       = ("mindmap" NEWLINE)? (blank | directive)* node*
+
+directive      = "%%" WS key ":" WS value NEWLINE
+key            = "style" | "theme" | "maxlabelwidth"
+
+node           = heading | bullet
+heading        = INDENT? "#"+ SPACE label NEWLINE
+bullet         = SPACE* bullet-marker SPACE label NEWLINE
+bullet-marker  = "-" | "*" | "+"
+
+label          = inline-token*
+inline-token   = checkbox
+               | "**" inline-token* "**"
+               | "*" inline-token* "*"
+               | "`" code-text "`"
+               | "[" inline-token* "]" "(" url ")"
+               | plain-text
+
+checkbox       = "[ ]" SPACE | "[x]" SPACE | "[X]" SPACE
+
+INDENT         = WS*    %% headings may have leading whitespace (ignored)
+SPACE          = " " | "\t"
+```
+
+**Règles de profondeur :**
+- Titre `#` → profondeur 0 (racine)
+- Titre `##` → profondeur 1, `###` → profondeur 2, etc.
+- Puce à `n` espaces en tête → profondeur = `lastHeadingDepth + 1 + floor(n / 2)`
+
+Source faisant autorité : `src/diagrams/mindmap/parser.ts`. Si cela diverge du parseur, le parseur a la priorité — veuillez ouvrir un ticket.
+
+---
+
+## 11. Feuille de route
+
+**Prévu — pas encore analysable.** N'utilisez pas ces éléments dans le DSL généré aujourd'hui ; le parseur les rejettera ou les ignorera.
+
+- **Bloc `%%{init: {…}}%%`** — bloc d'initialisation de style Mermaid pour le thème/la configuration ; seules les directives de ligne `%%` sont actuellement prises en charge.
+- **Branches numérotées automatiquement** — `%% numbering: true` pour préfixer chaque branche avec 1., 1.1., etc.
+- **Nœuds légende / note** — un marqueur spécial pour attacher une boîte d'annotation flottante à n'importe quel nœud.
+- **Nœuds image** — `![alt](url)` comme étiquette de nœud entier rendu sous forme d'image en ligne.
+- **Branches réduites** — `%% collapsed: branchId` pour rendre un sous-arbre comme un indicateur plié unique.
+
+Suivez dans les tickets GitHub si vous avez besoin de l'un de ces éléments plus tôt.
+
+---
+
+## Exemples associés
+
+Scénarios prêts à l'emploi depuis la galerie d'exemples :
+
+<RelatedExamples slugs={[
+  'mindmap-product-launch',
+  'mindmap-quarterly-okrs',
+]} />

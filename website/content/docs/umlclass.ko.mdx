@@ -1,0 +1,192 @@
+---
+title: UML 클래스 다이어그램
+---
+
+## 클래스 다이어그램이란
+
+**클래스 다이어그램**은 객체지향 설계의 근간입니다. 시스템 내의 *타입* — 클래스, 인터페이스, 열거형 — 과 그 속성 및 연산, 그리고 타입 간의 구조적 관계(상속, 컴포지션, 집합, 의존)를 표현합니다. **[UML](https://www.omg.org/spec/UML/2.5.1/) 2.5.1 §9–§11** 표준에 기반하며, 소프트웨어 문서화에서 가장 많이 사용되는 UML 다이어그램입니다.
+
+Schematex는 UML 2.5.1 시각적 서브셋을 `umlclass` 단일 키워드와 LLM 생성에 최적화된 텍스트 DSL로 구현합니다. PlantUML 스타일을 따르며, 원클릭 마이그레이션을 위해 Mermaid `classDiagram` 글리프 별칭도 추가로 지원합니다. 표준에 충실한 장식 요소(빈 삼각형이 더 일반적인 분류자를 가리키며, 채워진 다이아몬드가 복합 끝을 표시), **일반화 기반 계층 레이아웃**(인터페이스가 상단에, 리프 클래스가 하단에 배치), 외부 의존성 없는 임베드 가능한 SVG를 제공합니다. **[erd](/docs/erd)**(타입이 아닌 *데이터* 행을 모델링)나 **[c4](/docs/flowchart)**(코드 수준 타입이 아닌 아키텍처)와는 구별됩니다.
+
+<Playground initial={`umlclass
+title: "Shapes"
+«interface» Shape {
+  + area() : double
+}
+abstract class AbstractShape {
+  # name : String
+  + area() : double {abstract}
+}
+class Circle {
+  + radius : double
+  + area() : double
+}
+class Square {
+  + side : double
+  + area() : double
+}
+Shape         <|.. AbstractShape
+AbstractShape <|-- Circle
+AbstractShape <|-- Square`} height={560} />
+
+---
+
+## 1. 첫 번째 다이어그램
+
+모든 문서는 `umlclass` 키워드(Mermaid의 `classDiagram` 헤더도 허용)로 시작한 후, 선언과 관계를 기술합니다.
+
+```
+umlclass
+class Account {
+  + id : String
+  - balance : Money
+  + deposit(amount : Money) : void
+}
+class Customer {
+  + name : String
+}
+Customer "1" o-- "*" Account : owns
+```
+
+`class X { … }` 블록은 이름 컴파트먼트, 속성 컴파트먼트, 연산 컴파트먼트를 가진 분류자를 선언합니다. 중괄호 안의 각 줄에 멤버를 작성합니다. 단일 행으로도 작성할 수 있습니다(`class Account { + id : String + deposit() }`). 헤더에서 허용되는 속성:
+
+- `title: "…"` — 다이어그램 위에 표시되는 제목.
+- `direction: tb | bt | lr | rl` — 랭크 방향, 기본값은 `tb`(부모가 위에 위치).
+- `theme: …` — 테마 재정의.
+
+---
+
+## 2. 분류자
+
+```
+class Order
+«interface» Repository
+«enumeration» Status
+abstract class Shape
+datatype Money
+primitive int
+```
+
+다섯 가지 분류자 종류는 `class`, `interface`, `enum`(`enumeration` 별칭), `datatype`, `primitive`입니다. `«stereotype»`(또는 ASCII `<<stereotype>>`)은 이름 위에 렌더링됩니다. `abstract class`(또는 `{abstract}` 어노테이션)는 이름을 이탤릭체로 렌더링합니다. `as`를 사용하면 참조 id와 다른 표시 이름을 부여할 수 있습니다: `class "Order Service" as OrderSvc`.
+
+---
+
+## 3. 멤버 — 속성 및 연산
+
+```
+class Account {
+  + id : String
+  - balance : Money = 0
+  / available : Money
+  # owner : Customer
+  ~ region : String
+  + count : int {static}
+  + deposit(amount : Money) : void
+  + transfer(to : Account, amount : Money) : boolean {query}
+}
+```
+
+- **가시성** 글리프: `+` 공개, `-` 비공개, `#` 보호, `~` 패키지.
+- `: Type`은 속성 타입 또는 연산 반환 타입을 지정하고, `= value`는 기본값을, `[0..*]`은 다중성을, `/`는 파생 속성을 나타냅니다.
+- `{…}` 어노테이션: `{static}`(밑줄 렌더링), `{abstract}`(이탤릭 연산), `{readOnly}`, `{query}`, `{ordered}`, …
+- `name : Type`, `name: Type`, Java 순서 `Type name` 모두 허용되며 `name : Type`으로 정규화됩니다.
+
+**열거형 리터럴**은 `enum` 본문 안에 단순 이름으로 작성합니다.
+
+```
+«enumeration» Status {
+  ACTIVE
+  SUSPENDED
+  CLOSED
+}
+```
+
+---
+
+## 4. 관계
+
+```
+Vehicle <|-- Car            일반화 (빈 삼각형 → 부모)
+Shape   <|.. Circle         실체화 (점선 + 빈 삼각형 → 인터페이스)
+Order   *-- LineItem        컴포지션 (전체 쪽에 채워진 다이아몬드)
+Customer o-- Address        집합 (전체 쪽에 빈 다이아몬드)
+Service --> Repository      방향 연관 (열린 화살표 → 대상)
+Service ..> Logger          의존 (점선 + 열린 화살표 → 공급자)
+A -- B                      단순 연관 (화살표 없음)
+```
+
+역방향 형식도 허용되며 정규화됩니다(`Car --|> Vehicle` ≡ `Vehicle <|-- Car`). 커넥터 주변의 공백은 선택 사항입니다.
+
+두 개 이상의 자식이 일반화/실체화를 통해 하나의 부모를 공유하면, 헤드가 **트리 병합**됩니다: 하나의 트렁크, 하나의 공유 삼각형, 각 자식별 다리.
+
+---
+
+## 5. 레이블 및 다중성
+
+```
+Customer "1" o-- "0..*" Order : places
+```
+
+끝에 붙는 `: 레이블`은 연관에 이름을 붙입니다(선의 중간 지점에 표시). 따옴표로 감싼 끝은 다중성 또는 역할 이름입니다: `"1"`, `"0..1"`, `"*"`, `"1..*"`. 소스 끝은 커넥터의 왼쪽, 대상 끝은 오른쪽입니다(역방향 형식 정규화 후).
+
+---
+
+## 6. 네임스페이스 / 패키지
+
+분류자를 레이블이 붙은 포함 프레임으로 그룹화합니다.
+
+```
+umlclass
+namespace Platform {
+  namespace Auth {
+    class UserService {
+      + login()
+    }
+  }
+  namespace Data {
+    class Repository {
+      + find()
+    }
+  }
+}
+class Gateway {
+  + route()
+}
+Gateway --> UserService : delegates
+Gateway --> Repository  : delegates
+```
+
+- 블록은 문법적으로 **중첩**됩니다. 점 표기법을 사용하면 부모가 자동 생성됩니다: `namespace Company.Engineering.Backend { … }`는 `Company`와 `Company.Engineering`도 함께 생성합니다.
+- 명시적 레이블: `namespace plat["Platform Layer"] { … }`.
+- 각 패키지는 멤버(및 중첩 서브프레임)의 합집합 + 패딩 + 상단 레이블로 구성된 프레임으로 렌더링됩니다. 네임스페이스 본문은 줄 바꿈을 사용해야 합니다(한 줄에 선언 하나).
+
+---
+
+## 7. Mermaid 호환 형식
+
+Mermaid `classDiagram`에서 원클릭 마이그레이션을 위한 형식:
+
+```
+classDiagram
+class Repository~T~ {
+  + findAll() List~T~
+  + cache : Map~String,List~int~~
+  + count$
+  + flush()*
+}
+Repository : <<service>>
+Repository : + save(e : T) T
+```
+
+- **틸드 제네릭** `List~T~` → `List<T>` (중첩 지원: `Map~String,List~int~~` → `Map<String,List<int>>`); 클래스 이름에도 적용 가능(`class Box~T~`).
+- **단일 행 멤버**: `ClassName : +member`는 멤버를 추가하고, `ClassName : <<interface>>`는 종류/스테레오타입을 설정합니다.
+- **멤버 분류자**: 끝에 붙는 `*` = abstract(이탤릭), `$` = static(밑줄).
+- **공백 반환 타입**: `getId() String`은 콜론이 필요 없습니다.
+
+단독으로 앞에 오는 `~`는 여전히 패키지 가시성 글리프입니다. 틸드 제네릭은 타입 내부에서 균형 잡힌 `~…~` 쌍에서만 변환되므로 두 가지가 충돌하지 않습니다.
+
+---
+
+## 8. 테마 및 접근성
+
+모든 획과 채우기는 테마 토큰에서 가져옵니다(인라인 스타일 없음). CSS 클래스는 `sx-umlclass-*` 접두사로 지정됩니다. 가시성은 텍스트 글리프(`+ - # ~`)로 렌더링되며, 색상 아이콘을 사용하지 않아 표준에 충실하고 흑백에서도 안전합니다. 모든 다이어그램에는 `<title>`/`<desc>`와 `data-*` 속성(`data-id`, `data-kind`, 관계에는 `data-from`/`data-to`/`data-kind`, 프레임에는 `data-package-id`)이 포함되어 상호작용을 지원합니다.

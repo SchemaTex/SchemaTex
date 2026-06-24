@@ -1,0 +1,115 @@
+---
+title: Reliability Block Diagram
+---
+
+## Über Reliability Block Diagrams
+
+Ein **Reliability Block Diagram (RBD)** beschreibt die **Erfolgslogik** eines Systems: Jede Komponente ist ein Block auf einem Pfad von einem Eingangsknoten zu einem Ausgangsknoten, und das System *funktioniert*, solange ein ununterbrochener Pfad funktionierender Blöcke die beiden verbindet. Komponenten in **Reihe** müssen alle funktionieren; Komponenten **parallel** schaffen Redundanz (eine genügt); eine **k-of-n**-Gruppe funktioniert, wenn mindestens *k* ihrer *n* Mitglieder funktionieren. Es ist das Standardwerkzeug der RAMS-Technik (Reliability, Availability, Maintainability, Safety), definiert durch **[IEC 61078:2016](https://webstore.iec.ch/publication/24566)** und MIL-HDBK-338B.
+
+Der Vorteil von Schematex liegt darin, dass die Engine **die Antwort berechnet** — nicht nur das Bild: Aus den blockweisen Zuverlässigkeitswerten reduziert sie die Struktur auf die **Systemzuverlässigkeit** (∏ für Reihe, 1−∏(1−Rᵢ) für Parallel, exakte Enumeration für k-of-n), leitet die **Birnbaum-Zuverlässigkeitswichtigkeit** jedes Blocks ab (welcher den größten Hebel hat) und markiert **Single Points of Failure** — Blöcke, deren Ausfall allein das System zum Versagen bringt — in Rot. Das ist dieselbe Herangehensweise wie bei `faulttree` gegenüber Schnittmengen und bei `pert` gegenüber der Terminplanung. RBD ist das Erfolgsraum-Pendant zum Fehlerraum des Fehlerbaums.
+
+<Playground initial={`rbd "Redundant Server"
+  series {
+    block PSU "Power Supply" R=0.99
+    parallel {
+      block FAN1 "Fan A" R=0.95
+      block FAN2 "Fan B" R=0.95
+    }
+    kofn 2/3 {
+      block D1 "Disk 1" R=0.97
+      block D2 "Disk 2" R=0.97
+      block D3 "Disk 3" R=0.97
+    }
+  }`} height={520} />
+
+---
+
+## 1. Erstes Diagramm
+
+Jedes Dokument beginnt mit dem Schlüsselwort `rbd` (Alias `reliability`), einem optionalen Titel und anschließend verschachtelten Erfolgslogik-Gruppen mit `block`-Blättern:
+
+```
+rbd "Two redundant pumps"
+  parallel {
+    block A "Pump A" R=0.9
+    block B "Pump B" R=0.9
+  }
+```
+
+Die Engine zeichnet die beiden Pumpen auf parallelen Schienen zwischen einem Aufspaltungs- und einem Zusammenführungsknoten, berechnet die Systemzuverlässigkeit `1 − (1−0.9)(1−0.9) = 0.99` und gibt sie als Hauptwert aus. Eine einfache Liste von Blöcken auf oberster Ebene (ohne äußere Gruppe) wird als **Reihenschaltung** behandelt.
+
+## 2. Blöcke
+
+Ein `block` ist eine Komponente auf einem Erfolgspfad:
+
+```
+block ID "Label" R=0.99
+```
+
+- `ID` — ein kurzer Bezeichner (wird angezeigt, wenn kein Label angegeben ist).
+- `"Label"` — ein optionaler Anzeigename (CJK-Anführungszeichen sind erlaubt).
+- Die Zuverlässigkeit wird angegeben als **`R=0.99`** (Zuverlässigkeit/Verfügbarkeit), **`p=0.01`** (Ausfallwahrscheinlichkeit, → R = 1−p) oder als Prozentsatz **`R=99%`**. Ein Block ohne Zuverlässigkeitswert lässt den Systemwert symbolisch (`n/a`).
+
+## 3. Erfolgslogik-Gruppen
+
+Gruppen lassen sich frei verschachteln, sodass redundante Ketten, Abstimmungsgruppen und Standby-Paare modelliert werden können:
+
+| Gruppe | Erfolgreich wenn | Zuverlässigkeit |
+|--------|-----------------|-----------------|
+| `series { … }` | **jedes** Kind funktioniert | ∏ Rᵢ |
+| `parallel { … }` | **ein beliebiges** Kind funktioniert | 1 − ∏(1 − Rᵢ) |
+| `kofn k/n { … }` | **≥ k von n** Kindern funktionieren | exakte Zustandsenumeration |
+
+```
+series {
+  block CTRL "Controller" R=0.995
+  parallel {
+    series { block P1 "Path 1 sensor" R=0.97
+             block A1 "Path 1 actuator" R=0.98 }
+    series { block P2 "Path 2 sensor" R=0.97
+             block A2 "Path 2 actuator" R=0.98 }
+  }
+}
+```
+
+## 4. Berechnete Zuverlässigkeit, Wichtigkeit & SPOF
+
+Nach dem Parsen berechnet die Engine:
+
+- **Systemzuverlässigkeit** — der Hauptwert, durch rekursive Reihen-/Parallel-/k-of-n-Reduktion.
+- **Birnbaum-Wichtigkeit** `Iᴮ(i) = R_sys(Rᵢ=1) − R_sys(Rᵢ=0)` für jeden Block; der Block mit der höchsten Wichtigkeit (das primäre Verbesserungsziel) wird hervorgehoben.
+- **Kritizitätswichtigkeit** `I_C(i) = Iᴮ(i)·(1−Rᵢ)/(1−R_sys)` — die Wahrscheinlichkeit, dass Block i ausgefallen *und* kritisch ist, gegeben dass das System ausgefallen ist.
+- **Single Points of Failure** — jeder Block, bei dem `R_sys(Rᵢ=0) = 0` gilt (dessen Ausfall allein das System zum Versagen bringt), wird mit einem roten Rand gezeichnet. Ein nicht redundanter Block in Reihenschaltung ist immer ein SPOF.
+
+## 5. Zeitabhängige Zuverlässigkeit — R(t)
+
+Ein statisches `R=` ist der Einstiegspunkt; in der Praxis ist die Zuverlässigkeit eine Funktion der Missionsdauer. Setze eine **`mission: <t>`** und gib Blöcken eine Ausfallverteilung statt eines konstanten Werts — die Engine berechnet **R(t)** und rollt diesen genau wie zuvor auf. Verwende **einheitliche Zeiteinheiten** für `mission` und die Raten.
+
+| Block-Attribut | Modell | R(t) |
+|----------------|--------|------|
+| `rate=0.0001` | Exponential (konstante Hazardrate λ) | e^(−λt) |
+| `mtbf=10000` | Exponential (λ = 1/MTBF) | e^(−t/MTBF) |
+| `weibull=2,10000` | Weibull (β Form, η Skalierung) | e^(−(t/η)^β) |
+
+```
+rbd "Pump station — 1-year mission"
+  mission: 8760            # hours
+  parallel {
+    block A "Pump A" mtbf=10000
+    block B "Pump B" weibull=1.5,12000
+  }
+```
+
+Der Hauptwert lautet dann `R(t=8760) = …`. Ein Block mit einer Verteilung, aber ohne `mission:`, gibt eine Warnung aus und fällt auf seinen konstanten `R=`-Wert zurück (sofern vorhanden).
+
+## 6. Validierung
+
+Der Parser meldet nicht-fatale Warnungen, anstatt zu scheitern:
+
+- Ein `kofn k/n`-Schwellenwert mit `k > n` wird auf `n` begrenzt (und `k < 1` auf `1`);
+- eine Zuverlässigkeit außerhalb von `0..1` wird begrenzt;
+- eine doppelte Block-ID wird markiert.
+
+## 7. Theming
+
+`theme: default` verwendet die gemeinsame Risk-&-Reliability-Palette (neutrale Blöcke, blaue Zuverlässigkeitszahlen, rote Single-Point-of-Failure-Ränder). `theme: monochrome` rendert eine Schwarz-Weiß-Druckversion (SPOF durch Randstärke); `theme: dark` ist die Catppuccin-Dark-Variante.

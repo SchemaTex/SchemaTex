@@ -1,0 +1,357 @@
+---
+title: 演化樹
+---
+
+## 關於演化樹
+
+**演化樹**（又稱系統發生樹、親緣樹或進化枝圖）展示一組物種、基因或序列的推斷演化史。內部節點代表假設的共同祖先；葉尖代表觀測到的分類群；分支長度編碼演化距離或分歧時間。演化生物學家、分子生態學家和臨床微生物學家使用演化樹來重建生命演化史、追蹤病原體疫情，以及了解基因家族的演化歷程。
+
+Schematex 接受 **[Newick 格式](https://phylipweb.github.io/phylip/newicktree.html)**的樹——這是 PAUP\*、IQ-TREE、RAxML、BEAST 及幾乎所有系統發生學程式都使用的通用交換標準——並以 **[NHX 標注](https://home.cc.umanitoba.ca/~psgendb/doc/atv/NHX.pdf)**擴充支援自展值和進化枝元數據。對於手工編寫的樹，也支援基於縮排的 DSL。本頁說明解析器目前支援的語法。
+
+<Playground initial={`phylo "Vertebrate Evolution" [layout: circular, mode: phylogram]
+  newick: "(((Human:0.1,Chimp:0.08,Gorilla:0.12):0.15,(Mouse:0.45,Rat:0.42):0.3):0.05,((Dog:0.35,(Cat:0.30,Tiger:0.32):0.1):0.2,(Whale:0.6,Dolphin:0.55):0.15):0.3,(Salmon:0.5,Zebrafish:0.45):0.4);"
+  clade Primates = (Human, Chimp, Gorilla) [color: "#1E88E5", label: "Primates", highlight: both]
+  clade Rodents = (Mouse, Rat) [color: "#E53935", label: "Rodents", highlight: background]
+  clade Carnivora = (Dog, Cat, Tiger) [color: "#43A047", label: "Carnivora", highlight: both]
+  clade Cetacea = (Whale, Dolphin) [color: "#FB8C00", label: "Cetacea", highlight: background]
+  scale "substitutions/site"`} height={540} />
+
+---
+
+## 1. 第一棵演化樹
+
+最小可用的樹：四個分類群，兩個進化枝。
+
+<Playground initial={`phylo "Vertebrates"
+  newick: "((Human:0.1,Chimp:0.08):0.03,(Dog:0.35,Cat:0.30):0.2);"`} />
+
+三條規則涵蓋了 80% 的使用情境：
+
+1. 以 `phylo` 起頭，後面可選擇性加上引號標題和方括號屬性。
+2. 以 `newick:` 格式提供樹的拓撲——標準 Newick 字串，加引號，放在同一行。結尾的 `;` 可省略。
+3. 可選擇在 newick 行下方定義**clade** 高亮群組和**scale** 標籤。
+
+> 注解必須以 `#` 開頭並獨立成行。不支援行尾行內注解。
+
+---
+
+## 2. 輸入格式
+
+### 2.1 Newick 格式
+
+Newick 是主要輸入格式。完整語法如下：
+
+```
+(A,B,(C,D));                         # topology only
+(A:0.1,B:0.2,(C:0.3,D:0.4):0.5);    # with branch lengths
+((A:0.1,B:0.2):0.05[&&NHX:B=98],(C,D):0.08);  # NHX bootstrap
+('Homo sapiens':0.1,'Mus musculus':0.2);        # quoted names with spaces
+```
+
+分支長度在節點名稱後面以冒號分隔。內部節點支援值可用純括號 `[95]` 或 NHX `[&&NHX:B=95]` 表示。
+
+<Playground initial={`phylo "Newick examples"
+  newick: "((A:0.1,B:0.2):0.05[&&NHX:B=98],(C:0.3,D:0.4):0.08[&&NHX:B=87]);"`} />
+
+**解析器接受的 Newick 規則：**
+
+| 功能 | 語法 | 備注 |
+|---|---|---|
+| 葉節點名稱 | `A`、`Homo_sapiens` | 不能有空格——用 `_` 或加引號 |
+| 引號葉節點名稱 | `'Homo sapiens'` | 單引號；`''` 是引號內的字面單引號 |
+| 分支長度 | 名稱後的 `:0.035` | 浮點數；可選 |
+| 內部節點名稱 | `(A,B)ancestor` | 在閉括號 `)` 後面 |
+| 自展值（純括號） | `(A,B)[95]` | 括號內的整數或浮點數 |
+| 自展值（NHX） | `(A,B)[&&NHX:B=95]` | `B=` 欄位；其他 NHX 欄位被解析並儲存但不渲染 |
+| 分號 | 末尾的 `;` | 可選——解析器會去除 |
+| 多叉 | `(A,B,C)` | 超過 2 個子節點 |
+
+### 2.2 縮排 DSL
+
+對於手工編寫或小型的樹，Schematex 提供一種基於縮排的替代格式，比原始 Newick 更易讀和編輯：
+
+<Playground initial={`phylo "Vertebrates (indent DSL)" [mode: phylogram]
+root:
+  :0.03
+    Human: 0.1
+    Chimp: 0.08
+  :0.2
+    Dog: 0.35
+    Cat: 0.30
+scale "substitutions/site"`} />
+
+**縮排 DSL 規則：**
+
+| 語法 | 意義 |
+|---|---|
+| `Name: length` | 帶分支長度的葉節點 |
+| `: length` | 帶分支長度的無名內部節點 |
+| `Name` | 無分支長度的葉節點（進化枝圖） |
+| `Name [N]` | 帶支援值 N 的節點 |
+| 更深縮排 | 縮排較淺的上方節點的子節點 |
+| `#` 行 | 注解，被忽略 |
+
+以冒號結尾且無空格的第一行會觸發縮排樹模式（如 `root:`）。冒號前的名稱成為根節點標籤；下方所有縮排行成為其子節點。
+
+---
+
+## 3. 版面
+
+在標頭方括號中設定版面：`phylo "Title" [layout: rectangular]`。
+
+| 版面 | 值 | 說明 |
+|---|---|---|
+| 直角型 | `rectangular` | 預設。L 形分支；根在左，葉尖在右 |
+| 斜線型 | `slanted` | 從親節點到子節點的斜線；更緊湊 |
+| 圓形 | `circular` | 根在中心，葉尖環繞圓周 |
+| 無根型 | `unrooted` | 等角放射狀；強調距離，不強調祖先關係 |
+
+`[unrooted]` 作為裸旗標等同於 `[layout: unrooted]`。
+
+**圓形** — 根在中心，葉尖向外散開。對於多分類群且帶進化枝高亮的樹，視覺效果最為震撼。
+
+<Playground initial={`phylo "Vertebrates — circular" [layout: circular]
+  newick: "((Human:0.1,Chimp:0.08,Gorilla:0.12):0.15,(Dog:0.35,Cat:0.30,Wolf:0.32):0.2,(Salmon:0.5,Zebrafish:0.45):0.3);"
+  clade Primates = (Human, Chimp, Gorilla) [color: "#1E88E5", label: "Primates", highlight: both]
+  clade Carnivora = (Dog, Cat, Wolf) [color: "#E53935", label: "Carnivora", highlight: both]`} height={440} />
+
+**直角型** — L 形分支；根在左，葉尖在右。發表論文時最經典的系統發生樹形式。
+
+<Playground initial={`phylo "Bacterial Diversity" [layout: rectangular, mode: phylogram]
+  newick: "((((Ecoli:0.1,Salmonella:0.12):0.05[&&NHX:B=98],Vibrio:0.2):0.08,((Bacillus:0.15,Staph:0.18):0.06[&&NHX:B=92],Listeria:0.22):0.1):0.15,((Myco_tb:0.3,Myco_leprae:0.28):0.12[&&NHX:B=100],(Strepto:0.25,Lactobacillus:0.2):0.08):0.2);"
+  clade Gamma = (Ecoli, Salmonella, Vibrio) [color: "#1E88E5", label: "γ-Proteobacteria"]
+  clade Firmi = (Bacillus, Staph, Listeria) [color: "#E53935", label: "Firmicutes"]
+  scale "substitutions/site"`} height={480} />
+
+**斜線型** — 從親節點到子節點的斜線；比直角型更緊湊，閱讀方向相同（由左至右）。
+
+<Playground initial={`phylo "Vertebrates — slanted" [layout: slanted]
+  newick: "((Human:0.1,Chimp:0.08,Gorilla:0.12):0.15,(Dog:0.35,Cat:0.30,Wolf:0.32):0.2,(Salmon:0.5,Zebrafish:0.45):0.3);"
+  clade Primates = (Human, Chimp, Gorilla) [color: "#1E88E5", label: "Primates"]
+  clade Carnivora = (Dog, Cat, Wolf) [color: "#E53935", label: "Carnivora"]
+  scale "substitutions/site"`} height={360} />
+
+**無根型** — 等角放射狀版面；淡化根節點的概念，強調所有分類群之間的兩兩距離。
+
+<Playground initial={`phylo "Vertebrates — unrooted" [unrooted]
+  newick: "((Human:0.1,Chimp:0.08,Gorilla:0.12):0.15,(Dog:0.35,Cat:0.30,Wolf:0.32):0.2,(Salmon:0.5,Zebrafish:0.45):0.3);"
+  clade Primates = (Human, Chimp, Gorilla) [color: "#1E88E5", label: "Primates"]
+  clade Carnivora = (Dog, Cat, Wolf) [color: "#E53935", label: "Carnivora"]`} height={400} />
+
+---
+
+## 4. 模式
+
+在標頭中以 `[mode: …]` 設定（或在正文任意位置的 `style [mode: …]` 行中設定）。
+
+| 模式 | 值 | 分支長度意義 |
+|---|---|---|
+| 系統發生圖 | `phylogram` | 預設。與演化距離（替換/位點）成比例 |
+| 進化枝圖 | `cladogram` | 忽略——葉尖對齊；只有拓撲重要 |
+| 年代圖 | `chronogram` | 與分歧時間成比例；所有葉尖對齊到「現在」 |
+| 樹狀圖 | `dendrogram` | 分支長度是**合併高度**——兩個集群合併的距離 |
+
+年代圖需要以時間為單位的分支長度，以及標頭中的 `[mrsd: "YYYY"]`（最近採樣日期），以便渲染器將葉尖對齊到現在。
+
+```
+phylo "SARS-CoV-2 variants" [mode: chronogram, mrsd: "2023"]
+  newick: "((Alpha:0.5,Delta:0.4):0.3,Omicron:0.8);"
+  scale "years"
+```
+
+**樹狀圖** — 層次聚合分群的標準輸出，不用於演化。每個內部節點放置在其**合併高度**（兩個子集群融合的表型距離）處，所有葉節點對齊到共同基線，分支為直角折線連接器。旁邊繪製高度軸，讓你讀出任意兩個葉節點第一次共享集群的距離。當同一棵 Newick/縮排樹描述的是分群結果——基因表現量集群、樣本相似度、問卷回應分組——而非系統發生，請選用此模式。
+
+加入 `cut <value>` 行，在選定高度切割樹：合併高度低於閾值的每棵子樹成為一個平坦集群，每個集群著以不同顏色，並在該高度處跨樹繪製一條虛線閾值線。這是 scipy 中 `fcluster` 的樹狀圖等價物——將連續樹轉換為離散群組集合。
+
+<Playground initial={`phylo "Gene expression clusters" [mode: dendrogram]
+  newick: "(((A:1,B:1):2,C:3):2,(D:2,E:2):3);"
+  cut 4
+  scale "cluster distance"`} />
+
+省略 `cut` 可顯示不帶平坦集群著色的裸樹狀圖：
+
+<Playground initial={`phylo "Sample clustering" [mode: dendrogram]
+  newick: "(((A:1,B:1):2,C:3):2,(D:2,E:2):3);"
+  scale "cluster distance"`} />
+
+---
+
+## 5. 進化枝高亮
+
+`clade` 行為單系群（monophyletic group）標記顏色、可選標籤和可選高亮模式。
+
+```
+clade ID = (member1, member2, ...) [color: "#hex", label: "text", highlight: mode]
+```
+
+| 屬性 | 值 | 效果 |
+|---|---|---|
+| `color:` | 十六進位字串，如 `"#1E88E5"` | 分支和/或背景顏色 |
+| `label:` | 引號字串 | 顯示在右邊距的進化枝標籤 |
+| `highlight:` | `branch`、`background`、`both` | `branch` 為線條著色；`background` 為區域著色；`both` 兩者都做 |
+
+成員是 Newick 字串中的葉尖（葉節點）ID。渲染器計算列出葉尖的最近共同祖先（MRCA），並高亮以其為根的整個子樹。
+
+<Playground initial={`phylo "Mammal clades" [layout: rectangular]
+  newick: "(((Human:0.1,Chimp:0.08,Gorilla:0.12):0.15,Mouse:0.45):0.05,(Dog:0.35,(Cat:0.30,Tiger:0.32):0.1):0.2);"
+  clade Primates = (Human, Chimp, Gorilla) [color: "#1E88E5", label: "Primates", highlight: both]
+  clade Carnivora = (Dog, Cat, Tiger) [color: "#E53935", label: "Carnivora", highlight: branch]`} />
+
+---
+
+## 6. 比例尺和外群
+
+**比例尺：** `scale "標籤"` — 在底部加一條比例尺。標籤說明單位（如 `"substitutions/site"`、`"Mya"`）。在進化枝圖模式下，分支長度無意義，可省略。
+
+**外群：** `outgroup: taxonId` — 記錄外群以供文件說明；渲染器可用它在視覺上標記外群分類群。
+
+```
+phylo "Vertebrates"
+  newick: "((Human:0.1,Chimp:0.08):0.03,Lamprey:0.8);"
+  outgroup: Lamprey
+  scale "substitutions/site"
+```
+
+---
+
+## 7. 標頭屬性參考
+
+所有選項都放在 `phylo` 標頭行的 `[…]` 中，或放在正文任意位置的 `style […]` 行中。
+
+| 屬性 | 值 | 預設值 | 效果 |
+|---|---|---|---|
+| `layout:` | `rectangular`、`slanted`、`circular`、`unrooted` | `rectangular` | 樹狀版面 |
+| `mode:` | `phylogram`、`cladogram`、`chronogram`、`dendrogram` | `phylogram` | 分支長度語義 |
+| `unrooted` | （旗標） | — | 等同於 `layout: unrooted` |
+| `branch-width:` | 數字 | `1.5` | 分支筆觸寬度 |
+| `openAngle:` | 數字（度） | `0` | 圓形版面的扇形缺口（0 = 完整 360°） |
+| `mrsd:` | 引號年份字串 | — | 年代圖的最近採樣日期 |
+
+---
+
+## 8. 標籤與注解
+
+- **標題：** `phylo "Tree of Life"` — 僅第一行。
+- **比例尺標籤：** `scale "substitutions/site"` — 每份文件一個。
+- **進化枝標籤：** `clade` 行內的 `[label: "Primates"]`。
+- **注解：** `#` 開頭的行（在前置空白之後）。不支援行尾行內注解。
+
+---
+
+## 9. 常見錯誤
+
+| 你寫的 | 解析器回應 | 修正方式 |
+|---|---|---|
+| `newick: (A,B,C);`（未加引號） | `PhyloParseError: Phylo document must start with 'phylo'` | 為 Newick 字串加引號：`newick: "(A,B,C);"` |
+| 名稱含空格：`Homo sapiens:0.1` | 解析為 `Homo`——空格終止未加引號的名稱 | 使用底線（`Homo_sapiens`）或單引號（`'Homo sapiens'`） |
+| `clade` 中的葉節點 ID 與 Newick 名稱不符 | 進化枝靜默擁有 0 個成員；無高亮 | 精確複製 Newick 字串中的名稱 |
+| `clade X = (A, B)`，但無 `newick:` 或縮排樹 | `PhyloParseError: No tree definition found` | 加入 `newick:` 行或縮排樹區塊 |
+| `mode: chronogram`，但無分支長度 | 渲染器將所有長度視為 0；葉尖在根部重疊 | 在 Newick 字串中為每條邊加上 `:length` |
+| `root:` 行未被偵測到 | 若 `root:` 行的名稱含空格（如 `My root:`），縮排樹不會被觸發 | 使用單詞根節點標籤或 `root:` |
+| 含內部節點名稱的 Newick：`(A,B)ancestor:0.5` | 正常解析——`ancestor` 是內部節點標籤 | 已支援；內部名稱顯示在內部節點上 |
+
+---
+
+## 10. 語法（EBNF）
+
+```text
+document        = header (blank | comment | newick-line | scale-line
+                    | outgroup-line | clade-line | style-line | cut-line | indent-line)*
+
+header          = "phylo" ( WS quoted-string )? ( WS "[" props "]" )? NEWLINE
+quoted-string   = '"' any-char-but-quote* '"'
+
+newick-line     = "newick:" WS quoted-newick NEWLINE
+scale-line      = "scale" ( WS quoted-string )? NEWLINE
+outgroup-line   = "outgroup:" WS id NEWLINE
+cut-line        = "cut" WS number NEWLINE       // dendrogram mode: flat-cluster threshold height
+clade-line      = "clade" WS id WS "=" WS "(" id ("," id)* ")"
+                    ( WS "[" clade-props "]" )? NEWLINE
+style-line      = "style" WS "[" props "]" NEWLINE
+
+// Indent tree — triggered by a line ending in ":" with no spaces
+indent-tree     = root-line indent-node*
+root-line       = id ":" NEWLINE
+indent-node     = INDENT ( id ":" length | ":" length | id ) ( WS "[" number "]" )? NEWLINE
+
+props           = prop ("," prop)*
+prop            = "layout:" layout-value
+                | "mode:" mode-value
+                | "unrooted"
+                | "branch-width:" number
+                | "openAngle:" number
+                | "mrsd:" quoted-string
+
+clade-props     = clade-prop ("," clade-prop)*
+clade-prop      = "color:" quoted-string
+                | "label:" quoted-string
+                | "highlight:" ( "branch" | "background" | "both" )
+
+layout-value    = "rectangular" | "slanted" | "circular" | "unrooted"
+mode-value      = "phylogram" | "cladogram" | "chronogram" | "dendrogram"
+
+// Newick grammar (embedded, parsed separately)
+newick          = subtree ";"?
+subtree         = leaf | internal
+internal        = "(" subtree ("," subtree)* ")" name? nhx? length?
+leaf            = name nhx? length?
+name            = unquoted-name | "'" single-quoted "'")
+length          = ":" number
+nhx             = "[" number "]"                     // plain bootstrap
+                | "[&&NHX:" nhx-pair (":" nhx-pair)* "]"
+nhx-pair        = key "=" value
+
+id              = [a-zA-Z] [a-zA-Z0-9_-]*
+number          = /[+-]?[0-9]+(\.[0-9]+)?([eE][+-]?[0-9]+)?/
+comment         = INDENT "#" any NEWLINE
+```
+
+權威來源：`src/diagrams/phylo/parser.ts`。若本文件與解析器有出入，以解析器為準——請提交 issue。
+
+---
+
+## 11. 標準合規
+
+Schematex 演化樹遵循 **[Newick 格式規範](https://phylipweb.github.io/phylip/newicktree.html)**（以 PHYLIP 套件中的文件為基準）處理核心樹序列化，以及 **[NHX（New Hampshire Extended）](https://home.cc.umanitoba.ca/~psgendb/doc/atv/NHX.pdf)**慣例處理自展支援值。NHX 方括號中的 `B=` 欄位是目前唯一渲染的 NHX 欄位；其他所有欄位均被解析和儲存，但不顯示。
+
+目前已實作的內容：
+
+- ✅ Newick 拓撲、分支長度、引號名稱、多叉
+- ✅ 自展值——純括號 `[95]` 和 NHX `[&&NHX:B=95]`
+- ✅ 直角型、斜線型、圓形和無根型版面
+- ✅ 系統發生圖、進化枝圖和年代圖模式
+- ✅ 進化枝高亮（分支著色、背景著色、兩者皆有）
+- ✅ 比例尺
+- ✅ 縮排 DSL 替代格式
+- ⏳ 多樹文件（森林）——見 §12
+- ⏳ 年代圖的時間校準軸（地質年代刻度）
+- ⏳ 逐葉尖圖示或圖片
+- ⏳ `B=` 以外的 NHX 欄位（物種、分類、重複事件）
+
+參考文獻：
+
+- Felsenstein, J. (1986). The Newick tree format. PHYLIP documentation.
+- Zmasek, C.M. & Eddy, S.R. (2001). ATV: Display and manipulation of annotated phylogenetic trees. *Bioinformatics*, 17(4), 383–384. (NHX specification)
+- Felsenstein, J. (2004). *Inferring Phylogenies.* Sinauer Associates.
+
+---
+
+## 12. 相關範例
+
+<RelatedExamples slugs={[
+  'phylo-bacterial-diversity',
+]} />
+
+---
+
+## 13. 開發路線圖
+
+**規劃中——目前尚無法解析。** 請勿在生成的 DSL 中使用以下語法；解析器將拒絕或忽略它們。
+
+- **多樹文件** — 包含超過一個 `newick:` 區塊的 `phylo` 檔案（如基因樹與物種樹對照）。
+- **年代圖的地質時間軸** — 以地質年代標記的 X 軸（新生代 / 中生代等），取代純數字刻度。
+- **逐葉尖元數據** — 無需宣告完整進化枝即可為個別葉尖附加性狀或彩色標記（如 `tip Ecoli [color: "#F00", shape: star]`）。
+- **自展值以外的 NHX 欄位** — 以分支符號渲染物種（`S=`）、重複（`D=`）和水平轉移事件（`Tr=`）。
+- **糾纏圖（Tanglegram）** — 並排顯示兩棵樹，並以連線連接對應的葉尖。
+
+如果你迫切需要以上功能，歡迎在 GitHub issues 追蹤。

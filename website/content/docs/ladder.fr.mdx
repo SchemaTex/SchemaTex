@@ -1,0 +1,362 @@
+---
+title: Ladder logic
+---
+
+## À propos des diagrammes Ladder logic
+
+Le **ladder logic** (logique à contacts) est le langage de programmation graphique utilisé pour décrire les programmes de contrôle dans les automates programmables industriels (API) — les ordinateurs industriels qui pilotent l'automatisation d'usine, les systèmes CVC, les lignes de convoyeurs et les équipements de process dans le monde entier. Le nom vient de l'apparence du diagramme : deux rails d'alimentation verticaux connectés par des barreaux horizontaux, chaque barreau exprimant une règle condition-action. Les électriciens et les ingénieurs en automatisme l'ont adopté parce qu'il reflète les schémas de contacts à relais qu'ils connaissaient déjà.
+
+Schematex suit la norme **[IEC 61131-3:2013](https://en.wikipedia.org/wiki/IEC_61131-3)**, le standard international pour les langages de programmation d'API, avec les conventions de nommage d'adresses de tag Allen-Bradley (Rockwell) courantes dans la pratique industrielle nord-américaine. Cette page documente ce que le parseur accepte aujourd'hui.
+
+<Playground initial={`ladder "Motor Start/Stop"
+rung 1 "Seal-in circuit":
+  parallel:
+    branch:
+      XIC(START_PB, "IN 1.0", name="Start Button")
+    branch:
+      XIC(MOTOR_AUX, "BIT 3.0", name="Aux Contact")
+  XIO(STOP_PB, "IN 1.1", name="Stop Button")
+  OTE(MOTOR_CMD, "OUT 2.0", name="Motor Command")
+rung 2 "Mode select with Set/Reset":
+  XIC(AUTO_HMIPB, "BIT 5.10", name="Auto Mode Button")
+  XIO(SYS_FAULT, "BIT 3.0", name="System Fault")
+  parallel:
+    branch:
+      OTL(SYS_AUTO, "BIT 3.1", name="System Auto Mode")
+    branch:
+      OTU(SYS_MANUAL, "BIT 3.2", name="System Manual Mode")
+rung 3 "Run timer":
+  XIC(MOTOR_CMD)
+  TON(RUN_TMR, PT=5000)
+rung 4 "Alarm on cycle complete":
+  XIC(CYCLE_DONE, "BIT 4.0", name="Cycle Done")
+  OTN(ALARM_OUT, "OUT 2.5", name="Alarm Output")`} height={500} />
+
+---
+
+## 1. Votre premier diagramme ladder
+
+Le programme ladder minimal utile : un barreau, deux contacts, une bobine.
+
+<Playground initial={`ladder "First Rung"
+rung 1 "Start when button pressed, stop on fault":
+  XIC(START_PB)
+  XIO(FAULT)
+  OTE(MOTOR_RUN)`} />
+
+Quatre règles couvrent 80 % des usages :
+
+1. Commencer par `ladder`, suivi optionnellement d'un titre entre guillemets.
+2. Chaque **barreau** commence par `rung N "commentaire optionnel":` sur sa propre ligne. Le deux-points en fin de ligne est optionnel.
+3. Les éléments sont listés un par ligne, indentés sous le barreau — de gauche à droite signifie série (logique ET).
+4. Un bloc `parallel:` / `branch:` introduit la logique OU. Chaque branche contient sa propre liste d'éléments.
+
+> Les commentaires peuvent commencer par `#`, `//` ou le style Mermaid `%%` sur leur propre ligne.
+
+---
+
+## 2. Contacts
+
+Les contacts représentent des conditions d'entrée — ils laissent passer le courant lorsque le bit associé correspond au type de contact.
+
+| Type | Nom | Laisse passer le courant quand… |
+|---|---|---|
+| `XIC` | Examine If Closed | Bit de tag = 1 (normalement ouvert) |
+| `XIO` | Examine If Open | Bit de tag = 0 (normalement fermé) |
+| `ONS` | One-Shot Rising | Le tag passe de 0 → 1 (front montant, un cycle) |
+| `OSF` | One-Shot Falling | Le tag passe de 1 → 0 (front descendant, un cycle) |
+
+**Syntaxe :**
+
+```
+XIC(tag)
+XIC(tag, "address")
+XIC(tag, "address", name="Description")
+XIC(tag, address="address", name="Description")
+```
+
+- `tag` — obligatoire. Le nom de tag API (affiché sous le symbole de contact).
+- `"address"` — deuxième argument positionnel optionnel. L'adresse E/S (ex. `"IN 1.0"`, `"BIT 3.1"`).
+- `name="…"` — argument clé-valeur optionnel. Description lisible par l'homme (affichée au-dessus du symbole).
+
+<Playground initial={`ladder "Contact types"
+rung 1 "All four contact types":
+  XIC(START_PB, "IN 1.0", name="Start Button")
+  XIO(E_STOP, "IN 1.5", name="Emergency Stop NC")
+  ONS(PULSE_IN, "BIT 5.0", name="One-Shot Rising")
+  OSF(RESET_SIG, "BIT 5.1", name="One-Shot Falling")
+  OTE(OUT_RLY, "OUT 2.0", name="Output Relay")`} />
+
+---
+
+## 3. Bobines
+
+Les bobines représentent des actions de sortie — elles agissent sur un bit de tag lorsque le barreau est alimenté.
+
+| Type | Nom | Effet sur le bit de tag |
+|---|---|---|
+| `OTE` | Output Energize | Met le bit à 1 tant que le barreau est vrai ; le remet à 0 quand le barreau est faux |
+| `OTL` | Output Latch | Met le bit à 1 ; **conserve** même après que le barreau redevient faux (verrouillage) |
+| `OTU` | Output Unlatch | Remet le bit à 0 ; conserve même après que le barreau redevient faux |
+| `OTN` | Output Negate | Met le bit à 0 tant que le barreau est vrai ; le met à 1 quand le barreau est faux |
+| `RES` | Reset | Bobine de remise à zéro de compteur ou minuterie Rockwell / Allen-Bradley |
+
+**Syntaxe :** identique aux contacts — `OTE(tag)`, `OTE(tag, "address")`, `OTE(tag, "address", name="…")`.
+
+`OTL` et `OTU` sont utilisés en paires pour construire des bascules Set/Reset. Le dernier barreau à écrire l'emporte.
+
+<Playground initial={`ladder "Set-Reset latch"
+rung 1 "Set on start":
+  XIC(START_PB, "IN 1.0", name="Start")
+  OTL(MOTOR_ON, "BIT 3.0", name="Motor Latch")
+rung 2 "Reset on stop or fault":
+  parallel:
+    branch:
+      XIC(STOP_PB, "IN 1.1", name="Stop")
+    branch:
+      XIC(E_STOP, "IN 1.5", name="E-Stop")
+  OTU(MOTOR_ON, "BIT 3.0", name="Motor Latch")`} />
+
+---
+
+## 4. Blocs fonctionnels
+
+Les blocs fonctionnels effectuent des opérations de minuterie, de compteur, de mathématique et de comparaison. Ils apparaissent en ligne dans un barreau et ont des paramètres nommés après l'argument de tag obligatoire.
+
+### 4.1 Minuteries
+
+| Type | Nom | Paramètres clés |
+|---|---|---|
+| `TON` | Timer On-Delay | `PT=` temps de présélection en millisecondes |
+| `TOFF` | Timer Off-Delay | `PT=` temps de présélection en millisecondes |
+| `TP` | Timer Pulse | `PT=` temps de présélection en millisecondes |
+
+```
+TON(timer_tag, PT=5000)
+```
+
+Le tag de minuterie stocke le temps écoulé. Le bit `Q` de la minuterie (sortie terminée) est accessible par nom de tag dans les contacts en aval.
+
+### 4.2 Compteurs
+
+| Type | Nom | Paramètres clés |
+|---|---|---|
+| `CTU` | Count Up | `PV=` valeur de présélection (entier) |
+| `CTD` | Count Down | `PV=` valeur de présélection |
+| `CTUD` | Count Up/Down | `PV=` valeur de présélection |
+
+```
+CTU(cycle_counter, PV=100)
+```
+
+### 4.3 Mathématiques
+
+| Type | Opération |
+|---|---|
+| `ADD` | Addition |
+| `SUB` | Soustraction |
+| `MUL` | Multiplication |
+| `DIV` | Division |
+| `MOV` | Déplacement (copie) |
+
+```
+ADD(result_tag, IN1=setpoint, IN2=offset)
+MOV(dest_tag, IN1=source_tag)
+```
+
+### 4.4 Comparaisons
+
+| Type | Signification |
+|---|---|
+| `EQU` | Égal |
+| `NEQ` | Différent |
+| `GRT` | Supérieur à |
+| `LES` | Inférieur à |
+| `GEQ` | Supérieur ou égal |
+| `LEQ` | Inférieur ou égal |
+
+```
+EQU(compare_tag, IN1=speed_actual, IN2=speed_setpoint)
+```
+
+<Playground initial={`ladder "Timer and counter"
+rung 1 "Start run timer":
+  XIC(MOTOR_CMD, "BIT 3.0", name="Motor Running")
+  TON(RUN_TIMER, PT=10000)
+rung 2 "Count completed cycles":
+  XIC(CYCLE_SENSOR, "IN 2.0", name="Cycle Sensor")
+  CTU(PART_COUNT, PV=500)
+rung 3 "Alarm when batch complete":
+  XIC(PART_COUNT, name="Count Done")
+  OTE(BATCH_ALARM, "OUT 3.0", name="Batch Complete Alarm")`} />
+
+---
+
+## 5. Branches parallèles
+
+Un bloc `parallel:` introduit la logique OU — le barreau est alimenté si **au moins une** branche conduit. Chaque branche est un sous-bloc `branch:` avec ses éléments indentés en dessous.
+
+```
+parallel:
+  branch:
+    XIC(LOCAL_START)
+  branch:
+    XIC(REMOTE_START)
+```
+
+Les branches dans un `parallel:` sont évaluées simultanément. Le bloc se ferme quand l'indentation revient au niveau précédant le `parallel:`.
+
+**Règles :**
+- `parallel:` doit apparaître à l'intérieur d'un barreau.
+- `branch:` doit apparaître à l'intérieur d'un `parallel:` — l'utiliser seul génère une `LadderParseError`.
+- Chaque branche contient un ou plusieurs éléments.
+- Les éléments après le bloc `parallel:` sont en série avec lui (logique ET).
+
+<Playground initial={`ladder "Parallel OR logic"
+rung 1 "Start from either local or remote":
+  parallel:
+    branch:
+      XIC(LOCAL_START, "IN 1.0", name="Local Start")
+    branch:
+      XIC(REMOTE_START, "BIT 5.2", name="Remote Start")
+  XIO(STOP_ALL, "IN 1.5", name="Stop All")
+  OTE(CONVEYOR, "OUT 2.0", name="Conveyor Run")`} />
+
+---
+
+## 6. Labels et commentaires
+
+- **Titre :** `ladder "Motor Control"` — première ligne uniquement, chaîne entre guillemets.
+- **Numéro de barreau :** entier obligatoire après `rung`.
+- **Commentaire de barreau :** chaîne entre guillemets optionnelle après le numéro de barreau, avant le deux-points optionnel : `rung 3 "Run indicator":` ou `rung 3 "Run indicator"`.
+- **Tag :** premier argument entre parenthèses — affiché sous le symbole.
+- **Adresse :** deuxième argument positionnel (entre guillemets) : `XIC(START_PB, "IN 1.0")`.
+- **Nom :** argument nommé `name="…"` — description lisible par l'homme affichée au-dessus du symbole.
+- **Commentaires de ligne :** `#`, `//` ou `%%` au début d'une ligne (après les espaces initiaux). Les mêmes marqueurs démarrent également des commentaires en fin de ligne.
+
+---
+
+## 7. Mots réservés et échappement
+
+**Réservés en début de ligne (insensibles à la casse) :** `ladder`, `rung`, `parallel:`, `branch:`.
+
+**Noms d'éléments** en ASCII majuscules : `XIC`, `XIO`, `ONS`, `OSF`, `OTE`, `OTL`, `OTU`, `OTN`, `TON`, `TOFF`, `TP`, `CTU`, `CTD`, `CTUD`, `ADD`, `SUB`, `MUL`, `DIV`, `MOV`, `EQU`, `NEQ`, `GRT`, `LES`, `GEQ`, `LEQ`.
+
+**IDs de tag** — doivent correspondre à `[A-Z][A-Z0-9_]*` (le parseur fait correspondre `[A-Z][A-Z0-9_]*` pour le préfixe du nom d'élément). Les tags en minuscules sont acceptés à l'intérieur des parenthèses.
+
+**Chaînes entre guillemets** dans les arguments d'adresse ou de nom doivent utiliser des guillemets doubles `"…"`.
+
+---
+
+## 8. Erreurs courantes
+
+| Ce que vous avez écrit | Ce que dit le parseur | Correction |
+|---|---|---|
+| `rung 1` (sans deux-points) | Parsé correctement | Le deux-points en fin de ligne est optionnel |
+| `ONF(TAG)` | `LadderParseError: unknown element type "ONF"` | Le contact à front descendant est `OSF`, pas `ONF` |
+| `parallel:` sans `branch:` | Bloc parallèle vide — le barreau n'a pas d'élément | Ajouter au moins un `branch:` à l'intérieur du `parallel:` |
+| `branch:` avant `parallel:` | `LadderParseError: branch: without parallel:` | Toujours ouvrir `parallel:` en premier |
+| `OTE()` — pas de tag | `LadderParseError: element missing tag` | Le tag est obligatoire : `OTE(MY_TAG)` |
+| `var StartBtn: bool` (déclaration de variable) | `LadderParseError: invalid element syntax` | Pas de déclarations de variables — les tags sont utilisés directement |
+| Barreau vide (pas d'éléments après `rung N:`) | `LadderParseError: Rung N: empty rung` | Ajouter au moins un élément à chaque barreau |
+| `TON(T1, T#5s)` | `LadderParseError: invalid element syntax` (T# n'est pas un nombre valide) | Utiliser un entier en millisecondes : `TON(T1, PT=5000)` |
+
+---
+
+## 9. Grammaire (EBNF)
+
+```text
+document      = header NEWLINE rung+
+
+header        = "ladder" ( WS quoted-string )? NEWLINE
+quoted-string = '"' any-char-but-quote* '"'
+
+rung          = "rung" WS integer ( WS quoted-string )? ":"? NEWLINE
+                  element+
+
+element       = contact-line
+              | coil-line
+              | fb-line
+              | parallel-block
+
+contact-line  = contact-type "(" tag ( "," arg )* ")" NEWLINE
+contact-type  = "XIC" | "XIO" | "ONS" | "OSF"
+
+coil-line     = coil-type "(" tag ( "," arg )* ")" NEWLINE
+coil-type     = "OTE" | "OTL" | "OTU" | "OTN" | "RES"
+
+fb-line       = fb-type "(" tag ( "," arg )* ")" NEWLINE
+fb-type       = "TON" | "TOFF" | "TP"
+              | "CTU" | "CTD" | "CTUD"
+              | "ADD" | "SUB" | "MUL" | "DIV" | "MOV"
+              | "EQU" | "NEQ" | "GRT" | "LES" | "GEQ" | "LEQ"
+
+arg           = quoted-string             // positional (address)
+              | key "=" quoted-string     // keyword (e.g. name="…")
+              | key "=" number            // keyword (e.g. PT=5000)
+
+parallel-block = INDENT≥2 "parallel:" NEWLINE
+                   ( INDENT branch-block )+
+
+branch-block   = "branch:" NEWLINE
+                   ( INDENT element )+
+
+tag           = [A-Za-z][A-Za-z0-9_]*
+key           = [A-Za-z][A-Za-z0-9_]*
+integer       = [0-9]+
+number        = [0-9]+ ( "." [0-9]+ )?
+comment       = ( "#" | "//" | "%%" ) any NEWLINE
+```
+
+Source faisant autorité : `src/diagrams/ladder/parser.ts`. En cas de divergence avec le parseur, le parseur prévaut — veuillez ouvrir un ticket.
+
+---
+
+## 10. Conformité aux normes
+
+La logique ladder Schematex suit la norme **IEC 61131-3:2013** partie 3 pour le langage Ladder Diagram et utilise les conventions de **nommage tag-adresse Allen-Bradley (Rockwell)** courantes dans la pratique API nord-américaine.
+
+Ce qui est implémenté aujourd'hui :
+
+- ✅ Quatre types de contacts : XIC (NO), XIO (NC), ONS (front montant), OSF (front descendant)
+- ✅ Cinq types de bobines : OTE (sortie), OTL (verrouillage/set), OTU (déverrouillage/reset), OTN (négation), RES (remise à zéro compteur/minuterie)
+- ✅ Trois blocs fonctionnels de minuterie : TON, TOFF, TP avec paramètre `PT=` en millisecondes
+- ✅ Trois blocs fonctionnels de compteur : CTU, CTD, CTUD avec paramètre entier `PV=`
+- ✅ Blocs fonctionnels mathématiques : ADD, SUB, MUL, DIV, MOV
+- ✅ Blocs fonctionnels de comparaison : EQU, NEQ, GRT, LES, GEQ, LEQ
+- ✅ Blocs parallèles / de branche pour la logique OU
+- ✅ Annotations de tag, d'adresse et de nom selon les conventions Allen-Bradley Studio 5000
+- ⏳ Minuterie à mémorisation (RTO) — dans la norme ; pas encore dans le parseur
+- ⏳ Instructions Jump (JMP) / Label (LBL)
+- ⏳ Zone de contrôle maître reset (MCR)
+- ⏳ Instructions E/S immédiates (IIN, IOT)
+- ⏳ Éléments de texte structuré ou de diagramme bloc fonctionnel intégrés dans les barreaux
+
+Références :
+
+- IEC 61131-3:2013 — *Programmable controllers, Part 3: Programming languages*
+- NEMA ICS 1-2009 — *General Standards for Industrial Control and Systems*
+- Rockwell Automation Studio 5000 Logix Designer — [Ladder Diagram Programming Manual](https://literature.rockwellautomation.com/)
+
+---
+
+## 11. Exemples connexes
+
+<RelatedExamples slugs={[
+  'ladder-motor-start-stop',
+  'ladder-mode-selection',
+]} />
+
+---
+
+## 12. Feuille de route
+
+**Prévu — pas encore analysable.** Ne pas utiliser dans un DSL généré aujourd'hui ; le parseur les rejettera ou les ignorera.
+
+- **Retentive Timer On (RTO)** — minuterie qui conserve le temps écoulé en cas de coupure d'alimentation ; nécessite un contact de remise à zéro séparé.
+- **Jump (JMP) / Label (LBL)** — branchement vers un barreau étiqueté pour ignorer de la logique conditionnellement ; utilisé dans les grands programmes pour les performances.
+- **Zone de contrôle maître reset (MCR)** — zone délimitée qui désactive toutes les sorties non mémorisées quand l'entrée MCR est fausse.
+- **Texte structuré dans les barreaux** — évaluation d'expression en ligne (ex., `CALC(result = a * b + c)`).
+- **E/S immédiates (IIN / IOT)** — forcer le scan E/S en milieu de programme pour le contrôle à temps critique.
+
+Suivre dans les tickets GitHub si vous avez besoin de l'un de ces éléments plus tôt.

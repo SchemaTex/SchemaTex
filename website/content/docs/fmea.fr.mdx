@@ -1,0 +1,119 @@
+---
+title: Fiche FMEA
+description: Analyse des modes de défaillance et de leurs effets — le moteur calcule le RPN et la priorité d'action AIAG-VDA à partir d'un arbre imbriqué élément → mode → effet/cause.
+---
+
+## À propos de la FMEA
+
+La **FMEA** (Failure Mode and Effects Analysis — Analyse des modes de défaillance et de leurs effets) est la méthode de fiabilité proactive la plus répandue dans la fabrication : pour chaque composant d'un système, elle liste comment il peut défaillir (**modes de défaillance**), ce que chaque défaillance produit (**effets**), pourquoi elle survient (**causes**) et comment elle est détectée (**contrôles**). Chaque ligne est évaluée selon trois échelles de 1 à 10 — **Gravité**, **Occurrence**, **Détection** — et classée par priorité. Standardisée par le **Manuel FMEA AIAG-VDA (2019)** et la norme **IEC 60812**.
+
+L'avantage de Schematex est que le moteur **calcule la priorité**, et ne se contente pas de générer le tableau. Il aplatit la chaîne de défaillance en une ligne de fiche par (élément, mode, cause), calcule le **RPN = G × O × D**, et — point crucial — la **Priorité d'action** AIAG-VDA (banding à primauté de la gravité), qui corrige délibérément le problème qu'introduit un tri sur le RPN brut : une défaillance d'airbag à G10·O2·D3 est *Haute* même si son RPN (60) paraît faible.
+
+<Playground initial={`fmea "Brake system DFMEA"
+  type: design
+  rank: ap
+  flag: ap >= High
+  item "Master cylinder" fn "Generate hydraulic pressure"
+    mode "Internal seal leak"
+      effect "Loss of braking" sev: 9
+      cause "Seal material degradation" occ: 3
+        controls prevention: "Material spec", detection: "Bench test" det: 4
+      cause "Contamination" occ: 2
+        controls detection: "Fluid analysis" det: 5`} height={520} />
+
+---
+
+## 1. Votre première fiche
+
+Chaque document commence par `fmea`, un titre optionnel, des directives optionnelles, puis une **chaîne de défaillance imbriquée**. La structure est donnée par le mot-clé, non par le niveau d'indentation :
+
+```
+fmea "Pump DFMEA"
+  item "Impeller" fn "Move fluid"
+    mode "No flow"
+      effect "Process stops" sev: 8
+      cause "Impeller wear" occ: 4
+        controls detection: "Flow sensor" det: 5
+```
+
+- **`item "name" fn "function"`** — une pièce et la fonction qu'elle remplit. `fn` est optionnel.
+- **`mode "failure mode"`** — comment cette fonction défaille. Un élément peut en avoir plusieurs.
+- **`effect "consequence" sev: 1..10`** — ce que la défaillance provoque ; porte sa propre **Gravité**. Un mode peut en avoir plusieurs (le moteur utilise la *pire* pour chaque ligne de ce mode).
+- **`cause "root cause" occ: 1..10`** — pourquoi elle survient ; porte l'**Occurrence**.
+- **`controls prevention: "…", detection: "…" det: 1..10`** — contrôles actuels et la note de **Détection** qu'ils méritent. Sans contrôle, la Détection prend par défaut la valeur **10** (indétectable).
+
+Les trois notes sont des entiers compris entre 1 et 10 ; toute valeur hors de cette plage est rejetée.
+
+---
+
+## 2. Directives d'en-tête
+
+```
+type: design          # design (dfmea) | process (pfmea) | msr
+rank: ap              # ap (default) | rpn — la clé de tri/priorité
+flag: ap >= High      # ou `rpn > 100` — mettre en évidence les lignes dépassant un seuil
+number: FMEA-2026-014 # métadonnées libres : numéro/équipe/auteur/date/révision/département/processus/produit
+```
+
+`rank` choisit comment les lignes sont classées ; `flag` met en évidence les lignes qui dépassent un seuil (`ap >= High` / `ap == High`, ou `rpn > 100` / `rpn >= 120`).
+
+---
+
+## 3. RPN calculé et Priorité d'action
+
+C'est ici que réside la différence. À partir de l'AST imbriqué, le moteur :
+
+1. **Aplatit** en une ligne par (élément, mode, cause) ; la gravité de l'effet le plus défavorable du mode gouverne chaque ligne de ce mode.
+2. **RPN = G × O × D** (1–1000).
+3. **Priorité d'action** selon la structure de banding AIAG-VDA — **la Gravité est l'axe principal**, l'Occurrence en second, la Détection en troisième. G = 9–10 (sécurité/réglementaire) est Haute pour *toute* valeur de O et D ; une gravité intermédiaire dégrade Haute→Moyenne→Faible à mesure que l'Occurrence diminue.
+4. **Trie** selon la clé choisie. Pour `ap` : Haute > Moyenne > Faible, départagées par Gravité puis RPN — *jamais* par RPN seul, ce qui réintroduirait le problème que l'AP a été conçue pour corriger.
+5. **Met en évidence** les lignes dépassant le seuil.
+
+Chaque ligne porte `data-rpn` et `data-ap` afin que la priorité calculée soit inspectable.
+
+---
+
+## 4. Suivi des actions correctives
+
+Enregistrer les actions correctives et les notes révisées pour afficher le delta avant/après :
+
+```
+fmea "Brake DFMEA"
+  item "MC"
+    mode "Seal leak"
+      effect "Loss of braking" sev: 9
+      cause "Degradation" occ: 3 det: 4
+  action "Seal leak" / "Degradation"
+    do: "Upgrade seal to EPDM" owner: "J. Lee" target: 2026-Q3
+    revised sev: 9 occ: 1 det: 4
+```
+
+`action "Mode" / "Cause"` cible une chaîne par son mode entre guillemets et sa cause optionnelle ; `do:` est la recommandation ; `revised sev/occ/det` recalcule le RPN et l'AP après action afin que le moteur rapporte la réduction du risque.
+
+---
+
+## 5. Erreurs courantes
+
+```
+# WRONG — rating out of the 1..10 band
+effect "Leak" sev: 11
+
+# WRONG — mode before any item
+mode "orphan mode"
+
+# WRONG — effect before any mode
+item "x"
+  effect "e" sev: 3
+```
+
+Les notes doivent être des entiers compris entre 1 et 10 ; la chaîne de défaillance doit imbriquer `item → mode → effect/cause` ; les mots-clés hors ordre sont rejetés par leur nom. La Détection prend silencieusement la valeur 10 si aucun contrôle ne la note — indiquer `det:` (sur la cause ou ses `controls`) lorsque vous disposez d'un contrôle de détection.
+
+---
+
+## 6. Conformité aux normes
+
+La chaîne de défaillance et les échelles Gravité/Occurrence/Détection suivent le Manuel FMEA AIAG-VDA (2019) et la norme IEC 60812. La Priorité d'action implémente la **structure** de banding publiée (à primauté de la gravité), et non le tableau verbatim de 1000 cellules soumis à droits d'accès. Le RPN reste disponible via `rank: rpn` pour les fiches héritées.
+
+## 7. Feuille de route
+
+Différé : les tables de décision AP/MSR AIAG-VDA exactes, la pondération multi-effets par cause et les vues arbre de structure/fonction.

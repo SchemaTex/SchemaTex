@@ -1,0 +1,621 @@
+---
+title: 回路図（Circuit Schematic）
+---
+
+## 回路図について
+
+「回路図」（circuit schematic）は電子回路の標準的なグラフィカル表現です。コンポーネントを標準化されたシンボルで描き、配線で接続し、回路の製造やシミュレーションに必要な情報をすべて含みます。電子エンジニアは製品ライフサイクル全体にわたって使用します。初期コンセプトから PCB レイアウトレビュー、データシートのドキュメント作成まで。Schematex はコンポーネントシンボルについて **[IEEE Std 315-1975 / ANSI Y32.2](https://standards.ieee.org/ieee/315/738/)** および **[IEC 60617](https://webstore.iec.ch/publication/2765)** に準拠しています。
+
+DSL には 2 つのモードがあります。**ネットリストモード（推奨）** は SPICE スタイルです。コンポーネントと接続先ノードを列挙するだけで、エンジンが自動的にレイアウトを計算します。各行は独立しており、空間的な状態を追跡する必要はありません。**ポジショナルモード**は手書き風にコンポーネントを Schemdraw のように方向に連ねていくスタイルです。どちらも同じ SVG を生成します。**LLM による生成など、自動生成される場合は必ずネットリストモードを使用してください**。エラーが発生する余地がはるかに小さくなります。
+
+<Playground initial={`circuit "CE Amp (netlist)" netlist
+V1 vcc 0 9V
+Rc vcc c 2.2k
+Rb vcc b 100k
+Q1 c b e npn
+Re e 0 1k`} height={440} />
+
+---
+
+## 1. 最小限の回路図（ネットリストモード — 推奨）
+
+最小限の実用的な回路：電圧源、抵抗、グランドへのコンデンサによる RC ローパスフィルター。
+
+<Playground initial={`circuit "RC Low-Pass" netlist
+V1 in 0 5V
+R1 in out 1k
+C1 out 0 100n`} />
+
+ネットリスト使用法の約 90% をカバーする 3 つのルール：
+
+1. `circuit "タイトル" netlist` で始めます（`netlist` キーワードでこのモードに切り替わります）。
+2. 各行は `componentId nodeA nodeB value` — 1 つのコンポーネント、接続先の 2 つ（またはそれ以上）の名前付きノード、そして値です。
+3. **同じノード名を共有する 2 つのコンポーネントは接続されます。** `0`、`gnd`、または `GND` はグランドネット（グランドシンボルが自動的に描画されます）です。
+
+コンポーネント ID のプレフィックスがシンボルを決定します：`R*`→抵抗、`C*`→コンデンサ、`L*`→インダクタ、`V*`→電圧源、`D*`→ダイオード、`Q*`→BJT。プレフィックスが曖昧な場合は `type=` を追加します（例：`X1 a b type=opamp`）。座標を計算する必要はなく、エンジンが接続性から配置を導出します。
+
+> コメントは単独行で `#` で始める必要があります。
+
+---
+
+## 2. コンポーネント
+
+### 2.1 ネットリストモードの構文
+
+ネットリスト行の形式：
+
+```
+componentId node... [value] [type=…] [label="…"]
+```
+
+位置ノードが最初に来ます。ノードのように見えない末尾のトークンが値になります。例：トランジスタ（4 ノード）と抵抗：
+
+```
+Q1 c b e npn        # collector, base, emitter nodes + model
+Rc vcc c 2.2k       # two nodes + value
+```
+
+**オプションの向きヒント。** エンジンは役割に基づいてシンボルの向きを自動決定します（ソースは上、グランドは下、その他は水平）。1 つのシンボルの向きを調整するには `dir=right|left|up|down` を追加します。接続性は変わらず、シンボルの向きだけが回転します：
+
+```
+C1 out 0 100n dir=down    # draw C1 as a shunt cap hanging to ground
+```
+
+これは軽量なレイアウト制御レイヤーです（Lcapy のコンポーネントごとの向き指定に相当）。ネットリストの接続性がメインの作業をこなし、`dir=` は外観を微調整するだけです。完全な幾何学的制御が必要な場合は、以下のポジショナルモードを使用します。
+
+### 2.2 ポジショナルモードの構文（手書き風）
+
+> ポジショナルモードは回路図を幾何学的に手動レイアウトするためのものです。**生成された出力にはネットリストモードを優先してください**。ポジショナルモードは行をまたいで移動する「カーソル」を追跡する必要があり、LLM にとってエラーが発生しやすいです。
+
+名前付きコンポーネント行の形式：
+
+```
+id: type direction [value="…"] [label="…"]
+```
+
+匿名コンポーネントは `id:` プレフィックスを省略します。パーサーが自動 ID を割り当てます。
+
+```
+R1: resistor right value="4.7k" label="R1"
+capacitor down value="100n"
+```
+
+**方向**は `right`（デフォルト）、`left`、`up`、`down` のいずれかです。現在のカーソル位置からコンポーネントがどちらへ伸びるかを制御します。
+
+### 2.3 受動部品
+
+| DSL タイプ | 説明 |
+|---|---|
+| `resistor` | ジグザグ（ANSI）または長方形（IEC）|
+| `potentiometer` | 抵抗 + ワイパー矢印、3 ピン |
+| `rheostat` | 2 ピン可変抵抗 |
+| `thermistor_ntc` | NTC サーミスタ（別名：`therm`、`ntc`）|
+| `thermistor_ptc` | PTC サーミスタ（別名：`ptc`）|
+| `ldr` | 光依存抵抗 |
+| `varistor` | 電圧依存抵抗 |
+| `fuse` | 標準ヒューズ |
+| `fuse_slow` | 遅断ヒューズ（`T` 指定）|
+| `capacitor` | 無極性コンデンサ |
+| `electrolytic_cap` | 極性/電解コンデンサ（別名：`ecap`）|
+| `variable_cap` | 可変コンデンサ |
+| `inductor` | 空心インダクタ |
+| `inductor_iron` | 鉄心インダクタ |
+| `inductor_ferrite` | フェライト心インダクタ |
+| `variable_inductor` | 可変インダクタ |
+| `ferrite_bead` | EMI フェライトビーズ |
+| `crystal` | 水晶発振子（別名：`xtal`）|
+| `transformer` | 結合コイル（別名：`xfmr`）|
+
+<Playground initial={`circuit "Passive components gallery"
+# Row 1: resistor → capacitor → inductor
+R1: resistor right value="1k"
+wire right
+C1: capacitor right value="100n"
+wire right
+L1: inductor right value="10u"
+# Row 2: crystal and transformer, offset below
+at: R1.start
+wire down
+wire down
+X1: crystal right
+wire right
+wire right
+T1: transformer right`} height={380} />
+
+### 2.4 ソースと電源
+
+| DSL タイプ | 説明 |
+|---|---|
+| `voltage_source` | 円 + 極性（別名：`vsource`）|
+| `current_source` | 円 + 矢印（別名：`isource`）|
+| `ac_source` | 円 + サインシンボル（別名：`acsource`）|
+| `battery` | 交互の長/短端子線 |
+| `vcc` | 電源レール矢印（上向き）|
+| `ground` | アースグランド — 3 本の減少する線（別名：`gnd`）|
+| `gnd_signal` | シグナルグランド — 塗りつぶし三角形 |
+| `gnd_chassis` | シャーシグランド |
+| `gnd_digital` | デジタルグランド |
+
+<Playground initial={`circuit "Sources and power gallery"
+# voltage source with ground
+V1: voltage_source down value="5V"
+wire down
+ground
+at: V1.start
+wire right
+wire right
+# battery
+B1: battery down value="9V"
+wire down
+ground
+at: B1.start
+wire right
+wire right
+# ac source
+A1: ac_source down value="120V"
+wire down
+ground
+at: A1.start
+wire right
+wire right
+# vcc rail
+vcc up
+wire down
+gnd_signal down`} height={420} />
+
+### 2.5 半導体 — ダイオード
+
+| DSL タイプ | 説明 |
+|---|---|
+| `diode` | 三角形 + カソードバー |
+| `zener` | ダイオード + 曲がったカソードバー |
+| `schottky` | ダイオード + S バー |
+| `led` | ダイオード + 外向き放射矢印 |
+| `photodiode` | ダイオード + 内向き光矢印 |
+| `varactor` | ダイオード + 可変コンデンサ |
+| `tvs_diode` | 双方向 TVS（2 本の曲がったバー）|
+| `bridge_rectifier` | 4 ダイオードブリッジ、4 ピン |
+
+<Playground initial={`circuit "Diode types gallery"
+D1: diode right
+wire right
+D2: zener right
+wire right
+D3: led right
+wire right
+D4: schottky right
+wire right
+D5: photodiode right
+wire right
+ground
+at: D1.start
+wire left
+ground`} height={280} />
+
+### 2.6 半導体 — トランジスタ
+
+| DSL タイプ | 説明 |
+|---|---|
+| `npn` | NPN BJT（別名：`transistor`、`bjt_npn`）|
+| `pnp` | PNP BJT（別名：`bjt_pnp`）|
+| `darlington_npn` | NPN ダーリントン対 |
+| `darlington_pnp` | PNP ダーリントン対 |
+| `nmos` | N チャンネル MOSFET エンハンスメント（別名：`mosfet_n`）|
+| `pmos` | P チャンネル MOSFET エンハンスメント（別名：`mosfet_p`）|
+| `nmos_depletion` | N チャンネル MOSFET デプレッション |
+| `jfet_n` | N チャンネル JFET |
+| `jfet_p` | P チャンネル JFET |
+| `igbt` | IGBT |
+| `scr` | SCR / サイリスタ |
+| `triac` | TRIAC |
+| `diac` | DIAC |
+| `phototransistor` | NPN + 光矢印 |
+| `optocoupler` | LED + フォトトランジスタ（絶縁ボックス内）|
+
+<Playground initial={`circuit "Transistor types gallery"
+# NPN BJT
+Q1: npn right
+wire right
+wire right
+# PNP BJT
+Q2: pnp right
+wire right
+wire right
+# N-channel MOSFET
+Q3: nmos right
+wire right
+wire right
+# P-channel MOSFET
+Q4: pmos right`} height={320} />
+
+### 2.7 アナログ IC とオペアンプ
+
+| DSL タイプ | 説明 |
+|---|---|
+| `opamp` | 三角形：+/− 入力、出力 |
+| `comparator` | 同形状、オープンコレクタ出力 |
+| `schmitt_buffer` | バッファ + ヒステリシスシンボル |
+| `tri_state_buffer` | バッファ + イネーブルピン |
+| `instrumentation_amp` | 3 オペアンプ INA ブロック |
+| `generic_ic` | ラベル付きピンを持つ設定可能な矩形（別名：`ic`）|
+| `voltage_regulator` | 3 端子ブロック：IN/GND/OUT（別名：`reg`）|
+| `dc_dc_converter` | DC/DC ラベル付き 2 ポートブロック |
+| `555_timer` | 8 ピン 555 ピン配置ブロック（別名：`timer555`）|
+
+<Playground initial={`circuit "Analog IC gallery"
+# op-amp with input/output wires
+wire right
+U1: opamp right
+wire right
+wire right
+wire right
+# comparator
+U2: comparator right
+wire right
+wire right
+wire right
+# generic IC block
+U3: generic_ic right`} height={320} />
+
+### 2.8 スイッチとリレー
+
+| DSL タイプ | 説明 |
+|---|---|
+| `switch_spst` | 単極単投 |
+| `switch_spdt` | 単極双投 |
+| `switch_dpdt` | 双極双投 |
+| `push_no` | 押しボタン常開 |
+| `push_nc` | 押しボタン常閉 |
+| `relay_coil` | リレーコイル（2 ピン矩形）|
+| `relay_no` | リレー接点常開 |
+| `relay_nc` | リレー接点常閉 |
+
+<Playground initial={`circuit "Switch and relay gallery"
+# SPST switch
+S1: switch_spst right
+wire right
+wire right
+# SPDT switch
+S2: switch_spdt right
+wire right
+wire right
+# normally-open push button
+S3: push_no right
+wire right
+wire right
+# relay coil + contact pair
+K1: relay_coil right
+wire right
+K2: relay_no right`} height={300} />
+
+### 2.9 電気機械と測定
+
+| DSL タイプ | 説明 |
+|---|---|
+| `motor` | 円 + M |
+| `speaker` | コーン + ボックス |
+| `microphone` | カプセルシンボル |
+| `buzzer` | 圧電ブザー |
+| `ammeter` | 円 + A |
+| `voltmeter` | 円 + V |
+| `wattmeter` | 円 + W |
+| `oscilloscope` | 円 + 波形 |
+
+### 2.10 コネクタとアノテーション
+
+| DSL タイプ | 説明 |
+|---|---|
+| `wire` | プレーンな配線セグメント |
+| `dot` | 接続点ドット（T 字路マーカー）|
+| `label` | ネットラベル / フラグ |
+| `port` | 名前付きポート（中空円）|
+| `test_point` | TP マーカー |
+| `no_connect` | X — 意図的に未接続のピン |
+| `antenna` | アンテナスタブ |
+
+<Playground initial={`circuit "Passive components"
+R1: resistor right value="1k" label="R1"
+wire right
+C1: capacitor down value="100n" label="C1"
+wire down
+ground
+at: R1.start
+wire up
+battery up label="9V"`} height={360} />
+
+---
+
+## 3. 配線と分岐
+
+### 3.1 配線セグメント
+
+`wire direction [N]` は現在のカーソルから指定の方向に裸の配線を引きます。オプションの数値でピクセル単位の長さを設定します。
+
+```
+wire right
+wire down 40
+wire left 20
+```
+
+### 3.2 `at:` でカーソルをジャンプ
+
+`at: id.end` は何も描かずにカーソルを名前付きアンカーに移動します。以前に配置したコンポーネントから分岐する場合に使用します。
+
+```
+R1: resistor right value="10k"
+at: R1.end
+C1: capacitor down value="100n"
+```
+
+名前付きアンカーのサフィックス：`end`、`start`。コンポーネントはダイアグラム全体でその ID を保持するため、以前に配置したコンポーネントにいつでもジャンプできます。
+
+### 3.3 接続点ドット
+
+`dot`（または `net NAME: dot`）を配置して T 字路をマークします。3 本以上の配線が交わる点です。ドットがない場合、交差する配線はクロスオーバー（接続なし）として描かれます。
+
+```
+R1: resistor right
+dot
+wire right           # continues from R1.end
+at: R1.end
+C1: capacitor down   # branches down from the same point
+```
+
+### 3.4 名前付きネット
+
+`net NAME` で名前付きネットを宣言します。`net NAME: dot` はネットを宣言し、現在のカーソルに接続点ドットを配置してその位置を記憶します。後で `at: NAME` でそのネットのアンカーにジャンプできます。
+
+```
+net VOUT: dot
+R2: resistor right value="10k"
+at: VOUT
+C1: capacitor down value="470n"
+```
+
+### 3.5 ネットラベル
+
+`label "text" direction?` は現在のカーソル位置にテキストラベルを配置します。ラベルはカーソルを進めません。電源レールやシート間接続の命名に役立ちます。
+
+```
+label "VCC" up
+label "GND" down
+```
+
+<Playground initial={`circuit "RC filter"
+V1: voltage_source down value="5V"
+wire right
+R1: resistor right value="1k" label="R1"
+net OUT: dot
+wire right
+label "Vout" right
+at: OUT
+C1: capacitor down value="100n" label="C1"
+wire down
+ground`} height={380} />
+
+---
+
+## 4. ネットリストモード
+
+ヘッダ行のタイトルの後に `netlist` を追加すると、SPICE スタイルのネットリスト解析に切り替わります。自動レイアウトエンジンがネット接続性からコンポーネントの位置を計算します。
+
+```
+circuit "Low-pass filter" netlist
+```
+
+### 4.1 ネットリスト行の形式
+
+各行は：`ID net1 net2 [net3…] [value] [key=value…]`
+
+- **ID** — コンポーネント識別子。最初の文字がデフォルトタイプを決定します（SPICE プレフィックス規則）。
+- **net1, net2, …** — ピンが接続するネット名。`0`、`gnd`、`ground`、`earth`、`pe`、`agnd`、`dgnd`、`gnda`、`gndd`、`vss`、`com`（大文字小文字無視、オプションの `_<word>` または数値サフィックス — 例：`gnd_ref`、`AGND_DIG`、`EARTH1`）に一致するネット名はすべてグランドネットに正規化されます。
+- **value**（オプションの裸のトークン）— コンポーネント値またはモデル名。
+- **key=value**（オプション）— `label=`、`value=`、`type=` の上書き。
+
+### 4.2 SPICE プレフィックス → コンポーネントタイプ
+
+| プレフィックス | デフォルトタイプ | ピン順序 |
+|---|---|---|
+| `R` | `resistor` | p1, p2 |
+| `C` | `capacitor` | p1, p2 |
+| `L` | `inductor` | p1, p2 |
+| `D` | `diode` | アノード（start）、カソード（end）|
+| `V` | `voltage_source` | plus, minus |
+| `I` | `current_source` | plus, minus |
+| `Q` | `npn` | c, b, e |
+| `M` | `nmos` | d, g, s |
+| `J` | `jfet_n` | d, g, s |
+| `S` | `switch_spst` | p1, p2 |
+| `F` | `fuse` | p1, p2 |
+| `B` | `battery` | plus, minus |
+| `K` | `relay_coil` | p1, p2 |
+| `U`, `X` | `generic_ic` | `pins=` でカスタム |
+| `W` | `wire` | start, end |
+| `T` | `terminal_block` | `pins=` でカスタム（`type=junction_box` も可）|
+
+> **スコープ：** Schematex circuit は **電気回路図のみ**（IEEE 315 / IEC 60617）をカバーします。油圧・空気圧回路図（ISO 1219）は根本的に異なる視覚的文法（方向バルブエンベロープ、シリンダシンボル、圧力/戻り/ドレーンのラインスタイル）を使用するため、このエンジンではサポートされていません。`EV*`（電磁弁）、`BOMBA*`（ポンプ）、`TANK*`、`DIPOSIT*` などの油圧プレフィックスは「型を推測できない」エラーで拒否されます。
+
+### 4.3 トランジスタモデルの上書き
+
+`Q` 行では、末尾のモデル名がタイプを上書きします：
+
+```
+Q1 c b e npn      # NPN BJT
+Q2 c b e pnp      # PNP BJT
+M1 d g s nmos     # N-channel MOSFET
+M2 d g s pmos     # P-channel MOSFET
+```
+
+`D` 行も同様：
+
+```
+D1 anode cathode zener
+D2 anode cathode led
+D3 anode cathode schottky
+D4 anode cathode photodiode
+```
+
+### 4.4 ネットリストの例
+
+<Playground initial={`circuit "CE Amp (netlist)" netlist
+V1 vcc 0 9V
+Rc vcc c 2.2k
+Rb vcc b 100k
+Q1 c b e npn
+Re e 0 1k`} height={420} />
+
+---
+
+## 5. 属性
+
+ポジショナルモードとネットリストモードの両方で以下の key=value 属性が使用できます：
+
+| 属性 | 対象 | 効果 |
+|---|---|---|
+| `label="…"` | 全コンポーネント | 表示ラベル（リファレンス指定子）|
+| `value="…"` | 全コンポーネント | 値アノテーション（1kΩ、100nF、5V）|
+| `at=id.end` | ポジショナルコンポーネント | このコンポーネントを名前付きアンカーから開始 |
+| `length=N` | `wire`、一部の受動部品 | ピクセル単位の長さ |
+
+ポジショナルモードでは、コンポーネント行内の `at=` は先行する `at:` 行と同等です：
+
+```
+C1: capacitor down at=R1.end value="100n"
+```
+
+---
+
+## 6. ラベルとコメント
+
+- **ダイアグラムタイトル：** `circuit "RC Filter"` — 最初の行のみ。
+- **コンポーネントラベル：** `label="R1"` 属性 — シンボルの横に表示されるリファレンス指定子。
+- **値アノテーション：** `value="4.7k"` — コンポーネントの横または下に表示。
+- **ネットラベル：** `label "VOUT" right` — 現在のカーソルに配置されるスタンドアロンのネットフラグ。
+- **コメント：** 行の先頭（先頭の空白の後）の `#`。
+
+---
+
+## 7. 予約語とエスケープ
+
+**行頭で予約済み（ポジショナル）：** `circuit`（ヘッダ）、`at:`、`net`、`wire`、`label`。
+
+**ネットリストモードで予約済み：** 同じヘッダルールが適用されます。他の行はすべて SPICE コンポーネント行です。
+
+**グランドネットのエイリアス（ネットリストのみ）：** `0`、`gnd`、`GND`、`Gnd`、`ground`、`Ground` — すべて同じノードとして扱われます。
+
+**コンポーネント ID** は `[a-zA-Z_][a-zA-Z0-9_]*` に一致する必要があります。値内のスペースはクォートが必要です：`value="10 kΩ"`。
+
+---
+
+## 8. よくあるミス
+
+| 記述した内容 | パーサーの反応 | 修正方法 |
+|---|---|---|
+| `resistor right 1k`（`value=` なしの裸の値）| `1k` は不明な属性フラグとして解析され無視される | `value="1k"` を使用：`resistor right value="1k"` |
+| `at: R1.center` | `center` は認識されたアンカーサフィックスではない — カーソルは現在位置のまま | `at: R1.end` または `at: R1.start` を使用 |
+| `wire 40`（方向なし）| 方向のデフォルトは `right`。長さ `40` は受け入れられる | 明示的な方向を推奨：`wire right 40` |
+| `R1 vcc out 10k`（ポジショナルモード）| 行が裸のタイプパターンにマッチ。`R1` がタイプ名として読まれ、ルックアップ失敗 | ポジショナルモードでは `R1: resistor right value="10k"` を使用 |
+| `Q1 c b e`（ネットリスト、モデルなし）| `Q` プレフィックスからデフォルトで `npn` になる — 正しい | OK。明確にするために明示的に `npn` を追加することを推奨 |
+| `net OUT` の後 `net OUT: dot` なしに `at: OUT` | `OUT` ネットは存在するがアンカーがない。ジャンプ先がない | カーソル位置を登録するために `net OUT: dot` を使用 |
+| `label VCC up`（クォートなしラベル）| `VCC` が方向トークンとして解析され、`up` と合わせてラベルテキストが失われる | テキストをクォート：`label "VCC" up` |
+
+---
+
+## 9. 文法（EBNF）
+
+```text
+document        = header statement*
+
+-- Positional mode --
+header          = "circuit" ( WS quoted-string )? NEWLINE
+statement       = blank | comment | component | wire | at | net-decl | label-stmt
+
+component       = ( id ":" WS )? type WS direction? attrs* NEWLINE
+wire            = "wire" ( WS direction )? ( WS integer )? NEWLINE
+at              = "at:" WS anchor NEWLINE
+anchor          = id "." ( "start" | "end" )
+                | id                          // net name anchor
+
+net-decl        = "net" WS id NEWLINE         // declare net only
+                | "net" WS id ":" WS "dot" NEWLINE  // declare + place dot
+
+label-stmt      = "label" WS quoted-string ( WS direction )? NEWLINE
+
+component-attr  = "value=" quoted-string
+                | "label=" quoted-string
+                | "at=" anchor
+                | "length=" integer
+
+direction       = "right" | "left" | "up" | "down"
+type            = // any value from §2 component tables
+
+-- Netlist mode --
+netlist-header  = "circuit" ( WS quoted-string )? WS "netlist" NEWLINE
+netlist-stmt    = id WS net-ref+ ( WS kv-pair )* NEWLINE
+                | comment
+net-ref         = id | "0"                    // net name or ground alias
+kv-pair         = id "=" ( quoted-string | bare-value )
+
+id              = [a-zA-Z_] [a-zA-Z0-9_]*
+integer         = [0-9]+
+quoted-string   = '"' any-char-but-quote* '"'
+comment         = "#" any NEWLINE
+```
+
+権威ある情報源：`src/diagrams/circuit/parser.ts` および `src/diagrams/circuit/netlist.ts`。これらがパーサーと異なる場合、パーサーが優先されます — イシューを開いてください。
+
+---
+
+## 10. 標準準拠
+
+Schematex の回路図はコンポーネントシンボル形状について **IEEE Std 315-1975 / ANSI Y32.2** に、国際バリアントについて **IEC 60617** に準拠しています。ネットリスト構文は **SPICE** プレフィックス規則（Berkeley SPICE3 / LTspice / ngspice）に従います。
+
+現在実装済みの内容：
+
+- ✅ 完全な受動部品セット：抵抗バリアント、コンデンサバリアント、インダクタバリアント、水晶発振子、トランス
+- ✅ ソースと電源：電圧源、電流源、AC 源、バッテリー、VCC、4 種類のグランドスタイル
+- ✅ ダイオードファミリー：ダイオード、ツェナー、ショットキー、LED、フォトダイオード、バラクタ、TVS、ブリッジ整流器
+- ✅ BJT：NPN、PNP、ダーリントン NPN/PNP
+- ✅ FET：NMOS/PMOS エンハンスメント、NMOS デプレッション、N/P チャンネル JFET
+- ✅ パワー半導体：IGBT、SCR、TRIAC、DIAC
+- ✅ オプトエレクトロニクス：フォトトランジスタ、オプトカプラー
+- ✅ アナログ IC：オペアンプ、コンパレータ、シュミットバッファ、トライステートバッファ、INA、汎用 IC、電圧レギュレータ、DC-DC コンバータ、555 タイマー
+- ✅ スイッチ：SPST、SPDT、DPDT、押しボタン常開、押しボタン常閉
+- ✅ リレー：コイル、常開接点、常閉接点
+- ✅ 電気機械：モーター、スピーカー、マイクロフォン、ブザー
+- ✅ 測定：電流計、電圧計、電力計、オシロスコープ
+- ✅ アノテーション：配線、ドット、ラベル、ポート、テストポイント、非接続、アンテナ
+- ✅ ポジショナル DSL：方向チェーン、`at:` 分岐、`net` 宣言
+- ✅ ネットリスト DSL：SPICE プレフィックスマッピング、モデル上書き、自動グランド合成
+- ⏳ BJT/FET/オペアンプの名前付きピン（base、collector、plus、minus、out）に対するピンレベルの `at:`
+- ⏳ ポジショナルモードでの自動ルーティング配線（配置されたシンボルを迂回するルーティング）
+- ⏳ ビット幅アノテーション付きバス配線（`/8` スラッシュ）
+
+参考文献：
+
+- IEEE Std 315-1975 (ANSI Y32.2): *Graphic Symbols for Electrical and Electronics Diagrams*
+- IEC 60617: *Graphical symbols for diagrams*
+- SPICE3 User's Manual, UC Berkeley — ネットリスト行形式の規則
+
+---
+
+## 11. 関連例
+
+<RelatedExamples slugs={[
+  'circuit-ce-amplifier',
+]} />
+
+---
+
+## 12. ロードマップ
+
+**計画中 — まだ解析できません。** 今日の生成 DSL では使用しないでください。パーサーが拒否または無視します。
+
+- **マルチピンコンポーネントの名前付きピンアンカー** — `at: Q1.base`、`at: U1.out`、`at: U1.plus` により、長い `wire` の迂回なしにオペアンプと BJT のフィードバックループを配線できるようになります。
+- **バス配線** — `wire right bus=8` で `/8` ビット幅スラッシュアノテーション付きの太い配線を描きます。
+- **自動ルーティング配線** — `connect R1.end U1.minus` でエンジンが配置されたシンボルを迂回して配線をルーティングします。
+- **`flip` と `reverse` 属性** — 方向軸に沿ってコンポーネントの極性/向きをミラーまたは反転します。
+- **`dashed` 配線スタイル** — RF シールド、ケーブルバンドル、または仮想接続用の破線。
+- **階層シート** — `module "name" { … }` グルーピング（ロジックゲートモジュールに類似）、マルチシート回路図のドキュメント化用。
+
+早急にこれらが必要な場合は GitHub イシューで追跡してください。

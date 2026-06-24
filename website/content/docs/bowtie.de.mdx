@@ -1,0 +1,151 @@
+---
+title: Bowtie-Risikodiagramm
+---
+
+## Über Bowtie-Diagramme
+
+Ein **Bowtie** ist das bekannteste Bild im barrierebasierten Risikomanagement: ein zentrales **Top-Ereignis** (der Moment, in dem die Kontrolle über eine Gefahr verloren geht), mit **Bedrohungen**, die von links durch Ketten von **präventiven Barrieren** einfließen, und **Konsequenzen**, die nach rechts durch Ketten von **mitigativen Barrieren** ausfließen — das Ganze in Form einer Fliege. Es beantwortet für eine Gefahr die zwei Fragen, die ein Regulator oder Vorstand tatsächlich stellt: *Was könnte schieflaufen, und was verhindert es?* (links) und *Wenn es schiefläuft, was passiert, und was begrenzt den Schaden?* (rechts). Vorgeschrieben in Öl & Gas, chemischer Verarbeitung, Luftfahrt ([ICAO Doc 9859](https://www.icao.int/) SMS), Bahn, Bergbau und Gesundheitswesen. Kodifiziert durch **[CCPS / Energy Institute 2018](https://www.aiche.org/ccps)** (*Bow Ties in Risk Management*) und als Technik benannt in **IEC 31010:2019** §B.4.6.
+
+Schematexs Vorteil liegt **nicht** in der Berechnung (das ist die Domäne von `faulttree` und `pert`) — ein einfaches Bowtie enthält keine Wahrscheinlichkeiten. Es sind zwei Dinge: ein **starres, korrekt-konstruiertes symmetrisches Layout**, das kein universelles Box-und-Pfeil-Werkzeug erzeugt, und die **strukturelle Validierung des CCPS/EI-Barrieren-Regelwerks** — jede Bedrohung muss das Top-Ereignis durch ≥ 1 Barriere erreichen, jede Konsequenz muss durch ≥ 1 Barriere daran hängen, und jeder Eskalationsfaktor muss an eine spezifisch benannte Barriere gebunden sein. Eine Bedrohung ohne Barriere wird *abgelehnt*, nicht stillschweigend gezeichnet.
+
+<Playground initial={`bowtie "LPG storage — loss of containment"
+hazard "LPG stored under pressure"
+topevent "Loss of containment"
+
+threat "Corrosion of vessel wall"
+  prevent "Corrosion-resistant coating"
+  prevent "UT thickness inspection"
+    escalation "Inspection interval too long"
+      barrier "Risk-based inspection scheme"
+
+threat "Overpressure during filling"
+  prevent "High-pressure trip (SIL 2)"
+  prevent "Pressure relief valve"
+
+consequence "Jet fire"
+  mitigate "Gas detection + ESD"
+  mitigate "Deluge / water spray"
+
+consequence "Toxic exposure"
+  mitigate "Personal gas monitors"
+  mitigate "Emergency evacuation plan"`} height={560} />
+
+---
+
+## 1. Ihr erstes Diagramm
+
+Jedes Dokument beginnt mit dem Schlüsselwort `bowtie`, einem optionalen Titel, dann der Gefahr, dem Top-Ereignis und den zwei Flügeln:
+
+```
+bowtie
+topevent "Loss of containment"
+threat "Corrosion"
+  prevent "Inspection programme"
+consequence "Release to atmosphere"
+  mitigate "Gas detection + ESD"
+```
+
+`topevent` deklariert den einzelnen Knoten in der Mitte (Pflicht, genau einer). Jede `threat` beginnt eine linke Flügellinie; jede `consequence` endet eine rechte Flügellinie. Eine Barriere unter einer `threat` ist **präventiv** (`prevent`); unter einer `consequence` ist sie **mitigation** (`mitigate`). Das Diagramm wird symmetrisch um den Knoten angeordnet — Bedrohungen fächern von links ein, Konsequenzen fächern nach rechts aus.
+
+Der DSL ist **einrückungsstrukturiert** und spiegelt die CCPS-7-Schritt-Aufbaumethodik: Gefahr identifizieren → das Top-Ereignis → die Bedrohungen → die Konsequenzen → die präventiven Barrieren → die mitigativen Barrieren → die Eskalationsfaktoren.
+
+Header-Direktiven (in beliebiger Reihenfolge):
+
+- `layout: symmetric | compact` — Bandmodell (Standard `symmetric`).
+- `legend: on | off | bottom | top` — die automatisch abgeleitete Farblegend (Standard on).
+
+---
+
+## 2. Gefahr und Top-Ereignis
+
+```
+hazard "Working at height"
+topevent "Person falls from height"
+```
+
+- **`hazard`** — der Vorgang oder das Material mit dem Potenzial, Schaden zu verursachen: der *Kontext*, über den der Bowtie handelt (z.B. "Arbeiten in der Höhe", "Kohlenwasserstoff unter Druck"). Optional; wird als Header-Box über dem Knoten mit einer Verbindungslinie nach unten gerendert. Höchstens eine.
+- **`topevent`** — der Moment, in dem die Kontrolle über die Gefahr **verloren** geht (z.B. "Kontrollverlust", "Person fällt aus der Höhe"). Der Knoten des Bowties, gezeichnet als grüner Kreis. **Pflicht, genau einer.**
+
+Eine Gefahr ist eine *Sache/Tätigkeit*, kein Fehler; das Top-Ereignis ist der genaue Moment des *Kontrollverlusts* — keine Ursache und noch keine Konsequenz.
+
+---
+
+## 3. Bedrohungen und Konsequenzen
+
+```
+threat "Guardrail removed for access"
+  prevent "Permit-to-work system"
+
+consequence "Fatality"
+  mitigate "Fall-arrest harness + lanyard"
+```
+
+- Eine **Bedrohung** ist eine glaubwürdige Ursache, die *für sich allein* das Top-Ereignis auslösen könnte. Jede Bedrohung ist der Beginn einer linken Flügellinie, gezeichnet als orangefarbenes Kästchen am linken Rand.
+- Eine **Konsequenz** ist ein glaubwürdiges Ergebnis *des Top-Ereignisses* (nicht der Bedrohung), gezeichnet als rotes Kästchen am rechten Rand.
+
+Bedrohungen und Konsequenzen können in beliebiger verschachtelter Reihenfolge deklariert werden — der Parser gruppiert alle linken Flügelblöcke und alle rechten Flügelblöcke unabhängig von der Reihenfolge. Ein Bowtie benötigt **mindestens eine von jedem**: ein einfügeliges Diagramm ist ein Fehlerbaum (siehe `faulttree`) oder ein Ereignisbaum, kein Bowtie.
+
+---
+
+## 4. Barrieren (die Kontrollen dazwischen)
+
+```
+threat "Guardrail removed for access"
+  prevent "Permit-to-work system"
+  prevent "Temporary edge protection"
+  prevent "Spotter / banksman"
+```
+
+Eine **Barriere** ist eine Kontrolle, die den Bedrohungs→Top-Ereignis-Pfad unterbricht (präventiv) oder die Konsequenz nach dem Top-Ereignis reduziert (mitigation). Jede ist ein graues Kästchen *auf der Linie*. Ketten haben freie Länge (1..n) — der Flügel verlängert sich einfach.
+
+**Die Barrierenreihenfolge ist die Deklarationsreihenfolge**: Die zuerst deklarierte ist die **äußerste** (am nächsten an der Bedrohung/Konsequenz, die erste Verteidigungslinie); die zuletzt deklarierte ist die **innerste** (am nächsten am Knoten). Dies entspricht der Links-Rechts-Leserichtung eines echten Bowties. Jede Barriere trägt `data-order` (0 = äußerst) und `data-side` (`prevent` / `mitigate`) für nachgelagerte Interaktivität.
+
+Wenn Ketten unterschiedlich lang sind, werden Barrieren **mittig verankert**: die innersten Barrieren richten sich in einer ordentlichen Spalte nahe dem Knoten aus, und die Bedrohungs-/Konsequenz-Boxen sind je nach Kettentiefe versetzt — gelesen als Staffelung der Tiefenverteidigung.
+
+---
+
+## 5. Eskalationsfaktoren
+
+```
+threat "Corrosion"
+  prevent "UT thickness inspection"
+    escalation "Inspection interval too long"
+      barrier "Risk-based inspection scheme"
+```
+
+Ein **Eskalationsfaktor** (oder Degradationsfaktor) ist eine Bedingung, die *die Wirksamkeit einer bestimmten Barriere beeinträchtigt* — z.B. "Kantenschutz nicht inspiziert", "Bediener-Ermüdung". Er ist an **eine** Barriere (nicht an die Linie) gebunden und fällt vertikal darunter als bernsteinfarbenes Kästchen, verbunden durch einen gedämpften "beeinträchtigt"-Verbinder.
+
+Eine **Eskalationsfaktor-Barriere** ist eine Kontrolle, die am Eskalationsfaktor selbst platziert ist — sie schützt die Barriere vor Beeinträchtigung (z.B. ein Vor-Nutzungs-Inspektionsregime). Sie ist eine Ebene tiefer, unter dem Eskalationsfaktor, verschachtelt und wird als graues Kästchen darunter gerendert.
+
+Einrückung bindet die Verschachtelung: `prevent`/`mitigate` bei 2 Leerzeichen, `escalation` bei 4, `barrier` bei 6.
+
+---
+
+## 6. Korrekt durch Konstruktion (das Barrieren-Regelwerk)
+
+Bevor eine einzige Form gezeichnet wird, validiert die Engine den strukturellen Teil des CCPS/EI-Barrieren-Regelwerks und **verweigert das Rendering** bei Fehler — genau wie `prisma` fehlende Zählungen ablehnt:
+
+- **Genau ein Top-Ereignis** — null oder mehrere ist ein Fehler.
+- **Jede Bedrohung hat ≥ 1 präventive Barriere** — eine bloße Bedrohung ist ein Schweizer-Käse-Cartoon, kein Bowtie.
+- **Jede Konsequenz hat ≥ 1 mitigative Barriere** — die Spiegelregel.
+- **Jeder Eskalationsfaktor ist an eine Barriere gebunden** — er kann nicht auf einer Linie oder am Top-Ereignis schweben.
+- **Mindestens eine Bedrohung und eine Konsequenz** — ein einfügeliges Diagramm ist eine FTA oder eine ETA.
+
+Meldungen nennen das betroffene Element und die Regel in klarem Englisch, z.B. *"Threat 'Corrosion' has no preventative barrier — every threat must reach the top event through at least one barrier (CCPS/EI barrier rule). Add a `prevent` line under it."* Das ist es, was einen echten Bowtie von einer Skizze unterscheidet. Die Engine beurteilt **nicht**, ob eine Barriere wirklich *wirksam* oder *unabhängig* ist — das ist das qualitative Urteil des Analytikers.
+
+---
+
+## 7. Bowtie vs. Fehlerbaum
+
+Ein vollständig entwickelter Bowtie *ist* ein Fehlerbaum, der an einem Ereignisbaum am Top-Ereignis angeklebt ist: Der linke Flügel rückwärts gelesen ist der Fehlerbaum, dessen Top-Ereignis der Knoten des Bowties ist, und der rechte Flügel ist der Ereignisbaum, der es in Konsequenzen überführt. Schematex hält sie als zwei Engines, weil sich ihre Verwendung unterscheidet:
+
+- **`bowtie`** ist qualitativ und symmetrisch — das Barrieren-Inventar und die Tiefenverteidigungs-Geschichte auf einen Blick; keine Wahrscheinlichkeitsrechnung.
+- **`faulttree`** ist quantitativ und boolesch — UND/ODER-Gatter, Grundereignis-Wahrscheinlichkeiten, minimale Schnittmengen, eine Wahrscheinlichkeits-Rollup.
+
+Wenn Sie das Gatter-Level-Detail hinter einer einzelnen Bedrohung möchten, zeichnen Sie einen separaten `faulttree`.
+
+---
+
+## 8. Theming
+
+`default` verwendet die bekannte BowTieXP / bowtiemaster-Palette — **orange Bedrohungen** (links), **graue Barrieren** auf der Linie, eine **grüne Top-Ereignis-Scheibe** (zentraler Knoten), **rote Konsequenzen** (rechts), **bernsteinfarbene Eskalationsfaktoren** darunter — abgebildet auf Schematexs semantische Slots, damit es mit `prisma` / `pert` / `petri` kohärent bleibt. `monochrome` reproduziert den regulatorischen Schwarz-Weiß-Druckstil, bei dem die Element-Unterscheidung durch Form/Rand + Position erfolgt (Eskalationsfaktoren erhalten einen gestrichelten Rand, der Knoten einen doppelten Ring) anstatt durch Farbe. `dark` folgt Catppuccin Mocha. Alle Strokes/Fills kommen aus `BowtieTokens`; jedes Element trägt `data-*` (`data-role`, `data-side`, `data-line`, `data-order`, `data-barrier`), sodass die Struktur nachgelagert inspizierbar ist.

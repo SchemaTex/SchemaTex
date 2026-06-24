@@ -1,0 +1,389 @@
+---
+title: Single-line diagram (SLD)
+---
+
+## Sobre diagramas unifilares
+
+Um **diagrama unifilar** (também chamado de diagrama de linha única) representa o sistema de energia elétrica de uma instalação ou subestação usando uma única linha para representar as três fases de um sistema CA trifásico. Os equipamentos — transformadores, disjuntores, barramentos, motores, cargas — são mostrados com símbolos padronizados, e o caminho do fluxo de energia os conecta de cima para baixo, da fonte à carga. Engenheiros elétricos, planejadores de concessionárias e gerentes de instalações usam SLDs como documento de referência primário em todo projeto de sistema de energia: é o primeiro entregável em qualquer pedido de interconexão, estudo de flash de arco ou pacote de comissionamento.
+
+O Schematex segue as convenções de símbolos gráficos do **[IEEE Std 315 (ANSI Y32.2)](https://standards.ieee.org/ieee/315/1099/)** para equipamentos, estendidas com a notação de configuração de enrolamento IEC 60617 para variantes de transformadores. Esta página documenta o que o parser aceita atualmente.
+
+<Playground initial={`sld "13.8 kV Substation"
+utility = utility [label: "Grid 138 kV"]
+bus_hv = bus [voltage: "138kV", label: "HV Bus"]
+xfmr1 = transformer_dy [rating: "15 MVA", voltage: "138kV/13.8kV", label: "Main Xfmr"]
+bus_mv = bus [voltage: "13.8kV", label: "MV Bus"]
+brk1 = breaker [rating: "1200A", label: "BKR-1"]
+brk2 = breaker [rating: "1200A", label: "BKR-2"]
+brk3 = breaker [rating: "1200A", label: "BKR-3"]
+feeder1 = load [label: "Feeder 1"]
+feeder2 = load [label: "Feeder 2"]
+feeder3 = load [label: "Feeder 3"]
+utility -> bus_hv
+bus_hv -> xfmr1
+xfmr1 -> bus_mv
+bus_mv -> brk1
+bus_mv -> brk2
+bus_mv -> brk3
+brk1 -> feeder1
+brk2 -> feeder2
+brk3 -> feeder3`} height={480} />
+
+---
+
+## 1. Seu primeiro diagrama unifilar
+
+O SLD mais simples: uma fonte de concessionária, um transformador, um disjuntor e uma carga.
+
+<Playground initial={`sld "Simple feeder"
+util = utility [label: "Utility 13.8kV"]
+xfmr = transformer [rating: "500 kVA", voltage: "13.8kV/480V"]
+bus1 = bus [voltage: "480V", label: "480V Bus"]
+cb1 = breaker [rating: "200A"]
+load1 = load [label: "Panel LP-1"]
+util -> xfmr
+xfmr -> bus1
+bus1 -> cb1
+cb1 -> load1`} />
+
+Quatro regras cobrem 80% dos casos de uso:
+
+1. Comece com `sld`, opcionalmente seguido de um título entre aspas.
+2. Declare cada equipamento como `id = nodeType [attributes]` — um por linha.
+3. Conecte os itens com `from -> to`, opcionalmente adicionando `[cable: "…", label: "…"]`.
+4. IDs podem conter letras, dígitos, underscores e hifens — mas devem começar com uma letra.
+
+> Comentários podem começar com `#`, `//` ou `%%` no estilo Mermaid na própria linha.
+
+---
+
+## 2. Tipos de nó
+
+Uma linha de nó tem o formato `id = nodeType [attr: value, …]`. O tipo de nó determina o símbolo desenhado.
+
+### 2.1 Fontes
+
+| Tipo | Símbolo | Uso típico |
+|---|---|---|
+| `utility` | Seta de fonte da concessionária | Barramento infinito / conexão com a rede |
+| `generator` | Círculo com `G` | Gerador a diesel, gás ou hidro |
+| `solar` | Símbolo de painel fotovoltaico | Arranjo fotovoltaico |
+| `wind` | Símbolo de turbina | Turbina eólica |
+| `ups` | Bloco com bateria | No-break (fonte ininterrupta de energia) |
+
+<Playground initial={`sld "Generation sources"
+util = utility [label: "Grid 115 kV"]
+gen = generator [rating: "2 MW", label: "Diesel Gen"]
+sol = solar [rating: "500 kW", label: "PV Array"]
+wnd = wind [rating: "1 MW", label: "Wind Turbine"]
+ups = ups [rating: "100 kVA", label: "UPS System"]
+util -> gen
+util -> sol
+util -> wnd
+util -> ups`} height={360} />
+
+### 2.2 Transformadores
+
+| Tipo | Configuração de enrolamento | Observações |
+|---|---|---|
+| `transformer` | Genérico de dois enrolamentos | Sem especificação de enrolamento |
+| `transformer_dy` | Delta → Estrela aterrada (Δ-Yg) | Distribuição mais comum |
+| `transformer_yd` | Estrela aterrada → Delta (Yg-Δ) | |
+| `transformer_yy` | Estrela-Estrela (ambos aterrados) | |
+| `transformer_dd` | Delta-Delta | |
+| `autotransformer` | Enrolamento único com tap | Símbolo de bobina em zigue-zague |
+| `transformer_3winding` | Três enrolamentos | Taps AT / MT / BT |
+
+<Playground initial={`sld "Transformer configurations"
+src = utility [label: "138kV Grid"]
+t_dy = transformer_dy [rating: "30 MVA", voltage: "138kV/13.8kV", label: "Δ-Yg (most common)"]
+t_yy = transformer_yy [rating: "10 MVA", voltage: "138kV/13.8kV", label: "Yg-Yg"]
+t_auto = autotransformer [rating: "50 MVA", voltage: "138kV/69kV", label: "Autotransformer"]
+t_3w = transformer_3winding [rating: "40 MVA", voltage: "138/13.8/4.16kV", label: "3-Winding"]
+src -> t_dy
+src -> t_yy
+src -> t_auto
+src -> t_3w`} height={360} />
+
+### 2.3 Barramentos e nós
+
+| Tipo | Símbolo | Uso típico |
+|---|---|---|
+| `bus` | Linha horizontal espessa | Barramento principal de tensão |
+| `bus_tie` | Disjuntor de interligação | Liga dois barramentos paralelos na mesma tensão |
+| `hub` | Retângulo largo | Ponto de combinação de múltiplos alimentadores |
+
+### 2.4 Chaveamento e proteção
+
+| Tipo | Símbolo | Número de dispositivo |
+|---|---|---|
+| `breaker` | Diagonal + arco | 52 (disjuntor CA) |
+| `breaker_vacuum` | Diagonal + oval com V | 52 tipo a vácuo |
+| `switch` | Diagonal (sem arco) | 89 (seccionadora / isoladora) |
+| `switch_load` | Chave de interrupção de carga | — |
+| `ground_switch` | Diagonal + símbolo de terra | Seccionadora de aterramento |
+| `ats` | Símbolo de chave de transferência | Chave de transferência automática |
+| `recloser` | Diagonal + arco + seta | Disjuntor com religamento automático |
+| `sectionalizer` | Diagonal + S | Seccionalizador de distribuição |
+| `fuse` | Oval com diagonal | Fusível tipo expulsão |
+| `fuse_cl` | Retângulo com diagonal | Fusível limitador de corrente |
+
+<Playground initial={`sld "Switching and protection"
+src = utility [label: "Source"]
+rclsr = recloser [label: "Recloser"]
+sect = sectionalizer [label: "Sectionalizer"]
+fuse1 = fuse [label: "Fuse"]
+sw = switch [label: "Disconnect"]
+gnd_sw = ground_switch [label: "Ground SW"]
+src -> rclsr
+rclsr -> sect
+sect -> fuse1
+sect -> sw
+sw -> gnd_sw`} height={340} />
+
+### 2.5 Proteção e monitoramento
+
+| Tipo | Símbolo | Uso típico |
+|---|---|---|
+| `ct` | Pequeno círculo com linha | Transformador de corrente (TC) |
+| `pt` | Pequeno círculo | Transformador de potencial / tensão (TP) |
+| `relay` | Pequeno círculo com número de dispositivo | Relé de proteção (número ANSI via `device:`) |
+| `surge_arrester` | Seta + terra | Para-raios |
+| `ground_fault` | Símbolo GFI | Detector de falta à terra |
+
+### 2.6 Cargas e equipamentos
+
+| Tipo | Símbolo | Uso típico |
+|---|---|---|
+| `motor` | Círculo com `M` | Motor trifásico |
+| `load` | Retângulo | Carga genérica ou alimentador |
+| `capacitor_bank` | Duas placas + chave | Correção do fator de potência |
+| `harmonic_filter` | Símbolo LC | Filtro harmônico passivo |
+| `vfd` | Retângulo com VFD | Inversor de frequência |
+
+### 2.7 Medição
+
+| Tipo | Símbolo | Uso típico |
+|---|---|---|
+| `watthour_meter` | Círculo com `Wh` | Medidor de energia |
+| `demand_meter` | Círculo com `D` | Medidor de demanda |
+
+<Playground initial={`sld "Equipment types"
+src = utility [label: "Grid 13.8kV"]
+tx = transformer_dy [rating: "1000 kVA", voltage: "13.8kV/480V", label: "Main TX"]
+bk = breaker [rating: "2000A", label: "Main Breaker"]
+bus = bus [voltage: "480V", label: "480V MV Bus"]
+ct1 = ct [label: "CT-1"]
+rly = relay [device: "51", label: "Overcurrent Relay"]
+cap = capacitor_bank [rating: "150 kVAR", label: "PF Cap"]
+mtr = motor [rating: "100HP", label: "Pump Motor"]
+gen = generator [rating: "500kW", label: "Emergency Gen"]
+ats = ats [rating: "800A", label: "ATS-1"]
+src -> tx
+tx -> bk
+bk -> bus
+bus -> ct1
+ct1 -> rly
+bus -> cap
+bus -> mtr
+gen -> ats
+ats -> bus`} height={440} />
+
+---
+
+## 3. Atributos de nó
+
+Os atributos são escritos dentro de `[…]` após o tipo de nó, separados por vírgulas.
+
+| Atributo | Valores | Efeito |
+|---|---|---|
+| `label: "…"` | string entre aspas | Nome de exibição no diagrama |
+| `voltage: "…"` | string entre aspas, ex.: `"13.8kV"`, `"480V"` | Anotação do nível de tensão |
+| `rating: "…"` | string entre aspas, ex.: `"1000 kVA"`, `"200A"` | Anotação da capacidade do equipamento |
+| `device: "…"` | número de dispositivo ANSI, ex.: `"51"`, `"87"` | Usado com nós `relay` |
+| qualquer outra chave | string entre aspas | Armazenado como dado de plaqueta (kVA, %Z do transformador, etc.) |
+
+**Exemplo com todos os atributos comuns:**
+
+```
+xfmr = transformer_dy [
+  label: "Main Transformer",
+  voltage: "13.8kV/480V",
+  rating: "1000 kVA",
+  impedance: "5.75%Z"
+]
+```
+
+O bloco de atributos pode abranger múltiplas linhas — o parser une as linhas até que o `]` seja fechado.
+
+---
+
+## 4. Conexões
+
+Uma linha de conexão é `fromId -> toId`, opcionalmente seguida de `[cable: "…", label: "…"]`.
+
+```
+bus1 -> cb1
+bus1 -> cb1 [cable: "3#2/0 AWG"]
+bus1 -> cb1 [cable: "3#2/0 AWG", label: "Feeder A"]
+```
+
+**Regras:**
+- Ambos os IDs devem ser declarados antes ou após a conexão — todas as conexões são validadas ao final do parse.
+- Apenas `->` (direcionado, da fonte para a carga) é aceito. A direção da conexão é usada no layout.
+- Um ID de nó desconhecido lança `SLDParseError: Connection references unknown node "…"`.
+
+<Playground initial={`sld "ATS backup with cable labels"
+UTIL = utility [label: "Utility 480V"]
+GEN = generator [rating: "500 kW", label: "Emergency Gen"]
+ATS1 = ats [rating: "800A", label: "ATS-1"]
+BUS1 = bus [voltage: "480V", label: "Critical Bus"]
+CB1 = breaker [rating: "200A", label: "CB-1"]
+CB2 = breaker [rating: "200A", label: "CB-2"]
+L1 = load [label: "Server Room"]
+L2 = load [label: "Life Safety"]
+UTIL -> ATS1 [label: "Normal source"]
+GEN -> ATS1 [label: "Emergency source"]
+ATS1 -> BUS1 [cable: "3#2/0 AWG"]
+BUS1 -> CB1
+BUS1 -> CB2
+CB1 -> L1 [cable: "3#4 AWG"]
+CB2 -> L2 [cable: "3#4 AWG"]`} height={400} />
+
+---
+
+## 5. Rótulos e comentários
+
+- **Título:** `sld "Substation One-Line"` — apenas na primeira linha.
+- **Rótulo do nó:** `id = type [label: "…"]` — o nome de exibição.
+- **Rótulo da conexão:** `A -> B [label: "…"]` — aparece ao lado da linha de conexão.
+- **Anotação de cabo:** `A -> B [cable: "3#2/0 AWG, 200ft"]` — especificação do condutor.
+- **Comentários:** `#` no início de uma linha. O `#` inline na mesma linha de um nó ou conexão também é removido.
+- **Aliases residenciais:** vocabulário IEC / REBT como `mcb`, `rcd`, `rcbo`, `rccb`, `pia`, `iga`, `main_switch`, `consumer_unit`, `distribution_board`, `panel` e `panelboard` é aceito como entrada e mapeado para primitivos SLD existentes.
+
+---
+
+## 6. Palavras reservadas e escapamento
+
+**Reservadas no início da linha:** `sld` (cabeçalho).
+
+**Token operador** — evite `->` dentro de IDs de nó. IDs podem conter `[A-Za-z][A-Za-z0-9_-]*` — hifens são válidos (por exemplo, `CB-101` é um ID legal).
+
+**Bloco de atributos** — os colchetes `[…]` podem abranger múltiplas linhas físicas. O parser une as linhas de continuação até que a profundidade dos colchetes chegue a zero.
+
+**IDs duplicados** lançam `SLDParseError: Duplicate node id "…"`.
+
+---
+
+## 7. Erros comuns
+
+| Você escreveu | O parser diz | Correção |
+|---|---|---|
+| `xfmr1 [type: transformer]` | `SLDParseError: Cannot parse line` | Use a atribuição com `=`: `xfmr1 = transformer [...]` |
+| `id = battery [...]` | `SLDParseError: Unknown node type "battery"` | Não existe tipo `battery` — use `ups` ou `generator` |
+| `id = breakerz` | `SLDParseError: Unknown node type ... (did you mean 'breaker'?)` | Use o tipo canônico sugerido ou um alias |
+| `A -- B` (bidirecional) | `SLDParseError: Cannot parse line` | Apenas `->` é aceito; use duas linhas `->` se necessário |
+| `A -> B -> C` (encadeado) | `SLDParseError: Cannot parse line` | Cada conexão é um `->` por linha |
+| `relay [label: "OC"]` (sem número de dispositivo) | O relé é renderizado com número em branco | Adicione `device: "51"` para o número de dispositivo ANSI |
+| `voltage: 480V` (sem aspas) | Valor do atributo não reconhecido | Coloque todos os valores entre aspas: `voltage: "480V"` |
+| ID de nó começando com dígito: `2BUS` | `SLDParseError: Cannot parse line` | IDs devem começar com uma letra: `BUS2` |
+| Conexão antes do nó declarado | `SLDParseError: Connection references unknown node "…"` | Declare os nós antes ou após as conexões — validado ao final do parse, portanto a ordem é flexível |
+
+---
+
+## 8. Gramática (EBNF)
+
+```text
+document      = header NEWLINE ( blank | comment | node-def | connection )*
+
+header        = "sld" ( WS quoted-string )? NEWLINE
+quoted-string = '"' any-char-but-quote* '"'
+
+node-def      = id WS "=" WS node-type ( WS "[" attr-list "]" )? NEWLINE
+node-type     = "utility" | "generator" | "solar" | "wind" | "ups"
+              | "transformer" | "transformer_dy" | "transformer_yd"
+              | "transformer_yy" | "transformer_dd"
+              | "autotransformer" | "transformer_3winding"
+              | "bus" | "bus_tie" | "hub"
+              | "breaker" | "breaker_vacuum" | "switch" | "switch_load"
+              | "ground_switch" | "ats" | "recloser" | "sectionalizer"
+              | "fuse" | "fuse_cl"
+              | "ct" | "pt" | "relay" | "surge_arrester" | "ground_fault"
+              | "motor" | "load" | "capacitor_bank" | "harmonic_filter" | "vfd"
+              | "watthour_meter" | "demand_meter"
+              | residential-alias
+
+residential-alias
+              = "mcb" | "mccb" | "rcd" | "rcbo" | "rccb"
+              | "differential" | "diferencial" | "pia" | "iga"
+              | "main_switch" | "isolator" | "disconnector"
+              | "consumer_unit" | "distribution_board" | "panel" | "panelboard"
+
+attr-list     = attr ( "," attr )*
+attr          = key ":" WS quoted-string
+
+connection    = id WS "->" WS id ( WS "[" conn-attrs "]" )? NEWLINE
+conn-attrs    = conn-attr ( "," conn-attr )*
+conn-attr     = "cable" ":" WS quoted-string
+              | "label" ":" WS quoted-string
+
+id            = [A-Za-z] [A-Za-z0-9_-]*
+key           = [A-Za-z] [A-Za-z0-9_]*
+comment       = ( "#" | "//" | "%%" ) any NEWLINE
+```
+
+O bloco de atributos `[…]` pode abranger múltiplas linhas físicas — o parser une as linhas de continuação até que a profundidade dos colchetes retorne a zero.
+
+Fonte autoritativa: `src/diagrams/sld/parser.ts`. Se houver divergência com o parser, o parser prevalece — por favor, abra uma issue.
+
+---
+
+## 9. Conformidade com padrões
+
+Os SLDs do Schematex seguem as convenções de símbolos gráficos do **IEEE Std 315 (ANSI Y32.2)** para equipamentos de chaveamento, transformadores e fontes. As variantes de configuração de enrolamento de transformadores (`transformer_dy`, `transformer_yy`, etc.) usam a notação Δ/Y da **IEC 60617**. Os números de dispositivos de relés de proteção seguem a **ANSI/IEEE C37.2**.
+
+O que está implementado atualmente:
+
+- ✅ Todos os tipos de fonte: concessionária, gerador, solar, eólico, UPS
+- ✅ Seis variantes de transformador, mais autotransformador e de três enrolamentos
+- ✅ Barramento, interligação de barramentos, hub
+- ✅ Aliases de vocabulário residencial IEC / REBT mapeados para primitivos canônicos
+- ✅ Conjunto completo de chaveamento: disjuntor, disjuntor a vácuo, chave, chave de carga, chave de aterramento, ATS, religador, seccionalizador, fusível, fusível limitador de corrente
+- ✅ Proteção e monitoramento: TC, TP, relé (com número de dispositivo ANSI), para-raios, detector de falta à terra
+- ✅ Equipamentos de carga: motor, carga, banco de capacitores, filtro harmônico, inversor de frequência
+- ✅ Medição: medidor de energia, medidor de demanda
+- ✅ Conexões direcionadas com anotações de cabo e rótulo
+- ✅ Atributos de nó `label`, `voltage`, `rating`, `device`; dados de plaqueta arbitrários
+- ⏳ Chaveamento de interligação de barramentos com indicador de estado aberto/fechado
+- ⏳ Zonas de proteção (linhas de fronteira tracejadas envolvendo relé + TC)
+- ⏳ Blocos de rótulo de flash de arco (energia incidente, nível de EPI, distância de trabalho)
+- ⏳ Faixas de nível de tensão (faixas horizontais coloridas automaticamente por nível de kV)
+
+Referências:
+
+- IEEE Std 315-1975 / ANSI Y32.2-1975 — *Graphic Symbols for Electrical and Electronics Diagrams*
+- IEC 60617:2025 (BS 3939) — *Graphical symbols for diagrams*
+- ANSI/IEEE C37.2 — *Electrical Power System Device Function Numbers*
+
+---
+
+## 10. Exemplos relacionados
+
+<RelatedExamples slugs={[
+  'sld-generator-ats',
+  'sld-substation-13kv',
+]} />
+
+---
+
+## 11. Roadmap
+
+**Planejado — ainda não parseável.** Não use estes itens em DSL gerado hoje; o parser os rejeitará ou ignorará.
+
+- **Estado aberto/fechado do bus-tie** — `bus_tie` com atributo explícito de aberto/fechado para que o símbolo seja renderizado na posição de chaveamento correta.
+- **Zonas de proteção** — um bloco `zone:` ou `boundary:` que desenha um retângulo tracejado ao redor de um conjunto de nós (relé + TC + disjuntor) para indicar uma zona de proteção.
+- **Blocos de anotação de flash de arco** — `arc_flash: [incident_energy: "8 cal/cm²", ppe: "2", distance: "18in"]` por IEEE 1584.
+- **Faixas de nível de tensão** — sombreamento horizontal automático por nível de kV; os nós são posicionados automaticamente em seu nível de tensão.
+- **Conexão bidirecional** (`<->`) — para caminhos de interligação de barramentos ou normalmente abertos onde a direção é indefinida.
+
+Acompanhe nas issues do GitHub se precisar de algum desses itens mais cedo.

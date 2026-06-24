@@ -1,0 +1,306 @@
+---
+title: Diagrama de blocos
+---
+
+## Sobre diagramas de blocos
+
+Um **diagrama de blocos** modela um sistema como um conjunto de blocos funcionais conectados por linhas de sinal direcionadas. Cada bloco representa um componente cujo comportamento é capturado por uma função de transferência ou um rótulo descritivo; os sinais fluem pelos blocos em uma direção definida. Engenheiros de controle os usam para projetar malhas de feedback, engenheiros de processamento de sinais os usam para documentar cadeias de filtros, e engenheiros de sistemas os usam para decompor arquiteturas complexas. Os elementos visuais definidores — blocos retangulares e junções de soma circulares — são convenções extraídas da análise de sistemas de controle (Ogata, Franklin, Nise) e presentes em cada datasheet e livro didático que descreve um sistema de feedback.
+
+O Schematex segue a **convenção de função de transferência no domínio de Laplace** usada em livros didáticos de sistemas de controle: os blocos são rotulados com suas funções de transferência, as junções de soma carregam sinais explícitos de polaridade `+`/`−`, e um flag `discrete` em sinais renderiza uma linha tracejada para caminhos de dados amostrados. Esta página documenta o que o parser aceita hoje. Referências autoritativas: Ogata (2010) *Modern Control Engineering*; Franklin, Powell & Emami-Naeini (2018) *Feedback Control of Dynamic Systems*.
+
+<Playground initial={`blockdiagram "Audio dynamics processor"
+# Signal chain
+in_s = signal("Input")
+gate_s = signal("gated")
+comp_s = signal("compressed")
+out_s = signal("Output")
+# Blocks
+gate = block("Noise gate") [role: controller]
+comp = block("Compressor") [role: plant]
+eq = block("3-band EQ") [role: generic]
+limiter = block("Limiter") [role: actuator]
+# Level detection side-chain
+detect = block("Level detect") [role: sensor]
+sum_g = sum(+in_s, -detect)
+# Forward path
+in -> in_s
+in_s -> sum_g
+sum_g -> gate
+gate -> gate_s
+gate_s -> comp
+comp -> comp_s
+comp_s -> eq
+eq -> limiter
+limiter -> out_s
+# Side-chain feedback
+limiter -> detect`} height={460} />
+
+---
+
+## 1. Seu primeiro diagrama de blocos
+
+O menor diagrama de blocos útil: um controlador, uma planta, uma malha de feedback.
+
+<Playground initial={`blockdiagram "Temperature control"
+ctrl = block("PID") [role: controller]
+plant = block("Heater") [role: plant]
+sensor = block("Thermocouple") [role: sensor]
+err = sum(+ref, -measured)
+ref = signal("Setpoint")
+measured = signal("T_measured")
+in -> ref
+ref -> err
+err -> ctrl
+ctrl -> plant
+plant -> measured
+measured -> sensor
+sensor -> err`} />
+
+Quatro regras cobrem 80% do uso:
+
+1. Comece com `blockdiagram`, opcionalmente seguido de um título entre aspas.
+2. Declare cada componente com `ID = block("rótulo")`, cada junção de soma com `ID = sum(+a, -b)`, e cada sinal nomeado com `ID = signal("rótulo")`.
+3. Conecte componentes com `->`. Encadeie múltiplos saltos em uma linha: `A -> B -> C`.
+4. Opcionalmente anote conexões com um rótulo no final: `A -> B ["E(s)"]`.
+
+> Comentários devem começar com `#` em sua própria linha.
+
+---
+
+## 2. Blocos
+
+Um bloco representa qualquer elemento funcional — controlador, planta, filtro, atuador, sensor. O rótulo é tipicamente uma função de transferência ou um nome descritivo.
+
+**Sintaxe:** `ID = block("rótulo") [role: X]`
+
+| Atributo | Valores | Efeito |
+|---|---|---|
+| `role: plant` | `plant`, `controller`, `sensor`, `actuator`, `reference`, `disturbance`, `generic` | Codificação visual por cor; `generic` é o padrão |
+| `route: above` | `above`, `below` | Dica de roteamento para blocos de feedback e feedforward |
+
+**Regras para ID.** Deve começar com uma letra ou underscore, seguido de letras, dígitos ou underscores: `[A-Za-z_]\w*`.
+
+<Playground initial={`blockdiagram "Block roles"
+ref_block = block("r(t)") [role: reference]
+ctrl = block("C(s)") [role: controller]
+act = block("Actuator") [role: actuator]
+plant = block("G(s)") [role: plant]
+sensor = block("H(s)") [role: sensor]
+dist = block("d(t)") [role: disturbance]
+ref_block -> ctrl
+ctrl -> act
+act -> plant
+plant -> sensor
+dist -> plant`} />
+
+---
+
+## 3. Junções de soma
+
+Uma junção de soma combina múltiplos sinais em um, com polaridade explícita para cada entrada. Ela é renderizada como um círculo com sinais `+`/`−` — o símbolo padrão de sistemas de controle.
+
+**Sintaxe:** `ID = sum(+a, -b, +c, …)`
+
+- Cada entrada é um ID com sinal: `+x` adiciona o sinal `x`, `-y` subtrai o sinal `y`.
+- Uma entrada sem sinal é tratada como positiva.
+- O ID da junção de soma é então usado como destino de linhas de conexão, assim como um ID de bloco.
+
+<Playground initial={`blockdiagram "Error with disturbance rejection"
+ctrl = block("PI C(s)") [role: controller]
+plant = block("G(s)") [role: plant]
+sensor = block("H(s)") [role: sensor]
+# Main error junction: add reference, subtract feedback
+err = sum(+r, -ym)
+# Disturbance junction: add plant input, add disturbance
+disturb = sum(+ctrl_out, +d)
+r = signal("r (setpoint)")
+ym = signal("y_m")
+ctrl_out = signal("u(t)")
+in -> r
+r -> err
+err -> ctrl
+ctrl -> ctrl_out
+ctrl_out -> disturb
+disturb -> plant
+plant -> ym
+ym -> sensor
+sensor -> err`} />
+
+---
+
+## 4. Sinais
+
+Uma declaração de sinal cria um nó de sinal nomeado que o parser insere como rótulo de aresta. Sinais são passantes: quando o parser vê `A -> sig` e `sig -> B`, ele os une em uma única aresta de `A` para `B`, rotulando-a com o texto de exibição do sinal.
+
+**Sintaxe:** `ID = signal("rótulo") [discrete]`
+
+- Omita `[discrete]` para sinais contínuos (linha sólida).
+- Adicione `[discrete]` para sinais de dados amostrados (linha tracejada).
+
+```
+e_sig = signal("E(s)")
+u_sig = signal("U(s)") [discrete]
+```
+
+Sinais são puramente uma conveniência de rotulagem — você também pode rotular arestas diretamente com um atributo no final (veja §5).
+
+---
+
+## 5. Conexões
+
+Uma linha de conexão é `from -> to`. O operador `->` sempre produz uma linha direcionada com seta.
+
+**Salto simples:** `A -> B`
+
+**Encadeamento:** `A -> B -> C` — equivalente a `A -> B` e `B -> C`. Ambos escritos em uma linha.
+
+**Com rótulo de sinal:** acrescente `["texto do rótulo"]` ao final do encadeamento. O rótulo se aplica apenas ao último salto.
+
+```
+ctrl -> plant ["U(s)"]
+```
+
+**Com flag de discreto:** acrescente `[discrete]` para tornar a seta do último salto tracejada.
+
+```
+plant -> adc ["y"] [discrete]
+```
+
+**Rótulo e discreto juntos:** use `[label: "Y(s)", discrete]` (separado por vírgula).
+
+```
+adc -> ctrl [label: "y[k]", discrete]
+```
+
+<Playground initial={`blockdiagram "Mixed continuous/discrete"
+ctrl = block("Digital PID") [role: controller]
+dac = block("DAC") [role: actuator]
+plant = block("G(s)") [role: plant]
+adc = block("ADC") [role: sensor]
+err = sum(+r, -yk)
+r = signal("r[k]") [discrete]
+yk = signal("y[k]") [discrete]
+in -> r
+r -> err
+err -> ctrl
+ctrl -> dac [label: "u[k]", discrete]
+dac -> plant ["u(t)"]
+plant -> adc ["y(t)"]
+adc -> yk [discrete]
+yk -> err`} />
+
+---
+
+## 6. Rótulos e comentários
+
+- **Título:** `blockdiagram "Meu Sistema"` — primeira linha, entre aspas.
+- **Rótulo de bloco:** a string entre aspas dentro de `block("…")` — aparece dentro da caixa.
+- **Rótulo de sinal:** a string entre aspas dentro de `signal("…")` — aparece na aresta fundida.
+- **Rótulo de aresta:** `["texto"]` ou `[label: "texto"]` no final de uma linha de conexão — aparece nessa seta.
+- **Comentários:** `#` no início de uma linha (após espaços em branco iniciais). Comentários inline no final de linha não são suportados.
+
+---
+
+## 7. Palavras reservadas e escape
+
+**Reservado no início de linha:** `blockdiagram` (header).
+
+**Palavras-chave estruturais** (evite como IDs de block/signal/sum para prevenir ambiguidade): `block`, `signal`, `sum`.
+
+**`in` e `out`** são IDs convencionais para o limite externo de um diagrama — o parser os trata como identificadores comuns, mas o renderer os usa como nós implícitos de fonte/sumidouro. Usar `in -> r` e `plant -> out` é idiomático.
+
+**Strings com espaços** devem ser colocadas entre aspas duplas nos rótulos de `block("…")` e `signal("…")`.
+
+---
+
+## 8. Erros comuns
+
+| Você escreveu | O parser diz | Correção |
+|---|---|---|
+| `G = block(G(s))` (sem aspas) | Parse falha — rótulo deve ser entre aspas | `G = block("G(s)")` |
+| `err = sum(r, -ym)` (sem `+`) | `r` tratado como `+r` — funciona, mas é ambíguo | Escreva `sum(+r, -ym)` para clareza |
+| `ctrl -> plant, plant -> out` (vírgula na mesma linha) | `,` não é separador — parse falha | Uma conexão por linha ou use encadeamento: `ctrl -> plant -> out` |
+| `s1 = signal("E(s)") [label: "E"]` | `label:` não é válido em sinal; use em conexões | Remova `label:` da declaração de sinal |
+| `role: filter` | Role desconhecido — silenciosamente usa `generic` | Use `plant`, `controller`, `sensor`, `actuator`, `reference`, `disturbance` ou `generic` |
+| `A -> B [discrete, label: "e"]` — rótulo primeiro falha | A ordem dos atributos dentro de `[…]` não importa, mas a forma abreviada `"texto"` só funciona quando é o único item | Use `[label: "e", discrete]` |
+
+---
+
+## 9. Gramática (EBNF)
+
+```text
+document       = header (blank | comment | block-def | sum-def | signal-def | connection)*
+
+header         = "blockdiagram" ( WS quoted-string )? NEWLINE
+quoted-string  = '"' any-char-but-quote* '"'
+
+block-def      = id WS "=" WS "block" "(" quoted-string ")" ( "[" block-attrs "]" )? NEWLINE
+block-attrs    = block-attr ("," block-attr)*
+block-attr     = "role:" role | "route:" ("above" | "below")
+role           = "plant" | "controller" | "sensor" | "actuator"
+               | "reference" | "disturbance" | "generic"
+
+sum-def        = id WS "=" WS "sum" "(" sum-inputs ")" NEWLINE
+sum-inputs     = sum-input ("," sum-input)*
+sum-input      = ("+" | "-")? id
+
+signal-def     = id WS "=" WS "signal" "(" quoted-string ")" ( "[" "discrete" "]" )? NEWLINE
+
+connection     = id ("->" id)+ ( "[" conn-attrs "]" )? NEWLINE
+conn-attrs     = quoted-string                          # forma abreviada: apenas rótulo
+               | conn-attr ("," conn-attr)*
+conn-attr      = "label:" quoted-string | "discrete"
+
+id             = [A-Za-z_] \w*
+comment        = "#" any NEWLINE
+```
+
+Fonte autoritativa: `src/diagrams/blockdiagram/parser.ts`. Se isso divergir do parser, o parser vence — por favor, abra uma issue.
+
+---
+
+## 10. Conformidade com padrões
+
+Os diagramas de blocos do Schematex seguem as convenções de **função de transferência no domínio de Laplace** de Ogata (2010) e Franklin et al. (2018) — os símbolos de bloco, junção de soma e linha de sinal direcionada encontrados em todos os livros didáticos de sistemas de controle.
+
+O que está implementado hoje:
+
+- ✅ Blocos retangulares com rótulos de função de transferência
+- ✅ Junções de soma circulares com entradas de polaridade `+`/`−`
+- ✅ Nós de sinal nomeados (passantes, fundidos como rótulo de aresta)
+- ✅ Conexões direcionadas com encadeamento (`A -> B -> C`)
+- ✅ Rótulos de aresta — nomes de sinais nas setas
+- ✅ Flag `discrete` — linha tracejada para sinais de dados amostrados
+- ✅ Anotações de role (`plant`, `controller`, `sensor`, `actuator`, `reference`, `disturbance`, `generic`)
+- ✅ Dica `route: above | below` para posicionamento de feedback/feedforward
+- ⏳ Ponto de ramificação/pickoff — símbolo de ponto explícito onde um sinal se divide em dois destinos
+- ⏳ Caixa de contorno — compartimento de subsistema tracejado com rótulo
+- ⏳ Setas bidirecionais — `<->` para troca de sinal bidirecional
+- ⏳ Notação de barramento — linha grossa representando um vetor de sinais
+
+Referências:
+
+- Ogata, K. (2010). *Modern Control Engineering*, 5ª ed. Prentice Hall.
+- Franklin, G.F., Powell, J.D. & Emami-Naeini, A. (2018). *Feedback Control of Dynamic Systems*, 8ª ed. Pearson.
+
+---
+
+## 11. Exemplos relacionados
+
+<RelatedExamples slugs={[
+  'block-pid-loop',
+]} />
+
+---
+
+## 12. Roadmap
+
+**Planejado — ainda não parseável.** Não use isso no DSL gerado hoje; o parser vai rejeitar ou ignorar.
+
+- **Símbolo de ponto de ramificação/pickoff** — primitivo `dot` explícito onde uma saída se divide em múltiplos destinos (atualmente o renderer insere automaticamente uma ramificação quando um ID é usado como fonte mais de uma vez, mas não há sintaxe explícita).
+- **Caixa de contorno de subsistema** — bloco `boundary "rótulo" { … }` que desenha um retângulo tracejado envolvendo os blocos contidos, usado para visões multi-malha e de subsistema.
+- **Conexão bidirecional** — `A <-> B` para componentes com troca mútua de informações (ex: interface de barramento).
+- **Notação de barramento (sinal vetorial)** — linha grossa com anotação de barra e contagem `//n` indicando um barramento de sinal de largura n.
+- **Subsistemas aninhados** — um `block` cujo interior é ele mesmo um diagrama de blocos, recolhível na saída renderizada.
+
+Acompanhe nas issues do GitHub se precisar de algum desses com urgência.

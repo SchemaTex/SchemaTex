@@ -1,0 +1,361 @@
+---
+title: P&ID (Piping & Instrumentation Diagram)
+---
+
+## Über P&IDs
+
+Ein **Rohrleitungs- und Instrumentenfließbild (P&ID)** ist der technische „Schaltplan" einer Prozessanlage — jedes Behältnis, jede Pumpe, jeder Wärmetauscher, jedes Ventil und jeder Messkreis, gezeichnet mit normierten Symbolen und verbunden durch Rohrleitungen und Signalleitungen. Verfahrenstechniker, Leittechniker und HSE-Auditoren lesen dasselbe P&ID, um die Anlage zu spezifizieren, in Betrieb zu nehmen, Gefahrenanalysen (HAZOP) durchzuführen und sie im Betrieb zu bedienen. P&IDs sind das gesetzlich vorgeschriebene Engineering-Dokument für Chemie-, Petrochemie-, Pharma-, Wasseraufbereitungs- und Energieerzeugungsprojekte gemäß OSHA PSM und EPA RMP.
+
+Schematex implementiert den Symbolkatalog nach **[ANSI/ISA-5.1-2009](https://www.isa.org/products/ansi-isa-5-1-2009-instrumentation-symbols-and-iden)** (Messstellen-Blasen, Tag-Buchstabencodes, Signalleitungstypen) sowie Ausrüstungssymbole aus **[ISO 10628-1:2014](https://www.iso.org/standard/51840.html)** (Behälter, Kolonnen, Pumpen, Wärmetauscher). Die DSL ist bewusst kompakt gehalten, damit ein LLM aus einer Prozessbeschreibung in einem einzigen Schritt ein P&ID mit Regelkreis erzeugen kann.
+
+<Playground initial={`pid "Pump with Flow Control"
+
+equip T-101 : tank_atm           [tag: "Feed Tank"]
+equip P-101 : pump_centrifugal   [tag: "P-101"]
+equip V-101 : valve_control      [tag: "V-101"]
+equip F-101 : filter             [tag: "Filter"]
+equip V-201 : vessel_v           [tag: "V-201"]
+
+line L1 from T-101.bottom to P-101.in  [size: "4\\"", service: "water", type: "process"]
+line L2 from P-101.out    to V-101.in  [size: "4\\"", type: "process"]
+line L3 from V-101.out    to F-101.in  [size: "4\\"", type: "process"]
+line L4 from F-101.out    to V-201.in  [size: "4\\"", type: "process"]
+
+inst FT-101 : field_discrete
+  measures P-101
+inst FIC-101 : cr_shared
+  controls V-101`} height={420} />
+
+---
+
+## 1. Ihr erstes P&ID
+
+Ein minimales P&ID besteht aus mindestens einer Ausrüstungseinheit und einer Prozessleitung.
+
+<Playground initial={`pid
+
+equip T-1 : tank_atm
+equip P-1 : pump_centrifugal
+equip V-1 : vessel_v
+
+line L1 from T-1.bottom to P-1.in [size: "2\\"", type: "process"]
+line L2 from P-1.out    to V-1.in [size: "2\\"", type: "process"]`} />
+
+Drei Regeln decken 80 % der Anwendungsfälle ab:
+
+1. Das Dokument beginnt mit `pid` (optionaler Titel und `[direction: LR]`-Attribute).
+2. Jede Ausrüstungseinheit wird deklariert: `equip <ID> : <type> [tag: "label"]`.
+3. Verbindungen werden mit `line <ID> from <equip>.<port> to <equip>.<port> [type: "process", size: "4\""]` hergestellt.
+
+Messgeräte werden separat mit `inst <TAG> : <category>` sowie eingerückten `measures`- und `controls`-Klauseln hinzugefügt.
+
+> Kommentare beginnen mit `#` am Zeilenanfang.
+
+---
+
+## 2. Ausrüstung
+
+Die `equip`-Anweisung deklariert Prozessausrüstung. Der Katalog folgt den Konventionen von ISO 10628 / ISA-5.1.
+
+```
+equip T-101 : tank_atm [tag: "Feed Tank"]
+equip P-101 : pump_centrifugal
+equip E-201 : hx_shell_tube [tag: "Overhead Cond"]
+equip T-201 : column_tray [tag: "Stripper"]
+```
+
+### 2.1 Ausrüstungskatalog
+
+| Typ | Symbol | Verwendungszweck |
+|---|---|---|
+| `tank_atm` | Zylinder + gewölbter Deckel | Atmosphärischer Lagertank |
+| `tank_cone_roof` | Zylinder + Kegeldach | Lagertank mit Kegeldach |
+| `vessel_v` | Vertikale Kapsel | Vertikaler Druckbehälter |
+| `vessel_h` | Horizontale Kapsel | Horizontaler Druckbehälter |
+| `sphere` | Gefüllter Kreis | LPG- / Ammoniakkugel |
+| `column_tray` | Hohe Kapsel + horizontale Bodenlinien | Destillationskolonne mit Böden |
+| `column_packed` | Hohe Kapsel + Schraffur | Füllkörperkolonne |
+| `hx_shell_tube` | Horizontale Kapsel + Rohrbündel | Rohrbündelwärmetauscher |
+| `hx_air_cooled` | Rechteck + Lüfterkreis | Luftkühler (Fin-Fan) |
+| `reboiler` | Kapsel + parallele Rohrlinien | Umlaufverdampfer |
+| `condenser` | Horizontale Kapsel + Rohre | Kopfkondensator |
+| `pump_centrifugal` | Kreis + Dreieck-Auslass rechts | Kreiselpumpe |
+| `pump_pd` | Kreis + innere Zahnräder | Verdrängerpumpe |
+| `compressor` | Trapez (rechts schmal) | Kreiselverdichter |
+| `blower` | Kreis + 3-flügeliger Lüfter | Gebläse / Lüfter |
+| `reactor_cstr` | Vertikale Kapsel + Rührer | Rührkesselreaktor (CSTR) |
+| `reactor_pfr` | Horizontale Kapsel + Schüttungspunkte | Rohrreaktor / Festbettreaktor (PFR) |
+| `filter` | Rechteck + Diagonalschraffur | Filter |
+| `cyclone` | Zylinder + Kegelunterteil | Zyklon-Abscheider |
+| `flare` | Hoher Schornstein + Flamme | Fackel |
+| `cooling_tower` | Sanduhr | Kühlturm mit Fremdbelüftung |
+
+### 2.2 Ventilkatalog
+
+Ventile sind Ausrüstungselemente, die in der Rohrleitung sitzen. Sie werden im `bowtie`-Stil mit typspezifischer Stellantriebsdekoration dargestellt.
+
+| Typ | Dekoration | Verwendungszweck |
+|---|---|---|
+| `valve_gate` | Einfacher Bowtie | Manuelles Absperrventil (Vollbohrung) |
+| `valve_ball` | Bowtie + gefüllter Mittelkreis | Manuelles Absperrventil (Kugelhahn) |
+| `valve_globe` | Bowtie + kleiner oberer Kreis | Manuelles Regelventil |
+| `valve_butterfly` | Bowtie + vertikale Mittellinie | Drosselklappe |
+| `valve_check` | Bowtie + Bogen | Rückschlagventil |
+| `valve_control` | Bowtie + Membrananschluss | Pneumatisches Regelventil (mit FIC verbunden) |
+| `valve_psv` | Bowtie + 45°-Auslass + Federpaket | Sicherheitsventil (Druckentlastung) |
+
+```
+equip V-101 : valve_control [tag: "V-101 (FC)"]
+equip V-303 : valve_psv     [tag: "V-303 · 150 psig"]
+```
+
+---
+
+## 3. Rohrleitungs- und Signalleitungen
+
+Die `line`-Anweisung verbindet zwei Ankerpunkte (Ausrüstungsanschlüsse oder Messstellentags).
+
+```
+line L1 from T-101.bottom to P-101.in  [size: "4\"", service: "water", type: "process"]
+line s1 from FT-101 to FIC-101         [type: "electric"]
+line s2 from FIC-101 to V-101          [type: "pneumatic"]
+```
+
+### 3.1 Ankersyntax
+
+Jedes Ende einer Leitung ist entweder:
+- `<equip-id>.<port>` — Anschlussname aus Abschnitt 2.2 (`in`, `out`, `top`, `bottom`, `feed`, `shell_in`, `tube_out`, `reflux` usw.)
+- `<equip-id>` — Anschluss weggelassen; Standardwert ist `in` (Ziel) / `out` (Quelle) je nach Ausrüstungsfamilie
+- `<inst-tag>` — Mittelpunkt der Messstellenblase (Signalleitungen)
+
+### 3.2 Leitungstypen (ISA-5.1 §5)
+
+| `type:` | Strichart | Verwendung |
+|---|---|---|
+| `process` | Durchgehend, dick | Hauptprozessleitung (Standard) |
+| `process_minor` | Durchgehend, dünn | Hilfs-/Versorgungsleitung |
+| `pneumatic` | Durchgehend + Diagonalstriche | Druckluftsignal (Stellantrieb) |
+| `electric` | Langer Strich | Elektrisches Signal / 4–20 mA |
+| `hydraulic` | Langer Strich + Pause | Hydraulischer Stellantrieb |
+| `capillary` | Gepunktet (runde Enden) | Flüssigkeitsgefülltes Temperatursystem |
+| `software` | Kurzer Strich, hell | DCS-/PLC-interner Datenlink |
+| `mechanical` | Gemischter Strich | Mechanische Kopplung |
+
+### 3.3 Leitungsetiketten
+
+Das Standardformat nach PIP PIC001 lautet `<size>"-<service>-<sequence>-<spec>`. Es wird über das Attribut `tag:` übergeben; der Renderer platziert dann ein kleines weißes Etikett-Rechteck an der Leitungsmitte.
+
+```
+line L1 from T-101.bottom to P-101.in [size: "4\"", service: "PG", tag: "4\"-PG-101-A1B"]
+```
+
+---
+
+## 4. Instrumentierung (ISA-5.1 §4)
+
+Die `inst`-Anweisung deklariert eine Messstellenblase. Das **Tag** verwendet die ISA-Buchstabencode-Konvention: Der erste Buchstabe ist die *gemessene Größe*, die folgenden Buchstaben sind *Modifikatoren* und *Funktion*.
+
+```
+inst FT-101  : field_discrete         %% Flow Transmitter, loop 101
+inst FIC-101 : cr_shared              %% Flow Indicating Controller (DCS)
+inst PSHH-301: cr_plc                 %% Pressure Switch High-High (PLC)
+inst LIC-201 : cr_shared
+  measures D-201
+  controls V-202
+```
+
+### 4.1 Buchstabencodes (erster Buchstabe)
+
+Am häufigsten verwendet: `F` Durchfluss · `L` Füllstand · `P` Druck · `T` Temperatur · `A` Analyse · `S` Drehzahl · `H` Handeingriff · `Y` Ereignis/Zustand. Vollständige Liste in ISA-5.1 Tabelle 1.
+
+### 4.2 Funktionsmodifikatoren
+
+`I` Anzeige · `R` Registrierung · `C` Regler · `T` Transmitter · `E` Primärelement · `V` Ventil · `S` Schalter · `A` Alarm · `H`/`L` Hoch/Tief. Kombination zum mehrbuchstabigen Tag: `FIC` = Durchfluss-Anzeige-Regler; `PSHH` = Druckschalter Hoch-Hoch.
+
+### 4.3 Blasenkategorien
+
+ISA-5.1 unterscheidet zwischen **Einbauort** (wo das Messgerät sitzt) und **Typ** (analog vs. gemeinsam vs. Computer vs. PLC). Schematex implementiert die vier gebräuchlichsten Kombinationen:
+
+| Kategorie | Blasenform | Verwendung |
+|---|---|---|
+| `field_discrete` | Einfacher Kreis | Vor-Ort-Messgerät, analog (FT, PT) |
+| `cr_shared` | Kreis + horizontale Linie + eingeschriebenes Hexagon | DCS-gesteuertes HMI-Display |
+| `cr_computer` | Kreis + horizontale Linie + eingeschriebene Raute | Computerfunktion (FY, Berechnung) |
+| `cr_plc` | Kreis + horizontale Linie + eingeschriebenes Quadrat | PLC-gesteuerte Logik |
+
+Varianten `field_*` lassen die horizontale Mittellinie weg; `local_*`-Varianten verwenden eine gestrichelte Mittellinie; `cr_*`-Varianten eine durchgehende Mittellinie, die „Hauptschalttafel — Vorderseite" anzeigt.
+
+### 4.4 measures / controls
+
+Eingerückt unter einer `inst`-Deklaration:
+
+| Klausel | Wirkung |
+|---|---|
+| `measures <equip-id>` | Automatisch geroutete elektrische Signalleitung (gestrichelt) von der Ausrüstung zur Blase |
+| `controls <equip-id>` | Automatisch geroutete pneumatische Signalleitung von der Blase zur Ausrüstung (typisch ein `valve_control`) |
+
+```
+inst FT-101 : field_discrete
+  measures P-101
+inst FIC-101 : cr_shared
+  controls V-101
+```
+
+Diese automatisch erzeugten Signalleitungen sind unabhängig von den expliziten `line`-Anweisungen — sie werden mit dem jeweils passenden Signalleitungsstil gerendert, der sich aus dem Beziehungstyp ergibt.
+
+---
+
+## 5. Layoutrichtung
+
+Die Standardrichtung ist **`LR`** (links nach rechts) — Zulauf kommt von links, Produkt verlässt die Anlage nach rechts. Überschreiben im Header:
+
+```
+pid "Distillation Tower" [direction: TB]
+
+equip T-201 : column_tray
+…
+```
+
+Das MVP-Layout ordnet die Ausrüstung in Deklarationsreihenfolge entlang der Hauptrichtung an und verwendet Manhattan-Routing für Signalleitungen. **Mehrzeilige / parallele Flusslayouts und T-Verbindungen sind Roadmap-Punkte** — siehe Abschnitt 9.
+
+---
+
+## 6. Ausführliches Beispiel: Destillationskolonne
+
+Ein realer Kopfkondensator-Kreislauf mit Umlaufverdampfer, Rückflusstrommel und Instrumentierung:
+
+<Playground initial={`pid "Distillation T-201"
+
+equip T-201 : column_tray         [tag: "T-201"]
+equip E-201 : condenser           [tag: "Overhead Cond"]
+equip D-201 : vessel_h            [tag: "Reflux Drum"]
+equip P-201 : pump_centrifugal    [tag: "Reflux Pump"]
+equip E-202 : reboiler            [tag: "Reboiler"]
+
+line L1 from T-201.top    to E-201.shell_in  [size: "8\\"", service: "vapor",  type: "process"]
+line L2 from E-201.shell_out to D-201.in    [size: "8\\"", type: "process"]
+line L3 from D-201.bottom to P-201.in       [size: "3\\"", type: "process"]
+line L4 from P-201.out    to T-201.reflux   [size: "3\\"", type: "process"]
+line L5 from T-201.bottom to E-202.in       [size: "6\\"", type: "process"]
+
+inst PT-201  : field_discrete
+  measures T-201
+inst LIC-201 : cr_shared
+  measures D-201
+inst TIC-201 : cr_shared
+  measures T-201`} height={520} />
+
+---
+
+## 7. Grammatik (EBNF)
+
+```text
+document    = header statement*
+header      = "pid" ( title )? ( "[" attrs "]" )? NEWLINE
+attrs       = attr ("," attr)*
+attr        = "direction:" ("LR" | "TB")
+            | "units:" ("imperial" | "metric")
+
+statement   = comment
+            | equipment-decl
+            | line-decl
+            | instrument-decl
+
+equipment-decl = "equip" ID ":" equip-type ( "[" attr-list "]" )? NEWLINE
+equip-type     = "tank_atm" | "tank_cone_roof"
+               | "vessel_v" | "vessel_h" | "sphere"
+               | "column_tray" | "column_packed"
+               | "hx_shell_tube" | "hx_air_cooled" | "reboiler" | "condenser"
+               | "pump_centrifugal" | "pump_pd"
+               | "compressor" | "blower"
+               | "reactor_cstr" | "reactor_pfr"
+               | "filter" | "cyclone" | "flare" | "cooling_tower"
+               | "valve_gate" | "valve_ball" | "valve_globe" | "valve_butterfly"
+               | "valve_check" | "valve_control" | "valve_psv"
+
+line-decl   = "line" ID "from" anchor "to" anchor ( "[" attr-list "]" )? NEWLINE
+anchor      = ID ( "." port )?
+port        = "in" | "out" | "top" | "bottom" | "left" | "right"
+            | "feed" | "reflux" | "shell_in" | "shell_out"
+            | "tube_in" | "tube_out" | "vapor_out" | "liquid_out"
+            | "bottom_return"
+
+instrument-decl = "inst" tag ":" inst-category ( "[" attr-list "]" )? NEWLINE
+                  ( indented "measures" anchor NEWLINE )*
+                  ( indented "controls" ID NEWLINE )*
+tag             = letter-code "-" loop-num     %% e.g., "FIC-101"
+inst-category   = "field_discrete" | "field_shared" | "field_computer" | "field_plc"
+                | "cr_discrete"    | "cr_shared"    | "cr_computer"    | "cr_plc"
+                | "local_discrete" | "local_shared"
+
+attr-list   = attr ("," attr)*
+attr        = key ":" value
+key         = "tag" | "size" | "service" | "type" | "set_pressure"
+            | "actuator" | "fail" | "trays" | …
+value       = quoted-string | bare-word
+
+ID          = [A-Za-z] [A-Za-z0-9_-]*
+```
+
+Maßgebliche Quelle: `src/diagrams/pid/parser.ts`. Weicht diese Beschreibung vom Parser ab, hat der Parser Vorrang — bitte ein Issue eröffnen.
+
+---
+
+## 8. Normkonformität
+
+Aktuell implementiert (P0 MVP):
+
+- ✅ 22 Prozessausrüstungs-Symbole (Behälter, Kolonnen, Pumpen, Wärmetauscher, Reaktoren, Abscheider, Fackel, Kühlturm)
+- ✅ 7 Ventilsymbole (Schieber, Kugel, Kegel, Klappe, Rückschlag, Regelventil mit Membrananschluss, Sicherheitsventil mit 45°-Auslass + Federpaket)
+- ✅ 4 Messstellenblasenkategorien × 2 Einbauorte = 8 ISA-5.1-Blasenvarianten (Vor-Ort/Warte × diskret/gemeinsam/Computer/PLC)
+- ✅ ISA-Buchstabencode-Tag-Parsing (`FT-101`, `LIC-203`, `PSHH-301`)
+- ✅ 8 Leitungstyp-Stile (process / process_minor / pneumatic / electric / hydraulic / capillary / software / mechanical)
+- ✅ Automatisch geroutete `measures`- und `controls`-Signalleitungen
+- ✅ Leitungsetiketten als weiß hinterlegte Rechtecke an der Leitungsmitte
+- ✅ Manhattan-Routing, einreihiges Ausrüstungslayout
+
+**Noch nicht implementiert** (siehe Roadmap):
+
+- ⏳ Mehrzeilige / parallele Flusslayouts (z. B. zwei Pumpen münden in einen Mischer)
+- ⏳ T-Verbindungen und Abzweigleitungen
+- ⏳ Kreuzungserkennung (Überbrückungsbogen bei Rohrleitungskreuzungen)
+- ⏳ Funktionsblock-Overlays (Σ-Summierer, PID, Selektoren)
+- ⏳ Verriegelungsraute und Freigabekreis (ISA-5.06)
+- ⏳ Begleitheizungs-/Mantelrohr-Leitungsdekoration
+- ⏳ Reduzierstücke (konzentrisch / exzentrisch) in der Leitung
+- ⏳ Stutzenbeschriftungen an Behältern
+
+Referenzen:
+
+- ANSI/ISA-5.1-2009 — *Instrumentation Symbols and Identification* (US-Norm)
+- ISO 10628-1:2014 — *Diagrams for the chemical and petrochemical industry* (international)
+- ISA-5.06.01-2007 — *Functional Requirements Documentation for Control Software*
+- PIP PIC001 — Piping & Instrumentation Diagram Documentation Criteria (Branchenergänzung)
+
+---
+
+## 9. Roadmap
+
+Das MVP-P&ID deckt einen einzelnen linearen Regelkreis ab (Tank → Pumpe → Regelventil → Instrumentierung). Reale Anlagen benötigen 2D-Platzierung und T-Verbindungen. Für v0.4 geplant:
+
+- **DSL-Erweiterung**: `equip ... [row: 0, col: 2]`-Gitter-Hinweise für Mehrflusslayouts
+- **`tee`-Primitiv**: `tee T1 on L1` für einen dreifachen Abzweig an einer Prozessleitung
+- **`junction`-Primitiv**: ISA-Verbindungspunkt für Rohrleitungsanschlüsse
+- **Kreuzungserkennung**: Überbrückungsbogen bei sich kreuzenden Rohrleitungen
+- **Funktionsblöcke**: `Σ`-Summierer, `PID`-Regler, `LS`/`HS`-Tief-/Hochselektor
+- **Verriegelungssymbole**: `interlock I-301`-Raute, `permissive P-202`-Kreis
+- **Reduzierstücke in der Leitung**: konzentrische / exzentrische Reduzierstücke als Leitungsdekorationen
+- **Stutzenliste**: seitliche Anschlussannotationen an Behältersymbolen (`N1`, `N2`, …)
+
+Einfache Einkreis-Regelschemas werden bereits vollständig dargestellt; komplexe Mehrstromprozess-P&IDs benötigen manuelle Positionshinweise (zurückgestellt).
+
+---
+
+## Verwandte Beispiele
+
+Einsatzbereite Szenarien aus der Beispielgalerie:
+
+<RelatedExamples slugs={[
+  'pid-pump-flow-control',
+  'pid-reactor-feed-system',
+]} />

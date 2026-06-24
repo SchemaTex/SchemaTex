@@ -1,0 +1,92 @@
+---
+title: Erste Schritte
+description: Installieren Sie Schematex und rendern Sie Ihr erstes Diagramm in unter einer Minute.
+---
+
+## Installation
+
+```bash
+npm install schematex
+```
+
+## Rendern
+
+```ts
+import { render } from 'schematex';
+
+const svg = render(`
+genogram "Smiths"
+  john [male, 1950]
+  mary [female, 1952]
+  john -- mary
+    alice [female, 1975, index]
+`);
+```
+
+Der Diagrammtyp wird automatisch aus dem ersten Schlüsselwort ermittelt. Die Ausgabe ist ein reiner SVG-String — direkt per `dangerouslySetInnerHTML` oder `innerHTML` injizierbar oder auf die Festplatte schreibbar.
+
+## Live-Vorschau
+
+`render()` arbeitet im Strict-Modus: Ungültiges DSL wirft sofort einen Fehler. Für KI-Canvas oder Editor-Vorschauen verwenden Sie die Preview-API, damit Parse-Fehler sichtbar bleiben statt zu einer leeren Zeichenfläche zu führen.
+
+```ts
+import { renderPreview, renderResult } from 'schematex';
+
+const svg = renderPreview(dsl);
+const state = renderResult(dsl);
+
+preview.innerHTML = state.svg;
+if (!state.ok) console.error(state.diagnostics);
+```
+
+`renderPreview()` gibt immer SVG zurück. Bei einem Strict-Rendering-Fehler wird ein sichtbares Diagnose-SVG erzeugt. Verwenden Sie `renderResult()`, wenn Sie gleichzeitig `ok`, `status` und Diagnosedaten (für Wiederholungs- oder Reparaturlogik) benötigen.
+
+### Optionales Frontmatter
+
+Dem DSL-Hauptteil kann YAML-Frontmatter im Mermaid-Stil vorangestellt werden. Der `title:`-Wert wird in den Diagrammtitel übernommen, sofern keine Titelzeile direkt angegeben wurde.
+
+```txt
+---
+title: Smith Family
+---
+genogram
+  john [male, 1950]
+```
+
+Führende Leerzeilen und reine Kommentarzeilen werden übersprungen, bevor der Diagrammtyp erkannt wird. Im Mermaid-kompatiblen Parser ab v0.4.3 wird `%%` als Zeilenkommentar-Marker behandelt.
+
+## Tree-Shaking (On-Demand-Imports)
+
+Importieren Sie nur die benötigten Teile:
+
+```ts
+import { render } from 'schematex/genogram';
+import { render } from 'schematex/ladder';
+import { render } from 'schematex/sld';
+```
+
+Jedes Submodul besitzt einen eigenständigen Parser / Layout / Renderer und ist vollständig unabhängig.
+
+## Framework-Integration
+
+- **React** — Verwenden Sie `<SchematexDiagram />` aus `schematex/react` oder injizieren Sie SVG-Strings im Strict- oder Vorschaumodus selbst. Die Komponente zeigt bei Rendering-Fehlern ein Diagnose-Fallback-SVG an.
+- **SSR** — Schematex gibt reine Strings ohne DOM-Abhängigkeit aus. Unterstützt Node.js, Edge-Runtimes, Cloudflare Workers und den Browser.
+- **Markdown** — Ein `remark-schematex`-Plugin ist in Planung.
+
+```tsx
+import { SchematexDiagram } from 'schematex/react';
+
+<SchematexDiagram dsl={dsl} theme="monochrome" />;
+```
+
+## Mit KI nutzen
+
+Schematex ist für LLMs konzipiert. Der gehostete MCP-Server ermöglicht es Claude, eigenständig validiertes, standardkonformes DSL zu generieren — ohne Konfiguration.
+
+<MCPConnectCard size="compact" />
+
+→ Eigene KI-Funktionen einbauen? Lesen Sie **[Schematex mit KI verwenden](/docs/ai-integration)** — Vercel AI SDK-Adapter, fünf Tools und die empfohlene selbstkorrigierende Agentenschleife.
+
+## Nächste Schritte
+
+Wählen Sie in der Seitenleiste den gewünschten Diagrammtyp und lesen Sie den entsprechenden Syntaxleitfaden.

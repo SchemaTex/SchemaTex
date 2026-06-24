@@ -1,0 +1,119 @@
+---
+title: FMEA 工作表
+description: 失效模式与影响分析——引擎根据嵌套的"项目→模式→影响/原因"树计算 RPN 和 AIAG-VDA 措施优先级。
+---
+
+## 关于 FMEA
+
+**FMEA**（失效模式与影响分析）是制造业中使用最广泛的主动可靠性方法：针对系统的每个部分，列出其可能的失效方式（**失效模式**）、每种失效的后果（**影响**）、失效原因（**起因**），以及如何检测到失效（**控制**）。每行按三个 1–10 的等级评分——**严重度**、**发生度**、**探测度**——并设定优先级。标准来自 **AIAG-VDA FMEA Handbook（2019）**和 **IEC 60812**。
+
+Schematex 的优势在于引擎**计算优先级**，而不只是生成表格。它将失效链展平为每个（项目、模式、原因）组合一行，计算 **RPN = S × O × D**，并——最关键的是——计算 AIAG-VDA **措施优先级**（AP，以严重度为主轴的分段），这从根本上修正了纯 RPN 排序引入的缺陷：一个 S10·O2·D3 的安全气囊失效被评为*高*优先级，即便其 RPN（60）看起来很低。
+
+<Playground initial={`fmea "Brake system DFMEA"
+  type: design
+  rank: ap
+  flag: ap >= High
+  item "Master cylinder" fn "Generate hydraulic pressure"
+    mode "Internal seal leak"
+      effect "Loss of braking" sev: 9
+      cause "Seal material degradation" occ: 3
+        controls prevention: "Material spec", detection: "Bench test" det: 4
+      cause "Contamination" occ: 2
+        controls detection: "Fluid analysis" det: 5`} height={520} />
+
+---
+
+## 1. 第一张工作表
+
+每个文档以 `fmea` 开头，后跟可选标题、可选指令，然后是**嵌套**的失效链。结构由关键字决定，而非缩进深度：
+
+```
+fmea "Pump DFMEA"
+  item "Impeller" fn "Move fluid"
+    mode "No flow"
+      effect "Process stops" sev: 8
+      cause "Impeller wear" occ: 4
+        controls detection: "Flow sensor" det: 5
+```
+
+- **`item "名称" fn "功能"`** — 零件及其承担的功能。`fn` 可选。
+- **`mode "失效模式"`** — 功能如何失效。一个项目可有多种模式。
+- **`effect "后果" sev: 1..10`** — 失效造成的影响；携带自己的**严重度**。一个模式可有多种影响（引擎对该模式的每一行使用*最差*值）。
+- **`cause "根本原因" occ: 1..10`** — 失效原因；携带**发生度**。
+- **`controls prevention: "…", detection: "…" det: 1..10`** — 当前控制措施及其所获得的**探测度**评级。若无控制措施，探测度默认为 **10**（不可探测）。
+
+所有三个评级均为 1–10 的整数；超出范围将被拒绝。
+
+---
+
+## 2. 标头指令
+
+```
+type: design          # design (dfmea) | process (pfmea) | msr
+rank: ap              # ap（默认）| rpn — 排序/优先级键
+flag: ap >= High      # 或 `rpn > 100` — 高亮超过阈值的行
+number: FMEA-2026-014 # 自由元数据：编号/团队/作者/日期/修订/部门/流程/产品
+```
+
+`rank` 选择行的优先排序方式；`flag` 高亮超过阈值的行（`ap >= High` / `ap == High`，或 `rpn > 100` / `rpn >= 120`）。
+
+---
+
+## 3. 计算 RPN 与措施优先级
+
+这是核心差异所在。引擎从嵌套 AST 执行以下操作：
+
+1. **展平**为每个（项目、模式、原因）组合一行；模式最差影响的严重度适用于该模式的每一行。
+2. **RPN = S × O × D**（1–1000）。
+3. 按 AIAG-VDA 分段结构计算**措施优先级**——**严重度是主轴**，其次是发生度，再次是探测度。S = 9–10（安全/法规）在任何 O 和 D 下均为*高*；中等严重度随发生度下降而从高→中→低退化。
+4. 按选定的键**排序**。对于 `ap`：高 > 中 > 低，以严重度再以 RPN 作为并列打破因子——*绝不*单独按 RPN 排序，否则会重新引入 AP 设计所要修正的缺陷。
+5. **标记**超过阈值的行。
+
+每行携带 `data-rpn` 和 `data-ap`，使计算出的优先级可被检查。
+
+---
+
+## 4. 纠正措施跟进
+
+记录纠正措施及修订后的评级，以展示前后对比：
+
+```
+fmea "Brake DFMEA"
+  item "MC"
+    mode "Seal leak"
+      effect "Loss of braking" sev: 9
+      cause "Degradation" occ: 3 det: 4
+  action "Seal leak" / "Degradation"
+    do: "Upgrade seal to EPDM" owner: "J. Lee" target: 2026-Q3
+    revised sev: 9 occ: 1 det: 4
+```
+
+`action "模式" / "原因"` 通过引号中的模式和（可选）原因定位失效链；`do:` 是建议措施；`revised sev/occ/det` 重新计算措施后的 RPN 和 AP，使引擎能报告风险降低情况。
+
+---
+
+## 5. 常见错误
+
+```
+# WRONG — rating out of the 1..10 band
+effect "Leak" sev: 11
+
+# WRONG — mode before any item
+mode "orphan mode"
+
+# WRONG — effect before any mode
+item "x"
+  effect "e" sev: 3
+```
+
+评级必须为 1–10 的整数；失效链必须按 `item → mode → effect/cause` 嵌套；乱序关键字将按名称被拒绝。若无控制措施设置探测度，探测度默认静默为 10——当您确实有探测控制时，请在原因或其 `controls` 上声明 `det:`。
+
+---
+
+## 6. 标准合规性
+
+失效链以及严重度/发生度/探测度等级遵循 AIAG-VDA FMEA Handbook（2019）和 IEC 60812。措施优先级实现了已发布的分段**结构**（以严重度为主轴），而非付费墙后的 1000 格完整表格。RPN 通过 `rank: rpn` 仍可用于遗留工作表。
+
+## 7. 路线图
+
+暂缓实现：精确的 AIAG-VDA AP/MSR 决策表、多影响-每原因加权，以及结构/功能树视图。

@@ -1,0 +1,367 @@
+---
+title: 법인 구조 다이어그램
+---
+
+## 법인 구조 다이어그램이란
+
+**법인 구조 다이어그램**은 조직과 사람 사이의 법적, 경제적 관계를 매핑합니다 — 누가 무엇을 소유하는지, 어떤 법인 형태를 통해, 어느 관할권에서. 기업 변호사들은 지주 구조와 자회사 체인을 문서화하는 데 사용합니다. 세무 고문들은 국경 간 IP 라이선싱 흐름과 이전 가격 약정을 보여주기 위해 그립니다. 스타트업 변호사들은 자본 구성 및 이사회 동의를 위해 작성합니다. 유산 계획자들은 증여자-신탁-수익자 약정을 보여주는 데 사용합니다. 이 다이어그램은 모든 M&A 실사 과정에서 가장 먼저 요청되는 문서이며, OECD 이전 가격 마스터 파일의 표준 첨부 자료입니다.
+
+Schematex는 **SEC 규정 S-K 전시물 21**(자회사 공시), **IRS 양식 8832** 법인 분류, **ISO 3166-1** 관할권 코드, **ISO 20275** 법인 형태, 그리고 빅4 세무 메모 관례에서 합성된 실무 관례를 따릅니다. 법인 유형은 서로 다른 형태(법인은 직사각형, LLC는 둥근 직사각형, 신탁은 타원)로 매핑되어 독자가 법인 형태를 한눈에 식별할 수 있습니다. 이 페이지는 파서가 현재 허용하는 내용을 문서화합니다.
+
+<Playground initial={`entity-structure "Acme Global Holdings"
+entity parent "Acme Global, Inc." corp@US [note: "Ultimate Parent"]
+entity ie-holdco "Acme Ireland Holdings" corp@IE
+entity ie-ip "Acme IP Ltd" corp@KY [note: "Holds group IP"]
+entity nl-bv "Acme EU Distribution" llc@NL
+entity sg-apac "Acme APAC Trading" corp@SG
+entity esop "Employee Option Pool" pool
+parent -> ie-holdco : 100%
+ie-holdco -> ie-ip : 100%
+ie-holdco -> nl-bv : 100%
+ie-ip -~-> nl-bv [label: "IP License · royalty"]
+parent -> sg-apac : 100%
+esop -.-> ie-holdco`} height={480} />
+
+---
+
+## 1. 첫 번째 법인 구조
+
+가장 작고 유용한 법인 구조: 두 개의 자회사를 소유한 모회사.
+
+<Playground initial={`entity-structure "Simple holding"
+entity holdco "Holdco LLC" llc@DE
+entity opco "OpCo Inc." corp@DE
+entity sub_uk "UK Sub Ltd." llc@UK
+holdco -> opco : 100%
+holdco -> sub_uk : 100%`} />
+
+네 가지 규칙으로 사용의 80%를 다룰 수 있습니다.
+
+1. `entity-structure`로 시작하고, 선택적으로 따옴표로 묶인 제목을 추가합니다.
+2. 각 법인은 노드입니다: `entity ID "Display Name" type` — 유형이 형태를 결정합니다.
+3. `->` 로 법인을 연결합니다. `: pct`를 추가하여 소유 비율에 레이블을 붙입니다: `parent -> child : 60%`.
+4. 관할권 배지를 표시하려면 유형 뒤에 `@jurisdiction`을 추가합니다: `corp@DE`.
+
+> 주석은 독립된 줄에서 `#`으로 시작해야 합니다.
+
+---
+
+## 2. 법인 유형
+
+법인 유형은 해당 노드에 대해 렌더링되는 형태를 결정합니다. Schematex는 여러 일반적인 별칭을 표준 유형에 매핑합니다.
+
+| 표준 유형 | 허용 별칭 | 렌더링 형태 | 일반적인 용도 |
+|---|---|---|---|
+| `corp` | `corporation`, `inc` | 직사각형 (날카로운 모서리) | C-corp, S-corp, Ltd., SA, AG |
+| `llc` | `llp`, `gmbh`, `bv` | 둥근 직사각형 | LLC, LLP, GmbH, BV |
+| `lp` | `lllp`, `fund` | 노치 직사각형 | LP, LLLP, 투자 펀드 |
+| `trust` | — | 타원 | 가족 신탁, 법정 신탁 |
+| `individual` | `person` | 원 | 창업자, 증여자, 자연인 |
+| `foundation` | `npo` | 오각형 (방패) | 비영리, 자선 재단 |
+| `disregarded` | `branch` | 점선 직사각형 | 무시된 법인, 해외 지점 |
+| `pool` | — | 점선 둥근 직사각형 | 옵션 풀, ESOP, 미발행 주식 |
+| `placeholder` | `tbf` | 점선 직사각형 (흐릿함) | 설립 예정 법인, 인수 대상 |
+
+**법인 문법:**
+
+```
+entity ID "Display Name" type
+entity ID "Display Name" type@JURISDICTION
+entity ID "Display Name" type@JURISDICTION [properties]
+```
+
+**ID 규칙.** 문자로 시작하고 문자, 숫자, 밑줄, 하이픈이 따라옵니다: `[A-Za-z][A-Za-z0-9_-]*`.
+
+<Playground initial={`entity-structure "Entity type shapes"
+entity c1 "Delaware C-Corp" corp@DE
+entity l1 "California LLC" llc@CA
+entity p1 "Cayman Fund LP" lp@KY
+entity t1 "Family Trust" trust@SD
+entity i1 "Jane Smith" individual
+entity f1 "Acme Foundation" foundation
+entity d1 "Irish Branch" disregarded@IE
+entity pool1 "ESOP Pool" pool
+entity tbf1 "Acquisition Target" placeholder
+c1 -> l1 : 100%
+c1 -> p1 : 80%
+c1 -> f1
+i1 -> t1
+t1 -> c1 : 100%`} height={480} />
+
+---
+
+## 3. 노드 속성
+
+`[…]` 내부의 선택적 속성은 렌더링된 노드에 보이는 추가 컨텍스트로 법인에 주석을 답니다.
+
+| 속성 | 문법 | 효과 |
+|---|---|---|
+| `status: new` | `new`, `eliminated`, `modified`, `normal` | 거래 단계 다이어그램을 위한 시각적 배지 |
+| `tax: ccorp` | 따옴표 문자열 | 법인 이름 아래의 세무 분류 레이블 |
+| `role: "Grantor"` | 따옴표 문자열 | 역할 레이블 (개인 및 수탁자용) |
+| `note: "…"` | 따옴표 문자열 | 노드 내부에 표시되는 작은 메모 |
+| `est: "2024-03-15"` | 따옴표 문자열 | 설립 날짜 |
+
+예약 세트(`status`, `tax`, `role`, `note`, `est`)에 없는 모든 키는 커스텀 속성으로 저장됩니다.
+
+```
+entity alice "Alice Chen" individual [role: "Founder & CEO"]
+entity trust1 "Smith Irrevocable Trust" trust@SD [est: "2019-06-01", note: "Spendthrift provisions"]
+entity opco "OpCo, Inc." corp@DE [status: new, tax: ccorp]
+```
+
+---
+
+## 4. 관할권
+
+관할권 배지를 노드에 표시하려면 법인 유형 뒤에 `@CODE`를 추가합니다. 코드는 2~3자리 문자열입니다 — ISO 3166-1 alpha-2 국가 코드와 미국 주 약어 모두 허용됩니다.
+
+```
+entity parent "Parent Corp" corp@US
+entity ie_sub "Ireland Sub" corp@IE
+entity ky_fund "Cayman Fund" lp@KY
+entity de_llc "Delaware LLC" llc@DE
+```
+
+일반 코드: `US` 미국 · `DE` 델라웨어 · `CA` 캘리포니아 · `NY` 뉴욕 · `UK` 영국 · `IE` 아일랜드 · `NL` 네덜란드 · `KY` 케이맨 제도 · `SG` 싱가포르 · `HK` 홍콩 · `JP` 일본 · `BM` 버뮤다 · `VG` 영국령 버진 아일랜드 · `CH` 스위스 · `LU` 룩셈부르크 · `SD` 사우스다코타.
+
+`@DE`는 기본적으로 델라웨어로 해석됩니다(미국 법적 컨텍스트에서 가장 일반적).
+
+### 관할권 클러스터
+
+`jurisdiction CODE "Name" [color: "#hex"]`로 관할권을 선언하면 해당 코드를 공유하는 모든 법인이 다이어그램에서 레이블이 붙은 점선 테두리 클러스터 영역으로 그룹화됩니다.
+
+```
+jurisdiction US "United States" [color: "#3b82f6"]
+jurisdiction IE "Ireland" [color: "#059669"]
+```
+
+법인의 `@CODE`가 선언된 `jurisdiction`과 일치하면 해당 클러스터 내에 자동으로 배치됩니다. `jurisdiction`이 선언되지 않으면 배지는 여전히 나타나지만 클러스터 영역은 그려지지 않습니다.
+
+<Playground initial={`entity-structure "IP holding structure"
+jurisdiction US "United States" [color: "#3b82f6"]
+jurisdiction IE "Ireland" [color: "#059669"]
+jurisdiction KY "Cayman Islands" [color: "#d97706"]
+entity parent "TopCo, Inc." corp@US
+entity ie_hold "Ireland Holdings" corp@IE
+entity ie_ip "IP HoldCo" corp@KY [note: "Group IP"]
+entity ie_op "EU Opco" llc@IE
+parent -> ie_hold : 100%
+ie_hold -> ie_ip : 100%
+ie_hold -> ie_op : 100%
+ie_ip -~-> ie_op [label: "IP License"]`} height={440} />
+
+### 수동 클러스터
+
+`cluster "Label" [members: [id1, id2], color: "#hex"]`를 사용하여 단일 관할권 코드를 공유하지 않는 법인을 그룹화합니다.
+
+```
+cluster "Ireland / Cayman IP" [members: [ie_ip, nl_bv], color: "#059669"]
+```
+
+---
+
+## 5. 소유 엣지
+
+엣지 줄은 연산자로 두 법인 ID를 연결합니다. 연산자가 선 스타일과 시각적 의미를 결정합니다.
+
+| 연산자 | 렌더링 방식 | 의미 |
+|---|---|---|
+| `->` | 실선 화살표 | 지분 소유 (기본) |
+| `==>` | 이중 선 화살표 | 의결권만 있는 지배 (경제적 이해 없음) |
+| `-.->` | 회색 점선 화살표 | 옵션 풀 / 조건부 소유 |
+| `-~->` | 자주색 점선 화살표 | IP 라이선스, 경영 계약, 회사 간 서비스 |
+| `-->` | 녹색 점선 화살표 | 배분 (신탁에서 수익자로) |
+
+**소유 비율:** 대상 ID 뒤에 `: pct`를 추가합니다.
+
+```
+parent -> subsidiary : 60%
+```
+
+**주식 종류:** `[class: "Series A Pref"]`를 추가하여 엣지에 주식 종류 레이블을 붙입니다.
+
+```
+vc -> startup : 22% [class: "Series A Pref"]
+```
+
+**비지분 레이블:** 라이선스 또는 배분 엣지에 설명적인 엣지 텍스트를 위해 `[label: "…"]`를 사용합니다.
+
+```
+ip_co -~-> opco [label: "IP License · royalty"]
+trust --> beneficiary [label: "Discretionary distributions"]
+```
+
+**조합:** `class:`와 `label:`은 함께 사용할 수 있습니다.
+
+```
+fund -> portfolio : 35% [class: "Common", label: "Post-Series B"]
+```
+
+<Playground initial={`entity-structure "Mixed edge types"
+entity holdco "HoldCo LLC" llc@DE
+entity opco "OpCo Inc." corp@DE
+entity ip_co "IP Ltd" corp@KY
+entity fund "Growth Fund" lp@DE
+entity esop "ESOP Pool" pool
+entity trust1 "Family Trust" trust@SD
+entity founder "J. Smith" individual
+# Equity ownership
+holdco -> opco : 100%
+holdco -> ip_co : 100%
+# IP license (non-equity)
+ip_co -~-> opco [label: "Exclusive license"]
+# Option pool (dashed)
+esop -.-> opco : 10%
+# Voting control
+fund ==> holdco
+# Trust distribution
+trust1 --> founder [label: "Income distributions"]
+founder -> trust1 : 100%`} height={500} />
+
+---
+
+## 6. 레이블 및 주석
+
+- **제목:** `entity-structure "Acme Holdings"` — 첫 줄, 따옴표 포함.
+- **법인 표시 이름:** `entity ID "Name" type`의 따옴표 문자열 — 노드 내부에 나타남.
+- **관할권 배지:** 유형 뒤 `@CODE` — 노드 모서리에 표시되는 2~3자리 코드.
+- **노드 속성:** `[note: "…", role: "…", status: new, …]` — 노드 내부의 주석.
+- **엣지 비율:** 대상 ID 뒤 `: pct` — 소유 화살표에 나타남.
+- **엣지 클래스:** `[class: "…"]` — 화살표의 주식 종류 레이블.
+- **엣지 레이블:** `[label: "…"]` — 화살표의 설명 텍스트.
+- **주석:** 줄 시작에 `#`(앞의 공백 이후). 괄호 블록 내부의 인라인 후미 `#` 주석도 제거됩니다.
+
+---
+
+## 7. 예약어 및 이스케이프
+
+**줄 시작 예약어:** `entity-structure`(헤더), `entity`, `jurisdiction`, `cluster`.
+
+**법인 유형 키워드** — 이 문자열들은 법인 유형으로 파싱되며 법인 ID로 사용할 수 없습니다: `corp`, `corporation`, `inc`, `llc`, `llp`, `gmbh`, `bv`, `lp`, `lllp`, `fund`, `trust`, `individual`, `person`, `foundation`, `npo`, `disregarded`, `branch`, `pool`, `placeholder`, `tbf`.
+
+**엣지 연산자 토큰** — ID 내에서 이 시퀀스를 피하십시오: `->`, `==>`, `-.->`, `-~->`, `-->`.
+
+**공백이 있는 문자열**은 표시 이름, 메모, 역할 레이블, 색상 값에서 큰따옴표로 묶어야 합니다.
+
+**관할권 코드**는 소스에서 대소문자를 구분하지 않지만 대문자로 정규화됩니다: `@de`와 `@DE`는 동일합니다.
+
+---
+
+## 8. 흔한 실수
+
+| 작성한 내용 | 파서 오류 | 수정 방법 |
+|---|---|---|
+| `entity acme Acme Inc. corp@DE` (이름 따옴표 없음) | 파싱 실패 — 이름은 따옴표로 묶어야 함 | `entity acme "Acme Inc." corp@DE` |
+| `acme -> sub [50%]` (괄호 안에 비율) | `50%`가 속성 키로 인식되지 않음 | `acme -> sub : 50%` (콜론 + 비율, 괄호 밖에) |
+| `entity acme "Acme" Ltd@DE` | `Ltd`가 인식된 유형 키워드가 아님 | `corp` 또는 `llc` 사용; `Ltd`는 별칭 표에 없음 |
+| `acme -> unknown_id : 100%` | `EntityParseError: Edge references unknown entity "unknown_id"` | 엣지에서 사용하기 전에 모든 법인을 선언하십시오 |
+| `cluster "US entities" [ids: [a, b]]` | `ids:`가 인식되지 않음; 속성이 자동으로 무시됨 | `members: [a, b]` 사용 |
+| `jurisdiction DE "Delaware"` 이후 `entity co "Co" corp@DE` | 클러스터가 `co` 주변에 그려짐 — 올바름. 그러나 미국 컨텍스트의 `@DE`는 독일이 아닌 델라웨어 | `@DE`는 델라웨어용으로 사용, `@DEU`는 유효하지 않음 — 모호성 해결 방법 없음; 의도를 `note:`에 문서화 |
+| `entity x "X" corp [status: pending]` | `pending`은 유효한 상태가 아님 — 속성이 커스텀 속성으로 자동 저장됨 | `new`, `eliminated`, `modified`, 또는 `normal` 사용 |
+
+---
+
+## 9. 문법 (EBNF)
+
+```text
+document        = header (blank | comment | jurisdiction-def | cluster-def | entity-def | edge)*
+
+header          = "entity-structure" ( WS quoted-string )? NEWLINE
+quoted-string   = '"' any-char-but-quote* '"'
+
+jurisdiction-def = "jurisdiction" CODE WS quoted-string ( "[" jur-attrs "]" )? NEWLINE
+jur-attrs        = jur-attr ("," jur-attr)*
+jur-attr         = "color:" quoted-string
+
+cluster-def     = "cluster" WS quoted-string ( "[" cluster-attrs "]" )? NEWLINE
+cluster-attrs   = cluster-attr ("," cluster-attr)*
+cluster-attr    = "members:" "[" id ("," id)* "]"
+                | "color:" quoted-string
+
+entity-def      = "entity" WS id WS quoted-string WS entity-type ( "@" CODE )?
+                  ( "[" entity-attrs "]" )? NEWLINE
+entity-attrs    = entity-attr ("," entity-attr)*
+entity-attr     = "status:" status
+                | "tax:" quoted-string
+                | "role:" quoted-string
+                | "note:" quoted-string
+                | "est:" quoted-string
+                | key ":" quoted-string        # 커스텀 속성
+
+entity-type     = "corp" | "corporation" | "inc"
+                | "llc" | "llp" | "gmbh" | "bv"
+                | "lp" | "lllp" | "fund"
+                | "trust"
+                | "individual" | "person"
+                | "foundation" | "npo"
+                | "disregarded" | "branch"
+                | "pool"
+                | "placeholder" | "tbf"
+
+edge            = id WS op WS id ( ":" WS pct-text )? ( "[" edge-attrs "]" )? NEWLINE
+op              = "->" | "==>" | "-.->" | "-~->" | "-->"
+pct-text        = any text up to "[" or end of line   # 예: "100%" 또는 "V 75% / E 50%"
+
+edge-attrs      = edge-attr ("," edge-attr)*
+edge-attr       = "class:" quoted-string
+                | "label:" quoted-string
+
+status          = "new" | "eliminated" | "modified" | "normal"
+CODE            = [A-Za-z]{2,3}
+id              = [A-Za-z] [A-Za-z0-9_-]*
+comment         = "#" any NEWLINE
+```
+
+권위 있는 소스: `src/diagrams/entity/parser.ts`. 파서와 다를 경우 파서가 우선합니다 — 이슈를 열어주십시오.
+
+---
+
+## 10. 표준 준수
+
+Schematex 법인 구조 다이어그램은 다음의 관례를 합성합니다.
+
+- **SEC 규정 S-K, 항목 601(b)(21)** — 전시물 21 자회사 공시 관례
+- **IRS 양식 8832** — C-corp / 패스스루 / 무시된 법인 분류
+- **ISO 3166-1 alpha-2** — 노드 배지의 관할권 코드
+- **ISO 20275:2017** — 법인 식별자(LEI) 법인 형태 분류
+- **OECD 이전 가격 지침 (2022)** — 국경 간 IP 라이선스 및 로열티 흐름 관례
+- **빅4 세무 메모 관례** (EY / PwC / KPMG / Deloitte) — 국경 간 구조 다이어그램의 사실상 표준
+
+현재 구현된 항목:
+
+- ✅ 서로 다른 형태를 가진 9가지 법인 유형: `corp`, `llc`, `lp`, `trust`, `individual`, `foundation`, `disregarded`, `pool`, `placeholder`
+- ✅ 유형 별칭: `corporation`, `inc`, `llp`, `gmbh`, `bv`, `lllp`, `fund`, `person`, `npo`, `branch`, `tbf`
+- ✅ 5가지 엣지 연산자: `->` (소유), `==>` (의결권), `-.->` (풀), `-~->` (라이선스), `-->` (배분)
+- ✅ 소유 비율 레이블 (`: pct`) 및 주식 종류 (`[class: "…"]`)
+- ✅ 관할권 배지 (`@CODE`) (ISO 3166-1 및 미국 주 코드 포함)
+- ✅ 관할권 클러스터 영역 (`@CODE`로 점선 테두리 그룹화)
+- ✅ 수동 클러스터 (`cluster "…" [members: […]]`)
+- ✅ 노드 속성: `status`, `tax`, `role`, `note`, `est`, 커스텀 키-값 쌍
+- ⏳ V/E 분할 비율 — `V 75% / E 50%`는 `percentage` 문자열에 저장되지만 2줄 레이블 렌더링 미구현
+- ⏳ 거래 단계 차이 렌더링 — `status: new` / `eliminated` / `modified`는 저장되지만 시각적 차이 배지 미렌더링
+- ⏳ 인라인 주식 수 주석 — 비율과 함께 `100 shares Common`
+
+---
+
+## 11. 관련 예시
+
+<RelatedExamples slugs={[
+  'entity-holding-company',
+  'entity-international-tax',
+  'entity-series-a-cap-table',
+]} />
+
+---
+
+## 12. 로드맵
+
+**계획됨 — 아직 파싱 불가.** 오늘 생성된 DSL에서 이것들을 사용하지 마십시오; 파서가 거부하거나 무시합니다.
+
+- **V/E 분할 렌더링** — 단일 엣지에 `V 75% / E 50%`를 의결권 지분과 경제적 지분을 구분하는 2줄 비율 레이블로 표시.
+- **거래 단계 차이 배지** — `status: new`는 녹색 "NEW" 배지를 렌더링하고, `status: eliminated`는 빨간 취소선을 렌더링합니다. 단일 다이어그램에서 M&A 전후 구조 비교에 사용.
+- **주식 수 주석** — `-> sub : 100 shares Common` 비율과 함께 자본 구성 표의 정확한 주식 수를 캡처.
+- **양방향 소유** — 상호 소유(두 법인이 서로를 보유)를 위한 명시적 `<->` 엣지, 혼잡함을 피하기 위한 S-곡선 라우팅.
+- **범례 블록** — 형태에서 법인 유형으로, 연산자에서 관계 유형으로의 매핑을 보여주는 자동 생성 범례.
+
+더 빨리 필요하다면 GitHub 이슈에서 추적하십시오.

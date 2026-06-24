@@ -1,0 +1,197 @@
+---
+title: 功能方塊圖（FBD）
+---
+
+## 關於功能方塊圖
+
+**功能方塊圖（FBD）** 是 **[IEC 61131-3:2013](https://en.wikipedia.org/wiki/IEC_61131-3)** 所定義的五種 PLC 程式語言之一 — 這是工業自動化的國際標準。它是生產程式碼中繪製第二多的 PLC 語言（僅次於階梯圖），在某個程式片段以**資料流**方式閱讀比用電力軌道與階梯繼電器更容易時，它是自然的選擇。AND/OR 邏輯、計時器（TON/TOF/TP）、計數器（CTU/CTD）、比較（EQ/NE/GT/GE/LT/LE）、數學（ADD/SUB/MUL/DIV/MOVE）、邊緣偵測（R\_TRIG/F\_TRIG）、雙穩態閂鎖（SR/RS） — 全部呈現為具有命名連接埠的方塊，從左至右連線。
+
+Schematex 遵循 **IEC 61131-3 §6.4** 視覺慣例以及 **IEC 60617-12** 特殊符號（AND 用 `&`，OR 用 `≥1`，XOR 用 `=1`，NOT/BUF 用 `1`）。導線依資料類型著色（BOOL 黑色、INT 藍色、REAL 橙色、TIME 洋紅色），遵循 TIA Portal 的事實標準慣例。與 **[ladder](/docs/ladder)**（§6.3，基於階梯）和 **[sfc](/docs/sfc)**（§6.5，基於序列）為姊妹語言；三者共同構成 IEC 61131-3 的視覺化部分。
+
+<Playground initial={`
+  fbd "Motor Control"
+
+  var Start: bool
+  var Stop: bool
+  var Latch: bool
+  var MotorOut: bool
+
+  network 0 "Start/stop latch":
+    Latch = OR(Start, AND(Latch, ~Stop))
+
+  network 1 "Drive output":
+    MotorOut = MOVE(Latch)`} height={420} />
+
+---
+
+## 1. 第一個 FBD 網路
+
+最小可用的 FBD 網路：一個方塊、兩個輸入、一個輸出。
+
+```
+fbd
+network 0:
+  Out = AND(A, B)
+```
+
+`A` 和 `B` 自動宣告為 BOOL 輸入（左側端點），`Out` 自動連線至 AND 方塊的 `OUT` 連接埠（右側端點）。方塊位於兩者之間，帶有連接埠存根和標籤。
+
+---
+
+## 2. 變數
+
+在任何網路之前宣告變數。每個變數有名稱、IEC 資料類型，以及可選的初始值。
+
+```
+fbd "Tank Control"
+
+var StartBtn: bool
+var TankLevel: real
+var SetPoint: real = 80.0
+var DwellTimer: timer
+var Pulse: counter
+```
+
+支援的類型：`bool`、`int`、`dint`、`uint`、`udint`、`real`、`lreal`、`time`、`date`、`tod`、`string`、`wstring`、`byte`、`word`、`dword`、`timer`、`counter`。任何其他識別碼均視為使用者自定義的功能方塊類型。
+
+可選的範圍前綴（預設為本地）：`var_input`、`var_output`、`var_in_out`、`var_global`、`var_external`。
+
+---
+
+## 3. 網路
+
+**網路**是一個獨立的資料流片段，在其內部從左至右求值；網路在程式中依掃描順序從上至下求值。
+
+```
+network 0 "Start latch":
+  ...
+
+network 1:
+  ...
+```
+
+編號是可選的 — 若省略，網路會自動編號。標題（引號內）顯示在網路框的左上角。
+
+---
+
+## 4. 方塊呼叫 — 內聯運算式記法
+
+撰寫組合網路最清晰的方式是用單一巢狀運算式：
+
+```
+network 0:
+  Out = OR(A, AND(B, ~C))
+```
+
+解析器建構呼叫樹：外層 OR 在輸入 1 有 `A`，在輸入 2 有 AND 的結果；AND 有 `B` 和取反的 `C`。渲染器從左至右排列它們（輸入在第 0 層，AND 在第 1 層，OR 在第 2 層，輸出在第 3 層）。
+
+`~C` 在輸入連接埠加上**取反氣泡**（小空心圓） — 相當於在該導線上插入一個 NOT 方塊，但更簡潔。
+
+---
+
+## 5. 方塊呼叫 — 實例命名記法
+
+當您需要從其他地方引用方塊的輸出時，給它一個實例標記：
+
+```
+network 0:
+  Pulse = R_TRIG(CLK: Sensor)
+  Count = CTU(CU: Pulse.Q, R: Reset, PV: 100)
+  Done  = GE(IN1: Count.CV, IN2: 100)
+```
+
+`Pulse.Q`、`Count.CV` 引用命名實例的輸出連接埠。實例標記以斜體顯示在方塊標頭上方。
+
+引數清單接受**具名連接埠**（`CU: Pulse.Q`）或**位置**（`CTU(Pulse.Q, Reset, 100)`）— 具名方式推薦用於可讀性，且在跳過連接埠時必須使用。
+
+---
+
+## 6. 內聯常數
+
+輸入連接埠可以直接接受字面值 — 不需要導線：
+
+```
+network 0:
+  Dwell = TON(IN: BottleSensor, PT: T#50ms)
+  Cap   = LIMIT(MN: 0.0, IN: Setpoint, MX: 95.0)
+  Mode  = SEL(G: ManualSwitch, IN0: AutoMode, IN1: ManualMode)
+```
+
+`T#50ms`、`0.0`、`95.0` 以小黃色文字框顯示在其連接埠左側。時間字面值遵循 IEC 61131-3：`T#10ms`、`T#5s`、`T#3m20s`、`T#1h`。布林值為 `true` / `false`（不區分大小寫）。
+
+---
+
+## 7. 標準方塊程式庫
+
+| 類別 | 方塊 |
+|---|---|
+| 布林 | `AND`、`OR`、`NOT`、`NAND`、`NOR`、`XOR`、`XNOR`、`BUF` |
+| 邊緣偵測 | `R_TRIG`、`F_TRIG` |
+| 雙穩態 | `SR`、`RS` |
+| 計時器 | `TON`、`TOF`、`TP` |
+| 計數器 | `CTU`、`CTD` |
+| 數學 | `ADD`、`SUB`、`MUL`、`DIV`、`MOD`、`ABS`、`NEG`、`MOVE` |
+| 比較 | `EQ`、`NE`、`GT`、`GE`、`LT`、`LE` |
+| 選擇 | `SEL`、`MUX`、`MAX`、`MIN`、`LIMIT` |
+
+AND、OR、NAND、NOR、ADD、MUL、MAX、MIN 接受任意數量的輸入（預設 2）。傳遞額外的位置引數或使用 `[inputs: N]` 來擴充。
+
+```
+network 0:
+  All4 = AND(A, B, C, D)
+  Sum  = ADD(X, Y, Z)
+```
+
+---
+
+## 8. 較大範例 — 瓶子計數器
+
+```
+fbd "Bottle Counter"
+
+var ConveyorRunning: bool
+var BottleSensor: bool
+var BatchDone: bool
+var BatchSize: counter
+var DwellTimer: timer
+
+network 0 "Debounce sensor with 50ms dwell":
+  Dwell = TON(IN: BottleSensor, PT: T#50ms)
+
+network 1 "Count one bottle on rising edge of debounced signal":
+  Pulse     = R_TRIG(CLK: Dwell.Q)
+  BatchSize = CTU(CU: Pulse.Q, R: BatchDone, PV: 24)
+
+network 2 "Batch done":
+  BatchDone = MOVE(BatchSize.Q)
+```
+
+三個網路：去彈跳 → 邊緣偵測 → 計數 → 旗標。每個網路是一個 DAG；渲染器透過曼哈頓路徑路由導線。
+
+---
+
+## 9. v0.1 限制
+
+目前引擎實作了大多數團隊日常使用的標準方塊子集。以下功能延後實作，將在後續版本加入：
+
+- **EN/ENO 電力流軌道**（`[en]` 方塊屬性，`[rail: on]` 標頭）— 在網路頂部加入使能軌道，這是 Studio 5000 / TIA Portal 的廠商慣例。
+- **使用者自定義功能方塊**，帶有 `pins_in:` / `pins_out:` 宣告 — 用於自定義馬達控制器、PID 實例等。
+- **頁面連接器**（`connector_out` / `connector_in`），用於跨越多頁的導線。
+- **位元字串方塊**（SHL、SHR、ROL、ROR、AND_BIT、OR_BIT 等）。
+- **擴充數學**（SQRT、LN、LOG、EXP、SIN、COS、TAN、ASIN、ACOS、ATAN）。
+- **ANSI 特殊形狀模式**（`[shape: ansi]`）— `logic` 引擎已為純布林圖表提供此功能。
+- **CTUD** 雙向計數器、**TP** 保持計時器（RTO）。
+
+如果您現在需要這些功能，請開 issue 或使用 `ladder` 引擎取得完整的 IEC 61131-3 LD 子集。
+
+---
+
+## 相關範例
+
+範例庫中的即用場景：
+
+<RelatedExamples slugs={[
+  'fbd-motor-latch',
+  'fbd-bottle-counter',
+  'fbd-tank-setpoint-limiter',
+]} />

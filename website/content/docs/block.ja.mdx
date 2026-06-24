@@ -1,0 +1,306 @@
+---
+title: ブロックダイアグラム
+---
+
+## ブロックダイアグラムについて
+
+**ブロックダイアグラム**（block diagram）は、有向信号線でつながった機能ブロックの集合としてシステムをモデル化します。各ブロックは伝達関数または説明的なラベルで動作を表すコンポーネントを表し、信号は定義された方向にブロックを流れます。制御エンジニアはフィードバックループの設計に、信号処理エンジニアはフィルターチェーンの文書化に、システムエンジニアは複雑なアーキテクチャの分解に使います。主要な視覚要素 — 矩形ブロックと円形の加算点 — は制御システム解析（Ogata、Franklin、Nise）に由来する慣習であり、フィードバックシステムを記述するすべてのデータシートや教科書に使われています。
+
+Schematex は制御システムの教科書で使われる **ラプラス領域の伝達関数の慣習** に従っています：ブロックは伝達関数でラベル付けされ、加算点には明示的な `+`/`−` 極性符号が付き、信号に `discrete` フラグを付けるとサンプルデータパスの破線になります。このページはパーサーが現在受け付ける内容を文書化しています。権威ある参考文献：Ogata (2010) *Modern Control Engineering*; Franklin, Powell & Emami-Naeini (2018) *Feedback Control of Dynamic Systems*。
+
+<Playground initial={`blockdiagram "Audio dynamics processor"
+# Signal chain
+in_s = signal("Input")
+gate_s = signal("gated")
+comp_s = signal("compressed")
+out_s = signal("Output")
+# Blocks
+gate = block("Noise gate") [role: controller]
+comp = block("Compressor") [role: plant]
+eq = block("3-band EQ") [role: generic]
+limiter = block("Limiter") [role: actuator]
+# Level detection side-chain
+detect = block("Level detect") [role: sensor]
+sum_g = sum(+in_s, -detect)
+# Forward path
+in -> in_s
+in_s -> sum_g
+sum_g -> gate
+gate -> gate_s
+gate_s -> comp
+comp -> comp_s
+comp_s -> eq
+eq -> limiter
+limiter -> out_s
+# Side-chain feedback
+limiter -> detect`} height={460} />
+
+---
+
+## 1. 最初のブロックダイアグラム
+
+最小限の実用的なブロックダイアグラム：コントローラー 1 個、プラント 1 個、フィードバックループ 1 個。
+
+<Playground initial={`blockdiagram "Temperature control"
+ctrl = block("PID") [role: controller]
+plant = block("Heater") [role: plant]
+sensor = block("Thermocouple") [role: sensor]
+err = sum(+ref, -measured)
+ref = signal("Setpoint")
+measured = signal("T_measured")
+in -> ref
+ref -> err
+err -> ctrl
+ctrl -> plant
+plant -> measured
+measured -> sensor
+sensor -> err`} />
+
+4 つのルールで使い方の 80% をカバーできます：
+
+1. `blockdiagram` から始め、オプションでクォートしたタイトルを続ける。
+2. 各コンポーネントは `ID = block("label")`、各加算点は `ID = sum(+a, -b)`、各名前付き信号は `ID = signal("label")` で宣言する。
+3. コンポーネントを `->` で接続する。複数のホップを 1 行にチェインできる：`A -> B -> C`。
+4. 接続に末尾のラベルをオプションで付ける：`A -> B ["E(s)"]`。
+
+> コメントは単独の行で `#` から始める必要があります。
+
+---
+
+## 2. ブロック
+
+ブロックはコントローラー、プラント、フィルター、アクチュエーター、センサーなどの任意の機能要素を表します。ラベルは通常、伝達関数または説明的な名前です。
+
+**構文：** `ID = block("label") [role: X]`
+
+| 属性 | 値 | 効果 |
+|---|---|---|
+| `role: plant` | `plant`, `controller`, `sensor`, `actuator`, `reference`, `disturbance`, `generic` | 色分けによる視覚的表示；`generic` がデフォルト |
+| `route: above` | `above`, `below` | フィードバック・フィードフォワードブロックのルーティングヒント |
+
+**ID のルール。** 文字またはアンダースコアで始まり、文字・数字・アンダースコアが続く：`[A-Za-z_]\w*`。
+
+<Playground initial={`blockdiagram "Block roles"
+ref_block = block("r(t)") [role: reference]
+ctrl = block("C(s)") [role: controller]
+act = block("Actuator") [role: actuator]
+plant = block("G(s)") [role: plant]
+sensor = block("H(s)") [role: sensor]
+dist = block("d(t)") [role: disturbance]
+ref_block -> ctrl
+ctrl -> act
+act -> plant
+plant -> sensor
+dist -> plant`} />
+
+---
+
+## 3. 加算点
+
+加算点（summing junction）は複数の信号を 1 つに合成し、各入力に明示的な極性を持ちます。`+`/`−` 記号を付けた円として描画されます — 制御システムの標準記号です。
+
+**構文：** `ID = sum(+a, -b, +c, …)`
+
+- 各入力は符号付き ID：`+x` は信号 `x` を加算、`-y` は信号 `y` を減算。
+- 符号のない入力は正として扱われます。
+- 加算点 ID はブロック ID と同様に接続線のターゲットとして使用します。
+
+<Playground initial={`blockdiagram "Error with disturbance rejection"
+ctrl = block("PI C(s)") [role: controller]
+plant = block("G(s)") [role: plant]
+sensor = block("H(s)") [role: sensor]
+# Main error junction: add reference, subtract feedback
+err = sum(+r, -ym)
+# Disturbance junction: add plant input, add disturbance
+disturb = sum(+ctrl_out, +d)
+r = signal("r (setpoint)")
+ym = signal("y_m")
+ctrl_out = signal("u(t)")
+in -> r
+r -> err
+err -> ctrl
+ctrl -> ctrl_out
+ctrl_out -> disturb
+disturb -> plant
+plant -> ym
+ym -> sensor
+sensor -> err`} />
+
+---
+
+## 4. 信号
+
+信号の宣言は、パーサーがエッジラベルとしてインライン化する名前付き信号ノードを作成します。信号はパススルーです：パーサーが `A -> sig` と `sig -> B` を検出すると、`A` から `B` への単一エッジにマージし、信号の表示テキストでラベルを付けます。
+
+**構文：** `ID = signal("label") [discrete]`
+
+- 連続信号（実線）には `[discrete]` を省略。
+- サンプルデータ信号（破線）には `[discrete]` を追加。
+
+```
+e_sig = signal("E(s)")
+u_sig = signal("U(s)") [discrete]
+```
+
+信号は純粋にラベル付けの便宜機能です — §5 に示すように末尾の属性でエッジに直接ラベルを付けることもできます。
+
+---
+
+## 5. 接続
+
+接続線は `from -> to` です。`->` 演算子は常に有向の矢印付き線を生成します。
+
+**シングルホップ：** `A -> B`
+
+**チェイン：** `A -> B -> C` — `A -> B` と `B -> C` と同等。1 行で書けます。
+
+**信号ラベル付き：** チェインの末尾に `["label text"]` を追加。ラベルは最後のホップにのみ適用されます。
+
+```
+ctrl -> plant ["U(s)"]
+```
+
+**discrete フラグ付き：** `[discrete]` を追加すると最後のホップの矢印が破線になります。
+
+```
+plant -> adc ["y"] [discrete]
+```
+
+**ラベルと discrete の両方：** `[label: "Y(s)", discrete]` を使用（カンマ区切り）。
+
+```
+adc -> ctrl [label: "y[k]", discrete]
+```
+
+<Playground initial={`blockdiagram "Mixed continuous/discrete"
+ctrl = block("Digital PID") [role: controller]
+dac = block("DAC") [role: actuator]
+plant = block("G(s)") [role: plant]
+adc = block("ADC") [role: sensor]
+err = sum(+r, -yk)
+r = signal("r[k]") [discrete]
+yk = signal("y[k]") [discrete]
+in -> r
+r -> err
+err -> ctrl
+ctrl -> dac [label: "u[k]", discrete]
+dac -> plant ["u(t)"]
+plant -> adc ["y(t)"]
+adc -> yk [discrete]
+yk -> err`} />
+
+---
+
+## 6. ラベルとコメント
+
+- **タイトル：** `blockdiagram "My System"` — 1 行目、クォート付き。
+- **ブロックラベル：** `block("…")` 内のクォート付き文字列 — ボックス内に表示。
+- **信号ラベル：** `signal("…")` 内のクォート付き文字列 — マージされたエッジに表示。
+- **エッジラベル：** 接続線末尾の `["text"]` または `[label: "text"]` — その矢印に表示。
+- **コメント：** 行頭（先頭の空白の後）の `#`。行末インラインコメントはサポートされていません。
+
+---
+
+## 7. 予約語とエスケープ
+
+**行頭で予約：** `blockdiagram`（ヘッダー）。
+
+**構造キーワード**（曖昧さを避けるためブロック・信号・加算点の ID として使うことを避ける）：`block`、`signal`、`sum`。
+
+**`in` と `out`** はダイアグラムの外部境界の慣習的な ID です — パーサーは通常の識別子として扱いますが、レンダラーは暗黙のソース・シンクノードとして使用します。`in -> r` と `plant -> out` の使用が慣用的です。
+
+**スペースを含む文字列** は `block("…")` と `signal("…")` のラベルでダブルクォートが必要です。
+
+---
+
+## 8. よくある間違い
+
+| 書いた内容 | パーサーの反応 | 修正 |
+|---|---|---|
+| `G = block(G(s))`（クォートなし） | パース失敗 — ラベルはクォートが必要 | `G = block("G(s)")` |
+| `err = sum(r, -ym)`（`+` なし） | `r` は `+r` として扱われる — 動作するが曖昧 | 明確にするため `sum(+r, -ym)` と書く |
+| `ctrl -> plant, plant -> out`（1 行にカンマ） | `,` はセパレーターではない — パース失敗 | 接続は 1 行に 1 つ、またはチェインを使う：`ctrl -> plant -> out` |
+| `s1 = signal("E(s)") [label: "E"]` | `label:` は signal では無効；接続で使う | signal の宣言から `label:` を削除 |
+| `role: filter` | 不明なロール — 暗黙で `generic` にデフォルト | `plant`、`controller`、`sensor`、`actuator`、`reference`、`disturbance`、`generic` を使う |
+| `A -> B [discrete, label: "e"]` — label を先に書いても失敗 | `[…]` 内の属性の順序は関係ないが、`"text"` の省略記法は唯一の項目の場合のみ有効 | `[label: "e", discrete]` を使う |
+
+---
+
+## 9. 文法（EBNF）
+
+```text
+document       = header (blank | comment | block-def | sum-def | signal-def | connection)*
+
+header         = "blockdiagram" ( WS quoted-string )? NEWLINE
+quoted-string  = '"' any-char-but-quote* '"'
+
+block-def      = id WS "=" WS "block" "(" quoted-string ")" ( "[" block-attrs "]" )? NEWLINE
+block-attrs    = block-attr ("," block-attr)*
+block-attr     = "role:" role | "route:" ("above" | "below")
+role           = "plant" | "controller" | "sensor" | "actuator"
+               | "reference" | "disturbance" | "generic"
+
+sum-def        = id WS "=" WS "sum" "(" sum-inputs ")" NEWLINE
+sum-inputs     = sum-input ("," sum-input)*
+sum-input      = ("+" | "-")? id
+
+signal-def     = id WS "=" WS "signal" "(" quoted-string ")" ( "[" "discrete" "]" )? NEWLINE
+
+connection     = id ("->" id)+ ( "[" conn-attrs "]" )? NEWLINE
+conn-attrs     = quoted-string                          # shorthand: bare label only
+               | conn-attr ("," conn-attr)*
+conn-attr      = "label:" quoted-string | "discrete"
+
+id             = [A-Za-z_] \w*
+comment        = "#" any NEWLINE
+```
+
+権威ある出典：`src/diagrams/blockdiagram/parser.ts`。このドキュメントとパーサーに乖離がある場合、パーサーが正です — 問題を報告してください。
+
+---
+
+## 10. 規格準拠
+
+Schematex のブロックダイアグラムは Ogata (2010) と Franklin ら (2018) の **ラプラス領域の伝達関数** の慣習に従っています — すべての制御システムの教科書に見られるブロック、加算点、有向信号線の記号です。
+
+現時点で実装済みの内容：
+
+- ✅ 伝達関数ラベル付き矩形ブロック
+- ✅ `+`/`−` 極性入力付き円形加算点
+- ✅ 名前付き信号ノード（パススルー、エッジラベルにマージ）
+- ✅ チェイン付き有向接続（`A -> B -> C`）
+- ✅ エッジラベル — 矢印上の信号名
+- ✅ `discrete` フラグ — サンプルデータ信号の破線
+- ✅ ロール注釈（`plant`、`controller`、`sensor`、`actuator`、`reference`、`disturbance`、`generic`）
+- ✅ `route: above | below` フィードバック・フィードフォワード配置のヒント
+- ⏳ 分岐／ピックオフポイント — 1 つの信号が 2 つの宛先にファンアウトする明示的なドット記号
+- ⏳ 境界ボックス — ラベル付き破線サブシステムの囲み
+- ⏳ 双方向矢印 — 双方向信号交換のための `<->`
+- ⏳ バス表記 — 信号ベクトルを表す太線
+
+参考文献：
+
+- Ogata, K. (2010). *Modern Control Engineering*, 5th ed. Prentice Hall.
+- Franklin, G.F., Powell, J.D. & Emami-Naeini, A. (2018). *Feedback Control of Dynamic Systems*, 8th ed. Pearson.
+
+---
+
+## 11. 関連サンプル
+
+<RelatedExamples slugs={[
+  'block-pid-loop',
+]} />
+
+---
+
+## 12. ロードマップ
+
+**計画中 — 現時点ではパース不可。** 今日の生成 DSL では使わないでください；パーサーが拒否または無視します。
+
+- **分岐・ピックオフポイント記号** — 1 つの出力が複数の宛先にファンアウトする場所の明示的な `dot` プリミティブ（現在レンダラーは ID がソースとして複数回使われると自動で分岐を挿入するが、明示的な構文はない）。
+- **サブシステム境界ボックス** — 含まれるブロックを囲む破線矩形を描く `boundary "label" { … }` ブロック。マルチループとサブシステムビューに使用。
+- **双方向接続** — 相互情報交換を持つコンポーネント（バスインターフェースなど）の `A <-> B`。
+- **バス（ベクトル信号）表記** — n 幅の信号バスを示すスラッシュとカウント注釈 `//n` 付きの太線。
+- **ネストされたサブシステム** — 内部が自身ブロックダイアグラムである `block`。レンダリング出力で折りたたみ可能。
+
+これらが早急に必要な場合は GitHub の Issue でトラッキングしてください。

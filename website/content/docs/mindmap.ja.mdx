@@ -1,0 +1,402 @@
+---
+title: マインドマップ
+---
+
+## マインドマップについて
+
+**マインドマップ**は、中心となるトピックを軸にアイデアを放射状に整理し、サブトピックや詳細へと枝分かれさせる図です。Tony Buzan が1970年代にノートやブレインストーミングのツールとして普及させ、以来、教育・プロジェクト計画・ミーティングの進行・ナレッジマネジメントの場で広く活用されています。非線形に枝分かれする構造は、連想的思考の働き方を反映しており、アウトライン作成より速く、自由記述より体系的です。
+
+Schematex のマインドマップは、[markmap](https://markmap.js.org/) にインスパイアされた **Markdown 見出し＋箇条書き** DSL を採用しており、多くの人がすでに慣れ親しんでいる形式です。レイアウトスタイルは2種類あります。古典的な放射状の **map**（全方向に枝を広げる）と、水平ツリーの **logic-right** です。このページでは、現在パーサーが受け付ける構文を説明します。
+
+<Playground initial={`mindmap
+
+# Product Launch Plan
+
+## Market readiness
+### Competitive analysis
+- Direct competitors
+- Pricing benchmarks
+### Target segments
+- SMB customers
+- Enterprise pilot
+
+## Engineering
+### Feature freeze
+- Core API complete
+- Edge cases resolved
+### Infrastructure
+- Load testing
+- CDN configuration
+  - Cache rules
+  - Geo routing
+
+## Go-to-market
+- Landing page live
+- Email campaign
+- Press outreach
+  - TechCrunch pitch
+  - Newsletter sponsors
+
+## Success metrics
+- Week 1 signups
+- Activation rate
+- NPS at day 30`} height={500} />
+
+---
+
+## 1. はじめてのマインドマップ
+
+最小限の実用的なマインドマップ：中心トピックと2つの枝、そのうち1つにサブ項目があります。
+
+<Playground initial={`mindmap
+
+# Team retrospective
+
+## What went well
+- Clear sprint goals
+- Good test coverage
+
+## What to improve
+- Slower PR reviews
+  - Add a review SLA`} />
+
+以下の4つのルールで利用の80%をカバーできます。
+
+1. 最初の行に任意で `mindmap` キーワードを書き、その後に空行を入れます。
+2. ルート（根）は単一の `#` 見出しです。1つだけ使用できます。
+3. `##`、`###`、さらに深い見出しで枝の深さを設定します。見出しレベルがツリーの深さに対応します。
+4. `-`、`*`、`+` の箇条書きを使って、任意の見出しの下にサブ項目を追加します。スペース2つのインデントで深さが1段階増えます。
+
+> コメントはサポートされていません。設定のみに `%%` ディレクティブ（`#` ルートの前）を使用してください。
+
+---
+
+## 2. 見出しと深さ
+
+見出しレベルはツリーの深さに直接対応します。`#` は常にルート（深さ0）です。`##` は深さ1、`###` は深さ2、以下同様に `######`（深さ5）まで続きます。
+
+```
+mindmap
+
+# Root
+## Branch A         ← depth 1
+### Sub-branch      ← depth 2
+#### Leaf           ← depth 3
+## Branch B
+```
+
+見出しはレベルを飛ばすことができます。`##` の後に `####` を置いても有効で、深さ3のノードが生成されます。ツリーの深さはルートからの相対値であり、直前の見出しからの相対値ではありません。
+
+---
+
+## 3. 箇条書き
+
+箇条書きを使うと、見出しの枝をさらに詳細に展開できます。`-`、`*`、`+` のいずれもマーカーとして使用できます。インデント **スペース2つ**ごとに、直前の見出しに対する深さが1段階増えます。
+
+```
+## Risks
+- Technical complexity         ← depth 2 (one level under ## Risks)
+  - Legacy integrations        ← depth 3 (2 spaces indent)
+    - Auth service             ← depth 4 (4 spaces indent)
+- Team availability            ← depth 2 again
+```
+
+<Playground initial={`mindmap
+
+# Book outline
+
+## Chapter 1 — Introduction
+- Why this matters
+  - Historical context
+  - Current state
+- What you will learn
+
+## Chapter 2 — Core concepts
+- Concept A
+  - Definition
+  - Examples
+- Concept B
+  - Definition
+  - Worked example
+    - Step-by-step walkthrough`} height={440} />
+
+---
+
+## 4. インラインフォーマット
+
+ノードラベルは Markdown インラインフォーマットのサブセットをサポートしています。パーサーはパース時にラベルをトークン化し、レンダラーがそのトークンを使ってスタイル付きテキストを出力します。
+
+| 構文 | 効果 | 例 |
+|---|---|---|
+| `**text**` | 太字 | `**Critical path**` |
+| `*text*` | 斜体 | `*optional*` |
+| `` `code` `` | 等幅コード | `` `npm install` `` |
+| `[text](url)` | リンク | `[RFC 7519](https://tools.ietf.org/html/rfc7519)` |
+| `[ ] item` | 未チェックタスク | `[ ] Write tests` |
+| `[x] item` | チェック済みタスク | `[x] Design review` |
+
+チェックボックスはラベルの先頭（他のテキストより前）に置く必要があります。インラインフォーマットはネスト可能です：`**[bold link](url)**`。
+
+<Playground initial={`mindmap
+
+# Sprint 24 review
+
+## Completed
+- [x] **Auth redesign** — JWT + refresh tokens
+- [x] API rate limiting \`per-user\`
+- [x] [Error budget dashboard](https://metrics.example.com)
+
+## In progress
+- [ ] *Mobile push notifications*
+  - [ ] iOS APNs integration
+  - [ ] Android FCM setup
+
+## Blocked
+- [ ] **Payment webhook** — waiting on Stripe team
+  - *Escalated to account manager*`} height={420} />
+
+---
+
+## 5. レイアウトスタイル
+
+`%% style:` ディレクティブでレイアウトアルゴリズムを選択します。`#` ルート見出しの前に置いてください。
+
+| スタイル | レイアウト | 最適用途 |
+|---|---|---|
+| `map`（デフォルト）| 放射状 — 枝が中心から全方向に広がる | ブレインストーミング、コンセプトマップ、自由な探索 |
+| `logic-right` | 水平ツリー — 全枝が右方向に伸びる | 構造化アウトライン、階層、連続的な分解 |
+| `futureswheel` | 同心円状リング — ルートがハブ、各見出しレベルが独自のリングに配置 | フォーサイト、影響分析、構造的ブレインストーミング |
+| `driver` | 水平ツリー — 左側の目標から右に向かってドライバーを経由してアイデアへ流れる | 改善プログラム、目標 → ドライバー → アクション分解 |
+
+```
+%% style: map
+%% style: logic-right
+%% style: futureswheel
+%% style: driver
+```
+
+**`map`**（デフォルト）— 放射状レイアウト、枝が中心から全方向に広がります。ブレインストーミングやコンセプトマップに最適です。
+
+<Playground initial={`mindmap
+
+# Machine learning
+
+## Supervised
+### Classification
+- Decision tree
+- SVM
+- Neural net
+### Regression
+- Linear
+- Gradient boosting
+
+## Unsupervised
+### Clustering
+- K-means
+- DBSCAN
+### Reduction
+- PCA
+- t-SNE
+
+## Reinforcement
+- Q-learning
+- Policy gradient`} height={480} />
+
+**`logic-right`** — 水平ツリー、全枝が右方向に伸びます。構造化アウトラインや連続的な階層に最適です。
+
+<Playground initial={`mindmap
+%% style: logic-right
+
+# Machine learning
+
+## Supervised
+### Classification
+- Decision tree
+- SVM
+- Neural net
+### Regression
+- Linear
+- Gradient boosting
+
+## Unsupervised
+### Clustering
+- K-means
+- DBSCAN
+### Reduction
+- PCA
+- t-SNE
+
+## Reinforcement
+- Q-learning
+- Policy gradient`} height={460} />
+
+**`futureswheel`** — [フューチャーズホイール](https://en.wikipedia.org/wiki/Futures_wheel)（Jerome Glenn、1971/72年）は、結果を考察するための古典的な構造的ブレインストーミング形式です。中心的な事象やトレンドがハブに位置し、一次的な結果が内側のリングに、二次的な結果が次のリングへと続きます。各子要素は親の角度セクター内に収まり、各リングは次数ごとに色分けされるため、読み手は元の事象からの波及の距離を一目で把握できます。深さはリングに対応します。`#` がハブ、`##` が最初のリング（1次）、`###`/見出し下の箇条書きが次のリング（2次）、さらに深いレベルは外側へ続きます。
+
+<Playground initial={`mindmap
+%% style: futureswheel
+
+# Remote work becomes default
+
+## Less commuting
+- Lower carbon emissions
+- Cheaper city living
+
+## Distributed teams
+- Async communication norms
+- Global hiring pools
+
+## Empty offices
+- Commercial real estate slump
+- Repurposed to housing`} height={520} />
+
+**`driver`** — [ドライバーダイアグラム](https://www.ihi.org/resources/tools/driver-diagram)は、IHI（医療改善研究所）の改善モデルから来たプランニングツールです。左から右に向かって整然としたツリーとして読みます。左端に**目標（Aim）**、次の列に**プライマリドライバー**（目標を動かす少数の高レバレッジ領域）、そこからさらに右に**セカンダリドライバー**と具体的な**変化のアイデア**が分岐します。ツリーレベルが構造に対応します。`#` が目標、`##` がプライマリドライバー、各配下の箇条書き/深い見出しがセカンダリドライバーと変化アイデアになります。目標がどのように達成されるかを示したいときに使用してください。
+
+<Playground initial={`mindmap
+%% style: driver
+
+# Reduce 30-day readmissions
+
+## Reliable discharge process
+- Teach-back at bedside
+- Med reconciliation
+
+## Timely follow-up
+- Appointment within 7 days
+- Post-discharge phone call`} height={400} />
+
+---
+
+## 6. ディレクティブ
+
+ディレクティブは `#` ルート見出しの**前**に置く `%%` 行です。図全体をグローバルに設定します。
+
+| ディレクティブ | 値 | デフォルト | 効果 |
+|---|---|---|---|
+| `%% style: …` | `map`、`logic-right`、`futureswheel`、`driver` | `map` | レイアウトアルゴリズム |
+| `%% theme: …` | 任意の文字列 | （なし）| レンダラーに渡されるテーマオーバーライド |
+| `%% maxLabelWidth: …` | 整数 80〜1000 | `240` | ラベルが折り返される前の最大ピクセル幅 |
+
+```
+mindmap
+%% style: logic-right
+%% maxLabelWidth: 320
+
+# Wide label root
+```
+
+<Playground initial={`mindmap
+%% style: logic-right
+%% maxLabelWidth: 200
+
+# Schematex features
+
+## DSL-first design
+- One keyword per diagram
+- AI-friendly syntax
+- CJK support
+
+## Zero dependencies
+- Hand-written parser
+- No D3, no dagre
+- ~KB-level bundle
+
+## Standards-compliant
+- IEEE for logic gates
+- IEC for circuits
+- McGoldrick for genograms`} height={360} />
+
+---
+
+## 7. ラベルとコメント
+
+- **ルートタイトル：** ルート見出し行の `#` 後のテキスト。
+- **枝ラベル：** `##`、`###` 等の後のテキスト。
+- **箇条書きラベル：** `- ` / `* ` / `+ ` マーカーの後のテキスト。
+- **インラインフォーマット：** `**bold**`、`*italic*`、`` `code` ``、`[text](url)`、`[ ]` / `[x]`。
+- **コメント：** 本文内ではサポートされていません。設定には `#` ルートの前の `%%` ディレクティブを使用してください。本文内の `%%` 行はディレクティブとして扱われます（認識されない場合は無視されます）。
+
+---
+
+## 8. 予約語とエスケープ
+
+**ドキュメント先頭の予約語：** `mindmap`（任意のキーワード）と `%%`（ディレクティブプレフィックス）。
+
+**ルートの予約：** 正確に1つの `#` 見出し。2つ目の `#` 見出しはパースエラーになります。
+
+**箇条書きマーカー：** スペースに続く `-`、`*`、`+`。スペースが続かない `*` は、ラベルテキスト内に現れる場合、斜体マーカーとして扱われます。
+
+**インラインの競合：** `[ ]` または `[x] ` で始まるラベルはチェックボックスとしてパースされ、Markdown リンクではありません。`[` で始まるラベルが必要な場合は `\[` と書いてください。バックスラッシュで角括弧をエスケープします。
+
+---
+
+## 9. よくある間違い
+
+| 書いた内容 | パーサーの応答 | 修正方法 |
+|---|---|---|
+| `#` 見出しが2つ | `Error: multiple # center nodes not allowed` | ルートとして `#` 見出しを正確に1つ使用する |
+| `##Branch`（`##` の後にスペースなし）| 見出しと認識されず無視される | 必ずスペースを入れる：`## Branch` |
+| スペース3つでインデントした箇条書き | 深さ = `lastHeadingDepth + 1 + floor(3/2) = lastHeadingDepth + 2`（予期しないレベルが生まれることがある）| スペースの倍数（0、2、4、6…）を使用する |
+| `%% style: radial` | 不明な値は無視され、レイアウトは `map` のまま | `map`、`logic-right`、`futureswheel`、`driver` を使用する |
+| `mindmap` キーワードがドキュメント中間 | 平文行として扱われる（キーワードは最初の行のみ認識される）| `mindmap` を内容の前の1行目に置く |
+| `[ ]text`（角括弧の後にスペースなし）| チェックボックスと認識されず、`[ ]text` のまま描画される | `[ ] text`（閉じ括弧の後にスペースが必要）|
+
+---
+
+## 10. 文法（EBNF）
+
+```text
+document       = ("mindmap" NEWLINE)? (blank | directive)* node*
+
+directive      = "%%" WS key ":" WS value NEWLINE
+key            = "style" | "theme" | "maxlabelwidth"
+
+node           = heading | bullet
+heading        = INDENT? "#"+ SPACE label NEWLINE
+bullet         = SPACE* bullet-marker SPACE label NEWLINE
+bullet-marker  = "-" | "*" | "+"
+
+label          = inline-token*
+inline-token   = checkbox
+               | "**" inline-token* "**"
+               | "*" inline-token* "*"
+               | "`" code-text "`"
+               | "[" inline-token* "]" "(" url ")"
+               | plain-text
+
+checkbox       = "[ ]" SPACE | "[x]" SPACE | "[X]" SPACE
+
+INDENT         = WS*    %% headings may have leading whitespace (ignored)
+SPACE          = " " | "\t"
+```
+
+**深さのルール：**
+- 見出し `#` → 深さ0（ルート）
+- 見出し `##` → 深さ1、`###` → 深さ2、以下同様
+- 先頭スペース `n` 個の箇条書き → 深さ = `lastHeadingDepth + 1 + floor(n / 2)`
+
+権威ある情報源：`src/diagrams/mindmap/parser.ts`。このドキュメントとパーサーが乖離している場合、パーサーが優先されます。Issue を立ててください。
+
+---
+
+## 11. ロードマップ
+
+**計画中 — 現在はパース不可。** 生成する DSL でこれらを使用しないでください。パーサーが拒否または無視します。
+
+- **`%%{init: {…}}%%` ブロック** — テーマ/設定用の Mermaid スタイル init ブロック。現在は `%%` 行ディレクティブのみサポートされています。
+- **自動番号付き枝** — `%% numbering: true` で各枝に 1.、1.1. などのプレフィックスを付ける。
+- **コールアウト/ノートノード** — 任意のノードにフローティング注釈ボックスを付けるための特別なマーカー。
+- **画像ノード** — `![alt](url)` をノードラベル全体としてインライン画像としてレンダリング。
+- **折りたたみ枝** — `%% collapsed: branchId` でサブツリーを折りたたみインジケーターとして描画。
+
+早急に必要な場合は GitHub の Issue でトラッキングしてください。
+
+---
+
+## 関連サンプル
+
+サンプルギャラリーから使用可能なシナリオ：
+
+<RelatedExamples slugs={[
+  'mindmap-product-launch',
+  'mindmap-quarterly-okrs',
+]} />

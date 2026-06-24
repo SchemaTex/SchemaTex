@@ -1,0 +1,106 @@
+---
+title: Diagrama de bucle causal
+description: Diagramas de retroalimentación de dinámica de sistemas — el motor enumera todos los bucles de retroalimentación y los clasifica como reforzadores o balanceadores según su polaridad.
+---
+
+## Acerca de los diagramas de bucle causal
+
+Un **diagrama de bucle causal** (CLD, por sus siglas en inglés) es la herramienta de mapeo central de la **dinámica de sistemas** (Jay Forrester, MIT, años 60): variables conectadas por vínculos causales con signo, donde los *bucles de retroalimentación* — no las flechas individuales — explican el comportamiento de un sistema. Un bucle es **reforzador (R)** cuando amplifica el cambio y **balanceador (B)** cuando lo contrarresta. La referencia canónica es Sterman, *Business Dynamics* (2000).
+
+La ventaja de Schematex es que el motor **encuentra y clasifica los bucles por ti**. Las herramientas de dibujo te permiten colocar flechas; no te dicen qué bucles existen ni si cada uno es reforzador o balanceador. Schematex enumera todos los bucles de retroalimentación elementales (algoritmo de Johnson) y aplica la regla de polaridad par/impar de Sterman — etiquetándolos R1, B1, R2…
+
+<Playground initial={`causalloop "Sales force flywheel"
+var "Training quality"
+"Training quality" -> "Salesperson skills" : + delay
+"Salesperson skills" -> Revenue : +
+Revenue -> "Training quality" : +
+Revenue -> "Hiring rate" : +
+"Hiring rate" -> "Salesperson skills" : -
+loop R1 "Skill flywheel"
+loop B1 "Dilution"`} height={480} />
+
+---
+
+## 1. Tu primer bucle causal
+
+Comienza con la palabra clave `causalloop` (alias `cld`), un título opcional, luego **vínculos con signo**. Las variables se crean automáticamente a partir de los vínculos — raramente necesitas declararlas:
+
+```
+causalloop "Adoption model"
+"Adoption rate" -> Adopters : +
+Adopters -> "Adoption rate" : +
+loop R1 "Word of mouth"
+```
+
+Un vínculo es `FUENTE -> DESTINO : POLARIDAD`. Los nombres de variables con múltiples palabras van entre comillas (`"Adoption rate"`); las palabras simples no necesitan comillas (`Adopters`). Se requiere al menos un vínculo.
+
+---
+
+## 2. Polaridad de vínculo
+
+La polaridad es el signo de la influencia causal y es **obligatoria** en cada vínculo:
+
+```
+A -> B : +          # misma dirección (más A → más B)
+B -> C : -          # dirección opuesta (más B → menos C)
+A -> B : s          # alias para + (mismo)
+B -> C : o          # alias para − (opuesto)
+C -> D : same       # alias para +
+D -> E : opposite   # alias para −
+A -> B +            # los dos puntos son opcionales
+```
+
+`+` / `s` / `same` significan *misma dirección*; `−` / `o` / `opposite` significan *opuesta*. Un vínculo sin polaridad es rechazado.
+
+---
+
+## 3. Retrasos y variables explícitas
+
+```
+"Training quality" -> "Salesperson skills" : + delay   # retraso marcado (marca ∥ en la flecha)
+A -> B : + ~delay                                       # la forma ~delay también funciona
+var "Adoption rate"                                     # fija una variable para que no se cree automáticamente
+loop R1 "Word of mouth"                                 # nombra/anota un bucle
+```
+
+- **`delay`** / **`~delay`** marca un vínculo como retrasado (la marca hash de dinámica de sistemas).
+- **`var "nombre"`** declara una variable explícitamente (fija su etiqueta; no se crea automáticamente).
+- **`loop ID "frase"`** adjunta un nombre legible por humanos a un bucle que detecta el motor.
+
+---
+
+## 4. Bucles de retroalimentación computados
+
+Esta es la diferencia clave. El motor:
+
+1. Construye el **grafo dirigido con signo** (nodos = variables, aristas = vínculos con signo).
+2. Enumera **todos los bucles de retroalimentación elementales** (ciclos dirigidos simples) con el algoritmo de Johnson — de forma determinista, en orden de declaración.
+3. **Clasifica** cada bucle contando los vínculos negativos:
+   - Conteo **par** (incluyendo 0) → **R** (reforzador); producto de signos = +1
+   - Conteo **impar** → **B** (balanceador); producto de signos = −1
+
+Esta es exactamente la regla par/impar de Sterman. Los bucles se numeran en orden de detección por tipo (R1, B1, R2…) y se dibujan con su glifo de rotación `R`/`B` en el centro del bucle. Cada bucle lleva `data-loop` y `data-kind`.
+
+---
+
+## 5. Errores comunes
+
+```
+# INCORRECTO — vínculo sin polaridad
+A -> B
+
+# INCORRECTO — un diagrama sin vínculos
+cld
+```
+
+Cada vínculo necesita una polaridad (`: +` o `: -`); un CLD sin vínculos es rechazado. Recuerda que la polaridad es sobre la *dirección del cambio*, no la conveniencia — un vínculo de "muertes" a "población" sigue siendo `-` (más muertes → menos población) aunque las muertes sean algo malo.
+
+---
+
+## 6. Conformidad con estándares
+
+La notación sigue Sterman, *Business Dynamics* (2000) y la convención estándar de dinámica de sistemas: polaridad de vínculo con signo, marcas hash de retraso, e identificadores de bucle R/B. La regla de vínculo negativo par/impar para la polaridad del bucle es la clasificación del libro de texto, implementada exactamente.
+
+## 7. Hoja de ruta
+
+Diferidos: promoción de stocks y flujos, ponderación de la fuerza del vínculo, y análisis de bucle dominante (eigenvalor de bucle) a lo largo del tiempo.

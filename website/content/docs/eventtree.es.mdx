@@ -1,0 +1,102 @@
+---
+title: Análisis de Árbol de Eventos
+description: Análisis de riesgo inductivo hacia adelante — un evento iniciador se ramifica en éxito/fallo a través de funciones de seguridad hasta llegar a estados finales cuantificados.
+---
+
+## Acerca de los árboles de eventos
+
+Un **árbol de eventos** es el gemelo inductivo hacia adelante del árbol de fallos. Se parte de un **evento iniciador** (una rotura de tubería, un incendio, una demanda sobre un sistema de seguridad) y se pregunta, en orden, si cada **función de seguridad** aguas abajo tiene éxito o falla. Cada camino a través de la escalera de ramificación termina en un **resultado** cuantificado (OK, contenido, daño al núcleo…). Es la herramienta de trabajo del PRA nuclear y el QRA de procesos, estandarizada mediante **IEC 62502** y la práctica WASH-1400 de la era **[NUREG-0492](https://www.nrc.gov/docs/ML1007/ML100780465.pdf)**.
+
+La ventaja de Schematex es la misma que la del árbol de fallos: el motor **calcula la respuesta**, no solo la escalera. Dados la frecuencia iniciadora y la probabilidad de fallo de cada función, deriva la frecuencia de cada camino (`f₀ · ∏ probabilidades-de-rama`), agrega los resultados a lo largo de los caminos, y destaca la **secuencia dominante** en rojo. draw.io dibuja una escalera con bifurcaciones y se detiene; eso es una imagen, no un análisis.
+
+<Playground initial={`eventtree "Loss of coolant accident"
+  initiating LOCA "Large LOCA" freq: 1e-4
+  function A "ECCS injects"          p: 0.001
+  function B "Containment spray"     p: 0.01
+  function C "Containment integrity" p: 0.005
+  outcome s s s -> "OK"
+  outcome s s f -> "Late release"
+  outcome s f * -> "Early release"
+  outcome f * * -> "Core damage"`} height={560} />
+
+---
+
+## 1. Tu primer árbol de eventos
+
+Todo documento comienza con la palabra clave `eventtree` (alias `eta`), un título opcional, y luego una lista plana de declaraciones:
+
+```
+eventtree "Smoke detector demand"
+  initiating FIRE "Fire starts" freq: 0.01
+  function D "Detector actuates" p: 0.02
+  function S "Suppression works" p: 0.05
+  outcome s s -> "Controlled"
+  outcome s f -> "Damage, contained"
+  outcome f * -> "Uncontrolled fire"
+```
+
+- **`initiating ID "etiqueta" freq: N`** — exactamente uno. La frecuencia del desafío, que acepta decimales o notación científica (`freq: 0.01` o `freq: 1e-4`).
+- **`function ID "etiqueta" p: N`** — uno por columna de rama, **declarados de izquierda a derecha en orden de consulta**. `p:` es la probabilidad de **fallo**; el motor deriva la rama de éxito como su complemento `1 − p` (nunca se declaran ambas).
+- **`outcome <patrón> -> "estado final"`** — una hoja realizada por cada resultado.
+
+---
+
+## 2. El patrón de resultado s / f / *
+
+Cada fila `outcome` se lee de izquierda a derecha sobre las columnas de función:
+
+```
+outcome s s s -> "OK"           # todas las funciones tienen éxito
+outcome s s f -> "Late release" # C falla en la última consulta
+outcome s f * -> "Early release"# B falla; C nunca se consulta (podado)
+outcome f * * -> "Core damage"  # A falla; el camino termina inmediatamente
+```
+
+- **`s`** — rama de éxito (rama superior).
+- **`f`** — rama de fallo (rama inferior).
+- **`*`** — podado: el camino no se consulta aquí, corre plano hasta su hoja.
+
+Así es como un árbol de eventos evita ser un árbol 2ⁿ completamente balanceado: una vez que el fallo de una función hace irrelevantes las preguntas posteriores, se escribe `*` y la secuencia termina antes. Dos reglas estrictas: un patrón no puede ser **más largo** que el número de columnas, y **una vez que una columna es podada (`*`), todas las columnas siguientes también deben ser `*`** — un camino que ha terminado no puede reanudar consultas.
+
+---
+
+## 3. Frecuencias de camino calculadas y resultados
+
+Este es el diferenciador. Con las probabilidades de fallo y `freq`, el motor calcula:
+
+- **La frecuencia de cada camino** = `f₀ · ∏ probabilidades-de-rama` a lo largo de sus ramas `s`/`f` (las ramas de éxito contribuyen `1 − p`, las de fallo `p`).
+- **Agregación de resultados**: los resultados con la misma etiqueta de estado final se suman a lo largo de cada camino que los alcanza (cada hoja `"Core damage"` se acumula).
+- **La secuencia dominante** — el camino de mayor frecuencia — recibe el acento rojo reservado, el análogo del árbol de eventos al punto único de fallo del árbol de fallos.
+
+Cada hoja lleva `data-*` (`data-freq`, `data-outcome`) para que los números calculados sean inspeccionables aguas abajo.
+
+---
+
+## 4. Errores comunes
+
+```
+# INCORRECTO — función sin probabilidad de fallo
+function A "ECCS"
+
+# INCORRECTO — consulta después de una columna podada (camino ya terminado)
+outcome * s -> "bad"
+
+# INCORRECTO — más tokens que columnas declaradas
+function A p: 0.1
+outcome s s -> "ok"
+
+# INCORRECTO — evento iniciador sin frecuencia
+initiating LOCA "Large LOCA"
+```
+
+Cada uno se rechaza con un mensaje en texto plano que nombra la línea. Declara `p:` como probabilidad de **fallo** (valor pequeño), proporciona al evento iniciador un `freq:`, mantén los podados al final y la construcción será correcta por diseño.
+
+---
+
+## 5. Conformidad con estándares
+
+La forma sigue la IEC 62502 y la práctica clásica de PRA (WASH-1400 / NUREG): funciones como columnas de encabezado ordenadas, la división binaria éxito/fallo, ramas de éxito derivadas por complemento, y propagación de frecuencia por multiplicación. El tema `monochrome` reproduce el aspecto en blanco y negro del libro de texto; `default` reserva el rojo para la secuencia dominante.
+
+## 6. Hoja de ruta
+
+Aplazado: fragmentos de árbol de fallos vinculados por rama (eventos básicos compartidos), propagación de incertidumbre, y agrupación por categoría de consecuencia.

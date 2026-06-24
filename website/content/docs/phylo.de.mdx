@@ -1,0 +1,357 @@
+---
+title: Phylogenetischer Baum
+---
+
+## Über phylogenetische Bäume
+
+Ein **phylogenetischer Baum** (auch Phylogramm oder Kladogramm genannt) zeigt die erschlossene Evolutionsgeschichte einer Gruppe von Arten, Genen oder Sequenzen. Interne Knoten stellen hypothetische gemeinsame Vorfahren dar; Blätter stellen beobachtete Taxa dar; Astlängen kodieren evolutionäre Distanz oder Divergenzzeit. Evolutionsbiologen, molekulare Ökologen und klinische Mikrobiologen verwenden phylogenetische Bäume, um die Geschichte des Lebens zu rekonstruieren, Pathogenausbrüche zu verfolgen und zu verstehen, wie Genfamilien sich entwickelt haben.
+
+Schematex akzeptiert Bäume im **[Newick-Format](https://phylipweb.github.io/phylip/newicktree.html)** — dem universellen Austauschstandard, der von PAUP\*, IQ-TREE, RAxML, BEAST und praktisch jedem Phylogenetik-Programm verwendet wird — erweitert mit **[NHX-Annotationen](https://home.cc.umanitoba.ca/~psgendb/doc/atv/NHX.pdf)** für Bootstrap-Werte und Kladus-Metadaten. Eine einrückungsbasierte DSL wird ebenfalls für handgeschriebene Bäume unterstützt. Diese Seite dokumentiert, was der Parser heute akzeptiert.
+
+<Playground initial={`phylo "Vertebrate Evolution" [layout: circular, mode: phylogram]
+  newick: "(((Human:0.1,Chimp:0.08,Gorilla:0.12):0.15,(Mouse:0.45,Rat:0.42):0.3):0.05,((Dog:0.35,(Cat:0.30,Tiger:0.32):0.1):0.2,(Whale:0.6,Dolphin:0.55):0.15):0.3,(Salmon:0.5,Zebrafish:0.45):0.4);"
+  clade Primates = (Human, Chimp, Gorilla) [color: "#1E88E5", label: "Primates", highlight: both]
+  clade Rodents = (Mouse, Rat) [color: "#E53935", label: "Rodents", highlight: background]
+  clade Carnivora = (Dog, Cat, Tiger) [color: "#43A047", label: "Carnivora", highlight: both]
+  clade Cetacea = (Whale, Dolphin) [color: "#FB8C00", label: "Cetacea", highlight: background]
+  scale "substitutions/site"`} height={540} />
+
+---
+
+## 1. Ihr erster phylogenetischer Baum
+
+Der kleinste sinnvolle Baum: vier Taxa, zwei Kladen.
+
+<Playground initial={`phylo "Vertebrates"
+  newick: "((Human:0.1,Chimp:0.08):0.03,(Dog:0.35,Cat:0.30):0.2);"`} />
+
+Drei Regeln decken 80 % der Anwendungsfälle ab:
+
+1. Mit `phylo` beginnen, optional gefolgt von einem zitierten Titel und Klammer-Eigenschaften.
+2. Die Baumtopologie im `newick:`-Format bereitstellen — die Standard-Newick-Zeichenkette, zitiert, auf einer Zeile. Das abschließende `;` ist optional.
+3. Optional **Kladus**-Hervorhebungsgruppen und eine **Skala**-Beschriftung unter der Newick-Zeile definieren.
+
+> Kommentare müssen mit `#` in einer eigenen Zeile beginnen. Inline-Trailing-Kommentare werden nicht unterstützt.
+
+---
+
+## 2. Eingabeformate
+
+### 2.1 Newick-Format
+
+Newick ist die primäre Eingabe. Die vollständige Grammatik ist:
+
+```
+(A,B,(C,D));                         # nur Topologie
+(A:0.1,B:0.2,(C:0.3,D:0.4):0.5);    # mit Astlängen
+((A:0.1,B:0.2):0.05[&&NHX:B=98],(C,D):0.08);  # NHX Bootstrap
+('Homo sapiens':0.1,'Mus musculus':0.2);        # zitierte Namen mit Leerzeichen
+```
+
+Astlängen folgen dem Knotennamen nach einem Doppelpunkt. Support-Werte interner Knoten können als einfache Klammern `[95]` oder als NHX `[&&NHX:B=95]` erscheinen.
+
+<Playground initial={`phylo "Newick examples"
+  newick: "((A:0.1,B:0.2):0.05[&&NHX:B=98],(C:0.3,D:0.4):0.08[&&NHX:B=87]);"`} />
+
+**Vom Parser akzeptierte Newick-Regeln:**
+
+| Merkmal | Syntax | Hinweise |
+|---|---|---|
+| Blattname | `A`, `Homo_sapiens` | Keine Leerzeichen — `_` oder Anführungszeichen verwenden |
+| Zitierter Blattname | `'Homo sapiens'` | Einfache Anführungszeichen; `''` ist ein wörtliches Anführungszeichen darin |
+| Astlänge | `:0.035` nach dem Namen | Float; optional |
+| Interner Knotenname | `(A,B)ancestor` | Nach der schließenden `)` |
+| Bootstrap (einfach) | `(A,B)[95]` | Ganzzahl oder Float in Klammern |
+| Bootstrap (NHX) | `(A,B)[&&NHX:B=95]` | `B=`-Feld; andere NHX-Felder werden gespeichert, aber nicht gerendert |
+| Semikolon | `;` am Ende | Optional — Parser entfernt es |
+| Polytomie | `(A,B,C)` | Mehr als 2 Kinder |
+
+### 2.2 Einzugs-DSL
+
+Für handgeschriebene oder kleine Bäume bietet Schematex eine einrückungsbasierte Alternative, die leichter zu lesen und bearbeiten ist als rohes Newick:
+
+<Playground initial={`phylo "Vertebrates (indent DSL)" [mode: phylogram]
+root:
+  :0.03
+    Human: 0.1
+    Chimp: 0.08
+  :0.2
+    Dog: 0.35
+    Cat: 0.30
+scale "substitutions/site"`} />
+
+**Regeln der Einzugs-DSL:**
+
+| Syntax | Bedeutung |
+|---|---|
+| `Name: Länge` | Blattknoten mit Astlänge |
+| `: Länge` | Unbenannter interner Knoten mit Astlänge |
+| `Name` | Blattknoten, ohne Astlänge (Kladogramm) |
+| `Name [N]` | Knoten mit Support-Wert N |
+| Tieferer Einzug | Kind des Knotens darüber mit geringerem Einzug |
+| `#`-Zeile | Kommentar, ignoriert |
+
+Die erste Zeile, die mit `:` endet und keine Leerzeichen hat, löst den Einzugsbaum-Modus aus (z. B. `root:`). Der Name vor dem Doppelpunkt wird zur Wurzelbeschriftung; alle eingerückten Zeilen darunter werden zu seinen Kindern.
+
+---
+
+## 3. Layout
+
+Das Layout wird in den Header-Klammern gesetzt: `phylo "Titel" [layout: rectangular]`.
+
+| Layout | Wert | Beschreibung |
+|---|---|---|
+| Rechteckig | `rectangular` | Standard. L-förmige Äste; Wurzel links, Blätter rechts |
+| Geneigt | `slanted` | Diagonale Linien von Eltern zu Kindern; kompakter |
+| Kreisförmig | `circular` | Wurzel im Zentrum, Blätter um den Umfang |
+| Ohne Wurzel | `unrooted` | Gleichwinkeliger Radial; betont Distanz, nicht Abstammung |
+
+`[unrooted]` als nacktes Flag ist äquivalent zu `[layout: unrooted]`.
+
+**Kreisförmig** — Wurzel im Zentrum, Blätter fächern nach außen. Am visuell beeindruckendsten für Bäume mit vielen Taxa und Kladus-Hervorhebungen.
+
+<Playground initial={`phylo "Vertebrates — circular" [layout: circular]
+  newick: "((Human:0.1,Chimp:0.08,Gorilla:0.12):0.15,(Dog:0.35,Cat:0.30,Wolf:0.32):0.2,(Salmon:0.5,Zebrafish:0.45):0.3);"
+  clade Primates = (Human, Chimp, Gorilla) [color: "#1E88E5", label: "Primates", highlight: both]
+  clade Carnivora = (Dog, Cat, Wolf) [color: "#E53935", label: "Carnivora", highlight: both]`} height={440} />
+
+**Rechteckig** — L-förmige Äste; Wurzel links, Blätter rechts. Die klassische Phylogramm-Form für veröffentlichte Abbildungen.
+
+<Playground initial={`phylo "Bacterial Diversity" [layout: rectangular, mode: phylogram]
+  newick: "((((Ecoli:0.1,Salmonella:0.12):0.05[&&NHX:B=98],Vibrio:0.2):0.08,((Bacillus:0.15,Staph:0.18):0.06[&&NHX:B=92],Listeria:0.22):0.1):0.15,((Myco_tb:0.3,Myco_leprae:0.28):0.12[&&NHX:B=100],(Strepto:0.25,Lactobacillus:0.2):0.08):0.2);"
+  clade Gamma = (Ecoli, Salmonella, Vibrio) [color: "#1E88E5", label: "γ-Proteobacteria"]
+  clade Firmi = (Bacillus, Staph, Listeria) [color: "#E53935", label: "Firmicutes"]
+  scale "substitutions/site"`} height={480} />
+
+**Geneigt** — diagonale Linien von Eltern zu Kindern; kompakter als rechteckig, gleiche Links-nach-Rechts-Leserichtung.
+
+<Playground initial={`phylo "Vertebrates — slanted" [layout: slanted]
+  newick: "((Human:0.1,Chimp:0.08,Gorilla:0.12):0.15,(Dog:0.35,Cat:0.30,Wolf:0.32):0.2,(Salmon:0.5,Zebrafish:0.45):0.3);"
+  clade Primates = (Human, Chimp, Gorilla) [color: "#1E88E5", label: "Primates"]
+  clade Carnivora = (Dog, Cat, Wolf) [color: "#E53935", label: "Carnivora"]
+  scale "substitutions/site"`} height={360} />
+
+**Ohne Wurzel** — gleichwinkeliges radiales Layout; betont die Wurzel weniger, betont die paarweise Distanz zwischen allen Taxa.
+
+<Playground initial={`phylo "Vertebrates — unrooted" [unrooted]
+  newick: "((Human:0.1,Chimp:0.08,Gorilla:0.12):0.15,(Dog:0.35,Cat:0.30,Wolf:0.32):0.2,(Salmon:0.5,Zebrafish:0.45):0.3);"
+  clade Primates = (Human, Chimp, Gorilla) [color: "#1E88E5", label: "Primates"]
+  clade Carnivora = (Dog, Cat, Wolf) [color: "#E53935", label: "Carnivora"]`} height={400} />
+
+---
+
+## 4. Modus
+
+Mit `[mode: …]` im Header (oder in einer `style [mode: …]`-Zeile) gesetzt.
+
+| Modus | Wert | Bedeutung der Astlänge |
+|---|---|---|
+| Phylogramm | `phylogram` | Standard. Proportional zur evolutionären Distanz (Substitutionen/Stelle) |
+| Kladogramm | `cladogram` | Ignoriert — Blätter ausgerichtet; nur Topologie zählt |
+| Chronogramm | `chronogram` | Proportional zur Divergenzzeit; alle Blätter richten sich an "Gegenwart" aus |
+| Dendrogramm | `dendrogram` | Astlänge ist **Zusammenführungshöhe** — der Abstand, bei dem zwei Cluster zusammengeführt werden |
+
+Chronogramm erfordert Astlängen in Zeiteinheiten plus `[mrsd: "YYYY"]` (jüngstes Probenahmerdatum) im Header, damit der Renderer Blätter an der Gegenwart ausrichten kann.
+
+```
+phylo "SARS-CoV-2 variants" [mode: chronogram, mrsd: "2023"]
+  newick: "((Alpha:0.5,Delta:0.4):0.3,Omicron:0.8);"
+  scale "years"
+```
+
+**Dendrogramm** — die Standardausgabe hierarchischer agglomerativer Clusterung, keine Evolution. Jeder interne Knoten wird an seiner **Zusammenführungshöhe** (der kophenethischen Distanz, bei der seine beiden Kind-Cluster fusionieren) platziert, alle Blätter richten sich auf einer gemeinsamen Basislinie aus, und die Äste sind rechteckige Ellenbogen-Verbinder. Eine Höhenachse wird gezeichnet, damit Sie den Abstand ablesen können, bei dem zwei beliebige Blätter zuerst einen Cluster teilen. Verwenden Sie diesen Modus, wenn derselbe Newick-/Einzugsbaum ein Clustering-Ergebnis beschreibt — Genexpressions-Cluster, Probenähnlichkeit, Umfrageantwortgruppen — und keine Phylogenie.
+
+Fügen Sie eine `cut <Wert>`-Zeile hinzu, um den Baum bei einer gewählten Höhe zu schneiden: Jeder Teilbaum, dessen Zusammenführungshöhe unter dem Schwellenwert liegt, wird zu einem flachen Cluster, jeder mit einer eigenen Farbe, und eine gestrichelte Schwellenwertlinie wird quer durch den Baum bei dieser Höhe gezeichnet. Dies ist das Dendrogramm-Äquivalent von `fcluster` in scipy — ein kontinuierlicher Baum in eine diskrete Menge von Gruppen umgewandelt.
+
+<Playground initial={`phylo "Gene expression clusters" [mode: dendrogram]
+  newick: "(((A:1,B:1):2,C:3):2,(D:2,E:2):3);"
+  cut 4
+  scale "cluster distance"`} />
+
+`cut` weglassen, um das bloße Dendrogramm ohne Flat-Cluster-Färbung zu zeigen:
+
+<Playground initial={`phylo "Sample clustering" [mode: dendrogram]
+  newick: "(((A:1,B:1):2,C:3):2,(D:2,E:2):3);"
+  scale "cluster distance"`} />
+
+---
+
+## 5. Kladus-Hervorhebung
+
+Eine `clade`-Zeile markiert eine monophyletische Gruppe mit einer Farbe, einer optionalen Beschriftung und einem optionalen Hervorhebungsmodus.
+
+```
+clade ID = (member1, member2, ...) [color: "#hex", label: "text", highlight: mode]
+```
+
+| Eigenschaft | Werte | Effekt |
+|---|---|---|
+| `color:` | Hex-Zeichenkette z. B. `"#1E88E5"` | Ast- und/oder Hintergrundfarbe |
+| `label:` | zitierte Zeichenkette | Kladus-Beschriftung am rechten Rand angezeigt |
+| `highlight:` | `branch`, `background`, `both` | `branch` färbt Linien; `background` schattiert den Bereich; `both` macht beides |
+
+Mitglieder sind Blatt-(Blatt-)IDs aus der Newick-Zeichenkette. Der Renderer berechnet den MRCA der aufgelisteten Blätter und hebt den gesamten Teilbaum hervor, der dort verwurzelt ist.
+
+<Playground initial={`phylo "Mammal clades" [layout: rectangular]
+  newick: "(((Human:0.1,Chimp:0.08,Gorilla:0.12):0.15,Mouse:0.45):0.05,(Dog:0.35,(Cat:0.30,Tiger:0.32):0.1):0.2);"
+  clade Primates = (Human, Chimp, Gorilla) [color: "#1E88E5", label: "Primates", highlight: both]
+  clade Carnivora = (Dog, Cat, Tiger) [color: "#E53935", label: "Carnivora", highlight: branch]`} />
+
+---
+
+## 6. Skalierungsbalken und Außengruppe
+
+**Skalierungsbalken:** `scale "Beschriftung"` — fügt einen Balken am unteren Rand hinzu. Die Beschriftung beschreibt die Einheit (z. B. `"substitutions/site"`, `"Mya"`). Im Kladogramm-Modus weglassen, wo Astlängen keine Bedeutung haben.
+
+**Außengruppe:** `outgroup: taxonId` — zeichnet die Außengruppe zur Dokumentation auf; der Renderer kann es verwenden, um das Außengruppen-Taxon visuell zu markieren.
+
+```
+phylo "Vertebrates"
+  newick: "((Human:0.1,Chimp:0.08):0.03,Lamprey:0.8);"
+  outgroup: Lamprey
+  scale "substitutions/site"
+```
+
+---
+
+## 7. Header-Eigenschaften-Referenz
+
+Alle Optionen kommen innerhalb von `[…]` in der `phylo`-Header-Zeile oder in einer `style […]`-Zeile irgendwo im Körper.
+
+| Eigenschaft | Werte | Standard | Effekt |
+|---|---|---|---|
+| `layout:` | `rectangular`, `slanted`, `circular`, `unrooted` | `rectangular` | Baum-Layout |
+| `mode:` | `phylogram`, `cladogram`, `chronogram`, `dendrogram` | `phylogram` | Astlängen-Semantik |
+| `unrooted` | (Flag) | — | Äquivalent zu `layout: unrooted` |
+| `branch-width:` | Zahl | `1.5` | Strichbreite der Äste |
+| `openAngle:` | Zahl (Grad) | `0` | Fächerlücke für kreisförmiges Layout (0 = volles 360°) |
+| `mrsd:` | zitierte Jahrzeichenkette | — | Jüngstes Probenahmerdatum für Chronogramme |
+
+---
+
+## 8. Bezeichnungen & Kommentare
+
+- **Titel:** `phylo "Tree of Life"` — nur in der ersten Zeile.
+- **Skalierungsbeschriftung:** `scale "substitutions/site"` — einmal pro Dokument.
+- **Kladus-Beschriftung:** `[label: "Primates"]` innerhalb einer `clade`-Zeile.
+- **Kommentare:** `#` am Anfang einer Zeile (nach führendem Leerzeichen). Inline-Trailing-Kommentare werden nicht unterstützt.
+
+---
+
+## 9. Häufige Fehler
+
+| Sie schrieben | Parser sagt | Behebung |
+|---|---|---|
+| `newick: (A,B,C);` (ohne Anführungszeichen) | `PhyloParseError: Phylo document must start with 'phylo'` | Newick-Zeichenkette in Anführungszeichen setzen: `newick: "(A,B,C);"` |
+| Blattname mit Leerzeichen: `Homo sapiens:0.1` | Als `Homo` geparst — Leerzeichen beendet einen nicht zitierten Namen | Unterstrich (`Homo_sapiens`) oder einfache Anführungszeichen (`'Homo sapiens'`) verwenden |
+| Blatt-ID in `clade` stimmt nicht mit Newick-Namen überein | Kladus hat stillschweigend 0 Mitglieder; keine Hervorhebung | Namen genau so kopieren, wie sie in der Newick-Zeichenkette erscheinen |
+| `clade X = (A, B)` ohne `newick:` oder Einzugsbaum | `PhyloParseError: No tree definition found` | Eine `newick:`-Zeile oder einen Einzugsbaum-Block hinzufügen |
+| `mode: chronogram` ohne Astlängen | Renderer behandelt alle Längen als 0; Blätter überlappen an der Wurzel | `:Länge` zu jeder Kante in der Newick-Zeichenkette hinzufügen |
+| `root:`-Zeile nicht erkannt | Wenn die `root:`-Zeile ein Leerzeichen im Namen hat (z. B. `My root:`), wird der Einzugsbaum nicht ausgelöst | Einwortiges Wurzel-Label oder `root:` verwenden |
+| Newick mit internen Knotennamen: `(A,B)ancestor:0.5` | Wird korrekt geparst — `ancestor` ist das Label des internen Knotens | Unterstützt; interne Namen erscheinen auf internen Knoten |
+
+---
+
+## 10. Grammatik (EBNF)
+
+```text
+document        = header (blank | comment | newick-line | scale-line
+                    | outgroup-line | clade-line | style-line | cut-line | indent-line)*
+
+header          = "phylo" ( WS quoted-string )? ( WS "[" props "]" )? NEWLINE
+quoted-string   = '"' any-char-but-quote* '"'
+
+newick-line     = "newick:" WS quoted-newick NEWLINE
+scale-line      = "scale" ( WS quoted-string )? NEWLINE
+outgroup-line   = "outgroup:" WS id NEWLINE
+cut-line        = "cut" WS number NEWLINE       // Dendrogramm-Modus: Flat-Cluster-Schwellenwerthöhe
+clade-line      = "clade" WS id WS "=" WS "(" id ("," id)* ")"
+                    ( WS "[" clade-props "]" )? NEWLINE
+style-line      = "style" WS "[" props "]" NEWLINE
+
+// Einzugsbaum — ausgelöst durch eine Zeile, die mit ":" endet und keine Leerzeichen hat
+indent-tree     = root-line indent-node*
+root-line       = id ":" NEWLINE
+indent-node     = INDENT ( id ":" length | ":" length | id ) ( WS "[" number "]" )? NEWLINE
+
+props           = prop ("," prop)*
+prop            = "layout:" layout-value
+                | "mode:" mode-value
+                | "unrooted"
+                | "branch-width:" number
+                | "openAngle:" number
+                | "mrsd:" quoted-string
+
+clade-props     = clade-prop ("," clade-prop)*
+clade-prop      = "color:" quoted-string
+                | "label:" quoted-string
+                | "highlight:" ( "branch" | "background" | "both" )
+
+layout-value    = "rectangular" | "slanted" | "circular" | "unrooted"
+mode-value      = "phylogram" | "cladogram" | "chronogram" | "dendrogram"
+
+// Newick-Grammatik (eingebettet, separat geparst)
+newick          = subtree ";"?
+subtree         = leaf | internal
+internal        = "(" subtree ("," subtree)* ")" name? nhx? length?
+leaf            = name nhx? length?
+name            = unquoted-name | "'" single-quoted "'")
+length          = ":" number
+nhx             = "[" number "]"                     // einfacher Bootstrap
+                | "[&&NHX:" nhx-pair (":" nhx-pair)* "]"
+nhx-pair        = key "=" value
+
+id              = [a-zA-Z] [a-zA-Z0-9_-]*
+number          = /[+-]?[0-9]+(\.[0-9]+)?([eE][+-]?[0-9]+)?/
+comment         = INDENT "#" any NEWLINE
+```
+
+Maßgebliche Quelle: `src/diagrams/phylo/parser.ts`. Falls dies vom Parser abweicht, gewinnt der Parser — bitte öffnen Sie ein Issue.
+
+---
+
+## 11. Normkonformität
+
+Schematex-phylogenetische Bäume folgen der **[Newick-Format-Spezifikation](https://phylipweb.github.io/phylip/newicktree.html)** (wie im PHYLIP-Paket dokumentiert) für die Kern-Baum-Serialisierung und der **[NHX (New Hampshire Extended)](https://home.cc.umanitoba.ca/~psgendb/doc/atv/NHX.pdf)**-Konvention für Bootstrap-Support-Werte. Das `B=`-Feld in NHX-Klammern ist heute das einzige NHX-Feld, das visuell gerendert wird; alle anderen Felder werden geparst und gespeichert, aber nicht angezeigt.
+
+Was heute implementiert ist:
+
+- ✅ Newick-Topologie, Astlängen, zitierte Namen, Polytomien
+- ✅ Bootstrap-Werte — einfaches `[95]` und NHX `[&&NHX:B=95]`
+- ✅ Rechteckige, geneigte, kreisförmige und wurzellose Layouts
+- ✅ Phylogramm-, Kladogramm- und Chronogramm-Modi
+- ✅ Kladus-Hervorhebung (Astfarbe, Hintergrundschattierung, beides)
+- ✅ Skalierungsbalken
+- ✅ Einzugs-DSL-Alternative
+- ⏳ Mehrbaumdokumente (Wald) — siehe §12
+- ⏳ Zeitkalibrierte Achse für Chronogramme (geologische Skala)
+- ⏳ Icons oder Bilder pro Blatt
+- ⏳ NHX-Felder jenseits von `B=` (Spezies, Taxonomie, Duplikationsereignisse)
+
+Referenzen:
+
+- Felsenstein, J. (1986). The Newick tree format. PHYLIP documentation.
+- Zmasek, C.M. & Eddy, S.R. (2001). ATV: Display and manipulation of annotated phylogenetic trees. *Bioinformatics*, 17(4), 383–384. (NHX-Spezifikation)
+- Felsenstein, J. (2004). *Inferring Phylogenies.* Sinauer Associates.
+
+---
+
+## 12. Verwandte Beispiele
+
+<RelatedExamples slugs={[
+  'phylo-bacterial-diversity',
+]} />
+
+---
+
+## 13. Roadmap
+
+**Geplant — noch nicht parsebar.** Verwenden Sie diese heute nicht in generiertem DSL; der Parser wird sie ablehnen oder ignorieren.
+
+- **Mehrbaumdokumente** — eine `phylo`-Datei mit mehr als einem `newick:`-Block (z. B. Genbäume vs. Artbaum).
+- **Geologische Zeitachse für Chronogramme** — eine epochenbeschriftete X-Achse (Känozoikum / Mesozoikum usw.) anstelle einer einfachen numerischen Skala.
+- **Metadaten pro Blatt** — Merkmale oder farbige Markierungen an einzelnen Blättern anhängen, ohne einen vollständigen Kladus zu deklarieren (z. B. `tip Ecoli [color: "#F00", shape: star]`).
+- **NHX-Felder jenseits von Bootstrap** — Rendern von Spezies (`S=`), Duplikation (`D=`) und Transferereignissen (`Tr=`) als Astsymbole.
+- **Tangelgramm** — zwei Bäume nebeneinander dargestellt mit verbindenden Linien, die entsprechende Blätter verknüpfen.
+
+Verfolgen Sie die GitHub-Issues, wenn Sie eines davon früher benötigen.

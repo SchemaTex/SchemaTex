@@ -1,0 +1,349 @@
+---
+title: 系谱图
+---
+
+## 关于系谱图
+
+**系谱图**是临床遗传学中使用的标准化图表，用于追踪一种或少数几种相关遗传病在家族多代间的传递情况。与家谱图不同，系谱图纯粹是结构性的：谁受到影响、谁是携带者、谁已经接受检测、谁是先证者。遗传咨询师、临床遗传学家和转诊医生通过系谱图来判断遗传模式、复发风险以及家族中其他哪些人应该接受检测。
+
+Schematex 遵循**[Bennett et al. (2022) NSGC 建议](https://onlinelibrary.wiley.com/doi/10.1002/jgc4.1621)**——美国国家遗传咨询协会的最新修订版，取代了 1995 年和 2008 年的版本。背景知识请参考[维基百科：系谱图](https://en.wikipedia.org/wiki/Pedigree_chart)。本页记录了解析器目前接受的内容。
+
+<Playground initial={`pedigree "BRCA1 — Hereditary Breast/Ovarian Cancer"
+  I-1 [male, unaffected]
+  I-2 [female, affected, deceased]
+  I-1 -- I-2
+    II-1 [female, affected]
+    II-2 [male, unaffected]
+    II-3 [female, carrier]
+  II-1 -- II-4 [male, unaffected]
+    III-1 [female, affected, proband]
+    III-2 [male, unaffected]
+    III-3 [female, presymptomatic]
+  II-3 -- II-6 [male, unaffected]
+    III-6 [female, carrier]
+    III-7 [male, unaffected]`} height={520} />
+
+---
+
+## 1. 第一张系谱图
+
+最小的临床可用系谱图：两位父母和他们的受影响子女。
+
+<Playground initial={`pedigree
+  I-1 [male, carrier]
+  I-2 [female, carrier]
+  I-1 -- I-2
+    II-1 [male, affected, proband]
+    II-2 [female, unaffected]`} />
+
+四条规则涵盖了 80% 的使用场景：
+
+1. 以关键字 `pedigree` 开头，后面可选择性加上引号标题。
+2. 每个人独占一行声明：`id [属性]`。按惯例，ID 格式为 `I-1`、`II-3` 等——罗马数字代系、连字符、代内位置。
+3. 用**伴侣运算符**连接两个人——`--`（配偶）、`==`（近亲结婚）、`-/-`（分居）、`~`（无子女）。见第 4 节。
+4. 在伴侣行下方**缩进**以添加他们的子女。任何更深的缩进均可；惯例使用两个空格。
+
+> 注释必须独占一行，以 `#`、`//` 或 Mermaid 风格的 `%%` 开头。不支持行尾内联注释。
+
+---
+
+## 2. 个人
+
+个人行格式为 `id [attr1, attr2, …]`。属性以逗号分隔，顺序无关，全部可选。
+
+**ID 规则。** 必须符合 `[a-zA-Z][a-zA-Z0-9_-]*`。ID 在内部不区分大小写，但保留原始大小写作为显示标签（可用 `label:"…"` 覆盖）。
+
+**解析器目前接受的属性：**
+
+| 属性 | 值 | 效果 |
+|---|---|---|
+| 性别 | `male`、`female`、`unknown`、`amab`、`afab`、`uaab` | 形状：方形、圆形、菱形（见第 3 节） |
+| 遗传状态 | `unaffected`、`affected`、`carrier`、`carrier-x`、`obligate-carrier`、`presymptomatic` | 填充/内部标记（见第 3 节） |
+| 标记 | `proband`、`consultand`、`evaluated` | 箭头 + 字母注释（见第 3.3 节） |
+| 生命状态 | `deceased`、`stillborn`、`pregnancy`、`sab`、`tab`、`ectopic` | 视觉修饰符 |
+| 出生年份 | 4 位数字，如 `1958` | 显示在形状下方 |
+| `label:"…"` | 任意引号字符串 | 覆盖显示标签 |
+| `affected: trait1+trait2` | 见第 5 节 | 多性状象限填充 |
+
+<Playground initial={`pedigree
+  I-1 [male, 1942, deceased]
+  I-2 [female, 1945, affected, deceased]
+  II-1 [female, affected, proband, label: "Jane (42)"]
+  II-2 [male, evaluated]
+  II-3 [female, presymptomatic]`} />
+
+---
+
+## 3. 形状、状态与标记
+
+### 3.1 形状（Bennett 2022）
+
+| 视觉 | 性别值 | 含义 |
+|---|---|---|
+| ☐ 方形 | `male` 或 `amab` | 出生时指定为男性 |
+| ○ 圆形 | `female` 或 `afab` | 出生时指定为女性 |
+| ◇ 菱形 | `unknown`、`uaab` 或省略 | 未知 / DSD / 未披露 / 宫内 |
+
+Bennett 2022 正式确认方形和圆形代表**出生时指定性别**，而非性别认同。如果性别认同不同，请在标签中记录（`[female, label: "跨性别男性 (AFAB)"]`）——不要更改形状。
+
+### 3.2 遗传状态（填充）
+
+| 状态 | 含义 |
+|---|---|
+| （默认，无状态标记） | 未受影响——空心形状 |
+| `unaffected` | 明确未受影响 |
+| `affected` | 完全填充的形状 |
+| `carrier` | 半填充——常染色体携带者 |
+| `carrier-x` | 中心点——X 连锁携带者女性 |
+| `obligate-carrier` | 中心点——从系谱结构推断 |
+| `presymptomatic` | 形状中央竖线——检测阳性，尚无临床症状 |
+
+<Playground initial={`pedigree
+  I-1 [male, unaffected]
+  I-2 [female, affected]
+  I-3 [female, carrier]
+  I-4 [female, carrier-x]
+  I-5 [male, obligate-carrier]
+  I-6 [female, presymptomatic]`} />
+
+### 3.3 标记
+
+| 标记 | 含义 |
+|---|---|
+| `proband` | 箭头 + "P"——引发转诊的先证者 |
+| `consultand` | 箭头 + "C"——寻求遗传咨询的人 |
+| `evaluated` | "E"——已评估但无阳性发现记录 |
+
+### 3.4 生命状态
+
+| 值 | 含义 |
+|---|---|
+| `deceased` | 形状上的斜线 |
+| `stillborn` | 小形状 + "SB" 标签 |
+| `pregnancy` | 形状 + "P" 标签；性别未知则为菱形 |
+| `sab` | 小三角形——自然流产 |
+| `tab` | 带横线的小三角形——人工终止妊娠 |
+| `ectopic` | 小三角形 + "ECT" 标签 |
+
+多个标记可组合使用：`[female, affected, deceased]`、`[male, sab]`、`[unknown, pregnancy, presymptomatic]`。
+
+---
+
+## 4. 伴侣与子女
+
+### 4.1 伴侣运算符
+
+解析器按顺序尝试这些运算符，第一个匹配的优先——因此 `-/-` 优先于 `--`。
+
+| 运算符 | 类型 | 示例 | 含义 |
+|---|---|---|---|
+| `-/-` | 分居 | `a -/- b` | 已有伴侣关系，但不再在一起 |
+| `==` | 近亲结婚 | `a == b` | 血缘相关的结合（临床上至关重要） |
+| `--` | 婚配 | `a -- b` | 有子女的伴侣对 |
+| `~` | 同居 | `a ~ b` | 无子女的伴侣 |
+
+### 4.2 右侧个人内联声明
+
+如果右侧的个人尚未声明，可以就地声明：
+
+<Playground initial={`pedigree
+  I-1 [female, carrier]
+  I-1 -- I-2 [male, unaffected]
+    II-1 [female, affected, proband]
+    II-2 [male, carrier]`} />
+
+### 4.3 子女（缩进在伴侣行下方）
+
+伴侣行下方的缩进 = "这些是该伴侣对的子女。"任何大于伴侣缩进的缩进均可；惯例使用两个空格。
+
+<Playground initial={`pedigree "Cystic Fibrosis — autosomal recessive"
+  I-1 [male, carrier]
+  I-2 [female, carrier]
+  I-1 -- I-2
+    II-1 [male, affected, proband]
+    II-2 [female, carrier]
+    II-3 [male, unaffected]`} />
+
+### 4.4 近亲结婚
+
+近亲结婚以双线渲染，必须清晰可见——它是许多系谱图上最重要的信息。
+
+<Playground initial={`pedigree "Consanguineous union"
+  I-1 [male, carrier]
+  I-2 [female, unaffected]
+  I-1 -- I-2
+    II-1 [male, carrier]
+  I-3 [male, unaffected]
+  I-4 [female, carrier]
+  I-3 -- I-4
+    II-3 [female, carrier]
+  II-1 == II-3
+    III-1 [male, affected, proband]`} />
+
+---
+
+## 5. 多性状系谱图
+
+对于携带多种遗传病的家族，使用 `legend:` 行定义形状的哪个象限代表哪种性状，然后用 `affected: trait1+trait2` 标记个人。
+
+```
+pedigree "Cancer Family Syndrome"
+  legend: breast = "Breast cancer" (fill: quad-tl)
+  legend: ovarian = "Ovarian cancer" (fill: quad-tr)
+  legend: prostate = "Prostate cancer" (fill: quad-bl)
+  legend: colon = "Colon cancer" (fill: quad-br)
+
+  I-1 [male, affected: prostate, deceased]
+  I-2 [female, affected: breast, deceased]
+  I-1 -- I-2
+    II-1 [female, affected: breast+ovarian]
+    II-2 [male, unaffected]
+```
+
+**图例语法：** `legend: id = "人类可读标签" (fill: 位置)`。
+
+| `fill` 位置 | 区域 |
+|---|---|
+| `full` | 整个形状（省略 `(fill: …)` 时的默认值） |
+| `quad-tl` / `quad-tr` / `quad-bl` / `quad-br` | 左上 / 右上 / 左下 / 右下象限 |
+| `half-left` / `half-right` / `half-top` / `half-bottom` | 形状的一半 |
+
+个人使用图例性状 ID：`[affected: breast]`、`[affected: breast+ovarian]`。`+` 连接多个性状；象限累积填充。
+
+---
+
+## 6. 标签与注释
+
+- **标题：** `pedigree "BRCA1 Family"` — 仅第一行。
+- **个人标签覆盖：** `II-1 [female, affected, label: "Jane Smith (42)"]`。
+- **图例条目：** `legend: id = "标签" (fill: 位置)` — 见第 5 节。
+- **模式后缀：** `pedigree:autosomal-dominant "Family X"` 可被接受。后缀存储为 `metadata.mode`；当前渲染器忽略它。
+- **注释：** 行首（前导空白后）的 `#`、`//` 或 `%%`。**不**支持行尾内联注释。
+
+---
+
+## 7. 保留字与转义
+
+**行首保留字：** `pedigree`（头部）、`legend:`（图例条目）。
+
+**行内保留运算符标记** — 在 ID 中避免使用这些序列：
+`--`、`==`、`-/-`、`~`。
+
+**`[…]` 内保留属性标记** — 无论位置如何，解析器都会解释这些标记：性别标记（`male`、`female`、`unknown`、`amab`、`afab`、`uaab`）、遗传状态（`affected`、`carrier`、`carrier-x`、`obligate-carrier`、`presymptomatic`、`unaffected`）、标记（`proband`、`consultand`、`evaluated`）以及生命状态（`deceased`、`stillborn`、`pregnancy`、`sab`、`tab`、`ectopic`）。
+
+**含空格的字符串**必须用双引号括起来。不识别单引号和反引号。
+
+---
+
+## 8. 常见错误
+
+真实的解析器错误、触发原因及修复方法。
+
+| 你写了 | 解析器报错 | 修复方法 |
+|---|---|---|
+| `II-1 -- II-4`，但 `II-4` 从未声明 | `Unknown individual 'II-4'` | 在上方声明 `II-4`，或使用内联形式：`II-1 -- II-4 [male, unaffected]` |
+| `II-1 [nonbinary]` | 静默存储为自定义属性；形状保持菱形 | Bennett 2022 区分指定性别和性别认同——使用 `amab`/`afab`/`uaab` 并在 `label:` 中记录认同 |
+| `II-3 [twin-mz]` | 存储为自定义属性；不渲染双胞胎线 | 双胞胎标记在第 10 节路线图中 |
+| `I-1 -- I-2` 后面 `II-1 [male]` 在**同一缩进** | 子女被解析为新的顶级个人，而非后代 | 将子女行缩进至比伴侣行更深 |
+| `I-1 [affected: breast]` 没有匹配的 `legend:` | 性状 ID 被存储但不渲染图例键控填充 | 在上方添加 `legend: breast = "…" (fill: quad-tl)` |
+| `II-1[affected]`（无空格，属性未分割） | 单个标记时有效；添加第二个属性后会出错 | 始终在 `id` 和 `[…]` 之间加空格 |
+| 第 1 行是 `I-1 [male]`，没有 `pedigree` 头部 | `Expected "pedigree" header` | 以 `pedigree` 或 `pedigree "标题"` 开头 |
+
+---
+
+## 9. 语法（EBNF）
+
+```text
+document       = header (blank | comment | legend | individual | couple-block)*
+
+header         = "pedigree" ( ":" mode )? ( WS quoted-string )? NEWLINE
+mode           = [A-Za-z] [A-Za-z0-9_-]*
+quoted-string  = '"' any-char-but-quote* '"'
+
+legend         = INDENT "legend:" WS id WS "=" WS quoted-string
+                   ( WS "(" "fill:" fill-value ")" )? NEWLINE
+
+individual     = INDENT id ( "[" attrs "]" )? NEWLINE
+couple-block   = INDENT id WS coupleOp WS right-side NEWLINE
+                   ( deeper-indent child )*
+child          = INDENT id ( "[" attrs "]" )? NEWLINE
+right-side     = id ( "[" attrs "]" )?
+
+coupleOp       = "-/-" | "==" | "--" | "~"
+
+id             = [a-zA-Z] [a-zA-Z0-9_-]*
+attrs          = attr ("," attr)*
+attr           = sex
+               | genetic-status
+               | marker
+               | life-status
+               | digit digit digit digit                         // birth year
+               | "label" ":" quoted-string
+               | "affected" ":" trait-id ( "+" trait-id )*
+               | key ":" value                                    // custom
+
+sex            = "male" | "female" | "unknown" | "amab" | "afab" | "uaab"
+genetic-status = "unaffected" | "affected" | "carrier" | "carrier-x"
+               | "obligate-carrier" | "presymptomatic"
+marker         = "proband" | "consultand" | "evaluated"
+life-status    = "deceased" | "stillborn" | "pregnancy"
+               | "sab" | "tab" | "ectopic"
+fill-value     = "full" | "half-left" | "half-right" | "half-top" | "half-bottom"
+               | "quad-tl" | "quad-tr" | "quad-bl" | "quad-br"
+
+comment        = INDENT ( "#" | "//" | "%%" ) any NEWLINE
+```
+
+权威来源：`src/diagrams/pedigree/parser.ts`。如果与解析器有出入，以解析器为准——请提交 issue。
+
+---
+
+## 10. 标准符合性
+
+Schematex 系谱图遵循 **Bennett, R.L. 等人 (2022)，《演变中的系谱图：更新以反映现代家庭结构、性别认知与性别认同》** 中关于形状语义、状态填充以及先证者/咨询者惯例的规定。早期修订版（Bennett 1995、2008）仍是经典子集的有效参考。
+
+目前已实现与标准的对照：
+
+- ✅ 核心形状（方形 / 圆形 / 菱形），符合 Bennett 2022 AMAB/AFAB/UAAB 语义
+- ✅ 完整遗传状态集（affected / carrier / carrier-x / obligate-carrier / presymptomatic / unaffected）
+- ✅ 先证者、咨询者、已评估标记
+- ✅ 生命状态修饰符（deceased、stillborn、pregnancy、SAB、TAB、ectopic）
+- ✅ 伴侣运算符：婚配 / 分居 / 近亲结婚 / 无子女
+- ✅ 带 `legend:` 条目的多性状象限填充
+- ⏳ 双胞胎标记（同卵 / 异卵 / 未知卵型）
+- ⏳ 领养入 / 领养出括号标记
+- ⏳ 辅助生殖（捐卵/捐精/捐胚、代孕、IVF）
+- ⏳ 自愿无子女和不育标记
+
+参考文献：
+
+- Bennett, R.L., French, K.S., Resta, R.G., & Austin, J. (2022). *Practice resource-focused revision: Standardized pedigree nomenclature update centered on sex and gender inclusivity.* Journal of Genetic Counseling, 31(6), 1238–1249.
+- Bennett, R.L., Steinhaus French, K., Resta, R.G., & Doyle, D.L. (2008). Standardized human pedigree nomenclature: Update and assessment. *J Genet Couns*, 17(5), 424–433.
+- Bennett, R.L. et al. (1995). Recommendations for standardized human pedigree nomenclature. *Am J Hum Genet*, 56(3), 745–752.
+
+---
+
+## 11. 相关示例
+
+来自示例库的即用场景：
+
+<RelatedExamples slugs={[
+  'pedigree-brca1',
+  'pedigree-cystic-fibrosis',
+  'pedigree-hemophilia',
+]} />
+
+---
+
+## 12. 路线图
+
+**计划中——暂不可解析。** 请勿在生成的 DSL 中使用这些内容；解析器会拒绝或将其存储为未使用的自定义属性。
+
+- **双胞胎标记** — `twin-mz`（同卵）、`twin-dz`（异卵）、`twin-unknown`。
+- **领养括号** — `adopted-in`、`adopted-out`（括号形状，到生物学父母的虚线）。
+- **辅助生殖** — `donor-egg`、`donor-sperm`、`donor-embryo`、`surrogate`，以及伴侣行上的 `ivf` 注释。
+- **无子女标记** — `no-children`（自愿）和 `infertile` 垂线注释。
+- **性别认同属性** — 独立于性别的结构化属性，而非塞进 `label:` 中。
+- **三胞胎及更高阶出生** — `triplet-mz`、`triplet-dz`。
+
+如果你迫切需要以上任何功能，请在 GitHub issues 中跟踪。

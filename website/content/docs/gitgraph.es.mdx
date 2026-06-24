@@ -1,0 +1,118 @@
+---
+title: Git Graph
+description: Gráficos de historial de commits compatibles con Mermaid — ramas, fusiones, etiquetas, cherry-picks — renderizados a partir de una secuencia reproducida de operaciones git.
+---
+
+## Acerca de los git graphs
+
+Un **git graph** visualiza el historial de commits de un repositorio: una línea principal de commits, **ramas** que se bifurcan, **fusiones** que las reintegran, más **etiquetas** y **cherry-picks**. Es la forma estándar de enseñar estrategias de ramificación (Git Flow, trunk-based) y documentar un historial de versiones. Schematex implementa el dialecto **Mermaid `gitGraph`**, por lo que las fuentes Mermaid existentes se renderizan sin cambios.
+
+La ventaja de Schematex es la fidelidad y un diseño limpio sin dependencias: **reproduce la secuencia de operaciones** para asignar cada commit a un carril, enruta los conectores de ramas y fusiones sin cruces, y renderiza nodos de commits con estilo según su tipo (normal / highlight / reverse) — todo desde un paquete de tamaño KB.
+
+<Playground initial={`gitGraph
+  commit id: "init"
+  branch develop
+  checkout develop
+  commit
+  commit tag: "v0.1"
+  checkout main
+  merge develop tag: "v1.0"`} height={360} />
+
+---
+
+## 1. Tu primer git graph
+
+Comienza con la palabra clave `gitGraph` (insensible a mayúsculas/minúsculas; se permite dos puntos al final), luego una operación por línea. El primer commit cae en la rama principal:
+
+```
+gitGraph
+  commit
+  branch develop
+  checkout develop
+  commit id: "feature work"
+  checkout main
+  merge develop tag: "v1.0"
+```
+
+Cada operación se ejecuta contra la **rama actualmente activa**. `commit` agrega a ella; `branch` crea una nueva línea desde el commit actual; `checkout` (alias `switch`) mueve el cursor; `merge` incorpora otra rama a la actual.
+
+---
+
+## 2. Operaciones
+
+```
+commit                         # commit simple en la rama actual
+commit id: "init"              # asigna un id explícito al commit
+commit tag: "v0.1"             # adjunta una etiqueta de versión
+commit type: HIGHLIGHT         # NORMAL (predeterminado) | HIGHLIGHT | REVERSE
+branch develop                 # bifurca una rama desde el commit actual
+branch hotfix order: 3         # fija el orden de su carril
+checkout develop               # cambia el cursor (alias: switch)
+merge develop tag: "v1.0"      # fusiona una rama en la actual
+cherry-pick id: "abc"          # copia un commit a la rama actual
+```
+
+- **`commit`** acepta `id:`, `tag:`, y `type:` opcionales (`NORMAL` / `HIGHLIGHT` / `REVERSE`).
+- **`branch NAME`** acepta un `order:` opcional para controlar la posición del carril.
+- **`checkout` / `switch`** son intercambiables.
+- **`cherry-pick id:`** copia un commit; un `parent:` opcional desambigua un commit de fusión.
+
+---
+
+## 3. Orientación
+
+El gráfico tiene orientación izquierda-derecha por defecto. Configura la dirección directamente en el encabezado:
+
+```
+gitGraph TB:
+  commit
+  branch feature
+  checkout feature
+  commit
+  checkout main
+  merge feature
+```
+
+Se aceptan `LR` (predeterminado), `TB`, y `BT`. La configuración también puede suministrarse mediante una directiva `%%{init: {'gitGraph': {...}}}%%` al inicio, o un bloque `config:` en frontmatter YAML para compatibilidad con Mermaid (`mainBranchName`, `showCommitLabel`, `rotateCommitLabel`).
+
+---
+
+## 4. Cómo el motor realiza el diseño
+
+La compatibilidad con Mermaid es el diferenciador, pero el diseño es el trabajo:
+
+- La lista de operaciones se **reproduce en orden** para construir el DAG de commits y asignar cada commit a su carril de rama.
+- Los carriles de ramas se ordenan por aparición (sobrescribible con `order:`); los conectores de fusión se enrutan desde la punta de la rama fusionada hasta el nuevo commit de fusión.
+- Los nodos de commits tienen estilo según `type:` — un commit HIGHLIGHT está enfatizado, un commit REVERSE marcado — y las etiquetas se renderizan como banderas. Los cherry-picks dibujan una arista punteada de copia hacia la fuente.
+
+Cada commit lleva `data-*` (rama, id, tipo) para interacción posterior.
+
+---
+
+## 5. Errores comunes
+
+```
+# INCORRECTO — sin encabezado gitGraph
+commit
+commit
+
+# INCORRECTO — operación desconocida
+gitGraph
+  rebase main
+
+# INCORRECTO — tipo de commit desconocido
+gitGraph
+  commit type: SQUASH
+```
+
+El documento debe comenzar con `gitGraph`; solo `commit` / `branch` / `checkout` / `switch` / `merge` / `cherry-pick` son operaciones válidas; `type:` debe ser `NORMAL`, `HIGHLIGHT`, o `REVERSE`. `%%` inicia un comentario, al igual que en Mermaid.
+
+---
+
+## 6. Conformidad con el estándar
+
+La sintaxis sigue la gramática `gitGraph` de Mermaid — palabras clave de operación, opciones `id:`/`tag:`/`type:`, `order:`, la directiva `%%{init}%%`, y configuración en frontmatter YAML — por lo que las fuentes Mermaid se portan directamente mientras se renderizan a través del motor sin dependencias de Schematex.
+
+## 7. Hoja de ruta
+
+Diferido: compactación de commits paralelos, temas de commit personalizados vía classDef, y sobreescrituras de color por rama más allá del orden de carriles.

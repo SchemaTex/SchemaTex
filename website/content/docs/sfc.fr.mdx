@@ -1,0 +1,216 @@
+---
+title: Sequential Function Chart (SFC)
+---
+
+## À propos des Sequential Function Charts
+
+Le **Sequential Function Chart (SFC)** est la **vue état-machine** d'un programme PLC cyclique — ce qui se passe *maintenant* et ce qui déclenche la *phase suivante*. C'est le cinquième langage défini par **[IEC 61131-3:2013 §6.5](https://en.wikipedia.org/wiki/Sequential_function_chart)** et le sous-ensemble industriel de l'**IEC 60848 GRAFCET**. Là où **[ladder](/docs/ladder)** et **[fbd](/docs/fbd)** décrivent la logique combinatoire par balayage, le SFC décrit le séquencement temporel entre ces balayages : quelle étape est active, quand elle passe la main, ce qui s'exécute en parallèle.
+
+En code de production, environ 10 % des réseaux sont écrits en SFC, mais ~100 % des machines séquentielles non triviales ont au moins un schéma SFC — réacteurs discontinus, cellules robotisées, lignes d'emballage, postes d'assemblage. Jusqu'à présent, il n'existait pas de bon DSL SFC open source : les IDE des fournisseurs (Studio 5000, TIA Portal, CODESYS) étaient la seule option. Schematex fournit un sous-ensemble IEC 61131-3 SFC conçu pour la génération par IA.
+
+Distinct de **[state](/docs/state)** (statechart UML pour les interfaces réactives et les FSM de cycle de vie) : le SFC a une sémantique de *balayage cyclique*, des étapes initiales à double bordure, des qualificateurs de blocs d'action (N/S/R/L/D/P), et des branches à barre (barre simple = OU, barre double = ET).
+
+<Playground initial={`
+  sfc "Bottle Filling"
+
+  var StartBtn: bool
+  var TankLevel: real
+  var DoneBtn: bool
+
+  step S0 [initial]
+    N FillValve_Closed
+
+  step S1 [label: "Filling"]
+    N FillValve_Open
+
+  step S2 [label: "Done"]
+    N Confirm_Done
+
+  transition from: S0 to: S1: StartBtn
+  transition from: S1 to: S2: TankLevel >= 80.0
+  transition from: S2 to: S0: DoneBtn`} height={520} />
+
+---
+
+## 1. Votre premier schéma SFC
+
+Deux étapes, une transition, un marqueur initial :
+
+```
+sfc
+step S0 [initial]
+step S1
+transition from: S0 to: S1: Trigger
+```
+
+`S0` s'affiche comme un **rectangle à double bordure** (convention IEC pour l'étape initiale) ; `S1` comme un rectangle à bordure simple. Entre eux se trouve une **barre de transition** horizontale avec le texte de condition `Trigger` à sa droite.
+
+Si vous oubliez `[initial]`, la première étape déclarée est automatiquement promue en étape initiale.
+
+---
+
+## 2. Étapes
+
+```
+step S_Filling [label: "Filling tank"]
+  N FillValve_Open
+  D Mixer_Run T#30s
+  P StartChime
+```
+
+Une étape possède :
+
+- Un **identifiant** (unique dans le schéma) — utilisé dans les transitions et les sauts.
+- Un `[label: "..."]` facultatif pour l'affichage.
+- Un `[initial]` facultatif (un seul autorisé) ou `[final]` (étape d'arrêt fournisseur, triple bordure).
+- Zéro ou plusieurs **blocs d'action**, indentés d'un niveau, chacun avec une lettre qualificateur.
+
+---
+
+## 3. Transitions
+
+Une **transition** déclare un lien orienté entre deux étapes avec une condition booléenne :
+
+```
+transition from: S0 to: S1: StartBtn
+transition from: S1 to: S2: TankLevel >= 80.0 AND NOT EmergencyStop
+transition T_Reset from: S5 to: S0: ResetBtn
+```
+
+Le texte de condition est opaque — Schematex le stocke tel quel et le restitue à côté de la barre. Chaque transition doit avoir une condition non vide ; utilisez `TRUE` pour les liens inconditionnels.
+
+Les transitions dont les étapes `from` et `to` sont linéairement adjacentes dans le corps se restituent comme des barres en ligne entre les étapes. Les transitions dont la paire n'est *pas* linéairement adjacente (par exemple, un saut vers une étape antérieure) se restituent comme des **flèches en marge** à gauche ou à droite du schéma.
+
+---
+
+## 4. Qualificateurs d'action
+
+Les actions s'attachent au côté droit d'une étape et s'exécutent selon leur lettre qualificateur :
+
+| Qualificateur | Comportement |
+|---|---|
+| `N` | Actif pendant que l'étape est active (le plus courant) |
+| `S` | Mémorisé — mis à vrai à l'entrée, reste jusqu'au `R` correspondant |
+| `R` | Réinitialisation — efface une action précédemment mémorisée |
+| `L` | Limité dans le temps — actif jusqu'à T après l'entrée dans l'étape |
+| `D` | Retardé — s'active T après l'entrée |
+| `P` | Impulsion — vrai pour un seul balayage PLC |
+| `P0` | Impulsion à la désactivation (Siemens) |
+| `P1` | Synonyme de `P` (Siemens) |
+| `SD` | Mémorisé et retardé |
+| `DS` | Retardé et mémorisé |
+| `SL` | Mémorisé et limité dans le temps |
+
+Les qualificateurs paramétrés par le temps (L, D, SD, DS, SL) prennent un littéral de durée :
+
+```
+step S1
+  L LimitedRun T#5s
+  D DelayedRun T#2s
+```
+
+---
+
+## 5. Branches alternatives (barre simple — OU)
+
+Une **seule** branche est déclenchée par balayage, sélectionnée par la condition de transition :
+
+```
+step S0 [initial]
+step S_Pick
+
+alt from: S_Pick:
+  branch [priority: 1]:
+    transition: IsExpressShipping
+    step S_Express
+      N PrepExpressBox
+    transition: TRUE
+  branch [priority: 2]:
+    transition: IsStandardShipping
+    step S_Standard
+      N PrepStandardBox
+    transition: TRUE
+merge_to: S_Ship
+
+step S_Ship
+
+transition from: S0 to: S_Pick: ProductOrdered
+transition from: S_Ship to: S0: Shipped
+```
+
+Les lignes horizontales simples au-dessus et en dessous des branches sont les barres de divergence et de convergence. Chaque branche commence par sa **transition d'entrée** (entre la barre de divergence et la première étape) et se termine par une **transition de sortie** (entre la dernière étape et la barre de convergence).
+
+---
+
+## 6. Branches simultanées (barre double — ET)
+
+**Toutes** les branches s'exécutent de manière concurrente ; le schéma attend à la convergence que chaque branche soit terminée :
+
+```
+sim from: S_Heat: TRUE
+  branch:
+    step S_Bake
+      D Oven_Run T#15m
+  branch:
+    step S_Cool
+      L Cooler_On T#5m
+merge_to: S_Done: Bake_Done AND Cool_Done
+```
+
+Les deux lignes horizontales parallèles (écart de 4 px) au-dessus et en dessous des branches sont les barres simultanées. La **transition partagée ci-dessus** (`TRUE` ici) déclenche la divergence ; la **transition partagée ci-dessous** (`Bake_Done AND Cool_Done`) est vérifiée avant que la convergence ne soit déclenchée.
+
+---
+
+## 7. Sauts (boucles)
+
+Une transition dont la cible est une étape antérieure s'affiche comme une flèche en marge :
+
+```
+step S0 [initial]
+step S1
+step S2
+transition from: S0 to: S1: A
+transition from: S1 to: S2: B
+transition T_Reset from: S2 to: S0: ResetBtn
+transition from: S2 to: S1: NOT ResetBtn
+```
+
+La transition en avant `S2 → S1` (arête arrière) obtient la flèche en marge à droite ; le saut `T_Reset` vers `S0` va à gauche. Chaque flèche en marge affiche son identifiant cible et sa condition.
+
+---
+
+## 8. Variables
+
+Réutilisées depuis `ladder` et `fbd` :
+
+```
+var StartBtn: bool
+var TankLevel: real
+var BakeReady: bool
+var Counter: counter
+var T1: timer
+```
+
+Les variables déclarées dans les conditions et les actions ne sont pas validées — Schematex traite le texte du corps des conditions et des actions comme des chaînes opaques, de la même manière que `state` gère les gardes et les actions.
+
+---
+
+## 9. Limitations de la v0.1
+
+- **Les branches imbriquées** (alt dans sim, sim dans alt) sont analysées, mais les heuristiques de mise en page en cas d'effondrement sont basiques ; des imbrications profondes peuvent se chevaucher.
+- **Les connecteurs en pointillés des paires d'actions S/R** (qui relient visuellement une action `S` à son `R` correspondant ailleurs) sont différés.
+- **L'indicateur d'étape active au moment de l'exécution** (remplissage jaune sur l'étape actuellement active) est différé — utile pour déboguer les intégrations qui exposent l'état d'exécution du PLC.
+- **Les ordres de forçage GRAFCET** (hors portée, fonctionnalité exclusive à l'IEC 60848).
+- **L'étape finale** est analysée avec `[final]` mais s'affiche avec la même double bordure que l'étape initiale ; la convention IEC de triple bordure est différée.
+
+---
+
+## Exemples associés
+
+Scénarios prêts à l'emploi depuis la galerie d'exemples :
+
+<RelatedExamples slugs={[
+  'sfc-bottle-filling',
+  'sfc-bake-cool-concurrent',
+  'sfc-order-routing-alt',
+]} />

@@ -1,0 +1,174 @@
+---
+title: Petri-Netz
+---
+
+## Über Petri-Netze
+
+Ein **Petri-Netz** ist der grundlegende Formalismus zur Modellierung von Nebenläufigkeit, Synchronisation und Ressourcenfluss in diskreten Ereignissystemen — erfunden von [Carl Adam Petri im Jahr 1962](https://en.wikipedia.org/wiki/Petri_net) und seitdem kontinuierlich eingesetzt in Informatik, Steuerungstechnik, Fertigung und Geschäftsprozessmodellierung. Die Notation ist klein und sofort erkennbar: eine **Stelle** ist ein Kreis, eine **Transition** ist ein Balken, ein Bogen trägt ein Gewicht, und der dynamische Zustand des Systems ist eine Streuung von **Token**, die in den Stellen sitzen.
+
+Was Schematex's `petri`-Engine von einer Drag-and-Drop-Formbibliothek unterscheidet, ist, dass sie die **Dynamik versteht**. Sie kennt eine *Markierung* (welche Stellen wie viele Token halten), berechnet, welche Transitionen *aktiviert* sind (jede Eingangsstelle hat mindestens das Bogengewicht an Token — grün hervorgehoben), und kann eine Transition *schalten*, um die nächste Markierung zu erzeugen. Das Rendern ist nachgelagert der Semantik — dieselbe Haltung, die **[pert](/docs/pert)** gegenüber der Planung einnimmt. Abzugrenzen von **[Zustandsdiagrammen](/docs/state)** (ein aktiver Zustand, keine Token-Verteilung), **[SFC](/docs/sfc)** (ein eingeschränktes sicheres Petri-Netz für SPS) und **[BPMN](/docs/bpmn)** (dessen Token-Semantik durch Reduktion auf Workflow-Petri-Netze *definiert* ist).
+
+<Playground initial={`petri "Classic"
+  place P1 *1
+  place P2
+  place P3 *2
+  place P4 *1
+  transition T1
+  transition T2
+  P1 -> T1
+  T1 -> P2
+  T1 -> P3
+  P2 -> T2
+  P3 -> T2
+  T2 -> P4
+  P4 -> T1`} height={420} />
+
+Unter der Anfangsmarkierung ist **T1** aktiviert (seine Eingaben P1 und P4 halten jeweils ein Token), daher erhält es den grünen Ring; **T2** ist nicht aktiviert (P2 ist leer). Der Rückkoppelbogen `P4 -> T1` wird als Rückkantenkurve geroutet.
+
+---
+
+## 1. Ihr erstes Netz
+
+Jedes Dokument beginnt mit dem Schlüsselwort `petri` und einem optionalen Titel, dann werden **Stellen** und **Transitionen** vor der Verbindung durch **Bögen** deklariert:
+
+```
+petri "Minimal"
+  place P1 *1
+  transition T1
+  place P2
+  P1 -> T1
+  T1 -> P2
+```
+
+- `place <id>` — ein Kreis. `*1` setzt die anfängliche Token-Anzahl (die Markierung).
+- `transition <id>` — ein Balken (ein Ereignis/eine Aktion).
+- `<a> -> <b>` — ein gerichteter Bogen. Bögen sind **bipartit**: Jeder Bogen geht von Stelle→Transition oder Transition→Stelle, niemals Stelle→Stelle oder Transition→Transition. Wenn Sie einen falsch schreiben, teilt Ihnen die Engine mit, in welcher Zeile.
+
+Anders als einige Schematex-Diagramme werden Knoten **nicht** automatisch aus Bögen deklariert — weil eine nicht deklarierte ID nicht sicher als Stelle oder Transition typisiert werden kann. Ein Bogen, der auf einen unbekannten Knoten verweist, ist ein lesbarer Fehler.
+
+---
+
+## 2. Markierung & Token
+
+Die **Markierung** gibt an, wie viele Token jede Stelle hält. Drei gleichwertige Möglichkeiten zum Setzen:
+
+```
+place P1 *3            # *n-Kurzform
+place P2 tokens: 3     # explizit
+place P3 •••           # wörtliche Punkte (1–4)
+```
+
+Oder mehrere auf einmal mit einer `marking:`-Zeile setzen:
+
+```
+marking: P1=3, P3=2
+```
+
+Token werden als Punkte gerendert (bis zu 4, in einem Raster angeordnet) und als Ziffer darüber hinaus. Erzwingen Sie einen Stil mit `tokens: dots | count | auto` (Standard `auto`).
+
+---
+
+## 3. Transitionen: sofort vs. zeitgesteuert
+
+```
+transition fast                 # sofort — ein durchgehender Balken (Standard)
+transition slow timed rate: 0.8 # zeitgesteuert — eine hohle Box mit einem Rate-Label λ
+```
+
+Sofortige Transitionen schalten in Null-Zeit und werden als klassischer gefüllter Balken dargestellt; **zeitgesteuerte** Transitionen (die [GSPN](https://en.wikipedia.org/wiki/Stochastic_Petri_net)-Konvention) werden als hohle Box dargestellt und tragen eine optionale `rate:` (λ). Eine Transition mit einer `rate:` wird automatisch als zeitgesteuert behandelt. `prio: n` setzt eine Priorität, und eine `[Bedingung]` wird als Beschriftung gerendert (in v0.1 nicht ausgewertet).
+
+---
+
+## 4. Bogentypen
+
+Vier Bogenköpfe decken das Standard-Nebenläufigkeitsvokabular ab:
+
+```
+P -> T              # Standardbogen (gefüllter Pfeilkopf)
+P -> T weight: 2    # Gewicht > 1 wird beschriftet (weight: n oder *n)
+P -o T              # Inhibitor — aktiviert nur wenn die Stelle leer ist (hohler Kreiskopf)
+P -- T              # Lese-/Testbogen — testet Vorhandensein ohne Verbrauch (kein Kopf)
+P => T              # Reset — leert die Stelle wenn die Transition schaltet (Doppelkopf)
+```
+
+Inhibitor- und Reset-Bögen sind **nur Stelle→Transition** — der Parser lehnt die umgekehrte Richtung ab.
+
+---
+
+## 5. Kapazität
+
+Eine Stelle kann begrenzt werden. Ein Schalten, das sie überlaufen würde, ist deaktiviert, und die Stelle wird mit einem gestrichelten Rahmen und einem `K=n`-Label gezeichnet:
+
+```
+place Buffer capacity: 3
+```
+
+---
+
+## 6. Die Dynamik: aktiviert & schalten
+
+Die Engine berechnet die Semantik bei jedem Rendern:
+
+- **Aktivierte** Transitionen (jede Eingabe erfüllt; Inhibitor-Eingaben leer; keine Ausgabe würde die Kapazität überschreiten) erhalten einen grünen Ring.
+- **Tote** Transitionen — solche, die aus der aktuellen Markierung nie schalten können — werden gedämpft dargestellt.
+- Eine **`fire:`**-Zeile spielt eine Schaltsequenz ab und rendert die *resultierende* Markierung:
+
+```
+petri
+  place P1 *1
+  transition T1
+  place P2
+  transition T2
+  place P3
+  P1 -> T1
+  T1 -> P2
+  P2 -> T2
+  T2 -> P3
+  fire: T1
+```
+
+Nach dem Schalten von `T1` hat sich der Token von P1 → P2 bewegt, und nun ist **T2** die aktivierte Transition. Das SVG-`<desc>` zeichnet die Markierung, die aktivierte Menge und jede erkannte Unterklasse (Zustandsmaschine / Markierter Graph / Workflow-Netz) auf.
+
+---
+
+## 7. Layout & Themes
+
+```
+layout: lr     # links nach rechts (Standard)
+layout: tb     # oben nach unten
+```
+
+Stellen und Transitionen landen automatisch auf abwechselnden Ebenen; Zyklen werden erkannt und ihre Rückkopplungsbögen als Rückkantenkurven geroutet. Drei Themes:
+
+- **`default`** — Haus-Blau-Grau, mit Grün reserviert für *aktiviert* und Rot für *Inhibitor*.
+- **`monochrome`** — der treue Murata-1989-Lehrbuchstil; aktiviert erscheint als verdoppelter schwarzer Ring (Farbe fällt auf Form zurück).
+- **`dark`** — Catppuccin Mocha.
+
+CJK-Beschriftungen und `「…」` / `"…"`-Anführungszeichen werden sauber geparst:
+
+```
+petri "生产流程"
+  place 原料 *2 「原材料」
+  transition 加工
+  place 成品
+  原料 -> 加工 weight: 2
+  加工 -> 成品
+```
+
+---
+
+Vollständige Spezifikation: [Petri Net Standard Reference](https://github.com/schematex/schematex/blob/main/docs/reference/34-PETRINET-STANDARD.md).
+
+---
+
+## Verwandte Beispiele
+
+Sofort einsetzbare Szenarien aus der Beispielgalerie:
+
+<RelatedExamples slugs={[
+  'petri-classic-net',
+  'petri-mutual-exclusion',
+  'petri-fire-sequence',
+  'petri-workflow-net',
+  'petri-producer-consumer',
+]} />

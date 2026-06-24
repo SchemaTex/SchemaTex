@@ -1,0 +1,150 @@
+---
+title: 比較・意思決定マトリックス（Comparison & Decision Matrix）
+---
+
+## 比較ダイアグラムについて
+
+「comparison」は「物事を並べて比較・決定する」という用途をすべてカバーする 1 つのエンジンです。`mode:` を選ぶだけで、同じ DSL が 5 種類の専門的な成果物をレンダリングします：
+
+- **`tchart`** — 2〜N 列のラベル付きの箇条書き列（古典的な比較 T チャート。3 列の場合は Y チャートになります）。
+- **`pros-cons`** — 緑の ✓ / 赤の ✗ で色分けされた 2 列リスト。
+- **`matrix`** — オプション × 基準のグリッド。セルには自由テキストまたは `yes` / `no` / `partial` マークを使用できます。
+- **`decision`**（ヘッダエイリアス `pugh`）— **重み付き意思決定マトリックス**：各基準に `weight:` を持ち、各オプションに数値スコアを付け、**エンジンが自動計算**して各オプションの重み付き合計 Σ(weight × score) を求め、ランキングし、勝者をハイライトします。これはスチュアート・ピュー（Pugh）の収束制御手法（ASQ / シックスシグマのコンセプト選択）です。`pert` や `faulttree` と同じ「エンジンが答えを計算する」スタンスです。
+- **`double-bubble`** — シンキングマップスの比較/対比オーガナイザー：2 つの中心、中間に共通点、外側に独自の特徴が扇形に展開されます。
+
+> **[`matrix`](/docs/matrix) と混同しないでください。** そちらのエンジンは 2 つの連続軸上にアイテムを *配置*します（アイゼンハワー、BCG、インパクト-工数）。`comparison` は**テーブル**をレイアウトし、`decision` モードでは**意思決定を計算**します。よく混同される 2 つの異なるものです。
+
+<Playground initial={`comparison "Selecting a CI/CD platform"
+mode: decision
+baseline: "Jenkins"
+option "GitHub Actions"
+option "GitLab CI"
+option "Jenkins"
+criterion "Ease of setup" weight: 5
+  GitHub Actions: 5
+  GitLab CI: 4
+  Jenkins: 2
+criterion "Build speed" weight: 4
+  GitHub Actions: 4
+  GitLab CI: 4
+  Jenkins: 3
+criterion "Cost at our scale" weight: 4
+  GitHub Actions: 4
+  GitLab CI: 3
+  Jenkins: 5
+criterion "Self-host control" weight: 2
+  GitHub Actions: 2
+  GitLab CI: 5
+  Jenkins: 5`} />
+
+## 1. ヘッダとモード
+
+ヘッダキーワードは `comparison`（エイリアス：`compare`、`vs`）です。ヘッダキーワード `tchart` と `pugh` はモードを直接設定します。それ以外は `mode:` ディレクティブで選択します：
+
+```
+comparison "Title"
+mode: tchart | pros-cons | matrix | decision | double-bubble
+legend: on | off
+```
+
+`mode:` を省略すると、使用したキーワードから推定されますが、明示的に指定する方が確実です。
+
+## 2. T チャート（と Y チャート）
+
+各 `column` を宣言し、`-` 箇条書きでポイントを列挙します。3 列は Y チャートとして読まれます。
+
+```
+tchart "TCP vs UDP"
+column "TCP"
+- Connection-oriented (handshake)
+- Guaranteed, ordered delivery
+column "UDP"
+- Connectionless, fire-and-forget
+- Minimal header, low latency
+```
+
+## 3. 長所 / 短所
+
+```
+comparison "Migrate to microservices?"
+mode: pros-cons
+pro "Independent team deploys"
+pro "Scale hot paths in isolation"
+con "Distributed-systems complexity"
+con "Operational + infra cost goes up"
+```
+
+`pro` 行は緑の列に、`con` は赤の列に入ります — 順序は関係ありません。
+
+## 4. 比較マトリックス
+
+全 `option`（列）を宣言し、各 `criterion`（行）についてオプションごとにインデントした `OptionName: value` セルを記述します。セル値：`yes` / `no` / `partial` は ✓ / ✗ / ~ としてレンダリングされ、数値はスコア、クォートされたテキストはそのまま表示されます。オプション名は `option` と完全に一致する必要があります（タイポはエラーになり、無視されません）。
+
+```
+comparison "Cloud provider — managed services"
+mode: matrix
+option "AWS"
+option "GCP"
+option "Azure"
+criterion "Free tier"
+  AWS: "12 months"
+  GCP: "Always-free"
+  Azure: "12 months"
+criterion "Managed Postgres"
+  AWS: yes
+  GCP: yes
+  Azure: partial
+```
+
+コンパクトなパイプ形式も使用できます：`criterion "Free tier" | "12 months" | "Always-free" | "12 months"`（オプション順序に基づく位置指定）。
+
+## 5. 意思決定マトリックス（計算あり）
+
+各基準に `weight:` を追加し、各セルに数値スコアを付けます。エンジンが**重み付き合計**行を追加し、オプションをランキング（`#1`、`#2`、…）して勝者をハイライトします。Pugh データムとして `baseline: "Option"` を追加すると、その列がシェードされ、**vs データム**デルタ行が追加されます。
+
+```
+pugh "Database for the new service"
+baseline: "PostgreSQL"
+option "PostgreSQL"
+option "MongoDB"
+option "DynamoDB"
+criterion "Query flexibility" weight: 5
+  PostgreSQL: 5
+  MongoDB: 3
+  DynamoDB: 2
+criterion "Horizontal scaling" weight: 4
+  PostgreSQL: 3
+  MongoDB: 4
+  DynamoDB: 5
+criterion "Operational cost" weight: 3
+  PostgreSQL: 4
+  MongoDB: 3
+  DynamoDB: 3
+```
+
+合計を自分で書く必要はありません — エンジンが Σ(weight × score) を計算するため、スコアが変われば計算された勝者も変わります。
+
+## 6. ダブルバブル（比較と対比）
+
+```
+comparison "Plant cell vs Animal cell"
+mode: double-bubble
+left "Plant cell"
+right "Animal cell"
+shared "Has a nucleus"
+shared "Mitochondria"
+left-only "Cell wall"
+left-only "Chloroplasts"
+right-only "Centrioles"
+right-only "Lysosomes"
+```
+
+`shared` の特性は中間に配置され両方の中心に接続されます。`left-only` / `right-only` はそれぞれの中心に向かって扇形に展開されます。
+
+## 7. テーマ
+
+`default` は緑/赤/アンバーのバレンス（判定色）を持つハウスブルーです。`monochrome` はカラーを廃止し（バレンスは ✓/✗/~ で、勝者は太いボーダーで表現）、白黒印刷用です。`dark` は Catppuccin テーマです。
+
+## 標準
+
+Pugh, *Total Design* (1991) 収束制御 · ASQ 意思決定マトリックス · Hyerle シンキングマップス（ダブルバブル）· K-12 グラフィックオーガナイザー規則。`docs/reference/51-COMPARISON-STANDARD.md` を参照してください。

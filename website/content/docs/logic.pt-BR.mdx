@@ -1,0 +1,365 @@
+---
+title: Diagrama de portas lógicas
+---
+
+## Sobre diagramas de portas lógicas
+
+Um **diagrama de portas lógicas** mostra como funções Booleanas são implementadas em hardware — entradas fluem da esquerda através de portas combinacionais e flip-flops para produzir saídas à direita. Engenheiros de design digital os utilizam para documentar intenção RTL, verificar netlists em nível de porta e ensinar álgebra Booleana. O Schematex deriva seu conjunto de símbolos do **[IEEE Std 91-1984 / ANSI Y32.14](https://standards.ieee.org/ieee/91/749/)** (símbolos ANSI de forma distintiva, o padrão nos EUA) e do **[IEC 60617-12](https://webstore.iec.ch/publication/2765)** (símbolos de retângulo uniforme, o padrão internacional), selecionáveis por diagrama.
+
+A DSL é funcional: você declara sinais e descreve as entradas de cada porta por nome. Layout e fiação são calculados automaticamente a partir do grafo de dependências — sem coordenadas manuais.
+
+<Playground initial={`logic "1-bit Full Adder" style: ansi
+input A, B, Cin
+output Sum, Cout
+# XOR stage — sum bits
+s1 = XOR(A, B)
+Sum = XOR(s1, Cin)
+# AND/OR stage — carry
+c1 = AND(A, B)
+c2 = AND(s1, Cin)
+Cout = OR(c1, c2)`} height={440} />
+
+---
+
+## 1. Seu primeiro diagrama de portas lógicas
+
+O menor diagrama útil: duas entradas, uma porta, uma saída.
+
+<Playground initial={`logic "NAND check"
+input A, B
+output F
+F = NAND(A, B)`} />
+
+Quatro regras cobrem 80% do uso:
+
+1. Comece com a palavra-chave `logic`, opcionalmente seguida de um título entre aspas e `style: ansi` ou `style: iec`.
+2. Declare portas com linhas `input` e `output` — nomes de sinais separados por vírgula.
+3. Cada porta é `id = GATE_TYPE(input1, input2, …)`. O `id` se torna um fio de sinal nomeado.
+4. Um nome de `output` que corresponda a um `id` de porta é conectado automaticamente; use `OUTPUT <- gate_id` quando os nomes forem diferentes.
+
+> Comentários devem começar com `#` ou `--` em sua própria linha (ou após o último token em uma linha de porta).
+
+---
+
+## 2. Tipos de porta
+
+### 2.1 Portas combinacionais
+
+| Palavra-chave DSL | Função | Forma ANSI | Símbolo IEC |
+|---|---|---|---|
+| `AND` | A · B | Corpo em forma de D | Retângulo + `&` |
+| `OR` | A + B | Corpo curvo | Retângulo + `≥1` |
+| `NOT` | Ā | Triângulo + bolha | Retângulo + `1` + bolha |
+| `NAND` | ¬(A · B) | AND + bolha | Retângulo + `&` + bolha |
+| `NOR` | ¬(A + B) | OR + bolha | Retângulo + `≥1` + bolha |
+| `XOR` | A ⊕ B | OR + arco extra | Retângulo + `=1` |
+| `XNOR` | ¬(A ⊕ B) | XOR + bolha | Retângulo + `=1` + bolha |
+| `BUF` | A (buffer) | Triângulo, sem bolha | Retângulo + `1` |
+
+<Playground initial={`logic "Gate gallery" style: ansi
+input A, B, C
+output Y_and, Y_or, Y_xor, Y_nand, Y_not
+Y_and = AND(A, B)
+Y_or = OR(A, B)
+Y_xor = XOR(A, B)
+Y_nand = NAND(A, B)
+Y_not = NOT(C)`} height={420} />
+
+### 2.2 Buffers de saída especial
+
+| Palavra-chave DSL | Função |
+|---|---|
+| `TRISTATE_BUF` | Buffer tri-state — saída Z quando enable está baixo |
+| `TRISTATE_INV` | Buffer inversor tri-state |
+| `OPEN_DRAIN` | Saída open-drain / open-collector (pull-up externo necessário) |
+| `SCHMITT` | Trigger de Schmitt — símbolo de histerese dentro do corpo |
+
+<Playground initial={`logic "Special buffers" style: ansi
+input A, EN
+output Y_tri, Y_od, Y_sch
+Y_tri = TRISTATE_BUF(A, EN)
+Y_od = OPEN_DRAIN(A)
+Y_sch = SCHMITT(A)`} height={340} />
+
+### 2.3 Flip-flops e latches
+
+| Palavra-chave DSL | Tipo | Pinos principais |
+|---|---|---|
+| `DFF` | D flip-flop (ativado por borda) | D, CLK, Q, Q̄ |
+| `JKFF` | JK flip-flop | J, K, CLK, Q, Q̄ |
+| `SRFF` | SR flip-flop | S, R, CLK, Q, Q̄ |
+| `TFF` | T (toggle) flip-flop | T, CLK, Q, Q̄ |
+| `LATCH_SR` | SR latch (sensível ao nível, sem clock) | S, R, Q, Q̄ |
+| `LATCH_D` | D latch (transparente quando enable=1) | D, EN, Q, Q̄ |
+
+<Playground initial={`logic "Flip-flop gallery" style: ansi
+input D, J, K, CLK, EN
+output Q_dff, Q_jk, Q_latch
+Q_dff = DFF(D, CLK)
+Q_jk = JKFF(J, K, CLK)
+Q_latch = LATCH_D(D, EN)`} height={420} />
+
+### 2.4 Combinacional complexo
+
+| Palavra-chave DSL | Função |
+|---|---|
+| `MUX` | Multiplexador |
+| `DEMUX` | Demultiplexador |
+| `DECODER` | Decodificador binário |
+| `ENCODER` | Codificador de prioridade |
+
+<Playground initial={`logic "Combinational MSI" style: ansi
+input A, B, S
+output Y_mux, Y_dec
+Y_mux = MUX(A, B, S)
+Y_dec = DECODER(A, B)`} height={340} />
+
+### 2.5 Sequencial complexo
+
+| Palavra-chave DSL | Função |
+|---|---|
+| `COUNTER` | Contador binário genérico (rótulo `CTR`, CLK/RESET/Q0–Q3) |
+| `SHIFT_REG` | Registrador de deslocamento genérico (rótulo `SRG`, CLK/SER/Q0–Q7) |
+
+<Playground initial={`logic "Sequential MSI" style: ansi
+input DATA, CLK, RESET
+output Q_cnt, Q_sr
+Q_cnt = COUNTER(CLK, RESET)
+Q_sr = SHIFT_REG(DATA, CLK)`} height={340} />
+
+---
+
+## 3. Entradas e saídas
+
+### 3.1 Declarando portas
+
+```
+input A, B, Cin          # três portas de entrada
+output Sum, Cout         # duas portas de saída
+```
+
+Cada nome em uma lista `input` ou `output` torna-se um fio de sinal nomeado disponível em todo o diagrama.
+
+### 3.2 Entradas ativas em nível baixo
+
+Prefixe um nome de sinal com `~` na lista de entrada para marcá-lo como ativo em nível baixo. O renderizador desenha uma bolha no símbolo da porta.
+
+```
+input ~nRESET, CLK, DATA
+```
+
+A notação de nível baixo também funciona dentro de listas de entrada de porta:
+
+```
+g1 = AND(~nRESET, CLK)
+```
+
+### 3.3 Conectando saídas a portas
+
+Se o ID de saída corresponder a um ID de porta, a conexão é implícita:
+
+```
+output Sum        # Sum também é um id de porta → conectado automaticamente
+Sum = XOR(s1, Cin)
+```
+
+Quando os nomes diferem, use o operador de atribuição explícito:
+
+```
+output F
+q1 = NOR(A, B)
+F <- q1           # F recebe da saída de q1
+```
+
+<Playground initial={`logic "SR latch from NOR gates"
+input S, R
+output Q, Qn
+q_gate = NOR(R, Qn)
+qn_gate = NOR(S, Q)
+Q <- q_gate
+Qn <- qn_gate`} height={300} />
+
+---
+
+## 4. Estilo de símbolo
+
+A opção `style:` na linha de cabeçalho seleciona o padrão de símbolo. Aplica-se a todas as portas do diagrama.
+
+| Valor | Padrão | Use quando |
+|---|---|---|
+| `ansi` (padrão) | IEEE Std 91 — formas curvas distintivas | Educação nos EUA, documentação de hardware |
+| `iec` | IEC 60617-12 — retângulos uniformes + rótulo de função | Internacional, indústria europeia |
+
+```
+logic "ALU slice" style: iec
+```
+
+<Playground initial={`logic "1-bit Full Adder" style: iec
+input A, B, Cin
+output Sum, Cout
+# XOR stage — sum bits
+s1 = XOR(A, B)
+Sum = XOR(s1, Cin)
+# AND/OR stage — carry
+c1 = AND(A, B)
+c2 = AND(s1, Cin)
+Cout = OR(c1, c2)`} height={440} />
+
+<Playground initial={`logic "Gate gallery — IEC style" style: iec
+input A, B, C
+output Y_and, Y_or, Y_xor, Y_nand, Y_not
+Y_and = AND(A, B)
+Y_or = OR(A, B)
+Y_xor = XOR(A, B)
+Y_nand = NAND(A, B)
+Y_not = NOT(C)`} height={420} />
+
+---
+
+## 5. Blocos de módulo
+
+Use `module` para agrupar portas em uma caixa de sub-circuito rotulada. Os blocos de módulo são úteis para documentar designs hierárquicos — cada módulo é renderizado como um retângulo nomeado ao redor de suas portas membros.
+
+```
+logic "Hierarchical adder"
+input A, B, Cin
+output Sum, Cout
+
+module "Half Adder" {
+  s1 = XOR(A, B)
+  c1 = AND(A, B)
+}
+
+Sum = XOR(s1, Cin)
+Cout = OR(c1, AND(s1, Cin))
+```
+
+Regras de sintaxe de módulo:
+- `module "Label" {` — abre um módulo (rótulo entre aspas ou identificador simples). O `{` deve estar na mesma linha.
+- `}` em sua própria linha fecha o módulo mais recentemente aberto.
+- Módulos podem ser aninhados.
+
+---
+
+## 6. Rótulos e comentários
+
+- **Título do diagrama:** `logic "Full Adder"` — apenas na primeira linha.
+- **Nomes de sinais de porta:** o `id` em `id = GATE(…)` é tanto o nome da porta quanto o nome do fio de saída.
+- **Rótulos de saída:** `output Sum` — o rótulo da porta de saída corresponde ao nome do sinal por padrão.
+- **Marcador de nível baixo:** prefixo `~` em uma porta ou entrada de porta.
+- **Comentários:** `#` ou `--` no início de uma linha, ou após o último token significativo em uma linha.
+
+---
+
+## 7. Palavras reservadas e escape
+
+**Reservadas no início de linha:** `logic` (cabeçalho), `input`, `output`, `module`, `}`.
+
+**Tokens de operador reservados** — evite esses dentro de nomes de sinais: `=`, `(`, `)`, `,`, `<-`, `~`.
+
+**Regras de nome de sinal:** deve corresponder a `[a-zA-Z_][a-zA-Z0-9_]*`. Letras minúsculas e maiúsculas são ambas aceitas; palavras-chave de tipo de porta (`AND`, `OR`, etc.) são sem distinção de maiúsculas no parser.
+
+---
+
+## 8. Erros comuns
+
+| Você escreveu | O parser diz | Correção |
+|---|---|---|
+| `f = and(A, B)` (porta em minúsculas) | Aceito — tipos de porta são sem distinção de maiúsculas | Tanto `AND` quanto `and` funcionam |
+| `output F` e depois `F <- q1` mas `q1` não declarado | `LogicParseError: Unknown signal "q1"` | Declare `q1` como uma porta antes de referenciá-lo |
+| `input A B C` (espaços, sem vírgulas) | Parser aceita apenas `A`; `B` e `C` são ignorados | Use vírgulas: `input A, B, C` |
+| `F = BUFFER(A)` | `LogicParseError: Unknown gate type: BUFFER` | Use `BUF` |
+| `module FullAdder {` (sem chave `{`) | A linha não corresponde ao padrão de módulo — ignorada silenciosamente | A chave de abertura `{` é obrigatória na mesma linha que `module` |
+| `style: IEEE` no cabeçalho | Valor de style desconhecido — silenciosamente assume `ansi` | Use `style: ansi` ou `style: iec` |
+
+---
+
+## 9. Gramática (EBNF)
+
+```text
+document    = header statement*
+
+header      = "logic" ( WS quoted-string )? ( WS "style:" WS style )? NEWLINE
+style       = "ansi" | "iec"
+quoted-string = '"' any-char-but-quote* '"'
+
+statement   = blank | comment | input-decl | output-decl | gate-def | assign | module-block
+
+comment     = ( "#" | "--" ) any NEWLINE
+
+input-decl  = "input" WS port-list NEWLINE
+output-decl = "output" WS port-list NEWLINE
+port-list   = port-id ( "," WS? port-id )*
+port-id     = "~"? id
+
+gate-def    = id WS "=" WS gate-type "(" input-list ")" NEWLINE
+input-list  = ( "~"? id ) ( "," WS? ( "~"? id ) )*
+
+assign      = id WS "<-" WS id NEWLINE
+
+module-block = module-open ( statement | module-block )* module-close
+module-open  = "module" WS ( quoted-string | id ) WS? "{" NEWLINE
+module-close = "}" NEWLINE
+
+gate-type   = "AND" | "OR" | "NOT" | "NAND" | "NOR" | "XOR" | "XNOR" | "BUF"
+            | "TRISTATE_BUF" | "TRISTATE_INV" | "OPEN_DRAIN" | "SCHMITT"
+            | "DFF" | "JKFF" | "SRFF" | "TFF"
+            | "LATCH_SR" | "LATCH_D"
+            | "MUX" | "DEMUX" | "DECODER" | "ENCODER"
+            | "COUNTER" | "SHIFT_REG"
+            // todos sem distinção de maiúsculas
+
+id          = [a-zA-Z_] [a-zA-Z0-9_]*
+```
+
+Fonte autoritativa: `src/diagrams/logic/parser.ts`. Se houver divergência com o parser, o parser prevalece — abra uma issue.
+
+---
+
+## 10. Conformidade com o padrão
+
+Os diagramas de portas lógicas do Schematex seguem o **IEEE Std 91-1984 / ANSI Y32.14** (símbolos de forma distintiva) e o **IEC 60617-12** (símbolos retangulares com qualificadores de função).
+
+O que está implementado hoje:
+
+- ✅ Todas as oito portas combinacionais: AND, OR, NOT, NAND, NOR, XOR, XNOR, BUF
+- ✅ Buffers de saída especial: TRISTATE_BUF, TRISTATE_INV, OPEN_DRAIN, SCHMITT
+- ✅ Quatro flip-flops ativados por borda: DFF, JKFF, SRFF, TFF
+- ✅ Dois latches: LATCH_SR, LATCH_D
+- ✅ MSI combinacional: MUX, DEMUX, DECODER, ENCODER
+- ✅ MSI sequencial: COUNTER, SHIFT_REG
+- ✅ Notação de nível baixo (`~`) em entradas e portas
+- ✅ Estilos de símbolo ANSI e IEC, selecionáveis por diagrama
+- ✅ Blocos de agrupamento de módulo
+- ✅ Layout DAG automático (ordenação topológica, fluxo de sinal da esquerda para a direita)
+- ⏳ Roteamento explícito de fio fan-out (rede compartilhada com ponto de junção)
+- ⏳ Notação de barramento multi-bit (anotação barra `/N` no fio)
+- ⏳ Entradas de clock ativas em nível baixo em flip-flops
+
+Referências:
+
+- IEEE Std 91-1984 / ANSI Y32.14: *IEEE Standard Graphic Symbols for Logic Functions*
+- IEEE Std 91a-1991: Suplemento ao IEEE Std 91
+- IEC 60617-12: *Graphical symbols for diagrams — binary logic elements*
+
+---
+
+## 11. Exemplos relacionados
+
+<RelatedExamples slugs={[
+  'logic-full-adder',
+]} />
+
+---
+
+## 12. Roadmap
+
+**Planejado — ainda não parseável.** Não use esses recursos em DSL gerado hoje; o parser irá rejeitá-los ou ignorá-los.
+
+- **Fan-out explícito / ponto de junção** — fio nomeado compartilhado por múltiplas entradas de porta, renderizado com um ponto de junção no ponto de ramificação.
+- **Notação de barramento multi-bit** — anotação `bus N` em um fio para denotar um grupo de sinal de N bits.
+- **Clock em nível baixo** — `~CLK` em uma lista de entrada de flip-flop renderizando uma bolha no triângulo de clock.
+- **Arco de realimentação** — fio explícito de uma saída de porta de volta para uma entrada de porta anterior, roteado acima do caminho principal de sinal.
+- **Fan-in parametrizado de porta** — `AND(A, B, C, D)` renderizando uma porta AND de 4 entradas diretamente.
+
+Acompanhe as issues do GitHub se precisar de algum desses recursos mais cedo.

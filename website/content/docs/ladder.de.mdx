@@ -1,0 +1,362 @@
+---
+title: Ladder-Logik
+---
+
+## Über Ladder-Logik-Diagramme
+
+**Ladder-Logik** ist die grafische Programmiersprache zur Beschreibung von Steuerprogrammen in Speicherprogrammierbaren Steuerungen (SPS) – den Industrierechnern, die weltweit Fabrikautomation, HLK-Systeme, Förderbänder und Prozessanlagen betreiben. Der Name leitet sich vom Erscheinungsbild des Diagramms ab: zwei vertikale Schienen, verbunden durch horizontale Sprossen, wobei jede Sprosse eine Bedingung-zu-Aktion-Regel ausdrückt. Elektriker und Steuerungsingenieure haben es übernommen, weil es die Relais-Schaltpläne widerspiegelt, die sie bereits kannten.
+
+Schematex folgt **[IEC 61131-3:2013](https://en.wikipedia.org/wiki/IEC_61131-3)**, dem internationalen Standard für SPS-Programmiersprachen, mit den in der nordamerikanischen Industriepraxis verbreiteten Allen-Bradley (Rockwell) Tag-Adress-Namen-Konventionen. Diese Seite beschreibt, was der Parser heute akzeptiert.
+
+<Playground initial={`ladder "Motor Start/Stop"
+rung 1 "Seal-in circuit":
+  parallel:
+    branch:
+      XIC(START_PB, "IN 1.0", name="Start Button")
+    branch:
+      XIC(MOTOR_AUX, "BIT 3.0", name="Aux Contact")
+  XIO(STOP_PB, "IN 1.1", name="Stop Button")
+  OTE(MOTOR_CMD, "OUT 2.0", name="Motor Command")
+rung 2 "Mode select with Set/Reset":
+  XIC(AUTO_HMIPB, "BIT 5.10", name="Auto Mode Button")
+  XIO(SYS_FAULT, "BIT 3.0", name="System Fault")
+  parallel:
+    branch:
+      OTL(SYS_AUTO, "BIT 3.1", name="System Auto Mode")
+    branch:
+      OTU(SYS_MANUAL, "BIT 3.2", name="System Manual Mode")
+rung 3 "Run timer":
+  XIC(MOTOR_CMD)
+  TON(RUN_TMR, PT=5000)
+rung 4 "Alarm on cycle complete":
+  XIC(CYCLE_DONE, "BIT 4.0", name="Cycle Done")
+  OTN(ALARM_OUT, "OUT 2.5", name="Alarm Output")`} height={500} />
+
+---
+
+## 1. Ihr erstes Ladder-Diagramm
+
+Das kleinste nützliche Ladder-Programm: eine Sprosse, zwei Kontakte, eine Spule.
+
+<Playground initial={`ladder "First Rung"
+rung 1 "Start when button pressed, stop on fault":
+  XIC(START_PB)
+  XIO(FAULT)
+  OTE(MOTOR_RUN)`} />
+
+Vier Regeln decken 80 % der Anwendungsfälle ab:
+
+1. Beginnen Sie mit `ladder`, optional gefolgt von einem zitierten Titel.
+2. Jede **Sprosse** beginnt mit `rung N "optionaler Kommentar":` in einer eigenen Zeile. Der abschließende Doppelpunkt ist optional.
+3. Elemente werden einzeln pro Zeile aufgelistet, eingerückt unter der Sprosse – von links nach rechts bedeutet Reihenschaltung (UND-Logik).
+4. Ein `parallel:` / `branch:`-Block führt ODER-Logik ein. Jeder Branch hat seine eigene Elementliste.
+
+> Kommentare können mit `#`, `//` oder Mermaid-Stil `%%` in einer eigenen Zeile beginnen.
+
+---
+
+## 2. Kontakte
+
+Kontakte repräsentieren Eingabebedingungen – sie leiten Strom, wenn das zugehörige Bit zum Kontakttyp passt.
+
+| Typ | Name | Leitet Strom wenn… |
+|---|---|---|
+| `XIC` | Examine If Closed | Tag-Bit = 1 (Schließer) |
+| `XIO` | Examine If Open | Tag-Bit = 0 (Öffner) |
+| `ONS` | One-Shot Rising | Tag wechselt 0 → 1 (steigende Flanke, ein Scan) |
+| `OSF` | One-Shot Falling | Tag wechselt 1 → 0 (fallende Flanke, ein Scan) |
+
+**Syntax:**
+
+```
+XIC(tag)
+XIC(tag, "address")
+XIC(tag, "address", name="Description")
+XIC(tag, address="address", name="Description")
+```
+
+- `tag` — erforderlich. Der SPS-Tag-Name (wird unterhalb des Kontaktsymbols angezeigt).
+- `"address"` — optionales positionelles zweites Argument. Die E/A-Adresse (z. B. `"IN 1.0"`, `"BIT 3.1"`).
+- `name="…"` — optionales Schlüssel-Wert-Argument. Für Menschen lesbare Beschreibung (wird oberhalb des Symbols angezeigt).
+
+<Playground initial={`ladder "Contact types"
+rung 1 "All four contact types":
+  XIC(START_PB, "IN 1.0", name="Start Button")
+  XIO(E_STOP, "IN 1.5", name="Emergency Stop NC")
+  ONS(PULSE_IN, "BIT 5.0", name="One-Shot Rising")
+  OSF(RESET_SIG, "BIT 5.1", name="One-Shot Falling")
+  OTE(OUT_RLY, "OUT 2.0", name="Output Relay")`} />
+
+---
+
+## 3. Spulen
+
+Spulen repräsentieren Ausgangsaktionen – sie wirken auf ein Tag-Bit, wenn die Sprosse Stromfluss hat.
+
+| Typ | Name | Wirkung auf Tag-Bit |
+|---|---|---|
+| `OTE` | Output Energize | Setzt Bit = 1, während Sprosse wahr ist; löscht auf 0, wenn Sprosse falsch wird |
+| `OTL` | Output Latch | Setzt Bit = 1; **behält** den Wert, auch nachdem die Sprosse falsch wird (verriegelt) |
+| `OTU` | Output Unlatch | Löscht Bit = 0; behält den Wert, auch nachdem die Sprosse falsch wird |
+| `OTN` | Output Negate | Setzt Bit = 0, während Sprosse wahr ist; setzt auf 1, wenn Sprosse falsch wird |
+| `RES` | Reset | Rockwell / Allen-Bradley Zähler- oder Timer-Reset-Spule |
+
+**Syntax:** identisch zu Kontakten – `OTE(tag)`, `OTE(tag, "address")`, `OTE(tag, "address", name="…")`.
+
+`OTL` und `OTU` werden paarweise verwendet, um Set/Reset-Flipflops aufzubauen. Die letzte Sprosse, die schreibt, gewinnt.
+
+<Playground initial={`ladder "Set-Reset latch"
+rung 1 "Set on start":
+  XIC(START_PB, "IN 1.0", name="Start")
+  OTL(MOTOR_ON, "BIT 3.0", name="Motor Latch")
+rung 2 "Reset on stop or fault":
+  parallel:
+    branch:
+      XIC(STOP_PB, "IN 1.1", name="Stop")
+    branch:
+      XIC(E_STOP, "IN 1.5", name="E-Stop")
+  OTU(MOTOR_ON, "BIT 3.0", name="Motor Latch")`} />
+
+---
+
+## 4. Funktionsblöcke
+
+Funktionsblöcke führen Timer-, Zähler-, Rechen- und Vergleichsoperationen durch. Sie erscheinen inline in einer Sprosse und haben Schlüsselwortparameter nach dem obligatorischen Tag-Argument.
+
+### 4.1 Timer
+
+| Typ | Name | Schlüsselparameter |
+|---|---|---|
+| `TON` | Timer On-Delay | `PT=` Vorwahlzeit in Millisekunden |
+| `TOFF` | Timer Off-Delay | `PT=` Vorwahlzeit in Millisekunden |
+| `TP` | Timer Pulse | `PT=` Vorwahlzeit in Millisekunden |
+
+```
+TON(timer_tag, PT=5000)
+```
+
+Der Timer-Tag speichert die abgelaufene Zeit. Das `Q`-Bit des Timers (Fertig-Ausgang) wird über den Tag-Namen in nachgelagerten Kontakten abgerufen.
+
+### 4.2 Zähler
+
+| Typ | Name | Schlüsselparameter |
+|---|---|---|
+| `CTU` | Count Up | `PV=` Vorwahlwert (Ganzzahl) |
+| `CTD` | Count Down | `PV=` Vorwahlwert |
+| `CTUD` | Count Up/Down | `PV=` Vorwahlwert |
+
+```
+CTU(cycle_counter, PV=100)
+```
+
+### 4.3 Mathematik
+
+| Typ | Operation |
+|---|---|
+| `ADD` | Addition |
+| `SUB` | Subtraktion |
+| `MUL` | Multiplikation |
+| `DIV` | Division |
+| `MOV` | Move (Kopieren) |
+
+```
+ADD(result_tag, IN1=setpoint, IN2=offset)
+MOV(dest_tag, IN1=source_tag)
+```
+
+### 4.4 Vergleiche
+
+| Typ | Bedeutung |
+|---|---|
+| `EQU` | Gleich |
+| `NEQ` | Ungleich |
+| `GRT` | Größer als |
+| `LES` | Kleiner als |
+| `GEQ` | Größer als oder gleich |
+| `LEQ` | Kleiner als oder gleich |
+
+```
+EQU(compare_tag, IN1=speed_actual, IN2=speed_setpoint)
+```
+
+<Playground initial={`ladder "Timer and counter"
+rung 1 "Start run timer":
+  XIC(MOTOR_CMD, "BIT 3.0", name="Motor Running")
+  TON(RUN_TIMER, PT=10000)
+rung 2 "Count completed cycles":
+  XIC(CYCLE_SENSOR, "IN 2.0", name="Cycle Sensor")
+  CTU(PART_COUNT, PV=500)
+rung 3 "Alarm when batch complete":
+  XIC(PART_COUNT, name="Count Done")
+  OTE(BATCH_ALARM, "OUT 3.0", name="Batch Complete Alarm")`} />
+
+---
+
+## 5. Parallelbranches
+
+Ein `parallel:`-Block führt ODER-Logik ein – die Sprosse hat Strom, wenn **ein beliebiger** Branch leitet. Jeder Branch ist ein `branch:`-Unterblock mit seinen eingerückten Elementen.
+
+```
+parallel:
+  branch:
+    XIC(LOCAL_START)
+  branch:
+    XIC(REMOTE_START)
+```
+
+Branches in einem `parallel:`-Block werden gleichzeitig ausgewertet. Der Block schließt, wenn die Einrückung auf das Niveau vor `parallel:` zurückkehrt.
+
+**Regeln:**
+- `parallel:` muss innerhalb einer Sprosse erscheinen.
+- `branch:` muss innerhalb eines `parallel:`-Blocks erscheinen – alleine verwendet löst es `LadderParseError` aus.
+- Jeder Branch enthält ein oder mehrere Elemente.
+- Elemente nach dem `parallel:`-Block sind in Reihe mit ihm (UND-Logik).
+
+<Playground initial={`ladder "Parallel OR logic"
+rung 1 "Start from either local or remote":
+  parallel:
+    branch:
+      XIC(LOCAL_START, "IN 1.0", name="Local Start")
+    branch:
+      XIC(REMOTE_START, "BIT 5.2", name="Remote Start")
+  XIO(STOP_ALL, "IN 1.5", name="Stop All")
+  OTE(CONVEYOR, "OUT 2.0", name="Conveyor Run")`} />
+
+---
+
+## 6. Labels und Kommentare
+
+- **Titel:** `ladder "Motor Control"` – nur in der ersten Zeile, als Zeichenfolge in Anführungszeichen.
+- **Sprossennummer:** erforderliche Ganzzahl nach `rung`.
+- **Sprossenkommentar:** optionale Zeichenfolge in Anführungszeichen nach der Sprossennummer, vor dem optionalen Doppelpunkt: `rung 3 "Run indicator":` oder `rung 3 "Run indicator"`.
+- **Tag:** erstes Argument in den Klammern – wird unterhalb des Symbols angezeigt.
+- **Adresse:** zweites positionelles Argument (in Anführungszeichen): `XIC(START_PB, "IN 1.0")`.
+- **Name:** `name="…"` Schlüsselwortargument – für Menschen lesbare Beschreibung, die oberhalb des Symbols angezeigt wird.
+- **Zeilenkommentare:** `#`, `//` oder `%%` am Zeilenanfang (nach führenden Leerzeichen). Dieselben Marker starten auch nachgestellte Kommentare.
+
+---
+
+## 7. Reservierte Wörter und Escaping
+
+**Am Zeilenanfang reserviert (Groß-/Kleinschreibung-unabhängig):** `ladder`, `rung`, `parallel:`, `branch:`.
+
+**Elementnamen** sind ausschließlich aus ASCII-Großbuchstaben: `XIC`, `XIO`, `ONS`, `OSF`, `OTE`, `OTL`, `OTU`, `OTN`, `TON`, `TOFF`, `TP`, `CTU`, `CTD`, `CTUD`, `ADD`, `SUB`, `MUL`, `DIV`, `MOV`, `EQU`, `NEQ`, `GRT`, `LES`, `GEQ`, `LEQ`.
+
+**Tag-IDs** – müssen dem Muster `[A-Z][A-Z0-9_]*` entsprechen (der Parser matcht `[A-Z][A-Z0-9_]*` für den Elementnamen-Präfix). Kleinbuchstaben-Tags werden innerhalb der Klammern akzeptiert.
+
+**Zeichenfolgen in Anführungszeichen** in Adress- oder Namensargumenten müssen doppelte Anführungszeichen `"…"` verwenden.
+
+---
+
+## 8. Häufige Fehler
+
+| Sie schrieben | Parser meldet | Behebung |
+|---|---|---|
+| `rung 1` (kein Doppelpunkt) | Korrekt geparst | Der abschließende Doppelpunkt ist optional |
+| `ONF(TAG)` | `LadderParseError: unknown element type "ONF"` | Der Kontakt für fallende Flanke ist `OSF`, nicht `ONF` |
+| `parallel:` ohne `branch:` | Leerer Parallelblock – Sprosse hat kein Element | Fügen Sie mindestens einen `branch:` innerhalb des `parallel:` hinzu |
+| `branch:` vor `parallel:` | `LadderParseError: branch: without parallel:` | Öffnen Sie immer zuerst `parallel:` |
+| `OTE()` – kein Tag | `LadderParseError: element missing tag` | Tag ist erforderlich: `OTE(MY_TAG)` |
+| `var StartBtn: bool` (Variablendeklaration) | `LadderParseError: invalid element syntax` | Keine Variablendeklarationen – Tags werden direkt verwendet |
+| Leere Sprosse (keine Elemente nach `rung N:`) | `LadderParseError: Rung N: empty rung` | Fügen Sie mindestens ein Element zu jeder Sprosse hinzu |
+| `TON(T1, T#5s)` | `LadderParseError: invalid element syntax` (T# ist keine gültige Zahl) | Verwenden Sie Millisekunden als Ganzzahl: `TON(T1, PT=5000)` |
+
+---
+
+## 9. Grammatik (EBNF)
+
+```text
+document      = header NEWLINE rung+
+
+header        = "ladder" ( WS quoted-string )? NEWLINE
+quoted-string = '"' any-char-but-quote* '"'
+
+rung          = "rung" WS integer ( WS quoted-string )? ":"? NEWLINE
+                  element+
+
+element       = contact-line
+              | coil-line
+              | fb-line
+              | parallel-block
+
+contact-line  = contact-type "(" tag ( "," arg )* ")" NEWLINE
+contact-type  = "XIC" | "XIO" | "ONS" | "OSF"
+
+coil-line     = coil-type "(" tag ( "," arg )* ")" NEWLINE
+coil-type     = "OTE" | "OTL" | "OTU" | "OTN" | "RES"
+
+fb-line       = fb-type "(" tag ( "," arg )* ")" NEWLINE
+fb-type       = "TON" | "TOFF" | "TP"
+              | "CTU" | "CTD" | "CTUD"
+              | "ADD" | "SUB" | "MUL" | "DIV" | "MOV"
+              | "EQU" | "NEQ" | "GRT" | "LES" | "GEQ" | "LEQ"
+
+arg           = quoted-string             // positional (address)
+              | key "=" quoted-string     // keyword (e.g. name="…")
+              | key "=" number            // keyword (e.g. PT=5000)
+
+parallel-block = INDENT≥2 "parallel:" NEWLINE
+                   ( INDENT branch-block )+
+
+branch-block   = "branch:" NEWLINE
+                   ( INDENT element )+
+
+tag           = [A-Za-z][A-Za-z0-9_]*
+key           = [A-Za-z][A-Za-z0-9_]*
+integer       = [0-9]+
+number        = [0-9]+ ( "." [0-9]+ )?
+comment       = ( "#" | "//" | "%%" ) any NEWLINE
+```
+
+Maßgebliche Quelle: `src/diagrams/ladder/parser.ts`. Wenn dies vom Parser abweicht, hat der Parser Vorrang – bitte öffnen Sie ein Issue.
+
+---
+
+## 10. Standardkonformität
+
+Schematex-Ladder-Logik folgt **IEC 61131-3:2013** Teil 3 für die Ladder-Diagramm-Sprache und verwendet **Allen-Bradley (Rockwell) Tag-Adress-Namen**-Konventionen, die in der nordamerikanischen SPS-Praxis verbreitet sind.
+
+Was heute implementiert ist:
+
+- ✅ Vier Kontakttypen: XIC (Schließer), XIO (Öffner), ONS (steigende Flanke), OSF (fallende Flanke)
+- ✅ Fünf Spulentypen: OTE (Ausgang), OTL (Verriegelung/Setzen), OTU (Entriegelung/Rücksetzen), OTN (Negation), RES (Zähler/Timer-Reset)
+- ✅ Drei Timer-Funktionsblöcke: TON, TOFF, TP mit Millisekunden-`PT=`-Parameter
+- ✅ Drei Zähler-Funktionsblöcke: CTU, CTD, CTUD mit ganzzahligem `PV=`-Parameter
+- ✅ Mathematik-Funktionsblöcke: ADD, SUB, MUL, DIV, MOV
+- ✅ Vergleichs-Funktionsblöcke: EQU, NEQ, GRT, LES, GEQ, LEQ
+- ✅ Parallel-/Branch-Blöcke für ODER-Logik
+- ✅ Tag-, Adress- und Namensannotationen gemäß Allen-Bradley Studio 5000-Konventionen
+- ⏳ Retentiver Timer (RTO) – im Standard; noch nicht im Parser
+- ⏳ Jump (JMP) / Label (LBL)-Anweisungen
+- ⏳ Master Control Reset (MCR)-Zone
+- ⏳ Sofortige E/A-Anweisungen (IIN, IOT)
+- ⏳ Structured Text- oder Function Block Diagram-Elemente eingebettet in Sprossen
+
+Referenzen:
+
+- IEC 61131-3:2013 — *Programmable controllers, Part 3: Programming languages*
+- NEMA ICS 1-2009 — *General Standards for Industrial Control and Systems*
+- Rockwell Automation Studio 5000 Logix Designer — [Ladder Diagram Programming Manual](https://literature.rockwellautomation.com/)
+
+---
+
+## 11. Verwandte Beispiele
+
+<RelatedExamples slugs={[
+  'ladder-motor-start-stop',
+  'ladder-mode-selection',
+]} />
+
+---
+
+## 12. Roadmap
+
+**Geplant – noch nicht parsebar.** Verwenden Sie diese heute nicht in generiertem DSL; der Parser wird sie ablehnen oder ignorieren.
+
+- **Retentiver Timer On (RTO)** — Timer, der die abgelaufene Zeit bei Stromausfall hält; erfordert einen separaten Reset-Kontakt.
+- **Jump (JMP) / Label (LBL)** — Sprung zu einer beschrifteten Sprosse, um Logik bedingt zu überspringen; in großen Programmen für die Leistung verwendet.
+- **Master Control Reset (MCR)-Zone** — ein eingeklammerter Bereich, der alle nicht-retentiven Ausgänge de-energisiert, wenn der MCR-Eingang falsch ist.
+- **Structured Text in Sprossen** — inline Ausdrucksauswertung (z. B. `CALC(result = a * b + c)`).
+- **Sofortige E/A (IIN / IOT)** — E/A-Scan mitten im Programm erzwingen für zeitkritische Steuerung.
+
+Verfolgen Sie den Fortschritt in den GitHub-Issues, wenn Sie eines davon früher benötigen.

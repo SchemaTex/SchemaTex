@@ -1,0 +1,222 @@
+---
+title: 網路拓撲
+---
+
+## 關於網路圖
+
+**網路圖**是最常被繪製的專業基礎設施圖——每位網路工程師、系統管理員、MSP，以及實體安全（CCTV）整合商都會在設計提案、竣工文件、稽核和客戶交付時繪製它。網路圖的慣例豐富：路由器和交換器的圖示不同，光纖連線和銅纜連線的外觀不同，攝影機子網路也有其可辨識的形狀。Schematex 的 `network` 引擎以原創線條藝術渲染業界通行的 **Cisco 慣例圖示剪影**，以標準規定的方式呈現各類拓撲，並且——不像 LLM 輸出原始 Mermaid——**絕不靜默遺漏任何設備、連接埠或連線**。
+
+它與拖放式圖示庫的不同之處在於：它理解**拓撲類別**（星狀有中心節點、環狀需封閉迴圈、脊-葉架構是兩列網格互聯、三層模型是核心-分發-接入的帶狀架構），以慣例外觀渲染每種**連線類型**，並**驗證**結構事實——設備 IP 必須落在其子網路的 CIDR 範圍內，VLAN ID 必須在 1 到 4094 之間。
+
+<Playground initial={`network "Acme HQ — CCTV"
+  layout: tiered
+  internet net "Internet"
+  firewall fw1 "Perimeter FW" tier: edge
+  l3switch core1 "Core SW" tier: core
+  poeswitch poe1 "PoE Switch" tier: access
+  nvr nvr1 "Recorder"
+  subnet cams "192.168.20.0/24" {
+    camera cam1 "Lobby" type: dome ip: 192.168.20.11
+    camera cam2 "Gate" type: ptz ip: 192.168.20.12
+    poe1
+  }
+  net -- fw1 : wan "ISP 1Gbps"
+  fw1 -- core1 : fiber 10G
+  core1 -- poe1 : trunk vlan: 20 1G
+  core1 -- nvr1
+  poe1 -- cam1 : poe
+  poe1 -- cam2 : poe`} height={460} />
+
+攝影機位於虛線標示的 `192.168.20.0/24` 子網路內（IP 已對 CIDR 進行驗證），PoE 連線顯示為綠色，光纖上行連線為橘色，設備依 `tier:` 分層排列。
+
+---
+
+## 1. 第一張網路圖
+
+一張完整的網路圖只需要兩種行：**設備宣告**和**連線**，其他什麼都不是必須的。
+
+<Playground initial={`network "Tiny LAN"
+router r1 "Edge Router"
+switch sw1 "Core Switch"
+pc pc1 "Workstation"
+r1 -- sw1
+sw1 -- pc1`} height={300} />
+
+就這樣——一張有效的、已完成版面配置的圖。只有兩條規則：
+
+- `<kind> <id> ["label"]` — 一個有類型的設備，種類決定圖示。
+- `<a> -- <b>` — 兩個已宣告設備之間的無向連線。
+
+**其他所有東西都是可選的、附加的——但並非同等重要。** 當層級關係重要時，有兩個低成本、高價值的結構提示值得加上：`layout:`（tiered/tree/star/ring/bus/mesh/spine-leaf）和 `tier:`（edge/core/distribution/access）。它們以極低的語法成本驅動可讀的由上而下層級：
+
+```
+network "Branch"
+  layout: tiered
+  router r1 "Edge Router" tier: edge
+  l3switch core1 "Core SW" tier: core
+  switch acc1 "Access SW" tier: access
+  pc pc1 "Workstation"
+  r1 -- core1
+  core1 -- acc1
+  acc1 -- pc1
+```
+
+相較之下，**逐條連線的標注**——連線類型（`fiber`/`wireless`/`poe`……）、速度、`vlan:`、`port:`、`trunk`/`access` 以及 `subnet { }` 邊界——不影響版面配置，且是生成最常出錯的地方。只有在請求明確需要時才加上這些。原則上：保留結構提示，除非有要求，否則省略裝飾性標注。
+
+設備**不會**從連線中自動宣告——無法安全地為未宣告的 ID 指定類型，因此連線到未知設備會產生可讀的錯誤訊息。使用 `;` 在同一行放置多個陳述式，並使用 `a b c : kind` 速記法一次宣告多個相同類型的設備。
+
+骨架確認無誤後，可以疊加方向和標注——`->` 是有向連線，`==` 是 LAG，而 `:` 後面的內容是連線規格：
+
+```
+network "Home"
+  layout: star
+  router gw "Gateway"
+  pc pc1
+  laptop lt1
+  gw -- pc1
+  gw -- lt1 : wireless
+```
+
+---
+
+## 2. 設備種類
+
+選擇符合實際裝置的種類；圖示遵循 Cisco 慣例剪影。
+
+- **基礎設施** — `router`、`switch`、`l3switch`、`firewall`、`loadbalancer`、`ap`、`wlc`、`gateway`、`modem`、`ids`、`proxy`、`vpngw`
+- **終端設備** — `server`、`serverfarm`（含 `count: n`）、`pc`、`laptop`、`mobile`、`ipphone`、`printer`、`storage`
+- **CCTV / 安全** — `camera`（含 `type: fixed | bullet | dome | ptz | turret`）、`nvr`、`dvr`、`poeswitch`、`encoder`、`monitor`
+- **雲端** — `internet`、`wan`、`pstn`、`cloud`，以及 `lan`（匯流排）
+
+接受別名：`multilayer`→`l3switch`、`workstation`→`pc`、`wifi`→`ap`、`nas`/`san`→`storage`、`voip`→`ipphone`。
+
+```
+camera cam1 type: dome ip: 192.168.20.11
+serverfarm farm "Server Farm" count: 4
+l3switch core1 tier: core model: "C9500"
+```
+
+---
+
+## 3. 連線與標注
+
+連線的外觀取決於其類型；`:` 後面的所有內容順序無關。
+
+```
+a -- b                       # copper / ethernet (default solid)
+a -- b : fiber 10G           # fiber — orange with slash ticks
+a -- b : wireless            # dashed
+a -- b : serial              # leased / WAN circuit
+a -- b : poe                 # Power-over-Ethernet (green + tag)
+a -- b : vpn "site-to-site"  # dashed tunnel
+a == b : lag 40G             # aggregated / EtherChannel (double line)
+a -- b : trunk vlan: 10,20 1G port: Gi0/1>Gi1/0/24
+```
+
+- `trunk` / `access` — 連接埠模式（trunk 應連接交換器類設備）。
+- `vlan: 10` 或 `vlan: 10,20` — 單一 VLAN 為連線著色（跳過保留的警告紅色）。
+- `1G` / `10G` / `100M` / `40G` — 速度，顯示在連線中段。
+- `port: near>far` — 兩端的介面標籤。
+
+---
+
+## 4. 版面模式
+
+```
+layout: tiered      # default — band by tier: edge → core → distribution → access
+layout: tree        # hierarchical from the root
+layout: star        # hub at center, spokes on a ring
+layout: ring        # nodes on a circle
+layout: bus         # shared backbone
+layout: mesh        # full/partial mesh on a circle
+layout: spine-leaf  # two rows, every leaf auto-meshed to every spine
+layout: manual      # explicit at: x,y per device
+direction: tb | lr  # flow axis for tiered/tree
+```
+
+使用 `tiered` 時，在基礎設施設備上設定 `tier:`（`edge` / `core` / `distribution` / `access`）；未設定 tier 的終端設備會放在其交換器下方。使用 `spine-leaf` 時，宣告 `spines:` 和 `leaves:`，脊-葉之間的連線會自動生成。
+
+---
+
+## 5. 邊界：站點、機架、子網路、VLAN
+
+設備可以放在巢狀的邊界區塊內。**實體**容器（site/rack）繪製實線邊框；**邏輯**疊加層（subnet/VLAN/zone/DMZ）繪製虛線著色區域。
+
+```
+network "Branch"
+  site hq "HQ Building" {
+    rack mdf "MDF Rack" {
+      firewall fw1 tier: edge
+      l3switch core1 tier: core
+    }
+  }
+  subnet lan "10.0.10.0/24" {
+    switch a1 tier: access
+    pc u1 "User PC" ip: 10.0.10.50
+  }
+  zone dmz "DMZ" {
+    server web
+  }
+  fw1 -- core1 : 10G
+  core1 -- a1 : trunk vlan: 10
+  a1 -- u1
+```
+
+在標籤為 CIDR 的 `subnet` 內宣告的設備，其 `ip:` 會進行驗證——位址不在範圍內會產生可讀的錯誤訊息。在區塊內單獨一行的裸 ID，可將已宣告的設備加入該群組。
+
+---
+
+## 6. 驗證與不遺漏保證
+
+引擎保證每個已宣告的設備和連線都能渲染——通用工具中設備被遺漏的問題在結構上不可能發生。引擎還會檢查：
+
+- **重複 ID** → 錯誤；
+- **未知種類** → 錯誤，附帶最接近的建議（`"swtich" → did you mean "switch"?`）；
+- **連線到未宣告設備** → 錯誤；
+- **VLAN ID 超出 1–4094** → 警告（仍會渲染）；
+- **設備 IP 不在其子網路 CIDR 內** → 錯誤。
+
+SVG 的 `<desc>` 記錄設備/連線數量、偵測到的拓撲類別（star / ring / bus / mesh / tree / hierarchical / spine-leaf），以及任何警告。
+
+---
+
+## 7. 主題
+
+```
+theme: default      # house "network blue" Cisco-style bodies
+theme: monochrome   # clean line-art for print/audit (link meaning via line-style + tags)
+theme: dark         # Catppuccin Mocha
+```
+
+CJK 標籤和 `「…」` / `"…"` 引號可正常解析：
+
+```
+network "办公室"
+  multilayer core1 「核心交换机」
+  poeswitch poe1
+  camera cam1 type: dome
+  core1 -- poe1 : trunk vlan: 10
+  poe1 -- cam1 : poe
+```
+
+---
+
+## 8. 標準合規
+
+網路拓撲沒有單一的正式繪圖標準；Schematex 從業界通行來源組合基準——**Cisco 網路拓撲圖示**（剪影以原創線條藝術重繪）、版面配置參考 **Cisco 層級模型**和**脊-葉（Clos）架構**、纜線配色參考 **ANSI/TIA-606**，CCTV 叢集角色參考 **ONVIF**。
+
+完整規格：[Network Topology Standard Reference](https://github.com/schematex/schematex/blob/main/docs/reference/35-NETWORK-STANDARD.md)。
+
+---
+
+## 相關範例
+
+來自範例庫的即用情境：
+
+<RelatedExamples slugs={[
+  'network-cctv-camera-system',
+  'network-link-types',
+  'network-spine-leaf-fabric',
+  'network-boundaries',
+  'network-enterprise-campus',
+]} />

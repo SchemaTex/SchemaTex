@@ -1,0 +1,222 @@
+---
+title: Network Topology
+---
+
+## 네트워크 다이어그램이란
+
+**네트워크 다이어그램**은 전문 인프라 다이어그램 중 가장 널리 그려지는 유형입니다. 모든 네트워크 엔지니어, 시스템 관리자, MSP, 물리 보안(CCTV) 통합업체가 설계 제안서, 준공 문서, 감사, 고객 인수 자료로 이를 작성합니다. 이 분야에는 확립된 시각 관례가 있습니다: 라우터는 스위치와 다르게 생겼고, 광섬유 링크는 구리선 링크와 다르게 표시되며, 카메라 서브넷은 고유한 형태를 가집니다. Schematex의 `network` 엔진은 실질적 표준인 **Cisco 관례 아이콘 실루엣**을 독자적인 라인 아트로 렌더링하고, 표준이 규정하는 방식으로 토폴로지 클래스를 배치하며 — Mermaid 원시 코드를 생성하는 LLM과 달리 — **장치, 포트, 링크를 단 하나도 자동으로 누락시키지 않습니다**.
+
+드래그 앤 드롭 스텐실 라이브러리와의 차이점: **토폴로지 클래스**를 이해합니다(스타에는 허브가 있고, 링은 루프를 닫으며, spine-leaf는 두 행으로 메시를 구성하고, 3계층 모델은 코어-배포-액세스 밴드로 구성됩니다). 각 **링크 유형**을 관례적인 외관으로 렌더링하고, 구조적 사실을 **검증**합니다 — 장치의 IP는 서브넷의 CIDR 내에 있어야 하고, VLAN ID는 1–4094 범위여야 합니다.
+
+<Playground initial={`network "Acme HQ — CCTV"
+  layout: tiered
+  internet net "Internet"
+  firewall fw1 "Perimeter FW" tier: edge
+  l3switch core1 "Core SW" tier: core
+  poeswitch poe1 "PoE Switch" tier: access
+  nvr nvr1 "Recorder"
+  subnet cams "192.168.20.0/24" {
+    camera cam1 "Lobby" type: dome ip: 192.168.20.11
+    camera cam2 "Gate" type: ptz ip: 192.168.20.12
+    poe1
+  }
+  net -- fw1 : wan "ISP 1Gbps"
+  fw1 -- core1 : fiber 10G
+  core1 -- poe1 : trunk vlan: 20 1G
+  core1 -- nvr1
+  poe1 -- cam1 : poe
+  poe1 -- cam2 : poe`} height={460} />
+
+카메라들은 점선 `192.168.20.0/24` 서브넷(IP가 CIDR에 대해 검증됨) 안에 위치하고, PoE 링크는 초록색, 광섬유 업링크는 주황색으로 표시되며, 장치들은 `tier:`에 따라 밴드를 이룹니다.
+
+---
+
+## 1. 첫 번째 다이어그램 만들기
+
+완전한 네트워크 다이어그램에는 두 가지 종류의 줄만 필요합니다: **장치 선언**과 **링크**. 그 외에는 아무것도 필요하지 않습니다.
+
+<Playground initial={`network "Tiny LAN"
+router r1 "Edge Router"
+switch sw1 "Core Switch"
+pc pc1 "Workstation"
+r1 -- sw1
+sw1 -- pc1`} height={300} />
+
+이것으로 충분합니다 — 유효하고 배치된 다이어그램입니다. 두 가지 규칙만 기억하면 됩니다:
+
+- `<kind> <id> ["label"]` — 타입이 있는 장치. kind에 따라 아이콘이 결정됩니다.
+- `<a> -- <b>` — 선언된 두 장치 간의 무방향 링크.
+
+**나머지는 모두 선택 사항이지만, 동등하지는 않습니다.** 계층이 중요할 때 추가할 가치가 있는 두 가지 저비용, 고가치 구조적 힌트: `layout:` (tiered/tree/star/ring/bus/mesh/spine-leaf)와 `tier:` (edge/core/distribution/access). 거의 문법 비용 없이 읽기 쉬운 상하 계층을 만들어줍니다:
+
+```
+network "Branch"
+  layout: tiered
+  router r1 "Edge Router" tier: edge
+  l3switch core1 "Core SW" tier: core
+  switch acc1 "Access SW" tier: access
+  pc pc1 "Workstation"
+  r1 -- core1
+  core1 -- acc1
+  acc1 -- pc1
+```
+
+반면 **링크별 주석** — 링크 유형(`fiber`/`wireless`/`poe`…), 속도, `vlan:`, `port:`, `trunk`/`access`, `subnet { }` 경계 — 은 레이아웃에 영향을 주지 않으며, 생성 시 가장 자주 오류가 발생하는 부분입니다. 요청에서 명시적으로 요구할 때만 추가하세요. 경험 법칙: 구조적 힌트는 유지하고, 명시적으로 요청받지 않은 장식적 주석은 제거합니다.
+
+장치는 링크에서 자동으로 선언되지 **않습니다** — 선언되지 않은 ID는 안전하게 타입을 지정할 수 없으므로, 알 수 없는 장치로의 링크는 읽기 쉬운 오류를 발생시킵니다. `;`를 사용해 한 줄에 여러 명령문을 배치하고, `a b c : kind` 약식으로 같은 종류의 여러 장치를 한 번에 선언할 수 있습니다.
+
+기본 구조가 작동하면 방향과 주석을 추가할 수 있습니다 — `->` 는 방향이 있는 링크, `==`는 LAG, `:`이후는 링크 스펙입니다:
+
+```
+network "Home"
+  layout: star
+  router gw "Gateway"
+  pc pc1
+  laptop lt1
+  gw -- pc1
+  gw -- lt1 : wireless
+```
+
+---
+
+## 2. 장치 종류
+
+박스에 맞는 종류를 선택하세요; 아이콘은 Cisco 관례 실루엣을 따릅니다.
+
+- **인프라** — `router`, `switch`, `l3switch`, `firewall`, `loadbalancer`, `ap`, `wlc`, `gateway`, `modem`, `ids`, `proxy`, `vpngw`
+- **엔드포인트** — `server`, `serverfarm` (`count: n`), `pc`, `laptop`, `mobile`, `ipphone`, `printer`, `storage`
+- **CCTV / 보안** — `camera` (`type: fixed | bullet | dome | ptz | turret`), `nvr`, `dvr`, `poeswitch`, `encoder`, `monitor`
+- **클라우드** — `internet`, `wan`, `pstn`, `cloud`, 그리고 `lan` (버스 바)
+
+별칭 허용: `multilayer`→`l3switch`, `workstation`→`pc`, `wifi`→`ap`, `nas`/`san`→`storage`, `voip`→`ipphone`.
+
+```
+camera cam1 type: dome ip: 192.168.20.11
+serverfarm farm "Server Farm" count: 4
+l3switch core1 tier: core model: "C9500"
+```
+
+---
+
+## 3. 링크 및 주석
+
+링크의 외관은 유형에 따라 결정됩니다; `:`이후는 순서에 무관합니다.
+
+```
+a -- b                       # 구리 / 이더넷 (기본 실선)
+a -- b : fiber 10G           # 광섬유 — 슬래시 틱이 있는 주황색
+a -- b : wireless            # 점선
+a -- b : serial              # 임대 / WAN 회로
+a -- b : poe                 # Power-over-Ethernet (초록색 + 태그)
+a -- b : vpn "site-to-site"  # 점선 터널
+a == b : lag 40G             # 집계 / EtherChannel (이중 선)
+a -- b : trunk vlan: 10,20 1G port: Gi0/1>Gi1/0/24
+```
+
+- `trunk` / `access` — 포트 모드 (trunk는 스위치 클래스 장치에 연결해야 함).
+- `vlan: 10` 또는 `vlan: 10,20` — 단일 VLAN은 링크에 색조를 입힘 (예약된 경보-빨간색 제외).
+- `1G` / `10G` / `100M` / `40G` — 속도, 링크 중간에 표시.
+- `port: near>far` — 각 끝의 인터페이스 레이블.
+
+---
+
+## 4. 레이아웃 모드
+
+```
+layout: tiered      # 기본 — tier: edge → core → distribution → access로 밴드 구성
+layout: tree        # 루트에서 계층적으로
+layout: star        # 중심에 허브, 스포크가 링에 배치
+layout: ring        # 원에 노드 배치
+layout: bus         # 공유 백본
+layout: mesh        # 원에 완전/부분 메시
+layout: spine-leaf  # 두 행, 모든 leaf가 모든 spine에 자동 메시 연결
+layout: manual      # 장치별 명시적 at: x,y
+direction: tb | lr  # tiered/tree의 흐름 축
+```
+
+`tiered`의 경우 인프라에 `tier:` (`edge` / `core` / `distribution` / `access`)를 설정하세요; 티어가 없는 엔드포인트는 해당 스위치 아래에 배치됩니다. `spine-leaf`의 경우 `spines:`와 `leaves:`를 선언하면 spine↔leaf 링크가 자동으로 생성됩니다.
+
+---
+
+## 5. 경계: 사이트, 랙, 서브넷, VLAN
+
+장치는 중첩된 경계 블록 안에 위치할 수 있습니다. **물리적** 컨테이너(site/rack)는 실선 테두리를 그리고, **논리적** 오버레이(subnet/VLAN/zone/DMZ)는 점선 색조 영역을 그립니다.
+
+```
+network "Branch"
+  site hq "HQ Building" {
+    rack mdf "MDF Rack" {
+      firewall fw1 tier: edge
+      l3switch core1 tier: core
+    }
+  }
+  subnet lan "10.0.10.0/24" {
+    switch a1 tier: access
+    pc u1 "User PC" ip: 10.0.10.50
+  }
+  zone dmz "DMZ" {
+    server web
+  }
+  fw1 -- core1 : 10G
+  core1 -- a1 : trunk vlan: 10
+  a1 -- u1
+```
+
+레이블이 CIDR인 `subnet` 안에 선언된 장치는 `ip:`가 검증됩니다 — 범위 밖의 주소는 읽기 쉬운 오류를 발생시킵니다. 블록 안에 단독으로 있는 ID는 이미 선언된 장치를 해당 그룹에 추가합니다.
+
+---
+
+## 6. 검증 및 누락 방지 보장
+
+엔진은 선언된 모든 장치와 링크가 렌더링됨을 보장합니다 — 일반 도구에서 발생하는 장치 누락 오류는 구조적으로 불가능합니다. 또한 다음을 확인합니다:
+
+- **중복 ID** → 오류;
+- **알 수 없는 종류** → 가장 가까운 제안과 함께 오류 (`"swtich" → did you mean "switch"?`);
+- **선언되지 않은 장치로의 링크** → 오류;
+- **1–4094 범위를 벗어난 VLAN ID** → 경고 (렌더링은 계속됨);
+- **서브넷 CIDR 밖의 장치 IP** → 오류.
+
+SVG `<desc>`는 장치/링크 수, 감지된 토폴로지 클래스(star / ring / bus / mesh / tree / hierarchical / spine-leaf), 경고를 기록합니다.
+
+---
+
+## 7. 테마
+
+```
+theme: default      # 하우스 "network blue" Cisco 스타일 바디
+theme: monochrome   # 인쇄/감사용 깔끔한 라인 아트 (링크 의미는 선 스타일 + 태그로)
+theme: dark         # Catppuccin Mocha
+```
+
+CJK 레이블과 `「…」` / `"…"` 따옴표는 깔끔하게 파싱됩니다:
+
+```
+network "办公室"
+  multilayer core1 「核心交换机」
+  poeswitch poe1
+  camera cam1 type: dome
+  core1 -- poe1 : trunk vlan: 10
+  poe1 -- cam1 : poe
+```
+
+---
+
+## 8. 표준 준수
+
+네트워크 토폴로지에는 단일 공식 도면 표준이 없습니다. Schematex는 실질적 표준을 바탕으로 기준을 구성합니다 — **Cisco 네트워크 토폴로지 아이콘** (독자적인 라인 아트로 재작성된 실루엣), 레이아웃을 위한 **Cisco 계층 모델**과 **spine-leaf (Clos)**, 케이블링을 위한 **ANSI/TIA-606** 색상 관례, CCTV 클러스터를 위한 **ONVIF** 역할.
+
+전체 사양: [Network Topology Standard Reference](https://github.com/schematex/schematex/blob/main/docs/reference/35-NETWORK-STANDARD.md).
+
+---
+
+## 관련 예시
+
+예시 갤러리에서 바로 사용 가능한 시나리오:
+
+<RelatedExamples slugs={[
+  'network-cctv-camera-system',
+  'network-link-types',
+  'network-spine-leaf-fabric',
+  'network-boundaries',
+  'network-enterprise-campus',
+]} />

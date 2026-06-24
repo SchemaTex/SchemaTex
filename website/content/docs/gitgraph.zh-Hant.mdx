@@ -1,0 +1,118 @@
+---
+title: Git Graph
+description: 與 Mermaid 相容的提交歷史圖——分支、合併、標籤、cherry-pick——從一系列 git 操作的重播中算圖。
+---
+
+## 關於 git graph
+
+**Git graph** 視覺化呈現一個儲存庫的提交歷史：主線上的一系列提交、從中分叉出去的**分支**、將它們帶回的**合併**，加上**標籤**與 **cherry-pick**。這是教授分支策略（Git Flow、主幹開發）及記錄發布歷史的標準方式。Schematex 實作 **Mermaid `gitGraph`** 方言，因此現有的 Mermaid 來源可以直接渲染不需更動。
+
+Schematex 的優勢在於精確度與乾淨、無相依性的版面配置：它**重播操作序列**以將每個提交分配至對應的軌道，無交叉地路由分支和合併連接器，並渲染帶有類型樣式的提交節點（normal / highlight / reverse）——全部來自 KB 級的微型套件。
+
+<Playground initial={`gitGraph
+  commit id: "init"
+  branch develop
+  checkout develop
+  commit
+  commit tag: "v0.1"
+  checkout main
+  merge develop tag: "v1.0"`} height={360} />
+
+---
+
+## 1. 你的第一張 git graph
+
+以 `gitGraph` 關鍵字開頭（不區分大小寫；允許末尾冒號），然後每行一個操作。第一個提交落在主分支上：
+
+```
+gitGraph
+  commit
+  branch develop
+  checkout develop
+  commit id: "feature work"
+  checkout main
+  merge develop tag: "v1.0"
+```
+
+每個操作都針對**當前已簽出的分支**執行。`commit` 追加到該分支；`branch` 從當前提交建立一條新線；`checkout`（別名 `switch`）移動游標；`merge` 將另一個分支合併進當前分支。
+
+---
+
+## 2. 操作
+
+```
+commit                         # plain commit on the current branch
+commit id: "init"              # give the commit an explicit id
+commit tag: "v0.1"             # attach a release tag
+commit type: HIGHLIGHT         # NORMAL (default) | HIGHLIGHT | REVERSE
+branch develop                 # fork a branch from the current commit
+branch hotfix order: 3         # pin its lane order
+checkout develop               # switch the cursor (alias: switch)
+merge develop tag: "v1.0"      # merge a branch into the current one
+cherry-pick id: "abc"          # copy a commit onto the current branch
+```
+
+- **`commit`** 接受可選的 `id:`、`tag:` 和 `type:`（`NORMAL` / `HIGHLIGHT` / `REVERSE`）。
+- **`branch NAME`** 接受可選的 `order:` 以控制軌道排列。
+- **`checkout` / `switch`** 可互換使用。
+- **`cherry-pick id:`** 複製一個提交；可選的 `parent:` 用來消歧義合併提交。
+
+---
+
+## 3. 方向
+
+圖表預設為從左至右。在標頭行內設定方向：
+
+```
+gitGraph TB:
+  commit
+  branch feature
+  checkout feature
+  commit
+  checkout main
+  merge feature
+```
+
+接受 `LR`（預設值）、`TB` 和 `BT`。也可以透過前置的 `%%{init: {'gitGraph': {...}}}%%` 指令或 YAML frontmatter 的 `config:` 區塊提供設定（與 Mermaid 相容），支援 `mainBranchName`、`showCommitLabel`、`rotateCommitLabel`。
+
+---
+
+## 4. 引擎如何排版
+
+與 Mermaid 相容是差異化優勢，但版面配置才是核心工作：
+
+- 操作清單依序**重播**，以建立提交 DAG 並將每個提交分配到其分支軌道。
+- 分支軌道依出現順序排列（可用 `order:` 覆寫）；合併連接器從被合併分支的末端路由至新的合併提交。
+- 提交節點依 `type:` 套用樣式——HIGHLIGHT 提交被強調，REVERSE 提交被標記——標籤渲染為旗幟。cherry-pick 以虛線複製邊連接到來源。
+
+每個提交都帶有 `data-*`（分支、id、類型）供下游互動使用。
+
+---
+
+## 5. 常見錯誤
+
+```
+# WRONG — no gitGraph header
+commit
+commit
+
+# WRONG — unknown operation
+gitGraph
+  rebase main
+
+# WRONG — unknown commit type
+gitGraph
+  commit type: SQUASH
+```
+
+文件必須以 `gitGraph` 開頭；只有 `commit` / `branch` / `checkout` / `switch` / `merge` / `cherry-pick` 是有效操作；`type:` 必須是 `NORMAL`、`HIGHLIGHT` 或 `REVERSE`。`%%` 開始一個註解，與 Mermaid 一致。
+
+---
+
+## 6. 標準合規性
+
+語法對應 Mermaid `gitGraph` 語法——操作關鍵字、`id:`/`tag:`/`type:` 選項、`order:`、`%%{init}%%` 指令，以及 YAML frontmatter 設定——因此 Mermaid 來源可以直接移植，同時透過 Schematex 的零相依性引擎渲染。
+
+## 7. 路線圖
+
+延後實作：平行提交壓縮、透過 classDef 自訂提交主題，以及超越軌道順序的個別分支顏色覆寫。

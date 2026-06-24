@@ -1,0 +1,237 @@
+---
+title: Usar Schematex con IA
+description: Integra Schematex en agentes de IA a través del Vercel AI SDK, el endpoint MCP alojado, o el paquete npm @schematex/mcp.
+---
+
+<MCPConnectCard />
+
+## TL;DR
+
+Schematex incluye una capa de herramientas construida para LLMs — cinco herramientas que permiten a un agente de IA **descubrir** tipos de diagramas, **aprender** su sintaxis, **ver** ejemplos curados, **validar** su propia salida y **renderizar** SVG. Tres caminos de integración, las mismas herramientas:
+
+| Camino | Cuándo | Instalación |
+|---|---|---|
+| **Vercel AI SDK** | Construyendo tu propia funcionalidad de IA en una app Next.js / Node | `npm i schematex ai zod` |
+| **MCP alojado** | Conectar Claude Desktop, ChatGPT, Cursor, Windsurf | Apunta el cliente a `https://schematex.js.org/mcp` |
+| **MCP stdio local** | Offline / hosts personalizados | `npx @schematex/mcp` |
+
+---
+
+## Las cinco herramientas
+
+Cada camino expone las mismas cinco herramientas con semántica idéntica.
+
+### `listDiagrams()`
+Devuelve los 45 tipos de diagramas con tagline, pista de "cuándo usar", cluster y estándar autoritativo. Llámala primero para elegir un tipo.
+
+### `getSyntax({ type, detail? })`
+Sintaxis canónica para un diagrama. Llámala después de elegir un tipo.
+
+La respuesta por defecto `detail: "canonical"` está diseñada para la generación LLM en el primer intento: encabezado canónico, modo preferido, formas básicas, guía de evitar/reparar, y reglas de generación compartidas. Usa `detail: "reference"` solo cuando la solicitud necesite una funcionalidad avanzada o un adaptador importado; eso devuelve el fragmento recortado de la documentación pública desde `## 1.` hasta la sección de gramática.
+
+### `getExamples({ type, limit?, preferFeatured?, maxComplexity? })`
+Ejemplos DSL curados del mundo real con notas de escenario. Úsalos como contexto few-shot antes de la generación.
+
+### `validateDsl({ type?, dsl })`
+Verificación solo de parse. Devuelve `{ ok: true }` o `{ ok: false, errors: [{line, column, message, source, hint}] }`. Pasa el `type` canónico seleccionado una vez que lo conozcas, y **siempre llama antes de devolver DSL al usuario** — los agentes que se autocorrigen con este bucle son dramáticamente más confiables.
+
+### `renderDsl({ type?, dsl, theme?, padding? })`
+Renderiza DSL a una cadena SVG. El éxito devuelve `{ ok: true, status, svg }`.
+El fallo devuelve `{ ok: false, status: 'invalid', svg, errors }`, donde `svg` es
+un fallback de diagnóstico visible en lugar de una vista previa vacía.
+
+<Callout type="info" title="¿Realmente necesitas esta herramienta?">
+**Si tu app ya renderiza diagramas** (estás usando el paquete `schematex` directamente), omite `renderDsl` — haz que el agente devuelva el DSL validado y renderízalo tú mismo. Llamar a la herramienta solo agrega un round-trip innecesario.
+
+**Usa `renderDsl` solo cuando** necesites que el SVG se devuelva dentro de la conversación misma: Claude Desktop, ChatGPT, Cursor, o cualquier cliente de chat puro que no tenga su propio pipeline de renderizado.
+</Callout>
+
+Para una vista previa de IA dentro de la app, renderiza el DSL devuelto con `renderResult()` o
+`renderPreview()`:
+
+```ts
+import { renderResult } from 'schematex';
+
+const result = renderResult(dsl, { type });
+preview.innerHTML = result.svg;
+
+if (!result.ok) {
+  queueRepair(result.diagnostics);
+}
+```
+
+La vista previa puede permanecer visible mientras tu app trata `ok: false` como un
+resultado de usuario inválido para reparación, reintento, telemetría o política de facturación.
+
+---
+
+## Camino 1 — Vercel AI SDK (in-app)
+
+La forma más rápida de agregar generación de Schematex a una app Next.js / Node.
+
+```ts
+import { streamText } from 'ai';
+import { schematexTools } from 'schematex/ai/sdk';
+
+const result = streamText({
+  model: 'anthropic/claude-opus-4-7',
+  tools: schematexTools,
+  maxSteps: 5,
+  system: `You write Schematex DSL. First call listDiagrams to pick a type.
+Then call getSyntax and getExamples for that type. Write the DSL, then
+call validateDsl and self-correct on errors before returning to the user.`,
+  prompt: userMessage,
+});
+```
+
+La subruta `schematex/ai/sdk` solo se carga si `ai` y `zod` están instalados (ambos son peer-deps opcionales). Si no usas el AI SDK, importa las funciones planas desde `schematex/ai` y conéctalas a cualquier framework:
+
+```ts
+import { listDiagrams, getSyntax, getExamples, validateDsl, renderDsl } from 'schematex/ai';
+```
+
+### Generación en un solo paso (sin bucle de herramientas)
+
+Los backends de alto volumen a menudo generan con **una** llamada al modelo en lugar de un bucle de herramientas de múltiples pasos — más barato y con menor latencia. Para eso, `buildPromptContext(type)` ensambla la tarjeta de gramática canónica **y** un ejemplo few-shot destacado en un bloque listo para inyectar, de modo que no tengas que unir `getSyntax` + `getExamples` tú mismo:
+
+```ts
+import { buildPromptContext, validateDsl } from 'schematex/ai';
+
+const ctx = buildPromptContext('genogram');          // grammar card + featured example
+const system = `Generate only Schematex DSL.\n\n${ctx.text}`;
+const dsl = await generate(system, userMessage);     // your single model call
+
+const check = validateDsl('genogram', dsl);          // always gate server-side
+if (!check.ok) {
+  // one repair pass: re-prompt with check.errors[].message + .hint
+}
+```
+
+`buildPromptContext` es puro azúcar sobre `getSyntax({ detail: 'canonical' })` + `getExamples({ preferFeatured: true })` — ambos siguen disponibles si prefieres componer el prompt tú mismo. Opciones: `{ examples?: number, detail?, preferFeatured?, maxComplexity? }`.
+
+---
+
+## Camino 2 — MCP alojado (sin instalación)
+
+El servidor MCP de Schematex está alojado en:
+
+```
+https://schematex.js.org/mcp
+```
+
+Cualquier cliente MCP que hable JSON-RPC sobre HTTP puede conectarse. Sin instalación, sin proceso local, siempre actualizado con la última versión de schematex.
+
+### Claude.ai (web)
+
+Usa el bloque de conexión al inicio de esta página — un clic abre el diálogo del conector, pega la URL, listo. El conector aparece luego en Configuración → Conectores y está disponible en cada conversación.
+
+### Claude Desktop (app)
+
+Configuración → Conectores → Agregar conector personalizado → pega `https://schematex.js.org/mcp`.
+
+### ChatGPT / Cursor / Windsurf
+
+Sigue el flujo "Agregar servidor MCP" de tu cliente y usa el transporte HTTP con la URL anterior.
+
+---
+
+## Camino 3 — MCP stdio local
+
+Para desarrollo offline o clientes que solo admiten transporte stdio.
+
+```bash
+npm i -g @schematex/mcp
+# o
+npx @schematex/mcp
+```
+
+### Configuración de Claude Desktop
+
+`~/Library/Application Support/Claude/claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "schematex": {
+      "command": "npx",
+      "args": ["-y", "@schematex/mcp"]
+    }
+  }
+}
+```
+
+---
+
+## Bucle de agente recomendado
+
+La mayor ganancia de confiabilidad es hacer que el agente valide su propia salida y se autocorrija.
+
+```
+1. listDiagrams()                          → elegir el tipo correcto
+2. getSyntax({ type })                     → obtener sintaxis de generación canónica
+3. getExamples({ type, maxComplexity: 2 }) → obtener contexto few-shot
+4. escribir DSL
+5. validateDsl({ type, dsl })
+   ├─ ok:    devolver DSL al usuario
+   └─ error: leer línea/columna/mensaje, corregir, ir a 5
+6. (opcional) renderDsl({ type, dsl })     → devolver SVG (omitir si la app renderiza nativamente)
+```
+
+Un system prompt sencillo que implementa este bucle:
+
+```
+You generate Schematex DSL for diagrams. Always follow this procedure:
+
+1. If you don't already know which diagram type matches the user's request,
+   call listDiagrams and pick the best match.
+2. Call getSyntax for the chosen type. Stay on the canonical path unless an
+   advanced feature requires getSyntax({ type, detail: "reference" }).
+3. Call getExamples (maxComplexity: 2) for few-shot context.
+4. Write the DSL.
+5. Call validateDsl. If ok:false, read the error's line, column, and message,
+   fix the DSL, and call validateDsl again. Repeat up to 3 times.
+6. Return the validated DSL to the user, inside a ```schematex code block.
+```
+
+---
+
+## Forma del error
+
+`validateDsl` y `renderDsl` devuelven errores estructurados en caso de fallo:
+
+```ts
+{
+  ok: false,
+  status: 'invalid',     // renderDsl only
+  type: 'genogram' | null,
+  svg: string,           // renderDsl only: visible diagnostic fallback
+  errors: [
+    {
+      line?: number;        // 1-based, if the parser reported it
+      column?: number;
+      source?: string;      // the offending line text
+      message: string;      // human-readable
+      hint?: string;
+    }
+  ]
+}
+```
+
+No todos los parsers emiten información de línea todavía (genogram, pedigree, ecomap, venn, sld,
+fishbone sí lo hacen hoy; otros devuelven solo el mensaje). La forma es estable — `line` es
+opcional.
+
+---
+
+## ¿Listo para probarlo?
+
+<MCPConnectCard
+  title="Add Schematex to Claude — it takes 10 seconds"
+  description="Hosted MCP. No install, no local process. The connector stays up to date with every Schematex release."
+/>
+
+---
+
+## Notas de licencia
+
+Schematex es AGPL-3.0. Para integraciones comerciales de código cerrado, contacta a victor&#64;mymap.ai para una licencia comercial.

@@ -1,0 +1,404 @@
+---
+title: Genogram（ジェノグラム）
+---
+
+## ジェノグラムについて
+
+**ジェノグラム**は、従来の家系図における名前や生年月日を超え、3世代以上にわたる家族の*感情的*・*医療的*な質感を記録する家族図です。セラピスト、ソーシャルワーカー、遺伝カウンセラーが、散文的な記録では見えにくいパターン——断絶、過剰な関与、繰り返す疾病——を明らかにするために使用します。
+
+Schematex は、臨床訓練で使用される **[McGoldrick, Gerson & Petry (2020) 標準](https://www.guilford.com/books/Genograms/McGoldrick-Gerson-Petry/9781462542055)** と、広く採用されている **[GenoPro](https://genopro.com/genogram/) の32タイプ感情関係分類** に従っています。理論と歴史については [Wikipedia: Genogram](https://en.wikipedia.org/wiki/Genogram) を参照してください。このページでは現在のパーサーが受け入れる内容を説明します。
+
+<Playground initial={`genogram "The Potter Family"
+  fleamont [male, 1909, 1979, deceased]
+  euphemia [female, 1920, 1979, deceased]
+  fleamont -- euphemia
+    james [male, 1960, 1981, deceased]
+  mr_evans [male, 1925, deceased]
+  mrs_evans [female, 1928, deceased]
+  mr_evans -- mrs_evans
+    lily [female, 1960, 1981, deceased]
+    petunia [female, 1958]
+  james -- lily "m. 1978"
+    harry [male, 1980, index]
+  petunia -- vernon [male, 1951]
+    dudley [male, 1980]
+  harry -cutoff- petunia
+  harry -hostile- dudley
+  harry -close- lily`} height={520} />
+
+---
+
+## 1. 最初のジェノグラム
+
+臨床的に有用な最小のジェノグラム：両親2人と子ども1人。
+
+<Playground initial={`genogram
+  alice [female, 1980]
+  bob [male, 1978]
+  alice -- bob "m. 2005"
+    carol [female, 2008]`} />
+
+使用方法の80%をカバーする4つのルール：
+
+1. キーワード `genogram` で始め、オプションで引用符付きのタイトルを続けます。
+2. 各人物を独自の行で宣言します：`id [属性]`。属性は角括弧内にカンマ区切りで記述します。
+3. 2人を**カップル演算子**で接続します——ここでは `--`（婚姻）を使用。§4.1でその他6種類を説明します。末尾の引用符付き文字列は関係のラベルになります。
+4. カップル行の下に**インデント**して子どもを追加します。
+
+> コメントは `#`、`//`、またはMermaidスタイルの `%%` で始まる独立した行に記述してください。末尾のインラインコメント（`bob [male, 1978] # ...`）はサポートされておらず、パーサーを壊します——§8を参照。
+
+---
+
+## 2. 個人
+
+個人の行は `id [attr1, attr2, …]` です。属性はカンマ区切りで、順序は問わず、すべてオプションです。
+
+**IDルール。** `[a-zA-Z][a-zA-Z0-9_-]*` に一致する必要があります。IDは内部的に大文字・小文字を区別せず、元の大文字・小文字をそのまま表示ラベルとして使用します（`label:"…"` で上書き可能）。
+
+**現在のパーサーが受け入れる属性：**
+
+| 属性 | 値 | 効果 |
+|---|---|---|
+| 性別 | `male`、`female`、`unknown`、`other` | 形状：正方形、円、菱形、菱形 |
+| 状態 | `deceased`、`stillborn`、`miscarriage`、`abortion` | 視覚的な修飾子（×印、スケールされた形状など） |
+| 生年 | 4桁の数字（例：`1980`） | 最初の4桁トークン = 生年 |
+| 死年 | 生年後の4桁の数字（例：`1980, 2055`） | 2番目の4桁トークン = 死年 |
+| `index` | フラグ | 同心形状 = 識別患者 |
+| `unknown-siblings` | フラグ | `?` 付きの菱形——不明数の兄弟姉妹のプレースホルダー |
+| `age:N` | 例：`age:42` | 形状内に年齢を表示 |
+| `death:YYYY` | 例：`death:2020` | 明示的な死年 |
+| `label:"…"` | 例：`label:"Dr. Smith"` | 表示ラベルの上書き |
+| `sibling-of:<id>` | 例：`sibling-of:monica` | 参照された兄弟姉妹と同じ世代に固定し、破線の括弧を描画——祖先が不明な既知の親族に使用。 |
+| `conditions:…` | §5を参照 | 医療的・心理的状態 |
+| `key:value` | 任意のカスタム | メタデータとして保存 |
+
+<Playground initial={`genogram
+  grandma [female, 1920, 2002, deceased]
+  dad [male, 1950, age:74]
+  me [male, 1985, index]
+  daughter [female, 2012, label:"Em"]`} />
+
+---
+
+## 3. 形状
+
+| 視覚 | 性別値 | 意味 |
+|---|---|---|
+| ☐ 正方形 | `male` | 男性 |
+| ○ 円 | `female` | 女性 |
+| ◇ 菱形 | `unknown`、`other`、または属性省略 | 不明 / 未指定 |
+
+状態修飾子はベース形状の上に重なります：
+
+<Playground initial={`genogram
+  alive [male, 1960]
+  passed [male, 1930, 2010, deceased]
+  stillborn_child [unknown, stillborn]
+  lost [unknown, miscarriage]`} />
+
+---
+
+## 4. 接続
+
+### 4.1 カップル演算子
+
+パーサーは以下の順序で試みます。最初に一致したものが優先されます——`-x-` は `--` より優先されます。
+
+| 演算子 | タイプ | 例 | 意味 |
+|---|---|---|---|
+| `-x-` | 離婚 | `a -x- b` | 離婚 |
+| `-/-` | 別居 | `a -/- b` | 別居（婚姻中） |
+| `-//` | 別居 | `a -// b` | 別居（`-/-` のエイリアス） |
+| `-o-` | 婚約 | `a -o- b` | 婚約 |
+| `==` | 血縁 | `a == b` | 血縁関係のカップル |
+| `--` | 婚姻 | `a -- b` | 婚姻 |
+| `~` | 同棲 | `a ~ b` | 同棲 / 長期交際（現在） |
+| `~/~` | 同棲終了 | `a ~/~ b` | 同棲が終了（未婚）。生物学的な親が同棲していたが関係が終わったラテンアメリカの児童保護ケースに多く見られる——`-x-` 離婚（婚姻なし）や `-/-` 別居（婚姻中）とは異なる。 |
+
+末尾の引用符付き文字列は関係ラベルになります（`a -- b "m. 2005"`）。
+
+### 4.2 右側のインライン個人
+
+右側の人物がまだ宣言されていない場合、インラインで宣言できます：
+
+<Playground initial={`genogram
+  ann [female, 1970]
+  ann -- ben [male, 1968] "m. 1995"
+    kim [female, 1997]`} />
+
+### 4.3 子ども（カップルの下にインデント）
+
+カップル行の下のインデント = 「これらはこのカップルの子ども」。カップルのインデントより大きいインデントであれば何でも機能します。慣習的にスペース2つ多く使用します。子どもは宣言順にレンダリングされます（生年が存在する場合はソートも行います）。
+
+<Playground initial={`genogram
+  dad [male, 1950]
+  mom [female, 1952]
+  dad -- mom
+    eldest [male, 1975]
+    middle [female, 1978, adopted]
+    twin_a [male, 1985, twin-identical]
+    twin_b [male, 1985, twin-identical]`} />
+
+**特別な子ども属性：**
+
+| 属性 | 効果 |
+|---|---|
+| `adopted` | 養子縁組の線スタイル |
+| `foster` | 里親関係 |
+| `guardian` | 親以外の親族による後見（例：祖父母の親権）。`foster` と同じプリミティブ——生物学的な親が宣言されている場合、副次的な「現在のケアギバー」リンクとして描画。 |
+| `twin-identical` | 同じカップルの他の `twin-identical` の子どもとグループ化 |
+| `twin-fraternal` | 他の `twin-fraternal` の子どもとグループ化 |
+| `unknown-siblings` | `?` グリフの単一菱形——「1人以上の兄弟姉妹、人数と身元は不明」（家系図の慣習）。 |
+
+### 4.3.1 二重親家族（里親、養子縁組、後見）
+
+生物学的な親がまだケースに含まれている状態で非生物学的なケアギバーのもとに置かれた子どもは、両方のカップルの下で宣言できます。**最初に（生物学的なカップルの下で）完全な属性で子どもを宣言**し、その後**現在のケアギバーの下で `[foster]` / `[adopted]` / `[guardian]` だけで再宣言**します。最初の宣言がレイアウトを決定します。2番目は副次的な点線の「現在のケアギバー」リンクとして描画され、子どもを生物学的な位置から引き離しません。
+
+<Playground initial={`genogram "Foster placement"
+  bp1 [male, label: "Bio dad"]
+  bp2 [female, label: "Bio mom"]
+  bp1 ~/~ bp2
+    child [male, 2018, index]
+  fp1 [male, label: "Foster dad"]
+  fp2 [female, label: "Foster mom"]
+  fp1 -- fp2
+    own [male, 2010]
+    child [foster]`} />
+
+同じプリミティブが養子縁組（クローズド/オープン）、里親措置、親族による後見に使用されます——キーワードのみが異なります。再宣言は競合しない属性（性別、生年、ラベル、`index` マーカー）を元のものに**マージ**します。`male` と `female` のような競合する宣言は、サイレントな上書きではなくパースエラーを発生させます。
+
+### 4.3.2 不明数の兄弟姉妹
+
+ケースファイルに「子どもに兄弟姉妹がいる」とあっても名前がない場合、独立した行に `?` ショートハンドを使用するか、通常のIDに `[unknown-siblings]` を使用します。どちらも「？」グリフの単一菱形でレンダリングされます——「1人以上の兄弟姉妹、身元不明」を示す標準的な家系図マーカーです。
+
+<Playground initial={`genogram
+  dad [male]
+  mom [female]
+  dad -- mom
+    ?
+    known_kid [male, 2018]`} />
+
+### 4.3.3 Sibling-of（既知の親族、祖先不明）
+
+親を作らずに「XはYの兄弟姉妹」を表現するには、`sibling-of: <id>` プロパティを使用します。レンダラーはXをYの世代に固定し、2人の上に破線の括弧を描画します——ケースに含まれない祖先を持つ既知の親族を表す標準的な家系図の慣習です。
+
+<Playground initial={`genogram
+  monica [female, 1990]
+  uncle [male, label: "Tío materno", sibling-of: monica]`} />
+
+### 4.4 感情的関係
+
+独立した行、パーサーパターンは `A -TYPE- B`（非指向性）または `A -TYPE-> B`（指向性）。末尾にオプションの引用符付きラベルを追加できます。**感情的な行の前に両方の個人が宣言されている必要があります。**
+
+```
+harry -cutoff- petunia           # 非指向性
+harry -hostile- dudley "since 1991"
+uncle -abuse-> nephew             # 指向性（矢印付き）
+```
+
+現在パーサーが受け入れる32種類すべて：
+
+| カテゴリ | タイプ |
+|---|---|
+| ポジティブ / 親密 | `harmony`、`close`、`bestfriends`、`love`、`inlove`、`friendship` |
+| ネガティブ / 敵対 | `hostile`、`conflict`、`enmity`、`distant-hostile`、`cutoff` |
+| 両価的 | `close-hostile`、`fused`、`fused-hostile` |
+| 距離 | `distant`、`normal`、`nevermet` |
+| 虐待 *（指向性）* | `abuse`、`physical-abuse`、`emotional-abuse`、`sexual-abuse`、`neglect` |
+| 支配 *（指向性）* | `manipulative`、`controlling`、`jealous` |
+| 特殊 | `focused`、`focused-neg`、`distrust`、`admirer`、`limerence` |
+
+<Playground initial={`genogram
+  dad [male, 1950]
+  son [male, 1985]
+  daughter [female, 1988]
+  dad -close- daughter
+  dad -conflict- son
+  son -cutoff- dad "since 2010"`} />
+
+---
+
+## 5. 医療的状態
+
+構文：`conditions: name(fill) [+ name(fill, #color)]…`
+
+```
+father [male, 1945, conditions: heart(full, #E53935)]
+mother [female, 1948, conditions: diabetes(half-left) + anxiety(half-right, #26A69A)]
+```
+
+- **`name`** — 任意の識別子（凡例/ツールチップに表示）。
+- **`fill`** — 必須。形状のどの領域に色付けするかを制御。以下の表を参照。
+- **`color`** — オプションの16進数。デフォルトはレンダラーのテーマによる。
+- 複数の状態は `+` で結合します。それぞれに独自の `(fill)` が必要です。
+
+**フィル位置：**
+
+| `fill` 値 | 領域 |
+|---|---|
+| `full` | 形状全体 |
+| `half-left` / `half-right` | 左半分 / 右半分 |
+| `half-top` / `half-bottom` | 上半分 / 下半分 |
+| `quad-tl` / `quad-tr` / `quad-bl` / `quad-br` | 一つの象限 |
+| `striped` | 斜めのストライプパターン（無症状保因者） |
+| `dotted` | ドットパターン |
+
+<Playground initial={`genogram
+  dad [male, 1950, conditions: heart(full, #E53935)]
+  mom [female, 1952, conditions: diabetes(half-left) + depression(half-right, #5C6BC0)]
+  dad -- mom
+    son [male, 1980, conditions: carrier(striped)]`} />
+
+---
+
+## 6. ラベルとコメント
+
+- **タイトル：** `genogram "Smith Family"` — 最初の行のみ。
+- **人物ラベルの上書き：** `alice [female, label:"Dr. Alice Smith"]`。
+- **関係ラベル：** カップルまたは感情的な行の末尾に引用符付き文字列——`alice -- bob "m. 2005"`。
+- **コメント：** 行頭（先頭の空白の後）に `#`、`//`、または `%%`。インラインコメントは**サポートされていません**。
+
+```
+genogram "Smith Family"
+  # この行はコメント — 問題なし
+  %% Mermaidスタイルのコメント — 同様に問題なし
+  alice [female, 1980]   # ← この末尾コメントはパーサーを壊します
+```
+
+---
+
+## 7. 予約語とエスケープ
+
+**行頭で予約：** `genogram`（ヘッダーキーワード）。
+
+**行内の予約演算子トークン** — IDでこれらの並びを使用しないでください：
+`--`、`~`、`~/~`、`==`、`-x-`、`-/-`、`-//`、`-o-`、および感情関係タイプに一致する任意の `-<type>-` / `-<type>->`。
+
+**予約ID `?`** — 子ども行の裸の `?` は `unknown-siblings` マーカーを持つ合成プレースホルダーを自動生成します。実際のIDとして `?` を使用しないでください。
+
+**スペースを含む文字列**はダブルクォートで囲む必要があります：タイトル、ラベル、`label:"…"`。シングルクォートとバックティックは認識されません。
+
+---
+
+## 8. よくある間違い
+
+実際のパーサーエラー、その原因、修正方法。
+
+| 記述した内容 | パーサーのメッセージ | 修正方法 |
+|---|---|---|
+| `alex [nonbinary, 1995]` | `Unknown property 'nonbinary'` | `unknown` または `other` を使用（nonbinaryは§13ロードマップ） |
+| `alice [female, transgender]` | `Unknown property 'transgender'` | まだパース不可（§13ロードマップ） |
+| `dad -- mom` ← その後 `child [male, 2010]` が**同じインデント** | 子どもが新しいトップレベル個人としてパースされ、子どもとして扱われない | 子ども行をカップル行より深くインデント（スペース2つで十分） |
+| 宣言されていない `A` を含む `A -- B` | `Unknown individual 'A'` | 上の行に `A [sex, year]` を宣言する |
+| 1行目に `genogram` ヘッダーなしの `father -- mother "married"` | `Expected "genogram" header` | ファイルを `genogram` または `genogram "Title"` で開始する |
+| `conditions: diabetes + cancer`（括弧なし） | `Invalid condition format 'diabetes'` | fillを追加：`conditions: diabetes(half-left) + cancer(half-right)` |
+| `[triplet-identical]` | `Unknown property 'triplet-identical'` | 三つ子はまだパース不可（§13ロードマップ） |
+| `dad -- mom # first marriage` | 末尾のインライン `#` コメントがラベルの一部として扱われる / エラー | コメントを独立した行に移動する |
+| 異なる性別で同じIDを2回宣言（`x [male]` その後 `x [female]`） | `Conflicting sex for 'x': previously 'male', now 'female'` | どちらか一方を選択するか、IDの一方を変更する |
+| `child [foster]` を再宣言したが生物学的な親が未宣言 | `child` が里親カップルの通常の子どもになる（副次リンクなし） | これは意図的——副次リンクは前の宣言からの既存の親子関係を必要とします |
+
+---
+
+## 9. 文法（EBNF）
+
+```text
+document       = header (blank | comment | individual | couple-block | emotional)*
+
+header         = "genogram" ( WS quoted-string )? NEWLINE
+quoted-string  = '"' any-char-but-quote* '"'
+
+individual     = INDENT id ( "[" attrs "]" )? NEWLINE
+couple-block   = INDENT id WS coupleOp WS right-side ( WS quoted-string )? NEWLINE
+                   ( deeper-indent child )*
+child          = INDENT id ( "[" attrs "]" )? NEWLINE
+               | INDENT "?" NEWLINE                              // 不明数の兄弟ショートハンド
+right-side     = id ( "[" attrs "]" )?
+
+emotional      = INDENT id WS "-" type "-"  id ( WS quoted-string )? NEWLINE
+               | INDENT id WS "-" type "->" id ( WS quoted-string )? NEWLINE
+
+coupleOp       = "~/~" | "-//" | "-x-" | "-/-" | "-o-" | "==" | "--" | "~"
+type           = "harmony" | "close" | "bestfriends" | "love" | "inlove"
+               | "friendship" | "hostile" | "conflict" | "enmity"
+               | "distant-hostile" | "cutoff" | "close-hostile" | "fused"
+               | "fused-hostile" | "distant" | "normal" | "nevermet"
+               | "abuse" | "physical-abuse" | "emotional-abuse"
+               | "sexual-abuse" | "neglect" | "manipulative" | "controlling"
+               | "jealous" | "focused" | "focused-neg" | "distrust"
+               | "admirer" | "limerence"
+
+id             = [a-zA-Z] [a-zA-Z0-9_-]*
+attrs          = attr ("," attr)*
+attr           = "male" | "female" | "unknown" | "other"
+               | "deceased" | "stillborn" | "miscarriage" | "abortion"
+               | "adopted" | "foster" | "guardian"
+               | "twin-identical" | "twin-fraternal"
+               | "index" | "unknown-siblings"
+               | digit digit digit digit                         // 年
+               | "age" ":" digits
+               | "death" ":" digit digit digit digit
+               | "label" ":" quoted-string
+               | "sibling-of" ":" id
+               | "conditions" ":" condition ("+" condition)*
+               | key ":" value                                    // カスタム
+condition      = name "(" fill ("," "#" hex)? ")"
+fill           = "full" | "half-left" | "half-right" | "half-top" | "half-bottom"
+               | "quad-tl" | "quad-tr" | "quad-bl" | "quad-br"
+               | "striped" | "dotted"
+
+comment        = INDENT ( "#" | "//" | "%%" ) any NEWLINE
+```
+
+権威ある情報源：`src/diagrams/genogram/parser.ts`。これがパーサーと異なる場合はパーサーが優先されます——Issueを立ててください。
+
+---
+
+## 10. 標準への準拠
+
+Schematex のジェノグラムは、構造的シンボル、カップル演算子、世代配置について **McGoldrick, Gerson & Petry (2020), *Genograms: Assessment and Treatment*, 第4版** に従っています。感情関係の分類は **GenoPro の32タイプ分類** に従っています（GenoPro の34タイプセット全体は実装していません。`focused-admirer` と1つの重複は `focused` と `admirer` に統合されています）。
+
+現在実装されているものと標準との比較：
+
+- ✅ コアの構造的シンボル（男性/女性/不明、故人、死産、流産、中絶）
+- ✅ McGoldrick の6演算子カップルシステム
+- ✅ GenoPro の32感情タイプ、臨床的に指定された場所では指向性あり
+- ✅ 医療的状態象限フィルシステム（4位置 + ストライプ/ドットパターン）
+- ✅ インデックスパーソン（同心形状）
+- ✅ 双子グループ（一卵性 / 二卵性）
+- ⏳ Bennett 2022ジェンダー包括性の追加——§13参照
+- ⏳ ドナー / 代理母 / 継子の接続タイプ——§13参照
+
+参考文献：
+- McGoldrick, M., Gerson, R., & Petry, S. (2020). *Genograms: Assessment and Treatment* (第4版)。
+- Hardy, K.V. & Laszloffy, T.A. (1995). The cultural genogram. *J Marital Fam Ther*, 21(3), 227–237。
+- GenoPro シンボルリファレンス——https://genopro.com/genogram/
+
+---
+
+## 11. 関連するサンプル
+
+サンプルギャラリーからすぐに使えるシナリオ：
+
+<RelatedExamples slugs={[
+  'genogram-nuclear-family',
+  'genogram-medical-history',
+  'genogram-brca-cancer',
+  'genogram-potter-family',
+  'genogram-foster-care',
+]} />
+
+---
+
+## 13. ロードマップ
+
+**計画中——まだパース不可。** 今日生成された DSL ではこれらを使用しないでください。パーサーが拒否します。
+
+- **Bennett 2022 ジェンダー包括性** — 性別値としての `nonbinary`、`intersex`；マーカーとしての `transgender`。現在 `src/core/types.ts` には型定義がありますが、パーサーの `VALID_SEX` セットにはまだ含まれていません。
+- **三つ子以上の高次出産** — `triplet-identical`、`triplet-fraternal`。
+- **現代的な家族構造** — 子どもタイプの属性としての `surrogate`、`donor`、`step`。
+- **条件のカテゴリショートハンド** — `(fill)` なしの `conditions: cardiovascular + depression`、象限とデフォルト色を自動割り当て。
+- **国内パートナーシップ演算子** — `~dp~` / 明示的なDPラベル。
+- **ルーツアノテーション** — 個人への文化的ジェノグラムのルーツ識別子。
+- **世帯境界ボックス** — 同じ屋根を共有するノードのグループ化（里親措置、多世代世帯）。
+
+これらが早期に必要な場合はGitHubのIssueでトラックしてください。

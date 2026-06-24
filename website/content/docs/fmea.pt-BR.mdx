@@ -1,0 +1,119 @@
+---
+title: Planilha FMEA
+description: Análise de Modos de Falha e Efeitos — o engine calcula o RPN e a Prioridade de Ação AIAG-VDA a partir de uma árvore aninhada de item → modo → efeito/causa.
+---
+
+## Sobre FMEA
+
+**FMEA** (Failure Mode and Effects Analysis — Análise de Modos de Falha e Efeitos) é o método proativo de confiabilidade mais amplamente usado na manufatura: para cada parte de um sistema, lista-se como ela pode falhar (**modos de falha**), o que cada falha causa (**efeitos**), por que acontece (**causas**) e como é detectada (**controles**). Cada linha é avaliada em três escalas de 1 a 10 — **Severidade**, **Ocorrência**, **Detecção** — e priorizada. Padronizado pelo **AIAG-VDA FMEA Handbook (2019)** e pela **IEC 60812**.
+
+O diferencial do Schematex é que o engine **calcula a prioridade**, não apenas a tabela. Ele achata a cadeia de falhas em uma linha de planilha por (item, modo, causa), calcula **RPN = S × O × D** e — crucialmente — a **Prioridade de Ação** AIAG-VDA (faixa com severidade como eixo primário), que deliberadamente corrige o bug que uma ordenação por RPN bruto introduz: uma falha de airbag com S10·O2·D3 é *Alta* mesmo que seu RPN (60) pareça baixo.
+
+<Playground initial={`fmea "Brake system DFMEA"
+  type: design
+  rank: ap
+  flag: ap >= High
+  item "Master cylinder" fn "Generate hydraulic pressure"
+    mode "Internal seal leak"
+      effect "Loss of braking" sev: 9
+      cause "Seal material degradation" occ: 3
+        controls prevention: "Material spec", detection: "Bench test" det: 4
+      cause "Contamination" occ: 2
+        controls detection: "Fluid analysis" det: 5`} height={520} />
+
+---
+
+## 1. Sua primeira planilha
+
+Cada documento começa com `fmea`, um título opcional, diretivas opcionais e uma cadeia de falhas **aninhada**. A estrutura vem da palavra-chave, não da profundidade do recuo:
+
+```
+fmea "Pump DFMEA"
+  item "Impeller" fn "Move fluid"
+    mode "No flow"
+      effect "Process stops" sev: 8
+      cause "Impeller wear" occ: 4
+        controls detection: "Flow sensor" det: 5
+```
+
+- **`item "name" fn "function"`** — uma peça e a função que ela entrega. `fn` é opcional.
+- **`mode "failure mode"`** — como essa função falha. Um item pode ter vários.
+- **`effect "consequence" sev: 1..10`** — o que a falha causa; carrega sua própria **Severidade**. Um modo pode ter vários (o engine usa o *pior* para cada linha desse modo).
+- **`cause "root cause" occ: 1..10`** — por que acontece; carrega **Ocorrência**.
+- **`controls prevention: "…", detection: "…" det: 1..10`** — controles atuais e a classificação de **Detecção** que eles recebem. Sem controle, a Detecção assume como padrão **10** (indetectável).
+
+Todas as três classificações são inteiros de 1 a 10; qualquer valor fora desse intervalo é rejeitado.
+
+---
+
+## 2. Diretivas de cabeçalho
+
+```
+type: design          # design (dfmea) | process (pfmea) | msr
+rank: ap              # ap (padrão) | rpn — chave de ordenação/prioridade
+flag: ap >= High      # ou `rpn > 100` — destaca linhas acima de um limite
+number: FMEA-2026-014 # metadados livres: number/team/author/date/revision/dept/process/product
+```
+
+`rank` escolhe como as linhas são priorizadas; `flag` destaca as linhas que ultrapassam um limite (`ap >= High` / `ap == High`, ou `rpn > 100` / `rpn >= 120`).
+
+---
+
+## 3. RPN calculado e Prioridade de Ação
+
+Este é o diferencial. A partir do AST aninhado, o engine:
+
+1. **Achata** para uma linha por (item, modo, causa); a pior severidade de efeito do modo governa cada linha desse modo.
+2. **RPN = S × O × D** (1–1000).
+3. **Prioridade de Ação** pela estrutura de faixas AIAG-VDA — **Severidade é o eixo primário**, Ocorrência em segundo, Detecção em terceiro. S = 9–10 (segurança/regulatório) é Alta para *toda* O e D; severidade média degrada Alta→Média→Baixa conforme a Ocorrência diminui.
+4. **Ordena** pela chave escolhida. Para `ap`: Alta > Média > Baixa, com desempate por Severidade e depois RPN — *nunca* RPN sozinho, o que reintroduziria o bug que a AP foi projetada para corrigir.
+5. **Destaca** linhas acima do limite.
+
+Cada linha carrega `data-rpn` e `data-ap` para que a prioridade calculada seja inspecionável.
+
+---
+
+## 4. Acompanhamento pós-ação
+
+Registre ações corretivas e as classificações revisadas para mostrar o delta antes/depois:
+
+```
+fmea "Brake DFMEA"
+  item "MC"
+    mode "Seal leak"
+      effect "Loss of braking" sev: 9
+      cause "Degradation" occ: 3 det: 4
+  action "Seal leak" / "Degradation"
+    do: "Upgrade seal to EPDM" owner: "J. Lee" target: 2026-Q3
+    revised sev: 9 occ: 1 det: 4
+```
+
+`action "Mode" / "Cause"` tem como alvo uma cadeia pelo seu modo e (opcional) causa entre aspas; `do:` é a recomendação; `revised sev/occ/det` recalcula o RPN e a AP pós-ação para que o engine reporte a redução de risco.
+
+---
+
+## 5. Erros comuns
+
+```
+# ERRADO — classificação fora da faixa 1..10
+effect "Leak" sev: 11
+
+# ERRADO — modo antes de qualquer item
+mode "orphan mode"
+
+# ERRADO — efeito antes de qualquer modo
+item "x"
+  effect "e" sev: 3
+```
+
+As classificações devem ser inteiros de 1 a 10; a cadeia de falhas deve aninhar `item → mode → effect/cause`; palavras-chave fora de ordem são rejeitadas por nome. A Detecção assume silenciosamente o padrão 10 se nenhum controle a classifica — especifique `det:` (na causa ou em seus `controls`) quando houver um controle de detecção.
+
+---
+
+## 6. Conformidade com o padrão
+
+A cadeia de falhas e as escalas de Severidade/Ocorrência/Detecção seguem o AIAG-VDA FMEA Handbook (2019) e a IEC 60812. A Prioridade de Ação implementa a *estrutura* de faixas publicada (severidade como eixo primário), não a tabela verbatim de 1000 células (paga). O RPN permanece disponível via `rank: rpn` para planilhas legadas.
+
+## 7. Roadmap
+
+Adiado: as tabelas de decisão exatas de AP/MSR AIAG-VDA, ponderação de múltiplos efeitos por causa e visualizações de árvore de estrutura/função.

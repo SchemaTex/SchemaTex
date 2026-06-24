@@ -1,0 +1,362 @@
+---
+title: ラダーロジック
+---
+
+## ラダーロジックダイアグラムについて
+
+**ラダーロジック**は、プログラマブルロジックコントローラー（PLC）——工場自動化、HVACシステム、コンベアライン、プロセス機器を世界中で動かす産業用コンピューター——の制御プログラムを記述するためのグラフィカルプログラミング言語です。名前はダイアグラムの外観に由来します：2本の垂直な電力レール（レール）を横の段（ラング）が接続し、各ラングは1つの条件→動作ルールを表します。電気技師と制御エンジニアがすでに知っていたリレー接点回路図に似ているため採用されました。
+
+Schematex は、PLCプログラミング言語の国際標準である **[IEC 61131-3:2013](https://en.wikipedia.org/wiki/IEC_61131-3)** に従い、北米の産業現場で一般的なAllen-Bradley（Rockwell）タグアドレス名の命名規則を使用します。このページでは現在のパーサーが受け入れる内容を説明します。
+
+<Playground initial={`ladder "Motor Start/Stop"
+rung 1 "Seal-in circuit":
+  parallel:
+    branch:
+      XIC(START_PB, "IN 1.0", name="Start Button")
+    branch:
+      XIC(MOTOR_AUX, "BIT 3.0", name="Aux Contact")
+  XIO(STOP_PB, "IN 1.1", name="Stop Button")
+  OTE(MOTOR_CMD, "OUT 2.0", name="Motor Command")
+rung 2 "Mode select with Set/Reset":
+  XIC(AUTO_HMIPB, "BIT 5.10", name="Auto Mode Button")
+  XIO(SYS_FAULT, "BIT 3.0", name="System Fault")
+  parallel:
+    branch:
+      OTL(SYS_AUTO, "BIT 3.1", name="System Auto Mode")
+    branch:
+      OTU(SYS_MANUAL, "BIT 3.2", name="System Manual Mode")
+rung 3 "Run timer":
+  XIC(MOTOR_CMD)
+  TON(RUN_TMR, PT=5000)
+rung 4 "Alarm on cycle complete":
+  XIC(CYCLE_DONE, "BIT 4.0", name="Cycle Done")
+  OTN(ALARM_OUT, "OUT 2.5", name="Alarm Output")`} height={500} />
+
+---
+
+## 1. 最初のラダーダイアグラム
+
+最小限の有用なラダープログラム：ラング1つ、コンタクト2つ、コイル1つ。
+
+<Playground initial={`ladder "First Rung"
+rung 1 "Start when button pressed, stop on fault":
+  XIC(START_PB)
+  XIO(FAULT)
+  OTE(MOTOR_RUN)`} />
+
+使用方法の80%をカバーする4つのルール：
+
+1. `ladder` で始め、オプションで引用符付きのタイトルを続けます。
+2. 各**ラング**は独立した行の `rung N "オプションのコメント":` で始まります。末尾のコロンはオプションです。
+3. エレメントはラングの下にインデントして1行に1つ記述します——左から右がシリーズ（AND論理）です。
+4. `parallel:` / `branch:` ブロックはOR論理を導入します。各ブランチは独自のエレメントリストを持ちます。
+
+> コメントは独立した行で `#`、`//`、またはMermaidスタイルの `%%` で始めることができます。
+
+---
+
+## 2. コンタクト
+
+コンタクトは入力条件を表します——関連するビットがコンタクトタイプに一致するとき電力を通過させます。
+
+| タイプ | 名前 | 電力を通過させる条件 |
+|---|---|---|
+| `XIC` | Examine If Closed | タグビット = 1（ノーマルオープン） |
+| `XIO` | Examine If Open | タグビット = 0（ノーマルクローズド） |
+| `ONS` | One-Shot Rising | タグが0→1に遷移（立ち上がりエッジ、1スキャン） |
+| `OSF` | One-Shot Falling | タグが1→0に遷移（立ち下がりエッジ、1スキャン） |
+
+**構文：**
+
+```
+XIC(tag)
+XIC(tag, "address")
+XIC(tag, "address", name="Description")
+XIC(tag, address="address", name="Description")
+```
+
+- `tag` — 必須。PLCタグ名（コンタクトシンボルの下に表示）。
+- `"address"` — オプションの2番目の位置引数。I/Oアドレス（例：`"IN 1.0"`、`"BIT 3.1"`）。
+- `name="…"` — オプションのキーバリュー。人間が読める説明（シンボルの上に表示）。
+
+<Playground initial={`ladder "Contact types"
+rung 1 "All four contact types":
+  XIC(START_PB, "IN 1.0", name="Start Button")
+  XIO(E_STOP, "IN 1.5", name="Emergency Stop NC")
+  ONS(PULSE_IN, "BIT 5.0", name="One-Shot Rising")
+  OSF(RESET_SIG, "BIT 5.1", name="One-Shot Falling")
+  OTE(OUT_RLY, "OUT 2.0", name="Output Relay")`} />
+
+---
+
+## 3. コイル
+
+コイルは出力アクションを表します——ラングに電力フローがあるときタグビットに作用します。
+
+| タイプ | 名前 | タグビットへの効果 |
+|---|---|---|
+| `OTE` | Output Energize | ラングがtrueの間ビット = 1に設定；ラングがfalseになると0にクリア |
+| `OTL` | Output Latch | ビット = 1に設定；ラングがfalseになっても**保持**（ラッチ） |
+| `OTU` | Output Unlatch | ビット = 0にクリア；ラングがfalseになっても保持 |
+| `OTN` | Output Negate | ラングがtrueの間ビット = 0に設定；ラングがfalseのとき1に設定 |
+| `RES` | Reset | Rockwell / Allen-Bradleyカウンターまたはタイマーリセットコイル |
+
+**構文：** コンタクトと同一——`OTE(tag)`、`OTE(tag, "address")`、`OTE(tag, "address", name="…")`。
+
+`OTL` と `OTU` はSet/Resetフリップフロップを構築するためにペアで使用されます。最後に書き込んだラングが優先されます。
+
+<Playground initial={`ladder "Set-Reset latch"
+rung 1 "Set on start":
+  XIC(START_PB, "IN 1.0", name="Start")
+  OTL(MOTOR_ON, "BIT 3.0", name="Motor Latch")
+rung 2 "Reset on stop or fault":
+  parallel:
+    branch:
+      XIC(STOP_PB, "IN 1.1", name="Stop")
+    branch:
+      XIC(E_STOP, "IN 1.5", name="E-Stop")
+  OTU(MOTOR_ON, "BIT 3.0", name="Motor Latch")`} />
+
+---
+
+## 4. ファンクションブロック
+
+ファンクションブロックはタイマー、カウンター、数学演算、比較演算を実行します。ラング内にインラインで表示され、必須のタグ引数の後にキーワードパラメーターを持ちます。
+
+### 4.1 タイマー
+
+| タイプ | 名前 | 主要パラメーター |
+|---|---|---|
+| `TON` | Timer On-Delay | `PT=` プリセット時間（ミリ秒） |
+| `TOFF` | Timer Off-Delay | `PT=` プリセット時間（ミリ秒） |
+| `TP` | Timer Pulse | `PT=` プリセット時間（ミリ秒） |
+
+```
+TON(timer_tag, PT=5000)
+```
+
+タイマータグは経過時間を格納します。タイマーの `Q` ビット（完了出力）はダウンストリームのコンタクトでタグ名によってアクセスされます。
+
+### 4.2 カウンター
+
+| タイプ | 名前 | 主要パラメーター |
+|---|---|---|
+| `CTU` | Count Up | `PV=` プリセット値（整数） |
+| `CTD` | Count Down | `PV=` プリセット値 |
+| `CTUD` | Count Up/Down | `PV=` プリセット値 |
+
+```
+CTU(cycle_counter, PV=100)
+```
+
+### 4.3 数学演算
+
+| タイプ | 演算 |
+|---|---|
+| `ADD` | 加算 |
+| `SUB` | 減算 |
+| `MUL` | 乗算 |
+| `DIV` | 除算 |
+| `MOV` | 移動（コピー） |
+
+```
+ADD(result_tag, IN1=setpoint, IN2=offset)
+MOV(dest_tag, IN1=source_tag)
+```
+
+### 4.4 比較演算
+
+| タイプ | 意味 |
+|---|---|
+| `EQU` | 等しい |
+| `NEQ` | 等しくない |
+| `GRT` | より大きい |
+| `LES` | より小さい |
+| `GEQ` | 以上 |
+| `LEQ` | 以下 |
+
+```
+EQU(compare_tag, IN1=speed_actual, IN2=speed_setpoint)
+```
+
+<Playground initial={`ladder "Timer and counter"
+rung 1 "Start run timer":
+  XIC(MOTOR_CMD, "BIT 3.0", name="Motor Running")
+  TON(RUN_TIMER, PT=10000)
+rung 2 "Count completed cycles":
+  XIC(CYCLE_SENSOR, "IN 2.0", name="Cycle Sensor")
+  CTU(PART_COUNT, PV=500)
+rung 3 "Alarm when batch complete":
+  XIC(PART_COUNT, name="Count Done")
+  OTE(BATCH_ALARM, "OUT 3.0", name="Batch Complete Alarm")`} />
+
+---
+
+## 5. 並列ブランチ
+
+`parallel:` ブロックはOR論理を導入します——**いずれかの**ブランチが導通するとラングに電力があります。各ブランチはその下にインデントされたエレメントを持つ `branch:` サブブロックです。
+
+```
+parallel:
+  branch:
+    XIC(LOCAL_START)
+  branch:
+    XIC(REMOTE_START)
+```
+
+`parallel:` 内のブランチは同時に評価されます。ブロックは `parallel:` の前のレベルにインデントが戻ると閉じます。
+
+**ルール：**
+- `parallel:` はラング内に出現する必要があります。
+- `branch:` は `parallel:` 内に出現する必要があります——単独で使用すると `LadderParseError` が発生します。
+- 各ブランチは1つ以上のエレメントを持ちます。
+- `parallel:` ブロックの後のエレメントはそれとシリーズ接続（AND論理）になります。
+
+<Playground initial={`ladder "Parallel OR logic"
+rung 1 "Start from either local or remote":
+  parallel:
+    branch:
+      XIC(LOCAL_START, "IN 1.0", name="Local Start")
+    branch:
+      XIC(REMOTE_START, "BIT 5.2", name="Remote Start")
+  XIO(STOP_ALL, "IN 1.5", name="Stop All")
+  OTE(CONVEYOR, "OUT 2.0", name="Conveyor Run")`} />
+
+---
+
+## 6. ラベルとコメント
+
+- **タイトル：** `ladder "Motor Control"` — 最初の行のみ、引用符付き文字列。
+- **ラング番号：** `rung` の後に必須の整数。
+- **ラングコメント：** ラング番号の後、オプションのコロンの前にオプションの引用符付き文字列：`rung 3 "Run indicator":` または `rung 3 "Run indicator"`。
+- **タグ：** 括弧内の最初の引数——シンボルの下に表示。
+- **アドレス：** 2番目の位置引数（引用符付き）：`XIC(START_PB, "IN 1.0")`。
+- **名前：** `name="…"` キーワード引数——シンボルの上に表示される人間が読める説明。
+- **行コメント：** 行頭（先頭の空白の後）に `#`、`//`、または `%%`。これらのマーカーは末尾コメントも開始します。
+
+---
+
+## 7. 予約語とエスケープ
+
+**行頭で予約（大文字・小文字を区別しない）：** `ladder`、`rung`、`parallel:`、`branch:`。
+
+**エレメント名**はすべて大文字ASCII：`XIC`、`XIO`、`ONS`、`OSF`、`OTE`、`OTL`、`OTU`、`OTN`、`TON`、`TOFF`、`TP`、`CTU`、`CTD`、`CTUD`、`ADD`、`SUB`、`MUL`、`DIV`、`MOV`、`EQU`、`NEQ`、`GRT`、`LES`、`GEQ`、`LEQ`。
+
+**タグID** — `[A-Z][A-Z0-9_]*` に一致する必要があります（パーサーはエレメント名プレフィックスとして `[A-Z][A-Z0-9_]*` をマッチします）。括弧内では小文字のタグも受け入れられます。
+
+**アドレスまたは名前引数の引用符付き文字列**はダブルクォート `"…"` を使用する必要があります。
+
+---
+
+## 8. よくある間違い
+
+| 記述した内容 | パーサーのメッセージ | 修正方法 |
+|---|---|---|
+| `rung 1`（コロンなし） | 正しくパース | 末尾のコロンはオプション |
+| `ONF(TAG)` | `LadderParseError: unknown element type "ONF"` | 立ち下がりエッジのコンタクトは `OSF`（`ONF` ではない） |
+| `branch:` のない `parallel:` | 空の並列ブロック——ラングにエレメントなし | `parallel:` 内に少なくとも1つの `branch:` を追加する |
+| `parallel:` より前の `branch:` | `LadderParseError: branch: without parallel:` | 常に最初に `parallel:` を開く |
+| `OTE()`——タグなし | `LadderParseError: element missing tag` | タグは必須：`OTE(MY_TAG)` |
+| `var StartBtn: bool`（変数宣言） | `LadderParseError: invalid element syntax` | 変数宣言なし——タグは直接使用 |
+| 空のラング（`rung N:` の後にエレメントなし） | `LadderParseError: Rung N: empty rung` | 各ラングに少なくとも1つのエレメントを追加する |
+| `TON(T1, T#5s)` | `LadderParseError: invalid element syntax`（T#は有効な数字でない） | ミリ秒整数を使用：`TON(T1, PT=5000)` |
+
+---
+
+## 9. 文法（EBNF）
+
+```text
+document      = header NEWLINE rung+
+
+header        = "ladder" ( WS quoted-string )? NEWLINE
+quoted-string = '"' any-char-but-quote* '"'
+
+rung          = "rung" WS integer ( WS quoted-string )? ":"? NEWLINE
+                  element+
+
+element       = contact-line
+              | coil-line
+              | fb-line
+              | parallel-block
+
+contact-line  = contact-type "(" tag ( "," arg )* ")" NEWLINE
+contact-type  = "XIC" | "XIO" | "ONS" | "OSF"
+
+coil-line     = coil-type "(" tag ( "," arg )* ")" NEWLINE
+coil-type     = "OTE" | "OTL" | "OTU" | "OTN" | "RES"
+
+fb-line       = fb-type "(" tag ( "," arg )* ")" NEWLINE
+fb-type       = "TON" | "TOFF" | "TP"
+              | "CTU" | "CTD" | "CTUD"
+              | "ADD" | "SUB" | "MUL" | "DIV" | "MOV"
+              | "EQU" | "NEQ" | "GRT" | "LES" | "GEQ" | "LEQ"
+
+arg           = quoted-string             // 位置引数（アドレス）
+              | key "=" quoted-string     // キーワード（例：name="…"）
+              | key "=" number            // キーワード（例：PT=5000）
+
+parallel-block = INDENT≥2 "parallel:" NEWLINE
+                   ( INDENT branch-block )+
+
+branch-block   = "branch:" NEWLINE
+                   ( INDENT element )+
+
+tag           = [A-Za-z][A-Za-z0-9_]*
+key           = [A-Za-z][A-Za-z0-9_]*
+integer       = [0-9]+
+number        = [0-9]+ ( "." [0-9]+ )?
+comment       = ( "#" | "//" | "%%" ) any NEWLINE
+```
+
+権威ある情報源：`src/diagrams/ladder/parser.ts`。これがパーサーと異なる場合はパーサーが優先されます——Issueを立ててください。
+
+---
+
+## 10. 標準への準拠
+
+Schematex のラダーロジックは、ラダーダイアグラム言語について **IEC 61131-3:2013** パート3に従い、北米のPLC実務で一般的な **Allen-Bradley（Rockwell）タグアドレス名** 規則を使用します。
+
+現在実装されているもの：
+
+- ✅ 4種類のコンタクト：XIC（NO）、XIO（NC）、ONS（立ち上がりエッジ）、OSF（立ち下がりエッジ）
+- ✅ 5種類のコイル：OTE（出力）、OTL（ラッチ/セット）、OTU（アンラッチ/リセット）、OTN（ネゲート）、RES（カウンター/タイマーリセット）
+- ✅ 3種類のタイマーファンクションブロック：TON、TOFF、TP（ミリ秒 `PT=` パラメーター付き）
+- ✅ 3種類のカウンターファンクションブロック：CTU、CTD、CTUD（整数 `PV=` パラメーター付き）
+- ✅ 数学ファンクションブロック：ADD、SUB、MUL、DIV、MOV
+- ✅ 比較ファンクションブロック：EQU、NEQ、GRT、LES、GEQ、LEQ
+- ✅ OR論理のための並列 / ブランチブロック
+- ✅ Allen-Bradley Studio 5000 規則に従ったタグ、アドレス、名前のアノテーション
+- ⏳ リテンティブタイマー（RTO）——標準に含まれるが、まだパーサーにない
+- ⏳ ジャンプ（JMP）/ ラベル（LBL）命令
+- ⏳ マスターコントロールリセット（MCR）ゾーン
+- ⏳ 即時I/O命令（IIN、IOT）
+- ⏳ ラング内に埋め込まれたStructured TextまたはFunction Block Diagramエレメント
+
+参考文献：
+
+- IEC 61131-3:2013 — *Programmable controllers, Part 3: Programming languages*
+- NEMA ICS 1-2009 — *General Standards for Industrial Control and Systems*
+- Rockwell Automation Studio 5000 Logix Designer — [Ladder Diagram Programming Manual](https://literature.rockwellautomation.com/)
+
+---
+
+## 11. 関連するサンプル
+
+<RelatedExamples slugs={[
+  'ladder-motor-start-stop',
+  'ladder-mode-selection',
+]} />
+
+---
+
+## 12. ロードマップ
+
+**計画中——まだパース不可。** 今日生成された DSL ではこれらを使用しないでください。パーサーが拒否または無視します。
+
+- **リテンティブタイマーオン（RTO）** — 電源損失後も経過時間を保持するタイマー。別個のリセットコンタクトが必要。
+- **ジャンプ（JMP）/ ラベル（LBL）** — 条件付きでロジックをスキップするためにラベル付きラングへ分岐；大規模プログラムのパフォーマンスに使用。
+- **マスターコントロールリセット（MCR）ゾーン** — MCR入力がfalseのとき非リテンティブ出力をすべてオフにするブラケットゾーン。
+- **ラング内ストラクチャードテキスト** — インライン式評価（例：`CALC(result = a * b + c)`）。
+- **即時I/O（IIN / IOT）** — 時間クリティカルな制御のためにプログラムの途中でI/Oスキャンを強制。
+
+これらが早期に必要な場合はGitHubのIssueでトラックしてください。

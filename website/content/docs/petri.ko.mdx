@@ -1,0 +1,174 @@
+---
+title: Petri Net
+---
+
+## Petri net에 대하여
+
+**Petri net**은 이산 이벤트 시스템에서 동시성(concurrency), 동기화(synchronisation), 자원 흐름(resource flow)을 모델링하기 위한 핵심 형식론입니다. [1962년 Carl Adam Petri가 고안](https://en.wikipedia.org/wiki/Petri_net)하였으며, 이후 컴퓨터 과학, 제어 공학, 제조업, 비즈니스 프로세스 모델링 전반에서 지속적으로 활용되고 있습니다. 표기법은 단순하면서도 누구나 즉시 알아볼 수 있습니다. **장소(place)**는 원, **전이(transition)**는 막대, 호(arc)는 가중치를 가지며, 시스템의 동적 상태는 장소에 놓인 **토큰(token)**의 분포로 나타납니다.
+
+Schematex의 `petri` 엔진이 드래그앤드롭 방식의 도형 라이브러리와 다른 점은, **시스템의 동작을 이해한다**는 것입니다. 엔진은 *마킹(marking)*(각 장소에 몇 개의 토큰이 있는지)을 알고, 어떤 전이가 *활성화(enabled)*되었는지(모든 입력 장소에 호 가중치 이상의 토큰이 있는 경우 — 초록색으로 강조 표시)를 계산하며, 전이를 *발화(fire)*하여 다음 마킹을 생성할 수 있습니다. 렌더링은 의미론(semantics) 이후에 이루어집니다. 이는 **[pert](/docs/pert)**가 스케줄링에 대해 취하는 입장과 동일합니다. **[state 다이어그램](/docs/state)**(토큰 분포가 아닌 하나의 활성 상태), **[sfc](/docs/sfc)**(PLC용으로 제한된 안전 Petri net), **[bpmn](/docs/bpmn)**(토큰 의미론이 워크플로 Petri net으로의 환원으로 *정의*되는 것)과는 구별됩니다.
+
+<Playground initial={`petri "Classic"
+  place P1 *1
+  place P2
+  place P3 *2
+  place P4 *1
+  transition T1
+  transition T2
+  P1 -> T1
+  T1 -> P2
+  T1 -> P3
+  P2 -> T2
+  P3 -> T2
+  T2 -> P4
+  P4 -> T1`} height={420} />
+
+초기 마킹에서 **T1**은 활성화 상태입니다(입력 장소 P1과 P4가 각각 토큰을 보유하므로 초록색 링이 표시됩니다). **T2**는 비활성 상태입니다(P2가 비어 있기 때문입니다). `P4 -> T1` 피드백 호는 역방향 곡선으로 라우팅됩니다.
+
+---
+
+## 1. 첫 번째 net
+
+모든 문서는 `petri` 키워드와 선택적 제목으로 시작하며, **장소(place)**와 **전이(transition)**를 선언한 후 **호(arc)**로 연결합니다.
+
+```
+petri "Minimal"
+  place P1 *1
+  transition T1
+  place P2
+  P1 -> T1
+  T1 -> P2
+```
+
+- `place <id>` — 원(circle). `*1`은 초기 토큰 수(마킹)를 설정합니다.
+- `transition <id>` — 막대(이벤트/동작).
+- `<a> -> <b>` — 방향이 있는 호. 호는 **이분(bipartite)** 구조입니다. 모든 호는 장소→전이 또는 전이→장소 방향이며, 장소→장소나 전이→전이는 허용되지 않습니다. 잘못된 방향의 호를 작성하면 엔진이 해당 줄을 알려줍니다.
+
+일부 다른 Schematex 다이어그램과 달리, 노드는 호에서 **자동으로 선언되지 않습니다**. 선언되지 않은 ID는 장소인지 전이인지 안전하게 타입을 결정할 수 없기 때문입니다. 알 수 없는 노드를 참조하는 호는 읽기 쉬운 오류 메시지를 출력합니다.
+
+---
+
+## 2. 마킹과 토큰
+
+**마킹(marking)**은 각 장소가 보유하는 토큰의 수입니다. 세 가지 동등한 방법으로 설정할 수 있습니다.
+
+```
+place P1 *3            # *n 단축 표기
+place P2 tokens: 3     # 명시적 선언
+place P3 •••           # 점 리터럴 (1–4개)
+```
+
+또는 `marking:` 줄로 한 번에 여러 개를 설정할 수 있습니다.
+
+```
+marking: P1=3, P3=2
+```
+
+토큰은 4개까지는 격자 배열의 점으로 렌더링되고, 그 이상은 숫자로 표시됩니다. `tokens: dots | count | auto`로 스타일을 강제 설정할 수 있습니다(기본값: `auto`).
+
+---
+
+## 3. 전이: 즉시(immediate) vs 시간 기반(timed)
+
+```
+transition fast                 # 즉시 — 채워진 막대 (기본값)
+transition slow timed rate: 0.8 # 시간 기반 — 속도 레이블 λ가 있는 빈 상자
+```
+
+즉시 전이는 시간 없이 발화되며 고전적인 채워진 막대로 렌더링됩니다. **시간 기반** 전이([GSPN](https://en.wikipedia.org/wiki/Stochastic_Petri_net) 관례)는 빈 상자로 렌더링되며 선택적으로 `rate:` (λ)를 가집니다. `rate:`가 있는 전이는 자동으로 시간 기반으로 처리됩니다. `prio: n`으로 우선순위를 설정하고, `[guard]`는 레이블로 렌더링됩니다(v0.1에서는 평가되지 않음).
+
+---
+
+## 4. 호 유형
+
+네 가지 호 헤드가 표준 동시성 어휘를 담당합니다.
+
+```
+P -> T              # 표준 호 (채워진 화살촉)
+P -> T weight: 2    # 가중치 > 1이면 레이블 표시 (weight: n 또는 *n)
+P -o T              # 억제자(inhibitor) — 장소가 비어 있을 때만 활성화 (빈 원 헤드)
+P -- T              # 읽기/테스트 — 소비 없이 존재 여부 테스트 (헤드 없음)
+P => T              # 리셋 — 전이 발화 시 장소를 비움 (이중 헤드)
+```
+
+억제자와 리셋 호는 **장소→전이 방향만** 허용됩니다. 파서는 반대 방향을 거부합니다.
+
+---
+
+## 5. 용량(Capacity)
+
+장소에 상한을 설정할 수 있습니다. 해당 상한을 초과하는 발화는 비활성화되며, 장소는 점선 테두리와 `K=n` 레이블로 표시됩니다.
+
+```
+place Buffer capacity: 3
+```
+
+---
+
+## 6. 동작: 활성화(enabled)와 발화(fire)
+
+엔진은 렌더링마다 의미론을 계산합니다.
+
+- **활성화된** 전이(모든 입력 조건 충족, 억제자 입력 비어 있음, 출력 용량 초과 없음)는 초록색 링으로 표시됩니다.
+- **죽은(dead)** 전이 — 현재 마킹에서 절대 발화할 수 없는 전이 — 는 흐리게 표시됩니다.
+- **`fire:`** 줄은 발화 시퀀스를 재현하고 *결과* 마킹을 렌더링합니다.
+
+```
+petri
+  place P1 *1
+  transition T1
+  place P2
+  transition T2
+  place P3
+  P1 -> T1
+  T1 -> P2
+  P2 -> T2
+  T2 -> P3
+  fire: T1
+```
+
+`T1`을 발화하면 토큰이 P1 → P2로 이동하고, 이제 **T2**가 활성화된 전이가 됩니다. SVG `<desc>`에는 마킹, 활성화 집합, 감지된 서브클래스(상태 기계/마킹 그래프/워크플로 net)가 기록됩니다.
+
+---
+
+## 7. 레이아웃과 테마
+
+```
+layout: lr     # 좌→우 (기본값)
+layout: tb     # 위→아래
+```
+
+장소와 전이는 자동으로 교번 레이어에 배치됩니다. 사이클이 감지되면 피드백 호는 역방향 곡선으로 라우팅됩니다. 세 가지 테마:
+
+- **`default`** — 하우스 블루-그레이. 초록색은 *활성화* 전용, 빨간색은 *억제자* 전용.
+- **`monochrome`** — Murata-1989 교재 스타일을 충실히 재현. 활성화는 이중 검정 링으로 표시됩니다(색상 대신 도형 사용).
+- **`dark`** — Catppuccin Mocha.
+
+CJK 레이블과 `「…」` / `"…"` 따옴표는 올바르게 파싱됩니다.
+
+```
+petri "生産流程"
+  place 원료 *2 「원재료」
+  transition 가공
+  place 완성품
+  원료 -> 가공 weight: 2
+  가공 -> 완성품
+```
+
+---
+
+전체 사양: [Petri Net Standard Reference](https://github.com/schematex/schematex/blob/main/docs/reference/34-PETRINET-STANDARD.md).
+
+---
+
+## 관련 예제
+
+예제 갤러리에서 바로 사용할 수 있는 시나리오:
+
+<RelatedExamples slugs={[
+  'petri-classic-net',
+  'petri-mutual-exclusion',
+  'petri-fire-sequence',
+  'petri-workflow-net',
+  'petri-producer-consumer',
+]} />

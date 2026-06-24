@@ -1,0 +1,119 @@
+---
+title: FMEA 工作表
+description: 失效模式與效應分析 — 引擎從巢狀的「項目 → 失效模式 → 效應／原因」樹計算 RPN 和 AIAG-VDA 行動優先級。
+---
+
+## 關於 FMEA
+
+**FMEA**（失效模式與效應分析）是製造業中使用最廣泛的主動式可靠性方法：對系統的每個部件，列出它可能如何失效（**失效模式**）、每種失效會導致什麼後果（**效應**）、為何發生（**原因**），以及如何被發現（**管制措施**）。每一列以三個 1–10 的量表評分 — **嚴重性（S）**、**發生率（O）**、**偵測性（D）** — 並排列優先順序。由 **AIAG-VDA FMEA 手冊（2019）** 和 **IEC 60812** 標準化。
+
+Schematex 的優勢在於引擎**計算出優先級**，而不只是製作表格。它將失效鏈展平為每個（項目、模式、原因）一列的工作表，計算 **RPN = S × O × D**，並且 — 最關鍵的是 — AIAG-VDA **行動優先級**（以嚴重性為主的分帶），這刻意修正了純 RPN 排序引入的缺陷：S10·O2·D3 的氣囊失效屬於*高*優先級，即使其 RPN（60）看起來很低。
+
+<Playground initial={`fmea "Brake system DFMEA"
+  type: design
+  rank: ap
+  flag: ap >= High
+  item "Master cylinder" fn "Generate hydraulic pressure"
+    mode "Internal seal leak"
+      effect "Loss of braking" sev: 9
+      cause "Seal material degradation" occ: 3
+        controls prevention: "Material spec", detection: "Bench test" det: 4
+      cause "Contamination" occ: 2
+        controls detection: "Fluid analysis" det: 5`} height={520} />
+
+---
+
+## 1. 第一個工作表
+
+每份文件以 `fmea` 開頭，後接可選的標題、可選的指示詞，然後是**巢狀**的失效鏈。結構來自關鍵字，而非縮排深度：
+
+```
+fmea "Pump DFMEA"
+  item "Impeller" fn "Move fluid"
+    mode "No flow"
+      effect "Process stops" sev: 8
+      cause "Impeller wear" occ: 4
+        controls detection: "Flow sensor" det: 5
+```
+
+- **`item "name" fn "function"`** — 一個部件及其提供的功能。`fn` 是可選的。
+- **`mode "failure mode"`** — 該功能如何失效。一個項目可以有多個。
+- **`effect "consequence" sev: 1..10`** — 失效造成的後果；攜帶自己的**嚴重性**。一個模式可以有多個（引擎為該模式的每一列使用*最差*的嚴重性）。
+- **`cause "root cause" occ: 1..10`** — 為何發生；攜帶**發生率**。
+- **`controls prevention: "…", detection: "…" det: 1..10`** — 當前管制措施及其獲得的**偵測性**評分。若無管制措施，偵測性預設為 **10**（無法偵測）。
+
+三個評分均為 1–10 的整數；超出該範圍的值將被拒絕。
+
+---
+
+## 2. 標頭指示詞
+
+```
+type: design          # design (dfmea) | process (pfmea) | msr
+rank: ap              # ap (預設) | rpn — 排序／優先級鍵
+flag: ap >= High      # 或 `rpn > 100` — 醒目標示超過門檻的列
+number: FMEA-2026-014 # 自由元資料：編號／團隊／作者／日期／修訂版本／部門／製程／產品
+```
+
+`rank` 選擇列的排列方式；`flag` 醒目標示超過門檻的列（`ap >= High` / `ap == High`，或 `rpn > 100` / `rpn >= 120`）。
+
+---
+
+## 3. 計算 RPN 與行動優先級
+
+這是差異所在。從巢狀 AST，引擎：
+
+1. **展平**為每個（項目、模式、原因）一列；模式的最差效應嚴重性管轄該模式的每一列。
+2. **RPN = S × O × D**（1–1000）。
+3. **行動優先級**依 AIAG-VDA 分帶結構 — **嚴重性是主要軸**，發生率次之，偵測性第三。S = 9–10（安全／法規）對於*任何* O 和 D 都是高優先級；中等嚴重性隨發生率降低而從高→中→低降級。
+4. 依選定的鍵**排序**。對於 `ap`：高 > 中 > 低，相同時按嚴重性再按 RPN 排序 — *絕不*單獨按 RPN 排序，那樣會重新引入 AP 設計用來修正的缺陷。
+5. **標記**超過門檻的列。
+
+每列攜帶 `data-rpn` 和 `data-ap`，使計算出的優先級可供檢查。
+
+---
+
+## 4. 後續行動跟進
+
+記錄糾正措施和修訂後的評分，以顯示前後對比：
+
+```
+fmea "Brake DFMEA"
+  item "MC"
+    mode "Seal leak"
+      effect "Loss of braking" sev: 9
+      cause "Degradation" occ: 3 det: 4
+  action "Seal leak" / "Degradation"
+    do: "Upgrade seal to EPDM" owner: "J. Lee" target: 2026-Q3
+    revised sev: 9 occ: 1 det: 4
+```
+
+`action "Mode" / "Cause"` 透過其引號模式和（可選）原因來鎖定一條鏈；`do:` 是建議措施；`revised sev/occ/det` 重新計算行動後的 RPN 和 AP，使引擎能夠回報風險降低情況。
+
+---
+
+## 5. 常見錯誤
+
+```
+# 錯誤 — 評分超出 1..10 範圍
+effect "Leak" sev: 11
+
+# 錯誤 — 在任何項目之前的模式
+mode "orphan mode"
+
+# 錯誤 — 在任何模式之前的效應
+item "x"
+  effect "e" sev: 3
+```
+
+評分必須是 1–10 的整數；失效鏈必須以 `item → mode → effect/cause` 的方式巢狀；亂序的關鍵字以名稱被拒絕。若無管制措施評估它，偵測性靜默預設為 10 — 當您有偵測管制措施時，在原因或其 `controls` 上宣告 `det:`。
+
+---
+
+## 6. 標準合規性
+
+失效鏈和嚴重性／發生率／偵測性量表遵循 AIAG-VDA FMEA 手冊（2019）和 IEC 60812。行動優先級實作已發佈的分帶*結構*（嚴重性優先），而非需付費的逐字 1000 格表格。RPN 仍可透過 `rank: rpn` 供舊版工作表使用。
+
+## 7. 路線圖
+
+延後實作：精確的 AIAG-VDA AP/MSR 決策表、多效應每原因加權，以及結構／功能樹視圖。

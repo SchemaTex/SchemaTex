@@ -1,0 +1,119 @@
+---
+title: FMEAワークシート
+description: 故障モード影響解析 — エンジンはネストされた「部品 → 故障モード → 影響/原因」ツリーからRPNとAIAG-VDA アクションプライオリティを計算します。
+---
+
+## FMEAについて
+
+**FMEA**（Failure Mode and Effects Analysis：故障モード影響解析）は製造業で最も広く使用されているプロアクティブな信頼性手法です。システムの各部品について、どのように故障するか（**故障モード**）、各故障が何をもたらすか（**影響**）、なぜ起こるか（**原因**）、どのように検出されるか（**管理策**）をリスト化します。各行は1〜10の3つの尺度 — **重大度（Severity）**、**発生度（Occurrence）**、**検出度（Detection）** — で評価され、優先順位が付けられます。**AIAG-VDA FMEA Handbook（2019年）**および**IEC 60812**によって標準化されています。
+
+Schematexの強みはエンジンが単にテーブルを作るのではなく、**優先順位を計算する**ことです。故障チェーンを（部品、モード、原因）ごとのワークシート行にフラット化し、**RPN = S × O × D** を計算し、そして重要なことに AIAG-VDA **アクションプライオリティ**（重大度優先バンディング）を計算します。これにより生のRPNソートが引き起こすバグを意図的に修正します：S10·O2·D3のエアバッグ故障は、RPN（60）が低く見えても「高（High）」です。
+
+<Playground initial={`fmea "Brake system DFMEA"
+  type: design
+  rank: ap
+  flag: ap >= High
+  item "Master cylinder" fn "Generate hydraulic pressure"
+    mode "Internal seal leak"
+      effect "Loss of braking" sev: 9
+      cause "Seal material degradation" occ: 3
+        controls prevention: "Material spec", detection: "Bench test" det: 4
+      cause "Contamination" occ: 2
+        controls detection: "Fluid analysis" det: 5`} height={520} />
+
+---
+
+## 1. 最初のワークシート
+
+すべてのドキュメントは `fmea`、任意のタイトル、オプションのディレクティブ、そして**ネストされた**故障チェーンで始まります。構造はキーワードから来るものであり、インデントの深さからではありません：
+
+```
+fmea "Pump DFMEA"
+  item "Impeller" fn "Move fluid"
+    mode "No flow"
+      effect "Process stops" sev: 8
+      cause "Impeller wear" occ: 4
+        controls detection: "Flow sensor" det: 5
+```
+
+- **`item "名前" fn "機能"`** — 部品とその部品が提供する機能。`fn` はオプション。
+- **`mode "故障モード"`** — その機能がどのように故障するか。1つの部品に複数持てる。
+- **`effect "結果" sev: 1..10`** — 故障が引き起こすもの；独自の**重大度**を持つ。1つのモードに複数持てる（エンジンはそのモードのすべての行に対して*最悪の*ものを使用）。
+- **`cause "根本原因" occ: 1..10`** — なぜ起こるか；**発生度**を持つ。
+- **`controls prevention: "…", detection: "…" det: 1..10`** — 現在の管理策と、それらが得る**検出度**評価。管理策がない場合、検出度はデフォルトで**10**（検出不能）。
+
+3つの評価はすべて1〜10の整数です；その範囲外は拒否されます。
+
+---
+
+## 2. ヘッダーディレクティブ
+
+```
+type: design          # design (dfmea) | process (pfmea) | msr
+rank: ap              # ap (デフォルト) | rpn — ソート/優先度キー
+flag: ap >= High      # または `rpn > 100` — しきい値を超えた行をハイライト
+number: FMEA-2026-014 # フリーメタデータ：番号/チーム/作成者/日付/改訂/部門/プロセス/製品
+```
+
+`rank` は行の優先順位の付け方を選択し；`flag` はしきい値を超えた行をハイライトします（`ap >= High` / `ap == High`、または `rpn > 100` / `rpn >= 120`）。
+
+---
+
+## 3. 計算されたRPNとアクションプライオリティ
+
+これが差別化要因です。ネストされたASTからエンジンは：
+
+1. **フラット化**して（部品、モード、原因）ごとの1行に；モードの最悪の影響重大度がそのモードのすべての行を支配する。
+2. **RPN = S × O × D**（1〜1000）。
+3. AIAG-VDAバンド構造による**アクションプライオリティ** — **重大度が主軸**、発生度が2番目、検出度が3番目。S = 9〜10（安全/規制）はすべてのOとDに対して「高（High）」；中程度の重大度は発生度が低下するにつれてHigh→Medium→Lowに低下。
+4. 選択したキーで**ソート**。`ap` の場合：High > Medium > Low、同順位は重大度次にRPNで解決 — RPNのみを使うと、APが修正するために設計されたバグを再導入してしまう。
+5. しきい値を超えた行に**フラグ**を立てる。
+
+各行は `data-rpn` と `data-ap` を持つため、計算された優先順位は後続で検査可能です。
+
+---
+
+## 4. 事後措置のフォローアップ
+
+是正処置と修正された評価を記録してbefore/afterのデルタを示します：
+
+```
+fmea "Brake DFMEA"
+  item "MC"
+    mode "Seal leak"
+      effect "Loss of braking" sev: 9
+      cause "Degradation" occ: 3 det: 4
+  action "Seal leak" / "Degradation"
+    do: "Upgrade seal to EPDM" owner: "J. Lee" target: 2026-Q3
+    revised sev: 9 occ: 1 det: 4
+```
+
+`action "モード" / "原因"` は引用符付きのモードと（オプションの）原因でチェーンをターゲットします；`do:` は推奨事項；`revised sev/occ/det` はエンジンがリスク削減を報告できるよう事後措置後のRPNとAPを再計算します。
+
+---
+
+## 5. よくある間違い
+
+```
+# 誤り — 1..10バンド外の評価
+effect "Leak" sev: 11
+
+# 誤り — 部品の前のモード
+mode "orphan mode"
+
+# 誤り — モードの前の影響
+item "x"
+  effect "e" sev: 3
+```
+
+評価は1〜10の整数でなければならず；故障チェーンは `item → mode → effect/cause` としてネストされなければならない；順序外のキーワードは名前を指定して拒否されます。検出度管理策がない場合は暗黙にデフォルト10になります — 検出管理策がある場合は原因またはその `controls` に `det:` を記述してください。
+
+---
+
+## 6. 標準準拠
+
+故障チェーンとSeverity/Occurrence/Detectionのスケールは AIAG-VDA FMEA Handbook（2019年）および IEC 60812 に従います。アクションプライオリティは公開されたバンド*構造*（重大度優先）を実装しており、有料の逐語的な1000セルテーブルではありません。RPNはレガシーワークシート向けに `rank: rpn` で引き続き利用可能です。
+
+## 7. ロードマップ
+
+延期：正確なAIAG-VDA AP/MSR決定テーブル、複数影響・原因ごとの重み付け、および構造/機能ツリービュー。

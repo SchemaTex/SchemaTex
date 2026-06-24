@@ -1,0 +1,414 @@
+---
+title: 플로우차트
+---
+
+## 플로우차트란
+
+**플로우차트**는 프로세스의 각 단계 — 결정, 작업, 입력, 출력, 그리고 그 사이의 경로 — 를 표준화된 기호와 화살표로 표현하는 다이어그램입니다. 엔지니어는 알고리즘을 명세하는 데, 비즈니스 분석가는 워크플로우를 문서화하는 데, 품질 팀은 실패 유형을 추적하는 데 활용합니다. 플로우차트는 모든 산업에서 가장 널리 통용되는 기술 다이어그램 중 하나입니다.
+
+Schematex는 플로우차트 기호 규약으로 **[ISO 5807:1985](https://www.iso.org/standard/11955.html)** 를 따르며, **[Mermaid 호환](https://mermaid.js.org/syntax/flowchart.html)** DSL을 사용하므로 기존 Mermaid 플로우차트를 그대로 가져올 수 있습니다. 이 페이지에서는 현재 파서가 지원하는 문법을 설명합니다.
+
+<Playground initial={`flowchart LR
+  start([New order received])
+  start --> validate{Inventory available?}
+  validate -->|Yes| reserve[Reserve items]
+  validate -->|No| notify[Notify customer]
+  notify --> done([End])
+  reserve --> payment{Payment authorized?}
+  payment -->|Yes| ship[Ship order]
+  payment -->|No| cancel[Cancel & release]
+  ship --> confirm[Send confirmation email]
+  confirm --> done
+  cancel --> done`} height={420} />
+
+---
+
+## 1. 첫 번째 플로우차트
+
+가장 단순한 유용한 플로우차트: 두 가지 결과를 갖는 결정 노드입니다.
+
+<Playground initial={`flowchart TD
+  A([Start]) --> B{File exists?}
+  B -->|Yes| C[Read file]
+  B -->|No| D[Return error]
+  C --> E([Done])`} />
+
+네 가지 규칙으로 전체 사용법의 80%를 커버할 수 있습니다.
+
+1. `flowchart` 뒤에 방향을 지정하여 시작합니다: `TD`, `LR`, `BT`, `RL` 중 하나.
+2. 각 노드는 `ID[레이블]` 형식이며, 괄호 종류가 노드 유형을 결정합니다(§2 참조).
+3. 노드를 `-->` 로 연결합니다. 파이프 문자 사이에 레이블을 넣으려면: `-->|Yes|`.
+4. 노드는 엣지에서 처음 참조될 때 자동으로 생성되지만, 명시적으로 선언하면 모양과 레이블을 독립적으로 지정할 수 있습니다.
+
+> 주석은 자체 줄에서 `%%` 로 시작합니다.
+
+---
+
+## 2. 노드 모양
+
+각 노드 모양은 `ID<괄호>레이블<괄호>` 형식으로 작성합니다. ID는 알파벳으로 시작해야 하며, 알파벳, 숫자, `_`, `-` 를 포함할 수 있습니다.
+
+| 문법 | 모양 | 일반적인 용도 |
+|---|---|---|
+| `A[Label]` | 직사각형 | 프로세스 단계, 작업 |
+| `A(Label)` | 모서리가 둥근 직사각형 | 서브프로세스, 소프트 단계 |
+| `A([Label])` | 스타디움(알약형) | 시작 / 종료 터미널 |
+| `A{Label}` | 다이아몬드 | 결정 / 조건 |
+| `A{{Label}}` | 육각형 | 준비, 설정 |
+| `A[[Label]]` | 서브루틴 | 미리 정의된 프로세스 |
+| `A[(Label)]` | 원통형 | 데이터베이스, 스토리지 |
+| `A((Label))` | 원 | 커넥터, 분기점 |
+| `A(((Label)))` | 이중 원 | 종료 상태 |
+| `A[/Label/]` | 평행사변형 | 입력 / 출력 |
+| `A[\Label\]` | 평행사변형(대체형) | 수동 작업 |
+| `A[/Label\]` | 사다리꼴 | 수동 입력 |
+| `A[\Label/]` | 사다리꼴(대체형) | 페이지 외 커넥터 |
+| `A>Label]` | 비대칭형 | 태그, 주석 |
+
+<Playground initial={`flowchart TD
+  t([Terminal / stadium])
+  r[Rectangle process]
+  d{Diamond decision}
+  p[/Parallelogram input/]
+  db[(Cylinder database)]
+  sub[[Subroutine]]
+  t --> r --> d
+  d -->|branch A| p
+  d -->|branch B| db
+  p --> sub
+  db --> sub`} height={440} />
+
+---
+
+## 3. 엣지
+
+엣지는 두 노드를 연결합니다. 커넥터 기호에 따라 시각적 스타일과 레이블 또는 화살촉의 유무가 결정됩니다.
+
+### 3.1 엣지 유형
+
+<Playground initial={`flowchart TD
+  A --> B
+  C --- D
+  E -.-> F
+  G ==> H
+  I <--> J
+  K --x L
+  M --o N`} height={380} />
+
+| 문법 | 스타일 | 화살표 | 일반적인 용도 |
+|---|---|---|---|
+| `A --> B` | 실선 | 화살표 | 일반 흐름 |
+| `A --- B` | 실선 | 없음 | 연관, 무방향 링크 |
+| `A -.-> B` | 점선 | 화살표 | 선택적 / 비동기 경로 |
+| `A ==> B` | 굵은 선 | 화살표 | 중요 / 주요 경로 |
+| `A <--> B` | 실선 | 양방향 | 양방향 흐름 |
+| `A --x B` | 실선 | 가위표 | 차단 / 거부된 경로 |
+| `A --o B` | 실선 | 원형 | 집합 / 합성 |
+
+### 3.2 엣지 레이블
+
+엣지에 레이블을 붙이는 두 가지 문법이 있습니다.
+
+**파이프 레이블** — 화살표 바로 뒤에 `|` 문자 사이에 배치합니다:
+```
+A -->|Yes| B
+A -.->|optional| B
+A ==>|critical| B
+```
+
+**인라인 레이블** — 대시 사이, 화살표 문자 앞에 텍스트를 배치합니다:
+```
+A -- success --> B
+A -- error --x C
+```
+
+두 방법 모두 동일한 결과를 생성합니다. Mermaid 도구와 다이어그램을 공유할 때는 파이프 레이블이 더 일반적으로 사용됩니다.
+
+<Playground initial={`flowchart TD
+  req[Request received]
+  req -->|valid| proc[Process]
+  req -->|invalid| err[Return 400]
+  proc -- success --> ok([Done])
+  proc -.->|timeout| retry[Retry queue]
+  retry ==>|max retries| dead[(Dead letter)]`} height={380} />
+
+### 3.3 체인
+
+세 개 이상의 노드를 한 줄로 연결합니다:
+
+```
+A --> B --> C --> D
+```
+
+이는 별개의 엣지 구문 세 개를 작성한 것과 동일합니다.
+
+### 3.4 `&` 를 이용한 팬아웃
+
+`&` 를 사용하면 화살표 양쪽에 여러 노드를 포함할 수 있습니다. 파서는 전체 교차곱(cross-product)의 엣지를 생성합니다:
+
+```
+A & B --> C        %% A→C and B→C
+A --> B & C        %% A→B and A→C
+A & B --> C & D    %% four edges: A→C, A→D, B→C, B→D
+```
+
+<Playground initial={`flowchart LR
+  deploy[Deploy service]
+  smoke[Smoke test]
+  health[Health check]
+  notify_slack[Slack alert]
+  notify_email[Email alert]
+  deploy --> smoke & health
+  smoke & health -->|fail| notify_slack & notify_email`} height={300} />
+
+---
+
+## 4. 서브그래프
+
+`subgraph` 는 관련 노드를 레이블이 달린 클러스터로 묶어 테두리를 표시합니다.
+
+```
+subgraph "Title"
+  A --> B
+end
+```
+
+세 가지 서브그래프 헤더 형식이 허용됩니다:
+
+| 형식 | ID | 레이블 |
+|---|---|---|
+| `subgraph "My Group"` | 자동 생성 | `My Group` |
+| `subgraph sg1 "My Group"` | `sg1` | `My Group` |
+| `subgraph sg1 [My Group]` | `sg1` | `My Group` |
+
+서브그래프에는 자체 `direction` 재정의를 설정할 수 있습니다:
+
+```
+subgraph sg1 "Frontend"
+  direction LR
+  ui[React App] --> api[API Client]
+end
+```
+
+<Playground initial={`flowchart TB
+  subgraph ingestion [Ingestion]
+    raw[/Raw events/] --> parse[Parse & validate]
+    parse --> enrich[Enrich]
+  end
+  subgraph storage [Storage]
+    dw[(Data warehouse)]
+    cache[(Redis cache)]
+  end
+  enrich --> dw
+  enrich --> cache
+  dw --> report[Generate report]`} height={420} />
+
+---
+
+## 5. 스타일링
+
+### 5.1 시맨틱 클래스
+
+노드에 CSS 클래스 이름을 지정하여 테마 수준의 시각적 그룹화를 수행합니다. 클래스는 `classDef` 로 정의하고 `class` 로 적용합니다. Mermaid 인라인 클래스 문법도 지원됩니다: `A[Start]:::critical`.
+
+```
+classDef danger fill:#f9c,stroke:#c00
+classDef safe fill:#cfc,stroke:#090
+class errorNode danger
+class successNode safe
+B[Review]:::danger
+```
+
+### 5.2 노드별 스타일 재정의
+
+```
+style nodeId fill:#f9f,stroke:#333,stroke-width:4px
+```
+
+표준 CSS 속성 이름을 사용합니다. 여러 속성은 쉼표로 구분합니다.
+
+### 5.3 엣지별 스타일 재정의
+
+`linkStyle` 은 엣지를 **선언 인덱스**(소스에 나타나는 순서대로 0부터 시작)로 대상으로 지정합니다. 쉼표로 구분된 여러 인덱스를 지정하면 동일한 속성을 여러 엣지에 적용할 수 있습니다:
+
+```
+flowchart TD
+  A --> B
+  B ==> C
+  B -.-> D
+  C --> E
+  D --> E
+  linkStyle 1 stroke:#d32f2f,stroke-width:4px
+  linkStyle 2,4 stroke:#f57c00,stroke-dasharray:5 5
+```
+
+중요 경로를 강조하거나 대체 흐름을 구분할 때 사용합니다.
+
+### 5.4 인라인 레이블 포맷
+
+노드 레이블에는 세 가지 인라인 서식 태그가 지원됩니다:
+
+| 태그 | 효과 |
+|---|---|
+| `<br/>` 또는 `<br>` | 줄 바꿈 |
+| `<b>…</b>` | 굵게 |
+| `<i>…</i>` | 기울임꼴 |
+
+```
+flowchart TD
+  M1["0 \| 0<br/><b>START</b>"]
+  M2["4 \| 4<br/><b>Phase 1</b><br/><i>est. 4h</i>"]
+  M1 --> M2
+```
+
+태그는 중첩 및 혼합이 가능합니다(`Hello <b>world</b>!`). 엣지 레이블은 단일 행이며 현재 이러한 태그를 지원하지 않습니다.
+
+---
+
+## 6. 레이블 및 주석
+
+- **방향:** `flowchart TD` — `flowchart` 또는 `graph` 뒤 첫 번째 토큰. `TD` 와 `TB` 는 동일합니다.
+- **제목:** `flowchart LR "My diagram"` — 방향 뒤에 오는 선택적 따옴표 문자열.
+- **엣지 레이블:** 파이프 문법 `-->|label|` 또는 인라인 `-- label -->`.
+- **주석:** 줄 시작 부분(앞쪽 공백 이후)에 `%%`.
+
+```
+flowchart LR
+%% This is a comment — ignored by the parser
+A[Step 1] --> B[Step 2]  %% inline %% is NOT supported — only line-start %%
+```
+
+---
+
+## 7. 예약어 및 이스케이핑
+
+**줄 시작에 예약된 키워드:** `flowchart`, `graph`(헤더), `subgraph`, `end`, `direction`, `class`, `classDef`, `style`, `linkStyle`.
+
+**예약된 ID 문자:** ID는 `[A-Za-z0-9_-]` 패턴으로, 알파벳으로 시작해야 합니다. 노드 ID에 공백이나 연산자 문자를 사용하지 마십시오.
+
+**ID 내부에서 피해야 할 연산자 토큰:** `-->`, `---`, `-.->`, `==>`, `<-->`, `--x`, `--o`, `|`, `&`.
+
+**특수 문자가 포함된 레이블:** 레이블은 모양 괄호 안의 모든 내용입니다. 레이블 안의 특수 문자는 그대로 지원됩니다 — 모호할 수 있는 괄호/중괄호는 매칭되는 닫는 토큰으로 닫힙니다.
+
+---
+
+## 8. 자주 발생하는 실수
+
+| 작성한 내용 | 파서의 반응 | 해결 방법 |
+|---|---|---|
+| 방향 없는 `flowchart` | 방향이 `TB` 로 기본 설정됨 | 방향 추가: `flowchart TD` |
+| 모양 선언 전 `A --> B` | 정상 작동 — 노드가 ID를 레이블로 하는 직사각형으로 생성됨 | 비직사각형 모양이 필요하면 명시적으로 선언: `A([Start])` |
+| `A[Label with [brackets]]` | 내부 `]` 가 모양을 일찍 닫음 | 레이블 안에 중첩 괄호를 피하십시오 |
+| `subgraph My Group`(따옴표 없이 공백 포함) | 파서가 `My` 를 서브그래프 id로, `Group` 을 알 수 없는 토큰으로 처리 | 따옴표 사용: `subgraph "My Group"` |
+| 코드 뒤 줄 중간에 `%% comment` | 인라인 주석은 지원되지 않음; `%%` 는 줄 시작에 있어야 함 | 주석을 별도 줄로 이동 |
+| `A --> B --> C` 와 `A --> B` 혼용 | 체인은 추가적 — 동일한 쌍에 중복 엣지가 생길 수 있음 | 동일한 쌍에는 체인 또는 별개 줄 중 하나만 사용 |
+| 서브그래프 외부의 `direction LR` | 무시됨 — `direction` 재정의는 `subgraph … end` 내부에서만 적용 | `flowchart` 헤더 줄에 방향을 설정 |
+
+---
+
+## 9. 문법 (EBNF)
+
+```text
+document       = header (blank | comment | subgraph-block | direction-stmt
+                        | class-stmt | classdef-stmt | style-stmt
+                        | linkstyle-stmt | chain-stmt)*
+
+header         = ("flowchart" | "graph") ( WS direction )? ( WS title )? NEWLINE
+direction      = "TD" | "TB" | "BT" | "LR" | "RL"
+title          = '"' any-char-but-quote* '"' | bare-word
+
+subgraph-block = "subgraph" ( WS subgraph-header )? NEWLINE
+                   ( WS? "direction" WS direction NEWLINE )?
+                   statement*
+                 "end" NEWLINE
+subgraph-header = id WS "[" label "]"
+                | id WS quoted-string
+                | quoted-string
+                | id
+
+chain-stmt     = node-group ( WS edge-op WS pipe-label? WS node-group )* NEWLINE
+node-group     = node-ref ( WS "&" WS node-ref )*
+node-ref       = id shape-suffix?
+shape-suffix   = "[" label "]"          %% rect
+               | "(" label ")"          %% round
+               | "([" label "])"        %% stadium
+               | "{" label "}"          %% diamond
+               | "{{" label "}}"        %% hexagon
+               | "[[" label "]]"        %% subroutine
+               | "[(" label ")]"        %% cylinder
+               | "((" label "))"        %% circle
+               | "(((" label ")))"      %% double-circle
+               | "[/" label "/]"        %% parallelogram
+               | "[\" label "\]"        %% parallelogram-alt
+               | "[/" label "\]"        %% trapezoid
+               | "[\" label "/]"        %% trapezoid-alt
+               | ">" label "]"          %% asymmetric
+
+edge-op        = "-->" | "---" | "-."-".->" | "==>" | "<-->" | "--x" | "--o"
+               | inline-label variants of the above
+pipe-label     = "|" text "|"
+
+class-stmt     = "class" WS id-list WS class-name NEWLINE
+               | node-ref ":::" class-name NEWLINE         # Mermaid inline form
+classdef-stmt  = "classDef" WS class-name WS css-props NEWLINE
+style-stmt     = "style" WS id WS css-props NEWLINE
+linkstyle-stmt = "linkStyle" WS index-list WS css-props NEWLINE
+index-list     = NUMBER ( "," NUMBER )* | "default"
+
+comment        = "%%" any NEWLINE
+id             = [A-Za-z] [A-Za-z0-9_-]*
+```
+
+권위 있는 소스: `src/diagrams/flowchart/parser.ts`. 이 문서가 파서와 다를 경우 파서가 우선합니다 — 이슈를 열어주십시오.
+
+---
+
+## 10. 표준 준수
+
+Schematex 플로우차트는 **ISO 5807:1985** 기호 규약을 따릅니다. DSL 문법은 **[Mermaid flowchart](https://mermaid.js.org/syntax/flowchart.html)** 와 의도적으로 호환되도록 설계되어 있으므로, 한 도구에서 만든 다이어그램을 다른 도구에서 사용할 수 있습니다.
+
+현재 구현된 내용:
+
+- ✅ 다섯 가지 방향: `TD`, `TB`, `BT`, `LR`, `RL`
+- ✅ 13가지 노드 모양 (직사각형부터 비대칭형까지)
+- ✅ 7가지 엣지 종류: 실선, 화살표 없음, 점선, 굵은 선, 양방향, 가위표, 원형 끝
+- ✅ 파이프 레이블 (`-->|text|`) 및 인라인 레이블 (`-- text -->`)
+- ✅ 엣지 체인 (`A --> B --> C`)
+- ✅ `&` 를 이용한 팬아웃 (교차곱 엣지)
+- ✅ 선택적 id, 레이블, 서브그래프별 방향이 있는 서브그래프
+- ✅ `classDef` / `class` 시맨틱 그룹화
+- ✅ Mermaid 인라인 노드 클래스: `A[Label]:::className`
+- ✅ 노드별 `style` CSS 재정의
+- ✅ `linkStyle` 렌더링 — `linkStyle 1,5,6 stroke:#f00,stroke-width:4px` 가 선언 순서에 따라 매칭 엣지에 CSS 적용
+- ✅ 노드 레이블의 인라인 `<b>` / `<i>` (기존 `<br/>` 줄 바꿈과 조합 가능)
+- ⏳ 13가지 모양의 렌더링 — M1은 rect/round/stadium/diamond/parallelogram을 완전히 렌더링하며, 나머지 모양은 rect로 폴백
+- ⏳ 스윔레인 레이아웃 변형
+
+참고 자료:
+
+- ISO 5807:1985 — *Information processing — Documentation symbols and conventions for data, program and system flowcharts, program network charts and system resources charts*
+- Mermaid flowchart documentation — https://mermaid.js.org/syntax/flowchart.html
+
+---
+
+## 11. 로드맵
+
+**계획됨 — 아직 파싱 불가.** 현재 생성된 DSL에 이를 사용하지 마십시오; 파서가 거부하거나 무시합니다.
+
+- **13가지 모양 전체 렌더링** — subroutine, cylinder, circle, double-circle, hexagon, asymmetric, trapezoid, parallelogram-alt는 M1에서 rect로 폴백됩니다.
+- **스윔레인 레이아웃** — 배우 또는 시스템별로 노드를 그룹화하는 수평 밴드 (Mermaid의 `LR` 루트 내 `direction TB` 가 있는 `subgraph`).
+- **`%%{init: {…}}%%` init 블록** — Mermaid 호환 테마 및 레이아웃 초기화 블록.
+- **레이블의 Markdown 서식** — `**bold**` / `*italic*` markdown 문법 (HTML `<b>`/`<i>` 는 이미 동작 — §5 참조).
+
+더 빨리 필요한 기능이 있으면 GitHub 이슈에서 추적하십시오.
+
+---
+
+## 관련 예제
+
+예제 갤러리에서 바로 사용할 수 있는 시나리오:
+
+<RelatedExamples slugs={[
+  'flowchart-order-fulfillment',
+  'flowchart-cicd-pipeline',
+]} />

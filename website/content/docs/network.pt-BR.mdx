@@ -1,0 +1,222 @@
+---
+title: Topologia de Rede
+---
+
+## Sobre diagramas de rede
+
+Um **diagrama de rede** é o diagrama de infraestrutura profissional mais desenhado — todo engenheiro de redes, administrador de sistemas, MSP e integrador de segurança física (CFTV) os produz para propostas de projeto, documentação as-built, auditorias e entrega ao cliente. Eles são ricos em convenções: um roteador não se parece com um switch, um link de fibra não se parece com um de cobre, e uma sub-rede de câmeras tem uma forma reconhecível. O motor `network` do Schematex renderiza as **silhuetas de ícones convencionais Cisco** como arte vetorial original, organiza as classes de topologia da forma que o padrão define e — ao contrário de um LLM emitindo Mermaid puro — **nunca descarta silenciosamente um dispositivo, uma porta ou um link**.
+
+O que o diferencia de uma biblioteca de stencils do tipo arrastar e soltar: ele entende **classes de topologia** (uma estrela tem um hub, um anel fecha um loop, uma spine-leaf são duas fileiras com malha, o modelo de três camadas é core sobre distribuição sobre acesso), renderiza cada **tipo de link** com sua aparência convencional e **valida** fatos estruturais — o IP de um dispositivo deve estar dentro do CIDR da sub-rede, um id de VLAN deve ser 1–4094.
+
+<Playground initial={`network "Acme HQ — CCTV"
+  layout: tiered
+  internet net "Internet"
+  firewall fw1 "Perimeter FW" tier: edge
+  l3switch core1 "Core SW" tier: core
+  poeswitch poe1 "PoE Switch" tier: access
+  nvr nvr1 "Recorder"
+  subnet cams "192.168.20.0/24" {
+    camera cam1 "Lobby" type: dome ip: 192.168.20.11
+    camera cam2 "Gate" type: ptz ip: 192.168.20.12
+    poe1
+  }
+  net -- fw1 : wan "ISP 1Gbps"
+  fw1 -- core1 : fiber 10G
+  core1 -- poe1 : trunk vlan: 20 1G
+  core1 -- nvr1
+  poe1 -- cam1 : poe
+  poe1 -- cam2 : poe`} height={460} />
+
+As câmeras ficam em uma sub-rede `192.168.20.0/24` tracejada (seus IPs validados contra o CIDR), os links PoE são verdes, o uplink de fibra é laranja, e os dispositivos são agrupados por `tier:`.
+
+---
+
+## 1. Seu primeiro diagrama
+
+Um diagrama de rede completo precisa apenas de dois tipos de linha: **declarações de dispositivo** e **links**. Nada mais é necessário.
+
+<Playground initial={`network "Tiny LAN"
+router r1 "Edge Router"
+switch sw1 "Core Switch"
+pc pc1 "Workstation"
+r1 -- sw1
+sw1 -- pc1`} height={300} />
+
+É isso — um diagrama válido e com layout definido. Apenas duas regras:
+
+- `<tipo> <id> ["rótulo"]` — um dispositivo tipado. O tipo define o ícone.
+- `<a> -- <b>` — um link não direcionado entre dois dispositivos declarados.
+
+**Todo o resto é opcional e aditivo — mas nem tudo tem o mesmo valor.** Duas dicas estruturais baratas e de alto valor valem a pena adicionar sempre que a hierarquia importa: `layout:` (tiered/tree/star/ring/bus/mesh/spine-leaf) e `tier:` (edge/core/distribution/access). Elas criam uma hierarquia legível de cima para baixo com um custo de sintaxe quase nulo:
+
+```
+network "Branch"
+  layout: tiered
+  router r1 "Edge Router" tier: edge
+  l3switch core1 "Core SW" tier: core
+  switch acc1 "Access SW" tier: access
+  pc pc1 "Workstation"
+  r1 -- core1
+  core1 -- acc1
+  acc1 -- pc1
+```
+
+Em contrapartida, as **anotações por link** — tipos de link (`fiber`/`wireless`/`poe`…), velocidades, `vlan:`, `port:`, `trunk`/`access` e limites `subnet { }` — não afetam o layout e são onde a geração mais frequentemente quebra. Adicione-os somente quando a solicitação os exigir. Regra prática: mantenha as dicas estruturais, descarte as anotações decorativas a menos que solicitado.
+
+Os dispositivos **não** são declarados automaticamente a partir dos links — um id não declarado não pode ser tipado com segurança, então um link para um dispositivo desconhecido é um erro legível. Use `;` para colocar várias instruções em uma linha, e o atalho `a b c : tipo` para declarar vários dispositivos do mesmo tipo de uma vez.
+
+Quando o esqueleto funcionar, você pode adicionar direção e anotações — `->` é um link direcionado, `==` é um LAG, e qualquer coisa após `:` é a especificação do link:
+
+```
+network "Home"
+  layout: star
+  router gw "Gateway"
+  pc pc1
+  laptop lt1
+  gw -- pc1
+  gw -- lt1 : wireless
+```
+
+---
+
+## 2. Tipos de dispositivo
+
+Escolha o tipo que corresponde ao dispositivo; o ícone segue a silhueta da convenção Cisco.
+
+- **Infraestrutura** — `router`, `switch`, `l3switch`, `firewall`, `loadbalancer`, `ap`, `wlc`, `gateway`, `modem`, `ids`, `proxy`, `vpngw`
+- **Endpoints** — `server`, `serverfarm` (`count: n`), `pc`, `laptop`, `mobile`, `ipphone`, `printer`, `storage`
+- **CFTV / segurança** — `camera` (com `type: fixed | bullet | dome | ptz | turret`), `nvr`, `dvr`, `poeswitch`, `encoder`, `monitor`
+- **Nuvens** — `internet`, `wan`, `pstn`, `cloud`, mais `lan` (uma barra de barramento)
+
+Aliases são aceitos: `multilayer`→`l3switch`, `workstation`→`pc`, `wifi`→`ap`, `nas`/`san`→`storage`, `voip`→`ipphone`.
+
+```
+camera cam1 type: dome ip: 192.168.20.11
+serverfarm farm "Server Farm" count: 4
+l3switch core1 tier: core model: "C9500"
+```
+
+---
+
+## 3. Links e anotações
+
+A aparência de um link segue seu tipo; tudo após `:` é livre de ordem.
+
+```
+a -- b                       # cobre / ethernet (sólido padrão)
+a -- b : fiber 10G           # fibra — laranja com marcas de barra
+a -- b : wireless            # tracejado
+a -- b : serial              # circuito alugado / WAN
+a -- b : poe                 # Power-over-Ethernet (verde + tag)
+a -- b : vpn "site-to-site"  # túnel tracejado
+a == b : lag 40G             # agregado / EtherChannel (linha dupla)
+a -- b : trunk vlan: 10,20 1G port: Gi0/1>Gi1/0/24
+```
+
+- `trunk` / `access` — modo de porta (um trunk deve conectar dispositivos de classe switch).
+- `vlan: 10` ou `vlan: 10,20` — uma única VLAN colore o link (ignorando o vermelho de alarme reservado).
+- `1G` / `10G` / `100M` / `40G` — velocidade, mostrada no meio do link.
+- `port: near>far` — rótulos de interface em cada extremidade.
+
+---
+
+## 4. Modos de layout
+
+```
+layout: tiered      # padrão — faixa por tier: edge → core → distribution → access
+layout: tree        # hierárquico a partir da raiz
+layout: star        # hub no centro, raios em um anel
+layout: ring        # nós em um círculo
+layout: bus         # backbone compartilhado
+layout: mesh        # malha completa/parcial em um círculo
+layout: spine-leaf  # duas fileiras, cada folha auto-conectada a cada spine
+layout: manual      # explícito em at: x,y por dispositivo
+direction: tb | lr  # eixo de fluxo para tiered/tree
+```
+
+Para `tiered`, defina `tier:` (`edge` / `core` / `distribution` / `access`) na infraestrutura; endpoints sem tier são colocados abaixo do switch. Para `spine-leaf`, declare `spines:` e `leaves:` e os links spine↔leaf são gerados automaticamente.
+
+---
+
+## 5. Limites: sites, racks, sub-redes, VLANs
+
+Um dispositivo pode ficar dentro de blocos de limite aninhados. Contêineres **físicos** (site/rack) desenham uma borda sólida; sobreposições **lógicas** (subnet/VLAN/zone/DMZ) desenham uma região tracejada colorida.
+
+```
+network "Branch"
+  site hq "HQ Building" {
+    rack mdf "MDF Rack" {
+      firewall fw1 tier: edge
+      l3switch core1 tier: core
+    }
+  }
+  subnet lan "10.0.10.0/24" {
+    switch a1 tier: access
+    pc u1 "User PC" ip: 10.0.10.50
+  }
+  zone dmz "DMZ" {
+    server web
+  }
+  fw1 -- core1 : 10G
+  core1 -- a1 : trunk vlan: 10
+  a1 -- u1
+```
+
+Um dispositivo declarado dentro de uma `subnet` cujo rótulo é um CIDR tem seu `ip:` validado — um endereço fora do intervalo é um erro legível. Um id simples em sua própria linha dentro de um bloco adiciona um dispositivo já declarado a esse grupo.
+
+---
+
+## 6. Validação e a garantia de não descartar
+
+O motor garante que todos os dispositivos e links declarados sejam renderizados — a falha de dispositivo descartado de ferramentas genéricas é estruturalmente impossível. Ele também verifica:
+
+- **id duplicado** → erro;
+- **tipo desconhecido** → erro com a sugestão mais próxima (`"swtich" → você quis dizer "switch"?`);
+- **link para um dispositivo não declarado** → erro;
+- **id de VLAN fora de 1–4094** → aviso (ainda renderiza);
+- **IP do dispositivo fora do CIDR da sub-rede** → erro.
+
+O `<desc>` do SVG registra contagens de dispositivos/links, a classe de topologia detectada (star / ring / bus / mesh / tree / hierarchical / spine-leaf) e quaisquer avisos.
+
+---
+
+## 7. Temas
+
+```
+theme: default      # corpo estilo Cisco "network blue" da casa
+theme: monochrome   # arte vetorial limpa para impressão/auditoria (significado do link via estilo de linha + tags)
+theme: dark         # Catppuccin Mocha
+```
+
+Rótulos CJK e aspas `「…」` / `"…"` são analisados corretamente:
+
+```
+network "办公室"
+  multilayer core1 「核心交换机」
+  poeswitch poe1
+  camera cam1 type: dome
+  core1 -- poe1 : trunk vlan: 10
+  poe1 -- cam1 : poe
+```
+
+---
+
+## 8. Conformidade com padrões
+
+A topologia de rede não tem um único padrão formal de desenho; o Schematex compõe sua base a partir das fontes de fato — **ícones de topologia de rede Cisco** (silhuetas redesenhadas como arte vetorial original), o **modelo hierárquico Cisco** e **spine-leaf (Clos)** para layout, convenções de cor de cabeamento **ANSI/TIA-606** e funções **ONVIF** para o cluster CFTV.
+
+Especificação completa: [Network Topology Standard Reference](https://github.com/schematex/schematex/blob/main/docs/reference/35-NETWORK-STANDARD.md).
+
+---
+
+## Exemplos relacionados
+
+Cenários prontos para uso da galeria de exemplos:
+
+<RelatedExamples slugs={[
+  'network-cctv-camera-system',
+  'network-link-types',
+  'network-spine-leaf-fabric',
+  'network-boundaries',
+  'network-enterprise-campus',
+]} />

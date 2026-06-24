@@ -1,0 +1,241 @@
+---
+title: UML 시퀀스 다이어그램
+---
+
+## 시퀀스 다이어그램에 대하여
+
+**시퀀스 다이어그램**은 참여자들이 **시간에 따라** 메시지를 교환하는 방식을 보여줍니다. 생명선(lifeline)은 위→아래로 이어지고, 메시지는 생명선 사이를 좌→우로 이동하며, 수직 축이 순서를 나타냅니다. **[UML](https://www.omg.org/spec/UML/2.5.1/) 2.5.1 §17 (Interactions)**에서 정의된 이 다이어그램은 API 호출 흐름, 인증 핸드셰이크, 분산 프로토콜을 명확히 할 때 엔지니어들이 가장 먼저 찾는 도구입니다 — *누가 누구를 호출하고, 어떤 순서로, 무엇이 돌아오는지*.
+
+Schematex는 완전한 UML 표기법을 구현하며, 생성을 위해 **Mermaid `sequenceDiagram` 방언도 허용**합니다 — Mermaid를 그대로 붙여 넣으면 렌더링됩니다. `sequenceDiagram` 헤더 아래에서는 화살표가 Mermaid 의미를 가집니다(`->>` 동기 호출, `-->>` 응답, `-)` 비동기). 네이티브 `sequence "Title"` 헤더 아래에서는 기존 Schematex 의미가 유지됩니다(`->>` = 비동기). 대부분의 도구가 공통 부분 집합(`alt`/`opt`/`loop`/`par`)에서 멈추는 반면, Schematex는 **열두 가지** 모든 결합 프래그먼트 연산자와 `ref` 상호작용 사용 프레임을 지원합니다. 전문가들이 상호작용이 복잡해질 때 필요로 하는 것들이 바로 이 부분이기 때문입니다. **[usecase](/docs/usecase)**(메시지 순서가 아닌 시스템 범위), **[state](/docs/state)**(객체 간 메시지가 아닌 하나의 객체 모드), **[bpmn](/docs/bpmn)**(호출 시퀀스가 아닌 조직 프로세스)와 구별됩니다.
+
+<Playground initial={`sequence "Login flow"
+  actor User
+  participant Web as "Web App"
+  control Auth
+  database DB
+  User -> Web : submit(credentials)
+  activate Web
+  Web ->+ Auth : verify(credentials)
+  Auth ->+ DB : SELECT user
+  DB --> Auth : row
+  deactivate DB
+  alt [credentials valid]
+    Auth --> Web : token
+    Web --> User : 200 OK
+  else [invalid]
+    Auth --> Web : 401
+    Web --> User : error
+  end
+  deactivate Auth
+  deactivate Web
+  note over User, Web : session cookie set`} height={560} />
+
+---
+
+## 1. 첫 번째 다이어그램
+
+모든 문서는 `sequence` 키워드와 선택적 `"title"`로 시작합니다. 참여자를 선언할 필요가 없습니다 — 메시지에서 처음 언급하면 생명선이 됩니다.
+
+```
+sequence
+  Alice -> Bob : Authentication Request
+  Bob --> Alice : Authentication Response
+```
+
+생명선은 첫 사용 순서대로 좌→우로 나타납니다. `->`는 동기 호출(실선, 채워진 화살촉), `-->`는 응답(점선, 열린 화살촉)입니다. `:` 뒤의 텍스트가 메시지 레이블입니다.
+
+---
+
+## 2. 참여자
+
+참여자를 명시적으로 선언하여 **종류**를 설정하고, **별칭**을 지정하거나, **순서**를 고정합니다.
+
+```
+sequence
+  actor User
+  participant Web as "Web App"
+  boundary LoginUI
+  control Auth
+  entity Account
+  database DB
+  collections Sessions
+  queue Events
+```
+
+| 종류 | 렌더링 방식 |
+|------|-------------|
+| `participant` (기본값) | 둥근 분류기 박스 |
+| `actor` | 막대 인간 |
+| `boundary` / `control` / `entity` | Jacobson 견고성 아이콘 (⊢◯ / 화살표가 있는 ◯ / 밑줄이 있는 ◯) |
+| `database` | 실린더 |
+| `collections` / `queue` | 종류가 `«stereotype»`인 박스 |
+
+- `as "Label"`로 표시 이름을 설정합니다(따옴표 선택 사항; `「…」` CJK 따옴표 허용).
+- 사용자 지정 **stereotype**은 선언 후 guillemets 또는 ASCII 꺾쇠괄호로 지정합니다 — 기본 레이블을 재정의합니다: `actor Printer «system»`, `participant Bus as "Event Bus" <<service>>`.
+
+---
+
+## 3. 메시지
+
+화살표 토큰이 UML 의미론을 결정합니다.
+
+| DSL | 의미 | 렌더링 |
+|-----|---------|-----------|
+| `A -> B` | 동기 호출 | 실선, **채워진** 화살촉 |
+| `A ->> B` | 비동기 신호 | 실선, **열린** 화살촉 |
+| `A --> B` | 응답/반환 | **점선**, 열린 화살촉 |
+| `A -x B` | 손실된 메시지 | 채워진 원에서 끝나는 선 |
+| `o-> B` | 발견된 메시지 | 채워진 원에서 시작하는 선 |
+| `A -> A` | 자기 메시지 | 같은 생명선으로 돌아오는 굽은 루프 |
+
+화살표 주위의 공백은 선택 사항입니다(`A->B`도 가능). 레이블은 반환값 포함 자유 텍스트입니다 — 예: `aHotel -> aHotel : available(roomId, date): isRoom`.
+
+---
+
+## 4. 활성화 (실행 명세)
+
+생명선의 얇은 막대는 활성 상태를 나타냅니다. 명시적 구문이나 메시지 자체의 `+` / `-` 접미사로 열고 닫습니다.
+
+```
+sequence
+  participant Client
+  participant Server
+  Client ->+ Server : request()
+  Server ->> Server : validate()
+  Server -->- Client : response
+```
+
+화살표 뒤의 `+`는 도착 시 **수신자**를 활성화하고, `-`는 메시지 전송 후 **발신자**를 비활성화합니다. 명시적 형식은 `activate X` / `deactivate X`입니다. 하나의 생명선에서 겹치는 막대는 수평으로 오프셋되어 중첩됩니다.
+
+---
+
+## 5. 객체 생성 및 소멸
+
+```
+sequence
+  participant Factory
+  Factory -> *Worker : «create»
+  Factory -> Worker : work()
+  destroy Worker
+```
+
+수신자 앞에 `*`를 붙이면 메시지가 그것을 **인스턴스화**합니다 — 새 생명선의 헤드가 상단이 아닌 도착 행에 그려집니다. `destroy X`는 생명선을 ✕로 종료하고 시간 축을 멈춥니다.
+
+---
+
+## 6. 결합 프래그먼트
+
+결합 프래그먼트는 영역 주위에 레이블이 있는 프레임입니다. Schematex는 완전한 UML `InteractionOperatorKind` 집합을 구현합니다.
+
+| 연산자 | 의미 | 오퍼랜드 |
+|----------|---------|----------|
+| `alt` | 대안 (if/else-if/else) | `else`, 각각 가드됨 |
+| `opt` | 가드 조건이 성립할 때만 실행 | 하나, 가드됨 |
+| `loop` | 반복 | 하나; 가드는 `(min,max)` 가능 |
+| `par` | 동시 오퍼랜드 | `and` |
+| `break` | 예외적 종료 | 하나, 가드됨 |
+| `critical` | 원자적 / 인터리빙 없음 | 하나 |
+| `seq` / `strict` | 약/강 시퀀싱 | `and` |
+| `neg` | 유효하지 않은 트레이스 (색조로 렌더링) | 하나 |
+| `ignore` / `consider` | 메시지 집합 필터 `{m1, m2}` | 하나 |
+| `assert` | 유일하게 유효한 지속 | 하나 |
+
+```
+sequence
+  actor User
+  participant API
+  User -> API : GET /resource
+  alt [authorized]
+    API --> User : 200 + body
+  else [forbidden]
+    API --> User : 403
+  end
+```
+
+가드는 연산자 뒤(그리고 `else` 뒤)의 `[대괄호]`에 넣습니다. 프래그먼트는 중첩되며, 내부 프레임은 부모 안에 깔끔하게 자동으로 들여쓰기됩니다.
+
+---
+
+## 7. 상호작용 사용 (`ref`)
+
+인라인으로 작성하는 대신 다른 상호작용을 참조합니다 — UML이 큰 다이어그램을 구성 가능하게 유지하는 방법입니다.
+
+```
+sequence
+  participant A
+  participant B
+  ref over A, B : Establish session
+  A -> B : poll()
+```
+
+`ref over <lifelines> : Name`은 명명된 생명선을 가로지르는 프레임 박스를 그립니다. 대부분의 도구가 이것을 생략합니다. 이것이 실제 시스템이 긴 흐름을 분해하는 방법입니다.
+
+---
+
+## 8. 노트, 구분선, 불변조건, 번호 매기기
+
+```
+sequence
+  autonumber 1 1
+  actor Shopper
+  participant Cart
+  == Phase 1: review ==
+  Shopper -> Cart : view items
+  note over Cart : cart persisted in Redis
+  state Cart : ready
+```
+
+- `note over A` / `note over A, B` / `note left of A` / `note right of A` — 접힌 모서리 주석.
+- `== text ==` — 전체 너비 섹션 구분선.
+- `state X : text` — 생명선의 상태 불변조건 캡슐.
+- `autonumber [start] [step]` — 모든 메시지에 증가하는 번호를 앞에 붙입니다.
+
+---
+
+## 9. 문법 (EBNF)
+
+```text
+diagram      = "sequence" [ string ] NEWLINE statement*
+statement    = participant | message | activation | note
+             | fragment | ref | divider | invariant | destroy | autonumber
+
+participant  = kind IDENT ("as" label)? stereotype?
+kind         = "participant" | "actor" | "boundary" | "control"
+             | "entity" | "database" | "collections" | "queue"
+stereotype   = "«" TEXT "»" | "<<" TEXT ">>"
+
+message      = IDENT? act? arrow act? ("*")? IDENT? (":" TEXT)?
+arrow        = "->" | "->>" | "-->" | "-x" | "o->"
+act          = "+" | "-"
+activation   = ("activate" | "deactivate") IDENT
+
+fragment     = ("alt"|"opt"|"loop"|"par"|"break"|"critical"|"seq"
+               |"strict"|"neg"|"ignore"|"consider"|"assert") guard? NEWLINE
+                 statement* (("else"|"and") guard? NEWLINE statement*)* "end"
+guard        = "[" TEXT "]" | "(" NUMBER ("," NUMBER)? ")"
+ref          = "ref" "over" IDENT ("," IDENT)* ":" TEXT
+note         = "note" ("over"|"left of"|"right of") IDENT ("," IDENT)? ":" TEXT
+divider      = "==" TEXT "=="
+invariant    = "state" IDENT ":" TEXT
+destroy      = "destroy" IDENT
+autonumber   = "autonumber" NUMBER? NUMBER?
+```
+
+---
+
+## 10. 표준 준수
+
+Schematex는 OMG **UML 2.5.1 §17 (Interactions)** 표기법을 따릅니다. 동기(채워진) vs. 비동기(열린) vs. 응답(점선) 화살촉, 발견/손실 메시지 끝점, 실행 명세 막대, 가드된 오퍼랜드를 가진 열두 가지 모든 결합 프래그먼트 연산자, `ref` 상호작용 사용 프레임, `boundary`/`control`/`entity`를 위한 Jacobson 분석 클래스 아이콘을 구현합니다. 게이트(gate), 코리전(coregion), 시간/기간 제약은 v0.1 범위를 벗어납니다(새로운 레이아웃 기본 요소가 필요함). 향후 릴리스에서 추적될 예정입니다. 전체 사양은 `docs/reference/33-SEQUENCE-STANDARD.md`를 참조하십시오.
+
+---
+
+## 관련 예제
+
+예제 갤러리에서 바로 사용할 수 있는 시나리오:
+
+<RelatedExamples slugs={[
+  'sequence-login-flow',
+  'sequence-oauth-login',
+  'sequence-object-lifecycle',
+  'sequence-microservices-saga',
+]} />

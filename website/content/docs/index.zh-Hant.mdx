@@ -1,0 +1,82 @@
+---
+title: 介紹
+description: 每一種醫生、工程師或律師真正會用的圖表。免費、完全開源、為 AI 而生。從文字 DSL 到業界標準 SVG——從族譜到故障樹，一氣呵成。
+---
+
+**Schematex** 能渲染醫生、工程師和律師真正在用的每一種圖表——臨床族譜、IEC 61131-3 梯形圖、NSGC 家系圖、IEEE 315 單線圖、股權表等等。輸入一段文字 DSL，輸出符合業界標準的 SVG。
+
+**免費、完全開源、為 AI 而生。** AGPL-3.0 授權，零執行時期依賴，DSL 專門針對 LLM 的寫作方式設計——把 ChatGPT 或 Claude 的輸出直接貼上來，第一次就能得到專業圖表。
+
+## 能畫什麼？
+
+<DiagramCatalog />
+
+## 快速範例
+
+<Playground initial={`genogram "The Smiths"
+  john [male, 1950]
+  mary [female, 1952]
+  john -- mary
+    alice [female, 1975, index]
+    bob [male, 1978]
+  alice -close- mary`} />
+
+## 與 AI 配合使用
+
+Schematex 內建了專為 LLM 設計的工具層。把託管的 MCP 伺服器連接到 Claude.ai，10 秒內就能讓它在任意對話中生成經過驗證的圖表——無需安裝，無需設定。
+
+<MCPConnectCard size="compact" />
+
+或者基於 Vercel AI SDK 建構你自己的 AI 功能。詳見 **[在 AI 中使用 Schematex](/docs/ai-integration)**。
+
+## 下一步
+
+- [快速上手](/docs/getting-started) — 安裝、匯入、渲染
+- [在 AI 中使用 Schematex](/docs/ai-integration) — MCP + Vercel AI SDK + 代理循環
+- [Playground](/playground) — 線上試用任意圖表類型
+- [API 參考](/docs/api)
+
+---
+
+## 運作原理
+
+每種圖表類型都遵循相同的處理流程：
+
+```
+Text DSL ──→ Parser ──→ AST ──→ Layout Engine ──→ LayoutResult ──→ SVG Renderer ──→ SVG string
+```
+
+每種圖表都實作了一個 `DiagramPlugin`，包含四個方法：
+
+```ts
+interface DiagramPlugin {
+  detect(text: string): boolean;           // auto-detects diagram type
+  parse(text: string): DiagramAST;         // text → typed AST
+  layout(ast, config): LayoutResult;       // AST → positioned nodes/edges
+  render(layout, config): string;          // LayoutResult → SVG string
+}
+```
+
+佈局演算法針對各領域量身定制——genogram 使用基於世代的分層佈局，ecomap 使用放射狀／極座標佈局，邏輯閘使用 DAG 拓撲排序，梯形圖使用固定母線佈局。通用佈局引擎（如 dagre、ELK）無法為這些圖表類型生成符合標準的輸出。
+
+---
+
+## 設計原則
+
+1. **專業人士真正在用的圖表** — 每種圖表類型都實作了已發布的領域規範：McGoldrick 2020（genogram）、Hartman 1978（ecomap）、Bennett 2022（pedigree）、Moreno 1934（sociogram）、IEEE Std 91（邏輯閘）、IEC 61131-3（梯形圖）、IEEE 315（單線圖）等。
+2. **免費且完全開源** — AGPL-3.0 授權，零執行時期依賴（無 D3、無 dagre、無 parser generator），全部手寫實作。體積小，無供應鏈風險。商業用途可申請商業授權。
+3. **為 AI 而生** — DSL 圍繞 LLM 的實際寫作方式設計（支援 CJK 引號、嵌套歧義容錯、AI 可讀錯誤訊息）。把 ChatGPT 或 Claude 的輸出貼上來，第一次就能得到專業圖表。
+4. **語意化 SVG 輸出** — 每個 SVG 都包含用於無障礙存取的 `<title>` 和 `<desc>`、用於主題自訂的 CSS 類別，以及用於互動的 `data-*` 屬性。
+
+---
+
+## 佈景主題
+
+三套內建預設：`default`（藍灰色）、`monochrome`（黑白／列印版）、`dark`（Catppuccin Mocha 配色）。
+
+透過注入每個 SVG `<style>` 區塊中的 CSS 自訂屬性來覆寫任意 token：
+
+```css
+--schematex-stroke: #1a1a1a;
+--schematex-fill: #f5f5f5;
+```

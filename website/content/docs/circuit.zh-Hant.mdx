@@ -1,0 +1,621 @@
+---
+title: 電路原理圖
+---
+
+## 關於電路原理圖
+
+**電路原理圖**是電子電路的標準圖形表示法——元件以標準化符號繪製，以導線連接，提供足夠的資訊以製作或模擬電路。電子工程師在產品生命週期的各個階段都會用到它：從初步概念設計、PCB 佈局審查，到資料手冊文件。Schematex 遵循 **[IEEE Std 315-1975 / ANSI Y32.2](https://standards.ieee.org/ieee/315/738/)** 和 **[IEC 60617](https://webstore.iec.ch/publication/2765)** 的元件符號規範。
+
+DSL 有兩種模式。**網路列表模式（建議）** 採用 SPICE 風格：您列出元件及其連接的節點，引擎會自動完成佈局——每一行都是獨立的，無需追蹤空間狀態。**位置模式** 用於手動繪製：元件按方向鏈式排列，類似 Schemdraw。兩者都會產生相同的 SVG 輸出。**對於生成式圖表（例如由 LLM 產生），請一律使用網路列表模式**——其錯誤面遠小得多。
+
+<Playground initial={`circuit "CE Amp (netlist)" netlist
+V1 vcc 0 9V
+Rc vcc c 2.2k
+Rb vcc b 100k
+Q1 c b e npn
+Re e 0 1k`} height={440} />
+
+---
+
+## 1. 最小電路範例（網路列表模式——建議）
+
+最精簡的實用電路：一個電壓源、一個電阻和一個接地電容——RC 低通濾波器。
+
+<Playground initial={`circuit "RC Low-Pass" netlist
+V1 in 0 5V
+R1 in out 1k
+C1 out 0 100n`} />
+
+三條規則涵蓋約 90% 的網路列表用法：
+
+1. 以 `circuit "Title" netlist` 開頭（`netlist` 關鍵字啟用此模式）。
+2. 每一行格式為 `componentId nodeA nodeB value`——一個元件、它所連接的兩個（或多個）命名節點，然後是其數值。
+3. **共用相同節點名稱的兩個元件會被連接在一起。** `0`、`gnd` 或 `GND` 是接地網路（地線符號會自動繪製）。
+
+元件 ID 前綴決定符號：`R*`→電阻、`C*`→電容、`L*`→電感、`V*`→電壓源、`D*`→二極體、`Q*`→BJT。當前綴不明確時，加上 `type=`（例如 `X1 a b type=opamp`）。您無需計算座標——引擎會根據連接關係自動推導位置。
+
+> 注釋必須以 `#` 開頭，且單獨佔一行。
+
+---
+
+## 2. 元件
+
+### 2.1 網路列表模式語法
+
+網路列表行的格式為：
+
+```
+componentId node... [value] [type=…] [label="…"]
+```
+
+位置節點排在最前面；最後一個不像節點名稱的標記會成為數值。範例——一個電晶體（4 個節點）和一個電阻：
+
+```
+Q1 c b e npn        # collector, base, emitter nodes + model
+Rc vcc c 2.2k       # two nodes + value
+```
+
+**選用方向提示。** 引擎根據角色自動定向符號（電源朝上、接地朝下、其餘水平）。若要調整單一符號，加上 `dir=right|left|up|down`——連接關係不變，只有符號朝向旋轉：
+
+```
+C1 out 0 100n dir=down    # draw C1 as a shunt cap hanging to ground
+```
+
+這是輕量的佈局控制層（類似 Lcapy 的逐元件方向設定）：網路列表連接關係做主要工作，`dir=` 只用於微調外觀。若需完整的幾何控制，請使用下方的位置模式。
+
+### 2.2 位置模式語法（手動繪製）
+
+> 位置模式用於手動以幾何方式排列原理圖。**對於生成式輸出，請優先使用網路列表模式**——位置模式需要跨行追蹤移動的「游標」，對 LLM 而言容易出錯。
+
+命名元件行的格式為：
+
+```
+id: type direction [value="…"] [label="…"]
+```
+
+匿名元件省略 `id:` 前綴——解析器會自動指定 ID。
+
+```
+R1: resistor right value="4.7k" label="R1"
+capacitor down value="100n"
+```
+
+**方向**為 `right`（預設）、`left`、`up`、`down` 之一。它控制元件從當前游標位置向哪個方向延伸。
+
+### 2.3 被動元件
+
+| DSL 類型 | 說明 |
+|---|---|
+| `resistor` | 鋸齒形（ANSI）或矩形（IEC） |
+| `potentiometer` | 電阻 + 滑片箭頭，3 腳 |
+| `rheostat` | 2 腳可變電阻 |
+| `thermistor_ntc` | NTC 熱敏電阻（亦可用：`therm`、`ntc`） |
+| `thermistor_ptc` | PTC 熱敏電阻（亦可用：`ptc`） |
+| `ldr` | 光敏電阻 |
+| `varistor` | 壓敏電阻 |
+| `fuse` | 標準保險絲 |
+| `fuse_slow` | 慢熔保險絲（`T` 規格） |
+| `capacitor` | 無極性電容 |
+| `electrolytic_cap` | 極性/電解電容（亦可用：`ecap`） |
+| `variable_cap` | 可變電容 |
+| `inductor` | 空心電感 |
+| `inductor_iron` | 鐵心電感 |
+| `inductor_ferrite` | 鐵氧體磁心電感 |
+| `variable_inductor` | 可變電感 |
+| `ferrite_bead` | EMI 鐵氧體磁珠 |
+| `crystal` | 石英晶體振盪器（亦可用：`xtal`） |
+| `transformer` | 耦合線圈（亦可用：`xfmr`） |
+
+<Playground initial={`circuit "Passive components gallery"
+# Row 1: resistor → capacitor → inductor
+R1: resistor right value="1k"
+wire right
+C1: capacitor right value="100n"
+wire right
+L1: inductor right value="10u"
+# Row 2: crystal and transformer, offset below
+at: R1.start
+wire down
+wire down
+X1: crystal right
+wire right
+wire right
+T1: transformer right`} height={380} />
+
+### 2.4 電源與供電
+
+| DSL 類型 | 說明 |
+|---|---|
+| `voltage_source` | 圓形 + 極性（亦可用：`vsource`） |
+| `current_source` | 圓形 + 箭頭（亦可用：`isource`） |
+| `ac_source` | 圓形 + 正弦符號（亦可用：`acsource`） |
+| `battery` | 交替長短端子線 |
+| `vcc` | 電源軌箭頭（朝上） |
+| `ground` | 大地接地——三條遞減線（亦可用：`gnd`） |
+| `gnd_signal` | 訊號接地——實心三角形 |
+| `gnd_chassis` | 機殼接地 |
+| `gnd_digital` | 數位接地 |
+
+<Playground initial={`circuit "Sources and power gallery"
+# voltage source with ground
+V1: voltage_source down value="5V"
+wire down
+ground
+at: V1.start
+wire right
+wire right
+# battery
+B1: battery down value="9V"
+wire down
+ground
+at: B1.start
+wire right
+wire right
+# ac source
+A1: ac_source down value="120V"
+wire down
+ground
+at: A1.start
+wire right
+wire right
+# vcc rail
+vcc up
+wire down
+gnd_signal down`} height={420} />
+
+### 2.5 半導體——二極體
+
+| DSL 類型 | 說明 |
+|---|---|
+| `diode` | 三角形 + 陰極條 |
+| `zener` | 二極體 + 彎曲陰極條 |
+| `schottky` | 二極體 + S 形條 |
+| `led` | 二極體 + 向外發射箭頭 |
+| `photodiode` | 二極體 + 向內光線箭頭 |
+| `varactor` | 二極體 + 可變電容 |
+| `tvs_diode` | 雙向 TVS（兩個彎曲條） |
+| `bridge_rectifier` | 4 二極體橋式整流器，4 腳 |
+
+<Playground initial={`circuit "Diode types gallery"
+D1: diode right
+wire right
+D2: zener right
+wire right
+D3: led right
+wire right
+D4: schottky right
+wire right
+D5: photodiode right
+wire right
+ground
+at: D1.start
+wire left
+ground`} height={280} />
+
+### 2.6 半導體——電晶體
+
+| DSL 類型 | 說明 |
+|---|---|
+| `npn` | NPN BJT（亦可用：`transistor`、`bjt_npn`） |
+| `pnp` | PNP BJT（亦可用：`bjt_pnp`） |
+| `darlington_npn` | NPN 達靈頓對 |
+| `darlington_pnp` | PNP 達靈頓對 |
+| `nmos` | N 通道 MOSFET 增強型（亦可用：`mosfet_n`） |
+| `pmos` | P 通道 MOSFET 增強型（亦可用：`mosfet_p`） |
+| `nmos_depletion` | N 通道 MOSFET 耗盡型 |
+| `jfet_n` | N 通道 JFET |
+| `jfet_p` | P 通道 JFET |
+| `igbt` | IGBT |
+| `scr` | SCR / 閘流體 |
+| `triac` | 雙向閘流體 |
+| `diac` | 雙向觸發二極體 |
+| `phototransistor` | NPN + 光線箭頭 |
+| `optocoupler` | LED + 光電晶體，置於隔離框內 |
+
+<Playground initial={`circuit "Transistor types gallery"
+# NPN BJT
+Q1: npn right
+wire right
+wire right
+# PNP BJT
+Q2: pnp right
+wire right
+wire right
+# N-channel MOSFET
+Q3: nmos right
+wire right
+wire right
+# P-channel MOSFET
+Q4: pmos right`} height={320} />
+
+### 2.7 類比 IC 與運算放大器
+
+| DSL 類型 | 說明 |
+|---|---|
+| `opamp` | 三角形：+/− 輸入，輸出 |
+| `comparator` | 相同外形，開集極輸出 |
+| `schmitt_buffer` | 緩衝器 + 遲滯符號 |
+| `tri_state_buffer` | 緩衝器 + 致能腳 |
+| `instrumentation_amp` | 三運放 INA 方塊 |
+| `generic_ic` | 可設定矩形，帶標籤腳位（亦可用：`ic`） |
+| `voltage_regulator` | 3 端子方塊：IN/GND/OUT（亦可用：`reg`） |
+| `dc_dc_converter` | 2 埠方塊，帶 DC/DC 標籤 |
+| `555_timer` | 8 腳 555 腳位方塊（亦可用：`timer555`） |
+
+<Playground initial={`circuit "Analog IC gallery"
+# op-amp with input/output wires
+wire right
+U1: opamp right
+wire right
+wire right
+wire right
+# comparator
+U2: comparator right
+wire right
+wire right
+wire right
+# generic IC block
+U3: generic_ic right`} height={320} />
+
+### 2.8 開關與繼電器
+
+| DSL 類型 | 說明 |
+|---|---|
+| `switch_spst` | 單刀單擲 |
+| `switch_spdt` | 單刀雙擲 |
+| `switch_dpdt` | 雙刀雙擲 |
+| `push_no` | 按鈕，常開 |
+| `push_nc` | 按鈕，常閉 |
+| `relay_coil` | 繼電器線圈（2 腳矩形） |
+| `relay_no` | 繼電器接點，常開 |
+| `relay_nc` | 繼電器接點，常閉 |
+
+<Playground initial={`circuit "Switch and relay gallery"
+# SPST switch
+S1: switch_spst right
+wire right
+wire right
+# SPDT switch
+S2: switch_spdt right
+wire right
+wire right
+# normally-open push button
+S3: push_no right
+wire right
+wire right
+# relay coil + contact pair
+K1: relay_coil right
+wire right
+K2: relay_no right`} height={300} />
+
+### 2.9 機電元件與量測儀器
+
+| DSL 類型 | 說明 |
+|---|---|
+| `motor` | 圓形 + M |
+| `speaker` | 錐形 + 方框 |
+| `microphone` | 膠囊符號 |
+| `buzzer` | 壓電蜂鳴器 |
+| `ammeter` | 圓形 + A |
+| `voltmeter` | 圓形 + V |
+| `wattmeter` | 圓形 + W |
+| `oscilloscope` | 圓形 + 波形 |
+
+### 2.10 連接器與標註
+
+| DSL 類型 | 說明 |
+|---|---|
+| `wire` | 普通導線段 |
+| `dot` | 接點圓點（T 形接頭標記） |
+| `label` | 網路標籤 / 旗標 |
+| `port` | 命名埠（空心圓） |
+| `test_point` | TP 測試點標記 |
+| `no_connect` | X——刻意不連接的腳位 |
+| `antenna` | 天線短截線 |
+
+<Playground initial={`circuit "Passive components"
+R1: resistor right value="1k" label="R1"
+wire right
+C1: capacitor down value="100n" label="C1"
+wire down
+ground
+at: R1.start
+wire up
+battery up label="9V"`} height={360} />
+
+---
+
+## 3. 導線與分支
+
+### 3.1 導線段
+
+`wire direction [N]` 從當前游標位置向指定方向繪製一段裸線。選用數字設定長度（像素）。
+
+```
+wire right
+wire down 40
+wire left 20
+```
+
+### 3.2 使用 `at:` 跳轉游標
+
+`at: id.end` 將游標移至命名錨點，但不繪製任何內容。用於從已放置的元件處分支。
+
+```
+R1: resistor right value="10k"
+at: R1.end
+C1: capacitor down value="100n"
+```
+
+命名錨點後綴：`end`、`start`。元件 ID 在整個圖表中保持不變，因此您可以跳回到任何先前放置的元件。
+
+### 3.3 接點圓點
+
+放置一個 `dot`（或使用 `net NAME: dot`）來標記 T 形接頭——三條或多條導線相交的點。沒有圓點時，交叉導線會繪製為跨越（無連接）。
+
+```
+R1: resistor right
+dot
+wire right           # continues from R1.end
+at: R1.end
+C1: capacitor down   # branches down from the same point
+```
+
+### 3.4 命名網路
+
+`net NAME` 宣告一個命名網路。`net NAME: dot` 宣告網路並在當前游標位置放置接點圓點，記住該位置。之後，`at: NAME` 可跳回該網路的錨點。
+
+```
+net VOUT: dot
+R2: resistor right value="10k"
+at: VOUT
+C1: capacitor down value="470n"
+```
+
+### 3.5 網路標籤
+
+`label "text" direction?` 在當前游標位置放置文字標籤。標籤不會移動游標。適合用於命名電源軌或跨頁連接。
+
+```
+label "VCC" up
+label "GND" down
+```
+
+<Playground initial={`circuit "RC filter"
+V1: voltage_source down value="5V"
+wire right
+R1: resistor right value="1k" label="R1"
+net OUT: dot
+wire right
+label "Vout" right
+at: OUT
+C1: capacitor down value="100n" label="C1"
+wire down
+ground`} height={380} />
+
+---
+
+## 4. 網路列表模式
+
+在標頭行的標題後加上 `netlist`，切換為 SPICE 風格的網路列表解析。自動佈局引擎會根據網路連接關係計算元件位置。
+
+```
+circuit "Low-pass filter" netlist
+```
+
+### 4.1 網路列表行格式
+
+每行格式：`ID net1 net2 [net3…] [value] [key=value…]`
+
+- **ID** — 元件識別碼。首字母決定預設類型（SPICE 前綴慣例）。
+- **net1, net2, …** — 各腳位連接的網路名稱。符合 `0`、`gnd`、`ground`、`earth`、`pe`、`agnd`、`dgnd`、`gnda`、`gndd`、`vss` 或 `com`（不分大小寫，可帶選用的 `_<word>` 或數字後綴，例如 `gnd_ref`、`AGND_DIG`、`EARTH1`）的網路名稱，全部正規化為接地網路。
+- **value**（選用裸標記）— 元件數值或模型名稱。
+- **key=value**（選用）— `label=`、`value=`、`type=` 覆寫。
+
+### 4.2 SPICE 前綴 → 元件類型
+
+| 前綴 | 預設類型 | 腳位順序 |
+|---|---|---|
+| `R` | `resistor` | p1, p2 |
+| `C` | `capacitor` | p1, p2 |
+| `L` | `inductor` | p1, p2 |
+| `D` | `diode` | anode（起點）, cathode（終點） |
+| `V` | `voltage_source` | plus, minus |
+| `I` | `current_source` | plus, minus |
+| `Q` | `npn` | c, b, e |
+| `M` | `nmos` | d, g, s |
+| `J` | `jfet_n` | d, g, s |
+| `S` | `switch_spst` | p1, p2 |
+| `F` | `fuse` | p1, p2 |
+| `B` | `battery` | plus, minus |
+| `K` | `relay_coil` | p1, p2 |
+| `U`, `X` | `generic_ic` | 透過 `pins=` 自訂 |
+| `W` | `wire` | start, end |
+| `T` | `terminal_block` | 透過 `pins=` 自訂（亦可用 `type=junction_box`） |
+
+> **範圍說明：** Schematex circuit 僅涵蓋**電氣原理圖**（IEEE 315 / IEC 60617）。液壓和氣動原理圖（ISO 1219）使用截然不同的視覺語法——方向閥包絡、油缸符號、壓力/回流/洩油線型——本引擎不支援。液壓前綴如 `EV*`（電磁閥）、`BOMBA*`（泵）、`TANK*`、`DIPOSIT*` 會被拒絕，並顯示「無法推斷類型」錯誤。
+
+### 4.3 電晶體模型覆寫
+
+對於 `Q` 行，結尾的模型名稱可覆寫類型：
+
+```
+Q1 c b e npn      # NPN BJT
+Q2 c b e pnp      # PNP BJT
+M1 d g s nmos     # N-channel MOSFET
+M2 d g s pmos     # P-channel MOSFET
+```
+
+對於 `D` 行，同樣適用：
+
+```
+D1 anode cathode zener
+D2 anode cathode led
+D3 anode cathode schottky
+D4 anode cathode photodiode
+```
+
+### 4.4 網路列表範例
+
+<Playground initial={`circuit "CE Amp (netlist)" netlist
+V1 vcc 0 9V
+Rc vcc c 2.2k
+Rb vcc b 100k
+Q1 c b e npn
+Re e 0 1k`} height={420} />
+
+---
+
+## 5. 屬性
+
+位置模式和網路列表模式都接受以下 key=value 屬性：
+
+| 屬性 | 適用對象 | 效果 |
+|---|---|---|
+| `label="…"` | 所有元件 | 顯示標籤（參考標識符） |
+| `value="…"` | 所有元件 | 數值標註（1kΩ、100nF、5V） |
+| `at=id.end` | 位置模式元件 | 從命名錨點開始放置此元件 |
+| `length=N` | `wire`、部分被動元件 | 長度（像素） |
+
+在位置模式中，元件行內的 `at=` 等同於前置的 `at:` 行：
+
+```
+C1: capacitor down at=R1.end value="100n"
+```
+
+---
+
+## 6. 標籤與注釋
+
+- **圖表標題：** `circuit "RC Filter"` — 僅限第一行。
+- **元件標籤：** `label="R1"` 屬性——參考標識符，顯示在符號旁。
+- **數值標註：** `value="4.7k"` — 顯示在元件旁邊或下方。
+- **網路標籤：** `label "VOUT" right` — 在當前游標處獨立放置的網路旗標。
+- **注釋：** `#` 位於行首（前置空白字元之後）。
+
+---
+
+## 7. 保留字與跳脫
+
+**行首保留字（位置模式）：** `circuit`（標頭）、`at:`、`net`、`wire`、`label`。
+
+**網路列表模式保留字：** 標頭規則相同；其他所有行均為 SPICE 元件行。
+
+**接地網路別名（僅網路列表模式）：** `0`、`gnd`、`GND`、`Gnd`、`ground`、`Ground` — 全部視為同一節點。
+
+**元件 ID** 必須符合 `[a-zA-Z_][a-zA-Z0-9_]*`。包含空白字元的數值必須加引號：`value="10 kΩ"`。
+
+---
+
+## 8. 常見錯誤
+
+| 您寫的 | 解析器回應 | 修正方式 |
+|---|---|---|
+| `resistor right 1k`（裸數值，未用 `value=`） | `1k` 被解析為未知屬性旗標，被忽略 | 使用 `value="1k"`：`resistor right value="1k"` |
+| `at: R1.center` | `center` 不是有效的錨點後綴——游標停在當前位置 | 使用 `at: R1.end` 或 `at: R1.start` |
+| `wire 40`（無方向） | 方向預設為 `right`；長度 `40` 被接受 | 建議明確指定方向：`wire right 40` |
+| 位置模式中 `R1 vcc out 10k` | 行符合裸類型樣式；`R1` 被讀為類型名稱，查詢失敗 | 位置模式請使用 `R1: resistor right value="10k"` |
+| 網路列表中 `Q1 c b e`（無模型） | 類型根據 `Q` 前綴預設為 `npn`——正確 | 可以；為求清晰建議明確加上 `npn` |
+| `net OUT` 後接 `at: OUT`，但未使用 `net OUT: dot` | `OUT` 網路存在但無錨點；跳轉無目的地 | 使用 `net OUT: dot` 以登記游標位置 |
+| `label VCC up`（未加引號的標籤） | `VCC` 被解析為方向標記，然後 `up`——標籤文字遺失 | 將文字加引號：`label "VCC" up` |
+
+---
+
+## 9. 語法（EBNF）
+
+```text
+document        = header statement*
+
+-- Positional mode --
+header          = "circuit" ( WS quoted-string )? NEWLINE
+statement       = blank | comment | component | wire | at | net-decl | label-stmt
+
+component       = ( id ":" WS )? type WS direction? attrs* NEWLINE
+wire            = "wire" ( WS direction )? ( WS integer )? NEWLINE
+at              = "at:" WS anchor NEWLINE
+anchor          = id "." ( "start" | "end" )
+                | id                          // net name anchor
+
+net-decl        = "net" WS id NEWLINE         // declare net only
+                | "net" WS id ":" WS "dot" NEWLINE  // declare + place dot
+
+label-stmt      = "label" WS quoted-string ( WS direction )? NEWLINE
+
+component-attr  = "value=" quoted-string
+                | "label=" quoted-string
+                | "at=" anchor
+                | "length=" integer
+
+direction       = "right" | "left" | "up" | "down"
+type            = // any value from §2 component tables
+
+-- Netlist mode --
+netlist-header  = "circuit" ( WS quoted-string )? WS "netlist" NEWLINE
+netlist-stmt    = id WS net-ref+ ( WS kv-pair )* NEWLINE
+                | comment
+net-ref         = id | "0"                    // net name or ground alias
+kv-pair         = id "=" ( quoted-string | bare-value )
+
+id              = [a-zA-Z_] [a-zA-Z0-9_]*
+integer         = [0-9]+
+quoted-string   = '"' any-char-but-quote* '"'
+comment         = "#" any NEWLINE
+```
+
+權威來源：`src/diagrams/circuit/parser.ts` 和 `src/diagrams/circuit/netlist.ts`。若本文與解析器有出入，以解析器為準——請開 issue 回報。
+
+---
+
+## 10. 標準合規性
+
+Schematex 電路原理圖遵循 **IEEE Std 315-1975 / ANSI Y32.2**（元件符號外形）和 **IEC 60617**（國際變體）。網路列表語法遵循 **SPICE** 前綴慣例（Berkeley SPICE3 / LTspice / ngspice）。
+
+目前已實作：
+
+- ✅ 完整被動元件集：電阻變體、電容變體、電感變體、石英晶體、變壓器
+- ✅ 電源與供電：電壓源、電流源、交流源、電池、VCC、四種接地樣式
+- ✅ 二極體族：二極體、稽納二極體、蕭特基二極體、LED、光二極體、變容二極體、TVS、橋式整流器
+- ✅ BJT：NPN、PNP、達靈頓 NPN/PNP
+- ✅ FET：NMOS/PMOS 增強型、NMOS 耗盡型、N/P 通道 JFET
+- ✅ 功率半導體：IGBT、SCR、TRIAC、DIAC
+- ✅ 光電元件：光電晶體、光耦合器
+- ✅ 類比 IC：運算放大器、比較器、施密特緩衝器、三態緩衝器、INA、通用 IC、穩壓器、DC-DC 轉換器、555 計時器
+- ✅ 開關：SPST、SPDT、DPDT、按鈕常開、按鈕常閉
+- ✅ 繼電器：線圈、常開接點、常閉接點
+- ✅ 機電元件：馬達、揚聲器、麥克風、蜂鳴器
+- ✅ 量測儀器：電流表、電壓表、功率表、示波器
+- ✅ 標註：導線、圓點、標籤、埠、測試點、不連接、天線
+- ✅ 位置 DSL：方向鏈接、`at:` 分支、`net` 宣告
+- ✅ 網路列表 DSL：SPICE 前綴對應、模型覆寫、自動接地合成
+- ⏳ BJT/FET/運放命名腳位的腳位級 `at:`（base、collector、plus、minus、out）
+- ⏳ 位置模式中的自動繞線（繞過已放置符號的走線）
+- ⏳ 帶位元寬度標註的匯流排導線（`/8` 斜線）
+
+參考文獻：
+
+- IEEE Std 315-1975 (ANSI Y32.2)：*Graphic Symbols for Electrical and Electronics Diagrams*
+- IEC 60617：*Graphical symbols for diagrams*
+- SPICE3 User's Manual, UC Berkeley — 網路列表行格式慣例
+
+---
+
+## 11. 相關範例
+
+<RelatedExamples slugs={[
+  'circuit-ce-amplifier',
+]} />
+
+---
+
+## 12. 開發藍圖
+
+**規劃中——目前尚無法解析。** 請勿在今日生成的 DSL 中使用；解析器會拒絕或忽略這些語法。
+
+- **多腳位元件的命名腳位錨點** — `at: Q1.base`、`at: U1.out`、`at: U1.plus`，使運放和 BJT 的回授迴路不需要冗長的 `wire` 繞路即可連接。
+- **匯流排導線** — `wire right bus=8`，繪製帶有 `/8` 位元寬度斜線標註的粗導線。
+- **自動繞線** — `connect R1.end U1.minus`，讓引擎繞過已放置符號進行走線。
+- **`flip` 和 `reverse` 屬性** — 沿方向軸鏡像或反轉元件的極性/方向。
+- **`dashed` 導線樣式** — 虛線，用於射頻屏蔽、電纜束或虛擬連接。
+- **層次化頁面** — `module "name" { … }` 群組，類似邏輯閘模組，用於記錄多頁原理圖。
+
+如有需要優先實作的項目，請在 GitHub issues 中追蹤。

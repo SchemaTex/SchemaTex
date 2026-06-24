@@ -1,0 +1,199 @@
+---
+title: ERD（エンティティ関係図）
+---
+
+## ERD について
+
+「エンティティ関係図」（ERD: Entity-Relationship Diagram）はリレーショナルデータベースの構造を文書化します：テーブル（エンティティ）、その列（属性）、それらの間の外部キー関係 — カーディナリティ（1..1 / 0..1 / 1..N / 0..N）を含みます。バックエンドエンジニアは新しいチームメンバーにコードベースを説明するために描きます。データアーキテクトは DDL を書く前にホワイトボードでスケッチします。データベース教育者（Elmasri & Navathe; Silberschatz / Korth / Sudarshan）はすべての CS データベースコースの概念設計ユニットの中心に置いています。
+
+Schematex は**クロウズフット記法**（crow's-foot notation）を実装します — MySQL Workbench、dbdiagram.io、ERDPlus、Lucidchart、draw.io、Mermaid `erDiagram`、Oracle SQL Developer Data Modeler が使用するデファクト現代スタイルです。DSL は DBML と互換性があるためエンジニアがコピー&ペーストでき、**完全な Mermaid `erDiagram` 方言も受け付けます** — `erDiagram` ヘッダで始まり、Mermaid のリレーションシップ（`CUSTOMER ||--o{ ORDER : places`）とタイプファーストのエンティティブロック（`ORDER { int id PK }`）をそのまま貼り付けられます。エンティティはリレーションシップから自動作成されます。Chen 1976 記法（矩形 + ダイヤモンド + 楕円 + ISA 階層）と Barker オーバーレイは v0.2 に延期されています。今日、すべてのダイアグラムはクロウズフットでレンダリングされます。
+
+> **注意** — これは `entity` エンジンと同じではありません。`entity`（エンティティ構造）は**企業 / 法的所有権**の階層（子会社、割合のロールアップ、信託）のためのものです。`erd` は**データベーススキーマ**（テーブル、列、外部キー）のためのものです。ドメイン、レイアウト、対象者が異なります。
+
+<Playground initial={`erd
+title: "University Schema"
+
+table Student {
+  student_id  int       PK
+  name        varchar
+  email       varchar   UK
+  major_id    int       FK -> Major.major_id
+}
+
+table Major {
+  major_id    int       PK
+  name        varchar
+}
+
+table Course {
+  course_id   int       PK
+  title       varchar
+  credits     int
+}
+
+table Enrollment {
+  student_id  int       PK FK -> Student.student_id
+  course_id   int       PK FK -> Course.course_id
+  grade       char
+}
+
+ref Student.major_id many-mandatory -- one-mandatory Major.major_id : "majors in"
+ref Enrollment.student_id many-mandatory -- one-mandatory Student.student_id
+ref Enrollment.course_id many-mandatory -- one-mandatory Course.course_id`} height={480} />
+
+---
+
+## 1. 最初の ERD
+
+最小限の実用的な ERD：外部キーで子が親を参照。
+
+<Playground initial={`erd
+table Customer {
+  customer_id  int       PK
+  email        varchar   UK
+}
+table Order {
+  order_id     int       PK
+  customer_id  int       FK -> Customer.customer_id
+}
+ref Order.customer_id many-mandatory -- one-mandatory Customer.customer_id : "places"`} />
+
+使用法の 80% をカバーする 4 つのルール：
+
+1. `erd` で始めます。オプションのヘッダ `title:`、`direction: LR | TB`。
+2. 各テーブルはブロックです：`table Name { col type marker }`。マーカーは `PK`、`FK`、`UK`、`NN`（または `*`、NOT NULL の意味）。
+3. インライン外部キーターゲット：列に `FK -> Other.column` を追加します。レンダラーは `FK` ピルを自動的に追加します。
+4. テーブルを `ref` 行で接続します：`ref Source <left-card> -- <right-card> Target [: "label"]`。カーディナリティは `one-mandatory`、`one-optional`、`many-mandatory`、`many-optional`（名前付き形式）、`1..1` / `0..1` / `1..N` / `0..N`（Min-Max）、または Mermaid グリフ（`}o--||` など）のエイリアスのいずれかです。
+
+> コメントは `//` または `#` を使用します。ブロック形式は複数行（1 行に 1 列）またはインライン（`table A { id int PK; name varchar }`）のどちらでも可能です。
+
+---
+
+## 2. カーディナリティグリフ
+
+クロウズフットはリレーションシップ線の各端のカーディナリティをエンコードします：
+
+| グリフ | 読み方 | Min..Max | 名前付きトークン |
+|---|---|---|---|
+| `─┃`（垂直バー）| ちょうど 1 つ（必須の 1 つ）| 1..1 | `one-mandatory` |
+| `─○`（開いた円）| 0 または 1 つ（オプションの 1 つ）| 0..1 | `one-optional` |
+| `─┃<`（バー + クロウズフット）| 1 つ以上（必須の多数）| 1..N | `many-mandatory` |
+| `─○<`（円 + クロウズフット）| 0 以上（オプションの多数）| 0..N | `many-optional` |
+
+線の各端は独立してアノテーションが付けられます。典型的な 1:N リレーションシップは「ちょうど 1 人の CUSTOMER が 0 以上の ORDER を行う」と読みます：
+
+```
+ref Order.customer_id many-mandatory -- one-mandatory Customer.customer_id : "places"
+```
+
+右から左に読む：線の**右端**は 1 本のバー（one-mandatory）で Customer に接続。**左端**はバー + クロウズフット（many-mandatory）で Order に接続。
+
+---
+
+## 3. Mermaid エイリアス
+
+すでに Mermaid `erDiagram` を使っている場合、同じグリフが入力として機能します：
+
+<Playground initial={`erd
+table Customer { customer_id int PK; email varchar UK }
+table Order    { order_id int PK; customer_id int FK -> Customer.customer_id }
+table Product  { product_id int PK; name varchar }
+
+ref Order }o--|| Customer : "places"
+ref Order }o--o{ Product  : "contains"`} />
+
+| Mermaid トークン | Schematex の意味 |
+|---|---|
+| `\|o` 左 / `o\|` 右 | 0..1 |
+| `\|\|` | 1..1 |
+| `}o` 左 / `o{` 右 | 0..N |
+| `}\|` 左 / `\|{` 右 | 1..N |
+| `--` | 識別 / 実線 |
+| `..` | 非識別 / 破線 |
+
+---
+
+## 4. 識別関係と非識別関係
+
+識別関係（実線）には `--`、非識別（破線）には `..` を使用します：
+
+<Playground initial={`erd
+table User       { id int PK; email varchar }
+table SessionLog { id int PK; user_id int FK -> User.id; created_at timestamp }
+
+ref SessionLog.user_id many-optional .. one-optional User.id : "logs (optional FK)"`} />
+
+破線は Barker / IDEF1X の非識別慣習に従います。
+
+---
+
+## 5. 複合主キー（関連テーブル）
+
+関連（ジャンクション）テーブルは M:N リレーションシップを解決します。PK + FK の列には両方の `PK` と `FK` をマークします：
+
+<Playground initial={`erd
+table Student { student_id int PK; name varchar }
+table Course  { course_id int PK; title varchar }
+table Enrollment {
+  student_id  int  PK FK -> Student.student_id
+  course_id   int  PK FK -> Course.course_id
+  grade       char
+}
+ref Enrollment.student_id many-mandatory -- one-mandatory Student.student_id
+ref Enrollment.course_id  many-mandatory -- one-mandatory Course.course_id`} />
+
+Schematex は同じ行に両方のピル（PK + FK）をレンダリングします。`PK` マーカーが存在する場合、列名に PK アンダーラインが適用されます。
+
+---
+
+## 6. レイアウト方向
+
+`direction: LR`（デフォルト）は親テーブルを左、子テーブルを右に配置します。`direction: TB` は上から下にフリップします — 狭い埋め込みに便利です：
+
+<Playground initial={`erd
+title: "Library (top-down)"
+direction: TB
+
+table Member { id int PK; name varchar; email varchar UK }
+table Book   { id int PK; title varchar; author varchar }
+table Loan   { id int PK; member_id int FK -> Member.id; book_id int FK -> Book.id; due_date date }
+
+ref Loan.member_id many-mandatory -- one-mandatory Member.id : "borrowed by"
+ref Loan.book_id   many-mandatory -- one-mandatory Book.id   : "of"`} />
+
+単一ベンドエッジを持つ層状の直交マンハッタンルーティング。v0.1 はレイヤー内で外観順のスタッキングを使用します。重心交差削減は v0.2 に延期されています。
+
+---
+
+## 7. 記法モード
+
+DSL ヘッダで記法を固定できます：
+
+```
+erd
+notation: crowsfoot     // default — only mode supported in v0.1
+```
+
+`notation: chen`（矩形-ダイヤモンド-楕円、弱エンティティ、三項、ISA）と `notation: barker`（半分ごとの破線）は `27-ERD-STANDARD.md` に文書化されていますが、今日のパーサーでは拒否されます。v0.2 が目標です。
+
+---
+
+## 8. v0.1 の制限
+
+- **クロウズフットのみ。** Chen と Barker のレンダリングは延期。
+- **エッジ交差最小化なし。** 層状配置は層内の宣言順を使用します。大きな ERD（10 以上のテーブル、密な FK）では交差が見られます。特定のレイアウトが重要な場合は `table` ブロックを並べ替えてください。
+- **自己参照 C ループなし。** 再帰的なリレーションシップ（`Employee.manager_id -> Employee.id`）は解析されますが、標準的な C 字形ではなく直角の直線としてルーティングされます。
+- **M:N の自動解決なし。** 関連エンティティを明示的に表現してください（これはいずれにせよ本番スキーマの標準的なプラクティスです）。
+
+完全な標準リファレンスについては `docs/reference/27-ERD-STANDARD.md` を参照してください。
+
+---
+
+## 関連例
+
+サンプルギャラリーからすぐに使えるシナリオ：
+
+<RelatedExamples slugs={[
+  'erd-university-schema',
+  'erd-ecommerce-schema',
+]} />

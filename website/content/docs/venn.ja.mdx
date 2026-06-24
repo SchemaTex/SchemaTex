@@ -1,0 +1,297 @@
+---
+title: ベン図 / オイラー図
+---
+
+## ベン図とオイラー図とは
+
+**ベン図**は重なり合う円を使って、集合の集まりにおけるすべての可能な論理的関係を示します——各交差が実際に要素を含むかどうかにかかわらず。**オイラー図**はより一般的な形式で：円は実際に関係が存在する場合にのみ描かれ、ある集合が別の集合に完全に含まれる場合はネストされた円として示され、2つの互いに素な集合はまったく重なりません。John Venn が1880年に固定重なりの形式を導入し、Leonhard Euler が1760年代に一般的な集合包含の形式を記述しました。
+
+教育者は集合論を教えるために使用し、データアナリストはセグメント間のオーディエンス重複を示すために使用し（メールリスト ∩ モバイルユーザー ∩ 有料購読者）、生物学・言語学・医学の研究者は分類学的または概念的な階層をマッピングするためにオイラー図を使用します。Schematex は1つの DSL で4つの一般的な使用パターンをすべてサポートしています——宣言的なカウント・要素の列挙・領域ラベル・オイラーサブセット/互いに素/重複関係——1つの図で混在させることもできます。背景については [ベン図のウィキペディア記事](https://en.wikipedia.org/wiki/Venn_diagram) と [オイラー図](https://en.wikipedia.org/wiki/Euler_diagram) を参照してください。
+
+<Playground initial={`venn "Customer Segments — Q3 2025"
+set email "Email subscribers" [color: "#1E88E5"]
+set paid "Paid users" [color: "#E53935"]
+set mobile "Mobile app users" [color: "#43A047"]
+email & paid : 1840
+email & mobile : 920
+paid & mobile : 2100
+email & paid & mobile : 650
+email only : 12400
+paid only : 3200
+mobile only : 8700`} height={480} />
+
+---
+
+## 1. 最初のベン図
+
+最小限の実用的な図：2つの集合、1つの重複、2つの排他的領域。
+
+<Playground initial={`venn "Support channels"
+set A "Email support" [color: "#1E88E5"]
+set B "Live chat" [color: "#E53935"]
+A & B : 320
+A only : 1450
+B only : 890`} />
+
+4つのルールで使用例の80%をカバーできます：
+
+1. `venn` で始め、必要に応じて引用符付きのタイトルを続けます。
+2. 各**集合**を `set ID "Label"` で宣言します——id は内部で使用され、ラベルが図に表示されます。
+3. `A & B : value` で交差に、`A only : value` で排他的領域に値を割り当てます。
+4. `config:` 行で外観を設定します；図のモード（`venn` vs `euler`）は明示的に設定するか `auto` のままにします。
+
+> コメントは独立した行で `#` から始める必要があります。
+
+---
+
+## 2. 集合
+
+集合の宣言は図に1つの円を作成します。
+
+```
+set ID "Label" [color: "#hex"]
+```
+
+| 部分 | 必須 | 備考 |
+|---|---|---|
+| `ID` | Yes | `[A-Za-z][A-Za-z0-9_-]*` にマッチする必要がある |
+| `"Label"` | Yes | 円に表示される引用符付き文字列 |
+| `[color: "#hex"]` | No | この集合のフィルカラーをオーバーライド |
+
+集合は領域または関係行で参照される前に宣言する必要があります。
+
+<Playground initial={`venn "Programming paradigms"
+set oop "Object-Oriented" [color: "#1E88E5"]
+set fp "Functional" [color: "#E53935"]
+set logic "Logic" [color: "#43A047"]
+oop & fp : 180
+oop & logic : 45
+fp & logic : 90
+oop & fp & logic : 12
+oop only : 620
+fp only : 340
+logic only : 95`} height={440} />
+
+---
+
+## 3. 領域
+
+領域は交差または排他的エリアに値を割り当てます。4つの DSL モードを1つの図で混在させることができます。
+
+### 3.1 宣言モード——カウントとパーセンテージ
+
+名前付き領域に数値またはパーセンテージを割り当てます。領域キーは、交差の場合は `&` で区切られた集合 id のリスト、排他的部分の場合は `ID only` です。
+
+```
+A & B : 320          # 整数カウント
+A & B & C : 45       # 3方向交差
+A only : 1450        # 他のすべての集合を除いた A
+A & B : 18.5%        # パーセンテージ値
+```
+
+<Playground initial={`venn "Market research"
+set aware "Awareness" [color: "#7B1FA2"]
+set consider "Consideration" [color: "#0288D1"]
+set convert "Conversion" [color: "#388E3C"]
+aware & consider : 3400
+consider & convert : 890
+aware & convert : 210
+aware & consider & convert : 150
+aware only : 18200
+consider only : 2100
+convert only : 540`} height={440} />
+
+### 3.2 領域ラベル（テキスト）
+
+`region` キーワードプレフィックスを使用し、数値の代わりに引用符付き文字列を割り当てます。文字列は領域内にレンダリングされます。
+
+```
+region A & B : "Nurture"
+region B & C : "Convert"
+region A & B & C : "Loyal customer"
+```
+
+<Playground initial={`venn "Go-to-market funnel"
+set A "Awareness" [color: "#7B1FA2"]
+set B "Consideration" [color: "#0288D1"]
+set C "Purchase" [color: "#388E3C"]
+region A & B : "Nurture"
+region B & C : "Convert"
+region A only : "Cold audience"
+region A & B & C : "Loyal"
+region C only : "Direct buyers"`} height={440} />
+
+### 3.3 列挙モード——要素リスト
+
+各集合の実際の要素をリストします。Schematex はすべての交差を自動的に計算します。
+
+```
+ID = { element1, element2, element3 }
+```
+
+要素はカンマ区切りの裸の単語または引用符付き文字列です。列挙集合には明示的な `set` 宣言は不要です——宣言は暗黙的です。
+
+<Playground initial={`venn "Full-stack team skills"
+Frontend = { React, TypeScript, CSS, Jest, Webpack }
+Backend  = { TypeScript, Node.js, PostgreSQL, Jest, Redis }
+DevOps   = { Docker, Kubernetes, PostgreSQL, Terraform, Redis }`} height={440} />
+
+---
+
+## 4. オイラー関係
+
+オイラー関係は、ある集合が別の集合のサブセットであること、2つの集合が完全に互いに素であること、または単に重複することを表す構造的な包含または分離を表現します。`set` で宣言済みの集合 id を参照する必要があります。
+
+```
+from subset to    # from は to の内部に完全にある（別名：「in」）
+from in to        # subset のエイリアス
+from disjoint to  # from と to は重複しない
+from overlap to   # from と to は部分的に重複する（明示的——関連のない集合のデフォルト）
+```
+
+<Playground initial={`venn "Biology taxonomy"
+set animals "Animals"
+set vertebrates "Vertebrates"
+set mammals "Mammals"
+set birds "Birds"
+set fish "Fish"
+vertebrates subset animals
+mammals subset vertebrates
+birds subset vertebrates
+fish subset vertebrates
+mammals disjoint birds
+mammals disjoint fish
+birds disjoint fish`} height={440} />
+
+| キーワード | エイリアス | 意味 |
+|---|---|---|
+| `subset` | `in` | `from` は `to` に完全に含まれる |
+| `disjoint` | — | `from` と `to` は交差しない |
+| `overlap` | — | `from` と `to` は交差するが、どちらかが他方を含むわけではない |
+
+---
+
+## 5. 設定
+
+`config:` 行でダイアグラムの動作を調整します。各行は独立した行です。
+
+| 設定キー | 値 | デフォルト | 効果 |
+|---|---|---|---|
+| `diagram` | `venn`、`euler`、`auto` | `auto` | ベン（すべての円を固定）またはオイラー（サブセットネスト）を強制。`auto` はオイラー関係の存在から推定。 |
+| `proportional` | `true`、`false` | `false` | 領域カウント値に比例して円の面積をスケーリング |
+| `showCounts` | `true`、`false` | `auto` | カウントラベルを常に / 決して表示しない。`auto` はカウントが提供された場合に表示。 |
+| `showPercent` | `true`、`false` | `false` | 各領域の値を全体の合計のパーセンテージとして表示 |
+| `palette` | `default`、`brand`、`monochrome` | `default` | 集合のカラーパレット（集合ごとの `color:` でオーバーライド） |
+| `blendMode` | `multiply`、`screen`、`none` | `multiply` | 重なったフィルカラーがどのようにブレンドするか |
+
+設定はヘッダー行にインラインでも記述できます：`venn "Title" [proportional: true, showPercent: true]`。
+
+```
+venn "Segment overlap"
+config: proportional = true
+config: showPercent = true
+config: blendMode = screen
+```
+
+**レイアウト選択：**
+
+- `layout venn` — `config: diagram = venn` の別形式（同じようにパース）。
+- `layout euler` — `config: diagram = euler` の別形式。
+- `layout auto` — `config: diagram = auto` の別形式。
+
+---
+
+## 6. ラベルとコメント
+
+- **タイトル：** `venn "My diagram"` — 最初の行のみ。
+- **集合ラベル：** `set A "Email subscribers"` — `set` 行の引用符付き文字列。
+- **領域値：** `:` の後に割り当てられた整数・パーセンテージ・引用符付き文字列・要素リスト。
+- **コメント：** `#` を行頭に記述（先頭のホワイトスペースの後）。
+
+---
+
+## 7. 予約語とエスケープ
+
+**行頭の予約語：** `venn`（ヘッダー）、`set`、`config:`、`layout`、`region`。
+
+**領域キーの予約演算子：** `&`（交差）、`only`（排他的領域）。
+
+**オイラー関係キーワード：** `subset`、`in`、`disjoint`、`overlap` ——集合 id として使用不可。
+
+**ID ルール：** `[A-Za-z][A-Za-z0-9_-]*` にマッチする必要があります。スペースを含むラベルは引用符付きの `"Label"` フィールドに記述します。
+
+---
+
+## 8. よくある間違い
+
+| 記述した内容 | パーサーの反応 | 修正方法 |
+|---|---|---|
+| `set A …` と `set B …` の前の `A & B : 320` | `VennParseError: unknown set id "A" in region key` | `set` で集合を宣言してから領域行で参照する |
+| `set dogs …` の前の `dogs subset mammals` | `VennParseError: unknown set "dogs" in relation` | 先に集合を宣言し、次にオイラー関係を記述する |
+| `set A Email subscribers`（スペースを含む引用符なしラベル） | パーサーエラー——ラベルは引用符付き文字列であることが期待される | 引用符で囲む：`set A "Email subscribers"` |
+| `A & B = 320`（コロンの代わりにイコール） | 領域パターンにマッチせず；パースエラー | コロンを使用：`A & B : 320` |
+| `Frontend = { React TypeScript }`（カンマなし） | `React TypeScript` が1つの要素として扱われる | カンマで区切る：`Frontend = { React, TypeScript }` |
+| `config: mode = venn` | `mode` は認識されたキーではない（キーは `diagram`） | `config: diagram = venn` を使用 |
+| 列挙集合と明示的な `A & B :` 領域の混在 | 列挙の自動導出は `regions.length === 0` の場合のみ実行 | 1つの図で1つのスタイルを使うか、すべての領域を明示的に追加する |
+
+---
+
+## 9. 文法（EBNF）
+
+```text
+document       = header (blank | comment | config | layout-stmt | set-decl | enum-decl | euler-rel | region)*
+
+header         = "venn" ( ":"? WS quoted-string )? ( WS "[" config-props "]" )? NEWLINE
+quoted-string  = '"' any-char-but-quote* '"'
+
+config         = "config" WS ":" WS config-key WS "=" WS config-value NEWLINE
+config-key     = "diagram" | "proportional" | "palette" | "blendMode" | "showCounts" | "showPercent"
+
+layout-stmt    = "layout" WS ( "venn" | "euler" | "auto" ) NEWLINE
+
+set-decl       = "set" WS id WS quoted-string ( WS "[" set-props "]" )? NEWLINE
+set-props      = "color:" quoted-hex | "fill:" quoted-hex
+
+enum-decl      = id WS "=" WS "{" element-list "}" NEWLINE
+element-list   = element ( "," element )*
+element        = quoted-string | bare-word
+
+euler-rel      = id WS euler-op WS id NEWLINE
+euler-op       = "subset" | "in" | "disjoint" | "overlap"
+
+region         = "region"? WS region-key WS ":" WS region-value NEWLINE
+region-key     = id WS "only"
+               | id ( WS "&" WS id )+
+region-value   = integer | percent | quoted-string | "[" element-list "]"
+
+percent        = number "%"
+id             = [A-Za-z] [A-Za-z0-9_-]*
+comment        = "#" any NEWLINE
+```
+
+権威ある情報源：`src/diagrams/venn/parser.ts`。パーサーとの相違がある場合は、パーサーが優先されます——Issue を作成してください。
+
+---
+
+## 10. ロードマップ
+
+**計画中 — まだパース不可。** 現在生成された DSL ではこれらを使用しないでください；パーサーが拒否または無視します。
+
+- **3方向と N 方向のオイラーネスト** — レンダラーは現在ベンモードで最大3集合をサポート；複雑な包含を持つより大きなオイラー図はまだ完全にはレイアウトされていない。
+- **`fill:` カラーエイリアス** — `set` の `fill:` プロパティはパーサーが受け付けます（`color:` のエイリアス）が、レンダラーは現在 `color:` のみ使用。
+- **領域の `label:`** — 別個のラベル vs 値のための `region A & B [label: "Core"]` 構文。
+- **面積比例オイラー** — `proportional: true` は現在ベンモードにのみ影響；オイラー包含レイアウトはフラグを無視。
+- **`and` キーワード** — `A & B : 120` のエイリアスとしての自然言語 `A and B : 120`。
+
+これらのどれかが早急に必要な場合は GitHub Issues でトラックしてください。
+
+---
+
+## 関連する例
+
+サンプルギャラリーからすぐに使えるシナリオ：
+
+<RelatedExamples slugs={[
+  'venn-customer-segments',
+  'venn-programming-paradigms',
+]} />

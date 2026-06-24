@@ -1,0 +1,461 @@
+---
+title: Diagrama de árbol de decisión
+---
+
+## Acerca de los árboles de decisión
+
+Un **árbol de decisión** es un diagrama ramificado que representa una secuencia de elecciones y sus consecuencias como un árbol con raíz: cada nodo interno es una pregunta o decisión, cada arista es una respuesta o acción, y cada hoja es un resultado. El formato aparece en tres prácticas bastante diferentes — diagramas de flujo de resolución de problemas y reglas de decisión clínica (árboles taxonómicos), análisis de riesgo e inversión usando valor esperado (análisis de decisión) e inspección de modelos de machine learning (árboles clasificadores). A pesar de las diferencias superficiales, los tres comparten la misma estructura de árbol, razón por la cual Schematex los codifica bajo una palabra clave con un selector de modo.
+
+Los árboles de decisión de Schematex cubren: (1) **modo taxonómico** — los flujos de preguntas sí/no usados en triaje médico ([linaje Turing 1937](https://en.wikipedia.org/wiki/Decision_tree); ahora estándar en soporte de decisión clínica), (2) **modo de análisis de decisión** — el método de rollback de valor esperado desarrollado en ciencias de la gestión ([Raiffa & Schlaifer, 1961](https://en.wikipedia.org/wiki/Decision_tree#Decision_analysis)), y (3) **modo ML** — el formato de división/hoja CART utilizado para visualizar clasificadores entrenados de scikit-learn y similares ([Breiman et al., 1984](https://en.wikipedia.org/wiki/Decision_tree_learning)).
+
+<Playground initial={`
+  decisiontree "Customer Support Triage"
+  direction: top-down
+
+  question "Is the service completely down?"
+    yes: question "Outage confirmed on status page?"
+      yes: answer "Follow incident protocol — page on-call"
+      no: answer "Check monitoring — open severity-1 ticket"
+    no: question "Is the issue affecting billing?"
+      yes: answer "Escalate to billing team — SLA breach risk"
+      no: question "Can user reproduce consistently?"
+        yes: answer "Collect HAR trace — file bug report"
+        no: answer "Ask for screenshot — watch for recurrence"`} height={460} />
+
+---
+
+## 1. Su primer árbol de decisión
+
+El árbol de decisión útil más pequeño: una pregunta raíz con dos ramas.
+
+<Playground initial={`
+  decisiontree "Laptop troubleshoot"
+
+  question "Does it power on?"
+    yes: answer "Check display — connect external monitor"
+    no: question "Is the charger light on?"
+      yes: answer "Hold power button 10 s — try again"
+      no: answer "Check outlet and charging cable"`} />
+
+Cuatro reglas cubren el 80% del uso:
+
+1. Empiece con `decisiontree`, opcionalmente con `:mode` y un título entre comillas.
+2. Cada nodo de pregunta usa `question "texto"` (o la forma abreviada `q "texto"`).
+3. Cada respuesta/hoja usa `answer "texto"` (o `a "texto"` o `leaf "texto"`).
+4. Las etiquetas de rama — `yes:`, `no:`, o una `label "X":` personalizada — preceden al nodo hijo en la misma línea.
+
+La indentación controla el anidamiento: cada nivel añade 2 espacios. El parser calcula las relaciones padre-hijo a partir de la profundidad de indentación.
+
+> Los comentarios deben comenzar con `#` o `//` en su propia línea.
+
+---
+
+## 2. Modos
+
+El modo se establece en la línea de encabezado:
+
+| Encabezado | Modo | Usado para |
+|---|---|---|
+| `decisiontree` | taxonómico | Flujos de preguntas sí/no, guías de resolución de problemas, soporte de decisión clínica |
+| `decisiontree:decision` (o `decisiontree:da`) | análisis de decisión | Decisiones de inversión, análisis de riesgo, cálculo de valor esperado |
+| `decisiontree:influence` (o `mode: influence`) | diagrama de influencia | Vista DAG compacta de un problema de decisión — estructura antes de desplegarlo en un árbol |
+| `decisiontree:ml` | machine learning | Visualización de clasificadores CART entrenados (scikit-learn, XGBoost, etc.) |
+
+La dirección predeterminada es `top-down` para los modos taxonómico y ML, `left-right` para el análisis de decisión.
+
+---
+
+## 3. Modo taxonómico
+
+Mejor para: guías de resolución de problemas, FAQs, protocolos clínicos, flujos de recomendación de productos.
+
+### Palabras clave de nodo
+
+| Palabra clave | Alias | Significado |
+|---|---|---|
+| `question "…"` | `q "…"` | Nodo interno — una pregunta con hijos |
+| `answer "…"` | `a "…"`, `leaf "…"` | Nodo hoja — un resultado terminal |
+
+### Etiquetas de rama
+
+| Sintaxis | Significado |
+|---|---|
+| `yes: question "…"` | Rama etiquetada "yes" |
+| `no: answer "…"` | Rama etiquetada "no" |
+| `label "Texto personalizado": answer "…"` | Rama con cualquier etiqueta personalizada |
+
+Las etiquetas personalizadas permiten ir más allá de sí/no para decisiones de múltiples vías desde una pregunta.
+
+<Playground initial={`
+  decisiontree "Triage — chest pain onset"
+
+  q "Onset sudden?"
+    yes: q "ECG changes present?"
+      yes: a "ACS protocol — cardiology consult"
+      no: q "D-dimer elevated?"
+        yes: a "PE workup — CT pulmonary angiography"
+        no: a "Aortic dissection — CT angiography"
+    no: q "Pain reproducible on palpation?"
+      yes: a "Musculoskeletal — NSAIDs, follow-up PCP"
+      no: a "GI / anxiety — further history"`} height={420} />
+
+<Playground initial={`
+  decisiontree "Pain level triage"
+
+  question "Reported pain level?"
+    label "Severe (8-10)": answer "Emergency — send to ER immediately"
+    label "Moderate (4-7)": answer "Urgent care — within 2 hours"
+    label "Mild (1-3)": answer "Schedule next available — OTC care"
+    label "None": answer "Monitor — patient may be post-medication"`} height={320} />
+
+---
+
+## 4. Modo de análisis de decisión
+
+Mejor para: decisiones de inversión, análisis de fabricar vs. comprar, evaluación de estrategias ponderadas por riesgo.
+
+### Palabras clave de nodo
+
+| Palabra clave | Alias | Significado |
+|---|---|---|
+| `decision "…"` | — | Nodo de decisión — el actor elige una rama |
+| `chance "…"` | — | Nodo de azar — un resultado incierto |
+| `end "…"` | `outcome "…"` | Nodo terminal — beneficio final |
+
+### Palabras clave de rama
+
+| Palabra clave | Significado |
+|---|---|
+| `choice "etiqueta"` | Nombra la rama entrante desde un nodo de decisión |
+| `prob N` | Establece la probabilidad (0–1) en la rama entrante desde un nodo de azar |
+
+### Atributo de beneficio
+
+`payoff=N` en cualquier nodo establece el valor del beneficio. En los nodos `end` / `outcome` define el valor terminal. El parser ejecuta el rollback de valor esperado automáticamente: el EV de cada nodo `chance` es la suma ponderada por probabilidad de los EVs de sus hijos; el EV de cada nodo `decision` es el EV máximo de los hijos, y la rama óptima queda señalada.
+
+**Restricción:** las probabilidades en todos los hijos directos de un nodo `chance` deben sumar 1.0 (±0.01). El parser lanza un `DTreeParseError` si no es así.
+
+<Playground initial={`
+  decisiontree:decision "Cloud vendor selection"
+
+  decision "Which vendor?"
+    choice "Build in-house"
+      chance "Project outcome"
+        prob 0.6 end "On-time delivery" payoff=900000
+        prob 0.4 end "Over budget / delayed" payoff=150000
+    choice "Managed SaaS vendor"
+      end "Predictable cost" payoff=500000
+    choice "Hybrid approach"
+      chance "Integration complexity"
+        prob 0.5 end "Smooth integration" payoff=700000
+        prob 0.5 end "Integration rework" payoff=300000`} height={440} />
+
+---
+
+## 5. Modo de diagrama de influencia
+
+Mejor para: encuadrar un problema de decisión **de forma compacta** antes de desplegarlo. Donde el modo de análisis de decisión dibuja cada rama de cada resultado como un árbol explícito, un **diagrama de influencia** ([Howard & Matheson, 1981](https://en.wikipedia.org/wiki/Influence_diagram)) dibuja el *mismo* problema como un grafo acíclico dirigido (DAG) de variables y las dependencias entre ellas — un nodo por decisión, incertidumbre y objetivo, independientemente de cuántos estados pueda tomar cada uno. Es el diagrama al que los analistas de decisión acuden primero, porque muestra la estructura (qué informa a qué, qué afecta al beneficio) sin la explosión combinatoria de un árbol.
+
+Este modo es **estructural, no computacional.** A diferencia del modo de análisis de decisión, no resuelve el valor esperado — el grafo compacto omite deliberadamente las tablas de probabilidad y beneficio que requeriría un rollback de EV. Úselo para comunicar y validar la forma del problema; use el modo de análisis de decisión (sección 4) cuando quiera los números plegados hacia atrás.
+
+### Formas del encabezado
+
+Dos maneras equivalentes de seleccionar el modo:
+
+```
+decisiontree:influence "Oil Wildcatter"
+```
+
+o, como directiva en su propia línea después del encabezado:
+
+```
+decisiontree "Market Entry"
+  mode: influence
+```
+
+### Palabras clave de nodo
+
+Cada nodo se declara como `tipo Id "etiqueta"` — un id (usado para conectar arcos) seguido de una etiqueta de visualización entre comillas.
+
+| Palabra clave | Forma | Significado |
+|---|---|---|
+| `decision Id "…"` | **rectángulo** | Una elección que controla el tomador de decisiones |
+| `chance Id "…"` | **óvalo** | Una variable incierta (un estado del mundo) |
+| `value Id "…"` | **octágono** | El objetivo / beneficio que se optimiza |
+
+Las formas siguen la convención estándar del diagrama de influencia: las decisiones son rectángulos, las incertidumbres son óvalos y el nodo de valor es un octágono. Añada `utility=N` a un nodo de valor para anotar el beneficio que representa (`value Profit "Net profit" utility=42`).
+
+### Arcos y su semántica
+
+Los arcos se escriben `Origen -> Destino` en sus propias líneas, por id de nodo. **El significado de un arco se lee por su destino**, exactamente como en el estándar publicado:
+
+| Arco hacia un… | Significado | Dibujado como |
+|---|---|---|
+| `decision` | **Informativo** — esto se sabe *antes* de tomar la decisión | línea discontinua |
+| `chance` | **Relevancia / condicionamiento** — la fuente condiciona esta incertidumbre | línea sólida |
+| `value` | **Funcional** — la fuente es un argumento de la función de beneficio | línea sólida |
+
+El arco informativo discontinuo es el que hay que vigilar: `Seismic -> Drill` significa "el resultado de la prueba sísmica se observa antes de elegir si perforar", lo que es precisamente lo que hace que la decisión valga la pena modelar.
+
+### Reglas de validación
+
+- El grafo debe ser **acíclico** — un ciclo (por ejemplo, `A -> B` y `B -> A`) es rechazado.
+- Se requiere al menos **un nodo `value`**; un diagrama de influencia sin objetivo no es un problema de decisión.
+- Los arcos referencian ids de nodo que deben estar declarados.
+
+### Ejemplos
+
+El Wildcatter de Petróleo — el problema de enseñanza canónico. El resultado de la prueba sísmica se observa antes de la decisión de perforar (arco informativo discontinuo `Seismic -> Drill`), la prueba es relevante para si hay petróleo presente (`Seismic -> Oil`), y tanto el estado del petróleo como la decisión de perforar alimentan el beneficio (`Oil -> Profit`, `Drill -> Profit`).
+
+<Playground initial={`
+  decisiontree:influence "Oil Wildcatter"
+    decision Drill "Drill?"
+    chance Oil "Oil present"
+    chance Seismic "Seismic test"
+    value Profit "Net profit" utility=42
+    Seismic -> Oil
+    Seismic -> Drill
+    Oil -> Profit
+    Drill -> Profit`} height={360} />
+
+Una decisión de entrada al mercado usando la forma de directiva `mode: influence`. La demanda se observa antes de entrar (`Demand -> Enter`, informativo/discontinuo) y también impulsa directamente el beneficio, mientras que la respuesta del competidor solo alimenta el resultado.
+
+<Playground initial={`
+  decisiontree "Market Entry"
+    mode: influence
+    decision Enter "Enter market?"
+    chance Demand "Market demand"
+    chance Competition "Competitor response"
+    value V "Profit" utility=120
+    Demand -> Enter
+    Demand -> V
+    Competition -> V
+    Enter -> V`} height={360} />
+
+---
+
+## 6. Modo de machine learning
+
+Mejor para: explicar clasificadores CART entrenados, informes de transparencia de modelos, análisis de importancia de características.
+
+### Palabras clave de nodo
+
+| Palabra clave | Significado |
+|---|---|
+| `split "…"` | Nodo de división interno — contiene una prueba de característica |
+| `leaf "…"` | Nodo hoja — clase o valor de regresión |
+
+### Prefijos de rama
+
+`true` y `false` preceden a los nodos hijos para marcar qué rama representa cada hijo.
+
+### Propiedades (clave=valor, sin dos puntos, sin comillas alrededor de los valores)
+
+| Propiedad | Se aplica a | Significado |
+|---|---|---|
+| `feature=nombre` | split | Nombre de la característica usada en la división |
+| `op="<="` | split | Operador de comparación (entre comillas si contiene caracteres especiales) |
+| `threshold=5.9` | split | Valor umbral de la división |
+| `samples=150` | split, leaf | Recuento de muestras en este nodo |
+| `gini=0.5` | split, leaf | Impureza Gini |
+| `entropy=0.5` | split, leaf | Impureza de entropía |
+| `mse=0.3` | split, leaf | Error cuadrático medio (regresión) |
+| `gain=0.2` | split, leaf | Ganancia de información |
+| `class=nombre` | leaf | Nombre de la clase predicha |
+| `value=50` | leaf | Recuento de muestras; use `value=[50,30,20]` para la distribución de clases |
+
+<Playground initial={`
+  decisiontree:ml "Iris classification (CART)"
+  direction: top-down
+  impurity: gini
+
+  split "Petal length ≤ 2.45" feature=petal_length op="<=" threshold=2.45 samples=150 gini=0.667
+    true leaf "Setosa" class=Iris-setosa value=50 gini=0.0
+    false split "Petal width ≤ 1.75" feature=petal_width op="<=" threshold=1.75 samples=100 gini=0.5
+      true leaf "Versicolor" class=Iris-versicolor value=50 gini=0.0
+      false leaf "Virginica" class=Iris-virginica value=50 gini=0.0`} height={400} />
+
+---
+
+## 7. Opciones de configuración
+
+Las líneas de configuración aparecen entre el encabezado y el primer nodo. Cada una es `clave: valor` (dos puntos, sin palabra clave `config`).
+
+### Configuración compartida (todos los modos)
+
+| Clave | Valores | Predeterminado | Efecto |
+|---|---|---|---|
+| `direction:` | `top-down`, `left-right` | `top-down` (taxonómico/ML), `left-right` (decisión) | Dirección del layout |
+| `edgeStyle:` (o `edge-style:`) | `diagonal`, `orthogonal`, `bracket` | depende del modo | Estilo de dibujo de aristas |
+
+### Configuración taxonómica
+
+| Clave | Valores | Predeterminado | Efecto |
+|---|---|---|---|
+| `branchLabels:` (o `branch-labels:`) | `boolean`, `relation` | `boolean` | Estilo de etiqueta de rama |
+
+### Configuración de análisis de decisión
+
+| Clave | Valores | Predeterminado | Efecto |
+|---|---|---|---|
+| `branchLength:` (o `branch-length:`) | `probability` | desactivado | Escala la longitud de la rama proporcionalmente a la probabilidad |
+
+### Configuración ML
+
+| Clave | Valores | Predeterminado | Efecto |
+|---|---|---|---|
+| `impurity:` | `gini`, `entropy`, `mse`, `gain` | `gini` | Métrica de impureza mostrada en los nodos |
+| `classes:` | lista separada por comas | — | Nombres de etiquetas de clase para visualización |
+
+```
+decisiontree:ml "Loan classifier"
+direction: top-down
+impurity: gini
+classes: Approved, Denied, Review
+```
+
+---
+
+## 8. Etiquetas y comentarios
+
+- **Título del diagrama:** `decisiontree "Título"` — la cadena entre comillas después de la palabra clave del encabezado.
+- **Etiqueta de nodo:** la cadena entre comillas inmediatamente después de la palabra clave del nodo — `question "Is the fee waived?"`.
+- **Etiqueta de rama:** `yes:`, `no:`, o `label "Personalizado":` antes del nodo hijo — en la misma línea que el hijo.
+- **Beneficio:** `payoff=250000` al final de una línea de nodo de decisión/fin.
+- **Propiedades ML:** tokens `clave=valor` después de la cadena de etiqueta del nodo (sin corchetes `[…]`, sin dos puntos).
+- **Comentarios:** `#` o `//` al inicio de una línea (después de espacios iniciales opcionales). Solo se admiten comentarios de línea completa — no se admiten comentarios al final de la línea.
+
+---
+
+## 9. Palabras reservadas y escape
+
+**Palabras clave de nodo reservadas:** `decision`, `chance`, `end`, `outcome`, `choice`, `prob`, `split`, `leaf`, `question`, `q`, `answer`, `a`.
+
+**Prefijos de rama reservados:** `yes:`, `no:`, `true`, `false`, `label`.
+
+**Formas de encabezado reservadas:** `decisiontree`, `decisiontree:decision`, `decisiontree:da`, `decisiontree:ml`.
+
+**Las cadenas con espacios** deben ir entre comillas dobles: `question "Annual revenue > $1M?"`. Las etiquetas de nodo, las etiquetas de rama de la sintaxis `label "…":` y el título del diagrama requieren comillas dobles.
+
+| Token reservado | Contexto | Notas |
+|---|---|---|
+| `yes:` / `no:` | Inicio de línea en modo taxonómico | No se puede usar como etiqueta — use `label "yes":` si necesita el texto literal "yes" |
+| `true` / `false` | Inicio de línea en modo ML | No puede ser una etiqueta de nodo |
+| `choice` | Inicio de línea en modo de decisión | Actúa como envolvente de rama, no como nodo |
+| `prob` | Inicio de línea en modo de decisión | Debe ir seguido de un número |
+
+---
+
+## 10. Errores comunes
+
+| Usted escribió | El parser dice | Solución |
+|---|---|---|
+| `yes: "Approve"` (sin palabra clave de nodo) | `DTreeParseError: Missing taxonomy node kind` | `yes: answer "Approve"` |
+| Probabilidades en hijos de `chance` que suman 0.8 | `DTreeParseError: probabilities do not sum to 1.0` | Ajuste para que todos los valores `prob` sumen exactamente 1.0 (±0.01) |
+| `question "texto"` con un hijo al mismo nivel de indentación | El hijo no se analiza como hijo — se convierte en hermano | Indente los hijos 2 espacios más que el padre |
+| `config direction = top-down` (usando la palabra clave `config`) | `config` es una palabra clave de fishbone — no se reconoce aquí | Use `direction: top-down` (sin prefijo `config`) |
+| `feature = petal_length` (espacios alrededor de `=`) | Se analiza como tokens separados; la propiedad no se reconoce | Sin espacios: `feature=petal_length` |
+| `[payoff: 500000]` sintaxis con corchetes | No reconocida — el parser ignora los corchetes para el beneficio | Use `payoff=500000` (sin corchetes, sin espacios alrededor de `=`) |
+| `decisiontree:taxonomy` | `DTreeParseError: Invalid header` | Use `decisiontree` (sin sufijo de modo para taxonómico) |
+
+---
+
+## 11. Gramática (EBNF)
+
+```text
+document       = header ( config-line )* node
+
+header         = "decisiontree" ( ":" mode )? ( WS quoted-string )? NEWLINE
+mode           = "decision" | "da" | "ml"
+                 // omitted → taxonomy
+
+config-line    = config-key ":" WS config-value NEWLINE
+config-key     = "direction" | "edgeStyle" | "edge-style"
+               | "branchLabels" | "branch-labels"
+               | "branchLength" | "branch-length"
+               | "impurity" | "classes"
+
+// ── Taxonomy mode ──────────────────────────────
+node           = ( branch-prefix WS )? tax-node ( WS "[" tax-attrs "]" )? NEWLINE
+                   INDENT child-node*
+tax-node       = ( "question" | "q" ) WS quoted-string
+               | ( "answer" | "a" | "leaf" ) WS quoted-string
+branch-prefix  = "yes:" | "no:" | "label" WS quoted-string ":"
+
+// ── Decision-analysis mode ─────────────────────
+da-node        = "decision" WS quoted-string NEWLINE INDENT da-child+
+               | "chance" WS quoted-string NEWLINE INDENT da-prob-child+
+               | ( "end" | "outcome" ) WS quoted-string ( WS "payoff=" number )? NEWLINE
+da-child       = "choice" WS quoted-string NEWLINE INDENT da-node
+da-prob-child  = "prob" WS number WS da-node    // prob, value, and child all on one line
+
+// ── ML mode ───────────────────────────────────
+ml-node        = ( "true" | "false" )? ml-kind WS quoted-string ml-prop* NEWLINE
+                   INDENT ml-child*
+                 // "true"/"false" and ml-kind must be on the same line
+ml-kind        = "split" | "leaf"
+ml-prop        = WS key "=" value     // no spaces around "="
+
+comment        = ( "#" | "//" ) any NEWLINE
+quoted-string  = '"' any-char-but-quote* '"'
+```
+
+Fuente autorizada: `src/diagrams/decisiontree/parser.ts`. Si esto diverge del parser, el parser tiene precedencia — por favor, abra un issue.
+
+---
+
+## 12. Conformidad con estándares
+
+Los árboles de decisión de Schematex cubren cuatro convenciones establecidas:
+
+El **modo taxonómico** sigue las convenciones de diagrama de flujo de preguntas/respuestas comunes en los sistemas de soporte de decisión clínica (linaje Arden Syntax) y los procedimientos de resolución de problemas ISO 9001.
+
+El **modo de análisis de decisión** sigue el método de rollback de valor esperado de las ciencias de la gestión: nodos de decisión (cuadrado, el actor elige), nodos de azar (círculo, probabilístico), nodos terminales con beneficios. El EV se calcula automáticamente mediante inducción hacia atrás (Raiffa & Schlaifer, 1961).
+
+El **modo de diagrama de influencia** sigue la convención de Howard & Matheson (1981): nodos de decisión (rectángulo), azar (óvalo) y valor (octágono) conectados como un grafo acíclico, con el significado del arco leído desde el destino (informativo hacia las decisiones, dibujado discontinuo; relevancia hacia el azar; funcional hacia el valor). Es un diagrama estructural — no resuelve el EV.
+
+El **modo ML** sigue la notación de división/hoja CART (Classification and Regression Trees) (Breiman et al., 1984) compatible con la salida `export_text` y `plot_tree` de scikit-learn.
+
+Lo que está implementado hoy:
+
+- ✅ Los cuatro modos: taxonómico, análisis de decisión, diagrama de influencia, ML
+- ✅ Taxonómico: `question`/`q`, `answer`/`a`/`leaf`, `yes:`, `no:`, etiquetas de rama `label "X":`
+- ✅ Decisión: `decision`, `chance`, `end`/`outcome`, `choice`, `prob`, `payoff=N`, rollback de EV automático
+- ✅ Influencia: nodos `decision`/`chance`/`value`, `utility=N`, arcos `Origen -> Destino`, semántica de arco derivada del destino, arcos informativos discontinuos, validación de aciclicidad + nodo de valor
+- ✅ ML: `split`, `leaf`, prefijos de rama `true`/`false`, `feature=`, `threshold=`, `gini=`, `entropy=`, `mse=`, `class=`, `value=`
+- ✅ Configuración: `direction:`, `edgeStyle:`, `impurity:`, `classes:`, `branchLabels:`, `branchLength:`, `mode:`
+- ⏳ Renderizado de longitud de rama ponderada por probabilidad (`branchLength: probability` se analiza pero aún no se aplica visualmente)
+- ⏳ Superposiciones de análisis de sensibilidad (anotaciones estilo gráfico tornado en árboles de decisión)
+- ⏳ Vista de bosque/conjunto — múltiples árboles en paralelo
+
+Referencias:
+
+- Raiffa, H. & Schlaifer, R. (1961). *Applied Statistical Decision Theory.* Harvard Business School.
+- Howard, R. A. & Matheson, J. E. (1981/2005). *Influence Diagrams.* Decision Analysis 2(3).
+- Breiman, L. et al. (1984). *Classification and Regression Trees.* Wadsworth.
+- Wikipedia — [Decision tree](https://en.wikipedia.org/wiki/Decision_tree) · [Influence diagram](https://en.wikipedia.org/wiki/Influence_diagram) · [Decision tree learning](https://en.wikipedia.org/wiki/Decision_tree_learning)
+
+---
+
+## 13. Hoja de ruta
+
+**Planificado — aún no analizable.** No use estos elementos en DSL generado hoy; el parser los rechazará o ignorará.
+
+- **Renderizado visual de `branchLength: probability`** — la clave de configuración se analiza pero el motor de layout aún no escala las longitudes de rama por probabilidad.
+- **Análisis de sensibilidad / tornado** — bloque `sensitivity:` que anota qué valores `prob` afectan más el EV final.
+- **Anotaciones de exportación** — salida de tabla estructurada (matriz de decisión) junto al SVG del diagrama.
+- **Vista de bosque** — palabra clave `forest` que envuelve múltiples bloques `decisiontree` en un layout de comparación en paralelo.
+- **Marcadores interactivos de colapsar/expandir** — `collapsed: true` en un nodo para renderizar un marcador triangular para subárboles profundos.
+
+Haga seguimiento en los issues de GitHub si necesita alguno de estos antes.
+
+---
+
+## Ejemplos relacionados
+
+Escenarios listos para usar de la galería de ejemplos:
+
+<RelatedExamples slugs={[
+  'decisiontree-support-triage',
+  'decisiontree-investment-analysis',
+]} />

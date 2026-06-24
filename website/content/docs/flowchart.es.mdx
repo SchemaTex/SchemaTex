@@ -1,0 +1,414 @@
+---
+title: Diagrama de flujo
+---
+
+## Acerca de los diagramas de flujo
+
+Un **diagrama de flujo** mapea los pasos de un proceso — decisiones, operaciones, entradas, salidas y los caminos entre ellos — usando un conjunto estandarizado de símbolos conectados por flechas. Los ingenieros los usan para especificar algoritmos; los analistas de negocio los usan para documentar flujos de trabajo; los equipos de calidad los usan para rastrear modos de fallo. Son los diagramas técnicos más universalmente entendidos en todas las industrias.
+
+Schematex sigue las convenciones de símbolos de **[ISO 5807:1985](https://www.iso.org/standard/11955.html)** para formas de diagramas de flujo y usa un DSL **[compatible con Mermaid](https://mermaid.js.org/syntax/flowchart.html)** para que los diagramas de flujo de Mermaid existentes se transfieran directamente. Esta página documenta lo que el analizador acepta hoy.
+
+<Playground initial={`flowchart LR
+  start([New order received])
+  start --> validate{Inventory available?}
+  validate -->|Yes| reserve[Reserve items]
+  validate -->|No| notify[Notify customer]
+  notify --> done([End])
+  reserve --> payment{Payment authorized?}
+  payment -->|Yes| ship[Ship order]
+  payment -->|No| cancel[Cancel & release]
+  ship --> confirm[Send confirmation email]
+  confirm --> done
+  cancel --> done`} height={420} />
+
+---
+
+## 1. Tu primer diagrama de flujo
+
+El diagrama de flujo más pequeño y útil: una decisión con dos resultados.
+
+<Playground initial={`flowchart TD
+  A([Start]) --> B{File exists?}
+  B -->|Yes| C[Read file]
+  B -->|No| D[Return error]
+  C --> E([Done])`} />
+
+Cuatro reglas cubren el 80% del uso:
+
+1. Comienza con `flowchart` seguido de una dirección: `TD`, `LR`, `BT`, o `RL`.
+2. Cada nodo es `ID[Etiqueta]` — los corchetes de forma determinan el tipo de nodo (ver §2).
+3. Conecta los nodos con `-->`. Agrega una etiqueta entre caracteres de barra vertical: `-->|Yes|`.
+4. Los nodos se crean automáticamente cuando se referencian por primera vez en un borde — pero las declaraciones explícitas permiten establecer formas y etiquetas de forma independiente.
+
+> Los comentarios comienzan con `%%` en su propia línea.
+
+---
+
+## 2. Formas de nodos
+
+Cada forma de nodo se escribe como `ID<corchetes>Etiqueta<corchetes>`. El ID debe comenzar con una letra y puede contener letras, dígitos, `_` y `-`.
+
+| Sintaxis | Forma | Uso típico |
+|---|---|---|
+| `A[Label]` | Rectángulo | Paso de proceso, operación |
+| `A(Label)` | Rectángulo redondeado | Subproceso, paso suave |
+| `A([Label])` | Estadio (píldora) | Terminal de inicio / fin |
+| `A{Label}` | Diamante | Decisión / condición |
+| `A{{Label}}` | Hexágono | Preparación, configuración |
+| `A[[Label]]` | Subrutina | Proceso predefinido |
+| `A[(Label)]` | Cilindro | Base de datos, almacenamiento |
+| `A((Label))` | Círculo | Conector, unión |
+| `A(((Label)))` | Círculo doble | Estado final |
+| `A[/Label/]` | Paralelogramo | Entrada / salida |
+| `A[\Label\]` | Paralelogramo (alt) | Operación manual |
+| `A[/Label\]` | Trapecio | Entrada manual |
+| `A[\Label/]` | Trapecio (alt) | Conector fuera de página |
+| `A>Label]` | Asimétrico | Etiqueta, anotación |
+
+<Playground initial={`flowchart TD
+  t([Terminal / stadium])
+  r[Rectangle process]
+  d{Diamond decision}
+  p[/Parallelogram input/]
+  db[(Cylinder database)]
+  sub[[Subroutine]]
+  t --> r --> d
+  d -->|branch A| p
+  d -->|branch B| db
+  p --> sub
+  db --> sub`} height={440} />
+
+---
+
+## 3. Bordes
+
+Un borde conecta dos nodos. El símbolo de conector determina el estilo visual y si hay una etiqueta o punta de flecha presente.
+
+### 3.1 Tipos de borde
+
+<Playground initial={`flowchart TD
+  A --> B
+  C --- D
+  E -.-> F
+  G ==> H
+  I <--> J
+  K --x L
+  M --o N`} height={380} />
+
+| Sintaxis | Estilo | Flecha | Uso típico |
+|---|---|---|---|
+| `A --> B` | Sólido | Flecha | Flujo normal |
+| `A --- B` | Sólido | Ninguna | Asociación, enlace no dirigido |
+| `A -.-> B` | Punteado | Flecha | Camino opcional / asíncrono |
+| `A ==> B` | Grueso | Flecha | Camino crítico / principal |
+| `A <--> B` | Sólido | Ambos extremos | Flujo bidireccional |
+| `A --x B` | Sólido | Cruz | Camino bloqueado / rechazado |
+| `A --o B` | Sólido | Círculo | Agregación / composición |
+
+### 3.2 Etiquetas de borde
+
+Dos sintaxis adjuntan una etiqueta a un borde:
+
+**Etiqueta de barra** — colocada entre caracteres `|` directamente después de la flecha:
+```
+A -->|Yes| B
+A -.->|optional| B
+A ==>|critical| B
+```
+
+**Etiqueta en línea** — texto colocado entre los guiones, antes del carácter de flecha:
+```
+A -- success --> B
+A -- error --x C
+```
+
+Ambas producen resultados idénticos. La etiqueta de barra es más común al compartir un diagrama con herramientas Mermaid.
+
+<Playground initial={`flowchart TD
+  req[Request received]
+  req -->|valid| proc[Process]
+  req -->|invalid| err[Return 400]
+  proc -- success --> ok([Done])
+  proc -.->|timeout| retry[Retry queue]
+  retry ==>|max retries| dead[(Dead letter)]`} height={380} />
+
+### 3.3 Cadenas
+
+Conecta tres o más nodos en una sola línea:
+
+```
+A --> B --> C --> D
+```
+
+Esto es equivalente a tres declaraciones de borde separadas.
+
+### 3.4 Salida múltiple con `&`
+
+Usa `&` para incluir múltiples nodos en cualquiera de los lados de una flecha. El analizador genera el producto cruzado completo de bordes:
+
+```
+A & B --> C        %% A→C and B→C
+A --> B & C        %% A→B and A→C
+A & B --> C & D    %% cuatro bordes: A→C, A→D, B→C, B→D
+```
+
+<Playground initial={`flowchart LR
+  deploy[Deploy service]
+  smoke[Smoke test]
+  health[Health check]
+  notify_slack[Slack alert]
+  notify_email[Email alert]
+  deploy --> smoke & health
+  smoke & health -->|fail| notify_slack & notify_email`} height={300} />
+
+---
+
+## 4. Subgráficas
+
+Una `subgraph` agrupa nodos relacionados en un clúster etiquetado con un borde visible.
+
+```
+subgraph "Title"
+  A --> B
+end
+```
+
+Se aceptan tres formas de encabezado de subgráfica:
+
+| Forma | ID | Etiqueta |
+|---|---|---|
+| `subgraph "My Group"` | generado automáticamente | `My Group` |
+| `subgraph sg1 "My Group"` | `sg1` | `My Group` |
+| `subgraph sg1 [My Group]` | `sg1` | `My Group` |
+
+Las subgráficas pueden tener su propia dirección de override:
+
+```
+subgraph sg1 "Frontend"
+  direction LR
+  ui[React App] --> api[API Client]
+end
+```
+
+<Playground initial={`flowchart TB
+  subgraph ingestion [Ingestion]
+    raw[/Raw events/] --> parse[Parse & validate]
+    parse --> enrich[Enrich]
+  end
+  subgraph storage [Storage]
+    dw[(Data warehouse)]
+    cache[(Redis cache)]
+  end
+  enrich --> dw
+  enrich --> cache
+  dw --> report[Generate report]`} height={420} />
+
+---
+
+## 5. Estilo
+
+### 5.1 Clases semánticas
+
+Asigna nombres de clase CSS a los nodos para la agrupación visual a nivel de tema. Las clases se definen con `classDef` y se aplican con `class`. La sintaxis de clase en línea de Mermaid también es aceptada: `A[Start]:::critical`.
+
+```
+classDef danger fill:#f9c,stroke:#c00
+classDef safe fill:#cfc,stroke:#090
+class errorNode danger
+class successNode safe
+B[Review]:::danger
+```
+
+### 5.2 Overrides de estilo por nodo
+
+```
+style nodeId fill:#f9f,stroke:#333,stroke-width:4px
+```
+
+Acepta nombres de propiedades CSS estándar. Múltiples propiedades se separan con comas.
+
+### 5.3 Overrides de estilo por borde
+
+`linkStyle` apunta a bordes por su **índice de declaración** (basado en 0, en el orden en que aparecen en el código fuente). Múltiples índices separados por comas aplican las mismas propiedades a varios bordes:
+
+```
+flowchart TD
+  A --> B
+  B ==> C
+  B -.-> D
+  C --> E
+  D --> E
+  linkStyle 1 stroke:#d32f2f,stroke-width:4px
+  linkStyle 2,4 stroke:#f57c00,stroke-dasharray:5 5
+```
+
+Usa esto para resaltar un camino crítico o distinguir un flujo alternativo.
+
+### 5.4 Formato de etiquetas en línea
+
+Las etiquetas de nodo aceptan tres etiquetas de formato en línea:
+
+| Etiqueta | Efecto |
+|---|---|
+| `<br/>` o `<br>` | Salto de línea |
+| `<b>…</b>` | Negrita |
+| `<i>…</i>` | Cursiva |
+
+```
+flowchart TD
+  M1["0 \| 0<br/><b>START</b>"]
+  M2["4 \| 4<br/><b>Phase 1</b><br/><i>est. 4h</i>"]
+  M1 --> M2
+```
+
+Las etiquetas pueden anidarse y mezclarse a mitad de línea (`Hello <b>world</b>!`). Las etiquetas de borde son de una sola línea y actualmente no admiten estas etiquetas.
+
+---
+
+## 6. Etiquetas y comentarios
+
+- **Dirección:** `flowchart TD` — primer token después de `flowchart` o `graph`. `TD` y `TB` son equivalentes.
+- **Título:** `flowchart LR "My diagram"` — cadena entre comillas opcional después de la dirección.
+- **Etiquetas de borde:** sintaxis de barra `-->|etiqueta|` o en línea `-- etiqueta -->`.
+- **Comentarios:** `%%` al inicio de una línea (después de espacios en blanco iniciales).
+
+```
+flowchart LR
+%% This is a comment — ignored by the parser
+A[Step 1] --> B[Step 2]  %% inline %% is NOT supported — only line-start %%
+```
+
+---
+
+## 7. Palabras reservadas y escape
+
+**Reservadas al inicio de línea:** `flowchart`, `graph` (encabezado), `subgraph`, `end`, `direction`, `class`, `classDef`, `style`, `linkStyle`.
+
+**Caracteres reservados en ID:** los IDs coinciden con `[A-Za-z0-9_-]` comenzando con una letra. No uses espacios ni caracteres de operador en los IDs de nodo.
+
+**Tokens de operador a evitar dentro de IDs:** `-->`, `---`, `-.->`, `==>`, `<-->`, `--x`, `--o`, `|`, `&`.
+
+**Etiquetas con caracteres especiales:** la etiqueta es todo lo que está dentro de los corchetes de forma. Los caracteres especiales son admitidos dentro de las etiquetas tal cual — los corchetes/llaves que serían ambiguos se cierran con el token de cierre correspondiente.
+
+---
+
+## 8. Errores comunes
+
+| Lo que escribiste | El analizador dice | Corrección |
+|---|---|---|
+| `flowchart` sin dirección | La dirección tiene por defecto `TB` | Agrega una dirección: `flowchart TD` |
+| `A --> B` antes de declarar formas | Funciona — los nodos se crean como rectángulos con el ID como etiqueta | Declara explícitamente cuando necesitas una forma que no sea rect: `A([Start])` |
+| `A[Label with [brackets]]` | El `]` interno cierra la forma antes de tiempo | Evita corchetes anidados en etiquetas |
+| `subgraph My Group` (sin comillas, con espacio) | El analizador toma `My` como ID de subgráfica, `Group` como token desconocido | Entrecomilla: `subgraph "My Group"` |
+| Comentario `%% comment` a mitad de línea tras código | Los comentarios en línea no son admitidos; `%%` debe estar al inicio de la línea | Mueve los comentarios a su propia línea |
+| `A --> B --> C` mezclado con `A --> B` | Las cadenas son aditivas — pueden aparecer bordes duplicados | Usa cadenas O líneas separadas, no ambas para el mismo par |
+| `direction LR` fuera de una subgráfica | Ignorado silenciosamente — el override de `direction` solo aplica dentro de `subgraph … end` | Establece la dirección en la línea de encabezado del `flowchart` |
+
+---
+
+## 9. Gramática (EBNF)
+
+```text
+document       = header (blank | comment | subgraph-block | direction-stmt
+                        | class-stmt | classdef-stmt | style-stmt
+                        | linkstyle-stmt | chain-stmt)*
+
+header         = ("flowchart" | "graph") ( WS direction )? ( WS title )? NEWLINE
+direction      = "TD" | "TB" | "BT" | "LR" | "RL"
+title          = '"' any-char-but-quote* '"' | bare-word
+
+subgraph-block = "subgraph" ( WS subgraph-header )? NEWLINE
+                   ( WS? "direction" WS direction NEWLINE )?
+                   statement*
+                 "end" NEWLINE
+subgraph-header = id WS "[" label "]"
+                | id WS quoted-string
+                | quoted-string
+                | id
+
+chain-stmt     = node-group ( WS edge-op WS pipe-label? WS node-group )* NEWLINE
+node-group     = node-ref ( WS "&" WS node-ref )*
+node-ref       = id shape-suffix?
+shape-suffix   = "[" label "]"          %% rect
+               | "(" label ")"          %% round
+               | "([" label "])"        %% stadium
+               | "{" label "}"          %% diamond
+               | "{{" label "}}"        %% hexagon
+               | "[[" label "]]"        %% subroutine
+               | "[(" label ")]"        %% cylinder
+               | "((" label "))"        %% circle
+               | "(((" label ")))"      %% double-circle
+               | "[/" label "/]"        %% parallelogram
+               | "[\" label "\]"        %% parallelogram-alt
+               | "[/" label "\]"        %% trapezoid
+               | "[\" label "/]"        %% trapezoid-alt
+               | ">" label "]"          %% asymmetric
+
+edge-op        = "-->" | "---" | "-."-".->" | "==>" | "<-->" | "--x" | "--o"
+               | inline-label variants of the above
+pipe-label     = "|" text "|"
+
+class-stmt     = "class" WS id-list WS class-name NEWLINE
+               | node-ref ":::" class-name NEWLINE         # Mermaid inline form
+classdef-stmt  = "classDef" WS class-name WS css-props NEWLINE
+style-stmt     = "style" WS id WS css-props NEWLINE
+linkstyle-stmt = "linkStyle" WS index-list WS css-props NEWLINE
+index-list     = NUMBER ( "," NUMBER )* | "default"
+
+comment        = "%%" any NEWLINE
+id             = [A-Za-z] [A-Za-z0-9_-]*
+```
+
+Fuente autoritativa: `src/diagrams/flowchart/parser.ts`. Si esto diverge del analizador, el analizador tiene precedencia — por favor abre un issue.
+
+---
+
+## 10. Conformidad con estándares
+
+Los diagramas de flujo de Schematex siguen las convenciones de símbolos de **ISO 5807:1985**. La sintaxis del DSL es intencionalmente compatible con **[Mermaid flowchart](https://mermaid.js.org/syntax/flowchart.html)** para que los diagramas creados en una herramienta puedan usarse en la otra.
+
+Lo que está implementado hoy:
+
+- ✅ Las cinco direcciones: `TD`, `TB`, `BT`, `LR`, `RL`
+- ✅ 13 formas de nodo (desde rect hasta asimétrico)
+- ✅ 7 tipos de borde: sólido, sin flecha, punteado, grueso, bidireccional, cruzado, extremo redondeado
+- ✅ Etiquetas de barra (`-->|text|`) y etiquetas en línea (`-- text -->`)
+- ✅ Cadenas de bordes (`A --> B --> C`)
+- ✅ Salida múltiple con `&` (bordes de producto cruzado)
+- ✅ Subgráficas con ID, etiqueta y dirección por subgráfica opcionales
+- ✅ Agrupación semántica `classDef` / `class`
+- ✅ Clases de nodo en línea de Mermaid: `A[Label]:::className`
+- ✅ Overrides CSS de `style` por nodo
+- ✅ Renderizado de `linkStyle` — `linkStyle 1,5,6 stroke:#f00,stroke-width:4px` aplica CSS a los bordes correspondientes por orden de declaración
+- ✅ `<b>` / `<i>` en línea en etiquetas de nodo (se combina con saltos de línea `<br/>` existentes)
+- ⏳ Renderizado de forma para las 13 formas — M1 renderiza completamente rect/round/stadium/diamond/parallelogram; las formas restantes retroceden a rect
+- ⏳ Variante de diseño de carriles de natación
+
+Referencias:
+
+- ISO 5807:1985 — *Information processing — Documentation symbols and conventions for data, program and system flowcharts, program network charts and system resources charts*
+- Documentación de diagrama de flujo Mermaid — https://mermaid.js.org/syntax/flowchart.html
+
+---
+
+## 11. Hoja de ruta
+
+**Planificado — aún no parseable.** No uses esto en DSL generado hoy; el analizador lo rechazará o ignorará.
+
+- **Renderizado completo de formas para las 13 formas** — subrutina, cilindro, círculo, círculo doble, hexágono, asimétrico, trapecio y paralelogramo-alt retroceden a rect en M1.
+- **Diseño de carril de natación** — bandas horizontales que agrupan nodos por actor o sistema (`subgraph` de Mermaid con `direction TB` dentro de la raíz `LR`).
+- **Bloque de inicialización `%%{init: {…}}%%`** — bloque de inicialización de tema y diseño compatible con Mermaid.
+- **Formato markdown en etiquetas** — sintaxis markdown `**bold**` / `*italic*` (el HTML `<b>`/`<i>` ya funciona — ver §5).
+
+Síguelo en los issues de GitHub si necesitas alguna de estas características antes.
+
+---
+
+## Ejemplos relacionados
+
+Escenarios listos para usar de la galería de ejemplos:
+
+<RelatedExamples slugs={[
+  'flowchart-order-fulfillment',
+  'flowchart-cicd-pipeline',
+]} />

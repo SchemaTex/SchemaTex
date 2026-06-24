@@ -1,0 +1,209 @@
+---
+title: 평면도
+---
+
+## 평면도란
+
+**평면도**는 공간의 표준 2D 건축 뷰입니다: 실제 치수의 방, 단단한 **포셰(poché)** 밴드로 그려진 벽, 4분원 스윙 호가 있는 문, 유리 선으로 표시된 창문, 그리고 평면도 기호로 나타낸 가구 — *Architectural Graphic Standards*에 문서화되어 모든 전문 평면도 세트에서 사용하는 시각 언어입니다. Schematex는 텍스트에서 이를 렌더링합니다: 방, 개구부, 가구를 실제 측정값으로 선언하면, 엔진이 공유 벽을 병합하고, 방 면적을 계산하고, 치수 선을 그리고, 테이블에 자동으로 좌석을 배치하고, 기하학을 검증합니다.
+
+이미지 생성기와 달리, 출력은 *측정 가능하고 편집 가능합니다* — 모든 방은 계산된 면적이 있는 레이블이 달린 요소이며, 네 번째 책상 줄을 추가하는 것은 한 줄 편집입니다.
+
+<Playground initial={`floorplan "Studio Apartment" unit m
+room main   "Living / Sleeping" at 0,0 size 5.2x4.0
+room bath   "Bath"   right-of main size 2.0x2.2
+room kitchen "Kitchenette" right-of main align end size 2.0x1.8
+door main south at 15% width 0.9
+door between main bath at 50%
+opening between main kitchen at 50% width 1.2
+window main north at 30% width 1.8
+furniture bed-double in main at 3.4,0.3
+furniture sofa in main at 0.2,3.0
+furniture toilet in bath at 0.2,0.2
+furniture sink in bath at 1.3,0.2
+furniture counter in kitchen at 0.15,1.05 size 1.7x0.6
+furniture kitchen-sink in kitchen at 0.6,1.05`} height={420} />
+
+---
+
+## 1. 첫 번째 평면도 만들기
+
+헤더, 방 하나, 문, 창문:
+
+```
+floorplan "Studio"
+room main "Studio" at 0,0 size 4x3
+door main south at 20%
+window main north at 50%
+```
+
+세 가지 규칙이 대부분의 사용을 커버합니다:
+
+1. `floorplan`으로 시작하고, 선택적 따옴표 제목과 `unit m`(기본값) 또는 `unit ft`를 붙입니다. **모든 숫자가 이 단위입니다.**
+2. 방은 직사각형입니다: `room id "Label" at x,y size WxH`. 라벨과 계산된 면적이 방 중앙에 렌더링됩니다.
+3. 개구부는 벽에 걸립니다: 벽 참조(`main south`)가 해당 벽을 따라 퍼센트 위치를 지정합니다. `between A B`는 공유 벽을 자동으로 찾습니다.
+
+---
+
+## 2. 방과 배치
+
+첫 번째 방을 `0,0`에 배치하고 나머지를 상대적으로 연결합니다 — 인접한 방은 정확히 하나의 가장자리를 공유하며, 벽이 단일 밴드로 병합됩니다:
+
+```
+room living  "Living Room" at 0,0 size 5.2x4.2
+room kitchen "Kitchen"     right-of living size 3.0x4.2
+room hall    "Hallway"     below living size 2.0x2.6
+room bed1    "Bedroom 1"   right-of hall size 3.2x2.6
+```
+
+- `right-of` / `left-of` / `above` / `below`는 참조 방의 가장자리에 스냅합니다.
+- `align start|center|end`는 교차 축을 정렬합니다(기본값 `start` = 위/왼쪽 가장자리 맞춤). `offset n`으로 이동합니다.
+- `fill #e0f2fe`는 바닥을 색조로 물들입니다. `nolabel`은 이름 + 면적 라벨을 숨깁니다(교실처럼 단순한 평면도).
+- 좌표는 y 아래 방향: `at 0,0`은 왼쪽 상단 모서리입니다.
+
+**L/T/U 형태의 방**은 `extend`를 사용합니다 — 주요 직사각형을 선언하고, 가장자리를 공유하는 직사각형으로 확장합니다. 이음새를 따라 벽이 병합되고, 면적이 하나의 숫자로 합산됩니다(전문가가 L형 방을 측정하는 방식과 정확히 같음). 라벨은 가장 큰 부분의 중앙에 위치합니다:
+
+```
+room living "Living Room" at 0,0 size 5x4
+extend living at 5,2 size 2x2          # L형: 오른쪽 상단 노치
+```
+
+방에 닿지 않거나 겹치는 확장은 정량화된 오류와 함께 거부됩니다. `north`(회전된 평면도의 경우 선택적으로 `north 30`)는 오른쪽 상단에 나침반을 추가합니다.
+
+---
+
+## 3. 문, 창문, 개구부
+
+```
+door hall west at 50% width 1.0 swing in          # 벽의 외부 문
+door between hall bed1 at 50% hinge right          # 공유 벽의 내부 문
+door between bed1 bath at 30% type sliding         # 슬라이딩 문 — 호 없음
+opening between living kitchen at 35% width 1.2    # 아치형, 잎 없음
+window living north at 30% width 1.8
+```
+
+- `between A B`는 공유 벽 세그먼트를 해석하고 **겹치는 부분을 따라** 퍼센트 위치를 지정합니다 — 좌표 불필요. 인접하지 않은 방은 측정된 간격과 함께 거부됩니다.
+- 문의 기본 너비는 외부 벽에서 0.9m, `between` 벽에서 0.8m입니다. 창문의 기본 너비는 1.2m입니다.
+- `hinge left|right`는 문틀을 선택합니다. `swing in|out`은 4분원 호를 반전합니다(기본값은 소유 방, 즉 첫 번째로 명명된 방으로 스윙).
+- 문 `type single|double|sliding|pocket|bifold`: double은 두 개의 미러 호를 그립니다. sliding/pocket은 호 없이 오프셋 잎 선을 그립니다. bifold는 두 개의 옷장 문 텐트 피크를 그립니다.
+- 창문 `type fixed|sliding|casement|bay`: sliding = 두 개의 오프셋 패널, casement는 바깥쪽 스윙 호를 추가, bay는 벽 바깥쪽으로 기울어진 사다리꼴을 투영합니다.
+- 개구부는 넘치는 대신 벽 세그먼트에 맞게 클램핑됩니다(경고 포함).
+
+---
+
+## 4. 가구
+
+가구는 **방 내부 왼쪽 상단 모서리를 기준으로** 배치되며, 선택적 `size`, `rotate`, 라벨을 가집니다:
+
+```
+furniture sofa in living at 0.25,2.9
+furniture desk "Teacher" in class at 2,1.5 size 5x2.5 rotate 20
+furniture counter "Cubbies" in class at 6,24.4 size 10x1.2
+```
+
+카탈로그는 주거, 상업, 부지 작업에 걸쳐 있습니다(크기는 업계 표준 공간 기준이 기본값):
+
+| 클러스터 | 유형 |
+| --- | --- |
+| 주거 | `bed-double` `bed-single` `bed-queen` `bed-king` `bunk-bed` `crib` `sofa` `loveseat` `sectional` `armchair` `ottoman` `coffee-table` `side-table` `tv` `tv-stand` `fireplace` `floor-lamp` `rug` `wardrobe` `dresser` `nightstand` `bookshelf` `plant` `piano` `piano-upright` `pool-table` `ceiling-fan` `dining-table` |
+| 주방/욕실 | `counter` `wall-cabinet` `kitchen-sink` `stove` `range-hood` `fridge` `dishwasher` `island` `bar-stool` `toilet` `sink` `vanity` `bidet` `urinal` `bathtub` `shower` `washer` `dryer` |
+| 교실/사무실 | `desk-chair` `desk` `desk-l` `chair` `whiteboard` `smartboard` `bookcase` `cubbies` `filing-cabinet` `lockers` `kidney-table` `round-table-4/6/8/10` `conference-table` |
+| 이벤트/연회 | `banquet-table` `head-table` `stage` `dance-floor` `bar` `dj-booth` `cocktail-table` `podium` `row-chairs` |
+| 소매/창고 | `shelving` `checkout` `clothing-rack` `fitting-room` `pallet-rack` `loading-dock` `forklift` |
+| 살롱/헬스장 | `salon-chair` `shampoo-bowl` `manicure-table` `treadmill` `weight-bench` `power-rack` `yoga-mat` |
+| 레스토랑/상업 주방 | `booth` `prep-table` `range` `walk-in` `commercial-sink` `fryer` |
+| 계단/구조물 | `stairs` `stairs-l` `stairs-u` `spiral-stairs` `elevator` `column` |
+| 부지/실외 | `tree` `car` |
+
+**자동 좌석 배치**가 내장되어 있습니다: `round-table-8`은 원주에 8개의 의자를 그립니다(60인치 상단; `round-table-10`은 72인치 사용). `dining-table` / `banquet-table` / `conference-table`은 0.65m당 의자 하나로 긴 쪽 가장자리 양쪽에 좌석을 배치합니다. `head-table`은 방을 향한 한쪽 면에 좌석을 배치합니다. `manicure-table`은 고객과 기술자 의자를 배치합니다. `row-chairs`는 0.55m 간격으로 극장식 줄을 배치합니다. `rug`, `dance-floor`, `yoga-mat`, `counter`, `island`, `wall-cabinet`, `range-hood`, `ceiling-fan`은 언더레이/오버헤드로 충돌 경고 없이 다른 가구와 겹칠 수 있습니다.
+
+**좌석 배치표** — 자동 좌석 배치 테이블의 점유자를 `seats` 절로 이름을 지정하면, 엔진이 각 이름을 해당 의자에 기록합니다(배치 순서: 원형 테이블은 상단에서 시계 방향; 직사각형 테이블은 상단 가장자리 왼쪽에서 오른쪽으로, 그 다음 하단 가장자리). 이것은 장소 평면도를 손님이 실제로 읽는 좌석 배치표로 변환합니다:
+
+```
+furniture round-table-8 "Table 3" in hall at 11,4 seats "Alice" "Bob" "Carol" "Dave"
+furniture head-table "Head Table" in hall at 5,0.6 size 6x0.9 seats "Bride" "Groom"
+```
+
+이름 없는 추가 의자는 비어 있습니다. 의자 수를 초과하는 추가 이름은 무시됩니다. CJK 따옴표 이름(`seats "张伟" "李娜"`)은 다른 모든 라벨과 같이 작동합니다. 이름은 수평으로 읽히므로, 깔끔한 배치표를 위해 테이블을 회전하지 않는 것이 좋습니다.
+
+`tree`와 `car`는 실외용으로 크기가 지정됩니다(캐노피 디스크, 주차 공간 발자국). 따라서 **부지 평면도**는 인접한 방으로 타일링된 구역들 — 앞마당, 집 발자국, 진입로, 뒷마당 — 에 나무와 주차된 차를 배치하는 것입니다.
+
+**계단**은 제도 관례를 따릅니다: 0.28m(11인치) 간격의 디딤판 선, 최저 디딤판에서 시작하는 `UP` 레이블 방향 화살표(내려가는 계단의 경우 항목에 `"DN"` 라벨 지정), 가상의 4피트 절단면에서의 45° 지그재그 브레이크 선, 그 너머의 점선 디딤판. `stairs`는 직선 계단(방향은 `size`/`rotate`로 지정), `stairs-l`은 계단참 위에서 90° 회전, `stairs-u`는 180° 복귀, `spiral-stairs`는 방사형 디딤판과 중앙 기둥이 있는 원입니다.
+
+---
+
+## 5. 배열 — grid, row, arc
+
+반복 가구는 서른 개의 진술이 아닌 하나의 진술입니다:
+
+```
+grid desk-chair in class rows 5 cols 6 count 27 area 5,8 25,24 itemsize 2x2.5
+row round-table-8 in hall cols 3 area 8.8,13.4 15.2,13.4 itemsize 2.3x2.3
+arc chair in hall count 13 center 12,8 radius 5 from 200 to 340
+```
+
+- `area x1,y1 x2,y2`는 첫 번째와 마지막 항목의 **중심**을 지정합니다. 항목들은 그 사이에 균등하게 분산됩니다.
+- `count`는 **행 우선** 방식으로 잘라냅니다 — 5×6 그리드에 27개의 책상은 마지막 행의 끝을 떨어뜨립니다. 실제 교실과 정확히 같습니다.
+- `arc`는 중심을 향한 원호 위에 항목을 배치합니다 — 반원형 교실, 예식 좌석.
+
+---
+
+## 6. 단위, 면적, 치수 선
+
+- `unit ft`는 모든 숫자를 피트로 만듭니다. 치수 선 형식은 `32'` / `15'1"`, 면적은 `sq ft`. 내부적으로는 모두 미터 단위입니다(1 ft = 0.3048 m).
+- 방 면적은 **엔진이 선언된 기하학에서 계산**합니다. 직접 입력할 필요 없습니다.
+- 치수 선은 건축 슬래시 틱으로 평면도 밖에 렌더링됩니다: 전체 너비 + 높이 항상 표시, 상단 및 왼쪽 외관을 따라 방별 세그먼트 표시.
+
+---
+
+## 7. 검증
+
+엔진은 LLM(과 인간)이 실제로 틀리는 부분을 검증하며, 위반 요소의 이름과 수정 방향을 명시한 오류를 제공합니다:
+
+**오류** (렌더링 차단, 오류 패널에 표시):
+
+- 방 겹침 — `rooms "bed1" and "bath" overlap by 0.40×2.60 m — move "bath" right-of "bed1" or shrink size`
+- 인접하지 않은 방 사이의 문 — `door between "kitchen" and "bed2": rooms share no wall (gap 2 m on x-axis)`
+- 방 밖의 가구 — `furniture sofa #1 extends 1.7 m outside room "c" — move it or shrink size`
+
+**경고** (어쨌든 렌더링됨, 평면도 아래 나열):
+
+- 가구 충돌 — **의자 링 엔벨로프**를 포함한 경계 상자. 테이블 상단이 닿지 않더라도 의자가 닿는 두 개의 연회 원형 테이블은 표시됩니다.
+- 개구부가 벽 세그먼트에 맞게 클램핑됨.
+
+---
+
+## 8. 문법 (EBNF)
+
+```text
+plan      ::= "floorplan" string? ("unit" ("m"|"ft"))? NL statement*
+statement ::= room | extend | north | door | window | opening | furniture | array
+room      ::= "room" id string? placement "size" dims ("fill" color)? ("nolabel")?
+extend    ::= "extend" id placement "size" dims
+north     ::= "north" num?
+placement ::= "at" coord
+            | ("right-of"|"left-of"|"above"|"below") id ("offset" num)?
+              ("align" ("start"|"center"|"end"))?
+door      ::= "door" (wallref | "between" id id) "at" pct
+              ("width" num)? ("hinge" ("left"|"right"))? ("swing" ("in"|"out"))?
+              ("type" ("single"|"double"|"sliding"|"pocket"|"bifold"))?
+window    ::= "window" wallref "at" pct ("width" num)?
+              ("type" ("fixed"|"sliding"|"casement"|"bay"))?
+opening   ::= "opening" (wallref | "between" id id) "at" pct ("width" num)?
+furniture ::= "furniture" type ("in" id) "at" coord ("size" dims)? ("rotate" num)? string? ("seats" string+)?
+array     ::= ("grid"|"row"|"arc") type "in" id
+              ("rows" int)? ("cols" int)? ("count" int)?
+              ("area" coord coord)? ("itemsize" dims)? ("rotate" num)?
+              ("center" coord)? ("radius" num)? ("from" num "to" num)?
+wallref   ::= id ("north"|"south"|"east"|"west")
+coord     ::= num "," num          dims ::= num "x" num          pct ::= num "%"?
+```
+
+주석은 `#`에서 줄 끝까지입니다. CJK 따옴표(`""`)는 ASCII 따옴표와 동일하게 허용됩니다.
+
+---
+
+## 관련 예제
+
+- [Two-bedroom apartment](/examples#floorplan) — 상대 배치, 문 7개, 완전한 가구 배치
+- [27-desk classroom](/examples#floorplan) — `grid … count` 잘라내기, `unit ft`
+- [Wedding reception for 120](/examples#floorplan) — 자동 좌석 배치된 연회 원형 테이블, 댄스 플로어

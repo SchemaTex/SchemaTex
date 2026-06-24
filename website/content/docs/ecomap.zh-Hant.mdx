@@ -1,0 +1,295 @@
+---
+title: 生態圖
+---
+
+## 關於生態圖
+
+**生態圖**是一種以一人或一個家庭為中心、將外部系統網絡——包括大家庭、學校、教會、診所、雇主、支持團體——環繞其周圍排列的單頁圖。每條連接線記錄關係的*品質*（強韌、脆弱、緊張）和*方向*（誰給予、誰接受）。社工、學校輔導員、個案管理員和社區衛生護士使用生態圖，以快速一覽個案在哪裡有穩固的支撐，在哪裡的安全網又薄弱不足。
+
+Schematex 遵循 **[Hartman（1978）生態圖模型](https://journals.sagepub.com/doi/10.1177/104438947805900803)**——即最初引入此符號表示法的《Social Casework》論文——並以當代臨床社工實務的慣例加以擴充。背景資料請參閱 [Wikipedia：Ecomap](https://en.wikipedia.org/wiki/Ecomap)。本頁記錄解析器目前接受的語法。
+
+<Playground initial={`ecomap "Nguyen Family Resettlement"
+  center: family [label: "Nguyen Family"]
+  resettlement [label: "IRC Office", category: government]
+  school [label: "Lincoln Elementary", category: education]
+  clinic [label: "Community Clinic", category: health]
+  caseworker [label: "Ms. Patel", category: mental-health]
+  temple [label: "Vietnamese Temple", category: cultural]
+  neighbors [label: "Sponsor Family", category: community]
+  employer [label: "Warehouse Job", category: work]
+  family === resettlement [label: "active case"]
+  family === school
+  clinic --> family [label: "vaccinations"]
+  caseworker <-> family [label: "weekly"]
+  family === temple [label: "anchor"]
+  neighbors === family [label: "housing host"]
+  family --- employer [label: "new, part-time"]`} height={520} />
+
+---
+
+## 1. 您的第一張生態圖
+
+最精簡的實用生態圖：一個中心和三個外部系統。
+
+<Playground initial={`ecomap
+  center: client [label: "Maria"]
+  mom [label: "Mother", category: family]
+  work [label: "Tech Corp", category: work]
+  therapist [label: "Dr. Patel", category: mental-health]
+  mom === client
+  work --- client
+  therapist <-> client [label: "weekly"]`} />
+
+四條規則涵蓋 80% 的用法：
+
+1. 以關鍵字 `ecomap` 開頭，可選擇性加上帶引號的標題。
+2. 在單獨一行宣告中心：`center: id [label: "…"]`。每張圖只能有一個中心。
+3. 在各自的行上宣告每個外部系統：`id [label: "…", category: …]`。
+4. 以**連接運算子**連接任意兩個已宣告的 ID——`===`（強）、`---`（一般）、`<->`（相互）等。完整表格見第 3 節。結尾的 `[label: "…"]` 可加上邊緣標籤。
+
+> 注釋必須單獨佔一行，以 `#`、`//` 或 Mermaid 風格的 `%%` 開頭。行內尾隨注釋會導致解析器出錯。
+
+---
+
+## 2. 中心與外部系統
+
+每張生態圖有一個**中心**和任意數量的**外部系統**。兩者使用相同的 `id [attrs]` 語法；唯一的差別是 `center:` 前綴。
+
+**ID 規則。** 必須符合 `[a-zA-Z][a-zA-Z0-9_-]*`。ID 不分大小寫；原始標記作為預設標籤。
+
+**解析器目前接受的屬性：**
+
+| 屬性 | 值 | 效果 |
+|---|---|---|
+| `label:"…"` | 任何帶引號的字串 | 覆寫顯示標籤 |
+| `category:…` | 見第 2.1 節 | 系統節點的顏色/群組 |
+| `size:…` | `small`、`medium`、`large` | 節點大小 |
+| `importance:…` | `major`、`moderate`、`minor` | 視覺權重 |
+| `sector:…` | `top`、`right`、`bottom`、`left` | 提示系統在中心哪一側的方位 |
+| `age:N` | 例如 `age:34` | 顯示在人型中心內部的年齡 |
+| `male` / `female` / `unknown` | 旗標 | 人型中心的性別 |
+
+### 2.1 系統類別
+
+類別依所屬生活領域為外部系統加上顏色代碼。解析器接受任何字串——以下是渲染器有主題調色板的值：
+
+| 類別 | 典型範例 |
+|---|---|
+| `family` | 大家庭、姻親、表親 |
+| `friends` | 朋友、鄰居 |
+| `work` | 雇主、同事 |
+| `education` | 學校、大學、訓練課程 |
+| `health` | 基層醫療、專科、醫院 |
+| `mental-health` | 心理治療師、精神科醫師、支持團體 |
+| `religion` | 教堂、寺廟、靈性社群 |
+| `recreation` | 運動、嗜好、社團 |
+| `legal` | 律師、假釋、法院 |
+| `government` | 社會服務、住房、移民 |
+| `financial` | 銀行、福利、助學金 |
+| `community` | 社區團體、保薦人 |
+| `cultural` | 文化/族裔組織 |
+| `substance` | 戒癮課程，或若為負面關係，則為活躍使用來源 |
+| `technology` | 線上社群、支援論壇 |
+| `pet` | 寵物、輔助動物 |
+
+<Playground initial={`ecomap
+  center: client [label: "Marcus, age 15"]
+  mom [label: "Mother", category: family]
+  dad [label: "Father (divorced)", category: family]
+  school [label: "East High School", category: education]
+  coach [label: "Soccer Coach", category: community]
+  therapist [label: "Ms. Chen", category: mental-health]
+  mom === client
+  dad --- client [label: "EOW weekends"]
+  school === client
+  coach --> client [label: "mentor"]
+  therapist <-> client [label: "weekly"]`} />
+
+---
+
+## 3. 連接
+
+連接是一行：`來源ID 運算子 目標ID`，可選擇性加上 `[label: "…"]`。兩個 ID 都必須已宣告（中心也算）。
+
+### 3.1 關係品質運算子
+
+| 運算子 | 類型 | 含義 |
+|---|---|---|
+| `===` | 強 | 親密、支持性、高頻 |
+| `==` | 中等 | 正向、中等程度的參與 |
+| `---` | 一般 | 中立/平均 |
+| `- -` | 弱 | 脆弱、不穩定、萌芽階段 |
+| `~~~` | 緊張 | 帶有壓力的關係 |
+| `~=~` | 緊張且強 | 親密*且*充滿壓力 |
+| `~x~` | 衝突 | 主動衝突 |
+| `-/-` | 斷裂 | 已切斷、疏離、決裂 |
+
+### 3.2 能量流運算子
+
+在強或一般線條上疊加箭頭方向：
+
+| 運算子 | 含義 |
+|---|---|
+| `-->` | 單向：能量從中心流向系統 |
+| `<--` | 單向：能量從系統流向中心 |
+| `<->` | 相互/雙向 |
+| `===>` | 強單向外流（消耗性） |
+| `<===` | 強單向內流（滋養性） |
+| `<=>` | 強相互 |
+| `==>` | 中等單向外流 |
+| `<==` | 中等單向內流 |
+
+解析器會將方向正規化，使箭頭相對於中心讀取。寫 `family === resettlement` 和 `resettlement === family` 產生相同的圖；寫 `clinic --> family` 和 `family <-- clinic` 同樣產生指向*從*診所*到*家庭的箭頭。
+
+<Playground initial={`ecomap
+  center: client [label: "Rosa"]
+  mom [category: family]
+  ex [category: family]
+  aa [label: "AA Group", category: substance]
+  job [label: "Warehouse", category: work]
+  mom === client [label: "daily calls"]
+  ex ~x~ client [label: "custody disputes"]
+  aa <== client [label: "sponsor support"]
+  job - - client [label: "unstable hours"]`} />
+
+### 3.3 邊緣標籤
+
+結尾的 `[label: "…"]` 是連接行唯一接受的屬性。在此填入時間表、關係性質或簡短備注：
+
+```
+family === temple [label: "weekly service"]
+clinic --> family [label: "vaccinations"]
+caseworker <-> family [label: "every Tuesday"]
+```
+
+---
+
+## 4. 標籤與注釋
+
+- **標題：** `ecomap "Nguyen Family"` — 僅限第一行。
+- **節點標籤覆寫：** `family [label: "The Nguyens"]`。
+- **邊緣標籤：** 連接行結尾的 `[label: "…"]`。
+- **模式後綴：** `ecomap:strengths "Smith family"` 可被接受。後綴儲存為 `metadata.mode`；目前的渲染器忽略此設定。
+- **注釋：** `#`、`//` 或 `%%` 位於行首（前置空白字元之後）。**不**支援行內尾隨注釋。
+
+```
+ecomap "Marcus Intake"
+  # caseworker's notes — fine
+  // also fine
+  %% Mermaid-style comments are fine
+  mom [category: family]   # ← THIS trailing comment breaks the parser
+```
+
+---
+
+## 5. 保留字與跳脫
+
+**行首保留字：** `ecomap`、`center:`。
+
+**行內保留運算子標記** — 請避免在 ID 中使用這些序列：
+`===`、`==`、`---`、`- -`、`~~~`、`~=~`、`~x~`、`-/-`，以及第 3.2 節列出的方向變體。
+
+**含空白字元的字串**必須使用雙引號：標題和任何標籤。不支援單引號和反引號。
+
+---
+
+## 6. 常見錯誤
+
+真實的解析器錯誤、觸發原因及修正方式。
+
+| 您寫的 | 解析器回應 | 修正方式 |
+|---|---|---|
+| `family -- school` | `Unexpected: family -- school` | 生態圖使用 `===`/`---`/`<->` 等。`--` 是世代圖/家系圖的運算子 |
+| `family === school`，但 `school` 從未宣告 | 靜默建立一個沒有標籤/類別的空 `school` 節點 | 在連接行之前宣告系統 |
+| 沒有任何 `center:` | 可渲染，但沒有視覺中心錨點 | 每張生態圖都需要恰好一行 `center:` |
+| 兩行 `center:` | 只有第一個被視為中心；第二個變成普通系統 | 只選一個 |
+| `family==school`（無空格） | `Unexpected: family==school` | 運算子兩側都需要空格 |
+| `family === school [weekly]` | 裸標記 `weekly` 被解析為屬性旗標，不顯示標籤 | 使用 `[label: "weekly"]` |
+| `family === school # daily` | 尾隨的 `#` 被視為該行的一部分 | 將注釋移至上一行 |
+
+---
+
+## 7. 語法（EBNF）
+
+```text
+document       = header (blank | comment | center | system | connection)*
+
+header         = "ecomap" ( ":" mode )? ( WS quoted-string )? NEWLINE
+mode           = [A-Za-z] [A-Za-z0-9_-]*
+quoted-string  = '"' any-char-but-quote* '"'
+
+center         = "center:" WS id ( "[" attrs "]" )? NEWLINE
+system         = id ( "[" attrs "]" )? NEWLINE
+connection     = id WS op WS id ( WS "[" "label:" quoted-string "]" )? NEWLINE
+
+op             = "===" | "==" | "---" | "- -" | "~~~" | "~=~" | "~x~" | "-/-"
+               | "===>" | "<===" | "<=>" | "==>" | "<=="
+               | "-->" | "<--" | "<->"
+
+id             = [a-zA-Z] [a-zA-Z0-9_-]*
+attrs          = attr ("," attr)*
+attr           = "label" ":" quoted-string
+               | "category" ":" category
+               | "size" ":" ("small" | "medium" | "large")
+               | "importance" ":" ("major" | "moderate" | "minor")
+               | "sector" ":" ("top" | "right" | "bottom" | "left")
+               | "age" ":" digits
+               | "male" | "female" | "unknown"
+               | key ":" value                  // custom, stored as metadata
+
+category       = "family" | "friends" | "work" | "education" | "health"
+               | "mental-health" | "religion" | "recreation" | "legal"
+               | "government" | "financial" | "community" | "cultural"
+               | "substance" | "technology" | "pet" | "other"
+
+comment        = ( "#" | "//" | "%%" ) any NEWLINE
+```
+
+權威來源：`src/diagrams/ecomap/parser.ts`。若本文與解析器有出入，以解析器為準——請開 issue 回報。
+
+---
+
+## 8. 標準合規性
+
+Schematex 生態圖遵循 **Hartman（1978），《Diagrammatic Assessment of Family Relationships》** 的核心符號體系：以邊界中心為核心，周圍環繞外部系統，以同時編碼品質和方向性的連接線相連。類別調色板和擴充的運算子集（緊張且強、相互箭頭）遵循當代臨床社工與護理研究的慣例。
+
+目前已實作：
+
+- ✅ 中心 + 外部系統放射狀結構
+- ✅ 8 種品質運算子（強/中等/一般/弱/緊張/緊張且強/衝突/斷裂）
+- ✅ 8 種方向運算子（單向和相互，各有三種強度）
+- ✅ 類別顏色編碼（17 種類別）
+- ✅ 邊緣標籤
+- ⏳ 嵌入式迷你世代圖作為中心（見第 10 節）
+- ⏳ 超出目前四個基本方位的扇形佈局提示
+
+參考文獻：
+
+- Hartman, A. (1978). Diagrammatic assessment of family relationships. *Social Casework*, 59(8), 465–476.
+- Ray, R.A. & Street, A.F. (2005). Ecomapping: An innovative research tool for nurses. *Journal of Advanced Nursing*, 50(5), 545–552.
+- Rempel, G.R., Neufeld, A., & Kushner, K.E. (2007). Interactive use of genograms and ecomaps in family caregiving research. *Journal of Family Nursing*, 13(4), 403–419.
+
+---
+
+## 9. 相關範例
+
+範例庫中的即用情境：
+
+<RelatedExamples slugs={[
+  'ecomap-refugee-resettlement',
+  'ecomap-teen-client',
+  'ecomap-substance-recovery',
+]} />
+
+---
+
+## 10. 開發藍圖
+
+**規劃中——目前尚無法解析。** 請勿在今日生成的 DSL 中使用；解析器會拒絕或靜默忽略這些語法。
+
+- **嵌入式迷你世代圖作為中心** — 在 `center:` 節點內宣告完整的家庭區塊（縮排的夫婦和子女），使中心成為一張小型世代圖而非單一形狀。解析器目前會跳過 `center:` 下縮排的內容。
+- **各類別預設箭頭語意** — 例如為 `health` 系統（流入）和 `work` 系統（流出）自動設定箭頭方向。
+- **多個中心** — 共享部分系統的兩位個案的生態圖。
+- **自訂顏色覆寫** — 系統或連接上的 `[color: "#…"]`。
+
+如有需要優先實作的項目，請在 GitHub issues 中追蹤。

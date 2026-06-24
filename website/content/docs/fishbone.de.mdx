@@ -1,0 +1,316 @@
+---
+title: Fishbone-Diagramm
+---
+
+## Über Fishbone-Diagramme
+
+Ein **Fishbone-Diagramm** (auch Ishikawa- oder Ursache-Wirkungs-Diagramm genannt) ordnet die potenziellen Ursachen eines Problems auf einer horizontalen Wirbelsäule an, die bei der „Wirkung" — der Problembeschreibung — endet. Jeder Hauptast repräsentiert eine Ursachenkategorie; Unteräste enthalten beitragende Details. Kaoru Ishikawa führte die Methode 1968 als Qualitätskontrollwerkzeug für die Fertigung ein; seitdem hat sie sich in Gesundheitswesen, Softwareentwicklung und Geschäftsbetrieb als strukturierte Brainstorming-Methode zur Ursachenanalyse verbreitet. Teams setzen sie in Retrospektiven, DMAIC-Verbesserungsphasen und Incident-Post-Mortems ein, um eine voreilige Fixierung auf die lauteste Hypothese zu verhindern.
+
+Schematex folgt den Ursachen-Wirkungs-Konventionen von **Ishikawa (1968)** mit den standardmäßigen 6M-Fertigungskategorien (Man, Machine, Material, Method, Measurement, Mother Nature/Environment) und deren Dienstvarianten (People, Process, Place, Policy, Procedures, Patron). Zwei Authoring-Stile — strukturiert und kompakt — können in einem Dokument gemischt werden. Externe Referenzen: [Ishikawa, K. — Guide to Quality Control (1968)](https://en.wikipedia.org/wiki/Ishikawa_diagram) · [ASQ Cause-and-Effect Diagram](https://asq.org/quality-resources/cause-analysis-tools/fishbone) · [ISO 9001:2015 §10.2 — Corrective Action](https://www.iso.org/standard/62085.html).
+
+<Playground initial={`fishbone "Solder Joint Defect Rate — Root Cause Analysis"
+effect "3.2% solder joint failure rate"
+category man "Man"
+category machine "Machine"
+category material "Material"
+category method "Method"
+category meas "Measurement"
+category env "Environment"
+man : "Operator training gap"
+man : "Shift handover not documented"
+machine : "Reflow oven temp drift"
+machine : "Squeegee blade worn"
+material : "Solder paste past shelf life"
+material : "PCB pad oxidation"
+method : "Stencil aperture undersized"
+method : "Pick-and-place speed too high"
+meas : "AOI false-accept rate rising"
+env : "Humidity spike in Q3"
+env : "ESD grounding gaps"`} height={460} />
+
+---
+
+## 1. Ihr erstes Fishbone-Diagramm
+
+Das kleinste nützliche Fishbone-Diagramm: drei Kategorien, je eine Ursache, eine davon mit einer Unterursache.
+
+<Playground initial={`fishbone "API latency spike"
+effect "P99 > 2 s after deploy"
+category code "Code"
+category infra "Infra"
+category data "Data"
+code : "N+1 query in new endpoint"
+  - "Missing eager-load on orders"
+infra : "DB connection pool exhausted"
+data : "Index missing on accounts table"`} />
+
+Vier Regeln decken 80 % der Anwendungsfälle ab:
+
+1. Beginnen Sie mit `fishbone`, gefolgt von einem optionalen Titel in Anführungszeichen.
+2. Deklarieren Sie jeden Ast mit `category id "Label"` — die `id` ist ein kurzer interner Schlüssel, `"Label"` ist das, was im Diagramm gedruckt wird.
+3. Fügen Sie Ursachen mit `id : "Ursachentext"` in eigenen Zeilen hinzu.
+4. Rücken Sie eine Zeile um mindestens 2 Leerzeichen ein und beginnen Sie sie mit `-`, um eine Unterursache (Ast zweiter Ordnung) unter der vorherigen Ursache zu erstellen.
+
+> Kommentare können mit `#`, `//` oder im Mermaid-Stil `%%` auf einer eigenen Zeile beginnen.
+
+---
+
+## 2. Bausteine
+
+### Die Wirbelsäule und die Wirkung
+
+`effect "Problembeschreibung"` platziert Text im Fischkopf. Wenn `effect` weggelassen wird, greift der Parser auf den Diagrammtitel zurück.
+
+```
+fishbone "Titel"
+effect "Spezifische Problembeschreibung"
+```
+
+Der Kopf sitzt standardmäßig rechts (`config direction = right`). Verwenden Sie `config direction = left`, um ihn umzukehren.
+
+### Kategorien (Hauptgräten)
+
+`category id "Label"` deklariert einen Ast. Die `id` wird intern verwendet, um Ursachen zuzuweisen; das in Anführungszeichen gesetzte `"Label"` erscheint im Diagramm.
+
+Kategorien akzeptieren auch optionale Eigenschaften in `[…]`:
+
+| Eigenschaft | Werte | Wirkung |
+|---|---|---|
+| `color: "#hex"` | Hex-Farbstring | Ast- und Beschriftungsfarbe |
+| `side: top` / `side: bottom` | `top`, `bottom` | Erzwingt diesen Ast auf die obere oder untere Schiene (Standard: abwechselnd) |
+| `order: N` | Ganzzahl | Position innerhalb seiner Schiene — kleinere Zahlen sitzen näher am Schwanz |
+
+```
+category rework "Rework" [color: "#E53935", side: top, order: 1]
+```
+
+### Ursachen (Nebengräten)
+
+Zwei Stile werden akzeptiert und können in einem Diagramm gemischt werden:
+
+**Stil A — strukturiert.** Deklarieren Sie zuerst die Kategorien, dann weisen Sie Ursachen mit `id : "Text"` zu:
+
+```
+category code "Code"
+category infra "Infra"
+code : "N+1 query in endpoint"
+code : "Missing cache layer"
+infra : "Auto-scaling lag"
+```
+
+**Stil B — kompakt.** Kategoriebeschriftung und Ursachen in einer Zeile, getrennt durch `;` oder `,`:
+
+```
+category Code: N+1 query; Missing cache; Synchronous call
+category Infra: Auto-scaling lag; CDN misconfigured
+```
+
+Im kompakten Stil wird die `id` automatisch aus dem Beschriftungstext abgeleitet (Kleinschreibung, Leerzeichen → Bindestriche). Anführungszeichen sind für Ursachentexte optional.
+
+<Playground initial={`fishbone "Conversion rate drop"
+effect "Checkout conversion -12% MoM"
+# Stil A — strukturiert
+category ux "UX"
+category trust "Trust"
+ux : "Confusing multi-step form"
+ux : "Slow page on mobile"
+trust : "No payment security badge"
+# Stil B — kompakt
+category Pricing: Price-anchoring missing; No annual discount shown; Coupon field too prominent`} height={380} />
+
+**Stil C — Mermaid-Mindmap-Kurzform.** Eine einfache Zeile der obersten Ebene wird zur Kategorie, und eingerückte `-`-Elemente werden zu Level-1-Geschwisterursachen unter dieser Kategorie:
+
+```txt
+fishbone "Why is the site slow?"
+effect "Page LCP > 4s"
+Content
+  - heavy hero image
+  - too much above-the-fold text
+Tech
+  - JS bundle too large
+  - render-blocking CSS
+```
+
+---
+
+## 3. Unterursachen (Äste zweiter Ordnung)
+
+Rücken Sie eine `-`-Zeile um mindestens 2 Leerzeichen nach einer Level-1-Ursache ein, um eine Unterursache daran anzuhängen. Der `-`-Strich ist Teil der Syntax; der Text folgt ihm.
+
+```
+method : "Stencil aperture undersized"
+  - "Tolerance spec from 2018 board revision"
+  - "No re-validation after material change"
+method : "Pick-and-place speed too high"
+  - "Speed limit lifted during overtime run"
+```
+
+Unterursachen erscheinen als kürzere, schmalere Zweige, die von ihrer übergeordneten Gräte abzweigen.
+
+<Playground initial={`fishbone "Medication error increase"
+effect "Errors up 18% in Q3"
+category process "Process"
+category people "People"
+process : "CPOE alert fatigue"
+  - "47 non-critical alerts per shift"
+  - "Override too easy — one click"
+process : "5-Rights verification skipped"
+  - "No barcode scanner at bedside"
+people : "Float staff unfamiliar with unit"
+  - "No unit-specific orientation checklist"
+people : "Handoff communication gaps"`} height={420} />
+
+---
+
+## 4. Konfigurationsoptionen
+
+`config Schlüssel = Wert`-Zeilen können überall nach dem Header erscheinen. Unbekannte Schlüssel und Werte werden stillschweigend ignoriert.
+
+| Konfigurationsschlüssel | Werte | Standard | Wirkung |
+|---|---|---|---|
+| `direction` | `right` / `left` (auch `ltr` / `rtl`) | `right` | Auf welcher Seite der Wirkungskopf erscheint |
+| `sides` | `both`, `top`, `bottom` | `both` | Welche Hälfte der Wirbelsäule Äste aufnimmt |
+| `density` | `compact`, `normal`, `spacious` | `normal` | Abstand zwischen Gräten — beeinflusst, wie viele Äste passen, bevor Überlappung entsteht |
+| `slope` (oder `ribslope`) | `gentle`, `normal`, `steep`, oder eine Zahl (0–3) | `normal` (0.6) | Grätenwinkel — flache vs. steile Diagonale |
+| `causeside` (oder `cause-side`) | `head`, `tail`, `both` | `head` | Auf welcher Seite einer Gräte Unterursachen abzweigen |
+| `width` | Ganzzahl px | auto | Leinwandbreite überschreiben |
+| `height` | Ganzzahl px | auto | Leinwandhöhe überschreiben |
+
+```
+config direction = left
+config density = compact
+config slope = gentle
+config sides = top
+```
+
+---
+
+## 5. Beschriftungen & Kommentare
+
+- **Diagrammtitel:** `fishbone "Website Traffic Drop"` — erste Zeile, optional.
+- **Wirkungsbeschriftung:** `effect "30% organic traffic decline"` — das Problem im Fischkopf.
+- **Kategoriebeschriftung:** `category id "Menschenlesbarer Name"` — wird auf dem Ast gedruckt.
+- **Ursachentext:** in Anführungszeichen `"so"` oder ohne (Leerzeichen im kompakten Stil erlaubt).
+- **Unterursachentext:** nach dem führenden `-`, in Anführungszeichen oder ohne.
+- **Kommentare:** `#`, `//` oder `%%` am Anfang einer Zeile (nach optionalem führendem Leerzeichen). Dieselben Marker beginnen auch abschließende Kommentare außerhalb doppelt angeführter Zeichenketten.
+
+---
+
+## 6. Reservierte Wörter & Escaping
+
+**Am Zeilenanfang reserviert:** `fishbone` (Header), `effect`, `category`, `config`.
+
+**Das `-`-Präfix** auf einer eingerückten Zeile ist als Unterursachen-Marker reserviert. Um einen wörtlichen Bindestrich am Anfang von Ursachentext einzufügen, schreiben Sie ihn in Anführungszeichen: `code : "- old deprecated path"`.
+
+**Zeichenketten mit Leerzeichen** im strukturierten Ursachentext sollten doppelt angeführt sein: `code : "N+1 query"`. Im kompakten Stil (`category Label: ...`) läuft der Text bis zum `;`- oder `,`-Trennzeichen, und Anführungszeichen sind optional.
+
+**Kommentarmarker** (`#`, `//`, `%%`) beginnen einen Kommentar, sofern sie sich nicht innerhalb einer doppelt angeführten Zeichenkette befinden.
+
+| Reservierte Sequenz | Kontext | Alternative |
+|---|---|---|
+| `#` am Zeilenanfang | Kommentarmarker | Text in Anführungszeichen, wenn `#` Teil des Inhalts ist |
+| `-` am Anfang nach ≥2 Leerzeichen Einrückung | Unterursachen-Marker | In Anführungszeichen: `- "- Text mit Strich"` |
+| `category`, `effect`, `config`, `fishbone` | Schlüsselwörter am Zeilenanfang | Können nicht als Kategorie-IDs verwendet werden |
+
+---
+
+## 7. Häufige Fehler
+
+| Sie schrieben | Parser meldet | Behebung |
+|---|---|---|
+| `cause1 : "text"` ohne vorherige `category cause1` | `FishboneParseError: Unknown category "cause1"` | Deklarieren Sie `category cause1 "Label"` vor der Ursachenzuweisung |
+| `- "sub-cause"` am Anfang der Datei (keine vorherige Level-1-Ursache) | `FishboneParseError: Sub-cause … has no preceding Level-1 cause` | Platzieren Sie die Unterursachenzeile direkt nach einer `id : "cause"`-Zeile |
+| `- "sub-cause"` mit nur 1 Leerzeichen Einrückung | Wird als Ursachenzeile behandelt, nicht als Unterursache | Mindestens 2 Leerzeichen Einrückung |
+| `category Code: cause one, cause two` | Als kompakter Stil geparst — `,` und `;` sind beide Trennzeichen | Beabsichtigtes Verhalten; beide Trennzeichen funktionieren |
+| `config direction = center` | Unbekannter Wert — stillschweigend ignoriert, bleibt `right` | `right` oder `left` verwenden |
+| `config slope = 45` | Außerhalb des Bereichs (muss 0–3 sein); stillschweigend ignoriert | Einen Preset verwenden (`gentle`, `normal`, `steep`) oder einen Wert wie `0.5` |
+| `fishbone: "Title"` | Korrekt geparst — Doppelpunkt nach Schlüsselwort ist optional | Sowohl `fishbone "Title"` als auch `fishbone: "Title"` funktionieren |
+| Mermaid-Mindmap-Stil einfache Kategorie | Als implizite Kategorie geparst | `Content` gefolgt von eingerückten `- item`-Zeilen funktioniert ohne `category` |
+
+---
+
+## 8. Grammatik (EBNF)
+
+```text
+document       = header (blank | comment | effect | category | config | cause | sub-cause | implicit-category)*
+
+header         = "fishbone" ":"? ( WS quoted-string )? NEWLINE
+effect         = "effect" ":"? WS quoted-string NEWLINE
+config         = "config" WS config-key WS "=" WS config-value NEWLINE
+config-key     = "direction" | "width" | "height" | "sides"
+               | "slope" | "ribslope" | "density" | "causeside" | "cause-side"
+config-value   = bare-word | number | quoted-string
+
+category       = "category" WS id WS label-or-compact ( "[" category-attrs "]" )? NEWLINE
+implicit-category
+               = bare-text NEWLINE                         # top-level, no ":"
+
+label-or-compact
+               = quoted-string                            # structured form: category id "Label"
+               | id WS ":" WS compact-causes             # compact form: category Label: cause; cause
+
+category-attrs = category-attr ("," category-attr)*
+category-attr  = "color:" quoted-string
+               | "side:" ( "top" | "bottom" )
+               | "order:" integer
+
+cause          = id WS ":" WS cause-text NEWLINE         # structured form
+cause-text     = quoted-string | bare-text
+
+sub-cause      = INDENT≥2 "-" WS cause-text NEWLINE
+
+compact-causes = compact-cause ( (";" | ",") compact-cause )*
+compact-cause  = quoted-string | bare-text
+
+comment        = ( "#" | "//" | "%%" ) any NEWLINE
+id             = [a-zA-Z] [a-zA-Z0-9_-]*
+quoted-string  = '"' any-char-but-unescaped-quote* '"'
+```
+
+Maßgebliche Quelle: `src/diagrams/fishbone/parser.ts`. Falls dies vom Parser abweicht, hat der Parser Vorrang — bitte eröffnen Sie ein Issue.
+
+---
+
+## 9. Standardkonformität
+
+Schematex-Fishbone-Diagramme folgen den Ursachen-Wirkungs-Konventionen von **Ishikawa (1968)**: eine horizontale Wirbelsäule mit einem beschrifteten Kopf (die Wirkung) und diagonalen Gräten für wichtige Ursachenkategorien, die jeweils Nebengräten (einzelne Ursachen) tragen. Die zweistufige Hierarchie (Kategorie → Ursache → Unterursache) entspricht der traditionellen „5 Warum"-Drill-down-Tiefe, die in Six Sigma DMAIC- und ISO 9001-Korrekturmaßnahme-Workflows verwendet wird.
+
+Was heute implementiert ist:
+
+- ✅ Strukturierter Stil: `category id "Label"` + `id : "cause"`
+- ✅ Kompakter Stil: `category Label: cause; cause; cause`
+- ✅ Unterursachen (Level 2) über eingerückte `-`-Präfixe
+- ✅ Farb- und Seitenüberschreibung pro Kategorie
+- ✅ `direction`-, `density`-, `slope`-, `sides`-, `causeside`-Konfiguration
+- ✅ Optionale explizite `width` / `height`
+- ⏳ Level 3+ Unter-Unterursachen (Parser speichert Kinder, Renderer schneidet bei Tiefe 2 ab)
+- ⏳ Automatische Vorschläge für Standard-Kategoriesets (6M, 8P, 5P)
+- ⏳ `order`-Rendering pro Kategorie (geparst, aber noch nicht von der Layout-Engine angewendet)
+
+Referenzen:
+
+- Ishikawa, K. (1968). *Guide to Quality Control.* JUSE Press.
+- ASQ — [Cause-and-Effect (Fishbone) Diagram](https://asq.org/quality-resources/cause-analysis-tools/fishbone)
+- ISO 9001:2015 §10.2 — Nonconformity and corrective action
+
+---
+
+## 10. Verwandte Beispiele
+
+<RelatedExamples slugs={[
+  'fishbone-website-traffic',
+]} />
+
+---
+
+## 11. Roadmap
+
+**Geplant — noch nicht parsebar.** Verwenden Sie diese Elemente heute nicht in generiertem DSL; der Parser wird sie ablehnen oder ignorieren.
+
+- **Level-3-Unter-Unterursachen** — eine dritte Einrückungsebene; die AST-Struktur unterstützt dies, aber der Renderer stoppt derzeit bei Level 2.
+- **`causeside`-Überschreibung pro Kategorie** — `cause-side` für einzelne Kategorien statt global festlegen.
+- **Automatische Standard-Kategorievorschläge** — `template: 6M` / `template: 8P`-Kurzform, die die standardmäßigen Fertigungs- oder Dienst-Kategorienamen vorbelegt.
+- **Legend-Block** — `legend`-Schlüsselwort zur Deklaration eines Farbcodierungsschlüssels, der neben dem Diagramm dargestellt wird.
+- **`metadata:`-Block** — strukturierte Schlüssel-Wert-Metadaten (Moderator, Datum, Revision), die in einer Eckenannotation angezeigt werden.
+
+Verfolgen Sie die GitHub-Issues, wenn Sie eines davon früher benötigen.

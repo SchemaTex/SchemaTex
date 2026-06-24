@@ -1,0 +1,242 @@
+---
+title: UML シーケンス図
+description: Schematex の sequence エンジンを使って、UML 2.5.1 §17 準拠のシーケンス図をテキスト DSL から生成する方法を解説します。12 種類の複合フラグメント演算子と ref フレームに完全対応。
+---
+
+## シーケンス図について
+
+**シーケンス図**は、参加者が**時間の経過とともに**メッセージを交換する様子を示します。ライフラインは上から下へ、メッセージは参加者間で左から右へ流れ、縦軸が順序を表します。**[UML](https://www.omg.org/spec/UML/2.5.1/) 2.5.1 §17（インタラクション）** で定義されており、API コールフロー、認証ハンドシェイク、分散プロトコルを明確にするためにエンジニアが最もよく使う図です。*誰が誰を呼び出し、どの順序で、何が返ってくるかを表現します。*
+
+Schematex は完全な UML 記法を実装しており、生成向けに **Mermaid の `sequenceDiagram` 方言も受け付けます**。Mermaid コードをそのまま貼り付けてレンダリングできます。`sequenceDiagram` ヘッダーではMermaid の矢印の意味（`->>` 同期呼び出し、`-->>` 返答、`-)` 非同期）を使用し；ネイティブの `sequence "Title"` ヘッダーでは従来の Schematex の意味（`->>` = 非同期）を保持します。多くのツールが `alt`/`opt`/`loop`/`par` の共通部分で止まるのに対し、Schematex はすべての**12 種類**の複合フラグメント演算子と `ref` インタラクション使用フレームを実装しています。インタラクションが本格的になったとき、プロフェッショナルが必要とするのはこれらの部分だからです。**[usecase](/docs/usecase)**（システムスコープ、メッセージ順序ではない）、**[state](/docs/state)**（1 つのオブジェクトのモード、オブジェクト間のメッセージではない）、**[bpmn](/docs/bpmn)**（組織プロセス、コールシーケンスではない）とは異なります。
+
+<Playground initial={`sequence "Login flow"
+  actor User
+  participant Web as "Web App"
+  control Auth
+  database DB
+  User -> Web : submit(credentials)
+  activate Web
+  Web ->+ Auth : verify(credentials)
+  Auth ->+ DB : SELECT user
+  DB --> Auth : row
+  deactivate DB
+  alt [credentials valid]
+    Auth --> Web : token
+    Web --> User : 200 OK
+  else [invalid]
+    Auth --> Web : 401
+    Web --> User : error
+  end
+  deactivate Auth
+  deactivate Web
+  note over User, Web : session cookie set`} height={560} />
+
+---
+
+## 1. はじめての図
+
+すべてのドキュメントは `sequence` キーワードとオプションの `"title"` で始まります。参加者は宣言不要で、メッセージに初めて登場した時点でライフラインになります。
+
+```
+sequence
+  Alice -> Bob : Authentication Request
+  Bob --> Alice : Authentication Response
+```
+
+ライフラインは初出順に左から右に並びます。`->` は同期呼び出し（実線、塗りつぶし矢じり）；`-->` は返答（破線、開き矢じり）。`:` の後がメッセージラベルです。
+
+---
+
+## 2. 参加者
+
+参加者を明示的に宣言して**種別**の設定、**エイリアス**の付与、**順序**の固定を行います。
+
+```
+sequence
+  actor User
+  participant Web as "Web App"
+  boundary LoginUI
+  control Auth
+  entity Account
+  database DB
+  collections Sessions
+  queue Events
+```
+
+| 種別 | レンダリング |
+|------|-------------|
+| `participant`（デフォルト） | 角丸分類ボックス |
+| `actor` | 棒人間 |
+| `boundary` / `control` / `entity` | Jacobson ロバストネスアイコン（⊢◯ / 矢印付き◯ / 下線付き◯） |
+| `database` | シリンダー |
+| `collections` / `queue` | 種別を `«ステレオタイプ»` として表示したボックス |
+
+- `as "Label"` で表示名を設定します（クォート省略可；`「…」` CJK クォート受け入れ）。
+- カスタム**ステレオタイプ**は二重山括弧または ASCII 山括弧を宣言の後ろに付けます。デフォルトラベルを上書きします：`actor Printer «system»`、`participant Bus as "Event Bus" <<service>>`。
+
+---
+
+## 3. メッセージ
+
+矢印トークンが UML のセマンティクスを決定します。
+
+| DSL | 意味 | レンダリング |
+|-----|---------|-----------|
+| `A -> B` | 同期呼び出し | 実線、**塗りつぶし**矢じり |
+| `A ->> B` | 非同期シグナル | 実線、**開き**矢じり |
+| `A --> B` | 返答 / リターン | **破線**、開き矢じり |
+| `A -x B` | 消失メッセージ | 塗りつぶし円で終わる線 |
+| `o-> B` | 発見メッセージ | 塗りつぶし円から始まる線 |
+| `A -> A` | セルフメッセージ | 同じライフラインに戻る曲線ループ |
+
+矢印前後のスペースは省略可能（`A->B` でも動作）で、ラベルは自由テキストです。戻り値も表現できます：例 `aHotel -> aHotel : available(roomId, date): isRoom`。
+
+---
+
+## 4. アクティベーション（実行仕様）
+
+ライフライン上の細いバーがアクティブ状態を示します。明示的な文または矢印への `+` / `-` サフィックスで開閉します。
+
+```
+sequence
+  participant Client
+  participant Server
+  Client ->+ Server : request()
+  Server ->> Server : validate()
+  Server -->- Client : response
+```
+
+`+` を矢印の後に付けると**受信者**が到着時にアクティベートされ；`-` を付けると**送信者**がメッセージ送信後にディアクティベートされます。明示的な形式は `activate X` / `deactivate X` です。同一ライフライン上の重複するバーは水平オフセットで入れ子になります。
+
+---
+
+## 5. オブジェクトの生成と破棄
+
+```
+sequence
+  participant Factory
+  Factory -> *Worker : «create»
+  Factory -> Worker : work()
+  destroy Worker
+```
+
+受信者の前に `*` を付けるとメッセージが**インスタンス化**します。新しいライフラインのヘッドは上部ではなく到着行に描画されます。`destroy X` でライフラインを ✕ で終了し、時間軸を止めます。
+
+---
+
+## 6. 複合フラグメント
+
+複合フラグメントはある領域を囲むラベル付きフレームです。Schematex は UML `InteractionOperatorKind` のフルセットを実装しています。
+
+| 演算子 | 意味 | オペランド |
+|----------|---------|----------|
+| `alt` | 選択肢（if/else-if/else） | `else`、それぞれガード付き |
+| `opt` | ガードが成立する場合のみ実行 | 1 つ、ガード付き |
+| `loop` | 繰り返し | 1 つ；ガードは `(min,max)` でも可 |
+| `par` | 並行オペランド | `and` |
+| `break` | 例外的な終了 | 1 つ、ガード付き |
+| `critical` | アトミック / インターリーブなし | 1 つ |
+| `seq` / `strict` | 弱い / 厳密なシーケンス | `and` |
+| `neg` | 無効なトレース（色付きでレンダリング） | 1 つ |
+| `ignore` / `consider` | メッセージセットフィルター `{m1, m2}` | 1 つ |
+| `assert` | 唯一有効な継続 | 1 つ |
+
+```
+sequence
+  actor User
+  participant API
+  User -> API : GET /resource
+  alt [authorized]
+    API --> User : 200 + body
+  else [forbidden]
+    API --> User : 403
+  end
+```
+
+ガードは演算子の後（および `else` の後）に `[括弧]` で記述します。フラグメントは入れ子にでき、内側のフレームは親の中にきれいに収まるよう自動でインセットされます。
+
+---
+
+## 7. インタラクション使用（`ref`）
+
+インライン展開の代わりに別のインタラクションを参照します。UML が大きな図を合成可能に保つ方法です。
+
+```
+sequence
+  participant A
+  participant B
+  ref over A, B : Establish session
+  A -> B : poll()
+```
+
+`ref over <lifelines> : Name` は指定されたライフラインをまたぐフレームボックスを描画します。多くのツールがこれを省略していますが、実際のシステムで長いフローを分解する方法がこれです。
+
+---
+
+## 8. ノート、区切り、不変条件、番号付け
+
+```
+sequence
+  autonumber 1 1
+  actor Shopper
+  participant Cart
+  == Phase 1: review ==
+  Shopper -> Cart : view items
+  note over Cart : cart persisted in Redis
+  state Cart : ready
+```
+
+- `note over A` / `note over A, B` / `note left of A` / `note right of A` — 折り角アノテーション。
+- `== text ==` — 全幅のセクション区切り。
+- `state X : text` — ライフライン上の状態不変条件カプセル。
+- `autonumber [start] [step]` — すべてのメッセージに増分番号を付ける。
+
+---
+
+## 9. 文法（EBNF）
+
+```text
+diagram      = "sequence" [ string ] NEWLINE statement*
+statement    = participant | message | activation | note
+             | fragment | ref | divider | invariant | destroy | autonumber
+
+participant  = kind IDENT ("as" label)? stereotype?
+kind         = "participant" | "actor" | "boundary" | "control"
+             | "entity" | "database" | "collections" | "queue"
+stereotype   = "«" TEXT "»" | "<<" TEXT ">>"
+
+message      = IDENT? act? arrow act? ("*")? IDENT? (":" TEXT)?
+arrow        = "->" | "->>" | "-->" | "-x" | "o->"
+act          = "+" | "-"
+activation   = ("activate" | "deactivate") IDENT
+
+fragment     = ("alt"|"opt"|"loop"|"par"|"break"|"critical"|"seq"
+               |"strict"|"neg"|"ignore"|"consider"|"assert") guard? NEWLINE
+                 statement* (("else"|"and") guard? NEWLINE statement*)* "end"
+guard        = "[" TEXT "]" | "(" NUMBER ("," NUMBER)? ")"
+ref          = "ref" "over" IDENT ("," IDENT)* ":" TEXT
+note         = "note" ("over"|"left of"|"right of") IDENT ("," IDENT)? ":" TEXT
+divider      = "==" TEXT "=="
+invariant    = "state" IDENT ":" TEXT
+destroy      = "destroy" IDENT
+autonumber   = "autonumber" NUMBER? NUMBER?
+```
+
+---
+
+## 10. 標準準拠
+
+Schematex は OMG **UML 2.5.1 §17（インタラクション）** 記法に準拠しています：同期（塗りつぶし）と非同期（開き）と返答（破線）の矢じり、発見 / 消失メッセージのエンドポイント、実行仕様バー、ガード付きオペランドを持つ 12 種類すべての複合フラグメント演算子、`ref` インタラクション使用フレーム、`boundary`/`control`/`entity` 用の Jacobson 分析クラスアイコン。ゲート、コリージョン、時間 / 期間制約は v0.1 のスコープ外（新しいレイアウトプリミティブが必要）であり、後のリリースで追跡される予定です。完全な仕様は `docs/reference/33-SEQUENCE-STANDARD.md` を参照してください。
+
+---
+
+## 関連サンプル
+
+サンプルギャラリーからすぐに使えるシナリオ：
+
+<RelatedExamples slugs={[
+  'sequence-login-flow',
+  'sequence-oauth-login',
+  'sequence-object-lifecycle',
+  'sequence-microservices-saga',
+]} />

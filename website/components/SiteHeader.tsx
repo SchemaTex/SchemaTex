@@ -6,7 +6,6 @@ import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 import { Logo } from '@/components/Logo';
 import { GithubStarButton } from '@/components/GithubStarButton';
-import { LocaleSwitcher } from '@/lib/i18n/LocaleSwitcher';
 import { DEFAULT_LOCALE, localizedPath, type SupportedLocale } from '@/lib/i18n/locales';
 
 // Nav targets are bare English paths (docs/gallery/… aren't translated yet);
@@ -27,13 +26,11 @@ export function SiteHeader({
   stars,
   lang = DEFAULT_LOCALE,
   nav = DEFAULT_NAV,
-  switcherLabel = 'Language',
 }: {
   version?: string;
   stars?: number;
   lang?: SupportedLocale;
   nav?: NavLabels;
-  switcherLabel?: string;
 }) {
   const pathname = usePathname() ?? '/';
   const [open, setOpen] = useState(false);
@@ -86,9 +83,6 @@ export function SiteHeader({
           <div className="hidden sm:inline-flex">
             <GithubStarButton stars={stars ?? 0} size="sm" source="header" />
           </div>
-          <div className="hidden md:inline-flex">
-            <LocaleSwitcher current={lang} variant="header" label={switcherLabel} />
-          </div>
           <ThemeToggle />
           <button
             type="button"
@@ -125,9 +119,6 @@ export function SiteHeader({
                 </Link>
               </li>
             ))}
-            <li className="mt-2 border-t border-fd-border pt-3">
-              <LocaleSwitcher current={lang} variant="footer" label={switcherLabel} />
-            </li>
           </ul>
         </nav>
       )}

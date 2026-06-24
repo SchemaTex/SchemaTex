@@ -1,0 +1,402 @@
+---
+title: Mapa mental
+---
+
+## Sobre mapas mentais
+
+Um **mapa mental** é um diagrama radial que organiza ideias em torno de um tema central, ramificando-se para subtópicos e detalhes. Tony Buzan popularizou o formato nos anos 1970 como ferramenta de anotação e brainstorming; desde então o método foi amplamente adotado na educação, planejamento de projetos, facilitação de reuniões e gestão do conhecimento. O insight principal é que a ramificação não linear espelha como o pensamento associativo funciona — mais rápido que fazer um esboço, mais estruturado que a escrita livre.
+
+Os mapas mentais do Schematex usam uma DSL de **cabeçalho Markdown + lista de marcadores** inspirada no [markmap](https://markmap.js.org/) — um formato que a maioria das pessoas já conhece. Dois estilos de layout estão disponíveis: o clássico **map** radial (ramificações em todas as direções) e uma árvore horizontal **logic-right**. Esta página documenta o que o parser aceita atualmente.
+
+<Playground initial={`mindmap
+
+# Product Launch Plan
+
+## Market readiness
+### Competitive analysis
+- Direct competitors
+- Pricing benchmarks
+### Target segments
+- SMB customers
+- Enterprise pilot
+
+## Engineering
+### Feature freeze
+- Core API complete
+- Edge cases resolved
+### Infrastructure
+- Load testing
+- CDN configuration
+  - Cache rules
+  - Geo routing
+
+## Go-to-market
+- Landing page live
+- Email campaign
+- Press outreach
+  - TechCrunch pitch
+  - Newsletter sponsors
+
+## Success metrics
+- Week 1 signups
+- Activation rate
+- NPS at day 30`} height={500} />
+
+---
+
+## 1. Seu primeiro mapa mental
+
+O menor mapa mental útil: um tema central com dois ramos, um deles com um subitem.
+
+<Playground initial={`mindmap
+
+# Team retrospective
+
+## What went well
+- Clear sprint goals
+- Good test coverage
+
+## What to improve
+- Slower PR reviews
+  - Add a review SLA`} />
+
+Quatro regras cobrem 80% dos casos:
+
+1. Comece com a palavra-chave opcional `mindmap` em sua própria linha, seguida de uma linha em branco.
+2. A raiz é o único cabeçalho `#` — exatamente um é permitido.
+3. Use `##`, `###` e cabeçalhos mais profundos para definir a profundidade dos ramos. O nível do cabeçalho equivale à profundidade na árvore.
+4. Use marcadores `-`, `*` ou `+` para adicionar subitens sob qualquer cabeçalho. Cada 2 espaços de indentação adiciona mais um nível de profundidade.
+
+> Comentários não são suportados. Use diretivas `%%` (antes do cabeçalho raiz `#`) somente para configuração.
+
+---
+
+## 2. Cabeçalhos e profundidade
+
+O nível do cabeçalho mapeia diretamente para a profundidade na árvore. `#` é sempre a raiz (profundidade 0). `##` é profundidade 1. `###` é profundidade 2, e assim por diante até `######` (profundidade 5).
+
+```
+mindmap
+
+# Root
+## Branch A         ← profundidade 1
+### Sub-branch      ← profundidade 2
+#### Leaf           ← profundidade 3
+## Branch B
+```
+
+Os cabeçalhos podem pular níveis — `####` após `##` é válido e produz um nó na profundidade 3. A profundidade na árvore é relativa à raiz, não ao cabeçalho anterior.
+
+---
+
+## 3. Marcadores
+
+Os marcadores estendem um ramo de cabeçalho com mais detalhes. Qualquer um de `-`, `*` ou `+` é aceito como marcador. Cada **2 espaços** de indentação adiciona um nível de profundidade em relação ao cabeçalho que o contém.
+
+```
+## Risks
+- Technical complexity         ← profundidade 2 (um nível abaixo de ## Risks)
+  - Legacy integrations        ← profundidade 3 (2 espaços de indent)
+    - Auth service             ← profundidade 4 (4 espaços de indent)
+- Team availability            ← profundidade 2 novamente
+```
+
+<Playground initial={`mindmap
+
+# Book outline
+
+## Chapter 1 — Introduction
+- Why this matters
+  - Historical context
+  - Current state
+- What you will learn
+
+## Chapter 2 — Core concepts
+- Concept A
+  - Definition
+  - Examples
+- Concept B
+  - Definition
+  - Worked example
+    - Step-by-step walkthrough`} height={440} />
+
+---
+
+## 4. Formatação inline
+
+Os rótulos dos nós suportam um subconjunto da formatação inline do Markdown. O parser tokeniza os rótulos em tempo de análise; o renderizador usa os tokens para emitir texto estilizado.
+
+| Sintaxe | Efeito | Exemplo |
+|---|---|---|
+| `**texto**` | Negrito | `**Critical path**` |
+| `*texto*` | Itálico | `*optional*` |
+| `` `código` `` | Código monoespaçado | `` `npm install` `` |
+| `[texto](url)` | Link | `[RFC 7519](https://tools.ietf.org/html/rfc7519)` |
+| `[ ] item` | Tarefa não concluída | `[ ] Write tests` |
+| `[x] item` | Tarefa concluída | `[x] Design review` |
+
+A caixa de seleção deve estar no início do rótulo (antes de qualquer outro texto). A formatação inline pode ser aninhada: `**[bold link](url)**`.
+
+<Playground initial={`mindmap
+
+# Sprint 24 review
+
+## Completed
+- [x] **Auth redesign** — JWT + refresh tokens
+- [x] API rate limiting \`per-user\`
+- [x] [Error budget dashboard](https://metrics.example.com)
+
+## In progress
+- [ ] *Mobile push notifications*
+  - [ ] iOS APNs integration
+  - [ ] Android FCM setup
+
+## Blocked
+- [ ] **Payment webhook** — waiting on Stripe team
+  - *Escalated to account manager*`} height={420} />
+
+---
+
+## 5. Estilos de layout
+
+A diretiva `%% style:` seleciona o algoritmo de layout. Coloque-a antes do cabeçalho raiz `#`.
+
+| Estilo | Layout | Melhor para |
+|---|---|---|
+| `map` (padrão) | Radial — ramos se espalham em todas as direções a partir do centro | Brainstorming, mapas conceituais, exploração livre |
+| `logic-right` | Árvore horizontal — todos os ramos se estendem para a direita | Esboços estruturados, hierarquias, decomposições sequenciais |
+| `futureswheel` | Anéis concêntricos — a raiz no centro, cada nível de cabeçalho em seu próprio anel | Prospectiva, mapeamento de consequências, brainstorming estruturado |
+| `driver` | Árvore horizontal — objetivo à esquerda fluindo para a direita por drivers até ideias de mudança | Programas de melhoria, decomposição objetivo → driver → ação |
+
+```
+%% style: map
+%% style: logic-right
+%% style: futureswheel
+%% style: driver
+```
+
+**`map`** (padrão) — layout radial, ramos se espalham em todas as direções a partir do centro. Melhor para brainstorming e mapas conceituais.
+
+<Playground initial={`mindmap
+
+# Machine learning
+
+## Supervised
+### Classification
+- Decision tree
+- SVM
+- Neural net
+### Regression
+- Linear
+- Gradient boosting
+
+## Unsupervised
+### Clustering
+- K-means
+- DBSCAN
+### Reduction
+- PCA
+- t-SNE
+
+## Reinforcement
+- Q-learning
+- Policy gradient`} height={480} />
+
+**`logic-right`** — árvore horizontal, todos os ramos se estendem para a direita. Melhor para esboços estruturados e hierarquias sequenciais.
+
+<Playground initial={`mindmap
+%% style: logic-right
+
+# Machine learning
+
+## Supervised
+### Classification
+- Decision tree
+- SVM
+- Neural net
+### Regression
+- Linear
+- Gradient boosting
+
+## Unsupervised
+### Clustering
+- K-means
+- DBSCAN
+### Reduction
+- PCA
+- t-SNE
+
+## Reinforcement
+- Q-learning
+- Policy gradient`} height={460} />
+
+**`futureswheel`** — uma [Roda de Futuros](https://en.wikipedia.org/wiki/Futures_wheel) (Jerome Glenn, 1971/72), o formato clássico de brainstorming estruturado para pensar em consequências. O evento ou tendência central fica no centro; as consequências de primeira ordem pousam no anel interno, as de segunda ordem no próximo anel externo, e assim por diante. Cada filho permanece dentro do setor angular de seu pai, e cada anel é codificado por cor por ordem, para que um leitor possa ver de relance quão distante uma repercussão está do evento original. A profundidade mapeia para anéis: `#` é o centro, `##` é o primeiro anel (1ª ordem), `###` / marcadores sob um cabeçalho avançam para o próximo anel (2ª ordem), e níveis mais profundos continuam avançando.
+
+<Playground initial={`mindmap
+%% style: futureswheel
+
+# Remote work becomes default
+
+## Less commuting
+- Lower carbon emissions
+- Cheaper city living
+
+## Distributed teams
+- Async communication norms
+- Global hiring pools
+
+## Empty offices
+- Commercial real estate slump
+- Repurposed to housing`} height={520} />
+
+**`driver`** — um [Diagrama de Drivers](https://www.ihi.org/resources/tools/driver-diagram), a ferramenta de planejamento do modelo de melhoria do IHI (Instituto para Melhoria da Saúde). Ele é lido da esquerda para a direita como uma árvore organizada: o **objetivo** na extremidade esquerda, os **drivers primários** (as poucas áreas de alta alavancagem que movem o objetivo) na próxima coluna, depois os **drivers secundários** e **ideias de mudança** concretas ramificando-se mais à direita. Os níveis da árvore mapeiam claramente para a estrutura: `#` é o objetivo, `##` são os drivers primários, e marcadores / cabeçalhos mais profundos sob cada um se tornam os drivers secundários e ideias de mudança. Use-o sempre que precisar mostrar *como* uma meta será alcançada.
+
+<Playground initial={`mindmap
+%% style: driver
+
+# Reduce 30-day readmissions
+
+## Reliable discharge process
+- Teach-back at bedside
+- Med reconciliation
+
+## Timely follow-up
+- Appointment within 7 days
+- Post-discharge phone call`} height={400} />
+
+---
+
+## 6. Diretivas
+
+As diretivas são linhas `%%` colocadas **antes** do cabeçalho raiz `#`. Elas configuram o diagrama globalmente.
+
+| Diretiva | Valores | Padrão | Efeito |
+|---|---|---|---|
+| `%% style: …` | `map`, `logic-right`, `futureswheel`, `driver` | `map` | Algoritmo de layout |
+| `%% theme: …` | qualquer string | (nenhum) | Substituição de tema passada ao renderizador |
+| `%% maxLabelWidth: …` | inteiro 80–1000 | `240` | Largura máxima em pixels antes de o rótulo quebrar |
+
+```
+mindmap
+%% style: logic-right
+%% maxLabelWidth: 320
+
+# Wide label root
+```
+
+<Playground initial={`mindmap
+%% style: logic-right
+%% maxLabelWidth: 200
+
+# Schematex features
+
+## DSL-first design
+- One keyword per diagram
+- AI-friendly syntax
+- CJK support
+
+## Zero dependencies
+- Hand-written parser
+- No D3, no dagre
+- ~KB-level bundle
+
+## Standards-compliant
+- IEEE for logic gates
+- IEC for circuits
+- McGoldrick for genograms`} height={360} />
+
+---
+
+## 7. Rótulos e comentários
+
+- **Título raiz:** o texto após `#` na linha do cabeçalho raiz.
+- **Rótulos de ramos:** o texto após `##`, `###`, etc.
+- **Rótulos de marcadores:** o texto após o marcador `- ` / `* ` / `+ `.
+- **Formatação inline:** `**negrito**`, `*itálico*`, `` `código` ``, `[texto](url)`, `[ ]` / `[x]`.
+- **Comentários:** não suportados no corpo. Use diretivas `%%` antes da raiz `#` para configuração; linhas `%%` no corpo são tratadas como diretivas (silenciosamente ignoradas se não reconhecidas).
+
+---
+
+## 8. Palavras reservadas e escape
+
+**Reservadas no início do documento:** `mindmap` (palavra-chave opcional) e `%%` (prefixo de diretiva).
+
+**Reservado como raiz:** exatamente um cabeçalho `#`; um segundo cabeçalho `#` gera um erro de análise.
+
+**Marcadores:** `-`, `*`, `+` seguidos de um espaço. Um `*` que não é seguido de espaço é tratado como marcador de itálico se aparecer dentro do texto do rótulo.
+
+**Conflitos inline:** um rótulo começando com `[ ]` ou `[x] ` é analisado como uma caixa de seleção, não um link Markdown. Se você precisar de um rótulo que literalmente comece com `[`, escreva `\[` — a barra invertida escapa o colchete.
+
+---
+
+## 9. Erros comuns
+
+| O que você escreveu | O parser diz | Correção |
+|---|---|---|
+| Dois cabeçalhos `#` | `Error: multiple # center nodes not allowed` | Use exatamente um cabeçalho `#` como raiz |
+| `##Branch` (sem espaço após `##`) | A linha não é reconhecida como cabeçalho; silenciosamente ignorada | Sempre coloque um espaço: `## Branch` |
+| Marcador indentado 3 espaços | Profundidade = `lastHeadingDepth + 1 + floor(3/2) = lastHeadingDepth + 2` — pode criar um nível inesperado | Use múltiplos de 2 espaços: 0, 2, 4, 6… |
+| `%% style: radial` | Valor desconhecido silenciosamente ignorado; layout permanece `map` | Use `map`, `logic-right`, `futureswheel` ou `driver` |
+| Palavra-chave `mindmap` no meio do documento | Tratada como linha de texto simples (a palavra-chave só é reconhecida na primeira linha) | Coloque `mindmap` na linha 1, antes de qualquer conteúdo |
+| `[ ]texto` (sem espaço após o colchete) | Caixa de seleção não reconhecida; renderizada como literal `[ ]texto` | `[ ] texto` — espaço obrigatório após o colchete de fechamento |
+
+---
+
+## 10. Gramática (EBNF)
+
+```text
+document       = ("mindmap" NEWLINE)? (blank | directive)* node*
+
+directive      = "%%" WS key ":" WS value NEWLINE
+key            = "style" | "theme" | "maxlabelwidth"
+
+node           = heading | bullet
+heading        = INDENT? "#"+ SPACE label NEWLINE
+bullet         = SPACE* bullet-marker SPACE label NEWLINE
+bullet-marker  = "-" | "*" | "+"
+
+label          = inline-token*
+inline-token   = checkbox
+               | "**" inline-token* "**"
+               | "*" inline-token* "*"
+               | "`" code-text "`"
+               | "[" inline-token* "]" "(" url ")"
+               | plain-text
+
+checkbox       = "[ ]" SPACE | "[x]" SPACE | "[X]" SPACE
+
+INDENT         = WS*    %% headings may have leading whitespace (ignored)
+SPACE          = " " | "\t"
+```
+
+**Regras de profundidade:**
+- Cabeçalho `#` → profundidade 0 (raiz)
+- Cabeçalho `##` → profundidade 1, `###` → profundidade 2, etc.
+- Marcador com `n` espaços iniciais → profundidade = `lastHeadingDepth + 1 + floor(n / 2)`
+
+Fonte autoritativa: `src/diagrams/mindmap/parser.ts`. Se houver divergência com o parser, o parser prevalece — por favor, abra uma issue.
+
+---
+
+## 11. Roadmap
+
+**Planejado — ainda não analisável pelo parser.** Não use estes itens em DSL gerada hoje; o parser irá rejeitá-los ou ignorá-los.
+
+- **Bloco `%%{init: {…}}%%`** — bloco init no estilo Mermaid para tema/configuração; atualmente apenas diretivas de linha `%%` são suportadas.
+- **Ramos com numeração automática** — `%% numbering: true` para prefixar cada ramo com 1., 1.1., etc.
+- **Nós de anotação / nota** — um marcador especial para anexar uma caixa de anotação flutuante a qualquer nó.
+- **Nós de imagem** — `![alt](url)` como rótulo de nó completo renderizado como imagem inline.
+- **Ramos recolhidos** — `%% collapsed: branchId` para renderizar uma subárvore como um único indicador dobrado.
+
+Acompanhe nas issues do GitHub se você precisar de algum desses recursos mais cedo.
+
+---
+
+## Exemplos relacionados
+
+Cenários prontos para uso da galeria de exemplos:
+
+<RelatedExamples slugs={[
+  'mindmap-product-launch',
+  'mindmap-quarterly-okrs',
+]} />

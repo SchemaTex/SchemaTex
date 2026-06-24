@@ -1,0 +1,209 @@
+---
+title: Plano de planta
+---
+
+## Acerca de los planos de planta
+
+Un **plano de planta** es la vista arquitectónica 2D estándar de un espacio: habitaciones con dimensiones reales, paredes dibujadas como bandas sólidas de **poché**, puertas con arcos de giro de cuarto de círculo, ventanas como líneas de acristalamiento, y mobiliario como símbolos en vista de planta — el lenguaje visual documentado en *Architectural Graphic Standards* y utilizado por todo conjunto de planos profesionales. Schematex lo renderiza desde texto: declaras habitaciones, aberturas y mobiliario con medidas reales; el motor fusiona las paredes compartidas, calcula las áreas de las habitaciones, dibuja las líneas de cota, asienta automáticamente las mesas, y valida la geometría.
+
+A diferencia de los generadores de imágenes, el resultado es *medible y editable* — cada habitación es un elemento etiquetado con su área calculada, y agregar una cuarta fila de escritorios es una edición de una sola línea.
+
+<Playground initial={`floorplan "Studio Apartment" unit m
+room main   "Living / Sleeping" at 0,0 size 5.2x4.0
+room bath   "Bath"   right-of main size 2.0x2.2
+room kitchen "Kitchenette" right-of main align end size 2.0x1.8
+door main south at 15% width 0.9
+door between main bath at 50%
+opening between main kitchen at 50% width 1.2
+window main north at 30% width 1.8
+furniture bed-double in main at 3.4,0.3
+furniture sofa in main at 0.2,3.0
+furniture toilet in bath at 0.2,0.2
+furniture sink in bath at 1.3,0.2
+furniture counter in kitchen at 0.15,1.05 size 1.7x0.6
+furniture kitchen-sink in kitchen at 0.6,1.05`} height={420} />
+
+---
+
+## 1. Tu primer plano de planta
+
+Un encabezado, una habitación, una puerta y una ventana:
+
+```
+floorplan "Studio"
+room main "Studio" at 0,0 size 4x3
+door main south at 20%
+window main north at 50%
+```
+
+Tres reglas cubren la mayor parte del uso:
+
+1. Comienza con `floorplan`, un título opcional entre comillas, y `unit m` (por defecto) o `unit ft`. **Todos los números están en esta unidad.**
+2. Las habitaciones son rectángulos: `room id "Etiqueta" at x,y size WxH`. La etiqueta y el área calculada se renderizan centradas en la habitación.
+3. Las aberturas cuelgan de las paredes: una referencia de pared (`main south`) se posiciona a lo largo de esa pared en un porcentaje; `between A B` encuentra la pared compartida automáticamente.
+
+---
+
+## 2. Habitaciones y posicionamiento
+
+Coloca la primera habitación en `0,0` y encadena el resto de forma relativa — las habitaciones adyacentes comparten un borde exactamente, y sus paredes se fusionan en una sola banda:
+
+```
+room living  "Living Room" at 0,0 size 5.2x4.2
+room kitchen "Kitchen"     right-of living size 3.0x4.2
+room hall    "Hallway"     below living size 2.0x2.6
+room bed1    "Bedroom 1"   right-of hall size 3.2x2.6
+```
+
+- `right-of` / `left-of` / `above` / `below` se ajustan al borde de la habitación de referencia.
+- `align start|center|end` alinea el eje transversal (por defecto `start` = bordes superior/izquierdo alineados); `offset n` lo desplaza.
+- `fill #e0f2fe` tinta el piso; `nolabel` suprime la etiqueta de nombre + área (planos de espacio único como aulas).
+- Las coordenadas son y hacia abajo: `at 0,0` es la esquina superior izquierda.
+
+**Habitaciones en forma de L/T/U** usan `extend` — declara el rectángulo principal, luego expándelo con rectángulos que comparten bordes. Las paredes se fusionan a lo largo de la unión, el área se suma en un solo número (exactamente como los profesionales miden las habitaciones en L), y la etiqueta se centra en la parte más grande:
+
+```
+room living "Living Room" at 0,0 size 5x4
+extend living at 5,2 size 2x2          # L-shape: notch at top-right
+```
+
+Una extensión que no toca la habitación, o que se superpone con ella, es rechazada con un error cuantificado. `north` (opcionalmente `north 30` para planos rotados) agrega la brújula en la esquina superior derecha.
+
+---
+
+## 3. Puertas, ventanas, aberturas
+
+```
+door hall west at 50% width 1.0 swing in          # puerta exterior en una pared
+door between hall bed1 at 50% hinge right          # puerta interior en la pared compartida
+door between bed1 bath at 30% type sliding         # puerta corrediza — sin arco
+opening between living kitchen at 35% width 1.2    # arco, sin hoja
+window living north at 30% width 1.8
+```
+
+- `between A B` resuelve el segmento de pared compartida y se posiciona en el porcentaje **a lo largo del solapamiento** — sin necesidad de coordenadas. Las habitaciones no adyacentes son rechazadas con la separación medida.
+- Las puertas tienen por defecto 0.9 m de ancho en paredes exteriores, 0.8 m en paredes `between`; las ventanas tienen por defecto 1.2 m.
+- `hinge left|right` elige el marco; `swing in|out` invierte el cuarto de arco (por defecto se abre hacia la habitación propietaria — la primera habitación nombrada).
+- Tipo de puerta `type single|double|sliding|pocket|bifold`: double dibuja dos arcos simétricos; sliding/pocket dibujan líneas de hoja desplazadas sin arco; bifold dibuja las dos cimas de tienda de puerta de armario.
+- Tipo de ventana `type fixed|sliding|casement|bay`: sliding = dos paneles desplazados, casement agrega el arco de giro hacia afuera, bay proyecta un trapezoide inclinado fuera de la pared.
+- Las aberturas se ajustan para caber en su segmento de pared (con advertencia) en lugar de desbordarse.
+
+---
+
+## 4. Mobiliario
+
+El mobiliario se coloca **en relación con la esquina superior izquierda interior de su habitación**, con `size`, `rotate` y una etiqueta opcionales:
+
+```
+furniture sofa in living at 0.25,2.9
+furniture desk "Teacher" in class at 2,1.5 size 5x2.5 rotate 20
+furniture counter "Cubbies" in class at 6,24.4 size 10x1.2
+```
+
+El catálogo abarca trabajos residenciales, comerciales y de terreno (los tamaños tienen por defecto las huellas estándar de la industria):
+
+| Grupo | Tipos |
+| --- | --- |
+| Residencial | `bed-double` `bed-single` `bed-queen` `bed-king` `bunk-bed` `crib` `sofa` `loveseat` `sectional` `armchair` `ottoman` `coffee-table` `side-table` `tv` `tv-stand` `fireplace` `floor-lamp` `rug` `wardrobe` `dresser` `nightstand` `bookshelf` `plant` `piano` `piano-upright` `pool-table` `ceiling-fan` `dining-table` |
+| Cocina / baño | `counter` `wall-cabinet` `kitchen-sink` `stove` `range-hood` `fridge` `dishwasher` `island` `bar-stool` `toilet` `sink` `vanity` `bidet` `urinal` `bathtub` `shower` `washer` `dryer` |
+| Aula / oficina | `desk-chair` `desk` `desk-l` `chair` `whiteboard` `smartboard` `bookcase` `cubbies` `filing-cabinet` `lockers` `kidney-table` `round-table-4/6/8/10` `conference-table` |
+| Eventos / banquetes | `banquet-table` `head-table` `stage` `dance-floor` `bar` `dj-booth` `cocktail-table` `podium` `row-chairs` |
+| Retail / almacén | `shelving` `checkout` `clothing-rack` `fitting-room` `pallet-rack` `loading-dock` `forklift` |
+| Salón / gimnasio | `salon-chair` `shampoo-bowl` `manicure-table` `treadmill` `weight-bench` `power-rack` `yoga-mat` |
+| Restaurante / cocina comercial | `booth` `prep-table` `range` `walk-in` `commercial-sink` `fryer` |
+| Escaleras / estructural | `stairs` `stairs-l` `stairs-u` `spiral-stairs` `elevator` `column` |
+| Terreno / exterior | `tree` `car` |
+
+**El asiento automático** está integrado: `round-table-8` dibuja 8 sillas en su circunferencia (mesa de 60″; `round-table-10` usa 72″), `dining-table` / `banquet-table` / `conference-table` asientan ambos bordes largos a una silla por cada 0.65 m, `head-table` asienta un lado mirando hacia la habitación, `manicure-table` asienta a un cliente y una silla de técnico, y `row-chairs` coloca una tira de teatro a 0.55 m de paso. `rug`, `dance-floor`, `yoga-mat`, `counter`, `island`, `wall-cabinet`, `range-hood` y `ceiling-fan` son superficies inferiores/superiores — otros muebles pueden superponerse con ellas sin advertencia de colisión.
+
+**Tablas de disposición** — nombra a los ocupantes de cualquier mesa con asiento automático mediante una cláusula `seats`, y el motor escribe cada nombre en su silla (en orden de colocación: las mesas redondas en sentido horario desde la parte superior; las mesas rectangulares llenan el borde superior de izquierda a derecha, luego el borde inferior). Esto convierte un plano de planta de recinto en la tabla de disposición que realmente leen los invitados:
+
+```
+furniture round-table-8 "Table 3" in hall at 11,4 seats "Alice" "Bob" "Carol" "Dave"
+furniture head-table "Head Table" in hall at 5,0.6 size 6x0.9 seats "Bride" "Groom"
+```
+
+Las sillas extra sin nombre quedan vacías; los nombres extra que superan el conteo de sillas se ignoran. Los nombres con comillas CJK (`seats "张伟" "李娜"`) funcionan como cualquier otra etiqueta. Los nombres se leen horizontalmente, así que mantén la mesa sin rotar para una tabla de disposición limpia.
+
+`tree` y `car` tienen tamaño para exteriores (disco de copa de árbol, huella de plaza de aparcamiento), por lo que un **plano de terreno** son simplemente zonas ordenadas como habitaciones adyacentes — jardín delantero, huella de la casa, entrada de vehículos, jardín trasero — con árboles y coches aparcados colocados encima.
+
+**Las escaleras** siguen las convenciones de dibujo: líneas de peldaño a 0.28 m (11″), una flecha de dirección comenzando en el peldaño más bajo etiquetada `UP` (dar al elemento una etiqueta `"DN"` para un tramo descendente), y la línea de corte en zigzag a 45° en el plano de corte imaginario de 4 pies, con peldaños punteados más allá. `stairs` es un tramo recto (orientado con `size`/`rotate`), `stairs-l` gira 90° sobre un rellano, `stairs-u` vuelve 180°, `spiral-stairs` es un círculo con peldaños radiales y un poste central.
+
+---
+
+## 5. Matrices — grid, row, arc
+
+El mobiliario repetido es una sola declaración, no treinta:
+
+```
+grid desk-chair in class rows 5 cols 6 count 27 area 5,8 25,24 itemsize 2x2.5
+row round-table-8 in hall cols 3 area 8.8,13.4 15.2,13.4 itemsize 2.3x2.3
+arc chair in hall count 13 center 12,8 radius 5 from 200 to 340
+```
+
+- `area x1,y1 x2,y2` da los **centros** del primer y último elemento; los elementos se distribuyen uniformemente entre ellos.
+- `count` trunca en **orden mayor de fila** — 27 escritorios en una cuadrícula 5×6 elimina la cola de la última fila, exactamente como un aula real.
+- `arc` coloca elementos en un arco circular mirando hacia el centro — aulas en semicírculo, asientos para ceremonias.
+
+---
+
+## 6. Unidades, áreas, líneas de cota
+
+- `unit ft` hace que cada número esté en pies; las líneas de cota se formatean como `32'` / `15'1"` y las áreas como `sq ft`. Internamente todo es métrico (1 ft = 0.3048 m).
+- Las áreas de las habitaciones son **calculadas por el motor** a partir de la geometría declarada, nunca escritas a mano.
+- Las líneas de cota se renderizan fuera del plano con marcas de barra diagonal arquitectónicas: ancho + alto general siempre, más segmentos por habitación a lo largo de los exteriores superior e izquierdo.
+
+---
+
+## 7. Validación
+
+El motor valida lo que los LLMs (y los humanos) realmente se equivocan, con errores que nombran los elementos infractores y una dirección de corrección:
+
+**Errores** (bloquean el renderizado, mostrados en un panel de error):
+
+- Superposición de habitaciones — `rooms "bed1" and "bath" overlap by 0.40×2.60 m — move "bath" right-of "bed1" or shrink size`
+- Puerta entre habitaciones no adyacentes — `door between "kitchen" and "bed2": rooms share no wall (gap 2 m on x-axis)`
+- Mobiliario fuera de su habitación — `furniture sofa #1 extends 1.7 m outside room "c" — move it or shrink size`
+
+**Advertencias** (se renderizan de todos modos, listadas bajo el plano):
+
+- Colisión de mobiliario — cajas delimitadoras incluyendo **envolturas de anillo de sillas**, por lo que dos mesas redondas de banquete cuyas sillas se tocan son marcadas incluso cuando los tableros no lo hacen.
+- Abertura ajustada para caber en su segmento de pared.
+
+---
+
+## 8. Gramática (EBNF)
+
+```text
+plan      ::= "floorplan" string? ("unit" ("m"|"ft"))? NL statement*
+statement ::= room | extend | north | door | window | opening | furniture | array
+room      ::= "room" id string? placement "size" dims ("fill" color)? ("nolabel")?
+extend    ::= "extend" id placement "size" dims
+north     ::= "north" num?
+placement ::= "at" coord
+            | ("right-of"|"left-of"|"above"|"below") id ("offset" num)?
+              ("align" ("start"|"center"|"end"))?
+door      ::= "door" (wallref | "between" id id) "at" pct
+              ("width" num)? ("hinge" ("left"|"right"))? ("swing" ("in"|"out"))?
+              ("type" ("single"|"double"|"sliding"|"pocket"|"bifold"))?
+window    ::= "window" wallref "at" pct ("width" num)?
+              ("type" ("fixed"|"sliding"|"casement"|"bay"))?
+opening   ::= "opening" (wallref | "between" id id) "at" pct ("width" num)?
+furniture ::= "furniture" type ("in" id) "at" coord ("size" dims)? ("rotate" num)? string? ("seats" string+)?
+array     ::= ("grid"|"row"|"arc") type "in" id
+              ("rows" int)? ("cols" int)? ("count" int)?
+              ("area" coord coord)? ("itemsize" dims)? ("rotate" num)?
+              ("center" coord)? ("radius" num)? ("from" num "to" num)?
+wallref   ::= id ("north"|"south"|"east"|"west")
+coord     ::= num "," num          dims ::= num "x" num          pct ::= num "%"?
+```
+
+Los comentarios van desde `#` hasta el final de la línea. Las comillas CJK (`""`) se aceptan como comillas ASCII.
+
+---
+
+## Ejemplos relacionados
+
+- [Apartamento de dos dormitorios](/examples#floorplan) — posicionamiento relativo, 7 puertas, amueblado completo
+- [Aula de 27 escritorios](/examples#floorplan) — truncamiento `grid … count`, `unit ft`
+- [Recepción de boda para 120](/examples#floorplan) — mesas redondas de banquete con asiento automático, pista de baile

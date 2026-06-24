@@ -1,0 +1,245 @@
+---
+title: PRISMA 2020 フロー図
+description: Schematex の prisma エンジンを使って、システマティックレビュー・メタアナリシス向け PRISMA 2020 準拠フロー図をテキスト DSL から生成する方法を解説します。
+---
+
+## PRISMA フロー図について
+
+**PRISMA 2020 フロー図**（Page MJ et al., *BMJ* 2021;372:n71）は、BMJ、Lancet、JAMA、Cochrane、JBI をはじめ 200 以上のジャーナルに掲載されるすべてのシステマティックレビュー、メタアナリシス、スコーピングレビューで必須の図です。これは*単一の、固定された 4 段構成*の図で、**Identification（同定）→ Screening（スクリーニング）→ Eligibility（適格性評価）→ Included（採用）** という流れで、各ボックスに記録数が入り、並行する「除外」サイドボックスが付きます。
+
+概念的にはフローチャートですが、レイアウト、必須の `n =` フィールド、デュアルパイプラインバリアントは*規定されています*。Schematex は `prisma` を独立した専用エンジンとして実装しており、著者は件数と除外理由を記述するだけで図が**構造的に正確に生成されます**。件数の省略やステージの順序ミスはできない仕組みになっています。仕様：[`28-PRISMA-STANDARD.md`](https://github.com/SchemaTex/SchemaTex/blob/main/docs/reference/28-PRISMA-STANDARD.md)。
+
+[flowchart](/docs/flowchart)（汎用フローチャート）とは異なります。汎用フローチャートには必須ステージ、記録数、除外サイドボックス、デュアルパイプラインマージの概念がありません。図が PRISMA レビューフローである場合は `prisma` を使用してください。
+
+<Playground initial={`
+  prisma
+  mode: 2020-single
+  title: Effect of exercise on chronic low-back pain — SR
+
+  identification:
+    databases:
+      n: 1418
+      sources: PubMed=600, Embase=450, Cochrane=184, Web of Science=184
+      duplicates-removed: 318
+
+  screening:
+    records-screened: 1100
+    excluded:
+      n: 870
+      reasons: irrelevant title=750, non-English=120
+
+  eligibility:
+    full-text-assessed: 230
+    excluded:
+      n: 195
+      reasons: wrong population=80, wrong intervention=60, wrong outcome=55
+
+  included:
+    studies: 35
+    reports: 38`} height={620} />
+
+---
+
+## 1. はじめての図
+
+最小構成は 4 つのステージブロックです。件数は必須で、合計値が欠落している図はパーサーがレイアウトを拒否します。
+
+```
+prisma
+
+identification:
+  databases:
+    n: 1000
+
+screening:
+  records-screened: 900
+  excluded:
+    n: 600
+
+eligibility:
+  full-text-assessed: 300
+  excluded:
+    n: 250
+
+included:
+  studies: 50
+```
+
+インデントは重要です。**1 レベルにつきスペース 2 つ**（genogram や SLD と同様）。最初の空白でない行は `prisma` でなければなりません。コメントは `#` または `//` を使用します。
+
+---
+
+## 2. メタライン
+
+ステージブロックの前に記述するトップレベルの `key: value` 行：
+
+```
+prisma
+mode: 2020-single
+kind: systematic-review
+title: My review
+validate-counts: warn
+```
+
+| キー | 値 | デフォルト | 意味 |
+|---|---|---|---|
+| `mode` | `2020-single` · `2020-dual` · `2009` | `2020-single` | シングル列またはデュアル列（「他の方法」列）。 |
+| `kind` | `systematic-review` · `scoping-review` · `ipd` · `nma` | `systematic-review` | ステージの語彙を変更（§6 参照）。 |
+| `title` | 文字列 | — | 図の上に表示されるタイトル。 |
+| `validate-counts` | `warn` · `strict` · `off` | `warn` | 件数の算術チェック（§7 参照）。 |
+| `direction` | `TB` / `TD` | `TB` | PRISMA は標準により縦方向；横方向は拒否されます。 |
+
+---
+
+## 3. Identification（同定）
+
+`identification:` ブロックには `databases:` サブブロック（常に必須）とオプションの `other:` サブブロック（デュアルモード用）が含まれます。
+
+```
+identification:
+  databases:
+    n: 1418
+    sources: PubMed=600, Embase=450, Cochrane=184
+    duplicates-removed: 318
+    ineligible-automation: 0
+    other-removed: 0
+```
+
+- `n:` — 同定された総記録数（**必須**）。
+- `sources:` — `name=count` のペア、カンマ区切り。インデントされた内訳としてレンダリングされます。スペースや句読点を含む名前はクォートできます：`"Web of Science"=184`。
+- `duplicates-removed:`、`ineligible-automation:`、`other-removed:` — オプションの除去件数。いずれかが存在する場合、右列に独立した**「スクリーニング前に除去されたレコード」**ボックスが水平矢印付きでレンダリングされます。
+
+大きな数値にはカンマを使用できます：`n: 1,418` は `n: 1418` と同じです。
+
+---
+
+## 4. Screening（スクリーニング）と Eligibility（適格性評価）
+
+両ステージとも、主な件数と `excluded:` ブロックを持ちます。除外ブロックには独自の `n:` とオプションの `reasons:` 内訳があります。
+
+```
+screening:
+  records-screened: 1100
+  excluded:
+    n: 870
+    reasons: irrelevant title=750, non-English=120
+  reports-sought: 226        # オプション
+  reports-not-retrieved: 12  # オプション
+
+eligibility:
+  full-text-assessed: 230
+  excluded:
+    n: 195
+    reasons: wrong population=80, wrong intervention=60, wrong outcome=55
+```
+
+`reasons:` は `name=count` のペアです。8 件を超えてリストした場合、レンダラーが降順でソートし、末尾を `Other (n = …)` に集約してサイドボックスを読みやすく保ちます。
+
+---
+
+## 5. Included（採用）
+
+```
+included:
+  studies: 35
+  reports: 38          # 1 件の研究が複数のレポートを生む場合がある
+  participants: 28741  # PRISMA-IPD のみ
+```
+
+`studies:` は必須です。`reports:` と `participants:` はオプションの追加件数行です。
+
+---
+
+## 6. デュアルパイプラインとレビュー種別
+
+**デュアルパイプライン** — PRISMA 2020 の更新では、2 番目の「他の方法による同定」列（引用文献検索、ハンドサーチ、専門家推薦）が追加されました。`other:` ブロックを追加すると、2 列が Y 字結合を経由してスクリーニングにマージされます。
+
+```
+prisma
+mode: 2020-dual
+
+identification:
+  databases:
+    n: 1234
+    duplicates-removed: 254
+  other:
+    n: 56
+    sources: citation-search=30, hand-search=20, expert-recommendation=6
+
+screening:
+  records-screened: 1036
+  excluded:
+    n: 810
+
+eligibility:
+  full-text-assessed: 226
+  excluded:
+    n: 195
+
+included:
+  studies: 31
+```
+
+**スコーピングレビュー** — `kind: scoping-review` を指定すると、ジオメトリを変えずに Tricco et al. 2018 に従って「studies」→「sources of evidence」に変更し、ステージを再ラベルします。
+
+**更新レビュー** — オプションの `previous-studies:` ブロックを追加すると、同定セクションに接続される破線ボックスが上部に描画されます。
+
+```
+previous-studies:
+  n: 19
+  sources: previous review=19
+```
+
+---
+
+## 7. 件数算術バリデーション
+
+`validate-counts: warn`（デフォルト）では、エンジンがステージ間で件数が整合しているかチェックします。例：`databases.n + other.n − duplicates-removed = records-screened`、およびソース / 理由の内訳が合計と一致するか。不一致は図の下に小さな警告としてレンダリングされます（スクリーンリーダー用の SVG `<desc>` にも表示されます）。
+
+`validate-counts: strict` では不一致がパースエラーになり、「N だけ差異あり」というメッセージが表示されます。`off` ではチェックを完全にスキップします。
+
+---
+
+## 8. 文法（EBNF）
+
+```
+prisma-document  = "prisma", { meta-line }, stage-block, { stage-block } ;
+meta-line        = ("mode:" | "kind:" | "title:" | "review-id:" | "validate-counts:" | "direction:") value ;
+
+stage-block      = previous-block | identification-block | screening-block | eligibility-block | included-block ;
+
+previous-block       = "previous-studies:" , indent, "n:" int, [ "reports:" int ], { "sources:" pairs } ;
+identification-block = "identification:" , indent,
+                         "databases:" , indent, "n:" int, { "sources:" pairs },
+                           [ "duplicates-removed:" int ], [ "ineligible-automation:" int ], [ "other-removed:" int ],
+                         [ "other:" , indent, "n:" int, { "sources:" pairs } ] ;
+screening-block      = "screening:" , indent, "records-screened:" int,
+                         "excluded:" , indent, "n:" int, { "reasons:" pairs },
+                         [ "reports-sought:" int ], [ "reports-not-retrieved:" int ] ;
+eligibility-block    = "eligibility:" , indent, "full-text-assessed:" int,
+                         "excluded:" , indent, "n:" int, { "reasons:" pairs } ;
+included-block       = "included:" , indent, "studies:" int, [ "reports:" int ], [ "participants:" int ] ;
+
+pairs            = pair, { "," pair } ;
+pair             = (string | quoted) "=" int ;
+int              = digit, { digit | "," } ;     (* カンマは除去される：1,234 == 1234 *)
+```
+
+インデントは 1 レベルにつきスペース 2 つです。ステージブロック内の未知のキーはパースエラーになり、各ステージを明確に定義します。
+
+---
+
+## 9. 標準準拠
+
+**PRISMA 2020 声明**（Page MJ, McKenzie JE, Bossuyt PM, et al. *The PRISMA 2020 statement: an updated guideline for reporting systematic reviews.* BMJ 2021;372:n71）および **PRISMA2020 R パッケージ**（Haddaway et al. 2022）のリファレンスレンダラー規則に準拠しています。スコーピングレビューの語彙は **PRISMA-ScR**（Tricco et al. 2018）に従い；参加者数は **PRISMA-IPD**（Stewart et al. 2015）に従います。テンプレート：[prisma-statement.org/prisma-2020-flow-diagram](https://www.prisma-statement.org/prisma-2020-flow-diagram)。
+
+---
+
+## 関連サンプル
+
+サンプルギャラリーからすぐに使えるシナリオ：
+
+<RelatedExamples slugs={[
+  'prisma-systematic-review',
+  'prisma-dual-pipeline',
+]} />

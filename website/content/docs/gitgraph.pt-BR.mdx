@@ -1,0 +1,118 @@
+---
+title: Git Graph
+description: Gráficos de histórico de commits compatíveis com Mermaid — branches, merges, tags, cherry-picks — renderizados a partir de uma sequência reproduzida de operações git.
+---
+
+## Sobre git graphs
+
+Um **git graph** visualiza o histórico de commits de um repositório: uma linha principal de commits, **branches** que se ramificam, **merges** que as reintegram, além de **tags** e **cherry-picks**. É a forma padrão de ensinar estratégias de branching (Git Flow, trunk-based) e documentar um histórico de releases. O Schematex implementa o dialeto **Mermaid `gitGraph`**, portanto fontes Mermaid existentes são renderizadas sem alterações.
+
+O diferencial do Schematex aqui é a fidelidade e um layout limpo sem dependências externas: ele **reproduz a sequência de operações** para atribuir cada commit a uma lane, roteia conectores de branch e merge sem cruzamentos e renderiza nós de commit estilizados por tipo (normal / highlight / reverse) — tudo a partir de um bundle de poucos KB.
+
+<Playground initial={`gitGraph
+  commit id: "init"
+  branch develop
+  checkout develop
+  commit
+  commit tag: "v0.1"
+  checkout main
+  merge develop tag: "v1.0"`} height={360} />
+
+---
+
+## 1. Seu primeiro git graph
+
+Comece com a palavra-chave `gitGraph` (sem distinção de maiúsculas/minúsculas; dois-pontos ao final são permitidos) e depois uma operação por linha. O primeiro commit vai para o branch main:
+
+```
+gitGraph
+  commit
+  branch develop
+  checkout develop
+  commit id: "feature work"
+  checkout main
+  merge develop tag: "v1.0"
+```
+
+Toda operação é executada contra o **branch atualmente em checkout**. `commit` adiciona ao branch atual; `branch` cria uma nova linha a partir do commit atual; `checkout` (alias `switch`) move o cursor; `merge` traz outro branch para o atual.
+
+---
+
+## 2. Operações
+
+```
+commit                         # commit simples no branch atual
+commit id: "init"              # atribui um id explícito ao commit
+commit tag: "v0.1"             # anexa uma tag de release
+commit type: HIGHLIGHT         # NORMAL (padrão) | HIGHLIGHT | REVERSE
+branch develop                 # ramifica um branch a partir do commit atual
+branch hotfix order: 3         # fixa a ordem da lane
+checkout develop               # muda o cursor (alias: switch)
+merge develop tag: "v1.0"      # faz merge de um branch no atual
+cherry-pick id: "abc"          # copia um commit para o branch atual
+```
+
+- **`commit`** aceita `id:`, `tag:` e `type:` opcionais (`NORMAL` / `HIGHLIGHT` / `REVERSE`).
+- **`branch NAME`** aceita `order:` opcional para controlar o posicionamento da lane.
+- **`checkout` / `switch`** são intercambiáveis.
+- **`cherry-pick id:`** copia um commit; um `parent:` opcional desambigua um commit de merge.
+
+---
+
+## 3. Orientação
+
+O gráfico tem orientação padrão da esquerda para a direita. Defina a direção inline no cabeçalho:
+
+```
+gitGraph TB:
+  commit
+  branch feature
+  checkout feature
+  commit
+  checkout main
+  merge feature
+```
+
+`LR` (padrão), `TB` e `BT` são aceitos. A configuração também pode ser fornecida via uma diretiva `%%{init: {'gitGraph': {...}}}%%` inicial ou um bloco `config:` em YAML frontmatter para compatibilidade com Mermaid (`mainBranchName`, `showCommitLabel`, `rotateCommitLabel`).
+
+---
+
+## 4. Como o engine realiza o layout
+
+A compatibilidade com o Mermaid é o diferencial, mas o layout é o trabalho real:
+
+- A lista de operações é **reproduzida em ordem** para construir o DAG de commits e atribuir cada commit à sua lane de branch.
+- As lanes de branch são ordenadas por aparecimento (substituível com `order:`); os conectores de merge são roteados a partir da ponta do branch mesclado até o novo commit de merge.
+- Os nós de commit são estilizados por `type:` — um commit HIGHLIGHT é enfatizado, um commit REVERSE é marcado — e as tags são renderizadas como bandeiras. Cherry-picks desenham uma aresta de cópia tracejada para a origem.
+
+Cada commit carrega `data-*` (branch, id, type) para interação downstream.
+
+---
+
+## 5. Erros comuns
+
+```
+# ERRADO — sem cabeçalho gitGraph
+commit
+commit
+
+# ERRADO — operação desconhecida
+gitGraph
+  rebase main
+
+# ERRADO — tipo de commit desconhecido
+gitGraph
+  commit type: SQUASH
+```
+
+O documento deve começar com `gitGraph`; apenas `commit` / `branch` / `checkout` / `switch` / `merge` / `cherry-pick` são operações válidas; `type:` deve ser `NORMAL`, `HIGHLIGHT` ou `REVERSE`. `%%` inicia um comentário, compatível com o Mermaid.
+
+---
+
+## 6. Conformidade com o padrão
+
+A sintaxe acompanha a gramática `gitGraph` do Mermaid — palavras-chave de operação, opções `id:`/`tag:`/`type:`, `order:`, a diretiva `%%{init}%%` e configuração em YAML frontmatter — portanto fontes Mermaid são transferidas diretamente enquanto são renderizadas pelo engine sem dependências do Schematex.
+
+## 7. Roadmap
+
+Adiado: compactação de commits paralelos, temas de commit personalizados via classDef e substituições de cor por branch além da ordem das lanes.

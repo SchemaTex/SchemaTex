@@ -1,0 +1,306 @@
+---
+title: Blockdiagramm
+---
+
+## Über Blockdiagramme
+
+Ein **Blockdiagramm** modelliert ein System als eine Menge funktionaler Blöcke, die durch gerichtete Signalleitungen verbunden sind. Jeder Block repräsentiert eine Komponente, deren Verhalten durch eine Übertragungsfunktion oder ein beschreibendes Label erfasst wird; Signale fließen durch die Blöcke in einer definierten Richtung. Regelungsingenieure verwenden sie für den Entwurf von Regelkreisen, Signalverarbeitungsingenieure nutzen sie zur Dokumentation von Filterketten, und Systemingenieure setzen sie ein, um komplexe Architekturen zu zergliedern. Die charakteristischen visuellen Elemente — rechteckige Blöcke und kreisförmige Summierstellen — sind Konventionen aus der Regelungstechnik (Ogata, Franklin, Nise) und finden sich in jedem Datenblatt und Lehrbuch, das ein Rückkopplungssystem beschreibt.
+
+Schematex folgt der **Laplace-Bereich-Übertragungsfunktions-Konvention** aus Regelungstechnik-Lehrbüchern: Blöcke werden mit ihren Übertragungsfunktionen beschriftet, Summierstellen tragen explizite `+`/`−`-Vorzeichen, und ein `discrete`-Flag an Signalen rendert eine gestrichelte Linie für abgetastete Datenpfade. Diese Seite dokumentiert, was der Parser heute akzeptiert. Maßgebliche Referenzen: Ogata (2010) *Modern Control Engineering*; Franklin, Powell & Emami-Naeini (2018) *Feedback Control of Dynamic Systems*.
+
+<Playground initial={`blockdiagram "Audio dynamics processor"
+# Signal chain
+in_s = signal("Input")
+gate_s = signal("gated")
+comp_s = signal("compressed")
+out_s = signal("Output")
+# Blocks
+gate = block("Noise gate") [role: controller]
+comp = block("Compressor") [role: plant]
+eq = block("3-band EQ") [role: generic]
+limiter = block("Limiter") [role: actuator]
+# Level detection side-chain
+detect = block("Level detect") [role: sensor]
+sum_g = sum(+in_s, -detect)
+# Forward path
+in -> in_s
+in_s -> sum_g
+sum_g -> gate
+gate -> gate_s
+gate_s -> comp
+comp -> comp_s
+comp_s -> eq
+eq -> limiter
+limiter -> out_s
+# Side-chain feedback
+limiter -> detect`} height={460} />
+
+---
+
+## 1. Ihr erstes Blockdiagramm
+
+Das kleinstmögliche nützliche Blockdiagramm: ein Regler, eine Regelstrecke, ein Regelkreis.
+
+<Playground initial={`blockdiagram "Temperature control"
+ctrl = block("PID") [role: controller]
+plant = block("Heater") [role: plant]
+sensor = block("Thermocouple") [role: sensor]
+err = sum(+ref, -measured)
+ref = signal("Setpoint")
+measured = signal("T_measured")
+in -> ref
+ref -> err
+err -> ctrl
+ctrl -> plant
+plant -> measured
+measured -> sensor
+sensor -> err`} />
+
+Vier Regeln decken 80 % der Anwendungsfälle ab:
+
+1. Beginnen Sie mit `blockdiagram`, optional gefolgt von einem zitierten Titel.
+2. Deklarieren Sie jede Komponente mit `ID = block("label")`, jede Summierstelle mit `ID = sum(+a, -b)` und jedes benannte Signal mit `ID = signal("label")`.
+3. Verbinden Sie Komponenten mit `->`. Mehrere Hops in einer Zeile verketten: `A -> B -> C`.
+4. Kommentieren Sie Verbindungen optional mit einem nachgestellten Label: `A -> B ["E(s)"]`.
+
+> Kommentare müssen mit `#` auf einer eigenen Zeile beginnen.
+
+---
+
+## 2. Blöcke
+
+Ein Block repräsentiert jedes funktionale Element — Regler, Regelstrecke, Filter, Aktor, Sensor. Das Label ist typischerweise eine Übertragungsfunktion oder ein beschreibender Name.
+
+**Syntax:** `ID = block("label") [role: X]`
+
+| Attribut | Werte | Effekt |
+|---|---|---|
+| `role: plant` | `plant`, `controller`, `sensor`, `actuator`, `reference`, `disturbance`, `generic` | Visuelle Farbkodierung; `generic` ist der Standard |
+| `route: above` | `above`, `below` | Routing-Hinweis für Rückkopplungs- und Vorwärtskopplungsblöcke |
+
+**ID-Regeln.** Muss mit einem Buchstaben oder Unterstrich beginnen, gefolgt von Buchstaben, Ziffern oder Unterstrichen: `[A-Za-z_]\w*`.
+
+<Playground initial={`blockdiagram "Block roles"
+ref_block = block("r(t)") [role: reference]
+ctrl = block("C(s)") [role: controller]
+act = block("Actuator") [role: actuator]
+plant = block("G(s)") [role: plant]
+sensor = block("H(s)") [role: sensor]
+dist = block("d(t)") [role: disturbance]
+ref_block -> ctrl
+ctrl -> act
+act -> plant
+plant -> sensor
+dist -> plant`} />
+
+---
+
+## 3. Summierstellen
+
+Eine Summierstelle kombiniert mehrere Signale zu einem, mit expliziten Vorzeichen für jeden Eingang. Sie wird als Kreis mit `+`/`−`-Zeichen dargestellt — das Standardsymbol der Regelungstechnik.
+
+**Syntax:** `ID = sum(+a, -b, +c, …)`
+
+- Jeder Eingang ist eine vorzeichenbehaftete ID: `+x` addiert Signal `x`, `-y` subtrahiert Signal `y`.
+- Ein Eingang ohne Vorzeichen wird als positiv behandelt.
+- Die ID der Summierstelle wird dann als Ziel von Verbindungslinien verwendet, genau wie eine Block-ID.
+
+<Playground initial={`blockdiagram "Error with disturbance rejection"
+ctrl = block("PI C(s)") [role: controller]
+plant = block("G(s)") [role: plant]
+sensor = block("H(s)") [role: sensor]
+# Main error junction: add reference, subtract feedback
+err = sum(+r, -ym)
+# Disturbance junction: add plant input, add disturbance
+disturb = sum(+ctrl_out, +d)
+r = signal("r (setpoint)")
+ym = signal("y_m")
+ctrl_out = signal("u(t)")
+in -> r
+r -> err
+err -> ctrl
+ctrl -> ctrl_out
+ctrl_out -> disturb
+disturb -> plant
+plant -> ym
+ym -> sensor
+sensor -> err`} />
+
+---
+
+## 4. Signale
+
+Eine Signaldeklaration erstellt einen benannten Signalknoten, den der Parser als Kantenlabel einbettet. Signale sind durchleitend: Wenn der Parser `A -> sig` und `sig -> B` sieht, werden sie zu einer einzigen Kante von `A` nach `B` zusammengeführt, die mit dem Anzeigetext des Signals beschriftet wird.
+
+**Syntax:** `ID = signal("label") [discrete]`
+
+- `[discrete]` weglassen für kontinuierliche Signale (durchgehende Linie).
+- `[discrete]` hinzufügen für abgetastete Signale (gestrichelte Linie).
+
+```
+e_sig = signal("E(s)")
+u_sig = signal("U(s)") [discrete]
+```
+
+Signale sind rein eine Beschriftungshilfe — Sie können Kanten auch direkt mit einem nachgestellten Attribut beschriften (siehe §5).
+
+---
+
+## 5. Verbindungen
+
+Eine Verbindungslinie ist `from -> to`. Der `->` -Operator erzeugt immer eine gerichtete, mit Pfeil versehene Linie.
+
+**Einzelner Hop:** `A -> B`
+
+**Kette:** `A -> B -> C` — entspricht `A -> B` und `B -> C`. Beide werden in einer Zeile geschrieben.
+
+**Mit einem Signallabel:** `["label text"]` am Ende der Kette anhängen. Das Label gilt nur für den letzten Hop.
+
+```
+ctrl -> plant ["U(s)"]
+```
+
+**Mit einem discrete-Flag:** `[discrete]` anhängen, um den letzten Hop-Pfeil gestrichelt darzustellen.
+
+```
+plant -> adc ["y"] [discrete]
+```
+
+**Sowohl Label als auch discrete:** `[label: "Y(s)", discrete]` verwenden (kommagetrennt).
+
+```
+adc -> ctrl [label: "y[k]", discrete]
+```
+
+<Playground initial={`blockdiagram "Mixed continuous/discrete"
+ctrl = block("Digital PID") [role: controller]
+dac = block("DAC") [role: actuator]
+plant = block("G(s)") [role: plant]
+adc = block("ADC") [role: sensor]
+err = sum(+r, -yk)
+r = signal("r[k]") [discrete]
+yk = signal("y[k]") [discrete]
+in -> r
+r -> err
+err -> ctrl
+ctrl -> dac [label: "u[k]", discrete]
+dac -> plant ["u(t)"]
+plant -> adc ["y(t)"]
+adc -> yk [discrete]
+yk -> err`} />
+
+---
+
+## 6. Labels und Kommentare
+
+- **Titel:** `blockdiagram "Mein System"` — erste Zeile, in Anführungszeichen.
+- **Block-Label:** der zitierte String innerhalb von `block("…")` — erscheint im Kasten.
+- **Signallabel:** der zitierte String innerhalb von `signal("…")` — erscheint auf der zusammengeführten Kante.
+- **Kantenlabel:** nachgestelltes `["text"]` oder `[label: "text"]` auf einer Verbindungszeile — erscheint auf diesem Pfeil.
+- **Kommentare:** `#` am Anfang einer Zeile (nach führendem Leerzeichen). Nachgestellte Inline-Kommentare werden nicht unterstützt.
+
+---
+
+## 7. Reservierte Wörter und Escaping
+
+**Am Zeilenanfang reserviert:** `blockdiagram` (Header).
+
+**Strukturelle Schlüsselwörter** (als Block-/Signal-/Sum-IDs vermeiden, um Mehrdeutigkeiten zu verhindern): `block`, `signal`, `sum`.
+
+**`in` und `out`** sind konventionelle IDs für die externe Grenze eines Diagramms — der Parser behandelt sie als gewöhnliche Bezeichner, aber der Renderer verwendet sie als implizite Quell-/Senkenknoten. Die Verwendung von `in -> r` und `plant -> out` ist idiomatisch.
+
+**Strings mit Leerzeichen** müssen in `block("…")` und `signal("…")`-Labels in doppelte Anführungszeichen gesetzt werden.
+
+---
+
+## 8. Häufige Fehler
+
+| Sie schrieben | Parser meldet | Lösung |
+|---|---|---|
+| `G = block(G(s))` (keine Anführungszeichen) | Parse-Fehler — Label muss in Anführungszeichen stehen | `G = block("G(s)")` |
+| `err = sum(r, -ym)` (kein `+`) | `r` wird als `+r` behandelt — funktioniert, aber mehrdeutig | `sum(+r, -ym)` für Klarheit schreiben |
+| `ctrl -> plant, plant -> out` (Komma in einer Zeile) | `,` ist kein Trennzeichen — Parse-Fehler | Eine Verbindung pro Zeile oder Kette verwenden: `ctrl -> plant -> out` |
+| `s1 = signal("E(s)") [label: "E"]` | `label:` nicht für Signal gültig; für Verbindungen verwenden | `label:` aus der Signaldeklaration entfernen |
+| `role: filter` | Unbekannte Rolle — fällt stillschweigend auf `generic` zurück | `plant`, `controller`, `sensor`, `actuator`, `reference`, `disturbance` oder `generic` verwenden |
+| `A -> B [discrete, label: "e"]` — Label zuerst schlägt fehl | Reihenfolge der Attribute in `[…]` ist egal, aber die kurze `"text"`-Form funktioniert nur, wenn sie das einzige Element ist | `[label: "e", discrete]` verwenden |
+
+---
+
+## 9. Grammatik (EBNF)
+
+```text
+document       = header (blank | comment | block-def | sum-def | signal-def | connection)*
+
+header         = "blockdiagram" ( WS quoted-string )? NEWLINE
+quoted-string  = '"' any-char-but-quote* '"'
+
+block-def      = id WS "=" WS "block" "(" quoted-string ")" ( "[" block-attrs "]" )? NEWLINE
+block-attrs    = block-attr ("," block-attr)*
+block-attr     = "role:" role | "route:" ("above" | "below")
+role           = "plant" | "controller" | "sensor" | "actuator"
+               | "reference" | "disturbance" | "generic"
+
+sum-def        = id WS "=" WS "sum" "(" sum-inputs ")" NEWLINE
+sum-inputs     = sum-input ("," sum-input)*
+sum-input      = ("+" | "-")? id
+
+signal-def     = id WS "=" WS "signal" "(" quoted-string ")" ( "[" "discrete" "]" )? NEWLINE
+
+connection     = id ("->" id)+ ( "[" conn-attrs "]" )? NEWLINE
+conn-attrs     = quoted-string                          # shorthand: bare label only
+               | conn-attr ("," conn-attr)*
+conn-attr      = "label:" quoted-string | "discrete"
+
+id             = [A-Za-z_] \w*
+comment        = "#" any NEWLINE
+```
+
+Maßgebliche Quelle: `src/diagrams/blockdiagram/parser.ts`. Falls dies vom Parser abweicht, hat der Parser Vorrang — bitte eröffnen Sie einen Issue.
+
+---
+
+## 10. Standardkonformität
+
+Schematex-Blockdiagramme folgen den **Laplace-Bereich-Übertragungsfunktions**-Konventionen aus Ogata (2010) und Franklin et al. (2018) — die Block-, Summierstellen- und gerichteten Signallinien-Symbole, die in jedem Regelungstechnik-Lehrbuch zu finden sind.
+
+Was heute implementiert ist:
+
+- ✅ Rechteckige Blöcke mit Übertragungsfunktions-Labels
+- ✅ Kreisförmige Summierstellen mit `+`/`−`-Polaritätseingängen
+- ✅ Benannte Signalknoten (durchleitend, zu Kantenlabel zusammengeführt)
+- ✅ Gerichtete Verbindungen mit Verkettung (`A -> B -> C`)
+- ✅ Kantenlabels — Signalnamen auf Pfeilen
+- ✅ `discrete`-Flag — gestrichelte Linie für abgetastete Signale
+- ✅ Rollenannotationen (`plant`, `controller`, `sensor`, `actuator`, `reference`, `disturbance`, `generic`)
+- ✅ `route: above | below`-Hinweis für Rückkopplungs-/Vorwärtskopplungsplatzierung
+- ⏳ Verzweigungspunkt — explizites Punktsymbol, an dem ein Signal zu zwei Zielen verzweigt
+- ⏳ Begrenzungsrahmen — gestricheltes Subsystem-Gehäuse mit Label
+- ⏳ Bidirektionale Pfeile — `<->` für bidirektionalen Signalaustausch
+- ⏳ Bus-Notation — dicke Linie, die einen Signalvektor darstellt
+
+Referenzen:
+
+- Ogata, K. (2010). *Modern Control Engineering*, 5. Aufl. Prentice Hall.
+- Franklin, G.F., Powell, J.D. & Emami-Naeini, A. (2018). *Feedback Control of Dynamic Systems*, 8. Aufl. Pearson.
+
+---
+
+## 11. Verwandte Beispiele
+
+<RelatedExamples slugs={[
+  'block-pid-loop',
+]} />
+
+---
+
+## 12. Roadmap
+
+**Geplant — noch nicht parsierbar.** Verwenden Sie diese heute nicht in generiertem DSL; der Parser wird sie ablehnen oder ignorieren.
+
+- **Verzweigungspunkt-Symbol** — explizites `dot`-Primitiv, an dem ein Ausgang zu mehreren Zielen verzweigt (derzeit fügt der Renderer automatisch eine Verzweigung ein, wenn eine ID mehr als einmal als Quelle verwendet wird, aber es gibt keine explizite Syntax).
+- **Subsystem-Begrenzungsrahmen** — `boundary "label" { … }` -Block, der ein gestricheltes Rechteck um die enthaltenen Blöcke zeichnet, verwendet für Mehrschleifenansichten und Subsystemansichten.
+- **Bidirektionale Verbindung** — `A <-> B` für Komponenten mit gegenseitigem Informationsaustausch (z.B. eine Bus-Schnittstelle).
+- **Bus-(Vektorsignal-)Notation** — dicke Linie mit einer Schrägstrich-und-Anzahl-Annotation `//n`, die einen n-breiten Signalbus anzeigt.
+- **Verschachtelte Subsysteme** — ein `block`, dessen Inneres selbst ein Blockdiagramm ist, einklappbar in der gerenderten Ausgabe.
+
+Verfolgen Sie dies in den GitHub-Issues, wenn Sie eines davon früher benötigen.

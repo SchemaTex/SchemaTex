@@ -1,0 +1,106 @@
+---
+title: 因果迴路圖（Causal Loop Diagram）
+description: 系統動力學回授圖——引擎自動列舉所有回授迴路，並依極性將其分類為增強型或平衡型。
+---
+
+## 關於因果迴路圖
+
+**因果迴路圖**（causal loop diagram，CLD）是**系統動力學**（Jay Forrester，MIT，1960 年代）的核心映射工具：以有符號因果連結連接的變數，其中*回授迴路*——而非個別箭頭——解釋了系統的行為。迴路在放大變化時為**增強型（R，Reinforcing）**，在抵消變化時為**平衡型（B，Balancing）**。標準參考文獻為 Sterman，*Business Dynamics*（2000）。
+
+Schematex 的優勢在於引擎**幫你找到並分類這些迴路**。繪圖工具讓你放置箭頭；但它們不會告訴你哪些迴路存在，也不會說明每個迴路是增強型還是平衡型。Schematex 使用 Johnson 演算法列舉所有基本回授迴路，並套用 Sterman 的奇偶極性規則——將它們標記為 R1、B1、R2……
+
+<Playground initial={`causalloop "Sales force flywheel"
+var "Training quality"
+"Training quality" -> "Salesperson skills" : + delay
+"Salesperson skills" -> Revenue : +
+Revenue -> "Training quality" : +
+Revenue -> "Hiring rate" : +
+"Hiring rate" -> "Salesperson skills" : -
+loop R1 "Skill flywheel"
+loop B1 "Dilution"`} height={480} />
+
+---
+
+## 1. 你的第一個因果迴路
+
+以 `causalloop` 關鍵字（別名 `cld`）開頭，後接選用的標題，然後是**有符號的連結**。變數會從連結自動建立——你很少需要手動宣告：
+
+```
+causalloop "Adoption model"
+"Adoption rate" -> Adopters : +
+Adopters -> "Adoption rate" : +
+loop R1 "Word of mouth"
+```
+
+連結的形式為 `SOURCE -> TARGET : POLARITY`。多詞變數名稱加引號（`"Adoption rate"`）；單詞不需要引號（`Adopters`）。至少需要一條連結。
+
+---
+
+## 2. 連結極性
+
+極性是因果影響的方向，且**每條連結都必須填寫**：
+
+```
+A -> B : +          # same direction (more A → more B)
+B -> C : -          # opposite direction (more B → less C)
+A -> B : s          # alias for + (same)
+B -> C : o          # alias for − (opposite)
+C -> D : same       # alias for +
+D -> E : opposite   # alias for −
+A -> B +            # the colon is optional
+```
+
+`+` / `s` / `same` 表示*同向*；`−` / `o` / `opposite` 表示*反向*。沒有極性的連結會被拒絕。
+
+---
+
+## 3. 延遲與明確變數宣告
+
+```
+"Training quality" -> "Salesperson skills" : + delay   # marked delay (∥ hash on the arrow)
+A -> B : + ~delay                                       # the ~delay form also works
+var "Adoption rate"                                     # pin a variable so it isn't auto-created
+loop R1 "Word of mouth"                                 # name/annotate a loop
+```
+
+- **`delay`** / **`~delay`** 將連結標記為延遲（系統動力學中的 hash 記號）。
+- **`var "name"`** 明確宣告一個變數（固定其標籤；不會自動建立）。
+- **`loop ID "phrase"`** 為引擎偵測到的迴路附加人類可讀的名稱。
+
+---
+
+## 4. 計算得出的回授迴路
+
+這是最大的差異化功能。引擎會：
+
+1. 建構**有符號有向圖**（節點 = 變數，邊 = 有符號連結）。
+2. 使用 Johnson 演算法**列舉所有基本回授迴路**（簡單有向環）——以確定性順序按宣告順序執行。
+3. 透過計算負向連結的數量**分類**每個迴路：
+   - **偶數**個（含 0）→ **R**（增強型）；符號的乘積 = +1
+   - **奇數**個 → **B**（平衡型）；符號的乘積 = −1
+
+這正是 Sterman 的奇偶規則。迴路按種類以偵測順序編號（R1、B1、R2……），並在迴路中心繪製 `R`／`B` 旋轉圖符。每個迴路帶有 `data-loop` 和 `data-kind`。
+
+---
+
+## 5. 常見錯誤
+
+```
+# WRONG — link with no polarity
+A -> B
+
+# WRONG — a diagram with no links at all
+cld
+```
+
+每條連結都需要極性（`: +` 或 `: -`）；沒有連結的 CLD 會被拒絕。請記住極性是關於*變化方向*，而非是否理想——從「死亡數」到「人口」的連結仍然是 `-`（更多死亡 → 更少人口），即使死亡是負面的事。
+
+---
+
+## 6. 標準合規性
+
+符號遵循 Sterman，*Business Dynamics*（2000）和標準系統動力學慣例：有符號連結極性、延遲 hash 記號，以及 R/B 迴路識別符。迴路極性的奇偶負向連結規則是教科書中的分類方式，已精確實作。
+
+## 7. 路線圖
+
+延後處理：存量與流量升級、連結強度加權，以及隨時間的主導迴路（迴路特徵值）分析。

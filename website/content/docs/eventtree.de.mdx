@@ -1,0 +1,102 @@
+---
+title: Event Tree Analysis
+description: Induktive vorwärtsgerichtete Risikoanalyse — ein auslösendes Ereignis verzweigt sich durch Sicherheitsfunktionen in quantifizierte Endzustände (Erfolg/Versagen).
+---
+
+## Über Event Trees
+
+Ein **Event Tree** ist das vorwärtsgerichtete, induktive Gegenstück zum Fault Tree. Ausgehend von einem **auslösenden Ereignis** (einem Rohrbruch, einem Brand, einer Anforderung an ein Sicherheitssystem) wird in geordneter Reihenfolge geprüft, ob jede nachgelagerte **Sicherheitsfunktion** erfolgreich ist oder versagt. Jeder Pfad durch die Verzweigungsleiter endet in einem quantifizierten **Ergebnis** (OK, eingedämmt, Kernschaden …). Die Methode ist das Arbeitspferd nuklearer PRA und prozessbasierter QRA und ist durch **IEC 62502** sowie die klassische WASH-1400-Praxis (**[NUREG-0492](https://www.nrc.gov/docs/ML1007/ML100780465.pdf)**) standardisiert.
+
+Der Vorteil von Schematex ist derselbe wie beim Fault Tree: Die Engine **berechnet die Antwort**, nicht nur die Leiter. Gegeben die Auftretenshäufigkeit des auslösenden Ereignisses und die Ausfallwahrscheinlichkeit jeder Funktion, berechnet sie die Häufigkeit jedes Pfades (`f₀ · ∏ Verzweigungswahrscheinlichkeiten`), fasst Ergebnisse pfadübergreifend zusammen und hebt die **dominante Sequenz** in Rot hervor. draw.io zeichnet eine Verzweigungsleiter und hört dort auf — das ist ein Bild, keine Analyse.
+
+<Playground initial={`eventtree "Loss of coolant accident"
+  initiating LOCA "Large LOCA" freq: 1e-4
+  function A "ECCS injects"          p: 0.001
+  function B "Containment spray"     p: 0.01
+  function C "Containment integrity" p: 0.005
+  outcome s s s -> "OK"
+  outcome s s f -> "Late release"
+  outcome s f * -> "Early release"
+  outcome f * * -> "Core damage"`} height={560} />
+
+---
+
+## 1. Ihr erster Event Tree
+
+Jedes Dokument beginnt mit dem Schlüsselwort `eventtree` (Alias `eta`), einem optionalen Titel und einer flachen Liste von Deklarationen:
+
+```
+eventtree "Smoke detector demand"
+  initiating FIRE "Fire starts" freq: 0.01
+  function D "Detector actuates" p: 0.02
+  function S "Suppression works" p: 0.05
+  outcome s s -> "Controlled"
+  outcome s f -> "Damage, contained"
+  outcome f * -> "Uncontrolled fire"
+```
+
+- **`initiating ID "label" freq: N`** — genau eines. Die Auslösehäufigkeit; akzeptiert Dezimalzahlen oder wissenschaftliche Notation (`freq: 0.01` oder `freq: 1e-4`).
+- **`function ID "label" p: N`** — eine pro Verzweigungsspalte, **in Abfragereihenfolge von links nach rechts deklariert**. `p:` ist die **Ausfallwahrscheinlichkeit**; der Erfolgszweig wird als Komplement `1 − p` abgeleitet (beide Werte müssen nie angegeben werden).
+- **`outcome <Muster> -> "Endzustand"`** — je ein realisiertes Blatt.
+
+---
+
+## 2. Das s / f / * Ergebnismuster
+
+Jede `outcome`-Zeile liest von links nach rechts über die Funktionsspalten:
+
+```
+outcome s s s -> "OK"           # alle Funktionen erfolgreich
+outcome s s f -> "Late release" # C versagt bei der letzten Abfrage
+outcome s f * -> "Early release"# B versagt; C wird nie abgefragt (beschnitten)
+outcome f * * -> "Core damage"  # A versagt; Pfad endet sofort
+```
+
+- **`s`** — Erfolgszweig (oberer Ast).
+- **`f`** — Versagenszweig (unterer Ast).
+- **`*`** — beschnitten: Der Pfad wird hier nicht abgefragt, sondern verläuft flach bis zu seinem Blatt.
+
+So vermeidet ein Event Tree, ein vollständiger ausgeglichener 2ⁿ-Baum zu sein: Sobald ein Funktionsversagen spätere Fragen hinfällig macht, schreibt man `*` und die Sequenz endet vorzeitig. Zwei feste Regeln: Ein Muster darf nicht **länger** als die Spaltenanzahl sein, und **sobald eine Spalte beschnitten ist (`*`), müssen alle späteren Spalten ebenfalls `*` sein** — ein beendeter Pfad kann keine Abfragen mehr aufnehmen.
+
+---
+
+## 3. Berechnete Pfadhäufigkeiten & Ergebnisse
+
+Das ist der entscheidende Unterschied. Mit den Ausfallwahrscheinlichkeiten und `freq` berechnet die Engine:
+
+- **Jede Pfadhäufigkeit** = `f₀ · ∏ Verzweigungswahrscheinlichkeiten` entlang seiner `s`/`f`-Äste (Erfolgszweige tragen `1 − p` bei, Versagenszweige `p`).
+- **Ergebnisaggregation**: Ergebnisse mit demselben Endzustandslabel werden über alle Pfade, die sie erreichen, summiert (jedes `"Core damage"`-Blatt addiert sich auf).
+- **Die dominante Sequenz** — der Pfad mit der größten Häufigkeit — erhält den reservierten roten Akzent, das ETA-Äquivalent des Single Point of Failure im Fault Tree.
+
+Jedes Blatt trägt `data-*`-Attribute (`data-freq`, `data-outcome`), sodass die berechneten Zahlen nachgelagert inspiziert werden können.
+
+---
+
+## 4. Häufige Fehler
+
+```
+# FALSCH — Funktion ohne Ausfallwahrscheinlichkeit
+function A "ECCS"
+
+# FALSCH — Abfrage nach einer beschnittenen Spalte (Pfad bereits beendet)
+outcome * s -> "bad"
+
+# FALSCH — mehr Token als deklarierte Spalten
+function A p: 0.1
+outcome s s -> "ok"
+
+# FALSCH — auslösendes Ereignis ohne Häufigkeit
+initiating LOCA "Large LOCA"
+```
+
+Jeder Fehler wird mit einer verständlichen Meldung abgewiesen, die die betroffene Zeile benennt. Geben Sie `p:` als **Ausfallwahrscheinlichkeit** (kleiner Wert) an, versehen Sie das auslösende Ereignis mit `freq:`, halten Sie Beschneidungen am Ende, und die Korrektheit ist konstruktionsbedingt gewährleistet.
+
+---
+
+## 5. Standardkonformität
+
+Die Form folgt IEC 62502 und klassischer PRA-Praxis (WASH-1400 / NUREG): Funktionen als geordnete Kopfspalten, die binäre Erfolgs-/Versagenstrennung, komplementäre Erfolgszweige und Häufigkeitsfortpflanzung durch Multiplikation. Das `monochrome`-Theme reproduziert das schwarzweiße Lehrbuch-Erscheinungsbild; `default` reserviert Rot für die dominante Sequenz.
+
+## 6. Roadmap
+
+Zurückgestellt: verknüpfte Fault-Tree-Fragmente pro Ast (gemeinsame Basisereignisse), Unsicherheitspropagation und Konsekvenzkategoriengruppierung.

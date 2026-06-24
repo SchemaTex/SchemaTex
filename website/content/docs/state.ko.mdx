@@ -1,0 +1,364 @@
+---
+title: 상태 다이어그램
+---
+
+## 상태 다이어그램이란
+
+**상태 다이어그램(state diagram)** — *상태 차트(statechart)* 또는 *상태 머신 다이어그램(state machine diagram)*이라고도 합니다 — 은 반응형 시스템의 생명 주기를 기술합니다. 어떤 상태에 있을 수 있는지, 어떤 이벤트가 상태 간 전환을 유발하는지, 그리고 상태 진입, 종료, 또는 상태 내에서 어떤 액션이 실행되는지를 표현합니다. 소프트웨어 아키텍트는 워크플로 명세에, 제어 엔지니어는 반응형 컨트롤러 설계에, UI 디자이너는 화면 생명 주기 모델링에 활용합니다. 상태 다이어그램은 **OMG UML 2.5.1 §14**(상태 머신)와 복합 상태, 히스토리, 직교 영역을 도입한 Harel의 1987년 *Statechart* 확장으로 형식화되어 있습니다.
+
+Schematex는 **[Mermaid `stateDiagram-v2`](https://mermaid.js.org/syntax/stateDiagram.html)**의 엄격한 상위 집합을 구현합니다. 모든 Mermaid 예제는 변경 없이 붙여 넣기가 가능하며, Mermaid가 지원하지 않는 UML 2.5 기능도 제공합니다. 여기에는 `entry / exit / do` 활동, 완전한 `trigger [guard] / action` 트랜지션 레이블, `terminate` 및 히스토리 의사 상태, junction, Schematex 스타일 블록 노트가 포함됩니다. 레이아웃은 순서도와 동일한 Sugiyama 계층화 DAG 엔진을 사용하므로, 사이클, 복합 상태, 경계 간 트랜지션이 모두 깔끔하게 라우팅됩니다.
+
+<Playground initial={`stateDiagram-v2
+direction TB
+
+[*] --> Idle
+
+Idle --> Authenticating : submit [form_valid] / clearErrors()
+Authenticating --> Authenticated : ok / storeToken()
+Authenticating --> Idle : fail [retries < 3] / incrementRetries()
+Authenticating --> Locked : fail [retries >= 3]
+
+state Decide <<choice>>
+Authenticated --> Decide
+Decide --> Admin : [role == "admin"]
+Decide --> User  : [role == "user"]`} height={520} />
+
+---
+
+## 1. 첫 번째 상태 다이어그램
+
+가장 작은 유용한 상태 다이어그램: 초기 상태, 최종 상태, 하나의 트랜지션.
+
+<Playground initial={`stateDiagram-v2
+[*] --> Running
+Running --> [*] : done`} />
+
+사용법의 80%를 커버하는 세 가지 규칙:
+
+1. `stateDiagram-v2` (Mermaid 스타일) 또는 `state` (Schematex 스타일) 헤더로 시작합니다.
+2. `[*]`를 사용하여 암묵적 시작 노드(`-->` 왼쪽에 있을 때) 또는 종료 노드(`-->` 오른쪽에 있을 때)를 표현합니다.
+3. `-->`로 상태를 연결합니다. `:` 뒤에 레이블을 추가합니다. 완전한 UML 형식은 `trigger [guard] / action`입니다.
+
+기본 방향은 Mermaid와 맞추기 위해 **TB** (위에서 아래)입니다. 독립적인 줄에 `direction LR`을 사용하거나 헤더에 `[direction: LR]`을 사용하여 재정의합니다.
+
+> 주석은 `%%` (Mermaid), `#`, 또는 `//`를 사용합니다.
+
+---
+
+## 2. 상태 선언
+
+상태는 트랜지션에서 처음 참조될 때 자동으로 생성되지만, 명시적 선언으로 레이블과 모양을 제어할 수 있습니다.
+
+```
+state Authenticating
+state "Awaiting Approval" as Approval
+Idle: Waiting for input
+```
+
+| 형식 | 효과 |
+|---|---|
+| `Idle` | 단순 ID — id와 레이블 모두 `Idle`인 단순 상태로 생성 |
+| `state Idle` | 명시적 선언; 동일한 효과 |
+| `state "Awaiting Approval" as Approval` | 별칭 — `Awaiting Approval`을 표시하고, 트랜지션에서 `Approval`로 참조 |
+| `Idle: Waiting for input` | 인라인 레이블 — `Idle`이 id, `Waiting for input`이 표시 레이블 |
+
+---
+
+## 3. 의사 상태
+
+의사 상태(pseudo-state)는 안정적인 정지 상태를 나타내지 않고 상태 머신의 흐름을 제어합니다.
+
+| Mermaid | Schematex | 심볼 | 목적 |
+|---|---|---|---|
+| `[*]` (소스) | `initial id` | 채워진 검은 원 | 영역의 진입점 |
+| `[*]` (대상) | `final id` | 외부 링 안의 채워진 원 | 성공적인 종료 |
+| `state X <<choice>>` | `choice X` | 다이아몬드 | 동적 분기 (런타임에 가드 평가) |
+| `state X <<fork>>` | `fork X` | 굵은 검은 바 | 1개 입력 → N개 병렬 출력 |
+| `state X <<join>>` | `join X` | 굵은 검은 바 | N개 입력 → 1개 출력 |
+| — | `junction X` | 작은 채워진 원 | 정적 병합 지점 |
+| — | `history X` | `H`가 있는 원 | 마지막으로 방문한 하위 상태로 재진입 |
+| — | `dhistory X` | `H*`가 있는 원 | 딥 히스토리 (재귀적) |
+| — | `terminate X` | `×` 표시 | 비정상 종료 (정리 없음) |
+| — | `entry_point X` / `exit_point X` | 복합 경계의 빈 원 | 명명된 진입 / 종료점 |
+
+`[*]`는 Mermaid 별칭으로 항상 방향에 따라 해석됩니다. `-->`의 **소스** 쪽에 있으면 `initial`, **대상** 쪽에 있으면 `final`입니다. 각 복합 범위는 자체 쌍을 가집니다.
+
+<Playground initial={`stateDiagram-v2
+[*] --> Idle
+state Decide <<choice>>
+state Joiner <<join>>
+Idle --> Decide : evaluate
+Decide --> Authorized : [role == "admin"]
+Decide --> Joiner    : [role == "user"]
+Authorized --> Joiner
+Joiner --> [*]`} height={360} />
+
+---
+
+## 4. 트랜지션
+
+완전한 UML 2.5 트랜지션 레이블에는 세 가지 선택적 부분이 있습니다.
+
+```
+trigger [guard] / action
+```
+
+| 필드 | 의미 | 예 |
+|---|---|---|
+| `trigger` | 트랜지션을 발생시키는 이벤트 | `submit`, `tick`, `timeout(30s)` |
+| `[guard]` | 트리거 시점에 평가되는 불리언 표현식 | `[count > 0]`, `[role == "admin"]` |
+| `/ action` | 트랜지션 실행 시 수행되는 액션 | `/ log(); increment()` |
+
+세 가지 모두 선택 사항입니다. 레이블이 없는 트랜지션은 익명(완료 트랜지션)입니다.
+
+```
+A --> B                                      %% 익명 완료
+A --> B : tick                                %% 트리거만
+A --> B : [count > 0]                         %% 가드만
+A --> B : / clearErrors()                     %% 액션만
+A --> B : tick [count > 0] / log()            %% 세 가지 모두
+A --> B : tick, tock [enabled] / handle()     %% 다중 트리거
+```
+
+레인 너비를 초과하는 긴 레이블은 자동으로 줄 바꿈됩니다.
+
+---
+
+## 5. 복합 상태
+
+복합 상태는 중첩된 하위 상태 차트를 포함합니다. 외부 상태는 자체 초기/최종 의사 상태를 갖는 컨테이너 역할을 합니다.
+
+```
+state Playing {
+  [*] --> Buffering
+  Buffering --> Streaming : buffer_full
+  Streaming --> Buffering : underflow
+}
+```
+
+Mermaid 문법(`state X { … }`)과 Schematex 형식(`composite X { … }`) 모두 허용됩니다. 복합 블록 내에 활동을 선언할 수 있습니다.
+
+```
+state Playing {
+  entry / startBuffer()
+  exit / stopBuffer()
+  do / decodeFrames()
+
+  [*] --> Buffering
+  Buffering --> Streaming : buffer_full
+  Streaming --> Buffering : underflow
+}
+```
+
+렌더러는 복합 상태를 제목 바 + 활동 구획이 있는 스타일화된 클러스터로 그립니다.
+
+<Playground initial={`stateDiagram-v2
+
+[*] --> Stopped
+
+Stopped --> Playing : play / loadSource()
+Playing --> Paused  : pause
+Paused  --> Playing : play
+Playing --> Stopped : stop / releaseSource()
+
+state Playing {
+  entry / startBuffer()
+  exit / stopBuffer()
+  do / decodeFrames()
+
+  [*] --> Buffering
+  Buffering --> Streaming : buffer_full
+  Streaming --> Buffering : underflow
+}`} height={520} />
+
+경계 간 트랜지션(`Outside --> Inside`)은 자동으로 라우팅됩니다. Sugiyama 레이아웃이 소스/대상을 복합 경계를 통해 연결합니다.
+
+---
+
+## 6. 동시 영역
+
+복합 상태 내에서 `--` 구분자(Mermaid) 또는 `---` (Schematex)가 본문을 동시에 실행되는 직교 영역으로 분리합니다.
+
+```
+state Active {
+  [*] --> r1_idle
+  r1_idle --> Connected : connect
+  --
+  [*] --> r2_idle
+  r2_idle --> Working : start
+}
+```
+
+영역 간에 생성/동기화하려면 `fork`와 `join`을 사용합니다.
+
+<Playground initial={`stateDiagram-v2 [direction: LR]
+
+[*] --> F
+state F <<fork>>
+state J <<join>>
+F --> A
+F --> B
+A --> J : done_a
+B --> J : done_b
+J --> [*]`} height={300} />
+
+---
+
+## 7. 노트
+
+짧은 주석을 임의의 상태 양쪽에 부착할 수 있습니다.
+
+```
+note right of Checking : Calls /api/verify synchronously.
+note left of Idle : Anonymous landing state
+```
+
+여러 줄 노트는 Mermaid의 `end note` 블록 형식 또는 Schematex의 `{ … }` 형식을 사용합니다.
+
+```
+note right of Authenticating
+  Stores the JWT in localStorage
+  on success.
+end note
+
+note left_of Idle {
+  Anonymous landing state.
+  Returns here on 401.
+}
+```
+
+---
+
+## 8. 자기 트랜지션
+
+`A --> A` 트랜지션은 노드 오른쪽에 곡선 호로 렌더링됩니다.
+
+```
+Idle --> Idle : poll / refresh()
+```
+
+레이블은 경계 상자 외부의 호 옆에 배치됩니다.
+
+---
+
+## 9. 레이아웃 방향
+
+Schematex는 Mermaid와 맞추기 위해 **`TB`** (위에서 아래)를 기본값으로 사용합니다. 헤더에서 재정의합니다.
+
+```
+stateDiagram-v2
+direction LR
+
+[*] --> Loading
+Loading --> Ready
+```
+
+또는 Schematex 괄호 속성 형식을 사용합니다.
+
+```
+state "Order Lifecycle" [direction: TB]
+
+[*] --> Pending
+Pending --> Paid
+```
+
+`BT`와 `RL`은 파서에서 허용되지만 각각 `TB`와 `LR`로 정규화됩니다. 레이아웃 엔진이 아직 시각적 순서를 반전하지 않습니다.
+
+---
+
+## 10. 흔한 실수
+
+| 작성한 내용 | 파서 메시지 | 수정 방법 |
+|---|---|---|
+| `[*] -> [*]` | 같은 줄에서 초기 별칭과 최종 별칭 모두로 처리됨 | `[*]` 별칭 사이에 항상 하나 이상의 명명된 상태를 포함시키십시오 |
+| `state X <<branch>>` | `branch`는 스테레오타입이 아님 | `<<choice>>` (동적) 또는 `<<fork>>` / `<<join>>` 사용 |
+| `note right of`<br/>`text` | 여러 줄 노트는 `end note`로 끝나야 함 | 독립된 줄에 `end note` 추가 |
+| `composite X` (중괄호 없음) | 단순 상태 선언으로 처리 | 블록 열기: `composite X {` |
+| 복합 내부의 `direction LR` | 영역별 방향 아직 미지원 | 헤더 줄에 방향 설정 |
+
+---
+
+## 11. 문법 (EBNF)
+
+```text
+document     = header statement*
+header       = ("stateDiagram-v2" | "stateDiagram" | "state")
+                ( title )? ( "[" attrs "]" )? NEWLINE
+attrs        = attr ("," attr)*
+attr         = "direction:" ("TB" | "LR")
+
+statement    = comment
+             | direction-stmt              %% direction LR / TB / BT / RL
+             | state-decl
+             | alias-decl                  %% state "Long" as ID
+             | stereotype-decl             %% state ID <<choice|fork|join|end>>
+             | pseudo-decl                 %% initial / final / choice / ... ID
+             | composite-block             %% (state | composite) ID { ... }
+             | label-stmt                  %% ID : description
+             | transition
+             | note-stmt
+             | region-sep                  %% --  or  ---
+
+transition   = (ID | "[*]") "-->" (ID | "[*]") ( ":" trans-label )? NEWLINE
+trans-label  = trigger? ( "[" guard "]" )? ( "/" action )?
+
+note-stmt    = "note" side ID ":" inline-text NEWLINE
+             | "note" side ID NEWLINE  text-line+  ("end note" | "}") NEWLINE
+side         = "left of" | "right of" | "left_of" | "right_of"
+
+comment      = "%%" any | "#" any | "//" any
+
+ID           = [A-Za-z_] [A-Za-z0-9_]*
+```
+
+공식 소스: `src/diagrams/state/parser.ts`. 이 내용이 파서와 다를 경우 파서가 기준입니다. 이슈를 열어 주십시오.
+
+---
+
+## 12. 표준 준수
+
+| 기능 | UML 2.5 | Harel 1987 | Mermaid | Schematex |
+|---|:-:|:-:|:-:|:-:|
+| 단순 상태 | ✅ | ✅ | ✅ | ✅ |
+| 복합(중첩) 상태 | ✅ | ✅ | ✅ | ✅ |
+| 초기 / 최종 의사 상태 | ✅ | ✅ | ✅ | ✅ |
+| 선택 의사 상태 | ✅ | — | ✅ | ✅ |
+| Fork / join | ✅ | ✅ | ✅ | ✅ |
+| Junction 의사 상태 | ✅ | — | ❌ | ✅ |
+| 히스토리 (얕음 / 깊음) | ✅ | ✅ | ❌ | ✅ |
+| 종료 의사 상태 | ✅ | — | ❌ | ✅ |
+| `entry / exit / do` 활동 | ✅ | ✅ | ❌ | ✅ |
+| `trigger [guard] / action` 레이블 | ✅ | ✅ | ❌ (레이블만) | ✅ |
+| 내부 트랜지션 | ✅ | ✅ | ❌ | ✅ |
+| 동시 영역 | ✅ | ✅ | ✅ | ✅ |
+| 상태에 대한 노트 | — | — | ✅ | ✅ |
+| 복합 간 트랜지션 | ✅ | ✅ | ❌ | ✅ |
+| `[*]` 초기/최종 별칭 | — | — | ✅ | ✅ |
+
+Schematex는 Mermaid `stateDiagram-v2`의 엄격한 상위 집합입니다. Mermaid 예제는 변경 없이 붙여 넣기가 가능하며, 추가적인 UML 2.5 요소(활동, 히스토리, junction, terminate, 완전한 트랜지션 레이블)도 함께 허용됩니다.
+
+참고 문헌:
+
+- OMG UML 2.5.1 — *Unified Modeling Language*: https://www.omg.org/spec/UML/2.5.1/
+- Harel (1987) — *Statecharts: A visual formalism for complex systems*, Science of Computer Programming 8(3)
+- Mermaid stateDiagram-v2 — https://mermaid.js.org/syntax/stateDiagram.html
+
+---
+
+## 13. 로드맵
+
+- **`BT` / `RL` 방향** — 현재 파싱 시 `TB` / `LR`로 정규화됨; 시각적 반전 미구현
+- **영역별 방향 재정의** — 복합 블록 내 `direction LR` (현재 조용히 무시됨)
+- **서브머신 참조** — `state Foo : Submachine` 스테레오타입 렌더링
+- **내부 트랜지션 구획** — 상태 본문 내 `tick [g] / a` 줄을 위한 명시적 시각적 구분자
+
+---
+
+## 관련 예제
+
+예제 갤러리의 바로 사용 가능한 시나리오:
+
+<RelatedExamples slugs={[
+  'state-traffic-light',
+  'state-ecommerce-order',
+]} />

@@ -1,0 +1,226 @@
+---
+title: 브레드보드 / 물리 배선
+---
+
+## 브레드보드 다이어그램이란
+
+**브레드보드 다이어그램**은 무납땜 프로토타이핑 보드 위에 부품을 실제로 어떻게 배선하는지를 보여주는 도면입니다 — Arduino / ESP32 / Raspberry Pi 튜토리얼에서 흔히 볼 수 있는 바로 그 시각적 형식입니다. 독자는 실제 하드웨어 위에서 구멍 하나하나를 그대로 따라 재현합니다. 이 형식은 추상적인 회로 도식(`circuit`, IEEE 315)과 **상호 보완적**입니다. 도식은 엔지니어의 논리적 뷰이고, 브레드보드는 제작자의 재현 뷰입니다.
+
+Schematex는 **Fritzing 스타일**의 양식화된 브레드보드 렌더링을 구현합니다. 부품은 식별 가능한 형태로 그려집니다(저항의 컬러 밴드, LED의 컬러 돔, DIP의 노치, MCU PCB의 레이블이 붙은 핀 헤더). 점퍼 와이어는 특정 연결점 사이에 **부드러운 3차 베지어 곡선**으로 그려집니다 — 맨해튼 직각이 아닙니다. DSL은 모든 부품과 와이어를 픽셀 위치가 아닌 **브레드보드 고유 좌표**(`@열-행`, 예: `@5e`)로 지정하므로, 파일을 직접 작성하고 버전 관리할 수 있습니다.
+
+> **참고** — 이 엔진은 회로 도식이 아니며 전기적 규칙을 검증하지 않습니다. 튜토리얼, 실험실 자료, README, 학습 자료에 사용하십시오. 절점 해석이나 정식 도식에는 `circuit` 엔진을 사용하십시오.
+
+<Playground initial={`breadboard
+board: half
+title: "Blink LED — Arduino Uno hello-world"
+
+parts
+  uno: mcu uno @beside-left
+  r1:  resistor 220 @5e..9e
+  d1:  led red @10e..10f
+
+wires
+  uno:5V  --red--    @+t1
+  uno:GND --black--  @-t1
+  @+t1    --red--    @5a
+  uno:D13 --yellow-- @9a
+  @10j    --black--  @-t1`} height={420} />
+
+---
+
+## 1. 첫 번째 브레드보드
+
+세 가지 섹션으로 구성됩니다: 한 줄의 `breadboard` 헤더, `parts` 블록, 그리고 `wires` 블록입니다. 선택적인 `board:` 및 `title:` 줄은 헤더 바로 다음에 옵니다.
+
+<Playground initial={`breadboard
+parts
+  uno: mcu uno @beside-left
+  r1:  resistor 220 @5e..9e
+  d1:  led red @10e..10f
+
+wires
+  uno:5V  --red--   @+t1
+  uno:GND --black-- @-t1
+  uno:D13 --yellow-- @5a
+  @10j    --black-- @-t1`} />
+
+모든 부품은 `id: kind [args] @placement` 형식입니다. 모든 와이어는 `<endpoint> --color-- <endpoint>` 형식입니다. 이것이 문법의 전부입니다.
+
+---
+
+## 2. 좌표
+
+브레드보드는 2D 주소 격자를 사용합니다. Schematex 좌표는 항상 `@`로 시작합니다.
+
+| 형식 | 의미 | 예시 |
+|---|---|---|
+| `@<col><row>` | 메인 격자 구멍. 행 `a–e` (위쪽 절반), `f–j` (아래쪽 절반). | `@5e`, `@12g` |
+| `@+t<col>` | 상단 **양극** 레일 (빨간 줄). | `@+t8` |
+| `@-t<col>` | 상단 **음극 / GND** 레일 (파란 줄). | `@-t8` |
+| `@+b<col>` | 하단 양극 레일. | `@+b14` |
+| `@-b<col>` | 하단 음극 레일. | `@-b14` |
+| `@<a>..<b>` | 스팬 — 부품 배치(저항, 다이오드, LED)에 사용. | `@5e..9e` |
+| `@beside-left` | MCU 보드를 위한 보드 외부 배치. | `mcu uno @beside-left` |
+
+미니 보드(`board: mini`)는 **전원 레일이 없습니다** — `@+t…` / `@-b…`는 파서가 거부합니다.
+
+---
+
+## 3. 보드 크기
+
+```
+breadboard
+board: half          // 기본값 — 30열, 400개 연결점, 레일 (연속)
+```
+
+| 형식 | 연결점 | 열 수 | 전원 레일 |
+|---|---|---|---|
+| `mini` | 170 | 17 | 없음 |
+| `half` (기본) | 400 | 30 | 연속 |
+| `full` | 830 | 63 | 30/31열에서 분리 |
+
+> **주의** — 전체 크기 보드에서는 레일이 중간에서 분리됩니다. 회로가 양쪽 절반을 모두 사용한다면 레일을 점퍼로 명시적으로 연결해야 합니다.
+
+---
+
+## 4. 부품 카탈로그
+
+각 부품은 `id: <kind> [args] @<placement>` 형식입니다. 카탈로그는 가장 일반적인 Arduino / ESP32 메이커 부품을 다룹니다.
+
+**이산 부품** (브레드보드 위에 장착):
+
+| DSL | 인수 | 예시 |
+|---|---|---|
+| `resistor` | `value` (Ω; `k`/`M` 지원) | `r1: resistor 220 @5e..9e` |
+| `led` | `color` (red/green/blue/yellow/white/orange) | `d1: led red @10e..10f` |
+| `cap-elec` | — | `c1: cap-elec @4e..4f` |
+| `cap-ceramic` | — | `c2: cap-ceramic @6e..6f` |
+| `diode` | — | `d2: diode @5e..8e` |
+| `button` | — | `btn: button @8e` |
+| `dip` | `pins=N` | `ic: dip pins=8 @4e` |
+| `header` | `pins=N` | `h1: header pins=4 @20a` |
+
+**마이크로컨트롤러 보드** (기판 옆 / 위 / 아래에 배치):
+
+| DSL | 핀 레이블 |
+|---|---|
+| `mcu uno` | `5V`, `3V3`, `GND`, `VIN`, `RST`, `D2…D13`, `A0…A5`, `RX`, `TX` |
+| `mcu nano` | Uno 레이블의 하위 집합 |
+| `mcu esp32` | `3V3`, `GND`, `VIN`, `GPIO2`, `GPIO4`, `GPIO5`, `GPIO12…GPIO33` |
+| `mcu pico` | 동일한 범용 GPIO 레이블 |
+
+**센서 / 디스플레이 / 액추에이터** (모듈은 공급된 좌표에 핀 행이 고정되어 브레드보드 위에 장착):
+
+| DSL | 핀 |
+|---|---|
+| `sensor hcsr04` | `VCC`, `TRIG`, `ECHO`, `GND` |
+| `sensor dht11` / `sensor dht22` | `VCC`, `DATA`, `GND` |
+| `display oled-ssd1306` | `GND`, `VCC`, `SCL`, `SDA` |
+| `display lcd-1602-i2c` | `GND`, `VCC`, `SDA`, `SCL` |
+| `module rotary-ky040` | `CLK`, `DT`, `SW`, `VCC`, `GND` |
+| `actuator servo-sg90` | `GND`, `VCC`, `SIG` |
+
+저항 컬러 밴드는 `value`에서 자동으로 장식됩니다 — `220` → 빨강-빨강-갈색-금색, `10000` → 갈색-검정-주황-금색.
+
+---
+
+## 5. 와이어
+
+모든 와이어는 두 엔드포인트를 연결합니다. 엔드포인트는 **부품 핀**(`partId:pinName`) 또는 **브레드보드 좌표**(`@…`) 중 하나입니다.
+
+```
+wires
+  uno:5V  --red--    @+t1
+  uno:GND --black--  @-t1
+  uno:D9  --yellow-- @9c
+  @9a     --green--  @+t9
+```
+
+| 색상 | 관례적 역할 |
+|---|---|
+| `red` | +V (5V, 3.3V, VCC) |
+| `black` / `blue` | GND |
+| `yellow` / `orange` / `green` / `white` / `purple` | 신호 |
+| `brown` / `grey` | 임의 신호 |
+
+색상은 순전히 시각적 요소입니다 — 엔진은 색상을 전기적 역할에 대해 검증하지 않습니다.
+
+시각적으로 혼잡한 보드의 경우, `via @<coord>`를 사용하면 베지어 제어점에 편향을 주는 중간 구멍을 고정할 수 있습니다.
+
+```
+wires
+  uno:D13 --yellow-- @9a via @8c
+```
+
+대부분의 와이어는 `via`가 필요하지 않습니다 — 레이아웃 엔진이 자연스러운 곡선을 자체적으로 생성합니다.
+
+---
+
+## 6. 풀업 저항이 있는 센서 (DHT11 패턴)
+
+VCC와 센서 데이터 라인 사이에 10 kΩ 풀업 저항을 사용하는 전형적인 Arduino 튜토리얼 패턴입니다.
+
+<Playground initial={`breadboard
+board: half
+title: "DHT11 + 10kΩ pull-up"
+
+parts
+  uno: mcu uno @beside-left
+  s1:  sensor dht11 @6a
+  r1:  resistor 10000 @8e..14e
+
+wires
+  s1:VCC  --red--    @+t1
+  s1:GND  --black--  @-t1
+  s1:DATA --yellow-- @8e
+  @14e    --red--    @+t14
+  uno:5V  --red--    @+t1
+  uno:GND --black--  @-t1
+  uno:D2  --yellow-- @8a`} height={460} />
+
+---
+
+## 7. ESP32 + I²C OLED
+
+ESP32는 3.3 V로 동작합니다(5 V 아님). I²C 관례: 초록색 = SDA, 흰색 = SCL.
+
+<Playground initial={`breadboard
+board: half
+title: "ESP32 + SSD1306 OLED I²C"
+
+parts
+  esp:  mcu esp32 @beside-left
+  oled: display oled-ssd1306 @8a
+
+wires
+  oled:GND --black--   @-t1
+  oled:VCC --red--     @+t1
+  oled:SCL --white--   @10c
+  oled:SDA --green--   @11c
+  esp:3V3    --red--   @+t1
+  esp:GND    --black-- @-t1
+  esp:GPIO22 --white-- @10c
+  esp:GPIO21 --green-- @11c`} height={460} />
+
+---
+
+## 8. v0.1의 제한 사항
+
+- **인출선 콜아웃 없음** — 참조 지정자(R1, C2)는 부품 본체 근처에 그려집니다. 보드 외부 콜아웃 박스는 추후 구현 예정입니다.
+- **`.fzz` 가져오기 없음** — Schematex는 자체 DSL만 소비합니다. Fritzing 파일은 파싱되지 않습니다.
+- **시뮬레이션 없음** — 이것은 렌더러이며 Wokwi 스타일 시뮬레이터가 아닙니다. 부품 값 검증(옴의 법칙, 전류 한계)은 범위 밖입니다.
+- **PCB / 도식 왕복 없음** — `breadboard`와 `circuit`은 독립적인 엔진입니다. 동일한 프로토타입의 두 가지 뷰를 작성하려면 현재 두 개의 DSL을 작성해야 합니다.
+- **고정 부품 카탈로그** — 사용자 정의 부품 유형은 추후 구현 예정입니다. v0.1은 메이커 튜토리얼 80% 카탈로그(저항, LED, 커패시터, DIP, 헤더, 4개 MCU 계열, 6개 센서 / 디스플레이 / 액추에이터 모듈)를 제공합니다.
+- **전원 레일 분리 시각화** — 전체 크기 보드는 30/31 분리 지점을 구멍 너비의 간격으로 표시합니다. 레일 줄무늬는 여전히 간격을 가로질러 그려집니다(시각적 처리).
+
+---
+
+## 관련 예시
+
+예시 갤러리에서 바로 사용할 수 있는 시나리오:
+
+<RelatedExamples slugs={[
+  'breadboard-blink-led',
+  'breadboard-hcsr04-distance',
+  'breadboard-esp32-oled',
+]} />

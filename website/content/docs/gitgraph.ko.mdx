@@ -1,0 +1,118 @@
+---
+title: Git 그래프
+description: Mermaid 호환 커밋 히스토리 그래프 — git 작업 시퀀스의 재생을 통해 브랜치, 머지, 태그, 체리픽을 렌더링합니다.
+---
+
+## Git 그래프란
+
+**git 그래프**는 저장소의 커밋 히스토리를 시각화합니다: 메인 커밋 라인, 분기하는 **브랜치**, 다시 합류하는 **머지**, **태그**와 **체리픽**. 브랜칭 전략(Git Flow, 트렁크 기반)을 가르치고 릴리스 히스토리를 문서화하는 표준적인 방법입니다. Schematex는 **Mermaid `gitGraph`** 방언을 구현하므로 기존 Mermaid 소스가 그대로 렌더링됩니다.
+
+Schematex의 차별점은 충실도와 깔끔한 의존성 없는 레이아웃입니다: **작업 시퀀스를 재생**하여 각 커밋을 레인에 배치하고, 교차 없이 브랜치 및 머지 커넥터를 라우팅하며, 타입별 스타일의 커밋 노드(normal / highlight / reverse)를 렌더링합니다 — 모두 KB 규모의 작은 번들에서 처리됩니다.
+
+<Playground initial={`gitGraph
+  commit id: "init"
+  branch develop
+  checkout develop
+  commit
+  commit tag: "v0.1"
+  checkout main
+  merge develop tag: "v1.0"`} height={360} />
+
+---
+
+## 1. 첫 번째 git 그래프
+
+`gitGraph` 키워드(대소문자 구분 없음; 뒤에 콜론 허용)로 시작하고, 줄마다 하나의 작업을 입력합니다. 첫 번째 커밋은 메인 브랜치에 놓입니다:
+
+```
+gitGraph
+  commit
+  branch develop
+  checkout develop
+  commit id: "feature work"
+  checkout main
+  merge develop tag: "v1.0"
+```
+
+모든 작업은 **현재 체크아웃된 브랜치**에 대해 실행됩니다. `commit` 은 커밋을 추가하고, `branch` 는 현재 커밋에서 새 라인을 만들며, `checkout`(`switch` 의 별칭)은 커서를 이동하고, `merge` 는 다른 브랜치를 현재 브랜치로 가져옵니다.
+
+---
+
+## 2. 작업
+
+```
+commit                         # 현재 브랜치에 일반 커밋
+commit id: "init"              # 커밋에 명시적 id 부여
+commit tag: "v0.1"             # 릴리스 태그 추가
+commit type: HIGHLIGHT         # NORMAL (기본값) | HIGHLIGHT | REVERSE
+branch develop                 # 현재 커밋에서 브랜치 생성
+branch hotfix order: 3         # 레인 순서 고정
+checkout develop               # 커서 이동 (별칭: switch)
+merge develop tag: "v1.0"      # 브랜치를 현재 브랜치로 머지
+cherry-pick id: "abc"          # 현재 브랜치에 커밋 복사
+```
+
+- **`commit`** 은 선택적 `id:`, `tag:`, `type:` (`NORMAL` / `HIGHLIGHT` / `REVERSE`)을 받습니다.
+- **`branch NAME`** 은 선택적 `order:` 로 레인 배치를 제어합니다.
+- **`checkout` / `switch`** 는 상호 교환 가능합니다.
+- **`cherry-pick id:`** 는 커밋을 복사하며, 선택적 `parent:` 로 머지 커밋을 명확히 할 수 있습니다.
+
+---
+
+## 3. 방향
+
+그래프는 기본적으로 왼쪽에서 오른쪽으로 표시됩니다. 헤더에 인라인으로 방향을 설정합니다:
+
+```
+gitGraph TB:
+  commit
+  branch feature
+  checkout feature
+  commit
+  checkout main
+  merge feature
+```
+
+`LR` (기본값), `TB`, `BT` 가 허용됩니다. Mermaid 호환성을 위해 앞에 오는 `%%{init: {'gitGraph': {...}}}%%` 지시어나 YAML 프런트매터 `config:` 블록을 통해 설정을 제공할 수도 있습니다 (`mainBranchName`, `showCommitLabel`, `rotateCommitLabel`).
+
+---
+
+## 4. 엔진의 레이아웃 방식
+
+Mermaid 호환성이 차별점이지만 레이아웃이 핵심 작업입니다:
+
+- 작업 목록이 **순서대로 재생**되어 커밋 DAG를 구성하고 각 커밋을 브랜치 레인에 배치합니다.
+- 브랜치 레인은 등장 순서로 정렬됩니다(`order:` 로 재정의 가능); 머지 커넥터는 머지된 브랜치의 끝점에서 새 머지 커밋으로 라우팅됩니다.
+- 커밋 노드는 `type:` 으로 스타일이 적용됩니다 — HIGHLIGHT 커밋은 강조되고, REVERSE 커밋은 표시되며, 태그는 플래그로 렌더링됩니다. 체리픽은 소스까지 점선 복사 엣지를 그립니다.
+
+모든 커밋은 다운스트림 인터랙션을 위해 `data-*` (branch, id, type)를 가집니다.
+
+---
+
+## 5. 자주 발생하는 실수
+
+```
+# WRONG — no gitGraph header
+commit
+commit
+
+# WRONG — unknown operation
+gitGraph
+  rebase main
+
+# WRONG — unknown commit type
+gitGraph
+  commit type: SQUASH
+```
+
+문서는 반드시 `gitGraph` 로 시작해야 합니다; `commit` / `branch` / `checkout` / `switch` / `merge` / `cherry-pick` 만이 유효한 작업입니다; `type:` 은 반드시 `NORMAL`, `HIGHLIGHT`, `REVERSE` 중 하나여야 합니다. `%%` 는 Mermaid와 동일하게 주석을 시작합니다.
+
+---
+
+## 6. 표준 준수
+
+문법은 Mermaid `gitGraph` 문법 — 작업 키워드, `id:`/`tag:`/`type:` 옵션, `order:`, `%%{init}%%` 지시어, YAML 프런트매터 설정 — 을 따르므로, Mermaid 소스가 Schematex의 의존성 없는 엔진을 통해 그대로 렌더링됩니다.
+
+## 7. 로드맵
+
+연기됨: 병렬 커밋 압축, classDef를 통한 사용자 정의 커밋 테마, 레인 순서 이상의 브랜치별 색상 재정의.

@@ -1,0 +1,111 @@
+---
+title: IDEF0 기능 모델
+description: 구조적 분석 활동 모델 — ICOM 화살표(Input/Control/Output/Mechanism)로 연결된 기능 박스, 올바른 구조가 보장됩니다.
+---
+
+## IDEF0란
+
+**IDEF0**(Integration Definition for Function Modeling)은 **기능 분해** — 시스템이 *무엇을* 하는지 모델링하기 위한 미국 연방 표준입니다. 각 활동은 박스이며, 화살표는 역할에 따라 네 개의 고정된 면에 연결됩니다: **I**nput(왼쪽), **C**ontrol(위쪽), **O**utput(오른쪽), **M**echanism(아래쪽) — **ICOM** 규약. **[FIPS PUB 183](https://www.nist.gov/publications/integration-definition-function-modeling-idef0)** (1993)으로 표준화되어 있습니다.
+
+Schematex의 차별점은 모델이 **올바른 구조가 보장**된다는 것입니다. 화살표의 역할은 연결되는 박스의 면 *자체*이므로, 엔진이 ICOM 배치를 강제하고, 모든 참조를 해결하며, 분해 번호를 할당하고, 경계 화살표를 코딩(I1/C1/O1/M1…)하며, FIPS 3–6 박스 지침을 적용합니다 — 표준을 위반하는 모델은 잘못된 면에 화살표를 그리도록 두지 않고 거부합니다.
+
+<Playground initial={`idef0 "Manufacture product"
+node A0
+function A1 "Plan production"
+function A2 "Make parts"
+function A3 "Assemble product"
+input     A1 "Sales orders"
+control   A1 "Production schedule"
+A1 -> A2 "Work plan"
+input     A2 "Raw material"
+mechanism A2 "CNC machines"
+A2 -> A3 "Finished parts"
+output    A3 "Product"
+mechanism A3 "Assembly line"`} height={520} />
+
+---
+
+## 1. 첫 번째 IDEF0 다이어그램
+
+`idef0` 키워드, 선택적 제목, 선택적 `node`(다이어그램의 노드 번호), 그리고 **기능 박스**와 **ICOM 화살표**로 시작합니다:
+
+```
+idef0 "Fill order"
+function A1 "Receive order"
+input     A1 "Customer request"
+control   A1 "Order policy"
+mechanism A1 "Order clerk"
+output    A1 "Confirmed order"
+```
+
+`function ID "name"` 은 박스를 선언합니다(선언 순서대로). `node A0` 은 자식 노드 번호 도출에 사용되는 부모 노드 번호를 설정합니다(A0 → A1..An). FIPS 지침은 다이어그램당 3–6개 박스이며, 이 범위를 벗어나면 엔진이 경고합니다.
+
+---
+
+## 2. ICOM 경계 화살표
+
+각 키워드는 화살표를 박스의 특정 면에 고정하며, 그것이 곧 역할입니다:
+
+```
+input     A1 "Sales orders"        # 왼쪽 면으로 진입
+control   A1 "Production schedule" # 위쪽 면으로 진입 (활동을 지배함)
+output    A1 "Product"             # 오른쪽 면에서 나감
+mechanism A1 "CNC machines"        # 아래쪽 면으로 진입 (자원)
+```
+
+`input`, `control`, `mechanism` 은 다이어그램 프레임에서 박스 **안으로** 라우팅되고, `output` 은 박스에서 프레임 **밖으로** 라우팅됩니다. 엔진은 각 면의 경계 화살표를 코딩합니다(I1, I2 / C1 / O1 / M1).
+
+---
+
+## 3. 박스 간 흐름 화살표
+
+`->` 화살표는 두 박스를 연결합니다; 기본적으로 대상의 **input** 에 연결되지만, 대상의 ICOM 면을 명시할 수 있습니다:
+
+```
+A1 -> A2 "Work plan"            # 박스→박스; 기본적으로 A2의 input에 연결
+A2 -> A3.control "Parts spec"   # A3의 control(위쪽) 면에 연결
+input A2 "Raw material" (tunnel) # (tunnel)은 이 수준에서 화살표를 숨김
+```
+
+- `target.control` / `target.input` / `target.mechanism` 으로 연결 면을 선택합니다.
+- 흐름은 대상의 `.output` 에 **연결될 수 없습니다** — output은 박스를 나가는 것이지 들어오는 것이 아닙니다.
+- `(tunnel)` 은 터널된 화살표를 표시합니다 (FIPS에 따라 부모/자식 다이어그램에서 억제됨).
+
+---
+
+## 4. 계산된 구조적 강제
+
+이것이 차별점입니다 — 드로잉 도구와 달리 모델이 올바른 이유:
+
+1. **ICOM 배치 강제** — 역할은 박스의 기하학적 면에 대해 해결됩니다; 잘못된 역할이거나 `.output` 을 통해 박스에 *진입*하려는 흐름은 거부됩니다.
+2. **참조 해결** — 화살표가 명명하는 모든 박스 id는 선언되어야 합니다.
+3. **분해 번호 지정** — 박스는 연속된 박스 번호 1..n (오른쪽 하단 모서리)과 노드 번호(A0 → A1..An)를 얻습니다; 명시적 `#N` 번호는 연속성, 범위, 중복 여부가 확인됩니다.
+4. **경계 코딩** — 경계 화살표는 각 면에 따라 I1/C1/O1/M1으로 코딩됩니다.
+5. **박스 수 지침** — 박스가 3개 미만이거나 6개 초과이면 FIPS-183 경고가 발생합니다.
+
+---
+
+## 5. 자주 발생하는 실수
+
+```
+# WRONG — no idef0 header
+function A1 "x"
+
+# WRONG — a flow landing on the target's output
+A1 -> A2.output "bad"
+
+# WRONG — an unknown ICOM side word
+A1 -> A2.sideways "bad"
+```
+
+문서는 반드시 `idef0` 로 시작해야 합니다; 화살표는 `.input` / `.control` / `.mechanism` 만을 대상으로 할 수 있습니다; 참조된 모든 박스 id는 선언되어야 합니다. 키워드가 면을 인코딩하므로, 제어를 입력으로 잘못 그리는 실수가 불가능합니다 — 표준이 강제될 뿐, 제안에 그치지 않습니다.
+
+---
+
+## 6. 표준 준수
+
+표기법, ICOM 배치, 분해 번호 지정, 경계 코딩, 터널된 화살표, 3–6 박스 지침은 FIPS PUB 183 (IDEF0)을 따릅니다. `monochrome` 테마는 표준의 흑백 박스-화살표 외관을 재현합니다.
+
+## 7. 로드맵
+
+연기됨: 다중 페이지 분해 스플라이싱(자식 다이어그램), 노드 트리 / FEO 페이지, 참조 모델에 대한 호출 화살표.

@@ -1,0 +1,365 @@
+---
+title: 邏輯閘圖
+---
+
+## 關於邏輯閘圖
+
+**邏輯閘圖**展示布林函數在硬體中的實作方式——輸入從左側流經組合邏輯閘和正反器，在右側產生輸出。數位設計工程師使用它來記錄 RTL 意圖、驗證閘級網路表，以及教授布林代數。Schematex 的符號集源自 **[IEEE Std 91-1984 / ANSI Y32.14](https://standards.ieee.org/ieee/91/749/)**（特殊形狀的 ANSI 符號，美國預設）和 **[IEC 60617-12](https://webstore.iec.ch/publication/2765)**（均一矩形符號，國際預設），可在每張圖中自行選擇。
+
+DSL 採用函數式：你宣告訊號，並依名稱描述每個閘的輸入。版面配置和連線由相依性圖自動計算——無需手動指定座標。
+
+<Playground initial={`logic "1-bit Full Adder" style: ansi
+input A, B, Cin
+output Sum, Cout
+# XOR stage — sum bits
+s1 = XOR(A, B)
+Sum = XOR(s1, Cin)
+# AND/OR stage — carry
+c1 = AND(A, B)
+c2 = AND(s1, Cin)
+Cout = OR(c1, c2)`} height={440} />
+
+---
+
+## 1. 你的第一張邏輯閘圖
+
+最小的實用圖：兩個輸入、一個閘、一個輸出。
+
+<Playground initial={`logic "NAND check"
+input A, B
+output F
+F = NAND(A, B)`} />
+
+四條規則涵蓋 80% 的使用情境：
+
+1. 以關鍵字 `logic` 開頭，後面可選擇性地加上引號標題及 `style: ansi` 或 `style: iec`。
+2. 用 `input` 和 `output` 行宣告埠——逗號分隔的訊號名稱。
+3. 每個閘的格式為 `id = GATE_TYPE(input1, input2, …)`。`id` 成為一個命名訊號線。
+4. 名稱與閘 `id` 相符的 `output` 會自動連線；當名稱不同時，使用 `OUTPUT <- gate_id`。
+
+> 註解必須以 `#` 或 `--` 在一行的開頭（或在閘行的最後一個符記之後）。
+
+---
+
+## 2. 閘類型
+
+### 2.1 組合邏輯閘
+
+| DSL 關鍵字 | 函數 | ANSI 形狀 | IEC 符號 |
+|---|---|---|---|
+| `AND` | A · B | D 形本體 | 矩形 + `&` |
+| `OR` | A + B | 曲線本體 | 矩形 + `≥1` |
+| `NOT` | Ā | 三角形 + 氣泡 | 矩形 + `1` + 氣泡 |
+| `NAND` | ¬(A · B) | AND + 氣泡 | 矩形 + `&` + 氣泡 |
+| `NOR` | ¬(A + B) | OR + 氣泡 | 矩形 + `≥1` + 氣泡 |
+| `XOR` | A ⊕ B | OR + 額外弧線 | 矩形 + `=1` |
+| `XNOR` | ¬(A ⊕ B) | XOR + 氣泡 | 矩形 + `=1` + 氣泡 |
+| `BUF` | A（緩衝器） | 三角形，無氣泡 | 矩形 + `1` |
+
+<Playground initial={`logic "Gate gallery" style: ansi
+input A, B, C
+output Y_and, Y_or, Y_xor, Y_nand, Y_not
+Y_and = AND(A, B)
+Y_or = OR(A, B)
+Y_xor = XOR(A, B)
+Y_nand = NAND(A, B)
+Y_not = NOT(C)`} height={420} />
+
+### 2.2 特殊輸出緩衝器
+
+| DSL 關鍵字 | 函數 |
+|---|---|
+| `TRISTATE_BUF` | 三態緩衝器——當致能為低時輸出 Z |
+| `TRISTATE_INV` | 三態反相緩衝器 |
+| `OPEN_DRAIN` | 開汲極 / 開集極輸出（需要外部上拉） |
+| `SCHMITT` | 史密特觸發器——本體內帶有遲滯符號 |
+
+<Playground initial={`logic "Special buffers" style: ansi
+input A, EN
+output Y_tri, Y_od, Y_sch
+Y_tri = TRISTATE_BUF(A, EN)
+Y_od = OPEN_DRAIN(A)
+Y_sch = SCHMITT(A)`} height={340} />
+
+### 2.3 正反器與門閂
+
+| DSL 關鍵字 | 類型 | 主要接腳 |
+|---|---|---|
+| `DFF` | D 正反器（緣觸發） | D、CLK、Q、Q̄ |
+| `JKFF` | JK 正反器 | J、K、CLK、Q、Q̄ |
+| `SRFF` | SR 正反器 | S、R、CLK、Q、Q̄ |
+| `TFF` | T（切換）正反器 | T、CLK、Q、Q̄ |
+| `LATCH_SR` | SR 門閂（電位觸發，無時脈） | S、R、Q、Q̄ |
+| `LATCH_D` | D 門閂（致能 = 1 時透明） | D、EN、Q、Q̄ |
+
+<Playground initial={`logic "Flip-flop gallery" style: ansi
+input D, J, K, CLK, EN
+output Q_dff, Q_jk, Q_latch
+Q_dff = DFF(D, CLK)
+Q_jk = JKFF(J, K, CLK)
+Q_latch = LATCH_D(D, EN)`} height={420} />
+
+### 2.4 複雜組合邏輯
+
+| DSL 關鍵字 | 函數 |
+|---|---|
+| `MUX` | 多工器 |
+| `DEMUX` | 解多工器 |
+| `DECODER` | 二進位解碼器 |
+| `ENCODER` | 優先編碼器 |
+
+<Playground initial={`logic "Combinational MSI" style: ansi
+input A, B, S
+output Y_mux, Y_dec
+Y_mux = MUX(A, B, S)
+Y_dec = DECODER(A, B)`} height={340} />
+
+### 2.5 複雜時序邏輯
+
+| DSL 關鍵字 | 函數 |
+|---|---|
+| `COUNTER` | 通用二進位計數器（`CTR` 標籤，CLK/RESET/Q0–Q3） |
+| `SHIFT_REG` | 通用移位暫存器（`SRG` 標籤，CLK/SER/Q0–Q7） |
+
+<Playground initial={`logic "Sequential MSI" style: ansi
+input DATA, CLK, RESET
+output Q_cnt, Q_sr
+Q_cnt = COUNTER(CLK, RESET)
+Q_sr = SHIFT_REG(DATA, CLK)`} height={340} />
+
+---
+
+## 3. 輸入與輸出
+
+### 3.1 宣告埠
+
+```
+input A, B, Cin          # three input ports
+output Sum, Cout         # two output ports
+```
+
+`input` 或 `output` 清單中的每個名稱都成為整張圖中可用的命名訊號線。
+
+### 3.2 低態動作輸入
+
+在輸入清單中為訊號名稱加上 `~` 前綴，以標記為低態動作。算圖器在埠符號處繪製氣泡。
+
+```
+input ~nRESET, CLK, DATA
+```
+
+低態動作表示法也適用於閘的輸入清單內：
+
+```
+g1 = AND(~nRESET, CLK)
+```
+
+### 3.3 輸出接至閘
+
+若輸出 ID 與閘 ID 相符，連線為隱式：
+
+```
+output Sum        # Sum is also a gate id → auto-wired
+Sum = XOR(s1, Cin)
+```
+
+當名稱不同時，使用明確的賦值運算子：
+
+```
+output F
+q1 = NOR(A, B)
+F <- q1           # F draws from q1's output
+```
+
+<Playground initial={`logic "SR latch from NOR gates"
+input S, R
+output Q, Qn
+q_gate = NOR(R, Qn)
+qn_gate = NOR(S, Q)
+Q <- q_gate
+Qn <- qn_gate`} height={300} />
+
+---
+
+## 4. 符號樣式
+
+標頭行上的 `style:` 選項選擇符號標準。它套用到圖中的每個閘。
+
+| 值 | 標準 | 適用情境 |
+|---|---|---|
+| `ansi`（預設） | IEEE Std 91 — 特殊曲線形狀 | 美國教育、硬體文件 |
+| `iec` | IEC 60617-12 — 均一矩形 + 函數標籤 | 國際、歐洲工業 |
+
+```
+logic "ALU slice" style: iec
+```
+
+<Playground initial={`logic "1-bit Full Adder" style: iec
+input A, B, Cin
+output Sum, Cout
+# XOR stage — sum bits
+s1 = XOR(A, B)
+Sum = XOR(s1, Cin)
+# AND/OR stage — carry
+c1 = AND(A, B)
+c2 = AND(s1, Cin)
+Cout = OR(c1, c2)`} height={440} />
+
+<Playground initial={`logic "Gate gallery — IEC style" style: iec
+input A, B, C
+output Y_and, Y_or, Y_xor, Y_nand, Y_not
+Y_and = AND(A, B)
+Y_or = OR(A, B)
+Y_xor = XOR(A, B)
+Y_nand = NAND(A, B)
+Y_not = NOT(C)`} height={420} />
+
+---
+
+## 5. 模組區塊
+
+使用 `module` 將閘分組到一個帶標籤的子電路框中。模組區塊適合用來記錄階層式設計——每個模組算圖為圍繞其成員閘的命名矩形。
+
+```
+logic "Hierarchical adder"
+input A, B, Cin
+output Sum, Cout
+
+module "Half Adder" {
+  s1 = XOR(A, B)
+  c1 = AND(A, B)
+}
+
+Sum = XOR(s1, Cin)
+Cout = OR(c1, AND(s1, Cin))
+```
+
+模組語法規則：
+- `module "Label" {` — 開啟一個模組（引號標籤或裸識別符）。`{` 必須與 `module` 在同一行。
+- 獨立行上的 `}` 關閉最近開啟的模組。
+- 模組可以嵌套。
+
+---
+
+## 6. 標籤與註解
+
+- **圖標題：** `logic "Full Adder"` — 僅限第一行。
+- **閘訊號名稱：** `id = GATE(…)` 中的 `id` 既是閘名稱也是輸出線名稱。
+- **輸出標籤：** `output Sum` — 輸出埠標籤預設與訊號名稱相符。
+- **低態動作標記：** 埠或閘輸入上的 `~` 前綴。
+- **註解：** `#` 或 `--` 在一行的開頭，或在行中最後一個有意義的符記之後。
+
+---
+
+## 7. 保留字與跳脫
+
+**行首保留字：** `logic`（標頭）、`input`、`output`、`module`、`}`。
+
+**保留運算子符記** — 避免在訊號名稱中使用：`=`、`(`、`)`、`,`、`<-`、`~`。
+
+**訊號名稱規則：** 必須符合 `[a-zA-Z_][a-zA-Z0-9_]*`。大寫和小寫均接受；閘類型關鍵字（`AND`、`OR` 等）在解析器中不區分大小寫。
+
+---
+
+## 8. 常見錯誤
+
+| 你寫的 | 解析器的回應 | 修正方式 |
+|---|---|---|
+| `f = and(A, B)`（小寫閘） | 接受——閘類型不區分大小寫 | `AND` 和 `and` 均有效 |
+| `output F` 後接 `F <- q1` 但 `q1` 未宣告 | `LogicParseError: Unknown signal "q1"` | 在參照之前將 `q1` 宣告為閘 |
+| `input A B C`（空格，無逗號） | 解析器只取 `A`；`B` 和 `C` 被忽略 | 使用逗號：`input A, B, C` |
+| `F = BUFFER(A)` | `LogicParseError: Unknown gate type: BUFFER` | 使用 `BUF` |
+| `module FullAdder {`（無 `{` 大括號） | 行不符合模組模式——靜默跳過 | 開頭的 `{` 必須與 `module` 在同一行 |
+| 標頭上的 `style: IEEE` | 未知的樣式值——靜默預設為 `ansi` | 使用 `style: ansi` 或 `style: iec` |
+
+---
+
+## 9. 語法（EBNF）
+
+```text
+document    = header statement*
+
+header      = "logic" ( WS quoted-string )? ( WS "style:" WS style )? NEWLINE
+style       = "ansi" | "iec"
+quoted-string = '"' any-char-but-quote* '"'
+
+statement   = blank | comment | input-decl | output-decl | gate-def | assign | module-block
+
+comment     = ( "#" | "--" ) any NEWLINE
+
+input-decl  = "input" WS port-list NEWLINE
+output-decl = "output" WS port-list NEWLINE
+port-list   = port-id ( "," WS? port-id )*
+port-id     = "~"? id
+
+gate-def    = id WS "=" WS gate-type "(" input-list ")" NEWLINE
+input-list  = ( "~"? id ) ( "," WS? ( "~"? id ) )*
+
+assign      = id WS "<-" WS id NEWLINE
+
+module-block = module-open ( statement | module-block )* module-close
+module-open  = "module" WS ( quoted-string | id ) WS? "{" NEWLINE
+module-close = "}" NEWLINE
+
+gate-type   = "AND" | "OR" | "NOT" | "NAND" | "NOR" | "XOR" | "XNOR" | "BUF"
+            | "TRISTATE_BUF" | "TRISTATE_INV" | "OPEN_DRAIN" | "SCHMITT"
+            | "DFF" | "JKFF" | "SRFF" | "TFF"
+            | "LATCH_SR" | "LATCH_D"
+            | "MUX" | "DEMUX" | "DECODER" | "ENCODER"
+            | "COUNTER" | "SHIFT_REG"
+            // all case-insensitive
+
+id          = [a-zA-Z_] [a-zA-Z0-9_]*
+```
+
+權威來源：`src/diagrams/logic/parser.ts`。若本頁與解析器有出入，以解析器為準——請開立 issue 回報。
+
+---
+
+## 10. 標準合規性
+
+Schematex 邏輯閘圖遵循 **IEEE Std 91-1984 / ANSI Y32.14**（特殊形狀符號）和 **IEC 60617-12**（帶函數限定符的矩形符號）。
+
+目前已實作的內容：
+
+- ✅ 全部八種組合邏輯閘：AND、OR、NOT、NAND、NOR、XOR、XNOR、BUF
+- ✅ 特殊輸出緩衝器：TRISTATE_BUF、TRISTATE_INV、OPEN_DRAIN、SCHMITT
+- ✅ 四種緣觸發正反器：DFF、JKFF、SRFF、TFF
+- ✅ 兩種門閂：LATCH_SR、LATCH_D
+- ✅ 組合 MSI：MUX、DEMUX、DECODER、ENCODER
+- ✅ 時序 MSI：COUNTER、SHIFT_REG
+- ✅ 輸入和埠上的低態動作（`~`）表示法
+- ✅ ANSI 和 IEC 符號樣式，可在每張圖中選擇
+- ✅ 模組分組區塊
+- ✅ 自動 DAG 版面配置（拓撲排序，從左到右的訊號流）
+- ⏳ 明確扇出線路由（帶接合點的共享網路）
+- ⏳ 多位元匯流排表示法（線上的 `/N` 斜線標注）
+- ⏳ 正反器上的低態時脈輸入
+
+參考資料：
+
+- IEEE Std 91-1984 / ANSI Y32.14: *IEEE Standard Graphic Symbols for Logic Functions*
+- IEEE Std 91a-1991: Supplement to IEEE Std 91
+- IEC 60617-12: *Graphical symbols for diagrams — binary logic elements*
+
+---
+
+## 11. 相關範例
+
+<RelatedExamples slugs={[
+  'logic-full-adder',
+]} />
+
+---
+
+## 12. 路線圖
+
+**計畫中——目前尚無法解析。** 請勿在今天生成的 DSL 中使用；解析器會拒絕或忽略它們。
+
+- **明確扇出 / 接合點** — 由多個閘輸入共享的命名線路，在分支點以接合點渲染。
+- **多位元匯流排表示法** — 線上的 `bus N` 標注，表示 N 位元訊號群組。
+- **低態時脈** — 正反器輸入清單中的 `~CLK`，在時脈三角形上渲染氣泡。
+- **回授弧** — 從閘輸出明確連回較早閘輸入的線路，路由在主訊號路徑上方。
+- **參數化閘扇入** — `AND(A, B, C, D)` 直接渲染一個 4 輸入 AND 閘。
+
+如果你需要其中任何功能，請在 GitHub issues 中追蹤進度。

@@ -1,0 +1,217 @@
+---
+title: Sequential Function Chart（SFC）
+description: Schematex の SFC エンジンを使って、IEC 61131-3 §6.5 準拠のシーケンシャル・ファンクション・チャートをテキスト DSL から生成する方法を解説します。
+---
+
+## シーケンシャル・ファンクション・チャートについて
+
+**Sequential Function Chart（SFC）** は、サイクリック PLC プログラムの**ステートマシン表現**です。*現在*何が起きているか、*次の*フェーズへのトリガーが何かを示します。**[IEC 61131-3:2013 §6.5](https://en.wikipedia.org/wiki/Sequential_function_chart)** で定義される 5 番目の言語であり、**IEC 60848 GRAFCET** のエンジニアリングサブセットです。**[ladder](/docs/ladder)** と **[fbd](/docs/fbd)** がスキャンごとの組み合わせロジックを記述するのに対し、SFC はそれらをまたいだ時系列の順序付けを記述します：どのステップがアクティブか、いつ次に引き渡すか、何が並列実行されるか。
+
+製造コードでは、ネットワークの約 10% が SFC で記述されていますが、非自明なシーケンシャルマシンのほぼ 100% に少なくとも 1 つの SFC チャートがあります。バッチ反応器、ロボットセル、梱包ライン、組立ステーションなどが典型例です。これまで優れたオープンソースの SFC DSL が存在せず、ベンダーの IDE（Studio 5000、TIA Portal、CODESYS）が唯一の選択肢でした。Schematex は AI 生成向けに設計された IEC 61131-3 SFC サブセットを提供します。
+
+**[state](/docs/state)**（リアクティブ UI とライフサイクル FSM 向けの UML ステートチャート）とは異なります：SFC には*サイクリックスキャン*セマンティクス、二重境界線の初期ステップ、アクションブロック修飾子（N/S/R/L/D/P）、バーベースの分岐（単一バー = OR、二重バー = AND）があります。
+
+<Playground initial={`
+  sfc "Bottle Filling"
+
+  var StartBtn: bool
+  var TankLevel: real
+  var DoneBtn: bool
+
+  step S0 [initial]
+    N FillValve_Closed
+
+  step S1 [label: "Filling"]
+    N FillValve_Open
+
+  step S2 [label: "Done"]
+    N Confirm_Done
+
+  transition from: S0 to: S1: StartBtn
+  transition from: S1 to: S2: TankLevel >= 80.0
+  transition from: S2 to: S0: DoneBtn`} height={520} />
+
+---
+
+## 1. はじめてのチャート
+
+2 つのステップ、1 つのトランジション、初期マーカー：
+
+```
+sfc
+step S0 [initial]
+step S1
+transition from: S0 to: S1: Trigger
+```
+
+`S0` は**二重境界線矩形**（IEC 初期ステップ規則）でレンダリングされ、`S1` は単一境界線矩形でレンダリングされます。その間に条件テキスト `Trigger` が右に表示された水平**トランジションバー**があります。
+
+`[initial]` を忘れた場合、最初に宣言されたステップが自動的に初期に昇格されます。
+
+---
+
+## 2. ステップ
+
+```
+step S_Filling [label: "Filling tank"]
+  N FillValve_Open
+  D Mixer_Run T#30s
+  P StartChime
+```
+
+ステップには以下があります。
+
+- **ID**（チャート内で一意）— トランジションとジャンプで使用されます。
+- オプションの `[label: "..."]` — 表示用。
+- オプションの `[initial]`（1 つのみ許可）または `[final]`（ベンダーストップステップ、三重境界線）。
+- 1 レベルインデントされた 0 個以上の**アクションブロック**、それぞれに修飾子文字。
+
+---
+
+## 3. トランジション
+
+**トランジション**はブーリアン条件を持つ 2 つのステップ間の有向リンクを宣言します。
+
+```
+transition from: S0 to: S1: StartBtn
+transition from: S1 to: S2: TankLevel >= 80.0 AND NOT EmergencyStop
+transition T_Reset from: S5 to: S0: ResetBtn
+```
+
+条件テキストは不透明なものとして扱われます。Schematex はそのまま保存してバーの横にレンダリングします。すべてのトランジションには空でない条件が必要です；無条件リンクには `TRUE` を使用します。
+
+`from` と `to` がボディ内で線形に隣接しているトランジションはステップ間のインラインバーとしてレンダリングされます。線形に隣接していないペア（例：前のステップへのジャンプ）は、チャートの左右に**マージン矢印**としてレンダリングされます。
+
+---
+
+## 4. アクション修飾子
+
+アクションはステップの右側に付属し、修飾子文字に従って実行されます。
+
+| 修飾子 | 動作 |
+|---|---|
+| `N` | ステップがアクティブな間アクティブ（最も一般的） |
+| `S` | ストア — エントリー時に true に設定、対応する `R` まで維持 |
+| `R` | リセット — 以前にストアされたアクションをクリア |
+| `L` | 時間制限 — ステップエントリーから T まで有効 |
+| `D` | 時間遅延 — エントリーから T 後にアクティベート |
+| `P` | パルス — PLC 1 スキャンのみ true |
+| `P0` | ディアクティベート時にパルス（Siemens） |
+| `P1` | `P` の同義語（Siemens） |
+| `SD` | ストア＆遅延 |
+| `DS` | 遅延＆ストア |
+| `SL` | ストア＆時間制限 |
+
+時間パラメーター付き修飾子（L、D、SD、DS、SL）は継続時間リテラルを取ります。
+
+```
+step S1
+  L LimitedRun T#5s
+  D DelayedRun T#2s
+```
+
+---
+
+## 5. 選択分岐（単一バー — OR）
+
+スキャンごとに**1 つの**分岐のみが実行され、トランジション条件によって選択されます。
+
+```
+step S0 [initial]
+step S_Pick
+
+alt from: S_Pick:
+  branch [priority: 1]:
+    transition: IsExpressShipping
+    step S_Express
+      N PrepExpressBox
+    transition: TRUE
+  branch [priority: 2]:
+    transition: IsStandardShipping
+    step S_Standard
+      N PrepStandardBox
+    transition: TRUE
+merge_to: S_Ship
+
+step S_Ship
+
+transition from: S0 to: S_Pick: ProductOrdered
+transition from: S_Ship to: S0: Shipped
+```
+
+分岐の上下にある単一の水平線が発散バーと収束バーです。各分岐は**エントリートランジション**（発散バーと最初のステップの間）で始まり、**エグジットトランジション**（最後のステップと収束バーの間）で終わります。
+
+---
+
+## 6. 同時分岐（二重バー — AND）
+
+**すべての**分岐が並行して実行され、チャートはすべての分岐が完了するまで収束で待機します。
+
+```
+sim from: S_Heat: TRUE
+  branch:
+    step S_Bake
+      D Oven_Run T#15m
+  branch:
+    step S_Cool
+      L Cooler_On T#5m
+merge_to: S_Done: Bake_Done AND Cool_Done
+```
+
+分岐の上下にある 2 本の平行水平線（4px ギャップ）が同時バーです。共有の**上部トランジション**（ここでは `TRUE`）が発散をトリガーし；共有の**下部トランジション**（`Bake_Done AND Cool_Done`）が収束の前にチェックされます。
+
+---
+
+## 7. ジャンプ（ループ）
+
+ターゲットが前のステップであるトランジションはマージン矢印としてレンダリングされます。
+
+```
+step S0 [initial]
+step S1
+step S2
+transition from: S0 to: S1: A
+transition from: S1 to: S2: B
+transition T_Reset from: S2 to: S0: ResetBtn
+transition from: S2 to: S1: NOT ResetBtn
+```
+
+前進方向の `S2 → S1`（バックエッジ）は右側にマージン矢印を取り；`S0` への `T_Reset` ジャンプは左側に取ります。各マージン矢印にはターゲット ID と条件が表示されます。
+
+---
+
+## 8. 変数
+
+`ladder` と `fbd` から再利用されます。
+
+```
+var StartBtn: bool
+var TankLevel: real
+var BakeReady: bool
+var Counter: counter
+var T1: timer
+```
+
+条件とアクションで宣言された変数はバリデーションされません。Schematex は `state` がガードとアクションを扱うのと同様に、条件 / アクションのボディテキストを不透明な文字列として扱います。
+
+---
+
+## 9. v0.1 の制限事項
+
+- **入れ子分岐**（alt-in-sim、sim-in-alt）はパースできますが、レイアウトの縮小ヒューリスティックが基本的なため、深い入れ子は重複が生じる場合があります。
+- **S/R アクションペアの破線コネクター**（`S` アクションと別の場所の対応する `R` を視覚的にリンク）は後回しです。
+- **アクティブステップのランタイムインジケーター**（現在アクティブなステップへの黄色塗りつぶし）は後回しです。PLC ランタイム状態を表示するデバッグ統合に有用です。
+- **GRAFCET 強制オーダー**（IEC 60848 のみの機能のためスコープ外）。
+- **Final ステップ** は `[final]` でパースできますが、initial と同じ二重境界線でレンダリングされます；IEC の三重境界線規則は後回しです。
+
+---
+
+## 関連サンプル
+
+サンプルギャラリーからすぐに使えるシナリオ：
+
+<RelatedExamples slugs={[
+  'sfc-bottle-filling',
+  'sfc-bake-cool-concurrent',
+  'sfc-order-routing-alt',
+]} />

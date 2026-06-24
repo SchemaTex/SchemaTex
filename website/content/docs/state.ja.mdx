@@ -1,0 +1,364 @@
+---
+title: 状態図
+---
+
+## 状態図とは
+
+**状態図**（ステートチャートまたは状態機械図とも呼ばれる）は、リアクティブシステムのライフサイクルを記述します——システムがとりうる状態、何のイベントが状態間の遷移を引き起こすか、状態への入場・退場・滞在中に実行されるアクション。ソフトウェアアーキテクトはワークフローの仕様記述に使用し、制御エンジニアはリアクティブコントローラの設計に使用し、UI デザイナーは画面ライフサイクルのモデリングに使用します。**OMG UML 2.5.1 §14**（状態機械）と、コンポジット状態・ヒストリー・直交領域を導入した Harel の1987年の*ステートチャート*拡張で形式化されています。
+
+Schematex は **[Mermaid `stateDiagram-v2`](https://mermaid.js.org/syntax/stateDiagram.html)** の厳密なスーパーセットを実装しています——すべての Mermaid の例をそのまま貼り付けて動作し、Mermaid が公開していない UML 2.5 の機能も利用できます：`entry / exit / do` アクティビティ、完全な `trigger [guard] / action` 遷移ラベル、`terminate` とヒストリー擬似状態、junction、Schematex スタイルのブロックノート。レイアウトはフローチャートと同じ Sugiyama 階層化 DAG エンジンを使用するため、サイクル・コンポジット状態・クロスバウンダリ遷移もすべてクリーンにルーティングされます。
+
+<Playground initial={`stateDiagram-v2
+direction TB
+
+[*] --> Idle
+
+Idle --> Authenticating : submit [form_valid] / clearErrors()
+Authenticating --> Authenticated : ok / storeToken()
+Authenticating --> Idle : fail [retries < 3] / incrementRetries()
+Authenticating --> Locked : fail [retries >= 3]
+
+state Decide <<choice>>
+Authenticated --> Decide
+Decide --> Admin : [role == "admin"]
+Decide --> User  : [role == "user"]`} height={520} />
+
+---
+
+## 1. 最初の状態図
+
+最小限の実用的な状態図：初期状態、最終状態、1つの遷移。
+
+<Playground initial={`stateDiagram-v2
+[*] --> Running
+Running --> [*] : done`} />
+
+3つのルールで使用例の80%をカバーできます：
+
+1. `stateDiagram-v2`（Mermaid スタイル）または `state`（Schematex スタイル）ヘッダーで始めます。
+2. 暗黙的な開始ノード（`-->` の左側にある場合）または終了ノード（右側にある場合）に `[*]` を使用します。
+3. `-->` で状態をつなぎます。`:` の後にラベルを追加します——完全な UML 形式は `trigger [guard] / action` です。
+
+デフォルトの方向は Mermaid に合わせて **TB**（上から下）です。独立した行に `direction LR` を記述するか、ヘッダーに `[direction: LR]` を記述してオーバーライドします。
+
+> コメントは `%%`（Mermaid）、`#`、または `//` を使用します。
+
+---
+
+## 2. 状態の宣言
+
+状態は遷移で初めて参照されたときに自動的に作成されますが、明示的な宣言でラベルと形状を制御できます。
+
+```
+state Authenticating
+state "Awaiting Approval" as Approval
+Idle: Waiting for input
+```
+
+| 形式 | 効果 |
+|---|---|
+| `Idle` | 裸の ID — `Idle` を id と label の両方として持つシンプルな状態として作成される |
+| `state Idle` | 明示的な宣言；同じ効果 |
+| `state "Awaiting Approval" as Approval` | エイリアス — `Awaiting Approval` と表示し、遷移では `Approval` で参照する |
+| `Idle: Waiting for input` | インラインラベル — `Idle` が id、`Waiting for input` が可視ラベル |
+
+---
+
+## 3. 擬似状態
+
+擬似状態は、安定した待機状態を表すことなく、状態機械のフローを制御します。
+
+| Mermaid | Schematex | シンボル | 目的 |
+|---|---|---|---|
+| `[*]`（ソース） | `initial id` | 塗りつぶされた黒い円 | リージョンのエントリポイント |
+| `[*]`（ターゲット） | `final id` | 外側のリングの中の塗りつぶされた円 | 正常終了 |
+| `state X <<choice>>` | `choice X` | ダイアモンド | 動的分岐（ガードを実行時に評価） |
+| `state X <<fork>>` | `fork X` | 太い黒いバー | 1入力 → N 並行出力 |
+| `state X <<join>>` | `join X` | 太い黒いバー | N 入力 → 1出力 |
+| — | `junction X` | 小さな塗りつぶされた円 | 静的マージポイント |
+| — | `history X` | `H` のある円 | 最後に訪れたサブ状態に再入場 |
+| — | `dhistory X` | `H*` のある円 | ディープヒストリー（再帰的） |
+| — | `terminate X` | `×` マーク | 異常終了（クリーンアップなし） |
+| — | `entry_point X` / `exit_point X` | コンポジットボーダー上の中空円 | 名前付きエントリ / エグジットポイント |
+
+`[*]` は Mermaid のエイリアスで、常に方向によって解決されます：`-->` の**ソース**側では `initial`、**ターゲット**側では `final`。各コンポジットスコープは独自のペアを持ちます。
+
+<Playground initial={`stateDiagram-v2
+[*] --> Idle
+state Decide <<choice>>
+state Joiner <<join>>
+Idle --> Decide : evaluate
+Decide --> Authorized : [role == "admin"]
+Decide --> Joiner    : [role == "user"]
+Authorized --> Joiner
+Joiner --> [*]`} height={360} />
+
+---
+
+## 4. 遷移
+
+完全な UML 2.5 遷移ラベルは3つのオプションパーツを持ちます：
+
+```
+trigger [guard] / action
+```
+
+| フィールド | 意味 | 例 |
+|---|---|---|
+| `trigger` | 遷移を発火させるイベント | `submit`、`tick`、`timeout(30s)` |
+| `[guard]` | トリガー時に評価されるブール式 | `[count > 0]`、`[role == "admin"]` |
+| `/ action` | 遷移が取られたときに実行されるアクション | `/ log(); increment()` |
+
+3つすべてオプションです——ラベルなしの遷移は匿名（完了遷移）です。
+
+```
+A --> B                                      %% 匿名完了
+A --> B : tick                                %% トリガーのみ
+A --> B : [count > 0]                         %% ガードのみ
+A --> B : / clearErrors()                     %% アクションのみ
+A --> B : tick [count > 0] / log()            %% 3つすべて
+A --> B : tick, tock [enabled] / handle()     %% マルチトリガー
+```
+
+長いラベルはレーン幅を超えると自動的に折り返されます。
+
+---
+
+## 5. コンポジット状態
+
+コンポジット状態は、ネストされたサブ状態チャートを含みます。外側の状態は独自の初期 / 最終擬似状態を持つコンテナとして機能します。
+
+```
+state Playing {
+  [*] --> Buffering
+  Buffering --> Streaming : buffer_full
+  Streaming --> Buffering : underflow
+}
+```
+
+Mermaid 構文（`state X { … }`）と Schematex 形式（`composite X { … }`）の両方が受け入れられます。アクティビティはコンポジットブロック内で宣言できます：
+
+```
+state Playing {
+  entry / startBuffer()
+  exit / stopBuffer()
+  do / decodeFrames()
+
+  [*] --> Buffering
+  Buffering --> Streaming : buffer_full
+  Streaming --> Buffering : underflow
+}
+```
+
+レンダラーはコンポジットをタイトルバーとアクティビティコンパートメントを持つスタイル付きクラスターとして描画します。
+
+<Playground initial={`stateDiagram-v2
+
+[*] --> Stopped
+
+Stopped --> Playing : play / loadSource()
+Playing --> Paused  : pause
+Paused  --> Playing : play
+Playing --> Stopped : stop / releaseSource()
+
+state Playing {
+  entry / startBuffer()
+  exit / stopBuffer()
+  do / decodeFrames()
+
+  [*] --> Buffering
+  Buffering --> Streaming : buffer_full
+  Streaming --> Buffering : underflow
+}`} height={520} />
+
+クロスバウンダリ遷移（`Outside --> Inside`）は自動的にルーティングされます——Sugiyama レイアウトがソース / ターゲットをコンポジットボーダーを通して引き出します。
+
+---
+
+## 6. 並行リージョン
+
+コンポジットの内側で、`--` セパレーター（Mermaid）または `---`（Schematex）がボディを並行して実行される直交リージョンに分割します。
+
+```
+state Active {
+  [*] --> r1_idle
+  r1_idle --> Connected : connect
+  --
+  [*] --> r2_idle
+  r2_idle --> Working : start
+}
+```
+
+`fork` と `join` を使用してリージョン間でスポーン / 同期します：
+
+<Playground initial={`stateDiagram-v2 [direction: LR]
+
+[*] --> F
+state F <<fork>>
+state J <<join>>
+F --> A
+F --> B
+A --> J : done_a
+B --> J : done_b
+J --> [*]`} height={300} />
+
+---
+
+## 7. ノート
+
+短いアノテーションを任意の状態のどちら側にも付加できます。
+
+```
+note right of Checking : Calls /api/verify synchronously.
+note left of Idle : Anonymous landing state
+```
+
+複数行のノートは Mermaid の `end note` ブロック形式、または Schematex の `{ … }` 形式を使用します：
+
+```
+note right of Authenticating
+  Stores the JWT in localStorage
+  on success.
+end note
+
+note left_of Idle {
+  Anonymous landing state.
+  Returns here on 401.
+}
+```
+
+---
+
+## 8. セルフ遷移
+
+遷移 `A --> A` はノードの右側に曲線弧としてレンダリングされます。
+
+```
+Idle --> Idle : poll / refresh()
+```
+
+ラベルは弧の横、バウンディングボックスの外側に配置されます。
+
+---
+
+## 9. レイアウトの方向
+
+Schematex はデフォルトで Mermaid に合わせて **`TB`**（上から下）です。ヘッダーでオーバーライドします：
+
+```
+stateDiagram-v2
+direction LR
+
+[*] --> Loading
+Loading --> Ready
+```
+
+または Schematex のブラケット属性形式で：
+
+```
+state "Order Lifecycle" [direction: TB]
+
+[*] --> Pending
+Pending --> Paid
+```
+
+`BT` と `RL` はパーサーが受け付けますが、それぞれ `TB` と `LR` に正規化されます（レイアウトエンジンはまだ視覚的な順序を反転しません）。
+
+---
+
+## 10. よくある間違い
+
+| 記述した内容 | パーサーの反応 | 修正方法 |
+|---|---|---|
+| `[*] -> [*]` | 同じ行で初期エイリアスと最終エイリアスの両方として扱われる | `[*]` エイリアスの間に常に少なくとも1つの名前付き状態を入れる |
+| `state X <<branch>>` | `branch` はステレオタイプではない | `<<choice>>`（動的）または `<<fork>>` / `<<join>>` を使用 |
+| `note right of`<br/>`text` | 複数行ノートは `end note` で終わる必要がある | 独立した行に `end note` を追加 |
+| `composite X`（中括弧なし） | 裸の状態宣言として扱われる | ブロックを開く：`composite X {` |
+| コンポジット内の `direction LR` | リージョンごとの方向はまだサポートされていない | ヘッダー行に方向を設定する |
+
+---
+
+## 11. 文法（EBNF）
+
+```text
+document     = header statement*
+header       = ("stateDiagram-v2" | "stateDiagram" | "state")
+                ( title )? ( "[" attrs "]" )? NEWLINE
+attrs        = attr ("," attr)*
+attr         = "direction:" ("TB" | "LR")
+
+statement    = comment
+             | direction-stmt              %% direction LR / TB / BT / RL
+             | state-decl
+             | alias-decl                  %% state "Long" as ID
+             | stereotype-decl             %% state ID <<choice|fork|join|end>>
+             | pseudo-decl                 %% initial / final / choice / ... ID
+             | composite-block             %% (state | composite) ID { ... }
+             | label-stmt                  %% ID : description
+             | transition
+             | note-stmt
+             | region-sep                  %% --  or  ---
+
+transition   = (ID | "[*]") "-->" (ID | "[*]") ( ":" trans-label )? NEWLINE
+trans-label  = trigger? ( "[" guard "]" )? ( "/" action )?
+
+note-stmt    = "note" side ID ":" inline-text NEWLINE
+             | "note" side ID NEWLINE  text-line+  ("end note" | "}") NEWLINE
+side         = "left of" | "right of" | "left_of" | "right_of"
+
+comment      = "%%" any | "#" any | "//" any
+
+ID           = [A-Za-z_] [A-Za-z0-9_]*
+```
+
+権威ある情報源：`src/diagrams/state/parser.ts`。パーサーとの相違がある場合は、パーサーが優先されます——Issue を作成してください。
+
+---
+
+## 12. 標準準拠
+
+| 機能 | UML 2.5 | Harel 1987 | Mermaid | Schematex |
+|---|:-:|:-:|:-:|:-:|
+| シンプルな状態 | ✅ | ✅ | ✅ | ✅ |
+| コンポジット（ネスト）状態 | ✅ | ✅ | ✅ | ✅ |
+| 初期 / 最終擬似状態 | ✅ | ✅ | ✅ | ✅ |
+| Choice 擬似状態 | ✅ | — | ✅ | ✅ |
+| Fork / join | ✅ | ✅ | ✅ | ✅ |
+| Junction 擬似状態 | ✅ | — | ❌ | ✅ |
+| ヒストリー（浅い / 深い） | ✅ | ✅ | ❌ | ✅ |
+| Terminate 擬似状態 | ✅ | — | ❌ | ✅ |
+| `entry / exit / do` アクティビティ | ✅ | ✅ | ❌ | ✅ |
+| `trigger [guard] / action` ラベル | ✅ | ✅ | ❌（ラベルのみ） | ✅ |
+| 内部遷移 | ✅ | ✅ | ❌ | ✅ |
+| 並行リージョン | ✅ | ✅ | ✅ | ✅ |
+| 状態へのノート | — | — | ✅ | ✅ |
+| クロスコンポジット遷移 | ✅ | ✅ | ❌ | ✅ |
+| `[*]` 初期 / 最終エイリアス | — | — | ✅ | ✅ |
+
+Schematex は Mermaid `stateDiagram-v2` の厳密なスーパーセットです。Mermaid の例はそのまま貼り付けて動作し、追加の UML 2.5 要素（アクティビティ、ヒストリー、junction、terminate、完全な遷移ラベル）もサイドバイサイドで受け入れられます。
+
+参考文献：
+
+- OMG UML 2.5.1 — *Unified Modeling Language*: https://www.omg.org/spec/UML/2.5.1/
+- Harel (1987) — *Statecharts: A visual formalism for complex systems*, Science of Computer Programming 8(3)
+- Mermaid stateDiagram-v2 — https://mermaid.js.org/syntax/stateDiagram.html
+
+---
+
+## 13. ロードマップ
+
+- **`BT` / `RL` 方向** — 現在はパース時に `TB` / `LR` に正規化；視覚的な反転は保留中
+- **リージョンごとの方向オーバーライド** — コンポジットブロック内の `direction LR`（現在は暗黙的に無視）
+- **サブマシン参照** — `state Foo : Submachine` ステレオタイプレンダリング
+- **内部遷移コンパートメント** — 状態ボディ内の `tick [g] / a` 行の明示的な視覚的区切り
+
+---
+
+## 関連する例
+
+サンプルギャラリーからすぐに使えるシナリオ：
+
+<RelatedExamples slugs={[
+  'state-traffic-light',
+  'state-ecommerce-order',
+]} />

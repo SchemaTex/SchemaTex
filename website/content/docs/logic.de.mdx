@@ -1,0 +1,365 @@
+---
+title: Logikgatter-Diagramm
+---
+
+## Über Logikgatter-Diagramme
+
+Ein **Logikgatter-Diagramm** zeigt, wie Boolesche Funktionen in Hardware implementiert werden – Eingaben fließen von links durch kombinatorische Gatter und Flipflops zu Ausgaben auf der rechten Seite. Digitaldesign-Ingenieure nutzen sie, um RTL-Intent zu dokumentieren, Gate-Level-Netlists zu verifizieren und Boolesche Algebra zu lehren. Schematex leitet seinen Symbolsatz von **[IEEE Std 91-1984 / ANSI Y32.14](https://standards.ieee.org/ieee/91/749/)** ab (charakteristische ANSI-Formen, der US-Standard) und **[IEC 60617-12](https://webstore.iec.ch/publication/2765)** (einheitliche Rechtecksymbole, der internationale Standard), pro Diagramm wählbar.
+
+Der DSL ist funktional: Sie deklarieren Signale und beschreiben die Eingaben jedes Gatters namentlich. Layout und Verdrahtung werden automatisch aus dem Abhängigkeitsgraphen berechnet – keine manuellen Koordinaten.
+
+<Playground initial={`logic "1-bit Full Adder" style: ansi
+input A, B, Cin
+output Sum, Cout
+# XOR stage — sum bits
+s1 = XOR(A, B)
+Sum = XOR(s1, Cin)
+# AND/OR stage — carry
+c1 = AND(A, B)
+c2 = AND(s1, Cin)
+Cout = OR(c1, c2)`} height={440} />
+
+---
+
+## 1. Ihr erstes Logikgatter-Diagramm
+
+Das kleinste nützliche Diagramm: zwei Eingaben, ein Gatter, ein Ausgang.
+
+<Playground initial={`logic "NAND check"
+input A, B
+output F
+F = NAND(A, B)`} />
+
+Vier Regeln decken 80 % der Anwendungsfälle ab:
+
+1. Beginnen Sie mit dem Schlüsselwort `logic`, optional gefolgt von einem zitierten Titel und `style: ansi` oder `style: iec`.
+2. Deklarieren Sie Ports mit `input`- und `output`-Zeilen – durch Kommas getrennte Signalnamen.
+3. Jedes Gatter ist `id = GATTER_TYP(eingang1, eingang2, …)`. Die `id` wird ein benannter Signaldraht.
+4. Ein `output`-Name, der einer Gatter-`id` entspricht, wird automatisch verdrahtet; verwenden Sie `OUTPUT <- gate_id`, wenn die Namen unterschiedlich sind.
+
+> Kommentare müssen mit `#` oder `--` in einer eigenen Zeile beginnen (oder nach dem letzten Token in einer Gatterzeile).
+
+---
+
+## 2. Gattertypen
+
+### 2.1 Kombinatorische Gatter
+
+| DSL-Schlüsselwort | Funktion | ANSI-Form | IEC-Symbol |
+|---|---|---|---|
+| `AND` | A · B | D-förmiger Körper | Rechteck + `&` |
+| `OR` | A + B | Gekrümmter Körper | Rechteck + `≥1` |
+| `NOT` | Ā | Dreieck + Blase | Rechteck + `1` + Blase |
+| `NAND` | ¬(A · B) | AND + Blase | Rechteck + `&` + Blase |
+| `NOR` | ¬(A + B) | OR + Blase | Rechteck + `≥1` + Blase |
+| `XOR` | A ⊕ B | OR + extra Bogen | Rechteck + `=1` |
+| `XNOR` | ¬(A ⊕ B) | XOR + Blase | Rechteck + `=1` + Blase |
+| `BUF` | A (Puffer) | Dreieck, keine Blase | Rechteck + `1` |
+
+<Playground initial={`logic "Gate gallery" style: ansi
+input A, B, C
+output Y_and, Y_or, Y_xor, Y_nand, Y_not
+Y_and = AND(A, B)
+Y_or = OR(A, B)
+Y_xor = XOR(A, B)
+Y_nand = NAND(A, B)
+Y_not = NOT(C)`} height={420} />
+
+### 2.2 Sonderpuffer
+
+| DSL-Schlüsselwort | Funktion |
+|---|---|
+| `TRISTATE_BUF` | Tristate-Puffer – Z-Ausgang, wenn Enable niedrig |
+| `TRISTATE_INV` | Invertierender Tristate-Puffer |
+| `OPEN_DRAIN` | Open-Drain / Open-Collector-Ausgang (externer Pull-up erforderlich) |
+| `SCHMITT` | Schmitt-Trigger – Hysterese-Symbol im Körper |
+
+<Playground initial={`logic "Special buffers" style: ansi
+input A, EN
+output Y_tri, Y_od, Y_sch
+Y_tri = TRISTATE_BUF(A, EN)
+Y_od = OPEN_DRAIN(A)
+Y_sch = SCHMITT(A)`} height={340} />
+
+### 2.3 Flipflops und Latches
+
+| DSL-Schlüsselwort | Typ | Schlüsselpins |
+|---|---|---|
+| `DFF` | D-Flipflop (flankengesteuert) | D, CLK, Q, Q̄ |
+| `JKFF` | JK-Flipflop | J, K, CLK, Q, Q̄ |
+| `SRFF` | SR-Flipflop | S, R, CLK, Q, Q̄ |
+| `TFF` | T-Flipflop (Toggle) | T, CLK, Q, Q̄ |
+| `LATCH_SR` | SR-Latch (pegelgesteuert, kein Takt) | S, R, Q, Q̄ |
+| `LATCH_D` | D-Latch (transparent wenn Enable=1) | D, EN, Q, Q̄ |
+
+<Playground initial={`logic "Flip-flop gallery" style: ansi
+input D, J, K, CLK, EN
+output Q_dff, Q_jk, Q_latch
+Q_dff = DFF(D, CLK)
+Q_jk = JKFF(J, K, CLK)
+Q_latch = LATCH_D(D, EN)`} height={420} />
+
+### 2.4 Komplexe kombinatorische Bausteine
+
+| DSL-Schlüsselwort | Funktion |
+|---|---|
+| `MUX` | Multiplexer |
+| `DEMUX` | Demultiplexer |
+| `DECODER` | Binärdecoder |
+| `ENCODER` | Prioritätsencoder |
+
+<Playground initial={`logic "Combinational MSI" style: ansi
+input A, B, S
+output Y_mux, Y_dec
+Y_mux = MUX(A, B, S)
+Y_dec = DECODER(A, B)`} height={340} />
+
+### 2.5 Komplexe sequentielle Bausteine
+
+| DSL-Schlüsselwort | Funktion |
+|---|---|
+| `COUNTER` | Generischer Binärzähler (`CTR`-Label, CLK/RESET/Q0–Q3) |
+| `SHIFT_REG` | Generisches Schieberegister (`SRG`-Label, CLK/SER/Q0–Q7) |
+
+<Playground initial={`logic "Sequential MSI" style: ansi
+input DATA, CLK, RESET
+output Q_cnt, Q_sr
+Q_cnt = COUNTER(CLK, RESET)
+Q_sr = SHIFT_REG(DATA, CLK)`} height={340} />
+
+---
+
+## 3. Eingaben und Ausgaben
+
+### 3.1 Ports deklarieren
+
+```
+input A, B, Cin          # drei Eingabe-Ports
+output Sum, Cout         # zwei Ausgabe-Ports
+```
+
+Jeder Name in einer `input`- oder `output`-Liste wird ein benannter Signaldraht, der im gesamten Diagramm verfügbar ist.
+
+### 3.2 Aktiv-niedrig-Eingaben
+
+Stellen Sie einem Signalnamen in der Eingabeliste `~` voran, um es als aktiv-niedrig zu markieren. Der Renderer zeichnet eine Blase am Port-Symbol.
+
+```
+input ~nRESET, CLK, DATA
+```
+
+Die Aktiv-niedrig-Notation funktioniert auch innerhalb von Gatter-Eingabelisten:
+
+```
+g1 = AND(~nRESET, CLK)
+```
+
+### 3.3 Ausgaben mit Gattern verdrahten
+
+Wenn die Ausgabe-ID mit einer Gatter-ID übereinstimmt, ist die Verbindung implizit:
+
+```
+output Sum        # Sum ist auch eine Gatter-ID → automatisch verdrahtet
+Sum = XOR(s1, Cin)
+```
+
+Wenn die Namen unterschiedlich sind, verwenden Sie den expliziten Zuweisungsoperator:
+
+```
+output F
+q1 = NOR(A, B)
+F <- q1           # F bezieht sich auf q1s Ausgang
+```
+
+<Playground initial={`logic "SR latch from NOR gates"
+input S, R
+output Q, Qn
+q_gate = NOR(R, Qn)
+qn_gate = NOR(S, Q)
+Q <- q_gate
+Qn <- qn_gate`} height={300} />
+
+---
+
+## 4. Symbolstil
+
+Die Option `style:` in der Headerzeile wählt den Symbolstandard aus. Sie gilt für jedes Gatter im Diagramm.
+
+| Wert | Standard | Verwenden wenn |
+|---|---|---|
+| `ansi` (Standard) | IEEE Std 91 — charakteristische gebogene Formen | US-Bildung, Hardware-Dokumentation |
+| `iec` | IEC 60617-12 — einheitliche Rechtecke + Funktionslabel | International, europäische Industrie |
+
+```
+logic "ALU slice" style: iec
+```
+
+<Playground initial={`logic "1-bit Full Adder" style: iec
+input A, B, Cin
+output Sum, Cout
+# XOR stage — sum bits
+s1 = XOR(A, B)
+Sum = XOR(s1, Cin)
+# AND/OR stage — carry
+c1 = AND(A, B)
+c2 = AND(s1, Cin)
+Cout = OR(c1, c2)`} height={440} />
+
+<Playground initial={`logic "Gate gallery — IEC style" style: iec
+input A, B, C
+output Y_and, Y_or, Y_xor, Y_nand, Y_not
+Y_and = AND(A, B)
+Y_or = OR(A, B)
+Y_xor = XOR(A, B)
+Y_nand = NAND(A, B)
+Y_not = NOT(C)`} height={420} />
+
+---
+
+## 5. Modulblöcke
+
+Verwenden Sie `module`, um Gatter in einem beschrifteten Teilschaltungsblock zu gruppieren. Modulblöcke sind nützlich zur Dokumentation hierarchischer Designs – jedes Modul wird als benanntes Rechteck um seine Mitgliedsgatter gerendert.
+
+```
+logic "Hierarchical adder"
+input A, B, Cin
+output Sum, Cout
+
+module "Half Adder" {
+  s1 = XOR(A, B)
+  c1 = AND(A, B)
+}
+
+Sum = XOR(s1, Cin)
+Cout = OR(c1, AND(s1, Cin))
+```
+
+Modulregeln:
+- `module "Label" {` — öffnet ein Modul (Label in Anführungszeichen oder als einfacher Bezeichner). Die `{` muss in derselben Zeile wie `module` stehen.
+- `}` in einer eigenen Zeile schließt das zuletzt geöffnete Modul.
+- Module können verschachtelt werden.
+
+---
+
+## 6. Labels und Kommentare
+
+- **Diagrammtitel:** `logic "Full Adder"` – nur in der ersten Zeile.
+- **Gattersignalnamen:** die `id` in `id = GATTER(…)` ist sowohl der Gattername als auch der Name des Ausgabedrahtes.
+- **Ausgabelabels:** `output Sum` – das Ausgabe-Port-Label entspricht standardmäßig dem Signalnamen.
+- **Aktiv-niedrig-Marker:** `~`-Präfix an einem Port oder Gattereingang.
+- **Kommentare:** `#` oder `--` am Zeilenanfang oder nach dem letzten sinnvollen Token einer Zeile.
+
+---
+
+## 7. Reservierte Wörter und Escaping
+
+**Am Zeilenanfang reserviert:** `logic` (Header), `input`, `output`, `module`, `}`.
+
+**Reservierte Operator-Token** – vermeiden Sie diese in Signalnamen: `=`, `(`, `)`, `,`, `<-`, `~`.
+
+**Signalnamensregeln:** muss dem Muster `[a-zA-Z_][a-zA-Z0-9_]*` entsprechen. Klein- und Großbuchstaben werden beide akzeptiert; Gattertyp-Schlüsselwörter (`AND`, `OR` usw.) sind im Parser Groß-/Kleinschreibung-unabhängig.
+
+---
+
+## 8. Häufige Fehler
+
+| Sie schrieben | Parser meldet | Behebung |
+|---|---|---|
+| `f = and(A, B)` (Kleinbuchstaben-Gatter) | Akzeptiert – Gattertypen sind Groß-/Kleinschreibung-unabhängig | Sowohl `AND` als auch `and` funktionieren |
+| `output F` dann `F <- q1` aber `q1` nicht deklariert | `LogicParseError: Unknown signal "q1"` | Deklarieren Sie `q1` als Gatter, bevor Sie darauf referenzieren |
+| `input A B C` (Leerzeichen, keine Kommas) | Parser nimmt nur `A`; `B` und `C` werden ignoriert | Verwenden Sie Kommas: `input A, B, C` |
+| `F = BUFFER(A)` | `LogicParseError: Unknown gate type: BUFFER` | Verwenden Sie `BUF` |
+| `module FullAdder {` (keine `{`-Klammer) | Zeile entspricht nicht dem Modulpatter – still übersprungen | Die öffnende `{` ist in derselben Zeile wie `module` erforderlich |
+| `style: IEEE` im Header | Unbekannter Stilwert – still auf `ansi` zurückgesetzt | Verwenden Sie `style: ansi` oder `style: iec` |
+
+---
+
+## 9. Grammatik (EBNF)
+
+```text
+document    = header statement*
+
+header      = "logic" ( WS quoted-string )? ( WS "style:" WS style )? NEWLINE
+style       = "ansi" | "iec"
+quoted-string = '"' any-char-but-quote* '"'
+
+statement   = blank | comment | input-decl | output-decl | gate-def | assign | module-block
+
+comment     = ( "#" | "--" ) any NEWLINE
+
+input-decl  = "input" WS port-list NEWLINE
+output-decl = "output" WS port-list NEWLINE
+port-list   = port-id ( "," WS? port-id )*
+port-id     = "~"? id
+
+gate-def    = id WS "=" WS gate-type "(" input-list ")" NEWLINE
+input-list  = ( "~"? id ) ( "," WS? ( "~"? id ) )*
+
+assign      = id WS "<-" WS id NEWLINE
+
+module-block = module-open ( statement | module-block )* module-close
+module-open  = "module" WS ( quoted-string | id ) WS? "{" NEWLINE
+module-close = "}" NEWLINE
+
+gate-type   = "AND" | "OR" | "NOT" | "NAND" | "NOR" | "XOR" | "XNOR" | "BUF"
+            | "TRISTATE_BUF" | "TRISTATE_INV" | "OPEN_DRAIN" | "SCHMITT"
+            | "DFF" | "JKFF" | "SRFF" | "TFF"
+            | "LATCH_SR" | "LATCH_D"
+            | "MUX" | "DEMUX" | "DECODER" | "ENCODER"
+            | "COUNTER" | "SHIFT_REG"
+            // alle Groß-/Kleinschreibung-unabhängig
+
+id          = [a-zA-Z_] [a-zA-Z0-9_]*
+```
+
+Maßgebliche Quelle: `src/diagrams/logic/parser.ts`. Wenn dies vom Parser abweicht, hat der Parser Vorrang – bitte öffnen Sie ein Issue.
+
+---
+
+## 10. Standardkonformität
+
+Schematex-Logikgatter-Diagramme folgen **IEEE Std 91-1984 / ANSI Y32.14** (charakteristische Formen) und **IEC 60617-12** (Rechtecksymbole mit Funktionsqualifikatoren).
+
+Was heute implementiert ist:
+
+- ✅ Alle acht kombinatorischen Gatter: AND, OR, NOT, NAND, NOR, XOR, XNOR, BUF
+- ✅ Sonderpuffer: TRISTATE_BUF, TRISTATE_INV, OPEN_DRAIN, SCHMITT
+- ✅ Vier flankengetriggerte Flipflops: DFF, JKFF, SRFF, TFF
+- ✅ Zwei Latches: LATCH_SR, LATCH_D
+- ✅ Kombinatorische MSI: MUX, DEMUX, DECODER, ENCODER
+- ✅ Sequentielle MSI: COUNTER, SHIFT_REG
+- ✅ Aktiv-niedrig (`~`)-Notation für Eingaben und Ports
+- ✅ ANSI- und IEC-Symbolstile, pro Diagramm wählbar
+- ✅ Modulgruppen-Blöcke
+- ✅ Automatisches DAG-Layout (topologische Sortierung, Signal-Fluss von links nach rechts)
+- ⏳ Explizites Fan-out-Drahtrouting (geteiltes Netz mit Verbindungspunkt)
+- ⏳ Multi-Bit-Bus-Notation (`/N`-Schrägstrich-Annotation am Draht)
+- ⏳ Aktiv-niedrig-Takteingänge an Flipflops
+
+Referenzen:
+
+- IEEE Std 91-1984 / ANSI Y32.14: *IEEE Standard Graphic Symbols for Logic Functions*
+- IEEE Std 91a-1991: Ergänzung zu IEEE Std 91
+- IEC 60617-12: *Graphical symbols for diagrams — binary logic elements*
+
+---
+
+## 11. Verwandte Beispiele
+
+<RelatedExamples slugs={[
+  'logic-full-adder',
+]} />
+
+---
+
+## 12. Roadmap
+
+**Geplant – noch nicht parsebar.** Verwenden Sie diese heute nicht in generiertem DSL; der Parser wird sie ablehnen oder ignorieren.
+
+- **Expliziter Fan-out / Verbindungspunkt** — benannter Draht, der von mehreren Gattereingaben geteilt wird, gerendert mit einem Verbindungspunkt an der Verzweigungsstelle.
+- **Multi-Bit-Bus-Notation** — `bus N`-Annotation an einem Draht, um eine N-Bit-Signalgruppe zu kennzeichnen.
+- **Aktiv-niedrig-Takt** — `~CLK` in einer Flipflop-Eingabeliste, das eine Blase am Taktdreieck rendert.
+- **Rückkopplungsbogen** — expliziter Draht vom Gatterausgang zurück zu einem früheren Gattereingang, oberhalb des Haupt-Signalpfads geroutet.
+- **Parametrisierter Gatter-Fan-In** — `AND(A, B, C, D)` rendert direkt ein 4-Eingangs-AND-Gatter.
+
+Verfolgen Sie den Fortschritt in den GitHub-Issues, wenn Sie eines davon früher benötigen.

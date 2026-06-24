@@ -1,0 +1,162 @@
+---
+title: 溶接記号図
+---
+
+## 溶接記号とは
+
+**溶接記号**は、製造業者に継手をどのように溶接するかを正確に伝えます：溶接の種類、どちら側に、サイズ、長さ、仕上げ方法。記法は**参照線スケルトン**——継手を指す矢印リーダー付きの水平線、その上下にスナップされた小さな溶接記号グリフ——で、**AWS A2.4**（米国）および **ISO 2553**（国際）で標準化されています。Schematex は正しい骨格を構築します：溶接を記述すれば、エンジンがすべてのグリフ・寸法・補足記号を配置します。
+
+これは*固定スケルトン*記法であり、グラフではありません——解くべきレイアウトがないため、毎回決定論的にレンダリングされます。
+
+<Playground initial={`welding "Bracket welds"
+joint "bracket to plate" {
+  arrow: fillet size=8 len=50 pitch=150
+  other: fillet size=6
+  around
+  tail: "GMAW"
+}`} height={260} />
+
+---
+
+## 1. 最初の溶接
+
+最小限の実用的な引き出し線：ヘッダー、1つの継手、1つの矢印側溶接。
+
+```
+welding "Bracket"
+joint "bracket to plate" {
+  arrow: fillet size=8
+}
+```
+
+3つのルールでほとんどの使用例をカバーできます：
+
+1. `welding` で始め、オプションで `standard: aws | iso-a | iso-b`（デフォルト `aws`）と引用符付きのタイトルを続けます。
+2. 各継手は `joint "label" { … }` ブロックです。`arrow:`（矢印側）と / または `other:`（反対側）に溶接を記述します。
+3. 溶接仕様は種類に続く `key=value` 寸法——`fillet size=8`、`vgroove angle=60 root=3`。
+
+---
+
+## 2. 側面——矢印側、反対側、両側
+
+継手は矢印側、反対側、または両側で溶接されます。
+
+```
+joint "double fillet" {
+  both: fillet size=6        # 両側に同じ溶接
+}
+joint "asymmetric" {
+  arrow: fillet size=8       # 矢印側のみ
+  other: vgroove angle=60    # 反対側は異なる溶接
+}
+```
+
+- **AWS**（デフォルト）：矢印側グリフは参照線の**下**に、反対側グリフは**上**に描かれます。
+- **ISO-A**（`standard: iso-a`）：**破線のコンパニオンライン**が表示され、矢印側溶接は実線に付き、反対側溶接は破線に付きます。対称的な `both:` 溶接は破線を抑制します。
+
+---
+
+## 3. 溶接の種類
+
+| 種類 | グリフ | 種類 | グリフ |
+|---|---|---|---|
+| `fillet` | 三角形 | `plug` / `slot` | 矩形 |
+| `square` | 平行垂直線 | `spot` | 線上の円 |
+| `vgroove` | V 字 | `seam` | 円 + 線 |
+| `bevel` | 半 V 字 | `back` / `backing` | 半円 |
+| `ugroove` | U 字 | `surfacing` | 盛り上がり |
+| `jgroove` | 半 U 字 | `edge` | 高い垂直線 |
+| `flarev` / `flarebevel` | 曲線溝 | | |
+
+エイリアス：`v`→`vgroove`、`u`→`ugroove`、`j`→`jgroove`、`flare-v`→`flarev`。
+
+---
+
+## 4. 寸法
+
+寸法は参照線に沿って固定スロットに読み取られます。
+
+```
+joint "groove" {
+  arrow: vgroove angle=60 root=3 throat=12 len=50 pitch=150
+}
+```
+
+| キー | スロット | 意味 |
+|---|---|---|
+| `size=` | 記号の左 | フィレット脚 / 溝深さ / プラグ直径 |
+| `throat=` | 左、括弧内 | 有効のど `(E)` |
+| `len=` | 記号の右 | 溶接長 |
+| `pitch=` | 右（`len` と共に） | 断続的な中心間ピッチ → `len-pitch` |
+| `count=` | 右（ISO） | 増分の数 → `count×len (pitch)` |
+| `angle=` | 開口部で | 溝の開き角度（溝タイプのみ） |
+| `root=` | 記号と線の間 | ルート開口部 / ギャップ |
+| `contour=` | 記号の上 | `flush`（バー）、`convex`、`concave`（円弧） |
+| `finish=` | コンターの上 | 仕上げ方法の文字 `G`/`M`/`C`/`R`/`H`/`U` |
+
+---
+
+## 5. 補足記号
+
+```
+joint "post base" {
+  arrow: fillet size=10
+  around            # 全周溶接——接合部に開いた円
+  field             # 現場 / 工事溶接——末端を指す塗りつぶされたフラグ
+  tail: "GTAW; WPS-12"   # プロセス / 仕様 / NDE 方法
+}
+```
+
+<Playground initial={`welding
+joint "butt weld" {
+  arrow: vgroove angle=60 root=3 throat=12
+  other: backing
+  tail: "SMAW; E7018"
+}`} height={240} />
+
+---
+
+## 6. 標準準拠
+
+Schematex の溶接図は **AWS A2.4:2020**（単一参照線）と **ISO 2553:2019** システム A（デュアル実線 + 破線）および B を実装しています。
+
+- ✅ 完全なグリフカタログ——フィレット、スクエア / V / ベベル / U / J / フレア V / フレアベベル溝、プラグ、スロット、スポット、シーム、バック、バッキング、肉盛り、エッジ
+- ✅ 寸法スロット——サイズ、のど `(E)`、長さ、長さ-ピッチ、count×長さ、溝角度、ルート開口部
+- ✅ 補足——全周溶接円、現場溶接フラグ、末端プロセス / 仕様 / NDE、コンター + 仕上げ
+- ✅ 標準ごとの慣例による矢印側 / 反対側 / 両側
+- ✅ 違法な種類 / 側面 / 寸法の組み合わせの AI 可読バリデーション
+- ⏳ 複合溶接 + NDE 記号（NDE は今日では末端テキスト）
+- ⏳ 準備部材の矢印ブレーク；断続的なオフセット；溶け込み / 消耗インサートグリフ
+
+参考文献：
+
+- American Welding Society (2020). *AWS A2.4: Standard Symbols for Welding, Brazing, and Nondestructive Examination.*
+- ISO 2553:2019. *Welding and allied processes — Symbolic representation on drawings — Welded joints.*
+
+---
+
+## 7. 文法（EBNF）
+
+```text
+document  = "welding" ( "standard:" std )? title? NEWLINE joint*
+std       = "aws" | "iso-a" | "iso-b"
+joint     = "joint" title? "{" directive* "}"
+directive = ( "arrow:" | "other:" | "both:" ) weldspec
+          | "around" | "field"
+          | "tail:" quoted-string
+weldspec  = type ( WS key "=" value )*
+type      = "fillet"|"square"|"vgroove"|"bevel"|"ugroove"|"jgroove"
+          | "flarev"|"flarebevel"|"plug"|"slot"|"spot"|"seam"
+          | "back"|"backing"|"surfacing"|"edge"
+key       = "size"|"len"|"pitch"|"count"|"angle"|"root"|"throat"|"contour"|"finish"
+```
+
+権威ある情報源：`src/diagrams/welding/parser.ts`。
+
+---
+
+## 関連する例
+
+<RelatedExamples slugs={[
+  'welding-bracket-fillet',
+]} />

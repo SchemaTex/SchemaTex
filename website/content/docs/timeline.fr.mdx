@@ -1,0 +1,399 @@
+---
+title: Timeline diagram
+---
+
+## À propos des diagrammes de chronologie
+
+Un **diagramme de chronologie** dispose les événements le long d'un axe temporel commun afin que les relations chronologiques soient immédiatement visibles. Les chefs de projet les utilisent pour présenter les plannings de sprints et les jalons ; les historiens les utilisent pour contextualiser les découvertes ; les journalistes les utilisent pour reconstituer des séquences d'événements ; les chercheurs cliniques les utilisent pour cartographier les parcours de traitement. La forme visuelle n'a pas de norme de gouvernance unique, mais les conventions sont universelles : le temps s'écoule de gauche à droite, les événements sont marqués à leurs dates, et les plages indiquent la durée.
+
+Schematex restitue les chronologies en trois styles visuels — **swimlane** (événements répartis au-dessus et en dessous d'un axe), **gantt** (barres de durée horizontales, utile pour la planification de projets) et **lollipop** (marqueurs en forme de sucette, utile pour les rétrospectives historiques). Les trois partagent le même DSL ; la clé de configuration `style` permet de basculer entre eux.
+
+<Playground initial={`timeline "History of the Web"
+config: style = lollipop
+
+1991: "World Wide Web — Berners-Lee"
+1993: milestone "Mosaic browser" [side: above, color: #1565C0]
+1995: "JavaScript — Brendan Eich" [side: below]
+1998: milestone "Google founded" [side: above, color: #E53935]
+2004: "Facebook launches" [side: below]
+2007: milestone "iPhone — mobile web era" [color: #2E7D32, side: above]
+2009: "Node.js — server-side JavaScript" [side: below]
+2015: milestone "ES6 / React mainstream" [side: above, color: #6A1B9A]
+2022: "ChatGPT — AI era begins" [side: below]`} height={460} />
+
+---
+
+## 1. Votre première chronologie
+
+La chronologie utile la plus simple : un titre, deux événements ordinaires et un jalon.
+
+<Playground initial={`timeline "Product Launch"
+2024-06-01: "Development complete"
+2024-08-15: "Closed beta"
+2024-09-01: milestone "Public launch"`} />
+
+Quatre règles couvrent 80 % des usages :
+
+1. Commencez par le mot-clé `timeline`, suivi éventuellement d'un titre entre guillemets.
+2. Chaque événement est `DATE: "Étiquette"` — une date, un deux-points, puis une étiquette entre guillemets. Le mot-clé `milestone` avant l'étiquette marque l'événement comme un jalon.
+3. Les plages de dates utilisent `DATE - DATE:` ou `DATE .. DATE:` (les deux sont équivalents).
+4. Ajoutez des propriétés `[clé: valeur]` après l'étiquette entre guillemets pour définir la couleur, le placement, la forme ou la catégorie.
+
+> Les commentaires doivent commencer par `#` ou `//` sur leur propre ligne.
+
+---
+
+## 2. Événements
+
+Une ligne d'événement place un marqueur étiqueté à un moment précis (ou une barre sur une plage).
+
+### 2.1 Événements ponctuels
+
+```
+2024-09-15: "Conference keynote"
+```
+
+### 2.2 Événements de plage
+
+```
+2024-06-01 - 2024-08-31: "Q3 development sprint"
+2024-06-01 .. 2024-08-31: "Q3 development sprint"
+```
+
+Les deux séparateurs (`-` entouré d'espaces, ou `..`) sont équivalents.
+
+### 2.3 Jalons
+
+```
+2024-09-01: milestone "Public launch"
+```
+
+Le mot-clé `milestone` avant l'étiquette entre guillemets change le marqueur en forme de losange.
+
+### 2.4 Propriétés des événements
+
+Les propriétés vont dans `[clé: valeur, …]` après l'étiquette entre guillemets, avant le saut de ligne.
+
+| Propriété | Valeurs | Signification |
+|---|---|---|
+| `color:` | chaîne hexadécimale | Couleur personnalisée pour ce marqueur ou cette barre |
+| `side:` | `above` \| `below` | Force le placement au-dessus ou en dessous de l'axe (swimlane / lollipop) |
+| `icon:` | tout texte (ex. emoji) | Icône affichée avec l'événement |
+| `shape:` | `circle` \| `square` \| `diamond` \| `star` \| `flag` | Forme du marqueur ponctuel |
+| `category:` | chaîne entre guillemets | Étiquette de groupe — pilote la couleur dans la légende gantt |
+
+```
+2024-09-01: milestone "Launch day" [color: #E53935, side: above]
+2024-07-15: "Beta ships" [icon: 🚀, category: "product"]
+```
+
+<Playground initial={`timeline "Engineering Milestones"
+config: style = lollipop
+
+2024-01-08: "Sprint planning complete"
+2024-02-14: milestone "Design system shipped" [side: above, color: #1565C0]
+2024-03-22: "Incident — 4h outage" [icon: ⚠️]
+2024-04-01 - 2024-06-30: "API v2 build"
+2024-07-01: milestone "API v2 GA" [side: above, color: #2E7D32]`} height={380} />
+
+---
+
+## 3. Formats de date
+
+Tous les formats de date peuvent apparaître partout où une date est attendue — dans les événements, les ères et les plages.
+
+| Format | Exemple | Remarques |
+|---|---|---|
+| Date complète | `2024-09-15` | Précision au jour ; `AAAA-MM-JJ` |
+| Année-mois | `2024-09` | Précision au mois |
+| Année | `2024` | Précision à l'année |
+| Trimestre | `2024-Q3` | Correspond au début de ce trimestre |
+| Année av. J.-C. (négative) | `-753` | 753 av. J.-C. |
+| Année av. J.-C. (suffixe) | `753BC` ou `753BCE` | Identique à `-753` |
+| Géologique | `65Ma`, `4.6Ga`, `12ka` | Millions / milliards / milliers d'années |
+
+<Playground initial={`timeline "Age of Earth"
+config: style = lollipop
+config: scale = log
+
+4600Ma: "Earth forms"
+540Ma: "Cambrian explosion"
+252Ma: milestone "Permian extinction — 96% of species lost"
+66Ma: milestone "K-Pg extinction — end of non-avian dinosaurs"
+3Ma: "Earliest stone tools (Lomekwi)"
+0: "Present day"`} height={340} />
+
+---
+
+## 4. Ères (plages d'arrière-plan)
+
+Une ligne `era` dessine une bande d'arrière-plan ombrée sur l'axe temporel. Elle nécessite toujours une plage de dates.
+
+```
+era 2020 - 2022: "Foundation Phase"
+era 2022 .. 2025: "Growth Phase" [color: #E8F5E9]
+```
+
+La propriété `[color: …]` est optionnelle. Les ères qui se chevauchent s'empilent automatiquement en bandes séparées.
+
+<Playground initial={`timeline "Company History"
+config: style = swimlane
+
+era 2019..2021: "Early Stage" [color: #FFF8E1]
+era 2021..2024: "Series A & B" [color: #E8F5E9]
+
+2019-03-01: "Founded"
+2019-11-15: "First paying customer"
+2020-05-01: milestone "Product-market fit" [side: above]
+2021-02-10: "Series A — $8M"
+2022-09-01: "Series B — $30M"
+2023-06-15: milestone "Profitability" [color: #1B5E20]`} height={380} />
+
+---
+
+## 5. Pistes (regroupement en swimlane)
+
+Un bloc `track` regroupe les événements connexes dans une swimlane nommée. Les lignes d'événement indentées (2 espaces) appartiennent à la piste.
+
+```
+track "Engineering":
+  2024-01-15 - 2024-03-31: "API design"
+  2024-04-01 - 2024-07-31: "Implementation"
+
+track "Marketing":
+  2024-06-01: "Campaign kick-off"
+  2024-09-01: milestone "Launch campaign" [color: #1B5E20]
+```
+
+Les pistes sont les plus utiles dans le style `gantt`, où chaque piste devient son propre couloir étiqueté.
+
+<Playground initial={`timeline "Q3 Project Plan"
+config: style = gantt
+
+track "Backend":
+  2024-07-01 - 2024-08-15: "Database migration"
+  2024-08-16 - 2024-09-30: "API hardening"
+
+track "Frontend":
+  2024-07-01 - 2024-08-31: "New design system"
+  2024-09-01 - 2024-09-30: "Integration & QA"
+
+track "DevOps":
+  2024-07-15 - 2024-08-01: "Staging environment"
+  2024-09-30: milestone "Go-live" [color: #2E7D32]`} height={380} />
+
+---
+
+## 6. Notes
+
+Une ligne `note:` indentée sous un événement lui attache une annotation de type info-bulle.
+
+```
+2024-06-01: "Beta launch"
+  note: "First external users; NPS target 40+"
+```
+
+Les notes fonctionnent aussi bien pour les événements plats que pour les événements à l'intérieur des pistes.
+
+---
+
+## 7. Configuration
+
+Les lignes `config:` ajustent la mise en page et le style visuel. Chacune est sur sa propre ligne sous la forme `config: clé = valeur`.
+
+| Clé | Valeurs | Défaut | Effet |
+|---|---|---|---|
+| `style` | `swimlane` \| `gantt` \| `lollipop` | `swimlane` | Mode de rendu visuel |
+| `orientation` | `horizontal` \| `vertical` | `horizontal` | Direction de l'axe |
+| `scale` | `proportional` \| `equidistant` \| `log` | `proportional` | Comment le temps se mappe à l'espace écran |
+| `axis` | `bottom` \| `center` | `bottom` | Où l'axe temporel est dessiné |
+
+**Notes sur les styles :**
+- `swimlane` — les événements alternent au-dessus et en dessous d'un axe horizontal ; `side:` contrôle le placement par événement. Les ères ajoutent des bandes d'arrière-plan colorées. Convient aux feuilles de route et aux biographies.
+- `gantt` — chaque piste nommée devient un couloir de barres horizontales ; les jalons deviennent des épingles au-dessus des barres. `gantt-project` est un alias. Convient à la planification de projets.
+- `lollipop` — un axe central avec des cartes étiquetées sur des tiges alternées. Convient aux rétrospectives historiques avec des événements rares et mémorables.
+
+**Swimlane** — feuilles de route, chronologies de produit, biographies. Les ères ajoutent des bandes de couleur ; les événements alternent au-dessus et en dessous.
+
+<Playground initial={`timeline "SaaS Platform Roadmap"
+config: style = swimlane
+
+era 2024-Q1..2024-Q2: "Foundation" [color: #E3F2FD]
+era 2024-Q3..2024-Q4: "Growth" [color: #E8F5E9]
+
+2024-01-15: "Kick-off & team onboarding"
+2024-02-01: milestone "Architecture sign-off" [side: above]
+2024-03-01 - 2024-05-31: "API v2 build"
+2024-04-10: "Security audit" [color: #F9A825]
+2024-06-30: milestone "Beta launch" [side: above]
+2024-07-01 - 2024-09-30: "Performance & scaling"
+2024-10-15: milestone "General availability" [color: #2E7D32]`} height={460} />
+
+**Gantt** — pistes parallèles avec barres de durée horizontales et épingles de jalons. Convient à la planification de projets.
+
+<Playground initial={`timeline "Product Launch — Q4"
+config: style = gantt
+
+track "Engineering":
+  2024-10-01 - 2024-11-15: "Feature freeze & hardening"
+  2024-11-16 - 2024-11-30: "Load testing"
+
+track "Design":
+  2024-10-01 - 2024-10-31: "Final UI polish"
+  2024-11-01 - 2024-11-14: "Asset delivery"
+
+track "Marketing":
+  2024-10-15 - 2024-11-14: "Campaign prep"
+  2024-11-15 - 2024-11-30: "Launch campaign"
+  2024-12-01: milestone "Launch day" [color: #2E7D32]`} height={400} />
+
+**Lollipop** — jalons rares sur un axe central avec des cartes alternées. Convient aux rétrospectives historiques et aux récits de marque.
+
+<Playground initial={`timeline "History of Computing"
+config: style = lollipop
+config: scale = equidistant
+
+1936: "Turing — On Computable Numbers"
+1945: "ENIAC — first general-purpose computer"
+1969: "ARPANET"
+1971: milestone "Intel 4004 microprocessor" [side: above]
+1976: "Apple I"
+1991: "World Wide Web (Berners-Lee)"
+2007: milestone "iPhone" [color: #1565C0, side: above]`} height={380} />
+
+---
+
+## 8. Étiquettes et commentaires
+
+- **Titre :** `timeline "My Title"` — première ligne uniquement.
+- **Étiquette d'événement :** chaîne entre guillemets après le deux-points : `DATE: "Étiquette"`.
+- **Étiquette de jalon :** `DATE: milestone "Étiquette"`.
+- **Étiquette d'ère :** `era DATE - DATE: "Étiquette"`.
+- **Nom de piste :** `track "Nom":`.
+- **Note :** `note: "texte"` indenté sous un événement.
+- **Commentaires :** `#` ou `//` en début de ligne (après les espaces initiaux).
+
+---
+
+## 9. Mots réservés et échappement
+
+**Réservés en début de ligne :** `timeline` (en-tête), `config:`, `era`, `track`, `note:`.
+
+**Séparateurs de plage de dates :** ` - ` (espace-tiret-espace) et `..` — évitez ces séquences dans le texte d'étiquette qui apparaît avant le deux-points.
+
+**Années av. J.-C. comme entiers négatifs :** `-753` est l'année 753 av. J.-C. Le parseur distingue le signe négatif d'un séparateur de plage en vérifiant les espaces environnants — ` - ` (avec espaces) est une plage ; `-753` (sans espace avant après un deux-points) est une année av. J.-C.
+
+**Blocs de propriétés :** `[clé: valeur]` doit apparaître *après* l'étiquette entre guillemets sur la même ligne. Le `]` fermant doit être présent ; les crochets non fermés produisent une erreur d'analyse.
+
+---
+
+## 10. Erreurs courantes
+
+| Vous avez écrit | Le parseur indique | Correction |
+|---|---|---|
+| `2024-06-01: Launch day` (étiquette sans guillemets) | Ligne non reconnue comme événement — `TimelineParseError` | Mettez l'étiquette entre guillemets : `2024-06-01: "Launch day"` |
+| `2024-06 - 2024-09: "Q3"` (plage année-mois) | Analysée correctement | Cela fonctionne — tous les formats de date sont valides dans les plages |
+| `era 2024: "Whole year"` (sans plage) | `TimelineParseError: era requires a date range` | Utilisez une plage : `era 2024 - 2024: "Whole year"` |
+| `track "Backend"` (sans deux-points) | `TimelineParseError: Expected ':' after track name` | Ajoutez le deux-points : `track "Backend":` |
+| `2024-01-01: "Event" [side: left]` | `side: left` ignoré silencieusement ; seuls `above` et `below` sont valides | Utilisez `side: above` ou `side: below` |
+| `config: style = Gantt` (G majuscule) | `TimelineParseError: Invalid style: Gantt` | Utilisez des minuscules : `config: style = gantt` |
+| `2024-01-01-2024-03-31: "Q1"` (sans espaces autour de `-`) | Le parseur lit `2024-01-01-2024` comme une date — échoue | Utilisez des espaces : `2024-01-01 - 2024-03-31:` ou `..` : `2024-01-01..2024-03-31:` |
+| Événement indenté sans piste | Les lignes indentées sous l'en-tête de la chronologie qui ne sont pas dans un bloc `track` — analysées comme événements plats | N'indentez les événements que s'ils sont dans un bloc `track "Nom":` |
+
+---
+
+## 11. Grammaire (EBNF)
+
+```text
+document     = header ( blank | comment | config | era | track | event )*
+
+header       = "timeline" ( WS quoted-string )? NEWLINE
+quoted-string = '"' any-char-but-quote* '"'
+
+config       = "config:" WS key WS "=" WS value NEWLINE
+key          = "style" | "orientation" | "scale" | "axis"
+
+era          = "era" WS date-range ":" WS quoted-string ( WS props )? NEWLINE
+track        = "track" WS quoted-string ":" NEWLINE
+                 ( INDENT≥2 event | INDENT≥2 note )*
+
+event        = date-spec ":" WS event-body ( WS props )? NEWLINE
+               ( INDENT note )?
+event-body   = ( "milestone" WS )? quoted-string
+date-spec    = date ( ( " - " | ".." ) date )?
+
+note         = "note:" WS quoted-string NEWLINE
+
+props        = "[" prop-list "]"
+prop-list    = prop ( "," prop )*
+prop         = key ":" WS value
+             | key ":" WS quoted-string
+
+date         = iso-date | year-month | year | quarter | bc-year | geological
+iso-date     = digit{4} "-" digit{2} "-" digit{2}
+year-month   = digit{4} "-" digit{2}
+year         = "-"? digit{1,5}
+quarter      = digit{4} "-"? "Q" [1-4]
+bc-year      = digit+ ( "BC" | "BCE" )
+geological   = number ( "Ma" | "Ga" | "ka" )
+
+comment      = ( "#" | "//" ) any NEWLINE
+```
+
+Source faisant autorité : `src/diagrams/timeline/parser.ts`. En cas de divergence avec le parseur, le parseur a la priorité — veuillez ouvrir un ticket.
+
+---
+
+## 12. Conformité aux normes
+
+Les diagrammes de chronologie n'ont pas de norme de gouvernance unique. Schematex suit les conventions de visualisation établies :
+
+- **Style swimlane** — adapté de la convention de chronologie horizontale utilisée en historiographie académique et en gestion de projet (PMI PMBOK).
+- **Style gantt** — suit la forme du diagramme de Gantt introduite par Henry Gantt (1910–1915) ; la mise en page barre-par-piste correspond à la convention de planification de projet ISO 21500.
+- **Style lollipop** — suit la convention de graphique à points / à tiges courante dans le journalisme de données et l'infographie.
+
+Ce qui est implémenté aujourd'hui :
+
+- ✅ Trois styles visuels : swimlane, gantt, lollipop
+- ✅ Orientation horizontale et verticale
+- ✅ Trois modes d'échelle : proportionnel, équidistant, log
+- ✅ Événements ponctuels, événements de plage (barres) et marqueurs de jalons
+- ✅ Ères (bandes d'ombrage d'arrière-plan)
+- ✅ Pistes nommées (couloirs de swimlane)
+- ✅ Notes d'événement
+- ✅ Six formats de date : date complète, année-mois, année, trimestre, année av. J.-C., géologique (Ma/Ga/ka)
+- ✅ Propriétés d'événement : couleur, côté, icône, forme, catégorie
+- ⏳ Rendu de l'orientation verticale (analysé, mise en page non encore implémentée)
+- ⏳ Rendu de l'échelle `log` (analysé, la mise en page traite comme proportionnel aujourd'hui)
+- ⏳ Étiquettes de graduation de l'axe avec des chaînes de format personnalisées
+- ⏳ Connecteurs d'événements (flèches entre événements liés)
+
+Références :
+
+- Gantt, H.L. (1910). *Work, Wages, and Profits.* Engineering Magazine.
+- Tufte, E.R. (1983). *The Visual Display of Quantitative Information.* — Chronologie comme petits multiples.
+
+---
+
+## 13. Feuille de route
+
+**Prévu — pas encore analysable.** N'utilisez pas ces éléments dans le DSL généré aujourd'hui ; le parseur les rejettera ou les ignorera.
+
+- **Connecteurs d'événements** — `connect ev1 -> ev2 [label: "causes"]` flèches reliant deux événements dans le temps.
+- **Répétition / récurrence** — `every 2024-Q1 .. 2024-Q4 monthly: "Sprint review"` pour les événements réguliers.
+- **Format de graduation de l'axe** — `config: tickFormat = "%b %Y"` pour un affichage de date personnalisé sur l'axe.
+- **Orientation verticale** — `config: orientation = vertical` avec des événements à gauche/droite d'un axe vertical (analysé ; rendu différé).
+- **Échelle logarithmique** — `config: scale = log` pour les plages géologiques ou de grande profondeur historique qui nécessitent de comprimer les années récentes (analysé ; mise en page différée).
+
+Suivez les tickets GitHub si vous avez besoin de l'une de ces fonctionnalités plus tôt.
+
+---
+
+## Exemples associés
+
+Scénarios prêts à l'emploi depuis la galerie d'exemples :
+
+<RelatedExamples slugs={[
+  'timeline-product-launch',
+  'timeline-company-milestones',
+]} />

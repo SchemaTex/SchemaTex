@@ -1,0 +1,414 @@
+---
+title: Flowchart
+---
+
+## Über Flowcharts
+
+Ein **Flowchart** bildet die Schritte eines Prozesses ab — Entscheidungen, Operationen, Eingaben, Ausgaben und die Pfade zwischen ihnen — unter Verwendung eines standardisierten Satzes von Symbolen, die durch Pfeile verbunden sind. Ingenieure verwenden sie zur Spezifikation von Algorithmen; Geschäftsanalysten verwenden sie zur Dokumentation von Arbeitsabläufen; Qualitätsteams verwenden sie zur Verfolgung von Fehlermustern. Sie gehören zu den universell verständlichsten technischen Diagrammen in allen Branchen.
+
+Schematex folgt den Symbolkonventionen von **[ISO 5807:1985](https://www.iso.org/standard/11955.html)** für Flowchart-Formen und verwendet eine **[Mermaid-kompatible](https://mermaid.js.org/syntax/flowchart.html)** DSL, sodass bestehende Mermaid-Flowcharts direkt übertragen werden können. Diese Seite dokumentiert, was der Parser heute akzeptiert.
+
+<Playground initial={`flowchart LR
+  start([New order received])
+  start --> validate{Inventory available?}
+  validate -->|Yes| reserve[Reserve items]
+  validate -->|No| notify[Notify customer]
+  notify --> done([End])
+  reserve --> payment{Payment authorized?}
+  payment -->|Yes| ship[Ship order]
+  payment -->|No| cancel[Cancel & release]
+  ship --> confirm[Send confirmation email]
+  confirm --> done
+  cancel --> done`} height={420} />
+
+---
+
+## 1. Ihr erstes Flowchart
+
+Das kleinste nützliche Flowchart: eine Entscheidung mit zwei Ergebnissen.
+
+<Playground initial={`flowchart TD
+  A([Start]) --> B{File exists?}
+  B -->|Yes| C[Read file]
+  B -->|No| D[Return error]
+  C --> E([Done])`} />
+
+Vier Regeln decken 80 % der Anwendungsfälle ab:
+
+1. Beginnen Sie mit `flowchart`, gefolgt von einer Richtung: `TD`, `LR`, `BT` oder `RL`.
+2. Jeder Knoten ist `ID[Label]` — die Form-Klammern bestimmen den Knotentyp (siehe §2).
+3. Verbinden Sie Knoten mit `-->`. Fügen Sie ein Label zwischen Pipe-Zeichen hinzu: `-->|Yes|`.
+4. Knoten werden automatisch erstellt, wenn sie erstmals in einer Kante referenziert werden — explizite Deklarationen ermöglichen jedoch das unabhängige Festlegen von Formen und Labels.
+
+> Kommentare beginnen mit `%%` auf einer eigenen Zeile.
+
+---
+
+## 2. Knotenformen
+
+Jede Knotenform wird als `ID<Klammern>Label<Klammern>` geschrieben. Die ID muss mit einem Buchstaben beginnen und darf Buchstaben, Ziffern, `_` und `-` enthalten.
+
+| Syntax | Form | Typische Verwendung |
+|---|---|---|
+| `A[Label]` | Rechteck | Prozessschritt, Operation |
+| `A(Label)` | Abgerundetes Rechteck | Teilprozess, weicher Schritt |
+| `A([Label])` | Stadion (Pille) | Start-/End-Terminal |
+| `A{Label}` | Raute | Entscheidung / Bedingung |
+| `A{{Label}}` | Sechseck | Vorbereitung, Konfiguration |
+| `A[[Label]]` | Unterroutine | Vordefinierter Prozess |
+| `A[(Label)]` | Zylinder | Datenbank, Speicher |
+| `A((Label))` | Kreis | Verbinder, Kreuzung |
+| `A(((Label)))` | Doppelkreis | Endzustand |
+| `A[/Label/]` | Parallelogramm | Eingabe / Ausgabe |
+| `A[\Label\]` | Parallelogramm (alt) | Manuelle Operation |
+| `A[/Label\]` | Trapez | Manuelle Eingabe |
+| `A[\Label/]` | Trapez (alt) | Off-Page-Verbinder |
+| `A>Label]` | Asymmetrisch | Tag, Annotation |
+
+<Playground initial={`flowchart TD
+  t([Terminal / stadium])
+  r[Rectangle process]
+  d{Diamond decision}
+  p[/Parallelogram input/]
+  db[(Cylinder database)]
+  sub[[Subroutine]]
+  t --> r --> d
+  d -->|branch A| p
+  d -->|branch B| db
+  p --> sub
+  db --> sub`} height={440} />
+
+---
+
+## 3. Kanten
+
+Eine Kante verbindet zwei Knoten. Das Verbindersymbol bestimmt den visuellen Stil und ob ein Label oder Pfeilspitze vorhanden ist.
+
+### 3.1 Kantentypen
+
+<Playground initial={`flowchart TD
+  A --> B
+  C --- D
+  E -.-> F
+  G ==> H
+  I <--> J
+  K --x L
+  M --o N`} height={380} />
+
+| Syntax | Stil | Pfeil | Typische Verwendung |
+|---|---|---|---|
+| `A --> B` | Durchgezogen | Pfeil | Normaler Fluss |
+| `A --- B` | Durchgezogen | Keiner | Assoziation, ungerichteter Link |
+| `A -.-> B` | Gepunktet | Pfeil | Optionaler / asynchroner Pfad |
+| `A ==> B` | Dick | Pfeil | Kritischer / primärer Pfad |
+| `A <--> B` | Durchgezogen | Beide Enden | Bidirektionaler Fluss |
+| `A --x B` | Durchgezogen | Kreuz | Blockierter / abgelehnter Pfad |
+| `A --o B` | Durchgezogen | Kreis | Aggregation / Komposition |
+
+### 3.2 Kantenbeschriftungen
+
+Zwei Syntaxen hängen ein Label an eine Kante:
+
+**Pipe-Label** — zwischen `|`-Zeichen direkt nach dem Pfeil platziert:
+```
+A -->|Yes| B
+A -.->|optional| B
+A ==>|critical| B
+```
+
+**Inline-Label** — Text zwischen den Strichen, vor dem Pfeilzeichen:
+```
+A -- success --> B
+A -- error --x C
+```
+
+Beide erzeugen identische Ergebnisse. Pipe-Labels sind häufiger beim Teilen eines Diagramms mit Mermaid-Tools.
+
+<Playground initial={`flowchart TD
+  req[Request received]
+  req -->|valid| proc[Process]
+  req -->|invalid| err[Return 400]
+  proc -- success --> ok([Done])
+  proc -.->|timeout| retry[Retry queue]
+  retry ==>|max retries| dead[(Dead letter)]`} height={380} />
+
+### 3.3 Ketten
+
+Verbinden Sie drei oder mehr Knoten in einer einzigen Zeile:
+
+```
+A --> B --> C --> D
+```
+
+Dies entspricht drei separaten Kantenanweisungen.
+
+### 3.4 Fächerung mit `&`
+
+Verwenden Sie `&`, um mehrere Knoten auf einer Seite eines Pfeils einzuschließen. Der Parser erzeugt das vollständige Kreuzprodukt der Kanten:
+
+```
+A & B --> C        %% A→C und B→C
+A --> B & C        %% A→B und A→C
+A & B --> C & D    %% vier Kanten: A→C, A→D, B→C, B→D
+```
+
+<Playground initial={`flowchart LR
+  deploy[Deploy service]
+  smoke[Smoke test]
+  health[Health check]
+  notify_slack[Slack alert]
+  notify_email[Email alert]
+  deploy --> smoke & health
+  smoke & health -->|fail| notify_slack & notify_email`} height={300} />
+
+---
+
+## 4. Teilgraphen
+
+Ein `subgraph` gruppiert verwandte Knoten in einem beschrifteten Cluster mit sichtbarem Rahmen.
+
+```
+subgraph "Title"
+  A --> B
+end
+```
+
+Drei Teilgraph-Header-Formen werden akzeptiert:
+
+| Form | ID | Label |
+|---|---|---|
+| `subgraph "My Group"` | automatisch generiert | `My Group` |
+| `subgraph sg1 "My Group"` | `sg1` | `My Group` |
+| `subgraph sg1 [My Group]` | `sg1` | `My Group` |
+
+Teilgraphen können ihre eigene `direction`-Überschreibung haben:
+
+```
+subgraph sg1 "Frontend"
+  direction LR
+  ui[React App] --> api[API Client]
+end
+```
+
+<Playground initial={`flowchart TB
+  subgraph ingestion [Ingestion]
+    raw[/Raw events/] --> parse[Parse & validate]
+    parse --> enrich[Enrich]
+  end
+  subgraph storage [Storage]
+    dw[(Data warehouse)]
+    cache[(Redis cache)]
+  end
+  enrich --> dw
+  enrich --> cache
+  dw --> report[Generate report]`} height={420} />
+
+---
+
+## 5. Gestaltung
+
+### 5.1 Semantische Klassen
+
+Weisen Sie Knoten CSS-Klassennamen für visuelle Gruppenbildung auf Theme-Ebene zu. Klassen werden mit `classDef` definiert und mit `class` angewendet. Die Mermaid-Inline-Klassensyntax wird ebenfalls akzeptiert: `A[Start]:::critical`.
+
+```
+classDef danger fill:#f9c,stroke:#c00
+classDef safe fill:#cfc,stroke:#090
+class errorNode danger
+class successNode safe
+B[Review]:::danger
+```
+
+### 5.2 Knotenspezifische Stil-Überschreibungen
+
+```
+style nodeId fill:#f9f,stroke:#333,stroke-width:4px
+```
+
+Akzeptiert standardmäßige CSS-Eigenschaftsnamen. Mehrere Eigenschaften werden durch Komma getrennt.
+
+### 5.3 Kantenspezifische Stil-Überschreibungen
+
+`linkStyle` zielt auf Kanten nach ihrem **Deklarationsindex** (0-basiert, in der Reihenfolge ihres Erscheinens im Quellcode). Mehrere kommagetrennte Indizes wenden dieselben Eigenschaften auf mehrere Kanten an:
+
+```
+flowchart TD
+  A --> B
+  B ==> C
+  B -.-> D
+  C --> E
+  D --> E
+  linkStyle 1 stroke:#d32f2f,stroke-width:4px
+  linkStyle 2,4 stroke:#f57c00,stroke-dasharray:5 5
+```
+
+Verwenden Sie dies, um einen kritischen Pfad hervorzuheben oder einen alternativen Fluss zu unterscheiden.
+
+### 5.4 Inline-Label-Formatierung
+
+Knotenlabels akzeptieren drei Inline-Formatierungstags:
+
+| Tag | Wirkung |
+|---|---|
+| `<br/>` oder `<br>` | Zeilenumbruch |
+| `<b>…</b>` | Fett |
+| `<i>…</i>` | Kursiv |
+
+```
+flowchart TD
+  M1["0 \| 0<br/><b>START</b>"]
+  M2["4 \| 4<br/><b>Phase 1</b><br/><i>est. 4h</i>"]
+  M1 --> M2
+```
+
+Tags können verschachtelt und zeilenübergreifend gemischt werden (`Hello <b>world</b>!`). Kantenlabels sind einzeilig und unterstützen diese Tags derzeit nicht.
+
+---
+
+## 6. Labels & Kommentare
+
+- **Richtung:** `flowchart TD` — erstes Token nach `flowchart` oder `graph`. `TD` und `TB` sind gleichwertig.
+- **Titel:** `flowchart LR "My diagram"` — optionaler Zeichenkettenwert in Anführungszeichen nach der Richtung.
+- **Kantenlabels:** Pipe-Syntax `-->|label|` oder Inline `-- label -->`.
+- **Kommentare:** `%%` am Anfang einer Zeile (nach führendem Leerzeichen).
+
+```
+flowchart LR
+%% Dies ist ein Kommentar — wird vom Parser ignoriert
+A[Step 1] --> B[Step 2]  %% inline %% wird NICHT unterstützt — nur Zeilenanfang %%
+```
+
+---
+
+## 7. Reservierte Wörter & Escaping
+
+**Am Zeilenanfang reserviert:** `flowchart`, `graph` (Header), `subgraph`, `end`, `direction`, `class`, `classDef`, `style`, `linkStyle`.
+
+**Reservierte ID-Zeichen:** IDs entsprechen `[A-Za-z0-9_-]` beginnend mit einem Buchstaben. Verwenden Sie keine Leerzeichen oder Operatorzeichen in Knoten-IDs.
+
+**Zu vermeidende Operatortokens in IDs:** `-->`, `---`, `-.->`, `==>`, `<-->`, `--x`, `--o`, `|`, `&`.
+
+**Labels mit Sonderzeichen:** Das Label ist alles innerhalb der Formklammern. Sonderzeichen werden innerhalb von Labels unverändert unterstützt — Klammern/geschweifte Klammern, die mehrdeutig wären, werden durch das passende schließende Token abgeschlossen.
+
+---
+
+## 8. Häufige Fehler
+
+| Sie schrieben | Parser meldet | Behebung |
+|---|---|---|
+| `flowchart` ohne Richtung | Richtung wird auf `TB` gesetzt | Richtung angeben: `flowchart TD` |
+| `A --> B` vor der Deklaration von Formen | Funktioniert — Knoten werden als Rechtecke mit der ID als Label erstellt | Explizit deklarieren, wenn eine Nicht-Rechteck-Form benötigt wird: `A([Start])` |
+| `A[Label with [brackets]]` | Inneres `]` schließt die Form frühzeitig | Verschachtelte Klammern in Labels vermeiden |
+| `subgraph My Group` (ohne Anführungszeichen, mit Leerzeichen) | Parser nimmt `My` als Teilgraph-ID, `Group` als unbekanntes Token | Anführungszeichen: `subgraph "My Group"` |
+| `%% comment` mitten in der Zeile nach Code | Inline-Kommentare werden nicht unterstützt; `%%` muss am Zeilenanfang stehen | Kommentare in eigene Zeilen verschieben |
+| `A --> B --> C` gemischt mit `A --> B` | Ketten sind additiv — doppelte Kanten können erscheinen | Entweder Ketten ODER separate Zeilen verwenden, nicht beides für dasselbe Paar |
+| `direction LR` außerhalb eines Teilgraphen | Stillschweigend ignoriert — `direction`-Überschreibung gilt nur innerhalb von `subgraph … end` | Richtung auf der `flowchart`-Header-Zeile festlegen |
+
+---
+
+## 9. Grammatik (EBNF)
+
+```text
+document       = header (blank | comment | subgraph-block | direction-stmt
+                        | class-stmt | classdef-stmt | style-stmt
+                        | linkstyle-stmt | chain-stmt)*
+
+header         = ("flowchart" | "graph") ( WS direction )? ( WS title )? NEWLINE
+direction      = "TD" | "TB" | "BT" | "LR" | "RL"
+title          = '"' any-char-but-quote* '"' | bare-word
+
+subgraph-block = "subgraph" ( WS subgraph-header )? NEWLINE
+                   ( WS? "direction" WS direction NEWLINE )?
+                   statement*
+                 "end" NEWLINE
+subgraph-header = id WS "[" label "]"
+                | id WS quoted-string
+                | quoted-string
+                | id
+
+chain-stmt     = node-group ( WS edge-op WS pipe-label? WS node-group )* NEWLINE
+node-group     = node-ref ( WS "&" WS node-ref )*
+node-ref       = id shape-suffix?
+shape-suffix   = "[" label "]"          %% rect
+               | "(" label ")"          %% round
+               | "([" label "])"        %% stadium
+               | "{" label "}"          %% diamond
+               | "{{" label "}}"        %% hexagon
+               | "[[" label "]]"        %% subroutine
+               | "[(" label ")]"        %% cylinder
+               | "((" label "))"        %% circle
+               | "(((" label ")))"      %% double-circle
+               | "[/" label "/]"        %% parallelogram
+               | "[\" label "\]"        %% parallelogram-alt
+               | "[/" label "\]"        %% trapezoid
+               | "[\" label "/]"        %% trapezoid-alt
+               | ">" label "]"          %% asymmetric
+
+edge-op        = "-->" | "---" | "-."-".->" | "==>" | "<-->" | "--x" | "--o"
+               | inline-label variants of the above
+pipe-label     = "|" text "|"
+
+class-stmt     = "class" WS id-list WS class-name NEWLINE
+               | node-ref ":::" class-name NEWLINE         # Mermaid inline form
+classdef-stmt  = "classDef" WS class-name WS css-props NEWLINE
+style-stmt     = "style" WS id WS css-props NEWLINE
+linkstyle-stmt = "linkStyle" WS index-list WS css-props NEWLINE
+index-list     = NUMBER ( "," NUMBER )* | "default"
+
+comment        = "%%" any NEWLINE
+id             = [A-Za-z] [A-Za-z0-9_-]*
+```
+
+Maßgebliche Quelle: `src/diagrams/flowchart/parser.ts`. Falls dies vom Parser abweicht, hat der Parser Vorrang — bitte eröffnen Sie ein Issue.
+
+---
+
+## 10. Standardkonformität
+
+Schematex-Flowcharts folgen den Symbolkonventionen von **ISO 5807:1985**. Die DSL-Syntax ist absichtlich kompatibel mit **[Mermaid flowchart](https://mermaid.js.org/syntax/flowchart.html)**, sodass in einem Tool erstellte Diagramme im anderen verwendet werden können.
+
+Was heute implementiert ist:
+
+- ✅ Alle fünf Richtungen: `TD`, `TB`, `BT`, `LR`, `RL`
+- ✅ 13 Knotenformen (Rechteck bis Asymmetrisch)
+- ✅ 7 Kantenarten: durchgezogen, ohne Pfeil, gepunktet, dick, bidirektional, gekreuzt, rundes Ende
+- ✅ Pipe-Labels (`-->|text|`) und Inline-Labels (`-- text -->`)
+- ✅ Kantenketten (`A --> B --> C`)
+- ✅ Fächerung mit `&` (Kreuzprodukt-Kanten)
+- ✅ Teilgraphen mit optionaler ID, Label und teilgraphspezifischer Richtung
+- ✅ `classDef` / `class`-semantische Gruppierung
+- ✅ Mermaid-Inline-Knotenklassen: `A[Label]:::className`
+- ✅ Knotenspezifische `style`-CSS-Überschreibungen
+- ✅ `linkStyle`-Rendering — `linkStyle 1,5,6 stroke:#f00,stroke-width:4px` wendet CSS auf übereinstimmende Kanten nach Deklarationsreihenfolge an
+- ✅ Inline `<b>` / `<i>` in Knotenlabels (kombiniert mit vorhandenen `<br/>`-Zeilenumbrüchen)
+- ⏳ Formrendering für alle 13 Formen — M1 rendert Rechteck/Rund/Stadion/Raute/Parallelogramm vollständig; verbleibende Formen fallen auf Rechteck zurück
+- ⏳ Swim-Lane-Layout-Variante
+
+Referenzen:
+
+- ISO 5807:1985 — *Information processing — Documentation symbols and conventions for data, program and system flowcharts, program network charts and system resources charts*
+- Mermaid-Flowchart-Dokumentation — https://mermaid.js.org/syntax/flowchart.html
+
+---
+
+## 11. Roadmap
+
+**Geplant — noch nicht parsebar.** Verwenden Sie diese Elemente heute nicht in generiertem DSL; der Parser wird sie ablehnen oder ignorieren.
+
+- **Vollständiges Formrendering für alle 13 Formen** — Unterroutine, Zylinder, Kreis, Doppelkreis, Sechseck, Asymmetrisch, Trapez und Parallelogramm-alt fallen in M1 auf Rechteck zurück.
+- **Swim-Lane-Layout** — horizontale Bänder zur Gruppierung von Knoten nach Akteur oder System (Mermaid `subgraph` mit `direction TB` innerhalb des `LR`-Wurzels).
+- **`%%{init: {…}}%%` Initialisierungsblock** — Mermaid-kompatibler Theme- und Layout-Initialisierungsblock.
+- **Markdown-Formatierung in Labels** — `**fett**` / `*kursiv*`-Markdown-Syntax (HTML `<b>`/`<i>` funktioniert bereits — siehe §5).
+
+Verfolgen Sie die GitHub-Issues, wenn Sie eines davon früher benötigen.
+
+---
+
+## Verwandte Beispiele
+
+Sofort einsetzbare Szenarien aus der Beispielgalerie:
+
+<RelatedExamples slugs={[
+  'flowchart-order-fulfillment',
+  'flowchart-cicd-pipeline',
+]} />

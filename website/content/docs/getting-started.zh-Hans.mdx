@@ -1,0 +1,92 @@
+---
+title: 快速上手
+description: 安装 Schematex，一分钟内渲染你的第一张图表。
+---
+
+## 安装
+
+```bash
+npm install schematex
+```
+
+## 渲染
+
+```ts
+import { render } from 'schematex';
+
+const svg = render(`
+genogram "Smiths"
+  john [male, 1950]
+  mary [female, 1952]
+  john -- mary
+    alice [female, 1975, index]
+`);
+```
+
+图表类型从第一个关键字自动推断。输出是纯 SVG 字符串——可以直接通过 `dangerouslySetInnerHTML`、`innerHTML` 注入，或写入磁盘。
+
+## 实时预览
+
+`render()` 严格模式：DSL 非法时直接抛错。如果是 AI 画布或编辑器预览，请使用预览 API，让解析失败可见，而不是留下空白画面。
+
+```ts
+import { renderPreview, renderResult } from 'schematex';
+
+const svg = renderPreview(dsl);
+const state = renderResult(dsl);
+
+preview.innerHTML = state.svg;
+if (!state.ok) console.error(state.diagnostics);
+```
+
+`renderPreview()` 始终返回 SVG。严格渲染失败时会生成一个可见的诊断 SVG。当你同时需要 `ok`、`status` 和诊断信息（用于重试或修复逻辑）时，使用 `renderResult()`。
+
+### 可选的 frontmatter
+
+DSL 正文前可以加 Mermaid 风格的 YAML frontmatter。`title:` 值会合并到图表标题中（当标题行本身未提供时）。
+
+```txt
+---
+title: Smith Family
+---
+genogram
+  john [male, 1950]
+```
+
+检测到图表类型之前，前置空行和纯注释行会被跳过。对于 v0.4.3 中涉及的 Mermaid 兼容解析器，`%%` 被视为整行注释标记。
+
+## 按需导入（Tree-shaking）
+
+只导入你需要的部分：
+
+```ts
+import { render } from 'schematex/genogram';
+import { render } from 'schematex/ladder';
+import { render } from 'schematex/sld';
+```
+
+每个子模块都有独立的 parser / layout / renderer，彼此完全独立。
+
+## 框架集成
+
+- **React** — 使用 `schematex/react` 中的 `<SchematexDiagram />`，或自行注入严格/预览模式的 SVG 字符串。当 DSL 无法渲染时，该组件会显示诊断 fallback SVG。
+- **SSR** — Schematex 输出纯字符串，不依赖 DOM。支持 Node.js、边缘运行时、Cloudflare Workers 和浏览器环境。
+- **Markdown** — `remark-schematex` 插件已在规划中。
+
+```tsx
+import { SchematexDiagram } from 'schematex/react';
+
+<SchematexDiagram dsl={dsl} theme="monochrome" />;
+```
+
+## 与 AI 配合使用
+
+Schematex 专为 LLM 设计。托管的 MCP 服务器可以让 Claude 自主生成经过校验、符合标准的 DSL——无需任何配置。
+
+<MCPConnectCard size="compact" />
+
+→ 要构建自己的 AI 功能？参见 **[在 AI 中使用 Schematex](/docs/ai-integration)**，了解 Vercel AI SDK 适配器、五个工具和推荐的自校正代理循环。
+
+## 接下来做什么？
+
+从侧边栏选择你要用的图表类型，阅读对应的语法指南。

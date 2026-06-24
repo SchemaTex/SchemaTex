@@ -1,0 +1,232 @@
+---
+title: 在 AI 中使用 Schematex
+description: 通过 Vercel AI SDK、托管 MCP 端点或 @schematex/mcp npm 包，将 Schematex 集成到 AI 代理中。
+---
+
+<MCPConnectCard />
+
+## TL;DR
+
+Schematex 内置了专为 LLM 设计的工具层——五个工具让 AI 代理能够**发现**图表类型、**学习**语法、**查看**精选示例、**校验**自身输出并**渲染** SVG。三种集成路径，工具集完全相同：
+
+| 路径 | 适用场景 | 安装 |
+|---|---|---|
+| **Vercel AI SDK** | 在 Next.js / Node 应用中构建自己的 AI 功能 | `npm i schematex ai zod` |
+| **托管 MCP** | 连接 Claude Desktop、ChatGPT、Cursor、Windsurf | 将客户端指向 `https://schematex.js.org/mcp` |
+| **本地 stdio MCP** | 离线 / 自定义 host | `npx @schematex/mcp` |
+
+---
+
+## 五个工具
+
+每种路径暴露的五个工具语义完全一致。
+
+### `listDiagrams()`
+返回全部 45 种图表类型，包含简介、使用场景提示、所属 cluster 和权威标准。首先调用此工具来选择类型。
+
+### `getSyntax({ type, detail? })`
+返回某种图表的标准语法。确定类型后调用。
+
+默认的 `detail: "canonical"` 响应专为 LLM 首次生成而设计：包含规范头部、首选模式、核心形式、避坑/修复指导以及通用生成规则。仅当请求用到高级特性或需要导入适配器时，才使用 `detail: "reference"`——该选项返回从 `## 1.` 到语法章节的精简公开文档片段。
+
+### `getExamples({ type, limit?, preferFeatured?, maxComplexity? })`
+真实世界的精选 DSL 示例及场景说明。在生成前用作 few-shot 上下文。
+
+### `validateDsl({ type?, dsl })`
+仅做解析校验。返回 `{ ok: true }` 或 `{ ok: false, errors: [{line, column, message, source, hint}] }`。一旦确定类型就传入规范的 `type`，并且**在向用户返回 DSL 前始终调用此工具**——使用自校正循环的代理可靠性会大幅提升。
+
+### `renderDsl({ type?, dsl, theme?, padding? })`
+将 DSL 渲染为 SVG 字符串。成功时返回 `{ ok: true, status, svg }`。
+失败时返回 `{ ok: false, status: 'invalid', svg, errors }`，其中 `svg` 是一个可见的诊断 fallback，而非空预览。
+
+<Callout type="info" title="真的需要这个工具吗？">
+**如果你的应用已经自行渲染图表**（即直接使用 `schematex` 包），就跳过 `renderDsl`——让代理返回经过校验的 DSL，由你自己渲染。调用这个工具只会增加不必要的一次往返。
+
+**只有当你需要在对话本身中返回 SVG 时才使用 `renderDsl`**：Claude Desktop、ChatGPT、Cursor 或任何没有自己渲染管线的纯聊天客户端。
+</Callout>
+
+若要在应用内做 AI 预览，用 `renderResult()` 或 `renderPreview()` 渲染返回的 DSL：
+
+```ts
+import { renderResult } from 'schematex';
+
+const result = renderResult(dsl, { type });
+preview.innerHTML = result.svg;
+
+if (!result.ok) {
+  queueRepair(result.diagnostics);
+}
+```
+
+预览可以保持可见，同时应用仍可将 `ok: false` 视为无效用户结果，用于修复、重试、遥测或计费策略。
+
+---
+
+## 路径一 — Vercel AI SDK（应用内集成）
+
+在 Next.js / Node 应用中添加 Schematex 生成能力最快的方式。
+
+```ts
+import { streamText } from 'ai';
+import { schematexTools } from 'schematex/ai/sdk';
+
+const result = streamText({
+  model: 'anthropic/claude-opus-4-7',
+  tools: schematexTools,
+  maxSteps: 5,
+  system: `You write Schematex DSL. First call listDiagrams to pick a type.
+Then call getSyntax and getExamples for that type. Write the DSL, then
+call validateDsl and self-correct on errors before returning to the user.`,
+  prompt: userMessage,
+});
+```
+
+`schematex/ai/sdk` 子路径只有在 `ai` 和 `zod` 已安装时才加载（两者都是可选的 peer dep）。如果不使用 AI SDK，直接从 `schematex/ai` 导入原始函数，接入任意框架：
+
+```ts
+import { listDiagrams, getSyntax, getExamples, validateDsl, renderDsl } from 'schematex/ai';
+```
+
+### 单次生成（无工具循环）
+
+高流量后端通常用**一次**模型调用来生成，而非多步工具循环——成本更低、延迟更小。为此，`buildPromptContext(type)` 会将规范语法卡和精选 few-shot 示例组合成一个即插即用的注入块，省去你自己拼接 `getSyntax` + `getExamples` 的麻烦：
+
+```ts
+import { buildPromptContext, validateDsl } from 'schematex/ai';
+
+const ctx = buildPromptContext('genogram');          // 语法卡 + 精选示例
+const system = `Generate only Schematex DSL.\n\n${ctx.text}`;
+const dsl = await generate(system, userMessage);     // 你的单次模型调用
+
+const check = validateDsl('genogram', dsl);          // 服务端必须校验
+if (!check.ok) {
+  // 一次修复 pass：用 check.errors[].message + .hint 重新提示
+}
+```
+
+`buildPromptContext` 是对 `getSyntax({ detail: 'canonical' })` + `getExamples({ preferFeatured: true })` 的纯封装——如果你更喜欢自己组合 prompt，两者依然可以单独使用。选项：`{ examples?: number, detail?, preferFeatured?, maxComplexity? }`。
+
+---
+
+## 路径二 — 托管 MCP（零安装）
+
+Schematex MCP 服务器托管于：
+
+```
+https://schematex.js.org/mcp
+```
+
+任何支持 HTTP JSON-RPC 的 MCP 客户端都可以连接。无需安装，无需本地进程，始终与最新版 schematex 同步。
+
+### Claude.ai（网页版）
+
+使用本页顶部的连接卡片——一键打开连接对话框，粘贴 URL，完成。之后可在「设置 → 连接器」中找到，并在每次对话中使用。
+
+### Claude Desktop（桌面应用）
+
+设置 → 连接器 → 添加自定义连接器 → 粘贴 `https://schematex.js.org/mcp`。
+
+### ChatGPT / Cursor / Windsurf
+
+按照客户端的「添加 MCP 服务器」流程操作，使用 HTTP transport 和上面的 URL。
+
+---
+
+## 路径三 — 本地 stdio MCP
+
+适用于离线开发，或仅支持 stdio transport 的客户端。
+
+```bash
+npm i -g @schematex/mcp
+# 或
+npx @schematex/mcp
+```
+
+### Claude Desktop 配置
+
+`~/Library/Application Support/Claude/claude_desktop_config.json`：
+
+```json
+{
+  "mcpServers": {
+    "schematex": {
+      "command": "npx",
+      "args": ["-y", "@schematex/mcp"]
+    }
+  }
+}
+```
+
+---
+
+## 推荐的代理循环
+
+最大的可靠性提升来自让代理校验自身输出并自我修正。
+
+```
+1. listDiagrams()                          → 选择正确的类型
+2. getSyntax({ type })                     → 获取规范生成语法
+3. getExamples({ type, maxComplexity: 2 }) → 获取 few-shot 上下文
+4. 编写 DSL
+5. validateDsl({ type, dsl })
+   ├─ ok:    将 DSL 返回给用户
+   └─ error: 读取行/列/消息，修复，回到第 5 步
+6. (可选) renderDsl({ type, dsl })         → 返回 SVG（如果应用自行渲染则跳过）
+```
+
+实现此循环的简单 system prompt：
+
+```
+You generate Schematex DSL for diagrams. Always follow this procedure:
+
+1. If you don't already know which diagram type matches the user's request,
+   call listDiagrams and pick the best match.
+2. Call getSyntax for the chosen type. Stay on the canonical path unless an
+   advanced feature requires getSyntax({ type, detail: "reference" }).
+3. Call getExamples (maxComplexity: 2) for few-shot context.
+4. Write the DSL.
+5. Call validateDsl. If ok:false, read the error's line, column, and message,
+   fix the DSL, and call validateDsl again. Repeat up to 3 times.
+6. Return the validated DSL to the user, inside a ```schematex code block.
+```
+
+---
+
+## 错误结构
+
+`validateDsl` 和 `renderDsl` 在失败时返回结构化错误：
+
+```ts
+{
+  ok: false,
+  status: 'invalid',     // 仅 renderDsl
+  type: 'genogram' | null,
+  svg: string,           // 仅 renderDsl：可见的诊断 fallback
+  errors: [
+    {
+      line?: number;        // 1-based，若解析器有报告
+      column?: number;
+      source?: string;      // 出错的行文本
+      message: string;      // 人类可读的描述
+      hint?: string;
+    }
+  ]
+}
+```
+
+目前并非所有解析器都能输出行信息（今天支持的有：genogram、pedigree、ecomap、venn、sld、fishbone；其他只返回消息）。结构是稳定的——`line` 是可选字段。
+
+---
+
+## 准备好试试了吗？
+
+<MCPConnectCard
+  title="将 Schematex 添加到 Claude — 只需 10 秒"
+  description="托管 MCP。无需安装，无需本地进程。连接器随每次 Schematex 发版自动更新。"
+/>
+
+---
+
+## 许可说明
+
+Schematex 采用 AGPL-3.0 协议。闭源商业集成请联系 victor&#64;mymap.ai 获取商业授权。

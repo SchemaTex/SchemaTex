@@ -1,0 +1,244 @@
+---
+title: Fluxograma PRISMA 2020
+---
+
+## Sobre fluxogramas PRISMA
+
+O **fluxograma PRISMA 2020** (Page MJ et al., *BMJ* 2021;372:n71) é a figura obrigatória em toda revisão sistemática, metanálise e revisão de escopo publicada no BMJ, Lancet, JAMA, Cochrane, JBI e mais de 200 outros periódicos. É uma figura *única, rígida e de quatro linhas* — **Identificação → Triagem → Elegibilidade → Incluídos** — com contagens de registros em cada caixa e caixas laterais paralelas de "excluídos".
+
+Conceitualmente é um fluxograma, mas o layout, os campos obrigatórios `n =` e a variante de pipeline duplo são *prescritos*. O Schematex oferece `prisma` como um motor dedicado e opinativo para que o autor escreva as contagens e os motivos de exclusão e o diagrama seja **correto por construção** — não é possível omitir acidentalmente uma contagem ou ordenar incorretamente um estágio. Especificação: [`28-PRISMA-STANDARD.md`](https://github.com/SchemaTex/SchemaTex/blob/main/docs/reference/28-PRISMA-STANDARD.md).
+
+Distinto de [flowchart](/docs/flowchart): um fluxograma genérico não tem noção de estágios obrigatórios, contagens de registros, caixas laterais de exclusão ou a fusão de pipeline duplo. Use `prisma` sempre que a figura for um fluxo de revisão PRISMA.
+
+<Playground initial={`
+  prisma
+  mode: 2020-single
+  title: Effect of exercise on chronic low-back pain — SR
+
+  identification:
+    databases:
+      n: 1418
+      sources: PubMed=600, Embase=450, Cochrane=184, Web of Science=184
+      duplicates-removed: 318
+
+  screening:
+    records-screened: 1100
+    excluded:
+      n: 870
+      reasons: irrelevant title=750, non-English=120
+
+  eligibility:
+    full-text-assessed: 230
+    excluded:
+      n: 195
+      reasons: wrong population=80, wrong intervention=60, wrong outcome=55
+
+  included:
+    studies: 35
+    reports: 38`} height={620} />
+
+---
+
+## 1. Seu primeiro diagrama
+
+O mínimo são os quatro blocos de estágio. As contagens são obrigatórias; o parser recusa montar um diagrama com um total ausente.
+
+```
+prisma
+
+identification:
+  databases:
+    n: 1000
+
+screening:
+  records-screened: 900
+  excluded:
+    n: 600
+
+eligibility:
+  full-text-assessed: 300
+  excluded:
+    n: 250
+
+included:
+  studies: 50
+```
+
+A indentação é significativa — **dois espaços por nível**, como nos diagramas genogram e SLD. A primeira linha não em branco deve ser `prisma`. Comentários usam `#` ou `//`.
+
+---
+
+## 2. Linhas de metadados
+
+Linhas `chave: valor` de nível superior, escritas antes dos blocos de estágio:
+
+```
+prisma
+mode: 2020-single
+kind: systematic-review
+title: Minha revisão
+validate-counts: warn
+```
+
+| Chave | Valores | Padrão | Significado |
+|---|---|---|---|
+| `mode` | `2020-single` · `2020-dual` · `2009` | `2020-single` | Coluna única ou dupla ("outros métodos"). |
+| `kind` | `systematic-review` · `scoping-review` · `ipd` · `nma` | `systematic-review` | Altera o vocabulário de estágio (ver §6). |
+| `title` | string | — | Renderizado acima do diagrama. |
+| `validate-counts` | `warn` · `strict` · `off` | `warn` | Verificação aritmética (ver §7). |
+| `direction` | `TB` / `TD` | `TB` | O PRISMA é vertical por padrão; horizontal é rejeitado. |
+
+---
+
+## 3. Identificação
+
+O bloco `identification:` contém um sub-bloco `databases:` (sempre) e um sub-bloco `other:` opcional (modo duplo).
+
+```
+identification:
+  databases:
+    n: 1418
+    sources: PubMed=600, Embase=450, Cochrane=184
+    duplicates-removed: 318
+    ineligible-automation: 0
+    other-removed: 0
+```
+
+- `n:` — total de registros identificados (**obrigatório**).
+- `sources:` — pares `nome=contagem` separados por vírgula. Renderizados como uma subdivisão indentada. Nomes com espaços ou pontuação podem ser colocados entre aspas: `"Web of Science"=184`.
+- `duplicates-removed:`, `ineligible-automation:`, `other-removed:` — contagens de remoção opcionais. Quando presentes, são renderizadas como uma caixa separada **"Registros removidos antes da triagem"** na coluna direita, conectada por uma seta horizontal.
+
+Números grandes podem usar vírgulas: `n: 1,418` é o mesmo que `n: 1418`.
+
+---
+
+## 4. Triagem e elegibilidade
+
+Ambos os estágios carregam uma contagem principal mais um bloco `excluded:`. O bloco de exclusão tem seu próprio `n:` e um subdivisão opcional `reasons:`.
+
+```
+screening:
+  records-screened: 1100
+  excluded:
+    n: 870
+    reasons: irrelevant title=750, non-English=120
+  reports-sought: 226        # opcional
+  reports-not-retrieved: 12  # opcional
+
+eligibility:
+  full-text-assessed: 230
+  excluded:
+    n: 195
+    reasons: wrong population=80, wrong intervention=60, wrong outcome=55
+```
+
+`reasons:` são pares `nome=contagem`. Se você listar mais de 8, o renderizador os ordena de forma decrescente e agrega a cauda como `Other (n = …)` para manter a caixa lateral legível.
+
+---
+
+## 5. Incluídos
+
+```
+included:
+  studies: 35
+  reports: 38          # um estudo pode gerar vários relatórios
+  participants: 28741  # somente para PRISMA-IPD
+```
+
+`studies:` é obrigatório. `reports:` e `participants:` são linhas de contagem extras opcionais.
+
+---
+
+## 6. Pipeline duplo e tipos de revisão
+
+**Pipeline duplo** — a atualização do PRISMA 2020 adicionou uma segunda coluna "Identificação por outros métodos" (busca de citações, buscas manuais, recomendações de especialistas). Adicione um bloco `other:`; as duas colunas se fundem na Triagem via uma junção em Y.
+
+```
+prisma
+mode: 2020-dual
+
+identification:
+  databases:
+    n: 1234
+    duplicates-removed: 254
+  other:
+    n: 56
+    sources: citation-search=30, hand-search=20, expert-recommendation=6
+
+screening:
+  records-screened: 1036
+  excluded:
+    n: 810
+
+eligibility:
+  full-text-assessed: 226
+  excluded:
+    n: 195
+
+included:
+  studies: 31
+```
+
+**Revisão de escopo** — `kind: scoping-review` substitui "studies" → "sources of evidence" e rerotula os estágios conforme Tricco et al. 2018, sem alterar a geometria.
+
+**Revisão atualizada** — um bloco opcional `previous-studies:` desenha uma caixa tracejada no topo que alimenta a seção de identificação:
+
+```
+previous-studies:
+  n: 19
+  sources: previous review=19
+```
+
+---
+
+## 7. Validação aritmética das contagens
+
+Com `validate-counts: warn` (padrão) o motor verifica se as contagens se reconciliam entre os estágios — ex.: `databases.n + other.n − duplicates-removed = records-screened`, e que as subdivisões de fontes/motivos somam aos seus totais. Divergências renderizam um pequeno aviso abaixo do diagrama (também disponível no `<desc>` do SVG para leitores de tela).
+
+`validate-counts: strict` transforma uma divergência em um erro de parser com uma mensagem "off by N". `off` pula a verificação completamente.
+
+---
+
+## 8. Gramática (EBNF)
+
+```
+prisma-document  = "prisma", { meta-line }, stage-block, { stage-block } ;
+meta-line        = ("mode:" | "kind:" | "title:" | "review-id:" | "validate-counts:" | "direction:") value ;
+
+stage-block      = previous-block | identification-block | screening-block | eligibility-block | included-block ;
+
+previous-block       = "previous-studies:" , indent, "n:" int, [ "reports:" int ], { "sources:" pairs } ;
+identification-block = "identification:" , indent,
+                         "databases:" , indent, "n:" int, { "sources:" pairs },
+                           [ "duplicates-removed:" int ], [ "ineligible-automation:" int ], [ "other-removed:" int ],
+                         [ "other:" , indent, "n:" int, { "sources:" pairs } ] ;
+screening-block      = "screening:" , indent, "records-screened:" int,
+                         "excluded:" , indent, "n:" int, { "reasons:" pairs },
+                         [ "reports-sought:" int ], [ "reports-not-retrieved:" int ] ;
+eligibility-block    = "eligibility:" , indent, "full-text-assessed:" int,
+                         "excluded:" , indent, "n:" int, { "reasons:" pairs } ;
+included-block       = "included:" , indent, "studies:" int, [ "reports:" int ], [ "participants:" int ] ;
+
+pairs            = pair, { "," pair } ;
+pair             = (string | quoted) "=" int ;
+int              = digit, { digit | "," } ;     (* vírgulas removidas: 1.234 == 1234 *)
+```
+
+A indentação é de dois espaços por nível. Chaves desconhecidas dentro de um bloco de estágio são um erro de parser, mantendo cada estágio bem definido.
+
+---
+
+## 9. Conformidade com padrões
+
+Segue a **declaração PRISMA 2020** (Page MJ, McKenzie JE, Bossuyt PM, et al. *The PRISMA 2020 statement: an updated guideline for reporting systematic reviews.* BMJ 2021;372:n71) e as convenções de renderização de referência do **pacote R PRISMA2020** (Haddaway et al. 2022). O vocabulário de revisão de escopo segue o **PRISMA-ScR** (Tricco et al. 2018); a contagem de participantes segue o **PRISMA-IPD** (Stewart et al. 2015). Modelo: [prisma-statement.org/prisma-2020-flow-diagram](https://www.prisma-statement.org/prisma-2020-flow-diagram).
+
+---
+
+## Exemplos relacionados
+
+Cenários prontos para uso da galeria de exemplos:
+
+<RelatedExamples slugs={[
+  'prisma-systematic-review',
+  'prisma-dual-pipeline',
+]} />

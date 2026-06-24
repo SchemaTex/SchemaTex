@@ -1,0 +1,106 @@
+---
+title: Kausalkreis-Diagramm
+description: Systemdynamik-Rückkopplungsdiagramme — die Engine enumeriert jeden Rückkopplungskreis und klassifiziert ihn als verstärkend oder ausgleichend nach seiner Polarität.
+---
+
+## Über Kausalkreis-Diagramme
+
+Ein **Kausalkreis-Diagramm** (KKD, engl. CLD) ist das grundlegende Kartierungswerkzeug der **Systemdynamik** (Jay Forrester, MIT, 1960er Jahre): Variablen, die durch vorzeichenbehaftete Kausalverbindungen verbunden sind, wobei die *Rückkopplungsschleifen* — nicht die einzelnen Pfeile — das Verhalten eines Systems erklären. Eine Schleife ist **verstärkend (R)**, wenn sie Veränderungen verstärkt, und **ausgleichend (B)**, wenn sie ihr entgegenwirkt. Die kanonische Referenz ist Sterman, *Business Dynamics* (2000).
+
+Schematexs Vorteil besteht darin, dass die Engine **die Schleifen für Sie findet und klassifiziert**. Zeichenwerkzeuge ermöglichen das Platzieren von Pfeilen; sie sagen Ihnen nicht, welche Schleifen existieren oder ob jede verstärkend oder ausgleichend ist. Schematex enumeriert jede elementare Rückkopplungsschleife (Johnsons Algorithmus) und wendet Stermans Gerade/Ungerade-Polaritätsregel an — sie werden als R1, B1, R2… beschriftet.
+
+<Playground initial={`causalloop "Sales force flywheel"
+var "Training quality"
+"Training quality" -> "Salesperson skills" : + delay
+"Salesperson skills" -> Revenue : +
+Revenue -> "Training quality" : +
+Revenue -> "Hiring rate" : +
+"Hiring rate" -> "Salesperson skills" : -
+loop R1 "Skill flywheel"
+loop B1 "Dilution"`} height={480} />
+
+---
+
+## 1. Ihr erster Kausalkreis
+
+Beginnen Sie mit dem Schlüsselwort `causalloop` (Alias `cld`), einem optionalen Titel, dann **vorzeichenbehafteten Verbindungen**. Variablen werden automatisch aus den Verbindungen erstellt — Sie deklarieren sie selten:
+
+```
+causalloop "Adoption model"
+"Adoption rate" -> Adopters : +
+Adopters -> "Adoption rate" : +
+loop R1 "Word of mouth"
+```
+
+Eine Verbindung ist `QUELLE -> ZIEL : POLARITÄT`. Mehrwörtige Variablennamen werden in Anführungszeichen gesetzt (`"Adoption rate"`); einzelne Wörter brauchen keine Anführungszeichen (`Adopters`). Mindestens eine Verbindung ist erforderlich.
+
+---
+
+## 2. Verbindungspolarität
+
+Die Polarität ist das Vorzeichen des kausalen Einflusses und **obligatorisch** für jede Verbindung:
+
+```
+A -> B : +          # gleiche Richtung (mehr A → mehr B)
+B -> C : -          # entgegengesetzte Richtung (mehr B → weniger C)
+A -> B : s          # Alias für + (same)
+B -> C : o          # Alias für − (opposite)
+C -> D : same       # Alias für +
+D -> E : opposite   # Alias für −
+A -> B +            # der Doppelpunkt ist optional
+```
+
+`+` / `s` / `same` bedeutet *gleiche Richtung*; `−` / `o` / `opposite` bedeutet *entgegengesetzt*. Eine Verbindung ohne Polarität wird abgelehnt.
+
+---
+
+## 3. Verzögerungen und explizite Variablen
+
+```
+"Training quality" -> "Salesperson skills" : + delay   # markierte Verzögerung (∥ Hash auf dem Pfeil)
+A -> B : + ~delay                                       # die ~delay-Form funktioniert auch
+var "Adoption rate"                                     # Variable fixieren, damit sie nicht auto-erstellt wird
+loop R1 "Word of mouth"                                 # eine Schleife benennen/annotieren
+```
+
+- **`delay`** / **`~delay`** markiert eine Verbindung als verzögert (das Systemdynamik-Hashzeichen).
+- **`var "name"`** deklariert eine Variable explizit (fixiert ihr Label; wird nicht auto-erstellt).
+- **`loop ID "phrase"`** hängt einen menschenlesbaren Namen an eine vom System erkannte Schleife.
+
+---
+
+## 4. Berechnete Rückkopplungsschleifen
+
+Das ist das Unterscheidungsmerkmal. Die Engine:
+
+1. Erstellt den **vorzeichenbehafteten gerichteten Graphen** (Knoten = Variablen, Kanten = vorzeichenbehaftete Verbindungen).
+2. Enumeriert **jede elementare Rückkopplungsschleife** (einfacher gerichteter Zyklus) mit Johnsons Algorithmus — deterministisch, in Deklarationsreihenfolge.
+3. **Klassifiziert** jede Schleife durch Zählen negativer Verbindungen:
+   - **Gerade** Anzahl (einschließlich 0) → **R** (verstärkend); Produkt der Vorzeichen = +1
+   - **Ungerade** Anzahl → **B** (ausgleichend); Produkt der Vorzeichen = −1
+
+Dies ist genau Stermans Gerade/Ungerade-Regel. Schleifen werden in der Erkennungsreihenfolge nach Art nummeriert (R1, B1, R2…) und mit ihrer `R`/`B`-Rotationsglyphe im Schleifenzentrum gezeichnet. Jede Schleife trägt `data-loop` und `data-kind`.
+
+---
+
+## 5. Häufige Fehler
+
+```
+# FALSCH — Verbindung ohne Polarität
+A -> B
+
+# FALSCH — ein Diagramm ohne Verbindungen
+cld
+```
+
+Jede Verbindung benötigt eine Polarität (`: +` oder `: -`); ein KKD ohne Verbindungen wird abgelehnt. Denken Sie daran, dass Polarität über die *Richtung der Veränderung* geht, nicht über Wünschbarkeit — eine Verbindung von "Todesfällen" zu "Bevölkerung" ist immer noch `-` (mehr Todesfälle → weniger Bevölkerung), auch wenn Todesfälle negativ sind.
+
+---
+
+## 6. Standardkonformität
+
+Die Notation folgt Sterman, *Business Dynamics* (2000) und der Standard-Systemdynamik-Konvention: vorzeichenbehaftete Verbindungspolarität, Verzögerungs-Hashzeichen und R/B-Schleifenbezeichner. Die Gerade/Ungerade-Negativverbindungs-Regel für die Schleifenpolarität ist die Lehrbuch-Klassifikation, genau implementiert.
+
+## 7. Roadmap
+
+Verschoben: Bestand-und-Fluss-Promotion, Verbindungsstärken-Gewichtung und dominante-Schleifen-(Loop-Eigenwert-)Analyse über die Zeit.

@@ -1,0 +1,209 @@
+---
+title: 間取り図
+---
+
+## 間取り図について
+
+**間取り図**は空間の標準的な2D建築図面です：実際の寸法を持つ部屋、ソリッドな**ポシェ**帯として描かれた壁、四半円スイングアークのドア、ガラス線としての窓、そして平面図記号としての家具 — *Architectural Graphic Standards* で文書化され、すべてのプロのプランセットで使用されるビジュアル言語です。Schematexはテキストからこれをレンダリングします：部屋、開口部、家具を実際の寸法で宣言すると、エンジンが共有壁を結合し、部屋面積を計算し、寸法線を描き、テーブルに自動で座席を配置し、ジオメトリを検証します。
+
+画像生成器とは異なり、出力は*測定可能で編集可能*です — すべての部屋は計算された面積を持つラベル付き要素であり、4列目のデスクを追加するのは1行の編集です。
+
+<Playground initial={`floorplan "Studio Apartment" unit m
+room main   "Living / Sleeping" at 0,0 size 5.2x4.0
+room bath   "Bath"   right-of main size 2.0x2.2
+room kitchen "Kitchenette" right-of main align end size 2.0x1.8
+door main south at 15% width 0.9
+door between main bath at 50%
+opening between main kitchen at 50% width 1.2
+window main north at 30% width 1.8
+furniture bed-double in main at 3.4,0.3
+furniture sofa in main at 0.2,3.0
+furniture toilet in bath at 0.2,0.2
+furniture sink in bath at 1.3,0.2
+furniture counter in kitchen at 0.15,1.05 size 1.7x0.6
+furniture kitchen-sink in kitchen at 0.6,1.05`} height={420} />
+
+---
+
+## 1. 最初の間取り図
+
+ヘッダー、1つの部屋、ドア、窓：
+
+```
+floorplan "Studio"
+room main "Studio" at 0,0 size 4x3
+door main south at 20%
+window main north at 50%
+```
+
+ほとんどの使用をカバーする3つのルール：
+
+1. `floorplan`、任意の引用符付きタイトル、`unit m`（デフォルト）または `unit ft` で始める。**すべての数値はこの単位。**
+2. 部屋は矩形：`room id "Label" at x,y size WxH`。ラベルと計算された面積は部屋の中央に表示。
+3. 開口部は壁に掛かります：壁参照（`main south`）はパーセンテージでその壁に沿って位置を決め；`between A B` は共有壁を自動的に見つけます。
+
+---
+
+## 2. 部屋と配置
+
+最初の部屋を `0,0` に配置し、残りを相対的にチェーンします — 隣接する部屋はエッジを正確に共有し、その壁は単一の帯に結合されます：
+
+```
+room living  "Living Room" at 0,0 size 5.2x4.2
+room kitchen "Kitchen"     right-of living size 3.0x4.2
+room hall    "Hallway"     below living size 2.0x2.6
+room bed1    "Bedroom 1"   right-of hall size 3.2x2.6
+```
+
+- `right-of` / `left-of` / `above` / `below` は参照部屋のエッジにスナップします。
+- `align start|center|end` は交差軸を整列させます（デフォルト `start` = 上/左エッジを揃える）；`offset n` でシフト。
+- `fill #e0f2fe` で床に色を付け；`nolabel` で名前 + 面積ラベルを非表示（教室のような単純な間取り図）。
+- 座標はy-down：`at 0,0` は左上隅。
+
+**L/T/U字型の部屋**は `extend` を使用します — メインの矩形を宣言し、エッジ共有矩形で成長させます。壁は継ぎ目に沿って結合され、面積は1つの数値に合計され（プロがL字型の部屋を測定する方法とまったく同じ）、ラベルは最大の部分の中央に置かれます：
+
+```
+room living "Living Room" at 0,0 size 5x4
+extend living at 5,2 size 2x2          # L字型：右上の切り欠き
+```
+
+部屋に接触しない、またはそれと重なる拡張は定量化されたエラーで拒否されます。`north`（回転した平面図のためにオプションで `north 30`）は右上にコンパスを追加します。
+
+---
+
+## 3. ドア、窓、開口部
+
+```
+door hall west at 50% width 1.0 swing in          # 壁の外部ドア
+door between hall bed1 at 50% hinge right          # 共有壁の内部ドア
+door between bed1 bath at 30% type sliding         # 引き戸 — アークなし
+opening between living kitchen at 35% width 1.2    # アーチ、建具なし
+window living north at 30% width 1.8
+```
+
+- `between A B` は共有壁セグメントを解決し、**重複範囲に沿ったパーセンテージ**で位置を決めます — 座標不要。隣接していない部屋は測定されたギャップで拒否されます。
+- ドアのデフォルト幅は外壁で0.9m、`between` 壁で0.8m；窓のデフォルトは1.2m。
+- `hinge left|right` で丁番を選択；`swing in|out` で四半円アークを反転（デフォルトは所有部屋 — 最初に名前が挙げられた部屋 — の内側にスイング）。
+- ドアの `type single|double|sliding|pocket|bifold`：doubleは2つのミラーアークを描き；sliding/pocketはアークなしのオフセット建具線を描き；bifoldはクローゼットドアの2つのテントピークを描きます。
+- 窓の `type fixed|sliding|casement|bay`：slidingは2つのオフセットパネル、casementは外向きのスイングアークを追加、bayは壁の外側に張り出した台形を投影します。
+- 開口部は壁セグメントに収まるようにクランプされます（警告付き）。
+
+---
+
+## 4. 家具
+
+家具は**部屋の内部左上隅を基準**に配置され、オプションの `size`、`rotate`、ラベルを持ちます：
+
+```
+furniture sofa in living at 0.25,2.9
+furniture desk "Teacher" in class at 2,1.5 size 5x2.5 rotate 20
+furniture counter "Cubbies" in class at 6,24.4 size 10x1.2
+```
+
+カタログは住宅、商業、サイト作業にまたがります（サイズは業界標準のフットプリントをデフォルトとします）：
+
+| クラスター | タイプ |
+| --- | --- |
+| 住宅 | `bed-double` `bed-single` `bed-queen` `bed-king` `bunk-bed` `crib` `sofa` `loveseat` `sectional` `armchair` `ottoman` `coffee-table` `side-table` `tv` `tv-stand` `fireplace` `floor-lamp` `rug` `wardrobe` `dresser` `nightstand` `bookshelf` `plant` `piano` `piano-upright` `pool-table` `ceiling-fan` `dining-table` |
+| キッチン / バス | `counter` `wall-cabinet` `kitchen-sink` `stove` `range-hood` `fridge` `dishwasher` `island` `bar-stool` `toilet` `sink` `vanity` `bidet` `urinal` `bathtub` `shower` `washer` `dryer` |
+| 教室 / オフィス | `desk-chair` `desk` `desk-l` `chair` `whiteboard` `smartboard` `bookcase` `cubbies` `filing-cabinet` `lockers` `kidney-table` `round-table-4/6/8/10` `conference-table` |
+| イベント / 宴会 | `banquet-table` `head-table` `stage` `dance-floor` `bar` `dj-booth` `cocktail-table` `podium` `row-chairs` |
+| 小売 / 倉庫 | `shelving` `checkout` `clothing-rack` `fitting-room` `pallet-rack` `loading-dock` `forklift` |
+| サロン / ジム | `salon-chair` `shampoo-bowl` `manicure-table` `treadmill` `weight-bench` `power-rack` `yoga-mat` |
+| レストラン / 業務用キッチン | `booth` `prep-table` `range` `walk-in` `commercial-sink` `fryer` |
+| 階段 / 構造 | `stairs` `stairs-l` `stairs-u` `spiral-stairs` `elevator` `column` |
+| サイト / 屋外 | `tree` `car` |
+
+**自動着席**が内蔵されています：`round-table-8` は円周に8脚の椅子を描き（60インチトップ；`round-table-10` は72インチを使用）、`dining-table` / `banquet-table` / `conference-table` は0.65mに1脚の割合で両長辺に着席、`head-table` は部屋を向いた片側に着席、`manicure-table` はクライアントと技術者の椅子を着席、`row-chairs` は0.55mピッチで劇場ストリップを配置。`rug`、`dance-floor`、`yoga-mat`、`counter`、`island`、`wall-cabinet`、`range-hood`、`ceiling-fan` はアンダーレイ/オーバーヘッドであり、他の家具は衝突警告なしにこれらと重なることができます。
+
+**座席表** — `seats` 句を使用して自動着席テーブルの占有者に名前を付けると、エンジンは各椅子に名前を書きます（配置順：丸テーブルは上から時計回り；長方形テーブルは上辺を左→右に埋め、次に下辺）。これにより会場の間取り図がゲストが実際に読む座席表になります：
+
+```
+furniture round-table-8 "Table 3" in hall at 11,4 seats "Alice" "Bob" "Carol" "Dave"
+furniture head-table "Head Table" in hall at 5,0.6 size 6x0.9 seats "Bride" "Groom"
+```
+
+名前のない余分な椅子は空のままになります；椅子数を超えた名前は無視されます。CJK引用符付きの名前（`seats "张伟" "李娜"`）は他のラベルと同様に機能します。名前は水平に読まれるため、きれいな表のためにテーブルを回転させないでください。
+
+`tree` と `car` は屋外用のサイズ（樹冠ディスク、駐車スペースのフットプリント）なので、**サイトプラン**は隣接する部屋としてタイル状に並べたゾーン — 前庭、建物のフットプリント、車道、裏庭 — の上に木と駐車中の車を配置するだけです。
+
+**階段**は製図の規約に従います：0.28m（11インチ）のトレッド線、最低段から `UP` とラベル付きの方向矢印（降りる場合は `"DN"` ラベルを付ける）、仮想の4フィートカット平面での45°ジグザグ断線と断線より先の点線トレッド。`stairs` はストレートの走り（`size`/`rotate` で向きを設定）、`stairs-l` は踊り場を経て90°曲がり、`stairs-u` は180°折り返し、`spiral-stairs` は中心柱と放射状トレッドの円。
+
+---
+
+## 5. 配列 — グリッド、行、アーク
+
+繰り返される家具は30ではなく1文：
+
+```
+grid desk-chair in class rows 5 cols 6 count 27 area 5,8 25,24 itemsize 2x2.5
+row round-table-8 in hall cols 3 area 8.8,13.4 15.2,13.4 itemsize 2.3x2.3
+arc chair in hall count 13 center 12,8 radius 5 from 200 to 340
+```
+
+- `area x1,y1 x2,y2` は最初と最後のアイテムの**中心**を指定；アイテムはそれらの間に均等に広がります。
+- `count` は**行優先**で切り捨て — 5×6グリッドで27のデスクは最終行の末尾を削除します。本物の教室と同じ。
+- `arc` は中心を向くように円弧上にアイテムを配置 — 半円形の教室、式典の着席。
+
+---
+
+## 6. 単位、面積、寸法線
+
+- `unit ft` はすべての数値をフィートにします；寸法線は `32'` / `15'1"` でフォーマットされ、面積は平方フィートで表示。内部的にはすべてメートル法（1フィート = 0.3048m）。
+- 部屋面積はエンジンが宣言されたジオメトリから**計算**し、手入力は不要。
+- 寸法線は建築スラッシュティック付きで平面図の外側にレンダリングされます：常に全幅 + 高さ、さらに上と左の外周に沿った部屋ごとのセグメント。
+
+---
+
+## 7. バリデーション
+
+エンジンはLLM（および人間）が実際に間違えることを、問題の要素を名指しして修正方向を示すエラーで検証します。
+
+**エラー**（レンダリングをブロック、エラーパネルに表示）：
+
+- 部屋の重複 — `rooms "bed1" and "bath" overlap by 0.40×2.60 m — move "bath" right-of "bed1" or shrink size`
+- 隣接していない部屋間のドア — `door between "kitchen" and "bed2": rooms share no wall (gap 2 m on x-axis)`
+- 部屋の外の家具 — `furniture sofa #1 extends 1.7 m outside room "c" — move it or shrink size`
+
+**警告**（とにかくレンダリング、平面図の下に一覧表示）：
+
+- 家具の衝突 — **椅子リングエンベロープ**を含む境界ボックス。2つの宴会ラウンドテーブルで椅子が接触する場合、テーブルトップが接触しなくてもフラグが立てられます。
+- 壁セグメントに収まるようにクランプされた開口部。
+
+---
+
+## 8. 文法（EBNF）
+
+```text
+plan      ::= "floorplan" string? ("unit" ("m"|"ft"))? NL statement*
+statement ::= room | extend | north | door | window | opening | furniture | array
+room      ::= "room" id string? placement "size" dims ("fill" color)? ("nolabel")?
+extend    ::= "extend" id placement "size" dims
+north     ::= "north" num?
+placement ::= "at" coord
+            | ("right-of"|"left-of"|"above"|"below") id ("offset" num)?
+              ("align" ("start"|"center"|"end"))?
+door      ::= "door" (wallref | "between" id id) "at" pct
+              ("width" num)? ("hinge" ("left"|"right"))? ("swing" ("in"|"out"))?
+              ("type" ("single"|"double"|"sliding"|"pocket"|"bifold"))?
+window    ::= "window" wallref "at" pct ("width" num)?
+              ("type" ("fixed"|"sliding"|"casement"|"bay"))?
+opening   ::= "opening" (wallref | "between" id id) "at" pct ("width" num)?
+furniture ::= "furniture" type ("in" id) "at" coord ("size" dims)? ("rotate" num)? string? ("seats" string+)?
+array     ::= ("grid"|"row"|"arc") type "in" id
+              ("rows" int)? ("cols" int)? ("count" int)?
+              ("area" coord coord)? ("itemsize" dims)? ("rotate" num)?
+              ("center" coord)? ("radius" num)? ("from" num "to" num)?
+wallref   ::= id ("north"|"south"|"east"|"west")
+coord     ::= num "," num          dims ::= num "x" num          pct ::= num "%"?
+```
+
+コメントは `#` から行末まで。CJK引用符（`""`）はASCII引用符として受け付けられます。
+
+---
+
+## 関連例
+
+- [2ベッドルームアパートメント](/examples#floorplan) — 相対配置、7つのドア、完全な家具配置
+- [27台のデスク教室](/examples#floorplan) — `grid … count` 切り捨て、`unit ft`
+- [120名のウェディングレセプション](/examples#floorplan) — 自動着席の宴会ラウンドテーブル、ダンスフロア

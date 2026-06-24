@@ -1,0 +1,461 @@
+---
+title: 의사결정 트리 다이어그램
+---
+
+## 의사결정 트리란
+
+**의사결정 트리**는 선택의 연속과 그 결과를 루트 트리로 표현하는 분기 다이어그램입니다: 각 내부 노드는 질문 또는 결정, 각 엣지는 답변 또는 행동, 각 리프는 결과입니다. 이 형식은 서로 꽤 다른 세 가지 실무 분야에 걸쳐 나타납니다 — 문제 해결 순서도와 임상 의사결정 규칙(분류 트리), 기대 가치를 사용하는 위험 및 투자 분석(의사결정 분석), 그리고 기계 학습 모델 검사(분류기 트리). 표면적 차이에도 불구하고 세 가지 모두 동일한 트리 구조를 공유합니다. 이것이 Schematex가 모드 선택기를 통해 하나의 키워드 아래에 인코딩하는 이유입니다.
+
+Schematex 의사결정 트리는 다음을 다룹니다: (1) **분류 모드** — 의료 분류([Turing 1937](https://en.wikipedia.org/wiki/Decision_tree) 계보; 현재 임상 의사결정 지원에서 표준)에서 사용되는 예/아니오 질문 흐름, (2) **의사결정 분석 모드** — 경영 과학에서 개발된 기대 가치 역산법([Raiffa & Schlaifer, 1961](https://en.wikipedia.org/wiki/Decision_tree#Decision_analysis)), (3) **ML 모드** — scikit-learn 및 유사한 훈련된 분류기를 시각화하는 데 사용되는 CART 분할/리프 형식([Breiman et al., 1984](https://en.wikipedia.org/wiki/Decision_tree_learning)).
+
+<Playground initial={`
+  decisiontree "Customer Support Triage"
+  direction: top-down
+
+  question "Is the service completely down?"
+    yes: question "Outage confirmed on status page?"
+      yes: answer "Follow incident protocol — page on-call"
+      no: answer "Check monitoring — open severity-1 ticket"
+    no: question "Is the issue affecting billing?"
+      yes: answer "Escalate to billing team — SLA breach risk"
+      no: question "Can user reproduce consistently?"
+        yes: answer "Collect HAR trace — file bug report"
+        no: answer "Ask for screenshot — watch for recurrence"`} height={460} />
+
+---
+
+## 1. 첫 번째 의사결정 트리
+
+가장 작고 유용한 의사결정 트리: 두 개의 분기가 있는 루트 질문입니다.
+
+<Playground initial={`
+  decisiontree "Laptop troubleshoot"
+
+  question "Does it power on?"
+    yes: answer "Check display — connect external monitor"
+    no: question "Is the charger light on?"
+      yes: answer "Hold power button 10 s — try again"
+      no: answer "Check outlet and charging cable"`} />
+
+네 가지 규칙으로 사용의 80%를 다룰 수 있습니다.
+
+1. `decisiontree`로 시작하고, 선택적으로 `:mode`와 따옴표로 묶인 제목을 추가합니다.
+2. 각 질문 노드는 `question "text"`(또는 약칭 `q "text"`)를 사용합니다.
+3. 각 답변/리프는 `answer "text"`(또는 `a "text"` 또는 `leaf "text"`)를 사용합니다.
+4. 분기 레이블 — `yes:`, `no:`, 또는 커스텀 `label "X":` — 는 같은 줄에서 자식 노드 앞에 옵니다.
+
+들여쓰기가 중첩을 제어합니다: 각 레벨은 2개의 공백을 추가합니다. 파서는 들여쓰기 깊이에서 부모-자식 관계를 계산합니다.
+
+> 주석은 독립된 줄에서 `#` 또는 `//`로 시작해야 합니다.
+
+---
+
+## 2. 모드
+
+모드는 헤더 줄에서 설정됩니다.
+
+| 헤더 | 모드 | 사용 용도 |
+|---|---|---|
+| `decisiontree` | 분류 | 예/아니오 질문 흐름, 문제 해결 가이드, 임상 의사결정 지원 |
+| `decisiontree:decision` (또는 `decisiontree:da`) | 의사결정 분석 | 투자 결정, 위험 분석, 기대 가치 계산 |
+| `decisiontree:influence` (또는 `mode: influence`) | 영향 다이어그램 | 트리로 펼치기 전에 의사결정 문제를 간결하게 보는 DAG 뷰 |
+| `decisiontree:ml` | 기계 학습 | 훈련된 CART 분류기 시각화 (scikit-learn, XGBoost 등) |
+
+기본 방향은 분류 및 ML의 경우 `top-down`, 의사결정 분석의 경우 `left-right`입니다.
+
+---
+
+## 3. 분류 모드
+
+최적 용도: 문제 해결 가이드, FAQ, 임상 프로토콜, 제품 추천 흐름.
+
+### 노드 키워드
+
+| 키워드 | 별칭 | 의미 |
+|---|---|---|
+| `question "…"` | `q "…"` | 내부 노드 — 자식이 있는 질문 |
+| `answer "…"` | `a "…"`, `leaf "…"` | 리프 노드 — 최종 결과 |
+
+### 분기 레이블
+
+| 문법 | 의미 |
+|---|---|
+| `yes: question "…"` | "yes"로 레이블된 분기 |
+| `no: answer "…"` | "no"로 레이블된 분기 |
+| `label "Custom text": answer "…"` | 임의 커스텀 레이블이 있는 분기 |
+
+커스텀 레이블을 사용하면 한 질문에서 다방향 결정을 위해 예/아니오를 넘어설 수 있습니다.
+
+<Playground initial={`
+  decisiontree "Triage — chest pain onset"
+
+  q "Onset sudden?"
+    yes: q "ECG changes present?"
+      yes: a "ACS protocol — cardiology consult"
+      no: q "D-dimer elevated?"
+        yes: a "PE workup — CT pulmonary angiography"
+        no: a "Aortic dissection — CT angiography"
+    no: q "Pain reproducible on palpation?"
+      yes: a "Musculoskeletal — NSAIDs, follow-up PCP"
+      no: a "GI / anxiety — further history"`} height={420} />
+
+<Playground initial={`
+  decisiontree "Pain level triage"
+
+  question "Reported pain level?"
+    label "Severe (8-10)": answer "Emergency — send to ER immediately"
+    label "Moderate (4-7)": answer "Urgent care — within 2 hours"
+    label "Mild (1-3)": answer "Schedule next available — OTC care"
+    label "None": answer "Monitor — patient may be post-medication"`} height={320} />
+
+---
+
+## 4. 의사결정 분석 모드
+
+최적 용도: 투자 결정, 빌드 vs 구매 분석, 위험 가중 전략 평가.
+
+### 노드 키워드
+
+| 키워드 | 별칭 | 의미 |
+|---|---|---|
+| `decision "…"` | — | 의사결정 노드 — 행위자가 분기를 선택함 |
+| `chance "…"` | — | 확률 노드 — 불확실한 결과 |
+| `end "…"` | `outcome "…"` | 터미널 노드 — 최종 보상 |
+
+### 분기 키워드
+
+| 키워드 | 의미 |
+|---|---|
+| `choice "label"` | 의사결정 노드에서 들어오는 분기에 이름 부여 |
+| `prob N` | 확률 노드에서 들어오는 분기의 확률 설정 (0–1) |
+
+### 보상 속성
+
+노드의 `payoff=N`은 보상 값을 설정합니다. `end` / `outcome` 노드에서는 터미널 값을 정의합니다. 파서는 자동으로 기대 가치 역산을 실행합니다: 각 `chance` 노드의 EV는 자식 EV의 확률 가중 합계이고, 각 `decision` 노드의 EV는 최대 자식 EV이며, 최적 분기가 표시됩니다.
+
+**제약:** `chance` 노드의 모든 직접 자식의 확률은 1.0(±0.01)이 되어야 합니다. 그렇지 않으면 파서가 `DTreeParseError`를 발생시킵니다.
+
+<Playground initial={`
+  decisiontree:decision "Cloud vendor selection"
+
+  decision "Which vendor?"
+    choice "Build in-house"
+      chance "Project outcome"
+        prob 0.6 end "On-time delivery" payoff=900000
+        prob 0.4 end "Over budget / delayed" payoff=150000
+    choice "Managed SaaS vendor"
+      end "Predictable cost" payoff=500000
+    choice "Hybrid approach"
+      chance "Integration complexity"
+        prob 0.5 end "Smooth integration" payoff=700000
+        prob 0.5 end "Integration rework" payoff=300000`} height={440} />
+
+---
+
+## 5. 영향 다이어그램 모드
+
+최적 용도: 트리로 펼치기 **전에** 의사결정 문제를 간결하게 프레이밍. 의사결정 분석 모드가 모든 결과의 모든 분기를 명시적 트리로 그리는 반면, **영향 다이어그램**([Howard & Matheson, 1981](https://en.wikipedia.org/wiki/Influence_diagram))은 *동일한* 문제를 변수와 그 사이의 의존성의 방향성 비순환 그래프(DAG)로 그립니다 — 각 상태의 수에 관계없이 의사결정, 불확실성, 목적당 하나의 노드만 사용합니다. 이것은 의사결정 분석가들이 먼저 도달하는 다이어그램입니다. 트리의 조합적 팽창 없이 구조(무엇이 무엇을 알리는지, 무엇이 보상에 영향을 미치는지)를 보여주기 때문입니다.
+
+이 모드는 **구조적이며 계산적이지 않습니다.** 의사결정 분석 모드와 달리 기대 가치를 계산하지 않습니다 — 간결한 그래프는 EV 역산이 필요한 확률 및 보상 표를 의도적으로 생략합니다. 문제의 형태를 전달하고 검증하는 데 사용하고, 수치가 필요할 때는 의사결정 분석 모드(섹션 4)를 사용하십시오.
+
+### 헤더 형식
+
+모드를 선택하는 두 가지 동등한 방법:
+
+```
+decisiontree:influence "Oil Wildcatter"
+```
+
+또는 헤더 뒤 독립된 줄의 지시어로:
+
+```
+decisiontree "Market Entry"
+  mode: influence
+```
+
+### 노드 키워드
+
+각 노드는 `kind Id "label"`로 선언됩니다 — 호 연결에 사용되는 id와 따옴표로 묶인 표시 레이블.
+
+| 키워드 | 형태 | 의미 |
+|---|---|---|
+| `decision Id "…"` | **직사각형** | 의사결정자가 제어하는 선택 |
+| `chance Id "…"` | **타원** | 불확실한 변수 (세계의 상태) |
+| `value Id "…"` | **팔각형** | 최적화되는 목적 / 보상 |
+
+형태는 표준 영향 다이어그램 관례를 따릅니다: 의사결정은 직사각형, 불확실성은 타원, 가치 노드는 팔각형입니다. `value` 노드에 `utility=N`을 추가하면 해당 노드가 나타내는 보상에 주석을 달 수 있습니다(`value Profit "Net profit" utility=42`).
+
+### 호 및 의미
+
+호는 노드 id로 `Source -> Target`을 독립된 줄에 작성합니다. **호의 의미는 목적지에서 읽습니다**, 발표된 표준과 정확히 동일합니다.
+
+| ...로의 호 | 의미 | 그려지는 방식 |
+|---|---|---|
+| `decision` | **정보적** — 이것은 의사결정 *전에* 알려짐 | 점선 |
+| `chance` | **관련성 / 조건화** — 소스가 이 불확실성을 조건화함 | 실선 |
+| `value` | **함수적** — 소스가 보상 함수의 인수임 | 실선 |
+
+점선 정보 호를 주목하십시오: `Seismic -> Drill`은 "시추 여부를 선택하기 전에 지진 검사 결과가 관찰된다"는 것을 의미하며, 이것이 바로 모델링할 가치가 있는 의사결정을 만드는 것입니다.
+
+### 유효성 검사 규칙
+
+- 그래프는 **비순환**이어야 합니다 — 사이클(예: `A -> B` 및 `B -> A`)은 거부됩니다.
+- 최소 **하나의 `value` 노드**가 필요합니다; 목적이 없는 영향 다이어그램은 의사결정 문제가 아닙니다.
+- 호는 선언된 노드 id를 참조해야 합니다.
+
+### 예시
+
+Oil Wildcatter — 정식 교수 문제. 시추 결정 전에 지진 검사 결과가 관찰됩니다(점선 정보 호 `Seismic -> Drill`), 검사는 실제로 석유가 있는지 여부와 관련이 있습니다(`Seismic -> Oil`), 석유 상태와 시추 선택 모두 이익을 결정합니다(`Oil -> Profit`, `Drill -> Profit`).
+
+<Playground initial={`
+  decisiontree:influence "Oil Wildcatter"
+    decision Drill "Drill?"
+    chance Oil "Oil present"
+    chance Seismic "Seismic test"
+    value Profit "Net profit" utility=42
+    Seismic -> Oil
+    Seismic -> Drill
+    Oil -> Profit
+    Drill -> Profit`} height={360} />
+
+`mode: influence` 지시어 형식을 사용하는 시장 진입 결정. 수요는 진입 전에 관찰됩니다(`Demand -> Enter`, 정보적/점선) 그리고 이익을 직접 결정하고, 경쟁자의 반응은 보상에만 영향을 미칩니다.
+
+<Playground initial={`
+  decisiontree "Market Entry"
+    mode: influence
+    decision Enter "Enter market?"
+    chance Demand "Market demand"
+    chance Competition "Competitor response"
+    value V "Profit" utility=120
+    Demand -> Enter
+    Demand -> V
+    Competition -> V
+    Enter -> V`} height={360} />
+
+---
+
+## 6. 기계 학습 모드
+
+최적 용도: 훈련된 CART 분류기 설명, 모델 투명성 보고서, 특성 중요도 분석.
+
+### 노드 키워드
+
+| 키워드 | 의미 |
+|---|---|
+| `split "…"` | 내부 분할 노드 — 특성 테스트 포함 |
+| `leaf "…"` | 리프 노드 — 클래스 또는 회귀 값 |
+
+### 분기 접두사
+
+`true`와 `false`가 자식 노드 앞에 붙어 각 자식이 나타내는 분기를 표시합니다.
+
+### 속성 (key=value, 콜론 없음, 값 주위에 따옴표 없음)
+
+| 속성 | 적용 대상 | 의미 |
+|---|---|---|
+| `feature=name` | split | 분할에 사용된 특성 이름 |
+| `op="<="` | split | 비교 연산자 (특수 문자 포함 시 따옴표) |
+| `threshold=5.9` | split | 분할 임계값 |
+| `samples=150` | split, leaf | 이 노드의 샘플 수 |
+| `gini=0.5` | split, leaf | 지니 불순도 |
+| `entropy=0.5` | split, leaf | 엔트로피 불순도 |
+| `mse=0.3` | split, leaf | 평균 제곱 오차 (회귀) |
+| `gain=0.2` | split, leaf | 정보 획득 |
+| `class=name` | leaf | 예측된 클래스 이름 |
+| `value=50` | leaf | 샘플 수; 클래스 분포에는 `value=[50,30,20]` 사용 |
+
+<Playground initial={`
+  decisiontree:ml "Iris classification (CART)"
+  direction: top-down
+  impurity: gini
+
+  split "Petal length ≤ 2.45" feature=petal_length op="<=" threshold=2.45 samples=150 gini=0.667
+    true leaf "Setosa" class=Iris-setosa value=50 gini=0.0
+    false split "Petal width ≤ 1.75" feature=petal_width op="<=" threshold=1.75 samples=100 gini=0.5
+      true leaf "Versicolor" class=Iris-versicolor value=50 gini=0.0
+      false leaf "Virginica" class=Iris-virginica value=50 gini=0.0`} height={400} />
+
+---
+
+## 7. 설정 옵션
+
+설정 줄은 헤더와 첫 번째 노드 사이에 위치합니다. 각각은 `key: value` 형식입니다(콜론, `config` 키워드 없음).
+
+### 공통 설정 (모든 모드)
+
+| 키 | 값 | 기본값 | 효과 |
+|---|---|---|---|
+| `direction:` | `top-down`, `left-right` | `top-down` (분류/ML), `left-right` (의사결정) | 레이아웃 방향 |
+| `edgeStyle:` (또는 `edge-style:`) | `diagonal`, `orthogonal`, `bracket` | 모드에 따라 다름 | 엣지 그리기 스타일 |
+
+### 분류 설정
+
+| 키 | 값 | 기본값 | 효과 |
+|---|---|---|---|
+| `branchLabels:` (또는 `branch-labels:`) | `boolean`, `relation` | `boolean` | 분기 레이블 스타일 |
+
+### 의사결정 분석 설정
+
+| 키 | 값 | 기본값 | 효과 |
+|---|---|---|---|
+| `branchLength:` (또는 `branch-length:`) | `probability` | 꺼짐 | 분기 길이를 확률에 비례하여 조정 |
+
+### ML 설정
+
+| 키 | 값 | 기본값 | 효과 |
+|---|---|---|---|
+| `impurity:` | `gini`, `entropy`, `mse`, `gain` | `gini` | 노드에 표시되는 불순도 지표 |
+| `classes:` | 쉼표로 구분된 목록 | — | 표시용 클래스 레이블 이름 |
+
+```
+decisiontree:ml "Loan classifier"
+direction: top-down
+impurity: gini
+classes: Approved, Denied, Review
+```
+
+---
+
+## 8. 레이블 및 주석
+
+- **다이어그램 제목:** `decisiontree "Title"` — 헤더 키워드 뒤의 따옴표 문자열.
+- **노드 레이블:** 노드 키워드 바로 뒤의 따옴표 문자열 — `question "Is the fee waived?"`.
+- **분기 레이블:** `yes:`, `no:`, 또는 `label "Custom":` 자식 노드 앞에 — 자식과 같은 줄에.
+- **보상:** 의사결정/end 노드 줄 끝에 `payoff=250000`.
+- **ML 속성:** 노드의 레이블 문자열 뒤 `key=value` 토큰 (`[…]` 괄호 없음, 콜론 없음).
+- **주석:** 줄 시작에 `#` 또는 `//`(선택적 앞의 공백 이후). 전체 줄 주석만 지원됩니다 — 인라인 후미 주석은 지원되지 않습니다.
+
+---
+
+## 9. 예약어 및 이스케이프
+
+**예약 노드 키워드:** `decision`, `chance`, `end`, `outcome`, `choice`, `prob`, `split`, `leaf`, `question`, `q`, `answer`, `a`.
+
+**예약 분기 접두사:** `yes:`, `no:`, `true`, `false`, `label`.
+
+**예약 헤더 형식:** `decisiontree`, `decisiontree:decision`, `decisiontree:da`, `decisiontree:ml`.
+
+**공백이 있는 문자열**은 큰따옴표로 묶어야 합니다: `question "Annual revenue > $1M?"`. 노드 레이블, `label "…":` 문법의 분기 레이블, 다이어그램 제목 모두 큰따옴표가 필요합니다.
+
+| 예약 토큰 | 컨텍스트 | 참고 |
+|---|---|---|
+| `yes:` / `no:` | 분류에서 줄 시작 | 레이블로 사용할 수 없음 — 리터럴 "yes" 텍스트가 필요하면 `label "yes":` 사용 |
+| `true` / `false` | ML 모드에서 줄 시작 | 노드 레이블이 될 수 없음 |
+| `choice` | 의사결정 모드에서 줄 시작 | 노드가 아닌 분기 래퍼로 작동 |
+| `prob` | 의사결정 모드에서 줄 시작 | 뒤에 숫자가 와야 함 |
+
+---
+
+## 10. 흔한 실수
+
+| 작성한 내용 | 파서 오류 | 수정 방법 |
+|---|---|---|
+| `yes: "Approve"` (노드 키워드 없음) | `DTreeParseError: Missing taxonomy node kind` | `yes: answer "Approve"` |
+| 확률 합이 0.8인 `chance` 자식들 | `DTreeParseError: probabilities do not sum to 1.0` | 모든 `prob` 값의 합이 정확히 1.0(±0.01)이 되도록 조정 |
+| 자식이 같은 들여쓰기 레벨에 있는 `question "text"` | 자식이 자식으로 파싱되지 않고 형제가 됨 | 자식을 부모보다 2개 더 많은 공백으로 들여쓰기 |
+| `config direction = top-down` (`config` 키워드 사용) | `config`는 fishbone 키워드 — 여기서 인식되지 않음 | `direction: top-down` 사용 (`config` 접두사 없이) |
+| `feature = petal_length` (`=` 주위에 공백) | 별도 토큰으로 파싱됨; 속성 인식 안 됨 | 공백 없이: `feature=petal_length` |
+| `[payoff: 500000]` 괄호 문법 | 인식되지 않음 — 파서가 보상을 위한 괄호 무시 | `payoff=500000` 사용 (괄호 없음, `=` 주위에 공백 없음) |
+| `decisiontree:taxonomy` | `DTreeParseError: Invalid header` | `decisiontree` 사용 (분류에는 모드 접미사 없음) |
+
+---
+
+## 11. 문법 (EBNF)
+
+```text
+document       = header ( config-line )* node
+
+header         = "decisiontree" ( ":" mode )? ( WS quoted-string )? NEWLINE
+mode           = "decision" | "da" | "ml"
+                 // 생략 → 분류
+
+config-line    = config-key ":" WS config-value NEWLINE
+config-key     = "direction" | "edgeStyle" | "edge-style"
+               | "branchLabels" | "branch-labels"
+               | "branchLength" | "branch-length"
+               | "impurity" | "classes"
+
+// ── 분류 모드 ──────────────────────────────
+node           = ( branch-prefix WS )? tax-node ( WS "[" tax-attrs "]" )? NEWLINE
+                   INDENT child-node*
+tax-node       = ( "question" | "q" ) WS quoted-string
+               | ( "answer" | "a" | "leaf" ) WS quoted-string
+branch-prefix  = "yes:" | "no:" | "label" WS quoted-string ":"
+
+// ── 의사결정 분석 모드 ─────────────────────
+da-node        = "decision" WS quoted-string NEWLINE INDENT da-child+
+               | "chance" WS quoted-string NEWLINE INDENT da-prob-child+
+               | ( "end" | "outcome" ) WS quoted-string ( WS "payoff=" number )? NEWLINE
+da-child       = "choice" WS quoted-string NEWLINE INDENT da-node
+da-prob-child  = "prob" WS number WS da-node    // prob, 값, 자식이 모두 한 줄에
+
+// ── ML 모드 ───────────────────────────────
+ml-node        = ( "true" | "false" )? ml-kind WS quoted-string ml-prop* NEWLINE
+                   INDENT ml-child*
+                 // "true"/"false"와 ml-kind는 같은 줄에 있어야 함
+ml-kind        = "split" | "leaf"
+ml-prop        = WS key "=" value     // "=" 주위에 공백 없음
+
+comment        = ( "#" | "//" ) any NEWLINE
+quoted-string  = '"' any-char-but-quote* '"'
+```
+
+권위 있는 소스: `src/diagrams/decisiontree/parser.ts`. 파서와 다를 경우 파서가 우선합니다 — 이슈를 열어주십시오.
+
+---
+
+## 12. 표준 준수
+
+Schematex 의사결정 트리는 네 가지 확립된 관례를 다룹니다.
+
+**분류 모드**는 임상 의사결정 지원 시스템(Arden Syntax 계보) 및 ISO 9001 문제 해결 절차에서 일반적인 질문/답변 순서도 관례를 따릅니다.
+
+**의사결정 분석 모드**는 경영 과학의 기대 가치 역산법을 따릅니다: 의사결정 노드(사각형, 행위자 선택), 확률 노드(원, 확률적), 보상이 있는 터미널 노드. EV는 역방향 귀납을 통해 자동으로 계산됩니다(Raiffa & Schlaifer, 1961).
+
+**영향 다이어그램 모드**는 Howard & Matheson(1981) 관례를 따릅니다: 의사결정(직사각형), 확률(타원), 가치(팔각형) 노드가 비순환 그래프로 연결되며, 호의 의미는 목적지에서 읽습니다(의사결정으로의 정보 호는 점선; 확률로의 관련성; 가치로의 함수). 이것은 구조적 다이어그램으로 EV를 계산하지 않습니다.
+
+**ML 모드**는 scikit-learn의 `export_text` 및 `plot_tree` 출력과 호환되는 CART(분류 및 회귀 트리) 분할/리프 표기법(Breiman et al., 1984)을 따릅니다.
+
+현재 구현된 항목:
+
+- ✅ 모든 4가지 모드: 분류, 의사결정 분석, 영향 다이어그램, ML
+- ✅ 분류: `question`/`q`, `answer`/`a`/`leaf`, `yes:`, `no:`, `label "X":` 분기 레이블
+- ✅ 의사결정: `decision`, `chance`, `end`/`outcome`, `choice`, `prob`, `payoff=N`, 자동 EV 역산
+- ✅ 영향: `decision`/`chance`/`value` 노드, `utility=N`, `Source -> Target` 호, 목적지 파생 호 의미, 점선 정보 호, 비순환성 + 가치 노드 검증
+- ✅ ML: `split`, `leaf`, `true`/`false` 분기 접두사, `feature=`, `threshold=`, `gini=`, `entropy=`, `mse=`, `class=`, `value=`
+- ✅ 설정: `direction:`, `edgeStyle:`, `impurity:`, `classes:`, `branchLabels:`, `branchLength:`, `mode:`
+- ⏳ 확률 가중 분기 길이 렌더링 (`branchLength: probability`는 파싱되지만 아직 시각적으로 적용되지 않음)
+- ⏳ 민감도 분석 오버레이 (의사결정 트리의 토네이도 차트 스타일 주석)
+- ⏳ 포레스트 / 앙상블 뷰 — 여러 트리가 나란히
+
+참고 문헌:
+
+- Raiffa, H. & Schlaifer, R. (1961). *Applied Statistical Decision Theory.* Harvard Business School.
+- Howard, R. A. & Matheson, J. E. (1981/2005). *Influence Diagrams.* Decision Analysis 2(3).
+- Breiman, L. et al. (1984). *Classification and Regression Trees.* Wadsworth.
+- Wikipedia — [Decision tree](https://en.wikipedia.org/wiki/Decision_tree) · [Influence diagram](https://en.wikipedia.org/wiki/Influence_diagram) · [Decision tree learning](https://en.wikipedia.org/wiki/Decision_tree_learning)
+
+---
+
+## 13. 로드맵
+
+**계획됨 — 아직 파싱 불가.** 오늘 생성된 DSL에서 이것들을 사용하지 마십시오; 파서가 거부하거나 무시합니다.
+
+- **`branchLength: probability` 시각적 렌더링** — 설정 키는 파싱되지만 레이아웃 엔진이 아직 확률에 따라 분기 길이를 조정하지 않습니다.
+- **민감도 / 토네이도 분석** — 어떤 `prob` 값이 최종 EV에 가장 많은 영향을 미치는지 주석을 다는 `sensitivity:` 블록.
+- **내보내기 주석** — 다이어그램 SVG와 함께 구조화된 표 출력 (의사결정 매트릭스).
+- **포레스트 뷰** — 여러 `decisiontree` 블록을 나란히 비교 레이아웃으로 래핑하는 `forest` 키워드.
+- **접기/펼치기 인터랙티브 마커** — 깊은 하위 트리에 대한 삼각형 플레이스홀더를 렌더링하는 노드의 `collapsed: true`.
+
+더 빨리 필요하다면 GitHub 이슈에서 추적하십시오.
+
+---
+
+## 관련 예시
+
+예시 갤러리에서 바로 사용할 수 있는 시나리오:
+
+<RelatedExamples slugs={[
+  'decisiontree-support-triage',
+  'decisiontree-investment-analysis',
+]} />

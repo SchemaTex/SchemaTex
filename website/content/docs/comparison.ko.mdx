@@ -1,0 +1,150 @@
+---
+title: 비교 및 의사결정 매트릭스
+---
+
+## 비교 다이어그램이란
+
+**comparison**은 "항목들을 나란히 놓고 결정한다"는 전체 계열을 위한 하나의 엔진입니다. `mode:`를 선택하면 동일한 DSL이 다섯 가지 전문적인 산출물을 렌더링합니다.
+
+- **`tchart`** — 2~N개의 레이블이 붙은 항목 열(클래식 비교/대조 T-차트; 3개 열이면 Y-차트가 됨).
+- **`pros-cons`** — 녹색 ✓ / 빨간 ✗ 가치가 있는 2열 목록.
+- **`matrix`** — 옵션 × 기준 격자; 셀은 자유 텍스트 또는 `yes` / `no` / `partial` 마크를 사용.
+- **`decision`** (헤더 별칭 `pugh`) — **가중 의사결정 매트릭스**: 각 기준에 `weight:`가 있고, 각 옵션에 수치 점수가 있으며, **엔진이** 모든 옵션의 가중 합계 Σ(weight × score)를 계산하고, 순위를 매기고, 승자를 강조합니다. 이것은 Stuart Pugh의 제어된 수렴 방법(ASQ / 6시그마 개념 선택)으로 — `pert` 및 `faulttree`와 동일한 "엔진이 답을 계산한다"는 입장입니다.
+- **`double-bubble`** — Thinking-Maps 비교/대조 구성 도구: 두 개의 중심, 공통 특성은 가운데, 고유 특성은 바깥으로 펼쳐짐.
+
+> **[`matrix`](/docs/matrix)와 혼동하지 마십시오.** 해당 엔진은 두 개의 연속 축에 항목을 *배치*합니다(아이젠하워, BCG, 영향-노력). `comparison`은 **표**를 배치하고, `decision` 모드에서는 **의사결정을 계산**합니다. 이 두 가지가 흔히 혼동되는 두 가지 측면입니다.
+
+<Playground initial={`comparison "Selecting a CI/CD platform"
+mode: decision
+baseline: "Jenkins"
+option "GitHub Actions"
+option "GitLab CI"
+option "Jenkins"
+criterion "Ease of setup" weight: 5
+  GitHub Actions: 5
+  GitLab CI: 4
+  Jenkins: 2
+criterion "Build speed" weight: 4
+  GitHub Actions: 4
+  GitLab CI: 4
+  Jenkins: 3
+criterion "Cost at our scale" weight: 4
+  GitHub Actions: 4
+  GitLab CI: 3
+  Jenkins: 5
+criterion "Self-host control" weight: 2
+  GitHub Actions: 2
+  GitLab CI: 5
+  Jenkins: 5`} />
+
+## 1. 헤더 및 모드
+
+헤더 키워드는 `comparison`(별칭 `compare`, `vs`)입니다. 헤더 키워드 `tchart`와 `pugh`는 모드를 직접 설정합니다. 그 외에는 `mode:` 지시어로 선택합니다.
+
+```
+comparison "Title"
+mode: tchart | pros-cons | matrix | decision | double-bubble
+legend: on | off
+```
+
+`mode:`를 생략하면 사용하는 키워드에서 추론됩니다 — 하지만 명시적으로 지정하는 것이 더 신뢰할 수 있습니다.
+
+## 2. T-차트 (및 Y-차트)
+
+각 `column`을 선언하고 `-` 불릿으로 항목을 나열합니다. 열이 3개이면 Y-차트로 표시됩니다.
+
+```
+tchart "TCP vs UDP"
+column "TCP"
+- 연결 지향 (핸드셰이크)
+- 보장된, 순서 있는 전달
+column "UDP"
+- 비연결, fire-and-forget
+- 최소 헤더, 낮은 지연
+```
+
+## 3. 장단점
+
+```
+comparison "Migrate to microservices?"
+mode: pros-cons
+pro "Independent team deploys"
+pro "Scale hot paths in isolation"
+con "Distributed-systems complexity"
+con "Operational + infra cost goes up"
+```
+
+`pro` 줄은 녹색 열, `con`은 빨간 열을 채웁니다 — 순서 무관.
+
+## 4. 비교 매트릭스
+
+모든 `option`(열)을 선언한 후, 각 `criterion`(행)에 옵션당 하나의 들여쓰기된 `OptionName: value` 셀을 지정합니다. 셀 값: `yes` / `no` / `partial`은 ✓ / ✗ / ~로 렌더링되고, 숫자는 점수로, 따옴표 텍스트는 그대로 표시됩니다. 옵션 이름은 `option`과 정확히 일치해야 합니다(오타는 감지되어 버려지지 않음).
+
+```
+comparison "Cloud provider — managed services"
+mode: matrix
+option "AWS"
+option "GCP"
+option "Azure"
+criterion "Free tier"
+  AWS: "12 months"
+  GCP: "Always-free"
+  Azure: "12 months"
+criterion "Managed Postgres"
+  AWS: yes
+  GCP: yes
+  Azure: partial
+```
+
+파이프 형식의 압축 표현도 허용됩니다: `criterion "Free tier" | "12 months" | "Always-free" | "12 months"` (옵션 순서에 따라 위치 지정).
+
+## 5. 의사결정 매트릭스 (계산)
+
+각 기준에 `weight:`를 추가하고 각 셀에 수치 점수를 부여합니다. 엔진은 **가중 합계** 행을 추가하고, 옵션의 순위를 매기며(`#1`, `#2`, …), 승자를 강조합니다. `baseline: "Option"`을 추가하면 Pugh 기준이 생성됩니다 — 해당 열은 음영 처리되고 **vs datum** 델타 행이 추가됩니다.
+
+```
+pugh "Database for the new service"
+baseline: "PostgreSQL"
+option "PostgreSQL"
+option "MongoDB"
+option "DynamoDB"
+criterion "Query flexibility" weight: 5
+  PostgreSQL: 5
+  MongoDB: 3
+  DynamoDB: 2
+criterion "Horizontal scaling" weight: 4
+  PostgreSQL: 3
+  MongoDB: 4
+  DynamoDB: 5
+criterion "Operational cost" weight: 3
+  PostgreSQL: 4
+  MongoDB: 3
+  DynamoDB: 3
+```
+
+합계를 직접 작성할 필요가 없습니다 — 엔진이 Σ(weight × score)를 계산하므로, 점수를 잘못 입력하면 계산된 승자가 달라집니다.
+
+## 6. 이중 버블 (비교 및 대조)
+
+```
+comparison "Plant cell vs Animal cell"
+mode: double-bubble
+left "Plant cell"
+right "Animal cell"
+shared "Has a nucleus"
+shared "Mitochondria"
+left-only "Cell wall"
+left-only "Chloroplasts"
+right-only "Centrioles"
+right-only "Lysosomes"
+```
+
+`shared` 특성은 양쪽 중심에 연결되어 가운데에 위치하고, `left-only` / `right-only`는 자신의 중심 방향으로 펼쳐집니다.
+
+## 7. 테마
+
+`default`는 녹색/빨간/호박색 가치가 있는 하우스 블루입니다. `monochrome`은 흑백 인쇄용으로 색상을 제거합니다(가치는 ✓/✗/~로, 승자는 굵은 테두리로 표시됩니다). `dark`는 Catppuccin입니다.
+
+## 표준
+
+Pugh, *Total Design* (1991) 제어된 수렴 · ASQ 의사결정 매트릭스 · Hyerle Thinking Maps (이중 버블) · K-12 그래픽 구성자 관례. `docs/reference/51-COMPARISON-STANDARD.md` 참조.

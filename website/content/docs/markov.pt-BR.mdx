@@ -1,0 +1,109 @@
+---
+title: Cadeia de Markov
+description: Diagramas de transição de estados em que o motor valida a matriz estocástica, classifica estados e calcula a distribuição estacionária ou a resposta de absorção.
+---
+
+## Sobre cadeias de Markov
+
+Uma **cadeia de Markov** modela um sistema que alterna entre **estados** com **probabilidades de transição** fixas, em que o próximo estado depende apenas do estado atual (a propriedade *sem memória*). Elas fundamentam a modelagem de confiabilidade, filas, PageRank, o problema da ruína do jogador e modelos meteorológicos. As probabilidades de transição a partir de cada estado devem somar 1 (uma matriz **row-stochastic**).
+
+O diferencial do Schematex é que o motor **faz a álgebra linear**, não apenas desenha círculos e setas. Ele valida a matriz row-stochastic, classifica estados (transientes / recorrentes / absorventes) via análise de CFC, e calcula a **distribuição estacionária** π ou, para cadeias absorventes, as **probabilidades de absorção** e os passos esperados — tudo sem dependências externas, escrito à mão.
+
+<Playground initial={`markov "Weather"
+  Sunny -> Sunny : 0.9
+  Sunny -> Rainy : 0.1
+  Rainy -> Sunny : 0.5
+  Rainy -> Rainy : 0.5`} height={420} />
+
+---
+
+## 1. Sua primeira cadeia
+
+Comece com a palavra-chave `markov` (alias `markovchain`), um título opcional e então as **transições com peso probabilístico**. Os estados são criados automaticamente a partir do primeiro arco que os menciona:
+
+```
+markov "Weather"
+  Sunny -> Sunny : 0.9
+  Sunny -> Rainy : 0.1
+  Rainy -> Sunny : 0.5
+  Rainy -> Rainy : 0.5
+```
+
+Uma transição é `DE -> PARA : PROBABILIDADE`. Um laço próprio (`Sunny -> Sunny`) é a probabilidade de permanecer no mesmo estado. Toda probabilidade deve estar em `[0, 1]`, e **as probabilidades que saem de cada estado devem somar 1**.
+
+---
+
+## 2. Declarando estados
+
+Você pode declarar estados explicitamente para fixar rótulo, ordem ou marcá-los como absorventes:
+
+```
+markov "Gambler's ruin"
+  state Broke "$0" absorbing
+  state Rich  "$4" absorbing
+  state S1
+  state S2
+  Broke -> Broke : 1
+  Rich  -> Rich  : 1
+  S1 -> Broke : 0.5
+  S1 -> S2 : 0.5
+  S2 -> S1 : 0.5
+  S2 -> Rich : 0.5
+```
+
+`state ID "rótulo" absorbing` — o rótulo é opcional; `absorbing` afirma que o estado é um sumidouro (um laço próprio de probabilidade 1). O motor verifica essa afirmação em relação à matriz.
+
+---
+
+## 3. Diretivas
+
+```
+layout: layered       # modo de layout
+normalize: true        # escala cada linha para somar 1 em vez de gerar erro
+analysis: classify, absorbing   # o que calcular: classify | absorbing | stationary
+```
+
+- **`normalize: true`** redimensiona cada linha para somar 1 (útil para pesos não normalizados como `A -> B : 1`, `A -> C : 1`). Sem essa opção, uma linha que não soma 1 é um erro fatal.
+- **`analysis:`** seleciona quais cálculos executar e exibir.
+
+---
+
+## 4. A resposta calculada
+
+Este é o diferencial. Três passagens de álgebra linear escritas à mão, sem dependências externas:
+
+1. **Montagem + validação da matriz** — constrói P e aplica a política de soma de linhas (erro fatal, ou redimensionamento com `normalize`).
+2. **Classificação de estados** — CFC de Tarjan → classes comunicantes; uma classe é **recorrente** sse for fechada, **transiente** caso contrário; um singleton fechado com laço próprio de probabilidade 1 é **absorvente**.
+3. **A resposta quantitativa**:
+   - **Distribuição estacionária** π (πP = π, Σπ = 1) por iteração de potência com recuo exato por eliminação gaussiana para cadeias periódicas.
+   - Para **cadeias absorventes**: a matriz fundamental N = (I−Q)⁻¹, probabilidades de absorção B = N·R, e passos esperados até a absorção t = N·1.
+
+Estados transientes, classes recorrentes e estados absorventes são renderizados de forma distinta; os valores calculados ficam armazenados em `data-*`.
+
+---
+
+## 5. Erros comuns
+
+```
+# ERRADO — probabilidade fora de [0,1]
+A -> B : 1.5
+
+# ERRADO — transição sem probabilidade
+A -> B
+
+# ERRADO — linhas que não somam 1 (sem `normalize: true`)
+A -> B : 0.3
+A -> C : 0.3
+```
+
+Toda transição precisa de uma probabilidade em `[0, 1]`; as probabilidades de saída de cada estado devem somar 1, ou você deve definir `normalize: true`. Uma cadeia vazia (sem transições) é rejeitada.
+
+---
+
+## 6. Conformidade com padrões
+
+O modelo é uma cadeia de Markov discreta no tempo, homogênea no tempo, com uma matriz de transição row-stochastic; a classificação (transiente/recorrente/absorvente), distribuições estacionárias e a análise da matriz fundamental para cadeias absorventes seguem textos padrão (Kemeny & Snell, *Finite Markov Chains*).
+
+## 7. Roadmap
+
+Adiados: cadeias de tempo contínuo (matrizes de taxa), modelos de Markov ocultos, tempos médios de primeira passagem e relatório de periodicidade.

@@ -1,0 +1,216 @@
+---
+title: 順序功能圖（SFC）
+---
+
+## 關於順序功能圖
+
+**順序功能圖（SFC）**是循環 PLC 程式的**狀態機視圖**——*現在*正在執行什麼，以及什麼觸發*下一個*階段。它是 **[IEC 61131-3:2013 §6.5](https://en.wikipedia.org/wiki/Sequential_function_chart)** 定義的第五種語言，也是 **IEC 60848 GRAFCET** 的工程子集。**[梯形圖](/docs/ladder)**和 **[FBD](/docs/fbd)**描述每次掃描的組合邏輯，SFC 則描述跨掃描的時序：哪個步驟處於活躍狀態、何時移交、哪些部分平行執行。
+
+在實際生產程式碼中，約 10% 的網路以 SFC 編寫，但約 100% 的非瑣碎循序機器都至少有一個 SFC 圖表——批次反應器、機器人工作站、包裝線、組裝站。在此之前，一直沒有好用的開源 SFC DSL：廠商 IDE（Studio 5000、TIA Portal、CODESYS）是唯一選項。Schematex 為 AI 生成設計了 IEC 61131-3 SFC 子集。
+
+與**[狀態圖](/docs/state)**（用於響應式 UI 和生命週期 FSM 的 UML 狀態圖）不同：SFC 具有*循環掃描*語義、雙邊框的初始步驟、動作塊限定符（N/S/R/L/D/P），以及基於橫線的分支（單橫線 = OR，雙橫線 = AND）。
+
+<Playground initial={`
+  sfc "Bottle Filling"
+
+  var StartBtn: bool
+  var TankLevel: real
+  var DoneBtn: bool
+
+  step S0 [initial]
+    N FillValve_Closed
+
+  step S1 [label: "Filling"]
+    N FillValve_Open
+
+  step S2 [label: "Done"]
+    N Confirm_Done
+
+  transition from: S0 to: S1: StartBtn
+  transition from: S1 to: S2: TankLevel >= 80.0
+  transition from: S2 to: S0: DoneBtn`} height={520} />
+
+---
+
+## 1. 第一個圖表
+
+兩個步驟、一個轉換、一個初始標記：
+
+```
+sfc
+step S0 [initial]
+step S1
+transition from: S0 to: S1: Trigger
+```
+
+`S0` 渲染為**雙邊框矩形**（IEC 初始步驟慣例）；`S1` 為單邊框矩形。它們之間是一條水平**轉換橫線**，條件文字 `Trigger` 在其右側。
+
+若遺漏了 `[initial]`，第一個宣告的步驟會自動提升為初始步驟。
+
+---
+
+## 2. 步驟
+
+```
+step S_Filling [label: "Filling tank"]
+  N FillValve_Open
+  D Mixer_Run T#30s
+  P StartChime
+```
+
+一個步驟包含：
+
+- **id**（在整個圖表中唯一）——用於轉換和跳轉。
+- 可選的 `[label: "..."]` 顯示名稱。
+- 可選的 `[initial]`（只允許一個）或 `[final]`（廠商停止步驟，三邊框）。
+- 零個或多個**動作塊**，縮排一層，每個帶有限定符字母。
+
+---
+
+## 3. 轉換
+
+**轉換**宣告兩個步驟之間帶有布林條件的有向連結：
+
+```
+transition from: S0 to: S1: StartBtn
+transition from: S1 to: S2: TankLevel >= 80.0 AND NOT EmergencyStop
+transition T_Reset from: S5 to: S0: ResetBtn
+```
+
+條件文字是不透明的——Schematex 原封不動地儲存並在橫線旁渲染。每個轉換必須有非空的條件；對於無條件連結使用 `TRUE`。
+
+`from` 和 `to` 在主體中線性相鄰的轉換會在步驟之間渲染為內嵌橫線。配對*不*線性相鄰的轉換（例如跳回較早步驟）會在圖表左側或右側渲染為**邊距箭頭**。
+
+---
+
+## 4. 動作限定符
+
+動作附著在步驟右側，根據其限定符字母執行：
+
+| 限定符 | 行為 |
+|---|---|
+| `N` | 步驟活躍期間持續活躍（最常見） |
+| `S` | 儲存——在進入時設為真，直到配對的 `R` 才清除 |
+| `R` | 重設——清除先前儲存的動作 |
+| `L` | 時間限制——在步驟進入後最多活躍 T 時間 |
+| `D` | 時間延遲——在進入後 T 時間才啟動 |
+| `P` | 脈衝——僅在一次 PLC 掃描中為真 |
+| `P0` | 停用時脈衝（Siemens） |
+| `P1` | `P` 的同義詞（Siemens） |
+| `SD` | 儲存且延遲 |
+| `DS` | 延遲且儲存 |
+| `SL` | 儲存且時間限制 |
+
+時間參數化限定符（L、D、SD、DS、SL）接受持續時間字面值：
+
+```
+step S1
+  L LimitedRun T#5s
+  D DelayedRun T#2s
+```
+
+---
+
+## 5. 替代分支（單橫線 — OR）
+
+每次掃描只有**一個**分支觸發，由轉換條件決定：
+
+```
+step S0 [initial]
+step S_Pick
+
+alt from: S_Pick:
+  branch [priority: 1]:
+    transition: IsExpressShipping
+    step S_Express
+      N PrepExpressBox
+    transition: TRUE
+  branch [priority: 2]:
+    transition: IsStandardShipping
+    step S_Standard
+      N PrepStandardBox
+    transition: TRUE
+merge_to: S_Ship
+
+step S_Ship
+
+transition from: S0 to: S_Pick: ProductOrdered
+transition from: S_Ship to: S0: Shipped
+```
+
+分支上下各一條水平單線，分別是發散橫線和收斂橫線。每個分支以**進入轉換**（在發散橫線與第一個步驟之間）開始，以**退出轉換**（在最後一個步驟與收斂橫線之間）結束。
+
+---
+
+## 6. 同時分支（雙橫線 — AND）
+
+**所有**分支並發執行；圖表在收斂處等待，直到每個分支都完成：
+
+```
+sim from: S_Heat: TRUE
+  branch:
+    step S_Bake
+      D Oven_Run T#15m
+  branch:
+    step S_Cool
+      L Cooler_On T#5m
+merge_to: S_Done: Bake_Done AND Cool_Done
+```
+
+分支上下各有兩條平行水平線（間距 4px），即同時橫線。上方的**共享轉換**（這裡是 `TRUE`）觸發發散；下方的**共享轉換**（`Bake_Done AND Cool_Done`）在收斂觸發前進行檢查。
+
+---
+
+## 7. 跳轉（迴圈）
+
+目標是較早步驟的轉換渲染為邊距箭頭：
+
+```
+step S0 [initial]
+step S1
+step S2
+transition from: S0 to: S1: A
+transition from: S1 to: S2: B
+transition T_Reset from: S2 to: S0: ResetBtn
+transition from: S2 to: S1: NOT ResetBtn
+```
+
+正向的 `S2 → S1`（回邊）在右側取得邊距箭頭；`T_Reset` 跳回 `S0` 在左側。每個邊距箭頭顯示其目標 id 和條件。
+
+---
+
+## 8. 變數
+
+與 `ladder` 和 `fbd` 共用：
+
+```
+var StartBtn: bool
+var TankLevel: real
+var BakeReady: bool
+var Counter: counter
+var T1: timer
+```
+
+在條件和動作中宣告的變數不進行驗證——Schematex 將條件／動作主體文字視為不透明字串，與 `state` 處理守衛和動作的方式相同。
+
+---
+
+## 9. v0.1 限制
+
+- **巢狀分支**（alt 中的 sim、sim 中的 alt）可以解析，但佈局折疊啟發式較為基礎；深度巢狀可能重疊。
+- **S/R 動作對虛線連接器**（在視覺上將 `S` 動作與其他地方配對的 `R` 連接）已延後實作。
+- **活躍步驟執行時指示器**（當前活躍步驟的黃色填充）已延後實作——對呈現 PLC 執行時狀態的偵錯整合有用。
+- **GRAFCET 強制命令**（超出 IEC 60848 專屬功能範圍）。
+- **終止步驟**以 `[final]` 解析但以與初始步驟相同的雙邊框渲染；IEC 三邊框慣例已延後實作。
+
+---
+
+## 相關範例
+
+來自範例圖庫的即用情境：
+
+<RelatedExamples slugs={[
+  'sfc-bottle-filling',
+  'sfc-bake-cool-concurrent',
+  'sfc-order-routing-alt',
+]} />

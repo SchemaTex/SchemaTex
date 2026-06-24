@@ -1,0 +1,184 @@
+---
+title: 運動戰術板
+---
+
+## 關於運動戰術板
+
+**運動戰術板**是教練繪製的單一戰術、陣形或球隊站位圖——以圓點代表球員，以線條代表移動路線，採用教練一眼就能看懂的標記方式。Schematex 可從文字為三大團隊運動生成戰術板：**美式足球**（X&O 戰術圖）、**籃球**（半場陣形）和**足球／協會式足球**（球隊陣形與移動路線）。每種運動都以該運動專屬的教練標準標記方式，在正確比例的場地、球場或草皮上繪製。
+
+你指定一種運動和一個陣形，引擎負責放置球員。你再加入移動動詞（`route`、`pass`、`cut`、`dribble`、`run`、`screen`、`shot`），引擎就會用該運動教練實際使用的線條樣式繪製每個動作。與圖片生成器不同，輸出結果是*可編輯的*——新增第四名接球員或移動擋拆位置只需修改一行。
+
+<Playground initial={`playbook "Four Verticals" sport football
+field down 2 distance 7 los 40
+formation spread
+defense cover-2
+route X go
+route H seam
+route Y seam
+route Z go
+route RB flat right`} height={460} />
+
+---
+
+## 1. 第一個戰術圖
+
+每個圖表以命名**運動**的標頭開始，接著是**陣形**（用於放置球員），然後是**任務分配**：
+
+<Playground initial={`playbook "Give & Go" sport basketball
+set 5-out
+pass 1 2
+cut 1 rim
+pass 2 1`} height={420} />
+
+`pass 1 2` 繪製從球員 1 到球員 2 的傳球；`cut 1 rim` 讓球員 1 切入禁區。籃球中，傳球以**虛線**繪製，切入以**實線**繪製——這是每個教練白板上的慣例。
+
+---
+
+## 2. 三種運動
+
+在標頭中選擇運動（`sport football|basketball|soccer`）。每種運動使用其實際單位和傳統教練視角：
+
+| 運動 | 單位 | 視角 | 場地 |
+|---|---|---|---|
+| `football` | 碼 | 進攻方在底部向**上**進攻；推進方向 = 向上 | 帶碼數線、雜湊線和達陣區的綠色球場 |
+| `basketball` | 英尺 | NBA **半場**；底線和籃框在頂部 | 淺楓木木地板 |
+| `soccer` | 公尺 | 完整的 **105 × 68 公尺**草皮（向右進攻）；或 `view half` | 帶 IFAB 標記的綠色草皮 |
+
+---
+
+## 3. 球員與陣形
+
+放置球員最快的方式是使用**陣形**（美式足球/足球）或**陣式**（籃球）：
+
+- **美式足球** — `formation i-form | shotgun | singleback | pistol | spread | trips | empty | goal-line | wishbone`，可選強側 `left`/`right`。接球員為 `X Z H Y`（Y = 緊端鋒），後衛為 `QB RB FB`，鋒線為 `LT LG C RG RT`。
+- **籃球** — `set horns | 1-4-high | 1-4-low | box | spread-pnr | 4-out | 5-out`。球員以 `1`–`5` 編號。
+- **足球** — `formation 4-3-3 | 4-4-2 | 4-2-3-1 | 4-5-1 | 4-4-1-1 | 3-5-2 | 3-4-3`。球員以 `1`（守門員）……`11` 編號。
+
+對於定點球或自由形式圖表，可個別放置球員並裁剪為半場：
+
+<Playground initial={`playbook "Overlap & Cross" sport soccer
+view half
+player 7 o at 75,12 label 7
+player 2 o at 60,15 label 2
+player 9 o at 88,30 label 9
+player 11 o at 85,52 label 11
+player 10 o at 80,38 label 10
+dribble 7 to 82,20
+run 2 to 90,8
+pass 7 to 90,8
+pass 2 to 102,34
+run 9 to 101,31
+run 11 to 101,40`} height={420} />
+
+---
+
+## 4. 移動動詞與線條樣式
+
+相同的線條樣式在不同運動中代表不同含義——Schematex 依照每種運動的慣例繪製，且圖例始終與之一致：
+
+| 動詞 | 美式足球 | 籃球 | 足球 |
+|---|---|---|---|
+| `pass` | 虛線（傳球） | **虛線** | **實線** |
+| `run` / `cut` | 實線 | **實線**（切入） | **虛線**（跑位） |
+| `dribble` | — | 波浪線 | 波浪線 |
+| `screen` / `block` | T 形垂直線 ⊥ | T 形垂直線 ⊥（擋拆） | T 形垂直線 ⊥ |
+| `shot` | — | 實線 | 雙線 |
+
+**注意這個反轉：**籃球中傳球用*虛線*、切入用*實線*；足球中傳球用*實線*、跑位用*虛線*。這是兩個教練群體實際使用的圖示方式——Schematex 尊重各自的慣例。
+
+移動目標可以是**球員 id**、**地標**名稱，或明確的**座標**（`to x,y`）。
+
+---
+
+## 5. 美式足球——路線、跑陣、防守
+
+傳球路線使用**路線樹**：`go fly streak slant flat hitch out in dig curl comeback corner post wheel cross drag seam`。跑陣概念：`dive iso power counter sweep toss draw trap`。阻擋使用 `block`、`pull` 和 `handoff`。設定 `goal N` 可繪製達陣區和球門柱：
+
+<Playground initial={`playbook "Red Zone — Play-Action Fade" sport football
+field down 1 distance 5 los 5 goal 5 hash nfl
+formation i-form right
+defense cover-1
+handoff QB RB
+route Z corner 4
+route X slant
+route Y out 3
+run RB dive right`} height={460} />
+
+`defense cover-0/1/2/3/4/6` 繪製防守覆蓋陣形；`defense 4-3 | 3-4 | nickel | dime` 設定前排陣形。`hash nfl|college|none` 控制雜湊線顯示。
+
+---
+
+## 6. 籃球——陣式、地標、擋拆
+
+切入和傳球的目標為**命名地標**——`rim elbow wing corner short-corner block slot top high-post dunker`（以 `l`/`r` 前綴表示左/右）。`screen A B` 為球員 B 繪製持球擋拆（T 形垂直線）；`dribble` 為波浪線：
+
+<Playground initial={`playbook "Spread Pick & Roll" sport basketball
+set spread-pnr
+screen 5 1
+dribble 1 to 11,17
+cut 5 rim
+pass 1 2`} height={440} />
+
+`defense man` 讓每個防守者對應一個人；`defense zone-2-3 | zone-3-2 | zone-1-3-1` 繪製區域防守。
+
+---
+
+## 7. 足球——陣形、跑位、組織進攻
+
+單一陣形即可繪製球隊站位。加入 `pass`（實線）、`run`（虛線）和 `dribble`（波浪線）可顯示一個進攻段：
+
+<Playground initial={`playbook "Build-Up From the Back" sport soccer
+formation 4-3-3
+pass 1 4
+pass 4 2
+run 2 to 40,10
+pass 4 6
+run 6 to 62,24`} height={440} />
+
+地標包括 `box top-box d penalty-spot near-post far-post six-yard center`。`defense low-block | mid-block | high-press` 疊加對手陣形。足球只在日間渲染——`theme: dark` 回退至預設草皮。
+
+---
+
+## 8. 驗證
+
+引擎會拒絕模型實際上常犯的錯誤，並列出有效選項：
+
+- 未知的 `sport`、`formation` / `set`、`defense` 或命名路線；
+- 引用未宣告球員 id 的移動；
+- 格式錯誤的座標或缺少 `to` 目標。
+
+較輕微的問題（例如零長度移動）會在渲染時顯示警告而非直接失敗。
+
+---
+
+## 9. 語法（EBNF）
+
+```text
+playbook   = "playbook" string "sport" sport NL { stmt NL } ;
+sport      = "football" | "basketball" | "soccer" ;
+stmt       = field | formation | defense | player | move | zone | "view" view ;
+field      = "field" { "down" num | "distance" num | "los" num
+                     | "goal" num | "hash" hash | "view" view } ;
+formation  = ( "formation" | "set" ) name [ "left" | "right" ] ;
+defense    = "defense" scheme ;
+player     = "player" id pos "at" coord "label" text ;
+move       = route | run | pass | cut | dribble | screen
+           | shot | motion | handoff | pull | block ;
+route      = "route" id namedRoute [ num ] [ "left" | "right" ] ;
+run        = "run" id ( concept [ "left" | "right" ] | "to" coord ) ;
+pass       = "pass" id ( id | landmark | "to" coord ) ;
+cut        = "cut" id ( landmark | "to" coord ) ;
+dribble    = "dribble" id "to" coord ;
+screen     = "screen" id id ;
+shot       = "shot" id [ "to" coord ] ;
+zone       = "zone" coord coord string ;
+coord      = num "," num ;
+view       = "full" | "half" ;
+hash       = "nfl" | "college" | "none" ;
+```
+
+---
+
+## 相關範例
+
+每種運動各附五個標準戰術圖作為範例——美式足球：四條垂直路線、交叉路線、Smash、強側跑陣和達陣區漸深路線；籃球：擋拆、犄角陣、傳切配合、Floppy 和背切；足球：4-3-3 陣形、後場組織、套邊傳中、高位壓迫和反擊。

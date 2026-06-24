@@ -1,0 +1,87 @@
+---
+title: Einführung
+description: Jedes Diagramm, das ein Arzt, Ingenieur oder Anwalt tatsächlich verwenden würde. Kostenlos. Vollständig Open Source. Für AI konzipiert. Branchenstandard-Diagramme — vom Genogramm bis zum Fehlerbaum — aus einem Text-DSL.
+---
+
+**Schematex** rendert jedes Diagramm, das ein Arzt, Ingenieur oder Anwalt tatsächlich
+verwenden würde — klinische Genogramme, IEC 61131-3 Leiterlogik, NSGC-Stammbäume, IEEE 315
+Einlinienschaltpläne, Cap-Tables und vieles mehr. Eingabe: ein kompakter Text-DSL;
+Ausgabe: standardkonformes SVG.
+
+**Kostenlos. Vollständig Open Source. Für AI konzipiert.** AGPL-3.0, keine Laufzeit-Abhängigkeiten,
+und ein DSL, der darauf ausgelegt ist, wie LLMs tatsächlich Text schreiben — fügen Sie die Ausgabe
+von ChatGPT oder Claude ein und erhalten Sie beim ersten Versuch ein professionelles Diagramm.
+
+## Was kann ich zeichnen?
+
+<DiagramCatalog />
+
+## Schnellbeispiel
+
+<Playground initial={`genogram "The Smiths"
+  john [male, 1950]
+  mary [female, 1952]
+  john -- mary
+    alice [female, 1975, index]
+    bob [male, 1978]
+  alice -close- mary`} />
+
+## Mit AI verwenden
+
+Schematex wird mit einer Tool-Schicht geliefert, die für LLMs entwickelt wurde. Verbinden Sie Claude.ai in 10 Sekunden mit dem gehosteten MCP-Server und lassen Sie ihn in jedem Gespräch validierte Diagramme erstellen — keine Installation, kein Setup.
+
+<MCPConnectCard size="compact" />
+
+Oder erstellen Sie Ihre eigene AI-Funktion auf Basis des Vercel AI SDK. Siehe **[Schematex mit AI verwenden](/docs/ai-integration)**.
+
+## Nächste Schritte
+
+- [Erste Schritte](/docs/getting-started) — Installation, Import, Rendering
+- [Schematex mit AI verwenden](/docs/ai-integration) — MCP + Vercel AI SDK + Agent-Loop
+- [Playground](/playground) — beliebigen Diagrammtyp live ausprobieren
+- [API-Referenz](/docs/api)
+
+---
+
+## Wie es funktioniert
+
+Jeder Diagrammtyp folgt derselben Pipeline:
+
+```
+Text DSL ──→ Parser ──→ AST ──→ Layout Engine ──→ LayoutResult ──→ SVG Renderer ──→ SVG string
+```
+
+Jedes Diagramm implementiert ein `DiagramPlugin` mit vier Methoden:
+
+```ts
+interface DiagramPlugin {
+  detect(text: string): boolean;           // erkennt den Diagrammtyp automatisch
+  parse(text: string): DiagramAST;         // Text → typisierter AST
+  layout(ast, config): LayoutResult;       // AST → positionierte Knoten/Kanten
+  render(layout, config): string;          // LayoutResult → SVG-String
+}
+```
+
+Die Layout-Algorithmen sind absichtlich domänenspezifisch — das Genogramm verwendet ein generationsbasiertes geschichtetes Layout, Ecomap verwendet radial/polar, Logikgatter verwenden einen topologischen DAG-Sort, Leiterlogik verwendet ein festes Schienenstrahl-Layout. Generische Layout-Engines (dagre, ELK) können für diese Diagrammtypen keine standardkonformen Ausgaben erzeugen.
+
+---
+
+## Designprinzipien
+
+1. **Diagramme, die Fachleute tatsächlich verwenden** — jeder Diagrammtyp implementiert eine veröffentlichte Fachspezifikation: McGoldrick 2020 (Genogramm), Hartman 1978 (Ecomap), Bennett 2022 (Stammbaum), Moreno 1934 (Soziogramm), IEEE Std 91 (Logikgatter), IEC 61131-3 (Leiterlogik), IEEE 315 (SLD) und mehr.
+2. **Kostenlos & vollständig Open Source** — AGPL-3.0, keine Laufzeit-Abhängigkeiten (kein D3, kein dagre, keine Parser-Generatoren), alles handgeschrieben. Kleines Bundle, kein Supply-Chain-Risiko. Kommerzielle Lizenz für Closed-Source-Nutzung erhältlich.
+3. **Für AI konzipiert** — der DSL ist darauf ausgelegt, wie LLMs tatsächlich Text schreiben (CJK-Anführungszeichen, Verschachtelungsmehrdeutigkeiten, AI-lesbare Fehler). Fügen Sie die Ausgabe von ChatGPT oder Claude ein und erhalten Sie beim ersten Versuch ein professionelles Diagramm.
+4. **Semantische SVG-Ausgabe** — jedes SVG enthält `<title>` und `<desc>` für Barrierefreiheit, CSS-Klassen für das Theming und `data-*`-Attribute für Interaktivität.
+
+---
+
+## Theming
+
+Drei integrierte Presets: `default` (blau-grau), `monochrome` (schwarz-weiß / Druck), `dark` (Catppuccin Mocha).
+
+Überschreiben Sie beliebige Token über CSS-Custom-Properties, die in den `<style>`-Block jedes SVG eingefügt werden:
+
+```css
+--schematex-stroke: #1a1a1a;
+--schematex-fill: #f5f5f5;
+```

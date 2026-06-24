@@ -1,0 +1,258 @@
+---
+title: PERT / CPM-Netzwerk
+---
+
+## Über PERT-Diagramme
+
+Ein **PERT-Diagramm** (Program Evaluation and Review Technique) — und sein nahezu identischer Zwilling **CPM** (Critical Path Method) — ist das grundlegende Projektplanungsdiagramm des modernen Projektmanagements. 1959 entstanden (PERT aus dem US-Navy-Polaris-Programm, CPM von DuPont), konvergierten die beiden zur **Activity-on-Node / Precedence Diagramming Method**, die im [PMI PMBOK Guide](https://www.pmi.org/pmbok-guide-standards) gelehrt wird. Sie schreiben die Aufgaben, ihre Dauern und welche Aufgabe von welcher abhängt; der Zeitplan — Früher Start, Frühes Ende, Später Start, Spätes Ende, Puffer und der **kritische Pfad** — wird *berechnet*.
+
+Genau dieser letzte Punkt unterscheidet Schematex's `pert`-Engine von jedem Drag-and-Drop-"PERT-Chart-Maker". Die meisten Werkzeuge liefern eine Formenbibliothek und lassen Sie das sechsfeldriges Kästchen ausfüllen und den kritischen Pfad mit einem Taschenrechner berechnen. Schematex führt den Vorwärtsdurchlauf und Rückwärtsdurchlauf selbst durch und hebt den kritischen Pfad automatisch in Rot hervor. Abzugrenzen von **[Flussdiagramm](/docs/flowchart)** (keine Planung), **[Timeline](/docs/timeline)** (keine Kritischer-Pfad-Mathematik) und **[BPMN](/docs/bpmn)** (ein organisatorischer Prozess, kein einmaliger Projektplan).
+
+<Playground initial={`pert
+title: "Q3 Product Launch"
+unit: days
+
+task A "Market research"     duration: 5
+task B "Design mockups"      duration: 8  after: A
+task C "Backend API"         duration: 15 after: A
+task D "Frontend build"      duration: 10 after: B, C
+task E "QA / testing"        duration: 5  after: D
+task F "Marketing collateral" duration: 7 after: B
+task G "Launch event"        duration: 2  after: E, F`} height={520} />
+
+---
+
+## 1. Ihr erstes Diagramm
+
+Jedes Dokument beginnt mit dem Schlüsselwort `pert`, einem optionalen Header und dann einer `task`-Zeile pro Aktivität:
+
+```
+pert
+unit: days
+
+task A "Market research" duration: 5
+task B "Design mockups"  duration: 8 after: A
+task C "Backend API"     duration: 15 after: A
+task D "Frontend build"  duration: 10 after: B, C
+```
+
+Jede Aufgabe trägt eine `<id>`, eine zitierte `<Bezeichnung>`, eine `duration:` und eine optionale `after:`-Liste von Vorgängern. Die Engine fügt einen unsichtbaren Start und Abschluss hinzu, führt den Zeitplan aus und zeichnet das Sechsfeld-Aktivitätskästchen für jede Aufgabe. Sie geben niemals ES/EF/LS/LF ein — sie werden berechnet.
+
+Der Header akzeptiert:
+
+- `title: "…"` — eine Überschrift, die über dem Diagramm gezeichnet wird.
+- `unit: days | weeks | hours | abstract` — die Zeiteinheit (Standard `days`; rein eine Bezeichnung, die Engine ist kalenderunabhängig).
+- `direction: LR | TB` — von links nach rechts (Standard) oder von oben nach unten.
+- `layout: network | timescaled` — das geschichtete Netzwerk (Standard) oder eine zeitproportionale Ansicht (§6).
+- `critical-tolerance: <n>` — Puffer ≤ diesem Wert gilt als kritisch (Standard `0`; setzen Sie `0.001` für Drei-Punkt-Projekte).
+- `show-sentinels: true` — zeichnet die synthetischen Start-/Abschluss-Knoten (standardmäßig verborgen).
+
+---
+
+## 2. Das Sechsfeld-Aktivitätskästchen
+
+Jede Aufgabe wird als das kanonische 3×2 PERT/CPM-Rechteck gerendert:
+
+```
+┌──────────┬────────────┬──────────┐
+│  ES      │  Duration  │   EF     │
+├──────────┴────────────┴──────────┤
+│         Task Name (ID)           │
+├──────────┬────────────┬──────────┤
+│  LS      │  Slack     │   LF     │
+└──────────┴────────────┴──────────┘
+```
+
+- **ES / EF** — Früher Start / Frühes Ende, aus dem Vorwärtsdurchlauf.
+- **LS / LF** — Später Start / Spätes Ende, aus dem Rückwärtsdurchlauf.
+- **Slack** (Gesamtpuffer) = LS − ES = LF − EF. Null Puffer bedeutet, dass die Aktivität auf dem kritischen Pfad liegt.
+
+Kritische Aktivitäten erhalten einen **roten Rahmen** und einen fettgedruckten `0`-Puffer; die kritische Kette des Projekts ist als ununterbrochene rote Linie zu lesen. Jedes Feld wird auch auf `data-*`-Attribute gespiegelt (`data-es`, `data-slack`, `data-critical`, …), sodass Sie das SVG abfragen können, ohne die Mathematik erneut durchzuführen.
+
+**Zur Zwei-Farben-Palette.** Ein PERT-Diagramm wird bewusst in nur zwei Farben gezeichnet. Rot für den kritischen Pfad ist eine echte Branchenkonvention — MS Project, Oracle Primavera P6 und PMBOK-Abbildungen verwenden es alle, weil "kritisch vs. nicht kritisch" die einzige Unterscheidung ist, für die das Diagramm existiert. Alles andere bleibt ein neutrales Hausblau. Das Hinzufügen weiterer Farben würde Kategorien implizieren, die die PERT-Semantik nicht hat; wenn Sie nach Team oder Phase gruppieren müssen, verwenden Sie stattdessen [Schwimmbahnen](#7-schwimmbahnen-tags-klassen-und-kommentare) (`lane:`).
+
+---
+
+## 3. Abhängigkeiten (FS / SS / FF / SF + Lag/Lead)
+
+`after:` nimmt eine kommagetrennte Liste von Vorgängerreferenzen. Die Standardbeziehung ist **Finish-to-Start (FS)** — eine Aufgabe beginnt, sobald ihr Vorgänger abgeschlossen ist:
+
+```
+task D "Frontend build" duration: 10 after: B, C
+```
+
+Modernes Planen benötigt die anderen drei Precedence-Diagramming-Beziehungen und **Lag** (Verzögerung) oder **Lead** (negativer Lag):
+
+```
+task B "Stakeholder interviews" duration: 6 after: A SS+1   # beginnt 1d nach A-Start
+task I "Documentation"          duration: 4 after: D+3      # FS mit 3-Tage-Lag
+task J "Translation"            duration: 3 after: I SS-1   # beginnt 1d vor I-Start (Lead)
+task K "Sign-off"               duration: 1 after: I FF     # endet wenn I endet
+task L "Press release"          duration: 2 after: G SF+1   # Start-to-Finish (selten)
+```
+
+| Form | Bedeutung |
+|------|---------|
+| `after: A` | Finish-to-Start, kein Lag (der häufige Fall) |
+| `after: A+2` oder `after: A+2d` | FS mit 2-Einheiten-Lag |
+| `after: A SS` / `A FF` / `A SF` | Start-to-Start / Finish-to-Finish / Start-to-Finish |
+| `after: A SS+2d` / `A FF-1d` | beliebiger Typ mit Lag (`+`) oder Lead (`-`) |
+
+Ein Lag-Einheiten-Suffix (`d` / `w` / `h`) muss mit der `unit:` des Diagramms übereinstimmen oder weggelassen werden; gemischte Einheiten werden abgelehnt. FS mit Null-Lag ist unbeschriftet; SS/FF/SF zeigen immer ihren Typ auf der Kante.
+
+---
+
+## 4. Drei-Punkt-(PERT-)Schätzung
+
+Schreiben Sie eine Dauer als `O/M/P` (optimistisch / wahrscheinlichst / pessimistisch), und die Engine berechnet die Beta-Verteilungs-Erwartungsdauer **te = (O + 4M + P) / 6** und die Varianz **σ² = ((P − O)/6)²**:
+
+```
+pert
+critical-tolerance: 0.01
+task A "Spec"   duration: 2/3/5    # te = 3.17, σ² = 0.25
+task B "Build"  duration: 5/8/14   after: A   # te = 8.50, σ² = 2.25
+task C "Test"   duration: 3/4/6    after: B
+task D "Deploy" duration: 1/2/3    after: C
+```
+
+Das Dauernfeld zeigt `te`; eine kleine `σ=…`-Annotation erscheint unter dem Namen; und die Standard abweichung auf Projektebene (√ der summierten kritischen-Pfad-Varianzen) wird in der Fußzeile berichtet. Verwenden Sie `critical-tolerance: 0.01`, damit Gleitkomma-`te`-Werte den sichtbaren kritischen Pfad nicht verschieben.
+
+---
+
+## 5. Meilensteine
+
+Ein Meilenstein ist ein Checkpoint mit Null-Dauer, gezeichnet als Raute. Verwenden Sie das `milestone`-Flag oder `duration: 0`:
+
+```
+task P "Cutover weekend" milestone after: O
+task Q "Go-live"         duration: 0 after: P
+```
+
+---
+
+## 6. Zeitlich skaliertes Layout
+
+`layout: timescaled` wechselt vom geschichteten Netzwerk zu einem Netzwerk-Gantt-Hybrid: Die **x-Position** jeder Aktivität ist proportional zu ihrem **ES** und ihre **Breite proportional zu ihrer Dauer**, mit einer Zeitachse am unteren Rand. Aktivitäten werden in Bahnen angeordnet, damit es keine Überlappungen gibt.
+
+```
+pert
+layout: timescaled
+unit: days
+
+task A "Inventory"     duration: 5
+task B "Interviews"    duration: 6  after: A SS+1
+task C "Design"        duration: 10 after: A, B
+task D "Build"         duration: 15 after: C
+task E "Pilot"         duration: 7  after: D
+```
+
+Dies ist die netzwerkartige Zeitansicht; für ein Kalender-Gantt-Diagramm mit einer Zeile pro Aufgabe verwenden Sie `layout: gantt` (nächster Abschnitt).
+
+### Gantt-Diagramm (`gantt` / `layout: gantt`)
+
+Starten Sie ein Dokument mit dem **`gantt`**-Header (syntaktischer Zucker für `pert` + `layout: gantt`) für ein Kalender-Gantt. Es ist *derselbe Scheduler* — die Balken werden also aus dem **berechneten** ES/EF platziert, und der **kritische Pfad wird in Rot gezeichnet**, was ein manuell platzierten Gantt (Mermaid) nicht leisten kann: dort geben Sie die Daten selbst ein, hier geben Sie Abhängigkeiten ein und die Engine plant sie.
+
+```
+gantt "Website Relaunch"
+start: 2026-07-01
+calendar: 5day
+task A "Discovery"      duration: 5  lane: "Plan"
+task B "Wireframes"     duration: 8  after: A   lane: "Design"
+task C "Visual design"  duration: 6  after: B   lane: "Design"  progress: 40%
+task D "Frontend build" duration: 12 after: C   lane: "Build"
+task E "Backend API"    duration: 10 after: A   lane: "Build"
+task F "Integration"    duration: 5  after: D, E lane: "Build"
+task LAUNCH "Go live"   milestone    after: F   lane: "Build"
+today: 2026-07-20
+```
+
+- **`start: YYYY-MM-DD`** verwandelt die Achse in Kalenderdaten (weglassen für eine numerische Tagesversatz-Achse).
+- **`calendar: continuous`** (Standard) überbrückt Wochenenden; **`calendar: 5day`** schließt Samstag/Sonntag aus der Zeitachse aus.
+- **`lane: "…"`** gruppiert Aufgaben in beschriftete **Abschnitte**; **`progress: 60%`** zeichnet eine Fertigstellungsüberlagerung; **`milestone`** ist eine Raute; **`today: YYYY-MM-DD`** setzt eine Markierungslinie.
+- Eine Zeile pro Aufgabe, in Deklarationsreihenfolge. Nicht-kritische-Pfad-Balken werden im Ruhezustand Blau mit ihrem **Puffer** annotiert; kritische Balken sind rot.
+
+### Activity-on-Arrow (`layout: aoa`)
+
+`layout: aoa` rendert die ältere **Activity-on-Arrow** (ADM)-Notation, die Sie in Lehrbüchern und auf Investopedia finden: nummerierte **Ereignis**-Kreise, **Aktivitäten als beschriftete Pfeile** und gestrichelte **Dummy-Aktivitäten**, die automatisch eingefügt werden, wo immer eine Aktivität zwei oder mehr Vorgänger hat. Sie schreiben dieselbe Activity-on-Node-DSL — Schematex erstellt den Ereignisgraph und nummeriert die Ereignisse für Sie.
+
+```
+pert
+layout: aoa
+unit: days
+
+task A "create schedule" duration: 10
+task B "buy hardware"    duration: 5
+task C "programming"     duration: 20 after: A
+task D "installation"    duration: 5  after: B
+task E "conversion"      duration: 15 after: D
+task F "test code"       duration: 20 after: C, E
+task G "write manual"    duration: 15 after: E
+```
+
+AOA ist eine **Legacy**-Notation (PMBOK 7 hat sie fallen gelassen; AON ist der moderne Standard) und kann nur **Finish-to-Start**-Logik ausdrücken — SS/FF/SF und Lag/Lead werden mit einer Warnung auf FS reduziert. Verwenden Sie es für Lehr-, Prüfungsvorbereitungs- oder Textbuchvergleichszwecke; verwenden Sie das Standard-`network`-(AON-)Layout für echte Planung.
+
+---
+
+## 7. Schwimmbahnen, Tags, Klassen und Kommentare
+
+Fügen Sie `lane: "…"` zu einer beliebigen Aufgabe hinzu, und das Netzwerk gruppiert sich in horizontale Schwimmbahnen neu — nach verantwortlichem Team, Phase oder Eigentümer — während der Zeitplan exakt wie zuvor berechnet wird:
+
+```
+task T1 "Support Account Deletion" duration: 3  lane: "Customer Account"
+task T2 "Design a New Theme"        duration: 8  lane: "Shopping Site"
+task T3 "Apply New Theme"           duration: 15 after: T2 lane: "Shopping Site"
+```
+
+Bahnen erscheinen in der zuerst deklarierten Reihenfolge, jede als gebänderte Zeile mit einem Beschriftungskanal auf der linken Seite. Schwimmbahnen sind eine Darstellung desselben AON-Netzwerks, kein anderer Layout-Modus — sie aktivieren sich automatisch, wenn eine Aufgabe eine Bahn deklariert.
+
+```
+task X "External vendor work" duration: 10 after: A tags: vendor, external class: secondary
+# this is a comment
+```
+
+`tags:` emittiert `data-tag="…"` auf der Knotengruppe und `class:` fügt eine CSS-Klasse für nachgelagerte Thematisierung hinzu. `#` und `//` beginnen einen Kommentar bis zum Zeilenende.
+
+---
+
+## 8. Grammatik (EBNF)
+
+```text
+document    = "pert" NEWLINE header* task+
+header      = "title:" quoted
+            | "unit:" ("days" | "weeks" | "hours" | "abstract")
+            | "direction:" ("LR" | "TB")
+            | "layout:" ("network" | "timescaled" | "aoa")
+            | "critical-tolerance:" number
+            | "show-sentinels:" boolean
+
+task        = "task" IDENT quoted "duration:" duration ("after:" reflist)? "milestone"? attrs?
+            | "task" IDENT quoted "milestone" ("after:" reflist)? attrs?
+duration    = number | number "/" number "/" number          ; deterministisch oder O/M/P
+reflist     = ref ("," ref)*
+ref         = IDENT (WS deptype)? laglead?
+            | IDENT "+" number unit?                          ; attached FS lag sugar
+deptype     = "FS" | "SS" | "FF" | "SF"
+laglead     = ("+" | "-") number unit?
+unit        = "d" | "w" | "h"
+attrs       = ("tags:" idlist)? ("class:" IDENT)? ("lane:" quoted)?
+```
+
+---
+
+## 9. Normkonformität
+
+Schematex `pert` implementiert die **Activity-on-Node / Precedence Diagramming Method** nach **PMI PMBOK 7** und Moder, Phillips & Davis (1983), mit der Sechsfeld-Kästchen-Konvention von Kerzner und Oracle Primavera P6. Der Vorwärtsdurchlauf und Rückwärtsdurchlauf, Gesamtpuffer, kritischer Pfad, alle vier PDM-Abhängigkeitstypen mit Lag/Lead und Drei-Punkt-Schätzung (te + Varianz) werden exakt berechnet. Die ältere **Activity-on-Arrow**-Notation ist als optionale Legacy-Ansicht verfügbar (`layout: aoa`) für Lehr- und Lehrbuch-Parität. Außerhalb des Umfangs für v0.1: Ressourcenausgleich / RCPSP, Monte-Carlo-Zeitplan-Risikosimulation, kalenderbasierte Dauern und MS Project / Primavera-Import-Export. Siehe `docs/reference/32-PERT-STANDARD.md` für die vollständige Spezifikation.
+
+---
+
+## Verwandte Beispiele
+
+Sofort einsetzbare Szenarien aus der Beispielgalerie:
+
+<RelatedExamples slugs={[
+  'pert-product-launch',
+  'pert-aoa-software-project',
+  'pert-swimlane-online-shop',
+  'pert-three-point-estimation',
+  'pert-migration-timescaled',
+]} />

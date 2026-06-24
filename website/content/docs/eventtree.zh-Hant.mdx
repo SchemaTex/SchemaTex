@@ -1,0 +1,102 @@
+---
+title: 事件樹分析
+description: 歸納式正向風險分析 — 從一個起始事件出發，透過安全功能的成功／失敗分支，推算至各量化終態。
+---
+
+## 關於事件樹
+
+**事件樹**是故障樹的正向歸納對應物。從一個**起始事件**（管線破裂、火災、安全系統的一次需求）出發，依序詢問每個下游**安全功能**是成功或失敗。分支階梯上的每條路徑最終都會抵達一個量化的**結果**（正常、受控、爐心損傷……）。事件樹是核能 PRA 與製程 QRA 的主力工具，並由 **IEC 62502** 與 **[NUREG-0492](https://www.nrc.gov/docs/ML1007/ML100780465.pdf)** 時代的 WASH-1400 實踐所標準化。
+
+Schematex 的優勢與故障樹相同：引擎**計算出答案**，而不只是畫出階梯。給定起始頻率和各功能的失效概率，它推導出每條路徑的頻率（`f₀ · ∏ 分支概率`），將結果跨路徑彙總，並以紅色標出**主導序列**。draw.io 只畫出一個分叉梯形，就此停止；那只是一張圖，不是分析。
+
+<Playground initial={`eventtree "Loss of coolant accident"
+  initiating LOCA "Large LOCA" freq: 1e-4
+  function A "ECCS injects"          p: 0.001
+  function B "Containment spray"     p: 0.01
+  function C "Containment integrity" p: 0.005
+  outcome s s s -> "OK"
+  outcome s s f -> "Late release"
+  outcome s f * -> "Early release"
+  outcome f * * -> "Core damage"`} height={560} />
+
+---
+
+## 1. 第一個事件樹
+
+每份文件以 `eventtree` 關鍵字（別名 `eta`）開頭，後接可選的標題，然後是一組扁平的宣告清單：
+
+```
+eventtree "Smoke detector demand"
+  initiating FIRE "Fire starts" freq: 0.01
+  function D "Detector actuates" p: 0.02
+  function S "Suppression works" p: 0.05
+  outcome s s -> "Controlled"
+  outcome s f -> "Damage, contained"
+  outcome f * -> "Uncontrolled fire"
+```
+
+- **`initiating ID "label" freq: N`** — 恰好一個。挑戰頻率，接受十進位數或科學記號（`freq: 0.01` 或 `freq: 1e-4`）。
+- **`function ID "label" p: N`** — 每個分支欄一個，**依查詢順序從左至右宣告**。`p:` 是**失效**概率；引擎從其補數 `1 − p` 推導出成功分支（您不需要同時宣告兩者）。
+- **`outcome <pattern> -> "end state"`** — 每個實現的葉節點各一個。
+
+---
+
+## 2. s / f / * 結果模式
+
+每個 `outcome` 列從左至右讀取各功能欄：
+
+```
+outcome s s s -> "OK"           # 所有功能均成功
+outcome s s f -> "Late release" # C 在最後一次查詢時失效
+outcome s f * -> "Early release"# B 失效；C 永遠不被查詢（被剪枝）
+outcome f * * -> "Core damage"  # A 失效；路徑立即終止
+```
+
+- **`s`** — 成功分支（上方分叉）。
+- **`f`** — 失效分支（下方分叉）。
+- **`*`** — 被剪枝：此處不查詢該路徑，它直接延伸至其葉節點。
+
+這就是事件樹避免成為完整平衡 2ⁿ 樹的方式：一旦某功能失效使後續問題變得無意義，就寫 `*`，序列提前終止。兩條硬性規則：模式的長度不得**超過**欄數，且**一旦某欄被剪枝（`*`），其後的每一欄也必須是 `*`** — 已終止的路徑不能恢復查詢。
+
+---
+
+## 3. 計算路徑頻率與結果
+
+這是差異所在。利用失效概率和 `freq`，引擎計算：
+
+- **各路徑頻率** = 沿其 `s`/`f` 分支的 `f₀ · ∏ 分支概率`（成功分支貢獻 `1 − p`，失效分支貢獻 `p`）。
+- **結果彙總**：具有相同終態標籤的結果，在所有抵達它們的路徑中求和（每個「Core damage」葉節點都加總進去）。
+- **主導序列** — 頻率最大的路徑 — 以保留紅色強調，是事件樹中對應故障樹「單點失效」的概念。
+
+每個葉節點攜帶 `data-*`（`data-freq`、`data-outcome`），使計算數值可供下游檢查。
+
+---
+
+## 4. 常見錯誤
+
+```
+# 錯誤 — 功能沒有失效概率
+function A "ECCS"
+
+# 錯誤 — 在已剪枝的欄之後繼續查詢（路徑已終止）
+outcome * s -> "bad"
+
+# 錯誤 — 標記數多於已宣告的欄數
+function A p: 0.1
+outcome s s -> "ok"
+
+# 錯誤 — 起始事件沒有頻率
+initiating LOCA "Large LOCA"
+```
+
+每個錯誤都會以標示行號的白話文訊息拒絕。將 `p:` 設為**失效**概率（應為小數），給起始事件一個 `freq:`，將剪枝放在尾端，這樣就能從結構上確保正確性。
+
+---
+
+## 5. 標準合規性
+
+形式遵循 IEC 62502 與傳統 PRA 實踐（WASH-1400 / NUREG）：功能作為有序的標題欄，二元成功／失效分割，補數推導的成功分支，以及乘法頻率傳播。`monochrome` 主題重現教科書的黑白外觀；`default` 保留紅色給主導序列。
+
+## 6. 路線圖
+
+延後實作：每個分支的連結故障樹片段（共享基本事件）、不確定性傳播，以及後果類別分組。

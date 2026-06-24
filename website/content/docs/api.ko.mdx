@@ -1,0 +1,117 @@
+---
+title: API 참조
+description: Schematex JavaScript/TypeScript API — 엄격한 렌더링/파싱 호출, 미리보기 안전 결과 API, 구성 옵션, 트리 셰이킹 가능한 가져오기.
+---
+
+## `render(text, config?)`
+
+DSL 문자열을 SVG 문자열로 렌더링합니다. 첫 번째 키워드로 디스패치하며, 감지, 파싱, 레이아웃, 또는 렌더링이 실패하면 예외를 발생시킵니다.
+
+```ts
+import { render } from 'schematex';
+
+const svg: string = render(text, { theme: 'monochrome' });
+```
+
+유효하지 않은 DSL이 워크플로를 중단해야 하는 경우, 예를 들어 테스트, 내보내기 작업, 또는 서버 측 검증 게이트에서 엄격한 API를 사용하세요.
+
+## `parse(text, config?)`
+
+DSL 문자열을 렌더링 없이 타입이 지정된 AST로 파싱합니다. 이 API도 엄격하며 유효하지 않은 DSL에서 예외를 발생시킵니다.
+
+```ts
+import { parse } from 'schematex';
+
+const ast = parse(text);
+```
+
+## 미리보기 안전 렌더링
+
+라이브 에디터, AI 미리보기, 채팅 캔버스는 파서 실패를 빈 화면으로 바꿔서는 안 됩니다. SVG 문자열만 필요한 경우 `renderPreview()`를 사용하세요:
+
+```ts
+import { renderPreview } from 'schematex';
+
+const svg = renderPreview(text, { type: 'circuit' });
+```
+
+`renderPreview()`는 항상 SVG를 반환합니다. 엄격한 렌더링이 실패하면 해당 SVG는
+표시 가능한 진단용 폴백입니다. `render(text, { mode: 'preview' })`는 이미 `render()`를 호출하는
+통합을 위한 동일한 미리보기 경계입니다.
+
+## 결과 API
+
+호출자가 표시 가능한 출력과 유효성 상태 모두 필요한 경우 결과 API를 사용하세요:
+
+```ts
+import { parseResult, renderResult } from 'schematex';
+
+const renderState = renderResult(text);
+container.innerHTML = renderState.svg;
+
+if (!renderState.ok) {
+  console.error(renderState.diagnostics);
+}
+
+const parseState = parseResult(text);
+```
+
+`renderResult()`는 `svg`, `diagnostics`, `type`, 그리고 `valid`, `partial`, 또는 `invalid`의 `status`를 반환합니다. 유효하지 않은 렌더링 결과도 진단용 SVG를 포함하므로 미리보기는 계속 표시됩니다.
+
+`parseResult()`는 예외를 발생시키지 않고 AST 또는 구조화된 진단을 반환합니다. `partial` 상태는 부분적인 AST 또는 부분적으로 렌더링된 다이어그램을 복구할 수 있는 파서를 위해 예약되어 있습니다.
+
+"SVG 문자열이 존재한다"는 것을 DSL이 유효하다는 증거로 취급하지 마세요. 미리보기 화면은 SVG를 표시하되, 재시도, 수정, 텔레메트리, 또는 결제 결정에는 `ok`, `status`, `diagnostics`를 사용해야 합니다.
+
+## 브라우저와 React
+
+브라우저 하위 경로는 엄격한 DOM 헬퍼와 미리보기 안전 DOM 헬퍼를 제공합니다:
+
+```ts
+import {
+  renderToContainer,
+  renderPreviewToContainer,
+} from 'schematex/browser';
+
+renderToContainer(text, exportContainer);          // strict
+renderPreviewToContainer(text, previewContainer);  // visible fallback
+```
+
+React 컴포넌트는 이미 미리보기 안전 결과 경계를 사용합니다:
+
+```tsx
+import { SchematexDiagram } from 'schematex/react';
+
+<SchematexDiagram
+  dsl={text}
+  type="circuit"
+  onError={(error) => console.error(error)}
+/>;
+```
+
+`onError`는 컴포넌트가 진단용 폴백 SVG를 표시하기 전에 엄격한 파서/레이아웃/렌더링 실패 시 실행됩니다.
+
+## 트리 셰이킹 가능한 가져오기
+
+```ts
+import { render } from 'schematex/genogram';
+import { render } from 'schematex/ecomap';
+import { render } from 'schematex/pedigree';
+import { render } from 'schematex/phylo';
+import { render } from 'schematex/sociogram';
+```
+
+## `SchematexConfig`
+
+```ts
+interface SchematexConfig {
+  type?: string;              // optional diagram type override
+  width?: number;
+  height?: number;
+  padding?: number;
+  theme?: string;             // e.g. 'default' | 'monochrome' | 'dark'
+  fontFamily?: string;
+  mode?: 'strict' | 'preview';
+}
+```
+
+전체 타입 정의는 [`src/core/types.ts`](https://github.com/SchemaTex/SchemaTex/blob/main/src/core/types.ts)와 [`src/core/api.ts`](https://github.com/SchemaTex/SchemaTex/blob/main/src/core/api.ts)를 참조하세요.

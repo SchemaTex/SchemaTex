@@ -1,0 +1,306 @@
+---
+title: 블록 다이어그램
+---
+
+## 블록 다이어그램이란
+
+**블록 다이어그램**은 시스템을 방향이 있는 신호 선으로 연결된 기능적 블록들의 집합으로 모델링합니다. 각 블록은 전달 함수 또는 설명적 레이블로 동작이 표현되는 구성 요소를 나타내며, 신호는 정해진 방향으로 블록을 통해 흐릅니다. 제어 엔지니어는 피드백 루프 설계에, 신호 처리 엔지니어는 필터 체인 문서화에, 시스템 엔지니어는 복잡한 아키텍처 분해에 사용합니다. 핵심 시각적 요소인 직사각형 블록과 원형 합산 접합점은 제어 시스템 분석(Ogata, Franklin, Nise)에서 유래한 관례이며, 피드백 시스템을 설명하는 모든 데이터시트와 교과서에 적용됩니다.
+
+Schematex는 제어 시스템 교과서에서 사용되는 **라플라스 도메인 전달 함수 관례**를 따릅니다: 블록에는 전달 함수로 레이블이 지정되고, 합산 접합점에는 명시적인 `+`/`−` 극성 기호가 있으며, 신호의 `discrete` 플래그는 샘플링된 데이터 경로에 대해 점선을 렌더링합니다. 이 페이지는 파서가 현재 지원하는 내용을 문서화합니다. 권위 있는 참조: Ogata (2010) *Modern Control Engineering*; Franklin, Powell & Emami-Naeini (2018) *Feedback Control of Dynamic Systems*.
+
+<Playground initial={`blockdiagram "Audio dynamics processor"
+# Signal chain
+in_s = signal("Input")
+gate_s = signal("gated")
+comp_s = signal("compressed")
+out_s = signal("Output")
+# Blocks
+gate = block("Noise gate") [role: controller]
+comp = block("Compressor") [role: plant]
+eq = block("3-band EQ") [role: generic]
+limiter = block("Limiter") [role: actuator]
+# Level detection side-chain
+detect = block("Level detect") [role: sensor]
+sum_g = sum(+in_s, -detect)
+# Forward path
+in -> in_s
+in_s -> sum_g
+sum_g -> gate
+gate -> gate_s
+gate_s -> comp
+comp -> comp_s
+comp_s -> eq
+eq -> limiter
+limiter -> out_s
+# Side-chain feedback
+limiter -> detect`} height={460} />
+
+---
+
+## 1. 첫 번째 블록 다이어그램
+
+가장 작은 유용한 블록 다이어그램: 하나의 컨트롤러, 하나의 플랜트, 하나의 피드백 루프.
+
+<Playground initial={`blockdiagram "Temperature control"
+ctrl = block("PID") [role: controller]
+plant = block("Heater") [role: plant]
+sensor = block("Thermocouple") [role: sensor]
+err = sum(+ref, -measured)
+ref = signal("Setpoint")
+measured = signal("T_measured")
+in -> ref
+ref -> err
+err -> ctrl
+ctrl -> plant
+plant -> measured
+measured -> sensor
+sensor -> err`} />
+
+네 가지 규칙이 사용의 80%를 커버합니다:
+
+1. `blockdiagram`으로 시작하고, 선택적으로 따옴표로 묶인 제목을 입력합니다.
+2. 각 구성 요소는 `ID = block("label")`로, 각 합산 접합점은 `ID = sum(+a, -b)`로, 각 명명된 신호는 `ID = signal("label")`로 선언합니다.
+3. `->` 로 구성 요소를 연결합니다. 한 줄에 여러 홉을 연결합니다: `A -> B -> C`.
+4. 선택적으로 연결에 레이블을 추가합니다: `A -> B ["E(s)"]`.
+
+> 주석은 별도 줄에서 `#`으로 시작해야 합니다.
+
+---
+
+## 2. 블록
+
+블록은 컨트롤러, 플랜트, 필터, 액추에이터, 센서 등 모든 기능적 요소를 나타냅니다. 레이블은 일반적으로 전달 함수 또는 설명적 이름입니다.
+
+**구문:** `ID = block("label") [role: X]`
+
+| 속성 | 값 | 효과 |
+|---|---|---|
+| `role: plant` | `plant`, `controller`, `sensor`, `actuator`, `reference`, `disturbance`, `generic` | 시각적 색상 코딩; `generic`이 기본값 |
+| `route: above` | `above`, `below` | 피드백 및 피드포워드 블록에 대한 라우팅 힌트 |
+
+**ID 규칙.** 문자나 밑줄로 시작하고, 그 뒤에 문자, 숫자, 밑줄이 올 수 있습니다: `[A-Za-z_]\w*`.
+
+<Playground initial={`blockdiagram "Block roles"
+ref_block = block("r(t)") [role: reference]
+ctrl = block("C(s)") [role: controller]
+act = block("Actuator") [role: actuator]
+plant = block("G(s)") [role: plant]
+sensor = block("H(s)") [role: sensor]
+dist = block("d(t)") [role: disturbance]
+ref_block -> ctrl
+ctrl -> act
+act -> plant
+plant -> sensor
+dist -> plant`} />
+
+---
+
+## 3. 합산 접합점
+
+합산 접합점은 각 입력에 대한 명시적 극성을 가진 여러 신호를 하나로 결합합니다. `+`/`−` 기호가 있는 원으로 렌더링됩니다 — 표준 제어 시스템 기호입니다.
+
+**구문:** `ID = sum(+a, -b, +c, …)`
+
+- 각 입력은 부호가 있는 ID입니다: `+x`는 신호 `x`를 더하고, `-y`는 신호 `y`를 뺍니다.
+- 부호 없는 입력은 양수로 처리됩니다.
+- 합산 접합점 ID는 블록 ID와 마찬가지로 연결 선의 대상으로 사용됩니다.
+
+<Playground initial={`blockdiagram "Error with disturbance rejection"
+ctrl = block("PI C(s)") [role: controller]
+plant = block("G(s)") [role: plant]
+sensor = block("H(s)") [role: sensor]
+# Main error junction: add reference, subtract feedback
+err = sum(+r, -ym)
+# Disturbance junction: add plant input, add disturbance
+disturb = sum(+ctrl_out, +d)
+r = signal("r (setpoint)")
+ym = signal("y_m")
+ctrl_out = signal("u(t)")
+in -> r
+r -> err
+err -> ctrl
+ctrl -> ctrl_out
+ctrl_out -> disturb
+disturb -> plant
+plant -> ym
+ym -> sensor
+sensor -> err`} />
+
+---
+
+## 4. 신호
+
+신호 선언은 파서가 엣지 레이블로 인라인 처리하는 명명된 신호 노드를 생성합니다. 신호는 통과형입니다: 파서가 `A -> sig`와 `sig -> B`를 보면, 신호의 표시 텍스트로 레이블을 붙여 `A`에서 `B`로의 단일 엣지로 병합합니다.
+
+**구문:** `ID = signal("label") [discrete]`
+
+- 연속 신호(실선)에는 `[discrete]`를 생략합니다.
+- 샘플링된 데이터 신호(점선)에는 `[discrete]`를 추가합니다.
+
+```
+e_sig = signal("E(s)")
+u_sig = signal("U(s)") [discrete]
+```
+
+신호는 순수하게 레이블 편의 기능입니다 — 연결 선에 후행 속성으로 직접 엣지에 레이블을 지정할 수도 있습니다(§5 참조).
+
+---
+
+## 5. 연결
+
+연결 선은 `from -> to` 형식입니다. `->` 연산자는 항상 방향이 있는 화살표 선을 생성합니다.
+
+**단일 홉:** `A -> B`
+
+**체인:** `A -> B -> C` — `A -> B`와 `B -> C`와 동일합니다. 둘 다 한 줄에 작성합니다.
+
+**신호 레이블 포함:** 체인 끝에 `["레이블 텍스트"]`를 추가합니다. 레이블은 마지막 홉에만 적용됩니다.
+
+```
+ctrl -> plant ["U(s)"]
+```
+
+**discrete 플래그 포함:** `[discrete]`를 추가하여 마지막 홉 화살표를 점선으로 만듭니다.
+
+```
+plant -> adc ["y"] [discrete]
+```
+
+**레이블과 discrete 모두:** `[label: "Y(s)", discrete]`를 사용합니다 (쉼표로 구분).
+
+```
+adc -> ctrl [label: "y[k]", discrete]
+```
+
+<Playground initial={`blockdiagram "Mixed continuous/discrete"
+ctrl = block("Digital PID") [role: controller]
+dac = block("DAC") [role: actuator]
+plant = block("G(s)") [role: plant]
+adc = block("ADC") [role: sensor]
+err = sum(+r, -yk)
+r = signal("r[k]") [discrete]
+yk = signal("y[k]") [discrete]
+in -> r
+r -> err
+err -> ctrl
+ctrl -> dac [label: "u[k]", discrete]
+dac -> plant ["u(t)"]
+plant -> adc ["y(t)"]
+adc -> yk [discrete]
+yk -> err`} />
+
+---
+
+## 6. 레이블 및 주석
+
+- **제목:** `blockdiagram "My System"` — 첫 번째 줄, 따옴표로 묶임.
+- **블록 레이블:** `block("…")` 안의 따옴표 문자열 — 박스 안에 표시됨.
+- **신호 레이블:** `signal("…")` 안의 따옴표 문자열 — 병합된 엣지에 표시됨.
+- **엣지 레이블:** 연결 선의 후행 `["text"]` 또는 `[label: "text"]` — 해당 화살표에 표시됨.
+- **주석:** 줄 앞부분(선행 공백 이후)에서 `#`. 인라인 후행 주석은 지원되지 않습니다.
+
+---
+
+## 7. 예약어 및 이스케이프
+
+**줄 시작에서 예약됨:** `blockdiagram` (헤더).
+
+**구조적 키워드** (모호성 방지를 위해 block/signal/sum ID로 사용 피하기): `block`, `signal`, `sum`.
+
+**`in`과 `out`**은 다이어그램의 외부 경계를 위한 관례적 ID입니다 — 파서는 일반 식별자로 처리하지만, 렌더러는 이를 암시적 소스/싱크 노드로 사용합니다. `in -> r`과 `plant -> out`을 사용하는 것이 관용적입니다.
+
+**공백이 있는 문자열**은 `block("…")`과 `signal("…")` 레이블에서 쌍따옴표로 묶어야 합니다.
+
+---
+
+## 8. 일반적인 실수
+
+| 작성한 내용 | 파서가 말하는 것 | 수정 방법 |
+|---|---|---|
+| `G = block(G(s))` (따옴표 없음) | 파싱 실패 — 레이블은 따옴표로 묶어야 함 | `G = block("G(s)")` |
+| `err = sum(r, -ym)` (`+` 없음) | `r`은 `+r`로 처리됨 — 작동하지만 모호함 | 명확성을 위해 `sum(+r, -ym)` 작성 |
+| `ctrl -> plant, plant -> out` (한 줄에 쉼표) | `,`는 구분자가 아님 — 파싱 실패 | 줄당 하나의 연결 또는 체인 사용: `ctrl -> plant -> out` |
+| `s1 = signal("E(s)") [label: "E"]` | `label:`은 signal에 유효하지 않음; 연결에 사용 | signal 선언에서 `label:` 제거 |
+| `role: filter` | 알 수 없는 role — 자동으로 `generic`으로 기본 설정됨 | `plant`, `controller`, `sensor`, `actuator`, `reference`, `disturbance`, 또는 `generic` 사용 |
+| `A -> B [discrete, label: "e"]` — 레이블 먼저가 실패 | `[…]` 안의 attr 순서는 상관없지만, 단독으로 있을 때만 bare `"text"` 축약형이 작동함 | `[label: "e", discrete]` 사용 |
+
+---
+
+## 9. 문법 (EBNF)
+
+```text
+document       = header (blank | comment | block-def | sum-def | signal-def | connection)*
+
+header         = "blockdiagram" ( WS quoted-string )? NEWLINE
+quoted-string  = '"' any-char-but-quote* '"'
+
+block-def      = id WS "=" WS "block" "(" quoted-string ")" ( "[" block-attrs "]" )? NEWLINE
+block-attrs    = block-attr ("," block-attr)*
+block-attr     = "role:" role | "route:" ("above" | "below")
+role           = "plant" | "controller" | "sensor" | "actuator"
+               | "reference" | "disturbance" | "generic"
+
+sum-def        = id WS "=" WS "sum" "(" sum-inputs ")" NEWLINE
+sum-inputs     = sum-input ("," sum-input)*
+sum-input      = ("+" | "-")? id
+
+signal-def     = id WS "=" WS "signal" "(" quoted-string ")" ( "[" "discrete" "]" )? NEWLINE
+
+connection     = id ("->" id)+ ( "[" conn-attrs "]" )? NEWLINE
+conn-attrs     = quoted-string                          # shorthand: bare label only
+               | conn-attr ("," conn-attr)*
+conn-attr      = "label:" quoted-string | "discrete"
+
+id             = [A-Za-z_] \w*
+comment        = "#" any NEWLINE
+```
+
+권위 있는 소스: `src/diagrams/blockdiagram/parser.ts`. 이것이 파서와 다를 경우, 파서가 우선합니다 — 이슈를 열어주세요.
+
+---
+
+## 10. 표준 준수
+
+Schematex 블록 다이어그램은 Ogata (2010)와 Franklin 외 (2018)의 **라플라스 도메인 전달 함수** 관례를 따릅니다 — 모든 제어 시스템 교과서에서 찾을 수 있는 블록, 합산 접합점, 방향성 신호 선 기호입니다.
+
+현재 구현된 내용:
+
+- ✅ 전달 함수 레이블이 있는 직사각형 블록
+- ✅ `+`/`−` 극성 입력이 있는 원형 합산 접합점
+- ✅ 명명된 신호 노드 (통과형, 엣지 레이블로 병합)
+- ✅ 체이닝이 있는 방향성 연결 (`A -> B -> C`)
+- ✅ 엣지 레이블 — 화살표의 신호 이름
+- ✅ `discrete` 플래그 — 샘플링된 데이터 신호에 점선
+- ✅ 역할 주석 (`plant`, `controller`, `sensor`, `actuator`, `reference`, `disturbance`, `generic`)
+- ✅ 피드백/피드포워드 배치를 위한 `route: above | below` 힌트
+- ⏳ 분기/픽오프 포인트 — 하나의 신호가 두 목적지로 분기되는 명시적 점 기호
+- ⏳ 경계 박스 — 레이블이 있는 점선 서브시스템 인클로저
+- ⏳ 양방향 화살표 — 양방향 신호 교환을 위한 `<->`
+- ⏳ 버스 표기 — 신호 벡터를 나타내는 두꺼운 선
+
+참조:
+
+- Ogata, K. (2010). *Modern Control Engineering*, 5th ed. Prentice Hall.
+- Franklin, G.F., Powell, J.D. & Emami-Naeini, A. (2018). *Feedback Control of Dynamic Systems*, 8th ed. Pearson.
+
+---
+
+## 11. 관련 예제
+
+<RelatedExamples slugs={[
+  'block-pid-loop',
+]} />
+
+---
+
+## 12. 로드맵
+
+**계획됨 — 아직 파싱 불가.** 오늘 생성된 DSL에서 이것들을 사용하지 마세요; 파서가 거부하거나 무시합니다.
+
+- **분기/픽오프 포인트 기호** — 하나의 출력이 여러 목적지로 분기되는 명시적 `dot` 프리미티브 (현재 렌더러는 ID가 소스로 두 번 이상 사용될 때 자동으로 분기를 삽입하지만, 명시적 구문이 없음).
+- **서브시스템 경계 박스** — 다중 루프 및 서브시스템 뷰에 사용되는, 포함된 블록을 둘러싸는 점선 직사각형을 그리는 `boundary "label" { … }` 블록.
+- **양방향 연결** — 상호 정보 교환이 있는 구성 요소(예: 버스 인터페이스)를 위한 `A <-> B`.
+- **버스 (벡터 신호) 표기** — n-너비 신호 버스를 나타내는 슬래시와 숫자 주석 `//n`이 있는 두꺼운 선.
+- **중첩 서브시스템** — 내부 자체가 블록 다이어그램이며, 렌더링된 출력에서 접을 수 있는 `block`.
+
+이 중 하나가 더 빨리 필요한 경우 GitHub 이슈에서 추적하세요.

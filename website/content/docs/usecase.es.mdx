@@ -1,0 +1,206 @@
+---
+title: Diagrama de casos de uso UML
+---
+
+## Sobre los diagramas de casos de uso
+
+Un **diagrama de casos de uso** responde una pregunta con la que comienza todo proceso de requisitos: *¿qué hace este sistema y para quién?* Introducido por Ivar Jacobson en 1992 e incorporado a **[UML](https://www.omg.org/spec/UML/2.5.1/) 2.5.1 §18**, es el diagrama UML más enseñado y la lingua franca entre producto, ingeniería y QA. La notación es pequeña — figuras de actor, elipses de caso de uso, un límite de sistema y cuatro tipos de línea — pero delimita el alcance del sistema mejor que cualquier diagrama de cajas y flechas.
+
+Schematex implementa el subconjunto visual de UML 2.5.1 con la palabra clave de una sola palabra `usecase` y un DSL de texto construido para la generación por LLM — la experiencia de desarrollador de PlantUML sin la JVM y sin la gimnasia de corchetes. Distinto de **[state](/docs/state)** (comportamiento intra-objeto, no alcance del sistema), **[flowchart](/docs/flowchart)** (sin semántica de actor / sujeto / include-extend), y **[bpmn](/docs/bpmn)** (cómo se ejecuta un proceso, no qué ofrece un sistema).
+
+<Playground initial={`usecase
+title: "ATM"
+system: "ATM System"
+
+actor: Customer
+actor: Bank (external)
+
+usecase: "Withdraw Cash"  as Withdraw
+usecase: "Deposit Funds"  as Deposit
+usecase: "Check Balance"  as Check
+
+Customer -- Withdraw
+Customer -- Deposit
+Customer -- Check
+Withdraw -- Bank
+Deposit  -- Bank
+Check    -- Bank`} height={520} />
+
+---
+
+## 1. Tu primer diagrama
+
+Cada documento comienza con la palabra clave `usecase`, luego un encabezado, declaraciones y relaciones:
+
+```
+usecase
+system: "Library"
+
+actor: Member
+usecase: "Borrow Book" as Borrow
+
+Member -- Borrow
+```
+
+`actor:` declara un actor (una figura de palito), `usecase:` declara un caso de uso (una elipse), y `Member -- Borrow` dibuja una asociación simple entre ellos. `system:` envuelve los casos de uso en un rectángulo de **sujeto** etiquetado. El actor primario se coloca a la izquierda; los actores de soporte a la derecha.
+
+El encabezado acepta:
+
+- `title: "…"` — un encabezado dibujado encima del diagrama.
+- `system: "…"` — el nombre del sujeto (límite del sistema). Omítelo para dejar los casos de uso flotando libremente (Schematex advierte si se omite con ≥3 casos de uso).
+- `direction: LR | TB` — por defecto `LR` (los actores flanquean el sujeto horizontalmente).
+- `generalization: tree | individual` — si fusionar las flechas de generalización entre hermanos (por defecto `tree`).
+
+---
+
+## 2. Actores
+
+```
+actor: Customer
+actor: "Payment Gateway" as PG (external)
+actor: "Warehouse Staff" as WH
+actor: Admin (left)
+```
+
+- Un nombre simple o `"entre comillas"` se convierte en la etiqueta; `as ID` le da un identificador corto para las relaciones.
+- `(external)` (o `(system)`) renderiza el actor como un **rectángulo con un estereotipo `«actor»`** en lugar de una figura de palito — úsalo para otros sistemas de software (pasarelas de pago, APIs de terceros).
+- `(business)` agrega la diagonal de Bittner & Spence sobre la figura de palito.
+- `(left)` / `(right)` fija el actor a un lado. Por defecto el primer actor va a la izquierda y el resto a la derecha.
+
+Los estereotipos personalizados van en guillemets después de la declaración: `actor: "Audit Service" as Audit (external) «system»`. El parser también acepta `<<system>>` ASCII y lo normaliza a `«system»`.
+
+---
+
+## 3. Casos de uso
+
+```
+usecase: "Checkout" as Checkout {
+  extension point: payment failed
+  extension point: stock depleted
+}
+```
+
+Un caso de uso es una elipse dimensionada para ajustarse a su texto. El bloque opcional `{ … }` lista **puntos de extensión** en un compartimento debajo del nombre, separados por una línea divisoria. Los estereotipos también funcionan aquí: `usecase: "Validate Card" as ValidateCard «secured»`.
+
+---
+
+## 4. Relaciones
+
+Cuatro tipos de línea conectan actores y casos de uso:
+
+| DSL | Significado | Renderizado |
+|-----|---------|-----------|
+| `A -- B` | asociación | línea sólida, sin flecha |
+| `A --> B` | asociación dirigida | línea sólida, flecha abierta en B |
+| `A ..> B` | `A` **incluye** `B` | línea discontinua, flecha abierta → B, píldora `«include»` |
+| `A <.. B` | `A` **extiende** `B` | línea discontinua, flecha abierta → B (la base), píldora `«extend»` |
+| `A --\|> B` | `A` es una especialización de `B` | línea sólida, triángulo hueco → padre B |
+
+```
+Customer -- Checkout
+Checkout ..> Pay          : «include»
+Pay      ..> ValidateCard : «include»
+Cancel   <.. Checkout     : «extend» [payment failed] (extension point: payment failed)
+```
+
+- **`«include»`** apunta *hacia el caso de uso incluido* — el comportamiento reutilizable que `A` siempre ejecuta. El origen incluye al destino.
+- **`«extend»`** apunta *hacia la base* — `A` es el comportamiento opcional, `B` es la base que extiende. Puedes adjuntar una `[condición]` y referenciar una de las entradas `(extension point: …)` de la base. (La cabeza de flecha siempre se dibuja hacia la base independientemente de cómo ordenes los extremos.)
+- Una línea `«extend»` se dibuja en el **color de acento** del tema para que la relación más rara y sorprendente se destaque.
+
+El parser rechaza los errores de alta confianza que cometen tanto humanos como LLMs, con el número de línea infractor: asociación entre dos actores o dos casos de uso, `include`/`extend` tocando un actor, generalización entre metaclases (actor → caso de uso), identificadores reutilizados y referencias a puntos de extensión que no existen en la base.
+
+---
+
+## 5. Generalización
+
+`--|>` funciona entre dos actores **o** entre dos casos de uso (nunca entre los dos tipos — eso es un error grave):
+
+```
+actor: User as U
+actor: "Premium User" as PU
+PU --|> U
+
+usecase: "Pay by Card"   as PayCard
+usecase: "Pay by PayPal" as PayPaypal
+usecase: "Pay"           as Pay
+PayCard   --|> Pay
+PayPaypal --|> Pay
+```
+
+La flecha lleva un **triángulo hueco** apuntando al padre. Cuando tres o más hermanos comparten un padre, las flechas se fusionan en una sola cabeza compartida (convención de la Figura 18.5 de UML 2.5); establece `generalization: individual` en el encabezado para mantenerlas separadas. Las jerarquías de actores se enrutan como un bus limpio en el borde exterior de la pila de actores.
+
+---
+
+## 6. Multiplicidad
+
+Pon una cadena de multiplicidad entre comillas inmediatamente junto al extremo al que pertenece:
+
+```
+Customer "1"    -- "*" Checkout
+Cashier  "1..*" -- "1" Register
+```
+
+---
+
+## 7. Forma en línea al estilo PlantUML
+
+¿Vienes de PlantUML? La forma de declaración en línea funciona y se mezcla libremente con la forma declarativa:
+
+```
+usecase
+:Customer: as C
+(Browse Catalog) as Browse
+(Add to Cart)    as AddCart
+
+C -- Browse
+C -- AddCart
+Browse ..> AddCart : «include»
+```
+
+`:Nombre:` declara un actor, `(Nombre)` declara un caso de uso, y `as ID` crea un alias para cualquiera de los dos. Schematex está *inspirado en* PlantUML, no es un transpilador 1:1 — la multiplicidad y la sintaxis de relaciones difieren ligeramente.
+
+---
+
+## 8. Gramática (EBNF)
+
+```text
+document     = "usecase" NEWLINE header_prop* statement*
+header_prop  = ("title:" | "system:") quoted_string
+             | "direction:" ("LR" | "TB")
+             | "generalization:" ("tree" | "individual")
+
+statement    = actor_decl | usecase_decl | plantuml_inline | relation | note
+
+actor_decl   = "actor" ":" name ("as" IDENT)? actor_kind? stereotype?
+actor_kind   = "(" ("external" | "system" | "business" | "left" | "right") ")"
+usecase_decl = "usecase" ":" quoted ("as" IDENT)? stereotype? extpoints?
+extpoints    = "{" ("extension point:" TEXT)+ "}"
+plantuml_inline = ":" name ":" ("as" IDENT)?      ; actor
+                | "(" name ")" ("as" IDENT)?       ; use case
+
+relation     = endpoint relop endpoint label_clause?
+endpoint     = (IDENT | quoted) multiplicity? | multiplicity? (IDENT | quoted)
+relop        = "--" | "-->" | "..>" | "<.." | "--|>"
+label_clause = ":" stereotype? condition? extpoint_ref?
+stereotype   = "«" TEXT "»" | "<<" TEXT ">>"
+condition    = "[" TEXT "]"
+extpoint_ref = "(extension point:" TEXT ")"
+multiplicity = quoted_string                       ; "1", "*", "0..1", "1..*"
+```
+
+---
+
+## 9. Conformidad con el estándar
+
+Schematex sigue el subconjunto visual de **UML 2.5.1 §18 (UseCases)** de OMG y la guía de estilo de Bittner & Spence: guillemets (nunca `<<>>` ASCII) en el SVG renderizado, `«include»` hacia el caso de uso incluido, `«extend»` hacia la base, cabezas de generalización de triángulo hueco, y el estereotipo `«actor»` en los rectángulos de sistemas externos. Las descripciones de casos de uso en texto (forma completamente vestida de Cockburn), tablas de escenarios y exportación XMI están fuera del alcance de un renderizador de *diagramas*. Ver `docs/reference/29-USECASE-STANDARD.md` para la especificación completa.
+
+---
+
+## Ejemplos relacionados
+
+Escenarios listos para usar del catálogo de ejemplos:
+
+<RelatedExamples slugs={[
+  'usecase-atm',
+  'usecase-online-bookstore',
+]} />

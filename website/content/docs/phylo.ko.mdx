@@ -1,0 +1,357 @@
+---
+title: 계통수 (Phylogenetic tree)
+---
+
+## 계통수에 대하여
+
+**계통수(phylogenetic tree)**는 계통도(phylogram) 또는 분기도(cladogram)라고도 하며, 종·유전자·서열 집단의 추정된 진화 역사를 나타냅니다. 내부 노드는 가상의 공통 조상을, 끝 노드(tip)는 관찰된 분류군(taxon)을, 가지 길이(branch length)는 진화적 거리 또는 분기 시간을 나타냅니다. 진화생물학자, 분자생태학자, 임상미생물학자들은 계통수를 통해 생명의 역사를 재구성하고, 병원체 발생을 추적하며, 유전자 패밀리의 진화를 이해합니다.
+
+Schematex는 **[Newick 형식](https://phylipweb.github.io/phylip/newicktree.html)**을 지원합니다. 이는 PAUP\*, IQ-TREE, RAxML, BEAST 등 사실상 모든 계통학 프로그램에서 사용하는 범용 교환 표준이며, 부트스트랩 값과 클레이드 메타데이터를 위한 **[NHX 주석](https://home.cc.umanitoba.ca/~psgendb/doc/atv/NHX.pdf)**도 지원합니다. 또한 수동 작성 트리를 위한 들여쓰기 기반 DSL도 지원합니다. 이 페이지는 현재 파서가 허용하는 내용을 문서화합니다.
+
+<Playground initial={`phylo "Vertebrate Evolution" [layout: circular, mode: phylogram]
+  newick: "(((Human:0.1,Chimp:0.08,Gorilla:0.12):0.15,(Mouse:0.45,Rat:0.42):0.3):0.05,((Dog:0.35,(Cat:0.30,Tiger:0.32):0.1):0.2,(Whale:0.6,Dolphin:0.55):0.15):0.3,(Salmon:0.5,Zebrafish:0.45):0.4);"
+  clade Primates = (Human, Chimp, Gorilla) [color: "#1E88E5", label: "Primates", highlight: both]
+  clade Rodents = (Mouse, Rat) [color: "#E53935", label: "Rodents", highlight: background]
+  clade Carnivora = (Dog, Cat, Tiger) [color: "#43A047", label: "Carnivora", highlight: both]
+  clade Cetacea = (Whale, Dolphin) [color: "#FB8C00", label: "Cetacea", highlight: background]
+  scale "substitutions/site"`} height={540} />
+
+---
+
+## 1. 첫 번째 계통수
+
+가장 작은 유용한 트리: 4개의 분류군, 2개의 클레이드.
+
+<Playground initial={`phylo "Vertebrates"
+  newick: "((Human:0.1,Chimp:0.08):0.03,(Dog:0.35,Cat:0.30):0.2);"`} />
+
+세 가지 규칙으로 80%의 사용 사례를 처리할 수 있습니다.
+
+1. `phylo`로 시작하고, 선택적으로 따옴표로 묶인 제목과 대괄호 속성을 추가합니다.
+2. `newick:` 형식으로 트리 토폴로지를 제공합니다 — 표준 Newick 문자열, 따옴표로 묶어 한 줄에 작성합니다. 끝의 `;`는 선택 사항입니다.
+3. newick 줄 아래에 선택적으로 **clade** 강조 그룹과 **scale** 레이블을 정의합니다.
+
+> 주석은 별도 줄에서 `#`으로 시작해야 합니다. 인라인 후행 주석은 지원되지 않습니다.
+
+---
+
+## 2. 입력 형식
+
+### 2.1 Newick 형식
+
+Newick은 기본 입력 형식입니다. 전체 문법은 다음과 같습니다.
+
+```
+(A,B,(C,D));                         # 토폴로지만
+(A:0.1,B:0.2,(C:0.3,D:0.4):0.5);    # 가지 길이 포함
+((A:0.1,B:0.2):0.05[&&NHX:B=98],(C,D):0.08);  # NHX 부트스트랩
+('Homo sapiens':0.1,'Mus musculus':0.2);        # 공백이 있는 이름은 따옴표로 묶음
+```
+
+가지 길이는 콜론 뒤에 노드 이름과 함께 옵니다. 내부 노드의 지지값은 일반 대괄호 `[95]` 또는 NHX `[&&NHX:B=95]` 형식으로 표기할 수 있습니다.
+
+<Playground initial={`phylo "Newick examples"
+  newick: "((A:0.1,B:0.2):0.05[&&NHX:B=98],(C:0.3,D:0.4):0.08[&&NHX:B=87]);"`} />
+
+**파서가 허용하는 Newick 규칙:**
+
+| 기능 | 구문 | 비고 |
+|---|---|---|
+| 끝 노드 이름 | `A`, `Homo_sapiens` | 공백 불가 — `_` 또는 따옴표 사용 |
+| 따옴표로 묶인 이름 | `'Homo sapiens'` | 단일 따옴표; `''`는 따옴표 리터럴 |
+| 가지 길이 | 이름 뒤 `:0.035` | 부동소수점; 선택 사항 |
+| 내부 노드 이름 | `(A,B)ancestor` | 닫는 `)` 뒤에 위치 |
+| 부트스트랩 (일반) | `(A,B)[95]` | 대괄호 안의 정수 또는 소수 |
+| 부트스트랩 (NHX) | `(A,B)[&&NHX:B=95]` | `B=` 필드; 다른 NHX 필드는 저장되나 렌더링 안 됨 |
+| 세미콜론 | 끝의 `;` | 선택 사항 — 파서가 제거 |
+| 다분기(Polytomy) | `(A,B,C)` | 자식이 2개 이상 |
+
+### 2.2 들여쓰기 DSL
+
+수동 작성이나 소규모 트리의 경우, Schematex는 들여쓰기 기반 대안을 제공합니다. 원시 Newick보다 읽고 편집하기 쉽습니다.
+
+<Playground initial={`phylo "Vertebrates (indent DSL)" [mode: phylogram]
+root:
+  :0.03
+    Human: 0.1
+    Chimp: 0.08
+  :0.2
+    Dog: 0.35
+    Cat: 0.30
+scale "substitutions/site"`} />
+
+**들여쓰기 DSL 규칙:**
+
+| 구문 | 의미 |
+|---|---|
+| `Name: length` | 가지 길이가 있는 끝 노드 |
+| `: length` | 가지 길이가 있는 이름 없는 내부 노드 |
+| `Name` | 가지 길이 없는 끝 노드 (분기도) |
+| `Name [N]` | 지지값 N을 가진 노드 |
+| 더 깊은 들여쓰기 | 더 낮은 들여쓰기의 노드 자식 |
+| `#` 줄 | 주석, 무시됨 |
+
+`:`로 끝나고 공백이 없는 첫 번째 줄이 들여쓰기 트리 모드를 활성화합니다 (예: `root:`). 콜론 앞의 이름이 루트 레이블이 되고, 아래의 모든 들여쓰기 줄이 자식이 됩니다.
+
+---
+
+## 3. 레이아웃
+
+헤더 대괄호에서 레이아웃을 설정합니다: `phylo "Title" [layout: rectangular]`.
+
+| 레이아웃 | 값 | 설명 |
+|---|---|---|
+| 직각형 | `rectangular` | 기본값. L자형 가지; 루트는 왼쪽, 끝 노드는 오른쪽 |
+| 사선형 | `slanted` | 부모에서 자식까지 대각선; 더 조밀함 |
+| 원형 | `circular` | 루트가 중심, 끝 노드는 원주에 |
+| 비루트형 | `unrooted` | 등각 방사형; 계통보다 거리를 강조 |
+
+`[unrooted]`는 플래그로 쓰면 `[layout: unrooted]`와 동일합니다.
+
+**원형(Circular)** — 루트가 중심에, 끝 노드가 바깥쪽으로 퍼집니다. 클레이드 강조가 있는 다분류군 트리에서 시각적으로 가장 인상적입니다.
+
+<Playground initial={`phylo "Vertebrates — circular" [layout: circular]
+  newick: "((Human:0.1,Chimp:0.08,Gorilla:0.12):0.15,(Dog:0.35,Cat:0.30,Wolf:0.32):0.2,(Salmon:0.5,Zebrafish:0.45):0.3);"
+  clade Primates = (Human, Chimp, Gorilla) [color: "#1E88E5", label: "Primates", highlight: both]
+  clade Carnivora = (Dog, Cat, Wolf) [color: "#E53935", label: "Carnivora", highlight: both]`} height={440} />
+
+**직각형(Rectangular)** — L자형 가지; 루트는 왼쪽, 끝 노드는 오른쪽. 게재 논문용 고전적인 계통도 형태입니다.
+
+<Playground initial={`phylo "Bacterial Diversity" [layout: rectangular, mode: phylogram]
+  newick: "((((Ecoli:0.1,Salmonella:0.12):0.05[&&NHX:B=98],Vibrio:0.2):0.08,((Bacillus:0.15,Staph:0.18):0.06[&&NHX:B=92],Listeria:0.22):0.1):0.15,((Myco_tb:0.3,Myco_leprae:0.28):0.12[&&NHX:B=100],(Strepto:0.25,Lactobacillus:0.2):0.08):0.2);"
+  clade Gamma = (Ecoli, Salmonella, Vibrio) [color: "#1E88E5", label: "γ-Proteobacteria"]
+  clade Firmi = (Bacillus, Staph, Listeria) [color: "#E53935", label: "Firmicutes"]
+  scale "substitutions/site"`} height={480} />
+
+**사선형(Slanted)** — 부모에서 자식까지 대각선으로 연결됩니다. 직각형보다 조밀하며, 동일한 좌→우 읽기 방향을 유지합니다.
+
+<Playground initial={`phylo "Vertebrates — slanted" [layout: slanted]
+  newick: "((Human:0.1,Chimp:0.08,Gorilla:0.12):0.15,(Dog:0.35,Cat:0.30,Wolf:0.32):0.2,(Salmon:0.5,Zebrafish:0.45):0.3);"
+  clade Primates = (Human, Chimp, Gorilla) [color: "#1E88E5", label: "Primates"]
+  clade Carnivora = (Dog, Cat, Wolf) [color: "#E53935", label: "Carnivora"]
+  scale "substitutions/site"`} height={360} />
+
+**비루트형(Unrooted)** — 등각 방사형 레이아웃. 루트를 강조하지 않고, 모든 분류군 간의 쌍별 거리를 강조합니다.
+
+<Playground initial={`phylo "Vertebrates — unrooted" [unrooted]
+  newick: "((Human:0.1,Chimp:0.08,Gorilla:0.12):0.15,(Dog:0.35,Cat:0.30,Wolf:0.32):0.2,(Salmon:0.5,Zebrafish:0.45):0.3);"
+  clade Primates = (Human, Chimp, Gorilla) [color: "#1E88E5", label: "Primates"]
+  clade Carnivora = (Dog, Cat, Wolf) [color: "#E53935", label: "Carnivora"]`} height={400} />
+
+---
+
+## 4. 모드(Mode)
+
+헤더에서 `[mode: …]`로 설정합니다 (또는 본문의 `style [mode: …]` 줄에서).
+
+| 모드 | 값 | 가지 길이 의미 |
+|---|---|---|
+| 계통도 | `phylogram` | 기본값. 진화적 거리에 비례 (치환/사이트) |
+| 분기도 | `cladogram` | 무시됨 — 끝 노드가 정렬됨; 토폴로지만 중요 |
+| 연대도 | `chronogram` | 분기 시간에 비례; 모든 끝 노드가 "현재"에 정렬됨 |
+| 덴드로그램 | `dendrogram` | 가지 길이가 **병합 높이** — 두 클러스터가 합쳐지는 거리 |
+
+연대도(chronogram)는 시간 단위의 가지 길이와 함께 헤더에 `[mrsd: "YYYY"]`(가장 최근 샘플링 날짜)가 필요합니다.
+
+```
+phylo "SARS-CoV-2 variants" [mode: chronogram, mrsd: "2023"]
+  newick: "((Alpha:0.5,Delta:0.4):0.3,Omicron:0.8);"
+  scale "years"
+```
+
+**덴드로그램(Dendrogram)** — 진화가 아닌 계층적 집적 군집화의 표준 출력입니다. 각 내부 노드는 두 자식 클러스터가 합쳐지는 **병합 높이**(코페네틱 거리)에 배치되고, 모든 끝 노드는 공통 기준선에 정렬되며, 가지는 직각 엘보 커넥터로 연결됩니다. 높이 축이 그려지므로 어떤 두 끝 노드가 처음으로 같은 클러스터를 공유하는 거리를 읽을 수 있습니다. Newick/들여쓰기 트리가 유전자 발현 클러스터, 샘플 유사도, 설문 응답 그룹 등 군집화 결과를 나타낼 때 이 모드를 사용하십시오.
+
+`cut <value>` 줄을 추가하면 선택한 높이에서 트리를 절단합니다. 병합 높이가 임계값 이하인 모든 서브트리는 하나의 평면 클러스터가 되어 각각 고유한 색으로 표시되고, 해당 높이에 점선 임계값 선이 그려집니다. 이것은 scipy의 `fcluster`에 해당하는 덴드로그램 기능으로, 연속 트리를 이산 그룹 집합으로 변환합니다.
+
+<Playground initial={`phylo "Gene expression clusters" [mode: dendrogram]
+  newick: "(((A:1,B:1):2,C:3):2,(D:2,E:2):3);"
+  cut 4
+  scale "cluster distance"`} />
+
+`cut`을 생략하면 평면 클러스터 색칠 없이 기본 덴드로그램만 표시됩니다.
+
+<Playground initial={`phylo "Sample clustering" [mode: dendrogram]
+  newick: "(((A:1,B:1):2,C:3):2,(D:2,E:2):3);"
+  scale "cluster distance"`} />
+
+---
+
+## 5. 클레이드 강조
+
+`clade` 줄은 단계통(monophyletic) 그룹을 색상, 선택적 레이블, 선택적 강조 모드로 표시합니다.
+
+```
+clade ID = (member1, member2, ...) [color: "#hex", label: "text", highlight: mode]
+```
+
+| 속성 | 값 | 효과 |
+|---|---|---|
+| `color:` | hex 문자열 예: `"#1E88E5"` | 가지 및/또는 배경 색상 |
+| `label:` | 따옴표로 묶인 문자열 | 오른쪽 여백에 표시되는 클레이드 레이블 |
+| `highlight:` | `branch`, `background`, `both` | `branch`는 선을 색칠; `background`는 영역을 음영; `both`는 둘 다 |
+
+멤버는 Newick 문자열의 끝 노드(leaf) ID입니다. 렌더러는 나열된 끝 노드의 MRCA(최근 공통 조상)를 계산하고 해당 서브트리 전체를 강조합니다.
+
+<Playground initial={`phylo "Mammal clades" [layout: rectangular]
+  newick: "(((Human:0.1,Chimp:0.08,Gorilla:0.12):0.15,Mouse:0.45):0.05,(Dog:0.35,(Cat:0.30,Tiger:0.32):0.1):0.2);"
+  clade Primates = (Human, Chimp, Gorilla) [color: "#1E88E5", label: "Primates", highlight: both]
+  clade Carnivora = (Dog, Cat, Tiger) [color: "#E53935", label: "Carnivora", highlight: branch]`} />
+
+---
+
+## 6. 척도 막대와 외군(Outgroup)
+
+**척도 막대:** `scale "label"` — 하단에 막대를 추가합니다. 레이블은 단위를 나타냅니다 (예: `"substitutions/site"`, `"Mya"`). 가지 길이에 의미가 없는 분기도 모드에서는 생략하십시오.
+
+**외군:** `outgroup: taxonId` — 문서화를 위해 외군을 기록합니다. 렌더러가 이를 사용하여 외군 분류군을 시각적으로 표시할 수 있습니다.
+
+```
+phylo "Vertebrates"
+  newick: "((Human:0.1,Chimp:0.08):0.03,Lamprey:0.8);"
+  outgroup: Lamprey
+  scale "substitutions/site"
+```
+
+---
+
+## 7. 헤더 속성 참조
+
+모든 옵션은 `phylo` 헤더 줄의 `[…]` 안에 넣거나, 본문 어디에서나 `style […]` 줄로 지정합니다.
+
+| 속성 | 값 | 기본값 | 효과 |
+|---|---|---|---|
+| `layout:` | `rectangular`, `slanted`, `circular`, `unrooted` | `rectangular` | 트리 레이아웃 |
+| `mode:` | `phylogram`, `cladogram`, `chronogram`, `dendrogram` | `phylogram` | 가지 길이 의미론 |
+| `unrooted` | (플래그) | — | `layout: unrooted`와 동일 |
+| `branch-width:` | 숫자 | `1.5` | 가지의 선 두께 |
+| `openAngle:` | 숫자 (도) | `0` | 원형 레이아웃의 팬 간격 (0 = 전체 360°) |
+| `mrsd:` | 따옴표로 묶인 연도 문자열 | — | 연대도의 가장 최근 샘플링 날짜 |
+
+---
+
+## 8. 레이블과 주석
+
+- **제목:** `phylo "Tree of Life"` — 첫 번째 줄에만.
+- **척도 레이블:** `scale "substitutions/site"` — 문서당 하나.
+- **클레이드 레이블:** `clade` 줄 안의 `[label: "Primates"]`.
+- **주석:** 줄 시작(앞 공백 포함)에 `#`. 인라인 후행 주석은 지원되지 않습니다.
+
+---
+
+## 9. 자주 발생하는 오류
+
+| 작성한 내용 | 파서 메시지 | 수정 방법 |
+|---|---|---|
+| `newick: (A,B,C);` (따옴표 없음) | `PhyloParseError: Phylo document must start with 'phylo'` | Newick 문자열을 따옴표로 묶으세요: `newick: "(A,B,C);"` |
+| 공백이 있는 끝 노드 이름: `Homo sapiens:0.1` | `Homo`로 파싱됨 — 공백이 이름을 종료 | 밑줄 사용 (`Homo_sapiens`) 또는 단일 따옴표 (`'Homo sapiens'`) |
+| `clade`의 끝 노드 ID가 Newick 이름과 불일치 | 클레이드 멤버가 0개가 됨; 강조 없음 | Newick 문자열에 있는 이름과 정확히 같게 복사하세요 |
+| `clade X = (A, B)`인데 `newick:` 또는 들여쓰기 트리 없음 | `PhyloParseError: No tree definition found` | `newick:` 줄 또는 들여쓰기 트리 블록을 추가하세요 |
+| `mode: chronogram`인데 가지 길이 없음 | 렌더러가 모든 길이를 0으로 처리; 끝 노드가 루트에서 겹침 | Newick 문자열의 모든 엣지에 `:length`를 추가하세요 |
+| `root:` 줄이 인식되지 않음 | `root:` 줄에 이름에 공백이 있으면 (예: `My root:`) 들여쓰기 트리가 활성화되지 않음 | 단일 단어 루트 레이블 또는 `root:` 사용 |
+| 내부 노드 이름이 있는 Newick: `(A,B)ancestor:0.5` | 정상 파싱 — `ancestor`가 내부 노드 레이블 | 지원됨; 내부 이름이 내부 노드에 표시됩니다 |
+
+---
+
+## 10. 문법 (EBNF)
+
+```text
+document        = header (blank | comment | newick-line | scale-line
+                    | outgroup-line | clade-line | style-line | cut-line | indent-line)*
+
+header          = "phylo" ( WS quoted-string )? ( WS "[" props "]" )? NEWLINE
+quoted-string   = '"' any-char-but-quote* '"'
+
+newick-line     = "newick:" WS quoted-newick NEWLINE
+scale-line      = "scale" ( WS quoted-string )? NEWLINE
+outgroup-line   = "outgroup:" WS id NEWLINE
+cut-line        = "cut" WS number NEWLINE       // dendrogram mode: flat-cluster threshold height
+clade-line      = "clade" WS id WS "=" WS "(" id ("," id)* ")"
+                    ( WS "[" clade-props "]" )? NEWLINE
+style-line      = "style" WS "[" props "]" NEWLINE
+
+// Indent tree — triggered by a line ending in ":" with no spaces
+indent-tree     = root-line indent-node*
+root-line       = id ":" NEWLINE
+indent-node     = INDENT ( id ":" length | ":" length | id ) ( WS "[" number "]" )? NEWLINE
+
+props           = prop ("," prop)*
+prop            = "layout:" layout-value
+                | "mode:" mode-value
+                | "unrooted"
+                | "branch-width:" number
+                | "openAngle:" number
+                | "mrsd:" quoted-string
+
+clade-props     = clade-prop ("," clade-prop)*
+clade-prop      = "color:" quoted-string
+                | "label:" quoted-string
+                | "highlight:" ( "branch" | "background" | "both" )
+
+layout-value    = "rectangular" | "slanted" | "circular" | "unrooted"
+mode-value      = "phylogram" | "cladogram" | "chronogram" | "dendrogram"
+
+// Newick grammar (embedded, parsed separately)
+newick          = subtree ";"?
+subtree         = leaf | internal
+internal        = "(" subtree ("," subtree)* ")" name? nhx? length?
+leaf            = name nhx? length?
+name            = unquoted-name | "'" single-quoted "'")
+length          = ":" number
+nhx             = "[" number "]"                     // plain bootstrap
+                | "[&&NHX:" nhx-pair (":" nhx-pair)* "]"
+nhx-pair        = key "=" value
+
+id              = [a-zA-Z] [a-zA-Z0-9_-]*
+number          = /[+-]?[0-9]+(\.[0-9]+)?([eE][+-]?[0-9]+)?/
+comment         = INDENT "#" any NEWLINE
+```
+
+권위 있는 원본: `src/diagrams/phylo/parser.ts`. 이 문서와 파서가 다를 경우, 파서가 우선합니다 — 이슈를 열어 주십시오.
+
+---
+
+## 11. 표준 준수
+
+Schematex 계통수는 핵심 트리 직렬화에 **[Newick 형식 사양](https://phylipweb.github.io/phylip/newicktree.html)**(PHYLIP 패키지에 문서화)을 따르고, 부트스트랩 지지값에 **[NHX (New Hampshire Extended)](https://home.cc.umanitoba.ca/~psgendb/doc/atv/NHX.pdf)** 관례를 따릅니다. NHX 대괄호의 `B=` 필드가 현재 시각적으로 렌더링되는 유일한 NHX 필드입니다. 다른 모든 필드는 파싱 및 저장되지만 표시되지는 않습니다.
+
+현재 구현된 내용:
+
+- ✅ Newick 토폴로지, 가지 길이, 따옴표로 묶인 이름, 다분기(polytomy)
+- ✅ 부트스트랩 값 — 일반 `[95]` 및 NHX `[&&NHX:B=95]`
+- ✅ 직각형, 사선형, 원형, 비루트형 레이아웃
+- ✅ 계통도, 분기도, 연대도 모드
+- ✅ 클레이드 강조 (가지 색상, 배경 음영, 둘 다)
+- ✅ 척도 막대
+- ✅ 들여쓰기 DSL 대안
+- ⏳ 다중 트리 문서 (forest) — §12 참조
+- ⏳ 연대도의 시간 보정 축 (지질 척도)
+- ⏳ 끝 노드별 아이콘 또는 이미지
+- ⏳ `B=` 이외의 NHX 필드 (종, 분류, 중복 이벤트)
+
+참고 문헌:
+
+- Felsenstein, J. (1986). The Newick tree format. PHYLIP documentation.
+- Zmasek, C.M. & Eddy, S.R. (2001). ATV: Display and manipulation of annotated phylogenetic trees. *Bioinformatics*, 17(4), 383–384. (NHX 사양)
+- Felsenstein, J. (2004). *Inferring Phylogenies.* Sinauer Associates.
+
+---
+
+## 12. 관련 예제
+
+<RelatedExamples slugs={[
+  'phylo-bacterial-diversity',
+]} />
+
+---
+
+## 13. 로드맵
+
+**계획 중 — 아직 파싱 불가.** 오늘 생성된 DSL에서는 이것들을 사용하지 마십시오; 파서가 거부하거나 무시합니다.
+
+- **다중 트리 문서** — 하나의 `phylo` 파일에 여러 `newick:` 블록 (예: 유전자 트리 vs 종 트리).
+- **연대도의 지질 시간 축** — 숫자 척도 대신 에포크 레이블 X축 (신생대/중생대 등).
+- **끝 노드별 메타데이터** — 전체 클레이드를 선언하지 않고 개별 끝 노드에 특성이나 색상 마커 첨부 (예: `tip Ecoli [color: "#F00", shape: star]`).
+- **부트스트랩 이외의 NHX 필드** — 종(`S=`), 중복(`D=`), 전이 이벤트(`Tr=`)를 가지 기호로 렌더링.
+- **탄젤그램(Tanglegram)** — 두 트리를 나란히 표시하고 대응하는 끝 노드를 연결선으로 연결.
+
+이 중 더 빨리 필요한 기능이 있다면 GitHub 이슈를 통해 추적하십시오.

@@ -1,0 +1,414 @@
+---
+title: 流程图
+---
+
+## 关于流程图
+
+**流程图**使用一组标准符号通过箭头连接，将流程的各步骤——决策、操作、输入、输出以及它们之间的路径——映射出来。工程师用它描述算法规格；业务分析师用它记录工作流程；质量团队用它追踪故障模式。流程图是跨行业最普遍可读的技术图表之一。
+
+Schematex 遵循 **[ISO 5807:1985](https://www.iso.org/standard/11955.html)** 符号规范，并使用与 **[Mermaid](https://mermaid.js.org/syntax/flowchart.html) 兼容**的 DSL，使现有 Mermaid 流程图可以直接迁移。本页记录解析器当前支持的语法。
+
+<Playground initial={`flowchart LR
+  start([New order received])
+  start --> validate{Inventory available?}
+  validate -->|Yes| reserve[Reserve items]
+  validate -->|No| notify[Notify customer]
+  notify --> done([End])
+  reserve --> payment{Payment authorized?}
+  payment -->|Yes| ship[Ship order]
+  payment -->|No| cancel[Cancel & release]
+  ship --> confirm[Send confirmation email]
+  confirm --> done
+  cancel --> done`} height={420} />
+
+---
+
+## 1. 第一张流程图
+
+最小的可用流程图：一个包含两种结果的决策。
+
+<Playground initial={`flowchart TD
+  A([Start]) --> B{File exists?}
+  B -->|Yes| C[Read file]
+  B -->|No| D[Return error]
+  C --> E([Done])`} />
+
+四条规则涵盖 80% 的使用场景：
+
+1. 以 `flowchart` 开头，后跟方向：`TD`、`LR`、`BT` 或 `RL`。
+2. 每个节点为 `ID[标签]`——形状括号决定节点类型（见§2）。
+3. 用 `-->` 连接节点。在竖线字符之间添加标签：`-->|Yes|`。
+4. 节点在边中首次被引用时自动创建——但显式声明可以独立设置形状和标签。
+
+> 注释以 `%%` 开头，须独占一行。
+
+---
+
+## 2. 节点形状
+
+每种节点形状写为 `ID<括号>标签<括号>`。ID 必须以字母开头，可包含字母、数字、`_` 和 `-`。
+
+| 语法 | 形状 | 常见用途 |
+|---|---|---|
+| `A[Label]` | 矩形 | 流程步骤、操作 |
+| `A(Label)` | 圆角矩形 | 子流程、软步骤 |
+| `A([Label])` | 体育场形（胶囊）| 开始/结束终点 |
+| `A{Label}` | 菱形 | 决策/条件 |
+| `A{{Label}}` | 六边形 | 准备、配置 |
+| `A[[Label]]` | 子程序框 | 预定义流程 |
+| `A[(Label)]` | 圆柱体 | 数据库、存储 |
+| `A((Label))` | 圆形 | 连接符、汇合点 |
+| `A(((Label)))` | 双圆形 | 结束状态 |
+| `A[/Label/]` | 平行四边形 | 输入/输出 |
+| `A[\Label\]` | 平行四边形（反向）| 手动操作 |
+| `A[/Label\]` | 梯形 | 手动输入 |
+| `A[\Label/]` | 梯形（反向）| 跨页连接符 |
+| `A>Label]` | 非对称形 | 标签、注释 |
+
+<Playground initial={`flowchart TD
+  t([Terminal / stadium])
+  r[Rectangle process]
+  d{Diamond decision}
+  p[/Parallelogram input/]
+  db[(Cylinder database)]
+  sub[[Subroutine]]
+  t --> r --> d
+  d -->|branch A| p
+  d -->|branch B| db
+  p --> sub
+  db --> sub`} height={440} />
+
+---
+
+## 3. 边
+
+边连接两个节点。连接符号决定视觉样式以及是否带有标签或箭头。
+
+### 3.1 边的类型
+
+<Playground initial={`flowchart TD
+  A --> B
+  C --- D
+  E -.-> F
+  G ==> H
+  I <--> J
+  K --x L
+  M --o N`} height={380} />
+
+| 语法 | 样式 | 箭头 | 常见用途 |
+|---|---|---|---|
+| `A --> B` | 实线 | 箭头 | 正常流向 |
+| `A --- B` | 实线 | 无 | 关联、无向链接 |
+| `A -.-> B` | 虚线 | 箭头 | 可选/异步路径 |
+| `A ==> B` | 粗线 | 箭头 | 关键/主要路径 |
+| `A <--> B` | 实线 | 两端 | 双向流 |
+| `A --x B` | 实线 | 叉号 | 阻断/拒绝路径 |
+| `A --o B` | 实线 | 圆圈 | 聚合/组合 |
+
+### 3.2 边的标签
+
+两种语法可为边附加标签：
+
+**竖线标签** — 直接放在箭头后的 `|` 字符之间：
+```
+A -->|Yes| B
+A -.->|optional| B
+A ==>|critical| B
+```
+
+**内联标签** — 文本置于连字符之间，箭头字符之前：
+```
+A -- success --> B
+A -- error --x C
+```
+
+两种方式产生相同结果。与 Mermaid 工具共享图表时，竖线标签更为常见。
+
+<Playground initial={`flowchart TD
+  req[Request received]
+  req -->|valid| proc[Process]
+  req -->|invalid| err[Return 400]
+  proc -- success --> ok([Done])
+  proc -.->|timeout| retry[Retry queue]
+  retry ==>|max retries| dead[(Dead letter)]`} height={380} />
+
+### 3.3 链式连接
+
+在单行中连接三个或更多节点：
+
+```
+A --> B --> C --> D
+```
+
+这等同于三条独立的边语句。
+
+### 3.4 用 `&` 扇出
+
+使用 `&` 在箭头任意一侧包含多个节点。解析器生成完整的笛卡尔积边：
+
+```
+A & B --> C        %% A→C 和 B→C
+A --> B & C        %% A→B 和 A→C
+A & B --> C & D    %% 四条边：A→C、A→D、B→C、B→D
+```
+
+<Playground initial={`flowchart LR
+  deploy[Deploy service]
+  smoke[Smoke test]
+  health[Health check]
+  notify_slack[Slack alert]
+  notify_email[Email alert]
+  deploy --> smoke & health
+  smoke & health -->|fail| notify_slack & notify_email`} height={300} />
+
+---
+
+## 4. 子图
+
+`subgraph` 将相关节点分组到带有可见边框的标记集群中。
+
+```
+subgraph "Title"
+  A --> B
+end
+```
+
+支持三种子图标头形式：
+
+| 形式 | ID | 标签 |
+|---|---|---|
+| `subgraph "My Group"` | 自动生成 | `My Group` |
+| `subgraph sg1 "My Group"` | `sg1` | `My Group` |
+| `subgraph sg1 [My Group]` | `sg1` | `My Group` |
+
+子图可以有自己的 `direction` 覆盖：
+
+```
+subgraph sg1 "Frontend"
+  direction LR
+  ui[React App] --> api[API Client]
+end
+```
+
+<Playground initial={`flowchart TB
+  subgraph ingestion [Ingestion]
+    raw[/Raw events/] --> parse[Parse & validate]
+    parse --> enrich[Enrich]
+  end
+  subgraph storage [Storage]
+    dw[(Data warehouse)]
+    cache[(Redis cache)]
+  end
+  enrich --> dw
+  enrich --> cache
+  dw --> report[Generate report]`} height={420} />
+
+---
+
+## 5. 样式
+
+### 5.1 语义类
+
+为节点指定 CSS 类名以进行主题级视觉分组。类用 `classDef` 定义，用 `class` 应用。也支持 Mermaid 内联类语法：`A[Start]:::critical`。
+
+```
+classDef danger fill:#f9c,stroke:#c00
+classDef safe fill:#cfc,stroke:#090
+class errorNode danger
+class successNode safe
+B[Review]:::danger
+```
+
+### 5.2 单节点样式覆盖
+
+```
+style nodeId fill:#f9f,stroke:#333,stroke-width:4px
+```
+
+接受标准 CSS 属性名。多个属性以逗号分隔。
+
+### 5.3 单边样式覆盖
+
+`linkStyle` 按边的**声明索引**（从 0 开始，按源码中出现的顺序）定位边。多个以逗号分隔的索引对多条边应用相同属性：
+
+```
+flowchart TD
+  A --> B
+  B ==> C
+  B -.-> D
+  C --> E
+  D --> E
+  linkStyle 1 stroke:#d32f2f,stroke-width:4px
+  linkStyle 2,4 stroke:#f57c00,stroke-dasharray:5 5
+```
+
+可用于高亮关键路径或区分备用流向。
+
+### 5.4 内联标签格式化
+
+节点标签支持三种内联格式标签：
+
+| 标签 | 效果 |
+|---|---|
+| `<br/>` 或 `<br>` | 换行 |
+| `<b>…</b>` | 粗体 |
+| `<i>…</i>` | 斜体 |
+
+```
+flowchart TD
+  M1["0 \| 0<br/><b>START</b>"]
+  M2["4 \| 4<br/><b>Phase 1</b><br/><i>est. 4h</i>"]
+  M1 --> M2
+```
+
+标签可以嵌套混用（`Hello <b>world</b>!`）。边的标签为单行，当前不支持这些标签。
+
+---
+
+## 6. 标签与注释
+
+- **方向：** `flowchart TD` — `flowchart` 或 `graph` 后的第一个词元。`TD` 和 `TB` 等价。
+- **标题：** `flowchart LR "My diagram"` — 方向后的可选引号字符串。
+- **边标签：** 竖线语法 `-->|label|` 或内联 `-- label -->`。
+- **注释：** `%%` 位于行首（前面可有空白）。
+
+```
+flowchart LR
+%% This is a comment — ignored by the parser
+A[Step 1] --> B[Step 2]  %% inline %% is NOT supported — only line-start %%
+```
+
+---
+
+## 7. 保留字与转义
+
+**行首保留字：** `flowchart`、`graph`（标头）、`subgraph`、`end`、`direction`、`class`、`classDef`、`style`、`linkStyle`。
+
+**保留 ID 字符：** ID 匹配以字母开头的 `[A-Za-z0-9_-]`。节点 ID 中不得使用空格或运算符字符。
+
+**ID 中应避免的运算符词元：** `-->`、`---`、`-.->` 、`==>`、`<-->`、`--x`、`--o`、`|`、`&`。
+
+**含特殊字符的标签：** 标签是形状括号内的所有内容。标签内支持特殊字符原样使用——可能产生歧义的括号/花括号由相应的闭合词元关闭。
+
+---
+
+## 8. 常见错误
+
+| 您写了 | 解析器报错 | 修正方法 |
+|---|---|---|
+| `flowchart` 后未指定方向 | 方向默认为 `TB` | 添加方向：`flowchart TD` |
+| 未声明形状直接写 `A --> B` | 有效——节点以 ID 为标签自动创建为矩形 | 需要非矩形形状时显式声明：`A([Start])` |
+| `A[Label with [brackets]]` | 内部 `]` 提前关闭了形状 | 避免在标签中嵌套括号 |
+| `subgraph My Group`（未加引号，含空格）| 解析器将 `My` 作为子图 ID，`Group` 为未知词元 | 加引号：`subgraph "My Group"` |
+| 代码后的行中间有 `%% comment` | 不支持内联注释；`%%` 必须位于行首 | 将注释移至独立行 |
+| `A --> B --> C` 与 `A --> B` 混用 | 链式是累加的——同一对节点可能出现重复边 | 使用链式或独立行，同一对节点不要混用 |
+| 在子图外写 `direction LR` | 静默忽略——`direction` 覆盖仅适用于 `subgraph … end` 内部 | 在 `flowchart` 标头行上设置方向 |
+
+---
+
+## 9. 语法（EBNF）
+
+```text
+document       = header (blank | comment | subgraph-block | direction-stmt
+                        | class-stmt | classdef-stmt | style-stmt
+                        | linkstyle-stmt | chain-stmt)*
+
+header         = ("flowchart" | "graph") ( WS direction )? ( WS title )? NEWLINE
+direction      = "TD" | "TB" | "BT" | "LR" | "RL"
+title          = '"' any-char-but-quote* '"' | bare-word
+
+subgraph-block = "subgraph" ( WS subgraph-header )? NEWLINE
+                   ( WS? "direction" WS direction NEWLINE )?
+                   statement*
+                 "end" NEWLINE
+subgraph-header = id WS "[" label "]"
+                | id WS quoted-string
+                | quoted-string
+                | id
+
+chain-stmt     = node-group ( WS edge-op WS pipe-label? WS node-group )* NEWLINE
+node-group     = node-ref ( WS "&" WS node-ref )*
+node-ref       = id shape-suffix?
+shape-suffix   = "[" label "]"          %% rect
+               | "(" label ")"          %% round
+               | "([" label "])"        %% stadium
+               | "{" label "}"          %% diamond
+               | "{{" label "}}"        %% hexagon
+               | "[[" label "]]"        %% subroutine
+               | "[(" label ")]"        %% cylinder
+               | "((" label "))"        %% circle
+               | "(((" label ")))"      %% double-circle
+               | "[/" label "/]"        %% parallelogram
+               | "[\" label "\]"        %% parallelogram-alt
+               | "[/" label "\]"        %% trapezoid
+               | "[\" label "/]"        %% trapezoid-alt
+               | ">" label "]"          %% asymmetric
+
+edge-op        = "-->" | "---" | "-."-".->" | "==>" | "<-->" | "--x" | "--o"
+               | inline-label variants of the above
+pipe-label     = "|" text "|"
+
+class-stmt     = "class" WS id-list WS class-name NEWLINE
+               | node-ref ":::" class-name NEWLINE         # Mermaid inline form
+classdef-stmt  = "classDef" WS class-name WS css-props NEWLINE
+style-stmt     = "style" WS id WS css-props NEWLINE
+linkstyle-stmt = "linkStyle" WS index-list WS css-props NEWLINE
+index-list     = NUMBER ( "," NUMBER )* | "default"
+
+comment        = "%%" any NEWLINE
+id             = [A-Za-z] [A-Za-z0-9_-]*
+```
+
+权威来源：`src/diagrams/flowchart/parser.ts`。若本文档与解析器有出入，以解析器为准——欢迎提 issue。
+
+---
+
+## 10. 标准合规性
+
+Schematex 流程图遵循 **ISO 5807:1985** 符号规范。DSL 语法有意与 **[Mermaid 流程图](https://mermaid.js.org/syntax/flowchart.html)** 兼容，使在一个工具中创建的图表可在另一工具中使用。
+
+当前已实现：
+
+- ✅ 全部五种方向：`TD`、`TB`、`BT`、`LR`、`RL`
+- ✅ 13 种节点形状（矩形至非对称形）
+- ✅ 7 种边类型：实线、无箭头、虚线、粗线、双向、带叉、圆端
+- ✅ 竖线标签（`-->|text|`）和内联标签（`-- text -->`）
+- ✅ 边链（`A --> B --> C`）
+- ✅ 用 `&` 扇出（笛卡尔积边）
+- ✅ 子图，支持可选 ID、标签和每个子图的方向
+- ✅ `classDef` / `class` 语义分组
+- ✅ Mermaid 内联节点类：`A[Label]:::className`
+- ✅ 单节点 `style` CSS 覆盖
+- ✅ `linkStyle` 渲染——`linkStyle 1,5,6 stroke:#f00,stroke-width:4px` 按声明顺序对匹配的边应用 CSS
+- ✅ 节点标签中的内联 `<b>` / `<i>`（与现有的 `<br/>` 换行组合使用）
+- ⏳ 全部 13 种形状的渲染——M1 完整渲染矩形/圆角/体育场形/菱形/平行四边形；其余形状回退为矩形
+- ⏳ 泳道布局变体
+
+参考文献：
+
+- ISO 5807:1985 — *信息处理——数据、程序和系统流程图、程序网络图和系统资源图的文档符号和规范*
+- Mermaid 流程图文档 — https://mermaid.js.org/syntax/flowchart.html
+
+---
+
+## 11. 路线图
+
+**计划中——当前尚不可解析。** 请勿在生成的 DSL 中使用以下功能；解析器将拒绝或忽略它们。
+
+- **全部 13 种形状的完整渲染** — 子程序框、圆柱体、圆形、双圆形、六边形、非对称形、梯形和反向平行四边形在 M1 中回退为矩形。
+- **泳道布局** — 按角色或系统将节点分组为水平带（Mermaid `subgraph` 在 `LR` 根下使用 `direction TB`）。
+- **`%%{init: {…}}%%` 初始化块** — 与 Mermaid 兼容的主题和布局初始化块。
+- **标签中的 Markdown 格式** — `**粗体**` / `*斜体*` Markdown 语法（HTML `<b>`/`<i>` 已支持——见§5）。
+
+如需提前实现以上功能，请在 GitHub issues 中跟踪。
+
+---
+
+## 相关示例
+
+来自示例库的可直接使用场景：
+
+<RelatedExamples slugs={[
+  'flowchart-order-fulfillment',
+  'flowchart-cicd-pipeline',
+]} />

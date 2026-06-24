@@ -1,0 +1,115 @@
+---
+title: Diagrama de Bloques de Confiabilidad
+---
+
+## Acerca de los diagramas de bloques de confiabilidad
+
+Un **diagrama de bloques de confiabilidad (RBD)** muestra la **lógica de éxito** de un sistema: cada componente es un bloque en un camino desde un nodo de entrada hasta un nodo de salida, y el sistema *funciona* siempre que un camino ininterrumpido de bloques funcionando conecte los dos. Los componentes en **serie** deben funcionar todos; los componentes en **paralelo** dan redundancia (cualquiera basta); un grupo **k-de-n** funciona cuando al menos *k* de sus *n* miembros lo hacen. Es la herramienta estándar de ingeniería RAMS (confiabilidad, disponibilidad, mantenibilidad, seguridad), definida por **[IEC 61078:2016](https://webstore.iec.ch/publication/24566)** y MIL-HDBK-338B.
+
+La ventaja de Schematex es que el motor **calcula la respuesta**, no solo la imagen: a partir de las confiabilidades por bloque reduce la estructura a la **confiabilidad del sistema** (∏ para serie, 1−∏(1−Rᵢ) para paralelo, enumeración exacta para k-de-n), deriva la **importancia de confiabilidad de Birnbaum** de cada bloque (cuál mueve más la aguja) y señala los **puntos únicos de fallo** — bloques cuyo fallo solo por sí mismo falla el sistema — en rojo. Es la misma postura que `faulttree` adopta hacia los conjuntos de corte y `pert` hacia la programación. El RBD es el dual en espacio de éxito del árbol de fallos en espacio de fallos.
+
+<Playground initial={`rbd "Redundant Server"
+  series {
+    block PSU "Power Supply" R=0.99
+    parallel {
+      block FAN1 "Fan A" R=0.95
+      block FAN2 "Fan B" R=0.95
+    }
+    kofn 2/3 {
+      block D1 "Disk 1" R=0.97
+      block D2 "Disk 2" R=0.97
+      block D3 "Disk 3" R=0.97
+    }
+  }`} height={520} />
+
+---
+
+## 1. Tu primer diagrama
+
+Cada documento comienza con la palabra clave `rbd` (alias `reliability`), un título opcional y luego grupos de lógica de éxito anidados alrededor de hojas `block`:
+
+```
+rbd "Two redundant pumps"
+  parallel {
+    block A "Pump A" R=0.9
+    block B "Pump B" R=0.9
+  }
+```
+
+El motor dibuja las dos bombas en rieles paralelos entre un nodo de división y un nodo de unión, calcula la confiabilidad del sistema `1 − (1−0.9)(1−0.9) = 0.99` y la imprime como titular. Una lista de bloques de nivel superior simple (sin grupo externo) se trata como una cadena en **serie**.
+
+## 2. Bloques
+
+Un `block` es un componente en un camino de éxito:
+
+```
+block ID "Label" R=0.99
+```
+
+- `ID` — un identificador corto (mostrado cuando no se da etiqueta).
+- `"Label"` — un nombre de visualización opcional (se aceptan comillas CJK).
+- La confiabilidad se da como **`R=0.99`** (confiabilidad/disponibilidad), **`p=0.01`** (probabilidad de *fallo*, → R = 1−p), o un porcentaje **`R=99%`**. Un bloque sin confiabilidad deja la figura del sistema como simbólica (`n/a`).
+
+## 3. Grupos de lógica de éxito
+
+Los grupos se anidan libremente, por lo que puedes modelar cadenas redundantes, bancos de votación y pares en espera:
+
+| Grupo | Tiene éxito cuando | Confiabilidad |
+|-------|-------------------|---------------|
+| `series { … }` | **todos** los hijos funcionan | ∏ Rᵢ |
+| `parallel { … }` | **cualquier** hijo funciona | 1 − ∏(1 − Rᵢ) |
+| `kofn k/n { … }` | **≥ k de n** hijos funcionan | enumeración exacta de estados |
+
+```
+series {
+  block CTRL "Controller" R=0.995
+  parallel {
+    series { block P1 "Path 1 sensor" R=0.97
+             block A1 "Path 1 actuator" R=0.98 }
+    series { block P2 "Path 2 sensor" R=0.97
+             block A2 "Path 2 actuator" R=0.98 }
+  }
+}
+```
+
+## 4. Confiabilidad calculada, importancia y SPOF
+
+Tras el parseo, el motor calcula:
+
+- **Confiabilidad del sistema** — la figura titular, mediante reducción recursiva serie/paralelo/k-de-n.
+- **Importancia de Birnbaum** `Iᴮ(i) = R_sys(Rᵢ=1) − R_sys(Rᵢ=0)` para cada bloque; el bloque de mayor importancia (el objetivo de mejora) se resalta.
+- **Importancia de criticidad** `I_C(i) = Iᴮ(i)·(1−Rᵢ)/(1−R_sys)` — la probabilidad de que el bloque i haya fallado *y* sea crítico, dado que el sistema ha fallado.
+- **Puntos únicos de fallo** — cualquier bloque donde `R_sys(Rᵢ=0) = 0` (su fallo solo falla el sistema) se dibuja con un borde rojo. Un bloque no redundante en serie siempre es un SPOF.
+
+## 5. Confiabilidad dependiente del tiempo — R(t)
+
+Un `R=` estático es el punto de entrada; en la práctica la confiabilidad es una función del tiempo de misión. Establece una **`mission: <t>`** y da a los bloques una distribución de fallo en lugar de una constante — el motor evalúa **R(t)** y lo acumula exactamente como antes. Usa **unidades de tiempo consistentes** en `mission` y las tasas.
+
+| Atributo del bloque | Modelo | R(t) |
+|---------------------|--------|------|
+| `rate=0.0001` | exponencial (hazard constante λ) | e^(−λt) |
+| `mtbf=10000` | exponencial (λ = 1/MTBF) | e^(−t/MTBF) |
+| `weibull=2,10000` | Weibull(β forma, η escala) | e^(−(t/η)^β) |
+
+```
+rbd "Pump station — 1-year mission"
+  mission: 8760            # horas
+  parallel {
+    block A "Pump A" mtbf=10000
+    block B "Pump B" weibull=1.5,12000
+  }
+```
+
+El titular se convierte en `R(t=8760) = …`. Un bloque con distribución pero sin `mission:` genera una advertencia y vuelve a su `R=` constante (si existe).
+
+## 6. Validación
+
+El parser reporta advertencias no fatales en lugar de fallar:
+
+- un umbral `kofn k/n` con `k > n` se limita a `n` (y `k < 1` a `1`);
+- una confiabilidad fuera de `0..1` se limita;
+- un id de bloque duplicado se señala.
+
+## 7. Temas
+
+`theme: default` usa la paleta compartida de riesgo-confiabilidad (bloques neutros, numerales de confiabilidad azules, bordes rojos de punto único de fallo). `theme: monochrome` renderiza una versión en blanco y negro para impresión (SPOF por peso del borde); `theme: dark` es la variante oscura Catppuccin.

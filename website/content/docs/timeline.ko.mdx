@@ -1,0 +1,399 @@
+---
+title: 타임라인 다이어그램
+---
+
+## 타임라인이란
+
+**타임라인 다이어그램(timeline diagram)**은 시간 축을 따라 이벤트를 배열하여 연대기적 관계를 즉시 파악할 수 있도록 합니다. 프로젝트 관리자는 스프린트 일정과 마일스톤을 표시하는 데 사용하고, 역사가는 발견들을 맥락 안에 배치하며, 저널리스트는 사건 순서를 재구성하고, 임상 연구자는 치료 과정을 매핑합니다. 이 시각적 형식을 지배하는 단일 표준은 없지만, 표기 방식은 보편적입니다. 시간은 왼쪽에서 오른쪽으로 흐르고, 이벤트는 날짜에 표시되며, 기간은 스팬으로 표현됩니다.
+
+Schematex는 세 가지 시각적 스타일로 타임라인을 렌더링합니다. **swimlane** (이벤트가 축 위아래로 펼쳐짐), **gantt** (수평 기간 바, 프로젝트 일정에 유용), **lollipop** (막대 위 점 마커, 역사적 회고에 유용). 세 가지 모두 동일한 DSL을 공유하며, `style` 설정 키로 전환합니다.
+
+<Playground initial={`timeline "History of the Web"
+config: style = lollipop
+
+1991: "World Wide Web — Berners-Lee"
+1993: milestone "Mosaic browser" [side: above, color: #1565C0]
+1995: "JavaScript — Brendan Eich" [side: below]
+1998: milestone "Google founded" [side: above, color: #E53935]
+2004: "Facebook launches" [side: below]
+2007: milestone "iPhone — mobile web era" [color: #2E7D32, side: above]
+2009: "Node.js — server-side JavaScript" [side: below]
+2015: milestone "ES6 / React mainstream" [side: above, color: #6A1B9A]
+2022: "ChatGPT — AI era begins" [side: below]`} height={460} />
+
+---
+
+## 1. 첫 번째 타임라인
+
+가장 작은 유용한 타임라인: 제목, 두 개의 일반 이벤트, 하나의 마일스톤.
+
+<Playground initial={`timeline "Product Launch"
+2024-06-01: "Development complete"
+2024-08-15: "Closed beta"
+2024-09-01: milestone "Public launch"`} />
+
+사용법의 80%를 커버하는 네 가지 규칙:
+
+1. `timeline` 키워드로 시작하고, 선택적으로 따옴표로 묶인 제목을 사용합니다.
+2. 각 이벤트는 `DATE: "Label"` 형식입니다. 날짜, 콜론, 따옴표로 묶인 레이블. `milestone` 키워드를 레이블 앞에 넣으면 해당 이벤트가 마일스톤으로 표시됩니다.
+3. 날짜 범위는 `DATE - DATE:` 또는 `DATE .. DATE:` 형식입니다(둘 다 동등합니다).
+4. 따옴표 레이블 뒤에 `[key: value]` 속성을 추가하여 색상, 배치 면, 모양, 카테고리를 설정합니다.
+
+> 주석은 해당 줄의 맨 앞에 `#` 또는 `//`로 시작해야 합니다.
+
+---
+
+## 2. 이벤트
+
+이벤트 줄은 특정 시점(또는 기간에 걸친 바)에 레이블이 있는 마커를 배치합니다.
+
+### 2.1 시점 이벤트
+
+```
+2024-09-15: "Conference keynote"
+```
+
+### 2.2 범위 이벤트
+
+```
+2024-06-01 - 2024-08-31: "Q3 development sprint"
+2024-06-01 .. 2024-08-31: "Q3 development sprint"
+```
+
+두 구분자(`-` 공백 포함, 또는 `..`)는 동등합니다.
+
+### 2.3 마일스톤
+
+```
+2024-09-01: milestone "Public launch"
+```
+
+따옴표 레이블 앞의 `milestone` 키워드는 마커를 다이아몬드 모양으로 전환합니다.
+
+### 2.4 이벤트 속성
+
+속성은 따옴표 레이블 뒤, 줄 바꿈 전에 `[key: value, …]` 형식으로 작성합니다.
+
+| 속성 | 값 | 의미 |
+|---|---|---|
+| `color:` | 16진수 문자열 | 이 마커 또는 바의 사용자 정의 색상 |
+| `side:` | `above` \| `below` | 축 위 또는 아래에 강제 배치 (swimlane / lollipop) |
+| `icon:` | 임의의 텍스트 (예: 이모지) | 이벤트와 함께 표시되는 아이콘 |
+| `shape:` | `circle` \| `square` \| `diamond` \| `star` \| `flag` | 시점 마커 모양 |
+| `category:` | 따옴표 문자열 | 그룹 레이블 — gantt 범례에서 색상 구동 |
+
+```
+2024-09-01: milestone "Launch day" [color: #E53935, side: above]
+2024-07-15: "Beta ships" [icon: 🚀, category: "product"]
+```
+
+<Playground initial={`timeline "Engineering Milestones"
+config: style = lollipop
+
+2024-01-08: "Sprint planning complete"
+2024-02-14: milestone "Design system shipped" [side: above, color: #1565C0]
+2024-03-22: "Incident — 4h outage" [icon: ⚠️]
+2024-04-01 - 2024-06-30: "API v2 build"
+2024-07-01: milestone "API v2 GA" [side: above, color: #2E7D32]`} height={380} />
+
+---
+
+## 3. 날짜 형식
+
+모든 날짜 형식은 이벤트, 에라(era), 범위에서 날짜가 필요한 곳 어디에서든 사용할 수 있습니다.
+
+| 형식 | 예 | 비고 |
+|---|---|---|
+| 전체 날짜 | `2024-09-15` | 일 단위; `YYYY-MM-DD` |
+| 연-월 | `2024-09` | 월 단위 |
+| 연도 | `2024` | 연 단위 |
+| 분기 | `2024-Q3` | 해당 분기의 시작으로 매핑 |
+| BC 연도 (음수) | `-753` | 기원전 753년 |
+| BC 연도 (접미사) | `753BC` 또는 `753BCE` | `-753`과 동일 |
+| 지질학적 | `65Ma`, `4.6Ga`, `12ka` | 백만 / 10억 / 천 년 전 |
+
+<Playground initial={`timeline "Age of Earth"
+config: style = lollipop
+config: scale = log
+
+4600Ma: "Earth forms"
+540Ma: "Cambrian explosion"
+252Ma: milestone "Permian extinction — 96% of species lost"
+66Ma: milestone "K-Pg extinction — end of non-avian dinosaurs"
+3Ma: "Earliest stone tools (Lomekwi)"
+0: "Present day"`} height={340} />
+
+---
+
+## 4. 에라 (배경 기간)
+
+`era` 줄은 시간 축 위에 음영 처리된 배경 밴드를 그립니다. 항상 날짜 범위가 필요합니다.
+
+```
+era 2020 - 2022: "Foundation Phase"
+era 2022 .. 2025: "Growth Phase" [color: #E8F5E9]
+```
+
+`[color: …]` 속성은 선택 사항입니다. 겹치는 에라는 자동으로 별도의 밴드로 쌓입니다.
+
+<Playground initial={`timeline "Company History"
+config: style = swimlane
+
+era 2019..2021: "Early Stage" [color: #FFF8E1]
+era 2021..2024: "Series A & B" [color: #E8F5E9]
+
+2019-03-01: "Founded"
+2019-11-15: "First paying customer"
+2020-05-01: milestone "Product-market fit" [side: above]
+2021-02-10: "Series A — $8M"
+2022-09-01: "Series B — $30M"
+2023-06-15: milestone "Profitability" [color: #1B5E20]`} height={380} />
+
+---
+
+## 5. 트랙 (swimlane 그룹)
+
+`track` 블록은 관련 이벤트를 명명된 swimlane으로 그룹화합니다. 들여쓰기된 이벤트 줄(2칸)이 트랙에 속합니다.
+
+```
+track "Engineering":
+  2024-01-15 - 2024-03-31: "API design"
+  2024-04-01 - 2024-07-31: "Implementation"
+
+track "Marketing":
+  2024-06-01: "Campaign kick-off"
+  2024-09-01: milestone "Launch campaign" [color: #1B5E20]
+```
+
+트랙은 `gantt` 스타일에서 가장 유용합니다. 각 트랙이 레이블이 있는 고유한 행이 됩니다.
+
+<Playground initial={`timeline "Q3 Project Plan"
+config: style = gantt
+
+track "Backend":
+  2024-07-01 - 2024-08-15: "Database migration"
+  2024-08-16 - 2024-09-30: "API hardening"
+
+track "Frontend":
+  2024-07-01 - 2024-08-31: "New design system"
+  2024-09-01 - 2024-09-30: "Integration & QA"
+
+track "DevOps":
+  2024-07-15 - 2024-08-01: "Staging environment"
+  2024-09-30: milestone "Go-live" [color: #2E7D32]`} height={380} />
+
+---
+
+## 6. 노트
+
+이벤트 아래에 들여쓰기된 `note:` 줄은 해당 이벤트에 툴팁 주석을 부착합니다.
+
+```
+2024-06-01: "Beta launch"
+  note: "First external users; NPS target 40+"
+```
+
+노트는 평면 이벤트와 트랙 내부 이벤트 모두에서 작동합니다.
+
+---
+
+## 7. 설정
+
+`config:` 줄로 레이아웃과 시각적 스타일을 조정합니다. 각 항목은 `config: key = value` 형식의 독립된 줄입니다.
+
+| 키 | 값 | 기본값 | 효과 |
+|---|---|---|---|
+| `style` | `swimlane` \| `gantt` \| `lollipop` | `swimlane` | 시각적 렌더링 모드 |
+| `orientation` | `horizontal` \| `vertical` | `horizontal` | 축 방향 |
+| `scale` | `proportional` \| `equidistant` \| `log` | `proportional` | 시간이 화면 공간에 매핑되는 방식 |
+| `axis` | `bottom` \| `center` | `bottom` | 시간 축이 그려지는 위치 |
+
+**스타일 참고:**
+- `swimlane` — 이벤트가 수평 축 위아래로 교대로 배치됩니다. `side:`로 이벤트별 배치를 제어합니다. 에라는 색상 배경 밴드를 추가합니다. 로드맵과 전기(biography)에 적합합니다.
+- `gantt` — 각 명명된 트랙이 수평 바 레인이 됩니다. 마일스톤은 바 위의 핀이 됩니다. `gantt-project`는 별칭입니다. 프로젝트 일정에 적합합니다.
+- `lollipop` — 중앙 축과 교대 줄기 위의 레이블 카드. 희소하고 기억할 만한 이벤트가 있는 역사적 회고에 적합합니다.
+
+**Swimlane** — 로드맵, 제품 타임라인, 전기. 에라가 색상 밴드를 추가하며 이벤트가 위아래로 교대합니다.
+
+<Playground initial={`timeline "SaaS Platform Roadmap"
+config: style = swimlane
+
+era 2024-Q1..2024-Q2: "Foundation" [color: #E3F2FD]
+era 2024-Q3..2024-Q4: "Growth" [color: #E8F5E9]
+
+2024-01-15: "Kick-off & team onboarding"
+2024-02-01: milestone "Architecture sign-off" [side: above]
+2024-03-01 - 2024-05-31: "API v2 build"
+2024-04-10: "Security audit" [color: #F9A825]
+2024-06-30: milestone "Beta launch" [side: above]
+2024-07-01 - 2024-09-30: "Performance & scaling"
+2024-10-15: milestone "General availability" [color: #2E7D32]`} height={460} />
+
+**Gantt** — 수평 기간 바와 마일스톤 핀이 있는 병렬 트랙. 프로젝트 일정에 적합합니다.
+
+<Playground initial={`timeline "Product Launch — Q4"
+config: style = gantt
+
+track "Engineering":
+  2024-10-01 - 2024-11-15: "Feature freeze & hardening"
+  2024-11-16 - 2024-11-30: "Load testing"
+
+track "Design":
+  2024-10-01 - 2024-10-31: "Final UI polish"
+  2024-11-01 - 2024-11-14: "Asset delivery"
+
+track "Marketing":
+  2024-10-15 - 2024-11-14: "Campaign prep"
+  2024-11-15 - 2024-11-30: "Launch campaign"
+  2024-12-01: milestone "Launch day" [color: #2E7D32]`} height={400} />
+
+**Lollipop** — 중앙 축과 교대 카드가 있는 희소한 마일스톤. 역사적 회고와 브랜드 스토리에 적합합니다.
+
+<Playground initial={`timeline "History of Computing"
+config: style = lollipop
+config: scale = equidistant
+
+1936: "Turing — On Computable Numbers"
+1945: "ENIAC — first general-purpose computer"
+1969: "ARPANET"
+1971: milestone "Intel 4004 microprocessor" [side: above]
+1976: "Apple I"
+1991: "World Wide Web (Berners-Lee)"
+2007: milestone "iPhone" [color: #1565C0, side: above]`} height={380} />
+
+---
+
+## 8. 레이블 및 주석
+
+- **제목:** `timeline "My Title"` — 첫 번째 줄에만.
+- **이벤트 레이블:** 콜론 뒤의 따옴표 문자열: `DATE: "Label"`.
+- **마일스톤 레이블:** `DATE: milestone "Label"`.
+- **에라 레이블:** `era DATE - DATE: "Label"`.
+- **트랙 이름:** `track "Name":`.
+- **노트:** 이벤트 아래에 들여쓰기된 `note: "text"`.
+- **주석:** 줄의 앞부분(선행 공백 이후) `#` 또는 `//`.
+
+---
+
+## 9. 예약어 및 이스케이프
+
+**줄 시작 예약어:** `timeline` (헤더), `config:`, `era`, `track`, `note:`.
+
+**날짜 범위 구분자:** ` - ` (공백-하이픈-공백)와 `..` — 콜론 앞에 나오는 레이블 텍스트 내에서는 이 시퀀스를 피하십시오.
+
+**음수 정수 BC 연도:** `-753`은 기원전 753년입니다. 파서는 주변 공백을 확인하여 음수 부호와 범위 구분자를 구별합니다. ` - ` (공백 포함)는 범위이고, `-753` (콜론 뒤 선행 공백 없음)은 BC 연도입니다.
+
+**속성 블록:** `[key: value]`는 같은 줄의 따옴표 레이블 *뒤에* 나와야 합니다. 닫히는 `]`가 반드시 있어야 하며, 닫히지 않은 괄호는 파싱 오류를 발생시킵니다.
+
+---
+
+## 10. 흔한 실수
+
+| 작성한 내용 | 파서 메시지 | 수정 방법 |
+|---|---|---|
+| `2024-06-01: Launch day` (따옴표 없는 레이블) | 이벤트로 인식되지 않음 — `TimelineParseError` | 레이블을 따옴표로 묶기: `2024-06-01: "Launch day"` |
+| `2024-06 - 2024-09: "Q3"` (연-월 범위) | 올바르게 파싱됨 | 작동함 — 모든 날짜 형식이 범위에서 유효 |
+| `era 2024: "Whole year"` (범위 없음) | `TimelineParseError: era requires a date range` | 범위 사용: `era 2024 - 2024: "Whole year"` |
+| `track "Backend"` (콜론 없음) | `TimelineParseError: Expected ':' after track name` | 콜론 추가: `track "Backend":` |
+| `2024-01-01: "Event" [side: left]` | `side: left`가 조용히 무시됨; `above`와 `below`만 유효 | `side: above` 또는 `side: below` 사용 |
+| `config: style = Gantt` (대문자 G) | `TimelineParseError: Invalid style: Gantt` | 소문자 사용: `config: style = gantt` |
+| `2024-01-01-2024-03-31: "Q1"` (`-` 주변 공백 없음) | 파서가 `2024-01-01-2024`를 날짜로 읽음 — 실패 | 공백 사용: `2024-01-01 - 2024-03-31:` 또는 `..`: `2024-01-01..2024-03-31:` |
+| 트랙 없이 들여쓰기된 이벤트 | `track` 블록 내부가 아닌 타임라인 헤더 아래의 들여쓰기 줄 — 평면 이벤트로 파싱됨 | `track "Name":` 블록 내부에 있는 이벤트만 들여쓰기 |
+
+---
+
+## 11. 문법 (EBNF)
+
+```text
+document     = header ( blank | comment | config | era | track | event )*
+
+header       = "timeline" ( WS quoted-string )? NEWLINE
+quoted-string = '"' any-char-but-quote* '"'
+
+config       = "config:" WS key WS "=" WS value NEWLINE
+key          = "style" | "orientation" | "scale" | "axis"
+
+era          = "era" WS date-range ":" WS quoted-string ( WS props )? NEWLINE
+track        = "track" WS quoted-string ":" NEWLINE
+                 ( INDENT≥2 event | INDENT≥2 note )*
+
+event        = date-spec ":" WS event-body ( WS props )? NEWLINE
+               ( INDENT note )?
+event-body   = ( "milestone" WS )? quoted-string
+date-spec    = date ( ( " - " | ".." ) date )?
+
+note         = "note:" WS quoted-string NEWLINE
+
+props        = "[" prop-list "]"
+prop-list    = prop ( "," prop )*
+prop         = key ":" WS value
+             | key ":" WS quoted-string
+
+date         = iso-date | year-month | year | quarter | bc-year | geological
+iso-date     = digit{4} "-" digit{2} "-" digit{2}
+year-month   = digit{4} "-" digit{2}
+year         = "-"? digit{1,5}
+quarter      = digit{4} "-"? "Q" [1-4]
+bc-year      = digit+ ( "BC" | "BCE" )
+geological   = number ( "Ma" | "Ga" | "ka" )
+
+comment      = ( "#" | "//" ) any NEWLINE
+```
+
+공식 소스: `src/diagrams/timeline/parser.ts`. 이 내용이 파서와 다를 경우 파서가 기준입니다. 이슈를 열어 주십시오.
+
+---
+
+## 12. 표준 준수
+
+타임라인 다이어그램에는 단일 지배 표준이 없습니다. Schematex는 확립된 시각화 표기 방식을 따릅니다.
+
+- **Swimlane 스타일** — 학문적 역사학과 프로젝트 관리(PMI PMBOK)에서 사용되는 수평 타임라인 표기 방식에서 채택.
+- **Gantt 스타일** — Henry Gantt(1910–1915)가 도입한 간트 차트 형식을 따름; 트랙별 바 레이아웃은 ISO 21500 프로젝트 일정 표기 방식과 일치.
+- **Lollipop 스타일** — 데이터 저널리즘과 인포그래픽에서 일반적인 점 도표 / 줄기 도표 표기 방식을 따름.
+
+현재 구현된 사항:
+
+- ✅ 세 가지 시각적 스타일: swimlane, gantt, lollipop
+- ✅ 수평 및 수직 방향
+- ✅ 세 가지 스케일 모드: proportional, equidistant, log
+- ✅ 시점 이벤트, 범위 이벤트(바), 마일스톤 마커
+- ✅ 에라 (배경 음영 밴드)
+- ✅ 명명된 트랙 (swimlane 행)
+- ✅ 이벤트 노트
+- ✅ 여섯 가지 날짜 형식: 전체 날짜, 연-월, 연도, 분기, BC 연도, 지질학적 (Ma/Ga/ka)
+- ✅ 이벤트 속성: color, side, icon, shape, category
+- ⏳ 수직 방향 렌더링 (파싱됨, 레이아웃 미구현)
+- ⏳ `log` 스케일 렌더링 (파싱됨, 현재 레이아웃은 proportional로 처리)
+- ⏳ 사용자 정의 형식 문자열이 있는 축 눈금 레이블
+- ⏳ 이벤트 연결자 (관련 이벤트 간 화살표)
+
+참고 문헌:
+
+- Gantt, H.L. (1910). *Work, Wages, and Profits.* Engineering Magazine.
+- Tufte, E.R. (1983). *The Visual Display of Quantitative Information.* — 소규모 배수로서의 타임라인.
+
+---
+
+## 13. 로드맵
+
+**계획 중 — 아직 파싱 불가.** 오늘 생성된 DSL에서는 사용하지 마십시오. 파서가 거부하거나 무시합니다.
+
+- **이벤트 연결자** — `connect ev1 -> ev2 [label: "causes"]` 형식으로 시간을 가로질러 두 이벤트를 연결하는 화살표.
+- **반복/재발** — `every 2024-Q1 .. 2024-Q4 monthly: "Sprint review"` 형식으로 정기 이벤트 표현.
+- **축 눈금 형식** — `config: tickFormat = "%b %Y"` 형식으로 축의 날짜 표시 사용자 정의.
+- **수직 방향** — `config: orientation = vertical` 형식으로 수직 축 좌우에 이벤트 배치 (파싱됨; 렌더링 지연).
+- **Log 스케일** — `config: scale = log` 형식으로 압축된 최근 연도가 필요한 지질학적 또는 심층 역사 기간용 (파싱됨; 레이아웃 지연).
+
+더 빠른 구현이 필요하시면 GitHub 이슈에서 추적하십시오.
+
+---
+
+## 관련 예제
+
+예제 갤러리의 바로 사용 가능한 시나리오:
+
+<RelatedExamples slugs={[
+  'timeline-product-launch',
+  'timeline-company-milestones',
+]} />

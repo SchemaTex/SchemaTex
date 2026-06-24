@@ -1,0 +1,184 @@
+---
+title: 运动战术图
+---
+
+## 关于运动战术图
+
+**运动战术图**是教练绘制的单次战术、阵型或队形示意图——以球员圆点和运动轨迹线条表示，采用每位教练一眼就能读懂的标记方式。Schematex 可从文本为三大团队运动生成战术图：**美式橄榄球**（X&O 战术图）、**篮球**（半场阵型）和**足球/协会足球**（球队阵型与运动路线）。每项运动都在其本身正确比例的球场、球馆或足球场上，以该运动的教练标准标记方式绘制。
+
+你只需命名运动和阵型，引擎负责摆放球员。你添加运动动词（`route`、`pass`、`cut`、`dribble`、`run`、`screen`、`shot`），引擎以该运动教练实际使用的线型风格绘制每一个动作。与图像生成器不同，输出是*可编辑的*——添加第四个接球员或移动一次掩护，只需改一行文字。
+
+<Playground initial={`playbook "Four Verticals" sport football
+field down 2 distance 7 los 40
+formation spread
+defense cover-2
+route X go
+route H seam
+route Y seam
+route Z go
+route RB flat right`} height={460} />
+
+---
+
+## 1. 第一张战术图
+
+每张图以包含**运动名称**的头部开始，然后是**阵型**（摆放球员），再是**战术分配**：
+
+<Playground initial={`playbook "Give & Go" sport basketball
+set 5-out
+pass 1 2
+cut 1 rim
+pass 2 1`} height={420} />
+
+`pass 1 2` 绘制从 1 号球员到 2 号球员的传球；`cut 1 rim` 让 1 号球员切向篮筐。篮球中传球用**虚线**、切入用**实线**——这是每块教练白板上的惯例。
+
+---
+
+## 2. 三大运动
+
+在头部选择运动（`sport football|basketball|soccer`）。每项运动使用其真实单位和惯例教练视角：
+
+| 运动 | 单位 | 视角 | 场地 |
+|---|---|---|---|
+| `football` | 码 | 进攻方在底部向**上**进攻；顺场方向 = 向上 | 带码线、区域标记和得分区的绿色球场 |
+| `basketball` | 英尺 | NBA **半场**；底线 + 篮筐在顶部 | 浅色枫木地板 |
+| `soccer` | 米 | 完整 **105 × 68 米**球场（进攻方向向右）；或 `view half` | 带 IFAB 标线的绿色草坪 |
+
+---
+
+## 3. 球员与阵型
+
+摆放球员最快的方式是使用**阵型**（橄榄球/足球）或**阵列**（篮球）：
+
+- **橄榄球** — `formation i-form | shotgun | singleback | pistol | spread | trips | empty | goal-line | wishbone`，可选强侧 `left`/`right`。接球员为 `X Z H Y`（Y = 近端锋），后卫为 `QB RB FB`，前锋线为 `LT LG C RG RT`。
+- **篮球** — `set horns | 1-4-high | 1-4-low | box | spread-pnr | 4-out | 5-out`。球员编号为 `1`–`5`。
+- **足球** — `formation 4-3-3 | 4-4-2 | 4-2-3-1 | 4-5-1 | 4-4-1-1 | 3-5-2 | 3-4-3`。球员编号为 `1`（门将）……`11`。
+
+对于定位球或自由形式的图，可单独放置球员并裁剪为半场：
+
+<Playground initial={`playbook "Overlap & Cross" sport soccer
+view half
+player 7 o at 75,12 label 7
+player 2 o at 60,15 label 2
+player 9 o at 88,30 label 9
+player 11 o at 85,52 label 11
+player 10 o at 80,38 label 10
+dribble 7 to 82,20
+run 2 to 90,8
+pass 7 to 90,8
+pass 2 to 102,34
+run 9 to 101,31
+run 11 to 101,40`} height={420} />
+
+---
+
+## 4. 运动动词与线型风格
+
+同一种线型在不同运动中含义不同——Schematex 按各运动自己的惯例绘制，图例始终与之匹配：
+
+| 动词 | 橄榄球 | 篮球 | 足球 |
+|---|---|---|---|
+| `pass` | 虚线（传球） | **虚线** | **实线** |
+| `run` / `cut` | 实线 | **实线**（切入） | **虚线**（跑动） |
+| `dribble` | — | 波浪线 | 波浪线 |
+| `screen` / `block` | T 形 ⊥ | T 形 ⊥（掩护） | T 形 ⊥ |
+| `shot` | — | 实线 | 双线 |
+
+**注意这里的反转：** 篮球中传球用*虚线*、切入用*实线*；足球中传球用*实线*、跑动用*虚线*。这正是两个教练群体实际使用的图示方式——Schematex 尊重各自的惯例。
+
+运动目标可以是**球员 id**、**地标**名称或明确的**坐标**（`to x,y`）。
+
+---
+
+## 5. 橄榄球——路线、跑动、防守
+
+传球路线使用**路线树**：`go fly streak slant flat hitch out in dig curl comeback corner post wheel cross drag seam`。跑动战术：`dive iso power counter sweep toss draw trap`。阻挡使用 `block`、`pull` 和 `handoff`。设置 `goal N` 可绘制得分区和门柱：
+
+<Playground initial={`playbook "Red Zone — Play-Action Fade" sport football
+field down 1 distance 5 los 5 goal 5 hash nfl
+formation i-form right
+defense cover-1
+handoff QB RB
+route Z corner 4
+route X slant
+route Y out 3
+run RB dive right`} height={460} />
+
+`defense cover-0/1/2/3/4/6` 绘制防守覆盖壳；`defense 4-3 | 3-4 | nickel | dime` 设置防守阵型。`hash nfl|college|none` 控制区域标记线。
+
+---
+
+## 6. 篮球——阵列、地标、掩护
+
+切入和传球以**命名地标**为目标——`rim elbow wing corner short-corner block slot top high-post dunker`（前缀 `l`/`r` 表示左/右）。`screen A B` 为 B 球员绘制 A 球员的挡拆（T 形）；`dribble` 为波浪线：
+
+<Playground initial={`playbook "Spread Pick & Roll" sport basketball
+set spread-pnr
+screen 5 1
+dribble 1 to 11,17
+cut 5 rim
+pass 1 2`} height={440} />
+
+`defense man` 为每位防守球员匹配盯人；`defense zone-2-3 | zone-3-2 | zone-1-3-1` 绘制区域防守阵型。
+
+---
+
+## 7. 足球——阵型、跑动、组织进攻
+
+单独一个阵型就能绘制球队队形。加上 `pass`（实线）、`run`（虚线）和 `dribble`（波浪线）可展示一个进攻阶段：
+
+<Playground initial={`playbook "Build-Up From the Back" sport soccer
+formation 4-3-3
+pass 1 4
+pass 4 2
+run 2 to 40,10
+pass 4 6
+run 6 to 62,24`} height={440} />
+
+地标包括 `box top-box d penalty-spot near-post far-post six-yard center`。`defense low-block | mid-block | high-press` 叠加对手阵型。足球仅支持日光模式——`theme: dark` 会回退到默认球场。
+
+---
+
+## 8. 验证
+
+引擎会拒绝模型实际常犯的错误，并列出有效选项：
+
+- 未知的 `sport`、`formation` / `set`、`defense` 或命名路线；
+- 引用了未声明球员 id 的动作；
+- 格式错误的坐标或缺少 `to` 目标。
+
+较轻微的问题（如零长度移动）会以警告形式渲染而非报错。
+
+---
+
+## 9. 语法（EBNF）
+
+```text
+playbook   = "playbook" string "sport" sport NL { stmt NL } ;
+sport      = "football" | "basketball" | "soccer" ;
+stmt       = field | formation | defense | player | move | zone | "view" view ;
+field      = "field" { "down" num | "distance" num | "los" num
+                     | "goal" num | "hash" hash | "view" view } ;
+formation  = ( "formation" | "set" ) name [ "left" | "right" ] ;
+defense    = "defense" scheme ;
+player     = "player" id pos "at" coord "label" text ;
+move       = route | run | pass | cut | dribble | screen
+           | shot | motion | handoff | pull | block ;
+route      = "route" id namedRoute [ num ] [ "left" | "right" ] ;
+run        = "run" id ( concept [ "left" | "right" ] | "to" coord ) ;
+pass       = "pass" id ( id | landmark | "to" coord ) ;
+cut        = "cut" id ( landmark | "to" coord ) ;
+dribble    = "dribble" id "to" coord ;
+screen     = "screen" id id ;
+shot       = "shot" id [ "to" coord ] ;
+zone       = "zone" coord coord string ;
+coord      = num "," num ;
+view       = "full" | "half" ;
+hash       = "nfl" | "college" | "none" ;
+```
+
+---
+
+## 相关示例
+
+每项运动各有五个经典战术示例——橄榄球：四条垂直路线（Four Verticals）、交叉路线（Mesh）、双深突破（Smash）、强力跑动（Power O）和红区渐远路线（Red-Zone Fade）；篮球：挡拆（Pick & Roll）、双高（Horns）、传切配合（Give & Go）、蹦蹦跳跳（Floppy）和背切（Backdoor Cut）；足球：4-3-3 队形、从后场组织进攻（Build-Up）、边路重叠（Overlap）、高位压迫（High Press）和反击（Counter-Attack）。

@@ -1,0 +1,258 @@
+---
+title: PERT / CPM ネットワーク
+---
+
+## PERT チャートについて
+
+**PERT チャート**（Program Evaluation and Review Technique、プログラム評価レビュー技法）— そしてその近縁である **CPM**（Critical Path Method、クリティカルパス法）— は、現代のプロジェクト管理における基礎的なプロジェクトスケジューリング図です。1959年に誕生し（PERT は米国海軍のポラリスプログラム、CPM はデュポンから）、両手法は [PMI の PMBOK ガイド](https://www.pmi.org/pmbok-guide-standards)が教える **Activity-on-Node / Precedence Diagramming Method** へと収束しました。タスク・所要日数・依存関係を記述すれば、スケジュール — Early Start、Early Finish、Late Start、Late Finish、スラック、そして**クリティカルパス** — が*自動計算*されます。
+
+この最後の点こそが、Schematex の `pert` エンジンをあらゆるドラッグ＆ドロップ式「PERT チャートメーカー」と区別するものです。ほとんどのツールは形状ライブラリを提供し、6フィールドボックスを自分で埋めてクリティカルパスを電卓で計算させます。Schematex はフォワードパスとバックワードパスを自分で実行し、クリティカルパスを自動的に赤でハイライトします。**[フローチャート](/docs/flowchart)**（スケジューリングなし）、**[タイムライン](/docs/timeline)**（クリティカルパス計算なし）、**[bpmn](/docs/bpmn)**（単発プロジェクトスケジュールではなく組織的プロセス）とは明確に異なります。
+
+<Playground initial={`pert
+title: "Q3 Product Launch"
+unit: days
+
+task A "Market research"     duration: 5
+task B "Design mockups"      duration: 8  after: A
+task C "Backend API"         duration: 15 after: A
+task D "Frontend build"      duration: 10 after: B, C
+task E "QA / testing"        duration: 5  after: D
+task F "Marketing collateral" duration: 7 after: B
+task G "Launch event"        duration: 2  after: E, F`} height={520} />
+
+---
+
+## 1. はじめての図
+
+すべてのドキュメントは `pert` キーワードで始まり、オプションのヘッダーを経て、アクティビティごとに1つの `task` 行が続きます。
+
+```
+pert
+unit: days
+
+task A "Market research" duration: 5
+task B "Design mockups"  duration: 8 after: A
+task C "Backend API"     duration: 15 after: A
+task D "Frontend build"  duration: 10 after: B, C
+```
+
+各タスクは `<id>`、引用符付きの `<label>`、`duration:`、およびオプションの先行タスクリスト `after:` を持ちます。エンジンは非表示の Start と Finish を追加し、スケジュールを計算して、各タスクの6フィールドアクティビティボックスを描画します。ES/EF/LS/LF を手で入力する必要はありません — 自動計算されます。
+
+ヘッダーで使用できる設定：
+
+- `title: "…"` — 図の上に描画される見出し。
+- `unit: days | weeks | hours | abstract` — 時間単位（デフォルト `days`；純粋にラベルであり、エンジンはカレンダーに依存しません）。
+- `direction: LR | TB` — 左から右（デフォルト）または上から下。
+- `layout: network | timescaled` — レイヤードネットワーク（デフォルト）または時間比例ビュー（§6）。
+- `critical-tolerance: <n>` — このスラック以下をクリティカルとみなします（デフォルト `0`；3点見積もりプロジェクトには `0.001` を設定）。
+- `show-sentinels: true` — 合成された Start / Finish ノードを描画します（デフォルトは非表示）。
+
+---
+
+## 2. 6フィールドアクティビティボックス
+
+すべてのタスクは標準的な PERT/CPM の3×2矩形としてレンダリングされます。
+
+```
+┌──────────┬────────────┬──────────┐
+│  ES      │  Duration  │   EF     │
+├──────────┴────────────┴──────────┤
+│         Task Name (ID)           │
+├──────────┬────────────┬──────────┤
+│  LS      │  Slack     │   LF     │
+└──────────┴────────────┴──────────┘
+```
+
+- **ES / EF** — Early Start / Early Finish、フォワードパスから。
+- **LS / LF** — Late Start / Late Finish、バックワードパスから。
+- **スラック**（総フロート）= LS − ES = LF − EF。スラックがゼロのアクティビティはクリティカルパス上にあります。
+
+クリティカルなアクティビティは**赤い境界線**と太字の `0` スラックを持ちます。プロジェクトのクリティカルチェーンは途切れない赤いラインとして読めます。すべてのフィールドは `data-*` 属性（`data-es`、`data-slack`、`data-critical` など）にもミラーリングされるため、計算を再実行せずに SVG をクエリできます。
+
+**2色パレットについて。** PERT チャートは意図的に2色だけで描かれます。クリティカルパスの赤は本物の業界慣習です — MS Project、Oracle Primavera P6、PMBOK の図もすべて使用しています。なぜなら「クリティカルかどうか」こそがこの図が存在する唯一の区別だからです。それ以外はすべてニュートラルなハウスブルーです。色を追加すると PERT のセマンティクスにないカテゴリを示唆することになります。チームやフェーズでグループ化したい場合は、色の代わりに[スイムレーン](#7-スイムレーンタグクラスとコメント)（`lane:`）を使用してください。
+
+---
+
+## 3. 依存関係（FS / SS / FF / SF + ラグ/リード）
+
+`after:` はカンマ区切りの先行タスク参照リストを受け付けます。デフォルトの関係は**Finish-to-Start（FS）** — 先行タスクが完了したらタスクが開始します。
+
+```
+task D "Frontend build" duration: 10 after: B, C
+```
+
+現代のスケジューリングでは、他の3つの Precedence-Diagramming 関係と**ラグ**（遅延）または**リード**（負のラグ）も必要です。
+
+```
+task B "Stakeholder interviews" duration: 6 after: A SS+1   # start 1d after A starts
+task I "Documentation"          duration: 4 after: D+3      # FS with a 3-day lag
+task J "Translation"            duration: 3 after: I SS-1   # start 1d before I starts (lead)
+task K "Sign-off"               duration: 1 after: I FF     # finishes when I finishes
+task L "Press release"          duration: 2 after: G SF+1   # start-to-finish (rare)
+```
+
+| 形式 | 意味 |
+|------|---------|
+| `after: A` | Finish-to-Start、ラグなし（一般的なケース）|
+| `after: A+2` または `after: A+2d` | FS で2単位のラグ |
+| `after: A SS` / `A FF` / `A SF` | Start-to-Start / Finish-to-Finish / Start-to-Finish |
+| `after: A SS+2d` / `A FF-1d` | 任意のタイプにラグ（`+`）またはリード（`-`）を付加 |
+
+ラグの単位サフィックス（`d` / `w` / `h`）は図の `unit:` と一致するか省略する必要があります。混合単位は拒否されます。ラグなしの FS はラベルなし。SS/FF/SF は常にエッジにその種類を表示します。
+
+---
+
+## 4. 3点見積もり（PERT）
+
+所要時間を `O/M/P`（楽観値 / 最可能値 / 悲観値）として書くと、エンジンがベータ分布の期待所要時間 **te = (O + 4M + P) / 6** と分散 **σ² = ((P − O)/6)²** を計算します。
+
+```
+pert
+critical-tolerance: 0.01
+task A "Spec"   duration: 2/3/5    # te = 3.17, σ² = 0.25
+task B "Build"  duration: 5/8/14   after: A   # te = 8.50, σ² = 2.25
+task C "Test"   duration: 3/4/6    after: B
+task D "Deploy" duration: 1/2/3    after: C
+```
+
+Duration フィールドには `te` が表示され、名前の下に小さな `σ=…` アノテーションが現れます。プロジェクトレベルの標準偏差（クリティカルパスの分散の合計の平方根）がフッターに報告されます。浮動小数点の `te` 値が可視のクリティカルパスを変位させないよう `critical-tolerance: 0.01` を使用してください。
+
+---
+
+## 5. マイルストーン
+
+マイルストーンはゼロ期間のチェックポイントで、菱形として描画されます。`milestone` フラグまたは `duration: 0` を使用します。
+
+```
+task P "Cutover weekend" milestone after: O
+task Q "Go-live"         duration: 0 after: P
+```
+
+---
+
+## 6. 時間スケールレイアウト
+
+`layout: timescaled` はレイヤードネットワークからネットワーク-ガントハイブリッドに切り替えます。各アクティビティの **x 位置は ES に比例**し、**幅は所要時間に比例**します。下部には時間単位の軸があり、アクティビティは重ならないようにレーンに詰め込まれます。
+
+```
+pert
+layout: timescaled
+unit: days
+
+task A "Inventory"     duration: 5
+task B "Interviews"    duration: 6  after: A SS+1
+task C "Design"        duration: 10 after: A, B
+task D "Build"         duration: 15 after: C
+task E "Pilot"         duration: 7  after: D
+```
+
+これはネットワーク風の時間ビューです。タスクごとに1行のカレンダーガントチャートには `layout: gantt`（次節）を使用してください。
+
+### ガントチャート（`gantt` / `layout: gantt`）
+
+**`gantt`** ヘッダーでドキュメントを開始します（`pert` + `layout: gantt` の糖衣構文）。カレンダーガントを作成します。*同じスケジューラー*であるため、バーは**計算された** ES/EF から配置され、**クリティカルパスが赤で描画**されます。手動配置のガント（Mermaid）ではできないことです。Mermaid では日付を自分で入力しますが、ここでは依存関係を入力してエンジンがスケジューリングします。
+
+```
+gantt "Website Relaunch"
+start: 2026-07-01
+calendar: 5day
+task A "Discovery"      duration: 5  lane: "Plan"
+task B "Wireframes"     duration: 8  after: A   lane: "Design"
+task C "Visual design"  duration: 6  after: B   lane: "Design"  progress: 40%
+task D "Frontend build" duration: 12 after: C   lane: "Build"
+task E "Backend API"    duration: 10 after: A   lane: "Build"
+task F "Integration"    duration: 5  after: D, E lane: "Build"
+task LAUNCH "Go live"   milestone    after: F   lane: "Build"
+today: 2026-07-20
+```
+
+- **`start: YYYY-MM-DD`** で軸をカレンダー日付に変換します（省略すると数値の日オフセット軸になります）。
+- **`calendar: continuous`**（デフォルト）は週末を含みます。**`calendar: 5day`** は土日をタイムラインから除外します。
+- **`lane: "…"`** はタスクをラベル付きの**セクション**にグループ化します。**`progress: 60%`** は完了オーバーレイを描画し、**`milestone`** は菱形、**`today: YYYY-MM-DD`** はマーカーラインを落とします。
+- タスクごとに1行、宣言順で配置されます。クリティカルでないバーは落ち着いたブルーで描画され、**スラック**がアノテーションされます。クリティカルなバーは赤です。
+
+### Activity-on-Arrow（`layout: aoa`）
+
+`layout: aoa` は、テキストブックや Investopedia に掲載されている古い**Activity-on-Arrow（ADM）**記法をレンダリングします。番号付きの**イベント**円、**アクティビティとしてラベル付きの矢印**、アクティビティが2つ以上の先行タスクを持つ場合に自動挿入される点線の**ダミーアクティビティ**が特徴です。同じ Activity-on-Node DSL を書けば、Schematex がイベントグラフを構築してイベントに番号を付けます。
+
+```
+pert
+layout: aoa
+unit: days
+
+task A "create schedule" duration: 10
+task B "buy hardware"    duration: 5
+task C "programming"     duration: 20 after: A
+task D "installation"    duration: 5  after: B
+task E "conversion"      duration: 15 after: D
+task F "test code"       duration: 20 after: C, E
+task G "write manual"    duration: 15 after: E
+```
+
+AOA は**レガシー**記法です（PMBOK 7 では削除され、AON が現代の標準）。Finish-to-Start ロジックしか表現できません — SS/FF/SF とラグ/リードは警告付きで FS に平坦化されます。教育・試験準備・既存テキストブックの図との照合に使用し、実際のスケジューリングにはデフォルトの `network`（AON）レイアウトを使用してください。
+
+---
+
+## 7. スイムレーン、タグ、クラス、とコメント
+
+任意のタスクに `lane: "…"` を追加すると、ネットワークが水平スイムレーンに再グループ化されます。担当チーム、フェーズ、オーナー別に分かれますが、スケジュールはまったく同じように計算されます。
+
+```
+task T1 "Support Account Deletion" duration: 3  lane: "Customer Account"
+task T2 "Design a New Theme"        duration: 8  lane: "Shopping Site"
+task T3 "Apply New Theme"           duration: 15 after: T2 lane: "Shopping Site"
+```
+
+レーンは最初に宣言された順に表示され、各レーンは左側にラベルガターを持つバンドの行として表示されます。スイムレーンは同じ AON ネットワークのプレゼンテーションであり、別のレイアウトモードではありません — 任意のタスクがレーンを宣言すると自動的に有効になります。
+
+```
+task X "External vendor work" duration: 10 after: A tags: vendor, external class: secondary
+# this is a comment
+```
+
+`tags:` はノードグループに `data-tag="…"` を付与し、`class:` はダウンストリームのテーマ付けのために CSS クラスを追加します。`#` と `//` はその行の終わりまでコメントを開始します。
+
+---
+
+## 8. 文法（EBNF）
+
+```text
+document    = "pert" NEWLINE header* task+
+header      = "title:" quoted
+            | "unit:" ("days" | "weeks" | "hours" | "abstract")
+            | "direction:" ("LR" | "TB")
+            | "layout:" ("network" | "timescaled" | "aoa")
+            | "critical-tolerance:" number
+            | "show-sentinels:" boolean
+
+task        = "task" IDENT quoted "duration:" duration ("after:" reflist)? "milestone"? attrs?
+            | "task" IDENT quoted "milestone" ("after:" reflist)? attrs?
+duration    = number | number "/" number "/" number          ; deterministic or O/M/P
+reflist     = ref ("," ref)*
+ref         = IDENT (WS deptype)? laglead?
+            | IDENT "+" number unit?                          ; attached FS lag sugar
+deptype     = "FS" | "SS" | "FF" | "SF"
+laglead     = ("+" | "-") number unit?
+unit        = "d" | "w" | "h"
+attrs       = ("tags:" idlist)? ("class:" IDENT)? ("lane:" quoted)?
+```
+
+---
+
+## 9. 標準準拠
+
+Schematex の `pert` は、**PMI PMBOK 7** と Moder, Phillips & Davis (1983) による **Activity-on-Node / Precedence Diagramming Method** を実装しており、Kerzner と Oracle Primavera P6 の6フィールドボックス慣習を採用しています。フォワード/バックワードパス、総スラック、クリティカルパス、ラグ/リード付きの4つの PDM 依存関係タイプ、3点見積もり（te + 分散）がすべて正確に計算されます。古い **Activity-on-Arrow** 記法は教育・テキストブック互換のためのオプトインのレガシービューとして利用可能です（`layout: aoa`）。v0.1 のスコープ外：リソースレベリング / RCPSP、モンテカルロスケジュールリスクシミュレーション、カレンダー対応所要時間、MS Project / Primavera のインポート・エクスポート。完全な仕様は `docs/reference/32-PERT-STANDARD.md` を参照してください。
+
+---
+
+## 関連サンプル
+
+サンプルギャラリーから使用可能なシナリオ：
+
+<RelatedExamples slugs={[
+  'pert-product-launch',
+  'pert-aoa-software-project',
+  'pert-swimlane-online-shop',
+  'pert-three-point-estimation',
+  'pert-migration-timescaled',
+]} />

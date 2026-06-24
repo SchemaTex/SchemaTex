@@ -1,0 +1,389 @@
+---
+title: 单线图（SLD）
+---
+
+## 关于单线图
+
+**单线图**（也称单相图）用一条线代替三相交流系统的全部三相，表示设施或变电站的电力系统。设备——变压器、断路器、母线、电动机、负荷——以标准化符号表示，电能流动路径从上到下由源到负荷连接。电气工程师、电力规划人员和设施管理人员将单线图作为每个电力系统项目的主要参考文件：它是任何并网申请、弧闪研究或调试资料包中的第一份交付物。
+
+Schematex 遵循 **[IEEE Std 315（ANSI Y32.2）](https://standards.ieee.org/ieee/315/1099/)** 图形符号规范，并扩展了 IEC 60617 绕组配置符号以涵盖变压器变体。本页记录解析器目前所接受的内容。
+
+<Playground initial={`sld "13.8 kV Substation"
+utility = utility [label: "Grid 138 kV"]
+bus_hv = bus [voltage: "138kV", label: "HV Bus"]
+xfmr1 = transformer_dy [rating: "15 MVA", voltage: "138kV/13.8kV", label: "Main Xfmr"]
+bus_mv = bus [voltage: "13.8kV", label: "MV Bus"]
+brk1 = breaker [rating: "1200A", label: "BKR-1"]
+brk2 = breaker [rating: "1200A", label: "BKR-2"]
+brk3 = breaker [rating: "1200A", label: "BKR-3"]
+feeder1 = load [label: "Feeder 1"]
+feeder2 = load [label: "Feeder 2"]
+feeder3 = load [label: "Feeder 3"]
+utility -> bus_hv
+bus_hv -> xfmr1
+xfmr1 -> bus_mv
+bus_mv -> brk1
+bus_mv -> brk2
+bus_mv -> brk3
+brk1 -> feeder1
+brk2 -> feeder2
+brk3 -> feeder3`} height={480} />
+
+---
+
+## 1. 第一张单线图
+
+最简单的 SLD：一个电源、一台变压器、一个断路器和一个负荷。
+
+<Playground initial={`sld "Simple feeder"
+util = utility [label: "Utility 13.8kV"]
+xfmr = transformer [rating: "500 kVA", voltage: "13.8kV/480V"]
+bus1 = bus [voltage: "480V", label: "480V Bus"]
+cb1 = breaker [rating: "200A"]
+load1 = load [label: "Panel LP-1"]
+util -> xfmr
+xfmr -> bus1
+bus1 -> cb1
+cb1 -> load1`} />
+
+四条规则覆盖 80% 的用法：
+
+1. 以 `sld` 开头，后跟可选的带引号标题。
+2. 每行用 `id = 节点类型 [属性]` 的形式声明设备，一行一条。
+3. 用 `from -> to` 连接设备，可选附加 `[cable: "…", label: "…"]`。
+4. ID 可包含字母、数字、下划线和连字符——但必须以字母开头。
+
+> 注释可以 `#`、`//` 或 Mermaid 风格的 `%%` 单独开头。
+
+---
+
+## 2. 节点类型
+
+节点行格式为 `id = 节点类型 [属性: 值, …]`，节点类型决定绘制的符号。
+
+### 2.1 电源
+
+| 类型 | 符号 | 典型用途 |
+|---|---|---|
+| `utility` | 电源箭头 | 无穷大母线/电网连接 |
+| `generator` | 带 `G` 的圆圈 | 柴油、燃气或水力发电机组 |
+| `solar` | 光伏板符号 | 光伏阵列 |
+| `wind` | 风机符号 | 风力发电机 |
+| `ups` | 带电池的方块 | 不间断电源 |
+
+<Playground initial={`sld "Generation sources"
+util = utility [label: "Grid 115 kV"]
+gen = generator [rating: "2 MW", label: "Diesel Gen"]
+sol = solar [rating: "500 kW", label: "PV Array"]
+wnd = wind [rating: "1 MW", label: "Wind Turbine"]
+ups = ups [rating: "100 kVA", label: "UPS System"]
+util -> gen
+util -> sol
+util -> wnd
+util -> ups`} height={360} />
+
+### 2.2 变压器
+
+| 类型 | 绕组配置 | 说明 |
+|---|---|---|
+| `transformer` | 通用双绕组 | 无绕组规格 |
+| `transformer_dy` | 三角形→接地星形（Δ-Yg） | 最常用的配电方式 |
+| `transformer_yd` | 接地星形→三角形（Yg-Δ） | |
+| `transformer_yy` | 星形-星形（均接地） | |
+| `transformer_dd` | 三角形-三角形 | |
+| `autotransformer` | 带抽头的单绕组 | 锯齿线圈符号 |
+| `transformer_3winding` | 三绕组 | 高压/中压/低压抽头 |
+
+<Playground initial={`sld "Transformer configurations"
+src = utility [label: "138kV Grid"]
+t_dy = transformer_dy [rating: "30 MVA", voltage: "138kV/13.8kV", label: "Δ-Yg (most common)"]
+t_yy = transformer_yy [rating: "10 MVA", voltage: "138kV/13.8kV", label: "Yg-Yg"]
+t_auto = autotransformer [rating: "50 MVA", voltage: "138kV/69kV", label: "Autotransformer"]
+t_3w = transformer_3winding [rating: "40 MVA", voltage: "138/13.8/4.16kV", label: "3-Winding"]
+src -> t_dy
+src -> t_yy
+src -> t_auto
+src -> t_3w`} height={360} />
+
+### 2.3 母线与节点
+
+| 类型 | 符号 | 典型用途 |
+|---|---|---|
+| `bus` | 粗水平线 | 主电压母线 |
+| `bus_tie` | 母联断路器 | 连接同电压等级的两条并列母线 |
+| `hub` | 宽矩形 | 多路馈线汇合点 |
+
+### 2.4 开关与保护
+
+| 类型 | 符号 | 设备编号 |
+|---|---|---|
+| `breaker` | 斜线+弧形 | 52（交流断路器） |
+| `breaker_vacuum` | 斜线+V形椭圆 | 52 真空型 |
+| `switch` | 斜线（无弧形） | 89（隔离开关） |
+| `switch_load` | 负荷开关 | — |
+| `ground_switch` | 斜线+接地符号 | 接地隔离开关 |
+| `ats` | 转换开关符号 | 自动转换开关 |
+| `recloser` | 斜线+弧形+箭头 | 自动重合闸 |
+| `sectionalizer` | 斜线+S | 配电分段器 |
+| `fuse` | 椭圆加斜线 | 熔断器 |
+| `fuse_cl` | 矩形加斜线 | 限流熔断器 |
+
+<Playground initial={`sld "Switching and protection"
+src = utility [label: "Source"]
+rclsr = recloser [label: "Recloser"]
+sect = sectionalizer [label: "Sectionalizer"]
+fuse1 = fuse [label: "Fuse"]
+sw = switch [label: "Disconnect"]
+gnd_sw = ground_switch [label: "Ground SW"]
+src -> rclsr
+rclsr -> sect
+sect -> fuse1
+sect -> sw
+sw -> gnd_sw`} height={340} />
+
+### 2.5 保护与监测
+
+| 类型 | 符号 | 典型用途 |
+|---|---|---|
+| `ct` | 带穿线的小圆圈 | 电流互感器 |
+| `pt` | 小圆圈 | 电位/电压互感器 |
+| `relay` | 带设备编号的小圆圈 | 保护继电器（通过 `device:` 设置 ANSI 编号） |
+| `surge_arrester` | 箭头+接地 | 避雷器 |
+| `ground_fault` | GFI 符号 | 接地故障检测器 |
+
+### 2.6 负荷与设备
+
+| 类型 | 符号 | 典型用途 |
+|---|---|---|
+| `motor` | 带 `M` 的圆圈 | 三相电动机 |
+| `load` | 矩形 | 通用负荷或馈线 |
+| `capacitor_bank` | 两极板+开关 | 功率因数补偿 |
+| `harmonic_filter` | LC 符号 | 无源谐波滤波器 |
+| `vfd` | 带 VFD 的矩形 | 变频驱动器 |
+
+### 2.7 计量
+
+| 类型 | 符号 | 典型用途 |
+|---|---|---|
+| `watthour_meter` | 带 `Wh` 的圆圈 | 电能表 |
+| `demand_meter` | 带 `D` 的圆圈 | 需量表 |
+
+<Playground initial={`sld "Equipment types"
+src = utility [label: "Grid 13.8kV"]
+tx = transformer_dy [rating: "1000 kVA", voltage: "13.8kV/480V", label: "Main TX"]
+bk = breaker [rating: "2000A", label: "Main Breaker"]
+bus = bus [voltage: "480V", label: "480V MV Bus"]
+ct1 = ct [label: "CT-1"]
+rly = relay [device: "51", label: "Overcurrent Relay"]
+cap = capacitor_bank [rating: "150 kVAR", label: "PF Cap"]
+mtr = motor [rating: "100HP", label: "Pump Motor"]
+gen = generator [rating: "500kW", label: "Emergency Gen"]
+ats = ats [rating: "800A", label: "ATS-1"]
+src -> tx
+tx -> bk
+bk -> bus
+bus -> ct1
+ct1 -> rly
+bus -> cap
+bus -> mtr
+gen -> ats
+ats -> bus`} height={440} />
+
+---
+
+## 3. 节点属性
+
+属性写在节点类型后的 `[…]` 内，用逗号分隔。
+
+| 属性 | 值 | 效果 |
+|---|---|---|
+| `label: "…"` | 带引号字符串 | 图表上的显示名称 |
+| `voltage: "…"` | 带引号字符串，如 `"13.8kV"`、`"480V"` | 电压等级标注 |
+| `rating: "…"` | 带引号字符串，如 `"1000 kVA"`、`"200A"` | 设备额定值标注 |
+| `device: "…"` | ANSI 设备编号，如 `"51"`、`"87"` | 与 `relay` 节点配合使用 |
+| 其他任意键 | 带引号字符串 | 作为铭牌数据存储（变压器 kVA、%Z 等） |
+
+**包含所有常用属性的示例：**
+
+```
+xfmr = transformer_dy [
+  label: "Main Transformer",
+  voltage: "13.8kV/480V",
+  rating: "1000 kVA",
+  impedance: "5.75%Z"
+]
+```
+
+属性块可跨多行——解析器会合并各行直到 `]` 配对。
+
+---
+
+## 4. 连接
+
+连接行格式为 `fromId -> toId`，可选追加 `[cable: "…", label: "…"]`。
+
+```
+bus1 -> cb1
+bus1 -> cb1 [cable: "3#2/0 AWG"]
+bus1 -> cb1 [cable: "3#2/0 AWG", label: "Feeder A"]
+```
+
+**规则：**
+- 两个 ID 可在连接之前或之后声明——所有连接在解析结束时统一验证。
+- 仅接受 `->`（有向，从源到负荷）。连接方向用于布局。
+- 未知节点 ID 会抛出 `SLDParseError: Connection references unknown node "…"`。
+
+<Playground initial={`sld "ATS backup with cable labels"
+UTIL = utility [label: "Utility 480V"]
+GEN = generator [rating: "500 kW", label: "Emergency Gen"]
+ATS1 = ats [rating: "800A", label: "ATS-1"]
+BUS1 = bus [voltage: "480V", label: "Critical Bus"]
+CB1 = breaker [rating: "200A", label: "CB-1"]
+CB2 = breaker [rating: "200A", label: "CB-2"]
+L1 = load [label: "Server Room"]
+L2 = load [label: "Life Safety"]
+UTIL -> ATS1 [label: "Normal source"]
+GEN -> ATS1 [label: "Emergency source"]
+ATS1 -> BUS1 [cable: "3#2/0 AWG"]
+BUS1 -> CB1
+BUS1 -> CB2
+CB1 -> L1 [cable: "3#4 AWG"]
+CB2 -> L2 [cable: "3#4 AWG"]`} height={400} />
+
+---
+
+## 5. 标签与注释
+
+- **标题：** `sld "Substation One-Line"` — 仅限第一行。
+- **节点标签：** `id = type [label: "…"]` — 显示名称。
+- **连接标签：** `A -> B [label: "…"]` — 显示在连接线旁。
+- **电缆标注：** `A -> B [cable: "3#2/0 AWG, 200ft"]` — 导体规格。
+- **注释：** 行首的 `#`。同一行中节点或连接后的行内 `#` 也会被去除。
+- **住宅别名：** IEC / REBT 词汇，如 `mcb`、`rcd`、`rcbo`、`rccb`、`pia`、`iga`、`main_switch`、`consumer_unit`、`distribution_board`、`panel` 和 `panelboard`，均可作为输入并映射到现有的 SLD 原语。
+
+---
+
+## 6. 保留字与转义
+
+**行首保留字：** `sld`（文件头）。
+
+**运算符符号**——避免在节点 ID 中使用 `->`。ID 可包含 `[A-Za-z][A-Za-z0-9_-]*`——连字符有效（如 `CB-101` 是合法 ID）。
+
+**属性块**——`[…]` 括号可跨多个物理行。解析器合并后续行，直到括号深度回到零。
+
+**重复 ID** 会抛出 `SLDParseError: Duplicate node id "…"`。
+
+---
+
+## 7. 常见错误
+
+| 你写的 | 解析器提示 | 修正方法 |
+|---|---|---|
+| `xfmr1 [type: transformer]` | `SLDParseError: Cannot parse line` | 使用 `=` 赋值：`xfmr1 = transformer [...]` |
+| `id = battery [...]` | `SLDParseError: Unknown node type "battery"` | 没有 `battery` 类型——使用 `ups` 或 `generator` |
+| `id = breakerz` | `SLDParseError: Unknown node type ... (did you mean 'breaker'?)` | 使用建议的规范类型或别名 |
+| `A -- B`（双向） | `SLDParseError: Cannot parse line` | 仅接受 `->`；如需双向请用两行 `->` |
+| `A -> B -> C`（链式） | `SLDParseError: Cannot parse line` | 每条连接单独一行 `->` |
+| `relay [label: "OC"]`（无设备编号） | 继电器渲染时编号为空 | 添加 `device: "51"` 以设置 ANSI 设备编号 |
+| `voltage: 480V`（无引号） | 属性值无法识别 | 所有值加引号：`voltage: "480V"` |
+| 以数字开头的节点 ID：`2BUS` | `SLDParseError: Cannot parse line` | ID 必须以字母开头：`BUS2` |
+| 连接在节点声明之前 | `SLDParseError: Connection references unknown node "…"` | 节点可在连接之前或之后声明——在解析结束时统一验证，顺序灵活 |
+
+---
+
+## 8. 语法（EBNF）
+
+```text
+document      = header NEWLINE ( blank | comment | node-def | connection )*
+
+header        = "sld" ( WS quoted-string )? NEWLINE
+quoted-string = '"' any-char-but-quote* '"'
+
+node-def      = id WS "=" WS node-type ( WS "[" attr-list "]" )? NEWLINE
+node-type     = "utility" | "generator" | "solar" | "wind" | "ups"
+              | "transformer" | "transformer_dy" | "transformer_yd"
+              | "transformer_yy" | "transformer_dd"
+              | "autotransformer" | "transformer_3winding"
+              | "bus" | "bus_tie" | "hub"
+              | "breaker" | "breaker_vacuum" | "switch" | "switch_load"
+              | "ground_switch" | "ats" | "recloser" | "sectionalizer"
+              | "fuse" | "fuse_cl"
+              | "ct" | "pt" | "relay" | "surge_arrester" | "ground_fault"
+              | "motor" | "load" | "capacitor_bank" | "harmonic_filter" | "vfd"
+              | "watthour_meter" | "demand_meter"
+              | residential-alias
+
+residential-alias
+              = "mcb" | "mccb" | "rcd" | "rcbo" | "rccb"
+              | "differential" | "diferencial" | "pia" | "iga"
+              | "main_switch" | "isolator" | "disconnector"
+              | "consumer_unit" | "distribution_board" | "panel" | "panelboard"
+
+attr-list     = attr ( "," attr )*
+attr          = key ":" WS quoted-string
+
+connection    = id WS "->" WS id ( WS "[" conn-attrs "]" )? NEWLINE
+conn-attrs    = conn-attr ( "," conn-attr )*
+conn-attr     = "cable" ":" WS quoted-string
+              | "label" ":" WS quoted-string
+
+id            = [A-Za-z] [A-Za-z0-9_-]*
+key           = [A-Za-z] [A-Za-z0-9_]*
+comment       = ( "#" | "//" | "%%" ) any NEWLINE
+```
+
+属性块 `[…]` 可跨多个物理行——解析器合并后续行，直到括号深度回到零。
+
+权威来源：`src/diagrams/sld/parser.ts`。如与解析器有出入，以解析器为准——请提 issue。
+
+---
+
+## 9. 规范合规性
+
+Schematex SLD 遵循 **IEEE Std 315（ANSI Y32.2）** 关于开关设备、变压器和电源的图形符号规范。变压器绕组配置变体（`transformer_dy`、`transformer_yy` 等）使用 **IEC 60617** 的 Δ/Y 符号。保护继电器设备编号遵循 **ANSI/IEEE C37.2**。
+
+目前已实现：
+
+- ✅ 所有电源类型：电网、发电机、光伏、风电、UPS
+- ✅ 六种变压器变体及自耦变压器、三绕组变压器
+- ✅ 母线、母联、汇合点
+- ✅ IEC / REBT 住宅词汇别名映射到规范原语
+- ✅ 完整开关集：断路器、真空断路器、隔离开关、负荷开关、接地开关、自动转换开关、自动重合闸、分段器、熔断器、限流熔断器
+- ✅ 保护与监测：电流互感器、电压互感器、继电器（含 ANSI 设备编号）、避雷器、接地故障检测器
+- ✅ 负荷设备：电动机、负荷、电容器组、谐波滤波器、变频驱动器
+- ✅ 计量：电能表、需量表
+- ✅ 带电缆和标签标注的有向连接
+- ✅ `label`、`voltage`、`rating`、`device` 节点属性；任意铭牌数据
+- ⏳ 带开合状态指示的母联开关
+- ⏳ 保护区域（包围继电器+电流互感器的虚线边界线）
+- ⏳ 弧闪标签块（入射能量、PPE 等级、工作距离）
+- ⏳ 电压等级色带（按 kV 等级自动着色的水平带）
+
+参考文献：
+
+- IEEE Std 315-1975 / ANSI Y32.2-1975 — *Graphic Symbols for Electrical and Electronics Diagrams*
+- IEC 60617:2025（BS 3939）— *Graphical symbols for diagrams*
+- ANSI/IEEE C37.2 — *Electrical Power System Device Function Numbers*
+
+---
+
+## 10. 相关示例
+
+<RelatedExamples slugs={[
+  'sld-generator-ats',
+  'sld-substation-13kv',
+]} />
+
+---
+
+## 11. 路线图
+
+**规划中——尚不可解析。** 请勿在生成的 DSL 中使用以下功能，解析器会拒绝或忽略。
+
+- **母联开合状态** — `bus_tie` 带显式开/合属性，以便符号渲染在正确的开关位置。
+- **保护区域** — `zone:` 或 `boundary:` 块，在一组节点（继电器+电流互感器+断路器）周围绘制虚线矩形，表示保护区域。
+- **弧闪标注块** — 按 IEEE 1584 规范：`arc_flash: [incident_energy: "8 cal/cm²", ppe: "2", distance: "18in"]`。
+- **电压等级色带** — 按 kV 等级自动添加水平阴影带；节点自动置于对应电压层级。
+- **双向连接**（`<->`）— 用于方向不明确的母联或常开联络路径。
+
+如需优先实现以上功能，请在 GitHub issues 中跟踪反馈。

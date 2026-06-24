@@ -1,0 +1,102 @@
+---
+title: 이벤트 트리 분석
+description: 귀납적 전향 리스크 분석 — 하나의 개시 이벤트에서 안전 기능의 성공/실패를 통해 정량화된 최종 상태로 분기합니다.
+---
+
+## 이벤트 트리란
+
+**이벤트 트리**는 결함 트리의 전향적, 귀납적 쌍둥이입니다. 하나의 **개시 이벤트**(배관 파열, 화재, 안전 시스템 수요)에서 시작하여, 각 하위 **안전 기능**의 성공 또는 실패를 순서대로 묻습니다. 분기 사다리를 통한 모든 경로는 정량화된 **결과**(정상, 격리, 노심 손상 등)로 끝납니다. 이는 **IEC 62502**와 **[NUREG-0492](https://www.nrc.gov/docs/ML1007/ML100780465.pdf)** 시대의 WASH-1400 관행으로 표준화된 원자력 PRA 및 공정 QRA의 핵심 도구입니다.
+
+Schematex의 차별점은 결함 트리와 동일합니다: 엔진은 사다리만 그리는 것이 아니라 **답을 계산**합니다. 개시 빈도와 각 기능의 고장 확률이 주어지면, 모든 경로 빈도(`f₀ · ∏ 분기 확률`)를 도출하고, 경로에 걸쳐 결과를 집계하며, **지배적 시퀀스**를 빨간색으로 강조 표시합니다. draw.io는 분기 사다리를 그리는 데서 멈춥니다. 그것은 그림일 뿐, 분석이 아닙니다.
+
+<Playground initial={`eventtree "Loss of coolant accident"
+  initiating LOCA "Large LOCA" freq: 1e-4
+  function A "ECCS injects"          p: 0.001
+  function B "Containment spray"     p: 0.01
+  function C "Containment integrity" p: 0.005
+  outcome s s s -> "OK"
+  outcome s s f -> "Late release"
+  outcome s f * -> "Early release"
+  outcome f * * -> "Core damage"`} height={560} />
+
+---
+
+## 1. 첫 번째 이벤트 트리 만들기
+
+모든 문서는 `eventtree` 키워드(별칭 `eta`)로 시작하고, 선택적 제목 다음에 선언 목록이 나열됩니다:
+
+```
+eventtree "Smoke detector demand"
+  initiating FIRE "Fire starts" freq: 0.01
+  function D "Detector actuates" p: 0.02
+  function S "Suppression works" p: 0.05
+  outcome s s -> "Controlled"
+  outcome s f -> "Damage, contained"
+  outcome f * -> "Uncontrolled fire"
+```
+
+- **`initiating ID "label" freq: N`** — 정확히 하나. 도전 빈도이며, 소수 또는 과학적 표기법을 허용합니다(`freq: 0.01` 또는 `freq: 1e-4`).
+- **`function ID "label" p: N`** — 분기 컬럼당 하나씩, **쿼리 순서에 따라 왼쪽→오른쪽으로 선언**합니다. `p:`는 **고장** 확률입니다. 엔진이 성공 구간을 보완값 `1 − p`로 도출합니다(양쪽을 모두 명시할 필요 없음).
+- **`outcome <pattern> -> "end state"`** — 실현된 각 리프당 하나.
+
+---
+
+## 2. s / f / * 결과 패턴
+
+각 `outcome` 행은 함수 컬럼에 걸쳐 왼쪽→오른쪽으로 읽힙니다:
+
+```
+outcome s s s -> "OK"           # 모든 기능이 성공
+outcome s s f -> "Late release" # 마지막 쿼리에서 C 실패
+outcome s f * -> "Early release"# B 실패; C는 쿼리되지 않음(가지치기됨)
+outcome f * * -> "Core damage"  # A 실패; 경로가 즉시 종료됨
+```
+
+- **`s`** — 성공 구간 (위쪽 분기).
+- **`f`** — 실패 구간 (아래쪽 분기).
+- **`*`** — 가지치기됨: 경로가 여기서 쿼리되지 않고, 리프까지 평탄하게 실행됩니다.
+
+이것이 이벤트 트리가 완전한 균형 2ⁿ 트리가 되는 것을 피하는 방법입니다: 기능 고장으로 이후 질문이 의미 없어지면 `*`를 쓰고 시퀀스가 일찍 종료됩니다. 두 가지 엄격한 규칙: 패턴은 컬럼 수보다 **길어서는 안 되고**, **컬럼이 가지치기되면(`*`) 이후 모든 컬럼도 `*`여야 합니다** — 종료된 경로는 쿼리를 재개할 수 없습니다.
+
+---
+
+## 3. 계산된 경로 빈도 및 결과
+
+이것이 차별점입니다. 고장 확률과 `freq`를 사용하여 엔진은 다음을 계산합니다:
+
+- **각 경로 빈도** = `s`/`f` 구간을 따라 `f₀ · ∏ 분기 확률` (성공 구간은 `1 − p`, 실패 구간은 `p` 기여).
+- **결과 집계**: 동일한 최종 상태 라벨을 가진 결과가 모든 경로에 걸쳐 합산됩니다(모든 `"Core damage"` 리프가 더해짐).
+- **지배적 시퀀스** — 가장 높은 빈도 경로 — 은 예약된 빨간색 강조 표시를 받습니다. 결함 트리의 단일 장애점에 해당하는 ETA 개념입니다.
+
+모든 리프에는 `data-*`(`data-freq`, `data-outcome`)가 있어 계산된 수치를 다운스트림에서 검사할 수 있습니다.
+
+---
+
+## 4. 흔한 실수
+
+```
+# 잘못됨 — 고장 확률 없는 기능
+function A "ECCS"
+
+# 잘못됨 — 가지치기된 컬럼 이후 쿼리 (경로가 이미 종료됨)
+outcome * s -> "bad"
+
+# 잘못됨 — 선언된 컬럼 수보다 많은 토큰
+function A p: 0.1
+outcome s s -> "ok"
+
+# 잘못됨 — 빈도 없는 개시 이벤트
+initiating LOCA "Large LOCA"
+```
+
+각각은 해당 줄을 명시하는 평이한 영어 메시지로 거부됩니다. `p:`를 **고장** 확률(작은 값)로 명시하고, 개시 이벤트에 `freq:`를 부여하고, 가지치기를 뒤에 배치하면 구성상 올바르게 됩니다.
+
+---
+
+## 5. 표준 준수
+
+형식은 IEC 62502와 고전적 PRA 관행(WASH-1400 / NUREG)을 따릅니다: 함수를 정렬된 헤더 컬럼으로, 이진 성공/실패 분할, 보완 도출된 성공 구간, 그리고 곱셈에 의한 빈도 전파. `monochrome` 테마는 교과서 흑백 모양을 재현합니다. `default`는 빨간색을 지배적 시퀀스에 예약합니다.
+
+## 6. 로드맵
+
+미구현 항목: 분기별 연결된 결함 트리 조각(공유 기본 이벤트), 불확실성 전파, 결과 카테고리 그룹화.

@@ -1,0 +1,82 @@
+---
+title: はじめに
+description: 医師、エンジニア、弁護士が実際に使うすべてのダイアグラムを。無料、完全オープンソース、AI向けに設計。テキスト DSL から業界標準のダイアグラムを — genogram から fault tree まで。
+---
+
+**Schematex** は、医師・エンジニア・弁護士が実際の業務で使うあらゆるダイアグラムをレンダリングします — 臨床用 genogram（家族図）、IEC 61131-3 ラダーロジック、NSGC pedigree（系譜図）、IEEE 315 単線結線図（SLD）、キャップテーブルなど。テキスト DSL を入力すれば、規格準拠の SVG が出力されます。
+
+**無料、完全オープンソース、AI 向け。** AGPL-3.0、ランタイム依存ゼロ。DSL は LLM が実際にテキストを生成する方法に合わせて設計されているため、ChatGPT や Claude の出力をそのまま貼り付けるだけで、初回から正確なプロフェッショナルダイアグラムが得られます。
+
+## 何が描けますか？
+
+<DiagramCatalog />
+
+## クイック例
+
+<Playground initial={`genogram "The Smiths"
+  john [male, 1950]
+  mary [female, 1952]
+  john -- mary
+    alice [female, 1975, index]
+    bob [male, 1978]
+  alice -close- mary`} />
+
+## AI と一緒に使う
+
+Schematex には LLM 向けのツールレイヤーが付属しています。10 秒でホスト型 MCP サーバーに Claude.ai を接続すれば、インストールや設定なしで、どのチャットセッションでも検証済みのダイアグラムを生成できます。
+
+<MCPConnectCard size="compact" />
+
+または、Vercel AI SDK を使って独自の AI 機能を構築することもできます。詳しくは **[Schematex を AI と連携する](/docs/ai-integration)** をご覧ください。
+
+## 次のステップ
+
+- [はじめに](/docs/getting-started) — インストール、インポート、レンダリング
+- [Schematex を AI と連携する](/docs/ai-integration) — MCP + Vercel AI SDK + エージェントループ
+- [プレイグラウンド](/playground) — どのダイアグラムタイプもライブで試せる
+- [API リファレンス](/docs/api)
+
+---
+
+## 仕組み
+
+各ダイアグラムタイプは同じパイプラインに従います：
+
+```
+Text DSL ──→ Parser ──→ AST ──→ Layout Engine ──→ LayoutResult ──→ SVG Renderer ──→ SVG string
+```
+
+すべてのダイアグラムは `DiagramPlugin` を 4 つのメソッドで実装します：
+
+```ts
+interface DiagramPlugin {
+  detect(text: string): boolean;           // ダイアグラムタイプを自動検出
+  parse(text: string): DiagramAST;         // テキスト → 型付き AST
+  layout(ast, config): LayoutResult;       // AST → ノード・エッジの位置決め
+  render(layout, config): string;          // LayoutResult → SVG 文字列
+}
+```
+
+レイアウトアルゴリズムは設計上ドメイン固有です — genogram は世代ベースの階層レイアウト、ecomap は放射状／極座標、ロジックゲートは DAG トポロジカルソート、ラダーロジックは固定電源レールレイアウトを使用します。汎用レイアウトエンジン（dagre、ELK）では、これらのダイアグラムタイプに対して規格準拠の出力は得られません。
+
+---
+
+## 設計原則
+
+1. **プロが実際に使うダイアグラム** — 各ダイアグラムタイプは公開されたドメイン仕様を実装しています：McGoldrick 2020（genogram）、Hartman 1978（ecomap）、Bennett 2022（pedigree）、Moreno 1934（sociogram）、IEEE Std 91（ロジックゲート）、IEC 61131-3（ラダーロジック）、IEEE 315（SLD）など。
+2. **無料・完全オープンソース** — AGPL-3.0、ランタイム依存ゼロ（D3 なし、dagre なし、パーサジェネレータなし）、すべて手書きで実装。バンドルサイズが小さく、サプライチェーンリスクもありません。クローズドソース商用利用には商用ライセンスが提供されています。
+3. **AI 向け** — DSL は LLM が実際にテキストを生成する方法に合わせて設計されています（CJK 引用符、ネストの曖昧さ、AI が読みやすいエラーメッセージ）。ChatGPT や Claude の出力を貼り付けるだけで、初回から正確なプロフェッショナルダイアグラムが得られます。
+4. **セマンティック SVG 出力** — すべての SVG にアクセシビリティのための `<title>` と `<desc>`、テーマ設定用の CSS クラス、インタラクティビティ用の `data-*` 属性が含まれています。
+
+---
+
+## テーマ
+
+3 つのプリセットが組み込まれています：`default`（ブルーグレー）、`monochrome`（白黒・印刷用）、`dark`（Catppuccin Mocha）。
+
+各 SVG の `<style>` ブロックに注入された CSS カスタムプロパティで任意のトークンを上書きできます：
+
+```css
+--schematex-stroke: #1a1a1a;
+--schematex-fill: #f5f5f5;
+```

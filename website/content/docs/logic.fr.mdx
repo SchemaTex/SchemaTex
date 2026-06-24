@@ -1,0 +1,365 @@
+---
+title: Diagramme de portes logiques
+---
+
+## À propos des diagrammes de portes logiques
+
+Un **diagramme de portes logiques** montre comment les fonctions booléennes sont implémentées dans le matériel — les entrées circulent de gauche à droite à travers des portes combinatoires et des bascules pour produire des sorties à droite. Les ingénieurs en conception numérique les utilisent pour documenter l'intention RTL, vérifier les netlists au niveau des portes et enseigner l'algèbre booléenne. Schematex dérive son jeu de symboles de la norme **[IEEE Std 91-1984 / ANSI Y32.14](https://standards.ieee.org/ieee/91/749/)** (symboles ANSI à formes distinctives, valeur par défaut aux États-Unis) et de la norme **[IEC 60617-12](https://webstore.iec.ch/publication/2765)** (symboles en rectangles uniformes, valeur par défaut internationale), sélectionnables par diagramme.
+
+Le DSL est fonctionnel : vous déclarez des signaux et décrivez les entrées de chaque porte par leur nom. Le layout et le câblage sont calculés automatiquement à partir du graphe de dépendances — pas de coordonnées manuelles.
+
+<Playground initial={`logic "1-bit Full Adder" style: ansi
+input A, B, Cin
+output Sum, Cout
+# XOR stage — sum bits
+s1 = XOR(A, B)
+Sum = XOR(s1, Cin)
+# AND/OR stage — carry
+c1 = AND(A, B)
+c2 = AND(s1, Cin)
+Cout = OR(c1, c2)`} height={440} />
+
+---
+
+## 1. Votre premier diagramme de portes logiques
+
+Le diagramme minimal utile : deux entrées, une porte, une sortie.
+
+<Playground initial={`logic "NAND check"
+input A, B
+output F
+F = NAND(A, B)`} />
+
+Quatre règles couvrent 80 % des usages :
+
+1. Commencer par le mot-clé `logic`, suivi optionnellement d'un titre entre guillemets et de `style: ansi` ou `style: iec`.
+2. Déclarer les ports avec des lignes `input` et `output` — noms de signaux séparés par des virgules.
+3. Chaque porte est `id = GATE_TYPE(input1, input2, …)`. L'`id` devient un fil de signal nommé.
+4. Un nom d'`output` qui correspond à un `id` de porte est câblé automatiquement ; utiliser `OUTPUT <- gate_id` quand les noms diffèrent.
+
+> Les commentaires doivent commencer par `#` ou `--` sur leur propre ligne (ou après le dernier token d'une ligne de porte).
+
+---
+
+## 2. Types de portes
+
+### 2.1 Portes combinatoires
+
+| Mot-clé DSL | Fonction | Forme ANSI | Symbole IEC |
+|---|---|---|---|
+| `AND` | A · B | Corps en D | Rectangle + `&` |
+| `OR` | A + B | Corps courbe | Rectangle + `≥1` |
+| `NOT` | Ā | Triangle + bulle | Rectangle + `1` + bulle |
+| `NAND` | ¬(A · B) | AND + bulle | Rectangle + `&` + bulle |
+| `NOR` | ¬(A + B) | OR + bulle | Rectangle + `≥1` + bulle |
+| `XOR` | A ⊕ B | OR + arc supplémentaire | Rectangle + `=1` |
+| `XNOR` | ¬(A ⊕ B) | XOR + bulle | Rectangle + `=1` + bulle |
+| `BUF` | A (buffer) | Triangle, sans bulle | Rectangle + `1` |
+
+<Playground initial={`logic "Gate gallery" style: ansi
+input A, B, C
+output Y_and, Y_or, Y_xor, Y_nand, Y_not
+Y_and = AND(A, B)
+Y_or = OR(A, B)
+Y_xor = XOR(A, B)
+Y_nand = NAND(A, B)
+Y_not = NOT(C)`} height={420} />
+
+### 2.2 Buffers à sortie spéciale
+
+| Mot-clé DSL | Fonction |
+|---|---|
+| `TRISTATE_BUF` | Buffer trois états — sortie Z quand l'enable est bas |
+| `TRISTATE_INV` | Buffer inverseur trois états |
+| `OPEN_DRAIN` | Sortie drain ouvert / collecteur ouvert (pull-up externe requis) |
+| `SCHMITT` | Trigger de Schmitt — symbole d'hystérésis à l'intérieur du corps |
+
+<Playground initial={`logic "Special buffers" style: ansi
+input A, EN
+output Y_tri, Y_od, Y_sch
+Y_tri = TRISTATE_BUF(A, EN)
+Y_od = OPEN_DRAIN(A)
+Y_sch = SCHMITT(A)`} height={340} />
+
+### 2.3 Bascules et latchs
+
+| Mot-clé DSL | Type | Broches principales |
+|---|---|---|
+| `DFF` | Bascule D (déclenchée par front) | D, CLK, Q, Q̄ |
+| `JKFF` | Bascule JK | J, K, CLK, Q, Q̄ |
+| `SRFF` | Bascule SR | S, R, CLK, Q, Q̄ |
+| `TFF` | Bascule T (bascule) | T, CLK, Q, Q̄ |
+| `LATCH_SR` | Latch SR (sensible au niveau, sans horloge) | S, R, Q, Q̄ |
+| `LATCH_D` | Latch D (transparent quand enable = 1) | D, EN, Q, Q̄ |
+
+<Playground initial={`logic "Flip-flop gallery" style: ansi
+input D, J, K, CLK, EN
+output Q_dff, Q_jk, Q_latch
+Q_dff = DFF(D, CLK)
+Q_jk = JKFF(J, K, CLK)
+Q_latch = LATCH_D(D, EN)`} height={420} />
+
+### 2.4 Combinatoire complexe
+
+| Mot-clé DSL | Fonction |
+|---|---|
+| `MUX` | Multiplexeur |
+| `DEMUX` | Démultiplexeur |
+| `DECODER` | Décodeur binaire |
+| `ENCODER` | Encodeur à priorité |
+
+<Playground initial={`logic "Combinational MSI" style: ansi
+input A, B, S
+output Y_mux, Y_dec
+Y_mux = MUX(A, B, S)
+Y_dec = DECODER(A, B)`} height={340} />
+
+### 2.5 Séquentiel complexe
+
+| Mot-clé DSL | Fonction |
+|---|---|
+| `COUNTER` | Compteur binaire générique (label `CTR`, CLK/RESET/Q0–Q3) |
+| `SHIFT_REG` | Registre à décalage générique (label `SRG`, CLK/SER/Q0–Q7) |
+
+<Playground initial={`logic "Sequential MSI" style: ansi
+input DATA, CLK, RESET
+output Q_cnt, Q_sr
+Q_cnt = COUNTER(CLK, RESET)
+Q_sr = SHIFT_REG(DATA, CLK)`} height={340} />
+
+---
+
+## 3. Entrées et sorties
+
+### 3.1 Déclarer les ports
+
+```
+input A, B, Cin          # three input ports
+output Sum, Cout         # two output ports
+```
+
+Chaque nom dans une liste `input` ou `output` devient un fil de signal nommé disponible dans tout le diagramme.
+
+### 3.2 Entrées actives basses
+
+Préfixer un nom de signal avec `~` dans la liste d'entrées pour le marquer comme actif bas. Le rendu dessine une bulle au niveau du symbole de port.
+
+```
+input ~nRESET, CLK, DATA
+```
+
+La notation active basse fonctionne également à l'intérieur des listes d'entrées de portes :
+
+```
+g1 = AND(~nRESET, CLK)
+```
+
+### 3.3 Câbler les sorties aux portes
+
+Si l'ID de sortie correspond à un ID de porte, la connexion est implicite :
+
+```
+output Sum        # Sum is also a gate id → auto-wired
+Sum = XOR(s1, Cin)
+```
+
+Quand les noms diffèrent, utiliser l'opérateur d'affectation explicite :
+
+```
+output F
+q1 = NOR(A, B)
+F <- q1           # F draws from q1's output
+```
+
+<Playground initial={`logic "SR latch from NOR gates"
+input S, R
+output Q, Qn
+q_gate = NOR(R, Qn)
+qn_gate = NOR(S, Q)
+Q <- q_gate
+Qn <- qn_gate`} height={300} />
+
+---
+
+## 4. Style de symbole
+
+L'option `style:` sur la ligne d'en-tête sélectionne le standard de symboles. Elle s'applique à toutes les portes du diagramme.
+
+| Valeur | Standard | Utiliser quand |
+|---|---|---|
+| `ansi` (par défaut) | IEEE Std 91 — formes courbes distinctives | Enseignement aux États-Unis, documentation matériel |
+| `iec` | IEC 60617-12 — rectangles uniformes + label de fonction | International, industrie européenne |
+
+```
+logic "ALU slice" style: iec
+```
+
+<Playground initial={`logic "1-bit Full Adder" style: iec
+input A, B, Cin
+output Sum, Cout
+# XOR stage — sum bits
+s1 = XOR(A, B)
+Sum = XOR(s1, Cin)
+# AND/OR stage — carry
+c1 = AND(A, B)
+c2 = AND(s1, Cin)
+Cout = OR(c1, c2)`} height={440} />
+
+<Playground initial={`logic "Gate gallery — IEC style" style: iec
+input A, B, C
+output Y_and, Y_or, Y_xor, Y_nand, Y_not
+Y_and = AND(A, B)
+Y_or = OR(A, B)
+Y_xor = XOR(A, B)
+Y_nand = NAND(A, B)
+Y_not = NOT(C)`} height={420} />
+
+---
+
+## 5. Blocs de module
+
+Utiliser `module` pour regrouper des portes dans une boîte de sous-circuit étiquetée. Les blocs de module sont utiles pour documenter des conceptions hiérarchiques — chaque module se rend comme un rectangle nommé entourant ses portes membres.
+
+```
+logic "Hierarchical adder"
+input A, B, Cin
+output Sum, Cout
+
+module "Half Adder" {
+  s1 = XOR(A, B)
+  c1 = AND(A, B)
+}
+
+Sum = XOR(s1, Cin)
+Cout = OR(c1, AND(s1, Cin))
+```
+
+Règles de syntaxe du module :
+- `module "Label" {` — ouvre un module (label entre guillemets ou identifiant nu). Le `{` doit être sur la même ligne.
+- `}` sur sa propre ligne ferme le module ouvert le plus récemment.
+- Les modules peuvent être imbriqués.
+
+---
+
+## 6. Labels et commentaires
+
+- **Titre du diagramme :** `logic "Full Adder"` — première ligne uniquement.
+- **Noms de signaux de porte :** l'`id` dans `id = GATE(…)` est à la fois le nom de la porte et le nom du fil de sortie.
+- **Labels de sortie :** `output Sum` — le label de port de sortie correspond par défaut au nom du signal.
+- **Marqueur actif bas :** préfixe `~` sur un port ou une entrée de porte.
+- **Commentaires :** `#` ou `--` au début d'une ligne, ou après le dernier token significatif d'une ligne.
+
+---
+
+## 7. Mots réservés et échappement
+
+**Réservés en début de ligne :** `logic` (en-tête), `input`, `output`, `module`, `}`.
+
+**Tokens opérateurs réservés** — éviter à l'intérieur des noms de signaux : `=`, `(`, `)`, `,`, `<-`, `~`.
+
+**Règles pour les noms de signaux :** doivent correspondre à `[a-zA-Z_][a-zA-Z0-9_]*`. Minuscules et majuscules sont toutes deux acceptées ; les mots-clés de type de porte (`AND`, `OR`, etc.) sont insensibles à la casse dans le parseur.
+
+---
+
+## 8. Erreurs courantes
+
+| Ce que vous avez écrit | Ce que dit le parseur | Correction |
+|---|---|---|
+| `f = and(A, B)` (porte en minuscules) | Accepté — les types de portes sont insensibles à la casse | `AND` et `and` fonctionnent tous les deux |
+| `output F` puis `F <- q1` mais `q1` non déclaré | `LogicParseError: Unknown signal "q1"` | Déclarer `q1` comme porte avant d'y faire référence |
+| `input A B C` (espaces, pas de virgules) | Le parseur prend seulement `A` ; `B` et `C` sont ignorés | Utiliser des virgules : `input A, B, C` |
+| `F = BUFFER(A)` | `LogicParseError: Unknown gate type: BUFFER` | Utiliser `BUF` |
+| `module FullAdder {` (sans accolade `{`) | La ligne ne correspond pas au pattern module — ignorée silencieusement | L'accolade ouvrante `{` est obligatoire sur la même ligne que `module` |
+| `style: IEEE` dans l'en-tête | Valeur de style inconnue — revient silencieusement à `ansi` | Utiliser `style: ansi` ou `style: iec` |
+
+---
+
+## 9. Grammaire (EBNF)
+
+```text
+document    = header statement*
+
+header      = "logic" ( WS quoted-string )? ( WS "style:" WS style )? NEWLINE
+style       = "ansi" | "iec"
+quoted-string = '"' any-char-but-quote* '"'
+
+statement   = blank | comment | input-decl | output-decl | gate-def | assign | module-block
+
+comment     = ( "#" | "--" ) any NEWLINE
+
+input-decl  = "input" WS port-list NEWLINE
+output-decl = "output" WS port-list NEWLINE
+port-list   = port-id ( "," WS? port-id )*
+port-id     = "~"? id
+
+gate-def    = id WS "=" WS gate-type "(" input-list ")" NEWLINE
+input-list  = ( "~"? id ) ( "," WS? ( "~"? id ) )*
+
+assign      = id WS "<-" WS id NEWLINE
+
+module-block = module-open ( statement | module-block )* module-close
+module-open  = "module" WS ( quoted-string | id ) WS? "{" NEWLINE
+module-close = "}" NEWLINE
+
+gate-type   = "AND" | "OR" | "NOT" | "NAND" | "NOR" | "XOR" | "XNOR" | "BUF"
+            | "TRISTATE_BUF" | "TRISTATE_INV" | "OPEN_DRAIN" | "SCHMITT"
+            | "DFF" | "JKFF" | "SRFF" | "TFF"
+            | "LATCH_SR" | "LATCH_D"
+            | "MUX" | "DEMUX" | "DECODER" | "ENCODER"
+            | "COUNTER" | "SHIFT_REG"
+            // all case-insensitive
+
+id          = [a-zA-Z_] [a-zA-Z0-9_]*
+```
+
+Source faisant autorité : `src/diagrams/logic/parser.ts`. En cas de divergence avec le parseur, le parseur prévaut — veuillez ouvrir un ticket.
+
+---
+
+## 10. Conformité aux normes
+
+Les diagrammes de portes logiques Schematex suivent la norme **IEEE Std 91-1984 / ANSI Y32.14** (symboles à formes distinctives) et la norme **IEC 60617-12** (symboles rectangulaires avec qualificatifs de fonction).
+
+Ce qui est implémenté aujourd'hui :
+
+- ✅ Les huit portes combinatoires : AND, OR, NOT, NAND, NOR, XOR, XNOR, BUF
+- ✅ Buffers à sortie spéciale : TRISTATE_BUF, TRISTATE_INV, OPEN_DRAIN, SCHMITT
+- ✅ Quatre bascules à déclenchement par front : DFF, JKFF, SRFF, TFF
+- ✅ Deux latchs : LATCH_SR, LATCH_D
+- ✅ MSI combinatoire : MUX, DEMUX, DECODER, ENCODER
+- ✅ MSI séquentiel : COUNTER, SHIFT_REG
+- ✅ Notation active basse (`~`) sur les entrées et les ports
+- ✅ Styles de symboles ANSI et IEC, sélectionnables par diagramme
+- ✅ Blocs de groupement de modules
+- ✅ Layout DAG automatique (tri topologique, flux de signal de gauche à droite)
+- ⏳ Routage explicite de fil fan-out (réseau partagé avec point de jonction)
+- ⏳ Notation de bus multi-bit (annotation `/N` slash sur le fil)
+- ⏳ Entrées d'horloge actives basses sur les bascules
+
+Références :
+
+- IEEE Std 91-1984 / ANSI Y32.14 : *IEEE Standard Graphic Symbols for Logic Functions*
+- IEEE Std 91a-1991 : Supplément à IEEE Std 91
+- IEC 60617-12 : *Graphical symbols for diagrams — binary logic elements*
+
+---
+
+## 11. Exemples connexes
+
+<RelatedExamples slugs={[
+  'logic-full-adder',
+]} />
+
+---
+
+## 12. Feuille de route
+
+**Prévu — pas encore analysable.** Ne pas utiliser dans un DSL généré aujourd'hui ; le parseur les rejettera ou les ignorera.
+
+- **Fan-out / point de jonction explicite** — fil nommé partagé par plusieurs entrées de portes, rendu avec un point de jonction à la bifurcation.
+- **Notation de bus multi-bit** — annotation `bus N` sur un fil pour désigner un groupe de signaux de N bits.
+- **Horloge active basse** — `~CLK` dans une liste d'entrées de bascule rendant une bulle sur le triangle d'horloge.
+- **Arc de rétroaction** — fil explicite d'une sortie de porte vers une entrée de porte antérieure, routé au-dessus du chemin de signal principal.
+- **Entrée de porte paramétrée** — `AND(A, B, C, D)` rendant directement une porte AND à 4 entrées.
+
+Suivre dans les tickets GitHub si vous avez besoin de l'un de ces éléments plus tôt.

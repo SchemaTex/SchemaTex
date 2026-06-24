@@ -1,0 +1,243 @@
+---
+title: Timing diagram
+---
+
+## Sobre diagramas de temporização
+
+Um **diagrama de temporização** mostra como os sinais digitais mudam ao longo do tempo — pulsos de clock, transições de barramento, valores de dados e estados de alta impedância — desenhados como um conjunto de faixas de forma de onda horizontais com um eixo de tempo compartilhado. Engenheiros de hardware os usam para especificar o comportamento de protocolos, verificar restrições de setup e hold e documentar interfaces de chips. Eles aparecem em datasheets, relatórios de simulação HDL e livros didáticos de sistemas digitais.
+
+O Schematex usa uma notação de sinal **[compatível com WaveDrom](https://wavedrom.com/tutorial.html)** — os mesmos caracteres de onda (`0`, `1`, `x`, `z`, `p`, `=`, …) e sintaxe de rótulo de dados que o WaveDrom pioneirizou — portanto, DSL WaveDrom existente é transferida diretamente. Esta página documenta o que o parser aceita atualmente.
+
+<Playground initial={`timing "SPI Transaction"
+CLK:   pppppppp
+CS_N:  10000001
+MOSI:  x=======  data: ["0xAB","0xCD","0xEF","0x01","0x02","0x03","0x04","0x05"]
+MISO:  zzzz====  data: ["","","","","0xFF","0x12","0x34","0x56"]`} height={400} />
+
+---
+
+## 1. Seu primeiro diagrama de temporização
+
+O menor diagrama de temporização útil: um clock e um sinal de dados. A forma mais simples de escrevê-lo evita completamente a contagem de caracteres:
+
+<Playground initial={`timing
+CLK:  clock 8
+RST:  rle 1*2 0*6
+DATA: 0011==00  data: ["A","B"]`} />
+
+Três regras cobrem 80% dos casos de uso:
+
+1. Comece com a palavra-chave `timing`, opcionalmente seguida de um título entre aspas e `[hscale: N]`.
+2. Cada sinal é uma linha: `NAME: <wave>` — nome, dois pontos e a forma de onda. A forma de onda pode ser:
+   - **`clock N`** — um gerador de clock com `N` períodos (adicione `neg` para clock de borda de descida). Sem contagem de caracteres.
+   - **`rle <state>*<count> …`** — segmentos com codificação por comprimento de execução, por ex.: `rle 1*2 0*6` = `11000000`. Alinha comprimentos automaticamente.
+   - **uma string de onda WaveDrom bruta** — uma sequência contígua de caracteres de estado (sem espaços internos) para controle preciso.
+3. Adicione `data: ["val1", "val2"]` após uma string de onda bruta para rotular segmentos de barramento.
+
+> **Dica de alinhamento:** a causa número 1 de um diagrama de temporização quebrado são sinais de comprimentos desiguais. `clock N` e `rle` tornam a contagem de células de cada sinal explícita, garantindo o alinhamento. Use strings de onda brutas apenas quando precisar de controle por célula.
+
+> Comentários devem começar com `#` na própria linha.
+
+---
+
+## 2. Caracteres de onda
+
+A string de onda é uma sequência de caracteres, um por período de tempo. O parser aceita estes:
+
+| Caractere | Estado | Significado |
+|---|---|---|
+| `0` | Nível lógico baixo | Sinal em GND / VSS |
+| `1` | Nível lógico alto | Sinal em VDD |
+| `x` | Desconhecido | Don't-care, indefinido ou não inicializado |
+| `z` | Alta impedância | Tri-state / alta impedância |
+| `p` | Pulso de clock (positivo) | Clock ativo na borda de subida; um `p` = um período completo (baixo→alto→baixo) |
+| `P` | Pulso de clock (positivo, alto) | Igual a `p`, visualmente mais alto |
+| `n` | Pulso de clock (negativo) | Ativo na borda de descida; um `n` = um período completo (alto→baixo→alto) |
+| `N` | Pulso de clock (negativo, alto) | Igual a `n`, visualmente mais alto |
+| `=` | Dado de barramento | Segmento de barramento paralelo; adicione rótulos via `data: […]` |
+| `2`–`9` | Segmento de barramento nomeado | Igual a `=`, indexado em `data: […]` por posição |
+| `.` | Manter / continuar | Estende o estado anterior por mais um período |
+| `h` / `H` | Manter alto | Força alto para este período |
+| `l` / `L` | Manter baixo | Força baixo para este período |
+| `u` | Borda de subida | Diagonal de baixo para alto (apenas transição) |
+| `d` / `D` | Borda de descida | Diagonal de alto para baixo (apenas transição) |
+
+<Playground initial={`timing "Wave character reference"
+clk:   pppppppppp
+high:  1111111111
+low:   0000000000
+unkn:  xxxxxxxxxx
+hiz:   zzzzzzzzzz
+bus:   x========x  data: ["ADDR","DATA","","","","","",""]
+hold:  0..1..0..1
+rise:  0u1
+fall:  1d0`} height={440} />
+
+---
+
+## 3. Rótulos de dados
+
+Quando um sinal carrega um valor de barramento, marque a onda com `data: ["label1", "label2", …]`. Cada string entre aspas não vazia é colocada dentro do segmento `=` (ou `2`–`9`) correspondente.
+
+```
+MOSI:  x=======  data: ["0xAB","0xCD","0xEF","0x01","0x02","0x03","0x04","0x05"]
+```
+
+Strings vazias `""` deixam um segmento sem rótulo (úteis para segmentos que estendem um valor anterior).
+
+```
+MISO:  zzzz====  data: ["","","","","0xFF","0x12","0x34","0x56"]
+# os primeiros quatro períodos-z não têm rótulo; quatro segmentos = recebem rótulos começando em 0xFF
+```
+
+<Playground initial={`timing "I2C read burst"
+SCL:   ppppppppppp
+SDA:   x1=======1x  data: ["ADDR+R","ACK","D0","D1","D2","D3","D4","D5","NACK"]`} />
+
+---
+
+## 4. Agrupamento de sinais
+
+Envolva sinais relacionados em um bloco `[GroupName]`. Uma linha `---` fecha o grupo e também atua como separador visual entre grupos.
+
+```
+[Control]
+CLK:   pppppppp
+CS_N:  10000001
+---
+[Data]
+MOSI:  x=======  data: ["0xAB","0xCD","0xEF","0x01","0x02","0x03","0x04","0x05"]
+MISO:  zzzz====  data: ["","","","","0xFF","0x12","0x34","0x56"]
+```
+
+A sintaxe alternativa `group "name" { … }` também é aceita (o `}` de fechamento fecha o grupo).
+
+<Playground initial={`timing "UART frame"
+[Clock & control]
+CLK:  pppppppppppp
+TX_EN: 0111111110
+---
+[Data lines]
+TX:   1==========  data: ["START","D0","D1","D2","D3","D4","D5","D6","D7","STOP"]
+RX:   zz1=======1  data: ["","","D0","D1","D2","D3","D4","D5","D6","D7"]`} height={380} />
+
+---
+
+## 5. Título e hscale
+
+**Título:** `timing "SPI Transaction"` — aparece no topo do diagrama.
+
+**hscale:** `timing "title" [hscale: 2]` — escala a largura de cada período de tempo. O padrão é 1. Use 2 para períodos mais largos quando os rótulos de dados precisarem de mais espaço.
+
+```
+timing "Wide bus" [hscale: 2]
+CLK:  pppp
+DATA: ====  data: ["long label here","another","third","fourth"]
+```
+
+---
+
+## 6. Rótulos e comentários
+
+- **Nome do sinal:** qualquer texto antes do primeiro `:` em uma linha de sinal. Nomes com espaços são válidos — o dois-pontos é o delimitador.
+- **Rótulos de dados:** `data: ["a", "b"]` após a string de onda.
+- **Título:** primeiro token após a palavra-chave `timing`, entre aspas.
+- **Comentários:** `#` no início de uma linha (após espaços em branco iniciais).
+
+```
+timing "Demo"
+# este é um comentário
+CLK: pppp    # ← comentário de linha inline NÃO é suportado
+```
+
+---
+
+## 7. Erros comuns
+
+| Você escreveu | O parser diz | Correção |
+|---|---|---|
+| `CLK: p p p p` (espaços na onda) | String de onda parseada apenas como `p`; o restante é tratado como cláusula de dados | Remova os espaços: `CLK: pppp` |
+| `DATA: =====` sem `data:` | Segmentos renderizados como células de barramento sem rótulo | Adicione `data: ["A","B","C","D","E"]` |
+| Caractere de onda `s` ou `r` | `TimingParseError: Invalid wave string` | Apenas os caracteres listados em §2 são válidos |
+| `CLK pppp` (sem dois pontos) | Linha não corresponde ao padrão de sinal; silenciosamente ignorada | Os dois pontos após o nome do sinal são obrigatórios |
+| `data: [A, B, C]` (sem aspas) | Valores não reconhecidos — o parser espera `"…"` | Coloque cada valor entre aspas: `data: ["A","B","C"]` |
+| `[Group Name with spaces]` | Rótulo do grupo é `Group Name with spaces` — parseado corretamente | Suportado |
+| `hscale: 2` em sua própria linha | Não reconhecido (hscale vai na linha do cabeçalho) | `timing "title" [hscale: 2]` |
+
+---
+
+## 8. Gramática (EBNF)
+
+```text
+document       = header (blank | comment | group-open | group-close | separator | signal)*
+
+header         = "timing" ( WS quoted-string )? ( WS "[" "hscale:" number "]" )? NEWLINE
+quoted-string  = '"' any-char-but-quote* '"'
+
+group-open     = "[" label "]" NEWLINE
+               | "group" WS quoted-string WS "{"? NEWLINE
+group-close    = "}" NEWLINE
+separator      = "---" NEWLINE
+
+signal         = name ":" WS wave-string ( WS data-clause )? NEWLINE
+name           = any text before the first ":"
+wave-string    = wave-char+
+wave-char      = "0"|"1"|"x"|"z"
+               | "p"|"P"|"n"|"N"
+               | "h"|"H"|"l"|"L"
+               | "u"|"d"|"D"
+               | "="|"."|"2"|"3"|"4"|"5"|"6"|"7"|"8"|"9"
+
+data-clause    = "data:" WS ( "[" quoted-string ("," quoted-string)* "]"
+                            | quoted-string+ )
+
+comment        = "#" any NEWLINE
+```
+
+Fonte autoritativa: `src/diagrams/timing/parser.ts`. Se houver divergência com o parser, o parser prevalece — por favor, abra uma issue.
+
+---
+
+## 9. Conformidade com padrões
+
+Os diagramas de temporização do Schematex seguem a notação de sinal **[WaveDrom WaveJSON](https://wavedrom.com/tutorial.html)** para caracteres de onda e rótulos de dados — o mesmo conjunto usado pelo editor online do WaveDrom, tornando a DSL do Schematex amplamente intercambiável com a entrada do WaveDrom. A opção `hscale`, a sintaxe de grupo e o formato de rótulo de dados são todos compatíveis.
+
+O que está implementado atualmente:
+
+- ✅ Todos os caracteres de onda principais: `0 1 x z p P n N h H l L u d D = . 2–9`
+- ✅ Rótulos de dados via `data: ["…"]`
+- ✅ Blocos de grupo: sintaxe `[Name]` e `group "name" { }`
+- ✅ Separador `---` / fechamento de grupo
+- ✅ Multiplicador de largura de período `hscale`
+- ⏳ Anotações de temporização (setas entre transições de sinal, rótulos `t_su`, `t_pd`)
+- ⏳ Offset `phase:` por sinal (deslocamento de ciclo fracionário)
+- ⏳ Blocos de anotação `node:` / `edge:` do WaveDrom
+- ⏳ Skin / tema (`default`, `narrow`, `lowkey`)
+
+Referências:
+
+- WaveDrom — https://wavedrom.com (especificação WaveJSON)
+- IEEE Std 1364 (Verilog HDL) — conceitos de simulação de temporização digital
+- IEEE Std 1497 (Standard Delay Format) — convenções de anotação de temporização
+
+---
+
+## 10. Exemplos relacionados
+
+<RelatedExamples slugs={[
+  'timing-spi-transaction',
+]} />
+
+---
+
+## 11. Roadmap
+
+**Planejado — ainda não parseável.** Não use estes itens em DSL gerado hoje; o parser os ignorará.
+
+- **Setas de anotação de temporização** — bloco `annotate:` com sintaxe `A -> B [label: "t_su = 5ns"]` para desenhar intervalos de setup/hold e atraso de propagação entre transições de sinal.
+- **`phase:` por sinal** — deslocamento de ciclo fracionário para que os sinais possam começar a meio de um período.
+- **`node:` / `edge:` do WaveDrom** — compatibilidade completa com o bloco de anotação do WaveDrom.
+- **Opções de skin** — temas de renderização `narrow` (compacto) e `lowkey` (paleta discreta).
+- **Eixo de tempo** — eixo numérico de tempo opcional na parte inferior (unidades ns, µs, ps).
+
+Acompanhe nas issues do GitHub se precisar de algum desses itens mais cedo.

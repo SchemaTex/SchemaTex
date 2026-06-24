@@ -1,0 +1,365 @@
+---
+title: ロジックゲートダイアグラム
+---
+
+## ロジックゲートダイアグラムについて
+
+**ロジックゲートダイアグラム**は、ブール関数がハードウェアでどのように実装されるかを示します——入力が左から組み合わせ回路ゲートとフリップフロップを通って流れ、右側に出力を生成します。デジタル設計エンジニアはRTLの意図を文書化し、ゲートレベルのネットリストを検証し、ブール代数を教えるために使用します。Schematex はそのシンボルセットを **[IEEE Std 91-1984 / ANSI Y32.14](https://standards.ieee.org/ieee/91/749/)**（特徴的な形状のANSIシンボル、米国のデフォルト）と **[IEC 60617-12](https://webstore.iec.ch/publication/2765)**（統一矩形シンボル、国際デフォルト）から導出し、ダイアグラムごとに選択可能です。
+
+DSLは機能的です：シグナルを宣言し、各ゲートの入力を名前で記述します。レイアウトと配線は依存グラフから自動的に計算されます——手動での座標指定は不要です。
+
+<Playground initial={`logic "1-bit Full Adder" style: ansi
+input A, B, Cin
+output Sum, Cout
+# XOR stage — sum bits
+s1 = XOR(A, B)
+Sum = XOR(s1, Cin)
+# AND/OR stage — carry
+c1 = AND(A, B)
+c2 = AND(s1, Cin)
+Cout = OR(c1, c2)`} height={440} />
+
+---
+
+## 1. 最初のロジックゲートダイアグラム
+
+最小限の有用なダイアグラム：入力2つ、ゲート1つ、出力1つ。
+
+<Playground initial={`logic "NAND check"
+input A, B
+output F
+F = NAND(A, B)`} />
+
+使用方法の80%をカバーする4つのルール：
+
+1. キーワード `logic` で始め、オプションで引用符付きのタイトルと `style: ansi` または `style: iec` を続けます。
+2. `input` と `output` 行でポートを宣言します——カンマ区切りのシグナル名。
+3. 各ゲートは `id = GATE_TYPE(input1, input2, …)` です。`id` は名前付きシグナル線になります。
+4. ゲートの `id` と一致する `output` 名は自動的に配線されます。名前が異なる場合は `OUTPUT <- gate_id` を使用します。
+
+> コメントは独立した行で `#` または `--` で始める必要があります（またはゲート行の最後のトークンの後）。
+
+---
+
+## 2. ゲートタイプ
+
+### 2.1 組み合わせ回路ゲート
+
+| DSLキーワード | 関数 | ANSIシェイプ | IECシンボル |
+|---|---|---|---|
+| `AND` | A · B | D字型ボディ | 矩形 + `&` |
+| `OR` | A + B | 曲線ボディ | 矩形 + `≥1` |
+| `NOT` | Ā | 三角形 + バブル | 矩形 + `1` + バブル |
+| `NAND` | ¬(A · B) | AND + バブル | 矩形 + `&` + バブル |
+| `NOR` | ¬(A + B) | OR + バブル | 矩形 + `≥1` + バブル |
+| `XOR` | A ⊕ B | OR + 追加のアーク | 矩形 + `=1` |
+| `XNOR` | ¬(A ⊕ B) | XOR + バブル | 矩形 + `=1` + バブル |
+| `BUF` | A（バッファ） | 三角形、バブルなし | 矩形 + `1` |
+
+<Playground initial={`logic "Gate gallery" style: ansi
+input A, B, C
+output Y_and, Y_or, Y_xor, Y_nand, Y_not
+Y_and = AND(A, B)
+Y_or = OR(A, B)
+Y_xor = XOR(A, B)
+Y_nand = NAND(A, B)
+Y_not = NOT(C)`} height={420} />
+
+### 2.2 特殊出力バッファ
+
+| DSLキーワード | 関数 |
+|---|---|
+| `TRISTATE_BUF` | トライステートバッファ——イネーブルがローのとき出力はZ |
+| `TRISTATE_INV` | トライステート反転バッファ |
+| `OPEN_DRAIN` | オープンドレイン / オープンコレクタ出力（外部プルアップ必要） |
+| `SCHMITT` | シュミットトリガー——ボディ内のヒステリシスシンボル |
+
+<Playground initial={`logic "Special buffers" style: ansi
+input A, EN
+output Y_tri, Y_od, Y_sch
+Y_tri = TRISTATE_BUF(A, EN)
+Y_od = OPEN_DRAIN(A)
+Y_sch = SCHMITT(A)`} height={340} />
+
+### 2.3 フリップフロップとラッチ
+
+| DSLキーワード | タイプ | 主要ピン |
+|---|---|---|
+| `DFF` | Dフリップフロップ（エッジトリガー） | D、CLK、Q、Q̄ |
+| `JKFF` | JKフリップフロップ | J、K、CLK、Q、Q̄ |
+| `SRFF` | SRフリップフロップ | S、R、CLK、Q、Q̄ |
+| `TFF` | T（トグル）フリップフロップ | T、CLK、Q、Q̄ |
+| `LATCH_SR` | SRラッチ（レベルセンシティブ、クロックなし） | S、R、Q、Q̄ |
+| `LATCH_D` | Dラッチ（イネーブル=1のとき透過） | D、EN、Q、Q̄ |
+
+<Playground initial={`logic "Flip-flop gallery" style: ansi
+input D, J, K, CLK, EN
+output Q_dff, Q_jk, Q_latch
+Q_dff = DFF(D, CLK)
+Q_jk = JKFF(J, K, CLK)
+Q_latch = LATCH_D(D, EN)`} height={420} />
+
+### 2.4 複合組み合わせ回路
+
+| DSLキーワード | 関数 |
+|---|---|
+| `MUX` | マルチプレクサ |
+| `DEMUX` | デマルチプレクサ |
+| `DECODER` | バイナリデコーダ |
+| `ENCODER` | プライオリティエンコーダ |
+
+<Playground initial={`logic "Combinational MSI" style: ansi
+input A, B, S
+output Y_mux, Y_dec
+Y_mux = MUX(A, B, S)
+Y_dec = DECODER(A, B)`} height={340} />
+
+### 2.5 順序回路（複合）
+
+| DSLキーワード | 関数 |
+|---|---|
+| `COUNTER` | 汎用バイナリカウンター（`CTR` ラベル、CLK/RESET/Q0〜Q3） |
+| `SHIFT_REG` | 汎用シフトレジスタ（`SRG` ラベル、CLK/SER/Q0〜Q7） |
+
+<Playground initial={`logic "Sequential MSI" style: ansi
+input DATA, CLK, RESET
+output Q_cnt, Q_sr
+Q_cnt = COUNTER(CLK, RESET)
+Q_sr = SHIFT_REG(DATA, CLK)`} height={340} />
+
+---
+
+## 3. 入力と出力
+
+### 3.1 ポートの宣言
+
+```
+input A, B, Cin          # 3つの入力ポート
+output Sum, Cout         # 2つの出力ポート
+```
+
+`input` または `output` リストの各名前は、ダイアグラム全体で使用可能な名前付きシグナル線になります。
+
+### 3.2 アクティブローの入力
+
+入力リストでシグナル名の前に `~` を付けてアクティブローとしてマークします。レンダラーはポートシンボルにバブルを描画します。
+
+```
+input ~nRESET, CLK, DATA
+```
+
+アクティブロー表記はゲート入力リスト内でも機能します：
+
+```
+g1 = AND(~nRESET, CLK)
+```
+
+### 3.3 出力とゲートの配線
+
+出力IDがゲートIDと一致する場合、接続は暗黙的です：
+
+```
+output Sum        # SumはゲートIDでもある → 自動配線
+Sum = XOR(s1, Cin)
+```
+
+名前が異なる場合は明示的な代入演算子を使用します：
+
+```
+output F
+q1 = NOR(A, B)
+F <- q1           # Fはq1の出力から取得
+```
+
+<Playground initial={`logic "SR latch from NOR gates"
+input S, R
+output Q, Qn
+q_gate = NOR(R, Qn)
+qn_gate = NOR(S, Q)
+Q <- q_gate
+Qn <- qn_gate`} height={300} />
+
+---
+
+## 4. シンボルスタイル
+
+ヘッダー行の `style:` オプションはシンボル標準を選択します。ダイアグラム内のすべてのゲートに適用されます。
+
+| 値 | 標準 | 使用場面 |
+|---|---|---|
+| `ansi`（デフォルト） | IEEE Std 91——特徴的な曲線形状 | 米国の教育、ハードウェアドキュメント |
+| `iec` | IEC 60617-12——統一矩形 + 機能ラベル | 国際、欧州産業 |
+
+```
+logic "ALU slice" style: iec
+```
+
+<Playground initial={`logic "1-bit Full Adder" style: iec
+input A, B, Cin
+output Sum, Cout
+# XOR stage — sum bits
+s1 = XOR(A, B)
+Sum = XOR(s1, Cin)
+# AND/OR stage — carry
+c1 = AND(A, B)
+c2 = AND(s1, Cin)
+Cout = OR(c1, c2)`} height={440} />
+
+<Playground initial={`logic "Gate gallery — IEC style" style: iec
+input A, B, C
+output Y_and, Y_or, Y_xor, Y_nand, Y_not
+Y_and = AND(A, B)
+Y_or = OR(A, B)
+Y_xor = XOR(A, B)
+Y_nand = NAND(A, B)
+Y_not = NOT(C)`} height={420} />
+
+---
+
+## 5. モジュールブロック
+
+`module` を使用してゲートをラベル付きのサブ回路ボックスにグループ化します。モジュールブロックは階層的な設計を文書化するのに便利です——各モジュールはそのメンバーゲートを囲む名前付き矩形としてレンダリングされます。
+
+```
+logic "Hierarchical adder"
+input A, B, Cin
+output Sum, Cout
+
+module "Half Adder" {
+  s1 = XOR(A, B)
+  c1 = AND(A, B)
+}
+
+Sum = XOR(s1, Cin)
+Cout = OR(c1, AND(s1, Cin))
+```
+
+モジュール構文のルール：
+- `module "Label" {` — モジュールを開く（引用符付きラベルまたは裸の識別子）。`{` は `module` と同じ行に必要です。
+- 独立した行の `}` は最近開いたモジュールを閉じます。
+- モジュールはネストできます。
+
+---
+
+## 6. ラベルとコメント
+
+- **ダイアグラムタイトル：** `logic "Full Adder"` — 最初の行のみ。
+- **ゲートシグナル名：** `id = GATE(…)` の `id` がゲート名と出力線名の両方になります。
+- **出力ラベル：** `output Sum` — 出力ポートラベルはデフォルトでシグナル名と一致します。
+- **アクティブローマーカー：** ポートまたはゲート入力の `~` プレフィックス。
+- **コメント：** 行頭または行の最後の意味のあるトークンの後に `#` または `--`。
+
+---
+
+## 7. 予約語とエスケープ
+
+**行頭で予約：** `logic`（ヘッダー）、`input`、`output`、`module`、`}`。
+
+**予約演算子トークン** — シグナル名にこれらを使用しないでください：`=`、`(`、`)`、`,`、`<-`、`~`。
+
+**シグナル名のルール：** `[a-zA-Z_][a-zA-Z0-9_]*` に一致する必要があります。小文字と大文字の両方が受け入れられます。ゲートタイプのキーワード（`AND`、`OR` など）はパーサーで大文字・小文字を区別しません。
+
+---
+
+## 8. よくある間違い
+
+| 記述した内容 | パーサーのメッセージ | 修正方法 |
+|---|---|---|
+| `f = and(A, B)`（小文字ゲート） | 受け入れ——ゲートタイプは大文字・小文字を区別しない | `AND` も `and` も機能する |
+| `output F` その後 `F <- q1` だが `q1` が未宣言 | `LogicParseError: Unknown signal "q1"` | 参照前に `q1` をゲートとして宣言する |
+| `input A B C`（スペース区切り、カンマなし） | パーサーは `A` のみ取得；`B` と `C` は無視される | カンマを使用：`input A, B, C` |
+| `F = BUFFER(A)` | `LogicParseError: Unknown gate type: BUFFER` | `BUF` を使用する |
+| `module FullAdder {`（`{` ブレースなし） | 行がモジュールパターンに一致しない——サイレントにスキップ | `module` と同じ行に開き `{` が必要 |
+| ヘッダーの `style: IEEE` | 不明なスタイル値——サイレントに `ansi` にデフォルト | `style: ansi` または `style: iec` を使用する |
+
+---
+
+## 9. 文法（EBNF）
+
+```text
+document    = header statement*
+
+header      = "logic" ( WS quoted-string )? ( WS "style:" WS style )? NEWLINE
+style       = "ansi" | "iec"
+quoted-string = '"' any-char-but-quote* '"'
+
+statement   = blank | comment | input-decl | output-decl | gate-def | assign | module-block
+
+comment     = ( "#" | "--" ) any NEWLINE
+
+input-decl  = "input" WS port-list NEWLINE
+output-decl = "output" WS port-list NEWLINE
+port-list   = port-id ( "," WS? port-id )*
+port-id     = "~"? id
+
+gate-def    = id WS "=" WS gate-type "(" input-list ")" NEWLINE
+input-list  = ( "~"? id ) ( "," WS? ( "~"? id ) )*
+
+assign      = id WS "<-" WS id NEWLINE
+
+module-block = module-open ( statement | module-block )* module-close
+module-open  = "module" WS ( quoted-string | id ) WS? "{" NEWLINE
+module-close = "}" NEWLINE
+
+gate-type   = "AND" | "OR" | "NOT" | "NAND" | "NOR" | "XOR" | "XNOR" | "BUF"
+            | "TRISTATE_BUF" | "TRISTATE_INV" | "OPEN_DRAIN" | "SCHMITT"
+            | "DFF" | "JKFF" | "SRFF" | "TFF"
+            | "LATCH_SR" | "LATCH_D"
+            | "MUX" | "DEMUX" | "DECODER" | "ENCODER"
+            | "COUNTER" | "SHIFT_REG"
+            // すべて大文字・小文字を区別しない
+
+id          = [a-zA-Z_] [a-zA-Z0-9_]*
+```
+
+権威ある情報源：`src/diagrams/logic/parser.ts`。これがパーサーと異なる場合はパーサーが優先されます——Issueを立ててください。
+
+---
+
+## 10. 標準への準拠
+
+Schematex のロジックゲートダイアグラムは **IEEE Std 91-1984 / ANSI Y32.14**（特徴的な形状のシンボル）と **IEC 60617-12**（関数修飾子付き矩形シンボル）に従います。
+
+現在実装されているもの：
+
+- ✅ 8種類すべての組み合わせゲート：AND、OR、NOT、NAND、NOR、XOR、XNOR、BUF
+- ✅ 特殊出力バッファ：TRISTATE_BUF、TRISTATE_INV、OPEN_DRAIN、SCHMITT
+- ✅ 4種類のエッジトリガーフリップフロップ：DFF、JKFF、SRFF、TFF
+- ✅ 2種類のラッチ：LATCH_SR、LATCH_D
+- ✅ 組み合わせ回路MSI：MUX、DEMUX、DECODER、ENCODER
+- ✅ 順序回路MSI：COUNTER、SHIFT_REG
+- ✅ 入力とポートのアクティブロー（`~`）表記
+- ✅ ANSIとIECのシンボルスタイル、ダイアグラムごとに選択可能
+- ✅ モジュールグループ化ブロック
+- ✅ 自動DAGレイアウト（トポロジカルソート、左から右へのシグナルフロー）
+- ⏳ 明示的なファンアウト配線ルーティング（ジャンクションドット付きの共有ネット）
+- ⏳ マルチビットバス表記（線への `/N` スラッシュアノテーション）
+- ⏳ フリップフロップのアクティブロークロック入力
+
+参考文献：
+
+- IEEE Std 91-1984 / ANSI Y32.14: *IEEE Standard Graphic Symbols for Logic Functions*
+- IEEE Std 91a-1991: Supplement to IEEE Std 91
+- IEC 60617-12: *Graphical symbols for diagrams — binary logic elements*
+
+---
+
+## 11. 関連するサンプル
+
+<RelatedExamples slugs={[
+  'logic-full-adder',
+]} />
+
+---
+
+## 12. ロードマップ
+
+**計画中——まだパース不可。** 今日生成された DSL ではこれらを使用しないでください。パーサーが拒否または無視します。
+
+- **明示的なファンアウト / ジャンクションドット** — 複数のゲート入力で共有される名前付き線、分岐点にジャンクションドット付きでレンダリング。
+- **マルチビットバス表記** — N ビットシグナルグループを示す線への `bus N` アノテーション。
+- **アクティブロークロック** — フリップフロップ入力リストの `~CLK`、クロック三角形にバブルをレンダリング。
+- **フィードバックアーク** — ゲート出力から前のゲート入力への明示的な線、メインシグナルパスの上にルーティング。
+- **パラメータ化されたゲートファンイン** — `AND(A, B, C, D)` を直接4入力ANDゲートとしてレンダリング。
+
+これらが早期に必要な場合はGitHubのIssueでトラックしてください。

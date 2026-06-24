@@ -1,0 +1,130 @@
+---
+title: Référence API
+description: API JavaScript/TypeScript Schematex — appels de rendu/parsing stricts, API de résultat sécurisées pour l'aperçu, options de configuration et imports avec tree-shaking.
+---
+
+## `render(text, config?)`
+
+Génère un SVG à partir d'une chaîne DSL. Dispatch par premier mot-clé et lève une exception
+lorsque la détection, le parsing, la mise en page ou le rendu échoue.
+
+```ts
+import { render } from 'schematex';
+
+const svg: string = render(text, { theme: 'monochrome' });
+```
+
+Utilisez l'API stricte lorsque le DSL invalide doit interrompre le flux de travail, par exemple lors d'un
+test, d'une tâche d'export ou d'une porte de validation côté serveur.
+
+## `parse(text, config?)`
+
+Parse une chaîne DSL en AST typé sans rendu. Cette API est également
+stricte et lève une exception sur un DSL invalide.
+
+```ts
+import { parse } from 'schematex';
+
+const ast = parse(text);
+```
+
+## Rendu sécurisé pour l'aperçu
+
+Les éditeurs en direct, les aperçus IA et les canevas de chat ne doivent pas transformer un échec du parser
+en surface vide. Utilisez `renderPreview()` lorsque vous avez uniquement besoin d'une chaîne SVG :
+
+```ts
+import { renderPreview } from 'schematex';
+
+const svg = renderPreview(text, { type: 'circuit' });
+```
+
+`renderPreview()` retourne toujours du SVG. Si le rendu strict échoue, ce SVG est un
+fallback de diagnostic visible. `render(text, { mode: 'preview' })` est la même
+limite d'aperçu pour les intégrations qui appellent déjà `render()`.
+
+## API de résultat
+
+Utilisez les API de résultat lorsque l'appelant a besoin à la fois d'une sortie visible et d'un état de validité :
+
+```ts
+import { parseResult, renderResult } from 'schematex';
+
+const renderState = renderResult(text);
+container.innerHTML = renderState.svg;
+
+if (!renderState.ok) {
+  console.error(renderState.diagnostics);
+}
+
+const parseState = parseResult(text);
+```
+
+`renderResult()` retourne `svg`, `diagnostics`, `type`, et un `status` de
+`valid`, `partial`, ou `invalid`. Les résultats de rendu invalides contiennent quand même un
+SVG de diagnostic afin que l'aperçu reste visible.
+
+`parseResult()` retourne soit un AST, soit des diagnostics structurés sans
+lever d'exception. Le statut `partial` est réservé aux parsers qui peuvent récupérer un
+AST partiel ou un diagramme partiellement rendu.
+
+Ne traitez pas « une chaîne SVG existe » comme preuve que le DSL est valide. Les surfaces
+d'aperçu doivent afficher le SVG et utiliser `ok`, `status` et `diagnostics` pour les
+décisions de nouvelle tentative, réparation, télémétrie ou facturation.
+
+## Navigateur et React
+
+Le sous-chemin navigateur expose des helpers DOM stricts et des helpers DOM sécurisés pour l'aperçu :
+
+```ts
+import {
+  renderToContainer,
+  renderPreviewToContainer,
+} from 'schematex/browser';
+
+renderToContainer(text, exportContainer);          // strict
+renderPreviewToContainer(text, previewContainer);  // fallback visible
+```
+
+Le composant React utilise déjà la limite de résultat sécurisée pour l'aperçu :
+
+```tsx
+import { SchematexDiagram } from 'schematex/react';
+
+<SchematexDiagram
+  dsl={text}
+  type="circuit"
+  onError={(error) => console.error(error)}
+/>;
+```
+
+`onError` se déclenche lors d'un échec strict du parser/mise en page/rendu avant que le composant
+affiche le SVG de fallback de diagnostic.
+
+## Imports avec tree-shaking
+
+```ts
+import { render } from 'schematex/genogram';
+import { render } from 'schematex/ecomap';
+import { render } from 'schematex/pedigree';
+import { render } from 'schematex/phylo';
+import { render } from 'schematex/sociogram';
+```
+
+## `SchematexConfig`
+
+```ts
+interface SchematexConfig {
+  type?: string;              // remplacement optionnel du type de diagramme
+  width?: number;
+  height?: number;
+  padding?: number;
+  theme?: string;             // ex. 'default' | 'monochrome' | 'dark'
+  fontFamily?: string;
+  mode?: 'strict' | 'preview';
+}
+```
+
+Voir [`src/core/types.ts`](https://github.com/SchemaTex/SchemaTex/blob/main/src/core/types.ts)
+et [`src/core/api.ts`](https://github.com/SchemaTex/SchemaTex/blob/main/src/core/api.ts)
+pour les définitions de types complètes.
