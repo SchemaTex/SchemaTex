@@ -44,10 +44,14 @@ export async function generateMetadata(props: { params: Promise<{ slug?: string[
       }
     : undefined;
 
+  // NOT page.url — fumadocs i18n prefixes the default locale too, so page.url
+  // is '/en/docs/api', which 404s. English docs are served bare at '/docs/...'.
+  const canonicalPath = params.slug?.length ? `/docs/${params.slug.join('/')}` : '/docs';
+
   return {
     title: page.data.title,
     description: page.data.description,
-    alternates: { canonical: `https://schematex.js.org${page.url}` },
+    alternates: { canonical: `https://schematex.js.org${canonicalPath}` },
     openGraph: ogImage
       ? {
           title: `${ogEntry?.title ?? ''} · Schematex`,

@@ -1,36 +1,10 @@
-import { source, DOC_LOCALES } from '@/lib/source';
+import { source } from '@/lib/source';
 import { LIVE_LOCALES } from '@/lib/i18n/locales';
+import { buildDocLocaleMap, docBarePath, docFileKey } from '@/lib/docs-locales';
 import { allExamples } from '@/lib/examples-source';
-import fs from 'fs';
-import path from 'path';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
-
-// Scan content/docs for *.{locale}.mdx files to know which locales have actual
-// translations (not just fumadocs i18n fallbacks). Returns { slug: locale[] }.
-// e.g. { 'getting-started': ['en','zh-Hans','ja',...], 'genogram': ['en'] }
-function buildDocLocaleMap(): Record<string, string[]> {
-  const contentDir = path.join(process.cwd(), 'content/docs');
-  const localeSet = new Set<string>(DOC_LOCALES);
-  const map: Record<string, string[]> = {};
-
-  for (const file of fs.readdirSync(contentDir)) {
-    if (!file.endsWith('.mdx')) continue;
-    const name = file.slice(0, -4);
-    const parts = name.split('.');
-    const lastPart = parts[parts.length - 1];
-
-    const [slug, locale] =
-      localeSet.has(lastPart) && lastPart !== 'en'
-        ? [parts.slice(0, -1).join('.'), lastPart]
-        : [name, 'en'];
-
-    if (!map[slug]) map[slug] = [];
-    map[slug].push(locale);
-  }
-  return map;
-}
 
 export function GET(request: Request) {
   const token = request.headers.get('x-pseo-auth');
@@ -45,11 +19,17 @@ export function GET(request: Request) {
   // from localeMap (actual translation files, not fumadocs fallbacks).
   const enPages = source.getPages('en');
   const docSlugs = enPages.flatMap((page) => {
-    // page.url = '/docs/getting-started'. Use the full path as slug (no locale prefix).
-    const slug = page.url;
-    // Filename key: last segment of the URL path ('getting-started', 'index', …)
-    const fileKey = page.slugs.join('/') || 'index';
-    const locales = localeMap[fileKey] ?? ['en'];
+    // IMPORTANT: do NOT use page.url here. fumadocs i18n prefixes EVERY locale
+    // (including the default) so page.url is '/en/docs/api', not '/docs/api'.
+    // The cockpit treats the manifest slug as the locale-agnostic baseSlug and
+    // prepends each non-default locale itself (→ '/fr/docs/api'); feeding it the
+    // already-prefixed '/en/docs/api' both breaks the grouping (group header
+    // shows '/en/...') and produces double-prefixed URLs like '/fr/en/docs/api'.
+    // English is served bare at '/docs/...' (app/docs/[[...slug]]). So emit the
+    // bare canonical path, same for every locale; the cockpit prefixes non-default
+    // locales itself.
+    const slug = docBarePath(page.slugs);
+    const locales = localeMap[docFileKey(page.slugs)] ?? ['en'];
 
     return locales.map((locale) => ({
       slug,
