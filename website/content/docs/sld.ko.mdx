@@ -1,0 +1,389 @@
+---
+title: 단선 결선도 (SLD)
+---
+
+## 단선 결선도란
+
+**단선 결선도(single-line diagram, SLD)** — 또는 단선도(one-line diagram)라고도 합니다 — 는 3상 교류 시스템의 세 상(phase) 전체를 하나의 선으로 나타내어 시설 또는 변전소의 전력 시스템을 표현합니다. 변압기, 차단기, 모선, 전동기, 부하 같은 기기들은 표준화된 심볼로 표시되며, 전력 흐름 경로는 전원에서 부하까지 위에서 아래로 연결됩니다. 전기 엔지니어, 유틸리티 계획가, 시설 관리자는 모든 전력 시스템 프로젝트에서 SLD를 1차 참조 문서로 사용합니다. SLD는 계통 연계 신청서, 아크 플래시 연구, 시운전 패키지에서 첫 번째 납품물입니다.
+
+Schematex는 기기 심볼에 대해 **[IEEE Std 315 (ANSI Y32.2)](https://standards.ieee.org/ieee/315/1099/)** 도식 심볼 표기 방식을 따르며, 변압기 변형에 대해서는 IEC 60617 권선 구성 표기법으로 확장됩니다. 이 페이지는 현재 파서가 허용하는 내용을 설명합니다.
+
+<Playground initial={`sld "13.8 kV Substation"
+utility = utility [label: "Grid 138 kV"]
+bus_hv = bus [voltage: "138kV", label: "HV Bus"]
+xfmr1 = transformer_dy [rating: "15 MVA", voltage: "138kV/13.8kV", label: "Main Xfmr"]
+bus_mv = bus [voltage: "13.8kV", label: "MV Bus"]
+brk1 = breaker [rating: "1200A", label: "BKR-1"]
+brk2 = breaker [rating: "1200A", label: "BKR-2"]
+brk3 = breaker [rating: "1200A", label: "BKR-3"]
+feeder1 = load [label: "Feeder 1"]
+feeder2 = load [label: "Feeder 2"]
+feeder3 = load [label: "Feeder 3"]
+utility -> bus_hv
+bus_hv -> xfmr1
+xfmr1 -> bus_mv
+bus_mv -> brk1
+bus_mv -> brk2
+bus_mv -> brk3
+brk1 -> feeder1
+brk2 -> feeder2
+brk3 -> feeder3`} height={480} />
+
+---
+
+## 1. 첫 번째 단선 결선도
+
+가장 단순한 SLD: 유틸리티 전원, 변압기, 차단기, 부하.
+
+<Playground initial={`sld "Simple feeder"
+util = utility [label: "Utility 13.8kV"]
+xfmr = transformer [rating: "500 kVA", voltage: "13.8kV/480V"]
+bus1 = bus [voltage: "480V", label: "480V Bus"]
+cb1 = breaker [rating: "200A"]
+load1 = load [label: "Panel LP-1"]
+util -> xfmr
+xfmr -> bus1
+bus1 -> cb1
+cb1 -> load1`} />
+
+사용법의 80%를 커버하는 네 가지 규칙:
+
+1. `sld`로 시작하고, 선택적으로 따옴표로 묶인 제목을 사용합니다.
+2. 각 기기는 `id = nodeType [attributes]` 형식으로 한 줄에 하나씩 선언합니다.
+3. `from -> to` 형식으로 기기를 연결합니다. 선택적으로 `[cable: "…", label: "…"]`를 추가할 수 있습니다.
+4. ID는 문자, 숫자, 밑줄, 하이픈을 포함할 수 있으며, 반드시 문자로 시작해야 합니다.
+
+> 주석은 `#`, `//`, 또는 Mermaid 스타일의 `%%`로 시작할 수 있으며, 해당 줄 전체가 주석이어야 합니다.
+
+---
+
+## 2. 노드 유형
+
+노드 줄의 형식은 `id = nodeType [attr: value, …]`입니다. 노드 유형에 따라 그려지는 심볼이 결정됩니다.
+
+### 2.1 전원
+
+| 유형 | 심볼 | 일반적인 사용 |
+|---|---|---|
+| `utility` | 유틸리티 전원 화살표 | 무한 모선 / 계통 연계 |
+| `generator` | `G` 기호가 있는 원 | 디젤, 가스, 또는 수력 발전기 |
+| `solar` | 태양광 패널 심볼 | 태양광(PV) 어레이 |
+| `wind` | 터빈 심볼 | 풍력 터빈 |
+| `ups` | 배터리가 있는 블록 | 무정전 전원 장치 |
+
+<Playground initial={`sld "Generation sources"
+util = utility [label: "Grid 115 kV"]
+gen = generator [rating: "2 MW", label: "Diesel Gen"]
+sol = solar [rating: "500 kW", label: "PV Array"]
+wnd = wind [rating: "1 MW", label: "Wind Turbine"]
+ups = ups [rating: "100 kVA", label: "UPS System"]
+util -> gen
+util -> sol
+util -> wnd
+util -> ups`} height={360} />
+
+### 2.2 변압기
+
+| 유형 | 권선 구성 | 비고 |
+|---|---|---|
+| `transformer` | 일반 2권선 | 권선 사양 없음 |
+| `transformer_dy` | 델타 → 접지형 와이 (Δ-Yg) | 가장 일반적인 배전 방식 |
+| `transformer_yd` | 접지형 와이 → 델타 (Yg-Δ) | |
+| `transformer_yy` | 와이-와이 (양쪽 접지) | |
+| `transformer_dd` | 델타-델타 | |
+| `autotransformer` | 탭이 있는 단권선 | 지그재그 코일 심볼 |
+| `transformer_3winding` | 3권선 | HV / MV / LV 탭 |
+
+<Playground initial={`sld "Transformer configurations"
+src = utility [label: "138kV Grid"]
+t_dy = transformer_dy [rating: "30 MVA", voltage: "138kV/13.8kV", label: "Δ-Yg (most common)"]
+t_yy = transformer_yy [rating: "10 MVA", voltage: "138kV/13.8kV", label: "Yg-Yg"]
+t_auto = autotransformer [rating: "50 MVA", voltage: "138kV/69kV", label: "Autotransformer"]
+t_3w = transformer_3winding [rating: "40 MVA", voltage: "138/13.8/4.16kV", label: "3-Winding"]
+src -> t_dy
+src -> t_yy
+src -> t_auto
+src -> t_3w`} height={360} />
+
+### 2.3 모선 및 노드
+
+| 유형 | 심볼 | 일반적인 사용 |
+|---|---|---|
+| `bus` | 굵은 수평선 | 주 전압 모선 바 |
+| `bus_tie` | 모선 연결 차단기 | 같은 전압의 두 병렬 모선 연결 |
+| `hub` | 넓은 사각형 | 다중 피더 결합 지점 |
+
+### 2.4 개폐 및 보호
+
+| 유형 | 심볼 | 기기 번호 |
+|---|---|---|
+| `breaker` | 대각선 + 호 | 52 (교류 차단기) |
+| `breaker_vacuum` | 대각선 + V형 타원 | 52 진공 차단기 |
+| `switch` | 대각선 (호 없음) | 89 (단로기 / 절연기) |
+| `switch_load` | 부하 차단 스위치 | — |
+| `ground_switch` | 대각선 + 접지 심볼 | 접지 단로기 |
+| `ats` | 절체 스위치 심볼 | 자동 절체 스위치 |
+| `recloser` | 대각선 + 호 + 화살표 | 자동 재폐로 차단기 |
+| `sectionalizer` | 대각선 + S | 배전 구분 개폐기 |
+| `fuse` | 대각선이 있는 타원 | 방출형 퓨즈 컷아웃 |
+| `fuse_cl` | 대각선이 있는 사각형 | 전류 제한형 퓨즈 |
+
+<Playground initial={`sld "Switching and protection"
+src = utility [label: "Source"]
+rclsr = recloser [label: "Recloser"]
+sect = sectionalizer [label: "Sectionalizer"]
+fuse1 = fuse [label: "Fuse"]
+sw = switch [label: "Disconnect"]
+gnd_sw = ground_switch [label: "Ground SW"]
+src -> rclsr
+rclsr -> sect
+sect -> fuse1
+sect -> sw
+sw -> gnd_sw`} height={340} />
+
+### 2.5 보호 및 감시
+
+| 유형 | 심볼 | 일반적인 사용 |
+|---|---|---|
+| `ct` | 선이 통과하는 작은 원 | 변류기 |
+| `pt` | 작은 원 | 계기용 변압기 / 전압 변압기 |
+| `relay` | 기기 번호가 있는 작은 원 | 보호 계전기 (`device:`로 ANSI 번호 지정) |
+| `surge_arrester` | 화살표 + 접지 | 피뢰기 |
+| `ground_fault` | GFI 심볼 | 지락 검출기 |
+
+### 2.6 부하 및 기기
+
+| 유형 | 심볼 | 일반적인 사용 |
+|---|---|---|
+| `motor` | `M` 기호가 있는 원 | 3상 전동기 |
+| `load` | 사각형 | 일반 부하 또는 피더 |
+| `capacitor_bank` | 두 판 + 스위치 | 역률 개선 |
+| `harmonic_filter` | LC 심볼 | 수동형 고조파 필터 |
+| `vfd` | VFD가 있는 사각형 | 가변 주파수 드라이브 |
+
+### 2.7 계량
+
+| 유형 | 심볼 | 일반적인 사용 |
+|---|---|---|
+| `watthour_meter` | `Wh` 기호가 있는 원 | 전력량계 |
+| `demand_meter` | `D` 기호가 있는 원 | 수요 전력계 |
+
+<Playground initial={`sld "Equipment types"
+src = utility [label: "Grid 13.8kV"]
+tx = transformer_dy [rating: "1000 kVA", voltage: "13.8kV/480V", label: "Main TX"]
+bk = breaker [rating: "2000A", label: "Main Breaker"]
+bus = bus [voltage: "480V", label: "480V MV Bus"]
+ct1 = ct [label: "CT-1"]
+rly = relay [device: "51", label: "Overcurrent Relay"]
+cap = capacitor_bank [rating: "150 kVAR", label: "PF Cap"]
+mtr = motor [rating: "100HP", label: "Pump Motor"]
+gen = generator [rating: "500kW", label: "Emergency Gen"]
+ats = ats [rating: "800A", label: "ATS-1"]
+src -> tx
+tx -> bk
+bk -> bus
+bus -> ct1
+ct1 -> rly
+bus -> cap
+bus -> mtr
+gen -> ats
+ats -> bus`} height={440} />
+
+---
+
+## 3. 노드 속성
+
+속성은 노드 유형 뒤의 `[…]` 안에 쉼표로 구분하여 작성합니다.
+
+| 속성 | 값 | 효과 |
+|---|---|---|
+| `label: "…"` | 따옴표 문자열 | 다이어그램의 표시 이름 |
+| `voltage: "…"` | 따옴표 문자열, 예: `"13.8kV"`, `"480V"` | 전압 레벨 주석 |
+| `rating: "…"` | 따옴표 문자열, 예: `"1000 kVA"`, `"200A"` | 기기 정격 주석 |
+| `device: "…"` | ANSI 기기 번호, 예: `"51"`, `"87"` | `relay` 노드에 사용 |
+| 기타 키 | 따옴표 문자열 | 명판 데이터로 저장 (변압기 kVA, %Z 등) |
+
+**일반적인 속성을 모두 포함한 예제:**
+
+```
+xfmr = transformer_dy [
+  label: "Main Transformer",
+  voltage: "13.8kV/480V",
+  rating: "1000 kVA",
+  impedance: "5.75%Z"
+]
+```
+
+속성 블록은 여러 줄에 걸쳐 작성할 수 있습니다. 파서는 `]`가 닫힐 때까지 줄을 이어서 처리합니다.
+
+---
+
+## 4. 연결
+
+연결 줄의 형식은 `fromId -> toId`이며, 선택적으로 `[cable: "…", label: "…"]`를 추가할 수 있습니다.
+
+```
+bus1 -> cb1
+bus1 -> cb1 [cable: "3#2/0 AWG"]
+bus1 -> cb1 [cable: "3#2/0 AWG", label: "Feeder A"]
+```
+
+**규칙:**
+- 두 ID 모두 연결 이전이나 이후에 선언되어야 합니다. 모든 연결은 파싱 종료 시점에 유효성 검사가 이루어집니다.
+- `->` (방향성, 전원에서 부하 방향)만 허용됩니다. 연결 방향은 레이아웃에 사용됩니다.
+- 알 수 없는 노드 ID가 있으면 `SLDParseError: Connection references unknown node "…"` 오류가 발생합니다.
+
+<Playground initial={`sld "ATS backup with cable labels"
+UTIL = utility [label: "Utility 480V"]
+GEN = generator [rating: "500 kW", label: "Emergency Gen"]
+ATS1 = ats [rating: "800A", label: "ATS-1"]
+BUS1 = bus [voltage: "480V", label: "Critical Bus"]
+CB1 = breaker [rating: "200A", label: "CB-1"]
+CB2 = breaker [rating: "200A", label: "CB-2"]
+L1 = load [label: "Server Room"]
+L2 = load [label: "Life Safety"]
+UTIL -> ATS1 [label: "Normal source"]
+GEN -> ATS1 [label: "Emergency source"]
+ATS1 -> BUS1 [cable: "3#2/0 AWG"]
+BUS1 -> CB1
+BUS1 -> CB2
+CB1 -> L1 [cable: "3#4 AWG"]
+CB2 -> L2 [cable: "3#4 AWG"]`} height={400} />
+
+---
+
+## 5. 레이블 및 주석
+
+- **제목:** `sld "Substation One-Line"` — 첫 번째 줄에만.
+- **노드 레이블:** `id = type [label: "…"]` — 표시 이름.
+- **연결 레이블:** `A -> B [label: "…"]` — 연결선 옆에 표시.
+- **케이블 주석:** `A -> B [cable: "3#2/0 AWG, 200ft"]` — 도선 사양.
+- **주석:** 줄 시작의 `#`. 노드나 연결과 같은 줄의 인라인 `#`도 제거됩니다.
+- **주거용 별칭:** `mcb`, `rcd`, `rcbo`, `rccb`, `pia`, `iga`, `main_switch`, `consumer_unit`, `distribution_board`, `panel`, `panelboard` 같은 IEC / REBT 어휘는 입력으로 허용되며 기존 SLD 프리미티브에 매핑됩니다.
+
+---
+
+## 6. 예약어 및 이스케이프
+
+**줄 시작 예약어:** `sld` (헤더).
+
+**연산자 토큰** — 노드 ID 내에 `->` 사용을 피하십시오. ID는 `[A-Za-z][A-Za-z0-9_-]*` 형식을 따릅니다. 하이픈은 유효합니다(예: `CB-101`은 올바른 ID입니다).
+
+**속성 블록** — `[…]` 괄호는 여러 물리적 줄에 걸쳐 작성할 수 있습니다. 파서는 괄호 깊이가 0이 될 때까지 이어지는 줄을 병합합니다.
+
+**중복 ID**는 `SLDParseError: Duplicate node id "…"` 오류를 발생시킵니다.
+
+---
+
+## 7. 흔한 실수
+
+| 작성한 내용 | 파서 메시지 | 수정 방법 |
+|---|---|---|
+| `xfmr1 [type: transformer]` | `SLDParseError: Cannot parse line` | `=` 할당 사용: `xfmr1 = transformer [...]` |
+| `id = battery [...]` | `SLDParseError: Unknown node type "battery"` | `battery` 유형은 없음 — `ups` 또는 `generator` 사용 |
+| `id = breakerz` | `SLDParseError: Unknown node type ... (did you mean 'breaker'?)` | 제안된 정식 유형 또는 별칭 사용 |
+| `A -- B` (양방향) | `SLDParseError: Cannot parse line` | `->` 만 허용됨. 필요 시 `->` 두 줄 사용 |
+| `A -> B -> C` (연쇄) | `SLDParseError: Cannot parse line` | 각 연결은 줄당 하나의 `->` |
+| `relay [label: "OC"]` (기기 번호 없음) | 계전기가 빈 번호로 렌더링 | ANSI 기기 번호를 위해 `device: "51"` 추가 |
+| `voltage: 480V` (따옴표 없음) | 속성 값을 인식하지 못함 | 모든 값을 따옴표로 묶기: `voltage: "480V"` |
+| 숫자로 시작하는 노드 ID: `2BUS` | `SLDParseError: Cannot parse line` | ID는 문자로 시작해야 함: `BUS2` |
+| 노드 선언 전 연결 | `SLDParseError: Connection references unknown node "…"` | 노드 선언은 연결 전후 어디든 가능 — 파싱 종료 시 유효성 검사 |
+
+---
+
+## 8. 문법 (EBNF)
+
+```text
+document      = header NEWLINE ( blank | comment | node-def | connection )*
+
+header        = "sld" ( WS quoted-string )? NEWLINE
+quoted-string = '"' any-char-but-quote* '"'
+
+node-def      = id WS "=" WS node-type ( WS "[" attr-list "]" )? NEWLINE
+node-type     = "utility" | "generator" | "solar" | "wind" | "ups"
+              | "transformer" | "transformer_dy" | "transformer_yd"
+              | "transformer_yy" | "transformer_dd"
+              | "autotransformer" | "transformer_3winding"
+              | "bus" | "bus_tie" | "hub"
+              | "breaker" | "breaker_vacuum" | "switch" | "switch_load"
+              | "ground_switch" | "ats" | "recloser" | "sectionalizer"
+              | "fuse" | "fuse_cl"
+              | "ct" | "pt" | "relay" | "surge_arrester" | "ground_fault"
+              | "motor" | "load" | "capacitor_bank" | "harmonic_filter" | "vfd"
+              | "watthour_meter" | "demand_meter"
+              | residential-alias
+
+residential-alias
+              = "mcb" | "mccb" | "rcd" | "rcbo" | "rccb"
+              | "differential" | "diferencial" | "pia" | "iga"
+              | "main_switch" | "isolator" | "disconnector"
+              | "consumer_unit" | "distribution_board" | "panel" | "panelboard"
+
+attr-list     = attr ( "," attr )*
+attr          = key ":" WS quoted-string
+
+connection    = id WS "->" WS id ( WS "[" conn-attrs "]" )? NEWLINE
+conn-attrs    = conn-attr ( "," conn-attr )*
+conn-attr     = "cable" ":" WS quoted-string
+              | "label" ":" WS quoted-string
+
+id            = [A-Za-z] [A-Za-z0-9_-]*
+key           = [A-Za-z] [A-Za-z0-9_]*
+comment       = ( "#" | "//" | "%%" ) any NEWLINE
+```
+
+속성 블록 `[…]`는 여러 물리적 줄에 걸쳐 작성할 수 있으며, 파서는 괄호 깊이가 0으로 돌아올 때까지 줄을 이어서 처리합니다.
+
+공식 소스: `src/diagrams/sld/parser.ts`. 이 내용이 파서와 다를 경우 파서가 기준입니다. 이슈를 열어 주십시오.
+
+---
+
+## 9. 표준 준수
+
+Schematex SLD는 개폐 기기, 변압기, 전원에 대해 **IEEE Std 315 (ANSI Y32.2)** 도식 심볼 표기 방식을 따릅니다. 변압기 권선 구성 변형(`transformer_dy`, `transformer_yy` 등)은 **IEC 60617** Δ/Y 표기법을 사용합니다. 보호 계전기 기기 번호는 **ANSI/IEEE C37.2**를 따릅니다.
+
+현재 구현된 사항:
+
+- ✅ 모든 전원 유형: utility, generator, solar, wind, UPS
+- ✅ 6가지 변압기 변형 및 단권 변압기, 3권선 변압기
+- ✅ Bus, bus-tie, hub
+- ✅ IEC / REBT 주거용 어휘 별칭이 정식 프리미티브에 매핑됨
+- ✅ 전체 개폐 세트: breaker, vacuum breaker, switch, load switch, ground switch, ATS, recloser, sectionalizer, fuse, current-limiting fuse
+- ✅ 보호 및 감시: CT, PT, relay (ANSI 기기 번호 포함), surge arrester, ground-fault detector
+- ✅ 부하 기기: motor, load, capacitor bank, harmonic filter, VFD
+- ✅ 계량: watt-hour meter, demand meter
+- ✅ 케이블 및 레이블 주석이 있는 방향성 연결
+- ✅ `label`, `voltage`, `rating`, `device` 노드 속성; 임의의 명판 데이터
+- ⏳ 개폐 상태 표시기가 있는 모선 연결 차단기 (열림/닫힘)
+- ⏳ 보호 구역 (계전기 + CT를 둘러싼 점선 경계선)
+- ⏳ 아크 플래시 레이블 블록 (입사 에너지, PPE 레벨, 작업 거리)
+- ⏳ 전압 레벨 밴딩 (kV 레벨에 따른 자동 색상 구분 수평 밴드)
+
+참고 문헌:
+
+- IEEE Std 315-1975 / ANSI Y32.2-1975 — *Graphic Symbols for Electrical and Electronics Diagrams*
+- IEC 60617:2025 (BS 3939) — *Graphical symbols for diagrams*
+- ANSI/IEEE C37.2 — *Electrical Power System Device Function Numbers*
+
+---
+
+## 10. 관련 예제
+
+<RelatedExamples slugs={[
+  'sld-generator-ats',
+  'sld-substation-13kv',
+]} />
+
+---
+
+## 11. 로드맵
+
+**계획 중 — 아직 파싱 불가.** 오늘 생성된 DSL에서는 사용하지 마십시오. 파서가 거부하거나 무시합니다.
+
+- **모선 연결 차단기 개폐 상태** — `bus_tie`에 명시적인 열림/닫힘 속성을 추가하여 올바른 개폐 위치로 심볼을 렌더링.
+- **보호 구역** — 노드 세트(계전기 + CT + 차단기) 주변에 점선 사각형을 그려 보호 구역을 나타내는 `zone:` 또는 `boundary:` 블록.
+- **아크 플래시 주석 블록** — IEEE 1584에 따른 `arc_flash: [incident_energy: "8 cal/cm²", ppe: "2", distance: "18in"]`.
+- **전압 레벨 밴딩** — kV 레벨에 따른 자동 수평 음영 밴드; 노드가 자동으로 해당 전압 계층에 배치됨.
+- **양방향 연결** (`<->`) — 방향이 정의되지 않은 모선 연결 또는 상시 개방 타이 경로용.
+
+더 빠른 구현이 필요하시면 GitHub 이슈에서 추적하십시오.

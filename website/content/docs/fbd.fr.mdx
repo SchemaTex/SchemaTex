@@ -1,0 +1,197 @@
+---
+title: Diagramme de blocs fonctionnels (FBD)
+---
+
+## À propos des diagrammes de blocs fonctionnels
+
+Le **diagramme de blocs fonctionnels (FBD)** est l'un des cinq langages de programmation d'automates définis par **[IEC 61131-3:2013](https://en.wikipedia.org/wiki/IEC_61131-3)** — la norme internationale pour l'automatisation industrielle. C'est le deuxième langage d'automate le plus utilisé en production (après le schéma en échelle), et le choix naturel lorsqu'un programme est plus lisible en tant que **flux de données** qu'en relais à rails d'alimentation et barreaux. La logique AND/OR, les temporisateurs (TON/TOF/TP), les compteurs (CTU/CTD), la comparaison (EQ/NE/GT/GE/LT/LE), les mathématiques (ADD/SUB/MUL/DIV/MOVE), les détecteurs de fronts (R\_TRIG/F\_TRIG), les bascules bistables (SR/RS) — tous rendus comme des boîtes à ports nommés câblées de gauche à droite.
+
+Schematex suit les conventions visuelles **IEC 61131-3 §6.4** avec les symboles distinctifs **IEC 60617-12** (`&` pour AND, `≥1` pour OR, `=1` pour XOR, `1` pour NOT/BUF). Les fils sont colorés par type de données (BOOL noir, INT bleu, REAL orange, TIME magenta) suivant la convention de facto TIA Portal. Langage sœur de **[ladder](/docs/ladder)** (§6.3, basé sur les barreaux) et de **[sfc](/docs/sfc)** (§6.5, basé sur les séquences) ; ensemble, ils forment la moitié visuelle de IEC 61131-3.
+
+<Playground initial={`
+  fbd "Motor Control"
+
+  var Start: bool
+  var Stop: bool
+  var Latch: bool
+  var MotorOut: bool
+
+  network 0 "Start/stop latch":
+    Latch = OR(Start, AND(Latch, ~Stop))
+
+  network 1 "Drive output":
+    MotorOut = MOVE(Latch)`} height={420} />
+
+---
+
+## 1. Votre premier réseau FBD
+
+Le plus petit réseau FBD utile : un bloc, deux entrées, une sortie.
+
+```
+fbd
+network 0:
+  Out = AND(A, B)
+```
+
+`A` et `B` sont auto-déclarés comme entrées BOOL (bornes côté gauche), et `Out` est câblé automatiquement au port `OUT` du bloc AND (borne côté droit). Le bloc se place entre eux avec des souches de ports et des étiquettes.
+
+---
+
+## 2. Variables
+
+Déclarez les variables avant tout réseau. Chaque variable a un nom, un type de données IEC et une valeur initiale optionnelle.
+
+```
+fbd "Tank Control"
+
+var StartBtn: bool
+var TankLevel: real
+var SetPoint: real = 80.0
+var DwellTimer: timer
+var Pulse: counter
+```
+
+Types pris en charge : `bool`, `int`, `dint`, `uint`, `udint`, `real`, `lreal`, `time`, `date`, `tod`, `string`, `wstring`, `byte`, `word`, `dword`, `timer`, `counter`. Tout autre identifiant est traité comme un type de bloc fonctionnel défini par l'utilisateur.
+
+Préfixes de portée optionnels (par défaut = local) : `var_input`, `var_output`, `var_in_out`, `var_global`, `var_external`.
+
+---
+
+## 3. Réseaux
+
+Un **réseau** est un morceau indépendant de flux de données, évalué de gauche à droite en son sein ; les réseaux s'évaluent de haut en bas dans le programme à chaque cycle.
+
+```
+network 0 "Start latch":
+  ...
+
+network 1:
+  ...
+```
+
+Le numéro est optionnel — les réseaux sont numérotés automatiquement en cas d'absence. Le titre (entre guillemets) s'affiche en haut à gauche du cadre du réseau.
+
+---
+
+## 4. Appels de blocs — notation en expression inline
+
+La manière la plus claire d'écrire un réseau combinatoire est une expression imbriquée unique :
+
+```
+network 0:
+  Out = OR(A, AND(B, ~C))
+```
+
+Le parseur construit l'arbre d'appels : OR externe avec `A` en entrée 1 et le résultat AND en entrée 2 ; le AND a `B` et le `C` nié. Le moteur de rendu les dispose de gauche à droite (entrées en couche 0, AND en couche 1, OR en couche 2, sortie en couche 3).
+
+`~C` ajoute une **bulle de négation** (petit cercle ouvert) sur le port d'entrée — équivalent à insérer un bloc NOT sur ce fil, mais plus propre.
+
+---
+
+## 5. Appels de blocs — notation avec tag d'instance
+
+Lorsque vous avez besoin de référencer les sorties d'un bloc ailleurs, donnez-lui un tag d'instance :
+
+```
+network 0:
+  Pulse = R_TRIG(CLK: Sensor)
+  Count = CTU(CU: Pulse.Q, R: Reset, PV: 100)
+  Done  = GE(IN1: Count.CV, IN2: 100)
+```
+
+`Pulse.Q`, `Count.CV` référencent les ports de sortie des instances nommées. Le tag d'instance s'affiche en italique au-dessus de l'en-tête du bloc.
+
+Les listes d'arguments acceptent des **ports nommés** (`CU: Pulse.Q`) ou **positionnels** (`CTU(Pulse.Q, Reset, 100)`) — les ports nommés sont recommandés pour la lisibilité et requis lorsque vous sautez un port.
+
+---
+
+## 6. Constantes inline
+
+Les ports d'entrée peuvent prendre des littéraux directement — pas de fil nécessaire :
+
+```
+network 0:
+  Dwell = TON(IN: BottleSensor, PT: T#50ms)
+  Cap   = LIMIT(MN: 0.0, IN: Setpoint, MX: 95.0)
+  Mode  = SEL(G: ManualSwitch, IN0: AutoMode, IN1: ManualMode)
+```
+
+`T#50ms`, `0.0`, `95.0` s'affichent comme de petits textes en boîte jaune à gauche de leur port. Les littéraux temporels suivent IEC 61131-3 : `T#10ms`, `T#5s`, `T#3m20s`, `T#1h`. Les booléens sont `true` / `false` (insensible à la casse).
+
+---
+
+## 7. Bibliothèque de blocs standard
+
+| Catégorie | Blocs |
+|---|---|
+| Booléen | `AND`, `OR`, `NOT`, `NAND`, `NOR`, `XOR`, `XNOR`, `BUF` |
+| Détection de front | `R_TRIG`, `F_TRIG` |
+| Bistable | `SR`, `RS` |
+| Temporisateur | `TON`, `TOF`, `TP` |
+| Compteur | `CTU`, `CTD` |
+| Mathématiques | `ADD`, `SUB`, `MUL`, `DIV`, `MOD`, `ABS`, `NEG`, `MOVE` |
+| Comparaison | `EQ`, `NE`, `GT`, `GE`, `LT`, `LE` |
+| Sélection | `SEL`, `MUX`, `MAX`, `MIN`, `LIMIT` |
+
+AND, OR, NAND, NOR, ADD, MUL, MAX, MIN acceptent un nombre quelconque d'entrées (2 par défaut). Passez des arguments positionnels supplémentaires ou utilisez `[inputs: N]` pour étendre.
+
+```
+network 0:
+  All4 = AND(A, B, C, D)
+  Sum  = ADD(X, Y, Z)
+```
+
+---
+
+## 8. Exemple plus complet — compteur de bouteilles
+
+```
+fbd "Bottle Counter"
+
+var ConveyorRunning: bool
+var BottleSensor: bool
+var BatchDone: bool
+var BatchSize: counter
+var DwellTimer: timer
+
+network 0 "Debounce sensor with 50ms dwell":
+  Dwell = TON(IN: BottleSensor, PT: T#50ms)
+
+network 1 "Count one bottle on rising edge of debounced signal":
+  Pulse     = R_TRIG(CLK: Dwell.Q)
+  BatchSize = CTU(CU: Pulse.Q, R: BatchDone, PV: 24)
+
+network 2 "Batch done":
+  BatchDone = MOVE(BatchSize.Q)
+```
+
+Trois réseaux : antirebond → détection de front → comptage → indicateur. Chaque réseau est un DAG ; le moteur de rendu achemine les fils par des chemins Manhattan.
+
+---
+
+## 9. Limitations de la version 0.1
+
+Le moteur actuel implémente le sous-ensemble de blocs standard que la plupart des équipes utilisent au quotidien. Les éléments suivants sont différés et seront ajoutés dans une version ultérieure :
+
+- **Rails de flux de puissance EN/ENO** (attribut de bloc `[en]`, en-tête `[rail: on]`) — ajoute un rail d'activation en haut du réseau, convention vendor de Studio 5000 / TIA Portal.
+- **Blocs fonctionnels définis par l'utilisateur** avec déclarations `pins_in:` / `pins_out:` — pour les contrôleurs de moteurs personnalisés, les instances PID, etc.
+- **Connecteurs de page** (`connector_out` / `connector_in`) pour les fils couvrant plusieurs pages.
+- **Blocs sur chaîne de bits** (SHL, SHR, ROL, ROR, AND_BIT, OR_BIT, etc.).
+- **Mathématiques étendues** (SQRT, LN, LOG, EXP, SIN, COS, TAN, ASIN, ACOS, ATAN).
+- **Mode de forme distinctive ANSI** (`[shape: ansi]`) — le moteur `logic` le fournit déjà pour les diagrammes purement booléens.
+- **Compteur bidirectionnel CTUD**, **temporisateur TP** retentif (RTO).
+
+Si vous avez besoin de l'un de ces éléments maintenant, ouvrez un ticket ou utilisez le moteur `ladder` pour le sous-ensemble IEC 61131-3 LD complet.
+
+---
+
+## Exemples associés
+
+Scénarios prêts à l'emploi issus de la galerie d'exemples :
+
+<RelatedExamples slugs={[
+  'fbd-motor-latch',
+  'fbd-bottle-counter',
+  'fbd-tank-setpoint-limiter',
+]} />

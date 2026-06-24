@@ -1,0 +1,88 @@
+---
+title: Introdução
+description: Cada diagrama que um médico, engenheiro ou advogado realmente usaria. Gratuito. Totalmente open source. Feito para IA. Diagramas seguindo padrões da indústria — do genogram ao fault tree — a partir de um DSL textual.
+---
+
+**Schematex** renderiza cada diagrama que um médico, engenheiro ou advogado realmente
+usaria — genograms clínicos, ladder logic IEC 61131-3, pedigrees NSGC, single-line
+diagrams IEEE 315, cap tables, e muito mais. Um DSL textual minimalista na entrada;
+SVG em conformidade com padrões na saída.
+
+**Gratuito. Totalmente open source. Feito para IA.** AGPL-3.0, zero dependências em
+tempo de execução, e um DSL projetado em torno de como LLMs realmente escrevem texto —
+cole a saída do ChatGPT ou do Claude e obtenha um diagrama profissional já na primeira
+tentativa.
+
+## O que posso desenhar?
+
+<DiagramCatalog />
+
+## Exemplo rápido
+
+<Playground initial={`genogram "The Smiths"
+  john [male, 1950]
+  mary [female, 1952]
+  john -- mary
+    alice [female, 1975, index]
+    bob [male, 1978]
+  alice -close- mary`} />
+
+## Use com IA
+
+O Schematex inclui uma camada de ferramentas criada para LLMs. Conecte o Claude.ai ao servidor MCP hospedado em 10 segundos e deixe-o gerar diagramas validados em qualquer conversa — sem instalação, sem configuração.
+
+<MCPConnectCard size="compact" />
+
+Ou construa seu próprio recurso de IA sobre o Vercel AI SDK. Veja **[Usar Schematex com IA](/docs/ai-integration)**.
+
+## Próximos passos
+
+- [Primeiros passos](/docs/getting-started) — instalar, importar, renderizar
+- [Usar Schematex com IA](/docs/ai-integration) — MCP + Vercel AI SDK + agent loop
+- [Playground](/playground) — experimente qualquer tipo de diagrama ao vivo
+- [Referência de API](/docs/api)
+
+---
+
+## Como funciona
+
+Cada tipo de diagrama segue o mesmo pipeline:
+
+```
+Text DSL ──→ Parser ──→ AST ──→ Layout Engine ──→ LayoutResult ──→ SVG Renderer ──→ SVG string
+```
+
+Cada diagrama implementa um `DiagramPlugin` com quatro métodos:
+
+```ts
+interface DiagramPlugin {
+  detect(text: string): boolean;           // auto-detecta o tipo de diagrama
+  parse(text: string): DiagramAST;         // texto → AST tipado
+  layout(ast, config): LayoutResult;       // AST → nós/arestas posicionados
+  render(layout, config): string;          // LayoutResult → string SVG
+}
+```
+
+Os algoritmos de layout são específicos por domínio por design — genogram usa um layout em camadas baseado em geração, ecomap usa radial/polar, logic gates usam ordenação topológica de DAG, ladder logic usa um layout fixo de power-rail. Engines de layout genéricos (dagre, ELK) não conseguem produzir saída em conformidade com padrões para esses tipos de diagrama.
+
+---
+
+## Princípios de design
+
+1. **Diagramas que profissionais realmente usam** — cada tipo de diagrama implementa uma especificação de domínio publicada: McGoldrick 2020 (genogram), Hartman 1978 (ecomap), Bennett 2022 (pedigree), Moreno 1934 (sociogram), IEEE Std 91 (logic gates), IEC 61131-3 (ladder logic), IEEE 315 (SLD), e mais.
+2. **Gratuito e totalmente open source** — AGPL-3.0, zero dependências em tempo de execução (sem D3, sem dagre, sem geradores de parser), tudo escrito à mão. Bundle pequeno, sem risco de supply-chain. Licença comercial disponível para uso em código fechado.
+3. **Feito para IA** — o DSL é projetado em torno de como LLMs realmente escrevem texto (aspas CJK, ambiguidade de aninhamento, erros legíveis por IA). Cole a saída do ChatGPT ou do Claude e obtenha um diagrama profissional já na primeira tentativa.
+4. **Saída SVG semântica** — cada SVG inclui `<title>` e `<desc>` para acessibilidade, classes CSS para temas, e atributos `data-*` para interatividade.
+
+---
+
+## Temas
+
+Três presets integrados: `default` (azul-cinza), `monochrome` (preto-e-branco / impressão), `dark` (Catppuccin Mocha).
+
+Sobrescreva qualquer token via custom properties CSS injetadas no bloco `<style>` de cada SVG:
+
+```css
+--schematex-stroke: #1a1a1a;
+--schematex-fill: #f5f5f5;
+```

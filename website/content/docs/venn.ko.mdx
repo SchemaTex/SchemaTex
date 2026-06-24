@@ -1,0 +1,297 @@
+---
+title: 벤 / 오일러 다이어그램
+---
+
+## 벤 다이어그램과 오일러 다이어그램이란
+
+**벤 다이어그램**은 겹치는 원을 사용하여 집합들 사이에서 가능한 모든 논리적 관계를 표현합니다 — 각 교집합에 실제 원소가 있는지 여부와 무관하게. **오일러 다이어그램**은 더 일반적인 형태입니다. 실제로 관계가 존재하는 곳에만 원을 그리므로, 다른 집합에 완전히 포함된 집합은 중첩된 원으로 표현되고, 서로 분리된 두 집합은 겹치지 않습니다. John Venn이 1880년에 고정 겹침 형식을 도입했고, Leonhard Euler가 1760년대에 일반적인 집합 포함 형식을 설명했습니다.
+
+교육자들은 집합론을 가르치는 데 활용하고, 데이터 분석가들은 세그먼트 간의 청중 겹침(이메일 목록 ∩ 모바일 사용자 ∩ 유료 구독자)을 표현하는 데 사용합니다. 생물학, 언어학, 의학 분야 연구자들은 분류학적 또는 개념적 계층 구조를 매핑하는 데 오일러 다이어그램을 활용합니다. Schematex는 하나의 DSL로 네 가지 일반적인 사용 패턴을 모두 지원합니다 — 선언적 카운트, 원소 열거, 영역 레이블, 오일러 부분집합/분리/겹침 관계 — 하나의 다이어그램 안에서 혼용할 수 있습니다. 배경 지식은 [Wikipedia의 벤 다이어그램](https://en.wikipedia.org/wiki/Venn_diagram)과 [오일러 다이어그램](https://en.wikipedia.org/wiki/Euler_diagram) 문서를 참조하십시오.
+
+<Playground initial={`venn "Customer Segments — Q3 2025"
+set email "Email subscribers" [color: "#1E88E5"]
+set paid "Paid users" [color: "#E53935"]
+set mobile "Mobile app users" [color: "#43A047"]
+email & paid : 1840
+email & mobile : 920
+paid & mobile : 2100
+email & paid & mobile : 650
+email only : 12400
+paid only : 3200
+mobile only : 8700`} height={480} />
+
+---
+
+## 1. 첫 번째 벤 다이어그램
+
+가장 작고 유용한 다이어그램: 두 집합, 하나의 교집합, 두 개의 배타적 영역.
+
+<Playground initial={`venn "Support channels"
+set A "Email support" [color: "#1E88E5"]
+set B "Live chat" [color: "#E53935"]
+A & B : 320
+A only : 1450
+B only : 890`} />
+
+80%의 사용 사례를 커버하는 네 가지 규칙:
+
+1. `venn`으로 시작하고, 선택적으로 따옴표로 감싼 제목을 붙입니다.
+2. `set ID "레이블"`로 각 **집합**을 선언합니다 — id는 내부적으로 사용되고, 레이블은 다이어그램에 표시됩니다.
+3. 교집합에는 `A & B : 값`, 배타적 영역에는 `A only : 값`으로 **영역**에 값을 할당합니다.
+4. `config:` 행으로 외관을 설정합니다. 다이어그램 모드(`venn` vs `euler`)는 명시적으로 설정하거나 `auto`로 둘 수 있습니다.
+
+> 주석은 독립된 줄에서 `#`으로 시작해야 합니다.
+
+---
+
+## 2. 집합
+
+집합 선언은 다이어그램에 원 하나를 만듭니다.
+
+```
+set ID "레이블" [color: "#hex"]
+```
+
+| 부분 | 필수 여부 | 참고 |
+|------|-----------|------|
+| `ID` | 예 | `[A-Za-z][A-Za-z0-9_-]*` 형식이어야 함 |
+| `"레이블"` | 예 | 원에 표시되는 따옴표 문자열 |
+| `[color: "#hex"]` | 아니오 | 이 집합의 채우기 색상 재정의 |
+
+집합은 영역 또는 관계 행에서 참조되기 전에 선언되어야 합니다.
+
+<Playground initial={`venn "Programming paradigms"
+set oop "Object-Oriented" [color: "#1E88E5"]
+set fp "Functional" [color: "#E53935"]
+set logic "Logic" [color: "#43A047"]
+oop & fp : 180
+oop & logic : 45
+fp & logic : 90
+oop & fp & logic : 12
+oop only : 620
+fp only : 340
+logic only : 95`} height={440} />
+
+---
+
+## 3. 영역
+
+영역은 교집합 또는 배타적 영역에 값을 할당합니다. 네 가지 DSL 모드를 하나의 다이어그램에서 혼용할 수 있습니다.
+
+### 3.1 선언적 모드 — 카운트와 백분율
+
+이름이 붙은 영역에 숫자 또는 백분율을 할당합니다. 영역 키는 교집합의 경우 `&`로 구분된 집합 id 목록이거나, 다른 집합에 포함되지 않는 부분의 경우 `ID only`입니다.
+
+```
+A & B : 320          # 정수 카운트
+A & B & C : 45       # 3방향 교집합
+A only : 1450        # 다른 모든 집합에서 제외된 A
+A & B : 18.5%        # 백분율 값
+```
+
+<Playground initial={`venn "Market research"
+set aware "Awareness" [color: "#7B1FA2"]
+set consider "Consideration" [color: "#0288D1"]
+set convert "Conversion" [color: "#388E3C"]
+aware & consider : 3400
+consider & convert : 890
+aware & convert : 210
+aware & consider & convert : 150
+aware only : 18200
+consider only : 2100
+convert only : 540`} height={440} />
+
+### 3.2 영역 레이블 (텍스트)
+
+`region` 키워드 접두사를 사용하고 숫자 대신 따옴표 문자열을 할당합니다. 해당 문자열이 영역 안에 렌더링됩니다.
+
+```
+region A & B : "Nurture"
+region B & C : "Convert"
+region A & B & C : "Loyal customer"
+```
+
+<Playground initial={`venn "Go-to-market funnel"
+set A "Awareness" [color: "#7B1FA2"]
+set B "Consideration" [color: "#0288D1"]
+set C "Purchase" [color: "#388E3C"]
+region A & B : "Nurture"
+region B & C : "Convert"
+region A only : "Cold audience"
+region A & B & C : "Loyal"
+region C only : "Direct buyers"`} height={440} />
+
+### 3.3 열거 모드 — 원소 목록
+
+각 집합의 실제 원소를 나열합니다. Schematex가 모든 교집합을 자동으로 계산합니다.
+
+```
+ID = { element1, element2, element3 }
+```
+
+원소는 쉼표로 구분된 단어 또는 따옴표 문자열입니다. 열거 집합은 명시적인 `set` 선언이 필요하지 않습니다 — 선언이 암묵적으로 처리됩니다.
+
+<Playground initial={`venn "Full-stack team skills"
+Frontend = { React, TypeScript, CSS, Jest, Webpack }
+Backend  = { TypeScript, Node.js, PostgreSQL, Jest, Redis }
+DevOps   = { Docker, Kubernetes, PostgreSQL, Terraform, Redis }`} height={440} />
+
+---
+
+## 4. 오일러 관계
+
+오일러 관계는 구조적 포함 또는 분리를 표현합니다 — 한 집합이 다른 집합의 부분집합이거나, 두 집합이 완전히 분리되거나, 단순히 겹치는 경우. `set`으로 이미 선언된 집합 id를 참조해야 합니다.
+
+```
+from subset to    # from이 to 완전히 포함 (별칭: "in")
+from in to        # subset의 별칭
+from disjoint to  # from과 to가 겹치지 않음
+from overlap to   # from과 to가 부분적으로 겹침 (명시적 — 관계 없는 집합의 기본값)
+```
+
+<Playground initial={`venn "Biology taxonomy"
+set animals "Animals"
+set vertebrates "Vertebrates"
+set mammals "Mammals"
+set birds "Birds"
+set fish "Fish"
+vertebrates subset animals
+mammals subset vertebrates
+birds subset vertebrates
+fish subset vertebrates
+mammals disjoint birds
+mammals disjoint fish
+birds disjoint fish`} height={440} />
+
+| 키워드 | 별칭 | 의미 |
+|--------|------|------|
+| `subset` | `in` | `from`이 `to` 안에 완전히 포함됨 |
+| `disjoint` | — | `from`과 `to`가 교차하지 않음 |
+| `overlap` | — | `from`과 `to`가 교차하지만 어느 쪽도 다른 쪽을 포함하지 않음 |
+
+---
+
+## 5. 설정
+
+`config:` 행으로 다이어그램 동작을 조정합니다. 각각 독립된 줄에 작성합니다.
+
+| 설정 키 | 값 | 기본값 | 효과 |
+|---------|----|--------|------|
+| `diagram` | `venn`, `euler`, `auto` | `auto` | Venn(모든 원 고정) 또는 Euler(부분집합 중첩)를 강제합니다. `auto`는 오일러 관계의 존재를 보고 추론합니다. |
+| `proportional` | `true`, `false` | `false` | 원의 면적을 영역 카운트 값에 비례하여 조정합니다 |
+| `showCounts` | `true`, `false` | `auto` | 카운트 레이블 항상/절대 표시. `auto`는 카운트가 제공된 경우 표시합니다. |
+| `showPercent` | `true`, `false` | `false` | 각 영역 값을 전체 합계의 백분율로 표시합니다 |
+| `palette` | `default`, `brand`, `monochrome` | `default` | 집합의 색상 팔레트 (집합별 `color:`로 재정의 가능) |
+| `blendMode` | `multiply`, `screen`, `none` | `multiply` | 겹치는 채우기 색상의 혼합 방식 |
+
+설정은 헤더 행에 인라인으로 작성할 수도 있습니다: `venn "Title" [proportional: true, showPercent: true]`.
+
+```
+venn "Segment overlap"
+config: proportional = true
+config: showPercent = true
+config: blendMode = screen
+```
+
+**레이아웃 선택:**
+
+- `layout venn` — `config: diagram = venn`의 대체 형식 (동일하게 파싱됨).
+- `layout euler` — `config: diagram = euler`의 대체 형식.
+- `layout auto` — `config: diagram = auto`의 대체 형식.
+
+---
+
+## 6. 레이블 및 주석
+
+- **제목:** `venn "내 다이어그램"` — 첫 번째 줄에만.
+- **집합 레이블:** `set A "Email subscribers"` — `set` 행의 따옴표 문자열.
+- **영역 값:** `:` 뒤에 정수, 백분율, 따옴표 문자열, 원소 목록.
+- **주석:** 행 시작(앞에 공백 허용)에 `#`.
+
+---
+
+## 7. 예약어 및 이스케이핑
+
+**줄 시작 예약어:** `venn`(헤더), `set`, `config:`, `layout`, `region`.
+
+**영역 키 예약 연산자:** `&`(교집합), `only`(배타적 영역).
+
+**오일러 관계 키워드:** `subset`, `in`, `disjoint`, `overlap` — 집합 id로 사용 불가.
+
+**ID 규칙:** `[A-Za-z][A-Za-z0-9_-]*` 형식이어야 합니다. 공백이 포함된 레이블은 따옴표로 감싼 `"레이블"` 필드에 작성합니다.
+
+---
+
+## 8. 자주 하는 실수
+
+| 작성한 내용 | 파서 메시지 | 수정 방법 |
+|------------|------------|---------|
+| `set A …`와 `set B …` 선언 전에 `A & B : 320` | `VennParseError: unknown set id "A" in region key` | 영역 행에서 참조하기 전에 `set`으로 집합을 선언합니다 |
+| `set dogs …` 선언 전에 `dogs subset mammals` | `VennParseError: unknown set "dogs" in relation` | 집합을 먼저 선언한 후 오일러 관계를 작성합니다 |
+| `set A Email subscribers` (공백 있는 레이블에 따옴표 없음) | 파서 오류 — 레이블은 따옴표 문자열이어야 함 | 따옴표로 감쌉니다: `set A "Email subscribers"` |
+| `A & B = 320` (콜론 대신 등호) | 영역 패턴과 일치하지 않아 파서 오류 | 콜론을 사용합니다: `A & B : 320` |
+| `Frontend = { React TypeScript }` (쉼표 없음) | `React TypeScript`가 하나의 원소로 처리됨 | 쉼표로 구분합니다: `Frontend = { React, TypeScript }` |
+| `config: mode = venn` | `mode`는 인식되지 않는 키(키는 `diagram`) | `config: diagram = venn`을 사용합니다 |
+| 열거 집합과 명시적 `A & B :` 영역 혼용 | 열거 자동 파생은 `regions.length === 0`일 때만 실행됨 | 다이어그램당 하나의 스타일을 사용하거나 모든 영역을 명시적으로 추가합니다 |
+
+---
+
+## 9. 문법 (EBNF)
+
+```text
+document       = header (blank | comment | config | layout-stmt | set-decl | enum-decl | euler-rel | region)*
+
+header         = "venn" ( ":"? WS quoted-string )? ( WS "[" config-props "]" )? NEWLINE
+quoted-string  = '"' any-char-but-quote* '"'
+
+config         = "config" WS ":" WS config-key WS "=" WS config-value NEWLINE
+config-key     = "diagram" | "proportional" | "palette" | "blendMode" | "showCounts" | "showPercent"
+
+layout-stmt    = "layout" WS ( "venn" | "euler" | "auto" ) NEWLINE
+
+set-decl       = "set" WS id WS quoted-string ( WS "[" set-props "]" )? NEWLINE
+set-props      = "color:" quoted-hex | "fill:" quoted-hex
+
+enum-decl      = id WS "=" WS "{" element-list "}" NEWLINE
+element-list   = element ( "," element )*
+element        = quoted-string | bare-word
+
+euler-rel      = id WS euler-op WS id NEWLINE
+euler-op       = "subset" | "in" | "disjoint" | "overlap"
+
+region         = "region"? WS region-key WS ":" WS region-value NEWLINE
+region-key     = id WS "only"
+               | id ( WS "&" WS id )+
+region-value   = integer | percent | quoted-string | "[" element-list "]"
+
+percent        = number "%"
+id             = [A-Za-z] [A-Za-z0-9_-]*
+comment        = "#" any NEWLINE
+```
+
+공식 소스: `src/diagrams/venn/parser.ts`. 이 문서와 파서가 다른 경우, 파서가 우선합니다 — 이슈를 등록해 주십시오.
+
+---
+
+## 10. 로드맵
+
+**계획 중 — 아직 파싱 불가.** 현재 생성된 DSL에서 사용하지 마십시오. 파서가 거부하거나 무시합니다.
+
+- **3방향 및 N방향 오일러 중첩** — 렌더러는 현재 Venn 모드에서 최대 3개의 집합을 지원합니다. 복잡한 포함 관계를 가진 더 큰 오일러 다이어그램은 아직 완전히 레이아웃되지 않습니다.
+- **`fill:` 색상 별칭** — `set`의 `fill:` 속성은 파서에서 허용되지만(`color:`의 별칭), 렌더러는 현재 `color:`만 사용합니다.
+- **영역의 `label:`** — 별도 레이블과 값을 위한 `region A & B [label: "Core"]` 문법.
+- **면적 비례 오일러** — `proportional: true`는 현재 Venn 모드에만 영향을 미치며, 오일러 포함 레이아웃은 이 플래그를 무시합니다.
+- **`and` 키워드** — 자연어 `A and B : 120`을 `A & B : 120`의 별칭으로.
+
+이 중 하나가 더 빨리 필요하다면 GitHub 이슈에서 트래킹하십시오.
+
+---
+
+## 관련 예제
+
+예제 갤러리에서 바로 사용할 수 있는 시나리오:
+
+<RelatedExamples slugs={[
+  'venn-customer-segments',
+  'venn-programming-paradigms',
+]} />

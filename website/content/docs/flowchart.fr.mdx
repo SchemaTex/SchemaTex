@@ -1,0 +1,414 @@
+---
+title: Flowchart
+---
+
+## À propos des flowcharts
+
+Un **flowchart** (organigramme) représente les étapes d'un processus — décisions, opérations, entrées, sorties et les chemins qui les relient — à l'aide d'un ensemble standardisé de symboles connectés par des flèches. Les ingénieurs les utilisent pour spécifier des algorithmes ; les analystes métier pour documenter des flux de travail ; les équipes qualité pour tracer les modes de défaillance. Ce sont les diagrammes techniques les plus universellement compris dans tous les secteurs d'activité.
+
+Schematex suit les conventions de symboles **[ISO 5807:1985](https://www.iso.org/standard/11955.html)** pour les formes des flowcharts et utilise un DSL **[compatible Mermaid](https://mermaid.js.org/syntax/flowchart.html)** afin que les flowcharts Mermaid existants puissent être utilisés directement. Cette page documente ce que le parseur accepte aujourd'hui.
+
+<Playground initial={`flowchart LR
+  start([New order received])
+  start --> validate{Inventory available?}
+  validate -->|Yes| reserve[Reserve items]
+  validate -->|No| notify[Notify customer]
+  notify --> done([End])
+  reserve --> payment{Payment authorized?}
+  payment -->|Yes| ship[Ship order]
+  payment -->|No| cancel[Cancel & release]
+  ship --> confirm[Send confirmation email]
+  confirm --> done
+  cancel --> done`} height={420} />
+
+---
+
+## 1. Votre premier flowchart
+
+Le flowchart minimal utile : une décision avec deux issues.
+
+<Playground initial={`flowchart TD
+  A([Start]) --> B{File exists?}
+  B -->|Yes| C[Read file]
+  B -->|No| D[Return error]
+  C --> E([Done])`} />
+
+Quatre règles couvrent 80 % des usages :
+
+1. Commencer par `flowchart` suivi d'une direction : `TD`, `LR`, `BT` ou `RL`.
+2. Chaque nœud est `ID[Label]` — les symboles entourant le label déterminent le type de nœud (voir §2).
+3. Relier les nœuds avec `-->`. Ajouter un label entre des caractères pipe : `-->|Yes|`.
+4. Les nœuds sont créés automatiquement lors de leur première référence dans une arête — mais les déclarations explicites permettent de définir les formes et les labels indépendamment.
+
+> Les commentaires commencent par `%%` sur leur propre ligne.
+
+---
+
+## 2. Formes des nœuds
+
+Chaque forme de nœud s'écrit `ID<crochets>Label<crochets>`. L'ID doit commencer par une lettre et peut contenir des lettres, des chiffres, `_` et `-`.
+
+| Syntaxe | Forme | Usage typique |
+|---|---|---|
+| `A[Label]` | Rectangle | Étape de processus, opération |
+| `A(Label)` | Rectangle arrondi | Sous-processus, étape souple |
+| `A([Label])` | Stade (pilule) | Terminal de début / fin |
+| `A{Label}` | Losange | Décision / condition |
+| `A{{Label}}` | Hexagone | Préparation, configuration |
+| `A[[Label]]` | Sous-routine | Processus prédéfini |
+| `A[(Label)]` | Cylindre | Base de données, stockage |
+| `A((Label))` | Cercle | Connecteur, jonction |
+| `A(((Label)))` | Double cercle | État final |
+| `A[/Label/]` | Parallélogramme | Entrée / sortie |
+| `A[\Label\]` | Parallélogramme (alt) | Opération manuelle |
+| `A[/Label\]` | Trapèze | Entrée manuelle |
+| `A[\Label/]` | Trapèze (alt) | Connecteur hors page |
+| `A>Label]` | Asymétrique | Étiquette, annotation |
+
+<Playground initial={`flowchart TD
+  t([Terminal / stadium])
+  r[Rectangle process]
+  d{Diamond decision}
+  p[/Parallelogram input/]
+  db[(Cylinder database)]
+  sub[[Subroutine]]
+  t --> r --> d
+  d -->|branch A| p
+  d -->|branch B| db
+  p --> sub
+  db --> sub`} height={440} />
+
+---
+
+## 3. Arêtes
+
+Une arête connecte deux nœuds. Le symbole de connecteur détermine le style visuel, ainsi que la présence ou l'absence d'un label ou d'une tête de flèche.
+
+### 3.1 Types d'arêtes
+
+<Playground initial={`flowchart TD
+  A --> B
+  C --- D
+  E -.-> F
+  G ==> H
+  I <--> J
+  K --x L
+  M --o N`} height={380} />
+
+| Syntaxe | Style | Flèche | Usage typique |
+|---|---|---|---|
+| `A --> B` | Plein | Flèche | Flux normal |
+| `A --- B` | Plein | Aucune | Association, lien non orienté |
+| `A -.-> B` | Pointillé | Flèche | Chemin optionnel / asynchrone |
+| `A ==> B` | Épais | Flèche | Chemin critique / principal |
+| `A <--> B` | Plein | Les deux extrémités | Flux bidirectionnel |
+| `A --x B` | Plein | Croix | Chemin bloqué / rejeté |
+| `A --o B` | Plein | Cercle | Agrégation / composition |
+
+### 3.2 Labels d'arêtes
+
+Deux syntaxes permettent d'attacher un label à une arête :
+
+**Label pipe** — placé entre des caractères `|` directement après la flèche :
+```
+A -->|Yes| B
+A -.->|optional| B
+A ==>|critical| B
+```
+
+**Label en ligne** — texte placé entre les tirets, avant le caractère de flèche :
+```
+A -- success --> B
+A -- error --x C
+```
+
+Les deux produisent des résultats identiques. Le label pipe est plus courant lors du partage d'un diagramme avec des outils Mermaid.
+
+<Playground initial={`flowchart TD
+  req[Request received]
+  req -->|valid| proc[Process]
+  req -->|invalid| err[Return 400]
+  proc -- success --> ok([Done])
+  proc -.->|timeout| retry[Retry queue]
+  retry ==>|max retries| dead[(Dead letter)]`} height={380} />
+
+### 3.3 Chaînes
+
+Connecter trois nœuds ou plus sur une seule ligne :
+
+```
+A --> B --> C --> D
+```
+
+Cela est équivalent à trois instructions d'arête séparées.
+
+### 3.4 Divergence avec `&`
+
+Utiliser `&` pour inclure plusieurs nœuds de chaque côté d'une flèche. Le parseur génère le produit croisé complet d'arêtes :
+
+```
+A & B --> C        %% A→C and B→C
+A --> B & C        %% A→B and A→C
+A & B --> C & D    %% four edges: A→C, A→D, B→C, B→D
+```
+
+<Playground initial={`flowchart LR
+  deploy[Deploy service]
+  smoke[Smoke test]
+  health[Health check]
+  notify_slack[Slack alert]
+  notify_email[Email alert]
+  deploy --> smoke & health
+  smoke & health -->|fail| notify_slack & notify_email`} height={300} />
+
+---
+
+## 4. Sous-graphes
+
+Un `subgraph` regroupe des nœuds liés dans un cluster étiqueté avec une bordure visible.
+
+```
+subgraph "Title"
+  A --> B
+end
+```
+
+Trois formes d'en-tête de sous-graphe sont acceptées :
+
+| Forme | ID | Label |
+|---|---|---|
+| `subgraph "My Group"` | Auto-généré | `My Group` |
+| `subgraph sg1 "My Group"` | `sg1` | `My Group` |
+| `subgraph sg1 [My Group]` | `sg1` | `My Group` |
+
+Les sous-graphes peuvent avoir leur propre remplacement de `direction` :
+
+```
+subgraph sg1 "Frontend"
+  direction LR
+  ui[React App] --> api[API Client]
+end
+```
+
+<Playground initial={`flowchart TB
+  subgraph ingestion [Ingestion]
+    raw[/Raw events/] --> parse[Parse & validate]
+    parse --> enrich[Enrich]
+  end
+  subgraph storage [Storage]
+    dw[(Data warehouse)]
+    cache[(Redis cache)]
+  end
+  enrich --> dw
+  enrich --> cache
+  dw --> report[Generate report]`} height={420} />
+
+---
+
+## 5. Styles
+
+### 5.1 Classes sémantiques
+
+Assigner des noms de classes CSS aux nœuds pour un regroupement visuel au niveau du thème. Les classes sont définies avec `classDef` et appliquées avec `class`. La syntaxe de classe en ligne Mermaid est également acceptée : `A[Start]:::critical`.
+
+```
+classDef danger fill:#f9c,stroke:#c00
+classDef safe fill:#cfc,stroke:#090
+class errorNode danger
+class successNode safe
+B[Review]:::danger
+```
+
+### 5.2 Remplacements de style par nœud
+
+```
+style nodeId fill:#f9f,stroke:#333,stroke-width:4px
+```
+
+Accepte les noms de propriétés CSS standard. Plusieurs propriétés sont séparées par des virgules.
+
+### 5.3 Remplacements de style par arête
+
+`linkStyle` cible les arêtes par leur **index de déclaration** (base 0, dans l'ordre d'apparition dans la source). Plusieurs index séparés par des virgules appliquent les mêmes propriétés à plusieurs arêtes :
+
+```
+flowchart TD
+  A --> B
+  B ==> C
+  B -.-> D
+  C --> E
+  D --> E
+  linkStyle 1 stroke:#d32f2f,stroke-width:4px
+  linkStyle 2,4 stroke:#f57c00,stroke-dasharray:5 5
+```
+
+Utiliser ceci pour mettre en évidence un chemin critique ou distinguer un flux alternatif.
+
+### 5.4 Formatage de label en ligne
+
+Les labels de nœuds acceptent trois balises de formatage en ligne :
+
+| Balise | Effet |
+|---|---|
+| `<br/>` ou `<br>` | Saut de ligne |
+| `<b>…</b>` | Gras |
+| `<i>…</i>` | Italique |
+
+```
+flowchart TD
+  M1["0 \| 0<br/><b>START</b>"]
+  M2["4 \| 4<br/><b>Phase 1</b><br/><i>est. 4h</i>"]
+  M1 --> M2
+```
+
+Les balises peuvent être imbriquées et mélangées en milieu de ligne (`Hello <b>world</b>!`). Les labels d'arêtes sont sur une seule ligne et ne prennent pas en charge ces balises pour l'instant.
+
+---
+
+## 6. Labels et commentaires
+
+- **Direction :** `flowchart TD` — premier token après `flowchart` ou `graph`. `TD` et `TB` sont équivalents.
+- **Titre :** `flowchart LR "My diagram"` — chaîne entre guillemets optionnelle après la direction.
+- **Labels d'arêtes :** syntaxe pipe `-->|label|` ou en ligne `-- label -->`.
+- **Commentaires :** `%%` au début d'une ligne (après les espaces initiaux).
+
+```
+flowchart LR
+%% This is a comment — ignored by the parser
+A[Step 1] --> B[Step 2]  %% inline %% is NOT supported — only line-start %%
+```
+
+---
+
+## 7. Mots réservés et échappement
+
+**Réservés en début de ligne :** `flowchart`, `graph` (en-tête), `subgraph`, `end`, `direction`, `class`, `classDef`, `style`, `linkStyle`.
+
+**Caractères réservés pour les ID :** les ID correspondent à `[A-Za-z0-9_-]` commençant par une lettre. Ne pas utiliser d'espaces ni de caractères opérateurs dans les ID de nœuds.
+
+**Tokens opérateurs à éviter dans les ID :** `-->`, `---`, `-.->`, `==>`, `<-->`, `--x`, `--o`, `|`, `&`.
+
+**Labels avec des caractères spéciaux :** le label est tout ce qui se trouve à l'intérieur des crochets de forme. Les caractères spéciaux sont pris en charge tels quels dans les labels — les crochets/accolades qui seraient ambigus sont fermés par le token de fermeture correspondant.
+
+---
+
+## 8. Erreurs courantes
+
+| Ce que vous avez écrit | Ce que dit le parseur | Correction |
+|---|---|---|
+| `flowchart` sans direction | La direction prend par défaut `TB` | Ajouter une direction : `flowchart TD` |
+| `A --> B` avant de déclarer les formes | Fonctionne — les nœuds sont créés comme des rectangles avec l'ID comme label | Déclarer explicitement quand vous avez besoin d'une forme non rectangulaire : `A([Start])` |
+| `A[Label with [brackets]]` | Le `]` intérieur ferme la forme prématurément | Éviter les crochets imbriqués dans les labels |
+| `subgraph My Group` (non entre guillemets, avec espace) | Le parseur prend `My` comme ID de sous-graphe, `Group` comme token inconnu | Utiliser des guillemets : `subgraph "My Group"` |
+| `%% comment` en milieu de ligne après du code | Les commentaires en ligne ne sont pas pris en charge ; `%%` doit être en début de ligne | Déplacer les commentaires sur leur propre ligne |
+| `A --> B --> C` mélangé avec `A --> B` | Les chaînes sont additives — des arêtes en double peuvent apparaître | Utiliser des chaînes OU des lignes séparées, pas les deux pour la même paire |
+| `direction LR` en dehors d'un sous-graphe | Ignoré silencieusement — le remplacement de `direction` s'applique uniquement dans `subgraph … end` | Définir la direction sur la ligne d'en-tête `flowchart` |
+
+---
+
+## 9. Grammaire (EBNF)
+
+```text
+document       = header (blank | comment | subgraph-block | direction-stmt
+                        | class-stmt | classdef-stmt | style-stmt
+                        | linkstyle-stmt | chain-stmt)*
+
+header         = ("flowchart" | "graph") ( WS direction )? ( WS title )? NEWLINE
+direction      = "TD" | "TB" | "BT" | "LR" | "RL"
+title          = '"' any-char-but-quote* '"' | bare-word
+
+subgraph-block = "subgraph" ( WS subgraph-header )? NEWLINE
+                   ( WS? "direction" WS direction NEWLINE )?
+                   statement*
+                 "end" NEWLINE
+subgraph-header = id WS "[" label "]"
+                | id WS quoted-string
+                | quoted-string
+                | id
+
+chain-stmt     = node-group ( WS edge-op WS pipe-label? WS node-group )* NEWLINE
+node-group     = node-ref ( WS "&" WS node-ref )*
+node-ref       = id shape-suffix?
+shape-suffix   = "[" label "]"          %% rect
+               | "(" label ")"          %% round
+               | "([" label "])"        %% stadium
+               | "{" label "}"          %% diamond
+               | "{{" label "}}"        %% hexagon
+               | "[[" label "]]"        %% subroutine
+               | "[(" label ")]"        %% cylinder
+               | "((" label "))"        %% circle
+               | "(((" label ")))"      %% double-circle
+               | "[/" label "/]"        %% parallelogram
+               | "[\" label "\]"        %% parallelogram-alt
+               | "[/" label "\]"        %% trapezoid
+               | "[\" label "/]"        %% trapezoid-alt
+               | ">" label "]"          %% asymmetric
+
+edge-op        = "-->" | "---" | "-."-".->" | "==>" | "<-->" | "--x" | "--o"
+               | inline-label variants of the above
+pipe-label     = "|" text "|"
+
+class-stmt     = "class" WS id-list WS class-name NEWLINE
+               | node-ref ":::" class-name NEWLINE         # Mermaid inline form
+classdef-stmt  = "classDef" WS class-name WS css-props NEWLINE
+style-stmt     = "style" WS id WS css-props NEWLINE
+linkstyle-stmt = "linkStyle" WS index-list WS css-props NEWLINE
+index-list     = NUMBER ( "," NUMBER )* | "default"
+
+comment        = "%%" any NEWLINE
+id             = [A-Za-z] [A-Za-z0-9_-]*
+```
+
+Source faisant autorité : `src/diagrams/flowchart/parser.ts`. En cas de divergence avec le parseur, le parseur prévaut — veuillez ouvrir un ticket.
+
+---
+
+## 10. Conformité aux normes
+
+Les flowcharts Schematex suivent les conventions de symboles **ISO 5807:1985**. La syntaxe DSL est intentionnellement compatible avec **[Mermaid flowchart](https://mermaid.js.org/syntax/flowchart.html)** afin que les diagrammes créés dans l'un des outils puissent être utilisés dans l'autre.
+
+Ce qui est implémenté aujourd'hui :
+
+- ✅ Les cinq directions : `TD`, `TB`, `BT`, `LR`, `RL`
+- ✅ 13 formes de nœuds (du rectangle à l'asymétrique)
+- ✅ 7 types d'arêtes : plein, sans flèche, pointillé, épais, bidirectionnel, croisé, extrémité ronde
+- ✅ Labels pipe (`-->|text|`) et labels en ligne (`-- text -->`)
+- ✅ Chaînes d'arêtes (`A --> B --> C`)
+- ✅ Divergence avec `&` (arêtes en produit croisé)
+- ✅ Sous-graphes avec ID optionnel, label, et direction par sous-graphe
+- ✅ Regroupement sémantique `classDef` / `class`
+- ✅ Classes de nœuds en ligne Mermaid : `A[Label]:::className`
+- ✅ Remplacements CSS `style` par nœud
+- ✅ Rendu `linkStyle` — `linkStyle 1,5,6 stroke:#f00,stroke-width:4px` applique le CSS aux arêtes correspondantes par ordre de déclaration
+- ✅ `<b>` / `<i>` en ligne dans les labels de nœuds (combiné avec les sauts de ligne `<br/>` existants)
+- ⏳ Rendu des formes pour les 13 formes — M1 rend entièrement rect/round/stadium/diamond/parallelogram ; les formes restantes se replient sur rect
+- ⏳ Variante de layout avec couloirs (swim-lane)
+
+Références :
+
+- ISO 5807:1985 — *Information processing — Documentation symbols and conventions for data, program and system flowcharts, program network charts and system resources charts*
+- Documentation Mermaid flowchart — https://mermaid.js.org/syntax/flowchart.html
+
+---
+
+## 11. Feuille de route
+
+**Prévu — pas encore analysable.** Ne pas utiliser dans un DSL généré aujourd'hui ; le parseur les rejettera ou les ignorera.
+
+- **Rendu complet des formes pour les 13 formes** — les sous-routines, cylindres, cercles, doubles cercles, hexagones, asymétriques, trapèzes et parallélogrammes alternatifs se replient sur rect dans M1.
+- **Layout swim-lane** — bandes horizontales regroupant les nœuds par acteur ou système (Mermaid `subgraph` avec `direction TB` dans une racine `LR`).
+- **Bloc d'initialisation `%%{init: {…}}%%`** — bloc d'initialisation de thème et de layout compatible Mermaid.
+- **Formatage Markdown dans les labels** — syntaxe markdown `**bold**` / `*italic*` (HTML `<b>`/`<i>` fonctionne déjà — voir §5).
+
+Suivre dans les tickets GitHub si vous avez besoin de l'un de ces éléments plus tôt.
+
+---
+
+## Exemples connexes
+
+Scénarios prêts à l'emploi de la galerie d'exemples :
+
+<RelatedExamples slugs={[
+  'flowchart-order-fulfillment',
+  'flowchart-cicd-pipeline',
+]} />

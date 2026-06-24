@@ -1,0 +1,174 @@
+---
+title: Réseau de Petri
+---
+
+## À propos des réseaux de Petri
+
+Un **réseau de Petri** est le formalisme fondateur pour modéliser la concurrence, la synchronisation et le flux de ressources dans les systèmes à événements discrets — inventé par [Carl Adam Petri en 1962](https://en.wikipedia.org/wiki/Petri_net) et utilisé depuis lors en informatique, en automatique, en production industrielle et en modélisation de processus métier. La notation est simple et immédiatement reconnaissable : une **place** est un cercle, une **transition** est une barre, un arc porte un poids, et l'état dynamique du système est matérialisé par des **jetons** placés dans les places.
+
+Ce qui distingue le moteur `petri` de Schematex d'une bibliothèque de formes à glisser-déposer, c'est qu'il **comprend la dynamique**. Il connaît le *marquage* (combien de jetons chaque place contient), calcule quelles transitions sont *activées* (chaque place d'entrée possède au moins le poids d'arc requis en jetons — mis en évidence en vert), et peut *tirer* une transition pour produire le marquage suivant. Le rendu est en aval de la sémantique — la même posture qu'adopte **[pert](/docs/pert)** pour l'ordonnancement. Distinct des **[diagrammes d'état](/docs/state)** (un état actif, pas une distribution de jetons), du **[sfc](/docs/sfc)** (un réseau de Petri sûr restreint pour les automates programmables), et du **[bpmn](/docs/bpmn)** (dont la sémantique des jetons est *définie par réduction à* des réseaux de Petri de type workflow).
+
+<Playground initial={`petri "Classic"
+  place P1 *1
+  place P2
+  place P3 *2
+  place P4 *1
+  transition T1
+  transition T2
+  P1 -> T1
+  T1 -> P2
+  T1 -> P3
+  P2 -> T2
+  P3 -> T2
+  T2 -> P4
+  P4 -> T1`} height={420} />
+
+Avec le marquage initial, **T1** est activée (ses entrées P1 et P4 contiennent chacune un jeton) et reçoit donc l'anneau vert ; **T2** ne l'est pas (P2 est vide). L'arc de retour `P4 -> T1` est tracé sous forme de courbe à rebours.
+
+---
+
+## 1. Votre premier réseau
+
+Chaque document commence par le mot-clé `petri` et un titre optionnel, puis déclare les **places** et les **transitions** avant de les relier par des **arcs** :
+
+```
+petri "Minimal"
+  place P1 *1
+  transition T1
+  place P2
+  P1 -> T1
+  T1 -> P2
+```
+
+- `place <id>` — un cercle. `*1` définit le nombre initial de jetons (le marquage).
+- `transition <id>` — une barre (un événement / une action).
+- `<a> -> <b>` — un arc orienté. Les arcs sont **bipartites** : chaque arc va d'une place vers une transition ou d'une transition vers une place, jamais place→place ou transition→transition. Si vous en écrivez un incorrect, le moteur vous indique la ligne concernée.
+
+Contrairement à certains diagrammes Schematex, les nœuds ne sont **pas** déclarés automatiquement à partir des arcs — car un identifiant non déclaré ne peut pas être typé de manière sûre comme place ou transition. Un arc référençant un nœud inconnu produit une erreur lisible.
+
+---
+
+## 2. Marquage et jetons
+
+Le **marquage** indique combien de jetons chaque place contient. Trois façons équivalentes de le définir :
+
+```
+place P1 *3            # raccourci *n
+place P2 tokens: 3     # explicite
+place P3 •••           # points littéraux (1 à 4)
+```
+
+Ou définir plusieurs marquages à la fois avec une ligne `marking:` :
+
+```
+marking: P1=3, P3=2
+```
+
+Les jetons sont rendus sous forme de points (jusqu'à 4, disposés en grille) et sous forme de chiffre au-delà. Forcez un style avec `tokens: dots | count | auto` (par défaut `auto`).
+
+---
+
+## 3. Transitions : immédiates et temporisées
+
+```
+transition fast                 # immédiate — une barre pleine (par défaut)
+transition slow timed rate: 0.8 # temporisée — une boîte creuse avec un label de taux λ
+```
+
+Les transitions immédiates tirent en temps zéro et se représentent par la barre pleine classique ; les transitions **temporisées** (la convention [GSPN](https://en.wikipedia.org/wiki/Stochastic_Petri_net)) se représentent par une boîte creuse et portent un `rate:` optionnel (λ). Une transition avec un `rate:` est automatiquement considérée comme temporisée. `prio: n` définit une priorité, et un `[guard]` est rendu sous forme de label (non évalué en v0.1).
+
+---
+
+## 4. Types d'arcs
+
+Quatre têtes d'arc couvrent le vocabulaire standard de la concurrence :
+
+```
+P -> T              # arc standard (tête de flèche pleine)
+P -> T weight: 2    # poids > 1 est étiqueté (weight: n ou *n)
+P -o T              # inhibiteur — activé uniquement si la place est vide (tête cercle creux)
+P -- T              # lecture / test — teste la présence sans consommer (sans tête)
+P => T              # remise à zéro — vide la place lors du tir (double tête)
+```
+
+Les arcs inhibiteurs et de remise à zéro sont **place→transition uniquement** — le parseur rejette la direction inverse.
+
+---
+
+## 5. Capacité
+
+Une place peut être plafonnée. Un tir qui provoquerait un débordement est désactivé, et la place est représentée avec une bordure en pointillés et un label `K=n` :
+
+```
+place Buffer capacity: 3
+```
+
+---
+
+## 6. La dynamique : activées et tir
+
+Le moteur calcule la sémantique à chaque rendu :
+
+- Les transitions **activées** (chaque entrée satisfaite ; entrées inhibitrices vides ; aucune sortie ne débordera la capacité) reçoivent un anneau vert.
+- Les transitions **mortes** — celles qui ne peuvent jamais tirer depuis le marquage actuel — sont atténuées.
+- Une ligne **`fire:`** rejoue une séquence de tirs et rend le *marquage résultant* :
+
+```
+petri
+  place P1 *1
+  transition T1
+  place P2
+  transition T2
+  place P3
+  P1 -> T1
+  T1 -> P2
+  P2 -> T2
+  T2 -> P3
+  fire: T1
+```
+
+Après le tir de `T1`, le jeton s'est déplacé de P1 → P2, et maintenant **T2** est la transition activée. Le `<desc>` SVG enregistre le marquage, l'ensemble des transitions activées, et toute sous-classe détectée (machine d'état / graphe marqué / réseau de workflow).
+
+---
+
+## 7. Mise en page et thèmes
+
+```
+layout: lr     # gauche-à-droite (par défaut)
+layout: tb     # haut-en-bas
+```
+
+Les places et transitions se placent automatiquement sur des couches alternées ; les cycles sont détectés et leurs arcs de retour tracés sous forme de courbes à rebours. Trois thèmes :
+
+- **`default`** — bleu-gris maison, avec le vert réservé aux transitions *activées* et le rouge aux *inhibiteurs*.
+- **`monochrome`** — le fidèle rendu du manuel Murata-1989 ; les transitions activées se distinguent par un double anneau noir (la couleur est remplacée par la forme).
+- **`dark`** — Catppuccin Mocha.
+
+Les labels CJK et les guillemets `「…」` / `"…"` sont analysés correctement :
+
+```
+petri "生产流程"
+  place 原料 *2 「原材料」
+  transition 加工
+  place 成品
+  原料 -> 加工 weight: 2
+  加工 -> 成品
+```
+
+---
+
+Spécification complète : [Référence du standard Petri Net](https://github.com/schematex/schematex/blob/main/docs/reference/34-PETRINET-STANDARD.md).
+
+---
+
+## Exemples associés
+
+Scénarios prêts à l'emploi issus de la galerie d'exemples :
+
+<RelatedExamples slugs={[
+  'petri-classic-net',
+  'petri-mutual-exclusion',
+  'petri-fire-sequence',
+  'petri-workflow-net',
+  'petri-producer-consumer',
+]} />

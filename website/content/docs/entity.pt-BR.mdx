@@ -1,0 +1,367 @@
+---
+title: Diagrama de estrutura de entidades
+---
+
+## Sobre diagramas de estrutura de entidades
+
+Um **diagrama de estrutura de entidades** mapeia as relações legais e econômicas entre organizações e pessoas — quem possui o quê, por meio de qual forma de entidade e em qual jurisdição. Advogados corporativos os usam para documentar estruturas de holding e cadeias de subsidiárias. Consultores tributários os desenham para mostrar fluxos de licenciamento de PI transfronteiriços e arranjos de preços de transferência. Advogados de startups os produzem para tabelas de capitalização e consentimentos do conselho. Planejadores patrimoniais os usam para mostrar arranjos grantor-trust-beneficiário. O diagrama é o primeiro documento solicitado em qualquer processo de due diligence de M&A e o anexo padrão a um master file de preços de transferência da OCDE.
+
+O Schematex segue as convenções de praticantes sintetizadas do **SEC Regulation S-K Exhibit 21** (divulgação de subsidiárias), **IRS Form 8832** (classificações de entidades), **ISO 3166-1** (códigos de jurisdição), **ISO 20275** (formas de entidade legal) e convenções de memorandos tributários das Big Four. Os tipos de entidade mapeiam para formas distintas (retângulo para corp, retângulo arredondado para LLC, elipse para trust) para que qualquer leitor possa identificar a forma jurídica de relance. Esta página documenta o que o parser aceita hoje.
+
+<Playground initial={`entity-structure "Acme Global Holdings"
+entity parent "Acme Global, Inc." corp@US [note: "Ultimate Parent"]
+entity ie-holdco "Acme Ireland Holdings" corp@IE
+entity ie-ip "Acme IP Ltd" corp@KY [note: "Holds group IP"]
+entity nl-bv "Acme EU Distribution" llc@NL
+entity sg-apac "Acme APAC Trading" corp@SG
+entity esop "Employee Option Pool" pool
+parent -> ie-holdco : 100%
+ie-holdco -> ie-ip : 100%
+ie-holdco -> nl-bv : 100%
+ie-ip -~-> nl-bv [label: "IP License · royalty"]
+parent -> sg-apac : 100%
+esop -.-> ie-holdco`} height={480} />
+
+---
+
+## 1. Sua primeira estrutura de entidades
+
+A menor estrutura de entidades útil: uma controladora com duas subsidiárias.
+
+<Playground initial={`entity-structure "Simple holding"
+entity holdco "Holdco LLC" llc@DE
+entity opco "OpCo Inc." corp@DE
+entity sub_uk "UK Sub Ltd." llc@UK
+holdco -> opco : 100%
+holdco -> sub_uk : 100%`} />
+
+Quatro regras cobrem 80% do uso:
+
+1. Comece com `entity-structure`, opcionalmente seguido de um título entre aspas.
+2. Cada entidade legal é um nó: `entity ID "Nome de Exibição" tipo` — o tipo determina a forma.
+3. Conecte entidades com `->`. Acrescente `: pct` para rotular a porcentagem de propriedade: `parent -> child : 60%`.
+4. Adicione `@jurisdição` após o tipo para mostrar um badge de jurisdição: `corp@DE`.
+
+> Comentários devem começar com `#` em sua própria linha.
+
+---
+
+## 2. Tipos de entidade
+
+O tipo de entidade determina a forma renderizada para aquele nó. O Schematex mapeia vários aliases comuns para um tipo canônico.
+
+| Tipo canônico | Aliases aceitos | Forma renderizada | Uso típico |
+|---|---|---|---|
+| `corp` | `corporation`, `inc` | Retângulo (cantos afiados) | C-corp, S-corp, Ltd., SA, AG |
+| `llc` | `llp`, `gmbh`, `bv` | Retângulo arredondado | LLC, LLP, GmbH, BV |
+| `lp` | `lllp`, `fund` | Retângulo com entalhe | LP, LLLP, fundo de investimento |
+| `trust` | — | Elipse | Trust familiar, trust estatutário |
+| `individual` | `person` | Círculo | Fundador, cedente, pessoa física |
+| `foundation` | `npo` | Pentágono (escudo) | Sem fins lucrativos, fundação filantrópica |
+| `disregarded` | `branch` | Retângulo tracejado | Entidade desconsiderada, filial estrangeira |
+| `pool` | — | Retângulo arredondado tracejado | Pool de opções, ESOP, ações não emitidas |
+| `placeholder` | `tbf` | Retângulo tracejado (desbotado) | Entidade a ser formada, alvo de aquisição |
+
+**Sintaxe de entidade:**
+
+```
+entity ID "Nome de Exibição" tipo
+entity ID "Nome de Exibição" tipo@JURISDIÇÃO
+entity ID "Nome de Exibição" tipo@JURISDIÇÃO [propriedades]
+```
+
+**Regras de ID.** Deve começar com uma letra, seguida de letras, dígitos, sublinhados ou hífens: `[A-Za-z][A-Za-z0-9_-]*`.
+
+<Playground initial={`entity-structure "Entity type shapes"
+entity c1 "Delaware C-Corp" corp@DE
+entity l1 "California LLC" llc@CA
+entity p1 "Cayman Fund LP" lp@KY
+entity t1 "Family Trust" trust@SD
+entity i1 "Jane Smith" individual
+entity f1 "Acme Foundation" foundation
+entity d1 "Irish Branch" disregarded@IE
+entity pool1 "ESOP Pool" pool
+entity tbf1 "Acquisition Target" placeholder
+c1 -> l1 : 100%
+c1 -> p1 : 80%
+c1 -> f1
+i1 -> t1
+t1 -> c1 : 100%`} height={480} />
+
+---
+
+## 3. Propriedades do nó
+
+Propriedades opcionais dentro de `[…]` anotam a entidade com contexto adicional visível no nó renderizado.
+
+| Propriedade | Sintaxe | Efeito |
+|---|---|---|
+| `status: new` | `new`, `eliminated`, `modified`, `normal` | Badge visual para diagramas de etapas de transação |
+| `tax: ccorp` | string entre aspas | Rótulo de classificação tributária abaixo do nome da entidade |
+| `role: "Cedente"` | string entre aspas | Rótulo de função (para pessoas físicas e administradores) |
+| `note: "…"` | string entre aspas | Nota pequena exibida dentro do nó |
+| `est: "2024-03-15"` | string entre aspas | Data de constituição |
+
+Qualquer chave não incluída no conjunto reservado (`status`, `tax`, `role`, `note`, `est`) é armazenada como propriedade personalizada.
+
+```
+entity alice "Alice Chen" individual [role: "Fundadora & CEO"]
+entity trust1 "Smith Irrevocable Trust" trust@SD [est: "2019-06-01", note: "Spendthrift provisions"]
+entity opco "OpCo, Inc." corp@DE [status: new, tax: ccorp]
+```
+
+---
+
+## 4. Jurisdição
+
+Acrescente `@CÓDIGO` após o tipo de entidade para exibir um badge de jurisdição no nó. O código é uma string de 2–3 letras — códigos de país ISO 3166-1 alpha-2 e abreviações de estados dos EUA são ambos aceitos.
+
+```
+entity parent "Parent Corp" corp@US
+entity ie_sub "Ireland Sub" corp@IE
+entity ky_fund "Cayman Fund" lp@KY
+entity de_llc "Delaware LLC" llc@DE
+```
+
+Códigos comuns: `US` Estados Unidos · `DE` Delaware · `CA` Califórnia · `NY` Nova York · `UK` Reino Unido · `IE` Irlanda · `NL` Países Baixos · `KY` Ilhas Cayman · `SG` Singapura · `HK` Hong Kong · `JP` Japão · `BM` Bermudas · `VG` Ilhas Virgens Britânicas · `CH` Suíça · `LU` Luxemburgo · `SD` Dakota do Sul.
+
+`@DE` resolve como Delaware por padrão (mais comum em contextos jurídicos dos EUA).
+
+### Clusters de jurisdição
+
+Declare uma jurisdição com `jurisdiction CÓDIGO "Nome" [color: "#hex"]` para agrupar todas as entidades que compartilham aquele código em uma região de cluster com borda tracejada e rotulada no diagrama.
+
+```
+jurisdiction US "United States" [color: "#3b82f6"]
+jurisdiction IE "Ireland" [color: "#059669"]
+```
+
+Quando o `@CÓDIGO` de uma entidade corresponde a uma `jurisdiction` declarada, ela é automaticamente colocada dentro daquele cluster. Se `jurisdiction` não for declarada, o badge ainda aparece, mas nenhuma região de cluster é desenhada.
+
+<Playground initial={`entity-structure "IP holding structure"
+jurisdiction US "United States" [color: "#3b82f6"]
+jurisdiction IE "Ireland" [color: "#059669"]
+jurisdiction KY "Cayman Islands" [color: "#d97706"]
+entity parent "TopCo, Inc." corp@US
+entity ie_hold "Ireland Holdings" corp@IE
+entity ie_ip "IP HoldCo" corp@KY [note: "Group IP"]
+entity ie_op "EU Opco" llc@IE
+parent -> ie_hold : 100%
+ie_hold -> ie_ip : 100%
+ie_hold -> ie_op : 100%
+ie_ip -~-> ie_op [label: "IP License"]`} height={440} />
+
+### Clusters manuais
+
+Use `cluster "Rótulo" [members: [id1, id2], color: "#hex"]` para agrupar entidades que não compartilham um único código de jurisdição.
+
+```
+cluster "Ireland / Cayman IP" [members: [ie_ip, nl_bv], color: "#059669"]
+```
+
+---
+
+## 5. Arestas de propriedade
+
+Uma linha de aresta conecta dois IDs de entidade com um operador. O operador determina o estilo da linha e os significados visuais.
+
+| Operador | Renderizado como | Significado |
+|---|---|---|
+| `->` | Seta sólida | Propriedade de capital (padrão) |
+| `==>` | Seta de linha dupla | Controle de votação apenas (sem interesse econômico) |
+| `-.->` | Seta cinza tracejada | Pool de opções / propriedade condicional |
+| `-~->` | Seta roxa tracejada | Licença de PI, acordo de gestão, serviço intercompanhia |
+| `-->` | Seta verde tracejada | Distribuição (trust para beneficiários) |
+
+**Porcentagem de propriedade:** acrescente `: pct` após o ID de destino.
+
+```
+parent -> subsidiary : 60%
+```
+
+**Classe de ações:** adicione `[class: "Series A Pref"]` para rotular a classe de ações na aresta.
+
+```
+vc -> startup : 22% [class: "Series A Pref"]
+```
+
+**Rótulo não-equity:** use `[label: "…"]` para texto descritivo na aresta em arestas de licença ou distribuição.
+
+```
+ip_co -~-> opco [label: "IP License · royalty"]
+trust --> beneficiary [label: "Discretionary distributions"]
+```
+
+**Combinando:** `class:` e `label:` podem aparecer juntos.
+
+```
+fund -> portfolio : 35% [class: "Common", label: "Post-Series B"]
+```
+
+<Playground initial={`entity-structure "Mixed edge types"
+entity holdco "HoldCo LLC" llc@DE
+entity opco "OpCo Inc." corp@DE
+entity ip_co "IP Ltd" corp@KY
+entity fund "Growth Fund" lp@DE
+entity esop "ESOP Pool" pool
+entity trust1 "Family Trust" trust@SD
+entity founder "J. Smith" individual
+# Equity ownership
+holdco -> opco : 100%
+holdco -> ip_co : 100%
+# IP license (non-equity)
+ip_co -~-> opco [label: "Exclusive license"]
+# Option pool (dashed)
+esop -.-> opco : 10%
+# Voting control
+fund ==> holdco
+# Trust distribution
+trust1 --> founder [label: "Income distributions"]
+founder -> trust1 : 100%`} height={500} />
+
+---
+
+## 6. Rótulos e comentários
+
+- **Título:** `entity-structure "Acme Holdings"` — primeira linha, entre aspas.
+- **Nome de exibição da entidade:** a string entre aspas em `entity ID "Nome" tipo` — aparece dentro do nó.
+- **Badge de jurisdição:** `@CÓDIGO` após o tipo — código de 2–3 letras mostrado no canto do nó.
+- **Propriedades do nó:** `[note: "…", role: "…", status: new, …]` — anotações dentro do nó.
+- **Porcentagem da aresta:** `: pct` após o ID de destino — aparece na seta de propriedade.
+- **Classe da aresta:** `[class: "…"]` — rótulo de classe de ações na seta.
+- **Rótulo da aresta:** `[label: "…"]` — texto descritivo na seta.
+- **Comentários:** `#` no início de uma linha (após espaço em branco inicial). Comentários `#` inline no final de linha dentro de blocos de colchetes também são removidos.
+
+---
+
+## 7. Palavras reservadas e escape
+
+**Reservadas no início de linha:** `entity-structure` (cabeçalho), `entity`, `jurisdiction`, `cluster`.
+
+**Palavras-chave de tipo de entidade** — essas strings são analisadas como tipos de entidade e não devem ser usadas como IDs de entidade: `corp`, `corporation`, `inc`, `llc`, `llp`, `gmbh`, `bv`, `lp`, `lllp`, `fund`, `trust`, `individual`, `person`, `foundation`, `npo`, `disregarded`, `branch`, `pool`, `placeholder`, `tbf`.
+
+**Tokens de operadores de aresta** — evite essas sequências dentro de IDs: `->`, `==>`, `-.->`, `-~->`, `-->`.
+
+**Strings com espaços** devem ser colocadas entre aspas duplas em nomes de exibição, notas, rótulos de função e valores de cor.
+
+**Códigos de jurisdição** são insensíveis a maiúsculas/minúsculas na fonte, mas normalizados para maiúsculas: `@de` e `@DE` são equivalentes.
+
+---
+
+## 8. Erros comuns
+
+| Você escreveu | O parser diz | Correção |
+|---|---|---|
+| `entity acme Acme Inc. corp@DE` (nome sem aspas) | Parse falha — o nome deve estar entre aspas | `entity acme "Acme Inc." corp@DE` |
+| `acme -> sub [50%]` (porcentagem dentro de colchetes) | `50%` não reconhecido como chave de propriedade | `acme -> sub : 50%` (dois-pontos antes da porcentagem, fora dos colchetes) |
+| `entity acme "Acme" Ltd@DE` | `Ltd` não é uma palavra-chave de tipo reconhecida | Use `corp` ou `llc`; `Ltd` não está na tabela de aliases |
+| `acme -> unknown_id : 100%` | `EntityParseError: Edge references unknown entity "unknown_id"` | Declare cada entidade antes de usá-la em uma aresta |
+| `cluster "US entities" [ids: [a, b]]` | `ids:` não reconhecido; propriedade silenciosamente ignorada | Use `members: [a, b]` |
+| `jurisdiction DE "Delaware"` então `entity co "Co" corp@DE` | O cluster é desenhado ao redor de `co` — correto. Mas `@DE` em contexto americano é Delaware, não Alemanha | Use `@DE` para Delaware, `@DEU` não é válido — não há solução para a ambiguidade; documente a intenção em uma `note:` |
+| `entity x "X" corp [status: pending]` | `pending` não é um status válido — propriedade silenciosamente armazenada como prop personalizado | Use `new`, `eliminated`, `modified` ou `normal` |
+
+---
+
+## 9. Gramática (EBNF)
+
+```text
+document        = header (blank | comment | jurisdiction-def | cluster-def | entity-def | edge)*
+
+header          = "entity-structure" ( WS quoted-string )? NEWLINE
+quoted-string   = '"' any-char-but-quote* '"'
+
+jurisdiction-def = "jurisdiction" CODE WS quoted-string ( "[" jur-attrs "]" )? NEWLINE
+jur-attrs        = jur-attr ("," jur-attr)*
+jur-attr         = "color:" quoted-string
+
+cluster-def     = "cluster" WS quoted-string ( "[" cluster-attrs "]" )? NEWLINE
+cluster-attrs   = cluster-attr ("," cluster-attr)*
+cluster-attr    = "members:" "[" id ("," id)* "]"
+                | "color:" quoted-string
+
+entity-def      = "entity" WS id WS quoted-string WS entity-type ( "@" CODE )?
+                  ( "[" entity-attrs "]" )? NEWLINE
+entity-attrs    = entity-attr ("," entity-attr)*
+entity-attr     = "status:" status
+                | "tax:" quoted-string
+                | "role:" quoted-string
+                | "note:" quoted-string
+                | "est:" quoted-string
+                | key ":" quoted-string        # propriedade personalizada
+
+entity-type     = "corp" | "corporation" | "inc"
+                | "llc" | "llp" | "gmbh" | "bv"
+                | "lp" | "lllp" | "fund"
+                | "trust"
+                | "individual" | "person"
+                | "foundation" | "npo"
+                | "disregarded" | "branch"
+                | "pool"
+                | "placeholder" | "tbf"
+
+edge            = id WS op WS id ( ":" WS pct-text )? ( "[" edge-attrs "]" )? NEWLINE
+op              = "->" | "==>" | "-.->" | "-~->" | "-->"
+pct-text        = qualquer texto até "[" ou fim de linha   # ex.: "100%" ou "V 75% / E 50%"
+
+edge-attrs      = edge-attr ("," edge-attr)*
+edge-attr       = "class:" quoted-string
+                | "label:" quoted-string
+
+status          = "new" | "eliminated" | "modified" | "normal"
+CODE            = [A-Za-z]{2,3}
+id              = [A-Za-z] [A-Za-z0-9_-]*
+comment         = "#" any NEWLINE
+```
+
+Fonte autoritativa: `src/diagrams/entity/parser.ts`. Se isso divergir do parser, o parser vence — por favor, abra um issue.
+
+---
+
+## 10. Conformidade com padrões
+
+Os diagramas de estrutura de entidades do Schematex sintetizam convenções de:
+
+- **SEC Regulation S-K, Item 601(b)(21)** — convenções de divulgação de subsidiárias do Exhibit 21
+- **IRS Form 8832** — classificações de C-corp / pass-through / entidade desconsiderada
+- **ISO 3166-1 alpha-2** — códigos de jurisdição em badges de nó
+- **ISO 20275:2017** — classificação de forma de entidade do Legal Entity Identifier (LEI)
+- **OCDE Transfer Pricing Guidelines (2022)** — convenções de licença de PI e fluxo de royalties transfronteiriços
+- **Convenções de memorandos tributários das Big Four** (EY / PwC / KPMG / Deloitte) — padrão de facto para diagramas de estrutura transfronteiriça
+
+O que está implementado hoje:
+
+- ✅ Nove tipos de entidade com formas distintas: `corp`, `llc`, `lp`, `trust`, `individual`, `foundation`, `disregarded`, `pool`, `placeholder`
+- ✅ Aliases de tipo: `corporation`, `inc`, `llp`, `gmbh`, `bv`, `lllp`, `fund`, `person`, `npo`, `branch`, `tbf`
+- ✅ Cinco operadores de aresta: `->` (propriedade), `==>` (votação), `-.->` (pool), `-~->` (licença), `-->` (distribuição)
+- ✅ Rótulos de porcentagem de propriedade (`: pct`) e classe de ações (`[class: "…"]`)
+- ✅ Badges de jurisdição (`@CÓDIGO`) com ISO 3166-1 e códigos de estados dos EUA
+- ✅ Regiões de cluster de jurisdição (agrupamento com borda tracejada por `@CÓDIGO`)
+- ✅ Clusters manuais (`cluster "…" [members: […]]`)
+- ✅ Propriedades de nó: `status`, `tax`, `role`, `note`, `est`, pares chave-valor personalizados
+- ⏳ Porcentagem dividida V/E — `V 75% / E 50%` armazenado na string `percentage`, mas renderização como rótulo de duas linhas ainda não implementada
+- ⏳ Renderização de diff por etapa de transação — `status: new` / `eliminated` / `modified` armazenado, mas badges visuais de diff ainda não renderizados
+- ⏳ Anotação de contagem de ações inline — `100 shares Common` ao lado da porcentagem
+
+---
+
+## 11. Exemplos relacionados
+
+<RelatedExamples slugs={[
+  'entity-holding-company',
+  'entity-international-tax',
+  'entity-series-a-cap-table',
+]} />
+
+---
+
+## 12. Roadmap
+
+**Planejado — ainda não analisável.** Não use estes no DSL gerado hoje; o parser irá rejeitar ou ignorar.
+
+- **Renderização de divisão V/E** — `V 75% / E 50%` em uma única aresta, exibido como rótulo de porcentagem de duas linhas distinguindo interesse de votação de interesse econômico.
+- **Badges de diff por etapa de transação** — `status: new` renderiza um badge verde "NEW"; `status: eliminated` renderiza um tachado vermelho; usado para comparação de estrutura pré/pós M&A em um único diagrama.
+- **Anotação de contagem de ações** — `-> sub : 100 shares Common` ao lado de uma porcentagem para capturar a contagem exata de ações de uma tabela de capitalização.
+- **Propriedade bidirecional** — aresta `<->` explícita para propriedade cruzada (duas entidades se possuindo mutuamente), com roteamento em curva S para evitar confusão.
+- **Bloco de legenda** — legenda gerada automaticamente mostrando o mapeamento de forma-para-tipo-de-entidade e operador-para-tipo-de-relacionamento.
+
+Acompanhe nos issues do GitHub se precisar de algum deles com mais urgência.

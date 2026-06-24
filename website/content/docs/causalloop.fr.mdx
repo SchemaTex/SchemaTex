@@ -1,0 +1,106 @@
+---
+title: Diagramme de boucle causale
+description: Diagrammes de rétroaction en dynamique des systèmes — le moteur énumère chaque boucle de rétroaction et la classe en renforçante ou équilibrante selon sa polarité.
+---
+
+## À propos des diagrammes de boucle causale
+
+Un **diagramme de boucle causale** (CLD) est l'outil de cartographie central de la **dynamique des systèmes** (Jay Forrester, MIT, années 1960) : des variables reliées par des liens causaux signés, où ce sont les *boucles de rétroaction* — et non les flèches individuelles — qui expliquent le comportement d'un système. Une boucle est **renforçante (R)** lorsqu'elle amplifie le changement et **équilibrante (B)** lorsqu'elle le contrecarre. La référence canonique est Sterman, *Business Dynamics* (2000).
+
+L'avantage de Schematex est que le moteur **trouve et classe les boucles pour vous**. Les outils de dessin vous permettent de placer des flèches ; ils ne vous indiquent pas quelles boucles existent ni si chacune est renforçante ou équilibrante. Schematex énumère chaque boucle de rétroaction élémentaire (algorithme de Johnson) et applique la règle de polarité pair/impair de Sterman — en les étiquetant R1, B1, R2…
+
+<Playground initial={`causalloop "Sales force flywheel"
+var "Training quality"
+"Training quality" -> "Salesperson skills" : + delay
+"Salesperson skills" -> Revenue : +
+Revenue -> "Training quality" : +
+Revenue -> "Hiring rate" : +
+"Hiring rate" -> "Salesperson skills" : -
+loop R1 "Skill flywheel"
+loop B1 "Dilution"`} height={480} />
+
+---
+
+## 1. Votre première boucle causale
+
+Commencez avec le mot-clé `causalloop` (alias `cld`), un titre optionnel, puis des **liens signés**. Les variables sont créées automatiquement à partir des liens — vous les déclarez rarement :
+
+```
+causalloop "Adoption model"
+"Adoption rate" -> Adopters : +
+Adopters -> "Adoption rate" : +
+loop R1 "Word of mouth"
+```
+
+Un lien est `SOURCE -> CIBLE : POLARITE`. Les noms de variables composés sont entre guillemets (`"Adoption rate"`) ; les mots simples n'ont pas besoin de guillemets (`Adopters`). Au moins un lien est requis.
+
+---
+
+## 2. Polarité des liens
+
+La polarité est le signe de l'influence causale et est **obligatoire** sur chaque lien :
+
+```
+A -> B : +          # même direction (plus de A → plus de B)
+B -> C : -          # direction opposée (plus de B → moins de C)
+A -> B : s          # alias pour + (same)
+B -> C : o          # alias pour − (opposite)
+C -> D : same       # alias pour +
+D -> E : opposite   # alias pour −
+A -> B +            # le deux-points est optionnel
+```
+
+`+` / `s` / `same` signifient *même direction* ; `−` / `o` / `opposite` signifient *direction opposée*. Un lien sans polarité est rejeté.
+
+---
+
+## 3. Délais et variables explicites
+
+```
+"Training quality" -> "Salesperson skills" : + delay   # délai marqué (∥ sur la flèche)
+A -> B : + ~delay                                       # la forme ~delay fonctionne aussi
+var "Adoption rate"                                     # épingler une variable pour qu'elle ne soit pas auto-créée
+loop R1 "Word of mouth"                                 # nommer/annoter une boucle
+```
+
+- **`delay`** / **`~delay`** marque un lien comme différé (la marque de hachure en dynamique des systèmes).
+- **`var "nom"`** déclare une variable explicitement (fixe son étiquette ; non auto-créée).
+- **`loop ID "phrase"`** attache un nom lisible par l'homme à une boucle détectée par le moteur.
+
+---
+
+## 4. Boucles de rétroaction calculées
+
+C'est le différenciateur. Le moteur :
+
+1. Construit le **graphe dirigé signé** (nœuds = variables, arêtes = liens signés).
+2. Énumère **chaque boucle de rétroaction élémentaire** (cycle dirigé simple) avec l'algorithme de Johnson — de manière déterministe, dans l'ordre de déclaration.
+3. **Classe** chaque boucle en comptant les liens négatifs :
+   - Nombre **pair** (y compris 0) → **R** (renforçante) ; produit des signes = +1
+   - Nombre **impair** → **B** (équilibrante) ; produit des signes = −1
+
+C'est exactement la règle pair/impair de Sterman. Les boucles sont numérotées dans l'ordre de détection par type (R1, B1, R2…) et dessinées avec leur glyphe de rotation `R`/`B` au centre de la boucle. Chaque boucle porte `data-loop` et `data-kind`.
+
+---
+
+## 5. Erreurs courantes
+
+```
+# FAUX — lien sans polarité
+A -> B
+
+# FAUX — un diagramme sans aucun lien
+cld
+```
+
+Chaque lien a besoin d'une polarité (`: +` ou `: -`) ; un CLD sans lien est rejeté. Rappel : la polarité concerne la *direction du changement*, pas la désirabilité — un lien de « décès » vers « population » est quand même `-` (plus de décès → moins de population) même si les décès sont négatifs.
+
+---
+
+## 6. Conformité aux normes
+
+La notation suit Sterman, *Business Dynamics* (2000) et la convention standard de dynamique des systèmes : polarité de lien signée, marques de délai de hachure, et identifiants de boucle R/B. La règle de polarité de boucle pair/impair par lien négatif est la classification du manuel, implémentée exactement.
+
+## 7. Feuille de route
+
+Reporté : promotion stock-et-flux, pondération de la force des liens, et analyse de boucle dominante (valeur propre de boucle) dans le temps.

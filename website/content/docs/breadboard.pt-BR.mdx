@@ -1,0 +1,226 @@
+---
+title: Breadboard / Fiação Física
+---
+
+## Sobre diagramas de breadboard
+
+Um **diagrama de breadboard** mostra como conectar fisicamente componentes em uma placa de prototipagem sem solda — o gênero visual icônico de todo tutorial de Arduino / ESP32 / Raspberry Pi. O leitor replica o que vê, furo por furo, no hardware real. Isso é *complementar ao* esquemático de circuito abstrato (`circuit`, IEEE 315): o esquemático é a visão de raciocínio do engenheiro; o breadboard é a visão de replicação do maker.
+
+O Schematex implementa renderização de breadboard no estilo **Fritzing**. Os componentes são desenhados como corpos reconhecíveis (resistores com faixas de cor, LEDs como domes coloridos, DIPs com entalhes, PCBs de MCU com headers de pinos rotulados). Os fios jumper são desenhados como **arcos Bézier cúbicos suaves** entre pontos de conexão específicos — não ângulos retos Manhattan. O DSL endereça cada parte e cada fio por **coordenadas nativas do breadboard** (`@col-linha`, por ex. `@5e`), não por posições em pixels, então o arquivo pode ser escrito manualmente e versionado.
+
+> **Nota** — este motor *não* é um esquemático de circuito e não aplica regras elétricas. Use-o para tutoriais, apostilas de laboratório, READMEs e material didático. Para análise nodal ou esquemáticos formais, use o motor `circuit`.
+
+<Playground initial={`breadboard
+board: half
+title: "Blink LED — Arduino Uno hello-world"
+
+parts
+  uno: mcu uno @beside-left
+  r1:  resistor 220 @5e..9e
+  d1:  led red @10e..10f
+
+wires
+  uno:5V  --red--    @+t1
+  uno:GND --black--  @-t1
+  @+t1    --red--    @5a
+  uno:D13 --yellow-- @9a
+  @10j    --black--  @-t1`} height={420} />
+
+---
+
+## 1. Seu primeiro breadboard
+
+Três seções: uma linha de cabeçalho `breadboard`, um bloco `parts` e um bloco `wires`. As linhas opcionais `board:` e `title:` vêm logo após o cabeçalho.
+
+<Playground initial={`breadboard
+parts
+  uno: mcu uno @beside-left
+  r1:  resistor 220 @5e..9e
+  d1:  led red @10e..10f
+
+wires
+  uno:5V  --red--   @+t1
+  uno:GND --black-- @-t1
+  uno:D13 --yellow-- @5a
+  @10j    --black-- @-t1`} />
+
+Cada parte é `id: kind [args] @placement`. Cada fio é `<endpoint> --color-- <endpoint>`. Essa é a gramática completa.
+
+---
+
+## 2. Coordenadas
+
+Breadboards têm uma grade de endereçamento 2D. As coordenadas do Schematex sempre começam com `@`.
+
+| Forma | Significado | Exemplo |
+|---|---|---|
+| `@<col><linha>` | Furo da grade principal. Linhas `a–e` (metade superior), `f–j` (metade inferior). | `@5e`, `@12g` |
+| `@+t<col>` | Trilho **positivo** superior (faixa vermelha). | `@+t8` |
+| `@-t<col>` | Trilho **negativo / GND** superior (faixa azul). | `@-t8` |
+| `@+b<col>` | Trilho positivo inferior. | `@+b14` |
+| `@-b<col>` | Trilho negativo inferior. | `@-b14` |
+| `@<a>..<b>` | Span — usado no posicionamento de partes (resistor, diodo, LED). | `@5e..9e` |
+| `@beside-left` | Posicionamento fora da placa para placas MCU. | `mcu uno @beside-left` |
+
+Mini placas (`board: mini`) **não têm trilhos de alimentação** — `@+t…` / `@-b…` são rejeitados pelo parser.
+
+---
+
+## 3. Tamanhos de placa
+
+```
+breadboard
+board: half          // padrão — 30 colunas, 400 pontos de conexão, trilhos (contínuos)
+```
+
+| Forma | Pontos de conexão | Colunas | Trilhos de alimentação |
+|---|---|---|---|
+| `mini` | 170 | 17 | nenhum |
+| `half` (padrão) | 400 | 30 | contínuos |
+| `full` | 830 | 63 | interrupção na coluna 30/31 |
+
+> **Atenção** — em placas de tamanho completo, os trilhos se interrompem no meio. Se o seu circuito usar ambas as metades, você deve conectar os trilhos com jumpers explicitamente.
+
+---
+
+## 4. Catálogo de partes
+
+Cada parte é `id: <kind> [args] @<placement>`. O catálogo cobre os componentes maker mais comuns para Arduino / ESP32:
+
+**Componentes discretos** (ficam no breadboard):
+
+| DSL | Args | Exemplo |
+|---|---|---|
+| `resistor` | `value` (Ω; suporta `k`/`M`) | `r1: resistor 220 @5e..9e` |
+| `led` | `color` (red/green/blue/yellow/white/orange) | `d1: led red @10e..10f` |
+| `cap-elec` | — | `c1: cap-elec @4e..4f` |
+| `cap-ceramic` | — | `c2: cap-ceramic @6e..6f` |
+| `diode` | — | `d2: diode @5e..8e` |
+| `button` | — | `btn: button @8e` |
+| `dip` | `pins=N` | `ic: dip pins=8 @4e` |
+| `header` | `pins=N` | `h1: header pins=4 @20a` |
+
+**Placas microcontroladoras** (posicionadas ao lado / acima / abaixo do substrato):
+
+| DSL | Rótulos de pinos |
+|---|---|
+| `mcu uno` | `5V`, `3V3`, `GND`, `VIN`, `RST`, `D2…D13`, `A0…A5`, `RX`, `TX` |
+| `mcu nano` | Subconjunto dos rótulos do Uno |
+| `mcu esp32` | `3V3`, `GND`, `VIN`, `GPIO2`, `GPIO4`, `GPIO5`, `GPIO12…GPIO33` |
+| `mcu pico` | Mesmos rótulos genéricos de GPIO |
+
+**Sensores / displays / atuadores** (módulos ficam no breadboard com a fileira de pinos ancorada na coordenada fornecida):
+
+| DSL | Pinos |
+|---|---|
+| `sensor hcsr04` | `VCC`, `TRIG`, `ECHO`, `GND` |
+| `sensor dht11` / `sensor dht22` | `VCC`, `DATA`, `GND` |
+| `display oled-ssd1306` | `GND`, `VCC`, `SCL`, `SDA` |
+| `display lcd-1602-i2c` | `GND`, `VCC`, `SDA`, `SCL` |
+| `module rotary-ky040` | `CLK`, `DT`, `SW`, `VCC`, `GND` |
+| `actuator servo-sg90` | `GND`, `VCC`, `SIG` |
+
+As faixas de cor dos resistores são decoradas automaticamente a partir do `value` — `220` → vermelho-vermelho-marrom-ouro, `10000` → marrom-preto-laranja-ouro.
+
+---
+
+## 5. Fios
+
+Cada fio conecta dois endpoints. Um endpoint é um **pino de parte** (`partId:pinName`) ou uma **coordenada do breadboard** (`@…`).
+
+```
+wires
+  uno:5V  --red--    @+t1
+  uno:GND --black--  @-t1
+  uno:D9  --yellow-- @9c
+  @9a     --green--  @+t9
+```
+
+| Cor | Função convencional |
+|---|---|
+| `red` | +V (5V, 3,3V, VCC) |
+| `black` / `blue` | GND |
+| `yellow` / `orange` / `green` / `white` / `purple` | Sinal |
+| `brown` / `grey` | Sinal arbitrário |
+
+A cor é puramente visual — o motor não a valida contra a função elétrica.
+
+Para placas visualmente congestionadas, `via @<coord>` permite fixar um furo intermediário que influencia os pontos de controle do Bézier:
+
+```
+wires
+  uno:D13 --yellow-- @9a via @8c
+```
+
+A maioria dos fios não precisa de `via` — o motor de layout produz um arco natural por conta própria.
+
+---
+
+## 6. Sensor com resistor pull-up (motivo DHT11)
+
+O padrão icônico de tutoriais de Arduino: um pull-up de 10 kΩ entre VCC e a linha de dados do sensor.
+
+<Playground initial={`breadboard
+board: half
+title: "DHT11 + 10kΩ pull-up"
+
+parts
+  uno: mcu uno @beside-left
+  s1:  sensor dht11 @6a
+  r1:  resistor 10000 @8e..14e
+
+wires
+  s1:VCC  --red--    @+t1
+  s1:GND  --black--  @-t1
+  s1:DATA --yellow-- @8e
+  @14e    --red--    @+t14
+  uno:5V  --red--    @+t1
+  uno:GND --black--  @-t1
+  uno:D2  --yellow-- @8a`} height={460} />
+
+---
+
+## 7. ESP32 + I²C OLED
+
+O ESP32 opera a 3,3 V (não 5 V). Convenção I²C: verde = SDA, branco = SCL.
+
+<Playground initial={`breadboard
+board: half
+title: "ESP32 + SSD1306 OLED I²C"
+
+parts
+  esp:  mcu esp32 @beside-left
+  oled: display oled-ssd1306 @8a
+
+wires
+  oled:GND --black--   @-t1
+  oled:VCC --red--     @+t1
+  oled:SCL --white--   @10c
+  oled:SDA --green--   @11c
+  esp:3V3    --red--   @+t1
+  esp:GND    --black-- @-t1
+  esp:GPIO22 --white-- @10c
+  esp:GPIO21 --green-- @11c`} height={460} />
+
+---
+
+## 8. Limitações da v0.1
+
+- **Sem callouts com linha guia** — os designadores de referência (R1, C2) são desenhados próximos ao corpo da parte. Caixas de callout fora da placa estão adiadas.
+- **Sem importação de `.fzz`** — o Schematex consome apenas seu próprio DSL; arquivos Fritzing não são analisados.
+- **Sem simulação** — este é um renderizador, não um simulador no estilo Wokwi. A validação de valores de componentes (lei de Ohm, limites de corrente) está fora do escopo.
+- **Sem round-trip PCB / esquemático** — `breadboard` e `circuit` são motores independentes. Criar duas visões do mesmo protótipo atualmente significa escrever dois DSLs.
+- **Catálogo de partes fixo** — tipos de partes definidos pelo usuário estão adiados. A v0.1 inclui o catálogo de 80% de tutoriais maker (resistores, LEDs, capacitores, DIPs, headers, quatro famílias de MCU, seis módulos de sensor / display / atuador).
+- **Visual de interrupção do trilho de alimentação** — placas de tamanho completo marcam a interrupção 30/31 com um espaço da largura de um furo; as faixas do trilho ainda são desenhadas através do espaço (cosmético).
+
+---
+
+## Exemplos relacionados
+
+Cenários prontos para uso da galeria de exemplos:
+
+<RelatedExamples slugs={[
+  'breadboard-blink-led',
+  'breadboard-hcsr04-distance',
+  'breadboard-esp32-oled',
+]} />

@@ -1,0 +1,199 @@
+---
+title: ERD (엔티티-관계 다이어그램)
+---
+
+## ERD란
+
+**엔티티-관계 다이어그램(Entity-Relationship Diagram, ERD)**은 관계형 데이터베이스의 구조를 문서화합니다: 테이블(엔티티), 컬럼(속성), 그리고 테이블 간의 외래 키 관계(카디널리티 포함: 1..1 / 0..1 / 1..N / 0..N). 백엔드 엔지니어는 신입 팀원에게 코드베이스를 소개할 때 이를 사용합니다. 데이터 아키텍트는 DDL을 작성하기 전에 화이트보드에 스케치합니다. 데이터베이스 교육자(Elmasri & Navathe; Silberschatz / Korth / Sudarshan)는 모든 CS 데이터베이스 강좌의 개념 설계 단원 중심에 ERD를 둡니다.
+
+Schematex는 **크로우즈 풋 표기법(crow's-foot notation)**을 구현합니다. 이는 MySQL Workbench, dbdiagram.io, ERDPlus, Lucidchart, draw.io, Mermaid `erDiagram`, 그리고 Oracle SQL Developer Data Modeler에서 사용하는 사실상의 현대 표준 스타일입니다. DSL은 DBML과 호환되어 엔지니어가 복사-붙여넣기를 할 수 있으며, **완전한 Mermaid `erDiagram` 방언도 허용**합니다. `erDiagram` 헤더로 시작하고 Mermaid 관계(`CUSTOMER ||--o{ ORDER : places`)와 타입 우선 엔티티 블록(`ORDER { int id PK }`)을 그대로 붙여 넣으면 됩니다. 엔티티는 관계에서 자동으로 생성됩니다. Chen 1976 표기법(직사각형 + 다이아몬드 + 타원 + ISA 계층)과 Barker 오버레이는 v0.2로 미뤄졌습니다. 현재 모든 다이어그램은 크로우즈 풋으로 렌더링됩니다.
+
+> **참고** — 이것은 `entity` 엔진과 **다릅니다**. `entity`(엔티티 구조)는 **기업/법인 소유권** 계층(자회사, 지분율 롤업, 신탁)을 위한 것입니다. `erd`는 **데이터베이스 스키마**(테이블, 컬럼, 외래 키)를 위한 것입니다. 도메인, 레이아웃, 대상 독자 모두 다릅니다.
+
+<Playground initial={`erd
+title: "University Schema"
+
+table Student {
+  student_id  int       PK
+  name        varchar
+  email       varchar   UK
+  major_id    int       FK -> Major.major_id
+}
+
+table Major {
+  major_id    int       PK
+  name        varchar
+}
+
+table Course {
+  course_id   int       PK
+  title       varchar
+  credits     int
+}
+
+table Enrollment {
+  student_id  int       PK FK -> Student.student_id
+  course_id   int       PK FK -> Course.course_id
+  grade       char
+}
+
+ref Student.major_id many-mandatory -- one-mandatory Major.major_id : "majors in"
+ref Enrollment.student_id many-mandatory -- one-mandatory Student.student_id
+ref Enrollment.course_id many-mandatory -- one-mandatory Course.course_id`} height={480} />
+
+---
+
+## 1. 첫 번째 ERD 만들기
+
+가장 간단한 ERD: 자식 테이블이 외래 키로 부모 테이블을 참조합니다.
+
+<Playground initial={`erd
+table Customer {
+  customer_id  int       PK
+  email        varchar   UK
+}
+table Order {
+  order_id     int       PK
+  customer_id  int       FK -> Customer.customer_id
+}
+ref Order.customer_id many-mandatory -- one-mandatory Customer.customer_id : "places"`} />
+
+네 가지 규칙이 사용의 80%를 커버합니다:
+
+1. `erd`로 시작합니다. 선택적 헤더 `title:`, `direction: LR | TB`.
+2. 각 테이블은 블록입니다: `table Name { col type marker }`. 마커는 `PK`, `FK`, `UK`, `NN`(또는 `*`, NOT NULL).
+3. 인라인 외래 키 대상: 컬럼에 `FK -> Other.column`을 추가합니다. 렌더러가 `FK` 필을 자동으로 추가합니다.
+4. `ref` 줄로 테이블을 연결합니다: `ref Source <left-card> -- <right-card> Target [: "label"]`. 카디널리티는 `one-mandatory`, `one-optional`, `many-mandatory`, `many-optional`(명칭 형식), `1..1` / `0..1` / `1..N` / `0..N`(Min-Max), 또는 Mermaid 글리프(`}o--||` 등)를 별칭으로 사용합니다.
+
+> 주석은 `//` 또는 `#`을 사용합니다. 블록 형식은 멀티라인(컬럼당 한 줄) 또는 인라인(`table A { id int PK; name varchar }`) 모두 가능합니다.
+
+---
+
+## 2. 카디널리티 글리프
+
+크로우즈 풋은 관계 선의 각 끝에 카디널리티를 인코딩합니다:
+
+| 글리프 | 읽기 | Min..Max | 명칭 토큰 |
+|---|---|---|---|
+| `─┃` (수직선) | 정확히 하나 (필수 하나) | 1..1 | `one-mandatory` |
+| `─○` (열린 원) | 0 또는 하나 (선택적 하나) | 0..1 | `one-optional` |
+| `─┃<` (수직선 + 크로우즈 풋) | 하나 이상 (필수 다수) | 1..N | `many-mandatory` |
+| `─○<` (원 + 크로우즈 풋) | 0 이상 (선택적 다수) | 0..N | `many-optional` |
+
+선의 각 끝은 독립적으로 주석이 달립니다. 일반적인 1:N 관계는 "정확히 하나의 CUSTOMER가 0개 이상의 ORDER를 가진다"로 읽힙니다:
+
+```
+ref Order.customer_id many-mandatory -- one-mandatory Customer.customer_id : "places"
+```
+
+오른쪽에서 왼쪽으로 읽으면: 선의 **오른쪽 끝**은 Customer에 단일 수직선(one-mandatory)으로, **왼쪽 끝**은 Order에 수직선 + 크로우즈 풋(many-mandatory)으로 연결됩니다.
+
+---
+
+## 3. Mermaid 별칭
+
+이미 Mermaid `erDiagram`을 사용하고 있다면, 동일한 글리프를 입력으로 사용할 수 있습니다:
+
+<Playground initial={`erd
+table Customer { customer_id int PK; email varchar UK }
+table Order    { order_id int PK; customer_id int FK -> Customer.customer_id }
+table Product  { product_id int PK; name varchar }
+
+ref Order }o--|| Customer : "places"
+ref Order }o--o{ Product  : "contains"`} />
+
+| Mermaid 토큰 | Schematex 의미 |
+|---|---|
+| `\|o` 왼쪽 / `o\|` 오른쪽 | 0..1 |
+| `\|\|` | 1..1 |
+| `}o` 왼쪽 / `o{` 오른쪽 | 0..N |
+| `}\|` 왼쪽 / `\|{` 오른쪽 | 1..N |
+| `--` | 식별 / 실선 |
+| `..` | 비식별 / 점선 |
+
+---
+
+## 4. 식별 관계 vs 비식별 관계
+
+식별 관계(실선)에는 `--`를, 비식별 관계(점선)에는 `..`를 사용합니다:
+
+<Playground initial={`erd
+table User       { id int PK; email varchar }
+table SessionLog { id int PK; user_id int FK -> User.id; created_at timestamp }
+
+ref SessionLog.user_id many-optional .. one-optional User.id : "logs (optional FK)"`} />
+
+점선은 Barker / IDEF1X 비식별 관례를 따릅니다.
+
+---
+
+## 5. 복합 기본 키 (연관 테이블)
+
+연관("정션") 테이블은 M:N 관계를 해소합니다. 각 PK + FK 컬럼에 `PK`와 `FK`를 모두 표시합니다:
+
+<Playground initial={`erd
+table Student { student_id int PK; name varchar }
+table Course  { course_id int PK; title varchar }
+table Enrollment {
+  student_id  int  PK FK -> Student.student_id
+  course_id   int  PK FK -> Course.course_id
+  grade       char
+}
+ref Enrollment.student_id many-mandatory -- one-mandatory Student.student_id
+ref Enrollment.course_id  many-mandatory -- one-mandatory Course.course_id`} />
+
+Schematex는 동일한 행에 두 필(PK + FK)을 모두 렌더링합니다. `PK` 마커가 있는 경우 컬럼 이름에 PK 밑줄이 적용됩니다.
+
+---
+
+## 6. 레이아웃 방향
+
+`direction: LR`(기본값)은 부모 테이블을 왼쪽에, 자식 테이블을 오른쪽에 배치합니다. `direction: TB`는 위에서 아래 방향으로 전환합니다. 좁은 임베드에 유용합니다:
+
+<Playground initial={`erd
+title: "Library (top-down)"
+direction: TB
+
+table Member { id int PK; name varchar; email varchar UK }
+table Book   { id int PK; title varchar; author varchar }
+table Loan   { id int PK; member_id int FK -> Member.id; book_id int FK -> Book.id; due_date date }
+
+ref Loan.member_id many-mandatory -- one-mandatory Member.id : "borrowed by"
+ref Loan.book_id   many-mandatory -- one-mandatory Book.id   : "of"`} />
+
+단일 굴곡 간선을 사용하는 레이어드 직교 맨해튼 라우팅. v0.1은 레이어 내에서 선언 순서 스태킹을 사용합니다. 무게 중심 교차 감소는 v0.2로 미뤄졌습니다.
+
+---
+
+## 7. 표기 모드
+
+DSL 헤더로 표기법을 고정할 수 있습니다:
+
+```
+erd
+notation: crowsfoot     // 기본값 — v0.1에서 지원하는 유일한 모드
+```
+
+`notation: chen`(직사각형-다이아몬드-타원, 약한 엔티티, 3항, ISA)과 `notation: barker`(반쪽 점선)는 `27-ERD-STANDARD.md`에 문서화되어 있지만 현재 파서에서 거부됩니다. v0.2 목표.
+
+---
+
+## 8. v0.1 제한 사항
+
+- **크로우즈 풋만 지원합니다.** Chen 및 Barker 렌더링은 미구현.
+- **간선 교차 최소화 없음.** 레이어드 배치는 레이어 내 선언 순서를 사용합니다. 대형 ERD(테이블 10개 이상, FK 밀집)는 일부 교차가 발생합니다. 특정 레이아웃이 중요한 경우 `table` 블록을 재정렬하십시오.
+- **자기 참조 C-루프 없음.** 재귀 관계(`Employee.manager_id -> Employee.id`)는 파싱되지만 정규 C-형태가 아닌 직선 직교 선으로 라우팅됩니다.
+- **M:N 자동 해소 없음.** 연관 엔티티를 명시적으로 표현하십시오(어차피 실제 스키마에서도 표준 관행).
+
+전체 표준 참조는 `docs/reference/27-ERD-STANDARD.md`를 참조하십시오.
+
+---
+
+## 관련 예제
+
+예제 갤러리에서 바로 사용할 수 있는 시나리오:
+
+<RelatedExamples slugs={[
+  'erd-university-schema',
+  'erd-ecommerce-schema',
+]} />

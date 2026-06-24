@@ -1,0 +1,244 @@
+---
+title: Diagramme de flux PRISMA 2020
+---
+
+## À propos des diagrammes de flux PRISMA
+
+Le **diagramme de flux PRISMA 2020** (Page MJ et al., *BMJ* 2021;372:n71) est la figure obligatoire dans chaque revue systématique, méta-analyse et revue de portée publiée dans BMJ, Lancet, JAMA, Cochrane, JBI et plus de 200 autres revues. C'est une figure *unique, rigide et à quatre rangées* — **Identification → Sélection → Éligibilité → Inclusion** — avec le nombre d'enregistrements dans chaque case et des cases « exclus » latérales parallèles.
+
+Il s'agit conceptuellement d'un organigramme, mais la mise en page, les champs `n =` obligatoires et la variante à double pipeline sont *prescrits*. Schematex livre `prisma` comme un moteur séparé et opinionné pour que l'auteur écrive les décomptes et les raisons d'exclusion et que le diagramme soit **correct par construction** — il est impossible d'omettre accidentellement un décompte ou de mal ordonner une étape. Spec : [`28-PRISMA-STANDARD.md`](https://github.com/SchemaTex/SchemaTex/blob/main/docs/reference/28-PRISMA-STANDARD.md).
+
+Distinct de [flowchart](/docs/flowchart) : un organigramme générique n'a pas de notion d'étapes obligatoires, de décomptes d'enregistrements, de cases d'exclusion latérales ni de fusion de double pipeline. Utiliser `prisma` chaque fois que la figure est un flux de revue PRISMA.
+
+<Playground initial={`
+  prisma
+  mode: 2020-single
+  title: Effect of exercise on chronic low-back pain — SR
+
+  identification:
+    databases:
+      n: 1418
+      sources: PubMed=600, Embase=450, Cochrane=184, Web of Science=184
+      duplicates-removed: 318
+
+  screening:
+    records-screened: 1100
+    excluded:
+      n: 870
+      reasons: irrelevant title=750, non-English=120
+
+  eligibility:
+    full-text-assessed: 230
+    excluded:
+      n: 195
+      reasons: wrong population=80, wrong intervention=60, wrong outcome=55
+
+  included:
+    studies: 35
+    reports: 38`} height={620} />
+
+---
+
+## 1. Votre premier diagramme
+
+Le minimum est constitué des quatre blocs d'étapes. Les décomptes sont obligatoires ; le parseur refuse de mettre en page un diagramme avec un total manquant.
+
+```
+prisma
+
+identification:
+  databases:
+    n: 1000
+
+screening:
+  records-screened: 900
+  excluded:
+    n: 600
+
+eligibility:
+  full-text-assessed: 300
+  excluded:
+    n: 250
+
+included:
+  studies: 50
+```
+
+L'indentation est significative — **deux espaces par niveau**, comme pour genogram et SLD. La première ligne non vide doit être `prisma`. Les commentaires utilisent `#` ou `//`.
+
+---
+
+## 2. Méta-lignes
+
+Lignes `key: value` de niveau supérieur, écrites avant les blocs d'étapes :
+
+```
+prisma
+mode: 2020-single
+kind: systematic-review
+title: My review
+validate-counts: warn
+```
+
+| Clé | Valeurs | Défaut | Signification |
+|---|---|---|---|
+| `mode` | `2020-single` · `2020-dual` · `2009` | `2020-single` | Colonne unique ou double (« autres méthodes »). |
+| `kind` | `systematic-review` · `scoping-review` · `ipd` · `nma` | `systematic-review` | Modifie le vocabulaire des étapes (voir §6). |
+| `title` | chaîne | — | Affiché au-dessus du diagramme. |
+| `validate-counts` | `warn` · `strict` · `off` | `warn` | Vérification arithmétique (voir §7). |
+| `direction` | `TB` / `TD` | `TB` | PRISMA est vertical par standard ; l'horizontal est rejeté. |
+
+---
+
+## 3. Identification
+
+Le bloc `identification:` contient un sous-bloc `databases:` (toujours) et un sous-bloc `other:` optionnel (mode double).
+
+```
+identification:
+  databases:
+    n: 1418
+    sources: PubMed=600, Embase=450, Cochrane=184
+    duplicates-removed: 318
+    ineligible-automation: 0
+    other-removed: 0
+```
+
+- `n:` — total des enregistrements identifiés (**obligatoire**).
+- `sources:` — paires `name=count`, séparées par des virgules. Rendues comme une ventilation indentée. Les noms avec des espaces ou de la ponctuation peuvent être entre guillemets : `"Web of Science"=184`.
+- `duplicates-removed:`, `ineligible-automation:`, `other-removed:` — décomptes de suppressions optionnels. Lorsque l'un d'eux est présent, ils se rendent sous forme d'une case séparée **« Enregistrements supprimés avant la sélection »** dans la colonne de droite, reliée par une flèche horizontale.
+
+Les grands nombres peuvent utiliser des virgules : `n: 1,418` est identique à `n: 1418`.
+
+---
+
+## 4. Sélection et éligibilité
+
+Les deux étapes portent un décompte principal plus un bloc `excluded:`. Le bloc excluded a son propre `n:` et une ventilation `reasons:` optionnelle.
+
+```
+screening:
+  records-screened: 1100
+  excluded:
+    n: 870
+    reasons: irrelevant title=750, non-English=120
+  reports-sought: 226        # optionnel
+  reports-not-retrieved: 12  # optionnel
+
+eligibility:
+  full-text-assessed: 230
+  excluded:
+    n: 195
+    reasons: wrong population=80, wrong intervention=60, wrong outcome=55
+```
+
+`reasons:` sont des paires `name=count`. Si vous en listez plus de 8, le rendu les trie par ordre décroissant et agrège la queue en `Other (n = …)` pour que la case latérale reste lisible.
+
+---
+
+## 5. Inclusion
+
+```
+included:
+  studies: 35
+  reports: 38          # une étude peut donner lieu à plusieurs rapports
+  participants: 28741  # PRISMA-IPD uniquement
+```
+
+`studies:` est obligatoire. `reports:` et `participants:` sont des lignes de décompte supplémentaires optionnelles.
+
+---
+
+## 6. Double pipeline et types de revue
+
+**Double pipeline** — la mise à jour PRISMA 2020 a ajouté une deuxième colonne « Identification via d'autres méthodes » (recherche de citations, recherches manuelles, recommandations d'experts). Ajouter un bloc `other:` ; les deux colonnes fusionnent dans la Sélection via une jonction en Y.
+
+```
+prisma
+mode: 2020-dual
+
+identification:
+  databases:
+    n: 1234
+    duplicates-removed: 254
+  other:
+    n: 56
+    sources: citation-search=30, hand-search=20, expert-recommendation=6
+
+screening:
+  records-screened: 1036
+  excluded:
+    n: 810
+
+eligibility:
+  full-text-assessed: 226
+  excluded:
+    n: 195
+
+included:
+  studies: 31
+```
+
+**Revue de portée** — `kind: scoping-review` remplace « studies » → « sources of evidence » et réétiquète les étapes selon Tricco et al. 2018, sans modifier la géométrie.
+
+**Revue mise à jour** — un bloc `previous-studies:` optionnel trace une case en pointillés en haut qui alimente la section d'identification :
+
+```
+previous-studies:
+  n: 19
+  sources: previous review=19
+```
+
+---
+
+## 7. Validation de l'arithmétique des décomptes
+
+Avec `validate-counts: warn` (par défaut), le moteur vérifie que les décomptes se recoupent entre les étapes — ex. `databases.n + other.n − duplicates-removed = records-screened`, et que les ventilations de sources/raisons correspondent à leurs totaux. Les écarts affichent un petit avertissement sous le diagramme (également visible dans le `<desc>` SVG pour les lecteurs d'écran).
+
+`validate-counts: strict` transforme un écart en erreur de parsing avec un message « off by N ». `off` désactive entièrement la vérification.
+
+---
+
+## 8. Grammaire (EBNF)
+
+```
+prisma-document  = "prisma", { meta-line }, stage-block, { stage-block } ;
+meta-line        = ("mode:" | "kind:" | "title:" | "review-id:" | "validate-counts:" | "direction:") value ;
+
+stage-block      = previous-block | identification-block | screening-block | eligibility-block | included-block ;
+
+previous-block       = "previous-studies:" , indent, "n:" int, [ "reports:" int ], { "sources:" pairs } ;
+identification-block = "identification:" , indent,
+                         "databases:" , indent, "n:" int, { "sources:" pairs },
+                           [ "duplicates-removed:" int ], [ "ineligible-automation:" int ], [ "other-removed:" int ],
+                         [ "other:" , indent, "n:" int, { "sources:" pairs } ] ;
+screening-block      = "screening:" , indent, "records-screened:" int,
+                         "excluded:" , indent, "n:" int, { "reasons:" pairs },
+                         [ "reports-sought:" int ], [ "reports-not-retrieved:" int ] ;
+eligibility-block    = "eligibility:" , indent, "full-text-assessed:" int,
+                         "excluded:" , indent, "n:" int, { "reasons:" pairs } ;
+included-block       = "included:" , indent, "studies:" int, [ "reports:" int ], [ "participants:" int ] ;
+
+pairs            = pair, { "," pair } ;
+pair             = (string | quoted) "=" int ;
+int              = digit, { digit | "," } ;     (* les virgules sont supprimées : 1,234 == 1234 *)
+```
+
+L'indentation est de deux espaces par niveau. Les clés inconnues à l'intérieur d'un bloc d'étape constituent une erreur de parsing, maintenant chaque étape bien définie.
+
+---
+
+## 9. Conformité aux standards
+
+Suit la **déclaration PRISMA 2020** (Page MJ, McKenzie JE, Bossuyt PM, et al. *The PRISMA 2020 statement: an updated guideline for reporting systematic reviews.* BMJ 2021;372:n71) et les conventions de rendu de référence du **package R PRISMA2020** (Haddaway et al. 2022). Le vocabulaire des revues de portée suit **PRISMA-ScR** (Tricco et al. 2018) ; le décompte de participants suit **PRISMA-IPD** (Stewart et al. 2015). Modèle : [prisma-statement.org/prisma-2020-flow-diagram](https://www.prisma-statement.org/prisma-2020-flow-diagram).
+
+---
+
+## Exemples associés
+
+Scénarios prêts à l'emploi issus de la galerie d'exemples :
+
+<RelatedExamples slugs={[
+  'prisma-systematic-review',
+  'prisma-dual-pipeline',
+]} />

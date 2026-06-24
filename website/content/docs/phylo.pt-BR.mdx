@@ -1,0 +1,357 @@
+---
+title: Árvore filogenética
+---
+
+## Sobre árvores filogenéticas
+
+Uma **árvore filogenética** (também chamada de filograma ou cladograma) mostra a história evolutiva inferida de um grupo de espécies, genes ou sequências. Nós internos representam ancestrais comuns hipotéticos; folhas representam táxons observados; comprimentos de ramo codificam distância evolutiva ou tempo de divergência. Biólogos evolucionistas, ecólogos moleculares e microbiologistas clínicos usam árvores filogenéticas para reconstruir a história da vida, rastrear surtos de patógenos e entender como famílias gênicas evoluíram.
+
+O Schematex aceita árvores no **[formato Newick](https://phylipweb.github.io/phylip/newicktree.html)** — o padrão universal de intercâmbio usado pelo PAUP\*, IQ-TREE, RAxML, BEAST e praticamente todos os programas de filogenética — estendido com **[anotações NHX](https://home.cc.umanitoba.ca/~psgendb/doc/atv/NHX.pdf)** para valores de bootstrap e metadados de clado. Um DSL baseado em indentação também é suportado para árvores criadas manualmente. Esta página documenta o que o parser aceita atualmente.
+
+<Playground initial={`phylo "Vertebrate Evolution" [layout: circular, mode: phylogram]
+  newick: "(((Human:0.1,Chimp:0.08,Gorilla:0.12):0.15,(Mouse:0.45,Rat:0.42):0.3):0.05,((Dog:0.35,(Cat:0.30,Tiger:0.32):0.1):0.2,(Whale:0.6,Dolphin:0.55):0.15):0.3,(Salmon:0.5,Zebrafish:0.45):0.4);"
+  clade Primates = (Human, Chimp, Gorilla) [color: "#1E88E5", label: "Primates", highlight: both]
+  clade Rodents = (Mouse, Rat) [color: "#E53935", label: "Rodents", highlight: background]
+  clade Carnivora = (Dog, Cat, Tiger) [color: "#43A047", label: "Carnivora", highlight: both]
+  clade Cetacea = (Whale, Dolphin) [color: "#FB8C00", label: "Cetacea", highlight: background]
+  scale "substitutions/site"`} height={540} />
+
+---
+
+## 1. Sua primeira árvore filogenética
+
+A menor árvore útil: quatro táxons, dois clados.
+
+<Playground initial={`phylo "Vertebrates"
+  newick: "((Human:0.1,Chimp:0.08):0.03,(Dog:0.35,Cat:0.30):0.2);"`} />
+
+Três regras cobrem 80% dos casos de uso:
+
+1. Comece com `phylo`, seguido opcionalmente por um título entre aspas e propriedades entre colchetes.
+2. Forneça a topologia da árvore no formato `newick:` — a string Newick padrão, entre aspas, em uma única linha. O `;` final é opcional.
+3. Opcionalmente, defina grupos de destaque de **clado** e um rótulo de **scale** abaixo da linha newick.
+
+> Comentários devem começar com `#` em sua própria linha. Comentários inline ao final da linha não são suportados.
+
+---
+
+## 2. Formatos de entrada
+
+### 2.1 Formato Newick
+
+Newick é a entrada principal. A gramática completa é:
+
+```
+(A,B,(C,D));                         # apenas topologia
+(A:0.1,B:0.2,(C:0.3,D:0.4):0.5);    # com comprimentos de ramo
+((A:0.1,B:0.2):0.05[&&NHX:B=98],(C,D):0.08);  # bootstrap NHX
+('Homo sapiens':0.1,'Mus musculus':0.2);        # nomes entre aspas com espaços
+```
+
+Os comprimentos de ramo seguem o nome do nó após dois-pontos. Valores de suporte de nós internos podem aparecer como colchetes simples `[95]` ou como NHX `[&&NHX:B=95]`.
+
+<Playground initial={`phylo "Newick examples"
+  newick: "((A:0.1,B:0.2):0.05[&&NHX:B=98],(C:0.3,D:0.4):0.08[&&NHX:B=87]);"`} />
+
+**Regras Newick que o parser aceita:**
+
+| Recurso | Sintaxe | Observações |
+|---|---|---|
+| Nome de folha | `A`, `Homo_sapiens` | Sem espaços — use `_` ou aspas |
+| Nome de folha entre aspas | `'Homo sapiens'` | Aspas simples; `''` é uma aspa literal |
+| Comprimento de ramo | `:0.035` após o nome | Float; opcional |
+| Nome de nó interno | `(A,B)ancestor` | Após o `)` de fechamento |
+| Bootstrap (simples) | `(A,B)[95]` | Inteiro ou float entre colchetes |
+| Bootstrap (NHX) | `(A,B)[&&NHX:B=95]` | Campo `B=`; outros campos NHX são armazenados mas não renderizados |
+| Ponto e vírgula | `;` ao final | Opcional — o parser o remove |
+| Politomia | `(A,B,C)` | Mais de 2 filhos |
+
+### 2.2 DSL de indentação
+
+Para árvores escritas manualmente ou pequenas, o Schematex oferece uma alternativa baseada em indentação que é mais fácil de ler e editar do que o Newick bruto:
+
+<Playground initial={`phylo "Vertebrates (indent DSL)" [mode: phylogram]
+root:
+  :0.03
+    Human: 0.1
+    Chimp: 0.08
+  :0.2
+    Dog: 0.35
+    Cat: 0.30
+scale "substitutions/site"`} />
+
+**Regras do DSL de indentação:**
+
+| Sintaxe | Significado |
+|---|---|
+| `Name: length` | Nó folha com comprimento de ramo |
+| `: length` | Nó interno sem nome com comprimento de ramo |
+| `Name` | Nó folha sem comprimento de ramo (cladograma) |
+| `Name [N]` | Nó com valor de suporte N |
+| Indentação mais profunda | Filho do nó acima com indentação menor |
+| Linha `#` | Comentário, ignorado |
+
+A primeira linha que termina com `:` e não possui espaços aciona o modo de árvore por indentação (ex.: `root:`). O nome antes dos dois-pontos torna-se o rótulo da raiz; todas as linhas indentadas abaixo tornam-se seus filhos.
+
+---
+
+## 3. Layout
+
+Defina o layout nos colchetes do cabeçalho: `phylo "Title" [layout: rectangular]`.
+
+| Layout | Valor | Descrição |
+|---|---|---|
+| Retangular | `rectangular` | Padrão. Ramos em formato L; raiz à esquerda, folhas à direita |
+| Inclinado | `slanted` | Linhas diagonais do pai para o filho; mais compacto |
+| Circular | `circular` | Raiz no centro, folhas ao redor da circunferência |
+| Sem raiz | `unrooted` | Radial de ângulo igual; enfatiza distância, não ancestralidade |
+
+`[unrooted]` como flag simples é equivalente a `[layout: unrooted]`.
+
+**Circular** — raiz no centro, folhas se expandindo para fora. Visualmente mais impactante para árvores com muitos táxons e destaques de clado.
+
+<Playground initial={`phylo "Vertebrates — circular" [layout: circular]
+  newick: "((Human:0.1,Chimp:0.08,Gorilla:0.12):0.15,(Dog:0.35,Cat:0.30,Wolf:0.32):0.2,(Salmon:0.5,Zebrafish:0.45):0.3);"
+  clade Primates = (Human, Chimp, Gorilla) [color: "#1E88E5", label: "Primates", highlight: both]
+  clade Carnivora = (Dog, Cat, Wolf) [color: "#E53935", label: "Carnivora", highlight: both]`} height={440} />
+
+**Retangular** — ramos em formato L; raiz à esquerda, folhas à direita. A forma clássica de filograma para figuras publicadas.
+
+<Playground initial={`phylo "Bacterial Diversity" [layout: rectangular, mode: phylogram]
+  newick: "((((Ecoli:0.1,Salmonella:0.12):0.05[&&NHX:B=98],Vibrio:0.2):0.08,((Bacillus:0.15,Staph:0.18):0.06[&&NHX:B=92],Listeria:0.22):0.1):0.15,((Myco_tb:0.3,Myco_leprae:0.28):0.12[&&NHX:B=100],(Strepto:0.25,Lactobacillus:0.2):0.08):0.2);"
+  clade Gamma = (Ecoli, Salmonella, Vibrio) [color: "#1E88E5", label: "γ-Proteobacteria"]
+  clade Firmi = (Bacillus, Staph, Listeria) [color: "#E53935", label: "Firmicutes"]
+  scale "substitutions/site"`} height={480} />
+
+**Inclinado** — linhas diagonais do pai para o filho; mais compacto que o retangular, mesma direção de leitura da esquerda para a direita.
+
+<Playground initial={`phylo "Vertebrates — slanted" [layout: slanted]
+  newick: "((Human:0.1,Chimp:0.08,Gorilla:0.12):0.15,(Dog:0.35,Cat:0.30,Wolf:0.32):0.2,(Salmon:0.5,Zebrafish:0.45):0.3);"
+  clade Primates = (Human, Chimp, Gorilla) [color: "#1E88E5", label: "Primates"]
+  clade Carnivora = (Dog, Cat, Wolf) [color: "#E53935", label: "Carnivora"]
+  scale "substitutions/site"`} height={360} />
+
+**Sem raiz** — layout radial de ângulo igual; de-enfatiza a raiz, enfatiza a distância par a par entre todos os táxons.
+
+<Playground initial={`phylo "Vertebrates — unrooted" [unrooted]
+  newick: "((Human:0.1,Chimp:0.08,Gorilla:0.12):0.15,(Dog:0.35,Cat:0.30,Wolf:0.32):0.2,(Salmon:0.5,Zebrafish:0.45):0.3);"
+  clade Primates = (Human, Chimp, Gorilla) [color: "#1E88E5", label: "Primates"]
+  clade Carnivora = (Dog, Cat, Wolf) [color: "#E53935", label: "Carnivora"]`} height={400} />
+
+---
+
+## 4. Modo
+
+Definido com `[mode: …]` no cabeçalho (ou em uma linha `style [mode: …]` em qualquer parte do corpo).
+
+| Modo | Valor | Significado do comprimento de ramo |
+|---|---|---|
+| Filograma | `phylogram` | Padrão. Proporcional à distância evolutiva (substituições/sítio) |
+| Cladograma | `cladogram` | Ignorado — as folhas se alinham; apenas a topologia importa |
+| Cronograma | `chronogram` | Proporcional ao tempo de divergência; todas as folhas se alinham ao "presente" |
+| Dendrograma | `dendrogram` | Comprimento de ramo é a **altura de fusão** — a distância na qual dois grupos se unem |
+
+O cronograma requer comprimentos de ramo em unidades de tempo mais `[mrsd: "YYYY"]` (data de amostragem mais recente) no cabeçalho para que o renderizador possa alinhar as folhas ao presente.
+
+```
+phylo "SARS-CoV-2 variants" [mode: chronogram, mrsd: "2023"]
+  newick: "((Alpha:0.5,Delta:0.4):0.3,Omicron:0.8);"
+  scale "years"
+```
+
+**Dendrograma** — a saída padrão do agrupamento hierárquico aglomerativo, não da evolução. Cada nó interno é posicionado na sua **altura de fusão** (a distância cofenotípica na qual seus dois grupos filhos se fundem), todas as folhas se alinham em uma linha de base comum e os ramos são conectores retangulares em cotovelo. Um eixo de altura é desenhado para que você possa ler a distância na qual quaisquer duas folhas compartilham primeiro um grupo. Use este modo quando a mesma árvore Newick/indentação descreve um resultado de agrupamento — clusters de expressão gênica, similaridade de amostras, grupos de respostas de pesquisa — em vez de uma filogenia.
+
+Adicione uma linha `cut <value>` para cortar a árvore em uma altura escolhida: cada subárvore cuja altura de fusão cai abaixo do limite vira um grupo plano, cada um colorido de forma distinta, e uma linha de threshold tracejada é desenhada na altura especificada. Isso é o equivalente em dendrograma ao `fcluster` do scipy — convertendo uma árvore contínua em um conjunto discreto de grupos.
+
+<Playground initial={`phylo "Gene expression clusters" [mode: dendrogram]
+  newick: "(((A:1,B:1):2,C:3):2,(D:2,E:2):3);"
+  cut 4
+  scale "cluster distance"`} />
+
+Omita `cut` para mostrar o dendrograma puro sem coloração de grupos planos:
+
+<Playground initial={`phylo "Sample clustering" [mode: dendrogram]
+  newick: "(((A:1,B:1):2,C:3):2,(D:2,E:2):3);"
+  scale "cluster distance"`} />
+
+---
+
+## 5. Destaque de clado
+
+Uma linha `clade` marca um grupo monofilético com uma cor, um rótulo opcional e um modo de destaque opcional.
+
+```
+clade ID = (member1, member2, ...) [color: "#hex", label: "text", highlight: mode]
+```
+
+| Propriedade | Valores | Efeito |
+|---|---|---|
+| `color:` | string hexadecimal ex.: `"#1E88E5"` | Cor do ramo e/ou do fundo |
+| `label:` | string entre aspas | Rótulo do clado mostrado na margem direita |
+| `highlight:` | `branch`, `background`, `both` | `branch` colore as linhas; `background` sombreia a região; `both` faz os dois |
+
+Os membros são IDs de folhas (terminais) da string Newick. O renderizador computa o MRCA das folhas listadas e destaca toda a subárvore enraizada ali.
+
+<Playground initial={`phylo "Mammal clades" [layout: rectangular]
+  newick: "(((Human:0.1,Chimp:0.08,Gorilla:0.12):0.15,Mouse:0.45):0.05,(Dog:0.35,(Cat:0.30,Tiger:0.32):0.1):0.2);"
+  clade Primates = (Human, Chimp, Gorilla) [color: "#1E88E5", label: "Primates", highlight: both]
+  clade Carnivora = (Dog, Cat, Tiger) [color: "#E53935", label: "Carnivora", highlight: branch]`} />
+
+---
+
+## 6. Barra de escala e grupo externo
+
+**Barra de escala:** `scale "label"` — adiciona uma barra na parte inferior. O rótulo descreve a unidade (ex.: `"substitutions/site"`, `"Mya"`). Omita no modo cladograma, onde os comprimentos de ramo não têm significado.
+
+**Grupo externo:** `outgroup: taxonId` — registra o grupo externo para documentação; o renderizador pode usá-lo para marcar visualmente o táxon do grupo externo.
+
+```
+phylo "Vertebrates"
+  newick: "((Human:0.1,Chimp:0.08):0.03,Lamprey:0.8);"
+  outgroup: Lamprey
+  scale "substitutions/site"
+```
+
+---
+
+## 7. Referência de propriedades do cabeçalho
+
+Todas as opções vão dentro de `[…]` na linha de cabeçalho `phylo`, ou em uma linha `style […]` em qualquer parte do corpo.
+
+| Propriedade | Valores | Padrão | Efeito |
+|---|---|---|---|
+| `layout:` | `rectangular`, `slanted`, `circular`, `unrooted` | `rectangular` | Layout da árvore |
+| `mode:` | `phylogram`, `cladogram`, `chronogram`, `dendrogram` | `phylogram` | Semântica do comprimento de ramo |
+| `unrooted` | (flag) | — | Equivalente a `layout: unrooted` |
+| `branch-width:` | número | `1.5` | Largura do traço dos ramos |
+| `openAngle:` | número (graus) | `0` | Espaço em leque para layout circular (0 = 360° completo) |
+| `mrsd:` | string de ano entre aspas | — | Data de amostragem mais recente para cronogramas |
+
+---
+
+## 8. Rótulos e comentários
+
+- **Título:** `phylo "Tree of Life"` — apenas na primeira linha.
+- **Rótulo de escala:** `scale "substitutions/site"` — um por documento.
+- **Rótulo de clado:** `[label: "Primates"]` dentro de uma linha `clade`.
+- **Comentários:** `#` no início de uma linha (após espaço em branco inicial). Comentários inline ao final da linha não são suportados.
+
+---
+
+## 9. Erros comuns
+
+| Você escreveu | O parser diz | Correção |
+|---|---|---|
+| `newick: (A,B,C);` (sem aspas) | `PhyloParseError: Phylo document must start with 'phylo'` | Coloque a string Newick entre aspas: `newick: "(A,B,C);"` |
+| Nome de folha com espaço: `Homo sapiens:0.1` | Interpretado como `Homo` — o espaço termina um nome sem aspas | Use sublinhado (`Homo_sapiens`) ou aspas simples (`'Homo sapiens'`) |
+| ID de folha em `clade` não corresponde ao nome Newick | O clado fica silenciosamente com 0 membros; sem destaque | Copie os nomes exatamente como aparecem na string Newick |
+| `clade X = (A, B)` sem `newick:` ou árvore por indentação | `PhyloParseError: No tree definition found` | Adicione uma linha `newick:` ou um bloco de árvore por indentação |
+| `mode: chronogram` sem comprimentos de ramo | O renderizador trata todos os comprimentos como 0; as folhas se sobrepõem na raiz | Adicione `:length` a cada aresta na string Newick |
+| Linha `root:` não detectada | Se a linha `root:` contém um espaço no nome (ex.: `My root:`), a árvore por indentação não é acionada | Use um rótulo de raiz de uma única palavra ou `root:` |
+| Newick com nomes de nós internos: `(A,B)ancestor:0.5` | Interpretado corretamente — `ancestor` é o rótulo do nó interno | Suportado; nomes internos aparecem nos nós internos |
+
+---
+
+## 10. Gramática (EBNF)
+
+```text
+document        = header (blank | comment | newick-line | scale-line
+                    | outgroup-line | clade-line | style-line | cut-line | indent-line)*
+
+header          = "phylo" ( WS quoted-string )? ( WS "[" props "]" )? NEWLINE
+quoted-string   = '"' any-char-but-quote* '"'
+
+newick-line     = "newick:" WS quoted-newick NEWLINE
+scale-line      = "scale" ( WS quoted-string )? NEWLINE
+outgroup-line   = "outgroup:" WS id NEWLINE
+cut-line        = "cut" WS number NEWLINE       // modo dendrograma: altura de threshold do grupo plano
+clade-line      = "clade" WS id WS "=" WS "(" id ("," id)* ")"
+                    ( WS "[" clade-props "]" )? NEWLINE
+style-line      = "style" WS "[" props "]" NEWLINE
+
+// Árvore por indentação — acionada por uma linha terminando em ":" sem espaços
+indent-tree     = root-line indent-node*
+root-line       = id ":" NEWLINE
+indent-node     = INDENT ( id ":" length | ":" length | id ) ( WS "[" number "]" )? NEWLINE
+
+props           = prop ("," prop)*
+prop            = "layout:" layout-value
+                | "mode:" mode-value
+                | "unrooted"
+                | "branch-width:" number
+                | "openAngle:" number
+                | "mrsd:" quoted-string
+
+clade-props     = clade-prop ("," clade-prop)*
+clade-prop      = "color:" quoted-string
+                | "label:" quoted-string
+                | "highlight:" ( "branch" | "background" | "both" )
+
+layout-value    = "rectangular" | "slanted" | "circular" | "unrooted"
+mode-value      = "phylogram" | "cladogram" | "chronogram" | "dendrogram"
+
+// Gramática Newick (embutida, interpretada separadamente)
+newick          = subtree ";"?
+subtree         = leaf | internal
+internal        = "(" subtree ("," subtree)* ")" name? nhx? length?
+leaf            = name nhx? length?
+name            = unquoted-name | "'" single-quoted "'")
+length          = ":" number
+nhx             = "[" number "]"                     // bootstrap simples
+                | "[&&NHX:" nhx-pair (":" nhx-pair)* "]"
+nhx-pair        = key "=" value
+
+id              = [a-zA-Z] [a-zA-Z0-9_-]*
+number          = /[+-]?[0-9]+(\.[0-9]+)?([eE][+-]?[0-9]+)?/
+comment         = INDENT "#" any NEWLINE
+```
+
+Fonte autoritativa: `src/diagrams/phylo/parser.ts`. Se isso divergir do parser, o parser prevalece — abra uma issue.
+
+---
+
+## 11. Conformidade com padrões
+
+As árvores filogenéticas do Schematex seguem a **[especificação do formato Newick](https://phylipweb.github.io/phylip/newicktree.html)** (conforme documentado no pacote PHYLIP) para a serialização central da árvore, e a convenção **[NHX (New Hampshire Extended)](https://home.cc.umanitoba.ca/~psgendb/doc/atv/NHX.pdf)** para valores de suporte de bootstrap. O campo `B=` nos colchetes NHX é o único campo NHX renderizado visualmente atualmente; todos os outros campos são interpretados e armazenados, mas não exibidos.
+
+O que está implementado hoje:
+
+- ✅ Topologia Newick, comprimentos de ramo, nomes entre aspas, politomias
+- ✅ Valores de bootstrap — simples `[95]` e NHX `[&&NHX:B=95]`
+- ✅ Layouts retangular, inclinado, circular e sem raiz
+- ✅ Modos filograma, cladograma e cronograma
+- ✅ Destaque de clado (cor do ramo, sombreamento de fundo, ambos)
+- ✅ Barra de escala
+- ✅ DSL de indentação alternativo
+- ⏳ Documentos com múltiplas árvores (floresta) — veja §12
+- ⏳ Eixo temporal calibrado para cronogramas (escala geológica)
+- ⏳ Ícones ou imagens por folha
+- ⏳ Campos NHX além de `B=` (espécies, taxonomia, eventos de duplicação)
+
+Referências:
+
+- Felsenstein, J. (1986). The Newick tree format. PHYLIP documentation.
+- Zmasek, C.M. & Eddy, S.R. (2001). ATV: Display and manipulation of annotated phylogenetic trees. *Bioinformatics*, 17(4), 383–384. (especificação NHX)
+- Felsenstein, J. (2004). *Inferring Phylogenies.* Sinauer Associates.
+
+---
+
+## 12. Exemplos relacionados
+
+<RelatedExamples slugs={[
+  'phylo-bacterial-diversity',
+]} />
+
+---
+
+## 13. Roadmap
+
+**Planejado — ainda não interpretável pelo parser.** Não use estes recursos em DSL gerado hoje; o parser irá rejeitar ou ignorar.
+
+- **Documentos com múltiplas árvores** — um arquivo `phylo` com mais de um bloco `newick:` (ex.: árvores de genes versus árvore de espécies).
+- **Eixo de tempo geológico para cronogramas** — um eixo X com rótulos de éons (Cenozoico / Mesozoico etc.) em vez de uma escala numérica simples.
+- **Metadados por folha** — associar características ou marcadores coloridos a folhas individuais sem declarar um clado completo (ex.: `tip Ecoli [color: "#F00", shape: star]`).
+- **Campos NHX além do bootstrap** — renderizar espécies (`S=`), duplicação (`D=`) e eventos de transferência (`Tr=`) como símbolos nos ramos.
+- **Tanglegrama** — duas árvores exibidas lado a lado com linhas conectando as folhas correspondentes.
+
+Acompanhe nas issues do GitHub se você precisar de algum desses recursos com urgência.

@@ -1,0 +1,102 @@
+---
+title: Analyse par arbre d'événements
+description: Analyse de risque inductive vers l'avant — un événement initiateur se ramifie selon le succès/l'échec des fonctions de sécurité jusqu'à des états finaux quantifiés.
+---
+
+## À propos des arbres d'événements
+
+Un **arbre d'événements** est le jumeau inductif vers l'avant de l'arbre de défaillances. On part d'un **événement initiateur** (une rupture de tuyauterie, un incendie, une sollicitation d'un système de sécurité) et l'on se demande, dans l'ordre, si chaque **fonction de sécurité** en aval réussit ou échoue. Chaque chemin à travers l'échelle de ramification aboutit à un **résultat** quantifié (OK, contenu, dommage au cœur…). C'est l'outil de travail de l'analyse probabiliste des risques (PRA) nucléaire et de l'analyse quantitative des risques (QRA) des procédés, normalisé par **IEC 62502** et la pratique **[NUREG-0492](https://www.nrc.gov/docs/ML1007/ML100780465.pdf)**-WASH-1400.
+
+L'avantage de Schematex est le même que pour l'arbre de défaillances : le moteur **calcule le résultat**, pas seulement l'échelle. Connaissant la fréquence initiatrice et la probabilité de défaillance de chaque fonction, il dérive la fréquence de chaque chemin (`f₀ · ∏ probabilités-de-branche`), agrège les résultats sur les chemins et met en évidence la **séquence dominante** en rouge. draw.io dessine une échelle de bifurcation et s'arrête là ; c'est une image, pas une analyse.
+
+<Playground initial={`eventtree "Loss of coolant accident"
+  initiating LOCA "Large LOCA" freq: 1e-4
+  function A "ECCS injects"          p: 0.001
+  function B "Containment spray"     p: 0.01
+  function C "Containment integrity" p: 0.005
+  outcome s s s -> "OK"
+  outcome s s f -> "Late release"
+  outcome s f * -> "Early release"
+  outcome f * * -> "Core damage"`} height={560} />
+
+---
+
+## 1. Votre premier arbre d'événements
+
+Chaque document commence par le mot-clé `eventtree` (alias `eta`), un titre optionnel, puis une liste plate de déclarations :
+
+```
+eventtree "Smoke detector demand"
+  initiating FIRE "Fire starts" freq: 0.01
+  function D "Detector actuates" p: 0.02
+  function S "Suppression works" p: 0.05
+  outcome s s -> "Controlled"
+  outcome s f -> "Damage, contained"
+  outcome f * -> "Uncontrolled fire"
+```
+
+- **`initiating ID "label" freq: N`** — exactement un. La fréquence de sollicitation, acceptant les décimales ou la notation scientifique (`freq: 0.01` ou `freq: 1e-4`).
+- **`function ID "label" p: N`** — un par colonne de branche, **déclarés de gauche à droite dans l'ordre d'interrogation**. `p:` est la probabilité de **défaillance** ; le moteur dérive la branche succès comme son complément `1 − p` (vous n'avez jamais à indiquer les deux).
+- **`outcome <motif> -> "état final"`** — une feuille réalisée chacun.
+
+---
+
+## 2. Le motif s / f / * des résultats
+
+Chaque ligne `outcome` se lit de gauche à droite sur les colonnes de fonctions :
+
+```
+outcome s s s -> "OK"           # toutes les fonctions réussissent
+outcome s s f -> "Late release" # C échoue sur la dernière interrogation
+outcome s f * -> "Early release"# B échoue ; C n'est jamais interrogée (élagué)
+outcome f * * -> "Core damage"  # A échoue ; le chemin se termine immédiatement
+```
+
+- **`s`** — branche succès (branche haute).
+- **`f`** — branche échec (branche basse).
+- **`*`** — élagué : le chemin n'est pas interrogé ici, il court plat jusqu'à sa feuille.
+
+C'est ainsi qu'un arbre d'événements évite d'être un arbre binaire équilibré complet à 2ⁿ feuilles : dès qu'une défaillance de fonction rend les questions ultérieures sans objet, on écrit `*` et la séquence se termine prématurément. Deux règles strictes : un motif ne peut pas être **plus long** que le nombre de colonnes, et **une fois qu'une colonne est élagée (`*`), toutes les colonnes suivantes doivent l'être aussi** — un chemin terminé ne peut pas reprendre les interrogations.
+
+---
+
+## 3. Fréquences de chemin calculées et résultats
+
+C'est ici que Schematex se distingue. Avec les probabilités de défaillance et `freq`, le moteur calcule :
+
+- **La fréquence de chaque chemin** = `f₀ · ∏ probabilités-de-branche` le long de ses branches `s`/`f` (les branches succès contribuent `1 − p`, les branches échec `p`).
+- **Agrégation des résultats** : les résultats portant la même étiquette d'état final sont sommés sur tous les chemins qui les atteignent (chaque feuille « Core damage » s'additionne).
+- **La séquence dominante** — le chemin de fréquence la plus élevée — reçoit l'accent rouge réservé, l'analogue ETA du point de défaillance unique de l'arbre de défaillances.
+
+Chaque feuille porte des attributs `data-*` (`data-freq`, `data-outcome`), de sorte que les chiffres calculés sont inspectables en aval.
+
+---
+
+## 4. Erreurs courantes
+
+```
+# INCORRECT — fonction sans probabilité de défaillance
+function A "ECCS"
+
+# INCORRECT — interrogation après une colonne élabuée (chemin déjà terminé)
+outcome * s -> "bad"
+
+# INCORRECT — plus de jetons que de colonnes déclarées
+function A p: 0.1
+outcome s s -> "ok"
+
+# INCORRECT — événement initiateur sans fréquence
+initiating LOCA "Large LOCA"
+```
+
+Chacune de ces erreurs est rejetée avec un message en clair indiquant la ligne concernée. Indiquez `p:` comme probabilité de **défaillance** (petite valeur), donnez à l'événement initiateur une `freq:`, gardez les élagages en fin de motif, et vous serez correct par construction.
+
+---
+
+## 5. Conformité aux normes
+
+La forme suit IEC 62502 et la pratique classique PRA (WASH-1400 / NUREG) : fonctions en colonnes d'en-tête ordonnées, la division binaire succès/échec, les branches succès dérivées par complément, et la propagation des fréquences par multiplication. Le thème `monochrome` reproduit l'aspect noir et blanc des manuels ; `default` réserve le rouge pour la séquence dominante.
+
+## 6. Feuille de route
+
+Différé : fragments d'arbres de défaillances liés par branche (événements de base partagés), propagation de l'incertitude, et regroupement par catégorie de conséquences.

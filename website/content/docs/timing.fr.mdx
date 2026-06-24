@@ -1,0 +1,243 @@
+---
+title: Timing diagram
+---
+
+## À propos des diagrammes de chronométrage
+
+Un **diagramme de chronométrage** montre comment les signaux numériques évoluent dans le temps — impulsions d'horloge, transitions de bus, valeurs de données et états haute impédance — représentés sous la forme d'un ensemble de bandes de formes d'onde horizontales avec un axe temporel commun. Les ingénieurs matériel les utilisent pour spécifier le comportement des protocoles, vérifier les contraintes de setup et hold, et documenter les interfaces de puces. Ils apparaissent dans les fiches techniques, les rapports de simulation HDL et les manuels de systèmes numériques.
+
+Schematex utilise une notation de signal **[compatible WaveDrom](https://wavedrom.com/tutorial.html)** — les mêmes caractères de forme d'onde (`0`, `1`, `x`, `z`, `p`, `=`, …) et la même syntaxe d'étiquette de données que WaveDrom a introduits — de sorte que les DSL WaveDrom existants se transfèrent directement. Cette page documente ce que le parseur accepte aujourd'hui.
+
+<Playground initial={`timing "SPI Transaction"
+CLK:   pppppppp
+CS_N:  10000001
+MOSI:  x=======  data: ["0xAB","0xCD","0xEF","0x01","0x02","0x03","0x04","0x05"]
+MISO:  zzzz====  data: ["","","","","0xFF","0x12","0x34","0x56"]`} height={400} />
+
+---
+
+## 1. Votre premier diagramme de chronométrage
+
+Le diagramme de chronométrage utile le plus simple : une horloge et un signal de données. La façon la plus simple de l'écrire évite entièrement de compter les caractères :
+
+<Playground initial={`timing
+CLK:  clock 8
+RST:  rle 1*2 0*6
+DATA: 0011==00  data: ["A","B"]`} />
+
+Trois règles couvrent 80 % des usages :
+
+1. Commencez par le mot-clé `timing`, suivi éventuellement d'un titre entre guillemets et de `[hscale: N]`.
+2. Chaque signal est une ligne : `NOM: <forme_onde>` — nom, deux-points, puis la forme d'onde. La forme d'onde peut être :
+   - **`clock N`** — un générateur d'horloge avec `N` périodes (ajoutez `neg` pour une horloge à front descendant). Pas de comptage de caractères.
+   - **`rle <état>*<compte> …`** — segments de codage par plage, ex. `rle 1*2 0*6` = `11000000`. Alignement automatique de la longueur.
+   - **une chaîne de forme d'onde WaveDrom brute** — une suite contiguë de caractères d'état (sans espaces internes) pour un contrôle fin.
+3. Ajoutez `data: ["val1", "val2"]` après une chaîne de forme d'onde brute pour étiqueter les segments de bus.
+
+> **Conseil d'alignement :** La première cause d'un diagramme de chronométrage cassé est des signaux de longueur inégale. `clock N` et `rle` rendent explicite le nombre de cellules de chaque signal, de sorte qu'ils s'alignent. N'utilisez les chaînes de forme d'onde brutes que lorsque vous avez besoin d'un contrôle par cellule.
+
+> Les commentaires doivent commencer par `#` sur leur propre ligne.
+
+---
+
+## 2. Caractères de forme d'onde
+
+La chaîne de forme d'onde est une séquence de caractères, un par période de temps. Le parseur accepte les suivants :
+
+| Caractère | État | Signification |
+|---|---|---|
+| `0` | Niveau logique bas | Signal à GND / VSS |
+| `1` | Niveau logique haut | Signal à VDD |
+| `x` | Inconnu | Sans importance, non défini ou non initialisé |
+| `z` | Haute impédance | Tri-state / haute impédance |
+| `p` | Impulsion d'horloge (positive) | Horloge active sur front montant ; un `p` = une période complète (bas→haut→bas) |
+| `P` | Impulsion d'horloge (positive, haute) | Identique à `p`, visuellement plus haute |
+| `n` | Impulsion d'horloge (négative) | Active sur front descendant ; un `n` = une période complète (haut→bas→haut) |
+| `N` | Impulsion d'horloge (négative, haute) | Identique à `n`, visuellement plus haute |
+| `=` | Données de bus | Segment de bus parallèle ; ajoutez des étiquettes via `data: […]` |
+| `2`–`9` | Segment de bus nommé | Identique à `=`, indexé dans `data: […]` par position |
+| `.` | Maintien / continuation | Prolonge l'état précédent d'une période de plus |
+| `h` / `H` | Maintien haut | Force le signal haut pour cette période |
+| `l` / `L` | Maintien bas | Force le signal bas pour cette période |
+| `u` | Front montant | Diagonal de bas en haut (transition uniquement) |
+| `d` / `D` | Front descendant | Diagonal de haut en bas (transition uniquement) |
+
+<Playground initial={`timing "Wave character reference"
+clk:   pppppppppp
+high:  1111111111
+low:   0000000000
+unkn:  xxxxxxxxxx
+hiz:   zzzzzzzzzz
+bus:   x========x  data: ["ADDR","DATA","","","","","",""]
+hold:  0..1..0..1
+rise:  0u1
+fall:  1d0`} height={440} />
+
+---
+
+## 3. Étiquettes de données
+
+Lorsqu'un signal porte une valeur de bus, annotez la forme d'onde avec `data: ["étiquette1", "étiquette2", …]`. Chaque chaîne non vide entre guillemets est placée dans le segment `=` (ou `2`–`9`) correspondant.
+
+```
+MOSI:  x=======  data: ["0xAB","0xCD","0xEF","0x01","0x02","0x03","0x04","0x05"]
+```
+
+Les chaînes vides `""` laissent un segment sans étiquette (utile pour les segments qui prolongent une valeur précédente).
+
+```
+MISO:  zzzz====  data: ["","","","","0xFF","0x12","0x34","0x56"]
+# les quatre premières périodes z n'ont pas d'étiquette ; quatre segments = reçoivent des étiquettes à partir de 0xFF
+```
+
+<Playground initial={`timing "I2C read burst"
+SCL:   ppppppppppp
+SDA:   x1=======1x  data: ["ADDR+R","ACK","D0","D1","D2","D3","D4","D5","NACK"]`} />
+
+---
+
+## 4. Regroupement de signaux
+
+Enveloppez les signaux liés dans un bloc `[NomDuGroupe]`. Une ligne `---` ferme le groupe et agit également comme séparateur visuel entre les groupes.
+
+```
+[Control]
+CLK:   pppppppp
+CS_N:  10000001
+---
+[Data]
+MOSI:  x=======  data: ["0xAB","0xCD","0xEF","0x01","0x02","0x03","0x04","0x05"]
+MISO:  zzzz====  data: ["","","","","0xFF","0x12","0x34","0x56"]
+```
+
+La syntaxe alternative `group "nom" { … }` est également acceptée (le `}` fermant ferme le groupe).
+
+<Playground initial={`timing "UART frame"
+[Clock & control]
+CLK:  pppppppppppp
+TX_EN: 0111111110
+---
+[Data lines]
+TX:   1==========  data: ["START","D0","D1","D2","D3","D4","D5","D6","D7","STOP"]
+RX:   zz1=======1  data: ["","","D0","D1","D2","D3","D4","D5","D6","D7"]`} height={380} />
+
+---
+
+## 5. Titre et hscale
+
+**Titre :** `timing "SPI Transaction"` — apparaît en haut du diagramme.
+
+**hscale :** `timing "titre" [hscale: 2]` — met à l'échelle la largeur de chaque période. La valeur par défaut est 1. Utilisez 2 pour des périodes plus larges lorsque les étiquettes de données ont besoin de plus d'espace.
+
+```
+timing "Wide bus" [hscale: 2]
+CLK:  pppp
+DATA: ====  data: ["long label here","another","third","fourth"]
+```
+
+---
+
+## 6. Étiquettes et commentaires
+
+- **Nom du signal :** tout ce qui précède le premier `:` sur une ligne de signal. Les noms avec des espaces sont acceptés — le deux-points est le délimiteur.
+- **Étiquettes de données :** `data: ["a", "b"]` après la chaîne de forme d'onde.
+- **Titre :** premier jeton après le mot-clé `timing`, entre guillemets.
+- **Commentaires :** `#` en début de ligne (après les espaces initiaux).
+
+```
+timing "Demo"
+# ceci est un commentaire
+CLK: pppp    # ← les commentaires de fin de ligne en ligne ne sont PAS supportés
+```
+
+---
+
+## 7. Erreurs courantes
+
+| Vous avez écrit | Le parseur indique | Correction |
+|---|---|---|
+| `CLK: p p p p` (espaces dans la forme d'onde) | La chaîne de forme d'onde est analysée comme `p` uniquement ; le reste est traité comme clause de données | Supprimez les espaces : `CLK: pppp` |
+| `DATA: =====` sans `data:` | Les segments s'affichent comme des cellules de bus sans étiquette | Ajoutez `data: ["A","B","C","D","E"]` |
+| Caractère de forme d'onde `s` ou `r` | `TimingParseError: Invalid wave string` | Seuls les caractères listés dans §2 sont valides |
+| `CLK pppp` (sans deux-points) | La ligne ne correspond pas au motif de signal ; ignorée silencieusement | Le deux-points après le nom du signal est obligatoire |
+| `data: [A, B, C]` (sans guillemets) | Valeurs non reconnues — le parseur cherche `"…"` | Mettez chaque valeur entre guillemets : `data: ["A","B","C"]` |
+| `[Group Name with spaces]` | L'étiquette du groupe est `Group Name with spaces` — analysée correctement | Supporté |
+| `hscale: 2` sur sa propre ligne | Non reconnu (hscale va sur la ligne d'en-tête) | `timing "titre" [hscale: 2]` |
+
+---
+
+## 8. Grammaire (EBNF)
+
+```text
+document       = header (blank | comment | group-open | group-close | separator | signal)*
+
+header         = "timing" ( WS quoted-string )? ( WS "[" "hscale:" number "]" )? NEWLINE
+quoted-string  = '"' any-char-but-quote* '"'
+
+group-open     = "[" label "]" NEWLINE
+               | "group" WS quoted-string WS "{"? NEWLINE
+group-close    = "}" NEWLINE
+separator      = "---" NEWLINE
+
+signal         = name ":" WS wave-string ( WS data-clause )? NEWLINE
+name           = tout texte avant le premier ":"
+wave-string    = wave-char+
+wave-char      = "0"|"1"|"x"|"z"
+               | "p"|"P"|"n"|"N"
+               | "h"|"H"|"l"|"L"
+               | "u"|"d"|"D"
+               | "="|"."|"2"|"3"|"4"|"5"|"6"|"7"|"8"|"9"
+
+data-clause    = "data:" WS ( "[" quoted-string ("," quoted-string)* "]"
+                            | quoted-string+ )
+
+comment        = "#" any NEWLINE
+```
+
+Source faisant autorité : `src/diagrams/timing/parser.ts`. En cas de divergence avec le parseur, le parseur a la priorité — veuillez ouvrir un ticket.
+
+---
+
+## 9. Conformité aux normes
+
+Les diagrammes de chronométrage Schematex suivent la notation de signal **[WaveDrom WaveJSON](https://wavedrom.com/tutorial.html)** pour les caractères de forme d'onde et les étiquettes de données — le même ensemble utilisé par l'éditeur en ligne WaveDrom, rendant le DSL Schematex largement interchangeable avec l'entrée WaveDrom. L'option `hscale`, la syntaxe de groupe et le format des étiquettes de données sont tous compatibles.
+
+Ce qui est implémenté aujourd'hui :
+
+- ✅ Tous les caractères de forme d'onde principaux : `0 1 x z p P n N h H l L u d D = . 2–9`
+- ✅ Étiquettes de données via `data: ["…"]`
+- ✅ Blocs de groupe : syntaxe `[Nom]` et `group "nom" { }`
+- ✅ Séparateur / fermeture de groupe `---`
+- ✅ Multiplicateur de largeur de période `hscale`
+- ⏳ Annotations de chronométrage (flèches entre les transitions de signaux, étiquettes `t_su`, `t_pd`)
+- ⏳ Décalage `phase:` par signal (décalage de cycle fractionnaire)
+- ⏳ Blocs d'annotation WaveDrom `node:` / `edge:`
+- ⏳ Skin / thème (`default`, `narrow`, `lowkey`)
+
+Références :
+
+- WaveDrom — https://wavedrom.com (spécification WaveJSON)
+- IEEE Std 1364 (Verilog HDL) — concepts de simulation de chronométrage numérique
+- IEEE Std 1497 (Standard Delay Format) — conventions d'annotation de chronométrage
+
+---
+
+## 10. Exemples associés
+
+<RelatedExamples slugs={[
+  'timing-spi-transaction',
+]} />
+
+---
+
+## 11. Feuille de route
+
+**Prévu — pas encore analysable.** N'utilisez pas ces éléments dans le DSL généré aujourd'hui ; le parseur les ignorera.
+
+- **Flèches d'annotation de chronométrage** — bloc `annotate:` avec la syntaxe `A -> B [label: "t_su = 5ns"]` pour dessiner des plages de setup/hold et de délai de propagation entre les transitions de signaux.
+- **`phase:` par signal** — décalage de cycle fractionnaire afin que les signaux puissent démarrer à mi-parcours d'une période.
+- **WaveDrom `node:` / `edge:`** — compatibilité complète avec les blocs d'annotation WaveDrom.
+- **Options de skin** — thèmes de rendu `narrow` (compact) et `lowkey` (palette atténuée).
+- **Axe temporel** — axe temporel numérique optionnel en bas (unités ns, µs, ps).
+
+Suivez les tickets GitHub si vous avez besoin de l'une de ces fonctionnalités plus tôt.

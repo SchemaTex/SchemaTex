@@ -1,0 +1,226 @@
+---
+title: Breadboard / Câblage physique
+---
+
+## À propos des diagrammes de breadboard
+
+Un **diagramme de breadboard** montre comment câbler physiquement des composants sur une plaque de prototypage sans soudure — le genre visuel emblématique de tout tutoriel Arduino / ESP32 / Raspberry Pi. Le lecteur reproduit ce qu'il voit, trou par trou, sur le matériel réel. Ce diagramme est *complémentaire* du schéma électronique abstrait (`circuit`, IEEE 315) : le schéma est la vue de raisonnement de l'ingénieur ; le breadboard est la vue de réplication du maker.
+
+Schematex implémente un rendu de breadboard stylisé de type **Fritzing**. Les composants sont dessinés en tant que corps reconnaissables (résistances avec bandes de couleur, LED sous forme de dômes colorés, DIP avec encoches, PCB de microcontrôleurs avec barrettes de broches étiquetées). Les fils de jonction sont dessinés sous forme d'**arcs de Bézier cubiques lisses** entre des points d'attache spécifiques — pas des angles droits en escalier. Le DSL adresse chaque composant et chaque fil par des **coordonnées natives du breadboard** (`@colonne-rangée`, par ex. `@5e`), et non par des positions en pixels, de sorte que le fichier est rédigeable à la main et versionnable.
+
+> **Remarque** — ce moteur n'est *pas* un schéma de circuit et n'applique pas de règles électriques. Utilisez-le pour des tutoriels, des documents de travaux pratiques, des README et du matériel pédagogique. Pour l'analyse nodale ou des schémas formels, utilisez plutôt le moteur `circuit`.
+
+<Playground initial={`breadboard
+board: half
+title: "Blink LED — Arduino Uno hello-world"
+
+parts
+  uno: mcu uno @beside-left
+  r1:  resistor 220 @5e..9e
+  d1:  led red @10e..10f
+
+wires
+  uno:5V  --red--    @+t1
+  uno:GND --black--  @-t1
+  @+t1    --red--    @5a
+  uno:D13 --yellow-- @9a
+  @10j    --black--  @-t1`} height={420} />
+
+---
+
+## 1. Votre premier breadboard
+
+Trois sections : une ligne d'en-tête `breadboard`, un bloc `parts` et un bloc `wires`. Les lignes optionnelles `board:` et `title:` viennent juste après l'en-tête.
+
+<Playground initial={`breadboard
+parts
+  uno: mcu uno @beside-left
+  r1:  resistor 220 @5e..9e
+  d1:  led red @10e..10f
+
+wires
+  uno:5V  --red--   @+t1
+  uno:GND --black-- @-t1
+  uno:D13 --yellow-- @5a
+  @10j    --black-- @-t1`} />
+
+Chaque composant est `id: kind [args] @placement`. Chaque fil est `<endpoint> --color-- <endpoint>`. C'est toute la grammaire.
+
+---
+
+## 2. Coordonnées
+
+Les breadboards ont une grille d'adressage à 2 dimensions. Les coordonnées Schematex commencent toujours par `@`.
+
+| Forme | Signification | Exemple |
+|---|---|---|
+| `@<col><row>` | Trou de la grille principale. Rangées `a–e` (moitié supérieure), `f–j` (moitié inférieure). | `@5e`, `@12g` |
+| `@+t<col>` | Rail **positif** supérieur (bande rouge). | `@+t8` |
+| `@-t<col>` | Rail **négatif / GND** supérieur (bande bleue). | `@-t8` |
+| `@+b<col>` | Rail positif inférieur. | `@+b14` |
+| `@-b<col>` | Rail négatif inférieur. | `@-b14` |
+| `@<a>..<b>` | Étendue — utilisée pour le placement de composants (résistance, diode, LED). | `@5e..9e` |
+| `@beside-left` | Placement hors plaque pour les cartes microcontrôleurs. | `mcu uno @beside-left` |
+
+Les mini-plaques (`board: mini`) n'ont **pas de rails d'alimentation** — `@+t…` / `@-b…` sont rejetés par l'analyseur.
+
+---
+
+## 3. Tailles de plaque
+
+```
+breadboard
+board: half          // par défaut — 30 colonnes, 400 points de connexion, rails (continus)
+```
+
+| Forme | Points de connexion | Colonnes | Rails d'alimentation |
+|---|---|---|---|
+| `mini` | 170 | 17 | aucun |
+| `half` (par défaut) | 400 | 30 | continus |
+| `full` | 830 | 63 | coupure à la colonne 30/31 |
+
+> **Attention** — sur les plaques pleine taille, les rails se coupent au milieu. Si votre circuit utilise les deux moitiés, vous devez relier les rails explicitement avec des fils de jonction.
+
+---
+
+## 4. Catalogue de composants
+
+Chaque composant est `id: <kind> [args] @<placement>`. Le catalogue couvre les composants maker Arduino / ESP32 les plus courants :
+
+**Composants discrets** (montés sur le breadboard) :
+
+| DSL | Args | Exemple |
+|---|---|---|
+| `resistor` | `value` (Ω ; supporte `k`/`M`) | `r1: resistor 220 @5e..9e` |
+| `led` | `color` (red/green/blue/yellow/white/orange) | `d1: led red @10e..10f` |
+| `cap-elec` | — | `c1: cap-elec @4e..4f` |
+| `cap-ceramic` | — | `c2: cap-ceramic @6e..6f` |
+| `diode` | — | `d2: diode @5e..8e` |
+| `button` | — | `btn: button @8e` |
+| `dip` | `pins=N` | `ic: dip pins=8 @4e` |
+| `header` | `pins=N` | `h1: header pins=4 @20a` |
+
+**Cartes microcontrôleurs** (placées à côté / au-dessus / en dessous du substrat) :
+
+| DSL | Étiquettes de broches |
+|---|---|
+| `mcu uno` | `5V`, `3V3`, `GND`, `VIN`, `RST`, `D2…D13`, `A0…A5`, `RX`, `TX` |
+| `mcu nano` | Sous-ensemble des étiquettes Uno |
+| `mcu esp32` | `3V3`, `GND`, `VIN`, `GPIO2`, `GPIO4`, `GPIO5`, `GPIO12…GPIO33` |
+| `mcu pico` | Mêmes étiquettes GPIO génériques |
+
+**Capteurs / affichages / actionneurs** (modules montés sur le breadboard avec la rangée de broches ancrée à la coordonnée fournie) :
+
+| DSL | Broches |
+|---|---|
+| `sensor hcsr04` | `VCC`, `TRIG`, `ECHO`, `GND` |
+| `sensor dht11` / `sensor dht22` | `VCC`, `DATA`, `GND` |
+| `display oled-ssd1306` | `GND`, `VCC`, `SCL`, `SDA` |
+| `display lcd-1602-i2c` | `GND`, `VCC`, `SDA`, `SCL` |
+| `module rotary-ky040` | `CLK`, `DT`, `SW`, `VCC`, `GND` |
+| `actuator servo-sg90` | `GND`, `VCC`, `SIG` |
+
+Les bandes de couleur de résistance sont décorées automatiquement à partir de `value` — `220` → rouge-rouge-marron-or, `10000` → marron-noir-orange-or.
+
+---
+
+## 5. Fils
+
+Chaque fil connecte deux extrémités. Une extrémité est soit une **broche de composant** (`partId:pinName`) soit une **coordonnée de breadboard** (`@…`).
+
+```
+wires
+  uno:5V  --red--    @+t1
+  uno:GND --black--  @-t1
+  uno:D9  --yellow-- @9c
+  @9a     --green--  @+t9
+```
+
+| Couleur | Rôle conventionnel |
+|---|---|
+| `red` | +V (5V, 3,3V, VCC) |
+| `black` / `blue` | GND |
+| `yellow` / `orange` / `green` / `white` / `purple` | Signal |
+| `brown` / `grey` | Signal arbitraire |
+
+La couleur est purement visuelle — le moteur ne la valide pas par rapport au rôle électrique.
+
+Pour les plaques visuellement chargées, `via @<coord>` vous permet d'épingler un trou intermédiaire qui influence les points de contrôle Bézier :
+
+```
+wires
+  uno:D13 --yellow-- @9a via @8c
+```
+
+La plupart des fils n'ont pas besoin de `via` — le moteur de disposition produit un arc naturel par lui-même.
+
+---
+
+## 6. Capteur avec résistance de pull-up (motif DHT11)
+
+Le schéma de tutoriel Arduino emblématique : un pull-up de 10 kΩ entre VCC et la ligne de données du capteur.
+
+<Playground initial={`breadboard
+board: half
+title: "DHT11 + 10kΩ pull-up"
+
+parts
+  uno: mcu uno @beside-left
+  s1:  sensor dht11 @6a
+  r1:  resistor 10000 @8e..14e
+
+wires
+  s1:VCC  --red--    @+t1
+  s1:GND  --black--  @-t1
+  s1:DATA --yellow-- @8e
+  @14e    --red--    @+t14
+  uno:5V  --red--    @+t1
+  uno:GND --black--  @-t1
+  uno:D2  --yellow-- @8a`} height={460} />
+
+---
+
+## 7. ESP32 + OLED I²C
+
+L'ESP32 fonctionne à 3,3 V (pas 5 V). Convention I²C : vert = SDA, blanc = SCL.
+
+<Playground initial={`breadboard
+board: half
+title: "ESP32 + SSD1306 OLED I²C"
+
+parts
+  esp:  mcu esp32 @beside-left
+  oled: display oled-ssd1306 @8a
+
+wires
+  oled:GND --black--   @-t1
+  oled:VCC --red--     @+t1
+  oled:SCL --white--   @10c
+  oled:SDA --green--   @11c
+  esp:3V3    --red--   @+t1
+  esp:GND    --black-- @-t1
+  esp:GPIO22 --white-- @10c
+  esp:GPIO21 --green-- @11c`} height={460} />
+
+---
+
+## 8. Limitations de la v0.1
+
+- **Pas d'étiquettes avec lignes de repère** — les références de composants (R1, C2) sont dessinées près du corps du composant. Les boîtes d'annotation hors plaque sont reportées.
+- **Pas d'import `.fzz`** — Schematex ne consomme que son propre DSL ; les fichiers Fritzing ne sont pas analysés.
+- **Pas de simulation** — c'est un moteur de rendu, pas un simulateur de type Wokwi. La validation des valeurs de composants (loi d'Ohm, limites de courant) est hors du périmètre.
+- **Pas d'aller-retour PCB / schéma** — `breadboard` et `circuit` sont des moteurs indépendants. Créer deux vues du même prototype nécessite actuellement d'écrire deux DSL.
+- **Catalogue de composants fixe** — les types de composants définis par l'utilisateur sont reportés. La v0.1 intègre le catalogue à 80 % des tutoriels maker (résistances, LED, condensateurs, DIP, barrettes, quatre familles de microcontrôleurs, six modules capteurs / affichages / actionneurs).
+- **Visuel de coupure de rail** — sur les plaques pleine taille, la coupure 30/31 est marquée par un écart d'un trou de largeur ; les bandes de rail continuent de se dessiner à travers l'écart (cosmétique).
+
+---
+
+## Exemples associés
+
+Scénarios prêts à l'emploi issus de la galerie d'exemples :
+
+<RelatedExamples slugs={[
+  'breadboard-blink-led',
+  'breadboard-hcsr04-distance',
+  'breadboard-esp32-oled',
+]} />

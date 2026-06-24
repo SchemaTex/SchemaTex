@@ -1,0 +1,199 @@
+---
+title: ERD (Diagramme entité-relation)
+---
+
+## À propos des ERD
+
+Un **diagramme entité-relation (ERD)** documente la structure d'une base de données relationnelle : les tables (entités), leurs colonnes (attributs), et les relations de clé étrangère entre elles — y compris la cardinalité (1..1 / 0..1 / 1..N / 0..N). Les ingénieurs backend les utilisent pour intégrer de nouveaux membres dans une base de code. Les architectes de données les esquissent au tableau blanc avant d'écrire le moindre DDL. Les enseignants en bases de données (Elmasri & Navathe ; Silberschatz / Korth / Sudarshan) les placent au centre de l'unité de conception conceptuelle dans chaque cours de bases de données en informatique.
+
+Schematex implémente la **notation patte-de-corbeau** (crow's-foot) — le style moderne de facto utilisé par MySQL Workbench, dbdiagram.io, ERDPlus, Lucidchart, draw.io, Mermaid `erDiagram`, et Oracle SQL Developer Data Modeler. Le DSL est globalement compatible DBML, ce qui permet aux ingénieurs de copier-coller ; il **accepte également le dialecte Mermaid `erDiagram` complet** — commencez par l'en-tête `erDiagram` et collez des relations Mermaid (`CUSTOMER ||--o{ ORDER : places`) et des blocs d'entités avec type en premier (`ORDER { int id PK }`) inchangés ; les entités sont créées automatiquement à partir des relations. La notation Chen 1976 (rectangles + losanges + ovales + hiérarchies ISA) et la couche Barker sont différées à la version 0.2 ; aujourd'hui, chaque diagramme est rendu en patte-de-corbeau.
+
+> **Remarque** — Ce n'est **pas** la même chose que le moteur `entity`. `entity` (structure d'entité) sert aux hiérarchies de **propriété d'entreprise/légale** (filiales, agrégation par pourcentage, fiducies). `erd` sert aux **schémas de bases de données** (tables, colonnes, clés étrangères). Domaine différent, disposition différente, public différent.
+
+<Playground initial={`erd
+title: "University Schema"
+
+table Student {
+  student_id  int       PK
+  name        varchar
+  email       varchar   UK
+  major_id    int       FK -> Major.major_id
+}
+
+table Major {
+  major_id    int       PK
+  name        varchar
+}
+
+table Course {
+  course_id   int       PK
+  title       varchar
+  credits     int
+}
+
+table Enrollment {
+  student_id  int       PK FK -> Student.student_id
+  course_id   int       PK FK -> Course.course_id
+  grade       char
+}
+
+ref Student.major_id many-mandatory -- one-mandatory Major.major_id : "majors in"
+ref Enrollment.student_id many-mandatory -- one-mandatory Student.student_id
+ref Enrollment.course_id many-mandatory -- one-mandatory Course.course_id`} height={480} />
+
+---
+
+## 1. Votre premier ERD
+
+Le plus petit ERD utile : une table parente référencée par une table enfant via une clé étrangère.
+
+<Playground initial={`erd
+table Customer {
+  customer_id  int       PK
+  email        varchar   UK
+}
+table Order {
+  order_id     int       PK
+  customer_id  int       FK -> Customer.customer_id
+}
+ref Order.customer_id many-mandatory -- one-mandatory Customer.customer_id : "places"`} />
+
+Quatre règles couvrent 80 % des usages :
+
+1. Commencez par `erd`. En-têtes optionnels `title:`, `direction: LR | TB`.
+2. Chaque table est un bloc : `table Name { col type marker }`. Les marqueurs sont `PK`, `FK`, `UK`, `NN` (ou `*`) pour NOT NULL.
+3. Cible de clé étrangère en ligne : ajoutez `FK -> Other.column` à une colonne. Le moteur de rendu ajoute automatiquement une pastille `FK`.
+4. Connectez les tables avec une ligne `ref` : `ref Source <card-gauche> -- <card-droite> Target [: "label"]`. La cardinalité est l'une des suivantes : `one-mandatory`, `one-optional`, `many-mandatory`, `many-optional` (forme nommée), `1..1` / `0..1` / `1..N` / `0..N` (Min-Max), ou les glyphes Mermaid (`}o--||`, etc.) comme alias.
+
+> Les commentaires utilisent `//` ou `#`. Les formes en bloc peuvent être soit multi-lignes (une colonne par ligne) soit en ligne (`table A { id int PK; name varchar }`).
+
+---
+
+## 2. Glyphes de cardinalité
+
+La patte-de-corbeau encode la cardinalité à chaque extrémité de la ligne de relation :
+
+| Glyphe | Lecture | Min..Max | Jeton nommé |
+|---|---|---|---|
+| `─┃` (barre perpendiculaire) | Exactement un (un obligatoire) | 1..1 | `one-mandatory` |
+| `─○` (cercle ouvert) | Zéro ou un (un optionnel) | 0..1 | `one-optional` |
+| `─┃<` (barre + patte-de-corbeau) | Un ou plusieurs (plusieurs obligatoires) | 1..N | `many-mandatory` |
+| `─○<` (cercle + patte-de-corbeau) | Zéro ou plusieurs (plusieurs optionnels) | 0..N | `many-optional` |
+
+Chaque extrémité d'une ligne est annotée indépendamment. Une relation 1:N typique se lit « exactement un CUSTOMER passe zéro-ou-plusieurs ORDERs » :
+
+```
+ref Order.customer_id many-mandatory -- one-mandatory Customer.customer_id : "places"
+```
+
+En lisant de droite à gauche : l'**extrémité droite** de la ligne est rattachée à Customer avec une barre simple (one-mandatory) ; l'**extrémité gauche** est rattachée à Order avec une barre + patte-de-corbeau (many-mandatory).
+
+---
+
+## 3. Alias Mermaid
+
+Si vous utilisez déjà Mermaid `erDiagram`, les mêmes glyphes fonctionnent en entrée :
+
+<Playground initial={`erd
+table Customer { customer_id int PK; email varchar UK }
+table Order    { order_id int PK; customer_id int FK -> Customer.customer_id }
+table Product  { product_id int PK; name varchar }
+
+ref Order }o--|| Customer : "places"
+ref Order }o--o{ Product  : "contains"`} />
+
+| Jeton Mermaid | Signification Schematex |
+|---|---|
+| `\|o` gauche / `o\|` droite | 0..1 |
+| `\|\|` | 1..1 |
+| `}o` gauche / `o{` droite | 0..N |
+| `}\|` gauche / `\|{` droite | 1..N |
+| `--` | identifiante / ligne pleine |
+| `..` | non-identifiante / ligne pointillée |
+
+---
+
+## 4. Identifiante vs non-identifiante
+
+Utilisez `--` pour les relations identifiantes (ligne pleine) et `..` pour les non-identifiantes (pointillée) :
+
+<Playground initial={`erd
+table User       { id int PK; email varchar }
+table SessionLog { id int PK; user_id int FK -> User.id; created_at timestamp }
+
+ref SessionLog.user_id many-optional .. one-optional User.id : "logs (optional FK)"`} />
+
+La ligne pointillée suit la convention de relation non-identifiante Barker / IDEF1X.
+
+---
+
+## 5. Clés primaires composites (tables associatives)
+
+Les tables associatives (« de jonction ») résolvent les relations M:N. Marquez chaque colonne PK + FK avec les deux marqueurs `PK` et `FK` :
+
+<Playground initial={`erd
+table Student { student_id int PK; name varchar }
+table Course  { course_id int PK; title varchar }
+table Enrollment {
+  student_id  int  PK FK -> Student.student_id
+  course_id   int  PK FK -> Course.course_id
+  grade       char
+}
+ref Enrollment.student_id many-mandatory -- one-mandatory Student.student_id
+ref Enrollment.course_id  many-mandatory -- one-mandatory Course.course_id`} />
+
+Schematex affiche les deux pastilles (PK + FK) sur la même ligne. Le soulignement PK s'applique au nom de la colonne lorsqu'un marqueur `PK` est présent.
+
+---
+
+## 6. Direction de disposition
+
+`direction: LR` (par défaut) place les tables parentes à gauche, les tables enfants à droite. `direction: TB` bascule en disposition de haut en bas — utile pour les intégrations étroites :
+
+<Playground initial={`erd
+title: "Library (top-down)"
+direction: TB
+
+table Member { id int PK; name varchar; email varchar UK }
+table Book   { id int PK; title varchar; author varchar }
+table Loan   { id int PK; member_id int FK -> Member.id; book_id int FK -> Book.id; due_date date }
+
+ref Loan.member_id many-mandatory -- one-mandatory Member.id : "borrowed by"
+ref Loan.book_id   many-mandatory -- one-mandatory Book.id   : "of"`} />
+
+Routage orthogonal Manhattan en couches avec arêtes à courbure unique. La version 0.1 utilise l'empilement par ordre d'apparition à l'intérieur des couches ; la réduction des croisements par barycentre est différée à la version 0.2.
+
+---
+
+## 7. Modes de notation
+
+L'en-tête du DSL peut fixer la notation :
+
+```
+erd
+notation: crowsfoot     // par défaut — seul mode pris en charge en v0.1
+```
+
+`notation: chen` (rectangle-losange-ovale, entités faibles, ternaire, ISA) et `notation: barker` (demi-trait pointillé) sont documentés dans `27-ERD-STANDARD.md` mais rejetés par le parseur aujourd'hui. Cible la version 0.2.
+
+---
+
+## 8. Limitations de la version 0.1
+
+- **Patte-de-corbeau uniquement.** Rendu Chen et Barker différé.
+- **Aucune minimisation des croisements d'arêtes.** Le placement en couches utilise l'ordre de déclaration à l'intérieur des couches ; les grands ERD (10+ tables, FK denses) afficheront quelques croisements. Réorganisez les blocs `table` si une disposition spécifique est importante.
+- **Pas de boucles-C auto-référentielles.** Les relations récursives (`Employee.manager_id -> Employee.id`) sont parsées mais routées comme des lignes orthogonales droites, non sous la forme canonique en C.
+- **Pas de résolution automatique M:N.** Exprimez explicitement l'entité associative (c'est de toute façon la pratique standard dans les schémas de production).
+
+Pour la référence complète des normes, voir `docs/reference/27-ERD-STANDARD.md`.
+
+---
+
+## Exemples associés
+
+Scénarios prêts à l'emploi issus de la galerie d'exemples :
+
+<RelatedExamples slugs={[
+  'erd-university-schema',
+  'erd-ecommerce-schema',
+]} />

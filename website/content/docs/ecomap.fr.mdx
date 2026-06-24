@@ -1,0 +1,295 @@
+---
+title: Ecomap
+---
+
+## À propos des ecomaps
+
+Un **ecomap** est une page unique qui montre une personne ou une famille au centre et le réseau de systèmes extérieurs — famille élargie, école, église, clinique, employeur, groupes de soutien — disposés autour d'eux. Chaque ligne de connexion enregistre la *qualité* (forte, tenue, stressante) et la *direction* (qui donne, qui reçoit) de la relation. Les travailleurs sociaux, les conseillers scolaires, les gestionnaires de cas et les infirmières de santé communautaire utilisent les ecomaps pour voir d'un coup d'œil où un client a des ancrages et où le filet de sécurité est mince.
+
+Schematex suit le **[modèle d'ecomap Hartman (1978)](https://journals.sagepub.com/doi/10.1177/104438947805900803)** — l'article original de *Social Casework* qui a introduit la notation — étendu avec des conventions de la pratique contemporaine du travail social clinique. Pour le contexte, voir [Wikipedia : Ecomap](https://en.wikipedia.org/wiki/Ecomap). Cette page documente ce que l'analyseur accepte aujourd'hui.
+
+<Playground initial={`ecomap "Nguyen Family Resettlement"
+  center: family [label: "Nguyen Family"]
+  resettlement [label: "IRC Office", category: government]
+  school [label: "Lincoln Elementary", category: education]
+  clinic [label: "Community Clinic", category: health]
+  caseworker [label: "Ms. Patel", category: mental-health]
+  temple [label: "Vietnamese Temple", category: cultural]
+  neighbors [label: "Sponsor Family", category: community]
+  employer [label: "Warehouse Job", category: work]
+  family === resettlement [label: "active case"]
+  family === school
+  clinic --> family [label: "vaccinations"]
+  caseworker <-> family [label: "weekly"]
+  family === temple [label: "anchor"]
+  neighbors === family [label: "housing host"]
+  family --- employer [label: "new, part-time"]`} height={520} />
+
+---
+
+## 1. Votre premier ecomap
+
+L'ecomap utile minimal : un centre et trois systèmes extérieurs.
+
+<Playground initial={`ecomap
+  center: client [label: "Maria"]
+  mom [label: "Mother", category: family]
+  work [label: "Tech Corp", category: work]
+  therapist [label: "Dr. Patel", category: mental-health]
+  mom === client
+  work --- client
+  therapist <-> client [label: "weekly"]`} />
+
+Quatre règles couvrent 80 % de l'usage :
+
+1. Commencez par le mot-clé `ecomap`, optionnellement suivi d'un titre entre guillemets.
+2. Déclarez le centre sur sa propre ligne : `center: id [label: "…"]`. Exactement un centre par diagramme.
+3. Déclarez chaque système extérieur sur sa propre ligne : `id [label: "…", category: …]`.
+4. Connectez deux identifiants déclarés avec un **opérateur de connexion** — `===` (fort), `---` (normal), `<->` (réciproque), etc. Voir §3 pour la table complète. Un `[label: "…"]` en fin de ligne ajoute une étiquette à l'arête.
+
+> Les commentaires doivent être sur leur propre ligne, commençant par `#`, `//` ou `%%` de style Mermaid. Les commentaires en ligne à la fin briseront l'analyseur.
+
+---
+
+## 2. Centre et systèmes extérieurs
+
+Chaque ecomap a un **centre** et un nombre quelconque de **systèmes extérieurs**. Les deux utilisent la même syntaxe `id [attrs]` ; la seule différence est le préfixe `center:`.
+
+**Règles d'identifiant.** Doit correspondre à `[a-zA-Z][a-zA-Z0-9_-]*`. Les identifiants sont insensibles à la casse ; le jeton d'origine est conservé comme étiquette par défaut.
+
+**Attributs acceptés par l'analyseur aujourd'hui :**
+
+| Attribut | Valeurs | Effet |
+|---|---|---|
+| `label:"…"` | toute chaîne entre guillemets | Remplacement de l'étiquette d'affichage |
+| `category:…` | voir §2.1 | Couleur / regroupement d'un nœud système |
+| `size:…` | `small`, `medium`, `large` | Taille du nœud |
+| `importance:…` | `major`, `moderate`, `minor` | Poids visuel |
+| `sector:…` | `top`, `right`, `bottom`, `left` | Indication du côté du centre où le système se trouve |
+| `age:N` | ex. `age:34` | Âge affiché à l'intérieur d'un centre de type personne |
+| `male` / `female` / `unknown` | indicateur | Sexe pour un centre de type personne |
+
+### 2.1 Catégories de systèmes
+
+Les catégories codent par couleur les systèmes extérieurs selon le domaine de vie auquel ils appartiennent. L'analyseur accepte toute chaîne — ce sont les valeurs pour lesquelles le moteur de rendu a des palettes thématiques :
+
+| Catégorie | Exemples typiques |
+|---|---|
+| `family` | Famille élargie, beaux-parents, cousins |
+| `friends` | Amis, voisins |
+| `work` | Employeur, collègues |
+| `education` | École, université, programme de formation |
+| `health` | Médecin généraliste, spécialiste, hôpital |
+| `mental-health` | Thérapeute, psychiatre, groupe de soutien |
+| `religion` | Église, temple, communauté spirituelle |
+| `recreation` | Sports, loisirs, clubs |
+| `legal` | Avocat, probation, tribunal |
+| `government` | Services sociaux, logement, immigration |
+| `financial` | Banque, prestations, aide financière |
+| `community` | Groupes de quartier, parrains |
+| `cultural` | Organisations culturelles/ethniques |
+| `substance` | Programmes de rétablissement ou, si négatifs, sources de consommation active |
+| `technology` | Communauté en ligne, forum de soutien |
+| `pet` | Animaux de compagnie, animaux d'assistance |
+
+<Playground initial={`ecomap
+  center: client [label: "Marcus, age 15"]
+  mom [label: "Mother", category: family]
+  dad [label: "Father (divorced)", category: family]
+  school [label: "East High School", category: education]
+  coach [label: "Soccer Coach", category: community]
+  therapist [label: "Ms. Chen", category: mental-health]
+  mom === client
+  dad --- client [label: "EOW weekends"]
+  school === client
+  coach --> client [label: "mentor"]
+  therapist <-> client [label: "weekly"]`} />
+
+---
+
+## 3. Connexions
+
+Une connexion est une ligne : `fromId OP toId` optionnellement suivie de `[label: "…"]`. Les deux identifiants doivent déjà être déclarés (le centre compte).
+
+### 3.1 Opérateurs de qualité de relation
+
+| Opérateur | Type | Signification |
+|---|---|---|
+| `===` | fort | Proche, solidaire, haute fréquence |
+| `==` | modéré | Positif, implication modérée |
+| `---` | normal | Neutre / moyen |
+| `- -` | faible | Ténu, fragile, stade initial |
+| `~~~` | stressant | Relation stressante |
+| `~=~` | fort-stressant | Proche *et* stressant |
+| `~x~` | conflictuel | Conflit actif |
+| `-/-` | rompu | Sevré, aliéné, coupé |
+
+### 3.2 Opérateurs de flux d'énergie
+
+Superposez la direction des flèches sur les lignes fortes ou normales :
+
+| Opérateur | Signification |
+|---|---|
+| `-->` | Unidirectionnel : l'énergie circule du centre vers le système |
+| `<--` | Unidirectionnel : l'énergie circule du système vers le centre |
+| `<->` | Réciproque / bidirectionnel |
+| `===>` | Fort flux sortant unidirectionnel (épuisant) |
+| `<===` | Fort flux entrant unidirectionnel (nourrissant) |
+| `<=>` | Fort réciproque |
+| `==>` | Flux sortant unidirectionnel modéré |
+| `<==` | Flux entrant unidirectionnel modéré |
+
+L'analyseur normalise la direction pour que les flèches soient lues par rapport au centre. Écrire `family === resettlement` et `resettlement === family` produit le même diagramme ; écrire `clinic --> family` vs `family <-- clinic` produit également la même flèche pointant *de* la clinique *vers* la famille.
+
+<Playground initial={`ecomap
+  center: client [label: "Rosa"]
+  mom [category: family]
+  ex [category: family]
+  aa [label: "AA Group", category: substance]
+  job [label: "Warehouse", category: work]
+  mom === client [label: "daily calls"]
+  ex ~x~ client [label: "custody disputes"]
+  aa <== client [label: "sponsor support"]
+  job - - client [label: "unstable hours"]`} />
+
+### 3.3 Étiquettes d'arêtes
+
+Un `[label: "…"]` en fin de ligne est le seul attribut qu'une ligne de connexion accepte. Mettez ici l'horaire, la nature ou une courte note :
+
+```
+family === temple [label: "weekly service"]
+clinic --> family [label: "vaccinations"]
+caseworker <-> family [label: "every Tuesday"]
+```
+
+---
+
+## 4. Étiquettes et commentaires
+
+- **Titre :** `ecomap "Famille Nguyen"` — première ligne uniquement.
+- **Remplacement d'étiquette de nœud :** `family [label: "Les Nguyen"]`.
+- **Étiquette d'arête :** `[label: "…"]` en fin de ligne de connexion.
+- **Suffixe de mode :** `ecomap:strengths "Smith family"` est accepté. Le suffixe est stocké dans `metadata.mode` ; les moteurs de rendu actuels l'ignorent.
+- **Commentaires :** `#`, `//` ou `%%` au début d'une ligne (après les espaces initiaux). Les commentaires en ligne à la fin **ne sont pas** pris en charge.
+
+```
+ecomap "Marcus Intake"
+  # notes du travailleur social — correct
+  // également correct
+  %% les commentaires de style Mermaid sont corrects
+  mom [category: family]   # ← CE commentaire en fin de ligne brise l'analyseur
+```
+
+---
+
+## 5. Mots réservés et échappement
+
+**Réservés en début de ligne :** `ecomap`, `center:`.
+
+**Jetons d'opérateurs réservés** dans une ligne — évitez d'utiliser ces séquences dans les identifiants :
+`===`, `==`, `---`, `- -`, `~~~`, `~=~`, `~x~`, `-/-`, et les variantes directionnelles listées dans §3.2.
+
+**Les chaînes avec des espaces** doivent être entre double guillemets : titres et toute étiquette. Les guillemets simples et les backticks ne sont pas reconnus.
+
+---
+
+## 6. Erreurs courantes
+
+Erreurs réelles de l'analyseur, ce qui les déclenche et comment les corriger.
+
+| Ce que vous avez écrit | Ce que dit l'analyseur | Correction |
+|---|---|---|
+| `family -- school` | `Unexpected: family -- school` | L'ecomap utilise `===`/`---`/`<->` etc. `--` est un opérateur genogram/pedigree |
+| `family === school` où `school` n'a jamais été déclaré | Crée silencieusement un nœud `school` vide sans étiquette/catégorie | Déclarez les systèmes au-dessus de leurs lignes de connexion |
+| Pas de `center:` nulle part | Rendu mais sans ancre de centre visuelle | Chaque ecomap a besoin d'exactement une ligne `center:` |
+| Deux lignes `center:` | Seule la première est traitée comme centre ; la seconde devient un système ordinaire | N'en choisissez qu'un |
+| `family==school` (sans espaces) | `Unexpected: family==school` | Les opérateurs nécessitent un espace de chaque côté |
+| `family === school [weekly]` | Le jeton `weekly` est analysé comme un indicateur de propriété, aucune étiquette affichée | Utilisez `[label: "weekly"]` |
+| `family === school # daily` | Le `#` final est consommé comme partie de la ligne | Déplacez le commentaire au-dessus |
+
+---
+
+## 7. Grammaire (EBNF)
+
+```text
+document       = header (blank | comment | center | system | connection)*
+
+header         = "ecomap" ( ":" mode )? ( WS quoted-string )? NEWLINE
+mode           = [A-Za-z] [A-Za-z0-9_-]*
+quoted-string  = '"' any-char-but-quote* '"'
+
+center         = "center:" WS id ( "[" attrs "]" )? NEWLINE
+system         = id ( "[" attrs "]" )? NEWLINE
+connection     = id WS op WS id ( WS "[" "label:" quoted-string "]" )? NEWLINE
+
+op             = "===" | "==" | "---" | "- -" | "~~~" | "~=~" | "~x~" | "-/-"
+               | "===>" | "<===" | "<=>" | "==>" | "<=="
+               | "-->" | "<--" | "<->"
+
+id             = [a-zA-Z] [a-zA-Z0-9_-]*
+attrs          = attr ("," attr)*
+attr           = "label" ":" quoted-string
+               | "category" ":" category
+               | "size" ":" ("small" | "medium" | "large")
+               | "importance" ":" ("major" | "moderate" | "minor")
+               | "sector" ":" ("top" | "right" | "bottom" | "left")
+               | "age" ":" digits
+               | "male" | "female" | "unknown"
+               | key ":" value                  // personnalisé, stocké comme métadonnées
+
+category       = "family" | "friends" | "work" | "education" | "health"
+               | "mental-health" | "religion" | "recreation" | "legal"
+               | "government" | "financial" | "community" | "cultural"
+               | "substance" | "technology" | "pet" | "other"
+
+comment        = ( "#" | "//" | "%%" ) any NEWLINE
+```
+
+Source faisant autorité : `src/diagrams/ecomap/parser.ts`. En cas de divergence avec l'analyseur, l'analyseur l'emporte — veuillez ouvrir un ticket.
+
+---
+
+## 8. Conformité aux normes
+
+Les ecomaps Schematex suivent **Hartman (1978), *Diagrammatic Assessment of Family Relationships*** pour la notation centrale : un centre délimité entouré de systèmes extérieurs, des lignes de connexion qui encodent à la fois la qualité et la directionnalité. La palette de catégories et l'ensemble d'opérateurs étendu (fort-stressant, flèches réciproques) suivent les conventions du travail social clinique contemporain et de la recherche infirmière.
+
+Ce qui est implémenté aujourd'hui :
+
+- ✅ Structure radiale centre + systèmes extérieurs
+- ✅ 8 opérateurs de qualité (fort / modéré / normal / faible / stressant / fort-stressant / conflictuel / rompu)
+- ✅ 8 opérateurs directionnels (unidirectionnel et réciproque, à trois intensités)
+- ✅ Codage couleur des catégories (17 catégories)
+- ✅ Étiquettes d'arêtes
+- ⏳ Mini-génogramme intégré comme centre (voir §10)
+- ⏳ Indications de disposition basées sur les secteurs au-delà des quatre points cardinaux actuels
+
+Références :
+
+- Hartman, A. (1978). Diagrammatic assessment of family relationships. *Social Casework*, 59(8), 465–476.
+- Ray, R.A. & Street, A.F. (2005). Ecomapping: An innovative research tool for nurses. *Journal of Advanced Nursing*, 50(5), 545–552.
+- Rempel, G.R., Neufeld, A., & Kushner, K.E. (2007). Interactive use of genograms and ecomaps in family caregiving research. *Journal of Family Nursing*, 13(4), 403–419.
+
+---
+
+## 9. Exemples associés
+
+Scénarios prêts à l'emploi issus de la galerie d'exemples :
+
+<RelatedExamples slugs={[
+  'ecomap-refugee-resettlement',
+  'ecomap-teen-client',
+  'ecomap-substance-recovery',
+]} />
+
+---
+
+## 10. Feuille de route
+
+**Prévu — pas encore analysable.** Ne l'utilisez pas dans le DSL généré aujourd'hui ; l'analyseur le rejettera ou l'ignorera silencieusement.
+
+- **Mini-génogramme intégré comme centre** — déclarer un bloc famille complet à l'intérieur du nœud `center:` (couples et enfants indentés) pour que le centre soit un petit génogramme plutôt qu'une seule forme. L'analyseur lit actuellement le contenu indenté sous `center:` comme des lignes ignorées.
+- **Sémantique de flèche par défaut par catégorie** — ex. flèches auto-directionnelles pour les systèmes `health` (entrant) vs les systèmes `work` (sortant).
+- **Centres multiples** — ecomaps pour deux clients partageant certains systèmes.
+- **Substitutions de couleur personnalisées** — `[color: "#…"]` sur un système ou une connexion.
+
+Suivez dans les tickets GitHub si vous avez besoin de l'une de ces fonctionnalités plus tôt.

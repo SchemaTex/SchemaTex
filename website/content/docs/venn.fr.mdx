@@ -1,0 +1,297 @@
+---
+title: Diagramme de Venn / Euler
+---
+
+## À propos des diagrammes de Venn et d'Euler
+
+Un **diagramme de Venn** utilise des cercles qui se chevauchent pour représenter toutes les relations logiques possibles entre un ensemble de collections — qu'il y ait ou non des éléments dans chaque intersection. Un **diagramme d'Euler** est la forme plus générale : les cercles ne sont tracés que là où des relations existent réellement, de sorte qu'un ensemble entièrement contenu dans un autre est représenté comme un cercle imbriqué, et deux ensembles disjoints ne se chevauchent pas du tout. John Venn a introduit la forme à chevauchement fixe en 1880 ; Leonhard Euler a décrit la forme générale de containment d'ensembles dans les années 1760.
+
+Les enseignants l'utilisent pour enseigner la théorie des ensembles ; les analystes de données y recourent pour montrer le chevauchement d'audience entre des segments (liste e-mail ∩ utilisateurs mobiles ∩ abonnés payants) ; les chercheurs en biologie, linguistique et médecine utilisent les diagrammes d'Euler pour cartographier des hiérarchies taxonomiques ou conceptuelles. Schematex prend en charge les quatre modes d'utilisation courants dans un seul DSL — comptages déclaratifs, énumération d'éléments, étiquettes de régions et relations Euler de sous-ensemble/disjonction/chevauchement — et peut les combiner dans un même diagramme. Voir les articles Wikipédia sur les [diagrammes de Venn](https://en.wikipedia.org/wiki/Venn_diagram) et les [diagrammes d'Euler](https://en.wikipedia.org/wiki/Euler_diagram) pour plus de contexte.
+
+<Playground initial={`venn "Customer Segments — Q3 2025"
+set email "Email subscribers" [color: "#1E88E5"]
+set paid "Paid users" [color: "#E53935"]
+set mobile "Mobile app users" [color: "#43A047"]
+email & paid : 1840
+email & mobile : 920
+paid & mobile : 2100
+email & paid & mobile : 650
+email only : 12400
+paid only : 3200
+mobile only : 8700`} height={480} />
+
+---
+
+## 1. Votre premier diagramme de Venn
+
+Le diagramme le plus simple : deux ensembles, un chevauchement, deux régions exclusives.
+
+<Playground initial={`venn "Support channels"
+set A "Email support" [color: "#1E88E5"]
+set B "Live chat" [color: "#E53935"]
+A & B : 320
+A only : 1450
+B only : 890`} />
+
+Quatre règles couvrent 80 % des usages :
+
+1. Commencez par `venn`, optionnellement suivi d'un titre entre guillemets.
+2. Déclarez chaque **ensemble** avec `set ID "Label"` — l'identifiant est utilisé en interne, l'étiquette apparaît dans le diagramme.
+3. Assignez des valeurs aux **régions** avec `A & B : valeur` pour les intersections et `A only : valeur` pour les régions exclusives.
+4. Configurez l'apparence avec des lignes `config:` ; le mode du diagramme (`venn` vs `euler`) peut être défini explicitement ou laissé en `auto`.
+
+> Les commentaires doivent commencer par `#` sur leur propre ligne.
+
+---
+
+## 2. Ensembles
+
+Une déclaration d'ensemble crée un cercle dans le diagramme.
+
+```
+set ID "Label" [color: "#hex"]
+```
+
+| Partie | Obligatoire | Notes |
+|--------|-------------|-------|
+| `ID` | Oui | Doit correspondre à `[A-Za-z][A-Za-z0-9_-]*` |
+| `"Label"` | Oui | Chaîne entre guillemets affichée sur le cercle |
+| `[color: "#hex"]` | Non | Couleur de remplissage personnalisée pour cet ensemble |
+
+Les ensembles doivent être déclarés avant d'être référencés dans les lignes de région ou de relation.
+
+<Playground initial={`venn "Programming paradigms"
+set oop "Object-Oriented" [color: "#1E88E5"]
+set fp "Functional" [color: "#E53935"]
+set logic "Logic" [color: "#43A047"]
+oop & fp : 180
+oop & logic : 45
+fp & logic : 90
+oop & fp & logic : 12
+oop only : 620
+fp only : 340
+logic only : 95`} height={440} />
+
+---
+
+## 3. Régions
+
+Une région assigne une valeur à une intersection ou à une zone exclusive. Les quatre modes DSL peuvent être mélangés dans un même diagramme.
+
+### 3.1 Mode déclaratif — comptages et pourcentages
+
+Assignez un nombre ou un pourcentage à une région nommée. La clé de région est soit une liste d'identifiants d'ensembles séparés par `&` (pour les intersections), soit `ID only` (pour la partie de cet ensemble non couverte par un autre ensemble).
+
+```
+A & B : 320          # comptage entier
+A & B & C : 45       # intersection à trois voies
+A only : 1450        # A moins tous les autres ensembles
+A & B : 18.5%        # valeur en pourcentage
+```
+
+<Playground initial={`venn "Market research"
+set aware "Awareness" [color: "#7B1FA2"]
+set consider "Consideration" [color: "#0288D1"]
+set convert "Conversion" [color: "#388E3C"]
+aware & consider : 3400
+consider & convert : 890
+aware & convert : 210
+aware & consider & convert : 150
+aware only : 18200
+consider only : 2100
+convert only : 540`} height={440} />
+
+### 3.2 Étiquettes de régions (texte)
+
+Utilisez le préfixe `region` et assignez une chaîne entre guillemets au lieu d'un nombre. La chaîne est rendue à l'intérieur de la région.
+
+```
+region A & B : "Nurture"
+region B & C : "Convert"
+region A & B & C : "Loyal customer"
+```
+
+<Playground initial={`venn "Go-to-market funnel"
+set A "Awareness" [color: "#7B1FA2"]
+set B "Consideration" [color: "#0288D1"]
+set C "Purchase" [color: "#388E3C"]
+region A & B : "Nurture"
+region B & C : "Convert"
+region A only : "Cold audience"
+region A & B & C : "Loyal"
+region C only : "Direct buyers"`} height={440} />
+
+### 3.3 Mode énumération — listes d'éléments
+
+Listez les éléments réels de chaque ensemble. Schematex calcule automatiquement toutes les intersections.
+
+```
+ID = { element1, element2, element3 }
+```
+
+Les éléments sont des mots simples ou des chaînes entre guillemets séparés par des virgules. Les ensembles en mode énumération n'ont pas besoin d'une déclaration `set` explicite — elle est implicite.
+
+<Playground initial={`venn "Full-stack team skills"
+Frontend = { React, TypeScript, CSS, Jest, Webpack }
+Backend  = { TypeScript, Node.js, PostgreSQL, Jest, Redis }
+DevOps   = { Docker, Kubernetes, PostgreSQL, Terraform, Redis }`} height={440} />
+
+---
+
+## 4. Relations Euler
+
+Les relations Euler expriment un containment structurel ou une séparation — qu'un ensemble est un sous-ensemble d'un autre, que deux ensembles sont complètement disjoints, ou qu'ils se chevauchent simplement. Elles doivent référencer des identifiants d'ensembles déjà déclarés avec `set`.
+
+```
+from subset to    # from est entièrement à l'intérieur de to (aussi : "in")
+from in to        # alias de subset
+from disjoint to  # from et to ne se chevauchent pas
+from overlap to   # from et to se chevauchent partiellement (explicite — comportement par défaut pour des ensembles sans relation)
+```
+
+<Playground initial={`venn "Biology taxonomy"
+set animals "Animals"
+set vertebrates "Vertebrates"
+set mammals "Mammals"
+set birds "Birds"
+set fish "Fish"
+vertebrates subset animals
+mammals subset vertebrates
+birds subset vertebrates
+fish subset vertebrates
+mammals disjoint birds
+mammals disjoint fish
+birds disjoint fish`} height={440} />
+
+| Mot-clé | Alias | Signification |
+|---------|-------|---------------|
+| `subset` | `in` | `from` est entièrement contenu dans `to` |
+| `disjoint` | — | `from` et `to` ne se croisent pas |
+| `overlap` | — | `from` et `to` se croisent, sans que l'un contienne l'autre |
+
+---
+
+## 5. Configuration
+
+Les lignes `config:` ajustent le comportement du diagramme. Chacune va sur sa propre ligne.
+
+| Clé de config | Valeurs | Défaut | Effet |
+|---------------|---------|--------|-------|
+| `diagram` | `venn`, `euler`, `auto` | `auto` | Force Venn (tous les cercles fixes) ou Euler (imbrication de sous-ensembles). `auto` infère à partir de la présence de relations Euler. |
+| `proportional` | `true`, `false` | `false` | Dimensionne l'aire des cercles proportionnellement aux valeurs de comptage des régions |
+| `showCounts` | `true`, `false` | `auto` | Affiche toujours/jamais les étiquettes de comptage. `auto` les affiche quand des comptages sont fournis. |
+| `showPercent` | `true`, `false` | `false` | Affiche chaque valeur de région en pourcentage du total général |
+| `palette` | `default`, `brand`, `monochrome` | `default` | Palette de couleurs pour les ensembles (remplacée par `color:` par ensemble) |
+| `blendMode` | `multiply`, `screen`, `none` | `multiply` | Mode de fusion des couleurs de remplissage qui se chevauchent |
+
+La configuration peut aussi être écrite en ligne sur la ligne d'en-tête : `venn "Title" [proportional: true, showPercent: true]`.
+
+```
+venn "Segment overlap"
+config: proportional = true
+config: showPercent = true
+config: blendMode = screen
+```
+
+**Sélection de la disposition :**
+
+- `layout venn` — forme alternative de `config: diagram = venn` (analysée de façon identique).
+- `layout euler` — forme alternative de `config: diagram = euler`.
+- `layout auto` — forme alternative de `config: diagram = auto`.
+
+---
+
+## 6. Étiquettes et commentaires
+
+- **Titre :** `venn "Mon diagramme"` — première ligne uniquement.
+- **Étiquette d'ensemble :** `set A "Email subscribers"` — chaîne entre guillemets sur la ligne `set`.
+- **Valeur de région :** entier, pourcentage, chaîne entre guillemets, ou liste d'éléments assignée après les `:`.
+- **Commentaires :** `#` en début de ligne (après les espaces de début).
+
+---
+
+## 7. Mots réservés et échappement
+
+**Réservés en début de ligne :** `venn` (en-tête), `set`, `config:`, `layout`, `region`.
+
+**Opérateurs réservés dans les clés de région :** `&` (intersection), `only` (région exclusive).
+
+**Mots-clés de relation Euler :** `subset`, `in`, `disjoint`, `overlap` — ne peuvent pas être utilisés comme identifiants d'ensemble.
+
+**Règles d'identifiant :** doit correspondre à `[A-Za-z][A-Za-z0-9_-]*`. Les étiquettes avec espaces vont dans le champ `"Label"` entre guillemets.
+
+---
+
+## 8. Erreurs fréquentes
+
+| Vous avez écrit | Le parseur dit | Correction |
+|-----------------|----------------|------------|
+| `A & B : 320` avant `set A …` et `set B …` | `VennParseError: unknown set id "A" in region key` | Déclarez les ensembles avec `set` avant de les référencer dans les lignes de région |
+| `dogs subset mammals` avant `set dogs …` | `VennParseError: unknown set "dogs" in relation` | Déclarez d'abord les ensembles, puis écrivez les relations Euler |
+| `set A Email subscribers` (étiquette non citée avec espace) | Erreur du parseur — l'étiquette doit être une chaîne entre guillemets | Mettez-la entre guillemets : `set A "Email subscribers"` |
+| `A & B = 320` (égal au lieu de deux-points) | La ligne ne correspond pas au motif de région ; erreur d'analyse | Utilisez les deux-points : `A & B : 320` |
+| `Frontend = { React TypeScript }` (sans virgules) | `React TypeScript` traité comme un seul élément | Séparez par des virgules : `Frontend = { React, TypeScript }` |
+| `config: mode = venn` | `mode` n'est pas une clé reconnue (la clé est `diagram`) | Utilisez `config: diagram = venn` |
+| Mélange d'ensembles d'énumération avec des régions explicites `A & B :` | La dérivation automatique d'énumération ne s'exécute que lorsque `regions.length === 0` | Utilisez un seul style par diagramme ou ajoutez toutes les régions explicitement |
+
+---
+
+## 9. Grammaire (EBNF)
+
+```text
+document       = header (blank | comment | config | layout-stmt | set-decl | enum-decl | euler-rel | region)*
+
+header         = "venn" ( ":"? WS quoted-string )? ( WS "[" config-props "]" )? NEWLINE
+quoted-string  = '"' any-char-but-quote* '"'
+
+config         = "config" WS ":" WS config-key WS "=" WS config-value NEWLINE
+config-key     = "diagram" | "proportional" | "palette" | "blendMode" | "showCounts" | "showPercent"
+
+layout-stmt    = "layout" WS ( "venn" | "euler" | "auto" ) NEWLINE
+
+set-decl       = "set" WS id WS quoted-string ( WS "[" set-props "]" )? NEWLINE
+set-props      = "color:" quoted-hex | "fill:" quoted-hex
+
+enum-decl      = id WS "=" WS "{" element-list "}" NEWLINE
+element-list   = element ( "," element )*
+element        = quoted-string | bare-word
+
+euler-rel      = id WS euler-op WS id NEWLINE
+euler-op       = "subset" | "in" | "disjoint" | "overlap"
+
+region         = "region"? WS region-key WS ":" WS region-value NEWLINE
+region-key     = id WS "only"
+               | id ( WS "&" WS id )+
+region-value   = integer | percent | quoted-string | "[" element-list "]"
+
+percent        = number "%"
+id             = [A-Za-z] [A-Za-z0-9_-]*
+comment        = "#" any NEWLINE
+```
+
+Source de référence : `src/diagrams/venn/parser.ts`. En cas de divergence avec le parseur, le parseur fait foi — veuillez ouvrir un ticket.
+
+---
+
+## 10. Feuille de route
+
+**Planifié — pas encore analysable.** N'utilisez pas ces fonctionnalités dans le DSL généré aujourd'hui ; le parseur les rejettera ou les ignorera.
+
+- **Imbrication Euler à trois voies et N voies** — le moteur de rendu prend actuellement en charge jusqu'à 3 ensembles en mode Venn ; les diagrammes d'Euler plus larges avec un containment complexe ne sont pas encore entièrement mis en page.
+- **Alias de couleur `fill:`** — la propriété `fill:` sur `set` est acceptée par le parseur (comme alias de `color:`) mais le moteur de rendu n'utilise actuellement que `color:`.
+- **`label:` sur les régions** — syntaxe `region A & B [label: "Core"]` pour séparer l'étiquette de la valeur.
+- **Euler proportionnel à la surface** — `proportional: true` n'affecte actuellement que le mode Venn ; la disposition Euler de containment ignore cet indicateur.
+- **Mot-clé `and`** — `A and B : 120` en langage naturel comme alias de `A & B : 120`.
+
+Suivez les tickets GitHub si vous avez besoin de l'une de ces fonctionnalités plus tôt.
+
+---
+
+## Exemples associés
+
+Scénarios prêts à l'emploi issus de la galerie d'exemples :
+
+<RelatedExamples slugs={[
+  'venn-customer-segments',
+  'venn-programming-paradigms',
+]} />

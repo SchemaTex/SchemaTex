@@ -1,0 +1,115 @@
+---
+title: Diagramme de blocs de fiabilité
+---
+
+## À propos des diagrammes de blocs de fiabilité
+
+Un **diagramme de blocs de fiabilité (RBD)** représente la **logique de succès** d'un système : chaque composant est un bloc sur un chemin allant d'un nœud d'entrée à un nœud de sortie, et le système *fonctionne* tant qu'un chemin ininterrompu de blocs fonctionnels relie les deux. Les composants en **série** doivent tous fonctionner ; les composants en **parallèle** offrent de la redondance (un seul suffit) ; un groupe **k-parmi-n** fonctionne lorsqu'au moins *k* de ses *n* membres fonctionnent. C'est l'outil standard de l'ingénierie RAMS (fiabilité, disponibilité, maintenabilité, sécurité), défini par **[IEC 61078:2016](https://webstore.iec.ch/publication/24566)** et MIL-HDBK-338B.
+
+L'avantage de Schematex est que le moteur **calcule la réponse**, pas seulement l'image : à partir des fiabilités par bloc, il réduit la structure à la **fiabilité système** (∏ pour la série, 1−∏(1−Rᵢ) pour le parallèle, énumération exacte pour k-parmi-n), dérive l'**importance de fiabilité de Birnbaum** de chaque bloc (lequel fait le plus avancer les choses), et signale les **points de défaillance uniques** — les blocs dont la défaillance seule entraîne la défaillance du système — en rouge. C'est la même posture que `faulttree` adopte pour les coupes minimales et `pert` pour l'ordonnancement. Le RBD est le dual espace-succès de l'arbre de défaillance espace-échec.
+
+<Playground initial={`rbd "Redundant Server"
+  series {
+    block PSU "Power Supply" R=0.99
+    parallel {
+      block FAN1 "Fan A" R=0.95
+      block FAN2 "Fan B" R=0.95
+    }
+    kofn 2/3 {
+      block D1 "Disk 1" R=0.97
+      block D2 "Disk 2" R=0.97
+      block D3 "Disk 3" R=0.97
+    }
+  }`} height={520} />
+
+---
+
+## 1. Votre premier diagramme
+
+Chaque document commence par le mot-clé `rbd` (alias `reliability`), un titre optionnel, puis des groupes de logique de succès imbriqués autour de feuilles `block` :
+
+```
+rbd "Two redundant pumps"
+  parallel {
+    block A "Pump A" R=0.9
+    block B "Pump B" R=0.9
+  }
+```
+
+Le moteur trace les deux pompes sur des rails parallèles entre un nœud de séparation et un nœud de jonction, calcule la fiabilité système `1 − (1−0.9)(1−0.9) = 0.99`, et l'affiche en en-tête. Une liste de blocs de niveau supérieur sans groupe externe (pas de groupe externe) est traitée comme une chaîne **série**.
+
+## 2. Blocs
+
+Un `block` est un composant sur un chemin de succès :
+
+```
+block ID "Label" R=0.99
+```
+
+- `ID` — un identifiant court (affiché en l'absence de label).
+- `"Label"` — un nom d'affichage optionnel (guillemets CJK acceptés).
+- La fiabilité est donnée sous la forme **`R=0.99`** (fiabilité/disponibilité), **`p=0.01`** (probabilité de *défaillance*, → R = 1−p) ou un pourcentage **`R=99%`**. Un bloc sans fiabilité laisse la valeur système symbolique (`n/a`).
+
+## 3. Groupes de logique de succès
+
+Les groupes s'imbriquent librement, permettant de modéliser des chaînes redondantes, des bancs de vote et des paires en attente :
+
+| Groupe | Réussit quand | Fiabilité |
+|-------|---------------|-------------|
+| `series { … }` | **chaque** enfant fonctionne | ∏ Rᵢ |
+| `parallel { … }` | **n'importe quel** enfant fonctionne | 1 − ∏(1 − Rᵢ) |
+| `kofn k/n { … }` | **≥ k parmi n** enfants fonctionnent | énumération exacte des états |
+
+```
+series {
+  block CTRL "Controller" R=0.995
+  parallel {
+    series { block P1 "Path 1 sensor" R=0.97
+             block A1 "Path 1 actuator" R=0.98 }
+    series { block P2 "Path 2 sensor" R=0.97
+             block A2 "Path 2 actuator" R=0.98 }
+  }
+}
+```
+
+## 4. Fiabilité calculée, importance et SPOF
+
+Après le parsing, le moteur calcule :
+
+- **Fiabilité système** — la valeur en en-tête, par réduction récursive série/parallèle/k-parmi-n.
+- **Importance de Birnbaum** `Iᴮ(i) = R_sys(Rᵢ=1) − R_sys(Rᵢ=0)` pour chaque bloc ; le bloc avec la plus haute importance (la cible d'amélioration) est accentué.
+- **Importance de criticité** `I_C(i) = Iᴮ(i)·(1−Rᵢ)/(1−R_sys)` — la probabilité que le bloc i soit défaillant *et* critique, sachant que le système est défaillant.
+- **Points de défaillance uniques** — tout bloc où `R_sys(Rᵢ=0) = 0` (sa défaillance seule entraîne la défaillance du système) est tracé avec une bordure rouge. Un bloc non redondant en série est toujours un SPOF.
+
+## 5. Fiabilité dépendante du temps — R(t)
+
+Un `R=` statique est le point d'entrée ; en pratique, la fiabilité est une fonction du temps de mission. Définir un **`mission: <t>`** et donner aux blocs une distribution de défaillance au lieu d'une constante — le moteur évalue **R(t)** et le consolide exactement comme précédemment. Utiliser des **unités de temps cohérentes** entre `mission` et les taux.
+
+| Attribut de bloc | Modèle | R(t) |
+|-----------------|-------|------|
+| `rate=0.0001` | exponentiel (taux de défaillance constant λ) | e^(−λt) |
+| `mtbf=10000` | exponentiel (λ = 1/MTBF) | e^(−t/MTBF) |
+| `weibull=2,10000` | Weibull(β forme, η échelle) | e^(−(t/η)^β) |
+
+```
+rbd "Pump station — 1-year mission"
+  mission: 8760            # heures
+  parallel {
+    block A "Pump A" mtbf=10000
+    block B "Pump B" weibull=1.5,12000
+  }
+```
+
+L'en-tête devient `R(t=8760) = …`. Un bloc avec une distribution mais sans `mission:` émet un avertissement et revient à son `R=` constant (si disponible).
+
+## 6. Validation
+
+Le parseur signale des avertissements non fatals plutôt que d'échouer :
+
+- un seuil `kofn k/n` avec `k > n` est écrêté à `n` (et `k < 1` à `1`) ;
+- une fiabilité hors de `0..1` est écrêtée ;
+- un identifiant de bloc dupliqué est signalé.
+
+## 7. Thèmes
+
+`theme: default` utilise la palette partagée risque-fiabilité (blocs neutres, chiffres de fiabilité en bleu, bordures de points de défaillance uniques en rouge). `theme: monochrome` rend une version imprimée en noir et blanc (SPOF par épaisseur de bordure) ; `theme: dark` est la variante sombre Catppuccin.

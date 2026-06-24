@@ -1,0 +1,258 @@
+---
+title: PERT / CPM Network
+---
+
+## PERT 차트란
+
+**PERT 차트**(Program Evaluation and Review Technique)와 그 쌍둥이 **CPM**(Critical Path Method)은 현대 프로젝트 관리의 근간이 되는 프로젝트 일정 다이어그램입니다. 1959년에 탄생했으며(PERT는 미 해군 Polaris 프로그램, CPM은 DuPont에서), 두 방법은 [PMI의 PMBOK 가이드](https://www.pmi.org/pmbok-guide-standards)에서 가르치는 **Activity-on-Node / Precedence Diagramming Method**로 수렴했습니다. 작업, 기간, 어떤 작업이 어떤 작업에 의존하는지를 작성하면 일정 — Early Start, Early Finish, Late Start, Late Finish, 여유 시간, **주경로** — 이 *자동으로 계산됩니다*.
+
+바로 이 마지막 점이 Schematex의 `pert` 엔진을 모든 드래그 앤 드롭 "PERT 차트 메이커"와 다르게 만듭니다. 대부분의 도구는 도형 라이브러리를 제공하고 여섯 개 필드 박스를 직접 채우고 계산기로 주경로를 계산하게 합니다. Schematex는 전진 통과와 후진 통과를 스스로 실행하고 주경로를 빨간색으로 자동 강조합니다. **[flowchart](/docs/flowchart)**(일정 없음), **[timeline](/docs/timeline)**(주경로 계산 없음), **[bpmn](/docs/bpmn)**(일회성 프로젝트 일정이 아닌 조직 프로세스)과 구별됩니다.
+
+<Playground initial={`pert
+title: "Q3 Product Launch"
+unit: days
+
+task A "Market research"     duration: 5
+task B "Design mockups"      duration: 8  after: A
+task C "Backend API"         duration: 15 after: A
+task D "Frontend build"      duration: 10 after: B, C
+task E "QA / testing"        duration: 5  after: D
+task F "Marketing collateral" duration: 7 after: B
+task G "Launch event"        duration: 2  after: E, F`} height={520} />
+
+---
+
+## 1. 첫 번째 다이어그램 만들기
+
+모든 문서는 `pert` 키워드로 시작하고, 선택적 헤더, 그다음 활동당 하나의 `task` 줄이 옵니다:
+
+```
+pert
+unit: days
+
+task A "Market research" duration: 5
+task B "Design mockups"  duration: 8 after: A
+task C "Backend API"     duration: 15 after: A
+task D "Frontend build"  duration: 10 after: B, C
+```
+
+각 작업은 `<id>`, 따옴표로 묶인 `<레이블>`, `duration:`, 선택적 `after:` 선행 작업 목록을 가집니다. 엔진은 보이지 않는 Start와 Finish를 추가하고, 일정을 실행하며, 모든 작업에 대해 여섯 개 필드 활동 박스를 그립니다. ES/EF/LS/LF는 직접 입력할 필요가 없습니다 — 자동으로 계산됩니다.
+
+헤더에서 허용되는 항목:
+
+- `title: "…"` — 다이어그램 위에 그려지는 제목.
+- `unit: days | weeks | hours | abstract` — 시간 단위 (기본값 `days`; 순전히 레이블이며, 엔진은 달력과 무관).
+- `direction: LR | TB` — 왼쪽에서 오른쪽(기본) 또는 위에서 아래.
+- `layout: network | timescaled` — 계층화된 네트워크(기본) 또는 시간 비례 뷰 (§6).
+- `critical-tolerance: <n>` — 이 값 이하의 여유 시간이 주경로로 계산됨 (기본값 `0`; 삼점 프로젝트에는 `0.001` 설정).
+- `show-sentinels: true` — 합성 Start / Finish 노드 표시 (기본적으로 숨겨짐).
+
+---
+
+## 2. 여섯 개 필드 활동 박스
+
+모든 작업은 표준 3×2 PERT/CPM 직사각형으로 렌더링됩니다:
+
+```
+┌──────────┬────────────┬──────────┐
+│  ES      │  Duration  │   EF     │
+├──────────┴────────────┴──────────┤
+│         Task Name (ID)           │
+├──────────┬────────────┬──────────┤
+│  LS      │  Slack     │   LF     │
+└──────────┴────────────┴──────────┘
+```
+
+- **ES / EF** — Early Start / Early Finish, 전진 통과에서 계산.
+- **LS / LF** — Late Start / Late Finish, 후진 통과에서 계산.
+- **Slack**(총 여유) = LS − ES = LF − EF. 여유가 0이면 해당 활동은 주경로 위에 있습니다.
+
+주경로 활동은 **빨간 테두리**와 굵은 `0` 여유를 가지며, 프로젝트의 주경로는 연속적인 빨간 선으로 읽힙니다. 모든 필드는 `data-*` 속성(`data-es`, `data-slack`, `data-critical`, …)에도 미러링되어 수학을 다시 실행하지 않고 SVG를 쿼리할 수 있습니다.
+
+**두 가지 색상 팔레트에 대하여.** PERT 차트는 의도적으로 두 가지 색상만으로 그려집니다. 주경로에 빨간색을 사용하는 것은 실제 업계 관례입니다 — MS Project, Oracle Primavera P6, PMBOK 도형 모두 이를 사용합니다. 왜냐하면 "주경로 vs 비주경로"가 이 다이어그램이 표현하는 핵심 구별이기 때문입니다. 그 외에는 모두 중립적인 하우스 블루를 유지합니다. 더 많은 색상을 추가하면 PERT의 의미론이 없는 범주를 암시하게 됩니다; 팀이나 단계별로 그룹화가 필요하다면 색상 대신 [수영 레인](#7-수영-레인-태그-클래스-및-주석) (`lane:`)을 사용하세요.
+
+---
+
+## 3. 의존성 (FS / SS / FF / SF + 지연/선행)
+
+`after:`는 쉼표로 구분된 선행 작업 참조 목록을 받습니다. 기본 관계는 **Finish-to-Start (FS)** — 선행 작업이 완료된 후 작업이 시작됩니다:
+
+```
+task D "Frontend build" duration: 10 after: B, C
+```
+
+현대 일정 관리에는 다른 세 가지 Precedence-Diagramming 관계와 **지연**(lag, 지연) 또는 **선행**(lead, 음의 지연)이 필요합니다:
+
+```
+task B "Stakeholder interviews" duration: 6 after: A SS+1   # A 시작 1일 후 시작
+task I "Documentation"          duration: 4 after: D+3      # 3일 지연의 FS
+task J "Translation"            duration: 3 after: I SS-1   # I 시작 1일 전 시작 (선행)
+task K "Sign-off"               duration: 1 after: I FF     # I가 완료될 때 완료
+task L "Press release"          duration: 2 after: G SF+1   # start-to-finish (드문 경우)
+```
+
+| 형식 | 의미 |
+|------|---------|
+| `after: A` | Finish-to-Start, 지연 없음 (일반적인 경우) |
+| `after: A+2` 또는 `after: A+2d` | 2단위 지연의 FS |
+| `after: A SS` / `A FF` / `A SF` | Start-to-Start / Finish-to-Finish / Start-to-Finish |
+| `after: A SS+2d` / `A FF-1d` | 지연(`+`) 또는 선행(`-`)이 있는 임의 유형 |
+
+지연 단위 접미사(`d` / `w` / `h`)는 다이어그램의 `unit:`과 일치하거나 생략해야 합니다; 혼합 단위는 거부됩니다. 지연 없는 FS는 레이블 없음; SS/FF/SF는 항상 엣지에 유형을 표시합니다.
+
+---
+
+## 4. 삼점 (PERT) 추정
+
+기간을 `O/M/P` (낙관적 / 가장 가능성 높음 / 비관적)로 작성하면 엔진이 베타 분포 기대 기간 **te = (O + 4M + P) / 6**과 분산 **σ² = ((P − O)/6)²**를 계산합니다:
+
+```
+pert
+critical-tolerance: 0.01
+task A "Spec"   duration: 2/3/5    # te = 3.17, σ² = 0.25
+task B "Build"  duration: 5/8/14   after: A   # te = 8.50, σ² = 2.25
+task C "Test"   duration: 3/4/6    after: B
+task D "Deploy" duration: 1/2/3    after: C
+```
+
+Duration 필드에 `te`가 표시되고, 이름 아래에 작은 `σ=…` 주석이 나타나며, 프로젝트 수준의 표준 편차(주경로 분산의 합의 제곱근)가 하단에 보고됩니다. 부동 소수점 `te` 값이 가시적 주경로를 이동시키지 않도록 `critical-tolerance: 0.01`을 사용하세요.
+
+---
+
+## 5. 마일스톤
+
+마일스톤은 다이아몬드로 그려지는 기간 0의 체크포인트입니다. `milestone` 플래그 또는 `duration: 0`을 사용합니다:
+
+```
+task P "Cutover weekend" milestone after: O
+task Q "Go-live"         duration: 0 after: P
+```
+
+---
+
+## 6. 시간 스케일 레이아웃
+
+`layout: timescaled`는 계층화된 네트워크에서 네트워크-Gantt 혼합으로 전환합니다: 각 활동의 **x 위치가 ES에 비례**하고 **너비가 기간에 비례**하며, 하단에 단위 시간 축이 있습니다. 활동들은 겹치지 않도록 레인에 배치됩니다.
+
+```
+pert
+layout: timescaled
+unit: days
+
+task A "Inventory"     duration: 5
+task B "Interviews"    duration: 6  after: A SS+1
+task C "Design"        duration: 10 after: A, B
+task D "Build"         duration: 15 after: C
+task E "Pilot"         duration: 7  after: D
+```
+
+이것은 네트워크 기반 시간 뷰입니다; 작업당 한 행의 달력 Gantt 차트는 `layout: gantt`를 사용하세요 (다음 절).
+
+### Gantt 차트 (`gantt` / `layout: gantt`)
+
+달력 Gantt를 위해 **`gantt`** 헤더로 문서를 시작합니다(`pert` + `layout: gantt`의 약식). 이것은 *동일한 스케줄러*입니다 — 따라서 막대는 **계산된** ES/EF로 배치되고, **주경로가 빨간색으로 표시됩니다**. 이것이 직접 날짜를 입력하는 Gantt(Mermaid)가 할 수 없는 것입니다: Mermaid에서는 날짜를 직접 입력하지만, 여기서는 의존성을 입력하면 엔진이 일정을 계산합니다.
+
+```
+gantt "Website Relaunch"
+start: 2026-07-01
+calendar: 5day
+task A "Discovery"      duration: 5  lane: "Plan"
+task B "Wireframes"     duration: 8  after: A   lane: "Design"
+task C "Visual design"  duration: 6  after: B   lane: "Design"  progress: 40%
+task D "Frontend build" duration: 12 after: C   lane: "Build"
+task E "Backend API"    duration: 10 after: A   lane: "Build"
+task F "Integration"    duration: 5  after: D, E lane: "Build"
+task LAUNCH "Go live"   milestone    after: F   lane: "Build"
+today: 2026-07-20
+```
+
+- **`start: YYYY-MM-DD`**는 축을 달력 날짜로 전환합니다 (생략하면 숫자 일 오프셋 축).
+- **`calendar: continuous`** (기본)는 주말을 포함; **`calendar: 5day`**는 토/일을 타임라인에서 제외합니다.
+- **`lane: "…"`**는 작업을 레이블된 **섹션**으로 그룹화; **`progress: 60%`**는 완료 오버레이를 그림; **`milestone`**은 다이아몬드; **`today: YYYY-MM-DD`**는 마커 선을 추가합니다.
+- 선언 순서대로 작업당 한 행. 주경로가 아닌 막대는 **여유 시간**이 주석으로 표시된 채 기본 파란색으로 그려지고; 주경로 막대는 빨간색입니다.
+
+### Activity-on-arrow (`layout: aoa`)
+
+`layout: aoa`는 교재와 Investopedia에서 볼 수 있는 이전의 **activity-on-arrow** (ADM) 표기법을 렌더링합니다: 번호가 매겨진 **이벤트** 원, **활동은 레이블이 있는 화살표**, 활동에 두 개 이상의 선행 작업이 있는 경우 자동으로 삽입되는 점선 **더미 활동**. 동일한 activity-on-node DSL을 작성하면 — Schematex가 이벤트 그래프를 구성하고 이벤트에 번호를 매깁니다.
+
+```
+pert
+layout: aoa
+unit: days
+
+task A "create schedule" duration: 10
+task B "buy hardware"    duration: 5
+task C "programming"     duration: 20 after: A
+task D "installation"    duration: 5  after: B
+task E "conversion"      duration: 15 after: D
+task F "test code"       duration: 20 after: C, E
+task G "write manual"    duration: 15 after: E
+```
+
+AOA는 **레거시** 표기법(PMBOK 7은 삭제; AON이 현대 표준)이며, **finish-to-start** 로직만 표현할 수 있습니다 — SS/FF/SF와 지연/선행은 경고와 함께 FS로 평탄화됩니다. 교육, 시험 준비, 또는 기존 교재 도형과 일치할 때 사용하세요; 실제 일정 계획에는 기본 `network` (AON) 레이아웃을 사용하세요.
+
+---
+
+## 7. 수영 레인, 태그, 클래스, 주석
+
+임의의 작업에 `lane: "…"`를 추가하면 네트워크가 수평 수영 레인으로 재그룹됩니다 — 담당 팀, 단계, 또는 담당자별 — 일정은 이전과 동일하게 계산됩니다:
+
+```
+task T1 "Support Account Deletion" duration: 3  lane: "Customer Account"
+task T2 "Design a New Theme"        duration: 8  lane: "Shopping Site"
+task T3 "Apply New Theme"           duration: 15 after: T2 lane: "Shopping Site"
+```
+
+레인은 처음 선언된 순서로 나타나며, 각각 왼쪽에 레이블 홈통이 있는 밴드 행으로 표시됩니다. 수영 레인은 동일한 AON 네트워크의 표현이며, 다른 레이아웃 모드가 아닙니다 — 어느 작업이든 레인을 선언하면 자동으로 활성화됩니다.
+
+```
+task X "External vendor work" duration: 10 after: A tags: vendor, external class: secondary
+# 주석입니다
+```
+
+`tags:`는 노드 그룹에 `data-tag="…"`를 내보내고 `class:`는 다운스트림 테마를 위한 CSS 클래스를 추가합니다. `#`과 `//`는 줄 끝까지 주석을 시작합니다.
+
+---
+
+## 8. 문법 (EBNF)
+
+```text
+document    = "pert" NEWLINE header* task+
+header      = "title:" quoted
+            | "unit:" ("days" | "weeks" | "hours" | "abstract")
+            | "direction:" ("LR" | "TB")
+            | "layout:" ("network" | "timescaled" | "aoa")
+            | "critical-tolerance:" number
+            | "show-sentinels:" boolean
+
+task        = "task" IDENT quoted "duration:" duration ("after:" reflist)? "milestone"? attrs?
+            | "task" IDENT quoted "milestone" ("after:" reflist)? attrs?
+duration    = number | number "/" number "/" number          ; 결정론적 또는 O/M/P
+reflist     = ref ("," ref)*
+ref         = IDENT (WS deptype)? laglead?
+            | IDENT "+" number unit?                          ; 첨부된 FS 지연 약식
+deptype     = "FS" | "SS" | "FF" | "SF"
+laglead     = ("+" | "-") number unit?
+unit        = "d" | "w" | "h"
+attrs       = ("tags:" idlist)? ("class:" IDENT)? ("lane:" quoted)?
+```
+
+---
+
+## 9. 표준 준수
+
+Schematex `pert`는 **PMI PMBOK 7** 및 Moder, Phillips & Davis (1983)에 따른 **Activity-on-Node / Precedence Diagramming Method**를 구현하며, Kerzner와 Oracle Primavera P6의 여섯 개 필드 박스 관례를 따릅니다. 전진/후진 통과, 총 여유, 주경로, 지연/선행이 있는 네 가지 PDM 의존성 유형, 삼점 추정(te + 분산)이 정확하게 계산됩니다. 이전의 **Activity-on-Arrow** 표기법은 교육 및 교재 동등성을 위한 옵트인 레거시 뷰(`layout: aoa`)로 제공됩니다. v0.1 범위 외: 자원 평준화 / RCPSP, Monte Carlo 일정 위험 시뮬레이션, 달력 인식 기간, MS Project / Primavera 가져오기-내보내기. 전체 사양은 `docs/reference/32-PERT-STANDARD.md`를 참고하세요.
+
+---
+
+## 관련 예시
+
+예시 갤러리에서 바로 사용 가능한 시나리오:
+
+<RelatedExamples slugs={[
+  'pert-product-launch',
+  'pert-aoa-software-project',
+  'pert-swimlane-online-shop',
+  'pert-three-point-estimation',
+  'pert-migration-timescaled',
+]} />

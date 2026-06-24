@@ -1,0 +1,151 @@
+---
+title: Diagramme nœud papillon de risque
+---
+
+## À propos des diagrammes nœud papillon
+
+Un **nœud papillon** est l'image la plus reconnaissable de la gestion des risques par barrières : un **événement sommet** central (le moment où le contrôle d'un danger est perdu), avec des **menaces** qui convergent depuis la gauche à travers des chaînes de **barrières préventives**, et des **conséquences** qui divergent vers la droite à travers des chaînes de **barrières atténuantes** — le tout en forme de nœud papillon. Il répond, pour un danger donné, aux deux questions qu'un régulateur ou un conseil d'administration pose réellement : *qu'est-ce qui pourrait mal tourner, et qu'est-ce qui l'en empêche ?* (gauche), et *si cela tourne mal, que se passe-t-il, et qu'est-ce qui limite les dégâts ?* (droite). Requis dans les secteurs pétrolier et gazier, la chimie, l'aviation ([ICAO Doc 9859](https://www.icao.int/) SMS), le rail, l'exploitation minière et la santé. Codifié par **[CCPS / Energy Institute 2018](https://www.aiche.org/ccps)** (*Bow Ties in Risk Management*) et nommé comme technique par **IEC 31010:2019** §B.4.6.
+
+L'avantage de Schematex ici **n'est pas** le calcul (c'est la spécialité de `faulttree` et `pert`) — un nœud papillon de base ne contient pas de probabilités. Il repose sur deux choses : une **mise en page symétrique rigide et correcte par construction** qu'aucun outil générique boîte-flèche ne produit, et une **validation structurelle du jeu de règles de barrières CCPS/EI** — chaque menace doit atteindre l'événement sommet via ≥ 1 barrière, chaque conséquence doit y être rattachée via ≥ 1 barrière, et chaque facteur d'escalade doit être attaché à une barrière spécifiquement nommée. Une menace sans barrière est *rejetée*, pas silencieusement dessinée.
+
+<Playground initial={`bowtie "LPG storage — loss of containment"
+hazard "LPG stored under pressure"
+topevent "Loss of containment"
+
+threat "Corrosion of vessel wall"
+  prevent "Corrosion-resistant coating"
+  prevent "UT thickness inspection"
+    escalation "Inspection interval too long"
+      barrier "Risk-based inspection scheme"
+
+threat "Overpressure during filling"
+  prevent "High-pressure trip (SIL 2)"
+  prevent "Pressure relief valve"
+
+consequence "Jet fire"
+  mitigate "Gas detection + ESD"
+  mitigate "Deluge / water spray"
+
+consequence "Toxic exposure"
+  mitigate "Personal gas monitors"
+  mitigate "Emergency evacuation plan"`} height={560} />
+
+---
+
+## 1. Votre premier diagramme
+
+Chaque document commence par le mot-clé `bowtie`, un titre optionnel, puis le danger, l'événement sommet et les deux ailes :
+
+```
+bowtie
+topevent "Loss of containment"
+threat "Corrosion"
+  prevent "Inspection programme"
+consequence "Release to atmosphere"
+  mitigate "Gas detection + ESD"
+```
+
+`topevent` déclare le nœud unique au centre (obligatoire, exactement un). Chaque `threat` démarre une ligne d'aile gauche ; chaque `consequence` termine une ligne d'aile droite. Une barrière sous une `threat` est **préventive** (`prevent`) ; sous une `consequence` elle est **atténuante** (`mitigate`). Le diagramme est disposé symétriquement autour du nœud — les menaces convergent depuis la gauche, les conséquences divergent vers la droite.
+
+Le DSL est **structuré par indentation** et reflète la méthodologie de construction en 7 étapes du CCPS : identifier le danger → l'événement sommet → les menaces → les conséquences → les barrières préventives → les barrières atténuantes → les facteurs d'escalade.
+
+Directives d'en-tête (dans n'importe quel ordre) :
+
+- `layout: symmetric | compact` — modèle en bandes (par défaut `symmetric`).
+- `legend: on | off | bottom | top` — la légende de couleurs dérivée automatiquement (par défaut activée).
+
+---
+
+## 2. Danger et événement sommet
+
+```
+hazard "Working at height"
+topevent "Person falls from height"
+```
+
+- **`hazard`** — l'opération ou le matériau avec le potentiel de causer un préjudice : le *contexte* sur lequel porte le nœud papillon (ex. « Travail en hauteur », « Hydrocarbure sous pression »). Optionnel ; s'affiche comme une boîte d'en-tête au-dessus du nœud avec une ligne de liaison vers celui-ci. Au plus un.
+- **`topevent`** — le moment où le contrôle du danger est **perdu** (ex. « Perte de confinement », « Chute d'une personne en hauteur »). Le nœud du nœud papillon, dessiné comme un cercle vert. **Obligatoire, exactement un.**
+
+Un danger est une *chose/activité*, pas une défaillance ; l'événement sommet est le moment précis de *perte de contrôle* — ni une cause, ni encore une conséquence.
+
+---
+
+## 3. Menaces et conséquences
+
+```
+threat "Guardrail removed for access"
+  prevent "Permit-to-work system"
+
+consequence "Fatality"
+  mitigate "Fall-arrest harness + lanyard"
+```
+
+- Une **menace** est une cause crédible qui, *à elle seule*, pourrait déclencher l'événement sommet. Chaque menace est le point de départ d'une ligne d'aile gauche, dessinée comme une boîte orange sur le bord gauche.
+- Une **conséquence** est un résultat crédible *de l'événement sommet* (pas de la menace), dessinée comme une boîte rouge sur le bord droit.
+
+Les menaces et conséquences peuvent être déclarées dans n'importe quel ordre mélangé — le parser regroupe tous les blocs d'aile gauche et tous les blocs d'aile droite indépendamment de la séquence. Un nœud papillon nécessite **au moins une de chaque** : un diagramme à une seule aile est un arbre de défaillances (voir `faulttree`) ou un arbre d'événements, pas un nœud papillon.
+
+---
+
+## 4. Barrières (les contrôles intermédiaires)
+
+```
+threat "Guardrail removed for access"
+  prevent "Permit-to-work system"
+  prevent "Temporary edge protection"
+  prevent "Spotter / banksman"
+```
+
+Une **barrière** est un contrôle qui interrompt le chemin menace → événement sommet (préventif) ou réduit la conséquence après l'événement sommet (atténuant). Chacune est une boîte grise *sur la ligne*. Les chaînes sont de longueur libre (1..n) — l'aile s'étend simplement.
+
+**L'ordre des barrières est l'ordre de déclaration** : la première déclarée est la **plus externe** (la plus proche de la menace/conséquence, la première ligne de défense) ; la dernière déclarée est la **plus interne** (la plus proche du nœud). Cela correspond à la lecture de gauche à droite d'un vrai nœud papillon. Chaque barrière porte `data-order` (0 = la plus externe) et `data-side` (`prevent` / `mitigate`) pour l'interactivité en aval.
+
+Lorsque les chaînes diffèrent en longueur, les barrières sont **centrées** : les barrières les plus internes s'alignent dans une colonne nette près du nœud, et les boîtes de menace/conséquence sont irrégulières selon la profondeur de la chaîne — se lisant comme une défense en profondeur.
+
+---
+
+## 5. Facteurs d'escalade
+
+```
+threat "Corrosion"
+  prevent "UT thickness inspection"
+    escalation "Inspection interval too long"
+      barrier "Risk-based inspection scheme"
+```
+
+Un **facteur d'escalade** (ou facteur de dégradation) est une condition qui *dégrade l'efficacité d'une barrière spécifique* — ex. « Protection de bord non inspectée », « Fatigue de l'opérateur ». Il est attaché à **une** barrière (pas à la ligne) et descend verticalement en dessous d'elle comme une boîte ambre, reliée par un connecteur discret « dégrade ».
+
+Une **barrière de facteur d'escalade** est un contrôle placé sur le facteur d'escalade lui-même — il protège la barrière contre la dégradation (ex. un régime d'inspection avant utilisation). Elle s'imbrique un niveau plus profond, sous le facteur d'escalade, et se représente comme une boîte grise en dessous.
+
+L'indentation lie l'imbrication : `prevent`/`mitigate` à 2 espaces, `escalation` à 4, `barrier` à 6.
+
+---
+
+## 6. Correct par construction (le jeu de règles de barrières)
+
+Avant de dessiner une seule forme, le moteur valide la partie structurelle du jeu de règles de barrières CCPS/EI et **refuse de générer** en cas d'échec — exactement comme `prisma` refuse les comptages manquants :
+
+- **Exactement un événement sommet** — zéro ou plusieurs est une erreur.
+- **Chaque menace a ≥ 1 barrière préventive** — une menace nue est une caricature de gruyère suisse, pas un nœud papillon.
+- **Chaque conséquence a ≥ 1 barrière atténuante** — la règle miroir.
+- **Chaque facteur d'escalade est attaché à une barrière** — il ne peut pas flotter sur une ligne ou sur l'événement sommet.
+- **Au moins une menace et une conséquence** — un diagramme à une seule aile est un FTA ou un ETA.
+
+Les messages nomment l'élément incriminé et la règle en anglais clair, ex. *« Threat 'Corrosion' has no preventative barrier — every threat must reach the top event through at least one barrier (CCPS/EI barrier rule). Add a `prevent` line under it. »* C'est ce qui distingue un vrai nœud papillon d'un gribouillis. Le moteur **ne juge pas** si une barrière est réellement *efficace* ou *indépendante* — c'est le jugement qualitatif de l'analyste.
+
+---
+
+## 7. Nœud papillon vs arbre de défaillances
+
+Un nœud papillon entièrement développé *est* un arbre de défaillances collé à un arbre d'événements à l'événement sommet : l'aile gauche lue à l'envers est l'arbre de défaillances dont l'événement sommet est le nœud du nœud papillon, et l'aile droite est l'arbre d'événements qui le propage en conséquences. Schematex les garde comme deux moteurs séparés car leurs usages diffèrent :
+
+- **`bowtie`** est qualitatif et symétrique — l'inventaire des barrières et l'histoire de défense en profondeur en un coup d'œil ; pas d'arithmétique de probabilité.
+- **`faulttree`** est quantitatif et booléen — portes ET/OU, probabilités d'événements de base, coupes minimales, calcul de probabilité.
+
+Lorsque vous voulez le détail au niveau des portes derrière une seule menace, dessinez un `faulttree` séparé.
+
+---
+
+## 8. Thèmes
+
+`default` utilise la palette reconnue BowTieXP / bowtiemaster — **menaces orange** (gauche), **barrières grises** sur la ligne, un **disque d'événement sommet vert** (nœud central), **conséquences rouges** (droite), **facteurs d'escalade ambre** descendant en dessous — mappés sur les emplacements sémantiques de Schematex pour rester cohérents avec `prisma` / `pert` / `petri`. `monochrome` reproduit l'aspect noir et blanc d'impression réglementaire, où la distinction des éléments repose sur la forme/bordure + la position (les facteurs d'escalade ont une bordure en tirets, le nœud un double anneau) plutôt que sur la couleur. `dark` suit Catppuccin Mocha. Tous les traits/remplissages proviennent de `BowtieTokens` ; chaque élément porte des attributs `data-*` (`data-role`, `data-side`, `data-line`, `data-order`, `data-barrier`) afin que la structure soit inspectable en aval.

@@ -1,0 +1,244 @@
+---
+title: PRISMA 2020 흐름도
+---
+
+## PRISMA 흐름도에 대하여
+
+**PRISMA 2020 흐름도**(Page MJ et al., *BMJ* 2021;372:n71)는 BMJ, Lancet, JAMA, Cochrane, JBI 등 200개 이상의 저널에서 발표되는 모든 체계적 문헌 고찰, 메타분석, 범위 고찰에서 필수적인 그림입니다. 이것은 *단일하고 엄격한 네 행* 그림으로 — **Identification → Screening → Eligibility → Included** — 모든 박스에 기록 수가 있고 평행한 "제외" 사이드 박스를 포함합니다.
+
+개념적으로는 순서도이지만, 레이아웃, 필수 `n =` 필드, 이중 파이프라인 변형이 *규정되어 있습니다*. Schematex는 `prisma`를 별도의 독립적인 엔진으로 제공하여, 저자가 수치와 제외 이유를 작성하면 다이어그램이 **올바르게 구성**됩니다 — 수치를 실수로 누락하거나 단계 순서를 잘못 배치할 수 없습니다. 사양: [`28-PRISMA-STANDARD.md`](https://github.com/SchemaTex/SchemaTex/blob/main/docs/reference/28-PRISMA-STANDARD.md).
+
+[flowchart](/docs/flowchart)와 구별됩니다: 일반 순서도는 필수 단계, 기록 수, 제외 사이드 박스, 이중 파이프라인 병합의 개념이 없습니다. 그림이 PRISMA 검토 흐름인 경우 항상 `prisma`를 사용하십시오.
+
+<Playground initial={`
+  prisma
+  mode: 2020-single
+  title: Effect of exercise on chronic low-back pain — SR
+
+  identification:
+    databases:
+      n: 1418
+      sources: PubMed=600, Embase=450, Cochrane=184, Web of Science=184
+      duplicates-removed: 318
+
+  screening:
+    records-screened: 1100
+    excluded:
+      n: 870
+      reasons: irrelevant title=750, non-English=120
+
+  eligibility:
+    full-text-assessed: 230
+    excluded:
+      n: 195
+      reasons: wrong population=80, wrong intervention=60, wrong outcome=55
+
+  included:
+    studies: 35
+    reports: 38`} height={620} />
+
+---
+
+## 1. 첫 번째 다이어그램
+
+최소 구성은 네 개의 단계 블록입니다. 수치는 필수입니다. 파서는 총계가 누락된 다이어그램의 레이아웃을 거부합니다.
+
+```
+prisma
+
+identification:
+  databases:
+    n: 1000
+
+screening:
+  records-screened: 900
+  excluded:
+    n: 600
+
+eligibility:
+  full-text-assessed: 300
+  excluded:
+    n: 250
+
+included:
+  studies: 50
+```
+
+들여쓰기는 중요합니다 — genogram 및 SLD처럼 **두 칸**씩. 첫 번째 비어 있지 않은 줄은 반드시 `prisma`여야 합니다. 주석은 `#` 또는 `//`를 사용합니다.
+
+---
+
+## 2. 메타 줄
+
+단계 블록 전에 작성하는 최상위 `key: value` 줄:
+
+```
+prisma
+mode: 2020-single
+kind: systematic-review
+title: My review
+validate-counts: warn
+```
+
+| 키 | 값 | 기본값 | 의미 |
+|---|---|---|---|
+| `mode` | `2020-single` · `2020-dual` · `2009` | `2020-single` | 단일 열 또는 이중 열 ("기타 방법") 열. |
+| `kind` | `systematic-review` · `scoping-review` · `ipd` · `nma` | `systematic-review` | 단계 어휘 변경 (§6 참조). |
+| `title` | 문자열 | — | 다이어그램 위에 렌더링됩니다. |
+| `validate-counts` | `warn` · `strict` · `off` | `warn` | 산술 검사 (§7 참조). |
+| `direction` | `TB` / `TD` | `TB` | PRISMA는 표준상 수직; 수평은 거부됩니다. |
+
+---
+
+## 3. Identification (식별)
+
+`identification:` 블록에는 `databases:` 하위 블록(항상)과 선택적 `other:` 하위 블록(이중 모드)이 있습니다.
+
+```
+identification:
+  databases:
+    n: 1418
+    sources: PubMed=600, Embase=450, Cochrane=184
+    duplicates-removed: 318
+    ineligible-automation: 0
+    other-removed: 0
+```
+
+- `n:` — 식별된 총 기록 수 (**필수**).
+- `sources:` — `name=count` 쌍, 쉼표로 구분. 들여쓰기된 세부 내역으로 렌더링됩니다. 공백이나 구두점이 있는 이름은 따옴표로 묶을 수 있습니다: `"Web of Science"=184`.
+- `duplicates-removed:`, `ineligible-automation:`, `other-removed:` — 선택적 제거 수치. 하나라도 있으면 오른쪽 열에 별도의 **"스크리닝 전 제거된 기록"** 박스로 렌더링되고 수평 화살표로 연결됩니다.
+
+큰 숫자에는 쉼표를 사용할 수 있습니다: `n: 1,418`은 `n: 1418`과 동일합니다.
+
+---
+
+## 4. Screening(선별) 및 Eligibility(적격성)
+
+두 단계 모두 주요 수치와 `excluded:` 블록을 가집니다. excluded 블록은 자체 `n:`와 선택적 `reasons:` 세부 내역을 가집니다.
+
+```
+screening:
+  records-screened: 1100
+  excluded:
+    n: 870
+    reasons: irrelevant title=750, non-English=120
+  reports-sought: 226        # 선택 사항
+  reports-not-retrieved: 12  # 선택 사항
+
+eligibility:
+  full-text-assessed: 230
+  excluded:
+    n: 195
+    reasons: wrong population=80, wrong intervention=60, wrong outcome=55
+```
+
+`reasons:`는 `name=count` 쌍입니다. 8개를 초과하면 렌더러가 내림차순으로 정렬하고 나머지를 `Other (n = …)`으로 집계하여 사이드 박스를 읽기 쉽게 유지합니다.
+
+---
+
+## 5. Included (포함)
+
+```
+included:
+  studies: 35
+  reports: 38          # 하나의 연구가 여러 보고서를 산출할 수 있음
+  participants: 28741  # PRISMA-IPD 전용
+```
+
+`studies:`는 필수입니다. `reports:`와 `participants:`는 선택적 추가 수치 줄입니다.
+
+---
+
+## 6. 이중 파이프라인 및 검토 종류
+
+**이중 파이프라인** — PRISMA 2020 업데이트에서 두 번째 "기타 방법을 통한 식별" 열이 추가되었습니다(인용 검색, 수동 검색, 전문가 추천). `other:` 블록을 추가하면, 두 열이 Y-분기를 통해 Screening에서 합쳐집니다.
+
+```
+prisma
+mode: 2020-dual
+
+identification:
+  databases:
+    n: 1234
+    duplicates-removed: 254
+  other:
+    n: 56
+    sources: citation-search=30, hand-search=20, expert-recommendation=6
+
+screening:
+  records-screened: 1036
+  excluded:
+    n: 810
+
+eligibility:
+  full-text-assessed: 226
+  excluded:
+    n: 195
+
+included:
+  studies: 31
+```
+
+**범위 고찰** — `kind: scoping-review`는 기하학을 변경하지 않고, Tricco et al. 2018에 따라 "studies" → "sources of evidence"로 변경하고 단계를 재레이블링합니다.
+
+**업데이트 검토** — 선택적 `previous-studies:` 블록은 identification 섹션으로 이어지는 점선 박스를 상단에 그립니다.
+
+```
+previous-studies:
+  n: 19
+  sources: previous review=19
+```
+
+---
+
+## 7. 수치 산술 유효성 검사
+
+`validate-counts: warn`(기본값)을 사용하면 엔진이 단계 간 수치 일관성을 검사합니다 — 예: `databases.n + other.n − duplicates-removed = records-screened`, 소스/이유 세부 내역이 총계와 합산되는지 등. 불일치는 다이어그램 아래에 작은 경고를 렌더링합니다(스크린 리더를 위해 SVG `<desc>`에도 표시됩니다).
+
+`validate-counts: strict`은 불일치를 "N만큼 차이" 메시지와 함께 파싱 오류로 변환합니다. `off`는 검사를 완전히 건너뜁니다.
+
+---
+
+## 8. 문법 (EBNF)
+
+```
+prisma-document  = "prisma", { meta-line }, stage-block, { stage-block } ;
+meta-line        = ("mode:" | "kind:" | "title:" | "review-id:" | "validate-counts:" | "direction:") value ;
+
+stage-block      = previous-block | identification-block | screening-block | eligibility-block | included-block ;
+
+previous-block       = "previous-studies:" , indent, "n:" int, [ "reports:" int ], { "sources:" pairs } ;
+identification-block = "identification:" , indent,
+                         "databases:" , indent, "n:" int, { "sources:" pairs },
+                           [ "duplicates-removed:" int ], [ "ineligible-automation:" int ], [ "other-removed:" int ],
+                         [ "other:" , indent, "n:" int, { "sources:" pairs } ] ;
+screening-block      = "screening:" , indent, "records-screened:" int,
+                         "excluded:" , indent, "n:" int, { "reasons:" pairs },
+                         [ "reports-sought:" int ], [ "reports-not-retrieved:" int ] ;
+eligibility-block    = "eligibility:" , indent, "full-text-assessed:" int,
+                         "excluded:" , indent, "n:" int, { "reasons:" pairs } ;
+included-block       = "included:" , indent, "studies:" int, [ "reports:" int ], [ "participants:" int ] ;
+
+pairs            = pair, { "," pair } ;
+pair             = (string | quoted) "=" int ;
+int              = digit, { digit | "," } ;     (* 쉼표 제거: 1,234 == 1234 *)
+```
+
+들여쓰기는 레벨당 두 칸입니다. 단계 블록 내 알 수 없는 키는 파싱 오류로, 각 단계를 명확하게 정의합니다.
+
+---
+
+## 9. 표준 준수
+
+**PRISMA 2020 성명서**(Page MJ, McKenzie JE, Bossuyt PM, et al. *The PRISMA 2020 statement: an updated guideline for reporting systematic reviews.* BMJ 2021;372:n71)와 **PRISMA2020 R 패키지**(Haddaway et al. 2022)의 참조 렌더러 관례를 따릅니다. 범위 고찰 어휘는 **PRISMA-ScR**(Tricco et al. 2018)을 따르고, 참여자 수는 **PRISMA-IPD**(Stewart et al. 2015)를 따릅니다. 템플릿: [prisma-statement.org/prisma-2020-flow-diagram](https://www.prisma-statement.org/prisma-2020-flow-diagram).
+
+---
+
+## 관련 예제
+
+예제 갤러리에서 바로 사용할 수 있는 시나리오:
+
+<RelatedExamples slugs={[
+  'prisma-systematic-review',
+  'prisma-dual-pipeline',
+]} />

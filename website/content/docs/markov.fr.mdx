@@ -1,0 +1,109 @@
+---
+title: Chaîne de Markov
+description: Diagrammes de transition d'états où le moteur valide la matrice stochastique, classifie les états et calcule la distribution stationnaire ou le résultat d'absorption.
+---
+
+## À propos des chaînes de Markov
+
+Une **chaîne de Markov** modélise un système qui saute entre des **états** avec des **probabilités de transition** fixes, où l'état suivant ne dépend que de l'état actuel (la propriété *sans mémoire*). Elles sous-tendent la modélisation de fiabilité, les files d'attente, PageRank, la ruine du joueur et les modèles météorologiques. Les probabilités de transition sortant de chaque état doivent sommer à 1 (une matrice **stochastique par lignes**).
+
+L'avantage de Schematex est que le moteur **effectue l'algèbre linéaire**, pas seulement les cercles et les flèches. Il valide la matrice stochastique par lignes, classifie les états (transitoires / récurrents / absorbants) via une analyse SCC, et calcule la **distribution stationnaire** π ou, pour les chaînes absorbantes, les **probabilités d'absorption** et le nombre d'étapes attendu — le tout sans dépendances, écrit à la main.
+
+<Playground initial={`markov "Weather"
+  Sunny -> Sunny : 0.9
+  Sunny -> Rainy : 0.1
+  Rainy -> Sunny : 0.5
+  Rainy -> Rainy : 0.5`} height={420} />
+
+---
+
+## 1. Votre première chaîne
+
+Commencez avec le mot-clé `markov` (alias `markovchain`), un titre optionnel, puis des **transitions pondérées par des probabilités**. Les états sont créés automatiquement à partir du premier arc qui les mentionne :
+
+```
+markov "Weather"
+  Sunny -> Sunny : 0.9
+  Sunny -> Rainy : 0.1
+  Rainy -> Sunny : 0.5
+  Rainy -> Rainy : 0.5
+```
+
+Une transition s'écrit `DEPUIS -> VERS : PROBABILITÉ`. Une boucle sur soi-même (`Sunny -> Sunny`) est la probabilité de rester dans cet état. Chaque probabilité doit être dans `[0, 1]`, et **les probabilités sortant de chaque état doivent sommer à 1**.
+
+---
+
+## 2. Déclaration des états
+
+Vous pouvez déclarer les états explicitement pour fixer l'étiquette, l'ordre, ou les marquer comme absorbants :
+
+```
+markov "Gambler's ruin"
+  state Broke "$0" absorbing
+  state Rich  "$4" absorbing
+  state S1
+  state S2
+  Broke -> Broke : 1
+  Rich  -> Rich  : 1
+  S1 -> Broke : 0.5
+  S1 -> S2 : 0.5
+  S2 -> S1 : 0.5
+  S2 -> Rich : 0.5
+```
+
+`state ID "étiquette" absorbing` — l'étiquette est optionnelle ; `absorbing` affirme que l'état est un puits (une boucle sur soi-même de probabilité 1). Le moteur vérifie cette affirmation par rapport à la matrice.
+
+---
+
+## 3. Directives
+
+```
+layout: layered       # mode de disposition
+normalize: true        # normalise chaque ligne pour sommer à 1 au lieu de générer une erreur
+analysis: classify, absorbing   # ce qu'il faut calculer : classify | absorbing | stationary
+```
+
+- **`normalize: true`** redimensionne chaque ligne pour sommer à 1 (pratique pour des poids non normalisés comme `A -> B : 1`, `A -> C : 1`). Sans cela, une ligne qui ne somme pas à 1 est une erreur bloquante.
+- **`analysis:`** sélectionne les calculs à effectuer et à afficher.
+
+---
+
+## 4. Le résultat calculé
+
+C'est ce qui différencie Schematex. Trois passes d'algèbre linéaire, écrites à la main et sans dépendances :
+
+1. **Assemblage et validation de la matrice** — construire P et appliquer la politique de somme par lignes (erreur bloquante, ou rééchantillonnage avec `normalize`).
+2. **Classification des états** — SCC de Tarjan → classes communicantes ; une classe est **récurrente** si et seulement si elle est fermée, **transitoire** sinon ; un singleton fermé avec une boucle de probabilité 1 est **absorbant**.
+3. **La réponse quantitative** :
+   - **Distribution stationnaire** π (πP = π, Σπ = 1) par itération de puissance avec un repli par élimination gaussienne exacte pour les chaînes périodiques.
+   - Pour les **chaînes absorbantes** : la matrice fondamentale N = (I−Q)⁻¹, les probabilités d'absorption B = N·R, et le nombre d'étapes attendu jusqu'à l'absorption t = N·1.
+
+Les états transitoires, les classes récurrentes et les états absorbants sont rendus de manière distincte ; les valeurs calculées sont portées dans les `data-*`.
+
+---
+
+## 5. Erreurs courantes
+
+```
+# INCORRECT — probabilité hors de [0,1]
+A -> B : 1.5
+
+# INCORRECT — transition sans probabilité
+A -> B
+
+# INCORRECT — lignes qui ne somment pas à 1 (sans `normalize: true`)
+A -> B : 0.3
+A -> C : 0.3
+```
+
+Chaque transition nécessite une probabilité dans `[0, 1]` ; les probabilités sortantes de chaque état doivent sommer à 1, ou vous devez définir `normalize: true`. Une chaîne vide (sans transitions) est rejetée.
+
+---
+
+## 6. Conformité aux standards
+
+Le modèle est une chaîne de Markov à temps discret et homogène dans le temps avec une matrice de transition stochastique par lignes ; la classification (transitoire/récurrent/absorbant), les distributions stationnaires et l'analyse par matrice fondamentale pour les chaînes absorbantes suivent les textes de référence standard (Kemeny & Snell, *Finite Markov Chains*).
+
+## 7. Feuille de route
+
+Différé : chaînes à temps continu (matrices de taux), modèles de Markov cachés, temps moyens de premier passage et rapport de périodicité.

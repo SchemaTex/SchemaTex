@@ -1,0 +1,243 @@
+---
+title: 타이밍 다이어그램
+---
+
+## 타이밍 다이어그램이란
+
+**타이밍 다이어그램(timing diagram)**은 공유 시간 축을 가진 수평 파형 밴드 집합으로, 디지털 신호가 시간에 따라 어떻게 변하는지를 보여줍니다. 클록 펄스, 버스 전환, 데이터 값, 고임피던스 상태 등을 표현합니다. 하드웨어 엔지니어는 프로토콜 동작 명세, 셋업 및 홀드 제약 조건 검증, 칩 인터페이스 문서화에 사용합니다. 데이터시트, HDL 시뮬레이션 보고서, 디지털 시스템 교재에서 볼 수 있습니다.
+
+Schematex는 **[WaveDrom 호환](https://wavedrom.com/tutorial.html)** 신호 표기법을 사용합니다. WaveDrom이 개척한 동일한 파형 문자(`0`, `1`, `x`, `z`, `p`, `=`, …)와 데이터 레이블 문법을 사용하므로, 기존 WaveDrom DSL을 직접 가져올 수 있습니다. 이 페이지는 현재 파서가 허용하는 내용을 설명합니다.
+
+<Playground initial={`timing "SPI Transaction"
+CLK:   pppppppp
+CS_N:  10000001
+MOSI:  x=======  data: ["0xAB","0xCD","0xEF","0x01","0x02","0x03","0x04","0x05"]
+MISO:  zzzz====  data: ["","","","","0xFF","0x12","0x34","0x56"]`} height={400} />
+
+---
+
+## 1. 첫 번째 타이밍 다이어그램
+
+가장 작은 유용한 타이밍 다이어그램: 클록과 하나의 데이터 신호. 문자 수 계산을 전혀 하지 않아도 되는 가장 편리한 작성 방법:
+
+<Playground initial={`timing
+CLK:  clock 8
+RST:  rle 1*2 0*6
+DATA: 0011==00  data: ["A","B"]`} />
+
+사용법의 80%를 커버하는 세 가지 규칙:
+
+1. `timing` 키워드로 시작하고, 선택적으로 따옴표로 묶인 제목과 `[hscale: N]`을 사용합니다.
+2. 각 신호는 한 줄입니다: `NAME: <wave>` — 이름, 콜론, 그 다음 파형. 파형은 다음 중 하나입니다.
+   - **`clock N`** — `N` 주기의 클록 생성기 (네거티브 엣지 클록에는 `neg` 추가). 문자 수 계산 불필요.
+   - **`rle <state>*<count> …`** — 런 렝스 세그먼트, 예: `rle 1*2 0*6` = `11000000`. 길이 자동 정렬.
+   - **원시 WaveDrom 파형 문자열** — 상태 문자의 연속 실행 (내부 공백 없음), 세밀한 제어용.
+3. 원시 파형 문자열 뒤에 `data: ["val1", "val2"]`를 추가하여 버스 세그먼트에 레이블을 붙입니다.
+
+> **정렬 팁:** 타이밍 다이어그램이 깨지는 가장 흔한 원인은 신호 길이가 맞지 않는 것입니다. `clock N`과 `rle`는 각 신호의 셀 수를 명시적으로 만들어 정렬을 보장합니다. 셀 단위 제어가 필요한 경우에만 원시 파형 문자열을 사용하십시오.
+
+> 주석은 해당 줄의 맨 앞에 `#`으로 시작해야 합니다.
+
+---
+
+## 2. 파형 문자
+
+파형 문자열은 시간 주기당 하나씩의 문자 시퀀스입니다. 파서는 다음 문자들을 허용합니다.
+
+| 문자 | 상태 | 의미 |
+|---|---|---|
+| `0` | 논리 로우 | GND / VSS의 신호 |
+| `1` | 논리 하이 | VDD의 신호 |
+| `x` | 미지 | 돈케어, 미정의, 또는 초기화되지 않음 |
+| `z` | 고임피던스 | 3상태 / 하이 임피던스 |
+| `p` | 클록 펄스 (양성) | 라이징 엣지 활성 클록; 하나의 `p` = 하나의 전체 주기 (low→high→low) |
+| `P` | 클록 펄스 (양성, 키 큼) | `p`와 동일, 시각적으로 더 큰 파형 |
+| `n` | 클록 펄스 (음성) | 폴링 엣지 활성; 하나의 `n` = 하나의 전체 주기 (high→low→high) |
+| `N` | 클록 펄스 (음성, 키 큼) | `n`과 동일, 시각적으로 더 큰 파형 |
+| `=` | 버스 데이터 | 병렬 버스 세그먼트; `data: […]`로 레이블 추가 |
+| `2`–`9` | 명명된 버스 세그먼트 | `=`와 동일, `data: […]`에서 위치로 인덱싱 |
+| `.` | 홀드 / 계속 | 이전 상태를 한 주기 더 연장 |
+| `h` / `H` | 홀드 하이 | 이 주기를 강제 하이로 |
+| `l` / `L` | 홀드 로우 | 이 주기를 강제 로우로 |
+| `u` | 라이징 엣지 | 로우에서 하이로의 대각선 (전환만) |
+| `d` / `D` | 폴링 엣지 | 하이에서 로우로의 대각선 (전환만) |
+
+<Playground initial={`timing "Wave character reference"
+clk:   pppppppppp
+high:  1111111111
+low:   0000000000
+unkn:  xxxxxxxxxx
+hiz:   zzzzzzzzzz
+bus:   x========x  data: ["ADDR","DATA","","","","","",""]
+hold:  0..1..0..1
+rise:  0u1
+fall:  1d0`} height={440} />
+
+---
+
+## 3. 데이터 레이블
+
+신호가 버스 값을 전달하는 경우, `data: ["label1", "label2", …]`로 파형에 태그를 붙입니다. 비어 있지 않은 각 따옴표 문자열은 해당하는 `=` (또는 `2`–`9`) 세그먼트 내부에 배치됩니다.
+
+```
+MOSI:  x=======  data: ["0xAB","0xCD","0xEF","0x01","0x02","0x03","0x04","0x05"]
+```
+
+빈 문자열 `""`은 세그먼트를 레이블 없이 남깁니다 (이전 값을 연장하는 세그먼트에 유용).
+
+```
+MISO:  zzzz====  data: ["","","","","0xFF","0x12","0x34","0x56"]
+# 앞쪽 네 개의 z 주기에는 레이블 없음; 네 개의 = 세그먼트는 0xFF부터 레이블 시작
+```
+
+<Playground initial={`timing "I2C read burst"
+SCL:   ppppppppppp
+SDA:   x1=======1x  data: ["ADDR+R","ACK","D0","D1","D2","D3","D4","D5","NACK"]`} />
+
+---
+
+## 4. 신호 그룹화
+
+관련 신호를 `[GroupName]` 블록으로 묶습니다. `---` 줄은 그룹을 닫으며, 그룹 간 시각적 구분선 역할도 합니다.
+
+```
+[Control]
+CLK:   pppppppp
+CS_N:  10000001
+---
+[Data]
+MOSI:  x=======  data: ["0xAB","0xCD","0xEF","0x01","0x02","0x03","0x04","0x05"]
+MISO:  zzzz====  data: ["","","","","0xFF","0x12","0x34","0x56"]
+```
+
+대안적인 `group "name" { … }` 문법도 허용됩니다 (닫히는 `}`가 그룹을 닫습니다).
+
+<Playground initial={`timing "UART frame"
+[Clock & control]
+CLK:  pppppppppppp
+TX_EN: 0111111110
+---
+[Data lines]
+TX:   1==========  data: ["START","D0","D1","D2","D3","D4","D5","D6","D7","STOP"]
+RX:   zz1=======1  data: ["","","D0","D1","D2","D3","D4","D5","D6","D7"]`} height={380} />
+
+---
+
+## 5. 제목 및 hscale
+
+**제목:** `timing "SPI Transaction"` — 다이어그램 상단에 표시됩니다.
+
+**hscale:** `timing "title" [hscale: 2]` — 각 시간 주기의 너비를 스케일링합니다. 기본값은 1입니다. 데이터 레이블에 더 많은 공간이 필요한 경우 2를 사용하십시오.
+
+```
+timing "Wide bus" [hscale: 2]
+CLK:  pppp
+DATA: ====  data: ["long label here","another","third","fourth"]
+```
+
+---
+
+## 6. 레이블 및 주석
+
+- **신호 이름:** 신호 줄의 첫 번째 `:` 이전의 모든 텍스트. 공백이 있는 이름도 괜찮습니다. 콜론이 구분자입니다.
+- **데이터 레이블:** 파형 문자열 뒤의 `data: ["a", "b"]`.
+- **제목:** `timing` 키워드 뒤의 첫 번째 토큰, 따옴표로 묶음.
+- **주석:** 줄의 앞부분(선행 공백 이후) `#`.
+
+```
+timing "Demo"
+# 이것은 주석입니다
+CLK: pppp    # ← 인라인 후행 주석은 지원되지 않습니다
+```
+
+---
+
+## 7. 흔한 실수
+
+| 작성한 내용 | 파서 메시지 | 수정 방법 |
+|---|---|---|
+| `CLK: p p p p` (파형에 공백) | 파형 문자열이 `p`만으로 파싱됨; 나머지는 데이터 절로 처리 | 공백 제거: `CLK: pppp` |
+| `DATA: =====`에 `data:` 없음 | 세그먼트가 레이블 없는 버스 셀로 렌더링 | `data: ["A","B","C","D","E"]` 추가 |
+| 파형 문자 `s` 또는 `r` | `TimingParseError: Invalid wave string` | §2에 나열된 문자만 유효 |
+| `CLK pppp` (콜론 없음) | 신호 패턴과 일치하지 않음; 조용히 건너뜀 | 신호 이름 뒤에 콜론 필요 |
+| `data: [A, B, C]` (따옴표 없음) | 값 인식 불가 — 파서는 `"…"` 형식을 찾음 | 각 값을 따옴표로 묶기: `data: ["A","B","C"]` |
+| `[Group Name with spaces]` | 그룹 레이블은 `Group Name with spaces` — 올바르게 파싱됨 | 지원됨 |
+| `hscale: 2` 독립 줄로 | 인식되지 않음 (hscale은 헤더 줄에 작성) | `timing "title" [hscale: 2]` |
+
+---
+
+## 8. 문법 (EBNF)
+
+```text
+document       = header (blank | comment | group-open | group-close | separator | signal)*
+
+header         = "timing" ( WS quoted-string )? ( WS "[" "hscale:" number "]" )? NEWLINE
+quoted-string  = '"' any-char-but-quote* '"'
+
+group-open     = "[" label "]" NEWLINE
+               | "group" WS quoted-string WS "{"? NEWLINE
+group-close    = "}" NEWLINE
+separator      = "---" NEWLINE
+
+signal         = name ":" WS wave-string ( WS data-clause )? NEWLINE
+name           = any text before the first ":"
+wave-string    = wave-char+
+wave-char      = "0"|"1"|"x"|"z"
+               | "p"|"P"|"n"|"N"
+               | "h"|"H"|"l"|"L"
+               | "u"|"d"|"D"
+               | "="|"."|"2"|"3"|"4"|"5"|"6"|"7"|"8"|"9"
+
+data-clause    = "data:" WS ( "[" quoted-string ("," quoted-string)* "]"
+                            | quoted-string+ )
+
+comment        = "#" any NEWLINE
+```
+
+공식 소스: `src/diagrams/timing/parser.ts`. 이 내용이 파서와 다를 경우 파서가 기준입니다. 이슈를 열어 주십시오.
+
+---
+
+## 9. 표준 준수
+
+Schematex 타이밍 다이어그램은 파형 문자와 데이터 레이블에 대해 **[WaveDrom WaveJSON](https://wavedrom.com/tutorial.html)** 신호 표기법을 따릅니다. WaveDrom의 온라인 편집기에서 사용하는 것과 동일한 세트를 사용하므로, Schematex DSL은 WaveDrom 입력과 대부분 호환됩니다. `hscale` 옵션, 그룹 문법, 데이터 레이블 형식도 모두 호환됩니다.
+
+현재 구현된 사항:
+
+- ✅ 모든 핵심 파형 문자: `0 1 x z p P n N h H l L u d D = . 2–9`
+- ✅ `data: ["…"]`를 통한 데이터 레이블
+- ✅ 그룹 블록: `[Name]` 및 `group "name" { }` 문법
+- ✅ `---` 구분자 / 그룹 닫기
+- ✅ `hscale` 주기 너비 배수
+- ⏳ 타이밍 주석 (신호 전환 사이의 화살표, `t_su`, `t_pd` 레이블)
+- ⏳ 신호별 `phase:` 오프셋 (분수 주기 이동)
+- ⏳ WaveDrom `node:` / `edge:` 주석 블록
+- ⏳ 스킨 / 테마 (`default`, `narrow`, `lowkey`)
+
+참고 문헌:
+
+- WaveDrom — https://wavedrom.com (WaveJSON 명세)
+- IEEE Std 1364 (Verilog HDL) — 디지털 타이밍 시뮬레이션 개념
+- IEEE Std 1497 (Standard Delay Format) — 타이밍 주석 표기 방식
+
+---
+
+## 10. 관련 예제
+
+<RelatedExamples slugs={[
+  'timing-spi-transaction',
+]} />
+
+---
+
+## 11. 로드맵
+
+**계획 중 — 아직 파싱 불가.** 오늘 생성된 DSL에서는 사용하지 마십시오. 파서가 무시합니다.
+
+- **타이밍 주석 화살표** — 신호 전환 사이의 셋업/홀드 및 전파 지연 스팬을 그리는 `annotate:` 블록 (`A -> B [label: "t_su = 5ns"]` 문법).
+- **신호별 `phase:`** — 신호가 주기의 중간에서 시작할 수 있는 분수 주기 오프셋.
+- **WaveDrom `node:` / `edge:`** — 완전한 WaveDrom 주석 블록 호환성.
+- **스킨 옵션** — `narrow` (컴팩트) 및 `lowkey` (차분한 팔레트) 렌더링 테마.
+- **시간 축** — 하단의 선택적 숫자 시간 축 (ns, µs, ps 단위).
+
+더 빠른 구현이 필요하시면 GitHub 이슈에서 추적하십시오.

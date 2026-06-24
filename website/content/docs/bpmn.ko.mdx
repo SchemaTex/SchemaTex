@@ -1,0 +1,240 @@
+---
+title: BPMN / 비즈니스 프로세스
+---
+
+## BPMN 다이어그램이란
+
+**BPMN 다이어그램**은 비즈니스 프로세스를 문서화합니다 — 역할, 부서, 시스템 전반에 걸쳐 발생하는 활동, 결정, 이벤트, 메시지 교환을 기록합니다. 기업 BPM, ISO-9001 / SOX 감사, 프로세스 마이닝 도구에서 지배적인 표기법입니다. 유일한 공식 직렬화는 BPMN 2.0 XML인데, 이는 상세하고 LLM 생성에 적합하지 않습니다; Schematex는 준수하는 시각적 서브셋을 생성하는 간결한 텍스트 DSL을 제공합니다.
+
+Schematex는 실제 비즈니스 분석가들이 실제로 그리는 요소들을 위해 OMG **BPMN 2.0.2 / ISO/IEC 19510:2013**을 구현합니다: 풀, 레인, 이벤트 (시작 / 중간 / 끝, none / message / timer 트리거), 활동 (마커가 있는 태스크 + 접힌 서브프로세스), 게이트웨이 (XOR / OR / AND / 이벤트 기반), 시퀀스 / 조건부 / 기본 / 메시지 흐름.
+
+> **참고** — Schematex는 렌더링 라이브러리이지 프로세스 실행 엔진이 아닙니다. 토큰 시뮬레이션, XML 라운드트립, DI (Diagram Interchange) 레이어가 없습니다. v0.1은 대부분의 팀이 사용하는 시각적 서브셋을 커버합니다; 경계 이벤트, 확장된 서브프로세스, 드문 트리거 유형 (취소 / 보상 / 에스컬레이션 / 신호 / 링크)은 v0.2+로 이연됩니다.
+
+<Playground initial={`bpmn
+direction: LR
+title: "Loan Application Approval"
+
+pool "Bank" {
+  lane "Clerk" {
+    A: start "Application received"
+    B: task user "Check completeness"
+    G1: gateway xor "Complete?"
+  }
+  lane "Underwriter" {
+    C: task service "Risk score"
+    D: task user "Underwriter review"
+    G2: gateway xor "Decision"
+    E: end "Approved"
+    F: end "Rejected"
+  }
+}
+
+flows
+A --> B
+B --> G1
+G1 --? "yes" --> C
+G1 --* "no" --> F
+C --> D
+D --> G2
+G2 --? "approve" --> E
+G2 --* "reject" --> F`} height={420} />
+
+---
+
+## 1. 첫 번째 BPMN 다이어그램
+
+세 가지 섹션: 한 줄짜리 `bpmn` 헤더, 하나 이상의 `pool { … }` 블록, 그리고 `flows` 블록. 각 풀 안에 `lane { … }` 블록을 넣고, 각 레인 안에 `id: kind "label"` 형식으로 흐름 객체를 나열합니다.
+
+<Playground initial={`bpmn
+pool "Service" {
+  lane "Worker" {
+    A: start "Request"
+    B: task service "Process"
+    F: end "Done"
+  }
+}
+
+flows
+A --> B
+B --> F`} />
+
+모든 흐름 객체는 **id**, 콜론, **kind**, 선택적 서브 키워드 (트리거 / 마커 / 게이트웨이 유형), 따옴표로 묶인 **label**로 시작합니다. Id는 흐름 선에서 참조됩니다.
+
+---
+
+## 2. 풀과 레인
+
+**풀**은 하나의 참가자 — 조직, 부서, 또는 시스템 — 를 나타냅니다. **레인**은 풀을 역할로 세분화합니다. 풀 레이블은 수평 풀의 왼쪽 가장자리에 90° 회전하여 렌더링됩니다.
+
+```
+pool "Customer" blackbox          // black-box pool — no internal flow
+pool "Bank" {
+  lane "Clerk" { … }
+  lane "Underwriter" { … }
+}
+```
+
+**블랙박스 풀**은 내부 프로세스를 모델링하지 않는 참가자입니다 — 일반적으로 외부 고객이나 파트너. 블랙박스 풀에는 흐름 객체가 없어야 합니다 (Schematex는 파서에서 이를 강제합니다).
+
+시퀀스 흐름 (`-->`)은 풀 경계를 **넘어서는 것이 허용되지 않습니다**. 풀 간 통신에는 메시지 흐름 (`~~>`)을 사용하세요.
+
+---
+
+## 3. 이벤트
+
+이벤트는 원입니다. 획 두께가 수명 주기 역할을 나타냅니다:
+
+| 종류 | 획 | DSL |
+|---|---|---|
+| 시작 | 얇음 (1px) | `start` |
+| 중간 | 얇은 이중 링 | `intermediate` |
+| 끝 | 두꺼움 (3px) | `end` |
+
+선택적 **트리거** 키워드는 내부 글리프를 추가합니다. v0.1은 세 가지 가장 일반적인 트리거를 지원합니다 — `none` (글리프 없음), `message` (봉투), `timer` (시계 면):
+
+```
+A: start                       // none-trigger
+A: start message "Inbound"     // message-catch (unfilled envelope)
+T: intermediate timer "60 min" // timer (clock face)
+F: end "Done"
+```
+
+채워진 글리프 = **던지기**, 비어있는 글리프 = **잡기**. Schematex는 이벤트 종류에 따라 올바른 채우기를 자동으로 선택합니다.
+
+---
+
+## 4. 활동 — 태스크와 서브프로세스
+
+활동은 둥근 직사각형입니다. v0.1의 두 가지 형식은 `task`와 **접힌** 서브프로세스 (`+` 마커는 확장 가능한 세부 사항을 나타냄):
+
+```
+B: task "Generic abstract task"
+U: task user "User decides"
+S: task service "API call"
+SE: task send "Send email"
+RE: task receive "Wait for reply"
+M: task manual "Hand-stamp the form"
+SC: task script "Run rule engine"
+
+X: subprocess "Verify identity" collapsed
+```
+
+**태스크 마커** (왼쪽 상단의 작은 아이콘)는 *누가 또는 무엇이* 작업을 수행하는지를 나타냅니다 — 사람 (`user`), 소프트웨어 서비스 (`service`), 아웃바운드 메시지 (`send`), 인바운드 대기 (`receive`), 시스템 외부 수동 단계 (`manual`), 또는 자동화된 스크립트 (`script`). 확신이 없으면 마커를 생략하세요 — 기본값은 추상적입니다.
+
+---
+
+## 5. 게이트웨이
+
+게이트웨이는 다이아몬드입니다. 내부 글리프가 분기 의미론을 나타냅니다:
+
+| 종류 | 글리프 | 의미 | DSL |
+|---|---|---|---|
+| 배타적 (XOR) | **X** | 정확히 하나의 나가는 분기를 선택 (데이터 기반) | `gateway xor` |
+| 포함적 (OR) | **O** | 하나 이상의 나가는 분기를 선택 | `gateway or` |
+| 병렬 (AND) | **+** | 모든 나가는 분기를 동시에 선택 | `gateway and` |
+| 이벤트 기반 | 원 안의 오각형 | 먼저 발생하는 이벤트의 분기를 선택 | `gateway event` |
+
+Schematex는 기본적으로 XOR에 Bruce Silver의 **X 글리프**를 사용합니다 — 실제 BPMN 감사에서 기대하는 관례입니다. 대부분의 다이어그램은 XOR (데이터 분기)와 AND (병렬 분할 / 합류)를 사용하고; OR는 드물며 이벤트 기반은 주로 경쟁 조건 모델에서 나타납니다.
+
+---
+
+## 6. 커넥터
+
+네 가지 커넥터 유형. 세 가지는 풀 안에 있고; 메시지 흐름만 풀 경계를 넘어갈 수 있습니다.
+
+```
+A --> B                  // sequence flow (default)
+G --? "yes" --> C        // conditional sequence (label is a guard)
+G --* "default" --> D    // default flow (one per gateway, max)
+"Customer" ~~> A : "Submit application"   // message flow
+E ~~> "Customer" : "Notify approval"      // message flow back
+```
+
+- `-->`는 기본 도구 — 실선 + 채워진 삼각형 화살촉.
+- `--? "label" -->`는 소스에 작은 비어있는 다이아몬드를 추가합니다. 활동에서 직접 보호된 결과로 나갈 때 사용하세요. (게이트웨이에서는 조건부 레이블로 충분하고; 다이아몬드 글리프는 그려지지 않습니다.)
+- `--* "label" -->`는 소스에 슬래시 마크를 추가합니다. **게이트웨이당 최대 하나의 기본 흐름** — Schematex가 이를 강제합니다.
+- `~~>`는 점선에 열린 화살촉과 소스의 작은 비어있는 원입니다. 소스나 대상은 따옴표로 묶인 **풀 이름** (블랙박스 참가자용) 또는 객체 id일 수 있습니다.
+
+---
+
+## 7. 검증
+
+파서는 줄 번호가 있는 오류와 함께 BPMN 의미론을 위반하는 다이어그램을 거부합니다:
+
+| 규칙 | 오류 |
+|---|---|
+| 시퀀스 흐름이 풀을 넘어감 | `sequence flow 'A --> B' crosses pool boundary — use message flow (~~>)` |
+| 메시지 흐름이 하나의 풀 안에 있음 | `message flow 'A ~~> B' must cross pool boundaries` |
+| 블랙박스 풀에 내부 요소가 있음 | `black-box pool "X" cannot contain lanes` |
+| 동일한 게이트웨이에서 두 개의 기본 흐름 | `gateway 'G' has 2 default flows (max 1)` |
+| 풀 내에서 중복 id | `duplicate id 'A'` |
+| 알 수 없는 소스 / 대상 | `unknown source 'X' in sequence flow` |
+
+이러한 검사는 파싱 중에 실행되므로, LLM은 레이아웃 패스 전에 사용 가능한 신호를 받습니다.
+
+---
+
+## 8. 더 큰 예제 — 블랙박스 고객이 있는 피자 주문
+
+표준 BPMN 튜토리얼: 모델링하지 않는 프로세스를 가진 외부 고객이 점원 / 셰프 / 배달 레인으로 나뉜 피자 가게에 주문하고, 셰프의 품질 검사에서 재작업 루프가 있습니다.
+
+<Playground initial={`bpmn
+direction: LR
+title: "Pizza order"
+
+pool "Customer" blackbox
+
+pool "Pizzeria" {
+  lane "Clerk" {
+    A: start message "Order received"
+    B: task user "Take order"
+  }
+  lane "Chef" {
+    C: task manual "Make pizza"
+    G1: gateway xor "Pizza ok?"
+    D: task manual "Rework"
+  }
+  lane "Delivery" {
+    E: task send "Deliver"
+    F: end "Done"
+  }
+}
+
+flows
+A --> B
+B --> C
+C --> G1
+G1 --? "yes" --> E
+G1 --* "no" --> D
+D --> C
+E --> F
+"Customer" ~~> A : "Place order"
+E ~~> "Customer" : "Pizza delivered"`} height={520} />
+
+재작업 루프 (`D --> C`)는 레이아웃의 사이클 감지가 DFS를 통해 감지하는 역방향 엣지를 생성합니다 — 최장 경로 레이어링은 그런 다음 순방향 DAG에서 진행되므로 열이 합리적으로 유지됩니다.
+
+---
+
+## 9. v0.1의 제한 사항
+
+이것들은 이후 릴리스로 이연됩니다. 다이어그램에 이 중 하나가 필요한 경우, 사용 사례와 함께 이슈를 등록하세요:
+
+- **경계 이벤트** — 활동 가장자리에 연결된 이벤트 (타이머, 오류, 에스컬레이션, 보상). 현재 경계를 자유 부동 중간 이벤트와 수동 흐름으로 모델링해야 합니다.
+- **확장된 서브프로세스** — 접힌 `subprocess`는 작동하고; 확장된 인라인 블록 (`subprocess "X" { … }`)은 이연됩니다.
+- **드문 이벤트 트리거** — 오류 / 에스컬레이션 / 취소 / 보상 / 신호 / 링크 / 조건부 / 다중 / 병렬-다중. 자리 표시자로 `none` 또는 `message`를 사용하세요.
+- **트랜잭션 / 호출 활동** — v0.1에서는 일반 태스크로 렌더링됩니다.
+- **루프 및 다중 인스턴스 마커** — 하단 중앙 활동 글리프; 이연됩니다.
+- **아티팩트** — 데이터 객체 / 데이터 저장소 / 그룹 / 텍스트 주석. 이연됩니다.
+- **BPMN 2.0 XML 가져오기 / 내보내기** — 범위 밖입니다. Schematex는 DSL에서 레이아웃을 계산하고; 라운드트립할 DI 레이어가 없습니다.
+
+---
+
+## 관련 예제
+
+예제 갤러리에서 바로 사용할 수 있는 시나리오:
+
+<RelatedExamples slugs={[
+  'bpmn-loan-approval',
+  'bpmn-pizza-order',
+  'bpmn-incident-response',
+]} />

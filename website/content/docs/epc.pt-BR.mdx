@@ -1,0 +1,121 @@
+---
+title: EPC (Cadeia de Processo Orientada a Eventos)
+description: Diagramas de processo de negócio ARIS — eventos e funções alternados conectados por conectores AND/OR/XOR, com validação estrutural de conformidade.
+---
+
+## Sobre EPC
+
+Uma **Cadeia de Processo Orientada a Eventos** (EPC, do inglês *Event-driven Process Chain*) é a notação de processo de negócio central do **ARIS** (Scheer, anos 1990): um fluxo de controle que **alterna estritamente eventos** (estados passivos — "Pedido recebido") e **funções** (tarefas ativas — "Verificar crédito"), roteados por **conectores AND / OR / XOR** para divisões e junções. É amplamente usada para documentação de processos SAP e BPM.
+
+O diferencial do Schematex é a **validação estrutural**. O motor não computa um número (ao contrário do `pert` ou do `faulttree`); ele verifica as regras de conformidade do EPC — alternância evento/função, a regra de assinatura *evento-não-decide*, multiplicidade de uma entrada/uma saída, alcançabilidade — e destaca violações com mensagens legíveis por IA em vez de renderizar silenciosamente um modelo incorreto.
+
+<Playground initial={`epc "Verificação de crédito"
+  event E1 "Pedido recebido"
+  function F1 "Verificar crédito"
+  xor X1
+  event E2 "Crédito aprovado"
+  event E3 "Crédito recusado"
+  E1 -> F1 -> X1
+  X1 -> E2
+  X1 -> E3`} height={460} />
+
+---
+
+## 1. Seu primeiro EPC
+
+Comece com a palavra-chave `epc`, um título opcional, depois declare **nós por id** e **conecte-os com setas**:
+
+```
+epc "Fulfillment de pedido"
+  event E1 "Pedido recebido"
+  function F1 "Verificar crédito"
+  event E2 "Crédito OK"
+  E1 -> F1 -> E2
+```
+
+Os nós têm um id e um rótulo opcional entre aspas; as setas referenciam ids. A forma canônica declara conectores como nós (`xor X1`) e conecta tudo por id — mais próxima de como o ARIS armazena um EPC.
+
+---
+
+## 2. Tipos de nós
+
+```
+event E1 "Pedido recebido"     # estado passivo (hexágono arredondado)
+function F1 "Verificar crédito"    # tarefa ativa (retângulo arredondado); alias: func
+func F2 "Enviar fatura"        # `func` é abreviação de `function`
+and  A1                       # conector AND (∧)
+or   O1                       # conector OR (∨)
+xor  X1                       # conector OR exclusivo (×)
+```
+
+Um conector pode divergir ou convergir (divisão ou junção) dependendo dos seus arcos de entrada/saída, então o mesmo glifo serve para ambos. Rótulos de conectores são opcionais.
+
+---
+
+## 3. Conectando o fluxo de controle
+
+```
+E1 -> F1 -> X1        # uma cadeia é açúcar sintático para os arcos par a par E1→F1, F1→X1
+X1 -> E2              # divisão do conector em dois ramos
+X1 -> E3
+F2 -> E2 : enviado    # um único arco pode ter uma ': label'
+```
+
+- Uma **cadeia** `->` se expande para arestas par a par.
+- Um **`: label`** no final anota um único arco.
+- Um ponto final de seta ainda não declarado é **criado automaticamente** (e sinalizado pelo validador), então você pode esboçar rápido e ajustar depois.
+
+```
+epc "Procure-to-pay"
+  layout: tb
+  event E1 "Necessidade identificada"
+  function F1 "Criar PO"
+  and A1
+  function F2 "Notificar fornecedor"
+  function F3 "Atualizar orçamento"
+  E1 -> F1 -> A1
+  A1 -> F2
+  A1 -> F3
+```
+
+`layout: tb` posiciona a cadeia de cima para baixo (o padrão também é compatível com orientação vertical).
+
+---
+
+## 4. Verificação de conformidade computada
+
+Este é o diferencial. O motor valida (sinaliza, não interrompe):
+
+1. **Alternância bipartida** — eventos e funções se alternam estritamente ao longo de qualquer caminho; conectores não quebram a regra.
+2. **Início/fim devem ser eventos** — uma função não pode ser nó inicial ou final.
+3. **Regra de assinatura** — um *evento não pode ser a fonte de uma divisão OR/XOR* (um evento passivo não pode tomar decisões); uma divisão AND após um evento é permitida.
+4. **Balanceamento de divisões/junções** — uma divisão do tipo T deve ser fechada por uma junção do tipo T; incompatibilidades geram avisos (EPCs reais às vezes são desbalanceados).
+5. **Uma entrada / uma saída** por evento e função — conectores carregam a multiplicidade.
+6. **Alcançabilidade** — todo nó alcançável a partir de um início e que alcança um fim.
+
+Nós com problemas são destacados com flags `data-*`; o diagrama ainda é renderizado.
+
+---
+
+## 5. Erros comuns
+
+```
+# ERRADO — id inválido (deve começar com uma letra)
+event 9ruim
+
+# EVITE — redeclarar um nó (o primeiro vence, um aviso é gerado)
+event E1 "primeiro"
+event E1 "segundo"
+```
+
+Ids devem começar com uma letra; um nó redeclarado mantém a primeira definição e avisa. Como divisões evento→XOR/OR são sinalizadas, roteie uma decisão através de uma **função** que produza a decisão, e então divida.
+
+---
+
+## 6. Conformidade com o padrão
+
+A notação e as regras seguem a convenção EPC do ARIS (Scheer), van der Aalst (1999) e Mendling (2008): eventos hexagonais, funções em retângulo arredondado, conectores ∧/∨/×, e a restrição de assinatura evento-não-decide.
+
+## 7. Roadmap
+
+Adiado: nós de interface de processo (fora de página), raias de unidade organizacional/objeto de dados (eEPC), e sugestões automáticas de reparo de divisões/junções.

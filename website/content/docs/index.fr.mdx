@@ -1,0 +1,82 @@
+---
+title: Introduction
+description: Chaque diagramme qu'un médecin, un ingénieur ou un avocat utiliserait réellement. Gratuit. Entièrement open source. Conçu pour l'IA. Des diagrammes conformes aux standards — du genogram à l'arbre de défaillances — à partir d'un DSL textuel.
+---
+
+**Schematex** génère chaque diagramme qu'un médecin, un ingénieur ou un avocat utiliserait réellement — des genograms cliniques, la logique ladder IEC 61131-3, les pedigrees NSGC, les schémas unifilaires IEEE 315, les tableaux de capitalisation, et bien d'autres. Un DSL textuel minimal en entrée ; un SVG conforme aux standards en sortie.
+
+**Gratuit. Entièrement open source. Conçu pour l'IA.** AGPL-3.0, zéro dépendance à l'exécution, et un DSL conçu autour de la façon dont les LLM écrivent réellement du texte — collez le résultat de ChatGPT ou Claude et obtenez un diagramme professionnel dès le premier essai.
+
+## Que puis-je dessiner ?
+
+<DiagramCatalog />
+
+## Exemple rapide
+
+<Playground initial={`genogram "The Smiths"
+  john [male, 1950]
+  mary [female, 1952]
+  john -- mary
+    alice [female, 1975, index]
+    bob [male, 1978]
+  alice -close- mary`} />
+
+## Utilisation avec l'IA
+
+Schematex fournit une couche d'outils conçue pour les LLM. Connectez Claude.ai au serveur MCP hébergé en 10 secondes et laissez-le générer des diagrammes validés dans n'importe quelle conversation — sans installation, sans configuration.
+
+<MCPConnectCard size="compact" />
+
+Ou construisez votre propre fonctionnalité IA au-dessus du Vercel AI SDK. Voir **[Utiliser Schematex avec l'IA](/docs/ai-integration)**.
+
+## Prochaines étapes
+
+- [Démarrage](/docs/getting-started) — installation, import, rendu
+- [Utiliser Schematex avec l'IA](/docs/ai-integration) — MCP + Vercel AI SDK + boucle d'agent
+- [Playground](/playground) — essayez n'importe quel type de diagramme en direct
+- [Référence API](/docs/api)
+
+---
+
+## Comment ça marche
+
+Chaque type de diagramme suit le même pipeline :
+
+```
+Text DSL ──→ Parser ──→ AST ──→ Layout Engine ──→ LayoutResult ──→ SVG Renderer ──→ SVG string
+```
+
+Chaque diagramme implémente un `DiagramPlugin` avec quatre méthodes :
+
+```ts
+interface DiagramPlugin {
+  detect(text: string): boolean;           // auto-détecte le type de diagramme
+  parse(text: string): DiagramAST;         // texte → AST typé
+  layout(ast, config): LayoutResult;       // AST → nœuds/arêtes positionnés
+  render(layout, config): string;          // LayoutResult → chaîne SVG
+}
+```
+
+Les algorithmes de mise en page sont spécifiques au domaine par conception — genogram utilise une mise en page en couches basée sur les générations, ecomap utilise le mode radial/polaire, les portes logiques utilisent un tri topologique DAG, la logique ladder utilise une mise en page fixe sur rails d'alimentation. Les moteurs de mise en page génériques (dagre, ELK) ne peuvent pas produire une sortie conforme aux standards pour ces types de diagrammes.
+
+---
+
+## Principes de conception
+
+1. **Des diagrammes que les professionnels utilisent réellement** — chaque type de diagramme implémente une spécification de domaine publiée : McGoldrick 2020 (genogram), Hartman 1978 (ecomap), Bennett 2022 (pedigree), Moreno 1934 (sociogram), IEEE Std 91 (portes logiques), IEC 61131-3 (logique ladder), IEEE 315 (SLD), et bien d'autres.
+2. **Gratuit et entièrement open source** — AGPL-3.0, zéro dépendance à l'exécution (pas de D3, pas de dagre, pas de générateurs de parsers), tout est écrit à la main. Bundle léger, aucun risque sur la chaîne d'approvisionnement. Licence commerciale disponible pour une utilisation en source fermée.
+3. **Conçu pour l'IA** — le DSL est conçu autour de la façon dont les LLM écrivent réellement du texte (guillemets CJK, ambiguïté d'imbrication, erreurs lisibles par l'IA). Collez le résultat de ChatGPT ou Claude et obtenez un diagramme professionnel dès le premier essai.
+4. **Sortie SVG sémantique** — chaque SVG inclut `<title>` et `<desc>` pour l'accessibilité, des classes CSS pour le thème, et des attributs `data-*` pour l'interactivité.
+
+---
+
+## Thèmes
+
+Trois préréglages intégrés : `default` (bleu-gris), `monochrome` (noir et blanc / impression), `dark` (Catppuccin Mocha).
+
+Remplacez n'importe quel token via des propriétés personnalisées CSS injectées dans le bloc `<style>` de chaque SVG :
+
+```css
+--schematex-stroke: #1a1a1a;
+--schematex-fill: #f5f5f5;
+```

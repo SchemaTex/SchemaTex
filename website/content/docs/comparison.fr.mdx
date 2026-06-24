@@ -1,0 +1,150 @@
+---
+title: Matrice de comparaison et de décision
+---
+
+## À propos des diagrammes de comparaison
+
+**comparison** est un seul moteur pour toute la famille « mettre les choses côte à côte et décider ». Choisissez un `mode:` et le même DSL rend cinq artefacts professionnels différents :
+
+- **`tchart`** — 2 à N colonnes étiquetées de points clés (le classique diagramme T de comparaison ; trois colonnes donne un diagramme en Y).
+- **`pros-cons`** — une liste à deux colonnes avec une valence vert ✓ / rouge ✗.
+- **`matrix`** — une grille options × critères ; les cellules acceptent du texte libre ou des marques `yes` / `no` / `partial`.
+- **`decision`** (alias en-tête `pugh`) — la **matrice de décision pondérée** : chaque critère porte un `weight:`, chaque option un score numérique, et **le moteur calcule** le total pondéré Σ(poids × score) de chaque option, les classe et met en évidence le gagnant. Il s'agit de la méthode de convergence contrôlée de Stuart Pugh (ASQ / Six Sigma, sélection de concept) — la même posture « le moteur calcule la réponse » que `pert` et `faulttree`.
+- **`double-bubble`** — l'organisateur de comparaison/contraste de la méthode Thinking Maps : deux centres, les traits communs au milieu, les traits uniques en éventail vers l'extérieur.
+
+> **À ne pas confondre avec [`matrix`](/docs/matrix).** Ce moteur *positionne* les éléments sur deux axes continus (Eisenhower, BCG, impact–effort). `comparison` dispose un **tableau** et, en mode `decision`, **calcule la décision**. Ce sont les deux moitiés que les gens confondent.
+
+<Playground initial={`comparison "Selecting a CI/CD platform"
+mode: decision
+baseline: "Jenkins"
+option "GitHub Actions"
+option "GitLab CI"
+option "Jenkins"
+criterion "Ease of setup" weight: 5
+  GitHub Actions: 5
+  GitLab CI: 4
+  Jenkins: 2
+criterion "Build speed" weight: 4
+  GitHub Actions: 4
+  GitLab CI: 4
+  Jenkins: 3
+criterion "Cost at our scale" weight: 4
+  GitHub Actions: 4
+  GitLab CI: 3
+  Jenkins: 5
+criterion "Self-host control" weight: 2
+  GitHub Actions: 2
+  GitLab CI: 5
+  Jenkins: 5`} />
+
+## 1. En-tête et mode
+
+Le mot-clé d'en-tête est `comparison` (alias `compare`, `vs`). Les mots-clés d'en-tête `tchart` et `pugh` définissent le mode directement. Sinon, choisissez avec la directive `mode:` :
+
+```
+comparison "Titre"
+mode: tchart | pros-cons | matrix | decision | double-bubble
+legend: on | off
+```
+
+Si vous omettez `mode:`, il est inféré à partir des mots-clés que vous utilisez — mais le générer explicitement est plus fiable.
+
+## 2. Diagramme en T (et en Y)
+
+Déclarez chaque `column`, puis listez ses points avec des puces `-`. Trois colonnes sont lues comme un diagramme en Y.
+
+```
+tchart "TCP vs UDP"
+column "TCP"
+- Orienté connexion (poignée de main)
+- Livraison garantie et ordonnée
+column "UDP"
+- Sans connexion, tirer-et-oublier
+- En-tête minimal, faible latence
+```
+
+## 3. Pour / contre
+
+```
+comparison "Migrer vers les microservices ?"
+mode: pros-cons
+pro "Déploiements d'équipe indépendants"
+pro "Mettre à l'échelle les chemins critiques isolément"
+con "Complexité des systèmes distribués"
+con "Coûts opérationnels et d'infrastructure augmentent"
+```
+
+Les lignes `pro` remplissent la colonne verte, `con` la rouge — l'ordre est indépendant.
+
+## 4. Matrice de comparaison
+
+Déclarez chaque `option` (les colonnes), puis chaque `criterion` (une ligne) avec une cellule `NomOption: valeur` indentée par option. Valeurs de cellule : `yes` / `no` / `partial` s'affichent en ✓ / ✗ / ~, les nombres sont des scores, le texte entre guillemets est affiché tel quel. Le nom de l'option doit correspondre exactement à une `option` (une faute de frappe est signalée, pas ignorée).
+
+```
+comparison "Fournisseur cloud — services managés"
+mode: matrix
+option "AWS"
+option "GCP"
+option "Azure"
+criterion "Offre gratuite"
+  AWS: "12 mois"
+  GCP: "Toujours gratuit"
+  Azure: "12 mois"
+criterion "Postgres managé"
+  AWS: yes
+  GCP: yes
+  Azure: partial
+```
+
+Une forme compacte avec tube est également acceptée : `criterion "Offre gratuite" | "12 mois" | "Toujours gratuit" | "12 mois"` (positionnel selon l'ordre des options).
+
+## 5. Matrice de décision (calculée)
+
+Ajoutez un `weight:` à chaque critère et un score numérique à chaque cellule. Le moteur ajoute une ligne **Total pondéré**, classe les options (`#1`, `#2`, …) et met en évidence le gagnant. Ajoutez `baseline: "Option"` pour une référence Pugh — cette colonne est ombrée et une ligne delta **vs référence** est ajoutée.
+
+```
+pugh "Base de données pour le nouveau service"
+baseline: "PostgreSQL"
+option "PostgreSQL"
+option "MongoDB"
+option "DynamoDB"
+criterion "Flexibilité des requêtes" weight: 5
+  PostgreSQL: 5
+  MongoDB: 3
+  DynamoDB: 2
+criterion "Mise à l'échelle horizontale" weight: 4
+  PostgreSQL: 3
+  MongoDB: 4
+  DynamoDB: 5
+criterion "Coût opérationnel" weight: 3
+  PostgreSQL: 4
+  MongoDB: 3
+  DynamoDB: 3
+```
+
+Vous n'écrivez jamais les totaux — le moteur calcule Σ(poids × score), donc une erreur de score change le gagnant calculé.
+
+## 6. Double bulle (comparer et contraster)
+
+```
+comparison "Cellule végétale vs cellule animale"
+mode: double-bubble
+left "Cellule végétale"
+right "Cellule animale"
+shared "Possède un noyau"
+shared "Mitochondries"
+left-only "Paroi cellulaire"
+left-only "Chloroplastes"
+right-only "Centrioles"
+right-only "Lysosomes"
+```
+
+Les traits `shared` se trouvent au milieu, reliés aux deux centres ; `left-only` / `right-only` s'éventent vers leur propre centre.
+
+## 7. Thèmes
+
+`default` est le bleu maison avec une valence vert/rouge/ambre ; `monochrome` supprime les couleurs (la valence repose sur ✓/✗/~, le gagnant sur une bordure épaisse) pour l'impression en noir et blanc ; `dark` est Catppuccin.
+
+## Norme
+
+Pugh, *Total Design* (1991) convergence contrôlée · matrice de décision ASQ · Hyerle Thinking Maps (double bulle) · convention d'organisateur graphique K-12. Voir `docs/reference/51-COMPARISON-STANDARD.md`.

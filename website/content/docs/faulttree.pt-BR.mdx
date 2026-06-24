@@ -1,0 +1,134 @@
+---
+title: Análise de Árvore de Falhas
+---
+
+## Sobre árvores de falhas
+
+Uma **árvore de falhas** é a técnica de confiabilidade/segurança mais amplamente usada em engenharia regulamentada: comece a partir de um **evento de topo** indesejado (uma falha de sistema) e decomponha-o através de **portas** booleanas (AND / OR / votação / …) até **eventos básicos** (falhas de componentes) cujas probabilidades são conhecidas. Inventada nos Bell Labs em 1962 e padronizada pelo **[NUREG-0492](https://www.nrc.gov/docs/ML1007/ML100780465.pdf)** (nuclear), **IEC 61025** (multissetorial) e SAE ARP4761 (aeroespacial).
+
+O diferencial do Schematex é que o motor **computa a resposta**, não apenas a figura: ele executa o MOCUS (Fussell-Vesely 1972) para encontrar os **conjuntos de corte mínimos** — as combinações de falha irredutíveis — e a **probabilidade do evento de topo**, depois destaca os conjuntos de corte em vermelho (pontos únicos de falha no vermelho mais intenso). Esse é o ponto central de se desenhar uma árvore de falhas, e é a mesma postura que o `pert` adota em relação ao agendamento e o `petri` em relação à marcação. Diferente de `logic` (netlist de sinal da esquerda para a direita), `decisiontree` (rollback por valor esperado), e `fishbone` (qualitativo, não quantificado).
+
+<Playground initial={`faulttree "Produto não removido"
+  analysis: cutsets, probability
+  top T  "Falha na remoção do produto" = OR(G1, G2)
+  gate G1 "Braço trava ou colide"      = AND(MSF, G3)
+  gate G2 "Slot errado comandado"      = OR(CDM, MSF)
+  gate G3 "Perda de feedback de posição" = OR(ESF, RCF)
+  basic MSF "Falha do sistema manipulador" p: 0.0035
+  basic CDM "Erro de comando do controlador"   p: 0.0009
+  basic ESF "Falha do sensor encoder"     p: 0.0021
+  basic RCF "Falha do cabo do resolver"       p: 0.0012`} height={620} />
+
+---
+
+## 1. Seu primeiro diagrama
+
+Cada documento começa com a palavra-chave `faulttree` (alias `fta`), um título opcional, e depois uma lista plana de declarações conectadas por id:
+
+```
+faulttree "Ambas as bombas falham"
+  analysis: cutsets, probability
+  top T "Ambas as bombas redundantes falham" = AND(PA, PB)
+  basic PA "Bomba A falha" p: 0.01
+  basic PB "Bomba B falha" p: 0.01
+```
+
+`top` declara o evento raiz único e a porta que o produz; `basic` declara a falha de um componente folha com uma probabilidade. O motor computa o conjunto de corte mínimo `{PA, PB}` e P(top) = 1.0e-4. A DSL é uma **declaração plana + referência** (não aninhada por indentação) — uma árvore de falhas é um DAG, então um evento compartilhado é simplesmente referenciado por id a partir de várias portas.
+
+Diretivas de cabeçalho:
+
+- `analysis: cutsets, probability` — o que computar (também `pathsets`, `none`).
+- `prob: rare | mcub | exact` — o método de probabilidade (padrão `rare`, um limite superior conservador).
+- `layout: tb | bt` — de cima para baixo (padrão) ou de baixo para cima.
+
+---
+
+## 2. Eventos
+
+```
+top  T   "Sistema falha"        = OR(A, B)
+gate G1  "Sub-falha"           = AND(A, B)
+basic A  "Componente A falha"   p: 0.01
+undeveloped EXT "Incêndio externo (não modelado)"
+house HX "Energia ligada"            state: 1
+```
+
+- **`top`** — o único evento indesejado sendo analisado (retângulo, borda enfatizada). Exatamente um é obrigatório.
+- **`gate`** — um evento intermediário que é ele mesmo a saída de uma porta (retângulo).
+- **`basic`** — uma falha de componente primário, a folha que carrega `p:` (círculo).
+- **`undeveloped`** — um evento não desenvolvido adiante (losango); pode carregar `p:`.
+- **`house`** — um evento normalmente esperado forçado a `state: 0` ou `state: 1` (glifo de casa) — liga/desliga ramos da árvore.
+
+Probabilidades aceitam decimais ou notação científica (`p: 0.004` ou `p: 1e-6`); `p:` e `prob:` são intercambiáveis. Um evento sem probabilidade é tratado simbolicamente (conjuntos de corte ainda computados; P(top) reportado como n/a).
+
+---
+
+## 3. Portas
+
+```
+top  T1 = AND(A, B, C)            # todas as entradas ocorrem
+top  T2 = OR(A, B)                # pelo menos uma entrada ocorre
+top  T3 = XOR(A, B)               # exatamente uma (tratada como OR para conjuntos de corte)
+top  T4 = VOTING(2/3; A, B, C)    # pelo menos k de n
+gate G1 = INHIBIT(A) if COND      # A ocorre E a condição é satisfeita
+gate G2 = PAND(A, B) order: A, B  # A depois B (ordem renderizada, AND para conjuntos de corte)
+```
+
+As portas são desenhadas **saída para cima, entradas para baixo** (o espelho de uma porta `logic`): AND é uma cúpula de fundo plano, OR/XOR/VOTING um escudo, INHIBIT um hexágono. O evento de condicionamento de um `INHIBIT`/`PAND` é renderizado como uma elipse ao lado. Uma porta pode referenciar outra porta ou qualquer evento — e o mesmo evento básico pode alimentar várias portas (um evento repetido).
+
+---
+
+## 4. Conjuntos de corte computados e probabilidade
+
+Este é o diferencial. Com `analysis: cutsets`, o motor executa o **MOCUS**: portas AND aumentam a ordem de um conjunto de corte, portas OR multiplicam o número de conjuntos de corte, e então idempotência (`A∧A=A`) e absorção (`X ⊆ Y ⇒ descarta Y`) minimizam o resultado.
+
+- Cada **conjunto de corte mínimo** é enquadrado em vermelho; um **conjunto de corte de ordem 1 é um ponto único de falha** (vermelho mais intenso, `data-spof`).
+- Um **evento repetido** (um evento básico sob várias portas) é tratado por absorção — o caso que um expansor ingênuo erra.
+- **P(top)** é computado a partir das probabilidades por evento: `rare` (Σ probabilidades dos conjuntos de corte, padrão), `mcub` (1 − ∏(1−P)), ou `exact` (inclusão-exclusão, que desduplicada corretamente um evento compartilhado). O método é mostrado ao lado do evento de topo e anotado em `<desc>`.
+- Um `house state: 0` pode tornar o evento de topo insatisfazível — reportado como "sem conjuntos de corte."
+
+---
+
+## 5. Eventos repetidos
+
+```
+faulttree "Falha da função de segurança"
+  analysis: cutsets, probability
+  prob: exact
+  top T "Falha da função de segurança" = OR(C1, C2)
+  gate C1 "Canal 1" = AND(S1, L1)
+  gate C2 "Canal 2" = AND(S2, L1)
+  basic S1 "Sensor 1 falha" p: 0.05
+  basic S2 "Sensor 2 falha" p: 0.05
+  basic L1 "Solver lógico compartilhado falha" p: 0.05
+```
+
+`L1` alimenta ambos os canais — é desenhado uma vez por referência com uma marca de evento compartilhado, mas o motor de conjuntos de corte trata cada instância como uma variável booleana única. Os conjuntos de corte são `{S1, L1}` e `{S2, L1}`; `prob: exact` subtrai a sobreposição (L1 contado uma vez na união), dando 0.004875 em vez do evento raro 0.005.
+
+---
+
+## 6. Transferências
+
+```
+gate OVP "Sobrepressão sustentada" = INHIBIT(PUMP) if HEATER
+transfer OVP -> "OVP-detalhe"
+```
+
+Um `transfer ID -> "name"` desenha o triângulo de transferência abaixo de um evento cujo desenvolvimento está em outro lugar; um `transfer "name" = gate_expr` correspondente define essa subárvore nomeada e é inserida no cômputo dos conjuntos de corte. A v0.1 resolve transferências no mesmo documento.
+
+---
+
+## 7. Validação
+
+O parser falha rapidamente com erros legíveis para que o cômputo dos conjuntos de corte seja significativo:
+
+- exatamente um `top` é obrigatório (zero ou vários é um erro);
+- uma porta referenciando um id não declarado reporta o id pelo nome;
+- ciclos são rejeitados (uma árvore de falhas é um DAG);
+- uma probabilidade fora de `[0, 1]`, um `VOTING k/n` com `k > n` ou `n ≠ contagem de entradas`, ou uma condição `if` numa porta que não seja INHIBIT/PAND são todos reportados em português claro.
+
+---
+
+## 8. Temas
+
+`default` usa a paleta da casa — caixas de evento em azul-ardósia suave, **portas verdes** ("a lógica prossegue"), **caixas de conjuntos de corte vermelhas** (o risco computado), numerais de probabilidade em azul, uma casa amarela. `monochrome` reproduz o visual preto-e-branco do livro didático NUREG-0492, onde a forma da cúpula/escudo (e não a cor) carrega o tipo da porta. Todos os traços/preenchimentos vêm de `ReliabilityTokens`; cada elemento carrega `data-*` (`data-cutset`, `data-spof`, `data-prob`, `data-gate`) para que a análise computada seja inspecionável downstream.

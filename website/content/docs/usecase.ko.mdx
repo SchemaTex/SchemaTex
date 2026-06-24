@@ -1,0 +1,206 @@
+---
+title: UML 유스케이스 다이어그램
+---
+
+## 유스케이스 다이어그램이란
+
+**유스케이스 다이어그램**은 요구사항 도출 시 가장 먼저 던지는 질문에 답합니다: *이 시스템은 무엇을 하며, 누구를 위한 것인가?* 1992년 Ivar Jacobson이 제안하고 **[UML](https://www.omg.org/spec/UML/2.5.1/) 2.5.1 §18**에 수록된 이 다이어그램은 가장 널리 가르치는 UML 다이어그램이며, 제품팀·엔지니어링·QA 간의 공통 언어입니다. 표기법은 단순합니다 — 액터 막대 인간, 유스케이스 타원, 시스템 경계, 네 가지 선 유형 — 하지만 어떤 박스-화살표 플로우차트보다 시스템 범위를 명확히 정의합니다.
+
+Schematex는 UML 2.5.1 시각적 서브셋을 `usecase` 단일 키워드와 LLM 생성에 최적화된 텍스트 DSL로 구현합니다. JVM도, 복잡한 괄호 문법도 없는 PlantUML 개발자 경험을 제공합니다. **[state](/docs/state)**(시스템 범위가 아닌 객체 내부 동작), **[flowchart](/docs/flowchart)**(액터/주제/include-extend 의미론 없음), **[bpmn](/docs/bpmn)**(시스템이 제공하는 것이 아닌 프로세스 실행 방식)과는 구별됩니다.
+
+<Playground initial={`usecase
+title: "ATM"
+system: "ATM System"
+
+actor: Customer
+actor: Bank (external)
+
+usecase: "Withdraw Cash"  as Withdraw
+usecase: "Deposit Funds"  as Deposit
+usecase: "Check Balance"  as Check
+
+Customer -- Withdraw
+Customer -- Deposit
+Customer -- Check
+Withdraw -- Bank
+Deposit  -- Bank
+Check    -- Bank`} height={520} />
+
+---
+
+## 1. 첫 번째 다이어그램
+
+모든 문서는 `usecase` 키워드로 시작한 후, 헤더, 선언, 관계를 기술합니다.
+
+```
+usecase
+system: "Library"
+
+actor: Member
+usecase: "Borrow Book" as Borrow
+
+Member -- Borrow
+```
+
+`actor:`는 액터(막대 인간)를, `usecase:`는 유스케이스(타원)를 선언하고, `Member -- Borrow`는 둘 사이에 단순 연관을 그립니다. `system:`은 유스케이스를 레이블이 붙은 **주제** 사각형으로 감쌉니다. 주 액터는 왼쪽에, 지원 액터는 오른쪽에 배치됩니다.
+
+헤더에서 허용되는 속성:
+
+- `title: "…"` — 다이어그램 위에 표시되는 제목.
+- `system: "…"` — 주제(시스템 경계) 이름. 생략하면 유스케이스가 자유롭게 떠 있습니다(유스케이스가 3개 이상이면 Schematex가 경고를 표시합니다).
+- `direction: LR | TB` — 기본값 `LR`(액터가 주제 양옆에 수평으로 배치).
+- `generalization: tree | individual` — 형제 일반화 화살표를 병합할지 여부(기본값 `tree`).
+
+---
+
+## 2. 액터
+
+```
+actor: Customer
+actor: "Payment Gateway" as PG (external)
+actor: "Warehouse Staff" as WH
+actor: Admin (left)
+```
+
+- 따옴표 없는 이름이나 `"따옴표로 감싼"` 이름이 레이블이 되고, `as ID`로 관계에서 사용할 짧은 식별자를 부여합니다.
+- `(external)`(또는 `(system)`)은 액터를 막대 인간 대신 **`«actor»` 스테레오타입이 붙은 사각형**으로 렌더링합니다. 다른 소프트웨어 시스템(결제 게이트웨이, 서드파티 API)에 사용합니다.
+- `(business)`는 막대 인간에 Bittner & Spence 대각선 슬래시를 추가합니다.
+- `(left)` / `(right)`는 액터를 특정 쪽에 고정합니다. 기본적으로 첫 번째 액터는 왼쪽에, 나머지는 오른쪽에 배치됩니다.
+
+커스텀 스테레오타입은 선언 뒤에 길메(guillemets)로 작성합니다: `actor: "Audit Service" as Audit (external) «system»`. 파서는 ASCII `<<system>>`도 허용하며 `«system»`으로 정규화합니다.
+
+---
+
+## 3. 유스케이스
+
+```
+usecase: "Checkout" as Checkout {
+  extension point: payment failed
+  extension point: stock depleted
+}
+```
+
+유스케이스는 텍스트에 맞게 크기가 조정된 타원입니다. 선택적 `{ … }` 블록에는 이름 아래 구분선으로 구분된 컴파트먼트에 **확장 포인트**를 나열합니다. 스테레오타입도 사용 가능합니다: `usecase: "Validate Card" as ValidateCard «secured»`.
+
+---
+
+## 4. 관계
+
+액터와 유스케이스를 연결하는 네 가지 선 유형:
+
+| DSL | 의미 | 렌더링 |
+|-----|------|--------|
+| `A -- B` | 연관 | 실선, 화살표 없음 |
+| `A --> B` | 방향 연관 | 실선, B 쪽 열린 화살표 |
+| `A ..> B` | `A`가 `B`를 **포함** | 점선, 열린 화살표 → B, `«include»` 레이블 |
+| `A <.. B` | `A`가 `B`를 **확장** | 점선, 열린 화살표 → B(베이스), `«extend»` 레이블 |
+| `A --\|> B` | `A`가 `B`의 특수화 | 실선, 빈 삼각형 → 부모 B |
+
+```
+Customer -- Checkout
+Checkout ..> Pay          : «include»
+Pay      ..> ValidateCard : «include»
+Cancel   <.. Checkout     : «extend» [payment failed] (extension point: payment failed)
+```
+
+- **`«include»`**는 *포함된 유스케이스를 향합니다* — 재사용 가능한 동작 `A`가 항상 실행됩니다. 소스가 대상을 포함합니다.
+- **`«extend»`**는 *베이스를 향합니다* — `A`는 선택적 동작이고, `B`는 `A`가 확장하는 베이스입니다. `[조건]`을 추가하고 베이스의 `(extension point: …)` 항목 중 하나를 참조할 수 있습니다. (화살표 방향은 엔드포인트 순서에 관계없이 항상 베이스를 향합니다.)
+- `«extend»` 선은 드물고 예상치 못한 관계가 눈에 띄도록 테마 **강조색**으로 그려집니다.
+
+파서는 사람과 LLM이 모두 범하는 고확신 오류를 오류가 발생한 줄 번호와 함께 거부합니다: 두 액터 또는 두 유스케이스 사이의 연관, 액터에 닿는 `include`/`extend`, 메타클래스 간 일반화(액터 → 유스케이스), 재사용된 식별자, 베이스에 존재하지 않는 확장 포인트 참조.
+
+---
+
+## 5. 일반화
+
+`--|>`는 두 액터 **또는** 두 유스케이스 사이에서 사용합니다(둘을 가로지르는 것은 하드 오류입니다):
+
+```
+actor: User as U
+actor: "Premium User" as PU
+PU --|> U
+
+usecase: "Pay by Card"   as PayCard
+usecase: "Pay by PayPal" as PayPaypal
+usecase: "Pay"           as Pay
+PayCard   --|> Pay
+PayPaypal --|> Pay
+```
+
+화살표에는 부모를 가리키는 **빈 삼각형**이 표시됩니다. 세 개 이상의 형제가 하나의 부모를 공유하면, 화살표가 하나의 공유 헤드로 병합됩니다(UML 2.5 Figure 18.5 관례). 헤더에 `generalization: individual`을 설정하면 별도로 유지됩니다. 액터 계층 구조는 액터 스택 외부 엣지에 깔끔한 버스로 라우팅됩니다.
+
+---
+
+## 6. 다중성
+
+다중성 문자열을 해당 엔드포인트 바로 옆에 따옴표로 작성합니다.
+
+```
+Customer "1"    -- "*" Checkout
+Cashier  "1..*" -- "1" Register
+```
+
+---
+
+## 7. PlantUML 스타일 인라인 형식
+
+PlantUML에서 오셨나요? 인라인 선언 형식이 작동하며 선언적 형식과 자유롭게 혼용 가능합니다.
+
+```
+usecase
+:Customer: as C
+(Browse Catalog) as Browse
+(Add to Cart)    as AddCart
+
+C -- Browse
+C -- AddCart
+Browse ..> AddCart : «include»
+```
+
+`:Name:`은 액터를, `(Name)`은 유스케이스를 선언하며, `as ID`로 별칭을 부여합니다. Schematex는 PlantUML에서 *영감을 받았지만*, 1:1 변환기는 아닙니다 — 다중성과 관계 문법이 약간 다릅니다.
+
+---
+
+## 8. 문법 (EBNF)
+
+```text
+document     = "usecase" NEWLINE header_prop* statement*
+header_prop  = ("title:" | "system:") quoted_string
+             | "direction:" ("LR" | "TB")
+             | "generalization:" ("tree" | "individual")
+
+statement    = actor_decl | usecase_decl | plantuml_inline | relation | note
+
+actor_decl   = "actor" ":" name ("as" IDENT)? actor_kind? stereotype?
+actor_kind   = "(" ("external" | "system" | "business" | "left" | "right") ")"
+usecase_decl = "usecase" ":" quoted ("as" IDENT)? stereotype? extpoints?
+extpoints    = "{" ("extension point:" TEXT)+ "}"
+plantuml_inline = ":" name ":" ("as" IDENT)?      ; actor
+                | "(" name ")" ("as" IDENT)?       ; use case
+
+relation     = endpoint relop endpoint label_clause?
+endpoint     = (IDENT | quoted) multiplicity? | multiplicity? (IDENT | quoted)
+relop        = "--" | "-->" | "..>" | "<.." | "--|>"
+label_clause = ":" stereotype? condition? extpoint_ref?
+stereotype   = "«" TEXT "»" | "<<" TEXT ">>"
+condition    = "[" TEXT "]"
+extpoint_ref = "(extension point:" TEXT ")"
+multiplicity = quoted_string                       ; "1", "*", "0..1", "1..*"
+```
+
+---
+
+## 9. 표준 준수
+
+Schematex는 OMG **UML 2.5.1 §18 (UseCases)** 시각적 서브셋과 Bittner & Spence 스타일 가이드를 따릅니다. 렌더링된 SVG에서는 길메(ASCII `<<>>`가 아님), 포함된 유스케이스를 향하는 `«include»`, 베이스를 향하는 `«extend»`, 빈 삼각형 일반화 헤드, 외부 시스템 사각형의 `«actor»` 스테레오타입을 사용합니다. 텍스트 유스케이스 설명(Cockburn 완전 형식), 시나리오 테이블, XMI 내보내기는 *다이어그램* 렌더러의 범위 밖입니다. 전체 명세는 `docs/reference/29-USECASE-STANDARD.md`를 참조하십시오.
+
+---
+
+## 관련 예제
+
+예제 갤러리에서 바로 사용할 수 있는 시나리오:
+
+<RelatedExamples slugs={[
+  'usecase-atm',
+  'usecase-online-bookstore',
+]} />

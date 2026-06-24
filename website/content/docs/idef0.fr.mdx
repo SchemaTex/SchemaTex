@@ -1,0 +1,111 @@
+---
+title: Modèle fonctionnel IDEF0
+description: Modèles d'activité à analyse structurée — boîtes de fonction câblées par des flèches ICOM (Entrée/Contrôle/Sortie/Mécanisme), corrects par construction.
+---
+
+## À propos d'IDEF0
+
+**IDEF0** (Integration Definition for Function Modeling) est la norme fédérale américaine pour la **décomposition fonctionnelle** — modéliser *ce que* fait un système. Chaque activité est une boîte ; les flèches se connectent sur quatre côtés fixes selon leur rôle : **E**ntrée (gauche), **C**ontrôle (haut), **S**ortie (droite), **M**écanisme (bas) — la convention **ICOM**. Standardisée sous **[FIPS PUB 183](https://www.nist.gov/publications/integration-definition-function-modeling-idef0)** (1993).
+
+L'avantage de Schematex est que le modèle est **correct par construction**. Le rôle de la flèche *est* le bord de la boîte auquel elle s'attache, de sorte que le moteur impose le placement ICOM, résout chaque référence, attribue les numéros de décomposition, code les flèches de frontière (I1/C1/O1/M1…) et applique la recommandation de 3 à 6 boîtes de la norme FIPS — en rejetant un modèle qui viole la norme plutôt que de vous laisser dessiner une flèche du mauvais côté.
+
+<Playground initial={`idef0 "Manufacture product"
+node A0
+function A1 "Plan production"
+function A2 "Make parts"
+function A3 "Assemble product"
+input     A1 "Sales orders"
+control   A1 "Production schedule"
+A1 -> A2 "Work plan"
+input     A2 "Raw material"
+mechanism A2 "CNC machines"
+A2 -> A3 "Finished parts"
+output    A3 "Product"
+mechanism A3 "Assembly line"`} height={520} />
+
+---
+
+## 1. Votre premier diagramme IDEF0
+
+Commencer par le mot-clé `idef0`, un titre optionnel, un `node` optionnel (le numéro de nœud du diagramme), puis les **boîtes de fonction** et leurs **flèches ICOM** :
+
+```
+idef0 "Fill order"
+function A1 "Receive order"
+input     A1 "Customer request"
+control   A1 "Order policy"
+mechanism A1 "Order clerk"
+output    A1 "Confirmed order"
+```
+
+`function ID "name"` déclare une boîte (dans l'ordre de déclaration). `node A0` définit le numéro de nœud parent utilisé pour dériver les numéros de nœuds enfants (A0 → A1..An). La recommandation FIPS est de 3 à 6 boîtes par diagramme ; en dehors de cette plage, le moteur émet un avertissement.
+
+---
+
+## 2. Flèches de frontière ICOM
+
+Chaque mot-clé épingle une flèche à un côté spécifique d'une boîte, et c'est *là* son rôle :
+
+```
+input     A1 "Sales orders"        # enters the LEFT edge
+control   A1 "Production schedule" # enters the TOP edge (governs the activity)
+output    A1 "Product"             # leaves the RIGHT edge
+mechanism A1 "CNC machines"        # enters the BOTTOM edge (the resource)
+```
+
+`input`, `control` et `mechanism` acheminent depuis le cadre du diagramme **vers** la boîte ; `output` achemine depuis la boîte **vers** le cadre. Le moteur code ces flèches de frontière sur chaque bord (I1, I2 / C1 / O1 / M1).
+
+---
+
+## 3. Flèches de flux entre boîtes
+
+Une flèche `->` connecte deux boîtes ; par défaut elle atterrit sur l'**entrée** de la cible, mais vous pouvez nommer le côté ICOM cible :
+
+```
+A1 -> A2 "Work plan"            # box→box; defaults to A2's input
+A2 -> A3.control "Parts spec"   # land on A3's control (top) edge
+input A2 "Raw material" (tunnel) # (tunnel) hides the arrow at this level
+```
+
+- `target.control` / `target.input` / `target.mechanism` choisit le côté d'atterrissage.
+- Un flux **ne peut pas atterrir sur la `.output` de la cible** — une sortie quitte une boîte, elle n'y entre pas.
+- `(tunnel)` marque une flèche tunnelisée (supprimée sur le diagramme parent/enfant selon FIPS).
+
+---
+
+## 4. Enforcement structurel calculé
+
+C'est ici que réside la différence — ce qui rend le modèle correct là où un outil de dessin ne l'est pas :
+
+1. **Enforcement du placement ICOM** — le rôle est résolu par rapport au côté géométrique de la boîte ; un rôle mal formé, ou un flux demandant à *entrer* dans une boîte via `.output`, est rejeté.
+2. **Résolution des références** — chaque ID de boîte nommé par une flèche doit être déclaré.
+3. **Numérotation de décomposition** — les boîtes reçoivent des numéros de boîte contigus 1..n (coin inférieur droit) et des numéros de nœuds (A0 → A1..An) ; les numéros `#N` explicites sont vérifiés pour leur contiguïté, leur plage et leurs doublons.
+4. **Codage de frontière** — les flèches de frontière sont codées I1/C1/O1/M1 sur chaque bord.
+5. **Recommandation sur le nombre de boîtes** — moins de 3 ou plus de 6 boîtes génère un avertissement FIPS-183.
+
+---
+
+## 5. Erreurs courantes
+
+```
+# WRONG — no idef0 header
+function A1 "x"
+
+# WRONG — a flow landing on the target's output
+A1 -> A2.output "bad"
+
+# WRONG — an unknown ICOM side word
+A1 -> A2.sideways "bad"
+```
+
+Le document doit commencer par `idef0` ; les flèches peuvent cibler uniquement `.input` / `.control` / `.mechanism` ; chaque ID de boîte référencé doit être déclaré. Comme le mot-clé encode le côté, il est impossible de dessiner accidentellement un contrôle comme une entrée — la norme est imposée, pas seulement suggérée.
+
+---
+
+## 6. Conformité aux normes
+
+La notation, le placement ICOM, la numérotation de décomposition, le codage de frontière, les flèches tunnelisées et la recommandation de 3 à 6 boîtes suivent FIPS PUB 183 (IDEF0). Le thème `monochrome` reproduit l'aspect boîte-et-flèche en noir et blanc de la norme.
+
+## 7. Feuille de route
+
+Différé : l'assemblage de décomposition multi-page (diagrammes enfants), les pages nœud-arbre / FEO et les flèches d'appel vers des modèles référencés.

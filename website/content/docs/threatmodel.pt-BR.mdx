@@ -1,0 +1,122 @@
+---
+title: Threat Model (STRIDE DFD)
+description: Diagramas de fluxo de dados para segurança onde o motor mapeia ameaças STRIDE por elemento e sinaliza toda travessia de fronteira de confiança.
+---
+
+## Sobre modelos de ameaça
+
+Um **modelo de ameaça** é um **diagrama de fluxo de dados** (DFD) de segurança anotado com fronteiras de confiança: **entidades externas** (usuários, terceiros), **processos** (serviços), **armazenamentos de dados** (bancos de dados, logs) e os **fluxos** entre eles. O framework **STRIDE** da Microsoft — Spoofing, Tampering, Repudiation, Information disclosure, Denial of service, Elevation of privilege — classifica as ameaças que cada elemento enfrenta. A referência é Shostack, *Threat Modeling: Designing for Security* (2014).
+
+O diferencial do Schematex é que o motor **executa a análise STRIDE por elemento**, não apenas as caixas. Ele aplica o mapeamento canônico elemento→ameaça, adiciona condicionalmente Repudiation a armazenamentos de log/auditoria e — mais importante — **sinaliza todo fluxo que atravessa uma fronteira de confiança**, pois é onde spoofing, tampering e information disclosure se concentram.
+
+<Playground initial={`threatmodel "Web App"
+external: User
+process 1.1: Web Server
+datastore D1: User DB
+datastore D2: Audit Log
+User -> 1.1 : "HTTPS Request"
+1.1 -> D1 : Lookup
+1.1 -> D2 : Auth Event
+boundary "Internet" { User }
+boundary "DMZ" { 1.1 }
+boundary "Internal" { D1, D2 }`} height={520} />
+
+---
+
+## 1. Seu primeiro modelo de ameaça
+
+Comece com a palavra-chave `threatmodel` (alias `stride`), um título opcional e então **declare os elementos** e **conecte os fluxos**:
+
+```
+threatmodel "Login flow"
+external: User
+process 1.1: Web Server
+datastore D1: User DB
+User -> 1.1 : "Login request"
+1.1 -> D1 : Lookup
+```
+
+Cada elemento é `kind: ID: Label` (ou `kind: Label`, onde o id é gerado a partir do label — `external: Mobile App` vira id `Mobile_App`). Um fluxo é `SOURCE -> TARGET : label`, e o **label é obrigatório** (ele nomeia os dados que cruzam a fronteira).
+
+---
+
+## 2. Tipos de elemento e fluxos
+
+```
+external: User              # entidade externa (o lado do atacante)
+process 1.1: Web Server     # um processo / serviço
+datastore D1: User DB       # um armazenamento de dados
+datastore D2: Audit log     # um armazenamento de log/auditoria (recebe Repudiation condicional)
+User -> 1.1 : "HTTPS Request"   # fluxo direcionado, label entre aspas ou sem
+1.1 <-> D1 : Read/Write         # <-> se expande em dois fluxos direcionados
+```
+
+- IDs de processo são frequentemente números DFD com pontos (`1.1`, `2.3`); IDs de externa/armazenamento são geralmente slugs curtos (`User`, `D1`).
+- Um fluxo `<->` se expande em **dois** fluxos direcionados.
+- Um armazenamento cujo nome/id corresponde a `log|audit|journal` (ou que carrega uma dica explícita) é tratado como armazenamento de log.
+
+**Regras de fluxo** que o motor impõe: sem fluxos armazenamento→armazenamento (armazenamentos de dados são passivos), sem fluxos externo→externo, e todo endpoint deve ser um elemento declarado.
+
+---
+
+## 3. Fronteiras de confiança
+
+```
+boundary "Internet"  { User }
+boundary "DMZ"       { 1.1 }
+boundary "Internal"  { D1, D2 }
+```
+
+`boundary "name" { id, id, … }` agrupa elementos em uma zona de confiança. Um elemento pode pertencer a **no máximo uma** fronteira; os membros devem ser declarados. Elementos em nenhuma fronteira compartilham uma zona implícita não confiável.
+
+---
+
+## 4. Análise STRIDE computada
+
+Este é o diferencial. O motor aplica o mapeamento **STRIDE por elemento**:
+
+| Elemento DFD        | Ameaças aplicadas      |
+|---------------------|------------------------|
+| Entidade externa    | S, R                   |
+| Processo            | S, T, R, I, D, E       |
+| Armazenamento       | T, I, D (+ R se log)   |
+| Fluxo de dados      | T, I, D                |
+
+- A **Repudiation** do armazenamento de dados é condicional — adicionada para armazenamentos de log / auditoria / journal (o "?" verde de Shostack).
+- **Travessia de fronteira**: um fluxo cujos endpoints estão em zonas de confiança diferentes é sinalizado, pois é onde Spoofing / Tampering / Information-disclosure se concentram. Dois elementos na mesma zona (ou zona implícita) não cruzam fronteira.
+
+Cada elemento e fluxo carrega suas categorias STRIDE aplicáveis em atributos `data-*` para que a análise seja inspecionável.
+
+---
+
+## 5. Erros comuns
+
+```
+# ERRADO — fluxo sem label
+User -> 1.1
+
+# ERRADO — armazenamento para armazenamento (armazenamentos são passivos)
+D1 -> D2 : x
+
+# ERRADO — externo para externo
+A -> B : x
+
+# ERRADO — endpoint de fluxo desconhecido
+P -> Ghost : x
+
+# ERRADO — um elemento em duas fronteiras
+boundary "A" { P }
+boundary "B" { P }
+```
+
+Todo fluxo precisa de um label; armazenamentos e entidades externas não podem ser parceiros de fluxo entre si; os endpoints devem ser declarados; um elemento pertence a no máximo uma fronteira de confiança. IDs duplicados são rejeitados.
+
+---
+
+## 6. Conformidade com padrões
+
+O vocabulário de elementos, as convenções de DFD e a tabela STRIDE por elemento seguem Shostack (2014) e a Microsoft Threat Modeling Tool. A Repudiation condicional do armazenamento de log e a ênfase na travessia de fronteira de confiança correspondem ao diagrama STRIDE por elemento publicado.
+
+## 7. Roadmap
+
+Adiado: pontuação DREAD/risco, vinculação de mitigação de ameaças, decomposição de múltiplos processos (níveis de DFD) e drill-down de árvore de ataque.

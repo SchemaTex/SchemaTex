@@ -1,0 +1,349 @@
+---
+title: Pedigree
+---
+
+## 계보도란
+
+**계보도**(pedigree chart)는 임상 유전학에서 여러 세대에 걸쳐 하나의 질환 — 또는 소수의 관련 질환 — 을 가족 내에서 추적하는 데 사용하는 표준화된 다이어그램입니다. 가족 구성원의 감정적·사회적 관계를 기록하는 가계도(genogram)와 달리, 계보도는 순전히 구조적입니다: 누가 이환되었는지, 누가 보인자인지, 누가 검사를 받았는지, 그리고 색인 사례(index case)가 누구인지. 유전 상담사, 임상 유전학자, 의뢰 의사들은 이를 사용해 유전 방식, 재발 위험도, 그리고 가족 내에서 검사를 받아야 할 다른 사람들을 판단합니다.
+
+Schematex는 **[Bennett et al. (2022) NSGC 권고안](https://onlinelibrary.wiley.com/doi/10.1002/jgc4.1621)** — 전국 유전 상담사 협회(National Society of Genetic Counselors)의 가장 최근 개정안으로, 1995년과 2008년 개정안을 대체함 — 을 따릅니다. 배경은 [위키피디아: 계보도](https://en.wikipedia.org/wiki/Pedigree_chart)를 참고하세요. 이 페이지는 현재 파서가 허용하는 내용을 설명합니다.
+
+<Playground initial={`pedigree "BRCA1 — Hereditary Breast/Ovarian Cancer"
+  I-1 [male, unaffected]
+  I-2 [female, affected, deceased]
+  I-1 -- I-2
+    II-1 [female, affected]
+    II-2 [male, unaffected]
+    II-3 [female, carrier]
+  II-1 -- II-4 [male, unaffected]
+    III-1 [female, affected, proband]
+    III-2 [male, unaffected]
+    III-3 [female, presymptomatic]
+  II-3 -- II-6 [male, unaffected]
+    III-6 [female, carrier]
+    III-7 [male, unaffected]`} height={520} />
+
+---
+
+## 1. 첫 번째 계보도 만들기
+
+임상적으로 유용한 가장 간단한 계보도: 두 부모와 이환된 자녀.
+
+<Playground initial={`pedigree
+  I-1 [male, carrier]
+  I-2 [female, carrier]
+  I-1 -- I-2
+    II-1 [male, affected, proband]
+    II-2 [female, unaffected]`} />
+
+80%의 사용 사례를 커버하는 네 가지 규칙:
+
+1. `pedigree` 키워드로 시작하고, 선택적으로 따옴표로 묶인 제목을 추가합니다.
+2. 각 개인을 별도의 줄에 선언합니다: `id [속성]`. 관례적으로 ID는 `I-1`, `II-3` 등 — 로마 숫자 세대, 대시, 세대 내 순서.
+3. **커플 연산자**로 두 개인을 연결합니다 — `--` (혼인), `==` (근친), `-/-` (별거), `~` (자녀 없음). §4 참고.
+4. **커플 줄 아래에 들여쓰기**로 자녀를 추가합니다. 더 깊은 들여쓰기면 어떤 것이든 작동하며, 두 칸이 관례입니다.
+
+> 주석은 독립된 줄에서 `#`, `//`, 또는 Mermaid 스타일 `%%`로 시작해야 합니다. 인라인 후행 주석은 파서를 망가뜨립니다.
+
+---
+
+## 2. 개인
+
+개인 줄의 형식은 `id [attr1, attr2, …]`입니다. 속성은 쉼표로 구분하며, 순서 무관, 모두 선택 사항입니다.
+
+**ID 규칙.** `[a-zA-Z][a-zA-Z0-9_-]*`와 일치해야 합니다. ID는 내부적으로 대소문자를 구분하지 않지만, 원래 대소문자가 표시 레이블로 유지됩니다(`label:"…"`로 재정의 가능).
+
+**파서가 현재 허용하는 속성:**
+
+| 속성 | 값 | 효과 |
+|---|---|---|
+| 성별 | `male`, `female`, `unknown`, `amab`, `afab`, `uaab` | 모양: 정사각형, 원, 마름모 (§3 참고) |
+| 유전적 상태 | `unaffected`, `affected`, `carrier`, `carrier-x`, `obligate-carrier`, `presymptomatic` | 채우기/내부 마커 (§3 참고) |
+| 마커 | `proband`, `consultand`, `evaluated` | 화살표 + 글자 주석 (§3.3 참고) |
+| 생명 상태 | `deceased`, `stillborn`, `pregnancy`, `sab`, `tab`, `ectopic` | 시각적 수정자 |
+| 출생 연도 | 4자리 숫자 (예: `1958`) | 모양 아래 표시 |
+| `label:"…"` | 임의 따옴표 문자열 | 표시 레이블 재정의 |
+| `affected: trait1+trait2` | §5 참고 | 다중 특성 사분면 채우기 |
+
+<Playground initial={`pedigree
+  I-1 [male, 1942, deceased]
+  I-2 [female, 1945, affected, deceased]
+  II-1 [female, affected, proband, label: "Jane (42)"]
+  II-2 [male, evaluated]
+  II-3 [female, presymptomatic]`} />
+
+---
+
+## 3. 모양, 상태, 마커
+
+### 3.1 모양 (Bennett 2022)
+
+| 시각 | 성별 값 | 의미 |
+|---|---|---|
+| ☐ 정사각형 | `male` 또는 `amab` | 출생 시 남성 배정 |
+| ○ 원 | `female` 또는 `afab` | 출생 시 여성 배정 |
+| ◇ 마름모 | `unknown`, `uaab`, 또는 생략 | 불명/DSD/미공개/자궁 내 |
+
+Bennett 2022는 정사각형과 원이 **출생 시 배정 성별**을 나타내며, 젠더 정체성이 아님을 공식화했습니다. 젠더 정체성이 다른 경우 레이블에 기록합니다(`[female, label: "Trans man (AFAB)"]`) — 모양은 변경하지 않습니다.
+
+### 3.2 유전적 상태 (채우기)
+
+| 상태 | 의미 |
+|---|---|
+| (기본, 상태 토큰 없음) | 비이환 — 빈 모양 |
+| `unaffected` | 명시적 비이환 |
+| `affected` | 완전히 채워진 모양 |
+| `carrier` | 반만 채워짐 — 상염색체 보인자 |
+| `carrier-x` | 중심 점 — X-연결 보인자 여성 |
+| `obligate-carrier` | 중심 점 — 계보 구조에서 추론된 보인자 |
+| `presymptomatic` | 모양을 통과하는 세로선 — 양성 검사, 아직 임상 증상 없음 |
+
+<Playground initial={`pedigree
+  I-1 [male, unaffected]
+  I-2 [female, affected]
+  I-3 [female, carrier]
+  I-4 [female, carrier-x]
+  I-5 [male, obligate-carrier]
+  I-6 [female, presymptomatic]`} />
+
+### 3.3 마커
+
+| 마커 | 의미 |
+|---|---|
+| `proband` | 화살표 + "P" — 의뢰를 촉발한 색인 사례 |
+| `consultand` | 화살표 + "C" — 유전 상담을 받으러 온 사람 |
+| `evaluated` | "E" — 평가 받았으나 양성 소견 없음 |
+
+### 3.4 생명 상태
+
+| 값 | 의미 |
+|---|---|
+| `deceased` | 모양을 가로지르는 대각선 슬래시 |
+| `stillborn` | 작은 모양 + "SB" 레이블 |
+| `pregnancy` | 모양 + "P" 레이블, 또는 성별 불명 시 마름모 |
+| `sab` | 작은 삼각형 — 자연 유산 |
+| `tab` | 바가 있는 작은 삼각형 — 인공 임신 중절 |
+| `ectopic` | 작은 삼각형 + "ECT" 레이블 |
+
+여러 토큰이 결합됩니다: `[female, affected, deceased]`, `[male, sab]`, `[unknown, pregnancy, presymptomatic]`.
+
+---
+
+## 4. 커플과 자녀
+
+### 4.1 커플 연산자
+
+파서는 이 순서대로 시도합니다. 첫 번째 매치가 우선됩니다 — 따라서 `-/-`가 `--`보다 우선입니다.
+
+| 연산자 | 유형 | 예시 | 의미 |
+|---|---|---|---|
+| `-/-` | 별거 | `a -/- b` | 결합했으나 더 이상 함께하지 않는 쌍 |
+| `==` | 근친 | `a == b` | 혈연 관계의 결합 (임상적으로 매우 중요) |
+| `--` | 혼인 | `a -- b` | 자녀가 있는 결합 쌍 |
+| `~` | 동거 | `a ~ b` | 자녀 없는 파트너 관계 |
+
+### 4.2 오른쪽에 인라인 개인 선언
+
+오른쪽 개인이 아직 선언되지 않은 경우, 인라인으로 선언할 수 있습니다:
+
+<Playground initial={`pedigree
+  I-1 [female, carrier]
+  I-1 -- I-2 [male, unaffected]
+    II-1 [female, affected, proband]
+    II-2 [male, carrier]`} />
+
+### 4.3 자녀 (커플 아래에 들여쓰기)
+
+커플 줄 아래에 들여쓰기 = "이것들이 이 커플의 자녀입니다." 커플의 들여쓰기보다 더 깊은 들여쓰기면 어떤 것이든 작동하며, 두 칸이 관례입니다.
+
+<Playground initial={`pedigree "Cystic Fibrosis — autosomal recessive"
+  I-1 [male, carrier]
+  I-2 [female, carrier]
+  I-1 -- I-2
+    II-1 [male, affected, proband]
+    II-2 [female, carrier]
+    II-3 [male, unaffected]`} />
+
+### 4.4 근친 결합
+
+근친은 이중 선으로 렌더링되어야 하며, 가시적으로 표시해야 합니다 — 많은 계보도에서 가장 중요한 정보입니다.
+
+<Playground initial={`pedigree "Consanguineous union"
+  I-1 [male, carrier]
+  I-2 [female, unaffected]
+  I-1 -- I-2
+    II-1 [male, carrier]
+  I-3 [male, unaffected]
+  I-4 [female, carrier]
+  I-3 -- I-4
+    II-3 [female, carrier]
+  II-1 == II-3
+    III-1 [male, affected, proband]`} />
+
+---
+
+## 5. 다중 특성 계보도
+
+둘 이상의 유전적 질환을 가진 가계의 경우, `legend:` 줄을 사용해 모양의 어느 사분면이 어떤 특성을 나타내는지 정의한 후, 개인에게 `affected: trait1+trait2`로 태그를 붙입니다.
+
+```
+pedigree "Cancer Family Syndrome"
+  legend: breast = "Breast cancer" (fill: quad-tl)
+  legend: ovarian = "Ovarian cancer" (fill: quad-tr)
+  legend: prostate = "Prostate cancer" (fill: quad-bl)
+  legend: colon = "Colon cancer" (fill: quad-br)
+
+  I-1 [male, affected: prostate, deceased]
+  I-2 [female, affected: breast, deceased]
+  I-1 -- I-2
+    II-1 [female, affected: breast+ovarian]
+    II-2 [male, unaffected]
+```
+
+**범례 문법:** `legend: id = "사람이 읽을 수 있는 레이블" (fill: POSITION)`.
+
+| `fill` 위치 | 영역 |
+|---|---|
+| `full` | 전체 모양 (`(fill: …)` 생략 시 기본값) |
+| `quad-tl` / `quad-tr` / `quad-bl` / `quad-br` | 왼쪽 위 / 오른쪽 위 / 왼쪽 아래 / 오른쪽 아래 사분면 |
+| `half-left` / `half-right` / `half-top` / `half-bottom` | 모양의 절반 |
+
+개인은 범례 특성 ID를 사용합니다: `[affected: breast]`, `[affected: breast+ovarian]`. `+`로 특성을 결합하고, 사분면은 누적으로 채워집니다.
+
+---
+
+## 6. 레이블과 주석
+
+- **제목:** `pedigree "BRCA1 Family"` — 첫 번째 줄에만.
+- **개인 레이블 재정의:** `II-1 [female, affected, label: "Jane Smith (42)"]`.
+- **범례 항목:** `legend: id = "레이블" (fill: POSITION)` — §5 참고.
+- **모드 접미사:** `pedigree:autosomal-dominant "Family X"`가 허용됩니다. 접미사는 `metadata.mode`에 저장되며, 현재 렌더러는 무시합니다.
+- **주석:** `#`, `//`, 또는 `%%`로 줄 시작 (선행 공백 허용). 인라인 후행 주석은 **지원되지 않습니다**.
+
+---
+
+## 7. 예약어와 이스케이프
+
+**줄 시작 시 예약:** `pedigree` (헤더), `legend:` (범례 항목).
+
+**줄 안의 예약 연산자 토큰** — ID에서 이 시퀀스를 피하세요:
+`--`, `==`, `-/-`, `~`.
+
+**`[…]` 안의 예약 속성 토큰** — 파서는 위치에 관계없이 이것들을 해석합니다: 성별 토큰(`male`, `female`, `unknown`, `amab`, `afab`, `uaab`), 유전적 상태(`affected`, `carrier`, `carrier-x`, `obligate-carrier`, `presymptomatic`, `unaffected`), 마커(`proband`, `consultand`, `evaluated`), 생명 상태(`deceased`, `stillborn`, `pregnancy`, `sab`, `tab`, `ectopic`).
+
+**공백이 있는 문자열**은 큰따옴표로 묶어야 합니다. 작은따옴표와 백틱은 인식되지 않습니다.
+
+---
+
+## 8. 자주 발생하는 실수
+
+실제 파서 오류, 원인, 수정 방법.
+
+| 작성한 내용 | 파서 반응 | 수정 방법 |
+|---|---|---|
+| 선언되지 않은 `II-4`에 `II-1 -- II-4` | `Unknown individual 'II-4'` | 위에서 `II-4`를 선언하거나, 인라인 형식 사용: `II-1 -- II-4 [male, unaffected]` |
+| `II-1 [nonbinary]` | 커스텀 속성으로 저장; 모양은 마름모로 유지 | Bennett 2022는 배정 성별과 젠더를 구분 — `amab`/`afab`/`uaab`를 사용하고 정체성은 `label:`에 기록 |
+| `II-3 [twin-mz]` | 커스텀 속성으로 저장; 쌍둥이 선 미렌더링 | 쌍둥이 표기는 §10 로드맵 항목 |
+| **같은 들여쓰기**에서 `I-1 -- I-2` 다음에 `II-1 [male]` | 자식이 최상위 개인으로 파싱됨, 자녀가 아님 | 자식 줄을 커플 줄보다 더 깊이 들여쓰기 |
+| 매칭 `legend:`가 없는 `I-1 [affected: breast]` | 특성 ID 저장되나 범례 키 채우기 미렌더링 | 위에 `legend: breast = "…" (fill: quad-tl)` 추가 |
+| `II-1[affected]` (공백 없음, 속성 분리 없음) | 단일 토큰은 작동; 두 번째 속성 추가 시 깨짐 | 항상 `id`와 `[…]`를 공백으로 분리 |
+| 1번 줄이 `pedigree` 헤더 없이 `I-1 [male]` | `Expected "pedigree" header` | `pedigree` 또는 `pedigree "제목"`으로 시작 |
+
+---
+
+## 9. 문법 (EBNF)
+
+```text
+document       = header (blank | comment | legend | individual | couple-block)*
+
+header         = "pedigree" ( ":" mode )? ( WS quoted-string )? NEWLINE
+mode           = [A-Za-z] [A-Za-z0-9_-]*
+quoted-string  = '"' any-char-but-quote* '"'
+
+legend         = INDENT "legend:" WS id WS "=" WS quoted-string
+                   ( WS "(" "fill:" fill-value ")" )? NEWLINE
+
+individual     = INDENT id ( "[" attrs "]" )? NEWLINE
+couple-block   = INDENT id WS coupleOp WS right-side NEWLINE
+                   ( deeper-indent child )*
+child          = INDENT id ( "[" attrs "]" )? NEWLINE
+right-side     = id ( "[" attrs "]" )?
+
+coupleOp       = "-/-" | "==" | "--" | "~"
+
+id             = [a-zA-Z] [a-zA-Z0-9_-]*
+attrs          = attr ("," attr)*
+attr           = sex
+               | genetic-status
+               | marker
+               | life-status
+               | digit digit digit digit                         // 출생 연도
+               | "label" ":" quoted-string
+               | "affected" ":" trait-id ( "+" trait-id )*
+               | key ":" value                                    // 커스텀
+
+sex            = "male" | "female" | "unknown" | "amab" | "afab" | "uaab"
+genetic-status = "unaffected" | "affected" | "carrier" | "carrier-x"
+               | "obligate-carrier" | "presymptomatic"
+marker         = "proband" | "consultand" | "evaluated"
+life-status    = "deceased" | "stillborn" | "pregnancy"
+               | "sab" | "tab" | "ectopic"
+fill-value     = "full" | "half-left" | "half-right" | "half-top" | "half-bottom"
+               | "quad-tl" | "quad-tr" | "quad-bl" | "quad-br"
+
+comment        = INDENT ( "#" | "//" | "%%" ) any NEWLINE
+```
+
+권위 있는 소스: `src/diagrams/pedigree/parser.ts`. 이 문서와 파서가 다를 경우 파서가 우선입니다 — 이슈를 열어주세요.
+
+---
+
+## 10. 표준 준수
+
+Schematex 계보도는 **Bennett, R.L. et al. (2022), *The evolving pedigree: Updating to reflect modern family structures, sex, and gender***의 모양 의미론, 상태 채우기, proband/consultand 관례를 따릅니다. 이전 개정안(Bennett 1995, 2008)은 고전적 하위집합의 유효한 참조로 남아 있습니다.
+
+현재 구현 vs. 표준:
+
+- ✅ 핵심 모양 (정사각형 / 원 / 마름모) — Bennett 2022 AMAB/AFAB/UAAB 의미론
+- ✅ 전체 유전적 상태 집합 (affected / carrier / carrier-x / obligate-carrier / presymptomatic / unaffected)
+- ✅ Proband, consultand, evaluated 마커
+- ✅ 생명 상태 수정자 (deceased, stillborn, pregnancy, SAB, TAB, ectopic)
+- ✅ 커플 연산자: 혼인 / 별거 / 근친 / 자녀 없음
+- ✅ `legend:` 항목을 사용한 다중 특성 사분면 채우기
+- ⏳ 쌍둥이 표기 (일란성 / 이란성 / 접합성 불명)
+- ⏳ 입양 괄호 표기 (adopted-in / adopted-out)
+- ⏳ 보조 생식 (공여란/공여정자/공여배아, 대리모, IVF)
+- ⏳ 선택에 의한 무자녀 및 불임 마커
+
+참고문헌:
+
+- Bennett, R.L., French, K.S., Resta, R.G., & Austin, J. (2022). *Practice resource-focused revision: Standardized pedigree nomenclature update centered on sex and gender inclusivity.* Journal of Genetic Counseling, 31(6), 1238–1249.
+- Bennett, R.L., Steinhaus French, K., Resta, R.G., & Doyle, D.L. (2008). Standardized human pedigree nomenclature: Update and assessment. *J Genet Couns*, 17(5), 424–433.
+- Bennett, R.L. et al. (1995). Recommendations for standardized human pedigree nomenclature. *Am J Hum Genet*, 56(3), 745–752.
+
+---
+
+## 11. 관련 예시
+
+예시 갤러리에서 바로 사용 가능한 시나리오:
+
+<RelatedExamples slugs={[
+  'pedigree-brca1',
+  'pedigree-cystic-fibrosis',
+  'pedigree-hemophilia',
+]} />
+
+---
+
+## 12. 로드맵
+
+**계획 중 — 아직 파싱 불가.** 오늘 생성된 DSL에서 이것들을 사용하지 마세요; 파서가 거부하거나 미사용 커스텀 속성으로 저장합니다.
+
+- **쌍둥이 표기** — `twin-mz` (일란성), `twin-dz` (이란성), `twin-unknown`.
+- **입양 괄호** — `adopted-in`, `adopted-out` (괄호로 묶인 모양, 생물학적 부모로 점선 연결).
+- **보조 생식** — `donor-egg`, `donor-sperm`, `donor-embryo`, `surrogate`, 커플 줄의 `ivf` 주석.
+- **무자녀 마커** — `no-children` (선택에 의한) 및 `infertile` 드롭라인 주석.
+- **젠더 정체성 속성** — 성별과 구분되는 구조화된 속성, `label:`에 넣는 것이 아닌.
+- **세 쌍둥이 및 다태아** — `triplet-mz`, `triplet-dz`.
+
+더 빨리 필요하다면 GitHub 이슈에서 추적하세요.

@@ -1,0 +1,185 @@
+---
+title: Contribuindo com um novo tipo de diagrama
+description: Guia passo a passo para adicionar um novo plugin de diagrama ao Schematex — da especificação do padrão ao exemplo publicado no site.
+---
+
+
+> Um guia passo a passo para adicionar um novo plugin de diagrama ao Schematex — da especificação do padrão ao exemplo publicado no site. Leia [`00-OVERVIEW.md`](/docs) primeiro para entender a arquitetura geral.
+
+---
+
+## 1. O Pipeline
+
+Cada tipo de diagrama segue o mesmo pipeline:
+
+```
+Text (DSL) ──► Parser ──► AST ──► Layout ──► LayoutResult ──► Renderer ──► SVG
+```
+
+- **Parser** — descida recursiva escrita à mão; sem geradores de parser, sem dependências.
+- **Layout** — funções puras sobre o AST que produzem geometria absoluta. Determinístico, sem aleatoriedade.
+- **Renderer** — SVG construído via string com [`src/core/svg.ts`](https://github.com/SchemaTex/SchemaTex/blob/main/src/core/svg.ts); sem DOM, seguro para SSR.
+
+Diagramas pequenos (ex: timing) podem fundir layout e renderer. Diagramas complexos (genogram, SLD) devem mantê-los separados e testados independentemente.
+
+---
+
+## 2. Restrições Rígidas (não negociáveis)
+
+1. **Zero dependências em tempo de execução.** Sem D3, sem dagre, sem geradores de parser. Escreva tudo à mão.
+2. **TypeScript strict.** Sem `any`, sem `as` sem comentário. Os tipos em [`src/core/types.ts`](https://github.com/SchemaTex/SchemaTex/blob/main/src/core/types.ts) são a especificação.
+3. **SVG semântico.** Cada diagrama renderizado deve incluir `<title>`, `<desc>`, classes CSS para temas e atributos `data-*` para interatividade. Sem inline styles.
+4. **Use o SVG builder.** Nunca concatene strings SVG brutas — use [`src/core/svg.ts`](https://github.com/SchemaTex/SchemaTex/blob/main/src/core/svg.ts).
+5. **Layout primeiro nos testes.** Escreva testes de layout com falha antes de escrever o código de layout.
+6. **Conformidade com padrões.** Cada diagrama implementa um padrão de domínio publicado — não uma invenção nossa. Cite a referência no doc do padrão (IEEE, IEC, ISO, McGoldrick, etc.).
+
+---
+
+## 3. Checklist Passo a Passo
+
+### Passo 1 — Escreva o doc do padrão
+
+Crie `docs/reference/NN-{TYPE}-STANDARD.md` (próximo número livre). Deve conter:
+
+- Escopo e referências (IEEE / IEC / artigo publicado).
+- Tabela de símbolos com referências ASCII/Unicode.
+- Gramática DSL (EBNF ou equivalente).
+- Regras de layout (eixos, alinhamento, espaçamento).
+- 3–5 casos de teste canônicos com notas de renderização esperada.
+
+Veja [`06-TIMING-STANDARD.md`](/docs/timing) ou [`11-SINGLE-LINE-STANDARD.md`](/docs/sld) como templates.
+
+### Passo 2 — Adicione tipos AST a `src/core/types.ts`
+
+Os tipos são a especificação. Antes de escrever qualquer código, defina:
+
+- O literal `DiagramType` — estenda a union em `types.ts`.
+- O formato do AST: nós, arestas, metadados, quaisquer campos específicos do diagrama.
+- O formato do LayoutResult (posições, tamanhos, roteamento computado).
+
+Faça isso em seu próprio commit para que os revisores possam criticar o contrato separadamente.
+
+### Passo 3 — Crie o diretório do plugin
+
+```
+src/diagrams/{type}/
+  index.ts       # export DiagramPlugin
+  parser.ts      # texto → AST
+  layout.ts      # AST → LayoutResult   (opcional; pule para diagramas simples)
+  renderer.ts    # LayoutResult → string SVG
+```
+
+`index.ts` sempre tem esse formato:
+
+```ts
+import type { DiagramPlugin } from "../../core/types";
+import { parseMyType } from "./parser";
+import { renderMyType } from "./renderer";
+
+export const myType: DiagramPlugin = {
+  type: "mytype",
+  detect(text) {
+    const first = text.trim().split("\n")[0]?.trim().toLowerCase() ?? "";
+    return first.startsWith("mytype");
+  },
+  render(text) {
+    const ast = parseMyType(text);
+    return renderMyType(ast);
+  },
+};
+```
+
+### Passo 4 — Escreva os testes primeiro
+
+```
+tests/{type}/
+  parser.test.ts
+  layout.test.ts
+  renderer.test.ts
+  e2e.test.ts      # texto completo → SVG, string de snapshot para estabilidade
+```
+
+Cubra cada caso de teste que você definiu no doc do padrão. Testes de layout devem verificar coordenadas absolutas — é isso que detecta regressões.
+
+### Passo 5 — Implemente parser → layout → renderer
+
+Siga os testes. Mantenha cada módulo puro — o parser recebe uma string e retorna um AST, o layout recebe um AST e retorna geometria, o renderer recebe geometria e retorna uma string.
+
+Use o SVG builder:
+
+```ts
+import { svg, g, rect, text } from "../../core/svg";
+```
+
+Nunca `'<svg>' + ... + '</svg>'`.
+
+### Passo 6 — Registre o plugin
+
+Edite [`src/core/api.ts`](https://github.com/SchemaTex/SchemaTex/blob/main/src/core/api.ts):
+
+1. Importe `{ myType }` de `../diagrams/mytype`.
+2. Adicione ao array `plugins[]`.
+3. Estenda a union literal `SchematexConfig.type`.
+4. Atualize a mensagem de erro do `detectPlugin` com a nova palavra-chave.
+
+### Passo 7 — Gate de qualidade
+
+```bash
+npm run typecheck
+npm run test
+npm run lint
+npm run build
+```
+
+Os quatro devem passar. Se `dts` falhar em variáveis locais não usadas, corrija-as — não suprima.
+
+### Passo 8 — Conecte ao site
+
+1. **Tile na galeria** — adicione uma entrada em [`website/lib/gallery-data.ts`](https://github.com/SchemaTex/SchemaTex/blob/main/website/lib/gallery-data.ts). O campo `dsl` deve fazer parse — valide com `node scripts/validate-gallery.mjs`.
+2. **SVG estático** — adicione uma entrada em [`scripts/generate-gallery-svgs.mjs`](https://github.com/SchemaTex/SchemaTex/blob/main/scripts/generate-gallery-svgs.mjs) e execute-o. O SVG gerado vai junto ao repo e é referenciado no README.
+3. **Página de docs** — crie `website/content/docs/{type}.mdx` com um `<Playground initial={…}>` e o corpo do doc do padrão inserido.
+4. **Página de exemplo (opcional)** — para um estudo de caso do mundo real, adicione `website/content/examples/{slug}.mdx`.
+5. **README** — adicione uma linha à tabela da galeria com o SVG gerado.
+
+### Passo 9 — Atualize os docs do nível superior
+
+- [`README.md`](https://github.com/SchemaTex/SchemaTex/blob/main/README.md) — linha na galeria.
+- [`CLAUDE.md`](https://github.com/SchemaTex/SchemaTex/blob/main/CLAUDE.md) — lista "Concluído" no final.
+- [`docs/reference/00-OVERVIEW.md`](/docs) — tabela de status.
+
+---
+
+## 4. Armadilhas Comuns
+
+- **Esquecer `detect()`** — se dois plugins retornam `true`, o primeiro vence. Faça sua palavra-chave de header única.
+- **Desvio de coordenadas** — testes de layout que usam números relativos (`width / 2 + padding`) mascaram bugs. Verifique com valores absolutos esperados concretos.
+- **Atributos `style=` inline** — bloqueados pela regra de SVG semântico. Use classes CSS e exponha-as como tokens de tema em [`src/core/theme.ts`](https://github.com/SchemaTex/SchemaTex/blob/main/src/core/theme.ts).
+- **Dependências em tempo de execução entrando sorrateiramente** — se achar que precisa de uma, abra uma issue primeiro. A resposta é quase sempre "escreva uma versão de 30 linhas à mão."
+- **Stubs DSL na galeria que não fazem parse** — execute `node scripts/validate-gallery.mjs` antes de commitar. Esse script existe exatamente porque isso continuava acontecendo.
+
+---
+
+## 5. Plugins de Referência
+
+Bons exemplos para estudar, por complexidade:
+
+| Complexidade | Plugin | Estudar para |
+|-----------|--------|-----------|
+| Mínima | [`timing`](https://github.com/SchemaTex/SchemaTex/tree/main/src/diagrams/timing) | Apenas parser + renderer, sem layout separado. |
+| Média | [`ecomap`](https://github.com/SchemaTex/SchemaTex/tree/main/src/diagrams/ecomap) | Divisão limpa AST → layout → renderer. |
+| Avançada | [`genogram`](https://github.com/SchemaTex/SchemaTex/tree/main/src/diagrams/genogram) | Layout geracional, roteamento multi-passe, conjunto de símbolos rico. |
+| Avançada | [`sld`](https://github.com/SchemaTex/SchemaTex/tree/main/src/diagrams/sld) | Banding por nível de tensão, roteamento de barramento, clustering de dispositivos. |
+
+---
+
+## 6. Diagramas Candidatos no Roadmap
+
+Ainda não implementados — PRs são bem-vindos. Comece com o doc do padrão (Passo 1) e abra um PR de rascunho antes de codificar.
+
+- **Fishbone / Ishikawa** — análise de causa e efeito. AST e doc do padrão são as principais incógnitas.
+- **Sequence diagram** — sequência UML sem depender de convenções PlantUML/Mermaid.
+- **State machine** — statechart UML com estados hierárquicos.
+- **Gantt** — cronograma de projeto com dependências e caminho crítico.
+- **Network topology** — diagramas de rede L2/L3 com ícones de dispositivos.
+
+Se você está adicionando um desses, o doc do padrão faz a maior parte do trabalho — não economize nele.

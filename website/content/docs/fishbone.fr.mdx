@@ -1,0 +1,317 @@
+---
+title: Diagramme d'Ishikawa (arête de poisson)
+---
+
+## À propos des diagrammes d'Ishikawa
+
+Un **diagramme d'Ishikawa** (également appelé diagramme de causes et effets ou diagramme en arête de poisson) cartographie les causes potentielles d'un problème sur une épine horizontale qui se termine à l'« effet » — le problème à résoudre. Chaque branche principale représente une catégorie de causes ; les sous-branches portent des détails contributifs. Kaoru Ishikawa a introduit cette technique en 1968 comme outil de contrôle qualité pour la fabrication ; elle s'est depuis étendue à la santé, au génie logiciel et aux opérations métier comme méthode de brainstorming structuré pour l'analyse des causes profondes. Les équipes l'utilisent dans les rétrospectives, les phases d'amélioration DMAIC et les post-mortems d'incidents pour éviter la fixation prématurée sur l'hypothèse la plus bruyante.
+
+Schematex suit les conventions de causes et effets d'**Ishikawa (1968)** avec les 6 catégories de fabrication standard (Main-d'œuvre, Machine, Matière, Méthode, Mesure, Milieu/Environnement) et leurs variantes de services (Personnes, Processus, Lieu, Politique, Procédures, Patron). Deux styles de rédaction — structuré et compact — peuvent être mélangés dans un même document. Références externes : [Ishikawa, K. — Guide to Quality Control (1968)](https://en.wikipedia.org/wiki/Ishikawa_diagram) · [ASQ Cause-and-Effect Diagram](https://asq.org/quality-resources/cause-analysis-tools/fishbone) · [ISO 9001:2015 §10.2 — Corrective Action](https://www.iso.org/standard/62085.html).
+
+<Playground initial={`fishbone "Solder Joint Defect Rate — Root Cause Analysis"
+effect "3.2% solder joint failure rate"
+category man "Man"
+category machine "Machine"
+category material "Material"
+category method "Method"
+category meas "Measurement"
+category env "Environment"
+man : "Operator training gap"
+man : "Shift handover not documented"
+machine : "Reflow oven temp drift"
+machine : "Squeegee blade worn"
+material : "Solder paste past shelf life"
+material : "PCB pad oxidation"
+method : "Stencil aperture undersized"
+method : "Pick-and-place speed too high"
+meas : "AOI false-accept rate rising"
+env : "Humidity spike in Q3"
+env : "ESD grounding gaps"`} height={460} />
+
+---
+
+## 1. Votre premier diagramme d'Ishikawa
+
+Le plus petit diagramme d'Ishikawa utile : trois catégories, une cause chacune, une avec une sous-cause.
+
+<Playground initial={`fishbone "API latency spike"
+effect "P99 > 2 s after deploy"
+category code "Code"
+category infra "Infra"
+category data "Data"
+code : "N+1 query in new endpoint"
+  - "Missing eager-load on orders"
+infra : "DB connection pool exhausted"
+data : "Index missing on accounts table"`} />
+
+Quatre règles couvrent 80 % des usages :
+
+1. Commencez par `fishbone`, optionnellement suivi d'un titre entre guillemets.
+2. Déclarez chaque branche avec `category id "Label"` — l'`id` est une clé interne courte, `"Label"` est ce qui s'imprime sur le diagramme.
+3. Ajoutez des causes avec `id : "texte de cause"` sur leurs propres lignes.
+4. Indentez une ligne d'au moins 2 espaces et commencez-la par `-` pour créer une sous-cause (branche de second ordre) sous la cause précédente.
+
+> Les commentaires peuvent commencer par `#`, `//`, ou `%%` en style Mermaid sur leur propre ligne.
+
+---
+
+## 2. Éléments constitutifs
+
+### L'épine et l'effet
+
+`effect "Énoncé du problème"` place le texte dans la tête du poisson. Si `effect` est omis, le parseur utilise le titre du diagramme comme solution de repli.
+
+```
+fishbone "Title"
+effect "Specific problem statement"
+```
+
+La tête se place à droite par défaut (`config direction = right`). Utilisez `config direction = left` pour l'inverser.
+
+### Catégories (arêtes principales)
+
+`category id "Label"` déclare une branche. L'`id` est utilisé en interne pour assigner des causes ; le `"Label"` entre guillemets apparaît sur le diagramme.
+
+Les catégories acceptent également des propriétés optionnelles dans `[…]` :
+
+| Propriété | Valeurs | Effet |
+|---|---|---|
+| `color: "#hex"` | chaîne couleur hexadécimale | Couleur de la branche et de l'étiquette |
+| `side: top` / `side: bottom` | `top`, `bottom` | Force cette branche sur le rail supérieur ou inférieur (par défaut : alternance) |
+| `order: N` | entier | Position dans son rail — les nombres inférieurs sont plus proches de la queue |
+
+```
+category rework "Rework" [color: "#E53935", side: top, order: 1]
+```
+
+### Causes (arêtes secondaires)
+
+Deux styles sont acceptés et peuvent être mélangés dans un même diagramme :
+
+**Style A — structuré.** Déclarez d'abord les catégories, puis assignez les causes avec `id : "texte"` :
+
+```
+category code "Code"
+category infra "Infra"
+code : "N+1 query in endpoint"
+code : "Missing cache layer"
+infra : "Auto-scaling lag"
+```
+
+**Style B — compact.** Étiquette de catégorie et causes sur une seule ligne, séparées par `;` ou `,` :
+
+```
+category Code: N+1 query; Missing cache; Synchronous call
+category Infra: Auto-scaling lag; CDN misconfigured
+```
+
+En style compact, l'`id` est auto-dérivé du texte de l'étiquette (en minuscules, espaces → tirets). Les guillemets sont optionnels pour le texte des causes.
+
+<Playground initial={`fishbone "Conversion rate drop"
+effect "Checkout conversion -12% MoM"
+# Style A — structured
+category ux "UX"
+category trust "Trust"
+ux : "Confusing multi-step form"
+ux : "Slow page on mobile"
+trust : "No payment security badge"
+# Style B — compact
+category Pricing: Price-anchoring missing; No annual discount shown; Coupon field too prominent`} height={380} />
+
+**Style C — raccourci mindmap Mermaid.** Une ligne nue de premier niveau devient une catégorie,
+et les éléments `-` indentés deviennent des causes de niveau 1 frères sous cette catégorie :
+
+```txt
+fishbone "Why is the site slow?"
+effect "Page LCP > 4s"
+Content
+  - heavy hero image
+  - too much above-the-fold text
+Tech
+  - JS bundle too large
+  - render-blocking CSS
+```
+
+---
+
+## 3. Sous-causes (branches de second ordre)
+
+Indentez une ligne `-` d'au moins 2 espaces après une cause de niveau 1 pour lui attacher une sous-cause. Le tiret `-` fait partie de la syntaxe ; le texte le suit.
+
+```
+method : "Stencil aperture undersized"
+  - "Tolerance spec from 2018 board revision"
+  - "No re-validation after material change"
+method : "Pick-and-place speed too high"
+  - "Speed limit lifted during overtime run"
+```
+
+Les sous-causes apparaissent comme de petites arêtes plus courtes et plus étroites se ramifiant à partir de leur arête parente.
+
+<Playground initial={`fishbone "Medication error increase"
+effect "Errors up 18% in Q3"
+category process "Process"
+category people "People"
+process : "CPOE alert fatigue"
+  - "47 non-critical alerts per shift"
+  - "Override too easy — one click"
+process : "5-Rights verification skipped"
+  - "No barcode scanner at bedside"
+people : "Float staff unfamiliar with unit"
+  - "No unit-specific orientation checklist"
+people : "Handoff communication gaps"`} height={420} />
+
+---
+
+## 4. Options de configuration
+
+Les lignes `config key = value` peuvent apparaître n'importe où après l'en-tête. Les clés et valeurs inconnues sont silencieusement ignorées.
+
+| Clé de config | Valeurs | Défaut | Effet |
+|---|---|---|---|
+| `direction` | `right` / `left` (aussi `ltr` / `rtl`) | `right` | De quel côté la tête de l'effet apparaît |
+| `sides` | `both`, `top`, `bottom` | `both` | Quelle moitié de l'épine héberge les branches |
+| `density` | `compact`, `normal`, `spacious` | `normal` | Espacement entre les arêtes — affecte combien de branches tiennent avant chevauchement |
+| `slope` (ou `ribslope`) | `gentle`, `normal`, `steep`, ou un nombre (0–3) | `normal` (0.6) | Angle des arêtes — diagonal peu prononcé vs. accentué |
+| `causeside` (ou `cause-side`) | `head`, `tail`, `both` | `head` | De quel côté d'une arête les sous-causes se ramifient |
+| `width` | entier px | auto | Remplace la largeur du canevas |
+| `height` | entier px | auto | Remplace la hauteur du canevas |
+
+```
+config direction = left
+config density = compact
+config slope = gentle
+config sides = top
+```
+
+---
+
+## 5. Étiquettes et commentaires
+
+- **Titre du diagramme :** `fishbone "Website Traffic Drop"` — première ligne, optionnel.
+- **Étiquette d'effet :** `effect "30% organic traffic decline"` — le problème à la tête du poisson.
+- **Étiquette de catégorie :** `category id "Nom lisible"` — imprimé sur la branche.
+- **Texte de cause :** entre guillemets `"comme ceci"` ou sans guillemets (espaces autorisés en style compact).
+- **Texte de sous-cause :** après le `-` initial, entre guillemets ou sans.
+- **Commentaires :** `#`, `//`, ou `%%` au début d'une ligne (après un éventuel espace blanc initial). Les mêmes marqueurs démarrent également des commentaires en fin de ligne en dehors des chaînes entre guillemets.
+
+---
+
+## 6. Mots réservés et échappement
+
+**Réservés en début de ligne :** `fishbone` (en-tête), `effect`, `category`, `config`.
+
+**Le préfixe `-`** sur une ligne indentée est réservé comme marqueur de sous-cause. Pour inclure un tiret littéral au début du texte d'une cause, mettez-le entre guillemets : `code : "- old deprecated path"`.
+
+**Les chaînes avec des espaces** dans le texte de cause en style structuré doivent être entre guillemets doubles : `code : "N+1 query"`. En style compact (`category Label: ...`), le texte court jusqu'au séparateur `;` ou `,` et les guillemets sont optionnels.
+
+**Les marqueurs de commentaires** (`#`, `//`, `%%`) démarrent un commentaire sauf à l'intérieur d'une chaîne entre guillemets doubles.
+
+| Séquence réservée | Contexte | Alternative |
+|---|---|---|
+| `#` en début de ligne | Marqueur de commentaire | Mettez le texte entre guillemets si `#` fait partie du contenu |
+| `-` en début après ≥2 espaces d'indentation | Marqueur de sous-cause | Guillemets : `- "- text with dash"` |
+| `category`, `effect`, `config`, `fishbone` | Mots-clés en début de ligne | Ne peuvent pas être utilisés comme identifiants de catégorie |
+
+---
+
+## 7. Erreurs courantes
+
+| Vous avez écrit | Le parseur dit | Correction |
+|---|---|---|
+| `cause1 : "text"` sans `category cause1` préalable | `FishboneParseError: Unknown category "cause1"` | Déclarez `category cause1 "Label"` avant d'assigner des causes |
+| `- "sub-cause"` au début du fichier (sans cause de niveau 1 précédente) | `FishboneParseError: Sub-cause … has no preceding Level-1 cause` | Placez la ligne de sous-cause immédiatement après une ligne `id : "cause"` |
+| `- "sub-cause"` avec seulement 1 espace d'indentation | Traitée comme une ligne de cause, pas une sous-cause | Indentez avec au moins 2 espaces |
+| `category Code: cause one, cause two` | Parsé en style compact — `,` et `;` sont tous deux des séparateurs | Comportement attendu ; les deux séparateurs fonctionnent |
+| `config direction = center` | Valeur inconnue — silencieusement ignorée, reste `right` | Utilisez `right` ou `left` |
+| `config slope = 45` | Hors plage (doit être 0–3 exclu) ; silencieusement ignoré | Utilisez un préréglage (`gentle`, `normal`, `steep`) ou une valeur comme `0.5` |
+| `fishbone: "Title"` | Parsé correctement — les deux points après le mot-clé sont optionnels | `fishbone "Title"` et `fishbone: "Title"` fonctionnent tous les deux |
+| Catégorie nue en style mindmap Mermaid | Parsée comme une catégorie implicite | `Content` suivi de lignes `- item` indentées fonctionne sans `category` |
+
+---
+
+## 8. Grammaire (EBNF)
+
+```text
+document       = header (blank | comment | effect | category | config | cause | sub-cause | implicit-category)*
+
+header         = "fishbone" ":"? ( WS quoted-string )? NEWLINE
+effect         = "effect" ":"? WS quoted-string NEWLINE
+config         = "config" WS config-key WS "=" WS config-value NEWLINE
+config-key     = "direction" | "width" | "height" | "sides"
+               | "slope" | "ribslope" | "density" | "causeside" | "cause-side"
+config-value   = bare-word | number | quoted-string
+
+category       = "category" WS id WS label-or-compact ( "[" category-attrs "]" )? NEWLINE
+implicit-category
+               = bare-text NEWLINE                         # top-level, no ":"
+
+label-or-compact
+               = quoted-string                            # structured form: category id "Label"
+               | id WS ":" WS compact-causes             # compact form: category Label: cause; cause
+
+category-attrs = category-attr ("," category-attr)*
+category-attr  = "color:" quoted-string
+               | "side:" ( "top" | "bottom" )
+               | "order:" integer
+
+cause          = id WS ":" WS cause-text NEWLINE         # structured form
+cause-text     = quoted-string | bare-text
+
+sub-cause      = INDENT≥2 "-" WS cause-text NEWLINE
+
+compact-causes = compact-cause ( (";" | ",") compact-cause )*
+compact-cause  = quoted-string | bare-text
+
+comment        = ( "#" | "//" | "%%" ) any NEWLINE
+id             = [a-zA-Z] [a-zA-Z0-9_-]*
+quoted-string  = '"' any-char-but-unescaped-quote* '"'
+```
+
+Source faisant autorité : `src/diagrams/fishbone/parser.ts`. En cas de divergence avec le parseur, le parseur a raison — veuillez ouvrir un ticket.
+
+---
+
+## 9. Conformité aux normes
+
+Les diagrammes d'Ishikawa de Schematex suivent les conventions de causes et effets d'**Ishikawa (1968)** : une épine horizontale avec une tête étiquetée (l'effet) et des arêtes diagonales pour les grandes catégories causales, chacune portant des arêtes secondaires (causes individuelles). La hiérarchie à deux niveaux (catégorie → cause → sous-cause) correspond à la profondeur de descente traditionnelle des « 5 Pourquoi » utilisée dans les workflows Six Sigma DMAIC et ISO 9001 d'action corrective.
+
+Ce qui est implémenté aujourd'hui :
+
+- ✅ Style structuré : `category id "Label"` + `id : "cause"`
+- ✅ Style compact : `category Label: cause; cause; cause`
+- ✅ Sous-causes (niveau 2) via préfixe `-` indenté
+- ✅ Couleur et côté par catégorie en remplacement
+- ✅ Config `direction`, `density`, `slope`, `sides`, `causeside`
+- ✅ `width` / `height` explicites optionnels
+- ⏳ Sous-sous-causes de niveau 3+ (le parseur stocke les enfants mais le moteur de rendu s'arrête à la profondeur 2)
+- ⏳ Suggestion automatique d'ensembles de catégories standard (6M, 8P, 5P)
+- ⏳ Rendu de l'`order` par catégorie (parsé mais pas encore appliqué par le moteur de disposition)
+
+Références :
+
+- Ishikawa, K. (1968). *Guide to Quality Control.* JUSE Press.
+- ASQ — [Cause-and-Effect (Fishbone) Diagram](https://asq.org/quality-resources/cause-analysis-tools/fishbone)
+- ISO 9001:2015 §10.2 — Nonconformité et action corrective
+
+---
+
+## 10. Exemples associés
+
+<RelatedExamples slugs={[
+  'fishbone-website-traffic',
+]} />
+
+---
+
+## 11. Feuille de route
+
+**Planifié — pas encore parseable.** N'utilisez pas ces fonctionnalités dans le DSL généré aujourd'hui ; le parseur les rejettera ou les ignorera.
+
+- **Sous-sous-causes de niveau 3** — un troisième niveau d'indentation ; la structure AST le supporte mais le moteur de rendu s'arrête actuellement au niveau 2.
+- **Remplacement `causeside` par catégorie** — définir `cause-side` sur des catégories individuelles plutôt que globalement.
+- **Suggestion automatique de catégories standard** — raccourci `template: 6M` / `template: 8P` qui pré-remplit les noms de catégories de fabrication ou de service standard.
+- **Bloc de légende** — mot-clé `legend` pour déclarer une clé de codage couleur affichée à côté du diagramme.
+- **Bloc `metadata:`** — métadonnées structurées clé-valeur (facilitateur, date, révision) affichées dans une annotation de coin.
+
+Suivez les tickets GitHub si vous avez besoin de l'un de ces éléments plus tôt.

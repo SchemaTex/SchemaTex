@@ -1,0 +1,134 @@
+---
+title: Analyse par arbre de défaillances
+---
+
+## À propos des arbres de défaillances
+
+Un **arbre de défaillances** est la technique de fiabilité/sécurité la plus répandue en ingénierie réglementée : on part d'un **événement redouté** unique (une défaillance système) et on le décompose à travers des **portes** logiques (AND / OR / vote / …) jusqu'aux **événements de base** (défaillances de composants) dont les probabilités sont connues. Inventée aux Bell Labs en 1962 et normalisée par **[NUREG-0492](https://www.nrc.gov/docs/ML1007/ML100780465.pdf)** (nucléaire), **IEC 61025** (inter-industries) et SAE ARP4761 (aérospatial).
+
+L'avantage de Schematex est que le moteur **calcule le résultat**, pas seulement l'image : il exécute MOCUS (Fussell-Vesely 1972) pour trouver les **coupes minimales** — les combinaisons de défaillances irréductibles — et la **probabilité de l'événement redouté**, puis met en évidence les coupes minimales en rouge (les points de défaillance unique dans le rouge le plus intense). C'est tout l'intérêt de dessiner un arbre de défaillances, et c'est la même posture que celle adoptée par `pert` pour l'ordonnancement et `petri` pour le marquage. À distinguer de `logic` (réseau de signaux gauche-droite), `decisiontree` (calcul par valeur espérée), et `fishbone` (qualitatif, non quantifié).
+
+<Playground initial={`faulttree "Product not removed"
+  analysis: cutsets, probability
+  top T  "Failure to remove product" = OR(G1, G2)
+  gate G1 "Arm jams or collides"      = AND(MSF, G3)
+  gate G2 "Wrong slot commanded"      = OR(CDM, MSF)
+  gate G3 "Loss of position feedback" = OR(ESF, RCF)
+  basic MSF "Manipulator system failure" p: 0.0035
+  basic CDM "Controller command error"   p: 0.0009
+  basic ESF "Encoder sensor failure"     p: 0.0021
+  basic RCF "Resolver cable fault"       p: 0.0012`} height={620} />
+
+---
+
+## 1. Votre premier diagramme
+
+Chaque document commence par le mot-clé `faulttree` (alias `fta`), un titre optionnel, puis une liste plate de déclarations reliées par identifiant :
+
+```
+faulttree "Both pumps fail"
+  analysis: cutsets, probability
+  top T "Both redundant pumps fail" = AND(PA, PB)
+  basic PA "Pump A fails" p: 0.01
+  basic PB "Pump B fails" p: 0.01
+```
+
+`top` déclare l'événement racine unique et la porte qui le produit ; `basic` déclare une défaillance de composant feuille avec une probabilité. Le moteur calcule la coupe minimale `{PA, PB}` et P(top) = 1.0e-4. Le DSL utilise une **déclaration plate + référence** (pas imbriqué par indentation) — un arbre de défaillances est un DAG, donc un événement partagé est simplement référencé par identifiant depuis plusieurs portes.
+
+Directives d'en-tête :
+
+- `analysis: cutsets, probability` — ce qu'il faut calculer (également `pathsets`, `none`).
+- `prob: rare | mcub | exact` — la méthode de probabilité (par défaut `rare`, une borne supérieure conservative).
+- `layout: tb | bt` — de haut en bas (par défaut) ou de bas en haut.
+
+---
+
+## 2. Événements
+
+```
+top  T   "System fails"        = OR(A, B)
+gate G1  "Sub-fault"           = AND(A, B)
+basic A  "Component A fails"   p: 0.01
+undeveloped EXT "External fire (not modelled)"
+house HX "Power on"            state: 1
+```
+
+- **`top`** — l'unique événement redouté analysé (rectangle à bordure accentuée). Exactement un est requis.
+- **`gate`** — un événement intermédiaire qui est lui-même une sortie de porte (rectangle).
+- **`basic`** — une défaillance primaire de composant, la feuille qui porte `p:` (cercle).
+- **`undeveloped`** — un événement non développé davantage (losange) ; peut porter `p:`.
+- **`house`** — un événement normalement attendu forcé à `state: 0` ou `state: 1` (glyphe maison) — active ou désactive des branches de l'arbre.
+
+Les probabilités acceptent des décimales ou la notation scientifique (`p: 0.004` ou `p: 1e-6`) ; `p:` et `prob:` sont interchangeables. Un événement sans probabilité est traité symboliquement (les coupes minimales sont quand même calculées ; P(top) est indiqué comme n/d).
+
+---
+
+## 3. Portes
+
+```
+top  T1 = AND(A, B, C)            # toutes les entrées se produisent
+top  T2 = OR(A, B)                # au moins une entrée se produit
+top  T3 = XOR(A, B)               # exactement une (traitée comme OR pour les coupes)
+top  T4 = VOTING(2/3; A, B, C)    # au moins k parmi n
+gate G1 = INHIBIT(A) if COND      # A se produit ET la condition est satisfaite
+gate G2 = PAND(A, B) order: A, B  # A puis B (ordre rendu, AND pour les coupes)
+```
+
+Les portes sont dessinées **sortie vers le haut, entrées vers le bas** (l'image miroir d'une porte `logic`) : AND est un dôme à base plate, OR/XOR/VOTING un bouclier, INHIBIT un hexagone. L'événement conditionnel d'un `INHIBIT`/`PAND` est rendu comme une ellipse sur le côté. Une porte peut référencer une autre porte ou tout événement — et le même événement de base peut alimenter plusieurs portes (un événement répété).
+
+---
+
+## 4. Coupes minimales et probabilité calculées
+
+C'est ici que Schematex se distingue. Avec `analysis: cutsets`, le moteur exécute **MOCUS** : les portes AND augmentent l'ordre d'une coupe, les portes OR multiplient le nombre de coupes, puis l'idempotence (`A∧A=A`) et l'absorption (`X ⊆ Y ⇒ supprimer Y`) minimisent le résultat.
+
+- Chaque **coupe minimale** est encadrée en rouge ; une **coupe d'ordre 1 est un point de défaillance unique** (rouge le plus intense, `data-spof`).
+- Un **événement répété** (un événement de base sous plusieurs portes) est géré par absorption — le cas qu'un expander naïf gère incorrectement.
+- **P(top)** est calculé à partir des probabilités par événement : `rare` (Σ probabilités des coupes, par défaut), `mcub` (1 − ∏(1−P)), ou `exact` (inclusion-exclusion, qui déduplique correctement un événement partagé). La méthode est indiquée à côté de l'événement redouté et notée dans `<desc>`.
+- Un `house state: 0` peut rendre l'événement redouté insatisfaisable — signalé comme « pas de coupes minimales ».
+
+---
+
+## 5. Événements répétés
+
+```
+faulttree "Safety function fails"
+  analysis: cutsets, probability
+  prob: exact
+  top T "Safety function fails" = OR(C1, C2)
+  gate C1 "Channel 1" = AND(S1, L1)
+  gate C2 "Channel 2" = AND(S2, L1)
+  basic S1 "Sensor 1 fails" p: 0.05
+  basic S2 "Sensor 2 fails" p: 0.05
+  basic L1 "Shared logic solver fails" p: 0.05
+```
+
+`L1` alimente les deux canaux — il est dessiné une fois par référence avec une marque d'événement partagé, mais le moteur des coupes traite chaque instance comme une variable booléenne unique. Les coupes minimales sont `{S1, L1}` et `{S2, L1}` ; `prob: exact` soustrait le chevauchement (L1 compté une seule fois sur l'union), donnant 0,004875 plutôt que la valeur événement rare de 0,005.
+
+---
+
+## 6. Transferts
+
+```
+gate OVP "Sustained over-pressure" = INHIBIT(PUMP) if HEATER
+transfer OVP -> "OVP-detail"
+```
+
+Un `transfer ID -> "name"` dessine le triangle de transfert sortant sous un événement dont le développement se trouve ailleurs ; un `transfer "name" = gate_expr` correspondant définit ce sous-arbre nommé et est inséré pour le calcul des coupes minimales. La version 0.1 résout les transferts dans le document.
+
+---
+
+## 7. Validation
+
+Le parseur échoue rapidement avec des erreurs lisibles pour que les calculs de coupes aient du sens :
+
+- exactement un `top` est requis (zéro ou plusieurs est une erreur) ;
+- une porte référençant un identifiant non déclaré signale l'identifiant par son nom ;
+- les cycles sont rejetés (un arbre de défaillances est un DAG) ;
+- une probabilité hors de `[0, 1]`, un `VOTING k/n` avec `k > n` ou `n ≠ nombre d'entrées`, ou une condition `if` sur une porte non-INHIBIT/PAND sont tous signalés en clair.
+
+---
+
+## 8. Thèmes
+
+`default` utilise la palette maison — boîtes d'événements gris-bleu doux, **portes vertes** (« la logique progresse »), **boîtes de coupes rouges** (le risque calculé), chiffres de probabilité en bleu, maison jaune. `monochrome` reproduit l'aspect noir et blanc des manuels NUREG-0492, où la forme du dôme/bouclier (pas la couleur) indique le type de porte. Tous les traits/remplissages proviennent de `ReliabilityTokens` ; chaque élément porte des attributs `data-*` (`data-cutset`, `data-spof`, `data-prob`, `data-gate`) pour que l'analyse calculée soit inspectable en aval.

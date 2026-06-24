@@ -1,0 +1,421 @@
+---
+title: Sociogram
+---
+
+## Sobre sociogramas
+
+Um **sociograma** mapeia a teia de escolhas, rejeições e alianças *dentro* de um grupo — quem gosta de quem, quem está isolado, onde se formam cliques. Jacob Moreno introduziu o método em 1934 como uma ferramenta clínica para terapia de grupo; desde então, foi adotado por professores de sala de aula (para detectar exclusão e bullying), equipes de RH (mapeamento de influência informal) e pesquisadores organizacionais. Ao contrário de um ecomap, que centraliza o ambiente externo de uma pessoa, o sociograma trata todos os membros do grupo de forma simétrica.
+
+O Schematex segue as **[convenções de sociometria de Moreno (1934)](https://en.wikipedia.org/wiki/Sociometry)** para papéis de nós e tipos de arestas, estendidas com notações modernas de análise de redes sociais para valência, direção e peso. Esta página documenta o que o parser aceita atualmente.
+
+<Playground initial={`sociogram "Group Therapy — Week 6"
+  config: layout = circular
+  therapist [label: "Dr. Park", role: star]
+  james [label: "James"]
+  maria [label: "Maria"]
+  lee [label: "Lee"]
+  sarah [label: "Sarah"]
+  tom [label: "Tom"]
+  nina [label: "Nina"]
+  james -> therapist
+  james <-> maria [weight: 3, label: "strong bond"]
+  james -> lee
+  maria -> therapist
+  maria -> sarah
+  lee -> therapist
+  lee -x> nina [label: "tension"]
+  sarah <-> nina
+  sarah -> therapist
+  tom -> therapist
+  tom -.- nina
+  nina -> maria`} height={520} />
+
+---
+
+## 1. Seu primeiro sociograma
+
+O menor sociograma útil: quatro pessoas, três tipos diferentes de relacionamento.
+
+<Playground initial={`sociogram "Study group"
+  alice [label: "Alice"]
+  bob [label: "Bob"]
+  carol [label: "Carol"]
+  dave [label: "Dave"]
+  alice <-> bob [label: "lab partners"]
+  carol -> alice
+  dave -x> bob [label: "rivalry"]`} />
+
+Quatro regras cobrem 80% dos casos de uso:
+
+1. Comece com a palavra-chave `sociogram`, opcionalmente seguida de um título entre aspas.
+2. Cada pessoa é um **nó** — declarado explicitamente com `id [label: "…"]` ou criado automaticamente na primeira vez que aparece em uma aresta.
+3. Conecte dois nós com um **operador de aresta** — `<->` (mútuo), `->` (unidirecional), `-x>` (rejeição), `-.-` (neutro). Veja §3.
+4. Opcionalmente, declare **grupos** e linhas de **config** para controlar o layout e a coloração.
+
+> Comentários devem começar com `#` na própria linha.
+
+---
+
+## 2. Nós
+
+Uma linha de nó tem o formato `id [attr: value, …]`. Os nós também são criados implicitamente quando referenciados pela primeira vez em uma aresta — mas a declaração explícita permite definir rótulos, grupos e papéis.
+
+**Regras de ID.** Deve corresponder a `[a-zA-Z][a-zA-Z0-9_-]*`. O ID é usado internamente; o atributo `label:` define o nome de exibição.
+
+**Atributos de nó:**
+
+| Atributo | Valores | Efeito |
+|---|---|---|
+| `label: "…"` | string entre aspas | Nome de exibição (padrão: o ID) |
+| `group: id` | ID de grupo | Associa o nó a um grupo para coloração |
+| `role: …` | `star`, `isolate`, `bridge`, `neglectee`, `rejected` | Anotação explícita de papel sociométrico |
+| `size: …` | `small`, `medium`, `large` | Substituição do tamanho do nó |
+
+<Playground initial={`sociogram "Group roles demo"
+  config: layout = circular
+  dr_park [label: "Dr. Park", role: star]
+  james [label: "James"]
+  nina [label: "Nina", role: neglectee]
+  loner [label: "Alex", role: isolate]
+  bridge [label: "Sam", role: bridge, size: large]
+  james -> dr_park
+  james -> bridge
+  bridge -> dr_park
+  bridge -> nina
+  nina -> james`} />
+
+---
+
+## 3. Arestas
+
+Uma linha de aresta tem o formato `leftId OP rightId`, opcionalmente seguida de `[label: "…", weight: N]`. Ambos os IDs são registrados automaticamente como nós se ainda não tiverem sido declarados.
+
+### 3.1 Direção e valência
+
+<Playground initial={`sociogram "Edge types"
+  config: layout = circular
+  a [label: "A"]
+  b [label: "B"]
+  c [label: "C"]
+  d [label: "D"]
+  e [label: "E"]
+  f [label: "F"]
+  # Positive
+  a -> b [label: "chose B"]
+  b <-> c [label: "mutual"]
+  # Negative
+  c -x> d [label: "rejects D"]
+  d <x-> e [label: "mutual reject"]
+  # Neutral
+  e -.- f [label: "indifferent"]
+  f <.-> a [label: "mutual neutral"]`} />
+
+| Operador | Direção | Valência | Significado |
+|---|---|---|---|
+| `A -> B` | unidirecional | positivo | A escolheu B |
+| `A <- B` | unidirecional | positivo | B escolheu A (mesmo que `B -> A`) |
+| `A <-> B` | mútuo | positivo | Ambos se escolheram |
+| `A -- B` | não direcionado | positivo | Relacionamento conhecido; direção não registrada |
+| `A -x> B` | unidirecional | negativo | A rejeita B |
+| `A <x- B` | unidirecional | negativo | B rejeita A |
+| `A <x-> B` | mútuo | negativo | Rejeição mútua |
+| `A -x- B` | não direcionado | negativo | Conflito; direção desconhecida |
+| `A -.> B` | unidirecional | neutro | A é indiferente a B |
+| `A <.-> B` | mútuo | neutro | Indiferença mútua |
+| `A -.- B` | não direcionado | neutro | Relacionamento neutro |
+
+### 3.2 Peso / intensidade
+
+Peso maior = linha mais espessa. Use os operadores abreviados ou substitua explicitamente com `[weight: N]`.
+
+| Peso | Abreviação | Direção | Significado |
+|---|---|---|---|
+| 2 (padrão) | `->` `<->` `--` `-x>` `-.-` | qualquer | Conexão padrão |
+| 3 | `==>` `<==` `<==>` `===` | unidirecional / mútuo / não direcionado | Forte |
+| 4 | `===>` `<===` `<===>` | unidirecional / mútuo | Muito forte |
+| personalizado | `[weight: N]` | — | Qualquer inteiro |
+
+<Playground initial={`sociogram "Relationship strengths"
+  config: layout = circular
+  a [label: "A"]
+  b [label: "B"]
+  c [label: "C"]
+  d [label: "D"]
+  a -> b [label: "weight 2 (default)"]
+  b ==> c [label: "weight 3 (strong)"]
+  c ===> d [label: "weight 4 (very strong)"]
+  d -> a [weight: 1, label: "weight 1 (weak)"]`} />
+
+### 3.3 Rótulos de aresta
+
+`A -> B [label: "best friend"]` — o rótulo aparece na linha de conexão.
+
+---
+
+## 4. Grupos
+
+Um bloco `group` agrupa nós em um subgrupo nomeado para coloração e agrupamento de layout.
+
+**Sintaxe de grupo:**
+- `group id [label: "…", color: "#hex"]` — a linha de cabeçalho do grupo.
+- As linhas de membros seguem, cada uma indentada **pelo menos 4 espaços**, um nó por linha.
+- Uma linha não indentada (ou o próximo `group`) fecha o grupo atual.
+- Os membros podem ter suas próprias propriedades: `anna [label: "Anna K.", size: large]`.
+
+Os nós também podem ser atribuídos inline: `alice [group: girls]`.
+
+<Playground initial={`sociogram "Classroom dynamics"
+  config: layout = force-directed
+  group boys [label: "Boys", color: "#42A5F5"]
+    tom [label: "Tom"]
+    jack [label: "Jack"]
+    mike [label: "Mike"]
+    leo [label: "Leo"]
+  group girls [label: "Girls", color: "#EF5350"]
+    anna [label: "Anna"]
+    beth [label: "Beth"]
+    chloe [label: "Chloe"]
+    diana [label: "Diana"]
+  tom <-> jack
+  anna <-> beth
+  anna <-> chloe
+  beth <-> chloe
+  mike -x> leo [label: "conflict"]
+  diana -> anna
+  tom -> anna [label: "cross-group"]`} />
+
+---
+
+## 5. Configuração
+
+Linhas `config:` ajustam o layout e a codificação visual. Cada uma é sua própria linha.
+
+| Chave de config | Valores | Padrão | Efeito |
+|---|---|---|---|
+| `layout` | `circular`, `force-directed`, `concentric` | `circular` | Algoritmo de posicionamento |
+| `sizing` | `uniform`, `in-degree`, `betweenness` | `uniform` | Tamanho do nó por métrica |
+| `coloring` | `default`, `group`, `role` | `default` | Esquema de cores dos nós |
+| `highlight` | lista separada por vírgula: `stars`, `isolates`, `cliques` | `stars,isolates` | Quais padrões anotar |
+
+**Notas sobre layout:**
+- `circular` — nós igualmente espaçados em um anel. Melhor para grupos pequenos (≤15).
+- `force-directed` — modelo de mola; clusters surgem automaticamente. Melhor para grupos de tamanho médio com subgrupos distintos.
+- `concentric` — anéis internos contêm nós com alto grau de entrada. Melhor para mostrar estrutura núcleo-periferia.
+
+**Circular** — posicionamento uniforme em anel; todos os nós igualmente visíveis. Melhor para grupos pequenos e coesos.
+
+<Playground initial={`sociogram "Therapy group — circular"
+  config: layout = circular
+  dr_park [label: "Dr. Park", role: star]
+  james [label: "James"]
+  maria [label: "Maria"]
+  lee [label: "Lee"]
+  sarah [label: "Sarah"]
+  tom [label: "Tom"]
+  nina [label: "Nina", role: neglectee]
+  james -> dr_park
+  james <-> maria [weight: 3]
+  james -> lee
+  maria -> dr_park
+  lee -> dr_park
+  lee -x> nina
+  sarah <-> nina
+  sarah -> dr_park
+  tom -> dr_park
+  nina -> maria`} height={460} />
+
+**Force-directed** — a física de molas atrai nós conectados entre si e afasta os desconectados. Subgrupos se agrupam organicamente.
+
+<Playground initial={`sociogram "Classroom dynamics — force-directed"
+  config: layout = force-directed
+  group boys [label: "Boys", color: "#42A5F5"]
+    tom [label: "Tom"]
+    jack [label: "Jack"]
+    mike [label: "Mike"]
+    leo [label: "Leo"]
+  group girls [label: "Girls", color: "#EF5350"]
+    anna [label: "Anna"]
+    beth [label: "Beth"]
+    chloe [label: "Chloe"]
+    diana [label: "Diana"]
+  tom <-> jack
+  anna <-> beth
+  anna <-> chloe
+  beth <-> chloe
+  mike -x> leo [label: "conflict"]
+  diana -> anna
+  tom -> anna [label: "cross-group"]
+  jack -> beth`} height={460} />
+
+**Concentric** — nós ordenados por grau de entrada; nós de alta centralidade aparecem nos anéis internos, nós periféricos nos anéis externos.
+
+<Playground initial={`sociogram "Informal influence — concentric"
+  config: layout = concentric
+  config: sizing = in-degree
+  vp [label: "VP Eng"]
+  lead_a [label: "Lead A"]
+  lead_b [label: "Lead B"]
+  alice [label: "Alice"]
+  bob [label: "Bob"]
+  carol [label: "Carol"]
+  dave [label: "Dave"]
+  alice -> lead_a
+  bob -> lead_a
+  carol -> lead_a
+  carol -> lead_b
+  dave -> lead_b
+  lead_a -> vp
+  lead_b -> vp
+  alice <-> bob
+  carol <-> dave`} height={460} />
+
+---
+
+## 6. Papéis sociométricos
+
+O parser armazena anotações de papel nos nós. O renderizador os utiliza para aplicar emblemas visuais — um marcador de estrela para `star`, uma borda tracejada para `isolate`, e assim por diante.
+
+| Papel | Significado |
+|---|---|
+| `star` | Figura central escolhida por muitos (alto grau de entrada) |
+| `isolate` | Sem conexões de entrada ou saída |
+| `neglectee` | Alcança outros, mas não recebe escolhas |
+| `rejected` | Recebe arestas de rejeição de múltiplos membros |
+| `bridge` | Conecta dois clusters separados |
+
+<Playground initial={`sociogram "Role annotations"
+  config: layout = circular
+  center [label: "Maria", role: star]
+  bridge_node [label: "Sam", role: bridge]
+  newcomer [label: "New Kid", role: neglectee]
+  loner [label: "Alex", role: isolate]
+  outcast [label: "Pat", role: rejected]
+  center <-> bridge_node
+  bridge_node -> outcast
+  newcomer -> center
+  newcomer -> bridge_node
+  center -x> outcast
+  bridge_node -x> outcast`} />
+
+---
+
+## 7. Rótulos e comentários
+
+- **Título:** `sociogram "Study group"` — apenas na primeira linha.
+- **Rótulo do nó:** `alice [label: "Alice K."]`.
+- **Rótulo do grupo:** `group boys [label: "Boys"]`.
+- **Rótulo da aresta:** `alice -> bob [label: "lab partners"]`.
+- **Comentários:** `#` no início de uma linha (após espaços em branco iniciais).
+
+---
+
+## 8. Palavras reservadas e escapamento
+
+**Reservadas no início da linha:** `sociogram` (cabeçalho), `group`, `config:`.
+
+**Tokens operadores reservados** — evite estas sequências dentro de IDs: `->`, `<-`, `<->`, `--`, `===`, `==>`, `<==`, `<===>`, `-x>`, `<x-`, `-x-`, `<x->`, `-.>`, `<.->`, `-.-`.
+
+**Strings com espaços** devem estar entre aspas duplas nos valores de `label:` e `color:`.
+
+---
+
+## 9. Erros comuns
+
+| Você escreveu | O parser diz | Correção |
+|---|---|---|
+| `tom; jack; mike` em uma linha de grupo | `tom;` não passa na regex de ID — silenciosamente ignorado | Um nó por linha, cada um indentado ≥4 espaços |
+| Membros do grupo indentados com 2 espaços | Não tratados como membros do grupo (o parser exige ≥4) | Use 4+ espaços de indentação |
+| `alice <> bob` | Sem operador correspondente — não parseado como aresta | Use `<->` para mútuo positivo |
+| `config: layout = grid` | Valor desconhecido silenciosamente ignorado; layout permanece `circular` | Use `circular`, `force-directed` ou `concentric` |
+| Nó com espaço no ID: `dr park` | O parser toma `dr` como ID e `park` como token perdido | Use underscore: `dr_park [label: "Dr. Park"]` |
+
+---
+
+## 10. Gramática (EBNF)
+
+```text
+document       = header (blank | comment | config | group-block | edge | node)*
+
+header         = "sociogram" ( WS quoted-string )? NEWLINE
+quoted-string  = '"' any-char-but-quote* '"'
+
+config         = "config:" WS key WS "=" WS value NEWLINE
+key            = "layout" | "sizing" | "coloring" | "highlight"
+
+group-block    = "group" WS id ( "[" group-attrs "]" )? NEWLINE
+                   ( INDENT≥4 member-line )*
+member-line    = id ( "[" node-attrs "]" )? NEWLINE
+group-attrs    = group-attr ("," group-attr)*
+group-attr     = "label:" quoted-string | "color:" quoted-string
+
+node           = id ( "[" node-attrs "]" )? NEWLINE
+node-attrs     = node-attr ("," node-attr)*
+node-attr      = "label:" quoted-string
+               | "group:" id
+               | "role:" role
+               | "size:" ("small" | "medium" | "large")
+
+edge           = id WS op WS id ( "[" edge-attrs "]" )? NEWLINE
+edge-attrs     = edge-attr ("," edge-attr)*
+edge-attr      = "label:" quoted-string | "weight:" number
+
+op             = // positive
+                 "<===>" | "===>" | "<==="
+               | "<==>"|"==>"|"<=="
+               | "===" | "<->" | "->" | "<-" | "--"
+               // negative
+               | "<x->" | "-x>" | "<x-" | "-x-"
+               // neutral
+               | "<.->" | "-\.>" | "-.-"
+
+role           = "star" | "isolate" | "bridge" | "neglectee" | "rejected"
+id             = [a-zA-Z] [a-zA-Z0-9_-]*
+comment        = "#" any NEWLINE
+```
+
+Fonte autoritativa: `src/diagrams/sociogram/parser.ts`. Se houver divergência com o parser, o parser prevalece — por favor, abra uma issue.
+
+---
+
+## 11. Conformidade com padrões
+
+Os sociogramas do Schematex seguem as convenções de **sociometria de Moreno (1934)** para papéis de nós (star, isolate, neglectee) e semântica de escolha direcionada. O conjunto de operadores de aresta é estendido com valência (positiva / negativa / neutra) e níveis de peso seguindo a prática moderna de análise de redes sociais (Hanneman & Riddle, 2005).
+
+O que está implementado atualmente:
+
+- ✅ Arestas direcionadas, mútuas e não direcionadas
+- ✅ Operadores de valência positiva, negativa e neutra
+- ✅ Quatro níveis de peso (1–4) com operadores abreviados e `[weight: N]`
+- ✅ Grupos com cor
+- ✅ Declarações de papel de nó (`star`, `isolate`, `bridge`, `neglectee`, `rejected`)
+- ✅ Três layouts: circular, force-directed, concentric
+- ✅ Três modos de dimensionamento: uniform, in-degree, betweenness
+- ⏳ Destaque automático de cliques — casco convexo sombreado (ver §13)
+- ⏳ Visão de átomo social (layout centrado no ego)
+
+Referências:
+
+- Moreno, J.L. (1934). *Who Shall Survive? Foundations of Sociometry, Group Psychotherapy and Sociodrama.* Beacon House.
+- Hanneman, R.A. & Riddle, M. (2005). *Introduction to Social Network Methods.* UC Riverside.
+
+---
+
+## 12. Exemplos relacionados
+
+<RelatedExamples slugs={[
+  'sociogram-playground-dynamics',
+  'sociogram-team-influence',
+]} />
+
+---
+
+## 13. Roadmap
+
+**Planejado — ainda não parseável.** Não use estes itens em DSL gerado hoje; o parser os rejeitará ou ignorará.
+
+- **Destaque automático de cliques** — casco convexo sombreado desenhado ao redor de subgrupos de escolha mútua com ≥3 membros.
+- **Detecção automática de bridge** — `role: bridge` inferido a partir da centralidade de intermediação sem declaração explícita.
+- **Visão de átomo social** — layout centrado no ego onde um nó indicado fica no centro.
+- **Exportação de matriz de reciprocidade** — saída de tabela estruturada ao lado do diagrama.
+
+Acompanhe nas issues do GitHub se precisar de algum desses itens mais cedo.

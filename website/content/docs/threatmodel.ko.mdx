@@ -1,0 +1,122 @@
+---
+title: 위협 모델 (STRIDE DFD)
+description: 엔진이 요소별 STRIDE 위협을 매핑하고 모든 신뢰 경계 횡단을 표시하는 보안 데이터 흐름 다이어그램.
+---
+
+## 위협 모델이란
+
+**위협 모델(threat model)**은 신뢰 경계로 주석 처리된 보안 **데이터 흐름 다이어그램(DFD)**입니다. **외부 엔터티**(사용자, 제3자), **프로세스**(서비스), **데이터 저장소**(데이터베이스, 로그), 그리고 이들 사이의 **흐름**으로 구성됩니다. Microsoft의 **STRIDE** 프레임워크 — Spoofing(위장), Tampering(변조), Repudiation(부인), Information disclosure(정보 노출), Denial of service(서비스 거부), Elevation of privilege(권한 상승) — 는 각 요소가 직면하는 위협을 분류합니다. 참고 문헌은 Shostack, *Threat Modeling: Designing for Security* (2014)입니다.
+
+Schematex의 차별점은 엔진이 단순히 박스를 그리는 것에 그치지 않고 **STRIDE-per-element 분석을 직접 수행**한다는 점입니다. 표준 요소→위협 매핑을 적용하고, 로그/감사 저장소에는 조건부로 Repudiation을 추가하며, 가장 유용하게는 **신뢰 경계를 가로지르는 모든 흐름에 표시**를 합니다. 이 지점에서 위장, 변조, 정보 노출이 집중되기 때문입니다.
+
+<Playground initial={`threatmodel "Web App"
+external: User
+process 1.1: Web Server
+datastore D1: User DB
+datastore D2: Audit Log
+User -> 1.1 : "HTTPS Request"
+1.1 -> D1 : Lookup
+1.1 -> D2 : Auth Event
+boundary "Internet" { User }
+boundary "DMZ" { 1.1 }
+boundary "Internal" { D1, D2 }`} height={520} />
+
+---
+
+## 1. 첫 번째 위협 모델
+
+`threatmodel` 키워드(별칭 `stride`)로 시작하고, 선택적 제목을 추가한 후, **요소를 선언**하고 **흐름을 연결**합니다.
+
+```
+threatmodel "Login flow"
+external: User
+process 1.1: Web Server
+datastore D1: User DB
+User -> 1.1 : "Login request"
+1.1 -> D1 : Lookup
+```
+
+각 요소는 `kind: ID: Label` 형식입니다(또는 `kind: Label`, 이 경우 id는 레이블에서 슬러그화됩니다. `external: Mobile App`은 id `Mobile_App`이 됩니다). 흐름은 `SOURCE -> TARGET : label` 형식이며, **레이블은 필수**입니다(이것이 횡단하는 데이터의 이름입니다).
+
+---
+
+## 2. 요소 종류 및 흐름
+
+```
+external: User              # 외부 엔터티 (공격자 측)
+process 1.1: Web Server     # 프로세스 / 서비스
+datastore D1: User DB       # 데이터 저장소
+datastore D2: Audit log     # 로그/감사 저장소 (조건부 Repudiation 추가)
+User -> 1.1 : "HTTPS Request"   # 방향성 흐름, 따옴표 또는 일반 레이블
+1.1 <-> D1 : Read/Write         # <->는 두 개의 방향성 흐름으로 확장
+```
+
+- 프로세스 id는 흔히 점으로 구분된 DFD 번호(`1.1`, `2.3`)이며, 외부/저장소 id는 보통 짧은 슬러그(`User`, `D1`)입니다.
+- `<->` 흐름은 **두 개**의 방향성 흐름으로 확장됩니다.
+- 이름/id에 `log|audit|journal`이 포함되거나 명시적 힌트가 있는 저장소는 로그 저장소로 처리됩니다.
+
+**엔진이 강제하는 흐름 규칙:** 저장소→저장소 흐름 불가(데이터 저장소는 수동적), 외부→외부 흐름 불가, 모든 엔드포인트는 선언된 요소여야 합니다.
+
+---
+
+## 3. 신뢰 경계
+
+```
+boundary "Internet"  { User }
+boundary "DMZ"       { 1.1 }
+boundary "Internal"  { D1, D2 }
+```
+
+`boundary "name" { id, id, … }`는 요소를 신뢰 구역으로 그룹화합니다. 요소는 **최대 하나의** 경계에만 속할 수 있으며, 구성원은 선언되어 있어야 합니다. 어느 경계에도 속하지 않는 요소는 암묵적인 신뢰되지 않는 구역을 공유합니다.
+
+---
+
+## 4. 계산된 STRIDE 분석
+
+이것이 차별점입니다. 엔진은 **STRIDE-per-element** 매핑을 적용합니다.
+
+| DFD 요소 | 적용 위협 |
+|-----------------|------------------------|
+| 외부 엔터티 | S, R |
+| 프로세스 | S, T, R, I, D, E |
+| 데이터 저장소 | T, I, D (+ R if log) |
+| 데이터 흐름 | T, I, D |
+
+- 데이터 저장소의 **Repudiation**은 조건부입니다. 로그 / 감사 / 저널 저장소에만 추가됩니다(Shostack의 녹색 "?").
+- **경계 횡단**: 엔드포인트가 서로 다른 신뢰 구역에 있는 흐름은 표시됩니다. 이 지점에서 위장 / 변조 / 정보 노출이 집중됩니다. 같은 (또는 암묵적) 구역의 두 요소는 횡단하지 않습니다.
+
+각 요소와 흐름은 `data-*` 속성에 해당 STRIDE 범주를 가지므로 분석 결과를 검사할 수 있습니다.
+
+---
+
+## 5. 흔한 실수
+
+```
+# 잘못됨 — 레이블 없는 흐름
+User -> 1.1
+
+# 잘못됨 — 저장소에서 저장소로 (데이터 저장소는 수동적)
+D1 -> D2 : x
+
+# 잘못됨 — 외부에서 외부로
+A -> B : x
+
+# 잘못됨 — 알 수 없는 흐름 엔드포인트
+P -> Ghost : x
+
+# 잘못됨 — 요소가 두 경계에 속함
+boundary "A" { P }
+boundary "B" { P }
+```
+
+모든 흐름에는 레이블이 필요합니다. 저장소와 외부 엔터티는 같은 종류끼리 흐름 파트너가 될 수 없습니다. 엔드포인트는 선언되어 있어야 하며, 요소는 최대 하나의 신뢰 경계에만 속합니다. 중복 id는 거부됩니다.
+
+---
+
+## 6. 표준 준수
+
+요소 어휘, DFD 표기 방식, 그리고 요소별 STRIDE 표는 Shostack (2014)과 Microsoft Threat Modeling Tool을 따릅니다. 조건부 로그 저장소 Repudiation과 신뢰 경계 횡단 강조는 공개된 STRIDE-per-element 차트와 일치합니다.
+
+## 7. 로드맵
+
+지연됨: DREAD/리스크 점수화, 위협-완화 연계, 다중 프로세스 분해(DFD 레벨), 공격 트리 드릴다운.

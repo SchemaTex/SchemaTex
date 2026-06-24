@@ -1,0 +1,106 @@
+---
+title: Diagrama de Loop Causal
+description: Diagramas de feedback de dinâmica de sistemas — o motor enumera todos os loops de feedback e os classifica como reforçadores ou equilibradores pela polaridade.
+---
+
+## Sobre diagramas de loop causal
+
+Um **diagrama de loop causal** (CLD) é a ferramenta central de mapeamento da **dinâmica de sistemas** (Jay Forrester, MIT, anos 1960): variáveis conectadas por vínculos causais com sinal, onde os *loops de feedback* — não as setas individuais — explicam o comportamento de um sistema. Um loop é **reforçador (R)** quando amplifica a mudança e **equilibrador (B)** quando a contraria. A referência canônica é Sterman, *Business Dynamics* (2000).
+
+A vantagem do Schematex é que o motor **encontra e classifica os loops para você**. Ferramentas de desenho deixam você posicionar setas; elas não dizem quais loops existem nem se cada um é reforçador ou equilibrador. O Schematex enumera todos os loops de feedback elementares (algoritmo de Johnson) e aplica a regra de polaridade par/ímpar de Sterman — rotulando-os R1, B1, R2…
+
+<Playground initial={`causalloop "Sales force flywheel"
+var "Training quality"
+"Training quality" -> "Salesperson skills" : + delay
+"Salesperson skills" -> Revenue : +
+Revenue -> "Training quality" : +
+Revenue -> "Hiring rate" : +
+"Hiring rate" -> "Salesperson skills" : -
+loop R1 "Skill flywheel"
+loop B1 "Dilution"`} height={480} />
+
+---
+
+## 1. Seu primeiro loop causal
+
+Comece com a palavra-chave `causalloop` (alias `cld`), um título opcional, e depois **vínculos com sinal**. As variáveis são criadas automaticamente a partir dos vínculos — raramente é necessário declará-las:
+
+```
+causalloop "Adoption model"
+"Adoption rate" -> Adopters : +
+Adopters -> "Adoption rate" : +
+loop R1 "Word of mouth"
+```
+
+Um vínculo é `ORIGEM -> DESTINO : POLARIDADE`. Nomes de variáveis com várias palavras são colocados entre aspas (`"Adoption rate"`); palavras únicas não precisam de aspas (`Adopters`). Pelo menos um vínculo é obrigatório.
+
+---
+
+## 2. Polaridade do vínculo
+
+A polaridade é o sinal da influência causal e é **obrigatória** em cada vínculo:
+
+```
+A -> B : +          # mesma direção (mais A → mais B)
+B -> C : -          # direção oposta (mais B → menos C)
+A -> B : s          # alias para + (same)
+B -> C : o          # alias para − (opposite)
+C -> D : same       # alias para +
+D -> E : opposite   # alias para −
+A -> B +            # o dois-pontos é opcional
+```
+
+`+` / `s` / `same` significam *mesma direção*; `−` / `o` / `opposite` significam *direção oposta*. Um vínculo sem polaridade é rejeitado.
+
+---
+
+## 3. Atrasos e variáveis explícitas
+
+```
+"Training quality" -> "Salesperson skills" : + delay   # atraso marcado (∥ traço na seta)
+A -> B : + ~delay                                       # a forma ~delay também funciona
+var "Adoption rate"                                     # fixa uma variável para que não seja criada automaticamente
+loop R1 "Word of mouth"                                 # nomeia/anota um loop
+```
+
+- **`delay`** / **`~delay`** marca um vínculo como atrasado (o símbolo de hash da dinâmica de sistemas).
+- **`var "nome"`** declara uma variável explicitamente (fixa seu rótulo; não criada automaticamente).
+- **`loop ID "frase"`** anexa um nome legível a um loop que o motor detecta.
+
+---
+
+## 4. Loops de feedback computados
+
+Esta é a diferença. O motor:
+
+1. Constrói o **grafo dirigido com sinal** (nós = variáveis, arestas = vínculos com sinal).
+2. Enumera **todos os loops de feedback elementares** (ciclos dirigidos simples) com o algoritmo de Johnson — deterministicamente, na ordem de declaração.
+3. **Classifica** cada loop contando os vínculos negativos:
+   - Contagem **par** (incluindo 0) → **R** (reforçador); produto dos sinais = +1
+   - Contagem **ímpar** → **B** (equilibrador); produto dos sinais = −1
+
+Esta é exatamente a regra par/ímpar de Sterman. Os loops são numerados na ordem de detecção por tipo (R1, B1, R2…) e desenhados com seu glifo de rotação `R`/`B` no centro do loop. Cada loop carrega `data-loop` e `data-kind`.
+
+---
+
+## 5. Erros comuns
+
+```
+# ERRADO — vínculo sem polaridade
+A -> B
+
+# ERRADO — um diagrama sem nenhum vínculo
+cld
+```
+
+Cada vínculo precisa de uma polaridade (`: +` ou `: -`); um CLD sem vínculos é rejeitado. Lembre que a polaridade é sobre *direção de mudança*, não desejabilidade — um vínculo de "mortes" para "população" ainda é `-` (mais mortes → menos população), mesmo que mortes sejam ruins.
+
+---
+
+## 6. Conformidade com padrões
+
+A notação segue Sterman, *Business Dynamics* (2000) e a convenção padrão de dinâmica de sistemas: polaridade de vínculos com sinal, marcas de atraso em hash e identificadores de loop R/B. A regra par/ímpar de vínculos negativos para polaridade de loop é a classificação do livro didático, implementada exatamente.
+
+## 7. Roadmap
+
+Adiado: promoção de estoque-e-fluxo, ponderação de força de vínculos e análise de loop dominante (loop-eigenvalue) ao longo do tempo.

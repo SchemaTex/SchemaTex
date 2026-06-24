@@ -1,0 +1,197 @@
+---
+title: 펑션 블록 다이어그램 (FBD)
+---
+
+## 펑션 블록 다이어그램이란
+
+**펑션 블록 다이어그램(Function Block Diagram, FBD)**은 산업 자동화 국제 표준인 **[IEC 61131-3:2013](https://en.wikipedia.org/wiki/IEC_61131-3)**에서 정의한 5가지 PLC 프로그래밍 언어 중 하나입니다. 생산 코드에서 두 번째로 많이 그려지는 PLC 언어(래더 다음)이며, 프로그램 일부를 전원 레일과 런그 릴레이보다 **데이터 흐름**으로 읽기가 더 쉬울 때 자연스러운 선택입니다. AND/OR 로직, 타이머(TON/TOF/TP), 카운터(CTU/CTD), 비교(EQ/NE/GT/GE/LT/LE), 수학(ADD/SUB/MUL/DIV/MOVE), 에지 검출기(R\_TRIG/F\_TRIG), 바이스테이블 래치(SR/RS) — 모두 명명된 포트 박스로 왼쪽에서 오른쪽으로 연결됩니다.
+
+Schematex는 **IEC 60617-12** 고유 기호(`&` for AND, `≥1` for OR, `=1` for XOR, `1` for NOT/BUF)를 사용하여 **IEC 61131-3 §6.4** 시각적 관례를 따릅니다. 와이어는 TIA Portal 사실상 표준 관례에 따라 데이터 유형별로 색상이 지정됩니다(BOOL 검정, INT 파랑, REAL 주황, TIME 자홍). **[ladder](/docs/ladder)**(§6.3, 런그 기반) 및 **[sfc](/docs/sfc)**(§6.5, 시퀀스 기반)와 자매 언어입니다. 함께 IEC 61131-3의 시각적 절반을 형성합니다.
+
+<Playground initial={`
+  fbd "Motor Control"
+
+  var Start: bool
+  var Stop: bool
+  var Latch: bool
+  var MotorOut: bool
+
+  network 0 "Start/stop latch":
+    Latch = OR(Start, AND(Latch, ~Stop))
+
+  network 1 "Drive output":
+    MotorOut = MOVE(Latch)`} height={420} />
+
+---
+
+## 1. 첫 번째 FBD 네트워크 만들기
+
+가장 간단한 FBD 네트워크: 블록 하나, 입력 두 개, 출력 하나.
+
+```
+fbd
+network 0:
+  Out = AND(A, B)
+```
+
+`A`와 `B`는 BOOL 입력(왼쪽 단자)으로 자동 선언되고, `Out`은 AND 블록의 `OUT` 포트(오른쪽 단자)에 자동 연결됩니다. 블록은 포트 스텁과 라벨과 함께 중간에 위치합니다.
+
+---
+
+## 2. 변수
+
+네트워크 이전에 변수를 선언합니다. 각 변수는 이름, IEC 데이터 유형, 선택적 초기값을 가집니다.
+
+```
+fbd "Tank Control"
+
+var StartBtn: bool
+var TankLevel: real
+var SetPoint: real = 80.0
+var DwellTimer: timer
+var Pulse: counter
+```
+
+지원 유형: `bool`, `int`, `dint`, `uint`, `udint`, `real`, `lreal`, `time`, `date`, `tod`, `string`, `wstring`, `byte`, `word`, `dword`, `timer`, `counter`. 다른 식별자는 사용자 정의 펑션 블록 유형으로 처리됩니다.
+
+선택적 범위 접두사(기본값 = 로컬): `var_input`, `var_output`, `var_in_out`, `var_global`, `var_external`.
+
+---
+
+## 3. 네트워크
+
+**네트워크**는 하나의 독립적인 데이터 흐름 단위로, 내부적으로는 왼쪽에서 오른쪽으로 평가되며, 프로그램 전반에 걸쳐 스캔당 위에서 아래로 네트워크가 평가됩니다.
+
+```
+network 0 "Start latch":
+  ...
+
+network 1:
+  ...
+```
+
+번호는 선택 사항입니다 — 없으면 네트워크가 자동으로 번호가 매겨집니다. 제목(따옴표 안)은 네트워크 프레임의 왼쪽 상단에 렌더링됩니다.
+
+---
+
+## 4. 블록 호출 — 인라인 표현식 표기법
+
+조합 네트워크를 작성하는 가장 명확한 방법은 단일 중첩 표현식입니다:
+
+```
+network 0:
+  Out = OR(A, AND(B, ~C))
+```
+
+파서는 호출 트리를 구성합니다: 외부 OR에 입력 1로 `A`, 입력 2로 AND 결과; AND에는 `B`와 부정된 `C`. 렌더러는 왼쪽에서 오른쪽으로 배치합니다(입력은 레이어 0, AND는 레이어 1, OR은 레이어 2, 출력은 레이어 3).
+
+`~C`는 입력 포트에 **부정 버블**(작은 열린 원)을 추가합니다 — 해당 와이어에 NOT 블록을 삽입하는 것과 동일하지만, 더 깔끔합니다.
+
+---
+
+## 5. 블록 호출 — 인스턴스 명명 표기법
+
+블록 출력을 다른 곳에서 참조해야 할 때, 인스턴스 태그를 부여합니다:
+
+```
+network 0:
+  Pulse = R_TRIG(CLK: Sensor)
+  Count = CTU(CU: Pulse.Q, R: Reset, PV: 100)
+  Done  = GE(IN1: Count.CV, IN2: 100)
+```
+
+`Pulse.Q`, `Count.CV`는 명명된 인스턴스의 출력 포트를 참조합니다. 인스턴스 태그는 블록 헤더 위에 이탤릭체로 렌더링됩니다.
+
+인수 목록은 **명명된 포트**(`CU: Pulse.Q`) 또는 **위치 기반**(`CTU(Pulse.Q, Reset, 100)`)을 허용합니다 — 포트를 건너뛸 때는 명명된 방식이 권장되며 필수입니다.
+
+---
+
+## 6. 인라인 상수
+
+입력 포트는 와이어 없이 리터럴을 직접 받을 수 있습니다:
+
+```
+network 0:
+  Dwell = TON(IN: BottleSensor, PT: T#50ms)
+  Cap   = LIMIT(MN: 0.0, IN: Setpoint, MX: 95.0)
+  Mode  = SEL(G: ManualSwitch, IN0: AutoMode, IN1: ManualMode)
+```
+
+`T#50ms`, `0.0`, `95.0`는 포트 왼쪽에 작은 노란색 박스 텍스트로 렌더링됩니다. 시간 리터럴은 IEC 61131-3을 따릅니다: `T#10ms`, `T#5s`, `T#3m20s`, `T#1h`. Boolean은 `true` / `false`(대소문자 구분 없음).
+
+---
+
+## 7. 표준 블록 라이브러리
+
+| 카테고리 | 블록 |
+|---|---|
+| Boolean | `AND`, `OR`, `NOT`, `NAND`, `NOR`, `XOR`, `XNOR`, `BUF` |
+| 에지 검출 | `R_TRIG`, `F_TRIG` |
+| 바이스테이블 | `SR`, `RS` |
+| 타이머 | `TON`, `TOF`, `TP` |
+| 카운터 | `CTU`, `CTD` |
+| 수학 | `ADD`, `SUB`, `MUL`, `DIV`, `MOD`, `ABS`, `NEG`, `MOVE` |
+| 비교 | `EQ`, `NE`, `GT`, `GE`, `LT`, `LE` |
+| 선택 | `SEL`, `MUX`, `MAX`, `MIN`, `LIMIT` |
+
+AND, OR, NAND, NOR, ADD, MUL, MAX, MIN은 임의 수의 입력을 허용합니다(기본값 2). 추가 위치 인수를 전달하거나 `[inputs: N]`을 사용하여 확장합니다.
+
+```
+network 0:
+  All4 = AND(A, B, C, D)
+  Sum  = ADD(X, Y, Z)
+```
+
+---
+
+## 8. 더 큰 예제 — 병 카운터
+
+```
+fbd "Bottle Counter"
+
+var ConveyorRunning: bool
+var BottleSensor: bool
+var BatchDone: bool
+var BatchSize: counter
+var DwellTimer: timer
+
+network 0 "Debounce sensor with 50ms dwell":
+  Dwell = TON(IN: BottleSensor, PT: T#50ms)
+
+network 1 "Count one bottle on rising edge of debounced signal":
+  Pulse     = R_TRIG(CLK: Dwell.Q)
+  BatchSize = CTU(CU: Pulse.Q, R: BatchDone, PV: 24)
+
+network 2 "Batch done":
+  BatchDone = MOVE(BatchSize.Q)
+```
+
+세 개의 네트워크: 디바운스 → 에지 검출 → 카운트 → 플래그. 각 네트워크는 하나의 DAG이며, 렌더러는 맨해튼 경로를 통해 와이어를 라우팅합니다.
+
+---
+
+## 9. v0.1 제한 사항
+
+현재 엔진은 팀이 일상적으로 사용하는 표준 블록 하위 집합을 구현합니다. 다음은 미구현이며 후속 업데이트에서 추가될 예정입니다:
+
+- **EN/ENO 전원 흐름 레일** (`[en]` 블록 속성, `[rail: on]` 헤더) — 네트워크 상단에 활성화 레일을 추가합니다. Studio 5000 / TIA Portal 벤더 관례.
+- **사용자 정의 펑션 블록** — `pins_in:` / `pins_out:` 선언 포함. 커스텀 모터 컨트롤러, PID 인스턴스 등에 활용.
+- **페이지 커넥터** (`connector_out` / `connector_in`) — 여러 페이지에 걸친 와이어.
+- **비트 문자열 블록** (SHL, SHR, ROL, ROR, AND_BIT, OR_BIT 등).
+- **확장 수학** (SQRT, LN, LOG, EXP, SIN, COS, TAN, ASIN, ACOS, ATAN).
+- **ANSI 고유 형태 모드** (`[shape: ansi]`) — `logic` 엔진은 순수 Boolean 다이어그램에 이미 이를 제공합니다.
+- **CTUD** 양방향 카운터, **TP** 보존 타이머(RTO).
+
+지금 당장 이 중 하나가 필요하다면 이슈를 열거나, 전체 IEC 61131-3 LD 하위 집합에 대해 `ladder` 엔진을 사용하십시오.
+
+---
+
+## 관련 예제
+
+예제 갤러리에서 바로 사용할 수 있는 시나리오:
+
+<RelatedExamples slugs={[
+  'fbd-motor-latch',
+  'fbd-bottle-counter',
+  'fbd-tank-setpoint-limiter',
+]} />

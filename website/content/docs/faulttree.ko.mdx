@@ -1,0 +1,134 @@
+---
+title: 결함 트리 분석
+---
+
+## 결함 트리란
+
+**결함 트리**는 규제된 엔지니어링에서 가장 널리 사용되는 신뢰성/안전 기법입니다: 하나의 원치 않는 **최상위 이벤트**(시스템 고장)에서 시작하여, Boolean **게이트**(AND / OR / voting / …)를 통해 확률이 알려진 **기본 이벤트**(부품 고장)까지 분해합니다. 1962년 Bell Labs에서 발명되었으며, **[NUREG-0492](https://www.nrc.gov/docs/ML1007/ML100780465.pdf)**(원자력), **IEC 61025**(범산업), SAE ARP4761(항공우주)로 표준화되었습니다.
+
+Schematex의 차별점은 엔진이 그림만 그리는 것이 아니라 **답을 계산**한다는 점입니다: MOCUS(Fussell-Vesely 1972)를 실행하여 **최소 컷 집합** — 불가약 고장 조합 — 과 **최상위 이벤트 확률**을 찾은 다음, 컷 집합을 빨간색으로 강조 표시합니다(단일 장애점은 가장 강한 빨간색). 이것이 결함 트리를 그리는 전체 목적이며, `pert`가 스케줄링에, `petri`가 마킹에 취하는 동일한 입장입니다. `logic`(왼쪽-오른쪽 신호 넷리스트), `decisiontree`(기대값 롤백), `fishbone`(정성적, 비정량)과 구별됩니다.
+
+<Playground initial={`faulttree "Product not removed"
+  analysis: cutsets, probability
+  top T  "Failure to remove product" = OR(G1, G2)
+  gate G1 "Arm jams or collides"      = AND(MSF, G3)
+  gate G2 "Wrong slot commanded"      = OR(CDM, MSF)
+  gate G3 "Loss of position feedback" = OR(ESF, RCF)
+  basic MSF "Manipulator system failure" p: 0.0035
+  basic CDM "Controller command error"   p: 0.0009
+  basic ESF "Encoder sensor failure"     p: 0.0021
+  basic RCF "Resolver cable fault"       p: 0.0012`} height={620} />
+
+---
+
+## 1. 첫 번째 다이어그램 만들기
+
+모든 문서는 `faulttree` 키워드(별칭 `fta`)로 시작하고, 선택적 제목 다음에 id로 연결된 선언 목록이 나열됩니다:
+
+```
+faulttree "Both pumps fail"
+  analysis: cutsets, probability
+  top T "Both redundant pumps fail" = AND(PA, PB)
+  basic PA "Pump A fails" p: 0.01
+  basic PB "Pump B fails" p: 0.01
+```
+
+`top`은 단일 루트 이벤트와 이를 생성하는 게이트를 선언합니다. `basic`은 확률이 있는 리프 부품 고장을 선언합니다. 엔진은 최소 컷 집합 `{PA, PB}`와 P(top) = 1.0e-4를 계산합니다. DSL은 **평면 선언 + 참조** 방식입니다(들여쓰기로 중첩하지 않음). 결함 트리는 DAG이므로 공유 이벤트는 여러 게이트에서 id로 참조됩니다.
+
+헤더 지시어:
+
+- `analysis: cutsets, probability` — 계산할 항목 (`pathsets`, `none`도 가능).
+- `prob: rare | mcub | exact` — 확률 계산 방법 (기본값 `rare`, 보수적 상한).
+- `layout: tb | bt` — 위에서 아래(기본값) 또는 아래에서 위.
+
+---
+
+## 2. 이벤트
+
+```
+top  T   "System fails"        = OR(A, B)
+gate G1  "Sub-fault"           = AND(A, B)
+basic A  "Component A fails"   p: 0.01
+undeveloped EXT "External fire (not modelled)"
+house HX "Power on"            state: 1
+```
+
+- **`top`** — 분석 중인 하나의 원치 않는 이벤트 (직사각형, 강조된 테두리). 정확히 하나가 필요합니다.
+- **`gate`** — 게이트 출력인 중간 이벤트 (직사각형).
+- **`basic`** — `p:`를 가진 리프인 주요 부품 고장 (원).
+- **`undeveloped`** — 더 이상 전개되지 않는 이벤트 (다이아몬드). `p:`를 가질 수 있습니다.
+- **`house`** — `state: 0` 또는 `state: 1`로 강제된 정상 예상 이벤트 (집 글리프) — 트리의 분기를 켜고 끕니다.
+
+확률은 소수 또는 과학적 표기법을 허용합니다(`p: 0.004` 또는 `p: 1e-6`). `p:`와 `prob:`는 상호 교환 가능합니다. 확률이 없는 이벤트는 기호적으로 처리됩니다(컷 집합은 여전히 계산됨; P(top)는 n/a로 보고됨).
+
+---
+
+## 3. 게이트
+
+```
+top  T1 = AND(A, B, C)            # 모든 입력이 발생
+top  T2 = OR(A, B)                # 적어도 하나의 입력이 발생
+top  T3 = XOR(A, B)               # 정확히 하나 (컷 집합에서는 OR로 처리)
+top  T4 = VOTING(2/3; A, B, C)    # n 중 k 이상
+gate G1 = INHIBIT(A) if COND      # A가 발생하고 조건이 성립
+gate G2 = PAND(A, B) order: A, B  # A 다음 B (순서 렌더링, 컷 집합에서는 AND)
+```
+
+게이트는 **출력이 위, 입력이 아래**로 그려집니다(`logic` 게이트의 반대): AND는 평평한 바닥의 돔, OR/XOR/VOTING은 방패, INHIBIT은 육각형입니다. `INHIBIT`/`PAND`의 조건 이벤트는 옆에 타원으로 렌더링됩니다. 게이트는 다른 게이트나 모든 이벤트를 참조할 수 있으며, 동일한 기본 이벤트가 여러 게이트에 연결될 수 있습니다(반복 이벤트).
+
+---
+
+## 4. 계산된 컷 집합 및 확률
+
+이것이 차별점입니다. `analysis: cutsets`를 사용하면 엔진은 **MOCUS**를 실행합니다: AND 게이트는 컷 집합의 차수를 높이고, OR 게이트는 컷 집합의 수를 늘리며, 그 다음 멱등성(`A∧A=A`)과 흡수(`X ⊆ Y ⇒ Y 제거`)가 결과를 최소화합니다.
+
+- 각 **최소 컷 집합**은 빨간색으로 박스 표시됩니다. **1차 컷 집합은 단일 장애점**입니다(가장 강한 빨간색, `data-spof`).
+- **반복 이벤트**(여러 게이트 아래의 하나의 기본 이벤트)는 흡수에 의해 처리됩니다 — 단순한 확장기가 틀리는 경우입니다.
+- **P(top)**은 이벤트별 확률에서 계산됩니다: `rare`(Σ 컷 집합 확률, 기본값), `mcub`(1 − ∏(1−P)), 또는 `exact`(포함-배제, 공유 이벤트를 올바르게 중복 제거). 방법은 최상위 이벤트 옆과 `<desc>`에 표시됩니다.
+- `house state: 0`은 최상위 이벤트를 충족 불가능하게 만들 수 있습니다 — "컷 집합 없음"으로 보고됩니다.
+
+---
+
+## 5. 반복 이벤트
+
+```
+faulttree "Safety function fails"
+  analysis: cutsets, probability
+  prob: exact
+  top T "Safety function fails" = OR(C1, C2)
+  gate C1 "Channel 1" = AND(S1, L1)
+  gate C2 "Channel 2" = AND(S2, L1)
+  basic S1 "Sensor 1 fails" p: 0.05
+  basic S2 "Sensor 2 fails" p: 0.05
+  basic L1 "Shared logic solver fails" p: 0.05
+```
+
+`L1`은 두 채널 모두에 연결됩니다 — 공유 이벤트 표시와 함께 참조별로 한 번씩 그려지지만, 컷 집합 엔진은 모든 인스턴스를 하나의 Boolean 변수로 처리합니다. 컷 집합은 `{S1, L1}`과 `{S2, L1}`입니다. `prob: exact`는 겹침을 빼서(L1이 합집합에서 한 번만 계산됨), 희귀 이벤트의 0.005가 아닌 0.004875를 제공합니다.
+
+---
+
+## 6. 전달
+
+```
+gate OVP "Sustained over-pressure" = INHIBIT(PUMP) if HEATER
+transfer OVP -> "OVP-detail"
+```
+
+`transfer ID -> "name"`은 다른 곳에 전개가 있는 이벤트 아래에 전달-출력 삼각형을 그립니다. 매칭되는 `transfer "name" = gate_expr`은 명명된 하위 트리를 정의하고 컷 집합 계산을 위해 삽입됩니다. v0.1은 문서 내 전달을 해석합니다.
+
+---
+
+## 7. 검증
+
+파서는 컷 집합 수학이 의미 있도록 읽기 쉬운 오류와 함께 빠르게 실패합니다:
+
+- 정확히 하나의 `top`이 필요합니다(0개 또는 여러 개는 오류).
+- 선언되지 않은 id를 참조하는 게이트는 id 이름으로 보고합니다.
+- 순환은 거부됩니다(결함 트리는 DAG).
+- `[0, 1]` 범위 밖의 확률, `k > n`인 `VOTING k/n` 또는 `n ≠ 입력 수`, INHIBIT/PAND가 아닌 게이트의 `if` 조건은 모두 평이한 영어로 보고됩니다.
+
+---
+
+## 8. 테마
+
+`default`는 하우스 팔레트를 사용합니다 — 소프트 슬레이트 블루 이벤트 박스, **녹색 게이트**("로직 진행"), **빨간색 컷 집합 박스**(계산된 위험), 파란색 확률 숫자, 노란색 집. `monochrome`은 NUREG-0492 흑백 교과서 모양을 재현하며, 돔/방패 형태(색이 아닌)가 게이트 유형을 전달합니다. 모든 획/채우기는 `ReliabilityTokens`에서 가져옵니다. 모든 요소에는 `data-*`(`data-cutset`, `data-spof`, `data-prob`, `data-gate`)가 있어 계산된 분석을 다운스트림에서 검사할 수 있습니다.
