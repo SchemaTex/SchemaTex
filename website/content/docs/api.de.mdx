@@ -1,0 +1,138 @@
+---
+title: API-Referenz
+description: Schematex JavaScript/TypeScript-API — strikte render/parse-Aufrufe, vorschausichere Result-APIs, Konfigurationsoptionen und tree-shakebare Imports.
+---
+
+## `render(text, config?)`
+
+Rendert einen DSL-String zu einem SVG-String. Die Auswahl erfolgt anhand des
+ersten Schlüsselworts; bei fehlgeschlagener Erkennung, Parsing, Layout oder
+Rendering wird ein Fehler geworfen.
+
+```ts
+import { render } from 'schematex';
+
+const svg: string = render(text, { theme: 'monochrome' });
+```
+
+Verwenden Sie die strikte API, wenn ungültiges DSL den Workflow stoppen soll,
+zum Beispiel während eines Tests, eines Export-Jobs oder einer serverseitigen
+Validierungsschranke.
+
+## `parse(text, config?)`
+
+Parst einen DSL-String in den typisierten AST, ohne zu rendern. Auch diese API
+ist strikt und wirft bei ungültigem DSL einen Fehler.
+
+```ts
+import { parse } from 'schematex';
+
+const ast = parse(text);
+```
+
+## Vorschausicheres Rendering
+
+Live-Editoren, KI-Vorschauen und Chat-Canvas sollten einen Parser-Fehler nicht
+in eine leere Zeichenfläche verwandeln. Verwenden Sie `renderPreview()`, wenn Sie
+nur einen SVG-String benötigen:
+
+```ts
+import { renderPreview } from 'schematex';
+
+const svg = renderPreview(text, { type: 'circuit' });
+```
+
+`renderPreview()` gibt immer SVG zurück. Schlägt das strikte Rendering fehl, ist
+dieses SVG ein sichtbares Diagnose-Fallback. `render(text, { mode: 'preview' })`
+bildet dieselbe Vorschaugrenze für Integrationen, die bereits `render()`
+aufrufen.
+
+## Result-APIs
+
+Verwenden Sie die Result-APIs, wenn der Aufrufer sowohl eine sichtbare Ausgabe
+als auch den Gültigkeitszustand benötigt:
+
+```ts
+import { parseResult, renderResult } from 'schematex';
+
+const renderState = renderResult(text);
+container.innerHTML = renderState.svg;
+
+if (!renderState.ok) {
+  console.error(renderState.diagnostics);
+}
+
+const parseState = parseResult(text);
+```
+
+`renderResult()` gibt `svg`, `diagnostics`, `type` sowie einen `status` von
+`valid`, `partial` oder `invalid` zurück. Ungültige Render-Ergebnisse enthalten
+weiterhin ein Diagnose-SVG, damit die Vorschau sichtbar bleibt.
+
+`parseResult()` gibt entweder einen AST oder strukturierte Diagnosedaten zurück,
+ohne einen Fehler zu werfen. Der Status `partial` ist für Parser reserviert, die
+einen partiellen AST oder ein partiell gerendertes Diagramm wiederherstellen
+können.
+
+Betrachten Sie „ein SVG-String existiert" nicht als Beweis dafür, dass das DSL
+gültig ist. Vorschauflächen sollten das SVG anzeigen und `ok`, `status` sowie
+`diagnostics` für Entscheidungen zu Wiederholung, Reparatur, Telemetrie oder
+Abrechnung nutzen.
+
+## Browser und React
+
+Der Browser-Subpfad stellt strikte DOM-Helfer und vorschausichere DOM-Helfer
+bereit:
+
+```ts
+import {
+  renderToContainer,
+  renderPreviewToContainer,
+} from 'schematex/browser';
+
+renderToContainer(text, exportContainer);          // strict
+renderPreviewToContainer(text, previewContainer);  // visible fallback
+```
+
+Die React-Komponente verwendet bereits die vorschausichere Result-Grenze:
+
+```tsx
+import { SchematexDiagram } from 'schematex/react';
+
+<SchematexDiagram
+  dsl={text}
+  type="circuit"
+  onError={(error) => console.error(error)}
+/>;
+```
+
+`onError` wird bei einem strikten Parser-, Layout- oder Rendering-Fehler
+ausgelöst, bevor die Komponente das Diagnose-Fallback-SVG anzeigt.
+
+## Tree-shakebare Imports
+
+```ts
+import { render } from 'schematex/genogram';
+import { render } from 'schematex/ecomap';
+import { render } from 'schematex/pedigree';
+import { render } from 'schematex/phylo';
+import { render } from 'schematex/sociogram';
+```
+
+## `SchematexConfig`
+
+```ts
+interface SchematexConfig {
+  type?: string;              // optional diagram type override
+  width?: number;
+  height?: number;
+  padding?: number;
+  theme?: string;             // e.g. 'default' | 'monochrome' | 'dark'
+  fontFamily?: string;
+  mode?: 'strict' | 'preview';
+}
+```
+
+Siehe [`src/core/types.ts`](https://github.com/SchemaTex/SchemaTex/blob/main/src/core/types.ts)
+und [`src/core/api.ts`](https://github.com/SchemaTex/SchemaTex/blob/main/src/core/api.ts)
+für die vollständigen Typdefinitionen.

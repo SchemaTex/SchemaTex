@@ -1,0 +1,185 @@
+---
+title: 贡献一种新图表类型
+description: 为 Schematex 添加新图表插件的分步指南——从标准规范到发布到官网的示例。
+---
+
+
+> 为 Schematex 添加新图表插件的分步指南——从标准规范到发布到官网的示例。请先阅读 [`00-OVERVIEW.md`](/docs) 了解整体架构。
+
+---
+
+## 1. 流水线（Pipeline）
+
+每种图表类型都遵循相同的流水线：
+
+```
+Text (DSL) ──► Parser ──► AST ──► Layout ──► LayoutResult ──► Renderer ──► SVG
+```
+
+- **Parser** — 手写递归下降；无 parser generator，无依赖。
+- **Layout** — 作用于 AST 的纯函数，产出绝对几何坐标。确定性，无随机。
+- **Renderer** — 通过 [`src/core/svg.ts`](https://github.com/SchemaTex/SchemaTex/blob/main/src/core/svg.ts) 构建 SVG 字符串；无 DOM，SSR 安全。
+
+小型图表（例如 timing）可以把 layout 融合进 renderer。复杂图表（genogram、SLD）必须把它们分开，并各自独立测试。
+
+---
+
+## 2. 硬约束（不可妥协）
+
+1. **零运行时依赖。** 无 D3，无 dagre，无 parser generator。手写一切。
+2. **严格 TypeScript。** 无 `any`，无未注释的 `as`。[`src/core/types.ts`](https://github.com/SchemaTex/SchemaTex/blob/main/src/core/types.ts) 中的类型就是规范。
+3. **语义 SVG。** 每张渲染出的图表都必须包含 `<title>`、`<desc>`、用于主题化的 CSS class，以及用于交互的 `data-*` 属性。无 inline style。
+4. **使用 SVG builder。** 永远不要拼接 raw SVG 字符串——用 [`src/core/svg.ts`](https://github.com/SchemaTex/SchemaTex/blob/main/src/core/svg.ts)。
+5. **Layout 测试先行。** 在写 layout 代码之前，先写会失败的 layout 测试。
+6. **符合标准。** 每种图表都实现一项已发布的领域标准——而不是我们自己发明的。在标准文档中引用参考来源（IEEE、IEC、ISO、McGoldrick 等）。
+
+---
+
+## 3. 分步清单
+
+### 第 1 步 — 编写标准文档
+
+创建 `docs/reference/NN-{TYPE}-STANDARD.md`（取下一个空闲编号）。它必须包含：
+
+- 范围与参考（IEEE / IEC / 已发表论文）。
+- 带 ASCII/Unicode 参照的符号表。
+- DSL 语法（EBNF 或等价形式）。
+- 布局规则（坐标轴、对齐、间距）。
+- 3–5 个规范测试用例，附预期渲染说明。
+
+可参考 [`06-TIMING-STANDARD.md`](/docs/timing) 或 [`11-SINGLE-LINE-STANDARD.md`](/docs/sld) 作为模板。
+
+### 第 2 步 — 在 `src/core/types.ts` 中添加 AST 类型
+
+类型就是规范。在写任何代码之前，先确定：
+
+- `DiagramType` 字面量——在 `types.ts` 中扩展该联合类型。
+- AST 形状：节点、边、元数据，以及任何特定于该图表的字段。
+- LayoutResult 形状（位置、尺寸、计算出的路由）。
+
+把这部分作为独立的 commit 提交，以便评审者单独审查这份契约。
+
+### 第 3 步 — 搭建插件目录骨架
+
+```
+src/diagrams/{type}/
+  index.ts       # DiagramPlugin export
+  parser.ts      # text → AST
+  layout.ts      # AST → LayoutResult   (optional; skip for simple diagrams)
+  renderer.ts    # LayoutResult → SVG string
+```
+
+`index.ts` 始终是这样的形状：
+
+```ts
+import type { DiagramPlugin } from "../../core/types";
+import { parseMyType } from "./parser";
+import { renderMyType } from "./renderer";
+
+export const myType: DiagramPlugin = {
+  type: "mytype",
+  detect(text) {
+    const first = text.trim().split("\n")[0]?.trim().toLowerCase() ?? "";
+    return first.startsWith("mytype");
+  },
+  render(text) {
+    const ast = parseMyType(text);
+    return renderMyType(ast);
+  },
+};
+```
+
+### 第 4 步 — 测试先行
+
+```
+tests/{type}/
+  parser.test.ts
+  layout.test.ts
+  renderer.test.ts
+  e2e.test.ts      # full text → SVG, snapshot string for stability
+```
+
+覆盖你在标准文档中确定的每一个测试用例。Layout 测试应断言绝对坐标——这正是能抓出回归的地方。
+
+### 第 5 步 — 实现 parser → layout → renderer
+
+跟着测试走。保持每个模块的纯粹——parser 接收字符串返回 AST，layout 接收 AST 返回几何坐标，renderer 接收几何坐标返回字符串。
+
+使用 SVG builder：
+
+```ts
+import { svg, g, rect, text } from "../../core/svg";
+```
+
+永远不要写 `'<svg>' + ... + '</svg>'`。
+
+### 第 6 步 — 注册插件
+
+编辑 [`src/core/api.ts`](https://github.com/SchemaTex/SchemaTex/blob/main/src/core/api.ts)：
+
+1. 从 `../diagrams/mytype` 导入 `{ myType }`。
+2. 把它加入 `plugins[]` 数组。
+3. 扩展 `SchematexConfig.type` 字面量联合类型。
+4. 用新关键字更新 `detectPlugin` 的错误信息。
+
+### 第 7 步 — 质量关卡
+
+```bash
+npm run typecheck
+npm run test
+npm run lint
+npm run build
+```
+
+四项全部必须通过。如果 `dts` 因为未使用的局部变量而失败，请修复它们——不要抑制告警。
+
+### 第 8 步 — 接入官网
+
+1. **画廊磁贴** — 在 [`website/lib/gallery-data.ts`](https://github.com/SchemaTex/SchemaTex/blob/main/website/lib/gallery-data.ts) 中添加一条记录。`dsl` 字段必须能解析——用 `node scripts/validate-gallery.mjs` 校验。
+2. **静态 SVG** — 在 [`scripts/generate-gallery-svgs.mjs`](https://github.com/SchemaTex/SchemaTex/blob/main/scripts/generate-gallery-svgs.mjs) 中添加一条记录并运行它。生成的 SVG 会随 repo 一起发布，并被 README 引用。
+3. **文档页** — 创建 `website/content/docs/{type}.mdx`，包含一个 `<Playground initial={…}>` 以及内联进来的标准文档正文。
+4. **示例页（可选）** — 对于真实世界的案例研究，添加 `website/content/examples/{slug}.mdx`。
+5. **README** — 在画廊表格中添加一行，附上生成的 SVG。
+
+### 第 9 步 — 更新顶层文档
+
+- [`README.md`](https://github.com/SchemaTex/SchemaTex/blob/main/README.md) — 画廊行。
+- [`CLAUDE.md`](https://github.com/SchemaTex/SchemaTex/blob/main/CLAUDE.md) — 底部的"已完成"列表。
+- [`docs/reference/00-OVERVIEW.md`](/docs) — 状态表。
+
+---
+
+## 4. 常见坑
+
+- **忘记写 `detect()`** — 如果两个插件都返回 `true`，第一个胜出。让你的头部关键字保持唯一。
+- **坐标漂移** — 使用相对数值（`width / 2 + padding`）的 layout 测试会掩盖 bug。请断言具体的预期值。
+- **inline `style=` 属性** — 被语义 SVG 规则禁止。使用 CSS class，并在 [`src/core/theme.ts`](https://github.com/SchemaTex/SchemaTex/blob/main/src/core/theme.ts) 中把它们暴露为主题 token。
+- **运行时依赖悄悄混入** — 如果你觉得需要一个依赖，先开一个 issue。答案几乎总是"手写一个 30 行的版本"。
+- **无法解析的画廊 DSL 占位串** — 提交前运行 `node scripts/validate-gallery.mjs`。这个脚本之所以存在，正是因为这种情况屡屡发生。
+
+---
+
+## 5. 参考插件
+
+值得研究的好例子，按复杂度排列：
+
+| 复杂度 | 插件 | 适合学什么 |
+|-----------|--------|-----------|
+| 极简 | [`timing`](https://github.com/SchemaTex/SchemaTex/tree/main/src/diagrams/timing) | 只有 parser + renderer，无独立 layout。 |
+| 中等 | [`ecomap`](https://github.com/SchemaTex/SchemaTex/tree/main/src/diagrams/ecomap) | 干净的 AST → layout → renderer 拆分。 |
+| 进阶 | [`genogram`](https://github.com/SchemaTex/SchemaTex/tree/main/src/diagrams/genogram) | 代际布局、多遍路由、丰富的符号集。 |
+| 进阶 | [`sld`](https://github.com/SchemaTex/SchemaTex/tree/main/src/diagrams/sld) | 电压等级分带、母线路由、设备聚类。 |
+
+---
+
+## 6. 路线图上的候选图表
+
+尚未实现——欢迎提 PR。从标准文档（第 1 步）开始，并在写代码前开一个 draft PR。
+
+- **Fishbone / Ishikawa** — 因果分析。AST 和标准文档是主要未知项。
+- **Sequence diagram** — UML 时序图，不依赖 PlantUML/Mermaid 约定。
+- **State machine** — 带层级状态的 UML 状态图。
+- **Gantt** — 带依赖和关键路径的项目排程。
+- **Network topology** — 带设备图标的 L2/L3 网络图。
+
+如果你要添加其中之一，标准文档承担了大部分工作——别在它上面偷工减料。

@@ -1,0 +1,185 @@
+---
+title: 貢獻一種新的圖表類型
+description: 為 Schematex 新增圖表外掛的逐步指南——從標準規格到發佈到網站的範例。
+---
+
+
+> 為 Schematex 新增圖表外掛的逐步指南——從標準規格到發佈到網站的範例。請先閱讀 [`00-OVERVIEW.md`](/docs) 了解整體架構。
+
+---
+
+## 1. Pipeline
+
+每一種圖表類型都遵循相同的 pipeline：
+
+```
+Text (DSL) ──► Parser ──► AST ──► Layout ──► LayoutResult ──► Renderer ──► SVG
+```
+
+- **Parser** — 手寫遞迴下降；無 parser generator，無相依套件。
+- **Layout** — 在 AST 之上的純函式，產生絕對幾何座標。確定性，無隨機性。
+- **Renderer** — 透過 [`src/core/svg.ts`](https://github.com/SchemaTex/SchemaTex/blob/main/src/core/svg.ts) 以字串組建 SVG；無 DOM，SSR-safe。
+
+小型圖表（例如 timing）可以把 layout 融合進 renderer。複雜圖表（genogram、SLD）必須將它們分開，並各自獨立測試。
+
+---
+
+## 2. 硬約束（不可協商）
+
+1. **零 runtime 相依套件。** 無 D3，無 dagre，無 parser generator。手寫一切。
+2. **嚴格 TypeScript。** 無 `any`，無未註解的 `as`。[`src/core/types.ts`](https://github.com/SchemaTex/SchemaTex/blob/main/src/core/types.ts) 中的型別即規格。
+3. **語義 SVG。** 每張渲染出的圖表都必須包含 `<title>`、`<desc>`、可主題化的 CSS class，以及供互動使用的 `data-*` 屬性。無 inline style。
+4. **使用 SVG builder。** 絕不拼接 raw SVG 字串——使用 [`src/core/svg.ts`](https://github.com/SchemaTex/SchemaTex/blob/main/src/core/svg.ts)。
+5. **Test-first layout。** 在撰寫 layout 程式碼之前，先寫會失敗的 layout 測試。
+6. **標準合規。** 每張圖表都實作一個已發佈的領域標準——而非我們自創。在標準文件中引用參考來源（IEEE、IEC、ISO、McGoldrick 等）。
+
+---
+
+## 3. 逐步檢查清單
+
+### Step 1 — 撰寫標準文件
+
+建立 `docs/reference/NN-{TYPE}-STANDARD.md`（下一個未使用的編號）。它必須包含：
+
+- 範圍與參考來源（IEEE / IEC / 已發表論文）。
+- 帶 ASCII/Unicode 參考的符號表。
+- DSL grammar（EBNF 或等效形式）。
+- Layout 規則（座標軸、對齊、間距）。
+- 3–5 個典型 test case，附預期渲染說明。
+
+可參考 [`06-TIMING-STANDARD.md`](/docs/timing) 或 [`11-SINGLE-LINE-STANDARD.md`](/docs/sld) 作為範本。
+
+### Step 2 — 將 AST 型別加入 `src/core/types.ts`
+
+型別即規格。在撰寫任何程式碼之前，先確定：
+
+- `DiagramType` literal——在 `types.ts` 中擴充該 union。
+- AST 結構：nodes、edges、metadata，以及任何圖表特有欄位。
+- LayoutResult 結構（位置、尺寸、計算出的 routing）。
+
+將其作為獨立的 commit 提交，讓審查者能單獨評論這份契約。
+
+### Step 3 — 搭建外掛目錄骨架
+
+```
+src/diagrams/{type}/
+  index.ts       # DiagramPlugin export
+  parser.ts      # text → AST
+  layout.ts      # AST → LayoutResult   (optional; skip for simple diagrams)
+  renderer.ts    # LayoutResult → SVG string
+```
+
+`index.ts` 永遠是這個樣子：
+
+```ts
+import type { DiagramPlugin } from "../../core/types";
+import { parseMyType } from "./parser";
+import { renderMyType } from "./renderer";
+
+export const myType: DiagramPlugin = {
+  type: "mytype",
+  detect(text) {
+    const first = text.trim().split("\n")[0]?.trim().toLowerCase() ?? "";
+    return first.startsWith("mytype");
+  },
+  render(text) {
+    const ast = parseMyType(text);
+    return renderMyType(ast);
+  },
+};
+```
+
+### Step 4 — 先寫測試
+
+```
+tests/{type}/
+  parser.test.ts
+  layout.test.ts
+  renderer.test.ts
+  e2e.test.ts      # full text → SVG, snapshot string for stability
+```
+
+涵蓋你在標準文件中確定的每一個 test case。Layout 測試應該斷言絕對座標——那正是能抓出回歸的地方。
+
+### Step 5 — 實作 parser → layout → renderer
+
+跟著測試走。讓每個模組保持純粹——parser 接收一個字串並回傳 AST，layout 接收一個 AST 並回傳幾何座標，renderer 接收幾何座標並回傳一個字串。
+
+使用 SVG builder：
+
+```ts
+import { svg, g, rect, text } from "../../core/svg";
+```
+
+絕不寫 `'<svg>' + ... + '</svg>'`。
+
+### Step 6 — 註冊外掛
+
+編輯 [`src/core/api.ts`](https://github.com/SchemaTex/SchemaTex/blob/main/src/core/api.ts)：
+
+1. 從 `../diagrams/mytype` 導入 `{ myType }`。
+2. 將其加入 `plugins[]` 陣列。
+3. 擴充 `SchematexConfig.type` 的 literal union。
+4. 用新的關鍵字更新 `detectPlugin` 的錯誤訊息。
+
+### Step 7 — 品質閘
+
+```bash
+npm run typecheck
+npm run test
+npm run lint
+npm run build
+```
+
+四項都必須通過。如果 `dts` 因未使用的區域變數而失敗，請修掉它們——不要壓制警告。
+
+### Step 8 — 接入網站
+
+1. **Gallery 圖塊** — 在 [`website/lib/gallery-data.ts`](https://github.com/SchemaTex/SchemaTex/blob/main/website/lib/gallery-data.ts) 中新增一筆條目。`dsl` 欄位必須能解析——用 `node scripts/validate-gallery.mjs` 校驗。
+2. **靜態 SVG** — 在 [`scripts/generate-gallery-svgs.mjs`](https://github.com/SchemaTex/SchemaTex/blob/main/scripts/generate-gallery-svgs.mjs) 中新增一筆條目並執行它。產生的 SVG 會隨 repo 一起發佈，並從 README 引用。
+3. **文件頁面** — 建立 `website/content/docs/{type}.mdx`，內含一個 `<Playground initial={…}>`，並將標準文件的正文內嵌進去。
+4. **範例頁面（可選）** — 對於真實世界的案例研究，新增 `website/content/examples/{slug}.mdx`。
+5. **README** — 在 gallery 表格中新增一列，附上產生的 SVG。
+
+### Step 9 — 更新頂層文件
+
+- [`README.md`](https://github.com/SchemaTex/SchemaTex/blob/main/README.md) — gallery 列。
+- [`CLAUDE.md`](https://github.com/SchemaTex/SchemaTex/blob/main/CLAUDE.md) — 底部的「Completed」清單。
+- [`docs/reference/00-OVERVIEW.md`](/docs) — 狀態表。
+
+---
+
+## 4. 常見陷阱
+
+- **忘記 `detect()`** — 如果兩個外掛都回傳 `true`，第一個獲勝。讓你的標頭關鍵字保持唯一。
+- **座標漂移** — 使用相對數字（`width / 2 + padding`）的 layout 測試會掩蓋 bug。請對具體的預期值做斷言。
+- **inline `style=` 屬性** — 被語義 SVG 規則所阻擋。請使用 CSS class，並在 [`src/core/theme.ts`](https://github.com/SchemaTex/SchemaTex/blob/main/src/core/theme.ts) 中將它們暴露為主題 token。
+- **runtime 相依套件悄悄混入** — 如果你覺得需要一個，請先開 issue。答案幾乎總是「手寫一個 30 行的版本」。
+- **無法解析的 Gallery DSL stub** — 提交前先執行 `node scripts/validate-gallery.mjs`。這個 script 之所以存在，正是因為這個問題一再發生。
+
+---
+
+## 5. 參考外掛
+
+值得研究的好範例，依複雜度排列：
+
+| 複雜度 | 外掛 | 研究重點 |
+|-----------|--------|-----------|
+| Minimal | [`timing`](https://github.com/SchemaTex/SchemaTex/tree/main/src/diagrams/timing) | 僅 parser + renderer，無獨立 layout。 |
+| Medium | [`ecomap`](https://github.com/SchemaTex/SchemaTex/tree/main/src/diagrams/ecomap) | 乾淨的 AST → layout → renderer 拆分。 |
+| Advanced | [`genogram`](https://github.com/SchemaTex/SchemaTex/tree/main/src/diagrams/genogram) | 世代式 layout、多趟 routing、豐富的符號集。 |
+| Advanced | [`sld`](https://github.com/SchemaTex/SchemaTex/tree/main/src/diagrams/sld) | 電壓等級分帶、bus routing、設備叢集。 |
+
+---
+
+## 6. Roadmap 上的候選圖表
+
+尚未實作——歡迎提 PR。請從標準文件開始（Step 1），並在寫程式碼之前開一個 draft PR。
+
+- **Fishbone / Ishikawa** — 因果分析。AST 和標準文件是主要的未知數。
+- **Sequence diagram** — UML sequence，不依賴 PlantUML/Mermaid 的慣例。
+- **State machine** — 帶階層狀態的 UML state chart。
+- **Gantt** — 帶相依關係與關鍵路徑的專案排程。
+- **Network topology** — 帶設備圖示的 L2/L3 網路圖。
+
+如果你要新增其中之一，標準文件承擔了大部分工作——別在它上面偷工。

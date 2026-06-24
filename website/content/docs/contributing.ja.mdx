@@ -1,0 +1,185 @@
+---
+title: 新しい図の種類を追加する
+description: Schematex に新しい図プラグインを追加するためのステップバイステップガイド — 標準仕様から公開されたウェブサイトのサンプルまで。
+---
+
+
+> Schematex に新しい図プラグインを追加するためのステップバイステップガイドです — 標準仕様から公開されたウェブサイトのサンプルまで。全体のアーキテクチャについては、まず [`00-OVERVIEW.md`](/docs) をお読みください。
+
+---
+
+## 1. パイプライン
+
+すべての図の種類は同じパイプラインに従います。
+
+```
+Text (DSL) ──► Parser ──► AST ──► Layout ──► LayoutResult ──► Renderer ──► SVG
+```
+
+- **Parser** — 手書きの再帰下降。パーサージェネレーターなし、依存関係なし。
+- **Layout** — AST に対する純粋関数で、絶対座標を生成します。決定的で、ランダム性はありません。
+- **Renderer** — [`src/core/svg.ts`](https://github.com/SchemaTex/SchemaTex/blob/main/src/core/svg.ts) による文字列ビルド方式の SVG。DOM 非依存で、SSR 安全です。
+
+小さな図（例: timing）はレイアウトをレンダラーに融合してもかまいません。複雑な図（genogram、SLD）はこれらを分離し、独立してテストする必要があります。
+
+---
+
+## 2. ハード制約（交渉の余地なし）
+
+1. **ランタイム依存ゼロ。** D3 なし、dagre なし、パーサージェネレーターなし。すべて手書きします。
+2. **ストリクト TypeScript。** `any` なし、コメントのない `as` なし。[`src/core/types.ts`](https://github.com/SchemaTex/SchemaTex/blob/main/src/core/types.ts) の型が仕様です。
+3. **セマンティック SVG。** 描画されるすべての図には `<title>`、`<desc>`、テーマ化のための CSS クラス、インタラクティブ性のための `data-*` 属性を含める必要があります。インラインスタイルは禁止です。
+4. **SVG ビルダーを使用する。** 生の SVG 文字列を連結しないでください — [`src/core/svg.ts`](https://github.com/SchemaTex/SchemaTex/blob/main/src/core/svg.ts) を使用します。
+5. **テストファーストのレイアウト。** レイアウトコードを書く前に、失敗するレイアウトテストを書きます。
+6. **標準準拠。** 各図は公開されたドメイン標準を実装します — 私たちの発明ではありません。標準ドキュメントで参照元（IEEE、IEC、ISO、McGoldrick など）を引用してください。
+
+---
+
+## 3. ステップバイステップ・チェックリスト
+
+### ステップ 1 — 標準ドキュメントを書く
+
+`docs/reference/NN-{TYPE}-STANDARD.md`（次の空き番号）を作成します。以下を含める必要があります。
+
+- スコープと参照元（IEEE / IEC / 公開論文）。
+- ASCII/Unicode 参照を含むシンボル表。
+- DSL 文法（EBNF または同等のもの）。
+- レイアウトルール（軸、整列、間隔）。
+- 期待される描画ノートを含む 3〜5 個の代表的なテストケース。
+
+テンプレートとして [`06-TIMING-STANDARD.md`](/docs/timing) または [`11-SINGLE-LINE-STANDARD.md`](/docs/sld) を参照してください。
+
+### ステップ 2 — `src/core/types.ts` に AST 型を追加する
+
+型が仕様です。コードを書く前に、以下を確定させます。
+
+- `DiagramType` リテラル — `types.ts` の union を拡張します。
+- AST の形状: ノード、エッジ、メタデータ、図固有のフィールド。
+- LayoutResult の形状（位置、サイズ、計算されたルーティング）。
+
+レビュアーが契約を個別に批評できるよう、これを独立したコミットとして提出してください。
+
+### ステップ 3 — プラグインディレクトリの雛形を作る
+
+```
+src/diagrams/{type}/
+  index.ts       # DiagramPlugin export
+  parser.ts      # text → AST
+  layout.ts      # AST → LayoutResult   (optional; skip for simple diagrams)
+  renderer.ts    # LayoutResult → SVG string
+```
+
+`index.ts` は常に次のような形になります。
+
+```ts
+import type { DiagramPlugin } from "../../core/types";
+import { parseMyType } from "./parser";
+import { renderMyType } from "./renderer";
+
+export const myType: DiagramPlugin = {
+  type: "mytype",
+  detect(text) {
+    const first = text.trim().split("\n")[0]?.trim().toLowerCase() ?? "";
+    return first.startsWith("mytype");
+  },
+  render(text) {
+    const ast = parseMyType(text);
+    return renderMyType(ast);
+  },
+};
+```
+
+### ステップ 4 — まずテストを書く
+
+```
+tests/{type}/
+  parser.test.ts
+  layout.test.ts
+  renderer.test.ts
+  e2e.test.ts      # full text → SVG, snapshot string for stability
+```
+
+標準ドキュメントで確定させたすべてのテストケースをカバーします。レイアウトテストは絶対座標をアサートすべきです — それがリグレッションを捕捉します。
+
+### ステップ 5 — parser → layout → renderer を実装する
+
+テストに従ってください。各モジュールを純粋に保ちます — parser は文字列を受け取り AST を返し、layout は AST を受け取り座標を返し、renderer は座標を受け取り文字列を返します。
+
+SVG ビルダーを使用します。
+
+```ts
+import { svg, g, rect, text } from "../../core/svg";
+```
+
+`'<svg>' + ... + '</svg>'` は決して行わないでください。
+
+### ステップ 6 — プラグインを登録する
+
+[`src/core/api.ts`](https://github.com/SchemaTex/SchemaTex/blob/main/src/core/api.ts) を編集します。
+
+1. `../diagrams/mytype` から `{ myType }` をインポートします。
+2. `plugins[]` 配列に追加します。
+3. `SchematexConfig.type` リテラル union を拡張します。
+4. `detectPlugin` のエラーメッセージを新しいキーワードで更新します。
+
+### ステップ 7 — 品質ゲート
+
+```bash
+npm run typecheck
+npm run test
+npm run lint
+npm run build
+```
+
+4 つすべてが通る必要があります。未使用のローカル変数で `dts` が失敗した場合は、それらを修正してください — 抑制しないでください。
+
+### ステップ 8 — ウェブサイトに組み込む
+
+1. **ギャラリータイル** — [`website/lib/gallery-data.ts`](https://github.com/SchemaTex/SchemaTex/blob/main/website/lib/gallery-data.ts) にエントリを追加します。`dsl` フィールドは解析できる必要があります — `node scripts/validate-gallery.mjs` で検証してください。
+2. **静的 SVG** — [`scripts/generate-gallery-svgs.mjs`](https://github.com/SchemaTex/SchemaTex/blob/main/scripts/generate-gallery-svgs.mjs) にエントリを追加して実行します。生成された SVG はリポジトリに同梱され、README から参照されます。
+3. **ドキュメントページ** — `website/content/docs/{type}.mdx` を作成し、`<Playground initial={…}>` と標準ドキュメントの本文をインライン化します。
+4. **サンプルページ（任意）** — 実世界のケーススタディには、`website/content/examples/{slug}.mdx` を追加します。
+5. **README** — 生成された SVG を含む行をギャラリーテーブルに追加します。
+
+### ステップ 9 — トップレベルのドキュメントを更新する
+
+- [`README.md`](https://github.com/SchemaTex/SchemaTex/blob/main/README.md) — ギャラリー行。
+- [`CLAUDE.md`](https://github.com/SchemaTex/SchemaTex/blob/main/CLAUDE.md) — 末尾の「Completed」リスト。
+- [`docs/reference/00-OVERVIEW.md`](/docs) — ステータステーブル。
+
+---
+
+## 4. よくある落とし穴
+
+- **`detect()` の忘れ** — 2 つのプラグインがともに `true` を返す場合、最初のものが勝ちます。ヘッダーキーワードを一意にしてください。
+- **座標のずれ** — 相対値（`width / 2 + padding`）を使うレイアウトテストはバグを隠します。具体的な期待値でアサートしてください。
+- **インライン `style=` 属性** — セマンティック SVG ルールによりブロックされます。CSS クラスを使用し、[`src/core/theme.ts`](https://github.com/SchemaTex/SchemaTex/blob/main/src/core/theme.ts) でテーマトークンとして公開してください。
+- **ランタイム依存の忍び込み** — 必要だと思ったら、まず issue を立ててください。答えはほとんどの場合「30 行のバージョンを手書きする」です。
+- **解析できないギャラリー DSL スタブ** — コミット前に `node scripts/validate-gallery.mjs` を実行してください。このスクリプトは、まさにこれが繰り返し起きたために存在しています。
+
+---
+
+## 5. 参照プラグイン
+
+複雑さ別の、研究に適した好例です。
+
+| 複雑さ | プラグイン | 学ぶ点 |
+|-----------|--------|-----------|
+| 最小限 | [`timing`](https://github.com/SchemaTex/SchemaTex/tree/main/src/diagrams/timing) | parser + renderer のみ、独立した layout なし。 |
+| 中程度 | [`ecomap`](https://github.com/SchemaTex/SchemaTex/tree/main/src/diagrams/ecomap) | クリーンな AST → layout → renderer の分割。 |
+| 上級 | [`genogram`](https://github.com/SchemaTex/SchemaTex/tree/main/src/diagrams/genogram) | 世代別レイアウト、マルチパスルーティング、豊富なシンボルセット。 |
+| 上級 | [`sld`](https://github.com/SchemaTex/SchemaTex/tree/main/src/diagrams/sld) | 電圧レベルのバンディング、母線ルーティング、デバイスのクラスタリング。 |
+
+---
+
+## 6. ロードマップ上の候補図
+
+まだ実装されていません — PR を歓迎します。標準ドキュメント（ステップ 1）から始め、コーディングの前にドラフト PR を立ててください。
+
+- **Fishbone / Ishikawa** — 原因・結果分析。AST と標準ドキュメントが主な未知数です。
+- **Sequence diagram** — PlantUML/Mermaid の慣習に依存しない UML シーケンス。
+- **State machine** — 階層的ステートを持つ UML 状態遷移図。
+- **Gantt** — 依存関係とクリティカルパスを持つプロジェクトスケジューリング。
+- **Network topology** — デバイスアイコンを持つ L2/L3 ネットワーク図。
+
+これらのいずれかを追加する場合、標準ドキュメントが作業の大半を担います — 手を抜かないでください。

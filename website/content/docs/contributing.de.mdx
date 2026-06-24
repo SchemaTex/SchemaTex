@@ -1,0 +1,185 @@
+---
+title: Einen neuen Diagrammtyp beitragen
+description: Schritt-für-Schritt-Anleitung zum Hinzufügen eines neuen Diagramm-Plugins zu Schematex — von der Standardspezifikation bis zum veröffentlichten Website-Beispiel.
+---
+
+
+> Eine Schritt-für-Schritt-Anleitung zum Hinzufügen eines neuen Diagramm-Plugins zu Schematex — von der Standardspezifikation bis zum veröffentlichten Website-Beispiel. Lesen Sie zuerst [`00-OVERVIEW.md`](/docs) für die Gesamtarchitektur.
+
+---
+
+## 1. Die Pipeline
+
+Jeder Diagrammtyp folgt derselben Pipeline:
+
+```
+Text (DSL) ──► Parser ──► AST ──► Layout ──► LayoutResult ──► Renderer ──► SVG
+```
+
+- **Parser** — handgeschriebener rekursiver Abstieg; keine Parser-Generatoren, keine Abhängigkeiten.
+- **Layout** — reine Funktionen über dem AST, die absolute Geometrie erzeugen. Deterministisch, keine Zufälligkeit.
+- **Renderer** — string-bildendes SVG über [`src/core/svg.ts`](https://github.com/SchemaTex/SchemaTex/blob/main/src/core/svg.ts); kein DOM, SSR-sicher.
+
+Kleine Diagramme (z. B. Timing) dürfen das Layout in den Renderer verschmelzen. Komplexe Diagramme (Genogramm, SLD) müssen sie getrennt halten und unabhängig testen.
+
+---
+
+## 2. Harte Einschränkungen (nicht verhandelbar)
+
+1. **Null Runtime-Abhängigkeiten.** Kein D3, kein dagre, keine Parser-Generatoren. Schreiben Sie alles von Hand.
+2. **Striktes TypeScript.** Kein `any`, kein unkommentiertes `as`. Die Typen in [`src/core/types.ts`](https://github.com/SchemaTex/SchemaTex/blob/main/src/core/types.ts) sind die Spezifikation.
+3. **Semantisches SVG.** Jedes gerenderte Diagramm muss `<title>`, `<desc>`, CSS-Klassen für die Themenanpassung und `data-*`-Attribute für Interaktivität enthalten. Keine Inline-Styles.
+4. **Verwenden Sie den SVG-Builder.** Verketten Sie niemals rohe SVG-Strings — nutzen Sie [`src/core/svg.ts`](https://github.com/SchemaTex/SchemaTex/blob/main/src/core/svg.ts).
+5. **Test-First-Layout.** Schreiben Sie fehlschlagende Layout-Tests, bevor Sie den Layout-Code schreiben.
+6. **Standardkonform.** Jedes Diagramm implementiert einen veröffentlichten Domänenstandard — keine eigene Erfindung. Zitieren Sie die Referenz im Standarddokument (IEEE, IEC, ISO, McGoldrick usw.).
+
+---
+
+## 3. Schritt-für-Schritt-Checkliste
+
+### Schritt 1 — Standarddokument schreiben
+
+Erstellen Sie `docs/reference/NN-{TYPE}-STANDARD.md` (nächste freie Nummer). Es muss enthalten:
+
+- Geltungsbereich & Referenzen (IEEE / IEC / veröffentlichte Arbeit).
+- Symboltabelle mit ASCII-/Unicode-Referenzen.
+- DSL-Grammatik (EBNF oder gleichwertig).
+- Layout-Regeln (Achsen, Ausrichtung, Abstände).
+- 3–5 kanonische Testfälle mit erwarteten Rendering-Hinweisen.
+
+Sehen Sie sich [`06-TIMING-STANDARD.md`](/docs/timing) oder [`11-SINGLE-LINE-STANDARD.md`](/docs/sld) als Vorlagen an.
+
+### Schritt 2 — AST-Typen zu `src/core/types.ts` hinzufügen
+
+Die Typen sind die Spezifikation. Bevor Sie Code schreiben, legen Sie Folgendes fest:
+
+- Das `DiagramType`-Literal — erweitern Sie die Union in `types.ts`.
+- Die AST-Struktur: Knoten, Kanten, Metadaten, etwaige diagrammspezifische Felder.
+- Die LayoutResult-Struktur (Positionen, Größen, berechnetes Routing).
+
+Liefern Sie dies als eigenen Commit aus, damit Reviewer den Vertrag separat kritisieren können.
+
+### Schritt 3 — Plugin-Verzeichnis gerüstartig anlegen
+
+```
+src/diagrams/{type}/
+  index.ts       # DiagramPlugin export
+  parser.ts      # text → AST
+  layout.ts      # AST → LayoutResult   (optional; skip for simple diagrams)
+  renderer.ts    # LayoutResult → SVG string
+```
+
+`index.ts` hat immer diese Form:
+
+```ts
+import type { DiagramPlugin } from "../../core/types";
+import { parseMyType } from "./parser";
+import { renderMyType } from "./renderer";
+
+export const myType: DiagramPlugin = {
+  type: "mytype",
+  detect(text) {
+    const first = text.trim().split("\n")[0]?.trim().toLowerCase() ?? "";
+    return first.startsWith("mytype");
+  },
+  render(text) {
+    const ast = parseMyType(text);
+    return renderMyType(ast);
+  },
+};
+```
+
+### Schritt 4 — Zuerst Tests schreiben
+
+```
+tests/{type}/
+  parser.test.ts
+  layout.test.ts
+  renderer.test.ts
+  e2e.test.ts      # full text → SVG, snapshot string for stability
+```
+
+Decken Sie jeden Testfall ab, auf den Sie sich im Standarddokument festgelegt haben. Layout-Tests sollten absolute Koordinaten prüfen — das ist es, was Regressionen aufdeckt.
+
+### Schritt 5 — Parser → Layout → Renderer implementieren
+
+Folgen Sie den Tests. Halten Sie jedes Modul rein — der Parser nimmt einen String und gibt einen AST zurück, das Layout nimmt einen AST und gibt Geometrie zurück, der Renderer nimmt Geometrie und gibt einen String zurück.
+
+Verwenden Sie den SVG-Builder:
+
+```ts
+import { svg, g, rect, text } from "../../core/svg";
+```
+
+Niemals `'<svg>' + ... + '</svg>'`.
+
+### Schritt 6 — Das Plugin registrieren
+
+Bearbeiten Sie [`src/core/api.ts`](https://github.com/SchemaTex/SchemaTex/blob/main/src/core/api.ts):
+
+1. Importieren Sie `{ myType }` aus `../diagrams/mytype`.
+2. Fügen Sie es dem `plugins[]`-Array hinzu.
+3. Erweitern Sie die Literal-Union `SchematexConfig.type`.
+4. Aktualisieren Sie die Fehlermeldung von `detectPlugin` mit dem neuen Schlüsselwort.
+
+### Schritt 7 — Quality-Gate
+
+```bash
+npm run typecheck
+npm run test
+npm run lint
+npm run build
+```
+
+Alle vier müssen bestehen. Wenn `dts` an ungenutzten lokalen Variablen scheitert, beheben Sie sie — unterdrücken Sie sie nicht.
+
+### Schritt 8 — In die Website einbinden
+
+1. **Galerie-Kachel** — fügen Sie einen Eintrag zu [`website/lib/gallery-data.ts`](https://github.com/SchemaTex/SchemaTex/blob/main/website/lib/gallery-data.ts) hinzu. Das `dsl`-Feld muss parsen — validieren Sie mit `node scripts/validate-gallery.mjs`.
+2. **Statisches SVG** — fügen Sie einen Eintrag zu [`scripts/generate-gallery-svgs.mjs`](https://github.com/SchemaTex/SchemaTex/blob/main/scripts/generate-gallery-svgs.mjs) hinzu und führen Sie es aus. Das generierte SVG wird mit dem Repo ausgeliefert und aus der README referenziert.
+3. **Docs-Seite** — erstellen Sie `website/content/docs/{type}.mdx` mit einem `<Playground initial={…}>` und dem eingebetteten Hauptteil des Standarddokuments.
+4. **Beispielseite (optional)** — fügen Sie für eine reale Fallstudie `website/content/examples/{slug}.mdx` hinzu.
+5. **README** — fügen Sie der Galerietabelle eine Zeile mit dem generierten SVG hinzu.
+
+### Schritt 9 — Die übergeordneten Dokumente aktualisieren
+
+- [`README.md`](https://github.com/SchemaTex/SchemaTex/blob/main/README.md) — Galeriezeile.
+- [`CLAUDE.md`](https://github.com/SchemaTex/SchemaTex/blob/main/CLAUDE.md) — „Completed"-Liste am Ende.
+- [`docs/reference/00-OVERVIEW.md`](/docs) — Statustabelle.
+
+---
+
+## 4. Häufige Fallstricke
+
+- **`detect()` vergessen** — wenn zwei Plugins beide `true` zurückgeben, gewinnt das erste. Machen Sie Ihr Header-Schlüsselwort eindeutig.
+- **Koordinatendrift** — Layout-Tests, die relative Zahlen verwenden (`width / 2 + padding`), verschleiern Fehler. Prüfen Sie gegen konkrete erwartete Werte.
+- **Inline-`style=`-Attribute** — durch die Semantisches-SVG-Regel blockiert. Verwenden Sie CSS-Klassen und stellen Sie sie als Theme-Token in [`src/core/theme.ts`](https://github.com/SchemaTex/SchemaTex/blob/main/src/core/theme.ts) bereit.
+- **Einschleichende Runtime-Abhängigkeiten** — wenn Sie glauben, eine zu brauchen, eröffnen Sie zuerst ein Issue. Die Antwort lautet fast immer „Schreiben Sie eine 30-zeilige Version von Hand."
+- **Galerie-DSL-Stubs, die nicht parsen** — führen Sie `node scripts/validate-gallery.mjs` vor dem Commit aus. Dieses Skript existiert genau deshalb, weil es immer wieder passiert ist.
+
+---
+
+## 5. Referenz-Plugins
+
+Gute Beispiele zum Studieren, nach Komplexität:
+
+| Komplexität | Plugin | Studieren für |
+|-----------|--------|-----------|
+| Minimal | [`timing`](https://github.com/SchemaTex/SchemaTex/tree/main/src/diagrams/timing) | Nur Parser + Renderer, kein separates Layout. |
+| Mittel | [`ecomap`](https://github.com/SchemaTex/SchemaTex/tree/main/src/diagrams/ecomap) | Saubere Trennung AST → Layout → Renderer. |
+| Fortgeschritten | [`genogram`](https://github.com/SchemaTex/SchemaTex/tree/main/src/diagrams/genogram) | Generationenlayout, mehrstufiges Routing, reicher Symbolsatz. |
+| Fortgeschritten | [`sld`](https://github.com/SchemaTex/SchemaTex/tree/main/src/diagrams/sld) | Spannungsebenen-Bänderung, Bus-Routing, Geräte-Clustering. |
+
+---
+
+## 6. Kandidaten-Diagramme auf der Roadmap
+
+Noch nicht implementiert — PRs willkommen. Beginnen Sie mit dem Standarddokument (Schritt 1) und eröffnen Sie einen Draft-PR, bevor Sie mit dem Coden beginnen.
+
+- **Fishbone / Ishikawa** — Ursache-Wirkungs-Analyse. AST und Standarddokument sind die größten Unbekannten.
+- **Sequenzdiagramm** — UML-Sequenz ohne Abhängigkeit von PlantUML-/Mermaid-Konventionen.
+- **Zustandsautomat** — UML-Zustandsdiagramm mit hierarchischen Zuständen.
+- **Gantt** — Projektplanung mit Abhängigkeiten und kritischem Pfad.
+- **Netzwerktopologie** — L2-/L3-Netzwerkdiagramme mit Geräte-Icons.
+
+Wenn Sie eines davon hinzufügen, leistet das Standarddokument den Großteil der Arbeit — sparen Sie nicht daran.

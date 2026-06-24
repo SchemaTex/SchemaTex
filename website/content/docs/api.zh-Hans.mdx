@@ -1,0 +1,116 @@
+---
+title: API 参考
+description: Schematex JavaScript/TypeScript API——严格的 render/parse 调用、预览安全的结果 API、配置选项，以及可 tree-shaking 的导入。
+---
+
+## `render(text, config?)`
+
+将 DSL 字符串渲染为 SVG 字符串。根据第一个关键字进行分发，当检测、解析、布局或渲染失败时抛错。
+
+```ts
+import { render } from 'schematex';
+
+const svg: string = render(text, { theme: 'monochrome' });
+```
+
+当非法 DSL 必须中断流程时使用严格 API，例如在测试、导出任务或服务端校验关卡中。
+
+## `parse(text, config?)`
+
+将 DSL 字符串解析为带类型的 AST，但不渲染。该 API 同样是严格的，遇到非法 DSL 会抛错。
+
+```ts
+import { parse } from 'schematex';
+
+const ast = parse(text);
+```
+
+## 预览安全渲染
+
+实时编辑器、AI 预览和聊天画布不应把解析失败变成一片空白。当你只需要 SVG 字符串时，使用 `renderPreview()`：
+
+```ts
+import { renderPreview } from 'schematex';
+
+const svg = renderPreview(text, { type: 'circuit' });
+```
+
+`renderPreview()` 始终返回 SVG。如果严格渲染失败，该 SVG 是一个可见的诊断 fallback。`render(text, { mode: 'preview' })` 为已经在调用 `render()` 的集成提供了相同的预览边界。
+
+## 结果 API
+
+当调用方既需要可见输出又需要有效性状态时，使用结果 API：
+
+```ts
+import { parseResult, renderResult } from 'schematex';
+
+const renderState = renderResult(text);
+container.innerHTML = renderState.svg;
+
+if (!renderState.ok) {
+  console.error(renderState.diagnostics);
+}
+
+const parseState = parseResult(text);
+```
+
+`renderResult()` 返回 `svg`、`diagnostics`、`type`，以及一个值为 `valid`、`partial` 或 `invalid` 的 `status`。无效的渲染结果仍会携带一个诊断 SVG，让预览保持可见。
+
+`parseResult()` 返回 AST 或结构化诊断信息，而不会抛错。`partial` 状态保留给那些能够恢复出部分 AST 或部分渲染图表的解析器。
+
+不要把"存在 SVG 字符串"当作 DSL 有效的证据。预览界面应显示 SVG，并用 `ok`、`status` 和 `diagnostics` 来做重试、修复、遥测或计费决策。
+
+## 浏览器与 React
+
+browser 子路径同时暴露严格的 DOM 辅助函数和预览安全的 DOM 辅助函数：
+
+```ts
+import {
+  renderToContainer,
+  renderPreviewToContainer,
+} from 'schematex/browser';
+
+renderToContainer(text, exportContainer);          // strict
+renderPreviewToContainer(text, previewContainer);  // visible fallback
+```
+
+React 组件已经使用了预览安全的结果边界：
+
+```tsx
+import { SchematexDiagram } from 'schematex/react';
+
+<SchematexDiagram
+  dsl={text}
+  type="circuit"
+  onError={(error) => console.error(error)}
+/>;
+```
+
+`onError` 在严格的解析/布局/渲染失败时触发，先于组件显示诊断 fallback SVG。
+
+## 可 tree-shaking 的导入
+
+```ts
+import { render } from 'schematex/genogram';
+import { render } from 'schematex/ecomap';
+import { render } from 'schematex/pedigree';
+import { render } from 'schematex/phylo';
+import { render } from 'schematex/sociogram';
+```
+
+## `SchematexConfig`
+
+```ts
+interface SchematexConfig {
+  type?: string;              // optional diagram type override
+  width?: number;
+  height?: number;
+  padding?: number;
+  theme?: string;             // e.g. 'default' | 'monochrome' | 'dark'
+  fontFamily?: string;
+  mode?: 'strict' | 'preview';
+}
+```
+
+完整的类型定义参见 [`src/core/types.ts`](https://github.com/SchemaTex/SchemaTex/blob/main/src/core/types.ts)
+和 [`src/core/api.ts`](https://github.com/SchemaTex/SchemaTex/blob/main/src/core/api.ts)。
