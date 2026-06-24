@@ -1,0 +1,421 @@
+---
+title: 社会关系图
+---
+
+## 关于社会关系图
+
+**社会关系图**绘制群体*内部*的选择、排斥与联盟网络——谁喜欢谁、谁被孤立、哪里形成了小团体。Jacob Moreno 于 1934 年将这一方法作为团体治疗的临床工具引入；此后被班级教师（用于发现排斥和霸凌）、HR 团队（非正式影响力图谱）和组织研究者广泛采用。与以个人为中心描述外部环境的生态图（ecomap）不同，社会关系图对群体中的每位成员一视同仁。
+
+Schematex 遵循 **[Moreno（1934）社会测量学惯例](https://en.wikipedia.org/wiki/Sociometry)** 中的节点角色和边类型，并扩展了现代社会网络分析对效价、方向和权重的符号表示。本页记录解析器目前所接受的内容。
+
+<Playground initial={`sociogram "Group Therapy — Week 6"
+  config: layout = circular
+  therapist [label: "Dr. Park", role: star]
+  james [label: "James"]
+  maria [label: "Maria"]
+  lee [label: "Lee"]
+  sarah [label: "Sarah"]
+  tom [label: "Tom"]
+  nina [label: "Nina"]
+  james -> therapist
+  james <-> maria [weight: 3, label: "strong bond"]
+  james -> lee
+  maria -> therapist
+  maria -> sarah
+  lee -> therapist
+  lee -x> nina [label: "tension"]
+  sarah <-> nina
+  sarah -> therapist
+  tom -> therapist
+  tom -.- nina
+  nina -> maria`} height={520} />
+
+---
+
+## 1. 第一张图
+
+最简实用的社会关系图：四个人、三种不同的关系类型。
+
+<Playground initial={`sociogram "Study group"
+  alice [label: "Alice"]
+  bob [label: "Bob"]
+  carol [label: "Carol"]
+  dave [label: "Dave"]
+  alice <-> bob [label: "lab partners"]
+  carol -> alice
+  dave -x> bob [label: "rivalry"]`} />
+
+四条规则覆盖 80% 的用法：
+
+1. 以关键字 `sociogram` 开头，后跟可选的带引号标题。
+2. 每个人是一个**节点**——用 `id [label: "…"]` 显式声明，或在边中首次出现时自动创建。
+3. 用**边运算符**连接两个节点——`<->`（双向）、`->`（单向）、`-x>`（排斥）、`-.-`（中性）。见第 3 节。
+4. 可选声明**群组**和 **config** 行以控制布局和着色。
+
+> 注释必须以 `#` 开头单独成行。
+
+---
+
+## 2. 节点
+
+节点行格式为 `id [属性: 值, …]`。在边中首次引用时也会隐式创建节点——但显式声明可以设置标签、群组和角色。
+
+**ID 规则。** 必须匹配 `[a-zA-Z][a-zA-Z0-9_-]*`。ID 为内部使用；`label:` 属性设置显示名称。
+
+**节点属性：**
+
+| 属性 | 值 | 效果 |
+|---|---|---|
+| `label: "…"` | 带引号字符串 | 显示名称（默认为 ID） |
+| `group: id` | 群组 ID | 将节点关联到群组以进行着色 |
+| `role: …` | `star`、`isolate`、`bridge`、`neglectee`、`rejected` | 显式社会测量角色标注 |
+| `size: …` | `small`、`medium`、`large` | 节点大小覆盖 |
+
+<Playground initial={`sociogram "Group roles demo"
+  config: layout = circular
+  dr_park [label: "Dr. Park", role: star]
+  james [label: "James"]
+  nina [label: "Nina", role: neglectee]
+  loner [label: "Alex", role: isolate]
+  bridge [label: "Sam", role: bridge, size: large]
+  james -> dr_park
+  james -> bridge
+  bridge -> dr_park
+  bridge -> nina
+  nina -> james`} />
+
+---
+
+## 3. 边
+
+边行格式为 `左侧ID 运算符 右侧ID`，可选追加 `[label: "…", weight: N]`。若 ID 尚未声明，则自动注册为节点。
+
+### 3.1 方向与效价
+
+<Playground initial={`sociogram "Edge types"
+  config: layout = circular
+  a [label: "A"]
+  b [label: "B"]
+  c [label: "C"]
+  d [label: "D"]
+  e [label: "E"]
+  f [label: "F"]
+  # Positive
+  a -> b [label: "chose B"]
+  b <-> c [label: "mutual"]
+  # Negative
+  c -x> d [label: "rejects D"]
+  d <x-> e [label: "mutual reject"]
+  # Neutral
+  e -.- f [label: "indifferent"]
+  f <.-> a [label: "mutual neutral"]`} />
+
+| 运算符 | 方向 | 效价 | 含义 |
+|---|---|---|---|
+| `A -> B` | 单向 | 正 | A 选择了 B |
+| `A <- B` | 单向 | 正 | B 选择了 A（等同于 `B -> A`） |
+| `A <-> B` | 双向 | 正 | 互相选择 |
+| `A -- B` | 无向 | 正 | 关系已知；方向未记录 |
+| `A -x> B` | 单向 | 负 | A 排斥 B |
+| `A <x- B` | 单向 | 负 | B 排斥 A |
+| `A <x-> B` | 双向 | 负 | 相互排斥 |
+| `A -x- B` | 无向 | 负 | 冲突；方向未知 |
+| `A -.> B` | 单向 | 中性 | A 对 B 漠然 |
+| `A <.-> B` | 双向 | 中性 | 相互漠然 |
+| `A -.- B` | 无向 | 中性 | 中性关系 |
+
+### 3.2 权重/强度
+
+权重越高，线条越粗。可使用简写运算符，也可通过 `[weight: N]` 显式指定。
+
+| 权重 | 简写 | 方向 | 含义 |
+|---|---|---|---|
+| 2（默认） | `->` `<->` `--` `-x>` `-.-` | 任意 | 标准连接 |
+| 3 | `==>` `<==` `<==>` `===` | 单向/双向/无向 | 强 |
+| 4 | `===>` `<===` `<===>` | 单向/双向 | 非常强 |
+| 自定义 | `[weight: N]` | — | 任意整数 |
+
+<Playground initial={`sociogram "Relationship strengths"
+  config: layout = circular
+  a [label: "A"]
+  b [label: "B"]
+  c [label: "C"]
+  d [label: "D"]
+  a -> b [label: "weight 2 (default)"]
+  b ==> c [label: "weight 3 (strong)"]
+  c ===> d [label: "weight 4 (very strong)"]
+  d -> a [weight: 1, label: "weight 1 (weak)"]`} />
+
+### 3.3 边标签
+
+`A -> B [label: "best friend"]` — 标签显示在连接线上。
+
+---
+
+## 4. 群组
+
+`group` 块将节点归入一个命名子群，用于着色和布局聚类。
+
+**群组语法：**
+- `group id [label: "…", color: "#hex"]` — 群组头行。
+- 成员行紧随其后，每行**至少缩进 4 个空格**，每行一个节点。
+- 非缩进行（或下一个 `group`）结束当前群组。
+- 成员可带自己的属性：`anna [label: "Anna K.", size: large]`。
+
+节点也可内联赋值群组：`alice [group: girls]`。
+
+<Playground initial={`sociogram "Classroom dynamics"
+  config: layout = force-directed
+  group boys [label: "Boys", color: "#42A5F5"]
+    tom [label: "Tom"]
+    jack [label: "Jack"]
+    mike [label: "Mike"]
+    leo [label: "Leo"]
+  group girls [label: "Girls", color: "#EF5350"]
+    anna [label: "Anna"]
+    beth [label: "Beth"]
+    chloe [label: "Chloe"]
+    diana [label: "Diana"]
+  tom <-> jack
+  anna <-> beth
+  anna <-> chloe
+  beth <-> chloe
+  mike -x> leo [label: "conflict"]
+  diana -> anna
+  tom -> anna [label: "cross-group"]`} />
+
+---
+
+## 5. 配置
+
+`config:` 行调整布局和视觉编码，每项单独一行。
+
+| 配置键 | 值 | 默认值 | 效果 |
+|---|---|---|---|
+| `layout` | `circular`、`force-directed`、`concentric` | `circular` | 排布算法 |
+| `sizing` | `uniform`、`in-degree`、`betweenness` | `uniform` | 按指标调整节点大小 |
+| `coloring` | `default`、`group`、`role` | `default` | 节点配色方案 |
+| `highlight` | 逗号列表：`stars`、`isolates`、`cliques` | `stars,isolates` | 标注哪些模式 |
+
+**布局说明：**
+- `circular` — 节点均匀分布在圆环上，适合小型群组（≤15 人）。
+- `force-directed` — 弹簧模型，子群自动涌现，适合有明显子群的中型群组。
+- `concentric` — 内圈为高入度节点，适合展示核心-外围结构。
+
+**圆形布局** — 均匀环形分布；每个节点可见性相同，适合小型紧密群组。
+
+<Playground initial={`sociogram "Therapy group — circular"
+  config: layout = circular
+  dr_park [label: "Dr. Park", role: star]
+  james [label: "James"]
+  maria [label: "Maria"]
+  lee [label: "Lee"]
+  sarah [label: "Sarah"]
+  tom [label: "Tom"]
+  nina [label: "Nina", role: neglectee]
+  james -> dr_park
+  james <-> maria [weight: 3]
+  james -> lee
+  maria -> dr_park
+  lee -> dr_park
+  lee -x> nina
+  sarah <-> nina
+  sarah -> dr_park
+  tom -> dr_park
+  nina -> maria`} height={460} />
+
+**力导向布局** — 弹簧物理将相连节点拉近，将不相连节点推开，子群有机聚合。
+
+<Playground initial={`sociogram "Classroom dynamics — force-directed"
+  config: layout = force-directed
+  group boys [label: "Boys", color: "#42A5F5"]
+    tom [label: "Tom"]
+    jack [label: "Jack"]
+    mike [label: "Mike"]
+    leo [label: "Leo"]
+  group girls [label: "Girls", color: "#EF5350"]
+    anna [label: "Anna"]
+    beth [label: "Beth"]
+    chloe [label: "Chloe"]
+    diana [label: "Diana"]
+  tom <-> jack
+  anna <-> beth
+  anna <-> chloe
+  beth <-> chloe
+  mike -x> leo [label: "conflict"]
+  diana -> anna
+  tom -> anna [label: "cross-group"]
+  jack -> beth`} height={460} />
+
+**同心圆布局** — 节点按入度排序；高中心性节点位于内圈，边缘节点位于外圈。
+
+<Playground initial={`sociogram "Informal influence — concentric"
+  config: layout = concentric
+  config: sizing = in-degree
+  vp [label: "VP Eng"]
+  lead_a [label: "Lead A"]
+  lead_b [label: "Lead B"]
+  alice [label: "Alice"]
+  bob [label: "Bob"]
+  carol [label: "Carol"]
+  dave [label: "Dave"]
+  alice -> lead_a
+  bob -> lead_a
+  carol -> lead_a
+  carol -> lead_b
+  dave -> lead_b
+  lead_a -> vp
+  lead_b -> vp
+  alice <-> bob
+  carol <-> dave`} height={460} />
+
+---
+
+## 6. 社会测量角色
+
+解析器将角色标注存储在节点上，渲染器据此应用视觉徽章——`star` 显示星形标记，`isolate` 显示虚线边框，等等。
+
+| 角色 | 含义 |
+|---|---|
+| `star` | 被众多成员选择的核心人物（高入度） |
+| `isolate` | 无任何进出连接 |
+| `neglectee` | 主动联系他人但未被任何人选择 |
+| `rejected` | 被多名成员的排斥边指向 |
+| `bridge` | 连接两个原本分离的子群 |
+
+<Playground initial={`sociogram "Role annotations"
+  config: layout = circular
+  center [label: "Maria", role: star]
+  bridge_node [label: "Sam", role: bridge]
+  newcomer [label: "New Kid", role: neglectee]
+  loner [label: "Alex", role: isolate]
+  outcast [label: "Pat", role: rejected]
+  center <-> bridge_node
+  bridge_node -> outcast
+  newcomer -> center
+  newcomer -> bridge_node
+  center -x> outcast
+  bridge_node -x> outcast`} />
+
+---
+
+## 7. 标签与注释
+
+- **标题：** `sociogram "Study group"` — 仅限第一行。
+- **节点标签：** `alice [label: "Alice K."]`。
+- **群组标签：** `group boys [label: "Boys"]`。
+- **边标签：** `alice -> bob [label: "lab partners"]`。
+- **注释：** 行首（前导空格后）的 `#`。
+
+---
+
+## 8. 保留字与转义
+
+**行首保留字：** `sociogram`（文件头）、`group`、`config:`。
+
+**保留运算符符号**——避免在 ID 中使用以下序列：`->`、`<-`、`<->`、`--`、`===`、`==>`、`<==`、`<===>`、`-x>`、`<x-`、`-x-`、`<x->`、`-.>`、`<.->`、`-.-`。
+
+**含空格的字符串**在 `label:` 和 `color:` 值中必须用双引号括起。
+
+---
+
+## 9. 常见错误
+
+| 你写的 | 解析器提示 | 修正方法 |
+|---|---|---|
+| `tom; jack; mike` 写在同一群组行 | `tom;` 不符合 ID 正则——被静默忽略 | 每行一个节点，各自缩进 ≥4 个空格 |
+| 群组成员缩进 2 个空格 | 不被视为群组成员（解析器要求 ≥4） | 使用 4 个及以上空格缩进 |
+| `alice <> bob` | 无匹配运算符——不被解析为边 | 双向正向关系使用 `<->` |
+| `config: layout = grid` | 未知值被静默忽略；布局保持 `circular` | 使用 `circular`、`force-directed` 或 `concentric` |
+| ID 含空格：`dr park` | 解析器将 `dr` 作为 ID，`park` 作为游离符号 | 使用下划线：`dr_park [label: "Dr. Park"]` |
+
+---
+
+## 10. 语法（EBNF）
+
+```text
+document       = header (blank | comment | config | group-block | edge | node)*
+
+header         = "sociogram" ( WS quoted-string )? NEWLINE
+quoted-string  = '"' any-char-but-quote* '"'
+
+config         = "config:" WS key WS "=" WS value NEWLINE
+key            = "layout" | "sizing" | "coloring" | "highlight"
+
+group-block    = "group" WS id ( "[" group-attrs "]" )? NEWLINE
+                   ( INDENT≥4 member-line )*
+member-line    = id ( "[" node-attrs "]" )? NEWLINE
+group-attrs    = group-attr ("," group-attr)*
+group-attr     = "label:" quoted-string | "color:" quoted-string
+
+node           = id ( "[" node-attrs "]" )? NEWLINE
+node-attrs     = node-attr ("," node-attr)*
+node-attr      = "label:" quoted-string
+               | "group:" id
+               | "role:" role
+               | "size:" ("small" | "medium" | "large")
+
+edge           = id WS op WS id ( "[" edge-attrs "]" )? NEWLINE
+edge-attrs     = edge-attr ("," edge-attr)*
+edge-attr      = "label:" quoted-string | "weight:" number
+
+op             = // 正
+                 "<===>" | "===>" | "<==="
+               | "<==>"|"==>"|"<=="
+               | "===" | "<->" | "->" | "<-" | "--"
+               // 负
+               | "<x->" | "-x>" | "<x-" | "-x-"
+               // 中性
+               | "<.->" | "-\.>" | "-.-"
+
+role           = "star" | "isolate" | "bridge" | "neglectee" | "rejected"
+id             = [a-zA-Z] [a-zA-Z0-9_-]*
+comment        = "#" any NEWLINE
+```
+
+权威来源：`src/diagrams/sociogram/parser.ts`。如与解析器有出入，以解析器为准——请提 issue。
+
+---
+
+## 11. 规范合规性
+
+Schematex 社会关系图遵循 **Moreno（1934）社会测量学**对节点角色（star、isolate、neglectee）和有向选择语义的惯例。边运算符集根据现代社会网络分析实践（Hanneman & Riddle，2005）扩展了效价（正/负/中性）和权重等级。
+
+目前已实现：
+
+- ✅ 有向、双向与无向边
+- ✅ 正、负、中性效价运算符
+- ✅ 四种权重等级（1–4），含简写运算符和 `[weight: N]`
+- ✅ 带颜色的群组
+- ✅ 节点角色声明（`star`、`isolate`、`bridge`、`neglectee`、`rejected`）
+- ✅ 三种布局：圆形、力导向、同心圆
+- ✅ 三种节点大小模式：均匀、入度、介数中心性
+- ⏳ 自动检测并高亮小团体——带阴影的凸包（见第 13 节）
+- ⏳ 社会原子视图（以自我为中心的布局）
+
+参考文献：
+
+- Moreno, J.L. (1934). *Who Shall Survive? Foundations of Sociometry, Group Psychotherapy and Sociodrama.* Beacon House.
+- Hanneman, R.A. & Riddle, M. (2005). *Introduction to Social Network Methods.* UC Riverside.
+
+---
+
+## 12. 相关示例
+
+<RelatedExamples slugs={[
+  'sociogram-playground-dynamics',
+  'sociogram-team-influence',
+]} />
+
+---
+
+## 13. 路线图
+
+**规划中——尚不可解析。** 请勿在生成的 DSL 中使用以下功能，解析器会拒绝或忽略。
+
+- **自动检测并高亮小团体** — 在互选子群（≥3 人）周围绘制带阴影的凸包。
+- **自动检测桥节点** — 无需显式声明，从介数中心性推断 `role: bridge`。
+- **社会原子视图** — 以自我为中心的布局，指定节点位于中心。
+- **互惠矩阵导出** — 在图表旁生成结构化表格输出。
+
+如需优先实现以上功能，请在 GitHub issues 中跟踪反馈。

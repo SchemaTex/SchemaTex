@@ -1,0 +1,364 @@
+---
+title: 状态图
+---
+
+## 关于状态图
+
+**状态图**（也称*状态机图*或*状态图表*）描述响应式系统的生命周期——它可以处于哪些状态、什么事件触发状态迁移，以及在进入、退出或处于某状态时执行哪些动作。软件架构师用它来规定工作流；控制工程师用它设计响应式控制器；UI 设计师用它建模屏幕生命周期。它已被正式化为 **OMG UML 2.5.1 §14**（状态机）和 Harel 1987 年引入复合状态、历史和正交区域的*状态图表（Statechart）*扩展。
+
+Schematex 实现了 **[Mermaid `stateDiagram-v2`](https://mermaid.js.org/syntax/stateDiagram.html)** 的严格超集——每个 Mermaid 示例可直接粘贴使用，同时还支持 Mermaid 未公开的 UML 2.5 特性：`entry / exit / do` 活动、完整的 `trigger [guard] / action` 转换标签、`terminate` 和历史伪状态、汇合点（junction），以及 Schematex 风格的块注释。布局使用与流程图相同的 Sugiyama 分层有向无环图引擎，因此循环、复合状态和跨边界转换均能整洁路由。
+
+<Playground initial={`stateDiagram-v2
+direction TB
+
+[*] --> Idle
+
+Idle --> Authenticating : submit [form_valid] / clearErrors()
+Authenticating --> Authenticated : ok / storeToken()
+Authenticating --> Idle : fail [retries < 3] / incrementRetries()
+Authenticating --> Locked : fail [retries >= 3]
+
+state Decide <<choice>>
+Authenticated --> Decide
+Decide --> Admin : [role == "admin"]
+Decide --> User  : [role == "user"]`} height={520} />
+
+---
+
+## 1. 第一张图
+
+最简实用的状态图：一个初始状态、一个终止状态和一条转换。
+
+<Playground initial={`stateDiagram-v2
+[*] --> Running
+Running --> [*] : done`} />
+
+三条规则覆盖 80% 的用法：
+
+1. 以 `stateDiagram-v2`（Mermaid 风格）或 `state`（Schematex 风格）作为头部。
+2. 用 `[*]` 表示隐式起始节点（位于 `-->` 左侧时）或终止节点（位于右侧时）。
+3. 用 `-->` 连接状态，在 `:` 后添加标签——完整 UML 形式为 `trigger [guard] / action`。
+
+默认方向为 **TB**（从上到下），与 Mermaid 保持一致。可在独立行加 `direction LR` 覆盖，或在头部使用 `[direction: LR]`。
+
+> 注释使用 `%%`（Mermaid 风格）、`#` 或 `//`。
+
+---
+
+## 2. 状态声明
+
+状态在转换中首次引用时自动创建，但显式声明可控制标签和形状。
+
+```
+state Authenticating
+state "Awaiting Approval" as Approval
+Idle: Waiting for input
+```
+
+| 形式 | 效果 |
+|---|---|
+| `Idle` | 裸 ID——作为简单状态创建，ID 和标签均为 `Idle` |
+| `state Idle` | 显式声明；效果相同 |
+| `state "Awaiting Approval" as Approval` | 别名——显示 `Awaiting Approval`，在转换中以 `Approval` 引用 |
+| `Idle: Waiting for input` | 内联标签——`Idle` 为 ID，`Waiting for input` 为可见标签 |
+
+---
+
+## 3. 伪状态
+
+伪状态控制状态机的流向，而不代表稳定的停留状态。
+
+| Mermaid | Schematex | 符号 | 用途 |
+|---|---|---|---|
+| `[*]`（源） | `initial id` | 实心黑圆 | 区域入口点 |
+| `[*]`（目标） | `final id` | 外环内含实心圆 | 成功退出 |
+| `state X <<choice>>` | `choice X` | 菱形 | 动态分支（守卫在运行时评估） |
+| `state X <<fork>>` | `fork X` | 粗黑线条 | 一个输入 → N 个并行输出 |
+| `state X <<join>>` | `join X` | 粗黑线条 | N 个输入 → 一个输出 |
+| — | `junction X` | 小实心圆 | 静态汇合点 |
+| — | `history X` | 带 `H` 的圆圈 | 重新进入上次访问的子状态 |
+| — | `dhistory X` | 带 `H*` 的圆圈 | 深层历史（递归） |
+| — | `terminate X` | `×` 标记 | 异常终止（不执行清理） |
+| — | `entry_point X` / `exit_point X` | 复合边界上的空心圆 | 命名入口/出口点 |
+
+`[*]` 是 Mermaid 别名，始终根据方向解析：在 `-->` 的**源**侧为 `initial`，在**目标**侧为 `final`。每个复合状态范围各有一对。
+
+<Playground initial={`stateDiagram-v2
+[*] --> Idle
+state Decide <<choice>>
+state Joiner <<join>>
+Idle --> Decide : evaluate
+Decide --> Authorized : [role == "admin"]
+Decide --> Joiner    : [role == "user"]
+Authorized --> Joiner
+Joiner --> [*]`} height={360} />
+
+---
+
+## 4. 转换
+
+完整的 UML 2.5 转换标签包含三个可选部分：
+
+```
+trigger [guard] / action
+```
+
+| 字段 | 含义 | 示例 |
+|---|---|---|
+| `trigger` | 触发转换的事件 | `submit`、`tick`、`timeout(30s)` |
+| `[guard]` | 触发时评估的布尔表达式 | `[count > 0]`、`[role == "admin"]` |
+| `/ action` | 执行转换时运行的动作 | `/ log(); increment()` |
+
+三者均为可选——无标签转换为匿名（完成转换）。
+
+```
+A --> B                                      %% 匿名完成
+A --> B : tick                                %% 仅触发
+A --> B : [count > 0]                         %% 仅守卫
+A --> B : / clearErrors()                     %% 仅动作
+A --> B : tick [count > 0] / log()            %% 三者齐全
+A --> B : tick, tock [enabled] / handle()     %% 多触发
+```
+
+标签过长时会在通道宽度处自动换行。
+
+---
+
+## 5. 复合状态
+
+复合状态内含一个嵌套的子状态机，外层状态作为容器，拥有各自的初始/终止伪状态。
+
+```
+state Playing {
+  [*] --> Buffering
+  Buffering --> Streaming : buffer_full
+  Streaming --> Buffering : underflow
+}
+```
+
+Mermaid 语法（`state X { … }`）和 Schematex 形式（`composite X { … }`）均可接受。活动可在复合块内声明：
+
+```
+state Playing {
+  entry / startBuffer()
+  exit / stopBuffer()
+  do / decodeFrames()
+
+  [*] --> Buffering
+  Buffering --> Streaming : buffer_full
+  Streaming --> Buffering : underflow
+}
+```
+
+渲染器将复合状态绘制为带标题栏和活动区隔的样式化集群。
+
+<Playground initial={`stateDiagram-v2
+
+[*] --> Stopped
+
+Stopped --> Playing : play / loadSource()
+Playing --> Paused  : pause
+Paused  --> Playing : play
+Playing --> Stopped : stop / releaseSource()
+
+state Playing {
+  entry / startBuffer()
+  exit / stopBuffer()
+  do / decodeFrames()
+
+  [*] --> Buffering
+  Buffering --> Streaming : buffer_full
+  Streaming --> Buffering : underflow
+}`} height={520} />
+
+跨边界转换（`外部 --> 内部`）会自动路由——Sugiyama 布局会引导源/目标穿过复合状态边界。
+
+---
+
+## 6. 并发区域
+
+在复合状态内，`--` 分隔符（Mermaid）或 `---`（Schematex）将主体分成并发执行的正交区域。
+
+```
+state Active {
+  [*] --> r1_idle
+  r1_idle --> Connected : connect
+  --
+  [*] --> r2_idle
+  r2_idle --> Working : start
+}
+```
+
+使用 `fork` 和 `join` 在区域间分叉/同步：
+
+<Playground initial={`stateDiagram-v2 [direction: LR]
+
+[*] --> F
+state F <<fork>>
+state J <<join>>
+F --> A
+F --> B
+A --> J : done_a
+B --> J : done_b
+J --> [*]`} height={300} />
+
+---
+
+## 7. 注释
+
+可在任意状态的任一侧附加简短标注。
+
+```
+note right of Checking : Calls /api/verify synchronously.
+note left of Idle : Anonymous landing state
+```
+
+多行注释使用 Mermaid 的 `end note` 块形式，或 Schematex 的 `{ … }` 形式：
+
+```
+note right of Authenticating
+  Stores the JWT in localStorage
+  on success.
+end note
+
+note left_of Idle {
+  Anonymous landing state.
+  Returns here on 401.
+}
+```
+
+---
+
+## 8. 自转换
+
+转换 `A --> A` 渲染为节点右侧的弧形曲线。
+
+```
+Idle --> Idle : poll / refresh()
+```
+
+标签放在弧形旁边、包围盒外侧。
+
+---
+
+## 9. 布局方向
+
+Schematex 默认为 **`TB`**（从上到下），与 Mermaid 一致。可在头部覆盖：
+
+```
+stateDiagram-v2
+direction LR
+
+[*] --> Loading
+Loading --> Ready
+```
+
+或使用 Schematex 的括号属性形式：
+
+```
+state "Order Lifecycle" [direction: TB]
+
+[*] --> Pending
+Pending --> Paid
+```
+
+`BT` 和 `RL` 可被解析器接受，但会被规范化为 `TB` 和 `LR`（布局引擎尚不支持视觉翻转）。
+
+---
+
+## 10. 常见错误
+
+| 你写的 | 解析器提示 | 修正方法 |
+|---|---|---|
+| `[*] -> [*]` | 被视为同一行的初始别名和终止别名 | `[*]` 别名之间至少保留一个命名状态 |
+| `state X <<branch>>` | `branch` 不是有效构造型 | 使用 `<<choice>>`（动态）或 `<<fork>>` / `<<join>>` |
+| `note right of`<br/>`text` | 多行注释必须以 `end note` 结束 | 在单独行添加 `end note` |
+| `composite X`（无花括号） | 被视为裸状态声明 | 打开块：`composite X {` |
+| `direction LR` 写在复合状态内 | 尚不支持每区域方向设置 | 在头部行设置方向 |
+
+---
+
+## 11. 语法（EBNF）
+
+```text
+document     = header statement*
+header       = ("stateDiagram-v2" | "stateDiagram" | "state")
+                ( title )? ( "[" attrs "]" )? NEWLINE
+attrs        = attr ("," attr)*
+attr         = "direction:" ("TB" | "LR")
+
+statement    = comment
+             | direction-stmt              %% direction LR / TB / BT / RL
+             | state-decl
+             | alias-decl                  %% state "Long" as ID
+             | stereotype-decl             %% state ID <<choice|fork|join|end>>
+             | pseudo-decl                 %% initial / final / choice / ... ID
+             | composite-block             %% (state | composite) ID { ... }
+             | label-stmt                  %% ID : description
+             | transition
+             | note-stmt
+             | region-sep                  %% --  or  ---
+
+transition   = (ID | "[*]") "-->" (ID | "[*]") ( ":" trans-label )? NEWLINE
+trans-label  = trigger? ( "[" guard "]" )? ( "/" action )?
+
+note-stmt    = "note" side ID ":" inline-text NEWLINE
+             | "note" side ID NEWLINE  text-line+  ("end note" | "}") NEWLINE
+side         = "left of" | "right of" | "left_of" | "right_of"
+
+comment      = "%%" any | "#" any | "//" any
+
+ID           = [A-Za-z_] [A-Za-z0-9_]*
+```
+
+权威来源：`src/diagrams/state/parser.ts`。如与解析器有出入，以解析器为准——请提 issue。
+
+---
+
+## 12. 规范合规性
+
+| 特性 | UML 2.5 | Harel 1987 | Mermaid | Schematex |
+|---|:-:|:-:|:-:|:-:|
+| 简单状态 | ✅ | ✅ | ✅ | ✅ |
+| 复合（嵌套）状态 | ✅ | ✅ | ✅ | ✅ |
+| 初始/终止伪状态 | ✅ | ✅ | ✅ | ✅ |
+| 选择伪状态 | ✅ | — | ✅ | ✅ |
+| 分叉/汇合 | ✅ | ✅ | ✅ | ✅ |
+| 汇合点伪状态 | ✅ | — | ❌ | ✅ |
+| 历史（浅/深） | ✅ | ✅ | ❌ | ✅ |
+| 终止伪状态 | ✅ | — | ❌ | ✅ |
+| `entry / exit / do` 活动 | ✅ | ✅ | ❌ | ✅ |
+| `trigger [guard] / action` 标签 | ✅ | ✅ | ❌（仅标签） | ✅ |
+| 内部转换 | ✅ | ✅ | ❌ | ✅ |
+| 并发区域 | ✅ | ✅ | ✅ | ✅ |
+| 状态注释 | — | — | ✅ | ✅ |
+| 跨复合状态转换 | ✅ | ✅ | ❌ | ✅ |
+| `[*]` 初始/终止别名 | — | — | ✅ | ✅ |
+
+Schematex 是 Mermaid `stateDiagram-v2` 的严格超集。Mermaid 示例可直接粘贴使用；额外的 UML 2.5 元素（活动、历史、汇合点、终止、完整转换标签）可与之共存。
+
+参考文献：
+
+- OMG UML 2.5.1 — *Unified Modeling Language*：https://www.omg.org/spec/UML/2.5.1/
+- Harel（1987）— *Statecharts: A visual formalism for complex systems*，Science of Computer Programming 8(3)
+- Mermaid stateDiagram-v2 — https://mermaid.js.org/syntax/stateDiagram.html
+
+---
+
+## 13. 路线图
+
+- **`BT` / `RL` 方向** — 目前在解析时规范化为 `TB` / `LR`；视觉翻转待实现
+- **每区域方向覆盖** — 复合块内的 `direction LR`（目前被静默忽略）
+- **子机引用** — `state Foo : Submachine` 构造型渲染
+- **内部转换区隔** — 状态主体内 `tick [g] / a` 行的显式视觉分隔线
+
+---
+
+## 相关示例
+
+来自示例库的即用场景：
+
+<RelatedExamples slugs={[
+  'state-traffic-light',
+  'state-ecommerce-order',
+]} />

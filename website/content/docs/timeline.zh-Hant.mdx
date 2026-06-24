@@ -1,0 +1,399 @@
+---
+title: 時間軸圖（Timeline diagram）
+---
+
+## 關於時間軸
+
+**時間軸圖**將事件沿著共享的時間軸排列，使時間順序關係一目了然。專案經理用它展示衝刺排程與里程碑；歷史學家用它將發現置於脈絡中；記者用它重建事件序列；臨床研究人員用它映射治療過程。這種視覺形式沒有單一的規範標準，但慣例是通用的：時間從左向右流動，事件在其日期處標記，而跨度則顯示持續時間。
+
+Schematex 以三種視覺樣式渲染時間軸——**泳道（swimlane）**（事件分布於軸線上下）、**甘特（gantt）**（水平持續時間橫條，適用於專案排程），以及**棒棒糖（lollipop）**（點在棒上的標記，適用於歷史回顧）。三種樣式共享同一套 DSL；`style` 設定鍵在它們之間切換。
+
+<Playground initial={`timeline "History of the Web"
+config: style = lollipop
+
+1991: "World Wide Web — Berners-Lee"
+1993: milestone "Mosaic browser" [side: above, color: #1565C0]
+1995: "JavaScript — Brendan Eich" [side: below]
+1998: milestone "Google founded" [side: above, color: #E53935]
+2004: "Facebook launches" [side: below]
+2007: milestone "iPhone — mobile web era" [color: #2E7D32, side: above]
+2009: "Node.js — server-side JavaScript" [side: below]
+2015: milestone "ES6 / React mainstream" [side: above, color: #6A1B9A]
+2022: "ChatGPT — AI era begins" [side: below]`} height={460} />
+
+---
+
+## 1. 第一個時間軸
+
+最小的實用時間軸：一個標題、兩個普通事件，以及一個里程碑。
+
+<Playground initial={`timeline "Product Launch"
+2024-06-01: "Development complete"
+2024-08-15: "Closed beta"
+2024-09-01: milestone "Public launch"`} />
+
+四條規則涵蓋 80% 的使用情境：
+
+1. 以關鍵字 `timeline` 開頭，後面可接一個引號標題。
+2. 每個事件的格式為 `DATE: "Label"`——日期、冒號，然後是引號標籤。在標籤前加上 `milestone` 關鍵字可將事件標記為里程碑。
+3. 日期範圍使用 `DATE - DATE:` 或 `DATE .. DATE:`（兩者等效）。
+4. 在引號標籤後加上 `[key: value]` 屬性以設定顏色、側邊位置、形狀或類別。
+
+> 註解必須以 `#` 或 `//` 開頭，獨立成一行。
+
+---
+
+## 2. 事件
+
+事件行在某個時間點（或某段時間跨度）放置一個帶標籤的標記。
+
+### 2.1 時間點事件
+
+```
+2024-09-15: "Conference keynote"
+```
+
+### 2.2 範圍事件
+
+```
+2024-06-01 - 2024-08-31: "Q3 development sprint"
+2024-06-01 .. 2024-08-31: "Q3 development sprint"
+```
+
+兩種分隔符（`-` 前後加空格，或 `..`）等效。
+
+### 2.3 里程碑
+
+```
+2024-09-01: milestone "Public launch"
+```
+
+在引號標籤前加上 `milestone` 關鍵字，可將標記切換為菱形。
+
+### 2.4 事件屬性
+
+屬性放在引號標籤後、換行前的 `[key: value, …]` 中。
+
+| 屬性 | 值 | 含義 |
+|---|---|---|
+| `color:` | 十六進位色碼字串 | 此標記或橫條的自訂顏色 |
+| `side:` | `above` \| `below` | 強制放置於軸線上方或下方（swimlane / lollipop） |
+| `icon:` | 任意文字（如 emoji） | 顯示於事件旁的圖示 |
+| `shape:` | `circle` \| `square` \| `diamond` \| `star` \| `flag` | 時間點標記形狀 |
+| `category:` | 引號字串 | 分組標籤——在甘特圖圖例中驅動顏色 |
+
+```
+2024-09-01: milestone "Launch day" [color: #E53935, side: above]
+2024-07-15: "Beta ships" [icon: 🚀, category: "product"]
+```
+
+<Playground initial={`timeline "Engineering Milestones"
+config: style = lollipop
+
+2024-01-08: "Sprint planning complete"
+2024-02-14: milestone "Design system shipped" [side: above, color: #1565C0]
+2024-03-22: "Incident — 4h outage" [icon: ⚠️]
+2024-04-01 - 2024-06-30: "API v2 build"
+2024-07-01: milestone "API v2 GA" [side: above, color: #2E7D32]`} height={380} />
+
+---
+
+## 3. 日期格式
+
+所有日期格式都可以出現在預期日期的任何位置——事件、紀元與範圍中皆可。
+
+| 格式 | 範例 | 備注 |
+|---|---|---|
+| 完整日期 | `2024-09-15` | 日精確度；`YYYY-MM-DD` |
+| 年月 | `2024-09` | 月精確度 |
+| 年份 | `2024` | 年精確度 |
+| 季度 | `2024-Q3` | 映射至該季度起始 |
+| 西元前年份（負數） | `-753` | 西元前 753 年 |
+| 西元前年份（後綴） | `753BC` 或 `753BCE` | 等同於 `-753` |
+| 地質年代 | `65Ma`、`4.6Ga`、`12ka` | 百萬／十億／千年前 |
+
+<Playground initial={`timeline "Age of Earth"
+config: style = lollipop
+config: scale = log
+
+4600Ma: "Earth forms"
+540Ma: "Cambrian explosion"
+252Ma: milestone "Permian extinction — 96% of species lost"
+66Ma: milestone "K-Pg extinction — end of non-avian dinosaurs"
+3Ma: "Earliest stone tools (Lomekwi)"
+0: "Present day"`} height={340} />
+
+---
+
+## 4. 紀元（背景跨度）
+
+`era` 行在時間軸上繪製一個陰影背景帶。它必須指定日期範圍。
+
+```
+era 2020 - 2022: "Foundation Phase"
+era 2022 .. 2025: "Growth Phase" [color: #E8F5E9]
+```
+
+`[color: …]` 屬性為可選。重疊的紀元會自動堆疊成獨立的帶狀。
+
+<Playground initial={`timeline "Company History"
+config: style = swimlane
+
+era 2019..2021: "Early Stage" [color: #FFF8E1]
+era 2021..2024: "Series A & B" [color: #E8F5E9]
+
+2019-03-01: "Founded"
+2019-11-15: "First paying customer"
+2020-05-01: milestone "Product-market fit" [side: above]
+2021-02-10: "Series A — $8M"
+2022-09-01: "Series B — $30M"
+2023-06-15: milestone "Profitability" [color: #1B5E20]`} height={380} />
+
+---
+
+## 5. 軌道（泳道分組）
+
+`track` 區塊將相關事件歸入一個命名泳道。縮排事件行（2 個空格）屬於該軌道。
+
+```
+track "Engineering":
+  2024-01-15 - 2024-03-31: "API design"
+  2024-04-01 - 2024-07-31: "Implementation"
+
+track "Marketing":
+  2024-06-01: "Campaign kick-off"
+  2024-09-01: milestone "Launch campaign" [color: #1B5E20]
+```
+
+軌道在 `gantt` 樣式中最為實用，每個軌道會成為一個有標籤的橫列。
+
+<Playground initial={`timeline "Q3 Project Plan"
+config: style = gantt
+
+track "Backend":
+  2024-07-01 - 2024-08-15: "Database migration"
+  2024-08-16 - 2024-09-30: "API hardening"
+
+track "Frontend":
+  2024-07-01 - 2024-08-31: "New design system"
+  2024-09-01 - 2024-09-30: "Integration & QA"
+
+track "DevOps":
+  2024-07-15 - 2024-08-01: "Staging environment"
+  2024-09-30: milestone "Go-live" [color: #2E7D32]`} height={380} />
+
+---
+
+## 6. 備注
+
+縮排於事件下方的 `note:` 行會為事件附加一個工具提示標注。
+
+```
+2024-06-01: "Beta launch"
+  note: "First external users; NPS target 40+"
+```
+
+備注適用於平面事件以及軌道內的事件。
+
+---
+
+## 7. 配置
+
+`config:` 行調整佈局與視覺樣式。每個設定獨立成一行，格式為 `config: key = value`。
+
+| 鍵 | 值 | 預設 | 效果 |
+|---|---|---|---|
+| `style` | `swimlane` \| `gantt` \| `lollipop` | `swimlane` | 視覺渲染模式 |
+| `orientation` | `horizontal` \| `vertical` | `horizontal` | 軸線方向 |
+| `scale` | `proportional` \| `equidistant` \| `log` | `proportional` | 時間映射到螢幕空間的方式 |
+| `axis` | `bottom` \| `center` | `bottom` | 時間軸繪製的位置 |
+
+**樣式說明：**
+- `swimlane` — 事件交替顯示於水平軸的上下兩側；`side:` 控制每個事件的位置。紀元增加彩色背景帶。最適合路線圖與傳記。
+- `gantt` — 每個命名軌道成為一個水平橫條橫列；里程碑成為橫條上方的固定針。`gantt-project` 是別名。最適合專案排程。
+- `lollipop` — 以中央軸線為主，帶標籤的卡片在交替的棒上排列。最適合事件稀疏的歷史回顧。
+
+**泳道（Swimlane）** — 路線圖、產品時間軸、傳記。紀元增加色帶；事件交替顯示於上下兩側。
+
+<Playground initial={`timeline "SaaS Platform Roadmap"
+config: style = swimlane
+
+era 2024-Q1..2024-Q2: "Foundation" [color: #E3F2FD]
+era 2024-Q3..2024-Q4: "Growth" [color: #E8F5E9]
+
+2024-01-15: "Kick-off & team onboarding"
+2024-02-01: milestone "Architecture sign-off" [side: above]
+2024-03-01 - 2024-05-31: "API v2 build"
+2024-04-10: "Security audit" [color: #F9A825]
+2024-06-30: milestone "Beta launch" [side: above]
+2024-07-01 - 2024-09-30: "Performance & scaling"
+2024-10-15: milestone "General availability" [color: #2E7D32]`} height={460} />
+
+**甘特（Gantt）** — 帶有水平持續時間橫條與里程碑固定針的平行軌道。最適合專案排程。
+
+<Playground initial={`timeline "Product Launch — Q4"
+config: style = gantt
+
+track "Engineering":
+  2024-10-01 - 2024-11-15: "Feature freeze & hardening"
+  2024-11-16 - 2024-11-30: "Load testing"
+
+track "Design":
+  2024-10-01 - 2024-10-31: "Final UI polish"
+  2024-11-01 - 2024-11-14: "Asset delivery"
+
+track "Marketing":
+  2024-10-15 - 2024-11-14: "Campaign prep"
+  2024-11-15 - 2024-11-30: "Launch campaign"
+  2024-12-01: milestone "Launch day" [color: #2E7D32]`} height={400} />
+
+**棒棒糖（Lollipop）** — 以中央軸線為主，帶交替卡片的稀疏里程碑。最適合歷史回顧與品牌故事。
+
+<Playground initial={`timeline "History of Computing"
+config: style = lollipop
+config: scale = equidistant
+
+1936: "Turing — On Computable Numbers"
+1945: "ENIAC — first general-purpose computer"
+1969: "ARPANET"
+1971: milestone "Intel 4004 microprocessor" [side: above]
+1976: "Apple I"
+1991: "World Wide Web (Berners-Lee)"
+2007: milestone "iPhone" [color: #1565C0, side: above]`} height={380} />
+
+---
+
+## 8. 標籤與註解
+
+- **標題：** `timeline "My Title"` — 僅限第一行。
+- **事件標籤：** 冒號後的引號字串：`DATE: "Label"`。
+- **里程碑標籤：** `DATE: milestone "Label"`。
+- **紀元標籤：** `era DATE - DATE: "Label"`。
+- **軌道名稱：** `track "Name":`。
+- **備注：** `note: "text"` 縮排於事件下方。
+- **註解：** `#` 或 `//` 位於行首（前方可有空白）。
+
+---
+
+## 9. 保留字與跳脫
+
+**行首保留字：** `timeline`（標題）、`config:`、`era`、`track`、`note:`。
+
+**日期範圍分隔符：** ` - `（空格-連字號-空格）與 `..`——避免在冒號前的標籤文字中出現這些序列。
+
+**負整數的西元前年份：** `-753` 代表西元前 753 年。剖析器通過檢查周圍空白來區分負號與範圍分隔符——` - `（帶空格）是範圍；`-753`（冒號後沒有前導空格）是西元前年份。
+
+**屬性區塊：** `[key: value]` 必須出現在同一行引號標籤*之後*。必須有結尾的 `]`；未關閉的括號會產生剖析錯誤。
+
+---
+
+## 10. 常見錯誤
+
+| 你寫了什麼 | 剖析器的反應 | 修正方式 |
+|---|---|---|
+| `2024-06-01: Launch day`（無引號標籤） | 行未被識別為事件——`TimelineParseError` | 加上引號：`2024-06-01: "Launch day"` |
+| `2024-06 - 2024-09: "Q3"`（年月範圍） | 剖析正確 | 這樣有效——所有日期格式都可用於範圍 |
+| `era 2024: "Whole year"`（無範圍） | `TimelineParseError: era requires a date range` | 使用範圍：`era 2024 - 2024: "Whole year"` |
+| `track "Backend"`（無冒號） | `TimelineParseError: Expected ':' after track name` | 加上冒號：`track "Backend":` |
+| `2024-01-01: "Event" [side: left]` | `side: left` 被靜默忽略；只有 `above` 與 `below` 有效 | 使用 `side: above` 或 `side: below` |
+| `config: style = Gantt`（G 大寫） | `TimelineParseError: Invalid style: Gantt` | 使用小寫：`config: style = gantt` |
+| `2024-01-01-2024-03-31: "Q1"`（`-` 前後無空格） | 剖析器將 `2024-01-01-2024` 讀作日期——失敗 | 使用空格：`2024-01-01 - 2024-03-31:` 或 `..`：`2024-01-01..2024-03-31:` |
+| 沒有軌道的縮排事件 | 不在 `track` 區塊內的縮排行被剖析為平面事件 | 只在 `track "Name":` 區塊內縮排事件 |
+
+---
+
+## 11. 語法（EBNF）
+
+```text
+document     = header ( blank | comment | config | era | track | event )*
+
+header       = "timeline" ( WS quoted-string )? NEWLINE
+quoted-string = '"' any-char-but-quote* '"'
+
+config       = "config:" WS key WS "=" WS value NEWLINE
+key          = "style" | "orientation" | "scale" | "axis"
+
+era          = "era" WS date-range ":" WS quoted-string ( WS props )? NEWLINE
+track        = "track" WS quoted-string ":" NEWLINE
+                 ( INDENT≥2 event | INDENT≥2 note )*
+
+event        = date-spec ":" WS event-body ( WS props )? NEWLINE
+               ( INDENT note )?
+event-body   = ( "milestone" WS )? quoted-string
+date-spec    = date ( ( " - " | ".." ) date )?
+
+note         = "note:" WS quoted-string NEWLINE
+
+props        = "[" prop-list "]"
+prop-list    = prop ( "," prop )*
+prop         = key ":" WS value
+             | key ":" WS quoted-string
+
+date         = iso-date | year-month | year | quarter | bc-year | geological
+iso-date     = digit{4} "-" digit{2} "-" digit{2}
+year-month   = digit{4} "-" digit{2}
+year         = "-"? digit{1,5}
+quarter      = digit{4} "-"? "Q" [1-4]
+bc-year      = digit+ ( "BC" | "BCE" )
+geological   = number ( "Ma" | "Ga" | "ka" )
+
+comment      = ( "#" | "//" ) any NEWLINE
+```
+
+權威來源：`src/diagrams/timeline/parser.ts`。若此文件與剖析器有所出入，以剖析器為準——請開立 issue 回報。
+
+---
+
+## 12. 標準合規性
+
+時間軸圖沒有單一的規範標準。Schematex 遵循既有的視覺化慣例：
+
+- **泳道樣式** — 改編自學術歷史學與專案管理（PMI PMBOK）中使用的水平時間軸慣例。
+- **甘特樣式** — 遵循 Henry Gantt（1910–1915）提出的甘特圖形式；每軌道一條橫條的佈局符合 ISO 21500 專案排程慣例。
+- **棒棒糖樣式** — 遵循數據新聞學與資訊圖表中常用的點圖／莖葉圖慣例。
+
+目前已實作的功能：
+
+- ✅ 三種視覺樣式：swimlane、gantt、lollipop
+- ✅ 水平與垂直方向
+- ✅ 三種比例模式：proportional、equidistant、log
+- ✅ 時間點事件、範圍事件（橫條）與里程碑標記
+- ✅ 紀元（背景陰影帶）
+- ✅ 命名軌道（泳道橫列）
+- ✅ 事件備注
+- ✅ 六種日期格式：完整日期、年月、年份、季度、西元前年份、地質年代（Ma/Ga/ka）
+- ✅ 事件屬性：color、side、icon、shape、category
+- ⏳ 垂直方向渲染（已剖析，佈局尚未實作）
+- ⏳ `log` 比例渲染（已剖析，佈局目前視為 proportional）
+- ⏳ 帶自訂格式字串的軸線刻度標籤
+- ⏳ 事件連接線（相關事件之間的箭頭）
+
+參考文獻：
+
+- Gantt, H.L. (1910). *Work, Wages, and Profits.* Engineering Magazine.
+- Tufte, E.R. (1983). *The Visual Display of Quantitative Information.* — 時間軸作為小型多元視圖。
+
+---
+
+## 13. 路線圖
+
+**已規劃——目前尚無法剖析。** 請勿在今日生成的 DSL 中使用以下功能；剖析器會拒絕或忽略它們。
+
+- **事件連接線** — `connect ev1 -> ev2 [label: "causes"]` 箭頭連接跨時間的兩個事件。
+- **重複／週期** — `every 2024-Q1 .. 2024-Q4 monthly: "Sprint review"` 用於定期事件。
+- **軸線刻度格式** — `config: tickFormat = "%b %Y"` 用於自訂軸線上的日期顯示。
+- **垂直方向** — `config: orientation = vertical`，事件顯示於垂直軸的左右兩側（已剖析；渲染延後）。
+- **對數比例** — `config: scale = log`，用於需要壓縮近期年份的地質或深歷史跨度（已剖析；佈局延後）。
+
+如需提前實現以上功能，請在 GitHub issues 中追蹤進度。
+
+---
+
+## 相關範例
+
+範例庫中的即用情境：
+
+<RelatedExamples slugs={[
+  'timeline-product-launch',
+  'timeline-company-milestones',
+]} />

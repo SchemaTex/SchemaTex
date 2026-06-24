@@ -1,0 +1,226 @@
+---
+title: Breadboard / Physische Verdrahtung
+---
+
+## Über Breadboard-Diagramme
+
+Ein **Breadboard-Diagramm** zeigt, wie Komponenten auf einem lötfreien Prototyping-Board physisch verdrahtet werden — das ikonische visuelle Genre jedes Arduino / ESP32 / Raspberry Pi-Tutorials. Der Leser repliziert, was er sieht, Loch für Loch, auf echter Hardware. Dies ist *ergänzend zu* dem abstrakten Schaltplan (`circuit`, IEEE 315): Der Schaltplan ist die Denkansicht des Ingenieurs; das Breadboard ist die Replikationsansicht des Makers.
+
+Schematex implementiert **Fritzing-Stil** stilisiertes Breadboard-Rendering. Komponenten werden als erkennbare Körper gezeichnet (Widerstände mit Farbbändern, LEDs als farbige Kuppeln, DIPs mit Kerben, MCU-PCBs mit beschrifteten Pin-Headern). Jumper-Drähte werden als **glatte kubische Bézier-Bögen** zwischen spezifischen Tie-Points gezeichnet — keine Manhattan-Rechtwinkelpfade. Der DSL adressiert jedes Teil und jeden Draht mit **Breadboard-nativen Koordinaten** (`@col-row`, z.B. `@5e`), keine Pixelpositionen, sodass die Datei von Hand bearbeitbar und versionierbar ist.
+
+> **Hinweis** — Diese Engine ist *kein* Schaltplan und setzt keine elektrischen Regeln durch. Verwenden Sie sie für Tutorials, Laborskripte, READMEs und Lernmaterial. Für Knotenanalyse oder formale Schaltpläne verwenden Sie stattdessen die `circuit`-Engine.
+
+<Playground initial={`breadboard
+board: half
+title: "Blink LED — Arduino Uno hello-world"
+
+parts
+  uno: mcu uno @beside-left
+  r1:  resistor 220 @5e..9e
+  d1:  led red @10e..10f
+
+wires
+  uno:5V  --red--    @+t1
+  uno:GND --black--  @-t1
+  @+t1    --red--    @5a
+  uno:D13 --yellow-- @9a
+  @10j    --black--  @-t1`} height={420} />
+
+---
+
+## 1. Ihr erstes Breadboard
+
+Drei Abschnitte: ein einzeiliger `breadboard`-Header, ein `parts`-Block und ein `wires`-Block. Optionale `board:`- und `title:`-Zeilen kommen direkt nach dem Header.
+
+<Playground initial={`breadboard
+parts
+  uno: mcu uno @beside-left
+  r1:  resistor 220 @5e..9e
+  d1:  led red @10e..10f
+
+wires
+  uno:5V  --red--   @+t1
+  uno:GND --black-- @-t1
+  uno:D13 --yellow-- @5a
+  @10j    --black-- @-t1`} />
+
+Jedes Teil ist `id: kind [args] @placement`. Jeder Draht ist `<endpoint> --color-- <endpoint>`. Das ist die gesamte Grammatik.
+
+---
+
+## 2. Koordinaten
+
+Breadboards haben ein 2D-Adressraster. Schematex-Koordinaten beginnen immer mit `@`.
+
+| Form | Bedeutung | Beispiel |
+|---|---|---|
+| `@<col><row>` | Hauptraster-Loch. Reihen `a–e` (obere Hälfte), `f–j` (untere Hälfte). | `@5e`, `@12g` |
+| `@+t<col>` | Obere **positive** Schiene (rote Streifen). | `@+t8` |
+| `@-t<col>` | Obere **negative / GND**-Schiene (blaue Streifen). | `@-t8` |
+| `@+b<col>` | Untere positive Schiene. | `@+b14` |
+| `@-b<col>` | Untere negative Schiene. | `@-b14` |
+| `@<a>..<b>` | Spanne — bei der Teilplatzierung verwendet (Widerstand, Diode, LED). | `@5e..9e` |
+| `@beside-left` | Off-Board-Platzierung für MCU-Boards. | `mcu uno @beside-left` |
+
+Mini-Boards (`board: mini`) haben **keine Stromschienen** — `@+t…` / `@-b…` werden vom Parser abgelehnt.
+
+---
+
+## 3. Board-Größen
+
+```
+breadboard
+board: half          // Standard — 30 Spalten, 400 Tie-Points, Schienen (durchgehend)
+```
+
+| Form | Tie-Points | Spalten | Stromschienen |
+|---|---|---|---|
+| `mini` | 170 | 17 | keine |
+| `half` (Standard) | 400 | 30 | durchgehend |
+| `full` | 830 | 63 | Unterbrechung bei Spalte 30/31 |
+
+> **Achtung** — bei Full-Size-Boards unterbrechen die Schienen in der Mitte. Wenn Ihre Schaltung beide Hälften verwendet, müssen Sie die Schienen explizit mit einem Jumper überbrücken.
+
+---
+
+## 4. Teilekatalog
+
+Jedes Teil ist `id: <kind> [args] @<placement>`. Der Katalog umfasst die gängigsten Arduino / ESP32 Maker-Komponenten:
+
+**Diskrete Komponenten** (sitzen auf dem Breadboard):
+
+| DSL | Args | Beispiel |
+|---|---|---|
+| `resistor` | `value` (Ω; unterstützt `k`/`M`) | `r1: resistor 220 @5e..9e` |
+| `led` | `color` (red/green/blue/yellow/white/orange) | `d1: led red @10e..10f` |
+| `cap-elec` | — | `c1: cap-elec @4e..4f` |
+| `cap-ceramic` | — | `c2: cap-ceramic @6e..6f` |
+| `diode` | — | `d2: diode @5e..8e` |
+| `button` | — | `btn: button @8e` |
+| `dip` | `pins=N` | `ic: dip pins=8 @4e` |
+| `header` | `pins=N` | `h1: header pins=4 @20a` |
+
+**Mikrocontroller-Boards** (neben / oben / unten am Substrat platziert):
+
+| DSL | Pin-Labels |
+|---|---|
+| `mcu uno` | `5V`, `3V3`, `GND`, `VIN`, `RST`, `D2…D13`, `A0…A5`, `RX`, `TX` |
+| `mcu nano` | Teilmenge der Uno-Labels |
+| `mcu esp32` | `3V3`, `GND`, `VIN`, `GPIO2`, `GPIO4`, `GPIO5`, `GPIO12…GPIO33` |
+| `mcu pico` | Generische GPIO-Labels |
+
+**Sensoren / Displays / Aktoren** (Module sitzen auf dem Breadboard, Pin-Reihe verankert an der angegebenen Koordinate):
+
+| DSL | Pins |
+|---|---|
+| `sensor hcsr04` | `VCC`, `TRIG`, `ECHO`, `GND` |
+| `sensor dht11` / `sensor dht22` | `VCC`, `DATA`, `GND` |
+| `display oled-ssd1306` | `GND`, `VCC`, `SCL`, `SDA` |
+| `display lcd-1602-i2c` | `GND`, `VCC`, `SDA`, `SCL` |
+| `module rotary-ky040` | `CLK`, `DT`, `SW`, `VCC`, `GND` |
+| `actuator servo-sg90` | `GND`, `VCC`, `SIG` |
+
+Widerstandsfarbbänder werden automatisch aus `value` abgeleitet — `220` → rot-rot-braun-gold, `10000` → braun-schwarz-orange-gold.
+
+---
+
+## 5. Drähte
+
+Jeder Draht verbindet zwei Endpunkte. Ein Endpunkt ist entweder ein **Teil-Pin** (`partId:pinName`) oder eine **Breadboard-Koordinate** (`@…`).
+
+```
+wires
+  uno:5V  --red--    @+t1
+  uno:GND --black--  @-t1
+  uno:D9  --yellow-- @9c
+  @9a     --green--  @+t9
+```
+
+| Farbe | Konventionelle Rolle |
+|---|---|
+| `red` | +V (5V, 3,3V, VCC) |
+| `black` / `blue` | GND |
+| `yellow` / `orange` / `green` / `white` / `purple` | Signal |
+| `brown` / `grey` | Beliebiges Signal |
+
+Die Farbe ist rein visuell — die Engine validiert sie nicht gegen die elektrische Rolle.
+
+Für visuell überfüllte Boards ermöglicht `via @<coord>`, ein Zwischenloch zu fixieren, das die Bézier-Kontrollpunkte beeinflusst:
+
+```
+wires
+  uno:D13 --yellow-- @9a via @8c
+```
+
+Die meisten Drähte benötigen kein `via` — die Layout-Engine erzeugt von selbst einen natürlichen Bogen.
+
+---
+
+## 6. Sensor mit Pull-Up-Widerstand (DHT11-Motiv)
+
+Das ikonische Arduino-Tutorial-Muster: ein 10-kΩ-Pull-Up zwischen VCC und der Datenleitung des Sensors.
+
+<Playground initial={`breadboard
+board: half
+title: "DHT11 + 10kΩ pull-up"
+
+parts
+  uno: mcu uno @beside-left
+  s1:  sensor dht11 @6a
+  r1:  resistor 10000 @8e..14e
+
+wires
+  s1:VCC  --red--    @+t1
+  s1:GND  --black--  @-t1
+  s1:DATA --yellow-- @8e
+  @14e    --red--    @+t14
+  uno:5V  --red--    @+t1
+  uno:GND --black--  @-t1
+  uno:D2  --yellow-- @8a`} height={460} />
+
+---
+
+## 7. ESP32 + I²C OLED
+
+ESP32 arbeitet mit 3,3 V (nicht 5 V). I²C-Konvention: grün = SDA, weiß = SCL.
+
+<Playground initial={`breadboard
+board: half
+title: "ESP32 + SSD1306 OLED I²C"
+
+parts
+  esp:  mcu esp32 @beside-left
+  oled: display oled-ssd1306 @8a
+
+wires
+  oled:GND --black--   @-t1
+  oled:VCC --red--     @+t1
+  oled:SCL --white--   @10c
+  oled:SDA --green--   @11c
+  esp:3V3    --red--   @+t1
+  esp:GND    --black-- @-t1
+  esp:GPIO22 --white-- @10c
+  esp:GPIO21 --green-- @11c`} height={460} />
+
+---
+
+## 8. Einschränkungen von v0.1
+
+- **Keine Leader-Line-Callouts** — Referenzbezeichner (R1, C2) werden in der Nähe des Teilkörpers gezeichnet. Off-Board-Callout-Boxen sind verschoben.
+- **Kein `.fzz`-Import** — Schematex verarbeitet nur seinen eigenen DSL; Fritzing-Dateien werden nicht geparst.
+- **Keine Simulation** — dies ist ein Renderer, kein Wokwi-Simulator. Komponentenwert-Validierung (Ohmsches Gesetz, Strombegrenzungen) ist nicht im Umfang.
+- **Kein PCB / Schaltplan-Roundtrip** — `breadboard` und `circuit` sind unabhängige Engines. Das Erstellen zweier Ansichten desselben Prototyps erfordert derzeit das Schreiben zweier DSLs.
+- **Fester Teilekatalog** — benutzerdefinierte Teiltypen sind verschoben. v0.1 enthält den Maker-Tutorial-80%-Katalog (Widerstände, LEDs, Kondensatoren, DIPs, Header, vier MCU-Familien, sechs Sensor- / Display- / Aktor-Module).
+- **Power-Rail-Break-Visualisierung** — Full-Size-Boards markieren den 30/31-Unterbrechungspunkt mit einer lochbreiten Lücke; die Schienstreifen zeichnen jedoch durch die Lücke (kosmetisch).
+
+---
+
+## Verwandte Beispiele
+
+Einsatzbereite Szenarien aus der Beispielgalerie:
+
+<RelatedExamples slugs={[
+  'breadboard-blink-led',
+  'breadboard-hcsr04-distance',
+  'breadboard-esp32-oled',
+]} />

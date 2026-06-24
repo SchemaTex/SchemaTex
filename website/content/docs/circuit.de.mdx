@@ -1,0 +1,621 @@
+---
+title: Schaltplan (Circuit Schematic)
+---
+
+## Über Schaltpläne
+
+Ein **Schaltplan** ist die standardisierte grafische Darstellung einer elektronischen Schaltung — Bauteile werden als normierte Symbole gezeichnet, durch Leitungen verbunden, mit allen Informationen, die zum Aufbau oder zur Simulation der Schaltung erforderlich sind. Elektronikingenieure verwenden Schaltpläne während des gesamten Produktlebenszyklus: vom ersten Konzept bis zur Überprüfung des PCB-Layouts und zur Datenblattdokumentation. Schematex folgt **[IEEE Std 315-1975 / ANSI Y32.2](https://standards.ieee.org/ieee/315/738/)** und **[IEC 60617](https://webstore.iec.ch/publication/2765)** für Bauteilsymbole.
+
+Der DSL verfügt über zwei Modi. Der **Netlist-Modus (empfohlen)** ist SPICE-ähnlich: Sie listen Bauteile und deren Knotenverbindungen auf, und die Engine berechnet das Layout automatisch — jede Zeile ist eigenständig, ohne räumlichen Zustand, den man verfolgen müsste. Der **Positionsmodus** dient dem manuellen Zeichnen: Bauteile reihen sich in einer Richtung aneinander wie in Schemdraw. Beide Modi erzeugen dasselbe SVG. **Für generierte Diagramme (z. B. durch ein LLM) verwenden Sie stets den Netlist-Modus** — dieser hat bei weitem die geringere Fehlerquote.
+
+<Playground initial={`circuit "CE Amp (netlist)" netlist
+V1 vcc 0 9V
+Rc vcc c 2.2k
+Rb vcc b 100k
+Q1 c b e npn
+Re e 0 1k`} height={440} />
+
+---
+
+## 1. Eine minimale Schaltung (Netlist-Modus — empfohlen)
+
+Die kleinste sinnvolle Schaltung: eine Spannungsquelle, ein Widerstand und ein Kondensator nach Masse — ein RC-Tiefpassfilter.
+
+<Playground initial={`circuit "RC Low-Pass" netlist
+V1 in 0 5V
+R1 in out 1k
+C1 out 0 100n`} />
+
+Drei Regeln decken ~90 % der Netlist-Nutzung ab:
+
+1. Beginnen Sie mit `circuit "Titel" netlist` (das Schlüsselwort `netlist` aktiviert diesen Modus).
+2. Jede Zeile hat die Form `komponentenId knotenA knotenB wert` — ein Bauteil, die zwei (oder mehr) benannten Knoten, mit denen es verbunden ist, dann sein Wert.
+3. **Zwei Bauteile, die denselben Knotennamen teilen, sind miteinander verdrahtet.** `0`, `gnd` oder `GND` ist das Massenetz (ein Massesymbol wird automatisch gezeichnet).
+
+Das Präfix der Komponenten-ID legt das Symbol fest: `R*`→Widerstand, `C*`→Kondensator, `L*`→Induktivität, `V*`→Spannungsquelle, `D*`→Diode, `Q*`→BJT. Wenn das Präfix mehrdeutig ist, fügen Sie `type=` hinzu (z. B. `X1 a b type=opamp`). Sie müssen keine Koordinaten berechnen — die Engine leitet die Platzierung aus der Konnektivität ab.
+
+> Kommentare müssen mit `#` am Anfang einer eigenen Zeile beginnen.
+
+---
+
+## 2. Bauteile
+
+### 2.1 Syntax im Netlist-Modus
+
+Eine Netlist-Zeile hat folgende Form:
+
+```
+komponentenId knoten... [wert] [type=…] [label="…"]
+```
+
+Die positionellen Knoten kommen zuerst; ein abschließendes Token, das nicht wie ein Knoten aussieht, wird als Wert interpretiert. Beispiel — ein Transistor (4 Knoten) und ein Widerstand:
+
+```
+Q1 c b e npn        # Kollektor-, Basis-, Emitter-Knoten + Modell
+Rc vcc c 2.2k       # zwei Knoten + Wert
+```
+
+**Optionaler Orientierungshinweis.** Die Engine orientiert Symbole automatisch nach ihrer Funktion (Quellen oben, Masse unten, der Rest horizontal). Um ein einzelnes Symbol zu verschieben, fügen Sie `dir=right|left|up|down` hinzu — die Konnektivität bleibt unverändert, nur die Ausrichtung des Symbols ändert sich:
+
+```
+C1 out 0 100n dir=down    # C1 als Shunt-Kondensator nach Masse zeichnen
+```
+
+Dies ist die leichtgewichtige Layout-Steuerungsebene (ähnlich wie die komponentenweise Orientierung in Lcapy): die Netlist-Konnektivität übernimmt die Hauptarbeit, `dir=` verfeinert lediglich das Erscheinungsbild. Für vollständige geometrische Kontrolle verwenden Sie den Positionsmodus (siehe unten).
+
+### 2.2 Syntax im Positionsmodus (manuelles Zeichnen)
+
+> Der Positionsmodus dient zum manuellen, geometrischen Aufbau eines Schaltplans. **Bevorzugen Sie für generierte Ausgaben den Netlist-Modus** — der Positionsmodus erfordert das Verfolgen eines sich bewegenden „Cursors" über Zeilen hinweg, was für LLMs fehleranfällig ist.
+
+Eine benannte Bauteilzeile hat die Form:
+
+```
+id: type richtung [value="…"] [label="…"]
+```
+
+Eine anonyme Komponente lässt das `id:`-Präfix weg — der Parser weist eine automatische ID zu.
+
+```
+R1: resistor right value="4.7k" label="R1"
+capacitor down value="100n"
+```
+
+**Richtung** ist eines von `right` (Standard), `left`, `up`, `down`. Es steuert, in welche Richtung sich die Komponente vom aktuellen Cursor-Position aus erstreckt.
+
+### 2.3 Passive Bauteile
+
+| DSL-Typ | Beschreibung |
+|---|---|
+| `resistor` | Zickzack (ANSI) oder Rechteck (IEC) |
+| `potentiometer` | Widerstand + Schleifer-Pfeil, 3-polig |
+| `rheostat` | 2-poliger veränderbarer Widerstand |
+| `thermistor_ntc` | NTC-Thermistor (auch: `therm`, `ntc`) |
+| `thermistor_ptc` | PTC-Thermistor (auch: `ptc`) |
+| `ldr` | Lichtabhängiger Widerstand |
+| `varistor` | Spannungsabhängiger Widerstand |
+| `fuse` | Standard-Sicherung |
+| `fuse_slow` | Träge Sicherung (`T`-Kennzeichnung) |
+| `capacitor` | Unpolarer Kondensator |
+| `electrolytic_cap` | Polarer/Elektrolytkondensator (auch: `ecap`) |
+| `variable_cap` | Variabler Kondensator |
+| `inductor` | Luftkern-Induktivität |
+| `inductor_iron` | Eisenkern-Induktivität |
+| `inductor_ferrite` | Ferritkern-Induktivität |
+| `variable_inductor` | Variable Induktivität |
+| `ferrite_bead` | EMI-Ferritperle |
+| `crystal` | Quarzoszillator (auch: `xtal`) |
+| `transformer` | Gekoppelte Spulen (auch: `xfmr`) |
+
+<Playground initial={`circuit "Passive components gallery"
+# Row 1: resistor → capacitor → inductor
+R1: resistor right value="1k"
+wire right
+C1: capacitor right value="100n"
+wire right
+L1: inductor right value="10u"
+# Row 2: crystal and transformer, offset below
+at: R1.start
+wire down
+wire down
+X1: crystal right
+wire right
+wire right
+T1: transformer right`} height={380} />
+
+### 2.4 Quellen und Versorgung
+
+| DSL-Typ | Beschreibung |
+|---|---|
+| `voltage_source` | Kreis + Polarität (auch: `vsource`) |
+| `current_source` | Kreis + Pfeil (auch: `isource`) |
+| `ac_source` | Kreis + Sinussymbol (auch: `acsource`) |
+| `battery` | Abwechselnd lange/kurze Anschlusslinien |
+| `vcc` | Versorgungsspannungspfeil (nach oben zeigend) |
+| `ground` | Erdmasse — 3 abnehmende Linien (auch: `gnd`) |
+| `gnd_signal` | Signalmasse — gefülltes Dreieck |
+| `gnd_chassis` | Gehäusemasse |
+| `gnd_digital` | Digitalmasse |
+
+<Playground initial={`circuit "Sources and power gallery"
+# voltage source with ground
+V1: voltage_source down value="5V"
+wire down
+ground
+at: V1.start
+wire right
+wire right
+# battery
+B1: battery down value="9V"
+wire down
+ground
+at: B1.start
+wire right
+wire right
+# ac source
+A1: ac_source down value="120V"
+wire down
+ground
+at: A1.start
+wire right
+wire right
+# vcc rail
+vcc up
+wire down
+gnd_signal down`} height={420} />
+
+### 2.5 Halbleiter — Dioden
+
+| DSL-Typ | Beschreibung |
+|---|---|
+| `diode` | Dreieck + Kathodenbalken |
+| `zener` | Diode + gebogener Kathodenbalken |
+| `schottky` | Diode + S-Balken |
+| `led` | Diode + nach außen gerichtete Emissionspfeile |
+| `photodiode` | Diode + einwärts gerichtete Lichtpfeile |
+| `varactor` | Diode + variabler Kondensator |
+| `tvs_diode` | Bidirektionale TVS (zwei gebogene Balken) |
+| `bridge_rectifier` | 4-Dioden-Brücke, 4-polig |
+
+<Playground initial={`circuit "Diode types gallery"
+D1: diode right
+wire right
+D2: zener right
+wire right
+D3: led right
+wire right
+D4: schottky right
+wire right
+D5: photodiode right
+wire right
+ground
+at: D1.start
+wire left
+ground`} height={280} />
+
+### 2.6 Halbleiter — Transistoren
+
+| DSL-Typ | Beschreibung |
+|---|---|
+| `npn` | NPN-BJT (auch: `transistor`, `bjt_npn`) |
+| `pnp` | PNP-BJT (auch: `bjt_pnp`) |
+| `darlington_npn` | NPN-Darlington-Paar |
+| `darlington_pnp` | PNP-Darlington-Paar |
+| `nmos` | N-Kanal-MOSFET Anreicherungstyp (auch: `mosfet_n`) |
+| `pmos` | P-Kanal-MOSFET Anreicherungstyp (auch: `mosfet_p`) |
+| `nmos_depletion` | N-Kanal-MOSFET Verarmungstyp |
+| `jfet_n` | N-Kanal-JFET |
+| `jfet_p` | P-Kanal-JFET |
+| `igbt` | IGBT |
+| `scr` | SCR / Thyristor |
+| `triac` | TRIAC |
+| `diac` | DIAC |
+| `phototransistor` | NPN mit Lichtpfeilen |
+| `optocoupler` | LED + Fototransistor in Isolationsgehäuse |
+
+<Playground initial={`circuit "Transistor types gallery"
+# NPN BJT
+Q1: npn right
+wire right
+wire right
+# PNP BJT
+Q2: pnp right
+wire right
+wire right
+# N-channel MOSFET
+Q3: nmos right
+wire right
+wire right
+# P-channel MOSFET
+Q4: pmos right`} height={320} />
+
+### 2.7 Analoge ICs und Operationsverstärker
+
+| DSL-Typ | Beschreibung |
+|---|---|
+| `opamp` | Dreieck: +/−-Eingänge, Ausgang |
+| `comparator` | Gleiche Form, Open-Collector-Ausgang |
+| `schmitt_buffer` | Puffer + Hysterese-Symbol |
+| `tri_state_buffer` | Puffer + Enable-Anschluss |
+| `instrumentation_amp` | Drei-Operationsverstärker-INA-Block |
+| `generic_ic` | Konfigurierbares Rechteck mit beschrifteten Pins (auch: `ic`) |
+| `voltage_regulator` | 3-Anschluss-Block: IN/GND/OUT (auch: `reg`) |
+| `dc_dc_converter` | 2-Port-Block mit DC/DC-Beschriftung |
+| `555_timer` | 8-Pin-555-Pinout-Block (auch: `timer555`) |
+
+<Playground initial={`circuit "Analog IC gallery"
+# op-amp with input/output wires
+wire right
+U1: opamp right
+wire right
+wire right
+wire right
+# comparator
+U2: comparator right
+wire right
+wire right
+wire right
+# generic IC block
+U3: generic_ic right`} height={320} />
+
+### 2.8 Schalter und Relais
+
+| DSL-Typ | Beschreibung |
+|---|---|
+| `switch_spst` | Einpoliger Einschalter |
+| `switch_spdt` | Einpoliger Umschalter |
+| `switch_dpdt` | Zweipoliger Umschalter |
+| `push_no` | Drucktaster, Schließer |
+| `push_nc` | Drucktaster, Öffner |
+| `relay_coil` | Relaisspule (2-poliges Rechteck) |
+| `relay_no` | Relaiskontakt, Schließer |
+| `relay_nc` | Relaiskontakt, Öffner |
+
+<Playground initial={`circuit "Switch and relay gallery"
+# SPST switch
+S1: switch_spst right
+wire right
+wire right
+# SPDT switch
+S2: switch_spdt right
+wire right
+wire right
+# normally-open push button
+S3: push_no right
+wire right
+wire right
+# relay coil + contact pair
+K1: relay_coil right
+wire right
+K2: relay_no right`} height={300} />
+
+### 2.9 Elektromechanische Bauteile und Messtechnik
+
+| DSL-Typ | Beschreibung |
+|---|---|
+| `motor` | Kreis + M |
+| `speaker` | Konus + Gehäuse |
+| `microphone` | Kapsel-Symbol |
+| `buzzer` | Piezo-Summer |
+| `ammeter` | Kreis + A |
+| `voltmeter` | Kreis + V |
+| `wattmeter` | Kreis + W |
+| `oscilloscope` | Kreis + Wellenform |
+
+### 2.10 Verbinder und Annotationen
+
+| DSL-Typ | Beschreibung |
+|---|---|
+| `wire` | Einfaches Leitungssegment |
+| `dot` | Verbindungspunkt (T-Verbindungsmarkierung) |
+| `label` | Netzbezeichnung / Flag |
+| `port` | Benannter Port (Hohlkreis) |
+| `test_point` | TP-Markierung |
+| `no_connect` | X — absichtlich nicht verbundener Pin |
+| `antenna` | Antennenstumpf |
+
+<Playground initial={`circuit "Passive components"
+R1: resistor right value="1k" label="R1"
+wire right
+C1: capacitor down value="100n" label="C1"
+wire down
+ground
+at: R1.start
+wire up
+battery up label="9V"`} height={360} />
+
+---
+
+## 3. Verdrahtung und Verzweigung
+
+### 3.1 Leitungssegmente
+
+`wire richtung [N]` zeichnet eine einfache Leitung vom aktuellen Cursor in die angegebene Richtung. Eine optionale Zahl legt die Länge in Pixeln fest.
+
+```
+wire right
+wire down 40
+wire left 20
+```
+
+### 3.2 Cursor-Sprung mit `at:`
+
+`at: id.end` bewegt den Cursor zu einem benannten Ankerpunkt, ohne etwas zu zeichnen. Verwenden Sie dies, um von einem zuvor platzierten Bauteil aus zu verzweigen.
+
+```
+R1: resistor right value="10k"
+at: R1.end
+C1: capacitor down value="100n"
+```
+
+Benannte Ankersuffixe: `end`, `start`. Bauteile behalten ihre ID im gesamten Diagramm, sodass Sie zu jedem zuvor platzierten Bauteil zurückspringen können.
+
+### 3.3 Verbindungspunkte
+
+Platzieren Sie einen `dot` (oder verwenden Sie `net NAME: dot`), um eine T-Verbindung zu markieren — einen Punkt, an dem drei oder mehr Leitungen zusammentreffen. Ohne einen Punkt werden sich kreuzende Leitungen als Kreuzung ohne Verbindung dargestellt.
+
+```
+R1: resistor right
+dot
+wire right           # fortsetzung von R1.end
+at: R1.end
+C1: capacitor down   # Abzweig nach unten vom selben Punkt
+```
+
+### 3.4 Benannte Netze
+
+`net NAME` deklariert ein benanntes Netz. `net NAME: dot` deklariert das Netz und platziert einen Verbindungspunkt am aktuellen Cursor, wobei diese Position gespeichert wird. Später springt `at: NAME` zum Ankerpunkt dieses Netzes zurück.
+
+```
+net VOUT: dot
+R2: resistor right value="10k"
+at: VOUT
+C1: capacitor down value="470n"
+```
+
+### 3.5 Netzbezeichnungen
+
+`label "text" richtung?` platziert eine Textbezeichnung an der aktuellen Cursor-Position. Bezeichnungen bewegen den Cursor nicht weiter. Sie sind nützlich zur Benennung von Versorgungsschienen oder blattübergreifenden Verbindungen.
+
+```
+label "VCC" up
+label "GND" down
+```
+
+<Playground initial={`circuit "RC filter"
+V1: voltage_source down value="5V"
+wire right
+R1: resistor right value="1k" label="R1"
+net OUT: dot
+wire right
+label "Vout" right
+at: OUT
+C1: capacitor down value="100n" label="C1"
+wire down
+ground`} height={380} />
+
+---
+
+## 4. Netlist-Modus
+
+Fügen Sie `netlist` nach dem Titel in der Kopfzeile hinzu, um zum SPICE-ähnlichen Netlist-Parsing zu wechseln. Die Auto-Layout-Engine berechnet die Bauteilpositionen aus der Netz-Konnektivität.
+
+```
+circuit "Tiefpassfilter" netlist
+```
+
+### 4.1 Netlist-Zeilenformat
+
+Jede Zeile hat die Form: `ID netz1 netz2 [netz3…] [wert] [schlüssel=wert…]`
+
+- **ID** — Bauteil-Bezeichner. Der erste Buchstabe bestimmt den Standardtyp (SPICE-Präfix-Konvention).
+- **netz1, netz2, …** — Netznamen, mit denen die Pins verbunden sind. Netznamen, die `0`, `gnd`, `ground`, `earth`, `pe`, `agnd`, `dgnd`, `gnda`, `gndd`, `vss` oder `com` entsprechen (Groß-/Kleinschreibung unerheblich, mit optionalem `_<wort>`- oder numerischem Suffix — z. B. `gnd_ref`, `AGND_DIG`, `EARTH1`), werden alle auf das Massenetz normiert.
+- **wert** (optionales nacktes Token) — Bauteilwert oder Modellname.
+- **schlüssel=wert** (optional) — Überschreibungen für `label=`, `value=`, `type=`.
+
+### 4.2 SPICE-Präfix → Bauteiltyp
+
+| Präfix | Standardtyp | Pin-Reihenfolge |
+|---|---|---|
+| `R` | `resistor` | p1, p2 |
+| `C` | `capacitor` | p1, p2 |
+| `L` | `inductor` | p1, p2 |
+| `D` | `diode` | Anode (start), Kathode (end) |
+| `V` | `voltage_source` | plus, minus |
+| `I` | `current_source` | plus, minus |
+| `Q` | `npn` | c, b, e |
+| `M` | `nmos` | d, g, s |
+| `J` | `jfet_n` | d, g, s |
+| `S` | `switch_spst` | p1, p2 |
+| `F` | `fuse` | p1, p2 |
+| `B` | `battery` | plus, minus |
+| `K` | `relay_coil` | p1, p2 |
+| `U`, `X` | `generic_ic` | benutzerdefiniert über `pins=` |
+| `W` | `wire` | start, end |
+| `T` | `terminal_block` | benutzerdefiniert über `pins=` (auch `type=junction_box`) |
+
+> **Geltungsbereich:** Schematex Circuit deckt ausschließlich **elektrische Schaltpläne** ab (IEEE 315 / IEC 60617). Hydraulische und pneumatische Schaltpläne (ISO 1219) verwenden eine grundlegend andere visuelle Grammatik — gerichtete Ventilenvelopen, Zylindersymbole, Linienstile für Druck/Rücklauf/Ablauf — und werden von dieser Engine nicht unterstützt. Hydraulische Präfixe wie `EV*` (Elektroventil), `BOMBA*` (Pumpe), `TANK*`, `DIPOSIT*` werden mit einem „Typ kann nicht abgeleitet werden"-Fehler zurückgewiesen.
+
+### 4.3 Transistormodell-Überschreibung
+
+Bei `Q`-Zeilen überschreibt ein abschließender Modellname den Typ:
+
+```
+Q1 c b e npn      # NPN-BJT
+Q2 c b e pnp      # PNP-BJT
+M1 d g s nmos     # N-Kanal-MOSFET
+M2 d g s pmos     # P-Kanal-MOSFET
+```
+
+Bei `D`-Zeilen gilt entsprechendes:
+
+```
+D1 anode cathode zener
+D2 anode cathode led
+D3 anode cathode schottky
+D4 anode cathode photodiode
+```
+
+### 4.4 Netlist-Beispiel
+
+<Playground initial={`circuit "CE Amp (netlist)" netlist
+V1 vcc 0 9V
+Rc vcc c 2.2k
+Rb vcc b 100k
+Q1 c b e npn
+Re e 0 1k`} height={420} />
+
+---
+
+## 5. Attribute
+
+Sowohl der Positions- als auch der Netlist-Modus akzeptieren diese Schlüssel-Wert-Attribute:
+
+| Attribut | Akzeptiert von | Wirkung |
+|---|---|---|
+| `label="…"` | alle Bauteile | Anzeigebezeichnung (Referenzkennzeichen) |
+| `value="…"` | alle Bauteile | Wertannotation (1kΩ, 100nF, 5V) |
+| `at=id.end` | Positions-Bauteile | Dieses Bauteil an einem benannten Ankerpunkt beginnen |
+| `length=N` | `wire`, einige Passive | Länge in Pixeln |
+
+Im Positionsmodus ist `at=` innerhalb der Bauteilzeile äquivalent zu einer vorangestellten `at:`-Zeile:
+
+```
+C1: capacitor down at=R1.end value="100n"
+```
+
+---
+
+## 6. Beschriftungen & Kommentare
+
+- **Diagrammtitel:** `circuit "RC-Filter"` — nur in der ersten Zeile.
+- **Bauteilbezeichnung:** `label="R1"`-Attribut — Referenzkennzeichen, das neben dem Symbol angezeigt wird.
+- **Wertannotation:** `value="4.7k"` — wird neben oder unter dem Bauteil angezeigt.
+- **Netzbezeichnung:** `label "VOUT" right` — eigenständiges Netz-Flag am aktuellen Cursor.
+- **Kommentare:** `#` am Anfang einer Zeile (nach führendem Leerzeichen).
+
+---
+
+## 7. Reservierte Wörter & Maskierung
+
+**Am Zeilenanfang reserviert (Positionsmodus):** `circuit` (Kopfzeile), `at:`, `net`, `wire`, `label`.
+
+**Im Netlist-Modus reserviert:** es gelten dieselben Kopfzeilenregeln; alle anderen Zeilen sind SPICE-Bauteilzeilen.
+
+**Massenetz-Aliase (nur Netlist):** `0`, `gnd`, `GND`, `Gnd`, `ground`, `Ground` — alle werden als derselbe Knoten behandelt.
+
+**Bauteil-IDs** müssen dem Muster `[a-zA-Z_][a-zA-Z0-9_]*` entsprechen. Leerzeichen in Werten müssen in Anführungszeichen gesetzt werden: `value="10 kΩ"`.
+
+---
+
+## 8. Häufige Fehler
+
+| Sie haben geschrieben | Der Parser meldet | Lösung |
+|---|---|---|
+| `resistor right 1k` (nackter Wert ohne `value=`) | `1k` wird als unbekanntes Attribut-Flag geparst und ignoriert | Verwenden Sie `value="1k"`: `resistor right value="1k"` |
+| `at: R1.center` | `center` ist kein erkanntes Ankersuffix — Cursor bleibt an aktueller Position | Verwenden Sie `at: R1.end` oder `at: R1.start` |
+| `wire 40` (keine Richtung) | Richtung wird zu `right`; Länge `40` wird akzeptiert | Explizite Richtung empfohlen: `wire right 40` |
+| `R1 vcc out 10k` im Positionsmodus | Zeile entspricht dem Bare-Typ-Muster; `R1` wird als Typname gelesen, Suche schlägt fehl | Im Positionsmodus: `R1: resistor right value="10k"` |
+| `Q1 c b e` (Netlist, kein Modell) | Typ wird aus `Q`-Präfix auf `npn` gesetzt — korrekt | OK; fügen Sie `npn` zur Klarheit explizit hinzu |
+| `net OUT` dann `at: OUT` ohne `net OUT: dot` | Das `OUT`-Netz existiert, hat aber keinen Ankerpunkt; Sprung hat kein Ziel | Verwenden Sie `net OUT: dot`, um die Cursor-Position zu registrieren |
+| `label VCC up` (unbeschriftetes Label) | `VCC` wird als Richtungstoken geparst, dann `up` — der Labeltext geht verloren | Text in Anführungszeichen setzen: `label "VCC" up` |
+
+---
+
+## 9. Grammatik (EBNF)
+
+```text
+document        = header statement*
+
+-- Positionsmodus --
+header          = "circuit" ( WS quoted-string )? NEWLINE
+statement       = blank | comment | component | wire | at | net-decl | label-stmt
+
+component       = ( id ":" WS )? type WS direction? attrs* NEWLINE
+wire            = "wire" ( WS direction )? ( WS integer )? NEWLINE
+at              = "at:" WS anchor NEWLINE
+anchor          = id "." ( "start" | "end" )
+                | id                          // Netzname-Ankerpunkt
+
+net-decl        = "net" WS id NEWLINE         // nur Netz deklarieren
+                | "net" WS id ":" WS "dot" NEWLINE  // deklarieren + Punkt platzieren
+
+label-stmt      = "label" WS quoted-string ( WS direction )? NEWLINE
+
+component-attr  = "value=" quoted-string
+                | "label=" quoted-string
+                | "at=" anchor
+                | "length=" integer
+
+direction       = "right" | "left" | "up" | "down"
+type            = // beliebiger Wert aus den Bauteil-Tabellen in §2
+
+-- Netlist-Modus --
+netlist-header  = "circuit" ( WS quoted-string )? WS "netlist" NEWLINE
+netlist-stmt    = id WS net-ref+ ( WS kv-pair )* NEWLINE
+                | comment
+net-ref         = id | "0"                    // Netzname oder Massenetz-Alias
+kv-pair         = id "=" ( quoted-string | bare-value )
+
+id              = [a-zA-Z_] [a-zA-Z0-9_]*
+integer         = [0-9]+
+quoted-string   = '"' any-char-but-quote* '"'
+comment         = "#" any NEWLINE
+```
+
+Maßgebliche Quelle: `src/diagrams/circuit/parser.ts` und `src/diagrams/circuit/netlist.ts`. Wenn diese Dokumentation vom Parser abweicht, hat der Parser Vorrang — bitte öffnen Sie ein Issue.
+
+---
+
+## 10. Normkonformität
+
+Schematex-Schaltpläne folgen **IEEE Std 315-1975 / ANSI Y32.2** für Bauteilsymbolformen und **IEC 60617** für internationale Varianten. Die Netlist-Syntax folgt den **SPICE**-Präfix-Konventionen (Berkeley SPICE3 / LTspice / ngspice).
+
+Was heute implementiert ist:
+
+- ✅ Vollständiger Satz passiver Bauteile: Widerstandsvarianten, Kondensatorvarianten, Induktivitätsvarianten, Quarz, Transformator
+- ✅ Quellen und Versorgung: Spannungsquelle, Stromquelle, Wechselstromquelle, Batterie, VCC, vier Massestile
+- ✅ Diodenfamilie: Diode, Zenerdiode, Schottky, LED, Fotodiode, Varaktor, TVS, Brückengleichrichter
+- ✅ BJTs: NPN, PNP, Darlington NPN/PNP
+- ✅ FETs: NMOS/PMOS Anreicherungstyp, NMOS Verarmungstyp, N/P-Kanal-JFET
+- ✅ Leistungshalbleiter: IGBT, SCR, TRIAC, DIAC
+- ✅ Optoelektronik: Fototransistor, Optokoppler
+- ✅ Analoge ICs: Operationsverstärker, Komparator, Schmitt-Puffer, Tri-State-Puffer, INA, generisches IC, Spannungsregler, DC-DC-Wandler, 555-Timer
+- ✅ Schalter: SPST, SPDT, DPDT, Schließer, Öffner
+- ✅ Relais: Spule, Schließerkontakt, Öffnerkontakt
+- ✅ Elektromechanik: Motor, Lautsprecher, Mikrofon, Summer
+- ✅ Messtechnik: Amperemeter, Voltmeter, Wattmeter, Oszilloskop
+- ✅ Annotationen: Leitung, Verbindungspunkt, Bezeichnung, Port, Testpunkt, Nicht-Verbinden, Antenne
+- ✅ Positions-DSL: Richtungsverkettung, `at:`-Verzweigung, `net`-Deklarationen
+- ✅ Netlist-DSL: SPICE-Präfix-Zuordnung, Modellüberschreibungen, automatische Massenetz-Synthese
+- ⏳ Pin-Ebene `at:` für BJT/FET/Operationsverstärker benannte Pins (Basis, Kollektor, Plus, Minus, Ausgang)
+- ⏳ Automatisch geroutete Leitungen im Positionsmodus (Routing um platzierte Symbole herum)
+- ⏳ Busleitungen mit Bit-Breiten-Annotation (`/8`-Schrägstrich)
+
+Referenzen:
+
+- IEEE Std 315-1975 (ANSI Y32.2): *Graphic Symbols for Electrical and Electronics Diagrams*
+- IEC 60617: *Graphical symbols for diagrams*
+- SPICE3 User's Manual, UC Berkeley — Netlist-Zeilenformat-Konventionen
+
+---
+
+## 11. Verwandte Beispiele
+
+<RelatedExamples slugs={[
+  'circuit-ce-amplifier',
+]} />
+
+---
+
+## 12. Roadmap
+
+**Geplant — noch nicht parsierbar.** Verwenden Sie diese nicht in generiertem DSL; der Parser wird sie zurückweisen oder ignorieren.
+
+- **Benannte Pin-Ankerpunkte für mehrpolige Bauteile** — `at: Q1.base`, `at: U1.out`, `at: U1.plus`, damit Rückkopplungsschleifen bei Operationsverstärkern und BJTs ohne lange `wire`-Umwege verdrahtet werden können.
+- **Busleitung** — `wire right bus=8` zeichnet eine dicke Leitung mit einer `/8`-Bit-Breiten-Schrägstrich-Annotation.
+- **Automatisch geroutete Leitungen** — `connect R1.end U1.minus` lässt die Engine die Leitung um platzierte Symbole herumleiten.
+- **`flip`- und `reverse`-Attribute** — Spiegeln oder Umkehren der Polarität/Orientierung eines Bauteils entlang der Richtungsachse.
+- **`dashed`-Leitungsstil** — gestrichelte Linie für HF-Abschirmungen, Kabelbündel oder virtuelle Verbindungen.
+- **Hierarchische Blätter** — `module "name" { … }` Gruppierung analog zu Logikgattern-Modulen, zur Dokumentation mehrseitiger Schaltpläne.
+
+Verfolgen Sie den Fortschritt in den GitHub-Issues, wenn Sie diese Funktionen früher benötigen.

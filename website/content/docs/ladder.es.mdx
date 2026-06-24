@@ -1,0 +1,362 @@
+---
+title: Diagrama de escalera (Ladder Logic)
+---
+
+## Acerca de los diagramas de ladder logic
+
+**Ladder logic** es el lenguaje de programación gráfico utilizado para describir programas de control en Controladores Lógicos Programables (PLCs) — las computadoras industriales que controlan la automatización de fábricas, sistemas HVAC, líneas de transporte y equipos de proceso en todo el mundo. El nombre proviene del aspecto del diagrama: dos rieles de alimentación verticales conectados por peldaños horizontales, donde cada peldaño expresa una regla de condición a acción. Los electricistas e ingenieros de control lo adoptaron porque refleja los esquemáticos de contactos de relés que ya conocían.
+
+Schematex sigue **[IEC 61131-3:2013](https://en.wikipedia.org/wiki/IEC_61131-3)**, el estándar internacional para lenguajes de programación de PLCs, con las convenciones de nomenclatura de dirección-nombre de etiqueta Allen-Bradley (Rockwell) comunes en la práctica industrial norteamericana. Esta página documenta lo que el analizador acepta actualmente.
+
+<Playground initial={`ladder "Motor Start/Stop"
+rung 1 "Seal-in circuit":
+  parallel:
+    branch:
+      XIC(START_PB, "IN 1.0", name="Start Button")
+    branch:
+      XIC(MOTOR_AUX, "BIT 3.0", name="Aux Contact")
+  XIO(STOP_PB, "IN 1.1", name="Stop Button")
+  OTE(MOTOR_CMD, "OUT 2.0", name="Motor Command")
+rung 2 "Mode select with Set/Reset":
+  XIC(AUTO_HMIPB, "BIT 5.10", name="Auto Mode Button")
+  XIO(SYS_FAULT, "BIT 3.0", name="System Fault")
+  parallel:
+    branch:
+      OTL(SYS_AUTO, "BIT 3.1", name="System Auto Mode")
+    branch:
+      OTU(SYS_MANUAL, "BIT 3.2", name="System Manual Mode")
+rung 3 "Run timer":
+  XIC(MOTOR_CMD)
+  TON(RUN_TMR, PT=5000)
+rung 4 "Alarm on cycle complete":
+  XIC(CYCLE_DONE, "BIT 4.0", name="Cycle Done")
+  OTN(ALARM_OUT, "OUT 2.5", name="Alarm Output")`} height={500} />
+
+---
+
+## 1. Tu primer diagrama ladder
+
+El programa ladder más pequeño y útil: un peldaño, dos contactos, una bobina.
+
+<Playground initial={`ladder "First Rung"
+rung 1 "Start when button pressed, stop on fault":
+  XIC(START_PB)
+  XIO(FAULT)
+  OTE(MOTOR_RUN)`} />
+
+Cuatro reglas cubren el 80% del uso:
+
+1. Comienza con `ladder`, seguido opcionalmente de un título entre comillas.
+2. Cada **peldaño** comienza con `rung N "comentario opcional":` en su propia línea. Los dos puntos al final son opcionales.
+3. Los elementos se listan uno por línea, indentados bajo el peldaño — de izquierda a derecha significa serie (lógica AND).
+4. Un bloque `parallel:` / `branch:` introduce lógica OR. Cada rama contiene su propia lista de elementos.
+
+> Los comentarios pueden comenzar con `#`, `//`, o al estilo Mermaid `%%` en su propia línea.
+
+---
+
+## 2. Contactos
+
+Los contactos representan condiciones de entrada — pasan corriente cuando el bit asociado coincide con el tipo de contacto.
+
+| Tipo | Nombre | Pasa corriente cuando… |
+|---|---|---|
+| `XIC` | Examine If Closed | Bit de etiqueta = 1 (normalmente abierto) |
+| `XIO` | Examine If Open | Bit de etiqueta = 0 (normalmente cerrado) |
+| `ONS` | One-Shot Rising | La etiqueta transiciona 0 → 1 (flanco ascendente, un scan) |
+| `OSF` | One-Shot Falling | La etiqueta transiciona 1 → 0 (flanco descendente, un scan) |
+
+**Sintaxis:**
+
+```
+XIC(tag)
+XIC(tag, "address")
+XIC(tag, "address", name="Description")
+XIC(tag, address="address", name="Description")
+```
+
+- `tag` — requerido. El nombre de la etiqueta PLC (mostrado debajo del símbolo del contacto).
+- `"address"` — segundo argumento posicional opcional. La dirección de E/S (ej. `"IN 1.0"`, `"BIT 3.1"`).
+- `name="…"` — argumento clave-valor opcional. Descripción legible por humanos (mostrada encima del símbolo).
+
+<Playground initial={`ladder "Contact types"
+rung 1 "All four contact types":
+  XIC(START_PB, "IN 1.0", name="Start Button")
+  XIO(E_STOP, "IN 1.5", name="Emergency Stop NC")
+  ONS(PULSE_IN, "BIT 5.0", name="One-Shot Rising")
+  OSF(RESET_SIG, "BIT 5.1", name="One-Shot Falling")
+  OTE(OUT_RLY, "OUT 2.0", name="Output Relay")`} />
+
+---
+
+## 3. Bobinas
+
+Las bobinas representan acciones de salida — actúan sobre un bit de etiqueta cuando el peldaño tiene flujo de corriente.
+
+| Tipo | Nombre | Efecto en el bit de etiqueta |
+|---|---|---|
+| `OTE` | Output Energize | Establece bit = 1 mientras el peldaño es verdadero; limpia a 0 cuando el peldaño es falso |
+| `OTL` | Output Latch | Establece bit = 1; **retiene** incluso después de que el peldaño se ponga en falso (enclavamiento) |
+| `OTU` | Output Unlatch | Limpia bit = 0; retiene incluso después de que el peldaño se ponga en falso |
+| `OTN` | Output Negate | Establece bit = 0 mientras el peldaño es verdadero; establece a 1 cuando el peldaño es falso |
+| `RES` | Reset | Bobina de reset de contador o temporizador Rockwell / Allen-Bradley |
+
+**Sintaxis:** idéntica a los contactos — `OTE(tag)`, `OTE(tag, "address")`, `OTE(tag, "address", name="…")`.
+
+`OTL` y `OTU` se usan en pares para construir flip-flops Set/Reset. El último peldaño en escribir gana.
+
+<Playground initial={`ladder "Set-Reset latch"
+rung 1 "Set on start":
+  XIC(START_PB, "IN 1.0", name="Start")
+  OTL(MOTOR_ON, "BIT 3.0", name="Motor Latch")
+rung 2 "Reset on stop or fault":
+  parallel:
+    branch:
+      XIC(STOP_PB, "IN 1.1", name="Stop")
+    branch:
+      XIC(E_STOP, "IN 1.5", name="E-Stop")
+  OTU(MOTOR_ON, "BIT 3.0", name="Motor Latch")`} />
+
+---
+
+## 4. Bloques de función
+
+Los bloques de función realizan operaciones de temporizador, contador, matemáticas y comparación. Aparecen en línea dentro de un peldaño y tienen parámetros de palabra clave después del argumento de etiqueta obligatorio.
+
+### 4.1 Temporizadores
+
+| Tipo | Nombre | Parámetros clave |
+|---|---|---|
+| `TON` | Timer On-Delay | `PT=` tiempo preset en milisegundos |
+| `TOFF` | Timer Off-Delay | `PT=` tiempo preset en milisegundos |
+| `TP` | Timer Pulse | `PT=` tiempo preset en milisegundos |
+
+```
+TON(timer_tag, PT=5000)
+```
+
+La etiqueta del temporizador almacena el tiempo transcurrido. El bit `Q` del temporizador (salida de listo) se accede por nombre de etiqueta en los contactos posteriores.
+
+### 4.2 Contadores
+
+| Tipo | Nombre | Parámetros clave |
+|---|---|---|
+| `CTU` | Count Up | `PV=` valor preset (entero) |
+| `CTD` | Count Down | `PV=` valor preset |
+| `CTUD` | Count Up/Down | `PV=` valor preset |
+
+```
+CTU(cycle_counter, PV=100)
+```
+
+### 4.3 Matemáticas
+
+| Tipo | Operación |
+|---|---|
+| `ADD` | Suma |
+| `SUB` | Resta |
+| `MUL` | Multiplicación |
+| `DIV` | División |
+| `MOV` | Mover (copiar) |
+
+```
+ADD(result_tag, IN1=setpoint, IN2=offset)
+MOV(dest_tag, IN1=source_tag)
+```
+
+### 4.4 Comparaciones
+
+| Tipo | Significado |
+|---|---|
+| `EQU` | Igual |
+| `NEQ` | No igual |
+| `GRT` | Mayor que |
+| `LES` | Menor que |
+| `GEQ` | Mayor que o igual |
+| `LEQ` | Menor que o igual |
+
+```
+EQU(compare_tag, IN1=speed_actual, IN2=speed_setpoint)
+```
+
+<Playground initial={`ladder "Timer and counter"
+rung 1 "Start run timer":
+  XIC(MOTOR_CMD, "BIT 3.0", name="Motor Running")
+  TON(RUN_TIMER, PT=10000)
+rung 2 "Count completed cycles":
+  XIC(CYCLE_SENSOR, "IN 2.0", name="Cycle Sensor")
+  CTU(PART_COUNT, PV=500)
+rung 3 "Alarm when batch complete":
+  XIC(PART_COUNT, name="Count Done")
+  OTE(BATCH_ALARM, "OUT 3.0", name="Batch Complete Alarm")`} />
+
+---
+
+## 5. Ramas paralelas
+
+Un bloque `parallel:` introduce lógica OR — el peldaño tiene corriente si **cualquier** rama conduce. Cada rama es un sub-bloque `branch:` con sus elementos indentados debajo.
+
+```
+parallel:
+  branch:
+    XIC(LOCAL_START)
+  branch:
+    XIC(REMOTE_START)
+```
+
+Las ramas en un `parallel:` se evalúan simultáneamente. El bloque se cierra cuando la indentación regresa al nivel anterior al `parallel:`.
+
+**Reglas:**
+- `parallel:` debe aparecer dentro de un peldaño.
+- `branch:` debe aparecer dentro de un `parallel:` — usarlo solo lanza `LadderParseError`.
+- Cada rama contiene uno o más elementos.
+- Los elementos después del bloque `parallel:` están en serie con él (lógica AND).
+
+<Playground initial={`ladder "Parallel OR logic"
+rung 1 "Start from either local or remote":
+  parallel:
+    branch:
+      XIC(LOCAL_START, "IN 1.0", name="Local Start")
+    branch:
+      XIC(REMOTE_START, "BIT 5.2", name="Remote Start")
+  XIO(STOP_ALL, "IN 1.5", name="Stop All")
+  OTE(CONVEYOR, "OUT 2.0", name="Conveyor Run")`} />
+
+---
+
+## 6. Etiquetas y comentarios
+
+- **Título:** `ladder "Motor Control"` — solo en la primera línea, cadena entre comillas.
+- **Número de peldaño:** entero requerido después de `rung`.
+- **Comentario de peldaño:** cadena entre comillas opcional después del número de peldaño, antes del colon opcional: `rung 3 "Run indicator":` o `rung 3 "Run indicator"`.
+- **Etiqueta:** primer argumento dentro de los paréntesis — mostrado debajo del símbolo.
+- **Dirección:** segundo argumento posicional (entre comillas): `XIC(START_PB, "IN 1.0")`.
+- **Nombre:** argumento de palabra clave `name="…"` — descripción legible por humanos mostrada encima del símbolo.
+- **Comentarios de línea:** `#`, `//`, o `%%` al inicio de una línea (después del espacio en blanco inicial). Los mismos marcadores también inician comentarios al final de línea.
+
+---
+
+## 7. Palabras reservadas y escape
+
+**Reservadas al inicio de línea (insensibles a mayúsculas/minúsculas):** `ladder`, `rung`, `parallel:`, `branch:`.
+
+**Los nombres de elementos** son todos ASCII en mayúsculas: `XIC`, `XIO`, `ONS`, `OSF`, `OTE`, `OTL`, `OTU`, `OTN`, `TON`, `TOFF`, `TP`, `CTU`, `CTD`, `CTUD`, `ADD`, `SUB`, `MUL`, `DIV`, `MOV`, `EQU`, `NEQ`, `GRT`, `LES`, `GEQ`, `LEQ`.
+
+**IDs de etiqueta** — deben coincidir con `[A-Z][A-Z0-9_]*` (el analizador coincide con `[A-Z][A-Z0-9_]*` para el prefijo del nombre del elemento). Las etiquetas en minúsculas se aceptan dentro de los paréntesis.
+
+**Cadenas entre comillas** en argumentos de dirección o nombre deben usar comillas dobles `"…"`.
+
+---
+
+## 8. Errores comunes
+
+| Escribiste | El analizador dice | Corrección |
+|---|---|---|
+| `rung 1` (sin dos puntos) | Analizado correctamente | Los dos puntos al final son opcionales |
+| `ONF(TAG)` | `LadderParseError: unknown element type "ONF"` | El contacto de flanco descendente es `OSF`, no `ONF` |
+| `parallel:` sin `branch:` | Bloque paralelo vacío — el peldaño no tiene elemento | Agrega al menos un `branch:` dentro del `parallel:` |
+| `branch:` antes de `parallel:` | `LadderParseError: branch: without parallel:` | Siempre abre `parallel:` primero |
+| `OTE()` — sin etiqueta | `LadderParseError: element missing tag` | La etiqueta es requerida: `OTE(MY_TAG)` |
+| `var StartBtn: bool` (declaración de variable) | `LadderParseError: invalid element syntax` | Sin declaraciones de variables — las etiquetas se usan directamente |
+| Peldaño vacío (sin elementos después de `rung N:`) | `LadderParseError: Rung N: empty rung` | Agrega al menos un elemento a cada peldaño |
+| `TON(T1, T#5s)` | `LadderParseError: invalid element syntax` (T# no es un número válido) | Usa entero en milisegundos: `TON(T1, PT=5000)` |
+
+---
+
+## 9. Gramática (EBNF)
+
+```text
+document      = header NEWLINE rung+
+
+header        = "ladder" ( WS quoted-string )? NEWLINE
+quoted-string = '"' any-char-but-quote* '"'
+
+rung          = "rung" WS integer ( WS quoted-string )? ":"? NEWLINE
+                  element+
+
+element       = contact-line
+              | coil-line
+              | fb-line
+              | parallel-block
+
+contact-line  = contact-type "(" tag ( "," arg )* ")" NEWLINE
+contact-type  = "XIC" | "XIO" | "ONS" | "OSF"
+
+coil-line     = coil-type "(" tag ( "," arg )* ")" NEWLINE
+coil-type     = "OTE" | "OTL" | "OTU" | "OTN" | "RES"
+
+fb-line       = fb-type "(" tag ( "," arg )* ")" NEWLINE
+fb-type       = "TON" | "TOFF" | "TP"
+              | "CTU" | "CTD" | "CTUD"
+              | "ADD" | "SUB" | "MUL" | "DIV" | "MOV"
+              | "EQU" | "NEQ" | "GRT" | "LES" | "GEQ" | "LEQ"
+
+arg           = quoted-string             // posicional (dirección)
+              | key "=" quoted-string     // palabra clave (ej. name="…")
+              | key "=" number            // palabra clave (ej. PT=5000)
+
+parallel-block = INDENT≥2 "parallel:" NEWLINE
+                   ( INDENT branch-block )+
+
+branch-block   = "branch:" NEWLINE
+                   ( INDENT element )+
+
+tag           = [A-Za-z][A-Za-z0-9_]*
+key           = [A-Za-z][A-Za-z0-9_]*
+integer       = [0-9]+
+number        = [0-9]+ ( "." [0-9]+ )?
+comment       = ( "#" | "//" | "%%" ) any NEWLINE
+```
+
+Fuente autoritativa: `src/diagrams/ladder/parser.ts`. Si esto diverge del analizador, el analizador tiene la razón — por favor abre un issue.
+
+---
+
+## 10. Conformidad con el estándar
+
+El ladder logic de Schematex sigue **IEC 61131-3:2013** Parte 3 para el lenguaje de Diagrama Ladder y usa las convenciones de **dirección-nombre de etiqueta Allen-Bradley (Rockwell)** comunes en la práctica de PLC norteamericana.
+
+Lo que está implementado hoy:
+
+- ✅ Cuatro tipos de contacto: XIC (NA), XIO (NC), ONS (flanco ascendente), OSF (flanco descendente)
+- ✅ Cinco tipos de bobina: OTE (salida), OTL (enclavamiento/set), OTU (desenclavamiento/reset), OTN (negación), RES (reset de contador/temporizador)
+- ✅ Tres bloques de función de temporizador: TON, TOFF, TP con parámetro `PT=` en milisegundos
+- ✅ Tres bloques de función de contador: CTU, CTD, CTUD con parámetro `PV=` entero
+- ✅ Bloques de función matemáticos: ADD, SUB, MUL, DIV, MOV
+- ✅ Bloques de función de comparación: EQU, NEQ, GRT, LES, GEQ, LEQ
+- ✅ Bloques paralelos / de ramas para lógica OR
+- ✅ Anotaciones de etiqueta, dirección y nombre según las convenciones Allen-Bradley Studio 5000
+- ⏳ Temporizador retentivo (RTO) — en el estándar; aún no en el analizador
+- ⏳ Instrucciones Jump (JMP) / Label (LBL)
+- ⏳ Zona Master Control Reset (MCR)
+- ⏳ Instrucciones de E/S inmediata (IIN, IOT)
+- ⏳ Elementos de Texto Estructurado o Diagrama de Bloques de Función embebidos en peldaños
+
+Referencias:
+
+- IEC 61131-3:2013 — *Programmable controllers, Part 3: Programming languages*
+- NEMA ICS 1-2009 — *General Standards for Industrial Control and Systems*
+- Rockwell Automation Studio 5000 Logix Designer — [Ladder Diagram Programming Manual](https://literature.rockwellautomation.com/)
+
+---
+
+## 11. Ejemplos relacionados
+
+<RelatedExamples slugs={[
+  'ladder-motor-start-stop',
+  'ladder-mode-selection',
+]} />
+
+---
+
+## 12. Hoja de ruta
+
+**Planificado — aún no analizable.** No uses estos en DSL generado hoy; el analizador los rechazará o ignorará.
+
+- **Temporizador Retentivo On (RTO)** — temporizador que retiene el tiempo transcurrido a través de pérdidas de alimentación; requiere un contacto de reset separado.
+- **Jump (JMP) / Label (LBL)** — ramificación a un peldaño etiquetado para omitir lógica condicionalmente; usado en programas grandes para rendimiento.
+- **Zona Master Control Reset (MCR)** — una zona entre corchetes que des-energiza todas las salidas no retentivas cuando la entrada MCR es falsa.
+- **Texto estructurado en peldaños** — evaluación de expresiones en línea (ej., `CALC(result = a * b + c)`).
+- **E/S inmediata (IIN / IOT)** — forzar el scan de E/S a mitad de programa para control crítico en tiempo.
+
+Haz seguimiento en los issues de GitHub si necesitas alguno de estos antes.

@@ -1,0 +1,111 @@
+---
+title: IDEF0-Funktionsmodell
+description: Strukturierte Analyseaktivitätsmodelle – Funktionsboxen, verbunden durch ICOM-Pfeile (Input/Control/Output/Mechanism), konstruktionsbedingt korrekt.
+---
+
+## Über IDEF0
+
+**IDEF0** (Integration Definition for Function Modeling) ist der US-Bundesstandard für **funktionale Zerlegung** – die Modellierung dessen, *was* ein System tut. Jede Aktivität ist eine Box; Pfeile verbinden die vier festen Seiten nach ihrer Rolle: **I**nput (links), **C**ontrol (oben), **O**utput (rechts), **M**echanism (unten) – die **ICOM**-Konvention. Standardisiert als **[FIPS PUB 183](https://www.nist.gov/publications/integration-definition-function-modeling-idef0)** (1993).
+
+Schematex's Vorteil ist, dass das Modell **konstruktionsbedingt korrekt** ist. Die Rolle eines Pfeils *ist* die Boxkante, an der er befestigt ist, sodass die Engine die ICOM-Platzierung erzwingt, jede Referenz auflöst, Zerlegungsnummern zuweist, Grenzpfeile kodiert (I1/C1/O1/M1…) und die FIPS-Richtlinie von 3–6 Boxen anwendet – ein Modell, das den Standard verletzt, wird abgelehnt, anstatt Ihnen zu erlauben, einen Pfeil auf der falschen Seite zu zeichnen.
+
+<Playground initial={`idef0 "Manufacture product"
+node A0
+function A1 "Plan production"
+function A2 "Make parts"
+function A3 "Assemble product"
+input     A1 "Sales orders"
+control   A1 "Production schedule"
+A1 -> A2 "Work plan"
+input     A2 "Raw material"
+mechanism A2 "CNC machines"
+A2 -> A3 "Finished parts"
+output    A3 "Product"
+mechanism A3 "Assembly line"`} height={520} />
+
+---
+
+## 1. Ihr erstes IDEF0-Diagramm
+
+Beginnen Sie mit dem Schlüsselwort `idef0`, einem optionalen Titel, einem optionalen `node` (die Knotennummer des Diagramms), dann **Funktionsboxen** und deren **ICOM-Pfeile**:
+
+```
+idef0 "Fill order"
+function A1 "Receive order"
+input     A1 "Customer request"
+control   A1 "Order policy"
+mechanism A1 "Order clerk"
+output    A1 "Confirmed order"
+```
+
+`function ID "name"` deklariert eine Box (in Deklarationsreihenfolge). `node A0` setzt die übergeordnete Knotennummer, die zur Ableitung von untergeordneten Knotennummern verwendet wird (A0 → A1..An). Die FIPS-Richtlinie empfiehlt 3–6 Boxen pro Diagramm; außerhalb dieses Bereichs gibt die Engine eine Warnung aus.
+
+---
+
+## 2. ICOM-Grenzpfeile
+
+Jedes Schlüsselwort fixiert einen Pfeil an einer bestimmten Seite einer Box, und das *ist* seine Rolle:
+
+```
+input     A1 "Sales orders"        # tritt auf der LINKEN Kante ein
+control   A1 "Production schedule" # tritt auf der OBEREN Kante ein (regelt die Aktivität)
+output    A1 "Product"             # verlässt die RECHTE Kante
+mechanism A1 "CNC machines"        # tritt auf der UNTEREN Kante ein (die Ressource)
+```
+
+`input`, `control` und `mechanism` routen vom Diagrammrahmen **in** die Box; `output` routet von der Box **heraus** zum Rahmen. Die Engine kodiert diese Grenzpfeile entlang jeder Kante (I1, I2 / C1 / O1 / M1).
+
+---
+
+## 3. Flusspfeile zwischen Boxen
+
+Ein `->` Pfeil verbindet zwei Boxen; standardmäßig landet er auf dem **Input** des Ziels, aber Sie können die ICOM-Seite des Ziels benennen:
+
+```
+A1 -> A2 "Work plan"            # Box→Box; Standard ist A2s Input
+A2 -> A3.control "Parts spec"   # landet auf A3s Control (obere) Kante
+input A2 "Raw material" (tunnel) # (tunnel) verbirgt den Pfeil auf dieser Ebene
+```
+
+- `target.control` / `target.input` / `target.mechanism` wählt die Zielseite.
+- Ein Fluss **kann nicht auf dem `.output` des Ziels landen** – ein Output verlässt eine Box, er tritt nicht in eine ein.
+- `(tunnel)` markiert einen getunnelten Pfeil (unterdrückt im übergeordneten/untergeordneten Diagramm gemäß FIPS).
+
+---
+
+## 4. Berechnete strukturelle Durchsetzung
+
+Dies ist das Unterscheidungsmerkmal – was das Modell korrekt macht, wo ein Zeichentool es nicht ist:
+
+1. **ICOM-Platzierungsdurchsetzung** – die Rolle wird gegen die Geometrieseite der Box aufgelöst; eine fehlerhafte Rolle oder ein Fluss, der über `.output` in eine Box *eintreten* soll, wird abgelehnt.
+2. **Referenzauflösung** – jede Box-ID, die von einem Pfeil benannt wird, muss deklariert sein.
+3. **Zerlegungsnummerierung** – Boxen erhalten fortlaufende Boxnummern 1..n (untere rechte Ecke) und Knotennummern (A0 → A1..An); explizite `#N`-Nummern werden auf Fortlaufigkeit, Bereich und Duplikate geprüft.
+4. **Grenzkodierung** – Grenzpfeile werden entlang jeder Kante als I1/C1/O1/M1 kodiert.
+5. **Box-Anzahl-Richtlinie** – weniger als 3 oder mehr als 6 Boxen löst eine FIPS-183-Warnung aus.
+
+---
+
+## 5. Häufige Fehler
+
+```
+# FALSCH — kein idef0-Header
+function A1 "x"
+
+# FALSCH — ein Fluss, der auf dem Output des Ziels landet
+A1 -> A2.output "bad"
+
+# FALSCH — ein unbekanntes ICOM-Seitenwort
+A1 -> A2.sideways "bad"
+```
+
+Das Dokument muss mit `idef0` beginnen; Pfeile dürfen nur `.input` / `.control` / `.mechanism` als Ziel haben; jede referenzierte Box-ID muss deklariert sein. Da das Schlüsselwort die Seite kodiert, können Sie nicht versehentlich ein Control als Input zeichnen – der Standard wird erzwungen, nicht vorgeschlagen.
+
+---
+
+## 6. Standardkonformität
+
+Notation, ICOM-Platzierung, Zerlegungsnummerierung, Grenzkodierung, getunnelte Pfeile und die 3-bis-6-Box-Richtlinie folgen FIPS PUB 183 (IDEF0). Das `monochrome`-Theme reproduziert das schwarz-weiße Box-und-Pfeil-Erscheinungsbild des Standards.
+
+## 7. Roadmap
+
+Zurückgestellt: mehrseitige Zerlegungsverbindung (untergeordnete Diagramme), Knoten-Baum-/FEO-Seiten und Call-Pfeile zu referenzierten Modellen.

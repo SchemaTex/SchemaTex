@@ -1,0 +1,258 @@
+---
+title: PERT / CPM 网络图
+---
+
+## 关于 PERT 图
+
+**PERT 图**（计划评审技术）——及其近亲 **CPM**（关键路径法）——是现代项目管理的基础项目调度图表。诞生于 1959 年（PERT 来自美国海军北极星项目，CPM 来自杜邦公司），两者融合成为 [PMI PMBOK 指南](https://www.pmi.org/pmbok-guide-standards) 所讲授的**活动节点法 / 紧前关系绘图法**。你写下任务、持续时间以及任务之间的依赖关系；进度计划——最早开始、最早完成、最迟开始、最迟完成、浮动时间和**关键路径**——由引擎*自动计算*。
+
+这正是 Schematex 的 `pert` 引擎与所有拖放式"PERT 图制作工具"的不同之处。大多数工具提供形状库，让你手动填写六格框并用计算器计算关键路径。Schematex 自行运行正向推算和反向推算，并自动用红色标出关键路径。与**[流程图](/docs/flowchart)**（无调度）、**[时间轴](/docs/timeline)**（无关键路径计算）和**[bpmn](/docs/bpmn)**（组织流程，而非一次性项目进度）截然不同。
+
+<Playground initial={`pert
+title: "Q3 Product Launch"
+unit: days
+
+task A "Market research"     duration: 5
+task B "Design mockups"      duration: 8  after: A
+task C "Backend API"         duration: 15 after: A
+task D "Frontend build"      duration: 10 after: B, C
+task E "QA / testing"        duration: 5  after: D
+task F "Marketing collateral" duration: 7 after: B
+task G "Launch event"        duration: 2  after: E, F`} height={520} />
+
+---
+
+## 1. 第一张图
+
+每个文档以 `pert` 关键字开头，可选头部信息，然后每个活动一行 `task`：
+
+```
+pert
+unit: days
+
+task A "Market research" duration: 5
+task B "Design mockups"  duration: 8 after: A
+task C "Backend API"     duration: 15 after: A
+task D "Frontend build"  duration: 10 after: B, C
+```
+
+每个任务包含 `<id>`、引号 `<标签>`、`duration:` 和可选的 `after:` 前置任务列表。引擎自动添加隐式的开始和结束节点，运行进度计算，并为每个任务绘制六格活动框。你无需输入 ES/EF/LS/LF——它们由引擎计算。
+
+头部接受：
+
+- `title: "…"` — 绘制在图表上方的标题。
+- `unit: days | weeks | hours | abstract` — 时间单位（默认 `days`；仅作标签，引擎与日历无关）。
+- `direction: LR | TB` — 从左到右（默认）或从上到下。
+- `layout: network | timescaled` — 分层网络（默认）或按时间比例视图（见第 6 节）。
+- `critical-tolerance: <n>` — 浮动时间 ≤ 此值视为关键（默认 `0`；三点估算项目设为 `0.001`）。
+- `show-sentinels: true` — 绘制合成的开始/结束节点（默认隐藏）。
+
+---
+
+## 2. 六格活动框
+
+每个任务渲染为标准 3×2 PERT/CPM 矩形：
+
+```
+┌──────────┬────────────┬──────────┐
+│  ES      │  Duration  │   EF     │
+├──────────┴────────────┴──────────┤
+│         Task Name (ID)           │
+├──────────┬────────────┬──────────┤
+│  LS      │  Slack     │   LF     │
+└──────────┴────────────┴──────────┘
+```
+
+- **ES / EF** — 最早开始 / 最早完成，由正向推算得出。
+- **LS / LF** — 最迟开始 / 最迟完成，由反向推算得出。
+- **浮动时间**（总浮动）= LS − ES = LF − EF。浮动时间为零意味着该活动在关键路径上。
+
+关键活动有**红色边框**和加粗的 `0` 浮动时间；项目的关键链呈现为一条连续的红线。每个字段还镜像到 `data-*` 属性（`data-es`、`data-slack`、`data-critical`……），方便无需重新计算即可查询 SVG。
+
+**关于双色方案。** PERT 图有意只用两种颜色。红色标注关键路径是业界真实惯例——MS Project、Oracle Primavera P6 和 PMBOK 图示均如此，因为"关键与否"是该图表存在要表达的唯一区别。其他所有内容保持中性的品牌蓝色。添加更多颜色会暗示 PERT 语义中没有的分类；如果需要按团队或阶段分组，请使用[泳道](#7-swimlanes-tags-classes-and-comments)（`lane:`）而非颜色。
+
+---
+
+## 3. 依赖关系（FS / SS / FF / SF + 滞后/提前）
+
+`after:` 接受逗号分隔的前置任务引用列表。默认关系是**完成-开始（FS）**——任务在前置任务完成后才能开始：
+
+```
+task D "Frontend build" duration: 10 after: B, C
+```
+
+现代调度还需要另外三种紧前关系绘图关系，以及**滞后**（延迟）或**提前**（负滞后）：
+
+```
+task B "Stakeholder interviews" duration: 6 after: A SS+1   # start 1d after A starts
+task I "Documentation"          duration: 4 after: D+3      # FS with a 3-day lag
+task J "Translation"            duration: 3 after: I SS-1   # start 1d before I starts (lead)
+task K "Sign-off"               duration: 1 after: I FF     # finishes when I finishes
+task L "Press release"          duration: 2 after: G SF+1   # start-to-finish (rare)
+```
+
+| 形式 | 含义 |
+|------|---------|
+| `after: A` | 完成-开始，无滞后（常见情况） |
+| `after: A+2` 或 `after: A+2d` | FS 带 2 单位滞后 |
+| `after: A SS` / `A FF` / `A SF` | 开始-开始 / 完成-完成 / 开始-完成 |
+| `after: A SS+2d` / `A FF-1d` | 任意类型带滞后（`+`）或提前（`-`） |
+
+滞后单位后缀（`d` / `w` / `h`）必须与图表的 `unit:` 匹配或省略；混合单位会被拒绝。零滞后的 FS 不显示标签；SS/FF/SF 总在连线上显示其类型。
+
+---
+
+## 4. 三点（PERT）估算
+
+将持续时间写为 `O/M/P`（乐观/最可能/悲观），引擎计算 beta 分布期望持续时间 **te = (O + 4M + P) / 6** 和方差 **σ² = ((P − O)/6)²**：
+
+```
+pert
+critical-tolerance: 0.01
+task A "Spec"   duration: 2/3/5    # te = 3.17, σ² = 0.25
+task B "Build"  duration: 5/8/14   after: A   # te = 8.50, σ² = 2.25
+task C "Test"   duration: 3/4/6    after: B
+task D "Deploy" duration: 1/2/3    after: C
+```
+
+"持续时间"字段显示 `te`；名称下方出现小型 `σ=…` 注释；项目级别的标准差（关键路径方差之和的平方根）在页脚报告。使用 `critical-tolerance: 0.01` 以免浮点 `te` 值偏移可见关键路径。
+
+---
+
+## 5. 里程碑
+
+里程碑是零持续时间的检查点，以菱形绘制。使用 `milestone` 标志或 `duration: 0`：
+
+```
+task P "Cutover weekend" milestone after: O
+task Q "Go-live"         duration: 0 after: P
+```
+
+---
+
+## 6. 时间比例布局
+
+`layout: timescaled` 从分层网络切换到网络-甘特混合视图：每个活动的 **x 坐标与其 ES 成比例**，**宽度与其持续时间成比例**，底部有时间单位轴。活动被压入泳道以避免重叠。
+
+```
+pert
+layout: timescaled
+unit: days
+
+task A "Inventory"     duration: 5
+task B "Interviews"    duration: 6  after: A SS+1
+task C "Design"        duration: 10 after: A, B
+task D "Build"         duration: 15 after: C
+task E "Pilot"         duration: 7  after: D
+```
+
+这是带网络风格的时间视图；如需每任务一行的日历甘特图，请使用 `layout: gantt`（见下文）。
+
+### 甘特图（`gantt` / `layout: gantt`）
+
+以 **`gantt`** 头部开始文档（`pert` + `layout: gantt` 的语法糖）可得到日历甘特图。它使用*同一个调度引擎*——因此条形图基于**计算出的** ES/EF 放置，**关键路径以红色绘制**，这是手动放置的甘特图（如 Mermaid）做不到的：那里你手动输入日期，这里你输入依赖关系，引擎自动调度。
+
+```
+gantt "Website Relaunch"
+start: 2026-07-01
+calendar: 5day
+task A "Discovery"      duration: 5  lane: "Plan"
+task B "Wireframes"     duration: 8  after: A   lane: "Design"
+task C "Visual design"  duration: 6  after: B   lane: "Design"  progress: 40%
+task D "Frontend build" duration: 12 after: C   lane: "Build"
+task E "Backend API"    duration: 10 after: A   lane: "Build"
+task F "Integration"    duration: 5  after: D, E lane: "Build"
+task LAUNCH "Go live"   milestone    after: F   lane: "Build"
+today: 2026-07-20
+```
+
+- **`start: YYYY-MM-DD`** 将轴转换为日历日期（省略则使用数字天偏移轴）。
+- **`calendar: continuous`**（默认）包含周末；**`calendar: 5day`** 从时间轴中排除周六/日。
+- **`lane: "…"`** 将任务分组到有标签的**分区**；**`progress: 60%`** 绘制完成度叠加层；**`milestone`** 是菱形；**`today: YYYY-MM-DD`** 添加标记线。
+- 每个任务一行，按声明顺序排列。非关键路径条形以静息蓝色绘制并注释**浮动时间**；关键条形为红色。
+
+### 箭线图（`layout: aoa`）
+
+`layout: aoa` 渲染教科书和 Investopedia 上常见的旧式**箭线图**（ADM）表示法：编号的**事件**圆圈、**活动作为带标签的箭头**，以及在活动有两个或多个前置任务时自动插入的虚线**虚拟活动**。你使用相同的活动节点法 DSL——Schematex 为你构建事件图并编号。
+
+```
+pert
+layout: aoa
+unit: days
+
+task A "create schedule" duration: 10
+task B "buy hardware"    duration: 5
+task C "programming"     duration: 20 after: A
+task D "installation"    duration: 5  after: B
+task E "conversion"      duration: 15 after: D
+task F "test code"       duration: 20 after: C, E
+task G "write manual"    duration: 15 after: E
+```
+
+AOA 是**传统**表示法（PMBOK 7 已弃用；AON 是现代标准），且只能表达**完成-开始**逻辑——SS/FF/SF 和滞后/提前会被展平为带警告的 FS。用于教学、备考或匹配现有教科书图示；实际调度请使用默认的 `network`（AON）布局。
+
+---
+
+## 7. 泳道、标签、类和注释
+
+为任何任务添加 `lane: "…"`，网络就会重新分组为水平泳道——按负责团队、阶段或负责人划分——同时仍像之前一样精确计算进度：
+
+```
+task T1 "Support Account Deletion" duration: 3  lane: "Customer Account"
+task T2 "Design a New Theme"        duration: 8  lane: "Shopping Site"
+task T3 "Apply New Theme"           duration: 15 after: T2 lane: "Shopping Site"
+```
+
+泳道按首次声明的顺序排列，每个泳道是一条带状行，左侧有标签槽。泳道是同一 AON 网络的一种呈现方式，而非不同的布局模式——当任何任务声明了泳道时自动激活。
+
+```
+task X "External vendor work" duration: 10 after: A tags: vendor, external class: secondary
+# this is a comment
+```
+
+`tags:` 在节点组上生成 `data-tag="…"`，`class:` 添加 CSS 类供下游主题化使用。`#` 和 `//` 开始行尾注释。
+
+---
+
+## 8. 语法（EBNF）
+
+```text
+document    = "pert" NEWLINE header* task+
+header      = "title:" quoted
+            | "unit:" ("days" | "weeks" | "hours" | "abstract")
+            | "direction:" ("LR" | "TB")
+            | "layout:" ("network" | "timescaled" | "aoa")
+            | "critical-tolerance:" number
+            | "show-sentinels:" boolean
+
+task        = "task" IDENT quoted "duration:" duration ("after:" reflist)? "milestone"? attrs?
+            | "task" IDENT quoted "milestone" ("after:" reflist)? attrs?
+duration    = number | number "/" number "/" number          ; deterministic or O/M/P
+reflist     = ref ("," ref)*
+ref         = IDENT (WS deptype)? laglead?
+            | IDENT "+" number unit?                          ; attached FS lag sugar
+deptype     = "FS" | "SS" | "FF" | "SF"
+laglead     = ("+" | "-") number unit?
+unit        = "d" | "w" | "h"
+attrs       = ("tags:" idlist)? ("class:" IDENT)? ("lane:" quoted)?
+```
+
+---
+
+## 9. 标准符合性
+
+Schematex `pert` 按照 **PMI PMBOK 7** 以及 Moder、Phillips & Davis（1983）实现**活动节点法 / 紧前关系绘图法**，采用 Kerzner 和 Oracle Primavera P6 的六格框惯例。正向/反向推算、总浮动时间、关键路径、全部四种 PDM 依赖类型（带滞后/提前）以及三点估算（te + 方差）均精确计算。旧式**箭线图**表示法作为可选传统视图（`layout: aoa`）提供，用于教学和教科书对照。v0.1 范围外：资源平衡 / RCPSP、蒙特卡洛进度风险模拟、日历感知持续时间以及 MS Project / Primavera 导入导出。完整规格见 `docs/reference/32-PERT-STANDARD.md`。
+
+---
+
+## 相关示例
+
+来自示例库的即用场景：
+
+<RelatedExamples slugs={[
+  'pert-product-launch',
+  'pert-aoa-software-project',
+  'pert-swimlane-online-shop',
+  'pert-three-point-estimation',
+  'pert-migration-timescaled',
+]} />

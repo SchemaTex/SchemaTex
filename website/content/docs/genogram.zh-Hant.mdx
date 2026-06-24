@@ -1,0 +1,404 @@
+---
+title: Genogram（家系圖）
+---
+
+## 關於 genogram
+
+**Genogram**（家系圖）是一種超越傳統家譜「名字與日期」的家庭圖表：它記錄了一個家庭跨越三代以上的*情感*與*醫療*脈絡。治療師、社工和遺傳諮詢師使用它來找出難以從文字個案記錄中看到的模式——疏離、過度介入、反覆出現的疾病等。
+
+Schematex 遵循臨床訓練中使用的 **[McGoldrick、Gerson & Petry（2020）標準](https://www.guilford.com/books/Genograms/McGoldrick-Gerson-Petry/9781462542055)**，以及廣泛採用的 **[GenoPro](https://genopro.com/genogram/) 32 種情感關係分類法**。理論與歷史背景請參考 [Wikipedia: Genogram](https://en.wikipedia.org/wiki/Genogram)。本頁文件說明目前解析器所接受的語法。
+
+<Playground initial={`genogram "The Potter Family"
+  fleamont [male, 1909, 1979, deceased]
+  euphemia [female, 1920, 1979, deceased]
+  fleamont -- euphemia
+    james [male, 1960, 1981, deceased]
+  mr_evans [male, 1925, deceased]
+  mrs_evans [female, 1928, deceased]
+  mr_evans -- mrs_evans
+    lily [female, 1960, 1981, deceased]
+    petunia [female, 1958]
+  james -- lily "m. 1978"
+    harry [male, 1980, index]
+  petunia -- vernon [male, 1951]
+    dudley [male, 1980]
+  harry -cutoff- petunia
+  harry -hostile- dudley
+  harry -close- lily`} height={520} />
+
+---
+
+## 1. 你的第一張 genogram
+
+最小的臨床實用 genogram：兩位家長、一個孩子。
+
+<Playground initial={`genogram
+  alice [female, 1980]
+  bob [male, 1978]
+  alice -- bob "m. 2005"
+    carol [female, 2008]`} />
+
+四條規則涵蓋 80% 的使用情境：
+
+1. 以關鍵字 `genogram` 開頭，後面可選擇性地加上引號括住的標題。
+2. 每個人各佔一行：`id [屬性]`。屬性放在方括號中，以逗號分隔。
+3. 用**配偶運算子**連接兩人——這裡使用 `--`（婚姻）；§4.1 列出全部六種。末尾的引號字串為關係標籤。
+4. **在配偶行下方縮排**以新增他們的孩子。
+
+> 註解必須單獨一行，以 `#`、`//` 或 Mermaid 風格的 `%%` 開頭。不支援行內尾端註解（`bob [male, 1978] # ...`），這樣會讓解析器出錯——請參閱 §8。
+
+---
+
+## 2. 個人
+
+個人行的格式為 `id [attr1, attr2, …]`。屬性以逗號分隔，順序不限，均為可選。
+
+**ID 規則：** 必須符合 `[a-zA-Z][a-zA-Z0-9_-]*`。ID 在內部不區分大小寫，但原始大小寫會作為顯示標籤保留（可用 `label:"…"` 覆寫）。
+
+**解析器目前接受的屬性：**
+
+| 屬性 | 值 | 效果 |
+|---|---|---|
+| 性別 | `male`、`female`、`unknown`、`other` | 形狀：方形、圓形、菱形、菱形 |
+| 狀態 | `deceased`、`stillborn`、`miscarriage`、`abortion` | 視覺修飾（打叉、縮小形狀等） |
+| 出生年份 | 四位數字，例如 `1980` | 第一個四位數字符記 = 出生年份 |
+| 死亡年份 | 出生年份後的四位數字，例如 `1980, 2055` | 第二個四位數字符記 = 死亡年份 |
+| `index` | 旗標 | 同心形狀 = 識別個案 |
+| `unknown-siblings` | 旗標 | 帶 `?` 的菱形——代表一個或多個身份不明的手足 |
+| `age:N` | 例如 `age:42` | 年齡顯示在形狀內 |
+| `death:YYYY` | 例如 `death:2020` | 明確指定死亡年份 |
+| `label:"…"` | 例如 `label:"Dr. Smith"` | 覆寫顯示標籤 |
+| `sibling-of:<id>` | 例如 `sibling-of:monica` | 固定在被參照手足的同一世代，並繪製虛線括號——用於已知但祖先不明的親屬。 |
+| `conditions:…` | 參見 §5 | 醫療或心理狀況 |
+| `key:value` | 任何自訂內容 | 儲存為元資料 |
+
+<Playground initial={`genogram
+  grandma [female, 1920, 2002, deceased]
+  dad [male, 1950, age:74]
+  me [male, 1985, index]
+  daughter [female, 2012, label:"Em"]`} />
+
+---
+
+## 3. 形狀
+
+| 視覺 | 性別值 | 含義 |
+|---|---|---|
+| ☐ 方形 | `male` | 男性 |
+| ○ 圓形 | `female` | 女性 |
+| ◇ 菱形 | `unknown`、`other`，*或*省略屬性 | 未知 / 未指定 |
+
+狀態修飾符疊加在基本形狀上：
+
+<Playground initial={`genogram
+  alive [male, 1960]
+  passed [male, 1930, 2010, deceased]
+  stillborn_child [unknown, stillborn]
+  lost [unknown, miscarriage]`} />
+
+---
+
+## 4. 連線
+
+### 4.1 配偶運算子
+
+解析器依序嘗試以下運算子，第一個符合的即為採用——因此 `-x-` 優先於 `--`。
+
+| 運算子 | 類型 | 範例 | 含義 |
+|---|---|---|---|
+| `-x-` | 離婚 | `a -x- b` | 離婚 |
+| `-/-` | 分居 | `a -/- b` | 分居（已婚） |
+| `-//` | 分居 | `a -// b` | 分居（`-/-` 的別名） |
+| `-o-` | 訂婚 | `a -o- b` | 訂婚 |
+| `==` | 近親 | `a == b` | 血親配偶 |
+| `--` | 已婚 | `a -- b` | 婚姻 |
+| `~` | 同居 | `a ~ b` | 同居 / 長期關係（現在進行中） |
+| `~/~` | 同居已結束 | `a ~/~ b` | 同居關係已結束（未曾結婚）。常見於拉丁美洲兒童保護個案，生父母曾非婚同居但關係已結束——有別於 `-x-` 離婚（無婚姻）和 `-/-` 分居（仍已婚）。 |
+
+末尾的引號字串會成為關係標籤（`a -- b "m. 2005"`）。
+
+### 4.2 右側行內宣告個人
+
+如果右側的人尚未宣告，可以就地宣告：
+
+<Playground initial={`genogram
+  ann [female, 1970]
+  ann -- ben [male, 1968] "m. 1995"
+    kim [female, 1997]`} />
+
+### 4.3 孩子（在配偶行下方縮排）
+
+在配偶行下方縮排 = 「這些是此配偶的孩子」。任何大於配偶縮排的縮排均有效；慣例是多縮排 2 個空格。孩子依宣告順序排列（若有出生年份，算圖時也會依出生年份排序）。
+
+<Playground initial={`genogram
+  dad [male, 1950]
+  mom [female, 1952]
+  dad -- mom
+    eldest [male, 1975]
+    middle [female, 1978, adopted]
+    twin_a [male, 1985, twin-identical]
+    twin_b [male, 1985, twin-identical]`} />
+
+**孩子的特殊屬性：**
+
+| 屬性 | 效果 |
+|---|---|
+| `adopted` | 收養連線樣式 |
+| `foster` | 寄養關係 |
+| `guardian` | 非親生親屬的監護（例如祖父母監護）。與 `foster` 使用相同基礎元素——當親生父母也已宣告時，以次要「現任照顧者」連線繪製。 |
+| `twin-identical` | 與同一配偶的其他 `twin-identical` 孩子成組 |
+| `twin-fraternal` | 與其他 `twin-fraternal` 孩子成組 |
+| `unknown-siblings` | 帶 `?` 字符的單一菱形——「一個或多個手足，人數及身份不明」（系譜慣例）。 |
+
+### 4.3.1 雙親家庭（寄養、收養、監護）
+
+若孩子被安置在非親生照顧者處，但親生父母仍是案件的一部分，可以在兩對配偶下方都宣告該孩子。**第一次宣告時使用完整屬性**（在親生配偶下方），然後**在現任照顧者下方僅用 `[foster]` / `[adopted]` / `[guardian]` 重新宣告**。第一次宣告決定版面位置；第二次則繪製為次要虛線「現任照顧者」連線，不會將孩子從其親生位置拉走。
+
+<Playground initial={`genogram "Foster placement"
+  bp1 [male, label: "Bio dad"]
+  bp2 [female, label: "Bio mom"]
+  bp1 ~/~ bp2
+    child [male, 2018, index]
+  fp1 [male, label: "Foster dad"]
+  fp2 [female, label: "Foster mom"]
+  fp1 -- fp2
+    own [male, 2010]
+    child [foster]`} />
+
+相同的基礎元素可用於收養（封閉/開放）、寄養安置，以及親屬監護——只有關鍵字不同。重新宣告會將不衝突的屬性（性別、出生年份、標籤、`index` 標記）**合併**到原始宣告中；若宣告了衝突的 `male` 和 `female`，會產生解析錯誤，而不是靜默覆寫。
+
+### 4.3.2 手足人數不明
+
+當個案檔案提到「這個孩子有手足」但沒有具體姓名時，可在獨立行使用 `?` 簡寫，或在一般 id 上使用 `[unknown-siblings]`。兩者都會渲染為帶「?」字符的單一菱形——這是系譜中標準的「一個或多個手足，身份不明」符號。
+
+<Playground initial={`genogram
+  dad [male]
+  mom [female]
+  dad -- mom
+    ?
+    known_kid [male, 2018]`} />
+
+### 4.3.3 sibling-of（已知親屬，祖先不明）
+
+若要表達「X 是 Y 的手足」而不需要虛構父母，請使用 `sibling-of: <id>` 屬性。算圖器會將 X 固定在 Y 的世代，並在兩者上方繪製虛線括號——這是系譜的標準慣例，表示已知親屬但其祖先不在案件中。
+
+<Playground initial={`genogram
+  monica [female, 1990]
+  uncle [male, label: "Tío materno", sibling-of: monica]`} />
+
+### 4.4 情感關係
+
+獨立行，解析器模式為 `A -TYPE- B`（無方向性）或 `A -TYPE-> B`（有方向性）。末尾可加上選擇性的引號標籤。**兩個人都必須在情感連線之前已宣告。**
+
+```
+harry -cutoff- petunia           # non-directional
+harry -hostile- dudley "since 1991"
+uncle -abuse-> nephew             # directional (arrow)
+```
+
+解析器目前接受的全部 32 種類型：
+
+| 類別 | 類型 |
+|---|---|
+| 正面 / 親近 | `harmony`、`close`、`bestfriends`、`love`、`inlove`、`friendship` |
+| 負面 / 敵意 | `hostile`、`conflict`、`enmity`、`distant-hostile`、`cutoff` |
+| 矛盾 | `close-hostile`、`fused`、`fused-hostile` |
+| 距離 | `distant`、`normal`、`nevermet` |
+| 虐待 *（有方向性）* | `abuse`、`physical-abuse`、`emotional-abuse`、`sexual-abuse`、`neglect` |
+| 控制 *（有方向性）* | `manipulative`、`controlling`、`jealous` |
+| 特殊 | `focused`、`focused-neg`、`distrust`、`admirer`、`limerence` |
+
+<Playground initial={`genogram
+  dad [male, 1950]
+  son [male, 1985]
+  daughter [female, 1988]
+  dad -close- daughter
+  dad -conflict- son
+  son -cutoff- dad "since 2010"`} />
+
+---
+
+## 5. 醫療狀況
+
+語法：`conditions: name(fill) [+ name(fill, #color)]…`
+
+```
+father [male, 1945, conditions: heart(full, #E53935)]
+mother [female, 1948, conditions: diabetes(half-left) + anxiety(half-right, #26A69A)]
+```
+
+- **`name`** — 任何你選擇的識別符（顯示在圖例/提示中）。
+- **`fill`** — 必填，控制形狀的哪個區域著色。見下方表格。
+- **`color`** — 可選的十六進位色碼。預設值取決於算圖器主題。
+- 多個狀況以 `+` 連接。每個狀況需有自己的 `(fill)`。
+
+**填色位置：**
+
+| `fill` 值 | 區域 |
+|---|---|
+| `full` | 整個形狀 |
+| `half-left` / `half-right` | 左 / 右半部 |
+| `half-top` / `half-bottom` | 上 / 下半部 |
+| `quad-tl` / `quad-tr` / `quad-bl` / `quad-br` | 一個象限 |
+| `striped` | 對角條紋圖案（無症狀攜帶者） |
+| `dotted` | 點狀圖案 |
+
+<Playground initial={`genogram
+  dad [male, 1950, conditions: heart(full, #E53935)]
+  mom [female, 1952, conditions: diabetes(half-left) + depression(half-right, #5C6BC0)]
+  dad -- mom
+    son [male, 1980, conditions: carrier(striped)]`} />
+
+---
+
+## 6. 標籤與註解
+
+- **標題：** `genogram "Smith Family"` — 僅限第一行。
+- **個人標籤覆寫：** `alice [female, label:"Dr. Alice Smith"]`。
+- **關係標籤：** 配偶行或情感連線末尾的引號字串——`alice -- bob "m. 2005"`。
+- **註解：** `#`、`//` 或 `%%` 置於行首（前導空白之後）。**不支援**行內註解。
+
+```
+genogram "Smith Family"
+  # this line is a comment — fine
+  %% Mermaid-style comment — also fine
+  alice [female, 1980]   # ← THIS trailing comment breaks the parser
+```
+
+---
+
+## 7. 保留字與跳脫
+
+**行首保留字：** `genogram`（標頭關鍵字）。
+
+**行內保留運算子符記**——避免在 ID 中使用以下序列：
+`--`、`~`、`~/~`、`==`、`-x-`、`-/-`、`-//`、`-o-`，以及任何符合情感關係類型的 `-<type>-` / `-<type>->`。
+
+**保留 id `?`** — 在孩子行上的單獨 `?` 會自動產生帶有 `unknown-siblings` 標記的合成佔位符。請勿將 `?` 作為真實 id 使用。
+
+**含有空格的字串**必須用雙引號括起來：標題、標籤、`label:"…"`。單引號和反引號不被識別。
+
+---
+
+## 8. 常見錯誤
+
+實際發生的解析器錯誤、觸發原因，以及修正方式。
+
+| 你寫的 | 解析器的回應 | 修正方式 |
+|---|---|---|
+| `alex [nonbinary, 1995]` | `Unknown property 'nonbinary'` | 使用 `unknown` 或 `other`（nonbinary 在 §13 路線圖中） |
+| `alice [female, transgender]` | `Unknown property 'transgender'` | 尚無法解析（§13 路線圖） |
+| `dad -- mom` ← 後接 **同縮排**的 `child [male, 2010]` | 孩子被解析為新的頂層個人，而非其孩子 | 將孩子行縮排得比配偶行更深（多 2 個空格即可） |
+| `A -- B` 但 `A` 從未宣告 | `Unknown individual 'A'` | 在上方行宣告 `A [sex, year]` |
+| `father -- mother "married"` 在第 1 行（無 `genogram` 標頭） | `Expected "genogram" header` | 檔案以 `genogram` 或 `genogram "Title"` 開頭 |
+| `conditions: diabetes + cancer`（無括號） | `Invalid condition format 'diabetes'` | 加上填色：`conditions: diabetes(half-left) + cancer(half-right)` |
+| `[triplet-identical]` | `Unknown property 'triplet-identical'` | 三胞胎尚無法解析（§13 路線圖） |
+| `dad -- mom # first marriage` | 尾端的行內 `#` 註解被當作標籤的一部分 / 產生錯誤 | 將註解移到獨立行 |
+| 同一 id 宣告兩次且性別不同（`x [male]` 後接 `x [female]`） | `Conflicting sex for 'x': previously 'male', now 'female'` | 擇一使用，或重新命名其中一個 id |
+| `child [foster]` 重新宣告但親生父母從未宣告 | `child` 成為寄養配偶的正規孩子（不繪製次要連線） | 這是有意設計——次要連線需要先前宣告中已存在的親生親子關係 |
+
+---
+
+## 9. 語法（EBNF）
+
+```text
+document       = header (blank | comment | individual | couple-block | emotional)*
+
+header         = "genogram" ( WS quoted-string )? NEWLINE
+quoted-string  = '"' any-char-but-quote* '"'
+
+individual     = INDENT id ( "[" attrs "]" )? NEWLINE
+couple-block   = INDENT id WS coupleOp WS right-side ( WS quoted-string )? NEWLINE
+                   ( deeper-indent child )*
+child          = INDENT id ( "[" attrs "]" )? NEWLINE
+               | INDENT "?" NEWLINE                              // unknown-count sibling shorthand
+right-side     = id ( "[" attrs "]" )?
+
+emotional      = INDENT id WS "-" type "-"  id ( WS quoted-string )? NEWLINE
+               | INDENT id WS "-" type "->" id ( WS quoted-string )? NEWLINE
+
+coupleOp       = "~/~" | "-//" | "-x-" | "-/-" | "-o-" | "==" | "--" | "~"
+type           = "harmony" | "close" | "bestfriends" | "love" | "inlove"
+               | "friendship" | "hostile" | "conflict" | "enmity"
+               | "distant-hostile" | "cutoff" | "close-hostile" | "fused"
+               | "fused-hostile" | "distant" | "normal" | "nevermet"
+               | "abuse" | "physical-abuse" | "emotional-abuse"
+               | "sexual-abuse" | "neglect" | "manipulative" | "controlling"
+               | "jealous" | "focused" | "focused-neg" | "distrust"
+               | "admirer" | "limerence"
+
+id             = [a-zA-Z] [a-zA-Z0-9_-]*
+attrs          = attr ("," attr)*
+attr           = "male" | "female" | "unknown" | "other"
+               | "deceased" | "stillborn" | "miscarriage" | "abortion"
+               | "adopted" | "foster" | "guardian"
+               | "twin-identical" | "twin-fraternal"
+               | "index" | "unknown-siblings"
+               | digit digit digit digit                         // year
+               | "age" ":" digits
+               | "death" ":" digit digit digit digit
+               | "label" ":" quoted-string
+               | "sibling-of" ":" id
+               | "conditions" ":" condition ("+" condition)*
+               | key ":" value                                    // custom
+condition      = name "(" fill ("," "#" hex)? ")"
+fill           = "full" | "half-left" | "half-right" | "half-top" | "half-bottom"
+               | "quad-tl" | "quad-tr" | "quad-bl" | "quad-br"
+               | "striped" | "dotted"
+
+comment        = INDENT ( "#" | "//" | "%%" ) any NEWLINE
+```
+
+權威來源：`src/diagrams/genogram/parser.ts`。若本頁與解析器有出入，以解析器為準——請開立 issue 回報。
+
+---
+
+## 10. 標準合規性
+
+Schematex genogram 遵循 **McGoldrick、Gerson & Petry（2020），《Genograms: Assessment and Treatment》第 4 版**的結構符號、配偶運算子及世代對齊方式。情感關係分類法遵循 **GenoPro 的 32 種分類**（我們並未完整實作 GenoPro 的 34 種分類；`focused-admirer` 及一個重複項目已合併至 `focused` 和 `admirer`）。
+
+目前實作狀態與標準的對照：
+
+- ✅ 核心結構符號（男性/女性/未知、已故、死產、流產、人工流產）
+- ✅ McGoldrick 6 種配偶運算子系統
+- ✅ GenoPro 32 種情感類型，有方向性處按臨床規定實作
+- ✅ 醫療狀況象限填色系統（4 種位置 + 條紋/點狀圖案）
+- ✅ 識別個案（同心形狀）
+- ✅ 雙胞胎分組（同卵 / 異卵）
+- ⏳ Bennett 2022 性別包容性新增——參見 §13
+- ⏳ 捐贈者 / 代孕 / 繼子女連線類型——參見 §13
+
+參考資料：
+- McGoldrick, M., Gerson, R., & Petry, S. (2020). *Genograms: Assessment and Treatment* (4th ed.).
+- Hardy, K.V. & Laszloffy, T.A. (1995). The cultural genogram. *J Marital Fam Ther*, 21(3), 227–237.
+- GenoPro 符號參考 — https://genopro.com/genogram/
+
+---
+
+## 11. 相關範例
+
+範例庫中的現成情境：
+
+<RelatedExamples slugs={[
+  'genogram-nuclear-family',
+  'genogram-medical-history',
+  'genogram-brca-cancer',
+  'genogram-potter-family',
+  'genogram-foster-care',
+]} />
+
+---
+
+## 13. 路線圖
+
+**計畫中——目前尚無法解析。** 請勿在今天生成的 DSL 中使用；解析器會拒絕它們。
+
+- **Bennett 2022 性別包容性** — 將 `nonbinary`、`intersex` 作為性別值；`transgender` 作為標記。目前已在 `src/core/types.ts` 中定義型別，但解析器的 `VALID_SEX` 集合尚未包含它們。
+- **三胞胎及更高階多胞胎** — `triplet-identical`、`triplet-fraternal`。
+- **現代家庭結構** — `surrogate`、`donor`、`step` 作為孩子類型屬性。
+- **狀況類別簡寫** — `conditions: cardiovascular + depression` 不需要 `(fill)`，自動分配象限和預設顏色。
+- **同居伴侶運算子** — `~dp~` / 明確的 DP 標籤。
+- **血統註記** — 個人的文化家系圖血統識別符。
+- **戶籍邊界框** — 將共同居住的節點分組（寄養安置、多代同堂家庭）。
+
+如果你需要其中任何功能，請在 GitHub issues 中追蹤進度。

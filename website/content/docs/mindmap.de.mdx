@@ -1,0 +1,402 @@
+---
+title: Mind Map
+---
+
+## Über Mind Maps
+
+Eine **Mind Map** ist ein radiales Diagramm, das Ideen rund um ein zentrales Thema organisiert und nach außen in Unterthemen und Details verzweigt. Tony Buzan popularisierte das Format in den 1970er Jahren als Notiz- und Brainstorming-Werkzeug; die Methode hat sich seitdem in Bildung, Projektplanung, Besprechungsmoderation und Wissensmanagement weit verbreitet. Der zentrale Gedanke: nichtlineare Verzweigungen spiegeln wider, wie assoziatives Denken funktioniert — schneller als eine Gliederung, strukturierter als freies Schreiben.
+
+Schematex Mind Maps verwenden eine **Markdown-Überschriften + Aufzählungslisten**-DSL, die von [markmap](https://markmap.js.org/) inspiriert ist — ein Format, das die meisten Nutzer bereits kennen. Zwei Layout-Stile stehen zur Verfügung: die klassische radiale **map** (Äste in alle Richtungen) und ein horizontaler **logic-right**-Baum. Diese Seite dokumentiert, was der Parser heute akzeptiert.
+
+<Playground initial={`mindmap
+
+# Product Launch Plan
+
+## Market readiness
+### Competitive analysis
+- Direct competitors
+- Pricing benchmarks
+### Target segments
+- SMB customers
+- Enterprise pilot
+
+## Engineering
+### Feature freeze
+- Core API complete
+- Edge cases resolved
+### Infrastructure
+- Load testing
+- CDN configuration
+  - Cache rules
+  - Geo routing
+
+## Go-to-market
+- Landing page live
+- Email campaign
+- Press outreach
+  - TechCrunch pitch
+  - Newsletter sponsors
+
+## Success metrics
+- Week 1 signups
+- Activation rate
+- NPS at day 30`} height={500} />
+
+---
+
+## 1. Ihre erste Mind Map
+
+Die kleinste sinnvolle Mind Map: ein zentrales Thema mit zwei Ästen, einer davon mit einem Unterpunkt.
+
+<Playground initial={`mindmap
+
+# Team retrospective
+
+## What went well
+- Clear sprint goals
+- Good test coverage
+
+## What to improve
+- Slower PR reviews
+  - Add a review SLA`} />
+
+Vier Regeln decken 80 % der Anwendungsfälle ab:
+
+1. Mit dem optionalen Schlüsselwort `mindmap` in einer eigenen Zeile beginnen, gefolgt von einer Leerzeile.
+2. Die Wurzel ist die einzige `#`-Überschrift — genau eine ist erlaubt.
+3. `##`, `###` und tiefere Überschriften legen die Ast-Tiefe fest. Die Überschriftenebene entspricht der Baumtiefe.
+4. `-`, `*` oder `+` als Aufzählungszeichen, um Unterpunkte unter einer Überschrift hinzuzufügen. Jeder 2-Leerzeichen-Einzug fügt eine weitere Tiefenebene hinzu.
+
+> Kommentare werden nicht unterstützt. `%%`-Direktiven (vor der `#`-Wurzel) dienen ausschließlich der Konfiguration.
+
+---
+
+## 2. Überschriften und Tiefe
+
+Die Überschriftenebene entspricht direkt der Baumtiefe. `#` ist immer die Wurzel (Tiefe 0). `##` ist Tiefe 1. `###` ist Tiefe 2, und so weiter bis `######` (Tiefe 5).
+
+```
+mindmap
+
+# Root
+## Branch A         ← Tiefe 1
+### Sub-branch      ← Tiefe 2
+#### Leaf           ← Tiefe 3
+## Branch B
+```
+
+Überschriften können Ebenen überspringen — `####` nach `##` ist gültig und erzeugt einen Knoten auf Tiefe 3. Die Baumtiefe ist relativ zur Wurzel, nicht zur vorherigen Überschrift.
+
+---
+
+## 3. Aufzählungspunkte
+
+Aufzählungspunkte erweitern einen Überschriften-Ast um weitere Details. `-`, `*` und `+` werden als Aufzählungszeichen akzeptiert. Jeder **2-Leerzeichen**-Einzug fügt eine Tiefenebene relativ zur umgebenden Überschrift hinzu.
+
+```
+## Risks
+- Technical complexity         ← Tiefe 2 (eine Ebene unter ## Risks)
+  - Legacy integrations        ← Tiefe 3 (2 Leerzeichen Einzug)
+    - Auth service             ← Tiefe 4 (4 Leerzeichen Einzug)
+- Team availability            ← wieder Tiefe 2
+```
+
+<Playground initial={`mindmap
+
+# Book outline
+
+## Chapter 1 — Introduction
+- Why this matters
+  - Historical context
+  - Current state
+- What you will learn
+
+## Chapter 2 — Core concepts
+- Concept A
+  - Definition
+  - Examples
+- Concept B
+  - Definition
+  - Worked example
+    - Step-by-step walkthrough`} height={440} />
+
+---
+
+## 4. Inline-Formatierung
+
+Knotenbezeichnungen unterstützen eine Teilmenge der Markdown-Inline-Formatierung. Der Parser tokenisiert Bezeichnungen zur Parse-Zeit; der Renderer verwendet die Token, um formatierten Text auszugeben.
+
+| Syntax | Effekt | Beispiel |
+|---|---|---|
+| `**text**` | Fett | `**Critical path**` |
+| `*text*` | Kursiv | `*optional*` |
+| `` `code` `` | Monospace-Code | `` `npm install` `` |
+| `[text](url)` | Link | `[RFC 7519](https://tools.ietf.org/html/rfc7519)` |
+| `[ ] item` | Nicht abgehakte Aufgabe | `[ ] Write tests` |
+| `[x] item` | Abgehakte Aufgabe | `[x] Design review` |
+
+Das Kontrollkästchen muss am Anfang der Bezeichnung stehen (vor jedem anderen Text). Inline-Formatierung kann verschachtelt werden: `**[bold link](url)**`.
+
+<Playground initial={`mindmap
+
+# Sprint 24 review
+
+## Completed
+- [x] **Auth redesign** — JWT + refresh tokens
+- [x] API rate limiting \`per-user\`
+- [x] [Error budget dashboard](https://metrics.example.com)
+
+## In progress
+- [ ] *Mobile push notifications*
+  - [ ] iOS APNs integration
+  - [ ] Android FCM setup
+
+## Blocked
+- [ ] **Payment webhook** — waiting on Stripe team
+  - *Escalated to account manager*`} height={420} />
+
+---
+
+## 5. Layout-Stile
+
+Die `%% style:`-Direktive wählt den Layout-Algorithmus aus. Sie wird vor der `#`-Wurzelüberschrift platziert.
+
+| Stil | Layout | Am besten für |
+|---|---|---|
+| `map` (Standard) | Radial — Äste breiten sich in alle Richtungen vom Zentrum aus | Brainstorming, Konzeptkarten, freie Exploration |
+| `logic-right` | Horizontaler Baum — alle Äste erstrecken sich nach rechts | Strukturierte Gliederungen, Hierarchien, sequenzielle Aufschlüsselungen |
+| `futureswheel` | Konzentrische Ringe — die Wurzel im Zentrum, jede Überschriftenebene auf einem eigenen Ring | Zukunftsforschung, Konsequenzanalyse, strukturiertes Brainstorming |
+| `driver` | Horizontaler Baum — Ziel auf der linken Seite, fließt durch Treiber zu Verbesserungsideen | Verbesserungsprogramme, Ziel → Treiber → Maßnahmen-Aufschlüsselungen |
+
+```
+%% style: map
+%% style: logic-right
+%% style: futureswheel
+%% style: driver
+```
+
+**`map`** (Standard) — radiales Layout, Äste breiten sich in alle Richtungen vom Zentrum aus. Am besten für Brainstorming und Konzeptkarten.
+
+<Playground initial={`mindmap
+
+# Machine learning
+
+## Supervised
+### Classification
+- Decision tree
+- SVM
+- Neural net
+### Regression
+- Linear
+- Gradient boosting
+
+## Unsupervised
+### Clustering
+- K-means
+- DBSCAN
+### Reduction
+- PCA
+- t-SNE
+
+## Reinforcement
+- Q-learning
+- Policy gradient`} height={480} />
+
+**`logic-right`** — horizontaler Baum, alle Äste erstrecken sich nach rechts. Am besten für strukturierte Gliederungen und sequenzielle Hierarchien.
+
+<Playground initial={`mindmap
+%% style: logic-right
+
+# Machine learning
+
+## Supervised
+### Classification
+- Decision tree
+- SVM
+- Neural net
+### Regression
+- Linear
+- Gradient boosting
+
+## Unsupervised
+### Clustering
+- K-means
+- DBSCAN
+### Reduction
+- PCA
+- t-SNE
+
+## Reinforcement
+- Q-learning
+- Policy gradient`} height={460} />
+
+**`futureswheel`** — ein [Futures Wheel](https://en.wikipedia.org/wiki/Futures_wheel) (Jerome Glenn, 1971/72), das klassische Format für strukturiertes Brainstorming zum Durchdenken von Konsequenzen. Das zentrale Ereignis oder der Trend sitzt im Mittelpunkt; Konsequenzen erster Ordnung landen auf dem inneren Ring, Konsequenzen zweiter Ordnung auf dem nächsten Ring nach außen, und so weiter. Jedes Kind bleibt im Winkelsegment seines Elternteils, und jeder Ring ist nach Ordnung farblich kodiert, sodass ein Leser auf einen Blick sehen kann, wie weit ein Welleneffekt vom ursprünglichen Ereignis entfernt ist. Die Tiefe wird auf Ringe abgebildet: `#` ist der Mittelpunkt, `##` ist der erste Ring (1. Ordnung), `###` und Aufzählungspunkte unter einer Überschrift schieben auf den nächsten Ring (2. Ordnung), und tiefere Ebenen rücken weiter nach außen.
+
+<Playground initial={`mindmap
+%% style: futureswheel
+
+# Remote work becomes default
+
+## Less commuting
+- Lower carbon emissions
+- Cheaper city living
+
+## Distributed teams
+- Async communication norms
+- Global hiring pools
+
+## Empty offices
+- Commercial real estate slump
+- Repurposed to housing`} height={520} />
+
+**`driver`** — ein [Driver Diagram](https://www.ihi.org/resources/tools/driver-diagram), das Planungswerkzeug aus dem IHI-Modell (Institute for Healthcare Improvement) zur Verbesserung. Es liest sich von links nach rechts als ordentlicher Baum: das **Ziel** ganz links, die **primären Treiber** (die wenigen Bereiche mit hohem Hebel, die das Ziel bewegen) in der nächsten Spalte, dann **sekundäre Treiber** und konkrete **Veränderungsideen**, die weiter nach rechts verzweigen. Baumebenen werden sauber auf die Struktur abgebildet: `#` ist das Ziel, `##` sind primäre Treiber, und Aufzählungspunkte und tiefere Überschriften darunter werden zu sekundären Treibern und Veränderungsideen. Verwenden Sie es immer dann, wenn Sie zeigen müssen, *wie* ein Ziel tatsächlich erreicht werden soll.
+
+<Playground initial={`mindmap
+%% style: driver
+
+# Reduce 30-day readmissions
+
+## Reliable discharge process
+- Teach-back at bedside
+- Med reconciliation
+
+## Timely follow-up
+- Appointment within 7 days
+- Post-discharge phone call`} height={400} />
+
+---
+
+## 6. Direktiven
+
+Direktiven sind `%%`-Zeilen, die **vor** der `#`-Wurzelüberschrift platziert werden. Sie konfigurieren das Diagramm global.
+
+| Direktive | Werte | Standard | Effekt |
+|---|---|---|---|
+| `%% style: …` | `map`, `logic-right`, `futureswheel`, `driver` | `map` | Layout-Algorithmus |
+| `%% theme: …` | beliebige Zeichenkette | (keine) | Theme-Überschreibung, die an den Renderer übergeben wird |
+| `%% maxLabelWidth: …` | Ganzzahl 80–1000 | `240` | Maximale Pixelbreite, bevor Beschriftung umbricht |
+
+```
+mindmap
+%% style: logic-right
+%% maxLabelWidth: 320
+
+# Wide label root
+```
+
+<Playground initial={`mindmap
+%% style: logic-right
+%% maxLabelWidth: 200
+
+# Schematex features
+
+## DSL-first design
+- One keyword per diagram
+- AI-friendly syntax
+- CJK support
+
+## Zero dependencies
+- Hand-written parser
+- No D3, no dagre
+- ~KB-level bundle
+
+## Standards-compliant
+- IEEE for logic gates
+- IEC for circuits
+- McGoldrick for genograms`} height={360} />
+
+---
+
+## 7. Bezeichnungen & Kommentare
+
+- **Wurzeltitel:** der Text nach `#` in der Wurzelüberschriften-Zeile.
+- **Ast-Bezeichnungen:** der Text nach `##`, `###` usw.
+- **Aufzählungsbezeichnungen:** der Text nach dem `- ` / `* ` / `+ `-Marker.
+- **Inline-Formatierung:** `**fett**`, `*kursiv*`, `` `code` ``, `[text](url)`, `[ ]` / `[x]`.
+- **Kommentare:** werden im Hauptteil nicht unterstützt. Verwenden Sie `%%`-Direktiven vor der `#`-Wurzel für die Konfiguration; `%%`-Zeilen im Hauptteil werden als Direktiven behandelt (werden stillschweigend ignoriert, wenn nicht erkannt).
+
+---
+
+## 8. Reservierte Wörter & Escaping
+
+**Am Dokumentanfang reserviert:** `mindmap` (optionales Schlüsselwort) und `%%` (Direktiv-Präfix).
+
+**Als Wurzel reserviert:** genau eine `#`-Überschrift; eine zweite `#`-Überschrift erzeugt einen Parse-Fehler.
+
+**Aufzählungsmarker:** `-`, `*`, `+` gefolgt von einem Leerzeichen. Ein `*`, dem kein Leerzeichen folgt, wird als Kursiv-Marker behandelt, wenn er im Beschriftungstext erscheint.
+
+**Inline-Konflikte:** Eine Beschriftung, die mit `[ ]` oder `[x] ` beginnt, wird als Kontrollkästchen geparst, nicht als Markdown-Link. Wenn Sie eine Beschriftung benötigen, die buchstäblich mit `[` beginnt, schreiben Sie `\[` — der Backslash escapet die Klammer.
+
+---
+
+## 9. Häufige Fehler
+
+| Sie schrieben | Parser sagt | Behebung |
+|---|---|---|
+| Zwei `#`-Überschriften | `Error: multiple # center nodes not allowed` | Genau eine `#`-Überschrift als Wurzel verwenden |
+| `##Branch` (kein Leerzeichen nach `##`) | Zeile wird nicht als Überschrift erkannt; still übersprungen | Immer ein Leerzeichen setzen: `## Branch` |
+| Aufzählungspunkt mit 3 Leerzeichen Einzug | Tiefe = `lastHeadingDepth + 1 + floor(3/2) = lastHeadingDepth + 2` — kann eine unerwartete Ebene erzeugen | Vielfache von 2 Leerzeichen verwenden: 0, 2, 4, 6… |
+| `%% style: radial` | Unbekannter Wert wird stillschweigend ignoriert; Layout bleibt `map` | `map`, `logic-right`, `futureswheel` oder `driver` verwenden |
+| `mindmap`-Schlüsselwort mitten im Dokument | Wird als einfache Textzeile behandelt (das Schlüsselwort wird nur in der allerersten Zeile erkannt) | `mindmap` in Zeile 1 platzieren, vor jedem Inhalt |
+| `[ ]text` (kein Leerzeichen nach der Klammer) | Kontrollkästchen nicht erkannt; wird als wörtliches `[ ]text` gerendert | `[ ] text` — Leerzeichen nach der schließenden Klammer erforderlich |
+
+---
+
+## 10. Grammatik (EBNF)
+
+```text
+document       = ("mindmap" NEWLINE)? (blank | directive)* node*
+
+directive      = "%%" WS key ":" WS value NEWLINE
+key            = "style" | "theme" | "maxlabelwidth"
+
+node           = heading | bullet
+heading        = INDENT? "#"+ SPACE label NEWLINE
+bullet         = SPACE* bullet-marker SPACE label NEWLINE
+bullet-marker  = "-" | "*" | "+"
+
+label          = inline-token*
+inline-token   = checkbox
+               | "**" inline-token* "**"
+               | "*" inline-token* "*"
+               | "`" code-text "`"
+               | "[" inline-token* "]" "(" url ")"
+               | plain-text
+
+checkbox       = "[ ]" SPACE | "[x]" SPACE | "[X]" SPACE
+
+INDENT         = WS*    %% headings may have leading whitespace (ignored)
+SPACE          = " " | "\t"
+```
+
+**Tiefenregeln:**
+- Überschrift `#` → Tiefe 0 (Wurzel)
+- Überschrift `##` → Tiefe 1, `###` → Tiefe 2, usw.
+- Aufzählungspunkt mit `n` führenden Leerzeichen → Tiefe = `lastHeadingDepth + 1 + floor(n / 2)`
+
+Maßgebliche Quelle: `src/diagrams/mindmap/parser.ts`. Falls dies vom Parser abweicht, gewinnt der Parser — bitte öffnen Sie ein Issue.
+
+---
+
+## 11. Roadmap
+
+**Geplant — noch nicht parsebar.** Verwenden Sie diese heute nicht in generiertem DSL; der Parser wird sie ablehnen oder ignorieren.
+
+- **`%%{init: {…}}%%`-Block** — Mermaid-ähnlicher Init-Block für Theme/Konfiguration; derzeit werden nur `%%`-Zeilendirektiven unterstützt.
+- **Automatisch nummerierte Äste** — `%% numbering: true`, um jeden Ast mit 1., 1.1., usw. zu präfixieren.
+- **Callout-/Notiz-Knoten** — ein spezieller Marker, um eine schwebende Annotationsbox an einen beliebigen Knoten anzuhängen.
+- **Bildknoten** — `![alt](url)` als gesamte Knotenbezeichnung, die als Inline-Bild gerendert wird.
+- **Eingeklappte Äste** — `%% collapsed: branchId`, um einen Teilbaum als einzelnen eingeklappten Indikator zu rendern.
+
+Verfolgen Sie die GitHub-Issues, wenn Sie eines davon früher benötigen.
+
+---
+
+## Verwandte Beispiele
+
+Sofort einsetzbare Szenarien aus der Beispielgalerie:
+
+<RelatedExamples slugs={[
+  'mindmap-product-launch',
+  'mindmap-quarterly-okrs',
+]} />

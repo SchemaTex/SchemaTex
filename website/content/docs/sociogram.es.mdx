@@ -1,0 +1,421 @@
+---
+title: Sociograma
+---
+
+## Sobre los sociogramas
+
+Un **sociograma** traza la red de elecciones, rechazos y alianzas *dentro* de un grupo: quién simpatiza con quién, quién está aislado, dónde se forman camarillas. Jacob Moreno introdujo el método en 1934 como herramienta clínica para la terapia de grupo; desde entonces lo han adoptado maestros en aulas (para detectar exclusión y acoso), equipos de RR. HH. (mapeo de influencia informal) e investigadores organizacionales. A diferencia del ecomap, que se centra en el entorno externo de una persona, el sociograma trata a todos los miembros del grupo de forma simétrica.
+
+Schematex sigue las **[convenciones sociométricas de Moreno (1934)](https://en.wikipedia.org/wiki/Sociometry)** para roles de nodos y tipos de aristas, extendidas con notaciones modernas de análisis de redes sociales para valencia, dirección y peso. Esta página documenta lo que el parser acepta actualmente.
+
+<Playground initial={`sociogram "Group Therapy — Week 6"
+  config: layout = circular
+  therapist [label: "Dr. Park", role: star]
+  james [label: "James"]
+  maria [label: "Maria"]
+  lee [label: "Lee"]
+  sarah [label: "Sarah"]
+  tom [label: "Tom"]
+  nina [label: "Nina"]
+  james -> therapist
+  james <-> maria [weight: 3, label: "strong bond"]
+  james -> lee
+  maria -> therapist
+  maria -> sarah
+  lee -> therapist
+  lee -x> nina [label: "tension"]
+  sarah <-> nina
+  sarah -> therapist
+  tom -> therapist
+  tom -.- nina
+  nina -> maria`} height={520} />
+
+---
+
+## 1. Tu primer sociograma
+
+El sociograma mínimo útil: cuatro personas, tres tipos distintos de relación.
+
+<Playground initial={`sociogram "Study group"
+  alice [label: "Alice"]
+  bob [label: "Bob"]
+  carol [label: "Carol"]
+  dave [label: "Dave"]
+  alice <-> bob [label: "lab partners"]
+  carol -> alice
+  dave -x> bob [label: "rivalry"]`} />
+
+Cuatro reglas cubren el 80 % del uso:
+
+1. Comienza con la palabra clave `sociogram`, seguida opcionalmente de un título entre comillas.
+2. Cada persona es un **nodo** — declarado explícitamente con `id [label: "…"]` o creado automáticamente la primera vez que aparece en una arista.
+3. Conecta dos nodos con un **operador de arista** — `<->` (mutuo), `->` (unidireccional), `-x>` (rechazo), `-.-` (neutral). Ver §3.
+4. Declara opcionalmente **grupos** y líneas de **config** para controlar el diseño y la coloración.
+
+> Los comentarios deben comenzar con `#` en su propia línea.
+
+---
+
+## 2. Nodos
+
+Una línea de nodo es `id [attr: value, …]`. Los nodos también se crean implícitamente la primera vez que se referencian en una arista, pero la declaración explícita permite establecer etiquetas, grupos y roles.
+
+**Reglas de ID.** Debe coincidir con `[a-zA-Z][a-zA-Z0-9_-]*`. El ID se usa internamente; el atributo `label:` establece el nombre visible.
+
+**Atributos de nodo:**
+
+| Atributo | Valores | Efecto |
+|---|---|---|
+| `label: "…"` | cadena entre comillas | Nombre visible (por defecto es el ID) |
+| `group: id` | ID de grupo | Asocia el nodo a un grupo para coloración |
+| `role: …` | `star`, `isolate`, `bridge`, `neglectee`, `rejected` | Anotación de rol sociométrico explícito |
+| `size: …` | `small`, `medium`, `large` | Tamaño del nodo personalizado |
+
+<Playground initial={`sociogram "Group roles demo"
+  config: layout = circular
+  dr_park [label: "Dr. Park", role: star]
+  james [label: "James"]
+  nina [label: "Nina", role: neglectee]
+  loner [label: "Alex", role: isolate]
+  bridge [label: "Sam", role: bridge, size: large]
+  james -> dr_park
+  james -> bridge
+  bridge -> dr_park
+  bridge -> nina
+  nina -> james`} />
+
+---
+
+## 3. Aristas
+
+Una línea de arista es `idIzquierdo OP idDerecho`, seguida opcionalmente de `[label: "…", weight: N]`. Ambos IDs se registran automáticamente como nodos si aún no fueron declarados.
+
+### 3.1 Dirección y valencia
+
+<Playground initial={`sociogram "Edge types"
+  config: layout = circular
+  a [label: "A"]
+  b [label: "B"]
+  c [label: "C"]
+  d [label: "D"]
+  e [label: "E"]
+  f [label: "F"]
+  # Positive
+  a -> b [label: "chose B"]
+  b <-> c [label: "mutual"]
+  # Negative
+  c -x> d [label: "rejects D"]
+  d <x-> e [label: "mutual reject"]
+  # Neutral
+  e -.- f [label: "indifferent"]
+  f <.-> a [label: "mutual neutral"]`} />
+
+| Operador | Dirección | Valencia | Significado |
+|---|---|---|---|
+| `A -> B` | unidireccional | positiva | A eligió a B |
+| `A <- B` | unidireccional | positiva | B eligió a A (igual que `B -> A`) |
+| `A <-> B` | mutua | positiva | Ambos se eligieron mutuamente |
+| `A -- B` | no dirigida | positiva | Relación conocida; dirección no registrada |
+| `A -x> B` | unidireccional | negativa | A rechaza a B |
+| `A <x- B` | unidireccional | negativa | B rechaza a A |
+| `A <x-> B` | mutua | negativa | Rechazo mutuo |
+| `A -x- B` | no dirigida | negativa | Conflicto; dirección desconocida |
+| `A -.> B` | unidireccional | neutral | A es indiferente hacia B |
+| `A <.-> B` | mutua | neutral | Indiferencia mutua |
+| `A -.- B` | no dirigida | neutral | Relación neutral |
+
+### 3.2 Peso / intensidad
+
+Mayor peso = línea más gruesa. Usa los operadores abreviados o anula explícitamente con `[weight: N]`.
+
+| Peso | Abreviatura | Dirección | Significado |
+|---|---|---|---|
+| 2 (por defecto) | `->` `<->` `--` `-x>` `-.-` | cualquiera | Conexión estándar |
+| 3 | `==>` `<==` `<==>` `===` | unidireccional / mutuo / no dirigido | Fuerte |
+| 4 | `===>` `<===` `<===>` | unidireccional / mutuo | Muy fuerte |
+| personalizado | `[weight: N]` | — | Cualquier entero |
+
+<Playground initial={`sociogram "Relationship strengths"
+  config: layout = circular
+  a [label: "A"]
+  b [label: "B"]
+  c [label: "C"]
+  d [label: "D"]
+  a -> b [label: "weight 2 (default)"]
+  b ==> c [label: "weight 3 (strong)"]
+  c ===> d [label: "weight 4 (very strong)"]
+  d -> a [weight: 1, label: "weight 1 (weak)"]`} />
+
+### 3.3 Etiquetas de arista
+
+`A -> B [label: "mejor amigo"]` — la etiqueta aparece en la línea de conexión.
+
+---
+
+## 4. Grupos
+
+Un bloque `group` reúne nodos en un subgrupo con nombre para coloración y agrupamiento en el diseño.
+
+**Sintaxis de grupo:**
+- `group id [label: "…", color: "#hex"]` — la línea de encabezado del grupo.
+- Las líneas de miembros siguen, cada una indentada **al menos 4 espacios**, un nodo por línea.
+- Una línea no indentada (o el siguiente `group`) cierra el grupo actual.
+- Los miembros pueden llevar sus propias propiedades: `anna [label: "Anna K.", size: large]`.
+
+Los nodos también se pueden asignar en línea: `alice [group: girls]`.
+
+<Playground initial={`sociogram "Classroom dynamics"
+  config: layout = force-directed
+  group boys [label: "Boys", color: "#42A5F5"]
+    tom [label: "Tom"]
+    jack [label: "Jack"]
+    mike [label: "Mike"]
+    leo [label: "Leo"]
+  group girls [label: "Girls", color: "#EF5350"]
+    anna [label: "Anna"]
+    beth [label: "Beth"]
+    chloe [label: "Chloe"]
+    diana [label: "Diana"]
+  tom <-> jack
+  anna <-> beth
+  anna <-> chloe
+  beth <-> chloe
+  mike -x> leo [label: "conflict"]
+  diana -> anna
+  tom -> anna [label: "cross-group"]`} />
+
+---
+
+## 5. Configuración
+
+Las líneas `config:` ajustan el diseño y la codificación visual. Cada una es su propia línea.
+
+| Clave de config | Valores | Por defecto | Efecto |
+|---|---|---|---|
+| `layout` | `circular`, `force-directed`, `concentric` | `circular` | Algoritmo de posicionamiento |
+| `sizing` | `uniform`, `in-degree`, `betweenness` | `uniform` | Tamaño del nodo según métrica |
+| `coloring` | `default`, `group`, `role` | `default` | Esquema de color de nodos |
+| `highlight` | lista separada por comas: `stars`, `isolates`, `cliques` | `stars,isolates` | Patrones a anotar |
+
+**Notas sobre diseño:**
+- `circular` — nodos distribuidos uniformemente en un anillo. Ideal para grupos pequeños (≤15).
+- `force-directed` — modelo de resortes; los clústeres emergen automáticamente. Ideal para grupos medianos con subgrupos distintos.
+- `concentric` — los anillos interiores contienen los nodos con mayor in-degree. Ideal para mostrar estructura núcleo-periferia.
+
+**Circular** — posicionamiento uniforme en anillo; cada nodo igualmente visible. Ideal para grupos pequeños y cohesionados.
+
+<Playground initial={`sociogram "Therapy group — circular"
+  config: layout = circular
+  dr_park [label: "Dr. Park", role: star]
+  james [label: "James"]
+  maria [label: "Maria"]
+  lee [label: "Lee"]
+  sarah [label: "Sarah"]
+  tom [label: "Tom"]
+  nina [label: "Nina", role: neglectee]
+  james -> dr_park
+  james <-> maria [weight: 3]
+  james -> lee
+  maria -> dr_park
+  lee -> dr_park
+  lee -x> nina
+  sarah <-> nina
+  sarah -> dr_park
+  tom -> dr_park
+  nina -> maria`} height={460} />
+
+**Force-directed** — la física de resortes acerca los nodos conectados y aleja los desconectados. Los subgrupos se agrupan orgánicamente.
+
+<Playground initial={`sociogram "Classroom dynamics — force-directed"
+  config: layout = force-directed
+  group boys [label: "Boys", color: "#42A5F5"]
+    tom [label: "Tom"]
+    jack [label: "Jack"]
+    mike [label: "Mike"]
+    leo [label: "Leo"]
+  group girls [label: "Girls", color: "#EF5350"]
+    anna [label: "Anna"]
+    beth [label: "Beth"]
+    chloe [label: "Chloe"]
+    diana [label: "Diana"]
+  tom <-> jack
+  anna <-> beth
+  anna <-> chloe
+  beth <-> chloe
+  mike -x> leo [label: "conflict"]
+  diana -> anna
+  tom -> anna [label: "cross-group"]
+  jack -> beth`} height={460} />
+
+**Concentric** — nodos ordenados por in-degree; los nodos de alta centralidad aparecen en los anillos interiores, los periféricos en los exteriores.
+
+<Playground initial={`sociogram "Informal influence — concentric"
+  config: layout = concentric
+  config: sizing = in-degree
+  vp [label: "VP Eng"]
+  lead_a [label: "Lead A"]
+  lead_b [label: "Lead B"]
+  alice [label: "Alice"]
+  bob [label: "Bob"]
+  carol [label: "Carol"]
+  dave [label: "Dave"]
+  alice -> lead_a
+  bob -> lead_a
+  carol -> lead_a
+  carol -> lead_b
+  dave -> lead_b
+  lead_a -> vp
+  lead_b -> vp
+  alice <-> bob
+  carol <-> dave`} height={460} />
+
+---
+
+## 6. Roles sociométricos
+
+El parser almacena anotaciones de rol en los nodos. El renderer las usa para aplicar insignias visuales: un marcador de estrella para `star`, un borde discontinuo para `isolate`, etc.
+
+| Rol | Significado |
+|---|---|
+| `star` | Figura central elegida por muchos (alto in-degree) |
+| `isolate` | Sin conexiones entrantes ni salientes |
+| `neglectee` | Se acerca a otros pero no recibe elecciones |
+| `rejected` | Recibe aristas de rechazo de múltiples miembros |
+| `bridge` | Conecta dos clústeres que de otro modo estarían separados |
+
+<Playground initial={`sociogram "Role annotations"
+  config: layout = circular
+  center [label: "Maria", role: star]
+  bridge_node [label: "Sam", role: bridge]
+  newcomer [label: "New Kid", role: neglectee]
+  loner [label: "Alex", role: isolate]
+  outcast [label: "Pat", role: rejected]
+  center <-> bridge_node
+  bridge_node -> outcast
+  newcomer -> center
+  newcomer -> bridge_node
+  center -x> outcast
+  bridge_node -x> outcast`} />
+
+---
+
+## 7. Etiquetas y comentarios
+
+- **Título:** `sociogram "Study group"` — solo en la primera línea.
+- **Etiqueta de nodo:** `alice [label: "Alice K."]`.
+- **Etiqueta de grupo:** `group boys [label: "Boys"]`.
+- **Etiqueta de arista:** `alice -> bob [label: "lab partners"]`.
+- **Comentarios:** `#` al inicio de una línea (después del espacio en blanco inicial).
+
+---
+
+## 8. Palabras reservadas y escapado
+
+**Reservadas al inicio de línea:** `sociogram` (encabezado), `group`, `config:`.
+
+**Tokens de operador reservados** — evita estas secuencias dentro de los IDs: `->`, `<-`, `<->`, `--`, `===`, `==>`, `<==`, `<===>`, `-x>`, `<x-`, `-x-`, `<x->`, `-.>`, `<.->`, `-.-`.
+
+**Cadenas con espacios** deben ir entre comillas dobles en los valores de `label:` y `color:`.
+
+---
+
+## 9. Errores comunes
+
+| Lo que escribiste | Dice el parser | Solución |
+|---|---|---|
+| `tom; jack; mike` en una línea de grupo | `tom;` falla la expresión regular de ID — se ignora silenciosamente | Un nodo por línea, cada uno indentado ≥4 espacios |
+| Miembros de grupo indentados 2 espacios | No se tratan como miembros del grupo (el parser requiere ≥4) | Usa una indentación de 4+ espacios |
+| `alice <> bob` | Sin operador coincidente — no se analiza como arista | Usa `<->` para positivo mutuo |
+| `config: layout = grid` | Valor desconocido ignorado silenciosamente; el diseño queda en `circular` | Usa `circular`, `force-directed` o `concentric` |
+| Nodo con espacio en el ID: `dr park` | El parser toma `dr` como ID y `park` como token suelto | Usa guion bajo: `dr_park [label: "Dr. Park"]` |
+
+---
+
+## 10. Gramática (EBNF)
+
+```text
+document       = header (blank | comment | config | group-block | edge | node)*
+
+header         = "sociogram" ( WS quoted-string )? NEWLINE
+quoted-string  = '"' any-char-but-quote* '"'
+
+config         = "config:" WS key WS "=" WS value NEWLINE
+key            = "layout" | "sizing" | "coloring" | "highlight"
+
+group-block    = "group" WS id ( "[" group-attrs "]" )? NEWLINE
+                   ( INDENT≥4 member-line )*
+member-line    = id ( "[" node-attrs "]" )? NEWLINE
+group-attrs    = group-attr ("," group-attr)*
+group-attr     = "label:" quoted-string | "color:" quoted-string
+
+node           = id ( "[" node-attrs "]" )? NEWLINE
+node-attrs     = node-attr ("," node-attr)*
+node-attr      = "label:" quoted-string
+               | "group:" id
+               | "role:" role
+               | "size:" ("small" | "medium" | "large")
+
+edge           = id WS op WS id ( "[" edge-attrs "]" )? NEWLINE
+edge-attrs     = edge-attr ("," edge-attr)*
+edge-attr      = "label:" quoted-string | "weight:" number
+
+op             = // positive
+                 "<===>" | "===>" | "<==="
+               | "<==>"|"==>"|"<=="
+               | "===" | "<->" | "->" | "<-" | "--"
+               // negative
+               | "<x->" | "-x>" | "<x-" | "-x-"
+               // neutral
+               | "<.->" | "-\.>" | "-.-"
+
+role           = "star" | "isolate" | "bridge" | "neglectee" | "rejected"
+id             = [a-zA-Z] [a-zA-Z0-9_-]*
+comment        = "#" any NEWLINE
+```
+
+Fuente autoritativa: `src/diagrams/sociogram/parser.ts`. Si esto diverge del parser, el parser tiene prioridad — por favor abre un issue.
+
+---
+
+## 11. Conformidad con el estándar
+
+Los sociogramas de Schematex siguen las convenciones de **sociometría de Moreno (1934)** para roles de nodos (star, isolate, neglectee) y semántica de elección dirigida. El conjunto de operadores de arista se amplía con valencia (positiva / negativa / neutral) y niveles de peso siguiendo la práctica moderna de análisis de redes sociales (Hanneman & Riddle, 2005).
+
+Lo que está implementado actualmente:
+
+- ✅ Aristas dirigidas, mutuas y no dirigidas
+- ✅ Operadores de valencia positiva, negativa y neutral
+- ✅ Cuatro niveles de peso (1–4) con operadores abreviados y `[weight: N]`
+- ✅ Grupos con color
+- ✅ Declaraciones de rol de nodo (`star`, `isolate`, `bridge`, `neglectee`, `rejected`)
+- ✅ Tres diseños: circular, force-directed, concentric
+- ✅ Tres modos de dimensionamiento: uniform, in-degree, betweenness
+- ⏳ Resaltado de cliques detectado automáticamente — casco convexo sombreado (ver §13)
+- ⏳ Vista de átomo social (diseño centrado en el ego)
+
+Referencias:
+
+- Moreno, J.L. (1934). *Who Shall Survive? Foundations of Sociometry, Group Psychotherapy and Sociodrama.* Beacon House.
+- Hanneman, R.A. & Riddle, M. (2005). *Introduction to Social Network Methods.* UC Riverside.
+
+---
+
+## 12. Ejemplos relacionados
+
+<RelatedExamples slugs={[
+  'sociogram-playground-dynamics',
+  'sociogram-team-influence',
+]} />
+
+---
+
+## 13. Hoja de ruta
+
+**Planificado — aún no analizable.** No uses esto en el DSL generado hoy; el parser lo rechazará o ignorará.
+
+- **Resaltado de cliques detectado automáticamente** — casco convexo sombreado dibujado alrededor de subgrupos de elección mutua de ≥3.
+- **Detección automática de bridge** — `role: bridge` inferido a partir de la centralidad de intermediación sin declaración explícita.
+- **Vista de átomo social** — diseño centrado en el ego donde un nodo nominado se sitúa en el centro.
+- **Exportación de matriz de reciprocidad** — salida de tabla estructurada junto al diagrama.
+
+Síguelo en los issues de GitHub si necesitas alguno de estos antes.

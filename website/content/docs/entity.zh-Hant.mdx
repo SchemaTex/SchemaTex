@@ -1,0 +1,367 @@
+---
+title: 法律實體結構圖
+---
+
+## 關於法律實體結構圖
+
+**法律實體結構圖**描繪組織與個人之間的法律和經濟關係——誰擁有什麼、透過哪種實體形式、在哪個司法管轄區。公司律師用它來記錄控股結構和子公司鏈。稅務顧問用它來展示跨境 IP 授權流程和移轉定價安排。創業公司律師用它來製作股權表和董事會決議。遺產規劃師用它來展示讓與人-信託-受益人安排。這種圖表是任何併購盡職調查過程中首先要求的文件，也是 OECD 移轉定價主檔的標準附件。
+
+Schematex 遵循以下實務慣例：**SEC Regulation S-K Exhibit 21**（子公司披露）、**IRS Form 8832** 實體分類、**ISO 3166-1** 司法管轄區代碼、**ISO 20275** 法律實體形式，以及四大會計師事務所稅務備忘錄慣例。實體類型對應不同的形狀（公司用矩形、LLC 用圓角矩形、信託用橢圓），讓任何讀者都能一眼識別法律形式。本頁記錄解析器目前接受的語法。
+
+<Playground initial={`entity-structure "Acme Global Holdings"
+entity parent "Acme Global, Inc." corp@US [note: "Ultimate Parent"]
+entity ie-holdco "Acme Ireland Holdings" corp@IE
+entity ie-ip "Acme IP Ltd" corp@KY [note: "Holds group IP"]
+entity nl-bv "Acme EU Distribution" llc@NL
+entity sg-apac "Acme APAC Trading" corp@SG
+entity esop "Employee Option Pool" pool
+parent -> ie-holdco : 100%
+ie-holdco -> ie-ip : 100%
+ie-holdco -> nl-bv : 100%
+ie-ip -~-> nl-bv [label: "IP License · royalty"]
+parent -> sg-apac : 100%
+esop -.-> ie-holdco`} height={480} />
+
+---
+
+## 1. 您的第一張實體結構圖
+
+最精簡的實用實體結構：一家母公司持有兩家子公司。
+
+<Playground initial={`entity-structure "Simple holding"
+entity holdco "Holdco LLC" llc@DE
+entity opco "OpCo Inc." corp@DE
+entity sub_uk "UK Sub Ltd." llc@UK
+holdco -> opco : 100%
+holdco -> sub_uk : 100%`} />
+
+四條規則涵蓋 80% 的用法：
+
+1. 以 `entity-structure` 開頭，可選擇性加上帶引號的標題。
+2. 每個法律實體是一個節點：`entity ID "顯示名稱" 類型` — 類型決定形狀。
+3. 以 `->` 連接實體。在目標 ID 後加上 `: pct` 標示持股比例：`parent -> child : 60%`。
+4. 在類型後加上 `@司法管轄區` 顯示司法管轄區標籤：`corp@DE`。
+
+> 注釋必須以 `#` 開頭，且單獨佔一行。
+
+---
+
+## 2. 實體類型
+
+實體類型決定節點渲染的形狀。Schematex 將多個常用別名對應至標準類型。
+
+| 標準類型 | 接受的別名 | 渲染形狀 | 典型用途 |
+|---|---|---|---|
+| `corp` | `corporation`、`inc` | 矩形（直角） | C-corp、S-corp、Ltd.、SA、AG |
+| `llc` | `llp`、`gmbh`、`bv` | 圓角矩形 | LLC、LLP、GmbH、BV |
+| `lp` | `lllp`、`fund` | 缺口矩形 | LP、LLLP、投資基金 |
+| `trust` | — | 橢圓形 | 家族信託、法定信託 |
+| `individual` | `person` | 圓形 | 創辦人、讓與人、自然人 |
+| `foundation` | `npo` | 五邊形（盾形） | 非營利機構、慈善基金會 |
+| `disregarded` | `branch` | 虛線矩形 | 透明實體、外國分支機構 |
+| `pool` | — | 虛線圓角矩形 | 選擇權池、ESOP、未發行股份 |
+| `placeholder` | `tbf` | 虛線矩形（淡化） | 待組建實體、收購目標 |
+
+**實體語法：**
+
+```
+entity ID "Display Name" type
+entity ID "Display Name" type@JURISDICTION
+entity ID "Display Name" type@JURISDICTION [properties]
+```
+
+**ID 規則。** 必須以字母開頭，後接字母、數字、底線或連字號：`[A-Za-z][A-Za-z0-9_-]*`。
+
+<Playground initial={`entity-structure "Entity type shapes"
+entity c1 "Delaware C-Corp" corp@DE
+entity l1 "California LLC" llc@CA
+entity p1 "Cayman Fund LP" lp@KY
+entity t1 "Family Trust" trust@SD
+entity i1 "Jane Smith" individual
+entity f1 "Acme Foundation" foundation
+entity d1 "Irish Branch" disregarded@IE
+entity pool1 "ESOP Pool" pool
+entity tbf1 "Acquisition Target" placeholder
+c1 -> l1 : 100%
+c1 -> p1 : 80%
+c1 -> f1
+i1 -> t1
+t1 -> c1 : 100%`} height={480} />
+
+---
+
+## 3. 節點屬性
+
+`[…]` 內的選用屬性可為實體加上額外的上下文資訊，顯示在渲染的節點中。
+
+| 屬性 | 語法 | 效果 |
+|---|---|---|
+| `status: new` | `new`、`eliminated`、`modified`、`normal` | 交易步驟圖的視覺標籤 |
+| `tax: ccorp` | 帶引號的字串 | 實體名稱下方的稅務分類標籤 |
+| `role: "Grantor"` | 帶引號的字串 | 角色標籤（供個人和受託人使用） |
+| `note: "…"` | 帶引號的字串 | 節點內顯示的小型備注 |
+| `est: "2024-03-15"` | 帶引號的字串 | 成立日期 |
+
+不在保留集合（`status`、`tax`、`role`、`note`、`est`）內的任何鍵都會儲存為自訂屬性。
+
+```
+entity alice "Alice Chen" individual [role: "Founder & CEO"]
+entity trust1 "Smith Irrevocable Trust" trust@SD [est: "2019-06-01", note: "Spendthrift provisions"]
+entity opco "OpCo, Inc." corp@DE [status: new, tax: ccorp]
+```
+
+---
+
+## 4. 司法管轄區
+
+在實體類型後加上 `@CODE` 以在節點上顯示司法管轄區標籤。代碼為 2–3 個字母的字串——ISO 3166-1 alpha-2 國家代碼和美國州縮寫都可接受。
+
+```
+entity parent "Parent Corp" corp@US
+entity ie_sub "Ireland Sub" corp@IE
+entity ky_fund "Cayman Fund" lp@KY
+entity de_llc "Delaware LLC" llc@DE
+```
+
+常用代碼：`US` 美國・`DE` 德拉瓦州・`CA` 加利福尼亞州・`NY` 紐約州・`UK` 英國・`IE` 愛爾蘭・`NL` 荷蘭・`KY` 開曼群島・`SG` 新加坡・`HK` 香港・`JP` 日本・`BM` 百慕達・`VG` 英屬維爾京群島・`CH` 瑞士・`LU` 盧森堡・`SD` 南達科他州。
+
+`@DE` 預設解析為德拉瓦州（美國法律脈絡中最常見）。
+
+### 司法管轄區群集
+
+使用 `jurisdiction CODE "名稱" [color: "#hex"]` 宣告司法管轄區，將所有共用該代碼的實體分組到圖表上一個帶標籤的虛線邊框群集區域中。
+
+```
+jurisdiction US "United States" [color: "#3b82f6"]
+jurisdiction IE "Ireland" [color: "#059669"]
+```
+
+當實體的 `@CODE` 與已宣告的 `jurisdiction` 吻合時，該實體會自動置於該群集內。若未宣告 `jurisdiction`，標籤仍會顯示，但不繪製群集區域。
+
+<Playground initial={`entity-structure "IP holding structure"
+jurisdiction US "United States" [color: "#3b82f6"]
+jurisdiction IE "Ireland" [color: "#059669"]
+jurisdiction KY "Cayman Islands" [color: "#d97706"]
+entity parent "TopCo, Inc." corp@US
+entity ie_hold "Ireland Holdings" corp@IE
+entity ie_ip "IP HoldCo" corp@KY [note: "Group IP"]
+entity ie_op "EU Opco" llc@IE
+parent -> ie_hold : 100%
+ie_hold -> ie_ip : 100%
+ie_hold -> ie_op : 100%
+ie_ip -~-> ie_op [label: "IP License"]`} height={440} />
+
+### 手動群集
+
+使用 `cluster "標籤" [members: [id1, id2], color: "#hex"]` 將不共用單一司法管轄區代碼的實體分組。
+
+```
+cluster "Ireland / Cayman IP" [members: [ie_ip, nl_bv], color: "#059669"]
+```
+
+---
+
+## 5. 持股邊
+
+邊線以一個運算子連接兩個實體 ID。運算子決定線條樣式和視覺語意。
+
+| 運算子 | 渲染為 | 含義 |
+|---|---|---|
+| `->` | 實線箭頭 | 股權持有（預設） |
+| `==>` | 雙線箭頭 | 僅表決控制（無經濟利益） |
+| `-.->` | 虛線灰色箭頭 | 選擇權池/條件持有 |
+| `-~->` | 虛線紫色箭頭 | IP 授權、管理協議、集團內部服務 |
+| `-->` | 虛線綠色箭頭 | 分配（信託到受益人） |
+
+**持股比例：** 在目標 ID 後加上 `: pct`。
+
+```
+parent -> subsidiary : 60%
+```
+
+**股份類別：** 加上 `[class: "Series A Pref"]` 在邊線上標示股份類別。
+
+```
+vc -> startup : 22% [class: "Series A Pref"]
+```
+
+**非股權標籤：** 在授權或分配邊線上使用 `[label: "…"]` 添加描述性文字。
+
+```
+ip_co -~-> opco [label: "IP License · royalty"]
+trust --> beneficiary [label: "Discretionary distributions"]
+```
+
+**組合使用：** `class:` 和 `label:` 可同時出現。
+
+```
+fund -> portfolio : 35% [class: "Common", label: "Post-Series B"]
+```
+
+<Playground initial={`entity-structure "Mixed edge types"
+entity holdco "HoldCo LLC" llc@DE
+entity opco "OpCo Inc." corp@DE
+entity ip_co "IP Ltd" corp@KY
+entity fund "Growth Fund" lp@DE
+entity esop "ESOP Pool" pool
+entity trust1 "Family Trust" trust@SD
+entity founder "J. Smith" individual
+# Equity ownership
+holdco -> opco : 100%
+holdco -> ip_co : 100%
+# IP license (non-equity)
+ip_co -~-> opco [label: "Exclusive license"]
+# Option pool (dashed)
+esop -.-> opco : 10%
+# Voting control
+fund ==> holdco
+# Trust distribution
+trust1 --> founder [label: "Income distributions"]
+founder -> trust1 : 100%`} height={500} />
+
+---
+
+## 6. 標籤與注釋
+
+- **標題：** `entity-structure "Acme Holdings"` — 第一行，加引號。
+- **實體顯示名稱：** `entity ID "名稱" type` 中帶引號的字串——顯示在節點內部。
+- **司法管轄區標籤：** 類型後的 `@CODE` — 2–3 個字母代碼，顯示在節點角落。
+- **節點屬性：** `[note: "…", role: "…", status: new, …]` — 節點內部的標註。
+- **邊線比例：** 目標 ID 後的 `: pct` — 顯示在持股箭頭上。
+- **邊線類別：** `[class: "…"]` — 箭頭上的股份類別標籤。
+- **邊線標籤：** `[label: "…"]` — 箭頭上的描述性文字。
+- **注釋：** `#` 位於行首（前置空白字元之後）。括號區塊內行內尾隨的 `#` 注釋也會被去除。
+
+---
+
+## 7. 保留字與跳脫
+
+**行首保留字：** `entity-structure`（標頭）、`entity`、`jurisdiction`、`cluster`。
+
+**實體類型關鍵字** — 這些字串被解析為實體類型，不得用作實體 ID：`corp`、`corporation`、`inc`、`llc`、`llp`、`gmbh`、`bv`、`lp`、`lllp`、`fund`、`trust`、`individual`、`person`、`foundation`、`npo`、`disregarded`、`branch`、`pool`、`placeholder`、`tbf`。
+
+**邊線運算子標記** — 請避免在 ID 中使用這些序列：`->`、`==>`、`-.->`、`-~->`、`-->`。
+
+**含空白字元的字串**必須在顯示名稱、備注、角色標籤和顏色值中使用雙引號。
+
+**司法管轄區代碼**在來源中不分大小寫，但會正規化為大寫：`@de` 和 `@DE` 等效。
+
+---
+
+## 8. 常見錯誤
+
+| 您寫的 | 解析器回應 | 修正方式 |
+|---|---|---|
+| `entity acme Acme Inc. corp@DE`（名稱未加引號） | 解析失敗——名稱必須加引號 | `entity acme "Acme Inc." corp@DE` |
+| `acme -> sub [50%]`（比例在括號內） | `50%` 無法識別為屬性鍵 | `acme -> sub : 50%`（冒號在比例前，括號外） |
+| `entity acme "Acme" Ltd@DE` | `Ltd` 不是有效的類型關鍵字 | 使用 `corp` 或 `llc`；`Ltd` 不在別名表中 |
+| `acme -> unknown_id : 100%` | `EntityParseError: Edge references unknown entity "unknown_id"` | 在邊線中使用之前必須先宣告每個實體 |
+| `cluster "US entities" [ids: [a, b]]` | `ids:` 無法識別；屬性被靜默忽略 | 使用 `members: [a, b]` |
+| `jurisdiction DE "Delaware"` 後接 `entity co "Co" corp@DE` | 群集繪製在 `co` 周圍——正確。但在美國脈絡中 `@DE` 是德拉瓦州，不是德國 | 用 `@DE` 表示德拉瓦州，`@DEU` 無效——沒有歧義解決方案；請在 `note:` 中記錄意圖 |
+| `entity x "X" corp [status: pending]` | `pending` 不是有效的狀態值——屬性靜默儲存為自訂屬性 | 使用 `new`、`eliminated`、`modified` 或 `normal` |
+
+---
+
+## 9. 語法（EBNF）
+
+```text
+document        = header (blank | comment | jurisdiction-def | cluster-def | entity-def | edge)*
+
+header          = "entity-structure" ( WS quoted-string )? NEWLINE
+quoted-string   = '"' any-char-but-quote* '"'
+
+jurisdiction-def = "jurisdiction" CODE WS quoted-string ( "[" jur-attrs "]" )? NEWLINE
+jur-attrs        = jur-attr ("," jur-attr)*
+jur-attr         = "color:" quoted-string
+
+cluster-def     = "cluster" WS quoted-string ( "[" cluster-attrs "]" )? NEWLINE
+cluster-attrs   = cluster-attr ("," cluster-attr)*
+cluster-attr    = "members:" "[" id ("," id)* "]"
+                | "color:" quoted-string
+
+entity-def      = "entity" WS id WS quoted-string WS entity-type ( "@" CODE )?
+                  ( "[" entity-attrs "]" )? NEWLINE
+entity-attrs    = entity-attr ("," entity-attr)*
+entity-attr     = "status:" status
+                | "tax:" quoted-string
+                | "role:" quoted-string
+                | "note:" quoted-string
+                | "est:" quoted-string
+                | key ":" quoted-string        # custom property
+
+entity-type     = "corp" | "corporation" | "inc"
+                | "llc" | "llp" | "gmbh" | "bv"
+                | "lp" | "lllp" | "fund"
+                | "trust"
+                | "individual" | "person"
+                | "foundation" | "npo"
+                | "disregarded" | "branch"
+                | "pool"
+                | "placeholder" | "tbf"
+
+edge            = id WS op WS id ( ":" WS pct-text )? ( "[" edge-attrs "]" )? NEWLINE
+op              = "->" | "==>" | "-.->" | "-~->" | "-->"
+pct-text        = any text up to "[" or end of line   # e.g. "100%" or "V 75% / E 50%"
+
+edge-attrs      = edge-attr ("," edge-attr)*
+edge-attr       = "class:" quoted-string
+                | "label:" quoted-string
+
+status          = "new" | "eliminated" | "modified" | "normal"
+CODE            = [A-Za-z]{2,3}
+id              = [A-Za-z] [A-Za-z0-9_-]*
+comment         = "#" any NEWLINE
+```
+
+權威來源：`src/diagrams/entity/parser.ts`。若本文與解析器有出入，以解析器為準——請開 issue 回報。
+
+---
+
+## 10. 標準合規性
+
+Schematex 法律實體結構圖綜合以下慣例：
+
+- **SEC Regulation S-K, Item 601(b)(21)** — Exhibit 21 子公司披露慣例
+- **IRS Form 8832** — C 型公司/直通式/透明實體分類
+- **ISO 3166-1 alpha-2** — 節點標籤上的司法管轄區代碼
+- **ISO 20275:2017** — 法律實體識別碼（LEI）實體形式分類
+- **OECD 移轉定價準則（2022）** — 跨境 IP 授權和特許權使用費流程慣例
+- **四大會計師事務所稅務備忘錄慣例**（EY / PwC / KPMG / 德勤）——跨境結構圖的實際標準
+
+目前已實作：
+
+- ✅ 九種具有不同形狀的實體類型：`corp`、`llc`、`lp`、`trust`、`individual`、`foundation`、`disregarded`、`pool`、`placeholder`
+- ✅ 類型別名：`corporation`、`inc`、`llp`、`gmbh`、`bv`、`lllp`、`fund`、`person`、`npo`、`branch`、`tbf`
+- ✅ 五種邊線運算子：`->`（持有）、`==>`（表決）、`-.->`（期權池）、`-~->`（授權）、`-->`（分配）
+- ✅ 持股比例標籤（`: pct`）和股份類別（`[class: "…"]`）
+- ✅ 司法管轄區標籤（`@CODE`），支援 ISO 3166-1 和美國州代碼
+- ✅ 司法管轄區群集區域（按 `@CODE` 虛線邊框分組）
+- ✅ 手動群集（`cluster "…" [members: […]]`）
+- ✅ 節點屬性：`status`、`tax`、`role`、`note`、`est`、自訂鍵值對
+- ⏳ 表決/經濟分割比例 — `V 75% / E 50%` 已儲存在 `percentage` 字串中，但雙行標籤渲染尚未實作
+- ⏳ 交易步驟差異渲染 — `status: new` / `eliminated` / `modified` 已儲存，但視覺差異標籤尚未渲染
+- ⏳ 行內股份數量標註 — 持股比例旁的 `100 shares Common`
+
+---
+
+## 11. 相關範例
+
+<RelatedExamples slugs={[
+  'entity-holding-company',
+  'entity-international-tax',
+  'entity-series-a-cap-table',
+]} />
+
+---
+
+## 12. 開發藍圖
+
+**規劃中——目前尚無法解析。** 請勿在今日生成的 DSL 中使用；解析器會拒絕或忽略這些語法。
+
+- **表決/經濟分割渲染** — 在單一邊線上顯示 `V 75% / E 50%`，以雙行比例標籤區分表決利益和經濟利益。
+- **交易步驟差異標籤** — `status: new` 渲染綠色「NEW」標籤；`status: eliminated` 渲染紅色刪除線；用於在單一圖表上比較併購前後的結構。
+- **股份數量標註** — 在 `-> sub : 100 shares Common` 中加上比例，以擷取股權表中的確切股份數量。
+- **雙向持股** — 明確的 `<->` 邊線用於交叉持股（兩個實體互相持有），以 S 形曲線路由避免雜亂。
+- **圖例區塊** — 自動生成的圖例，顯示形狀與實體類型、運算子與關係類型的對應。
+
+如有需要優先實作的項目，請在 GitHub issues 中追蹤。

@@ -1,0 +1,653 @@
+---
+title: マトリックス / クアドラントダイアグラム
+---
+
+## マトリックスダイアグラムについて
+
+**マトリックスダイアグラム**は、2つの交差する軸によって定義される二次元空間にアイテムを配置します——最も一般的なのは2×2のクアドラントグリッド——位置によって一目で意味が伝わります。プロダクトマネージャーはアイゼンハワーマトリックスを使用して緊急な仕事と重要な仕事を分けます。戦略コンサルタントはBCGマトリックスを使用してポートフォリオ投資を配分します。HRチームは9ボックスグリッドを使用してパフォーマンスとポテンシャルをマッピングします。この視覚的な慣習は、ボストンコンサルティンググループの1970年代のポートフォリオ研究に端を発し、Ansoff、Johari、RICEなどのフレームワークによって拡張されてきました。
+
+Schematex は3つのマトリックスモードをサポートします：**quadrant**（ラベル付き軸を持つ2×2または3×3のバブルプロット）、**heatmap**（N×Mの色付きセルグリッド）、**correlation**（N×Mのドット強度テーブル）。8つのプリビルドテンプレートが最も一般的なフレームワークをすぐに使える形でカバーし、すべての軸ラベル、クアドラント名、ポイントプロパティは完全にカスタマイズ可能です。
+
+<Playground initial={`matrix impact-effort "Q3 Planning"
+"Fix checkout timeout" at (0.15, 0.82) size: 4 highlight: true category: reliability
+"Redesign onboarding" at (0.72, 0.78) size: 5 category: growth
+"Add dark mode" at (0.78, 0.38) size: 3 category: polish
+"Write runbook" at (0.18, 0.32) size: 2 category: reliability
+"API rate limiting" at (0.55, 0.65) size: 4 category: reliability
+"Blog post series" at (0.35, 0.55) size: 2 category: growth`} height={460} />
+
+---
+
+## 1. 最初のマトリックス
+
+最小限の有用なマトリックス：カスタム2×2、2つのラベル付き軸、3つのポイント。
+
+<Playground initial={`matrix "Feature Prioritization"
+x-axis: Low Effort → High Effort
+y-axis: Low Value → High Value
+
+"Add search" at (0.3, 0.8)
+"Rebuild pipeline" at (0.85, 0.7)
+"Update footer" at (0.2, 0.2)`} />
+
+使用方法の80%をカバーする4つのルール：
+
+1. キーワード `matrix` で始め、オプションでテンプレート名または引用符付きのタイトルを続けます。
+2. `x-axis:` と `y-axis:` で軸を設定します——または組み込みテンプレートを使用してこのステップを省略します。
+3. 各ポイントは `"Label" at (x, y)` です。`x` と `y` は0.0（低/左/下）から1.0（高/右/上）の小数分数です。
+4. 座標の後にオプションのプロパティを追加します——`size:`、`category:`、`color:`、`shape:`、`highlight:`。
+
+> コメントは行のどこでも（引用符付き文字列の外で）`#` で始まります。
+
+---
+
+## 2. 組み込みテンプレート
+
+テンプレートは軸、クアドラントラベル、グリッドサイズをプリ設定します。ヘッダー行の2番目のトークンとしてテンプレート名を使用するだけです。
+
+| テンプレート | グリッド | ユースケース |
+|---|---|---|
+| `eisenhower` | 2×2 | 緊急性 / 重要性によるタスク優先順位付け |
+| `impact-effort` | 2×2 | インパクト対エフォートによるフィーチャー優先順位付け |
+| `rice` | 2×2 | RICEスコアリング——リーチ × インパクト対エフォート |
+| `bcg` | 2×2 | ポートフォリオ——マーケットシェア対成長率 |
+| `ansoff` | 2×2 | 製品/市場成長戦略 |
+| `johari` | 2×2 | 自己認識——自己既知対他者既知 |
+| `9-box` | 3×3 | HRタレントレビュー——パフォーマンス対ポテンシャル |
+| `risk-matrix` | 5×5 | リスク評価——可能性対深刻度（ヒートマップ） |
+
+<Playground initial={`matrix eisenhower "This Week"
+"Ship hotfix" at (0.1, 0.9) size: 5 highlight: true
+"Team 1:1s" at (0.1, 0.7) size: 3
+"Write Q3 OKRs" at (0.8, 0.85) size: 4
+"Inbox zero" at (0.1, 0.3) size: 2
+"Refactor auth" at (0.75, 0.4) size: 3`} height={420} />
+
+テンプレートの軸とクアドラントラベルは、明示的な `x-axis:` / `y-axis:` / `quadrant` ディレクティブで上書きできます。
+
+---
+
+## 3. 軸
+
+軸ラインは各次元の意味的な極を宣言します。
+
+```
+x-axis: Low Effort → High Effort
+y-axis: Low Value → High Value
+```
+
+矢印は低ラベル（左/下）と高ラベル（右/上）を区切ります。以下のセパレーターはすべて同等です：
+
+| セパレーター | 例 |
+|---|---|
+| `→`（Unicode） | `x-axis: Rare → Certain` |
+| `->`（ASCII） | `x-axis: Rare -> Certain` |
+| `↑` | `y-axis: Cheap ↑ Expensive` |
+| `←` / `<-` / `<` | 逆軸——高ラベルが左にある |
+
+**逆軸**は「高い」値が左または下にある慣習のためのものです：
+
+```
+x-axis: High Market Share ← Low Market Share
+```
+
+<Playground initial={`matrix "Product Portfolio"
+x-axis: High Market Share ← Low Market Share
+y-axis: Low Growth → High Growth
+
+quadrant Q1 "Question Marks"
+quadrant Q2 "Stars"
+quadrant Q3 "Cash Cows"
+quadrant Q4 "Dogs"
+
+"Analytics Suite" at (0.25, 0.35) size: 5
+"ChatBot Pro" at (0.2, 0.8) size: 4 highlight: true
+"Legacy CRM" at (0.75, 0.25) size: 6
+"Mobile App" at (0.65, 0.75) size: 3`} height={440} />
+
+---
+
+## 4. ポイント
+
+各ポイントは正規化された（x, y）座標ペアで位置決めされたバブルです。
+
+```
+"Label" at (x, y)
+"Label" at (x, y) size: 4 category: design color: #7B1FA2 highlight: true note: "clarify spec"
+```
+
+| プロパティ | 値 | 意味 |
+|---|---|---|
+| `size:` | 正の数値 | バブル面積の重み（デフォルト：3） |
+| `category:` | 裸のワード | カラーグループ；凡例を駆動 |
+| `color:` | 16進数文字列 | このポイントのバブル色を上書き |
+| `shape:` | `circle` \| `square` \| `triangle` \| `diamond` | バブル形状（デフォルト：`circle`） |
+| `highlight:` | `true` | バブルの周りに強調リングを描画 |
+| `note:` | 引用符付き文字列 | ツールチップアノテーション |
+| `label:` | 引用符付き文字列 | 表示ラベルを置き換え（IDとは異なる） |
+
+`[0, 1]` の外の座標はチャート境界にクランプされ、バッジでフラグ付けされます——元の値はツールチップ表示のために保存されます。
+
+<Playground initial={`matrix "Risk Register"
+x-axis: Low Impact → High Impact
+y-axis: Rare → Certain
+
+"Vendor delay" at (0.45, 0.7) size: 4 category: schedule highlight: true
+"Security breach" at (0.9, 0.3) size: 5 category: security shape: diamond
+"Budget overrun" at (0.5, 0.65) size: 3 category: finance
+"Key hire falls through" at (0.6, 0.55) size: 3 category: people
+"Scope creep" at (0.4, 0.8) size: 4 category: schedule`} height={440} />
+
+---
+
+## 5. クアドラントラベル
+
+各クアドラントに名前とオプションのサブタイトルでラベルを付けます。
+
+```
+quadrant Q1 "Do First"
+quadrant Q2 "Schedule"
+quadrant Q3 "Delete"
+quadrant Q4 "Delegate"
+
+# オプションのサブタイトル付き：
+quadrant Q1 "Do First" description: "High urgency, high importance"
+```
+
+クアドラントの番号付けは標準的な数学の慣習に従います：**Q1 = 右上、Q2 = 左上、Q3 = 左下、Q4 = 右下**。`Q` プレフィックスはオプションです——`quadrant 1 "Label"` も同様に有効です。
+
+---
+
+## 6. ヒートマップモード
+
+ヒートマップモードは、バブル位置をプロットする代わりに N×M セルをカラー強度で塗りつぶします。
+
+```
+matrix heatmap 4x3 "Skill Matrix"
+rows: [Strategy, Execution, Communication, Technical]
+cols: [Junior, Mid, Senior]
+
+cell (0,0) level: weak
+cell (1,0) level: medium
+cell (2,0) level: strong
+cell (0,1) value: 7
+cell (1,2) label: "Top 10%"
+```
+
+- `matrix heatmap COLxROW` — ヘッダーでグリッドの次元を設定。
+- `rows:` と `cols:` — カンマ区切りまたはブラケットリストの軸ラベル。
+- `cell (col, row)` — ゼロインデックス、列が先、行が後（行0 = 下）。
+- `level:` — `strong`（3）、`medium`（2）、`weak`（1）——熱強度のショートハンド。
+- `value:` — 明示的な数値（`level:` を上書き）。
+- `label:` — セル内に配置される引用符付きテキスト。
+
+<Playground initial={`matrix heatmap 4x4 "Competency Heat Map"
+rows: [Leadership, Execution, Communication, Technical]
+cols: [Junior, Mid, Senior, Staff]
+
+cell (0,0) level: weak
+cell (1,0) level: medium
+cell (2,0) level: strong
+cell (3,0) level: strong
+cell (0,1) level: medium
+cell (1,1) level: medium
+cell (2,1) level: strong
+cell (3,1) level: strong
+cell (0,2) level: weak
+cell (1,2) level: medium
+cell (2,2) level: medium
+cell (3,2) level: strong
+cell (0,3) level: weak
+cell (1,3) level: weak
+cell (2,3) level: medium
+cell (3,3) level: strong`} height={380} />
+
+---
+
+## 7. 相関モード
+
+相関モードは、行と列の変数間の関係の強さを表す強度でN×Mドットマトリックスをレンダリングします。
+
+```
+matrix correlation 4x4 "Product Metrics"
+rows: [DAU, Retention, Revenue, NPS]
+cols: [DAU, Retention, Revenue, NPS]
+
+cell (0,0) value: 1
+cell (1,0) value: 0.82
+cell (2,0) value: 0.54
+cell (3,0) value: 0.71
+```
+
+同じ `cell` 構文が適用されます。相関モードでも `level: strong | medium | weak` が受け入れられます。
+
+---
+
+## 8. SIPOCモード
+
+**SIPOC** は、Six Sigma DMAICプロジェクトの*Define*フェーズを開始する1ページのスコープテーブルです。5つの固定された列に、左から右にプロセスが関与するすべての人とものを記述します：**S**uppliers（供給者）・**I**nputs（投入物）・**P**rocess（プロセス）・**O**utputs（産出物）・**C**ustomers（顧客）。チームが何かを測定または改善する前に、SIPOCは境界を定めます——「このプロセスはどこから始まり、どこで終わり、誰が仕事を受け渡しするのか」。
+
+```
+matrix sipoc "Order fulfilment"
+suppliers: "Vendor", "Warehouse"
+inputs: "PO", "Stock levels"
+process: "Receive order", "Pick", "Pack", "Ship"
+outputs: "Shipped package", "Invoice"
+customers: "End customer", "Finance"
+```
+
+- `matrix sipoc` で始め、オプションで引用符付きのタイトルを続けます。
+- 5つの列それぞれが独自のディレクティブです：`suppliers:`、`inputs:`、`process:`、`outputs:`、`customers:`。
+- コロンの後に、**カンマ区切りの引用符付き文字列**としてエントリを列記します。列は任意の数のエントリを持てます。行はその列内で上から下にスタックされます。
+- `process:` 列は高レベルのステップシーケンスです（通常4〜7ステップ）——詳細なフローチャートではなく主要な段階だけにします。
+
+5つの列は、宣言した順序に関わらず、常に正規のS-I-P-O-Cの順序でレンダリングされます。そのため、LLMがブロックを順序外で出力しても、ダイアグラムは正しく読めます。
+
+<Playground initial={`matrix sipoc "Order fulfilment"
+suppliers: "Vendor", "Warehouse"
+inputs: "PO", "Stock levels"
+process: "Receive order", "Pick", "Pack", "Ship"
+outputs: "Shipped package", "Invoice"
+customers: "End customer", "Finance"`} height={360} />
+
+---
+
+## 9. QFDモード（品質の家）
+
+**品質機能展開（QFD）** ——赤尾洋二が導入した*品質の家*——は顧客が求めるものをそれを実現するエンジニアリング特性に変換します。行は**WHAT**（顧客要件、それぞれに重要度の重みを持つ）；列は**HOW**（チームが制御する測定可能なエンジニアリング特性）。グリッドの本体には各HOWが各WHATにどれだけ強く貢献するかを記録します。
+
+差別化要因は：エンジンが下の行を**計算**することです。各HOWの*技術的重要度*は、その列の `重み × 関係の強さ` の合計です——「どのエンジニアリング特性が最も顧客価値を動かすか、したがって最も努力を注ぐ価値があるか」への順位付けされた答えです。そして家の屋根——列の上の半行列のダイヤモンドセル——は2つのHOWが互いに助け合うか妨げ合うかを記録します。
+
+```
+matrix qfd "Coffee maker"
+what: "Quiet operation" weight: 5
+what: "Brews fast" weight: 3
+what: "Energy efficient" weight: 4
+how: "Fan RPM" dir: down
+how: "Heater watts" dir: up
+how: "Insulation" dir: up
+rel (0,0): 9
+rel (0,2): 3
+rel (1,1): 9
+rel (2,1): 3
+rel (2,2): 9
+roof (0,1): --
+roof (1,2): +
+```
+
+### WHATとHOW
+
+| ディレクティブ | 形式 | 意味 |
+|---|---|---|
+| `what:` | `what: "Label" weight: N` | 顧客要件（1行）。`weight:` はその重要度、通常1〜5。宣言順が行の順序（0からインデックス）。 |
+| `how:` | `how: "Label" dir: up\|down` | エンジニアリング特性（1列）。宣言順が列の順序（0からインデックス）。`dir:` は最適化目標——`up` = 大きいほど良い、`down` = 小さいほど良い。 |
+
+### 関係セル
+
+`rel (i, j): strength` は列 `j` のHOWが行 `i` のWHATにどれだけ強く貢献するかを記録します。インデックスは**（行、列）**、どちらもゼロベース。
+
+| 強さ | 意味 |
+|---|---|
+| `9` | 強い関係 |
+| `3` | 中程度の関係 |
+| `1` | 弱い関係 |
+| *（省略）* | 関係なし——セルを省略 |
+
+この9 / 3 / 1スケールはQFDの慣習です：重要度行が合計されたとき、1つの強いリンクが複数の弱いリンクを上回るように意図的に非線形にされています。
+
+### 計算される技術的重要度行
+
+エンジンは各列を合計して家の下部に技術的重要度行を生成します：
+
+```
+importance(j) = Σ 行i について  ( weight(i) × strength(i, j) )
+```
+
+上記のコーヒーメーカーの例では、この行は **45 / 39 / 51** と計算されます——Insulation（51）が最も高いレバレッジ特性、Heater watts（39）が最低。このランキングが成果物です：チームがエンジニアリング努力を注ぐべき場所を示します。
+
+`normalize: true`（ブロック内の任意の行に独立した行として）を追加すると、各列が生の合計の代わりに**合計に対するパーセンテージ**として表示されます——この例では **33% / 29% / 38%**。パーセンテージにより、非常に異なる重みスケールにわたる相対的な優先度が読みやすくなります。
+
+### 屋根——HOW × HOW相関
+
+**屋根**は列の上にある三角形の半行列です。`roof (i, j): glyph` はHOW `i` とHOW `j` が互いに強化し合うか対立するかを記録します——チームが調整しなければならない相乗効果とトレードオフ。
+
+| グリフ | 相関 |
+|---|---|
+| `++` | 強い正相関——一方を改善すると他方も強く助ける |
+| `+` | 正相関 |
+| `-` | 負相関 |
+| `--` | 強い負相関——一方を改善すると他方を傷つける（トレードオフ） |
+| *（省略）* | 相関なし——セルを省略 |
+
+各屋根エントリは標準QFDの傾斜屋根グリッドのダイヤモンドセルとしてレンダリングされます。例では、`roof (0,1): --` がFan RPMを下げながらHeater wattsを上げることがトレードオフであることを示し、`roof (1,2): +` がHeater wattsとInsulationが互いに強化し合うことを示します。
+
+<Playground initial={`matrix qfd "Coffee maker"
+what: "Quiet operation" weight: 5
+what: "Brews fast" weight: 3
+what: "Energy efficient" weight: 4
+how: "Fan RPM" dir: down
+how: "Heater watts" dir: up
+how: "Insulation" dir: up
+rel (0,0): 9
+rel (0,2): 3
+rel (1,1): 9
+rel (2,1): 3
+rel (2,2): 9
+roof (0,1): --
+roof (1,2): +`} height={460} />
+
+---
+
+## 10. パネットモード（メンデル遺伝学）
+
+**パネット方形**は遺伝交配の子孫を予測します。2つの親の遺伝子型を書くだけで、エンジンがメンデルの計算を行います——各親の**配偶子**（遺伝子座ごとに1つの対立遺伝子）を列挙し、グリッドをすべての配偶子の組み合わせで埋め、**遺伝子型と表現型の比率を計算**します。ユーザーがグリッドを埋める必要はありません。
+
+```
+matrix punnett "Eye color  (Bb × Bb)"
+cross: Bb x Bb
+trait B: "Brown eyes" / "Blue eyes"
+```
+
+### 交配
+
+| ディレクティブ | 形式 | 意味 |
+|---|---|---|
+| `cross:` | `cross: Bb x Bb` | `x`、`×`、または `*` で区切られた2つの親の遺伝子型。`parents:` は受け入れられるエイリアス。 |
+| `trait:` | `trait B: "Dominant" / "Recessive"` | *（オプション）* 遺伝子 `B` の2つの表現型を命名。凡例が `B_` / `bb` の代わりに平易な英語で読めるようになる。 |
+
+**対立遺伝子の大文字・小文字が優性を決定します** ——これは標準的な遺伝学の慣習です。大文字の文字が**優性**対立遺伝子、一致する小文字が**劣性**です。遺伝子型は文字ごとに対立遺伝子をグループ化します：`RrYy` は2つの遺伝子座、`R/r`（丸/しわ）と `Y/y`（黄/緑）。1つの遺伝子は**単性雑種**交配（2×2グリッド）、2つの遺伝子は**二性雑種**（4×4）、3つは三性雑種（8×8）です。
+
+### 計算される比率（差別化要因）
+
+エンジンは遺伝子型のみから以下を導出します：
+
+- 各親の**配偶子**——列と行のヘッダー——各遺伝子座で1つの対立遺伝子を取ることで（ヘテロ接合体 `Bb` は `B` と `b` を生成）；
+- **子孫グリッド**——すべての配偶子のペア、優性対立遺伝子を先に書く（`Bb`、`bB` ではない）；
+- **表現型比率**——どの表現型を発現するかでグループ化されたボックス、最小公倍数に約分。単性雑種 `Bb × Bb` は古典的な **3:1** を与え、二性雑種 `RrYy × RrYy` は有名な **9:3:3:1** を与える；
+- **遺伝子型比率**——例えば単性雑種では `1:2:1`（BB 1、Bb 2、bb 1）。
+
+各ボックスはその表現型クラスで色付けされ、フッターには表現型比率（凡例付き）と遺伝子型比率が記載されます。
+
+<Playground initial={`matrix punnett "Seed shape & colour  (RrYy × RrYy)"
+cross: RrYy x RrYy
+trait R: "Round" / "Wrinkled"
+trait Y: "Yellow" / "Green"`} height={520} />
+
+---
+
+## 11. 設定オプション
+
+`config:` ブロックは視覚的なレンダリングを調整します。各オプションは `config:` ヘッダーの下の独自のインデントされた行に記述します。
+
+```
+config:
+  quadrantBg: true
+  gridLines: true
+  axisArrows: true
+  bubbleScale: area
+  legendPosition: bottom-right
+```
+
+| キー | 値 | デフォルト | 効果 |
+|---|---|---|---|
+| `quadrantBg` | `true` \| `false` | `true` | 色付きクアドラント背景のフィル |
+| `gridLines` | `true` \| `false` | `true` | グリッドラインのオーバーレイ |
+| `axisArrows` | `true` \| `false` | `true` | 軸端の矢印 |
+| `bubbleScale` | `area` \| `radius` | `area` | `size:` がバブルの面積と半径のどちらをスケールするか |
+| `quadrantAnnotations` | `true` \| `false` | `true` | 角にクアドラントラベルテキストを表示 |
+| `legendPosition` | `bottom-right` \| `right` \| `bottom-center` \| `none` | `bottom-right` | カテゴリ凡例の配置 |
+| `labelCollision` | `auto` \| `offset-only` \| `leader-only` \| `off` | `auto` | ポイントラベルの重複回避戦略 |
+| `offChartPolicy` | `clamp-badge` \| `drop` | `clamp-badge` | [0,1] 外のポイントの扱い |
+
+2つのショートハンドディレクティブはトップレベルでも機能します（`config:` ブロック内でなく）：
+
+```
+axis: off          # off | on | auto — 軸ラインの表示・非表示
+margins: true      # true | false — スコアとランクのマージンを表示（相関モード）
+```
+
+---
+
+## 12. ラベルとコメント
+
+- **タイトル：** `matrix "My Title"` または独立した行として `title: My Title`。
+- **ポイントラベル：** `at (…)` の前の引用符付き文字列。
+- **軸ラベル：** `x-axis:` と `y-axis:` ディレクティブ。
+- **クアドラントラベル：** `quadrant Q1 "Name"` ディレクティブ。
+- **コメント：** 引用符付き文字列の外で行のどこでも `#`。
+
+```
+matrix "Prioritization"
+# これはコメントです
+x-axis: Low Cost → High Cost   # ディレクティブの後のインラインコメント
+"Fix bug" at (0.1, 0.9) size: 3  # ポイントの後のコメント
+```
+
+---
+
+## 13. テーブルモード（`style: table`）
+
+デフォルトのマトリックスレンダリングは**散布図 / バブルチャート**です——ポイントが（x, y）座標に浮かんでいます。アウトプットがクアドラントごとにアイテムをグループ化したリストになるフレームワーク（Eisenhower、Johari、Impact-Effort、9-box）では、`style: table` を使用して**テキストインセルレイアウト**に切り替えます。
+
+```
+matrix eisenhower "This Week"
+style: table
+Q2: "Ship hotfix"
+Q2: "Customer demo prep"
+Q1: "Write Q3 OKRs"
+Q1: "Refactor auth layer"
+Q4: "LinkedIn updates"
+Q3: "Reorganize Slack channels"
+```
+
+`style: table` はこれらの変更を自動的に適用します：
+
+| 効果 | 詳細 |
+|---|---|
+| 軸と矢印を非表示 | 軸ライン、ラベル、矢印なし |
+| グリッドラインを非表示 | 外側の境界線とセル区切りのみ残る |
+| クアドラントタイトルをセル内に移動 | 各タイトルがコーナーオーバーレイの代わりにセルヘッダーになる |
+| アイテムを箇条書きリストにスタック | 同じクアドラントの複数エントリが上から下にスタック |
+
+### `Q1`〜`Q4` ショートハンド（2×2のみ）
+
+2×2テンプレートでは、より長い `cell (col, row) label: "item"` 形式の代わりに `Qn: "item"` を使用します。マッピング：
+
+| ショートハンド | セル | Eisenhower | Johari |
+|---|---|---|---|
+| `Q1:` | 右上 | Schedule | Blind |
+| `Q2:` | 左上 | Do First | Open / Arena |
+| `Q3:` | 左下 | Delete | Hidden / Façade |
+| `Q4:` | 右下 | Delegate | Unknown |
+
+同じクアドラントに複数のアイテムを追加するにはショートハンドキーを繰り返します：
+
+```
+Q2: "Ship hotfix"
+Q2: "Customer demo prep"
+```
+
+3×3グリッド（9-box）では、`cell (col, row) label: "…"` を直接使用します——`Q` ショートハンドは2×2専用です。
+
+### テーブルと散布図の使い分け
+
+| `style: table` を使う場合 | 散布図（デフォルト）を使う場合 |
+|---|---|
+| タスクリスト付きのEisenhower | `size:` エフォート重み付きのEisenhower |
+| Johariウィンドウコーチング | バブル = 収益のImpact-Effort |
+| バックログのグループ化（数値の第三次元なし） | RICE / BCGポートフォリオ（第三次元がバブルサイズ） |
+| 9-boxタレントレビュー | リスクヒートマップ（数値の深刻度を持つ5×5） |
+
+<Playground initial={`matrix eisenhower "This Week"
+style: table
+Q2: "Ship hotfix"
+Q2: "Customer demo prep"
+Q1: "Write Q3 OKRs"
+Q1: "Refactor auth layer"
+Q4: "LinkedIn updates"
+Q3: "Reorganize Slack channels"`} height={420} />
+
+---
+
+## 14. 予約語とエスケープ
+
+**行頭で予約：** `matrix`（ヘッダー）、`x-axis:`、`y-axis:`、`quadrant`、`config:`、`title:`、`rows:`、`cols:`、`grid:`、`axis:`、`margins:`、`cell`。**SIPOC** モードでは：`suppliers:`、`inputs:`、`process:`、`outputs:`、`customers:`。**QFD** モードでは：`what:`、`how:`、`rel`、`roof`、`normalize:`。
+
+**ポイント行はクォート文字（`"` または `'`）で始まる必要があります。** クォートで始まらない行はポイントとして扱われません。
+
+**軸ラベルのスペースを含む文字列**はクォート不要です——コロンの後（および矢印の後）のテキストはそのまま取られます。ポイントプロパティの `note:` と `label:` ではダブルクォートを使用します。
+
+---
+
+## 15. よくある間違い
+
+| 記述した内容 | パーサーのメッセージ | 修正方法 |
+|---|---|---|
+| `"Fix bug" at (1, 2)` | ポイントはパース済み；x=1はクランプ、y=1はクランプ；オフチャートバッジ表示 | 座標を[0.0, 1.0]に収めるか、クランプバッジを受け入れる |
+| `quadrant 1 "Quick Wins"`（Qプレフィックスなし） | 受け入れ——`Q` プレフィックスはオプション | `quadrant 1` と `quadrant Q1` の両方が機能する |
+| `config: gridLines: false`（同じ行） | `config:` キーワードのみ認識；`gridLines: false` はサイレントに無視 | `config:` の下に独自のインデントされた行にオプションを記述 |
+| `x-axis: "Low" → "High"`（引用符付きラベル） | 引用符内で矢印が見つからない——プレーンテキストとして扱われる | 引用符を削除：`x-axis: Low → High` |
+| 次元なしの `matrix heatmap` | デフォルトで2×2；rows/colsディレクティブで実際のサイズを設定 | ヘッダーで次元を指定：`matrix heatmap 4x4` |
+| `cell (0, 0) level: Strong`（大文字S） | `level` のマッチは大文字・小文字を区別しない——受け入れ | `strong` と `Strong` の両方が機能する |
+| `shape: oval` | 不明な形状値——サイレントに無視 | `circle`、`square`、`triangle`、または `diamond` を使用する |
+| タスクリスト付きのEisenhowerで `"Fix bug" at (0.1, 0.9)` | 有効な散布点——しかしセル内リストが必要だった可能性あり | `style: table` を追加して `Q2: "Fix bug"` を使用する |
+| 3×3テンプレートで `Q1: "item"` | `Q` ショートハンドがポイント行としてパース——サイレントにドロップ | 3×3グリッドには `cell (col, row) label: "item"` を使用する |
+
+---
+
+## 16. 文法（EBNF）
+
+```text
+document     = header directive*
+
+header       = "matrix" ( template-name | mode-header | title )? NEWLINE
+template-name = "eisenhower"|"impact-effort"|"rice"|"bcg"|"ansoff"|"johari"|"9-box"|"risk-matrix"
+mode-header  = ( "heatmap" | "correlation" ) ( number "x" number )? title?
+             | ( "sipoc" | "qfd" | "punnett" ) title?
+title        = quoted-string | bare-text
+
+directive    = x-axis | y-axis | quadrant-dir | config-block
+             | point | cell | q-short | rows-dir | cols-dir | grid-dir
+             | style-dir | title-dir | axis-dir | margins-dir
+             | sipoc-col | qfd-what | qfd-how | qfd-rel | qfd-roof | normalize-dir
+             | punnett-cross | punnett-trait
+             | comment | blank
+
+# SIPOCモード
+sipoc-col    = ( "suppliers:" | "inputs:" | "process:" | "outputs:" | "customers:" )
+               WS quoted-string ( "," quoted-string )* NEWLINE
+
+# QFD / 品質の家モード
+qfd-what     = "what:" WS quoted-string WS "weight:" number NEWLINE
+qfd-how      = "how:" WS quoted-string ( WS "dir:" ( "up" | "down" ) )? NEWLINE
+qfd-rel      = "rel" WS "(" number "," number ")" ":" WS ( "9" | "3" | "1" ) NEWLINE  # (行, 列)
+qfd-roof     = "roof" WS "(" number "," number ")" ":" WS ( "++" | "+" | "-" | "--" ) NEWLINE  # (how, how)
+normalize-dir = "normalize:" WS "true" NEWLINE
+
+# パネット（メンデル遺伝学）モード
+punnett-cross = ( "cross:" | "parents:" ) WS genotype WS ( "x" | "×" | "*" ) WS genotype NEWLINE
+punnett-trait = "trait" WS letter ":" WS quoted-string WS "/" WS quoted-string NEWLINE  # 優性 / 劣性
+genotype     = ( letter letter )+   # 文字でグループ化された対立遺伝子ペア；大文字・小文字 = 優性、例：「RrYy」
+
+x-axis       = "x-axis:" WS axis-spec NEWLINE
+y-axis       = "y-axis:" WS axis-spec NEWLINE
+axis-spec    = text arrow text  |  text   # プレーンテキスト → 高ラベルのみ
+arrow        = "→" | "->" | "↑" | "←" | "<-" | "<" | "↓"
+
+quadrant-dir = "quadrant" WS "Q"? digit WS quoted-string ( WS "description:" quoted-string )? NEWLINE
+
+config-block = "config:" NEWLINE ( INDENT key ":" WS value NEWLINE )*
+
+point        = quoted-string WS "at" WS "(" number "," number ")" ( WS point-prop )* NEWLINE
+point-prop   = "size:" number
+             | "category:" bareword
+             | "color:" hex-color
+             | "shape:" ( "circle"|"square"|"triangle"|"diamond" )
+             | "highlight:" "true"
+             | "note:" quoted-string
+             | "label:" quoted-string
+
+cell         = "cell" WS "(" digit "," digit ")" ( WS cell-prop )* NEWLINE
+cell-prop    = "value:" number
+             | "label:" quoted-string
+             | "level:" ( "strong" | "medium" | "weak" )
+
+style-dir    = "style:" WS "table" NEWLINE
+q-short      = "Q" ( "1" | "2" | "3" | "4" ) ":" WS quoted-string NEWLINE   # 2×2のみ
+
+rows-dir     = "rows:" WS label-list NEWLINE
+cols-dir     = "cols:" WS label-list NEWLINE
+grid-dir     = "grid:" WS number "x" number NEWLINE
+axis-dir     = "axis:" WS ( "off" | "on" | "auto" ) NEWLINE
+margins-dir  = "margins:" WS ( "true" | "false" | "on" | "1" ) NEWLINE
+
+label-list   = "[" text ("," text)* "]" | text ("," text)*
+quoted-string = '"' any-char-but-quote* '"' | "'" any-char-but-quote* "'"
+comment      = "#" any NEWLINE
+```
+
+権威ある情報源：`src/diagrams/matrix/parser.ts`。これがパーサーと異なる場合はパーサーが優先されます——Issueを立ててください。
+
+---
+
+## 17. 標準への準拠
+
+Schematex のマトリックスダイアグラムは、**ボストンコンサルティンググループ（1970）**、**アイゼンハワー意思決定マトリックス**、**アンソフ成長マトリックス**、**ジョハリの窓**フレームワークで使用される標準的な2×2クアドラント慣習を実装しています。9ボックスグリッドは**マッキンゼー/GEタレントレビュー**慣習（3×3、パフォーマンス × ポテンシャル）に従います。ヒートマップと相関モードは特定の外部標準に従いませんが、ExcelのCondtional FormattingやRの `corrplot` などのツールに見られる普遍的なセル強度エンコーディングを使用しています。
+
+現在実装されているもの：
+
+- ✅ カスタム軸とクアドラントラベルを持つ2×2クアドラントモード
+- ✅ 3×3クアドラントモード（`9-box` テンプレート）
+- ✅ `level:` と `value:` セルを持つN×Mヒートマップモード
+- ✅ N×M相関モード
+- ✅ SIPOCモード——5列のSuppliers · Inputs · Process · Outputs · Customersスコーピングテーブル（Six Sigma DMAICのDefine）
+- ✅ QFD / 品質の家モード——WHATs × HOWsグリッド、9 / 3 / 1関係スケール、**計算済み**技術的重要度行（`normalize: true` でパーセンテージ表示）、HOW × HOW相関屋根（`++` / `+` / `-` / `--`）
+- ✅ パネットモード——2つの親の遺伝子型からのメンデル交配；エンジンが配偶子、子孫グリッド、遺伝子型 + 表現型比率（単性雑種3:1、二性雑種9:3:3:1）を**計算**；対立遺伝子の大文字・小文字 = 優性；オプションの `trait` 表現型名；単性雑種/二性雑種/三性雑種（2×2 / 4×4 / 8×8）
+- ✅ 8つの組み込みテンプレート（eisenhower、impact-effort、rice、bcg、ansoff、johari、9-box、risk-matrix）
+- ✅ ポイントプロパティ：size、category、color、shape、highlight、note
+- ✅ 逆軸（`←` / `<-`）
+- ✅ configブロック（quadrantBg、gridLines、axisArrows、bubbleScale、legendPosition、labelCollision、offChartPolicy）
+- ✅ `style: table` ——`Q1`〜`Q4` ショートハンド（2×2）とスタックされた箇条書きリストを持つテキストインセルレイアウト
+- ⏳ ポイントの `label:` 上書き（パース済み、レンダラーのサポートは保留中）
+- ⏳ オフチャートの `drop` ポリシー（パース済み、レンダラーは常に今日clamp-badge）
+- ⏳ `margins:` 相関スコア/ランクサイドバー（パース済み、まだレンダリングされていない）
+
+参考文献：
+
+- Henderson, B. (1970). *The Product Portfolio.* Boston Consulting Group.
+- Covey, S. (1989). *The 7 Habits of Highly Effective People.* （アイゼンハワーマトリックスの普及）
+- Ansoff, H.I. (1957). "Strategies for Diversification." *Harvard Business Review*.
+- Akao, Y. (1990). *Quality Function Deployment: Integrating Customer Requirements into Product Design.* Productivity Press.（品質の家）
+- Pyzdek, T. & Keller, P. (2018). *The Six Sigma Handbook* (第5版). McGraw-Hill.（DMAICのDefineにおけるSIPOC）
+- Punnett, R.C. (1905). *Mendelism.* Macmillan.（パネット方形）；Mendel, G. (1866). "Versuche über Pflanzenhybriden."
+
+---
+
+## 18. ロードマップ
+
+**計画中——まだパース不可。** 今日生成された DSL ではこれらを使用しないでください。パーサーが拒否または無視します。
+
+- **スイムレーン / ゾーンオーバーレイ** — グリッドの背後に描画された名前付き矩形ハイライト領域。
+- **閾値ライン** — ラベル付きの水平または垂直の参照ライン（例：「損益分岐点」ライン）。
+- **バブル内ラベル** — ポイントラベルを横ではなくバブル内に印刷するオプション。
+- **テーブルへのエクスポート** — スプレッドシートインポート用のSVGに加えた構造化CSV / JSONアウトプット。
+- **4×4とカスタムラベルクアドラントモード** — ヒートマップだけでなくクアドラント（バブルプロット）モードでもラベル付きセルを持つ任意のNxM。
+
+これらが早期に必要な場合はGitHubのIssueでトラックしてください。
+
+---
+
+## 関連するサンプル
+
+サンプルギャラリーからすぐに使えるシナリオ：
+
+<RelatedExamples slugs={[
+  'matrix-eisenhower-week',
+  'matrix-impact-effort',
+  'matrix-johari-window',
+  'matrix-9-box-talent',
+  'matrix-bcg-portfolio',
+  'matrix-punnett-monohybrid',
+  'matrix-punnett-dihybrid',
+  'matrix-punnett-testcross',
+]} />

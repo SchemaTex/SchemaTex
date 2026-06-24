@@ -1,0 +1,243 @@
+---
+title: 时序图（Timing diagram）
+---
+
+## 关于时序图
+
+**时序图**显示数字信号如何随时间变化——时钟脉冲、总线转换、数据值与高阻抗状态——以一组共享时间轴的水平波形带呈现。硬件工程师用它来规格化协议行为、验证建立时间与保持时间约束，以及记录芯片接口。它出现在数据手册、HDL 仿真报告与数字系统教科书中。
+
+Schematex 使用 **[WaveDrom 兼容](https://wavedrom.com/tutorial.html)**的信号符号——与 WaveDrom 首创的波形字符（`0`、`1`、`x`、`z`、`p`、`=`……）及数据标签语法相同——因此现有的 WaveDrom DSL 可以直接转移使用。本页记录了解析器目前所接受的语法。
+
+<Playground initial={`timing "SPI Transaction"
+CLK:   pppppppp
+CS_N:  10000001
+MOSI:  x=======  data: ["0xAB","0xCD","0xEF","0x01","0x02","0x03","0x04","0x05"]
+MISO:  zzzz====  data: ["","","","","0xFF","0x12","0x34","0x56"]`} height={400} />
+
+---
+
+## 1. 第一个时序图
+
+最小的实用时序图：一个时钟与一个数据信号。最友好的写法完全不需要数字符个数：
+
+<Playground initial={`timing
+CLK:  clock 8
+RST:  rle 1*2 0*6
+DATA: 0011==00  data: ["A","B"]`} />
+
+三条规则涵盖 80% 的使用场景：
+
+1. 以关键字 `timing` 开头，后面可接引号标题与 `[hscale: N]`。
+2. 每个信号占一行：`NAME: <wave>`——名称、冒号，然后是波形。波形可以是：
+   - **`clock N`** — 生成 `N` 个周期的时钟（加上 `neg` 为负沿时钟）。不需要数字符个数。
+   - **`rle <state>*<count> …`** — 游程长度编码片段，例如 `rle 1*2 0*6` = `11000000`。自动对齐长度。
+   - **裸 WaveDrom 波形字符串** — 连续的状态字符（内部无空格），用于精细控制。
+3. 在裸波形字符串后加上 `data: ["val1", "val2"]` 为总线片段标注标签。
+
+> **对齐提示：**时序图出错的第一大原因是信号长度不等。`clock N` 和 `rle` 让每个信号的单元格数量明确，因此它们会对齐。只有在需要每单元格控制时才使用裸波形字符串。
+
+> 注释必须以 `#` 开头，独立成一行。
+
+---
+
+## 2. 波形字符
+
+波形字符串是一系列字符，每个字符代表一个时间周期。解析器接受以下字符：
+
+| 字符 | 状态 | 含义 |
+|---|---|---|
+| `0` | 逻辑低 | 信号在 GND / VSS |
+| `1` | 逻辑高 | 信号在 VDD |
+| `x` | 未知 | 无关、未定义或未初始化 |
+| `z` | 高阻抗 | 三态／高阻抗 |
+| `p` | 时钟脉冲（正沿） | 上升沿触发时钟；一个 `p` = 一个完整周期（低→高→低） |
+| `P` | 时钟脉冲（正沿，较高） | 与 `p` 相同，视觉上更高 |
+| `n` | 时钟脉冲（负沿） | 下降沿触发；一个 `n` = 一个完整周期（高→低→高） |
+| `N` | 时钟脉冲（负沿，较高） | 与 `n` 相同，视觉上更高 |
+| `=` | 总线数据 | 并行总线片段；通过 `data: […]` 加入标签 |
+| `2`–`9` | 命名总线片段 | 与 `=` 相同，依位置索引至 `data: […]` |
+| `.` | 保持／延续 | 将前一个状态延伸一个周期 |
+| `h` / `H` | 保持高 | 本周期强制为高 |
+| `l` / `L` | 保持低 | 本周期强制为低 |
+| `u` | 上升沿 | 从低到高的对角线（仅转换） |
+| `d` / `D` | 下降沿 | 从高到低的对角线（仅转换） |
+
+<Playground initial={`timing "Wave character reference"
+clk:   pppppppppp
+high:  1111111111
+low:   0000000000
+unkn:  xxxxxxxxxx
+hiz:   zzzzzzzzzz
+bus:   x========x  data: ["ADDR","DATA","","","","","",""]
+hold:  0..1..0..1
+rise:  0u1
+fall:  1d0`} height={440} />
+
+---
+
+## 3. 数据标签
+
+当信号携带总线值时，以 `data: ["label1", "label2", …]` 标注波形。每个非空引号字符串放置在对应的 `=`（或 `2`–`9`）片段内。
+
+```
+MOSI:  x=======  data: ["0xAB","0xCD","0xEF","0x01","0x02","0x03","0x04","0x05"]
+```
+
+空字符串 `""` 让片段无标签（适用于延伸前一个值的片段）。
+
+```
+MISO:  zzzz====  data: ["","","","","0xFF","0x12","0x34","0x56"]
+# 前四个 z 周期没有标签；四个 = 片段从 0xFF 开始获得标签
+```
+
+<Playground initial={`timing "I2C read burst"
+SCL:   ppppppppppp
+SDA:   x1=======1x  data: ["ADDR+R","ACK","D0","D1","D2","D3","D4","D5","NACK"]`} />
+
+---
+
+## 4. 信号分组
+
+将相关信号包装在 `[GroupName]` 块中。`---` 行关闭组，同时也作为组之间的视觉分隔符。
+
+```
+[Control]
+CLK:   pppppppp
+CS_N:  10000001
+---
+[Data]
+MOSI:  x=======  data: ["0xAB","0xCD","0xEF","0x01","0x02","0x03","0x04","0x05"]
+MISO:  zzzz====  data: ["","","","","0xFF","0x12","0x34","0x56"]
+```
+
+也接受替代的 `group "name" { … }` 语法（结尾的 `}` 关闭组）。
+
+<Playground initial={`timing "UART frame"
+[Clock & control]
+CLK:  pppppppppppp
+TX_EN: 0111111110
+---
+[Data lines]
+TX:   1==========  data: ["START","D0","D1","D2","D3","D4","D5","D6","D7","STOP"]
+RX:   zz1=======1  data: ["","","D0","D1","D2","D3","D4","D5","D6","D7"]`} height={380} />
+
+---
+
+## 5. 标题与 hscale
+
+**标题：**`timing "SPI Transaction"` — 显示于图表顶部。
+
+**hscale：**`timing "title" [hscale: 2]` — 缩放每个时间周期的宽度。默认为 1。当数据标签需要更多空间时，使用 2 来加宽周期。
+
+```
+timing "Wide bus" [hscale: 2]
+CLK:  pppp
+DATA: ====  data: ["long label here","another","third","fourth"]
+```
+
+---
+
+## 6. 标签与注释
+
+- **信号名称：**信号行上第一个 `:` 之前的任何文字。含空格的名称也可以——冒号是分隔符。
+- **数据标签：**波形字符串后的 `data: ["a", "b"]`。
+- **标题：**`timing` 关键字后的第一个符号（引号包围）。
+- **注释：**`#` 位于行首（前方可有空白）。
+
+```
+timing "Demo"
+# this is a comment
+CLK: pppp    # ← 不支持行内尾端注释
+```
+
+---
+
+## 7. 常见错误
+
+| 你写了什么 | 解析器的反应 | 修正方式 |
+|---|---|---|
+| `CLK: p p p p`（波形内有空格） | 波形字符串只解析 `p`；其余被视为数据子句 | 移除空格：`CLK: pppp` |
+| `DATA: =====` 没有 `data:` | 片段渲染为无标签的总线单元格 | 加上 `data: ["A","B","C","D","E"]` |
+| 波形字符 `s` 或 `r` | `TimingParseError: Invalid wave string` | 只有第 2 节中列出的字符有效 |
+| `CLK pppp`（无冒号） | 行不符合信号模式；被静默略过 | 信号名称后必须有冒号 |
+| `data: [A, B, C]`（无引号） | 值未被识别——解析器查找 `"…"` | 为每个值加上引号：`data: ["A","B","C"]` |
+| `[Group Name with spaces]` | 组标签为 `Group Name with spaces`——解析正确 | 已支持 |
+| `hscale: 2` 在独立行上 | 未被识别（hscale 应在标题行） | `timing "title" [hscale: 2]` |
+
+---
+
+## 8. 语法（EBNF）
+
+```text
+document       = header (blank | comment | group-open | group-close | separator | signal)*
+
+header         = "timing" ( WS quoted-string )? ( WS "[" "hscale:" number "]" )? NEWLINE
+quoted-string  = '"' any-char-but-quote* '"'
+
+group-open     = "[" label "]" NEWLINE
+               | "group" WS quoted-string WS "{"? NEWLINE
+group-close    = "}" NEWLINE
+separator      = "---" NEWLINE
+
+signal         = name ":" WS wave-string ( WS data-clause )? NEWLINE
+name           = any text before the first ":"
+wave-string    = wave-char+
+wave-char      = "0"|"1"|"x"|"z"
+               | "p"|"P"|"n"|"N"
+               | "h"|"H"|"l"|"L"
+               | "u"|"d"|"D"
+               | "="|"."|"2"|"3"|"4"|"5"|"6"|"7"|"8"|"9"
+
+data-clause    = "data:" WS ( "[" quoted-string ("," quoted-string)* "]"
+                            | quoted-string+ )
+
+comment        = "#" any NEWLINE
+```
+
+权威来源：`src/diagrams/timing/parser.ts`。若此文件与解析器有所出入，以解析器为准——请提交 issue 反馈。
+
+---
+
+## 9. 标准合规性
+
+Schematex 时序图遵循 **[WaveDrom WaveJSON](https://wavedrom.com/tutorial.html)** 的信号符号（波形字符与数据标签），与 WaveDrom 在线编辑器使用的集合相同，使 Schematex DSL 与 WaveDrom 输入大致可互换。`hscale` 选项、组语法与数据标签格式均兼容。
+
+目前已实现的功能：
+
+- ✅ 所有核心波形字符：`0 1 x z p P n N h H l L u d D = . 2–9`
+- ✅ 通过 `data: ["…"]` 的数据标签
+- ✅ 组块：`[Name]` 与 `group "name" { }` 语法
+- ✅ `---` 分隔符／组关闭
+- ✅ `hscale` 周期宽度倍数
+- ⏳ 时序标注（信号转换之间的箭头、`t_su`、`t_pd` 标签）
+- ⏳ 每个信号的 `phase:` 偏移（小数周期偏移）
+- ⏳ WaveDrom `node:` / `edge:` 标注块
+- ⏳ 外观主题（`default`、`narrow`、`lowkey`）
+
+参考文献：
+
+- WaveDrom — https://wavedrom.com（WaveJSON 规格）
+- IEEE Std 1364（Verilog HDL）— 数字时序仿真概念
+- IEEE Std 1497（标准延迟格式）— 时序标注惯例
+
+---
+
+## 10. 相关示例
+
+<RelatedExamples slugs={[
+  'timing-spi-transaction',
+]} />
+
+---
+
+## 11. 路线图
+
+**已规划——目前尚无法解析。**请勿在今日生成的 DSL 中使用以下功能；解析器会忽略它们。
+
+- **时序标注箭头** — 带有 `A -> B [label: "t_su = 5ns"]` 语法的 `annotate:` 块，用于在信号转换之间绘制建立时间／保持时间与传播延迟跨度。
+- **每个信号的 `phase:`** — 小数周期偏移，使信号可以从周期中间开始。
+- **WaveDrom `node:` / `edge:`** — 完整的 WaveDrom 标注块兼容性。
+- **外观选项** — `narrow`（紧凑）与 `lowkey`（柔和调色板）渲染主题。
+- **时间轴** — 图表底部的可选数字时间轴（ns、µs、ps 单位）。
+
+如需提前实现以上功能，请在 GitHub issues 中跟踪进度。

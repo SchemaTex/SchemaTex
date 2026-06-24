@@ -1,0 +1,209 @@
+---
+title: Grundriss
+---
+
+## Über Grundrisse
+
+Ein **Grundriss** ist die standardmäßige zweidimensionale architektonische Ansicht eines Raums: Zimmer mit realen Abmessungen, Wände als feste **Poché**-Bänder gezeichnet, Türen mit Viertelschwingbögen, Fenster als Verglasungslinien und Möbel als Grundrisssymbole — die visuelle Sprache, die in *Architectural Graphic Standards* dokumentiert und von jedem professionellen Planungssatz verwendet wird. Schematex rendert sie aus Text: Sie deklarieren Zimmer, Öffnungen und Möbel mit realen Maßen; die Engine führt gemeinsame Wände zusammen, berechnet Zimmerflächen, zeichnet Maßlinien, bestückt Tische automatisch mit Sitzen und validiert die Geometrie.
+
+Im Gegensatz zu Bildgeneratoren ist die Ausgabe *messbar und editierbar* — jedes Zimmer ist ein beschriftetes Element mit seiner berechneten Fläche, und eine vierte Reihe von Schreibtischen hinzuzufügen ist eine einzeilige Bearbeitung.
+
+<Playground initial={`floorplan "Studio Apartment" unit m
+room main   "Living / Sleeping" at 0,0 size 5.2x4.0
+room bath   "Bath"   right-of main size 2.0x2.2
+room kitchen "Kitchenette" right-of main align end size 2.0x1.8
+door main south at 15% width 0.9
+door between main bath at 50%
+opening between main kitchen at 50% width 1.2
+window main north at 30% width 1.8
+furniture bed-double in main at 3.4,0.3
+furniture sofa in main at 0.2,3.0
+furniture toilet in bath at 0.2,0.2
+furniture sink in bath at 1.3,0.2
+furniture counter in kitchen at 0.15,1.05 size 1.7x0.6
+furniture kitchen-sink in kitchen at 0.6,1.05`} height={420} />
+
+---
+
+## 1. Ihr erster Grundriss
+
+Ein Header, ein Zimmer, eine Tür und ein Fenster:
+
+```
+floorplan "Studio"
+room main "Studio" at 0,0 size 4x3
+door main south at 20%
+window main north at 50%
+```
+
+Drei Regeln decken die meisten Anwendungsfälle ab:
+
+1. Beginnen Sie mit `floorplan`, einem optionalen Titel in Anführungszeichen und `unit m` (Standard) oder `unit ft`. **Alle Zahlen sind in dieser Einheit.**
+2. Zimmer sind Rechtecke: `room id "Label" at x,y size BxH`. Das Label und die berechnete Fläche werden zentriert im Zimmer dargestellt.
+3. Öffnungen hängen an Wänden: Eine Wandreferenz (`main south`) positioniert entlang dieser Wand an einem Prozentwert; `between A B` findet die gemeinsame Wand automatisch.
+
+---
+
+## 2. Zimmer und Platzierung
+
+Platzieren Sie das erste Zimmer bei `0,0` und verketten Sie den Rest relativ — benachbarte Zimmer teilen genau eine Kante, und ihre Wände verschmelzen zu einem einzigen Band:
+
+```
+room living  "Living Room" at 0,0 size 5.2x4.2
+room kitchen "Kitchen"     right-of living size 3.0x4.2
+room hall    "Hallway"     below living size 2.0x2.6
+room bed1    "Bedroom 1"   right-of hall size 3.2x2.6
+```
+
+- `right-of` / `left-of` / `above` / `below` rastet an der Kante des Referenzzimmers ein.
+- `align start|center|end` richtet die Querachse aus (Standard `start` = obere/linke Kanten bündig); `offset n` verschiebt sie.
+- `fill #e0f2fe` tönt den Boden; `nolabel` unterdrückt die Beschriftung mit Name + Fläche (Einfach-Raum-Pläne wie Klassenzimmer).
+- Koordinaten sind y-abwärts: `at 0,0` ist die obere linke Ecke.
+
+**L/T/U-förmige Zimmer** verwenden `extend` — deklarieren Sie das Hauptrechteck und wachsen Sie es dann mit kantengeteilten Rechtecken. Die Wände verschmelzen entlang der Naht, die Fläche wird zu einer einzigen Zahl summiert (genau so, wie Profis L-Zimmer messen), und das Label zentriert sich auf dem größten Teil:
+
+```
+room living "Living Room" at 0,0 size 5x4
+extend living at 5,2 size 2x2          # L-Form: Ausschnitt oben rechts
+```
+
+Eine Erweiterung, die das Zimmer nicht berührt oder überlappt, wird mit einem quantifizierten Fehler abgewiesen. `north` (optional `north 30` für gedrehte Pläne) fügt den Kompass oben rechts hinzu.
+
+---
+
+## 3. Türen, Fenster, Öffnungen
+
+```
+door hall west at 50% width 1.0 swing in          # Außentür an einer Wand
+door between hall bed1 at 50% hinge right          # Innentür an der gemeinsamen Wand
+door between bed1 bath at 30% type sliding         # Schiebetür — kein Bogen
+opening between living kitchen at 35% width 1.2    # Torbogen, kein Blatt
+window living north at 30% width 1.8
+```
+
+- `between A B` löst das gemeinsame Wandsegment auf und positioniert beim Prozentwert **entlang der Überlappung** — keine Koordinaten erforderlich. Nicht benachbarte Zimmer werden mit dem gemessenen Spalt abgewiesen.
+- Türen sind standardmäßig 0,9 m breit an Außenwänden, 0,8 m an `between`-Wänden; Fenster sind standardmäßig 1,2 m.
+- `hinge left|right` wählt den Türrahmen; `swing in|out` kippt den Viertelbogen (Standard schwingt in das besitzende Zimmer — das erste genannte Zimmer).
+- Tür `type single|double|sliding|pocket|bifold`: double zeichnet zwei gespiegelte Bögen; sliding/pocket zeichnen versetzte Blattlinien ohne Bogen; bifold zeichnet die zwei Schranktür-Zeltspitzen.
+- Fenster `type fixed|sliding|casement|bay`: sliding = zwei versetzte Paneele, casement fügt den nach außen schwingenden Bogen hinzu, bay projiziert ein gespreiztes Trapez außerhalb der Wand.
+- Öffnungen werden an ihr Wandsegment angepasst (mit einer Warnung), anstatt zu überfließen.
+
+---
+
+## 4. Möbel
+
+Möbel werden **relativ zur oberen linken Ecke des Zimmerinneren** platziert, mit optionaler `size`, `rotate` und einem Label:
+
+```
+furniture sofa in living at 0.25,2.9
+furniture desk "Teacher" in class at 2,1.5 size 5x2.5 rotate 20
+furniture counter "Cubbies" in class at 6,24.4 size 10x1.2
+```
+
+Der Katalog umfasst Wohnbereich, Gewerbe und Außenbereich (Größen entsprechen standardmäßig branchenüblichen Grundrissen):
+
+| Cluster | Typen |
+| --- | --- |
+| Wohnbereich | `bed-double` `bed-single` `bed-queen` `bed-king` `bunk-bed` `crib` `sofa` `loveseat` `sectional` `armchair` `ottoman` `coffee-table` `side-table` `tv` `tv-stand` `fireplace` `floor-lamp` `rug` `wardrobe` `dresser` `nightstand` `bookshelf` `plant` `piano` `piano-upright` `pool-table` `ceiling-fan` `dining-table` |
+| Küche / Bad | `counter` `wall-cabinet` `kitchen-sink` `stove` `range-hood` `fridge` `dishwasher` `island` `bar-stool` `toilet` `sink` `vanity` `bidet` `urinal` `bathtub` `shower` `washer` `dryer` |
+| Klassenzimmer / Büro | `desk-chair` `desk` `desk-l` `chair` `whiteboard` `smartboard` `bookcase` `cubbies` `filing-cabinet` `lockers` `kidney-table` `round-table-4/6/8/10` `conference-table` |
+| Veranstaltung / Bankett | `banquet-table` `head-table` `stage` `dance-floor` `bar` `dj-booth` `cocktail-table` `podium` `row-chairs` |
+| Einzelhandel / Lager | `shelving` `checkout` `clothing-rack` `fitting-room` `pallet-rack` `loading-dock` `forklift` |
+| Salon / Fitnessstudio | `salon-chair` `shampoo-bowl` `manicure-table` `treadmill` `weight-bench` `power-rack` `yoga-mat` |
+| Restaurant / Gewerbeküche | `booth` `prep-table` `range` `walk-in` `commercial-sink` `fryer` |
+| Treppen / Struktur | `stairs` `stairs-l` `stairs-u` `spiral-stairs` `elevator` `column` |
+| Gelände / Außenbereich | `tree` `car` |
+
+**Auto-Bestuhlung** ist eingebaut: `round-table-8` zeichnet 8 Stühle auf seinem Umfang (60″ oben; `round-table-10` verwendet 72″), `dining-table` / `banquet-table` / `conference-table` bestuhlen beide Längsseiten mit einem Stuhl pro 0,65 m, `head-table` bestuhlt eine Seite mit Blick in den Raum, `manicure-table` bestuhlt einen Kunden- und einen Technikerplatz, und `row-chairs` platziert einen Theaterstreifen im 0,55-m-Raster. `rug`, `dance-floor`, `yoga-mat`, `counter`, `island`, `wall-cabinet`, `range-hood` und `ceiling-fan` sind Unterlagen/Deckenelemente — andere Möbel können sie ohne Kollisionswarnung überlappen.
+
+**Sitzpläne** — benennen Sie die Insassen eines beliebigen Auto-Bestuhlung-Tisches mit einer `seats`-Klausel, und die Engine schreibt jeden Namen auf seinen Stuhl (in Platzierungsreihenfolge: runde Tische im Uhrzeigersinn von oben; rechteckige Tische füllen die obere Kante von links nach rechts, dann die untere Kante). Damit wird ein Veranstaltungsgrundris zum eigentlichen Sitzplan, den die Gäste lesen:
+
+```
+furniture round-table-8 "Table 3" in hall at 11,4 seats "Alice" "Bob" "Carol" "Dave"
+furniture head-table "Head Table" in hall at 5,0.6 size 6x0.9 seats "Bride" "Groom"
+```
+
+Stühle ohne Namen bleiben leer; überzählige Namen über die Stuhlanzahl hinaus werden ignoriert. CJK-Namen in Anführungszeichen (`seats "张伟" "李娜"`) funktionieren wie jedes andere Label. Namen werden horizontal gelesen, daher sollte der Tisch für einen übersichtlichen Plan nicht gedreht werden.
+
+`tree` und `car` sind für den Außenbereich dimensioniert (Kronenscheibe, Parkflächengrundriss), sodass ein **Lageplan** nur Zonen als benachbarte Zimmer kachelt — Vorderhof, Hausgrundplan, Einfahrt, Hinterhof — mit darüber platzierten Bäumen und parkenden Autos.
+
+**Treppen** folgen den Zeichenkonventionen: Stufenlinien im 0,28-m-Abstand (11″), ein Richtungspfeil ab der untersten Stufe mit der Beschriftung `UP` (geben Sie dem Element ein `"DN"`-Label für einen absteigenden Lauf) und die 45°-Zickzack-Bruchlinie an der imaginären 1,2-m-Schnittebene, mit gestrichelten Stufen dahinter. `stairs` ist ein gerader Lauf (ausrichten mit `size`/`rotate`), `stairs-l` macht eine 90°-Kurve über einen Absatz, `stairs-u` kehrt 180° um, `spiral-stairs` ist ein Kreis mit radialen Stufen und einem Mittelpfahl.
+
+---
+
+## 5. Arrays — Raster, Reihe, Bogen
+
+Wiederholte Möbel sind eine Anweisung, nicht dreißig:
+
+```
+grid desk-chair in class rows 5 cols 6 count 27 area 5,8 25,24 itemsize 2x2.5
+row round-table-8 in hall cols 3 area 8.8,13.4 15.2,13.4 itemsize 2.3x2.3
+arc chair in hall count 13 center 12,8 radius 5 from 200 to 340
+```
+
+- `area x1,y1 x2,y2` gibt die ersten und letzten **Mittelpunkte** der Elemente an; Elemente verteilen sich gleichmäßig zwischen ihnen.
+- `count` kürzt **zeilenweise** — 27 Schreibtische in einem 5×6-Raster lassen das Ende der letzten Zeile weg, genau wie ein echtes Klassenzimmer.
+- `arc` platziert Elemente auf einem Kreisbogen mit Blick auf den Mittelpunkt — Halbbogen-Klassenzimmer, Veranstaltungsbestuhlung.
+
+---
+
+## 6. Einheiten, Flächen, Maßlinien
+
+- `unit ft` macht jede Zahl zu Fuß; Maßlinien werden als `32'` / `15'1"` und Flächen als `sq ft` formatiert. Intern wird alles metrisch verarbeitet (1 ft = 0,3048 m).
+- Zimmerflächen werden **von der Engine berechnet** aus der deklarierten Geometrie, nie von Hand eingegeben.
+- Maßlinien werden außerhalb des Plans mit architektonischen Schrägstrichen dargestellt: Gesamtbreite + -höhe immer, plus zimmersegmentweise entlang der oberen und linken Außenseiten.
+
+---
+
+## 7. Validierung
+
+Die Engine validiert, was KI-Systeme (und Menschen) tatsächlich falsch machen, mit Fehlermeldungen, die die betroffenen Elemente benennen und eine Korrekturrichtung angeben:
+
+**Fehler** (blockieren das Rendering, werden in einem Fehler-Panel angezeigt):
+
+- Zimmerüberschneidung — `rooms "bed1" and "bath" overlap by 0.40×2.60 m — move "bath" right-of "bed1" or shrink size`
+- Tür zwischen nicht benachbarten Zimmern — `door between "kitchen" and "bed2": rooms share no wall (gap 2 m on x-axis)`
+- Möbel außerhalb des Zimmers — `furniture sofa #1 extends 1.7 m outside room "c" — move it or shrink size`
+
+**Warnungen** (wird dennoch gerendert, unter dem Plan aufgelistet):
+
+- Möbelkollision — Begrenzungsboxen einschließlich **Stuhlring-Umrisse**, sodass zwei Bankettrundes, deren Stühle sich berühren, auch dann markiert werden, wenn die Tischplatten es nicht tun.
+- Öffnung an ihr Wandsegment angepasst.
+
+---
+
+## 8. Grammatik (EBNF)
+
+```text
+plan      ::= "floorplan" string? ("unit" ("m"|"ft"))? NL statement*
+statement ::= room | extend | north | door | window | opening | furniture | array
+room      ::= "room" id string? placement "size" dims ("fill" color)? ("nolabel")?
+extend    ::= "extend" id placement "size" dims
+north     ::= "north" num?
+placement ::= "at" coord
+            | ("right-of"|"left-of"|"above"|"below") id ("offset" num)?
+              ("align" ("start"|"center"|"end"))?
+door      ::= "door" (wallref | "between" id id) "at" pct
+              ("width" num)? ("hinge" ("left"|"right"))? ("swing" ("in"|"out"))?
+              ("type" ("single"|"double"|"sliding"|"pocket"|"bifold"))?
+window    ::= "window" wallref "at" pct ("width" num)?
+              ("type" ("fixed"|"sliding"|"casement"|"bay"))?
+opening   ::= "opening" (wallref | "between" id id) "at" pct ("width" num)?
+furniture ::= "furniture" type ("in" id) "at" coord ("size" dims)? ("rotate" num)? string? ("seats" string+)?
+array     ::= ("grid"|"row"|"arc") type "in" id
+              ("rows" int)? ("cols" int)? ("count" int)?
+              ("area" coord coord)? ("itemsize" dims)? ("rotate" num)?
+              ("center" coord)? ("radius" num)? ("from" num "to" num)?
+wallref   ::= id ("north"|"south"|"east"|"west")
+coord     ::= num "," num          dims ::= num "x" num          pct ::= num "%"?
+```
+
+Kommentare laufen von `#` bis zum Zeilenende. CJK-Anführungszeichen (`""`) werden als ASCII-Anführungszeichen akzeptiert.
+
+---
+
+## Verwandte Beispiele
+
+- [Zwei-Zimmer-Wohnung](/examples#floorplan) — relative Platzierung, 7 Türen, vollständige Möblierung
+- [27-Schreibtisch-Klassenzimmer](/examples#floorplan) — `grid … count`-Kürzung, `unit ft`
+- [Hochzeitsempfang für 120 Personen](/examples#floorplan) — automatisch bestuhlte Bankettrundes, Tanzfläche

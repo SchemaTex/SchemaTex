@@ -1,0 +1,402 @@
+---
+title: Mapa mental
+---
+
+## Acerca de los mapas mentales
+
+Un **mapa mental** es un diagrama radial que organiza ideas alrededor de un tema central, ramificándose hacia subtemas y detalles. Tony Buzan popularizó el formato en la década de 1970 como herramienta de toma de notas y lluvia de ideas; desde entonces, el método ha sido ampliamente adoptado en educación, planificación de proyectos, facilitación de reuniones y gestión del conocimiento. La clave está en que la ramificación no lineal refleja cómo funciona el pensamiento asociativo — más rápido que los esquemas, más estructurado que la escritura libre.
+
+Los mapas mentales de Schematex usan un DSL de **encabezados Markdown + listas de viñetas** inspirado en [markmap](https://markmap.js.org/) — un formato que la mayoría ya conoce. Hay dos estilos de diseño disponibles: el clásico **map** radial (ramas en todas las direcciones) y un árbol horizontal **logic-right**. Esta página documenta lo que el analizador acepta actualmente.
+
+<Playground initial={`mindmap
+
+# Product Launch Plan
+
+## Market readiness
+### Competitive analysis
+- Direct competitors
+- Pricing benchmarks
+### Target segments
+- SMB customers
+- Enterprise pilot
+
+## Engineering
+### Feature freeze
+- Core API complete
+- Edge cases resolved
+### Infrastructure
+- Load testing
+- CDN configuration
+  - Cache rules
+  - Geo routing
+
+## Go-to-market
+- Landing page live
+- Email campaign
+- Press outreach
+  - TechCrunch pitch
+  - Newsletter sponsors
+
+## Success metrics
+- Week 1 signups
+- Activation rate
+- NPS at day 30`} height={500} />
+
+---
+
+## 1. Tu primer mapa mental
+
+El mapa mental más simple y útil: un tema central con dos ramas, una con un subítem.
+
+<Playground initial={`mindmap
+
+# Team retrospective
+
+## What went well
+- Clear sprint goals
+- Good test coverage
+
+## What to improve
+- Slower PR reviews
+  - Add a review SLA`} />
+
+Cuatro reglas cubren el 80% de los casos de uso:
+
+1. Comienza con la palabra clave opcional `mindmap` en su propia línea, seguida de una línea en blanco.
+2. La raíz es el único encabezado `#` — se permite exactamente uno.
+3. Usa encabezados `##`, `###` y más profundos para establecer la profundidad de las ramas. El nivel del encabezado equivale a la profundidad en el árbol.
+4. Usa viñetas `-`, `*` o `+` para agregar subitems bajo cualquier encabezado. Cada sangría de 2 espacios agrega un nivel de profundidad adicional.
+
+> Los comentarios no están disponibles. Usa directivas `%%` (antes del encabezado raíz `#`) únicamente para configuración.
+
+---
+
+## 2. Encabezados y profundidad
+
+El nivel de encabezado se mapea directamente a la profundidad en el árbol. `#` es siempre la raíz (profundidad 0). `##` es profundidad 1. `###` es profundidad 2, y así hasta `######` (profundidad 5).
+
+```
+mindmap
+
+# Root
+## Branch A         ← depth 1
+### Sub-branch      ← depth 2
+#### Leaf           ← depth 3
+## Branch B
+```
+
+Los encabezados pueden saltar niveles — `####` después de `##` es válido y produce un nodo en profundidad 3. La profundidad del árbol es relativa a la raíz, no al encabezado anterior.
+
+---
+
+## 3. Viñetas
+
+Las viñetas extienden una rama de encabezado con más detalle. Se aceptan `-`, `*` o `+` como marcadores de viñeta. Cada **2 espacios** de sangría agrega un nivel de profundidad relativo al encabezado contenedor.
+
+```
+## Risks
+- Technical complexity         ← depth 2 (one level under ## Risks)
+  - Legacy integrations        ← depth 3 (2 spaces indent)
+    - Auth service             ← depth 4 (4 spaces indent)
+- Team availability            ← depth 2 again
+```
+
+<Playground initial={`mindmap
+
+# Book outline
+
+## Chapter 1 — Introduction
+- Why this matters
+  - Historical context
+  - Current state
+- What you will learn
+
+## Chapter 2 — Core concepts
+- Concept A
+  - Definition
+  - Examples
+- Concept B
+  - Definition
+  - Worked example
+    - Step-by-step walkthrough`} height={440} />
+
+---
+
+## 4. Formato en línea
+
+Las etiquetas de los nodos admiten un subconjunto de formato en línea de Markdown. El analizador tokeniza las etiquetas en el momento del análisis; el renderizador usa los tokens para emitir texto con estilo.
+
+| Sintaxis | Efecto | Ejemplo |
+|---|---|---|
+| `**texto**` | Negrita | `**Critical path**` |
+| `*texto*` | Cursiva | `*optional*` |
+| `` `código` `` | Código monoespaciado | `` `npm install` `` |
+| `[texto](url)` | Enlace | `[RFC 7519](https://tools.ietf.org/html/rfc7519)` |
+| `[ ] item` | Tarea sin marcar | `[ ] Write tests` |
+| `[x] item` | Tarea marcada | `[x] Design review` |
+
+La casilla de verificación debe estar al inicio de la etiqueta (antes de cualquier otro texto). El formato en línea puede anidarse: `**[bold link](url)**`.
+
+<Playground initial={`mindmap
+
+# Sprint 24 review
+
+## Completed
+- [x] **Auth redesign** — JWT + refresh tokens
+- [x] API rate limiting \`per-user\`
+- [x] [Error budget dashboard](https://metrics.example.com)
+
+## In progress
+- [ ] *Mobile push notifications*
+  - [ ] iOS APNs integration
+  - [ ] Android FCM setup
+
+## Blocked
+- [ ] **Payment webhook** — waiting on Stripe team
+  - *Escalated to account manager*`} height={420} />
+
+---
+
+## 5. Estilos de diseño
+
+La directiva `%% style:` selecciona el algoritmo de diseño. Colócala antes del encabezado raíz `#`.
+
+| Estilo | Diseño | Mejor para |
+|---|---|---|
+| `map` (predeterminado) | Radial — las ramas se extienden en todas las direcciones desde el centro | Lluvia de ideas, mapas conceptuales, exploración libre |
+| `logic-right` | Árbol horizontal — todas las ramas se extienden hacia la derecha | Esquemas estructurados, jerarquías, desgloses secuenciales |
+| `futureswheel` | Anillos concéntricos — la raíz en el centro, cada nivel de encabezado en su propio anillo | Prospectiva, mapeo de consecuencias, lluvia de ideas estructurada |
+| `driver` | Árbol horizontal — el objetivo a la izquierda fluyendo hacia la derecha a través de impulsores hasta las ideas de cambio | Programas de mejora, desglose objetivo → impulsor → acción |
+
+```
+%% style: map
+%% style: logic-right
+%% style: futureswheel
+%% style: driver
+```
+
+**`map`** (predeterminado) — diseño radial, las ramas se extienden en todas las direcciones desde el centro. Ideal para lluvia de ideas y mapas conceptuales.
+
+<Playground initial={`mindmap
+
+# Machine learning
+
+## Supervised
+### Classification
+- Decision tree
+- SVM
+- Neural net
+### Regression
+- Linear
+- Gradient boosting
+
+## Unsupervised
+### Clustering
+- K-means
+- DBSCAN
+### Reduction
+- PCA
+- t-SNE
+
+## Reinforcement
+- Q-learning
+- Policy gradient`} height={480} />
+
+**`logic-right`** — árbol horizontal, todas las ramas se extienden hacia la derecha. Ideal para esquemas estructurados y jerarquías secuenciales.
+
+<Playground initial={`mindmap
+%% style: logic-right
+
+# Machine learning
+
+## Supervised
+### Classification
+- Decision tree
+- SVM
+- Neural net
+### Regression
+- Linear
+- Gradient boosting
+
+## Unsupervised
+### Clustering
+- K-means
+- DBSCAN
+### Reduction
+- PCA
+- t-SNE
+
+## Reinforcement
+- Q-learning
+- Policy gradient`} height={460} />
+
+**`futureswheel`** — una [Rueda de Futuros](https://en.wikipedia.org/wiki/Futures_wheel) (Jerome Glenn, 1971/72), el clásico formato de lluvia de ideas estructurada para pensar en consecuencias. El evento o tendencia central se sitúa en el centro; las consecuencias de primer orden caen en el anillo interior, las consecuencias de segundo orden en el siguiente anillo exterior, y así sucesivamente. Cada hijo permanece dentro del sector angular de su padre, y cada anillo está codificado por color según el orden, de modo que el lector puede ver de un vistazo qué tan lejos está una onda expansiva del evento original. La profundidad se mapea a los anillos: `#` es el centro, `##` es el primer anillo (1er orden), `###` / viñetas bajo un encabezado van al siguiente anillo (2do orden), y los niveles más profundos continúan hacia afuera.
+
+<Playground initial={`mindmap
+%% style: futureswheel
+
+# Remote work becomes default
+
+## Less commuting
+- Lower carbon emissions
+- Cheaper city living
+
+## Distributed teams
+- Async communication norms
+- Global hiring pools
+
+## Empty offices
+- Commercial real estate slump
+- Repurposed to housing`} height={520} />
+
+**`driver`** — un [Diagrama de Impulsores](https://www.ihi.org/resources/tools/driver-diagram), la herramienta de planificación del modelo IHI (Institute for Healthcare Improvement) para la mejora. Se lee de izquierda a derecha como un árbol ordenado: el **objetivo** en el extremo izquierdo, los **impulsores primarios** (las pocas áreas de alto impacto que mueven el objetivo) en la siguiente columna, luego los **impulsores secundarios** e **ideas de cambio** concretas ramificándose más hacia la derecha. Los niveles del árbol se mapean limpiamente a la estructura: `#` es el objetivo, `##` son los impulsores primarios, y las viñetas / encabezados más profundos bajo cada uno se convierten en los impulsores secundarios e ideas de cambio. Úsalo siempre que necesites mostrar *cómo* se alcanzará realmente un objetivo.
+
+<Playground initial={`mindmap
+%% style: driver
+
+# Reduce 30-day readmissions
+
+## Reliable discharge process
+- Teach-back at bedside
+- Med reconciliation
+
+## Timely follow-up
+- Appointment within 7 days
+- Post-discharge phone call`} height={400} />
+
+---
+
+## 6. Directivas
+
+Las directivas son líneas `%%` colocadas **antes** del encabezado raíz `#`. Configuran el diagrama globalmente.
+
+| Directiva | Valores | Predeterminado | Efecto |
+|---|---|---|---|
+| `%% style: …` | `map`, `logic-right`, `futureswheel`, `driver` | `map` | Algoritmo de diseño |
+| `%% theme: …` | cualquier cadena | (ninguno) | Anulación de tema pasada al renderizador |
+| `%% maxLabelWidth: …` | entero 80–1000 | `240` | Ancho máximo en píxeles antes de que la etiqueta se divida |
+
+```
+mindmap
+%% style: logic-right
+%% maxLabelWidth: 320
+
+# Wide label root
+```
+
+<Playground initial={`mindmap
+%% style: logic-right
+%% maxLabelWidth: 200
+
+# Schematex features
+
+## DSL-first design
+- One keyword per diagram
+- AI-friendly syntax
+- CJK support
+
+## Zero dependencies
+- Hand-written parser
+- No D3, no dagre
+- ~KB-level bundle
+
+## Standards-compliant
+- IEEE for logic gates
+- IEC for circuits
+- McGoldrick for genograms`} height={360} />
+
+---
+
+## 7. Etiquetas y comentarios
+
+- **Título raíz:** el texto después de `#` en la línea del encabezado raíz.
+- **Etiquetas de ramas:** el texto después de `##`, `###`, etc.
+- **Etiquetas de viñetas:** el texto después del marcador `- ` / `* ` / `+ `.
+- **Formato en línea:** `**negrita**`, `*cursiva*`, `` `código` ``, `[texto](url)`, `[ ]` / `[x]`.
+- **Comentarios:** no están disponibles en el cuerpo. Usa directivas `%%` antes del encabezado raíz `#` para configuración; las líneas `%%` en el cuerpo se tratan como directivas (ignoradas silenciosamente si no se reconocen).
+
+---
+
+## 8. Palabras reservadas y escape
+
+**Reservadas al inicio del documento:** `mindmap` (palabra clave opcional) y `%%` (prefijo de directiva).
+
+**Reservada como raíz:** exactamente un encabezado `#`; un segundo encabezado `#` lanza un error de análisis.
+
+**Marcadores de viñeta:** `-`, `*`, `+` seguidos de un espacio. Un `*` que no va seguido de un espacio se trata como marcador de cursiva si aparece dentro del texto de la etiqueta.
+
+**Conflictos en línea:** una etiqueta que comienza con `[ ]` o `[x] ` se analiza como casilla de verificación, no como enlace Markdown. Si necesitas una etiqueta que literalmente comience con `[`, escribe `\[` — la barra invertida escapa el corchete.
+
+---
+
+## 9. Errores comunes
+
+| Lo que escribiste | El analizador dice | Corrección |
+|---|---|---|
+| Dos encabezados `#` | `Error: multiple # center nodes not allowed` | Usa exactamente un encabezado `#` como raíz |
+| `##Rama` (sin espacio después de `##`) | La línea no se reconoce como encabezado; se omite silenciosamente | Siempre pon un espacio: `## Rama` |
+| Viñeta con sangría de 3 espacios | Profundidad = `lastHeadingDepth + 1 + floor(3/2) = lastHeadingDepth + 2` — puede crear un nivel inesperado | Usa múltiplos de 2 espacios: 0, 2, 4, 6… |
+| `%% style: radial` | Valor desconocido ignorado silenciosamente; el diseño permanece como `map` | Usa `map`, `logic-right`, `futureswheel` o `driver` |
+| Palabra clave `mindmap` a mitad del documento | Se trata como una línea de texto plano (la palabra clave solo se reconoce en la primera línea) | Coloca `mindmap` en la línea 1, antes de cualquier contenido |
+| `[ ]texto` (sin espacio después del corchete) | Casilla de verificación no reconocida; se renderiza como `[ ]texto` literal | `[ ] texto` — se requiere espacio después del corchete de cierre |
+
+---
+
+## 10. Gramática (EBNF)
+
+```text
+document       = ("mindmap" NEWLINE)? (blank | directive)* node*
+
+directive      = "%%" WS key ":" WS value NEWLINE
+key            = "style" | "theme" | "maxlabelwidth"
+
+node           = heading | bullet
+heading        = INDENT? "#"+ SPACE label NEWLINE
+bullet         = SPACE* bullet-marker SPACE label NEWLINE
+bullet-marker  = "-" | "*" | "+"
+
+label          = inline-token*
+inline-token   = checkbox
+               | "**" inline-token* "**"
+               | "*" inline-token* "*"
+               | "`" code-text "`"
+               | "[" inline-token* "]" "(" url ")"
+               | plain-text
+
+checkbox       = "[ ]" SPACE | "[x]" SPACE | "[X]" SPACE
+
+INDENT         = WS*    %% headings may have leading whitespace (ignored)
+SPACE          = " " | "\t"
+```
+
+**Reglas de profundidad:**
+- Encabezado `#` → profundidad 0 (raíz)
+- Encabezado `##` → profundidad 1, `###` → profundidad 2, etc.
+- Viñeta con `n` espacios iniciales → profundidad = `lastHeadingDepth + 1 + floor(n / 2)`
+
+Fuente autoritativa: `src/diagrams/mindmap/parser.ts`. Si esto diverge del analizador, el analizador tiene prioridad — por favor, abre un issue.
+
+---
+
+## 11. Hoja de ruta
+
+**Planificado — aún no se puede analizar.** No uses esto en DSL generado hoy; el analizador lo rechazará o ignorará.
+
+- **Bloque `%%{init: {…}}%%`** — bloque de inicialización al estilo Mermaid para tema/configuración; actualmente solo se admiten directivas de línea `%%`.
+- **Ramas numeradas automáticamente** — `%% numbering: true` para prefijar cada rama con 1., 1.1., etc.
+- **Nodos de referencia / nota** — un marcador especial para adjuntar un cuadro de anotación flotante a cualquier nodo.
+- **Nodos de imagen** — `![alt](url)` como etiqueta completa de un nodo renderizado como imagen en línea.
+- **Ramas colapsadas** — `%% collapsed: branchId` para renderizar un subárbol como un solo indicador plegado.
+
+Realiza seguimiento en los issues de GitHub si necesitas alguno de estos antes.
+
+---
+
+## Ejemplos relacionados
+
+Escenarios listos para usar de la galería de ejemplos:
+
+<RelatedExamples slugs={[
+  'mindmap-product-launch',
+  'mindmap-quarterly-okrs',
+]} />

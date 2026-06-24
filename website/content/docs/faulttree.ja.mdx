@@ -1,0 +1,134 @@
+---
+title: フォルトツリー解析
+---
+
+## フォルトツリーについて
+
+**フォルトツリー**は規制対象の工学分野で最も広く使用されている信頼性・安全性技術です。一つの望ましくない**トップ事象**（システム故障）から始まり、ブール**ゲート**（AND / OR / 投票 / …）を通じて確率が既知の**基本事象**（コンポーネント故障）へと分解します。1962年にベル研究所で考案され、**[NUREG-0492](https://www.nrc.gov/docs/ML1007/ML100780465.pdf)**（原子力）、**IEC 61025**（汎産業）、SAE ARP4761（航空宇宙）によって標準化されました。
+
+Schematexの強みは、エンジンが単に図を描くのではなく**答えを計算する**ことです。MOCUS（Fussell-Vesely 1972）を実行して**最小カットセット** — 既約の故障組み合わせ — および**トップ事象確率**を求め、カットセットを赤でハイライトします（単一障害点は最も強い赤）。これがフォルトツリーを描く意義そのものであり、`pert` がスケジューリングに、`petri` がマーキングに対してとるのと同じ姿勢です。`logic`（左→右の信号ネットリスト）、`decisiontree`（期待値のロールバック）、`fishbone`（定性的・非定量的）とは異なります。
+
+<Playground initial={`faulttree "Product not removed"
+  analysis: cutsets, probability
+  top T  "Failure to remove product" = OR(G1, G2)
+  gate G1 "Arm jams or collides"      = AND(MSF, G3)
+  gate G2 "Wrong slot commanded"      = OR(CDM, MSF)
+  gate G3 "Loss of position feedback" = OR(ESF, RCF)
+  basic MSF "Manipulator system failure" p: 0.0035
+  basic CDM "Controller command error"   p: 0.0009
+  basic ESF "Encoder sensor failure"     p: 0.0021
+  basic RCF "Resolver cable fault"       p: 0.0012`} height={620} />
+
+---
+
+## 1. 最初のダイアグラム
+
+すべてのドキュメントは `faulttree` キーワード（エイリアス `fta`）、任意のタイトル、そしてIDで参照されるフラットな宣言のリストで始まります。
+
+```
+faulttree "Both pumps fail"
+  analysis: cutsets, probability
+  top T "Both redundant pumps fail" = AND(PA, PB)
+  basic PA "Pump A fails" p: 0.01
+  basic PB "Pump B fails" p: 0.01
+```
+
+`top` は単一のルート事象とそれを生成するゲートを宣言し、`basic` は確率を持つ葉コンポーネント故障を宣言します。エンジンは最小カットセット `{PA, PB}` と P(top) = 1.0e-4 を計算します。DSL は**フラット宣言 + 参照**（インデントによるネストではない）— フォルトツリーはDAGなので、共有事象は複数のゲートからIDで参照するだけです。
+
+ヘッダーディレクティブ：
+
+- `analysis: cutsets, probability` — 何を計算するか（`pathsets`、`none` も可）。
+- `prob: rare | mcub | exact` — 確率計算方法（デフォルト `rare`：保守的な上界）。
+- `layout: tb | bt` — トップダウン（デフォルト）またはボトムアップ。
+
+---
+
+## 2. 事象
+
+```
+top  T   "System fails"        = OR(A, B)
+gate G1  "Sub-fault"           = AND(A, B)
+basic A  "Component A fails"   p: 0.01
+undeveloped EXT "External fire (not modelled)"
+house HX "Power on"            state: 1
+```
+
+- **`top`** — 解析対象の一つの望ましくない事象（矩形、強調境界線）。正確に1つ必要。
+- **`gate`** — それ自体がゲート出力である中間事象（矩形）。
+- **`basic`** — `p:` を持つ一次コンポーネント故障（葉）（円）。
+- **`undeveloped`** — これ以上展開されない事象（ダイヤモンド）；`p:` を持てる。
+- **`house`** — `state: 0` または `state: 1` に強制された通常予期される事象（家形グリフ）— ツリーの分岐をオン/オフに切り替える。
+
+確率は小数または指数表記を受け付けます（`p: 0.004` または `p: 1e-6`）；`p:` と `prob:` は互換。確率のない事象はシンボリックに扱われます（カットセットは引き続き計算；P(top)はn/aとして報告）。
+
+---
+
+## 3. ゲート
+
+```
+top  T1 = AND(A, B, C)            # すべての入力が発生
+top  T2 = OR(A, B)                # 少なくとも1つの入力が発生
+top  T3 = XOR(A, B)               # ちょうど1つ（カットセットではORとして扱う）
+top  T4 = VOTING(2/3; A, B, C)    # n個中k個以上
+gate G1 = INHIBIT(A) if COND      # Aが発生かつ条件が成立
+gate G2 = PAND(A, B) order: A, B  # AついでB（順序が描画され、カットセットではAND）
+```
+
+ゲートは**出力上・入力下**に描かれます（`logic` ゲートの鏡像）：ANDは平底ドーム、OR/XOR/VOTINGはシールド、INHIBITは六角形。`INHIBIT`/`PAND` の条件事象は横に楕円として描かれます。ゲートは別のゲートや任意の事象を参照でき、同じ基本事象が複数のゲートに供給されることもあります（繰り返し事象）。
+
+---
+
+## 4. 計算されたカットセットと確率
+
+これが差別化要因です。`analysis: cutsets` を指定すると、エンジンは**MOCUS**を実行します：ANDゲートはカットセットの次数を増やし、ORゲートはカットセットの数を増やし、その後べき等則（`A∧A=A`）と吸収則（`X ⊆ Y ⇒ Yを除去`）で結果を最小化します。
+
+- 各**最小カットセット**は赤でボックス化され、**次数1のカットセットは単一障害点**（最も強い赤、`data-spof`）。
+- **繰り返し事象**（複数のゲートに登場する基本事象）は吸収則で処理されます — 単純な展開器が誤る場合。
+- **P(top)** はイベントごとの確率から計算されます：`rare`（カットセット確率の和、デフォルト）、`mcub`（1 − ∏(1−P)）、または `exact`（包除原理、共有事象を正確に重複排除）。方法はトップ事象の横に表示され `<desc>` に記録されます。
+- `house state: 0` はトップ事象を充足不能にすることができます — 「カットセットなし」と報告されます。
+
+---
+
+## 5. 繰り返し事象
+
+```
+faulttree "Safety function fails"
+  analysis: cutsets, probability
+  prob: exact
+  top T "Safety function fails" = OR(C1, C2)
+  gate C1 "Channel 1" = AND(S1, L1)
+  gate C2 "Channel 2" = AND(S2, L1)
+  basic S1 "Sensor 1 fails" p: 0.05
+  basic S2 "Sensor 2 fails" p: 0.05
+  basic L1 "Shared logic solver fails" p: 0.05
+```
+
+`L1` は両チャンネルに供給されます — 参照ごとに共有事象マークとともに1回描画されますが、カットセットエンジンはすべてのインスタンスを一つのブール変数として扱います。カットセットは `{S1, L1}` と `{S2, L1}` であり、`prob: exact` は重複（L1が和集合上で一度カウント）を減算し、稀少事象近似の0.005ではなく0.004875を与えます。
+
+---
+
+## 6. 転送
+
+```
+gate OVP "Sustained over-pressure" = INHIBIT(PUMP) if HEATER
+transfer OVP -> "OVP-detail"
+```
+
+`transfer ID -> "name"` は、その展開が別の場所にある事象の下に転送アウト三角形を描きます。対応する `transfer "name" = gate_expr` は名前付きサブツリーを定義し、カットセット計算のためにスプライスされます。v0.1はドキュメント内の転送を解決します。
+
+---
+
+## 7. バリデーション
+
+パーサーはカットセットの数学が意味を持つよう、読みやすいエラーで早期に失敗します：
+
+- 正確に1つの `top` が必要（ゼロまたは複数はエラー）；
+- 宣言されていないIDを参照するゲートはIDを名指しで報告；
+- サイクルは拒否（フォルトツリーはDAG）；
+- `[0, 1]` 範囲外の確率、`k > n` または `n ≠ 入力数` の `VOTING k/n`、非INHIBIT/PANDゲートへの `if` 条件はすべて平易な英語で報告。
+
+---
+
+## 8. テーマ
+
+`default` はハウスパレットを使用します — ソフトなスレートブルーの事象ボックス、**緑のゲート**（「ロジックが進行する」）、**赤のカットセットボックス**（計算されたリスク）、青の確率数値、黄色の家。`monochrome` はNUREG-0492の白黒教科書の外観を再現し、ドーム/シールドの形状（色ではなく）がゲートタイプを示します。すべてのストローク/塗りつぶしは `ReliabilityTokens` から取得され、すべての要素は `data-*`（`data-cutset`、`data-spof`、`data-prob`、`data-gate`）を持つため、計算された解析は後続で検査可能です。

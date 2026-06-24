@@ -1,0 +1,134 @@
+---
+title: Análisis de Árbol de Fallos
+---
+
+## Acerca de los árboles de fallos
+
+Un **árbol de fallos** es la técnica de confiabilidad/seguridad más ampliamente utilizada en ingeniería regulada: se parte de un **evento superior** no deseado (un fallo del sistema) y se descompone mediante **compuertas** booleanas (AND / OR / votación / …) hasta llegar a **eventos básicos** (fallos de componentes) cuyas probabilidades se conocen. Fue inventado en Bell Labs en 1962 y estandarizado por **[NUREG-0492](https://www.nrc.gov/docs/ML1007/ML100780465.pdf)** (nuclear), **IEC 61025** (multisectorial), y SAE ARP4761 (aeroespacial).
+
+La ventaja de Schematex es que el motor **calcula la respuesta**, no solo la imagen: ejecuta MOCUS (Fussell-Vesely 1972) para encontrar los **conjuntos de corte mínimos** — las combinaciones irreducibles de fallos — y la **probabilidad del evento superior**, luego destaca los conjuntos de corte en rojo (los puntos únicos de fallo en el rojo más intenso). Ese es el propósito de dibujar un árbol de fallos, y es la misma postura que toma `pert` hacia la programación y `petri` hacia el marcado. Es distinto de `logic` (lista de señales de izquierda a derecha), `decisiontree` (retroceso de valor esperado), y `fishbone` (cualitativo, sin cuantificar).
+
+<Playground initial={`faulttree "Product not removed"
+  analysis: cutsets, probability
+  top T  "Failure to remove product" = OR(G1, G2)
+  gate G1 "Arm jams or collides"      = AND(MSF, G3)
+  gate G2 "Wrong slot commanded"      = OR(CDM, MSF)
+  gate G3 "Loss of position feedback" = OR(ESF, RCF)
+  basic MSF "Manipulator system failure" p: 0.0035
+  basic CDM "Controller command error"   p: 0.0009
+  basic ESF "Encoder sensor failure"     p: 0.0021
+  basic RCF "Resolver cable fault"       p: 0.0012`} height={620} />
+
+---
+
+## 1. Tu primer diagrama
+
+Todo documento comienza con la palabra clave `faulttree` (alias `fta`), un título opcional, y luego una lista plana de declaraciones conectadas por ID:
+
+```
+faulttree "Both pumps fail"
+  analysis: cutsets, probability
+  top T "Both redundant pumps fail" = AND(PA, PB)
+  basic PA "Pump A fails" p: 0.01
+  basic PB "Pump B fails" p: 0.01
+```
+
+`top` declara el único evento raíz y la compuerta que lo produce; `basic` declara un fallo de componente hoja con una probabilidad. El motor calcula el conjunto de corte mínimo `{PA, PB}` y P(top) = 1.0e-4. El DSL es **declaración plana + referencia** (no anidado por sangría) — un árbol de fallos es un DAG, por lo que un evento compartido simplemente se referencia por ID desde varias compuertas.
+
+Directivas de encabezado:
+
+- `analysis: cutsets, probability` — qué calcular (también `pathsets`, `none`).
+- `prob: rare | mcub | exact` — el método de probabilidad (por defecto `rare`, una cota superior conservadora).
+- `layout: tb | bt` — de arriba hacia abajo (por defecto) o de abajo hacia arriba.
+
+---
+
+## 2. Eventos
+
+```
+top  T   "System fails"        = OR(A, B)
+gate G1  "Sub-fault"           = AND(A, B)
+basic A  "Component A fails"   p: 0.01
+undeveloped EXT "External fire (not modelled)"
+house HX "Power on"            state: 1
+```
+
+- **`top`** — el único evento no deseado que se está analizando (rectángulo, borde enfatizado). Se requiere exactamente uno.
+- **`gate`** — un evento intermedio que es a su vez salida de una compuerta (rectángulo).
+- **`basic`** — un fallo primario de componente, la hoja que lleva `p:` (círculo).
+- **`undeveloped`** — un evento no desarrollado más allá (diamante); puede llevar `p:`.
+- **`house`** — un evento normalmente esperado forzado a `state: 0` o `state: 1` (glifo de casa) — activa/desactiva ramas del árbol.
+
+Las probabilidades aceptan decimales o notación científica (`p: 0.004` o `p: 1e-6`); `p:` y `prob:` son intercambiables. Un evento sin probabilidad se trata simbólicamente (los conjuntos de corte se calculan de todos modos; P(top) se reporta como n/a).
+
+---
+
+## 3. Compuertas
+
+```
+top  T1 = AND(A, B, C)            # todas las entradas ocurren
+top  T2 = OR(A, B)                # al menos una entrada ocurre
+top  T3 = XOR(A, B)               # exactamente una (tratada como OR para conjuntos de corte)
+top  T4 = VOTING(2/3; A, B, C)    # al menos k de n
+gate G1 = INHIBIT(A) if COND      # A ocurre Y la condición se cumple
+gate G2 = PAND(A, B) order: A, B  # A luego B (orden renderizado, AND para conjuntos de corte)
+```
+
+Las compuertas se dibujan **salida hacia arriba, entradas hacia abajo** (el espejo de una compuerta `logic`): AND es una cúpula de base plana, OR/XOR/VOTING un escudo, INHIBIT un hexágono. El evento de condicionamiento de un `INHIBIT`/`PAND` se renderiza como una elipse al lado. Una compuerta puede referenciar otra compuerta o cualquier evento — y el mismo evento básico puede alimentar varias compuertas (un evento repetido).
+
+---
+
+## 4. Conjuntos de corte y probabilidad calculados
+
+Este es el diferenciador. Con `analysis: cutsets`, el motor ejecuta **MOCUS**: las compuertas AND aumentan el orden de un conjunto de corte, las OR multiplican el número de conjuntos de corte, luego la idempotencia (`A∧A=A`) y la absorción (`X ⊆ Y ⇒ descartar Y`) minimizan el resultado.
+
+- Cada **conjunto de corte mínimo** está enmarcado en rojo; un **conjunto de corte de orden 1 es un punto único de fallo** (rojo más intenso, `data-spof`).
+- Un **evento repetido** (un evento básico bajo varias compuertas) es manejado por absorción — el caso que un expansor ingenuo resuelve incorrectamente.
+- **P(top)** se calcula a partir de las probabilidades por evento: `rare` (Σ probabilidades de conjuntos de corte, por defecto), `mcub` (1 − ∏(1−P)), o `exact` (inclusión-exclusión, que desduplicar correctamente un evento compartido). El método se muestra junto al evento superior y se anota en `<desc>`.
+- Un `house state: 0` puede hacer que el evento superior sea insatisfacible — se reporta como "no hay conjuntos de corte".
+
+---
+
+## 5. Eventos repetidos
+
+```
+faulttree "Safety function fails"
+  analysis: cutsets, probability
+  prob: exact
+  top T "Safety function fails" = OR(C1, C2)
+  gate C1 "Channel 1" = AND(S1, L1)
+  gate C2 "Channel 2" = AND(S2, L1)
+  basic S1 "Sensor 1 fails" p: 0.05
+  basic S2 "Sensor 2 fails" p: 0.05
+  basic L1 "Shared logic solver fails" p: 0.05
+```
+
+`L1` alimenta ambos canales — se dibuja una vez por referencia con una marca de evento compartido, pero el motor de conjuntos de corte trata cada instancia como una variable booleana. Los conjuntos de corte son `{S1, L1}` y `{S2, L1}`; `prob: exact` resta el solapamiento (L1 se cuenta una vez sobre la unión), dando 0.004875 en lugar del valor de evento raro 0.005.
+
+---
+
+## 6. Transferencias
+
+```
+gate OVP "Sustained over-pressure" = INHIBIT(PUMP) if HEATER
+transfer OVP -> "OVP-detail"
+```
+
+Un `transfer ID -> "nombre"` dibuja el triángulo de transferencia-salida debajo de un evento cuyo desarrollo está en otra parte; un `transfer "nombre" = gate_expr` correspondiente define ese subárbol con nombre y se inserta para el cálculo del conjunto de corte. La versión v0.1 resuelve las transferencias dentro del documento.
+
+---
+
+## 7. Validación
+
+El analizador falla rápidamente con errores legibles para que el cálculo de conjuntos de corte sea significativo:
+
+- se requiere exactamente un `top` (cero o varios es un error);
+- una compuerta que referencia un ID no declarado reporta el ID por nombre;
+- los ciclos son rechazados (un árbol de fallos es un DAG);
+- una probabilidad fuera de `[0, 1]`, un `VOTING k/n` con `k > n` o `n ≠ cantidad de entradas`, o una condición `if` en una compuerta que no sea INHIBIT/PAND, se reportan en texto plano.
+
+---
+
+## 8. Tematización
+
+`default` usa la paleta de la casa — cajas de eventos en azul pizarra suave, **compuertas verdes** ("la lógica procede"), **cajas de conjuntos de corte rojas** (el riesgo calculado), numerales de probabilidad azules, una casa amarilla. `monochrome` reproduce el aspecto en blanco y negro del libro de texto NUREG-0492, donde la forma de cúpula/escudo (no el color) indica el tipo de compuerta. Todos los trazos/rellenos provienen de `ReliabilityTokens`; cada elemento lleva `data-*` (`data-cutset`, `data-spof`, `data-prob`, `data-gate`) para que el análisis calculado sea inspeccionable aguas abajo.

@@ -1,0 +1,118 @@
+---
+title: Git 图
+description: 与 Mermaid 兼容的提交历史图——分支、合并、标签、cherry-pick——通过重放一系列 git 操作来渲染。
+---
+
+## 关于 Git 图
+
+**Git 图**可视化仓库的提交历史：一条主提交线、从中分叉出的**分支**、将它们合并回来的**合并**，以及**标签**和 **cherry-pick**。这是讲解分支策略（Git Flow、主干开发）和记录发版历史的标准方式。Schematex 实现了 **Mermaid `gitGraph`** 方言，因此现有 Mermaid 源码可直接渲染。
+
+Schematex 的优势在于忠实度和简洁的零依赖布局：它**按顺序重放操作序列**，将每次提交分配到对应的泳道，无交叉地路由分支和合并连接线，并渲染带类型样式的提交节点（普通/高亮/反转）——全部来自 KB 级别的极小包体。
+
+<Playground initial={`gitGraph
+  commit id: "init"
+  branch develop
+  checkout develop
+  commit
+  commit tag: "v0.1"
+  checkout main
+  merge develop tag: "v1.0"`} height={360} />
+
+---
+
+## 1. 第一张 Git 图
+
+以 `gitGraph` 关键字开头（不区分大小写；末尾允许加冒号），然后每行一个操作。第一次提交落在主分支上：
+
+```
+gitGraph
+  commit
+  branch develop
+  checkout develop
+  commit id: "feature work"
+  checkout main
+  merge develop tag: "v1.0"
+```
+
+每个操作针对**当前检出的分支**执行。`commit` 追加到当前分支；`branch` 从当前提交创建新泳道；`checkout`（别名 `switch`）移动游标；`merge` 将另一个分支并入当前分支。
+
+---
+
+## 2. 操作
+
+```
+commit                         # 在当前分支上的普通提交
+commit id: "init"              # 给提交指定显式 ID
+commit tag: "v0.1"             # 附加发版标签
+commit type: HIGHLIGHT         # NORMAL（默认）| HIGHLIGHT | REVERSE
+branch develop                 # 从当前提交派生分支
+branch hotfix order: 3         # 固定其泳道顺序
+checkout develop               # 切换游标（别名：switch）
+merge develop tag: "v1.0"      # 将分支合并入当前分支
+cherry-pick id: "abc"          # 将提交复制到当前分支
+```
+
+- **`commit`** 支持可选的 `id:`、`tag:` 和 `type:`（`NORMAL` / `HIGHLIGHT` / `REVERSE`）。
+- **`branch NAME`** 支持可选的 `order:` 控制泳道位置。
+- **`checkout` / `switch`** 可互换使用。
+- **`cherry-pick id:`** 复制提交；可选的 `parent:` 用于消除合并提交的歧义。
+
+---
+
+## 3. 方向
+
+图表默认从左到右排列。在标头上内联设置方向：
+
+```
+gitGraph TB:
+  commit
+  branch feature
+  checkout feature
+  commit
+  checkout main
+  merge feature
+```
+
+支持 `LR`（默认）、`TB` 和 `BT`。配置也可通过前置的 `%%{init: {'gitGraph': {...}}}%%` 指令或 YAML frontmatter 的 `config:` 块提供，以实现 Mermaid 兼容性（`mainBranchName`、`showCommitLabel`、`rotateCommitLabel`）。
+
+---
+
+## 4. 引擎的布局方式
+
+Mermaid 兼容性是差异化特点，但布局才是真正的工作量：
+
+- 操作列表按顺序**重放**，构建提交有向无环图并将每次提交分配到其分支泳道。
+- 分支泳道按出现顺序排列（可用 `order:` 覆盖）；合并连接线从被合并分支的末端路由到新的合并提交。
+- 提交节点按 `type:` 设置样式——HIGHLIGHT 提交被强调，REVERSE 提交被标记——标签渲染为旗帜。Cherry-pick 绘制到源提交的虚线复制边。
+
+每次提交携带 `data-*`（分支、ID、类型）以供后续交互使用。
+
+---
+
+## 5. 常见错误
+
+```
+# WRONG — no gitGraph header
+commit
+commit
+
+# WRONG — unknown operation
+gitGraph
+  rebase main
+
+# WRONG — unknown commit type
+gitGraph
+  commit type: SQUASH
+```
+
+文档必须以 `gitGraph` 开头；有效操作仅限 `commit` / `branch` / `checkout` / `switch` / `merge` / `cherry-pick`；`type:` 必须为 `NORMAL`、`HIGHLIGHT` 或 `REVERSE`。`%%` 开始注释，与 Mermaid 一致。
+
+---
+
+## 6. 标准合规性
+
+语法跟随 Mermaid `gitGraph` 语法——操作关键字、`id:`/`tag:`/`type:` 选项、`order:`、`%%{init}%%` 指令和 YAML frontmatter 配置——使 Mermaid 源码可直接在 Schematex 的零依赖引擎上渲染。
+
+## 7. 路线图
+
+暂缓实现：并行提交压缩、通过 classDef 自定义提交主题，以及超出泳道顺序的每分支颜色覆盖。

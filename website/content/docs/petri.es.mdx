@@ -1,0 +1,174 @@
+---
+title: Red de Petri
+---
+
+## Acerca de las redes de Petri
+
+Una **red de Petri** es el formalismo fundamental para modelar la concurrencia, la sincronización y el flujo de recursos en sistemas de eventos discretos — inventada por [Carl Adam Petri en 1962](https://en.wikipedia.org/wiki/Petri_net) y usada continuamente desde entonces en informática, ingeniería de control, manufactura y modelado de procesos de negocio. La notación es pequeña e inmediatamente reconocible: un **lugar** es un círculo, una **transición** es una barra, un arco lleva un peso, y el estado dinámico del sistema es una distribución de **tokens** que residen en los lugares.
+
+Lo que hace diferente al motor `petri` de Schematex de una biblioteca de formas de arrastrar y soltar es que **entiende la dinámica**. Conoce un *marcado* (qué lugares tienen cuántos tokens), calcula qué transiciones están *habilitadas* (cada lugar de entrada tiene al menos el peso del arco en tokens — resaltadas en verde), y puede *disparar* una transición para producir el siguiente marcado. El renderizado es posterior a la semántica — la misma posición que **[pert](/docs/pert)** adopta respecto a la planificación. Se distingue de los **[diagramas de estado](/docs/state)** (un estado activo, no una distribución de tokens), **[sfc](/docs/sfc)** (una red de Petri segura restringida para PLCs) y **[bpmn](/docs/bpmn)** (cuya semántica de tokens se *define por reducción a* redes de Petri de flujo de trabajo).
+
+<Playground initial={`petri "Classic"
+  place P1 *1
+  place P2
+  place P3 *2
+  place P4 *1
+  transition T1
+  transition T2
+  P1 -> T1
+  T1 -> P2
+  T1 -> P3
+  P2 -> T2
+  P3 -> T2
+  T2 -> P4
+  P4 -> T1`} height={420} />
+
+Con el marcado inicial, **T1** está habilitada (sus entradas P1 y P4 cada una contiene un token) por lo que obtiene el anillo verde; **T2** no lo está (P2 está vacío). El arco de retroalimentación `P4 -> T1` se enruta como una curva de arco hacia atrás.
+
+---
+
+## 1. Tu primera red
+
+Todo documento comienza con la palabra clave `petri` y un título opcional, luego declara **lugares** y **transiciones** antes de conectarlos con **arcos**:
+
+```
+petri "Minimal"
+  place P1 *1
+  transition T1
+  place P2
+  P1 -> T1
+  T1 -> P2
+```
+
+- `place <id>` — un círculo. `*1` establece su conteo inicial de tokens (el marcado).
+- `transition <id>` — una barra (un evento/acción).
+- `<a> -> <b>` — un arco dirigido. Los arcos son **bipartitos**: cada arco va de lugar→transición o transición→lugar, nunca lugar→lugar o transición→transición. Si escribes uno incorrectamente, el motor te indica qué línea.
+
+A diferencia de algunos diagramas de Schematex, los nodos **no** se declaran automáticamente desde los arcos — porque un id no declarado no puede tipificarse de forma segura como lugar o transición. Un arco que referencia un nodo desconocido es un error legible.
+
+---
+
+## 2. Marcado y tokens
+
+El **marcado** es cuántos tokens tiene cada lugar. Tres formas equivalentes de establecerlo:
+
+```
+place P1 *3            # *n shorthand
+place P2 tokens: 3     # explicit
+place P3 •••           # literal dots (1–4)
+```
+
+O establece varios a la vez con una línea `marking:`:
+
+```
+marking: P1=3, P3=2
+```
+
+Los tokens se renderizan como puntos (hasta 4, en una cuadrícula) y como numeral más allá de eso. Fuerza un estilo con `tokens: dots | count | auto` (predeterminado `auto`).
+
+---
+
+## 3. Transiciones: inmediatas vs. temporizadas
+
+```
+transition fast                 # immediate — a solid bar (the default)
+transition slow timed rate: 0.8 # timed — a hollow box with a rate label λ
+```
+
+Las transiciones inmediatas se disparan en tiempo cero y se renderizan como la barra rellena clásica; las transiciones **temporizadas** (la convención [GSPN](https://en.wikipedia.org/wiki/Stochastic_Petri_net)) se renderizan como una caja vacía y llevan un `rate:` (λ) opcional. Una transición con `rate:` se trata automáticamente como temporizada. `prio: n` establece una prioridad, y un `[guard]` se renderiza como una etiqueta (no evaluada en v0.1).
+
+---
+
+## 4. Tipos de arcos
+
+Cuatro cabezas de arco cubren el vocabulario estándar de concurrencia:
+
+```
+P -> T              # standard arc (filled arrowhead)
+P -> T weight: 2    # weight > 1 is labelled (weight: n or *n)
+P -o T              # inhibitor — enabled only while the place is empty (hollow-circle head)
+P -- T              # read / test — tests presence without consuming (no head)
+P => T              # reset — empties the place when the transition fires (double head)
+```
+
+Los arcos inhibidores y de restablecimiento son **solo de lugar→transición** — el analizador rechaza la dirección inversa.
+
+---
+
+## 5. Capacidad
+
+Un lugar puede tener un límite. Un disparo que lo desbordaría queda deshabilitado, y el lugar se dibuja con un borde punteado y una etiqueta `K=n`:
+
+```
+place Buffer capacity: 3
+```
+
+---
+
+## 6. La dinámica: habilitados y disparos
+
+El motor calcula la semántica en cada renderizado:
+
+- Las transiciones **habilitadas** (toda entrada satisfecha; entradas inhibidoras vacías; ninguna salida desbordaría la capacidad) obtienen un anillo verde.
+- Las transiciones **muertas** — aquellas que nunca pueden dispararse desde el marcado actual — se atenúan.
+- Una línea **`fire:`** reproduce una secuencia de disparos y renderiza el *marcado resultante*:
+
+```
+petri
+  place P1 *1
+  transition T1
+  place P2
+  transition T2
+  place P3
+  P1 -> T1
+  T1 -> P2
+  P2 -> T2
+  T2 -> P3
+  fire: T1
+```
+
+Después de disparar `T1`, el token se ha movido de P1 → P2, y ahora **T2** es la transición habilitada. El `<desc>` SVG registra el marcado, el conjunto habilitado y cualquier subclase detectada (máquina de estados / grafo marcado / red de flujo de trabajo).
+
+---
+
+## 7. Diseño y temas
+
+```
+layout: lr     # left-to-right (default)
+layout: tb     # top-to-bottom
+```
+
+Los lugares y las transiciones se ubican en capas alternas automáticamente; los ciclos se detectan y sus arcos de retroalimentación se enrutan como curvas de arco hacia atrás. Tres temas:
+
+- **`default`** — azul-gris de paleta, con verde reservado para *habilitado* y rojo para *inhibidor*.
+- **`monochrome`** — el aspecto fiel del libro de texto Murata-1989; habilitado se muestra como un anillo negro doble (el color cae de nuevo a la forma).
+- **`dark`** — Catppuccin Mocha.
+
+Las etiquetas CJK y las comillas `「…」` / `"…"` se analizan correctamente:
+
+```
+petri "生产流程"
+  place 原料 *2 「原材料」
+  transition 加工
+  place 成品
+  原料 -> 加工 weight: 2
+  加工 -> 成品
+```
+
+---
+
+Especificación completa: [Petri Net Standard Reference](https://github.com/schematex/schematex/blob/main/docs/reference/34-PETRINET-STANDARD.md).
+
+---
+
+## Ejemplos relacionados
+
+Escenarios listos para usar de la galería de ejemplos:
+
+<RelatedExamples slugs={[
+  'petri-classic-net',
+  'petri-mutual-exclusion',
+  'petri-fire-sequence',
+  'petri-workflow-net',
+  'petri-producer-consumer',
+]} />

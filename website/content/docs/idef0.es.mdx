@@ -1,0 +1,111 @@
+---
+title: Modelo de Función IDEF0
+description: Modelos de actividad de análisis estructurado — cajas de función conectadas por flechas ICOM (Entrada/Control/Salida/Mecanismo), correctos por construcción.
+---
+
+## Acerca de IDEF0
+
+**IDEF0** (Integration Definition for Function Modeling) es el estándar federal de EE. UU. para la **descomposición funcional** — modelar *qué* hace un sistema. Cada actividad es una caja; las flechas se conectan en cuatro lados fijos según su rol: **E**ntrada (izquierda), **C**ontrol (arriba), **S**alida (derecha), **M**ecanismo (abajo) — la convención **ICOM**. Estandarizado como **[FIPS PUB 183](https://www.nist.gov/publications/integration-definition-function-modeling-idef0)** (1993).
+
+La ventaja de Schematex es que el modelo es **correcto por construcción**. El rol de la flecha *es* el borde de la caja al que se conecta, por lo que el motor aplica el posicionamiento ICOM, resuelve cada referencia, asigna números de descomposición, codifica las flechas de límite (I1/C1/O1/M1…), y aplica la directriz FIPS de 3 a 6 cajas — rechazando un modelo que viola el estándar en lugar de permitirte dibujar una flecha en el lado incorrecto.
+
+<Playground initial={`idef0 "Manufacture product"
+node A0
+function A1 "Plan production"
+function A2 "Make parts"
+function A3 "Assemble product"
+input     A1 "Sales orders"
+control   A1 "Production schedule"
+A1 -> A2 "Work plan"
+input     A2 "Raw material"
+mechanism A2 "CNC machines"
+A2 -> A3 "Finished parts"
+output    A3 "Product"
+mechanism A3 "Assembly line"`} height={520} />
+
+---
+
+## 1. Tu primer diagrama IDEF0
+
+Comienza con la palabra clave `idef0`, un título opcional, un `node` opcional (el número de nodo del diagrama), luego **cajas de función** y sus **flechas ICOM**:
+
+```
+idef0 "Fill order"
+function A1 "Receive order"
+input     A1 "Customer request"
+control   A1 "Order policy"
+mechanism A1 "Order clerk"
+output    A1 "Confirmed order"
+```
+
+`function ID "name"` declara una caja (en orden de declaración). `node A0` establece el número de nodo padre utilizado para derivar los números de nodo hijo (A0 → A1..An). La guía FIPS es de 3–6 cajas por diagrama; fuera de ese rango el motor advierte.
+
+---
+
+## 2. Flechas de límite ICOM
+
+Cada palabra clave fija una flecha a un lado específico de una caja, y ese *es* su rol:
+
+```
+input     A1 "Sales orders"        # entra por el borde IZQUIERDO
+control   A1 "Production schedule" # entra por el borde SUPERIOR (gobierna la actividad)
+output    A1 "Product"             # sale por el borde DERECHO
+mechanism A1 "CNC machines"        # entra por el borde INFERIOR (el recurso)
+```
+
+`input`, `control`, y `mechanism` enrutan desde el marco del diagrama **hacia** la caja; `output` enruta desde la caja **hacia** el marco. El motor codifica estas flechas de límite a lo largo de cada borde (I1, I2 / C1 / O1 / M1).
+
+---
+
+## 3. Flechas de flujo entre cajas
+
+Una flecha `->` conecta dos cajas; por defecto llega a la **entrada** del destino, pero puedes nombrar el lado ICOM del destino:
+
+```
+A1 -> A2 "Work plan"            # caja→caja; predeterminado a la entrada de A2
+A2 -> A3.control "Parts spec"   # llega al borde de control (superior) de A3
+input A2 "Raw material" (tunnel) # (tunnel) oculta la flecha en este nivel
+```
+
+- `target.control` / `target.input` / `target.mechanism` elige el lado de llegada.
+- Un flujo **no puede llegar a la `.output` del destino** — una salida sale de una caja, no entra en una.
+- `(tunnel)` marca una flecha en túnel (suprimida en el diagrama padre/hijo según FIPS).
+
+---
+
+## 4. Aplicación estructural computada
+
+Este es el diferenciador — lo que hace que el modelo sea correcto donde una herramienta de dibujo no lo es:
+
+1. **Aplicación del posicionamiento ICOM** — el rol se resuelve contra el lado geométrico de la caja; un rol malformado, o un flujo que intenta *entrar* a una caja por `.output`, es rechazado.
+2. **Resolución de referencias** — cada id de caja nombrado por una flecha debe estar declarado.
+3. **Numeración de descomposición** — las cajas obtienen números de caja contiguos 1..n (esquina inferior derecha) y números de nodo (A0 → A1..An); los números explícitos `#N` se verifican para contigüidad, rango y duplicados.
+4. **Codificación de límites** — las flechas de límite se codifican I1/C1/O1/M1 a lo largo de cada borde.
+5. **Directriz de conteo de cajas** — menos de 3 o más de 6 cajas genera una advertencia FIPS-183.
+
+---
+
+## 5. Errores comunes
+
+```
+# INCORRECTO — sin encabezado idef0
+function A1 "x"
+
+# INCORRECTO — un flujo que llega a la salida del destino
+A1 -> A2.output "bad"
+
+# INCORRECTO — una palabra de lado ICOM desconocida
+A1 -> A2.sideways "bad"
+```
+
+El documento debe comenzar con `idef0`; las flechas solo pueden apuntar a `.input` / `.control` / `.mechanism`; cada id de caja referenciado debe estar declarado. Porque la palabra clave codifica el lado, no puedes accidentalmente dibujar un control como una entrada — el estándar se aplica, no se sugiere.
+
+---
+
+## 6. Conformidad con el estándar
+
+La notación, el posicionamiento ICOM, la numeración de descomposición, la codificación de límites, las flechas en túnel, y la directriz de 3 a 6 cajas siguen FIPS PUB 183 (IDEF0). El tema `monochrome` reproduce el aspecto en blanco y negro de cajas y flechas del estándar.
+
+## 7. Hoja de ruta
+
+Diferido: empalme de descomposición multipágina (diagramas hijos), páginas de árbol de nodos / FEO, y flechas de llamada a modelos referenciados.

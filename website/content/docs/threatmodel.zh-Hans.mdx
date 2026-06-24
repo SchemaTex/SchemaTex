@@ -1,0 +1,122 @@
+---
+title: 威胁模型（STRIDE DFD）
+description: 安全数据流图，引擎会对每个元素映射 STRIDE 威胁，并标记每一个信任边界穿越点。
+---
+
+## 关于威胁模型
+
+**威胁模型**是一种带有信任边界标注的安全**数据流图（DFD）**：**外部实体**（用户、第三方）、**处理程序**（服务）、**数据存储**（数据库、日志），以及它们之间的**数据流**。Microsoft 的 **STRIDE** 框架——伪造（Spoofing）、篡改（Tampering）、否认（Repudiation）、信息泄露（Information disclosure）、拒绝服务（Denial of service）、提升权限（Elevation of privilege）——对每个元素所面临的威胁进行分类。参考文献为 Shostack，*Threat Modeling: Designing for Security*（2014）。
+
+Schematex 的差异化优势在于：引擎**主动执行 STRIDE 逐元素分析**，而非只是绘制方框。它套用了标准的元素→威胁映射，有条件地为日志／审计存储补充否认威胁，并且——最实用的是——**标记每一个穿越信任边界的数据流**，因为伪造、篡改与信息泄露主要发生在这些位置。
+
+<Playground initial={`threatmodel "Web App"
+external: User
+process 1.1: Web Server
+datastore D1: User DB
+datastore D2: Audit Log
+User -> 1.1 : "HTTPS Request"
+1.1 -> D1 : Lookup
+1.1 -> D2 : Auth Event
+boundary "Internet" { User }
+boundary "DMZ" { 1.1 }
+boundary "Internal" { D1, D2 }`} height={520} />
+
+---
+
+## 1. 第一个威胁模型
+
+以 `threatmodel` 关键字（别名 `stride`）开头，接可选的标题，然后**声明元素**并**连接数据流**：
+
+```
+threatmodel "Login flow"
+external: User
+process 1.1: Web Server
+datastore D1: User DB
+User -> 1.1 : "Login request"
+1.1 -> D1 : Lookup
+```
+
+每个元素的格式为 `kind: ID: Label`（或 `kind: Label`，id 从标签生成——`external: Mobile App` 的 id 为 `Mobile_App`）。数据流的格式为 `SOURCE -> TARGET : label`，**标签是必填的**（它说明了穿越的数据是什么）。
+
+---
+
+## 2. 元素种类与数据流
+
+```
+external: User              # 外部实体（攻击者的那一侧）
+process 1.1: Web Server     # 处理程序／服务
+datastore D1: User DB       # 数据存储
+datastore D2: Audit log     # 日志／审计存储（会获得条件式否认威胁）
+User -> 1.1 : "HTTPS Request"   # 有向数据流，可用引号或裸文字标签
+1.1 <-> D1 : Read/Write         # <-> 展开为两个有向数据流
+```
+
+- 处理程序的 id 通常是带点的 DFD 编号（`1.1`、`2.3`）；外部实体与存储的 id 通常是短缩写（`User`、`D1`）。
+- `<->` 数据流展开为**两个**有向数据流。
+- 名称或 id 符合 `log|audit|journal` 的存储（或带有明确提示的）会被视为日志存储。
+
+**引擎强制执行的数据流规则：**不允许存储→存储的数据流（数据存储是被动的），不允许外部→外部的数据流，且每个端点都必须是已声明的元素。
+
+---
+
+## 3. 信任边界
+
+```
+boundary "Internet"  { User }
+boundary "DMZ"       { 1.1 }
+boundary "Internal"  { D1, D2 }
+```
+
+`boundary "name" { id, id, … }` 将元素分组到一个信任区域。一个元素**最多**属于一个边界；成员必须已声明。不属于任何边界的元素共享一个隐式的不信任区域。
+
+---
+
+## 4. 计算出的 STRIDE 分析
+
+这就是差异化所在。引擎套用 **STRIDE 逐元素**映射：
+
+| DFD 元素 | 套用的威胁 |
+|----------|-----------|
+| 外部实体 | S、R |
+| 处理程序 | S、T、R、I、D、E |
+| 数据存储 | T、I、D（若为日志则加 R） |
+| 数据流 | T、I、D |
+
+- 数据存储的**否认**威胁是有条件的——仅为日志／审计／日志存储加上（即 Shostack 绿色的「?」）。
+- **边界穿越**：端点位于不同信任区域的数据流会被标记，因为伪造／篡改／信息泄露主要集中在这里。位于同一个（或隐式）区域的两个元素不构成穿越。
+
+每个元素与数据流都在 `data-*` 属性中携带其适用的 STRIDE 类别，使分析结果可供检查。
+
+---
+
+## 5. 常见错误
+
+```
+# 错误——没有标签的数据流
+User -> 1.1
+
+# 错误——存储到存储（数据存储是被动的）
+D1 -> D2 : x
+
+# 错误——外部到外部
+A -> B : x
+
+# 错误——未知的数据流端点
+P -> Ghost : x
+
+# 错误——一个元素属于两个边界
+boundary "A" { P }
+boundary "B" { P }
+```
+
+每个数据流都需要标签；存储和外部实体不能与同类元素互为数据流伙伴；端点必须已声明；一个元素最多属于一个信任边界。重复的 id 会被拒绝。
+
+---
+
+## 6. 标准合规性
+
+元素词汇、DFD 惯例以及逐元素 STRIDE 表格遵循 Shostack（2014）与 Microsoft 威胁建模工具。条件式日志存储否认威胁以及信任边界穿越强调均符合已发布的 STRIDE 逐元素图表。
+
+## 7. 路线图
+
+已延后实现：DREAD／风险评分、威胁缓解链接、多处理程序分解（DFD 层级），以及攻击树下钻。

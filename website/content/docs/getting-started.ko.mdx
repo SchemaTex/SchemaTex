@@ -1,0 +1,92 @@
+---
+title: 시작하기
+description: Schematex를 설치하고 1분 안에 첫 번째 다이어그램을 렌더링해보세요.
+---
+
+## 설치
+
+```bash
+npm install schematex
+```
+
+## 렌더링
+
+```ts
+import { render } from 'schematex';
+
+const svg = render(`
+genogram "Smiths"
+  john [male, 1950]
+  mary [female, 1952]
+  john -- mary
+    alice [female, 1975, index]
+`);
+```
+
+다이어그램 유형은 첫 번째 키워드에서 자동으로 추론됩니다. 출력은 순수한 SVG 문자열로, `dangerouslySetInnerHTML`이나 `innerHTML`로 직접 주입하거나 디스크에 저장할 수 있습니다.
+
+## 실시간 미리보기
+
+`render()`는 엄격 모드입니다: DSL이 유효하지 않으면 오류를 던집니다. AI 캔버스나 에디터 미리보기에서는 파싱 실패를 빈 화면이 아니라 표시되도록 preview API를 사용하세요.
+
+```ts
+import { renderPreview, renderResult } from 'schematex';
+
+const svg = renderPreview(dsl);
+const state = renderResult(dsl);
+
+preview.innerHTML = state.svg;
+if (!state.ok) console.error(state.diagnostics);
+```
+
+`renderPreview()`는 항상 SVG를 반환합니다. 엄격 렌더링이 실패하면 진단용 SVG를 생성합니다. `ok`, `status`, 진단 정보가 동시에 필요할 때(재시도 또는 수정 로직용)는 `renderResult()`를 사용하세요.
+
+### 선택적 frontmatter
+
+DSL 본문 앞에 Mermaid 스타일의 YAML frontmatter를 추가할 수 있습니다. `title:` 값은 다이어그램 제목에 병합됩니다(제목 줄이 직접 제공되지 않은 경우).
+
+```txt
+---
+title: Smith Family
+---
+genogram
+  john [male, 1950]
+```
+
+다이어그램 유형이 감지되기 전에 앞의 빈 줄과 순수 주석 줄은 건너뜁니다. v0.4.3의 Mermaid 호환 파서에서는 `%%`가 줄 주석 마커로 처리됩니다.
+
+## Tree-Shaking (온디맨드 임포트)
+
+필요한 부분만 임포트하세요:
+
+```ts
+import { render } from 'schematex/genogram';
+import { render } from 'schematex/ladder';
+import { render } from 'schematex/sld';
+```
+
+각 서브모듈은 독립적인 parser / layout / renderer를 가지며 완전히 독립적입니다.
+
+## 프레임워크 통합
+
+- **React** — `schematex/react`의 `<SchematexDiagram />`을 사용하거나 엄격/미리보기 모드의 SVG 문자열을 직접 주입하세요. DSL을 렌더링할 수 없을 때 컴포넌트가 진단 fallback SVG를 표시합니다.
+- **SSR** — Schematex는 DOM 의존성 없이 순수한 문자열을 출력합니다. Node.js, 엣지 런타임, Cloudflare Workers, 브라우저 환경을 지원합니다.
+- **Markdown** — `remark-schematex` 플러그인이 계획 중입니다.
+
+```tsx
+import { SchematexDiagram } from 'schematex/react';
+
+<SchematexDiagram dsl={dsl} theme="monochrome" />;
+```
+
+## AI와 함께 사용하기
+
+Schematex는 LLM을 위해 설계되었습니다. 호스팅된 MCP 서버를 통해 Claude가 검증된 표준 준수 DSL을 자율적으로 생성할 수 있습니다 — 설정이 필요 없습니다.
+
+<MCPConnectCard size="compact" />
+
+→ 자신만의 AI 기능을 구축하고 싶으신가요? **[AI에서 Schematex 사용하기](/docs/ai-integration)**를 참고하세요 — Vercel AI SDK 어댑터, 다섯 가지 도구, 권장 자기수정 에이전트 루프를 설명합니다.
+
+## 다음 단계
+
+사이드바에서 사용할 다이어그램 유형을 선택하고 해당 문법 가이드를 읽어보세요.

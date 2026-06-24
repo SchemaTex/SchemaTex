@@ -1,0 +1,653 @@
+---
+title: Diagrama de matriz / cuadrante
+---
+
+## Acerca de los diagramas de matriz
+
+Un **diagrama de matriz** coloca elementos en un espacio bidimensional definido por dos ejes que se intersectan — más comúnmente una cuadrícula de cuadrantes 2×2 — para que la posición transmita significado de un vistazo. Los gerentes de producto usan la matriz de Eisenhower para separar el trabajo urgente del importante; los consultores de estrategia usan la matriz BCG para asignar la inversión de una cartera; los equipos de RRHH usan la cuadrícula 9-box para mapear el desempeño frente al potencial. La convención visual data del trabajo de cartera de Boston Consulting Group de la década de 1970 y ha sido extendida por marcos como Ansoff, Johari y RICE.
+
+Schematex soporta tres modos de matriz: **quadrant** (gráficos de burbujas 2×2 o 3×3 con ejes etiquetados), **heatmap** (cuadrículas de celdas coloreadas N×M), y **correlation** (tablas de intensidad de puntos N×M). Ocho plantillas prediseñadas cubren los marcos más comunes directamente, y todas las etiquetas de ejes, nombres de cuadrantes y propiedades de puntos son completamente personalizables.
+
+<Playground initial={`matrix impact-effort "Q3 Planning"
+"Fix checkout timeout" at (0.15, 0.82) size: 4 highlight: true category: reliability
+"Redesign onboarding" at (0.72, 0.78) size: 5 category: growth
+"Add dark mode" at (0.78, 0.38) size: 3 category: polish
+"Write runbook" at (0.18, 0.32) size: 2 category: reliability
+"API rate limiting" at (0.55, 0.65) size: 4 category: reliability
+"Blog post series" at (0.35, 0.55) size: 2 category: growth`} height={460} />
+
+---
+
+## 1. Tu primera matriz
+
+La matriz útil más pequeña: una 2×2 personalizada con dos ejes etiquetados y tres puntos.
+
+<Playground initial={`matrix "Feature Prioritization"
+x-axis: Low Effort → High Effort
+y-axis: Low Value → High Value
+
+"Add search" at (0.3, 0.8)
+"Rebuild pipeline" at (0.85, 0.7)
+"Update footer" at (0.2, 0.2)`} />
+
+Cuatro reglas cubren el 80% del uso:
+
+1. Comienza con la palabra clave `matrix`, seguida opcionalmente de un nombre de plantilla o un título entre comillas.
+2. Configura los ejes con `x-axis:` y `y-axis:` — o usa una plantilla incorporada y omite este paso.
+3. Cada punto es `"Etiqueta" at (x, y)` donde `x` e `y` son fracciones decimales de 0.0 (bajo/izquierda/abajo) a 1.0 (alto/derecha/arriba).
+4. Agrega propiedades opcionales — `size:`, `category:`, `color:`, `shape:`, `highlight:` — después de las coordenadas.
+
+> Los comentarios deben comenzar con `#` en cualquier parte de una línea (fuera de cadenas entre comillas).
+
+---
+
+## 2. Plantillas incorporadas
+
+Una plantilla preconfigurada los ejes, etiquetas de cuadrante y tamaño de cuadrícula. Solo usa el nombre de la plantilla como segundo token en la línea de encabezado.
+
+| Plantilla | Cuadrícula | Caso de uso |
+|---|---|---|
+| `eisenhower` | 2×2 | Priorización de tareas por Urgencia / Importancia |
+| `impact-effort` | 2×2 | Priorización de funciones por impacto vs. esfuerzo |
+| `rice` | 2×2 | Puntuación RICE — Alcance × Impacto vs. Esfuerzo |
+| `bcg` | 2×2 | Cartera — Cuota de mercado vs. Tasa de crecimiento |
+| `ansoff` | 2×2 | Estrategia de crecimiento producto/mercado |
+| `johari` | 2×2 | Autoconciencia — conocido-para-uno vs. conocido-para-otros |
+| `9-box` | 3×3 | Revisión de talento de RRHH — Desempeño vs. Potencial |
+| `risk-matrix` | 5×5 | Evaluación de riesgos — Probabilidad vs. Severidad (heatmap) |
+
+<Playground initial={`matrix eisenhower "This Week"
+"Ship hotfix" at (0.1, 0.9) size: 5 highlight: true
+"Team 1:1s" at (0.1, 0.7) size: 3
+"Write Q3 OKRs" at (0.8, 0.85) size: 4
+"Inbox zero" at (0.1, 0.3) size: 2
+"Refactor auth" at (0.75, 0.4) size: 3`} height={420} />
+
+Los ejes y etiquetas de cuadrante de una plantilla pueden sobreescribirse con directivas explícitas `x-axis:` / `y-axis:` / `quadrant`.
+
+---
+
+## 3. Ejes
+
+Las líneas de eje declaran los polos semánticos de cada dimensión.
+
+```
+x-axis: Low Effort → High Effort
+y-axis: Low Value → High Value
+```
+
+La flecha separa la etiqueta baja (izquierda / abajo) de la etiqueta alta (derecha / arriba). Todos estos separadores son equivalentes:
+
+| Separador | Ejemplo |
+|---|---|
+| `→` (Unicode) | `x-axis: Rare → Certain` |
+| `->` (ASCII) | `x-axis: Rare -> Certain` |
+| `↑` | `y-axis: Cheap ↑ Expensive` |
+| `←` / `<-` / `<` | Eje invertido — la etiqueta alta está a la izquierda |
+
+Un **eje invertido** es para convenciones donde el valor "alto" está a la izquierda o abajo:
+
+```
+x-axis: High Market Share ← Low Market Share
+```
+
+<Playground initial={`matrix "Product Portfolio"
+x-axis: High Market Share ← Low Market Share
+y-axis: Low Growth → High Growth
+
+quadrant Q1 "Question Marks"
+quadrant Q2 "Stars"
+quadrant Q3 "Cash Cows"
+quadrant Q4 "Dogs"
+
+"Analytics Suite" at (0.25, 0.35) size: 5
+"ChatBot Pro" at (0.2, 0.8) size: 4 highlight: true
+"Legacy CRM" at (0.75, 0.25) size: 6
+"Mobile App" at (0.65, 0.75) size: 3`} height={440} />
+
+---
+
+## 4. Puntos
+
+Cada punto es una burbuja posicionada por un par de coordenadas (x, y) normalizadas.
+
+```
+"Label" at (x, y)
+"Label" at (x, y) size: 4 category: design color: #7B1FA2 highlight: true note: "clarify spec"
+```
+
+| Propiedad | Valores | Significado |
+|---|---|---|
+| `size:` | número positivo | Peso del área de la burbuja (predeterminado: 3) |
+| `category:` | palabra simple | Grupo de color; impulsa la leyenda |
+| `color:` | cadena hex | Sobreescribir el color de la burbuja para este punto |
+| `shape:` | `circle` \| `square` \| `triangle` \| `diamond` | Forma de la burbuja (predeterminado: `circle`) |
+| `highlight:` | `true` | Dibuja un anillo de énfasis alrededor de la burbuja |
+| `note:` | cadena entre comillas | Anotación de tooltip |
+| `label:` | cadena entre comillas | Reemplaza la etiqueta de visualización (diferente del ID) |
+
+Las coordenadas fuera de `[0, 1]` se limitan al borde del gráfico y se marcan con una insignia — el valor original se almacena para visualización en tooltip.
+
+<Playground initial={`matrix "Risk Register"
+x-axis: Low Impact → High Impact
+y-axis: Rare → Certain
+
+"Vendor delay" at (0.45, 0.7) size: 4 category: schedule highlight: true
+"Security breach" at (0.9, 0.3) size: 5 category: security shape: diamond
+"Budget overrun" at (0.5, 0.65) size: 3 category: finance
+"Key hire falls through" at (0.6, 0.55) size: 3 category: people
+"Scope creep" at (0.4, 0.8) size: 4 category: schedule`} height={440} />
+
+---
+
+## 5. Etiquetas de cuadrante
+
+Etiqueta cada cuadrante con un nombre y un subtítulo opcional.
+
+```
+quadrant Q1 "Do First"
+quadrant Q2 "Schedule"
+quadrant Q3 "Delete"
+quadrant Q4 "Delegate"
+
+# Con un subtítulo opcional:
+quadrant Q1 "Do First" description: "High urgency, high importance"
+```
+
+La numeración de cuadrantes sigue la convención matemática estándar: **Q1 = arriba-derecha, Q2 = arriba-izquierda, Q3 = abajo-izquierda, Q4 = abajo-derecha**. El prefijo `Q` es opcional — `quadrant 1 "Label"` es igualmente válido.
+
+---
+
+## 6. Modo heatmap
+
+El modo heatmap rellena celdas N×M con intensidad de color en lugar de trazar posiciones de burbuja.
+
+```
+matrix heatmap 4x3 "Skill Matrix"
+rows: [Strategy, Execution, Communication, Technical]
+cols: [Junior, Mid, Senior]
+
+cell (0,0) level: weak
+cell (1,0) level: medium
+cell (2,0) level: strong
+cell (0,1) value: 7
+cell (1,2) label: "Top 10%"
+```
+
+- `matrix heatmap COLxROW` — el encabezado establece las dimensiones de la cuadrícula.
+- `rows:` y `cols:` — lista separada por comas o lista entre corchetes de etiquetas de eje.
+- `cell (col, row)` — indexado en cero, columna primero, fila después (fila 0 = abajo).
+- `level:` — `strong` (3), `medium` (2), o `weak` (1) — atajo para intensidad de calor.
+- `value:` — valor numérico explícito (sobrescribe `level:`).
+- `label:` — texto entre comillas colocado dentro de la celda.
+
+<Playground initial={`matrix heatmap 4x4 "Competency Heat Map"
+rows: [Leadership, Execution, Communication, Technical]
+cols: [Junior, Mid, Senior, Staff]
+
+cell (0,0) level: weak
+cell (1,0) level: medium
+cell (2,0) level: strong
+cell (3,0) level: strong
+cell (0,1) level: medium
+cell (1,1) level: medium
+cell (2,1) level: strong
+cell (3,1) level: strong
+cell (0,2) level: weak
+cell (1,2) level: medium
+cell (2,2) level: medium
+cell (3,2) level: strong
+cell (0,3) level: weak
+cell (1,3) level: weak
+cell (2,3) level: medium
+cell (3,3) level: strong`} height={380} />
+
+---
+
+## 7. Modo correlation
+
+El modo correlation renderiza una matriz de puntos N×M donde la intensidad representa la fuerza de relación entre variables de fila y columna.
+
+```
+matrix correlation 4x4 "Product Metrics"
+rows: [DAU, Retention, Revenue, NPS]
+cols: [DAU, Retention, Revenue, NPS]
+
+cell (0,0) value: 1
+cell (1,0) value: 0.82
+cell (2,0) value: 0.54
+cell (3,0) value: 0.71
+```
+
+Se aplica la misma sintaxis de `cell`. `level: strong | medium | weak` también se acepta en modo correlation.
+
+---
+
+## 8. Modo SIPOC
+
+Un **SIPOC** es la tabla de alcance de una página que abre la fase *Definición* de un proyecto Six Sigma DMAIC. Nombra, en cinco columnas fijas de izquierda a derecha, a todos y todo lo que el proceso involucra: **P**roveedores · **E**ntradas · **P**roceso · **S**alidas · **C**lientes. Antes de que un equipo mida o mejore cualquier cosa, SIPOC fija el límite — "dónde comienza este proceso, dónde termina, y quién entrega y recibe trabajo dentro y fuera de él."
+
+```
+matrix sipoc "Order fulfilment"
+suppliers: "Vendor", "Warehouse"
+inputs: "PO", "Stock levels"
+process: "Receive order", "Pick", "Pack", "Ship"
+outputs: "Shipped package", "Invoice"
+customers: "End customer", "Finance"
+```
+
+- Comienza con `matrix sipoc`, seguido opcionalmente de un título entre comillas.
+- Cada una de las cinco columnas tiene su propia directiva: `suppliers:`, `inputs:`, `process:`, `outputs:`, `customers:`.
+- Después de los dos puntos, lista las entradas como **cadenas entre comillas separadas por comas**. Una columna puede tener cualquier número de entradas; las filas simplemente se apilan de arriba abajo dentro de esa columna.
+- La columna `process:` es la secuencia de pasos de alto nivel (típicamente 4–7 pasos) — mantenla en las etapas principales, no en un diagrama de flujo detallado.
+
+Las cinco columnas siempre se renderizan en el orden canónico S-I-P-O-C independientemente del orden en que se declaren, por lo que el diagrama se lee correctamente incluso si un LLM emite los bloques fuera de secuencia.
+
+<Playground initial={`matrix sipoc "Order fulfilment"
+suppliers: "Vendor", "Warehouse"
+inputs: "PO", "Stock levels"
+process: "Receive order", "Pick", "Pack", "Ship"
+outputs: "Shipped package", "Invoice"
+customers: "End customer", "Finance"`} height={360} />
+
+---
+
+## 9. Modo QFD (Casa de la Calidad)
+
+**Quality Function Deployment (QFD)** — la *Casa de la Calidad*, introducida por Yoji Akao — traduce lo que los clientes quieren en las características de ingeniería que lo entregan. Las filas son los **QUÉs** (requisitos del cliente, cada uno con un peso de importancia); las columnas son los **CÓMOs** (las características de ingeniería medibles que controla el equipo). El cuerpo de la cuadrícula registra qué tan fuertemente cada CÓMO sirve a cada QUÉ.
+
+El diferenciador: el motor **calcula** la fila inferior por ti. La *importancia técnica* de cada CÓMO es la suma a lo largo de su columna de `peso × fuerza de relación` — una respuesta clasificada a "qué característica de ingeniería mueve más valor para el cliente y, por lo tanto, merece más esfuerzo." Y el techo de la casa — una semimetriz de celdas de diamante sobre las columnas — registra si dos CÓMOs se ayudan o se perjudican mutuamente.
+
+```
+matrix qfd "Coffee maker"
+what: "Quiet operation" weight: 5
+what: "Brews fast" weight: 3
+what: "Energy efficient" weight: 4
+how: "Fan RPM" dir: down
+how: "Heater watts" dir: up
+how: "Insulation" dir: up
+rel (0,0): 9
+rel (0,2): 3
+rel (1,1): 9
+rel (2,1): 3
+rel (2,2): 9
+roof (0,1): --
+roof (1,2): +
+```
+
+### QUÉs y CÓMOs
+
+| Directiva | Forma | Significado |
+|---|---|---|
+| `what:` | `what: "Label" weight: N` | Un requisito del cliente (una fila). `weight:` es su importancia, convencionalmente 1–5. El orden de declaración es el orden de filas, indexado desde 0. |
+| `how:` | `how: "Label" dir: up\|down` | Una característica de ingeniería (una columna). El orden de declaración es el orden de columnas, indexado desde 0. `dir:` es el objetivo de optimización — `up` = más es mejor, `down` = menos es mejor. |
+
+### Celdas de relación
+
+`rel (i, j): strength` registra qué tan fuertemente el CÓMO de la columna `j` sirve al QUÉ de la fila `i`. El índice es **(fila, columna)**, ambos basados en cero.
+
+| Fuerza | Significado |
+|---|---|
+| `9` | Relación fuerte |
+| `3` | Relación media |
+| `1` | Relación débil |
+| *(omitido)* | Sin relación — omite la celda |
+
+Esta escala 9 / 3 / 1 es la convención QFD: es deliberadamente no lineal para que un vínculo fuerte supere a varios débiles cuando se suma la fila de importancia.
+
+### Fila de importancia técnica calculada
+
+El motor suma cada columna para producir la fila de importancia técnica al pie de la casa:
+
+```
+importance(j) = Σ sobre filas i  ( weight(i) × strength(i, j) )
+```
+
+Para el ejemplo de la cafetera anterior, la fila calcula **45 / 39 / 51** — Insulation (51) es la característica de mayor apalancamiento, Heater watts (39) la de menor. Esta clasificación es el entregable: le dice al equipo dónde invertir el esfuerzo de ingeniería.
+
+Agrega `normalize: true` (en su propia línea, en cualquier lugar del bloque) para mostrar cada columna como un **porcentaje del total** en lugar de una suma bruta — para este ejemplo, **33% / 29% / 38%**. Los porcentajes hacen que las prioridades relativas sean más fáciles de leer en escalas de peso muy diferentes.
+
+### El techo — correlaciones CÓMO × CÓMO
+
+El **techo** es la semimetriz triangular que se asienta sobre las columnas. `roof (i, j): glyph` registra si el CÓMO `i` y el CÓMO `j` se refuerzan o entran en conflicto entre sí — las sinergias y compromisos que un equipo debe reconciliar.
+
+| Glifo | Correlación |
+|---|---|
+| `++` | Fuertemente positivo — mejorar uno ayuda fuertemente al otro |
+| `+` | Positivo |
+| `-` | Negativo |
+| `--` | Fuertemente negativo — mejorar uno perjudica al otro (un compromiso) |
+| *(omitido)* | Sin correlación — omite la celda |
+
+Cada entrada del techo se renderiza como una celda de diamante en la cuadrícula estándar QFD de techo inclinado. En el ejemplo, `roof (0,1): --` indica que reducir Fan RPM mientras se aumentan Heater watts es un compromiso, y `roof (1,2): +` indica que Heater watts e Insulation se refuerzan mutuamente.
+
+<Playground initial={`matrix qfd "Coffee maker"
+what: "Quiet operation" weight: 5
+what: "Brews fast" weight: 3
+what: "Energy efficient" weight: 4
+how: "Fan RPM" dir: down
+how: "Heater watts" dir: up
+how: "Insulation" dir: up
+rel (0,0): 9
+rel (0,2): 3
+rel (1,1): 9
+rel (2,1): 3
+rel (2,2): 9
+roof (0,1): --
+roof (1,2): +`} height={460} />
+
+---
+
+## 10. Modo Punnett (genética mendeliana)
+
+Un **cuadrado de Punnett** predice la descendencia de un cruce genético. Solo escribes los dos genotipos parentales; el motor realiza la contabilidad mendeliana — enumera los **gametos** de cada progenitor (un alelo por locus génico), rellena la cuadrícula con cada combinación de gametos y **calcula las proporciones de genotipo y fenotipo**. El usuario nunca rellena la cuadrícula.
+
+```
+matrix punnett "Eye color  (Bb × Bb)"
+cross: Bb x Bb
+trait B: "Brown eyes" / "Blue eyes"
+```
+
+### El cruce
+
+| Directiva | Forma | Significado |
+|---|---|---|
+| `cross:` | `cross: Bb x Bb` | Los dos genotipos parentales, separados por `x`, `×`, o `*`. `parents:` es un alias aceptado. |
+| `trait:` | `trait B: "Dominant" / "Recessive"` | *(opcional)* Nombra los dos fenotipos para el gen `B`, para que la leyenda sea legible en lugar de mostrar `B_` / `bb`. |
+
+**El caso del alelo establece la dominancia** — esta es la convención estándar de genética. Una letra mayúscula es el alelo **dominante**, la letra minúscula correspondiente es **recesivo**. Un genotipo agrupa alelos por letra: `RrYy` es dos loci, `R/r` (redondo/arrugado) y `Y/y` (amarillo/verde). Un gen es un cruce **monohíbrido** (cuadrícula 2×2), dos genes un **dihíbrido** (4×4), tres un trihíbrido (8×8).
+
+### Proporciones calculadas (el diferenciador)
+
+El motor deriva, solo de los genotipos:
+
+- los **gametos** de cada progenitor — los encabezados de columna y fila — tomando un alelo por locus (por lo que un heterocigoto `Bb` produce `B` y `b`);
+- la **cuadrícula de descendencia** — cada emparejamiento de gametos, escrito con el alelo dominante primero (`Bb`, nunca `bB`);
+- la **proporción de fenotipo** — cajas agrupadas según el fenotipo que expresan, reducidas a términos mínimos. Un monohíbrido `Bb × Bb` da el clásico **3:1**; un dihíbrido `RrYy × RrYy` da el famoso **9:3:3:1**;
+- la **proporción de genotipo** — ej. `1:2:1` (1 BB, 2 Bb, 1 bb) para el monohíbrido.
+
+Cada casilla se tinta según su clase de fenotipo, y el pie lista la proporción de fenotipo con una leyenda más la proporción de genotipo.
+
+<Playground initial={`matrix punnett "Seed shape & colour  (RrYy × RrYy)"
+cross: RrYy x RrYy
+trait R: "Round" / "Wrinkled"
+trait Y: "Yellow" / "Green"`} height={520} />
+
+---
+
+## 11. Opciones de configuración
+
+Un bloque `config:` ajusta el renderizado visual. Cada opción va en su propia línea indentada bajo el encabezado `config:`.
+
+```
+config:
+  quadrantBg: true
+  gridLines: true
+  axisArrows: true
+  bubbleScale: area
+  legendPosition: bottom-right
+```
+
+| Clave | Valores | Predeterminado | Efecto |
+|---|---|---|---|
+| `quadrantBg` | `true` \| `false` | `true` | Rellenos de fondo de cuadrante coloreados |
+| `gridLines` | `true` \| `false` | `true` | Superposición de líneas de cuadrícula |
+| `axisArrows` | `true` \| `false` | `true` | Flechas en los extremos de los ejes |
+| `bubbleScale` | `area` \| `radius` | `area` | Si `size:` escala el área o el radio de la burbuja |
+| `quadrantAnnotations` | `true` \| `false` | `true` | Mostrar texto de etiqueta de cuadrante en esquinas |
+| `legendPosition` | `bottom-right` \| `right` \| `bottom-center` \| `none` | `bottom-right` | Posición de la leyenda de categorías |
+| `labelCollision` | `auto` \| `offset-only` \| `leader-only` \| `off` | `auto` | Estrategia de evitación de superposición para etiquetas de puntos |
+| `offChartPolicy` | `clamp-badge` \| `drop` | `clamp-badge` | Qué hacer con los puntos fuera de [0,1] |
+
+Dos directivas abreviadas también funcionan en el nivel superior (no dentro del bloque `config:`):
+
+```
+axis: off          # off | on | auto — mostrar u ocultar las líneas de eje
+margins: true      # true | false — mostrar márgenes de Puntuación + Rango (modo correlation)
+```
+
+---
+
+## 12. Etiquetas y comentarios
+
+- **Título:** `matrix "My Title"` o `title: My Title` como línea independiente.
+- **Etiqueta de punto:** la cadena entre comillas antes de `at (…)`.
+- **Etiquetas de eje:** directivas `x-axis:` y `y-axis:`.
+- **Etiquetas de cuadrante:** directiva `quadrant Q1 "Name"`.
+- **Comentarios:** `#` en cualquier parte de una línea, fuera de cadenas entre comillas.
+
+```
+matrix "Prioritization"
+# Esto es un comentario
+x-axis: Low Cost → High Cost   # comentario en línea después de una directiva
+"Fix bug" at (0.1, 0.9) size: 3  # comentario después de un punto
+```
+
+---
+
+## 13. Modo tabla (`style: table`)
+
+El renderizado de matriz predeterminado es un **gráfico de dispersión / burbujas** — los puntos flotan en coordenadas (x, y). Para marcos donde la salida es una lista de elementos agrupados por cuadrante (Eisenhower, Johari, Impact-Effort, 9-box), usa `style: table` para cambiar a un **diseño de texto en celda** en su lugar.
+
+```
+matrix eisenhower "This Week"
+style: table
+Q2: "Ship hotfix"
+Q2: "Customer demo prep"
+Q1: "Write Q3 OKRs"
+Q1: "Refactor auth layer"
+Q4: "LinkedIn updates"
+Q3: "Reorganize Slack channels"
+```
+
+`style: table` aplica estos cambios automáticamente:
+
+| Efecto | Detalle |
+|---|---|
+| Ejes y flechas ocultos | Sin líneas de eje, etiquetas ni puntas de flecha |
+| Líneas de cuadrícula ocultas | Solo quedan el borde exterior y los divisores de celda |
+| Títulos de cuadrante se mueven dentro de las celdas | Cada título se convierte en un encabezado de celda en lugar de una superposición de esquina |
+| Los elementos se apilan como lista con viñetas | Las entradas múltiples para el mismo cuadrante se apilan de arriba a abajo |
+
+### Atajo `Q1` … `Q4` (solo 2×2)
+
+Para plantillas 2×2, usa `Qn: "item"` en lugar de la forma más larga `cell (col, row) label: "item"`. Mapeo:
+
+| Atajo | Celda | Eisenhower | Johari |
+|---|---|---|---|
+| `Q1:` | arriba-derecha | Schedule | Blind |
+| `Q2:` | arriba-izquierda | Do First | Open / Arena |
+| `Q3:` | abajo-izquierda | Delete | Hidden / Façade |
+| `Q4:` | abajo-derecha | Delegate | Unknown |
+
+Repite una clave de atajo para agregar múltiples elementos a la misma celda:
+
+```
+Q2: "Ship hotfix"
+Q2: "Customer demo prep"
+```
+
+Para cuadrículas 3×3 (9-box), usa `cell (col, row) label: "…"` directamente — el atajo `Q` es solo para 2×2.
+
+### Cuándo usar tabla vs dispersión
+
+| Usa `style: table` para | Usa dispersión (predeterminado) para |
+|---|---|
+| Eisenhower con listas de tareas | Eisenhower con pesos de esfuerzo `size:` |
+| Coaching de ventana Johari | Impact-Effort con burbuja = ingresos |
+| Agrupación de backlog (sin tercera dimensión numérica) | RICE / BCG portfolio (la tercera dimensión ES el tamaño de burbuja) |
+| Revisión de talento 9-box | Mapa de calor de riesgo (5×5 con severidad numérica) |
+
+<Playground initial={`matrix eisenhower "This Week"
+style: table
+Q2: "Ship hotfix"
+Q2: "Customer demo prep"
+Q1: "Write Q3 OKRs"
+Q1: "Refactor auth layer"
+Q4: "LinkedIn updates"
+Q3: "Reorganize Slack channels"`} height={420} />
+
+---
+
+## 14. Palabras reservadas y escape
+
+**Reservadas al inicio de línea:** `matrix` (encabezado), `x-axis:`, `y-axis:`, `quadrant`, `config:`, `title:`, `rows:`, `cols:`, `grid:`, `axis:`, `margins:`, `cell`. En modo **SIPOC**: `suppliers:`, `inputs:`, `process:`, `outputs:`, `customers:`. En modo **QFD**: `what:`, `how:`, `rel`, `roof`, `normalize:`.
+
+**Las líneas de punto deben comenzar con un carácter de comilla** (`"` o `'`). Una línea que no comienza con una comilla no se trata como un punto.
+
+**Las cadenas con espacios** en etiquetas de eje no necesitan comillas — el texto después de los dos puntos (y después de la flecha) se toma verbatim. En propiedades de punto `note:` y `label:`, usa comillas dobles.
+
+---
+
+## 15. Errores comunes
+
+| Escribiste | El analizador dice | Corrección |
+|---|---|---|
+| `"Fix bug" at (1, 2)` | Punto analizado; x=1 limitado, y=1 limitado; insignia fuera de gráfico mostrada | Mantén las coordenadas en [0.0, 1.0] o acepta la limitación |
+| `quadrant 1 "Quick Wins"` (sin prefijo Q) | Aceptado — el prefijo `Q` es opcional | Tanto `quadrant 1` como `quadrant Q1` funcionan |
+| `config: gridLines: false` (en la misma línea) | Solo la palabra clave `config:` es reconocida; `gridLines: false` se ignora silenciosamente | Pon las opciones en sus propias líneas indentadas bajo `config:` |
+| `x-axis: "Low" → "High"` (etiquetas entre comillas) | Flecha no encontrada dentro de las comillas — tratado como texto plano | Elimina las comillas: `x-axis: Low → High` |
+| `matrix heatmap` sin dimensiones | Predetermina a 2×2; las directivas rows/cols establecen el tamaño real | Especifica dimensiones en el encabezado: `matrix heatmap 4x4` |
+| `cell (0, 0) level: Strong` (S mayúscula) | La coincidencia de `level` es insensible a mayúsculas/minúsculas — aceptado | Tanto `strong` como `Strong` funcionan |
+| `shape: oval` | Valor de forma desconocido — ignorado silenciosamente | Usa `circle`, `square`, `triangle`, o `diamond` |
+| `"Fix bug" at (0.1, 0.9)` en un Eisenhower con lista de tareas | Punto de dispersión válido — pero probablemente quisiste una lista en una celda | Agrega `style: table` y usa `Q2: "Fix bug"` en su lugar |
+| `Q1: "item"` en una plantilla 3×3 | El atajo `Q` se analiza como una línea de punto — descartado silenciosamente | Usa `cell (col, row) label: "item"` para cuadrículas 3×3 |
+
+---
+
+## 16. Gramática (EBNF)
+
+```text
+document     = header directive*
+
+header       = "matrix" ( template-name | mode-header | title )? NEWLINE
+template-name = "eisenhower"|"impact-effort"|"rice"|"bcg"|"ansoff"|"johari"|"9-box"|"risk-matrix"
+mode-header  = ( "heatmap" | "correlation" ) ( number "x" number )? title?
+             | ( "sipoc" | "qfd" | "punnett" ) title?
+title        = quoted-string | bare-text
+
+directive    = x-axis | y-axis | quadrant-dir | config-block
+             | point | cell | q-short | rows-dir | cols-dir | grid-dir
+             | style-dir | title-dir | axis-dir | margins-dir
+             | sipoc-col | qfd-what | qfd-how | qfd-rel | qfd-roof | normalize-dir
+             | punnett-cross | punnett-trait
+             | comment | blank
+
+# Modo SIPOC
+sipoc-col    = ( "suppliers:" | "inputs:" | "process:" | "outputs:" | "customers:" )
+               WS quoted-string ( "," quoted-string )* NEWLINE
+
+# Modo QFD / Casa de la Calidad
+qfd-what     = "what:" WS quoted-string WS "weight:" number NEWLINE
+qfd-how      = "how:" WS quoted-string ( WS "dir:" ( "up" | "down" ) )? NEWLINE
+qfd-rel      = "rel" WS "(" number "," number ")" ":" WS ( "9" | "3" | "1" ) NEWLINE  # (fila, col)
+qfd-roof     = "roof" WS "(" number "," number ")" ":" WS ( "++" | "+" | "-" | "--" ) NEWLINE  # (how, how)
+normalize-dir = "normalize:" WS "true" NEWLINE
+
+# Modo Punnett (genética mendeliana)
+punnett-cross = ( "cross:" | "parents:" ) WS genotype WS ( "x" | "×" | "*" ) WS genotype NEWLINE
+punnett-trait = "trait" WS letter ":" WS quoted-string WS "/" WS quoted-string NEWLINE  # dominante / recesivo
+genotype     = ( letter letter )+   # pares de alelos agrupados por letra; caso = dominancia, ej. "RrYy"
+
+x-axis       = "x-axis:" WS axis-spec NEWLINE
+y-axis       = "y-axis:" WS axis-spec NEWLINE
+axis-spec    = text arrow text  |  text   # texto plano → solo etiqueta alta
+arrow        = "→" | "->" | "↑" | "←" | "<-" | "<" | "↓"
+
+quadrant-dir = "quadrant" WS "Q"? digit WS quoted-string ( WS "description:" quoted-string )? NEWLINE
+
+config-block = "config:" NEWLINE ( INDENT key ":" WS value NEWLINE )*
+
+point        = quoted-string WS "at" WS "(" number "," number ")" ( WS point-prop )* NEWLINE
+point-prop   = "size:" number
+             | "category:" bareword
+             | "color:" hex-color
+             | "shape:" ( "circle"|"square"|"triangle"|"diamond" )
+             | "highlight:" "true"
+             | "note:" quoted-string
+             | "label:" quoted-string
+
+cell         = "cell" WS "(" digit "," digit ")" ( WS cell-prop )* NEWLINE
+cell-prop    = "value:" number
+             | "label:" quoted-string
+             | "level:" ( "strong" | "medium" | "weak" )
+
+style-dir    = "style:" WS "table" NEWLINE
+q-short      = "Q" ( "1" | "2" | "3" | "4" ) ":" WS quoted-string NEWLINE   # solo 2×2
+
+rows-dir     = "rows:" WS label-list NEWLINE
+cols-dir     = "cols:" WS label-list NEWLINE
+grid-dir     = "grid:" WS number "x" number NEWLINE
+axis-dir     = "axis:" WS ( "off" | "on" | "auto" ) NEWLINE
+margins-dir  = "margins:" WS ( "true" | "false" | "on" | "1" ) NEWLINE
+
+label-list   = "[" text ("," text)* "]" | text ("," text)*
+quoted-string = '"' any-char-but-quote* '"' | "'" any-char-but-quote* "'"
+comment      = "#" any NEWLINE
+```
+
+Fuente autoritativa: `src/diagrams/matrix/parser.ts`. Si esto diverge del analizador, el analizador tiene la razón — por favor abre un issue.
+
+---
+
+## 17. Conformidad con el estándar
+
+Los diagramas de matriz de Schematex implementan la convención estándar de cuadrante 2×2 utilizada por el **Boston Consulting Group (1970)**, la **matriz de decisión de Eisenhower**, la **matriz de crecimiento de Ansoff**, y los marcos de la **Ventana de Johari**. La cuadrícula 9-box sigue la convención de **revisión de talento McKinsey/GE** (3×3, rendimiento × potencial). Los modos heatmap y correlation no siguen ningún estándar externo con nombre, pero usan la codificación universal de intensidad de celda que se encuentra en herramientas como el formato condicional de Excel y `corrplot` de R.
+
+Lo que está implementado hoy:
+
+- ✅ Modo de cuadrante 2×2 con ejes personalizados y etiquetas de cuadrante
+- ✅ Modo de cuadrante 3×3 (plantilla `9-box`)
+- ✅ Modo heatmap N×M con celdas `level:` y `value:`
+- ✅ Modo correlation N×M
+- ✅ Modo SIPOC — tabla de alcance de cinco columnas Proveedores · Entradas · Proceso · Salidas · Clientes (Six Sigma DMAIC Define)
+- ✅ Modo QFD / Casa de la Calidad — cuadrícula QUÉs × CÓMOs, escala de relación 9 / 3 / 1, fila de importancia técnica **calculada** (con porcentajes `normalize: true`), y techo de correlación CÓMO × CÓMO (`++` / `+` / `-` / `--`)
+- ✅ Modo Punnett — cruce mendeliano de dos genotipos parentales; el motor **calcula** los gametos, la cuadrícula de descendencia y las proporciones de genotipo + fenotipo (monohíbrido 3:1, dihíbrido 9:3:3:1); caso de alelo = dominancia; nombres de fenotipo `trait` opcionales; mono/di/trihíbrido (2×2 / 4×4 / 8×8)
+- ✅ Ocho plantillas incorporadas (eisenhower, impact-effort, rice, bcg, ansoff, johari, 9-box, risk-matrix)
+- ✅ Propiedades de punto: size, category, color, shape, highlight, note
+- ✅ Ejes invertidos (`←` / `<-`)
+- ✅ Bloque de configuración (quadrantBg, gridLines, axisArrows, bubbleScale, legendPosition, labelCollision, offChartPolicy)
+- ✅ `style: table` — diseño de texto en celda con atajo `Q1`…`Q4` (2×2) y listas de viñetas apiladas
+- ⏳ Sobreescritura `label:` en puntos (analizado, soporte del renderizador pendiente)
+- ⏳ Política `drop` fuera del gráfico (analizado, el renderizador siempre usa clamp-badge hoy)
+- ⏳ Barra lateral de puntuación/rango `margins:` de correlation (analizado, aún no renderizado)
+
+Referencias:
+
+- Henderson, B. (1970). *The Product Portfolio.* Boston Consulting Group.
+- Covey, S. (1989). *The 7 Habits of Highly Effective People.* (popularización de la matriz de Eisenhower)
+- Ansoff, H.I. (1957). "Strategies for Diversification." *Harvard Business Review*.
+- Akao, Y. (1990). *Quality Function Deployment: Integrating Customer Requirements into Product Design.* Productivity Press. (Casa de la Calidad)
+- Pyzdek, T. & Keller, P. (2018). *The Six Sigma Handbook* (5th ed.). McGraw-Hill. (SIPOC en DMAIC Define)
+- Punnett, R.C. (1905). *Mendelism.* Macmillan. (el cuadrado de Punnett); Mendel, G. (1866). "Versuche über Pflanzenhybriden."
+
+---
+
+## 18. Hoja de ruta
+
+**Planificado — aún no analizable.** No uses estos en DSL generado hoy; el analizador los rechazará o ignorará.
+
+- **Superposiciones de carril / zona** — regiones rectangulares resaltadas con nombre dibujadas detrás de la cuadrícula.
+- **Líneas de umbral** — líneas de referencia horizontales o verticales con etiquetas (ej. línea de "punto de equilibrio").
+- **Etiquetas de burbuja internas** — opción para imprimir la etiqueta del punto dentro de la burbuja en lugar de al lado.
+- **Exportar a tabla** — salida CSV / JSON estructurada junto al SVG para importación en hoja de cálculo.
+- **Modo de cuadrante 4×4 y etiquetas personalizadas** — N×M arbitrario con celdas etiquetadas en modo cuadrante (gráfico de burbujas), no solo heatmap.
+
+Haz seguimiento en los issues de GitHub si necesitas alguno de estos antes.
+
+---
+
+## Ejemplos relacionados
+
+Escenarios listos para usar de la galería de ejemplos:
+
+<RelatedExamples slugs={[
+  'matrix-eisenhower-week',
+  'matrix-impact-effort',
+  'matrix-johari-window',
+  'matrix-9-box-talent',
+  'matrix-bcg-portfolio',
+  'matrix-punnett-monohybrid',
+  'matrix-punnett-dihybrid',
+  'matrix-punnett-testcross',
+]} />

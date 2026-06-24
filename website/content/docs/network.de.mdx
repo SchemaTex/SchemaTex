@@ -1,0 +1,222 @@
+---
+title: Netzwerktopologie
+---
+
+## Über Netzwerkdiagramme
+
+Ein **Netzwerkdiagramm** ist das am häufigsten gezeichnete professionelle Infrastrukturdiagramm — jeder Netzwerktechniker, Systemadministrator, MSP und physische Sicherheits- (CCTV-) Integrator zeichnet sie für Designvorschläge, As-built-Dokumentation, Audits und Kundenübergaben. Sie sind konventionsreich: Ein Router sieht nicht wie ein Switch aus, ein Glasfaserkabel sieht nicht wie ein Kupferkabel aus, und ein Kamera-Subnetz hat eine erkennbare Form. Schematex's `network`-Engine rendert die de-facto **Cisco-Konventions-Icon-Silhouetten** als originale Linienzeichnung, ordnet die Topologieklassen so an, wie der Standard sie aussehen lässt, und **lässt — anders als ein LLM, das rohes Mermaid ausgibt — niemals stillschweigend ein Gerät, einen Port oder einen Link fallen**.
+
+Was es von einer Drag-and-Drop-Schablonenbibliothek unterscheidet: Es versteht **Topologieklassen** (ein Stern hat einen Hub, ein Ring schließt eine Schleife, eine Spine-Leaf-Architektur sind zwei vermaschte Reihen, das Drei-Tier-Modell besteht aus Core-über-Distribution-über-Access-Bändern), rendert jeden **Link-Typ** mit seinem konventionellen Erscheinungsbild und **validiert** strukturelle Fakten — die IP eines Geräts muss in das CIDR seines Subnetzes fallen, eine VLAN-ID muss zwischen 1 und 4094 liegen.
+
+<Playground initial={`network "Acme HQ — CCTV"
+  layout: tiered
+  internet net "Internet"
+  firewall fw1 "Perimeter FW" tier: edge
+  l3switch core1 "Core SW" tier: core
+  poeswitch poe1 "PoE Switch" tier: access
+  nvr nvr1 "Recorder"
+  subnet cams "192.168.20.0/24" {
+    camera cam1 "Lobby" type: dome ip: 192.168.20.11
+    camera cam2 "Gate" type: ptz ip: 192.168.20.12
+    poe1
+  }
+  net -- fw1 : wan "ISP 1Gbps"
+  fw1 -- core1 : fiber 10G
+  core1 -- poe1 : trunk vlan: 20 1G
+  core1 -- nvr1
+  poe1 -- cam1 : poe
+  poe1 -- cam2 : poe`} height={460} />
+
+Die Kameras befinden sich in einem gestrichelten `192.168.20.0/24`-Subnetz (ihre IPs werden gegen das CIDR validiert), PoE-Links sind grün, der Glasfaser-Uplink ist orange, und Geräte werden nach `tier:` gebändert.
+
+---
+
+## 1. Ihr erstes Diagramm
+
+Ein vollständiges Netzwerkdiagramm benötigt nur zwei Arten von Zeilen: **Gerätedeklar ationen** und **Links**. Nichts anderes ist erforderlich.
+
+<Playground initial={`network "Tiny LAN"
+router r1 "Edge Router"
+switch sw1 "Core Switch"
+pc pc1 "Workstation"
+r1 -- sw1
+sw1 -- pc1`} height={300} />
+
+Das war's — ein gültiges, layoutiertes Diagramm. Nur zwei Regeln:
+
+- `<kind> <id> ["label"]` — ein typisiertes Gerät. Die Art bestimmt das Icon.
+- `<a> -- <b>` — ein ungerichteter Link zwischen zwei deklarierten Geräten.
+
+**Alles andere ist optional und additiv — aber nicht alles ist gleichwertig.** Zwei günstige, hochwertige strukturelle Hinweise sind es wert, hinzugefügt zu werden, wenn Hierarchie wichtig ist: `layout:` (tiered/tree/star/ring/bus/mesh/spine-leaf) und `tier:` (edge/core/distribution/access). Sie erzeugen mit minimalem Syntaxaufwand eine lesbare Top-Down-Hierarchie:
+
+```
+network "Branch"
+  layout: tiered
+  router r1 "Edge Router" tier: edge
+  l3switch core1 "Core SW" tier: core
+  switch acc1 "Access SW" tier: access
+  pc pc1 "Workstation"
+  r1 -- core1
+  core1 -- acc1
+  acc1 -- pc1
+```
+
+Im Gegensatz dazu beeinflussen die **per-Link-Annotationen** — Link-Typen (`fiber`/`wireless`/`poe`…), Geschwindigkeiten, `vlan:`, `port:`, `trunk`/`access` und `subnet { }`-Grenzen — das Layout nicht und sind der Bereich, in dem die Generierung am häufigsten fehlschlägt. Fügen Sie sie nur hinzu, wenn die Anforderung es verlangt. Faustregel: Behalten Sie die strukturellen Hinweise, lassen Sie die dekorativen Annotationen weg, wenn nicht ausdrücklich danach gefragt.
+
+Geräte werden **nicht** automatisch aus Links deklariert — eine nicht deklarierte ID kann nicht sicher typisiert werden, daher ist ein Link zu einem unbekannten Gerät ein lesbarer Fehler. Verwenden Sie `;`, um mehrere Anweisungen in eine Zeile zu setzen, und die Kurzform `a b c : kind`, um mehrere Geräte derselben Art auf einmal zu deklarieren.
+
+Sobald das Grundgerüst funktioniert, können Sie Richtung und Annotationen hinzufügen — `->` ist ein gerichteter Link, `==` ist ein LAG, und alles nach `:` ist die Link-Spezifikation:
+
+```
+network "Home"
+  layout: star
+  router gw "Gateway"
+  pc pc1
+  laptop lt1
+  gw -- pc1
+  gw -- lt1 : wireless
+```
+
+---
+
+## 2. Gerätearten
+
+Wählen Sie die Art, die zur Box passt; das Icon folgt der Cisco-Konventions-Silhouette.
+
+- **Infrastruktur** — `router`, `switch`, `l3switch`, `firewall`, `loadbalancer`, `ap`, `wlc`, `gateway`, `modem`, `ids`, `proxy`, `vpngw`
+- **Endgeräte** — `server`, `serverfarm` (`count: n`), `pc`, `laptop`, `mobile`, `ipphone`, `printer`, `storage`
+- **CCTV / Sicherheit** — `camera` (mit `type: fixed | bullet | dome | ptz | turret`), `nvr`, `dvr`, `poeswitch`, `encoder`, `monitor`
+- **Clouds** — `internet`, `wan`, `pstn`, `cloud`, plus `lan` (ein Bus-Balken)
+
+Aliase werden akzeptiert: `multilayer`→`l3switch`, `workstation`→`pc`, `wifi`→`ap`, `nas`/`san`→`storage`, `voip`→`ipphone`.
+
+```
+camera cam1 type: dome ip: 192.168.20.11
+serverfarm farm "Server Farm" count: 4
+l3switch core1 tier: core model: "C9500"
+```
+
+---
+
+## 3. Links & Annotationen
+
+Das Erscheinungsbild eines Links folgt seinem Typ; alles nach `:` ist reihenfolgeunabhängig.
+
+```
+a -- b                       # Kupfer / Ethernet (Standard durchgezogen)
+a -- b : fiber 10G           # Glasfaser — orange mit Schrägstrich-Markierungen
+a -- b : wireless            # gestrichelt
+a -- b : serial              # Mietleitung / WAN-Schaltkreis
+a -- b : poe                 # Power-over-Ethernet (grün + Tag)
+a -- b : vpn "site-to-site"  # gestrichelter Tunnel
+a == b : lag 40G             # aggregiert / EtherChannel (Doppellinie)
+a -- b : trunk vlan: 10,20 1G port: Gi0/1>Gi1/0/24
+```
+
+- `trunk` / `access` — Port-Modus (ein Trunk sollte Switch-artige Geräte verbinden).
+- `vlan: 10` oder `vlan: 10,20` — ein einzelnes VLAN tönt den Link ein (überspringt das reservierte Alarm-Rot).
+- `1G` / `10G` / `100M` / `40G` — Geschwindigkeit, wird mittig am Link angezeigt.
+- `port: near>far` — Interface-Beschriftungen an jedem Ende.
+
+---
+
+## 4. Layout-Modi
+
+```
+layout: tiered      # Standard — nach tier: gebändert: edge → core → distribution → access
+layout: tree        # hierarchisch von der Wurzel aus
+layout: star        # Hub im Zentrum, Speichen auf einem Ring
+layout: ring        # Knoten auf einem Kreis
+layout: bus         # gemeinsame Backbone-Leitung
+layout: mesh        # vollständiges/teilweises Mesh auf einem Kreis
+layout: spine-leaf  # zwei Reihen, jedes Leaf automatisch mit jedem Spine verbunden
+layout: manual      # explizites at: x,y pro Gerät
+direction: tb | lr  # Flussachse für tiered/tree
+```
+
+Für `tiered` setzen Sie `tier:` (`edge` / `core` / `distribution` / `access`) auf Infrastruktur; Endgeräte ohne Tier-Zuweisung werden unter ihrem Switch platziert. Für `spine-leaf` deklarieren Sie `spines:` und `leaves:`, und die Spine↔Leaf-Links werden automatisch generiert.
+
+---
+
+## 5. Grenzen: Sites, Racks, Subnetze, VLANs
+
+Ein Gerät kann in verschachtelten Grenzblöcken leben. **Physische** Container (site/rack) zeichnen eine durchgehende Umrandung; **logische** Überlagerungen (subnet/VLAN/zone/DMZ) zeichnen eine gestrichelte, eingefärbte Region.
+
+```
+network "Branch"
+  site hq "HQ Building" {
+    rack mdf "MDF Rack" {
+      firewall fw1 tier: edge
+      l3switch core1 tier: core
+    }
+  }
+  subnet lan "10.0.10.0/24" {
+    switch a1 tier: access
+    pc u1 "User PC" ip: 10.0.10.50
+  }
+  zone dmz "DMZ" {
+    server web
+  }
+  fw1 -- core1 : 10G
+  core1 -- a1 : trunk vlan: 10
+  a1 -- u1
+```
+
+Ein Gerät, das innerhalb eines `subnet` deklariert ist, dessen Beschriftung ein CIDR ist, hat seine `ip:` validiert — eine Adresse außerhalb des Bereichs ist ein lesbarer Fehler. Eine bloße ID auf einer eigenen Zeile innerhalb eines Blocks fügt ein bereits deklariertes Gerät zu dieser Gruppe hinzu.
+
+---
+
+## 6. Validierung & die No-Drop-Garantie
+
+Die Engine garantiert, dass jedes deklarierte Gerät und jeder Link gerendert wird — der Fehler des Fallenassens von Geräten bei generischen Werkzeugen ist strukturell unmöglich. Sie prüft auch:
+
+- **Doppelte ID** → Fehler;
+- **Unbekannte Art** → Fehler mit dem nächsten Vorschlag (`"swtich" → meinen Sie "switch"?`);
+- **Link zu einem nicht deklarierten Gerät** → Fehler;
+- **VLAN-ID außerhalb 1–4094** → Warnung (wird trotzdem gerendert);
+- **Geräte-IP außerhalb seines Subnetz-CIDR** → Fehler.
+
+Das SVG `<desc>` zeichnet Geräte-/Link-Anzahlen, die erkannte Topologieklasse (star / ring / bus / mesh / tree / hierarchical / spine-leaf) und alle Warnungen auf.
+
+---
+
+## 7. Themes
+
+```
+theme: default      # Hausfarbe "Netzwerk-Blau" im Cisco-Stil
+theme: monochrome   # saubere Linienzeichnung für Druck/Audit (Link-Bedeutung über Linienstil + Tags)
+theme: dark         # Catppuccin Mocha
+```
+
+CJK-Beschriftungen und `「…」` / `"…"`-Anführungszeichen werden sauber geparst:
+
+```
+network "办公室"
+  multilayer core1 「核心交换机」
+  poeswitch poe1
+  camera cam1 type: dome
+  core1 -- poe1 : trunk vlan: 10
+  poe1 -- cam1 : poe
+```
+
+---
+
+## 8. Normkonformität
+
+Netzwerktopologie hat keinen einzigen formalen Zeichnungsstandard; Schematex setzt seine Grundlage aus den de-facto-Quellen zusammen — **Cisco-Netzwerktopologie-Icons** (Silhouetten als originale Linienzeichnung neu gezeichnet), das **Cisco-Hierarchiemodell** und **Spine-Leaf (Clos)** für das Layout, **ANSI/TIA-606**-Farbkonventionen für die Verkabelung und **ONVIF**-Rollen für den CCTV-Cluster.
+
+Vollständige Spezifikation: [Network Topology Standard Reference](https://github.com/schematex/schematex/blob/main/docs/reference/35-NETWORK-STANDARD.md).
+
+---
+
+## Verwandte Beispiele
+
+Sofort einsetzbare Szenarien aus der Beispielgalerie:
+
+<RelatedExamples slugs={[
+  'network-cctv-camera-system',
+  'network-link-types',
+  'network-spine-leaf-fabric',
+  'network-boundaries',
+  'network-enterprise-campus',
+]} />

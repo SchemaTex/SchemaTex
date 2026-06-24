@@ -1,0 +1,88 @@
+---
+title: Introducción
+description: Cada diagrama que un médico, ingeniero o abogado realmente usaría. Gratis. Completamente open source. Hecho para IA. Diagramas estándar de la industria — de genograma a árbol de fallos — a partir de un texto DSL.
+---
+
+**Schematex** renderiza cada diagrama que un médico, ingeniero o abogado realmente
+usaría — genogramas clínicos, lógica escalera IEC 61131-3, pedigríes NSGC, diagramas
+unifilares IEEE 315, tablas de capitalización, y muchos más. Un pequeño texto DSL de
+entrada; SVG conforme a estándares de salida.
+
+**Gratis. Completamente open source. Hecho para IA.** AGPL-3.0, sin dependencias
+en tiempo de ejecución, y un DSL diseñado en torno a cómo los LLMs realmente escriben
+texto — pega la salida de ChatGPT o Claude y obtén un diagrama profesional en el
+primer intento.
+
+## ¿Qué puedo dibujar?
+
+<DiagramCatalog />
+
+## Ejemplo rápido
+
+<Playground initial={`genogram "The Smiths"
+  john [male, 1950]
+  mary [female, 1952]
+  john -- mary
+    alice [female, 1975, index]
+    bob [male, 1978]
+  alice -close- mary`} />
+
+## Usar con IA
+
+Schematex incluye una capa de herramientas construida para LLMs. Conecta Claude.ai al servidor MCP alojado en 10 segundos y deja que genere diagramas validados en cualquier conversación — sin instalación, sin configuración.
+
+<MCPConnectCard size="compact" />
+
+O construye tu propia funcionalidad de IA sobre el Vercel AI SDK. Ver **[Usar Schematex con IA](/docs/ai-integration)**.
+
+## Próximos pasos
+
+- [Primeros pasos](/docs/getting-started) — instalar, importar, renderizar
+- [Usar Schematex con IA](/docs/ai-integration) — MCP + Vercel AI SDK + bucle de agente
+- [Playground](/playground) — prueba cualquier tipo de diagrama en vivo
+- [Referencia de API](/docs/api)
+
+---
+
+## Cómo funciona
+
+Cada tipo de diagrama sigue el mismo pipeline:
+
+```
+Text DSL ──→ Parser ──→ AST ──→ Layout Engine ──→ LayoutResult ──→ SVG Renderer ──→ SVG string
+```
+
+Cada diagrama implementa un `DiagramPlugin` con cuatro métodos:
+
+```ts
+interface DiagramPlugin {
+  detect(text: string): boolean;           // auto-detects diagram type
+  parse(text: string): DiagramAST;         // text → typed AST
+  layout(ast, config): LayoutResult;       // AST → positioned nodes/edges
+  render(layout, config): string;          // LayoutResult → SVG string
+}
+```
+
+Los algoritmos de layout son específicos del dominio por diseño — el genograma usa un layout en capas basado en generaciones, el ecomap usa radial/polar, las puertas lógicas usan un ordenamiento topológico DAG, la lógica escalera usa un layout fijo de rieles de alimentación. Los motores de layout genéricos (dagre, ELK) no pueden producir salidas conformes a estándares para estos tipos de diagramas.
+
+---
+
+## Principios de diseño
+
+1. **Diagramas que los profesionales realmente usan** — cada tipo de diagrama implementa una especificación de dominio publicada: McGoldrick 2020 (genograma), Hartman 1978 (ecomap), Bennett 2022 (pedigrí), Moreno 1934 (sociograma), IEEE Std 91 (puertas lógicas), IEC 61131-3 (lógica escalera), IEEE 315 (SLD), y más.
+2. **Gratis y completamente open source** — AGPL-3.0, sin dependencias en tiempo de ejecución (sin D3, sin dagre, sin generadores de parsers), todo escrito a mano. Bundle pequeño, sin riesgo en la cadena de suministro. Licencia comercial disponible para uso de código cerrado.
+3. **Hecho para IA** — el DSL está diseñado en torno a cómo los LLMs realmente escriben texto (comillas CJK, ambigüedad de anidamiento, errores legibles por IA). Pega la salida de ChatGPT o Claude y obtén un diagrama profesional en el primer intento.
+4. **Salida SVG semántica** — cada SVG incluye `<title>` y `<desc>` para accesibilidad, clases CSS para temas, y atributos `data-*` para interactividad.
+
+---
+
+## Temas
+
+Tres presets integrados: `default` (azul-gris), `monochrome` (blanco y negro / impresión), `dark` (Catppuccin Mocha).
+
+Sobreescribe cualquier token mediante propiedades personalizadas CSS inyectadas en el bloque `<style>` de cada SVG:
+
+```css
+--schematex-stroke: #1a1a1a;
+--schematex-fill: #f5f5f5;
+```

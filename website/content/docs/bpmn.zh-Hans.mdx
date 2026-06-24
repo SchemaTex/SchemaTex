@@ -1,0 +1,240 @@
+---
+title: BPMN 业务流程图
+---
+
+## 关于 BPMN 图表
+
+**BPMN 图表**记录业务流程——跨角色、部门和系统发生的活动、决策、事件和消息交换。它是企业 BPM、ISO-9001 / SOX 审计和流程挖掘工具中的主导符号。*唯一*官方序列化格式是 BPMN 2.0 XML，但其格式冗长，对 LLM 生成不友好；Schematex 提供紧凑的文本 DSL，可产生符合标准的视觉子集。
+
+Schematex 针对真实业务分析师实际绘制的元素实现 OMG **BPMN 2.0.2 / ISO/IEC 19510:2013**：池（pool）、泳道（lane）、事件（start / intermediate / end，带 none / message / timer 触发器）、活动（带标记的任务 + 折叠子流程）、网关（XOR / OR / AND / 基于事件）以及顺序流 / 条件流 / 默认流 / 消息流。
+
+> **注意** — Schematex 是渲染程序库，而非流程执行引擎。没有 token 模拟、没有 XML 来回转换，也没有 DI（图表交换）层。v0.1 涵盖大多数团队使用的视觉子集；边界事件、展开的子流程和罕见触发器类型（取消 / 补偿 / 升级 / 信号 / 链接）延后至 v0.2+ 处理。
+
+<Playground initial={`bpmn
+direction: LR
+title: "Loan Application Approval"
+
+pool "Bank" {
+  lane "Clerk" {
+    A: start "Application received"
+    B: task user "Check completeness"
+    G1: gateway xor "Complete?"
+  }
+  lane "Underwriter" {
+    C: task service "Risk score"
+    D: task user "Underwriter review"
+    G2: gateway xor "Decision"
+    E: end "Approved"
+    F: end "Rejected"
+  }
+}
+
+flows
+A --> B
+B --> G1
+G1 --? "yes" --> C
+G1 --* "no" --> F
+C --> D
+D --> G2
+G2 --? "approve" --> E
+G2 --* "reject" --> F`} height={420} />
+
+---
+
+## 1. 第一个 BPMN 图表
+
+三个区段：一行 `bpmn` 标头、一个或多个 `pool { … }` 块、以及一个 `flows` 块。在每个 pool 内放 `lane { … }` 块，在每个 lane 内用 `id: kind "label"` 列出流程对象。
+
+<Playground initial={`bpmn
+pool "Service" {
+  lane "Worker" {
+    A: start "Request"
+    B: task service "Process"
+    F: end "Done"
+  }
+}
+
+flows
+A --> B
+B --> F`} />
+
+每个流程对象以 **id** 开头，接着是冒号、**kind**、可选的子关键字（触发器 / 标记 / 网关类型），以及引号 **label**。Id 在流程线中被引用。
+
+---
+
+## 2. 池（Pool）与泳道（Lane）
+
+**pool** 代表一个参与者——组织、部门或系统。**lane** 将 pool 细分为角色。pool 标签在水平 pool 的左缘旋转 90° 渲染。
+
+```
+pool "Customer" blackbox          // black-box pool — no internal flow
+pool "Bank" {
+  lane "Clerk" { … }
+  lane "Underwriter" { … }
+}
+```
+
+**黑盒 pool** 是你不对其内部流程建模的参与者——通常是外部客户或合作伙伴。黑盒 pool 必须不含任何流程对象（Schematex 在解析器中强制执行此规则）。
+
+顺序流（`-->`）**不允许**跨越 pool 边界。跨 pool 通信请使用消息流（`~~>`）。
+
+---
+
+## 3. 事件
+
+事件是圆形。笔触粗细编码生命周期角色：
+
+| 类型 | 笔触 | DSL |
+|---|---|---|
+| 开始 | 细（1px）| `start` |
+| 中间 | 细双环 | `intermediate` |
+| 结束 | 粗（3px）| `end` |
+
+可选的**触发器**关键字添加内部图符。v0.1 支持三种最常见的触发器——`none`（无图符）、`message`（信封）和 `timer`（时钟面）：
+
+```
+A: start                       // none-trigger
+A: start message "Inbound"     // message-catch (unfilled envelope)
+T: intermediate timer "60 min" // timer (clock face)
+F: end "Done"
+```
+
+填充图符 = **投送（throw）**，空心图符 = **捕捉（catch）**。Schematex 根据事件类型自动选择正确的填充方式。
+
+---
+
+## 4. 活动——任务与子流程
+
+活动是圆角矩形。v0.1 的两种形式是 `task` 和**折叠**子流程（`+` 标记表示可展开的细节）：
+
+```
+B: task "Generic abstract task"
+U: task user "User decides"
+S: task service "API call"
+SE: task send "Send email"
+RE: task receive "Wait for reply"
+M: task manual "Hand-stamp the form"
+SC: task script "Run rule engine"
+
+X: subprocess "Verify identity" collapsed
+```
+
+**任务标记**（左上角小图标）传达*谁或什么*执行工作——人员（`user`）、软件服务（`service`）、外送消息（`send`）、等待入站（`receive`）、系统外的手动步骤（`manual`），或自动化脚本（`script`）。若不确定，省略标记——默认为抽象类型。
+
+---
+
+## 5. 网关
+
+网关是菱形。内部图符编码分支语义：
+
+| 类型 | 图符 | 含义 | DSL |
+|---|---|---|---|
+| 排他（XOR）| **X** | 恰好走一条出口路径（数据导向）| `gateway xor` |
+| 包含（OR）| **O** | 走一条或多条出口路径 | `gateway or` |
+| 并行（AND）| **+** | 同时走所有出口路径 | `gateway and` |
+| 基于事件 | 五边形-在-圆内 | 选择最先触发事件的路径 | `gateway event` |
+
+Schematex 默认使用 Bruce Silver 的 **X 图符**表示 XOR——这是真实 BPMN 审计所期望的惯例。大多数图表使用 XOR（数据分支）和 AND（并行分裂 / 合并）；OR 较少见，基于事件的主要出现在竞态条件模型中。
+
+---
+
+## 6. 连接线
+
+四种连接线类型。其中三种在 pool 内使用；只有消息流允许跨越 pool 边界。
+
+```
+A --> B                  // sequence flow (default)
+G --? "yes" --> C        // conditional sequence (label is a guard)
+G --* "default" --> D    // default flow (one per gateway, max)
+"Customer" ~~> A : "Submit application"   // message flow
+E ~~> "Customer" : "Notify approval"      // message flow back
+```
+
+- `-->` 是主力——实线 + 实心三角箭头。
+- `--? "label" -->` 在来源处添加小空心菱形。当从活动*直接*离开并带有守护条件时使用。（在网关处，条件标签已足够；不绘制菱形图符。）
+- `--* "label" -->` 在来源处添加斜线标记。**每个网关最多一条默认流**——Schematex 强制执行此规则。
+- `~~>` 是虚线 + 空心箭头，来源处带小空心圆。来源或目标可以是引号**pool 名称**（用于黑盒参与者）或对象 id。
+
+---
+
+## 7. 验证
+
+解析器拒绝违反 BPMN 语义的图表，并提供行号错误：
+
+| 规则 | 错误 |
+|---|---|
+| 顺序流跨越 pool | `sequence flow 'A --> B' crosses pool boundary — use message flow (~~>)` |
+| 消息流在同一 pool 内 | `message flow 'A ~~> B' must cross pool boundaries` |
+| 黑盒 pool 有内部元素 | `black-box pool "X" cannot contain lanes` |
+| 同一网关两条默认流 | `gateway 'G' has 2 default flows (max 1)` |
+| pool 内 id 重复 | `duplicate id 'A'` |
+| 未知的来源 / 目标 | `unknown source 'X' in sequence flow` |
+
+这些检查在解析时触发，因此 LLM 在布局过程之前就能获得可用的错误信号。
+
+---
+
+## 8. 较大示例——披萨订单与黑盒客户
+
+一个标准的 BPMN 教学示例：外部客户（其流程我们不建模）向比萨店下订单，比萨店分为 Clerk / Chef / Delivery 泳道，Chef 的质量检查有返工回路。
+
+<Playground initial={`bpmn
+direction: LR
+title: "Pizza order"
+
+pool "Customer" blackbox
+
+pool "Pizzeria" {
+  lane "Clerk" {
+    A: start message "Order received"
+    B: task user "Take order"
+  }
+  lane "Chef" {
+    C: task manual "Make pizza"
+    G1: gateway xor "Pizza ok?"
+    D: task manual "Rework"
+  }
+  lane "Delivery" {
+    E: task send "Deliver"
+    F: end "Done"
+  }
+}
+
+flows
+A --> B
+B --> C
+C --> G1
+G1 --? "yes" --> E
+G1 --* "no" --> D
+D --> C
+E --> F
+"Customer" ~~> A : "Place order"
+E ~~> "Customer" : "Pizza delivered"`} height={520} />
+
+返工回路（`D --> C`）创建了一条回边，布局的循环断路通过 DFS 检测——最长路径分层随后在前向 DAG 上进行，使列保持合理。
+
+---
+
+## 9. v0.1 的限制
+
+以下功能延后至后续版本。如果你的图表需要其中之一，请附上使用场景提交 issue：
+
+- **边界事件** — 附加到活动边缘的事件（计时器、错误、升级、补偿）。目前你必须将边界建模为自由浮动的中间事件并手动连接流程。
+- **展开的子流程** — 折叠的 `subprocess` 可用；展开的内嵌块（`subprocess "X" { … }`）延后处理。
+- **罕见事件触发器** — 错误 / 升级 / 取消 / 补偿 / 信号 / 链接 / 条件 / 多重 / 并行多重。暂时使用 `none` 或 `message` 作为占位符。
+- **事务 / 调用活动** — v0.1 渲染为普通任务。
+- **循环和多重实例标记** — 活动底部中央的图符；延后处理。
+- **人工标记（Artifact）** — 数据对象 / 数据存储 / 组 / 文本注解。延后处理。
+- **BPMN 2.0 XML 导入 / 导出** — 超出范围。Schematex 从 DSL 计算布局；没有 DI 层可供来回转换。
+
+---
+
+## 相关示例
+
+来自示例库的即用场景：
+
+<RelatedExamples slugs={[
+  'bpmn-loan-approval',
+  'bpmn-pizza-order',
+  'bpmn-incident-response',
+]} />

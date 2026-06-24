@@ -1,0 +1,162 @@
+---
+title: 銲接符號圖（Welding symbol diagram）
+---
+
+## 關於銲接符號
+
+**銲接符號**告訴製作者如何銲接一個接頭：銲接類型、在哪一側、多大、多長，以及如何完工。這個符號由**參考線骨架**構成——一條水平線、一個指向接頭的引線箭頭，以及固定在線上或線下的小型銲接符號字形——由 **AWS A2.4**（美國）與 **ISO 2553**（國際）標準化。Schematex 正確地依規格繪製骨架：你描述銲縫，引擎定位每個字形、尺寸與補充符號。
+
+這是一種*固定骨架*符號，而非圖形——沒有需要解決的佈局問題，因此每次都能確定性地渲染。
+
+<Playground initial={`welding "Bracket welds"
+joint "bracket to plate" {
+  arrow: fillet size=8 len=50 pitch=150
+  other: fillet size=6
+  around
+  tail: "GMAW"
+}`} height={260} />
+
+---
+
+## 1. 第一個銲接符號
+
+最小的實用標注：一個標題、一個接頭、一個箭頭側銲縫。
+
+```
+welding "Bracket"
+joint "bracket to plate" {
+  arrow: fillet size=8
+}
+```
+
+三條規則涵蓋大多數使用情境：
+
+1. 以 `welding` 開頭，可選擇加上 `standard: aws | iso-a | iso-b`（預設 `aws`）與引號標題。
+2. 每個接頭是一個 `joint "label" { … }` 區塊。在 `arrow:`（箭頭側）和／或 `other:`（另一側）放置銲縫。
+3. 銲縫規格是類型後接 `key=value` 尺寸——`fillet size=8`、`vgroove angle=60 root=3`。
+
+---
+
+## 2. 側面——箭頭側、另一側、兩側
+
+接頭可以在箭頭側、另一側或兩側銲接。
+
+```
+joint "double fillet" {
+  both: fillet size=6        # 兩側相同銲縫
+}
+joint "asymmetric" {
+  arrow: fillet size=8       # 僅箭頭側
+  other: vgroove angle=60    # 另一側使用不同銲縫
+}
+```
+
+- **AWS**（預設）：箭頭側字形繪製於參考線**下方**，另一側字形繪製於**上方**。
+- **ISO-A**（`standard: iso-a`）：顯示**虛線伴隨線**；箭頭側銲縫附在實線上，另一側銲縫附在虛線上。對稱的 `both:` 銲縫省略虛線。
+
+---
+
+## 3. 銲縫類型
+
+| 類型 | 字形 | 類型 | 字形 |
+|---|---|---|---|
+| `fillet` | 三角形 | `plug` / `slot` | 矩形 |
+| `square` | 平行垂直線 | `spot` | 線上圓形 |
+| `vgroove` | V 形 | `seam` | 圓形加線 |
+| `bevel` | 半 V 形 | `back` / `backing` | 半圓形 |
+| `ugroove` | U 形 | `surfacing` | 堆積隆起 |
+| `jgroove` | 半 U 形 | `edge` | 高垂直線 |
+| `flarev` / `flarebevel` | 曲線坡口 | | |
+
+別名：`v`→`vgroove`、`u`→`ugroove`、`j`→`jgroove`、`flare-v`→`flarev`。
+
+---
+
+## 4. 尺寸
+
+尺寸沿著參考線在固定的槽位讀取。
+
+```
+joint "groove" {
+  arrow: vgroove angle=60 root=3 throat=12 len=50 pitch=150
+}
+```
+
+| 鍵 | 槽位 | 含義 |
+|---|---|---|
+| `size=` | 符號左側 | 角銲腳長／坡口深度／塞孔直徑 |
+| `throat=` | 左側，括號內 | 有效喉深 `(E)` |
+| `len=` | 符號右側 | 銲縫長度 |
+| `pitch=` | 右側（配合 `len`） | 間歇式中心間距 → `len-pitch` |
+| `count=` | 右側（ISO） | 增量數量 → `count×len (pitch)` |
+| `angle=` | 開口處 | 坡口包含角度（僅坡口類型） |
+| `root=` | 符號與線之間 | 根部開口／間隙 |
+| `contour=` | 符號上方 | `flush`（平）、`convex`（凸）、`concave`（凹弧） |
+| `finish=` | 輪廓上方 | 完工方法字母 `G`/`M`/`C`/`R`/`H`/`U` |
+
+---
+
+## 5. 補充符號
+
+```
+joint "post base" {
+  arrow: fillet size=10
+  around            # 周圍銲接——接合點的開圓
+  field             # 現場／工地銲接——指向尾部的實心旗幟
+  tail: "GTAW; WPS-12"   # 製程 / 規格 / NDE 方法
+}
+```
+
+<Playground initial={`welding
+joint "butt weld" {
+  arrow: vgroove angle=60 root=3 throat=12
+  other: backing
+  tail: "SMAW; E7018"
+}`} height={240} />
+
+---
+
+## 6. 標準合規性
+
+Schematex 銲接圖實作了 **AWS A2.4:2020**（單參考線）與 **ISO 2553:2019** A 系統（雙實線加虛線）及 B 系統。
+
+- ✅ 完整字形目錄——角銲縫、方形／V 形／斜坡／U 形／J 形／擴口 V 形／擴口斜坡坡口、塞孔、開槽、點銲、縫銲、背面銲縫、背墊、堆焊、邊緣銲縫
+- ✅ 尺寸槽位——大小、喉深 `(E)`、長度、長度-間距、數量×長度、坡口角度、根部開口
+- ✅ 補充符號——周圍銲接圓、現場銲接旗幟、尾部製程/規格/NDE、輪廓加完工
+- ✅ 箭頭側／另一側／兩側，遵循各標準慣例
+- ✅ AI 可讀的非法類型/側面/尺寸組合驗證
+- ⏳ 組合銲縫加 NDE 符號（NDE 目前為尾部文字）
+- ⏳ 準備件的箭頭折斷；交錯式間歇偏移；熔透／消耗性嵌入字形
+
+參考文獻：
+
+- American Welding Society (2020). *AWS A2.4: Standard Symbols for Welding, Brazing, and Nondestructive Examination.*
+- ISO 2553:2019. *Welding and allied processes — Symbolic representation on drawings — Welded joints.*
+
+---
+
+## 7. 語法（EBNF）
+
+```text
+document  = "welding" ( "standard:" std )? title? NEWLINE joint*
+std       = "aws" | "iso-a" | "iso-b"
+joint     = "joint" title? "{" directive* "}"
+directive = ( "arrow:" | "other:" | "both:" ) weldspec
+          | "around" | "field"
+          | "tail:" quoted-string
+weldspec  = type ( WS key "=" value )*
+type      = "fillet"|"square"|"vgroove"|"bevel"|"ugroove"|"jgroove"
+          | "flarev"|"flarebevel"|"plug"|"slot"|"spot"|"seam"
+          | "back"|"backing"|"surfacing"|"edge"
+key       = "size"|"len"|"pitch"|"count"|"angle"|"root"|"throat"|"contour"|"finish"
+```
+
+權威來源：`src/diagrams/welding/parser.ts`。
+
+---
+
+## 相關範例
+
+<RelatedExamples slugs={[
+  'welding-bracket-fillet',
+]} />

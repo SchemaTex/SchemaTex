@@ -1,0 +1,653 @@
+---
+title: 矩陣 / 象限圖
+---
+
+## 關於矩陣圖
+
+**矩陣圖**將項目放置在由兩條相交軸所定義的二維空間中——最常見的是 2×2 的象限格線——讓位置一目了然地傳達含義。產品經理使用艾森豪矩陣（Eisenhower matrix）區分緊急工作與重要工作；策略顧問使用 BCG 矩陣分配投資組合；HR 團隊使用 9 宮格（9-box）對應績效與潛力。這種視覺化慣例可追溯至波士頓顧問集團 1970 年代的投資組合工作，並被 Ansoff、Johari 和 RICE 等框架延伸應用。
+
+Schematex 支援三種矩陣模式：**quadrant**（帶標記軸的 2×2 或 3×3 泡泡圖）、**heatmap**（N×M 彩色格線）和 **correlation**（N×M 點強度表格）。八種預建範本涵蓋了最常見的框架，所有軸標籤、象限名稱和資料點屬性均可完全自訂。
+
+<Playground initial={`matrix impact-effort "Q3 Planning"
+"Fix checkout timeout" at (0.15, 0.82) size: 4 highlight: true category: reliability
+"Redesign onboarding" at (0.72, 0.78) size: 5 category: growth
+"Add dark mode" at (0.78, 0.38) size: 3 category: polish
+"Write runbook" at (0.18, 0.32) size: 2 category: reliability
+"API rate limiting" at (0.55, 0.65) size: 4 category: reliability
+"Blog post series" at (0.35, 0.55) size: 2 category: growth`} height={460} />
+
+---
+
+## 1. 你的第一張矩陣圖
+
+最小的實用矩陣：自訂 2×2，兩條標記軸和三個資料點。
+
+<Playground initial={`matrix "Feature Prioritization"
+x-axis: Low Effort → High Effort
+y-axis: Low Value → High Value
+
+"Add search" at (0.3, 0.8)
+"Rebuild pipeline" at (0.85, 0.7)
+"Update footer" at (0.2, 0.2)`} />
+
+四條規則涵蓋 80% 的使用情境：
+
+1. 以關鍵字 `matrix` 開頭，後面可選擇性地加上範本名稱或引號標題。
+2. 用 `x-axis:` 和 `y-axis:` 設定軸——或者使用內建範本直接跳過此步驟。
+3. 每個資料點的格式為 `"Label" at (x, y)`，其中 `x` 和 `y` 是從 0.0（低/左/下）到 1.0（高/右/上）的十進位小數。
+4. 在座標後面加上選擇性屬性——`size:`、`category:`、`color:`、`shape:`、`highlight:`。
+
+> 註解必須以 `#` 在行的任何位置開頭（引號字串外）。
+
+---
+
+## 2. 內建範本
+
+範本預先設定軸、象限標籤和格線大小。只需在標頭行的第二個符記位置使用範本名稱即可。
+
+| 範本 | 格線 | 使用情境 |
+|---|---|---|
+| `eisenhower` | 2×2 | 緊急性 / 重要性任務優先排序 |
+| `impact-effort` | 2×2 | 依影響力與工作量的功能優先排序 |
+| `rice` | 2×2 | RICE 評分——觸及率 × 影響力 vs. 工作量 |
+| `bcg` | 2×2 | 投資組合——市場份額 vs. 成長率 |
+| `ansoff` | 2×2 | 產品 / 市場成長策略 |
+| `johari` | 2×2 | 自我認知——自己知道 vs. 他人知道 |
+| `9-box` | 3×3 | HR 人才評估——績效 vs. 潛力 |
+| `risk-matrix` | 5×5 | 風險評估——可能性 vs. 嚴重性（熱點圖） |
+
+<Playground initial={`matrix eisenhower "This Week"
+"Ship hotfix" at (0.1, 0.9) size: 5 highlight: true
+"Team 1:1s" at (0.1, 0.7) size: 3
+"Write Q3 OKRs" at (0.8, 0.85) size: 4
+"Inbox zero" at (0.1, 0.3) size: 2
+"Refactor auth" at (0.75, 0.4) size: 3`} height={420} />
+
+範本的軸和象限標籤可以用明確的 `x-axis:` / `y-axis:` / `quadrant` 指令覆寫。
+
+---
+
+## 3. 軸
+
+軸線宣告每個維度的語意兩極。
+
+```
+x-axis: Low Effort → High Effort
+y-axis: Low Value → High Value
+```
+
+箭頭將低標籤（左 / 下）與高標籤（右 / 上）分隔開來。以下所有分隔符號效果相同：
+
+| 分隔符號 | 範例 |
+|---|---|
+| `→`（Unicode） | `x-axis: Rare → Certain` |
+| `->`（ASCII） | `x-axis: Rare -> Certain` |
+| `↑` | `y-axis: Cheap ↑ Expensive` |
+| `←` / `<-` / `<` | 反向軸——高標籤在左側 |
+
+**反向軸**適用於「高」值位於左側或底部的慣例：
+
+```
+x-axis: High Market Share ← Low Market Share
+```
+
+<Playground initial={`matrix "Product Portfolio"
+x-axis: High Market Share ← Low Market Share
+y-axis: Low Growth → High Growth
+
+quadrant Q1 "Question Marks"
+quadrant Q2 "Stars"
+quadrant Q3 "Cash Cows"
+quadrant Q4 "Dogs"
+
+"Analytics Suite" at (0.25, 0.35) size: 5
+"ChatBot Pro" at (0.2, 0.8) size: 4 highlight: true
+"Legacy CRM" at (0.75, 0.25) size: 6
+"Mobile App" at (0.65, 0.75) size: 3`} height={440} />
+
+---
+
+## 4. 資料點
+
+每個資料點是一個以正規化 (x, y) 座標對定位的泡泡。
+
+```
+"Label" at (x, y)
+"Label" at (x, y) size: 4 category: design color: #7B1FA2 highlight: true note: "clarify spec"
+```
+
+| 屬性 | 值 | 含義 |
+|---|---|---|
+| `size:` | 正數 | 泡泡面積權重（預設值：3） |
+| `category:` | 裸字 | 顏色群組；驅動圖例 |
+| `color:` | 十六進位字串 | 覆寫此資料點的泡泡顏色 |
+| `shape:` | `circle` \| `square` \| `triangle` \| `diamond` | 泡泡形狀（預設：`circle`） |
+| `highlight:` | `true` | 在泡泡周圍繪製強調環 |
+| `note:` | 引號字串 | 工具提示標注 |
+| `label:` | 引號字串 | 取代顯示標籤（與 ID 不同） |
+
+座標超出 `[0, 1]` 的資料點會被夾在圖表邊界處並標記徽章——原始值儲存在工具提示中顯示。
+
+<Playground initial={`matrix "Risk Register"
+x-axis: Low Impact → High Impact
+y-axis: Rare → Certain
+
+"Vendor delay" at (0.45, 0.7) size: 4 category: schedule highlight: true
+"Security breach" at (0.9, 0.3) size: 5 category: security shape: diamond
+"Budget overrun" at (0.5, 0.65) size: 3 category: finance
+"Key hire falls through" at (0.6, 0.55) size: 3 category: people
+"Scope creep" at (0.4, 0.8) size: 4 category: schedule`} height={440} />
+
+---
+
+## 5. 象限標籤
+
+為每個象限標上名稱和可選副標題。
+
+```
+quadrant Q1 "Do First"
+quadrant Q2 "Schedule"
+quadrant Q3 "Delete"
+quadrant Q4 "Delegate"
+
+# With an optional subtitle:
+quadrant Q1 "Do First" description: "High urgency, high importance"
+```
+
+象限編號遵循標準數學慣例：**Q1 = 右上、Q2 = 左上、Q3 = 左下、Q4 = 右下**。`Q` 前綴可省略——`quadrant 1 "Label"` 同樣有效。
+
+---
+
+## 6. 熱點圖模式
+
+熱點圖模式以顏色強度填充 N×M 格子，而不是繪製泡泡位置。
+
+```
+matrix heatmap 4x3 "Skill Matrix"
+rows: [Strategy, Execution, Communication, Technical]
+cols: [Junior, Mid, Senior]
+
+cell (0,0) level: weak
+cell (1,0) level: medium
+cell (2,0) level: strong
+cell (0,1) value: 7
+cell (1,2) label: "Top 10%"
+```
+
+- `matrix heatmap COLxROW` — 標頭設定格線尺寸。
+- `rows:` 和 `cols:` — 逗號分隔或括號清單形式的軸標籤。
+- `cell (col, row)` — 從零開始的索引，先欄後列（row 0 = 底部）。
+- `level:` — `strong`（3）、`medium`（2）或 `weak`（1）——熱度強度的簡寫。
+- `value:` — 明確的數值（覆寫 `level:`）。
+- `label:` — 放置在格子內的引號文字。
+
+<Playground initial={`matrix heatmap 4x4 "Competency Heat Map"
+rows: [Leadership, Execution, Communication, Technical]
+cols: [Junior, Mid, Senior, Staff]
+
+cell (0,0) level: weak
+cell (1,0) level: medium
+cell (2,0) level: strong
+cell (3,0) level: strong
+cell (0,1) level: medium
+cell (1,1) level: medium
+cell (2,1) level: strong
+cell (3,1) level: strong
+cell (0,2) level: weak
+cell (1,2) level: medium
+cell (2,2) level: medium
+cell (3,2) level: strong
+cell (0,3) level: weak
+cell (1,3) level: weak
+cell (2,3) level: medium
+cell (3,3) level: strong`} height={380} />
+
+---
+
+## 7. 相關性矩陣模式
+
+相關性矩陣模式渲染一個 N×M 點矩陣，強度代表列和欄變數之間的關係強度。
+
+```
+matrix correlation 4x4 "Product Metrics"
+rows: [DAU, Retention, Revenue, NPS]
+cols: [DAU, Retention, Revenue, NPS]
+
+cell (0,0) value: 1
+cell (1,0) value: 0.82
+cell (2,0) value: 0.54
+cell (3,0) value: 0.71
+```
+
+適用相同的 `cell` 語法。在相關性模式中也接受 `level: strong | medium | weak`。
+
+---
+
+## 8. SIPOC 模式
+
+**SIPOC** 是六標準差 DMAIC 專案在*定義*（Define）階段使用的單頁範疇確定表。它以固定的五欄從左到右命名流程涉及的所有人和事物：**S**uppliers（供應商）· **I**nputs（輸入）· **P**rocess（流程）· **O**utputs（輸出）· **C**ustomers（客戶）。在團隊衡量或改善任何事情之前，SIPOC 確定邊界——「這個流程從哪裡開始、到哪裡結束，以及誰在哪個環節傳遞工作」。
+
+```
+matrix sipoc "Order fulfilment"
+suppliers: "Vendor", "Warehouse"
+inputs: "PO", "Stock levels"
+process: "Receive order", "Pick", "Pack", "Ship"
+outputs: "Shipped package", "Invoice"
+customers: "End customer", "Finance"
+```
+
+- 以 `matrix sipoc` 開頭，後面可選擇性地加上引號標題。
+- 五欄各有自己的指令：`suppliers:`、`inputs:`、`process:`、`outputs:`、`customers:`。
+- 在冒號後面，以**逗號分隔的引號字串**列出條目。一欄可以有任意數量的條目；各列由上到下在該欄中堆疊。
+- `process:` 欄是高層步驟序列（通常 4–7 個步驟）——保留主要階段，不要寫成詳細的流程圖。
+
+無論你宣告的順序如何，五欄始終依標準的 S-I-P-O-C 順序渲染，因此即使 LLM 以不同順序輸出區塊，圖表讀起來也是正確的。
+
+<Playground initial={`matrix sipoc "Order fulfilment"
+suppliers: "Vendor", "Warehouse"
+inputs: "PO", "Stock levels"
+process: "Receive order", "Pick", "Pack", "Ship"
+outputs: "Shipped package", "Invoice"
+customers: "End customer", "Finance"`} height={360} />
+
+---
+
+## 9. QFD 模式（品質屋）
+
+**品質機能展開（QFD）**——由赤尾洋二引入的*品質屋*——將客戶需求轉化為滿足這些需求的工程特性。列是 **WHAT**（客戶需求，每個帶有重要度權重）；欄是 **HOW**（團隊可控制的可衡量工程特性）。格線本體記錄每個 HOW 對每個 WHAT 的滿足強度。
+
+差異化優勢在於：引擎**自動計算**底列。每個 HOW 的*技術重要度*是其欄中 `weight × relationship strength` 的總和——給出「哪個工程特性帶動最多客戶價值，因此最值得投入心力」的排名答案。而品質屋的屋頂——欄上方的半矩陣鑽石格——記錄兩個 HOW 之間是否相互幫助還是衝突。
+
+```
+matrix qfd "Coffee maker"
+what: "Quiet operation" weight: 5
+what: "Brews fast" weight: 3
+what: "Energy efficient" weight: 4
+how: "Fan RPM" dir: down
+how: "Heater watts" dir: up
+how: "Insulation" dir: up
+rel (0,0): 9
+rel (0,2): 3
+rel (1,1): 9
+rel (2,1): 3
+rel (2,2): 9
+roof (0,1): --
+roof (1,2): +
+```
+
+### WHAT 與 HOW
+
+| 指令 | 格式 | 含義 |
+|---|---|---|
+| `what:` | `what: "Label" weight: N` | 一個客戶需求（一列）。`weight:` 是其重要度，慣例上為 1–5。宣告順序即為列順序，從 0 開始索引。 |
+| `how:` | `how: "Label" dir: up\|down` | 一個工程特性（一欄）。宣告順序即為欄順序，從 0 開始索引。`dir:` 是最佳化目標——`up` = 越多越好，`down` = 越少越好。 |
+
+### 關係格
+
+`rel (i, j): strength` 記錄欄 `j` 的 HOW 對列 `i` 的 WHAT 的滿足強度。索引為 **(列, 欄)**，均從零開始。
+
+| 強度 | 含義 |
+|---|---|
+| `9` | 強關係 |
+| `3` | 中等關係 |
+| `1` | 弱關係 |
+| *（省略）* | 無關係——省略此格 |
+
+這個 9 / 3 / 1 量表是 QFD 慣例：它故意設計為非線性，使得一個強連結在加總重要度列時超過幾個弱連結。
+
+### 計算技術重要度列
+
+引擎加總每欄以產生品質屋底部的技術重要度列：
+
+```
+importance(j) = Σ over rows i  ( weight(i) × strength(i, j) )
+```
+
+以上面的咖啡機範例，計算結果為 **45 / 39 / 51**——Insulation（51）是槓桿最大的特性，Heater watts（39）最低。這個排名就是可交付成果：它告訴團隊應該把工程心力投入在哪裡。
+
+在區塊中任意位置加上 `normalize: true`（獨立一行），即可顯示每欄佔**總和的百分比**而非原始總和——以此範例計算為 **33% / 29% / 38%**。百分比讓非常不同的權重量表下的相對優先順序更容易閱讀。
+
+### 屋頂——HOW × HOW 相關性
+
+**屋頂**是位於欄上方的三角半矩陣。`roof (i, j): glyph` 記錄 HOW `i` 和 HOW `j` 是否相互強化或衝突——即團隊必須調和的協同效應與取捨。
+
+| 字符 | 相關性 |
+|---|---|
+| `++` | 強正相關——改善一個強烈幫助另一個 |
+| `+` | 正相關 |
+| `-` | 負相關 |
+| `--` | 強負相關——改善一個損害另一個（取捨） |
+| *（省略）* | 無相關——省略此格 |
+
+每個屋頂條目在標準 QFD 坡屋頂格線中渲染為菱形格。在範例中，`roof (0,1): --` 標記降低風扇轉速同時提升加熱功率是一個取捨，`roof (1,2): +` 標記加熱功率和隔熱相互強化。
+
+<Playground initial={`matrix qfd "Coffee maker"
+what: "Quiet operation" weight: 5
+what: "Brews fast" weight: 3
+what: "Energy efficient" weight: 4
+how: "Fan RPM" dir: down
+how: "Heater watts" dir: up
+how: "Insulation" dir: up
+rel (0,0): 9
+rel (0,2): 3
+rel (1,1): 9
+rel (2,1): 3
+rel (2,2): 9
+roof (0,1): --
+roof (1,2): +`} height={460} />
+
+---
+
+## 10. Punnett 模式（孟德爾遺傳學）
+
+**龐奈特方格**（Punnett square）預測基因交配的後代。你只需寫出兩個親代基因型；引擎負責孟德爾遺傳的計算——它列舉每個親代的**配子**（每個基因座各一個等位基因），以每種配子組合填充格線，並**計算基因型和表現型比例**。使用者不需要自己填格子。
+
+```
+matrix punnett "Eye color  (Bb × Bb)"
+cross: Bb x Bb
+trait B: "Brown eyes" / "Blue eyes"
+```
+
+### 交配
+
+| 指令 | 格式 | 含義 |
+|---|---|---|
+| `cross:` | `cross: Bb x Bb` | 兩個親代基因型，以 `x`、`×` 或 `*` 分隔。`parents:` 為可接受的別名。 |
+| `trait:` | `trait B: "Dominant" / "Recessive"` | *（可選）* 為基因 `B` 命名兩種表現型，讓圖例以通俗英文顯示，而非 `B_` / `bb`。 |
+
+**等位基因大小寫決定顯性關係**——這是標準遺傳學慣例。大寫字母是**顯性**等位基因，對應的小寫字母是**隱性**等位基因。基因型依字母對等位基因分組：`RrYy` 代表兩個基因座，`R/r`（圓形/皺皮）和 `Y/y`（黃色/綠色）。一個基因是**單基因雜交**（2×2 格線），兩個基因是**雙基因雜交**（4×4），三個是三基因雜交（8×8）。
+
+### 計算比例（差異化優勢）
+
+引擎純粹從基因型推導出：
+
+- 每個親代的**配子**——欄和列的標題——每個基因座取一個等位基因（所以雜合子 `Bb` 產生 `B` 和 `b`）；
+- **後代格線**——每種配子配對，顯性等位基因先寫（`Bb`，絕不寫 `bB`）；
+- **表現型比例**——依其表現的表現型分組的格子，化為最簡整數比。單基因雜交 `Bb × Bb` 給出經典的 **3:1**；雙基因雜交 `RrYy × RrYy` 給出著名的 **9:3:3:1**；
+- **基因型比例**——例如單基因雜交的 `1:2:1`（1 BB、2 Bb、1 bb）。
+
+每個格子依其表現型類別著色，頁腳列出帶圖例的表現型比例以及基因型比例。
+
+<Playground initial={`matrix punnett "Seed shape & colour  (RrYy × RrYy)"
+cross: RrYy x RrYy
+trait R: "Round" / "Wrinkled"
+trait Y: "Yellow" / "Green"`} height={520} />
+
+---
+
+## 11. 設定選項
+
+`config:` 區塊調整視覺渲染。每個選項在 `config:` 標頭下方獨占一行（縮排）。
+
+```
+config:
+  quadrantBg: true
+  gridLines: true
+  axisArrows: true
+  bubbleScale: area
+  legendPosition: bottom-right
+```
+
+| 鍵 | 值 | 預設值 | 效果 |
+|---|---|---|---|
+| `quadrantBg` | `true` \| `false` | `true` | 彩色象限背景填色 |
+| `gridLines` | `true` \| `false` | `true` | 格線覆蓋層 |
+| `axisArrows` | `true` \| `false` | `true` | 軸末端的箭頭 |
+| `bubbleScale` | `area` \| `radius` | `area` | `size:` 是縮放泡泡面積還是半徑 |
+| `quadrantAnnotations` | `true` \| `false` | `true` | 在角落顯示象限標籤文字 |
+| `legendPosition` | `bottom-right` \| `right` \| `bottom-center` \| `none` | `bottom-right` | 類別圖例位置 |
+| `labelCollision` | `auto` \| `offset-only` \| `leader-only` \| `off` | `auto` | 資料點標籤的重疊避免策略 |
+| `offChartPolicy` | `clamp-badge` \| `drop` | `clamp-badge` | 超出 [0,1] 範圍的資料點的處理方式 |
+
+兩個速記指令也可在頂層使用（不在 `config:` 區塊內）：
+
+```
+axis: off          # off | on | auto — show or hide the axis lines
+margins: true      # true | false — show Score + Rank margins (correlation mode)
+```
+
+---
+
+## 12. 標籤與註解
+
+- **標題：** `matrix "My Title"` 或 `title: My Title` 作為獨立行。
+- **資料點標籤：** `at (…)` 前面的引號字串。
+- **軸標籤：** `x-axis:` 和 `y-axis:` 指令。
+- **象限標籤：** `quadrant Q1 "Name"` 指令。
+- **註解：** `#` 在行的任何位置，引號字串外。
+
+```
+matrix "Prioritization"
+# This is a comment
+x-axis: Low Cost → High Cost   # inline comment after a directive
+"Fix bug" at (0.1, 0.9) size: 3  # comment after a point
+```
+
+---
+
+## 13. 表格模式（`style: table`）
+
+預設的矩陣渲染是**散布圖 / 泡泡圖**——資料點浮在 (x, y) 座標上。對於輸出是按象限分組的項目清單的框架（Eisenhower、Johari、Impact-Effort、9-box），使用 `style: table` 切換為**格子內文字佈局**。
+
+```
+matrix eisenhower "This Week"
+style: table
+Q2: "Ship hotfix"
+Q2: "Customer demo prep"
+Q1: "Write Q3 OKRs"
+Q1: "Refactor auth layer"
+Q4: "LinkedIn updates"
+Q3: "Reorganize Slack channels"
+```
+
+`style: table` 自動套用以下變更：
+
+| 效果 | 細節 |
+|---|---|
+| 軸和箭頭隱藏 | 沒有軸線、標籤或箭頭 |
+| 格線隱藏 | 只剩外框和格子分隔線 |
+| 象限標題移到格子內 | 每個標題成為格子標題而不是角落覆蓋層 |
+| 項目堆疊為條列清單 | 同一象限的多個條目由上到下堆疊 |
+
+### `Q1` … `Q4` 簡寫（僅限 2×2）
+
+對於 2×2 範本，使用 `Qn: "item"` 代替較長的 `cell (col, row) label: "item"` 形式。對應關係：
+
+| 簡寫 | 格子 | Eisenhower | Johari |
+|---|---|---|---|
+| `Q1:` | 右上 | 排程（Schedule） | 盲點（Blind） |
+| `Q2:` | 左上 | 立刻做（Do First） | 開放區（Open / Arena） |
+| `Q3:` | 左下 | 刪除（Delete） | 隱藏區（Hidden / Façade） |
+| `Q4:` | 右下 | 委派（Delegate） | 未知區（Unknown） |
+
+重複使用同一簡寫鍵以在同一格子新增多個項目：
+
+```
+Q2: "Ship hotfix"
+Q2: "Customer demo prep"
+```
+
+對於 3×3 格線（9-box），直接使用 `cell (col, row) label: "…"`——`Q` 簡寫僅限 2×2。
+
+### 何時使用表格 vs 散布圖
+
+| 使用 `style: table` 的情況 | 使用散布圖（預設）的情況 |
+|---|---|
+| 有任務清單的 Eisenhower | 有 `size:` 工作量權重的 Eisenhower |
+| Johari 窗口輔導 | 泡泡 = 營收的 Impact-Effort |
+| 待辦事項分組（無數字第三維度） | RICE / BCG 投資組合（第三維度即泡泡大小） |
+| 9-box 人才評估 | 有數字嚴重性的風險熱點圖（5×5） |
+
+<Playground initial={`matrix eisenhower "This Week"
+style: table
+Q2: "Ship hotfix"
+Q2: "Customer demo prep"
+Q1: "Write Q3 OKRs"
+Q1: "Refactor auth layer"
+Q4: "LinkedIn updates"
+Q3: "Reorganize Slack channels"`} height={420} />
+
+---
+
+## 14. 保留字與跳脫
+
+**行首保留字：** `matrix`（標頭）、`x-axis:`、`y-axis:`、`quadrant`、`config:`、`title:`、`rows:`、`cols:`、`grid:`、`axis:`、`margins:`、`cell`。在 **SIPOC** 模式中：`suppliers:`、`inputs:`、`process:`、`outputs:`、`customers:`。在 **QFD** 模式中：`what:`、`how:`、`rel`、`roof`、`normalize:`。
+
+**資料點行必須以引號字元開頭**（`"` 或 `'`）。不以引號開頭的行不被視為資料點。
+
+**軸標籤中含空格的字串**不需要引號——冒號後的文字（以及箭頭後的文字）按字面取用。在資料點的 `note:` 和 `label:` 屬性中，使用雙引號。
+
+---
+
+## 15. 常見錯誤
+
+| 你寫的 | 解析器的回應 | 修正方式 |
+|---|---|---|
+| `"Fix bug" at (1, 2)` | 資料點解析；x=1 被夾住，y=1 被夾住；顯示超出圖表徽章 | 保持座標在 [0.0, 1.0] 內，或接受夾住徽章 |
+| `quadrant 1 "Quick Wins"`（無 Q 前綴） | 接受——`Q` 前綴可省略 | `quadrant 1` 和 `quadrant Q1` 均有效 |
+| `config: gridLines: false`（同一行） | 只識別 `config:` 關鍵字；`gridLines: false` 靜默忽略 | 在 `config:` 下方獨立縮排行放置選項 |
+| `x-axis: "Low" → "High"`（引號標籤） | 引號內找不到箭頭——被視為純文字 | 去掉引號：`x-axis: Low → High` |
+| `matrix heatmap` 無尺寸 | 預設為 2×2；rows/cols 指令設定實際大小 | 在標頭上指定尺寸：`matrix heatmap 4x4` |
+| `cell (0, 0) level: Strong`（大寫 S） | `level` 匹配不區分大小寫——接受 | `strong` 和 `Strong` 均有效 |
+| `shape: oval` | 未知的形狀值——靜默忽略 | 使用 `circle`、`square`、`triangle` 或 `diamond` |
+| 在有任務清單的 Eisenhower 上的 `"Fix bug" at (0.1, 0.9)` | 有效的散布資料點——但你可能想要格子裡的清單 | 加上 `style: table` 並改用 `Q2: "Fix bug"` |
+| 在 3×3 範本上的 `Q1: "item"` | `Q` 簡寫被解析為資料點行——靜默丟棄 | 3×3 格線使用 `cell (col, row) label: "item"` |
+
+---
+
+## 16. 語法（EBNF）
+
+```text
+document     = header directive*
+
+header       = "matrix" ( template-name | mode-header | title )? NEWLINE
+template-name = "eisenhower"|"impact-effort"|"rice"|"bcg"|"ansoff"|"johari"|"9-box"|"risk-matrix"
+mode-header  = ( "heatmap" | "correlation" ) ( number "x" number )? title?
+             | ( "sipoc" | "qfd" | "punnett" ) title?
+title        = quoted-string | bare-text
+
+directive    = x-axis | y-axis | quadrant-dir | config-block
+             | point | cell | q-short | rows-dir | cols-dir | grid-dir
+             | style-dir | title-dir | axis-dir | margins-dir
+             | sipoc-col | qfd-what | qfd-how | qfd-rel | qfd-roof | normalize-dir
+             | punnett-cross | punnett-trait
+             | comment | blank
+
+# SIPOC mode
+sipoc-col    = ( "suppliers:" | "inputs:" | "process:" | "outputs:" | "customers:" )
+               WS quoted-string ( "," quoted-string )* NEWLINE
+
+# QFD / House of Quality mode
+qfd-what     = "what:" WS quoted-string WS "weight:" number NEWLINE
+qfd-how      = "how:" WS quoted-string ( WS "dir:" ( "up" | "down" ) )? NEWLINE
+qfd-rel      = "rel" WS "(" number "," number ")" ":" WS ( "9" | "3" | "1" ) NEWLINE  # (row, col)
+qfd-roof     = "roof" WS "(" number "," number ")" ":" WS ( "++" | "+" | "-" | "--" ) NEWLINE  # (how, how)
+normalize-dir = "normalize:" WS "true" NEWLINE
+
+# Punnett (Mendelian genetics) mode
+punnett-cross = ( "cross:" | "parents:" ) WS genotype WS ( "x" | "×" | "*" ) WS genotype NEWLINE
+punnett-trait = "trait" WS letter ":" WS quoted-string WS "/" WS quoted-string NEWLINE  # dominant / recessive
+genotype     = ( letter letter )+   # allele pairs grouped by letter; case = dominance, e.g. "RrYy"
+
+x-axis       = "x-axis:" WS axis-spec NEWLINE
+y-axis       = "y-axis:" WS axis-spec NEWLINE
+axis-spec    = text arrow text  |  text   # plain text → high label only
+arrow        = "→" | "->" | "↑" | "←" | "<-" | "<" | "↓"
+
+quadrant-dir = "quadrant" WS "Q"? digit WS quoted-string ( WS "description:" quoted-string )? NEWLINE
+
+config-block = "config:" NEWLINE ( INDENT key ":" WS value NEWLINE )*
+
+point        = quoted-string WS "at" WS "(" number "," number ")" ( WS point-prop )* NEWLINE
+point-prop   = "size:" number
+             | "category:" bareword
+             | "color:" hex-color
+             | "shape:" ( "circle"|"square"|"triangle"|"diamond" )
+             | "highlight:" "true"
+             | "note:" quoted-string
+             | "label:" quoted-string
+
+cell         = "cell" WS "(" digit "," digit ")" ( WS cell-prop )* NEWLINE
+cell-prop    = "value:" number
+             | "label:" quoted-string
+             | "level:" ( "strong" | "medium" | "weak" )
+
+style-dir    = "style:" WS "table" NEWLINE
+q-short      = "Q" ( "1" | "2" | "3" | "4" ) ":" WS quoted-string NEWLINE   # 2×2 only
+
+rows-dir     = "rows:" WS label-list NEWLINE
+cols-dir     = "cols:" WS label-list NEWLINE
+grid-dir     = "grid:" WS number "x" number NEWLINE
+axis-dir     = "axis:" WS ( "off" | "on" | "auto" ) NEWLINE
+margins-dir  = "margins:" WS ( "true" | "false" | "on" | "1" ) NEWLINE
+
+label-list   = "[" text ("," text)* "]" | text ("," text)*
+quoted-string = '"' any-char-but-quote* '"' | "'" any-char-but-quote* "'"
+comment      = "#" any NEWLINE
+```
+
+權威來源：`src/diagrams/matrix/parser.ts`。若本頁與解析器有出入，以解析器為準——請開立 issue 回報。
+
+---
+
+## 17. 標準合規性
+
+Schematex 矩陣圖實作了**波士頓顧問集團（1970）**、**艾森豪決策矩陣**、**Ansoff 成長矩陣**和 **Johari 窗口**框架使用的標準 2×2 象限慣例。9 宮格遵循 **McKinsey/GE 人才評估**慣例（3×3，績效 × 潛力）。熱點圖和相關性矩陣模式沒有遵循特定的外部命名標準，但使用了 Excel 條件格式化和 R 的 `corrplot` 等工具中常見的通用格子強度編碼。
+
+目前已實作的內容：
+
+- ✅ 帶自訂軸和象限標籤的 2×2 象限模式
+- ✅ 3×3 象限模式（`9-box` 範本）
+- ✅ 帶 `level:` 和 `value:` 格子的 N×M 熱點圖模式
+- ✅ N×M 相關性矩陣模式
+- ✅ SIPOC 模式——五欄式供應商 · 輸入 · 流程 · 輸出 · 客戶範疇表（六標準差 DMAIC 定義階段）
+- ✅ QFD / 品質屋模式——WHAT × HOW 格線、9 / 3 / 1 關係量表、**計算式**技術重要度列（含 `normalize: true` 百分比），以及 HOW × HOW 相關性屋頂（`++` / `+` / `-` / `--`）
+- ✅ Punnett 模式——從兩個親代基因型計算孟德爾交配；引擎**計算**配子、後代格線，以及基因型 + 表現型比例（單基因雜交 3:1、雙基因雜交 9:3:3:1）；等位基因大小寫 = 顯性關係；可選的 `trait` 表現型名稱；單/雙/三基因雜交（2×2 / 4×4 / 8×8）
+- ✅ 八種內建範本（eisenhower、impact-effort、rice、bcg、ansoff、johari、9-box、risk-matrix）
+- ✅ 資料點屬性：size、category、color、shape、highlight、note
+- ✅ 反向軸（`←` / `<-`）
+- ✅ 設定區塊（quadrantBg、gridLines、axisArrows、bubbleScale、legendPosition、labelCollision、offChartPolicy）
+- ✅ `style: table` ——格子內文字佈局，帶 `Q1`…`Q4` 簡寫（2×2）和堆疊條列清單
+- ⏳ 資料點上的 `label:` 覆寫（已解析，算圖器支援待完成）
+- ⏳ 超出圖表的 `drop` 策略（已解析，算圖器目前始終以夾住徽章處理）
+- ⏳ `margins:` 相關性評分/排名側邊欄（已解析，尚未算圖）
+
+參考資料：
+
+- Henderson, B. (1970). *The Product Portfolio.* Boston Consulting Group.
+- Covey, S. (1989). *The 7 Habits of Highly Effective People.* （Eisenhower 矩陣的普及）
+- Ansoff, H.I. (1957). "Strategies for Diversification." *Harvard Business Review*.
+- Akao, Y. (1990). *Quality Function Deployment: Integrating Customer Requirements into Product Design.* Productivity Press. （品質屋）
+- Pyzdek, T. & Keller, P. (2018). *The Six Sigma Handbook* (5th ed.). McGraw-Hill. （DMAIC 定義階段的 SIPOC）
+- Punnett, R.C. (1905). *Mendelism.* Macmillan. （龐奈特方格）；Mendel, G. (1866). "Versuche über Pflanzenhybriden."
+
+---
+
+## 18. 路線圖
+
+**計畫中——目前尚無法解析。** 請勿在今天生成的 DSL 中使用；解析器會拒絕或忽略它們。
+
+- **泳道 / 區域覆蓋層** — 在格線後方繪製的命名矩形高亮區域。
+- **閾值線** — 帶標籤的水平或垂直參考線（例如「損益平衡」線）。
+- **泡泡內標籤** — 將資料點標籤印在泡泡內而非旁邊的選項。
+- **匯出為表格** — 在 SVG 旁邊輸出結構化 CSV / JSON 以供試算表匯入。
+- **4×4 及自訂標籤象限模式** — 在象限（泡泡圖）模式下任意 NxM 帶標籤格子，而不只是熱點圖。
+
+如果你需要其中任何功能，請在 GitHub issues 中追蹤進度。
+
+---
+
+## 相關範例
+
+範例庫中的現成情境：
+
+<RelatedExamples slugs={[
+  'matrix-eisenhower-week',
+  'matrix-impact-effort',
+  'matrix-johari-window',
+  'matrix-9-box-talent',
+  'matrix-bcg-portfolio',
+  'matrix-punnett-monohybrid',
+  'matrix-punnett-dihybrid',
+  'matrix-punnett-testcross',
+]} />

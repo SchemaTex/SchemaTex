@@ -8,7 +8,7 @@ import { getRepoStats } from '@/lib/github-stats';
 
 export default async function Page(props: { params: Promise<{ slug?: string[] }> }) {
   const params = await props.params;
-  const page = source.getPage(params.slug);
+  const page = source.getPage(params.slug, 'en');
   if (!page) notFound();
 
   const MDX = page.data.body;
@@ -27,12 +27,12 @@ export default async function Page(props: { params: Promise<{ slug?: string[] }>
 }
 
 export function generateStaticParams() {
-  return source.generateParams();
+  return source.generateParams().filter((p) => p.lang === 'en').map(({ slug }) => ({ slug }));
 }
 
 export async function generateMetadata(props: { params: Promise<{ slug?: string[] }> }) {
   const params = await props.params;
-  const page = source.getPage(params.slug);
+  const page = source.getPage(params.slug, 'en');
   if (!page) notFound();
 
   const docSlug = params.slug?.[0];

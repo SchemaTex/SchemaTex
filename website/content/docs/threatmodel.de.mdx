@@ -1,0 +1,122 @@
+---
+title: Bedrohungsmodell (STRIDE DFD)
+description: Sicherheits-Datenflussdiagramme, bei denen die Engine STRIDE-Bedrohungen pro Element zuordnet und jede Vertrauensgrenzen-Überquerung markiert.
+---
+
+## Über Bedrohungsmodelle
+
+Ein **Bedrohungsmodell** ist ein sicherheitsbezogenes **Datenflussdiagramm** (DFD), das mit Vertrauensgrenzen annotiert ist: **externe Entitäten** (Benutzer, Dritte), **Prozesse** (Dienste), **Datenspeicher** (Datenbanken, Protokolle) und die **Flüsse** zwischen ihnen. Das **STRIDE**-Framework von Microsoft – Spoofing, Tampering, Repudiation, Information disclosure, Denial of service, Elevation of privilege – klassifiziert die Bedrohungen, denen jedes Element ausgesetzt ist. Die Referenz ist Shostack, *Threat Modeling: Designing for Security* (2014).
+
+Der Vorteil von Schematex liegt darin, dass die Engine **die STRIDE-pro-Element-Analyse durchführt**, nicht nur die Boxen zeichnet. Sie wendet das kanonische Element→Bedrohungs-Mapping an, fügt Repudiation bedingt zu Log-/Audit-Speichern hinzu und – am nützlichsten – **markiert jeden Fluss, der eine Vertrauensgrenze überquert**, da dort Spoofing, Tampering und Information Disclosure konzentriert auftreten.
+
+<Playground initial={`threatmodel "Web App"
+external: User
+process 1.1: Web Server
+datastore D1: User DB
+datastore D2: Audit Log
+User -> 1.1 : "HTTPS Request"
+1.1 -> D1 : Lookup
+1.1 -> D2 : Auth Event
+boundary "Internet" { User }
+boundary "DMZ" { 1.1 }
+boundary "Internal" { D1, D2 }`} height={520} />
+
+---
+
+## 1. Ihr erstes Bedrohungsmodell
+
+Beginnen Sie mit dem Schlüsselwort `threatmodel` (Alias `stride`), einem optionalen Titel, dann **deklarieren Sie Elemente** und **verdrahten Sie Flüsse**:
+
+```
+threatmodel "Login flow"
+external: User
+process 1.1: Web Server
+datastore D1: User DB
+User -> 1.1 : "Login request"
+1.1 -> D1 : Lookup
+```
+
+Jedes Element ist `kind: ID: Label` (oder `kind: Label`, wobei die ID aus dem Label generiert wird – `external: Mobile App` wird zur ID `Mobile_App`). Ein Fluss ist `QUELLE -> ZIEL : label`, und das **Label ist obligatorisch** (es benennt die durchlaufenden Daten).
+
+---
+
+## 2. Elementtypen und Flüsse
+
+```
+external: User              # externe Entität (die Angreiferseite)
+process 1.1: Web Server     # ein Prozess / Dienst
+datastore D1: User DB       # ein Datenspeicher
+datastore D2: Audit log     # ein Log-/Audit-Speicher (erhält bedingte Repudiation)
+User -> 1.1 : "HTTPS Request"   # gerichteter Fluss, in Anführungszeichen oder ohne
+1.1 <-> D1 : Read/Write         # <-> expandiert in zwei gerichtete Flüsse
+```
+
+- Prozess-IDs sind oft gepunktete DFD-Nummern (`1.1`, `2.3`); externe/Speicher-IDs sind üblicherweise kurze Slugs (`User`, `D1`).
+- Ein `<->`-Fluss expandiert in **zwei** gerichtete Flüsse.
+- Ein Speicher, dessen Name/ID `log|audit|journal` entspricht (oder einen expliziten Hinweis trägt), wird als Log-Speicher behandelt.
+
+**Flussregeln**, die die Engine durchsetzt: keine Speicher→Speicher-Flüsse (Datenspeicher sind passiv), keine extern→extern-Flüsse, und jeder Endpunkt muss ein deklariertes Element sein.
+
+---
+
+## 3. Vertrauensgrenzen
+
+```
+boundary "Internet"  { User }
+boundary "DMZ"       { 1.1 }
+boundary "Internal"  { D1, D2 }
+```
+
+`boundary "name" { id, id, … }` gruppiert Elemente in eine Vertrauenszone. Ein Element darf **höchstens einer** Grenze angehören; Mitglieder müssen deklariert sein. Elemente in keiner Grenze teilen eine implizite nicht vertrauenswürdige Zone.
+
+---
+
+## 4. Berechnete STRIDE-Analyse
+
+Dies ist das Alleinstellungsmerkmal. Die Engine wendet das **STRIDE-pro-Element**-Mapping an:
+
+| DFD-Element         | Angewandte Bedrohungen   |
+|---------------------|--------------------------|
+| Externe Entität     | S, R                     |
+| Prozess             | S, T, R, I, D, E         |
+| Datenspeicher       | T, I, D (+ R wenn Log)   |
+| Datenfluss          | T, I, D                  |
+
+- Die Datenspeicher-**Repudiation** ist bedingt – sie wird für Log-/Audit-/Journal-Speicher hinzugefügt (das grüne "?" von Shostack).
+- **Grenzüberquerung**: Ein Fluss, dessen Endpunkte in verschiedenen Vertrauenszonen liegen, wird markiert, da dort Spoofing / Tampering / Information Disclosure konzentriert auftreten. Zwei Elemente in derselben (oder impliziten) Zone überqueren keine Grenze.
+
+Jedes Element und jeder Fluss trägt seine anwendbaren STRIDE-Kategorien in `data-*`, damit die Analyse inspizierbar ist.
+
+---
+
+## 5. Häufige Fehler
+
+```
+# FALSCH — Fluss ohne Label
+User -> 1.1
+
+# FALSCH — Speicher zu Speicher (Datenspeicher sind passiv)
+D1 -> D2 : x
+
+# FALSCH — extern zu extern
+A -> B : x
+
+# FALSCH — unbekannter Fluss-Endpunkt
+P -> Ghost : x
+
+# FALSCH — ein Element in zwei Grenzen
+boundary "A" { P }
+boundary "B" { P }
+```
+
+Jeder Fluss benötigt ein Label; Speicher und externe Entitäten können keine Flusspartner mit ihresgleichen sein; Endpunkte müssen deklariert sein; ein Element gehört zu höchstens einer Vertrauensgrenze. Doppelte IDs werden abgelehnt.
+
+---
+
+## 6. Standardkonformität
+
+Das Elementvokabular, die DFD-Konventionen und die STRIDE-Tabelle pro Element folgen Shostack (2014) und dem Microsoft Threat Modeling Tool. Die bedingte Log-Speicher-Repudiation und die Betonung der Vertrauensgrenzüberquerung entsprechen dem veröffentlichten STRIDE-pro-Element-Diagramm.
+
+## 7. Roadmap
+
+Zurückgestellt: DREAD-/Risikobewertung, Bedrohungs-Minderungsverknüpfung, Multi-Prozess-Dekomposition (DFD-Ebenen) und Attack-Tree-Drill-Down.

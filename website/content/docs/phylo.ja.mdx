@@ -1,0 +1,357 @@
+---
+title: 系統樹
+---
+
+## 系統樹について
+
+**系統樹**（フィログラムまたはクラドグラムとも呼ばれる）は、種・遺伝子・配列のグループの推定された進化史を示します。内部ノードは仮想的な共通祖先を表し、先端（チップ）は観察された分類群を表します。枝の長さは進化的距離または分岐時間をエンコードします。進化生物学者・分子生態学者・臨床微生物学者が、生命の歴史の再構築、病原体のアウトブレーク追跡、遺伝子ファミリーの進化の理解に系統樹を使用します。
+
+Schematex は**[Newick フォーマット](https://phylipweb.github.io/phylip/newicktree.html)**を受け付けます — PAUP\*、IQ-TREE、RAxML、BEAST、およびほぼすべての系統解析プログラムが使用する普遍的な交換標準であり、ブートストラップ値とクレードメタデータのための**[NHX アノテーション](https://home.cc.umanitoba.ca/~psgendb/doc/atv/NHX.pdf)**で拡張されています。手書きのツリーのためのインデントベースの DSL もサポートされています。このページでは、現在パーサーが受け付ける構文を説明します。
+
+<Playground initial={`phylo "Vertebrate Evolution" [layout: circular, mode: phylogram]
+  newick: "(((Human:0.1,Chimp:0.08,Gorilla:0.12):0.15,(Mouse:0.45,Rat:0.42):0.3):0.05,((Dog:0.35,(Cat:0.30,Tiger:0.32):0.1):0.2,(Whale:0.6,Dolphin:0.55):0.15):0.3,(Salmon:0.5,Zebrafish:0.45):0.4);"
+  clade Primates = (Human, Chimp, Gorilla) [color: "#1E88E5", label: "Primates", highlight: both]
+  clade Rodents = (Mouse, Rat) [color: "#E53935", label: "Rodents", highlight: background]
+  clade Carnivora = (Dog, Cat, Tiger) [color: "#43A047", label: "Carnivora", highlight: both]
+  clade Cetacea = (Whale, Dolphin) [color: "#FB8C00", label: "Cetacea", highlight: background]
+  scale "substitutions/site"`} height={540} />
+
+---
+
+## 1. はじめての系統樹
+
+最小限の実用的なツリー：4つの分類群、2つのクレード。
+
+<Playground initial={`phylo "Vertebrates"
+  newick: "((Human:0.1,Chimp:0.08):0.03,(Dog:0.35,Cat:0.30):0.2);"`} />
+
+以下の3つのルールで利用の80%をカバーできます。
+
+1. `phylo` で始め、オプションで引用符付きタイトルとブラケットの props を続けます。
+2. `newick:` フォーマットでツリートポロジーを提供します — 標準 Newick 文字列を引用符で囲み、1行に記述します。末尾の `;` はオプションです。
+3. オプションで、newick 行の下に**クレード**ハイライトグループと**スケール**ラベルを定義します。
+
+> コメントは単独行で `#` で始める必要があります。末尾インラインコメントはサポートされていません。
+
+---
+
+## 2. 入力フォーマット
+
+### 2.1 Newick フォーマット
+
+Newick が主要な入力です。完全な文法は以下の通りです。
+
+```
+(A,B,(C,D));                         # topology only
+(A:0.1,B:0.2,(C:0.3,D:0.4):0.5);    # with branch lengths
+((A:0.1,B:0.2):0.05[&&NHX:B=98],(C,D):0.08);  # NHX bootstrap
+('Homo sapiens':0.1,'Mus musculus':0.2);        # quoted names with spaces
+```
+
+枝の長さはコロンの後のノード名に続きます。内部ノードのサポート値はプレーンブラケット `[95]` または NHX `[&&NHX:B=95]` として表示できます。
+
+<Playground initial={`phylo "Newick examples"
+  newick: "((A:0.1,B:0.2):0.05[&&NHX:B=98],(C:0.3,D:0.4):0.08[&&NHX:B=87]);"`} />
+
+**パーサーが受け付ける Newick のルール：**
+
+| 機能 | 構文 | 備考 |
+|---|---|---|
+| リーフ名 | `A`、`Homo_sapiens` | スペースなし — `_` を使うか引用符で囲む |
+| 引用符付きリーフ名 | `'Homo sapiens'` | シングルクォート。`''` は内部のリテラルクォート |
+| 枝の長さ | `:0.035`（名前の後）| 浮動小数点。オプション |
+| 内部ノード名 | `(A,B)ancestor` | 閉じ `)` の後 |
+| ブートストラップ（プレーン）| `(A,B)[95]` | ブラケット内の整数または浮動小数点 |
+| ブートストラップ（NHX）| `(A,B)[&&NHX:B=95]` | `B=` フィールド。他の NHX フィールドは格納されるが描画されない |
+| セミコロン | `;`（末尾）| オプション — パーサーが削除 |
+| ポリトミー | `(A,B,C)` | 3つ以上の子 |
+
+### 2.2 インデント DSL
+
+手書きまたは小さなツリーには、生の Newick より読みやすく編集しやすいインデントベースの代替手段を提供します。
+
+<Playground initial={`phylo "Vertebrates (indent DSL)" [mode: phylogram]
+root:
+  :0.03
+    Human: 0.1
+    Chimp: 0.08
+  :0.2
+    Dog: 0.35
+    Cat: 0.30
+scale "substitutions/site"`} />
+
+**インデント DSL のルール：**
+
+| 構文 | 意味 |
+|---|---|
+| `Name: length` | 枝の長さを持つリーフノード |
+| `: length` | 枝の長さを持つ無名内部ノード |
+| `Name` | 枝の長さなしのリーフノード（クラドグラム）|
+| `Name [N]` | サポート値 N を持つノード |
+| 深いインデント | 浅いインデントの上のノードの子 |
+| `#` 行 | コメント、無視される |
+
+スペースなしで `:` で終わる最初の行がインデントツリーモードをトリガーします（例：`root:`）。コロンの前の名前がルートラベルになり、その下のすべてのインデント行が子になります。
+
+---
+
+## 3. レイアウト
+
+ヘッダーブラケットでレイアウトを設定します：`phylo "Title" [layout: rectangular]`。
+
+| レイアウト | 値 | 説明 |
+|---|---|---|
+| 矩形 | `rectangular` | デフォルト。L字形の枝。ルートが左、先端が右 |
+| 斜め | `slanted` | 親から子への斜線。よりコンパクト |
+| 円形 | `circular` | ルートが中心、先端が円周に広がる |
+| 無根 | `unrooted` | 等角放射状。距離を重視し、祖先関係を重視しない |
+
+`[unrooted]` を単独フラグとして使うと `[layout: unrooted]` と同等です。
+
+**円形** — ルートが中心、先端が外側に広がります。クレードハイライトを持つ多分類群ツリーで最も視覚的に印象的です。
+
+<Playground initial={`phylo "Vertebrates — circular" [layout: circular]
+  newick: "((Human:0.1,Chimp:0.08,Gorilla:0.12):0.15,(Dog:0.35,Cat:0.30,Wolf:0.32):0.2,(Salmon:0.5,Zebrafish:0.45):0.3);"
+  clade Primates = (Human, Chimp, Gorilla) [color: "#1E88E5", label: "Primates", highlight: both]
+  clade Carnivora = (Dog, Cat, Wolf) [color: "#E53935", label: "Carnivora", highlight: both]`} height={440} />
+
+**矩形** — L字形の枝。ルートが左、先端が右。発表用図のための古典的なフィログラム形式です。
+
+<Playground initial={`phylo "Bacterial Diversity" [layout: rectangular, mode: phylogram]
+  newick: "((((Ecoli:0.1,Salmonella:0.12):0.05[&&NHX:B=98],Vibrio:0.2):0.08,((Bacillus:0.15,Staph:0.18):0.06[&&NHX:B=92],Listeria:0.22):0.1):0.15,((Myco_tb:0.3,Myco_leprae:0.28):0.12[&&NHX:B=100],(Strepto:0.25,Lactobacillus:0.2):0.08):0.2);"
+  clade Gamma = (Ecoli, Salmonella, Vibrio) [color: "#1E88E5", label: "γ-Proteobacteria"]
+  clade Firmi = (Bacillus, Staph, Listeria) [color: "#E53935", label: "Firmicutes"]
+  scale "substitutions/site"`} height={480} />
+
+**斜め** — 親から子への斜線。矩形よりコンパクトで、同じ左から右への読み方向です。
+
+<Playground initial={`phylo "Vertebrates — slanted" [layout: slanted]
+  newick: "((Human:0.1,Chimp:0.08,Gorilla:0.12):0.15,(Dog:0.35,Cat:0.30,Wolf:0.32):0.2,(Salmon:0.5,Zebrafish:0.45):0.3);"
+  clade Primates = (Human, Chimp, Gorilla) [color: "#1E88E5", label: "Primates"]
+  clade Carnivora = (Dog, Cat, Wolf) [color: "#E53935", label: "Carnivora"]
+  scale "substitutions/site"`} height={360} />
+
+**無根** — 等角放射状レイアウト。ルートを重視せず、すべての分類群間のペアワイズ距離を強調します。
+
+<Playground initial={`phylo "Vertebrates — unrooted" [unrooted]
+  newick: "((Human:0.1,Chimp:0.08,Gorilla:0.12):0.15,(Dog:0.35,Cat:0.30,Wolf:0.32):0.2,(Salmon:0.5,Zebrafish:0.45):0.3);"
+  clade Primates = (Human, Chimp, Gorilla) [color: "#1E88E5", label: "Primates"]
+  clade Carnivora = (Dog, Cat, Wolf) [color: "#E53935", label: "Carnivora"]`} height={400} />
+
+---
+
+## 4. モード
+
+ヘッダーで `[mode: …]` を使って設定します（または本文の任意の場所に `style [mode: …]` 行を置きます）。
+
+| モード | 値 | 枝の長さの意味 |
+|---|---|---|
+| フィログラム | `phylogram` | デフォルト。進化的距離に比例（塩基置換/サイト）|
+| クラドグラム | `cladogram` | 無視 — 先端が整列。トポロジーのみ重要 |
+| クロノグラム | `chronogram` | 分岐時間に比例。すべての先端が「現在」に整列 |
+| デンドログラム | `dendrogram` | 枝の長さは**融合高さ** — 2つのクラスターが結合する距離 |
+
+クロノグラムには、時間単位の枝の長さと、ヘッダーに `[mrsd: "YYYY"]`（最新サンプリング日）が必要です。レンダラーが先端を現在に整列させるために使用します。
+
+```
+phylo "SARS-CoV-2 variants" [mode: chronogram, mrsd: "2023"]
+  newick: "((Alpha:0.5,Delta:0.4):0.3,Omicron:0.8);"
+  scale "years"
+```
+
+**デンドログラム** — 階層的凝集クラスタリングの標準的な出力であり、進化ではありません。各内部ノードはその**融合高さ**（2つの子クラスターが融合するコフェネティック距離）に配置され、すべての葉が共通のベースラインに整列し、枝は矩形のエルボーコネクターです。高さ軸が描画されるため、任意の2つの葉が最初にクラスターを共有する距離を読み取れます。同じ Newick/インデントツリーが系統ではなくクラスタリング結果を説明する場合に使用してください。たとえば、遺伝子発現クラスター、サンプル類似度、調査回答グループなどです。
+
+`cut <value>` 行を追加すると、選択した高さでツリーを切断します。融合高さがしきい値を下回るすべてのサブツリーが1つのフラットクラスターになり、それぞれが異なる色で着色され、その高さに破線のしきい値ラインが描画されます。これは scipy の `fcluster` に相当するデンドログラムの操作 — 連続ツリーを離散グループのセットに変換します。
+
+<Playground initial={`phylo "Gene expression clusters" [mode: dendrogram]
+  newick: "(((A:1,B:1):2,C:3):2,(D:2,E:2):3);"
+  cut 4
+  scale "cluster distance"`} />
+
+`cut` を省略すると、フラットクラスターの着色なしの純粋なデンドログラムが表示されます。
+
+<Playground initial={`phylo "Sample clustering" [mode: dendrogram]
+  newick: "(((A:1,B:1):2,C:3):2,(D:2,E:2):3);"
+  scale "cluster distance"`} />
+
+---
+
+## 5. クレードのハイライト
+
+`clade` 行は単系統群を色、オプションのラベル、オプションのハイライトモードでマークします。
+
+```
+clade ID = (member1, member2, ...) [color: "#hex", label: "text", highlight: mode]
+```
+
+| プロパティ | 値 | 効果 |
+|---|---|---|
+| `color:` | 16進文字列 例：`"#1E88E5"` | 枝および/または背景色 |
+| `label:` | 引用符付き文字列 | 右マージンに表示されるクレードラベル |
+| `highlight:` | `branch`、`background`、`both` | `branch` はラインを着色、`background` は領域をシェード、`both` は両方 |
+
+メンバーは Newick 文字列からの先端（葉）の ID です。レンダラーはリストされた先端の MRCA を計算し、そこをルートとするサブツリー全体をハイライトします。
+
+<Playground initial={`phylo "Mammal clades" [layout: rectangular]
+  newick: "(((Human:0.1,Chimp:0.08,Gorilla:0.12):0.15,Mouse:0.45):0.05,(Dog:0.35,(Cat:0.30,Tiger:0.32):0.1):0.2);"
+  clade Primates = (Human, Chimp, Gorilla) [color: "#1E88E5", label: "Primates", highlight: both]
+  clade Carnivora = (Dog, Cat, Tiger) [color: "#E53935", label: "Carnivora", highlight: branch]`} />
+
+---
+
+## 6. スケールバーとアウトグループ
+
+**スケールバー：** `scale "label"` — 下部にバーを追加します。ラベルは単位を説明します（例：`"substitutions/site"`、`"Mya"`）。枝の長さに意味がないクラドグラムモードでは省略してください。
+
+**アウトグループ：** `outgroup: taxonId` — ドキュメント用にアウトグループを記録します。レンダラーがアウトグループの分類群を視覚的にマークするために使用することがあります。
+
+```
+phylo "Vertebrates"
+  newick: "((Human:0.1,Chimp:0.08):0.03,Lamprey:0.8);"
+  outgroup: Lamprey
+  scale "substitutions/site"
+```
+
+---
+
+## 7. ヘッダー props リファレンス
+
+すべてのオプションは `phylo` ヘッダー行の `[…]` 内、または本文の任意の場所の `style […]` 行に記述します。
+
+| プロパティ | 値 | デフォルト | 効果 |
+|---|---|---|---|
+| `layout:` | `rectangular`、`slanted`、`circular`、`unrooted` | `rectangular` | ツリーレイアウト |
+| `mode:` | `phylogram`、`cladogram`、`chronogram`、`dendrogram` | `phylogram` | 枝の長さのセマンティクス |
+| `unrooted` | （フラグ）| — | `layout: unrooted` と同等 |
+| `branch-width:` | 数値 | `1.5` | 枝のストローク幅 |
+| `openAngle:` | 数値（度）| `0` | 円形レイアウトのファンギャップ（0 = 360° 全体）|
+| `mrsd:` | 引用符付き年文字列 | — | クロノグラムの最新サンプリング日 |
+
+---
+
+## 8. ラベルとコメント
+
+- **タイトル：** `phylo "Tree of Life"` — 最初の行のみ。
+- **スケールラベル：** `scale "substitutions/site"` — ドキュメントごとに1つ。
+- **クレードラベル：** `clade` 行内の `[label: "Primates"]`。
+- **コメント：** 行頭（先頭スペースの後）の `#`。末尾インラインコメントはサポートされていません。
+
+---
+
+## 9. よくある間違い
+
+| 書いた内容 | パーサーの応答 | 修正方法 |
+|---|---|---|
+| `newick: (A,B,C);`（引用符なし）| `PhyloParseError: Phylo document must start with 'phylo'` | Newick 文字列を引用符で囲む：`newick: "(A,B,C);"` |
+| スペースを含む先端名：`Homo sapiens:0.1` | `Homo` としてパースされる — スペースが引用符なしの名前を終了させる | アンダースコアを使う（`Homo_sapiens`）またはシングルクォートで囲む（`'Homo sapiens'`）|
+| `clade` の葉 ID が Newick 名と一致しない | クレードはサイレントに0メンバーになり、ハイライトなし | Newick 文字列に表示されているとおりの名前をコピーする |
+| `newick:` またはインデントツリーなしの `clade X = (A, B)` | `PhyloParseError: No tree definition found` | `newick:` 行またはインデントツリーブロックを追加する |
+| 枝の長さなしの `mode: chronogram` | レンダラーはすべての長さを0として扱い、先端がルートで重なる | Newick 文字列のすべてのエッジに `:length` を追加する |
+| `root:` 行が検出されない | `root:` 行の名前にスペースがある場合（例：`My root:`）、インデントツリーがトリガーされない | 単語1つのルートラベルまたは `root:` を使用する |
+| 内部ノード名を持つ Newick：`(A,B)ancestor:0.5` | 正常にパースされる — `ancestor` は内部ノードラベル | サポート済み。内部ノードに内部名が表示される |
+
+---
+
+## 10. 文法（EBNF）
+
+```text
+document        = header (blank | comment | newick-line | scale-line
+                    | outgroup-line | clade-line | style-line | cut-line | indent-line)*
+
+header          = "phylo" ( WS quoted-string )? ( WS "[" props "]" )? NEWLINE
+quoted-string   = '"' any-char-but-quote* '"'
+
+newick-line     = "newick:" WS quoted-newick NEWLINE
+scale-line      = "scale" ( WS quoted-string )? NEWLINE
+outgroup-line   = "outgroup:" WS id NEWLINE
+cut-line        = "cut" WS number NEWLINE       // dendrogram mode: flat-cluster threshold height
+clade-line      = "clade" WS id WS "=" WS "(" id ("," id)* ")"
+                    ( WS "[" clade-props "]" )? NEWLINE
+style-line      = "style" WS "[" props "]" NEWLINE
+
+// Indent tree — triggered by a line ending in ":" with no spaces
+indent-tree     = root-line indent-node*
+root-line       = id ":" NEWLINE
+indent-node     = INDENT ( id ":" length | ":" length | id ) ( WS "[" number "]" )? NEWLINE
+
+props           = prop ("," prop)*
+prop            = "layout:" layout-value
+                | "mode:" mode-value
+                | "unrooted"
+                | "branch-width:" number
+                | "openAngle:" number
+                | "mrsd:" quoted-string
+
+clade-props     = clade-prop ("," clade-prop)*
+clade-prop      = "color:" quoted-string
+                | "label:" quoted-string
+                | "highlight:" ( "branch" | "background" | "both" )
+
+layout-value    = "rectangular" | "slanted" | "circular" | "unrooted"
+mode-value      = "phylogram" | "cladogram" | "chronogram" | "dendrogram"
+
+// Newick grammar (embedded, parsed separately)
+newick          = subtree ";"?
+subtree         = leaf | internal
+internal        = "(" subtree ("," subtree)* ")" name? nhx? length?
+leaf            = name nhx? length?
+name            = unquoted-name | "'" single-quoted "'")
+length          = ":" number
+nhx             = "[" number "]"                     // plain bootstrap
+                | "[&&NHX:" nhx-pair (":" nhx-pair)* "]"
+nhx-pair        = key "=" value
+
+id              = [a-zA-Z] [a-zA-Z0-9_-]*
+number          = /[+-]?[0-9]+(\.[0-9]+)?([eE][+-]?[0-9]+)?/
+comment         = INDENT "#" any NEWLINE
+```
+
+権威ある情報源：`src/diagrams/phylo/parser.ts`。このドキュメントとパーサーが乖離している場合、パーサーが優先されます。Issue を立ててください。
+
+---
+
+## 11. 標準準拠
+
+Schematex の系統樹は、コアのツリーシリアライゼーションに**[Newick フォーマット仕様](https://phylipweb.github.io/phylip/newicktree.html)**（PHYLIP パッケージに記載）に従い、ブートストラップサポート値には**[NHX（New Hampshire Extended）](https://home.cc.umanitoba.ca/~psgendb/doc/atv/NHX.pdf)**の慣習を使用します。NHX ブラケットの `B=` フィールドのみが現在視覚的に描画されます。他のすべてのフィールドはパースされて格納されますが表示されません。
+
+現在実装済みのもの：
+
+- ✅ Newick トポロジー、枝の長さ、引用符付き名前、ポリトミー
+- ✅ ブートストラップ値 — プレーン `[95]` と NHX `[&&NHX:B=95]`
+- ✅ 矩形、斜め、円形、無根のレイアウト
+- ✅ フィログラム、クラドグラム、クロノグラムのモード
+- ✅ クレードハイライト（枝の色、背景シェーディング、両方）
+- ✅ スケールバー
+- ✅ インデント DSL の代替手段
+- ⏳ 複数ツリードキュメント（フォレスト）— §12参照
+- ⏳ クロノグラムの時間較正軸（地質スケール）
+- ⏳ 先端ごとのアイコンまたは画像
+- ⏳ `B=` 以外の NHX フィールド（種、分類、重複イベント）
+
+参考文献：
+
+- Felsenstein, J. (1986). The Newick tree format. PHYLIP documentation.
+- Zmasek, C.M. & Eddy, S.R. (2001). ATV: Display and manipulation of annotated phylogenetic trees. *Bioinformatics*, 17(4), 383–384. (NHX specification)
+- Felsenstein, J. (2004). *Inferring Phylogenies.* Sinauer Associates.
+
+---
+
+## 12. 関連サンプル
+
+<RelatedExamples slugs={[
+  'phylo-bacterial-diversity',
+]} />
+
+---
+
+## 13. ロードマップ
+
+**計画中 — 現在はパース不可。** 生成する DSL でこれらを使用しないでください。パーサーが拒否または無視します。
+
+- **複数ツリードキュメント** — 複数の `newick:` ブロックを持つ `phylo` ファイル（例：遺伝子ツリーと種ツリー）。
+- **クロノグラムの地質時間軸** — 平坦な数値スケールの代わりに、エポックラベル付きの X 軸（新生代/中生代など）。
+- **先端ごとのメタデータ** — クレード全体を宣言せずに個々の先端に形質や色付きマーカーを付ける（例：`tip Ecoli [color: "#F00", shape: star]`）。
+- **ブートストラップ以外の NHX フィールド** — 種（`S=`）、重複（`D=`）、転移イベント（`Tr=`）を枝記号として描画。
+- **タングルグラム** — 対応する先端を結ぶ接続線を持つ2つのツリーを並べて表示。
+
+早急に必要な場合は GitHub の Issue でトラッキングしてください。

@@ -1,0 +1,295 @@
+---
+title: Ecomap
+---
+
+## Über Ecomaps
+
+Eine **Ecomap** ist eine einzelne Seite, die eine Person oder Familie im Zentrum zeigt und das Geflecht äußerer Systeme — erweiterte Familie, Schule, Kirche, Klinik, Arbeitgeber, Selbsthilfegruppen — um sie herum anordnet. Jede Verbindungslinie dokumentiert die *Qualität* (stark, brüchig, belastend) und *Richtung* (wer gibt, wer nimmt) der Beziehung. Sozialarbeiterinnen und Sozialarbeiter, Schulberaterinnen und -berater, Fallmanagerinnen und -manager sowie Gemeindegesundheitspflegepersonal verwenden Ecomaps, um auf einen Blick zu sehen, wo eine Klientin oder ein Klient Halt findet und wo das Sicherheitsnetz dünn ist.
+
+Schematex folgt dem **[Hartman (1978)-Ecomap-Modell](https://journals.sagepub.com/doi/10.1177/104438947805900803)** — dem ursprünglichen *Social Casework*-Artikel, der die Notation eingeführt hat — ergänzt durch Konventionen aus der zeitgenössischen klinischen Sozialarbeitspraxis. Hintergrundinformationen finden Sie unter [Wikipedia: Ecomap](https://en.wikipedia.org/wiki/Ecomap). Diese Seite dokumentiert, was der Parser heute akzeptiert.
+
+<Playground initial={`ecomap "Nguyen Family Resettlement"
+  center: family [label: "Nguyen Family"]
+  resettlement [label: "IRC Office", category: government]
+  school [label: "Lincoln Elementary", category: education]
+  clinic [label: "Community Clinic", category: health]
+  caseworker [label: "Ms. Patel", category: mental-health]
+  temple [label: "Vietnamese Temple", category: cultural]
+  neighbors [label: "Sponsor Family", category: community]
+  employer [label: "Warehouse Job", category: work]
+  family === resettlement [label: "active case"]
+  family === school
+  clinic --> family [label: "vaccinations"]
+  caseworker <-> family [label: "weekly"]
+  family === temple [label: "anchor"]
+  neighbors === family [label: "housing host"]
+  family --- employer [label: "new, part-time"]`} height={520} />
+
+---
+
+## 1. Ihre erste Ecomap
+
+Die kleinste sinnvolle Ecomap: ein Zentrum und drei äußere Systeme.
+
+<Playground initial={`ecomap
+  center: client [label: "Maria"]
+  mom [label: "Mother", category: family]
+  work [label: "Tech Corp", category: work]
+  therapist [label: "Dr. Patel", category: mental-health]
+  mom === client
+  work --- client
+  therapist <-> client [label: "weekly"]`} />
+
+Vier Regeln decken 80 % der Nutzungsfälle ab:
+
+1. Beginnen Sie mit dem Schlüsselwort `ecomap`, optional gefolgt von einem Titel in Anführungszeichen.
+2. Deklarieren Sie das Zentrum in einer eigenen Zeile: `center: id [label: "…"]`. Genau ein Zentrum pro Diagramm.
+3. Deklarieren Sie jedes äußere System in einer eigenen Zeile: `id [label: "…", category: …]`.
+4. Verbinden Sie zwei deklarierte IDs mit einem **Verbindungsoperator** — `===` (stark), `---` (normal), `<->` (wechselseitig) usw. Siehe §3 für die vollständige Tabelle. Ein nachgestelltes `[label: "…"]` fügt eine Kantenbeschriftung hinzu.
+
+> Kommentare müssen in einer eigenen Zeile stehen und mit `#`, `//` oder Mermaid-ähnlichem `%%` beginnen. Nachgestellte Inline-Kommentare werden den Parser beschädigen.
+
+---
+
+## 2. Zentrum und äußere Systeme
+
+Jede Ecomap hat ein **Zentrum** und beliebig viele **äußere Systeme**. Beide verwenden dieselbe `id [attrs]`-Syntax; der einzige Unterschied ist das `center:`-Präfix.
+
+**ID-Regeln.** Muss dem Muster `[a-zA-Z][a-zA-Z0-9_-]*` entsprechen. IDs sind Groß-/Kleinschreibung-unabhängig; das ursprüngliche Token wird als Standard-Bezeichnung beibehalten.
+
+**Vom Parser heute akzeptierte Attribute:**
+
+| Attribut | Werte | Wirkung |
+|---|---|---|
+| `label:"…"` | beliebige Zeichenkette in Anführungszeichen | Überschreibt die Anzeigebezeichnung |
+| `category:…` | siehe §2.1 | Farbe / Gruppierung eines System-Knotens |
+| `size:…` | `small`, `medium`, `large` | Knotengröße |
+| `importance:…` | `major`, `moderate`, `minor` | Visuelles Gewicht |
+| `sector:…` | `top`, `right`, `bottom`, `left` | Hinweis, auf welcher Seite des Zentrums das System platziert werden soll |
+| `age:N` | z. B. `age:34` | Alter, das innerhalb eines personentypierten Zentrums angezeigt wird |
+| `male` / `female` / `unknown` | Flag | Geschlecht für ein personentypiertes Zentrum |
+
+### 2.1 Systemkategorien
+
+Kategorien codieren äußere Systeme nach dem Lebensbereich, dem sie angehören. Der Parser akzeptiert beliebige Zeichenketten — dies sind die Werte, für die der Renderer vordefinierte Farbpaletten hat:
+
+| Kategorie | Typische Beispiele |
+|---|---|
+| `family` | Erweiterte Familie, Schwiegereltern, Cousinen und Cousins |
+| `friends` | Freundinnen und Freunde, Nachbarinnen und Nachbarn |
+| `work` | Arbeitgeber, Kolleginnen und Kollegen |
+| `education` | Schule, Hochschule, Ausbildungsprogramm |
+| `health` | Hausarzt/-ärztin, Fachärzte/-ärztinnen, Krankenhaus |
+| `mental-health` | Therapeutin/Therapeut, Psychiaterin/Psychiater, Selbsthilfegruppe |
+| `religion` | Kirche, Tempel, spirituelle Gemeinschaft |
+| `recreation` | Sport, Hobbys, Vereine |
+| `legal` | Rechtsanwalt/-anwältin, Bewährungshilfe, Gericht |
+| `government` | Soziale Dienste, Wohnen, Einwanderung |
+| `financial` | Bank, Leistungen, Finanzhilfe |
+| `community` | Nachbarschaftsgruppen, Patinnen und Paten |
+| `cultural` | Kulturelle/ethnische Organisationen |
+| `substance` | Genesungsprogramme oder, wenn negativ, aktive Konsumquellen |
+| `technology` | Online-Gemeinschaft, Support-Forum |
+| `pet` | Haustiere, Assistenztiere |
+
+<Playground initial={`ecomap
+  center: client [label: "Marcus, age 15"]
+  mom [label: "Mother", category: family]
+  dad [label: "Father (divorced)", category: family]
+  school [label: "East High School", category: education]
+  coach [label: "Soccer Coach", category: community]
+  therapist [label: "Ms. Chen", category: mental-health]
+  mom === client
+  dad --- client [label: "EOW weekends"]
+  school === client
+  coach --> client [label: "mentor"]
+  therapist <-> client [label: "weekly"]`} />
+
+---
+
+## 3. Verbindungen
+
+Eine Verbindung ist eine Zeile: `vonId OP zuId`, optional gefolgt von `[label: "…"]`. Beide IDs müssen bereits deklariert sein (das Zentrum zählt dazu).
+
+### 3.1 Beziehungsqualitäts-Operatoren
+
+| Operator | Typ | Bedeutung |
+|---|---|---|
+| `===` | stark | Nah, unterstützend, hochfrequent |
+| `==` | mittel | Positiv, mäßige Beteiligung |
+| `---` | normal | Neutral / durchschnittlich |
+| `- -` | schwach | Brüchig, fragil, in der Anfangsphase |
+| `~~~` | belastend | Belastende Beziehung |
+| `~=~` | belastend-stark | Nah *und* belastend |
+| `~x~` | konflikthaft | Aktiver Konflikt |
+| `-/-` | unterbrochen | Getrennt, entfremdet, abgebrochen |
+
+### 3.2 Energiefluss-Operatoren
+
+Pfeilrichtung auf starke oder normale Linien aufsetzen:
+
+| Operator | Bedeutung |
+|---|---|
+| `-->` | Einseitig: Energie fließt vom Zentrum zum System |
+| `<--` | Einseitig: Energie fließt vom System zum Zentrum |
+| `<->` | Wechselseitig / bidirektional |
+| `===>` | Starker einseitiger Ausfluss (erschöpfend) |
+| `<===` | Starker einseitiger Einfluss (nährend) |
+| `<=>` | Starke Wechselseitigkeit |
+| `==>` | Mittlerer einseitiger Ausfluss |
+| `<==` | Mittlerer einseitiger Einfluss |
+
+Der Parser normalisiert die Richtung so, dass Pfeile relativ zum Zentrum gelesen werden. `family === resettlement` und `resettlement === family` zu schreiben ergibt dasselbe Diagramm; `clinic --> family` und `family <-- clinic` erzeugen entsprechend denselben Pfeil, der *von* der Klinik *zur* Familie zeigt.
+
+<Playground initial={`ecomap
+  center: client [label: "Rosa"]
+  mom [category: family]
+  ex [category: family]
+  aa [label: "AA Group", category: substance]
+  job [label: "Warehouse", category: work]
+  mom === client [label: "daily calls"]
+  ex ~x~ client [label: "custody disputes"]
+  aa <== client [label: "sponsor support"]
+  job - - client [label: "unstable hours"]`} />
+
+### 3.3 Kantenbeschriftungen
+
+Ein nachgestelltes `[label: "…"]` ist das einzige Attribut, das eine Verbindungszeile akzeptiert. Tragen Sie hier Zeitplan, Charakter oder eine kurze Notiz ein:
+
+```
+family === temple [label: "weekly service"]
+clinic --> family [label: "vaccinations"]
+caseworker <-> family [label: "every Tuesday"]
+```
+
+---
+
+## 4. Beschriftungen & Kommentare
+
+- **Titel:** `ecomap "Nguyen Family"` — nur in der ersten Zeile.
+- **Knotenbezeichnung überschreiben:** `family [label: "Die Nguyens"]`.
+- **Kantenbeschriftung:** nachgestelltes `[label: "…"]` in einer Verbindungszeile.
+- **Modus-Suffix:** `ecomap:strengths "Smith family"` wird akzeptiert. Das Suffix wird als `metadata.mode` gespeichert; aktuelle Renderer ignorieren es.
+- **Kommentare:** `#`, `//` oder `%%` am Anfang einer Zeile (nach führendem Leerzeichen). Nachgestellte Inline-Kommentare werden **nicht** unterstützt.
+
+```
+ecomap "Marcus Intake"
+  # Notizen der Sozialarbeiterin — in Ordnung
+  // ebenfalls in Ordnung
+  %% Mermaid-ähnliche Kommentare sind in Ordnung
+  mom [category: family]   # ← DIESER nachgestellte Kommentar beschädigt den Parser
+```
+
+---
+
+## 5. Reservierte Wörter & Maskierung
+
+**Am Zeilenanfang reserviert:** `ecomap`, `center:`.
+
+**Reservierte Operator-Token** innerhalb einer Zeile — vermeiden Sie diese Zeichenfolgen in IDs:
+`===`, `==`, `---`, `- -`, `~~~`, `~=~`, `~x~`, `-/-` und die in §3.2 aufgelisteten Richtungsvarianten.
+
+**Zeichenketten mit Leerzeichen** müssen in doppelte Anführungszeichen gesetzt werden: Titel und alle Bezeichnungen. Einfache Anführungszeichen und Backticks werden nicht erkannt.
+
+---
+
+## 6. Häufige Fehler
+
+Echte Parser-Fehler, deren Ursachen und Lösungen.
+
+| Sie haben geschrieben | Der Parser meldet | Lösung |
+|---|---|---|
+| `family -- school` | `Unexpected: family -- school` | Ecomap verwendet `===`/`---`/`<->` usw. `--` ist ein Genogramm/Pedigree-Operator |
+| `family === school`, wobei `school` nie deklariert wurde | Erstellt stillschweigend einen leeren `school`-Knoten ohne Bezeichnung/Kategorie | Systeme vor ihren Verbindungszeilen deklarieren |
+| Kein `center:` vorhanden | Wird gerendert, aber ohne visuellen Mittelpunkt-Anker | Jede Ecomap benötigt genau eine `center:`-Zeile |
+| Zwei `center:`-Zeilen | Nur die erste wird als Zentrum behandelt; die zweite wird ein reguläres System | Nur eine auswählen |
+| `family==school` (keine Leerzeichen) | `Unexpected: family==school` | Operatoren benötigen je ein Leerzeichen auf jeder Seite |
+| `family === school [weekly]` | Nacktes Token `weekly` wird als Eigenschafts-Flag geparst, keine Bezeichnung angezeigt | Verwenden Sie `[label: "weekly"]` |
+| `family === school # täglich` | Nachgestelltes `#` wird als Teil der Zeile verarbeitet | Kommentar in eine eigene Zeile darüber verschieben |
+
+---
+
+## 7. Grammatik (EBNF)
+
+```text
+document       = header (blank | comment | center | system | connection)*
+
+header         = "ecomap" ( ":" mode )? ( WS quoted-string )? NEWLINE
+mode           = [A-Za-z] [A-Za-z0-9_-]*
+quoted-string  = '"' any-char-but-quote* '"'
+
+center         = "center:" WS id ( "[" attrs "]" )? NEWLINE
+system         = id ( "[" attrs "]" )? NEWLINE
+connection     = id WS op WS id ( WS "[" "label:" quoted-string "]" )? NEWLINE
+
+op             = "===" | "==" | "---" | "- -" | "~~~" | "~=~" | "~x~" | "-/-"
+               | "===>" | "<===" | "<=>" | "==>" | "<=="
+               | "-->" | "<--" | "<->"
+
+id             = [a-zA-Z] [a-zA-Z0-9_-]*
+attrs          = attr ("," attr)*
+attr           = "label" ":" quoted-string
+               | "category" ":" category
+               | "size" ":" ("small" | "medium" | "large")
+               | "importance" ":" ("major" | "moderate" | "minor")
+               | "sector" ":" ("top" | "right" | "bottom" | "left")
+               | "age" ":" digits
+               | "male" | "female" | "unknown"
+               | key ":" value                  // benutzerdefiniert, als Metadaten gespeichert
+
+category       = "family" | "friends" | "work" | "education" | "health"
+               | "mental-health" | "religion" | "recreation" | "legal"
+               | "government" | "financial" | "community" | "cultural"
+               | "substance" | "technology" | "pet" | "other"
+
+comment        = ( "#" | "//" | "%%" ) any NEWLINE
+```
+
+Maßgebliche Quelle: `src/diagrams/ecomap/parser.ts`. Wenn diese Dokumentation vom Parser abweicht, hat der Parser Vorrang — bitte öffnen Sie ein Issue.
+
+---
+
+## 8. Normkonformität
+
+Schematex-Ecomaps folgen **Hartman (1978), *Diagrammatic Assessment of Family Relationships*** für die Kernnotation: ein umgrenztes Zentrum, umgeben von äußeren Systemen, mit Verbindungslinien, die sowohl Qualität als auch Richtung kodieren. Die Kategorie-Palette und der erweiterte Operatorensatz (belastend-stark, wechselseitige Pfeile) folgen Konventionen aus der zeitgenössischen klinischen Sozialarbeit und Pflegeforschung.
+
+Was heute implementiert ist:
+
+- ✅ Zentrum + radiale Struktur der äußeren Systeme
+- ✅ 8 Qualitätsoperatoren (stark / mittel / normal / schwach / belastend / belastend-stark / konflikthaft / unterbrochen)
+- ✅ 8 Richtungsoperatoren (einseitig und wechselseitig, in drei Intensitäten)
+- ✅ Kategorie-Farbkodierung (17 Kategorien)
+- ✅ Kantenbeschriftungen
+- ⏳ Eingebettetes Mini-Genogramm als Zentrum (siehe §10)
+- ⏳ Sektorbasierte Layout-Hinweise über die aktuellen vier Himmelsrichtungen hinaus
+
+Referenzen:
+
+- Hartman, A. (1978). Diagrammatic assessment of family relationships. *Social Casework*, 59(8), 465–476.
+- Ray, R.A. & Street, A.F. (2005). Ecomapping: An innovative research tool for nurses. *Journal of Advanced Nursing*, 50(5), 545–552.
+- Rempel, G.R., Neufeld, A., & Kushner, K.E. (2007). Interactive use of genograms and ecomaps in family caregiving research. *Journal of Family Nursing*, 13(4), 403–419.
+
+---
+
+## 9. Verwandte Beispiele
+
+Sofort verwendbare Szenarien aus der Beispielgalerie:
+
+<RelatedExamples slugs={[
+  'ecomap-refugee-resettlement',
+  'ecomap-teen-client',
+  'ecomap-substance-recovery',
+]} />
+
+---
+
+## 10. Roadmap
+
+**Geplant — noch nicht parsierbar.** Verwenden Sie diese nicht in generiertem DSL; der Parser wird sie zurückweisen oder stillschweigend ignorieren.
+
+- **Eingebettetes Mini-Genogramm als Zentrum** — Deklaration eines vollständigen Familienblocks innerhalb des `center:`-Knotens (eingerückte Paare und Kinder), sodass das Zentrum ein kleines Genogramm statt einer einzelnen Form ist. Der Parser liest aktuell eingerückte Inhalte unter `center:` als übersprungene Zeilen.
+- **Kategoriebasierte Standard-Pfeilsemantik** — z. B. automatisch gerichtete Pfeile für `health`-Systeme (einwärts) gegenüber `work`-Systemen (auswärts).
+- **Mehrfache Zentren** — Ecomaps für zwei Klientinnen/Klienten, die einige Systeme teilen.
+- **Benutzerdefinierte Farbüberschreibungen** — `[color: "#…"]` für ein System oder eine Verbindung.
+
+Verfolgen Sie den Fortschritt in den GitHub-Issues, wenn Sie diese Funktionen früher benötigen.

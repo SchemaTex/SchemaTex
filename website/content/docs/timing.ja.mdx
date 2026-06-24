@@ -1,0 +1,243 @@
+---
+title: タイミング図
+---
+
+## タイミング図とは
+
+**タイミング図**は、デジタル信号が時間とともにどのように変化するかを示します——クロックパルス、バス遷移、データ値、ハイインピーダンス状態——共有された時間軸を持つ水平波形バンドのセットとして描かれます。ハードウェアエンジニアはプロトコル動作の仕様記述、セットアップ・ホールド制約の検証、チップインターフェースの文書化に使用します。データシート、HDL シミュレーションレポート、デジタルシステムの教科書に登場します。
+
+Schematex は **[WaveDrom 互換](https://wavedrom.com/tutorial.html)** の信号記法を使用します——WaveDrom が先駆けた同じ波形文字（`0`、`1`、`x`、`z`、`p`、`=` など）とデータラベル構文——そのため既存の WaveDrom DSL はそのまま転用できます。このページでは、パーサーが現在受け付ける内容を説明します。
+
+<Playground initial={`timing "SPI Transaction"
+CLK:   pppppppp
+CS_N:  10000001
+MOSI:  x=======  data: ["0xAB","0xCD","0xEF","0x01","0x02","0x03","0x04","0x05"]
+MISO:  zzzz====  data: ["","","","","0xFF","0x12","0x34","0x56"]`} height={400} />
+
+---
+
+## 1. 最初のタイミング図
+
+最小限の実用的なタイミング図：クロックと1つのデータ信号。最も親しみやすい書き方は文字数のカウントをまったく必要としません：
+
+<Playground initial={`timing
+CLK:  clock 8
+RST:  rle 1*2 0*6
+DATA: 0011==00  data: ["A","B"]`} />
+
+3つのルールで使用例の80%をカバーできます：
+
+1. キーワード `timing` で始め、必要に応じて引用符付きのタイトルと `[hscale: N]` を続けます。
+2. 各信号は1行：`NAME: <wave>` ——名前、コロン、波形。波形は次のいずれかです：
+   - **`clock N`** — `N` 周期のクロックジェネレーター（ネガエッジクロックには `neg` を追加）。文字カウント不要。
+   - **`rle <state>*<count> …`** — ランレングスセグメント、例：`rle 1*2 0*6` = `11000000`。長さを自動整合。
+   - **生の WaveDrom 波形文字列** — 細かい制御のための状態文字の連続した並び（内部スペースなし）。
+3. データバスの値をラベリングするには、生の波形文字列の後に `data: ["val1", "val2"]` を追加します。
+
+> **整合のヒント：** タイミング図が壊れる一番の原因は信号の長さが不均等なことです。`clock N` と `rle` は各信号のセル数を明示的にするため、整合が取れます。セルごとの制御が必要な場合のみ生の波形文字列を使用してください。
+
+> コメントは独立した行で `#` から始める必要があります。
+
+---
+
+## 2. 波形文字
+
+波形文字列は文字のシーケンスで、1文字が1タイム周期を表します。パーサーは以下を受け付けます：
+
+| 文字 | 状態 | 意味 |
+|---|---|---|
+| `0` | ロジック低 | GND / VSS の信号 |
+| `1` | ロジック高 | VDD の信号 |
+| `x` | 不明 | ドントケア、未定義、または初期化されていない |
+| `z` | ハイ Z | トライステート / ハイインピーダンス |
+| `p` | クロックパルス（正） | 立ち上がりエッジアクティブクロック；`p` 1個 = 1完全周期（低→高→低） |
+| `P` | クロックパルス（正、高） | `p` と同じ、視覚的に高い |
+| `n` | クロックパルス（負） | 立ち下がりエッジアクティブ；`n` 1個 = 1完全周期（高→低→高） |
+| `N` | クロックパルス（負、高） | `n` と同じ、視覚的に高い |
+| `=` | バスデータ | 並列バスセグメント；`data: […]` でラベルを追加 |
+| `2`–`9` | 名前付きバスセグメント | `=` と同じ、位置で `data: […]` へのインデックス |
+| `.` | ホールド / 継続 | 前の状態をもう1周期延長 |
+| `h` / `H` | ホールド高 | この周期は強制高 |
+| `l` / `L` | ホールド低 | この周期は強制低 |
+| `u` | 立ち上がりエッジ | 低から高への対角線（遷移のみ） |
+| `d` / `D` | 立ち下がりエッジ | 高から低への対角線（遷移のみ） |
+
+<Playground initial={`timing "Wave character reference"
+clk:   pppppppppp
+high:  1111111111
+low:   0000000000
+unkn:  xxxxxxxxxx
+hiz:   zzzzzzzzzz
+bus:   x========x  data: ["ADDR","DATA","","","","","",""]
+hold:  0..1..0..1
+rise:  0u1
+fall:  1d0`} height={440} />
+
+---
+
+## 3. データラベル
+
+信号がバス値を持つ場合、`data: ["label1", "label2", …]` で波形にタグを付けます。空でない各引用符付き文字列は対応する `=`（または `2`–`9`）セグメント内に配置されます。
+
+```
+MOSI:  x=======  data: ["0xAB","0xCD","0xEF","0x01","0x02","0x03","0x04","0x05"]
+```
+
+空文字列 `""` はセグメントのラベルを付けないままにします（前の値を延長するセグメントに便利）。
+
+```
+MISO:  zzzz====  data: ["","","","","0xFF","0x12","0x34","0x56"]
+# 最初の4つの z 周期にはラベルなし；4つの = セグメントが 0xFF から始まるラベルを取得
+```
+
+<Playground initial={`timing "I2C read burst"
+SCL:   ppppppppppp
+SDA:   x1=======1x  data: ["ADDR+R","ACK","D0","D1","D2","D3","D4","D5","NACK"]`} />
+
+---
+
+## 4. 信号のグループ化
+
+関連する信号を `[GroupName]` ブロックにまとめます。`---` 行でグループを閉じ、グループ間の視覚的なセパレーターとしても機能します。
+
+```
+[Control]
+CLK:   pppppppp
+CS_N:  10000001
+---
+[Data]
+MOSI:  x=======  data: ["0xAB","0xCD","0xEF","0x01","0x02","0x03","0x04","0x05"]
+MISO:  zzzz====  data: ["","","","","0xFF","0x12","0x34","0x56"]
+```
+
+代替の `group "name" { … }` 構文も受け付けます（閉じる `}` でグループを閉じます）。
+
+<Playground initial={`timing "UART frame"
+[Clock & control]
+CLK:  pppppppppppp
+TX_EN: 0111111110
+---
+[Data lines]
+TX:   1==========  data: ["START","D0","D1","D2","D3","D4","D5","D6","D7","STOP"]
+RX:   zz1=======1  data: ["","","D0","D1","D2","D3","D4","D5","D6","D7"]`} height={380} />
+
+---
+
+## 5. タイトルと hscale
+
+**タイトル：** `timing "SPI Transaction"` — ダイアグラムの上部に表示されます。
+
+**hscale：** `timing "title" [hscale: 2]` — 各タイム周期の幅をスケーリングします。デフォルトは1。データラベルがより多くのスペースを必要とする場合は2を使用。
+
+```
+timing "Wide bus" [hscale: 2]
+CLK:  pppp
+DATA: ====  data: ["long label here","another","third","fourth"]
+```
+
+---
+
+## 6. ラベルとコメント
+
+- **信号名：** 信号行の最初の `:` より前のすべて。スペースを含む名前でも問題ありません——コロンが区切り文字です。
+- **データラベル：** 波形文字列の後の `data: ["a", "b"]`。
+- **タイトル：** `timing` キーワードの後の最初のトークン、引用符付き。
+- **コメント：** `#` を行頭に記述（先頭のホワイトスペースの後）。
+
+```
+timing "Demo"
+# these is a comment
+CLK: pppp    # ← インライントレーリングコメントはサポートされていません
+```
+
+---
+
+## 7. よくある間違い
+
+| 記述した内容 | パーサーの反応 | 修正方法 |
+|---|---|---|
+| `CLK: p p p p`（波形にスペース） | 波形文字列は `p` のみとしてパース；残りはデータ句として扱われる | スペースを削除：`CLK: pppp` |
+| `DATA: =====` で `data:` なし | セグメントはラベルなしのバスセルとしてレンダリングされる | `data: ["A","B","C","D","E"]` を追加 |
+| 波形文字 `s` または `r` | `TimingParseError: Invalid wave string` | §2 に記載されている文字のみ有効 |
+| `CLK pppp`（コロンなし） | 信号パターンにマッチせず；暗黙的にスキップ | 信号名の後のコロンが必須 |
+| `data: [A, B, C]`（引用符なし） | 値が認識されない——パーサーは `"…"` を期待 | 各値を引用符で囲む：`data: ["A","B","C"]` |
+| `[Group Name with spaces]` | グループラベルは `Group Name with spaces` ——正常にパース | サポート済み |
+| 独立した行の `hscale: 2` | 認識されない（hscale はヘッダー行に記述） | `timing "title" [hscale: 2]` |
+
+---
+
+## 8. 文法（EBNF）
+
+```text
+document       = header (blank | comment | group-open | group-close | separator | signal)*
+
+header         = "timing" ( WS quoted-string )? ( WS "[" "hscale:" number "]" )? NEWLINE
+quoted-string  = '"' any-char-but-quote* '"'
+
+group-open     = "[" label "]" NEWLINE
+               | "group" WS quoted-string WS "{"? NEWLINE
+group-close    = "}" NEWLINE
+separator      = "---" NEWLINE
+
+signal         = name ":" WS wave-string ( WS data-clause )? NEWLINE
+name           = any text before the first ":"
+wave-string    = wave-char+
+wave-char      = "0"|"1"|"x"|"z"
+               | "p"|"P"|"n"|"N"
+               | "h"|"H"|"l"|"L"
+               | "u"|"d"|"D"
+               | "="|"."|"2"|"3"|"4"|"5"|"6"|"7"|"8"|"9"
+
+data-clause    = "data:" WS ( "[" quoted-string ("," quoted-string)* "]"
+                            | quoted-string+ )
+
+comment        = "#" any NEWLINE
+```
+
+権威ある情報源：`src/diagrams/timing/parser.ts`。パーサーとの相違がある場合は、パーサーが優先されます——Issue を作成してください。
+
+---
+
+## 9. 標準準拠
+
+Schematex のタイミング図は、波形文字とデータラベルについて **[WaveDrom WaveJSON](https://wavedrom.com/tutorial.html)** 信号記法に従っています——WaveDrom のオンラインエディターで使用されているものと同じセットで、Schematex DSL は WaveDrom の入力とほぼ互換性があります。`hscale` オプション、グループ構文、データラベルフォーマットはすべて互換性があります。
+
+現在実装されているもの：
+
+- ✅ すべてのコア波形文字：`0 1 x z p P n N h H l L u d D = . 2–9`
+- ✅ `data: ["…"]` によるデータラベル
+- ✅ グループブロック：`[Name]` と `group "name" { }` 構文
+- ✅ `---` セパレーター / グループクローズ
+- ✅ `hscale` 周期幅乗数
+- ⏳ タイミングアノテーション（信号遷移間の矢印、`t_su`、`t_pd` ラベル）
+- ⏳ 信号ごとの `phase:` オフセット（分数サイクルシフト）
+- ⏳ WaveDrom の `node:` / `edge:` アノテーションブロック
+- ⏳ スキン / テーマ（`default`、`narrow`、`lowkey`）
+
+参考文献：
+
+- WaveDrom — https://wavedrom.com (WaveJSON 仕様)
+- IEEE Std 1364 (Verilog HDL) — デジタルタイミングシミュレーションの概念
+- IEEE Std 1497 (Standard Delay Format) — タイミングアノテーションの慣例
+
+---
+
+## 10. 関連する例
+
+<RelatedExamples slugs={[
+  'timing-spi-transaction',
+]} />
+
+---
+
+## 11. ロードマップ
+
+**計画中 — まだパース不可。** 現在生成された DSL ではこれらを使用しないでください；パーサーが無視します。
+
+- **タイミングアノテーション矢印** — 信号遷移間のセットアップ / ホールドおよび伝播遅延スパンを描画する `A -> B [label: "t_su = 5ns"]` 構文の `annotate:` ブロック。
+- **信号ごとの `phase:`** — 信号が周期の途中から開始できるようにする分数サイクルオフセット。
+- **WaveDrom の `node:` / `edge:`** — 完全な WaveDrom アノテーションブロックの互換性。
+- **スキンオプション** — `narrow`（コンパクト）と `lowkey`（控えめなパレット）レンダリングテーマ。
+- **時間軸** — 下部のオプションの数値時間軸（ns、µs、ps 単位）。
+
+これらのどれかが早急に必要な場合は GitHub Issues でトラックしてください。

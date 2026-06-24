@@ -1,0 +1,192 @@
+---
+title: Diagrama de clases UML
+---
+
+## Sobre los diagramas de clases
+
+Un **diagrama de clases** es la columna vertebral del diseño orientado a objetos: muestra los *tipos* de un sistema — clases, interfaces, enumeraciones — sus atributos y operaciones, y las relaciones estructurales entre ellos (herencia, composición, agregación, dependencia). Está definido en **[UML](https://www.omg.org/spec/UML/2.5.1/) 2.5.1 §9–§11** y es el diagrama UML más utilizado en la documentación de software.
+
+Schematex implementa el subconjunto visual de UML 2.5.1 con la palabra clave de una sola palabra `umlclass` y un DSL de texto construido para la generación por LLM — con la experiencia de PlantUML, y adicionalmente aceptando alias de glifos de Mermaid `classDiagram` para migración en una línea. Adornos estándar correctos (un triángulo hueco apunta al clasificador más general; un rombo relleno marca el extremo compuesto), un **diseño en capas impulsado por la generalización** (las interfaces flotan hacia arriba, las clases hoja descienden hacia abajo) y SVG embebible sin dependencias. Distinto de **[erd](/docs/erd)** (modela *filas de datos*, no tipos) y **[c4](/docs/flowchart)** (arquitectura, no tipos a nivel de código).
+
+<Playground initial={`umlclass
+title: "Shapes"
+«interface» Shape {
+  + area() : double
+}
+abstract class AbstractShape {
+  # name : String
+  + area() : double {abstract}
+}
+class Circle {
+  + radius : double
+  + area() : double
+}
+class Square {
+  + side : double
+  + area() : double
+}
+Shape         <|.. AbstractShape
+AbstractShape <|-- Circle
+AbstractShape <|-- Square`} height={560} />
+
+---
+
+## 1. Tu primer diagrama
+
+Cada documento comienza con la palabra clave `umlclass` (también se acepta el encabezado Mermaid `classDiagram`), luego declaraciones y relaciones:
+
+```
+umlclass
+class Account {
+  + id : String
+  - balance : Money
+  + deposit(amount : Money) : void
+}
+class Customer {
+  + name : String
+}
+Customer "1" o-- "*" Account : owns
+```
+
+Un bloque `class X { … }` declara un clasificador con un compartimento de nombre, uno de atributos y uno de operaciones. Los miembros van en sus propias líneas dentro de las llaves; también puedes escribir el cuerpo en una sola línea (`class Account { + id : String + deposit() }`). El encabezado acepta:
+
+- `title: "…"` — un encabezado dibujado encima del diagrama.
+- `direction: tb | bt | lr | rl` — dirección de los rangos, por defecto `tb` (padres arriba).
+- `theme: …` — una anulación de tema.
+
+---
+
+## 2. Clasificadores
+
+```
+class Order
+«interface» Repository
+«enumeration» Status
+abstract class Shape
+datatype Money
+primitive int
+```
+
+Los cinco tipos de clasificador son `class`, `interface`, `enum` (alias `enumeration`), `datatype` y `primitive`. Un `«estereotipo»` (o ASCII `<<estereotipo>>`) se renderiza encima del nombre; `abstract class` (o la anotación `{abstract}`) renderiza el nombre en cursiva. Usa `as` para dar un nombre de visualización diferente del id de referencia: `class "Order Service" as OrderSvc`.
+
+---
+
+## 3. Miembros — atributos y operaciones
+
+```
+class Account {
+  + id : String
+  - balance : Money = 0
+  / available : Money
+  # owner : Customer
+  ~ region : String
+  + count : int {static}
+  + deposit(amount : Money) : void
+  + transfer(to : Account, amount : Money) : boolean {query}
+}
+```
+
+- **Glifos de visibilidad**: `+` público, `-` privado, `#` protegido, `~` paquete.
+- `: Type` indica el tipo del atributo o el tipo de retorno de la operación; `= value` un valor por defecto; `[0..*]` una multiplicidad; `/` un atributo derivado.
+- Anotaciones `{…}`: `{static}` (renderizado subrayado), `{abstract}` (operación en cursiva), `{readOnly}`, `{query}`, `{ordered}`, …
+- `nombre : Tipo`, `nombre: Tipo` y el orden Java `Tipo nombre` son todos aceptados y normalizados a `nombre : Tipo`.
+
+**Los literales de enumeración** son nombres simples dentro de un cuerpo `enum`:
+
+```
+«enumeration» Status {
+  ACTIVE
+  SUSPENDED
+  CLOSED
+}
+```
+
+---
+
+## 4. Relaciones
+
+```
+Vehicle <|-- Car            generalización (triángulo hueco → padre)
+Shape   <|.. Circle         realización (discontinuo + triángulo hueco → interfaz)
+Order   *-- LineItem        composición (rombo relleno en el todo)
+Customer o-- Address        agregación (rombo hueco en el todo)
+Service --> Repository      asociación dirigida (flecha abierta → destino)
+Service ..> Logger          dependencia (discontinuo + flecha abierta → proveedor)
+A -- B                      asociación simple (sin cabeza)
+```
+
+Las formas invertidas se aceptan y normalizan (`Car --|> Vehicle` ≡ `Vehicle <|-- Car`). El espacio en blanco alrededor de un conector es opcional.
+
+Cuando dos o más hijos comparten un padre vía generalización/realización, las cabezas se **fusionan en árbol**: un tronco, un triángulo compartido, patas por hijo.
+
+---
+
+## 5. Etiquetas y multiplicidad
+
+```
+Customer "1" o-- "0..*" Order : places
+```
+
+Un `: etiqueta` final nombra la asociación (dibujado en el punto medio de la línea). Los extremos entre comillas son multiplicidades o nombres de rol: `"1"`, `"0..1"`, `"*"`, `"1..*"`. El extremo origen es la izquierda del conector, el destino es la derecha (tras la normalización de forma invertida).
+
+---
+
+## 6. Namespaces / paquetes
+
+Agrupa clasificadores en un marco de contenimiento etiquetado:
+
+```
+umlclass
+namespace Platform {
+  namespace Auth {
+    class UserService {
+      + login()
+    }
+  }
+  namespace Data {
+    class Repository {
+      + find()
+    }
+  }
+}
+class Gateway {
+  + route()
+}
+Gateway --> UserService : delegates
+Gateway --> Repository  : delegates
+```
+
+- Los bloques se **anidan** sintácticamente. La notación de puntos crea padres automáticamente: `namespace Company.Engineering.Backend { … }` crea `Company` y `Company.Engineering` también.
+- Una etiqueta explícita: `namespace plat["Platform Layer"] { … }`.
+- Cada paquete se renderiza como un marco = la unión de sus miembros (y sub-marcos anidados) + relleno + una etiqueta superior. Los cuerpos de namespace deben usar saltos de línea (una declaración por línea).
+
+---
+
+## 7. Formas de compatibilidad con Mermaid
+
+Para migración en una línea desde Mermaid `classDiagram`:
+
+```
+classDiagram
+class Repository~T~ {
+  + findAll() List~T~
+  + cache : Map~String,List~int~~
+  + count$
+  + flush()*
+}
+Repository : <<service>>
+Repository : + save(e : T) T
+```
+
+- **Genéricos con tilde** `List~T~` → `List<T>` (anidamiento soportado: `Map~String,List~int~~` → `Map<String,List<int>>`); también en nombres de clase (`class Box~T~`).
+- **Miembro en una línea**: `NombreClase : +miembro` agrega un miembro; `NombreClase : <<interface>>` establece el tipo/estereotipo.
+- **Clasificadores de miembro**: `*` final = abstracto (cursiva), `$` final = estático (subrayado).
+- **Tipo de retorno con espacio**: `getId() String` no necesita dos puntos.
+
+Una `~` inicial solitaria sigue siendo el glifo de visibilidad de paquete; los genéricos con tilde solo convierten pares `~…~` balanceados dentro de un tipo, por lo que los dos nunca colisionan.
+
+---
+
+## 8. Temas y accesibilidad
+
+Todos los trazos y rellenos provienen de tokens de tema (sin estilos en línea); las clases CSS tienen el prefijo `sx-umlclass-*`. La visibilidad se renderiza como glifos de texto (`+ - # ~`), nunca como iconos de color — fiel al estándar y seguro en monocromo. Cada diagrama lleva `<title>`/`<desc>` y atributos `data-*` (`data-id`, `data-kind`, `data-from`/`data-to`/`data-kind` en relaciones, `data-package-id` en marcos) para interactividad.

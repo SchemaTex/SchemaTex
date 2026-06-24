@@ -1,0 +1,244 @@
+---
+title: PRISMA 2020 流程圖
+---
+
+## 關於 PRISMA 流程圖
+
+**PRISMA 2020 流程圖**（Page MJ 等人，*BMJ* 2021;372:n71）是每篇發表於 BMJ、Lancet、JAMA、Cochrane、JBI 及 200+ 其他期刊的系統性回顧、統合分析和範疇性回顧中必備的圖表。它是一個*單一、固定的四列*圖表——**識別 → 篩選 → 合適性評估 → 納入**——每個方框都有記錄計數，並附有平行的「排除」側方框。
+
+從概念上看它是流程圖，但佈局、必填的 `n =` 欄位和雙管道變體是*規定的*。Schematex 將 `prisma` 實作為獨立的、有主見的引擎，讓作者只需填寫計數和排除原因，圖表就能**正確建構**——不可能意外遺漏計數或弄錯階段順序。規格：[`28-PRISMA-STANDARD.md`](https://github.com/SchemaTex/SchemaTex/blob/main/docs/reference/28-PRISMA-STANDARD.md)。
+
+與[流程圖](/docs/flowchart)不同：通用流程圖沒有強制階段、記錄計數、排除側方框或雙管道合流的概念。只要圖表是 PRISMA 回顧流程，就應使用 `prisma`。
+
+<Playground initial={`
+  prisma
+  mode: 2020-single
+  title: Effect of exercise on chronic low-back pain — SR
+
+  identification:
+    databases:
+      n: 1418
+      sources: PubMed=600, Embase=450, Cochrane=184, Web of Science=184
+      duplicates-removed: 318
+
+  screening:
+    records-screened: 1100
+    excluded:
+      n: 870
+      reasons: irrelevant title=750, non-English=120
+
+  eligibility:
+    full-text-assessed: 230
+    excluded:
+      n: 195
+      reasons: wrong population=80, wrong intervention=60, wrong outcome=55
+
+  included:
+    studies: 35
+    reports: 38`} height={620} />
+
+---
+
+## 1. 第一個圖表
+
+最基本的是四個階段方框。計數為必填項；解析器會拒絕排列缺少總計的圖表。
+
+```
+prisma
+
+identification:
+  databases:
+    n: 1000
+
+screening:
+  records-screened: 900
+  excluded:
+    n: 600
+
+eligibility:
+  full-text-assessed: 300
+  excluded:
+    n: 250
+
+included:
+  studies: 50
+```
+
+縮排有意義——**每層兩個空格**，與 genogram 和 SLD 相同。第一個非空白行必須是 `prisma`。註解使用 `#` 或 `//`。
+
+---
+
+## 2. 元資料行
+
+在階段方框之前，於頂層寫入 `key: value` 行：
+
+```
+prisma
+mode: 2020-single
+kind: systematic-review
+title: My review
+validate-counts: warn
+```
+
+| 鍵 | 值 | 預設值 | 說明 |
+|---|---|---|---|
+| `mode` | `2020-single` · `2020-dual` · `2009` | `2020-single` | 單欄或雙欄（「其他方法」）欄。 |
+| `kind` | `systematic-review` · `scoping-review` · `ipd` · `nma` | `systematic-review` | 切換階段詞彙（見 §6）。 |
+| `title` | 字串 | — | 顯示在圖表上方。 |
+| `validate-counts` | `warn` · `strict` · `off` | `warn` | 算術檢查（見 §7）。 |
+| `direction` | `TB` / `TD` | `TB` | PRISMA 依標準為垂直排列；水平方向會被拒絕。 |
+
+---
+
+## 3. 識別
+
+`identification:` 區塊包含一個 `databases:` 子區塊（必填）和一個可選的 `other:` 子區塊（雙管道模式）。
+
+```
+identification:
+  databases:
+    n: 1418
+    sources: PubMed=600, Embase=450, Cochrane=184
+    duplicates-removed: 318
+    ineligible-automation: 0
+    other-removed: 0
+```
+
+- `n:` — 識別到的記錄總數（**必填**）。
+- `sources:` — `名稱=計數` 配對，以逗號分隔。渲染為縮排的細項。含有空格或標點符號的名稱可加引號：`"Web of Science"=184`。
+- `duplicates-removed:`、`ineligible-automation:`、`other-removed:` — 可選的移除計數。若有任何一項存在，它們會在右欄渲染為獨立的**「篩選前移除的記錄」**方框，並以水平箭頭連接。
+
+大數字可使用逗號：`n: 1,418` 與 `n: 1418` 相同。
+
+---
+
+## 4. 篩選與合適性評估
+
+兩個階段都有一個主計數和一個 `excluded:` 區塊。排除區塊有自己的 `n:` 和可選的 `reasons:` 細項。
+
+```
+screening:
+  records-screened: 1100
+  excluded:
+    n: 870
+    reasons: irrelevant title=750, non-English=120
+  reports-sought: 226        # optional
+  reports-not-retrieved: 12  # optional
+
+eligibility:
+  full-text-assessed: 230
+  excluded:
+    n: 195
+    reasons: wrong population=80, wrong intervention=60, wrong outcome=55
+```
+
+`reasons:` 為 `名稱=計數` 配對。若列出超過 8 項，渲染器會以降序排列並將尾部匯總為 `其他（n = …）`，使側方框保持可讀。
+
+---
+
+## 5. 納入
+
+```
+included:
+  studies: 35
+  reports: 38          # one study may yield several reports
+  participants: 28741  # PRISMA-IPD only
+```
+
+`studies:` 為必填。`reports:` 和 `participants:` 為可選的額外計數行。
+
+---
+
+## 6. 雙管道與回顧類型
+
+**雙管道** — PRISMA 2020 更新新增了第二個「透過其他方法識別」欄（引文搜尋、手動搜尋、專家推薦）。加入 `other:` 區塊後，兩欄透過 Y 形接頭匯入篩選階段。
+
+```
+prisma
+mode: 2020-dual
+
+identification:
+  databases:
+    n: 1234
+    duplicates-removed: 254
+  other:
+    n: 56
+    sources: citation-search=30, hand-search=20, expert-recommendation=6
+
+screening:
+  records-screened: 1036
+  excluded:
+    n: 810
+
+eligibility:
+  full-text-assessed: 226
+  excluded:
+    n: 195
+
+included:
+  studies: 31
+```
+
+**範疇性回顧** — `kind: scoping-review` 將「studies」換成「sources of evidence」，並依照 Tricco 等人 2018 年的標準重新標記各階段，幾何結構不變。
+
+**更新性回顧** — 可選的 `previous-studies:` 區塊在識別部分上方繪製一個虛線方框並連入其中：
+
+```
+previous-studies:
+  n: 19
+  sources: previous review=19
+```
+
+---
+
+## 7. 計數算術驗證
+
+使用 `validate-counts: warn`（預設）時，引擎會檢查各階段的計數是否相符——例如 `databases.n + other.n − duplicates-removed = records-screened`，以及來源/原因細項是否加總等於其總計。不符時會在圖表下方渲染一個小警告（也在 SVG 的 `<desc>` 中顯示，供螢幕閱讀器使用）。
+
+`validate-counts: strict` 會將不符情況轉為包含「偏差 N」訊息的解析錯誤。`off` 則完全跳過檢查。
+
+---
+
+## 8. 語法（EBNF）
+
+```
+prisma-document  = "prisma", { meta-line }, stage-block, { stage-block } ;
+meta-line        = ("mode:" | "kind:" | "title:" | "review-id:" | "validate-counts:" | "direction:") value ;
+
+stage-block      = previous-block | identification-block | screening-block | eligibility-block | included-block ;
+
+previous-block       = "previous-studies:" , indent, "n:" int, [ "reports:" int ], { "sources:" pairs } ;
+identification-block = "identification:" , indent,
+                         "databases:" , indent, "n:" int, { "sources:" pairs },
+                           [ "duplicates-removed:" int ], [ "ineligible-automation:" int ], [ "other-removed:" int ],
+                         [ "other:" , indent, "n:" int, { "sources:" pairs } ] ;
+screening-block      = "screening:" , indent, "records-screened:" int,
+                         "excluded:" , indent, "n:" int, { "reasons:" pairs },
+                         [ "reports-sought:" int ], [ "reports-not-retrieved:" int ] ;
+eligibility-block    = "eligibility:" , indent, "full-text-assessed:" int,
+                         "excluded:" , indent, "n:" int, { "reasons:" pairs } ;
+included-block       = "included:" , indent, "studies:" int, [ "reports:" int ], [ "participants:" int ] ;
+
+pairs            = pair, { "," pair } ;
+pair             = (string | quoted) "=" int ;
+int              = digit, { digit | "," } ;     (* commas stripped: 1,234 == 1234 *)
+```
+
+縮排為每層兩個空格。階段方框內的未知鍵為解析錯誤，使每個階段定義明確。
+
+---
+
+## 9. 標準合規性
+
+遵循 **PRISMA 2020 聲明**（Page MJ, McKenzie JE, Bossuyt PM 等人。*The PRISMA 2020 statement: an updated guideline for reporting systematic reviews.* BMJ 2021;372:n71）和 **PRISMA2020 R 套件**（Haddaway 等人 2022）的參考渲染器慣例。範疇性回顧詞彙遵循 **PRISMA-ScR**（Tricco 等人 2018）；參與者計數遵循 **PRISMA-IPD**（Stewart 等人 2015）。範本：[prisma-statement.org/prisma-2020-flow-diagram](https://www.prisma-statement.org/prisma-2020-flow-diagram)。
+
+---
+
+## 相關範例
+
+來自範例圖庫的即用情境：
+
+<RelatedExamples slugs={[
+  'prisma-systematic-review',
+  'prisma-dual-pipeline',
+]} />

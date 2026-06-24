@@ -1,0 +1,216 @@
+---
+title: 顺序功能图（SFC）
+---
+
+## 关于顺序功能图
+
+**顺序功能图（SFC）**是循环扫描 PLC 程序的**状态机视图**——展示*当前*正在执行什么，以及什么触发*下一个*阶段。它是 **[IEC 61131-3:2013 §6.5](https://en.wikipedia.org/wiki/Sequential_function_chart)** 定义的第五种编程语言，也是 **IEC 60848 GRAFCET** 的工程子集。**[梯形图（ladder）](/docs/ladder)**和**[功能块图（fbd）](/docs/fbd)**描述每次扫描的组合逻辑，而 SFC 描述跨扫描的时序：哪个步骤处于激活状态、何时切换、哪些步骤并行执行。
+
+在实际生产代码中，约 10% 的网络用 SFC 编写，但几乎所有复杂顺序机器都至少有一张 SFC 图——批次反应器、机器人单元、包装线、装配工位。此前没有优质的开源 SFC DSL：供应商 IDE（Studio 5000、TIA Portal、CODESYS）是唯一选择。Schematex 提供一个专为 AI 生成设计的 IEC 61131-3 SFC 子集。
+
+与**[状态图（state）](/docs/state)**（用于响应式 UI 和生命周期 FSM 的 UML 状态图）的区别：SFC 具有*循环扫描*语义、双边框初始步、动作块限定符（N/S/R/L/D/P）以及基于线条的分支（单线 = OR，双线 = AND）。
+
+<Playground initial={`
+  sfc "Bottle Filling"
+
+  var StartBtn: bool
+  var TankLevel: real
+  var DoneBtn: bool
+
+  step S0 [initial]
+    N FillValve_Closed
+
+  step S1 [label: "Filling"]
+    N FillValve_Open
+
+  step S2 [label: "Done"]
+    N Confirm_Done
+
+  transition from: S0 to: S1: StartBtn
+  transition from: S1 to: S2: TankLevel >= 80.0
+  transition from: S2 to: S0: DoneBtn`} height={520} />
+
+---
+
+## 1. 第一张图
+
+两个步骤、一个转换、一个初始标记：
+
+```
+sfc
+step S0 [initial]
+step S1
+transition from: S0 to: S1: Trigger
+```
+
+`S0` 渲染为**双边框矩形**（IEC 初始步惯例）；`S1` 为单边框矩形。两者之间是一条水平**转换线**，条件文字 `Trigger` 位于其右侧。
+
+若忘记写 `[initial]`，第一个声明的步骤会自动提升为初始步。
+
+---
+
+## 2. 步骤
+
+```
+step S_Filling [label: "Filling tank"]
+  N FillValve_Open
+  D Mixer_Run T#30s
+  P StartChime
+```
+
+步骤包含：
+
+- **ID**（在图表中唯一）——用于转换和跳转。
+- 可选的 `[label: "..."]`，用于显示名称。
+- 可选的 `[initial]`（只允许一个）或 `[final]`（供应商停止步，三重边框）。
+- 零个或多个**动作块**，向右缩进一层，每个带一个限定符字母。
+
+---
+
+## 3. 转换
+
+**转换**声明两个步骤之间的有向链接，并附带布尔条件：
+
+```
+transition from: S0 to: S1: StartBtn
+transition from: S1 to: S2: TankLevel >= 80.0 AND NOT EmergencyStop
+transition T_Reset from: S5 to: S0: ResetBtn
+```
+
+条件文字为不透明字符串——Schematex 原样存储并渲染在线旁。每个转换必须有非空条件；无条件链接使用 `TRUE`。
+
+`from` 和 `to` 在文档中线性相邻的转换，渲染为步骤之间的内联线条。`from`/`to` *不*线性相邻的转换（例如跳回更早的步骤）渲染为图表左侧或右侧的**边距箭头**。
+
+---
+
+## 4. 动作限定符
+
+动作附加在步骤右侧，按限定符字母的规则执行：
+
+| 限定符 | 行为 |
+|---|---|
+| `N` | 步骤激活期间保持激活（最常用） |
+| `S` | 存储型——进入时置真，保持直到匹配的 `R` |
+| `R` | 复位型——清除先前存储的动作 |
+| `L` | 时间限制型——在步骤进入后持续激活最多 T 时间 |
+| `D` | 时间延迟型——在进入后延迟 T 时间激活 |
+| `P` | 脉冲型——仅在一次 PLC 扫描中为真 |
+| `P0` | 去激活时脉冲（西门子） |
+| `P1` | `P` 的同义词（西门子） |
+| `SD` | 存储且延迟型 |
+| `DS` | 延迟且存储型 |
+| `SL` | 存储且时间限制型 |
+
+带时间参数的限定符（L、D、SD、DS、SL）需接时长字面量：
+
+```
+step S1
+  L LimitedRun T#5s
+  D DelayedRun T#2s
+```
+
+---
+
+## 5. 选择分支（单线——OR）
+
+每次扫描只有**一个**分支触发，由转换条件决定：
+
+```
+step S0 [initial]
+step S_Pick
+
+alt from: S_Pick:
+  branch [priority: 1]:
+    transition: IsExpressShipping
+    step S_Express
+      N PrepExpressBox
+    transition: TRUE
+  branch [priority: 2]:
+    transition: IsStandardShipping
+    step S_Standard
+      N PrepStandardBox
+    transition: TRUE
+merge_to: S_Ship
+
+step S_Ship
+
+transition from: S0 to: S_Pick: ProductOrdered
+transition from: S_Ship to: S0: Shipped
+```
+
+分支上下方的单水平线分别是分叉线和汇合线。每个分支以**入口转换**（分叉线到第一个步骤之间）开始，以**出口转换**（最后一个步骤到汇合线之间）结束。
+
+---
+
+## 6. 同步分支（双线——AND）
+
+**所有**分支并发执行；图表在汇合处等待，直到每个分支完成：
+
+```
+sim from: S_Heat: TRUE
+  branch:
+    step S_Bake
+      D Oven_Run T#15m
+  branch:
+    step S_Cool
+      L Cooler_On T#5m
+merge_to: S_Done: Bake_Done AND Cool_Done
+```
+
+分支上下方的两条平行水平线（间距 4px）是同步线。上方的共享**转换**（此处为 `TRUE`）触发分叉；下方的共享**转换**（`Bake_Done AND Cool_Done`）在汇合触发前检验。
+
+---
+
+## 7. 跳转（循环）
+
+目标为更早步骤的转换渲染为边距箭头：
+
+```
+step S0 [initial]
+step S1
+step S2
+transition from: S0 to: S1: A
+transition from: S1 to: S2: B
+transition T_Reset from: S2 to: S0: ResetBtn
+transition from: S2 to: S1: NOT ResetBtn
+```
+
+正向 `S2 → S1`（回边）的边距箭头在右侧；`T_Reset` 跳回 `S0` 的箭头在左侧。每个边距箭头显示目标 ID 和条件。
+
+---
+
+## 8. 变量
+
+与 `ladder` 和 `fbd` 共用：
+
+```
+var StartBtn: bool
+var TankLevel: real
+var BakeReady: bool
+var Counter: counter
+var T1: timer
+```
+
+在条件和动作中声明的变量不做校验——Schematex 将条件/动作正文视为不透明字符串，与 `state` 处理守卫和动作的方式一致。
+
+---
+
+## 9. v0.1 已知限制
+
+- **嵌套分支**（alt 中嵌套 sim，sim 中嵌套 alt）可以解析，但布局折叠启发式算法较基础；深层嵌套可能出现重叠。
+- **S/R 动作对虚线连接**（视觉上将 `S` 动作与其他位置的匹配 `R` 相连）暂缓实现。
+- **激活步运行时指示器**（当前激活步的黄色填充）暂缓实现——对浮现 PLC 运行时状态的调试集成有用。
+- **GRAFCET 强制命令**（仅 IEC 60848 特有功能，超出范围）。
+- **最终步**使用 `[final]` 解析，但渲染时与初始步使用相同的双边框；IEC 三重边框惯例暂缓实现。
+
+---
+
+## 相关示例
+
+来自示例库的即用场景：
+
+<RelatedExamples slugs={[
+  'sfc-bottle-filling',
+  'sfc-bake-cool-concurrent',
+  'sfc-order-routing-alt',
+]} />

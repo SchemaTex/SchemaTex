@@ -1,0 +1,421 @@
+---
+title: ソシオグラム
+---
+
+## ソシオグラムとは
+
+**ソシオグラム**は、グループ内の選択・拒否・同盟関係のネットワークを可視化します——誰が誰を好むか、誰が孤立しているか、どこにクリークが形成されているかを示します。Jacob Moreno が1934年に集団療法の臨床ツールとして導入し、その後、排除やいじめを検出するために使う教師、非公式の影響力をマッピングする HR チーム、組織研究者などに採用されています。一人の人物の外部環境に焦点を当てるエコマップとは異なり、ソシオグラムはグループの全メンバーを対称的に扱います。
+
+Schematex は、ノードの役割とエッジの種類について **[Moreno (1934) 社会計量学の慣例](https://en.wikipedia.org/wiki/Sociometry)** に従い、価値評価・方向・重みに関する現代のソーシャルネットワーク分析記法で拡張しています。このページでは、パーサーが現在受け付ける内容を説明します。
+
+<Playground initial={`sociogram "Group Therapy — Week 6"
+  config: layout = circular
+  therapist [label: "Dr. Park", role: star]
+  james [label: "James"]
+  maria [label: "Maria"]
+  lee [label: "Lee"]
+  sarah [label: "Sarah"]
+  tom [label: "Tom"]
+  nina [label: "Nina"]
+  james -> therapist
+  james <-> maria [weight: 3, label: "strong bond"]
+  james -> lee
+  maria -> therapist
+  maria -> sarah
+  lee -> therapist
+  lee -x> nina [label: "tension"]
+  sarah <-> nina
+  sarah -> therapist
+  tom -> therapist
+  tom -.- nina
+  nina -> maria`} height={520} />
+
+---
+
+## 1. 最初のソシオグラム
+
+最小限の実用的なソシオグラム：4人、3種類の関係タイプ。
+
+<Playground initial={`sociogram "Study group"
+  alice [label: "Alice"]
+  bob [label: "Bob"]
+  carol [label: "Carol"]
+  dave [label: "Dave"]
+  alice <-> bob [label: "lab partners"]
+  carol -> alice
+  dave -x> bob [label: "rivalry"]`} />
+
+4つのルールで使用例の80%をカバーできます：
+
+1. キーワード `sociogram` で始め、必要に応じて引用符付きのタイトルを続けます。
+2. 各人は**ノード**です——`id [label: "…"]` で明示的に宣言するか、エッジに初めて登場したときに自動的に作成されます。
+3. 2つのノードを**エッジ演算子**で接続します——`<->`（相互）、`->`（一方向）、`-x>`（拒否）、`-.-`（中立）。§3 を参照。
+4. 必要に応じて**グループ**と**config** 行を宣言してレイアウトと色付けを制御します。
+
+> コメントは独立した行で `#` から始める必要があります。
+
+---
+
+## 2. ノード
+
+ノード行の形式は `id [attr: value, …]` です。エッジで初めて参照されたときにも暗黙的に作成されますが、明示的な宣言によってラベル・グループ・役割を設定できます。
+
+**ID のルール。** `[a-zA-Z][a-zA-Z0-9_-]*` にマッチする必要があります。ID は内部で使用され、`label:` 属性が表示名を設定します。
+
+**ノード属性：**
+
+| 属性 | 値 | 効果 |
+|---|---|---|
+| `label: "…"` | 引用符付き文字列 | 表示名（デフォルトは ID） |
+| `group: id` | グループ ID | ノードを色付けのためのグループに関連付ける |
+| `role: …` | `star`、`isolate`、`bridge`、`neglectee`、`rejected` | 明示的な社会計量学的役割アノテーション |
+| `size: …` | `small`、`medium`、`large` | ノードサイズのオーバーライド |
+
+<Playground initial={`sociogram "Group roles demo"
+  config: layout = circular
+  dr_park [label: "Dr. Park", role: star]
+  james [label: "James"]
+  nina [label: "Nina", role: neglectee]
+  loner [label: "Alex", role: isolate]
+  bridge [label: "Sam", role: bridge, size: large]
+  james -> dr_park
+  james -> bridge
+  bridge -> dr_park
+  bridge -> nina
+  nina -> james`} />
+
+---
+
+## 3. エッジ
+
+エッジ行の形式は `leftId OP rightId` で、オプションとして `[label: "…", weight: N]` が続きます。両方の ID がまだ宣言されていない場合は、自動的にノードとして登録されます。
+
+### 3.1 方向と価値評価
+
+<Playground initial={`sociogram "Edge types"
+  config: layout = circular
+  a [label: "A"]
+  b [label: "B"]
+  c [label: "C"]
+  d [label: "D"]
+  e [label: "E"]
+  f [label: "F"]
+  # Positive
+  a -> b [label: "chose B"]
+  b <-> c [label: "mutual"]
+  # Negative
+  c -x> d [label: "rejects D"]
+  d <x-> e [label: "mutual reject"]
+  # Neutral
+  e -.- f [label: "indifferent"]
+  f <.-> a [label: "mutual neutral"]`} />
+
+| 演算子 | 方向 | 価値評価 | 意味 |
+|---|---|---|---|
+| `A -> B` | 一方向 | 正 | A が B を選んだ |
+| `A <- B` | 一方向 | 正 | B が A を選んだ（`B -> A` と同じ） |
+| `A <-> B` | 相互 | 正 | お互いを選んだ |
+| `A -- B` | 無方向 | 正 | 関係は既知；方向は未記録 |
+| `A -x> B` | 一方向 | 負 | A が B を拒否する |
+| `A <x- B` | 一方向 | 負 | B が A を拒否する |
+| `A <x-> B` | 相互 | 負 | 相互拒否 |
+| `A -x- B` | 無方向 | 負 | 対立；方向不明 |
+| `A -.> B` | 一方向 | 中立 | A は B に対して無関心 |
+| `A <.-> B` | 相互 | 中立 | 相互無関心 |
+| `A -.- B` | 無方向 | 中立 | 中立的な関係 |
+
+### 3.2 重み / 強度
+
+重みが大きいほど線が太くなります。省略形演算子を使うか、`[weight: N]` で明示的にオーバーライドします。
+
+| 重み | 省略形 | 方向 | 意味 |
+|---|---|---|---|
+| 2（デフォルト） | `->` `<->` `--` `-x>` `-.-` | 任意 | 標準的な接続 |
+| 3 | `==>` `<==` `<==>` `===` | 一方向 / 相互 / 無方向 | 強い |
+| 4 | `===>` `<===` `<===>` | 一方向 / 相互 | 非常に強い |
+| カスタム | `[weight: N]` | — | 任意の整数 |
+
+<Playground initial={`sociogram "Relationship strengths"
+  config: layout = circular
+  a [label: "A"]
+  b [label: "B"]
+  c [label: "C"]
+  d [label: "D"]
+  a -> b [label: "weight 2 (default)"]
+  b ==> c [label: "weight 3 (strong)"]
+  c ===> d [label: "weight 4 (very strong)"]
+  d -> a [weight: 1, label: "weight 1 (weak)"]`} />
+
+### 3.3 エッジラベル
+
+`A -> B [label: "best friend"]` — ラベルは接続線上に表示されます。
+
+---
+
+## 4. グループ
+
+`group` ブロックは、色付けとレイアウトクラスタリングのためにノードを名前付きサブグループに収集します。
+
+**グループ構文：**
+- `group id [label: "…", color: "#hex"]` — グループヘッダー行。
+- メンバー行が続きます。各行は**最低4スペース**のインデント、1行1ノード。
+- インデントなしの行（または次の `group`）で現在のグループが閉じられます。
+- メンバーは独自のプロパティを持てます：`anna [label: "Anna K.", size: large]`。
+
+ノードはインラインでも割り当て可能：`alice [group: girls]`。
+
+<Playground initial={`sociogram "Classroom dynamics"
+  config: layout = force-directed
+  group boys [label: "Boys", color: "#42A5F5"]
+    tom [label: "Tom"]
+    jack [label: "Jack"]
+    mike [label: "Mike"]
+    leo [label: "Leo"]
+  group girls [label: "Girls", color: "#EF5350"]
+    anna [label: "Anna"]
+    beth [label: "Beth"]
+    chloe [label: "Chloe"]
+    diana [label: "Diana"]
+  tom <-> jack
+  anna <-> beth
+  anna <-> chloe
+  beth <-> chloe
+  mike -x> leo [label: "conflict"]
+  diana -> anna
+  tom -> anna [label: "cross-group"]`} />
+
+---
+
+## 5. 設定
+
+`config:` 行でレイアウトと視覚的なエンコーディングを調整します。各行は独立した行です。
+
+| 設定キー | 値 | デフォルト | 効果 |
+|---|---|---|---|
+| `layout` | `circular`、`force-directed`、`concentric` | `circular` | 配置アルゴリズム |
+| `sizing` | `uniform`、`in-degree`、`betweenness` | `uniform` | メトリクスによるノードサイズ |
+| `coloring` | `default`、`group`、`role` | `default` | ノードカラースキーム |
+| `highlight` | カンマ区切りリスト：`stars`、`isolates`、`cliques` | `stars,isolates` | どのパターンをアノテートするか |
+
+**レイアウトの注意事項：**
+- `circular` — ノードをリング上に均等配置。小さなグループ（≤15）に最適。
+- `force-directed` — バネモデル；クラスターが自動的に出現。サブグループが明確な中規模グループに最適。
+- `concentric` — 内側のリングに高い入次数のノードを配置。コア・周辺構造を示すのに最適。
+
+**Circular** — 均一なリング配置；すべてのノードが等しく見える。小さな、密接に結びついたグループに最適。
+
+<Playground initial={`sociogram "Therapy group — circular"
+  config: layout = circular
+  dr_park [label: "Dr. Park", role: star]
+  james [label: "James"]
+  maria [label: "Maria"]
+  lee [label: "Lee"]
+  sarah [label: "Sarah"]
+  tom [label: "Tom"]
+  nina [label: "Nina", role: neglectee]
+  james -> dr_park
+  james <-> maria [weight: 3]
+  james -> lee
+  maria -> dr_park
+  lee -> dr_park
+  lee -x> nina
+  sarah <-> nina
+  sarah -> dr_park
+  tom -> dr_park
+  nina -> maria`} height={460} />
+
+**Force-directed** — バネ物理がつながったノードを引き寄せ、つながっていないノードを遠ざけます。サブグループが有機的にクラスター化されます。
+
+<Playground initial={`sociogram "Classroom dynamics — force-directed"
+  config: layout = force-directed
+  group boys [label: "Boys", color: "#42A5F5"]
+    tom [label: "Tom"]
+    jack [label: "Jack"]
+    mike [label: "Mike"]
+    leo [label: "Leo"]
+  group girls [label: "Girls", color: "#EF5350"]
+    anna [label: "Anna"]
+    beth [label: "Beth"]
+    chloe [label: "Chloe"]
+    diana [label: "Diana"]
+  tom <-> jack
+  anna <-> beth
+  anna <-> chloe
+  beth <-> chloe
+  mike -x> leo [label: "conflict"]
+  diana -> anna
+  tom -> anna [label: "cross-group"]
+  jack -> beth`} height={460} />
+
+**Concentric** — 入次数でノードをソート；高い中心性のノードが内側のリングに、周辺ノードが外側のリングに表示されます。
+
+<Playground initial={`sociogram "Informal influence — concentric"
+  config: layout = concentric
+  config: sizing = in-degree
+  vp [label: "VP Eng"]
+  lead_a [label: "Lead A"]
+  lead_b [label: "Lead B"]
+  alice [label: "Alice"]
+  bob [label: "Bob"]
+  carol [label: "Carol"]
+  dave [label: "Dave"]
+  alice -> lead_a
+  bob -> lead_a
+  carol -> lead_a
+  carol -> lead_b
+  dave -> lead_b
+  lead_a -> vp
+  lead_b -> vp
+  alice <-> bob
+  carol <-> dave`} height={460} />
+
+---
+
+## 6. 社会計量学的役割
+
+パーサーはノードに役割アノテーションを保存します。レンダラーはそれを使って視覚的なバッジを適用します——`star` にはスターマーカー、`isolate` には破線ボーダー、など。
+
+| 役割 | 意味 |
+|---|---|
+| `star` | 多くから選ばれた中心的な人物（高い入次数） |
+| `isolate` | 内外を問わず接続が一切ない |
+| `neglectee` | 他者に働きかけるが、選ばれることがない |
+| `rejected` | 複数のメンバーから拒否エッジを受けている |
+| `bridge` | 他では分離している2つのクラスターをつなぐ |
+
+<Playground initial={`sociogram "Role annotations"
+  config: layout = circular
+  center [label: "Maria", role: star]
+  bridge_node [label: "Sam", role: bridge]
+  newcomer [label: "New Kid", role: neglectee]
+  loner [label: "Alex", role: isolate]
+  outcast [label: "Pat", role: rejected]
+  center <-> bridge_node
+  bridge_node -> outcast
+  newcomer -> center
+  newcomer -> bridge_node
+  center -x> outcast
+  bridge_node -x> outcast`} />
+
+---
+
+## 7. ラベルとコメント
+
+- **タイトル：** `sociogram "Study group"` — 最初の行のみ。
+- **ノードラベル：** `alice [label: "Alice K."]`。
+- **グループラベル：** `group boys [label: "Boys"]`。
+- **エッジラベル：** `alice -> bob [label: "lab partners"]`。
+- **コメント：** `#` を行頭に記述（先頭のホワイトスペースの後）。
+
+---
+
+## 8. 予約語とエスケープ
+
+**行頭の予約語：** `sociogram`（ヘッダー）、`group`、`config:`。
+
+**予約演算子トークン** — ID 内ではこれらのシーケンスを避けてください：`->`、`<-`、`<->`、`--`、`===`、`==>`、`<==`、`<===>`、`-x>`、`<x-`、`-x-`、`<x->`、`-.>`、`<.->`、`-.-`。
+
+**スペースを含む文字列**は、`label:` と `color:` の値でダブルクォートで囲む必要があります。
+
+---
+
+## 9. よくある間違い
+
+| 記述した内容 | パーサーの反応 | 修正方法 |
+|---|---|---|
+| 1つのグループ行に `tom; jack; mike` | `tom;` が ID 正規表現にマッチせず、暗黙的に無視される | 各行1ノード、各行4スペース以上のインデント |
+| グループメンバーを2スペースインデント | グループメンバーとして扱われない（パーサーは≥4を要求） | 4スペース以上のインデントを使用 |
+| `alice <> bob` | マッチする演算子なし — エッジとして解析されない | 相互肯定には `<->` を使用 |
+| `config: layout = grid` | 未知の値は暗黙的に無視；レイアウトは `circular` のまま | `circular`、`force-directed`、または `concentric` を使用 |
+| スペースを含む ID を持つノード：`dr park` | パーサーは `dr` を ID として、`park` を迷子のトークンとして認識 | アンダースコアを使用：`dr_park [label: "Dr. Park"]` |
+
+---
+
+## 10. 文法（EBNF）
+
+```text
+document       = header (blank | comment | config | group-block | edge | node)*
+
+header         = "sociogram" ( WS quoted-string )? NEWLINE
+quoted-string  = '"' any-char-but-quote* '"'
+
+config         = "config:" WS key WS "=" WS value NEWLINE
+key            = "layout" | "sizing" | "coloring" | "highlight"
+
+group-block    = "group" WS id ( "[" group-attrs "]" )? NEWLINE
+                   ( INDENT≥4 member-line )*
+member-line    = id ( "[" node-attrs "]" )? NEWLINE
+group-attrs    = group-attr ("," group-attr)*
+group-attr     = "label:" quoted-string | "color:" quoted-string
+
+node           = id ( "[" node-attrs "]" )? NEWLINE
+node-attrs     = node-attr ("," node-attr)*
+node-attr      = "label:" quoted-string
+               | "group:" id
+               | "role:" role
+               | "size:" ("small" | "medium" | "large")
+
+edge           = id WS op WS id ( "[" edge-attrs "]" )? NEWLINE
+edge-attrs     = edge-attr ("," edge-attr)*
+edge-attr      = "label:" quoted-string | "weight:" number
+
+op             = // positive
+                 "<===>" | "===>" | "<==="
+               | "<==>"|"==>"|"<=="
+               | "===" | "<->" | "->" | "<-" | "--"
+               // negative
+               | "<x->" | "-x>" | "<x-" | "-x-"
+               // neutral
+               | "<.->" | "-\.>" | "-.-"
+
+role           = "star" | "isolate" | "bridge" | "neglectee" | "rejected"
+id             = [a-zA-Z] [a-zA-Z0-9_-]*
+comment        = "#" any NEWLINE
+```
+
+権威ある情報源：`src/diagrams/sociogram/parser.ts`。パーサーとの相違がある場合は、パーサーが優先されます——Issue を作成してください。
+
+---
+
+## 11. 標準準拠
+
+Schematex のソシオグラムは、ノードの役割（star、isolate、neglectee）と有向選択のセマンティクスについて **Moreno (1934) 社会計量学**の慣例に従っています。エッジ演算子セットは、現代のソーシャルネットワーク分析の実践（Hanneman & Riddle, 2005）に従い、価値評価（正 / 負 / 中立）と重みレベルで拡張されています。
+
+現在実装されているもの：
+
+- ✅ 有向・相互・無方向エッジ
+- ✅ 正・負・中立の価値評価演算子
+- ✅ 4つの重みレベル（1〜4）と省略形演算子および `[weight: N]`
+- ✅ 色付きグループ
+- ✅ ノード役割の宣言（`star`、`isolate`、`bridge`、`neglectee`、`rejected`）
+- ✅ 3つのレイアウト：circular、force-directed、concentric
+- ✅ 3つのサイジングモード：uniform、in-degree、betweenness
+- ⏳ 自動検出クリークハイライト — シェーディングされた凸包（§13 参照）
+- ⏳ ソーシャルアトムビュー（エゴ中心レイアウト）
+
+参考文献：
+
+- Moreno, J.L. (1934). *Who Shall Survive? Foundations of Sociometry, Group Psychotherapy and Sociodrama.* Beacon House.
+- Hanneman, R.A. & Riddle, M. (2005). *Introduction to Social Network Methods.* UC Riverside.
+
+---
+
+## 12. 関連する例
+
+<RelatedExamples slugs={[
+  'sociogram-playground-dynamics',
+  'sociogram-team-influence',
+]} />
+
+---
+
+## 13. ロードマップ
+
+**計画中 — まだパース不可。** 現在生成された DSL ではこれらを使用しないでください；パーサーが拒否または無視します。
+
+- **自動検出クリークハイライト** — 3人以上の相互選択サブグループの周囲にシェーディングされた凸包を描画。
+- **ブリッジ自動検出** — 明示的な宣言なしに媒介中心性から `role: bridge` を推定。
+- **ソーシャルアトムビュー** — 指名された1つのノードを中心に置くエゴ中心レイアウト。
+- **相互性マトリクスエクスポート** — ダイアグラムと並行した構造化テーブル出力。
+
+これらのどれかが早急に必要な場合は GitHub Issues でトラックしてください。

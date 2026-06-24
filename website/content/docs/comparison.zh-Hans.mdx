@@ -1,0 +1,150 @@
+---
+title: 比较与决策矩阵
+---
+
+## 关于比较图
+
+**comparison** 是涵盖整个「并排比较与决策」家族的单一引擎。选择一个 `mode:`，同一套 DSL 即可渲染五种不同的专业图表：
+
+- **`tchart`** — 2 至 N 列带标签的要点清单（经典的比较对照 T 型图；三列即为 Y 型图）。
+- **`pros-cons`** — 两列清单，带有绿色 ✓ / 红色 ✗ 的正负标记。
+- **`matrix`** — 选项 × 准则网格；单元格可填自由文本或 `yes` / `no` / `partial` 标记。
+- **`decision`**（别名标头 `pugh`）— **加权决策矩阵**：每个准则带有 `weight:`，每个选项带有数字分数，**引擎自动计算**每个选项的加权总分 Σ(weight × score)，进行排名并标示获胜者。这是 Stuart Pugh 的收敛控制法（ASQ / 六西格玛概念选择）——与 `pert` 和 `faulttree` 一样，都是「引擎计算答案」的设计理念。
+- **`double-bubble`** — 思维地图的比较对照组织图：两个中心，共同特征居中，独有特征向外展开。
+
+> **请勿与 [`matrix`](/docs/matrix) 混淆。** 那个引擎是在两个连续轴上*定位*项目（艾森豪矩阵、BCG、影响-努力矩阵）。`comparison` 排列的是**表格**，而在 `decision` 模式下，**计算决策结果**。两者是人们常混淆的两个截然不同的工具。
+
+<Playground initial={`comparison "Selecting a CI/CD platform"
+mode: decision
+baseline: "Jenkins"
+option "GitHub Actions"
+option "GitLab CI"
+option "Jenkins"
+criterion "Ease of setup" weight: 5
+  GitHub Actions: 5
+  GitLab CI: 4
+  Jenkins: 2
+criterion "Build speed" weight: 4
+  GitHub Actions: 4
+  GitLab CI: 4
+  Jenkins: 3
+criterion "Cost at our scale" weight: 4
+  GitHub Actions: 4
+  GitLab CI: 3
+  Jenkins: 5
+criterion "Self-host control" weight: 2
+  GitHub Actions: 2
+  GitLab CI: 5
+  Jenkins: 5`} />
+
+## 1. 标头与模式
+
+标头关键字为 `comparison`（别名 `compare`、`vs`）。标头关键字 `tchart` 和 `pugh` 可直接设置模式。或使用 `mode:` 指令选择：
+
+```
+comparison "Title"
+mode: tchart | pros-cons | matrix | decision | double-bubble
+legend: on | off
+```
+
+若省略 `mode:`，系统会根据你使用的关键字推断——但明确指定更可靠。
+
+## 2. T 型图（与 Y 型图）
+
+声明每个 `column`，然后用 `-` 列出各列要点。三列即读作 Y 型图。
+
+```
+tchart "TCP vs UDP"
+column "TCP"
+- Connection-oriented (handshake)
+- Guaranteed, ordered delivery
+column "UDP"
+- Connectionless, fire-and-forget
+- Minimal header, low latency
+```
+
+## 3. 优缺点
+
+```
+comparison "Migrate to microservices?"
+mode: pros-cons
+pro "Independent team deploys"
+pro "Scale hot paths in isolation"
+con "Distributed-systems complexity"
+con "Operational + infra cost goes up"
+```
+
+`pro` 行填入绿色列，`con` 行填入红色列——顺序无关。
+
+## 4. 比较矩阵
+
+声明每个 `option`（列），再声明每个 `criterion`（行），并以缩进的 `选项名称: 数值` 格式填入各选项的单元格。单元格值：`yes` / `no` / `partial` 渲染为 ✓ / ✗ / ~，数字为分数，带引号的文本原样显示。选项名称必须与某个 `option` 完全吻合（拼写错误会被标示，而非静默忽略）。
+
+```
+comparison "Cloud provider — managed services"
+mode: matrix
+option "AWS"
+option "GCP"
+option "Azure"
+criterion "Free tier"
+  AWS: "12 months"
+  GCP: "Always-free"
+  Azure: "12 months"
+criterion "Managed Postgres"
+  AWS: yes
+  GCP: yes
+  Azure: partial
+```
+
+也接受简洁的管道格式：`criterion "Free tier" | "12 months" | "Always-free" | "12 months"`（按选项顺序对应位置）。
+
+## 5. 决策矩阵（计算型）
+
+为每个准则加上 `weight:` 并在每个单元格填入数字分数。引擎会附加一行**加权总分**，对选项排名（`#1`、`#2`……），并标示获胜者。加上 `baseline: "选项名称"` 作为 Pugh 基准——该列会以阴影标示，并新增一行**与基准的差值**。
+
+```
+pugh "Database for the new service"
+baseline: "PostgreSQL"
+option "PostgreSQL"
+option "MongoDB"
+option "DynamoDB"
+criterion "Query flexibility" weight: 5
+  PostgreSQL: 5
+  MongoDB: 3
+  DynamoDB: 2
+criterion "Horizontal scaling" weight: 4
+  PostgreSQL: 3
+  MongoDB: 4
+  DynamoDB: 5
+criterion "Operational cost" weight: 3
+  PostgreSQL: 4
+  MongoDB: 3
+  DynamoDB: 3
+```
+
+你无需手动写出总分——引擎自动计算 Σ(weight × score)，因此修改某个分数就会改变计算出的获胜者。
+
+## 6. 双泡泡图（比较对照）
+
+```
+comparison "Plant cell vs Animal cell"
+mode: double-bubble
+left "Plant cell"
+right "Animal cell"
+shared "Has a nucleus"
+shared "Mitochondria"
+left-only "Cell wall"
+left-only "Chloroplasts"
+right-only "Centrioles"
+right-only "Lysosomes"
+```
+
+`shared` 特征居中，与两个中心相连；`left-only` / `right-only` 向各自的中心展开。
+
+## 7. 主题
+
+`default` 使用带有绿色/红色/琥珀色标记的品牌蓝；`monochrome` 取消颜色（标记改用 ✓/✗/~，获胜者改用粗边框）以便黑白打印；`dark` 使用 Catppuccin 深色主题。
+
+## 标准依据
+
+Pugh，《Total Design》（1991）收敛控制法・ASQ 决策矩阵・Hyerle 思维地图（双泡泡）・K-12 图形组织工具惯例。参见 `docs/reference/51-COMPARISON-STANDARD.md`。

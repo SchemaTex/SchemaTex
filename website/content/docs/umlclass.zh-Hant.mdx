@@ -1,0 +1,192 @@
+---
+title: UML 類別圖（UML Class Diagram）
+---
+
+## 關於類別圖
+
+**類別圖**是物件導向設計的骨幹：它展示系統中的*型別*——類別、介面、列舉——以及它們的屬性與操作，還有彼此之間的結構關係（繼承、組合、聚合、依賴）。它是 **[UML](https://www.omg.org/spec/UML/2.5.1/) 2.5.1 §9–§11** 規範，也是軟體文件中最常用的 UML 圖。
+
+Schematex 以單一關鍵字 `umlclass` 與專為 LLM 生成設計的文字 DSL 實作了 UML 2.5.1 視覺子集——PlantUML 風格的體驗，同時也接受 Mermaid `classDiagram` 的字符別名，方便一行指令完成遷移。標準正確的裝飾（空心三角形指向更通用的分類器；實心菱形標記組合端），**繼承驅動的分層佈局**（介面浮於頂部，葉類別沉於底部），以及零依賴的可嵌入 SVG。與 **[erd](/docs/erd)**（建模*資料*列，而非型別）和 **[c4](/docs/flowchart)**（架構層級，而非程式碼層級型別）不同。
+
+<Playground initial={`umlclass
+title: "Shapes"
+«interface» Shape {
+  + area() : double
+}
+abstract class AbstractShape {
+  # name : String
+  + area() : double {abstract}
+}
+class Circle {
+  + radius : double
+  + area() : double
+}
+class Square {
+  + side : double
+  + area() : double
+}
+Shape         <|.. AbstractShape
+AbstractShape <|-- Circle
+AbstractShape <|-- Square`} height={560} />
+
+---
+
+## 1. 第一個類別圖
+
+每份文件以 `umlclass` 關鍵字開頭（也接受 Mermaid 的 `classDiagram` 標題），然後是宣告與關係：
+
+```
+umlclass
+class Account {
+  + id : String
+  - balance : Money
+  + deposit(amount : Money) : void
+}
+class Customer {
+  + name : String
+}
+Customer "1" o-- "*" Account : owns
+```
+
+`class X { … }` 區塊宣告一個分類器，包含名稱區隔、屬性區隔與操作區隔。成員各自佔一行；也可以寫在單行（`class Account { + id : String + deposit() }`）。標題接受以下屬性：
+
+- `title: "…"` — 繪製於圖表上方的標題。
+- `direction: tb | bt | lr | rl` — 分層方向，預設 `tb`（父層在上）。
+- `theme: …` — 主題覆寫。
+
+---
+
+## 2. 分類器
+
+```
+class Order
+«interface» Repository
+«enumeration» Status
+abstract class Shape
+datatype Money
+primitive int
+```
+
+五種分類器種類為 `class`、`interface`、`enum`（別名 `enumeration`）、`datatype` 與 `primitive`。`«stereotype»`（或 ASCII 的 `<<stereotype>>`）渲染於名稱上方；`abstract class`（或 `{abstract}` 標注）以斜體渲染名稱。使用 `as` 可給出與引用 id 不同的顯示名稱：`class "Order Service" as OrderSvc`。
+
+---
+
+## 3. 成員——屬性與操作
+
+```
+class Account {
+  + id : String
+  - balance : Money = 0
+  / available : Money
+  # owner : Customer
+  ~ region : String
+  + count : int {static}
+  + deposit(amount : Money) : void
+  + transfer(to : Account, amount : Money) : boolean {query}
+}
+```
+
+- **可見性**字符：`+` 公開、`-` 私有、`#` 受保護、`~` 套件。
+- `: Type` 給出屬性型別或操作回傳型別；`= value` 為預設值；`[0..*]` 為多重性；`/` 為衍生屬性。
+- `{…}` 標注：`{static}`（渲染為底線）、`{abstract}`（斜體操作）、`{readOnly}`、`{query}`、`{ordered}`……
+- `name : Type`、`name: Type` 以及 Java 順序的 `Type name` 均可接受，並標準化為 `name : Type`。
+
+**列舉字面值**是 `enum` 主體內的裸名稱：
+
+```
+«enumeration» Status {
+  ACTIVE
+  SUSPENDED
+  CLOSED
+}
+```
+
+---
+
+## 4. 關係
+
+```
+Vehicle <|-- Car            泛化（空心三角形 → 父類別）
+Shape   <|.. Circle         實現（虛線 + 空心三角形 → 介面）
+Order   *-- LineItem        組合（整體端的實心菱形）
+Customer o-- Address        聚合（整體端的空心菱形）
+Service --> Repository      有向關聯（開箭頭 → 目標）
+Service ..> Logger          依賴（虛線 + 開箭頭 → 供應者）
+A -- B                      純關聯（無箭頭）
+```
+
+接受反向形式並標準化（`Car --|> Vehicle` ≡ `Vehicle <|-- Car`）。連接符前後的空白為可選。
+
+當兩個以上的子類別透過泛化／實現共享同一個父類別時，箭頭會**合併為樹狀**：一根主幹、一個共享三角形、每個子類別各一條支腿。
+
+---
+
+## 5. 標籤與多重性
+
+```
+Customer "1" o-- "0..*" Order : places
+```
+
+尾部的 `: label` 為關聯命名（繪製於線段中點）。引號端為多重性或角色名稱：`"1"`、`"0..1"`、`"*"`、`"1..*"`。來源端為連接符左側，目標端為右側（反向形式標準化後）。
+
+---
+
+## 6. 命名空間／套件
+
+將分類器分組到帶標籤的容器框中：
+
+```
+umlclass
+namespace Platform {
+  namespace Auth {
+    class UserService {
+      + login()
+    }
+  }
+  namespace Data {
+    class Repository {
+      + find()
+    }
+  }
+}
+class Gateway {
+  + route()
+}
+Gateway --> UserService : delegates
+Gateway --> Repository  : delegates
+```
+
+- 區塊**巢狀嵌套**。點記法自動建立父層：`namespace Company.Engineering.Backend { … }` 也會建立 `Company` 與 `Company.Engineering`。
+- 明確標籤：`namespace plat["Platform Layer"] { … }`。
+- 每個套件渲染為一個框架 = 其成員（與巢狀子框架）的聯集 + 內距 + 頂部標籤。命名空間主體必須使用換行（每行一個宣告）。
+
+---
+
+## 7. Mermaid 相容形式
+
+用於從 Mermaid `classDiagram` 一行遷移：
+
+```
+classDiagram
+class Repository~T~ {
+  + findAll() List~T~
+  + cache : Map~String,List~int~~
+  + count$
+  + flush()*
+}
+Repository : <<service>>
+Repository : + save(e : T) T
+```
+
+- **波浪號泛型** `List~T~` → `List<T>`（支援巢狀：`Map~String,List~int~~` → `Map<String,List<int>>`）；也可用於類別名稱（`class Box~T~`）。
+- **單行成員**：`ClassName : +member` 附加一個成員；`ClassName : <<interface>>` 設定種類／原型。
+- **成員分類器**：尾部 `*` = 抽象（斜體），尾部 `$` = 靜態（底線）。
+- **空格回傳型別**：`getId() String` 不需要冒號。
+
+單獨的前導 `~` 仍然是套件可見性字符；波浪號泛型只轉換型別內部平衡的 `~…~` 對，因此兩者不會衝突。
+
+---
+
+## 8. 主題與無障礙存取
+
+所有筆觸與填充均來自主題令牌（無行內樣式）；CSS 類別前綴為 `sx-umlclass-*`。可見性以文字字符渲染（`+ - # ~`），而非彩色圖示——忠實於標準，且對黑白印刷友善。每個圖表都攜帶 `<title>`／`<desc>` 以及 `data-*` 屬性（分類器上的 `data-id`、`data-kind`，關係上的 `data-from`／`data-to`／`data-kind`，框架上的 `data-package-id`）以供互動使用。

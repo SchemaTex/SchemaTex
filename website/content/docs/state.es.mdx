@@ -1,0 +1,364 @@
+---
+title: Diagrama de estados
+---
+
+## Sobre los diagramas de estados
+
+Un **diagrama de estados** (también llamado *statechart* o diagrama de máquina de estados) describe el ciclo de vida de un sistema reactivo: en qué estados puede estar, qué eventos provocan las transiciones entre ellos y qué acciones se ejecutan al entrar, salir o durante un estado. Los arquitectos de software los usan para especificar flujos de trabajo; los ingenieros de control los usan para diseñar controladores reactivos; los diseñadores de UI los usan para modelar ciclos de vida de pantallas. Están formalizados en **OMG UML 2.5.1 §14** (máquinas de estados) y la extensión *Statechart* de Harel de 1987, que introdujo estados compuestos, historial y regiones ortogonales.
+
+Schematex implementa un superconjunto estricto de **[Mermaid `stateDiagram-v2`](https://mermaid.js.org/syntax/stateDiagram.html)** — cada ejemplo de Mermaid se pega sin cambios, además de que obtienes las características de UML 2.5 que Mermaid no expone: actividades `entry / exit / do`, etiquetas de transición completas `trigger [guard] / action`, pseudo-estados `terminate` e historial, junction, y notas en bloques al estilo Schematex. El diseño usa el mismo motor Sugiyama-layered-DAG que los flowcharts, por lo que los ciclos, estados compuestos y transiciones cruzando límites se enrutan limpiamente.
+
+<Playground initial={`stateDiagram-v2
+direction TB
+
+[*] --> Idle
+
+Idle --> Authenticating : submit [form_valid] / clearErrors()
+Authenticating --> Authenticated : ok / storeToken()
+Authenticating --> Idle : fail [retries < 3] / incrementRetries()
+Authenticating --> Locked : fail [retries >= 3]
+
+state Decide <<choice>>
+Authenticated --> Decide
+Decide --> Admin : [role == "admin"]
+Decide --> User  : [role == "user"]`} height={520} />
+
+---
+
+## 1. Tu primer diagrama de estados
+
+El diagrama de estados mínimo útil: un estado inicial, un estado final y una transición.
+
+<Playground initial={`stateDiagram-v2
+[*] --> Running
+Running --> [*] : done`} />
+
+Tres reglas cubren el 80 % del uso:
+
+1. Comienza con el encabezado `stateDiagram-v2` (estilo Mermaid) o `state` (estilo Schematex).
+2. Usa `[*]` para el nodo de inicio implícito (cuando está a la izquierda de `-->`) o el nodo de fin (cuando está a la derecha).
+3. Conecta estados con `-->`. Agrega una etiqueta después de `:` — la forma UML completa es `trigger [guard] / action`.
+
+La dirección por defecto es **TB** (de arriba a abajo) para coincidir con Mermaid. Cámbiala con `direction LR` en su propia línea, o `[direction: LR]` en el encabezado.
+
+> Los comentarios usan `%%` (Mermaid), `#` o `//`.
+
+---
+
+## 2. Declaraciones de estado
+
+Los estados se crean automáticamente la primera vez que se referencian en una transición, pero las declaraciones explícitas permiten controlar la etiqueta y la forma.
+
+```
+state Authenticating
+state "Awaiting Approval" as Approval
+Idle: Waiting for input
+```
+
+| Forma | Efecto |
+|---|---|
+| `Idle` | ID simple — creado como estado simple con `Idle` como id y etiqueta |
+| `state Idle` | Declaración explícita; mismo efecto |
+| `state "Awaiting Approval" as Approval` | Alias — muestra `Awaiting Approval`, se referencia como `Approval` en las transiciones |
+| `Idle: Waiting for input` | Etiqueta en línea — `Idle` es el id, `Waiting for input` es la etiqueta visible |
+
+---
+
+## 3. Pseudo-estados
+
+Los pseudo-estados controlan el flujo de una máquina de estados sin representar un estado de reposo estable.
+
+| Mermaid | Schematex | Símbolo | Propósito |
+|---|---|---|---|
+| `[*]` (origen) | `initial id` | Círculo negro relleno | Punto de entrada de una región |
+| `[*]` (destino) | `final id` | Círculo relleno dentro de un anillo exterior | Salida exitosa |
+| `state X <<choice>>` | `choice X` | Rombo | Rama dinámica (guardas evaluadas en tiempo de ejecución) |
+| `state X <<fork>>` | `fork X` | Barra negra gruesa | Una entrada → N salidas paralelas |
+| `state X <<join>>` | `join X` | Barra negra gruesa | N entradas → una salida |
+| — | `junction X` | Círculo pequeño relleno | Punto de fusión estático |
+| — | `history X` | Círculo con `H` | Volver a entrar en el último sub-estado visitado |
+| — | `dhistory X` | Círculo con `H*` | Historia profunda (recursiva) |
+| — | `terminate X` | Marca `×` | Terminación anormal (sin limpieza) |
+| — | `entry_point X` / `exit_point X` | Círculo hueco en el borde del estado compuesto | Puntos de entrada / salida con nombre |
+
+`[*]` es el alias Mermaid y siempre se resuelve por dirección: en el lado **origen** de `-->` es un `initial`, en el lado **destino** es un `final`. Cada ámbito compuesto tiene su propio par.
+
+<Playground initial={`stateDiagram-v2
+[*] --> Idle
+state Decide <<choice>>
+state Joiner <<join>>
+Idle --> Decide : evaluate
+Decide --> Authorized : [role == "admin"]
+Decide --> Joiner    : [role == "user"]
+Authorized --> Joiner
+Joiner --> [*]`} height={360} />
+
+---
+
+## 4. Transiciones
+
+La etiqueta de transición UML 2.5 completa tiene tres partes opcionales:
+
+```
+trigger [guard] / action
+```
+
+| Campo | Significado | Ejemplo |
+|---|---|---|
+| `trigger` | Evento que dispara la transición | `submit`, `tick`, `timeout(30s)` |
+| `[guard]` | Expresión booleana evaluada al momento del trigger | `[count > 0]`, `[role == "admin"]` |
+| `/ action` | Acción(es) ejecutadas al tomar la transición | `/ log(); increment()` |
+
+Los tres son opcionales — una transición sin etiqueta es anónima (transición de completado).
+
+```
+A --> B                                      %% completado anónimo
+A --> B : tick                                %% solo trigger
+A --> B : [count > 0]                         %% solo guard
+A --> B : / clearErrors()                     %% solo acción
+A --> B : tick [count > 0] / log()            %% los tres
+A --> B : tick, tock [enabled] / handle()     %% multi-trigger
+```
+
+Las etiquetas largas se ajustan automáticamente cuando superan el ancho del carril.
+
+---
+
+## 5. Estados compuestos
+
+Un estado compuesto contiene un sub-statechart anidado. El estado exterior actúa como contenedor con sus propios pseudo-estados initial / final.
+
+```
+state Playing {
+  [*] --> Buffering
+  Buffering --> Streaming : buffer_full
+  Streaming --> Buffering : underflow
+}
+```
+
+Se aceptan tanto la sintaxis Mermaid (`state X { … }`) como la forma Schematex (`composite X { … }`). Las actividades se pueden declarar dentro del bloque compuesto:
+
+```
+state Playing {
+  entry / startBuffer()
+  exit / stopBuffer()
+  do / decodeFrames()
+
+  [*] --> Buffering
+  Buffering --> Streaming : buffer_full
+  Streaming --> Buffering : underflow
+}
+```
+
+El renderer dibuja los estados compuestos como un clúster con barra de título + compartimento de actividades.
+
+<Playground initial={`stateDiagram-v2
+
+[*] --> Stopped
+
+Stopped --> Playing : play / loadSource()
+Playing --> Paused  : pause
+Paused  --> Playing : play
+Playing --> Stopped : stop / releaseSource()
+
+state Playing {
+  entry / startBuffer()
+  exit / stopBuffer()
+  do / decodeFrames()
+
+  [*] --> Buffering
+  Buffering --> Streaming : buffer_full
+  Streaming --> Buffering : underflow
+}`} height={520} />
+
+Las transiciones que cruzan límites (`Outside --> Inside`) se enrutan automáticamente — el diseño Sugiyama tira del origen/destino a través del borde del estado compuesto.
+
+---
+
+## 6. Regiones concurrentes
+
+Dentro de un estado compuesto, el separador `--` (Mermaid) o `---` (Schematex) divide el cuerpo en regiones ortogonales que se ejecutan de forma concurrente.
+
+```
+state Active {
+  [*] --> r1_idle
+  r1_idle --> Connected : connect
+  --
+  [*] --> r2_idle
+  r2_idle --> Working : start
+}
+```
+
+Usa `fork` y `join` para iniciar / sincronizar entre regiones:
+
+<Playground initial={`stateDiagram-v2 [direction: LR]
+
+[*] --> F
+state F <<fork>>
+state J <<join>>
+F --> A
+F --> B
+A --> J : done_a
+B --> J : done_b
+J --> [*]`} height={300} />
+
+---
+
+## 7. Notas
+
+Se puede adjuntar una anotación breve a cualquier lado de cualquier estado.
+
+```
+note right of Checking : Calls /api/verify synchronously.
+note left of Idle : Anonymous landing state
+```
+
+Las notas multilínea usan la forma de bloque `end note` de Mermaid, o la forma `{ … }` de Schematex:
+
+```
+note right of Authenticating
+  Stores the JWT in localStorage
+  on success.
+end note
+
+note left_of Idle {
+  Anonymous landing state.
+  Returns here on 401.
+}
+```
+
+---
+
+## 8. Auto-transiciones
+
+Una transición `A --> A` se renderiza como un arco curvo en el lado derecho del nodo.
+
+```
+Idle --> Idle : poll / refresh()
+```
+
+La etiqueta se coloca junto al arco, fuera del bounding box.
+
+---
+
+## 9. Dirección del diseño
+
+Schematex tiene por defecto **`TB`** (de arriba a abajo), coincidiendo con Mermaid. Cámbialo en el encabezado:
+
+```
+stateDiagram-v2
+direction LR
+
+[*] --> Loading
+Loading --> Ready
+```
+
+O con la forma de atributo entre corchetes de Schematex:
+
+```
+state "Order Lifecycle" [direction: TB]
+
+[*] --> Pending
+Pending --> Paid
+```
+
+`BT` y `RL` son aceptados por el parser pero se normalizan a `TB` y `LR` respectivamente (el motor de diseño aún no invierte el orden visual).
+
+---
+
+## 10. Errores comunes
+
+| Lo que escribiste | Dice el parser | Solución |
+|---|---|---|
+| `[*] -> [*]` | Tratado como alias initial y final en la misma línea | Siempre ten al menos un estado con nombre entre los alias `[*]` |
+| `state X <<branch>>` | `branch` no es un estereotipo | Usa `<<choice>>` (dinámico) o `<<fork>>` / `<<join>>` |
+| `note right of`<br/>`text` | La nota multilínea debe terminar con `end note` | Agrega `end note` en su propia línea |
+| `composite X` (sin llaves) | Tratado como una declaración de estado simple | Abre el bloque: `composite X {` |
+| `direction LR` dentro de composite | La dirección por región no está soportada aún | Establece la dirección en la línea del encabezado |
+
+---
+
+## 11. Gramática (EBNF)
+
+```text
+document     = header statement*
+header       = ("stateDiagram-v2" | "stateDiagram" | "state")
+                ( title )? ( "[" attrs "]" )? NEWLINE
+attrs        = attr ("," attr)*
+attr         = "direction:" ("TB" | "LR")
+
+statement    = comment
+             | direction-stmt              %% direction LR / TB / BT / RL
+             | state-decl
+             | alias-decl                  %% state "Long" as ID
+             | stereotype-decl             %% state ID <<choice|fork|join|end>>
+             | pseudo-decl                 %% initial / final / choice / ... ID
+             | composite-block             %% (state | composite) ID { ... }
+             | label-stmt                  %% ID : description
+             | transition
+             | note-stmt
+             | region-sep                  %% --  or  ---
+
+transition   = (ID | "[*]") "-->" (ID | "[*]") ( ":" trans-label )? NEWLINE
+trans-label  = trigger? ( "[" guard "]" )? ( "/" action )?
+
+note-stmt    = "note" side ID ":" inline-text NEWLINE
+             | "note" side ID NEWLINE  text-line+  ("end note" | "}") NEWLINE
+side         = "left of" | "right of" | "left_of" | "right_of"
+
+comment      = "%%" any | "#" any | "//" any
+
+ID           = [A-Za-z_] [A-Za-z0-9_]*
+```
+
+Fuente autoritativa: `src/diagrams/state/parser.ts`. Si esto diverge del parser, el parser tiene prioridad — por favor abre un issue.
+
+---
+
+## 12. Conformidad con el estándar
+
+| Característica | UML 2.5 | Harel 1987 | Mermaid | Schematex |
+|---|:-:|:-:|:-:|:-:|
+| Estado simple | ✅ | ✅ | ✅ | ✅ |
+| Estado compuesto (anidado) | ✅ | ✅ | ✅ | ✅ |
+| Pseudo-estado initial / final | ✅ | ✅ | ✅ | ✅ |
+| Pseudo-estado choice | ✅ | — | ✅ | ✅ |
+| Fork / join | ✅ | ✅ | ✅ | ✅ |
+| Pseudo-estado junction | ✅ | — | ❌ | ✅ |
+| Historia (superficial / profunda) | ✅ | ✅ | ❌ | ✅ |
+| Pseudo-estado terminate | ✅ | — | ❌ | ✅ |
+| Actividades `entry / exit / do` | ✅ | ✅ | ❌ | ✅ |
+| Etiquetas `trigger [guard] / action` | ✅ | ✅ | ❌ (solo etiqueta) | ✅ |
+| Transiciones internas | ✅ | ✅ | ❌ | ✅ |
+| Regiones concurrentes | ✅ | ✅ | ✅ | ✅ |
+| Notas en estados | — | — | ✅ | ✅ |
+| Transiciones entre estados compuestos | ✅ | ✅ | ❌ | ✅ |
+| Alias `[*]` initial/final | — | — | ✅ | ✅ |
+
+Schematex es un superconjunto estricto de Mermaid `stateDiagram-v2`. Los ejemplos de Mermaid se pegan sin cambios; los elementos adicionales de UML 2.5 (actividades, historial, junction, terminate, etiquetas de transición completas) se aceptan junto a ellos.
+
+Referencias:
+
+- OMG UML 2.5.1 — *Unified Modeling Language*: https://www.omg.org/spec/UML/2.5.1/
+- Harel (1987) — *Statecharts: A visual formalism for complex systems*, Science of Computer Programming 8(3)
+- Mermaid stateDiagram-v2 — https://mermaid.js.org/syntax/stateDiagram.html
+
+---
+
+## 13. Hoja de ruta
+
+- **Direcciones `BT` / `RL`** — actualmente normalizadas a `TB` / `LR` en tiempo de análisis; inversión visual pendiente
+- **Anulación de dirección por región** — `direction LR` dentro de un bloque composite (actualmente se ignora silenciosamente)
+- **Referencias a submáquinas** — renderizado del estereotipo `state Foo : Submachine`
+- **Compartimento de transición interna** — divisor visual explícito para líneas `tick [g] / a` dentro del cuerpo de un estado
+
+---
+
+## Ejemplos relacionados
+
+Escenarios listos para usar del catálogo de ejemplos:
+
+<RelatedExamples slugs={[
+  'state-traffic-light',
+  'state-ecommerce-order',
+]} />

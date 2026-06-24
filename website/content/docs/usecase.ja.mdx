@@ -1,0 +1,206 @@
+---
+title: UML ユースケース図
+---
+
+## ユースケース図とは
+
+**ユースケース図**は、あらゆる要件定義の場で最初に問われる質問に答えます：*このシステムは何をするのか、誰のために？* Ivar Jacobson が1992年に導入し、**[UML](https://www.omg.org/spec/UML/2.5.1/) 2.5.1 §18** に組み込まれ、最もよく教えられる UML 図であり、製品・エンジニアリング・QA 間の共通言語です。記法は小さいですが——アクターのスティックフィギュア・ユースケースの楕円・システム境界・4種類の線——どんなボックスアンドアロー図よりもシステムスコープを明確に固定します。
+
+Schematex は UML 2.5.1 ビジュアルサブセットを単一キーワード `usecase` と LLM 生成向けに設計されたテキスト DSL で実装しています——JVM なし、括弧の体操なしで PlantUML の開発者体験を提供します。**[state](/docs/state)**（システムスコープではなくオブジェクト内部の挙動）、**[flowchart](/docs/flowchart)**（アクター / サブジェクト / include-extend セマンティクスなし）、**[bpmn](/docs/bpmn)**（システムが提供するものではなくプロセスがどう実行されるか）とは異なります。
+
+<Playground initial={`usecase
+title: "ATM"
+system: "ATM System"
+
+actor: Customer
+actor: Bank (external)
+
+usecase: "Withdraw Cash"  as Withdraw
+usecase: "Deposit Funds"  as Deposit
+usecase: "Check Balance"  as Check
+
+Customer -- Withdraw
+Customer -- Deposit
+Customer -- Check
+Withdraw -- Bank
+Deposit  -- Bank
+Check    -- Bank`} height={520} />
+
+---
+
+## 1. 最初の図
+
+すべてのドキュメントは `usecase` キーワードで始まり、続いてヘッダー、宣言と関係を記述します：
+
+```
+usecase
+system: "Library"
+
+actor: Member
+usecase: "Borrow Book" as Borrow
+
+Member -- Borrow
+```
+
+`actor:` でアクター（スティックフィギュア）を宣言し、`usecase:` でユースケース（楕円）を宣言し、`Member -- Borrow` でそれらの間に単純な関連を描きます。`system:` でユースケースをラベル付きの**サブジェクト**矩形で囲みます。プライマリアクターは左側に、サポーティングアクターは右側に配置されます。
+
+ヘッダーには以下が指定できます：
+
+- `title: "…"` — 図の上部に描かれる見出し。
+- `system: "…"` — サブジェクト（システム境界）の名前。ユースケースが3つ以上ある場合に省略すると Schematex が警告します。
+- `direction: LR | TB` — デフォルトは `LR`（アクターがサブジェクトを水平に挟む）。
+- `generalization: tree | individual` — 兄弟の汎化矢印をマージするかどうか（デフォルトは `tree`）。
+
+---
+
+## 2. アクター
+
+```
+actor: Customer
+actor: "Payment Gateway" as PG (external)
+actor: "Warehouse Staff" as WH
+actor: Admin (left)
+```
+
+- 裸の名前または `"引用符付き"` の名前がラベルになります；`as ID` で関係に使う短い識別子を与えます。
+- `(external)`（または `(system)`）はアクターをスティックフィギュアの代わりに **`«actor»` ステレオタイプ付きの矩形**としてレンダリングします——他のソフトウェアシステム（決済ゲートウェイ、サードパーティ API）に使用します。
+- `(business)` はスティックフィギュアに Bittner & Spence の斜め線を追加します。
+- `(left)` / `(right)` でアクターを側面に固定します。デフォルトでは最初のアクターが左に、残りが右に配置されます。
+
+カスタムステレオタイプは宣言の後にギュメで記述します：`actor: "Audit Service" as Audit (external) «system»`。パーサーは ASCII の `<<system>>` も受け付け、`«system»` に正規化します。
+
+---
+
+## 3. ユースケース
+
+```
+usecase: "Checkout" as Checkout {
+  extension point: payment failed
+  extension point: stock depleted
+}
+```
+
+ユースケースはテキストに合わせたサイズの楕円です。オプションの `{ … }` ブロックが区切り線の下のコンパートメントに**拡張ポイント**をリストします。ステレオタイプもここで使えます：`usecase: "Validate Card" as ValidateCard «secured»`。
+
+---
+
+## 4. 関係
+
+4種類の線がアクターとユースケースをつなぎます：
+
+| DSL | 意味 | レンダリング |
+|-----|---------|-----------|
+| `A -- B` | 関連 | 実線、矢印なし |
+| `A --> B` | 有向関連 | 実線、B に開いた矢印 |
+| `A ..> B` | `A` が `B` を **include** する | 破線、開いた矢印 → B、`«include»` ピル |
+| `A <.. B` | `A` が `B` を **extend** する | 破線、開いた矢印 → B（ベース）、`«extend»` ピル |
+| `A --\|> B` | `A` は `B` の特殊化 | 実線、中空三角形 → 親 B |
+
+```
+Customer -- Checkout
+Checkout ..> Pay          : «include»
+Pay      ..> ValidateCard : «include»
+Cancel   <.. Checkout     : «extend» [payment failed] (extension point: payment failed)
+```
+
+- **`«include»`** は*インクルードされるユースケース*を指します——再利用可能な挙動 `A` が常に実行されます。ソースがターゲットをインクルードします。
+- **`«extend»`** は*ベース*を指します——`A` はオプションの挙動で、`B` はそれが拡張するベースです。`[condition]` を付加してベースの `(extension point: …)` のエントリの1つを参照できます。（矢印頭はエンドポイントの順序に関係なく常にベースに向けて描かれます。）
+- `«extend»` 行は、より稀で驚くべき関係が目立つようにテーマの**アクセントカラー**で描かれます。
+
+パーサーは人間と LLM の両方がよくする高確信度の間違いを、違反した行番号とともに拒否します：2つのアクター間または2つのユースケース間の関連、アクターに触れる `include`/`extend`、メタクラスを越えた汎化（アクター → ユースケース）、再使用された識別子、ベースに存在しない拡張ポイントへの参照。
+
+---
+
+## 5. 汎化
+
+`--|>` は2つのアクター**または**2つのユースケース間で動作します（2つを越えることは許されません——それはハードエラーです）：
+
+```
+actor: User as U
+actor: "Premium User" as PU
+PU --|> U
+
+usecase: "Pay by Card"   as PayCard
+usecase: "Pay by PayPal" as PayPaypal
+usecase: "Pay"           as Pay
+PayCard   --|> Pay
+PayPaypal --|> Pay
+```
+
+矢印は親を指す**中空三角形**を持ちます。3つ以上の兄弟が1つの親を共有する場合、矢印は単一の共有ヘッドにマージされます（UML 2.5 Figure 18.5 の慣例）；分離したまま保つには ヘッダーで `generalization: individual` を設定します。アクター階層はアクタースタックの外側エッジにクリーンなバスとしてルーティングされます。
+
+---
+
+## 6. 多重度
+
+多重度文字列を、それが属するエンドポイントのすぐ隣に引用符で記述します：
+
+```
+Customer "1"    -- "*" Checkout
+Cashier  "1..*" -- "1" Register
+```
+
+---
+
+## 7. PlantUML スタイルのインライン形式
+
+PlantUML から来た方へ。インライン宣言形式が動作し、宣言形式と自由に混在できます：
+
+```
+usecase
+:Customer: as C
+(Browse Catalog) as Browse
+(Add to Cart)    as AddCart
+
+C -- Browse
+C -- AddCart
+Browse ..> AddCart : «include»
+```
+
+`:Name:` でアクターを宣言し、`(Name)` でユースケースを宣言し、`as ID` でどちらにもエイリアスを付けます。Schematex は PlantUML に*インスパイアされた*もので、1:1 トランスパイラーではありません——多重度と関係構文は若干異なります。
+
+---
+
+## 8. 文法（EBNF）
+
+```text
+document     = "usecase" NEWLINE header_prop* statement*
+header_prop  = ("title:" | "system:") quoted_string
+             | "direction:" ("LR" | "TB")
+             | "generalization:" ("tree" | "individual")
+
+statement    = actor_decl | usecase_decl | plantuml_inline | relation | note
+
+actor_decl   = "actor" ":" name ("as" IDENT)? actor_kind? stereotype?
+actor_kind   = "(" ("external" | "system" | "business" | "left" | "right") ")"
+usecase_decl = "usecase" ":" quoted ("as" IDENT)? stereotype? extpoints?
+extpoints    = "{" ("extension point:" TEXT)+ "}"
+plantuml_inline = ":" name ":" ("as" IDENT)?      ; actor
+                | "(" name ")" ("as" IDENT)?       ; use case
+
+relation     = endpoint relop endpoint label_clause?
+endpoint     = (IDENT | quoted) multiplicity? | multiplicity? (IDENT | quoted)
+relop        = "--" | "-->" | "..>" | "<.." | "--|>"
+label_clause = ":" stereotype? condition? extpoint_ref?
+stereotype   = "«" TEXT "»" | "<<" TEXT ">>"
+condition    = "[" TEXT "]"
+extpoint_ref = "(extension point:" TEXT ")"
+multiplicity = quoted_string                       ; "1", "*", "0..1", "1..*"
+```
+
+---
+
+## 9. 標準準拠
+
+Schematex は OMG **UML 2.5.1 §18 (UseCases)** ビジュアルサブセットと Bittner & Spence スタイルガイドに従っています：レンダリングされた SVG ではギュメ（ASCII `<<>>` は不使用）、`«include»` はインクルードされるユースケースに向けて、`«extend»` はベースに向けて、中空三角形の汎化ヘッド、外部システム矩形には `«actor»` ステレオタイプ。テキスト形式のユースケース説明（Cockburn 完全形式）、シナリオテーブル、XMI エクスポートは*ダイアグラム*レンダラーの対象外です。完全な仕様については `docs/reference/29-USECASE-STANDARD.md` を参照してください。
+
+---
+
+## 関連する例
+
+サンプルギャラリーからすぐに使えるシナリオ：
+
+<RelatedExamples slugs={[
+  'usecase-atm',
+  'usecase-online-bookstore',
+]} />

@@ -1,0 +1,243 @@
+---
+title: Timing-Diagramm
+---
+
+## Über Timing-Diagramme
+
+Ein **Timing-Diagramm** zeigt, wie sich digitale Signale über die Zeit verändern – Taktimpulse, Bus-Übergänge, Datenwerte und Hochimpedanz-Zustände – dargestellt als eine Reihe horizontaler Wellenform-Bänder mit einer gemeinsamen Zeitachse. Hardware-Ingenieure nutzen sie zur Spezifikation des Protokollverhaltens, zur Überprüfung von Setup- und Hold-Constraints und zur Dokumentation von Chip-Schnittstellen. Sie erscheinen in Datenblättern, HDL-Simulationsberichten und digitalen Systemlehrbüchern.
+
+Schematex verwendet eine **[WaveDrom-kompatible](https://wavedrom.com/tutorial.html)** Signalnotation – dieselben Wellenformzeichen (`0`, `1`, `x`, `z`, `p`, `=`, …) und die Datenlabel-Syntax, die WaveDrom eingeführt hat – sodass vorhandene WaveDrom-DSL direkt übertragen werden kann. Diese Seite dokumentiert, was der Parser heute akzeptiert.
+
+<Playground initial={`timing "SPI Transaction"
+CLK:   pppppppp
+CS_N:  10000001
+MOSI:  x=======  data: ["0xAB","0xCD","0xEF","0x01","0x02","0x03","0x04","0x05"]
+MISO:  zzzz====  data: ["","","","","0xFF","0x12","0x34","0x56"]`} height={400} />
+
+---
+
+## 1. Ihr erstes Timing-Diagramm
+
+Das kleinste nützliche Timing-Diagramm: ein Takt und ein Datensignal. Die einfachste Schreibweise vermeidet das Zählen von Zeichen vollständig:
+
+<Playground initial={`timing
+CLK:  clock 8
+RST:  rle 1*2 0*6
+DATA: 0011==00  data: ["A","B"]`} />
+
+Drei Regeln decken 80 % der Anwendungsfälle ab:
+
+1. Beginnen Sie mit dem Schlüsselwort `timing`, optional gefolgt von einem Titel in Anführungszeichen und `[hscale: N]`.
+2. Jedes Signal ist eine Zeile: `NAME: <wave>` – Name, Doppelpunkt, dann die Wellenform. Die Wellenform kann sein:
+   - **`clock N`** – ein Taktgenerator mit `N` Perioden (fügen Sie `neg` für einen Negedge-Takt hinzu). Kein Zeichenzählen.
+   - **`rle <state>*<count> …`** – Lauflängensegmente, z. B. `rle 1*2 0*6` = `11000000`. Ausrichtung automatisch.
+   - **eine rohe WaveDrom-Wellenformzeichenkette** – eine zusammenhängende Folge von Zustandszeichen (keine internen Leerzeichen) für feine Steuerung.
+3. Fügen Sie `data: ["val1", "val2"]` nach einer rohen Wellenformzeichenkette hinzu, um Bus-Segmente zu beschriften.
+
+> **Tipp zur Ausrichtung:** Die häufigste Ursache für ein defektes Timing-Diagramm sind Signale unterschiedlicher Länge. `clock N` und `rle` machen die Zellenanzahl jedes Signals explizit, sodass sie sich ausrichten. Verwenden Sie rohe Wellenformzeichenketten nur, wenn Sie Steuerung auf Zellenebene benötigen.
+
+> Kommentare müssen mit `#` auf einer eigenen Zeile beginnen.
+
+---
+
+## 2. Wellenformzeichen
+
+Die Wellenformzeichenkette ist eine Folge von Zeichen, eines pro Zeitperiode. Der Parser akzeptiert diese:
+
+| Zeichen | Zustand | Bedeutung |
+|---|---|---|
+| `0` | Logisch niedrig | Signal bei GND / VSS |
+| `1` | Logisch hoch | Signal bei VDD |
+| `x` | Unbekannt | Don't-care, undefiniert oder nicht initialisiert |
+| `z` | High-Z | Tri-State / Hochimpedanz |
+| `p` | Taktimpuls (positiv) | Positiv-flanken-aktiver Takt; ein `p` = eine vollständige Periode (niedrig→hoch→niedrig) |
+| `P` | Taktimpuls (positiv, hoch) | Wie `p`, visuell höher |
+| `n` | Taktimpuls (negativ) | Negativ-flanken-aktiv; ein `n` = eine vollständige Periode (hoch→niedrig→hoch) |
+| `N` | Taktimpuls (negativ, hoch) | Wie `n`, visuell höher |
+| `=` | Bus-Daten | Paralleles Bus-Segment; Labels über `data: […]` hinzufügen |
+| `2`–`9` | Benanntes Bus-Segment | Wie `=`, positionsbasiert in `data: […]` indiziert |
+| `.` | Halten / fortsetzen | Vorherigen Zustand für eine weitere Periode verlängern |
+| `h` / `H` | Hoch halten | Für diese Periode auf hoch zwingen |
+| `l` / `L` | Niedrig halten | Für diese Periode auf niedrig zwingen |
+| `u` | Steigende Flanke | Diagonal von niedrig nach hoch (nur Übergang) |
+| `d` / `D` | Fallende Flanke | Diagonal von hoch nach niedrig (nur Übergang) |
+
+<Playground initial={`timing "Wave character reference"
+clk:   pppppppppp
+high:  1111111111
+low:   0000000000
+unkn:  xxxxxxxxxx
+hiz:   zzzzzzzzzz
+bus:   x========x  data: ["ADDR","DATA","","","","","",""]
+hold:  0..1..0..1
+rise:  0u1
+fall:  1d0`} height={440} />
+
+---
+
+## 3. Datenlabels
+
+Wenn ein Signal einen Bus-Wert trägt, versehen Sie die Wellenform mit `data: ["label1", "label2", …]`. Jede nicht leere Zeichenkette in Anführungszeichen wird im entsprechenden `=`- (oder `2`–`9`-) Segment platziert.
+
+```
+MOSI:  x=======  data: ["0xAB","0xCD","0xEF","0x01","0x02","0x03","0x04","0x05"]
+```
+
+Leere Zeichenketten `""` lassen ein Segment unbeschriftet (nützlich für Segmente, die einen vorherigen Wert erweitern).
+
+```
+MISO:  zzzz====  data: ["","","","","0xFF","0x12","0x34","0x56"]
+# Die ersten vier z-Perioden haben kein Label; vier =-Segmente erhalten Labels ab 0xFF
+```
+
+<Playground initial={`timing "I2C read burst"
+SCL:   ppppppppppp
+SDA:   x1=======1x  data: ["ADDR+R","ACK","D0","D1","D2","D3","D4","D5","NACK"]`} />
+
+---
+
+## 4. Signale gruppieren
+
+Umschließen Sie verwandte Signale in einem `[GroupName]`-Block. Eine `---`-Zeile schließt die Gruppe und fungiert auch als visueller Trenner zwischen Gruppen.
+
+```
+[Control]
+CLK:   pppppppp
+CS_N:  10000001
+---
+[Data]
+MOSI:  x=======  data: ["0xAB","0xCD","0xEF","0x01","0x02","0x03","0x04","0x05"]
+MISO:  zzzz====  data: ["","","","","0xFF","0x12","0x34","0x56"]
+```
+
+Die alternative `group "name" { … }`-Syntax wird ebenfalls akzeptiert (die schließende `}` schließt die Gruppe).
+
+<Playground initial={`timing "UART frame"
+[Clock & control]
+CLK:  pppppppppppp
+TX_EN: 0111111110
+---
+[Data lines]
+TX:   1==========  data: ["START","D0","D1","D2","D3","D4","D5","D6","D7","STOP"]
+RX:   zz1=======1  data: ["","","D0","D1","D2","D3","D4","D5","D6","D7"]`} height={380} />
+
+---
+
+## 5. Titel und hscale
+
+**Titel:** `timing "SPI Transaction"` – erscheint oben im Diagramm.
+
+**hscale:** `timing "title" [hscale: 2]` – skaliert die Breite jeder Zeitperiode. Standard ist 1. Verwenden Sie 2 für breitere Perioden, wenn Datenlabels mehr Platz benötigen.
+
+```
+timing "Wide bus" [hscale: 2]
+CLK:  pppp
+DATA: ====  data: ["long label here","another","third","fourth"]
+```
+
+---
+
+## 6. Beschriftungen & Kommentare
+
+- **Signalname:** alles vor dem ersten `:` in einer Signalzeile. Namen mit Leerzeichen sind in Ordnung – der Doppelpunkt ist das Trennzeichen.
+- **Datenlabels:** `data: ["a", "b"]` nach der Wellenformzeichenkette.
+- **Titel:** erstes Token nach dem `timing`-Schlüsselwort, in Anführungszeichen.
+- **Kommentare:** `#` am Anfang einer Zeile (nach führenden Leerzeichen).
+
+```
+timing "Demo"
+# Dies ist ein Kommentar
+CLK: pppp    # ← Inline-Trailing-Kommentar wird NICHT unterstützt
+```
+
+---
+
+## 7. Häufige Fehler
+
+| Geschrieben | Parser-Meldung | Korrektur |
+|---|---|---|
+| `CLK: p p p p` (Leerzeichen in Wellenform) | Wellenformzeichenkette wird als nur `p` geparst; der Rest wird als Daten-Klausel behandelt | Leerzeichen entfernen: `CLK: pppp` |
+| `DATA: =====` ohne `data:` | Segmente werden als unbeschriftete Bus-Zellen gerendert | `data: ["A","B","C","D","E"]` hinzufügen |
+| Wellenformzeichen `s` oder `r` | `TimingParseError: Invalid wave string` | Nur die in §2 aufgeführten Zeichen sind gültig |
+| `CLK pppp` (kein Doppelpunkt) | Zeile entspricht nicht dem Signal-Muster; wird stillschweigend übersprungen | Der Doppelpunkt nach dem Signalnamen ist erforderlich |
+| `data: [A, B, C]` (ohne Anführungszeichen) | Werte nicht erkannt – Parser sucht nach `"…"` | Jeden Wert in Anführungszeichen setzen: `data: ["A","B","C"]` |
+| `[Group Name with spaces]` | Gruppenbezeichnung ist `Group Name with spaces` – korrekt geparst | Unterstützt |
+| `hscale: 2` auf einer eigenen Zeile | Nicht erkannt (hscale gehört in die Header-Zeile) | `timing "title" [hscale: 2]` |
+
+---
+
+## 8. Grammatik (EBNF)
+
+```text
+document       = header (blank | comment | group-open | group-close | separator | signal)*
+
+header         = "timing" ( WS quoted-string )? ( WS "[" "hscale:" number "]" )? NEWLINE
+quoted-string  = '"' any-char-but-quote* '"'
+
+group-open     = "[" label "]" NEWLINE
+               | "group" WS quoted-string WS "{"? NEWLINE
+group-close    = "}" NEWLINE
+separator      = "---" NEWLINE
+
+signal         = name ":" WS wave-string ( WS data-clause )? NEWLINE
+name           = beliebiger Text vor dem ersten ":"
+wave-string    = wave-char+
+wave-char      = "0"|"1"|"x"|"z"
+               | "p"|"P"|"n"|"N"
+               | "h"|"H"|"l"|"L"
+               | "u"|"d"|"D"
+               | "="|"."|"2"|"3"|"4"|"5"|"6"|"7"|"8"|"9"
+
+data-clause    = "data:" WS ( "[" quoted-string ("," quoted-string)* "]"
+                            | quoted-string+ )
+
+comment        = "#" any NEWLINE
+```
+
+Maßgebliche Quelle: `src/diagrams/timing/parser.ts`. Falls dies vom Parser abweicht, hat der Parser Vorrang – bitte öffnen Sie ein Issue.
+
+---
+
+## 9. Standardkonformität
+
+Schematex-Timing-Diagramme folgen der **[WaveDrom WaveJSON](https://wavedrom.com/tutorial.html)**-Signalnotation für Wellenformzeichen und Datenlabels – denselben wie WaveDroms Online-Editor, was Schematex-DSL weitgehend mit WaveDrom-Eingaben austauschbar macht. Die `hscale`-Option, die Gruppen-Syntax und das Datenlabel-Format sind alle kompatibel.
+
+Was heute implementiert ist:
+
+- ✅ Alle Kern-Wellenformzeichen: `0 1 x z p P n N h H l L u d D = . 2–9`
+- ✅ Datenlabels über `data: ["…"]`
+- ✅ Gruppenblöcke: `[Name]` und `group "name" { }`-Syntax
+- ✅ `---`-Trenner / Gruppenabschluss
+- ✅ `hscale`-Periodenbreiten-Multiplikator
+- ⏳ Timing-Annotationen (Pfeile zwischen Signal-Übergängen, `t_su`, `t_pd`-Labels)
+- ⏳ `phase:`-Versatz pro Signal (fraktionaler Zyklusversatz)
+- ⏳ WaveDrom-`node:` / `edge:`-Annotationsblöcke
+- ⏳ Skin / Theme (`default`, `narrow`, `lowkey`)
+
+Referenzen:
+
+- WaveDrom — https://wavedrom.com (WaveJSON-Spezifikation)
+- IEEE Std 1364 (Verilog HDL) — Konzepte der digitalen Timing-Simulation
+- IEEE Std 1497 (Standard Delay Format) — Timing-Annotationskonventionen
+
+---
+
+## 10. Verwandte Beispiele
+
+<RelatedExamples slugs={[
+  'timing-spi-transaction',
+]} />
+
+---
+
+## 11. Roadmap
+
+**Geplant – noch nicht parsebar.** Verwenden Sie diese heute nicht in generiertem DSL; der Parser wird sie ignorieren.
+
+- **Timing-Annotationspfeile** – `annotate:`-Block mit `A -> B [label: "t_su = 5ns"]`-Syntax zum Zeichnen von Setup/Hold- und Propagationsverzögerungs-Spannen zwischen Signal-Übergängen.
+- **`phase:` pro Signal** – fraktionaler Zyklusversatz, damit Signale mitten in einer Periode beginnen können.
+- **WaveDrom `node:` / `edge:`** – vollständige Kompatibilität mit WaveDrom-Annotationsblöcken.
+- **Skin-Optionen** – `narrow` (kompakt) und `lowkey` (gedämpfte Palette) Rendering-Themes.
+- **Zeitachse** – optionale numerische Zeitachse unten (ns, µs, ps Einheiten).
+
+Verfolgen Sie die GitHub-Issues, wenn Sie eines davon früher benötigen.

@@ -1,0 +1,461 @@
+---
+title: 決策樹圖
+---
+
+## 關於決策樹
+
+**決策樹**是以根樹的形式表示一系列選擇及其後果的分支圖：每個內部節點是一個問題或決策，每條邊是一個答案或動作，每片葉子是一個結果。這種格式出現在三種截然不同的實務領域——故障排查流程圖與臨床決策規則（分類樹）、使用期望值的風險與投資分析（決策分析），以及機器學習模型檢視（分類器樹）。儘管外觀各異，三者都共用相同的樹狀結構，這也是 Schematex 以一個關鍵字搭配模式選擇器來統一編碼它們的原因。
+
+Schematex 決策樹涵蓋：(1) **分類模式** — 用於醫療分診的是/否問題流程（[圖靈 1937](https://en.wikipedia.org/wiki/Decision_tree) 血統；現為臨床決策支援的標準）；(2) **決策分析模式** — 管理科學中發展出的期望值回推法（[Raiffa & Schlaifer, 1961](https://en.wikipedia.org/wiki/Decision_tree#Decision_analysis)）；(3) **ML 模式** — 用於視覺化 scikit-learn 等已訓練分類器的 CART 分裂/葉節點格式（[Breiman et al., 1984](https://en.wikipedia.org/wiki/Decision_tree_learning)）。
+
+<Playground initial={`
+  decisiontree "Customer Support Triage"
+  direction: top-down
+
+  question "Is the service completely down?"
+    yes: question "Outage confirmed on status page?"
+      yes: answer "Follow incident protocol — page on-call"
+      no: answer "Check monitoring — open severity-1 ticket"
+    no: question "Is the issue affecting billing?"
+      yes: answer "Escalate to billing team — SLA breach risk"
+      no: question "Can user reproduce consistently?"
+        yes: answer "Collect HAR trace — file bug report"
+        no: answer "Ask for screenshot — watch for recurrence"`} height={460} />
+
+---
+
+## 1. 您的第一棵決策樹
+
+最精簡的實用決策樹：一個根節點問題，帶兩個分支。
+
+<Playground initial={`
+  decisiontree "Laptop troubleshoot"
+
+  question "Does it power on?"
+    yes: answer "Check display — connect external monitor"
+    no: question "Is the charger light on?"
+      yes: answer "Hold power button 10 s — try again"
+      no: answer "Check outlet and charging cable"`} />
+
+四條規則涵蓋 80% 的用法：
+
+1. 以 `decisiontree` 開頭，可選擇性加上 `:mode` 和帶引號的標題。
+2. 每個問題節點使用 `question "文字"`（或簡寫 `q "文字"`）。
+3. 每個答案/葉節點使用 `answer "文字"`（或 `a "文字"` 或 `leaf "文字"`）。
+4. 分支標籤——`yes:`、`no:`，或自訂 `label "X":`——在同一行中位於子節點前面。
+
+縮排控制巢狀關係：每個層級增加 2 個空格。解析器根據縮排深度計算父子關係。
+
+> 注釋必須以 `#` 或 `//` 開頭，且單獨佔一行。
+
+---
+
+## 2. 模式
+
+模式在標頭行中設定：
+
+| 標頭 | 模式 | 適用場景 |
+|---|---|---|
+| `decisiontree` | 分類 | 是/否問題流程、故障排查指南、臨床決策支援 |
+| `decisiontree:decision`（或 `decisiontree:da`） | 決策分析 | 投資決策、風險分析、期望值計算 |
+| `decisiontree:influence`（或 `mode: influence`） | 影響圖 | 決策問題的緊湊 DAG 視圖——在展開為樹狀圖之前先呈現結構 |
+| `decisiontree:ml` | 機器學習 | 視覺化已訓練的 CART 分類器（scikit-learn、XGBoost 等） |
+
+分類模式和 ML 模式的預設方向為 `top-down`，決策分析模式的預設方向為 `left-right`。
+
+---
+
+## 3. 分類模式
+
+最適合：故障排查指南、FAQ、臨床流程、產品推薦流程。
+
+### 節點關鍵字
+
+| 關鍵字 | 別名 | 含義 |
+|---|---|---|
+| `question "…"` | `q "…"` | 內部節點——帶子節點的問題 |
+| `answer "…"` | `a "…"`、`leaf "…"` | 葉節點——終端結果 |
+
+### 分支標籤
+
+| 語法 | 含義 |
+|---|---|
+| `yes: question "…"` | 標記為「yes」的分支 |
+| `no: answer "…"` | 標記為「no」的分支 |
+| `label "自訂文字": answer "…"` | 帶任意自訂標籤的分支 |
+
+自訂標籤讓您可以對一個問題使用超過是/否的多路決策。
+
+<Playground initial={`
+  decisiontree "Triage — chest pain onset"
+
+  q "Onset sudden?"
+    yes: q "ECG changes present?"
+      yes: a "ACS protocol — cardiology consult"
+      no: q "D-dimer elevated?"
+        yes: a "PE workup — CT pulmonary angiography"
+        no: a "Aortic dissection — CT angiography"
+    no: q "Pain reproducible on palpation?"
+      yes: a "Musculoskeletal — NSAIDs, follow-up PCP"
+      no: a "GI / anxiety — further history"`} height={420} />
+
+<Playground initial={`
+  decisiontree "Pain level triage"
+
+  question "Reported pain level?"
+    label "Severe (8-10)": answer "Emergency — send to ER immediately"
+    label "Moderate (4-7)": answer "Urgent care — within 2 hours"
+    label "Mild (1-3)": answer "Schedule next available — OTC care"
+    label "None": answer "Monitor — patient may be post-medication"`} height={320} />
+
+---
+
+## 4. 決策分析模式
+
+最適合：投資決策、自建與購買分析、風險加權策略評估。
+
+### 節點關鍵字
+
+| 關鍵字 | 別名 | 含義 |
+|---|---|---|
+| `decision "…"` | — | 決策節點——行動者選擇一條分支 |
+| `chance "…"` | — | 機率節點——不確定的結果 |
+| `end "…"` | `outcome "…"` | 終端節點——最終報酬 |
+
+### 分支關鍵字
+
+| 關鍵字 | 含義 |
+|---|---|
+| `choice "標籤"` | 命名來自決策節點的傳入分支 |
+| `prob N` | 設定來自機率節點的傳入分支機率（0–1） |
+
+### 報酬屬性
+
+任何節點上的 `payoff=N` 設定報酬值。在 `end` / `outcome` 節點上定義終端值。解析器會自動執行期望值回推：每個 `chance` 節點的期望值為其子節點期望值的機率加權和；每個 `decision` 節點的期望值為子節點期望值的最大值，並標示最優分支。
+
+**限制：** `chance` 節點所有直接子節點的機率之和必須等於 1.0（±0.01）。若不符合此條件，解析器會拋出 `DTreeParseError`。
+
+<Playground initial={`
+  decisiontree:decision "Cloud vendor selection"
+
+  decision "Which vendor?"
+    choice "Build in-house"
+      chance "Project outcome"
+        prob 0.6 end "On-time delivery" payoff=900000
+        prob 0.4 end "Over budget / delayed" payoff=150000
+    choice "Managed SaaS vendor"
+      end "Predictable cost" payoff=500000
+    choice "Hybrid approach"
+      chance "Integration complexity"
+        prob 0.5 end "Smooth integration" payoff=700000
+        prob 0.5 end "Integration rework" payoff=300000`} height={440} />
+
+---
+
+## 5. 影響圖模式
+
+最適合：在展開為完整決策樹**之前**，先緊湊地框架化決策問題。決策分析模式會將每個結果的每條分支都畫成明確的樹狀結構；而**影響圖**（[Howard & Matheson, 1981](https://en.wikipedia.org/wiki/Influence_diagram)）則將*相同*的問題繪製為由變數及其依賴關係構成的有向無環圖（DAG）——每個決策、不確定性和目標各為一個節點，無論每個節點可取多少狀態。決策分析師首先使用影響圖，因為它能在不引發樹狀展開組合爆炸的情況下呈現結構（什麼告知什麼、什麼影響報酬）。
+
+此模式是**結構性的，而非計算性的。** 與決策分析模式不同，它不計算期望值——緊湊的圖表刻意省略了期望值回推所需的機率和報酬表。請用它來溝通和驗證問題的形狀；需要折疊數值時，請使用決策分析模式（第 4 節）。
+
+### 標頭形式
+
+選擇此模式的兩種等效方式：
+
+```
+decisiontree:influence "Oil Wildcatter"
+```
+
+或，作為標頭後單獨一行的指令：
+
+```
+decisiontree "Market Entry"
+  mode: influence
+```
+
+### 節點關鍵字
+
+每個節點宣告為 `種類 Id "標籤"` ——一個 ID（用於連接弧線），後接帶引號的顯示標籤。
+
+| 關鍵字 | 形狀 | 含義 |
+|---|---|---|
+| `decision Id "…"` | **矩形** | 決策者控制的選擇 |
+| `chance Id "…"` | **橢圓形** | 不確定的變數（世界的某種狀態） |
+| `value Id "…"` | **八邊形** | 被最佳化的目標/報酬 |
+
+形狀遵循標準影響圖慣例：決策為矩形、不確定性為橢圓形、價值節點為八邊形。在 value 節點加上 `utility=N` 以標註其代表的報酬（`value Profit "Net profit" utility=42`）。
+
+### 弧線及其語意
+
+弧線以 `來源 -> 目標` 的形式寫在各自的行上，按節點 ID 引用。**弧線的含義由其目標決定**，完全符合已發表的標準：
+
+| 弧線指向…… | 含義 | 繪製方式 |
+|---|---|---|
+| `decision` | **資訊性** — 做出決策*之前*已知此資訊 | 虛線 |
+| `chance` | **相關性/條件** — 來源對此不確定性有條件限制 | 實線 |
+| `value` | **函數性** — 來源是報酬函數的引數 | 實線 |
+
+值得留意的是虛線資訊弧：`Seismic -> Drill` 表示「在選擇是否鑽探之前已觀測到地震測試結果」，這正是使決策值得建模的關鍵。
+
+### 驗證規則
+
+- 圖必須是**無環的** — 環（例如 `A -> B` 和 `B -> A`）會被拒絕。
+- 至少需要**一個 `value` 節點** — 沒有目標的影響圖不是決策問題。
+- 弧線引用的節點 ID 必須已宣告。
+
+### 範例
+
+石油探勘者——經典教學問題。地震測試結果在鑽探決策之前已被觀測（虛線資訊弧 `Seismic -> Drill`），測試與是否真的有石油有關（`Seismic -> Oil`），而石油狀態和鑽探選擇都影響利潤（`Oil -> Profit`、`Drill -> Profit`）。
+
+<Playground initial={`
+  decisiontree:influence "Oil Wildcatter"
+    decision Drill "Drill?"
+    chance Oil "Oil present"
+    chance Seismic "Seismic test"
+    value Profit "Net profit" utility=42
+    Seismic -> Oil
+    Seismic -> Drill
+    Oil -> Profit
+    Drill -> Profit`} height={360} />
+
+使用 `mode: influence` 指令形式的市場進入決策。需求在進入決策之前已被觀測（`Demand -> Enter`，資訊性/虛線），同時也直接驅動利潤，而競爭對手的反應只影響報酬。
+
+<Playground initial={`
+  decisiontree "Market Entry"
+    mode: influence
+    decision Enter "Enter market?"
+    chance Demand "Market demand"
+    chance Competition "Competitor response"
+    value V "Profit" utility=120
+    Demand -> Enter
+    Demand -> V
+    Competition -> V
+    Enter -> V`} height={360} />
+
+---
+
+## 6. 機器學習模式
+
+最適合：解釋已訓練的 CART 分類器、模型透明度報告、特徵重要性分析。
+
+### 節點關鍵字
+
+| 關鍵字 | 含義 |
+|---|---|
+| `split "…"` | 內部分裂節點——包含特徵測試 |
+| `leaf "…"` | 葉節點——類別或回歸值 |
+
+### 分支前綴
+
+`true` 和 `false` 置於子節點前以標示各子節點代表哪條分支。
+
+### 屬性（key=value，無冒號，值不加引號）
+
+| 屬性 | 適用對象 | 含義 |
+|---|---|---|
+| `feature=name` | split | 分裂所用的特徵名稱 |
+| `op="<="` | split | 比較運算子（若包含特殊字元則加引號） |
+| `threshold=5.9` | split | 分裂閾值 |
+| `samples=150` | split、leaf | 此節點的樣本數 |
+| `gini=0.5` | split、leaf | 吉尼不純度 |
+| `entropy=0.5` | split、leaf | 熵不純度 |
+| `mse=0.3` | split、leaf | 均方誤差（回歸） |
+| `gain=0.2` | split、leaf | 資訊增益 |
+| `class=name` | leaf | 預測的類別名稱 |
+| `value=50` | leaf | 樣本數；用 `value=[50,30,20]` 表示類別分布 |
+
+<Playground initial={`
+  decisiontree:ml "Iris classification (CART)"
+  direction: top-down
+  impurity: gini
+
+  split "Petal length ≤ 2.45" feature=petal_length op="<=" threshold=2.45 samples=150 gini=0.667
+    true leaf "Setosa" class=Iris-setosa value=50 gini=0.0
+    false split "Petal width ≤ 1.75" feature=petal_width op="<=" threshold=1.75 samples=100 gini=0.5
+      true leaf "Versicolor" class=Iris-versicolor value=50 gini=0.0
+      false leaf "Virginica" class=Iris-virginica value=50 gini=0.0`} height={400} />
+
+---
+
+## 7. 設定選項
+
+設定行出現在標頭和第一個節點之間。每行格式為 `key: value`（冒號，無 `config` 關鍵字）。
+
+### 共用設定（所有模式）
+
+| 鍵 | 值 | 預設值 | 效果 |
+|---|---|---|---|
+| `direction:` | `top-down`、`left-right` | `top-down`（分類/ML）、`left-right`（決策） | 佈局方向 |
+| `edgeStyle:`（或 `edge-style:`） | `diagonal`、`orthogonal`、`bracket` | 視模式而定 | 邊線繪製樣式 |
+
+### 分類設定
+
+| 鍵 | 值 | 預設值 | 效果 |
+|---|---|---|---|
+| `branchLabels:`（或 `branch-labels:`） | `boolean`、`relation` | `boolean` | 分支標籤樣式 |
+
+### 決策分析設定
+
+| 鍵 | 值 | 預設值 | 效果 |
+|---|---|---|---|
+| `branchLength:`（或 `branch-length:`） | `probability` | 關閉 | 依機率縮放分支長度 |
+
+### ML 設定
+
+| 鍵 | 值 | 預設值 | 效果 |
+|---|---|---|---|
+| `impurity:` | `gini`、`entropy`、`mse`、`gain` | `gini` | 節點上顯示的不純度指標 |
+| `classes:` | 逗號分隔的清單 | — | 顯示用的類別標籤名稱 |
+
+```
+decisiontree:ml "Loan classifier"
+direction: top-down
+impurity: gini
+classes: Approved, Denied, Review
+```
+
+---
+
+## 8. 標籤與注釋
+
+- **圖表標題：** `decisiontree "標題"` — 標頭關鍵字後的帶引號字串。
+- **節點標籤：** 節點關鍵字後緊接的帶引號字串——`question "Is the fee waived?"`。
+- **分支標籤：** `yes:`、`no:`，或子節點前的 `label "自訂":` ——與子節點在同一行。
+- **報酬：** 決策/終端節點行末的 `payoff=250000`。
+- **ML 屬性：** 節點標籤字串後的 `key=value` 標記（無 `[…]` 括號，等號兩側無冒號）。
+- **注釋：** `#` 或 `//` 位於行首（可有前置空白字元）。僅支援整行注釋——不支援行內尾隨注釋。
+
+---
+
+## 9. 保留字與跳脫
+
+**保留節點關鍵字：** `decision`、`chance`、`end`、`outcome`、`choice`、`prob`、`split`、`leaf`、`question`、`q`、`answer`、`a`。
+
+**保留分支前綴：** `yes:`、`no:`、`true`、`false`、`label`。
+
+**保留標頭形式：** `decisiontree`、`decisiontree:decision`、`decisiontree:da`、`decisiontree:ml`。
+
+**含空白字元的字串**必須使用雙引號：`question "Annual revenue > $1M?"`。節點標籤、來自 `label "…":` 語法的分支標籤，以及圖表標題都需要雙引號。
+
+| 保留標記 | 脈絡 | 備注 |
+|---|---|---|
+| `yes:` / `no:` | 分類模式行首 | 不能用作標籤——若需要字面文字「yes」，請使用 `label "yes":` |
+| `true` / `false` | ML 模式行首 | 不能作為節點標籤 |
+| `choice` | 決策模式行首 | 作為分支包裝器，不是節點 |
+| `prob` | 決策模式行首 | 其後必須跟數字 |
+
+---
+
+## 10. 常見錯誤
+
+| 您寫的 | 解析器回應 | 修正方式 |
+|---|---|---|
+| `yes: "Approve"`（無節點關鍵字） | `DTreeParseError: Missing taxonomy node kind` | `yes: answer "Approve"` |
+| `chance` 子節點機率加總為 0.8 | `DTreeParseError: probabilities do not sum to 1.0` | 調整使所有 `prob` 值精確加總為 1.0（±0.01） |
+| `question "text"` 的子節點與其縮排相同 | 子節點未被解析為子節點——變成兄弟節點 | 子節點縮排需比父節點多 2 個空格 |
+| `config direction = top-down`（使用 `config` 關鍵字） | `config` 是 fishbone 關鍵字——此處無法識別 | 使用 `direction: top-down`（無 `config` 前綴） |
+| `feature = petal_length`（等號兩側有空格） | 被解析為獨立標記；屬性無法識別 | 無空格：`feature=petal_length` |
+| `[payoff: 500000]` 括號語法 | 無法識別——解析器忽略 payoff 的括號 | 使用 `payoff=500000`（無括號，等號兩側無空格） |
+| `decisiontree:taxonomy` | `DTreeParseError: Invalid header` | 使用 `decisiontree`（分類模式無需後綴） |
+
+---
+
+## 11. 語法（EBNF）
+
+```text
+document       = header ( config-line )* node
+
+header         = "decisiontree" ( ":" mode )? ( WS quoted-string )? NEWLINE
+mode           = "decision" | "da" | "ml"
+                 // omitted → taxonomy
+
+config-line    = config-key ":" WS config-value NEWLINE
+config-key     = "direction" | "edgeStyle" | "edge-style"
+               | "branchLabels" | "branch-labels"
+               | "branchLength" | "branch-length"
+               | "impurity" | "classes"
+
+// ── Taxonomy mode ──────────────────────────────
+node           = ( branch-prefix WS )? tax-node ( WS "[" tax-attrs "]" )? NEWLINE
+                   INDENT child-node*
+tax-node       = ( "question" | "q" ) WS quoted-string
+               | ( "answer" | "a" | "leaf" ) WS quoted-string
+branch-prefix  = "yes:" | "no:" | "label" WS quoted-string ":"
+
+// ── Decision-analysis mode ─────────────────────
+da-node        = "decision" WS quoted-string NEWLINE INDENT da-child+
+               | "chance" WS quoted-string NEWLINE INDENT da-prob-child+
+               | ( "end" | "outcome" ) WS quoted-string ( WS "payoff=" number )? NEWLINE
+da-child       = "choice" WS quoted-string NEWLINE INDENT da-node
+da-prob-child  = "prob" WS number WS da-node    // prob, value, and child all on one line
+
+// ── ML mode ───────────────────────────────────
+ml-node        = ( "true" | "false" )? ml-kind WS quoted-string ml-prop* NEWLINE
+                   INDENT ml-child*
+                 // "true"/"false" and ml-kind must be on the same line
+ml-kind        = "split" | "leaf"
+ml-prop        = WS key "=" value     // no spaces around "="
+
+comment        = ( "#" | "//" ) any NEWLINE
+quoted-string  = '"' any-char-but-quote* '"'
+```
+
+權威來源：`src/diagrams/decisiontree/parser.ts`。若本文與解析器有出入，以解析器為準——請開 issue 回報。
+
+---
+
+## 12. 標準合規性
+
+Schematex 決策樹涵蓋四種已建立的慣例：
+
+**分類模式** 遵循臨床決策支援系統（Arden Syntax 血統）和 ISO 9001 故障排查程序中常見的問答流程圖慣例。
+
+**決策分析模式** 遵循管理科學中的期望值回推法：決策節點（方形，行動者選擇）、機率節點（圓形，機率性的）、帶報酬的終端節點。期望值透過反向歸納法自動計算（Raiffa & Schlaifer, 1961）。
+
+**影響圖模式** 遵循 Howard & Matheson（1981）慣例：決策（矩形）、機率（橢圓形）和價值（八邊形）節點以無環圖連接，弧線含義由目標決定（進入決策者為資訊性，以虛線繪製；進入機率者為相關性；進入價值者為函數性）。此為結構性圖表——不計算期望值。
+
+**ML 模式** 遵循 CART（分類與回歸樹）分裂/葉節點表示法（Breiman et al., 1984），與 scikit-learn 的 `export_text` 和 `plot_tree` 輸出格式相容。
+
+目前已實作：
+
+- ✅ 全部四種模式：分類、決策分析、影響圖、ML
+- ✅ 分類：`question`/`q`、`answer`/`a`/`leaf`、`yes:`、`no:`、`label "X":` 分支標籤
+- ✅ 決策：`decision`、`chance`、`end`/`outcome`、`choice`、`prob`、`payoff=N`、自動期望值回推
+- ✅ 影響圖：`decision`/`chance`/`value` 節點、`utility=N`、`來源 -> 目標` 弧線、由目標推導的弧線語意、虛線資訊弧、無環性 + value 節點驗證
+- ✅ ML：`split`、`leaf`、`true`/`false` 分支前綴、`feature=`、`threshold=`、`gini=`、`entropy=`、`mse=`、`class=`、`value=`
+- ✅ 設定：`direction:`、`edgeStyle:`、`impurity:`、`classes:`、`branchLabels:`、`branchLength:`、`mode:`
+- ⏳ 機率加權分支長度渲染（`branchLength: probability` 已解析但視覺上尚未套用）
+- ⏳ 敏感度分析覆疊（決策樹上的龍捲風圖式標註）
+- ⏳ 森林/整合視圖——多棵樹並排顯示
+
+參考文獻：
+
+- Raiffa, H. & Schlaifer, R. (1961). *Applied Statistical Decision Theory.* Harvard Business School.
+- Howard, R. A. & Matheson, J. E. (1981/2005). *Influence Diagrams.* Decision Analysis 2(3).
+- Breiman, L. et al. (1984). *Classification and Regression Trees.* Wadsworth.
+- Wikipedia — [Decision tree](https://en.wikipedia.org/wiki/Decision_tree) · [Influence diagram](https://en.wikipedia.org/wiki/Influence_diagram) · [Decision tree learning](https://en.wikipedia.org/wiki/Decision_tree_learning)
+
+---
+
+## 13. 開發藍圖
+
+**規劃中——目前尚無法解析。** 請勿在今日生成的 DSL 中使用；解析器會拒絕或忽略這些語法。
+
+- **`branchLength: probability` 視覺渲染** — 設定鍵已可解析，但佈局引擎尚未根據機率縮放分支長度。
+- **敏感度/龍捲風分析** — `sensitivity:` 區塊，標註哪些 `prob` 值對最終期望值影響最大。
+- **匯出標註** — 在圖表 SVG 旁邊輸出結構化表格（決策矩陣）。
+- **森林視圖** — `forest` 關鍵字，將多個 `decisiontree` 區塊包裝成並排比較佈局。
+- **收合/展開互動標記** — 節點上的 `collapsed: true`，為深層子樹渲染三角形佔位符。
+
+如有需要優先實作的項目，請在 GitHub issues 中追蹤。
+
+---
+
+## 相關範例
+
+範例庫中的即用情境：
+
+<RelatedExamples slugs={[
+  'decisiontree-support-triage',
+  'decisiontree-investment-analysis',
+]} />

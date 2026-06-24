@@ -1,0 +1,222 @@
+---
+title: 网络拓扑
+---
+
+## 关于网络图
+
+**网络图**是使用最广泛的专业基础设施图——每位网络工程师、系统管理员、MSP 和物理安全（CCTV）集成商都会在设计提案、竣工文档、审计和客户交付中绘制网络图。网络图具有丰富的约定：路由器与交换机外形不同，光纤链路与铜缆链路看起来不同，摄像头子网有其可识别的形状。Schematex 的 `network` 引擎将 de facto **思科惯例图标轮廓**渲染为原创线稿，按标准规定的方式布置拓扑类别，并且——与 LLM 直接生成原始 Mermaid 代码不同——**绝不会静默丢失任何设备、端口或链路**。
+
+它与拖放模板库的区别在于：它理解**拓扑类别**（星形有中心节点，环形形成闭环，脊叶式是两行互联，三层模型是核心-分发-接入分层），以其惯例外观渲染每种**链路类型**，并**验证**结构性事实——设备 IP 必须在子网的 CIDR 范围内，VLAN ID 必须在 1–4094 之间。
+
+<Playground initial={`network "Acme HQ — CCTV"
+  layout: tiered
+  internet net "Internet"
+  firewall fw1 "Perimeter FW" tier: edge
+  l3switch core1 "Core SW" tier: core
+  poeswitch poe1 "PoE Switch" tier: access
+  nvr nvr1 "Recorder"
+  subnet cams "192.168.20.0/24" {
+    camera cam1 "Lobby" type: dome ip: 192.168.20.11
+    camera cam2 "Gate" type: ptz ip: 192.168.20.12
+    poe1
+  }
+  net -- fw1 : wan "ISP 1Gbps"
+  fw1 -- core1 : fiber 10G
+  core1 -- poe1 : trunk vlan: 20 1G
+  core1 -- nvr1
+  poe1 -- cam1 : poe
+  poe1 -- cam2 : poe`} height={460} />
+
+摄像头位于虚线 `192.168.20.0/24` 子网中（其 IP 经过 CIDR 验证），PoE 链路为绿色，光纤上行链路为橙色，设备按 `tier:` 分层排列。
+
+---
+
+## 1. 你的第一张图
+
+一张完整的网络图只需要两类行：**设备声明**和**链路**。其他都不是必须的。
+
+<Playground initial={`network "Tiny LAN"
+router r1 "Edge Router"
+switch sw1 "Core Switch"
+pc pc1 "Workstation"
+r1 -- sw1
+sw1 -- pc1`} height={300} />
+
+就这样——一张有效的、已布局的图。只有两条规则：
+
+- `<kind> <id> ["label"]` — 带类型的设备。类型决定图标。
+- `<a> -- <b>` — 两个已声明设备之间的无向链路。
+
+**其他一切都是可选的附加项——但并非都同等重要。** 有两个性价比极高的结构提示，凡是层次结构重要时都值得添加：`layout:`（tiered/tree/star/ring/bus/mesh/spine-leaf）和 `tier:`（edge/core/distribution/access）。它们以极低的语法成本驱动可读的自上而下层次结构：
+
+```
+network "Branch"
+  layout: tiered
+  router r1 "Edge Router" tier: edge
+  l3switch core1 "Core SW" tier: core
+  switch acc1 "Access SW" tier: access
+  pc pc1 "Workstation"
+  r1 -- core1
+  core1 -- acc1
+  acc1 -- pc1
+```
+
+相比之下，**每条链路的注释**——链路类型（`fiber`/`wireless`/`poe`…）、速度、`vlan:`、`port:`、`trunk`/`access` 以及 `subnet { }` 边界——不影响布局，且最容易出错。只在有明确需求时才添加它们。经验法则：保留结构提示，除非有需要，否则去掉装饰性注释。
+
+设备**不会**从链路中自动声明——未声明的 ID 无法安全地确定类型，因此链路指向未知设备会产生可读的错误提示。使用 `;` 在一行中写多条语句，使用 `a b c : kind` 简写同时声明多个同类设备。
+
+骨架建好后，可以分层添加方向和注释——`->` 是有向链路，`==` 是 LAG，`:` 之后是链路规格：
+
+```
+network "Home"
+  layout: star
+  router gw "Gateway"
+  pc pc1
+  laptop lt1
+  gw -- pc1
+  gw -- lt1 : wireless
+```
+
+---
+
+## 2. 设备类型
+
+选择与设备相符的类型；图标遵循思科惯例轮廓。
+
+- **基础设施** — `router`、`switch`、`l3switch`、`firewall`、`loadbalancer`、`ap`、`wlc`、`gateway`、`modem`、`ids`、`proxy`、`vpngw`
+- **终端设备** — `server`、`serverfarm`（`count: n`）、`pc`、`laptop`、`mobile`、`ipphone`、`printer`、`storage`
+- **CCTV / 安保** — `camera`（带 `type: fixed | bullet | dome | ptz | turret`）、`nvr`、`dvr`、`poeswitch`、`encoder`、`monitor`
+- **云** — `internet`、`wan`、`pstn`、`cloud`，以及 `lan`（总线条）
+
+接受别名：`multilayer`→`l3switch`、`workstation`→`pc`、`wifi`→`ap`、`nas`/`san`→`storage`、`voip`→`ipphone`。
+
+```
+camera cam1 type: dome ip: 192.168.20.11
+serverfarm farm "Server Farm" count: 4
+l3switch core1 tier: core model: "C9500"
+```
+
+---
+
+## 3. 链路与注释
+
+链路的外观取决于其类型；`:` 之后的内容顺序自由。
+
+```
+a -- b                       # copper / ethernet (default solid)
+a -- b : fiber 10G           # fiber — orange with slash ticks
+a -- b : wireless            # dashed
+a -- b : serial              # leased / WAN circuit
+a -- b : poe                 # Power-over-Ethernet (green + tag)
+a -- b : vpn "site-to-site"  # dashed tunnel
+a == b : lag 40G             # aggregated / EtherChannel (double line)
+a -- b : trunk vlan: 10,20 1G port: Gi0/1>Gi1/0/24
+```
+
+- `trunk` / `access` — 端口模式（trunk 应连接交换机类设备）。
+- `vlan: 10` 或 `vlan: 10,20` — 单个 VLAN 为链路着色（跳过保留的报警红色）。
+- `1G` / `10G` / `100M` / `40G` — 速度，显示在链路中部。
+- `port: near>far` — 两端的接口标签。
+
+---
+
+## 4. 布局模式
+
+```
+layout: tiered      # default — band by tier: edge → core → distribution → access
+layout: tree        # hierarchical from the root
+layout: star        # hub at center, spokes on a ring
+layout: ring        # nodes on a circle
+layout: bus         # shared backbone
+layout: mesh        # full/partial mesh on a circle
+layout: spine-leaf  # two rows, every leaf auto-meshed to every spine
+layout: manual      # explicit at: x,y per device
+direction: tb | lr  # flow axis for tiered/tree
+```
+
+对于 `tiered`，在基础设施上设置 `tier:`（`edge` / `core` / `distribution` / `access`）；未指定层级的终端设备放置在其交换机下方。对于 `spine-leaf`，声明 `spines:` 和 `leaves:`，脊叶之间的链路会自动生成。
+
+---
+
+## 5. 边界：站点、机架、子网、VLAN
+
+设备可以位于嵌套的边界块内。**物理**容器（site/rack）绘制实线边框；**逻辑**覆盖层（subnet/VLAN/zone/DMZ）绘制虚线着色区域。
+
+```
+network "Branch"
+  site hq "HQ Building" {
+    rack mdf "MDF Rack" {
+      firewall fw1 tier: edge
+      l3switch core1 tier: core
+    }
+  }
+  subnet lan "10.0.10.0/24" {
+    switch a1 tier: access
+    pc u1 "User PC" ip: 10.0.10.50
+  }
+  zone dmz "DMZ" {
+    server web
+  }
+  fw1 -- core1 : 10G
+  core1 -- a1 : trunk vlan: 10
+  a1 -- u1
+```
+
+在标签为 CIDR 的 `subnet` 内声明的设备，其 `ip:` 会经过验证——超出范围的地址会产生可读的错误提示。在块内单独一行的裸 ID 会将已声明的设备添加到该分组。
+
+---
+
+## 6. 验证与无丢失保证
+
+引擎保证每个已声明的设备和链路都会渲染——通用工具的设备丢失问题在结构上不可能发生。引擎还会检查：
+
+- **重复 ID** → 错误；
+- **未知类型** → 错误，并给出最近似建议（`"swtich" → 您是否想输入 "switch"？`）；
+- **链路指向未声明设备** → 错误；
+- **VLAN ID 超出 1–4094** → 警告（仍然渲染）；
+- **设备 IP 超出其子网 CIDR** → 错误。
+
+SVG 的 `<desc>` 记录设备/链路数量、检测到的拓扑类别（star / ring / bus / mesh / tree / hierarchical / spine-leaf）以及任何警告。
+
+---
+
+## 7. 主题
+
+```
+theme: default      # house "network blue" Cisco-style bodies
+theme: monochrome   # clean line-art for print/audit (link meaning via line-style + tags)
+theme: dark         # Catppuccin Mocha
+```
+
+CJK 标签和 `「…」` / `"…"` 引号可以正常解析：
+
+```
+network "办公室"
+  multilayer core1 「核心交换机」
+  poeswitch poe1
+  camera cam1 type: dome
+  core1 -- poe1 : trunk vlan: 10
+  poe1 -- cam1 : poe
+```
+
+---
+
+## 8. 标准合规性
+
+网络拓扑没有单一的正式绘图标准；Schematex 从 de facto 来源组合其基准——**思科网络拓扑图标**（轮廓重新绘制为原创线稿）、**思科层次化模型**和**脊叶式（Clos）**布局、**ANSI/TIA-606** 布线颜色惯例，以及 CCTV 集群的 **ONVIF** 角色定义。
+
+完整规范：[Network Topology Standard Reference](https://github.com/schematex/schematex/blob/main/docs/reference/35-NETWORK-STANDARD.md)。
+
+---
+
+## 相关示例
+
+来自示例库的即用场景：
+
+<RelatedExamples slugs={[
+  'network-cctv-camera-system',
+  'network-link-types',
+  'network-spine-leaf-fabric',
+  'network-boundaries',
+  'network-enterprise-campus',
+]} />

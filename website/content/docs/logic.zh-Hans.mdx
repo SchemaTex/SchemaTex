@@ -1,0 +1,365 @@
+---
+title: 逻辑门图
+---
+
+## 关于逻辑门图
+
+**逻辑门图**展示布尔函数如何在硬件中实现——输入从左侧流经组合逻辑门和触发器，在右侧产生输出。数字设计工程师用它来记录 RTL 意图、验证门级网表，以及讲授布尔代数。Schematex 的符号集源自 **[IEEE Std 91-1984 / ANSI Y32.14](https://standards.ieee.org/ieee/91/749/)**（特征形状 ANSI 符号，美国默认）和 **[IEC 60617-12](https://webstore.iec.ch/publication/2765)**（统一矩形符号，国际默认），可按图选择。
+
+DSL 是函数式的：你声明信号，并按名称描述每个门的输入。布局和连线由依赖关系图自动计算——无需手动坐标。
+
+<Playground initial={`logic "1-bit Full Adder" style: ansi
+input A, B, Cin
+output Sum, Cout
+# XOR stage — sum bits
+s1 = XOR(A, B)
+Sum = XOR(s1, Cin)
+# AND/OR stage — carry
+c1 = AND(A, B)
+c2 = AND(s1, Cin)
+Cout = OR(c1, c2)`} height={440} />
+
+---
+
+## 1. 你的第一张逻辑门图
+
+最小可用的图：两个输入、一个门、一个输出。
+
+<Playground initial={`logic "NAND check"
+input A, B
+output F
+F = NAND(A, B)`} />
+
+四条规则涵盖 80% 的使用场景：
+
+1. 以关键字 `logic` 开头，后面可选带引号的标题和 `style: ansi` 或 `style: iec`。
+2. 用 `input` 和 `output` 行声明端口——逗号分隔的信号名称。
+3. 每个门写作 `id = GATE_TYPE(input1, input2, …)`。`id` 成为命名的信号线。
+4. 与门 `id` 同名的 `output` 会自动连线；名称不同时使用 `OUTPUT <- gate_id`。
+
+> 注释必须以 `#` 或 `--` 开头，独占一行（或在门行的最后一个有意义的标记之后）。
+
+---
+
+## 2. 门类型
+
+### 2.1 组合逻辑门
+
+| DSL 关键字 | 函数 | ANSI 形状 | IEC 符号 |
+|---|---|---|---|
+| `AND` | A · B | D 形体 | 矩形 + `&` |
+| `OR` | A + B | 曲线体 | 矩形 + `≥1` |
+| `NOT` | Ā | 三角形 + 气泡 | 矩形 + `1` + 气泡 |
+| `NAND` | ¬(A · B) | AND + 气泡 | 矩形 + `&` + 气泡 |
+| `NOR` | ¬(A + B) | OR + 气泡 | 矩形 + `≥1` + 气泡 |
+| `XOR` | A ⊕ B | OR + 额外弧线 | 矩形 + `=1` |
+| `XNOR` | ¬(A ⊕ B) | XOR + 气泡 | 矩形 + `=1` + 气泡 |
+| `BUF` | A（缓冲器） | 三角形，无气泡 | 矩形 + `1` |
+
+<Playground initial={`logic "Gate gallery" style: ansi
+input A, B, C
+output Y_and, Y_or, Y_xor, Y_nand, Y_not
+Y_and = AND(A, B)
+Y_or = OR(A, B)
+Y_xor = XOR(A, B)
+Y_nand = NAND(A, B)
+Y_not = NOT(C)`} height={420} />
+
+### 2.2 特殊输出缓冲器
+
+| DSL 关键字 | 函数 |
+|---|---|
+| `TRISTATE_BUF` | 三态缓冲器——使能端低电平时输出 Z |
+| `TRISTATE_INV` | 三态反相缓冲器 |
+| `OPEN_DRAIN` | 开漏 / 开集极输出（需外部上拉） |
+| `SCHMITT` | 施密特触发器——体内有迟滞符号 |
+
+<Playground initial={`logic "Special buffers" style: ansi
+input A, EN
+output Y_tri, Y_od, Y_sch
+Y_tri = TRISTATE_BUF(A, EN)
+Y_od = OPEN_DRAIN(A)
+Y_sch = SCHMITT(A)`} height={340} />
+
+### 2.3 触发器与锁存器
+
+| DSL 关键字 | 类型 | 关键引脚 |
+|---|---|---|
+| `DFF` | D 触发器（边沿触发） | D, CLK, Q, Q̄ |
+| `JKFF` | JK 触发器 | J, K, CLK, Q, Q̄ |
+| `SRFF` | SR 触发器 | S, R, CLK, Q, Q̄ |
+| `TFF` | T（翻转）触发器 | T, CLK, Q, Q̄ |
+| `LATCH_SR` | SR 锁存器（电平敏感，无时钟） | S, R, Q, Q̄ |
+| `LATCH_D` | D 锁存器（使能 = 1 时透明） | D, EN, Q, Q̄ |
+
+<Playground initial={`logic "Flip-flop gallery" style: ansi
+input D, J, K, CLK, EN
+output Q_dff, Q_jk, Q_latch
+Q_dff = DFF(D, CLK)
+Q_jk = JKFF(J, K, CLK)
+Q_latch = LATCH_D(D, EN)`} height={420} />
+
+### 2.4 复杂组合逻辑
+
+| DSL 关键字 | 函数 |
+|---|---|
+| `MUX` | 多路选择器 |
+| `DEMUX` | 多路分配器 |
+| `DECODER` | 二进制译码器 |
+| `ENCODER` | 优先编码器 |
+
+<Playground initial={`logic "Combinational MSI" style: ansi
+input A, B, S
+output Y_mux, Y_dec
+Y_mux = MUX(A, B, S)
+Y_dec = DECODER(A, B)`} height={340} />
+
+### 2.5 复杂时序逻辑
+
+| DSL 关键字 | 函数 |
+|---|---|
+| `COUNTER` | 通用二进制计数器（`CTR` 标签，CLK/RESET/Q0–Q3） |
+| `SHIFT_REG` | 通用移位寄存器（`SRG` 标签，CLK/SER/Q0–Q7） |
+
+<Playground initial={`logic "Sequential MSI" style: ansi
+input DATA, CLK, RESET
+output Q_cnt, Q_sr
+Q_cnt = COUNTER(CLK, RESET)
+Q_sr = SHIFT_REG(DATA, CLK)`} height={340} />
+
+---
+
+## 3. 输入与输出
+
+### 3.1 声明端口
+
+```
+input A, B, Cin          # three input ports
+output Sum, Cout         # two output ports
+```
+
+`input` 或 `output` 列表中的每个名称都成为整张图中可用的命名信号线。
+
+### 3.2 低有效输入
+
+在输入列表中为信号名称添加 `~` 前缀，表示低有效。渲染器会在端口符号处绘制气泡。
+
+```
+input ~nRESET, CLK, DATA
+```
+
+低有效记法也适用于门的输入列表：
+
+```
+g1 = AND(~nRESET, CLK)
+```
+
+### 3.3 将输出连接到门
+
+如果输出 ID 与门 ID 匹配，连接是隐式的：
+
+```
+output Sum        # Sum is also a gate id → auto-wired
+Sum = XOR(s1, Cin)
+```
+
+名称不同时，使用显式赋值运算符：
+
+```
+output F
+q1 = NOR(A, B)
+F <- q1           # F draws from q1's output
+```
+
+<Playground initial={`logic "SR latch from NOR gates"
+input S, R
+output Q, Qn
+q_gate = NOR(R, Qn)
+qn_gate = NOR(S, Q)
+Q <- q_gate
+Qn <- qn_gate`} height={300} />
+
+---
+
+## 4. 符号风格
+
+头行上的 `style:` 选项选择符号标准，应用于图中的每个门。
+
+| 值 | 标准 | 适用场景 |
+|---|---|---|
+| `ansi`（默认） | IEEE Std 91——特征曲线形状 | 美国教育、硬件文档 |
+| `iec` | IEC 60617-12——统一矩形 + 功能标签 | 国际、欧洲工业 |
+
+```
+logic "ALU slice" style: iec
+```
+
+<Playground initial={`logic "1-bit Full Adder" style: iec
+input A, B, Cin
+output Sum, Cout
+# XOR stage — sum bits
+s1 = XOR(A, B)
+Sum = XOR(s1, Cin)
+# AND/OR stage — carry
+c1 = AND(A, B)
+c2 = AND(s1, Cin)
+Cout = OR(c1, c2)`} height={440} />
+
+<Playground initial={`logic "Gate gallery — IEC style" style: iec
+input A, B, C
+output Y_and, Y_or, Y_xor, Y_nand, Y_not
+Y_and = AND(A, B)
+Y_or = OR(A, B)
+Y_xor = XOR(A, B)
+Y_nand = NAND(A, B)
+Y_not = NOT(C)`} height={420} />
+
+---
+
+## 5. 模块块
+
+使用 `module` 将门组织到带标签的子电路框中。模块块用于记录层次化设计——每个模块渲染为其成员门周围的命名矩形。
+
+```
+logic "Hierarchical adder"
+input A, B, Cin
+output Sum, Cout
+
+module "Half Adder" {
+  s1 = XOR(A, B)
+  c1 = AND(A, B)
+}
+
+Sum = XOR(s1, Cin)
+Cout = OR(c1, AND(s1, Cin))
+```
+
+模块语法规则：
+- `module "Label" {` — 打开一个模块（带引号的标签或裸标识符）。`{` 必须在 `module` 同一行。
+- 单独一行的 `}` 关闭最近打开的模块。
+- 模块可以嵌套。
+
+---
+
+## 6. 标签与注释
+
+- **图表标题：** `logic "Full Adder"` — 仅限第一行。
+- **门信号名称：** `id = GATE(…)` 中的 `id` 既是门名也是输出线名。
+- **输出标签：** `output Sum` — 输出端口标签默认与信号名匹配。
+- **低有效标记：** 端口或门输入上的 `~` 前缀。
+- **注释：** `#` 或 `--` 位于行首，或在行内最后一个有意义的标记之后。
+
+---
+
+## 7. 保留字与转义
+
+**行首保留字：** `logic`（头部）、`input`、`output`、`module`、`}`。
+
+**保留运算符标记**——避免在信号名称中使用：`=`、`(`、`)`、`,`、`<-`、`~`。
+
+**信号名称规则：** 必须匹配 `[a-zA-Z_][a-zA-Z0-9_]*`。大小写均可；门类型关键字（`AND`、`OR` 等）在解析器中不区分大小写。
+
+---
+
+## 8. 常见错误
+
+| 你写的 | 解析器报错 | 修复方法 |
+|---|---|---|
+| `f = and(A, B)`（小写门） | 已接受——门类型不区分大小写 | `AND` 和 `and` 均可 |
+| `output F` 然后 `F <- q1`，但 `q1` 未声明 | `LogicParseError: Unknown signal "q1"` | 在引用之前将 `q1` 声明为门 |
+| `input A B C`（空格分隔，无逗号） | 解析器只取 `A`；`B` 和 `C` 被忽略 | 使用逗号：`input A, B, C` |
+| `F = BUFFER(A)` | `LogicParseError: Unknown gate type: BUFFER` | 使用 `BUF` |
+| `module FullAdder {`（无 `{` 大括号） | 行不匹配模块模式——被静默跳过 | 开括号 `{` 必须与 `module` 在同一行 |
+| 头行上的 `style: IEEE` | 未知的风格值——静默回退到 `ansi` | 使用 `style: ansi` 或 `style: iec` |
+
+---
+
+## 9. 语法（EBNF）
+
+```text
+document    = header statement*
+
+header      = "logic" ( WS quoted-string )? ( WS "style:" WS style )? NEWLINE
+style       = "ansi" | "iec"
+quoted-string = '"' any-char-but-quote* '"'
+
+statement   = blank | comment | input-decl | output-decl | gate-def | assign | module-block
+
+comment     = ( "#" | "--" ) any NEWLINE
+
+input-decl  = "input" WS port-list NEWLINE
+output-decl = "output" WS port-list NEWLINE
+port-list   = port-id ( "," WS? port-id )*
+port-id     = "~"? id
+
+gate-def    = id WS "=" WS gate-type "(" input-list ")" NEWLINE
+input-list  = ( "~"? id ) ( "," WS? ( "~"? id ) )*
+
+assign      = id WS "<-" WS id NEWLINE
+
+module-block = module-open ( statement | module-block )* module-close
+module-open  = "module" WS ( quoted-string | id ) WS? "{" NEWLINE
+module-close = "}" NEWLINE
+
+gate-type   = "AND" | "OR" | "NOT" | "NAND" | "NOR" | "XOR" | "XNOR" | "BUF"
+            | "TRISTATE_BUF" | "TRISTATE_INV" | "OPEN_DRAIN" | "SCHMITT"
+            | "DFF" | "JKFF" | "SRFF" | "TFF"
+            | "LATCH_SR" | "LATCH_D"
+            | "MUX" | "DEMUX" | "DECODER" | "ENCODER"
+            | "COUNTER" | "SHIFT_REG"
+            // all case-insensitive
+
+id          = [a-zA-Z_] [a-zA-Z0-9_]*
+```
+
+权威来源：`src/diagrams/logic/parser.ts`。如果此处内容与解析器不一致，以解析器为准——请提交 issue。
+
+---
+
+## 10. 标准合规性
+
+Schematex 逻辑门图遵循 **IEEE Std 91-1984 / ANSI Y32.14**（特征形状符号）和 **IEC 60617-12**（带功能限定符的矩形符号）。
+
+当前已实现内容：
+
+- ✅ 全部八种组合逻辑门：AND、OR、NOT、NAND、NOR、XOR、XNOR、BUF
+- ✅ 特殊输出缓冲器：TRISTATE_BUF、TRISTATE_INV、OPEN_DRAIN、SCHMITT
+- ✅ 四种边沿触发触发器：DFF、JKFF、SRFF、TFF
+- ✅ 两种锁存器：LATCH_SR、LATCH_D
+- ✅ 组合 MSI：MUX、DEMUX、DECODER、ENCODER
+- ✅ 时序 MSI：COUNTER、SHIFT_REG
+- ✅ 输入和端口上的低有效（`~`）记法
+- ✅ ANSI 和 IEC 符号风格，可按图选择
+- ✅ 模块分组块
+- ✅ 自动 DAG 布局（拓扑排序，从左到右信号流）
+- ⏳ 显式扇出连线路由（带接点圆点的共享网络）
+- ⏳ 多位总线记法（线上的 `/N` 斜线注释）
+- ⏳ 触发器上的低有效时钟输入
+
+参考资料：
+
+- IEEE Std 91-1984 / ANSI Y32.14：*IEEE 逻辑函数图形符号标准*
+- IEEE Std 91a-1991：IEEE Std 91 的补充
+- IEC 60617-12：*图表的图形符号——二进制逻辑元件*
+
+---
+
+## 11. 相关示例
+
+<RelatedExamples slugs={[
+  'logic-full-adder',
+]} />
+
+---
+
+## 12. 路线图
+
+**计划中——当前尚不可解析。** 请勿在生成的 DSL 中使用这些内容；解析器会拒绝或忽略它们。
+
+- **显式扇出 / 接点圆点** — 由多个门输入共享的命名线，在分支点渲染接点圆点。
+- **多位总线记法** — 线上的 `bus N` 注释，表示 N 位信号组。
+- **低有效时钟** — 触发器输入列表中的 `~CLK`，在时钟三角形上渲染气泡。
+- **反馈弧** — 从门输出回到更早门输入的显式连线，路由在主信号路径上方。
+- **参数化门扇入** — `AND(A, B, C, D)` 直接渲染 4 输入 AND 门。
+
+如果你急需上述功能，请在 GitHub issues 中跟踪进度。

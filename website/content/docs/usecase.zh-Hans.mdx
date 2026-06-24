@@ -1,0 +1,206 @@
+---
+title: UML 用例图（UML Use Case Diagram）
+---
+
+## 关于用例图
+
+**用例图**回答了每次需求参与都从此开始的问题：*这个系统做什么，为谁做？*由 Ivar Jacobson 于 1992 年提出，并纳入 **[UML](https://www.omg.org/spec/UML/2.5.1/) 2.5.1 §18**，它是最常被教授的 UML 图，也是产品、工程与 QA 之间的共通语言。符号很精简——参与者火柴人、用例椭圆、系统边界，以及四种线型——但它能比任何方框箭头的流程图更清楚地固定系统范围。
+
+Schematex 以单一关键字 `usecase` 与专为 LLM 生成设计的文字 DSL 实现了 UML 2.5.1 视觉子集——PlantUML 的开发体验，不需要 JVM 也不需要繁复的括号操作。与 **[state](/docs/state)**（对象内部行为，而非系统范围）、**[flowchart](/docs/flowchart)**（无参与者／主题／include-extend 语义）和 **[bpmn](/docs/bpmn)**（流程如何执行，而非系统提供什么）不同。
+
+<Playground initial={`usecase
+title: "ATM"
+system: "ATM System"
+
+actor: Customer
+actor: Bank (external)
+
+usecase: "Withdraw Cash"  as Withdraw
+usecase: "Deposit Funds"  as Deposit
+usecase: "Check Balance"  as Check
+
+Customer -- Withdraw
+Customer -- Deposit
+Customer -- Check
+Withdraw -- Bank
+Deposit  -- Bank
+Check    -- Bank`} height={520} />
+
+---
+
+## 1. 第一个用例图
+
+每份文档以 `usecase` 关键字开头，然后是标题属性、声明与关系：
+
+```
+usecase
+system: "Library"
+
+actor: Member
+usecase: "Borrow Book" as Borrow
+
+Member -- Borrow
+```
+
+`actor:` 声明一个参与者（火柴人），`usecase:` 声明一个用例（椭圆），`Member -- Borrow` 在它们之间绘制一个纯关联。`system:` 将用例包裹在一个带标签的**主题**矩形中。主要参与者放在左侧；支撑参与者放在右侧。
+
+标题接受以下属性：
+
+- `title: "…"` — 绘制于图表上方的标题。
+- `system: "…"` — 主题（系统边界）名称。省略它可让用例自由浮动（若省略且有 ≥3 个用例，Schematex 会发出警告）。
+- `direction: LR | TB` — 默认 `LR`（参与者从两侧夹住主题）。
+- `generalization: tree | individual` — 是否合并同级泛化箭头（默认 `tree`）。
+
+---
+
+## 2. 参与者
+
+```
+actor: Customer
+actor: "Payment Gateway" as PG (external)
+actor: "Warehouse Staff" as WH
+actor: Admin (left)
+```
+
+- 裸名称或 `"引号"` 名称成为标签；`as ID` 给予短标识符用于关系。
+- `(external)`（或 `(system)`）将参与者渲染为**带有 `«actor»` 构造型的矩形**，而非火柴人——用于其他软件系统（支付网关、第三方 API）。
+- `(business)` 在火柴人上加上 Bittner & Spence 的对角斜线。
+- `(left)` / `(right)` 将参与者固定在某一侧。默认第一个参与者在左侧，其余在右侧。
+
+自定义构造型放在声明后的书名号中：`actor: "Audit Service" as Audit (external) «system»`。解析器也接受 ASCII 的 `<<system>>` 并标准化为 `«system»`。
+
+---
+
+## 3. 用例
+
+```
+usecase: "Checkout" as Checkout {
+  extension point: payment failed
+  extension point: stock depleted
+}
+```
+
+用例是一个大小配合文字的椭圆。可选的 `{ … }` 块在名称下方以分隔线隔出**扩展点**分区。这里也支持构造型：`usecase: "Validate Card" as ValidateCard «secured»`。
+
+---
+
+## 4. 关系
+
+四种线型连接参与者与用例：
+
+| DSL | 含义 | 渲染方式 |
+|-----|------|---------|
+| `A -- B` | 关联 | 实线，无箭头 |
+| `A --> B` | 有向关联 | 实线，B 端开箭头 |
+| `A ..> B` | `A` **包含** `B` | 虚线，开箭头 → B，`«include»` 标签 |
+| `A <.. B` | `A` **扩展** `B` | 虚线，开箭头 → B（基础），`«extend»` 标签 |
+| `A --\|> B` | `A` 是 `B` 的特化 | 实线，空心三角形 → 父类 B |
+
+```
+Customer -- Checkout
+Checkout ..> Pay          : «include»
+Pay      ..> ValidateCard : «include»
+Cancel   <.. Checkout     : «extend» [payment failed] (extension point: payment failed)
+```
+
+- **`«include»`** 指向*被包含的用例*——可重用的行为 `A` 总是执行。来源包含目标。
+- **`«extend»`** 指向*基础用例*——`A` 是可选行为，`B` 是它所扩展的基础。你可以附加一个 `[condition]` 并引用基础的某个 `(extension point: …)` 项目。（箭头始终朝向基础，不管端点的排列顺序。）
+- `«extend»` 线以主题**强调色**绘制，使这个较少见、较令人意外的关系更加显眼。
+
+解析器会拒绝人类与 LLM 都常犯的高置信度错误，并附上错误行号：两个参与者之间的关联、两个用例之间的关联、`include`／`extend` 触及参与者、跨元类的泛化（参与者 → 用例）、重复使用的标识符，以及引用不存在于基础用例上的扩展点。
+
+---
+
+## 5. 泛化
+
+`--|>` 在两个参与者**或**两个用例之间有效（绝不能跨两者——这是硬性错误）：
+
+```
+actor: User as U
+actor: "Premium User" as PU
+PU --|> U
+
+usecase: "Pay by Card"   as PayCard
+usecase: "Pay by PayPal" as PayPaypal
+usecase: "Pay"           as Pay
+PayCard   --|> Pay
+PayPaypal --|> Pay
+```
+
+箭头带有**空心三角形**指向父类。当三个以上的同级共享一个父类时，箭头合并为单一共享箭头（UML 2.5 图 18.5 惯例）；在标题中设置 `generalization: individual` 可保持它们分开。参与者层次结构在参与者栈外侧路由为整洁的总线。
+
+---
+
+## 6. 多重性
+
+在它所属的端点旁边直接引号多重性字符串：
+
+```
+Customer "1"    -- "*" Checkout
+Cashier  "1..*" -- "1" Register
+```
+
+---
+
+## 7. PlantUML 风格的行内形式
+
+从 PlantUML 迁移过来？行内声明形式有效，且可与声明式形式自由混用：
+
+```
+usecase
+:Customer: as C
+(Browse Catalog) as Browse
+(Add to Cart)    as AddCart
+
+C -- Browse
+C -- AddCart
+Browse ..> AddCart : «include»
+```
+
+`:Name:` 声明参与者，`(Name)` 声明用例，`as ID` 为两者设置别名。Schematex 是*受 PlantUML 启发*，并非 1:1 的转译器——多重性与关系语法略有不同。
+
+---
+
+## 8. 语法（EBNF）
+
+```text
+document     = "usecase" NEWLINE header_prop* statement*
+header_prop  = ("title:" | "system:") quoted_string
+             | "direction:" ("LR" | "TB")
+             | "generalization:" ("tree" | "individual")
+
+statement    = actor_decl | usecase_decl | plantuml_inline | relation | note
+
+actor_decl   = "actor" ":" name ("as" IDENT)? actor_kind? stereotype?
+actor_kind   = "(" ("external" | "system" | "business" | "left" | "right") ")"
+usecase_decl = "usecase" ":" quoted ("as" IDENT)? stereotype? extpoints?
+extpoints    = "{" ("extension point:" TEXT)+ "}"
+plantuml_inline = ":" name ":" ("as" IDENT)?      ; actor
+                | "(" name ")" ("as" IDENT)?       ; use case
+
+relation     = endpoint relop endpoint label_clause?
+endpoint     = (IDENT | quoted) multiplicity? | multiplicity? (IDENT | quoted)
+relop        = "--" | "-->" | "..>" | "<.." | "--|>"
+label_clause = ":" stereotype? condition? extpoint_ref?
+stereotype   = "«" TEXT "»" | "<<" TEXT ">>"
+condition    = "[" TEXT "]"
+extpoint_ref = "(extension point:" TEXT ")"
+multiplicity = quoted_string                       ; "1", "*", "0..1", "1..*"
+```
+
+---
+
+## 9. 标准合规性
+
+Schematex 遵循 OMG **UML 2.5.1 §18（UseCases）**视觉子集与 Bittner & Spence 风格指南：渲染的 SVG 使用书名号（而非 ASCII 的 `<<>>`），`«include»` 指向被包含的用例，`«extend»` 指向基础，空心三角形泛化箭头，以及外部系统矩形上的 `«actor»` 构造型。文字用例描述（Cockburn 完整形式）、场景表格与 XMI 导出超出*图表*渲染器的范畴。完整规格见 `docs/reference/29-USECASE-STANDARD.md`。
+
+---
+
+## 相关示例
+
+示例库中的即用场景：
+
+<RelatedExamples slugs={[
+  'usecase-atm',
+  'usecase-online-bookstore',
+]} />

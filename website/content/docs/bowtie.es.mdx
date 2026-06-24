@@ -1,0 +1,151 @@
+---
+title: Diagrama de riesgo Bowtie
+---
+
+## Acerca de los diagramas bowtie
+
+Un **bowtie** es la imagen más reconocible en la gestión de riesgos basada en barreras: un **evento superior** central (el momento en que se pierde el control de un peligro) con **amenazas** que se abanican desde la izquierda a través de cadenas de **barreras preventivas**, y **consecuencias** que se abanican hacia la derecha a través de cadenas de **barreras mitigativas** — todo con forma de corbatín. Responde, para un peligro, las dos preguntas que un regulador o consejo directivo realmente hace: *¿qué podría hacer que esto salga mal, y qué lo detiene?* (izquierda), y *si sale mal, ¿qué pasa, y qué limita el daño?* (derecha). Obligatorio en petróleo y gas, procesamiento químico, aviación ([ICAO Doc 9859](https://www.icao.int/) SMS), ferrocarriles, minería y salud. Codificado por **[CCPS / Energy Institute 2018](https://www.aiche.org/ccps)** (*Bow Ties in Risk Management*) y nombrado como técnica por **IEC 31010:2019** §B.4.6.
+
+La ventaja de Schematex aquí **no** es el cómputo (esa es la historia de `faulttree` y `pert`) — un bowtie básico no lleva probabilidades. Son dos cosas: un **layout simétrico rígido y correcto por construcción** que ninguna herramienta de cajas y flechas de propósito general produce, y **validación estructural del conjunto de reglas de barreras CCPS/EI** — cada amenaza debe llegar al evento superior a través de ≥ 1 barrera, cada consecuencia debe colgar de él a través de ≥ 1 barrera, y cada factor de escalación debe adjuntarse a una barrera nombrada específica. Una amenaza sin barrera es *rechazada*, no dibujada silenciosamente.
+
+<Playground initial={`bowtie "LPG storage — loss of containment"
+hazard "LPG stored under pressure"
+topevent "Loss of containment"
+
+threat "Corrosion of vessel wall"
+  prevent "Corrosion-resistant coating"
+  prevent "UT thickness inspection"
+    escalation "Inspection interval too long"
+      barrier "Risk-based inspection scheme"
+
+threat "Overpressure during filling"
+  prevent "High-pressure trip (SIL 2)"
+  prevent "Pressure relief valve"
+
+consequence "Jet fire"
+  mitigate "Gas detection + ESD"
+  mitigate "Deluge / water spray"
+
+consequence "Toxic exposure"
+  mitigate "Personal gas monitors"
+  mitigate "Emergency evacuation plan"`} height={560} />
+
+---
+
+## 1. Tu primer diagrama
+
+Cada documento comienza con la palabra clave `bowtie`, un título opcional, luego el peligro, el evento superior y las dos alas:
+
+```
+bowtie
+topevent "Loss of containment"
+threat "Corrosion"
+  prevent "Inspection programme"
+consequence "Release to atmosphere"
+  mitigate "Gas detection + ESD"
+```
+
+`topevent` declara el nudo central único (obligatorio, exactamente uno). Cada `threat` inicia una línea del ala izquierda; cada `consequence` termina una línea del ala derecha. Una barrera bajo un `threat` es **preventiva** (`prevent`); bajo una `consequence` es **mitigativa** (`mitigate`). El diagrama se presenta simétricamente alrededor del nudo — las amenazas se abanican desde la izquierda, las consecuencias se abanican hacia la derecha.
+
+El DSL está **estructurado por indentación** y refleja la metodología de construcción de 7 pasos del CCPS: identificar el peligro → el evento superior → las amenazas → las consecuencias → las barreras preventivas → las barreras mitigativas → los factores de escalación.
+
+Directivas de encabezado (en cualquier orden):
+
+- `layout: symmetric | compact` — modelo de bandas (por defecto `symmetric`).
+- `legend: on | off | bottom | top` — la leyenda de color derivada automáticamente (por defecto activada).
+
+---
+
+## 2. Peligro y evento superior
+
+```
+hazard "Working at height"
+topevent "Person falls from height"
+```
+
+- **`hazard`** — la operación o material con el potencial de causar daño: el *contexto* sobre el que trata el bowtie (p. ej., "Trabajar en altura", "Hidrocarburo bajo presión"). Opcional; se renderiza como una caja de encabezado encima del nudo con una línea de conexión hacia abajo. Como máximo uno.
+- **`topevent`** — el momento en que se **pierde** el control del peligro (p. ej., "Pérdida de contención", "Persona cae desde altura"). El nudo del bowtie, dibujado como un círculo verde. **Obligatorio, exactamente uno.**
+
+Un peligro es una *cosa/actividad*, no un fallo; el evento superior es el momento preciso de *pérdida de control* — no es una causa, y aún no es una consecuencia.
+
+---
+
+## 3. Amenazas y consecuencias
+
+```
+threat "Guardrail removed for access"
+  prevent "Permit-to-work system"
+
+consequence "Fatality"
+  mitigate "Fall-arrest harness + lanyard"
+```
+
+- Una **amenaza** es una causa creíble que, *por sí sola*, podría desencadenar el evento superior. Cada amenaza es el inicio de una línea del ala izquierda, dibujada como una caja naranja en el borde izquierdo.
+- Una **consecuencia** es un resultado creíble *del evento superior* (no de la amenaza), dibujada como una caja roja en el borde derecho.
+
+Las amenazas y consecuencias pueden declararse en cualquier orden intercalado — el parser agrupa todos los bloques del ala izquierda y del ala derecha independientemente de la secuencia. Un bowtie necesita **al menos uno de cada**: un diagrama de un ala es un árbol de fallos (ver `faulttree`) o un árbol de eventos, no un bowtie.
+
+---
+
+## 4. Barreras (los controles intermedios)
+
+```
+threat "Guardrail removed for access"
+  prevent "Permit-to-work system"
+  prevent "Temporary edge protection"
+  prevent "Spotter / banksman"
+```
+
+Una **barrera** es un control que interrumpe la ruta amenaza → evento superior (preventiva) o reduce la consecuencia después del evento superior (mitigativa). Cada una es una caja gris *en la línea*. Las cadenas tienen longitud libre (1..n) — el ala simplemente se extiende.
+
+**El orden de las barreras es el orden de declaración**: la primera declarada es la **más exterior** (más cercana a la amenaza/consecuencia, la primera línea de defensa); la última declarada es la **más interior** (más cercana al nudo). Esto coincide con la lectura de izquierda a derecha de un bowtie real. Cada barrera lleva `data-order` (0 = más exterior) y `data-side` (`prevent` / `mitigate`) para interactividad posterior.
+
+Cuando las cadenas difieren en longitud, las barreras están **ancladas al centro**: las barreras más internas se alinean en una columna ordenada cerca del nudo, y las cajas de amenaza/consecuencia son irregulares según la profundidad de la cadena — leídas como defensa en profundidad.
+
+---
+
+## 5. Factores de escalación
+
+```
+threat "Corrosion"
+  prevent "UT thickness inspection"
+    escalation "Inspection interval too long"
+      barrier "Risk-based inspection scheme"
+```
+
+Un **factor de escalación** (o factor de degradación) es una condición que *degrada la efectividad de una barrera específica* — p. ej., "Protección de borde no inspeccionada", "Fatiga del operador". Se adjunta a **una** barrera (no a la línea) y cae verticalmente debajo de ella como una caja ámbar, unida por un conector atenuado de "degrada".
+
+Una **barrera de factor de escalación** es un control colocado en el factor de escalación mismo — protege la barrera de ser degradada (p. ej., un régimen de inspección previa al uso). Se anida un nivel más profundo, bajo el factor de escalación, y se renderiza como una caja gris debajo de él.
+
+La indentación vincula el anidamiento: `prevent`/`mitigate` a 2 espacios, `escalation` a 4, `barrier` a 6.
+
+---
+
+## 6. Correcto por construcción (el conjunto de reglas de barreras)
+
+Antes de dibujar una sola forma, el motor valida la mitad estructural del conjunto de reglas de barreras CCPS/EI y **se niega a renderizar** en caso de fallo — exactamente como `prisma` se niega ante conteos faltantes:
+
+- **Exactamente un evento superior** — cero o varios es un error.
+- **Cada amenaza tiene ≥ 1 barrera preventiva** — una amenaza sin barreras es un cartoon de queso suizo, no un bowtie.
+- **Cada consecuencia tiene ≥ 1 barrera mitigativa** — la regla espejo.
+- **Cada factor de escalación está adjunto a una barrera** — no puede flotar en una línea o en el evento superior.
+- **Al menos una amenaza y una consecuencia** — un diagrama de un ala es un FTA o un ETA.
+
+Los mensajes nombran el elemento infractor y la regla en inglés claro, p. ej., *"Threat 'Corrosion' has no preventative barrier — every threat must reach the top event through at least one barrier (CCPS/EI barrier rule). Add a `prevent` line under it."* Esto es lo que separa un bowtie real de un garabato. El motor **no** juzga si una barrera es verdaderamente *efectiva* o *independiente* — ese es el juicio cualitativo del analista.
+
+---
+
+## 7. Bowtie vs árbol de fallos
+
+Un bowtie completamente desarrollado *es* un árbol de fallos pegado a un árbol de eventos en el evento superior: el ala izquierda leída al revés es el árbol de fallos cuyo evento superior es el nudo del bowtie, y el ala derecha es el árbol de eventos que lo propaga en consecuencias. Schematex los mantiene como dos motores porque su uso difiere:
+
+- **`bowtie`** es cualitativo y simétrico — el inventario de barreras y la historia visual de defensa en profundidad; sin aritmética de probabilidades.
+- **`faulttree`** es cuantitativo y booleano — compuertas AND/OR, probabilidades de eventos básicos, conjuntos de corte mínimos, un rollup de probabilidad.
+
+Cuando quieras el detalle de nivel de compuerta detrás de una sola amenaza, dibuja un `faulttree` separado.
+
+---
+
+## 8. Temas
+
+`default` usa la paleta reconocida de BowTieXP / bowtiemaster — **amenazas naranjas** (izquierda), **barreras grises** en la línea, un **disco verde del evento superior** (nudo central), **consecuencias rojas** (derecha), **factores de escalación ámbar** cayendo debajo — mapeados en los slots semánticos de Schematex para que permanezca coherente con `prisma` / `pert` / `petri`. `monochrome` reproduce el aspecto blanco y negro para impresión regulatoria, donde la distinción de elementos depende de la forma/borde + posición (los factores de escalación obtienen un borde discontinuo, el nudo un doble anillo) en lugar de color. `dark` sigue Catppuccin Mocha. Todos los trazos/rellenos provienen de `BowtieTokens`; cada elemento lleva `data-*` (`data-role`, `data-side`, `data-line`, `data-order`, `data-barrier`) para que la estructura sea inspeccionable posteriormente.

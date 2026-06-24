@@ -1,0 +1,111 @@
+---
+title: IDEF0 功能模型
+description: 结构化分析的活动模型——功能框以 ICOM 箭头（输入/控制/输出/机制）连线，且天然正确。
+---
+
+## 关于 IDEF0
+
+**IDEF0**（Integration Definition for Function Modeling，功能建模集成定义）是美国联邦标准中用于**功能分解**的规范——建模系统*做什么*。每个活动是一个框；箭头依角色连接在四个固定边：**I**nput（输入，左）、**C**ontrol（控制，上）、**O**utput（输出，右）、**M**echanism（机制，下）——即 **ICOM** 惯例。标准化为 **[FIPS PUB 183](https://www.nist.gov/publications/integration-definition-function-modeling-idef0)**（1993）。
+
+Schematex 的优势在于模型**天然正确**。箭头的角色*就是*它所附着的框边，因此引擎强制 ICOM 位置、解析所有引用、分配分解编号、编码边界箭头（I1/C1/O1/M1…），并应用 FIPS 的 3 至 6 个框的准则——当模型违反标准时拒绝，而不是让你在错误的边绘制箭头。
+
+<Playground initial={`idef0 "Manufacture product"
+node A0
+function A1 "Plan production"
+function A2 "Make parts"
+function A3 "Assemble product"
+input     A1 "Sales orders"
+control   A1 "Production schedule"
+A1 -> A2 "Work plan"
+input     A2 "Raw material"
+mechanism A2 "CNC machines"
+A2 -> A3 "Finished parts"
+output    A3 "Product"
+mechanism A3 "Assembly line"`} height={520} />
+
+---
+
+## 1. 你的第一张 IDEF0 图
+
+以 `idef0` 关键字开头，加上可选的标题、可选的 `node`（图的节点编号），然后是**功能框**及其 **ICOM 箭头**：
+
+```
+idef0 "Fill order"
+function A1 "Receive order"
+input     A1 "Customer request"
+control   A1 "Order policy"
+mechanism A1 "Order clerk"
+output    A1 "Confirmed order"
+```
+
+`function ID "name"` 声明一个框（按声明顺序）。`node A0` 设置父节点编号，用于推导子节点编号（A0 → A1..An）。FIPS 建议每张图有 3 至 6 个框；超出此范围时引擎会发出警告。
+
+---
+
+## 2. ICOM 边界箭头
+
+每个关键字将箭头固定在框的特定边，这也*就是*它的角色：
+
+```
+input     A1 "Sales orders"        # enters the LEFT edge
+control   A1 "Production schedule" # enters the TOP edge (governs the activity)
+output    A1 "Product"             # leaves the RIGHT edge
+mechanism A1 "CNC machines"        # enters the BOTTOM edge (the resource)
+```
+
+`input`、`control` 和 `mechanism` 从图框**进入**框；`output` 从框**离开**至图框。引擎为这些边界箭头沿各边编码（I1、I2 / C1 / O1 / M1）。
+
+---
+
+## 3. 框之间的流动箭头
+
+`->` 箭头连接两个框；默认落在目标的**输入**边，但你可以指定目标的 ICOM 边：
+
+```
+A1 -> A2 "Work plan"            # box→box; defaults to A2's input
+A2 -> A3.control "Parts spec"   # land on A3's control (top) edge
+input A2 "Raw material" (tunnel) # (tunnel) hides the arrow at this level
+```
+
+- `target.control` / `target.input` / `target.mechanism` 选择落点边。
+- 流动**不能落在目标的 `.output` 边**——输出是离开框的，不是进入框的。
+- `(tunnel)` 标记一个隧道箭头（按 FIPS 在父/子图中隐藏）。
+
+---
+
+## 4. 计算式结构强制
+
+这是差异化优势——使模型在绘图工具做不到的地方天然正确：
+
+1. **ICOM 位置强制** — 角色对照框的几何边解析；格式错误的角色，或要求*进入*框的 `.output`，会被拒绝。
+2. **引用解析** — 箭头提及的每个框 id 都必须已声明。
+3. **分解编号** — 框获得连续的框编号 1..n（右下角）和节点编号（A0 → A1..An）；显式的 `#N` 编号会检查连续性、范围和重复。
+4. **边界编码** — 边界箭头沿各边编码为 I1/C1/O1/M1。
+5. **框数量准则** — 少于 3 或多于 6 个框会触发 FIPS-183 警告。
+
+---
+
+## 5. 常见错误
+
+```
+# WRONG — no idef0 header
+function A1 "x"
+
+# WRONG — a flow landing on the target's output
+A1 -> A2.output "bad"
+
+# WRONG — an unknown ICOM side word
+A1 -> A2.sideways "bad"
+```
+
+文件必须以 `idef0` 开头；箭头只能以 `.input` / `.control` / `.mechanism` 为目标；每个被引用的框 id 都必须已声明。由于关键字本身就编码了边，你不可能不小心把控制箭头画成输入箭头——标准是强制执行的，不只是建议。
+
+---
+
+## 6. 标准合规性
+
+符号表示法、ICOM 位置、分解编号、边界编码、隧道箭头，以及 3 至 6 个框的准则均遵循 FIPS PUB 183（IDEF0）。`monochrome` 主题重现了标准的黑白框线图外观。
+
+## 7. 路线图
+
+延后实现：多页分解拼接（子图）、节点树 / FEO 页面，以及指向被引用模型的调用箭头。

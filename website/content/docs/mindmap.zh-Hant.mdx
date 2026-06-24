@@ -1,0 +1,402 @@
+---
+title: 心智圖
+---
+
+## 關於心智圖
+
+**心智圖**是一種以中心主題為核心、向外輻射延伸出子主題與細節的放射狀圖形。Tony Buzan 在 1970 年代推廣了這種格式，將其作為筆記和腦力激盪的工具；此後，心智圖被廣泛應用於教育、專案規劃、會議引導和知識管理。其核心洞見在於：非線性的分支結構能忠實反映聯想式思考的運作方式——比大綱更快速、比自由書寫更有結構。
+
+Schematex 心智圖採用受 [markmap](https://markmap.js.org/) 啟發的 **Markdown 標題加條列清單** DSL——這是大多數人早已熟悉的格式。提供兩種版面樣式：傳統放射狀的 **map**（向四面八方延伸）和水平排列的 **logic-right** 樹狀圖。本頁說明解析器目前支援的語法。
+
+<Playground initial={`mindmap
+
+# Product Launch Plan
+
+## Market readiness
+### Competitive analysis
+- Direct competitors
+- Pricing benchmarks
+### Target segments
+- SMB customers
+- Enterprise pilot
+
+## Engineering
+### Feature freeze
+- Core API complete
+- Edge cases resolved
+### Infrastructure
+- Load testing
+- CDN configuration
+  - Cache rules
+  - Geo routing
+
+## Go-to-market
+- Landing page live
+- Email campaign
+- Press outreach
+  - TechCrunch pitch
+  - Newsletter sponsors
+
+## Success metrics
+- Week 1 signups
+- Activation rate
+- NPS at day 30`} height={500} />
+
+---
+
+## 1. 第一張心智圖
+
+最小可用的心智圖：一個中心主題、兩個分支，其中一個帶有子項目。
+
+<Playground initial={`mindmap
+
+# Team retrospective
+
+## What went well
+- Clear sprint goals
+- Good test coverage
+
+## What to improve
+- Slower PR reviews
+  - Add a review SLA`} />
+
+四條規則涵蓋了 80% 的使用情境：
+
+1. 以可選的 `mindmap` 關鍵字起頭並單獨放一行，後面接一行空白行。
+2. 根節點是唯一的 `#` 標題——只允許一個。
+3. 以 `##`、`###` 及更深層的標題設定分支深度。標題層級等於樹狀深度。
+4. 在任意標題下使用 `-`、`*` 或 `+` 條列項目新增子項目。每 2 個空格縮排增加一層深度。
+
+> 正文不支援注解。在 `#` 根節點之前，可使用 `%%` 指令進行設定。
+
+---
+
+## 2. 標題與深度
+
+標題層級直接對應樹狀深度。`#` 固定為根節點（深度 0），`##` 為深度 1，`###` 為深度 2，以此類推，最深到 `######`（深度 5）。
+
+```
+mindmap
+
+# Root
+## Branch A         ← depth 1
+### Sub-branch      ← depth 2
+#### Leaf           ← depth 3
+## Branch B
+```
+
+標題可以跳層——`####` 接在 `##` 後面是合法的，會在深度 3 產生一個節點。樹狀深度是相對於根節點計算的，而非相對於前一個標題。
+
+---
+
+## 3. 條列項目
+
+條列項目讓標題分支延伸出更多細節。`-`、`*`、`+` 均可作為條列標記。每 **2 個空格**縮排，在相對於外層標題的基礎上增加一層深度。
+
+```
+## Risks
+- Technical complexity         ← depth 2 (one level under ## Risks)
+  - Legacy integrations        ← depth 3 (2 spaces indent)
+    - Auth service             ← depth 4 (4 spaces indent)
+- Team availability            ← depth 2 again
+```
+
+<Playground initial={`mindmap
+
+# Book outline
+
+## Chapter 1 — Introduction
+- Why this matters
+  - Historical context
+  - Current state
+- What you will learn
+
+## Chapter 2 — Core concepts
+- Concept A
+  - Definition
+  - Examples
+- Concept B
+  - Definition
+  - Worked example
+    - Step-by-step walkthrough`} height={440} />
+
+---
+
+## 4. 行內格式
+
+節點標籤支援 Markdown 行內格式的子集。解析器在解析時將標籤分詞；渲染器根據分詞結果輸出帶樣式的文字。
+
+| 語法 | 效果 | 範例 |
+|---|---|---|
+| `**text**` | 粗體 | `**Critical path**` |
+| `*text*` | 斜體 | `*optional*` |
+| `` `code` `` | 等寬程式碼 | `` `npm install` `` |
+| `[text](url)` | 連結 | `[RFC 7519](https://tools.ietf.org/html/rfc7519)` |
+| `[ ] item` | 未勾選的任務 | `[ ] Write tests` |
+| `[x] item` | 已勾選的任務 | `[x] Design review` |
+
+核取方塊必須出現在標籤的最開頭（在其他文字之前）。行內格式可以巢狀使用：`**[bold link](url)**`。
+
+<Playground initial={`mindmap
+
+# Sprint 24 review
+
+## Completed
+- [x] **Auth redesign** — JWT + refresh tokens
+- [x] API rate limiting \`per-user\`
+- [x] [Error budget dashboard](https://metrics.example.com)
+
+## In progress
+- [ ] *Mobile push notifications*
+  - [ ] iOS APNs integration
+  - [ ] Android FCM setup
+
+## Blocked
+- [ ] **Payment webhook** — waiting on Stripe team
+  - *Escalated to account manager*`} height={420} />
+
+---
+
+## 5. 版面樣式
+
+`%% style:` 指令選擇版面演算法，需放在 `#` 根標題之前。
+
+| 樣式 | 版面 | 最適合 |
+|---|---|---|
+| `map`（預設） | 放射狀——分支從中心向四面八方延伸 | 腦力激盪、概念圖、自由探索 |
+| `logic-right` | 水平樹狀——所有分支向右延伸 | 結構化大綱、層級關係、循序分解 |
+| `futureswheel` | 同心環——根節點在中心，每個標題層級在各自的環上 | 未來預測、後果映射、結構化腦力激盪 |
+| `driver` | 水平樹狀——目標在左，向右流過驅動因素到變革想法 | 改善方案、目標→驅動因素→行動的分解 |
+
+```
+%% style: map
+%% style: logic-right
+%% style: futureswheel
+%% style: driver
+```
+
+**`map`**（預設）——放射狀版面，分支從中心向四面八方延伸。最適合腦力激盪和概念圖。
+
+<Playground initial={`mindmap
+
+# Machine learning
+
+## Supervised
+### Classification
+- Decision tree
+- SVM
+- Neural net
+### Regression
+- Linear
+- Gradient boosting
+
+## Unsupervised
+### Clustering
+- K-means
+- DBSCAN
+### Reduction
+- PCA
+- t-SNE
+
+## Reinforcement
+- Q-learning
+- Policy gradient`} height={480} />
+
+**`logic-right`**——水平樹狀，所有分支向右延伸。最適合結構化大綱和循序層級關係。
+
+<Playground initial={`mindmap
+%% style: logic-right
+
+# Machine learning
+
+## Supervised
+### Classification
+- Decision tree
+- SVM
+- Neural net
+### Regression
+- Linear
+- Gradient boosting
+
+## Unsupervised
+### Clustering
+- K-means
+- DBSCAN
+### Reduction
+- PCA
+- t-SNE
+
+## Reinforcement
+- Q-learning
+- Policy gradient`} height={460} />
+
+**`futureswheel`**——[未來輪](https://en.wikipedia.org/wiki/Futures_wheel)（Jerome Glenn，1971/72 年），是思考後果的經典結構化腦力激盪格式。中心事件或趨勢位於軸心；一階後果落在內環，二階後果在更外一環，依此類推。每個子節點都保持在其父節點的角度扇區內，每一環以顏色區分階序，讀者一眼即可看出漣漪距原始事件有多遠。深度對應環數：`#` 是軸心，`##` 是第一環（1 階），`###` 及標題下的條列項目推進到下一環（2 階），更深層級持續向外延伸。
+
+<Playground initial={`mindmap
+%% style: futureswheel
+
+# Remote work becomes default
+
+## Less commuting
+- Lower carbon emissions
+- Cheaper city living
+
+## Distributed teams
+- Async communication norms
+- Global hiring pools
+
+## Empty offices
+- Commercial real estate slump
+- Repurposed to housing`} height={520} />
+
+**`driver`**——[驅動因素圖](https://www.ihi.org/resources/tools/driver-diagram)，來自 IHI（美國醫療保健改善研究所）改善模型的規劃工具。從左至右以整齊的樹狀呈現：最左側是**目標**，下一欄是**主要驅動因素**（推動目標實現的少數高槓桿領域），再往右分支出**次要驅動因素**和具體的**變革想法**。樹狀層級與結構整齊對應：`#` 是目標，`##` 是主要驅動因素，每個下方的條列項目與更深層標題成為次要驅動因素和變革想法。當你需要展示「如何」真正達成目標時，請使用這種樣式。
+
+<Playground initial={`mindmap
+%% style: driver
+
+# Reduce 30-day readmissions
+
+## Reliable discharge process
+- Teach-back at bedside
+- Med reconciliation
+
+## Timely follow-up
+- Appointment within 7 days
+- Post-discharge phone call`} height={400} />
+
+---
+
+## 6. 指令
+
+指令是放在 `#` 根標題**之前**的 `%%` 行，用於全域設定圖表。
+
+| 指令 | 可用值 | 預設值 | 效果 |
+|---|---|---|---|
+| `%% style: …` | `map`、`logic-right`、`futureswheel`、`driver` | `map` | 版面演算法 |
+| `%% theme: …` | 任意字串 | （無） | 傳遞給渲染器的主題覆蓋 |
+| `%% maxLabelWidth: …` | 整數 80–1000 | `240` | 標籤自動換行前的最大像素寬度 |
+
+```
+mindmap
+%% style: logic-right
+%% maxLabelWidth: 320
+
+# Wide label root
+```
+
+<Playground initial={`mindmap
+%% style: logic-right
+%% maxLabelWidth: 200
+
+# Schematex features
+
+## DSL-first design
+- One keyword per diagram
+- AI-friendly syntax
+- CJK support
+
+## Zero dependencies
+- Hand-written parser
+- No D3, no dagre
+- ~KB-level bundle
+
+## Standards-compliant
+- IEEE for logic gates
+- IEC for circuits
+- McGoldrick for genograms`} height={360} />
+
+---
+
+## 7. 標籤與注解
+
+- **根節點標題：** `#` 標題行後面的文字。
+- **分支標籤：** `##`、`###` 等後面的文字。
+- **條列標籤：** `- ` / `* ` / `+ ` 標記後面的文字。
+- **行內格式：** `**粗體**`、`*斜體*`、`` `程式碼` ``、`[文字](url)`、`[ ]` / `[x]`。
+- **注解：** 正文中不支援。在 `#` 根節點之前使用 `%%` 指令進行設定；正文中的 `%%` 行會被視為指令（未識別的指令會靜默忽略）。
+
+---
+
+## 8. 保留字與跳脫字元
+
+**文件開頭保留：** `mindmap`（可選關鍵字）和 `%%`（指令前綴）。
+
+**根節點保留：** 恰好一個 `#` 標題；第二個 `#` 標題會觸發解析錯誤。
+
+**條列標記：** `-`、`*`、`+` 後面接空格。若 `*` 後面沒有空格，在標籤文字內會被視為斜體標記。
+
+**行內衝突：** 以 `[ ]` 或 `[x] ` 開頭的標籤會被解析為核取方塊，而非 Markdown 連結。若需要標籤字面上以 `[` 開頭，請寫 `\[`——反斜線跳脫括號。
+
+---
+
+## 9. 常見錯誤
+
+| 你寫的 | 解析器回應 | 修正方式 |
+|---|---|---|
+| 兩個 `#` 標題 | `Error: multiple # center nodes not allowed` | 只使用一個 `#` 標題作為根節點 |
+| `##Branch`（`##` 後無空格） | 該行不被識別為標題，靜默跳過 | 加上空格：`## Branch` |
+| 條列縮排 3 個空格 | 深度 = `lastHeadingDepth + 1 + floor(3/2) = lastHeadingDepth + 2`——可能產生意外的層級 | 使用 2 的倍數空格：0、2、4、6… |
+| `%% style: radial` | 未知值被靜默忽略，版面維持 `map` | 使用 `map`、`logic-right`、`futureswheel` 或 `driver` |
+| `mindmap` 關鍵字在文件中間 | 被視為純文字行（關鍵字只在第一行才被識別） | 把 `mindmap` 放在第 1 行，任何內容之前 |
+| `[ ]text`（括號後無空格） | 核取方塊不被識別，渲染為字面的 `[ ]text` | `[ ] text`——關閉括號後需有空格 |
+
+---
+
+## 10. 語法（EBNF）
+
+```text
+document       = ("mindmap" NEWLINE)? (blank | directive)* node*
+
+directive      = "%%" WS key ":" WS value NEWLINE
+key            = "style" | "theme" | "maxlabelwidth"
+
+node           = heading | bullet
+heading        = INDENT? "#"+ SPACE label NEWLINE
+bullet         = SPACE* bullet-marker SPACE label NEWLINE
+bullet-marker  = "-" | "*" | "+"
+
+label          = inline-token*
+inline-token   = checkbox
+               | "**" inline-token* "**"
+               | "*" inline-token* "*"
+               | "`" code-text "`"
+               | "[" inline-token* "]" "(" url ")"
+               | plain-text
+
+checkbox       = "[ ]" SPACE | "[x]" SPACE | "[X]" SPACE
+
+INDENT         = WS*    %% headings may have leading whitespace (ignored)
+SPACE          = " " | "\t"
+```
+
+**深度規則：**
+- 標題 `#` → 深度 0（根節點）
+- 標題 `##` → 深度 1，`###` → 深度 2，以此類推
+- 前置 `n` 個空格的條列項目 → 深度 = `lastHeadingDepth + 1 + floor(n / 2)`
+
+權威來源：`src/diagrams/mindmap/parser.ts`。若本文件與解析器有出入，以解析器為準——請提交 issue。
+
+---
+
+## 11. 開發路線圖
+
+**規劃中——目前尚無法解析。** 請勿在生成的 DSL 中使用以下語法；解析器將拒絕或忽略它們。
+
+- **`%%{init: {…}}%%` 區塊** — Mermaid 風格的 init 區塊，用於主題/設定；目前只支援 `%%` 行指令。
+- **自動編號分支** — `%% numbering: true`，為每個分支加上 1.、1.1. 等前綴。
+- **標注/備注節點** — 特殊標記，可在任意節點附加浮動的標注框。
+- **圖片節點** — `![alt](url)` 作為整個節點標籤，渲染為行內圖片。
+- **折疊分支** — `%% collapsed: branchId`，將子樹渲染為單一折疊指示符。
+
+如果你迫切需要以上功能，歡迎在 GitHub issues 追蹤。
+
+---
+
+## 相關範例
+
+來自範例庫的即用情境：
+
+<RelatedExamples slugs={[
+  'mindmap-product-launch',
+  'mindmap-quarterly-okrs',
+]} />

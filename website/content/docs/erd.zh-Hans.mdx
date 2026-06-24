@@ -1,0 +1,199 @@
+---
+title: ERD（实体关系图）
+---
+
+## 关于 ERD
+
+**实体关系图（ERD）**记录关系型数据库的结构：数据表（实体）、其字段（属性），以及数据表之间的外键关系——包括基数（1..1 / 0..1 / 1..N / 0..N）。后端工程师用它向新团队成员介绍代码库。数据架构师在编写任何 DDL 之前先在白板上画出草图。数据库教育者（Elmasri & Navathe；Silberschatz / Korth / Sudarshan）将其置于每门计算机科学数据库课程的概念设计单元核心。
+
+Schematex 实现**乌鸦脚记号法**——MySQL Workbench、dbdiagram.io、ERDPlus、Lucidchart、draw.io、Mermaid `erDiagram` 和 Oracle SQL Developer Data Modeler 都采用的现代实际标准。DSL 与 DBML 大致兼容，让工程师可以直接粘贴；它也**完整接受 Mermaid `erDiagram` 方言**——以 `erDiagram` 标头开头，直接粘入 Mermaid 关系式（`CUSTOMER ||--o{ ORDER : places`）和以类型为首的实体块（`ORDER { int id PK }`），实体会从关系中自动创建。Chen 1976 记号法（矩形 + 菱形 + 椭圆形 + ISA 层次）和 Barker 叠加层延后至 v0.2；目前每张图都渲染为乌鸦脚记号法。
+
+> **注意** — 这与 `entity` 引擎**不同**。`entity`（法律实体结构）用于**公司/法律持有**层次（子公司、股比汇总、信托）。`erd` 用于**数据库架构**（数据表、字段、外键）。不同领域、不同布局、不同受众。
+
+<Playground initial={`erd
+title: "University Schema"
+
+table Student {
+  student_id  int       PK
+  name        varchar
+  email       varchar   UK
+  major_id    int       FK -> Major.major_id
+}
+
+table Major {
+  major_id    int       PK
+  name        varchar
+}
+
+table Course {
+  course_id   int       PK
+  title       varchar
+  credits     int
+}
+
+table Enrollment {
+  student_id  int       PK FK -> Student.student_id
+  course_id   int       PK FK -> Course.course_id
+  grade       char
+}
+
+ref Student.major_id many-mandatory -- one-mandatory Major.major_id : "majors in"
+ref Enrollment.student_id many-mandatory -- one-mandatory Student.student_id
+ref Enrollment.course_id many-mandatory -- one-mandatory Course.course_id`} height={480} />
+
+---
+
+## 1. 你的第一张 ERD
+
+最精简的实用 ERD：一张父数据表被子数据表通过外键引用。
+
+<Playground initial={`erd
+table Customer {
+  customer_id  int       PK
+  email        varchar   UK
+}
+table Order {
+  order_id     int       PK
+  customer_id  int       FK -> Customer.customer_id
+}
+ref Order.customer_id many-mandatory -- one-mandatory Customer.customer_id : "places"`} />
+
+四条规则涵盖 80% 的用法：
+
+1. 以 `erd` 开头。可选的标头：`title:`、`direction: LR | TB`。
+2. 每张数据表是一个块：`table 名称 { 字段 类型 标记 }`。标记为 `PK`、`FK`、`UK`、`NN`（或 `*`，表示 NOT NULL）。
+3. 行内外键目标：在字段后加上 `FK -> 其他表.字段`。渲染器会自动加上 `FK` 标签。
+4. 以 `ref` 行连接数据表：`ref 来源 <左基数> -- <右基数> 目标 [: "标签"]`。基数可用具名形式（`one-mandatory`、`one-optional`、`many-mandatory`、`many-optional`）、Min-Max 形式（`1..1` / `0..1` / `1..N` / `0..N`），或 Mermaid 符号（`}o--||` 等）作为别名。
+
+> 注释使用 `//` 或 `#`。块形式可以是多行（每字段一行）或行内（`table A { id int PK; name varchar }`）。
+
+---
+
+## 2. 基数符号
+
+乌鸦脚记号法在关系线的每一端编码基数：
+
+| 符号 | 读法 | Min..Max | 具名标记 |
+|---|---|---|---|
+| `─┃`（垂直线） | 恰好一个（强制一） | 1..1 | `one-mandatory` |
+| `─○`（空心圆） | 零或一个（可选一） | 0..1 | `one-optional` |
+| `─┃<`（线 + 乌鸦脚） | 一个或多个（强制多） | 1..N | `many-mandatory` |
+| `─○<`（圆 + 乌鸦脚） | 零个或多个（可选多） | 0..N | `many-optional` |
+
+线条的每一端可独立标注。典型的 1:N 关系读作"恰好一个 CUSTOMER 下零个或多个 ORDER"：
+
+```
+ref Order.customer_id many-mandatory -- one-mandatory Customer.customer_id : "places"
+```
+
+从右到左读：线条的**右端**以单线连接 Customer（one-mandatory）；**左端**以线+乌鸦脚连接 Order（many-mandatory）。
+
+---
+
+## 3. Mermaid 别名
+
+若你已使用 Mermaid `erDiagram`，相同的符号可直接作为输入：
+
+<Playground initial={`erd
+table Customer { customer_id int PK; email varchar UK }
+table Order    { order_id int PK; customer_id int FK -> Customer.customer_id }
+table Product  { product_id int PK; name varchar }
+
+ref Order }o--|| Customer : "places"
+ref Order }o--o{ Product  : "contains"`} />
+
+| Mermaid 标记 | Schematex 含义 |
+|---|---|
+| `\|o` 左 / `o\|` 右 | 0..1 |
+| `\|\|` | 1..1 |
+| `}o` 左 / `o{` 右 | 0..N |
+| `}\|` 左 / `\|{` 右 | 1..N |
+| `--` | 识别性/实线 |
+| `..` | 非识别性/虚线 |
+
+---
+
+## 4. 识别性与非识别性关系
+
+使用 `--` 表示识别性关系（实线），`..` 表示非识别性关系（虚线）：
+
+<Playground initial={`erd
+table User       { id int PK; email varchar }
+table SessionLog { id int PK; user_id int FK -> User.id; created_at timestamp }
+
+ref SessionLog.user_id many-optional .. one-optional User.id : "logs (optional FK)"`} />
+
+虚线遵循 Barker / IDEF1X 非识别性惯例。
+
+---
+
+## 5. 复合主键（关联数据表）
+
+关联（连接）数据表用于解析 M:N 关系。同时带有 `PK` 和 `FK` 标记的字段：
+
+<Playground initial={`erd
+table Student { student_id int PK; name varchar }
+table Course  { course_id int PK; title varchar }
+table Enrollment {
+  student_id  int  PK FK -> Student.student_id
+  course_id   int  PK FK -> Course.course_id
+  grade       char
+}
+ref Enrollment.student_id many-mandatory -- one-mandatory Student.student_id
+ref Enrollment.course_id  many-mandatory -- one-mandatory Course.course_id`} />
+
+Schematex 在同一行渲染两个标签（PK + FK）。当任何 `PK` 标记存在时，字段名称会加上下划线。
+
+---
+
+## 6. 布局方向
+
+`direction: LR`（默认）将父数据表置于左侧，子数据表置于右侧。`direction: TB` 切换为由上到下——适合窄幅嵌入：
+
+<Playground initial={`erd
+title: "Library (top-down)"
+direction: TB
+
+table Member { id int PK; name varchar; email varchar UK }
+table Book   { id int PK; title varchar; author varchar }
+table Loan   { id int PK; member_id int FK -> Member.id; book_id int FK -> Book.id; due_date date }
+
+ref Loan.member_id many-mandatory -- one-mandatory Member.id : "borrowed by"
+ref Loan.book_id   many-mandatory -- one-mandatory Book.id   : "of"`} />
+
+采用单折边的分层正交曼哈顿路由。v0.1 在层内使用声明顺序堆叠；重心交叉最小化延后至 v0.2。
+
+---
+
+## 7. 记号模式
+
+DSL 标头可以固定记号法：
+
+```
+erd
+notation: crowsfoot     // default — only mode supported in v0.1
+```
+
+`notation: chen`（矩形-菱形-椭圆形、弱实体、三元关系、ISA）和 `notation: barker`（每半侧虚线）已在 `27-ERD-STANDARD.md` 中记录，但目前解析器拒绝接受。目标版本 v0.2。
+
+---
+
+## 8. v0.1 的限制
+
+- **仅支持乌鸦脚记号法。** Chen 和 Barker 渲染延后实现。
+- **无边线交叉最小化。** 分层布局在层内使用声明顺序；大型 ERD（10 张以上数据表、密集外键）会出现一些交叉。若特定布局很重要，请重新排列 `table` 块的顺序。
+- **无自我引用的 C 形曲线。** 递归关系（`Employee.manager_id -> Employee.id`）可解析但路由为直正交线，而非标准的 C 形。
+- **无 M:N 自动解析。** 请明确表示关联实体（这也是生产架构中的标准实践）。
+
+完整标准参考请见 `docs/reference/27-ERD-STANDARD.md`。
+
+---
+
+## 相关示例
+
+示例库中的即用场景：
+
+<RelatedExamples slugs={[
+  'erd-university-schema',
+  'erd-ecommerce-schema',
+]} />

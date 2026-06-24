@@ -1,0 +1,134 @@
+---
+title: Fault Tree Analysis
+---
+
+## Über Fault Trees
+
+Ein **Fault Tree** ist die am weitesten verbreitete Zuverlässigkeits-/Sicherheitstechnik im regulierten Ingenieurwesen: Ausgehend von einem unerwünschten **Top-Ereignis** (einem Systemausfall) wird dieses durch Boolesche **Gates** (AND / OR / Voting / …) bis hinunter zu **Basisereignissen** (Komponentenausfälle) mit bekannten Wahrscheinlichkeiten zerlegt. Entwickelt bei Bell Labs im Jahr 1962 und standardisiert durch **[NUREG-0492](https://www.nrc.gov/docs/ML1007/ML100780465.pdf)** (nuklear), **IEC 61025** (branchenübergreifend) und SAE ARP4761 (Luft- und Raumfahrt).
+
+Der Vorteil von Schematex besteht darin, dass die Engine **die Antwort berechnet**, nicht nur das Bild: Sie führt MOCUS (Fussell-Vesely 1972) aus, um die **minimalen Schnittmengen** — die irreduziblen Ausfallkombinationen — und die **Top-Ereignis-Wahrscheinlichkeit** zu ermitteln, und hebt die Schnittmengen in Rot hervor (Single Points of Failure in kräftigstem Rot). Das ist der eigentliche Zweck eines Fault Trees, und es ist dieselbe Haltung, die `pert` bei der Terminplanung und `petri` bei der Markierung einnimmt. Abzugrenzen von `logic` (links-rechts-Signalnetzliste), `decisiontree` (Erwartungswert-Rollback) und `fishbone` (qualitativ, nicht quantifiziert).
+
+<Playground initial={`faulttree "Product not removed"
+  analysis: cutsets, probability
+  top T  "Failure to remove product" = OR(G1, G2)
+  gate G1 "Arm jams or collides"      = AND(MSF, G3)
+  gate G2 "Wrong slot commanded"      = OR(CDM, MSF)
+  gate G3 "Loss of position feedback" = OR(ESF, RCF)
+  basic MSF "Manipulator system failure" p: 0.0035
+  basic CDM "Controller command error"   p: 0.0009
+  basic ESF "Encoder sensor failure"     p: 0.0021
+  basic RCF "Resolver cable fault"       p: 0.0012`} height={620} />
+
+---
+
+## 1. Ihr erstes Diagramm
+
+Jedes Dokument beginnt mit dem Schlüsselwort `faulttree` (Alias `fta`), einem optionalen Titel und einer flachen Liste von ID-referenzierten Deklarationen:
+
+```
+faulttree "Both pumps fail"
+  analysis: cutsets, probability
+  top T "Both redundant pumps fail" = AND(PA, PB)
+  basic PA "Pump A fails" p: 0.01
+  basic PB "Pump B fails" p: 0.01
+```
+
+`top` deklariert das einzige Wurzelereignis und das Gate, das es erzeugt; `basic` deklariert einen Blatt-Komponentenausfall mit einer Wahrscheinlichkeit. Die Engine berechnet die minimale Schnittmenge `{PA, PB}` und P(top) = 1,0e-4. Die DSL arbeitet mit **flacher Deklaration + Referenz** (keine einrückungsbasierte Verschachtelung) — ein Fault Tree ist ein DAG, daher wird ein gemeinsames Ereignis einfach durch seine ID von mehreren Gates referenziert.
+
+Header-Direktiven:
+
+- `analysis: cutsets, probability` — was berechnet werden soll (auch `pathsets`, `none`).
+- `prob: rare | mcub | exact` — die Wahrscheinlichkeitsmethode (Standard `rare`, eine konservative obere Schranke).
+- `layout: tb | bt` — von oben nach unten (Standard) oder von unten nach oben.
+
+---
+
+## 2. Ereignisse
+
+```
+top  T   "System fails"        = OR(A, B)
+gate G1  "Sub-fault"           = AND(A, B)
+basic A  "Component A fails"   p: 0.01
+undeveloped EXT "External fire (not modelled)"
+house HX "Power on"            state: 1
+```
+
+- **`top`** — das eine unerwünschte Ereignis, das analysiert wird (Rechteck, betonter Rahmen). Genau eines ist erforderlich.
+- **`gate`** — ein intermediäres Ereignis, das selbst ein Gate-Ausgang ist (Rechteck).
+- **`basic`** — ein primärer Komponentenausfall, das Blatt, das `p:` trägt (Kreis).
+- **`undeveloped`** — ein nicht weiter entwickeltes Ereignis (Raute); kann `p:` tragen.
+- **`house`** — ein normalerweise erwartetes Ereignis, das auf `state: 0` oder `state: 1` gezwungen wird (Haus-Glyphe) — schaltet Äste des Baumes ein oder aus.
+
+Wahrscheinlichkeiten akzeptieren Dezimalzahlen oder wissenschaftliche Notation (`p: 0.004` oder `p: 1e-6`); `p:` und `prob:` sind austauschbar. Ein Ereignis ohne Wahrscheinlichkeit wird symbolisch behandelt (Schnittmengen werden dennoch berechnet; P(top) wird als k.A. gemeldet).
+
+---
+
+## 3. Gates
+
+```
+top  T1 = AND(A, B, C)            # alle Eingänge treten auf
+top  T2 = OR(A, B)                # mindestens ein Eingang tritt auf
+top  T3 = XOR(A, B)               # genau einer (wird für Schnittmengen wie OR behandelt)
+top  T4 = VOTING(2/3; A, B, C)    # mindestens k von n
+gate G1 = INHIBIT(A) if COND      # A tritt auf UND die Bedingung gilt
+gate G2 = PAND(A, B) order: A, B  # A dann B (Reihenfolge dargestellt, AND für Schnittmengen)
+```
+
+Gates werden **Ausgang oben, Eingänge unten** gezeichnet (das Spiegelbild eines `logic`-Gates): AND ist ein flachbödiger Dom, OR/XOR/VOTING ein Schild, INHIBIT ein Sechseck. Das Konditionierungsereignis eines `INHIBIT`/`PAND` wird als Ellipse seitlich dargestellt. Ein Gate kann ein anderes Gate oder ein beliebiges Ereignis referenzieren — und dasselbe Basisereignis kann mehrere Gates speisen (ein wiederholtes Ereignis).
+
+---
+
+## 4. Berechnete Schnittmengen & Wahrscheinlichkeit
+
+Das ist der entscheidende Unterschied. Mit `analysis: cutsets` führt die Engine **MOCUS** aus: AND-Gates erhöhen die Ordnung einer Schnittmenge, OR-Gates vervielfachen die Anzahl der Schnittmengen, dann minimieren Idempotenz (`A∧A=A`) und Absorption (`X ⊆ Y ⇒ Y entfernen`) das Ergebnis.
+
+- Jede **minimale Schnittmenge** ist rot umrahmt; eine **Schnittmenge der Ordnung 1 ist ein Single Point of Failure** (kräftigstes Rot, `data-spof`).
+- Ein **wiederholtes Ereignis** (ein Basisereignis unter mehreren Gates) wird durch Absorption behandelt — der Fall, den ein naiver Expander falsch macht.
+- **P(top)** wird aus Ereigniswahrscheinlichkeiten berechnet: `rare` (Σ Schnittmengenwahrscheinlichkeiten, Standard), `mcub` (1 − ∏(1−P)) oder `exact` (Inklusion-Exklusion, das ein gemeinsames Ereignis korrekt dedupliziert). Die Methode wird neben dem Top-Ereignis und in `<desc>` vermerkt.
+- Ein `house state: 0` kann das Top-Ereignis unerfüllbar machen — gemeldet als „keine Schnittmengen".
+
+---
+
+## 5. Wiederholte Ereignisse
+
+```
+faulttree "Safety function fails"
+  analysis: cutsets, probability
+  prob: exact
+  top T "Safety function fails" = OR(C1, C2)
+  gate C1 "Channel 1" = AND(S1, L1)
+  gate C2 "Channel 2" = AND(S2, L1)
+  basic S1 "Sensor 1 fails" p: 0.05
+  basic S2 "Sensor 2 fails" p: 0.05
+  basic L1 "Shared logic solver fails" p: 0.05
+```
+
+`L1` speist beide Kanäle — es wird einmal pro Referenz mit einem Shared-Event-Markierung gezeichnet, aber die Schnittmengen-Engine behandelt jede Instanz als eine Boolesche Variable. Schnittmengen sind `{S1, L1}` und `{S2, L1}`; `prob: exact` subtrahiert die Überlappung (L1 wird über die Vereinigung einmal gezählt) und ergibt 0,004875 statt des Rare-Event-Werts 0,005.
+
+---
+
+## 6. Transfers
+
+```
+gate OVP "Sustained over-pressure" = INHIBIT(PUMP) if HEATER
+transfer OVP -> "OVP-detail"
+```
+
+Ein `transfer ID -> "name"` zeichnet das Transfer-Out-Dreieck unterhalb eines Ereignisses, dessen Entwicklung anderswo stattfindet; ein passendes `transfer "name" = gate_expr` definiert diesen benannten Teilbaum und wird für die Schnittmengenberechnung eingebunden. v0.1 löst Transfers innerhalb des Dokuments auf.
+
+---
+
+## 7. Validierung
+
+Der Parser schlägt schnell mit lesbaren Fehlermeldungen fehl, damit die Schnittmengenberechnung aussagekräftig ist:
+
+- Genau ein `top` ist erforderlich (null oder mehrere ist ein Fehler);
+- Ein Gate, das eine nicht deklarierte ID referenziert, meldet die ID namentlich;
+- Zyklen werden abgewiesen (ein Fault Tree ist ein DAG);
+- Eine Wahrscheinlichkeit außerhalb `[0, 1]`, ein `VOTING k/n` mit `k > n` oder `n ≠ Eingangsanzahl`, oder eine `if`-Bedingung an einem Nicht-INHIBIT/PAND-Gate werden alle auf verständlichem Deutsch gemeldet.
+
+---
+
+## 8. Theming
+
+`default` verwendet die Hauspalette — weiche Schieferblau-Ereignisfelder, **grüne Gates** („Logik schreitet fort"), **rote Schnittmengenfelder** (das berechnete Risiko), blaue Wahrscheinlichkeitszahlen, ein gelbes Haus. `monochrome` reproduziert das schwarzweiße Lehrbuch-Erscheinungsbild von NUREG-0492, bei dem die Dom-/Schildform (nicht die Farbe) den Gate-Typ kennzeichnet. Alle Striche/Füllungen kommen aus `ReliabilityTokens`; jedes Element trägt `data-*`-Attribute (`data-cutset`, `data-spof`, `data-prob`, `data-gate`), sodass die berechnete Analyse nachgelagert inspiziert werden kann.

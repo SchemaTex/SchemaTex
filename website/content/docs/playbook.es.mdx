@@ -1,0 +1,184 @@
+---
+title: Playbook deportivo
+---
+
+## Acerca de los playbooks deportivos
+
+Un **playbook deportivo** es el diagrama del entrenador de una jugada, formación o disposición de equipo: puntos para los jugadores, líneas para el movimiento, dibujado en una notación que cualquier entrenador entiende de un vistazo. Schematex renderiza uno a partir de texto para los tres deportes de equipo más grandes: **fútbol americano** (diagramas de jugadas X&O), **baloncesto** (sets de medio campo) y **fútbol / fútbol asociación** (formas de equipo y patrones de movimiento). Cada deporte se dibuja en su propia notación estándar de entrenamiento sobre su campo, cancha o pista correctamente a escala.
+
+Nombras un deporte y una formación; el motor coloca a los jugadores. Añades verbos de movimiento (`route`, `pass`, `cut`, `dribble`, `run`, `screen`, `shot`); el motor dibuja cada uno en el estilo de línea que los entrenadores de ese deporte realmente usan. A diferencia de un generador de imágenes, el resultado es *editable* — agregar un cuarto receptor o mover una pantalla es un cambio de una línea.
+
+<Playground initial={`playbook "Four Verticals" sport football
+field down 2 distance 7 los 40
+formation spread
+defense cover-2
+route X go
+route H seam
+route Y seam
+route Z go
+route RB flat right`} height={460} />
+
+---
+
+## 1. Tu primera jugada
+
+Cada diagrama comienza con un encabezado que nombra el **deporte**, luego una **formación** (que coloca a los jugadores) y luego las **asignaciones**:
+
+<Playground initial={`playbook "Give & Go" sport basketball
+set 5-out
+pass 1 2
+cut 1 rim
+pass 2 1`} height={420} />
+
+`pass 1 2` dibuja un pase del jugador 1 al jugador 2; `cut 1 rim` envía al jugador 1 al aro. El baloncesto dibuja los pases **discontinuos** y los cortes **sólidos** — la convención en cualquier pizarra de entrenamiento.
+
+---
+
+## 2. Los tres deportes
+
+Elige el deporte en el encabezado (`sport football|basketball|soccer`). Cada uno usa su unidad real y el punto de vista convencional del entrenamiento:
+
+| Deporte | Unidad | Vista | Superficie |
+|---|---|---|---|
+| `football` | yardas | ataque en la parte inferior atacando **hacia arriba**; campo abajo = arriba | campo verde con líneas de yardas, hashes, zona de anotación |
+| `basketball` | pies | **medio campo** NBA; línea de fondo + aro en la parte superior | madera de arce clara |
+| `soccer` | metros | pista completa de **105 × 68 m** (ataque hacia la derecha); o `view half` | pista verde con marcas IFAB |
+
+---
+
+## 3. Jugadores y formaciones
+
+La forma más rápida de colocar jugadores es con una **formación** (fútbol americano/fútbol) o un **set** (baloncesto):
+
+- **Fútbol americano** — `formation i-form | shotgun | singleback | pistol | spread | trips | empty | goal-line | wishbone` con fuerza opcional `left`/`right`. Los receptores son `X Z H Y` (Y = ala cerrada), los backs `QB RB FB`, la línea `LT LG C RG RT`.
+- **Baloncesto** — `set horns | 1-4-high | 1-4-low | box | spread-pnr | 4-out | 5-out`. Los jugadores se numeran del `1` al `5`.
+- **Fútbol** — `formation 4-3-3 | 4-4-2 | 4-2-3-1 | 4-5-1 | 4-4-1-1 | 3-5-2 | 3-4-3`. Los jugadores se numeran del `1` (portero) al `11`.
+
+Para jugadas a balón parado o diagramas de forma libre, coloca jugadores individualmente y recorta a medio campo:
+
+<Playground initial={`playbook "Overlap & Cross" sport soccer
+view half
+player 7 o at 75,12 label 7
+player 2 o at 60,15 label 2
+player 9 o at 88,30 label 9
+player 11 o at 85,52 label 11
+player 10 o at 80,38 label 10
+dribble 7 to 82,20
+run 2 to 90,8
+pass 7 to 90,8
+pass 2 to 102,34
+run 9 to 101,31
+run 11 to 101,40`} height={420} />
+
+---
+
+## 4. Verbos de movimiento y estilos de línea
+
+El mismo estilo de línea significa cosas diferentes en distintos deportes — Schematex dibuja la convención propia de cada deporte, y la leyenda siempre coincide:
+
+| Verbo | Fútbol americano | Baloncesto | Fútbol |
+|---|---|---|---|
+| `pass` | discontinuo (pase) | **discontinuo** | **sólido** |
+| `run` / `cut` | sólido | **sólido** (corte) | **discontinuo** (carrera) |
+| `dribble` | — | ondulado | ondulado |
+| `screen` / `block` | T-bar ⊥ | T-bar ⊥ (pantalla) | T-bar ⊥ |
+| `shot` | — | sólido | línea doble |
+
+**Nota la inversión:** el baloncesto dibuja un pase *discontinuo* y un corte *sólido*; el fútbol dibuja un pase *sólido* y una carrera *discontinua*. Así es como ambas comunidades de entrenadores realmente diagraman — Schematex respeta cada una.
+
+Los objetivos de movimiento pueden ser un **id de jugador**, el nombre de un **punto de referencia** o **coordenadas** explícitas (`to x,y`).
+
+---
+
+## 5. Fútbol americano — rutas, carreras, defensa
+
+Las rutas de pase usan el **árbol de rutas**: `go fly streak slant flat hitch out in dig curl comeback corner post wheel cross drag seam`. Conceptos de carrera: `dive iso power counter sweep toss draw trap`. El bloqueo usa `block`, `pull` y `handoff`. Establece `goal N` para dibujar la zona de anotación y los postes:
+
+<Playground initial={`playbook "Red Zone — Play-Action Fade" sport football
+field down 1 distance 5 los 5 goal 5 hash nfl
+formation i-form right
+defense cover-1
+handoff QB RB
+route Z corner 4
+route X slant
+route Y out 3
+run RB dive right`} height={460} />
+
+`defense cover-0/1/2/3/4/6` dibuja la cobertura defensiva; `defense 4-3 | 3-4 | nickel | dime` establece la línea delantera. `hash nfl|college|none` controla las marcas hash.
+
+---
+
+## 6. Baloncesto — sets, puntos de referencia, pantallas
+
+Los cortes y pases apuntan a **puntos de referencia con nombre** — `rim elbow wing corner short-corner block slot top high-post dunker` (prefija `l`/`r` para izquierda/derecha). `screen A B` dibuja una pantalla de bloqueo (T-bar) para el jugador B; `dribble` es una línea ondulada:
+
+<Playground initial={`playbook "Spread Pick & Roll" sport basketball
+set spread-pnr
+screen 5 1
+dribble 1 to 11,17
+cut 5 rim
+pass 1 2`} height={440} />
+
+`defense man` asigna cada defensor a un hombre; `defense zone-2-3 | zone-3-2 | zone-1-3-1` dibuja una zona delantera.
+
+---
+
+## 7. Fútbol — formas, carreras, construcción de juego
+
+Una formación sola dibuja la forma del equipo. Agrega `pass` (sólido), `run` (discontinuo) y `dribble` (ondulado) para mostrar una fase de juego:
+
+<Playground initial={`playbook "Build-Up From the Back" sport soccer
+formation 4-3-3
+pass 1 4
+pass 4 2
+run 2 to 40,10
+pass 4 6
+run 6 to 62,24`} height={440} />
+
+Los puntos de referencia incluyen `box top-box d penalty-spot near-post far-post six-yard center`. `defense low-block | mid-block | high-press` superpone la forma del oponente. El fútbol se renderiza solo con luz diurna — `theme: dark` cae de vuelta al campo predeterminado.
+
+---
+
+## 8. Validación
+
+El motor rechaza los errores que los modelos realmente cometen y lista las opciones válidas:
+
+- `sport`, `formation` / `set`, `defense` o ruta nombrada desconocida;
+- un movimiento que hace referencia a un id de jugador no declarado;
+- una coordenada malformada o un objetivo `to` faltante.
+
+Los problemas más leves (ej. un movimiento de longitud cero) se renderizan con una advertencia en lugar de fallar.
+
+---
+
+## 9. Gramática (EBNF)
+
+```text
+playbook   = "playbook" string "sport" sport NL { stmt NL } ;
+sport      = "football" | "basketball" | "soccer" ;
+stmt       = field | formation | defense | player | move | zone | "view" view ;
+field      = "field" { "down" num | "distance" num | "los" num
+                     | "goal" num | "hash" hash | "view" view } ;
+formation  = ( "formation" | "set" ) name [ "left" | "right" ] ;
+defense    = "defense" scheme ;
+player     = "player" id pos "at" coord "label" text ;
+move       = route | run | pass | cut | dribble | screen
+           | shot | motion | handoff | pull | block ;
+route      = "route" id namedRoute [ num ] [ "left" | "right" ] ;
+run        = "run" id ( concept [ "left" | "right" ] | "to" coord ) ;
+pass       = "pass" id ( id | landmark | "to" coord ) ;
+cut        = "cut" id ( landmark | "to" coord ) ;
+dribble    = "dribble" id "to" coord ;
+screen     = "screen" id id ;
+shot       = "shot" id [ "to" coord ] ;
+zone       = "zone" coord coord string ;
+coord      = num "," num ;
+view       = "full" | "half" ;
+hash       = "nfl" | "college" | "none" ;
+```
+
+---
+
+## Ejemplos relacionados
+
+Cinco jugadas canónicas por deporte se incluyen como ejemplos — Four Verticals, Mesh, Smash, Power O y un fade en zona roja para fútbol americano; Pick & Roll, Horns, Give & Go, Floppy y un corte por la puerta trasera para baloncesto; forma 4-3-3, construcción de juego, solapamiento, presión alta y contraataque para fútbol.

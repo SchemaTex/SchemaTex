@@ -1,0 +1,390 @@
+---
+title: 単線結線図（SLD）
+description: Schematex の SLD エンジンを使って、IEEE Std 315 準拠の単線結線図（一線図）をテキスト DSL から生成する方法を解説します。
+---
+
+## 単線結線図について
+
+**単線結線図**（ワンラインダイアグラムとも呼ばれます）は、1 本の線で三相交流システムのすべての 3 相を表すことで、施設や変電所の電力システムを表現します。変圧器、遮断器、母線、モーター、負荷などの機器が標準化されたシンボルで示され、電力フローのパスが電源から負荷へ上から下へ接続されます。電気エンジニア、電力会社の計画担当者、施設管理者は SLD をあらゆる電力システムプロジェクトの主要参照ドキュメントとして使用します。系統連系申請、アーク閃光調査、試運転パッケージの最初の成果物です。
+
+Schematex は機器の標準シンボルに **[IEEE Std 315 (ANSI Y32.2)](https://standards.ieee.org/ieee/315/1099/)** のグラフィックシンボル規則に従い、変圧器バリアントの巻線構成表記には IEC 60617 を拡張して使用しています。このページでは現在パーサーが受け付けるものを解説します。
+
+<Playground initial={`sld "13.8 kV Substation"
+utility = utility [label: "Grid 138 kV"]
+bus_hv = bus [voltage: "138kV", label: "HV Bus"]
+xfmr1 = transformer_dy [rating: "15 MVA", voltage: "138kV/13.8kV", label: "Main Xfmr"]
+bus_mv = bus [voltage: "13.8kV", label: "MV Bus"]
+brk1 = breaker [rating: "1200A", label: "BKR-1"]
+brk2 = breaker [rating: "1200A", label: "BKR-2"]
+brk3 = breaker [rating: "1200A", label: "BKR-3"]
+feeder1 = load [label: "Feeder 1"]
+feeder2 = load [label: "Feeder 2"]
+feeder3 = load [label: "Feeder 3"]
+utility -> bus_hv
+bus_hv -> xfmr1
+xfmr1 -> bus_mv
+bus_mv -> brk1
+bus_mv -> brk2
+bus_mv -> brk3
+brk1 -> feeder1
+brk2 -> feeder2
+brk3 -> feeder3`} height={480} />
+
+---
+
+## 1. はじめての単線結線図
+
+最もシンプルな SLD：電源、変圧器、遮断器、負荷。
+
+<Playground initial={`sld "Simple feeder"
+util = utility [label: "Utility 13.8kV"]
+xfmr = transformer [rating: "500 kVA", voltage: "13.8kV/480V"]
+bus1 = bus [voltage: "480V", label: "480V Bus"]
+cb1 = breaker [rating: "200A"]
+load1 = load [label: "Panel LP-1"]
+util -> xfmr
+xfmr -> bus1
+bus1 -> cb1
+cb1 -> load1`} />
+
+80% のケースは次の 4 つのルールで対応できます。
+
+1. `sld` で始め、オプションでクォートされたタイトルを続けます。
+2. 各機器を `id = nodeType [attributes]` で宣言します（1 行に 1 つ）。
+3. `from -> to` で機器を接続し、オプションで `[cable: "…", label: "…"]` を追加します。
+4. ID には文字、数字、アンダースコア、ハイフンを使用でき、文字で始まる必要があります。
+
+> コメントは単独行の `#`、`//`、または Mermaid スタイルの `%%` で始めます。
+
+---
+
+## 2. ノードタイプ
+
+ノード行は `id = nodeType [attr: value, …]` の形式です。ノードタイプが描画されるシンボルを決定します。
+
+### 2.1 電源
+
+| タイプ | シンボル | 典型的な用途 |
+|---|---|---|
+| `utility` | ユーティリティ電源矢印 | 無限母線 / 系統連系 |
+| `generator` | `G` 入り円 | ディーゼル、ガス、水力発電機 |
+| `solar` | PV パネルシンボル | 太陽光発電アレイ |
+| `wind` | タービンシンボル | 風力タービン |
+| `ups` | バッテリー付きブロック | 無停電電源装置 |
+
+<Playground initial={`sld "Generation sources"
+util = utility [label: "Grid 115 kV"]
+gen = generator [rating: "2 MW", label: "Diesel Gen"]
+sol = solar [rating: "500 kW", label: "PV Array"]
+wnd = wind [rating: "1 MW", label: "Wind Turbine"]
+ups = ups [rating: "100 kVA", label: "UPS System"]
+util -> gen
+util -> sol
+util -> wnd
+util -> ups`} height={360} />
+
+### 2.2 変圧器
+
+| タイプ | 巻線構成 | 備考 |
+|---|---|---|
+| `transformer` | 汎用二巻線 | 巻線仕様なし |
+| `transformer_dy` | デルタ → グラウンデッドワイ（Δ-Yg） | 最も一般的な配電 |
+| `transformer_yd` | グラウンデッドワイ → デルタ（Yg-Δ） | |
+| `transformer_yy` | ワイ-ワイ（両方グラウンド） | |
+| `transformer_dd` | デルタ-デルタ | |
+| `autotransformer` | タップ付き単一巻線 | ジグザグコイルシンボル |
+| `transformer_3winding` | 三巻線 | HV / MV / LV タップ |
+
+<Playground initial={`sld "Transformer configurations"
+src = utility [label: "138kV Grid"]
+t_dy = transformer_dy [rating: "30 MVA", voltage: "138kV/13.8kV", label: "Δ-Yg (most common)"]
+t_yy = transformer_yy [rating: "10 MVA", voltage: "138kV/13.8kV", label: "Yg-Yg"]
+t_auto = autotransformer [rating: "50 MVA", voltage: "138kV/69kV", label: "Autotransformer"]
+t_3w = transformer_3winding [rating: "40 MVA", voltage: "138/13.8/4.16kV", label: "3-Winding"]
+src -> t_dy
+src -> t_yy
+src -> t_auto
+src -> t_3w`} height={360} />
+
+### 2.3 母線とノード
+
+| タイプ | シンボル | 典型的な用途 |
+|---|---|---|
+| `bus` | 太い水平線 | 主電圧母線バー |
+| `bus_tie` | 母線タイ遮断器 | 同一電圧の 2 つの並列母線を接続 |
+| `hub` | 広い矩形 | 複数フィーダー結合点 |
+
+### 2.4 開閉と保護
+
+| タイプ | シンボル | 機器番号 |
+|---|---|---|
+| `breaker` | 斜線＋アーク | 52（AC 遮断器） |
+| `breaker_vacuum` | 斜線＋V 楕円 | 52 真空タイプ |
+| `switch` | 斜線（アークなし） | 89（断路器 / アイソレーター） |
+| `switch_load` | 負荷開閉スイッチ | — |
+| `ground_switch` | 斜線＋接地シンボル | 接地断路器 |
+| `ats` | 切替スイッチシンボル | 自動切替スイッチ |
+| `recloser` | 斜線＋アーク＋矢印 | 自動再閉路遮断器 |
+| `sectionalizer` | 斜線＋S | 配電セクション開閉器 |
+| `fuse` | 斜線付き楕円 | 膨張ヒューズカットアウト |
+| `fuse_cl` | 斜線付き矩形 | 限流ヒューズ |
+
+<Playground initial={`sld "Switching and protection"
+src = utility [label: "Source"]
+rclsr = recloser [label: "Recloser"]
+sect = sectionalizer [label: "Sectionalizer"]
+fuse1 = fuse [label: "Fuse"]
+sw = switch [label: "Disconnect"]
+gnd_sw = ground_switch [label: "Ground SW"]
+src -> rclsr
+rclsr -> sect
+sect -> fuse1
+sect -> sw
+sw -> gnd_sw`} height={340} />
+
+### 2.5 保護と監視
+
+| タイプ | シンボル | 典型的な用途 |
+|---|---|---|
+| `ct` | 線を通した小円 | 変流器 |
+| `pt` | 小円 | 電圧変成器 |
+| `relay` | 機器番号付き小円 | 保護リレー（`device:` で ANSI 番号指定） |
+| `surge_arrester` | 矢印＋接地 | 避雷器 |
+| `ground_fault` | GFI シンボル | 地絡検出器 |
+
+### 2.6 負荷と機器
+
+| タイプ | シンボル | 典型的な用途 |
+|---|---|---|
+| `motor` | `M` 入り円 | 三相モーター |
+| `load` | 矩形 | 汎用負荷またはフィーダー |
+| `capacitor_bank` | 2 枚プレート＋スイッチ | 力率改善 |
+| `harmonic_filter` | LC シンボル | パッシブ高調波フィルター |
+| `vfd` | VFD 付き矩形 | 可変周波数ドライブ |
+
+### 2.7 計量
+
+| タイプ | シンボル | 典型的な用途 |
+|---|---|---|
+| `watthour_meter` | `Wh` 入り円 | 電力量計 |
+| `demand_meter` | `D` 入り円 | デマンド計 |
+
+<Playground initial={`sld "Equipment types"
+src = utility [label: "Grid 13.8kV"]
+tx = transformer_dy [rating: "1000 kVA", voltage: "13.8kV/480V", label: "Main TX"]
+bk = breaker [rating: "2000A", label: "Main Breaker"]
+bus = bus [voltage: "480V", label: "480V MV Bus"]
+ct1 = ct [label: "CT-1"]
+rly = relay [device: "51", label: "Overcurrent Relay"]
+cap = capacitor_bank [rating: "150 kVAR", label: "PF Cap"]
+mtr = motor [rating: "100HP", label: "Pump Motor"]
+gen = generator [rating: "500kW", label: "Emergency Gen"]
+ats = ats [rating: "800A", label: "ATS-1"]
+src -> tx
+tx -> bk
+bk -> bus
+bus -> ct1
+ct1 -> rly
+bus -> cap
+bus -> mtr
+gen -> ats
+ats -> bus`} height={440} />
+
+---
+
+## 3. ノード属性
+
+属性はノードタイプの後の `[…]` 内にカンマ区切りで記述します。
+
+| 属性 | 値 | 効果 |
+|---|---|---|
+| `label: "…"` | クォート文字列 | 図上の表示名 |
+| `voltage: "…"` | クォート文字列（例：`"13.8kV"`、`"480V"`） | 電圧レベルアノテーション |
+| `rating: "…"` | クォート文字列（例：`"1000 kVA"`、`"200A"`） | 機器定格アノテーション |
+| `device: "…"` | ANSI 機器番号（例：`"51"`、`"87"`） | `relay` ノードで使用 |
+| その他のキー | クォート文字列 | 銘板データとして保存（変圧器 kVA、%Z など） |
+
+**すべての一般的な属性を含む例：**
+
+```
+xfmr = transformer_dy [
+  label: "Main Transformer",
+  voltage: "13.8kV/480V",
+  rating: "1000 kVA",
+  impedance: "5.75%Z"
+]
+```
+
+属性ブロックは複数行にまたがることができます。パーサーは `]` が閉じるまで行を結合します。
+
+---
+
+## 4. 接続
+
+接続行は `fromId -> toId` の形式で、オプションで `[cable: "…", label: "…"]` を続けます。
+
+```
+bus1 -> cb1
+bus1 -> cb1 [cable: "3#2/0 AWG"]
+bus1 -> cb1 [cable: "3#2/0 AWG", label: "Feeder A"]
+```
+
+**ルール：**
+- 両方の ID は接続の前後のどこかで宣言されている必要があります。すべての接続はパース終了時にバリデーションされます。
+- `->`（有向、電源から負荷へ）のみ受け付けます。接続方向はレイアウトに使用されます。
+- 未知のノード ID は `SLDParseError: Connection references unknown node "…"` をスローします。
+
+<Playground initial={`sld "ATS backup with cable labels"
+UTIL = utility [label: "Utility 480V"]
+GEN = generator [rating: "500 kW", label: "Emergency Gen"]
+ATS1 = ats [rating: "800A", label: "ATS-1"]
+BUS1 = bus [voltage: "480V", label: "Critical Bus"]
+CB1 = breaker [rating: "200A", label: "CB-1"]
+CB2 = breaker [rating: "200A", label: "CB-2"]
+L1 = load [label: "Server Room"]
+L2 = load [label: "Life Safety"]
+UTIL -> ATS1 [label: "Normal source"]
+GEN -> ATS1 [label: "Emergency source"]
+ATS1 -> BUS1 [cable: "3#2/0 AWG"]
+BUS1 -> CB1
+BUS1 -> CB2
+CB1 -> L1 [cable: "3#4 AWG"]
+CB2 -> L2 [cable: "3#4 AWG"]`} height={400} />
+
+---
+
+## 5. ラベルとコメント
+
+- **タイトル：** `sld "Substation One-Line"` — 最初の行のみ。
+- **ノードラベル：** `id = type [label: "…"]` — 表示名。
+- **接続ラベル：** `A -> B [label: "…"]` — 接続線の横に表示。
+- **ケーブルアノテーション：** `A -> B [cable: "3#2/0 AWG, 200ft"]` — 導体仕様。
+- **コメント：** 行頭の `#`。ノードや接続と同じ行のインライン `#` も除去されます。
+- **住宅用エイリアス：** IEC / REBT の語彙（`mcb`、`rcd`、`rcbo`、`rccb`、`pia`、`iga`、`main_switch`、`consumer_unit`、`distribution_board`、`panel`、`panelboard`）は入力として受け付けられ、既存の SLD プリミティブにマッピングされます。
+
+---
+
+## 6. 予約語とエスケープ
+
+**行頭での予約語：** `sld`（ヘッダー）。
+
+**演算子トークン** — ノード ID 内で `->` を使用しないでください。ID は `[A-Za-z][A-Za-z0-9_-]*` を使用できます。ハイフンは有効です（例：`CB-101` は合法な ID）。
+
+**属性ブロック** — `[…]` 括弧は複数の物理行にまたがることができます。パーサーは括弧の深さがゼロに戻るまで続行行を結合します。
+
+**重複 ID** は `SLDParseError: Duplicate node id "…"` をスローします。
+
+---
+
+## 7. よくある間違い
+
+| 記述した内容 | パーサーのエラー | 修正方法 |
+|---|---|---|
+| `xfmr1 [type: transformer]` | `SLDParseError: Cannot parse line` | `=` 代入を使用：`xfmr1 = transformer [...]` |
+| `id = battery [...]` | `SLDParseError: Unknown node type "battery"` | `battery` タイプはなし — `ups` または `generator` を使用 |
+| `id = breakerz` | `SLDParseError: Unknown node type ... (did you mean 'breaker'?)` | 提案された正規タイプまたはエイリアスを使用 |
+| `A -- B`（双方向） | `SLDParseError: Cannot parse line` | `->` のみ受け付け；必要なら 2 つの `->` 行を使用 |
+| `A -> B -> C`（チェーン） | `SLDParseError: Cannot parse line` | 各接続は 1 行につき 1 つの `->` |
+| `relay [label: "OC"]`（機器番号なし） | リレーが空白番号でレンダリングされる | ANSI 機器番号のために `device: "51"` を追加 |
+| `voltage: 480V`（クォートなし） | 属性値が認識されない | すべての値をクォート：`voltage: "480V"` |
+| 数字で始まるノード ID：`2BUS` | `SLDParseError: Cannot parse line` | ID は文字で始まる必要があります：`BUS2` |
+| 宣言前の接続 | `SLDParseError: Connection references unknown node "…"` | ノードは接続の前後のどこかに宣言できます。パース終了時にバリデーションされるため順序は柔軟です |
+
+---
+
+## 8. 文法（EBNF）
+
+```text
+document      = header NEWLINE ( blank | comment | node-def | connection )*
+
+header        = "sld" ( WS quoted-string )? NEWLINE
+quoted-string = '"' any-char-but-quote* '"'
+
+node-def      = id WS "=" WS node-type ( WS "[" attr-list "]" )? NEWLINE
+node-type     = "utility" | "generator" | "solar" | "wind" | "ups"
+              | "transformer" | "transformer_dy" | "transformer_yd"
+              | "transformer_yy" | "transformer_dd"
+              | "autotransformer" | "transformer_3winding"
+              | "bus" | "bus_tie" | "hub"
+              | "breaker" | "breaker_vacuum" | "switch" | "switch_load"
+              | "ground_switch" | "ats" | "recloser" | "sectionalizer"
+              | "fuse" | "fuse_cl"
+              | "ct" | "pt" | "relay" | "surge_arrester" | "ground_fault"
+              | "motor" | "load" | "capacitor_bank" | "harmonic_filter" | "vfd"
+              | "watthour_meter" | "demand_meter"
+              | residential-alias
+
+residential-alias
+              = "mcb" | "mccb" | "rcd" | "rcbo" | "rccb"
+              | "differential" | "diferencial" | "pia" | "iga"
+              | "main_switch" | "isolator" | "disconnector"
+              | "consumer_unit" | "distribution_board" | "panel" | "panelboard"
+
+attr-list     = attr ( "," attr )*
+attr          = key ":" WS quoted-string
+
+connection    = id WS "->" WS id ( WS "[" conn-attrs "]" )? NEWLINE
+conn-attrs    = conn-attr ( "," conn-attr )*
+conn-attr     = "cable" ":" WS quoted-string
+              | "label" ":" WS quoted-string
+
+id            = [A-Za-z] [A-Za-z0-9_-]*
+key           = [A-Za-z] [A-Za-z0-9_]*
+comment       = ( "#" | "//" | "%%" ) any NEWLINE
+```
+
+属性ブロック `[…]` は複数の物理行にまたがることができます。パーサーは括弧の深さがゼロに戻るまで続行行を結合します。
+
+正式な仕様は `src/diagrams/sld/parser.ts` です。このドキュメントとパーサーで差異がある場合はパーサーが優先されます。差異を発見した場合は Issue を開いてください。
+
+---
+
+## 9. 標準準拠
+
+Schematex の SLD は開閉機器、変圧器、電源の **IEEE Std 315 (ANSI Y32.2)** グラフィックシンボル規則に従います。変圧器の巻線構成バリアント（`transformer_dy`、`transformer_yy` など）は **IEC 60617** の Δ/Y 記法を使用します。保護リレーの機器番号は **ANSI/IEEE C37.2** に従います。
+
+現時点での実装：
+
+- ✅ すべての電源タイプ：ユーティリティ、発電機、太陽光、風力、UPS
+- ✅ 6 種類の変圧器バリアント＋オートトランスフォーマーと三巻線
+- ✅ 母線、母線タイ、ハブ
+- ✅ IEC / REBT 住宅用語彙エイリアスを正規プリミティブにマッピング
+- ✅ 完全な開閉セット：遮断器、真空遮断器、スイッチ、負荷スイッチ、接地スイッチ、ATS、再閉路器、セクション開閉器、ヒューズ、限流ヒューズ
+- ✅ 保護と監視：CT、PT、リレー（ANSI 機器番号付き）、避雷器、地絡検出器
+- ✅ 負荷機器：モーター、負荷、コンデンサーバンク、高調波フィルター、VFD
+- ✅ 計量：電力量計、デマンド計
+- ✅ ケーブルとラベルアノテーション付き有向接続
+- ✅ `label`、`voltage`、`rating`、`device` ノード属性；任意の銘板データ
+- ⏳ 開/閉状態インジケーター付き母線タイ開閉
+- ⏳ 保護ゾーン（リレー＋CT を囲む破線境界線）
+- ⏳ アーク閃光ラベルブロック（入射エネルギー、PPE レベル、作業距離）
+- ⏳ 電圧レベルバンディング（kV レベル別の自動カラーコード付き水平バンド）
+
+参考資料：
+
+- IEEE Std 315-1975 / ANSI Y32.2-1975 — *Graphic Symbols for Electrical and Electronics Diagrams*
+- IEC 60617:2025 (BS 3939) — *Graphical symbols for diagrams*
+- ANSI/IEEE C37.2 — *Electrical Power System Device Function Numbers*
+
+---
+
+## 10. 関連サンプル
+
+<RelatedExamples slugs={[
+  'sld-generator-ats',
+  'sld-substation-13kv',
+]} />
+
+---
+
+## 11. ロードマップ
+
+**計画中 — 現時点ではパース不可。** 今日の生成 DSL ではこれらを使用しないでください；パーサーが拒否または無視します。
+
+- **母線タイの開/閉状態** — 正しい開閉位置でシンボルをレンダリングするための明示的な開/閉属性を持つ `bus_tie`。
+- **保護ゾーン** — ノードのセット（リレー＋CT＋遮断器）の周囲に破線矩形を描く `zone:` または `boundary:` ブロック（保護ゾーンを示す）。
+- **アーク閃光アノテーションブロック** — IEEE 1584 に準拠した `arc_flash: [incident_energy: "8 cal/cm²", ppe: "2", distance: "18in"]`。
+- **電圧レベルバンディング** — kV レベルによる自動水平シェーディングバンド；ノードは自動的に電圧ティアに配置される。
+- **双方向接続**（`<->`） — 方向が未定義の母線タイや常時開路パス用。
+
+早急に必要な場合は GitHub Issues でトラッキングしてください。

@@ -1,0 +1,102 @@
+---
+title: 事件树分析
+description: 归纳式正向风险分析 — 从一个起始事件出发，通过安全功能的成功／失败分支，推算至各量化终态。
+---
+
+## 关于事件树
+
+**事件树**是故障树的正向归纳对应物。从一个**起始事件**（管线破裂、火灾、安全系统的一次需求）出发，依序询问每个下游**安全功能**是成功或失败。分支阶梯上的每条路径最终都会抵达一个量化的**结果**（正常、受控、堆芯损伤……）。事件树是核能 PRA 与工艺 QRA 的主力工具，并由 **IEC 62502** 与 **[NUREG-0492](https://www.nrc.gov/docs/ML1007/ML100780465.pdf)** 时代的 WASH-1400 实践所标准化。
+
+Schematex 的优势与故障树相同：引擎**计算出答案**，而不只是画出阶梯。给定起始频率和各功能的失效概率，它推导出每条路径的频率（`f₀ · ∏ 分支概率`），将结果跨路径汇总，并以红色标出**主导序列**。draw.io 只画出一个分叉梯形，就此停止；那只是一张图，不是分析。
+
+<Playground initial={`eventtree "Loss of coolant accident"
+  initiating LOCA "Large LOCA" freq: 1e-4
+  function A "ECCS injects"          p: 0.001
+  function B "Containment spray"     p: 0.01
+  function C "Containment integrity" p: 0.005
+  outcome s s s -> "OK"
+  outcome s s f -> "Late release"
+  outcome s f * -> "Early release"
+  outcome f * * -> "Core damage"`} height={560} />
+
+---
+
+## 1. 你的第一个事件树
+
+每份文档以 `eventtree` 关键字（别名 `eta`）开头，后接可选的标题，然后是一组扁平的声明列表：
+
+```
+eventtree "Smoke detector demand"
+  initiating FIRE "Fire starts" freq: 0.01
+  function D "Detector actuates" p: 0.02
+  function S "Suppression works" p: 0.05
+  outcome s s -> "Controlled"
+  outcome s f -> "Damage, contained"
+  outcome f * -> "Uncontrolled fire"
+```
+
+- **`initiating ID "label" freq: N`** — 恰好一个。挑战频率，接受十进制数或科学记数法（`freq: 0.01` 或 `freq: 1e-4`）。
+- **`function ID "label" p: N`** — 每个分支列一个，**依查询顺序从左至右声明**。`p:` 是**失效**概率；引擎从其补数 `1 − p` 推导出成功分支（你不需要同时声明两者）。
+- **`outcome <pattern> -> "end state"`** — 每个实现的叶节点各一个。
+
+---
+
+## 2. s / f / * 结果模式
+
+每个 `outcome` 行从左至右读取各功能列：
+
+```
+outcome s s s -> "OK"           # 所有功能均成功
+outcome s s f -> "Late release" # C 在最后一次查询时失效
+outcome s f * -> "Early release"# B 失效；C 永远不被查询（被剪枝）
+outcome f * * -> "Core damage"  # A 失效；路径立即终止
+```
+
+- **`s`** — 成功分支（上方分叉）。
+- **`f`** — 失效分支（下方分叉）。
+- **`*`** — 被剪枝：此处不查询该路径，它直接延伸至其叶节点。
+
+这就是事件树避免成为完整平衡 2ⁿ 树的方式：一旦某功能失效使后续问题变得无意义，就写 `*`，序列提前终止。两条硬性规则：模式的长度不得**超过**列数，且**一旦某列被剪枝（`*`），其后的每一列也必须是 `*`** — 已终止的路径不能恢复查询。
+
+---
+
+## 3. 计算路径频率与结果
+
+这是差异所在。利用失效概率和 `freq`，引擎计算：
+
+- **各路径频率** = 沿其 `s`/`f` 分支的 `f₀ · ∏ 分支概率`（成功分支贡献 `1 − p`，失效分支贡献 `p`）。
+- **结果汇总**：具有相同终态标签的结果，在所有抵达它们的路径中求和（每个"Core damage"叶节点都加总进去）。
+- **主导序列** — 频率最大的路径 — 以保留红色强调，是事件树中对应故障树"单点失效"的概念。
+
+每个叶节点携带 `data-*`（`data-freq`、`data-outcome`），使计算数值可供下游检查。
+
+---
+
+## 4. 常见错误
+
+```
+# 错误 — 功能没有失效概率
+function A "ECCS"
+
+# 错误 — 在已剪枝的列之后继续查询（路径已终止）
+outcome * s -> "bad"
+
+# 错误 — 标记数多于已声明的列数
+function A p: 0.1
+outcome s s -> "ok"
+
+# 错误 — 起始事件没有频率
+initiating LOCA "Large LOCA"
+```
+
+每个错误都会以标示行号的通俗消息拒绝。将 `p:` 设为**失效**概率（应为小数），给起始事件一个 `freq:`，将剪枝放在尾端，这样就能从结构上确保正确性。
+
+---
+
+## 5. 标准合规性
+
+形式遵循 IEC 62502 与传统 PRA 实践（WASH-1400 / NUREG）：功能作为有序的标题列，二元成功／失效分割，补数推导的成功分支，以及乘法频率传播。`monochrome` 主题重现教科书的黑白外观；`default` 保留红色给主导序列。
+
+## 6. 开发路线图
+
+延后实现：每个分支的连结故障树片段（共享基本事件）、不确定性传播，以及后果类别分组。

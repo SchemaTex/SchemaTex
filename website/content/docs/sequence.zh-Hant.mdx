@@ -1,0 +1,241 @@
+---
+title: UML 循序圖
+---
+
+## 關於循序圖
+
+**循序圖**呈現參與者如何**隨時間**交換訊息：生命線從上向下延伸，訊息在它們之間從左向右流動，垂直軸代表順序。由 **[UML](https://www.omg.org/spec/UML/2.5.1/) 2.5.1 §17（互動）**所定義，這是工程師用來釐清 API 呼叫流程、驗證握手或分散式協定的圖表——*誰呼叫誰、順序為何、回應是什麼*。
+
+Schematex 實作了完整的 UML 標記，並且在生成時也**接受 Mermaid `sequenceDiagram` 語法**——直接貼入 Mermaid 程式碼即可渲染。在 `sequenceDiagram` 標頭下，箭頭採用 Mermaid 語義（`->>` 同步呼叫，`-->>` 回覆，`-)` 非同步）；在原生的 `sequence "Title"` 標頭下，保留 Schematex 長久以來的語義（`->>` = 非同步）。大多數工具只支援常見子集（`alt`/`opt`/`loop`/`par`），Schematex 支援全部**十二種**組合片段運算子和 `ref` 互動使用框架，因為這些正是當互動變得真實複雜時專業人員所需要的部分。與**[使用案例圖](/docs/usecase)**（系統範圍，而非訊息順序）、**[狀態圖](/docs/state)**（單一物件的模式，而非物件間訊息）和**[BPMN](/docs/bpmn)**（組織流程，而非呼叫順序）不同。
+
+<Playground initial={`sequence "Login flow"
+  actor User
+  participant Web as "Web App"
+  control Auth
+  database DB
+  User -> Web : submit(credentials)
+  activate Web
+  Web ->+ Auth : verify(credentials)
+  Auth ->+ DB : SELECT user
+  DB --> Auth : row
+  deactivate DB
+  alt [credentials valid]
+    Auth --> Web : token
+    Web --> User : 200 OK
+  else [invalid]
+    Auth --> Web : 401
+    Web --> User : error
+  end
+  deactivate Auth
+  deactivate Web
+  note over User, Web : session cookie set`} height={560} />
+
+---
+
+## 1. 第一個圖表
+
+每個文件以 `sequence` 關鍵字和可選的 `"title"` 開始。參與者不需要預先宣告——第一次在訊息中提到某個參與者時，它就會成為一條生命線：
+
+```
+sequence
+  Alice -> Bob : Authentication Request
+  Bob --> Alice : Authentication Response
+```
+
+生命線依首次出現的順序從左到右排列。`->` 是同步呼叫（實線、實心箭頭）；`-->` 是回覆（虛線、開放箭頭）。`:` 後的文字是訊息標籤。
+
+---
+
+## 2. 參與者
+
+明確宣告參與者以設定其**種類**、給予**別名**或固定其**順序**：
+
+```
+sequence
+  actor User
+  participant Web as "Web App"
+  boundary LoginUI
+  control Auth
+  entity Account
+  database DB
+  collections Sessions
+  queue Events
+```
+
+| 種類 | 渲染方式 |
+|------|-------------|
+| `participant`（預設） | 圓角分類器方框 |
+| `actor` | 火柴人 |
+| `boundary` / `control` / `entity` | Jacobson 健壯性圖示（⊢◯ / 帶箭頭的 ◯ / 帶底線的 ◯） |
+| `database` | 圓柱體 |
+| `collections` / `queue` | 帶種類 `«stereotype»` 的方框 |
+
+- `as "Label"` 設定顯示名稱（引號可省略；接受 `「…」` CJK 引號）。
+- 自訂**刻板印象**放在書名號或 ASCII 角括號中，寫在宣告後面——它會覆蓋預設標籤：`actor Printer «system»`、`participant Bus as "Event Bus" <<service>>`。
+
+---
+
+## 3. 訊息
+
+箭頭符號決定 UML 語義：
+
+| DSL | 意義 | 渲染方式 |
+|-----|---------|-----------|
+| `A -> B` | 同步呼叫 | 實線、**實心**箭頭 |
+| `A ->> B` | 非同步訊號 | 實線、**開放**箭頭 |
+| `A --> B` | 回覆／返回 | **虛線**、開放箭頭 |
+| `A -x B` | 迷失訊息 | 線段結束於實心圓 |
+| `o-> B` | 發現訊息 | 線段從實心圓開始 |
+| `A -> A` | 自身訊息 | 彎曲迴環回到同一生命線 |
+
+箭頭周圍的空白是可選的（`A->B` 有效），標籤為自由文字——包括回傳值，例如 `aHotel -> aHotel : available(roomId, date): isRoom`。
+
+---
+
+## 4. 啟動（執行規格）
+
+生命線上的細長條代表其處於活躍狀態。以明確語句開啟和關閉，或在訊息本身加上 `+` / `-` 後綴：
+
+```
+sequence
+  participant Client
+  participant Server
+  Client ->+ Server : request()
+  Server ->> Server : validate()
+  Server -->- Client : response
+```
+
+箭頭後的 `+` 在訊息到達時啟動**接收方**；`-` 在訊息發送後停用**發送方**。明確形式為 `activate X` / `deactivate X`。同一生命線上重疊的條形以水平偏移方式巢狀顯示。
+
+---
+
+## 5. 物件建立與銷毀
+
+```
+sequence
+  participant Factory
+  Factory -> *Worker : «create»
+  Factory -> Worker : work()
+  destroy Worker
+```
+
+在接收方前加 `*` 使訊息**實例化**它——新生命線的頭部繪製在到達列處，而非頂端。`destroy X` 以 ✕ 結束生命線並停止其時間軸。
+
+---
+
+## 6. 組合片段
+
+組合片段是圍繞一個區域的標籤框架。Schematex 實作了完整的 UML `InteractionOperatorKind` 集合：
+
+| 運算子 | 意義 | 操作數 |
+|----------|---------|----------|
+| `alt` | 替代選擇（if/else-if/else） | `else`，每個帶條件守衛 |
+| `opt` | 僅在守衛成立時執行 | 一個，帶守衛 |
+| `loop` | 重複 | 一個；守衛可為 `(min,max)` |
+| `par` | 並發操作數 | `and` |
+| `break` | 例外退出 | 一個，帶守衛 |
+| `critical` | 原子性／不可交錯 | 一個 |
+| `seq` / `strict` | 弱／強排序 | `and` |
+| `neg` | 無效軌跡（以色調渲染） | 一個 |
+| `ignore` / `consider` | 訊息集合過濾器 `{m1, m2}` | 一個 |
+| `assert` | 唯一有效的延續 | 一個 |
+
+```
+sequence
+  actor User
+  participant API
+  User -> API : GET /resource
+  alt [authorized]
+    API --> User : 200 + body
+  else [forbidden]
+    API --> User : 403
+  end
+```
+
+守衛放在運算子後（以及 `else` 後）的 `[方括號]` 中。片段可以巢狀，內層框架自動縮進，使其清晰地位於父框架之內。
+
+---
+
+## 7. 互動使用（`ref`）
+
+引用另一個互動而非內嵌——這是 UML 保持大型圖表可組合的方式：
+
+```
+sequence
+  participant A
+  participant B
+  ref over A, B : Establish session
+  A -> B : poll()
+```
+
+`ref over <lifelines> : Name` 跨指定生命線繪製一個框架方框。大多數工具省略了這一點；這正是真實系統分解長流程的方式。
+
+---
+
+## 8. 附註、分隔線、不變量、編號
+
+```
+sequence
+  autonumber 1 1
+  actor Shopper
+  participant Cart
+  == Phase 1: review ==
+  Shopper -> Cart : view items
+  note over Cart : cart persisted in Redis
+  state Cart : ready
+```
+
+- `note over A` / `note over A, B` / `note left of A` / `note right of A` — 摺角注解。
+- `== text ==` — 全寬區段分隔線。
+- `state X : text` — 生命線上的狀態不變量膠囊。
+- `autonumber [start] [step]` — 為每條訊息加上遞增編號前綴。
+
+---
+
+## 9. 語法（EBNF）
+
+```text
+diagram      = "sequence" [ string ] NEWLINE statement*
+statement    = participant | message | activation | note
+             | fragment | ref | divider | invariant | destroy | autonumber
+
+participant  = kind IDENT ("as" label)? stereotype?
+kind         = "participant" | "actor" | "boundary" | "control"
+             | "entity" | "database" | "collections" | "queue"
+stereotype   = "«" TEXT "»" | "<<" TEXT ">>"
+
+message      = IDENT? act? arrow act? ("*")? IDENT? (":" TEXT)?
+arrow        = "->" | "->>" | "-->" | "-x" | "o->"
+act          = "+" | "-"
+activation   = ("activate" | "deactivate") IDENT
+
+fragment     = ("alt"|"opt"|"loop"|"par"|"break"|"critical"|"seq"
+               |"strict"|"neg"|"ignore"|"consider"|"assert") guard? NEWLINE
+                 statement* (("else"|"and") guard? NEWLINE statement*)* "end"
+guard        = "[" TEXT "]" | "(" NUMBER ("," NUMBER)? ")"
+ref          = "ref" "over" IDENT ("," IDENT)* ":" TEXT
+note         = "note" ("over"|"left of"|"right of") IDENT ("," IDENT)? ":" TEXT
+divider      = "==" TEXT "=="
+invariant    = "state" IDENT ":" TEXT
+destroy      = "destroy" IDENT
+autonumber   = "autonumber" NUMBER? NUMBER?
+```
+
+---
+
+## 10. 標準合規性
+
+Schematex 遵循 OMG **UML 2.5.1 §17（互動）**標記：同步（實心）與非同步（開放）與回覆（虛線）箭頭、發現/迷失訊息端點、執行規格條形、全部十二種帶守衛操作數的組合片段運算子、`ref` 互動使用框架，以及 `boundary`/`control`/`entity` 的 Jacobson 分析類別圖示。閘道、協同區域和時間/持續時間約束在 v0.1 範圍外（需要新的佈局基本元素），已追蹤為後續版本的待辦事項。完整規格見 `docs/reference/33-SEQUENCE-STANDARD.md`。
+
+---
+
+## 相關範例
+
+來自範例圖庫的即用情境：
+
+<RelatedExamples slugs={[
+  'sequence-login-flow',
+  'sequence-oauth-login',
+  'sequence-object-lifecycle',
+  'sequence-microservices-saga',
+]} />

@@ -1,0 +1,226 @@
+---
+title: ブレッドボード / 物理配線
+---
+
+## ブレッドボードダイアグラムについて
+
+**ブレッドボードダイアグラム**は、ハンダ不要のプロトタイピングボード上でコンポーネントを物理的にどのように配線するかを示します — Arduino / ESP32 / Raspberry Pi のすべてのチュートリアルに見られる象徴的な視覚ジャンルです。読者は実物のハードウェア上で見たとおりに、穴ひとつずつ再現します。これは抽象的な回路図（`circuit`、IEEE 315）を*補完するもの*です：回路図はエンジニアの論理的なビューであり、ブレッドボードはメーカーの実装ビューです。
+
+Schematex は **Fritzing スタイル**の様式化されたブレッドボードレンダリングを実装しています。コンポーネントは認識しやすい形状で描かれます（カラーバンド付き抵抗、色付きドームの LED、ノッチ付き DIP、ラベル付きピンヘッダーの MCU PCB）。ジャンパーワイヤーは特定のタイポイント間を**スムーズな三次ベジェ曲線**で描かれます — マンハッタン直角ではありません。DSL はすべてのパーツとすべてのワイヤーを**ブレッドボードネイティブ座標**（`@col-row`、例：`@5e`）でアドレス指定するため、ファイルは手で書けてバージョン管理もできます。
+
+> **注記** — このエンジンは回路図ではなく、電気ルールを強制しません。チュートリアル、実験ハンドアウト、README、学習教材に使用してください。節点解析や正式な回路図には `circuit` エンジンを使用してください。
+
+<Playground initial={`breadboard
+board: half
+title: "Blink LED — Arduino Uno hello-world"
+
+parts
+  uno: mcu uno @beside-left
+  r1:  resistor 220 @5e..9e
+  d1:  led red @10e..10f
+
+wires
+  uno:5V  --red--    @+t1
+  uno:GND --black--  @-t1
+  @+t1    --red--    @5a
+  uno:D13 --yellow-- @9a
+  @10j    --black--  @-t1`} height={420} />
+
+---
+
+## 1. 最初のブレッドボード
+
+3 つのセクション：1 行の `breadboard` ヘッダー、`parts` ブロック、`wires` ブロック。オプションの `board:` と `title:` 行はヘッダーの直後に来ます。
+
+<Playground initial={`breadboard
+parts
+  uno: mcu uno @beside-left
+  r1:  resistor 220 @5e..9e
+  d1:  led red @10e..10f
+
+wires
+  uno:5V  --red--   @+t1
+  uno:GND --black-- @-t1
+  uno:D13 --yellow-- @5a
+  @10j    --black-- @-t1`} />
+
+すべてのパーツは `id: kind [args] @placement`。すべてのワイヤーは `<endpoint> --color-- <endpoint>`。これが文法のすべてです。
+
+---
+
+## 2. 座標
+
+ブレッドボードには 2D アドレスグリッドがあります。Schematex の座標は常に `@` で始まります。
+
+| 形式 | 意味 | 例 |
+|---|---|---|
+| `@<col><row>` | メイングリッドの穴。行は `a–e`（上半分）、`f–j`（下半分）。 | `@5e`、`@12g` |
+| `@+t<col>` | 上部**プラス**レール（赤ストライプ）。 | `@+t8` |
+| `@-t<col>` | 上部**マイナス / GND** レール（青ストライプ）。 | `@-t8` |
+| `@+b<col>` | 下部プラスレール。 | `@+b14` |
+| `@-b<col>` | 下部マイナスレール。 | `@-b14` |
+| `@<a>..<b>` | スパン — パーツ配置で使用（抵抗、ダイオード、LED）。 | `@5e..9e` |
+| `@beside-left` | MCU ボードのボード外配置。 | `mcu uno @beside-left` |
+
+ミニボード（`board: mini`）は**電源レールがありません** — `@+t…` / `@-b…` はパーサーが拒否します。
+
+---
+
+## 3. ボードサイズ
+
+```
+breadboard
+board: half          // デフォルト — 30 列、400 タイポイント、レール（連続）
+```
+
+| 形式 | タイポイント数 | 列数 | 電源レール |
+|---|---|---|---|
+| `mini` | 170 | 17 | なし |
+| `half`（デフォルト） | 400 | 30 | 連続 |
+| `full` | 830 | 63 | 30/31 列でブレーク |
+
+> **落とし穴** — フルサイズボードではレールが中央でブレークします。回路が両半分を使う場合は、レールを明示的にジャンパーで接続する必要があります。
+
+---
+
+## 4. パーツカタログ
+
+各パーツは `id: <kind> [args] @<placement>` です。カタログは最も一般的な Arduino / ESP32 メーカー向けコンポーネントをカバーしています：
+
+**ディスクリートコンポーネント**（ブレッドボード上に置く）：
+
+| DSL | 引数 | 例 |
+|---|---|---|
+| `resistor` | `value`（Ω；`k`/`M` 対応） | `r1: resistor 220 @5e..9e` |
+| `led` | `color`（red/green/blue/yellow/white/orange） | `d1: led red @10e..10f` |
+| `cap-elec` | — | `c1: cap-elec @4e..4f` |
+| `cap-ceramic` | — | `c2: cap-ceramic @6e..6f` |
+| `diode` | — | `d2: diode @5e..8e` |
+| `button` | — | `btn: button @8e` |
+| `dip` | `pins=N` | `ic: dip pins=8 @4e` |
+| `header` | `pins=N` | `h1: header pins=4 @20a` |
+
+**マイクロコントローラーボード**（基板の横・上・下に配置）：
+
+| DSL | ピンラベル |
+|---|---|
+| `mcu uno` | `5V`、`3V3`、`GND`、`VIN`、`RST`、`D2…D13`、`A0…A5`、`RX`、`TX` |
+| `mcu nano` | Uno ラベルのサブセット |
+| `mcu esp32` | `3V3`、`GND`、`VIN`、`GPIO2`、`GPIO4`、`GPIO5`、`GPIO12…GPIO33` |
+| `mcu pico` | 汎用 GPIO ラベル |
+
+**センサー・ディスプレイ・アクチュエーター**（モジュールはブレッドボード上に配置し、ピン行は指定した座標に固定）：
+
+| DSL | ピン |
+|---|---|
+| `sensor hcsr04` | `VCC`、`TRIG`、`ECHO`、`GND` |
+| `sensor dht11` / `sensor dht22` | `VCC`、`DATA`、`GND` |
+| `display oled-ssd1306` | `GND`、`VCC`、`SCL`、`SDA` |
+| `display lcd-1602-i2c` | `GND`、`VCC`、`SDA`、`SCL` |
+| `module rotary-ky040` | `CLK`、`DT`、`SW`、`VCC`、`GND` |
+| `actuator servo-sg90` | `GND`、`VCC`、`SIG` |
+
+抵抗のカラーバンドは `value` から自動的に装飾されます — `220` → 赤-赤-茶-金、`10000` → 茶-黒-橙-金。
+
+---
+
+## 5. ワイヤー
+
+すべてのワイヤーは 2 つのエンドポイントを接続します。エンドポイントは**パーツのピン**（`partId:pinName`）または**ブレッドボード座標**（`@…`）のいずれかです。
+
+```
+wires
+  uno:5V  --red--    @+t1
+  uno:GND --black--  @-t1
+  uno:D9  --yellow-- @9c
+  @9a     --green--  @+t9
+```
+
+| 色 | 慣習的な役割 |
+|---|---|
+| `red` | +V（5V、3.3V、VCC） |
+| `black` / `blue` | GND |
+| `yellow` / `orange` / `green` / `white` / `purple` | 信号 |
+| `brown` / `grey` | 任意の信号 |
+
+色は純粋に視覚的なものです — エンジンは電気的な役割に対して検証しません。
+
+視覚的に混雑したボードでは、`via @<coord>` を使って中間の穴を指定し、ベジェ制御点を誘導できます：
+
+```
+wires
+  uno:D13 --yellow-- @9a via @8c
+```
+
+ほとんどのワイヤーは `via` を必要としません — レイアウトエンジンが自然な弧を自動的に生成します。
+
+---
+
+## 6. プルアップ抵抗付きセンサー（DHT11 パターン）
+
+Arduino の典型的なチュートリアルパターン：VCC とセンサーのデータ線の間に 10 kΩ プルアップ抵抗。
+
+<Playground initial={`breadboard
+board: half
+title: "DHT11 + 10kΩ pull-up"
+
+parts
+  uno: mcu uno @beside-left
+  s1:  sensor dht11 @6a
+  r1:  resistor 10000 @8e..14e
+
+wires
+  s1:VCC  --red--    @+t1
+  s1:GND  --black--  @-t1
+  s1:DATA --yellow-- @8e
+  @14e    --red--    @+t14
+  uno:5V  --red--    @+t1
+  uno:GND --black--  @-t1
+  uno:D2  --yellow-- @8a`} height={460} />
+
+---
+
+## 7. ESP32 + I²C OLED
+
+ESP32 は 3.3V で動作します（5V ではありません）。I²C の慣習：緑 = SDA、白 = SCL。
+
+<Playground initial={`breadboard
+board: half
+title: "ESP32 + SSD1306 OLED I²C"
+
+parts
+  esp:  mcu esp32 @beside-left
+  oled: display oled-ssd1306 @8a
+
+wires
+  oled:GND --black--   @-t1
+  oled:VCC --red--     @+t1
+  oled:SCL --white--   @10c
+  oled:SDA --green--   @11c
+  esp:3V3    --red--   @+t1
+  esp:GND    --black-- @-t1
+  esp:GPIO22 --white-- @10c
+  esp:GPIO21 --green-- @11c`} height={460} />
+
+---
+
+## 8. v0.1 の制限事項
+
+- **リーダーライン引き出し線なし** — 参照指定子（R1、C2）はパーツ本体の近くに描かれます。ボード外の引き出しボックスは延期されています。
+- **`.fzz` インポートなし** — Schematex は独自の DSL のみ消費します；Fritzing ファイルはパースされません。
+- **シミュレーションなし** — これはレンダラーであり、Wokwi スタイルのシミュレーターではありません。コンポーネント値の検証（オームの法則、電流制限）はスコープ外です。
+- **PCB・回路図のラウンドトリップなし** — `breadboard` と `circuit` は独立したエンジンです。現時点では同じプロトタイプの 2 つのビューを作成するには 2 つの DSL を書く必要があります。
+- **固定パーツカタログ** — ユーザー定義のパーツタイプは延期されています。v0.1 はメーカーチュートリアルの 80% カタログ（抵抗、LED、コンデンサ、DIP、ヘッダー、4 MCU ファミリー、6 センサー・ディスプレイ・アクチュエーターモジュール）を含みます。
+- **電源レールブレークの表示** — フルサイズボードは 30/31 のブレークを穴の幅分のギャップで示します；レールのストライプはギャップを通じて描画されます（見た目のみの問題）。
+
+---
+
+## 関連サンプル
+
+サンプルギャラリーからすぐに使えるシナリオ：
+
+<RelatedExamples slugs={[
+  'breadboard-blink-led',
+  'breadboard-hcsr04-distance',
+  'breadboard-esp32-oled',
+]} />

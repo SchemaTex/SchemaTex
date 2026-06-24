@@ -1,0 +1,111 @@
+---
+title: IDEF0 機能モデル
+description: 構造化分析のアクティビティモデル——ICOM矢印（Input/Control/Output/Mechanism）で配線されたファンクションボックス、構造的に正確。
+---
+
+## IDEF0について
+
+**IDEF0**（Integration Definition for Function Modeling）は**機能分解**のための米国連邦標準です——システムが*何を*行うかをモデル化します。各アクティビティはボックスで、矢印は4つの固定された側面に役割に応じて接続されます：**I**nput（左）、**C**ontrol（上）、**O**utput（右）、**M**echanism（下）——**ICOM** 規約。**[FIPS PUB 183](https://www.nist.gov/publications/integration-definition-function-modeling-idef0)**（1993）として標準化されています。
+
+Schematexの強みは、モデルが**構造的に正確である**ことです。矢印の役割は接続するボックスのエッジそのものであるため、エンジンはICOM配置を強制し、すべての参照を解決し、分解番号を割り当て、境界矢印をコーディング（I1/C1/O1/M1…）し、FIPSの3〜6ボックスガイドラインを適用します——標準に違反するモデルは、間違った側に矢印を描かせる代わりに拒否します。
+
+<Playground initial={`idef0 "Manufacture product"
+node A0
+function A1 "Plan production"
+function A2 "Make parts"
+function A3 "Assemble product"
+input     A1 "Sales orders"
+control   A1 "Production schedule"
+A1 -> A2 "Work plan"
+input     A2 "Raw material"
+mechanism A2 "CNC machines"
+A2 -> A3 "Finished parts"
+output    A3 "Product"
+mechanism A3 "Assembly line"`} height={520} />
+
+---
+
+## 1. 最初のIDEF0ダイアグラム
+
+`idef0` キーワード、オプションのタイトル、オプションの `node`（ダイアグラムのノード番号）で始め、その後に**ファンクションボックス**とその**ICOM矢印**を記述します：
+
+```
+idef0 "Fill order"
+function A1 "Receive order"
+input     A1 "Customer request"
+control   A1 "Order policy"
+mechanism A1 "Order clerk"
+output    A1 "Confirmed order"
+```
+
+`function ID "name"` はボックスを宣言します（宣言順）。`node A0` は子ノード番号の導出に使用される親ノード番号を設定します（A0 → A1..An）。FIPSガイダンスではダイアグラムあたり3〜6ボックスです。その範囲外の場合はエンジンが警告します。
+
+---
+
+## 2. ICOM境界矢印
+
+各キーワードは矢印をボックスの特定の側面に固定し、それが役割になります：
+
+```
+input     A1 "Sales orders"        # 左エッジに入る
+control   A1 "Production schedule" # 上エッジに入る（アクティビティを管理）
+output    A1 "Product"             # 右エッジから出る
+mechanism A1 "CNC machines"        # 下エッジに入る（リソース）
+```
+
+`input`、`control`、`mechanism` はダイアグラムフレームから**ボックスへ**ルーティングし、`output` はボックスから**フレームへ**ルーティングします。エンジンはこれらの境界矢印を各エッジに沿ってコーディングします（I1, I2 / C1 / O1 / M1）。
+
+---
+
+## 3. ボックス間のフロー矢印
+
+`->` 矢印は2つのボックスを接続します。デフォルトではターゲットの**input**に接続されますが、ターゲットのICOMサイドを指定することもできます：
+
+```
+A1 -> A2 "Work plan"            # ボックス→ボックス；デフォルトはA2のinput
+A2 -> A3.control "Parts spec"   # A3のcontrol（上）エッジに接続
+input A2 "Raw material" (tunnel) # (tunnel) でこのレベルで矢印を非表示
+```
+
+- `target.control` / `target.input` / `target.mechanism` で接続側を選択します。
+- フローはターゲットの `.output` に**接続できません**——outputはボックスから出るものであり、ボックスに入るものではありません。
+- `(tunnel)` はトンネル矢印をマークします（FIPSに従い親/子ダイアグラムで非表示）。
+
+---
+
+## 4. 計算による構造強制
+
+これが差別化要因です——描画ツールにはできない、モデルを正確にする機能：
+
+1. **ICOM配置の強制** — 役割はボックスのジオメトリサイドに対して解決されます。不正な役割、または `.output` を介してボックスに*入る*フローは拒否されます。
+2. **参照解決** — 矢印によって命名されたすべてのボックスIDが宣言されている必要があります。
+3. **分解番号付け** — ボックスには連続したボックス番号1..n（右下隅）とノード番号（A0 → A1..An）が付与されます。明示的な `#N` 番号は連続性、範囲、重複がチェックされます。
+4. **境界コーディング** — 境界矢印は各エッジに沿ってI1/C1/O1/M1とコーディングされます。
+5. **ボックス数のガイドライン** — 3未満または6超のボックスはFIPS-183の警告を発生させます。
+
+---
+
+## 5. よくある間違い
+
+```
+# 間違い — idef0ヘッダーなし
+function A1 "x"
+
+# 間違い — ターゲットのoutputに接続するフロー
+A1 -> A2.output "bad"
+
+# 間違い — 不明なICOMサイドワード
+A1 -> A2.sideways "bad"
+```
+
+ドキュメントは `idef0` で始まる必要があります。矢印は `.input` / `.control` / `.mechanism` のみをターゲットにできます。参照されるすべてのボックスIDが宣言されている必要があります。キーワードがサイドをエンコードするため、コントロールを誤ってinputとして描画することはできません——標準は提案ではなく強制されます。
+
+---
+
+## 6. 標準への準拠
+
+表記、ICOM配置、分解番号付け、境界コーディング、トンネル矢印、3〜6ボックスのガイドラインはFIPS PUB 183（IDEF0）に従います。`monochrome` テーマは標準の白黒ボックスアンドアロースタイルを再現します。
+
+## 7. ロードマップ
+
+保留中：複数ページの分解スプライシング（子ダイアグラム）、ノードツリー / FEOページ、参照モデルへの呼び出し矢印。

@@ -1,0 +1,404 @@
+---
+title: Genogramm
+---
+
+## Über Genogramme
+
+Ein **Genogramm** ist ein Familiendiagramm, das über die bloßen Namen und Daten eines herkömmlichen Stammbaums hinausgeht: Es erfasst die *emotionale* und *medizinische* Textur einer Familie über drei oder mehr Generationen. Therapeuten, Sozialarbeiter und genetische Berater nutzen es, um Muster sichtbar zu machen – Abbrüche, Überverstrickungen, wiederkehrende Erkrankungen –, die in schriftlichen Fallnotizen schwer zu erkennen sind.
+
+Schematex folgt dem **[McGoldrick, Gerson & Petry (2020)-Standard](https://www.guilford.com/books/Genograms/McGoldrick-Gerson-Petry/9781462542055)**, der in der klinischen Ausbildung verwendet wird, sowie der weit verbreiteten **[GenoPro](https://genopro.com/genogram/)-Taxonomie für emotionale Beziehungen mit 32 Typen**. Theorie und Geschichte sind auf [Wikipedia: Genogramm](https://en.wikipedia.org/wiki/Genogram) dokumentiert. Diese Seite beschreibt, was der Parser heute akzeptiert.
+
+<Playground initial={`genogram "The Potter Family"
+  fleamont [male, 1909, 1979, deceased]
+  euphemia [female, 1920, 1979, deceased]
+  fleamont -- euphemia
+    james [male, 1960, 1981, deceased]
+  mr_evans [male, 1925, deceased]
+  mrs_evans [female, 1928, deceased]
+  mr_evans -- mrs_evans
+    lily [female, 1960, 1981, deceased]
+    petunia [female, 1958]
+  james -- lily "m. 1978"
+    harry [male, 1980, index]
+  petunia -- vernon [male, 1951]
+    dudley [male, 1980]
+  harry -cutoff- petunia
+  harry -hostile- dudley
+  harry -close- lily`} height={520} />
+
+---
+
+## 1. Ihr erstes Genogramm
+
+Das kleinste klinisch nützliche Genogramm: zwei Elternteile, ein Kind.
+
+<Playground initial={`genogram
+  alice [female, 1980]
+  bob [male, 1978]
+  alice -- bob "m. 2005"
+    carol [female, 2008]`} />
+
+Vier Regeln decken 80 % der Anwendungsfälle ab:
+
+1. Beginnen Sie mit dem Schlüsselwort `genogram`, optional gefolgt von einem zitierten Titel.
+2. Deklarieren Sie jede Person in einer eigenen Zeile: `id [Attribute]`. Attribute stehen in eckigen Klammern, durch Kommas getrennt.
+3. Verbinden Sie zwei Personen mit einem **Paaroperator** – hier `--` (Ehe); alle sechs Operatoren sind in §4.1 beschrieben. Eine nachgestellte Zeichenfolge in Anführungszeichen ist das Beziehungslabel.
+4. **Einrücken unter der Paarzeile**, um ihre Kinder hinzuzufügen.
+
+> Kommentare müssen in einer eigenen Zeile stehen und mit `#`, `//` oder Mermaid-Stil `%%` beginnen. Nachgestellte Inline-Kommentare (`bob [male, 1978] # ...`) werden nicht unterstützt und brechen den Parser – siehe §8.
+
+---
+
+## 2. Personen
+
+Eine Personenzeile lautet `id [attr1, attr2, …]`. Attribute sind durch Kommas getrennt, reihenfolgeunabhängig und alle optional.
+
+**ID-Regeln.** Muss dem Muster `[a-zA-Z][a-zA-Z0-9_-]*` entsprechen. IDs sind intern Groß-/Kleinschreibung-unabhängig, behalten jedoch ihre ursprüngliche Schreibweise als Anzeigelabel bei (überschreibbar mit `label:"…"`).
+
+**Vom Parser heute akzeptierte Attribute:**
+
+| Attribut | Werte | Wirkung |
+|---|---|---|
+| Geschlecht | `male`, `female`, `unknown`, `other` | Form: Quadrat, Kreis, Raute, Raute |
+| Status | `deceased`, `stillborn`, `miscarriage`, `abortion` | Visueller Modifikator (X-Markierung, skalierte Form usw.) |
+| Geburtsjahr | 4-stellige Zahl, z. B. `1980` | Erstes 4-stelliges Token = Geburtsjahr |
+| Todesjahr | 4-stellige Zahl nach Geburt, z. B. `1980, 2055` | Zweites 4-stelliges Token = Todesjahr |
+| `index` | Flag | Konzentrische Form = Indexperson |
+| `unknown-siblings` | Flag | Raute mit `?` – Platzhalter für ≥1 Geschwister unbekannter Anzahl |
+| `age:N` | z. B. `age:42` | Alter wird innerhalb der Form angezeigt |
+| `death:YYYY` | z. B. `death:2020` | Explizites Todesjahr |
+| `label:"…"` | z. B. `label:"Dr. Smith"` | Überschreibung des Anzeigelabels |
+| `sibling-of:<id>` | z. B. `sibling-of:monica` | Fixiert dieselbe Generation wie das referenzierte Geschwister und zeichnet eine gestrichelte Klammer – für bekannte Verwandte mit unbekannter Abstammung. |
+| `conditions:…` | siehe §5 | Medizinische/psychologische Zustände |
+| `key:value` | beliebig benutzerdefiniert | Wird als Metadaten gespeichert |
+
+<Playground initial={`genogram
+  grandma [female, 1920, 2002, deceased]
+  dad [male, 1950, age:74]
+  me [male, 1985, index]
+  daughter [female, 2012, label:"Em"]`} />
+
+---
+
+## 3. Formen
+
+| Visuell | Geschlechtswert | Bedeutung |
+|---|---|---|
+| ☐ Quadrat | `male` | Männlich |
+| ○ Kreis | `female` | Weiblich |
+| ◇ Raute | `unknown`, `other`, *oder* Attribut weggelassen | Unbekannt / nicht angegeben |
+
+Statusmodifikatoren werden auf die Grundform aufgelegt:
+
+<Playground initial={`genogram
+  alive [male, 1960]
+  passed [male, 1930, 2010, deceased]
+  stillborn_child [unknown, stillborn]
+  lost [unknown, miscarriage]`} />
+
+---
+
+## 4. Verbindungen
+
+### 4.1 Paaroperatoren
+
+Der Parser prüft diese der Reihe nach. Der erste Treffer gewinnt – daher schlägt `-x-` `--`.
+
+| Operator | Typ | Beispiel | Bedeutung |
+|---|---|---|---|
+| `-x-` | Scheidung | `a -x- b` | Scheidung |
+| `-/-` | Trennung | `a -/- b` | Trennung (verheiratet) |
+| `-//` | Trennung | `a -// b` | Trennung (Alias für `-/-`) |
+| `-o-` | Verlobt | `a -o- b` | Verlobung |
+| `==` | Blutsverwandt | `a == b` | Blutsverwandtes Paar |
+| `--` | Verheiratet | `a -- b` | Ehe |
+| `~` | Zusammenlebend | `a ~ b` | Zusammenleben / LTR (aktuell) |
+| `~/~` | Zusammenleben beendet | `a ~/~ b` | Zusammenleben beendet (nie verheiratet). Häufig in LATAM-Kinderschutzfällen, wo biologische Eltern unverheiratet zusammenlebten und die Beziehung inzwischen beendet ist – verschieden von `-x-` Scheidung (keine Ehe) und `-/-` Trennung (noch verheiratet). |
+
+Eine nachgestellte Zeichenfolge in Anführungszeichen wird zum Beziehungslabel (`a -- b "m. 2005"`).
+
+### 4.2 Inline-Person auf der rechten Seite
+
+Wenn die rechtsstehende Person noch nicht deklariert wurde, können Sie sie direkt deklarieren:
+
+<Playground initial={`genogram
+  ann [female, 1970]
+  ann -- ben [male, 1968] "m. 1995"
+    kim [female, 1997]`} />
+
+### 4.3 Kinder (eingerückt unter einem Paar)
+
+Einrückung unter einer Paarzeile bedeutet: „Dies sind die Kinder dieses Paares." Jede Einrückung, die größer als die des Paares ist, funktioniert; als Konvention werden 2 zusätzliche Leerzeichen verwendet. Kinder werden in der Reihenfolge ihrer Deklaration gerendert (das Rendering sortiert auch nach Geburtsjahr, wenn vorhanden).
+
+<Playground initial={`genogram
+  dad [male, 1950]
+  mom [female, 1952]
+  dad -- mom
+    eldest [male, 1975]
+    middle [female, 1978, adopted]
+    twin_a [male, 1985, twin-identical]
+    twin_b [male, 1985, twin-identical]`} />
+
+**Besondere Kind-Attribute:**
+
+| Attribut | Wirkung |
+|---|---|
+| `adopted` | Adoptionslinienstil |
+| `foster` | Pflegebeziehung |
+| `guardian` | Vormundschaft durch einen Nicht-Eltern-Verwandten (z. B. Großeltern-Sorgerecht). Gleiche Grundstruktur wie `foster` – wird als sekundäre „aktueller Betreuer"-Verbindung gezeichnet, wenn auch biologische Eltern deklariert sind. |
+| `twin-identical` | Gruppiert mit anderen `twin-identical`-Kindern desselben Paares |
+| `twin-fraternal` | Gruppiert mit anderen `twin-fraternal`-Kindern |
+| `unknown-siblings` | Einzelne Raute mit `?`-Glyph – „≥1 Geschwister, Anzahl und Identitäten unbekannt" (Pedigree-Konvention). |
+
+### 4.3.1 Dual-Eltern-Familien (Pflege, Adoption, Vormundschaft)
+
+Kinder, die bei einem nicht-biologischen Betreuer untergebracht sind, während biologische Eltern noch zum Fall gehören, können unter beiden Paaren deklariert werden. **Deklarieren Sie das Kind mit allen Attributen beim ersten Mal** (unter dem biologischen Paar), dann **redeklariern Sie es mit nur `[foster]` / `[adopted]` / `[guardian]`** unter dem aktuellen Betreuer. Die erste Deklaration gewinnt das Layout; die zweite wird als sekundärer gepunkteter „aktueller Betreuer"-Link gezeichnet, der das Kind nicht von seiner biologischen Position wegzieht.
+
+<Playground initial={`genogram "Foster placement"
+  bp1 [male, label: "Bio dad"]
+  bp2 [female, label: "Bio mom"]
+  bp1 ~/~ bp2
+    child [male, 2018, index]
+  fp1 [male, label: "Foster dad"]
+  fp2 [female, label: "Foster mom"]
+  fp1 -- fp2
+    own [male, 2010]
+    child [foster]`} />
+
+Dieselbe Grundstruktur dient Adoption (geschlossen/offen), Pflegeplatzierung und Vormundschaft durch Verwandte – nur das Schlüsselwort unterscheidet sich. Eine Redeklaration **führt** nicht-konfligierende Attribute (Geschlecht, Geburtsjahr, Label, `index`-Markierung) in das Original zusammen; das Deklarieren eines konfliktierenden `male` vs. `female` löst einen Parse-Fehler aus, anstatt stillschweigend zu überschreiben.
+
+### 4.3.2 Geschwister unbekannter Anzahl
+
+Wenn eine Fallakte „das Kind hat Geschwister" erwähnt, ohne sie zu benennen, verwenden Sie entweder die `?`-Kurzschreibweise in einer eigenen Zeile oder `[unknown-siblings]` bei einer regulären ID. Beide werden als einzelne Raute mit einem „?"-Glyph gerendert – das Standard-Pedigree-Marker für „ein oder mehr Geschwister, Identitäten unbekannt".
+
+<Playground initial={`genogram
+  dad [male]
+  mom [female]
+  dad -- mom
+    ?
+    known_kid [male, 2018]`} />
+
+### 4.3.3 Sibling-of (bekannter Verwandter, unbekannte Abstammung)
+
+Um „X ist ein Geschwister von Y" auszudrücken, ohne Eltern zu erfinden, verwenden Sie die Eigenschaft `sibling-of: <id>`. Der Renderer fixiert X auf Ys Generation und zeichnet eine gestrichelte Klammer über den beiden – die Standard-Pedigree-Konvention für einen bekannten Verwandten, dessen Abstammung nicht Teil des Falls ist.
+
+<Playground initial={`genogram
+  monica [female, 1990]
+  uncle [male, label: "Tío materno", sibling-of: monica]`} />
+
+### 4.4 Emotionale Beziehungen
+
+Eigene Zeile, Parser-Muster `A -TYP- B` (nicht-direktional) oder `A -TYP-> B` (direktional). Ein optionales Label in Anführungszeichen steht am Ende. **Beide Personen müssen bereits deklariert sein**, bevor die emotionale Zeile angegeben wird.
+
+```
+harry -cutoff- petunia           # nicht-direktional
+harry -hostile- dudley "since 1991"
+uncle -abuse-> nephew             # direktional (Pfeil)
+```
+
+Alle 32 Typen, die der Parser heute akzeptiert:
+
+| Kategorie | Typen |
+|---|---|
+| Positiv / nah | `harmony`, `close`, `bestfriends`, `love`, `inlove`, `friendship` |
+| Negativ / feindselig | `hostile`, `conflict`, `enmity`, `distant-hostile`, `cutoff` |
+| Ambivalent | `close-hostile`, `fused`, `fused-hostile` |
+| Distanz | `distant`, `normal`, `nevermet` |
+| Missbrauch *(direktional)* | `abuse`, `physical-abuse`, `emotional-abuse`, `sexual-abuse`, `neglect` |
+| Kontrolle *(direktional)* | `manipulative`, `controlling`, `jealous` |
+| Besonders | `focused`, `focused-neg`, `distrust`, `admirer`, `limerence` |
+
+<Playground initial={`genogram
+  dad [male, 1950]
+  son [male, 1985]
+  daughter [female, 1988]
+  dad -close- daughter
+  dad -conflict- son
+  son -cutoff- dad "since 2010"`} />
+
+---
+
+## 5. Medizinische Zustände
+
+Syntax: `conditions: name(fill) [+ name(fill, #color)]…`
+
+```
+father [male, 1945, conditions: heart(full, #E53935)]
+mother [female, 1948, conditions: diabetes(half-left) + anxiety(half-right, #26A69A)]
+```
+
+- **`name`** — beliebiger Bezeichner (wird in Legende/Tooltip angezeigt).
+- **`fill`** — erforderlich, steuert, welcher Bereich der Form eingefärbt wird. Siehe Tabelle unten.
+- **`color`** — optionaler Hex-Wert. Standard hängt vom Renderer-Theme ab.
+- Mehrere Zustände werden mit `+` verbunden. Jeder benötigt seine eigene `(fill)`-Angabe.
+
+**Füllpositionen:**
+
+| `fill`-Wert | Bereich |
+|---|---|
+| `full` | Gesamte Form |
+| `half-left` / `half-right` | Linke / rechte Hälfte |
+| `half-top` / `half-bottom` | Obere / untere Hälfte |
+| `quad-tl` / `quad-tr` / `quad-bl` / `quad-br` | Ein Quadrant |
+| `striped` | Diagonales Streifenmuster (asymptomatischer Träger) |
+| `dotted` | Punktmuster |
+
+<Playground initial={`genogram
+  dad [male, 1950, conditions: heart(full, #E53935)]
+  mom [female, 1952, conditions: diabetes(half-left) + depression(half-right, #5C6BC0)]
+  dad -- mom
+    son [male, 1980, conditions: carrier(striped)]`} />
+
+---
+
+## 6. Labels und Kommentare
+
+- **Titel:** `genogram "Smith Family"` – nur in der ersten Zeile.
+- **Überschreibung des Personenlabels:** `alice [female, label:"Dr. Alice Smith"]`.
+- **Beziehungslabel:** nachgestellte Zeichenfolge in Anführungszeichen bei einer Paar- oder emotionalen Zeile – `alice -- bob "m. 2005"`.
+- **Kommentare:** `#`, `//` oder `%%` am Zeilenanfang (nach führenden Leerzeichen). Inline-Kommentare werden **nicht** unterstützt.
+
+```
+genogram "Smith Family"
+  # diese Zeile ist ein Kommentar — in Ordnung
+  %% Mermaid-Stil-Kommentar — auch in Ordnung
+  alice [female, 1980]   # ← DIESER nachgestellte Kommentar bricht den Parser
+```
+
+---
+
+## 7. Reservierte Wörter und Escaping
+
+**Am Zeilenanfang reserviert:** `genogram` (Header-Schlüsselwort).
+
+**Reservierte Operator-Token** innerhalb einer Zeile – vermeiden Sie diese Zeichenfolgen in IDs:
+`--`, `~`, `~/~`, `==`, `-x-`, `-/-`, `-//`, `-o-` sowie jedes `-<typ>-` / `-<typ>->`, das einem emotionalen Beziehungstyp entspricht.
+
+**Reservierte ID `?`** – ein einzelnes `?` in einer Kindzeile erzeugt automatisch einen synthetischen Platzhalter mit dem Marker `unknown-siblings`. Verwenden Sie `?` nicht als echte ID.
+
+**Zeichenfolgen mit Leerzeichen** müssen in doppelte Anführungszeichen gesetzt werden: Titel, Labels, `label:"…"`. Einfache Anführungszeichen und Backticks werden nicht erkannt.
+
+---
+
+## 8. Häufige Fehler
+
+Echte Parser-Fehler, was sie auslöst und wie man sie behebt.
+
+| Sie schrieben | Parser meldet | Behebung |
+|---|---|---|
+| `alex [nonbinary, 1995]` | `Unknown property 'nonbinary'` | Verwenden Sie `unknown` oder `other` (nonbinary ist §13 Roadmap) |
+| `alice [female, transgender]` | `Unknown property 'transgender'` | Noch nicht parsebar (§13 Roadmap) |
+| `dad -- mom` ← gefolgt von `child [male, 2010]` mit **derselben Einrückung** | Kind wird als neue top-level Person geparst, nicht als deren Kind | Rücken Sie die Kindzeile tiefer als die Paarzeile ein (2 Leerzeichen genügen) |
+| `A -- B` wobei `A` nie deklariert wurde | `Unknown individual 'A'` | Deklarieren Sie `A [sex, year]` in einer Zeile darüber |
+| `father -- mother "married"` in Zeile 1 (kein `genogram`-Header) | `Expected "genogram" header` | Beginnen Sie die Datei mit `genogram` oder `genogram "Titel"` |
+| `conditions: diabetes + cancer` (keine Klammern) | `Invalid condition format 'diabetes'` | Fügen Sie fill hinzu: `conditions: diabetes(half-left) + cancer(half-right)` |
+| `[triplet-identical]` | `Unknown property 'triplet-identical'` | Drillinge noch nicht parsebar (§13 Roadmap) |
+| `dad -- mom # erste Ehe` | Nachgestellter Inline-`#`-Kommentar wird als Teil des Labels behandelt / Fehler | Verschieben Sie den Kommentar in eine eigene Zeile |
+| Gleiche ID zweimal mit unterschiedlichem Geschlecht deklariert (`x [male]` dann `x [female]`) | `Conflicting sex for 'x': previously 'male', now 'female'` | Wählen Sie eines oder benennen Sie eine ID um |
+| `child [foster]` redeklariiert, aber biologische Eltern nie deklariert | `child` wird zum regulären Kind des Pflegepaares (kein sekundärer Link gezeichnet) | Dies ist beabsichtigt – sekundäre Links erfordern eine bestehende primäre Eltern-Kind-Beziehung aus einer früheren Deklaration |
+
+---
+
+## 9. Grammatik (EBNF)
+
+```text
+document       = header (blank | comment | individual | couple-block | emotional)*
+
+header         = "genogram" ( WS quoted-string )? NEWLINE
+quoted-string  = '"' any-char-but-quote* '"'
+
+individual     = INDENT id ( "[" attrs "]" )? NEWLINE
+couple-block   = INDENT id WS coupleOp WS right-side ( WS quoted-string )? NEWLINE
+                   ( deeper-indent child )*
+child          = INDENT id ( "[" attrs "]" )? NEWLINE
+               | INDENT "?" NEWLINE                              // unknown-count sibling shorthand
+right-side     = id ( "[" attrs "]" )?
+
+emotional      = INDENT id WS "-" type "-"  id ( WS quoted-string )? NEWLINE
+               | INDENT id WS "-" type "->" id ( WS quoted-string )? NEWLINE
+
+coupleOp       = "~/~" | "-//" | "-x-" | "-/-" | "-o-" | "==" | "--" | "~"
+type           = "harmony" | "close" | "bestfriends" | "love" | "inlove"
+               | "friendship" | "hostile" | "conflict" | "enmity"
+               | "distant-hostile" | "cutoff" | "close-hostile" | "fused"
+               | "fused-hostile" | "distant" | "normal" | "nevermet"
+               | "abuse" | "physical-abuse" | "emotional-abuse"
+               | "sexual-abuse" | "neglect" | "manipulative" | "controlling"
+               | "jealous" | "focused" | "focused-neg" | "distrust"
+               | "admirer" | "limerence"
+
+id             = [a-zA-Z] [a-zA-Z0-9_-]*
+attrs          = attr ("," attr)*
+attr           = "male" | "female" | "unknown" | "other"
+               | "deceased" | "stillborn" | "miscarriage" | "abortion"
+               | "adopted" | "foster" | "guardian"
+               | "twin-identical" | "twin-fraternal"
+               | "index" | "unknown-siblings"
+               | digit digit digit digit                         // year
+               | "age" ":" digits
+               | "death" ":" digit digit digit digit
+               | "label" ":" quoted-string
+               | "sibling-of" ":" id
+               | "conditions" ":" condition ("+" condition)*
+               | key ":" value                                    // custom
+condition      = name "(" fill ("," "#" hex)? ")"
+fill           = "full" | "half-left" | "half-right" | "half-top" | "half-bottom"
+               | "quad-tl" | "quad-tr" | "quad-bl" | "quad-br"
+               | "striped" | "dotted"
+
+comment        = INDENT ( "#" | "//" | "%%" ) any NEWLINE
+```
+
+Maßgebliche Quelle: `src/diagrams/genogram/parser.ts`. Wenn dies vom Parser abweicht, hat der Parser Vorrang – bitte öffnen Sie ein Issue.
+
+---
+
+## 10. Standardkonformität
+
+Schematex-Genogramme folgen **McGoldrick, Gerson & Petry (2020), *Genograms: Assessment and Treatment*, 4. Aufl.** für strukturelle Symbole, Paaroperatoren und Generationsausrichtung. Die Taxonomie emotionaler Beziehungen folgt **GenoPros 32-Typ-Klassifikation** (wir implementieren GenoPros 34-Typ-Set nicht vollständig; `focused-admirer` und ein Duplikat sind in `focused` und `admirer` zusammengefasst).
+
+Was heute implementiert ist im Vergleich zum Standard:
+
+- ✅ Strukturelle Kernsymbole (male/female/unknown, deceased, stillborn, miscarriage, abortion)
+- ✅ McGoldrick-6-Operator-Paarsystem
+- ✅ GenoPro 32 emotionale Typen, direktional wo klinisch spezifiziert
+- ✅ Quadranten-Füllsystem für medizinische Zustände (4-Position + Streifen-/Punktmuster)
+- ✅ Indexperson (konzentrische Form)
+- ✅ Zwillingsgrupierungen (eineiig / zweieiig)
+- ⏳ Bennett 2022 Ergänzungen zur Geschlechterinklusivität – siehe §13
+- ⏳ Verbindungstypen für Spender / Leihmutter / Stiefkind – siehe §13
+
+Referenzen:
+- McGoldrick, M., Gerson, R., & Petry, S. (2020). *Genograms: Assessment and Treatment* (4. Aufl.).
+- Hardy, K.V. & Laszloffy, T.A. (1995). The cultural genogram. *J Marital Fam Ther*, 21(3), 227–237.
+- GenoPro Symbolreferenz — https://genopro.com/genogram/
+
+---
+
+## 11. Verwandte Beispiele
+
+Sofort einsatzbereite Szenarien aus der Beispielgalerie:
+
+<RelatedExamples slugs={[
+  'genogram-nuclear-family',
+  'genogram-medical-history',
+  'genogram-brca-cancer',
+  'genogram-potter-family',
+  'genogram-foster-care',
+]} />
+
+---
+
+## 13. Roadmap
+
+**Geplant – noch nicht parsebar.** Verwenden Sie diese heute nicht in generiertem DSL; der Parser wird sie ablehnen.
+
+- **Bennett 2022 Geschlechterinklusivität** — `nonbinary`, `intersex` als Geschlechtswerte; `transgender` als Marker. Aktuell in `src/core/types.ts` typisiert, aber das `VALID_SEX`-Set des Parsers enthält sie noch nicht.
+- **Drillinge und höherordnige Geburten** — `triplet-identical`, `triplet-fraternal`.
+- **Moderne Familienstrukturen** — `surrogate`, `donor`, `step` als Kindtyp-Attribute.
+- **Kategoriekurzschreibweise für Zustände** — `conditions: cardiovascular + depression` ohne `(fill)`, mit automatischer Quadrantenzuweisung und Standardfarben.
+- **Operator für eingetragene Lebenspartnerschaft** — `~dp~` / explizites DP-Label.
+- **Herkunftsannotationen** — kulturelle Genogramm-Herkunftsbezeichner für Personen.
+- **Haushaltsrahmen** — Gruppenknoten, die sich ein Dach teilen (Pflegeplatzierung, generationsübergreifender Haushalt).
+
+Verfolgen Sie den Fortschritt in den GitHub-Issues, wenn Sie eines davon früher benötigen.

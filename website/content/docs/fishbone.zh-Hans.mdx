@@ -1,0 +1,316 @@
+---
+title: 鱼骨图
+---
+
+## 关于鱼骨图
+
+**鱼骨图**（又称石川图或因果图）将问题的潜在原因映射到一条横向主骨上，主骨末端指向"结果"——即问题陈述。每条主要分支代表一类原因，子分支承载各项细节。石川馨于 1968 年将这一技法作为制造业质量管控工具推出，此后扩展到医疗、软件工程和业务运营领域，成为根本原因分析的结构化头脑风暴方法。团队在回顾会议、DMAIC 改进阶段和故障事后复盘中使用它，以避免过早聚焦于最显眼的假设。
+
+Schematex 遵循 **Ishikawa（1968）**因果图规范，支持标准 6M 制造类别（Man 人员、Machine 机器、Material 材料、Method 方法、Measurement 测量、Mother Nature/Environment 环境）及其服务业变体（People 人员、Process 流程、Place 场所、Policy 政策、Procedures 程序、Patron 顾客）。结构化和紧凑两种编写风格可在同一文档中混用。外部参考：[Ishikawa, K. — Guide to Quality Control (1968)](https://en.wikipedia.org/wiki/Ishikawa_diagram) · [ASQ 因果图](https://asq.org/quality-resources/cause-analysis-tools/fishbone) · [ISO 9001:2015 §10.2 — 纠正措施](https://www.iso.org/standard/62085.html)。
+
+<Playground initial={`fishbone "Solder Joint Defect Rate — Root Cause Analysis"
+effect "3.2% solder joint failure rate"
+category man "Man"
+category machine "Machine"
+category material "Material"
+category method "Method"
+category meas "Measurement"
+category env "Environment"
+man : "Operator training gap"
+man : "Shift handover not documented"
+machine : "Reflow oven temp drift"
+machine : "Squeegee blade worn"
+material : "Solder paste past shelf life"
+material : "PCB pad oxidation"
+method : "Stencil aperture undersized"
+method : "Pick-and-place speed too high"
+meas : "AOI false-accept rate rising"
+env : "Humidity spike in Q3"
+env : "ESD grounding gaps"`} height={460} />
+
+---
+
+## 1. 第一张鱼骨图
+
+最小的可用鱼骨图：三个类别，每类一条原因，其中一条带有子原因。
+
+<Playground initial={`fishbone "API latency spike"
+effect "P99 > 2 s after deploy"
+category code "Code"
+category infra "Infra"
+category data "Data"
+code : "N+1 query in new endpoint"
+  - "Missing eager-load on orders"
+infra : "DB connection pool exhausted"
+data : "Index missing on accounts table"`} />
+
+四条规则涵盖 80% 的使用场景：
+
+1. 以 `fishbone` 开头，后面可选跟一个引号括起的标题。
+2. 用 `category id "标签"` 声明每条分支——`id` 是短的内部键，`"标签"` 是图上显示的文字。
+3. 在独立行上用 `id : "原因文本"` 添加原因。
+4. 在某行缩进至少 2 个空格并以 `-` 开头，可在前一条原因下创建子原因（二阶分支）。
+
+> 注释可以 `#`、`//` 或 Mermaid 风格的 `%%` 开头，须独占一行。
+
+---
+
+## 2. 构成要素
+
+### 主骨与结果
+
+`effect "问题陈述"` 将文本放置在鱼头处。若省略 `effect`，解析器将回退到使用图表标题。
+
+```
+fishbone "标题"
+effect "具体问题陈述"
+```
+
+鱼头默认位于右侧（`config direction = right`）。使用 `config direction = left` 可翻转方向。
+
+### 类别（主骨）
+
+`category id "标签"` 声明一条分支。`id` 在内部用于分配原因；引号括起的 `"标签"` 显示在图上。
+
+类别还可在 `[…]` 中接受可选属性：
+
+| 属性 | 取值 | 效果 |
+|---|---|---|
+| `color: "#hex"` | 十六进制颜色字符串 | 分支和标签颜色 |
+| `side: top` / `side: bottom` | `top`、`bottom` | 强制该分支位于上轨或下轨（默认：交替排列）|
+| `order: N` | 整数 | 在所在轨道中的位置——数值越小越靠近尾部 |
+
+```
+category rework "Rework" [color: "#E53935", side: top, order: 1]
+```
+
+### 原因（小骨）
+
+支持两种风格，可在同一图中混用：
+
+**风格 A——结构化。** 先声明类别，再用 `id : "文本"` 分配原因：
+
+```
+category code "Code"
+category infra "Infra"
+code : "N+1 query in endpoint"
+code : "Missing cache layer"
+infra : "Auto-scaling lag"
+```
+
+**风格 B——紧凑式。** 类别标签与原因写在同一行，用 `;` 或 `,` 分隔：
+
+```
+category Code: N+1 query; Missing cache; Synchronous call
+category Infra: Auto-scaling lag; CDN misconfigured
+```
+
+紧凑风格中，`id` 由标签文字自动派生（转小写，空格替换为连字符）。原因文本的引号可选。
+
+<Playground initial={`fishbone "Conversion rate drop"
+effect "Checkout conversion -12% MoM"
+# Style A — structured
+category ux "UX"
+category trust "Trust"
+ux : "Confusing multi-step form"
+ux : "Slow page on mobile"
+trust : "No payment security badge"
+# Style B — compact
+category Pricing: Price-anchoring missing; No annual discount shown; Coupon field too prominent`} height={380} />
+
+**风格 C——Mermaid 思维导图简写。** 顶层裸行成为类别，缩进的 `-` 项成为该类别下的同级一阶原因：
+
+```txt
+fishbone "Why is the site slow?"
+effect "Page LCP > 4s"
+Content
+  - heavy hero image
+  - too much above-the-fold text
+Tech
+  - JS bundle too large
+  - render-blocking CSS
+```
+
+---
+
+## 3. 子原因（二阶分支）
+
+在一阶原因之后，将 `-` 行缩进至少 2 个空格，即可将子原因附加到该原因上。`-` 连字符是语法的一部分，文字紧随其后。
+
+```
+method : "Stencil aperture undersized"
+  - "Tolerance spec from 2018 board revision"
+  - "No re-validation after material change"
+method : "Pick-and-place speed too high"
+  - "Speed limit lifted during overtime run"
+```
+
+子原因显示为从父级小骨分叉出的更短、更细的枝条。
+
+<Playground initial={`fishbone "Medication error increase"
+effect "Errors up 18% in Q3"
+category process "Process"
+category people "People"
+process : "CPOE alert fatigue"
+  - "47 non-critical alerts per shift"
+  - "Override too easy — one click"
+process : "5-Rights verification skipped"
+  - "No barcode scanner at bedside"
+people : "Float staff unfamiliar with unit"
+  - "No unit-specific orientation checklist"
+people : "Handoff communication gaps"`} height={420} />
+
+---
+
+## 4. 配置选项
+
+`config key = value` 行可出现在标题之后的任意位置。未知的键和值将被静默忽略。
+
+| 配置键 | 取值 | 默认值 | 效果 |
+|---|---|---|---|
+| `direction` | `right` / `left`（亦可用 `ltr` / `rtl`）| `right` | 结果鱼头所在方向 |
+| `sides` | `both`、`top`、`bottom` | `both` | 主骨的哪一半承载分支 |
+| `density` | `compact`、`normal`、`spacious` | `normal` | 小骨间距——影响重叠前能容纳的分支数量 |
+| `slope`（或 `ribslope`）| `gentle`、`normal`、`steep` 或数字（0–3）| `normal`（0.6）| 小骨角度——平缓或陡峭的斜线 |
+| `causeside`（或 `cause-side`）| `head`、`tail`、`both` | `head` | 子原因从小骨的哪侧分出 |
+| `width` | 整数（像素）| 自动 | 覆盖画布宽度 |
+| `height` | 整数（像素）| 自动 | 覆盖画布高度 |
+
+```
+config direction = left
+config density = compact
+config slope = gentle
+config sides = top
+```
+
+---
+
+## 5. 标签与注释
+
+- **图表标题：** `fishbone "网站流量下降"` — 第一行，可选。
+- **结果标签：** `effect "自然流量下降 30%"` — 鱼头处的问题描述。
+- **类别标签：** `category id "易读名称"` — 打印在分支上。
+- **原因文本：** 用引号括起 `"这样"` 或不加引号（紧凑风格允许含空格）。
+- **子原因文本：** 在前导 `-` 之后，加引号或不加引号均可。
+- **注释：** `#`、`//` 或 `%%` 位于行首（前面可有空白）。同样的标记在双引号字符串之外也可用于行尾注释。
+
+---
+
+## 6. 保留字与转义
+
+**行首保留字：** `fishbone`（标头）、`effect`、`category`、`config`。
+
+**`-` 前缀**在缩进行上是子原因标记。若要在原因文本开头包含字面连字符，请加引号：`code : "- old deprecated path"`。
+
+**含空格的字符串**在结构化风格的原因文本中应加双引号：`code : "N+1 query"`。在紧凑风格（`category Label: ...`）中，文本延伸到 `;` 或 `,` 分隔符前，引号可选。
+
+**注释标记**（`#`、`//`、`%%`）在双引号字符串外均表示注释。
+
+| 保留序列 | 上下文 | 替代方案 |
+|---|---|---|
+| 行首 `#` | 注释标记 | 若 `#` 是内容的一部分，请给文本加引号 |
+| 缩进 ≥2 空格后行首 `-` | 子原因标记 | 加引号：`- "- 含连字符的文本"` |
+| `category`、`effect`、`config`、`fishbone` | 行首关键字 | 不能用作类别 ID |
+
+---
+
+## 7. 常见错误
+
+| 您写了 | 解析器报错 | 修正方法 |
+|---|---|---|
+| `cause1 : "text"` 但之前没有 `category cause1` | `FishboneParseError: Unknown category "cause1"` | 在分配原因之前声明 `category cause1 "标签"` |
+| `- "sub-cause"` 在文件开头（没有前置一阶原因）| `FishboneParseError: Sub-cause … has no preceding Level-1 cause` | 将子原因行紧接在 `id : "原因"` 行之后 |
+| `- "sub-cause"` 仅缩进 1 个空格 | 被视为原因行，而非子原因 | 缩进至少 2 个空格 |
+| `category Code: cause one, cause two` | 解析为紧凑风格——`,` 和 `;` 均为分隔符 | 符合预期，两种分隔符都有效 |
+| `config direction = center` | 未知值——静默忽略，保持 `right` | 使用 `right` 或 `left` |
+| `config slope = 45` | 超出范围（必须为 0–3），静默忽略 | 使用预设值（`gentle`、`normal`、`steep`）或如 `0.5` 的数值 |
+| `fishbone: "Title"` | 可正常解析——关键字后的冒号是可选的 | `fishbone "Title"` 和 `fishbone: "Title"` 均有效 |
+| Mermaid 思维导图风格的裸类别 | 解析为隐式类别 | `Content` 后跟缩进的 `- 项目` 行，无需 `category` 即可使用 |
+
+---
+
+## 8. 语法（EBNF）
+
+```text
+document       = header (blank | comment | effect | category | config | cause | sub-cause | implicit-category)*
+
+header         = "fishbone" ":"? ( WS quoted-string )? NEWLINE
+effect         = "effect" ":"? WS quoted-string NEWLINE
+config         = "config" WS config-key WS "=" WS config-value NEWLINE
+config-key     = "direction" | "width" | "height" | "sides"
+               | "slope" | "ribslope" | "density" | "causeside" | "cause-side"
+config-value   = bare-word | number | quoted-string
+
+category       = "category" WS id WS label-or-compact ( "[" category-attrs "]" )? NEWLINE
+implicit-category
+               = bare-text NEWLINE                         # top-level, no ":"
+
+label-or-compact
+               = quoted-string                            # structured form: category id "Label"
+               | id WS ":" WS compact-causes             # compact form: category Label: cause; cause
+
+category-attrs = category-attr ("," category-attr)*
+category-attr  = "color:" quoted-string
+               | "side:" ( "top" | "bottom" )
+               | "order:" integer
+
+cause          = id WS ":" WS cause-text NEWLINE         # structured form
+cause-text     = quoted-string | bare-text
+
+sub-cause      = INDENT≥2 "-" WS cause-text NEWLINE
+
+compact-causes = compact-cause ( (";" | ",") compact-cause )*
+compact-cause  = quoted-string | bare-text
+
+comment        = ( "#" | "//" | "%%" ) any NEWLINE
+id             = [a-zA-Z] [a-zA-Z0-9_-]*
+quoted-string  = '"' any-char-but-unescaped-quote* '"'
+```
+
+权威来源：`src/diagrams/fishbone/parser.ts`。若本文档与解析器有出入，以解析器为准——欢迎提 issue。
+
+---
+
+## 9. 标准合规性
+
+Schematex 鱼骨图遵循 **Ishikawa（1968）**因果图规范：横向主骨，右端为标记结果的鱼头，斜向小骨代表主要原因类别，每条小骨上附有细节原因。两级层次结构（类别→原因→子原因）与六西格玛 DMAIC 和 ISO 9001 纠正措施工作流中传统"5 个为什么"的分析深度相符。
+
+当前已实现：
+
+- ✅ 结构化风格：`category id "标签"` + `id : "原因"`
+- ✅ 紧凑风格：`category Label: 原因; 原因; 原因`
+- ✅ 子原因（二阶）通过缩进 `-` 前缀实现
+- ✅ 每个类别的颜色和方向覆盖
+- ✅ `direction`、`density`、`slope`、`sides`、`causeside` 配置
+- ✅ 可选的显式 `width` / `height`
+- ⏳ 三阶及以上子子原因（解析器存储子节点，但渲染器当前限制在第 2 层）
+- ⏳ 自动建议标准类别集（6M、8P、5P）
+- ⏳ `order` 渲染（已解析但布局引擎尚未应用）
+
+参考文献：
+
+- Ishikawa, K. (1968). *Guide to Quality Control.* JUSE Press.
+- ASQ — [Cause-and-Effect (Fishbone) Diagram](https://asq.org/quality-resources/cause-analysis-tools/fishbone)
+- ISO 9001:2015 §10.2 — 不合格与纠正措施
+
+---
+
+## 10. 相关示例
+
+<RelatedExamples slugs={[
+  'fishbone-website-traffic',
+]} />
+
+---
+
+## 11. 路线图
+
+**计划中——当前尚不可解析。** 请勿在生成的 DSL 中使用以下功能；解析器将拒绝或忽略它们。
+
+- **三阶子子原因** — 第三缩进层；AST 结构已支持，但渲染器目前止步于第 2 层。
+- **`causeside` 每类别覆盖** — 在单个类别上设置 `cause-side`，而非全局设置。
+- **自动建议标准类别** — `template: 6M` / `template: 8P` 简写，自动填入标准制造或服务类别名称。
+- **图例块** — `legend` 关键字，声明在图表旁渲染的颜色编码说明。
+- **`metadata:` 块** — 结构化键值元数据（主持人、日期、修订号），显示在角落注释中。
+
+如需提前实现以上功能，请在 GitHub issues 中跟踪。

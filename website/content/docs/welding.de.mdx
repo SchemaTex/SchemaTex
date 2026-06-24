@@ -1,0 +1,162 @@
+---
+title: Schweißsymbol-Diagramm
+---
+
+## Über Schweißsymbole
+
+Ein **Schweißsymbol** teilt einem Hersteller genau mit, wie eine Verbindung geschweißt werden soll: welche Art von Schweißung, auf welcher Seite, wie groß, wie lang und wie die Oberfläche ausgeführt werden soll. Die Notation ist ein **Bezugslinienskelett** – eine horizontale Linie, ein Pfeilzeiger auf die Verbindung und ein kleines Schweißsymbol-Glyphe, das oberhalb oder unterhalb der Linie einrastet – standardisiert durch **AWS A2.4** (US) und **ISO 2553** (international). Schematex zeichnet das Skelett konstruktionskorrekt: Sie beschreiben die Schweißung, die Engine platziert jede Glyphe, Abmessung und jedes Ergänzungssymbol.
+
+Dies ist eine *festkörper-Skelett*-Notation, kein Graph – es gibt kein Layout zu lösen, daher rendert sie jedes Mal deterministisch.
+
+<Playground initial={`welding "Bracket welds"
+joint "bracket to plate" {
+  arrow: fillet size=8 len=50 pitch=150
+  other: fillet size=6
+  around
+  tail: "GMAW"
+}`} height={260} />
+
+---
+
+## 1. Ihre erste Schweißung
+
+Das kleinste nützliche Callout: ein Header, eine Verbindung, eine Schweißung auf der Pfeilseite.
+
+```
+welding "Bracket"
+joint "bracket to plate" {
+  arrow: fillet size=8
+}
+```
+
+Drei Regeln decken den Großteil der Anwendungsfälle ab:
+
+1. Beginnen Sie mit `welding`, optional `standard: aws | iso-a | iso-b` (Standard `aws`) und einem Titel in Anführungszeichen.
+2. Jede Verbindung ist ein `joint "label" { … }`-Block. Setzen Sie eine Schweißung auf `arrow:` (Pfeilseite) und/oder `other:` (andere Seite).
+3. Eine Schweißspezifikation ist ein Typ gefolgt von `key=value`-Abmessungen – `fillet size=8`, `vgroove angle=60 root=3`.
+
+---
+
+## 2. Seiten – arrow, other, both
+
+Eine Verbindung wird auf der Pfeilseite, der anderen Seite oder beiden geschweißt.
+
+```
+joint "double fillet" {
+  both: fillet size=6        # gleiche Schweißung auf beiden Seiten
+}
+joint "asymmetric" {
+  arrow: fillet size=8       # nur Pfeilseite
+  other: vgroove angle=60    # andere Schweißung auf der anderen Seite
+}
+```
+
+- **AWS** (Standard): die Pfeilseiten-Glyphe wird **unterhalb** der Bezugslinie gezeichnet, die andere-Seiten-Glyphe **oberhalb**.
+- **ISO-A** (`standard: iso-a`): eine **gestrichelte Begleitlinie** erscheint; die Pfeilseiten-Schweißung haftet an der Volllinie, die andere-Seiten-Schweißung an der gestrichelten Linie. Eine symmetrische `both:`-Schweißung unterdrückt die gestrichelte Linie.
+
+---
+
+## 3. Schweißtypen
+
+| Typ | Glyphe | Typ | Glyphe |
+|---|---|---|---|
+| `fillet` | Dreieck | `plug` / `slot` | Rechteck |
+| `square` | parallele Vertikalen | `spot` | Kreis auf der Linie |
+| `vgroove` | V | `seam` | Kreis + Linie |
+| `bevel` | Halb-V | `back` / `backing` | Halbkreis |
+| `ugroove` | U | `surfacing` | Aufbau-Wülste |
+| `jgroove` | Halb-U | `edge` | hohe Vertikalen |
+| `flarev` / `flarebevel` | gebogene Nut | | |
+
+Aliasse: `v`→`vgroove`, `u`→`ugroove`, `j`→`jgroove`, `flare-v`→`flarev`.
+
+---
+
+## 4. Abmessungen
+
+Abmessungen werden entlang der Bezugslinie in festen Slots gelesen.
+
+```
+joint "groove" {
+  arrow: vgroove angle=60 root=3 throat=12 len=50 pitch=150
+}
+```
+
+| Schlüssel | Slot | Bedeutung |
+|---|---|---|
+| `size=` | links vom Symbol | Kehlnaht-Schenkel / Nuttiefe / Stecker-Durchmesser |
+| `throat=` | links, in Klammern | wirksame Kehlnahtdicke `(E)` |
+| `len=` | rechts vom Symbol | Schweißlänge |
+| `pitch=` | rechts (mit `len`) | Unterbrochener Mittenabstand → `len-pitch` |
+| `count=` | rechts (ISO) | Anzahl der Inkremente → `count×len (pitch)` |
+| `angle=` | an der Öffnung | Nuteinschlusswinkel (nur Nuttypen) |
+| `root=` | zwischen Symbol und Linie | Wurzelöffnung / Spalt |
+| `contour=` | oberhalb des Symbols | `flush` (Balken), `convex`, `concave` (Bogen) |
+| `finish=` | oberhalb der Kontur | Oberflächenbehandlungs-Buchstabe `G`/`M`/`C`/`R`/`H`/`U` |
+
+---
+
+## 5. Ergänzungssymbole
+
+```
+joint "post base" {
+  arrow: fillet size=10
+  around            # Rundumschweißung – offener Kreis am Knotenpunkt
+  field             # Baustellen- / Feldschweißung – ausgefüllte Flagge zum Schwanz hin
+  tail: "GTAW; WPS-12"   # Verfahren / Spezifikation / ZfP-Methode
+}
+```
+
+<Playground initial={`welding
+joint "butt weld" {
+  arrow: vgroove angle=60 root=3 throat=12
+  other: backing
+  tail: "SMAW; E7018"
+}`} height={240} />
+
+---
+
+## 6. Standardkonformität
+
+Schematex-Schweißdiagramme implementieren **AWS A2.4:2020** (einzelne Bezugslinie) und **ISO 2553:2019** Systeme A (doppelte Voll-+Strichlinie) und B.
+
+- ✅ Vollständiger Glyphenkatalog – Kehlnaht, quadratisch / V / Abschrägung / U / J / Flare-V / Flare-Abschrägung Nuten, Stecker, Schlitz, Punkt, Naht, Rücken, Unterlage, Auftragsschweißen, Kante
+- ✅ Abmessungs-Slots – Größe, Kehlnahtdicke `(E)`, Länge, Länge-Abstand, Anzahl×Länge, Nutwinkel, Wurzelöffnung
+- ✅ Ergänzend – Rundumschweißungs-Kreis, Feldschweißungs-Flagge, Schweifprozess/Spezifikation/ZfP, Kontur + Oberfläche
+- ✅ Pfeil- / andere / beide Seiten mit Standard-Konvention
+- ✅ KI-lesbare Validierung unzulässiger Typ-/Seiten-/Abmessungskombinationen
+- ⏳ Kombinierte Schweiß- + ZfP-Symbole (ZfP ist heute Schweifsymbol-Text)
+- ⏳ Pfeilunterbrechung für das vorbereitete Teil; versetzte Unterbrechungsschweißung; Schmelzdurchschlag / Verbrauchseinsatz-Glyphen
+
+Referenzen:
+
+- American Welding Society (2020). *AWS A2.4: Standard Symbols for Welding, Brazing, and Nondestructive Examination.*
+- ISO 2553:2019. *Welding and allied processes — Symbolic representation on drawings — Welded joints.*
+
+---
+
+## 7. Grammatik (EBNF)
+
+```text
+document  = "welding" ( "standard:" std )? title? NEWLINE joint*
+std       = "aws" | "iso-a" | "iso-b"
+joint     = "joint" title? "{" directive* "}"
+directive = ( "arrow:" | "other:" | "both:" ) weldspec
+          | "around" | "field"
+          | "tail:" quoted-string
+weldspec  = type ( WS key "=" value )*
+type      = "fillet"|"square"|"vgroove"|"bevel"|"ugroove"|"jgroove"
+          | "flarev"|"flarebevel"|"plug"|"slot"|"spot"|"seam"
+          | "back"|"backing"|"surfacing"|"edge"
+key       = "size"|"len"|"pitch"|"count"|"angle"|"root"|"throat"|"contour"|"finish"
+```
+
+Maßgebliche Quelle: `src/diagrams/welding/parser.ts`.
+
+---
+
+## Verwandte Beispiele
+
+<RelatedExamples slugs={[
+  'welding-bracket-fillet',
+]} />

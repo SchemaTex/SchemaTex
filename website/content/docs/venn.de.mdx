@@ -1,0 +1,297 @@
+---
+title: Venn- / Euler-Diagramm
+---
+
+## Über Venn- und Euler-Diagramme
+
+Ein **Venn-Diagramm** verwendet überlappende Kreise, um jede mögliche logische Beziehung zwischen einer Sammlung von Mengen darzustellen – unabhängig davon, ob jede Schnittmenge tatsächlich Elemente enthält. Ein **Euler-Diagramm** ist die allgemeinere Form: Kreise werden nur gezeichnet, wo Beziehungen tatsächlich bestehen, sodass eine vollständig in einer anderen enthaltene Menge als verschachtelter Kreis dargestellt wird und zwei disjunkte Mengen sich überhaupt nicht überschneiden. John Venn führte die Form mit festen Überlappungen 1880 ein; Leonhard Euler beschrieb die allgemeine Mengeneinschlussform in den 1760er Jahren.
+
+Lehrende nutzen sie zum Unterrichten der Mengenlehre; Datenanalysten greifen auf sie zurück, um Zielgruppen-Überschneidungen zwischen Segmenten darzustellen (E-Mail-Liste ∩ Mobilnutzer ∩ zahlende Abonnenten); Forscher in Biologie, Linguistik und Medizin verwenden Euler-Diagramme zur Kartierung taxonomischer oder konzeptueller Hierarchien. Schematex unterstützt alle vier gängigen Anwendungsmuster in einer einzigen DSL – deklarative Zählungen, Element-Aufzählungen, Regions-Labels und Euler-Teilmengen-/Disjunkt-/Überlappungs-Relationen – und kann sie in einem einzigen Diagramm mischen. Siehe den [Wikipedia-Artikel über Venn-Diagramme](https://en.wikipedia.org/wiki/Venn_diagram) und [Euler-Diagramme](https://en.wikipedia.org/wiki/Euler_diagram) als Hintergrund.
+
+<Playground initial={`venn "Customer Segments — Q3 2025"
+set email "Email subscribers" [color: "#1E88E5"]
+set paid "Paid users" [color: "#E53935"]
+set mobile "Mobile app users" [color: "#43A047"]
+email & paid : 1840
+email & mobile : 920
+paid & mobile : 2100
+email & paid & mobile : 650
+email only : 12400
+paid only : 3200
+mobile only : 8700`} height={480} />
+
+---
+
+## 1. Ihr erstes Venn-Diagramm
+
+Das kleinste nützliche Diagramm: zwei Mengen, eine Überlappung, zwei exklusive Regionen.
+
+<Playground initial={`venn "Support channels"
+set A "Email support" [color: "#1E88E5"]
+set B "Live chat" [color: "#E53935"]
+A & B : 320
+A only : 1450
+B only : 890`} />
+
+Vier Regeln decken 80 % der Anwendungsfälle ab:
+
+1. Beginnen Sie mit `venn`, optional gefolgt von einem Titel in Anführungszeichen.
+2. Deklarieren Sie jede **Menge** mit `set ID "Label"` – die ID wird intern verwendet, das Label erscheint im Diagramm.
+3. Weisen Sie **Regionen** Werte zu mit `A & B : value` für Schnittmengen und `A only : value` für exklusive Regionen.
+4. Konfigurieren Sie das Erscheinungsbild mit `config:`-Zeilen; der Diagrammmodus (`venn` vs. `euler`) kann explizit gesetzt oder auf `auto` belassen werden.
+
+> Kommentare müssen mit `#` auf einer eigenen Zeile beginnen.
+
+---
+
+## 2. Mengen
+
+Eine Mengendeklaration erstellt einen Kreis im Diagramm.
+
+```
+set ID "Label" [color: "#hex"]
+```
+
+| Teil | Erforderlich | Hinweise |
+|---|---|---|
+| `ID` | Ja | Muss `[A-Za-z][A-Za-z0-9_-]*` entsprechen |
+| `"Label"` | Ja | Zeichenkette in Anführungszeichen, die auf dem Kreis angezeigt wird |
+| `[color: "#hex"]` | Nein | Füllfarbe für diese Menge überschreiben |
+
+Mengen müssen deklariert werden, bevor sie in Regions- oder Relationszeilen referenziert werden.
+
+<Playground initial={`venn "Programming paradigms"
+set oop "Object-Oriented" [color: "#1E88E5"]
+set fp "Functional" [color: "#E53935"]
+set logic "Logic" [color: "#43A047"]
+oop & fp : 180
+oop & logic : 45
+fp & logic : 90
+oop & fp & logic : 12
+oop only : 620
+fp only : 340
+logic only : 95`} height={440} />
+
+---
+
+## 3. Regionen
+
+Eine Region weist einer Schnittmenge oder einem exklusiven Bereich einen Wert zu. Die vier DSL-Modi können in einem Diagramm gemischt werden.
+
+### 3.1 Deklarativer Modus – Zählungen und Prozentsätze
+
+Weisen Sie einer benannten Region eine Zahl oder einen Prozentsatz zu. Der Regions-Schlüssel ist entweder eine durch `&` getrennte Liste von Mengen-IDs (für Schnittmengen) oder `ID only` (für den Teil dieser Menge, der nicht von einer anderen Menge abgedeckt wird).
+
+```
+A & B : 320          # ganzzahlige Zählung
+A & B & C : 45       # Drei-Wege-Schnittmenge
+A only : 1450        # A minus alle anderen Mengen
+A & B : 18.5%        # Prozentwert
+```
+
+<Playground initial={`venn "Market research"
+set aware "Awareness" [color: "#7B1FA2"]
+set consider "Consideration" [color: "#0288D1"]
+set convert "Conversion" [color: "#388E3C"]
+aware & consider : 3400
+consider & convert : 890
+aware & convert : 210
+aware & consider & convert : 150
+aware only : 18200
+consider only : 2100
+convert only : 540`} height={440} />
+
+### 3.2 Regions-Labels (Text)
+
+Verwenden Sie das Schlüsselwort `region` als Präfix und weisen Sie eine Zeichenkette in Anführungszeichen statt einer Zahl zu. Die Zeichenkette wird innerhalb der Region gerendert.
+
+```
+region A & B : "Nurture"
+region B & C : "Convert"
+region A & B & C : "Loyal customer"
+```
+
+<Playground initial={`venn "Go-to-market funnel"
+set A "Awareness" [color: "#7B1FA2"]
+set B "Consideration" [color: "#0288D1"]
+set C "Purchase" [color: "#388E3C"]
+region A & B : "Nurture"
+region B & C : "Convert"
+region A only : "Cold audience"
+region A & B & C : "Loyal"
+region C only : "Direct buyers"`} height={440} />
+
+### 3.3 Aufzählungsmodus – Elementlisten
+
+Listen Sie die tatsächlichen Elemente jeder Menge auf. Schematex berechnet alle Schnittmengen automatisch.
+
+```
+ID = { element1, element2, element3 }
+```
+
+Elemente sind durch Kommas getrennte bloße Wörter oder Zeichenketten in Anführungszeichen. Aufzählungsmengen benötigen keine explizite `set`-Deklaration – die Deklaration wird impliziert.
+
+<Playground initial={`venn "Full-stack team skills"
+Frontend = { React, TypeScript, CSS, Jest, Webpack }
+Backend  = { TypeScript, Node.js, PostgreSQL, Jest, Redis }
+DevOps   = { Docker, Kubernetes, PostgreSQL, Terraform, Redis }`} height={440} />
+
+---
+
+## 4. Euler-Relationen
+
+Euler-Relationen drücken strukturellen Einschluss oder Trennung aus – dass eine Menge eine Teilmenge einer anderen ist, dass zwei Mengen vollständig disjunkt sind oder dass sie sich überlappen. Sie müssen Mengen-IDs referenzieren, die bereits mit `set` deklariert wurden.
+
+```
+from subset to    # from ist vollständig innerhalb von to (auch: "in")
+from in to        # Alias für subset
+from disjoint to  # from und to überlappen sich nicht
+from overlap to   # from und to überlappen sich teilweise (explizit – Standard für nicht verwandte Mengen)
+```
+
+<Playground initial={`venn "Biology taxonomy"
+set animals "Animals"
+set vertebrates "Vertebrates"
+set mammals "Mammals"
+set birds "Birds"
+set fish "Fish"
+vertebrates subset animals
+mammals subset vertebrates
+birds subset vertebrates
+fish subset vertebrates
+mammals disjoint birds
+mammals disjoint fish
+birds disjoint fish`} height={440} />
+
+| Schlüsselwort | Alias | Bedeutung |
+|---|---|---|
+| `subset` | `in` | `from` ist vollständig innerhalb von `to` enthalten |
+| `disjoint` | — | `from` und `to` überschneiden sich nicht |
+| `overlap` | — | `from` und `to` überschneiden sich, aber keines enthält das andere |
+
+---
+
+## 5. Konfiguration
+
+`config:`-Zeilen steuern das Diagrammverhalten. Jede steht auf einer eigenen Zeile.
+
+| Config-Schlüssel | Werte | Standard | Wirkung |
+|---|---|---|---|
+| `diagram` | `venn`, `euler`, `auto` | `auto` | Venn (alle Kreise fest) oder Euler (Teilmengen-Verschachtelung) erzwingen. `auto` leitet aus dem Vorhandensein von Euler-Relationen ab. |
+| `proportional` | `true`, `false` | `false` | Kreisfläche proportional zu Regions-Zählungswerten skalieren |
+| `showCounts` | `true`, `false` | `auto` | Zähllabels immer / nie anzeigen. `auto` zeigt sie, wenn Zählungen angegeben sind. |
+| `showPercent` | `true`, `false` | `false` | Jeden Regionswert als Prozentsatz der Gesamtsumme anzeigen |
+| `palette` | `default`, `brand`, `monochrome` | `default` | Farbpalette für Mengen (wird durch per-Mengen-`color:` überschrieben) |
+| `blendMode` | `multiply`, `screen`, `none` | `multiply` | Wie sich überlappende Füllfarben mischen |
+
+Config kann auch inline in der Header-Zeile geschrieben werden: `venn "Title" [proportional: true, showPercent: true]`.
+
+```
+venn "Segment overlap"
+config: proportional = true
+config: showPercent = true
+config: blendMode = screen
+```
+
+**Layout-Auswahl:**
+
+- `layout venn` – alternative Form von `config: diagram = venn` (identisch geparst).
+- `layout euler` – alternative Form von `config: diagram = euler`.
+- `layout auto` – alternative Form von `config: diagram = auto`.
+
+---
+
+## 6. Beschriftungen & Kommentare
+
+- **Titel:** `venn "My diagram"` – nur erste Zeile.
+- **Mengen-Label:** `set A "Email subscribers"` – Zeichenkette in Anführungszeichen in der `set`-Zeile.
+- **Regionswert:** Ganzzahl, Prozentsatz, Zeichenkette in Anführungszeichen oder Elementliste nach dem `:`.
+- **Kommentare:** `#` am Anfang einer Zeile (nach führenden Leerzeichen).
+
+---
+
+## 7. Reservierte Wörter & Escaping
+
+**Am Zeilenanfang reserviert:** `venn` (Header), `set`, `config:`, `layout`, `region`.
+
+**Reservierte Operatoren in Regions-Schlüsseln:** `&` (Schnittmenge), `only` (exklusive Region).
+
+**Euler-Relationsschlüsselwörter:** `subset`, `in`, `disjoint`, `overlap` – können nicht als Mengen-IDs verwendet werden.
+
+**ID-Regeln:** müssen `[A-Za-z][A-Za-z0-9_-]*` entsprechen. Labels mit Leerzeichen gehen in das `"Label"`-Feld in Anführungszeichen.
+
+---
+
+## 8. Häufige Fehler
+
+| Geschrieben | Parser-Meldung | Korrektur |
+|---|---|---|
+| `A & B : 320` vor `set A …` und `set B …` | `VennParseError: unknown set id "A" in region key` | Mengen mit `set` deklarieren, bevor sie in Regionszeilen referenziert werden |
+| `dogs subset mammals` vor `set dogs …` | `VennParseError: unknown set "dogs" in relation` | Mengen zuerst deklarieren, dann Euler-Relationen schreiben |
+| `set A Email subscribers` (Label mit Leerzeichen ohne Anführungszeichen) | Parser-Fehler – Label muss eine Zeichenkette in Anführungszeichen sein | In Anführungszeichen setzen: `set A "Email subscribers"` |
+| `A & B = 320` (Gleichheitszeichen statt Doppelpunkt) | Zeile entspricht nicht dem Regionsmuster; Parse-Fehler | Doppelpunkt verwenden: `A & B : 320` |
+| `Frontend = { React TypeScript }` (keine Kommas) | `React TypeScript` wird als ein Element behandelt | Kommas verwenden: `Frontend = { React, TypeScript }` |
+| `config: mode = venn` | `mode` ist kein erkannter Schlüssel (Schlüssel ist `diagram`) | `config: diagram = venn` verwenden |
+| Aufzählungsmengen mit expliziten `A & B :`-Regionen mischen | Aufzählungs-Auto-Ableitung läuft nur, wenn `regions.length === 0` | Einen Stil pro Diagramm verwenden oder alle Regionen explizit hinzufügen |
+
+---
+
+## 9. Grammatik (EBNF)
+
+```text
+document       = header (blank | comment | config | layout-stmt | set-decl | enum-decl | euler-rel | region)*
+
+header         = "venn" ( ":"? WS quoted-string )? ( WS "[" config-props "]" )? NEWLINE
+quoted-string  = '"' any-char-but-quote* '"'
+
+config         = "config" WS ":" WS config-key WS "=" WS config-value NEWLINE
+config-key     = "diagram" | "proportional" | "palette" | "blendMode" | "showCounts" | "showPercent"
+
+layout-stmt    = "layout" WS ( "venn" | "euler" | "auto" ) NEWLINE
+
+set-decl       = "set" WS id WS quoted-string ( WS "[" set-props "]" )? NEWLINE
+set-props      = "color:" quoted-hex | "fill:" quoted-hex
+
+enum-decl      = id WS "=" WS "{" element-list "}" NEWLINE
+element-list   = element ( "," element )*
+element        = quoted-string | bare-word
+
+euler-rel      = id WS euler-op WS id NEWLINE
+euler-op       = "subset" | "in" | "disjoint" | "overlap"
+
+region         = "region"? WS region-key WS ":" WS region-value NEWLINE
+region-key     = id WS "only"
+               | id ( WS "&" WS id )+
+region-value   = integer | percent | quoted-string | "[" element-list "]"
+
+percent        = number "%"
+id             = [A-Za-z] [A-Za-z0-9_-]*
+comment        = "#" any NEWLINE
+```
+
+Maßgebliche Quelle: `src/diagrams/venn/parser.ts`. Falls dies vom Parser abweicht, hat der Parser Vorrang – bitte öffnen Sie ein Issue.
+
+---
+
+## 10. Roadmap
+
+**Geplant – noch nicht parsebar.** Verwenden Sie diese heute nicht in generiertem DSL; der Parser wird sie ablehnen oder ignorieren.
+
+- **Drei-Wege- und N-Wege-Euler-Verschachtelung** – der Renderer unterstützt derzeit bis zu 3 Mengen im Venn-Modus; größere Euler-Diagramme mit komplexem Einschluss sind noch nicht vollständig ausgelegt.
+- **`fill:`-Farb-Alias** – die `fill:`-Eigenschaft auf `set` wird vom Parser akzeptiert (als Alias für `color:`), aber der Renderer verwendet derzeit nur `color:`.
+- **`label:` auf Regionen** – `region A & B [label: "Core"]`-Syntax für separate Labels vs. Werte.
+- **Flächenproportionales Euler** – `proportional: true` betrifft derzeit nur den Venn-Modus; das Euler-Einschlusslayout ignoriert das Flag.
+- **`and`-Schlüsselwort** – natürlichsprachiges `A and B : 120` als Alias für `A & B : 120`.
+
+Verfolgen Sie die GitHub-Issues, wenn Sie eines davon früher benötigen.
+
+---
+
+## Verwandte Beispiele
+
+Sofort einsatzbereite Szenarien aus der Beispiel-Galerie:
+
+<RelatedExamples slugs={[
+  'venn-customer-segments',
+  'venn-programming-paradigms',
+]} />

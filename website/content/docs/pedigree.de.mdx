@@ -1,0 +1,349 @@
+---
+title: Stammbaum (Pedigree)
+---
+
+## Über Stammbäume
+
+Ein **Stammbaum** (Pedigree-Diagramm) ist ein standardisiertes Diagramm, das in der klinischen Genetik verwendet wird, um einen einzelnen Zustand — oder eine kleine Gruppe verwandter Zustände — durch eine Familie über mehrere Generationen hinweg zu verfolgen. Anders als ein Genogramm, das emotionale und soziale Zusammenhänge aufzeichnet, ist ein Stammbaum rein strukturell: wer betroffen ist, wer Träger ist, wer getestet wurde und wer der Indexfall ist. Genetische Berater, klinische Genetiker und überweisende Ärzte verwenden ihn, um das Vererbungsmuster, das Wiederholungsrisiko und zu beurteilen, wem sonst in der Familie Tests angeboten werden sollten.
+
+Schematex folgt den **[Bennett et al. (2022) NSGC-Empfehlungen](https://onlinelibrary.wiley.com/doi/10.1002/jgc4.1621)** — dem jüngsten Update der National Society of Genetic Counselors — die die Revisionen von 1995 und 2008 ablösen. Hintergrundinformationen finden Sie unter [Wikipedia: Pedigree chart](https://en.wikipedia.org/wiki/Pedigree_chart). Diese Seite dokumentiert, was der Parser heute akzeptiert.
+
+<Playground initial={`pedigree "BRCA1 — Hereditary Breast/Ovarian Cancer"
+  I-1 [male, unaffected]
+  I-2 [female, affected, deceased]
+  I-1 -- I-2
+    II-1 [female, affected]
+    II-2 [male, unaffected]
+    II-3 [female, carrier]
+  II-1 -- II-4 [male, unaffected]
+    III-1 [female, affected, proband]
+    III-2 [male, unaffected]
+    III-3 [female, presymptomatic]
+  II-3 -- II-6 [male, unaffected]
+    III-6 [female, carrier]
+    III-7 [male, unaffected]`} height={520} />
+
+---
+
+## 1. Ihr erster Stammbaum
+
+Der kleinste klinisch sinnvolle Stammbaum: zwei Elternteile und ihr betroffenes Kind.
+
+<Playground initial={`pedigree
+  I-1 [male, carrier]
+  I-2 [female, carrier]
+  I-1 -- I-2
+    II-1 [male, affected, proband]
+    II-2 [female, unaffected]`} />
+
+Vier Regeln decken 80 % der Anwendungsfälle ab:
+
+1. Mit dem Schlüsselwort `pedigree` beginnen, optional gefolgt von einem zitierten Titel.
+2. Jede Person in einer eigenen Zeile deklarieren: `id [Attribute]`. Konventionell sind IDs `I-1`, `II-3` usw. — Römische Ziffer für die Generation, Bindestrich, Position innerhalb der Generation.
+3. Zwei Individuen mit einem **Paar-Operator** verbinden — `--` (gepaart), `==` (blutsverwandt), `-/-` (getrennt), `~` (keine Nachkommen). Siehe §4.
+4. **Unter die Paarungszeile einrücken**, um deren Kinder hinzuzufügen. Jede tiefere Einrückung funktioniert; zwei Leerzeichen sind konventionell.
+
+> Kommentare müssen in einer eigenen Zeile stehen, beginnend mit `#`, `//` oder im Mermaid-Stil `%%`. Inline-Trailing-Kommentare brechen den Parser.
+
+---
+
+## 2. Individuen
+
+Eine Individuen-Zeile ist `id [attr1, attr2, …]`. Attribute sind kommagetrennt, reihenfolgeunabhängig, alle optional.
+
+**ID-Regeln.** Muss `[a-zA-Z][a-zA-Z0-9_-]*` entsprechen. IDs sind intern Groß-/Kleinschreibung-unabhängig, bewahren aber ihre ursprüngliche Schreibweise als Anzeigebezeichnung (Überschreibung mit `label:"…"`).
+
+**Heute vom Parser akzeptierte Attribute:**
+
+| Attribut | Werte | Effekt |
+|---|---|---|
+| Geschlecht | `male`, `female`, `unknown`, `amab`, `afab`, `uaab` | Form: Quadrat, Kreis, Raute (siehe §3) |
+| Genetischer Status | `unaffected`, `affected`, `carrier`, `carrier-x`, `obligate-carrier`, `presymptomatic` | Füllung / innere Markierung (siehe §3) |
+| Marker | `proband`, `consultand`, `evaluated` | Pfeil + Buchstaben-Annotation (siehe §3.3) |
+| Lebensstatus | `deceased`, `stillborn`, `pregnancy`, `sab`, `tab`, `ectopic` | Visueller Modifikator |
+| Geburtsjahr | 4-stellige Zahl, z. B. `1958` | Unter der Form angezeigt |
+| `label:"…"` | beliebige zitierte Zeichenkette | Überschreibung der Anzeigebezeichnung |
+| `affected: trait1+trait2` | siehe §5 | Mehrfaches Merkmal-Quadrantenfüllen |
+
+<Playground initial={`pedigree
+  I-1 [male, 1942, deceased]
+  I-2 [female, 1945, affected, deceased]
+  II-1 [female, affected, proband, label: "Jane (42)"]
+  II-2 [male, evaluated]
+  II-3 [female, presymptomatic]`} />
+
+---
+
+## 3. Formen, Status, Marker
+
+### 3.1 Formen (Bennett 2022)
+
+| Visuell | Geschlechtswert | Bedeutung |
+|---|---|---|
+| ☐ Quadrat | `male` oder `amab` | Dem männlichen Geschlecht zugeordnet bei der Geburt |
+| ○ Kreis | `female` oder `afab` | Dem weiblichen Geschlecht zugeordnet bei der Geburt |
+| ◇ Raute | `unknown`, `uaab` oder weggelassen | Unbekannt / DSD / nicht offenbart / in utero |
+
+Bennett 2022 formalisierte, dass Quadrat und Kreis das **bei der Geburt zugeordnete Geschlecht** darstellen, nicht die Geschlechtsidentität. Wenn die Geschlechtsidentität abweicht, tragen Sie sie in der Beschriftung ein (`[female, label: "Trans man (AFAB)"]`) — ändern Sie die Form nicht.
+
+### 3.2 Genetischer Status (Füllung)
+
+| Status | Bedeutung |
+|---|---|
+| (Standard, kein Status-Token) | Nicht betroffen — leere Form |
+| `unaffected` | Explizit nicht betroffen |
+| `affected` | Vollständig ausgefüllte Form |
+| `carrier` | Halb ausgefüllt — autosomaler Träger |
+| `carrier-x` | Mittelkreis — X-gekoppelter Träger (weiblich) |
+| `obligate-carrier` | Mittelkreis — aus der Stammbaum-Struktur abgeleitet |
+| `presymptomatic` | Vertikale Linie durch die Form — positiv getestet, noch keine klinischen Zeichen |
+
+<Playground initial={`pedigree
+  I-1 [male, unaffected]
+  I-2 [female, affected]
+  I-3 [female, carrier]
+  I-4 [female, carrier-x]
+  I-5 [male, obligate-carrier]
+  I-6 [female, presymptomatic]`} />
+
+### 3.3 Marker
+
+| Marker | Bedeutung |
+|---|---|
+| `proband` | Pfeil + "P" — der Indexfall, der die Überweisung ausgelöst hat |
+| `consultand` | Pfeil + "C" — die Person, die genetische Beratung gesucht hat |
+| `evaluated` | "E" — bewertet, aber kein positiver Befund aufgezeichnet |
+
+### 3.4 Lebensstatus
+
+| Wert | Bedeutung |
+|---|---|
+| `deceased` | Diagonaler Schrägstrich durch die Form |
+| `stillborn` | Kleine Form + "SB"-Beschriftung |
+| `pregnancy` | Form + "P"-Beschriftung, oder Raute wenn Geschlecht unbekannt |
+| `sab` | Kleines Dreieck — Spontanabort |
+| `tab` | Kleines Dreieck mit Balken — Schwangerschaftsabbruch |
+| `ectopic` | Kleines Dreieck + "ECT"-Beschriftung |
+
+Mehrere Token kombinieren sich: `[female, affected, deceased]`, `[male, sab]`, `[unknown, pregnancy, presymptomatic]`.
+
+---
+
+## 4. Paare und Kinder
+
+### 4.1 Paar-Operatoren
+
+Der Parser probiert diese in Reihenfolge aus. Das erste Treffer gewinnt — also schlägt `-/-` das `--`.
+
+| Operator | Typ | Beispiel | Bedeutung |
+|---|---|---|---|
+| `-/-` | getrennt | `a -/- b` | Gepaarte Individuen, nicht mehr zusammen |
+| `==` | blutsverwandt | `a == b` | Blutsverwandte Union (klinisch kritisch) |
+| `--` | verheiratet | `a -- b` | Gepaarte Individuen mit Nachkommen |
+| `~` | zusammenlebend | `a ~ b` | Partner ohne Nachkommen |
+
+### 4.2 Inline-Individuum auf der rechten Seite
+
+Wenn das rechts stehende Individuum noch nicht deklariert wurde, kann es direkt deklariert werden:
+
+<Playground initial={`pedigree
+  I-1 [female, carrier]
+  I-1 -- I-2 [male, unaffected]
+    II-1 [female, affected, proband]
+    II-2 [male, carrier]`} />
+
+### 4.3 Kinder (unter einem Paar eingerückt)
+
+Einrückung unter einer Paarungszeile = "Diese sind die Kinder dieses Paares." Jede Einrückung, die größer als die des Paares ist, funktioniert; zwei Leerzeichen sind konventionell.
+
+<Playground initial={`pedigree "Cystic Fibrosis — autosomal recessive"
+  I-1 [male, carrier]
+  I-2 [female, carrier]
+  I-1 -- I-2
+    II-1 [male, affected, proband]
+    II-2 [female, carrier]
+    II-3 [male, unaffected]`} />
+
+### 4.4 Blutsverwandte Verbindungen
+
+Blutsverwandtschaft wird als Doppellinie dargestellt und muss sichtbar gemacht werden — sie ist der wichtigste Informationsträger in vielen Stammbäumen.
+
+<Playground initial={`pedigree "Consanguineous union"
+  I-1 [male, carrier]
+  I-2 [female, unaffected]
+  I-1 -- I-2
+    II-1 [male, carrier]
+  I-3 [male, unaffected]
+  I-4 [female, carrier]
+  I-3 -- I-4
+    II-3 [female, carrier]
+  II-1 == II-3
+    III-1 [male, affected, proband]`} />
+
+---
+
+## 5. Mehrfachzustands-Stammbäume
+
+Für Familien, die mehr als einen vererbbaren Zustand tragen, verwenden Sie `legend:`-Zeilen, um zu definieren, welcher Quadrant der Form welchen Zustand darstellt, und markieren Sie dann Individuen mit `affected: trait1+trait2`.
+
+```
+pedigree "Cancer Family Syndrome"
+  legend: breast = "Breast cancer" (fill: quad-tl)
+  legend: ovarian = "Ovarian cancer" (fill: quad-tr)
+  legend: prostate = "Prostate cancer" (fill: quad-bl)
+  legend: colon = "Colon cancer" (fill: quad-br)
+
+  I-1 [male, affected: prostate, deceased]
+  I-2 [female, affected: breast, deceased]
+  I-1 -- I-2
+    II-1 [female, affected: breast+ovarian]
+    II-2 [male, unaffected]
+```
+
+**Legende-Syntax:** `legend: id = "Bezeichnung" (fill: POSITION)`.
+
+| `fill`-Position | Bereich |
+|---|---|
+| `full` | Gesamte Form (Standard, wenn `(fill: …)` weggelassen) |
+| `quad-tl` / `quad-tr` / `quad-bl` / `quad-br` | Oben-links / Oben-rechts / Unten-links / Unten-rechts-Quadrant |
+| `half-left` / `half-right` / `half-top` / `half-bottom` | Eine Hälfte der Form |
+
+Individuen verwenden die Legende-Merkmal-IDs: `[affected: breast]`, `[affected: breast+ovarian]`. Das `+` verbindet Merkmale; Quadranten werden kumulativ gefüllt.
+
+---
+
+## 6. Bezeichnungen & Kommentare
+
+- **Titel:** `pedigree "BRCA1 Family"` — nur in der ersten Zeile.
+- **Individuum-Bezeichnungsüberschreibung:** `II-1 [female, affected, label: "Jane Smith (42)"]`.
+- **Legendeneintrag:** `legend: id = "Bezeichnung" (fill: POSITION)` — siehe §5.
+- **Modus-Suffix:** `pedigree:autosomal-dominant "Family X"` wird akzeptiert. Das Suffix wird als `metadata.mode` gespeichert; aktuelle Renderer ignorieren es.
+- **Kommentare:** `#`, `//` oder `%%` am Anfang einer Zeile (nach führendem Leerzeichen). Inline-Trailing-Kommentare werden **nicht** unterstützt.
+
+---
+
+## 7. Reservierte Wörter & Escaping
+
+**Am Zeilenanfang reserviert:** `pedigree` (Header), `legend:` (Legendeneintrag).
+
+**Reservierte Operator-Token** innerhalb einer Zeile — vermeiden Sie diese Sequenzen in IDs:
+`--`, `==`, `-/-`, `~`.
+
+**Reservierte Attribut-Token** innerhalb von `[…]` — der Parser interpretiert diese unabhängig von ihrer Position: Geschlechts-Token (`male`, `female`, `unknown`, `amab`, `afab`, `uaab`), genetische Status (`affected`, `carrier`, `carrier-x`, `obligate-carrier`, `presymptomatic`, `unaffected`), Marker (`proband`, `consultand`, `evaluated`) und Lebensstatus (`deceased`, `stillborn`, `pregnancy`, `sab`, `tab`, `ectopic`).
+
+**Zeichenketten mit Leerzeichen** müssen doppelt in Anführungszeichen stehen. Einfache Anführungszeichen und Backticks werden nicht erkannt.
+
+---
+
+## 8. Häufige Fehler
+
+Echte Parser-Fehler, was sie auslöst und wie man sie behebt.
+
+| Sie schrieben | Parser sagt | Behebung |
+|---|---|---|
+| `II-1 -- II-4` wo `II-4` nie deklariert wurde | `Unknown individual 'II-4'` | `II-4` oben deklarieren, oder Inline-Form verwenden: `II-1 -- II-4 [male, unaffected]` |
+| `II-1 [nonbinary]` | Stillschweigend als benutzerdefinierte Eigenschaft gespeichert; Form bleibt Raute | Bennett 2022 unterscheidet zugeordnetes Geschlecht von Identität — `amab`/`afab`/`uaab` verwenden und Identität in `label:` eintragen |
+| `II-3 [twin-mz]` | Als benutzerdefinierte Eigenschaft gespeichert; keine Zwillingslinie gerendert | Zwillings-Notation ist §10 Roadmap |
+| `I-1 -- I-2` gefolgt von `II-1 [male]` am **gleichen Einzug** | Kind wird als neues Top-Level-Individuum geparst, nicht als Nachkomme | Kind-Zeile tiefer einrücken als die Paarungszeile |
+| `I-1 [affected: breast]` ohne passende `legend:` | Merkmal-ID gespeichert, aber keine legende-keyed Füllung gerendert | `legend: breast = "…" (fill: quad-tl)` oben hinzufügen |
+| `II-1[affected]` (kein Leerzeichen, keine Attributtrennung) | Funktioniert bei einem einzelnen Token; bricht bei einem zweiten Attribut | `id` und `[…]` immer mit einem Leerzeichen trennen |
+| Zeile 1 ist `I-1 [male]` ohne `pedigree`-Header | `Expected "pedigree" header` | Mit `pedigree` oder `pedigree "Titel"` beginnen |
+
+---
+
+## 9. Grammatik (EBNF)
+
+```text
+document       = header (blank | comment | legend | individual | couple-block)*
+
+header         = "pedigree" ( ":" mode )? ( WS quoted-string )? NEWLINE
+mode           = [A-Za-z] [A-Za-z0-9_-]*
+quoted-string  = '"' any-char-but-quote* '"'
+
+legend         = INDENT "legend:" WS id WS "=" WS quoted-string
+                   ( WS "(" "fill:" fill-value ")" )? NEWLINE
+
+individual     = INDENT id ( "[" attrs "]" )? NEWLINE
+couple-block   = INDENT id WS coupleOp WS right-side NEWLINE
+                   ( deeper-indent child )*
+child          = INDENT id ( "[" attrs "]" )? NEWLINE
+right-side     = id ( "[" attrs "]" )?
+
+coupleOp       = "-/-" | "==" | "--" | "~"
+
+id             = [a-zA-Z] [a-zA-Z0-9_-]*
+attrs          = attr ("," attr)*
+attr           = sex
+               | genetic-status
+               | marker
+               | life-status
+               | digit digit digit digit                         // Geburtsjahr
+               | "label" ":" quoted-string
+               | "affected" ":" trait-id ( "+" trait-id )*
+               | key ":" value                                    // benutzerdefiniert
+
+sex            = "male" | "female" | "unknown" | "amab" | "afab" | "uaab"
+genetic-status = "unaffected" | "affected" | "carrier" | "carrier-x"
+               | "obligate-carrier" | "presymptomatic"
+marker         = "proband" | "consultand" | "evaluated"
+life-status    = "deceased" | "stillborn" | "pregnancy"
+               | "sab" | "tab" | "ectopic"
+fill-value     = "full" | "half-left" | "half-right" | "half-top" | "half-bottom"
+               | "quad-tl" | "quad-tr" | "quad-bl" | "quad-br"
+
+comment        = INDENT ( "#" | "//" | "%%" ) any NEWLINE
+```
+
+Maßgebliche Quelle: `src/diagrams/pedigree/parser.ts`. Falls dies vom Parser abweicht, gewinnt der Parser — bitte öffnen Sie ein Issue.
+
+---
+
+## 10. Normkonformität
+
+Schematex-Stammbäume folgen **Bennett, R.L. et al. (2022), *The evolving pedigree: Updating to reflect modern family structures, sex, and gender*** für Formsemantik, Status-Füllungen und die Proband/Consultand-Konventionen. Frühere Revisionen (Bennett 1995, 2008) bleiben eine gültige Referenz für die klassische Teilmenge.
+
+Was heute implementiert ist im Vergleich zum Standard:
+
+- ✅ Kernformen (Quadrat / Kreis / Raute) mit Bennett-2022-AMAB/AFAB/UAAB-Semantik
+- ✅ Vollständiger genetischer Statussatz (affected / carrier / carrier-x / obligate-carrier / presymptomatic / unaffected)
+- ✅ Proband-, Consultand-, Evaluated-Marker
+- ✅ Lebensstatus-Modifikatoren (deceased, stillborn, pregnancy, SAB, TAB, ectopic)
+- ✅ Paar-Operatoren: gepaart / getrennt / blutsverwandt / keine Nachkommen
+- ✅ Mehrfachzustands-Quadrantenfüllungen mit `legend:`-Einträgen
+- ⏳ Zwillings-Notation (monozygot / dizygot / unbekannte Zygotie)
+- ⏳ Adoptions-Klammer-Notation (adopted-in, adopted-out)
+- ⏳ Assistierte Reproduktion (Spendereizel/-samen/-embryo, Leihmutterschaft, IVF)
+- ⏳ Keine-Nachkommen-nach-Wahl- und Unfruchtbarkeits-Marker
+
+Referenzen:
+
+- Bennett, R.L., French, K.S., Resta, R.G., & Austin, J. (2022). *Practice resource-focused revision: Standardized pedigree nomenclature update centered on sex and gender inclusivity.* Journal of Genetic Counseling, 31(6), 1238–1249.
+- Bennett, R.L., Steinhaus French, K., Resta, R.G., & Doyle, D.L. (2008). Standardized human pedigree nomenclature: Update and assessment. *J Genet Couns*, 17(5), 424–433.
+- Bennett, R.L. et al. (1995). Recommendations for standardized human pedigree nomenclature. *Am J Hum Genet*, 56(3), 745–752.
+
+---
+
+## 11. Verwandte Beispiele
+
+Sofort einsetzbare Szenarien aus der Beispielgalerie:
+
+<RelatedExamples slugs={[
+  'pedigree-brca1',
+  'pedigree-cystic-fibrosis',
+  'pedigree-hemophilia',
+]} />
+
+---
+
+## 12. Roadmap
+
+**Geplant — noch nicht parsebar.** Verwenden Sie diese heute nicht in generiertem DSL; der Parser wird sie ablehnen oder als ungenutzte benutzerdefinierte Eigenschaften speichern.
+
+- **Zwillings-Notation** — `twin-mz` (monozygot), `twin-dz` (dizygot), `twin-unknown`.
+- **Adoptions-Klammern** — `adopted-in`, `adopted-out` (eingeklammerte Form, gestrichelte Linie zu biologischen Eltern).
+- **Assistierte Reproduktion** — `donor-egg`, `donor-sperm`, `donor-embryo`, `surrogate` und eine `ivf`-Annotation auf der Paarungszeile.
+- **Keine-Nachkommen-Marker** — `no-children` (nach Wahl) und `infertile`-Drop-Line-Annotationen.
+- **Geschlechtsidentitäts-Annotation** — ein strukturiertes Attribut, das vom Geschlecht bei der Geburt getrennt ist, anstatt es in `label:` einzustopfen.
+- **Drillinge und höhergradige Geburten** — `triplet-mz`, `triplet-dz`.
+
+Verfolgen Sie die GitHub-Issues, wenn Sie eines davon früher benötigen.

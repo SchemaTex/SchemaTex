@@ -1,0 +1,306 @@
+---
+title: 方塊圖（Block Diagram）
+---
+
+## 關於方塊圖
+
+**方塊圖**（block diagram）將系統建模為一組以有向訊號線連接的功能方塊。每個方塊代表一個元件，其行為由轉移函數或描述性標籤表示；訊號沿著定義的方向流經方塊。控制工程師用它設計回授迴路，訊號處理工程師用它記錄濾波器鏈，系統工程師用它分解複雜架構。定義性視覺元素——矩形方塊與圓形加法節點——是源自控制系統分析（Ogata、Franklin、Nise）的慣例，並被所有描述回授系統的資料手冊和教科書所沿用。
+
+Schematex 遵循控制系統教科書中使用的 **Laplace 域轉移函數慣例**：方塊以轉移函數標記，加法節點帶有明確的 `+`／`−` 極性符號，訊號上的 `discrete` 旗標以虛線渲染取樣資料路徑。本頁記錄解析器目前接受的語法。權威參考：Ogata（2010）*Modern Control Engineering*；Franklin, Powell & Emami-Naeini（2018）*Feedback Control of Dynamic Systems*。
+
+<Playground initial={`blockdiagram "Audio dynamics processor"
+# Signal chain
+in_s = signal("Input")
+gate_s = signal("gated")
+comp_s = signal("compressed")
+out_s = signal("Output")
+# Blocks
+gate = block("Noise gate") [role: controller]
+comp = block("Compressor") [role: plant]
+eq = block("3-band EQ") [role: generic]
+limiter = block("Limiter") [role: actuator]
+# Level detection side-chain
+detect = block("Level detect") [role: sensor]
+sum_g = sum(+in_s, -detect)
+# Forward path
+in -> in_s
+in_s -> sum_g
+sum_g -> gate
+gate -> gate_s
+gate_s -> comp
+comp -> comp_s
+comp_s -> eq
+eq -> limiter
+limiter -> out_s
+# Side-chain feedback
+limiter -> detect`} height={460} />
+
+---
+
+## 1. 你的第一個方塊圖
+
+最小實用的方塊圖：一個控制器、一個受控系統、一個回授迴路。
+
+<Playground initial={`blockdiagram "Temperature control"
+ctrl = block("PID") [role: controller]
+plant = block("Heater") [role: plant]
+sensor = block("Thermocouple") [role: sensor]
+err = sum(+ref, -measured)
+ref = signal("Setpoint")
+measured = signal("T_measured")
+in -> ref
+ref -> err
+err -> ctrl
+ctrl -> plant
+plant -> measured
+measured -> sensor
+sensor -> err`} />
+
+四條規則涵蓋 80% 的使用情境：
+
+1. 以 `blockdiagram` 開頭，後面可選擇性地加上引號標題。
+2. 用 `ID = block("label")` 宣告每個元件，用 `ID = sum(+a, -b)` 宣告每個加法節點，用 `ID = signal("label")` 宣告每個具名訊號。
+3. 用 `->` 連接元件。可在一行中鏈接多個步驟：`A -> B -> C`。
+4. 選擇性地在連線末尾加上標籤注記：`A -> B ["E(s)"]`。
+
+> 註解必須以 `#` 單獨成行。
+
+---
+
+## 2. 方塊
+
+方塊代表任何功能元素——控制器、受控系統、濾波器、致動器、感測器。標籤通常是轉移函數或描述性名稱。
+
+**語法：** `ID = block("label") [role: X]`
+
+| 屬性 | 值 | 效果 |
+|---|---|---|
+| `role: plant` | `plant`、`controller`、`sensor`、`actuator`、`reference`、`disturbance`、`generic` | 視覺顏色編碼；`generic` 為預設值 |
+| `route: above` | `above`、`below` | 回授和前饋方塊的佈線提示 |
+
+**ID 規則。** 必須以字母或底線開頭，後跟字母、數字或底線：`[A-Za-z_]\w*`。
+
+<Playground initial={`blockdiagram "Block roles"
+ref_block = block("r(t)") [role: reference]
+ctrl = block("C(s)") [role: controller]
+act = block("Actuator") [role: actuator]
+plant = block("G(s)") [role: plant]
+sensor = block("H(s)") [role: sensor]
+dist = block("d(t)") [role: disturbance]
+ref_block -> ctrl
+ctrl -> act
+act -> plant
+plant -> sensor
+dist -> plant`} />
+
+---
+
+## 3. 加法節點
+
+加法節點將多個訊號合併為一個，每個輸入帶有明確的極性。它渲染為帶有 `+`／`−` 符號的圓圈——標準的控制系統符號。
+
+**語法：** `ID = sum(+a, -b, +c, …)`
+
+- 每個輸入是帶符號的 ID：`+x` 加入訊號 `x`，`-y` 減去訊號 `y`。
+- 沒有符號的輸入被視為正值。
+- 加法節點 ID 隨後作為連線的目標使用，就像方塊 ID 一樣。
+
+<Playground initial={`blockdiagram "Error with disturbance rejection"
+ctrl = block("PI C(s)") [role: controller]
+plant = block("G(s)") [role: plant]
+sensor = block("H(s)") [role: sensor]
+# Main error junction: add reference, subtract feedback
+err = sum(+r, -ym)
+# Disturbance junction: add plant input, add disturbance
+disturb = sum(+ctrl_out, +d)
+r = signal("r (setpoint)")
+ym = signal("y_m")
+ctrl_out = signal("u(t)")
+in -> r
+r -> err
+err -> ctrl
+ctrl -> ctrl_out
+ctrl_out -> disturb
+disturb -> plant
+plant -> ym
+ym -> sensor
+sensor -> err`} />
+
+---
+
+## 4. 訊號
+
+訊號宣告建立一個具名訊號節點，解析器將其內嵌為邊緣標籤。訊號是穿透式的：當解析器看到 `A -> sig` 和 `sig -> B` 時，會將它們合併為從 `A` 到 `B` 的單一邊，並以訊號的顯示文字標記。
+
+**語法：** `ID = signal("label") [discrete]`
+
+- 省略 `[discrete]` 表示連續訊號（實線）。
+- 加上 `[discrete]` 表示取樣資料訊號（虛線）。
+
+```
+e_sig = signal("E(s)")
+u_sig = signal("U(s)") [discrete]
+```
+
+訊號純粹是標記的便利方式——你也可以直接用尾綴屬性標記邊（見第 5 節）。
+
+---
+
+## 5. 連線
+
+連線是 `from -> to`。`->` 運算子始終產生帶箭頭的有向線。
+
+**單步：** `A -> B`
+
+**鏈接：** `A -> B -> C` — 等同於 `A -> B` 和 `B -> C`，寫在一行。
+
+**帶訊號標籤：** 在鏈的末尾附加 `["label text"]`。標籤僅套用於最後一個步驟。
+
+```
+ctrl -> plant ["U(s)"]
+```
+
+**帶 discrete 旗標：** 附加 `[discrete]` 使最後一個箭頭變為虛線。
+
+```
+plant -> adc ["y"] [discrete]
+```
+
+**同時有標籤和 discrete：** 使用 `[label: "Y(s)", discrete]`（逗號分隔）。
+
+```
+adc -> ctrl [label: "y[k]", discrete]
+```
+
+<Playground initial={`blockdiagram "Mixed continuous/discrete"
+ctrl = block("Digital PID") [role: controller]
+dac = block("DAC") [role: actuator]
+plant = block("G(s)") [role: plant]
+adc = block("ADC") [role: sensor]
+err = sum(+r, -yk)
+r = signal("r[k]") [discrete]
+yk = signal("y[k]") [discrete]
+in -> r
+r -> err
+err -> ctrl
+ctrl -> dac [label: "u[k]", discrete]
+dac -> plant ["u(t)"]
+plant -> adc ["y(t)"]
+adc -> yk [discrete]
+yk -> err`} />
+
+---
+
+## 6. 標籤與註解
+
+- **標題：** `blockdiagram "My System"` — 第一行，加引號。
+- **方塊標籤：** `block("…")` 內的引號字串——出現在方塊內部。
+- **訊號標籤：** `signal("…")` 內的引號字串——出現在合併後的邊上。
+- **邊緣標籤：** 連線末尾的 `["text"]` 或 `[label: "text"]`——出現在該箭頭上。
+- **註解：** 行首的 `#`（前置空白後）。不支援行內尾隨註解。
+
+---
+
+## 7. 保留字與跳脫
+
+**行首保留：** `blockdiagram`（標頭）。
+
+**結構關鍵字**（避免作為 block／signal／sum 的 ID 以防歧義）：`block`、`signal`、`sum`。
+
+**`in` 和 `out`** 是圖表外部邊界的慣例 ID——解析器將其視為普通識別符，但渲染器將其作為隱含的來源／匯聚節點。使用 `in -> r` 和 `plant -> out` 是慣用寫法。
+
+**含空格的字串**必須在 `block("…")` 和 `signal("…")` 標籤中加雙引號。
+
+---
+
+## 8. 常見錯誤
+
+| 你寫了 | 解析器說 | 修正方式 |
+|---|---|---|
+| `G = block(G(s))` （無引號）| 解析失敗——標籤必須加引號 | `G = block("G(s)")` |
+| `err = sum(r, -ym)` （無 `+`）| `r` 被視為 `+r`——可行，但不明確 | 寫 `sum(+r, -ym)` 更清楚 |
+| `ctrl -> plant, plant -> out` （同一行用逗號）| `,` 不是分隔符——解析失敗 | 每行一個連線，或用鏈接：`ctrl -> plant -> out` |
+| `s1 = signal("E(s)") [label: "E"]` | `label:` 不適用於訊號；用在連線上 | 從訊號宣告中移除 `label:` |
+| `role: filter` | 未知角色——靜默預設為 `generic` | 使用 `plant`、`controller`、`sensor`、`actuator`、`reference`、`disturbance` 或 `generic` |
+| `A -> B [discrete, label: "e"]` — 先寫標籤失敗 | `[…]` 內屬性順序無關，但純 `"text"` 簡寫只在它是唯一項目時有效 | 使用 `[label: "e", discrete]` |
+
+---
+
+## 9. 語法（EBNF）
+
+```text
+document       = header (blank | comment | block-def | sum-def | signal-def | connection)*
+
+header         = "blockdiagram" ( WS quoted-string )? NEWLINE
+quoted-string  = '"' any-char-but-quote* '"'
+
+block-def      = id WS "=" WS "block" "(" quoted-string ")" ( "[" block-attrs "]" )? NEWLINE
+block-attrs    = block-attr ("," block-attr)*
+block-attr     = "role:" role | "route:" ("above" | "below")
+role           = "plant" | "controller" | "sensor" | "actuator"
+               | "reference" | "disturbance" | "generic"
+
+sum-def        = id WS "=" WS "sum" "(" sum-inputs ")" NEWLINE
+sum-inputs     = sum-input ("," sum-input)*
+sum-input      = ("+" | "-")? id
+
+signal-def     = id WS "=" WS "signal" "(" quoted-string ")" ( "[" "discrete" "]" )? NEWLINE
+
+connection     = id ("->" id)+ ( "[" conn-attrs "]" )? NEWLINE
+conn-attrs     = quoted-string                          # shorthand: bare label only
+               | conn-attr ("," conn-attr)*
+conn-attr      = "label:" quoted-string | "discrete"
+
+id             = [A-Za-z_] \w*
+comment        = "#" any NEWLINE
+```
+
+權威來源：`src/diagrams/blockdiagram/parser.ts`。若此文件與解析器不符，以解析器為準——請開 issue 回報。
+
+---
+
+## 10. 標準合規性
+
+Schematex 方塊圖遵循 Ogata（2010）和 Franklin 等人（2018）的 **Laplace 域轉移函數**慣例——每本控制系統教科書中都有的方塊、加法節點和有向訊號線符號。
+
+目前已實作：
+
+- ✅ 帶轉移函數標籤的矩形方塊
+- ✅ 帶 `+`／`−` 極性輸入的圓形加法節點
+- ✅ 具名訊號節點（穿透式，合併為邊緣標籤）
+- ✅ 帶鏈接的有向連線（`A -> B -> C`）
+- ✅ 邊緣標籤——箭頭上的訊號名稱
+- ✅ `discrete` 旗標——取樣資料訊號的虛線
+- ✅ 角色注記（`plant`、`controller`、`sensor`、`actuator`、`reference`、`disturbance`、`generic`）
+- ✅ `route: above | below` 回授／前饋佈局提示
+- ⏳ 分支／提取點——單一訊號扇出至兩個目的地的明確點符號
+- ⏳ 邊界框——帶標籤的虛線子系統包圍框
+- ⏳ 雙向箭頭——`<->` 用於雙向訊號交換
+- ⏳ 匯流排記法——代表訊號向量的粗線
+
+參考資料：
+
+- Ogata, K. (2010). *Modern Control Engineering*, 5th ed. Prentice Hall.
+- Franklin, G.F., Powell, J.D. & Emami-Naeini, A. (2018). *Feedback Control of Dynamic Systems*, 8th ed. Pearson.
+
+---
+
+## 11. 相關範例
+
+<RelatedExamples slugs={[
+  'block-pid-loop',
+]} />
+
+---
+
+## 12. 路線圖
+
+**計劃中——目前尚不可解析。** 請勿在生成的 DSL 中使用這些語法；解析器將拒絕或忽略它們。
+
+- **分支／提取點符號** — 明確的 `dot` 原語，表示一個輸出扇出至多個目的地（目前渲染器在 ID 被用作來源超過一次時會自動插入分支，但沒有明確語法）。
+- **子系統邊界框** — `boundary "label" { … }` 方塊，繪製包含所含方塊的虛線矩形，用於多迴路和子系統視圖。
+- **雙向連線** — `A <-> B` 用於具有相互資訊交換的元件（例如匯流排介面）。
+- **匯流排（向量訊號）記法** — 帶斜線和計數注記 `//n` 的粗線，表示 n 寬的訊號匯流排。
+- **巢套子系統** — 內部本身是方塊圖的 `block`，可在渲染輸出中折疊。
+
+如果你急需以上任何功能，請在 GitHub issues 中追蹤。

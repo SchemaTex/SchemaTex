@@ -1,0 +1,258 @@
+---
+title: PERT / CPM 網路圖
+---
+
+## 關於 PERT 圖
+
+**PERT 圖**（計畫評核術，Program Evaluation and Review Technique）——以及其近親 **CPM**（要徑法，Critical Path Method）——是現代專案管理的基礎排程圖。誕生於 1959 年（PERT 源自美國海軍北極星計畫，CPM 源自杜邦公司），兩者逐漸合流為 [PMI PMBOK 指南](https://www.pmi.org/pmbok-guide-standards)教授的**節點上活動法 / 優先順序圖示法（AON/PDM）**。你只需輸入任務、工期及依賴關係；排程——最早開始、最早完成、最晚開始、最晚完成、浮時，以及**要徑**——都是*自動計算*出來的。
+
+最後這一點正是 Schematex `pert` 引擎與所有拖放式「PERT 圖製作工具」的差異所在。大多數工具只提供形狀庫，讓你自己填寫六格欄位並用計算機算出要徑。Schematex 自動執行正向和反向計算，並以紅色標示要徑。它不同於**[流程圖](/docs/flowchart)**（無排程功能）、**[時間軸](/docs/timeline)**（無要徑計算）和**[BPMN](/docs/bpmn)**（組織流程，非一次性專案排程）。
+
+<Playground initial={`pert
+title: "Q3 Product Launch"
+unit: days
+
+task A "Market research"     duration: 5
+task B "Design mockups"      duration: 8  after: A
+task C "Backend API"         duration: 15 after: A
+task D "Frontend build"      duration: 10 after: B, C
+task E "QA / testing"        duration: 5  after: D
+task F "Marketing collateral" duration: 7 after: B
+task G "Launch event"        duration: 2  after: E, F`} height={520} />
+
+---
+
+## 1. 第一張圖
+
+每份文件以 `pert` 關鍵字開頭，加上可選的標頭，再逐行寫 `task` 活動：
+
+```
+pert
+unit: days
+
+task A "Market research" duration: 5
+task B "Design mockups"  duration: 8 after: A
+task C "Backend API"     duration: 15 after: A
+task D "Frontend build"  duration: 10 after: B, C
+```
+
+每個任務包含一個 `<id>`、引號括起的 `<標籤>`、`duration:` 工期，以及可選的 `after:` 前置任務清單。引擎會自動加入隱形的開始節點和結束節點，執行排程計算，並為每個任務繪製六格活動方塊。你不需要輸入 ES/EF/LS/LF——這些都是計算出來的。
+
+標頭接受以下設定：
+
+- `title: "…"` — 繪製在圖表上方的標題。
+- `unit: days | weeks | hours | abstract` — 時間單位（預設 `days`；純粹是標籤，引擎不感知日曆）。
+- `direction: LR | TB` — 由左至右（預設）或由上至下。
+- `layout: network | timescaled` — 分層網路（預設）或按時間比例的視圖（§6）。
+- `critical-tolerance: <n>` — 浮時 ≤ 此值計為要徑（預設 `0`；三點估計專案設 `0.001`）。
+- `show-sentinels: true` — 繪製合成的開始 / 結束節點（預設隱藏）。
+
+---
+
+## 2. 六格活動方塊
+
+每個任務渲染為標準的 3×2 PERT/CPM 矩形：
+
+```
+┌──────────┬────────────┬──────────┐
+│  ES      │  Duration  │   EF     │
+├──────────┴────────────┴──────────┤
+│         Task Name (ID)           │
+├──────────┬────────────┬──────────┤
+│  LS      │  Slack     │   LF     │
+└──────────┴────────────┴──────────┘
+```
+
+- **ES / EF** — 最早開始 / 最早完成，來自正向計算。
+- **LS / LF** — 最晚開始 / 最晚完成，來自反向計算。
+- **浮時**（總浮時）= LS − ES = LF − EF。浮時為零代表該活動在要徑上。
+
+要徑活動有**紅色邊框**和粗體的 `0` 浮時；專案要徑呈現為一條不間斷的紅線。所有欄位也會映射到 `data-*` 屬性（`data-es`、`data-slack`、`data-critical`……），讓你無需重新計算即可查詢 SVG。
+
+**關於雙色配色。** PERT 圖刻意只用兩種顏色。要徑用紅色是業界真實的慣例——MS Project、Oracle Primavera P6 和 PMBOK 圖示都這樣用，因為「要徑 vs. 非要徑」正是這張圖存在的目的。其他一切保持中性的主題藍色。加入更多顏色會暗示 PERT 語義所沒有的分類；若需要按團隊或階段分組，請使用[泳道](#7-swimlanes-tags-classes-and-comments)（`lane:`）而非顏色。
+
+---
+
+## 3. 依賴關係（FS / SS / FF / SF + 延遲/提前）
+
+`after:` 接受以逗號分隔的前置任務參考清單。預設關係是**完成到開始（FS）**——一個任務在其前置任務完成後才開始：
+
+```
+task D "Frontend build" duration: 10 after: B, C
+```
+
+現代排程需要另外三種優先順序圖示關係，以及**延遲**（lag，正延遲）或**提前**（lead，負延遲）：
+
+```
+task B "Stakeholder interviews" duration: 6 after: A SS+1   # start 1d after A starts
+task I "Documentation"          duration: 4 after: D+3      # FS with a 3-day lag
+task J "Translation"            duration: 3 after: I SS-1   # start 1d before I starts (lead)
+task K "Sign-off"               duration: 1 after: I FF     # finishes when I finishes
+task L "Press release"          duration: 2 after: G SF+1   # start-to-finish (rare)
+```
+
+| 形式 | 意義 |
+|------|---------|
+| `after: A` | 完成到開始，無延遲（最常見情況） |
+| `after: A+2` 或 `after: A+2d` | 帶 2 單位延遲的 FS |
+| `after: A SS` / `A FF` / `A SF` | 開始到開始 / 完成到完成 / 開始到完成 |
+| `after: A SS+2d` / `A FF-1d` | 任意類型帶延遲（`+`）或提前（`-`） |
+
+延遲單位後綴（`d` / `w` / `h`）必須與圖表的 `unit:` 相符或省略；混用單位會被拒絕。FS 無延遲時不加標籤；SS/FF/SF 始終在邊上顯示類型。
+
+---
+
+## 4. 三點（PERT）估計
+
+將工期寫為 `O/M/P`（樂觀 / 最可能 / 悲觀），引擎計算 beta 分佈期望工期 **te = (O + 4M + P) / 6** 和變異數 **σ² = ((P − O)/6)²**：
+
+```
+pert
+critical-tolerance: 0.01
+task A "Spec"   duration: 2/3/5    # te = 3.17, σ² = 0.25
+task B "Build"  duration: 5/8/14   after: A   # te = 8.50, σ² = 2.25
+task C "Test"   duration: 3/4/6    after: B
+task D "Deploy" duration: 1/2/3    after: C
+```
+
+工期欄位顯示 `te`；名稱下方出現小型 `σ=…` 標注；圖腳報告專案層級標準差（要徑變異數之和的平方根）。由於浮點數 `te` 值可能導致可見要徑偏移，請使用 `critical-tolerance: 0.01`。
+
+---
+
+## 5. 里程碑
+
+里程碑是零工期的檢查點，以菱形繪製。使用 `milestone` 旗標或 `duration: 0`：
+
+```
+task P "Cutover weekend" milestone after: O
+task Q "Go-live"         duration: 0 after: P
+```
+
+---
+
+## 6. 按時間比例的版面
+
+`layout: timescaled` 從分層網路切換到網路甘特混合視圖：每個活動的 **x 位置與其 ES 成比例**，**寬度與其工期成比例**，底部有一條時間單位軸。活動被打包到各欄中以避免重疊。
+
+```
+pert
+layout: timescaled
+unit: days
+
+task A "Inventory"     duration: 5
+task B "Interviews"    duration: 6  after: A SS+1
+task C "Design"        duration: 10 after: A, B
+task D "Build"         duration: 15 after: C
+task E "Pilot"         duration: 7  after: D
+```
+
+這是網路風格的時間視圖；若需要每個任務一列的日曆甘特圖，請使用 `layout: gantt`（見下文）。
+
+### 甘特圖（`gantt` / `layout: gantt`）
+
+以 **`gantt`** 標頭起頭的文件（等同於 `pert` + `layout: gantt`）可生成日曆甘特圖。它使用**相同的排程引擎**——因此任務條是根據**計算出的** ES/EF 放置，**要徑以紅色繪製**。這是手動放置的甘特圖（Mermaid）做不到的：Mermaid 中你要自己輸入日期，這裡你只需輸入依賴關係，引擎自動排程。
+
+```
+gantt "Website Relaunch"
+start: 2026-07-01
+calendar: 5day
+task A "Discovery"      duration: 5  lane: "Plan"
+task B "Wireframes"     duration: 8  after: A   lane: "Design"
+task C "Visual design"  duration: 6  after: B   lane: "Design"  progress: 40%
+task D "Frontend build" duration: 12 after: C   lane: "Build"
+task E "Backend API"    duration: 10 after: A   lane: "Build"
+task F "Integration"    duration: 5  after: D, E lane: "Build"
+task LAUNCH "Go live"   milestone    after: F   lane: "Build"
+today: 2026-07-20
+```
+
+- **`start: YYYY-MM-DD`** 將軸轉換為日曆日期（省略則為從零開始的天數偏移軸）。
+- **`calendar: continuous`**（預設）涵蓋週末；**`calendar: 5day`** 從時間軸中排除週六/週日。
+- **`lane: "…"`** 將任務分組為帶標籤的**區段**；**`progress: 60%`** 繪製完成度疊加層；**`milestone`** 是菱形；**`today: YYYY-MM-DD`** 在今天插入標記線。
+- 每個任務一列，按宣告順序排列。非要徑任務條以靜止藍色繪製，並標注**浮時**；要徑任務條為紅色。
+
+### 箭線上活動圖（`layout: aoa`）
+
+`layout: aoa` 渲染在教科書和 Investopedia 上常見的舊式**箭線上活動（ADM）**標注：編號的**事件**圓圈、**以帶標籤箭線表示的活動**，以及在活動有兩個或更多前置任務時自動插入的虛線**虛活動**。你使用相同的節點上活動 DSL 書寫——Schematex 為你建立事件圖並編號事件。
+
+```
+pert
+layout: aoa
+unit: days
+
+task A "create schedule" duration: 10
+task B "buy hardware"    duration: 5
+task C "programming"     duration: 20 after: A
+task D "installation"    duration: 5  after: B
+task E "conversion"      duration: 15 after: D
+task F "test code"       duration: 20 after: C, E
+task G "write manual"    duration: 15 after: E
+```
+
+AOA 是**傳統**標注（PMBOK 7 已放棄；AON 是現代標準），且只能表達**完成到開始**的邏輯——SS/FF/SF 和延遲/提前會被攤平為帶警告的 FS。用於教學、備考或與現有教科書圖示匹配；實際排程請使用預設的 `network`（AON）版面。
+
+---
+
+## 7. 泳道、標籤、樣式類別與注解
+
+在任意任務上加 `lane: "…"`，網路圖會按責任團隊、階段或負責人重新分組為水平泳道——排程計算完全不受影響：
+
+```
+task T1 "Support Account Deletion" duration: 3  lane: "Customer Account"
+task T2 "Design a New Theme"        duration: 8  lane: "Shopping Site"
+task T3 "Apply New Theme"           duration: 15 after: T2 lane: "Shopping Site"
+```
+
+泳道按第一次宣告的順序排列，每條泳道是一個帶狀列，左側有標籤溝槽。泳道是同一 AON 網路的呈現方式，不是不同的版面模式——只要任意任務宣告了泳道，就會自動啟用。
+
+```
+task X "External vendor work" duration: 10 after: A tags: vendor, external class: secondary
+# this is a comment
+```
+
+`tags:` 在節點群組上輸出 `data-tag="…"`，`class:` 加入 CSS 樣式類別供下游主題使用。`#` 和 `//` 開始行尾注解。
+
+---
+
+## 8. 語法（EBNF）
+
+```text
+document    = "pert" NEWLINE header* task+
+header      = "title:" quoted
+            | "unit:" ("days" | "weeks" | "hours" | "abstract")
+            | "direction:" ("LR" | "TB")
+            | "layout:" ("network" | "timescaled" | "aoa")
+            | "critical-tolerance:" number
+            | "show-sentinels:" boolean
+
+task        = "task" IDENT quoted "duration:" duration ("after:" reflist)? "milestone"? attrs?
+            | "task" IDENT quoted "milestone" ("after:" reflist)? attrs?
+duration    = number | number "/" number "/" number          ; deterministic or O/M/P
+reflist     = ref ("," ref)*
+ref         = IDENT (WS deptype)? laglead?
+            | IDENT "+" number unit?                          ; attached FS lag sugar
+deptype     = "FS" | "SS" | "FF" | "SF"
+laglead     = ("+" | "-") number unit?
+unit        = "d" | "w" | "h"
+attrs       = ("tags:" idlist)? ("class:" IDENT)? ("lane:" quoted)?
+```
+
+---
+
+## 9. 標準合規
+
+Schematex `pert` 按 **PMI PMBOK 7** 和 Moder、Phillips 與 Davis（1983 年）實作**節點上活動法 / 優先順序圖示法**，六格方塊慣例參考 Kerzner 和 Oracle Primavera P6。正向/反向計算、總浮時、要徑、所有四種 PDM 依賴類型含延遲/提前，以及三點估計（te + 變異數）均精確計算。舊式**箭線上活動**標注作為可選的傳統視圖提供（`layout: aoa`），用於教學和教科書對照。v0.1 不在範圍內的功能：資源平整 / RCPSP、蒙地卡羅排程風險模擬、感知日曆的工期，以及 MS Project / Primavera 匯入匯出。完整規格見 `docs/reference/32-PERT-STANDARD.md`。
+
+---
+
+## 相關範例
+
+來自範例庫的即用情境：
+
+<RelatedExamples slugs={[
+  'pert-product-launch',
+  'pert-aoa-software-project',
+  'pert-swimlane-online-shop',
+  'pert-three-point-estimation',
+  'pert-migration-timescaled',
+]} />

@@ -1,0 +1,241 @@
+---
+title: UML 序列图
+---
+
+## 关于序列图
+
+**序列图**展示参与者如何**随时间**交换消息：生命线从上到下延伸，消息在生命线之间从左到右传递，纵轴表示顺序。它由 **[UML](https://www.omg.org/spec/UML/2.5.1/) 2.5.1 §17（交互）**定义，是工程师用来厘清 API 调用流程、认证握手或分布式协议的首选图表——*谁调用谁、按什么顺序、返回什么*。
+
+Schematex 实现了完整的 UML 符号，在生成时还**接受 Mermaid `sequenceDiagram` 方言**——直接粘贴 Mermaid 代码即可渲染。在 `sequenceDiagram` 头部下，箭头采用 Mermaid 的含义（`->>` 同步调用，`-->>` 回复，`-)` 异步）；在原生 `sequence "Title"` 头部下，保留 Schematex 原有含义（`->>` = 异步）。大多数工具仅支持常用子集（`alt`/`opt`/`loop`/`par`），而 Schematex 实现了全部**十二种**组合片段运算符和 `ref` 交互使用框，因为这些正是专业人员在处理真实交互时所需要的。与**[用例图（usecase）](/docs/usecase)**（系统范围，而非消息顺序）、**[状态图（state）](/docs/state)**（单个对象的状态，而非对象间消息）以及**[BPMN](/docs/bpmn)**（组织流程，而非调用序列）有明确区别。
+
+<Playground initial={`sequence "Login flow"
+  actor User
+  participant Web as "Web App"
+  control Auth
+  database DB
+  User -> Web : submit(credentials)
+  activate Web
+  Web ->+ Auth : verify(credentials)
+  Auth ->+ DB : SELECT user
+  DB --> Auth : row
+  deactivate DB
+  alt [credentials valid]
+    Auth --> Web : token
+    Web --> User : 200 OK
+  else [invalid]
+    Auth --> Web : 401
+    Web --> User : error
+  end
+  deactivate Auth
+  deactivate Web
+  note over User, Web : session cookie set`} height={560} />
+
+---
+
+## 1. 第一张图
+
+每个文档以 `sequence` 关键字和可选的 `"标题"` 开头。参与者无需事先声明——在消息中首次出现时即自动成为生命线：
+
+```
+sequence
+  Alice -> Bob : Authentication Request
+  Bob --> Alice : Authentication Response
+```
+
+生命线按首次使用的顺序从左到右排列。`->` 为同步调用（实线，实心箭头）；`-->` 为回复（虚线，空心箭头）。`:` 后的文字为消息标签。
+
+---
+
+## 2. 参与者
+
+显式声明参与者以设置其**类型**、**别名**或固定其**顺序**：
+
+```
+sequence
+  actor User
+  participant Web as "Web App"
+  boundary LoginUI
+  control Auth
+  entity Account
+  database DB
+  collections Sessions
+  queue Events
+```
+
+| 类型 | 渲染方式 |
+|------|-------------|
+| `participant`（默认） | 圆角分类器框 |
+| `actor` | 火柴人 |
+| `boundary` / `control` / `entity` | Jacobson 鲁棒性图标（⊢◯ / ◯ 带箭头 / ◯ 带下划线） |
+| `database` | 圆柱体 |
+| `collections` / `queue` | 带 `«构造型»` 标注的方框 |
+
+- `as "标签"` 设置显示名称（引号可选；支持 `「…」` CJK 引号）。
+- 自定义**构造型**写在声明后的双尖括号或 ASCII 尖括号中——它会覆盖默认标签：`actor Printer «system»`、`participant Bus as "Event Bus" <<service>>`。
+
+---
+
+## 3. 消息
+
+箭头符号决定 UML 语义：
+
+| DSL | 含义 | 渲染方式 |
+|-----|---------|-----------|
+| `A -> B` | 同步调用 | 实线，**实心**箭头 |
+| `A ->> B` | 异步信号 | 实线，**空心**箭头 |
+| `A --> B` | 回复/返回 | **虚线**，空心箭头 |
+| `A -x B` | 丢失消息 | 线条末端为实心圆 |
+| `o-> B` | 发现消息 | 线条起点为实心圆 |
+| `A -> A` | 自消息 | 弯曲回到同一生命线 |
+
+箭头两侧的空格可省略（`A->B` 同样有效），标签为自由文本——包括返回值，例如 `aHotel -> aHotel : available(roomId, date): isRoom`。
+
+---
+
+## 4. 激活（执行规格）
+
+生命线上的细条表示其处于活跃状态。可用显式语句开关，也可在消息上使用 `+` / `-` 后缀：
+
+```
+sequence
+  participant Client
+  participant Server
+  Client ->+ Server : request()
+  Server ->> Server : validate()
+  Server -->- Client : response
+```
+
+箭头后的 `+` 在消息到达时激活**接收方**；`-` 在消息发出后停用**发送方**。显式形式为 `activate X` / `deactivate X`。同一生命线上的重叠激活条会水平偏移嵌套显示。
+
+---
+
+## 5. 对象创建与销毁
+
+```
+sequence
+  participant Factory
+  Factory -> *Worker : «create»
+  Factory -> Worker : work()
+  destroy Worker
+```
+
+在接收方前加 `*` 表示该消息**实例化**它——新生命线的头部绘制在消息到达行处，而非顶部。`destroy X` 用 ✕ 结束生命线并停止其时间轴。
+
+---
+
+## 6. 组合片段
+
+组合片段是围绕某区域的带标签框架。Schematex 实现了完整的 UML `InteractionOperatorKind` 集合：
+
+| 运算符 | 含义 | 操作数 |
+|----------|---------|----------|
+| `alt` | 分支（if/else-if/else） | `else`，每个带守卫 |
+| `opt` | 仅在守卫成立时执行 | 一个，带守卫 |
+| `loop` | 重复 | 一个；守卫可为 `(min,max)` |
+| `par` | 并发操作数 | `and` |
+| `break` | 异常退出 | 一个，带守卫 |
+| `critical` | 原子/不可交织 | 一个 |
+| `seq` / `strict` | 弱/强顺序 | `and` |
+| `neg` | 无效轨迹（以着色渲染） | 一个 |
+| `ignore` / `consider` | 消息集过滤 `{m1, m2}` | 一个 |
+| `assert` | 唯一有效延续 | 一个 |
+
+```
+sequence
+  actor User
+  participant API
+  User -> API : GET /resource
+  alt [authorized]
+    API --> User : 200 + body
+  else [forbidden]
+    API --> User : 403
+  end
+```
+
+守卫写在运算符（以及 `else`）之后的 `[括号]` 中。片段可嵌套，内层框架自动内缩，整洁地位于父框架内部。
+
+---
+
+## 7. 交互使用（`ref`）
+
+引用另一个交互而非内联展开——这是 UML 保持大型图表可组合的方式：
+
+```
+sequence
+  participant A
+  participant B
+  ref over A, B : Establish session
+  A -> B : poll()
+```
+
+`ref over <生命线> : 名称` 在指定生命线上绘制一个带框方块。大多数工具省略了此功能；它是真实系统分解长流程的方式。
+
+---
+
+## 8. 注释、分隔线、不变量与编号
+
+```
+sequence
+  autonumber 1 1
+  actor Shopper
+  participant Cart
+  == Phase 1: review ==
+  Shopper -> Cart : view items
+  note over Cart : cart persisted in Redis
+  state Cart : ready
+```
+
+- `note over A` / `note over A, B` / `note left of A` / `note right of A` — 折角标注。
+- `== 文字 ==` — 全宽区段分隔线。
+- `state X : 文字` — 生命线上的状态不变量胶囊。
+- `autonumber [起始] [步长]` — 为每条消息添加递增编号前缀。
+
+---
+
+## 9. 语法（EBNF）
+
+```text
+diagram      = "sequence" [ string ] NEWLINE statement*
+statement    = participant | message | activation | note
+             | fragment | ref | divider | invariant | destroy | autonumber
+
+participant  = kind IDENT ("as" label)? stereotype?
+kind         = "participant" | "actor" | "boundary" | "control"
+             | "entity" | "database" | "collections" | "queue"
+stereotype   = "«" TEXT "»" | "<<" TEXT ">>"
+
+message      = IDENT? act? arrow act? ("*")? IDENT? (":" TEXT)?
+arrow        = "->" | "->>" | "-->" | "-x" | "o->"
+act          = "+" | "-"
+activation   = ("activate" | "deactivate") IDENT
+
+fragment     = ("alt"|"opt"|"loop"|"par"|"break"|"critical"|"seq"
+               |"strict"|"neg"|"ignore"|"consider"|"assert") guard? NEWLINE
+                 statement* (("else"|"and") guard? NEWLINE statement*)* "end"
+guard        = "[" TEXT "]" | "(" NUMBER ("," NUMBER)? ")"
+ref          = "ref" "over" IDENT ("," IDENT)* ":" TEXT
+note         = "note" ("over"|"left of"|"right of") IDENT ("," IDENT)? ":" TEXT
+divider      = "==" TEXT "=="
+invariant    = "state" IDENT ":" TEXT
+destroy      = "destroy" IDENT
+autonumber   = "autonumber" NUMBER? NUMBER?
+```
+
+---
+
+## 10. 规范合规性
+
+Schematex 遵循 OMG **UML 2.5.1 §17（交互）**符号规范：同步（实心）vs. 异步（空心）vs. 回复（虚线）箭头，发现/丢失消息端点，执行规格条，全部十二种带守卫操作数的组合片段运算符，`ref` 交互使用框，以及 `boundary`/`control`/`entity` 的 Jacobson 分析类图标。门、协同区域和时间/时长约束超出 v0.1 范围（需要新的布局原语），已列入后续版本规划。完整规范见 `docs/reference/33-SEQUENCE-STANDARD.md`。
+
+---
+
+## 相关示例
+
+来自示例库的即用场景：
+
+<RelatedExamples slugs={[
+  'sequence-login-flow',
+  'sequence-oauth-login',
+  'sequence-object-lifecycle',
+  'sequence-microservices-saga',
+]} />

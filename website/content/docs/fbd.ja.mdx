@@ -1,0 +1,197 @@
+---
+title: ファンクションブロックダイアグラム（FBD）
+---
+
+## ファンクションブロックダイアグラムについて
+
+**ファンクションブロックダイアグラム（FBD）**は、産業オートメーションの国際標準である**[IEC 61131-3:2013](https://en.wikipedia.org/wiki/IEC_61131-3)**が定める5つのPLCプログラミング言語のうちの1つです。生産コードにおいて2番目に多く使われるPLC言語（ラダーに次ぐ）であり、プログラムの一部がパワーレール・ラングリレーよりも**データフロー**として読む方が分かりやすい場合の自然な選択です。AND/ORロジック、タイマー（TON/TOF/TP）、カウンター（CTU/CTD）、比較（EQ/NE/GT/GE/LT/LE）、数学（ADD/SUB/MUL/DIV/MOVE）、エッジ検出器（R\_TRIG/F\_TRIG）、バイステーブルラッチ（SR/RS） — すべて名前付きポートのボックスとして左→右に配線されます。
+
+Schematexは**IEC 61131-3 §6.4**のビジュアル規約と**IEC 60617-12**の識別記号（ANDは `&`、ORは `≥1`、XORは `=1`、NOT/BUFは `1`）に従います。ワイヤーはTIA Portalのデファクトスタンダードに従いデータ型で色分けされます（BOOL黒、INT青、REALオレンジ、TIMEマゼンタ）。**[ladder](/docs/ladder)**（§6.3、ラングベース）および**[sfc](/docs/sfc)**（§6.5、シーケンスベース）の姉妹言語であり、これらが合わさってIEC 61131-3のビジュアル半分を構成します。
+
+<Playground initial={`
+  fbd "Motor Control"
+
+  var Start: bool
+  var Stop: bool
+  var Latch: bool
+  var MotorOut: bool
+
+  network 0 "Start/stop latch":
+    Latch = OR(Start, AND(Latch, ~Stop))
+
+  network 1 "Drive output":
+    MotorOut = MOVE(Latch)`} height={420} />
+
+---
+
+## 1. 最初のFBDネットワーク
+
+最小限の実用的FBDネットワーク：1つのブロック、2つの入力、1つの出力。
+
+```
+fbd
+network 0:
+  Out = AND(A, B)
+```
+
+`A` と `B` はBOOL入力として自動宣言され（左側端子）、`Out` はANDブロックの `OUT` ポートに自動配線されます（右側端子）。ブロックはポートスタブとラベルとともにそれらの間に配置されます。
+
+---
+
+## 2. 変数
+
+ネットワークの前に変数を宣言します。各変数は名前、IECデータ型、およびオプションの初期値を持ちます。
+
+```
+fbd "Tank Control"
+
+var StartBtn: bool
+var TankLevel: real
+var SetPoint: real = 80.0
+var DwellTimer: timer
+var Pulse: counter
+```
+
+サポートされる型：`bool`、`int`、`dint`、`uint`、`udint`、`real`、`lreal`、`time`、`date`、`tod`、`string`、`wstring`、`byte`、`word`、`dword`、`timer`、`counter`。その他の識別子はユーザー定義ファンクションブロック型として扱われます。
+
+オプションのスコーププレフィックス（デフォルト = ローカル）：`var_input`、`var_output`、`var_in_out`、`var_global`、`var_external`。
+
+---
+
+## 3. ネットワーク
+
+**ネットワーク**はデータフローの独立した一単位であり、内部では左→右に評価され、プログラム全体ではスキャンごとに上→下に評価されます。
+
+```
+network 0 "Start latch":
+  ...
+
+network 1:
+  ...
+```
+
+番号はオプションです — 省略した場合は自動的に番号付けされます。タイトル（引用符で囲む）はネットワークフレームの左上に表示されます。
+
+---
+
+## 4. ブロック呼び出し — インライン式記法
+
+組み合わせネットワークを記述する最も明確な方法は、単一のネストされた式として書くことです。
+
+```
+network 0:
+  Out = OR(A, AND(B, ~C))
+```
+
+パーサーは呼び出しツリーを構築します：外部ORは入力1に `A`、入力2にANDの結果を持ち、ANDは `B` と否定された `C` を持ちます。レンダラーはそれらを左→右に配置します（入力はレイヤー0、ANDはレイヤー1、ORはレイヤー2、出力はレイヤー3）。
+
+`~C` は入力ポートに**否定バブル**（小さな開いた円）を追加します — そのワイヤーにNOTブロックを挿入することと同等ですが、よりすっきりしています。
+
+---
+
+## 5. ブロック呼び出し — インスタンス名記法
+
+ブロックの出力を別の場所から参照する必要がある場合、インスタンスタグを付けます。
+
+```
+network 0:
+  Pulse = R_TRIG(CLK: Sensor)
+  Count = CTU(CU: Pulse.Q, R: Reset, PV: 100)
+  Done  = GE(IN1: Count.CV, IN2: 100)
+```
+
+`Pulse.Q`、`Count.CV` は名前付きインスタンスの出力ポートを参照します。インスタンスタグはブロックヘッダーの上にイタリック体で表示されます。
+
+引数リストは**名前付きポート**（`CU: Pulse.Q`）または**位置指定**（`CTU(Pulse.Q, Reset, 100)`）を受け付けます — 名前付きは可読性のために推奨され、ポートをスキップする際に必須です。
+
+---
+
+## 6. インライン定数
+
+入力ポートはワイヤー不要でリテラルを直接受け取れます。
+
+```
+network 0:
+  Dwell = TON(IN: BottleSensor, PT: T#50ms)
+  Cap   = LIMIT(MN: 0.0, IN: Setpoint, MX: 95.0)
+  Mode  = SEL(G: ManualSwitch, IN0: AutoMode, IN1: ManualMode)
+```
+
+`T#50ms`、`0.0`、`95.0` はポートの左に小さな黄色のボックステキストとして表示されます。時間リテラルはIEC 61131-3に従います：`T#10ms`、`T#5s`、`T#3m20s`、`T#1h`。ブール値は `true` / `false`（大文字小文字不問）。
+
+---
+
+## 7. 標準ブロックライブラリ
+
+| カテゴリ | ブロック |
+|---|---|
+| ブール | `AND`、`OR`、`NOT`、`NAND`、`NOR`、`XOR`、`XNOR`、`BUF` |
+| エッジ検出 | `R_TRIG`、`F_TRIG` |
+| バイステーブル | `SR`、`RS` |
+| タイマー | `TON`、`TOF`、`TP` |
+| カウンター | `CTU`、`CTD` |
+| 数学 | `ADD`、`SUB`、`MUL`、`DIV`、`MOD`、`ABS`、`NEG`、`MOVE` |
+| 比較 | `EQ`、`NE`、`GT`、`GE`、`LT`、`LE` |
+| 選択 | `SEL`、`MUX`、`MAX`、`MIN`、`LIMIT` |
+
+AND、OR、NAND、NOR、ADD、MUL、MAX、MINは任意の数の入力を受け付けます（デフォルト2）。追加の位置引数を渡すか `[inputs: N]` を使用して拡張してください。
+
+```
+network 0:
+  All4 = AND(A, B, C, D)
+  Sum  = ADD(X, Y, Z)
+```
+
+---
+
+## 8. より大きな例 — ボトルカウンター
+
+```
+fbd "Bottle Counter"
+
+var ConveyorRunning: bool
+var BottleSensor: bool
+var BatchDone: bool
+var BatchSize: counter
+var DwellTimer: timer
+
+network 0 "Debounce sensor with 50ms dwell":
+  Dwell = TON(IN: BottleSensor, PT: T#50ms)
+
+network 1 "Count one bottle on rising edge of debounced signal":
+  Pulse     = R_TRIG(CLK: Dwell.Q)
+  BatchSize = CTU(CU: Pulse.Q, R: BatchDone, PV: 24)
+
+network 2 "Batch done":
+  BatchDone = MOVE(BatchSize.Q)
+```
+
+3つのネットワーク：デバウンス → エッジ検出 → カウント → フラグ。各ネットワークは1つのDAGであり、レンダラーはワイヤーをマンハッタンパスでルーティングします。
+
+---
+
+## 9. v0.1の制限事項
+
+現在のエンジンは、多くのチームが日々使用する標準ブロックのサブセットを実装しています。以下は延期されており、フォローアップで追加される予定です：
+
+- **EN/ENOパワーフローレール**（`[en]` ブロック属性、`[rail: on]` ヘッダー）— ネットワーク上部のイネーブルレールを追加。Studio 5000 / TIA Portalのベンダー規約。
+- **ユーザー定義ファンクションブロック**（`pins_in:` / `pins_out:` 宣言付き）— カスタムモーターコントローラー、PIDインスタンスなど用。
+- **ページコネクター**（`connector_out` / `connector_in`）— 複数ページにまたがるワイヤー用。
+- **ビット文字列ブロック**（SHL、SHR、ROL、ROR、AND_BIT、OR_BITなど）。
+- **拡張数学**（SQRT、LN、LOG、EXP、SIN、COS、TAN、ASIN、ACOS、ATAN）。
+- **ANSI識別形状モード**（`[shape: ansi]`）— `logic` エンジンはすでに純粋ブールダイアグラムにこれを提供しています。
+- **CTUD** 双方向カウンター、**TP** リテンティブタイマー（RTO）。
+
+これらがすぐに必要な場合は、issueを開くか、IEC 61131-3 LDの完全なサブセットのために `ladder` エンジンを使用してください。
+
+---
+
+## 関連例
+
+サンプルギャラリーからすぐに使えるシナリオ：
+
+<RelatedExamples slugs={[
+  'fbd-motor-latch',
+  'fbd-bottle-counter',
+  'fbd-tank-setpoint-limiter',
+]} />

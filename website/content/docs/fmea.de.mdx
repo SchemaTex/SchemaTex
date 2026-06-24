@@ -1,0 +1,119 @@
+---
+title: FMEA-Arbeitsblatt
+description: Failure Mode and Effects Analysis — die Engine berechnet RPN und AIAG-VDA Action Priority aus einem verschachtelten Bauteil → Fehlermodus → Auswirkung/Ursache-Baum.
+---
+
+## Über FMEA
+
+**FMEA** (Failure Mode and Effects Analysis — Fehlermöglichkeits- und Einflussanalyse) ist die am weitesten verbreitete proaktive Zuverlässigkeitsmethode in der Fertigung: Für jeden Teil eines Systems werden die möglichen Versagensarten (**Fehlermodi**), die Auswirkungen jedes Versagens (**Effekte**), die Ursachen (**Ursachen**) und die Erkennungsmaßnahmen (**Controls**) aufgelistet. Jede Zeile wird auf drei 1–10-Skalen bewertet — **Severity** (Schwere), **Occurrence** (Auftretenshäufigkeit), **Detection** (Entdeckungswahrscheinlichkeit) — und priorisiert. Standardisiert durch das **AIAG-VDA FMEA Handbook (2019)** und **IEC 60812**.
+
+Der Vorteil von Schematex besteht darin, dass die Engine **die Priorität berechnet**, nicht nur die Tabelle. Sie flacht die Fehlerkette auf eine Arbeitsblattzeile pro (Bauteil, Modus, Ursache) ab, berechnet **RPN = S × O × D** und — entscheidend — die AIAG-VDA **Action Priority** (schwerebasierte Bandeneinteilung), die absichtlich den Fehler behebt, den eine rohe RPN-Sortierung einführt: Ein Airbag-Versagen mit S10·O2·D3 ist *High*, obwohl sein RPN (60) niedrig erscheint.
+
+<Playground initial={`fmea "Brake system DFMEA"
+  type: design
+  rank: ap
+  flag: ap >= High
+  item "Master cylinder" fn "Generate hydraulic pressure"
+    mode "Internal seal leak"
+      effect "Loss of braking" sev: 9
+      cause "Seal material degradation" occ: 3
+        controls prevention: "Material spec", detection: "Bench test" det: 4
+      cause "Contamination" occ: 2
+        controls detection: "Fluid analysis" det: 5`} height={520} />
+
+---
+
+## 1. Ihr erstes Arbeitsblatt
+
+Jedes Dokument beginnt mit `fmea`, einem optionalen Titel, optionalen Direktiven und einer **verschachtelten** Fehlerkette. Die Struktur ergibt sich aus dem Schlüsselwort, nicht aus der Einrückungstiefe:
+
+```
+fmea "Pump DFMEA"
+  item "Impeller" fn "Move fluid"
+    mode "No flow"
+      effect "Process stops" sev: 8
+      cause "Impeller wear" occ: 4
+        controls detection: "Flow sensor" det: 5
+```
+
+- **`item "name" fn "function"`** — ein Bauteil und die Funktion, die es erfüllt. `fn` ist optional.
+- **`mode "failure mode"`** — wie diese Funktion versagt. Ein Bauteil kann mehrere haben.
+- **`effect "consequence" sev: 1..10`** — was das Versagen verursacht; trägt seine eigene **Severity**. Ein Modus kann mehrere haben (die Engine verwendet den *schlechtesten* für jede Zeile dieses Modus).
+- **`cause "root cause" occ: 1..10`** — warum es passiert; trägt **Occurrence**.
+- **`controls prevention: "…", detection: "…" det: 1..10`** — aktuelle Maßnahmen und die **Detection**-Bewertung, die sie erhalten. Ohne Maßnahme ist die Entdeckungswahrscheinlichkeit standardmäßig **10** (nicht erkennbar).
+
+Alle drei Bewertungen sind Ganzzahlen von 1–10; alles außerhalb dieses Bereichs wird abgewiesen.
+
+---
+
+## 2. Header-Direktiven
+
+```
+type: design          # design (dfmea) | process (pfmea) | msr
+rank: ap              # ap (Standard) | rpn — der Sortier-/Prioritätsschlüssel
+flag: ap >= High      # oder `rpn > 100` — Zeilen über einem Schwellenwert hervorheben
+number: FMEA-2026-014 # freie Metadaten: number/team/author/date/revision/dept/process/product
+```
+
+`rank` legt fest, wie Zeilen priorisiert werden; `flag` hebt Zeilen hervor, die einen Schwellenwert überschreiten (`ap >= High` / `ap == High`, oder `rpn > 100` / `rpn >= 120`).
+
+---
+
+## 3. Berechnetes RPN & Action Priority
+
+Das ist der entscheidende Unterschied. Aus dem verschachtelten AST führt die Engine folgende Schritte durch:
+
+1. **Abflachen** auf eine Zeile pro (Bauteil, Modus, Ursache); die schlimmste Effektschwere des Modus gilt für jede Zeile dieses Modus.
+2. **RPN = S × O × D** (1–1000).
+3. **Action Priority** nach der AIAG-VDA-Bandenstruktur — **Severity ist die primäre Achse**, Occurrence zweite, Detection dritte. S = 9–10 (Sicherheit/Regulierung) ist High für *jede* O und D; mittlere Schwere degradiert High→Medium→Low mit sinkender Occurrence.
+4. **Sortieren** nach dem gewählten Schlüssel. Für `ap`: High > Medium > Low, bei Gleichstand nach Severity dann RPN aufgelöst — *nie* nur RPN, das würde den Fehler wieder einführen, den AP beheben soll.
+5. **Markieren** von Zeilen über dem Schwellenwert.
+
+Jede Zeile trägt `data-rpn` und `data-ap`, sodass die berechnete Priorität inspiziert werden kann.
+
+---
+
+## 4. Nachmaßnahmen-Nachverfolgung
+
+Zeichnen Sie Korrekturmaßnahmen und die überarbeiteten Bewertungen auf, um das Vorher/Nachher-Delta anzuzeigen:
+
+```
+fmea "Brake DFMEA"
+  item "MC"
+    mode "Seal leak"
+      effect "Loss of braking" sev: 9
+      cause "Degradation" occ: 3 det: 4
+  action "Seal leak" / "Degradation"
+    do: "Upgrade seal to EPDM" owner: "J. Lee" target: 2026-Q3
+    revised sev: 9 occ: 1 det: 4
+```
+
+`action "Modus" / "Ursache"` zielt auf eine Kette über ihr in Anführungszeichen gesetztes Modus und (optionale) Ursache ab; `do:` ist die Empfehlung; `revised sev/occ/det` berechnet das RPN und AP nach der Maßnahme neu, sodass die Engine die Risikoreduzierung meldet.
+
+---
+
+## 5. Häufige Fehler
+
+```
+# FALSCH — Bewertung außerhalb des 1..10-Bandes
+effect "Leak" sev: 11
+
+# FALSCH — Modus vor einem Bauteil
+mode "orphan mode"
+
+# FALSCH — Effekt vor einem Modus
+item "x"
+  effect "e" sev: 3
+```
+
+Bewertungen müssen Ganzzahlen von 1–10 sein; die Fehlerkette muss `item → mode → effect/cause` verschachteln; außer der Reihe stehende Schlüsselwörter werden namentlich abgewiesen. Die Entdeckungswahrscheinlichkeit ist standardmäßig 10, wenn keine Maßnahme sie bewertet — geben Sie `det:` (bei der Ursache oder ihren `controls`) an, wenn Sie eine Erkennungsmaßnahme haben.
+
+---
+
+## 6. Standardkonformität
+
+Die Fehlerkette und die Severity/Occurrence/Detection-Skalen folgen dem AIAG-VDA FMEA Handbook (2019) und IEC 60812. Die Action Priority implementiert die veröffentlichte Bandenstruktur (schwerebasiert), nicht die kostenpflichtige verbatim 1000-Zellen-Tabelle. RPN bleibt über `rank: rpn` für ältere Arbeitsblätter verfügbar.
+
+## 7. Roadmap
+
+Zurückgestellt: die genauen AIAG-VDA AP/MSR-Entscheidungstabellen, Multi-Effekt-pro-Ursache-Gewichtung und Struktur-/Funktionsbaumansichten.

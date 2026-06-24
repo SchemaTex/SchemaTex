@@ -1,0 +1,209 @@
+---
+title: 平面圖
+---
+
+## 關於平面圖
+
+**平面圖**是空間的標準 2D 建築視圖：具有真實尺寸的房間、以實心**填充**帶繪製的牆體、帶四分之一圓弧的門、玻璃線窗戶，以及作為平面符號的家具 — 這是《建築圖形標準》所記錄、每份專業圖紙集所使用的視覺語言。Schematex 從文字渲染它：您以真實尺寸宣告房間、開口和家具；引擎合併共用牆、計算房間面積、繪製尺寸線、自動安排座位，並驗證幾何形狀。
+
+與圖像生成器不同，輸出結果是*可量測且可編輯的* — 每個房間都是帶有計算面積的已標記元素，新增第四排桌子只需一行編輯。
+
+<Playground initial={`floorplan "Studio Apartment" unit m
+room main   "Living / Sleeping" at 0,0 size 5.2x4.0
+room bath   "Bath"   right-of main size 2.0x2.2
+room kitchen "Kitchenette" right-of main align end size 2.0x1.8
+door main south at 15% width 0.9
+door between main bath at 50%
+opening between main kitchen at 50% width 1.2
+window main north at 30% width 1.8
+furniture bed-double in main at 3.4,0.3
+furniture sofa in main at 0.2,3.0
+furniture toilet in bath at 0.2,0.2
+furniture sink in bath at 1.3,0.2
+furniture counter in kitchen at 0.15,1.05 size 1.7x0.6
+furniture kitchen-sink in kitchen at 0.6,1.05`} height={420} />
+
+---
+
+## 1. 第一個平面圖
+
+一個標頭、一個房間、一扇門和一扇窗戶：
+
+```
+floorplan "Studio"
+room main "Studio" at 0,0 size 4x3
+door main south at 20%
+window main north at 50%
+```
+
+三條規則涵蓋大多數使用場景：
+
+1. 以 `floorplan` 開頭，後接可選的引號標題，以及 `unit m`（預設）或 `unit ft`。**所有數字都使用此單位。**
+2. 房間是矩形：`room id "Label" at x,y size WxH`。標籤和計算面積居中顯示在房間內。
+3. 開口掛在牆上：牆面引用（`main south`）以百分比定位在該牆上；`between A B` 自動找到共用牆。
+
+---
+
+## 2. 房間與放置
+
+將第一個房間放在 `0,0`，其餘房間相對連接 — 相鄰房間共用一條邊，它們的牆合併成一個帶：
+
+```
+room living  "Living Room" at 0,0 size 5.2x4.2
+room kitchen "Kitchen"     right-of living size 3.0x4.2
+room hall    "Hallway"     below living size 2.0x2.6
+room bed1    "Bedroom 1"   right-of hall size 3.2x2.6
+```
+
+- `right-of` / `left-of` / `above` / `below` 對齊至參考房間的邊緣。
+- `align start|center|end` 對齊橫軸（預設 `start` = 頂部／左側邊緣齊平）；`offset n` 偏移它。
+- `fill #e0f2fe` 為地板著色；`nolabel` 隱藏名稱與面積標籤（如教室等單一空間平面圖）。
+- 座標為 Y 軸向下：`at 0,0` 是左上角。
+
+**L/T/U 形房間**使用 `extend` — 宣告主矩形，然後用共用邊的矩形擴展它。牆沿接縫合併，面積加總為一個數字（與專業人士測量 L 形房間的方式完全相同），標籤居中於最大部分：
+
+```
+room living "Living Room" at 0,0 size 5x4
+extend living at 5,2 size 2x2          # L 形：右上角的缺口
+```
+
+不接觸房間或與之重疊的延伸會以量化錯誤被拒絕。`north`（可選地 `north 30` 用於旋轉平面圖）在右上角新增指北針。
+
+---
+
+## 3. 門、窗戶、開口
+
+```
+door hall west at 50% width 1.0 swing in          # 牆上的外門
+door between hall bed1 at 50% hinge right          # 共用牆上的內門
+door between bed1 bath at 30% type sliding         # 推拉門 — 無弧形
+opening between living kitchen at 35% width 1.2    # 拱形通道，無門扇
+window living north at 30% width 1.8
+```
+
+- `between A B` 解析共用牆段，並以**沿重疊部分**的百分比定位 — 不需要座標。不相鄰的房間以測量間距被拒絕。
+- 外牆門預設寬 0.9 m，`between` 牆門預設 0.8 m；窗戶預設 1.2 m。
+- `hinge left|right` 選擇門框；`swing in|out` 翻轉四分之一弧（預設向擁有房間內擺動 — 即第一個命名的房間）。
+- 門 `type single|double|sliding|pocket|bifold`：double 繪製兩個鏡像弧；sliding/pocket 繪製偏移葉片線，無弧形；bifold 繪製兩個壁櫃門帳篷峰。
+- 窗戶 `type fixed|sliding|casement|bay`：sliding = 兩個偏移面板，casement 加上向外擺動弧，bay 在牆外投影一個展開梯形。
+- 開口夾緊以適合其牆段（帶警告），而非溢出。
+
+---
+
+## 4. 家具
+
+家具**相對於其房間內部左上角**放置，帶有可選的 `size`、`rotate` 和標籤：
+
+```
+furniture sofa in living at 0.25,2.9
+furniture desk "Teacher" in class at 2,1.5 size 5x2.5 rotate 20
+furniture counter "Cubbies" in class at 6,24.4 size 10x1.2
+```
+
+目錄涵蓋住宅、商業和場地工作（尺寸預設為行業標準佔地面積）：
+
+| 類別 | 類型 |
+| --- | --- |
+| 住宅 | `bed-double` `bed-single` `bed-queen` `bed-king` `bunk-bed` `crib` `sofa` `loveseat` `sectional` `armchair` `ottoman` `coffee-table` `side-table` `tv` `tv-stand` `fireplace` `floor-lamp` `rug` `wardrobe` `dresser` `nightstand` `bookshelf` `plant` `piano` `piano-upright` `pool-table` `ceiling-fan` `dining-table` |
+| 廚房／浴室 | `counter` `wall-cabinet` `kitchen-sink` `stove` `range-hood` `fridge` `dishwasher` `island` `bar-stool` `toilet` `sink` `vanity` `bidet` `urinal` `bathtub` `shower` `washer` `dryer` |
+| 教室／辦公室 | `desk-chair` `desk` `desk-l` `chair` `whiteboard` `smartboard` `bookcase` `cubbies` `filing-cabinet` `lockers` `kidney-table` `round-table-4/6/8/10` `conference-table` |
+| 活動／宴會 | `banquet-table` `head-table` `stage` `dance-floor` `bar` `dj-booth` `cocktail-table` `podium` `row-chairs` |
+| 零售／倉庫 | `shelving` `checkout` `clothing-rack` `fitting-room` `pallet-rack` `loading-dock` `forklift` |
+| 美容院／健身房 | `salon-chair` `shampoo-bowl` `manicure-table` `treadmill` `weight-bench` `power-rack` `yoga-mat` |
+| 餐廳／商業廚房 | `booth` `prep-table` `range` `walk-in` `commercial-sink` `fryer` |
+| 樓梯／結構 | `stairs` `stairs-l` `stairs-u` `spiral-stairs` `elevator` `column` |
+| 場地／戶外 | `tree` `car` |
+
+**自動座位安排**已內建：`round-table-8` 在其圓周上繪製 8 把椅子（60″ 頂部；`round-table-10` 使用 72″），`dining-table` / `banquet-table` / `conference-table` 以每 0.65 m 一把椅子安排兩條長邊，`head-table` 面向房間安排一側，`manicure-table` 安排一位客戶和一位技術員椅，`row-chairs` 以 0.55 m 間距放置劇院排椅。`rug`、`dance-floor`、`yoga-mat`、`counter`、`island`、`wall-cabinet`、`range-hood` 和 `ceiling-fan` 是底層／頂層 — 其他家具可與它們重疊而不會觸發碰撞警告。
+
+**座位表** — 用 `seats` 子句命名任何自動座位桌的占用者，引擎將每個名字寫在其椅子上（按放置順序：圓桌從頂部順時針；矩形桌先填左至右的頂部邊緣，再填底部邊緣）。這將場地平面圖轉化為賓客實際閱讀的座位表：
+
+```
+furniture round-table-8 "Table 3" in hall at 11,4 seats "Alice" "Bob" "Carol" "Dave"
+furniture head-table "Head Table" in hall at 5,0.6 size 6x0.9 seats "Bride" "Groom"
+```
+
+沒有名字的額外椅子保持空白；超過椅子數量的額外名字被忽略。CJK 引號名字（`seats "張偉" "李娜"`）與所有其他標籤一樣有效。名字水平閱讀，因此保持桌子未旋轉以獲得清晰的圖表。
+
+`tree` 和 `car` 按戶外尺寸設計（樹冠圓盤、停車位佔地面積），因此**場地平面圖**只需將區域以相鄰房間的方式並排 — 前院、房屋足跡、車道、後院 — 並在上面放置樹木和停放的汽車。
+
+**樓梯**遵循製圖慣例：踏板線每 0.28 m（11″），方向箭頭從最低踏板開始標記 `UP`（給項目一個 `"DN"` 標籤用於下行段），以及 45° 鋸齒形折斷線在假想的 4 英尺截面平面，虛線踏板在其之外。`stairs` 是直跑（用 `size`/`rotate` 定向），`stairs-l` 經過平台轉 90°，`stairs-u` 回轉 180°，`spiral-stairs` 是帶有輻射踏板和中心柱的圓形。
+
+---
+
+## 5. 陣列 — grid、row、arc
+
+重複的家具是一條語句，而非三十條：
+
+```
+grid desk-chair in class rows 5 cols 6 count 27 area 5,8 25,24 itemsize 2x2.5
+row round-table-8 in hall cols 3 area 8.8,13.4 15.2,13.4 itemsize 2.3x2.3
+arc chair in hall count 13 center 12,8 radius 5 from 200 to 340
+```
+
+- `area x1,y1 x2,y2` 給出第一個和最後一個項目的**中心**；項目在它們之間均勻分布。
+- `count` 以**行主序**截斷 — 5×6 網格中的 27 張桌子丟棄最後一行的尾部，與真實教室完全一樣。
+- `arc` 將項目放置在面向中心的圓弧上 — 半圓形教室、典禮座位。
+
+---
+
+## 6. 單位、面積、尺寸線
+
+- `unit ft` 使所有數字為英尺；尺寸線格式化為 `32'` / `15'1"`，面積格式化為 `sq ft`。內部所有內容均為公制（1 ft = 0.3048 m）。
+- 房間面積**由引擎**從宣告的幾何形狀計算，永遠不需手動輸入。
+- 尺寸線在平面圖外部以建築斜線刻度渲染：始終顯示整體寬度和高度，加上沿頂部和左側外部的各房間段。
+
+---
+
+## 7. 驗證
+
+引擎驗證 LLM（和人類）實際上容易出錯的地方，錯誤訊息命名違規元素並指出修正方向：
+
+**錯誤**（阻止渲染，在錯誤面板中顯示）：
+
+- 房間重疊 — `rooms "bed1" and "bath" overlap by 0.40×2.60 m — move "bath" right-of "bed1" or shrink size`
+- 不相鄰房間之間的門 — `door between "kitchen" and "bed2": rooms share no wall (gap 2 m on x-axis)`
+- 家具超出其房間 — `furniture sofa #1 extends 1.7 m outside room "c" — move it or shrink size`
+
+**警告**（仍然渲染，列在平面圖下方）：
+
+- 家具碰撞 — 包括**椅圈包絡**的邊界框，因此兩個椅子相觸的宴會圓桌即使桌面不接觸也會被標記。
+- 開口夾緊以適合其牆段。
+
+---
+
+## 8. 語法（EBNF）
+
+```text
+plan      ::= "floorplan" string? ("unit" ("m"|"ft"))? NL statement*
+statement ::= room | extend | north | door | window | opening | furniture | array
+room      ::= "room" id string? placement "size" dims ("fill" color)? ("nolabel")?
+extend    ::= "extend" id placement "size" dims
+north     ::= "north" num?
+placement ::= "at" coord
+            | ("right-of"|"left-of"|"above"|"below") id ("offset" num)?
+              ("align" ("start"|"center"|"end"))?
+door      ::= "door" (wallref | "between" id id) "at" pct
+              ("width" num)? ("hinge" ("left"|"right"))? ("swing" ("in"|"out"))?
+              ("type" ("single"|"double"|"sliding"|"pocket"|"bifold"))?
+window    ::= "window" wallref "at" pct ("width" num)?
+              ("type" ("fixed"|"sliding"|"casement"|"bay"))?
+opening   ::= "opening" (wallref | "between" id id) "at" pct ("width" num)?
+furniture ::= "furniture" type ("in" id) "at" coord ("size" dims)? ("rotate" num)? string? ("seats" string+)?
+array     ::= ("grid"|"row"|"arc") type "in" id
+              ("rows" int)? ("cols" int)? ("count" int)?
+              ("area" coord coord)? ("itemsize" dims)? ("rotate" num)?
+              ("center" coord)? ("radius" num)? ("from" num "to" num)?
+wallref   ::= id ("north"|"south"|"east"|"west")
+coord     ::= num "," num          dims ::= num "x" num          pct ::= num "%"?
+```
+
+注解從 `#` 延伸至行尾。CJK 引號（`""` ）被接受為 ASCII 引號。
+
+---
+
+## 相關範例
+
+- [兩臥室公寓](/examples#floorplan) — 相對放置，7 扇門，完整家具
+- [27 張桌子的教室](/examples#floorplan) — `grid … count` 截斷，`unit ft`
+- [120 人婚宴](/examples#floorplan) — 自動座位宴會圓桌，舞池

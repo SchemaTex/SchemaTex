@@ -1,0 +1,226 @@
+---
+title: 麵包板接線圖（Breadboard / Physical Wiring）
+---
+
+## 關於 breadboard 圖
+
+**breadboard 圖**（麵包板接線圖）展示如何在無焊料原型板上實際接線——這是每個 Arduino / ESP32 / Raspberry Pi 教學的標誌性視覺風格。讀者在真實硬體上按圖索驥，一個孔一個孔地複製所見的接線。這與抽象電路原理圖（`circuit`，IEEE 315）是*互補關係*：原理圖是工程師的邏輯推導視圖；breadboard 圖是創客的實作複製視圖。
+
+Schematex 實作 **Fritzing 風格**的程式化 breadboard 渲染。元件以可辨識的外形繪製（電阻帶色碼環、LED 為彩色半球體、DIP 晶片有缺口、MCU 開發板有標記引腳排）。跳線以**平滑的三次貝塞爾弧線**繪製於特定連接點之間——而非直角折線。DSL 以**麵包板原生座標**（`@col-row`，例如 `@5e`）定址每個元件和每條導線，而非像素位置，因此檔案可手動編寫且易於版本控制。
+
+> **注意** — 此引擎*不是*電路原理圖，也不強制電氣規則。用於教學、實驗室講義、README 和學習材料。如需節點分析或正式原理圖，請改用 `circuit` 引擎。
+
+<Playground initial={`breadboard
+board: half
+title: "Blink LED — Arduino Uno hello-world"
+
+parts
+  uno: mcu uno @beside-left
+  r1:  resistor 220 @5e..9e
+  d1:  led red @10e..10f
+
+wires
+  uno:5V  --red--    @+t1
+  uno:GND --black--  @-t1
+  @+t1    --red--    @5a
+  uno:D13 --yellow-- @9a
+  @10j    --black--  @-t1`} height={420} />
+
+---
+
+## 1. 你的第一個麵包板接線圖
+
+三個區段：一行 `breadboard` 標頭、一個 `parts` 區塊和一個 `wires` 區塊。選用的 `board:` 和 `title:` 行緊接在標頭之後。
+
+<Playground initial={`breadboard
+parts
+  uno: mcu uno @beside-left
+  r1:  resistor 220 @5e..9e
+  d1:  led red @10e..10f
+
+wires
+  uno:5V  --red--   @+t1
+  uno:GND --black-- @-t1
+  uno:D13 --yellow-- @5a
+  @10j    --black-- @-t1`} />
+
+每個元件是 `id: kind [args] @placement`。每條導線是 `<endpoint> --color-- <endpoint>`。這就是完整的語法。
+
+---
+
+## 2. 座標
+
+麵包板有二維定址格。Schematex 座標始終以 `@` 開頭。
+
+| 形式 | 意義 | 範例 |
+|---|---|---|
+| `@<col><row>` | 主格孔。列 `a–e`（上半部），`f–j`（下半部）。| `@5e`、`@12g` |
+| `@+t<col>` | 頂部**正極**軌道（紅色條紋）。| `@+t8` |
+| `@-t<col>` | 頂部**負極 / GND** 軌道（藍色條紋）。| `@-t8` |
+| `@+b<col>` | 底部正極軌道。| `@+b14` |
+| `@-b<col>` | 底部負極軌道。| `@-b14` |
+| `@<a>..<b>` | 跨度——用於元件放置（電阻、二極體、LED）。| `@5e..9e` |
+| `@beside-left` | MCU 開發板的板外放置。| `mcu uno @beside-left` |
+
+迷你板（`board: mini`）**沒有電源軌**——解析器會拒絕 `@+t…` / `@-b…`。
+
+---
+
+## 3. 板子尺寸
+
+```
+breadboard
+board: half          // default — 30 columns, 400 tie-points, rails (continuous)
+```
+
+| 形式 | 連接點數 | 欄數 | 電源軌 |
+|---|---|---|---|
+| `mini` | 170 | 17 | 無 |
+| `half`（預設）| 400 | 30 | 連續 |
+| `full` | 830 | 63 | 在第 30/31 欄斷開 |
+
+> **陷阱** — 全尺寸板的電源軌在中間斷開。如果你的電路使用兩半，必須明確用跳線將電源軌連接起來。
+
+---
+
+## 4. 元件目錄
+
+每個元件是 `id: <kind> [args] @<placement>`。目錄涵蓋最常見的 Arduino / ESP32 創客元件：
+
+**分立元件**（放在麵包板上）：
+
+| DSL | 參數 | 範例 |
+|---|---|---|
+| `resistor` | `value`（Ω；支援 `k`／`M`）| `r1: resistor 220 @5e..9e` |
+| `led` | `color`（red/green/blue/yellow/white/orange）| `d1: led red @10e..10f` |
+| `cap-elec` | — | `c1: cap-elec @4e..4f` |
+| `cap-ceramic` | — | `c2: cap-ceramic @6e..6f` |
+| `diode` | — | `d2: diode @5e..8e` |
+| `button` | — | `btn: button @8e` |
+| `dip` | `pins=N` | `ic: dip pins=8 @4e` |
+| `header` | `pins=N` | `h1: header pins=4 @20a` |
+
+**微控制器開發板**（放在基板旁邊 / 上方 / 下方）：
+
+| DSL | 引腳標籤 |
+|---|---|
+| `mcu uno` | `5V`、`3V3`、`GND`、`VIN`、`RST`、`D2…D13`、`A0…A5`、`RX`、`TX` |
+| `mcu nano` | Uno 標籤的子集 |
+| `mcu esp32` | `3V3`、`GND`、`VIN`、`GPIO2`、`GPIO4`、`GPIO5`、`GPIO12…GPIO33` |
+| `mcu pico` | 相同的通用 GPIO 標籤 |
+
+**感測器 / 顯示器 / 致動器**（模組放在麵包板上，引腳列錨定在提供的座標）：
+
+| DSL | 引腳 |
+|---|---|
+| `sensor hcsr04` | `VCC`、`TRIG`、`ECHO`、`GND` |
+| `sensor dht11` / `sensor dht22` | `VCC`、`DATA`、`GND` |
+| `display oled-ssd1306` | `GND`、`VCC`、`SCL`、`SDA` |
+| `display lcd-1602-i2c` | `GND`、`VCC`、`SDA`、`SCL` |
+| `module rotary-ky040` | `CLK`、`DT`、`SW`、`VCC`、`GND` |
+| `actuator servo-sg90` | `GND`、`VCC`、`SIG` |
+
+電阻色碼環會根據 `value` 自動裝飾——`220` → 紅紅棕金，`10000` → 棕黑橙金。
+
+---
+
+## 5. 導線
+
+每條導線連接兩個端點。端點可以是**元件引腳**（`partId:pinName`）或**麵包板座標**（`@…`）。
+
+```
+wires
+  uno:5V  --red--    @+t1
+  uno:GND --black--  @-t1
+  uno:D9  --yellow-- @9c
+  @9a     --green--  @+t9
+```
+
+| 顏色 | 慣例用途 |
+|---|---|
+| `red` | +V（5V、3.3V、VCC）|
+| `black` / `blue` | GND |
+| `yellow` / `orange` / `green` / `white` / `purple` | 訊號線 |
+| `brown` / `grey` | 任意訊號 |
+
+顏色純屬視覺效果——引擎不會根據電氣角色驗證顏色。
+
+對於視覺上擁擠的板子，`via @<coord>` 讓你固定一個中間孔，使貝塞爾控制點偏向那個方向：
+
+```
+wires
+  uno:D13 --yellow-- @9a via @8c
+```
+
+大多數導線不需要 `via`——佈局引擎會自動產生自然的弧線。
+
+---
+
+## 6. 帶上拉電阻的感測器（DHT11 接法）
+
+標誌性的 Arduino 教學模式：VCC 與感測器資料線之間的 10 kΩ 上拉電阻。
+
+<Playground initial={`breadboard
+board: half
+title: "DHT11 + 10kΩ pull-up"
+
+parts
+  uno: mcu uno @beside-left
+  s1:  sensor dht11 @6a
+  r1:  resistor 10000 @8e..14e
+
+wires
+  s1:VCC  --red--    @+t1
+  s1:GND  --black--  @-t1
+  s1:DATA --yellow-- @8e
+  @14e    --red--    @+t14
+  uno:5V  --red--    @+t1
+  uno:GND --black--  @-t1
+  uno:D2  --yellow-- @8a`} height={460} />
+
+---
+
+## 7. ESP32 + I²C OLED
+
+ESP32 運行在 3.3 V（非 5 V）。I²C 慣例：綠色 = SDA，白色 = SCL。
+
+<Playground initial={`breadboard
+board: half
+title: "ESP32 + SSD1306 OLED I²C"
+
+parts
+  esp:  mcu esp32 @beside-left
+  oled: display oled-ssd1306 @8a
+
+wires
+  oled:GND --black--   @-t1
+  oled:VCC --red--     @+t1
+  oled:SCL --white--   @10c
+  oled:SDA --green--   @11c
+  esp:3V3    --red--   @+t1
+  esp:GND    --black-- @-t1
+  esp:GPIO22 --white-- @10c
+  esp:GPIO21 --green-- @11c`} height={460} />
+
+---
+
+## 8. v0.1 的限制
+
+- **無引線標注** — 參考代號（R1、C2）繪製在元件本體附近。板外標注框延後處理。
+- **無 `.fzz` 匯入** — Schematex 只接受自己的 DSL；不解析 Fritzing 檔案。
+- **無模擬** — 這是渲染器，而非 Wokwi 風格的模擬器。元件值驗證（歐姆定律、電流限制）超出範圍。
+- **無 PCB / 原理圖來回轉換** — `breadboard` 和 `circuit` 是獨立引擎。目前為同一個原型撰寫兩個視圖需要編寫兩份 DSL。
+- **固定元件目錄** — 使用者自定義元件類型延後處理。v0.1 附帶創客教學 80% 常用目錄（電阻、LED、電容、DIP、排針、四個 MCU 系列、六種感測器 / 顯示器 / 致動器模組）。
+- **電源軌斷點視覺** — 全尺寸板在 30/31 處用一個孔寬的間隔標記斷點；軌道條紋仍然穿過間隔繪製（外觀問題）。
+
+---
+
+## 相關範例
+
+來自範例庫的即用情境：
+
+<RelatedExamples slugs={[
+  'breadboard-blink-led',
+  'breadboard-hcsr04-distance',
+  'breadboard-esp32-oled',
+]} />

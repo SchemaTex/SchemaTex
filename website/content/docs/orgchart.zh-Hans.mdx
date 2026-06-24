@@ -1,0 +1,368 @@
+---
+title: 组织架构图
+---
+
+## 关于组织架构图
+
+**组织架构图**（org chart）绘制组织的正式汇报结构——谁管理谁、哪些团队隶属于哪位负责人、空缺职位和外部顾问在哪里。人力资源团队在人员规划时使用它；创始人在董事会会议前使用它；运营主管在重组时传阅它。与通用流程图不同，组织架构图以人员（和职位）作为主要实体，以缩进或明确的连线编码层级关系。
+
+Schematex 遵循通用的组织架构图惯例，并扩展支持空缺/未填补职位、矩阵（虚线）汇报关系和助理关系。组织架构图没有单一的 ISO 标准；这里实现的惯例来自人力资源实践和软件行业规范。学术背景请参考 [Fayol（1916）](https://en.wikipedia.org/wiki/Henri_Fayol)和[维基百科组织架构图条目](https://en.wikipedia.org/wiki/Organizational_chart)。
+
+<Playground initial={`orgchart "Acme Corp — Q3 2025"
+ceo: "Jamie Torres" | CEO [role: ceo]
+  cto: "Raj Patel" | CTO [role: cto]
+    lead_fe: "Priya Nair" | Engineering Lead | Frontend [role: engineer]
+      eng1: "Alex Kim" | Senior Engineer [role: engineer]
+      eng2: "Jordan Lee" | Engineer [role: engineer, status: new]
+      open1: open "TBH" | Frontend Engineer [role: engineer]
+    lead_be: "Omar Hassan" | Engineering Lead | Backend [role: engineer]
+      eng3: "Yuki Tanaka" | Staff Engineer [role: engineer]
+      draft1: draft "TBH" | Senior Engineer [role: engineer]
+  cfo: "Maria Santos" | CFO [role: cfo]
+    fin1: "Nour Ahmed" | Finance Manager [role: ops]
+  cpo: "Ellen Wu" | CPO [role: cpo]
+    pm1: "Tyler Brooks" | Product Lead | Core [role: product]
+    pm2: "Suki Ito" | Product Lead | Growth [role: product]
+advisor adv1: "Dr. Alan Ford" | Board Advisor [role: advisor]
+pm1 -.-> lead_fe
+pm2 -.-> lead_be`} height={520} />
+
+---
+
+## 1. 第一张组织架构图
+
+最小可用的组织架构图：三层层级，含一个空缺职位。
+
+<Playground initial={`orgchart "Engineering Team"
+cto: "Wei Zhang" | CTO [role: cto]
+  lead: "Sam Obi" | Engineering Lead [role: engineer]
+    eng: "Ana Rossi" | Engineer [role: engineer]
+    open1: open "TBH" | Engineer [role: engineer]`} />
+
+四条规则涵盖了 80% 的使用场景：
+
+1. 以关键字 `orgchart` 开头，后面可选择性加上引号标题。
+2. 每个人是一个**节点** — `id: "姓名" | "职称" | "部门" [属性]`。`|` 分隔姓名、职称和部门字段。
+3. **缩进决定层级** — 每多两个（或更多）空格，节点就在其上方最近一个缩进较少的节点下深入一层。
+4. 用 `open id:` 或 `draft id:` 声明空缺职位，用 `advisor id:` 声明外部顾问。
+
+> 注释必须以 `#` 开头并独立成行（行尾的 `//` 也会被去除）。
+
+---
+
+## 2. 节点
+
+节点行的格式为 `[kind] id: fields [props]`。`id` 必须符合 `[A-Za-z][A-Za-z0-9_-]*`。
+
+### 2.1 字段（以管道符分隔）
+
+`:` 后面到可选的 `[props]` 块之前的部分，以 `|` 分割：
+
+```
+alice: "Alice Zhang"                                # name only
+alice: "Alice Zhang" | "VP Engineering"             # name + title
+alice: "Alice Zhang" | "VP Eng" | "Platform"        # name + title + department
+alice: "Alice Zhang" | "VP Eng" | "Platform" | "x@co.com"  # + info line
+```
+
+| 位置 | 内容 | 备注 |
+|---|---|---|
+| 第 1 个 | 姓名 | 可加引号或不加引号 |
+| 第 2 个 | 职称 / 职级 | 可选 |
+| 第 3 个 | 部门 | 可选 |
+| 第 4 个 | 信息行 | 可选；也可通过 `note:`、`email:`、`phone:`、`location:` 属性设置 |
+
+<Playground initial={`orgchart "Field count demo"
+alice: "Alice"
+  bob: "Bob" | "CTO"
+    carol: "Carol" | "Engineer" | "Engineering"
+    dave: "Dave" | "VP Sales" | "Sales" | "dave@co.com"`} height={300} />
+
+### 2.2 节点类型
+
+id 前面可选的**类型关键字**会改变节点的渲染方式：
+
+| 关键字 | 类型 | 含义 |
+|---|---|---|
+| *（无）* | `person` | 普通人员 |
+| `role`、`open` | `role` | 空缺/未填补职位 |
+| `draft`、`tbh` | `draft` | 计划中的职位，尚未积极招聘 |
+| `advisor`、`external` | `advisor` | 外部顾问、董事会成员或承包商 |
+
+<Playground initial={`orgchart "Node kinds"
+ceo: "Jordan Kim" | CEO [role: ceo]
+  eng_lead: "Priya Nair" | Engineering Lead [role: engineer]
+    open eng_open: "TBH" | Senior Engineer [role: engineer]
+    draft eng_draft: "TBH" | Staff Engineer [role: engineer]
+  advisor adv1: "Dr. Lee" | Board Advisor [role: advisor]`} height={320} />
+
+### 2.3 节点属性
+
+属性写在节点行末尾的 `[key: value, …]` 中。
+
+| 属性 | 值 | 效果 |
+|---|---|---|
+| `role:` | 见下表 | 在头像中显示角色图标 |
+| `icon:` | 同 `role:` | `role:` 的别名 |
+| `department:` | 文本 | 覆盖部门字段 |
+| `status:` | `new` \| `leaving` \| `on-leave` | 卡片上的状态标签 |
+| `avatar-color:` | 十六进制颜色（如 `"#7B1FA2"`） | 头像背景颜色 |
+| `gender:` | `male` \| `female` | 头像轮廓（未设置角色图标时使用） |
+| `note:` | 文本 | 信息行（以第一个为准） |
+| `email:` | 文本 | 信息行 |
+| `phone:` | 文本 | 信息行 |
+| `location:` | 文本 | 信息行 |
+| `assistant-of:` | 节点 id | 将此节点渲染为指定节点的助理 |
+| `matrix:` | 空格或逗号分隔的节点 id | 从这些节点到本节点添加虚线矩阵连线 |
+| `reports:` | 节点 id | 明确指定父节点（代替缩进） |
+| `open` | *（裸标志）* | 将节点标记为空缺；等同于使用 `role` 类型关键字 |
+| `draft` 或 `tbh` | *（裸标志）* | 将节点标记为草稿；等同于 `draft` 类型关键字 |
+| `external` | *（裸标志）* | 将节点标记为外部；等同于 `advisor` 类型关键字 |
+
+**角色图标** — `role:` 的值对应显示图标。接受的关键字（不区分大小写）：
+
+| 关键字 | 图标 |
+|---|---|
+| `ceo` | CEO |
+| `cto` | CTO |
+| `cfo` | CFO |
+| `coo` | COO |
+| `cmo` | CMO |
+| `cpo` | CPO |
+| `vp` | VP |
+| `engineer`、`engineering` | 工程师 |
+| `designer`、`design` | 设计师 |
+| `sales` | 销售 |
+| `hr` | HR |
+| `legal` | 法务 |
+| `ops`、`operations` | 运营 |
+| `marketing` | 市场 |
+| `product` | 产品 |
+| `data` | 数据 |
+| `advisor` | 顾问 |
+| `intern` | 实习生 |
+| `vacant` | 空缺 |
+
+<Playground initial={`orgchart "People directory"
+ceo: "Jamie Torres" | CEO [role: ceo, avatar-color: "#1E88E5"]
+  cto: "Raj Patel" | CTO [role: cto]
+    eng1: "Priya Nair" | Staff Engineer [role: engineer, status: new]
+    eng2: "Jordan Lee" | Senior Engineer [role: engineer]
+  cfo: "Maria Santos" | CFO [role: cfo]
+    fin1: "Nour Ahmed" | Finance Manager [role: ops, status: on-leave]
+  advisor adv1: "Dr. Alan Ford" | Board Advisor [role: advisor]
+  draft draft1: "TBH" | General Counsel [role: legal]`} height={380} />
+
+---
+
+## 3. 层级关系
+
+层级关系通过**缩进**来表达——这是最常用的方式。每个节点成为其上方缩进最小的节点的子节点。制表符被视为两个空格。
+
+```
+ceo: "CEO"
+  cto: "CTO"           # child of ceo (indent 2)
+    eng: "Engineer"    # child of cto (indent 4)
+  cfo: "CFO"           # child of ceo (indent 2, same level as cto)
+```
+
+也可以使用 `reports:` 属性明确指定父节点，不受缩进影响：
+
+```
+orgchart "Flat file"
+ceo: "CEO"
+cto: "CTO" [reports: ceo]
+eng: "Engineer" [reports: cto]
+```
+
+<Playground initial={`orgchart "Series A Startup"
+ceo: "Lena Brandt" | CEO [role: ceo]
+  cto: "James Osei" | CTO [role: cto]
+    be: "Platform Lead" | Engineering [role: engineer]
+      be1: "Fatima Al-Rashid" | Backend Engineer [role: engineer]
+      be2: "Marco Ricci" | Backend Engineer [role: engineer]
+    fe: "Frontend Lead" | Engineering [role: engineer]
+      fe1: "Yumi Tanaka" | Frontend Engineer [role: engineer, status: new]
+      open_fe: open "TBH" | Frontend Engineer [role: engineer]
+  cpo: "Diana Russo" | CPO [role: cpo]
+    pm1: "Chris Obi" | Product Manager [role: product]
+  cmo: "Kai Nakamura" | CMO [role: cmo]
+    mkt1: draft "TBH" | Growth Marketer [role: marketing]`} height={480} />
+
+---
+
+## 4. 连线
+
+连线分两种。大多数汇报线由缩进层级自动生成。你也可以明确写出，或者添加矩阵（虚线）连线。
+
+| 运算符 | 连线类型 | 含义 |
+|---|---|---|
+| `from -> to` | `report` | 实线汇报线 |
+| `from -.-> to` | `matrix` | 虚线矩阵（间接）汇报线 |
+
+明确连线要求两个节点 id 均已声明。如果缩进层级已隐含了同样的关系，明确写出的 `report` 连线不会重复出现。
+
+连线支持标签：
+
+```
+pm1 -.-> design [label: "product partnership"]
+```
+
+<Playground initial={`orgchart "Matrix org"
+config: direction = LR
+cpo: "Ellen Wu" | CPO [role: cpo]
+  pm_core: "Core PM" | Product Manager [role: product]
+  pm_growth: "Growth PM" | Product Manager [role: product]
+  design: "Suki Ito" | Design Lead [role: designer]
+  data_lead: "Ben Park" | Data Lead [role: data]
+pm_core -.-> design [label: "design partner"]
+pm_growth -.-> design
+pm_growth -.-> data_lead`} height={320} />
+
+---
+
+## 5. 配置
+
+`config:` 行调整布局和方向，每行一条。
+
+| 配置键 | 值 | 默认值 | 效果 |
+|---|---|---|---|
+| `direction` | `TD`、`LR` | `TD` | 从上到下或从左到右 |
+| `layout` | `tree`、`list`、`directory`、`compact` | `tree` | 视觉布局模式 |
+
+**布局说明：**
+- `tree` — 带分支连接器的标准层级树。适合大多数组织架构图。
+- `list` / `directory` / `compact` — 紧凑型缩进目录视图。适合人员较多时树状分支过于复杂的情况。
+
+**树形布局**（默认）——带分支连接器和部门颜色编码的头像卡片。适合 30 人以内的团队。
+
+<Playground initial={`orgchart "Acme Engineering — tree"
+cto: "Wei Zhang" | CTO [role: cto]
+  platform: "Platform Lead" | Engineering [role: engineer]
+    p1: "Amara Diallo" | Staff Engineer [role: engineer]
+    p2: "Ben Novak" | Senior Engineer [role: engineer]
+    p3: draft "TBH" | Engineer [role: engineer]
+  growth: "Growth Lead" | Engineering [role: engineer, status: new]
+    g1: "Fatima Al-Rashid" | Senior Engineer [role: engineer]
+    g2: "Marco Ricci" | Engineer [role: engineer]`} height={400} />
+
+**列表布局** — 带缩进引导线的紧凑目录行。适合树状分支过于复杂的大型团队。
+
+<Playground initial={`orgchart "Engineering Directory — list"
+config: layout = list
+cto: "Wei Zhang" | CTO [role: cto]
+  platform: "Platform Team"
+    p1: "Amara Diallo" | Staff Eng [role: engineer]
+    p2: "Ben Novak" | Senior Eng [role: engineer]
+    p3: draft "TBH" | Engineer [role: engineer]
+  growth: "Growth Team"
+    g1: "Fatima Al-Rashid" | Senior Eng [role: engineer, status: new]
+    g2: "Marco Ricci" | Engineer [role: engineer, status: leaving]`} height={360} />
+
+---
+
+## 6. 标签与注释
+
+- **标题：** `orgchart "Acme Corp"` — 仅第一行。
+- **姓名字段：** 冒号后的第一个管道分隔字段；可加引号（`"Alice Zhang"`）或不加引号（`Alice`）。
+- **职称/部门字段：** 第二和第三个管道分隔字段。
+- **信息行：** 第四个管道分隔字段，或通过 `note:`、`email:`、`phone:`、`location:` 属性设置。以第一个遇到的为准。
+- **注释：** 行首（前导空白后）的 `#`。行内 `//` 也会被去除。
+
+---
+
+## 7. 保留字与转义
+
+**行首保留字：** `orgchart`（头部）、`config:`、`role`、`open`、`draft`、`tbh`、`advisor`、`external`。
+
+**保留运算符标记** — 在 id 中避免使用这些序列：`->`、`-.->`
+
+**ID 规则：** 必须符合 `[A-Za-z][A-Za-z0-9_-]*`。含空格的名称放在带引号的名称字段中，不能放在 id 里。
+
+属性值中**含空格的字符串**（如 `department: "Platform Eng"`）必须用双引号括起来。
+
+---
+
+## 8. 常见错误
+
+| 你写了 | 解析器报错 | 修复方法 |
+|---|---|---|
+| `alice: Alice Zhang`（不带引号的含空格名称） | 将 `Alice` 解析为姓名，`Zhang` 丢失或读错 | 给名称加引号：`alice: "Alice Zhang"` |
+| `open1 open: "TBH"` | id 后面的 `open` 不是类型关键字；id 正则匹配失败 | 类型关键字在前：`open open1: "TBH"` |
+| 在节点声明之前写 `alice -> bob` | `OrgchartParseError: Edge references unknown node` | 先声明节点，再在末尾写连线 |
+| `config: direction = top-down` | 未知值被忽略；方向保持 `TD` | 使用 `TD` 或 `LR` |
+| `config: layout = compact` | 接受——映射到 `list` 布局 | 正确；`compact`、`directory` 和 `list` 均可用 |
+| `alice [matrix: bob charlie]` | `matrix:` 中的空格分隔 id——两个均被添加 | 也可用逗号：`matrix: "bob, charlie"` |
+| id 含空格：`fe lead` | 解析器取 `fe` 作为 id；`lead` 失败 | 使用下划线：`fe_lead` |
+| 重复 id | `OrgchartParseError: Duplicate node id` | 每个节点需要唯一 id |
+
+---
+
+## 9. 语法（EBNF）
+
+```text
+document       = header (blank | comment | config | edge | node)*
+
+header         = "orgchart" ( WS quoted-string )? NEWLINE
+quoted-string  = '"' any-char-but-quote* '"'
+
+config         = "config" WS ":" WS key WS "=" WS value NEWLINE
+key            = "direction" | "layout"
+
+node           = INDENT* kind? id ":" WS fields ( "[" node-attrs "]" )? NEWLINE
+kind           = "role" | "open" | "draft" | "tbh" | "advisor" | "external" | "person"
+fields         = field ( "|" field )*
+field          = quoted-string | unquoted-text
+node-attrs     = node-attr ("," node-attr)*
+node-attr      = "role:" role-keyword
+               | "icon:" role-keyword
+               | "department:" text
+               | "status:" ( "new" | "leaving" | "on-leave" )
+               | "avatar-color:" quoted-hex
+               | "gender:" ( "male" | "female" )
+               | "note:" text
+               | "email:" text
+               | "phone:" text
+               | "location:" text
+               | "assistant-of:" id
+               | "matrix:" id-list
+               | "reports:" id
+               | bare-flag
+
+bare-flag      = "open" | "draft" | "tbh" | "external"
+
+edge           = id WS edge-op WS id ( "[" edge-attrs "]" )? NEWLINE
+edge-op        = "->" | ".->"  // -.-> for matrix
+edge-attrs     = "label:" quoted-string
+
+id             = [A-Za-z] [A-Za-z0-9_-]*
+comment        = ( "#" | "//" ) any NEWLINE
+```
+
+权威来源：`src/diagrams/orgchart/parser.ts`。如果与解析器有出入，以解析器为准——请提交 issue。
+
+---
+
+## 10. 路线图
+
+**计划中——暂不可解析。** 请勿在生成的 DSL 中使用这些内容；解析器会拒绝或忽略它们。
+
+- **`assistant-of:` 视觉渲染** — 该属性已被解析并存储在 AST 中，但渲染器尚未绘制助理肘形连接器。
+- **Config `coloring`** — 基于部门的颜色主题（`coloring: department`）。
+- **Config `compact` 尺寸等级** — 明确的卡片尺寸控制（`size: small | medium | large`）。
+- **`span:` 节点宽度** — 在树形布局中让节点跨越多个同级列。
+- **照片 / 头像 URL** — `avatar: "https://…"` 显示真实照片。
+- **导出为 HRIS 格式** — SVG 之外的 JSON/CSV 结构化输出。
+
+如果你迫切需要以上任何功能，请在 GitHub issues 中跟踪。
+
+---
+
+## 相关示例
+
+来自示例库的即用场景：
+
+<RelatedExamples slugs={[
+  'orgchart-tech-startup',
+  'orgchart-matrix-reporting',
+]} />

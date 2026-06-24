@@ -1,0 +1,119 @@
+---
+title: Hoja de trabajo FMEA
+description: Análisis de Modos de Fallo y Efectos — el motor calcula el RPN y la Prioridad de Acción AIAG-VDA a partir de un árbol anidado elemento → modo → efecto/causa.
+---
+
+## Acerca de FMEA
+
+**FMEA** (Análisis de Modos de Fallo y Efectos) es el método de confiabilidad proactivo más ampliamente utilizado en manufactura: para cada parte de un sistema, se listan cómo puede fallar (**modos de fallo**), qué hace cada fallo (**efectos**), por qué ocurre (**causas**), y cómo se detecta (**controles**). Cada fila se califica en tres escalas del 1 al 10 — **Severidad**, **Ocurrencia**, **Detección** — y se prioriza. Estandarizado por el **Manual FMEA AIAG-VDA (2019)** y **IEC 60812**.
+
+La ventaja de Schematex es que el motor **calcula la prioridad**, no solo la tabla. Aplana la cadena de fallos a una fila de hoja de trabajo por (elemento, modo, causa), calcula **RPN = S × O × D**, y — lo más importante — la **Prioridad de Acción** AIAG-VDA (bandas con primacía de severidad), que deliberadamente corrige el error que introduce un ordenamiento de RPN puro: un fallo de airbag con S10·O2·D3 es *Alto* aunque su RPN (60) parezca bajo.
+
+<Playground initial={`fmea "Brake system DFMEA"
+  type: design
+  rank: ap
+  flag: ap >= High
+  item "Master cylinder" fn "Generate hydraulic pressure"
+    mode "Internal seal leak"
+      effect "Loss of braking" sev: 9
+      cause "Seal material degradation" occ: 3
+        controls prevention: "Material spec", detection: "Bench test" det: 4
+      cause "Contamination" occ: 2
+        controls detection: "Fluid analysis" det: 5`} height={520} />
+
+---
+
+## 1. Tu primera hoja de trabajo
+
+Todo documento comienza con `fmea`, un título opcional, directivas opcionales, y luego una cadena de fallos **anidada**. La estructura proviene de la palabra clave, no del nivel de sangría:
+
+```
+fmea "Pump DFMEA"
+  item "Impeller" fn "Move fluid"
+    mode "No flow"
+      effect "Process stops" sev: 8
+      cause "Impeller wear" occ: 4
+        controls detection: "Flow sensor" det: 5
+```
+
+- **`item "nombre" fn "función"`** — una parte y la función que cumple. `fn` es opcional.
+- **`mode "modo de fallo"`** — cómo falla esa función. Un elemento puede tener varios.
+- **`effect "consecuencia" sev: 1..10`** — qué causa el fallo; lleva su propia **Severidad**. Un modo puede tener varios (el motor usa el *peor* para cada fila de ese modo).
+- **`cause "causa raíz" occ: 1..10`** — por qué ocurre; lleva la **Ocurrencia**.
+- **`controls prevention: "…", detection: "…" det: 1..10`** — controles actuales y la calificación de **Detección** que merecen. Sin control, la Detección tiene por defecto **10** (indetectable).
+
+Las tres calificaciones son enteros del 1 al 10; cualquier valor fuera de ese rango es rechazado.
+
+---
+
+## 2. Directivas de encabezado
+
+```
+type: design          # design (dfmea) | process (pfmea) | msr
+rank: ap              # ap (por defecto) | rpn — la clave de ordenamiento/prioridad
+flag: ap >= High      # o `rpn > 100` — resaltar filas por encima de un umbral
+number: FMEA-2026-014 # metadatos libres: number/team/author/date/revision/dept/process/product
+```
+
+`rank` elige cómo se priorizan las filas; `flag` resalta las filas que superan un umbral (`ap >= High` / `ap == High`, o `rpn > 100` / `rpn >= 120`).
+
+---
+
+## 3. RPN y Prioridad de Acción calculados
+
+Este es el diferenciador. Del AST anidado el motor:
+
+1. **Aplana** a una fila por (elemento, modo, causa); la severidad del peor efecto del modo rige cada fila de ese modo.
+2. **RPN = S × O × D** (1–1000).
+3. **Prioridad de Acción** por la estructura de bandas AIAG-VDA — **la Severidad es el eje primario**, la Ocurrencia el segundo, la Detección el tercero. S = 9–10 (seguridad/regulatorio) es Alto para *toda* O y D; la severidad media degrada Alto→Medio→Bajo a medida que la Ocurrencia disminuye.
+4. **Ordena** por la clave elegida. Para `ap`: Alto > Medio > Bajo, con desempate por Severidad luego RPN — *nunca* solo RPN, lo que reintroduciría el error que AP fue diseñado para corregir.
+5. **Marca** las filas por encima del umbral.
+
+Cada fila lleva `data-rpn` y `data-ap` para que la prioridad calculada sea inspeccionable.
+
+---
+
+## 4. Seguimiento posterior a la acción
+
+Registra las acciones correctivas y las calificaciones revisadas para mostrar el delta antes/después:
+
+```
+fmea "Brake DFMEA"
+  item "MC"
+    mode "Seal leak"
+      effect "Loss of braking" sev: 9
+      cause "Degradation" occ: 3 det: 4
+  action "Seal leak" / "Degradation"
+    do: "Upgrade seal to EPDM" owner: "J. Lee" target: 2026-Q3
+    revised sev: 9 occ: 1 det: 4
+```
+
+`action "Modo" / "Causa"` apunta a una cadena por su modo entre comillas y su causa (opcional); `do:` es la recomendación; `revised sev/occ/det` recalcula el RPN y AP posteriores a la acción para que el motor reporte la reducción de riesgo.
+
+---
+
+## 5. Errores comunes
+
+```
+# INCORRECTO — calificación fuera de la banda 1..10
+effect "Leak" sev: 11
+
+# INCORRECTO — modo antes de cualquier elemento
+mode "orphan mode"
+
+# INCORRECTO — efecto antes de cualquier modo
+item "x"
+  effect "e" sev: 3
+```
+
+Las calificaciones deben ser enteros del 1 al 10; la cadena de fallos debe anidarse `item → mode → effect/cause`; las palabras clave fuera de orden son rechazadas por nombre. La Detección tiene por defecto 10 silenciosamente si ningún control la califica — declara `det:` (en la causa o su `controls`) cuando tengas un control de detección.
+
+---
+
+## 6. Conformidad con estándares
+
+La cadena de fallos y las escalas de Severidad/Ocurrencia/Detección siguen el Manual FMEA AIAG-VDA (2019) e IEC 60812. La Prioridad de Acción implementa la *estructura* de bandas publicada (con primacía de severidad), no la tabla verbatim de 1000 celdas protegida por derechos de autor. RPN sigue disponible mediante `rank: rpn` para hojas de trabajo heredadas.
+
+## 7. Hoja de ruta
+
+Aplazado: las tablas de decisión AP/MSR exactas de AIAG-VDA, la ponderación de múltiples efectos por causa, y las vistas de árbol de estructura/función.

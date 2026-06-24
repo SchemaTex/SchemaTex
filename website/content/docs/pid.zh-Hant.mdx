@@ -1,0 +1,361 @@
+---
+title: P&ID（管道與儀表圖）
+---
+
+## 關於 P&ID
+
+**管道與儀表圖（P&ID）**是製程工廠的工程「接線圖」——每個容器、泵浦、熱交換器、閥門和儀表迴路，都以標準化符號繪製並以管道和訊號線連接。製程工程師、控制工程師和 HSE 稽核人員都閱讀同一份 P&ID，用來規劃工廠、試運轉、執行危害審查（HAZOP）以及正式生產操作。依照 OSHA PSM 和 EPA RMP 規範，P&ID 是化工、石化、製藥、水處理和發電項目的法定工程交付文件。
+
+Schematex 實作了 **[ANSI/ISA-5.1-2009](https://www.isa.org/products/ansi-isa-5-1-2009-instrumentation-symbols-and-iden)** 符號目錄（儀表氣泡、標籤字母代碼、訊號線類型），以及來自 **[ISO 10628-1:2014](https://www.iso.org/standard/51840.html)** 的設備符號（容器、塔柱、泵浦、熱交換器）。DSL 刻意設計得簡潔，讓 LLM 能從製程描述一次生成控制迴路 P&ID。
+
+<Playground initial={`pid "Pump with Flow Control"
+
+equip T-101 : tank_atm           [tag: "Feed Tank"]
+equip P-101 : pump_centrifugal   [tag: "P-101"]
+equip V-101 : valve_control      [tag: "V-101"]
+equip F-101 : filter             [tag: "Filter"]
+equip V-201 : vessel_v           [tag: "V-201"]
+
+line L1 from T-101.bottom to P-101.in  [size: "4\\"", service: "water", type: "process"]
+line L2 from P-101.out    to V-101.in  [size: "4\\"", type: "process"]
+line L3 from V-101.out    to F-101.in  [size: "4\\"", type: "process"]
+line L4 from F-101.out    to V-201.in  [size: "4\\"", type: "process"]
+
+inst FT-101 : field_discrete
+  measures P-101
+inst FIC-101 : cr_shared
+  controls V-101`} height={420} />
+
+---
+
+## 1. 第一個 P&ID
+
+最簡單的 P&ID 至少需要一個設備和一條製程管線。
+
+<Playground initial={`pid
+
+equip T-1 : tank_atm
+equip P-1 : pump_centrifugal
+equip V-1 : vessel_v
+
+line L1 from T-1.bottom to P-1.in [size: "2\\"", type: "process"]
+line L2 from P-1.out    to V-1.in [size: "2\\"", type: "process"]`} />
+
+三條規則涵蓋 80% 的用法：
+
+1. 文件以 `pid` 開頭（可選標題和 `[direction: LR]` 屬性）。
+2. 宣告每個設備：`equip <ID> : <type> [tag: "label"]`。
+3. 以 `line <ID> from <equip>.<port> to <equip>.<port> [type: "process", size: "4\""]` 連接設備。
+
+儀表另外以 `inst <TAG> : <category>` 加上縮排的 `measures` / `controls` 子句新增。
+
+> 註解使用行首的 `#`。
+
+---
+
+## 2. 設備
+
+`equip` 語句宣告製程設備。目錄遵循 ISO 10628 / ISA-5.1 慣例。
+
+```
+equip T-101 : tank_atm [tag: "Feed Tank"]
+equip P-101 : pump_centrifugal
+equip E-201 : hx_shell_tube [tag: "Overhead Cond"]
+equip T-201 : column_tray [tag: "Stripper"]
+```
+
+### 2.1 設備目錄
+
+| 類型 | 符號 | 用途 |
+|---|---|---|
+| `tank_atm` | 圓柱體＋圓頂頂蓋 | 常壓儲槽 |
+| `tank_cone_roof` | 圓柱體＋錐形頂蓋 | 錐頂儲槽 |
+| `vessel_v` | 垂直膠囊形 | 垂直壓力容器 |
+| `vessel_h` | 水平膠囊形 | 水平壓力容器 |
+| `sphere` | 實心圓形 | LPG／氨球形儲槽 |
+| `column_tray` | 高膠囊形＋水平塔板線 | 蒸餾塔板塔 |
+| `column_packed` | 高膠囊形＋交叉填料 | 填料吸收塔 |
+| `hx_shell_tube` | 水平膠囊形＋管束 | 殼管式熱交換器 |
+| `hx_air_cooled` | 矩形＋風扇圓形 | 空冷（翅片風扇）冷卻器 |
+| `reboiler` | 膠囊形＋平行管線 | 釜式再沸器 |
+| `condenser` | 水平膠囊形＋管束 | 頂部冷凝器 |
+| `pump_centrifugal` | 圓形＋右側三角形出口 | 離心泵浦 |
+| `pump_pd` | 圓形＋內部齒輪 | 正排量泵浦 |
+| `compressor` | 梯形（右側較窄） | 離心壓縮機 |
+| `blower` | 圓形＋三葉風扇 | 鼓風機／風扇 |
+| `reactor_cstr` | 垂直膠囊形＋攪拌器 | 攪拌槽反應器（CSTR） |
+| `reactor_pfr` | 水平膠囊形＋填充床點 | 活塞流／固定床反應器 |
+| `filter` | 矩形＋對角線填充 | 過濾器 |
+| `cyclone` | 圓柱體＋錐形底部 | 旋風分離器 |
+| `flare` | 高煙囪＋火焰 | 火炬煙囪 |
+| `cooling_tower` | 沙漏形 | 誘導通風冷卻塔 |
+
+### 2.2 閥門目錄
+
+閥門是位於管線上的設備，以 `bowtie`（蝶形）風格渲染，並有類型特定的執行機構裝飾。
+
+| 類型 | 裝飾 | 用途 |
+|---|---|---|
+| `valve_gate` | 普通蝶形 | 手動開／關（全口徑） |
+| `valve_ball` | 蝶形＋填充中心圓 | 手動開／關（四分之一圈） |
+| `valve_globe` | 蝶形＋頂部小圓 | 手動流量控制 |
+| `valve_butterfly` | 蝶形＋中心垂直線 | 四分之一圈節流 |
+| `valve_check` | 蝶形＋弧形 | 止回閥 |
+| `valve_control` | 蝶形＋隔膜執行機構 | 氣動控制閥（與 FIC 搭配） |
+| `valve_psv` | 蝶形＋45° 出口＋彈簧疊加 | 壓力安全洩壓閥 |
+
+```
+equip V-101 : valve_control [tag: "V-101 (FC)"]
+equip V-303 : valve_psv     [tag: "V-303 · 150 psig"]
+```
+
+---
+
+## 3. 管道與訊號線
+
+`line` 語句連接兩個錨點（設備埠或儀表標籤）。
+
+```
+line L1 from T-101.bottom to P-101.in  [size: "4\"", service: "water", type: "process"]
+line s1 from FT-101 to FIC-101         [type: "electric"]
+line s2 from FIC-101 to V-101          [type: "pneumatic"]
+```
+
+### 3.1 錨點語法
+
+線段的每個端點為以下之一：
+- `<equip-id>.<port>` — 來自 §2.2 的埠名稱（`in`、`out`、`top`、`bottom`、`feed`、`shell_in`、`tube_out`、`reflux` 等）
+- `<equip-id>` — 省略埠名稱；依設備系列預設為 `in`（目標）／`out`（來源）
+- `<inst-tag>` — 儀表氣泡中心（訊號線）
+
+### 3.2 線段類型（ISA-5.1 §5）
+
+| `type:` | 筆畫 | 用途 |
+|---|---|---|
+| `process` | 實線、粗 | 主要製程管線（預設） |
+| `process_minor` | 實線、細 | 輔助／工用管線 |
+| `pneumatic` | 實線＋對角刻度標記 | 氣動執行機構訊號 |
+| `electric` | 長虛線 | 電氣／4–20 mA 訊號 |
+| `hydraulic` | 長虛線＋停頓 | 液壓執行機構 |
+| `capillary` | 點線（圓帽） | 充液系統溫度 |
+| `software` | 短虛線、淺色 | DCS／PLC 內部資料連結 |
+| `mechanical` | 混合虛線 | 機械連動 |
+
+### 3.3 管線標籤
+
+標準 PIP PIC001 標籤格式為 `<size>"-<service>-<sequence>-<spec>`。透過 `tag:` 屬性傳入，渲染器會在線段中點放置一個白底標籤矩形。
+
+```
+line L1 from T-101.bottom to P-101.in [size: "4\"", service: "PG", tag: "4\"-PG-101-A1B"]
+```
+
+---
+
+## 4. 儀表（ISA-5.1 §4）
+
+`inst` 語句宣告儀表氣泡。**標籤**使用 ISA 字母代碼慣例：第一個字母是*量測變數*，後續字母是*修飾符*和*功能*。
+
+```
+inst FT-101  : field_discrete         %% Flow Transmitter, loop 101
+inst FIC-101 : cr_shared              %% Flow Indicating Controller (DCS)
+inst PSHH-301: cr_plc                 %% Pressure Switch High-High (PLC)
+inst LIC-201 : cr_shared
+  measures D-201
+  controls V-202
+```
+
+### 4.1 字母代碼（第一個字母）
+
+最常用：`F` 流量・`L` 液位・`P` 壓力・`T` 溫度・`A` 分析・`S` 速度・`H` 手動・`Y` 事件/狀態。完整清單見 ISA-5.1 表 1。
+
+### 4.2 功能修飾符
+
+`I` 指示器・`R` 記錄器・`C` 控制器・`T` 傳送器・`E` 元件・`V` 閥門・`S` 開關・`A` 警報・`H`/`L` 高/低。組合成多字母標籤：`FIC` = 流量指示控制器；`PSHH` = 壓力開關高高。
+
+### 4.3 氣泡類別
+
+ISA-5.1 區分**位置**（儀表所在位置）和**類型**（類比式、共用式、電腦式、PLC）。Schematex 實作四種最常見的組合：
+
+| 類別 | 氣泡形狀 | 用途 |
+|---|---|---|
+| `field_discrete` | 普通圓形 | 現場安裝類比儀表（FT、PT） |
+| `cr_shared` | 圓形＋水平線＋內切六邊形 | DCS 控制的 HMI 顯示 |
+| `cr_computer` | 圓形＋水平線＋內切菱形 | 電腦功能（FY、計算） |
+| `cr_plc` | 圓形＋水平線＋內切正方形 | PLC 驅動邏輯 |
+
+`field_*` 變體省略水平中心線；`local_*` 變體使用虛線中心線；`cr_*` 變體使用實線中心線，表示「主控制盤正面」。
+
+### 4.4 measures / controls
+
+縮排於 `inst` 宣告之下：
+
+| 子句 | 效果 |
+|---|---|
+| `measures <equip-id>` | 從設備到氣泡的自動路由虛線電氣訊號線 |
+| `controls <equip-id>` | 從氣泡到設備的自動路由氣動訊號線（通常是 `valve_control`） |
+
+```
+inst FT-101 : field_discrete
+  measures P-101
+inst FIC-101 : cr_shared
+  controls V-101
+```
+
+這些自動訊號獨立於明確的 `line` 語句——它們根據關係類型以對應的訊號線樣式渲染。
+
+---
+
+## 5. 佈局方向
+
+預設方向為 **`LR`**（從左到右）——製程進料從左邊進入，產品從右邊輸出。在標頭覆蓋設定：
+
+```
+pid "Distillation Tower" [direction: TB]
+
+equip T-201 : column_tray
+…
+```
+
+MVP 佈局按宣告順序沿主方向排列設備，並以曼哈頓路由佈置訊號線。**多列／並聯流程佈局和三通接頭為路線圖項目**——見 §9。
+
+---
+
+## 6. 實作範例：蒸餾塔
+
+包含再沸器、回流罐和儀表的真實頂部冷凝器迴路：
+
+<Playground initial={`pid "Distillation T-201"
+
+equip T-201 : column_tray         [tag: "T-201"]
+equip E-201 : condenser           [tag: "Overhead Cond"]
+equip D-201 : vessel_h            [tag: "Reflux Drum"]
+equip P-201 : pump_centrifugal    [tag: "Reflux Pump"]
+equip E-202 : reboiler            [tag: "Reboiler"]
+
+line L1 from T-201.top    to E-201.shell_in  [size: "8\\"", service: "vapor",  type: "process"]
+line L2 from E-201.shell_out to D-201.in    [size: "8\\"", type: "process"]
+line L3 from D-201.bottom to P-201.in       [size: "3\\"", type: "process"]
+line L4 from P-201.out    to T-201.reflux   [size: "3\\"", type: "process"]
+line L5 from T-201.bottom to E-202.in       [size: "6\\"", type: "process"]
+
+inst PT-201  : field_discrete
+  measures T-201
+inst LIC-201 : cr_shared
+  measures D-201
+inst TIC-201 : cr_shared
+  measures T-201`} height={520} />
+
+---
+
+## 7. 語法（EBNF）
+
+```text
+document    = header statement*
+header      = "pid" ( title )? ( "[" attrs "]" )? NEWLINE
+attrs       = attr ("," attr)*
+attr        = "direction:" ("LR" | "TB")
+            | "units:" ("imperial" | "metric")
+
+statement   = comment
+            | equipment-decl
+            | line-decl
+            | instrument-decl
+
+equipment-decl = "equip" ID ":" equip-type ( "[" attr-list "]" )? NEWLINE
+equip-type     = "tank_atm" | "tank_cone_roof"
+               | "vessel_v" | "vessel_h" | "sphere"
+               | "column_tray" | "column_packed"
+               | "hx_shell_tube" | "hx_air_cooled" | "reboiler" | "condenser"
+               | "pump_centrifugal" | "pump_pd"
+               | "compressor" | "blower"
+               | "reactor_cstr" | "reactor_pfr"
+               | "filter" | "cyclone" | "flare" | "cooling_tower"
+               | "valve_gate" | "valve_ball" | "valve_globe" | "valve_butterfly"
+               | "valve_check" | "valve_control" | "valve_psv"
+
+line-decl   = "line" ID "from" anchor "to" anchor ( "[" attr-list "]" )? NEWLINE
+anchor      = ID ( "." port )?
+port        = "in" | "out" | "top" | "bottom" | "left" | "right"
+            | "feed" | "reflux" | "shell_in" | "shell_out"
+            | "tube_in" | "tube_out" | "vapor_out" | "liquid_out"
+            | "bottom_return"
+
+instrument-decl = "inst" tag ":" inst-category ( "[" attr-list "]" )? NEWLINE
+                  ( indented "measures" anchor NEWLINE )*
+                  ( indented "controls" ID NEWLINE )*
+tag             = letter-code "-" loop-num     %% e.g., "FIC-101"
+inst-category   = "field_discrete" | "field_shared" | "field_computer" | "field_plc"
+                | "cr_discrete"    | "cr_shared"    | "cr_computer"    | "cr_plc"
+                | "local_discrete" | "local_shared"
+
+attr-list   = attr ("," attr)*
+attr        = key ":" value
+key         = "tag" | "size" | "service" | "type" | "set_pressure"
+            | "actuator" | "fail" | "trays" | …
+value       = quoted-string | bare-word
+
+ID          = [A-Za-z] [A-Za-z0-9_-]*
+```
+
+權威來源：`src/diagrams/pid/parser.ts`。若此文件與解析器有出入，以解析器為準——請提交 issue。
+
+---
+
+## 8. 標準合規性
+
+目前已實作（P0 MVP）：
+
+- ✅ 22 種製程設備符號（容器、塔柱、泵浦、熱交換器、反應器、分離器、火炬、冷卻塔）
+- ✅ 7 種閥門符號（閘閥、球閥、截止閥、蝶閥、止回閥、隔膜執行機構控制閥、帶對角出口和彈簧的安全閥）
+- ✅ 4 種儀表氣泡類別 × 2 種位置類別 = 8 種 ISA-5.1 氣泡變體（現場/控制室 × 類比/共用/電腦/PLC）
+- ✅ ISA 字母代碼標籤解析（`FT-101`、`LIC-203`、`PSHH-301`）
+- ✅ 8 種管線類型樣式（process / process_minor / pneumatic / electric / hydraulic / capillary / software / mechanical）
+- ✅ 自動路由的 `measures` 和 `controls` 訊號線
+- ✅ 在管線中點以白底矩形渲染的管線標籤
+- ✅ 曼哈頓路由、單列設備佈局
+
+**尚未實作**（見路線圖）：
+
+- ⏳ 多列／並聯流程佈局（例如兩台泵浦匯入混合器）
+- ⏳ 三通接頭和分支管道
+- ⏳ 管道交叉偵測（管道交叉處的跳越弧）
+- ⏳ 功能模塊疊加（Σ 加法器、PID、選擇器）
+- ⏳ 聯鎖菱形和允許圓（ISA-5.06）
+- ⏳ 電熱伴熱／夾套管線裝飾
+- ⏳ 在線縮徑管（同心／偏心）
+- ⏳ 容器上的接管標注
+
+參考資料：
+
+- ANSI/ISA-5.1-2009 — *Instrumentation Symbols and Identification*（美國標準）
+- ISO 10628-1:2014 — *Diagrams for the chemical and petrochemical industry*（國際標準）
+- ISA-5.06.01-2007 — *Functional Requirements Documentation for Control Software*
+- PIP PIC001 — 管道與儀表圖文件標準（行業補充）
+
+---
+
+## 9. 路線圖
+
+MVP P&ID 涵蓋單一線性控制迴路（儲槽 → 泵浦 → 控制閥 → 儀表）。實際工廠需要 2D 佈局和三通接頭。計劃於 v0.4 實作：
+
+- **DSL 擴展**：`equip ... [row: 0, col: 2]` 多流程佈局的通道／網格提示
+- **`tee` 基本元素**：`tee T1 on L1` 在製程管線上表示三向分支
+- **`junction` 基本元素**：管道連接的 ISA 節點圓點
+- **交叉偵測**：當兩條管道交叉時，為下方的管道渲染一個小弧形凸起
+- **功能模塊**：`Σ` 加法器、`PID` 控制器、`LS`/`HS` 低/高選擇器
+- **聯鎖符號**：`interlock I-301` 菱形、`permissive P-202` 圓形
+- **在線縮徑管**：作為管線裝飾的同心／偏心縮徑管
+- **接管清單**：容器符號上的側埠標注（`N1`、`N2`、……）
+
+目前，單迴路控制方案可直接清晰渲染；複雜的多流程 P&ID 需要手動位置提示（已延後實作）。
+
+---
+
+## 相關範例
+
+來自範例圖庫的即用情境：
+
+<RelatedExamples slugs={[
+  'pid-pump-flow-control',
+  'pid-reactor-feed-system',
+]} />

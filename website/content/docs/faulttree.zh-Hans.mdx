@@ -1,0 +1,134 @@
+---
+title: 故障树分析
+---
+
+## 关于故障树
+
+**故障树**是受规范工程中部署最广泛的可靠性／安全技术：从一个不期望的**顶事件**（系统失效）出发，通过布尔**门**（AND / OR / 投票 / ……）向下分解至**基本事件**（元件失效），其概率已知。由贝尔实验室于 1962 年发明，并由 **[NUREG-0492](https://www.nrc.gov/docs/ML1007/ML100780465.pdf)**（核能）、**IEC 61025**（跨行业）和 SAE ARP4761（航空航天）标准化。
+
+Schematex 的优势在于引擎**计算出答案**，而不只是画图：它执行 MOCUS（Fussell-Vesely 1972）以找出**最小割集** — 不可化简的失效组合 — 以及**顶事件概率**，然后以红色标出割集（最强红色标示单点失效）。这是绘制故障树的全部目的，与 `pert` 对调度和 `petri` 对标记的态度相同。与 `logic`（由左至右的信号网络表）、`decisiontree`（期望值回推）和 `fishbone`（定性，未量化）不同。
+
+<Playground initial={`faulttree "Product not removed"
+  analysis: cutsets, probability
+  top T  "Failure to remove product" = OR(G1, G2)
+  gate G1 "Arm jams or collides"      = AND(MSF, G3)
+  gate G2 "Wrong slot commanded"      = OR(CDM, MSF)
+  gate G3 "Loss of position feedback" = OR(ESF, RCF)
+  basic MSF "Manipulator system failure" p: 0.0035
+  basic CDM "Controller command error"   p: 0.0009
+  basic ESF "Encoder sensor failure"     p: 0.0021
+  basic RCF "Resolver cable fault"       p: 0.0012`} height={620} />
+
+---
+
+## 1. 第一个图表
+
+每份文档以 `faulttree` 关键字（别名 `fta`）开头，后接可选的标题，然后是一组以 id 连接的扁平声明列表：
+
+```
+faulttree "Both pumps fail"
+  analysis: cutsets, probability
+  top T "Both redundant pumps fail" = AND(PA, PB)
+  basic PA "Pump A fails" p: 0.01
+  basic PB "Pump B fails" p: 0.01
+```
+
+`top` 声明单一根事件及产生它的门；`basic` 声明一个具有概率的叶节点元件失效。引擎计算最小割集 `{PA, PB}` 和 P(top) = 1.0e-4。DSL 是**扁平声明 + 引用**（非缩进嵌套）— 故障树是有向无环图（DAG），因此共享事件只需从多个门以 id 引用即可。
+
+标头指令：
+
+- `analysis: cutsets, probability` — 要计算的内容（也可用 `pathsets`、`none`）。
+- `prob: rare | mcub | exact` — 概率方法（默认为 `rare`，保守上限）。
+- `layout: tb | bt` — 由上至下（默认）或由下至上。
+
+---
+
+## 2. 事件
+
+```
+top  T   "System fails"        = OR(A, B)
+gate G1  "Sub-fault"           = AND(A, B)
+basic A  "Component A fails"   p: 0.01
+undeveloped EXT "External fire (not modelled)"
+house HX "Power on"            state: 1
+```
+
+- **`top`** — 被分析的唯一不期望事件（矩形，强调边框）。恰好需要一个。
+- **`gate`** — 本身是门输出的中间事件（矩形）。
+- **`basic`** — 携带 `p:` 的叶节点主要元件失效（圆形）。
+- **`undeveloped`** — 未进一步开发的事件（菱形）；可携带 `p:`。
+- **`house`** — 一个被强制设为 `state: 0` 或 `state: 1` 的正常预期事件（房屋图示） — 用于开启／关闭树的分支。
+
+概率接受十进制数或科学记数法（`p: 0.004` 或 `p: 1e-6`）；`p:` 和 `prob:` 可互换。没有概率的事件视为符号式处理（仍计算割集；P(top) 报告为 n/a）。
+
+---
+
+## 3. 门
+
+```
+top  T1 = AND(A, B, C)            # 所有输入均发生
+top  T2 = OR(A, B)                # 至少一个输入发生
+top  T3 = XOR(A, B)               # 恰好一个（割集视为 OR）
+top  T4 = VOTING(2/3; A, B, C)    # n 个中至少 k 个
+gate G1 = INHIBIT(A) if COND      # A 发生且条件成立
+gate G2 = PAND(A, B) order: A, B  # A 然后 B（显示顺序，割集视为 AND）
+```
+
+门的绘制方式是**输出在上，输入在下**（与 `logic` 门的镜像）：AND 是平底穹顶形，OR/XOR/VOTING 是盾形，INHIBIT 是六边形。`INHIBIT`/`PAND` 的条件事件以旁边的椭圆形呈现。门可以引用另一个门或任何事件 — 同一个基本事件可以为多个门提供输入（重复事件）。
+
+---
+
+## 4. 计算割集与概率
+
+这是差异所在。使用 `analysis: cutsets`，引擎执行 **MOCUS**：AND 门增大割集的阶数，OR 门乘以割集数量，然后通过幂等性（`A∧A=A`）和吸收律（`X ⊆ Y ⇒ 移除 Y`）最小化结果。
+
+- 每个**最小割集**以红色框出；**一阶割集是单点失效**（最强红色，`data-spof`）。
+- **重复事件**（一个基本事件在多个门下）通过吸收律处理 — 这是朴素展开器容易出错的情况。
+- **P(top)** 从各事件概率计算：`rare`（割集概率之和，默认值）、`mcub`（1 − ∏(1−P)）或 `exact`（容斥原理，能正确去除重复的共享事件）。方法显示在顶事件旁边，并在 `<desc>` 中记录。
+- `house state: 0` 可以使顶事件无法满足 — 报告为"无割集"。
+
+---
+
+## 5. 重复事件
+
+```
+faulttree "Safety function fails"
+  analysis: cutsets, probability
+  prob: exact
+  top T "Safety function fails" = OR(C1, C2)
+  gate C1 "Channel 1" = AND(S1, L1)
+  gate C2 "Channel 2" = AND(S2, L1)
+  basic S1 "Sensor 1 fails" p: 0.05
+  basic S2 "Sensor 2 fails" p: 0.05
+  basic L1 "Shared logic solver fails" p: 0.05
+```
+
+`L1` 为两个通道提供输入 — 每次引用都各自绘制并带有共享事件标记，但割集引擎将每个实例视为同一个布尔变量。割集为 `{S1, L1}` 和 `{S2, L1}`；`prob: exact` 减去重叠部分（L1 在并集中只计算一次），得出 0.004875 而非稀有事件的 0.005。
+
+---
+
+## 6. 转移
+
+```
+gate OVP "Sustained over-pressure" = INHIBIT(PUMP) if HEATER
+transfer OVP -> "OVP-detail"
+```
+
+`transfer ID -> "name"` 在事件下方绘制转移输出三角形，该事件的展开定义在别处；对应的 `transfer "name" = gate_expr` 定义该命名子树，并在割集计算时拼接进来。v0.1 在文档内部解析转移。
+
+---
+
+## 7. 验证
+
+解析器以可读的错误快速失败，使割集计算具有意义：
+
+- 恰好需要一个 `top`（零个或多个均为错误）；
+- 引用未声明 id 的门会按名称报告该 id；
+- 循环被拒绝（故障树是 DAG）；
+- `[0, 1]` 范围外的概率、`VOTING k/n` 中 `k > n` 或 `n ≠ 输入数量`，或非 INHIBIT/PAND 门上的 `if` 条件，均以通俗语言报告。
+
+---
+
+## 8. 主题样式
+
+`default` 使用房屋调色板 — 柔和的蓝灰色事件框、**绿色门**（"逻辑继续"）、**红色割集框**（计算出的风险）、蓝色概率数字，以及黄色房屋。`monochrome` 重现 NUREG-0492 黑白教科书外观，其中穹顶／盾形（而非颜色）承载门的类型。所有线条／填充均来自 `ReliabilityTokens`；每个元素携带 `data-*`（`data-cutset`、`data-spof`、`data-prob`、`data-gate`），使计算分析可供下游检查。
