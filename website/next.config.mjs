@@ -35,11 +35,19 @@ const config = {
       './app/(home)/examples/[slug]/_assets/**',
     ],
   },
-  webpack(webpackConfig) {
+  webpack(webpackConfig, { dev }) {
     // Dev: point directly at TypeScript source for live HMR.
     // Production: use the built dist/ (built by Vercel install command).
-    if (process.env.NODE_ENV === 'development') {
+    if (dev) {
       webpackConfig.resolve.alias['schematex'] = path.resolve(__dirname, '../src/index.ts');
+    }
+    // 676 MDX modules (54 EN + 422 locale variants + 199 examples) cause the
+    // webpack PackFileCacheStrategy to OOM on Vercel's 8 GB build machine when
+    // it tries to serialize the enlarged module graph. Disable filesystem caching
+    // for production builds so the cache is never written; each build recompiles
+    // from scratch, which is still fast enough (~90 s webpack phase).
+    if (!dev) {
+      webpackConfig.cache = false;
     }
     return webpackConfig;
   },
