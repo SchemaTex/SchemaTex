@@ -76,6 +76,29 @@ export const LIVE_LOCALES = [
 
 export type LiveLocale = (typeof LIVE_LOCALES)[number];
 
+/**
+ * Locales the documentation is actually translated into (have `*.{locale}.mdx`
+ * files under content/docs). A subset of LIVE_LOCALES — docs translation lands
+ * separately from the marketing pages. Defined here (a client-safe module with
+ * no `node:` imports) rather than in lib/source.ts so the client-side
+ * DocLangSwitcher can import it without dragging fumadocs' server runtime —
+ * which uses `node:fs/promises` — into the browser bundle (webpack
+ * UnhandledSchemeError on `node:` URIs otherwise).
+ */
+export const DOC_LOCALES = [
+  'en',
+  'zh-Hans',
+  'zh-Hant',
+  'ja',
+  'de',
+  'pt-BR',
+  'es',
+  'fr',
+  'ko',
+] as const satisfies readonly SupportedLocale[];
+
+export type DocLocale = (typeof DOC_LOCALES)[number];
+
 /** Right-to-left locales — need `dir="rtl"` + direction-aware CSS (Batch 2). */
 export const RTL_LOCALES = ['ar', 'he'] as const satisfies readonly SupportedLocale[];
 

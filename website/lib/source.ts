@@ -1,21 +1,12 @@
 import { docs } from '@/.source/server';
 import { loader } from 'fumadocs-core/source';
 import { defineI18n } from 'fumadocs-core/i18n';
-import type { SupportedLocale } from '@/lib/i18n/locales';
+import { DOC_LOCALES, type DocLocale } from '@/lib/i18n/locales';
 
-export const DOC_LOCALES = [
-  'en',
-  'zh-Hans',
-  'zh-Hant',
-  'ja',
-  'de',
-  'pt-BR',
-  'es',
-  'fr',
-  'ko',
-] as const satisfies readonly SupportedLocale[];
-
-export type DocLocale = (typeof DOC_LOCALES)[number];
+// Re-exported for back-compat: DOC_LOCALES / DocLocale now live in the
+// client-safe lib/i18n/locales module (see the note there). Server-side
+// callers can keep importing them from '@/lib/source'.
+export { DOC_LOCALES, type DocLocale };
 
 export const docsI18n = defineI18n({
   defaultLanguage: 'en',

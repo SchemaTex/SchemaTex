@@ -2,8 +2,13 @@
 
 import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { DOC_LOCALES, type DocLocale } from '@/lib/source';
-import { swapLocale, LOCALE_LABELS, type SupportedLocale } from '@/lib/i18n/locales';
+import {
+  DOC_LOCALES,
+  type DocLocale,
+  swapLocale,
+  LOCALE_LABELS,
+  type SupportedLocale,
+} from '@/lib/i18n/locales';
 
 const FLAGS: Record<DocLocale, string> = {
   en: '🇺🇸',

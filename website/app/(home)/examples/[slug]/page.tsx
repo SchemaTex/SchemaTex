@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Playground } from '@/components/Playground';
 import { CopyButton } from '@/components/CopyButton';
-import { allExamples, getExample } from '@/lib/examples-source';
+import { getExample } from '@/lib/examples-source';
 import { getMDXComponents } from '@/mdx-components';
 import { resolveDiagramType, getDiagramSince } from 'schematex/ai';
 
