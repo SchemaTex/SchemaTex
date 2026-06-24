@@ -26,9 +26,7 @@ export default async function Page(props: { params: Promise<{ slug?: string[] }>
   );
 }
 
-export function generateStaticParams() {
-  return source.generateParams().filter((p) => p.lang === 'en').map(({ slug }) => ({ slug }));
-}
+export const revalidate = false;
 
 export async function generateMetadata(props: { params: Promise<{ slug?: string[] }> }) {
   const params = await props.params;

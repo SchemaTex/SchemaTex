@@ -6,9 +6,7 @@ import { allExamples, getExample } from '@/lib/examples-source';
 import { getMDXComponents } from '@/mdx-components';
 import { resolveDiagramType, getDiagramSince } from 'schematex/ai';
 
-export function generateStaticParams() {
-  return allExamples.map((e) => ({ slug: e.slug }));
-}
+export const revalidate = false;
 
 export async function generateMetadata({
   params,
