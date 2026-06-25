@@ -580,6 +580,7 @@ export function HomeContent({
                 {[
                   { name: 'ChatDiagram', href: 'https://chatdiagram.com', logo: '/logos/chatdiagram.svg' },
                   { name: 'FreeDiagram', href: 'https://freediagram.app', logo: '/logos/freediagram.svg' },
+                  { name: 'FloorPlan Maker', href: 'https://www.floorplanmaker.app', logo: '/logos/floorplanmaker.svg' },
                 ].map((p) => (
                   <a
                     key={p.name}
