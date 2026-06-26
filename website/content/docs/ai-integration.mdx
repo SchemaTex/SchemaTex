@@ -109,6 +109,8 @@ if (!check.ok) {
 
 `buildPromptContext` is pure sugar over `getSyntax({ detail: 'canonical' })` + `getExamples({ preferFeatured: true })` — both remain available if you'd rather compose the prompt yourself. Options: `{ examples?: number, detail?, preferFeatured?, maxComplexity? }`.
 
+> **MCP vs npm:** `buildPromptContext` is only available in the `schematex/ai` npm package (Path 1 below). The hosted MCP server (Path 2) exposes `getSyntax` and `getExamples` as separate tool calls — the agentic loop does the composing for you.
+
 ---
 
 ## Path 2 — Hosted MCP (zero install)
