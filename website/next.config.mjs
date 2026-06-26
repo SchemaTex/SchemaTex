@@ -21,6 +21,18 @@ const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
 /** @type {import('next').NextConfig} */
 const config = {
   reactStrictMode: true,
+  // English is the unprefixed canonical (CoCEO playbook §6.5 — `/en/*` would be
+  // a duplicate of the bare `/docs/...` paths and tanks ranking). The `[lang]`
+  // route therefore `notFound()`s on `en`, so `/en/*` used to hard-404. A 404 is
+  // the wrong tool for a guessable URL: 308-redirect every `/en/*` to its bare
+  // canonical so humans who type `/en/...` land on the page and crawlers
+  // consolidate link equity instead of dropping it.
+  async redirects() {
+    return [
+      { source: '/en', destination: '/', permanent: true },
+      { source: '/en/:path*', destination: '/:path*', permanent: true },
+    ];
+  },
   async rewrites() {
     if (!GA_ID) return [];
     return [
