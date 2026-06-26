@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.9.10] — 2026-06-26
+
+### Fixed — AI generation context surfaced shipped capabilities (`floorplan`, `matrix`, `timing`)
+
+No engine changes — this release fixes the **AI-facing prompt context** (`buildPromptContext` / generation-tier grammar cards + featured examples) so that already-shipped capabilities are actually discoverable by an LLM on the default path. Audit driven by ChatDiagram production data (wedding "plan de table" requests that fell back to comment-stuffing because the model never saw the feature).
+
+- **`floorplan` — named seating charts.** The `seats "Alice" "Bob" …` clause (write occupant names onto auto-seated chairs — the difference between a venue plan and a seating chart) shipped in 0.9.x but was absent from the generation-tier grammar card and from every featured example, so the model couldn't emit it. Added `seats` to the `furniture` clause + a `prefer` bullet (with `plan de table` / 席次表 phrasing), and promoted **"Wedding seating chart — named guests"** to a featured example.
+- **`matrix` — QFD / SIPOC / Punnett body grammar.** The three computational modes (`matrix qfd` House-of-Quality, `matrix sipoc`, `matrix punnett`) were named as headers but their **body syntax was missing** from the grammar card, and no QFD/SIPOC/Punnett example was featured — the model knew the modes existed but couldn't write a valid document. Added the `what:`/`how:`/`rel`/`roof`, `suppliers:/inputs:/process:/outputs:/customers:`, and `cross:`/`trait` grammar + inline forms + `prefer` guidance, and featured the **House of Quality**, **monohybrid Punnett**, and **SIPOC** examples.
+- **`timing` — removed a phantom keyword.** The grammar card advertised `phase: FLOAT (0.0–1.0)`, which the timing engine never implemented — the model would emit it and the parse would fail. Removed.
+
+---
+
 ## [0.9.8] — 2026-06-15
 
 ### Added — Comparison & decision-matrix engine (`comparison`)

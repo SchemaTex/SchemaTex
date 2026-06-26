@@ -199,7 +199,7 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
     header: 'timing "Title"',
     mode: "WaveDrom signals, with clock/run-length shorthands",
     keywords:
-      'timing "title" [hscale: N] · SIGNAME: wave_spec · wave chars 0 1 x z = . u d p P n N h H l L 2-9 · clock N [neg] · rle <state>*<count> … · data: ["a","b"] for = and digit segments · [GroupName] or group "name" { … } · --- spacer · phase: FLOAT (0.0–1.0)',
+      'timing "title" [hscale: N] · SIGNAME: wave_spec · wave chars 0 1 x z = . u d p P n N h H l L 2-9 · clock N [neg] · rle <state>*<count> … · data: ["a","b"] for = and digit segments · [GroupName] or group "name" { … } · --- spacer',
     forms: [
       'timing "Synchronous Bus Read"',
       "CLK:  clock 8",
@@ -562,7 +562,7 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
     header: 'matrix "Title"',
     mode: "quadrant scatter (default) | named templates | heatmap | sipoc | qfd | punnett",
     keywords:
-      'header variants: matrix "Title" | matrix <template> "Title" | matrix heatmap NxM | matrix correlation | matrix sipoc | matrix qfd | matrix punnett · templates: eisenhower impact-effort rice bcg ansoff johari 9-box risk-matrix · quadrant: x-axis: Low -> High · y-axis: Low -> High · "Label" at (x,y) [size:N category:C shape:circle|square|triangle|diamond] · quadrant Q1..Q4 "name" · Q1:/"Q1: text" cell shortcuts · style: table · config: offChartPolicy=clamp-badge|drop bubbleScale=area|radius',
+      'header variants: matrix "Title" | matrix <template> "Title" | matrix heatmap NxM | matrix correlation | matrix sipoc | matrix qfd | matrix punnett · templates: eisenhower impact-effort rice bcg ansoff johari 9-box risk-matrix · quadrant: x-axis: Low -> High · y-axis: Low -> High · "Label" at (x,y) [size:N category:C shape:circle|square|triangle|diamond] · quadrant Q1..Q4 "name" · Q1:/"Q1: text" cell shortcuts · style: table · config: offChartPolicy=clamp-badge|drop bubbleScale=area|radius · QFD body (under `matrix qfd`): what: "Need" [weight: N] · how: "Spec" [dir: up|down|target] · rel (whatIdx, howIdx): 9|3|1 · roof (i, j): ++|+|-|-- · [normalize: percent] — engine computes the technical-importance row · SIPOC body (under `matrix sipoc`): suppliers:/inputs:/process:/outputs:/customers: "A", "B", … (each column one line) · Punnett body (under `matrix punnett`): cross: Bb x Bb (genotype pairs, separator x/×/*) · trait B: "Brown" / "Blue" (dominant / recessive phenotype names) — engine computes the genotype + phenotype ratios',
     forms: [
       'matrix eisenhower "This Week"',
       "style: table",
@@ -573,11 +573,23 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
       'matrix bcg "Product Portfolio"',
       '"Platform SDK" at (0.8, 0.8) size: 5 category: star',
       '"Legacy API" at (0.85, 0.15) size: 4 category: cashcow',
+      "",
+      'matrix qfd "House of Quality"',
+      'what: "Quiet operation" weight: 5',
+      'how: "Fan RPM" dir: down',
+      "rel (1, 1): 9",
+      "",
+      'matrix punnett "Monohybrid Cross"',
+      "cross: Bb x Bb",
+      'trait B: "Brown" / "Blue"',
     ],
     prefer: [
       "Use a named template (`eisenhower`, `impact-effort`, `bcg`, `ansoff`, `johari`, `9-box`, `risk-matrix`, `rice`) for first-shot generation — it pre-fills axes and quadrant labels.",
       "Add `style: table` with `Q1:`/`Q2:`/`Q3:`/`Q4:` item lines for the four-cell list layout instead of a scatter.",
       "Quadrant scatter coordinates are normalized `[0,1]` fractions; add `size: N` for a bubble chart and `category:` to drive legend color.",
+      'For QFD / House of Quality, lead with the header `matrix qfd "…"`, then list customer needs as `what: "…" weight: N` and engineering specs as `how: "…" dir: up|down`, then weight the cells with `rel (whatIdx, howIdx): 9|3|1` (1-based, in declaration order) — the engine computes the technical-importance row, so never type it yourself.',
+      'For SIPOC, header `matrix sipoc "…"`, then one line per column: `suppliers:`, `inputs:`, `process:`, `outputs:`, `customers:`, each a comma-separated quoted list.',
+      'For a Punnett square, header `matrix punnett "…"`, then `cross: <genotype> x <genotype>` (even-length allele pairs like `Bb` or `RrYy`) and optional `trait <Letter>: "Dominant" / "Recessive"` — the engine fills the grid and computes the genotype/phenotype ratios.',
     ],
     avoid: [
       "Don't mix `sipoc:`/`qfd:`/`punnett:` sub-keywords in plain quadrant mode — they activate only under the matching header mode (`matrix sipoc`).",
@@ -1641,7 +1653,7 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
     header: 'floorplan "Title" [unit m|ft]',
     mode: "explicit dimensions + relative room placement; furniture room-relative from each room's top-left",
     keywords:
-      'room id "Label" at x,y | right-of/left-of/above/below ref [offset n] [align start|center|end] size WxH [fill #hex] [nolabel] · extend <room> at x,y | right-of ref size WxH (L/T/U rooms) · north [deg] · door <room> north|south|east|west | between A B at N% [width n] [hinge left|right] [swing in|out] [type single|double|sliding|pocket|bifold] · window <wallref> at N% [width n] [type fixed|sliding|casement|bay] · opening <wallref|between A B> at N% [width n] · furniture <type> in room at x,y [size WxH] [rotate deg] ["label"] · grid|row <type> in room rows R cols C [count N] area x1,y1 x2,y2 [itemsize WxH] · arc <type> in room count N center x,y radius r from deg to deg · types: bed-double/single/queen/king bunk-bed crib sofa loveseat sectional armchair ottoman coffee-table side-table tv tv-stand fireplace floor-lamp rug wardrobe dresser nightstand bookshelf plant piano piano-upright pool-table ceiling-fan dining-table counter wall-cabinet island kitchen-sink stove range-hood fridge dishwasher bar-stool toilet sink vanity bidet urinal bathtub shower washer dryer stairs stairs-l stairs-u spiral-stairs elevator column desk-chair desk desk-l chair whiteboard smartboard bookcase cubbies filing-cabinet lockers kidney-table round-table-4/6/8/10 conference-table banquet-table head-table stage dance-floor bar dj-booth cocktail-table podium row-chairs shelving checkout clothing-rack fitting-room pallet-rack loading-dock forklift salon-chair shampoo-bowl manicure-table treadmill weight-bench power-rack yoga-mat tree car',
+      'room id "Label" at x,y | right-of/left-of/above/below ref [offset n] [align start|center|end] size WxH [fill #hex] [nolabel] · extend <room> at x,y | right-of ref size WxH (L/T/U rooms) · north [deg] · door <room> north|south|east|west | between A B at N% [width n] [hinge left|right] [swing in|out] [type single|double|sliding|pocket|bifold] · window <wallref> at N% [width n] [type fixed|sliding|casement|bay] · opening <wallref|between A B> at N% [width n] · furniture <type> in room at x,y [size WxH] [rotate deg] ["label"] [seats "Name" "Name" …] · grid|row <type> in room rows R cols C [count N] area x1,y1 x2,y2 [itemsize WxH] · arc <type> in room count N center x,y radius r from deg to deg · types: bed-double/single/queen/king bunk-bed crib sofa loveseat sectional armchair ottoman coffee-table side-table tv tv-stand fireplace floor-lamp rug wardrobe dresser nightstand bookshelf plant piano piano-upright pool-table ceiling-fan dining-table counter wall-cabinet island kitchen-sink stove range-hood fridge dishwasher bar-stool toilet sink vanity bidet urinal bathtub shower washer dryer stairs stairs-l stairs-u spiral-stairs elevator column desk-chair desk desk-l chair whiteboard smartboard bookcase cubbies filing-cabinet lockers kidney-table round-table-4/6/8/10 conference-table banquet-table head-table stage dance-floor bar dj-booth cocktail-table podium row-chairs shelving checkout clothing-rack fitting-room pallet-rack loading-dock forklift salon-chair shampoo-bowl manicure-table treadmill weight-bench power-rack yoga-mat tree car',
     forms: [
       'floorplan "Two-Bedroom Apartment" unit m',
       'room living "Living Room" at 0,0 size 5.2x4.2',
@@ -1657,6 +1669,7 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
       "Furniture `at x,y` is relative to its room's interior top-left corner, in the plan unit.",
       "Use `grid`/`row`/`arc` for repeated items (desks, banquet tables, ceremony chairs) instead of many `furniture` lines; `count` truncates row-major.",
       "Round tables auto-seat their chairs (round-table-8 = 8 chairs); dining/banquet/conference tables auto-seat both long edges; leave chair clearance ≥ 0.5 m around tables.",
+      'For a seating chart / plan de table / 席次表 — who sits where, not just where the tables go — add `seats "Alice" "Bob" …` to each table: the names are written onto the chairs in seating order (round tables clockwise from top, head/long tables along the seated edge). Fewer names than chairs is fine (extras stay empty); CJK names quote like any label.',
       "For L/T/U-shaped rooms, declare the main rectangle then `extend <room> at x,y size WxH` — the extension must share an edge; the engine merges walls and sums the area.",
       "Stairs are furniture: `furniture stairs in hall at x,y` (also stairs-l, stairs-u, spiral-stairs) — they draw treads, the UP arrow, and the cut-plane break line automatically; label \"DN\" for a descending run.",
       "Commercial & site symbols: retail uses shelving/checkout/clothing-rack/fitting-room; warehouse uses pallet-rack/loading-dock/forklift; salon uses salon-chair/shampoo-bowl/manicure-table; gym uses treadmill/weight-bench/power-rack/yoga-mat; `tree` and `car` are sized for site plans, landscaping, and parking stalls.",

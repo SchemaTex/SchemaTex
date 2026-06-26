@@ -1239,7 +1239,7 @@ export const EXAMPLES: readonly GeneratedExample[] = [
       "seating-chart"
     ],
     "complexity": 3,
-    "featured": false,
+    "featured": true,
     "dsl": "floorplan \"Wedding Seating Chart\" unit m\nroom hall \"Grand Ballroom\" at 0,0 size 17x13 nolabel\ndoor hall south at 50% width 1.8\nfurniture head-table \"Head Table\" in hall at 5.5,0.6 size 6x0.9 seats \"Bride\" \"Groom\" \"Mom\" \"Dad\" \"MOH\" \"Best Man\"\nfurniture round-table-8 \"Table 1\" in hall at 1,3.6 seats \"Alice\" \"Bob\" \"Carol\" \"Dave\" \"Eve\" \"Frank\" \"Grace\" \"Heidi\"\nfurniture round-table-8 \"Table 2\" in hall at 7,3.6 seats \"Ivan\" \"Judy\" \"Mallory\" \"Niaj\" \"Olivia\" \"Peggy\"\nfurniture round-table-8 \"Table 3\" in hall at 13,3.6 seats \"张伟\" \"李娜\" \"王芳\" \"刘洋\"\nfurniture round-table-8 \"Table 4\" in hall at 1,8.4 seats \"Quinn\" \"Rupert\" \"Sybil\" \"Trent\" \"Uma\" \"Vera\"\nfurniture round-table-8 \"Table 5\" in hall at 7,8.4 seats \"Walt\" \"Xena\" \"Yuki\" \"Zane\"\nfurniture dance-floor \"Dance Floor\" in hall at 12,8 size 4.5x4.5",
     "notes": "## What this shows\n\nEach table is an individual `furniture` statement with a `seats \"…\"` clause, so the engine writes guest names onto the chairs in seating order — round tables clockwise from the top, the head table along its single facing edge. That is the difference between a *venue plan* (where the tables go) and a *seating chart* (who sits where), which is the deliverable guests actually read off the easel.\n\nNames map to chairs one-for-one: **Table 3** lists four guests on an eight-chair round, so four chairs are named and four stay empty — no error. CJK names (`张伟`, `李娜`) are quoted like any label. Because names render horizontally, the tables are left unrotated."
   },
@@ -1850,7 +1850,7 @@ export const EXAMPLES: readonly GeneratedExample[] = [
       "biology"
     ],
     "complexity": 1,
-    "featured": false,
+    "featured": true,
     "dsl": "matrix punnett \"Eye color  (Bb × Bb)\"\ncross: Bb x Bb\ntrait B: \"Brown eyes\" / \"Blue eyes\"",
     "notes": "## What this shows\n\nThe **monohybrid cross** is where every genetics course starts: one gene, two heterozygous parents. Here both parents are `Bb` for eye colour — `B` (brown) is dominant, `b` (blue) recessive. You write only the cross; the engine does the Mendelian bookkeeping.\n\nEach `Bb` parent makes two gametes, `B` and `b`, so the grid is 2×2. The engine fills it — `BB`, `Bb`, `Bb`, `bb` — and computes the two ratios every student memorises: a **3:1 phenotype ratio** (3 brown-eyed : 1 blue-eyed) and a **1:2:1 genotype ratio** (1 `BB` : 2 `Bb` : 1 `bb`). The single recessive `bb` box is tinted apart from the three dominant boxes, and the `trait` line names the phenotypes so the legend reads in plain English. Allele case sets dominance — uppercase is dominant — so the notation is exactly what a textbook uses."
   },
@@ -1887,7 +1887,7 @@ export const EXAMPLES: readonly GeneratedExample[] = [
       "voice-of-customer"
     ],
     "complexity": 3,
-    "featured": false,
+    "featured": true,
     "dsl": "matrix qfd \"Coffee maker\"\nwhat: \"Quiet operation\" weight: 5\nwhat: \"Brews fast\" weight: 3\nwhat: \"Energy efficient\" weight: 4\nhow: \"Fan RPM\" dir: down\nhow: \"Heater watts\" dir: up\nhow: \"Insulation\" dir: up\nrel (0,0): 9\nrel (0,2): 3\nrel (1,1): 9\nrel (2,1): 3\nrel (2,2): 9\nroof (0,1): --\nroof (1,2): +",
     "notes": "## What this shows\n\nThe **House of Quality** — the core matrix of Akao's Quality Function Deployment — translates what customers want into the engineering characteristics that deliver it. Customer requirements (**WHATs**) are the rows, each with an importance weight; engineering characteristics (**HOWs**) are the columns; the body cells record how strongly each HOW serves each WHAT on the 9 / 3 / 1 strong-medium-weak scale.\n\nThe differentiator is the computed row at the foot of the house: each column's **technical importance** is the sum of `weight × strength` down that column, here **45 / 39 / 51** — so Insulation (51) is the highest-leverage characteristic to invest in and Heater watts (39) the lowest. (Add `normalize: true` to read these as 33% / 29% / 38% instead.) Above the columns, the **roof** is a half-matrix of diamond cells recording HOW-to-HOW correlations: `roof (0,1): --` flags that lowering Fan RPM while raising Heater watts is a trade-off, while `roof (1,2): +` flags that Heater watts and Insulation reinforce each other."
   },
@@ -1905,7 +1905,7 @@ export const EXAMPLES: readonly GeneratedExample[] = [
       "process-scoping"
     ],
     "complexity": 2,
-    "featured": false,
+    "featured": true,
     "dsl": "matrix sipoc \"Order fulfilment\"\nsuppliers: \"Vendor\", \"Warehouse\"\ninputs: \"PO\", \"Stock levels\"\nprocess: \"Receive order\", \"Pick\", \"Pack\", \"Ship\"\noutputs: \"Shipped package\", \"Invoice\"\ncustomers: \"End customer\", \"Finance\"",
     "notes": "## What this shows\n\nA **SIPOC** is the first artifact a Six Sigma team builds in the *Define* phase of DMAIC. It names — in five columns read left to right — everyone and everything the process touches: **S**uppliers hand in **I**nputs, the **P**rocess turns them into **O**utputs, and **C**ustomers receive them. Here the order-fulfilment process runs `Receive order → Pick → Pack → Ship`, fed by purchase orders and stock levels from the vendor and warehouse, and producing a shipped package for the end customer and an invoice for finance.\n\nThe point of a SIPOC is boundary-setting before measurement: it forces the team to agree where the process starts, where it ends, and who hands work in and out of it. The five columns always render in canonical S-I-P-O-C order, so the diagram reads correctly even when the blocks are authored out of sequence."
   },
