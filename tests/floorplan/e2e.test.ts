@@ -106,6 +106,20 @@ window main north at 50%`);
     expect(count(svg, 'class="sx-fp-door-arc"')).toBe(1);
   });
 
+  it("renders an electrical fittings overlay without collision warnings", () => {
+    const svg = renderFloorplan(`floorplan "Kitchen Electrical Plan" unit m
+room kitchen "Kitchen" at 0,0 size 4x3
+furniture counter in kitchen at 0.2,0.2 size 3.4x0.6
+furniture duplex-outlet in kitchen at 0.4,0.1
+furniture switch in kitchen at 3.5,1.2
+furniture ceiling-light in kitchen at 2,1.5
+furniture distribution-board in kitchen at 3.2,0.1`);
+    expect(svg).toContain('data-furniture="duplex-outlet"');
+    expect(svg).toContain('data-furniture="switch"');
+    expect(svg).toContain('data-furniture="distribution-board"');
+    expect(svg).not.toContain('class="sx-fp-warn-item"');
+  });
+
   it("themes: monochrome and dark resolve without inline styles", () => {
     for (const theme of ["default", "monochrome", "dark"]) {
       const svg = renderFloorplan(APARTMENT, {

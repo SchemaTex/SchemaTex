@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.9.11] — 2026-06-29
+
+### Added — user-feedback electrical layout hardening (`breadboard`, `sld`, `floorplan`, `circuit`)
+
+Targeted release from ChatDiagram/UserSay production feedback: maker breadboard failures, professional SLD/consumer-unit requests, residential electrical floor plans, and control-cabinet layout prompts.
+
+- **`breadboard` — pin aliases + common maker modules.** ESP32/Arduino endpoints now tolerate the names users actually type (`D22`/`IO22`/`22` for `GPIO22`, `5V`/`VBUS` for ESP32 `VIN`, `A4`/`A5` for `SDA`/`SCL`, potentiometer `A/WIPER/B`). Added `potentiometer`, `sensor vl53l0x`, `display tm1637`, and `module l298n`, plus ESP32-C3/S3 subtype aliases to the existing ESP32 footprint.
+- **`sld` — first-class IEC residential distribution primitives.** `rcd`/`rcbo`/`rccb` now render as typed RCD devices instead of generic ground-fault symbols; `consumer_unit`/`distribution_board`/`panel` now render as consumer-unit symbols instead of industrial busbars. Breaker/RCD attrs (`curve`, `icn`, `rcd_type`, `sensitivity`) and structured cable attrs (`cable_csa`, `cable_length_m`, `cable_insulation`) are preserved and rendered.
+- **`floorplan` — electrical fittings overlay.** Added room-relative overlay fixtures: `outlet`, `duplex-outlet`, `switch`, `light`, `ceiling-light`, `data-outlet`, `electrical-panel`, and `distribution-board`. Parser aliases cover common prompt words (`socket`, `receptacle`, `consumer-unit`, `section`), and `size N` now means square `N×N`.
+- **`circuit` — control-cabinet / panel-layout MVP.** Positional mode now supports absolute `at=x,y` coordinates plus `enclosure`, `din_rail`, `wire_duct`, `plc`, `pilot_light`, `selector_switch`, and `emergency_stop`, so DIN-rail/control-panel front-layout prompts do not need to fall back to raw SVG.
+- Updated reference docs, AI generation profiles, and regression tests across all four engines.
+
+---
+
 ## [0.9.10] — 2026-06-26
 
 ### Fixed — AI generation context surfaced shipped capabilities (`floorplan`, `matrix`, `timing`)

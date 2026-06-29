@@ -261,7 +261,7 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
     header: 'circuit "Title" netlist',
     mode: "SPICE-style netlist (recommended for generation)",
     keywords:
-      'header: circuit "name" netlist · ID net1 net2 [value] [key=value …] · prefixes R(resistor) C(capacitor) L(inductor) D(diode) V(voltage_source) I(current_source) Q(BJT) M(MOSFET) J(jfet) S(switch) F(fuse) B(battery) K(relay) U/X(ic) W(wire) T(terminal) · ground nets 0/gnd/ground/earth/vss/agnd/dgnd · type= override · dir=(right|left|up|down) · pins="…" · positional mode (no netlist): id: type dir [label= value= at=] · wire right|left|up|down · at: id.pin · net NAME · ground vcc no_connect',
+      'header: circuit "name" netlist · ID net1 net2 [value] [key=value …] · prefixes R(resistor) C(capacitor) L(inductor) D(diode) V(voltage_source) I(current_source) Q(BJT) M(MOSFET) J(jfet) S(switch) F(fuse) B(battery) K(relay) U/X(ic) W(wire) T(terminal) · ground nets 0/gnd/ground/earth/vss/agnd/dgnd · type= override · dir=(right|left|up|down) · pins="…" · positional mode (no netlist): id: type dir [label= value= at=x,y width= height= length=] · panel primitives: enclosure/cabinet/panel din_rail wire_duct plc terminal_block contactor relay_coil pilot_light selector_switch emergency_stop · wire right|left|up|down · at: id.pin or x,y · net NAME · ground vcc no_connect',
     forms: [
       'circuit "Bridge Rectifier Supply" netlist',
       "V1 ac1 ac2 12Vac",
@@ -277,9 +277,10 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
       "Two components sharing a net name are wired together. Ground is `0`, `GND`, or an alias (`AGND`, `VSS`, `earth`); all normalise to one GND rail.",
       "The id first letter sets the type (R=resistor, C=capacitor, L=inductor, D=diode, V=voltage_source, Q=BJT, M=MOSFET). Use `type=` only when the prefix is ambiguous.",
       "Optional `dir=right|left|up|down` nudges a symbol's orientation (e.g. `C1 vout 0 100n dir=down` for a shunt cap); it does not set position.",
+      "For control cabinet / panel-layout drawings, use positional mode (no `netlist`) with absolute `at=x,y`: start with `enclosure width=… height=…`, add `wire_duct`, `din_rail`, `plc`, `terminal_block`, `contactor`, and front-panel controls.",
     ],
     avoid: [
-      "Avoid positional cursor mode (`wire`, `at:`) — it requires tracking mental cursor state and is not recommended for generation.",
+      "Avoid positional cursor mode (`wire`, `at:`) for ordinary schematics — use it only for cabinet/panel layouts where physical placement matters.",
       "Do not invent coordinates; the auto-layout engine places components from net connectivity. `dir=` only rotates a symbol.",
       "Don't give a multi-terminal part fewer nets than it has pins (a `transformer` needs 4: `T1 p1 p2 s1 s2 type=transformer`).",
     ],
@@ -357,7 +358,7 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
     header: 'sld "Title"',
     mode: "equipment declarations + directed power-flow edges",
     keywords:
-      'sld "title" [standard: ansi|iec|abnt|as-nzs] · ID = nodeType [label:"…" voltage:"…" rating:"…" device:"…"] · ID -> ID [cable:"…" label:"…"] · sources: utility generator solar wind ups · transformers: transformer transformer_dy transformer_yd transformer_yy transformer_dd autotransformer transformer_3winding · buses: bus bus_tie hub · switching: breaker breaker_vacuum switch switch_load ground_switch ats recloser sectionalizer fuse fuse_cl · protection: ct pt relay surge_arrester ground_fault · loads: motor load capacitor_bank harmonic_filter vfd · metering: watthour_meter demand_meter · aliases: mcb/mccb->breaker rcd/rcbo/rccb->ground_fault isolator/disconnector->switch_load panel/consumer_unit/distribution_board->bus',
+      'sld "title" [standard: ansi|iec|abnt|as-nzs] · ID = nodeType [label:"…" voltage:"…" rating:"…" device:"…" curve:"…" icn:"…" rcd_type:"…" sensitivity:"…"] · ID -> ID [cable:"…" cable_csa:"…" cable_length_m:"…" cable_insulation:"…" label:"…"] · sources: utility generator solar wind ups · transformers: transformer transformer_dy transformer_yd transformer_yy transformer_dd autotransformer transformer_3winding · buses: bus bus_tie hub consumer_unit · switching: breaker breaker_vacuum switch switch_load ground_switch ats recloser sectionalizer fuse fuse_cl · protection: ct pt relay surge_arrester ground_fault rcd · loads: motor load capacitor_bank harmonic_filter vfd · metering: watthour_meter demand_meter · aliases: mcb/mccb->breaker rcd/rcbo/rccb->rcd isolator/disconnector->switch_load panel/consumer_unit/distribution_board->consumer_unit',
     forms: [
       'sld "Utility + Generator Backup"',
       'UTIL = utility [voltage: "480V", label: "Utility"]',
@@ -375,7 +376,7 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
     prefer: [
       "Declare every node as `id = nodeType [attrs]` before any `->` connection references it.",
       "Use one `from -> to` edge per line — SLD does not support chained arrows like `a -> b -> c`.",
-      "Annotate nodes with `[label: \"…\", rating: \"…\", voltage: \"…\"]`; annotate edges with `[cable: \"…\", label: \"…\"]`.",
+      "Annotate nodes with `[label: \"…\", rating: \"…\", voltage: \"…\"]`; for IEC residential boards use `consumer_unit`, `rcd`, breaker `curve`/`icn`, RCD `rcd_type`/`sensitivity`, and edge `cable_csa`/`cable_insulation`.",
     ],
     avoid: [
       "Avoid nodeTypes not in the catalog — an unrecognised type renders as a flagged `?` placeholder; pick the closest canonical type or alias (meter->watthour_meter, inverter->vfd, isolator->switch_load).",
@@ -796,7 +797,7 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
     header: "breadboard",
     mode: "parts section + wires section; breadboard-native hole/rail coordinates",
     keywords:
-      'breadboard · board: mini|half|full · title: "…" · parts section: id: KIND [args] @placement · wire kinds: resistor led cap-elec cap-ceramic diode button dip header · mcu uno|nano|esp32|pico · sensor hcsr04|dht11|dht22 · display oled-ssd1306|lcd-1602-i2c · actuator servo-sg90 · placement: @5e (hole) @5e..9e (span) @+t8 @-t8 @+b14 @-b14 (rails) @beside-left @beside-right @above @below · wires section: ep --color-- ep [via @coord] · colors: red black blue yellow orange green white purple brown grey · endpoints: @coord or partId:pin',
+      'breadboard · board: mini|half|full · title: "…" · parts section: id: KIND [args] @placement · wire kinds: resistor led cap-elec cap-ceramic diode button dip header potentiometer · mcu uno|nano|esp32|esp32-c3|esp32-s3|pico · sensor hcsr04|dht11|dht22|vl53l0x · display oled-ssd1306|lcd-1602-i2c|tm1637 · module rotary-ky040|l298n · actuator servo-sg90 · pin aliases: ESP GPIO22 accepts D22/IO22/22, VIN accepts 5V/VBUS, Arduino A4/A5 accept SDA/SCL · placement: @5e (hole) @5e..9e (span) @+t8 @-t8 @+b14 @-b14 (rails) @beside-left @beside-right @above @below · wires section: ep --color-- ep [via @coord] · colors: red black blue yellow orange green white purple brown grey · endpoints: @coord or partId:pin',
     forms: [
       "breadboard",
       "board: half",
@@ -822,7 +823,7 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
     ],
     repair: [
       "'Unknown board' -> set `board:` to `mini`, `half`, or `full`.",
-      "'Unknown part kind' -> use a supported kind (`resistor` `led` `cap-elec` `diode` `button` `dip` `header`) or a compound (`mcu uno`, `sensor hcsr04`, `display oled-ssd1306`).",
+      "'Unknown part kind' -> use a supported kind (`resistor` `led` `cap-elec` `diode` `button` `dip` `header` `potentiometer`) or a compound (`mcu esp32`, `sensor hcsr04`, `display tm1637`, `module l298n`).",
       "'Wire references unknown part' -> add `X: KIND @placement` to the `parts` section before `wires`.",
     ],
   },
@@ -1653,7 +1654,7 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
     header: 'floorplan "Title" [unit m|ft]',
     mode: "explicit dimensions + relative room placement; furniture room-relative from each room's top-left",
     keywords:
-      'room id "Label" at x,y | right-of/left-of/above/below ref [offset n] [align start|center|end] size WxH [fill #hex] [nolabel] · extend <room> at x,y | right-of ref size WxH (L/T/U rooms) · north [deg] · door <room> north|south|east|west | between A B at N% [width n] [hinge left|right] [swing in|out] [type single|double|sliding|pocket|bifold] · window <wallref> at N% [width n] [type fixed|sliding|casement|bay] · opening <wallref|between A B> at N% [width n] · furniture <type> in room at x,y [size WxH] [rotate deg] ["label"] [seats "Name" "Name" …] · grid|row <type> in room rows R cols C [count N] area x1,y1 x2,y2 [itemsize WxH] · arc <type> in room count N center x,y radius r from deg to deg · types: bed-double/single/queen/king bunk-bed crib sofa loveseat sectional armchair ottoman coffee-table side-table tv tv-stand fireplace floor-lamp rug wardrobe dresser nightstand bookshelf plant piano piano-upright pool-table ceiling-fan dining-table counter wall-cabinet island kitchen-sink stove range-hood fridge dishwasher bar-stool toilet sink vanity bidet urinal bathtub shower washer dryer stairs stairs-l stairs-u spiral-stairs elevator column desk-chair desk desk-l chair whiteboard smartboard bookcase cubbies filing-cabinet lockers kidney-table round-table-4/6/8/10 conference-table banquet-table head-table stage dance-floor bar dj-booth cocktail-table podium row-chairs shelving checkout clothing-rack fitting-room pallet-rack loading-dock forklift salon-chair shampoo-bowl manicure-table treadmill weight-bench power-rack yoga-mat tree car',
+      'room id "Label" at x,y | right-of/left-of/above/below ref [offset n] [align start|center|end] size WxH [fill #hex] [nolabel] · extend <room> at x,y | right-of ref size WxH (L/T/U rooms) · north [deg] · door <room> north|south|east|west | between A B at N% [width n] [hinge left|right] [swing in|out] [type single|double|sliding|pocket|bifold] · window <wallref> at N% [width n] [type fixed|sliding|casement|bay] · opening <wallref|between A B> at N% [width n] · furniture <type> in room at x,y [size WxH or square size N] [rotate deg] ["label"] [seats "Name" "Name" …] · aliases: section->sectional socket/receptacle->outlet/duplex-outlet consumer-unit/db->distribution-board · grid|row <type> in room rows R cols C [count N] area x1,y1 x2,y2 [itemsize WxH] · arc <type> in room count N center x,y radius r from deg to deg · types: bed-double/single/queen/king bunk-bed crib sofa loveseat sectional armchair ottoman coffee-table side-table tv tv-stand fireplace floor-lamp rug wardrobe dresser nightstand bookshelf plant piano piano-upright pool-table ceiling-fan dining-table counter wall-cabinet island kitchen-sink stove range-hood fridge dishwasher bar-stool toilet sink vanity bidet urinal bathtub shower washer dryer stairs stairs-l stairs-u spiral-stairs elevator column desk-chair desk desk-l chair whiteboard smartboard bookcase cubbies filing-cabinet lockers kidney-table round-table-4/6/8/10 conference-table banquet-table head-table stage dance-floor bar dj-booth cocktail-table podium row-chairs shelving checkout clothing-rack fitting-room pallet-rack loading-dock forklift salon-chair shampoo-bowl manicure-table treadmill weight-bench power-rack yoga-mat outlet duplex-outlet switch light ceiling-light data-outlet electrical-panel distribution-board tree car',
     forms: [
       'floorplan "Two-Bedroom Apartment" unit m',
       'room living "Living Room" at 0,0 size 5.2x4.2',
@@ -1673,6 +1674,7 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
       "For L/T/U-shaped rooms, declare the main rectangle then `extend <room> at x,y size WxH` — the extension must share an edge; the engine merges walls and sums the area.",
       "Stairs are furniture: `furniture stairs in hall at x,y` (also stairs-l, stairs-u, spiral-stairs) — they draw treads, the UP arrow, and the cut-plane break line automatically; label \"DN\" for a descending run.",
       "Commercial & site symbols: retail uses shelving/checkout/clothing-rack/fitting-room; warehouse uses pallet-rack/loading-dock/forklift; salon uses salon-chair/shampoo-bowl/manicure-table; gym uses treadmill/weight-bench/power-rack/yoga-mat; `tree` and `car` are sized for site plans, landscaping, and parking stalls.",
+      "For electrical fittings plans, stay in `floorplan` and add overlay furniture: `duplex-outlet`, `switch`, `ceiling-light`, `data-outlet`, `electrical-panel`, `distribution-board`. Use `sld` for the panel internals, not floorplan.",
     ],
     avoid: [
       "Don't overlap room rectangles — adjacency means edges touch exactly (right-of/below guarantee this).",

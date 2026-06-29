@@ -13,10 +13,10 @@ const KNOWN_DEVICE_WORDS = [
   "bus", "bus_tie", "hub",
   "breaker", "breaker_vacuum", "switch", "switch_load", "ground_switch",
   "ats", "recloser", "sectionalizer", "fuse", "fuse_cl",
-  "ct", "pt", "relay", "surge_arrester", "ground_fault",
+  "ct", "pt", "relay", "surge_arrester", "ground_fault", "rcd",
   "motor", "load", "capacitor_bank", "harmonic_filter", "vfd",
-  "watthour_meter", "demand_meter",
-  "mcb", "mccb", "rcd", "rcbo", "rccb", "isolator", "disconnector", "panel",
+  "watthour_meter", "demand_meter", "consumer_unit",
+  "mcb", "mccb", "rcbo", "rccb", "isolator", "disconnector", "panel", "distribution_board", "consumer_unit",
 ];
 
 /**

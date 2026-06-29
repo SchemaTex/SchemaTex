@@ -293,6 +293,9 @@ component_type = "resistor" | "capacitor" | "inductor" | "diode" | "led"
                | "vsource" | "isource" | "acsource" | "battery"
                | "ground" | "opamp" | "transformer" | "switch" | "fuse"
                | "wire" | "dot"
+               | "enclosure" | "din_rail" | "wire_duct" | "plc"
+               | "terminal_block" | "contactor" | "relay_coil"
+               | "pilot_light" | "selector_switch" | "emergency_stop"
 direction      = "right" | "left" | "up" | "down"
 attrs          = attr+
 attr           = "label=" quoted_string
@@ -309,6 +312,7 @@ net_stmt       = "net" IDENTIFIER ":" NEWLINE    # declare net name at current p
                | "at:" anchor_ref NEWLINE        # jump to anchor
 anchor_ref     = IDENTIFIER "." pin_name
                | IDENTIFIER                      # net name as anchor
+               | FLOAT "," FLOAT                 # absolute positional coordinate
 pin_name       = "start" | "end" | "center" | "base" | "collector" | "emitter"
                | "plus" | "minus" | "out" | "p1" | "p2" | "s1" | "s2"
 
@@ -373,6 +377,28 @@ at: U1.out
 
 ---
 
+## 4.4 Control cabinet / panel-layout positional extension
+
+Control-cabinet drawings are physical layouts on a backplate or front door, not abstract schematics and not architectural floor plans. Use the positional `circuit` DSL when the prompt mentions `control cabinet`, `tablero de control`, `DIN rail`, `wire duct`, terminal strips, PLC modules, contactors, pilot lights, selector switches, or emergency stops.
+
+```
+circuit "MCC control cabinet"
+
+P1: enclosure at=0,0 width=260 height=170 label="MCC Panel"
+D1: wire_duct at=20,28 length=220
+R1: din_rail at=20,60 length=220
+PLC1: plc at=32,60 label="PLC"
+KM1: contactor at=118,60 label="KM1"
+TB1: terminal_block at=190,55 label="TB1" pins="L,N,PE"
+E1: emergency_stop at=40,125 label="E-STOP"
+S1: selector_switch at=90,125 label="AUTO"
+H1: pilot_light at=140,125 label="RUN"
+```
+
+`at=x,y` is an absolute SVG-coordinate placement hint in positional mode. `enclosure` accepts `width=` / `height=`, while `din_rail` and `wire_duct` accept `length=`. Use `sld` for the one-line power topology feeding the cabinet; use `floorplan` only to show where the cabinet sits in a room.
+
+---
+
 ## 4.5 Netlist DSL (SPICE-subset, declarative)
 
 Alternative to the positional DSL. Triggered by adding `netlist` to the header:
@@ -426,7 +452,7 @@ Net names matching `(0 | gnd | ground | earth | pe | agnd | dgnd | gnda | gndd |
 
 ### 4.5.3 Type aliases (for `type=`)
 
-`vsource`→voltage_source · `isource`→current_source · `acsource`→ac_source · `ecap`→electrolytic_cap · `pot`→potentiometer · `gnd`→ground · `ic`→generic_ic · `reg`→voltage_regulator · `timer555`→555_timer · `transistor`→npn
+`vsource`→voltage_source · `isource`→current_source · `acsource`→ac_source · `ecap`→electrolytic_cap · `pot`→potentiometer · `gnd`→ground · `ic`→generic_ic · `reg`→voltage_regulator · `timer555`→555_timer · `transistor`→npn · `cabinet`/`panel`→enclosure · `dinrail`→din_rail · `wireduct`/`trunking`→wire_duct
 
 ### 4.5.4 Trailing tokens
 

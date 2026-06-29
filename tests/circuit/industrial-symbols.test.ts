@@ -94,4 +94,24 @@ K1B: relay_nc right`;
     const svg = renderCircuit(ast);
     expect(svg).toContain("<svg");
   });
+
+  test("control cabinet layout primitives render with absolute panel coordinates", () => {
+    const dsl = `circuit "control cabinet"
+P1: enclosure at=0,0 width=260 height=170 label="MCC Panel"
+D1: wire_duct at=20,28 length=220
+R1: din_rail at=20,60 length=220
+PLC1: plc at=32,60 label="PLC"
+KM1: contactor at=118,60 label="KM1"
+TB1: terminal_block at=190,55 label="TB1" pins="L,N,PE"
+E1: emergency_stop at=40,125 label="E-STOP"
+S1: selector_switch at=90,125 label="AUTO"
+H1: pilot_light at=140,125 label="RUN"`;
+    const ast = parseCircuit(dsl);
+    expect(ast.components.find((c) => c.id === "P1")?.componentType).toBe("enclosure");
+    expect(ast.components.find((c) => c.id === "R1")?.componentType).toBe("din_rail");
+    const svg = renderCircuit(ast);
+    expect(svg).toContain("schematex-circuit-enclosure");
+    expect(svg).toContain("schematex-circuit-din");
+    expect(svg).toContain("MCC Panel");
+  });
 });

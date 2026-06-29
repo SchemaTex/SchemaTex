@@ -148,6 +148,16 @@ export function renderCircuit(ast: CircuitAST, config?: RenderConfig): string {
 .schematex-circuit-meter { font: bold 12px sans-serif; fill: ${t.stroke}; }
 .schematex-circuit-title { font: 700 16px sans-serif; fill: ${t.text}; }
 .schematex-circuit-err { stroke: ${t.error}; fill: ${t.error}; }
+.schematex-circuit-enclosure { stroke: ${t.stroke}; stroke-width: 2; stroke-dasharray: 8 5; fill: ${t.bg}; }
+.schematex-circuit-enclosure-inner { stroke: ${t.textMuted}; stroke-width: 1; stroke-dasharray: 4 3; fill: none; }
+.schematex-circuit-panel-label { font: 700 11px system-ui, sans-serif; fill: ${t.text}; }
+.schematex-circuit-din { fill: ${t.bg}; stroke: ${t.stroke}; stroke-width: 1.4; }
+.schematex-circuit-din-slot { fill: ${t.textMuted}; opacity: 0.5; }
+.schematex-circuit-duct { fill: none; stroke: ${t.textMuted}; stroke-width: 1.2; stroke-dasharray: 3 2; }
+.schematex-circuit-duct-tooth { stroke: ${t.textMuted}; stroke-width: 0.8; opacity: 0.65; }
+.schematex-circuit-panel-led { fill: ${t.accent}; stroke: ${t.stroke}; stroke-width: 0.8; }
+.schematex-circuit-panel-light { fill: ${t.bg}; stroke: ${t.stroke}; stroke-width: 1.5; }
+.schematex-circuit-estop { fill: ${t.error}; stroke: ${t.stroke}; stroke-width: 1.4; }
 `.trim();
 
   const titleBar = ast.title

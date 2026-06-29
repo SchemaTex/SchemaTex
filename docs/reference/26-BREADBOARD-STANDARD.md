@@ -221,6 +221,7 @@ parts
   uno: mcu uno @beside-left
   r1:  resistor 220 @5e..9e         // spans columns 5-9 in row e, top half
   d1:  led red @10e..10f            // anode row e, cathode row f (legs splayed)
+  pot: potentiometer @14a            // 3-pin module; aliases pot:1/2/3 or pot:A/W/B
 ```
 
 Each part is `id : kind [args] @placement`. The placement is either:
@@ -243,6 +244,12 @@ Wires are `from --color-- to`. The renderer draws a smooth cubic Bézier arc. `f
 - `partId:pinName` — a labelled pin on a part
 - `@col-row` — a hole on the breadboard
 - `@+t14` / `@-b22` — a power-rail tie point
+
+Common pin aliases are accepted for LLM/user input tolerance:
+- ESP32-style GPIO pins accept `GPIO22`, `D22`, `IO22`, `GP22`, or `22`.
+- ESP32 `VIN` accepts `5V`, `VBUS`, `USB`, and `VCC` as aliases; `3V3` accepts `3.3V` / `3V`.
+- Arduino `A4`/`A5` accept `SDA`/`SCL`; `TX`/`RX` accept `D1`/`D0`.
+- Potentiometer pins `1/2/3` also accept `A/WIPER/B`.
 
 ### 5.4 Optional routing hints
 
@@ -354,7 +361,11 @@ Arduino Uno + 5mm red LED + 220Ω resistor. 3 wires: `5V` → resistor → LED a
 
 ### 7.5 ESP32 DevKit + SSD1306 OLED I²C
 
-4 wires: 3V3 → VCC, GND → GND, SDA → GPIO21, SCL → GPIO22. Tests ESP32 (3.3V instead of 5V), OLED part, I²C bus.
+4 wires: 3V3 → VCC, GND → GND, SDA → GPIO21, SCL → GPIO22. Tests ESP32 (3.3V instead of 5V), OLED part, I²C bus. Alias forms such as `esp:D22` for `GPIO22` are accepted.
+
+### 7.6 ESP32 sensor/display modules
+
+Common maker-module prompts are built in: `sensor vl53l0x`, `display tm1637`, `module l298n`, and `potentiometer`. These cover the common ESP32/Arduino wiring requests that mention time-of-flight sensors, 4-digit displays, motor drivers, and a 3-pin pot by name.
 
 A sixth nice-to-have for the gallery: **classic Arduino "Knight Rider" 8-LED chase** — eight LEDs + eight resistors in row a/c, eight wires to D2..D9. Tests dense-component layout and many parallel wires.
 

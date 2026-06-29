@@ -26,33 +26,33 @@ const NODE_TYPES = new Set<SLDNodeType>([
   "breaker", "breaker_vacuum", "switch", "switch_load", "ground_switch",
   "ats", "recloser", "sectionalizer", "fuse", "fuse_cl",
   "ct", "pt", "relay", "surge_arrester", "ground_fault",
+  "rcd",
   "motor", "load", "capacitor_bank", "harmonic_filter", "vfd",
   "watthour_meter", "demand_meter",
+  "consumer_unit",
 ]);
 
 // IEC 60364 / BS 7671 / REBT residential vocabulary. These map onto existing
-// IEEE-315 visual primitives until issue 02 Fix C ships a typed `rcd` node
-// and per-curve breaker glyph. The mapping is conservative: every alias
-// renders as a recognisable breaker/RCD variant, no information loss beyond
-// the label-string fidelity LLMs already rely on.
 const TYPE_ALIASES: Record<string, SLDNodeType> = {
   mcb: "breaker",
   mccb: "breaker",
   miniature_circuit_breaker: "breaker",
-  rcd: "ground_fault",
-  rcbo: "ground_fault",
-  rccb: "ground_fault",
-  differential: "ground_fault",
-  diferencial: "ground_fault",
+  rcd: "rcd",
+  rcbo: "rcd",
+  rccb: "rcd",
+  differential: "rcd",
+  diferencial: "rcd",
   pia: "breaker",
   iga: "breaker",
   main_switch: "switch_load",
   isolator: "switch_load",
   disconnector: "switch_load",
-  consumer_unit: "bus",
-  distribution_board: "bus",
-  panel: "bus",
-  panelboard: "bus",
+  db: "consumer_unit",
+  cu: "consumer_unit",
+  consumer_unit: "consumer_unit",
+  distribution_board: "consumer_unit",
+  panel: "consumer_unit",
+  panelboard: "consumer_unit",
 };
 
 function stripComment(s: string): string {
@@ -207,6 +207,9 @@ export function parseSLDDSL(text: string): SLDAST {
         for (const [k, v] of splitAttrs(connMatch[3])) {
           const key = k.toLowerCase();
           if (key === "cable") c.cable = v;
+          else if (key === "cable_csa" || key === "csa") c.cableCsa = v;
+          else if (key === "cable_length_m" || key === "length_m") c.cableLengthM = v;
+          else if (key === "cable_insulation" || key === "insulation") c.cableInsulation = v;
           else if (key === "label") c.label = v;
         }
       }
@@ -221,7 +224,7 @@ export function parseSLDDSL(text: string): SLDAST {
     if (nodeMatch) {
       const id = nodeMatch[1];
       const rawType = nodeMatch[2].toLowerCase();
-      // Resolve REBT/IEC residential aliases (mcb → breaker, rcbo → ground_fault…)
+      // Resolve REBT/IEC residential aliases (mcb → breaker, rcbo/rccb → rcd…)
       // before the canonical-type check.
       const canonical = (TYPE_ALIASES[rawType] ?? rawType) as SLDNodeType;
       if (nodeMap.has(id)) {

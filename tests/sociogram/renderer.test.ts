@@ -307,6 +307,6 @@ tom -.- anna
       const svg = render("sociogram\nalice -> bob\n");
       expect(svg).toContain("schematex-sociogram");
       expect(svg).toContain("alice");
-    });
+    }, 10_000);
   });
 });

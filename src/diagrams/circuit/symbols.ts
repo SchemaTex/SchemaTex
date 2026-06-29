@@ -942,6 +942,142 @@ const terminal_block: SymbolDef = {
   },
 };
 
+function numAttr(attrs: Record<string, string> | undefined, key: string, fallback: number): number {
+  const v = Number(attrs?.[key]);
+  return Number.isFinite(v) && v > 0 ? v : fallback;
+}
+
+export function effectiveSymbolDef(type: string, attrs?: Record<string, string>): SymbolDef | undefined {
+  const sym = getSymbol(type);
+  if (!sym) return undefined;
+  if (type !== "enclosure" && type !== "din_rail" && type !== "wire_duct") return sym;
+
+  if (type === "enclosure") {
+    const w = numAttr(attrs, "width", numAttr(attrs, "w", 240));
+    const h = numAttr(attrs, "height", numAttr(attrs, "h", 160));
+    return {
+      ...sym,
+      length: w,
+      anchors: {
+        start: { x: 0, y: 0 },
+        end: { x: w, y: 0 },
+        center: { x: w / 2, y: h / 2 },
+        bottom_left: { x: 0, y: h },
+        bottom_right: { x: w, y: h },
+      },
+    };
+  }
+
+  const length = numAttr(attrs, "length", 180);
+  const h = type === "wire_duct" ? 22 : 14;
+  return {
+    ...sym,
+    length,
+    anchors: {
+      start: { x: 0, y: 0 },
+      end: { x: length, y: 0 },
+      center: { x: length / 2, y: 0 },
+      bottom_right: { x: length, y: h },
+    },
+  };
+}
+
+const enclosure: SymbolDef = {
+  length: 240,
+  anchors: { start: { x: 0, y: 0 }, end: { x: 240, y: 0 }, bottom_right: { x: 240, y: 160 } },
+  svg: (label?: string, _value?: string, attrs?: Record<string, string>) => {
+    const w = numAttr(attrs, "width", numAttr(attrs, "w", 240));
+    const h = numAttr(attrs, "height", numAttr(attrs, "h", 160));
+    const title = label ?? attrs?.title ?? "Panel";
+    return [
+      `<rect x="0" y="0" width="${w}" height="${h}" rx="8" fill="none" class="schematex-circuit-enclosure"/>`,
+      `<rect x="10" y="20" width="${Math.max(10, w - 20)}" height="${Math.max(10, h - 30)}" rx="3" fill="none" class="schematex-circuit-enclosure-inner"/>`,
+      `<text x="${w / 2}" y="15" text-anchor="middle" class="schematex-circuit-panel-label">${title}</text>`,
+    ].join("");
+  },
+};
+
+const din_rail: SymbolDef = {
+  length: 180,
+  anchors: { start: { x: 0, y: 0 }, end: { x: 180, y: 0 } },
+  svg: (_label?: string, _value?: string, attrs?: Record<string, string>) => {
+    const l = numAttr(attrs, "length", 180);
+    const slots: string[] = [];
+    for (let x = 8; x < l - 4; x += 16) {
+      slots.push(`<rect x="${x}" y="-3" width="8" height="6" rx="2" class="schematex-circuit-din-slot"/>`);
+    }
+    return [
+      `<rect x="0" y="-7" width="${l}" height="14" rx="2" class="schematex-circuit-din"/>`,
+      ...slots,
+    ].join("");
+  },
+};
+
+const wire_duct: SymbolDef = {
+  length: 180,
+  anchors: { start: { x: 0, y: 0 }, end: { x: 180, y: 0 }, bottom_right: { x: 180, y: 22 } },
+  svg: (_label?: string, _value?: string, attrs?: Record<string, string>) => {
+    const l = numAttr(attrs, "length", 180);
+    const teeth: string[] = [];
+    for (let x = 8; x < l - 4; x += 12) {
+      teeth.push(`<line x1="${x}" y1="0" x2="${x}" y2="22" class="schematex-circuit-duct-tooth"/>`);
+    }
+    return [
+      `<rect x="0" y="0" width="${l}" height="22" rx="2" class="schematex-circuit-duct"/>`,
+      ...teeth,
+    ].join("");
+  },
+};
+
+const plc: SymbolDef = {
+  length: 70,
+  anchors: { start: { x: 0, y: 0 }, end: { x: 70, y: 0 }, pwr: { x: 0, y: 24 }, out: { x: 70, y: 24 } },
+  svg: (label?: string, _value?: string, attrs?: Record<string, string>) => {
+    const title = label ?? attrs?.model ?? "PLC";
+    const leds = [12, 24, 36, 48, 60]
+      .map((x) => `<circle cx="${x}" cy="28" r="2.2" class="schematex-circuit-panel-led"/>`)
+      .join("");
+    return [
+      `<rect x="0" y="-20" width="70" height="56" rx="4" fill="white" ${BODY}/>`,
+      `<text x="35" y="-2" text-anchor="middle" class="schematex-circuit-meter">${title}</text>`,
+      leds,
+    ].join("");
+  },
+};
+
+const pilot_light: SymbolDef = {
+  length: 22,
+  anchors: { start: { x: 0, y: 0 }, end: { x: 22, y: 0 } },
+  svg: (label?: string, _value?: string) =>
+    [
+      `<circle cx="11" cy="0" r="10" class="schematex-circuit-panel-light"/>`,
+      `<circle cx="11" cy="0" r="4" class="schematex-circuit-panel-led"/>`,
+      label ? `<text x="11" y="20" text-anchor="middle" class="schematex-circuit-pol">${label}</text>` : "",
+    ].join(""),
+};
+
+const selector_switch: SymbolDef = {
+  length: 26,
+  anchors: { start: { x: 0, y: 0 }, end: { x: 26, y: 0 } },
+  svg: (label?: string) =>
+    [
+      `<circle cx="13" cy="0" r="12" fill="white" ${BODY}/>`,
+      `<line x1="7" y1="5" x2="19" y2="-5" ${BODY}/>`,
+      label ? `<text x="13" y="22" text-anchor="middle" class="schematex-circuit-pol">${label}</text>` : "",
+    ].join(""),
+};
+
+const emergency_stop: SymbolDef = {
+  length: 30,
+  anchors: { start: { x: 0, y: 0 }, end: { x: 30, y: 0 } },
+  svg: (label?: string) =>
+    [
+      `<circle cx="15" cy="0" r="14" class="schematex-circuit-estop"/>`,
+      `<text x="15" y="4" text-anchor="middle" class="schematex-circuit-meter">E</text>`,
+      label ? `<text x="15" y="25" text-anchor="middle" class="schematex-circuit-pol">${label}</text>` : "",
+    ].join(""),
+};
+
 // ─── Industrial control / Power electrical (IEC 60617) ───────
 
 // Relay coil — rectangle with diagonal line indicating coil winding.
@@ -1621,6 +1757,13 @@ export const SYMBOLS: Partial<Record<CircuitComponentType, SymbolDef>> = {
   antenna,
   generic_ic,
   terminal_block,
+  enclosure,
+  din_rail,
+  wire_duct,
+  plc,
+  pilot_light,
+  selector_switch,
+  emergency_stop,
   "555_timer": timer_555,
   voltage_regulator,
   // Industrial control / power electrical (IEC 60617)

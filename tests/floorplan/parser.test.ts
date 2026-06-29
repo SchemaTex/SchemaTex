@@ -142,6 +142,21 @@ furniture desk "Teacher" in class at 2,1.5 size 5x2.5 rotate 20`);
     ).toThrow(/jacuzzi.*(sofa|bed-double)/s);
   });
 
+  it("normalizes seating and electrical overlay aliases", () => {
+    const ast = parseFloorplan(`floorplan
+room kitchen at 0,0 size 4x3
+furniture section in kitchen at 0.5,0.5
+furniture socket in kitchen at 0.2,0.2
+furniture consumer-unit in kitchen at 3.2,0.1 size 0.5
+`);
+    expect(ast.furniture.map((f) => f.type)).toEqual([
+      "sectional",
+      "outlet",
+      "distribution-board",
+    ]);
+    expect(ast.furniture[2]!.size).toEqual({ w: 0.5, h: 0.5 });
+  });
+
   it("parses grid array with rows/cols/count/area/itemsize", () => {
     const ast = parseFloorplan(`floorplan
 room class at 0,0 size 32x26

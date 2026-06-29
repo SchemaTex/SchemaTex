@@ -3,7 +3,7 @@ import type {
   CircuitComponent,
   CircuitDirection,
 } from "../../core/types";
-import { getSymbol, type PinAnchor } from "./symbols";
+import { effectiveSymbolDef, getSymbol, type PinAnchor } from "./symbols";
 
 export interface LaidOutComponent {
   component: CircuitComponent;
@@ -43,6 +43,8 @@ function resolveAnchorRef(
   nets: Map<string, PinAnchor>
 ): PinAnchor | undefined {
   if (ref === "origin") return { x: 0, y: 0 };
+  const coord = /^@?(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)$/.exec(ref.trim());
+  if (coord) return { x: Number(coord[1]), y: Number(coord[2]) };
   if (nets.has(ref)) return nets.get(ref);
   const dot = ref.indexOf(".");
   if (dot < 0) {
@@ -72,7 +74,7 @@ export function layoutCircuit(ast: CircuitAST): CircuitLayoutResult {
       if (resolved) startPt = resolved;
     }
 
-    const sym = getSymbol(comp.componentType);
+    const sym = effectiveSymbolDef(comp.componentType, comp.attrs) ?? getSymbol(comp.componentType);
     const rot = rotationDeg(comp.direction);
 
     if (comp.componentType === "wire") {

@@ -127,16 +127,25 @@ const KIND_ALIASES: Record<string, BreadboardPartKind> = {
   button: "button",
   dip: "dip",
   header: "header",
+  pot: "potentiometer",
+  potentiometer: "potentiometer",
   // multi-token forms handled separately:  "mcu uno", "sensor hcsr04", etc.
 };
 
 const MCU_SUBTYPES: Record<string, BreadboardPartKind> = {
-  uno: "mcu-uno", nano: "mcu-nano", esp32: "mcu-esp32", pico: "mcu-pico",
+  uno: "mcu-uno",
+  nano: "mcu-nano",
+  esp32: "mcu-esp32",
+  "esp32-devkit": "mcu-esp32",
+  "esp32-c3": "mcu-esp32",
+  "esp32-s3": "mcu-esp32",
+  pico: "mcu-pico",
 };
 
 const SENSOR_SUBTYPES: Record<string, BreadboardPartKind> = {
   hcsr04: "sensor-hcsr04", "hc-sr04": "sensor-hcsr04",
   dht11: "sensor-dht11", dht22: "sensor-dht22",
+  vl53l0x: "sensor-vl53l0x", "vl53-l0x": "sensor-vl53l0x", tof: "sensor-vl53l0x",
 };
 
 const DISPLAY_SUBTYPES: Record<string, BreadboardPartKind> = {
@@ -144,11 +153,15 @@ const DISPLAY_SUBTYPES: Record<string, BreadboardPartKind> = {
   oled: "display-oled-ssd1306",
   "lcd-1602-i2c": "display-lcd-1602-i2c",
   lcd: "display-lcd-1602-i2c",
+  tm1637: "display-tm1637",
 };
 
 const MODULE_SUBTYPES: Record<string, BreadboardPartKind> = {
   "rotary-ky040": "module-rotary-ky040",
   rotary: "module-rotary-ky040",
+  l298n: "module-l298n",
+  "l298": "module-l298n",
+  motor: "module-l298n",
 };
 
 const ACTUATOR_SUBTYPES: Record<string, BreadboardPartKind> = {

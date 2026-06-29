@@ -329,10 +329,10 @@ attrs         = "[" attr ("," attr)* "]"
 
 # Parser aliases for IEC 60364 / BS 7671 / REBT residential vocabulary:
 # mcb, mccb, miniature_circuit_breaker -> breaker
-# rcd, rcbo, rccb, differential, diferencial -> ground_fault
+# rcd, rcbo, rccb, differential, diferencial -> rcd
 # pia, iga -> breaker
 # main_switch, isolator, disconnector -> switch_load
-# consumer_unit, distribution_board, panel, panelboard -> bus
+# consumer_unit, distribution_board, panel, panelboard -> consumer_unit
 attr          = "voltage:" voltage_spec
               | "rating:" quoted_string
               | "label:" quoted_string
@@ -352,7 +352,7 @@ load_type     = "motor" | "panel" | "lighting-panel" | "ats" | "ups" | "load"
 
 connect_def   = IDENTIFIER "->" IDENTIFIER cable_clause? NEWLINE
               | IDENTIFIER "--" IDENTIFIER             # bidirectional (bus tie)
-cable_clause  = "[" "cable:" quoted_string "]"
+cable_clause  = "[" ("cable:" | "cable_csa:" | "cable_length_m:" | "cable_insulation:" | "label:") quoted_string "]"
 
 feeder_def    = "feeder" IDENTIFIER "from:" bus_id "to:" load_id
               INDENT device_def+ DEDENT
@@ -439,11 +439,11 @@ sld "Vivienda — CGMP REBT ITC-BT-17"
 ACOM = utility [voltage: "230V", label: "Acometida 230V"]
 ICP  = watthour_meter [label: "Contador + ICP 25A"]
 IGA  = breaker [rating: "40A curva C, 6kA", label: "IGA"]
-ID   = ground_fault [rating: "40A / 30mA Tipo A", label: "Diferencial general"]
-BUS  = bus [voltage: "230V", label: "Embarrado CGMP"]
+CGMP = consumer_unit [rating: "40A", label: "CGMP"]
+ID   = rcd [rating: "40A", rcd_type: A, sensitivity: "30mA", label: "Diferencial general"]
 
-C1 = breaker [rating: "10A curva C", label: "PIA C1"]
-C2 = breaker [rating: "16A curva C", label: "PIA C2"]
+C1 = breaker [rating: "10A", curve: C, icn: "6kA", label: "PIA C1"]
+C2 = breaker [rating: "16A", curve: C, icn: "6kA", label: "PIA C2"]
 # … C3-C6 …
 
 L1 = load [label: "C1 Iluminación"]
@@ -451,17 +451,17 @@ L2 = load [label: "C2 Tomas uso general"]
 
 ACOM -> ICP
 ICP -> IGA
-IGA -> ID
-ID -> BUS
-BUS -> C1
-C1  -> L1 [cable: "1.5 mm² Cu H07V-K"]
-BUS -> C2
-C2  -> L2 [cable: "2.5 mm² Cu H07V-K"]
+IGA -> CGMP
+CGMP -> ID
+ID -> C1
+C1  -> L1 [cable_csa: "1.5 mm2", cable_insulation: "H07V-K"]
+ID -> C2
+C2  -> L2 [cable_csa: "2.5 mm2", cable_insulation: "H07V-K"]
 ```
 
 > **Pitfalls**
 > - Don't collapse the per-circuit MCBs into a single "panel" leaf — REBT inspectors expect every PIA visible with its rated curve.
-> - **EV charging circuits** require a Type B RCBO (not Type AC / Type A) per IEC 60364-7-722 — Mode-3 chargers can leak smooth DC residual currents that blind a Type AC RCD. Model the EV circuit with its own dedicated `ground_fault` device upstream of the EV `load`.
+> - **EV charging circuits** require a Type B RCBO (not Type AC / Type A) per IEC 60364-7-722 — Mode-3 chargers can leak smooth DC residual currents that blind a Type AC RCD. Model the EV circuit with its own dedicated `rcd` device upstream of the EV `load`.
 > - Cable spec on each `->` connection is non-decorative — REBT/IEC 60364 verification reads CSA against the upstream MCB rating to confirm conductor ampacity.
 >
 > See worked examples: `sld-residential-rebt-cgmp` (Spain),

@@ -415,6 +415,59 @@ function spiralStairs(c: SymbolDrawCtx): string {
   return parts.join("");
 }
 
+function outletDraw(duplex: boolean): (c: SymbolDrawCtx) => string {
+  return (c: SymbolDrawCtx): string => {
+    const parts: string[] = [];
+    const cx = c.w / 2;
+    const centers = duplex ? [c.h * 0.34, c.h * 0.66] : [c.h / 2];
+    parts.push(rect({ class: "sx-fp-furn-nofill", x: 0, y: 0, width: c.px(c.w), height: c.px(c.h), rx: c.px(0.04) }));
+    for (const cy of centers) {
+      parts.push(circle({ class: "sx-fp-furn-line", cx: c.px(cx), cy: c.px(cy), r: c.px(Math.min(c.w, c.h) * 0.16) }));
+      parts.push(line({ class: "sx-fp-furn-line", x1: c.px(cx - c.w * 0.1), y1: c.px(cy), x2: c.px(cx + c.w * 0.1), y2: c.px(cy) }));
+    }
+    return parts.join("");
+  };
+}
+
+function electricalSwitchDraw(c: SymbolDrawCtx): string {
+  return [
+    rect({ class: "sx-fp-furn-nofill", x: 0, y: 0, width: c.px(c.w), height: c.px(c.h), rx: c.px(0.04) }),
+    line({ class: "sx-fp-furn-line", x1: c.px(c.w * 0.28), y1: c.px(c.h * 0.65), x2: c.px(c.w * 0.72), y2: c.px(c.h * 0.35) }),
+    circle({ class: "sx-fp-furn-dot", cx: c.px(c.w * 0.28), cy: c.px(c.h * 0.65), r: c.px(0.025) }),
+  ].join("");
+}
+
+function lightDraw(label = "L"): (c: SymbolDrawCtx) => string {
+  return (c: SymbolDrawCtx): string => {
+    const r = Math.min(c.w, c.h) / 2 - 0.01;
+    const cx = c.w / 2;
+    const cy = c.h / 2;
+    return [
+      circle({ class: "sx-fp-furn-nofill", cx: c.px(cx), cy: c.px(cy), r: c.px(r) }),
+      line({ class: "sx-fp-furn-line", x1: c.px(cx - r * 0.65), y1: c.px(cy - r * 0.65), x2: c.px(cx + r * 0.65), y2: c.px(cy + r * 0.65) }),
+      line({ class: "sx-fp-furn-line", x1: c.px(cx + r * 0.65), y1: c.px(cy - r * 0.65), x2: c.px(cx - r * 0.65), y2: c.px(cy + r * 0.65) }),
+      textEl({ class: "sx-fp-furn-text", x: c.px(cx), y: c.px(cy + r + 0.11), "text-anchor": "middle", "font-size": c.px(0.16) }, label),
+    ].join("");
+  };
+}
+
+function panelDraw(label: string): (c: SymbolDrawCtx) => string {
+  return (c: SymbolDrawCtx): string => {
+    const parts = [
+      rect({ class: "sx-fp-furn", x: 0, y: 0, width: c.px(c.w), height: c.px(c.h), rx: c.px(0.03) }),
+      textEl({
+        class: "sx-fp-furn-text",
+        x: c.px(c.w / 2),
+        y: c.px(c.h / 2),
+        "text-anchor": "middle",
+        "dominant-baseline": "central",
+        "font-size": c.px(Math.min(0.14, c.h * 0.45)),
+      }, label),
+    ];
+    return parts.join("");
+  };
+}
+
 // ─── Catalog ─────────────────────────────────────────────────────
 
 export const FLOORPLAN_SYMBOLS: Record<FurnitureType, SymbolDef> = {
@@ -1352,6 +1405,16 @@ export const FLOORPLAN_SYMBOLS: Record<FurnitureType, SymbolDef> = {
       return parts.join("");
     },
   },
+
+  // ── electrical overlay fixtures ──
+  outlet: { w: 0.22, h: 0.22, underlay: true, draw: outletDraw(false) },
+  "duplex-outlet": { w: 0.24, h: 0.36, underlay: true, draw: outletDraw(true) },
+  switch: { w: 0.24, h: 0.3, underlay: true, draw: electricalSwitchDraw },
+  light: { w: 0.35, h: 0.35, underlay: true, draw: lightDraw("L") },
+  "ceiling-light": { w: 0.45, h: 0.45, underlay: true, draw: lightDraw("CL") },
+  "data-outlet": { w: 0.28, h: 0.24, underlay: true, draw: panelDraw("D") },
+  "electrical-panel": { w: 0.55, h: 0.24, underlay: true, draw: panelDraw("PANEL") },
+  "distribution-board": { w: 0.6, h: 0.28, underlay: true, draw: panelDraw("DB") },
 
   // ── site / outdoor ──
   // Tree in plan: a canopy disc with a foliage ring and a trunk dot.

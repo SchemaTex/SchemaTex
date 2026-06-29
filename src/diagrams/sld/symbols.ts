@@ -72,7 +72,10 @@ export function geometryFor(type: SLDNodeType): SymbolGeometry {
     case "watthour_meter":
     case "demand_meter":
     case "ground_fault":
+    case "rcd":
       return { halfWidth: 14, topY: -14, bottomY: 14 };
+    case "consumer_unit":
+      return { halfWidth: 52, topY: -24, bottomY: 24 };
     case "bus":
       return DEFAULT_GEOMETRY;
     case "hub":
@@ -416,6 +419,39 @@ function groundFaultSymbol(): string {
   ]);
 }
 
+function rcdSymbol(): string {
+  return group({}, [
+    el("rect", { x: -14, y: -14, width: 28, height: 28, rx: 3, class: "lt-sld-fill" }),
+    textEl({ x: 0, y: -1, class: "lt-sld-wdg", "text-anchor": "middle", "font-size": "8" }, "RCD"),
+    textEl({ x: 0, y: 9, class: "lt-sld-wdg", "text-anchor": "middle", "font-size": "7" }, "IΔn"),
+    lineEl(0, -14, 0, -18),
+    lineEl(0, 14, 0, 18),
+  ]);
+}
+
+function consumerUnitSymbol(label?: string): string {
+  const txt = label && label.length <= 9 ? label : "DB";
+  return group({}, [
+    el("rect", {
+      x: -50,
+      y: -22,
+      width: 100,
+      height: 44,
+      rx: 4,
+      class: "lt-sld-fill",
+      "stroke-width": 2,
+    }),
+    lineEl(-38, -8, 38, -8, "lt-sld-stroke-thick"),
+    lineEl(-38, 8, 38, 8, "lt-sld-stroke-thick"),
+    lineEl(-22, -15, -22, 15),
+    lineEl(0, -15, 0, 15),
+    lineEl(22, -15, 22, 15),
+    textEl({ x: 0, y: 4, class: "lt-sld-wdg", "text-anchor": "middle", "font-size": "10" }, txt),
+    lineEl(0, -24, 0, -22),
+    lineEl(0, 22, 0, 24),
+  ]);
+}
+
 function hubSymbol(label?: string): string {
   return group({}, [
     el("rect", {
@@ -555,8 +591,10 @@ export function renderSymbol(
     case "relay": return relaySymbol(detail);
     case "surge_arrester": return surgeArresterSymbol();
     case "ground_fault": return groundFaultSymbol();
+    case "rcd": return rcdSymbol();
     case "watthour_meter": return meterSymbol("Wh");
     case "demand_meter": return meterSymbol("D");
+    case "consumer_unit": return consumerUnitSymbol(detail);
     case "bus": return "";
     case "hub": return hubSymbol(detail);
     case "bus_tie": return busTieSymbol();

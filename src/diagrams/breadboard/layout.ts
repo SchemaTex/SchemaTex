@@ -120,6 +120,7 @@ function placePart(
     }
     const pins: Record<string, { x: number; y: number }> = {};
     for (const p of spec.pins) pins[p.name] = { x: x + p.x, y: y + p.y };
+    addPinAliases(part.kind, pins);
     // track reservations
     if (placement === "beside-left") reservedSides.left = Math.max(reservedSides.left, spec.width + BB_CONST.MCU_GAP);
     if (placement === "beside-right") reservedSides.right = Math.max(reservedSides.right, spec.width + BB_CONST.MCU_GAP);
@@ -149,6 +150,7 @@ function placePart(
     void pinSpanX;
     const pins: Record<string, { x: number; y: number }> = {};
     for (const p of spec.pins) pins[p.name] = { x: x + p.x, y: y + p.y };
+    addPinAliases(part.kind, pins);
     return { part, x, y, width: spec.width, height: spec.height, rotation: 0, pins };
   }
 
@@ -166,10 +168,76 @@ function placePart(
   }
   const pins: Record<string, { x: number; y: number }> = {};
   for (const p of spec.pins) pins[p.name] = { x: x + p.x, y: y + p.y };
+  addPinAliases(part.kind, pins);
   return { part, x, y, width: spec.width, height: spec.height, rotation: 0, pins };
 }
 
 // ─── Wire endpoint resolution ───────────────────────────────
+
+function setAlias(
+  pins: Record<string, { x: number; y: number }>,
+  alias: string,
+  xy: { x: number; y: number }
+): void {
+  if (!pins[alias]) pins[alias] = xy;
+}
+
+function addPinAliases(
+  kind: BreadboardPart["kind"],
+  pins: Record<string, { x: number; y: number }>
+): void {
+  const entries = Object.entries(pins);
+  for (const [name, xy] of entries) {
+    setAlias(pins, name.toUpperCase(), xy);
+    setAlias(pins, name.toLowerCase(), xy);
+
+    const gpio = /^GPIO(\d+)$/i.exec(name);
+    if (gpio) {
+      const n = gpio[1]!;
+      setAlias(pins, `D${n}`, xy);
+      setAlias(pins, `IO${n}`, xy);
+      setAlias(pins, `GP${n}`, xy);
+      setAlias(pins, n, xy);
+    }
+
+    const digital = /^D(\d+)$/i.exec(name);
+    if (digital) {
+      const n = digital[1]!;
+      setAlias(pins, n, xy);
+      setAlias(pins, `GPIO${n}`, xy);
+      setAlias(pins, `IO${n}`, xy);
+    }
+  }
+
+  const alias = (canonical: string, ...aliases: string[]): void => {
+    const xy = pins[canonical];
+    if (!xy) return;
+    for (const a of aliases) setAlias(pins, a, xy);
+  };
+
+  alias("3V3", "3.3V", "3V", "VCC3V3", "VDD");
+  alias("5V", "+5V", "VCC", "VBUS", "USB");
+  alias("VIN", "5V", "+5V", "VCC", "VBUS", "USB", "RAW");
+  alias("GND", "0V", "GROUND", "VSS", "COM", "-");
+  alias("RST", "RESET", "EN");
+  alias("A4", "SDA");
+  alias("A5", "SCL");
+  alias("TX", "D1", "GPIO1", "IO1");
+  alias("RX", "D0", "GPIO0", "IO0");
+  alias("VCC", "5V", "+5V", "VIN");
+  alias("DATA", "DAT", "OUT", "SIG", "SIGNAL");
+  alias("DIO", "DATA", "DAT");
+  alias("CLK", "SCK", "SCLK", "CLOCK");
+  alias("TRIG", "TRIGGER");
+  alias("SIG", "SIGNAL", "PWM", "DATA");
+  alias("1", "A", "P1");
+  alias("2", "W", "WIPER", "P2");
+  alias("3", "B", "P3");
+
+  if (kind === "mcu-esp32" || kind === "mcu-pico") {
+    alias("VIN", "5V", "VBUS", "USB");
+  }
+}
 
 function endpointXY(
   ep: BreadboardEndpoint,
@@ -179,8 +247,14 @@ function endpointXY(
   if (ep.kind === "coord") return holeXY(sub, ep.at);
   const part = parts.find((p) => p.part.id === ep.partId);
   if (!part) throw new Error(`Wire references unknown part '${ep.partId}'`);
-  const pin = part.pins[ep.pin];
-  if (!pin) throw new Error(`Part '${ep.partId}' has no pin named '${ep.pin}'`);
+  const pin = part.pins[ep.pin] ?? part.pins[ep.pin.toUpperCase()] ?? part.pins[ep.pin.toLowerCase()];
+  if (!pin) {
+    const known = Object.keys(part.pins)
+      .filter((name, idx, all) => all.indexOf(name) === idx)
+      .slice(0, 24)
+      .join(", ");
+    throw new Error(`Part '${ep.partId}' has no pin named '${ep.pin}' (known pins: ${known})`);
+  }
   // Return a copy so post-layout translation doesn't double-shift this point
   // through both part.pins[name] and lw.fromXY.
   return { x: pin.x, y: pin.y };

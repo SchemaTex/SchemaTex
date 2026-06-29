@@ -150,6 +150,15 @@ export type FurnitureType =
   | "walk-in"
   | "commercial-sink"
   | "fryer"
+  // electrical overlay fixtures
+  | "outlet"
+  | "duplex-outlet"
+  | "switch"
+  | "light"
+  | "ceiling-light"
+  | "data-outlet"
+  | "electrical-panel"
+  | "distribution-board"
   // site / outdoor
   | "tree"
   | "car";
