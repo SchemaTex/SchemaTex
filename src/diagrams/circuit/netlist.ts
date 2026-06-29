@@ -81,7 +81,15 @@ const TYPE_ALIASES: Record<string, CircuitComponentType> = {
   tb: "terminal_block",
   junction_box: "terminal_block",
   jbox: "terminal_block",
-  enclosure: "terminal_block",
+  enclosure: "enclosure",
+  cabinet: "enclosure",
+  panel: "enclosure",
+  dinrail: "din_rail",
+  din_rail: "din_rail",
+  wireduct: "wire_duct",
+  wire_duct: "wire_duct",
+  trunking: "wire_duct",
+  plc: "plc",
 };
 
 /** Ground refs: SPICE "0", canonical aliases (GND/AGND/DGND/EARTH/PE/VSS/COM), and suffixed variants (GND_REF, AGND_DIG, EARTH1). */

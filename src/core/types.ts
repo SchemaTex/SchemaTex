@@ -899,6 +899,13 @@ export type CircuitComponentType =
   | "dc_dc_converter"   // 2-port rect block with "DC/DC" label
   | "555_timer"         // 8-pin rect with standard 555 pinout
   | "terminal_block"    // Labeled enclosure with N named terminals (junction box, terminal strip)
+  | "enclosure"         // Panel/cabinet outline for control-cabinet layouts
+  | "din_rail"          // DIN rail mounting row inside a panel
+  | "wire_duct"         // Slotted trunking / wire duct inside a panel
+  | "plc"               // PLC / controller module block
+  | "pilot_light"       // Front-panel indicator lamp
+  | "selector_switch"   // Front-panel selector switch
+  | "emergency_stop"    // Mushroom emergency-stop pushbutton
 
   // ── Sources & Power ───────────────────────────────────────────
   | "voltage_source"    // Circle + V or ± polarity
@@ -1136,6 +1143,7 @@ export type SLDNodeType =
   | "relay"             // Protection relay (small circle + ANSI device number)
   | "surge_arrester"    // Surge arrester / lightning arrester (downward arrow + ground)
   | "ground_fault"      // Ground fault detector (GFI)
+  | "rcd"               // IEC residual-current device / RCD-RCCB-RCBO
 
   // ── Loads & Equipment ─────────────────────────────────────────
   | "motor"             // Motor (circle + M + 3-phase dots)
@@ -1147,6 +1155,7 @@ export type SLDNodeType =
   // ── Metering ──────────────────────────────────────────────────
   | "watthour_meter"    // Energy meter (circle + Wh)
   | "demand_meter"      // Demand meter (circle + D)
+  | "consumer_unit"     // Domestic distribution board / consumer unit container
 
   // ── Graceful-degradation sentinel ─────────────────────────────
   | "unknown";          // Unrecognised type token — drawn as a flagged placeholder, never silently substituted
@@ -1172,6 +1181,12 @@ export interface SLDConnection {
   to: string;
   /** Cable specification e.g. "3#2/0 AWG" */
   cable?: string;
+  /** Cable cross-sectional area, common in IEC/REBT residential docs (e.g. "2.5 mm2"). */
+  cableCsa?: string;
+  /** Cable length in meters, when a prompt asks for cable schedule hints. */
+  cableLengthM?: string;
+  /** Cable insulation / construction (e.g. "H07V-K", "XLPE/SWA/PVC"). */
+  cableInsulation?: string;
   label?: string;
 }
 
@@ -1742,12 +1757,16 @@ export type BreadboardPartKind =
   | "mcu-nano"
   | "mcu-esp32"
   | "mcu-pico"
+  | "potentiometer"
   | "sensor-hcsr04"
   | "sensor-dht11"
   | "sensor-dht22"
+  | "sensor-vl53l0x"
   | "display-oled-ssd1306"
   | "display-lcd-1602-i2c"
+  | "display-tm1637"
   | "module-rotary-ky040"
+  | "module-l298n"
   | "actuator-servo-sg90";
 
 export interface BreadboardPart {

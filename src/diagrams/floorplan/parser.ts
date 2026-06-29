@@ -83,7 +83,12 @@ function parseCoord(t: Tok | undefined, what: string, ln: number): { x: number; 
 
 function parseDims(t: Tok | undefined, what: string, ln: number): { w: number; h: number } {
   if (!isWord(t)) throw new FloorplanParseError(`expected "WxH" for ${what}`, ln);
-  const m = /^(\d*\.?\d+)x(\d*\.?\d+)$/i.exec(t.word);
+  const normalized = t.word.replace("×", "x");
+  const m = /^(\d*\.?\d+)x(\d*\.?\d+)$/i.exec(normalized);
+  if (!m && /^(\d*\.?\d+)$/.test(normalized)) {
+    const v = Number(normalized);
+    return { w: v, h: v };
+  }
   if (!m) throw new FloorplanParseError(`expected "WxH" for ${what}, got "${t.word}"`, ln);
   return { w: Number(m[1]), h: Number(m[2]) };
 }
@@ -103,15 +108,35 @@ function parseId(t: Tok | undefined, what: string, ln: number): string {
 const SIDES: readonly WallSide[] = ["north", "south", "east", "west"];
 const REL_HOW: readonly RelativeHow[] = ["right-of", "left-of", "above", "below"];
 
+const FURNITURE_ALIASES: Record<string, FurnitureType> = {
+  section: "sectional",
+  sectional_sofa: "sectional",
+  cabinet: "wall-cabinet",
+  socket: "outlet",
+  receptacle: "duplex-outlet",
+  "power-outlet": "duplex-outlet",
+  "duplex-receptacle": "duplex-outlet",
+  "light-fixture": "ceiling-light",
+  "ceiling-lamp": "ceiling-light",
+  lamp: "light",
+  "data-socket": "data-outlet",
+  "ethernet-outlet": "data-outlet",
+  panel: "electrical-panel",
+  "breaker-panel": "electrical-panel",
+  db: "distribution-board",
+  "consumer-unit": "distribution-board",
+};
+
 function parseFurnitureType(t: Tok | undefined, ln: number): FurnitureType {
   const word = isWord(t) ? t.word : "";
-  if (!(FURNITURE_TYPES as readonly string[]).includes(word)) {
+  const canonical = FURNITURE_ALIASES[word] ?? (word as FurnitureType);
+  if (!(FURNITURE_TYPES as readonly string[]).includes(canonical)) {
     throw new FloorplanParseError(
       `unknown furniture type "${word}". Valid types: ${FURNITURE_TYPES.join(", ")}`,
       ln
     );
   }
-  return word as FurnitureType;
+  return canonical;
 }
 
 // ─── Statement parsers ───────────────────────────────────────────

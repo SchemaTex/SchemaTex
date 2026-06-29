@@ -28,6 +28,23 @@ parts
     expect(typeof uno.pins["5V"]!.x).toBe("number");
   });
 
+  it("normalizes ESP32 and module pin aliases", () => {
+    const ast = parseBreadboard(`breadboard
+parts
+  esp: mcu esp32 @beside-left
+  pot: pot @8a
+wires
+  esp:D22 --green-- @8a
+  esp:5V --red-- @+t1
+  pot:3 --yellow-- @9a
+`);
+    const layout = layoutBreadboard(ast);
+    const esp = layout.parts.find((p) => p.part.id === "esp")!;
+    expect(esp.pins["D22"]).toEqual(esp.pins["GPIO22"]);
+    expect(esp.pins["5V"]).toEqual(esp.pins["VIN"]);
+    expect(layout.wires).toHaveLength(3);
+  });
+
   it("emits a wire path that's a Bézier (contains C)", () => {
     const ast = parseBreadboard(`breadboard
 parts

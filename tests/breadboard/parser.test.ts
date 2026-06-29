@@ -34,6 +34,24 @@ parts
     expect(ast.parts[0]!.args.color).toBe("red");
   });
 
+  it("parses common maker modules from user prompts", () => {
+    const ast = parseBreadboard(`breadboard
+parts
+  esp: mcu esp32-s3 @beside-left
+  pot: potentiometer @5a
+  tof: sensor vl53l0x @10a
+  tm: display tm1637 @15a
+  drv: module l298n @20a
+`);
+    expect(ast.parts.map((p) => p.kind)).toEqual([
+      "mcu-esp32",
+      "potentiometer",
+      "sensor-vl53l0x",
+      "display-tm1637",
+      "module-l298n",
+    ]);
+  });
+
   it("rejects unknown part kind", () => {
     expect(() => parseBreadboard(`breadboard
 parts

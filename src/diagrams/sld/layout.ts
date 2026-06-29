@@ -32,6 +32,9 @@ export interface SLDLayoutEdge {
   to: string;
   path: string;
   cable?: string;
+  cableCsa?: string;
+  cableLengthM?: string;
+  cableInsulation?: string;
   label?: string;
   midX: number;
   midY: number;
@@ -485,6 +488,9 @@ export function layoutSLD(ast: SLDAST): SLDLayoutResult {
       to: c.to,
       path: pathD,
       cable: c.cable,
+      cableCsa: c.cableCsa,
+      cableLengthM: c.cableLengthM,
+      cableInsulation: c.cableInsulation,
       label: c.label,
       midX: (fx + tx) / 2,
       midY: (startY + endY) / 2,

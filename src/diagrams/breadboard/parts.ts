@@ -448,12 +448,16 @@ export const PART_CATALOG: Record<BreadboardPartKind, PartSpec> = {
   "mcu-nano": mcuSpec("mcu-nano", "#0d9488", "Arduino Nano", UNO_SLOTS.slice(0, 18), { width: 90, height: 180, cornerR: 4 }),
   "mcu-esp32": mcuSpec("mcu-esp32", "#1e293b", "ESP32 DevKit", ESP32_SLOTS, { width: 110, height: 180, cornerR: 4 }),
   "mcu-pico": mcuSpec("mcu-pico", "#1e3a8a", "Raspberry Pi Pico", ESP32_SLOTS, { width: 100, height: 180, cornerR: 4 }),
+  potentiometer: moduleSpec("potentiometer", 54, 46, "#eab308", ["1", "2", "3"], "POT"),
   "sensor-hcsr04": moduleSpec("sensor-hcsr04", 100, 60, "#1e3a8a", ["VCC", "TRIG", "ECHO", "GND"], "HC-SR04"),
   "sensor-dht11": moduleSpec("sensor-dht11", 70, 60, "#1e40af", ["VCC", "DATA", "GND"], "DHT11"),
   "sensor-dht22": moduleSpec("sensor-dht22", 70, 60, "#1e40af", ["VCC", "DATA", "GND"], "DHT22"),
+  "sensor-vl53l0x": moduleSpec("sensor-vl53l0x", 80, 56, "#1e3a8a", ["VIN", "GND", "SCL", "SDA"], "VL53L0X"),
   "display-oled-ssd1306": moduleSpec("display-oled-ssd1306", 90, 60, "#0f172a", ["GND", "VCC", "SCL", "SDA"], "OLED 128×64"),
   "display-lcd-1602-i2c": moduleSpec("display-lcd-1602-i2c", 130, 60, "#166534", ["GND", "VCC", "SDA", "SCL"], "LCD 1602 I²C"),
+  "display-tm1637": moduleSpec("display-tm1637", 84, 52, "#7c2d12", ["CLK", "DIO", "VCC", "GND"], "TM1637"),
   "module-rotary-ky040": moduleSpec("module-rotary-ky040", 80, 60, "#7c2d12", ["CLK", "DT", "SW", "VCC", "GND"], "KY-040"),
+  "module-l298n": moduleSpec("module-l298n", 150, 72, "#991b1b", ["ENA", "IN1", "IN2", "IN3", "IN4", "ENB", "5V", "GND", "12V"], "L298N"),
   "actuator-servo-sg90": moduleSpec("actuator-servo-sg90", 60, 60, "#475569", ["GND", "VCC", "SIG"], "Servo SG90"),
 };
 

@@ -112,3 +112,26 @@ describe("symbol-availability lint", () => {
     expect(lintSLD(topo("iec"))).toHaveLength(0);
   });
 });
+
+describe("residential distribution aliases", () => {
+  test("consumer_unit and RCD aliases parse as first-class device types", () => {
+    const ast = parseSLDDSL(`sld "Flat DB" [standard: iec]
+GRID = utility
+DB = consumer_unit [label: "CU-1", rating: "63A"]
+RCD1 = rccb [label: "RCD-1", rcd_type: A, sensitivity: "30mA"]
+MCB1 = mcb [label: "Lighting", curve: B, icn: "6kA"]
+GRID -> DB [cable_csa: "16 mm2", cable_length_m: 12, cable_insulation: "H07V-K"]
+DB -> RCD1
+RCD1 -> MCB1`);
+    expect(ast.nodes.find((n) => n.id === "DB")?.nodeType).toBe("consumer_unit");
+    expect(ast.nodes.find((n) => n.id === "RCD1")?.nodeType).toBe("rcd");
+    expect(ast.nodes.find((n) => n.id === "MCB1")?.nodeType).toBe("breaker");
+    expect(ast.connections[0]!.cableCsa).toBe("16 mm2");
+
+    const svg = renderSLD(ast);
+    expect(svg).toContain("RCD");
+    expect(svg).toContain("16 mm2");
+    expect(svg).toContain("H07V-K");
+    expect(svg).toContain("curve: B");
+  });
+});

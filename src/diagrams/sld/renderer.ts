@@ -126,6 +126,12 @@ function renderLabels(ln: SLDLayoutNode): string[] {
   const lines: string[] = [];
   if (node.rating) lines.push(node.rating);
   if (node.voltage) lines.push(node.voltage);
+  if (node.nameplate) {
+    for (const key of ["curve", "icn", "rcd_type", "type", "sensitivity", "poles"]) {
+      const value = node.nameplate[key] ?? node.nameplate[key.toUpperCase()];
+      if (value) lines.push(`${key}: ${value}`);
+    }
+  }
   if (node.deviceNumber && ln.nodeType === "relay") {
     // deviceNumber is shown inside the relay glyph; skip here
   }
@@ -245,12 +251,18 @@ export function renderSLD(ast: SLDAST, config?: RenderConfig): string {
   // Connection wires (draw before symbols so symbols sit on top)
   for (const e of layout.edges) {
     inner.push(pathEl({ d: e.path, class: "lt-sld-wire" }));
-    if (e.cable) {
+    const cableParts = [
+      e.cable,
+      e.cableCsa,
+      e.cableInsulation,
+      e.cableLengthM ? `${e.cableLengthM} m` : undefined,
+    ].filter((v): v is string => !!v);
+    if (cableParts.length) {
       // Position cable label near midpoint, slightly offset
       inner.push(
         textEl(
           { x: e.midX + 6, y: e.midY - 2, class: "lt-sld-cable" },
-          e.cable
+          cableParts.join(" · ")
         )
       );
     }
@@ -291,7 +303,7 @@ export function renderSLD(ast: SLDAST, config?: RenderConfig): string {
       attrs["data-raw-type"] = ln.node.rawType;
     }
     const detail =
-      ln.nodeType === "hub"
+      ln.nodeType === "hub" || ln.nodeType === "consumer_unit"
         ? ln.node.label ?? ln.node.id
         : ln.nodeType === "unknown"
           ? ln.node.rawType
