@@ -813,6 +813,44 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
     ],
   },
   {
+    type: "siteplan",
+    name: "Site plan",
+    tagline:
+      "Presentation-grade parcel, road, and property layout diagrams — irregular lot boundaries, building footprints, driveways, setbacks, easements, frontage, trees, parking, dimensions, callouts, north arrow, and scale bar.",
+    useWhen:
+      "Use for listing/proposal site sketches and early planning diagrams focused on the land around a property: parcel or lot boundary, road frontage, driveway/walkway, building footprints, setbacks, easements, utility/fence/frontage lines, trees/cars/pins, dimensions, callouts, north arrow, scale bar, and legend. Header `siteplan \"Title\" unit ft|m`. Use `parcel ... points`, `structure ... points`, `road ... from/to width`, `driveway ... points width`, `setback/easement/fence/frontage ... from/to`, `tree/car ... at`, `dim ... from/to`, and `callout ... at/to`. Not for survey-grade bearings, CAD, permit-ready drawings, grading/drainage engineering, or 3D walkthroughs. Use `floorplan` for interior rooms/walls/furniture.",
+    cluster: "architecture",
+    standard:
+      "Planning/zoning site-plan convention · ALTA/NSPS survey drawing vocabulary · real-estate plot-plan/listing sketch conventions; see 52-SITEPLAN-STANDARD.md",
+    syntaxKey: "siteplan",
+    aliases: [
+      "Site plan",
+      "siteplan",
+      "plot plan",
+      "plotplan",
+      "parcel map",
+      "parcelmap",
+      "property map",
+      "lot plan",
+      "地块图",
+      "基地配置图",
+      "地籍示意图",
+    ],
+    keywords: [
+      "site plan",
+      "plot plan",
+      "parcel boundary",
+      "lot boundary",
+      "property line",
+      "road frontage",
+      "setback",
+      "easement",
+      "driveway",
+      "building footprint",
+      "real estate listing",
+    ],
+  },
+  {
     type: "playbook",
     name: "Sports playbook",
     tagline:
@@ -915,6 +953,7 @@ export const DIAGRAM_SINCE: Readonly<Record<DiagramType, string>> = {
   welding: "0.8.1",
   // 0.9.3
   floorplan: "0.9.3",
+  siteplan: "0.9.12",
   // 0.9.4 — multi-sport playbook (football X&O / basketball / soccer)
   playbook: "0.9.4",
   // 0.9.5 — reliability block diagram (IEC 61078)

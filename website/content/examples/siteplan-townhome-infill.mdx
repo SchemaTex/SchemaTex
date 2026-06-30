@@ -1,0 +1,45 @@
+---
+title: Townhome infill concept
+description: "Early development sketch: a deep parcel with internal lane, four townhome footprints, parking pads, open-space zone, trail connection, setbacks, and phase callouts."
+diagram: siteplan
+standard: Planning/zoning site-plan convention · conceptual development sketch
+industry: [development, planning]
+persona: For the developer preparing an early feasibility slide
+complexity: 4
+tags: [siteplan, development, townhomes, conceptual-planning, internal-road]
+featured: true
+relatedLink:
+  label: Site plan syntax
+  href: /docs/siteplan
+status: published
+dsl: |
+  siteplan "Townhome Infill Concept" unit ft
+  parcel lot points 0,0 92,0 102,210 12,226 -8,96
+  road cedar "Cedar Road" from -18,-17 to 110,-17 width 26
+  frontage front from 0,0 to 92,0
+  setback frontSetback from 8,20 to 90,20
+  setback rearSetback from 12,204 to 98,190
+  easement drainage from 78,12 to 96,194
+  driveway lane points 45,0 47,64 54,128 58,190 width 14
+  structure unit1 "Unit 1" points 12,42 38,42 38,74 12,74
+  structure unit2 "Unit 2" points 14,86 42,86 42,118 14,118
+  structure unit3 "Unit 3" points 18,132 46,132 46,164 18,164
+  structure unit4 "Unit 4" points 22,176 50,176 50,202 22,202
+  parking pad1 points 56,42 78,42 78,74 56,74 fill #eceff3
+  parking pad2 points 60,88 82,88 82,120 60,120 fill #eceff3
+  landscape open points 60,132 90,128 94,176 62,184 fill #dff0d3
+  walkway trail points 62,184 90,210 width 6
+  tree t1 at 12,20 size 8
+  tree t2 at 86,56 size 8
+  tree t3 at 88,152 size 9
+  tree t4 at 40,214 size 8
+  callout "Phase 1" at 0,74 to 22,58
+  dim "226 ft depth" from -30,0 to -30,226
+  north
+  scale 50
+  legend on
+---
+
+## What this shows
+
+This is the careful boundary for developer demand: a concept sketch with parcel geometry, internal access, buildings, parking, open space, and callouts. It helps a proposal conversation without crossing into civil engineering.

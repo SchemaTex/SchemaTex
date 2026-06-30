@@ -19,6 +19,7 @@ export default defineConfig({
     "diagrams/venn/index": "src/diagrams/venn/index.ts",
     "diagrams/flowchart/index": "src/diagrams/flowchart/index.ts",
     "diagrams/orgchart/index": "src/diagrams/orgchart/index.ts",
+    "diagrams/siteplan/index": "src/diagrams/siteplan/index.ts",
     browser: "src/browser.ts",
     react: "src/react.tsx",
     export: "src/export.ts",

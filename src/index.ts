@@ -74,6 +74,9 @@ export { threatmodel } from "./diagrams/threatmodel";
 export { welding } from "./diagrams/welding";
 export { rbd } from "./diagrams/rbd";
 export { comparison } from "./diagrams/comparison";
+export { floorplan } from "./diagrams/floorplan";
+export { siteplan } from "./diagrams/siteplan";
+export { playbook } from "./diagrams/playbook";
 
 export {
   type SymbolCatalog,
