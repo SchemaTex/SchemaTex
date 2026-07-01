@@ -1,0 +1,110 @@
+---
+title: Site plan
+---
+
+## About site plans
+
+A **site plan** shows the land around a property: parcel boundaries, road frontage, building footprints, driveways, walkways, setbacks, easements, fences, utilities, parking, trees, dimensions, callouts, north arrow, and scale bar. Schematex renders these as presentation-grade SVG sketches for listings, proposals, and early planning.
+
+This is deliberately different from `floorplan`: use `floorplan` for interior rooms, walls, doors, and furniture; use `siteplan` for the parcel and exterior site context. The output is not CAD, not survey-grade, and not permit-ready.
+
+<Playground initial={`siteplan "Residential Listing Site Plan" unit ft
+parcel lot points 0,0 62,0 58,96 8,104 -4,42
+road maple "Maple Ave" from -12,-16 to 74,-16 width 22
+frontage front from 0,0 to 62,0
+setback frontSetback "Front setback" from 5,8 to 57,8
+easement util "Utility easement" from 48,0 to 43,96
+structure house "Residence" points 15,28 45,28 45,64 34,64 34,78 15,78
+structure garage "Garage" points 45,32 58,32 58,55 45,55
+driveway drive points 52,0 52,32 width 10
+walkway walk points 31,0 31,28 width 4
+tree oak at 9,22 size 8 "Oak"
+tree mapleTree at 12,80 size 9
+car car1 at 52,14 size 15 rotate 0
+dim "62 ft frontage" from 0,-30 to 62,-30
+callout "Covered patio" at 20,90 to 22,76
+north
+scale 20
+legend on`} height={520} />
+
+---
+
+## 1. Parcel and footprints
+
+Use `parcel` for the outer lot boundary and `structure` for buildings, garages, sheds, decks, or patios:
+
+```text
+siteplan "Listing Site Plan" unit ft
+parcel lot points 0,0 62,0 58,96 8,104 -4,42
+structure house "Residence" points 15,28 45,28 45,64 34,64 34,78 15,78
+structure garage "Garage" points 45,32 58,32 58,55 45,55
+```
+
+Polygons close automatically. Keep them simple and use a human-authored label when the shape is part of a sales or proposal page.
+
+## 2. Roads and paths
+
+Roads, driveways, walkways, and trails are centerline paths with a visual width:
+
+```text
+road maple "Maple Ave" from -12,-16 to 74,-16 width 22
+driveway drive "Driveway" points 52,0 52,32 width 10
+walkway walk "Entry walk" points 31,0 31,28 width 4
+```
+
+Use `from x,y to x,y` for a straight segment or `points x,y x,y ...` for a bent path.
+
+Driveways render as paved aisles with edge lines. Commercial-width driveways (`width` 12+) add lane markings, and wider drive aisles (`width` 14+) add subtle directional arrows.
+
+## 3. Planning overlays
+
+Line features use standard site-plan vocabulary:
+
+```text
+frontage front "Road frontage" from 0,0 to 62,0
+setback frontSetback "Front setback" from 5,8 to 57,8
+easement util "Utility easement" from 48,0 to 43,96
+fence rearFence "Fence" from 8,104 to 58,96
+utility water "Water service" points 20,0 20,28
+```
+
+These are presentation overlays. The engine draws them clearly but does not calculate zoning compliance.
+
+## 4. Markers, dimensions, and callouts
+
+```text
+tree oak at 9,22 size 8 "Oak"
+car car1 at 52,14 size 15 rotate 0
+pin sign at 10,4 size 6 "Sign"
+dim "62 ft frontage" from 0,-30 to 62,-30
+callout "Covered patio" at 20,90 to 22,76
+north
+scale 20
+legend on
+```
+
+`dim` labels are authored by you. This keeps the diagram honest: it is a listing/proposal sketch, not a legal survey.
+
+## 5. Grammar
+
+```text
+plan       ::= ("siteplan"|"plotplan"|"parcelmap"|"propertymap") string? ("unit" ("ft"|"m"))? NL statement*
+polygon    ::= ("parcel"|"structure"|"zone"|"landscape"|"parking") id string? "points" coord coord coord+ ("fill" color)?
+path       ::= ("road"|"driveway"|"walkway"|"trail") id string? ("from" coord "to" coord | "points" coord coord+) ("width" num)?
+line       ::= ("setback"|"easement"|"fence"|"utility"|"frontage"|"boundary") id string? ("from" coord "to" coord | "points" coord coord+)
+marker     ::= ("tree"|"car"|"pin"|"entry"|"hydrant"|"well") id? "at" coord ("size" num|dims)? ("rotate" num)? string?
+dim        ::= ("dim"|"measure") string? "from" coord "to" coord
+callout    ::= "callout" string "at" coord "to" coord
+north      ::= "north" num?
+scale      ::= "scale" num
+legend     ::= "legend" ("on"|"off")
+```
+
+## Related examples
+
+- [Residential listing site plan](/examples#siteplan) — realtor-ready parcel, house footprint, driveway, easement, setbacks
+- [Backyard landscape sketch](/examples#siteplan) — house, patio, lawn, planting beds, trees, fence
+- [Corner commercial site](/examples#siteplan) — two-road frontage, parking, entry, retail footprint
+- [Mall parking lot concept](/examples#siteplan) — mall footprint, parking fields, loop drive, entry access, service court
+- [Lifestyle center parking plan](/examples#siteplan) — retail rows, pedestrian plaza, surface parking, parking deck
+- [Townhome infill concept](/examples#siteplan) — internal lane, phase zones, landscape/open space

@@ -1,0 +1,40 @@
+---
+title: Residential listing site plan
+description: "A realtor-friendly plot sketch: irregular parcel, road frontage, house and garage footprints, driveway, front setback, utility easement, trees, car, dimension, north arrow, and scale bar."
+diagram: siteplan
+standard: Planning/zoning site-plan convention · real-estate listing sketch
+industry: [real-estate, residential]
+persona: For the listing agent preparing a sales sheet or client deck
+complexity: 3
+tags: [siteplan, plot-plan, real-estate, listing, parcel, driveway]
+featured: true
+relatedLink:
+  label: Site plan syntax
+  href: /docs/siteplan
+status: published
+dsl: |
+  siteplan "Residential Listing Site Plan" unit ft
+  parcel lot points 0,0 62,0 58,96 8,104 -4,42
+  road maple "Maple Ave" from -12,-16 to 74,-16 width 22
+  frontage front from 0,0 to 62,0
+  setback frontSetback "Front setback" from 5,8 to 57,8
+  easement util "Utility easement" from 48,0 to 43,96
+  structure house "Residence" points 15,28 45,28 45,64 34,64 34,78 15,78
+  structure garage "Garage" points 45,32 58,32 58,55 45,55
+  driveway drive points 52,0 52,32 width 10
+  walkway walk points 31,0 31,28 width 4
+  tree oak at 9,22 size 8 "Oak"
+  tree mapleTree at 12,80 size 9
+  car car1 at 52,14 size 15 rotate 0
+  dim "62 ft frontage" from 0,-30 to 62,-30
+  callout "Covered patio" at 20,90 to 22,76
+  north
+  scale 20
+  legend on
+---
+
+## What this shows
+
+The parcel is an irregular polygon, not a room rectangle. The diagram keeps the listing-level essentials visible: road frontage, driveway, house footprint, garage, front setback, utility easement, outdoor trees, and a callout.
+
+It is presentation-grade: clean enough for a sales sheet, intentionally not a survey or permit drawing.

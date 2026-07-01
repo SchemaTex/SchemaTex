@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.9.12] — 2026-06-30
+
+### Added — `siteplan`: parcel, road, driveway, and property-layout diagrams
+
+A new Architecture & Space diagram type for presentation-grade site/plot sketches: real-estate listing materials, broker/developer proposal pages, and early parcel planning. Header aliases: `siteplan`, `plotplan`, `parcelmap`, and `propertymap`.
+
+- **`siteplan` engine.** Added parser, layout, renderer, package export (`schematex/siteplan`), AI registry/profile entries, docs navigation, icon, tests, and reference standard ([52-SITEPLAN-STANDARD.md](docs/reference/52-SITEPLAN-STANDARD.md)).
+- **DSL primitives.** Supports irregular `parcel` polygons, `structure` footprints, `parking`/`landscape`/`zone` polygons, `road`/`driveway`/`walkway`/`trail` paths, planning overlays (`frontage`, `setback`, `easement`, `fence`, `utility`, `boundary`), markers (`tree`, `car`, `pin`, `entry`, `hydrant`, `well`), `dim`, `callout`, `north`, `scale`, and `legend`.
+- **Professional plan-sheet styling.** White sheet, heavy property lines, hatched building footprints, roofline hints, side-panel legend/north/scale, architectural dimension ticks, line-following labels, subdued roads, and plan-symbol trees.
+- **Commercial parking/driveway language.** Driveways render as paved aisles with edge lines; commercial-width drive aisles add lane markings and directional arrows. Parking polygons use stall-striping style instead of generic hatch fills.
+- **Website examples.** Added six published, featured examples: residential listing site plan, backyard landscape sketch, corner commercial site, mall parking lot concept, lifestyle center parking plan, and townhome infill concept, with rendered SVG/PNG previews under `examples/siteplan/`.
+
+Scope boundary: `siteplan` is for listing/proposal/early-planning graphics. It is intentionally not CAD, survey-grade, permit-ready, civil engineering, grading/drainage, stall-count compliance, or 3D walkthrough output.
+
 ## [0.9.11] — 2026-06-29
 
 ### Added — user-feedback electrical layout hardening (`breadboard`, `sld`, `floorplan`, `circuit`)

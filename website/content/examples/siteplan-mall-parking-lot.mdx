@@ -1,0 +1,55 @@
+---
+title: Mall parking lot concept
+description: "A commercial site-plan sketch for a mall: arterial frontage, anchor building footprint, cinema wing, surface parking fields, loop drive, entry drives, landscape islands, loading/service court, north arrow, scale, and legend."
+diagram: siteplan
+standard: Planning/zoning site-plan convention · commercial leasing sketch
+industry: [commercial-real-estate, retail, leasing]
+persona: For the broker or property team explaining access, parking, and tenant anchors
+complexity: 4
+tags: [siteplan, mall, parking-lot, commercial, retail, access]
+featured: true
+relatedLink:
+  label: Site plan syntax
+  href: /docs/siteplan
+status: published
+dsl: |
+  siteplan "Mall Parking Lot Concept" unit ft
+  parcel site points 0,0 320,0 340,220 18,236 -10,82
+  road harbor "Harbor Blvd" from -34,-24 to 366,-24 width 36
+  frontage mainFront from 0,0 to 320,0
+  setback frontSetback from 18,22 to 306,22
+  structure mall "Mall" points 82,58 250,58 250,124 224,124 224,150 104,150 104,124 82,124
+  structure cinema "Cinema" points 252,72 310,72 310,132 252,132
+  parking northLot points 24,26 74,26 76,156 20,174 2,86
+  parking southLot points 72,158 260,158 310,190 62,214
+  parking eastLot points 314,40 328,188 264,174 266,140 322,132 322,72
+  driveway mainEntry from 160,0 to 160,58 width 22
+  driveway loop points 52,40 78,44 82,154 58,188 278,184 302,142 298,42 width 16
+  driveway eastEntry from 320,96 to 302,96 width 18
+  walkway promenade points 124,150 128,180 238,178 224,150 width 8
+  landscape island1 points 34,38 62,38 62,54 34,54 fill #dff0d3
+  landscape island2 points 36,92 64,94 66,110 38,108 fill #dff0d3
+  landscape island3 points 104,174 146,172 148,188 106,190 fill #dff0d3
+  landscape island4 points 214,174 258,176 262,192 218,190 fill #dff0d3
+  tree t1 at 44,46 size 10
+  tree t2 at 52,102 size 9
+  tree t3 at 126,182 size 9
+  tree t4 at 238,184 size 9
+  car c1 at 40,74 size 14 rotate 0
+  car c2 at 42,128 size 14 rotate 0
+  car c3 at 118,186 size 14 rotate 88
+  car c4 at 154,184 size 14 rotate 88
+  car c5 at 222,186 size 14 rotate 88
+  car c6 at 286,156 size 14 rotate 8
+  entry mainDoor at 166,58 size 10 "Main entry"
+  pin transit at 210,-4 size 8 "Transit stop"
+  callout "Loading/service court" at 292,154 to 252,124
+  dim "320 ft frontage" from 0,-46 to 320,-46
+  north
+  scale 100
+  legend on
+---
+
+## What this shows
+
+This is a mall-scale marketing and leasing sketch: it communicates frontage, major tenant massing, surface parking fields, access drives, pedestrian connection, and service court without pretending to be a civil parking-count drawing.

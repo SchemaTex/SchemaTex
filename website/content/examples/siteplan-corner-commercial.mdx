@@ -1,0 +1,44 @@
+---
+title: Corner commercial site
+description: "A small commercial property sketch: corner lot with two roads, retail footprint, parking field, driveway entries, frontage line, landscape strip, trees, and callouts."
+diagram: siteplan
+standard: Planning/zoning site-plan convention · commercial proposal sketch
+industry: [commercial-real-estate, retail]
+persona: For the broker pitching a corner retail site
+complexity: 3
+tags: [siteplan, commercial, corner-lot, parking, road-frontage]
+featured: true
+relatedLink:
+  label: Site plan syntax
+  href: /docs/siteplan
+status: published
+dsl: |
+  siteplan "Corner Retail Site" unit ft
+  parcel lot points 0,0 150,0 150,105 0,120
+  road main "Main Street" from -20,-18 to 170,-18 width 28
+  road oak "Oak Avenue" from -16,-18 to -16,138 width 24
+  frontage mainFront from 0,0 to 150,0
+  frontage sideFront from 0,0 to 0,120
+  setback front from 10,12 to 140,12
+  landscape strip points 10,12 140,12 140,26 10,26 fill #dff0d3
+  structure retail "Retail Building" points 42,35 126,35 126,70 42,70
+  parking stalls points 30,76 142,70 142,100 28,108 fill #eceff3
+  driveway entry1 from 82,0 to 82,32 width 18
+  driveway entry2 from 0,72 to 30,72 width 16
+  pin sign at 18,18 size 8 "Monument sign"
+  tree t1 at 20,38 size 9
+  tree t2 at 136,22 size 9
+  tree t3 at 136,94 size 9
+  car c1 at 54,90 size 14 rotate 86
+  car c2 at 74,89 size 14 rotate 86
+  car c3 at 94,88 size 14 rotate 86
+  callout "Dual access" at 24,56 to 0,72
+  dim "150 ft" from 0,-36 to 150,-36
+  north
+  scale 50
+  legend on
+---
+
+## What this shows
+
+This example is about selling the site relationship: corner exposure, two-road access, a retail footprint, and visible parking. `siteplan` keeps those exterior facts first instead of pretending to be an architectural floor plan.
