@@ -92,12 +92,12 @@ export interface SiteplanAst {
   dimensions: SiteplanDimension[];
 }
 
-export interface SiteplanLayoutPolygon extends SiteplanPolygon {}
-export interface SiteplanLayoutPath extends SiteplanPath {}
-export interface SiteplanLayoutLine extends SiteplanLine {}
-export interface SiteplanLayoutMarker extends SiteplanMarker {}
-export interface SiteplanLayoutCallout extends SiteplanCallout {}
-export interface SiteplanLayoutDimension extends SiteplanDimension {}
+export type SiteplanLayoutPolygon = SiteplanPolygon;
+export type SiteplanLayoutPath = SiteplanPath;
+export type SiteplanLayoutLine = SiteplanLine;
+export type SiteplanLayoutMarker = SiteplanMarker;
+export type SiteplanLayoutCallout = SiteplanCallout;
+export type SiteplanLayoutDimension = SiteplanDimension;
 
 export interface SiteplanLegendItem {
   key: string;
