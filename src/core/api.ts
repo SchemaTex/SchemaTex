@@ -1,5 +1,9 @@
 import type { DiagramPlugin, RenderConfig } from "./types";
-import { parseFrontmatter } from "./dsl-preprocess";
+import {
+  parseFrontmatter,
+  stripComments,
+  UNIVERSAL_COMMENT_MARKERS,
+} from "./dsl-preprocess";
 import {
   diagnosticFromError,
   renderDiagnosticSvg,
@@ -234,7 +238,14 @@ function normalizeHeader(text: string, type: string): string {
 }
 
 function preprocess(text: string): string {
-  const { data, body } = parseFrontmatter(stripCodeFences(text));
+  const { data, body: rawBody } = parseFrontmatter(stripCodeFences(text));
+  // Universal comment pass: `%%` (Mermaid-style) is stripped for EVERY diagram
+  // here, so it works consistently no matter what each parser's own lexer
+  // supports. `%%` never begins valid content in any schematex grammar, so this
+  // is collision-free; line positions are preserved to keep diagnostic line
+  // numbers stable. Diagram-native markers (`#` shell, `*` SPICE, …) are still
+  // handled inside each parser.
+  const body = stripComments(rawBody, UNIVERSAL_COMMENT_MARKERS);
   if (!data.title) return body;
   // Strip the title here — `data.title` was already unquoted by parseFrontmatter.
   const safeTitle = data.title.replace(/"/g, '\\"');
