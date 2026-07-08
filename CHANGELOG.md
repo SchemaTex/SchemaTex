@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.9.13] — 2026-07-08
+
+### Fixed — consistent comment handling across all diagram types
+
+Comment stripping was implemented ad-hoc inside each diagram's parser, so which marker counted as a comment was an accident of that diagram's lexer rather than a designed contract. A probe across all 50 types found no marker worked everywhere: `#` was accepted by 47/50 but is *content* in `mindmap`/`flowchart`/`gitgraph`; `%%` by only 29/50; `*` by 22/50. Driven by ChatDiagram production data — a model that faithfully wrote SPICE-style `*` comments to organize a `circuit` netlist had its entire diagram rejected with `Invalid component id: "*"`, because `circuit` advertises "SPICE-style netlist" but its parser only stripped `#`.
+
+- **Universal `%%` comments.** Mermaid-style `%%` line and inline comments are now stripped once in the shared preprocess pass, so **every** diagram type accepts them regardless of its own lexer. `%%` never begins valid content in any schematex grammar, so this is collision-free; comment-only lines are blanked (not removed) so diagnostic line numbers stay stable.
+- **`circuit` honors SPICE `*` comments.** A line whose first non-blank character is `*` is now treated as a full-line comment, matching the SPICE-style syntax the grammar advertises. `*` can never begin a valid component id, so this is unambiguous. (`#` inline comments continue to work.)
+- **`stripLineComment(line, markers?)`** now takes an optional marker set (default `%%`/`//`/`#`, unchanged for existing callers); the shared pass narrows it to `%%` only, so `#`/`//` stay content where diagrams use them (e.g. `#` headings in `mindmap`).
+
+Scope: this establishes the one universal marker and fixes the confirmed `circuit` advertised-vs-accepted bug. Folding each diagram's remaining native markers into a declared per-diagram policy is a follow-up. Added a conformance test that injects a `%%` comment into every diagram's bundled example and asserts it still validates.
+
+---
+
 ## [0.9.12] — 2026-06-30
 
 ### Added — `siteplan`: parcel, road, driveway, and property-layout diagrams
