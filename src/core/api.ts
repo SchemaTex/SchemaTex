@@ -237,6 +237,48 @@ function normalizeHeader(text: string, type: string): string {
   return text;
 }
 
+/**
+ * Header keyword(s) to try when a type-forced body only parses once a header is
+ * prepended. Most engines use the bare type name as a valid header; erd's
+ * Mermaid dialect needs `erDiagram` (bare `erd` selects the native table/ref
+ * parser, which rejects crow's-foot relationship lines).
+ */
+function headerCandidates(type: string): string[] {
+  if (type === "erd") return ["erDiagram", "erd"];
+  return [type];
+}
+
+/**
+ * When the diagram type is explicitly known (forced via `config.type`) the
+ * header line is redundant — the caller already told us the type. LLMs, having
+ * declared the engine in the artifact tag, routinely omit it and emit pure
+ * content (`CEO\n  VP…`, `Customer ||--o{ Order…`). If the body does not
+ * detect as this type, prepend the canonical header and keep it **only if the
+ * result parses cleanly** — so a genuine syntax error is never masked (a body
+ * that is malformed for other reasons still fails with its real error).
+ *
+ * Headerless grammars (mindmap's `# Title`) already `detect()` true, so they
+ * short-circuit and are never touched.
+ */
+function recoverHeader(
+  plugin: DiagramPlugin,
+  prepared: string,
+  forced: boolean
+): string {
+  if (!forced || !plugin.parse || plugin.detect(prepared)) return prepared;
+  for (const hdr of headerCandidates(plugin.type)) {
+    const candidate = `${hdr}\n${prepared}`;
+    if (!plugin.detect(candidate)) continue;
+    try {
+      plugin.parse(candidate);
+      return candidate;
+    } catch {
+      // this header candidate doesn't resolve the body — try the next
+    }
+  }
+  return prepared;
+}
+
 function preprocess(text: string): string {
   const { data, body: rawBody } = parseFrontmatter(stripCodeFences(text));
   // Universal comment pass: `%%` (Mermaid-style) is stripped for EVERY diagram
@@ -276,11 +318,14 @@ function preprocess(text: string): string {
 export function parse(text: string, config?: SchematexConfig): unknown {
   const prepared0 = preprocess(text);
   const plugin = detectPlugin(prepared0, config);
-  const prepared = normalizeHeader(prepared0, plugin.type);
-  if (plugin.parse) return plugin.parse(prepared);
-  throw new Error(
-    `Diagram type '${plugin.type}' does not yet expose a parse() method.`
-  );
+  if (!plugin.parse) {
+    throw new Error(
+      `Diagram type '${plugin.type}' does not yet expose a parse() method.`
+    );
+  }
+  const forced = config?.type != null && plugin.type === config.type;
+  const prepared = recoverHeader(plugin, normalizeHeader(prepared0, plugin.type), forced);
+  return plugin.parse(prepared);
 }
 
 export function parseResult(
@@ -296,7 +341,8 @@ export function parseResult(
         `Diagram type '${plugin.type}' does not yet expose a parse() method.`
       );
     }
-    const prepared = normalizeHeader(prepared0, plugin.type);
+    const forced = config?.type != null && plugin.type === config.type;
+    const prepared = recoverHeader(plugin, normalizeHeader(prepared0, plugin.type), forced);
     const ast = plugin.parse(prepared);
     const diagnostics = runLint(plugin, prepared);
     return {
@@ -334,7 +380,8 @@ export function render(text: string, config?: SchematexConfig): string {
 
   const prepared0 = preprocess(text);
   const plugin = detectPlugin(prepared0, config);
-  const prepared = normalizeHeader(prepared0, plugin.type);
+  const forced = config?.type != null && plugin.type === config.type;
+  const prepared = recoverHeader(plugin, normalizeHeader(prepared0, plugin.type), forced);
   return renderWithPlugin(prepared, plugin, config);
 }
 
@@ -346,7 +393,8 @@ export function renderResult(
   try {
     const prepared0 = preprocess(text);
     plugin = detectPlugin(prepared0, config);
-    const prepared = normalizeHeader(prepared0, plugin.type);
+    const forced = config?.type != null && plugin.type === config.type;
+    const prepared = recoverHeader(plugin, normalizeHeader(prepared0, plugin.type), forced);
     const svg = renderWithPlugin(prepared, plugin, config);
     const diagnostics = runLint(plugin, prepared);
     return {

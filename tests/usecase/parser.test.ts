@@ -207,4 +207,11 @@ A -- U3
 `);
     expect(ast.warnings.some((w) => /system.*omitted/i.test(w))).toBe(true);
   });
+
+  it("gives non-ASCII actor names distinct ids (no `__` collision)", () => {
+    // Korean actors used to sanitize to `__` and collide with
+    // "identifier '__' already declared".
+    const ast = parseUsecase(`usecase\nactor: 순원\nactor: 순장`);
+    expect(ast.actors.map((a) => a.id)).toEqual(["순원", "순장"]);
+  });
 });

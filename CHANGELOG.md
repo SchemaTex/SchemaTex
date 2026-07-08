@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.9.15] — 2026-07-08
+
+### Fixed — the header line is optional when the diagram type is already known
+
+When a caller passes `config.type` (always the case for an AI artifact whose `engine="…"` tag names the type), the leading header line is redundant — the type is already known. But every per-diagram parser still *required* it and hard-failed when it was missing. LLMs, having just declared the engine in the artifact tag, routinely omit the header and emit pure content (`CEO\n  VP Sales…`, `Customer ||--o{ Order…`), losing the whole diagram.
+
+- **Header recovery.** When the type is forced and the body does not `detect()` as that type, the canonical header is prepended and kept **only if the result parses cleanly**. A genuinely malformed body (a real syntax error, an unsupported node form) still fails with its true error — recovery never masks it.
+- **Dialect-aware.** erd recovers with `erDiagram` (the Mermaid crow's-foot dialect), not bare `erd` (which selects the native `table`/`ref` parser). Other engines use the bare type name.
+- Headerless-by-design grammars (mindmap's `# Title`) already `detect()` true, so they short-circuit untouched. Applies uniformly to `parse`, `parseResult`, `render`, and `renderResult`.
+
+### Fixed — `usecase` non-ASCII actor names + `network` device-kind synonyms
+
+Two more gaps surfaced by ChatDiagram production evals across high-traffic engines.
+
+- **`usecase` — non-ASCII auto-generated ids.** When an actor/use-case had no explicit `as <id>`, the synthetic id stripped every non-`[A-Za-z0-9_]` character to `_`. Korean actors (`순원`, `순장`) all collapsed to `__` and collided (`identifier '__' already declared`) — a recurring production failure for CJK use-case diagrams. Ids now preserve Unicode letters/digits, so non-ASCII names stay distinct.
+- **`network` — device-kind synonyms.** Added common everyday aliases so a valid topology doesn't fail on a vocabulary gap: `webserver`/`mailserver`/`dns`/`dhcp`/`ntp`/`database`/`db`/`dbserver`/`vm`/`host`/`hypervisor`/`activedirectory`/`domaincontroller` → `server`, `desktop` → `pc`, `smartphone`/`tablet` → `mobile`, `accesspoint`/`wap` → `ap`, `hub`/`bridge`/`l2switch` → `switch`, `ngfw`/`utm` → `firewall`, `mfp` → `printer`.
+
+---
+
 ## [0.9.14] — 2026-07-08
 
 ### Fixed — accept forms the model reasonably writes (`erd` titles, floorplan furniture synonyms)
