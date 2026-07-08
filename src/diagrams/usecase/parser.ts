@@ -439,10 +439,13 @@ function parseNote(ln: RawLine, state: ParserState): boolean {
 }
 
 function defaultIdFor(name: string): string {
-  // Convert quoted name with spaces into a synthetic id by stripping non-word chars.
-  // Used when the user omits `as <id>`.
-  const safe = name.replace(/[^A-Za-z0-9_]/g, "_");
-  return /^[A-Za-z_]/.test(safe) ? safe : "_" + safe;
+  // Convert a quoted name into a synthetic id when the user omits `as <id>`.
+  // Preserve Unicode letters/digits so non-ASCII names stay distinct — Korean
+  // actors like `순원` / `순장` used to collapse to `__` and collide with
+  // "identifier '__' already declared". Only characters that can't appear in an
+  // identifier are replaced with `_`.
+  const safe = name.replace(/[^\p{L}\p{N}_]/gu, "_");
+  return /^[\p{L}_]/u.test(safe) ? safe : "_" + safe;
 }
 
 function parseRelation(ln: RawLine, state: ParserState): boolean {

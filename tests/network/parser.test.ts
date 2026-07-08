@@ -132,4 +132,19 @@ describe("network parser — validation", () => {
   it("throws on an unclosed group block", () => {
     expect(() => parseNetwork('network\n  site hq "HQ" {\n  router r1')).toThrow(/unclosed group/);
   });
+
+  it("normalizes common device-kind synonyms to canonical kinds", () => {
+    const ast = parseNetwork(`network
+  webserver web1 "Web"
+  dns dns1
+  desktop d1
+  ngfw fw1
+  smartphone m1`);
+    const kind = (id: string) => ast.devices.find((d) => d.id === id)!.kind;
+    expect(kind("web1")).toBe("server");
+    expect(kind("dns1")).toBe("server");
+    expect(kind("d1")).toBe("pc");
+    expect(kind("fw1")).toBe("firewall");
+    expect(kind("m1")).toBe("mobile");
+  });
 });

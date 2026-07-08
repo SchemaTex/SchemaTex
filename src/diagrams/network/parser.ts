@@ -45,6 +45,32 @@ const KIND_ALIASES: Record<string, DeviceKind> = {
   decoder: "encoder",
   videowall: "monitor",
   segment: "lan",
+  // Common everyday synonyms a model reaches for. A specific server role still
+  // renders as a generic `server` (with its label) instead of hard-failing.
+  webserver: "server",
+  mailserver: "server",
+  dns: "server",
+  dhcp: "server",
+  ntp: "server",
+  database: "server",
+  dbserver: "server",
+  db: "server",
+  vm: "server",
+  host: "server",
+  hypervisor: "server",
+  activedirectory: "server",
+  domaincontroller: "server",
+  desktop: "pc",
+  smartphone: "mobile",
+  tablet: "mobile",
+  accesspoint: "ap",
+  wap: "ap",
+  hub: "switch",
+  bridge: "switch",
+  l2switch: "switch",
+  ngfw: "firewall",
+  utm: "firewall",
+  mfp: "printer",
 };
 
 const GROUP_KINDS = new Set<string>(["site", "building", "campus", "rack", "subnet", "vlan", "zone", "dmz"]);
