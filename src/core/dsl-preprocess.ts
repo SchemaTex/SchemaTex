@@ -97,13 +97,32 @@ export function parseFrontmatter(text: string): DslFrontmatter {
   return { data, body };
 }
 
+/** A line-comment marker. Each begins a "rest of line is a comment" region. */
+export type CommentMarker = "%%" | "//" | "#";
+
+/**
+ * The historical default marker set. Kept as the default so existing callers
+ * (`isBlankOrComment`, `firstContentLine`, and the handful of per-diagram
+ * parsers that import `stripLineComment` directly) are unchanged.
+ */
+export const DEFAULT_COMMENT_MARKERS: readonly CommentMarker[] = ["%%", "//", "#"];
+
+/**
+ * `%%` is the one marker that never begins valid content in ANY schematex
+ * grammar (it is Mermaid's comment style). It is stripped for every diagram in
+ * the shared preprocess pass, giving one universal, learnable comment syntax
+ * regardless of a diagram's own lexer. Per-diagram native markers (`#` shell,
+ * `*` SPICE, …) are still honored by each parser on top of this.
+ */
+export const UNIVERSAL_COMMENT_MARKERS: readonly CommentMarker[] = ["%%"];
+
 /**
  * Strip an inline comment from a line.
  *
- * Recognized markers (in order of precedence):
- *   - `%%` — Mermaid's comment style
- *   - `//` — C-style line comment
- *   - `#`  — shell/python style
+ * Recognized markers default to {@link DEFAULT_COMMENT_MARKERS} (`%%`, `//`,
+ * `#`) but can be narrowed by the caller — the shared preprocess pass passes
+ * {@link UNIVERSAL_COMMENT_MARKERS} so it only removes `%%`, leaving `#`/`//`
+ * to diagrams where they are content (e.g. `#` headings in mindmap).
  *
  * Markers inside ASCII double-quoted regions are preserved verbatim so URLs
  * (`"https://..."`) and CSS-color values (`"#ff0"`) survive. Smart-quoted
@@ -111,7 +130,10 @@ export function parseFrontmatter(text: string): DslFrontmatter {
  * and the cost of full Unicode quote tracking for every line isn't worth
  * the protection.
  */
-export function stripLineComment(line: string): string {
+export function stripLineComment(
+  line: string,
+  markers: readonly CommentMarker[] = DEFAULT_COMMENT_MARKERS,
+): string {
   let inQuote = false;
   for (let i = 0; i < line.length; i++) {
     const ch = line[i]!;
@@ -122,11 +144,27 @@ export function stripLineComment(line: string): string {
       continue;
     }
     if (inQuote) continue;
-    if (ch === "%" && line[i + 1] === "%") return line.slice(0, i);
-    if (ch === "/" && line[i + 1] === "/") return line.slice(0, i);
-    if (ch === "#") return line.slice(0, i);
+    for (const marker of markers) {
+      if (line.startsWith(marker, i)) return line.slice(0, i);
+    }
   }
   return line;
+}
+
+/**
+ * Strip comments from every line of a block, preserving line positions:
+ * comment-only lines become blank rather than being removed, so downstream
+ * parser diagnostics keep stable line numbers. Used by the shared preprocess
+ * pass with {@link UNIVERSAL_COMMENT_MARKERS}.
+ */
+export function stripComments(
+  text: string,
+  markers: readonly CommentMarker[] = DEFAULT_COMMENT_MARKERS,
+): string {
+  return text
+    .split("\n")
+    .map((line) => stripLineComment(line, markers))
+    .join("\n");
 }
 
 /** Returns true if the trimmed line is blank or a pure comment. */
