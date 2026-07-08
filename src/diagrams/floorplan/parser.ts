@@ -125,6 +125,22 @@ const FURNITURE_ALIASES: Record<string, FurnitureType> = {
   "breaker-panel": "electrical-panel",
   db: "distribution-board",
   "consumer-unit": "distribution-board",
+  // Common everyday synonyms an LLM reaches for that map cleanly onto an
+  // existing type. Keeps a valid layout from failing on a vocabulary gap.
+  "console-table": "side-table",
+  console: "side-table",
+  "end-table": "side-table",
+  couch: "sofa",
+  settee: "loveseat",
+  "tv-console": "tv-stand",
+  "media-console": "tv-stand",
+  "entertainment-center": "tv-stand",
+  refrigerator: "fridge",
+  cooktop: "stove",
+  stovetop: "stove",
+  armoire: "wardrobe",
+  wc: "toilet",
+  "water-closet": "toilet",
 };
 
 function parseFurnitureType(t: Tok | undefined, ln: number): FurnitureType {

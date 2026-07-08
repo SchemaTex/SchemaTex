@@ -157,6 +157,21 @@ furniture consumer-unit in kitchen at 3.2,0.1 size 0.5
     expect(ast.furniture[2]!.size).toEqual({ w: 0.5, h: 0.5 });
   });
 
+  it("normalizes common everyday furniture synonyms", () => {
+    const ast = parseFloorplan(`floorplan
+room living at 0,0 size 6x4
+furniture console-table "Console" in living at 0.2,0.2 size 1.2x0.4
+furniture couch in living at 1,2
+furniture refrigerator in living at 5,0.2
+furniture tv-console in living at 0.2,3`);
+    expect(ast.furniture.map((f) => f.type)).toEqual([
+      "side-table",
+      "sofa",
+      "fridge",
+      "tv-stand",
+    ]);
+  });
+
   it("parses grid array with rows/cols/count/area/itemsize", () => {
     const ast = parseFloorplan(`floorplan
 room class at 0,0 size 32x26

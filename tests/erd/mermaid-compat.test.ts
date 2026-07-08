@@ -38,4 +38,25 @@ table User { id int PK; email varchar }`);
     expect(ast.entities[0]!.attributes[0]!.name).toBe("id");
     expect(ast.entities[0]!.attributes[0]!.type).toBe("int");
   });
+
+  test("`title:`/`direction:` header attributes are accepted under erDiagram", () => {
+    const ast = parseErd(`erDiagram
+title: "Movie Rental Database"
+direction: TB
+CUSTOMER ||--o{ RENTAL : places`);
+    expect(ast.title).toBe("Movie Rental Database");
+    expect(ast.direction).toBe("TB");
+    expect(ast.entities.map((e) => e.id).sort()).toEqual(["CUSTOMER", "RENTAL"]);
+  });
+
+  test("a genuinely malformed line under erDiagram still throws", () => {
+    // `title:` is accepted, but a trailing stray `}` (over-closed) is not —
+    // we widened the header vocabulary, not brace balancing.
+    expect(() =>
+      parseErd(`erDiagram
+A { int id PK }
+A ||--o{ B : x
+}`),
+    ).toThrow();
+  });
 });
