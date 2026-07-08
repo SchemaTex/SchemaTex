@@ -242,6 +242,14 @@ function parseMermaidErd(lines: RawLine[]): ErdAst {
   const entityMap = new Map<string, ErdEntity>();
   const order: string[] = [];
   const refs: ErdRef[] = [];
+  // Header attributes (`title:`, `direction:`, `notation:`) are accepted here
+  // too — they are unambiguous `key: value` lines that can't be confused with
+  // an entity block or a relationship, and an LLM naturally reaches for
+  // `title: "..."` when it uses the Mermaid `erDiagram` header. Rejecting them
+  // used to fail an otherwise-valid diagram.
+  let title: string | undefined;
+  let direction: "LR" | "TB" = "LR";
+  let notation: ErdNotation = "crowsfoot";
 
   const ensure = (id: string): ErdEntity => {
     let e = entityMap.get(id);
@@ -257,6 +265,37 @@ function parseMermaidErd(lines: RawLine[]): ErdAst {
   while (i < lines.length) {
     const t = lines[i]!.text;
     const ln = lines[i]!.lineNumber;
+
+    // Header attributes — order-insensitive, same forms the native `erd`
+    // header accepts. `title:` maps to the diagram title; `direction:`/
+    // `notation:` are validated identically.
+    const lower = t.toLowerCase();
+    if (lower.startsWith("title:")) {
+      title = unquote(t.slice("title:".length).trim());
+      i++;
+      continue;
+    }
+    if (lower.startsWith("direction:")) {
+      const v = t.slice("direction:".length).trim().toUpperCase();
+      if (v !== "LR" && v !== "TB") {
+        throw new ErdParseError(`Unknown direction '${v}'. Use LR or TB.`, ln);
+      }
+      direction = v;
+      i++;
+      continue;
+    }
+    if (lower.startsWith("notation:")) {
+      const v = t.slice("notation:".length).trim().toLowerCase();
+      if (v !== "crowsfoot") {
+        throw new ErdParseError(
+          `notation '${v}' is documented but not yet implemented in v0.1; use 'crowsfoot'.`,
+          ln,
+        );
+      }
+      notation = v;
+      i++;
+      continue;
+    }
 
     // Entity block: `NAME {` (multi-line) or `NAME { ... }` (inline).
     const inlineBlock = new RegExp(`^(${MERMAID_NAME.source})\\s*\\{\\s*(.*?)\\s*\\}$`).exec(t);
@@ -309,8 +348,9 @@ function parseMermaidErd(lines: RawLine[]): ErdAst {
 
   return {
     type: "erd",
-    notation: "crowsfoot",
-    direction: "LR",
+    notation,
+    direction,
+    title,
     entities: order.map((id) => entityMap.get(id)!),
     refs,
   };

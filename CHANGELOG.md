@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.9.14] — 2026-07-08
+
+### Fixed — accept forms the model reasonably writes (`erd` titles, floorplan furniture synonyms)
+
+Two more "advertised-but-rejected" gaps found via ChatDiagram production evals, in the same spirit as 0.9.13 — the parser rejected valid, standard-looking input a capable model naturally produces.
+
+- **`erd` — `title:`/`direction:`/`notation:` under the Mermaid `erDiagram` header.** The native `erd` header already accepted these attributes, but the Mermaid `erDiagram` paste-compat path hard-failed on them (`Unrecognized erDiagram line: title: "…"`) — and it didn't even carry a title. A model that writes `erDiagram` + `title: "…"` (mixing the two dialects' most natural forms) lost the whole diagram. The `erDiagram` path now accepts the same header attributes and maps `title:` to the diagram title. Genuinely malformed lines (e.g. a trailing over-closing `}`) still throw.
+- **`floorplan` — common furniture synonyms.** Added aliases for everyday words that map cleanly onto an existing type: `console-table`/`console`/`end-table` → `side-table`, `couch` → `sofa`, `settee` → `loveseat`, `tv-console`/`media-console`/`entertainment-center` → `tv-stand`, `refrigerator` → `fridge`, `cooktop`/`stovetop` → `stove`, `armoire` → `wardrobe`, `wc`/`water-closet` → `toilet`. A valid layout no longer fails on a vocabulary gap.
+
+---
+
 ## [0.9.13] — 2026-07-08
 
 ### Fixed — consistent comment handling across all diagram types
