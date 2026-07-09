@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.9.18] — 2026-07-09
+
+### Fixed — `circuit` silently dropped unknown-type lines + rejected `;` comments (production failure)
+
+Pulling a real failing MyMap production map (a home-wiring circuit edited over several turns) surfaced two `circuit` gaps that together turned a good first diagram into a near-empty one, while every validator reported success:
+
+- **Positional mode silently dropped unrecognized component lines.** A model that wrote SPICE-style connectivity *without* the `netlist` header — e.g. `breaker CB1 (L L1) 16A`, `rcd RCD1 …`, `switch SW1 …` — had each unknown-type line silently discarded, rendering a schematic with almost nothing on it. Crucially `validateDsl` and `renderDsl` still returned `ok: true` with zero warnings, so no downstream check (in-loop `validateDsl`, or a caller's post-generation gate) could catch it. An identifier-led line whose head is not a known component type now raises `Unknown component type: "<x>"` with a hint to add the `netlist` header — matching the `id: type` colon form and every other diagram's unknown-kind handling. Known types and the netlist path are unchanged.
+- **`;` comments hard-failed in netlist mode.** The grammar advertises "SPICE-style netlist", and `;` is SPICE's in-line comment marker, so models routinely write `; note` lines. These failed with `Invalid component id: ";"`. `;` is now stripped as a comment (full-line and trailing) in both netlist and positional circuit modes, alongside the existing `*`, `#`, and `%%` markers. `;` stays circuit-local — it is **not** promoted to a universal marker, because other diagram types (e.g. `network`) use `;` as a statement separator.
+
+---
+
 ## [0.9.16] — 2026-07-09
 
 ### Fixed — `genogram` relationship + attribute gaps (top production failure)

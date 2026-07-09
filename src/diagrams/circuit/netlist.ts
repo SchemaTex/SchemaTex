@@ -173,11 +173,14 @@ export function parseNetlist(
     // SPICE full-line comment: a line whose first non-blank char is `*`. The
     // grammar advertises "SPICE-style netlist", and `*` is SPICE's canonical
     // full-line comment marker; it can never begin a valid component id, so
-    // skipping these lines is unambiguous. (`#` inline comments — a schematex
-    // extension — are stripped just below; `%%` is handled in the shared
-    // preprocess pass.)
+    // skipping these lines is unambiguous. (`#` and `;` inline comments are
+    // stripped just below; `%%` is handled in the shared preprocess pass.)
     if (/^\s*\*/.test(raw)) continue;
-    const stripped = raw.replace(/#.*$/, "").trim();
+    // Strip inline comments. `#` is the schematex extension; `;` is SPICE's
+    // in-line comment marker (netlist mode has no `;` statement syntax, so it is
+    // unambiguous here) — models with a strong SPICE prior write `; note` lines,
+    // which used to hard-fail as `Invalid component id: ";"`.
+    const stripped = raw.replace(/[#;].*$/, "").trim();
     if (!stripped) continue;
 
     const tokens = tokenize(stripped);

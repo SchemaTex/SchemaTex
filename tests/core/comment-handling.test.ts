@@ -65,4 +65,21 @@ describe("circuit honors SPICE-style comments", () => {
     const dsl = `circuit "T" netlist\n%% power section\nV1 vcc 0 12V\nR1 vcc 0 10k`;
     expect(validateDsl("circuit", dsl).ok).toBe(true);
   });
+
+  test("`;` full-line comment is ignored (SPICE in-line marker)", () => {
+    // A model with a SPICE prior writes `; note` lines; these used to hard-fail
+    // as `Invalid component id: ";"`.
+    const dsl = `circuit "T" netlist\n; power section\nV1 vcc 0 12V\n; the load\nR1 vcc 0 10k`;
+    expect(validateDsl("circuit", dsl).ok).toBe(true);
+  });
+
+  test("`;` inline (trailing) comment is stripped", () => {
+    const dsl = `circuit "T" netlist\nV1 vcc 0 12V ; supply\nR1 vcc 0 10k ; load`;
+    expect(validateDsl("circuit", dsl).ok).toBe(true);
+  });
+
+  test("`;` comment works in positional mode too", () => {
+    const dsl = `circuit "control"\n; disconnect + fuse\nQ1: disconnect_switch right\nF1: fuse right`;
+    expect(validateDsl("circuit", dsl).ok).toBe(true);
+  });
 });
