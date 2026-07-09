@@ -191,14 +191,14 @@ function parseAttrs(rest: string): { direction?: CircuitDirection; attrs: Record
 export function parseCircuit(text: string): CircuitAST {
   const rawLines = text.split("\n");
   const firstMeaningful = rawLines
-    .map((l) => l.replace(/#.*$/, "").trim())
+    .map((l) => l.replace(/[#;].*$/, "").trim())
     .find((l) => l.length > 0) ?? "";
 
   if (/^circuit\b.*\bnetlist\s*$/i.test(firstMeaningful)) {
     const netlistTitle = matchQuotedTitle(firstMeaningful);
     let headerIdx = -1;
     for (let i = 0; i < rawLines.length; i++) {
-      const s = rawLines[i].replace(/#.*$/, "").trim();
+      const s = rawLines[i].replace(/[#;].*$/, "").trim();
       if (s.length > 0) {
         headerIdx = i;
         break;
@@ -219,7 +219,7 @@ export function parseCircuit(text: string): CircuitAST {
   const mkId = (prefix: string) => `${prefix}_${autoId++}`;
 
   for (const rawLine of lines) {
-    const stripped = rawLine.replace(/#.*$/, "").trim();
+    const stripped = rawLine.replace(/[#;].*$/, "").trim();
     if (!stripped) continue;
 
     // header
@@ -335,8 +335,20 @@ export function parseCircuit(text: string): CircuitAST {
       const typeStr = bareMatch[1];
       const norm = normalizeType(typeStr);
       if (!norm) {
-        // ignore unknown bare tokens rather than throwing — keeps DSL forgiving
-        continue;
+        // An identifier-led line whose head is not a known component type is
+        // almost always a botched declaration — a typo'd type, or (the common
+        // one) netlist-style connectivity written WITHOUT the `netlist` header,
+        // e.g. `breaker CB1 (L L1) 16A`. Silently dropping such lines used to
+        // render a misleadingly near-empty schematic that still reported
+        // success, so nothing downstream (validateDsl / the caller's post-gen
+        // check) could catch it. Surface it as a real error instead — matching
+        // the `id: type` colon form above and every other diagram's unknown-kind
+        // handling.
+        throw new CircuitParseError(
+          `Unknown component type: "${typeStr}". ` +
+            `For SPICE-style connectivity (Id net1 net2 [value]), start the diagram with the ` +
+            `\`netlist\` header: circuit "..." netlist.`
+        );
       }
       const rest = bareMatch[2] ?? "";
       const parsed = parseAttrs(rest);
