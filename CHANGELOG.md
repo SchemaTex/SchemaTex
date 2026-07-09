@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.9.16] — 2026-07-09
+
+### Fixed — `genogram` relationship + attribute gaps (top production failure)
+
+`genogram` was the #1 remaining source of invalid artifacts in ChatDiagram production. Pulling the real failing DSL surfaced four gaps, all "the grammar advertises it / the model reasonably writes it, but the parser rejects it":
+
+- **`~x~` divorced couple operator.** The grammar's keyword list and examples advertise `~x~` for divorce, but the parser only recognized the ASCII alias `-x-` — so `a ~x~ b` failed with `Unknown individual 'x~ b'`. This was the single most common genogram failure (Spanish, Hebrew, Chinese, English prompts alike). `~x~` is now accepted; `-x-` remains a valid alias.
+- **Non-ASCII condition labels.** The `conditions: name(fill)` label was matched with an ASCII-only regex, so `hipertensión(full)` or `右側半癱(half-right)` failed with `Invalid condition format` even though the fill was valid. Labels may now be any Unicode text.
+- **Status synonyms.** `stillbirth` → `stillborn`, plus `miscarried`/`aborted`/`died`/`dead` → their canonical tokens.
+- **Bare age vs year.** A bare 1–3 digit number in `[...]` (e.g. `[male, 28]`) is now read as an age; a 4-digit number remains a birth year.
+
+---
+
 ## [0.9.15] — 2026-07-08
 
 ### Fixed — the header line is optional when the diagram type is already known

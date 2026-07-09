@@ -309,3 +309,29 @@ genogram
     expect(ast.relationships).toHaveLength(1);
   });
 });
+
+describe("genogram — production-driven leniency (0.9.16)", () => {
+  test("`~x~` divorced operator (the grammar-advertised form) parses", () => {
+    const ast = parseGenogram(`genogram\na [male]\nb [female]\na ~x~ b "div. 2010"`);
+    expect(ast.relationships[0]!.type).toBe("divorced");
+    // `-x-` ASCII alias still works
+    expect(parseGenogram(`genogram\na [male]\nb [female]\na -x- b`).relationships[0]!.type).toBe("divorced");
+  });
+
+  test("condition labels may be non-ASCII (accented / CJK)", () => {
+    const es = parseGenogram(`genogram\np [female, conditions: hipertensión(full, #e74c3c)]`);
+    expect(es.individuals[0]!.conditions?.[0]).toMatchObject({ label: "hipertensión", fill: "full" });
+    const cjk = parseGenogram(`genogram\np [female, conditions: 右側半癱(half-right)]`);
+    expect(cjk.individuals[0]!.conditions?.[0]!.label).toBe("右側半癱");
+  });
+
+  test("status synonyms normalize (stillbirth → stillborn)", () => {
+    expect(parseGenogram(`genogram\np [male, stillbirth]`).individuals[0]!.status).toBe("stillborn");
+    expect(parseGenogram(`genogram\np [female, died]`).individuals[0]!.status).toBe("deceased");
+  });
+
+  test("a bare 1–3 digit number is an age; 4 digits is a year", () => {
+    expect(parseGenogram(`genogram\np [male, 28]`).individuals[0]!.age).toBe(28);
+    expect(parseGenogram(`genogram\np [male, 1955]`).individuals[0]!.birthYear).toBe(1955);
+  });
+});
