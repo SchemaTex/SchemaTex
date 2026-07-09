@@ -158,6 +158,10 @@ describe("futureswheel angular containment", () => {
 describe("futureswheel rendered SVG", () => {
   const svg = renderMindmap(THREE_RING);
 
+  test("does not bake in a full-canvas background", () => {
+    expect(svg).not.toMatch(/<rect x="0" y="0" width="[^"]+" height="[^"]+" fill="#ffffff"\/>/);
+  });
+
   test("nodes carry semantic mm-order-N classes by consequence order", () => {
     expect(svg).toContain("mm-order-0"); // central event
     expect(svg).toContain("mm-order-1"); // first-order consequences

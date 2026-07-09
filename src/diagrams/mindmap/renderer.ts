@@ -338,7 +338,6 @@ export function renderMindmapAST(
     [
       svgTitle(title),
       svgDesc(descLabel),
-      rect({ x: 0, y: 0, width: layout.width, height: layout.height, fill: theme.bg }),
       group({ class: "schematex-mindmap-rings", "aria-hidden": "true" }, ringSvgs),
       group({ class: "schematex-mindmap-edges", "aria-hidden": "true" }, edgeSvgs),
       group({ class: "schematex-mindmap-nodes" }, nodeSvgs),
