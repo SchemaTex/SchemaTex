@@ -29,6 +29,7 @@ export class ParseError extends Error {
 // Longer tokens MUST come first so e.g. `~/~` is not split as `~` + `/~`.
 const COUPLE_OPS: Array<{ token: string; type: RelationshipType }> = [
   { token: "~/~", type: "cohabiting-ended" },
+  { token: "~x~", type: "divorced" }, // the form the grammar advertises; `-x-` is the ASCII alias
   { token: "-//", type: "separated" }, // alias for -/-
   { token: "-x-", type: "divorced" },
   { token: "-/-", type: "separated" },
@@ -45,6 +46,17 @@ const VALID_STATUS = new Set([
   "miscarriage",
   "abortion",
 ]);
+// Everyday synonyms an LLM reaches for, mapped to the canonical status token.
+const STATUS_ALIASES: Record<string, string> = {
+  stillbirth: "stillborn",
+  stillbirths: "stillborn",
+  miscarried: "miscarriage",
+  miscarry: "miscarriage",
+  aborted: "abortion",
+  dead: "deceased",
+  died: "deceased",
+  decd: "deceased",
+};
 const SPECIAL_CHILD_PROPS = new Set([
   "adopted",
   "foster",
@@ -600,8 +612,8 @@ function buildIndividual(
 
     if (VALID_SEX.has(tokenLower)) {
       individual.sex = tokenLower as Individual["sex"];
-    } else if (VALID_STATUS.has(tokenLower)) {
-      individual.status = tokenLower as Individual["status"];
+    } else if (VALID_STATUS.has(tokenLower) || STATUS_ALIASES[tokenLower]) {
+      individual.status = (STATUS_ALIASES[tokenLower] ?? tokenLower) as Individual["status"];
     } else if (tokenLower === "index") {
       if (!individual.markers) individual.markers = [];
       individual.markers.push("index-person");
@@ -612,6 +624,10 @@ function buildIndividual(
     } else if (SPECIAL_CHILD_PROPS.has(tokenLower) || tokenLower === "guardian") {
       // Handled at caller level for relationships
       continue;
+    } else if (/^\d{1,3}$/.test(tokenLower)) {
+      // A bare 1–3 digit number is an age (a 4-digit number is a year); this is
+      // what a user means by `[male, 28]`.
+      individual.age = parseInt(token, 10);
     } else if (/^\d{4}$/.test(tokenLower)) {
       if (individual.birthYear !== undefined) {
         individual.deathYear = parseInt(token, 10);
@@ -704,7 +720,10 @@ function parseConditions(
   const conditions: Condition[] = [];
 
   for (const part of parts) {
-    const match = part.match(/^([a-zA-Z0-9_-]+)\(([^)]+)\)$/);
+    // Label is everything before the `(...)` — allow Unicode names (accented
+    // Spanish, CJK, etc.) instead of ASCII-only, which used to reject valid
+    // conditions like `hipertensión(full)` / `右側半癱(half-right)`.
+    const match = part.match(/^([^(]+)\(([^)]+)\)$/);
     if (!match) {
       throw new ParseError(
         `Invalid condition format '${part}'. Expected: name(fill) or name(fill, #color)`,
@@ -713,7 +732,8 @@ function parseConditions(
         lineText
       );
     }
-    const [, label, innerRaw] = match;
+    const label = match[1]!.trim();
+    const innerRaw = match[2]!;
     const innerParts = innerRaw.split(",").map((s) => s.trim());
     const fill = innerParts[0];
     const color = innerParts[1]; // optional
