@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.9.19] — 2026-07-09
+
+### Fixed — readable, electrically correct household-lighting schematics
+
+The generic circuit auto-layout treated small household AC circuits like arbitrary electronic netlists. That produced oversized rectangular return wires, crowded the mains-source label into the source symbol, and could represent a two-location stair light as ordinary SPST switches in series — a different circuit that cannot provide normal two-way control.
+
+- **Household AC layout.** A source, protection/control chain, and lighting load now read left to right on the live conductor, with neutral returning on a clear lower rail instead of wrapping around the top of the page.
+- **Correct two-way switching.** Two `switch_spdt` components sharing traveler nets render as facing changeover switches with separate parallel travelers. Either traveler declaration order is supported without creating an apparent crossing or short.
+- **Clear labels.** Labels stay above horizontal symbols and to the right of vertical symbols, so `V_mains`, values, and reverse-facing switch labels no longer overlap wires, symbols, or the SVG edge.
+- **Canonical lamp type.** `lamp` is now a first-class circuit component type; `type=lamp`, `type=light`, and `type=bulb` all select the lamp symbol. Household examples use `L1 ... type=lamp` rather than the misleading `RL1` designator.
+- **Public guidance and examples.** The circuit reference, AI generation profile, README, all nine localized website docs, and two new gallery examples now teach the same L/N and SPDT-traveler conventions.
+
+---
+
 ## [0.9.18] — 2026-07-09
 
 ### Fixed — `circuit` silently dropped unknown-type lines + rejected `;` comments (production failure)
