@@ -293,6 +293,7 @@ K2: relay_no right`} height={300} />
 | DSL 类型 | 说明 |
 |---|---|
 | `motor` | 圆形 + M |
+| `lamp` | 照明负载：圆形 + X（别名：`light`、`bulb`） |
 | `speaker` | 锥形 + 方框 |
 | `microphone` | 胶囊符号 |
 | `buzzer` | 压电蜂鸣器 |
@@ -464,6 +465,31 @@ Rb vcc b 100k
 Q1 c b e npn
 Re e 0 1k`} height={420} />
 
+### 4.5 家庭照明电路
+
+照明负载应明确写成 `type=lamp`，因为 SPICE 约定中，裸 `L` 前缀代表**电感**。电源使用清晰的 `live` / `neutral` 网络名；自动布局会把带保护与控制的火线路径放在上方，把零线回路放在下方。
+
+```text
+circuit "家庭单控照明" netlist
+V1 live neutral 220Vac type=acsource label="V_mains"
+F1 live protected 16A
+S1 protected switched type=switch_spst label="S1"
+L1 switched neutral type=lamp label="Lamp"
+```
+
+双控（楼梯灯）必须使用两个 SPDT 开关并共享两条 traveler 网络。把多个 SPST 开关简单串联会改变电路功能，无法实现正常双控。
+
+```text
+circuit "楼梯双控照明" netlist
+V1 live neutral 220Vac type=acsource label="V_mains"
+F1 live feed 16A
+S1 feed traveler_a traveler_b type=switch_spdt label="S1"
+S2 switched traveler_a traveler_b type=switch_spdt label="S2"
+L1 switched neutral type=lamp label="Lamp"
+```
+
+灯具使用 `L1`（或其他适合负载的标号）；只有元件确实是继电器或负载电阻时才使用 `RL1`。
+
 ---
 
 ## 5. 属性
@@ -603,6 +629,8 @@ Schematex 电路原理图遵循 **IEEE Std 315-1975 / ANSI Y32.2**（元件符�
 
 <RelatedExamples slugs={[
   'circuit-ce-amplifier',
+  'circuit-household-light',
+  'circuit-two-way-stair-light',
 ]} />
 
 ---

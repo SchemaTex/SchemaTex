@@ -261,7 +261,7 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
     header: 'circuit "Title" netlist',
     mode: "SPICE-style netlist (recommended for generation)",
     keywords:
-      'header: circuit "name" netlist · ID net1 net2 [value] [key=value …] · prefixes R(resistor) C(capacitor) L(inductor) D(diode) V(voltage_source) I(current_source) Q(BJT) M(MOSFET) J(jfet) S(switch) F(fuse) B(battery) K(relay) U/X(ic) W(wire) T(terminal) · ground nets 0/gnd/ground/earth/vss/agnd/dgnd · type= override · dir=(right|left|up|down) · pins="…" · positional mode (no netlist): id: type dir [label= value= at=x,y width= height= length=] · panel primitives: enclosure/cabinet/panel din_rail wire_duct plc terminal_block contactor relay_coil pilot_light selector_switch emergency_stop · wire right|left|up|down · at: id.pin or x,y · net NAME · ground vcc no_connect',
+      'header: circuit "name" netlist · ID net1 net2 [value] [key=value …] · prefixes R(resistor) C(capacitor) L(inductor) D(diode) V(voltage_source) I(current_source) Q(BJT) M(MOSFET) J(jfet) S(switch) F(fuse) B(battery) K(relay) U/X(ic) W(wire) T(terminal) · lamps/loads: L1 switched neutral type=lamp · two-way lighting: switch_spdt with traveler nets · ground nets 0/gnd/ground/earth/vss/agnd/dgnd · type= override · dir=(right|left|up|down) · pins="…" · positional mode (no netlist): id: type dir [label= value= at=x,y width= height= length=] · panel primitives: enclosure/cabinet/panel din_rail wire_duct plc terminal_block contactor relay_coil pilot_light selector_switch emergency_stop · wire right|left|up|down · at: id.pin or x,y · net NAME · ground vcc no_connect',
     forms: [
       'circuit "Bridge Rectifier Supply" netlist',
       "V1 ac1 ac2 12Vac",
@@ -276,12 +276,16 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
       "Always use netlist mode (`circuit \"name\" netlist`). Each line is one component; no cursor state to track.",
       "Two components sharing a net name are wired together. Ground is `0`, `GND`, or an alias (`AGND`, `VSS`, `earth`); all normalise to one GND rail.",
       "The id first letter sets the type (R=resistor, C=capacitor, L=inductor, D=diode, V=voltage_source, Q=BJT, M=MOSFET). Use `type=` only when the prefix is ambiguous.",
+      "For household AC lighting, use clear L/N nets: `V1 live neutral 220Vac type=acsource`, then `F1 live protected`, `S1 protected switched`, `L1 switched neutral type=lamp`. The renderer keeps live/control above and neutral return below.",
+      "For two-way/stair lighting, use two `switch_spdt` parts sharing two traveler nets; do not place SPST switches in series.",
       "Optional `dir=right|left|up|down` nudges a symbol's orientation (e.g. `C1 vout 0 100n dir=down` for a shunt cap); it does not set position.",
       "For control cabinet / panel-layout drawings, use positional mode (no `netlist`) with absolute `at=x,y`: start with `enclosure width=… height=…`, add `wire_duct`, `din_rail`, `plc`, `terminal_block`, `contactor`, and front-panel controls.",
     ],
     avoid: [
       "Avoid positional cursor mode (`wire`, `at:`) for ordinary schematics — use it only for cabinet/panel layouts where physical placement matters.",
       "Do not invent coordinates; the auto-layout engine places components from net connectivity. `dir=` only rotates a symbol.",
+      "Do not use `RL1` for a lamp unless it is truly a relay/load resistor; prefer `L1 ... type=lamp` or `H1 ... type=pilot_light`.",
+      "Do not model two-way/three-way light switching as a simple series chain of `switch_spst`; use traveler nets and `switch_spdt`/crossover switching.",
       "Don't give a multi-terminal part fewer nets than it has pins (a `transformer` needs 4: `T1 p1 p2 s1 s2 type=transformer`).",
     ],
     repair: [

@@ -52,3 +52,86 @@ Re e 0 1k`);
     expect(item(lo, "R1").rotation).toBe(270); // up
   });
 });
+
+describe("circuit netlist auto-layout — household lighting loops", () => {
+  test("single-pole lamp circuit keeps the neutral return below the live path", () => {
+    const lo = layoutCircuitNetlist(
+      parseNetlist(`V1 live neutral 220Vac type=acsource label="V_mains"
+F1 live protected 16A
+S1 protected switched type=switch_spst label="S1"
+L1 switched neutral type=lamp label="Lamp"`)
+    );
+
+    const fuse = item(lo, "F1");
+    const lamp = item(lo, "L1");
+    const neutralRail = lo.routes.find((r) => r.netId === "neutral")!;
+
+    expect(lamp.component.componentType).toBe("lamp");
+    expect(fuse.y).toBe(lamp.y);
+    expect(Math.min(...neutralRail.points.map((p) => p.y))).toBeGreaterThan(lamp.y);
+  });
+
+  test("two-way lamp circuit lays out SPDT traveler nets between the switches", () => {
+    const lo = layoutCircuitNetlist(
+      parseNetlist(`V1 live neutral 220Vac type=acsource label="V_mains"
+F1 live feed 16A
+S1 feed t1 t2 type=switch_spdt label="S1"
+S2 switched t1 t2 type=switch_spdt label="S2"
+L1 switched neutral type=lamp label="Lamp"`)
+    );
+
+    const s1 = item(lo, "S1");
+    const s2 = item(lo, "S2");
+    const travelerRoutes = lo.routes.filter((r) => r.netId === "t1" || r.netId === "t2");
+
+    expect(s1.component.componentType).toBe("switch_spdt");
+    expect(s2.component.componentType).toBe("switch_spdt");
+    expect(s2.x).toBeGreaterThan(s1.x);
+    expect(travelerRoutes).toHaveLength(2);
+    expect(travelerRoutes.every((r) => r.points.length >= 2)).toBe(true);
+    expect(
+      travelerRoutes.every((r) =>
+        r.points.every((point) => Math.abs(point.y - r.points[0].y) < 0.5)
+      )
+    ).toBe(true);
+  });
+
+  test("vertical source and reverse-facing switch labels stay in the open margin", () => {
+    const svg = render(`circuit "Two-way stair light" netlist
+V1 live neutral 220Vac type=acsource label="V_mains"
+F1 live feed 16A
+S1 feed t1 t2 type=switch_spdt label="S1"
+S2 switched t1 t2 type=switch_spdt label="S2"
+L1 switched neutral type=lamp label="Lamp"`);
+
+    const source = svg.match(/translate\(([\d.]+), ([\d.]+)\) rotate\(270\)" data-id="V1"/);
+    const sourceLabel = svg.match(/<text x="([\d.]+)" y="([\d.]+)"[^>]*>V_mains<\/text>/);
+    const rightSwitch = svg.match(/translate\(([\d.]+), ([\d.]+)\) scale\(-1, 1\)" data-id="S2"/);
+    const rightSwitchLabel = svg.match(/<text x="([\d.]+)" y="([\d.]+)"[^>]*>S2<\/text>/);
+
+    expect(source).not.toBeNull();
+    expect(sourceLabel).not.toBeNull();
+    expect(Number(sourceLabel![1])).toBeGreaterThan(Number(source![1]));
+    expect(rightSwitch).not.toBeNull();
+    expect(rightSwitchLabel).not.toBeNull();
+    expect(Number(rightSwitchLabel![2])).toBeLessThan(Number(rightSwitch![2]));
+  });
+
+  test("reversed traveler declaration order also stays parallel", () => {
+    const lo = layoutCircuitNetlist(
+      parseNetlist(`V1 live neutral 220Vac type=acsource
+F1 live feed 16A
+S1 feed t1 t2 type=switch_spdt
+S2 switched t2 t1 type=switch_spdt
+L1 switched neutral type=lamp`)
+    );
+    const travelerRoutes = lo.routes.filter((r) => r.netId === "t1" || r.netId === "t2");
+
+    expect(travelerRoutes).toHaveLength(2);
+    expect(
+      travelerRoutes.every((r) =>
+        r.points.every((point) => Math.abs(point.y - r.points[0].y) < 0.5)
+      )
+    ).toBe(true);
+  });
+});

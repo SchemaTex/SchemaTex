@@ -140,6 +140,23 @@ Q1 c b e npn
 Re e 0 1k`,
   },
   {
+    file: 'examples/circuit/household-light.svg',
+    text: `circuit "Single-pole household light" netlist
+V1 live neutral 220Vac type=acsource label="V_mains"
+F1 live protected 16A
+S1 protected switched type=switch_spst label="S1"
+L1 switched neutral type=lamp label="Lamp"`,
+  },
+  {
+    file: 'examples/circuit/two-way-stair-light.svg',
+    text: `circuit "Two-way stair light" netlist
+V1 live neutral 220Vac type=acsource label="V_mains"
+F1 live feed 16A
+S1 feed traveler_a traveler_b type=switch_spdt label="S1"
+S2 switched traveler_a traveler_b type=switch_spdt label="S2"
+L1 switched neutral type=lamp label="Lamp"`,
+  },
+  {
     file: 'examples/ladder/motor-start-stop.svg',
     text: `ladder "Motor Start/Stop"
 rung 1 "Seal-in circuit":

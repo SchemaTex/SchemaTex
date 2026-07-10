@@ -32,6 +32,18 @@ M_X drv_x_a drv_x_b type=motor label="X axis"`;
     });
   });
 
+  test("lamp aliases resolve to the lamp symbol even when the id prefix would mean inductor", () => {
+    const ast = parseCircuit(`circuit "house light" netlist
+V1 live neutral 220Vac type=acsource
+L1 switched neutral type=light label="Lamp"`);
+
+    expect(ast.components.find((c) => c.id === "L1")?.componentType).toBe("lamp");
+    expect(ast.pinMap?.L1).toEqual({
+      start: "switched",
+      end: "neutral",
+    });
+  });
+
   // ─── Ground aliases (Case D) ─────────────────────────────────
   describe("ground aliases", () => {
     test("AGND/DGND/EARTH/PE/VSS/COM net names canonicalize to GND", () => {

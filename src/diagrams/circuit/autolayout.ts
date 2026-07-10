@@ -46,6 +46,11 @@ const ROW_H = 80; // vertical spacing per band (spine / shunt / ground)
 const LEFT_MARGIN = 70;
 const TOP_MARGIN = 56;
 const SHUNT_OFFSET = 28; // x nudge when two shunts share a node
+const AC_LEFT_MARGIN = 96;
+const AC_LIVE_Y = 56;
+const AC_RETURN_Y = 150;
+const AC_SERIES_GAP = 58;
+const AC_TRAVELER_SPAN = 128;
 
 export interface RoutedWire {
   netId: string;
@@ -124,8 +129,454 @@ function extendBBox(
   if (pt.y > bbox.maxY) bbox.maxY = pt.y;
 }
 
+function placeComponent(
+  comp: CircuitComponent,
+  x: number,
+  y: number,
+  fallbackDir?: "right" | "left" | "up" | "down"
+): LaidOutComponent {
+  // Honor an explicit L2 hint (`dir=`); else the caller's band default; else role.
+  const direction =
+    comp.attrs?.dirExplicit === "true"
+      ? comp.direction
+      : fallbackDir ?? defaultDirection(comp);
+  comp.direction = direction;
+  const rot = rotationOf(direction);
+  const sym = getSymbol(comp.componentType);
+  const worldAnchors: Record<string, PinAnchor> = {};
+  if (sym) {
+    for (const [name, pt] of Object.entries(sym.anchors)) {
+      const rp = rotatePt(pt, rot);
+      worldAnchors[name] = { x: x + rp.x, y: y + rp.y };
+    }
+  } else {
+    worldAnchors.start = { x, y };
+    worldAnchors.end = { x: x + 30, y };
+  }
+  return {
+    component: comp,
+    x,
+    y,
+    rotation: rot,
+    length: sym?.length ?? 30,
+    anchors: worldAnchors,
+  };
+}
+
+function placeMirroredComponent(comp: CircuitComponent, x: number, y: number): LaidOutComponent {
+  const sym = getSymbol(comp.componentType);
+  const length = sym?.length ?? 30;
+  const worldAnchors: Record<string, PinAnchor> = {};
+  comp.direction = "left";
+  if (sym) {
+    for (const [name, pt] of Object.entries(sym.anchors)) {
+      worldAnchors[name] = { x: x + length - pt.x, y: y + pt.y };
+    }
+  } else {
+    worldAnchors.start = { x: x + length, y };
+    worldAnchors.end = { x, y };
+  }
+  return {
+    component: comp,
+    x,
+    y,
+    rotation: 0,
+    mirrorX: true,
+    length,
+    anchors: worldAnchors,
+  };
+}
+
+function pinEntries(
+  pinMap: Record<string, Record<string, string>>,
+  comp: CircuitComponent
+): Array<[string, string]> {
+  return Object.entries(pinMap[comp.id] ?? {});
+}
+
+function anchorForNet(
+  pinMap: Record<string, Record<string, string>>,
+  laid: LaidOutComponent,
+  netId: string
+): PinAnchor | undefined {
+  const pin = Object.entries(pinMap[laid.component.id] ?? {}).find(
+    ([, net]) => net === netId
+  )?.[0];
+  return pin ? laid.anchors[pin] : undefined;
+}
+
+function compactPoints(points: PinAnchor[]): PinAnchor[] {
+  const out: PinAnchor[] = [];
+  for (const p of points) {
+    const prev = out[out.length - 1];
+    if (!prev || Math.abs(prev.x - p.x) > 0.5 || Math.abs(prev.y - p.y) > 0.5) {
+      out.push(p);
+    }
+  }
+  return out;
+}
+
+function routeViaY(netId: string, a: PinAnchor, b: PinAnchor, y: number): RoutedWire {
+  if (Math.abs(a.y - b.y) < 0.5) return { netId, points: [a, b] };
+  return {
+    netId,
+    points: compactPoints([a, { x: a.x, y }, { x: b.x, y }, b]),
+  };
+}
+
+function routeViaX(netId: string, a: PinAnchor, b: PinAnchor, x: number): RoutedWire {
+  if (Math.abs(a.x - b.x) < 0.5) return { netId, points: [a, b] };
+  return {
+    netId,
+    points: compactPoints([a, { x, y: a.y }, { x, y: b.y }, b]),
+  };
+}
+
+function isAutoGround(c: CircuitComponent): boolean {
+  return isGround(c) && c.attrs?.auto === "true";
+}
+
+function isTwoTerminal(
+  pinMap: Record<string, Record<string, string>>,
+  comp: CircuitComponent
+): boolean {
+  return pinEntries(pinMap, comp).length === 2;
+}
+
+function isLightingLoad(c: CircuitComponent): boolean {
+  return (
+    c.componentType === "lamp" ||
+    c.componentType === "pilot_light" ||
+    c.componentType === "motor" ||
+    c.componentType === "buzzer" ||
+    c.componentType === "speaker"
+  );
+}
+
+type TraceStep = {
+  comp: CircuitComponent;
+  inNet: string;
+  outNet: string;
+};
+
+function traceTwoTerminalChain(
+  pinMap: Record<string, Record<string, string>>,
+  candidates: CircuitComponent[],
+  startNet: string,
+  endNet: string
+): { steps: TraceStep[]; used: Set<string> } | null {
+  const remaining = new Set(candidates.map((c) => c.id));
+  const steps: TraceStep[] = [];
+  const seenNets = new Set<string>([startNet]);
+  let current = startNet;
+
+  for (let guard = 0; guard <= candidates.length; guard++) {
+    if (current === endNet) return { steps, used: new Set(steps.map((s) => s.comp.id)) };
+
+    const hits = candidates.filter((c) => {
+      if (!remaining.has(c.id) || !isTwoTerminal(pinMap, c)) return false;
+      return pinEntries(pinMap, c).some(([, net]) => net === current);
+    });
+    if (hits.length !== 1) return null;
+
+    const comp = hits[0];
+    const nets = pinEntries(pinMap, comp).map(([, net]) => net);
+    const next = nets[0] === current ? nets[1] : nets[0];
+    if (!next || (seenNets.has(next) && next !== endNet)) return null;
+
+    steps.push({ comp, inNet: current, outNet: next });
+    remaining.delete(comp.id);
+    seenNets.add(next);
+    current = next;
+  }
+
+  return null;
+}
+
+function finalizeAutoLayout(items: LaidOutComponent[], routes: RoutedWire[]): AutoLayoutResult {
+  const bbox = {
+    minX: Infinity,
+    minY: Infinity,
+    maxX: -Infinity,
+    maxY: -Infinity,
+  };
+  for (const it of items) {
+    for (const a of Object.values(it.anchors)) extendBBox(bbox, a);
+  }
+  for (const r of routes) {
+    for (const p of r.points) extendBBox(bbox, p);
+  }
+  if (!isFinite(bbox.minX)) {
+    bbox.minX = 0;
+    bbox.minY = 0;
+    bbox.maxX = 200;
+    bbox.maxY = 200;
+  }
+  const pad = 52;
+  const minX = bbox.minX - pad;
+  const minY = bbox.minY - pad;
+  const maxX = bbox.maxX + pad;
+  const maxY = bbox.maxY + pad;
+  return {
+    width: maxX - minX,
+    height: maxY - minY,
+    offsetX: -minX,
+    offsetY: -minY,
+    items,
+    routes,
+  };
+}
+
+function appendReturnRail(
+  routes: RoutedWire[],
+  pinMap: Record<string, Record<string, string>>,
+  sourceLaid: LaidOutComponent,
+  loadLaid: LaidOutComponent,
+  returnNet: string
+): boolean {
+  const sourceReturn = anchorForNet(pinMap, sourceLaid, returnNet);
+  const loadReturn = anchorForNet(pinMap, loadLaid, returnNet);
+  if (!sourceReturn || !loadReturn) return false;
+  routes.push({
+    netId: returnNet,
+    points: [
+      { x: sourceReturn.x, y: AC_RETURN_Y },
+      { x: loadReturn.x, y: AC_RETURN_Y },
+    ],
+  });
+  routes.push({
+    netId: `${returnNet}.${sourceLaid.component.id}`,
+    points: compactPoints([sourceReturn, { x: sourceReturn.x, y: AC_RETURN_Y }]),
+  });
+  routes.push({
+    netId: `${returnNet}.${loadLaid.component.id}`,
+    points: compactPoints([loadReturn, { x: loadReturn.x, y: AC_RETURN_Y }]),
+  });
+  return true;
+}
+
+function sourceLiveReturnNets(
+  pinMap: Record<string, Record<string, string>>,
+  source: CircuitComponent
+): { liveNet: string; returnNet: string } | null {
+  const pins = pinMap[source.id];
+  if (!pins) return null;
+  const liveNet = pins.plus ?? pins.end ?? Object.values(pins)[0];
+  const returnNet = pins.minus ?? pins.start ?? Object.values(pins)[1];
+  if (!liveNet || !returnNet || liveNet === returnNet) return null;
+  return { liveNet, returnNet };
+}
+
+function layoutTwoWireSeriesLoop(
+  ast: CircuitAST,
+  source: CircuitComponent,
+  chain: TraceStep[],
+  load: CircuitComponent,
+  liveNet: string,
+  returnNet: string,
+  loadLiveNet: string
+): AutoLayoutResult | null {
+  const pinMap = ast.pinMap ?? {};
+  const items: LaidOutComponent[] = [];
+  const routes: RoutedWire[] = [];
+
+  const put = (
+    comp: CircuitComponent,
+    x: number,
+    y: number,
+    fallbackDir?: "right" | "left" | "up" | "down"
+  ): LaidOutComponent => {
+    const laid = placeComponent(comp, x, y, fallbackDir);
+    items.push(laid);
+    return laid;
+  };
+
+  const sourceLaid = put(source, AC_LEFT_MARGIN, AC_LIVE_Y + 62, "up");
+  let cursorX = AC_LEFT_MARGIN + 86;
+  let prevPt = anchorForNet(pinMap, sourceLaid, liveNet);
+  if (!prevPt) return null;
+
+  for (const step of chain) {
+    const laid = put(step.comp, cursorX, AC_LIVE_Y, "right");
+    const inPt = anchorForNet(pinMap, laid, step.inNet);
+    const outPt = anchorForNet(pinMap, laid, step.outNet);
+    if (!inPt || !outPt) return null;
+    routes.push(routeViaY(step.inNet, prevPt, inPt, AC_LIVE_Y));
+    prevPt = outPt;
+    cursorX += laid.length + AC_SERIES_GAP;
+  }
+
+  const loadLaid = put(load, cursorX, AC_LIVE_Y, "right");
+  const loadLive = anchorForNet(pinMap, loadLaid, loadLiveNet);
+  if (!loadLive) return null;
+  routes.push(routeViaY(loadLiveNet, prevPt, loadLive, AC_LIVE_Y));
+  if (!appendReturnRail(routes, pinMap, sourceLaid, loadLaid, returnNet)) return null;
+
+  return finalizeAutoLayout(items, routes);
+}
+
+function layoutTwoWayLightingLoop(
+  ast: CircuitAST,
+  source: CircuitComponent,
+  preChain: TraceStep[],
+  leftSwitch: CircuitComponent,
+  rightSwitch: CircuitComponent,
+  postChain: TraceStep[],
+  load: CircuitComponent,
+  liveNet: string,
+  returnNet: string,
+  loadLiveNet: string
+): AutoLayoutResult | null {
+  const pinMap = ast.pinMap ?? {};
+  const leftPins = pinMap[leftSwitch.id] ?? {};
+  const rightPins = pinMap[rightSwitch.id] ?? {};
+  const travelerNets = [leftPins.nc, leftPins.no].filter(Boolean);
+  if (
+    travelerNets.length !== 2 ||
+    !travelerNets.every((n) => n === rightPins.nc || n === rightPins.no)
+  ) {
+    return null;
+  }
+
+  const items: LaidOutComponent[] = [];
+  const routes: RoutedWire[] = [];
+  const put = (
+    comp: CircuitComponent,
+    x: number,
+    y: number,
+    fallbackDir?: "right" | "left" | "up" | "down"
+  ): LaidOutComponent => {
+    const laid = placeComponent(comp, x, y, fallbackDir);
+    items.push(laid);
+    return laid;
+  };
+
+  const sourceLaid = put(source, AC_LEFT_MARGIN, AC_LIVE_Y + 62, "up");
+  let cursorX = AC_LEFT_MARGIN + 86;
+  let prevPt = anchorForNet(pinMap, sourceLaid, liveNet);
+  if (!prevPt) return null;
+
+  for (const step of preChain) {
+    const laid = put(step.comp, cursorX, AC_LIVE_Y, "right");
+    const inPt = anchorForNet(pinMap, laid, step.inNet);
+    const outPt = anchorForNet(pinMap, laid, step.outNet);
+    if (!inPt || !outPt) return null;
+    routes.push(routeViaY(step.inNet, prevPt, inPt, AC_LIVE_Y));
+    prevPt = outPt;
+    cursorX += laid.length + AC_SERIES_GAP;
+  }
+
+  const leftLaid = put(leftSwitch, cursorX, AC_LIVE_Y, "right");
+  const leftCommon = leftLaid.anchors.common;
+  if (!leftCommon) return null;
+  routes.push(routeViaY(leftPins.common ?? liveNet, prevPt, leftCommon, AC_LIVE_Y));
+
+  const rightCommonX = leftLaid.x + leftLaid.length + AC_TRAVELER_SPAN + leftLaid.length;
+  const sameTravelerOrder = leftPins.nc === rightPins.nc && leftPins.no === rightPins.no;
+  const rightLength = getSymbol(rightSwitch.componentType)?.length ?? 30;
+  const rightLaid = sameTravelerOrder
+    ? placeMirroredComponent(rightSwitch, rightCommonX - rightLength, AC_LIVE_Y)
+    : placeComponent(rightSwitch, rightCommonX, AC_LIVE_Y, "left");
+  items.push(rightLaid);
+  for (const net of travelerNets) {
+    const a = anchorForNet(pinMap, leftLaid, net);
+    const b = anchorForNet(pinMap, rightLaid, net);
+    if (!a || !b) return null;
+    routes.push(routeViaX(net, a, b, (a.x + b.x) / 2));
+  }
+
+  prevPt = rightLaid.anchors.common;
+  if (!prevPt) return null;
+  cursorX = rightCommonX + AC_SERIES_GAP;
+  for (const step of postChain) {
+    const laid = put(step.comp, cursorX, AC_LIVE_Y, "right");
+    const inPt = anchorForNet(pinMap, laid, step.inNet);
+    const outPt = anchorForNet(pinMap, laid, step.outNet);
+    if (!inPt || !outPt) return null;
+    routes.push(routeViaY(step.inNet, prevPt, inPt, AC_LIVE_Y));
+    prevPt = outPt;
+    cursorX += laid.length + AC_SERIES_GAP;
+  }
+
+  const loadLaid = put(load, cursorX, AC_LIVE_Y, "right");
+  const loadLive = anchorForNet(pinMap, loadLaid, loadLiveNet);
+  if (!loadLive) return null;
+  routes.push(routeViaY(loadLiveNet, prevPt, loadLive, AC_LIVE_Y));
+  if (!appendReturnRail(routes, pinMap, sourceLaid, loadLaid, returnNet)) return null;
+
+  return finalizeAutoLayout(items, routes);
+}
+
+function tryLayoutTwoWireLighting(ast: CircuitAST): AutoLayoutResult | null {
+  const pinMap = ast.pinMap ?? {};
+  const sources = ast.components.filter(isPowerSource);
+  if (sources.length !== 1) return null;
+  const source = sources[0];
+  const nets = sourceLiveReturnNets(pinMap, source);
+  if (!nets || nets.liveNet === "GND" || nets.returnNet === "GND") return null;
+  const { liveNet, returnNet } = nets;
+
+  const loads = ast.components.filter((c) => {
+    if (!isLightingLoad(c)) return false;
+    const pins = pinEntries(pinMap, c);
+    return pins.length === 2 && pins.some(([, net]) => net === returnNet);
+  });
+  if (loads.length !== 1) return null;
+
+  const load = loads[0];
+  const loadLiveNet = pinEntries(pinMap, load).find(([, net]) => net !== returnNet)?.[1];
+  if (!loadLiveNet) return null;
+
+  const excluded = new Set([source.id, load.id]);
+  const middle = ast.components.filter((c) => !excluded.has(c.id) && !isAutoGround(c));
+  const spdts = middle.filter((c) => c.componentType === "switch_spdt");
+
+  if (spdts.length === 0) {
+    if (!middle.every((c) => isTwoTerminal(pinMap, c))) return null;
+    const traced = traceTwoTerminalChain(pinMap, middle, liveNet, loadLiveNet);
+    if (!traced || traced.used.size !== middle.length) return null;
+    return layoutTwoWireSeriesLoop(ast, source, traced.steps, load, liveNet, returnNet, loadLiveNet);
+  }
+
+  if (spdts.length === 2) {
+    const twoTerminal = middle.filter((c) => c.componentType !== "switch_spdt");
+    if (!twoTerminal.every((c) => isTwoTerminal(pinMap, c))) return null;
+    for (const [leftSwitch, rightSwitch] of [
+      [spdts[0], spdts[1]],
+      [spdts[1], spdts[0]],
+    ] as const) {
+      const leftCommon = pinMap[leftSwitch.id]?.common;
+      const rightCommon = pinMap[rightSwitch.id]?.common;
+      if (!leftCommon || !rightCommon) continue;
+      const pre = traceTwoTerminalChain(pinMap, twoTerminal, liveNet, leftCommon);
+      if (!pre) continue;
+      const postCandidates = twoTerminal.filter((c) => !pre.used.has(c.id));
+      const post = traceTwoTerminalChain(pinMap, postCandidates, rightCommon, loadLiveNet);
+      if (!post) continue;
+      if (pre.used.size + post.used.size !== twoTerminal.length) continue;
+      const rendered = layoutTwoWayLightingLoop(
+        ast,
+        source,
+        pre.steps,
+        leftSwitch,
+        rightSwitch,
+        post.steps,
+        load,
+        liveNet,
+        returnNet,
+        loadLiveNet
+      );
+      if (rendered) return rendered;
+    }
+  }
+
+  return null;
+}
+
 export function layoutCircuitNetlist(ast: CircuitAST): AutoLayoutResult {
   const pinMap = ast.pinMap ?? {};
+  const twoWireLighting = tryLayoutTwoWireLighting(ast);
+  if (twoWireLighting) return twoWireLighting;
 
   // ── Step 1: classify ───────────────────────────────────────
   // Three bands, top→bottom: the SPINE row (sources on the left feeding a
@@ -164,32 +615,7 @@ export function layoutCircuitNetlist(ast: CircuitAST): AutoLayoutResult {
     y: number,
     fallbackDir?: "right" | "left" | "up" | "down"
   ): LaidOutComponent => {
-    // Honor an explicit L2 hint (`dir=`); else the caller's band default; else role.
-    const direction =
-      comp.attrs?.dirExplicit === "true"
-        ? comp.direction
-        : fallbackDir ?? defaultDirection(comp);
-    comp.direction = direction;
-    const rot = rotationOf(direction);
-    const sym = getSymbol(comp.componentType);
-    const worldAnchors: Record<string, PinAnchor> = {};
-    if (sym) {
-      for (const [name, pt] of Object.entries(sym.anchors)) {
-        const rp = rotatePt(pt, rot);
-        worldAnchors[name] = { x: x + rp.x, y: y + rp.y };
-      }
-    } else {
-      worldAnchors.start = { x, y };
-      worldAnchors.end = { x: x + 30, y };
-    }
-    const laid: LaidOutComponent = {
-      component: comp,
-      x,
-      y,
-      rotation: rot,
-      length: sym?.length ?? 30,
-      anchors: worldAnchors,
-    };
+    const laid = placeComponent(comp, x, y, fallbackDir);
     items.push(laid);
     placed.set(comp.id, laid);
     return laid;

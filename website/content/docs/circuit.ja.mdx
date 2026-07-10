@@ -293,6 +293,7 @@ K2: relay_no right`} height={300} />
 | DSL タイプ | 説明 |
 |---|---|
 | `motor` | 円 + M |
+| `lamp` | 照明負荷：円 + X（別名：`light`、`bulb`） |
 | `speaker` | コーン + ボックス |
 | `microphone` | カプセルシンボル |
 | `buzzer` | 圧電ブザー |
@@ -464,6 +465,31 @@ Rb vcc b 100k
 Q1 c b e npn
 Re e 0 1k`} height={420} />
 
+### 4.5 住宅照明回路
+
+照明負荷には `type=lamp` を明示してください。SPICE では型指定のない `L` プレフィックスは**インダクタ**を意味します。`live` / `neutral` ネットを使うと、auto-layout は保護された活線経路を上、ニュートラルの戻りを下に配置します。
+
+```text
+circuit "Single-pole household light" netlist
+V1 live neutral 220Vac type=acsource label="V_mains"
+F1 live protected 16A
+S1 protected switched type=switch_spst label="S1"
+L1 switched neutral type=lamp label="Lamp"
+```
+
+2 か所から操作する階段照明には、2 本の traveler ネットを共有する 2 個の SPDT スイッチを使います。SPST の直列接続は別の回路です。
+
+```text
+circuit "Two-way stair light" netlist
+V1 live neutral 220Vac type=acsource label="V_mains"
+F1 live feed 16A
+S1 feed traveler_a traveler_b type=switch_spdt label="S1"
+S2 switched traveler_a traveler_b type=switch_spdt label="S2"
+L1 switched neutral type=lamp label="Lamp"
+```
+
+ランプには `L1` を使い、`RL1` は実際のリレーまたは負荷抵抗に限定してください。
+
 ---
 
 ## 5. 属性
@@ -603,6 +629,8 @@ Schematex の回路図はコンポーネントシンボル形状について **I
 
 <RelatedExamples slugs={[
   'circuit-ce-amplifier',
+  'circuit-household-light',
+  'circuit-two-way-stair-light',
 ]} />
 
 ---

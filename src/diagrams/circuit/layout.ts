@@ -12,6 +12,8 @@ export interface LaidOutComponent {
   y: number;
   /** Rotation applied to the symbol, in degrees. */
   rotation: number;
+  /** Mirror the native right-facing symbol horizontally (used for facing pairs). */
+  mirrorX?: boolean;
   /** Length along direction — 0 for zero-length items (dots, labels). */
   length: number;
   /** Resolved anchors in world coordinates. */

@@ -939,6 +939,7 @@ export type CircuitComponentType =
 
   // ── Electromechanical ─────────────────────────────────────────
   | "motor"             // Circle + M + shaft line
+  | "lamp"              // Circle + X (lighting load)
   | "speaker"           // Triangle + box + radiating lines
   | "microphone"        // Circle + vertical lines (capsule)
   | "buzzer"            // Piezo symbol or speaker variant
