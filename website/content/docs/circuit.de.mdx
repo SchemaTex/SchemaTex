@@ -293,6 +293,7 @@ K2: relay_no right`} height={300} />
 | DSL-Typ | Beschreibung |
 |---|---|
 | `motor` | Kreis + M |
+| `lamp` | Beleuchtungslast: Kreis + X (Aliase: `light`, `bulb`) |
 | `speaker` | Konus + Gehäuse |
 | `microphone` | Kapsel-Symbol |
 | `buzzer` | Piezo-Summer |
@@ -464,6 +465,31 @@ Rb vcc b 100k
 Q1 c b e npn
 Re e 0 1k`} height={420} />
 
+### 4.5 Haushaltsbeleuchtung
+
+Verwenden Sie für eine Leuchte ausdrücklich `type=lamp`, da ein bloßes `L`-Präfix in SPICE eine **Induktivität** bezeichnet. Mit benannten `live`-/`neutral`-Netzen legt das Auto-Layout den geschützten Außenleiter oben und den Neutralleiter als untere Rückleitung an.
+
+```text
+circuit "Single-pole household light" netlist
+V1 live neutral 220Vac type=acsource label="V_mains"
+F1 live protected 16A
+S1 protected switched type=switch_spst label="S1"
+L1 switched neutral type=lamp label="Lamp"
+```
+
+Für eine Wechselschaltung verwenden Sie zwei SPDT-Schalter mit zwei gemeinsamen Korrespondierenden. In Reihe geschaltete SPST-Schalter bilden eine andere Schaltung.
+
+```text
+circuit "Two-way stair light" netlist
+V1 live neutral 220Vac type=acsource label="V_mains"
+F1 live feed 16A
+S1 feed traveler_a traveler_b type=switch_spdt label="S1"
+S2 switched traveler_a traveler_b type=switch_spdt label="S2"
+L1 switched neutral type=lamp label="Lamp"
+```
+
+Kennzeichnen Sie die Leuchte als `L1`; `RL1` bleibt einem tatsächlichen Relais oder Lastwiderstand vorbehalten.
+
 ---
 
 ## 5. Attribute
@@ -603,6 +629,8 @@ Referenzen:
 
 <RelatedExamples slugs={[
   'circuit-ce-amplifier',
+  'circuit-household-light',
+  'circuit-two-way-stair-light',
 ]} />
 
 ---

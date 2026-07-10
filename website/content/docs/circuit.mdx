@@ -293,6 +293,7 @@ K2: relay_no right`} height={300} />
 | DSL type | Description |
 |---|---|
 | `motor` | Circle + M |
+| `lamp` | Lighting load: circle + X (aliases: `light`, `bulb`) |
 | `speaker` | Cone + box |
 | `microphone` | Capsule symbol |
 | `buzzer` | Piezo buzzer |
@@ -464,6 +465,31 @@ Rb vcc b 100k
 Q1 c b e npn
 Re e 0 1k`} height={420} />
 
+### 4.5 Household lighting circuits
+
+Use explicit `type=lamp` for a lighting load because a bare `L` prefix means **inductor** in SPICE. Keep the source on named `live` / `neutral` nets; auto-layout places the protected live path above a lower neutral return rail.
+
+```text
+circuit "Single-pole household light" netlist
+V1 live neutral 220Vac type=acsource label="V_mains"
+F1 live protected 16A
+S1 protected switched type=switch_spst label="S1"
+L1 switched neutral type=lamp label="Lamp"
+```
+
+For two-location (stair) switching, use two SPDT switches sharing two traveler nets. Series SPST switches describe a different circuit and cannot provide normal two-way control.
+
+```text
+circuit "Two-way stair light" netlist
+V1 live neutral 220Vac type=acsource label="V_mains"
+F1 live feed 16A
+S1 feed traveler_a traveler_b type=switch_spdt label="S1"
+S2 switched traveler_a traveler_b type=switch_spdt label="S2"
+L1 switched neutral type=lamp label="Lamp"
+```
+
+Use `L1` (or another load-appropriate designator) for a lamp. Reserve `RL1` for an actual relay or load resistor.
+
 ---
 
 ## 5. Attributes
@@ -603,6 +629,8 @@ References:
 
 <RelatedExamples slugs={[
   'circuit-ce-amplifier',
+  'circuit-household-light',
+  'circuit-two-way-stair-light',
 ]} />
 
 ---

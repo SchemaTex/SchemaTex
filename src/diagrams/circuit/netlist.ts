@@ -90,6 +90,9 @@ const TYPE_ALIASES: Record<string, CircuitComponentType> = {
   wire_duct: "wire_duct",
   trunking: "wire_duct",
   plc: "plc",
+  lamp: "lamp",
+  light: "lamp",
+  bulb: "lamp",
 };
 
 /** Ground refs: SPICE "0", canonical aliases (GND/AGND/DGND/EARTH/PE/VSS/COM), and suffixed variants (GND_REF, AGND_DIG, EARTH1). */

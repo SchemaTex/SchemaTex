@@ -267,6 +267,19 @@ Re e 0 1k
 
 ![CE Amp Netlist Schematic](examples/circuit/ce-amp-netlist.svg)
 
+Household lighting uses a two-rail layout: protected live/control runs left to right, while neutral returns below. Two-location lighting uses two SPDT switches with traveler nets rather than series SPST switches.
+
+```text
+circuit "Two-way stair light" netlist
+V1 live neutral 220Vac type=acsource label="V_mains"
+F1 live feed 16A
+S1 feed traveler_a traveler_b type=switch_spdt label="S1"
+S2 switched traveler_a traveler_b type=switch_spdt label="S2"
+L1 switched neutral type=lamp label="Lamp"
+```
+
+![Two-way stair-light circuit](examples/circuit/two-way-stair-light.svg)
+
 [Circuit syntax →](https://schematex.dev/docs/circuit)
 
 ---

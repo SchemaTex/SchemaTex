@@ -293,6 +293,7 @@ K2: relay_no right`} height={300} />
 | Tipo DSL | Descripción |
 |---|---|
 | `motor` | Círculo + M |
+| `lamp` | Carga de iluminación: círculo + X (alias: `light`, `bulb`) |
 | `speaker` | Cono + caja |
 | `microphone` | Símbolo de cápsula |
 | `buzzer` | Zumbador piezoeléctrico |
@@ -464,6 +465,31 @@ Rb vcc b 100k
 Q1 c b e npn
 Re e 0 1k`} height={420} />
 
+### 4.5 Iluminación doméstica
+
+Use `type=lamp` de forma explícita para una lámpara, ya que un prefijo `L` sin tipo significa **inductor** en SPICE. Con redes `live` y `neutral`, el auto-layout coloca la fase protegida arriba y el neutro como retorno inferior.
+
+```text
+circuit "Single-pole household light" netlist
+V1 live neutral 220Vac type=acsource label="V_mains"
+F1 live protected 16A
+S1 protected switched type=switch_spst label="S1"
+L1 switched neutral type=lamp label="Lamp"
+```
+
+Para control desde dos ubicaciones, use dos interruptores SPDT que compartan dos redes viajeras. Varios SPST en serie describen un circuito distinto.
+
+```text
+circuit "Two-way stair light" netlist
+V1 live neutral 220Vac type=acsource label="V_mains"
+F1 live feed 16A
+S1 feed traveler_a traveler_b type=switch_spdt label="S1"
+S2 switched traveler_a traveler_b type=switch_spdt label="S2"
+L1 switched neutral type=lamp label="Lamp"
+```
+
+Use `L1` para la lámpara; reserve `RL1` para un relé o una resistencia de carga reales.
+
 ---
 
 ## 5. Atributos
@@ -603,6 +629,8 @@ Referencias:
 
 <RelatedExamples slugs={[
   'circuit-ce-amplifier',
+  'circuit-household-light',
+  'circuit-two-way-stair-light',
 ]} />
 
 ---

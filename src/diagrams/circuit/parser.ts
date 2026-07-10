@@ -35,7 +35,7 @@ const COMPONENT_TYPES = new Set<CircuitComponentType>([
   "switch_spst", "switch_spdt", "switch_dpdt", "push_no", "push_nc",
   "relay_coil", "relay_no", "relay_nc",
   "contactor", "solenoid_valve", "thermal_overload", "disconnect_switch",
-  "motor", "speaker", "microphone", "buzzer",
+  "motor", "lamp", "speaker", "microphone", "buzzer",
   "ammeter", "voltmeter", "wattmeter", "oscilloscope",
   "wire", "dot", "label", "port", "test_point", "no_connect", "antenna",
 ]);
@@ -91,20 +91,15 @@ const ALIASES: Record<string, CircuitComponentType> = {
   thermal: "thermal_overload",
   disconnect: "disconnect_switch",
   isolator: "disconnect_switch",
+  light: "lamp",
+  bulb: "lamp",
 };
-
-/** Component types that exist as symbols but aren't listed in CircuitComponentType. */
-const EXTRA_TYPES = new Set<string>(["lamp"]);
 
 function normalizeType(raw: string): CircuitComponentType | null {
   const lower = raw.toLowerCase();
   if (ALIASES[lower]) return ALIASES[lower];
   if (COMPONENT_TYPES.has(lower as CircuitComponentType)) {
     return lower as CircuitComponentType;
-  }
-  if (EXTRA_TYPES.has(lower)) {
-    // Cast through unknown — symbol lookup handles string; type system happy.
-    return lower as unknown as CircuitComponentType;
   }
   return null;
 }

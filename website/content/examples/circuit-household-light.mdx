@@ -1,0 +1,36 @@
+---
+title: Single-pole household light
+description: A 220 V household lighting loop with the live conductor routed through protection and control, plus a clear lower neutral return.
+diagram: circuit
+standard: IEC 60617
+industry: [electrical, residential]
+persona: For the electrical installer
+complexity: 1
+tags: [lighting, household, lamp, fuse, SPST, netlist]
+featured: false
+relatedLink:
+  label: Circuit syntax
+  href: /docs/circuit
+status: published
+dsl: |
+  circuit "Single-pole household light" netlist
+  V1 live neutral 220Vac type=acsource label="V_mains"
+  F1 live protected 16A
+  S1 protected switched type=switch_spst label="S1"
+  L1 switched neutral type=lamp label="Lamp"
+---
+
+## Scenario
+
+An electrical installer needs a compact schematic for one wall switch controlling one ceiling lamp. The diagram should read like a real lighting circuit: supply at the left, fuse and switch on the live conductor, lamp at the right, and neutral returning below.
+
+## Annotation key
+
+- `type=acsource` gives the 220 V mains source the AC symbol.
+- `F1` and `S1` sit in series on the live path before the load.
+- `type=lamp` is explicit because a bare `L1` means an inductor in SPICE notation.
+- `live`, `protected`, `switched`, and `neutral` describe electrical nets, not coordinates.
+
+## How to read
+
+Current leaves the source on `live`, passes through fuse `F1` and switch `S1`, powers lamp `L1`, then returns on `neutral`. The auto-layout keeps that functional order left to right and draws neutral as a lower return rail instead of wrapping it around the top of the page.

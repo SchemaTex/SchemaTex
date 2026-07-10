@@ -293,6 +293,7 @@ K2: relay_no right`} height={300} />
 | DSL 타입 | 설명 |
 |---|---|
 | `motor` | 원 + M |
+| `lamp` | 조명 부하: 원 + X (별칭: `light`, `bulb`) |
 | `speaker` | 콘 + 박스 |
 | `microphone` | 캡슐 기호 |
 | `buzzer` | 피에조 버저 |
@@ -464,6 +465,31 @@ Rb vcc b 100k
 Q1 c b e npn
 Re e 0 1k`} height={420} />
 
+### 4.5 가정용 조명 회로
+
+SPICE에서 타입 없는 `L` 접두사는 **인덕터**를 뜻하므로 조명 부하는 `type=lamp`로 명시하세요. `live` / `neutral` 넷을 사용하면 auto-layout이 보호된 활선 경로를 위에, 중성선 귀로를 아래에 배치합니다.
+
+```text
+circuit "Single-pole household light" netlist
+V1 live neutral 220Vac type=acsource label="V_mains"
+F1 live protected 16A
+S1 protected switched type=switch_spst label="S1"
+L1 switched neutral type=lamp label="Lamp"
+```
+
+두 위치에서 제어하는 계단 조명에는 두 traveler 넷을 공유하는 SPDT 스위치 두 개를 사용하세요. SPST 스위치를 직렬로 연결하면 다른 회로가 됩니다.
+
+```text
+circuit "Two-way stair light" netlist
+V1 live neutral 220Vac type=acsource label="V_mains"
+F1 live feed 16A
+S1 feed traveler_a traveler_b type=switch_spdt label="S1"
+S2 switched traveler_a traveler_b type=switch_spdt label="S2"
+L1 switched neutral type=lamp label="Lamp"
+```
+
+램프에는 `L1`을 사용하고, `RL1`은 실제 릴레이나 부하 저항에만 사용하세요.
+
 ---
 
 ## 5. 속성
@@ -603,6 +629,8 @@ Schematex 회로 도식은 부품 기호 형태에 대해 **IEEE Std 315-1975 / 
 
 <RelatedExamples slugs={[
   'circuit-ce-amplifier',
+  'circuit-household-light',
+  'circuit-two-way-stair-light',
 ]} />
 
 ---

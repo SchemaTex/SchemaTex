@@ -1738,6 +1738,7 @@ export const SYMBOLS: Partial<Record<CircuitComponentType, SymbolDef>> = {
   voltmeter,
   wattmeter,
   motor,
+  lamp,
   speaker,
   microphone,
   buzzer,
@@ -1799,17 +1800,10 @@ export const SYMBOLS: Partial<Record<CircuitComponentType, SymbolDef>> = {
   switch_dpdt,
   oscilloscope,
   port,
-  // Lamp reuses buzzer slot? No, needs its own entry but our CircuitComponentType
-  // doesn't have "lamp". We map it via parser alias to "buzzer" or add specifically.
-};
-
-// Lamp is not in CircuitComponentType; expose via a side channel so parser can find it.
-export const EXTRA_SYMBOLS: Record<string, SymbolDef> = {
-  lamp,
 };
 
 export function getSymbol(t: string): SymbolDef | undefined {
-  return SYMBOLS[t as CircuitComponentType] ?? EXTRA_SYMBOLS[t];
+  return SYMBOLS[t as CircuitComponentType];
 }
 
 export function getNetlistPinOrder(t: string): string[] | undefined {

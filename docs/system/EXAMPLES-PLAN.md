@@ -31,7 +31,7 @@ Scores are directional, not precise.
 | Entity structure | 5 | 5 | 2 | 4.2 | **S** | 8 |
 | SLD (single-line) | 5 | 5 | 3 | 4.6 | **S** | 8 |
 | Ladder logic | 5 | 5 | 3 | 4.6 | **S** | 7 |
-| Circuit schematic | 5 | 4 | 4 | 4.4 | **S** | 9 |
+| Circuit schematic | 5 | 4 | 4 | 4.4 | **S** | 11 |
 | Pedigree | 5 | 4 | 3 | 4.2 | **S** | 6 |
 | Genogram | 4 | 4 | 3 | 3.8 | **A** | 7 |
 | Decision tree | 4 | 4 | 4 | 4.0 | **A** | 7 |
@@ -151,7 +151,7 @@ Target: every row has ≥3 examples; every column has ≥3 examples.
 | 6 | ladder-elevator-cab | Call/destination with door interlock | Safety interlock | Building | Elevator tech |
 | 7 | ladder-bottling-line | Fill → cap → label with reject reject-kick | Sequential | F&B | F&B automation |
 
-### 5.4 Circuit Schematic (9)
+### 5.4 Circuit Schematic (11)
 
 | # | slug | title | variant | vertical | persona |
 |---|---|---|---|---|---|
@@ -164,6 +164,8 @@ Target: every row has ≥3 examples; every column has ≥3 examples.
 | 7 | circuit-buck-converter | Buck SMPS w/ ctrl IC | Power electronics | Power | Power EE |
 | 8 | circuit-audio-preamp | Mic preamp w/ phantom power | Audio | Pro-audio | Audio EE |
 | 9 | circuit-motor-driver | H-bridge DC motor driver | Power | Robotics | Embedded eng |
+| 10 | circuit-household-light ✅ | Single-pole household light | Residential AC | Electrical | Electrical installer |
+| 11 | circuit-two-way-stair-light ✅ | Two-way stair light | Residential AC | Electrical | Electrical installer |
 
 ### 5.5 Genogram (7)
 

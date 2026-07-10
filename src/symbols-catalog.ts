@@ -8,7 +8,7 @@
  * straight into the page.
  */
 import type { DiagramType, SLDNodeType, LogicGateType } from "./core/types";
-import { SYMBOLS, EXTRA_SYMBOLS } from "./diagrams/circuit/symbols";
+import { SYMBOLS } from "./diagrams/circuit/symbols";
 import { renderSymbol as sldRenderSymbol, geometryFor } from "./diagrams/sld/symbols";
 import { renderEquip, GEOMETRY as PID_GEOMETRY } from "./diagrams/pid/symbols";
 import { iconNames, renderIcon } from "./diagrams/flowchart/icons";
@@ -49,12 +49,9 @@ const CIRCUIT_CSS =
   ".schematex-circuit-wire{stroke:#0f172a;stroke-width:1.75;fill:none;stroke-linecap:square}";
 
 function circuitCatalog(): SymbolCatalogEntry[] {
-  const merged: Record<string, { length: number; svg: () => string }> = {
-    ...(SYMBOLS as Record<string, { length: number; svg: () => string }>),
-    ...(EXTRA_SYMBOLS as Record<string, { length: number; svg: () => string }>),
-  };
+  const symbols = SYMBOLS as Record<string, { length: number; svg: () => string }>;
   const out: SymbolCatalogEntry[] = [];
-  for (const [id, def] of Object.entries(merged)) {
+  for (const [id, def] of Object.entries(symbols)) {
     if (!def) continue;
     const L = def.length || 40;
     const inner = def.svg();

@@ -1,0 +1,37 @@
+---
+title: Two-way stair light
+description: A correct two-location lighting circuit using two SPDT switches and a pair of traveler conductors, with a fused live feed and neutral return.
+diagram: circuit
+standard: IEC 60617
+industry: [electrical, residential]
+persona: For the electrical installer
+complexity: 2
+tags: [lighting, stair, two-way, SPDT, traveler, netlist]
+featured: false
+relatedLink:
+  label: Circuit syntax
+  href: /docs/circuit
+status: published
+dsl: |
+  circuit "Two-way stair light" netlist
+  V1 live neutral 220Vac type=acsource label="V_mains"
+  F1 live feed 16A
+  S1 feed traveler_a traveler_b type=switch_spdt label="S1"
+  S2 switched traveler_a traveler_b type=switch_spdt label="S2"
+  L1 switched neutral type=lamp label="Lamp"
+---
+
+## Scenario
+
+A stair or hallway lamp must be operable from either end. That requires a changeover switch at each location and two traveler conductors between them; two ordinary on/off switches in series do not provide the same behavior.
+
+## Annotation key
+
+- Both `S1` and `S2` use `type=switch_spdt`, exposing one common and two throws.
+- `traveler_a` and `traveler_b` connect the two throws of the switches.
+- `feed` is the fused live common on `S1`; `switched` is the lamp-side common on `S2`.
+- `L1 ... type=lamp` uses a load-appropriate designator and the lamp symbol.
+
+## How to read
+
+Each switch selects one traveler. The lamp is energized when both switches select the same continuous path and de-energized when they select different paths, so changing either switch changes the lamp state. Neutral returns directly from the lamp to the source on the lower rail.

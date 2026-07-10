@@ -59,25 +59,29 @@ function renderItem(it: LaidOutComponent, offX: number, offY: number): string {
   }
 
   const body = sym.svg(comp.label, comp.value, comp.attrs);
-  const transform = `translate(${tx}, ${ty}) rotate(${it.rotation})`;
+  const transform = it.mirrorX
+    ? `translate(${tx + it.length}, ${ty}) scale(-1, 1)`
+    : `translate(${tx}, ${ty}) rotate(${it.rotation})`;
 
   // Label + value text: placed in non-rotated space using unrotated anchor endpoints.
   const labels: string[] = [];
   if (comp.label || comp.value) {
-    // Compute a perpendicular offset in world coords (perpendicular to the
-    // component direction). For rightward: "above" (y negative). For
-    // down/up we put label to the right.
-    const labelX = it.x + offX + it.length * Math.cos((it.rotation * Math.PI) / 180) / 2;
-    const labelY = it.y + offY + it.length * Math.sin((it.rotation * Math.PI) / 180) / 2;
-    const perpDX = Math.sin((it.rotation * Math.PI) / 180);
-    const perpDY = -Math.cos((it.rotation * Math.PI) / 180);
-    const off = 16;
+    // Keep labels above horizontal symbols and to the right of vertical ones,
+    // regardless of whether the component points forward or backward. Using a
+    // signed perpendicular here put left/up-facing labels below or outside the
+    // viewBox (notably mains sources and the second switch in a traveler pair).
+    const angle = (it.rotation * Math.PI) / 180;
+    const midpointX = it.x + offX + (it.length * Math.cos(angle)) / 2;
+    const midpointY = it.y + offY + (it.length * Math.sin(angle)) / 2;
+    const vertical = Math.abs(Math.sin(angle)) > 0.5;
+    const labelX = midpointX + (vertical ? 34 : 0);
+    const labelY = midpointY - (vertical ? 2 : 18);
     if (comp.label) {
       labels.push(
         text(
           {
-            x: labelX + perpDX * off,
-            y: labelY + perpDY * off - 2,
+            x: labelX,
+            y: labelY,
             class: "schematex-circuit-label",
             "text-anchor": "middle",
           },
@@ -89,8 +93,8 @@ function renderItem(it: LaidOutComponent, offX: number, offY: number): string {
       labels.push(
         text(
           {
-            x: labelX + perpDX * off,
-            y: labelY + perpDY * off + 10,
+            x: labelX,
+            y: labelY + 12,
             class: "schematex-circuit-value",
             "text-anchor": "middle",
           },

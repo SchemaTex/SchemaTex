@@ -275,6 +275,16 @@ net VOUT: dot        # 在 R1.end 打点并命名 net
 C1: capacitor down at: VOUT   # 从同名 net 点出发
 ```
 
+### 3.5 Readability conventions for auto-layout
+
+Circuit schematics are communication artifacts first. The auto-layout should therefore prefer the drafting conventions a technician expects over the shortest possible wire:
+
+- **Read left → right**: inputs/sources on the left, protection/control in the middle, loads/outputs on the right.
+- **Keep returns low**: for single-phase AC / household lighting, draw `L` through the fuse/switch path and keep `N` as a lower parallel return rail. Do not send the neutral return around the top as a giant rectangle.
+- **Separate source symbols from labels**: `V_mains`, `220V`, `L`, and `N` labels must sit outside the source glyph and wires.
+- **Use load-appropriate designators**: lamps should be `L1 ... type=lamp` or `H1 ... type=pilot_light`, not `RL1` unless the component is actually a relay/load resistor.
+- **Model two-way / three-way lighting as traveler circuits**: two-location switching uses two `switch_spdt` devices with two traveler nets. Three-location switching adds an intermediate/crossover switch (DPDT-style), not a row of series SPST switches.
+
 ---
 
 ## 4. DSL Grammar (Circuit Schematic)
@@ -426,7 +436,7 @@ The first character of `<id>` determines the default type and pin order. Overrid
 |--------|------------------|------------------|-------|
 | `R`    | resistor         | start, end       | passive |
 | `C`    | capacitor        | start, end       | use `type=ecap` for electrolytic |
-| `L`    | inductor         | start, end       | |
+| `L`    | inductor         | start, end       | use `type=lamp` for lamps, e.g. `L1 switched neutral type=lamp` |
 | `D`    | diode            | anode (start), cathode (end) | model token: `led`, `zener`, `schottky`, `photodiode` |
 | `V`    | voltage_source   | plus, minus      | |
 | `I`    | current_source   | plus, minus      | |
@@ -452,7 +462,7 @@ Net names matching `(0 | gnd | ground | earth | pe | agnd | dgnd | gnda | gndd |
 
 ### 4.5.3 Type aliases (for `type=`)
 
-`vsource`→voltage_source · `isource`→current_source · `acsource`→ac_source · `ecap`→electrolytic_cap · `pot`→potentiometer · `gnd`→ground · `ic`→generic_ic · `reg`→voltage_regulator · `timer555`→555_timer · `transistor`→npn · `cabinet`/`panel`→enclosure · `dinrail`→din_rail · `wireduct`/`trunking`→wire_duct
+`vsource`→voltage_source · `isource`→current_source · `acsource`→ac_source · `ecap`→electrolytic_cap · `pot`→potentiometer · `gnd`→ground · `ic`→generic_ic · `reg`→voltage_regulator · `timer555`→555_timer · `transistor`→npn · `lamp`/`light`/`bulb`→lamp · `cabinet`/`panel`→enclosure · `dinrail`→din_rail · `wireduct`/`trunking`→wire_duct
 
 ### 4.5.4 Trailing tokens
 
@@ -464,11 +474,19 @@ After the pin nets, the parser interprets extras in this order:
 
 ### 4.5.5 Auto-layout
 
-Netlist mode skips the positional `right`/`down`/`at:` directives entirely. Layout is computed by [autolayout.ts](../../src/diagrams/circuit/autolayout.ts) — currently a force-directed pass over the inferred graph. For deterministic, publication-quality output you should still prefer the positional DSL.
+Netlist mode skips the positional `right`/`down`/`at:` directives entirely. Layout is computed by [autolayout.ts](../../src/diagrams/circuit/autolayout.ts). The engine first checks for common readable idioms:
+
+- single-phase source + protection/control + lamp/load + neutral return → a two-rail household loop (`L` path above, `N` return below);
+- two `switch_spdt` devices sharing two traveler nets → a two-way / stair-lighting layout with the two travelers drawn between switches;
+- otherwise, the generic electronic schematic layout uses a top spine row, shunt band, and ground rail.
+
+For exact publication drawings, positional DSL is still available, but generated ordinary schematics should prefer netlist mode.
 
 ### 4.5.6 Common AI-generation pitfalls
 
 - **`W1`/`W2` for wires** — supported (see prefix table). Real SPICE has no `W` device; this is a textbook/AI convention that schematex accepts as a quality-of-life feature.
+- **Household lamps** — write `L1 switched neutral type=lamp label="Lamp"`; bare `L1` is an inductor by SPICE convention.
+- **Stair / two-way switching** — use `switch_spdt` traveler nets. Do not model a two-way or three-way lighting circuit as multiple `switch_spst` components in series; that changes the circuit.
 - **Pin references like `U_UNO.TX`** — the pin name must exist in the symbol's anchor map, OR the IC must declare `pins="TX,RX,..."`. Otherwise the connection silently fails.
 - **Mixing positional + netlist in one diagram** — not supported. Pick one mode per `circuit` block.
 
