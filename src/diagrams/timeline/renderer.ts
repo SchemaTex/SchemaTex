@@ -3,8 +3,10 @@ import { svgRoot, group, rect, line, path, text as textEl, title as titleEl, des
 import { resolveTimelineTheme, cssCustomProperties, type ResolvedTheme, type TimelineTokens } from "../../core/theme";
 import { parseTimeline } from "./parser";
 import { layoutTimeline } from "./layout";
+import { resolveSceneTitle } from "../../core/title-scene";
 import type {
   TimelineCardLayout,
+  TimelineDate,
   TimelineEventLayout,
   TimelineLayoutResult,
   TimelinePinLayout,
@@ -29,9 +31,10 @@ export function renderTimeline(src: string, config?: RenderConfig): string {
   ];
 
   if (ast.title) {
+    const title = resolveSceneTitle(ast.title, ast.titleSourceRange, layout.width / 2, 26, config);
     children.push(
       textEl(
-        { x: layout.width / 2, y: 26, "text-anchor": "middle", class: "st-title" },
+        { x: title.x, y: title.y, "text-anchor": "middle", class: "st-title", ...title.attrs },
         ast.title,
       ),
     );
@@ -53,6 +56,7 @@ export function renderTimeline(src: string, config?: RenderConfig): string {
   }
 
   children.push(renderAxis(layout));
+  children.push(renderNativeGeometry(layout, config));
 
   return svgRoot(
     {
@@ -123,7 +127,72 @@ function styleForTheme(theme: Theme, fontFamily?: string): string {
     .st-stem { stroke: var(--st-axis); stroke-width: 1.25; opacity: 0.55; fill: none; }
     .st-lp-marker-ring { stroke-width: 2.5; }
     .st-lp-marker-core { stroke: none; }
+    .sx-native-handle { fill: #fff; stroke: #2563eb; stroke-width: 1.5; vector-effect: non-scaling-stroke; cursor: ew-resize; }
+    .sx-native-handle:hover, .sx-native-handle.sx-interactive-selected { fill: #dbeafe; stroke-width: 2; }
   `;
+}
+
+function editableDate(date: TimelineDate, range: import("../../core/types").SourceRange | undefined): range is import("../../core/types").SourceRange {
+  return range !== undefined && date.precision !== "ordinal";
+}
+
+function renderNativeGeometry(layout: TimelineLayoutResult, config?: RenderConfig): string {
+  const scene = config?.__scene;
+  const unitsPerSvgX = layout.timeUnitsPerSvgX;
+  if (!scene || unitsPerSvgX === undefined) return "";
+  const handles: string[] = [];
+  const add = (
+    key: string,
+    x: number,
+    y: number,
+    date: TimelineDate,
+    range: import("../../core/types").SourceRange | undefined,
+  ): void => {
+    if (!editableDate(date, range)) return;
+    scene.push({
+      key,
+      kind: "node",
+      label: date.raw,
+      bbox: { x: x - 5, y: y - 5, width: 10, height: 10 },
+      positionSource: {
+        kind: "date",
+        range,
+        value: date.value,
+        raw: date.raw,
+        precision: date.precision as "day" | "month" | "year" | "ma",
+        unitsPerSvgX,
+      },
+      editable: { label: false, position: "move-x" },
+    });
+    handles.push(circle({
+      cx: x,
+      cy: y,
+      r: 5,
+      class: "sx-native-handle",
+      "data-sx-key": key,
+      "data-sx-owner": key,
+    }));
+  };
+
+  for (const event of layout.events) {
+    const y = event.y + event.h / 2;
+    add(`handle:event:${event.event.id}:start`, event.x, y, event.event.start, event.event.startSourceRange);
+    if (event.event.end && event.event.endSourceRange) {
+      add(`handle:event:${event.event.id}:end`, event.x + (event.w ?? 0), y, event.event.end, event.event.endSourceRange);
+    }
+  }
+  for (const pin of layout.pins ?? []) {
+    add(`handle:event:${pin.event.id}:start`, pin.x, pin.axisY - 6, pin.event.start, pin.event.startSourceRange);
+  }
+  for (const card of layout.cards ?? []) {
+    add(`handle:event:${card.event.id}:start`, card.x, card.axisY, card.event.start, card.event.startSourceRange);
+  }
+  for (const era of layout.eras) {
+    const y = (layout.title ? 54 : 40) + era.bandRow * (ERA_BAND_HEIGHT + ERA_ROW_GAP) + ERA_BAND_HEIGHT / 2;
+    add(`handle:era:${era.era.id}:start`, era.x, y, era.era.start, era.era.startSourceRange);
+    add(`handle:era:${era.era.id}:end`, era.x + era.width, y, era.era.end, era.era.endSourceRange);
+  }
+  return group({ class: "sx-native-handles" }, handles);
 }
 
 // ─── Shared sections ──────────────────────────────────────

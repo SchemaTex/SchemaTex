@@ -166,12 +166,14 @@ function convertToFlowchart(ast: StateDiagramAST): ConversionResult {
       to,
       kind: "solid",
       label: buildLabel(t),
+      labelSourceRange: t.labelSourceRange,
     };
   });
 
   const fc: FlowchartAST = {
     type: "flowchart",
     title: ast.title,
+    titleSourceRange: ast.titleSourceRange,
     direction: ast.direction === "LR" ? "LR" : ("TB" as FlowchartDirection),
     nodes: fcNodes,
     edges: fcEdges,
@@ -261,7 +263,10 @@ function selfLoopPath(
 
 // ── Public entry point ──────────────────────────────────────
 
-export function layoutStateDiagram(ast: StateDiagramAST): StateLayoutResult {
+export function layoutStateDiagram(
+  ast: StateDiagramAST,
+  pins?: Map<string, { x: number; y: number }>
+): StateLayoutResult {
   const { ast: fcAst, pseudoSizes } = convertToFlowchart(ast);
 
   // Self-loops would confuse Sugiyama's layering (re-visiting a node creates
@@ -277,7 +282,12 @@ export function layoutStateDiagram(ast: StateDiagramAST): StateLayoutResult {
     return true;
   });
 
-  const fcResult = layoutFlowchart(fcAst);
+  // Scene coordinates include the state renderer's title band. Flowchart
+  // layout does not, so remove it from the only affected editable axis (LR).
+  const layoutPins = ast.title && ast.direction === "LR" && pins
+    ? new Map([...pins].map(([id, pin]) => [id, { x: pin.x, y: pin.y - 28 }]))
+    : pins;
+  const fcResult = layoutFlowchart(fcAst, layoutPins);
 
   // Build state-id → AST node map for quick lookup
   const stateById = new Map<string, StateNode>();
@@ -379,6 +389,7 @@ export function layoutStateDiagram(ast: StateDiagramAST): StateLayoutResult {
       to: t.to,
       path,
       label: buildLabel(t),
+      labelSourceRange: t.labelSourceRange,
       labelX: fcEdge.labelAnchor?.x ?? 0,
       labelY: fcEdge.labelAnchor?.y ?? 0,
       labelAnchor: fcEdge.labelAnchor?.textAnchor ?? "middle",
@@ -396,6 +407,7 @@ export function layoutStateDiagram(ast: StateDiagramAST): StateLayoutResult {
       to: sl.to,
       path,
       label: buildLabel(sl),
+      labelSourceRange: sl.labelSourceRange,
       labelX,
       labelY,
       labelAnchor: "start",
@@ -504,6 +516,7 @@ export function layoutStateDiagram(ast: StateDiagramAST): StateLayoutResult {
     clusters,
     notes,
     title: ast.title,
+    titleSourceRange: ast.titleSourceRange,
     direction: ast.direction,
   };
 }

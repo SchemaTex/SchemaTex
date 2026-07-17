@@ -13,6 +13,7 @@ import type {
   SiteplanPolygonRole,
   SiteplanUnit,
 } from "./types";
+import { createSourceLocator } from "../../core/source-range";
 
 export class SiteplanParseError extends Error {
   readonly line: number;
@@ -267,10 +268,15 @@ export function parseSiteplan(text: string): SiteplanAst {
   };
 
   const lines = text.split(/\r?\n/);
+  const locator = createSourceLocator(text);
+  let absoluteStart = 0;
   let sawHeader = false;
   for (let i = 0; i < lines.length; i++) {
     const lineNo = i + 1;
-    const raw = stripComment(normalizeQuotes(lines[i] ?? "")).trim();
+    const original = lines[i] ?? "";
+    const lineStart = absoluteStart;
+    absoluteStart += original.length + (i < lines.length - 1 ? (text[lineStart + original.length] === "\r" ? 2 : 1) : 0);
+    const raw = stripComment(normalizeQuotes(original)).trim();
     if (!raw) continue;
     const tok = tokenize(raw);
     const head = tok.shift();
@@ -280,23 +286,42 @@ export function parseSiteplan(text: string): SiteplanAst {
       if (keyword !== "siteplan" && keyword !== "plotplan" && keyword !== "parcelmap" && keyword !== "propertymap") {
         throw new SiteplanParseError(`expected siteplan header`, lineNo);
       }
+      const titleToken = /"[^"]*"/.exec(original);
+      if (titleToken?.index !== undefined) {
+        ast.titleSourceRange = locator.range(
+          lineStart + titleToken.index,
+          lineStart + titleToken.index + titleToken[0].length
+        );
+      }
       parseHeader(tok, ast, lineNo);
       sawHeader = true;
       continue;
     }
 
     if ((POLYGON_ROLES as readonly string[]).includes(keyword)) {
-      ast.polygons.push(parsePolygon(keyword as SiteplanPolygonRole, tok, lineNo));
+      const polygon = parsePolygon(keyword as SiteplanPolygonRole, tok, lineNo);
+      polygon.pointSourceRanges = coordinateRanges(original, lineStart, locator.range);
+      ast.polygons.push(polygon);
     } else if ((PATH_ROLES as readonly string[]).includes(keyword)) {
-      ast.paths.push(parsePath(keyword as SiteplanPathRole, tok, lineNo));
+      const path = parsePath(keyword as SiteplanPathRole, tok, lineNo);
+      path.pointSourceRanges = coordinateRanges(original, lineStart, locator.range);
+      ast.paths.push(path);
     } else if ((LINE_ROLES as readonly string[]).includes(keyword)) {
-      ast.lines.push(parseLine(keyword as SiteplanLineRole, tok, lineNo));
+      const line = parseLine(keyword as SiteplanLineRole, tok, lineNo);
+      line.pointSourceRanges = coordinateRanges(original, lineStart, locator.range);
+      ast.lines.push(line);
     } else if ((MARKER_KINDS as readonly string[]).includes(keyword)) {
-      ast.markers.push(parseMarker(keyword as SiteplanMarkerKind, tok, lineNo));
+      const marker = parseMarker(keyword as SiteplanMarkerKind, tok, lineNo);
+      marker.atSourceRange = coordinateRanges(original, lineStart, locator.range)[0];
+      ast.markers.push(marker);
     } else if (keyword === "callout") {
-      ast.callouts.push(parseCallout(tokenize(raw).slice(1), lineNo));
+      const callout = parseCallout(tokenize(raw).slice(1), lineNo);
+      [callout.atSourceRange, callout.toSourceRange] = coordinateRanges(original, lineStart, locator.range);
+      ast.callouts.push(callout);
     } else if (keyword === "dim" || keyword === "measure") {
-      ast.dimensions.push(parseDimension(tok, lineNo));
+      const dimension = parseDimension(tok, lineNo);
+      [dimension.fromSourceRange, dimension.toSourceRange] = coordinateRanges(original, lineStart, locator.range);
+      ast.dimensions.push(dimension);
     } else if (keyword === "north") {
       ast.north = tok.length ? parseNum(tok.shift(), "north", lineNo) : 0;
     } else if (keyword === "scale") {
@@ -311,4 +336,18 @@ export function parseSiteplan(text: string): SiteplanAst {
 
   if (!sawHeader) throw new SiteplanParseError(`missing siteplan header`, 1);
   return ast;
+}
+
+function coordinateRanges(
+  line: string,
+  lineStart: number,
+  locate: (start: number, end: number) => import("../../core/types").SourceRange,
+): import("../../core/types").SourceRange[] {
+  const ranges: import("../../core/types").SourceRange[] = [];
+  const re = /-?\d*\.?\d+,-?\d*\.?\d+/g;
+  let match: RegExpExecArray | null;
+  while ((match = re.exec(line))) {
+    ranges.push(locate(lineStart + match.index, lineStart + match.index + match[0].length));
+  }
+  return ranges;
 }

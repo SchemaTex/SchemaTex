@@ -8,7 +8,8 @@
  * Spec: 49-SPORTS-PLAYBOOK-STANDARD §7.
  */
 
-import type { RenderConfig } from "../../core/types";
+import type { RenderConfig, SourceRange } from "../../core/types";
+import { createSourceLocator } from "../../core/source-range";
 import {
   circle,
   desc as descEl,
@@ -73,6 +74,7 @@ function buildCss(t: Theme): string {
 .sx-pb-x { fill: none; stroke: ${t.defenseStroke}; stroke-width: 2.6; stroke-linecap: round; }
 .sx-pb-x-text { font: 700 9px sans-serif; fill: ${t.defenseStroke}; }
 .sx-pb-ball { fill: ${t.ballFill}; stroke: ${t.lineBold}; stroke-width: 0.8; }
+.sx-pb-route-handle { fill: #fff; stroke: #2563eb; stroke-width: 2; }
 .sx-pb-anno { font: 600 12px sans-serif; fill: ${t.annotation}; }
 .sx-pb-legend { font: 11px sans-serif; fill: ${t.annotation}; }
 .sx-pb-error-box { fill: ${t.bg}; stroke: ${t.negative}; stroke-width: 1.5; }
@@ -145,25 +147,155 @@ function teeBar(pts: Array<{ x: number; y: number }>, cls: string): string {
   return line({ class: cls, x1: r2(b.x - half * Math.cos(ang)), y1: r2(b.y - half * Math.sin(ang)), x2: r2(b.x + half * Math.cos(ang)), y2: r2(b.y + half * Math.sin(ang)) });
 }
 
-function renderMove(mv: MoveGeom, ctx: RenderCtx): string {
+interface MoveCoordinateRange {
+  range: SourceRange;
+  x: number;
+  y: number;
+}
+
+function moveCoordinateRanges(source: string | undefined): Array<MoveCoordinateRange | undefined> {
+  if (!source) return [];
+  const locator = createSourceLocator(source);
+  const moves: Array<MoveCoordinateRange | undefined> = [];
+  const number = "[+-]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:[eE][+-]?\\d+)?";
+  const coordinate = new RegExp(`(${number})\\s*,\\s*(${number})`, "g");
+  let offset = 0;
+  for (const rawLine of source.split(/\n/)) {
+    const line = rawLine.replace(/\r$/, "");
+    if (/^\s*(?:route|run|cut|move|dribble|drive|pass|screen|block|shot|shoot|pull|handoff|motion)\b/i.test(line)) {
+      let match: RegExpExecArray | null;
+      let last: MoveCoordinateRange | undefined;
+      while ((match = coordinate.exec(line))) {
+        const first = offset + match.index + match[0].indexOf(match[1]!);
+        const second = offset + match.index + match[0].lastIndexOf(match[2]!);
+        last = {
+          range: locator.range(first, second + match[2]!.length),
+          x: Number(match[1]),
+          y: Number(match[2]),
+        };
+      }
+      moves.push(last);
+      coordinate.lastIndex = 0;
+    }
+    offset += rawLine.length + 1;
+  }
+  return moves;
+}
+
+function renderMove(
+  mv: MoveGeom,
+  ctx: RenderCtx,
+  options: {
+    index: number;
+    coordinate?: MoveCoordinateRange;
+    config?: RenderConfig;
+    scale: number;
+    yUp: boolean;
+  },
+): string {
   const pts = mv.points.map((p) => ({ x: ctx.X(p.x), y: ctx.Y(p.y) }));
+  const endpoint = pts[pts.length - 1];
+  const handleSemanticId = options.coordinate ? `route:${options.index}:endpoint` : undefined;
+  const handleKey = handleSemanticId ? `playbook:${handleSemanticId}` : undefined;
+  if (handleKey && handleSemanticId && endpoint && options.coordinate && options.config?.__scene) {
+    options.config.__scene.push({
+      key: handleKey,
+      kind: "handle",
+      semanticId: handleSemanticId,
+      label: `${mv.kind} endpoint`,
+      bbox: { x: endpoint.x - 6, y: endpoint.y - 6, width: 12, height: 12 },
+      positionSource: {
+        kind: "point",
+        range: options.coordinate.range,
+        x: options.coordinate.x,
+        y: options.coordinate.y,
+        unitsPerSvgX: 1 / options.scale,
+        unitsPerSvgY: options.yUp ? -1 / options.scale : 1 / options.scale,
+      },
+      editable: { label: false, position: "free" },
+    });
+  }
   const strokeCls = mv.kind === "motion" ? "sx-pb-motion" : mv.kind === "shot" ? "sx-pb-shot" : mv.style === "dashed" ? "sx-pb-move-dash" : "sx-pb-move";
   const headCls = mv.kind === "motion" ? "sx-pb-motion-fill" : mv.kind === "shot" ? "sx-pb-shot-fill" : "sx-pb-move-fill";
   const parts: string[] = [];
   if (mv.style === "wavy") {
-    parts.push(path({ class: strokeCls, d: wavyPath(pts) }));
+    parts.push(path({ class: strokeCls, d: wavyPath(pts), "data-sx-live-edge": "true" }));
   } else {
-    parts.push(path({ class: strokeCls, d: pts.map((p, i) => `${i === 0 ? "M" : "L"} ${r2(p.x)} ${r2(p.y)}`).join(" ") }));
+    parts.push(path({
+      class: strokeCls,
+      d: pts.map((p, i) => `${i === 0 ? "M" : "L"} ${r2(p.x)} ${r2(p.y)}`).join(" "),
+      "data-sx-live-edge": "true",
+    }));
   }
   if (mv.end === "arrow") parts.push(arrowHead(pts, headCls));
   else if (mv.end === "tee") parts.push(teeBar(pts, strokeCls));
-  return group({ class: "sx-pb-move-g", "data-kind": mv.kind, "data-player": mv.player }, parts);
+  if (handleKey && endpoint) {
+    parts.push(circle({
+      cx: endpoint.x,
+      cy: endpoint.y,
+      r: 5,
+      class: "sx-pb-route-handle",
+      "data-sx-key": handleKey,
+      "aria-label": `Move ${mv.kind} endpoint`,
+    }));
+  }
+  return group({
+    class: "sx-pb-move-g",
+    "data-kind": mv.kind,
+    "data-player": mv.player,
+    "data-sx-live-explicit": "true",
+    "data-sx-live-start": mv.player,
+    ...(handleSemanticId ? { "data-sx-live-end": handleSemanticId } : {}),
+  }, parts);
 }
 
 // ─── Players ─────────────────────────────────────────────────────
 
-function playerSymbol(p: PlayerGeom, ctx: RenderCtx): string {
+function playerCoordinateRanges(source: string | undefined): Map<string, SourceRange> {
+  const ranges = new Map<string, SourceRange>();
+  if (!source) return ranges;
+  const locator = createSourceLocator(source);
+  const number = "[+-]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:[eE][+-]?\\d+)?";
+  const player = new RegExp(`^\\s*player\\s+(\\S+)[^\\r\\n]*?\\bat\\s+(${number})\\s*,\\s*(${number})`, "gmi");
+  let match: RegExpExecArray | null;
+  while ((match = player.exec(source))) {
+    const first = match.index + match[0].indexOf(match[2]!);
+    const second = match.index + match[0].lastIndexOf(match[3]!);
+    ranges.set(match[1]!, locator.range(first, second + match[3]!.length));
+  }
+  return ranges;
+}
+
+function playerSymbol(
+  p: PlayerGeom,
+  ctx: RenderCtx,
+  options: {
+    config?: RenderConfig;
+    range?: SourceRange;
+    scale: number;
+    yUp: boolean;
+  },
+): string {
   const cx = ctx.X(p.x), cy = ctx.Y(p.y), r = 10;
+  const sceneKey = options.range ? `playbook:player:${p.id}` : undefined;
+  if (sceneKey && options.config?.__scene && options.range) {
+    options.config.__scene.push({
+      key: sceneKey,
+      kind: "node",
+      semanticId: p.id,
+      label: p.label,
+      bbox: { x: cx - 12, y: cy - 12, width: 24, height: 24 },
+      positionSource: {
+        kind: "point",
+        range: options.range,
+        x: p.x,
+        y: p.y,
+        unitsPerSvgX: 1 / options.scale,
+        unitsPerSvgY: options.yUp ? -1 / options.scale : 1 / options.scale,
+      },
+      editable: { label: false, position: "free" },
+    });
+  }
   const parts: string[] = [];
   if (p.side === "defense" || p.pos === "x") {
     const k = r * 0.78;
@@ -181,7 +313,12 @@ function playerSymbol(p: PlayerGeom, ctx: RenderCtx): string {
     parts.push(circle({ class: "sx-pb-o", cx: r2(cx), cy: r2(cy), r }));
     parts.push(textEl({ class: "sx-pb-o-text", x: r2(cx), y: r2(cy + 3.6), "text-anchor": "middle" }, p.label));
   }
-  return group({ class: "sx-pb-player", "data-side": p.side, "data-id": p.id }, parts);
+  return group({
+    class: "sx-pb-player",
+    "data-side": p.side,
+    "data-id": p.id,
+    ...(sceneKey ? { "data-sx-key": sceneKey } : {}),
+  }, parts);
 }
 
 // ─── Legend ──────────────────────────────────────────────────────
@@ -266,8 +403,21 @@ export function renderPlaybookLayout(lay: PlaybookLayoutResult, config?: RenderC
     zones.push(el("ellipse", { class: "sx-pb-zone", cx: X(z.x), cy: Y(z.y), rx: px(z.rx), ry: px(z.ry) }));
     if (z.label) zones.push(textEl({ class: "sx-pb-zone-text", x: X(z.x), y: r2(Y(z.y) - px(z.ry) + (mod.yUp ? 11 : -4)), "text-anchor": "middle" }, z.label));
   }
-  const moves = lay.moves.map((m) => renderMove(m, ctx));
-  const players = lay.players.map((p) => playerSymbol(p, ctx));
+  const moveRanges = moveCoordinateRanges(config?.__source);
+  const moves = lay.moves.map((m, index) => renderMove(m, ctx, {
+    index,
+    coordinate: moveRanges[index],
+    config,
+    scale,
+    yUp: mod.yUp,
+  }));
+  const coordinateRanges = playerCoordinateRanges(config?.__source);
+  const players = lay.players.map((p) => playerSymbol(p, ctx, {
+    config,
+    range: coordinateRanges.get(p.id),
+    scale,
+    yUp: mod.yUp,
+  }));
 
   // football ball on the LOS
   const ball = lay.sport === "football" ? el("ellipse", { class: "sx-pb-ball", cx: X(0), cy: Y(0), rx: 4.5, ry: 2.7 }) : "";

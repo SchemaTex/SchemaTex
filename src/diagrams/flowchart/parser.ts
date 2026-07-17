@@ -49,7 +49,9 @@ import type {
   FlowchartNode,
   FlowchartShape,
   FlowchartSubgraph,
+  SourceRange,
 } from "../../core/types";
+import { createSourceLocator } from "../../core/source-range";
 
 export class FlowchartParseError extends Error {
   constructor(
@@ -69,20 +71,64 @@ interface NodeRef {
   id: string;
   shape?: FlowchartShape;
   label?: string;
+  labelRange?: { start: number; end: number };
 }
 
 /** Mermaid: matched outer double-quotes are stripped from shape-suffix labels. */
 function unquoteLabel(s: string): string {
   const t = s.trim();
-  if (t.length >= 2 && t.startsWith('"') && t.endsWith('"')) return t.slice(1, -1);
+  if (t.length >= 2 && t.startsWith('"') && t.endsWith('"')) {
+    return t.slice(1, -1).replace(/\\([\\"])/g, "$1");
+  }
   return t;
+}
+
+function labelToken(
+  line: string,
+  start: number,
+  end: number
+): { label: string; start: number; end: number } {
+  let tokenStart = start;
+  let tokenEnd = end;
+  while (tokenStart < tokenEnd && /\s/.test(line[tokenStart]!)) tokenStart++;
+  while (tokenEnd > tokenStart && /\s/.test(line[tokenEnd - 1]!)) tokenEnd--;
+  return {
+    label: unquoteLabel(line.slice(tokenStart, tokenEnd)),
+    start: tokenStart,
+    end: tokenEnd,
+  };
+}
+
+/** Find a shape closer while allowing delimiters inside an ASCII quoted label. */
+function findCloser(line: string, start: number, closer: string): number {
+  let inQuote = false;
+  for (let i = start; i <= line.length - closer.length; i++) {
+    const ch = line[i]!;
+    if (ch === '"' && (i === 0 || line[i - 1] !== "\\")) {
+      inQuote = !inQuote;
+      continue;
+    }
+    if (!inQuote && line.startsWith(closer, i)) return i;
+  }
+  return -1;
+}
+
+function shapeResult(
+  line: string,
+  labelStart: number,
+  labelEnd: number,
+  shape: FlowchartShape,
+  end: number
+): { shape: FlowchartShape; label: string; labelStart: number; labelEnd: number; end: number } {
+  const token = labelToken(line, labelStart, labelEnd);
+  return { shape, label: token.label, labelStart: token.start, labelEnd: token.end, end };
 }
 
 /** Try to parse a shape-suffix starting at `pos` in `line`. Returns null if none. */
 function parseShapeSuffix(
   line: string,
   pos: number
-): { shape: FlowchartShape; label: string; end: number } | null {
+): { shape: FlowchartShape; label: string; labelStart: number; labelEnd: number; end: number } | null {
   const ch = line[pos];
   if (ch === undefined) return null;
 
@@ -90,96 +136,96 @@ function parseShapeSuffix(
 
   // Asymmetric: >label]
   if (ch === ">") {
-    const end = line.indexOf("]", pos + 1);
+    const end = findCloser(line, pos + 1, "]");
     if (end < 0) return null;
-    return { shape: "asymmetric", label: unquoteLabel(line.slice(pos + 1, end)), end: end + 1 };
+    return shapeResult(line, pos + 1, end, "asymmetric", end + 1);
   }
 
   // Triple paren double-circle: ((( ... )))
   if (ch === "(" && line[pos + 1] === "(" && line[pos + 2] === "(") {
-    const end = line.indexOf(")))", pos + 3);
+    const end = findCloser(line, pos + 3, ")))");
     if (end < 0) return null;
-    return { shape: "double-circle", label: unquoteLabel(line.slice(pos + 3, end)), end: end + 3 };
+    return shapeResult(line, pos + 3, end, "double-circle", end + 3);
   }
 
   // Stadium: ([ ... ])
   if (ch === "(" && line[pos + 1] === "[") {
-    const end = line.indexOf("])", pos + 2);
+    const end = findCloser(line, pos + 2, "])");
     if (end < 0) return null;
-    return { shape: "stadium", label: unquoteLabel(line.slice(pos + 2, end)), end: end + 2 };
+    return shapeResult(line, pos + 2, end, "stadium", end + 2);
   }
 
   // Double-paren circle: (( ... ))
   if (ch === "(" && line[pos + 1] === "(") {
-    const end = line.indexOf("))", pos + 2);
+    const end = findCloser(line, pos + 2, "))");
     if (end < 0) return null;
-    return { shape: "circle", label: unquoteLabel(line.slice(pos + 2, end)), end: end + 2 };
+    return shapeResult(line, pos + 2, end, "circle", end + 2);
   }
 
   // Double-bracket subroutine: [[ ... ]]
   if (ch === "[" && line[pos + 1] === "[") {
-    const end = line.indexOf("]]", pos + 2);
+    const end = findCloser(line, pos + 2, "]]");
     if (end < 0) return null;
-    return { shape: "subroutine", label: unquoteLabel(line.slice(pos + 2, end)), end: end + 2 };
+    return shapeResult(line, pos + 2, end, "subroutine", end + 2);
   }
 
   // Cylinder: [( ... )]
   if (ch === "[" && line[pos + 1] === "(") {
-    const end = line.indexOf(")]", pos + 2);
+    const end = findCloser(line, pos + 2, ")]");
     if (end < 0) return null;
-    return { shape: "cylinder", label: unquoteLabel(line.slice(pos + 2, end)), end: end + 2 };
+    return shapeResult(line, pos + 2, end, "cylinder", end + 2);
   }
 
   // Hexagon: {{ ... }}
   if (ch === "{" && line[pos + 1] === "{") {
-    const end = line.indexOf("}}", pos + 2);
+    const end = findCloser(line, pos + 2, "}}");
     if (end < 0) return null;
-    return { shape: "hexagon", label: unquoteLabel(line.slice(pos + 2, end)), end: end + 2 };
+    return shapeResult(line, pos + 2, end, "hexagon", end + 2);
   }
 
   // Trapezoid: [/ ... \]  (wider at top)
   if (ch === "[" && line[pos + 1] === "/") {
-    const endSlash = line.indexOf("\\]", pos + 2);
+    const endSlash = findCloser(line, pos + 2, "\\]");
     if (endSlash >= 0) {
-      return { shape: "trapezoid", label: unquoteLabel(line.slice(pos + 2, endSlash)), end: endSlash + 2 };
+      return shapeResult(line, pos + 2, endSlash, "trapezoid", endSlash + 2);
     }
     // Fall through to plain parallelogram [/ /]
-    const end = line.indexOf("/]", pos + 2);
+    const end = findCloser(line, pos + 2, "/]");
     if (end < 0) return null;
-    return { shape: "parallelogram", label: unquoteLabel(line.slice(pos + 2, end)), end: end + 2 };
+    return shapeResult(line, pos + 2, end, "parallelogram", end + 2);
   }
 
   // Trapezoid-alt: [\ ... /]  (wider at bottom)
   if (ch === "[" && line[pos + 1] === "\\") {
-    const endFwd = line.indexOf("/]", pos + 2);
+    const endFwd = findCloser(line, pos + 2, "/]");
     if (endFwd >= 0) {
-      return { shape: "trapezoid-alt", label: unquoteLabel(line.slice(pos + 2, endFwd)), end: endFwd + 2 };
+      return shapeResult(line, pos + 2, endFwd, "trapezoid-alt", endFwd + 2);
     }
     // Parallelogram-alt: [\ \]
-    const end = line.indexOf("\\]", pos + 2);
+    const end = findCloser(line, pos + 2, "\\]");
     if (end < 0) return null;
-    return { shape: "parallelogram-alt", label: unquoteLabel(line.slice(pos + 2, end)), end: end + 2 };
+    return shapeResult(line, pos + 2, end, "parallelogram-alt", end + 2);
   }
 
   // Rect: [ ... ]
   if (ch === "[") {
-    const end = line.indexOf("]", pos + 1);
+    const end = findCloser(line, pos + 1, "]");
     if (end < 0) return null;
-    return { shape: "rect", label: unquoteLabel(line.slice(pos + 1, end)), end: end + 1 };
+    return shapeResult(line, pos + 1, end, "rect", end + 1);
   }
 
   // Round: ( ... )
   if (ch === "(") {
-    const end = line.indexOf(")", pos + 1);
+    const end = findCloser(line, pos + 1, ")");
     if (end < 0) return null;
-    return { shape: "round", label: unquoteLabel(line.slice(pos + 1, end)), end: end + 1 };
+    return shapeResult(line, pos + 1, end, "round", end + 1);
   }
 
   // Diamond: { ... }
   if (ch === "{") {
-    const end = line.indexOf("}", pos + 1);
+    const end = findCloser(line, pos + 1, "}");
     if (end < 0) return null;
-    return { shape: "diamond", label: unquoteLabel(line.slice(pos + 1, end)), end: end + 1 };
+    return shapeResult(line, pos + 1, end, "diamond", end + 1);
   }
 
   return null;
@@ -192,6 +238,19 @@ interface EdgeOp {
   bidirectional: boolean;
   end: number;
   inlineLabel?: string;
+  inlineLabelRange?: { start: number; end: number };
+}
+
+function captureRange(
+  full: string,
+  captured: string | undefined,
+  absoluteStart: number
+): { start: number; end: number } | undefined {
+  if (!captured) return undefined;
+  const capturedAt = full.indexOf(captured);
+  if (capturedAt < 0) return undefined;
+  const token = labelToken(full, capturedAt, capturedAt + captured.length);
+  return { start: absoluteStart + token.start, end: absoluteStart + token.end };
 }
 
 function parseEdgeOp(line: string, pos: number): EdgeOp | null {
@@ -214,6 +273,7 @@ function parseEdgeOp(line: string, pos: number): EdgeOp | null {
       bidirectional: bi && hasArrow,
       end: pos + i + full.length,
       inlineLabel: inlineLabel && inlineLabel.length > 0 ? inlineLabel : undefined,
+      inlineLabelRange: inlineLabel ? captureRange(full, m[2], pos + i) : undefined,
     };
   }
 
@@ -231,6 +291,7 @@ function parseEdgeOp(line: string, pos: number): EdgeOp | null {
           bidirectional: bi && hasArrow,
           end: pos + i + full.length,
           inlineLabel: label && label.length > 0 ? label : undefined,
+          inlineLabelRange: label ? captureRange(full, mWithLabel[2], pos + i) : undefined,
         };
       }
       const mPlain = /^(-\.+)(->|-)?/.exec(rest.slice(i));
@@ -255,6 +316,7 @@ function parseEdgeOp(line: string, pos: number): EdgeOp | null {
         bidirectional: bi && endCh === ">",
         end: pos + i + full.length,
         inlineLabel: label && label.length > 0 ? label : undefined,
+        inlineLabelRange: label ? captureRange(full, mLabeled[2], pos + i) : undefined,
       };
     }
     const mPlain = /^(-{2,})(>|x|o)?/.exec(rest.slice(i));
@@ -278,17 +340,33 @@ function parseNodeRef(line: string, pos: number): { ref: NodeRef; end: number } 
   const id = line.slice(pos, i);
   const shape = parseShapeSuffix(line, i);
   if (shape) {
-    return { ref: { id, shape: shape.shape, label: shape.label }, end: shape.end };
+    return {
+      ref: {
+        id,
+        shape: shape.shape,
+        label: shape.label,
+        labelRange: { start: shape.labelStart, end: shape.labelEnd },
+      },
+      end: shape.end,
+    };
   }
   return { ref: { id }, end: i };
 }
 
 /** Parse pipe label segment: "|yes|" */
-function parsePipeLabel(line: string, pos: number): { label: string; end: number } | null {
+function parsePipeLabel(
+  line: string,
+  pos: number
+): { label: string; labelRange: { start: number; end: number }; end: number } | null {
   if (line[pos] !== "|") return null;
-  const end = line.indexOf("|", pos + 1);
+  const end = findCloser(line, pos + 1, "|");
   if (end < 0) return null;
-  return { label: unquoteLabel(line.slice(pos + 1, end)), end: end + 1 };
+  const token = labelToken(line, pos + 1, end);
+  return {
+    label: token.label,
+    labelRange: { start: token.start, end: token.end },
+    end: end + 1,
+  };
 }
 
 function skipSpaces(line: string, pos: number): number {
@@ -300,6 +378,7 @@ interface ParsedNodeDef {
   id: string;
   shape: FlowchartShape;
   label: string;
+  labelSourceRange?: SourceRange;
 }
 
 interface PendingEdge {
@@ -307,13 +386,26 @@ interface PendingEdge {
   to: string;
   kind: FlowchartEdgeKind;
   label?: string;
+  labelSourceRange?: SourceRange;
   bidirectional: boolean;
 }
 
 /** Register a NodeRef into the nodes accumulator. */
-function registerNode(ref: NodeRef, nodes: ParsedNodeDef[]): void {
+function registerNode(
+  ref: NodeRef,
+  nodes: ParsedNodeDef[],
+  lineStart: number,
+  locate: (start: number, end: number) => SourceRange
+): void {
   if (ref.shape && ref.label !== undefined) {
-    nodes.push({ id: ref.id, shape: ref.shape, label: ref.label });
+    nodes.push({
+      id: ref.id,
+      shape: ref.shape,
+      label: ref.label,
+      labelSourceRange: ref.labelRange
+        ? locate(lineStart + ref.labelRange.start, lineStart + ref.labelRange.end)
+        : undefined,
+    });
   } else {
     nodes.push({ id: ref.id, shape: "rect", label: ref.id });
   }
@@ -329,7 +421,9 @@ function parseNodeGroup(
   line: string,
   startPos: number,
   lineNo: number,
-  nodes: ParsedNodeDef[]
+  nodes: ParsedNodeDef[],
+  lineStart: number,
+  locate: (start: number, end: number) => SourceRange
 ): { refs: NodeRef[]; end: number } {
   let pos = skipSpaces(line, startPos);
   const first = parseNodeRef(line, pos);
@@ -340,7 +434,7 @@ function parseNodeGroup(
       pos + 1
     );
   }
-  registerNode(first.ref, nodes);
+  registerNode(first.ref, nodes, lineStart, locate);
   const refs: NodeRef[] = [first.ref];
   pos = first.end;
 
@@ -351,7 +445,7 @@ function parseNodeGroup(
     const p3 = skipSpaces(line, p2 + 1);
     const next = parseNodeRef(line, p3);
     if (!next) break;
-    registerNode(next.ref, nodes);
+    registerNode(next.ref, nodes, lineStart, locate);
     refs.push(next.ref);
     pos = next.end;
   }
@@ -368,7 +462,12 @@ function parseNodeGroup(
  *
  * Fan-out: A & B --> C & D generates 4 edges (cross-product).
  */
-function parseChainStatement(line: string, lineNo: number): {
+function parseChainStatement(
+  line: string,
+  lineNo: number,
+  lineStart: number,
+  locate: (start: number, end: number) => SourceRange
+): {
   nodes: ParsedNodeDef[];
   edges: PendingEdge[];
 } {
@@ -376,7 +475,7 @@ function parseChainStatement(line: string, lineNo: number): {
   const edges: PendingEdge[] = [];
 
   let pos = skipSpaces(line, 0);
-  const firstGroup = parseNodeGroup(line, pos, lineNo, nodes);
+  const firstGroup = parseNodeGroup(line, pos, lineNo, nodes, lineStart, locate);
   let prevGroup = firstGroup.refs;
   pos = firstGroup.end;
 
@@ -402,14 +501,16 @@ function parseChainStatement(line: string, lineNo: number): {
     // Optional pipe label after arrow
     pos = skipSpaces(line, pos);
     let label = op.inlineLabel;
+    let labelRange = op.inlineLabelRange;
     const pipe = parsePipeLabel(line, pos);
     if (pipe) {
       label = pipe.label;
+      labelRange = pipe.labelRange;
       pos = pipe.end;
     }
 
     pos = skipSpaces(line, pos);
-    const targetGroup = parseNodeGroup(line, pos, lineNo, nodes);
+    const targetGroup = parseNodeGroup(line, pos, lineNo, nodes, lineStart, locate);
     pos = targetGroup.end;
 
     // Cross-product edges: each source → each target
@@ -420,6 +521,9 @@ function parseChainStatement(line: string, lineNo: number): {
           to: to.id,
           kind: op.kind,
           label,
+          labelSourceRange: labelRange
+            ? locate(lineStart + labelRange.start, lineStart + labelRange.end)
+            : undefined,
           bidirectional: op.bidirectional,
         });
       }
@@ -536,13 +640,24 @@ function extractInlineClasses(
     }
     const id = before.slice(idStart, idEnd);
     pairs.push({ id, className: hit.name });
-    out = out.slice(0, hit.start) + out.slice(hit.end);
+    // Blank rather than delete so parser-produced source offsets stay in the
+    // original line coordinate space.
+    out = out.slice(0, hit.start) + " ".repeat(hit.end - hit.start) + out.slice(hit.end);
   }
   return { stripped: out, pairs };
 }
 
 export function parseFlowchart(source: string): FlowchartAST {
-  const lines = source.replace(/\r\n/g, "\n").split("\n");
+  const lines = source.split(/\r?\n/);
+  const lineStarts: number[] = [];
+  let lineCursor = 0;
+  for (const line of lines) {
+    lineStarts.push(lineCursor);
+    lineCursor += line.length;
+    if (source.slice(lineCursor, lineCursor + 2) === "\r\n") lineCursor += 2;
+    else if (source[lineCursor] === "\n") lineCursor += 1;
+  }
+  const locator = createSourceLocator(source);
 
   const ast: FlowchartAST = {
     type: "flowchart",
@@ -586,6 +701,14 @@ export function parseFlowchart(source: string): FlowchartAST {
   if (extra) {
     const mQuoted = /^"([^"]*)"$/.exec(extra);
     ast.title = mQuoted ? mQuoted[1] : extra;
+    const rawHeader = lines[headerIdx]!;
+    const tokenStart = rawHeader.lastIndexOf(extra);
+    if (tokenStart >= 0) {
+      ast.titleSourceRange = locator.range(
+        lineStarts[headerIdx]! + tokenStart,
+        lineStarts[headerIdx]! + tokenStart + extra.length
+      );
+    }
   }
 
   // ── Subgraph stack for tracking current scope ────────────────
@@ -733,7 +856,7 @@ export function parseFlowchart(source: string): FlowchartAST {
     // ── edge / node chain statement ──────────────────────────
     let parsed: { nodes: ParsedNodeDef[]; edges: PendingEdge[] };
     try {
-      parsed = parseChainStatement(trimmed, i + 1);
+      parsed = parseChainStatement(raw, i + 1, lineStarts[i]!, locator.range);
     } catch (e) {
       if (e instanceof FlowchartParseError) throw e;
       // Swallow unknown lines silently (e.g. `%%{init}%%` blocks)
@@ -749,6 +872,7 @@ export function parseFlowchart(source: string): FlowchartAST {
           id: ndef.id,
           shape: ndef.shape,
           label: ndef.label,
+          labelSourceRange: ndef.labelSourceRange,
           parent: currentSg?.id,
         };
         nodeMap.set(ndef.id, node);
@@ -758,7 +882,10 @@ export function parseFlowchart(source: string): FlowchartAST {
         }
       } else {
         // Update shape/label only when this declaration carries richer info
-        if (ndef.label !== ndef.id) existing.label = ndef.label;
+        if (ndef.label !== ndef.id) {
+          existing.label = ndef.label;
+          existing.labelSourceRange = ndef.labelSourceRange;
+        }
         if (ndef.shape !== "rect") existing.shape = ndef.shape;
         // Assign parent if first time inside a subgraph
         if (currentSg && !existing.parent) {
@@ -774,6 +901,7 @@ export function parseFlowchart(source: string): FlowchartAST {
         to: e.to,
         kind: e.kind,
         label: e.label,
+        labelSourceRange: e.labelSourceRange,
         arrowEnd:
           e.kind === "solid" || e.kind === "thick" || e.kind === "dotted" || e.kind === "bidirectional"
             ? "arrow"

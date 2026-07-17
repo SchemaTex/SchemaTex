@@ -111,9 +111,11 @@ class SequenceLayout {
 
   private autoCounter: number | null = null;
   private contentRight = 0;
+  private pins?: Map<string, { x: number; y: number }>;
 
-  constructor(ast: SeqAst) {
+  constructor(ast: SeqAst, pins?: Map<string, { x: number; y: number }>) {
     this.ast = ast;
+    this.pins = pins;
   }
 
   run(): SeqLayoutResult {
@@ -216,6 +218,13 @@ class SequenceLayout {
       this.x[i] = cx;
       if (i < gaps.length) cx += gaps[i]!;
     }
+
+    // Sequence y is event order, but lifeline x is pure presentation. A pin
+    // addresses the participant head's top-left bbox, so recover its center.
+    ps.forEach((p, i) => {
+      const pin = this.pins?.get(p.id);
+      if (pin) this.x[i] = pin.x + this.headW[i]! / 2;
+    });
 
     ps.forEach((p, i) => {
       const created = p.createdInline === true;
@@ -537,6 +546,9 @@ function collectMessages(stmts: SeqStatement[]): SeqMessage[] {
   return out;
 }
 
-export function layoutSequence(ast: SeqAst): SeqLayoutResult {
-  return new SequenceLayout(ast).run();
+export function layoutSequence(
+  ast: SeqAst,
+  pins?: Map<string, { x: number; y: number }>
+): SeqLayoutResult {
+  return new SequenceLayout(ast, pins).run();
 }

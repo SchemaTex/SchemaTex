@@ -54,16 +54,54 @@ const DEFAULTS = {
 
 export function layoutVenn(ast: VennAST, opts: LayoutOptions = {}): VennLayoutResult {
   const mode = decideMode(ast);
+  let result: VennLayoutResult;
   if (mode === "euler") {
-    return layoutEuler(ast, opts);
+    result = layoutEuler(ast, opts);
+  } else {
+    const n = ast.sets.length;
+    if (n === 1) result = layoutSingle(ast, opts);
+    else if (n === 2) result = layoutTwo(ast, opts);
+    else if (n === 3) result = layoutThree(ast, opts);
+    else if (n === 4) result = layoutFour(ast, opts);
+    // Fallback for 5+ — collapse to Euler disjoint row (UpSet deferred).
+    else result = layoutEuler(ast, opts);
   }
-  const n = ast.sets.length;
-  if (n === 1) return layoutSingle(ast, opts);
-  if (n === 2) return layoutTwo(ast, opts);
-  if (n === 3) return layoutThree(ast, opts);
-  if (n === 4) return layoutFour(ast, opts);
-  // Fallback for 5+ — collapse to Euler disjoint row (UpSet deferred).
-  return layoutEuler(ast, opts);
+  return applyAuthoredGeometry(ast, result);
+}
+
+function applyAuthoredGeometry(ast: VennAST, result: VennLayoutResult): VennLayoutResult {
+  const minDimension = Math.min(result.width, result.height);
+  const shapes = result.shapes.map((shape) => {
+    const authored = ast.sets.find((set) => set.id === shape.id);
+    if (!authored?.at && authored?.radius === undefined) return shape;
+    const cx = authored.at ? authored.at.x * result.width : shape.cx;
+    const cy = authored.at ? authored.at.y * result.height : shape.cy;
+    if (shape.kind === "circle") {
+      return {
+        ...shape,
+        cx,
+        cy,
+        r: authored.radius !== undefined ? authored.radius * minDimension : shape.r,
+      };
+    }
+    const scale = authored.radius !== undefined
+      ? (authored.radius * minDimension) / Math.max(shape.rx, 1)
+      : 1;
+    return { ...shape, cx, cy, rx: shape.rx * scale, ry: shape.ry * scale };
+  });
+  const setLabels = ast.sets.map((set) => {
+    const shape = shapes.find((candidate) => candidate.id === set.id);
+    if (!shape) return result.setLabels.find((label) => label.id === set.id)
+      ?? { id: set.id, label: set.label, x: result.width / 2, y: 24, anchor: "middle" as const };
+    const top = shape.kind === "circle" ? shape.r : shape.ry;
+    return { id: set.id, label: set.label, x: shape.cx, y: shape.cy - top - 10, anchor: "middle" as const };
+  });
+  return {
+    ...result,
+    shapes,
+    labels: placeLabels(ast, shapes),
+    setLabels,
+  };
 }
 
 function decideMode(ast: VennAST): "venn" | "euler" {

@@ -34,6 +34,17 @@ export type {
   SchematexRenderResult,
   SchematexResultStatus,
 } from "./core/diagnostics";
+export type { SceneItem, SourceRange } from "./core/types";
+export {
+  applyPins,
+  prunePins,
+  reattachPins,
+  setLabel,
+  setPosition,
+  stripPins,
+  type SceneEditTarget,
+  type SourceEditResult,
+} from "./core/editing";
 export { genogram } from "./diagrams/genogram";
 export { ecomap } from "./diagrams/ecomap";
 export { pedigree } from "./diagrams/pedigree";

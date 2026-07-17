@@ -4,7 +4,7 @@
  * Spec: docs/reference/34-PETRINET-STANDARD.md §3, §6, §8
  */
 
-import type { RenderConfig } from "../../core/types";
+import type { RenderConfig, SceneItem } from "../../core/types";
 import {
   svgRoot,
   group,
@@ -30,6 +30,7 @@ import type {
   PetriPoint,
   PetriTransitionBox,
 } from "./types";
+import { resolveSceneTitle } from "../../core/title-scene";
 
 type Theme = ResolvedTheme<PetriTokens>;
 
@@ -120,7 +121,12 @@ function renderTokens(pb: PetriPlaceBox, style: PetriAst["tokenStyle"]): string 
 
 // ── places ──────────────────────────────────────────────────────
 
-function renderPlace(pb: PetriPlaceBox, style: PetriAst["tokenStyle"]): string {
+function renderPlace(
+  pb: PetriPlaceBox,
+  style: PetriAst["tokenStyle"],
+  direction: PetriLayoutResult["direction"],
+  scene?: SceneItem[],
+): string {
   const cls = pb.place.capacity !== undefined ? "sx-petri-place sx-petri-place-cap" : "sx-petri-place";
   const parts: string[] = [circle({ class: cls, cx: pb.cx, cy: pb.cy, r: pb.r })];
   parts.push(renderTokens(pb, style));
@@ -145,12 +151,29 @@ function renderPlace(pb: PetriPlaceBox, style: PetriAst["tokenStyle"]): string {
   if (pb.place.capacity !== undefined) attrs["data-capacity"] = pb.place.capacity;
   if (pb.isSource) attrs["data-source"] = "true";
   if (pb.isSink) attrs["data-sink"] = "true";
+  if (scene) {
+    const key = `node:${pb.place.id}`;
+    attrs["data-sx-key"] = key;
+    attrs["data-sx-owner"] = key;
+    scene.push({
+      key,
+      kind: "node",
+      semanticId: pb.place.id,
+      label: pb.place.label ?? pb.place.id,
+      bbox: { x: pb.cx - pb.r, y: pb.cy - pb.r, width: pb.r * 2, height: pb.r * 2 },
+      editable: { label: false, position: direction === "lr" ? "move-y" : "move-x" },
+    });
+  }
   return group(attrs, parts);
 }
 
 // ── transitions ─────────────────────────────────────────────────
 
-function renderTransition(tb: PetriTransitionBox): string {
+function renderTransition(
+  tb: PetriTransitionBox,
+  direction: PetriLayoutResult["direction"],
+  scene?: SceneItem[],
+): string {
   const x = tb.cx - tb.w / 2;
   const y = tb.cy - tb.h / 2;
   const parts: string[] = [];
@@ -176,15 +199,26 @@ function renderTransition(tb: PetriTransitionBox): string {
   if (tb.transition.guard) {
     parts.push(textEl({ class: "sx-petri-rate", x: tb.cx + tb.w / 2 + 4, y: tb.cy + 3 }, `[${tb.transition.guard}]`));
   }
-  return group(
-    {
-      class: tb.dead ? "sx-petri-trans-g sx-petri-dead" : "sx-petri-trans-g",
-      "data-id": tb.transition.id,
-      "data-kind": tb.transition.kind,
-      "data-enabled": tb.enabled ? "true" : "false",
-    },
-    parts,
-  );
+  const attrs: Record<string, string | number | undefined> = {
+    class: tb.dead ? "sx-petri-trans-g sx-petri-dead" : "sx-petri-trans-g",
+    "data-id": tb.transition.id,
+    "data-kind": tb.transition.kind,
+    "data-enabled": tb.enabled ? "true" : "false",
+  };
+  if (scene) {
+    const key = `node:${tb.transition.id}`;
+    attrs["data-sx-key"] = key;
+    attrs["data-sx-owner"] = key;
+    scene.push({
+      key,
+      kind: "node",
+      semanticId: tb.transition.id,
+      label: tb.transition.label ?? tb.transition.id,
+      bbox: { x, y, width: tb.w, height: tb.h },
+      editable: { label: false, position: direction === "lr" ? "move-y" : "move-x" },
+    });
+  }
+  return group(attrs, parts);
 }
 
 // ── arcs ─────────────────────────────────────────────────────────
@@ -197,7 +231,7 @@ function arcPath(ag: PetriArcGeom): string {
   return `M ${p[0]!.x} ${p[0]!.y} L ${p[p.length - 1]!.x} ${p[p.length - 1]!.y}`;
 }
 
-function renderArc(ag: PetriArcGeom): string {
+function renderArc(ag: PetriArcGeom, scene?: SceneItem[], index = 0): string {
   const parts: string[] = [];
   let cls = "sx-petri-arc";
   let markerEnd: string | undefined;
@@ -210,7 +244,12 @@ function renderArc(ag: PetriArcGeom): string {
     cls += " sx-petri-arc-inhibitor";
   } // read: no head, base class
 
-  parts.push(pathEl({ class: cls, d: arcPath(ag), ...(markerEnd ? { "marker-end": markerEnd } : {}) }));
+  parts.push(pathEl({
+    class: cls,
+    d: arcPath(ag),
+    ...(markerEnd ? { "marker-end": markerEnd } : {}),
+    "data-sx-live-edge": scene ? "true" : undefined,
+  }));
 
   // inhibitor: hollow circle at the transition end
   if (ag.type === "inhibitor") {
@@ -231,8 +270,26 @@ function renderArc(ag: PetriArcGeom): string {
       textEl({ class: "sx-petri-weight", x: ag.labelX, y: ag.labelY + 3, "text-anchor": "middle" }, String(ag.weight)),
     );
   }
+  scene?.push({
+    key: `edge:${index}`,
+    kind: "edge",
+    semanticId: `${ag.arc.from}->${ag.arc.to}`,
+    path: arcPath(ag),
+    editable: { label: false, position: "none" },
+  });
   return group(
-    { class: "sx-petri-arc-g", "data-from": ag.arc.from, "data-to": ag.arc.to, "data-type": ag.type, "data-weight": ag.weight },
+    {
+      class: "sx-petri-arc-g",
+      "data-from": ag.arc.from,
+      "data-to": ag.arc.to,
+      "data-type": ag.type,
+      "data-weight": ag.weight,
+      ...(scene ? {
+        "data-sx-live-explicit": "true",
+        "data-sx-live-start": ag.arc.from,
+        "data-sx-live-end": ag.arc.to,
+      } : {}),
+    },
     parts,
   );
 }
@@ -261,13 +318,29 @@ export function renderPetriLayout(layout: PetriLayoutResult, config?: RenderConf
 
   const titleBand = layout.title ? 32 : 0;
   if (layout.title) {
-    children.push(textEl({ x: layout.width / 2, y: 22, class: "sx-petri-title", "text-anchor": "middle" }, layout.title));
+    const title = resolveSceneTitle(
+      layout.title,
+      layout.ast.titleSourceRange,
+      layout.width / 2,
+      22,
+      config
+    );
+    children.push(textEl({ x: title.x, y: title.y, class: "sx-petri-title", "text-anchor": "middle", ...title.attrs }, layout.title));
   }
 
   const body: string[] = [];
-  body.push(group({ class: "sx-petri-arcs" }, layout.arcs.map(renderArc)));
-  body.push(group({ class: "sx-petri-places" }, layout.places.map((p) => renderPlace(p, layout.ast.tokenStyle))));
-  body.push(group({ class: "sx-petri-transitions" }, layout.transitions.map(renderTransition)));
+  body.push(group(
+    { class: "sx-petri-arcs" },
+    layout.arcs.map((arc, index) => renderArc(arc, config?.__scene, index)),
+  ));
+  body.push(group(
+    { class: "sx-petri-places" },
+    layout.places.map((p) => renderPlace(p, layout.ast.tokenStyle, layout.direction, config?.__scene)),
+  ));
+  body.push(group(
+    { class: "sx-petri-transitions" },
+    layout.transitions.map((transition) => renderTransition(transition, layout.direction, config?.__scene)),
+  ));
 
   children.push(titleBand ? group({ transform: `translate(0, ${titleBand})` }, body) : group({}, body));
 
@@ -288,6 +361,6 @@ export function renderPetriLayout(layout: PetriLayoutResult, config?: RenderConf
 
 export function renderPetri(textOrAst: string | PetriAst, config?: RenderConfig): string {
   const ast = typeof textOrAst === "string" ? parsePetri(textOrAst) : textOrAst;
-  const layout = layoutPetri(ast);
+  const layout = layoutPetri(ast, config?.__pins);
   return renderPetriLayout(layout, config);
 }

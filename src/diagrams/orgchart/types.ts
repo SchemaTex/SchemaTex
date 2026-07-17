@@ -27,6 +27,8 @@ export type OrgchartNodeKind = "person" | "role" | "draft" | "advisor";
 export interface OrgchartNode {
   id: string;
   name: string;
+  /** Exact source token for the explicitly-authored display name. */
+  nameSourceRange?: import("../../core/types").SourceRange;
   title?: string;
   department?: string;
   /** Secondary info line: email, phone, location, short note */
@@ -64,6 +66,7 @@ export interface OrgchartEdge {
 export interface OrgchartAST {
   type: "orgchart";
   title?: string;
+  titleSourceRange?: import("../../core/types").SourceRange;
   direction: OrgchartDirection;
   layout: OrgchartLayoutMode;
   nodes: OrgchartNode[];

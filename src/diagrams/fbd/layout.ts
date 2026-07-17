@@ -27,6 +27,7 @@ import type {
   FbdWire,
 } from "../../core/types";
 import { getBlockSpec, isStdBlock } from "./blocks";
+import { applyPins } from "../../core/editing";
 
 export const FBD_CONST = {
   block_min_width: 64,
@@ -168,7 +169,12 @@ function assignLayers(network: FbdNetwork, graph: NetworkGraph): Map<string, num
   return layer;
 }
 
-function layoutNetwork(network: FbdNetwork, originX: number, originY: number): FbdLayoutNetwork {
+function layoutNetwork(
+  network: FbdNetwork,
+  originX: number,
+  originY: number,
+  pins?: Map<string, { x: number; y: number }>
+): FbdLayoutNetwork {
   const graph = buildGraph(network);
 
   // Compute sizes
@@ -190,6 +196,7 @@ function layoutNetwork(network: FbdNetwork, originX: number, originY: number): F
     for (const v of graph.inputVars.get(b.id) ?? []) inputVarsAll.add(v);
     for (const v of graph.outputVars.get(b.id) ?? []) outputVarsAll.add(v);
   }
+
   const inputVars = Array.from(inputVarsAll);
   const outputVars = Array.from(outputVarsAll);
 
@@ -236,6 +243,13 @@ function layoutNetwork(network: FbdNetwork, originX: number, originY: number): F
       height: bb.h,
       ports: buildPorts(b, bb.x, bb.y, bb.w),
     });
+  }
+  applyPins(layoutBlocks, pins, {
+    id: (block) => block.block.instance ? block.block.id : `@synthetic:${block.block.id}`,
+    position: (block) => block.block.instance ? "move-y" : "none",
+  });
+  for (const block of layoutBlocks) {
+    block.ports = buildPorts(block.block, block.x, block.y, block.width);
   }
 
   // Place variable terminals
@@ -323,9 +337,13 @@ function layoutNetwork(network: FbdNetwork, originX: number, originY: number): F
     }
   }
 
-  const width = cursorX - originX;
+  const pinnedYMax = Math.max(yMax, ...layoutBlocks.map((block) => block.y + block.height));
+  const width = Math.max(
+    cursorX - originX,
+    ...layoutBlocks.map((block) => block.x + block.width + FBD_CONST.network_padding_x - originX),
+  );
   const height = Math.max(
-    yMax - originY + FBD_CONST.network_padding_y,
+    pinnedYMax - originY + FBD_CONST.network_padding_y,
     FBD_CONST.block_min_height + FBD_CONST.network_label_h + FBD_CONST.network_padding_y * 2
   );
 
@@ -401,12 +419,12 @@ function routeWire(
   return `M ${sx} ${sy} L ${column} ${sy} L ${column} ${ey} L ${ex} ${ey}`;
 }
 
-export function layoutFbd(ast: FbdAst): FbdLayoutResult {
+export function layoutFbd(ast: FbdAst, pins?: Map<string, { x: number; y: number }>): FbdLayoutResult {
   const networks: FbdLayoutNetwork[] = [];
   let cursorY = 0;
   let maxWidth = 0;
   for (const net of ast.networks) {
-    const ln = layoutNetwork(net, 0, cursorY);
+    const ln = layoutNetwork(net, 0, cursorY, pins);
     networks.push(ln);
     cursorY = ln.y + ln.height + FBD_CONST.network_gap_y;
     maxWidth = Math.max(maxWidth, ln.width);

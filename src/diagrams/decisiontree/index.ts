@@ -4,6 +4,7 @@ import { renderDecisionTree } from "./renderer";
 
 export const decisiontree: DiagramPlugin = {
   type: "decisiontree" as DiagramPlugin["type"],
+  capabilities: { scene: true },
   detect(text) {
     return /^\s*decisiontree\b/i.test(text);
   },

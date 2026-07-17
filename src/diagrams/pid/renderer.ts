@@ -1,9 +1,10 @@
 import { defs, el, escapeXml, group, line as lineEl, path as pathEl, polygon, rect, svgRoot, text as textEl } from "../../core/svg";
-import type { RenderConfig } from "../../core/types";
+import type { RenderConfig, SceneItem } from "../../core/types";
 import { layoutPid } from "./layout";
 import { parsePid } from "./parser";
 import { renderEquip, renderInstrument } from "./symbols";
 import type { PidAST, PidLayoutLine, PidLayoutResult } from "./types";
+import { resolveSceneTitle } from "../../core/title-scene";
 
 const STYLE = `
 .lt-pid-equip { fill: #ffffff; stroke: #1d1d1d; stroke-width: 1.6; }
@@ -65,7 +66,7 @@ function isSignalLine(l: PidLayoutLine): boolean {
   return SIGNAL_LINE_TYPES.has(l.line.lineType);
 }
 
-function renderLine(l: PidLayoutLine): string {
+function renderLine(l: PidLayoutLine, scene?: SceneItem[], index = 0): string {
   const cls = lineClass(l.line.lineType);
   const parts: string[] = [
     pathEl({
@@ -74,6 +75,7 @@ function renderLine(l: PidLayoutLine): string {
       class: `${cls} lt-pid-line-path`,
       "data-line-id": l.line.id,
       "data-service": l.line.service ?? "",
+      "data-sx-live-edge": scene ? "true" : undefined,
     }),
   ];
 
@@ -109,7 +111,19 @@ function renderLine(l: PidLayoutLine): string {
     );
   }
 
-  return group({ class: "lt-pid-line", "data-id": l.line.id }, parts);
+  scene?.push({
+    key: `edge:${index}`, kind: "edge", path: l.path,
+    editable: { label: false, position: "none" },
+  });
+  return group({
+    class: "lt-pid-line", "data-id": l.line.id,
+    ...(scene ? {
+      "data-sx-live-explicit": "true",
+      "data-sx-live-start": l.line.from.id,
+      "data-sx-live-end": l.line.to.id,
+      "data-sx-live-mode": "orthogonal",
+    } : {}),
+  }, parts);
 }
 
 function pneumaticTicks(d: string): string[] {
@@ -151,9 +165,9 @@ function pneumaticTicks(d: string): string[] {
   return ticks;
 }
 
-export function renderPidAST(ast: PidAST, _config?: RenderConfig): string {
-  const layout = layoutPid(ast);
-  return renderLayout(layout);
+export function renderPidAST(ast: PidAST, config?: RenderConfig): string {
+  const layout = layoutPid(ast, config?.__pins);
+  return renderLayout(layout, config);
 }
 
 export function renderPid(text: string, config?: RenderConfig): string {
@@ -161,7 +175,7 @@ export function renderPid(text: string, config?: RenderConfig): string {
   return renderPidAST(ast, config);
 }
 
-function renderLayout(layout: PidLayoutResult): string {
+function renderLayout(layout: PidLayoutResult, config?: RenderConfig): string {
   const equipNodes = layout.equipment.map((eq) => {
     const symbol = renderEquip(
       eq.equip.equipType,
@@ -173,10 +187,22 @@ function renderLayout(layout: PidLayoutResult): string {
       "data-id": eq.equip.id,
       "data-type": eq.equip.equipType,
       transform: `translate(${eq.cx} ${eq.cy})`,
+      ...(config?.__scene ? {
+        "data-sx-key": `node:${eq.equip.id}`,
+        "data-sx-owner": `node:${eq.equip.id}`,
+      } : {}),
     };
     if (eq.equip.equipType === "unknown" && eq.equip.rawType) {
       wrapAttrs["data-raw-type"] = eq.equip.rawType;
     }
+    config?.__scene?.push({
+      key: `node:${eq.equip.id}`,
+      kind: "node",
+      semanticId: eq.equip.id,
+      label: eq.equip.tag ?? eq.equip.id,
+      bbox: { x: eq.x, y: eq.y, width: eq.width, height: eq.height },
+      editable: { label: false, position: "free" },
+    });
     return group(wrapAttrs, [symbol]);
   });
 
@@ -188,10 +214,24 @@ function renderLayout(layout: PidLayoutResult): string {
         "data-tag": i.inst.tag,
         "data-category": i.inst.category,
         transform: `translate(${i.cx} ${i.cy})`,
+        ...(config?.__scene ? {
+          "data-sx-key": `node:${i.inst.tag}`,
+          "data-sx-owner": `node:${i.inst.tag}`,
+        } : {}),
       },
       [renderInstrument(i.inst.category, letter, number)]
     );
   });
+  for (const item of layout.instruments) {
+    config?.__scene?.push({
+      key: `node:${item.inst.tag}`,
+      kind: "node",
+      semanticId: item.inst.tag,
+      label: item.inst.tag,
+      bbox: { x: item.cx - item.r, y: item.cy - item.r, width: item.r * 2, height: item.r * 2 },
+      editable: { label: false, position: "free" },
+    });
+  }
 
   // Auto-generate signal connections from instrument relations:
   //  - measures: dashed signal line from instrument to the measured equipment center
@@ -205,11 +245,20 @@ function renderLayout(layout: PidLayoutResult): string {
         const ay = i.cy;
         const bx = eq.cx;
         const by = eq.cy + eq.height / 2;
+        const path = `M ${ax} ${ay} L ${ax} ${by + 8} L ${bx} ${by + 8} L ${bx} ${by}`;
         autoSignals.push(
-          pathEl({
-            d: `M ${ax} ${ay} L ${ax} ${by + 8} L ${bx} ${by + 8} L ${bx} ${by}`,
+          group({
+            ...(config?.__scene ? {
+              "data-sx-live-explicit": "true",
+              "data-sx-live-start": i.inst.tag,
+              "data-sx-live-end": i.inst.measures,
+              "data-sx-live-mode": "orthogonal",
+            } : {}),
+          }, [pathEl({
+            d: path,
             class: "lt-pid-electric",
-          })
+            "data-sx-live-edge": config?.__scene ? "true" : undefined,
+          })])
         );
       }
     }
@@ -220,18 +269,30 @@ function renderLayout(layout: PidLayoutResult): string {
         const ay = i.cy + i.r;
         const bx = eq.cx;
         const by = eq.y;
+        const path = `M ${ax} ${ay} L ${bx} ${ay} L ${bx} ${by}`;
         autoSignals.push(
-          pathEl({
-            d: `M ${ax} ${ay} L ${bx} ${ay} L ${bx} ${by}`,
+          group({
+            ...(config?.__scene ? {
+              "data-sx-live-explicit": "true",
+              "data-sx-live-start": i.inst.tag,
+              "data-sx-live-end": i.inst.controls,
+              "data-sx-live-mode": "orthogonal",
+            } : {}),
+          }, [pathEl({
+            d: path,
             class: "lt-pid-pneumatic",
-          })
+            "data-sx-live-edge": config?.__scene ? "true" : undefined,
+          })])
         );
       }
     }
   }
 
-  const titleNode = layout.title
-    ? textEl({ x: layout.width / 2, y: 22, class: "lt-pid-title", "text-anchor": "middle" }, layout.title)
+  const title = layout.title
+    ? resolveSceneTitle(layout.title, layout.titleSourceRange, layout.width / 2, 22, config)
+    : undefined;
+  const titleNode = title
+    ? textEl({ x: title.x, y: title.y, class: "lt-pid-title", "text-anchor": "middle", ...title.attrs }, layout.title!)
     : "";
 
   return svgRoot(
@@ -265,12 +326,12 @@ function renderLayout(layout: PidLayoutResult): string {
       // Z-order: process pipes behind equipment; signal lines + instruments above.
       group(
         { class: "lt-pid-lines lt-pid-process-lines" },
-        layout.lines.filter((l) => !isSignalLine(l)).map(renderLine)
+        layout.lines.filter((l) => !isSignalLine(l)).map((line) => renderLine(line, config?.__scene, layout.lines.indexOf(line)))
       ),
       group({ class: "lt-pid-equipment" }, equipNodes),
       group(
         { class: "lt-pid-lines lt-pid-signal-lines" },
-        [...layout.lines.filter(isSignalLine).map(renderLine), ...autoSignals]
+        [...layout.lines.filter(isSignalLine).map((line) => renderLine(line, config?.__scene, layout.lines.indexOf(line))), ...autoSignals]
       ),
       group({ class: "lt-pid-instruments" }, instNodes),
     ]

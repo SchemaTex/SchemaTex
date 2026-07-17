@@ -1,4 +1,5 @@
-import type { MindmapAST, MindmapNode, MindmapStyle } from "../../core/types";
+import type { MindmapAST, MindmapNode, MindmapStyle, SourceRange } from "../../core/types";
+import { createSourceLocator } from "../../core/source-range";
 import { tokenizeInline } from "./inline";
 import {
   type ExtendedMindmapMode,
@@ -70,11 +71,21 @@ function parseDirective(line: string, out: Directives): void {
   }
 }
 
-function makeNode(id: string, label: string, depth: number): MindmapNode {
-  return { id, label, tokens: tokenizeInline(label), depth, children: [] };
+function makeNode(
+  id: string,
+  label: string,
+  depth: number,
+  sourceRange?: SourceRange
+): MindmapNode {
+  return { id, label, tokens: tokenizeInline(label), depth, children: [], sourceRange };
 }
 
 export function parseMindmap(text: string): MindmapAST {
+  const locator = createSourceLocator(text);
+  const lineStarts = [0];
+  for (let i = 0; i < text.length; i++) {
+    if (text.charCodeAt(i) === 10) lineStarts.push(i + 1);
+  }
   const allLines = text.split(/\r?\n/);
   let lineOffset = 0;
 
@@ -90,6 +101,18 @@ export function parseMindmap(text: string): MindmapAST {
   let rootInferred: "line" | "placeholder" | undefined;
   let idCounter = 0;
   const nextId = () => `n${idCounter++}`;
+  const labelRange = (
+    sourceLineIndex: number,
+    line: string,
+    captured: string,
+    label: string
+  ): SourceRange | undefined => {
+    const capturedAt = line.lastIndexOf(captured);
+    const labelAt = capturedAt < 0 ? -1 : capturedAt + captured.indexOf(label);
+    const lineStart = lineStarts[sourceLineIndex];
+    if (lineStart === undefined || labelAt < 0) return undefined;
+    return locator.range(lineStart + labelAt, lineStart + labelAt + label.length);
+  };
 
   // Parent stack — tracks (node, depth). Bullet depth = lastHeadingDepth + 1 + floor(indent / 2).
   const stack: { node: MindmapNode; depth: number }[] = [];
@@ -135,7 +158,12 @@ export function parseMindmap(text: string): MindmapAST {
     if (heading) {
       const depth = heading[1].length - 1; // H1 → 0 (root), H2 → 1, ...
       const label = heading[2].trim();
-      const node = makeNode(nextId(), label, depth);
+      const node = makeNode(
+        nextId(),
+        label,
+        depth,
+        labelRange(i + lineOffset, line, heading[2], label)
+      );
       if (depth === 0) {
         if (root) throw new MindmapParseError("multiple `#` center nodes not allowed", lineNo, undefined, line);
         root = node;
@@ -153,7 +181,12 @@ export function parseMindmap(text: string): MindmapAST {
       const indent = bullet[1].length;
       const depth = lastHeadingDepth + 1 + Math.floor(indent / 2);
       const label = bullet[2].trim();
-      const node = makeNode(nextId(), label, depth);
+      const node = makeNode(
+        nextId(),
+        label,
+        depth,
+        labelRange(i + lineOffset, line, bullet[2], label)
+      );
       attach(node, depth, lineNo, line);
       continue;
     }
@@ -163,7 +196,16 @@ export function parseMindmap(text: string): MindmapAST {
     // an LLM writing the title as a bare line (`My Topic`) instead of `# Title`
     // — adopt it as the center rather than discarding it and orphaning the rest.
     if (!root && stack.length === 0) {
-      root = makeNode(nextId(), trimmed, 0);
+      const lineStart = lineStarts[i + lineOffset];
+      const labelAt = line.indexOf(trimmed);
+      root = makeNode(
+        nextId(),
+        trimmed,
+        0,
+        lineStart === undefined || labelAt < 0
+          ? undefined
+          : locator.range(lineStart + labelAt, lineStart + labelAt + trimmed.length)
+      );
       rootInferred = "line";
       stack.push({ node: root, depth: 0 });
       lastHeadingDepth = 0;

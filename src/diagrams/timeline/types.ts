@@ -49,8 +49,10 @@ export interface TimelineEvent {
   label: string;
   kind: TimelineEventKind;
   start: TimelineDate;
+  startSourceRange?: import("../../core/types").SourceRange;
   /** Defined only for kind === "range". */
   end?: TimelineDate;
+  endSourceRange?: import("../../core/types").SourceRange;
   trackId?: string;
   icon?: string;
   shape?: TimelineEventShape;
@@ -67,6 +69,8 @@ export interface TimelineEra {
   label: string;
   start: TimelineDate;
   end: TimelineDate;
+  startSourceRange?: import("../../core/types").SourceRange;
+  endSourceRange?: import("../../core/types").SourceRange;
   color?: string;
 }
 
@@ -78,6 +82,7 @@ export interface TimelineTrack {
 export interface TimelineAST {
   type: "timeline";
   title?: string;
+  titleSourceRange?: import("../../core/types").SourceRange;
   style: TimelineStyle;
   orientation: TimelineOrientation;
   scale: TimelineScale;
@@ -176,6 +181,8 @@ export interface TimelineLayoutResult {
   ticks: TimelineTick[];
   axisY: number;
   title?: string;
+  /** Source-value delta per SVG pixel for proportional date handles. */
+  timeUnitsPerSvgX?: number;
   /** Gantt-only. */
   pins?: TimelinePinLayout[];
   legend?: TimelineLegendItem[];

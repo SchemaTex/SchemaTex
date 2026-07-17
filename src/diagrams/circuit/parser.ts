@@ -7,6 +7,8 @@ import type {
 } from "../../core/types";
 import { parseNetlist } from "./netlist";
 import { matchQuotedTitle } from "../../core/quotes";
+import { createSourceLocator, findFirstQuotedRange } from "../../core/source-range";
+import type { SourceRange } from "../../core/types";
 
 export class CircuitParseError extends Error {
   constructor(message: string) {
@@ -106,7 +108,24 @@ function normalizeType(raw: string): CircuitComponentType | null {
 
 const DIRECTIONS = new Set(["right", "left", "up", "down"]);
 
-function parseAttrs(rest: string): { direction?: CircuitDirection; attrs: Record<string, string>; label?: string; value?: string; at?: string; length?: string } {
+function assignedValueRange(
+  rest: string,
+  key: string,
+  absoluteStart: number,
+  locator: ReturnType<typeof createSourceLocator>
+): SourceRange | undefined {
+  const match = new RegExp(`(?:^|\\s)${key}=("[^"]*"|\\S+)`).exec(rest);
+  if (!match) return undefined;
+  const token = match[1]!;
+  const start = match.index + match[0].lastIndexOf(token);
+  return locator.range(absoluteStart + start, absoluteStart + start + token.length);
+}
+
+function parseAttrs(
+  rest: string,
+  absoluteStart: number,
+  locator: ReturnType<typeof createSourceLocator>
+): { direction?: CircuitDirection; attrs: Record<string, string>; label?: string; value?: string; at?: string; length?: string; labelSourceRange?: SourceRange; valueSourceRange?: SourceRange } {
   const out: {
     direction?: CircuitDirection;
     attrs: Record<string, string>;
@@ -170,7 +189,11 @@ function parseAttrs(rest: string): { direction?: CircuitDirection; attrs: Record
     // bare attribute flags
     out.attrs[tok] = "true";
   }
-  return out;
+  return {
+    ...out,
+    labelSourceRange: assignedValueRange(rest, "label", absoluteStart, locator),
+    valueSourceRange: assignedValueRange(rest, "value", absoluteStart, locator),
+  };
 }
 
 /**
@@ -184,6 +207,7 @@ function parseAttrs(rest: string): { direction?: CircuitDirection; attrs: Record
  *      positions.
  */
 export function parseCircuit(text: string): CircuitAST {
+  const locator = createSourceLocator(text);
   const rawLines = text.split("\n");
   const firstMeaningful = rawLines
     .map((l) => l.replace(/[#;].*$/, "").trim())
@@ -200,11 +224,37 @@ export function parseCircuit(text: string): CircuitAST {
       }
     }
     const body = rawLines.slice(headerIdx + 1).join("\n");
-    return parseNetlist(body, netlistTitle);
+    const ast = parseNetlist(body, netlistTitle);
+    const header = rawLines[headerIdx]!.replace(/\r$/, "");
+    const token = findFirstQuotedRange(header);
+    if (token) {
+      const headerStart = rawLines.slice(0, headerIdx).reduce((sum, line) => sum + line.length + 1, 0);
+      ast.titleSourceRange = locator.range(headerStart + token.start, headerStart + token.end);
+    }
+    let sourceOffset = rawLines.slice(0, headerIdx + 1).reduce((sum, line) => sum + line.length + 1, 0);
+    for (const line of rawLines.slice(headerIdx + 1)) {
+      const id = /^\s*([a-zA-Z_][\w]*)/.exec(line)?.[1];
+      const component = id ? ast.components.find((candidate) => candidate.id === id) : undefined;
+      if (component) {
+        for (const key of ["label", "value"] as const) {
+          const match = new RegExp(`(?:^|\\s)${key}=("[^"]*"|\\S+)`).exec(line);
+          if (!match) continue;
+          const valueToken = match[1]!;
+          const valueStart = match.index + match[0].lastIndexOf(valueToken);
+          component[key === "label" ? "labelSourceRange" : "valueSourceRange"] = locator.range(
+            sourceOffset + valueStart,
+            sourceOffset + valueStart + valueToken.length
+          );
+        }
+      }
+      sourceOffset += line.length + 1;
+    }
+    return ast;
   }
 
   const lines = text.split("\n").map((l) => l.replace(/\r$/, ""));
   let title: string | undefined;
+  let titleSourceRange: SourceRange | undefined;
   const components: CircuitComponent[] = [];
   const nets: CircuitNet[] = [];
   const netByName = new Map<string, CircuitNet>();
@@ -213,14 +263,21 @@ export function parseCircuit(text: string): CircuitAST {
 
   const mkId = (prefix: string) => `${prefix}_${autoId++}`;
 
+  let lineStart = 0;
   for (const rawLine of lines) {
     const stripped = rawLine.replace(/[#;].*$/, "").trim();
+    const absoluteStrippedStart = lineStart + Math.max(0, rawLine.indexOf(stripped));
+    lineStart += rawLine.length + 1;
     if (!stripped) continue;
 
     // header
     if (/^circuit\b/i.test(stripped)) {
       const t = matchQuotedTitle(stripped);
-      if (t !== undefined) title = t;
+      if (t !== undefined) {
+        title = t;
+        const token = findFirstQuotedRange(stripped);
+        if (token) titleSourceRange = locator.range(absoluteStrippedStart + token.start, absoluteStrippedStart + token.end);
+      }
       continue;
     }
 
@@ -256,6 +313,7 @@ export function parseCircuit(text: string): CircuitAST {
       const id = mkId("dot");
       components.push({
         id,
+        stableId: false,
         componentType: "dot",
         direction: "right",
         at: pendingAt,
@@ -272,10 +330,15 @@ export function parseCircuit(text: string): CircuitAST {
       const id = mkId("lbl");
       components.push({
         id,
+        stableId: false,
         componentType: "label",
         direction: (labelMatch[2]?.toLowerCase() as CircuitDirection) ?? "right",
         at: pendingAt,
         label: labelMatch[1],
+        labelSourceRange: (() => {
+          const token = findFirstQuotedRange(stripped);
+          return token ? locator.range(absoluteStrippedStart + token.start, absoluteStrippedStart + token.end) : undefined;
+        })(),
       });
       // labels don't advance cursor
       continue;
@@ -287,6 +350,7 @@ export function parseCircuit(text: string): CircuitAST {
       const id = mkId("w");
       components.push({
         id,
+        stableId: false,
         componentType: "wire",
         direction: (wireMatch[1]?.toLowerCase() as CircuitDirection) ?? "right",
         at: pendingAt,
@@ -308,14 +372,17 @@ export function parseCircuit(text: string): CircuitAST {
         throw new CircuitParseError(`Unknown component type: ${typeStr}`);
       }
       const rest = colonMatch[3] ?? "";
-      const parsed = parseAttrs(rest);
+      const parsed = parseAttrs(rest, absoluteStrippedStart + stripped.length - rest.length, locator);
       const comp: CircuitComponent = {
         id,
+        stableId: true,
         componentType: norm,
         direction: parsed.direction ?? "right",
         at: parsed.at ?? pendingAt,
         label: parsed.label,
+        labelSourceRange: parsed.labelSourceRange,
         value: parsed.value,
+        valueSourceRange: parsed.valueSourceRange,
         attrs: parsed.attrs,
       };
       if (parsed.length) {
@@ -346,15 +413,18 @@ export function parseCircuit(text: string): CircuitAST {
         );
       }
       const rest = bareMatch[2] ?? "";
-      const parsed = parseAttrs(rest);
+      const parsed = parseAttrs(rest, absoluteStrippedStart + stripped.length - rest.length, locator);
       const id = mkId(norm);
       const comp: CircuitComponent = {
         id,
+        stableId: false,
         componentType: norm,
         direction: parsed.direction ?? "right",
         at: parsed.at ?? pendingAt,
         label: parsed.label,
+        labelSourceRange: parsed.labelSourceRange,
         value: parsed.value,
+        valueSourceRange: parsed.valueSourceRange,
         attrs: parsed.attrs,
       };
       components.push(comp);
@@ -366,6 +436,7 @@ export function parseCircuit(text: string): CircuitAST {
   return {
     type: "circuit",
     title,
+    titleSourceRange,
     components,
     nets,
     mode: "positional",

@@ -23,6 +23,7 @@ import type {
   BreadboardWire,
   BreadboardWireColor,
 } from "../../core/types";
+import { createSourceLocator } from "../../core/source-range";
 
 export class BreadboardParseError extends Error {
   constructor(message: string, public lineNumber?: number) {
@@ -54,13 +55,21 @@ function unquote(v: string): string {
   return t;
 }
 
-interface RawLine { text: string; lineNumber: number; }
+interface RawLine { text: string; lineNumber: number; start: number; }
 
 function lex(text: string): RawLine[] {
-  return text.split(/\r?\n/).map((raw, i) => ({
-    text: stripComment(raw).trimEnd().replace(/^\s+/, ""),
-    lineNumber: i + 1,
-  })).filter((l) => l.text.length > 0);
+  let start = 0;
+  return text.split(/\r?\n/).map((raw, i, lines) => {
+    const stripped = stripComment(raw).trimEnd();
+    const textValue = stripped.replace(/^\s+/, "");
+    const line = {
+      text: textValue,
+      lineNumber: i + 1,
+      start: start + stripped.indexOf(textValue),
+    };
+    start += raw.length + (i < lines.length - 1 ? (text[start + raw.length] === "\r" ? 2 : 1) : 0);
+    return line;
+  }).filter((l) => l.text.length > 0);
 }
 
 // ─── Coordinate parser ───────────────────────────────────────
@@ -312,6 +321,7 @@ const VALID_BOARDS = new Set<BreadboardForm>(["mini", "half", "full"]);
 
 export function parseBreadboard(text: string): BreadboardAst {
   const lines = lex(text);
+  const locator = createSourceLocator(text);
   if (lines.length === 0) throw new BreadboardParseError("Empty input");
 
   // Header.
@@ -323,6 +333,7 @@ export function parseBreadboard(text: string): BreadboardAst {
   let i = 1;
   let board: BreadboardForm = "half";
   let title: string | undefined;
+  let titleSourceRange: import("../../core/types").SourceRange | undefined;
 
   // Header attributes: board:, title: (order-insensitive, before first section).
   while (i < lines.length) {
@@ -339,6 +350,13 @@ export function parseBreadboard(text: string): BreadboardAst {
     }
     if (lower.startsWith("title:")) {
       title = unquote(line.text.slice("title:".length).trim());
+      const token = /"[^"]*"/.exec(line.text);
+      if (token?.index !== undefined) {
+        titleSourceRange = locator.range(
+          line.start + token.index,
+          line.start + token.index + token[0].length
+        );
+      }
       i++;
       continue;
     }
@@ -357,7 +375,15 @@ export function parseBreadboard(text: string): BreadboardAst {
     if (lower === "parts") { mode = "parts"; i++; continue; }
     if (lower === "wires") { mode = "wires"; i++; continue; }
     if (mode === "parts") {
-      parts.push(parsePart(t, line.lineNumber));
+      const part = parsePart(t, line.lineNumber);
+      const placementStart = t.indexOf("@");
+      if (placementStart >= 0) {
+        part.placementSourceRange = locator.range(
+          line.start + placementStart,
+          line.start + t.length,
+        );
+      }
+      parts.push(part);
     } else if (mode === "wires") {
       wires.push(parseWire(t, line.lineNumber));
     } else {
@@ -399,7 +425,7 @@ export function parseBreadboard(text: string): BreadboardAst {
     }
   }
 
-  return { type: "breadboard", board, title, parts, wires };
+  return { type: "breadboard", board, title, titleSourceRange, parts, wires };
 }
 
 function railToken(c: BreadboardCoord): string {

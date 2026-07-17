@@ -1,9 +1,13 @@
-import type { DiagramPlugin, RenderConfig } from "./types";
+import type { DiagramPlugin, RenderConfig, SceneItem, SourceRange } from "./types";
 import {
   parseFrontmatter,
-  stripComments,
+  stripLineComment,
   UNIVERSAL_COMMENT_MARKERS,
 } from "./dsl-preprocess";
+import { parseMachineSections } from "./editing";
+import { createSourceLocator, findFirstQuotedRange } from "./source-range";
+import { adaptLegacyInteractiveSvg, supportsLegacyInteractive } from "./legacy-interactive";
+import { TITLE_SCENE_ID } from "./title-scene";
 import {
   diagnosticFromError,
   renderDiagnosticSvg,
@@ -114,6 +118,8 @@ export interface SchematexConfig {
    * `preview` returns a visible diagnostic SVG instead of an empty surface.
    */
   mode?: "strict" | "preview";
+  /** Opt in to derived geometry/source metadata and data-sx-* SVG hooks. */
+  scene?: boolean;
 }
 
 const plugins: DiagramPlugin[] = [
@@ -182,6 +188,77 @@ function detectPlugin(text: string, config?: SchematexConfig): DiagramPlugin {
   );
 }
 
+interface MappedText {
+  text: string;
+  /** Processed UTF-16 boundary offset → original UTF-16 boundary offset. */
+  boundaries: number[];
+}
+
+interface PreparedInput extends MappedText {
+  source: string;
+  pins: Map<string, { x: number; y: number }>;
+  diagnostics: SchematexDiagnostic[];
+  /** Original authored range when a frontmatter title was synthesized into the parser header. */
+  frontmatterTitleRange?: SourceRange;
+}
+
+function originalMappedText(source: string): MappedText {
+  return { text: source, boundaries: Array.from({ length: source.length + 1 }, (_, i) => i) };
+}
+
+function replaceMapped(
+  input: MappedText,
+  start: number,
+  end: number,
+  replacement: string
+): MappedText {
+  const anchorStart = input.boundaries[start] ?? input.boundaries[input.boundaries.length - 1] ?? 0;
+  const anchorEnd = input.boundaries[end] ?? anchorStart;
+  const inserted = Array.from({ length: replacement.length + 1 }, (_, i) =>
+    i === replacement.length ? anchorEnd : anchorStart
+  );
+  return {
+    text: input.text.slice(0, start) + replacement + input.text.slice(end),
+    boundaries: [
+      ...input.boundaries.slice(0, start),
+      ...inserted,
+      ...input.boundaries.slice(end + 1),
+    ],
+  };
+}
+
+function blankMapped(input: MappedText, start: number, end: number): MappedText {
+  const replacement = input.text
+    .slice(start, end)
+    .replace(/[^\r\n]/g, " ");
+  return {
+    text: input.text.slice(0, start) + replacement + input.text.slice(end),
+    boundaries: input.boundaries,
+  };
+}
+
+interface TextLine {
+  start: number;
+  contentEnd: number;
+  end: number;
+  text: string;
+}
+
+function textLines(source: string): TextLine[] {
+  const result: TextLine[] = [];
+  let start = 0;
+  while (start <= source.length) {
+    const nl = source.indexOf("\n", start);
+    const end = nl < 0 ? source.length : nl + 1;
+    let contentEnd = nl < 0 ? source.length : nl;
+    if (contentEnd > start && source[contentEnd - 1] === "\r") contentEnd--;
+    result.push({ start, contentEnd, end, text: source.slice(start, contentEnd) });
+    if (nl < 0) break;
+    start = nl + 1;
+  }
+  return result;
+}
+
 /**
  * Run the Mermaid-compat frontmatter pass and merge any `title:` into the
  * first header line as a quoted suffix (`flowchart TD` → `flowchart TD "T"`).
@@ -201,11 +278,16 @@ function detectPlugin(text: string, config?: SchematexConfig): DiagramPlugin {
  * line is never valid diagram syntax, so this is safe; inputs with no fence are
  * returned untouched.
  */
-function stripCodeFences(text: string): string {
-  let t = text;
-  t = t.replace(/^\uFEFF?[ \t]*```[A-Za-z0-9_-]*[ \t]*\r?\n/, "");
-  t = t.replace(/\r?\n[ \t]*```[ \t]*$/, "");
-  return t;
+function stripCodeFences(input: MappedText): MappedText {
+  let result = input;
+  const opening = /^\uFEFF?[ \t]*```[A-Za-z0-9_-]*[ \t]*(?:\r?\n|$)/.exec(result.text);
+  if (opening) result = blankMapped(result, 0, opening[0].length);
+  const closing = /(?:^|\r?\n)[ \t]*```[ \t]*$/.exec(result.text);
+  if (closing) {
+    const fenceAt = closing.index + (closing[0].startsWith("\n") ? 1 : closing[0].startsWith("\r\n") ? 2 : 0);
+    result = blankMapped(result, fenceAt, result.text.length);
+  }
+  return result;
 }
 
 /**
@@ -217,24 +299,24 @@ function stripCodeFences(text: string): string {
  * per-engine header check passes. Headerless grammars (mindmap's `# Title`) and
  * already-canonical / unrelated first tokens are left untouched.
  */
-function normalizeHeader(text: string, type: string): string {
-  const lines = text.split("\n");
-  for (let i = 0; i < lines.length; i++) {
-    const trimmed = lines[i]!.trim();
+function normalizeHeader(input: MappedText, type: string): MappedText {
+  const lines = textLines(input.text);
+  for (const line of lines) {
+    const trimmed = line.text.trim();
     if (!trimmed) continue;
     const m = trimmed.match(/^([A-Za-z][A-Za-z0-9_-]*)/);
-    if (!m) return text;
+    if (!m) return input;
     const tok = m[1]!;
     const lower = tok.toLowerCase();
-    if (lower === type) return text;
+    if (lower === type) return input;
     if (lower.length >= 3 && type.startsWith(lower)) {
-      const idx = lines[i]!.indexOf(tok);
-      lines[i] = lines[i]!.slice(0, idx) + type + lines[i]!.slice(idx + tok.length);
-      return lines.join("\n");
+      const inLine = line.text.indexOf(tok);
+      const start = line.start + inLine;
+      return replaceMapped(input, start, start + tok.length, type);
     }
-    return text;
+    return input;
   }
-  return text;
+  return input;
 }
 
 /**
@@ -262,15 +344,15 @@ function headerCandidates(type: string): string[] {
  */
 function recoverHeader(
   plugin: DiagramPlugin,
-  prepared: string,
+  prepared: MappedText,
   forced: boolean
-): string {
-  if (!forced || !plugin.parse || plugin.detect(prepared)) return prepared;
+): MappedText {
+  if (!forced || !plugin.parse || plugin.detect(prepared.text)) return prepared;
   for (const hdr of headerCandidates(plugin.type)) {
-    const candidate = `${hdr}\n${prepared}`;
-    if (!plugin.detect(candidate)) continue;
+    const candidate = replaceMapped(prepared, 0, 0, `${hdr}\n`);
+    if (!plugin.detect(candidate.text)) continue;
     try {
-      plugin.parse(candidate);
+      plugin.parse(candidate.text);
       return candidate;
     } catch {
       // this header candidate doesn't resolve the body — try the next
@@ -279,30 +361,194 @@ function recoverHeader(
   return prepared;
 }
 
-function preprocess(text: string): string {
-  const { data, body: rawBody } = parseFrontmatter(stripCodeFences(text));
-  // Universal comment pass: `%%` (Mermaid-style) is stripped for EVERY diagram
-  // here, so it works consistently no matter what each parser's own lexer
-  // supports. `%%` never begins valid content in any schematex grammar, so this
-  // is collision-free; line positions are preserved to keep diagnostic line
-  // numbers stable. Diagram-native markers (`#` shell, `*` SPICE, …) are still
-  // handled inside each parser.
-  const body = stripComments(rawBody, UNIVERSAL_COMMENT_MARKERS);
-  if (!data.title) return body;
-  // Strip the title here — `data.title` was already unquoted by parseFrontmatter.
-  const safeTitle = data.title.replace(/"/g, '\\"');
-  // Find the first non-blank line in body and append the title if it doesn't
-  // already carry a quoted region.
-  const lines = body.split("\n");
+function blankFrontmatter(input: MappedText): {
+  mapped: MappedText;
+  data: Record<string, string>;
+  titleRange?: { start: number; end: number };
+} {
+  const parsed = parseFrontmatter(input.text);
+  if (Object.keys(parsed.data).length === 0) return { mapped: input, data: {} };
+  const lines = textLines(input.text);
+  let open = -1;
   for (let i = 0; i < lines.length; i++) {
-    const trimmed = lines[i]!.trim();
+    const trimmed = lines[i]!.text.trim();
     if (trimmed === "") continue;
-    // Already has a quoted title — frontmatter loses.
-    if (/["“「『«][^"”」』»]+["”」』»]/.test(trimmed)) return body;
-    lines[i] = lines[i]!.replace(/\s*$/, ` "${safeTitle}"`);
-    return lines.join("\n");
+    if (/^-{3,}\s*$/.test(trimmed)) open = i;
+    break;
   }
-  return body;
+  if (open < 0) return { mapped: input, data: {} };
+  let close = -1;
+  for (let i = open + 1; i < lines.length; i++) {
+    if (/^-{3,}\s*$/.test(lines[i]!.text.trim())) {
+      close = i;
+      break;
+    }
+  }
+  if (close < 0) return { mapped: input, data: {} };
+  let titleRange: { start: number; end: number } | undefined;
+  for (let i = open + 1; i < close; i++) {
+    const line = lines[i]!;
+    const trimmed = line.text.trim();
+    if (!trimmed || trimmed.startsWith("#")) continue;
+    const colon = trimmed.indexOf(":");
+    if (colon <= 0 || trimmed.slice(0, colon).trim() !== "title") continue;
+    const rawValue = trimmed.slice(colon + 1).trim();
+    if (!rawValue) break;
+    const valueStart = line.text.indexOf(rawValue, line.text.indexOf(trimmed) + colon + 1);
+    if (valueStart >= 0) {
+      titleRange = {
+        start: line.start + valueStart,
+        end: line.start + valueStart + rawValue.length,
+      };
+    }
+    break;
+  }
+  return {
+    mapped: blankMapped(input, lines[open]!.start, lines[close]!.contentEnd),
+    data: parsed.data,
+    titleRange,
+  };
+}
+
+function blankUniversalComments(input: MappedText): MappedText {
+  let result = input;
+  for (const line of textLines(input.text)) {
+    const kept = stripLineComment(line.text, UNIVERSAL_COMMENT_MARKERS);
+    if (kept.length < line.text.length) {
+      result = blankMapped(result, line.start + kept.length, line.contentEnd);
+    }
+  }
+  return result;
+}
+
+function appendFrontmatterTitle(
+  input: MappedText,
+  titleValue: string | undefined
+): { mapped: MappedText; inserted: boolean } {
+  if (!titleValue) return { mapped: input, inserted: false };
+  const safeTitle = titleValue.replace(/"/g, '\\"');
+  for (const line of textLines(input.text)) {
+    const trimmed = line.text.trim();
+    if (trimmed === "") continue;
+    if (findFirstQuotedRange(trimmed)) {
+      return { mapped: input, inserted: false };
+    }
+    let insertAt = line.contentEnd;
+    while (insertAt > line.start && /[ \t]/.test(input.text[insertAt - 1]!)) insertAt--;
+    return {
+      mapped: replaceMapped(input, insertAt, insertAt, ` "${safeTitle}"`),
+      inserted: true,
+    };
+  }
+  return { mapped: input, inserted: false };
+}
+
+function preprocess(source: string): PreparedInput {
+  let mapped = stripCodeFences(originalMappedText(source));
+  const frontmatter = blankFrontmatter(mapped);
+  const locator = createSourceLocator(source);
+  const frontmatterTitleRange = frontmatter.titleRange
+    ? locator.range(
+        mapped.boundaries[frontmatter.titleRange.start] ?? source.length,
+        mapped.boundaries[frontmatter.titleRange.end] ?? source.length
+      )
+    : undefined;
+  mapped = frontmatter.mapped;
+  const machine = parseMachineSections(mapped.text);
+  mapped = { text: machine.body, boundaries: mapped.boundaries };
+  mapped = blankUniversalComments(mapped);
+  const titled = appendFrontmatterTitle(mapped, frontmatter.data.title);
+  mapped = titled.mapped;
+  return {
+    source,
+    text: mapped.text,
+    boundaries: mapped.boundaries,
+    pins: machine.pins,
+    diagnostics: machine.diagnostics,
+    ...(titled.inserted && frontmatterTitleRange ? { frontmatterTitleRange } : {}),
+  };
+}
+
+function prepareForPlugin(
+  input: PreparedInput,
+  plugin: DiagramPlugin,
+  forced: boolean
+): PreparedInput {
+  const normalized = normalizeHeader(input, plugin.type);
+  const recovered = recoverHeader(plugin, normalized, forced);
+  return { ...input, text: recovered.text, boundaries: recovered.boundaries };
+}
+
+function remapRange(
+  range: SourceRange,
+  prepared: PreparedInput,
+  locate: (start: number, end: number) => SourceRange
+): SourceRange {
+  const start = prepared.boundaries[range.start] ?? prepared.source.length;
+  const end = prepared.boundaries[range.end] ?? start;
+  return locate(start, end);
+}
+
+function remapScene(scene: SceneItem[], prepared: PreparedInput): SceneItem[] {
+  const locator = createSourceLocator(prepared.source);
+  return scene.map((item) => ({
+    ...item,
+    sourceRange:
+      item.semanticId === TITLE_SCENE_ID && prepared.frontmatterTitleRange
+        ? prepared.frontmatterTitleRange
+        : item.sourceRange
+          ? remapRange(item.sourceRange, prepared, locator.range)
+          : undefined,
+    labelSourceRanges: item.labelSourceRanges?.map((range) =>
+      remapRange(range, prepared, locator.range)
+    ),
+    positionSource: item.positionSource
+      ? {
+          ...item.positionSource,
+          range: remapRange(item.positionSource.range, prepared, locator.range),
+          ...(item.positionSource.kind === "source-block"
+            ? {
+                blocks: item.positionSource.blocks.map((range) =>
+                  remapRange(range, prepared, locator.range)
+                ),
+              }
+            : {}),
+        }
+      : undefined,
+  }));
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function isSourceRange(value: unknown): value is SourceRange {
+  if (!isRecord(value)) return false;
+  return ["start", "end", "line", "colStart", "colEnd"].every(
+    (key) => typeof value[key] === "number"
+  );
+}
+
+function remapAstSourceRanges(ast: unknown, prepared: PreparedInput): void {
+  const locator = createSourceLocator(prepared.source);
+  const visit = (value: unknown): void => {
+    if (Array.isArray(value)) {
+      for (const entry of value) visit(entry);
+      return;
+    }
+    if (!isRecord(value) || value instanceof Map) return;
+    for (const [key, child] of Object.entries(value)) {
+      if (key.endsWith("SourceRange") && isSourceRange(child)) {
+        value[key] =
+          key === "titleSourceRange" && prepared.frontmatterTitleRange
+            ? prepared.frontmatterTitleRange
+            : remapRange(child, prepared, locator.range);
+      } else {
+        visit(child);
+      }
+    }
+  };
+  visit(ast);
 }
 
 /**
@@ -317,15 +563,17 @@ function preprocess(text: string): string {
  */
 export function parse(text: string, config?: SchematexConfig): unknown {
   const prepared0 = preprocess(text);
-  const plugin = detectPlugin(prepared0, config);
+  const plugin = detectPlugin(prepared0.text, config);
   if (!plugin.parse) {
     throw new Error(
       `Diagram type '${plugin.type}' does not yet expose a parse() method.`
     );
   }
   const forced = config?.type != null && plugin.type === config.type;
-  const prepared = recoverHeader(plugin, normalizeHeader(prepared0, plugin.type), forced);
-  return plugin.parse(prepared);
+  const prepared = prepareForPlugin(prepared0, plugin, forced);
+  const ast = plugin.parse(prepared.text);
+  remapAstSourceRanges(ast, prepared);
+  return ast;
 }
 
 export function parseResult(
@@ -335,16 +583,17 @@ export function parseResult(
   let plugin: DiagramPlugin | undefined;
   try {
     const prepared0 = preprocess(text);
-    plugin = detectPlugin(prepared0, config);
+    plugin = detectPlugin(prepared0.text, config);
     if (!plugin.parse) {
       throw new Error(
         `Diagram type '${plugin.type}' does not yet expose a parse() method.`
       );
     }
     const forced = config?.type != null && plugin.type === config.type;
-    const prepared = recoverHeader(plugin, normalizeHeader(prepared0, plugin.type), forced);
-    const ast = plugin.parse(prepared);
-    const diagnostics = runLint(plugin, prepared);
+    const prepared = prepareForPlugin(prepared0, plugin, forced);
+    const ast = plugin.parse(prepared.text);
+    remapAstSourceRanges(ast, prepared);
+    const diagnostics = [...prepared.diagnostics, ...runLint(plugin, prepared.text)];
     return {
       ok: true,
       status: diagnostics.length > 0 ? "partial" : "valid",
@@ -379,10 +628,10 @@ export function render(text: string, config?: SchematexConfig): string {
   if (config?.mode === "preview") return renderResult(text, config).svg;
 
   const prepared0 = preprocess(text);
-  const plugin = detectPlugin(prepared0, config);
+  const plugin = detectPlugin(prepared0.text, config);
   const forced = config?.type != null && plugin.type === config.type;
-  const prepared = recoverHeader(plugin, normalizeHeader(prepared0, plugin.type), forced);
-  return renderWithPlugin(prepared, plugin, config);
+  const prepared = prepareForPlugin(prepared0, plugin, forced);
+  return renderWithPlugin(prepared, plugin, config).svg;
 }
 
 export function renderResult(
@@ -392,17 +641,18 @@ export function renderResult(
   let plugin: DiagramPlugin | undefined;
   try {
     const prepared0 = preprocess(text);
-    plugin = detectPlugin(prepared0, config);
+    plugin = detectPlugin(prepared0.text, config);
     const forced = config?.type != null && plugin.type === config.type;
-    const prepared = recoverHeader(plugin, normalizeHeader(prepared0, plugin.type), forced);
-    const svg = renderWithPlugin(prepared, plugin, config);
-    const diagnostics = runLint(plugin, prepared);
+    const prepared = prepareForPlugin(prepared0, plugin, forced);
+    const rendered = renderWithPlugin(prepared, plugin, config);
+    const diagnostics = [...prepared.diagnostics, ...runLint(plugin, prepared.text)];
     return {
       ok: true,
       status: diagnostics.length > 0 ? "partial" : "valid",
       type: plugin.type,
-      svg,
+      svg: rendered.svg,
       diagnostics,
+      ...(rendered.scene ? { scene: rendered.scene } : {}),
     };
   } catch (err) {
     const type = plugin?.type ?? config?.type ?? null;
@@ -424,15 +674,41 @@ export function renderPreview(text: string, config?: SchematexConfig): string {
 }
 
 function renderWithPlugin(
-  prepared: string,
+  prepared: PreparedInput,
   plugin: DiagramPlugin,
   config?: SchematexConfig
-): string {
+): { svg: string; scene?: SceneItem[] } {
+  let scene: SceneItem[] | undefined;
+  const legacyScene = supportsLegacyInteractive(plugin.type);
+  if (config?.scene === true && (plugin.capabilities?.scene || legacyScene)) scene = [];
   const renderConfig: RenderConfig = {
     fontFamily: config?.fontFamily ?? "system-ui, -apple-system, sans-serif",
     fontSize: 12,
     theme: config?.theme ?? "default",
     padding: config?.padding ?? 20,
+    __scene: scene,
+    __pins: prepared.pins,
+    __source: prepared.text,
   };
-  return plugin.render(prepared, renderConfig);
+  let svg = plugin.render(prepared.text, renderConfig);
+  if (scene && legacyScene) {
+    let ast: unknown;
+    try {
+      ast = plugin.parse?.(prepared.text);
+    } catch {
+      ast = undefined;
+    }
+    svg = adaptLegacyInteractiveSvg({
+      type: plugin.type,
+      source: prepared.text,
+      svg,
+      ast,
+      scene,
+      pins: prepared.pins,
+    });
+  }
+  return {
+    svg,
+    scene: scene ? remapScene(scene, prepared) : undefined,
+  };
 }

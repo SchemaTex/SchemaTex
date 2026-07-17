@@ -169,8 +169,10 @@ export interface FloorplanRoom {
   id: string;
   /** Display label; falls back to id. */
   label: string;
+  labelSourceRange?: import("../../core/types").SourceRange;
   /** Absolute placement in input units (mutually exclusive with `rel`). */
   at?: { x: number; y: number };
+  positionSourceRange?: import("../../core/types").SourceRange;
   /** Relative placement against a previously declared room. */
   rel?: {
     how: RelativeHow;
@@ -182,6 +184,7 @@ export interface FloorplanRoom {
   /** Interior size in input units. */
   w: number;
   h: number;
+  sizeSourceRange?: import("../../core/types").SourceRange;
   /** Optional floor fill (CSS color); rendered as a presentational attribute. */
   fill?: string;
   /** Suppress the centered name + area label (single-space plans). */
@@ -239,6 +242,9 @@ export interface FloorplanFurniture {
   /** Rotation in degrees, clockwise, around the symbol center. */
   rotate: number;
   label?: string;
+  labelSourceRange?: import("../../core/types").SourceRange;
+  /** Exact source range of the coordinate token following `at`. */
+  positionSourceRange?: import("../../core/types").SourceRange;
   /**
    * Per-seat occupant names (`seats "Alice" "Bob" …`) for tables that
    * auto-seat chairs (round/banquet/conference/dining/head tables). Names map
@@ -273,6 +279,7 @@ export interface FloorplanArray {
 export interface FloorplanAst {
   type: "floorplan";
   title: string;
+  titleSourceRange?: import("../../core/types").SourceRange;
   unit: FloorplanUnit;
   /** `north` statement: draw a compass; value = clockwise rotation in degrees (0 = up). */
   north?: number;
@@ -296,6 +303,10 @@ export interface RectM {
 export interface RoomBox {
   id: string;
   label: string;
+  labelSourceRange?: import("../../core/types").SourceRange;
+  sizeSourceRange?: import("../../core/types").SourceRange;
+  sourceW?: number;
+  sourceH?: number;
   /** Interior bounding box over all parts, absolute meters. */
   x: number;
   y: number;
@@ -313,6 +324,7 @@ export interface RoomBox {
   areaM2: number;
   fill?: string;
   nolabel: boolean;
+  positionMode: "free" | "move-x" | "move-y";
 }
 
 /**
@@ -351,6 +363,12 @@ export interface ItemGeom {
   /** Rotation degrees clockwise about the box center. */
   rotate: number;
   label?: string;
+  labelSourceRange?: import("../../core/types").SourceRange;
+  positionSourceRange?: import("../../core/types").SourceRange;
+  /** Authored room-local coordinates in the plan's input unit. */
+  sourceX?: number;
+  sourceY?: number;
+  sourceLine?: number;
   /** Per-seat occupant names, mapped to auto-seated chairs in placement order. */
   seats?: string[];
   roomId: string;
@@ -381,6 +399,7 @@ export interface SeamGeom {
 
 export interface FloorplanLayoutResult {
   title: string;
+  titleSourceRange?: import("../../core/types").SourceRange;
   unit: FloorplanUnit;
   /** Compass rotation in degrees when the plan declares `north`. */
   north?: number;

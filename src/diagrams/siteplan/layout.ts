@@ -65,6 +65,7 @@ export function layoutSiteplan(ast: SiteplanAst): SiteplanLayoutResult {
 
   return {
     title: ast.title,
+    titleSourceRange: ast.titleSourceRange,
     unit: ast.unit,
     north: ast.north,
     scale: ast.scale,

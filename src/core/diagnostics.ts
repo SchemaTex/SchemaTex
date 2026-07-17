@@ -1,4 +1,4 @@
-import type { DiagramType } from "./types";
+import type { DiagramType, SceneItem } from "./types";
 import {
   desc,
   el,
@@ -44,6 +44,8 @@ export type SchematexRenderResult =
       type: DiagramType;
       svg: string;
       diagnostics: SchematexDiagnostic[];
+      /** Present only for an explicit renderResult(..., { scene: true }) request. */
+      scene?: SceneItem[];
     }
   | {
       ok: false;

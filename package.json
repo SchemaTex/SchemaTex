@@ -112,6 +112,11 @@
       "import": "./dist/export.js",
       "require": "./dist/export.cjs"
     },
+    "./interactive": {
+      "types": "./dist/interactive.d.ts",
+      "import": "./dist/interactive.js",
+      "require": "./dist/interactive.cjs"
+    },
     "./ai": {
       "types": "./dist/ai/index.d.ts",
       "import": "./dist/ai/index.js",
@@ -133,6 +138,7 @@
     "build:ai": "node scripts/build-ai-content.mjs",
     "dev": "tsup --watch",
     "test": "vitest run",
+    "test:interactive:e2e": "node tests/e2e/interactive-editing.mjs",
     "test:watch": "vitest",
     "lint": "eslint src/",
     "typecheck": "npm run build:ai && tsc --noEmit",

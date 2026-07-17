@@ -57,6 +57,7 @@ export interface PetriArc {
 export interface PetriAst {
   type: "petri";
   title?: string;
+  titleSourceRange?: import("../../core/types").SourceRange;
   direction: PetriDirection;
   tokenStyle: PetriTokenStyle;
   places: PetriPlace[];

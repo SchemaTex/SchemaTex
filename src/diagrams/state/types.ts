@@ -42,6 +42,8 @@ export interface StateNode {
   id: string;
   /** Display label (defaults to id when empty) */
   label: string;
+  /** Exact source token for an explicitly-authored display label. */
+  labelSourceRange?: import("../../core/types").SourceRange;
   kind: StateNodeKind;
   /** Only set when kind === "pseudo" */
   pseudoKind?: PseudoStateKind;
@@ -63,6 +65,8 @@ export interface StateTransition {
   trigger?: string;
   guard?: string;
   action?: string;
+  /** Exact source token for the authored trigger / guard / action label. */
+  labelSourceRange?: import("../../core/types").SourceRange;
 }
 
 export interface StateNote {
@@ -77,6 +81,7 @@ export interface StateNote {
 export interface StateDiagramAST {
   type: "state";
   title?: string;
+  titleSourceRange?: import("../../core/types").SourceRange;
   direction: StateDirection;
   /** Top-level states (children of the implicit root). */
   states: StateNode[];
@@ -111,6 +116,7 @@ export interface StateLayoutEdge {
   /** SVG path d= */
   path: string;
   label?: string;
+  labelSourceRange?: import("../../core/types").SourceRange;
   /** Mid-point used for label placement */
   labelX: number;
   labelY: number;
@@ -151,5 +157,6 @@ export interface StateLayoutResult {
   notes: StateLayoutNote[];
   clusters: StateLayoutCluster[];
   title?: string;
+  titleSourceRange?: import("../../core/types").SourceRange;
   direction: StateDirection;
 }

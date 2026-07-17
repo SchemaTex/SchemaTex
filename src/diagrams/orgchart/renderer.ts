@@ -1,4 +1,4 @@
-import type { RenderConfig } from "../../core/types";
+import type { RenderConfig, SceneItem } from "../../core/types";
 import {
   svgRoot,
   group,
@@ -14,6 +14,7 @@ import {
 import { resolveBaseTheme, type BaseTheme } from "../../core/theme";
 import { layoutOrgchart, layoutOrgchartList } from "./layout";
 import type { OrgchartAST, OrgchartLayoutNode, OrgchartRoleIcon } from "./types";
+import { resolveSceneTitle } from "../../core/title-scene";
 
 function buildCss(t: BaseTheme): string {
   return `
@@ -150,7 +151,12 @@ function renderAvatar(ln: OrgchartLayoutNode): string {
   return group({}, parts);
 }
 
-function renderCardBody(ln: OrgchartLayoutNode, t: BaseTheme): string {
+function renderCardBody(
+  ln: OrgchartLayoutNode,
+  t: BaseTheme,
+  scene?: SceneItem[],
+  sceneOffsetY = 0
+): string {
   const n = ln.node;
   const x = -ln.width / 2;
   const y = -ln.height / 2;
@@ -188,7 +194,12 @@ function renderCardBody(ln: OrgchartLayoutNode, t: BaseTheme): string {
   const lineH = 16;
   const nameY = -(lineCount - 1) * lineH / 2;
 
-  parts.push(textEl({ x: textX, y: nameY, class: "lt-org-name" }, displayName));
+  parts.push(textEl({
+    x: textX,
+    y: nameY,
+    class: "lt-org-name",
+    "data-sx-role": scene && n.nameSourceRange ? "label" : undefined,
+  }, displayName));
   if (hasTitle) {
     parts.push(textEl({ x: textX, y: nameY + lineH, class: "lt-org-title-text" }, n.title!));
   }
@@ -244,18 +255,29 @@ function renderCardBody(ln: OrgchartLayoutNode, t: BaseTheme): string {
     );
   }
 
+  const key = `node:${n.id}`;
+  scene?.push({
+    key,
+    kind: "node",
+    semanticId: n.id,
+    label: displayName,
+    sourceRange: n.nameSourceRange,
+    bbox: { x: ln.x - ln.width / 2, y: ln.y + sceneOffsetY, width: ln.width, height: ln.height },
+    editable: { label: n.nameSourceRange !== undefined, position: "move-x" },
+  });
   return group(
     {
       transform: `translate(${ln.x}, ${ln.y + ln.height / 2})`,
       "data-person-id": n.id,
       "data-department": n.department ?? "",
       "data-role": n.role ?? "",
+      "data-sx-key": scene ? key : undefined,
     },
     parts
   );
 }
 
-function renderListRow(ln: OrgchartLayoutNode): string {
+function renderListRow(ln: OrgchartLayoutNode, scene?: SceneItem[], sceneOffsetY = 0): string {
   const n = ln.node;
   const rowCenterY = ln.y + ln.height / 2;
   const caretX = ln.x;
@@ -310,7 +332,12 @@ function renderListRow(ln: OrgchartLayoutNode): string {
   const textY = rowCenterY + 4;
   const nameX = avatarCx + avatarR + 10;
   const displayName = n.open && !n.name ? "Open Role" : n.name;
-  parts.push(textEl({ x: nameX, y: textY, class: "lt-org-row-name" }, displayName));
+  parts.push(textEl({
+    x: nameX,
+    y: textY,
+    class: "lt-org-row-name",
+    "data-sx-role": scene && n.nameSourceRange ? "label" : undefined,
+  }, displayName));
   if (n.title) {
     const titleX = nameX + Math.max(80, displayName.length * 8 + 10);
     parts.push(textEl({ x: titleX, y: textY, class: "lt-org-row-title" }, n.title));
@@ -350,13 +377,24 @@ function renderListRow(ln: OrgchartLayoutNode): string {
     );
   }
 
-  return group({ "data-person-id": n.id }, parts);
+  const key = `node:${n.id}`;
+  scene?.push({
+    key,
+    kind: "node",
+    semanticId: n.id,
+    label: displayName,
+    sourceRange: n.nameSourceRange,
+    bbox: { x: ln.x, y: ln.y + sceneOffsetY, width: ln.width, height: ln.height },
+    editable: { label: n.nameSourceRange !== undefined, position: "none" },
+  });
+  return group({ "data-person-id": n.id, "data-sx-key": scene ? key : undefined }, parts);
 }
 
 function renderOrgchartList(
   ast: OrgchartAST,
   layout: ReturnType<typeof layoutOrgchartList>,
-  t: BaseTheme
+  t: BaseTheme,
+  config?: RenderConfig
 ): string {
   const titleOffset = ast.title ? 42 : 16;
   const width = Math.ceil(layout.width);
@@ -371,9 +409,13 @@ function renderOrgchartList(
   );
   children.push(el("style", {}, buildCss(t)));
 
-  if (ast.title) {
-    children.push(textEl({ x: width / 2, y: 24, class: "lt-org-title", "text-anchor": "middle" }, ast.title));
-  }
+  const titleScene = ast.title
+    ? resolveSceneTitle(ast.title, ast.titleSourceRange, width / 2, 24, config)
+    : undefined;
+  const titleNode = ast.title && titleScene
+    ? textEl({ x: titleScene.x, y: titleScene.y, class: "lt-org-title", "text-anchor": "middle", ...titleScene.attrs }, ast.title)
+    : "";
+  if (titleNode && !config?.__scene) children.push(titleNode);
 
   const inner: string[] = [];
 
@@ -384,10 +426,11 @@ function renderOrgchartList(
 
   // Rows
   for (const ln of layout.nodes) {
-    inner.push(renderListRow(ln));
+    inner.push(renderListRow(ln, config?.__scene, titleOffset));
   }
 
   children.push(group({ transform: `translate(0, ${titleOffset})` }, inner));
+  if (titleNode && config?.__scene) children.push(titleNode);
 
   return svgRoot(
     {
@@ -405,9 +448,9 @@ function renderOrgchartList(
 export function renderOrgchart(ast: OrgchartAST, config?: RenderConfig): string {
   const t = resolveBaseTheme(config?.theme ?? "default");
   if (ast.layout === "list") {
-    return renderOrgchartList(ast, layoutOrgchartList(ast, t.palette), t);
+    return renderOrgchartList(ast, layoutOrgchartList(ast, t.palette), t, config);
   }
-  const layout = layoutOrgchart(ast, t.palette);
+  const layout = layoutOrgchart(ast, t.palette, config?.__pins);
   const titleOffset = ast.title ? 36 : 10;
   const width = Math.ceil(layout.width);
   const height = Math.ceil(layout.height + titleOffset);
@@ -421,17 +464,44 @@ export function renderOrgchart(ast: OrgchartAST, config?: RenderConfig): string 
   );
   children.push(el("style", {}, buildCss(t)));
 
-  if (ast.title) {
-    children.push(textEl({ x: width / 2, y: 24, class: "lt-org-title", "text-anchor": "middle" }, ast.title));
-  }
+  const titleScene = ast.title
+    ? resolveSceneTitle(ast.title, ast.titleSourceRange, width / 2, 24, config)
+    : undefined;
+  const titleNode = ast.title && titleScene
+    ? textEl({ x: titleScene.x, y: titleScene.y, class: "lt-org-title", "text-anchor": "middle", ...titleScene.attrs }, ast.title)
+    : "";
+  if (titleNode && !config?.__scene) children.push(titleNode);
 
   const inner: string[] = [];
 
   // Edges first
-  for (const le of layout.edges) {
+  layout.edges.forEach((le, index) => {
     const cls = le.edge.kind === "matrix" ? "lt-org-edge-matrix" : "lt-org-edge";
-    inner.push(pathEl({ d: le.path, class: cls }));
-  }
+    const key = `edge:${index}`;
+    const edgePath = pathEl({
+      d: le.path,
+      class: cls,
+      "data-sx-live-edge": config?.__scene ? "true" : undefined,
+    });
+    config?.__scene?.push({
+      key,
+      kind: "edge",
+      path: le.path,
+      editable: { label: false, position: "none" },
+    });
+    inner.push(config?.__scene
+      ? group({
+          "data-sx-key": key,
+          "data-from": le.edge.from,
+          "data-to": le.edge.to,
+          "data-sx-live-explicit": "true",
+          "data-sx-live-start": le.edge.from,
+          "data-sx-live-end": le.edge.to,
+          "data-sx-live-mode": "orthogonal",
+          class: "lt-org-edge-g",
+        }, [edgePath])
+      : edgePath);
+  });
   // Matrix edge labels
   for (const le of layout.edges) {
     if (le.edge.kind !== "matrix" || !le.edge.label || le.labelX === undefined) continue;
@@ -452,10 +522,11 @@ export function renderOrgchart(ast: OrgchartAST, config?: RenderConfig): string 
 
   // Cards on top
   for (const ln of layout.nodes) {
-    inner.push(renderCardBody(ln, t));
+    inner.push(renderCardBody(ln, t, config?.__scene, titleOffset));
   }
 
   children.push(group({ transform: `translate(0, ${titleOffset})` }, inner));
+  if (titleNode && config?.__scene) children.push(titleNode);
 
   return svgRoot(
     {

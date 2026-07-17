@@ -30,12 +30,20 @@ interface LayoutGraph {
 
 export function layoutGenogram(
   ast: DiagramAST,
-  config: LayoutConfig
+  config: LayoutConfig,
+  pins?: Map<string, { x: number; y: number }>
 ): LayoutResult {
   const graph = buildGraph(ast);
   assignGenerations(graph);
   const ordered = orderNodesInGenerations(graph, config);
   const positions = assignPositions(ordered, graph, config);
+  if (pins?.size) {
+    const padding = 40;
+    for (const position of positions.values()) {
+      const pin = pins.get(position.id);
+      if (pin) position.x = pin.x + config.nodeWidth / 2 - padding;
+    }
+  }
   const edges = computeEdges(graph, positions, config);
   const secondaryEdges = computeSecondaryParentEdges(
     ast.relationships,
@@ -856,8 +864,8 @@ function computeEdges(
         const sibRight = Math.max(rightX, midX);
         const sibPath = `M ${sibLeft} ${dropY} L ${sibRight} ${dropY}`;
         edges.push({
-          from: fu.partners[0],
-          to: fu.partners[1],
+          from: sibLeft < leftX - 0.1 ? fu.id : childPositions[0]!.id,
+          to: sibRight > rightX + 0.1 ? fu.id : childPositions[childPositions.length - 1]!.id,
           relationship: { type: "parent-child", from: fu.id, to: "_sibship" },
           path: sibPath,
         });

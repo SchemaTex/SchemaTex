@@ -16,7 +16,7 @@
  *  - all SVG built via core/svg.ts builder (no raw string concat)
  */
 
-import type { RenderConfig } from "../../core/types";
+import type { RenderConfig, SceneItem } from "../../core/types";
 import {
   group,
   line as svgLine,
@@ -36,6 +36,7 @@ import {
 } from "../../core/theme";
 import { parseUmlClass } from "./parser";
 import { layoutUmlClass, UMLCLASS_CONST } from "./layout";
+import { resolveSceneTitle } from "../../core/title-scene";
 import type {
   UmlClassAst,
   UmlClassLayoutBox,
@@ -62,7 +63,7 @@ const REL_STROKE_W = 1.4;
 
 export function renderUmlClass(text: string, config?: RenderConfig): string {
   const ast = parseUmlClass(text);
-  const layout = layoutUmlClass(ast);
+  const layout = layoutUmlClass(ast, config?.__pins);
   return renderUmlClassLayout(layout, config);
 }
 
@@ -116,13 +117,21 @@ export function renderUmlClassLayout(layout: UmlClassLayoutResult, config?: Rend
   ];
 
   if (layout.ast.title) {
+    const title = resolveSceneTitle(
+      layout.ast.title,
+      layout.ast.titleSourceRange,
+      pad + UMLCLASS_CONST.CANVAS_PAD + Math.max(48, layout.ast.title.length * 9 + 10) / 2,
+      pad + 20,
+      config
+    );
     children.push(
       svgText(
         {
-          x: pad + UMLCLASS_CONST.CANVAS_PAD,
-          y: pad + 20,
+          x: title.x,
+          y: title.y,
           class: "sx-umlclass-title",
           "font-family": fontFamily,
+          ...title.attrs,
         },
         layout.ast.title
       )
@@ -146,7 +155,11 @@ export function renderUmlClassLayout(layout: UmlClassLayoutResult, config?: Rend
       transform: pad ? `translate(${pad}, ${pad})` : undefined,
       "font-family": fontFamily,
     },
-    layout.boxes.map(renderBox)
+    layout.boxes.map((box) => renderBox(
+      box,
+      config?.__scene,
+      layout.ast.direction === "tb" || layout.ast.direction === "bt" ? "move-x" : "move-y"
+    ))
   );
   children.push(boxesGroup);
 
@@ -156,7 +169,7 @@ export function renderUmlClassLayout(layout: UmlClassLayoutResult, config?: Rend
       transform: pad ? `translate(${pad}, ${pad})` : undefined,
       "font-family": fontFamily,
     },
-    layout.edges.map((e) => renderEdge(e))
+    layout.edges.map((e, index) => renderEdge(e, config?.__scene, index))
   );
   children.push(edgesGroup);
 
@@ -219,8 +232,28 @@ function renderPackage(p: UmlClassLayoutPackage): string {
 
 // ─── Box rendering ────────────────────────────────────────────
 
-function renderBox(b: UmlClassLayoutBox): string {
+function renderBox(
+  b: UmlClassLayoutBox,
+  scene?: SceneItem[],
+  position: SceneItem["editable"]["position"] = "none"
+): string {
   const c = b.classifier;
+  const nodeKey = `node:${c.id}`;
+  const nameKey = `${nodeKey}:name`;
+  scene?.push({
+    key: nodeKey,
+    kind: "node",
+    semanticId: c.id,
+    bbox: { x: b.x, y: b.y, width: b.width, height: b.height },
+    editable: { label: false, position },
+  });
+  scene?.push({
+    key: nameKey,
+    kind: "label",
+    label: c.name,
+    sourceRange: c.nameSourceRange,
+    editable: { label: c.nameSourceRange !== undefined, position: "none" },
+  });
   const stereoText = c.stereotype
     ? `«${c.stereotype}»`
     : c.kind === "interface" ? "«interface»"
@@ -304,18 +337,22 @@ function renderBox(b: UmlClassLayoutBox): string {
         class: "sx-umlclass-classname",
         "text-anchor": "middle",
         "data-abstract": c.isAbstract ? "true" : undefined,
+        "data-sx-key": scene && c.nameSourceRange ? nameKey : undefined,
+        "data-sx-role": scene && c.nameSourceRange ? "label" : undefined,
       },
       c.name
     )
   );
 
   // 6. Attribute rows.
-  for (const row of b.attrRows) {
-    children.push(renderMemberRow(row.member, row.displayText, b.x + UMLCLASS_CONST.BOX_PAD_X, b.y + row.baselineY));
+  for (let index = 0; index < b.attrRows.length; index++) {
+    const row = b.attrRows[index]!;
+    children.push(renderMemberRow(row.member, row.displayText, b.x + UMLCLASS_CONST.BOX_PAD_X, b.y + row.baselineY, scene, `${nodeKey}:attr:${index}`));
   }
   // 7. Operation rows.
-  for (const row of b.opRows) {
-    children.push(renderMemberRow(row.member, row.displayText, b.x + UMLCLASS_CONST.BOX_PAD_X, b.y + row.baselineY));
+  for (let index = 0; index < b.opRows.length; index++) {
+    const row = b.opRows[index]!;
+    children.push(renderMemberRow(row.member, row.displayText, b.x + UMLCLASS_CONST.BOX_PAD_X, b.y + row.baselineY, scene, `${nodeKey}:op:${index}`));
   }
 
   return group(
@@ -324,41 +361,68 @@ function renderBox(b: UmlClassLayoutBox): string {
       "data-id": c.id,
       "data-kind": c.isAbstract && c.kind === "class" ? "abstract" : c.kind,
       "data-stereotype": c.stereotype,
+      "data-sx-key": scene ? nodeKey : undefined,
+      "data-sx-owner": scene ? nodeKey : undefined,
     },
     children
   );
 }
 
-function renderMemberRow(m: UmlClassMember, displayText: string, x: number, y: number): string {
-  if (m.kind === "literal") {
-    return svgText(
-      { x, y, class: "sx-umlclass-member", "data-visibility": "public" },
-      displayText
-    );
-  }
-
-  // Split visibility glyph (if any) from the rest, so we can colour it muted.
+function renderMemberRow(
+  m: UmlClassMember,
+  displayText: string,
+  x: number,
+  y: number,
+  scene?: SceneItem[],
+  keyBase = "member"
+): string {
   const glyph = m.visibility ? VIS_GLYPH[m.visibility] : "";
   let body = displayText;
-  if (glyph && body.startsWith(`${glyph} `)) {
-    body = body.slice(glyph.length + 1);
+  if (glyph && body.startsWith(`${glyph} `)) body = body.slice(glyph.length + 1);
+
+  const nameAt = body.indexOf(m.name);
+  const typeAt = m.type ? body.indexOf(m.type, Math.max(0, nameAt + m.name.length)) : -1;
+  const spans: string[] = [];
+  if (glyph) spans.push(el("tspan", { class: "sx-umlclass-visibility" }, `${glyph} `));
+
+  let cursor = 0;
+  if (nameAt >= 0) {
+    spans.push(escapeXmlText(body.slice(cursor, nameAt)));
+    const nameKey = `${keyBase}:name`;
+    spans.push(el("tspan", {
+      "data-sx-key": scene && m.nameSourceRange ? nameKey : undefined,
+      "data-sx-role": scene && m.nameSourceRange ? "label" : undefined,
+    }, m.name));
+    scene?.push({
+      key: nameKey, kind: "label", label: m.name, sourceRange: m.nameSourceRange,
+      editable: { label: m.nameSourceRange !== undefined, position: "none" },
+    });
+    cursor = nameAt + m.name.length;
   }
-  const visTspan = glyph
-    ? el("tspan", { class: "sx-umlclass-visibility" }, `${glyph} `)
-    : "";
-  return el(
-    "text",
-    {
-      x,
-      y,
-      class: "sx-umlclass-member",
-      "data-visibility": m.visibility ?? "public",
-      ...(m.isStatic ? { "data-static": "true" } : {}),
-      ...(m.isAbstract ? { "data-abstract": "true" } : {}),
-      ...(m.isDerived ? { "data-derived": "true" } : {}),
-    },
-    `${visTspan}${escapeXmlText(body)}`
-  );
+  if (m.type && typeAt >= cursor) {
+    spans.push(escapeXmlText(body.slice(cursor, typeAt)));
+    const typeKey = `${keyBase}:type`;
+    spans.push(el("tspan", {
+      "data-sx-key": scene && m.typeSourceRange ? typeKey : undefined,
+      "data-sx-role": scene && m.typeSourceRange ? "label" : undefined,
+    }, m.type));
+    scene?.push({
+      key: typeKey, kind: "label", label: m.type, sourceRange: m.typeSourceRange,
+      editable: { label: m.typeSourceRange !== undefined, position: "none" },
+    });
+    cursor = typeAt + m.type.length;
+  }
+  spans.push(escapeXmlText(body.slice(cursor)));
+
+  return el("text", {
+    x,
+    y,
+    class: "sx-umlclass-member",
+    "data-visibility": m.visibility ?? "public",
+    ...(m.isStatic ? { "data-static": "true" } : {}),
+    ...(m.isAbstract ? { "data-abstract": "true" } : {}),
+    ...(m.isDerived ? { "data-derived": "true" } : {}),
+  }, spans);
 }
 
 function escapeXmlText(s: string): string {
@@ -370,7 +434,7 @@ function escapeXmlText(s: string): string {
 
 // ─── Edge rendering (non-merged edges) ───────────────────────
 
-function renderEdge(e: UmlClassLayoutEdge): string {
+function renderEdge(e: UmlClassLayoutEdge, scene?: SceneItem[], index = 0): string {
   const r = e.rel;
   const dashed = r.kind === "realization" || r.kind === "dependency";
 
@@ -381,6 +445,7 @@ function renderEdge(e: UmlClassLayoutEdge): string {
       d: e.path,
       class: "sx-umlclass-rel-line",
       "data-dashed": dashed ? "true" : undefined,
+      "data-sx-live-edge": scene ? "true" : undefined,
     })
   );
 
@@ -421,6 +486,10 @@ function renderEdge(e: UmlClassLayoutEdge): string {
     );
   }
 
+  scene?.push({
+    key: `edge:${index}`, kind: "edge", path: e.path,
+    editable: { label: false, position: "none" },
+  });
   return group(
     {
       class: "sx-umlclass-rel",
@@ -430,6 +499,12 @@ function renderEdge(e: UmlClassLayoutEdge): string {
       "data-source-mult": r.sourceMult,
       "data-target-mult": r.targetMult,
       "data-name": r.label,
+      ...(scene ? {
+        "data-sx-live-explicit": "true",
+        "data-sx-live-start": r.from,
+        "data-sx-live-end": r.to,
+        "data-sx-live-mode": "orthogonal",
+      } : {}),
     },
     parts
   );

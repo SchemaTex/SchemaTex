@@ -94,6 +94,14 @@ function holeXY(sub: BreadboardLayoutSubstrate, c: BreadboardCoord): { x: number
   return { x: railColX, y: stripY };
 }
 
+/** Public coordinate projection used by native hole-snapping interaction. */
+export function breadboardCoordXY(
+  sub: BreadboardLayoutSubstrate,
+  coord: BreadboardCoord,
+): { x: number; y: number } {
+  return holeXY(sub, coord);
+}
+
 // ─── Part placement ─────────────────────────────────────────
 
 function placePart(

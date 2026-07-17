@@ -8,6 +8,7 @@
  */
 
 import { stripQuotes, matchQuotedTitle } from "../../core/quotes";
+import { createSourceLocator, findFirstQuotedRange } from "../../core/source-range";
 import type {
   SeqArrowKind,
   SeqAst,
@@ -98,6 +99,7 @@ function arrowKind(token: string, mermaid: boolean): SeqArrowKind {
 interface Line {
   text: string;
   n: number;
+  start: number;
 }
 
 function firstWord(s: string): string {
@@ -121,12 +123,18 @@ export class SequenceParser {
   private byId = new Map<string, SeqParticipant>();
   private warnings: string[] = [];
   private mermaid = false;
+  private locator: ReturnType<typeof createSourceLocator>;
 
   constructor(source: string) {
-    this.lines = source.split(/\r?\n/).map((raw, idx) => ({
-      text: raw.trim(),
-      n: idx + 1,
-    }));
+    this.locator = createSourceLocator(source);
+    const raws = source.split(/\r?\n/);
+    let offset = 0;
+    this.lines = raws.map((raw, idx) => {
+      const text = raw.trim();
+      const line = { text, n: idx + 1, start: offset + raw.indexOf(text) };
+      offset += raw.length + (idx < raws.length - 1 ? (source[offset + raw.length] === "\r" ? 2 : 1) : 0);
+      return line;
+    });
   }
 
   parse(): SeqAst {
@@ -138,6 +146,7 @@ export class SequenceParser {
       warnings: this.warnings,
     };
     if (header.title) ast.title = header.title;
+    if (header.titleSourceRange) ast.titleSourceRange = header.titleSourceRange;
 
     const statements = this.parseBlock();
 
@@ -181,7 +190,7 @@ export class SequenceParser {
 
   // ── header ───────────────────────────────────────────────────
 
-  private consumeHeader(): { title?: string } {
+  private consumeHeader(): { title?: string; titleSourceRange?: SeqAst["titleSourceRange"] } {
     const ln = this.next();
     if (!ln || !/^sequence(?:diagram)?\b/i.test(ln.text)) {
       throw new SequenceParseError(
@@ -192,7 +201,10 @@ export class SequenceParser {
     // Mermaid's `sequenceDiagram` header switches arrow tokens to Mermaid semantics.
     this.mermaid = /^sequencediagram\b/i.test(ln.text);
     const title = matchQuotedTitle(ln.text);
-    return title ? { title } : {};
+    const token = findFirstQuotedRange(ln.text);
+    return title && token
+      ? { title, titleSourceRange: this.locator.range(ln.start + token.start, ln.start + token.end) }
+      : title ? { title } : {};
   }
 
   // ── participants ─────────────────────────────────────────────
@@ -221,10 +233,20 @@ export class SequenceParser {
     // split on " as " (case-insensitive), respecting the rest as the label
     let id: string;
     let name: string;
+    let nameSourceRange: SeqParticipant["nameSourceRange"];
     const asMatch = /\sas\s/i.exec(rest);
     if (asMatch) {
       id = stripQuotes(rest.slice(0, asMatch.index).trim());
       name = stripQuotes(rest.slice(asMatch.index + asMatch[0].length).trim());
+      // Resolve against the original line so removing a stereotype above does
+      // not invalidate the edit span. The alias token may be quoted.
+      const originalAlias = /\bas\s+("[^"]*"|[^<«]+?)(?=\s*(?:<<|«|$))/i.exec(line.text);
+      const token = originalAlias?.[1]?.trim();
+      if (originalAlias && token) {
+        const inMatch = originalAlias[0].indexOf(token);
+        const start = line.start + originalAlias.index + inMatch;
+        nameSourceRange = this.locator.range(start, start + token.length);
+      }
     } else {
       id = stripQuotes(rest);
       name = id;
@@ -236,9 +258,11 @@ export class SequenceParser {
     if (existing) {
       existing.kind = kind;
       existing.name = name;
+      if (nameSourceRange) existing.nameSourceRange = nameSourceRange;
       if (stereotype) existing.stereotype = stereotype;
     } else {
       const p: SeqParticipant = { id, name, kind, line: line.n };
+      if (nameSourceRange) p.nameSourceRange = nameSourceRange;
       if (stereotype) p.stereotype = stereotype;
       this.byId.set(id, p);
       this.order.push(id);
@@ -423,9 +447,15 @@ export class SequenceParser {
 
     // label after the first ':'
     let label: string | undefined;
+    let labelSourceRange: SeqMessage["labelSourceRange"];
     const colon = rightRaw.indexOf(":");
     if (colon >= 0) {
       label = rightRaw.slice(colon + 1).trim();
+      const colonInLine = at + token.length + colon;
+      const rawAfterColon = text.slice(colonInLine + 1);
+      const leading = rawAfterColon.length - rawAfterColon.trimStart().length;
+      const start = ln.start + colonInLine + 1 + leading;
+      labelSourceRange = this.locator.range(start, start + label.length);
       rightRaw = rightRaw.slice(0, colon);
     }
 
@@ -475,6 +505,7 @@ export class SequenceParser {
       line: ln.n,
     };
     if (label) msg.label = label;
+    if (labelSourceRange) msg.labelSourceRange = labelSourceRange;
     if (activateTarget) msg.activateTarget = true;
     if (deactivateSource) msg.deactivateSource = true;
     if (create) msg.create = true;

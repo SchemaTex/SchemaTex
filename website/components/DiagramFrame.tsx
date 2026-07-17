@@ -51,8 +51,10 @@ export function DiagramFrame({
         </div>
         <div className="font-mono text-[13px] text-fd-foreground">
           {diagram}
-          <span className="mx-2 opacity-40">·</span>
-          <span style={{ color: 'var(--accent)' }}>§ {standard}</span>
+          <span className="diagram-frame-standard">
+            <span className="mx-2 opacity-40">·</span>
+            <span style={{ color: 'var(--accent)' }}>§ {standard}</span>
+          </span>
         </div>
         {actions ? (
           <div className="ml-auto flex items-center gap-1.5 font-mono">

@@ -1,9 +1,15 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import dynamic from 'next/dynamic';
-import { render } from 'schematex';
+import { renderResult, type SceneItem } from 'schematex';
+import {
+  attachInteraction,
+  sourceRevision,
+  type LabelEditAnchor,
+} from 'schematex/interactive';
 import { svgToPngBlob, downloadBlob, printSvgAsPdf } from 'schematex/export';
+import type { Monaco, OnMount } from '@monaco-editor/react';
 import { DiagramFrame } from './DiagramFrame';
 import { PlaygroundStarNudge } from './PlaygroundStarNudge';
 
@@ -31,6 +37,57 @@ interface PlaygroundProps {
   stars?: number;
 }
 
+type MonacoEditorInstance = Parameters<OnMount>[0];
+
+interface LabelEditorState {
+  item: SceneItem;
+  anchor: LabelEditAnchor;
+  draft: string;
+  draftWidth: number;
+  commit: (text: string) => void;
+  cancel: () => void;
+}
+
+function measureDraftWidth(anchor: LabelEditAnchor, draft: string): number {
+  const canvas = document.createElement('canvas');
+  const context = canvas.getContext('2d');
+  if (!context) return Math.max(anchor.rect.width, draft.length * anchor.fontSize * 0.62);
+  context.font = `${anchor.fontStyle} ${anchor.fontWeight} ${anchor.fontSize}px ${anchor.fontFamily}`;
+  let width = context.measureText(draft || ' ').width;
+  const letterSpacing = Number.parseFloat(anchor.letterSpacing);
+  if (Number.isFinite(letterSpacing) && draft.length > 1) {
+    width += letterSpacing * (draft.length - 1);
+  }
+  return width;
+}
+
+function labelEditorStyle(state: LabelEditorState): CSSProperties {
+  const { anchor, draftWidth } = state;
+  const width = Math.max(
+    28,
+    Math.min(window.innerWidth - 16, Math.max(anchor.rect.width, draftWidth) + 12),
+  );
+  const height = Math.max(22, anchor.rect.height + 6);
+  return {
+    left: Math.max(
+      8,
+      Math.min(anchor.rect.left + anchor.rect.width / 2 - width / 2, window.innerWidth - width - 8),
+    ),
+    top: Math.max(
+      8,
+      Math.min(anchor.rect.top + anchor.rect.height / 2 - height / 2, window.innerHeight - height - 8),
+    ),
+    width,
+    height,
+    color: anchor.color,
+    fontFamily: anchor.fontFamily,
+    fontSize: anchor.fontSize,
+    fontWeight: anchor.fontWeight,
+    fontStyle: anchor.fontStyle,
+    letterSpacing: anchor.letterSpacing,
+  };
+}
+
 const TYPE_META: Record<string, { name: string; std: string }> = {
   genogram: { name: 'genogram', std: 'McGoldrick' },
   ecomap: { name: 'ecomap', std: 'Hartman 1978' },
@@ -54,6 +111,16 @@ const TYPE_META: Record<string, { name: string; std: string }> = {
   statediagram: { name: 'state-diagram', std: 'UML 2.5 / Harel' },
   'statediagram-v2': { name: 'state-diagram', std: 'UML 2.5 / Harel' },
   pid: { name: 'P&ID', std: 'ISA-5.1 / ISO 10628' },
+  flowchart: { name: 'flowchart', std: 'ISO 5807 / Sugiyama' },
+  network: { name: 'network', std: 'Topology / OSI' },
+  decisiontree: { name: 'decision-tree', std: 'Decision analysis' },
+  erd: { name: 'ERD', std: 'Crow\'s foot' },
+  umlclass: { name: 'UML class', std: 'UML 2.5' },
+  fbd: { name: 'FBD', std: 'IEC 61131-3' },
+  petri: { name: 'Petri net', std: 'Place / transition' },
+  timeline: { name: 'timeline', std: 'Temporal axis' },
+  breadboard: { name: 'breadboard', std: 'Physical wiring' },
+  siteplan: { name: 'siteplan', std: 'Concept plan' },
 };
 
 function detectType(dsl: string): { name: string; std: string } {
@@ -103,7 +170,16 @@ export function Playground({ initial, height = 560, fill = false, syncHash = fal
   const [exportOpen, setExportOpen] = useState(false);
   const [zoom, setZoom] = useState(100);
   const exportRef = useRef<HTMLDivElement>(null);
+  const previewRef = useRef<HTMLDivElement>(null);
+  const editorRef = useRef<MonacoEditorInstance | null>(null);
+  const monacoRef = useRef<Monaco | null>(null);
+  const decorationIds = useRef<string[]>([]);
+  const selectedStatusRef = useRef<HTMLElement | null>(null);
+  const textRef = useRef(text);
   const hydrated = useRef(false);
+  const [labelEditor, setLabelEditor] = useState<LabelEditorState | null>(null);
+
+  textRef.current = text;
 
   useEffect(() => {
     if (!syncHash) return;
@@ -137,14 +213,26 @@ export function Playground({ initial, height = 560, fill = false, syncHash = fal
     return () => clearTimeout(id);
   }, [debounced, syncHash]);
 
-  const { svg, error, renderMs, svgBytes } = useMemo(() => {
+  const { svg, scene, sceneRev, error, renderMs, svgBytes } = useMemo(() => {
     const start = typeof performance !== 'undefined' ? performance.now() : Date.now();
     try {
-      const out = render(debounced);
+      const result = renderResult(debounced, { scene: true });
       const end = typeof performance !== 'undefined' ? performance.now() : Date.now();
-      const bytes = new TextEncoder().encode(out).length;
+      const bytes = new TextEncoder().encode(result.svg).length;
+      if (!result.ok) {
+        return {
+          svg: result.svg,
+          scene: new Array<SceneItem>(),
+          sceneRev: sourceRevision(debounced),
+          error: result.diagnostics[0]?.message ?? 'Unable to render this diagram.',
+          renderMs: end - start,
+          svgBytes: bytes,
+        };
+      }
       return {
-        svg: out,
+        svg: result.svg,
+        scene: result.scene ?? [],
+        sceneRev: sourceRevision(debounced),
         error: null as string | null,
         renderMs: end - start,
         svgBytes: bytes,
@@ -152,13 +240,143 @@ export function Playground({ initial, height = 560, fill = false, syncHash = fal
     } catch (e) {
       const end = typeof performance !== 'undefined' ? performance.now() : Date.now();
       const msg = e instanceof Error ? e.message : String(e);
-      return { svg: null, error: msg, renderMs: end - start, svgBytes: 0 };
+      return {
+        svg: null,
+        scene: new Array<SceneItem>(),
+        sceneRev: sourceRevision(debounced),
+        error: msg,
+        renderMs: end - start,
+        svgBytes: 0,
+      };
     }
   }, [debounced]);
+
+  const handleEditorMount = useCallback<OnMount>((editor, monaco) => {
+    editorRef.current = editor;
+    monacoRef.current = monaco;
+  }, []);
+
+  const highlightSource = useCallback((item: SceneItem | null) => {
+    const editor = editorRef.current;
+    const monaco = monacoRef.current;
+    if (!editor || !monaco) return;
+    const range = item?.sourceRange ?? item?.positionSource?.range;
+    const decorations = range
+      ? [{
+          range: new monaco.Range(
+            range.line + 1,
+            range.colStart + 1,
+            range.line + 1,
+            Math.max(range.colStart + 2, range.colEnd + 1),
+          ),
+          options: {
+            inlineClassName: 'sx-monaco-selection',
+            className: 'sx-monaco-selection-line',
+          },
+        }]
+      : [];
+    decorationIds.current = editor.deltaDecorations(decorationIds.current, decorations);
+    if (range) editor.revealLineInCenterIfOutsideViewport(range.line + 1);
+  }, []);
+
+  const applySourceEdit = useCallback((nextSource: string) => {
+    const editor = editorRef.current;
+    const model = editor?.getModel();
+    if (editor && model) {
+      editor.pushUndoStop();
+      editor.executeEdits('schematex-interaction', [{
+        range: model.getFullModelRange(),
+        text: nextSource,
+        forceMoveMarkers: true,
+      }]);
+      editor.pushUndoStop();
+    }
+    textRef.current = nextSource;
+    setText(nextSource);
+    setLabelEditor(null);
+  }, []);
+
+  useEffect(() => {
+    const host = previewRef.current;
+    const svgElement = host?.querySelector<SVGSVGElement>('svg');
+    if (!svgElement || scene.length === 0 || error) return;
+    return attachInteraction(svgElement, {
+      getSource: () => textRef.current,
+      getScene: () => ({ rev: sceneRev, items: scene }),
+      onSelect: (item) => {
+        if (selectedStatusRef.current) selectedStatusRef.current.textContent = item?.key ?? '';
+        highlightSource(item);
+      },
+      onRequestLabelEdit: (item, anchor, commit, cancel) => {
+        setLabelEditor({
+          item,
+          anchor,
+          draft: item.label ?? '',
+          draftWidth: anchor.rect.width,
+          commit,
+          cancel,
+        });
+      },
+      onSourceChange: (source) => applySourceEdit(source),
+    });
+  }, [applySourceEdit, error, highlightSource, scene, sceneRev, svg]);
+
+  useEffect(() => () => {
+    const editor = editorRef.current;
+    if (editor && decorationIds.current.length > 0) {
+      editor.deltaDecorations(decorationIds.current, []);
+    }
+  }, []);
+
+  useEffect(() => {
+    const key = labelEditor?.item.key;
+    const measureRect = labelEditor?.anchor.measureRect;
+    if (!key || !measureRect) return;
+    let frame = 0;
+    const syncAnchor = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        const rect = measureRect();
+        setLabelEditor((current) => {
+          if (!current || current.item.key !== key) return current;
+          const previous = current.anchor.rect;
+          if (
+            previous.left === rect.left &&
+            previous.top === rect.top &&
+            previous.width === rect.width &&
+            previous.height === rect.height
+          ) {
+            return current;
+          }
+          return { ...current, anchor: { ...current.anchor, rect } };
+        });
+      });
+    };
+    syncAnchor();
+    window.addEventListener('resize', syncAnchor);
+    window.addEventListener('scroll', syncAnchor, true);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener('resize', syncAnchor);
+      window.removeEventListener('scroll', syncAnchor, true);
+    };
+  }, [labelEditor?.anchor.measureRect, labelEditor?.item.key]);
 
   const meta = useMemo(() => detectType(text), [text]);
   const lineCount = useMemo(() => text.split('\n').length, [text]);
   const charCount = useMemo(() => text.length, [text]);
+  const interactionHints = useMemo(() => {
+    const editableLabel = scene.some((item) => item.editable.label);
+    const positions = new Set(scene.map((item) => item.editable.position));
+    const drag = positions.has('free')
+      ? 'drag x / y'
+      : positions.has('move-x')
+        ? 'drag horizontally'
+        : positions.has('move-y')
+          ? 'drag vertically'
+          : null;
+    return { editableLabel, drag };
+  }, [scene]);
 
   const handleCopy = useCallback(async () => {
     try {
@@ -264,7 +482,7 @@ export function Playground({ initial, height = 560, fill = false, syncHash = fal
           </div>
         )}
       </div>
-      <span className="pg-mini pg-mini-primary" aria-hidden>
+      <span className="pg-mini pg-mini-primary pg-render-action" aria-hidden>
         render
         <span className="pg-kbd">⌘R</span>
       </span>
@@ -296,6 +514,7 @@ export function Playground({ initial, height = 560, fill = false, syncHash = fal
   );
 
   return (
+    <>
     <DiagramFrame
       diagram={meta.name}
       standard={meta.std}
@@ -305,7 +524,7 @@ export function Playground({ initial, height = 560, fill = false, syncHash = fal
       style={fill ? undefined : { height }}
     >
       <div
-        className="grid min-h-0 flex-1 grid-cols-1 md:grid-cols-2"
+        className="grid min-h-0 flex-1 grid-cols-1 grid-rows-2 md:grid-cols-2 md:grid-rows-1"
       >
         <div
           className="min-h-0 overflow-hidden"
@@ -318,7 +537,12 @@ export function Playground({ initial, height = 560, fill = false, syncHash = fal
             height="100%"
             defaultLanguage="plaintext"
             value={text}
-            onChange={(v) => setText(v ?? '')}
+            onChange={(v) => {
+              const next = v ?? '';
+              textRef.current = next;
+              setText(next);
+            }}
+            onMount={handleEditorMount}
             theme="vs"
             options={{
               fontSize: 13,
@@ -369,15 +593,56 @@ export function Playground({ initial, height = 560, fill = false, syncHash = fal
             </pre>
           ) : svg ? (
             <div
+              ref={previewRef}
               className="flex h-full w-full items-center justify-center [&_svg]:block [&_svg]:max-h-full [&_svg]:max-w-full"
               style={{ transform: `scale(${zoom / 100})`, transformOrigin: 'center center' }}
               dangerouslySetInnerHTML={{ __html: svg }}
             />
           ) : null}
+          {!!svg && !error && scene.length > 0 && (
+            <div className="sx-interaction-hint" aria-live="polite">
+              <span>click to select</span>
+              {interactionHints.editableLabel && <span>double-click label</span>}
+              {interactionHints.drag && <span>{interactionHints.drag}</span>}
+              <strong ref={selectedStatusRef} />
+            </div>
+          )}
           {syncHash && <PlaygroundStarNudge stars={stars} active={!!svg && !error} />}
           </div>
         </div>
       </div>
     </DiagramFrame>
+    {labelEditor && (
+      <input
+        key={labelEditor.item.key}
+        className="sx-label-editor"
+        style={labelEditorStyle(labelEditor)}
+        aria-label={`Edit ${labelEditor.item.label ?? 'diagram label'}`}
+        autoFocus
+        value={labelEditor.draft}
+        onChange={(event) => {
+          const draft = event.currentTarget.value;
+          setLabelEditor((current) => current
+            ? { ...current, draft, draftWidth: measureDraftWidth(current.anchor, draft) }
+            : current);
+        }}
+        onFocus={(event) => event.currentTarget.select()}
+        onBlur={(event) => {
+          labelEditor.commit(event.currentTarget.value);
+          setLabelEditor(null);
+        }}
+        onKeyDown={(event) => {
+          if (event.key === 'Enter') {
+            event.preventDefault();
+            event.currentTarget.blur();
+          } else if (event.key === 'Escape') {
+            event.preventDefault();
+            labelEditor.cancel();
+            setLabelEditor(null);
+          }
+        }}
+      />
+    )}
+    </>
   );
 }

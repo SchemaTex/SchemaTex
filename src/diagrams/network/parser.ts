@@ -16,6 +16,7 @@ import type {
   NetworkLayoutMode,
   NetworkLink,
 } from "./types";
+import { createSourceLocator } from "../../core/source-range";
 
 export class NetworkParseError extends Error {
   override name = "NetworkParseError";
@@ -101,9 +102,10 @@ interface Token {
   value: string;
   /** True when the token came from a quoted string (label). */
   str: boolean;
+  /** Offsets in the current statement, including quote delimiters. */
+  start: number;
+  end: number;
 }
-
-const QUOTE_RE = /"([^"]*)"|「([^」]*)」|『([^』]*)』|“([^”]*)”|«([^»]*)»|'([^']*)'/g;
 
 /** Drop a trailing `#`/`//` comment that is not inside a quoted region. */
 function stripComment(line: string): string {
@@ -128,9 +130,10 @@ function stripComment(line: string): string {
 }
 
 /** Split a (comment-stripped) line on `;` statement separators outside quotes. */
-function splitStatements(line: string): string[] {
-  const out: string[] = [];
+function splitStatements(line: string): Array<{ text: string; start: number }> {
+  const out: Array<{ text: string; start: number }> = [];
   let buf = "";
+  let start = 0;
   let inQuote = false;
   let close = "";
   const pairs: Record<string, string> = { '"': '"', "「": "」", "『": "』", "“": "”", "«": "»", "'": "'" };
@@ -142,33 +145,42 @@ function splitStatements(line: string): string[] {
       continue;
     }
     if (pairs[ch]) { inQuote = true; close = pairs[ch]!; buf += ch; continue; }
-    if (ch === ";") { out.push(buf); buf = ""; continue; }
+    if (ch === ";") { out.push({ text: buf, start }); buf = ""; start = i + 1; continue; }
     buf += ch;
   }
-  out.push(buf);
+  out.push({ text: buf, start });
   return out;
 }
 
 function tokenize(raw: string): Token[] {
   const line = stripComment(raw);
-  const strings: string[] = [];
-  // Mask quoted regions so connector/colon splitting never touches label text.
-  const masked = line.replace(QUOTE_RE, (...m) => {
-    const inner = m.slice(1, 7).find((g) => g !== undefined) ?? "";
-    strings.push(inner);
-    return ` @@${strings.length - 1}@@ `;
-  });
-  // Space-pad connectors so `a--b` == `a -- b`.
-  const spaced = masked.replace(/(--|->|==)/g, " $1 ");
   const out: Token[] = [];
-  for (const w of spaced.split(/\s+/)) {
-    if (!w) continue;
-    const sm = /^@@(\d+)@@$/.exec(w);
-    if (sm) {
-      out.push({ value: strings[Number(sm[1])] ?? "", str: true });
-    } else {
-      out.push({ value: w, str: false });
+  const pairs: Record<string, string> = { '"': '"', "「": "」", "『": "』", "“": "”", "«": "»", "'": "'" };
+  let i = 0;
+  while (i < line.length) {
+    if (/\s/.test(line[i]!)) { i++; continue; }
+    const start = i;
+    const close = pairs[line[i]!];
+    if (close) {
+      i++;
+      while (i < line.length && line[i] !== close) i++;
+      if (i < line.length) i++;
+      out.push({ value: line.slice(start + 1, Math.max(start + 1, i - 1)), str: true, start, end: i });
+      continue;
     }
+    const connector = line.slice(i, i + 2);
+    if (CONNECTORS.has(connector)) {
+      out.push({ value: connector, str: false, start, end: i + 2 });
+      i += 2;
+      continue;
+    }
+    while (
+      i < line.length &&
+      !/\s/.test(line[i]!) &&
+      !pairs[line[i]!] &&
+      !CONNECTORS.has(line.slice(i, i + 2))
+    ) i++;
+    out.push({ value: line.slice(start, i), str: false, start, end: i });
   }
   return out;
 }
@@ -227,6 +239,7 @@ const SWITCH_CLASS = new Set<DeviceKind>(["switch", "l3switch", "poeswitch"]);
 // ─── Parser ──────────────────────────────────────────────────────
 
 export function parseNetwork(text: string): NetworkAst {
+  const locator = createSourceLocator(text);
   const ast: NetworkAst = {
     type: "network",
     layout: "tiered",
@@ -267,7 +280,7 @@ export function parseNetwork(text: string): NetworkAst {
   };
 
   // Parse `key:`/value attribute pairs onto a device.
-  const applyAttrs = (d: NetworkDevice, toks: Token[], start: number, lineNo: number) => {
+  const applyAttrs = (d: NetworkDevice, toks: Token[], start: number, lineNo: number, statementStart: number) => {
     let i = start;
     while (i < toks.length) {
       const tk = toks[i]!;
@@ -290,7 +303,10 @@ export function parseNetwork(text: string): NetworkAst {
         case "icon": d.icon = val.value; break;
         case "at": {
           const mm = /^(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)$/.exec(val.value);
-          if (mm) d.at = { x: Number(mm[1]), y: Number(mm[2]) };
+          if (mm) {
+            d.at = { x: Number(mm[1]), y: Number(mm[2]) };
+            d.atSourceRange = locator.range(statementStart + val.start, statementStart + val.end);
+          }
           break;
         }
         default:
@@ -299,9 +315,13 @@ export function parseNetwork(text: string): NetworkAst {
     }
   };
 
-  const statements: Array<{ text: string; no: number }> = [];
+  const statements: Array<{ text: string; no: number; start: number }> = [];
+  let rawLineStart = 0;
   rawLines.forEach((raw, i) => {
-    for (const seg of splitStatements(stripComment(raw))) statements.push({ text: seg, no: i + 1 });
+    for (const seg of splitStatements(stripComment(raw))) {
+      statements.push({ text: seg.text, no: i + 1, start: rawLineStart + seg.start });
+    }
+    rawLineStart += raw.length + (i < rawLines.length - 1 ? (text[rawLineStart + raw.length] === "\r" ? 2 : 1) : 0);
   });
 
   for (const stmt of statements) {
@@ -314,7 +334,10 @@ export function parseNetwork(text: string): NetworkAst {
     if (!headerSeen) {
       if (!t0.str && /^(network|topology)$/i.test(t0.value)) {
         headerSeen = true;
-        if (toks[1]?.str) ast.title = toks[1]!.value;
+        if (toks[1]?.str) {
+          ast.title = toks[1]!.value;
+          ast.titleSourceRange = locator.range(stmt.start + toks[1]!.start, stmt.start + toks[1]!.end);
+        }
         continue;
       }
       throw new NetworkParseError(
@@ -347,7 +370,10 @@ export function parseNetwork(text: string): NetworkAst {
           if (v === "tb" || v === "lr") ast.direction = v;
           break;
         }
-        case "title": if (rest[0]) ast.title = rest[0]!.value; break;
+        case "title": if (rest[0]) {
+          ast.title = rest[0]!.value;
+          ast.titleSourceRange = locator.range(stmt.start + rest[0]!.start, stmt.start + rest[0]!.end);
+        } break;
         case "spines": ast.spines.push(...rest.filter((r) => !r.str).map((r) => r.value)); break;
         case "leaves": ast.leaves.push(...rest.filter((r) => !r.str).map((r) => r.value)); break;
         case "legend": break; // parsed-and-ignored in v0.1
@@ -377,7 +403,12 @@ export function parseNetwork(text: string): NetworkAst {
       if (toks[si] && !toks[si]!.str && toks[si]!.value === ":") si++;
       while (si < toks.length) {
         const tk = toks[si]!;
-        if (tk.str) { link.label = tk.value; si++; continue; }
+        if (tk.str) {
+          link.label = tk.value;
+          link.labelSourceRange = locator.range(stmt.start + tk.start, stmt.start + tk.end);
+          si++;
+          continue;
+        }
         const low = tk.value.toLowerCase();
         if (LINK_TYPE_KEYWORDS[low]) { link.linkType = LINK_TYPE_KEYWORDS[low]!; si++; continue; }
         if (low === "trunk" || low === "access") { link.mode = low; si++; continue; }
@@ -418,6 +449,7 @@ export function parseNetwork(text: string): NetworkAst {
       const parent = groupStack[groupStack.length - 1];
       const g: NetworkGroup = {
         id: idT.value, kind, label, members: [], children: [], parent: parent?.id, line: lineNo,
+        ...(toks[2]?.str ? { labelSourceRange: locator.range(stmt.start + toks[2]!.start, stmt.start + toks[2]!.end) } : {}),
       };
       if (parent) parent.children.push(g.id);
       groupById.set(g.id, g);
@@ -435,7 +467,8 @@ export function parseNetwork(text: string): NetworkAst {
       let label: string | undefined;
       if (toks[2]?.str) { label = toks[2]!.value; idx = 3; }
       const d: NetworkDevice = { id: idT.value, kind: canonKind, label, groups: groupStack.map((g) => g.id) };
-      applyAttrs(d, toks, idx, lineNo);
+      if (toks[2]?.str) d.labelSourceRange = locator.range(stmt.start + toks[2]!.start, stmt.start + toks[2]!.end);
+      applyAttrs(d, toks, idx, lineNo, stmt.start);
       addDevice(d, lineNo);
       continue;
     }
@@ -455,7 +488,7 @@ export function parseNetwork(text: string): NetworkAst {
         }
         for (const idT of ids) {
           const d: NetworkDevice = { id: idT.value, kind: k, groups: groupStack.map((g) => g.id) };
-          applyAttrs(d, toks, sep + 2, lineNo);
+          applyAttrs(d, toks, sep + 2, lineNo, stmt.start);
           addDevice(d, lineNo);
         }
         continue;

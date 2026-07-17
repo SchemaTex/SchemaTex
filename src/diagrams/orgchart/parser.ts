@@ -8,6 +8,7 @@ import type {
   OrgchartRoleIcon,
 } from "./types";
 import { matchQuotedTitle } from "../../core/quotes";
+import { createSourceLocator, findFirstQuotedRange } from "../../core/source-range";
 
 export class OrgchartParseError extends Error {
   constructor(
@@ -115,19 +116,30 @@ interface RawLine {
   indent: number;
   text: string;
   line: number;
+  start: number;
 }
 
 function tokenizeLines(text: string): RawLine[] {
   const result: RawLine[] = [];
   const split = text.split("\n");
+  let offset = 0;
   for (let i = 0; i < split.length; i++) {
     const raw = split[i] ?? "";
     const stripped = stripComment(raw.replace(/\r$/, ""));
-    if (!stripped.trim()) continue;
+    if (!stripped.trim()) {
+      offset += raw.length + (i < split.length - 1 ? 1 : 0);
+      continue;
+    }
     const match = stripped.match(/^(\s*)(.*)$/);
-    if (!match) continue;
+    if (!match) {
+      offset += raw.length + (i < split.length - 1 ? 1 : 0);
+      continue;
+    }
     const indent = match[1].replace(/\t/g, "  ").length;
-    result.push({ indent, text: match[2].trim(), line: i + 1 });
+    const content = match[2].trim();
+    const contentStart = stripped.indexOf(content);
+    result.push({ indent, text: content, line: i + 1, start: offset + contentStart });
+    offset += raw.length + (i < split.length - 1 ? 1 : 0);
   }
   return result;
 }
@@ -137,10 +149,13 @@ function parseNodeLine(line: string): {
   id: string;
   fields: string[];
   props: Record<string, string>;
+  nameStart?: number;
+  nameEnd?: number;
 } | null {
   // Optional leading kind keyword
   let kind: OrgchartNodeKind = "person";
   let rest = line;
+  let restStart = 0;
   const firstSp = line.indexOf(" ");
   if (firstSp > 0) {
     const first = line.slice(0, firstSp).toLowerCase();
@@ -149,7 +164,10 @@ function parseNodeLine(line: string): {
       else if (first === "draft" || first === "tbh") kind = "draft";
       else if (first === "advisor" || first === "external") kind = "advisor";
       else kind = "person";
-      rest = line.slice(firstSp + 1).trim();
+      const afterKind = line.slice(firstSp + 1);
+      const leading = afterKind.length - afterKind.trimStart().length;
+      restStart = firstSp + 1 + leading;
+      rest = afterKind.trim();
     }
   }
 
@@ -159,7 +177,10 @@ function parseNodeLine(line: string): {
   const id = rest.slice(0, colonIdx).trim();
   if (!/^[A-Za-z][A-Za-z0-9_-]*$/.test(id)) return null;
 
-  let tail = rest.slice(colonIdx + 1).trim();
+  const tailRaw = rest.slice(colonIdx + 1);
+  const tailLeading = tailRaw.length - tailRaw.trimStart().length;
+  let tail = tailRaw.trim();
+  const tailStart = restStart + colonIdx + 1 + tailLeading;
   // Extract [props]
   let props: Record<string, string> = {};
   const propsMatch = tail.match(/\[([^\]]*)\]\s*$/);
@@ -182,9 +203,19 @@ function parseNodeLine(line: string): {
     }
   }
   if (cur.trim()) fields.push(cur.trim());
+  const firstRaw = fields[0];
+  let nameStart: number | undefined;
+  let nameEnd: number | undefined;
+  if (firstRaw) {
+    const firstAt = tail.indexOf(firstRaw);
+    if (firstAt >= 0) {
+      nameStart = tailStart + firstAt;
+      nameEnd = nameStart + firstRaw.length;
+    }
+  }
   // name field may be quoted
   if (fields.length > 0) fields[0] = stripQuotes(fields[0]);
-  return { kind, id, fields, props };
+  return { kind, id, fields, props, nameStart, nameEnd };
 }
 
 function resolveRole(raw: string | undefined): OrgchartRoleIcon | undefined {
@@ -210,8 +241,10 @@ function findEdgeToken(line: string, token: string): number {
 
 export function parseOrgchart(text: string): OrgchartAST {
   const rawLines = tokenizeLines(text);
+  const locator = createSourceLocator(text);
 
   let title: string | undefined;
+  let titleSourceRange: OrgchartAST["titleSourceRange"];
   let direction: OrgchartDirection = "TD";
   let layout: OrgchartLayoutMode = "tree";
   const nodes: OrgchartNode[] = [];
@@ -232,7 +265,11 @@ export function parseOrgchart(text: string): OrgchartAST {
     // Header
     if (/^orgchart\b/i.test(line)) {
       const t = matchQuotedTitle(line);
-      if (t !== undefined) title = t;
+      if (t !== undefined) {
+        title = t;
+        const token = findFirstQuotedRange(line);
+        if (token) titleSourceRange = locator.range(rl.start + token.start, rl.start + token.end);
+      }
       continue;
     }
 
@@ -299,6 +336,12 @@ export function parseOrgchart(text: string): OrgchartAST {
       kind: parsed.kind,
       matrix: [],
     };
+    if (parsed.nameStart !== undefined && parsed.nameEnd !== undefined) {
+      node.nameSourceRange = locator.range(
+        rl.start + parsed.nameStart,
+        rl.start + parsed.nameEnd
+      );
+    }
 
     const p = parsed.props;
     if (p.role) node.role = resolveRole(p.role);
@@ -397,6 +440,7 @@ export function parseOrgchart(text: string): OrgchartAST {
   const ast: OrgchartAST = {
     type: "orgchart",
     title,
+    titleSourceRange,
     direction,
     layout,
     nodes,

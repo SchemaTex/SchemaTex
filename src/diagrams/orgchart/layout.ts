@@ -75,7 +75,8 @@ function computeInitials(name: string): string {
 
 export function layoutOrgchart(
   ast: OrgchartAST,
-  palette: readonly string[]
+  palette: readonly string[],
+  pins?: Map<string, { x: number; y: number }>
 ): OrgchartLayoutResult {
   // If any node has info, expand card height to fit 3 text lines
   const hasInfo = ast.nodes.some((n) => !!n.info);
@@ -215,6 +216,13 @@ export function layoutOrgchart(
   const shift = PADDING - minX;
   if (Math.abs(shift) > 0.5) {
     for (const n of nodes) n.x += shift;
+  }
+
+  // Org hierarchy depth remains semantic; the cross-axis is presentation.
+  // Pins use scene bbox top-left coordinates while layout stores card centers.
+  for (const n of nodes) {
+    const pin = pins?.get(n.node.id);
+    if (pin) n.x = pin.x + n.width / 2;
   }
 
   const nodeLayoutById = new Map<string, OrgchartLayoutNode>();

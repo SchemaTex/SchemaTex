@@ -10,7 +10,7 @@ export const venn: DiagramPlugin = {
   },
   parse: parseVennDSL,
   render(text: string, config?: RenderConfig): string {
-    return renderVenn(text, { theme: config?.theme });
+    return renderVenn(text, config);
   },
 };
 

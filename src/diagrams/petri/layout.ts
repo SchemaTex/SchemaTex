@@ -20,6 +20,7 @@ import type {
   PetriPoint,
   PetriTransitionBox,
 } from "./types";
+import { applyPins } from "../../core/editing";
 
 export const PETRI_CONST = {
   PLACE_R: 18,
@@ -62,7 +63,7 @@ interface BBox {
   maxY: number;
 }
 
-export function layoutPetri(ast: PetriAst): PetriLayoutResult {
+export function layoutPetri(ast: PetriAst, pins?: Map<string, { x: number; y: number }>): PetriLayoutResult {
   const C = PETRI_CONST;
   const dir = ast.direction;
   const warnings = [...ast.warnings];
@@ -399,8 +400,105 @@ export function layoutPetri(ast: PetriAst): PetriLayoutResult {
     ag.labelY += dy;
   });
 
-  const width = bb.maxX - bb.minX + 2 * C.MARGIN;
-  const height = bb.maxY - bb.minY + 2 * C.MARGIN;
+  // Pins are absolute scene coordinates. Petri nets retain their automatic
+  // layer axis and allow movement only on the cross axis.
+  const mode = dir === "lr" ? "move-y" as const : "move-x" as const;
+  const placePinBoxes = placeBoxes.map((pb) => ({
+    id: pb.place.id,
+    item: pb,
+    x: pb.cx - pb.r,
+    y: pb.cy - pb.r,
+  }));
+  const transitionPinBoxes = transBoxes.map((tb) => ({
+    id: tb.transition.id,
+    item: tb,
+    x: tb.cx - tb.w / 2,
+    y: tb.cy - tb.h / 2,
+  }));
+  applyPins(placePinBoxes, pins, { id: (entry) => entry.id, position: () => mode });
+  applyPins(transitionPinBoxes, pins, { id: (entry) => entry.id, position: () => mode });
+  for (const entry of placePinBoxes) {
+    entry.item.cx = entry.x + entry.item.r;
+    entry.item.cy = entry.y + entry.item.r;
+  }
+  for (const entry of transitionPinBoxes) {
+    entry.item.cx = entry.x + entry.item.w / 2;
+    entry.item.cy = entry.y + entry.item.h / 2;
+  }
+
+  // Recompute connection boundaries after pins rather than translating stale
+  // paths. This keeps arrowheads attached during committed renders.
+  const finalGeom = new Map<string, NodeGeom>();
+  for (const pb of placeBoxes) {
+    finalGeom.set(pb.place.id, {
+      id: pb.place.id,
+      kind: "place",
+      cx: pb.cx,
+      cy: pb.cy,
+      halfW: pb.r,
+      halfH: pb.r,
+      r: pb.r,
+      layer: 0,
+    });
+  }
+  for (const tb of transBoxes) {
+    finalGeom.set(tb.transition.id, {
+      id: tb.transition.id,
+      kind: "transition",
+      cx: tb.cx,
+      cy: tb.cy,
+      halfW: tb.w / 2,
+      halfH: tb.h / 2,
+      r: 0,
+      layer: 0,
+    });
+  }
+  const finalBandMaxCross = Math.max(
+    0,
+    ...[...finalGeom.values()].map((g) => dir === "lr" ? g.cy + g.halfH : g.cx + g.halfW),
+  );
+  for (const ag of arcGeoms) {
+    const a = finalGeom.get(ag.arc.from)!;
+    const b = finalGeom.get(ag.arc.to)!;
+    if (!ag.reversed) {
+      ag.points = [
+        boundary(a, b.cx - a.cx, b.cy - a.cy),
+        boundary(b, a.cx - b.cx, a.cy - b.cy),
+      ];
+    } else if (dir === "lr") {
+      const pA = boundary(a, 0, 1);
+      const pB = boundary(b, 0, 1);
+      const bowY = finalBandMaxCross + C.BACKEDGE_BOW;
+      ag.points = [pA, { x: pA.x, y: bowY }, { x: pB.x, y: bowY }, pB];
+    } else {
+      const pA = boundary(a, 1, 0);
+      const pB = boundary(b, 1, 0);
+      const bowX = finalBandMaxCross + C.BACKEDGE_BOW;
+      ag.points = [pA, { x: bowX, y: pA.y }, { x: bowX, y: pB.y }, pB];
+    }
+    const p0 = ag.points[0]!;
+    const p1 = ag.points[ag.points.length - 1]!;
+    const ddx = p1.x - p0.x;
+    const ddy = p1.y - p0.y;
+    const dl = Math.hypot(ddx, ddy) || 1;
+    ag.labelX = (p0.x + p1.x) / 2 - (ddy / dl) * C.ARC_WEIGHT_OFFSET;
+    ag.labelY = (p0.y + p1.y) / 2 + (ddx / dl) * C.ARC_WEIGHT_OFFSET;
+  }
+
+  let width = bb.maxX - bb.minX + 2 * C.MARGIN;
+  let height = bb.maxY - bb.minY + 2 * C.MARGIN;
+  width = Math.max(
+    width,
+    ...placeBoxes.map((pb) => pb.cx + pb.r + C.MARGIN),
+    ...transBoxes.map((tb) => tb.cx + tb.w / 2 + C.MARGIN),
+    ...arcGeoms.flatMap((ag) => ag.points.map((point) => point.x + C.MARGIN)),
+  );
+  height = Math.max(
+    height,
+    ...placeBoxes.map((pb) => pb.cy + pb.r + C.MARGIN),
+    ...transBoxes.map((tb) => tb.cy + tb.h / 2 + C.MARGIN),
+    ...arcGeoms.flatMap((ag) => ag.points.map((point) => point.y + C.MARGIN)),
+  );
 
   // ── structural subclass detection ──
   const subclass = detectSubclass(ast);

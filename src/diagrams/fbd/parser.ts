@@ -23,6 +23,7 @@ import type {
   FbdWire,
 } from "../../core/types";
 import { matchQuotedTitle } from "../../core/quotes";
+import { createSourceLocator } from "../../core/source-range";
 import { BLOCK_SPECS, isStdBlock, getBlockSpec } from "./blocks";
 
 export class FbdParseError extends Error {
@@ -56,13 +57,18 @@ interface RawLine {
   text: string;
   indent: number;
   lineNo: number;
+  start: number;
 }
 
 function tokenizeLines(text: string): RawLine[] {
   const out: RawLine[] = [];
   const lines = text.split("\n");
+  let absoluteStart = 0;
   for (let i = 0; i < lines.length; i++) {
-    const raw = lines[i].replace(/\r$/, "");
+    const sourceLine = lines[i]!;
+    const raw = sourceLine.replace(/\r$/, "");
+    const lineStart = absoluteStart;
+    absoluteStart += sourceLine.length + (i < lines.length - 1 ? 1 : 0);
     // Strip `#` line comment but keep `#` inside time literals (T#...) and strings.
     let stripped = "";
     let inStr = false;
@@ -80,7 +86,8 @@ function tokenizeLines(text: string): RawLine[] {
     while (indent < stripped.length && (stripped[indent] === " " || stripped[indent] === "\t")) {
       indent += stripped[indent] === "\t" ? 4 : 1;
     }
-    out.push({ text: stripped.trim(), indent, lineNo: i + 1 });
+    const trimmed = stripped.trim();
+    out.push({ text: trimmed, indent, lineNo: i + 1, start: lineStart + stripped.indexOf(trimmed) });
   }
   return out;
 }
@@ -429,6 +436,7 @@ function bindArg(
 
 /** Top-level parser entrypoint. */
 export function parseFbd(text: string): FbdAst {
+  const locator = createSourceLocator(text);
   const lines = tokenizeLines(text);
   if (lines.length === 0) {
     throw new FbdParseError("Empty FBD program");
@@ -438,6 +446,10 @@ export function parseFbd(text: string): FbdAst {
     throw new FbdParseError(`First non-comment line must start with "fbd" (got: ${headLine.text})`, headLine.lineNo);
   }
   const title = matchQuotedTitle(headLine.text);
+  const titleToken = /"[^"]*"/.exec(headLine.text);
+  const titleSourceRange = titleToken?.index !== undefined
+    ? locator.range(headLine.start + titleToken.index, headLine.start + titleToken.index + titleToken[0].length)
+    : undefined;
 
   const state: ParserState = {
     variables: [],
@@ -531,6 +543,7 @@ export function parseFbd(text: string): FbdAst {
     networks,
   };
   if (title !== undefined) ast.title = title;
+  if (titleSourceRange !== undefined) ast.titleSourceRange = titleSourceRange;
   return ast;
 }
 

@@ -1,5 +1,6 @@
 import type { TimingAST, TimingSignal, TimingGroup } from "../../core/types";
 import { matchQuotedTitle } from "../../core/quotes";
+import { createSourceLocator } from "../../core/source-range";
 
 export class TimingParseError extends Error {
   constructor(
@@ -37,13 +38,18 @@ function splitDataList(rest: string): { wave: string; data: string[] } {
 
 export function parseTiming(text: string): TimingAST {
   const lines = text.split("\n").map((l) => l.replace(/\r$/, ""));
+  const locator = createSourceLocator(text);
+  let absoluteStart = 0;
   const signals: Array<TimingSignal | TimingGroup> = [];
   let title: string | undefined;
+  let titleSourceRange: import("../../core/types").SourceRange | undefined;
   let hscale: number | undefined;
   let currentGroup: TimingGroup | null = null;
 
   for (let i = 0; i < lines.length; i++) {
     const raw = lines[i] ?? "";
+    const lineStart = absoluteStart;
+    absoluteStart += raw.length + (i < lines.length - 1 ? 1 : 0);
     const lineNo = i + 1;
     const line = raw.trim();
     if (!line || line.startsWith("#")) continue;
@@ -51,7 +57,16 @@ export function parseTiming(text: string): TimingAST {
     // Header: `timing "title" [hscale: 2]`
     if (/^timing\b/i.test(line)) {
       const t = matchQuotedTitle(line);
-      if (t !== undefined) title = t;
+      if (t !== undefined) {
+        title = t;
+        const quoted = /"[^"]*"/.exec(raw);
+        if (quoted?.index !== undefined) {
+          titleSourceRange = locator.range(
+            lineStart + quoted.index,
+            lineStart + quoted.index + quoted[0].length
+          );
+        }
+      }
       const hs = line.match(/hscale\s*:\s*(\d+(?:\.\d+)?)/);
       if (hs) hscale = parseFloat(hs[1]);
       continue;
@@ -121,12 +136,22 @@ export function parseTiming(text: string): TimingAST {
         }
       }
 
-      const signal: TimingSignal = { name, wave, data: data.length ? data : undefined };
+      const colon = raw.indexOf(":");
+      const rhsStart = colon >= 0 ? colon + 1 + (raw.slice(colon + 1).match(/^\s*/)?.[0].length ?? 0) : -1;
+      const literalWave = !/^clock$/i.test(tok[0] ?? "") && !/^rle$/i.test(tok[0] ?? "");
+      const signal: TimingSignal = {
+        name,
+        wave,
+        data: data.length ? data : undefined,
+        waveSourceRange: literalWave && rhsStart >= 0
+          ? locator.range(lineStart + rhsStart, lineStart + rhsStart + (rhs.split(/\s+/)[0]?.length ?? 0))
+          : undefined,
+      };
       if (currentGroup) currentGroup.signals.push(signal);
       else signals.push(signal);
       continue;
     }
   }
 
-  return { type: "timing", title, hscale, signals };
+  return { type: "timing", title, titleSourceRange, hscale, signals };
 }

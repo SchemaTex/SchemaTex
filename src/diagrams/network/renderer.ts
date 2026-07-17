@@ -4,7 +4,7 @@
  * Spec: docs/reference/35-NETWORK-STANDARD.md §3, §6, §8.
  */
 
-import type { RenderConfig } from "../../core/types";
+import type { RenderConfig, SceneItem } from "../../core/types";
 import {
   svgRoot,
   group,
@@ -22,6 +22,7 @@ import { parseNetwork } from "./parser";
 import { layoutNetwork, NET_CONST as C } from "./layout";
 import { drawDeviceIcon, isCloudKind } from "./symbols";
 import type { DeviceBox, GroupBox, LinkGeom, NetworkAst, NetworkLayoutResult, NetworkLink } from "./types";
+import { resolveSceneTitle } from "../../core/title-scene";
 
 type Theme = ResolvedTheme<NetworkTokens>;
 
@@ -97,7 +98,7 @@ function arrowHead(x1: number, y1: number, x2: number, y2: number, color: string
   });
 }
 
-function renderLink(lg: LinkGeom, t: Theme): string {
+function renderLink(lg: LinkGeom, t: Theme, scene?: SceneItem[], index = 0): string {
   const { link } = lg;
   const p1 = lg.points[0]!;
   const p2 = lg.points[lg.points.length - 1]!;
@@ -112,6 +113,14 @@ function renderLink(lg: LinkGeom, t: Theme): string {
     const oy = 1.8 * Math.sin(ang);
     parts.push(line({ class: cls, stroke: color, x1: r2(p1.x + ox), y1: r2(p1.y + oy), x2: r2(p2.x + ox), y2: r2(p2.y + oy) }));
     parts.push(line({ class: cls, stroke: color, x1: r2(p1.x - ox), y1: r2(p1.y - oy), x2: r2(p2.x - ox), y2: r2(p2.y - oy) }));
+  } else if (scene) {
+    parts.push(el("path", {
+      class: cls,
+      stroke: color,
+      fill: "none",
+      d: lg.points.map((p, i) => `${i === 0 ? "M" : "L"}${r2(p.x)} ${r2(p.y)}`).join(" "),
+      "data-sx-live-edge": "true",
+    }));
   } else {
     parts.push(el("polyline", { class: cls, stroke: color, points: lg.points.map((p) => `${r2(p.x)},${r2(p.y)}`).join(" ") }));
   }
@@ -130,12 +139,32 @@ function renderLink(lg: LinkGeom, t: Theme): string {
 
   // mid-link annotation
   const ann = annotation(link);
-  if (ann) parts.push(textEl({ class: "sx-net-linklabel", x: r2(lg.labelX), y: r2(lg.labelY - 3), "text-anchor": "middle" }, ann));
+  if (ann) parts.push(textEl({
+    class: "sx-net-linklabel", x: r2(lg.labelX), y: r2(lg.labelY - 3), "text-anchor": "middle",
+    "data-sx-key": scene && link.labelSourceRange ? `edge:${index}:label` : undefined,
+    "data-sx-role": scene && link.labelSourceRange ? "label" : undefined,
+    "data-sx-live-midpoint": scene ? "true" : undefined,
+  }, ann));
 
   // port labels near endpoints
   if (link.portNear) parts.push(textEl({ class: "sx-net-port", x: r2(p1.x + (p2.x - p1.x) * 0.16), y: r2(p1.y + (p2.y - p1.y) * 0.16 - 3), "text-anchor": "middle" }, link.portNear));
   if (link.portFar) parts.push(textEl({ class: "sx-net-port", x: r2(p2.x + (p1.x - p2.x) * 0.16), y: r2(p2.y + (p1.y - p2.y) * 0.16 - 3), "text-anchor": "middle" }, link.portFar));
 
+  if (scene) {
+    scene.push({
+      key: `edge:${index}`,
+      kind: "edge",
+      path: lg.points.map((p, i) => `${i === 0 ? "M" : "L"}${r2(p.x)} ${r2(p.y)}`).join(" "),
+      editable: { label: false, position: "none" },
+    });
+    if (link.label && link.labelSourceRange) {
+      scene.push({
+        key: `edge:${index}:label`, kind: "label", label: link.label,
+        sourceRange: link.labelSourceRange,
+        editable: { label: true, position: "none" },
+      });
+    }
+  }
   return group(
     {
       class: "sx-net-link-g",
@@ -145,6 +174,12 @@ function renderLink(lg: LinkGeom, t: Theme): string {
       ...(link.vlans?.length ? { "data-vlan": link.vlans.join(",") } : {}),
       ...(link.speed ? { "data-speed": link.speed } : {}),
       ...(link.mode ? { "data-mode": link.mode } : {}),
+      ...(scene ? {
+        "data-sx-live-explicit": "true",
+        "data-sx-live-start": link.from,
+        "data-sx-live-end": link.to,
+        "data-sx-live-mode": "orthogonal",
+      } : {}),
     },
     parts,
   );
@@ -172,13 +207,16 @@ function renderGroup(gb: GroupBox, t: Theme): string {
 
 // ── devices ──────────────────────────────────────────────────────
 
-function renderDevice(b: DeviceBox, t: Theme): string {
+function renderDevice(b: DeviceBox, t: Theme, scene?: SceneItem[]): string {
   const d = b.device;
   const parts: string[] = [drawDeviceIcon(d, { x: b.x, y: b.y, w: b.w, h: b.h })];
 
   if (!isCloudKind(d.kind)) {
     const labelY = b.y + b.h + C.LABEL_GAP + 11;
-    parts.push(textEl({ class: "sx-net-label", x: r2(b.cx), y: r2(labelY), "text-anchor": "middle" }, d.label ?? d.id));
+    parts.push(textEl({
+      class: "sx-net-label", x: r2(b.cx), y: r2(labelY), "text-anchor": "middle",
+      "data-sx-role": scene && d.labelSourceRange ? "label" : undefined,
+    }, d.label ?? d.id));
     const sub = d.ip ?? d.model;
     if (sub) parts.push(textEl({ class: "sx-net-sublabel", x: r2(b.cx), y: r2(labelY + C.SUBLABEL_H), "text-anchor": "middle" }, sub));
   }
@@ -187,10 +225,24 @@ function renderDevice(b: DeviceBox, t: Theme): string {
     class: "sx-net-device",
     "data-id": d.id,
     "data-kind": d.kind,
+    "data-sx-key": scene ? `node:${d.id}` : undefined,
+    "data-sx-owner": scene ? `node:${d.id}` : undefined,
   };
   if (d.tier) attrs["data-tier"] = d.tier;
   if (d.ip) attrs["data-ip"] = d.ip;
   if (d.cameraType) attrs["data-type"] = d.cameraType;
+  scene?.push({
+    key: `node:${d.id}`,
+    kind: "node",
+    semanticId: d.id,
+    label: d.label ?? d.id,
+    sourceRange: d.labelSourceRange,
+    bbox: { x: b.x, y: b.y, width: b.w, height: b.h },
+    positionSource: d.at && d.atSourceRange
+      ? { range: d.atSourceRange, x: d.at.x, y: d.at.y, unitsPerSvgX: 1, unitsPerSvgY: 1 }
+      : undefined,
+    editable: { label: d.labelSourceRange !== undefined, position: "free" },
+  });
   void t;
   return group(attrs, parts);
 }
@@ -219,15 +271,16 @@ export function renderNetworkLayout(layout: NetworkLayoutResult, config?: Render
 
   const titleBand = layout.title ? 30 : 0;
   if (layout.title) {
-    children.push(textEl({ x: r2(layout.width / 2), y: 21, class: "sx-net-title", "text-anchor": "middle" }, layout.title));
+    const title = resolveSceneTitle(layout.title, layout.ast.titleSourceRange, layout.width / 2, 21, config);
+    children.push(textEl({ x: r2(title.x), y: r2(title.y), class: "sx-net-title", "text-anchor": "middle", ...title.attrs }, layout.title));
   }
 
   const body: string[] = [];
   // boundaries behind, outermost first
   const sortedGroups = [...layout.groups].sort((a, b) => a.depth - b.depth);
   body.push(group({ class: "sx-net-boundaries" }, sortedGroups.map((g) => renderGroup(g, t))));
-  body.push(group({ class: "sx-net-links" }, layout.links.map((l) => renderLink(l, t))));
-  body.push(group({ class: "sx-net-devices" }, layout.devices.map((b) => renderDevice(b, t))));
+  body.push(group({ class: "sx-net-links" }, layout.links.map((l, i) => renderLink(l, t, config?.__scene, i))));
+  body.push(group({ class: "sx-net-devices" }, layout.devices.map((b) => renderDevice(b, t, config?.__scene))));
 
   children.push(titleBand ? group({ transform: `translate(0, ${titleBand})` }, body) : group({}, body));
 
@@ -248,6 +301,6 @@ export function renderNetworkLayout(layout: NetworkLayoutResult, config?: Render
 
 export function renderNetwork(textOrAst: string | NetworkAst, config?: RenderConfig): string {
   const ast = typeof textOrAst === "string" ? parseNetwork(textOrAst) : textOrAst;
-  const layout = layoutNetwork(ast);
+  const layout = layoutNetwork(ast, config?.__pins);
   return renderNetworkLayout(layout, config);
 }

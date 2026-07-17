@@ -8,6 +8,7 @@ import type {
   ConditionFill,
 } from "../../core/types";
 import { parseLegendDirective } from "../../core/legend-parser";
+import { createSourceLocator, findFirstQuotedRange } from "../../core/source-range";
 
 // ─── ParseError ─────────────────────────────────────────────
 
@@ -103,6 +104,7 @@ interface ParserState {
 // ─── Main entry point ───────────────────────────────────────
 
 export function parseGenogram(text: string): DiagramAST {
+  const locator = createSourceLocator(text);
   const rawLines = text.split("\n");
   const state: ParserState = { lines: rawLines, currentLine: 0 };
 
@@ -127,6 +129,11 @@ export function parseGenogram(text: string): DiagramAST {
   if (titleMatch) {
     metadata.title = titleMatch[1];
   }
+  const headerToken = findFirstQuotedRange(headerLine);
+  const headerStart = rawLines.slice(0, state.currentLine).reduce((sum, line) => sum + line.length + 1, 0);
+  const titleSourceRange = headerToken
+    ? locator.range(headerStart + headerToken.start, headerStart + headerToken.end)
+    : undefined;
   state.currentLine++;
 
   // Collect individuals and relationships
@@ -382,11 +389,37 @@ export function parseGenogram(text: string): DiagramAST {
     Object.keys(legendOverrides).length > 0 &&
     Object.values(legendOverrides).some((v) => v !== undefined);
 
+  // Attach exact ranges only for explicit `label:` properties. The default
+  // id-derived label is intentionally not editable because renaming an id must
+  // also rewrite every relationship reference.
+  let sourceOffset = 0;
+  for (const line of rawLines) {
+    const labelMatch = /\blabel\s*:\s*("[^"]*"|[^,\]\s]+)/i.exec(line);
+    if (labelMatch) {
+      const token = labelMatch[1]!;
+      const tokenStart = labelMatch.index + labelMatch[0].lastIndexOf(token);
+      const before = line.slice(0, labelMatch.index);
+      const id = [...before.matchAll(/[a-zA-Z][a-zA-Z0-9_-]*/g)]
+        .map((match) => match[0]!.toLowerCase())
+        .filter((candidate) => individualsMap.has(candidate))
+        .at(-1);
+      const individual = id ? individualsMap.get(id) : undefined;
+      if (individual) {
+        individual.labelSourceRange = locator.range(
+          sourceOffset + tokenStart,
+          sourceOffset + tokenStart + token.length
+        );
+      }
+    }
+    sourceOffset += line.length + 1;
+  }
+
   return {
     type: "genogram",
     individuals: Array.from(individualsMap.values()),
     relationships,
     metadata: Object.keys(metadata).length > 0 ? metadata : undefined,
+    titleSourceRange,
     legendOverrides: hasLegendOverrides ? legendOverrides : undefined,
   };
 }

@@ -1056,21 +1056,44 @@ flowchart LR
 
 ---
 
-## 17. Interaction Hooks (future)
+## 17. Interactive editing (flowchart vertical slice)
+
+Interactive consumers opt in with `renderResult(source, { scene: true })`.
+The result includes derived `scene` geometry/source ranges and the SVG gains
+the normalized hooks below. With `scene` omitted or false, the SVG stays
+byte-for-byte compatible with the normal render path and does not contain
+`data-sx-*` attributes.
 
 | Attribute | Element | 用途 |
 |-----------|---------|------|
 | `data-node-id` | node group | 点击 / hover 定位 |
 | `data-edge-id` | edge group | 高亮单条 edge |
 | `data-cluster-id` | cluster group | fold/unfold cluster |
+| `data-sx-key` | interactive node / edge / label / group | 对应唯一 `SceneItem.key` |
+| `data-sx-role="label"` | deterministically editable text | 双击后用精确 `sourceRange` 回写 |
 | `data-classes` | node / edge | CSS :hover 变色 |
 | `data-from` / `data-to` | edge | 双向导航 |
 | `data-layer` | node | 按层动画 reveal |
 
-ChatDiagram 消费者可用这些 hook 实现：
-- 点击 node 跳到对应代码 anchor
-- hover edge 同时高亮 source/target node
-- 折叠 subgraph 展示缩略图
+`setLabel(source, sceneItem, newText)` 只 splice parser 产出的精确 range；
+不会按 id 或可见文字搜索，因此一行里的多个同名 label 也不会写错。
+`schematex/interactive` 提供原生 pointer-event 手势层，宿主继续负责 input UI、
+重新 render 和持久化。
+
+位置微调使用同一文档内的 delta-only section：
+
+```text
+@overrides
+pin <node-id> <bbox-left>,<bbox-top>
+```
+
+- 坐标是 node bbox 左上角，允许浮点。
+- flowchart pin 同时应用 x 和 y；拖动可在两个轴上自由调整节点。
+- pin 在节点定位后、edge routing 前应用，因此入边和出边会跟随节点重路由。
+- pointer drag 期间，宿主会先同步预览相连 edge；drop 后再由 layout 用 pin 确定性重路由。
+- pin 是 visual override，不会重新分配 rank 或推开邻居；自由拖动可能造成重叠，删除 pin 即恢复自动布局。
+- section 在 core 预处理阶段 blank-in-place；flowchart parser 看不到它，source offsets 不移动。
+- 拖拽或 `setPosition()` 会更新已有 pin，而不是追加重复项。
 
 ---
 

@@ -5,6 +5,7 @@ import { renderCircuit } from "./renderer";
 
 export const circuit: DiagramPlugin = {
   type: "circuit",
+  capabilities: { scene: true, editablePosition: true },
   detect(text: string): boolean {
     const first = text.trim().split("\n")[0]?.trim().toLowerCase() ?? "";
     return first.startsWith("circuit");

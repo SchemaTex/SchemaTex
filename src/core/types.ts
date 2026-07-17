@@ -198,6 +198,8 @@ export interface DiagramAST {
   individuals: Individual[];
   relationships: Relationship[];
   metadata?: Record<string, string>;
+  /** Exact authored title token, including quotes when present. */
+  titleSourceRange?: SourceRange;
   /** Legacy: pedigree-style trait legend. To be migrated into LegendOverrides.added. */
   legend?: LegendEntry[];
   /** Genogram display mode: medical conditions or cultural heritage */
@@ -220,6 +222,8 @@ export interface LegendEntry {
 export interface Individual {
   id: string;
   label: string;
+  /** Exact explicitly-authored display label token. */
+  labelSourceRange?: SourceRange;
   sex: Sex;
   status: IndividualStatus;
   birthYear?: number;
@@ -402,6 +406,8 @@ export type FishboneCauseSide = "head" | "tail" | "both";
 export interface FishboneNode {
   /** Display text on the bone. */
   label: string;
+  /** Exact authored label token used by interactive text editing. */
+  sourceRange?: SourceRange;
   /** Optional explicit hex color (conventionally set only on majors). */
   color?: string;
   /** Nested sub-causes (unbounded depth, recommended ≤ 3). */
@@ -420,8 +426,10 @@ export interface FishboneLegendEntry {
 export interface FishboneAST {
   type: "fishbone";
   title?: string;
+  titleSourceRange?: SourceRange;
   /** Problem / outcome displayed in the head box. */
   effect: string;
+  effectSourceRange?: SourceRange;
   /** Top-level cause categories (major bones). */
   majors: FishboneNode[];
   /** Effect position: `ltr` → head on right, `rtl` → head on left. */
@@ -661,6 +669,136 @@ export interface LayoutEdge {
 
 // ─── Diagram Plugin Interface ────────────────────────────────
 
+/** A source span in the caller's original UTF-16 string coordinate space. */
+export interface SourceRange {
+  /** Absolute UTF-16 offsets; end is exclusive. */
+  start: number;
+  end: number;
+  /** Zero-based line and columns; colEnd is exclusive. */
+  line: number;
+  colStart: number;
+  colEnd: number;
+}
+
+export type ScenePositionSource =
+  | {
+      /** Existing authored `x,y` coordinate pair. */
+      kind?: "point";
+      range: SourceRange;
+      x: number;
+      y: number;
+      unitsPerSvgX: number;
+      unitsPerSvgY: number;
+      /** Optional syntax emitted around the coordinate pair (also supports zero-width insertion ranges). */
+      prefix?: string;
+      suffix?: string;
+    }
+  | {
+      /** One authored scalar controlled by a one-axis geometry handle. */
+      kind: "scalar";
+      range: SourceRange;
+      value: number;
+      unitsPerSvgX: number;
+      min?: number;
+      max?: number;
+      prefix?: string;
+      suffix?: string;
+    }
+  | {
+      /** Reorder one complete authored block by dragging a discrete row handle. */
+      kind: "source-block";
+      range: SourceRange;
+      blocks: SourceRange[];
+      index: number;
+      step: number;
+    }
+  | {
+      /** Authored `WxH` dimensions, edited by edge/corner handles. */
+      kind: "size";
+      range: SourceRange;
+      width: number;
+      height: number;
+      unitsPerSvgX: number;
+      unitsPerSvgY: number;
+      axis: "x" | "y" | "xy";
+      minWidth?: number;
+      minHeight?: number;
+    }
+  | {
+      /** Timeline date or year scalar, edited on the time axis. */
+      kind: "date";
+      range: SourceRange;
+      value: number;
+      raw: string;
+      precision: "day" | "month" | "year" | "ma";
+      unitsPerSvgX: number;
+    }
+  | {
+      /** Boundary between two adjacent runs in a canonical timing wave. */
+      kind: "wave-boundary";
+      range: SourceRange;
+      wave: string;
+      boundary: number;
+      runStart: number;
+      runEnd: number;
+      periodWidth: number;
+    }
+  | {
+      /** Breadboard point/span placement, snapped to physical board holes. */
+      kind: "breadboard";
+      range: SourceRange;
+      from: {
+        kind: "hole" | "rail";
+        col: number;
+        row?: string;
+        rail?: string;
+      };
+      to?: {
+        kind: "hole" | "rail";
+        col: number;
+        row?: string;
+        rail?: string;
+      };
+      anchorSvgX: number;
+      anchorSvgY: number;
+      gridX0: number;
+      holeRowYs: number[];
+      railRowYs: Record<string, number>;
+      pitch: number;
+      cols: number;
+    };
+
+/** Derived geometry and source identity for an interactive render. */
+export interface SceneItem {
+  /** Render-unique identity. This, rather than semanticId, is written to SVG. */
+  key: string;
+  kind: "node" | "edge" | "label" | "group" | "handle";
+  /** Stable DSL identity used by pin/reconcile operations when available. */
+  semanticId?: string;
+  label?: string;
+  /**
+   * How setLabel writes the edited value back into source. Most DSL labels
+   * use delimiter-aware encoding; authored markup such as Mindmap Markdown
+   * must be replaced verbatim so quotes/backticks remain meaningful content.
+   */
+  labelWrite?: "encoded" | "verbatim" | "identifier" | "newick-bare" | "newick-quoted";
+  sourceRange?: SourceRange;
+  /** All identity references that must be renamed atomically with this label. */
+  labelSourceRanges?: SourceRange[];
+  bbox?: { x: number; y: number; width: number; height: number };
+  path?: string;
+  /**
+   * Optional native coordinate writer for DSLs that already author an `at x,y`
+   * token. The interaction layer still works in SVG coordinates; setPosition
+   * converts the drag delta back into source units and replaces this range.
+   */
+  positionSource?: ScenePositionSource;
+  editable: {
+    label: boolean;
+    position: "free" | "move-x" | "move-y" | "none";
+  };
+}
+
 export interface DiagramPlugin {
   type: DiagramType;
   detect: (text: string) => boolean;
@@ -674,6 +812,12 @@ export interface DiagramPlugin {
    * diagnostics. Must not throw — return `[]` when there's nothing to flag.
    */
   lint?: (text: string) => SchematexDiagnostic[];
+  capabilities?: {
+    /** Renderer can populate RenderConfig.__scene when explicitly requested. */
+    scene?: boolean;
+    /** The engine has at least one safe position-editing mode. */
+    editablePosition?: boolean;
+  };
 }
 
 export interface LayoutConfig {
@@ -701,6 +845,12 @@ export interface RenderConfig {
   showInLawLabels?: boolean;
   /** Legend position override */
   legendPosition?: LegendPosition;
+  /** @internal Core-owned scene collector; absent in the default render path. */
+  __scene?: SceneItem[];
+  /** @internal Parsed @overrides pins, blanked out before the diagram parser. */
+  __pins?: Map<string, { x: number; y: number }>;
+  /** @internal Exact preprocessed DSL used by compatibility scene adapters. */
+  __source?: string;
 }
 
 // ─── Electrical Engineering AST Types ───────────────────────
@@ -718,6 +868,8 @@ export interface TimingSignal {
   name: string;
   /** WaveDrom wave string: sequence of state chars */
   wave: string;
+  /** Exact authored wave token; absent for expanded clock/rle shorthand. */
+  waveSourceRange?: SourceRange;
   /** Data labels for bus states (= or 2-9) */
   data?: string[];
   /** Phase offset in half-periods */
@@ -744,6 +896,7 @@ export interface TimingAnnotation {
 export interface TimingAST {
   type: "timing";
   title?: string;
+  titleSourceRange?: SourceRange;
   /** Time scale multiplier (1–4) */
   hscale?: number;
   signals: Array<TimingSignal | TimingGroup>;
@@ -963,14 +1116,18 @@ export type CircuitDirection = "right" | "left" | "up" | "down";
 
 export interface CircuitComponent {
   id: string;
+  /** True only when the id is explicitly authored and safe to persist in @overrides. */
+  stableId?: boolean;
   componentType: CircuitComponentType;
   direction: CircuitDirection;
   /** Reference to anchor point of previous/named element: e.g. "R1.end", "origin" */
   at?: string;
   /** Display label (R1, C2, etc.) */
   label?: string;
+  labelSourceRange?: SourceRange;
   /** Value annotation (1kΩ, 100nF, etc.) */
   value?: string;
+  valueSourceRange?: SourceRange;
   /** Extra attributes (length for wires, gain for opamp, etc.) */
   attrs?: Record<string, string>;
 }
@@ -986,6 +1143,7 @@ export interface CircuitNet {
 export interface CircuitAST {
   type: "circuit";
   title?: string;
+  titleSourceRange?: SourceRange;
   components: CircuitComponent[];
   /** Explicit net declarations for multi-terminal connections */
   nets: CircuitNet[];
@@ -1302,8 +1460,12 @@ export type ErdCardinality =
 /** Attribute / column row within a tabular entity (crow's foot mode). */
 export interface ErdAttribute {
   name: string;
+  /** Exact authored column-name token. */
+  nameSourceRange?: SourceRange;
   /** Free-form type token, e.g. "int", "varchar(255)", "timestamp" — rendered verbatim. */
   type?: string;
+  /** Exact authored type token(s), excluding flags. */
+  typeSourceRange?: SourceRange;
   pk?: boolean;
   fk?: boolean;
   uk?: boolean;
@@ -1319,6 +1481,8 @@ export interface ErdEntity {
   id: string;
   /** Display name (defaults to id when not separately quoted). */
   name: string;
+  /** Exact authored display-name/id token. */
+  nameSourceRange?: SourceRange;
   attributes: ErdAttribute[];
   /** Reserved for Chen mode (weak entity). Ignored in crow's foot rendering. */
   weak?: boolean;
@@ -1340,6 +1504,7 @@ export interface ErdAst {
   notation: ErdNotation;
   direction: "LR" | "TB";
   title?: string;
+  titleSourceRange?: SourceRange;
   entities: ErdEntity[];
   refs: ErdRef[];
 }
@@ -1414,6 +1579,10 @@ export interface VennSet {
   elements?: string[];
   /** Override color (hex). */
   color?: string;
+  /** Optional normalized center authored by the native geometry handle. */
+  at?: { x: number; y: number };
+  /** Optional normalized radius / ellipse scale authored by the native size handle. */
+  radius?: number;
 }
 
 /** A named region. `sets` is the subset of set ids that define it (at least one). */
@@ -1553,6 +1722,8 @@ export interface FlowchartNode {
   style?: Record<string, string>;
   /** Containing subgraph id (undefined = root) */
   parent?: string;
+  /** Exact editable label token in the parser input. */
+  labelSourceRange?: SourceRange;
 }
 
 export interface FlowchartEdge {
@@ -1566,6 +1737,8 @@ export interface FlowchartEdge {
   classes?: string[];
   /** Reversed during cycle-removal (renderer must flip visual arrow) */
   isReversed?: boolean;
+  /** Exact editable edge-label token in the parser input. */
+  labelSourceRange?: SourceRange;
 }
 
 export interface FlowchartSubgraph {
@@ -1585,6 +1758,7 @@ export interface FlowchartClassDef {
 export interface FlowchartAST {
   type: "flowchart";
   title?: string;
+  titleSourceRange?: SourceRange;
   direction: FlowchartDirection;
   nodes: FlowchartNode[];
   edges: FlowchartEdge[];
@@ -1635,6 +1809,8 @@ export interface FlowchartLayoutResult {
   nodes: FlowchartLayoutNode[];
   edges: FlowchartLayoutEdge[];
   clusters: FlowchartLayoutCluster[];
+  /** Optional expanded viewport when authored pins leave the auto-layout canvas. */
+  viewBox?: { x: number; y: number; width: number; height: number };
 }
 
 // ─── Mindmap Types ──────────────────────────────────────────
@@ -1656,6 +1832,8 @@ export interface MindmapNode {
   id: string;
   /** Raw label text (post-bullet-marker, pre-tokenize) — kept for title/tooltip. */
   label: string;
+  /** Exact span of the authored Markdown label; absent for synthesized nodes. */
+  sourceRange?: SourceRange;
   /** Tokenized label. Layout & renderer consume this. */
   tokens: InlineToken[];
   depth: number;
@@ -1778,6 +1956,8 @@ export interface BreadboardPart {
   /** Optional kind-specific args. e.g. resistor.value="220", dip.pins=8, led.color="red". */
   args: Record<string, string | number>;
   placement: BreadboardPlacement;
+  /** Exact authored `@...` placement token for hole-snapped editing. */
+  placementSourceRange?: SourceRange;
   /** Optional inline label drawn near the part body. */
   label?: string;
 }
@@ -1811,6 +1991,7 @@ export interface BreadboardAst {
   type: "breadboard";
   board: BreadboardForm;
   title?: string;
+  titleSourceRange?: SourceRange;
   parts: BreadboardPart[];
   wires: BreadboardWire[];
 }
@@ -2118,6 +2299,7 @@ export interface FbdNetwork {
 export interface FbdAst {
   type: "fbd";
   title?: string;
+  titleSourceRange?: SourceRange;
   variables: FbdVarDecl[];
   networks: FbdNetwork[];
 }

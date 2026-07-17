@@ -9,6 +9,7 @@ import type {
   InfluenceAST,
 } from "./types";
 import { parseInfluence } from "./influence-parser";
+import { createSourceLocator } from "../../core/source-range";
 
 export class DTreeParseError extends Error {
   constructor(
@@ -26,17 +27,23 @@ interface RawLine {
   indent: number;
   text: string;
   line: number;
+  start: number;
 }
 
 function preprocess(src: string): RawLine[] {
   const out: RawLine[] = [];
   const lines = src.split(/\r?\n/);
+  let sourceStart = 0;
   for (let i = 0; i < lines.length; i++) {
     const raw = lines[i];
     if (raw === undefined) continue;
-    if (!raw.trim() || raw.trim().startsWith("#") || raw.trim().startsWith("//")) continue;
+    if (!raw.trim() || raw.trim().startsWith("#") || raw.trim().startsWith("//")) {
+      sourceStart += raw.length + (i < lines.length - 1 ? (src[sourceStart + raw.length] === "\r" ? 2 : 1) : 0);
+      continue;
+    }
     const indentSpaces = raw.length - raw.replace(/^\s+/, "").length;
-    out.push({ indent: Math.floor(indentSpaces / 2), text: raw.trim(), line: i + 1 });
+    out.push({ indent: Math.floor(indentSpaces / 2), text: raw.trim(), line: i + 1, start: sourceStart + indentSpaces });
+    sourceStart += raw.length + (i < lines.length - 1 ? (src[sourceStart + raw.length] === "\r" ? 2 : 1) : 0);
   }
   return out;
 }
@@ -287,15 +294,34 @@ function parseNodeLine(text: string, mode: DTreeMode, ctx: ParseContext, lineNum
   return parseTaxonomyLine(tokens, ctx, lineNum);
 }
 
-function buildTree(lines: RawLine[], mode: DTreeMode, ctx: ParseContext): DTreeNode {
+function attachNodeLabelRange(
+  node: DTreeNode,
+  line: RawLine,
+  range: ReturnType<typeof createSourceLocator>["range"]
+): DTreeNode {
+  if (!node.label) return node;
+  const quoted = [...line.text.matchAll(/"[^"]*"/g)];
+  const token = quoted[quoted.length - 1];
+  if (token?.index !== undefined) {
+    node.labelSourceRange = range(line.start + token.index, line.start + token.index + token[0].length);
+  }
+  return node;
+}
+
+function buildTree(
+  lines: RawLine[],
+  mode: DTreeMode,
+  ctx: ParseContext,
+  range: ReturnType<typeof createSourceLocator>["range"]
+): DTreeNode {
   if (lines.length === 0) throw new DTreeParseError("No tree body");
   const [first, ...rest] = lines;
   if (!first) throw new DTreeParseError("No tree body");
-  const root = parseNodeLine(first.text, mode, ctx, first.line);
+  const root = attachNodeLabelRange(parseNodeLine(first.text, mode, ctx, first.line), first, range);
   const stack: Array<{ node: DTreeNode; indent: number }> = [{ node: root, indent: first.indent }];
 
   for (const line of rest) {
-    const node = parseNodeLine(line.text, mode, ctx, line.line);
+    const node = attachNodeLabelRange(parseNodeLine(line.text, mode, ctx, line.line), line, range);
     while (stack.length > 0 && stack[stack.length - 1]!.indent >= line.indent) stack.pop();
     const parent = stack[stack.length - 1];
     if (!parent) throw new DTreeParseError(`Orphan line (bad indent): ${line.text}`, line.line);
@@ -360,6 +386,7 @@ function validateDecision(node: DTreeNode, lineMap: Map<string, number>): void {
 // ─── Top-level ───────────────────────────────────────────────
 
 export function parseDecisionTree(src: string): DTreeAST | InfluenceAST {
+  const locator = createSourceLocator(src);
   idCounter = 0;
   const lines = preprocess(src);
   if (lines.length === 0) throw new DTreeParseError("Empty input");
@@ -370,6 +397,10 @@ export function parseDecisionTree(src: string): DTreeAST | InfluenceAST {
   if (!headerMatch) throw new DTreeParseError(`Invalid header: ${header.text}`, header.line);
   const modeRaw = (headerMatch[1] ?? "taxonomy").toLowerCase();
   const title = headerMatch[2];
+  const titleToken = [...header.text.matchAll(/"[^"]*"/g)].at(-1);
+  const titleSourceRange = titleToken?.index !== undefined
+    ? locator.range(header.start + titleToken.index, header.start + titleToken.index + titleToken[0].length)
+    : undefined;
 
   // Influence diagram (DAG form) — handled by its own self-contained sub-parser.
   // The `mode: influence` / `layout: influence` config directive is also honoured.
@@ -429,7 +460,7 @@ export function parseDecisionTree(src: string): DTreeAST | InfluenceAST {
   if (es === "diagonal" || es === "orthogonal" || es === "bracket") edgeStyle = es;
 
   const ctx: ParseContext = { mode, regression: false };
-  const root = buildTree(lines, mode, ctx);
+  const root = buildTree(lines, mode, ctx, locator.range);
 
   if (mode === "decision") {
     validateDecision(root, new Map());
@@ -440,6 +471,7 @@ export function parseDecisionTree(src: string): DTreeAST | InfluenceAST {
     type: "decisiontree",
     mode,
     title,
+    titleSourceRange,
     direction,
     classes,
     impurityName: impurityName ?? (mode === "ml" ? "gini" : undefined),

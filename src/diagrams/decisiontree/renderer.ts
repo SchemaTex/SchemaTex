@@ -1,4 +1,4 @@
-import type { RenderConfig } from "../../core/types";
+import type { RenderConfig, SceneItem } from "../../core/types";
 import {
   svgRoot,
   group,
@@ -14,6 +14,7 @@ import {
 } from "../../core/svg";
 import { resolveBaseTheme, type BaseTheme } from "../../core/theme";
 import { layoutDecisionTree } from "./layout";
+import { resolveSceneTitle } from "../../core/title-scene";
 import { renderInfluence } from "./influence-renderer";
 import type {
   DTreeAST,
@@ -59,7 +60,13 @@ function buildCss(t: BaseTheme): string {
 
 // ─── Decision-mode node rendering ────────────────────────────
 
-function renderDecisionNode(ln: DTreeLayoutNode, layout: DTreeLayoutResult): string {
+function sceneLabelAttrs(n: DTreeNode, scene?: SceneItem[]): Record<string, string | undefined> {
+  return {
+    "data-sx-role": scene && n.labelSourceRange ? "label" : undefined,
+  };
+}
+
+function renderDecisionNode(ln: DTreeLayoutNode, layout: DTreeLayoutResult, scene?: SceneItem[]): string {
   const n = ln.node;
   const parts: string[] = [];
   const sibH = layout.direction === "top-down";
@@ -80,11 +87,13 @@ function renderDecisionNode(ln: DTreeLayoutNode, layout: DTreeLayoutResult): str
         parts.push(textEl({
           x: ln.x, y: ln.y - ln.height / 2 - 8,
           class: "lt-dtree-node-label", "text-anchor": "middle",
+          ...sceneLabelAttrs(n, scene),
         }, n.label));
       } else {
         parts.push(textEl({
           x: ln.x - ln.width / 2 - 8, y: ln.y + 4,
           class: "lt-dtree-node-label", "text-anchor": "end",
+          ...sceneLabelAttrs(n, scene),
         }, n.label));
       }
     }
@@ -104,11 +113,13 @@ function renderDecisionNode(ln: DTreeLayoutNode, layout: DTreeLayoutResult): str
         parts.push(textEl({
           x: ln.x, y: ln.y - ln.height / 2 - 8,
           class: "lt-dtree-node-label", "text-anchor": "middle",
+          ...sceneLabelAttrs(n, scene),
         }, n.label));
       } else {
         parts.push(textEl({
           x: ln.x, y: ln.y - ln.height / 2 - 6,
           class: "lt-dtree-node-label", "text-anchor": "middle",
+          ...sceneLabelAttrs(n, scene),
         }, n.label));
       }
     }
@@ -148,6 +159,7 @@ function renderDecisionNode(ln: DTreeLayoutNode, layout: DTreeLayoutResult): str
         parts.push(textEl({
           x: (tipX + colX) / 2, y: ln.y - 6,
           class: "lt-dtree-edge-label", "text-anchor": "middle",
+          ...sceneLabelAttrs(n, scene),
         }, n.label));
       }
       if (payoffStr) {
@@ -162,6 +174,7 @@ function renderDecisionNode(ln: DTreeLayoutNode, layout: DTreeLayoutResult): str
       if (labelParts.length > 0) {
         parts.push(textEl({
           x: tipX + 8, y: textY, class: payoffCls,
+          ...sceneLabelAttrs(n, scene),
         }, labelParts.join(" · ")));
       }
     }
@@ -171,6 +184,8 @@ function renderDecisionNode(ln: DTreeLayoutNode, layout: DTreeLayoutResult): str
     "data-node-id": n.id,
     "data-node-kind": n.kind,
     "data-ev": n.ev !== undefined ? String(n.ev) : "",
+    "data-sx-key": scene ? `node:${n.id}` : undefined,
+    "data-sx-owner": scene ? `node:${n.id}` : undefined,
   }, parts);
 }
 
@@ -210,7 +225,7 @@ function hexWithAlpha(hex: string, alpha: number): string {
   return hex + Math.round(alpha * 255).toString(16).padStart(2, "0");
 }
 
-function renderMlNode(ln: DTreeLayoutNode, ast: DTreeAST): string {
+function renderMlNode(ln: DTreeLayoutNode, ast: DTreeAST, scene?: SceneItem[]): string {
   const n = ln.node;
   const { fill } = mlNodeFillColor(n);
   const parts: string[] = [];
@@ -232,7 +247,7 @@ function renderMlNode(ln: DTreeLayoutNode, ast: DTreeAST): string {
       `${n.feature} ${n.op ?? ""} ${thresh}`));
     textY += lineH;
   } else if (n.label) {
-    parts.push(textEl({ x: textX, y: textY, class: "lt-dtree-ml-line-1", "text-anchor": "middle" }, n.label));
+    parts.push(textEl({ x: textX, y: textY, class: "lt-dtree-ml-line-1", "text-anchor": "middle", ...sceneLabelAttrs(n, scene) }, n.label));
     textY += lineH;
   }
   if (n.impurity !== undefined) {
@@ -291,12 +306,14 @@ function renderMlNode(ln: DTreeLayoutNode, ast: DTreeAST): string {
     "data-node-kind": n.kind,
     "data-samples": n.samples !== undefined ? String(n.samples) : "",
     "data-class": n.className ?? "",
+    "data-sx-key": scene ? `node:${n.id}` : undefined,
+    "data-sx-owner": scene ? `node:${n.id}` : undefined,
   }, parts);
 }
 
 // ─── Taxonomy-mode node rendering ────────────────────────────
 
-function renderTaxonomyNode(ln: DTreeLayoutNode): string {
+function renderTaxonomyNode(ln: DTreeLayoutNode, scene?: SceneItem[]): string {
   const n = ln.node;
   const isLeaf = n.kind === "answer" || n.children.length === 0;
   const cls = isLeaf ? "lt-dtree-taxon-leaf" : "lt-dtree-taxon";
@@ -316,7 +333,7 @@ function renderTaxonomyNode(ln: DTreeLayoutNode): string {
   const totalH = lines.length * 14;
   let ty = ln.y - totalH / 2 + 11;
   for (const line of lines) {
-    parts.push(textEl({ x: ln.x, y: ty, class: "lt-dtree-taxon-label" }, line));
+    parts.push(textEl({ x: ln.x, y: ty, class: "lt-dtree-taxon-label", ...sceneLabelAttrs(n, scene) }, line));
     ty += 14;
   }
 
@@ -324,6 +341,8 @@ function renderTaxonomyNode(ln: DTreeLayoutNode): string {
     "data-node-id": n.id,
     "data-node-kind": n.kind,
     "data-leaf": isLeaf ? "true" : "false",
+    "data-sx-key": scene ? `node:${n.id}` : undefined,
+    "data-sx-owner": scene ? `node:${n.id}` : undefined,
   }, parts);
 }
 
@@ -361,7 +380,8 @@ export function renderDecisionTree(ast: DTreeAST | InfluenceAST, config?: Render
   children.push(el("style", {}, buildCss(t)));
 
   if (ast.title) {
-    children.push(textEl({ x: width / 2, y: 24, class: "lt-dtree-title", "text-anchor": "middle" }, ast.title));
+    const title = resolveSceneTitle(ast.title, ast.titleSourceRange, width / 2, 24, config);
+    children.push(textEl({ x: title.x, y: title.y, class: "lt-dtree-title", "text-anchor": "middle", ...title.attrs }, ast.title));
   }
 
   const inner: string[] = [];
@@ -413,9 +433,17 @@ export function renderDecisionTree(ast: DTreeAST | InfluenceAST, config?: Render
 
   // Nodes on top
   for (const ln of layout.nodes) {
-    if (ast.mode === "decision") inner.push(renderDecisionNode(ln, layout));
-    else if (ast.mode === "ml") inner.push(renderMlNode(ln, ast));
-    else inner.push(renderTaxonomyNode(ln));
+    config?.__scene?.push({
+      key: `node:${ln.node.id}`,
+      kind: "node",
+      label: ln.node.label,
+      sourceRange: ln.node.labelSourceRange,
+      bbox: { x: ln.x - ln.width / 2, y: ln.y - ln.height / 2, width: ln.width, height: ln.height },
+      editable: { label: ln.node.labelSourceRange !== undefined, position: "none" },
+    });
+    if (ast.mode === "decision") inner.push(renderDecisionNode(ln, layout, config?.__scene));
+    else if (ast.mode === "ml") inner.push(renderMlNode(ln, ast, config?.__scene));
+    else inner.push(renderTaxonomyNode(ln, config?.__scene));
   }
 
   children.push(group({ transform: `translate(0, ${titleOffset})`, "data-mode": ast.mode }, inner));

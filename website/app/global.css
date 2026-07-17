@@ -242,6 +242,11 @@ body {
   color: var(--text);
   border-color: var(--stroke);
 }
+.pg-mini:focus-visible,
+.sx-label-editor:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
 .pg-mini-primary {
   background: var(--accent);
   color: #fff;
@@ -260,6 +265,179 @@ body {
   border-radius: var(--r-sm);
   opacity: 0.7;
   margin-left: 2px;
+}
+
+/* Interactive editing — source selection, SVG affordances, inline editor. */
+.sx-interaction-hint {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 8px;
+  border: 1px solid var(--neutral);
+  border-radius: var(--r-sm);
+  background: var(--bg);
+  color: var(--text-muted);
+  font-family: var(--mono);
+  font-size: 11px;
+  line-height: 1;
+}
+.sx-interaction-hint span + span::before {
+  content: '·';
+  margin-right: 8px;
+  color: var(--neutral);
+}
+.sx-interaction-hint strong {
+  padding-left: 8px;
+  border-left: 1px solid var(--fill-muted);
+  color: var(--accent);
+  font-weight: 500;
+}
+.sx-interaction-hint strong:empty { display: none; }
+
+.sx-label-editor {
+  position: fixed;
+  z-index: 100;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0 5px;
+  border: 1px solid var(--accent);
+  border-radius: var(--r-sm);
+  background: color-mix(in srgb, var(--bg) 94%, transparent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 18%, transparent);
+  line-height: 1;
+  text-align: center;
+  appearance: none;
+}
+.sx-label-editor:focus-visible {
+  outline: none;
+}
+.sx-label-editing {
+  opacity: 0;
+}
+
+.sx-specimen-switcher {
+  margin-bottom: 12px;
+  border: 1px solid var(--fill-muted);
+  border-radius: var(--r);
+  background: var(--fill);
+  overflow: hidden;
+}
+.sx-specimen-tabs {
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  border-bottom: 1px solid var(--fill-muted);
+}
+.sx-specimen-tab {
+  position: relative;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-height: 42px;
+  padding: 0 14px;
+  border-right: 1px solid var(--fill-muted);
+  background: var(--bg);
+  color: var(--text-muted);
+  font-family: var(--mono);
+  font-size: 11px;
+  cursor: pointer;
+}
+.sx-specimen-tab::after {
+  content: '';
+  position: absolute;
+  right: 10px;
+  bottom: -1px;
+  left: 10px;
+  height: 2px;
+  background: transparent;
+}
+.sx-specimen-tab small {
+  color: var(--neutral);
+  font-size: 9px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+.sx-specimen-tab:hover,
+.sx-specimen-tab[aria-selected='true'] {
+  color: var(--text);
+  background: var(--accent-soft);
+}
+.sx-specimen-tab[aria-selected='true']::after {
+  background: var(--accent);
+}
+.sx-specimen-tab:focus-visible {
+  z-index: 1;
+  outline: 2px solid var(--accent);
+  outline-offset: -3px;
+}
+.sx-specimen-note {
+  min-height: 37px;
+  margin: 0;
+  padding: 9px 13px;
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 18px;
+}
+
+@media (max-width: 640px) {
+  .sx-specimen-tab {
+    min-height: 40px;
+    padding-inline: 11px;
+  }
+  .sx-specimen-note {
+    min-height: 55px;
+  }
+}
+
+.sx-monaco-selection {
+  background: var(--accent-soft);
+  border-bottom: 1px solid var(--accent);
+}
+.sx-monaco-selection-line {
+  border-left: 2px solid var(--accent);
+}
+
+svg [data-sx-key^='node:'] {
+  cursor: grab;
+}
+svg [data-sx-role='label'] {
+  cursor: text;
+}
+svg [data-sx-key] > .sx-fc-node,
+svg [data-sx-key] > path {
+  transition: stroke .12s ease, stroke-width .12s ease, opacity .12s ease;
+}
+svg .sx-interactive-selected > .sx-fc-node,
+svg .sx-interactive-selected > path {
+  stroke: var(--accent) !important;
+  stroke-width: 2.5 !important;
+}
+svg .sx-interactive-selected[data-sx-role='label'] {
+  fill: var(--accent) !important;
+  font-weight: 600;
+}
+svg [data-sx-dragging='true'] {
+  cursor: grabbing;
+  opacity: .82;
+}
+
+@media (max-width: 767px) {
+  .sx-interaction-hint { display: none; }
+}
+
+@media (max-width: 639px) {
+  .diagram-frame-standard,
+  .pg-render-action { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  svg [data-sx-key] > .sx-fc-node,
+  svg [data-sx-key] > path { transition: none; }
 }
 
 /* Gallery card — design-spec card with card-bar + dot-grid stage + hover strip. */

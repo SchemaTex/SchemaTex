@@ -20,6 +20,8 @@ export type SeqParticipantKind =
 export interface SeqParticipant {
   id: string;
   name: string;
+  /** Exact source token for an explicitly-authored participant alias. */
+  nameSourceRange?: import("../../core/types").SourceRange;
   kind: SeqParticipantKind;
   /** Custom classifier stereotype, e.g. «system» / «service». Overrides the kind label. */
   stereotype?: string;
@@ -47,6 +49,8 @@ export interface SeqMessage {
   to: string;
   arrow: SeqArrowKind;
   label?: string;
+  /** Exact source token for the message label. */
+  labelSourceRange?: import("../../core/types").SourceRange;
   /** `+` suffix — activate the receiver on arrival. */
   activateTarget?: boolean;
   /** `-` suffix — deactivate the sender after this message is sent. */
@@ -142,6 +146,7 @@ export type SeqStatement =
 export interface SeqAst {
   type: "sequence";
   title?: string;
+  titleSourceRange?: import("../../core/types").SourceRange;
   participants: SeqParticipant[];
   statements: SeqStatement[];
   /** Present iff `autonumber` was declared. */
