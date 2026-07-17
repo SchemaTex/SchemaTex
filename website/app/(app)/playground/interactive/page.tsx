@@ -31,7 +31,7 @@ export default function InteractiveEditingPreview() {
         </p>
       </div>
 
-      <div className="mb-5 grid gap-3 md:grid-cols-3">
+      <div className="sx-interactive-steps mb-5 grid gap-3 md:grid-cols-3">
         {STEPS.map(([number, title, detail]) => (
           <section
             key={number}

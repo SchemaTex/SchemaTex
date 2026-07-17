@@ -11,7 +11,14 @@ import {
   getExamples,
   validateDsl,
   renderDsl,
+  getDiagramCapabilities,
+  inspectDiagram,
+  applyDiagramEdits,
 } from "../../src/ai";
+import {
+  INTERACTIVE_DIAGRAM_COUNT,
+  POSITION_EDITABLE_DIAGRAM_COUNT,
+} from "../../src";
 
 describe("listDiagrams", () => {
   it("returns all 50 diagram types", () => {
@@ -49,6 +56,69 @@ describe("listDiagrams", () => {
       expect(entry.tagline.length).toBeGreaterThan(10);
       expect(entry.useWhen.length).toBeGreaterThan(20);
       expect(entry.standard.length).toBeGreaterThan(3);
+    }
+  });
+
+  it("uses the canonical interactive capability registry for all engines", () => {
+    expect(INTERACTIVE_DIAGRAM_COUNT).toBe(50);
+    expect(POSITION_EDITABLE_DIAGRAM_COUNT).toBe(40);
+    for (const entry of listDiagrams()) {
+      expect(entry.interactive).toEqual(getDiagramCapabilities(entry.type));
+      expect(entry.interactive.text.length).toBeGreaterThan(0);
+    }
+  });
+});
+
+describe("AI-safe editing", () => {
+  const dsl = `flowchart TD "Release"
+  A[Draft] --> B[Ship]`;
+
+  it("inspects stable targets without leaking source offsets", () => {
+    const result = inspectDiagram("flowchart", dsl);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.capabilities.position).toBe("free");
+    expect(result.items.some((item) => item.key === "node:A")).toBe(true);
+    expect(result.items[0]).not.toHaveProperty("sourceRange");
+  });
+
+  it("applies a label and position batch atomically", () => {
+    const inspected = inspectDiagram("flowchart", dsl);
+    expect(inspected.ok).toBe(true);
+    if (!inspected.ok) return;
+    const result = applyDiagramEdits("flowchart", dsl, inspected.revision, [
+      { target: "node:A", op: "setLabel", value: "Approved" },
+      { target: "node:A", op: "setPosition", x: 80, y: 90 },
+    ]);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.dsl).toContain("A[Approved]");
+    expect(result.dsl).toMatch(/^pin A 80,90$/m);
+    expect(result.revision).not.toBe(inspected.revision);
+  });
+
+  it("rejects stale and partially invalid batches without changing DSL", () => {
+    const inspected = inspectDiagram("flowchart", dsl);
+    expect(inspected.ok).toBe(true);
+    if (!inspected.ok) return;
+
+    const stale = applyDiagramEdits("flowchart", `${dsl}\n`, inspected.revision, [
+      { target: "node:A", op: "setLabel", value: "Approved" },
+    ]);
+    expect(stale.ok).toBe(false);
+    if (!stale.ok) {
+      expect(stale.code).toBe("STALE_REVISION");
+      expect(stale.dsl).toBe(`${dsl}\n`);
+    }
+
+    const atomic = applyDiagramEdits("flowchart", dsl, inspected.revision, [
+      { target: "node:A", op: "setLabel", value: "Approved" },
+      { target: "node:missing", op: "setLabel", value: "Never applied" },
+    ]);
+    expect(atomic.ok).toBe(false);
+    if (!atomic.ok) {
+      expect(atomic.code).toBe("TARGET_NOT_FOUND");
+      expect(atomic.dsl).toBe(dsl);
     }
   });
 });

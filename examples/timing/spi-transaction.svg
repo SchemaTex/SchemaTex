@@ -12,7 +12,9 @@
 .schematex-timing-unknown { stroke: #555; stroke-width: 0.5; }
 .schematex-timing-hiz { stroke: #555; stroke-width: 1.5; stroke-dasharray: 4 3; }
 .schematex-timing-grid { stroke: #eee; stroke-width: 0.5; }
-.schematex-timing-title { font: 700 16px system-ui, -apple-system, sans-serif; fill: #111; }</style></defs>
+.schematex-timing-title { font: 700 16px system-ui, -apple-system, sans-serif; fill: #111; }
+.sx-native-handle { fill: #fff; stroke: #2563eb; stroke-width: 1.4; cursor: ew-resize; vector-effect: non-scaling-stroke; }
+.sx-native-handle:hover { fill: #dbeafe; stroke-width: 2; }</style></defs>
 <g class="schematex-timing-grid-g"><line x1="120" y1="40" x2="120" y2="194" class="schematex-timing-grid"/>
 <line x1="200" y1="40" x2="200" y2="194" class="schematex-timing-grid"/>
 <line x1="280" y1="40" x2="280" y2="194" class="schematex-timing-grid"/>
@@ -35,4 +37,5 @@
 <text x="112" y="98" class="schematex-timing-name" text-anchor="end">CS</text>
 <text x="112" y="134" class="schematex-timing-name" text-anchor="end">MOSI</text>
 <text x="112" y="170" class="schematex-timing-name" text-anchor="end">MISO</text></g>
+<g class="sx-native-handles"></g>
 <text x="430" y="24" text-anchor="middle" class="schematex-timing-title">SPI Transaction</text></svg>

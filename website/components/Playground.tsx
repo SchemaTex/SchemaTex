@@ -1,13 +1,9 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
-import { renderResult, type SceneItem } from 'schematex';
-import {
-  attachInteraction,
-  sourceRevision,
-  type LabelEditAnchor,
-} from 'schematex/interactive';
+import type { SceneItem, SchematexRenderResult } from 'schematex';
+import { InteractiveSchematexDiagram } from 'schematex/react';
 import { svgToPngBlob, downloadBlob, printSvgAsPdf } from 'schematex/export';
 import type { Monaco, OnMount } from '@monaco-editor/react';
 import { DiagramFrame } from './DiagramFrame';
@@ -38,55 +34,6 @@ interface PlaygroundProps {
 }
 
 type MonacoEditorInstance = Parameters<OnMount>[0];
-
-interface LabelEditorState {
-  item: SceneItem;
-  anchor: LabelEditAnchor;
-  draft: string;
-  draftWidth: number;
-  commit: (text: string) => void;
-  cancel: () => void;
-}
-
-function measureDraftWidth(anchor: LabelEditAnchor, draft: string): number {
-  const canvas = document.createElement('canvas');
-  const context = canvas.getContext('2d');
-  if (!context) return Math.max(anchor.rect.width, draft.length * anchor.fontSize * 0.62);
-  context.font = `${anchor.fontStyle} ${anchor.fontWeight} ${anchor.fontSize}px ${anchor.fontFamily}`;
-  let width = context.measureText(draft || ' ').width;
-  const letterSpacing = Number.parseFloat(anchor.letterSpacing);
-  if (Number.isFinite(letterSpacing) && draft.length > 1) {
-    width += letterSpacing * (draft.length - 1);
-  }
-  return width;
-}
-
-function labelEditorStyle(state: LabelEditorState): CSSProperties {
-  const { anchor, draftWidth } = state;
-  const width = Math.max(
-    28,
-    Math.min(window.innerWidth - 16, Math.max(anchor.rect.width, draftWidth) + 12),
-  );
-  const height = Math.max(22, anchor.rect.height + 6);
-  return {
-    left: Math.max(
-      8,
-      Math.min(anchor.rect.left + anchor.rect.width / 2 - width / 2, window.innerWidth - width - 8),
-    ),
-    top: Math.max(
-      8,
-      Math.min(anchor.rect.top + anchor.rect.height / 2 - height / 2, window.innerHeight - height - 8),
-    ),
-    width,
-    height,
-    color: anchor.color,
-    fontFamily: anchor.fontFamily,
-    fontSize: anchor.fontSize,
-    fontWeight: anchor.fontWeight,
-    fontStyle: anchor.fontStyle,
-    letterSpacing: anchor.letterSpacing,
-  };
-}
 
 const TYPE_META: Record<string, { name: string; std: string }> = {
   genogram: { name: 'genogram', std: 'McGoldrick' },
@@ -164,22 +111,35 @@ function formatBytes(n: number): string {
 
 export function Playground({ initial, height = 560, fill = false, syncHash = false, stars = 0 }: PlaygroundProps) {
   const [text, setText] = useState(initial);
-  const [debounced, setDebounced] = useState(initial);
+  const [renderState, setRenderState] = useState<{
+    result: SchematexRenderResult | null;
+    renderMs: number;
+    svgBytes: number;
+  }>({ result: null, renderMs: 0, svgBytes: 0 });
   const [copyState, setCopyState] = useState<'idle' | 'done'>('idle');
   const [shareState, setShareState] = useState<'idle' | 'done'>('idle');
   const [exportOpen, setExportOpen] = useState(false);
   const [zoom, setZoom] = useState(100);
   const exportRef = useRef<HTMLDivElement>(null);
-  const previewRef = useRef<HTMLDivElement>(null);
   const editorRef = useRef<MonacoEditorInstance | null>(null);
   const monacoRef = useRef<Monaco | null>(null);
   const decorationIds = useRef<string[]>([]);
   const selectedStatusRef = useRef<HTMLElement | null>(null);
   const textRef = useRef(text);
+  const renderStartedRef = useRef(0);
   const hydrated = useRef(false);
-  const [labelEditor, setLabelEditor] = useState<LabelEditorState | null>(null);
 
   textRef.current = text;
+
+  useEffect(() => {
+    textRef.current = initial;
+    setText(initial);
+    setRenderState({ result: null, renderMs: 0, svgBytes: 0 });
+    const editor = editorRef.current;
+    if (editor && decorationIds.current.length > 0) {
+      decorationIds.current = editor.deltaDecorations(decorationIds.current, []);
+    }
+  }, [initial]);
 
   useEffect(() => {
     if (!syncHash) return;
@@ -190,20 +150,18 @@ export function Playground({ initial, height = 560, fill = false, syncHash = fal
       const decoded = decodeShare(hash.slice(2));
       if (decoded) {
         setText(decoded);
-        setDebounced(decoded);
       }
     }
   }, [syncHash]);
 
   useEffect(() => {
-    const id = setTimeout(() => setDebounced(text), 120);
-    return () => clearTimeout(id);
+    renderStartedRef.current = performance.now();
   }, [text]);
 
   useEffect(() => {
     if (!syncHash) return;
     const id = setTimeout(() => {
-      const encoded = encodeShare(debounced);
+      const encoded = encodeShare(text);
       if (encoded) {
         const url = new URL(window.location.href);
         url.hash = `s=${encoded}`;
@@ -211,45 +169,24 @@ export function Playground({ initial, height = 560, fill = false, syncHash = fal
       }
     }, 400);
     return () => clearTimeout(id);
-  }, [debounced, syncHash]);
+  }, [syncHash, text]);
 
-  const { svg, scene, sceneRev, error, renderMs, svgBytes } = useMemo(() => {
-    const start = typeof performance !== 'undefined' ? performance.now() : Date.now();
-    try {
-      const result = renderResult(debounced, { scene: true });
-      const end = typeof performance !== 'undefined' ? performance.now() : Date.now();
-      const bytes = new TextEncoder().encode(result.svg).length;
-      if (!result.ok) {
-        return {
-          svg: result.svg,
-          scene: new Array<SceneItem>(),
-          sceneRev: sourceRevision(debounced),
-          error: result.diagnostics[0]?.message ?? 'Unable to render this diagram.',
-          renderMs: end - start,
-          svgBytes: bytes,
-        };
-      }
-      return {
-        svg: result.svg,
-        scene: result.scene ?? [],
-        sceneRev: sourceRevision(debounced),
-        error: null as string | null,
-        renderMs: end - start,
-        svgBytes: bytes,
-      };
-    } catch (e) {
-      const end = typeof performance !== 'undefined' ? performance.now() : Date.now();
-      const msg = e instanceof Error ? e.message : String(e);
-      return {
-        svg: null,
-        scene: new Array<SceneItem>(),
-        sceneRev: sourceRevision(debounced),
-        error: msg,
-        renderMs: end - start,
-        svgBytes: 0,
-      };
-    }
-  }, [debounced]);
+  const result = renderState.result;
+  const svg = result?.svg ?? null;
+  const scene = result?.ok ? result.scene ?? [] : [];
+  const error = result && !result.ok
+    ? result.diagnostics[0]?.message ?? 'Unable to render this diagram.'
+    : null;
+  const { renderMs, svgBytes } = renderState;
+
+  const handleRender = useCallback((nextResult: SchematexRenderResult) => {
+    const end = performance.now();
+    setRenderState({
+      result: nextResult,
+      renderMs: Math.max(0, end - renderStartedRef.current),
+      svgBytes: new TextEncoder().encode(nextResult.svg).length,
+    });
+  }, []);
 
   const handleEditorMount = useCallback<OnMount>((editor, monaco) => {
     editorRef.current = editor;
@@ -293,33 +230,16 @@ export function Playground({ initial, height = 560, fill = false, syncHash = fal
     }
     textRef.current = nextSource;
     setText(nextSource);
-    setLabelEditor(null);
   }, []);
 
-  useEffect(() => {
-    const host = previewRef.current;
-    const svgElement = host?.querySelector<SVGSVGElement>('svg');
-    if (!svgElement || scene.length === 0 || error) return;
-    return attachInteraction(svgElement, {
-      getSource: () => textRef.current,
-      getScene: () => ({ rev: sceneRev, items: scene }),
-      onSelect: (item) => {
-        if (selectedStatusRef.current) selectedStatusRef.current.textContent = item?.key ?? '';
-        highlightSource(item);
-      },
-      onRequestLabelEdit: (item, anchor, commit, cancel) => {
-        setLabelEditor({
-          item,
-          anchor,
-          draft: item.label ?? '',
-          draftWidth: anchor.rect.width,
-          commit,
-          cancel,
-        });
-      },
-      onSourceChange: (source) => applySourceEdit(source),
-    });
-  }, [applySourceEdit, error, highlightSource, scene, sceneRev, svg]);
+  const handleCanvasSelect = useCallback((item: SceneItem | null) => {
+    if (selectedStatusRef.current) selectedStatusRef.current.textContent = item?.key ?? '';
+    highlightSource(item);
+  }, [highlightSource]);
+
+  const handleCanvasChange = useCallback((nextSource: string) => {
+    applySourceEdit(nextSource);
+  }, [applySourceEdit]);
 
   useEffect(() => () => {
     const editor = editorRef.current;
@@ -327,40 +247,6 @@ export function Playground({ initial, height = 560, fill = false, syncHash = fal
       editor.deltaDecorations(decorationIds.current, []);
     }
   }, []);
-
-  useEffect(() => {
-    const key = labelEditor?.item.key;
-    const measureRect = labelEditor?.anchor.measureRect;
-    if (!key || !measureRect) return;
-    let frame = 0;
-    const syncAnchor = () => {
-      cancelAnimationFrame(frame);
-      frame = requestAnimationFrame(() => {
-        const rect = measureRect();
-        setLabelEditor((current) => {
-          if (!current || current.item.key !== key) return current;
-          const previous = current.anchor.rect;
-          if (
-            previous.left === rect.left &&
-            previous.top === rect.top &&
-            previous.width === rect.width &&
-            previous.height === rect.height
-          ) {
-            return current;
-          }
-          return { ...current, anchor: { ...current.anchor, rect } };
-        });
-      });
-    };
-    syncAnchor();
-    window.addEventListener('resize', syncAnchor);
-    window.addEventListener('scroll', syncAnchor, true);
-    return () => {
-      cancelAnimationFrame(frame);
-      window.removeEventListener('resize', syncAnchor);
-      window.removeEventListener('scroll', syncAnchor, true);
-    };
-  }, [labelEditor?.anchor.measureRect, labelEditor?.item.key]);
 
   const meta = useMemo(() => detectType(text), [text]);
   const lineCount = useMemo(() => text.split('\n').length, [text]);
@@ -514,7 +400,6 @@ export function Playground({ initial, height = 560, fill = false, syncHash = fal
   );
 
   return (
-    <>
     <DiagramFrame
       diagram={meta.name}
       standard={meta.std}
@@ -546,7 +431,7 @@ export function Playground({ initial, height = 560, fill = false, syncHash = fal
             theme="vs"
             options={{
               fontSize: 13,
-              fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
+              fontFamily: 'var(--mono)',
               minimap: { enabled: false },
               scrollBeyondLastLine: false,
               wordWrap: 'on',
@@ -584,65 +469,34 @@ export function Playground({ initial, height = 560, fill = false, syncHash = fal
             </div>
           </div>
           <div className="dot-grid relative flex flex-1 items-center justify-center overflow-auto p-6">
-          {error ? (
-            <pre
-              className="whitespace-pre-wrap font-mono text-sm"
-              style={{ color: 'var(--negative)' }}
-            >
-              {error}
-            </pre>
-          ) : svg ? (
-            <div
-              ref={previewRef}
-              className="flex h-full w-full items-center justify-center [&_svg]:block [&_svg]:max-h-full [&_svg]:max-w-full"
+            <InteractiveSchematexDiagram
+              value={text}
+              onChange={handleCanvasChange}
+              onSelect={handleCanvasSelect}
+              onRender={handleRender}
+              debounceMs={120}
+              ariaLabel="Interactive diagram preview"
+              className="flex h-full w-full items-center justify-center focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--accent)]"
+              svgClassName="flex h-full w-full items-center justify-center [&_svg]:block [&_svg]:max-h-full [&_svg]:max-w-full"
               style={{ transform: `scale(${zoom / 100})`, transformOrigin: 'center center' }}
-              dangerouslySetInnerHTML={{ __html: svg }}
             />
-          ) : null}
-          {!!svg && !error && scene.length > 0 && (
-            <div className="sx-interaction-hint" aria-live="polite">
-              <span>click to select</span>
-              {interactionHints.editableLabel && <span>double-click label</span>}
-              {interactionHints.drag && <span>{interactionHints.drag}</span>}
-              <strong ref={selectedStatusRef} />
-            </div>
-          )}
-          {syncHash && <PlaygroundStarNudge stars={stars} active={!!svg && !error} />}
+            {error && (
+              <div className="pointer-events-none absolute inset-x-4 top-4 z-10 rounded-sm border border-[color:var(--negative)] bg-white/95 px-3 py-2 font-mono text-xs text-[color:var(--negative)]">
+                {error}
+              </div>
+            )}
+            {!!svg && !error && scene.length > 0 && (
+              <div className="sx-interaction-hint" aria-live="polite">
+                <span>click to select</span>
+                {interactionHints.editableLabel && <span>double-click label</span>}
+                {interactionHints.drag && <span>{interactionHints.drag}</span>}
+                <strong ref={selectedStatusRef} />
+              </div>
+            )}
+            {syncHash && <PlaygroundStarNudge stars={stars} active={!!svg && !error} />}
           </div>
         </div>
       </div>
     </DiagramFrame>
-    {labelEditor && (
-      <input
-        key={labelEditor.item.key}
-        className="sx-label-editor"
-        style={labelEditorStyle(labelEditor)}
-        aria-label={`Edit ${labelEditor.item.label ?? 'diagram label'}`}
-        autoFocus
-        value={labelEditor.draft}
-        onChange={(event) => {
-          const draft = event.currentTarget.value;
-          setLabelEditor((current) => current
-            ? { ...current, draft, draftWidth: measureDraftWidth(current.anchor, draft) }
-            : current);
-        }}
-        onFocus={(event) => event.currentTarget.select()}
-        onBlur={(event) => {
-          labelEditor.commit(event.currentTarget.value);
-          setLabelEditor(null);
-        }}
-        onKeyDown={(event) => {
-          if (event.key === 'Enter') {
-            event.preventDefault();
-            event.currentTarget.blur();
-          } else if (event.key === 'Escape') {
-            event.preventDefault();
-            labelEditor.cancel();
-            setLabelEditor(null);
-          }
-        }}
-      />
-    )}
-    </>
   );
 }

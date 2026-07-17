@@ -422,7 +422,7 @@ function renderMemberRow(
     ...(m.isStatic ? { "data-static": "true" } : {}),
     ...(m.isAbstract ? { "data-abstract": "true" } : {}),
     ...(m.isDerived ? { "data-derived": "true" } : {}),
-  }, spans);
+  }, spans.join(""));
 }
 
 function escapeXmlText(s: string): string {

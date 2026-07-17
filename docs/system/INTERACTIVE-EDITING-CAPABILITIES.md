@@ -82,6 +82,12 @@ Drag directions mean:
 
 The interactive playground contains 53 specimens because Flowchart, Circuit, and Floorplan each have more than one representative mode. The table above covers all 50 unique engines: 40 support safe position editing, and all 50 expose at least one authored title, label, or structured field for canvas editing.
 
+The machine-readable source of truth is `src/core/interactive-capabilities.ts`.
+The public controlled React editor is exported from `schematex/react`; the
+low-level DOM adapter remains available from `schematex/interactive`. Website
+workspaces consume the public React component rather than maintaining a second
+interaction implementation.
+
 ## Canvas coverage status
 
 All 30 engines previously listed under “planned safe model” are now shipped. There are no render-only engines. The remaining distinction is whether an engine has a safe position model: diagrams without stable identity or native geometry tokens expose text/field editing only instead of inventing unreliable coordinates.

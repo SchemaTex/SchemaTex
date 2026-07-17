@@ -1,7 +1,7 @@
 {
   "name": "schematex",
-  "version": "0.9.19",
-  "description": "Every diagram a doctor, engineer, or lawyer would actually use. 36 industry-standard diagrams (genogram, pedigree, ladder logic, SLD, FBD, SFC, P&ID, UML class, UML use case, UML sequence, fault tree, bowtie, PRISMA, phylo, fishbone, entity structure, ...) from a text DSL. Free, fully open source, made for AI. Pure SVG, zero dependencies.",
+  "version": "1.0.0",
+  "description": "Every diagram a doctor, engineer, or lawyer would actually use. 50 industry-standard diagrams from a text DSL, with open-source React editing, AI tools, and MCP. Pure SVG, zero runtime dependencies.",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -134,7 +134,7 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "npm run build:ai && tsup",
+    "build": "npm run build:ai && tsup && node scripts/preserve-react-client-directive.mjs",
     "build:ai": "node scripts/build-ai-content.mjs",
     "dev": "tsup --watch",
     "test": "vitest run",
@@ -194,8 +194,7 @@
   "peerDependencies": {
     "ai": ">=5.0.0",
     "react": ">=18.0.0",
-    "react-dom": ">=18.0.0",
-    "zod": ">=3.23.0"
+    "react-dom": ">=18.0.0"
   },
   "peerDependenciesMeta": {
     "react": {
@@ -206,9 +205,6 @@
     },
     "ai": {
       "optional": true
-    },
-    "zod": {
-      "optional": true
     }
   },
   "devDependencies": {
@@ -216,13 +212,13 @@
     "@resvg/resvg-js": "^2.6.2",
     "@types/node": "^22.0.0",
     "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
     "ai": "^5.0.179",
     "eslint": "^9.0.0",
     "playwright": "^1.59.1",
     "tsup": "^8.0.0",
     "typescript": "^5.5.0",
     "typescript-eslint": "^8.58.2",
-    "vitest": "^2.0.0",
-    "zod": "^3.25.76"
+    "vitest": "^2.0.0"
   }
 }

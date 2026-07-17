@@ -34,6 +34,7 @@
 .sx-pb-x { fill: none; stroke: #ef4444; stroke-width: 2.6; stroke-linecap: round; }
 .sx-pb-x-text { font: 700 9px sans-serif; fill: #ef4444; }
 .sx-pb-ball { fill: #7c3a14; stroke: #ffffff; stroke-width: 0.8; }
+.sx-pb-route-handle { fill: #fff; stroke: #2563eb; stroke-width: 2; }
 .sx-pb-anno { font: 600 12px sans-serif; fill: #334155; }
 .sx-pb-legend { font: 11px sans-serif; fill: #334155; }
 .sx-pb-error-box { fill: #ffffff; stroke: #dc2626; stroke-width: 1.5; }
@@ -52,13 +53,14 @@
 <path class="sx-pb-court-line" fill="none" d="M 60 67 L 60 223.2 A 261.25 261.25 0 0 0 544 223.2 L 544 67"/>
 <path class="sx-pb-court-line" fill="none" d="M 236 584 A 66 66 0 0 1 368 584"/></g></g>
 <g class="sx-pb-zones" clip-path="url(#sx-pb-clip)"></g>
-<g class="sx-pb-moves"><g class="sx-pb-move-g" data-kind="screen" data-player="5"><path class="sx-pb-move" d="M 390 331 L 313.77 369.06"/>
+<g class="sx-pb-moves"><g class="sx-pb-move-g" data-kind="screen" data-player="5" data-sx-live-explicit="true" data-sx-live-start="5"><path class="sx-pb-move" d="M 390 331 L 313.77 369.06" data-sx-live-edge="true"/>
 <line class="sx-pb-move" x1="316.9" y1="375.32" x2="310.64" y2="362.8"/></g>
-<g class="sx-pb-move-g" data-kind="dribble" data-player="1"><path class="sx-pb-move" d="M 302 375 L 305.6 375.77 L 306.64 373.98 L 305.56 370.07 L 305.28 366.96 L 307.79 366.63 L 311.8 367.82 L 314.28 367.47 L 313.98 364.34 L 312.91 360.43 L 313.97 358.67 L 317.59 359.45 L 321.18 360.21 L 322.2 358.4 L 321.11 354.48 L 320.85 351.39 L 323.37 351.08 L 327.39 352.27 L 329.85 351.9 L 329.53 348.75 L 328.46 344.85 L 329.55 343.11 L 333.18 343.91 L 336.76 344.65 L 337.75 342.82 L 336.66 338.89 L 336.41 335.82 L 338.96 335.53 L 342.97 336.72 L 345.41 336.33 L 345.08 333.16 L 344.02 329.27 L 345.13 327.55 L 348.77 328.36 L 352.33 329.1 L 353.3 327.24 L 352.2 323.3 L 351.98 320.25 L 354.55 319.99 L 358.56 321.17 L 360.98 320.76 L 360.62 317.57 L 359.57 313.69 L 360.71 311.99 L 364.36 312.82 L 367.91 313.54 L 368.86 311.65 L 367.75 307.71 L 367.54 304.68 L 370.13 304.44 L 374.15 305.62 L 376.54 305.18 L 376.17 301.98 L 375.12 298.11 L 376.28 296.44 L 379.95 297.27 L 383.49 297.98 L 384.41 296.07 L 383.3 292.13 L 383.11 289.11 L 385.72 288.89 L 389.73 290.07 L 392.1 289.61 L 391.71 286.39 L 390.68 282.52 L 391.86 280.88 L 395.54 281.73 L 399.06 282.42 L 399.96 280.49 L 398.84 276.54 L 398.67 273.54 L 401.31 273.34 L 405.32 274.52 L 407.67 274.04 L 407.26 270.8 L 406.23 266.94 L 407.44 265.32 L 411.13 266.18 L 414.64 266.86 L 415.51 264.9 L 414.39 260.95 L 414.24 257.97 L 423 254"/>
-<polygon class="sx-pb-move-fill" points="423,254 420.14,261.47 415.53,256.86"/></g>
-<g class="sx-pb-move-g" data-kind="cut" data-player="5"><path class="sx-pb-move" d="M 390 331 L 302 124.75"/>
+<g class="sx-pb-move-g" data-kind="dribble" data-player="1" data-sx-live-explicit="true" data-sx-live-start="1" data-sx-live-end="route:1:endpoint"><path class="sx-pb-move" d="M 302 375 L 305.6 375.77 L 306.64 373.98 L 305.56 370.07 L 305.28 366.96 L 307.79 366.63 L 311.8 367.82 L 314.28 367.47 L 313.98 364.34 L 312.91 360.43 L 313.97 358.67 L 317.59 359.45 L 321.18 360.21 L 322.2 358.4 L 321.11 354.48 L 320.85 351.39 L 323.37 351.08 L 327.39 352.27 L 329.85 351.9 L 329.53 348.75 L 328.46 344.85 L 329.55 343.11 L 333.18 343.91 L 336.76 344.65 L 337.75 342.82 L 336.66 338.89 L 336.41 335.82 L 338.96 335.53 L 342.97 336.72 L 345.41 336.33 L 345.08 333.16 L 344.02 329.27 L 345.13 327.55 L 348.77 328.36 L 352.33 329.1 L 353.3 327.24 L 352.2 323.3 L 351.98 320.25 L 354.55 319.99 L 358.56 321.17 L 360.98 320.76 L 360.62 317.57 L 359.57 313.69 L 360.71 311.99 L 364.36 312.82 L 367.91 313.54 L 368.86 311.65 L 367.75 307.71 L 367.54 304.68 L 370.13 304.44 L 374.15 305.62 L 376.54 305.18 L 376.17 301.98 L 375.12 298.11 L 376.28 296.44 L 379.95 297.27 L 383.49 297.98 L 384.41 296.07 L 383.3 292.13 L 383.11 289.11 L 385.72 288.89 L 389.73 290.07 L 392.1 289.61 L 391.71 286.39 L 390.68 282.52 L 391.86 280.88 L 395.54 281.73 L 399.06 282.42 L 399.96 280.49 L 398.84 276.54 L 398.67 273.54 L 401.31 273.34 L 405.32 274.52 L 407.67 274.04 L 407.26 270.8 L 406.23 266.94 L 407.44 265.32 L 411.13 266.18 L 414.64 266.86 L 415.51 264.9 L 414.39 260.95 L 414.24 257.97 L 423 254" data-sx-live-edge="true"/>
+<polygon class="sx-pb-move-fill" points="423,254 420.14,261.47 415.53,256.86"/>
+<circle cx="423" cy="254" r="5" class="sx-pb-route-handle" data-sx-key="playbook:route:1:endpoint" aria-label="Move dribble endpoint"/></g>
+<g class="sx-pb-move-g" data-kind="cut" data-player="5" data-sx-live-explicit="true" data-sx-live-start="5"><path class="sx-pb-move" d="M 390 331 L 302 124.75" data-sx-live-edge="true"/>
 <polygon class="sx-pb-move-fill" points="302,124.75 307.87,130.19 301.87,132.75"/></g>
-<g class="sx-pb-move-g" data-kind="pass" data-player="1"><path class="sx-pb-move-dash" d="M 302 375 L 60 100"/>
+<g class="sx-pb-move-g" data-kind="pass" data-player="1" data-sx-live-explicit="true" data-sx-live-start="1"><path class="sx-pb-move-dash" d="M 302 375 L 60 100" data-sx-live-edge="true"/>
 <polygon class="sx-pb-move-fill" points="60,100 67.27,103.33 62.38,107.64"/></g></g>
 <rect class="sx-pb-boundary-court" x="16" y="56" width="572" height="357.5" rx="7"/>
 <g class="sx-pb-players"><g class="sx-pb-player" data-side="offense" data-id="1"><circle class="sx-pb-o" cx="302" cy="375" r="10"/>

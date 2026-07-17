@@ -2,6 +2,10 @@
 
 import { useState } from 'react';
 import { Playground } from '@/components/Playground';
+import {
+  DiagramExampleBrowser,
+  type DiagramExampleOption,
+} from '@/components/DiagramExampleBrowser';
 
 const DIAGRAMS = [
   {
@@ -778,62 +782,38 @@ route p1 to 0,10`,
 
 type DiagramId = (typeof DIAGRAMS)[number]['id'];
 
+const INTERACTIVE_EXAMPLES: DiagramExampleOption[] = DIAGRAMS.map((diagram) => ({
+  id: diagram.id,
+  title: diagram.label,
+  type: diagram.label.split(' · ')[0] ?? diagram.label,
+  group: diagram.status.includes('native')
+    ? 'native geometry'
+    : diagram.status.includes('drag')
+      ? 'presentation drag'
+      : 'text editing',
+  status: diagram.status,
+  note: diagram.note,
+  dsl: diagram.dsl,
+}));
+
 export function InteractivePreviewLab() {
   const [activeId, setActiveId] = useState<DiagramId>('flowchart-td');
   const active = DIAGRAMS.find((diagram) => diagram.id === activeId) ?? DIAGRAMS[0];
 
   return (
-    <section aria-label="Interactive diagram examples">
-      <div className="sx-specimen-switcher">
-        <div
-          className="sx-specimen-tabs"
-          role="tablist"
-          aria-label="Diagram example"
-          onKeyDown={(event) => {
-            if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
-            const tabs = Array.from(event.currentTarget.querySelectorAll<HTMLButtonElement>('[role="tab"]'));
-            const current = tabs.indexOf(document.activeElement as HTMLButtonElement);
-            if (current < 0) return;
-            event.preventDefault();
-            const next = event.key === 'Home'
-              ? 0
-              : event.key === 'End'
-                ? tabs.length - 1
-                : (current + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
-            tabs[next]?.focus();
-            tabs[next]?.click();
-          }}
-        >
-          {DIAGRAMS.map((diagram) => {
-            const selected = diagram.id === active.id;
-            return (
-              <button
-                key={diagram.id}
-                type="button"
-                role="tab"
-                aria-selected={selected}
-                aria-controls="interactive-example-panel"
-                id={`interactive-example-${diagram.id}`}
-                tabIndex={selected ? 0 : -1}
-                data-example-id={diagram.id}
-                className="sx-specimen-tab"
-                onClick={() => setActiveId(diagram.id)}
-              >
-                <span>{diagram.label}</span>
-                <small>{diagram.status}</small>
-              </button>
-            );
-          })}
-        </div>
-        <p className="sx-specimen-note" aria-live="polite">{active.note}</p>
-      </div>
-
+    <section className="sx-playground-workspace" aria-label="Interactive diagram examples">
+      <DiagramExampleBrowser
+        examples={INTERACTIVE_EXAMPLES}
+        activeId={active.id}
+        onSelect={(id) => setActiveId(id as DiagramId)}
+        label="Interactive diagram specimens"
+      />
       <div
+        className="min-w-0"
         id="interactive-example-panel"
-        role="tabpanel"
-        aria-labelledby={`interactive-example-${active.id}`}
+        aria-live="polite"
       >
-        <Playground key={active.id} initial={active.dsl} height={680} />
+        <Playground initial={active.dsl} height={680} />
       </div>
     </section>
   );

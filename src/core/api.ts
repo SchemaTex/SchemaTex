@@ -1,4 +1,4 @@
-import type { DiagramPlugin, RenderConfig, SceneItem, SourceRange } from "./types";
+import type { DiagramPlugin, DiagramType, RenderConfig, SceneItem, SourceRange } from "./types";
 import {
   parseFrontmatter,
   stripLineComment,
@@ -67,47 +67,7 @@ import { siteplan } from "../diagrams/siteplan";
 import { playbook } from "../diagrams/playbook";
 
 export interface SchematexConfig {
-  type?:
-    | "genogram"
-    | "ecomap"
-    | "pedigree"
-    | "phylo"
-    | "sociogram"
-    | "timing"
-    | "logic"
-    | "circuit"
-    | "blockdiagram"
-    | "ladder"
-    | "sld"
-    | "entity"
-    | "fishbone"
-    | "venn"
-    | "flowchart"
-    | "mindmap"
-    | "matrix"
-    | "orgchart"
-    | "decisiontree"
-    | "timeline"
-    | "state"
-    | "pid"
-    | "erd"
-    | "breadboard"
-    | "bpmn"
-    | "fbd"
-    | "sfc"
-    | "prisma"
-    | "usecase"
-    | "pert"
-    | "sequence"
-    | "petri"
-    | "network"
-    | "umlclass"
-    | "faulttree"
-    | "bowtie"
-    | "rbd"
-    | "floorplan"
-    | "siteplan"
-    | "playbook";
+  type?: DiagramType;
   width?: number;
   height?: number;
   padding?: number;

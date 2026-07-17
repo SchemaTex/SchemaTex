@@ -1,0 +1,124 @@
+---
+title: Interactive editing
+description: Embed Schematex's open-source React or Vanilla canvas editor, discover per-diagram capabilities, and persist safe DSL edits.
+---
+
+Schematex 1.0 ships the editor in the same repository and npm package as the
+renderer. Every canvas operation produces ordinary DSL: there is no private
+document model and no second JSON format to synchronize.
+
+## React quick start
+
+```tsx
+'use client';
+
+import { useState } from 'react';
+import { InteractiveSchematexDiagram } from 'schematex/react';
+
+export function Editor({ initialDsl }: { initialDsl: string }) {
+  const [dsl, setDsl] = useState(initialDsl);
+
+  return (
+    <InteractiveSchematexDiagram
+      value={dsl}
+      onChange={(nextDsl, { reason, item }) => {
+        setDsl(nextDsl);
+        // Save nextDsl or push it into your own undo/collaboration model.
+        console.log(reason, item?.semanticId);
+      }}
+      onSelect={(item) => console.log(item?.key)}
+      debounceMs={120}
+    />
+  );
+}
+```
+
+The component is controlled and browser-only. It owns selection, gestures,
+live connector previews, and the WYSIWYG label input. Your application owns
+source state, persistence, undo, permissions, and collaboration.
+
+## Vanilla DOM
+
+```ts
+import { renderResult } from 'schematex';
+import { attachInteraction, sourceRevision } from 'schematex/interactive';
+
+let source = initialDsl;
+let result = renderResult(source, { scene: true });
+host.innerHTML = result.svg;
+
+if (result.ok) {
+  attachInteraction(host.querySelector('svg')!, {
+    getSource: () => source,
+    getScene: () => ({
+      rev: sourceRevision(source),
+      items: result.scene ?? [],
+    }),
+    onSourceChange: (nextSource) => {
+      source = nextSource;
+      rerender();
+    },
+  });
+}
+```
+
+Use the React component unless you need to integrate gestures into an existing
+non-React canvas. `attachInteraction()` is deliberately low level; its caller
+must rerender after a committed edit.
+
+## Capability discovery
+
+```ts
+import {
+  getInteractiveCapabilities,
+  INTERACTIVE_DIAGRAM_COUNT,
+  POSITION_EDITABLE_DIAGRAM_COUNT,
+} from 'schematex';
+
+getInteractiveCapabilities('sequence');
+// { text: 'authored', position: 'x', implementation: 'native', ... }
+
+console.log(INTERACTIVE_DIAGRAM_COUNT);         // 50
+console.log(POSITION_EDITABLE_DIAGRAM_COUNT);   // 40
+```
+
+All 50 engines expose safe authored title, label, or structured-field editing.
+Forty also expose a position model. A position value of `x`, `y`, `xy`,
+`cross-axis`, or `native-handles` is a semantic constraint, not a UI hint. For
+example, sequence participants move only horizontally because vertical order
+represents time.
+
+## How edits persist
+
+- Stable semantic objects persist presentation-only positions under
+  `@overrides`, for example `pin R1 153.1,73.1`.
+- Domain geometry—dates, room sizes, floorplan furniture, site coordinates,
+  breadboard holes, waveform boundaries—rewrites its native DSL token.
+- Authored labels replace only their exact source range. Computed labels and
+  identifiers without a safe rename contract remain read-only.
+- Connected lines preview during drag and are recomputed from semantic
+  endpoints after drop. Engines that promise orthogonal routing remain
+  horizontal/vertical after the rerender.
+
+See the [complete capability matrix](https://github.com/SchemaTex/SchemaTex/blob/main/docs/system/INTERACTIVE-EDITING-CAPABILITIES.md)
+for every diagram's exact axis and limitations, or test all 53 representative
+specimens in the [interactive workspace](/playground/interactive).
+
+## AI-safe edits
+
+AI agents should never invent source offsets. The `schematex/ai` package and
+both MCP transports expose this revision-guarded flow:
+
+```ts
+import { inspectDiagram, applyDiagramEdits } from 'schematex/ai';
+
+const inspected = inspectDiagram('flowchart', dsl);
+if (inspected.ok) {
+  const result = applyDiagramEdits('flowchart', dsl, inspected.revision, [
+    { target: inspected.items[0].key, op: 'setLabel', value: 'Approved' },
+  ]);
+}
+```
+
+The batch is atomic: a stale revision, unknown target, unsafe operation, or
+invalid final render returns the original DSL instead of a partial mutation.

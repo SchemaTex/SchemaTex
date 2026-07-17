@@ -7,22 +7,22 @@ description: Integrieren Sie Schematex in AI-Agenten über das Vercel AI SDK, de
 
 ## Kurzfassung
 
-Schematex wird mit einer Tool-Schicht geliefert, die für LLMs entwickelt wurde — fünf Tools, mit denen ein AI-Agent Diagrammtypen **entdecken**, deren Syntax **erlernen**, kuratierte Beispiele **ansehen**, die eigene Ausgabe **validieren** und SVG **rendern** kann. Drei Integrationspfade, dieselben Tools:
+Schematex liefert acht LLM-Tools, mit denen ein AI-Agent Diagramme **entdecken**, **generieren**, **validieren**, **rendern**, **untersuchen** und **sicher bearbeiten** kann. Drei Integrationspfade, dieselben Verträge:
 
 | Pfad | Wann | Installation |
 |---|---|---|
-| **Vercel AI SDK** | Eigene AI-Funktion in einer Next.js / Node-App erstellen | `npm i schematex ai zod` |
+| **Vercel AI SDK** | Eigene AI-Funktion in einer Next.js / Node-App erstellen | `npm i schematex ai` |
 | **Hosted MCP** | Claude Desktop, ChatGPT, Cursor, Windsurf verbinden | Client auf `https://schematex.js.org/mcp` zeigen |
 | **Local stdio MCP** | Offline / eigene Hosts | `npx @schematex/mcp` |
 
 ---
 
-## Die fünf Tools
+## Die acht Tools
 
-Jeder Pfad stellt dieselben fünf Tools mit identischer Semantik bereit.
+Jeder Pfad stellt dieselben acht Tools mit identischer Semantik bereit.
 
 ### `listDiagrams()`
-Gibt alle 45 Diagrammtypen mit Tagline, Hinweis "wann verwenden", Cluster und maßgeblichem Standard zurück. Zuerst aufrufen, um einen Typ auszuwählen.
+Gibt alle 50 Diagrammtypen samt interaktiven Fähigkeiten zurück. Zuerst aufrufen, um einen Typ auszuwählen.
 
 ### `getSyntax({ type, detail? })`
 Kanonische Syntax für ein Diagramm. Nach der Auswahl eines Typs aufrufen.
@@ -44,6 +44,10 @@ Bei Fehler wird `{ ok: false, status: 'invalid', svg, errors }` zurückgegeben, 
 
 **Verwenden Sie `renderDsl` nur dann**, wenn Sie das SVG innerhalb des Gesprächs selbst zurückgeben müssen: Claude Desktop, ChatGPT, Cursor oder ein reiner Chat-Client, der keine eigene Rendering-Pipeline hat.
 </Callout>
+
+### Sichere Bearbeitung: `getDiagramCapabilities`, `inspectDiagram`, `applyDiagramEdits`
+
+Diese drei Tools liefern den Bearbeitungsvertrag, stabile Zielschlüssel und eine Revision und wenden Label- oder Positionsänderungen atomar an. Veraltete Revisionen oder unsichere Änderungen geben unverändertes DSL zurück.
 
 Für eine In-App-AI-Vorschau rendern Sie das zurückgegebene DSL mit `renderResult()` oder
 `renderPreview()`:
@@ -82,7 +86,7 @@ call validateDsl and self-correct on errors before returning to the user.`,
 });
 ```
 
-Der Unterpfad `schematex/ai/sdk` wird nur geladen, wenn `ai` und `zod` installiert sind (beide sind optionale Peer-Abhängigkeiten). Wenn Sie das AI SDK nicht verwenden, importieren Sie die einfachen Funktionen aus `schematex/ai` und verbinden Sie sie mit einem beliebigen Framework:
+Der Unterpfad `schematex/ai/sdk` benötigt nur die optionale Peer-Abhängigkeit `ai`. Er verwendet direkt JSON Schema; Zod muss nicht installiert werden. Ohne AI SDK können die reinen Funktionen aus `schematex/ai` verwendet werden:
 
 ```ts
 import { listDiagrams, getSyntax, getExamples, validateDsl, renderDsl } from 'schematex/ai';

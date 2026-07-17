@@ -7,22 +7,22 @@ description: Vercel AI SDK, 호스팅된 MCP 엔드포인트, 또는 @schematex/
 
 ## 요약
 
-Schematex는 LLM을 위해 구축된 툴 레이어를 제공합니다 — AI 에이전트가 다이어그램 유형을 **탐색**하고, 구문을 **학습**하고, 큐레이션된 예제를 **확인**하고, 자체 출력을 **검증**하고, SVG를 **렌더링**할 수 있는 다섯 가지 도구입니다. 세 가지 통합 경로가 있으며, 동일한 도구를 사용합니다:
+Schematex는 다이어그램을 **탐색**, **생성**, **검증**, **렌더링**, **검사**, **안전하게 편집**할 수 있는 여덟 가지 LLM 도구를 제공합니다. 세 가지 통합 경로는 동일한 계약을 사용합니다:
 
 | 경로 | 사용 시점 | 설치 |
 |---|---|---|
-| **Vercel AI SDK** | Next.js / Node 앱에서 자체 AI 기능 구축 시 | `npm i schematex ai zod` |
+| **Vercel AI SDK** | Next.js / Node 앱에서 자체 AI 기능 구축 시 | `npm i schematex ai` |
 | **Hosted MCP** | Claude Desktop, ChatGPT, Cursor, Windsurf 연결 시 | 클라이언트를 `https://schematex.js.org/mcp`로 지정 |
 | **Local stdio MCP** | 오프라인 / 커스텀 호스트 | `npx @schematex/mcp` |
 
 ---
 
-## 다섯 가지 도구
+## 여덟 가지 도구
 
-모든 경로는 동일한 의미를 가진 동일한 다섯 가지 도구를 제공합니다.
+모든 경로는 동일한 의미를 가진 동일한 여덟 가지 도구를 제공합니다.
 
 ### `listDiagrams()`
-태그라인, "언제 사용할지" 힌트, 클러스터, 권위 있는 표준과 함께 45가지 다이어그램 유형을 모두 반환합니다. 유형을 선택하기 위해 먼저 호출합니다.
+50가지 다이어그램 유형과 Interactive 기능을 반환합니다. 유형을 선택하기 위해 먼저 호출합니다.
 
 ### `getSyntax({ type, detail? })`
 하나의 다이어그램에 대한 표준 구문을 반환합니다. 유형을 선택한 후 호출합니다.
@@ -45,6 +45,10 @@ DSL을 SVG 문자열로 렌더링합니다. 성공 시 `{ ok: true, status, svg 
 
 **`renderDsl`은 다음 경우에만 사용하세요**: 대화 자체 안에 SVG가 반환되어야 할 때: Claude Desktop, ChatGPT, Cursor, 또는 자체 렌더링 파이프라인이 없는 순수 채팅 클라이언트.
 </Callout>
+
+### 안전한 편집: `getDiagramCapabilities`, `inspectDiagram`, `applyDiagramEdits`
+
+편집 계약, 안정적인 target key와 revision을 가져온 뒤 label 또는 position 변경을 atomic하게 적용합니다. 오래된 revision이나 안전하지 않은 변경은 원본 DSL을 반환합니다.
 
 인앱 AI 미리보기의 경우, 반환된 DSL을 `renderResult()` 또는
 `renderPreview()`로 렌더링하세요:
@@ -84,7 +88,7 @@ call validateDsl and self-correct on errors before returning to the user.`,
 });
 ```
 
-`schematex/ai/sdk` 하위 경로는 `ai`와 `zod`가 설치된 경우에만 로드됩니다 (둘 다 선택적 피어 의존성). AI SDK를 사용하지 않는 경우, `schematex/ai`에서 순수 함수를 가져와 어떤 프레임워크에도 연결할 수 있습니다:
+`schematex/ai/sdk` 하위 경로에는 선택적 peer dependency인 `ai`만 필요합니다. JSON Schema를 직접 사용하므로 Zod는 필요하지 않습니다. AI SDK를 사용하지 않으면 `schematex/ai`에서 함수를 가져오세요:
 
 ```ts
 import { listDiagrams, getSyntax, getExamples, validateDsl, renderDsl } from 'schematex/ai';

@@ -1,5 +1,8 @@
 import { setLabel, setPosition } from "./core/editing";
+import { sourceRevision } from "./core/revision";
 import type { SceneItem } from "./core/types";
+
+export { sourceRevision } from "./core/revision";
 
 export interface InteractionScene {
   /** Use sourceRevision(source) so stale preview/source pairs are rejected. */
@@ -67,16 +70,6 @@ interface DragState {
 }
 
 const DRAG_THRESHOLD = 4;
-
-/** Stable, inexpensive revision for matching a scene to its exact source. */
-export function sourceRevision(source: string): number {
-  let hash = 0x811c9dc5;
-  for (let i = 0; i < source.length; i++) {
-    hash ^= source.charCodeAt(i);
-    hash = Math.imul(hash, 0x01000193);
-  }
-  return hash >>> 0;
-}
 
 function eventElement(target: EventTarget | null): Element | null {
   return target instanceof Element ? target : null;

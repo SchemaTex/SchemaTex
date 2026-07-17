@@ -181,6 +181,7 @@ try {
     await page.locator(".sx-interactive-selected").getAttribute("data-sx-key"),
     "node:C",
   );
+  await page.locator(".sx-monaco-selection").waitFor({ state: "attached" });
   assert.equal(await page.locator(".sx-monaco-selection").count(), 1);
 
   const labelBefore = await page.locator('[data-sx-key="node:C"] [data-sx-role="label"]').evaluate((label) => {
@@ -442,6 +443,10 @@ try {
   await mindmapEditor.press("Enter");
   await page.waitForFunction(() =>
     (window.monaco?.editor.getModels()[0]?.getValue() ?? "").includes("# Product Strategy"),
+  );
+  await page.waitForFunction(() =>
+    document.querySelector('[data-sx-key="node:n0"] [data-sx-role="label"]')?.textContent
+      === "Product Strategy",
   );
   assert.equal(
     await page.locator('[data-sx-key="node:n0"] [data-sx-role="label"]').textContent(),

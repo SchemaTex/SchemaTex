@@ -7,22 +7,22 @@ description: Intégrez Schematex dans des agents IA via le Vercel AI SDK, le poi
 
 ## En bref
 
-Schematex fournit une couche d'outils conçue pour les LLM — cinq outils qui permettent à un agent IA de **découvrir** les types de diagrammes, d'**apprendre** leur syntaxe, de **voir** des exemples organisés, de **valider** sa propre sortie et de **générer** du SVG. Trois chemins d'intégration, mêmes outils :
+Schematex fournit huit outils pour les LLM afin de **découvrir**, **générer**, **valider**, **rendre**, **inspecter** et **modifier en toute sécurité** des diagrammes. Trois chemins d'intégration, mêmes contrats :
 
 | Chemin | Quand | Installation |
 |---|---|---|
-| **Vercel AI SDK** | Construire votre propre fonctionnalité IA dans une application Next.js / Node | `npm i schematex ai zod` |
+| **Vercel AI SDK** | Construire votre propre fonctionnalité IA dans une application Next.js / Node | `npm i schematex ai` |
 | **MCP hébergé** | Connecter Claude Desktop, ChatGPT, Cursor, Windsurf | Pointer le client sur `https://schematex.js.org/mcp` |
 | **MCP stdio local** | Hors ligne / hôtes personnalisés | `npx @schematex/mcp` |
 
 ---
 
-## Les cinq outils
+## Les huit outils
 
-Chaque chemin expose les mêmes cinq outils avec une sémantique identique.
+Chaque chemin expose les mêmes huit outils avec une sémantique identique.
 
 ### `listDiagrams()`
-Retourne les 45 types de diagrammes avec accroche, indication d'utilisation, cluster et standard de référence. À appeler en premier pour choisir un type.
+Retourne les 50 types de diagrammes avec leurs capacités interactives. À appeler en premier pour choisir un type.
 
 ### `getSyntax({ type, detail? })`
 Syntaxe canonique pour un diagramme. À appeler après avoir choisi un type.
@@ -45,6 +45,10 @@ un fallback de diagnostic visible au lieu d'un aperçu vide.
 
 **Utilisez `renderDsl` uniquement lorsque** vous avez besoin que le SVG soit retourné dans la conversation elle-même : Claude Desktop, ChatGPT, Cursor, ou tout client de chat pur qui n'a pas de pipeline de rendu propre.
 </Callout>
+
+### Modification sûre : `getDiagramCapabilities`, `inspectDiagram`, `applyDiagramEdits`
+
+Ces outils retournent le contrat d'édition, des clés de cible stables et une révision, puis appliquent atomiquement les changements de libellé ou de position. Une révision périmée ou une modification dangereuse renvoie le DSL original.
 
 Pour un aperçu IA intégré à l'application, rendez le DSL retourné avec `renderResult()` ou
 `renderPreview()` :
@@ -84,7 +88,7 @@ call validateDsl and self-correct on errors before returning to the user.`,
 });
 ```
 
-Le sous-chemin `schematex/ai/sdk` ne se charge que si `ai` et `zod` sont installés (les deux sont des dépendances peer optionnelles). Si vous n'utilisez pas le AI SDK, importez les fonctions simples depuis `schematex/ai` et connectez-les à n'importe quel framework :
+Le sous-chemin `schematex/ai/sdk` ne nécessite que la dépendance peer optionnelle `ai`. Il utilise directement JSON Schema ; Zod n'est pas requis. Sans AI SDK, importez les fonctions depuis `schematex/ai` :
 
 ```ts
 import { listDiagrams, getSyntax, getExamples, validateDsl, renderDsl } from 'schematex/ai';

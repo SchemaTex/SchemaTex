@@ -33,7 +33,7 @@
 
 ---
 
-**Schematex** is the open-source rendering engine for the diagrams professionals actually use — medical, electrical, legal, and analytical. **49 diagram families** spanning medicine, engineering, law, and analysis:
+**Schematex** is the open-source rendering and editing engine for the diagrams professionals actually use — medical, electrical, legal, and analytical. **50 diagram families** spanning medicine, engineering, law, and analysis:
 
 - 👪 **Relationships** — genograms, ecomaps, pedigrees, sociograms, phylogenetic trees
 - ⚡ **Electrical & Industrial** — ladder logic, single-line diagrams, circuit schematics, logic gates, timing, block diagrams, **FBD**, **SFC**, breadboard, **P&ID** (ISA-5.1)
@@ -80,9 +80,34 @@ The diagram type is inferred from the first keyword. Tree-shake by importing onl
 import { render } from 'schematex/genogram';
 ```
 
+### React editor
+
+The same package includes a controlled, open-source canvas editor. Your app owns the DSL state, persistence, undo, and collaboration; Schematex owns safe SVG gestures and WYSIWYG label editing.
+
+```tsx
+'use client';
+
+import { useState } from 'react';
+import { InteractiveSchematexDiagram } from 'schematex/react';
+
+export function DiagramEditor() {
+  const [dsl, setDsl] = useState('flowchart "Release"\n  draft [Draft]\n  draft -> shipped [Ship]');
+
+  return (
+    <InteractiveSchematexDiagram
+      value={dsl}
+      onChange={setDsl}
+      ariaLabel="Release workflow editor"
+    />
+  );
+}
+```
+
+All 50 engines support safe authored text/field editing; 40 also support either stable-ID drag or native geometry handles. See the [interactive editing guide](https://schematex.dev/docs/interactive-editing) and [live workspace](https://schematex.dev/playground/interactive).
+
 ## Gallery
 
-All 49 diagram types share one unified pipeline. A selection is shown below — **try any of them live at [schematex.dev/playground](https://schematex.dev/playground).**
+All 50 diagram types share one unified pipeline. A selection is shown below — **try any of them live at [schematex.dev/playground](https://schematex.dev/playground).**
 
 ### 👪 Genogram — *McGoldrick family-systems standard*
 

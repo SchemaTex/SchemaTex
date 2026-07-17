@@ -1,3 +1,4 @@
+import { getInteractiveCapabilities } from "./interactive-capabilities";
 import type { DiagramType, SceneItem, SourceRange } from "./types";
 import { createSourceLocator } from "./source-range";
 import { TITLE_SCENE_ID } from "./title-scene";
@@ -50,42 +51,12 @@ interface AdaptedNode {
   group: OpenTag;
 }
 
-const LEGACY_TYPES = new Set<DiagramType>([
-  "ecomap", "pedigree", "phylo", "sociogram", "logic", "blockdiagram",
-  "ladder", "sfc", "sld", "entity", "venn", "bpmn", "usecase", "prisma",
-  "pert", "faulttree", "bowtie", "matrix", "eventtree", "fmea", "rbd",
-  "comparison", "causalloop", "markov", "gitgraph", "epc", "idef0",
-  "threatmodel", "welding", "playbook",
-]);
-
-const POSITION_MODES: Partial<Record<DiagramType, PositionMode>> = {
-  ecomap: "free",
-  pedigree: "move-x",
-  sociogram: "free",
-  logic: "free",
-  blockdiagram: "free",
-  sfc: "move-x",
-  sld: "move-x",
-  entity: "move-x",
-  bpmn: "move-x",
-  usecase: "free",
-  pert: "free",
-  faulttree: "move-x",
-  bowtie: "move-y",
-  rbd: "move-x",
-  causalloop: "free",
-  markov: "free",
-  epc: "move-x",
-  idef0: "free",
-  threatmodel: "free",
-};
-
 const NODE_COLLECTION = /(?:individuals?|people|persons?|systems?|nodes?|gates?|blocks?|boxes|steps?|sources?|buses?|transformers?|entities|objects?|activities|actors?|usecases?|tasks?|events?|threats?|consequences?|barriers?|variables?|states?|functions?|processes?|stores?|externals?|components?)/i;
 const NODE_KINDS = /^(?:block|box|step|state|event|gate|function|activity|task|process|store|datastore|external|entity|actor|usecase|threat|consequence|barrier|equipment|component)$/i;
 const LABEL_FIELDS = ["label", "name", "title", "text", "comment", "caption", "description"] as const;
 
 export function supportsLegacyInteractive(type: DiagramType): boolean {
-  return LEGACY_TYPES.has(type);
+  return getInteractiveCapabilities(type).implementation === "compatibility";
 }
 
 function decodeXml(text: string): string {
@@ -505,7 +476,7 @@ function gitBranchReferences(source: string): Map<string, SourceRange[]> {
 }
 
 function collectStableNodes(ast: unknown, type: DiagramType): StableNode[] {
-  const mode = POSITION_MODES[type];
+  const mode = getInteractiveCapabilities(type).compatibilityPosition;
   if (!mode || ast === null || typeof ast !== "object") return [];
   const nodes: StableNode[] = [];
   const seen = new Set<string>();

@@ -1,8 +1,10 @@
-import { Playground } from '@/components/Playground';
-import { DiagramIcon } from '@/components/DiagramIcon';
+import { PlaygroundWorkspace } from '@/components/PlaygroundWorkspace';
+import type { DiagramExampleOption } from '@/components/DiagramExampleBrowser';
 import { allExamples } from '@/lib/examples-source';
 import { DIAGRAM_TYPE_COUNT } from '@/lib/diagram-stats';
 import { getRepoStats } from '@/lib/github-stats';
+import { getDiagramMeta } from 'schematex/ai';
+import { getInteractiveCapabilities } from 'schematex';
 
 const heroDefault = `genogram "The Smiths"
   john [male, 1950]
@@ -13,13 +15,21 @@ const heroDefault = `genogram "The Smiths"
   alice -close- mary
   alice -hostile- bob`;
 
-const galleryExamples = allExamples.map((ex) => ({
-  slug: ex.slug,
-  title: ex.title,
-  dsl: ex.dsl,
-  icon: ex.diagram as import('@/components/DiagramIcon').DiagramType,
-}));
-import Link from 'next/link';
+const galleryExamples: DiagramExampleOption[] = allExamples.map((example) => {
+  const meta = getDiagramMeta(example.diagram);
+  const capability = meta ? getInteractiveCapabilities(meta.type) : null;
+  return {
+    id: example.slug,
+    title: example.title,
+    type: meta?.name ?? example.diagram,
+    group: meta?.cluster ?? 'other',
+    status: capability?.position === 'none'
+      ? 'canvas text editing'
+      : `${capability?.position ?? 'source'} + text editing`,
+    note: example.description,
+    dsl: example.dsl,
+  };
+});
 
 export const metadata = {
   title: 'Playground — paste LLM output, see SVG live',
@@ -28,35 +38,19 @@ export const metadata = {
   alternates: { canonical: 'https://schematex.js.org/playground' },
 };
 
-const CLUSTER_COLOR: Record<string, string> = {
-  genogram: 'var(--cat-0)',
-  ecomap: 'var(--cat-0)',
-  pedigree: 'var(--cat-0)',
-  sociogram: 'var(--cat-0)',
-  phylo: 'var(--cat-1)',
-  block: 'var(--cat-1)',
-  fishbone: 'var(--cat-1)',
-  decisiontree: 'var(--cat-1)',
-  timing: 'var(--cat-2)',
-  logic: 'var(--cat-2)',
-  circuit: 'var(--cat-2)',
-  ladder: 'var(--cat-2)',
-  sld: 'var(--cat-2)',
-  entity: 'var(--cat-3)',
-};
-
 export default async function PlaygroundPage({
   searchParams,
 }: {
   searchParams: Promise<{ example?: string }>;
 }) {
   const { example } = await searchParams;
-  const active = galleryExamples.find((ex) => ex.slug === example);
-  const initial = active?.dsl ?? heroDefault;
+  const examples = galleryExamples.length > 0
+    ? galleryExamples
+    : [{ id: 'default', title: 'The Smiths', type: 'Genogram', group: 'relationships', status: 'text + drag', dsl: heroDefault }];
   const { stars } = await getRepoStats();
 
   return (
-    <div className="mx-auto max-w-6xl px-6 pb-16 pt-12">
+    <div className="mx-auto w-full max-w-[1500px] px-4 pb-16 pt-10 sm:px-6">
       {/* Page header */}
       <div className="mb-8 pb-8" style={{ borderBottom: '1px solid var(--fill-muted)' }}>
         <p className="type-eye mb-3">/ PLAYGROUND</p>
@@ -73,78 +67,7 @@ export default async function PlaygroundPage({
         </p>
       </div>
 
-      {/* Preset rail — bordered card wrap */}
-      <div
-        className="mb-5 grid items-center gap-3"
-        style={{
-          gridTemplateColumns: 'auto 1fr',
-          border: '1px solid var(--fill-muted)',
-          borderRadius: 'var(--r)',
-          background: 'var(--fill)',
-          padding: '10px 14px',
-        }}
-      >
-        <span
-          className="type-eye shrink-0 pr-3"
-          style={{ borderRight: '1px solid var(--fill-muted)' }}
-        >
-          PRESETS ·
-        </span>
-        <div className="flex gap-1.5 overflow-x-auto py-0.5" style={{ scrollbarWidth: 'thin' }}>
-          {galleryExamples.map((ex) => {
-            const isActive = ex.slug === example || (!example && ex.slug === 'genogram');
-            const dotColor = CLUSTER_COLOR[ex.icon] ?? 'var(--neutral)';
-            return (
-              <Link
-                key={ex.slug}
-                href={`/playground?example=${ex.slug}`}
-                className="flex shrink-0 flex-col p-1.5 transition"
-                style={{
-                  width: 92,
-                  border: '1px solid var(--fill-muted)',
-                  borderRadius: 'var(--r-sm)',
-                  background: 'var(--bg)',
-                  ...(isActive
-                    ? { borderColor: 'var(--accent)', boxShadow: 'inset 0 0 0 1px var(--accent)' }
-                    : {}),
-                }}
-              >
-                {/* Thumbnail */}
-                <div
-                  className="dot-grid mb-1.5 flex items-center justify-center rounded-sm"
-                  style={{ height: 60, color: 'var(--stroke)' }}
-                >
-                  <DiagramIcon
-                    type={ex.icon}
-                    size={26}
-                    style={{ color: isActive ? 'var(--text)' : 'var(--stroke)' }}
-                  />
-                </div>
-                {/* Name row */}
-                <div
-                  className="flex items-center gap-1 font-mono text-[11px]"
-                  style={{ color: isActive ? 'var(--accent-ink)' : 'var(--text-muted)' }}
-                >
-                  <span
-                    aria-hidden
-                    style={{
-                      width: 6,
-                      height: 6,
-                      borderRadius: '50%',
-                      background: dotColor,
-                      flexShrink: 0,
-                    }}
-                  />
-                  <span className="truncate">{ex.slug}</span>
-                </div>
-              </Link>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Editor panel */}
-      <Playground key={example ?? 'default'} initial={initial} height={640} syncHash stars={stars} />
+      <PlaygroundWorkspace examples={examples} initialId={example} stars={stars} />
     </div>
   );
 }

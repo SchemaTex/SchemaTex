@@ -97,12 +97,12 @@ export default function Page() {
 }`;
 
 const SNIPPET_REACT_CLIENT = `'use client';
-import { render } from 'schematex';
-import { useMemo } from 'react';
+import { useState } from 'react';
+import { InteractiveSchematexDiagram } from 'schematex/react';
 
-export function Diagram({ dsl }: { dsl: string }) {
-  const svg = useMemo(() => render(dsl), [dsl]);
-  return <div dangerouslySetInnerHTML={{ __html: svg }} />;
+export function DiagramEditor({ initialDsl }: { initialDsl: string }) {
+  const [dsl, setDsl] = useState(initialDsl);
+  return <InteractiveSchematexDiagram value={dsl} onChange={setDsl} />;
 }`;
 
 // ───────────────────────────────────────────────────────────────────
@@ -128,7 +128,6 @@ export function HomeContent({
         label: ex.diagram,
         standard: ex.standard ?? '—',
         dsl: ex.dsl,
-        svg: safeRender(ex.dsl),
       },
     ];
   });

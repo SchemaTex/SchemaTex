@@ -1,8 +1,8 @@
 /**
- * Schematex — Text-to-diagram rendering engine for relationship diagrams.
+ * Schematex — professional text-to-diagram rendering and editing engine.
  *
- * Supports: genogram, ecomap, pedigree, phylogenetic tree, sociogram, fishbone.
- * Output: SVG string.
+ * Supports 50 medical, engineering, legal, software, and analytical diagrams.
+ * Output: SVG plus optional scene metadata for browser editing.
  *
  * @example
  * ```ts
@@ -35,6 +35,15 @@ export type {
   SchematexResultStatus,
 } from "./core/diagnostics";
 export type { SceneItem, SourceRange } from "./core/types";
+export {
+  INTERACTIVE_CAPABILITIES,
+  INTERACTIVE_DIAGRAM_COUNT,
+  POSITION_EDITABLE_DIAGRAM_COUNT,
+  getInteractiveCapabilities,
+  type InteractiveCapabilities,
+  type InteractivePositionCapability,
+  type InteractiveTextCapability,
+} from "./core/interactive-capabilities";
 export {
   applyPins,
   prunePins,

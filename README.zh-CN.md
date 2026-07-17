@@ -33,7 +33,7 @@
 
 ---
 
-**Schematex** 是一个开源渲染引擎，专门画那些专业人士**真正在用**的图 —— 医学、电气、法律、分析领域。**37 种图**，覆盖医学、工程、法律与分析：
+**Schematex** 是一个开源渲染与编辑引擎，专门画那些专业人士**真正在用**的图 —— 医学、电气、法律、分析领域。**50 种图**，覆盖医学、工程、法律与分析：
 
 - 👪 **关系类** —— 家系图（genogram）、生态图（ecomap）、遗传谱系图（pedigree）、社交图（sociogram）、系统发育树（phylo）
 - ⚡ **电气与工业** —— 梯形图（ladder）、单线图（SLD）、电路原理图（circuit）、逻辑门（logic）、时序图（timing）、方框图（block）、**FBD**、**SFC**、面包板（breadboard）、**P&ID**（ISA-5.1）
@@ -80,9 +80,28 @@ genogram "The Smiths"
 import { render } from 'schematex/genogram';
 ```
 
+### React Editor
+
+同一个 npm 包内置受控的开源 Canvas Editor。你的应用负责 DSL state、持久化、undo 和协作；Schematex 负责安全的 SVG 手势和所见即所得文字编辑。
+
+```tsx
+'use client';
+
+import { useState } from 'react';
+import { InteractiveSchematexDiagram } from 'schematex/react';
+
+export function DiagramEditor() {
+  const [dsl, setDsl] = useState('flowchart "发布流程"\n  draft [草稿]\n  draft -> shipped [发布]');
+
+  return <InteractiveSchematexDiagram value={dsl} onChange={setDsl} />;
+}
+```
+
+50 个 engine 全部支持安全的 authored 文字 / 字段编辑，其中 40 个还支持稳定 ID 拖拽或 native geometry handle。详见 [Interactive Editing 指南](https://schematex.dev/docs/interactive-editing) 和 [在线测试 workspace](https://schematex.dev/playground/interactive)。
+
 ## 图库
 
-全部 37 种图共用同一条渲染管线，下面展示其中一部分 —— **在 [schematex.dev/playground](https://schematex.dev/playground) 实时试用任意一种。**
+全部 50 种图共用同一条渲染管线，下面展示其中一部分 —— **在 [schematex.dev/playground](https://schematex.dev/playground) 实时试用任意一种。**
 
 ### 👪 家系图 Genogram —— *McGoldrick 家庭系统标准*
 

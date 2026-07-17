@@ -82,6 +82,8 @@ Canvas 编辑不是一个简单的“支持 / 不支持”功能。Schematex 把
 
 Interactive Playground 中有 53 个 specimen，是因为 Flowchart、Circuit 和 Floorplan 都提供了不止一种代表性模式。上表覆盖全部 50 个独立引擎：其中 40 个支持安全的位置编辑，50 个全部至少有一个可以在 Canvas 上编辑的用户标题、label 或结构化字段。
 
+机器可读的 canonical truth 是 `src/core/interactive-capabilities.ts`。公开的 controlled React Editor 从 `schematex/react` 导出，低层 DOM adapter 仍由 `schematex/interactive` 提供。官网 workspace 直接消费公开 React 组件，不再维护第二套 interaction 实现。
+
 ## Canvas coverage 状态
 
 原“计划中的安全编辑模式”30 个引擎已全部 ship。现在没有 render-only engine；区别只在于哪些引擎能安全地改位置。没有稳定 identity 或 native geometry token 的图仍然只开放文字/字段编辑，不会为了“看起来可拖”而写入不可靠坐标。

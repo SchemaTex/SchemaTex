@@ -1,0 +1,102 @@
+---
+title: Interactive Editing
+description: 集成 Schematex 开源 React / Vanilla Canvas Editor，查询各 diagram 的能力，并安全持久化 DSL 修改。
+---
+
+Schematex 1.0 把 Editor 和 Renderer 放在同一个开源仓库、同一个 npm 包里。
+每次 Canvas 操作最终都生成普通 DSL，不存在私有文档模型，也不需要同步第二套 JSON。
+
+## React 快速开始
+
+```tsx
+'use client';
+
+import { useState } from 'react';
+import { InteractiveSchematexDiagram } from 'schematex/react';
+
+export function Editor({ initialDsl }: { initialDsl: string }) {
+  const [dsl, setDsl] = useState(initialDsl);
+
+  return (
+    <InteractiveSchematexDiagram
+      value={dsl}
+      onChange={(nextDsl, { reason, item }) => {
+        setDsl(nextDsl);
+        // 在这里保存 nextDsl，或接入你自己的 undo / collaboration model。
+        console.log(reason, item?.semanticId);
+      }}
+      debounceMs={120}
+    />
+  );
+}
+```
+
+这个组件是 controlled、browser-only 的。它负责 selection、手势、连线实时预览和所见即所得 label input；你的应用负责源码 state、持久化、undo、权限与协作。
+
+## Vanilla DOM
+
+```ts
+import { renderResult } from 'schematex';
+import { attachInteraction, sourceRevision } from 'schematex/interactive';
+
+let source = initialDsl;
+let result = renderResult(source, { scene: true });
+host.innerHTML = result.svg;
+
+if (result.ok) {
+  attachInteraction(host.querySelector('svg')!, {
+    getSource: () => source,
+    getScene: () => ({ rev: sourceRevision(source), items: result.scene ?? [] }),
+    onSourceChange: (nextSource) => {
+      source = nextSource;
+      rerender();
+    },
+  });
+}
+```
+
+除非你要把手势接入已有的非 React Canvas，否则优先使用 React 组件。`attachInteraction()` 是低层 API，commit 后必须由调用方重新 render。
+
+## 能力查询
+
+```ts
+import {
+  getInteractiveCapabilities,
+  INTERACTIVE_DIAGRAM_COUNT,
+  POSITION_EDITABLE_DIAGRAM_COUNT,
+} from 'schematex';
+
+getInteractiveCapabilities('sequence');
+// { text: 'authored', position: 'x', implementation: 'native', ... }
+
+console.log(INTERACTIVE_DIAGRAM_COUNT);         // 50
+console.log(POSITION_EDITABLE_DIAGRAM_COUNT);   // 40
+```
+
+50 个 engine 全部支持安全的 authored title、label 或结构化字段编辑；其中 40 个还具备位置模型。`x`、`y`、`xy`、`cross-axis`、`native-handles` 是语义约束，不只是 UI 提示。例如 sequence participant 只能水平移动，因为垂直顺序代表时间。
+
+## 修改如何持久化
+
+- 有稳定语义 ID 的对象把展示位置写入 `@overrides`，例如 `pin R1 153.1,73.1`。
+- 日期、房间尺寸、floorplan furniture、site 坐标、breadboard 插孔和 waveform boundary 等领域 geometry 会改写原生 DSL token。
+- Authored label 只替换其精确 source range。计算文字或没有安全 rename 契约的 identity 保持只读。
+- 相连线条在拖拽时实时预览，drop 后从语义 endpoint 重新计算。承诺正交 routing 的 engine 在重新 render 后仍只有水平 / 垂直线段。
+
+每种图的精确拖拽方向与限制见[完整能力矩阵](https://github.com/SchemaTex/SchemaTex/blob/main/docs/system/INTERACTIVE-EDITING-CAPABILITIES.zh-CN.md)，也可以在 [Interactive Workspace](/playground/interactive) 中测试 53 个代表性 specimen。
+
+## 对 AI 安全的编辑
+
+AI 不应直接猜 source offset。`schematex/ai` 和两种 MCP transport 提供 revision-guarded 流程：
+
+```ts
+import { inspectDiagram, applyDiagramEdits } from 'schematex/ai';
+
+const inspected = inspectDiagram('flowchart', dsl);
+if (inspected.ok) {
+  const result = applyDiagramEdits('flowchart', dsl, inspected.revision, [
+    { target: inspected.items[0].key, op: 'setLabel', value: '已批准' },
+  ]);
+}
+```
+
+整个 batch 是 atomic 的：revision 过期、target 不存在、操作不安全或最终 render 无效，都会返回原始 DSL，不会留下半次修改。

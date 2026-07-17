@@ -69,6 +69,9 @@ AbstractShape <|-- Square`);
     expect(svg).toContain("«interface»");
     // Abstract class name carries data-abstract.
     expect(svg).toMatch(/sx-umlclass-classname"[^>]*data-abstract="true"[^>]*>AbstractShape</);
+    // Editable member tspans stay compact so generated gallery SVGs remain
+    // deterministic and pass the repository's whitespace check.
+    expect(svg).not.toMatch(/[ \t]+\n/);
   });
 
   it("TC-3: composition vs aggregation vs plain association", () => {

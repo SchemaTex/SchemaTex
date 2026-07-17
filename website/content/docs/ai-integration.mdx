@@ -7,22 +7,22 @@ description: Integrate Schematex into AI agents via the Vercel AI SDK, the hoste
 
 ## TL;DR
 
-Schematex ships a tool layer built for LLMs — five tools that let an AI agent **discover** diagram types, **learn** their syntax, **see** curated examples, **validate** its own output, and **render** SVG. Three integration paths, same tools:
+Schematex ships a tool layer built for LLMs — eight tools that let an AI agent **discover**, **generate**, **validate**, **render**, **inspect**, and **safely edit** diagrams. Three integration paths, same contracts:
 
 | Path | When | Install |
 |---|---|---|
-| **Vercel AI SDK** | Building your own AI feature in a Next.js / Node app | `npm i schematex ai zod` |
+| **Vercel AI SDK** | Building your own AI feature in a Next.js / Node app | `npm i schematex ai` |
 | **Hosted MCP** | Connecting Claude Desktop, ChatGPT, Cursor, Windsurf | Point client at `https://schematex.js.org/mcp` |
 | **Local stdio MCP** | Offline / custom hosts | `npx @schematex/mcp` |
 
 ---
 
-## The five tools
+## The eight tools
 
-Every path exposes the same five tools with identical semantics.
+Every path exposes the same eight tools with identical semantics.
 
 ### `listDiagrams()`
-Returns all 45 diagram types with tagline, "use when" hint, cluster, and authoritative standard. Call first to pick a type.
+Returns all 50 diagram types with tagline, "use when" hint, cluster, authoritative standard, and interactive capability summary. Call first to pick a type.
 
 ### `getSyntax({ type, detail? })`
 Canonical syntax for one diagram. Call after picking a type.
@@ -45,6 +45,15 @@ a visible diagnostic fallback instead of an empty preview.
 
 **Use `renderDsl` only when** you need the SVG returned inside the conversation itself: Claude Desktop, ChatGPT, Cursor, or any pure chat client that has no rendering pipeline of its own.
 </Callout>
+
+### `getDiagramCapabilities({ type })`
+Returns the diagram's safe text and position-editing contract. Call before proposing direct manipulation or geometry changes.
+
+### `inspectDiagram({ type?, dsl })`
+Returns a source revision plus stable editable target keys, labels, bounds, and allowed operations. It intentionally does not expose raw source offsets to the model.
+
+### `applyDiagramEdits({ type?, dsl, revision, edits })`
+Atomically applies up to 50 `setLabel` / `setPosition` operations. A stale revision, unknown target, unsafe operation, or invalid result returns the original DSL—never a partially edited document.
 
 For an in-app AI preview, render the returned DSL with `renderResult()` or
 `renderPreview()`:
@@ -84,10 +93,19 @@ call validateDsl and self-correct on errors before returning to the user.`,
 });
 ```
 
-The `schematex/ai/sdk` subpath only loads if `ai` and `zod` are installed (both are optional peer-deps). If you don't use the AI SDK, import the plain functions from `schematex/ai` and wire them to any framework:
+The `schematex/ai/sdk` subpath only loads if the optional `ai` peer dependency is installed. It uses JSON Schema directly, so your app does not need Zod. If you don't use the AI SDK, import the plain functions from `schematex/ai` and wire them to any framework:
 
 ```ts
-import { listDiagrams, getSyntax, getExamples, validateDsl, renderDsl } from 'schematex/ai';
+import {
+  listDiagrams,
+  getSyntax,
+  getExamples,
+  validateDsl,
+  renderDsl,
+  getDiagramCapabilities,
+  inspectDiagram,
+  applyDiagramEdits,
+} from 'schematex/ai';
 ```
 
 ### Single-shot generation (no tool loop)
@@ -175,6 +193,8 @@ The single biggest reliability win is making the agent validate its own output a
    ├─ ok:    return DSL to user
    └─ error: read line/column/message, fix, goto 5
 6. (optional) renderDsl({ type, dsl })     → return SVG (skip if app renders natively)
+7. (for edits) inspectDiagram({ type, dsl })
+   → applyDiagramEdits({ dsl, revision, edits })
 ```
 
 A simple system prompt that implements this loop:

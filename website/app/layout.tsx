@@ -2,6 +2,8 @@ import './global.css';
 import { RootProvider } from 'fumadocs-ui/provider';
 import type { ReactNode } from 'react';
 import type { Metadata } from 'next';
+import { GeistSans } from 'geist/font/sans';
+import { GeistMono } from 'geist/font/mono';
 import { PlausibleAnalytics } from '@/components/plausible-analytics';
 import { CookieConsentGA } from '@/components/CookieConsentGA';
 import { DIAGRAM_TYPE_COUNT } from '@/lib/diagram-stats';
@@ -52,7 +54,7 @@ export default function Layout({ children }: { children: ReactNode }) {
       <head>
         <PlausibleAnalytics />
       </head>
-      <body className="flex min-h-screen flex-col">
+      <body className={`${GeistSans.variable} ${GeistMono.variable} flex min-h-screen flex-col`}>
         <RootProvider
           theme={{
             // Light by default, no `prefers-color-scheme` follow. Users can

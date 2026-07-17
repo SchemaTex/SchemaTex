@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.0] — 2026-07-17
+
+### Added — open-source interactive editor and AI-safe editing
+
+- **Public React editor.** `InteractiveSchematexDiagram` is a controlled Client Component with WYSIWYG label editing, semantic drag constraints, live connector previews, selection callbacks, and preview-safe diagnostics. Applications retain ownership of DSL state, persistence, undo, and collaboration.
+- **Complete Canvas capability contract.** All 50 engines support authored title, label, or structured-field editing; 40 also support stable-ID drag or native geometry handles. A single typed registry now drives SDK, website, and AI capability discovery.
+- **AI and MCP editing.** Vercel AI SDK, local stdio MCP, and hosted Streamable HTTP MCP share eight tool manifests, including revision-guarded `inspectDiagram` and atomic `applyDiagramEdits`.
+- **Editable website workspaces.** Full-size homepage, docs, example, and Playground render surfaces use the public editor. The Playground adds a searchable, grouped example rail covering published examples and a 53-specimen interactive test lab.
+- **Developer documentation.** English and Simplified Chinese guides document React, Vanilla DOM, capability discovery, `@overrides`, native handles, and the AI-safe edit loop.
+
+### Changed
+
+- Package versions are now `schematex@1.0.0` and `@schematex/mcp@1.0.0`.
+- The React bundle preserves its `"use client"` boundary for Next.js and other React Server Component consumers.
+
 ## [0.9.19] — 2026-07-09
 
 ### Fixed — readable, electrically correct household-lighting schematics

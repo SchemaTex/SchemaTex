@@ -4,6 +4,7 @@
 
 body {
   overflow-x: clip;
+  font-family: var(--sans);
 }
 
 @source '../node_modules/fumadocs-ui/dist/**/*.js';
@@ -15,16 +16,16 @@ body {
 
 :root {
   --bg: #ffffff;
-  --text: #0f172a;
+  --text: #101827;
   --text-muted: #475569;
   --stroke: #334155;
   --fill: #ffffff;
   --fill-muted: #f1f5f9;
-  --accent: #2563eb;
-  --positive: #059669;
+  --accent: #2457f5;
+  --positive: #0b8f68;
   --negative: #dc2626;
   --neutral: #94a3b8;
-  --warn: #d97706;
+  --warn: #c87316;
 
   --accent-soft: #eff6ff;
   --accent-ink: #1e40af;
@@ -40,8 +41,8 @@ body {
   --cat-6: #db2777;
   --cat-7: #475569;
 
-  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  --sans: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --mono: var(--font-geist-mono), "SFMono-Regular", Consolas, monospace;
+  --sans: var(--font-geist-sans), "Helvetica Neue", sans-serif;
 
   --r: 6px;
   --r-sm: 4px;
@@ -319,79 +320,176 @@ body {
   opacity: 0;
 }
 
-.sx-specimen-switcher {
-  margin-bottom: 12px;
+.sx-playground-workspace {
+  display: grid;
+  gap: 14px;
+  align-items: start;
+}
+
+.sx-example-browser {
+  min-width: 0;
+  overflow: hidden;
   border: 1px solid var(--fill-muted);
   border-radius: var(--r);
   background: var(--fill);
-  overflow: hidden;
 }
-.sx-specimen-tabs {
+.sx-example-browser-heading {
   display: flex;
-  overflow-x: auto;
-  scrollbar-width: thin;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px;
   border-bottom: 1px solid var(--fill-muted);
 }
-.sx-specimen-tab {
-  position: relative;
-  flex: 0 0 auto;
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-  min-height: 42px;
-  padding: 0 14px;
-  border-right: 1px solid var(--fill-muted);
-  background: var(--bg);
-  color: var(--text-muted);
+.sx-example-browser-heading > div {
+  display: grid;
+  gap: 3px;
+}
+.sx-example-browser-heading strong {
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.2;
+}
+.sx-example-count {
+  min-width: 28px;
+  padding: 3px 6px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent-ink);
   font-family: var(--mono);
   font-size: 11px;
+  text-align: center;
+}
+.sx-example-controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(130px, .45fr);
+  gap: 7px;
+  padding: 9px;
+  border-bottom: 1px solid var(--fill-muted);
+}
+.sx-example-controls input,
+.sx-example-controls select,
+.sx-example-mobile-select select {
+  width: 100%;
+  height: 34px;
+  border: 1px solid var(--fill-muted);
+  border-radius: var(--r-sm);
+  background: var(--bg);
+  color: var(--text);
+  padding: 0 9px;
+  font-family: var(--mono);
+  font-size: 11px;
+}
+.sx-example-controls input:focus-visible,
+.sx-example-controls select:focus-visible,
+.sx-example-mobile-select select:focus-visible,
+.sx-example-option:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+.sx-example-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1px;
+  max-height: 230px;
+  overflow: auto;
+  background: var(--fill-muted);
+  scrollbar-width: thin;
+}
+.sx-example-option {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+  padding: 10px 11px;
+  border: 0;
+  background: var(--bg);
+  color: var(--text-muted);
+  text-align: left;
   cursor: pointer;
 }
-.sx-specimen-tab::after {
-  content: '';
-  position: absolute;
-  right: 10px;
-  bottom: -1px;
-  left: 10px;
-  height: 2px;
-  background: transparent;
-}
-.sx-specimen-tab small {
-  color: var(--neutral);
-  font-size: 9px;
-  letter-spacing: .06em;
-  text-transform: uppercase;
-}
-.sx-specimen-tab:hover,
-.sx-specimen-tab[aria-selected='true'] {
-  color: var(--text);
+.sx-example-option:hover,
+.sx-example-option[aria-selected='true'] {
   background: var(--accent-soft);
 }
-.sx-specimen-tab[aria-selected='true']::after {
-  background: var(--accent);
+.sx-example-option[aria-selected='true'] {
+  box-shadow: inset 3px 0 0 var(--accent);
 }
-.sx-specimen-tab:focus-visible {
-  z-index: 1;
-  outline: 2px solid var(--accent);
-  outline-offset: -3px;
+.sx-example-option-type,
+.sx-example-option small {
+  overflow: hidden;
+  color: var(--text-muted);
+  font-family: var(--mono);
+  font-size: 10px;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
 }
-.sx-specimen-note {
-  min-height: 37px;
+.sx-example-option-type { color: var(--accent); letter-spacing: .05em; }
+.sx-example-option strong {
+  overflow: hidden;
+  color: var(--text);
+  font-size: 12px;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sx-example-note,
+.sx-example-empty {
   margin: 0;
-  padding: 9px 13px;
+  padding: 10px 12px;
   color: var(--text-muted);
   font-size: 12px;
-  line-height: 18px;
+  line-height: 1.5;
+}
+.sx-example-note { border-top: 1px solid var(--fill-muted); }
+.sx-example-empty { background: var(--bg); }
+.sx-example-mobile-select { display: none; padding: 9px; }
+
+.sx-canvas-caption {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  padding: 4px 7px;
+  border: 1px solid var(--fill-muted);
+  border-radius: var(--r-sm);
+  background: rgb(255 255 255 / .92);
+  color: var(--text-muted);
+  font-family: var(--mono);
+  font-size: 10px;
+}
+
+@media (min-width: 1180px) {
+  .sx-playground-workspace {
+    grid-template-columns: 248px minmax(0, 1fr);
+  }
+  .sx-example-browser {
+    position: sticky;
+    top: 76px;
+    max-height: 720px;
+  }
+  .sx-example-controls { grid-template-columns: 1fr; }
+  .sx-example-list {
+    grid-template-columns: 1fr;
+    max-height: 475px;
+  }
 }
 
 @media (max-width: 640px) {
-  .sx-specimen-tab {
-    min-height: 40px;
-    padding-inline: 11px;
+  .sx-interactive-steps {
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(260px, 82vw);
+    overflow-x: auto;
+    padding-bottom: 5px;
+    scroll-snap-type: x proximity;
+    scrollbar-width: thin;
   }
-  .sx-specimen-note {
-    min-height: 55px;
-  }
+  .sx-interactive-steps > section { scroll-snap-align: start; }
+  .sx-example-controls,
+  .sx-example-list { display: none; }
+  .sx-example-mobile-select { display: block; }
+  .sx-example-note { max-height: 72px; overflow: auto; }
+  .sx-canvas-caption { display: none; }
 }
 
 .sx-monaco-selection {
