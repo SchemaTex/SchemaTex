@@ -23,7 +23,7 @@ export function DiagramFrame({
     <div
       className={`flex flex-col overflow-hidden ${className ?? ''}`}
       style={{
-        border: '1px solid var(--fill-muted)',
+        border: '1px solid var(--line-strong)',
         borderRadius: 'var(--r)',
         // Force white surface so the always-light-theme schematex SVG (with dark
         // strokes/text) stays readable when the site is in dark mode.
@@ -33,7 +33,7 @@ export function DiagramFrame({
     >
       <div
         className="flex shrink-0 items-center gap-3 px-3 py-2"
-        style={{ borderBottom: '1px solid var(--fill-muted)' }}
+        style={{ borderBottom: '1px solid var(--line)' }}
       >
         <div className="flex gap-1.5">
           <span

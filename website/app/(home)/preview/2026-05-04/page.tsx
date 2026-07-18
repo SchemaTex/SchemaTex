@@ -132,7 +132,7 @@ export default function PreviewPage() {
                 </DiagramFrame>
                 <pre
                   className="overflow-auto rounded-md border bg-fd-muted/40 p-3 font-mono text-[12px] leading-relaxed text-fd-foreground"
-                  style={{ maxHeight: 480, borderColor: 'var(--fill-muted)' }}
+                  style={{ maxHeight: 480, borderColor: 'var(--line)' }}
                 >
                   {item.ex.dsl}
                 </pre>
@@ -142,7 +142,7 @@ export default function PreviewPage() {
         ))}
       </ul>
 
-      <footer className="mt-16 border-t pt-6 text-sm text-fd-muted-foreground" style={{ borderColor: 'var(--fill-muted)' }}>
+      <footer className="mt-16 border-t pt-6 text-sm text-fd-muted-foreground" style={{ borderColor: 'var(--line)' }}>
         <p>
           When approved, the engine change (matrix renderer + parser) and 5 MDX files
           ship together. Reference docs already updated:{' '}

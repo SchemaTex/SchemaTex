@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 export default function IconsPage() {
   return (
     <main className="flex flex-1 flex-col">
-      <section className="border-b px-6 pb-8 pt-12" style={{ borderColor: 'var(--fill-muted)' }}>
+      <section className="border-b px-6 pb-8 pt-12" style={{ borderColor: 'var(--line)' }}>
         <div className="mx-auto max-w-6xl">
           <p className="type-eye mb-3">/ SYMBOLS</p>
           <div className="mb-4 flex flex-wrap gap-2">
@@ -61,7 +61,7 @@ function CatalogSection({ catalog }: { catalog: SymbolCatalog }) {
   const meta = getDiagramMeta(catalog.type);
   return (
     <div id={catalog.type} className="scroll-mt-20 pt-14">
-      <div className="mb-1 flex flex-wrap items-center gap-2.5 border-b pb-3" style={{ borderColor: 'var(--fill-muted)' }}>
+      <div className="mb-1 flex flex-wrap items-center gap-2.5 border-b pb-3" style={{ borderColor: 'var(--line)' }}>
         <DiagramIcon type={catalog.type} size={20} style={{ color: 'var(--accent)' }} />
         <h2 className="text-xl font-semibold" style={{ color: 'var(--text)' }}>{meta?.name ?? catalog.label}</h2>
         <span className="ds-badge">{catalog.entries.length} symbols</span>
@@ -85,7 +85,7 @@ function CatalogSection({ catalog }: { catalog: SymbolCatalog }) {
             </div>
             <div
               className="truncate px-2 py-1.5 text-center text-[10.5px]"
-              style={{ borderTop: '1px solid var(--fill-muted)', color: 'var(--text-muted)' }}
+              style={{ borderTop: '1px solid var(--line)', color: 'var(--text-muted)' }}
             >
               {s.label}
             </div>

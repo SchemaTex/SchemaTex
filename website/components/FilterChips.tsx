@@ -25,7 +25,7 @@ export function FilterChips({ label, options, selected, onChange }: FilterChipsP
         className="flex flex-wrap items-center gap-1 p-1"
         style={{
           background: 'var(--fill)',
-          border: '1px solid var(--fill-muted)',
+          border: '1px solid var(--line)',
           borderRadius: 'var(--r)',
         }}
       >

@@ -37,7 +37,7 @@ export default function InteractiveEditingPreview() {
             key={number}
             className="p-4"
             style={{
-              border: '1px solid var(--fill-muted)',
+              border: '1px solid var(--line)',
               borderRadius: 'var(--r)',
               background: 'var(--fill)',
             }}

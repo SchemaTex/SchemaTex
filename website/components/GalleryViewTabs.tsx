@@ -9,7 +9,7 @@ const TABS: { view: GalleryView; href: string; label: string; hint: string }[] =
 
 export function GalleryViewTabs({ active }: { active: GalleryView }) {
   return (
-    <div className="inline-flex rounded-lg border p-0.5" style={{ borderColor: 'var(--fill-muted)' }}>
+    <div className="inline-flex rounded-lg border p-0.5" style={{ borderColor: 'var(--line)' }}>
       {TABS.map((t) => {
         const on = t.view === active;
         return (

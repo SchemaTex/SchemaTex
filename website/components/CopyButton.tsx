@@ -57,7 +57,7 @@ export function CopyButton({ text, className = '', label = 'Copy', variant = 'bo
         className
       }
       style={{
-        border: '1px solid var(--fill-muted)',
+        border: '1px solid var(--line)',
         borderRadius: 'var(--r-sm)',
         background: 'var(--fill)',
       }}

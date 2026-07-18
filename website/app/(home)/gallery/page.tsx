@@ -83,7 +83,7 @@ export default async function GalleryPage({
   return (
     <main className="flex flex-1 flex-col">
       {/* Header */}
-      <section className="border-b px-6 pb-8 pt-12" style={{ borderColor: 'var(--fill-muted)' }}>
+      <section className="border-b px-6 pb-8 pt-12" style={{ borderColor: 'var(--line)' }}>
         <div className="mx-auto max-w-6xl">
           <p className="type-eye mb-3">/ GALLERY</p>
           <div className="mb-4 flex flex-wrap gap-2">
@@ -175,7 +175,7 @@ function EmptyState() {
     <div
       className="flex flex-col items-center justify-center py-20 text-center"
       style={{
-        border: '1px dashed var(--fill-muted)',
+        border: '1px dashed var(--line)',
         borderRadius: 'var(--r)',
         background: 'var(--fill)',
       }}

@@ -230,7 +230,7 @@ export function HomeContent({
                 className="inline-flex h-10 items-center gap-2 px-3 font-mono text-[13px] text-fd-foreground"
                 style={{
                   background: 'var(--fill)',
-                  border: '1px solid var(--fill-muted)',
+                  border: '1px solid var(--line)',
                   borderRadius: 'var(--r-sm)',
                 }}
               >
@@ -258,7 +258,7 @@ export function HomeContent({
       <section
         aria-label={dict.standardsRail.ariaLabel}
         className="overflow-hidden border-b py-3.5"
-        style={{ borderColor: 'var(--fill-muted)', borderTopWidth: 1, background: 'var(--fill)' }}
+        style={{ borderColor: 'var(--line)', borderTopWidth: 1, background: 'var(--fill)' }}
       >
         <div className="marquee-track font-mono text-xs text-fd-muted-foreground">
           {[...STANDARDS_RAIL, ...STANDARDS_RAIL].map((s, i) => (
@@ -303,11 +303,11 @@ export function HomeContent({
                   key={ex.slug}
                   href={`/playground?example=${ex.slug}`}
                   className="group flex flex-col overflow-hidden bg-fd-card transition hover:border-[color:var(--accent)]"
-                  style={{ border: '1px solid var(--fill-muted)', borderRadius: 'var(--r)' }}
+                  style={{ border: '1px solid var(--line)', borderRadius: 'var(--r)' }}
                 >
                   <div
                     className="flex items-center gap-2 px-3 py-2 font-mono text-xs text-fd-muted-foreground"
-                    style={{ borderBottom: '1px solid var(--fill-muted)' }}
+                    style={{ borderBottom: '1px solid var(--line)' }}
                   >
                     <span aria-hidden className="size-2" style={{ background: color, borderRadius: 2 }} />
                     <span className="text-fd-foreground">{ex.diagram}</span>
@@ -323,7 +323,7 @@ export function HomeContent({
                       dangerouslySetInnerHTML={{ __html: svg }}
                     />
                   </div>
-                  <div className="flex flex-col gap-1.5 p-4" style={{ borderTop: '1px solid var(--fill-muted)' }}>
+                  <div className="flex flex-col gap-1.5 p-4" style={{ borderTop: '1px solid var(--line)' }}>
                     <div
                       className="font-mono text-[11px] uppercase tracking-[0.08em]"
                       style={{ color: 'var(--accent)' }}
@@ -352,7 +352,7 @@ export function HomeContent({
             <Link
               href="/gallery"
               className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-fd-foreground transition hover:border-[color:var(--stroke)]"
-              style={{ background: 'var(--fill)', border: '1px solid var(--fill-muted)', borderRadius: 'var(--r-sm)' }}
+              style={{ background: 'var(--fill)', border: '1px solid var(--line)', borderRadius: 'var(--r-sm)' }}
             >
               {dict.cases.browseGallery}
             </Link>
@@ -419,13 +419,13 @@ export function HomeContent({
 
           <div
             className="mt-12 overflow-x-auto"
-            style={{ border: '1px solid var(--fill-muted)', borderRadius: 'var(--r)', background: 'var(--fill)' }}
+            style={{ border: '1px solid var(--line)', borderRadius: 'var(--r)', background: 'var(--fill)' }}
           >
             <table className="w-full min-w-[720px] font-mono text-[13px]">
               <thead>
                 <tr
                   className="text-left text-fd-muted-foreground"
-                  style={{ borderBottom: '1px solid var(--fill-muted)' }}
+                  style={{ borderBottom: '1px solid var(--line)' }}
                 >
                   <th className="px-5 py-3 font-normal">{dict.positioning.columns.tool}</th>
                   <th className="px-5 py-3 font-normal">{dict.positioning.columns.domain}</th>
@@ -443,7 +443,7 @@ export function HomeContent({
                 ].map((row) => (
                   <tr
                     key={row.tool}
-                    style={{ borderBottom: '1px solid var(--fill-muted)' }}
+                    style={{ borderBottom: '1px solid var(--line)' }}
                     className="text-fd-muted-foreground"
                   >
                     <td className="px-5 py-3 text-fd-foreground">{row.tool}</td>
@@ -553,7 +553,7 @@ export function HomeContent({
             <Link
               href="/gallery"
               className="inline-flex items-center px-6 py-3 text-sm font-medium text-fd-foreground transition hover:border-[color:var(--stroke)]"
-              style={{ background: 'var(--fill)', border: '1px solid var(--fill-muted)', borderRadius: 'var(--r-sm)' }}
+              style={{ background: 'var(--fill)', border: '1px solid var(--line)', borderRadius: 'var(--r-sm)' }}
             >
               {dict.finalCta.browseGallery}
             </Link>
@@ -647,7 +647,7 @@ function StatCard({
   return (
     <div
       className="flex flex-col p-8"
-      style={{ border: '1px solid var(--fill-muted)', borderRadius: 'var(--r)', background: 'var(--fill)' }}
+      style={{ border: '1px solid var(--line)', borderRadius: 'var(--r)', background: 'var(--fill)' }}
     >
       <div
         className="text-[64px] font-semibold leading-none tracking-tight text-fd-foreground"

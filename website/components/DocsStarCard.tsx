@@ -10,7 +10,7 @@ export function DocsStarCard({ stars }: { stars: number }) {
     <div
       className="mt-12 flex flex-col items-start gap-3 p-5 sm:flex-row sm:items-center sm:justify-between"
       style={{
-        border: '1px solid var(--fill-muted)',
+        border: '1px solid var(--line)',
         borderRadius: 'var(--r)',
         background: 'var(--fill)',
       }}

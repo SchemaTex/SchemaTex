@@ -54,7 +54,7 @@ export default async function PlaygroundPage({
   return (
     <div className="mx-auto w-full max-w-[1500px] px-4 pb-16 pt-10 sm:px-6">
       {/* Page header */}
-      <div className="mb-8 pb-8" style={{ borderBottom: '1px solid var(--fill-muted)' }}>
+      <div className="mb-8 pb-8" style={{ borderBottom: '1px solid var(--line)' }}>
         <p className="type-eye mb-3">/ PLAYGROUND</p>
         <h1
           className="mb-3 text-[40px] font-semibold leading-none"

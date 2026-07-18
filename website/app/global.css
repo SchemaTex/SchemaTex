@@ -10,8 +10,9 @@ body {
 @source '../node_modules/fumadocs-ui/dist/**/*.js';
 
 /* =========================================================================
-   Schematex design-system tokens (source of truth).
-   Mirrors schematex theme.ts / site.css — do not invent new grays or blues.
+   Schematex website tokens (source of truth).
+   Core colors mirror theme.ts; line tokens give website chrome its own
+   boundary semantics instead of overloading muted surface fills.
    ========================================================================= */
 
 :root {
@@ -20,7 +21,9 @@ body {
   --text-muted: #475569;
   --stroke: #334155;
   --fill: #ffffff;
-  --fill-muted: #f1f5f9;
+  --fill-muted: #f1f5f9; /* inset, hover, and skeleton surfaces */
+  --line: #e2e8f0; /* regular dividers and card outlines */
+  --line-strong: #cbd5e1; /* editor, preview, and canvas frames */
   --accent: #2457f5;
   --positive: #0b8f68;
   --negative: #dc2626;
@@ -54,7 +57,9 @@ body {
   --text-muted: #7f849c;
   --stroke: #a6adc8;
   --fill: #313244;
-  --fill-muted: #45475a;
+  --fill-muted: #45475a; /* inset, hover, and skeleton surfaces */
+  --line: #585b70; /* regular dividers and card outlines */
+  --line-strong: #6c7086; /* editor, preview, and canvas frames */
   --accent: #89b4fa;
   --positive: #a6e3a1;
   --negative: #f38ba8;
@@ -90,7 +95,7 @@ body {
   --color-fd-muted-foreground: var(--text-muted);
   --color-fd-card: var(--fill);
   --color-fd-card-foreground: var(--text);
-  --color-fd-border: var(--fill-muted);
+  --color-fd-border: var(--line);
   --color-fd-primary: var(--accent);
   --color-fd-primary-foreground: #ffffff;
   --color-fd-accent: var(--accent-soft);
@@ -213,7 +218,7 @@ body {
   font-size: 12px;
   padding: 3px 8px;
   border-radius: var(--r-sm);
-  border: 1px solid var(--fill-muted);
+  border: 1px solid var(--line);
   color: var(--text-muted);
   background: var(--fill);
   font-weight: 400;
@@ -230,7 +235,7 @@ body {
   font-size: 12px;
   padding: 4px 10px;
   border-radius: var(--r-sm);
-  border: 1px solid var(--fill-muted);
+  border: 1px solid var(--line);
   color: var(--text-muted);
   background: var(--bg);
   display: inline-flex;
@@ -293,7 +298,7 @@ body {
 }
 .sx-interaction-hint strong {
   padding-left: 8px;
-  border-left: 1px solid var(--fill-muted);
+  border-left: 1px solid var(--line);
   color: var(--accent);
   font-weight: 500;
 }
@@ -329,7 +334,7 @@ body {
 .sx-example-browser {
   min-width: 0;
   overflow: hidden;
-  border: 1px solid var(--fill-muted);
+  border: 1px solid var(--line);
   border-radius: var(--r);
   background: var(--fill);
 }
@@ -339,7 +344,7 @@ body {
   justify-content: space-between;
   gap: 12px;
   padding: 12px;
-  border-bottom: 1px solid var(--fill-muted);
+  border-bottom: 1px solid var(--line);
 }
 .sx-example-browser-heading > div {
   display: grid;
@@ -365,14 +370,14 @@ body {
   grid-template-columns: minmax(0, 1fr) minmax(130px, .45fr);
   gap: 7px;
   padding: 9px;
-  border-bottom: 1px solid var(--fill-muted);
+  border-bottom: 1px solid var(--line);
 }
 .sx-example-controls input,
 .sx-example-controls select,
 .sx-example-mobile-select select {
   width: 100%;
   height: 34px;
-  border: 1px solid var(--fill-muted);
+  border: 1px solid var(--line);
   border-radius: var(--r-sm);
   background: var(--bg);
   color: var(--text);
@@ -442,7 +447,7 @@ body {
   font-size: 12px;
   line-height: 1.5;
 }
-.sx-example-note { border-top: 1px solid var(--fill-muted); }
+.sx-example-note { border-top: 1px solid var(--line); }
 .sx-example-empty { background: var(--bg); }
 .sx-example-mobile-select { display: none; padding: 9px; }
 
@@ -451,7 +456,7 @@ body {
   right: 10px;
   bottom: 10px;
   padding: 4px 7px;
-  border: 1px solid var(--fill-muted);
+  border: 1px solid var(--line);
   border-radius: var(--r-sm);
   background: rgb(255 255 255 / .92);
   color: var(--text-muted);
@@ -540,7 +545,7 @@ svg [data-sx-dragging='true'] {
 
 /* Gallery card — design-spec card with card-bar + dot-grid stage + hover strip. */
 .gal-card {
-  border: 1px solid var(--fill-muted);
+  border: 1px solid var(--line);
   border-radius: var(--r);
   background: var(--fill);
   transition: border-color .15s;
@@ -562,7 +567,7 @@ svg [data-sx-dragging='true'] {
   letter-spacing: 0.02em;
   text-align: right;
   padding: 8px 12px;
-  border-top: 1px solid var(--fill-muted);
+  border-top: 1px solid var(--line);
 }
 
 /* Gallery filter chip */
@@ -571,7 +576,7 @@ svg [data-sx-dragging='true'] {
   align-items: center;
   gap: 5px;
   padding: 4px 10px;
-  border: 1px solid var(--fill-muted);
+  border: 1px solid var(--line);
   border-radius: var(--r-sm);
   background: var(--bg);
   color: var(--text-muted);

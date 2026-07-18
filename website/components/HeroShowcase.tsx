@@ -60,7 +60,7 @@ export function HeroShowcase({ slides, intervalMs = 6500 }: HeroShowcaseProps) {
   );
 
   const footer = (
-    <div className="flex shrink-0 items-center justify-between border-t border-[color:var(--fill-muted)] bg-white px-3 py-2 font-mono text-[11px] text-[color:var(--text-muted)]">
+    <div className="flex shrink-0 items-center justify-between border-t border-[color:var(--line)] bg-white px-3 py-2 font-mono text-[11px] text-[color:var(--text-muted)]">
       <span>UTF-8 · LF · {lineCount} lines · {dsl.length} chars</span>
       <span>
         <span style={{ color: renderResult?.ok ? 'var(--positive)' : 'var(--negative)' }}>
@@ -81,8 +81,8 @@ export function HeroShowcase({ slides, intervalMs = 6500 }: HeroShowcaseProps) {
         footer={footer}
       >
         <div className="grid h-[360px] grid-cols-1 sm:h-[500px] sm:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:h-[600px]">
-          <label className="relative hidden min-h-0 flex-col border-r border-[color:var(--fill-muted)] bg-[color:var(--fill-muted)] sm:flex">
-            <span className="border-b border-[color:var(--fill-muted)] bg-white px-3 py-2 font-mono text-[11px] uppercase tracking-[0.06em] text-[color:var(--text-muted)]">
+          <label className="relative hidden min-h-0 flex-col border-r border-[color:var(--line-strong)] bg-[color:var(--fill-muted)] sm:flex">
+            <span className="border-b border-[color:var(--line)] bg-white px-3 py-2 font-mono text-[11px] uppercase tracking-[0.06em] text-[color:var(--text-muted)]">
               DSL source
             </span>
             <textarea

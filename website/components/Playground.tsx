@@ -341,7 +341,7 @@ export function Playground({ initial, height = 560, fill = false, syncHash = fal
           <div
             className="absolute right-0 top-full z-50 mt-1 flex flex-col overflow-hidden"
             style={{
-              border: '1px solid var(--fill-muted)',
+              border: '1px solid var(--line)',
               borderRadius: 'var(--r-sm)',
               background: 'var(--bg)',
               minWidth: 100,
@@ -378,7 +378,7 @@ export function Playground({ initial, height = 560, fill = false, syncHash = fal
   const footer = (
     <div
       className="flex shrink-0 items-center justify-between px-3 py-2 font-mono text-[11px] text-fd-muted-foreground"
-      style={{ background: 'var(--bg)', borderTop: '1px solid var(--fill-muted)' }}
+      style={{ background: 'var(--bg)', borderTop: '1px solid var(--line)' }}
     >
       <span>
         UTF-8 · LF · {lineCount} line{lineCount === 1 ? '' : 's'} · {charCount} chars
@@ -415,7 +415,7 @@ export function Playground({ initial, height = 560, fill = false, syncHash = fal
           className="min-h-0 overflow-hidden"
           style={{
             background: 'var(--fill-muted)',
-            borderRight: '1px solid var(--fill-muted)',
+            borderRight: '1px solid var(--line-strong)',
           }}
         >
           <MonacoEditor
@@ -447,7 +447,7 @@ export function Playground({ initial, height = 560, fill = false, syncHash = fal
         <div className="flex min-h-0 flex-col overflow-hidden">
           <div
             className="flex shrink-0 items-center justify-between px-3 py-1.5 font-mono text-[11px]"
-            style={{ borderBottom: '1px solid var(--fill-muted)', color: 'var(--text-muted)', background: 'var(--fill)' }}
+            style={{ borderBottom: '1px solid var(--line)', color: 'var(--text-muted)', background: 'var(--fill)' }}
           >
             <span>↘ preview</span>
             <div className="flex items-center gap-1">

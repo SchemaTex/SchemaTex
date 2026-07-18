@@ -124,7 +124,7 @@ function CopyURLPill() {
       className="flex items-center justify-between gap-2 flex-1 min-w-0"
       style={{
         background: 'var(--bg)',
-        border: '1px solid var(--fill-muted)',
+        border: '1px solid var(--line)',
         borderRadius: 'var(--r-sm)',
         padding: '8px 6px 8px 14px',
         minHeight: '40px',

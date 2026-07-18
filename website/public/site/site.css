@@ -1,16 +1,18 @@
 /* ================= schematex.js.org — site styles (v2, DS-aligned) ================= */
-/* Tokens are verbatim from theme.ts per DESIGN-SYSTEM.md.
-   Three themes: default / monochrome / dark. No invented grays or blues. */
+/* Core colors mirror theme.ts. Website line tokens keep chrome boundaries
+   semantically separate from muted surface fills. */
 
 :root,
 [data-theme="default"] {
-  /* ---- Base 11 tokens (default) ---- */
+  /* ---- Base + semantic boundary tokens (default) ---- */
   --bg: #ffffff;
   --text: #0f172a;
   --text-muted: #475569;
   --stroke: #334155;
   --fill: #ffffff;
   --fill-muted: #f1f5f9;
+  --line: #e2e8f0;
+  --line-strong: #cbd5e1;
   --accent: #2563eb;
   --positive: #059669;
   --negative: #dc2626;
@@ -68,6 +70,8 @@
   --stroke: #a6adc8;        /* NOT same as text — subtext1 — fixes contrast conflict called out in DS eval */
   --fill: #313244;           /* mantle */
   --fill-muted: #45475a;     /* surface1 */
+  --line: #585b70;           /* surface2 — standard dividers */
+  --line-strong: #6c7086;    /* overlay0 — editor and canvas frames */
   --accent: #89b4fa;
   --positive: #a6e3a1;
   --negative: #f38ba8;
@@ -107,7 +111,7 @@ a { color: inherit; text-decoration: none; cursor: pointer; }
   position: sticky; top: 0; z-index: 50;
   background: color-mix(in srgb, var(--bg) 90%, transparent);
   backdrop-filter: blur(10px);
-  border-bottom: 1px solid var(--fill-muted);
+  border-bottom: 1px solid var(--line);
 }
 .nav-inner {
   max-width: 1320px; margin: 0 auto;
@@ -142,7 +146,7 @@ a { color: inherit; text-decoration: none; cursor: pointer; }
 /* Theme switcher — 3-way default/mono/dark */
 .theme-switch {
   display: inline-flex;
-  border: 1px solid var(--fill-muted);
+  border: 1px solid var(--line);
   border-radius: var(--r-sm);
   overflow: hidden;
   background: var(--bg);
@@ -153,7 +157,7 @@ a { color: inherit; text-decoration: none; cursor: pointer; }
   font-family: var(--mono); font-size: 11px;
   color: var(--text-muted);
   cursor: pointer;
-  border-right: 1px solid var(--fill-muted);
+  border-right: 1px solid var(--line);
 }
 .theme-switch button:last-child { border-right: 0; }
 .theme-switch button.active { background: var(--text); color: var(--bg); }
@@ -162,7 +166,7 @@ a { color: inherit; text-decoration: none; cursor: pointer; }
 .gh-badge {
   display: inline-flex; font-family: var(--mono);
   font-size: 11px; overflow: hidden;
-  border: 1px solid var(--fill-muted);
+  border: 1px solid var(--line);
   border-radius: var(--r-sm);
 }
 .gh-badge .gh-l { padding: 4px 8px; color: var(--text-muted); background: var(--bg); }
@@ -170,7 +174,7 @@ a { color: inherit; text-decoration: none; cursor: pointer; }
 
 /* ================= Shared ================= */
 .page-wrap { max-width: 1320px; margin: 0 auto; padding: 64px 32px 0; }
-.page-hd { padding-bottom: 32px; border-bottom: 1px solid var(--fill-muted); margin-bottom: 48px; }
+.page-hd { padding-bottom: 32px; border-bottom: 1px solid var(--line); margin-bottom: 48px; }
 .page-hd .eye {
   font-family: var(--mono); font-size: 12px;
   color: var(--text-muted); letter-spacing: 0.04em;
@@ -187,7 +191,7 @@ a { color: inherit; text-decoration: none; cursor: pointer; }
   display: inline-flex; align-items: center; gap: 6px;
   font-family: var(--mono); font-size: 12px;
   padding: 3px 8px; border-radius: var(--r-sm);
-  border: 1px solid var(--fill-muted);
+  border: 1px solid var(--line);
   color: var(--text-muted);
   background: var(--fill);
   font-weight: 400;
@@ -198,7 +202,7 @@ a { color: inherit; text-decoration: none; cursor: pointer; }
   display: inline-flex; align-items: center; gap: 8px;
   font-size: 13px; font-weight: 500;
   padding: 9px 16px; border-radius: var(--r-sm);
-  border: 1px solid var(--fill-muted);
+  border: 1px solid var(--line);
   background: var(--fill); color: var(--text);
   cursor: pointer; transition: all .15s ease;
 }
@@ -219,7 +223,7 @@ a { color: inherit; text-decoration: none; cursor: pointer; }
 .btn-mini {
   font-family: var(--mono); font-size: 12px;
   padding: 4px 10px; border-radius: var(--r-sm);
-  border: 1px solid var(--fill-muted);
+  border: 1px solid var(--line);
   color: var(--text-muted); cursor: pointer;
   background: var(--bg);
 }
@@ -277,24 +281,24 @@ a { color: inherit; text-decoration: none; cursor: pointer; }
   border-radius: var(--r-sm);
   font-family: var(--mono); font-size: 13px;
   color: var(--text);
-  border: 1px solid var(--fill-muted);
+  border: 1px solid var(--line);
 }
 .hero-install .muted { margin-right: 8px; }
 
 /* ---------- Showcase ---------- */
 .showcase {
   background: var(--fill);
-  border: 1px solid var(--fill-muted);
+  border: 1px solid var(--line-strong);
   border-radius: var(--r);
   overflow: hidden;
 }
-[data-theme="dark"] .showcase { border-color: var(--fill-muted); }
+[data-theme="dark"] .showcase { border-color: var(--line-strong); }
 .showcase-bar {
   display: grid;
   grid-template-columns: auto 1fr auto;
   gap: 16px; align-items: center;
   padding: 10px 14px;
-  border-bottom: 1px solid var(--fill-muted);
+  border-bottom: 1px solid var(--line);
   font-family: var(--mono); font-size: 12px; color: var(--text-muted);
 }
 .showcase-bar .dots { display: flex; gap: 6px; }
@@ -316,7 +320,7 @@ a { color: inherit; text-decoration: none; cursor: pointer; }
   padding: 16px 20px;
   font-family: var(--mono); font-size: 13px;
   line-height: 1.65;
-  border-right: 1px solid var(--fill-muted);
+  border-right: 1px solid var(--line-strong);
   white-space: pre; overflow: auto;
   background: var(--fill-muted);
 }
@@ -333,7 +337,7 @@ a { color: inherit; text-decoration: none; cursor: pointer; }
 }
 .showcase-foot {
   padding: 8px 14px;
-  border-top: 1px solid var(--fill-muted);
+  border-top: 1px solid var(--line);
   display: flex; justify-content: space-between;
   font-family: var(--mono); font-size: 12px;
   color: var(--text-muted);
@@ -341,8 +345,8 @@ a { color: inherit; text-decoration: none; cursor: pointer; }
 
 /* ---------- Standards rail ---------- */
 .rail {
-  border-top: 1px solid var(--fill-muted);
-  border-bottom: 1px solid var(--fill-muted);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
   overflow: hidden;
   padding: 14px 0;
   background: var(--fill);
@@ -362,7 +366,7 @@ a { color: inherit; text-decoration: none; cursor: pointer; }
 .section {
   max-width: 1320px; margin: 0 auto;
   padding: 96px 32px;
-  border-bottom: 1px solid var(--fill-muted);
+  border-bottom: 1px solid var(--line);
 }
 .section-hd { margin-bottom: 48px; }
 .section-hd .eye {
@@ -383,14 +387,14 @@ a { color: inherit; text-decoration: none; cursor: pointer; }
   display: grid; grid-template-columns: repeat(4, 1fr);
   gap: 1px;
   background: var(--fill-muted);
-  border: 1px solid var(--fill-muted);
+  border: 1px solid var(--line);
   border-radius: var(--r); overflow: hidden;
 }
 .cluster-card { background: var(--fill); display: flex; flex-direction: column; min-height: 460px; }
 .cluster-hd {
   padding: 14px 18px;
   display: flex; align-items: center; gap: 12px;
-  border-bottom: 1px solid var(--fill-muted);
+  border-bottom: 1px solid var(--line);
   font-family: var(--mono); font-size: 12px;
   color: var(--text-muted);
 }
@@ -405,7 +409,7 @@ a { color: inherit; text-decoration: none; cursor: pointer; }
     linear-gradient(var(--fill-muted) 1px, transparent 1px) 0 0 / 10px 10px,
     linear-gradient(90deg, var(--fill-muted) 1px, transparent 1px) 0 0 / 10px 10px,
     var(--fill);
-  border-bottom: 1px solid var(--fill-muted);
+  border-bottom: 1px solid var(--line);
   color: var(--stroke);
 }
 .cluster-body { padding: 20px; flex: 1; display: flex; flex-direction: column; }
@@ -419,7 +423,7 @@ a { color: inherit; text-decoration: none; cursor: pointer; }
 .cluster-list li {
   display: flex; justify-content: space-between;
   padding: 6px 0;
-  border-top: 1px dashed var(--fill-muted);
+  border-top: 1px dashed var(--line);
 }
 .cluster-list .nm { color: var(--text); }
 .cluster-list .std { color: var(--text-muted); }
@@ -429,7 +433,7 @@ a { color: inherit; text-decoration: none; cursor: pointer; }
   display: grid; grid-template-columns: repeat(3, 1fr);
   gap: 1px;
   background: var(--fill-muted);
-  border: 1px solid var(--fill-muted);
+  border: 1px solid var(--line);
   border-radius: var(--r); overflow: hidden;
 }
 .pillar {
@@ -453,11 +457,11 @@ a { color: inherit; text-decoration: none; cursor: pointer; }
 .pillar p { color: var(--text-muted); font-size: 13px; margin: 0; line-height: 1.6; }
 
 /* ---------- Comparison ---------- */
-.cmp-wrap { border: 1px solid var(--fill-muted); border-radius: var(--r); overflow: hidden; background: var(--fill); }
+.cmp-wrap { border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; background: var(--fill); }
 .cmp-table { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 13px; }
 .cmp-table th, .cmp-table td {
   padding: 14px 18px; text-align: left;
-  border-bottom: 1px solid var(--fill-muted);
+  border-bottom: 1px solid var(--line);
 }
 .cmp-table th {
   font-weight: 500; color: var(--text-muted);
@@ -497,7 +501,7 @@ a { color: inherit; text-decoration: none; cursor: pointer; }
   display: inline-block;
   font-family: var(--mono); font-size: 15px;
   padding: 16px 24px; background: var(--fill);
-  border: 1px solid var(--fill-muted);
+  border: 1px solid var(--line);
   border-radius: var(--r);
   margin-bottom: 28px;
   color: var(--text);
@@ -527,15 +531,15 @@ a { color: inherit; text-decoration: none; cursor: pointer; }
 /* ---------- Playground ---------- */
 .example-rail-wrap {
   margin: 0 -32px 32px;
-  border-top: 1px solid var(--fill-muted);
-  border-bottom: 1px solid var(--fill-muted);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
   overflow-x: auto; overflow-y: hidden;
 }
 .example-rail { display: flex; gap: 0; padding: 16px 32px; min-width: max-content; }
 .ex-tile {
   width: 120px; flex-shrink: 0;
   margin-right: 8px;
-  border: 1px solid var(--fill-muted);
+  border: 1px solid var(--line);
   border-radius: var(--r-sm);
   padding: 10px;
   cursor: pointer;
@@ -559,7 +563,7 @@ a { color: inherit; text-decoration: none; cursor: pointer; }
 .ex-tile.active .ex-name { color: var(--accent); }
 
 .pg-panel {
-  border: 1px solid var(--fill-muted);
+  border: 1px solid var(--line-strong);
   border-radius: var(--r); overflow: hidden;
   background: var(--fill); margin-bottom: 64px;
 }
@@ -567,7 +571,7 @@ a { color: inherit; text-decoration: none; cursor: pointer; }
   display: grid; grid-template-columns: auto 1fr auto;
   gap: 16px; align-items: center;
   padding: 10px 14px;
-  border-bottom: 1px solid var(--fill-muted);
+  border-bottom: 1px solid var(--line);
   font-family: var(--mono); font-size: 12px;
   color: var(--text-muted);
 }
@@ -579,7 +583,7 @@ a { color: inherit; text-decoration: none; cursor: pointer; }
 .pg-actions { display: flex; gap: 6px; }
 .pg-split { display: grid; grid-template-columns: 1fr 1fr; min-height: 600px; }
 .pg-editor {
-  border-right: 1px solid var(--fill-muted);
+  border-right: 1px solid var(--line-strong);
   display: grid; grid-template-columns: 48px 1fr;
   overflow: auto;
   background: var(--fill-muted);
@@ -592,7 +596,7 @@ a { color: inherit; text-decoration: none; cursor: pointer; }
   font-size: 12px;
   line-height: 1.65;
   user-select: none;
-  border-right: 1px solid var(--fill-muted);
+  border-right: 1px solid var(--line);
 }
 .pg-gutter div { padding-right: 10px; }
 .pg-code {
@@ -614,7 +618,7 @@ a { color: inherit; text-decoration: none; cursor: pointer; }
 }
 .pg-foot {
   padding: 10px 14px;
-  border-top: 1px solid var(--fill-muted);
+  border-top: 1px solid var(--line);
   display: flex; justify-content: space-between;
   font-family: var(--mono);
   font-size: 12px; color: var(--text-muted);
@@ -626,7 +630,7 @@ a { color: inherit; text-decoration: none; cursor: pointer; }
 .gal-filter {
   display: flex; gap: 4px; align-items: center;
   padding: 12px 14px;
-  border: 1px solid var(--fill-muted);
+  border: 1px solid var(--line);
   border-radius: var(--r);
   background: var(--fill);
   margin-bottom: 32px;
@@ -648,7 +652,7 @@ a { color: inherit; text-decoration: none; cursor: pointer; }
 .gal-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 64px; }
 .gal-card {
   background: var(--fill);
-  border: 1px solid var(--fill-muted);
+  border: 1px solid var(--line);
   border-radius: var(--r); overflow: hidden;
   transition: border-color .15s;
   cursor: pointer;
@@ -657,7 +661,7 @@ a { color: inherit; text-decoration: none; cursor: pointer; }
 .gal-card-bar {
   display: flex; align-items: center; gap: 8px;
   padding: 8px 12px;
-  border-bottom: 1px solid var(--fill-muted);
+  border-bottom: 1px solid var(--line);
   font-family: var(--mono);
   font-size: 12px; color: var(--text-muted);
 }
@@ -671,14 +675,14 @@ a { color: inherit; text-decoration: none; cursor: pointer; }
 [data-theme="dark"] .gal-stage {
   background: radial-gradient(circle at 1px 1px, var(--neutral) 1px, transparent 1px) 0 0 / 12px 12px;
 }
-.gal-foot { padding: 12px 14px; border-top: 1px solid var(--fill-muted); }
+.gal-foot { padding: 12px 14px; border-top: 1px solid var(--line); }
 .gal-title { font-size: 14px; font-weight: 500; margin-bottom: 4px; }
 .gal-meta { font-family: var(--mono); font-size: 12px; color: var(--accent); }
 
 .gal-cta {
   text-align: center;
   padding: 56px 32px;
-  border: 1px solid var(--fill-muted);
+  border: 1px solid var(--line);
   border-radius: var(--r);
   background: var(--fill);
   margin-bottom: 64px;
@@ -688,11 +692,11 @@ a { color: inherit; text-decoration: none; cursor: pointer; }
 
 /* ---------- Examples ---------- */
 .ex-featured { display: flex; flex-direction: column; gap: 16px; margin-bottom: 64px; }
-.ex-item { border: 1px solid var(--fill-muted); border-radius: var(--r); background: var(--fill); overflow: hidden; }
+.ex-item { border: 1px solid var(--line); border-radius: var(--r); background: var(--fill); overflow: hidden; }
 .ex-meta {
   display: flex; gap: 12px; align-items: center;
   padding: 12px 20px;
-  border-bottom: 1px solid var(--fill-muted);
+  border-bottom: 1px solid var(--line);
   font-family: var(--mono);
   font-size: 12px; color: var(--text-muted);
 }
@@ -700,7 +704,7 @@ a { color: inherit; text-decoration: none; cursor: pointer; }
 .ex-dot { width: 8px; height: 8px; border-radius: 2px; }
 .ex-meta .sep { opacity: 0.3; }
 .ex-body { display: grid; grid-template-columns: 1fr 1fr; min-height: 320px; }
-.ex-prose { padding: 32px 36px; border-right: 1px solid var(--fill-muted); }
+.ex-prose { padding: 32px 36px; border-right: 1px solid var(--line); }
 .ex-prose h2 {
   font-size: 24px; letter-spacing: -0.015em;
   font-weight: 600; margin: 0 0 12px;
@@ -712,7 +716,7 @@ a { color: inherit; text-decoration: none; cursor: pointer; }
 .ex-render-bar {
   display: flex; align-items: center; gap: 10px;
   padding: 10px 14px;
-  border-bottom: 1px solid var(--fill-muted);
+  border-bottom: 1px solid var(--line);
   font-family: var(--mono);
   font-size: 12px; color: var(--text-muted);
 }
@@ -739,7 +743,7 @@ a { color: inherit; text-decoration: none; cursor: pointer; }
 .ex-list {
   display: grid; grid-template-columns: repeat(2, 1fr);
   gap: 1px; background: var(--fill-muted);
-  border: 1px solid var(--fill-muted); border-radius: var(--r);
+  border: 1px solid var(--line); border-radius: var(--r);
   overflow: hidden; margin-bottom: 64px;
 }
 .ex-row {
@@ -788,7 +792,7 @@ a { color: inherit; text-decoration: none; cursor: pointer; }
 .tweaks .choices { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
 .tweaks .choice {
   font-family: var(--mono); font-size: 11px;
-  padding: 5px 4px; border: 1px solid var(--fill-muted);
+  padding: 5px 4px; border: 1px solid var(--line);
   border-radius: var(--r-sm); text-align: center; cursor: pointer;
   background: var(--bg); color: var(--text-muted);
 }
@@ -803,5 +807,5 @@ a { color: inherit; text-decoration: none; cursor: pointer; }
   .foot-grid { grid-template-columns: 1fr 1fr; }
   .ex-list { grid-template-columns: 1fr; }
   .ex-body { grid-template-columns: 1fr; }
-  .ex-prose { border-right: none; border-bottom: 1px solid var(--fill-muted); }
+  .ex-prose { border-right: none; border-bottom: 1px solid var(--line); }
 }

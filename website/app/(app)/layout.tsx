@@ -8,7 +8,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
     <div className="flex min-h-screen flex-col">
       <header
         className="sticky top-0 z-40 flex h-10 shrink-0 items-center gap-4 px-4 text-sm"
-        style={{ borderBottom: '1px solid var(--fill-muted)', background: 'var(--bg)' }}
+        style={{ borderBottom: '1px solid var(--line)', background: 'var(--bg)' }}
       >
         <Link href="/" className="font-semibold tracking-tight" style={{ color: 'var(--text)' }}>
           <Logo size={16} />

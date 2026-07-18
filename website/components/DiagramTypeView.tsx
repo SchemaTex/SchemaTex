@@ -39,7 +39,7 @@ function ClusterSection({ group }: { group: DiagramClusterGroup }) {
     <div id={group.cluster} className="scroll-mt-20 pt-14 first:pt-0">
       <div
         className="mb-6 flex items-center gap-2.5 border-b pb-3"
-        style={{ borderColor: 'var(--fill-muted)' }}
+        style={{ borderColor: 'var(--line)' }}
       >
         <ClusterIcon cluster={group.cluster} size={20} style={{ color: 'var(--accent)' }} />
         <h2 className="text-xl font-semibold" style={{ color: 'var(--text)' }}>{group.label}</h2>
@@ -127,7 +127,7 @@ function ExampleThumb({
       </div>
       <div
         className="flex items-center gap-2 px-3 py-2"
-        style={{ borderTop: '1px solid var(--fill-muted)' }}
+        style={{ borderTop: '1px solid var(--line)' }}
       >
         <span className="truncate text-[12.5px]" style={{ color: 'var(--text)' }}>{ex.title}</span>
         <span className="ml-auto flex shrink-0 gap-0.5" title={`complexity ${ex.complexity}`}>

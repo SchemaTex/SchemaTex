@@ -17,14 +17,14 @@ export function DiagramCard({ title, blurb, href, preview, icon, standard }: Dia
       href={href}
       className="group flex flex-col overflow-hidden bg-fd-card transition hover:border-[color:var(--stroke)]"
       style={{
-        border: '1px solid var(--fill-muted)',
+        border: '1px solid var(--line)',
         borderRadius: 'var(--r)',
       }}
     >
       {/* Meta bar — DS mono chrome */}
       <div
         className="flex items-center gap-2 px-3 py-2 font-mono text-xs text-fd-muted-foreground"
-        style={{ borderBottom: '1px solid var(--fill-muted)' }}
+        style={{ borderBottom: '1px solid var(--line)' }}
       >
         {icon && (
           <DiagramIcon
@@ -50,7 +50,7 @@ export function DiagramCard({ title, blurb, href, preview, icon, standard }: Dia
       {/* Blurb */}
       <div
         className="p-3.5"
-        style={{ borderTop: '1px solid var(--fill-muted)' }}
+        style={{ borderTop: '1px solid var(--line)' }}
       >
         <p className="text-[13px] leading-relaxed text-fd-muted-foreground">
           {blurb}

@@ -29,7 +29,7 @@ function GalleryCard({ ex }: { ex: GalleryExample }) {
         {/* Card bar: diagram icon · diagram type · § standard */}
         <div
           className="flex items-center gap-2 px-3 py-2 font-mono text-xs"
-          style={{ borderBottom: '1px solid var(--fill-muted)', color: 'var(--text-muted)' }}
+          style={{ borderBottom: '1px solid var(--line)', color: 'var(--text-muted)' }}
         >
           <DiagramIcon
             type={ex.diagram as DiagramIconType}
@@ -63,7 +63,7 @@ function GalleryCard({ ex }: { ex: GalleryExample }) {
         {/* Card footer: title + description + use-case pill */}
         <div
           className="flex flex-1 flex-col gap-1.5 p-3"
-          style={{ borderTop: '1px solid var(--fill-muted)' }}
+          style={{ borderTop: '1px solid var(--line)' }}
         >
           <div
             className="text-[14px] font-medium leading-snug"

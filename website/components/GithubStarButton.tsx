@@ -32,7 +32,7 @@ export function GithubStarButton({ stars, size = 'md', source = 'unknown' }: Git
       aria-label={`Star Schematex on GitHub${stars > 0 ? ` — ${stars} stars` : ''}`}
       className={`group inline-flex items-stretch overflow-hidden font-mono ${text} transition hover:border-[color:var(--stroke)]`}
       style={{
-        border: '1px solid var(--fill-muted)',
+        border: '1px solid var(--line)',
         borderRadius: 'var(--r-sm)',
         background: 'var(--fill)',
       }}
@@ -56,7 +56,7 @@ export function GithubStarButton({ stars, size = 'md', source = 'unknown' }: Git
         className="inline-flex items-center gap-1 tabular-nums"
         style={{
           padding: pad,
-          borderLeft: '1px solid var(--fill-muted)',
+          borderLeft: '1px solid var(--line)',
           background: 'var(--fill-muted)',
           color: 'var(--accent-ink)',
         }}
