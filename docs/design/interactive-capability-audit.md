@@ -1,9 +1,9 @@
 # Interactive capability audit — 50 diagram engines
 
-> Status: original implementation baseline; planned modes completed 2026-07-17 Pacific Time
+> Status: first-principles classification; parser-native migration in progress as of 2026-07-18 Pacific Time
 > Scope: direct canvas editing. Editing source in Monaco remains available for every DSL.
 >
-> **Current shipped capability is canonical in `docs/system/INTERACTIVE-EDITING-CAPABILITIES.md`.** This file preserves the first-principles classification and the now-completed build order; its “Current implementation” snapshot is historical.
+> **Current shipped capability is canonical in `docs/system/INTERACTIVE-EDITING-CAPABILITIES.md`.** This file preserves the first-principles classification and migration order; do not infer shipped support from the aspirational table below.
 
 ## Decision model
 
@@ -88,11 +88,11 @@ Legend:
 
 ## Current implementation
 
-As of this audit:
+As of 2026-07-18:
 
-- **Text + drag:** flowchart, state, orgchart, sequence, circuit, floorplan items, genogram.
-- **Text only:** mindmap authored nodes.
-- **Render only:** the remaining 42 engines. This is implementation backlog, not a claim that their text is inherently uneditable.
+- **Parser-native Canvas editing:** flowchart, state, orgchart, sequence, circuit, floorplan, genogram, mindmap, network, decisiontree, fishbone, ERD, UML class, P&ID, FBD, Petri, timeline, timing, breadboard, and siteplan.
+- **Source editing only:** the remaining 30 engines. They render normally but expose no Canvas handles until their parsers produce exact ranges.
+- **Safety rule:** renderer/SVG text matching is not an accepted adapter. Repeated labels and computed render ordering make it ambiguous by construction.
 
 ## Recommended build order
 

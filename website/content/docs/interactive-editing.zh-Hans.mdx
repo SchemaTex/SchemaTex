@@ -214,13 +214,13 @@ import {
 getInteractiveCapabilities('sequence');
 // { type: 'sequence', text: ['title', 'labels'], position: 'move-x', ... }
 
-console.log(INTERACTIVE_DIAGRAM_COUNT);         // 50
-console.log(POSITION_EDITABLE_DIAGRAM_COUNT);   // 40
+console.log(INTERACTIVE_DIAGRAM_COUNT);         // 20
+console.log(POSITION_EDITABLE_DIAGRAM_COUNT);   // 17
 ```
 
-50 个 engine 全部支持安全的 authored title、label 或 structured field editing；其中 40 个还具备位置模型。
+只有具备 parser-native source range 的 20 个 engine 会被声明为 Canvas 可编辑，其中 17 个还具备位置模型。
+其余 30 个 engine 仍可正常 render，也能通过 DSL 源码编辑，但会返回空 `text` 与 `position: "none"`，并且不会生成猜测式 Canvas handle。
 `free`、`move-x`、`cross-axis`、`native-xy` 等 position 值是语义约束，不只是 UI 提示。
-例如 sequence participant 只能水平移动，因为垂直顺序代表时间。
 
 Web agent 和非 JavaScript 工具可以读取同一份 [machine-readable JSON](/api/interactive-capabilities)。
 [完整人工能力矩阵](https://github.com/SchemaTex/SchemaTex/blob/main/docs/system/INTERACTIVE-EDITING-CAPABILITIES.zh-CN.md)
@@ -231,9 +231,10 @@ Web agent 和非 JavaScript 工具可以读取同一份 [machine-readable JSON](
 - 有稳定语义 ID 的对象把展示位置写入 `@overrides`，例如 `pin R1 153.1,73.1`。
 - 日期、房间尺寸、floorplan furniture、site 坐标、breadboard 插孔和 waveform boundary 等 domain geometry 会改写 native DSL token。
 - Authored label 只替换其精确 source range；computed label 或没有安全 rename 契约的 identity 保持只读。
+- Core 会在每个可编辑 scene item 上记录 source revision 和精确 expected text；任一发生变化时，`setLabel` 都会安全拒绝，调用方必须重新 render，不能重试旧 target。
 - 相连线条在拖拽时实时预览，drop 后从 semantic endpoint 重新计算；承诺 orthogonal routing 的 engine 在重新 render 后仍只有水平 / 垂直线段。
 
-可以在 [Interactive Workspace](/playground/interactive) 中测试全部 53 个代表性 specimen。
+[Interactive Workspace](/playground/interactive) 仍覆盖全部 50 种图：其中 23 个 specimen 用来测试 20 个 native Canvas engine，其余案例会明确标记为 source-only，方便测试 render 和 DSL 编辑。
 
 ## 对 AI 安全的编辑
 

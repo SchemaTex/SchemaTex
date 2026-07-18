@@ -68,8 +68,6 @@ function buildCss(t: BaseTheme): string {
 .lt-bb-part-label { font: 600 9px sans-serif; fill: ${t.text}; text-anchor: middle; }
 .lt-bb-wire { fill: none; stroke-width: 2.4; stroke-linecap: round; opacity: 0.95; }
 .lt-bb-wire-dot { stroke: #0f172a; stroke-width: 0.6; }
-.lt-bb-part[data-sx-key] { cursor: grab; }
-.lt-bb-part[data-sx-dragging='true'] { cursor: grabbing; }
 `.trim();
 }
 

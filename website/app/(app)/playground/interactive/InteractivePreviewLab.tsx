@@ -782,19 +782,52 @@ route p1 to 0,10`,
 
 type DiagramId = (typeof DIAGRAMS)[number]['id'];
 
-const INTERACTIVE_EXAMPLES: DiagramExampleOption[] = DIAGRAMS.map((diagram) => ({
-  id: diagram.id,
-  title: diagram.label,
-  type: diagram.label.split(' · ')[0] ?? diagram.label,
-  group: diagram.status.includes('native')
-    ? 'native geometry'
-    : diagram.status.includes('drag')
-      ? 'presentation drag'
-      : 'text editing',
-  status: diagram.status,
-  note: diagram.note,
-  dsl: diagram.dsl,
-}));
+const NATIVE_INTERACTIVE_IDS = new Set<DiagramId>([
+  'flowchart-td',
+  'flowchart-lr',
+  'state',
+  'sequence',
+  'orgchart',
+  'circuit-positional',
+  'circuit-netlist',
+  'floorplan-home',
+  'floorplan-electrical',
+  'genogram',
+  'network',
+  'decisiontree',
+  'fishbone',
+  'erd',
+  'umlclass',
+  'pid',
+  'fbd',
+  'petri',
+  'timeline',
+  'timing',
+  'breadboard',
+  'siteplan',
+  'mindmap',
+]);
+
+const INTERACTIVE_EXAMPLES: DiagramExampleOption[] = DIAGRAMS.map((diagram) => {
+  const native = NATIVE_INTERACTIVE_IDS.has(diagram.id);
+  return {
+    id: diagram.id,
+    title: diagram.label,
+    type: diagram.label.split(' · ')[0] ?? diagram.label,
+    group: native
+      ? diagram.status.includes('native')
+        ? 'native geometry'
+        : diagram.status.includes('drag')
+          ? 'presentation drag'
+          : 'text editing'
+      : 'source-only render tests',
+    status: native ? diagram.status : 'source only',
+    note: native
+      ? diagram.note
+      : 'Canvas handles stay disabled until this parser emits exact source ranges. Edit the DSL on the left to test rendering safely.',
+    dsl: diagram.dsl,
+  };
+});
 
 export function InteractivePreviewLab() {
   const [activeId, setActiveId] = useState<DiagramId>('flowchart-td');

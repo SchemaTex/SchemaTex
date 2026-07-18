@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added — open-source interactive editor and AI-safe editing
 
 - **Public React editor.** `InteractiveSchematexDiagram` is a controlled Client Component with WYSIWYG label editing, semantic drag constraints, live connector previews, selection callbacks, and preview-safe diagnostics. Applications retain ownership of DSL state, persistence, undo, and collaboration.
-- **Complete Canvas capability contract.** All 50 engines support authored title, label, or structured-field editing; 40 also support stable-ID drag or native geometry handles. A single typed registry now drives SDK, website, and AI capability discovery.
+- **Parser-native Canvas capability contract.** Twenty engines expose deterministic authored text/field editing; 17 also support stable-ID drag or native geometry handles. The other 30 remain source-editable and renderable without guessed handles. A single typed registry drives SDK, website, and AI discovery.
 - **AI and MCP editing.** Vercel AI SDK, local stdio MCP, and hosted Streamable HTTP MCP share eight tool manifests, including revision-guarded `inspectDiagram` and atomic `applyDiagramEdits`.
 - **Editable website workspaces.** Full-size homepage, docs, example, and Playground render surfaces use the public editor. The Playground adds a searchable, grouped example rail covering published examples and a 53-specimen interactive test lab.
 - **Developer documentation.** English and Simplified Chinese guides document React, Vanilla DOM, capability discovery, `@overrides`, native handles, and the AI-safe edit loop.
@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Package versions are now `schematex@1.0.0` and `@schematex/mcp@1.0.0`.
 - The React bundle preserves its `"use client"` boundary for Next.js and other React Server Component consumers.
 - The interactive React styling prop is finalized as `canvasClassName`: it names the inner host `<div>` that directly contains the generated SVG.
+- Canvas writes now fail closed: core rejects stale source revisions and mismatched expected text, default renders contain no `data-sx-*` hooks, and non-native engines no longer use SVG/source text matching to infer edit ranges.
 
 ## [0.9.19] — 2026-07-09
 

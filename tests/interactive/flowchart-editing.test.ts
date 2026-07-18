@@ -202,7 +202,8 @@ describe("interactive flowchart vertical slice", () => {
     const source = "flowchart TD\nA --> B\n@overrides\npin B 100,120";
     const target = item(flowchartScene(source), "node:B");
     const once = setPosition(source, target, { x: 220, y: 140 });
-    const twice = setPosition(once.source, target, { x: 260, y: 160 });
+    const freshTarget = item(flowchartScene(once.source), "node:B");
+    const twice = setPosition(once.source, freshTarget, { x: 260, y: 160 });
     expect(twice.diagnostics).toEqual([]);
     expect(twice.source.match(/^pin B /gm)).toHaveLength(1);
     expect(twice.source).toContain("pin B 260,160");

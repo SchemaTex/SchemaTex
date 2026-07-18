@@ -45,7 +45,7 @@ export interface DiagramListItem {
   aliases?: readonly string[];
   /** Use-case / industry / standard search terms (not names). */
   keywords?: readonly string[];
-  interactive: Pick<InteractiveCapabilities, "text" | "position" | "implementation">;
+  interactive: Pick<InteractiveCapabilities, "text" | "position">;
 }
 
 export function listDiagrams(): DiagramListItem[] {

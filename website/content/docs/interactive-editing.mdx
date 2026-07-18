@@ -230,15 +230,16 @@ import {
 getInteractiveCapabilities('sequence');
 // { type: 'sequence', text: ['title', 'labels'], position: 'move-x', ... }
 
-console.log(INTERACTIVE_DIAGRAM_COUNT);         // 50
-console.log(POSITION_EDITABLE_DIAGRAM_COUNT);   // 40
+console.log(INTERACTIVE_DIAGRAM_COUNT);         // 20
+console.log(POSITION_EDITABLE_DIAGRAM_COUNT);   // 17
 ```
 
-All 50 engines expose safe authored title, label, or structured-field editing.
-Forty also expose a position model. A position value such as `free`, `move-x`,
-`cross-axis`, or `native-xy` is a semantic constraint, not a UI hint. For
-example, sequence participants move only horizontally because vertical order
-represents time.
+`INTERACTIVE_DIAGRAM_COUNT` is `20`: only engines with parser-native source
+ranges are advertised as canvas-editable. Seventeen also expose a position
+model. The other 30 engines remain fully renderable and editable through the
+DSL source, but return empty `text` plus `position: "none"` and emit no guessed
+canvas handles. A value such as `free`, `move-x`, `cross-axis`, or `native-xy`
+is a semantic constraint, not a UI hint.
 
 For web agents and non-JavaScript tooling, the same registry is available as
 [machine-readable JSON](/api/interactive-capabilities). The [complete human
@@ -253,12 +254,16 @@ documents each diagram's axes, editable fields, routing behavior, and limits.
   breadboard holes, waveform boundaries—rewrites its native DSL token.
 - Authored labels replace only their exact source range. Computed labels and
   identifiers without a safe rename contract remain read-only.
+- Core records the source revision and exact expected text on every editable
+  scene item. `setLabel` fails closed if either changed; callers must rerender
+  instead of retrying an old target.
 - Connected lines preview during drag and are recomputed from semantic
   endpoints after drop. Engines that promise orthogonal routing remain
   horizontal/vertical after the rerender.
 
-Test all 53 representative specimens in the [interactive
-workspace](/playground/interactive).
+The [interactive workspace](/playground/interactive) includes all 50 diagram
+families: 23 specimens exercise the 20 native canvas engines, while the rest
+are clearly marked source-only for render and DSL testing.
 
 ## AI-safe edits
 

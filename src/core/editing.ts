@@ -1,12 +1,13 @@
 import type { SchematexDiagnostic } from "./diagnostics";
 import type { SceneItem, SourceRange } from "./types";
 import { QUOTE_PAIRS } from "./quotes";
+import { sourceRevision as calculateSourceRevision } from "./revision";
 
 export type PositionEditMode = SceneItem["editable"]["position"];
 
 export type SceneEditTarget =
   | SceneItem
-  | { sourceRange: SourceRange }
+  | { sourceRange: SourceRange; expectedText: string; sourceRevision: number }
   | { key: string; scene: SceneItem[] };
 
 export interface SourceEditResult {
@@ -171,9 +172,30 @@ export function parseMachineSections(source: string): ParsedMachineSections {
   };
 }
 
-function resolveTarget(target: SceneEditTarget): SceneItem | { sourceRange: SourceRange } | undefined {
+function resolveTarget(
+  target: SceneEditTarget
+): SceneItem | { sourceRange: SourceRange; expectedText: string; sourceRevision: number } | undefined {
   if ("scene" in target) return target.scene.find((item) => item.key === target.key);
   return target;
+}
+
+function validateSourceRevision(
+  source: string,
+  target: SceneItem | { sourceRange: SourceRange; expectedText: string; sourceRevision: number }
+): SchematexDiagnostic | undefined {
+  if (target.sourceRevision === undefined) {
+    return diagnostic(
+      "EDIT_REVISION_REQUIRED",
+      "The edit target has no source revision. Render a fresh scene before editing."
+    );
+  }
+  if (target.sourceRevision !== calculateSourceRevision(source)) {
+    return diagnostic(
+      "EDIT_REVISION_STALE",
+      "The diagram changed after this edit target was rendered. Render a fresh scene and try again."
+    );
+  }
+  return undefined;
 }
 
 function quoteLabel(text: string): string {
@@ -217,6 +239,8 @@ export function setLabel(
       diagnostics: [diagnostic("EDIT_LABEL_UNAVAILABLE", "This scene item has no deterministic label edit range.")],
     };
   }
+  const revisionDiagnostic = validateSourceRevision(source, resolved);
+  if (revisionDiagnostic) return { source, diagnostics: [revisionDiagnostic] };
   const range = resolved.sourceRange;
   if (!range || range.start < 0 || range.end < range.start || range.end > source.length) {
     return {
@@ -244,6 +268,34 @@ export function setLabel(
     return {
       source,
       diagnostics: [diagnostic("EDIT_RANGE_INVALID", "One or more label source ranges are missing or stale.")],
+    };
+  }
+  const expectedTexts = "labelSourceRanges" in resolved && resolved.labelSourceRanges?.length
+    ? resolved.labelExpectedTexts
+    : [resolved.expectedText];
+  if (
+    !expectedTexts ||
+    expectedTexts.length !== ranges.length ||
+    expectedTexts.some((expected) => expected === undefined)
+  ) {
+    return {
+      source,
+      diagnostics: [diagnostic(
+        "EDIT_EXPECTED_TEXT_REQUIRED",
+        "The edit target has no expected source text. Render a fresh parser-native scene before editing."
+      )],
+    };
+  }
+  const mismatch = ranges.findIndex(
+    (entry, index) => source.slice(entry.start, entry.end) !== expectedTexts[index]
+  );
+  if (mismatch >= 0) {
+    return {
+      source,
+      diagnostics: [diagnostic(
+        "EDIT_SOURCE_MISMATCH",
+        "The authored text no longer matches this edit target. Render a fresh scene and try again."
+      )],
     };
   }
   const encodedFor = (entry: SourceRange): string =>
@@ -344,6 +396,8 @@ export function setPosition(
       diagnostics: [diagnostic("EDIT_POSITION_UNAVAILABLE", "This scene item does not support position edits.")],
     };
   }
+  const revisionDiagnostic = validateSourceRevision(source, resolved);
+  if (revisionDiagnostic) return { source, diagnostics: [revisionDiagnostic] };
   if (!Number.isFinite(pos.x) || !Number.isFinite(pos.y)) {
     return {
       source,

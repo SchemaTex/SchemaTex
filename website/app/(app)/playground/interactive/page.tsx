@@ -27,7 +27,7 @@ export default function InteractiveEditingPreview() {
           Monaco keeps the edit in its normal undo history.
         </p>
         <p className="mt-3 font-mono text-[11px] uppercase tracking-[0.08em]" style={{ color: 'var(--positive)' }}>
-          40 position-editable engines · 50 title/label-editable engines · 53 test specimens
+          20 parser-native Canvas engines · 17 with safe position editing · all 50 available as test specimens
         </p>
       </div>
 

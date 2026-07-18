@@ -366,6 +366,18 @@ function structuralLiveAttrs(edge: LayoutEdge, scene?: SceneItem[]): Record<stri
   };
 }
 
+function structuralPublicEndpoints(edge: LayoutEdge): { from: string; to: string } {
+  if (
+    edge.relationship.type === "parent-child" &&
+    edge.relationship.to === "_sibship" &&
+    edge.relationship.from.includes("+")
+  ) {
+    const [from, to] = edge.relationship.from.split("+");
+    if (from && to) return { from, to };
+  }
+  return { from: edge.from, to: edge.to };
+}
+
 function renderEdges(edges: LayoutEdge[], scene?: SceneItem[]): string {
   const children: string[] = [];
 
@@ -449,13 +461,14 @@ function renderEdges(edges: LayoutEdge[], scene?: SceneItem[]): string {
 
     const key = `edge:structural:${index}`;
     scene?.push({ key, kind: "edge", path: edge.path, editable: { label: false, position: "none" } });
+    const publicEndpoints = structuralPublicEndpoints(edge);
     children.push(
       group(
         {
           "data-sx-key": scene ? key : undefined,
           class: cssClass,
-          "data-from": edge.from,
-          "data-to": edge.to,
+          "data-from": publicEndpoints.from,
+          "data-to": publicEndpoints.to,
           ...structuralLiveAttrs(edge, scene),
         },
         elements

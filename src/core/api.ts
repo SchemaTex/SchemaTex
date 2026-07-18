@@ -6,7 +6,7 @@ import {
 } from "./dsl-preprocess";
 import { parseMachineSections } from "./editing";
 import { createSourceLocator, findFirstQuotedRange } from "./source-range";
-import { adaptLegacyInteractiveSvg, supportsLegacyInteractive } from "./legacy-interactive";
+import { sourceRevision } from "./revision";
 import { TITLE_SCENE_ID } from "./title-scene";
 import {
   diagnosticFromError,
@@ -451,18 +451,33 @@ function remapRange(
 
 function remapScene(scene: SceneItem[], prepared: PreparedInput): SceneItem[] {
   const locator = createSourceLocator(prepared.source);
-  return scene.map((item) => ({
-    ...item,
-    sourceRange:
+  const revision = sourceRevision(prepared.source);
+  return scene.map((item) => {
+    const sourceRange =
       item.semanticId === TITLE_SCENE_ID && prepared.frontmatterTitleRange
         ? prepared.frontmatterTitleRange
         : item.sourceRange
           ? remapRange(item.sourceRange, prepared, locator.range)
-          : undefined,
-    labelSourceRanges: item.labelSourceRanges?.map((range) =>
+          : undefined;
+    const labelSourceRanges = item.labelSourceRanges?.map((range) =>
       remapRange(range, prepared, locator.range)
-    ),
-    positionSource: item.positionSource
+    );
+    const editableLabel = item.editable.label && sourceRange !== undefined;
+    return {
+      ...item,
+      sourceRevision: revision,
+      sourceRange,
+      expectedText: editableLabel
+        ? prepared.source.slice(sourceRange.start, sourceRange.end)
+        : undefined,
+      labelSourceRanges,
+      labelExpectedTexts: labelSourceRanges?.map((range) =>
+        prepared.source.slice(range.start, range.end)
+      ),
+      editable: editableLabel === item.editable.label
+        ? item.editable
+        : { ...item.editable, label: editableLabel },
+      positionSource: item.positionSource
       ? {
           ...item.positionSource,
           range: remapRange(item.positionSource.range, prepared, locator.range),
@@ -475,7 +490,8 @@ function remapScene(scene: SceneItem[], prepared: PreparedInput): SceneItem[] {
             : {}),
         }
       : undefined,
-  }));
+    };
+  });
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -639,8 +655,7 @@ function renderWithPlugin(
   config?: SchematexConfig
 ): { svg: string; scene?: SceneItem[] } {
   let scene: SceneItem[] | undefined;
-  const legacyScene = supportsLegacyInteractive(plugin.type);
-  if (config?.scene === true && (plugin.capabilities?.scene || legacyScene)) scene = [];
+  if (config?.scene === true && plugin.capabilities?.scene) scene = [];
   const renderConfig: RenderConfig = {
     fontFamily: config?.fontFamily ?? "system-ui, -apple-system, sans-serif",
     fontSize: 12,
@@ -650,23 +665,7 @@ function renderWithPlugin(
     __pins: prepared.pins,
     __source: prepared.text,
   };
-  let svg = plugin.render(prepared.text, renderConfig);
-  if (scene && legacyScene) {
-    let ast: unknown;
-    try {
-      ast = plugin.parse?.(prepared.text);
-    } catch {
-      ast = undefined;
-    }
-    svg = adaptLegacyInteractiveSvg({
-      type: plugin.type,
-      source: prepared.text,
-      svg,
-      ast,
-      scene,
-      pins: prepared.pins,
-    });
-  }
+  const svg = plugin.render(prepared.text, renderConfig);
   return {
     svg,
     scene: scene ? remapScene(scene, prepared) : undefined,

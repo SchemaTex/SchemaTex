@@ -23,9 +23,11 @@ const galleryExamples: DiagramExampleOption[] = allExamples.map((example) => {
     title: example.title,
     type: meta?.name ?? example.diagram,
     group: meta?.cluster ?? 'other',
-    status: capability?.position === 'none'
-      ? 'canvas text editing'
-      : `${capability?.position ?? 'source'} + text editing`,
+    status: !capability || capability.text.length === 0
+      ? 'source editing only'
+      : capability.position === 'none'
+        ? 'canvas text editing'
+        : `${capability.position} + text editing`,
     note: example.description,
     dsl: example.dsl,
   };

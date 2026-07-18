@@ -38,7 +38,7 @@ import type { LegendItem, RenderCtx } from "./geometry/spec";
 type Theme = ResolvedTheme<PlaybookTokens>;
 const r2 = (n: number): number => Math.round(n * 100) / 100;
 
-function buildCss(t: Theme): string {
+function buildCss(t: Theme, interactive = false): string {
   return `
 .sx-pb { font-family: ${DEFAULT_FONT_FAMILY}; }
 .sx-pb-title { font: ${TITLE.weight} ${TITLE.size}px sans-serif; fill: ${t.text}; }
@@ -74,8 +74,7 @@ function buildCss(t: Theme): string {
 .sx-pb-x { fill: none; stroke: ${t.defenseStroke}; stroke-width: 2.6; stroke-linecap: round; }
 .sx-pb-x-text { font: 700 9px sans-serif; fill: ${t.defenseStroke}; }
 .sx-pb-ball { fill: ${t.ballFill}; stroke: ${t.lineBold}; stroke-width: 0.8; }
-.sx-pb-route-handle { fill: #fff; stroke: #2563eb; stroke-width: 2; }
-.sx-pb-anno { font: 600 12px sans-serif; fill: ${t.annotation}; }
+${interactive ? ".sx-pb-route-handle { fill: #fff; stroke: #2563eb; stroke-width: 2; }\n" : ""}.sx-pb-anno { font: 600 12px sans-serif; fill: ${t.annotation}; }
 .sx-pb-legend { font: 11px sans-serif; fill: ${t.annotation}; }
 .sx-pb-error-box { fill: ${t.bg}; stroke: ${t.negative}; stroke-width: 1.5; }
 .sx-pb-error-title { font: 700 13px ui-monospace, Menlo, monospace; fill: ${t.negative}; }
@@ -195,10 +194,13 @@ function renderMove(
 ): string {
   const pts = mv.points.map((p) => ({ x: ctx.X(p.x), y: ctx.Y(p.y) }));
   const endpoint = pts[pts.length - 1];
-  const handleSemanticId = options.coordinate ? `route:${options.index}:endpoint` : undefined;
+  const scene = options.config?.__scene;
+  const handleSemanticId = options.coordinate && scene
+    ? `route:${options.index}:endpoint`
+    : undefined;
   const handleKey = handleSemanticId ? `playbook:${handleSemanticId}` : undefined;
-  if (handleKey && handleSemanticId && endpoint && options.coordinate && options.config?.__scene) {
-    options.config.__scene.push({
+  if (handleKey && handleSemanticId && endpoint && options.coordinate && scene) {
+    scene.push({
       key: handleKey,
       kind: "handle",
       semanticId: handleSemanticId,
@@ -219,12 +221,16 @@ function renderMove(
   const headCls = mv.kind === "motion" ? "sx-pb-motion-fill" : mv.kind === "shot" ? "sx-pb-shot-fill" : "sx-pb-move-fill";
   const parts: string[] = [];
   if (mv.style === "wavy") {
-    parts.push(path({ class: strokeCls, d: wavyPath(pts), "data-sx-live-edge": "true" }));
+    parts.push(path({
+      class: strokeCls,
+      d: wavyPath(pts),
+      "data-sx-live-edge": scene ? "true" : undefined,
+    }));
   } else {
     parts.push(path({
       class: strokeCls,
       d: pts.map((p, i) => `${i === 0 ? "M" : "L"} ${r2(p.x)} ${r2(p.y)}`).join(" "),
-      "data-sx-live-edge": "true",
+      "data-sx-live-edge": scene ? "true" : undefined,
     }));
   }
   if (mv.end === "arrow") parts.push(arrowHead(pts, headCls));
@@ -243,9 +249,9 @@ function renderMove(
     class: "sx-pb-move-g",
     "data-kind": mv.kind,
     "data-player": mv.player,
-    "data-sx-live-explicit": "true",
-    "data-sx-live-start": mv.player,
-    ...(handleSemanticId ? { "data-sx-live-end": handleSemanticId } : {}),
+    "data-sx-live-explicit": scene ? "true" : undefined,
+    "data-sx-live-start": scene ? mv.player : undefined,
+    "data-sx-live-end": scene ? handleSemanticId : undefined,
   }, parts);
 }
 
@@ -277,9 +283,10 @@ function playerSymbol(
   },
 ): string {
   const cx = ctx.X(p.x), cy = ctx.Y(p.y), r = 10;
-  const sceneKey = options.range ? `playbook:player:${p.id}` : undefined;
-  if (sceneKey && options.config?.__scene && options.range) {
-    options.config.__scene.push({
+  const scene = options.config?.__scene;
+  const sceneKey = options.range && scene ? `playbook:player:${p.id}` : undefined;
+  if (sceneKey && scene && options.range) {
+    scene.push({
       key: sceneKey,
       kind: "node",
       semanticId: p.id,
@@ -443,7 +450,7 @@ export function renderPlaybookLayout(lay: PlaybookLayoutResult, config?: RenderC
     [
       titleEl(lay.title),
       descEl(descText),
-      el("style", {}, buildCss(t)),
+      el("style", {}, buildCss(t, Boolean(config?.__scene))),
       rect({ fill: t.bg, x: 0, y: 0, width: W, height: H }),
       el("defs", {}, [clip]),
       textEl({ class: "sx-pb-title", x: r2(W / 2), y: TITLE.y, "text-anchor": "middle" }, lay.title),

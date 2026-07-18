@@ -60,12 +60,14 @@ describe("listDiagrams", () => {
   });
 
   it("uses the canonical interactive capability registry for all engines", () => {
-    expect(INTERACTIVE_DIAGRAM_COUNT).toBe(50);
-    expect(POSITION_EDITABLE_DIAGRAM_COUNT).toBe(40);
+    expect(INTERACTIVE_DIAGRAM_COUNT).toBe(20);
+    expect(POSITION_EDITABLE_DIAGRAM_COUNT).toBe(17);
+    let sourceOnly = 0;
     for (const entry of listDiagrams()) {
       expect(entry.interactive).toEqual(getDiagramCapabilities(entry.type));
-      expect(entry.interactive.text.length).toBeGreaterThan(0);
+      if (entry.interactive.text.length === 0) sourceOnly++;
     }
+    expect(sourceOnly).toBe(30);
   });
 });
 

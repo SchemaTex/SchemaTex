@@ -40,6 +40,7 @@ export {
   INTERACTIVE_DIAGRAM_COUNT,
   POSITION_EDITABLE_DIAGRAM_COUNT,
   getInteractiveCapabilities,
+  isInteractiveDiagramType,
   type InteractiveCapabilities,
   type InteractivePositionCapability,
   type InteractiveTextCapability,

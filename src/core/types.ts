@@ -773,6 +773,8 @@ export interface SceneItem {
   /** Render-unique identity. This, rather than semanticId, is written to SVG. */
   key: string;
   kind: "node" | "edge" | "label" | "group" | "handle";
+  /** Revision of the exact source from which this derived item was rendered. */
+  sourceRevision?: number;
   /** Stable DSL identity used by pin/reconcile operations when available. */
   semanticId?: string;
   label?: string;
@@ -783,8 +785,12 @@ export interface SceneItem {
    */
   labelWrite?: "encoded" | "verbatim" | "identifier" | "newick-bare" | "newick-quoted";
   sourceRange?: SourceRange;
+  /** Exact authored bytes at sourceRange when this item was rendered. */
+  expectedText?: string;
   /** All identity references that must be renamed atomically with this label. */
   labelSourceRanges?: SourceRange[];
+  /** Exact authored bytes corresponding one-to-one with labelSourceRanges. */
+  labelExpectedTexts?: string[];
   bbox?: { x: number; y: number; width: number; height: number };
   path?: string;
   /**
@@ -849,7 +855,7 @@ export interface RenderConfig {
   __scene?: SceneItem[];
   /** @internal Parsed @overrides pins, blanked out before the diagram parser. */
   __pins?: Map<string, { x: number; y: number }>;
-  /** @internal Exact preprocessed DSL used by compatibility scene adapters. */
+  /** @internal Exact preprocessed DSL available to engine-specific renderers. */
   __source?: string;
 }
 

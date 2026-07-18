@@ -459,8 +459,8 @@ try {
   );
   console.log("e2e: mindmap label-only editing passed");
 
-  // Keep the remaining common ChatDiagram engines visible as compatibility
-  // probes even when they do not yet expose deterministic scene edits.
+  // Keep common ChatDiagram engines visible as render regression probes in
+  // addition to the focused interaction assertions above.
   for (const exampleId of ["network", "decisiontree", "fishbone", "erd", "umlclass"]) {
     await page.locator(`[data-example-id="${exampleId}"]`).click();
     await page.locator(".dot-grid svg").waitFor({ state: "visible" });
