@@ -119,15 +119,18 @@ export function DiagramEditor({ initialDsl }: { initialDsl: string }) {
         console.log(detail.reason, detail.item?.semanticId);
       }}
       debounceMs={120}
+      canvasClassName="diagramCanvas"
     />
   );
 }
 ```
 
-This component is browser-only and controlled: persistence, undo, source-code
-editing, and collaboration stay in your application. See [Interactive
-editing](/docs/interactive-editing) for capability discovery and the Vanilla
-DOM API.
+This component is controlled: persistence, undo, source-code editing, and
+collaboration stay in your application. `canvasClassName` applies to the inner
+host `<div>` that directly contains the generated SVG; it does not mutate the
+SVG's class attribute. See [Interactive editing](/docs/interactive-editing) for
+the complete Props table, styling contract, event semantics, capability
+discovery, and Vanilla DOM API.
 
 ## Tree-shakable imports
 

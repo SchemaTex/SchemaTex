@@ -98,11 +98,21 @@ import { InteractiveSchematexDiagram } from 'schematex/react';
 
 export function DiagramEditor({ initialDsl }: { initialDsl: string }) {
   const [dsl, setDsl] = useState(initialDsl);
-  return <InteractiveSchematexDiagram value={dsl} onChange={setDsl} debounceMs={120} />;
+  return (
+    <InteractiveSchematexDiagram
+      value={dsl}
+      onChange={setDsl}
+      debounceMs={120}
+      canvasClassName="diagramCanvas"
+    />
+  );
 }
 ```
 
-它是 browser-only 的受控组件：持久化、undo、源码编辑和协作仍由你的应用负责。能力发现与 Vanilla DOM API 见 [Interactive Editing](/docs/interactive-editing)。
+它是受控组件：持久化、undo、源码编辑和协作仍由你的应用负责。
+`canvasClassName` 作用于直接包含生成 SVG 的内部 host `<div>`，不会修改 SVG 自己的 class attribute。
+完整 Props 表、样式契约、event 语义、能力查询与 Vanilla DOM API 见
+[Interactive Editing](/docs/interactive-editing)。
 
 ## 可 tree-shaking 的导入
 

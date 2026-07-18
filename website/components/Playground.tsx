@@ -477,7 +477,7 @@ export function Playground({ initial, height = 560, fill = false, syncHash = fal
               debounceMs={120}
               ariaLabel="Interactive diagram preview"
               className="flex h-full w-full items-center justify-center focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--accent)]"
-              svgClassName="flex h-full w-full items-center justify-center [&_svg]:block [&_svg]:max-h-full [&_svg]:max-w-full"
+              canvasClassName="flex h-full w-full items-center justify-center [&_svg]:block [&_svg]:max-h-full [&_svg]:max-w-full"
               style={{ transform: `scale(${zoom / 100})`, transformOrigin: 'center center' }}
             />
             {error && (

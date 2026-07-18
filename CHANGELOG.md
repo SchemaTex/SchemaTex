@@ -16,11 +16,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **AI and MCP editing.** Vercel AI SDK, local stdio MCP, and hosted Streamable HTTP MCP share eight tool manifests, including revision-guarded `inspectDiagram` and atomic `applyDiagramEdits`.
 - **Editable website workspaces.** Full-size homepage, docs, example, and Playground render surfaces use the public editor. The Playground adds a searchable, grouped example rail covering published examples and a 53-specimen interactive test lab.
 - **Developer documentation.** English and Simplified Chinese guides document React, Vanilla DOM, capability discovery, `@overrides`, native handles, and the AI-safe edit loop.
+- **LLM discovery surfaces.** `schematex.js.org/llms.txt`, `llms-full.txt`, per-page `.md` mirrors, and a machine-readable interactive capability endpoint expose the same public contracts without requiring agents to scrape rendered HTML.
 
 ### Changed
 
 - Package versions are now `schematex@1.0.0` and `@schematex/mcp@1.0.0`.
 - The React bundle preserves its `"use client"` boundary for Next.js and other React Server Component consumers.
+- The interactive React styling prop is finalized as `canvasClassName`: it names the inner host `<div>` that directly contains the generated SVG.
 
 ## [0.9.19] — 2026-07-09
 
@@ -155,7 +157,7 @@ One new engine for the highest-frequency "put things side by side and decide" re
 - **`tchart` / `ychart`** — 2–N compare/contrast columns, rendered as **distinct rounded cards** with per-column coloured headers.
 - **`pros-cons`** — green ✓ / red ✗ valence with pill headers and circular badges.
 - **`double-bubble`** — the Thinking-Maps compare/contrast organizer: two side-coloured centres, shared traits in the middle tied to both, unique traits **fanned radially** around each centre.
-- Distinct from [`matrix`](https://schematex.dev/docs/matrix) (the 2×2 / BCG / quadrant engine that *positions* items on two axes) — `comparison` lays out a **table** and computes the decision.
+- Distinct from [`matrix`](https://schematex.js.org/docs/matrix) (the 2×2 / BCG / quadrant engine that *positions* items on two axes) — `comparison` lays out a **table** and computes the decision.
 - Unified keyword DSL (header aliases, pipe-form cells, mode inference, CJK quotes); `default` / `monochrome` / `dark` themes; semantic SVG (`data-diagram-type` / `data-mode` / `data-variant`). Validates the missing-column / no-option / wrong-mode / undeclared-option / out-of-set-baseline errors LLMs make.
 - Reference standard ([51-COMPARISON-STANDARD.md](docs/reference/51-COMPARISON-STANDARD.md)), syntax docs, 3 worked website examples, 4 gallery SVGs, AI profile + registry entry, and a domain icon. 23 e2e tests covering the computation, tie-ranking, cell parsing, and per-mode validation.
 

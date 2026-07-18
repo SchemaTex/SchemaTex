@@ -22,6 +22,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const staticRoutes: MetadataRoute.Sitemap = [
     ...homeRoutes,
     { url: `${SITE}/playground`, priority: 0.9, lastModified: NOW, changeFrequency: 'weekly' },
+    { url: `${SITE}/playground/interactive`, priority: 0.9, lastModified: NOW, changeFrequency: 'weekly' },
     { url: `${SITE}/gallery`, priority: 0.8, lastModified: NOW, changeFrequency: 'weekly' },
     { url: `${SITE}/examples`, priority: 0.7, lastModified: NOW, changeFrequency: 'weekly' },
     { url: `${SITE}/changelog`, priority: 0.6, lastModified: NOW, changeFrequency: 'weekly' },

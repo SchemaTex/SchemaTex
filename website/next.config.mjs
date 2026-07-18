@@ -22,11 +22,20 @@ const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
 const config = {
   reactStrictMode: true,
   async rewrites() {
-    if (!GA_ID) return [];
-    return [
-      { source: '/js/gtag.js', destination: `https://www.googletagmanager.com/gtag/js?id=${GA_ID}` },
-      { source: '/g/collect', destination: 'https://www.google-analytics.com/g/collect' },
+    const routes = [
+      // Clean Markdown mirrors for coding agents and plain-text clients.
+      { source: '/docs.md', destination: '/llms.mdx/docs' },
+      { source: '/docs/:path*.md', destination: '/llms.mdx/docs/:path*' },
+      { source: '/:lang/docs.md', destination: '/llms.mdx/:lang/docs' },
+      { source: '/:lang/docs/:path*.md', destination: '/llms.mdx/:lang/docs/:path*' },
     ];
+    if (GA_ID) {
+      routes.push(
+        { source: '/js/gtag.js', destination: `https://www.googletagmanager.com/gtag/js?id=${GA_ID}` },
+        { source: '/g/collect', destination: 'https://www.google-analytics.com/g/collect' },
+      );
+    }
+    return routes;
   },
   transpilePackages: ['schematex'],
   serverExternalPackages: ['@resvg/resvg-js'],

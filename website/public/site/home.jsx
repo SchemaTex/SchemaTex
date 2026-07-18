@@ -1,4 +1,4 @@
-// Home page — schematex.dev landing
+// Home page — schematex.js.org landing
 const { useState, useEffect, useRef } = React;
 
 // ---------- Tiny SVG diagram stubs (monoline, on-brand) ----------

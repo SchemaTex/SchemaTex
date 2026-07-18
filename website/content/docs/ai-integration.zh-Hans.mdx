@@ -5,6 +5,10 @@ description: 通过 Vercel AI SDK、托管 MCP 端点或 @schematex/mcp npm 包�
 
 <MCPConnectCard />
 
+Machine client 无需抓取渲染后的网页即可发现完整公共接口：[`/llms.txt`](/llms.txt) 是精选索引，
+[`/llms-full.txt`](/llms-full.txt) 包含完整英文文档，每个 docs URL 都有 `.md` mirror，
+[`/api/interactive-capabilities`](/api/interactive-capabilities) 则以 JSON 输出 canonical editor capability registry。
+
 ## TL;DR
 
 Schematex 内置了专为 LLM 设计的工具层——八个工具让 AI 代理能够**发现**、**生成**、**校验**、**渲染**、**检查**并**安全编辑**图表。三种集成路径使用同一套契约：

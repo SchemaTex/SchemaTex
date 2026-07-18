@@ -89,7 +89,8 @@ export interface InteractiveSchematexDiagramProps {
   /** Delay expensive re-renders while a source editor is typing. Direct canvas edits remain guarded against stale scenes. */
   debounceMs?: number;
   className?: string;
-  svgClassName?: string;
+  /** Class applied to the inner canvas host div that contains the generated SVG. */
+  canvasClassName?: string;
   style?: CSSProperties;
   ariaLabel?: string;
   labelEditorClassName?: string;
@@ -197,7 +198,7 @@ export function InteractiveSchematexDiagram({
   readOnly = false,
   debounceMs = 0,
   className,
-  svgClassName,
+  canvasClassName,
   style,
   ariaLabel = "Editable Schematex diagram",
   labelEditorClassName = "sx-label-editor",
@@ -337,10 +338,10 @@ export function InteractiveSchematexDiagram({
   const svgHost = useMemo(() => (
     <div
       ref={hostRef}
-      className={svgClassName}
+      className={canvasClassName}
       dangerouslySetInnerHTML={{ __html: result.svg }}
     />
-  ), [result.svg, svgClassName]);
+  ), [canvasClassName, result.svg]);
 
   return (
     <div

@@ -1,10 +1,22 @@
 ---
 title: Interactive Editing
-description: 集成 Schematex 开源 React / Vanilla Canvas Editor，查询各 diagram 的能力，并安全持久化 DSL 修改。
+description: 集成 Schematex 开源 React / Vanilla Editor，掌握完整 API，并安全持久化 DSL 修改。
 ---
 
 Schematex 1.0 把 Editor 和 Renderer 放在同一个开源仓库、同一个 npm 包里。
-每次 Canvas 操作最终都生成普通 DSL，不存在私有文档模型，也不需要同步第二套 JSON。
+每次 Canvas 操作最终都生成普通 DSL：不存在私有文档模型，也不需要同步第二套 JSON。
+
+## 安装与运行环境
+
+```bash
+npm install schematex
+```
+
+`InteractiveSchematexDiagram` 要求 `schematex >= 1.0.0`、React 18 或更新版本。
+React 和 React DOM 是 optional peer dependency，因此只使用 core renderer 的项目无需安装它们。
+
+不需要导入 Schematex stylesheet。组件会注入 selection、cursor 和 label editor 所需的最小样式；
+应用自己的布局和视觉样式通过 `className`、`canvasClassName` 与 `labelEditorStyle` 控制。
 
 ## React 快速开始
 
@@ -22,16 +34,145 @@ export function Editor({ initialDsl }: { initialDsl: string }) {
       value={dsl}
       onChange={(nextDsl, { reason, item }) => {
         setDsl(nextDsl);
-        // 在这里保存 nextDsl，或接入你自己的 undo / collaboration model。
+        // 保存 nextDsl，或接入你自己的 undo / collaboration model。
         console.log(reason, item?.semanticId);
       }}
-      debounceMs={120}
+      onSelect={(item) => console.log(item?.key)}
+      ariaLabel="架构图编辑器"
     />
   );
 }
 ```
 
-这个组件是 controlled、browser-only 的。它负责 selection、手势、连线实时预览和所见即所得 label input；你的应用负责源码 state、持久化、undo、权限与协作。
+这是 controlled component。它负责 selection、pointer gesture、连线实时预览和所见即所得的
+label input；你的应用负责 source state、持久化、undo、权限和协作。
+
+Next.js App Router 中应像上例一样从 Client Component 渲染。Vite 等纯客户端 React 应用使用
+同一个组件，但不需要 `'use client'`。无需额外使用 `dynamic(..., { ssr: false })`。
+
+## 完整 React API
+
+```ts
+interface InteractiveEditDetail {
+  reason: 'label' | 'position';
+  item: SceneItem | null;
+}
+
+interface InteractiveSchematexDiagramProps {
+  value: string;
+  onChange: (value: string, detail: InteractiveEditDetail) => void;
+  type?: DiagramType;
+  theme?: string;
+  fontFamily?: string;
+  padding?: number;
+  readOnly?: boolean;
+  debounceMs?: number;
+  className?: string;
+  canvasClassName?: string;
+  style?: React.CSSProperties;
+  ariaLabel?: string;
+  labelEditorClassName?: string;
+  labelEditorStyle?: React.CSSProperties;
+  onSelect?: (item: SceneItem | null) => void;
+  onRender?: (result: SchematexRenderResult) => void;
+  onError?: (error: Error) => void;
+}
+```
+
+| Prop | 默认值 | 契约 |
+|---|---|---|
+| `value` | 必填 | Controlled Schematex DSL。必须在 `onChange` 后更新；组件不会持有 canonical document。 |
+| `onChange` | 必填 | label commit 或 position gesture 完成后调用。第二个参数说明修改原因和当前语义对象。 |
+| `type` | 自动检测 | 可选 canonical diagram type。外层 UI 已选定类型时传入。 |
+| `theme` | renderer 默认值 | 传给 `renderResult()` 的 theme 名称。 |
+| `fontFamily` | renderer 默认值 | 传给 diagram renderer 的字体。 |
+| `padding` | engine 默认值 | SVG 外边距，单位为像素。 |
+| `readOnly` | `false` | 保留相同受控渲染面，但关闭 scene metadata、selection、label editing 和 dragging。 |
+| `debounceMs` | `0` | 外部 source editor 修改 `value` 时延迟昂贵的 render；Canvas commit 仍有 revision guard。 |
+| `className` | 无 | 外层、可 focus 的 editor region 的 class。 |
+| `canvasClassName` | 无 | 直接包含生成 SVG 的内部 Canvas host `<div>` 的 class。它不是 SVG 自身的 class。 |
+| `style` | 无 | 外层 editor region 的 inline style。 |
+| `ariaLabel` | `Editable Schematex diagram` | editor region 的 accessible name，建议改成当前文档的具体名称。 |
+| `labelEditorClassName` | `sx-label-editor` | 临时 WYSIWYG `<input>` 的 class；该 input 会挂到 `document.body`。 |
+| `labelEditorStyle` | 无 | 在测量所得的 WYSIWYG input 样式之后合并的 inline override。 |
+| `onSelect` | no-op | 选中时返回 `SceneItem`，selection 清空时返回 `null`。 |
+| `onRender` | no-op | 每次 render 都返回 `SchematexRenderResult`，包括 invalid preview result。 |
+| `onError` | no-op | parse、layout 或 render 失败时调用；可见的 diagnostic fallback SVG 仍会保留。 |
+
+`SceneItem` key 是当前 source revision 中稳定的编辑 target。不要持久化 raw source range，
+也不要假设结构性 DSL 修改后 item index 仍然不变。
+
+## 尺寸与样式
+
+`canvasClassName` 命名的是 SVG host，而不是 SVG 本身。要制作 responsive Canvas，选择它的直接 SVG 子元素：
+
+```tsx
+<InteractiveSchematexDiagram
+  value={dsl}
+  onChange={setDsl}
+  className="diagramEditor"
+  canvasClassName="diagramCanvas"
+/>
+```
+
+```css
+.diagramEditor {
+  min-height: 28rem;
+  border: 1px solid #e8eef6;
+  overflow: auto;
+}
+
+.diagramCanvas {
+  min-height: inherit;
+  display: grid;
+  place-items: center;
+}
+
+.diagramCanvas > svg {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+}
+```
+
+WYSIWYG input 会 portal 到 `document.body`，因此 Canvas scroll 或容器裁剪 overflow 时仍能保持对齐。
+按 Enter 或 blur 提交，按 Escape 取消。
+
+## 持久化、undo 与 autosave
+
+把每次 `onChange` 的值当作下一份完整文档。最小 undo / autosave 接法如下：
+
+```tsx
+const [dsl, setDsl] = useState(initialDsl);
+const history = useRef<string[]>([initialDsl]);
+
+function commit(nextDsl: string) {
+  history.current.push(nextDsl);
+  setDsl(nextDsl);
+  queueAutosave(nextDsl);
+}
+
+<InteractiveSchematexDiagram value={dsl} onChange={commit} />;
+```
+
+协作场景可以广播返回的 DSL，或把修改翻译到现有 document / CRDT layer。
+权限用 `readOnly` 控制；组件本身不负责 authentication 或服务端 authorization。
+
+## Error 与 preview 契约
+
+Editor 使用 `renderResult()`，不会把错误直接抛进 React tree。非法 DSL 会产生可见的 diagnostic SVG，
+同时调用 `onError`。应用还需要 `ok`、`status`、`diagnostics` 或识别出的 diagram type 时，使用 `onRender`：
+
+```tsx
+<InteractiveSchematexDiagram
+  value={dsl}
+  onChange={setDsl}
+  onRender={(result) => setIsValid(result.ok)}
+  onError={(error) => reportEditorError(error)}
+/>
+```
+
+“拿到了 SVG string”不代表 DSL 有效。保存、导出、telemetry 和 billing 决策都应检查 result status。
 
 ## Vanilla DOM
 
@@ -46,7 +187,10 @@ host.innerHTML = result.svg;
 if (result.ok) {
   attachInteraction(host.querySelector('svg')!, {
     getSource: () => source,
-    getScene: () => ({ rev: sourceRevision(source), items: result.scene ?? [] }),
+    getScene: () => ({
+      rev: sourceRevision(source),
+      items: result.scene ?? [],
+    }),
     onSourceChange: (nextSource) => {
       source = nextSource;
       rerender();
@@ -55,7 +199,8 @@ if (result.ok) {
 }
 ```
 
-除非你要把手势接入已有的非 React Canvas，否则优先使用 React 组件。`attachInteraction()` 是低层 API，commit 后必须由调用方重新 render。
+除非需要把 gesture 接入已有的非 React Canvas，否则优先使用 React 组件。
+`attachInteraction()` 是低层 API：调用方必须在 commit 后重新 render，并在替换 SVG 前 detach listener。
 
 ## 能力查询
 
@@ -67,22 +212,28 @@ import {
 } from 'schematex';
 
 getInteractiveCapabilities('sequence');
-// { text: 'authored', position: 'x', implementation: 'native', ... }
+// { type: 'sequence', text: ['title', 'labels'], position: 'move-x', ... }
 
 console.log(INTERACTIVE_DIAGRAM_COUNT);         // 50
 console.log(POSITION_EDITABLE_DIAGRAM_COUNT);   // 40
 ```
 
-50 个 engine 全部支持安全的 authored title、label 或结构化字段编辑；其中 40 个还具备位置模型。`x`、`y`、`xy`、`cross-axis`、`native-handles` 是语义约束，不只是 UI 提示。例如 sequence participant 只能水平移动，因为垂直顺序代表时间。
+50 个 engine 全部支持安全的 authored title、label 或 structured field editing；其中 40 个还具备位置模型。
+`free`、`move-x`、`cross-axis`、`native-xy` 等 position 值是语义约束，不只是 UI 提示。
+例如 sequence participant 只能水平移动，因为垂直顺序代表时间。
+
+Web agent 和非 JavaScript 工具可以读取同一份 [machine-readable JSON](/api/interactive-capabilities)。
+[完整人工能力矩阵](https://github.com/SchemaTex/SchemaTex/blob/main/docs/system/INTERACTIVE-EDITING-CAPABILITIES.zh-CN.md)
+说明每种图的拖拽方向、可编辑字段、routing 行为和限制。
 
 ## 修改如何持久化
 
 - 有稳定语义 ID 的对象把展示位置写入 `@overrides`，例如 `pin R1 153.1,73.1`。
-- 日期、房间尺寸、floorplan furniture、site 坐标、breadboard 插孔和 waveform boundary 等领域 geometry 会改写原生 DSL token。
-- Authored label 只替换其精确 source range。计算文字或没有安全 rename 契约的 identity 保持只读。
-- 相连线条在拖拽时实时预览，drop 后从语义 endpoint 重新计算。承诺正交 routing 的 engine 在重新 render 后仍只有水平 / 垂直线段。
+- 日期、房间尺寸、floorplan furniture、site 坐标、breadboard 插孔和 waveform boundary 等 domain geometry 会改写 native DSL token。
+- Authored label 只替换其精确 source range；computed label 或没有安全 rename 契约的 identity 保持只读。
+- 相连线条在拖拽时实时预览，drop 后从 semantic endpoint 重新计算；承诺 orthogonal routing 的 engine 在重新 render 后仍只有水平 / 垂直线段。
 
-每种图的精确拖拽方向与限制见[完整能力矩阵](https://github.com/SchemaTex/SchemaTex/blob/main/docs/system/INTERACTIVE-EDITING-CAPABILITIES.zh-CN.md)，也可以在 [Interactive Workspace](/playground/interactive) 中测试 53 个代表性 specimen。
+可以在 [Interactive Workspace](/playground/interactive) 中测试全部 53 个代表性 specimen。
 
 ## 对 AI 安全的编辑
 
@@ -99,4 +250,22 @@ if (inspected.ok) {
 }
 ```
 
-整个 batch 是 atomic 的：revision 过期、target 不存在、操作不安全或最终 render 无效，都会返回原始 DSL，不会留下半次修改。
+整个 batch 是 atomic 的：revision 过期、target 不存在、操作不安全或最终 render 无效，
+都会返回原始 DSL，不会留下半次修改。
+
+## 只读 React renderer
+
+Canvas 绝不应该修改 DSL 时，使用更小的只读组件：
+
+```tsx
+import { SchematexDiagram } from 'schematex/react';
+
+<SchematexDiagram
+  dsl={dsl}
+  type="circuit"
+  onError={(error) => console.error(error)}
+/>;
+```
+
+Schematex 使用 AGPL-3.0。闭源商业产品在分发前应阅读
+[license 说明](/docs/ai-integration#licensing-notes)。
