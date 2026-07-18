@@ -436,7 +436,7 @@ Constants (px):
 Schematex has two visual stances:
 
 - **`IndustrialTokens`** — circuit / ladder / SLD / logic / FBD / SFC: *forced monochrome* under IEEE/IEC, no colourful variant by design.
-- **`BaseTheme` + a semantic extension** — most others (flowchart, c4, petri, sequence): a tasteful house palette in `default`, true black/white in `monochrome`, Catppuccin in `dark`.
+- **`BaseTheme` + a semantic extension** — most others (flowchart, c4, petri, sequence): a tasteful house palette in `default`, true black/white in `monochrome`, Schematex slate/blue in `dark`.
 
 **`umlclass` belongs to the second group.** It is a software-engineering notation, not an IEC/IEEE compliance drawing; UML textbooks are black-and-white (so `monochrome` must reproduce the textbook look faithfully) but tools like PlantUML, draw.io, and StarUML use tasteful colour, so a `default` colour theme is legitimate and useful for the web gallery. This mirrors how its UML siblings `usecase` (§29) and `sequence` (§33) and its layout-cousin `c4` (§30) handle theming. The reserved-accent discipline here: **blue for the classifier body/header, the neutral stroke for relationship lines; no colour carries load-bearing meaning** (relationship semantics ride on *adornment shape*, which is the whole point of UML's notation and degrades perfectly to monochrome).
 
@@ -507,22 +507,22 @@ export interface UmlClassTokens {
 
 > The §34/§15 principle applies: in `monochrome`, every distinction that rides on colour in `default` falls back to shape/weight — and UML is the ideal case because **its relationship semantics already ride entirely on adornment shape** (diamond vs triangle vs arrow, filled vs hollow, solid vs dashed). The monochrome theme is therefore the *reference* render, not a degraded one.
 
-**`dark`** — Catppuccin Mocha, mirroring `DARK_THEME`:
+**`dark`** — Schematex slate/blue dark palette, mirroring `DARK_THEME`:
 
 | Token | Value |
 |-------|-------|
-| `classifierFill` | `#313244` (`fill`) |
-| `classifierStroke` | `#cdd6f4` (`stroke`) |
-| `headerFill` | `#45475a` |
-| `nameText` | `#cdd6f4` |
-| `stereotypeText` | `#a6adc8` |
-| `memberText` | `#cdd6f4` |
-| `visibilityText` | `#a6adc8` |
-| `relationStroke` | `#cdd6f4` |
-| `adornmentFill` | `#cdd6f4` |
-| `adornmentHollowFill` | `#313244` |
+| `classifierFill` | `#172033` (`fill`) |
+| `classifierStroke` | `#f8fafc` (`stroke`) |
+| `headerFill` | `#202b3d` |
+| `nameText` | `#f8fafc` |
+| `stereotypeText` | `#cbd5e1` |
+| `memberText` | `#f8fafc` |
+| `visibilityText` | `#cbd5e1` |
+| `relationStroke` | `#f8fafc` |
+| `adornmentFill` | `#f8fafc` |
+| `adornmentHollowFill` | `#172033` |
 | `edgeLabel` | `#bac2de` |
-| `abstractAccent` | `#89b4fa` (`accent`) |
+| `abstractAccent` | `#6d8fff` (`accent`) |
 
 ### 6.4 Stroke & type scale (reuse `theme.ts` constants)
 

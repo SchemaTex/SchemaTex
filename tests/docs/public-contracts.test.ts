@@ -25,7 +25,9 @@ const REACT_EDITOR_PROPS = [
   "ariaLabel",
   "labelEditorClassName",
   "labelEditorStyle",
+  "selectedKey",
   "onSelect",
+  "onPreviewChange",
   "onRender",
   "onError",
 ] as const;

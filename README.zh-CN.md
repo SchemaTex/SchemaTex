@@ -97,7 +97,7 @@ export function DiagramEditor() {
 }
 ```
 
-20 个具备 parser-native range 的 engine 支持确定性的 Canvas 编辑，其中 17 个还支持稳定 ID 拖拽或 native geometry handle。其余 30 个仍可正常 render 和通过 DSL 源码编辑，但不会生成猜测式 Canvas handle。详见 [Interactive Editing 指南](https://schematex.js.org/docs/interactive-editing) 和 [在线测试 workspace](https://schematex.js.org/playground/interactive)。
+20 个具备 parser-native range 的 engine 支持确定性的 Canvas 编辑，其中 17 个还支持稳定 ID 拖拽或 native geometry handle。其余 30 个仍可正常 render 和通过 DSL 源码编辑，但不会生成猜测式 Canvas handle。详见 [Interactive Editing 指南](https://schematex.js.org/docs/interactive-editing) 和 [在线测试 workspace](https://schematex.js.org/playground)。
 
 开发型 LLM 可以从 [`llms.txt`](https://schematex.js.org/llms.txt) 开始，通过 [`llms-full.txt`](https://schematex.js.org/llms-full.txt) 读取完整 Markdown 文档，或查询 [machine-readable interactive capability registry](https://schematex.js.org/api/interactive-capabilities)。任意 docs URL 末尾加 `.md` 即可获得干净的 Markdown。
 

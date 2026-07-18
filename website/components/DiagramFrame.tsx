@@ -25,14 +25,12 @@ export function DiagramFrame({
       style={{
         border: '1px solid var(--line-strong)',
         borderRadius: 'var(--r)',
-        // Force white surface so the always-light-theme schematex SVG (with dark
-        // strokes/text) stays readable when the site is in dark mode.
-        background: '#ffffff',
+        background: 'var(--fill)',
         ...style,
       }}
     >
       <div
-        className="flex shrink-0 items-center gap-3 px-3 py-2"
+        className="diagram-frame-header flex shrink-0 items-center gap-3 px-3 py-2"
         style={{ borderBottom: '1px solid var(--line)' }}
       >
         <div className="flex gap-1.5">
@@ -49,7 +47,7 @@ export function DiagramFrame({
             style={{ background: 'var(--fill-muted)' }}
           />
         </div>
-        <div className="font-mono text-[13px] text-fd-foreground">
+        <div className="diagram-frame-title font-mono text-[13px] text-fd-foreground">
           {diagram}
           <span className="diagram-frame-standard">
             <span className="mx-2 opacity-40">·</span>
@@ -57,7 +55,7 @@ export function DiagramFrame({
           </span>
         </div>
         {actions ? (
-          <div className="ml-auto flex items-center gap-1.5 font-mono">
+          <div className="diagram-frame-actions ml-auto flex items-center gap-1.5 font-mono">
             {actions}
           </div>
         ) : null}

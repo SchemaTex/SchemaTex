@@ -79,7 +79,9 @@ interface InteractiveSchematexDiagramProps {
   ariaLabel?: string;
   labelEditorClassName?: string;
   labelEditorStyle?: React.CSSProperties;
+  selectedKey?: string | null;
   onSelect?: (item: SceneItem | null) => void;
+  onPreviewChange?: (value: string | null, detail: InteractiveEditDetail) => void;
   onRender?: (result: SchematexRenderResult) => void;
   onError?: (error: Error) => void;
 }
@@ -101,7 +103,9 @@ interface InteractiveSchematexDiagramProps {
 | `ariaLabel` | `Editable Schematex diagram` | Accessible name for the editor region. Use a document-specific label. |
 | `labelEditorClassName` | `sx-label-editor` | Class on the temporary WYSIWYG `<input>` rendered into `document.body`. |
 | `labelEditorStyle` | none | Inline overrides merged after the measured WYSIWYG input styles. |
+| `selectedKey` | uncontrolled | Optional controlled `SceneItem.key`. Use it to mirror a source-editor cursor or an external inspector onto the canvas selection. |
 | `onSelect` | no-op | Called with the selected `SceneItem`, or `null` when selection clears. |
+| `onPreviewChange` | no-op | Emits a revision-guarded transient source document while a position gesture is active. Render it in a source editor, but persist only `onChange`; `null` discards a cancelled preview. |
 | `onRender` | no-op | Called with every new `SchematexRenderResult`, including invalid preview results. |
 | `onError` | no-op | Called when parsing, layout, or rendering fails; the diagnostic fallback SVG remains visible. |
 
@@ -228,7 +232,12 @@ import {
 } from 'schematex';
 
 getInteractiveCapabilities('sequence');
-// { type: 'sequence', text: ['title', 'labels'], position: 'move-x', ... }
+// {
+//   type: 'sequence',
+//   text: ['title', 'labels'],
+//   position: 'move-x',
+//   reason: 'Horizontal lifeline order is editable, while the vertical axis …'
+// }
 
 console.log(INTERACTIVE_DIAGRAM_COUNT);         // 20
 console.log(POSITION_EDITABLE_DIAGRAM_COUNT);   // 17
@@ -240,6 +249,8 @@ model. The other 30 engines remain fully renderable and editable through the
 DSL source, but return empty `text` plus `position: "none"` and emit no guessed
 canvas handles. A value such as `free`, `move-x`, `cross-axis`, or `native-xy`
 is a semantic constraint, not a UI hint.
+`reason` explains the standard or layout rule behind that constraint and is
+the canonical copy for product UI, documentation, and AI integrations.
 
 For web agents and non-JavaScript tooling, the same registry is available as
 [machine-readable JSON](/api/interactive-capabilities). The [complete human
@@ -261,9 +272,9 @@ documents each diagram's axes, editable fields, routing behavior, and limits.
   endpoints after drop. Engines that promise orthogonal routing remain
   horizontal/vertical after the rerender.
 
-The [interactive workspace](/playground/interactive) includes all 50 diagram
-families: 23 specimens exercise the 20 native canvas engines, while the rest
-are clearly marked source-only for render and DSL testing.
+The [interactive workspace](/playground) includes published examples for all
+50 diagram families. Its capability bar is generated from the same registry,
+so parser-native canvas editing and source-only behavior cannot drift apart.
 
 ## AI-safe edits
 

@@ -73,7 +73,9 @@ interface InteractiveSchematexDiagramProps {
   ariaLabel?: string;
   labelEditorClassName?: string;
   labelEditorStyle?: React.CSSProperties;
+  selectedKey?: string | null;
   onSelect?: (item: SceneItem | null) => void;
+  onPreviewChange?: (value: string | null, detail: InteractiveEditDetail) => void;
   onRender?: (result: SchematexRenderResult) => void;
   onError?: (error: Error) => void;
 }
@@ -95,7 +97,9 @@ interface InteractiveSchematexDiagramProps {
 | `ariaLabel` | `Editable Schematex diagram` | editor region 的 accessible name，建议改成当前文档的具体名称。 |
 | `labelEditorClassName` | `sx-label-editor` | 临时 WYSIWYG `<input>` 的 class；该 input 会挂到 `document.body`。 |
 | `labelEditorStyle` | 无 | 在测量所得的 WYSIWYG input 样式之后合并的 inline override。 |
+| `selectedKey` | 非受控 | 可选的 controlled `SceneItem.key`，用于把源码光标或外部 inspector 的选择同步到 Canvas。 |
 | `onSelect` | no-op | 选中时返回 `SceneItem`，selection 清空时返回 `null`。 |
+| `onPreviewChange` | no-op | position gesture 期间返回经过 revision guard 的临时完整源码；可以显示在 source editor，但只持久化 `onChange`，`null` 表示取消本次预览。 |
 | `onRender` | no-op | 每次 render 都返回 `SchematexRenderResult`，包括 invalid preview result。 |
 | `onError` | no-op | parse、layout 或 render 失败时调用；可见的 diagnostic fallback SVG 仍会保留。 |
 
@@ -212,7 +216,12 @@ import {
 } from 'schematex';
 
 getInteractiveCapabilities('sequence');
-// { type: 'sequence', text: ['title', 'labels'], position: 'move-x', ... }
+// {
+//   type: 'sequence',
+//   text: ['title', 'labels'],
+//   position: 'move-x',
+//   reason: 'Horizontal lifeline order is editable, while the vertical axis …'
+// }
 
 console.log(INTERACTIVE_DIAGRAM_COUNT);         // 20
 console.log(POSITION_EDITABLE_DIAGRAM_COUNT);   // 17
@@ -221,6 +230,7 @@ console.log(POSITION_EDITABLE_DIAGRAM_COUNT);   // 17
 只有具备 parser-native source range 的 20 个 engine 会被声明为 Canvas 可编辑，其中 17 个还具备位置模型。
 其余 30 个 engine 仍可正常 render，也能通过 DSL 源码编辑，但会返回空 `text` 与 `position: "none"`，并且不会生成猜测式 Canvas handle。
 `free`、`move-x`、`cross-axis`、`native-xy` 等 position 值是语义约束，不只是 UI 提示。
+`reason` 解释该限制背后的标准或布局规则，是产品 UI、文档和 AI 集成共用的 canonical 文案。
 
 Web agent 和非 JavaScript 工具可以读取同一份 [machine-readable JSON](/api/interactive-capabilities)。
 [完整人工能力矩阵](https://github.com/SchemaTex/SchemaTex/blob/main/docs/system/INTERACTIVE-EDITING-CAPABILITIES.zh-CN.md)
@@ -234,7 +244,7 @@ Web agent 和非 JavaScript 工具可以读取同一份 [machine-readable JSON](
 - Core 会在每个可编辑 scene item 上记录 source revision 和精确 expected text；任一发生变化时，`setLabel` 都会安全拒绝，调用方必须重新 render，不能重试旧 target。
 - 相连线条在拖拽时实时预览，drop 后从 semantic endpoint 重新计算；承诺 orthogonal routing 的 engine 在重新 render 后仍只有水平 / 垂直线段。
 
-[Interactive Workspace](/playground/interactive) 仍覆盖全部 50 种图：其中 23 个 specimen 用来测试 20 个 native Canvas engine，其余案例会明确标记为 source-only，方便测试 render 和 DSL 编辑。
+[Interactive Workspace](/playground) 包含全部 50 种图的已发布案例。能力栏直接由同一份 registry 生成，因此 parser-native Canvas 编辑与 source-only 行为不会发生文案漂移。
 
 ## 对 AI 安全的编辑
 

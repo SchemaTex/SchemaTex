@@ -1,13 +1,14 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from 'react';
 import dynamic from 'next/dynamic';
-import type { SceneItem, SchematexRenderResult } from 'schematex';
+import { getInteractiveCapabilities, renderResult, setPosition, type SceneItem, type SchematexRenderResult } from 'schematex';
 import { InteractiveSchematexDiagram } from 'schematex/react';
-import { svgToPngBlob, downloadBlob, printSvgAsPdf } from 'schematex/export';
+import { svgToPngBlob, downloadBlob, printSvgAsPdf, withWhiteSvgBackground } from 'schematex/export';
 import type { Monaco, OnMount } from '@monaco-editor/react';
+import { useTheme } from 'next-themes';
 import { DiagramFrame } from './DiagramFrame';
-import { PlaygroundStarNudge } from './PlaygroundStarNudge';
+import type { DiagramTypeOption } from './DiagramExampleBrowser';
 
 const MonacoEditor = dynamic(() => import('@monaco-editor/react'), {
   ssr: false,
@@ -29,52 +30,13 @@ interface PlaygroundProps {
    * on mount — causing every Playground on the page to show the same DSL.
    */
   syncHash?: boolean;
-  /** GitHub star count, for the success nudge on the dedicated playground. */
-  stars?: number;
+  /** Canonical registry metadata; supplied by the full-screen workspace. */
+  types?: DiagramTypeOption[];
+  sidebarCollapsed?: boolean;
+  onToggleSidebar?: () => void;
 }
 
 type MonacoEditorInstance = Parameters<OnMount>[0];
-
-const TYPE_META: Record<string, { name: string; std: string }> = {
-  genogram: { name: 'genogram', std: 'McGoldrick' },
-  ecomap: { name: 'ecomap', std: 'Hartman 1978' },
-  pedigree: { name: 'pedigree', std: 'ISCN / Bennett' },
-  phylo: { name: 'phylogenetic', std: 'Newick / NHX' },
-  phylogenetic: { name: 'phylogenetic', std: 'Newick / NHX' },
-  sociogram: { name: 'sociogram', std: 'Moreno' },
-  timing: { name: 'timing', std: 'WaveJSON' },
-  'logic-gate': { name: 'logic-gate', std: 'IEEE 91-1984' },
-  logic: { name: 'logic-gate', std: 'IEEE 91-1984' },
-  circuit: { name: 'circuit', std: 'IEEE 315' },
-  ladder: { name: 'ladder', std: 'IEC 61131-3' },
-  sld: { name: 'SLD', std: 'IEEE 315-1975' },
-  'single-line': { name: 'SLD', std: 'IEEE 315-1975' },
-  block: { name: 'block', std: 'ISO 5807' },
-  'entity-structure': { name: 'entity-structure', std: 'Corporate' },
-  entity: { name: 'entity-structure', std: 'Corporate' },
-  fishbone: { name: 'fishbone', std: 'Ishikawa 1968' },
-  ishikawa: { name: 'fishbone', std: 'Ishikawa 1968' },
-  state: { name: 'state-diagram', std: 'UML 2.5 / Harel' },
-  statediagram: { name: 'state-diagram', std: 'UML 2.5 / Harel' },
-  'statediagram-v2': { name: 'state-diagram', std: 'UML 2.5 / Harel' },
-  pid: { name: 'P&ID', std: 'ISA-5.1 / ISO 10628' },
-  flowchart: { name: 'flowchart', std: 'ISO 5807 / Sugiyama' },
-  network: { name: 'network', std: 'Topology / OSI' },
-  decisiontree: { name: 'decision-tree', std: 'Decision analysis' },
-  erd: { name: 'ERD', std: 'Crow\'s foot' },
-  umlclass: { name: 'UML class', std: 'UML 2.5' },
-  fbd: { name: 'FBD', std: 'IEC 61131-3' },
-  petri: { name: 'Petri net', std: 'Place / transition' },
-  timeline: { name: 'timeline', std: 'Temporal axis' },
-  breadboard: { name: 'breadboard', std: 'Physical wiring' },
-  siteplan: { name: 'siteplan', std: 'Concept plan' },
-};
-
-function detectType(dsl: string): { name: string; std: string } {
-  const firstLine = dsl.trimStart().split('\n', 1)[0] ?? '';
-  const head = firstLine.split(/\s+/, 1)[0]?.toLowerCase() ?? '';
-  return TYPE_META[head] ?? { name: head || 'schematex', std: '—' };
-}
 
 // URL-safe base64 (hash fragment)
 function encodeShare(s: string): string {
@@ -109,7 +71,52 @@ function formatBytes(n: number): string {
   return `${(n / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-export function Playground({ initial, height = 560, fill = false, syncHash = false, stars = 0 }: PlaygroundProps) {
+function positionGlyph(position: string): string {
+  if (position === 'move-x' || position === 'native-x') return '↔';
+  if (position === 'move-y' || position === 'native-y') return '↕';
+  if (position === 'none') return '⃠';
+  return '✥';
+}
+
+function positionText(position: string): string {
+  switch (position) {
+    case 'free': return 'free move';
+    case 'move-x': return 'horizontal move';
+    case 'move-y': return 'vertical move';
+    case 'cross-axis': return 'cross-axis move';
+    case 'native-x': return 'native x handles';
+    case 'native-y': return 'native y handles';
+    case 'native-xy': return 'native xy handles';
+    default: return 'position locked';
+  }
+}
+
+function formatSceneRange(item: SceneItem | null): string | null {
+  const range = item?.sourceRange ?? item?.positionSource?.range;
+  return range
+    ? `L${range.line + 1} C${range.colStart + 1}–L${range.line + 1} C${range.colEnd + 1}`
+    : null;
+}
+
+const SPLIT_STORAGE_KEY = 'schematex:playground:editor-split';
+const ONBOARDING_STORAGE_KEY = 'schematex:playground:onboarding-v1';
+const PLAYGROUND_LABEL_EDITOR_STYLE: CSSProperties = {
+  background: 'var(--fill)',
+  borderColor: 'var(--accent)',
+  outlineColor: 'color-mix(in srgb, var(--accent) 18%, transparent)',
+};
+
+export function Playground({
+  initial,
+  height = 560,
+  fill = false,
+  syncHash = false,
+  types = [],
+  sidebarCollapsed = false,
+  onToggleSidebar,
+}: PlaygroundProps) {
+  const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
   const [text, setText] = useState(initial);
   const [renderState, setRenderState] = useState<{
     result: SchematexRenderResult | null;
@@ -120,21 +127,46 @@ export function Playground({ initial, height = 560, fill = false, syncHash = fal
   const [shareState, setShareState] = useState<'idle' | 'done'>('idle');
   const [exportOpen, setExportOpen] = useState(false);
   const [zoom, setZoom] = useState(100);
+  const [split, setSplit] = useState(50);
+  const [renderEpoch, setRenderEpoch] = useState(0);
+  const [selectedKey, setSelectedKey] = useState<string | null>(null);
+  const [selectedItem, setSelectedItem] = useState<SceneItem | null>(null);
   const exportRef = useRef<HTMLDivElement>(null);
+  const splitRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLDivElement>(null);
   const editorRef = useRef<MonacoEditorInstance | null>(null);
   const monacoRef = useRef<Monaco | null>(null);
+  const cursorDisposableRef = useRef<{ dispose: () => void } | null>(null);
   const decorationIds = useRef<string[]>([]);
-  const selectedStatusRef = useRef<HTMLElement | null>(null);
   const textRef = useRef(text);
+  const sceneRef = useRef<SceneItem[]>([]);
+  const previewBaseRef = useRef<string | null>(null);
+  const suppressEditorChangeRef = useRef(false);
   const renderStartedRef = useRef(0);
   const hydrated = useRef(false);
+  const previousInitialRef = useRef(initial);
+
+  const isDark = mounted && resolvedTheme === 'dark';
+  const rendererTheme = isDark ? 'dark' : 'default';
+
+  useEffect(() => {
+    setMounted(true);
+    const storedSplit = Number(window.localStorage.getItem(SPLIT_STORAGE_KEY));
+    if (Number.isFinite(storedSplit) && storedSplit >= 25 && storedSplit <= 75) {
+      setSplit(storedSplit);
+    }
+  }, []);
 
   textRef.current = text;
 
   useEffect(() => {
+    if (previousInitialRef.current === initial) return;
+    previousInitialRef.current = initial;
+    previewBaseRef.current = null;
     textRef.current = initial;
     setText(initial);
-    setRenderState({ result: null, renderMs: 0, svgBytes: 0 });
+    setSelectedKey(null);
+    setSelectedItem(null);
     const editor = editorRef.current;
     if (editor && decorationIds.current.length > 0) {
       decorationIds.current = editor.deltaDecorations(decorationIds.current, []);
@@ -172,8 +204,8 @@ export function Playground({ initial, height = 560, fill = false, syncHash = fal
   }, [syncHash, text]);
 
   const result = renderState.result;
-  const svg = result?.svg ?? null;
   const scene = result?.ok ? result.scene ?? [] : [];
+  sceneRef.current = scene;
   const error = result && !result.ok
     ? result.diagnostics[0]?.message ?? 'Unable to render this diagram.'
     : null;
@@ -183,14 +215,44 @@ export function Playground({ initial, height = 560, fill = false, syncHash = fal
     const end = performance.now();
     setRenderState({
       result: nextResult,
-      renderMs: Math.max(0, end - renderStartedRef.current),
+      renderMs: renderStartedRef.current > 0
+        ? Math.max(0, end - renderStartedRef.current)
+        : 0,
       svgBytes: new TextEncoder().encode(nextResult.svg).length,
     });
+  }, []);
+
+  const triggerRender = useCallback(() => {
+    renderStartedRef.current = performance.now();
+    setRenderEpoch((epoch) => epoch + 1);
   }, []);
 
   const handleEditorMount = useCallback<OnMount>((editor, monaco) => {
     editorRef.current = editor;
     monacoRef.current = monaco;
+    cursorDisposableRef.current?.dispose();
+    cursorDisposableRef.current = editor.onDidChangeCursorPosition(({ position }) => {
+      const candidates = sceneRef.current.flatMap((item) => {
+        const ranges = [item.sourceRange, item.positionSource?.range].filter(
+          (range): range is NonNullable<typeof range> => Boolean(range),
+        );
+        return ranges
+          .filter((range) => range.line === position.lineNumber - 1)
+          .map((range) => ({
+            item,
+            range,
+            exact: position.column - 1 >= range.colStart && position.column - 1 <= range.colEnd,
+            distance: Math.min(
+              Math.abs(position.column - 1 - range.colStart),
+              Math.abs(position.column - 1 - range.colEnd),
+            ),
+          }));
+      }).sort((a, b) => Number(b.exact) - Number(a.exact) || a.distance - b.distance ||
+        (a.range.end - a.range.start) - (b.range.end - b.range.start));
+      const item = candidates[0]?.item ?? null;
+      setSelectedKey(item?.key ?? null);
+      setSelectedItem(item);
+    });
   }, []);
 
   const highlightSource = useCallback((item: SceneItem | null) => {
@@ -213,7 +275,26 @@ export function Playground({ initial, height = 560, fill = false, syncHash = fal
         }]
       : [];
     decorationIds.current = editor.deltaDecorations(decorationIds.current, decorations);
-    if (range) editor.revealLineInCenterIfOutsideViewport(range.line + 1);
+    if (range) {
+      editor.setSelection(new monaco.Range(
+        range.line + 1,
+        range.colStart + 1,
+        range.line + 1,
+        Math.max(range.colStart + 2, range.colEnd + 1),
+      ));
+      editor.revealLineInCenterIfOutsideViewport(range.line + 1);
+    }
+  }, []);
+
+  const replaceModelWithoutUndo = useCallback((nextSource: string) => {
+    const model = editorRef.current?.getModel();
+    if (!model || model.getValue() === nextSource) return;
+    suppressEditorChangeRef.current = true;
+    try {
+      model.applyEdits([{ range: model.getFullModelRange(), text: nextSource }]);
+    } finally {
+      suppressEditorChangeRef.current = false;
+    }
   }, []);
 
   const applySourceEdit = useCallback((nextSource: string) => {
@@ -233,36 +314,51 @@ export function Playground({ initial, height = 560, fill = false, syncHash = fal
   }, []);
 
   const handleCanvasSelect = useCallback((item: SceneItem | null) => {
-    if (selectedStatusRef.current) selectedStatusRef.current.textContent = item?.key ?? '';
+    setSelectedKey(item?.key ?? null);
+    setSelectedItem(item);
     highlightSource(item);
   }, [highlightSource]);
 
   const handleCanvasChange = useCallback((nextSource: string) => {
+    const previewBase = previewBaseRef.current;
+    if (previewBase !== null) {
+      previewBaseRef.current = null;
+      replaceModelWithoutUndo(previewBase);
+    }
     applySourceEdit(nextSource);
-  }, [applySourceEdit]);
+  }, [applySourceEdit, replaceModelWithoutUndo]);
+
+  const handleCanvasPreview = useCallback((nextSource: string | null) => {
+    if (nextSource === null) {
+      const previewBase = previewBaseRef.current;
+      previewBaseRef.current = null;
+      if (previewBase !== null) replaceModelWithoutUndo(previewBase);
+      return;
+    }
+    if (previewBaseRef.current === null) previewBaseRef.current = textRef.current;
+    replaceModelWithoutUndo(nextSource);
+  }, [replaceModelWithoutUndo]);
 
   useEffect(() => () => {
+    cursorDisposableRef.current?.dispose();
     const editor = editorRef.current;
     if (editor && decorationIds.current.length > 0) {
       editor.deltaDecorations(decorationIds.current, []);
     }
   }, []);
 
-  const meta = useMemo(() => detectType(text), [text]);
+  const activeType = result?.type ?? null;
+  const typeMeta = useMemo(
+    () => types.find((entry) => entry.type === activeType),
+    [activeType, types],
+  );
+  const meta = {
+    name: typeMeta?.name ?? activeType ?? 'schematex',
+    std: typeMeta?.standard ?? 'source-defined',
+  };
+  const capability = activeType ? getInteractiveCapabilities(activeType) : null;
   const lineCount = useMemo(() => text.split('\n').length, [text]);
   const charCount = useMemo(() => text.length, [text]);
-  const interactionHints = useMemo(() => {
-    const editableLabel = scene.some((item) => item.editable.label);
-    const positions = new Set(scene.map((item) => item.editable.position));
-    const drag = positions.has('free')
-      ? 'drag x / y'
-      : positions.has('move-x')
-        ? 'drag horizontally'
-        : positions.has('move-y')
-          ? 'drag vertically'
-          : null;
-    return { editableLabel, drag };
-  }, [scene]);
 
   const handleCopy = useCallback(async () => {
     try {
@@ -287,9 +383,15 @@ export function Playground({ initial, height = 560, fill = false, syncHash = fal
     }
   }, [text]);
 
+  const getExportSvg = useCallback(() => {
+    const exported = renderResult(text, { theme: 'default' });
+    return exported.ok ? withWhiteSvgBackground(exported.svg) : null;
+  }, [text]);
+
   const handleDownloadSvg = useCallback(() => {
-    if (!svg) return;
-    const blob = new Blob([svg], { type: 'image/svg+xml' });
+    const exportSvg = getExportSvg();
+    if (!exportSvg) return;
+    const blob = new Blob([exportSvg], { type: 'image/svg+xml' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -298,17 +400,96 @@ export function Playground({ initial, height = 560, fill = false, syncHash = fal
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-  }, [svg, meta.name]);
+  }, [getExportSvg, meta.name]);
 
   const handleDownloadPng = useCallback(async () => {
-    if (!svg) return;
+    const exportSvg = getExportSvg();
+    if (!exportSvg) return;
     try {
-      const blob = await svgToPngBlob(svg, { scale: 2, background: 'white' });
+      const blob = await svgToPngBlob(exportSvg, { scale: 2, background: 'white' });
       downloadBlob(blob, `${meta.name || 'diagram'}.png`);
     } catch {
       /* noop — browser may block in certain environments */
     }
-  }, [svg, meta.name]);
+  }, [getExportSvg, meta.name]);
+
+  const handlePrintPdf = useCallback(() => {
+    const exportSvg = getExportSvg();
+    if (exportSvg) printSvgAsPdf(exportSvg, meta.name || 'diagram');
+  }, [getExportSvg, meta.name]);
+
+  const handleSplitPointerDown = useCallback((event: ReactPointerEvent<HTMLButtonElement>) => {
+    if (!splitRef.current || window.matchMedia('(max-width: 767px)').matches) return;
+    event.preventDefault();
+    const container = splitRef.current;
+    const onMove = (moveEvent: PointerEvent) => {
+      const bounds = container.getBoundingClientRect();
+      const next = Math.max(25, Math.min(75, ((moveEvent.clientX - bounds.left) / bounds.width) * 100));
+      setSplit(next);
+    };
+    const onUp = () => {
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onUp);
+      setSplit((current) => {
+        window.localStorage.setItem(SPLIT_STORAGE_KEY, current.toFixed(2));
+        return current;
+      });
+    };
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp, { once: true });
+  }, []);
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (!(event.metaKey || event.ctrlKey)) return;
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        triggerRender();
+      } else if (event.key === '0') {
+        event.preventDefault();
+        setZoom(100);
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [triggerRender]);
+
+  useEffect(() => {
+    if (!syncHash || scene.length === 0 || !editorRef.current || !canvasRef.current) return;
+    if (window.localStorage.getItem(ONBOARDING_STORAGE_KEY) === 'done') return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const item = scene.find((entry) => entry.editable.position !== 'none' && entry.bbox);
+    if (!item?.bbox) return;
+    window.localStorage.setItem(ONBOARDING_STORAGE_KEY, 'done');
+    setSelectedKey(item.key);
+    setSelectedItem(item);
+    highlightSource(item);
+    const dx = item.editable.position === 'move-y' ? 0 : 18;
+    const dy = item.editable.position === 'move-x' ? 0 : 14;
+    const edited = setPosition(textRef.current, item, {
+      x: item.bbox.x + dx,
+      y: item.bbox.y + dy,
+    });
+    const element = Array.from(canvasRef.current.querySelectorAll<SVGElement>('[data-sx-key]'))
+      .find((entry) => entry.getAttribute('data-sx-key') === item.key);
+    const animation = element?.animate([
+      { transform: 'translate(0, 0)' },
+      { transform: `translate(${dx}px, ${dy}px)`, offset: 0.62 },
+      { transform: 'translate(0, 0)' },
+    ], { duration: 1800, easing: 'cubic-bezier(.2,.8,.2,1)' });
+    const previewTimer = window.setTimeout(() => {
+      if (edited.diagnostics.length === 0 && edited.source !== textRef.current) {
+        handleCanvasPreview(edited.source);
+      }
+    }, 650);
+    const resetTimer = window.setTimeout(() => handleCanvasPreview(null), 1700);
+    return () => {
+      animation?.cancel();
+      window.clearTimeout(previewTimer);
+      window.clearTimeout(resetTimer);
+      handleCanvasPreview(null);
+    };
+  }, [handleCanvasPreview, highlightSource, scene, syncHash]);
 
   useEffect(() => {
     if (!exportOpen) return;
@@ -350,7 +531,7 @@ export function Playground({ initial, height = 560, fill = false, syncHash = fal
             {[
               { label: '.svg', desc: 'vector', action: handleDownloadSvg },
               { label: '.png', desc: '@2× raster', action: handleDownloadPng },
-              { label: '.pdf', desc: 'print-ready', action: () => { if (svg) printSvgAsPdf(svg, meta.name || 'diagram'); } },
+              { label: '.pdf', desc: 'print-ready', action: handlePrintPdf },
             ].map(({ label, desc, action }) => (
               <button
                 key={label}
@@ -368,10 +549,20 @@ export function Playground({ initial, height = 560, fill = false, syncHash = fal
           </div>
         )}
       </div>
-      <span className="pg-mini pg-mini-primary pg-render-action" aria-hidden>
+      {onToggleSidebar && (
+        <button type="button" onClick={onToggleSidebar} className="pg-mini pg-sidebar-action">
+          {sidebarCollapsed ? 'show library' : 'hide library'}
+          <span className="pg-kbd">⌘\</span>
+        </button>
+      )}
+      <button
+        type="button"
+        className="pg-mini pg-mini-primary pg-render-action"
+        onClick={triggerRender}
+      >
         render
-        <span className="pg-kbd">⌘R</span>
-      </span>
+        <span className="pg-kbd">⌘↵</span>
+      </button>
     </>
   );
 
@@ -399,6 +590,8 @@ export function Playground({ initial, height = 560, fill = false, syncHash = fal
     </div>
   );
 
+  const selectedRange = formatSceneRange(selectedItem);
+
   return (
     <DiagramFrame
       diagram={meta.name}
@@ -408,27 +601,56 @@ export function Playground({ initial, height = 560, fill = false, syncHash = fal
       className={fill ? 'h-full' : ''}
       style={fill ? undefined : { height }}
     >
+      {capability && (
+        <div className="sx-capability-bar" aria-label="Editing contract">
+          <div className="sx-capability-summary">
+            {capability.text.length > 0 ? (
+              <span><b>✎</b> {capability.text.join(' · ')}</span>
+            ) : (
+              <span><b>⌨</b> source editing</span>
+            )}
+            <span>
+              <b>{positionGlyph(capability.position)}</b> {positionText(capability.position)}
+            </span>
+          </div>
+          {capability.reason && (
+            <p className="sx-capability-reason"><b>⃠</b> {capability.reason}</p>
+          )}
+          {selectedItem && (
+            <div className="sx-capability-selection" aria-live="polite">
+              <span>▣ {selectedItem.key}</span>
+              <span>
+                {selectedItem.editable.label ? '✎ label' : 'label locked'} ·{' '}
+                {positionGlyph(selectedItem.editable.position)} {positionText(selectedItem.editable.position)}
+              </span>
+              {selectedRange && <span>{selectedRange}</span>}
+            </div>
+          )}
+        </div>
+      )}
       <div
-        className="grid min-h-0 flex-1 grid-cols-1 grid-rows-2 md:grid-cols-2 md:grid-rows-1"
+        ref={splitRef}
+        className="sx-editor-split"
+        style={{ '--editor-split': `${split}%` } as CSSProperties}
       >
         <div
-          className="min-h-0 overflow-hidden"
-          style={{
-            background: 'var(--fill-muted)',
-            borderRight: '1px solid var(--line-strong)',
-          }}
+          className="sx-source-pane"
+          style={{ background: 'var(--fill-muted)' }}
         >
           <MonacoEditor
+            key={`monaco-${rendererTheme}`}
             height="100%"
             defaultLanguage="plaintext"
             value={text}
             onChange={(v) => {
+              if (suppressEditorChangeRef.current) return;
+              previewBaseRef.current = null;
               const next = v ?? '';
               textRef.current = next;
               setText(next);
             }}
             onMount={handleEditorMount}
-            theme="vs"
+            theme={isDark ? 'vs-dark' : 'vs'}
             options={{
               fontSize: 13,
               fontFamily: 'var(--mono)',
@@ -444,7 +666,14 @@ export function Playground({ initial, height = 560, fill = false, syncHash = fal
             }}
           />
         </div>
-        <div className="flex min-h-0 flex-col overflow-hidden">
+        <button
+          type="button"
+          className="sx-split-handle"
+          onPointerDown={handleSplitPointerDown}
+          aria-label={`Resize source editor, currently ${Math.round(split)} percent`}
+          title="Drag to resize source and preview"
+        />
+        <div className="sx-preview-pane">
           <div
             className="flex shrink-0 items-center justify-between px-3 py-1.5 font-mono text-[11px]"
             style={{ borderBottom: '1px solid var(--line)', color: 'var(--text-muted)', background: 'var(--fill)' }}
@@ -455,45 +684,50 @@ export function Playground({ initial, height = 560, fill = false, syncHash = fal
                 type="button"
                 onClick={() => setZoom((z) => Math.max(25, z - 25))}
                 className="flex size-5 items-center justify-center transition hover:text-[color:var(--text)]"
+                aria-label="Zoom out"
               >
                 −
               </button>
-              <span style={{ minWidth: 36, textAlign: 'center' }}>{zoom}%</span>
+              <button
+                type="button"
+                onClick={() => setZoom(100)}
+                className="min-w-9 text-center"
+                title="Reset zoom (⌘0)"
+              >
+                {zoom}%
+              </button>
               <button
                 type="button"
                 onClick={() => setZoom((z) => Math.min(200, z + 25))}
                 className="flex size-5 items-center justify-center transition hover:text-[color:var(--text)]"
+                aria-label="Zoom in"
               >
                 +
               </button>
             </div>
           </div>
-          <div className="dot-grid relative flex flex-1 items-center justify-center overflow-auto p-6">
+          <div ref={canvasRef} className="dot-grid relative flex flex-1 items-center justify-center overflow-auto p-6">
             <InteractiveSchematexDiagram
+              key={`${rendererTheme}:${renderEpoch}`}
               value={text}
               onChange={handleCanvasChange}
+              onPreviewChange={handleCanvasPreview}
               onSelect={handleCanvasSelect}
               onRender={handleRender}
+              selectedKey={selectedKey}
+              theme={rendererTheme}
               debounceMs={120}
               ariaLabel="Interactive diagram preview"
+              labelEditorStyle={PLAYGROUND_LABEL_EDITOR_STYLE}
               className="flex h-full w-full items-center justify-center focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--accent)]"
               canvasClassName="flex h-full w-full items-center justify-center [&_svg]:block [&_svg]:max-h-full [&_svg]:max-w-full"
               style={{ transform: `scale(${zoom / 100})`, transformOrigin: 'center center' }}
             />
             {error && (
-              <div className="pointer-events-none absolute inset-x-4 top-4 z-10 rounded-sm border border-[color:var(--negative)] bg-white/95 px-3 py-2 font-mono text-xs text-[color:var(--negative)]">
+              <div className="sx-playground-error pointer-events-none absolute inset-x-4 top-4 z-10 rounded-sm border border-[color:var(--negative)] px-3 py-2 font-mono text-xs text-[color:var(--negative)]">
                 {error}
               </div>
             )}
-            {!!svg && !error && scene.length > 0 && (
-              <div className="sx-interaction-hint" aria-live="polite">
-                <span>click to select</span>
-                {interactionHints.editableLabel && <span>double-click label</span>}
-                {interactionHints.drag && <span>{interactionHints.drag}</span>}
-                <strong ref={selectedStatusRef} />
-              </div>
-            )}
-            {syncHash && <PlaygroundStarNudge stars={stars} active={!!svg && !error} />}
           </div>
         </div>
       </div>

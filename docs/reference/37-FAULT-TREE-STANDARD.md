@@ -384,7 +384,7 @@ This is exactly the `pert` stance: the **red accent is reserved for the computed
 Schematex has two visual stances (see `00-OVERVIEW.md` §Theme System):
 
 - **`IndustrialTokens`** — circuit / ladder / SLD / logic / FBD / SFC: *forced monochrome* under IEEE/IEC compliance, no colourful variant by design.
-- **`BaseTheme` + a semantic extension** — most others (timeline, flowchart, venn, pert, petri): a tasteful house palette in `default`, true black/white in `monochrome`, Catppuccin in `dark`.
+- **`BaseTheme` + a semantic extension** — most others (timeline, flowchart, venn, pert, petri): a tasteful house palette in `default`, true black/white in `monochrome`, Schematex slate/blue in `dark`.
 
 **Fault tree belongs to the second group.** IEC 61025 even *permits alternative symbols* — it is not a forced-mono compliance drawing like a circuit schematic. The NUREG-0492 figures are black-and-white, so `monochrome` reproduces the textbook look faithfully, but real reliability tools (ReliaSoft BlockSim, Isograph, the reference image) freely use colour — green gates, red cut-set boxes. So a tasteful `default` colour theme is legitimate. This mirrors **`pert`** exactly: house body with **one reserved semantic accent (red)** for the computed-critical element — there the critical path, here the **cut sets / SPOFs**.
 
@@ -452,22 +452,22 @@ export interface ReliabilityTokens {
 
 > Principle (shared with `venn`/`industrial`/`petri`): in `monochrome`, semantics that ride on colour in `default` fall back to **shape/weight** — bold-dashed box for cut sets, dome/shield shape for gate type — so a black-and-white print is still unambiguous.
 
-**`dark`** — Catppuccin Mocha, mirroring `DARK_THEME`:
+**`dark`** — Schematex slate/blue dark palette, mirroring `DARK_THEME`:
 
 | Token | Value |
 |---|---|
-| `eventFill` / `basicFill` | `#313244` (`fill`) |
-| `eventStroke` / `basicStroke` / `edgeStroke` | `#cdd6f4` (`stroke`) |
-| `topEventStroke` | `#cdd6f4` (thick) |
-| `undevelopedFill` | `#45475a` |
+| `eventFill` / `basicFill` | `#172033` (`fill`) |
+| `eventStroke` / `basicStroke` / `edgeStroke` | `#f8fafc` (`stroke`) |
+| `topEventStroke` | `#f8fafc` (thick) |
+| `undevelopedFill` | `#202b3d` |
 | `houseFill` | `#45413a` (warn-tint) |
-| `conditionFill` | `#45475a` |
-| `gateFill` | `rgba(166,227,161,0.18)` (positive tint) |
-| `gateStroke` | `#a6e3a1` (`positive`) |
-| `probText` | `#89b4fa` (`accent`) |
-| `cutsetStroke` | `#f38ba8` (`negative`) |
-| `cutsetFill` | `rgba(243,139,168,0.12)` |
-| `spofStroke` | `#eba0ac` |
+| `conditionFill` | `#202b3d` |
+| `gateFill` | `rgba(52,211,153,0.18)` (positive tint) |
+| `gateStroke` | `#34d399` (`positive`) |
+| `probText` | `#6d8fff` (`accent`) |
+| `cutsetStroke` | `#f87171` (`negative`) |
+| `cutsetFill` | `rgba(248,113,113,0.12)` |
+| `spofStroke` | `#fb7185` |
 
 ### 6.4 Stroke & type scale (reuse `theme.ts` constants)
 

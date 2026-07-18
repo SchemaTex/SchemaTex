@@ -1,6 +1,7 @@
 import type { RenderConfig, TimingAST, TimingSignal, TimingGroup } from "../../core/types";
 import { svgRoot, defs, group, el, text, title as titleEl, desc } from "../../core/svg";
 import { resolveSceneTitle } from "../../core/title-scene";
+import { resolveBaseTheme } from "../../core/theme";
 
 const NAME_W = 120;
 const SIG_H = 36;
@@ -260,6 +261,7 @@ function renderWave(signal: TimingSignal, ctx: WaveCtx): { svg: string; labels: 
 }
 
 export function renderTiming(ast: TimingAST, config?: RenderConfig): string {
+  const t = resolveBaseTheme(config?.theme ?? "default");
   const pw = DEFAULT_PW * (ast.hscale ?? 1);
   const rows = flatten(ast.signals);
   const maxWaveLen = Math.max(
@@ -421,10 +423,10 @@ export function renderTiming(ast: TimingAST, config?: RenderConfig): string {
       height: 6,
     },
     [
-      el("rect", { x: 0, y: 0, width: 6, height: 6, fill: "#f5f5f5" }),
+      el("rect", { x: 0, y: 0, width: 6, height: 6, fill: t.fillMuted }),
       el("path", {
         d: "M 0,6 L 6,0 M -1,1 L 1,-1 M 5,7 L 7,5",
-        stroke: "#999",
+        stroke: t.textMuted,
         "stroke-width": 0.8,
       }),
     ]
@@ -432,18 +434,18 @@ export function renderTiming(ast: TimingAST, config?: RenderConfig): string {
 
   const css = `
 .schematex-timing { font-family: system-ui, -apple-system, sans-serif; }
-.schematex-timing-name { font: 12px monospace; fill: #111; }
+.schematex-timing-name { font: 12px monospace; fill: ${t.text}; }
 .schematex-timing-name-activelow { text-decoration: overline; }
-.schematex-timing-group-label { font: bold 12px sans-serif; fill: #111; }
-.schematex-timing-wave { stroke: #111; stroke-width: 1.75; fill: none; stroke-linejoin: miter; stroke-linecap: square; }
-.schematex-timing-bus { fill: none; stroke: #111; stroke-width: 1.5; }
-.schematex-timing-bus-label { font: 11px monospace; fill: #111; }
-.schematex-timing-unknown { stroke: #555; stroke-width: 0.5; }
-.schematex-timing-hiz { stroke: #555; stroke-width: 1.5; stroke-dasharray: 4 3; }
-.schematex-timing-grid { stroke: #eee; stroke-width: 0.5; }
-.schematex-timing-title { font: 700 16px system-ui, -apple-system, sans-serif; fill: #111; }
-.sx-native-handle { fill: #fff; stroke: #2563eb; stroke-width: 1.4; cursor: ew-resize; vector-effect: non-scaling-stroke; }
-.sx-native-handle:hover { fill: #dbeafe; stroke-width: 2; }
+.schematex-timing-group-label { font: bold 12px sans-serif; fill: ${t.text}; }
+.schematex-timing-wave { stroke: ${t.stroke}; stroke-width: 1.75; fill: none; stroke-linejoin: miter; stroke-linecap: square; }
+.schematex-timing-bus { fill: none; stroke: ${t.stroke}; stroke-width: 1.5; }
+.schematex-timing-bus-label { font: 11px monospace; fill: ${t.text}; }
+.schematex-timing-unknown { stroke: ${t.textMuted}; stroke-width: 0.5; }
+.schematex-timing-hiz { stroke: ${t.textMuted}; stroke-width: 1.5; stroke-dasharray: 4 3; }
+.schematex-timing-grid { stroke: ${t.fillMuted}; stroke-width: 0.5; }
+.schematex-timing-title { font: 700 16px system-ui, -apple-system, sans-serif; fill: ${t.text}; }
+.sx-native-handle { fill: ${t.fill}; stroke: ${t.accent}; stroke-width: 1.4; cursor: ew-resize; vector-effect: non-scaling-stroke; }
+.sx-native-handle:hover { fill: ${t.fillMuted}; stroke-width: 2; }
 `.trim();
 
   return svgRoot(

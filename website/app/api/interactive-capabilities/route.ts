@@ -1,8 +1,4 @@
-import {
-  INTERACTIVE_CAPABILITIES,
-  INTERACTIVE_DIAGRAM_COUNT,
-  POSITION_EDITABLE_DIAGRAM_COUNT,
-} from 'schematex';
+import { INTERACTIVE_DIAGRAM_COUNT, POSITION_EDITABLE_DIAGRAM_COUNT } from 'schematex';
 import { listDiagrams } from 'schematex/ai';
 
 export const revalidate = false;
@@ -13,11 +9,15 @@ export function GET() {
   const all = listDiagrams();
   const sourceOnly = all
     .filter((entry) => entry.interactive.text.length === 0)
-    .map((entry) => ({ type: entry.type, name: entry.name }));
+    .map((entry) => ({
+      type: entry.type,
+      name: entry.name,
+      reason: entry.interactive.reason,
+    }));
   return Response.json(
     {
-      schemaVersion: 2,
-      generatedFrom: 'schematex/INTERACTIVE_CAPABILITIES',
+      schemaVersion: 3,
+      generatedFrom: 'schematex/getInteractiveCapabilities',
       counts: {
         totalDiagrams: all.length,
         canvasEditable: INTERACTIVE_DIAGRAM_COUNT,
@@ -29,7 +29,11 @@ export function GET() {
         humanCapabilityMatrix:
           'https://github.com/SchemaTex/SchemaTex/blob/main/docs/system/INTERACTIVE-EDITING-CAPABILITIES.md',
       },
-      capabilities: Object.values(INTERACTIVE_CAPABILITIES),
+      capabilities: all.map((entry) => ({
+        name: entry.name,
+        standard: entry.standard,
+        ...entry.interactive,
+      })),
       sourceOnly,
     },
     {

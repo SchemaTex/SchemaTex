@@ -410,7 +410,7 @@ export interface BowtieTokens {
 
 > Principle (shared with `venn` / `petri`): in `monochrome`, semantics that ride on colour in `default` fall back to a **shape/border distinction** — escalation factors get a dashed border, the top event a doubled ring — so a black-and-white print stays unambiguous. Position (threat=left edge, consequence=right edge, barrier=on the line) already disambiguates most elements.
 
-**`dark`** — Catppuccin Mocha, mirroring `DARK_THEME`: `threatFill` peach `#fab387`, `consequenceFill` red `#f38ba8`, `escalationFill` yellow `#f9e2af`, `topEventFill` green `#a6e3a1`, `barrierFill` surface `#45475a`, `lineStroke` `#cdd6f4`. Bodies on `#1e1e2e`.
+**`dark`** — Schematex slate/blue dark palette, mirroring `DARK_THEME`: `threatFill` peach `#fbbf24`, `consequenceFill` red `#f87171`, `escalationFill` yellow `#facc15`, `topEventFill` green `#34d399`, `barrierFill` surface `#202b3d`, `lineStroke` `#f8fafc`. Bodies on `#0f172a`.
 
 ### 6.3 Stroke & type scale (reuse `theme.ts` constants)
 

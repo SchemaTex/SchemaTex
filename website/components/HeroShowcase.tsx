@@ -1,6 +1,7 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState, type CSSProperties } from 'react';
+import { useTheme } from 'next-themes';
 import type { SchematexRenderResult } from 'schematex';
 import { InteractiveSchematexDiagram } from 'schematex/react';
 import { DiagramFrame } from './DiagramFrame';
@@ -16,13 +17,24 @@ interface HeroShowcaseProps {
   intervalMs?: number;
 }
 
+const HERO_LABEL_EDITOR_STYLE: CSSProperties = {
+  background: 'var(--fill)',
+  borderColor: 'var(--accent)',
+  outlineColor: 'color-mix(in srgb, var(--accent) 18%, transparent)',
+};
+
 export function HeroShowcase({ slides, intervalMs = 6500 }: HeroShowcaseProps) {
+  const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const [drafts, setDrafts] = useState<Record<string, string>>(() =>
     Object.fromEntries(slides.map((slide) => [slide.label, slide.dsl])),
   );
   const [renderResult, setRenderResult] = useState<SchematexRenderResult | null>(null);
+
+  useEffect(() => setMounted(true), []);
+  const rendererTheme = mounted && resolvedTheme === 'dark' ? 'dark' : 'default';
 
   useEffect(() => {
     setDrafts((current) => ({
@@ -60,7 +72,7 @@ export function HeroShowcase({ slides, intervalMs = 6500 }: HeroShowcaseProps) {
   );
 
   const footer = (
-    <div className="flex shrink-0 items-center justify-between border-t border-[color:var(--line)] bg-white px-3 py-2 font-mono text-[11px] text-[color:var(--text-muted)]">
+    <div className="flex shrink-0 items-center justify-between border-t border-[color:var(--line)] bg-[color:var(--fill)] px-3 py-2 font-mono text-[11px] text-[color:var(--text-muted)]">
       <span>UTF-8 · LF · {lineCount} lines · {dsl.length} chars</span>
       <span>
         <span style={{ color: renderResult?.ok ? 'var(--positive)' : 'var(--negative)' }}>
@@ -82,7 +94,7 @@ export function HeroShowcase({ slides, intervalMs = 6500 }: HeroShowcaseProps) {
       >
         <div className="grid h-[360px] grid-cols-1 sm:h-[500px] sm:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:h-[600px]">
           <label className="relative hidden min-h-0 flex-col border-r border-[color:var(--line-strong)] bg-[color:var(--fill-muted)] sm:flex">
-            <span className="border-b border-[color:var(--line)] bg-white px-3 py-2 font-mono text-[11px] uppercase tracking-[0.06em] text-[color:var(--text-muted)]">
+            <span className="border-b border-[color:var(--line)] bg-[color:var(--fill)] px-3 py-2 font-mono text-[11px] uppercase tracking-[0.06em] text-[color:var(--text-muted)]">
               DSL source
             </span>
             <textarea
@@ -95,13 +107,16 @@ export function HeroShowcase({ slides, intervalMs = 6500 }: HeroShowcaseProps) {
             />
           </label>
 
-          <div className="dot-grid relative min-h-0 bg-white p-6">
+          <div className="dot-grid relative min-h-0 bg-[color:var(--fill)] p-6">
             <InteractiveSchematexDiagram
+              key={rendererTheme}
               value={dsl}
               onChange={updateDraft}
               onRender={setRenderResult}
+              theme={rendererTheme}
               debounceMs={100}
               ariaLabel={`${slide.label} interactive diagram`}
+              labelEditorStyle={HERO_LABEL_EDITOR_STYLE}
               className="flex h-full w-full items-center justify-center focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--accent)]"
               canvasClassName="flex h-full w-full items-center justify-center [&_svg]:max-h-full [&_svg]:max-w-full"
             />

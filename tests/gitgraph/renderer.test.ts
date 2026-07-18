@@ -104,6 +104,6 @@ gitGraph
 
   it("renders a dark theme palette", () => {
     const svg = renderGitGraph("gitGraph\n commit", { theme: "dark", fontFamily: "sans", fontSize: 12, padding: 0 });
-    expect(svg).toContain("#1e1e2e");
+    expect(svg).toContain("#0f172a");
   });
 });

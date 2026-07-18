@@ -322,7 +322,7 @@ interface MindmapTokens {
 
 - **default** — 白底 / 彩色 palette / 浅灰 codeBg。
 - **monochrome** — 白底 / 全黑 centralFill + palette（单色）/ stroke × 0.7。适合打印。
-- **dark** — 深色背景（`#1e1e2e`）/ 高饱和 palette / 深色 codeBg。
+- **dark** — 深色背景（`#0f172a`）/ 高饱和 palette / 深色 codeBg。
 
 ---
 

@@ -44,7 +44,7 @@ export function MCPConnectCard({
         className="mcp-connect-cta inline-flex items-center justify-center gap-1 font-medium transition no-underline"
         style={{
           background: '#D97757',
-          color: '#ffffff',
+          color: 'var(--color-fd-primary-foreground)',
           padding: '6px 11px',
           borderRadius: 'var(--r-sm)',
           fontSize: '12px',

@@ -95,7 +95,11 @@ export interface InteractiveSchematexDiagramProps {
   ariaLabel?: string;
   labelEditorClassName?: string;
   labelEditorStyle?: CSSProperties;
+  /** Controlled scene key selected by an external source editor. */
+  selectedKey?: string | null;
   onSelect?: (item: SceneItem | null) => void;
+  /** Transient drag source for live code previews; `null` discards a cancelled preview. */
+  onPreviewChange?: (value: string | null, detail: InteractiveEditDetail) => void;
   onRender?: (result: SchematexRenderResult) => void;
   onError?: (error: Error) => void;
 }
@@ -203,7 +207,9 @@ export function InteractiveSchematexDiagram({
   ariaLabel = "Editable Schematex diagram",
   labelEditorClassName = "sx-label-editor",
   labelEditorStyle,
+  selectedKey,
   onSelect,
+  onPreviewChange,
   onRender,
   onError,
 }: InteractiveSchematexDiagramProps) {
@@ -263,9 +269,28 @@ export function InteractiveSchematexDiagram({
         onChange(source, { reason, item: selectedRef.current });
         setLabelEditor(null);
       },
+      onSourcePreview: onPreviewChange
+        ? (source, reason) => onPreviewChange(source, { reason, item: selectedRef.current })
+        : undefined,
     });
     return detach;
-  }, [onChange, readOnly, result.ok, revision, scene, selectItem]);
+  }, [onChange, onPreviewChange, readOnly, result.ok, revision, scene, selectItem]);
+
+  useEffect(() => {
+    if (selectedKey === undefined) return;
+    const svg = hostRef.current?.querySelector<SVGSVGElement>("svg");
+    if (!svg) return;
+    svg.querySelectorAll<SVGElement>("[data-sx-key]").forEach((element) => {
+      element.classList.toggle(
+        "sx-interactive-selected",
+        selectedKey !== null &&
+          element.getAttribute("data-sx-key") === selectedKey,
+      );
+    });
+    selectedRef.current = selectedKey
+      ? scene.find((item) => item.key === selectedKey) ?? null
+      : null;
+  }, [result.svg, scene, selectedKey]);
 
   useEffect(() => {
     const key = labelEditor?.item.key;

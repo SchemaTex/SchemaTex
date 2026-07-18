@@ -126,7 +126,7 @@ export function SiteHeader({
   );
 }
 
-function ThemeToggle() {
+export function ThemeToggle({ compact = false }: { compact?: boolean }) {
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
@@ -136,7 +136,7 @@ function ThemeToggle() {
       type="button"
       onClick={() => setTheme(isDark ? 'light' : 'dark')}
       aria-label="Toggle theme"
-      className="inline-flex size-9 items-center justify-center rounded-md text-fd-muted-foreground transition hover:text-fd-foreground"
+      className={`${compact ? 'size-7' : 'size-9'} inline-flex items-center justify-center rounded-md text-fd-muted-foreground transition hover:text-fd-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--accent)]`}
     >
       {mounted && (
         <svg viewBox="0 0 24 24" className="size-4 fill-none stroke-current" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

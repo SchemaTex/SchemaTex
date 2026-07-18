@@ -9,6 +9,7 @@ import { localizedPath, type SupportedLocale } from '@/lib/i18n/locales';
 import type { Dictionary } from '@/lib/i18n/dictionaries/en';
 import { allExamples } from '@/lib/examples-source';
 import { DIAGRAM_TYPE_COUNT } from '@/lib/diagram-stats';
+import { ThemedSvg } from '@/components/ThemedSvg';
 
 // Featured cases — each tying a real diagram to the professional who ships it.
 // Order optimized for cluster coverage: relationships / industrial / corporate / causality.
@@ -67,9 +68,9 @@ const STANDARDS_RAIL = [
 
 const FALLBACK_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 120" role="img" aria-label="Diagram preview unavailable"><rect width="200" height="120" fill="transparent"/><text x="100" y="64" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#999">preview unavailable</text></svg>`;
 
-function safeRender(dsl: string): string {
+function safeRender(dsl: string, theme: 'default' | 'dark'): string {
   try {
-    return render(dsl);
+    return render(dsl, { theme });
   } catch {
     return FALLBACK_SVG;
   }
@@ -208,7 +209,7 @@ export function HomeContent({
                 className="group inline-flex h-10 items-center gap-2 px-4 text-sm font-medium transition hover:opacity-95"
                 style={{
                   background: 'var(--accent)',
-                  color: '#fff',
+                  color: 'var(--color-fd-primary-foreground)',
                   border: '1px solid var(--accent)',
                   borderRadius: 'var(--r-sm)',
                 }}
@@ -297,7 +298,7 @@ export function HomeContent({
               if (!ex) return null;
               const persona = ex.persona ?? '';
               const color = DIAGRAM_TO_CAT[ex.diagram] ?? 'var(--cat-7)';
-              const svg = safeRender(ex.dsl);
+              const lightSvg = safeRender(ex.dsl, 'default');
               return (
                 <Link
                   key={ex.slug}
@@ -316,11 +317,12 @@ export function HomeContent({
                   </div>
                   <div
                     className="dot-grid flex aspect-[4/3] items-center justify-center overflow-hidden p-4"
-                    style={{ background: '#ffffff' }}
+                    style={{ background: 'var(--fill)' }}
                   >
-                    <div
-                      className="flex h-full w-full items-center justify-center [&_svg]:block [&_svg]:h-auto [&_svg]:max-h-full [&_svg]:w-auto [&_svg]:max-w-full"
-                      dangerouslySetInnerHTML={{ __html: svg }}
+                    <ThemedSvg
+                      light={lightSvg}
+                      darkSrc={`/api/example-svg/${ex.slug}?theme=dark`}
+                      className="flex h-full w-full items-center justify-center [&>div]:h-full [&>div]:w-full [&_svg]:block [&_svg]:h-auto [&_svg]:max-h-full [&_svg]:w-auto [&_svg]:max-w-full"
                     />
                   </div>
                   <div className="flex flex-col gap-1.5 p-4" style={{ borderTop: '1px solid var(--line)' }}>
@@ -546,7 +548,7 @@ export function HomeContent({
             <Link
               href="/playground"
               className="inline-flex items-center gap-1.5 px-6 py-3 text-sm font-medium transition hover:opacity-95"
-              style={{ background: 'var(--accent)', color: '#fff', border: '1px solid var(--accent)', borderRadius: 'var(--r-sm)' }}
+              style={{ background: 'var(--accent)', color: 'var(--color-fd-primary-foreground)', border: '1px solid var(--accent)', borderRadius: 'var(--r-sm)' }}
             >
               {dict.finalCta.openPlayground}
             </Link>

@@ -443,7 +443,7 @@ Reuses C4's dashed-boundary approach (§30): a boundary's rectangle is the union
 
 ### 6.1 Where network sits in the theme taxonomy
 
-Two stances exist (see `00-OVERVIEW.md` §Theme System): **`IndustrialTokens`** (circuit/ladder/SLD/logic — *forced monochrome* under IEEE/IEC) and **`BaseTheme` + a semantic extension** (most others — house palette in `default`, true B/W in `monochrome`, Catppuccin in `dark`).
+Two stances exist (see `00-OVERVIEW.md` §Theme System): **`IndustrialTokens`** (circuit/ladder/SLD/logic — *forced monochrome* under IEEE/IEC) and **`BaseTheme` + a semantic extension** (most others — house palette in `default`, true B/W in `monochrome`, Schematex slate/blue in `dark`).
 
 **Network belongs to the second group.** It is *not* an IEEE/IEC compliance drawing — the de-facto reference (Cisco icons) is itself **colourful** (Cisco's blue/teal device icons are part of how the diagram "reads as a network"), and TIA-606-D *prescribes colour* for cable types. So a tasteful colour `default` is not just legitimate, it is closer to the standard than monochrome. But the engine must still produce a clean `monochrome` for print/audit. This mirrors `pert`/`flowchart`/`c4`: a coloured house default, with semantics that fall back to shape/line-style in mono.
 
@@ -533,22 +533,22 @@ export interface NetworkTokens {
 
 > Principle (shared with `petri`/`venn`/`industrial`): in `monochrome`, any semantic that rides on colour in `default` falls back to **line-style or a text/shape tag** — dashed for wireless/vpn, slash ticks for fiber, double line for LAG, text `PoE`/`VLAN 10` tags — so a black-and-white print stays unambiguous.
 
-**`dark`** — Catppuccin Mocha, mirroring `DARK_THEME`:
+**`dark`** — Schematex slate/blue dark palette, mirroring `DARK_THEME`:
 
 | Token | Value |
 |-------|-------|
-| `deviceFill` | `#89b4fa` (Catppuccin blue) |
-| `deviceStroke` | `#1e1e2e` |
-| `deviceAccent` | `#1e1e2e` |
-| `cloudFill` / `cloudStroke` | `#313244` / `#cdd6f4` |
-| `label` / `subLabel` | `#cdd6f4` / `#a6adc8` |
-| `linkCopper` | `#cdd6f4` |
-| `linkFiber` | `#fab387` (peach) |
-| `linkWireless` | `#89b4fa` dashed |
-| `linkPoe` | `#a6e3a1` (green) |
-| `linkVpn` | `#94e2d5` dashed |
-| `subnetStroke` / `subnetFill` | `#89b4fa` / `rgba(137,180,250,0.12)` |
-| `zoneStroke` | `#f38ba8` (red) |
+| `deviceFill` | `#6d8fff` (Schematex slate/blue blue) |
+| `deviceStroke` | `#0f172a` |
+| `deviceAccent` | `#0f172a` |
+| `cloudFill` / `cloudStroke` | `#172033` / `#f8fafc` |
+| `label` / `subLabel` | `#f8fafc` / `#cbd5e1` |
+| `linkCopper` | `#f8fafc` |
+| `linkFiber` | `#fbbf24` (peach) |
+| `linkWireless` | `#6d8fff` dashed |
+| `linkPoe` | `#34d399` (green) |
+| `linkVpn` | `#22d3ee` dashed |
+| `subnetStroke` / `subnetFill` | `#6d8fff` / `rgba(109,143,255,0.12)` |
+| `zoneStroke` | `#f87171` (red) |
 | `vlanPalette` | `DARK_PALETTE` |
 
 ### 6.4 Stroke & type scale (reuse `theme.ts` constants)

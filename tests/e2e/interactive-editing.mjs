@@ -4,12 +4,13 @@ import { connect } from "node:net";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
 import { chromium } from "playwright";
+import { INTERACTIVE_FIXTURES } from "./interactive-fixtures.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = resolve(here, "../..");
 const website = resolve(root, "website");
 const baseUrl = process.env.SCHEMATEX_E2E_BASE_URL ?? "http://127.0.0.1:3101";
-const previewUrl = new URL("/playground/interactive", baseUrl).toString();
+const previewUrl = new URL("/playground", baseUrl).toString();
 
 let server;
 let serverLog = "";
@@ -121,6 +122,19 @@ page.on("console", (message) => {
   if (message.type() === "error") browserErrors.push(message.text());
 });
 
+async function loadDiagram(exampleId) {
+  const dsl = INTERACTIVE_FIXTURES[exampleId];
+  assert.ok(dsl, `missing interaction fixture: ${exampleId}`);
+  await page.evaluate((source) => {
+    window.monaco?.editor.getModels()[0]?.setValue(source);
+  }, dsl);
+  await page.waitForFunction(
+    (source) => window.monaco?.editor.getModels()[0]?.getValue() === source,
+    dsl,
+  );
+  await page.locator(".dot-grid svg").waitFor({ state: "visible" });
+}
+
 async function dragNodeWithLiveEdge({
   exampleId,
   nodeKey,
@@ -131,7 +145,7 @@ async function dragNodeWithLiveEdge({
   midpointSelector,
   handleSelector,
 }) {
-  await page.locator(`[data-example-id="${exampleId}"]`).click();
+  await loadDiagram(exampleId);
   const node = page.locator(`[data-sx-key="${nodeKey}"]`);
   await node.waitFor({ state: "visible" });
   const dragHandle = handleSelector ? node.locator(handleSelector) : node;
@@ -173,6 +187,7 @@ try {
   await page.goto(previewUrl, { waitUntil: "domcontentloaded" });
   console.log("e2e: page loaded");
   await page.locator(".monaco-editor").waitFor({ state: "visible", timeout: 120_000 });
+  await loadDiagram("flowchart-td");
   await page.locator('[data-sx-key="node:C"]').waitFor({ state: "visible" });
 
   if (process.env.SCHEMATEX_E2E_FOCUS !== "expanded") {
@@ -256,11 +271,10 @@ try {
   await page.mouse.move(startX + 90, startY + 70, { steps: 5 });
   assert.notEqual(await edge.getAttribute("d"), baseEdgePath);
   assert.match(await draggable.getAttribute("transform"), /translate\(/);
-  assert.equal(
-    (await page.evaluate(() => window.monaco?.editor.getModels()[0]?.getValue() ?? ""))
-      .includes("@overrides"),
-    false,
+  const previewSource = await page.evaluate(
+    () => window.monaco?.editor.getModels()[0]?.getValue() ?? "",
   );
+  assert.ok(previewSource.includes("@overrides") && /^pin D /m.test(previewSource));
   await page.mouse.up();
   const pinnedSource = await page.waitForFunction(() => {
     const source = window.monaco?.editor.getModels()[0]?.getValue() ?? "";
@@ -273,7 +287,7 @@ try {
   console.log("e2e: flowchart passed");
 
   for (const exampleId of ["flowchart-lr", "state", "sequence", "orgchart"]) {
-    await page.locator(`[data-example-id="${exampleId}"]`).click();
+    await loadDiagram(exampleId);
     await page.locator(".dot-grid svg").waitFor({ state: "visible" });
     assert.equal(await page.locator(".dot-grid pre").count(), 0, `${exampleId} should render`);
   }
@@ -305,7 +319,7 @@ try {
   // Circuit netlist: a route now declares the component that owns each
   // endpoint. During drag the exact orthogonal path updates; it no longer
   // guesses from the first/last component on the whole net.
-  await page.locator('[data-example-id="circuit-netlist"]').click();
+  await loadDiagram("circuit-netlist");
   const resistor = page.locator('[data-sx-key="node:R1"]');
   await resistor.waitFor({ state: "visible" });
   const resistorBox = await resistor.boundingBox();
@@ -349,7 +363,7 @@ try {
   // Floorplan: furniture owns the gesture and writes its authored `at x,y`.
   // The room never receives a transform or a pin, so shared-wall validation
   // cannot be broken by clicking a sofa or fixture.
-  await page.locator('[data-example-id="floorplan-home"]').click();
+  await loadDiagram("floorplan-home");
   const sofa = page.locator('.sx-fp-item[data-furniture="sofa"]');
   const livingRoom = page.locator('[data-sx-key="node:living"]');
   await sofa.waitFor({ state: "visible" });
@@ -375,7 +389,7 @@ try {
 
   // Genogram: direct endpoints, couple midpoints, and emotional curves use
   // explicit weighted bindings instead of the generic sampled-path guess.
-  await page.locator('[data-example-id="genogram"]').click();
+  await loadDiagram("genogram");
   const dad = page.locator('[data-sx-key="node:dad"]');
   await dad.waitFor({ state: "visible" });
   const dadBox = await dad.boundingBox();
@@ -430,7 +444,7 @@ try {
 
   // Mindmap is label-only: generated hierarchy IDs are intentionally not
   // pinnable, while authored Markdown labels still round-trip by exact range.
-  await page.locator('[data-example-id="mindmap"]').click();
+  await loadDiagram("mindmap");
   const mindmapRootLabel = page.locator(
     '[data-sx-key="node:n0"] [data-sx-role="label"]',
   );
@@ -462,7 +476,7 @@ try {
   // Keep common ChatDiagram engines visible as render regression probes in
   // addition to the focused interaction assertions above.
   for (const exampleId of ["network", "decisiontree", "fishbone", "erd", "umlclass"]) {
-    await page.locator(`[data-example-id="${exampleId}"]`).click();
+    await loadDiagram(exampleId);
     await page.locator(".dot-grid svg").waitFor({ state: "visible" });
     assert.equal(await page.locator(".dot-grid pre").count(), 0, `${exampleId} should render`);
   }

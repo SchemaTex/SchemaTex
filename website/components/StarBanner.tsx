@@ -53,7 +53,7 @@ export function StarBanner({
           className="inline-flex shrink-0 items-center gap-1.5 px-3 py-1.5 font-mono text-[13px] font-medium transition hover:opacity-95"
           style={{
             background: 'var(--accent)',
-            color: '#fff',
+            color: 'var(--color-fd-primary-foreground)',
             border: '1px solid var(--accent)',
             borderRadius: 'var(--r-sm)',
           }}

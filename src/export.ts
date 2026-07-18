@@ -22,6 +22,22 @@ export interface PngExportOptions {
   background?: string | null;
 }
 
+/** Add an opaque white paint layer without disturbing SVG title/description metadata. */
+export function withWhiteSvgBackground(svgString: string): string {
+  if (svgString.includes('data-sx-export-background="true"')) return svgString;
+  const open = svgString.match(/<svg\b[^>]*>/)?.[0];
+  if (!open) return svgString;
+  const descEnd = svgString.indexOf("</desc>");
+  const titleEnd = svgString.indexOf("</title>");
+  const insertAt = descEnd >= 0
+    ? descEnd + "</desc>".length
+    : titleEnd >= 0
+      ? titleEnd + "</title>".length
+      : svgString.indexOf(open) + open.length;
+  const background = '<rect width="100%" height="100%" fill="#ffffff" data-sx-export-background="true"/>';
+  return `${svgString.slice(0, insertAt)}${background}${svgString.slice(insertAt)}`;
+}
+
 /**
  * Convert an SVG string to a PNG Blob using Canvas.
  * Resolves at @2× by default for crisp retina output.
@@ -93,6 +109,7 @@ export function downloadBlob(blob: Blob, filename: string): void {
  * (allows Save as PDF via the OS print driver).
  */
 export function printSvgAsPdf(svgString: string, title = "Schematex Diagram"): void {
+  const printSvg = withWhiteSvgBackground(svgString);
   const html = `<!DOCTYPE html>
 <html>
 <head>
@@ -100,6 +117,7 @@ export function printSvgAsPdf(svgString: string, title = "Schematex Diagram"): v
 <title>${title}</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #fff; color: #111; }
   body { display: flex; justify-content: center; align-items: flex-start; }
   svg { max-width: 100%; height: auto; display: block; }
   @media print {
@@ -108,7 +126,7 @@ export function printSvgAsPdf(svgString: string, title = "Schematex Diagram"): v
   }
 </style>
 </head>
-<body>${svgString}</body>
+<body>${printSvg}</body>
 </html>`;
 
   const win = window.open("", "_blank", "width=900,height=700");

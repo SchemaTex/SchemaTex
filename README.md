@@ -103,7 +103,7 @@ export function DiagramEditor() {
 }
 ```
 
-Twenty parser-native engines support deterministic canvas editing; 17 also support stable-ID drag or native geometry handles. The other 30 remain fully renderable and editable through their DSL source, without guessed canvas handles. See the [interactive editing guide](https://schematex.js.org/docs/interactive-editing) and [live workspace](https://schematex.js.org/playground/interactive).
+Twenty parser-native engines support deterministic canvas editing; 17 also support stable-ID drag or native geometry handles. The other 30 remain fully renderable and editable through their DSL source, without guessed canvas handles. See the [interactive editing guide](https://schematex.js.org/docs/interactive-editing) and [live workspace](https://schematex.js.org/playground).
 
 Coding agents can start at [`llms.txt`](https://schematex.js.org/llms.txt), load the complete Markdown corpus from [`llms-full.txt`](https://schematex.js.org/llms-full.txt), or query the [machine-readable interaction capability registry](https://schematex.js.org/api/interactive-capabilities). Append `.md` to any documentation URL for clean Markdown.
 

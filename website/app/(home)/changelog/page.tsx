@@ -4,6 +4,7 @@ import { DiagramIcon } from '@/components/DiagramIcon';
 import { parseChangelog, type ChangelogEntry, type ChangelogVersion } from '@/lib/changelog';
 import { getDiagramEntryMap } from '@/lib/diagrams-index';
 import { resolveDiagramType, type DiagramType } from 'schematex/ai';
+import { ThemedSvg } from '@/components/ThemedSvg';
 
 export const metadata: Metadata = {
   title: 'Changelog — what shipped in each Schematex release',
@@ -131,14 +132,19 @@ function VersionBlock({ version }: { version: ChangelogVersion }) {
           {diagrams.map((t) => {
             const meta = entryMap.get(t);
             const svg = meta?.examples[0]?.svg ?? null;
+            const exampleSlug = meta?.examples[0]?.slug;
             return (
               <Link key={t} href={`/gallery?view=type#type-${t}`} className="gal-card">
                 <div
                   className="dot-grid flex items-center justify-center p-2"
-                  style={{ height: 120, color: 'var(--stroke)', background: '#ffffff' }}
+                  style={{ height: 120, color: 'var(--stroke)', background: 'var(--fill)' }}
                 >
-                  {svg ? (
-                    <div className="h-full w-full [&_svg]:mx-auto [&_svg]:max-h-full [&_svg]:max-w-full" dangerouslySetInnerHTML={{ __html: svg }} />
+                  {svg && exampleSlug ? (
+                    <ThemedSvg
+                      light={svg}
+                      darkSrc={`/api/example-svg/${exampleSlug}?theme=dark`}
+                      className="h-full w-full [&_svg]:mx-auto [&_svg]:max-h-full [&_svg]:max-w-full"
+                    />
                   ) : (
                     <DiagramIcon type={t} size={34} style={{ color: 'var(--text-muted)', opacity: 0.35 }} />
                   )}
@@ -169,7 +175,7 @@ function EntryBlock({ entry }: { entry: ChangelogEntry }) {
       <div className="flex flex-wrap items-center gap-2">
         <span
           className="font-mono text-[10px] uppercase tracking-wider"
-          style={{ padding: '2px 7px', borderRadius: 'var(--r-sm)', background: color, color: '#fff' }}
+          style={{ padding: '2px 7px', borderRadius: 'var(--r-sm)', background: color, color: 'var(--color-fd-primary-foreground)' }}
         >
           {entry.kind}
         </span>

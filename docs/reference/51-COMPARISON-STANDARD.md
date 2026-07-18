@@ -177,7 +177,7 @@ criterion "Cost" weight: 4
 
 ## 7. 渲染（§7）
 
-语义 SVG：`<title>` + `<desc>`（含算出的赢家句）、class 主题化、`data-diagram-type="comparison"` + `data-mode`、每个 cell `data-variant`（+ glyph 时 `data-glyph`）。无 inline style。house blue 头；绿/红/琥珀承载正反与 yes/no/partial；绿色同时标 decision 赢家。`monochrome` 去色——正反靠 ✓/✗/~ 字形、赢家靠重边框（B&W 复印友好）；`dark` 为 Catppuccin。
+语义 SVG：`<title>` + `<desc>`（含算出的赢家句）、class 主题化、`data-diagram-type="comparison"` + `data-mode`、每个 cell `data-variant`（+ glyph 时 `data-glyph`）。无 inline style。house blue 头；绿/红/琥珀承载正反与 yes/no/partial；绿色同时标 decision 赢家。`monochrome` 去色——正反靠 ✓/✗/~ 字形、赢家靠重边框（B&W 复印友好）；`dark` 为 Schematex slate/blue。
 
 ---
 

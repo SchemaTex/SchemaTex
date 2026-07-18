@@ -76,7 +76,7 @@ function CatalogSection({ catalog }: { catalog: SymbolCatalog }) {
           <div key={s.id} className="gal-card flex flex-col" title={s.id}>
             <div
               className="dot-grid flex items-center justify-center p-2"
-              style={{ height: 76, background: '#ffffff' }}
+              style={{ height: 76, background: 'var(--fill)' }}
             >
               <div
                 className="flex h-full w-full items-center justify-center [&>svg]:max-h-full [&>svg]:max-w-full [&>svg]:h-auto [&>svg]:w-auto"

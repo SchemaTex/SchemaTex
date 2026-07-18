@@ -21,6 +21,11 @@ const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
 /** @type {import('next').NextConfig} */
 const config = {
   reactStrictMode: true,
+  async redirects() {
+    return [
+      { source: '/playground/interactive', destination: '/playground', permanent: true },
+    ];
+  },
   async rewrites() {
     const routes = [
       // Clean Markdown mirrors for coding agents and plain-text clients.

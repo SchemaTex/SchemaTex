@@ -33,6 +33,12 @@ export interface InteractionOptions {
     commit: (text: string) => void,
     cancel: () => void
   ) => void;
+  /**
+   * Transient, revision-guarded position source produced during a drag.
+   * The host may display it without rerendering the controlled SVG. `null`
+   * means the gesture was cancelled and the preview should be discarded.
+   */
+  onSourcePreview?: (newSource: string | null, reason: "position") => void;
   onSourceChange: (newSource: string, reason: "label" | "position") => void;
 }
 
@@ -66,6 +72,8 @@ interface DragState {
   baseTransform: string;
   linkedElements: Array<{ element: SVGElement; baseTransform: string }>;
   liveEdges: LiveEdgePreview[];
+  sourceAtStart: string;
+  previewSource: string | null;
   moved: boolean;
 }
 
@@ -419,7 +427,11 @@ export function attachInteraction(
   };
 
   const select = (hit: { item: SceneItem; element: SVGElement } | null): void => {
-    if (selected !== hit?.element) selected?.classList.remove("sx-interactive-selected");
+    if (selected !== hit?.element) {
+      svg.querySelectorAll(".sx-interactive-selected").forEach((element) =>
+        element.classList.remove("sx-interactive-selected")
+      );
+    }
     selected = hit?.element ?? null;
     selected?.classList.add("sx-interactive-selected");
     options.onSelect?.(hit?.item ?? null);
@@ -491,27 +503,29 @@ export function attachInteraction(
       // Pointer capture may already be gone after pointercancel/detach.
     }
     if (!commit || !state.moved || !state.item.bbox) {
+      if (state.previewSource !== null) options.onSourcePreview?.(null, "position");
       restoreDragVisual(state);
       return;
     }
     const scene = currentScene();
     if (!scene || !endTransform) {
+      if (state.previewSource !== null) options.onSourcePreview?.(null, "position");
       restoreDragVisual(state);
       return;
     }
     const [dxText, dyText] = endTransform.split(",");
     const dx = Number(dxText);
     const dy = Number(dyText);
-    const currentSource = options.getSource();
-    const edited = setPosition(currentSource, state.item, {
+    const edited = setPosition(state.sourceAtStart, state.item, {
       x: state.item.bbox.x + dx,
       y: state.item.bbox.y + dy,
     });
-    if (edited.diagnostics.length === 0 && edited.source !== currentSource) {
+    if (edited.diagnostics.length === 0 && edited.source !== state.sourceAtStart) {
       suppressClick = true;
       options.onSourceChange(edited.source, "position");
       return;
     }
+    if (state.previewSource !== null) options.onSourcePreview?.(null, "position");
     restoreDragVisual(state);
   };
 
@@ -544,13 +558,18 @@ export function attachInteraction(
       liveEdges: hit.item.semanticId
         ? collectLiveEdges(svg, hit.item.semanticId, hit.item.bbox)
         : [],
+      sourceAtStart: options.getSource(),
+      previewSource: null,
       moved: false,
     };
+    select(hit);
     hit.element.setPointerCapture(event.pointerId);
   };
 
   const onPointerMove = (event: PointerEvent): void => {
     if (!drag || event.pointerId !== drag.pointerId) return;
+    const bbox = drag.item.bbox;
+    if (!bbox) return;
     const clientDistance = Math.hypot(
       event.clientX - drag.startClientX,
       event.clientY - drag.startClientY
@@ -573,6 +592,20 @@ export function attachInteraction(
       );
     }
     previewLiveEdges(drag.liveEdges, dx, dy);
+    if (options.onSourcePreview) {
+      const edited = setPosition(drag.sourceAtStart, drag.item, {
+        x: bbox.x + dx,
+        y: bbox.y + dy,
+      });
+      if (
+        edited.diagnostics.length === 0 &&
+        edited.source !== drag.sourceAtStart &&
+        edited.source !== drag.previewSource
+      ) {
+        drag.previewSource = edited.source;
+        options.onSourcePreview(edited.source, "position");
+      }
+    }
     event.preventDefault();
   };
 

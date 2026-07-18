@@ -171,7 +171,8 @@ export type ResolvedTheme<T = object> = BaseTheme & T;
  * Unified 8-color category palettes. Single source of truth for every
  * diagram family — ecomap systems, sociogram groups, phylo clades, fishbone
  * bones, Venn sets all cycle through the same colors per theme.
- * Default uses Tailwind 600; dark uses Catppuccin Mocha; mono uses greys.
+ * Default uses Tailwind 600; dark derives lighter tones from the same
+ * slate/blue family; mono uses greys.
  */
 const DEFAULT_PALETTE = [
   "#2563eb", // blue-600
@@ -196,14 +197,14 @@ const MONOCHROME_PALETTE = [
 ] as const;
 
 const DARK_PALETTE = [
-  "#89b4fa", // blue
-  "#a6e3a1", // green
-  "#fab387", // peach
-  "#cba6f7", // mauve
-  "#f38ba8", // red
-  "#94e2d5", // teal
-  "#f5c2e7", // pink
-  "#89dceb", // sky
+  "#6d8fff", // blue
+  "#34d399", // green
+  "#fbbf24", // peach
+  "#a78bfa", // mauve
+  "#f87171", // red
+  "#22d3ee", // teal
+  "#f472b6", // pink
+  "#38bdf8", // sky
 ] as const;
 
 const DEFAULT_THEME: BaseTheme = {
@@ -237,17 +238,17 @@ const MONOCHROME_THEME: BaseTheme = {
 };
 
 const DARK_THEME: BaseTheme = {
-  bg: "#1e1e2e",
-  text: "#cdd6f4",
-  textMuted: "#7f849c",
-  stroke: "#cdd6f4",
-  fill: "#313244",
-  fillMuted: "#45475a",
-  accent: "#89b4fa",
-  positive: "#a6e3a1",
-  negative: "#f38ba8",
-  neutral: "#6c7086",
-  warn: "#fab387",
+  bg: "#0f172a",
+  text: "#f8fafc",
+  textMuted: "#94a3b8",
+  stroke: "#f8fafc",
+  fill: "#172033",
+  fillMuted: "#202b3d",
+  accent: "#6d8fff",
+  positive: "#34d399",
+  negative: "#f87171",
+  neutral: "#64748b",
+  warn: "#fbbf24",
   palette: DARK_PALETTE,
 };
 
@@ -278,9 +279,9 @@ const MONOCHROME_PERSON: PersonTokens = {
 const DARK_PERSON: PersonTokens = {
   maleFill: "#1e3a5f",
   femaleFill: "#3e1f3e",
-  unknownFill: "#45475a",
-  deceasedMark: "#f38ba8",
-  conditionFill: "#89b4fa",
+  unknownFill: "#202b3d",
+  deceasedMark: "#f87171",
+  conditionFill: "#6d8fff",
 };
 
 export const PERSON_TOKENS: Record<ThemeName, PersonTokens> = {
@@ -309,10 +310,10 @@ const MONOCHROME_BIOLOGY: BiologyTokens = {
 
 const DARK_BIOLOGY: BiologyTokens = {
   cladeColors: DARK_PALETTE,
-  supportGood: "#a6e3a1",
-  supportMedium: "#f9e2af",
-  supportWarn: "#fab387",
-  supportBad: "#f38ba8",
+  supportGood: "#34d399",
+  supportMedium: "#facc15",
+  supportWarn: "#fbbf24",
+  supportBad: "#f87171",
 };
 
 export const BIOLOGY_TOKENS: Record<ThemeName, BiologyTokens> = {
@@ -347,10 +348,10 @@ const DARK_VENN: VennTokens = {
   vennSetColors: DARK_PALETTE,
   vennBlendMode: "screen",
   vennSetOpacity: 0.55,
-  vennSetStroke: "#585b70",
-  vennLabelColor: "#cdd6f4",
-  vennCountColor: "#f9e2af",
-  vennLeaderColor: "#7f849c",
+  vennSetStroke: "#475569",
+  vennLabelColor: "#f8fafc",
+  vennCountColor: "#facc15",
+  vennLeaderColor: "#94a3b8",
 };
 
 export const VENN_TOKENS: Record<ThemeName, VennTokens> = {
@@ -387,13 +388,13 @@ const MONOCHROME_MINDMAP: MindmapTokens = {
 };
 
 const DARK_MINDMAP: MindmapTokens = {
-  centralFill: "#cdd6f4",
+  centralFill: "#f8fafc",
   branchPalette: DARK_PALETTE,
-  codeFg: "#f5c2e7",
-  codeBg: "#313244",
-  linkColor: "#89b4fa",
-  checkboxStroke: "#a6adc8",
-  checkboxFill: "#a6e3a1",
+  codeFg: "#f472b6",
+  codeBg: "#172033",
+  linkColor: "#6d8fff",
+  checkboxStroke: "#cbd5e1",
+  checkboxFill: "#34d399",
 };
 
 export const MINDMAP_TOKENS: Record<ThemeName, MindmapTokens> = {
@@ -426,13 +427,13 @@ const MONOCHROME_INDUSTRIAL: IndustrialTokens = {
 
 // Dark = inverted luminance only. No colorful semantics — still compliance-grade.
 const DARK_INDUSTRIAL: IndustrialTokens = {
-  bg: "#1e1e2e",
-  stroke: "#cdd6f4",
+  bg: "#0f172a",
+  stroke: "#f8fafc",
   strokeHeavy: "#ffffff",
-  text: "#cdd6f4",
-  textMuted: "#9399b2",
-  accent: "#89b4fa",
-  error: "#f38ba8",
+  text: "#f8fafc",
+  textMuted: "#94a3b8",
+  accent: "#6d8fff",
+  error: "#f87171",
 };
 
 export const INDUSTRIAL_TOKENS: Record<ThemeName, IndustrialTokens> = {
@@ -486,7 +487,7 @@ const DARK_FLOWCHART: FlowchartTokens = {
     decision: { fill: "#3a2d1a", stroke: "#d4985c", text: "#f2d5a8" },
     success:  { fill: "#1e3a2a", stroke: "#7bc19a", text: "#cdefd8" },
     danger:   { fill: "#3a231f", stroke: "#d89181", text: "#f2d0c8" },
-    neutral:  { fill: "#313244", stroke: "#7f849c", text: "#cdd6f4" },
+    neutral:  { fill: "#172033", stroke: "#94a3b8", text: "#f8fafc" },
   },
 };
 
@@ -551,24 +552,24 @@ const MONOCHROME_TIMELINE: TimelineTokens = {
 };
 
 const DARK_TIMELINE: TimelineTokens = {
-  axis: "#cdd6f4",
-  axisLabel: "#9399b2",
-  eraLabel: "#cdd6f4",
+  axis: "#f8fafc",
+  axisLabel: "#94a3b8",
+  eraLabel: "#f8fafc",
   eraOpacity: 0.5,
   eraPlotOpacity: 0.18,
-  laneStripe: "#313244",
+  laneStripe: "#172033",
   laneStripeOpacity: 0.5,
   categoryPalette: DARK_PALETTE,
-  markerRing: "#89b4fa",
-  markerFill: "#1e1e2e",
-  milestoneFill: "#fab387",
-  pinShaft: "#6c7086",
-  cardBg: "#313244",
-  cardStroke: "#45475a",
-  cardText: "#cdd6f4",
+  markerRing: "#6d8fff",
+  markerFill: "#0f172a",
+  milestoneFill: "#fbbf24",
+  pinShaft: "#64748b",
+  cardBg: "#172033",
+  cardStroke: "#202b3d",
+  cardText: "#f8fafc",
   cardShadow: "rgba(0,0,0,0.35)",
-  legendBg: "#181825",
-  legendStroke: "#45475a",
+  legendBg: "#0b1220",
+  legendStroke: "#202b3d",
 };
 
 export const TIMELINE_TOKENS: Record<ThemeName, TimelineTokens> = {
@@ -651,18 +652,18 @@ const MONOCHROME_PETRI: PetriTokens = {
 };
 
 const DARK_PETRI: PetriTokens = {
-  placeFill: "#313244",
-  placeStroke: "#cdd6f4",
-  transitionBarFill: "#cdd6f4",
-  transitionBoxFill: "#313244",
-  transitionStroke: "#cdd6f4",
-  tokenFill: "#cdd6f4",
-  enabledStroke: "#a6e3a1",
-  enabledFill: "rgba(166,227,161,0.15)",
-  deadStroke: "#6c7086",
-  inhibitorStroke: "#f38ba8",
-  arcStroke: "#cdd6f4",
-  weightLabel: "#89b4fa",
+  placeFill: "#172033",
+  placeStroke: "#f8fafc",
+  transitionBarFill: "#f8fafc",
+  transitionBoxFill: "#172033",
+  transitionStroke: "#f8fafc",
+  tokenFill: "#f8fafc",
+  enabledStroke: "#34d399",
+  enabledFill: "rgba(52,211,153,0.15)",
+  deadStroke: "#64748b",
+  inhibitorStroke: "#f87171",
+  arcStroke: "#f8fafc",
+  weightLabel: "#6d8fff",
   tokenPalette: DARK_PALETTE,
 };
 
@@ -743,21 +744,21 @@ const MONOCHROME_RELIABILITY: ReliabilityTokens = {
 };
 
 const DARK_RELIABILITY: ReliabilityTokens = {
-  eventFill: "#313244",
-  eventStroke: "#cdd6f4",
-  topEventStroke: "#cdd6f4",
-  basicFill: "#313244",
-  basicStroke: "#cdd6f4",
-  undevelopedFill: "#45475a",
+  eventFill: "#172033",
+  eventStroke: "#f8fafc",
+  topEventStroke: "#f8fafc",
+  basicFill: "#172033",
+  basicStroke: "#f8fafc",
+  undevelopedFill: "#202b3d",
   houseFill: "#45413a",
-  conditionFill: "#45475a",
-  gateFill: "rgba(166,227,161,0.18)",
-  gateStroke: "#a6e3a1",
-  edgeStroke: "#cdd6f4",
-  probText: "#89b4fa",
-  cutsetStroke: "#f38ba8",
-  cutsetFill: "rgba(243,139,168,0.12)",
-  spofStroke: "#eba0ac",
+  conditionFill: "#202b3d",
+  gateFill: "rgba(52,211,153,0.18)",
+  gateStroke: "#34d399",
+  edgeStroke: "#f8fafc",
+  probText: "#6d8fff",
+  cutsetStroke: "#f87171",
+  cutsetFill: "rgba(248,113,113,0.12)",
+  spofStroke: "#fb7185",
 };
 
 export const RELIABILITY_TOKENS: Record<ThemeName, ReliabilityTokens> = {
@@ -838,24 +839,24 @@ const MONOCHROME_BOWTIE: BowtieTokens = {
   labelText: "#000000",
 };
 
-// Catppuccin Mocha, mirroring DARK_THEME.
+// Slate/blue dark palette, mirroring DARK_THEME.
 const DARK_BOWTIE: BowtieTokens = {
   hazardFill: "#45413a",
-  hazardStroke: "#f9e2af",
-  topEventFill: "#a6e3a1",
+  hazardStroke: "#facc15",
+  topEventFill: "#34d399",
   topEventStroke: "#40a02b",
-  threatFill: "#fab387",
+  threatFill: "#fbbf24",
   threatStroke: "#e8a06a",
-  barrierFill: "#9399b2",      // light-grey surface so the single dark label reads
-  barrierStroke: "#6c7086",
-  consequenceFill: "#f38ba8",
+  barrierFill: "#94a3b8",      // light-grey surface so the single dark label reads
+  barrierStroke: "#64748b",
+  consequenceFill: "#f87171",
   consequenceStroke: "#e06c85",
-  escalationFill: "#f9e2af",
+  escalationFill: "#facc15",
   escalationStroke: "#d8bd84",
-  efBarrierFill: "#9399b2",
-  lineStroke: "#cdd6f4",
-  escalationLineStroke: "#7f849c",
-  labelText: "#1e1e2e",
+  efBarrierFill: "#94a3b8",
+  lineStroke: "#f8fafc",
+  escalationLineStroke: "#94a3b8",
+  labelText: "#0f172a",
 };
 
 export const BOWTIE_TOKENS: Record<ThemeName, BowtieTokens> = {
@@ -1021,49 +1022,49 @@ const MONOCHROME_COMPARISON: ComparisonTokens = {
 };
 
 const DARK_COMPARISON: ComparisonTokens = {
-  headerFill: "#89b4fa",
-  headerStroke: "#89b4fa",
-  headerText: "#1e1e2e",
-  rowHeaderFill: "#313244",
-  cellFill: "#1e1e2e",
+  headerFill: "#6d8fff",
+  headerStroke: "#6d8fff",
+  headerText: "#0f172a",
+  rowHeaderFill: "#172033",
+  cellFill: "#0f172a",
   cellAltFill: "#252537",
-  cellStroke: "#45475a",
-  cellText: "#cdd6f4",
-  gridStroke: "#45475a",
-  columnColors: ["#89b4fa", "#94e2d5", "#cba6f7", "#fab387", "#a6e3a1", "#f5c2e7"],
-  columnText: "#1e1e2e",
-  cardFill: "#181825",
-  cardStroke: "#313244",
-  rowDivider: "#313244",
+  cellStroke: "#202b3d",
+  cellText: "#f8fafc",
+  gridStroke: "#202b3d",
+  columnColors: ["#6d8fff", "#22d3ee", "#a78bfa", "#fbbf24", "#34d399", "#f472b6"],
+  columnText: "#0f172a",
+  cardFill: "#0b1220",
+  cardStroke: "#172033",
+  rowDivider: "#172033",
   posFill: "#2d4a36",
-  posText: "#a6e3a1",
+  posText: "#34d399",
   negFill: "#4a2d33",
-  negText: "#f38ba8",
+  negText: "#f87171",
   warnFill: "#4a452d",
-  warnText: "#f9e2af",
+  warnText: "#facc15",
   winnerFill: "#3a5a44",
-  winnerStroke: "#a6e3a1",
-  winnerText: "#a6e3a1",
-  totalFill: "#313244",
+  winnerStroke: "#34d399",
+  winnerText: "#34d399",
+  totalFill: "#172033",
   baselineFill: "#2a3a55",
-  tagText: "#7f849c",
-  captionText: "#bac2de",
+  tagText: "#94a3b8",
+  captionText: "#e2e8f0",
   pillPosFill: "#40a02b",
   pillNegFill: "#e06c85",
   pillText: "#ffffff",
-  badgeText: "#1e1e2e",
-  dbLeftCenterFill: "#89b4fa",
-  dbLeftCenterText: "#1e1e2e",
-  dbRightCenterFill: "#94e2d5",
-  dbRightCenterText: "#1e1e2e",
-  dbSharedFill: "#a6e3a1",
-  dbSharedText: "#1e1e2e",
-  dbLeftFill: "#313244",
-  dbLeftText: "#cdd6f4",
+  badgeText: "#0f172a",
+  dbLeftCenterFill: "#6d8fff",
+  dbLeftCenterText: "#0f172a",
+  dbRightCenterFill: "#22d3ee",
+  dbRightCenterText: "#0f172a",
+  dbSharedFill: "#34d399",
+  dbSharedText: "#0f172a",
+  dbLeftFill: "#172033",
+  dbLeftText: "#f8fafc",
   dbRightFill: "#3a3a4f",
-  dbRightText: "#cdd6f4",
-  dbStroke: "#45475a",
-  connectorStroke: "#6c7086",
+  dbRightText: "#f8fafc",
+  dbStroke: "#202b3d",
+  connectorStroke: "#64748b",
 };
 
 export const COMPARISON_TOKENS: Record<ThemeName, ComparisonTokens> = {
@@ -1156,27 +1157,27 @@ const MONOCHROME_NETWORK: NetworkTokens = {
 };
 
 const DARK_NETWORK: NetworkTokens = {
-  deviceFill: "#89b4fa",
-  deviceStroke: "#1e1e2e",
-  deviceAccent: "#1e1e2e",
-  cloudFill: "#313244",
-  cloudStroke: "#cdd6f4",
-  label: "#cdd6f4",
-  subLabel: "#a6adc8",
-  linkCopper: "#cdd6f4",
-  linkFiber: "#fab387",
-  linkWireless: "#89b4fa",
-  linkSerial: "#cba6f7",
-  linkPoe: "#a6e3a1",
-  linkVpn: "#94e2d5",
-  linkLag: "#cdd6f4",
-  linkLabel: "#a6adc8",
-  siteStroke: "#cdd6f4",
-  subnetStroke: "#89b4fa",
-  subnetFill: "rgba(137,180,250,0.12)",
-  zoneStroke: "#f38ba8",
+  deviceFill: "#6d8fff",
+  deviceStroke: "#0f172a",
+  deviceAccent: "#0f172a",
+  cloudFill: "#172033",
+  cloudStroke: "#f8fafc",
+  label: "#f8fafc",
+  subLabel: "#cbd5e1",
+  linkCopper: "#f8fafc",
+  linkFiber: "#fbbf24",
+  linkWireless: "#6d8fff",
+  linkSerial: "#a78bfa",
+  linkPoe: "#34d399",
+  linkVpn: "#22d3ee",
+  linkLag: "#f8fafc",
+  linkLabel: "#cbd5e1",
+  siteStroke: "#f8fafc",
+  subnetStroke: "#6d8fff",
+  subnetFill: "rgba(109,143,255,0.12)",
+  zoneStroke: "#f87171",
   vlanPalette: DARK_PALETTE,
-  warn: "#fab387",
+  warn: "#fbbf24",
 };
 
 export const NETWORK_TOKENS: Record<ThemeName, NetworkTokens> = {
@@ -1193,7 +1194,7 @@ export function resolveNetworkTheme(name: string): ResolvedTheme<NetworkTokens> 
 // ─── UML Class Diagram Tokens ──────────────────────────────
 // 36-UMLCLASS-STANDARD §6. Coloured-house family (with `c4`, `flowchart`,
 // `sequence`): blue/grey neutrals in default, true black/white in monochrome,
-// Catppuccin in dark. Relationship semantics ride entirely on adornment SHAPE
+// Lighter slate/blue tones in dark. Relationship semantics ride entirely on adornment SHAPE
 // (diamond/triangle/arrow, filled/hollow, solid/dashed) so the diagram is
 // identical in monochrome — see spec §6.5 house-style rule.
 
@@ -1268,21 +1269,21 @@ const MONOCHROME_UMLCLASS: UmlClassTokens = {
 };
 
 const DARK_UMLCLASS: UmlClassTokens = {
-  classifierFill: "#313244",
-  classifierStroke: "#cdd6f4",
-  headerFill: "#45475a",
-  nameText: "#cdd6f4",
-  stereotypeText: "#a6adc8",
-  memberText: "#cdd6f4",
-  visibilityText: "#a6adc8",
-  relationStroke: "#cdd6f4",
-  adornmentFill: "#cdd6f4",
-  adornmentHollowFill: "#313244",
-  edgeLabel: "#bac2de",
-  abstractAccent: "#89b4fa",
+  classifierFill: "#172033",
+  classifierStroke: "#f8fafc",
+  headerFill: "#202b3d",
+  nameText: "#f8fafc",
+  stereotypeText: "#cbd5e1",
+  memberText: "#f8fafc",
+  visibilityText: "#cbd5e1",
+  relationStroke: "#f8fafc",
+  adornmentFill: "#f8fafc",
+  adornmentHollowFill: "#172033",
+  edgeLabel: "#e2e8f0",
+  abstractAccent: "#6d8fff",
   packageFill: "rgba(205,214,244,0.05)",
-  packageStroke: "#6c7086",
-  packageLabel: "#a6adc8",
+  packageStroke: "#64748b",
+  packageLabel: "#cbd5e1",
 };
 
 export const UMLCLASS_TOKENS: Record<ThemeName, UmlClassTokens> = {
@@ -1302,7 +1303,7 @@ export function resolveUmlClassTheme(name: string): ResolvedTheme<UmlClassTokens
 // end events, yellow gateway diamonds, blue-tinted tasks — which `default`
 // adopts in the house tint-fill + 600-stroke pairing. `monochrome` is the pure
 // OMG-spec print look (the standard itself prescribes no colour); `dark` is
-// Catppuccin like the rest of the family.
+// Schematex slate/blue like the rest of the family.
 
 export interface BpmnTokens {
   /** Pool body + lane/pool borders + glyph strokes. */
@@ -1375,24 +1376,24 @@ const MONOCHROME_BPMN: BpmnTokens = {
 };
 
 const DARK_BPMN: BpmnTokens = {
-  bpmnStroke: "#cdd6f4",
-  bpmnText: "#cdd6f4",
-  poolFill: "#1e1e2e",
+  bpmnStroke: "#f8fafc",
+  bpmnText: "#f8fafc",
+  poolFill: "#0f172a",
   laneFill: "#272736",
-  labelBandFill: "#313244",
+  labelBandFill: "#172033",
   taskFill: "#1e3a5f",
-  taskStroke: "#89b4fa",
+  taskStroke: "#6d8fff",
   gatewayFill: "#45413a",
-  gatewayStroke: "#f9e2af",
-  gatewayGlyph: "#f9e2af",
+  gatewayStroke: "#facc15",
+  gatewayGlyph: "#facc15",
   startFill: "#1e3a2a",
-  startStroke: "#a6e3a1",
+  startStroke: "#34d399",
   endFill: "#3a231f",
-  endStroke: "#f38ba8",
-  intermediateFill: "#313244",
-  intermediateStroke: "#cdd6f4",
-  flowStroke: "#cdd6f4",
-  msgFlowStroke: "#7f849c",
+  endStroke: "#f87171",
+  intermediateFill: "#172033",
+  intermediateStroke: "#f8fafc",
+  flowStroke: "#f8fafc",
+  msgFlowStroke: "#94a3b8",
 };
 
 export const BPMN_TOKENS: Record<ThemeName, BpmnTokens> = {
@@ -1410,7 +1411,7 @@ export function resolveBpmnTheme(name: string): ResolvedTheme<BpmnTokens> {
 // UML 2.5 / Harel statechart. Neutral-house family like umlclass: slate body
 // in default (it previously carried two hardcoded blacks, #1a1a1a and #2a2a2a),
 // the conventional sticky-note yellow for UML notes, pure black/white in
-// monochrome, Catppuccin in dark.
+// monochrome, Schematex slate/blue in dark.
 
 export interface StateTokens {
   stateFill: string;
@@ -1468,20 +1469,20 @@ const MONOCHROME_STATE: StateTokens = {
 };
 
 const DARK_STATE: StateTokens = {
-  stateFill: "#313244",
-  stateStroke: "#cdd6f4",
-  stateText: "#cdd6f4",
-  activityText: "#a6adc8",
+  stateFill: "#172033",
+  stateStroke: "#f8fafc",
+  stateText: "#f8fafc",
+  activityText: "#cbd5e1",
   compositeFill: "#272736",
-  compositeTitlebar: "#313244",
-  regionDiv: "#6c7086",
-  psInk: "#cdd6f4",
-  transitionStroke: "#cdd6f4",
-  transitionLabel: "#cdd6f4",
-  labelBg: "#1e1e2e",
+  compositeTitlebar: "#172033",
+  regionDiv: "#64748b",
+  psInk: "#f8fafc",
+  transitionStroke: "#f8fafc",
+  transitionLabel: "#f8fafc",
+  labelBg: "#0f172a",
   noteFill: "#45413a",
-  noteStroke: "#f9e2af",
-  noteText: "#cdd6f4",
+  noteStroke: "#facc15",
+  noteText: "#f8fafc",
 };
 
 export const STATE_TOKENS: Record<ThemeName, StateTokens> = {
@@ -1602,31 +1603,31 @@ const MONOCHROME_MATRIX: MatrixTokens = {
 };
 
 const DARK_MATRIX: MatrixTokens = {
-  inkStrong: "#cdd6f4",
-  ink: "#cdd6f4",
-  inkMuted: "#bac2de",
-  inkFaint: "#a6adc8",
-  gridFaint: "#313244",
-  grid: "#45475a",
-  gridMid: "#45475a",
-  gridStrong: "#6c7086",
-  border: "#cdd6f4",
-  surface: "#1e1e2e",
+  inkStrong: "#f8fafc",
+  ink: "#f8fafc",
+  inkMuted: "#e2e8f0",
+  inkFaint: "#cbd5e1",
+  gridFaint: "#172033",
+  grid: "#202b3d",
+  gridMid: "#202b3d",
+  gridStrong: "#64748b",
+  border: "#f8fafc",
+  surface: "#0f172a",
   surfaceAlt: "#272736",
-  surfaceTint: "rgba(166,227,161,0.08)",
-  cornerFill: "#313244",
-  headerFill: "#45475a",
-  accent: "#89b4fa",
+  surfaceTint: "rgba(52,211,153,0.08)",
+  cornerFill: "#172033",
+  headerFill: "#202b3d",
+  accent: "#6d8fff",
   accentSoft: "#45557a",
   accentTint: "#1e3a5f",
-  accentDeep: "#89b4fa",
+  accentDeep: "#6d8fff",
   roofFilled: "#2a2a45",
-  positive: "#a6e3a1",
-  positiveDeep: "#a6e3a1",
-  negative: "#f38ba8",
-  negativeDeep: "#f38ba8",
-  warnDeep: "#fab387",
-  onHeader: "#1e1e2e",
+  positive: "#34d399",
+  positiveDeep: "#34d399",
+  negative: "#f87171",
+  negativeDeep: "#f87171",
+  warnDeep: "#fbbf24",
+  onHeader: "#0f172a",
 };
 
 export const MATRIX_TOKENS: Record<ThemeName, MatrixTokens> = {
@@ -1694,20 +1695,20 @@ const MONOCHROME_BLOCK: BlockTokens = {
 };
 
 const DARK_BLOCK: BlockTokens = {
-  blockStroke: "#cdd6f4",
-  blockText: "#cdd6f4",
-  blockName: "#a6adc8",
-  sumFill: "#313244",
-  signalStroke: "#cdd6f4",
+  blockStroke: "#f8fafc",
+  blockText: "#f8fafc",
+  blockName: "#cbd5e1",
+  sumFill: "#172033",
+  signalStroke: "#f8fafc",
   roleFills: {
-    plant: "#313244",
+    plant: "#172033",
     controller: "#1e3a5f",
     sensor: "#2e2a52",
     actuator: "#1e3a2a",
     filter: "#3a3326",
-    reference: "#313244",
+    reference: "#172033",
     disturbance: "#3a2d1a",
-    generic: "#313244",
+    generic: "#172033",
   },
 };
 
@@ -1977,7 +1978,7 @@ const DARK_PLAYBOOK: PlaybookTokens = {
   goalAccent: "#fcd34d",
   rim: "#fb923c",
   surfaceText: "rgba(232,243,236,0.85)",
-  annotation: "#cdd6f4",
+  annotation: "#f8fafc",
 };
 
 export const PLAYBOOK_TOKENS: Record<ThemeName, PlaybookTokens> = {

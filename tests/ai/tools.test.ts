@@ -69,6 +69,15 @@ describe("listDiagrams", () => {
     }
     expect(sourceOnly).toBe(30);
   });
+
+  it("publishes canonical reasons for every constrained position model", () => {
+    for (const entry of listDiagrams()) {
+      if (entry.interactive.position !== "free") {
+        expect(entry.interactive.reason, entry.type).toBeTypeOf("string");
+        expect(entry.interactive.reason!.length, entry.type).toBeGreaterThan(30);
+      }
+    }
+  });
 });
 
 describe("AI-safe editing", () => {

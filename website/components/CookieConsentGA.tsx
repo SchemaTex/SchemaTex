@@ -83,7 +83,7 @@ export function CookieConsentGA() {
         <div
           role="dialog"
           aria-label="Cookie consent"
-          className="fixed inset-x-4 bottom-4 z-[100] mx-auto flex max-w-md flex-col gap-3 rounded-xl border border-gray-200 bg-white p-4 text-sm text-gray-900 shadow-lg sm:left-auto sm:right-4 sm:mx-0 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+          className="fixed inset-x-4 bottom-4 z-[100] mx-auto flex max-w-md flex-col gap-3 rounded-xl border border-[color:var(--line)] bg-[color:var(--fill)] p-4 text-sm text-[color:var(--text)] shadow-lg sm:left-auto sm:right-4 sm:mx-0"
         >
           <p className="text-gray-600 dark:text-gray-400">
             We use cookies to analyze traffic and improve your experience.

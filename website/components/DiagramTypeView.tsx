@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { ThemedSvg } from '@/components/ThemedSvg';
 import { DiagramIcon } from '@/components/DiagramIcon';
 import { ClusterIcon } from '@/components/ClusterIcon';
 import {
@@ -114,12 +115,13 @@ function ExampleThumb({
     <Link href={`/examples/${ex.slug}`} className="gal-card">
       <div
         className="dot-grid flex items-center justify-center p-3"
-        style={{ height: 150, color: 'var(--stroke)', background: '#ffffff' }}
+        style={{ height: 150, color: 'var(--stroke)', background: 'var(--fill)' }}
       >
         {ex.svg ? (
-          <div
+          <ThemedSvg
+            light={ex.svg}
+            darkSrc={`/api/example-svg/${ex.slug}?theme=dark`}
             className="h-full w-full [&_svg]:mx-auto [&_svg]:max-h-full [&_svg]:max-w-full"
-            dangerouslySetInnerHTML={{ __html: ex.svg }}
           />
         ) : (
           <DiagramIcon type={type} size={40} style={{ color: 'var(--text-muted)', opacity: 0.35 }} />

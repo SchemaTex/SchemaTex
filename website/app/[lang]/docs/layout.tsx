@@ -1,9 +1,9 @@
 import { DocsLayout } from 'fumadocs-ui/layouts/docs';
-import { ThemeToggle } from 'fumadocs-ui/components/layout/theme-toggle';
 import type { ReactNode } from 'react';
 import { REPO_URL } from '@/lib/repo';
 import { source, type DocLocale } from '@/lib/source';
 import { DocLangSwitcher } from '@/components/DocLangSwitcher';
+import { ThemeToggle } from '@/components/SiteHeader';
 
 // Localized docs layout — sits under [lang]/layout.tsx which already renders
 // SiteHeader, so we disable the fumadocs top-nav to avoid a double bar.
@@ -31,7 +31,7 @@ export default async function LocalizedDocsLayout({
         component: (
           <>
             <DocLangSwitcher current={docLang} />
-            <ThemeToggle className="ms-auto p-0" />
+            <ThemeToggle compact />
           </>
         ),
       }}

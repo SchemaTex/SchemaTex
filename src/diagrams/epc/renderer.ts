@@ -76,12 +76,12 @@ function epcPalette(themeName: string): EpcPalette {
   }
   if (themeName === "dark") {
     return {
-      eventFill: "#f38ba8", eventStroke: "#11111b",
-      funcFill: "#a6e3a1", funcStroke: "#11111b",
-      connFill: "#45475a", connStroke: "#cdd6f4",
-      labelText: "#11111b", connGlyph: "#cdd6f4",
-      edge: "#cdd6f4", flag: "#f38ba8", flagFill: "#45304a",
-      backEdge: "#7f849c", edgeLabel: base.textMuted,
+      eventFill: "#f87171", eventStroke: "#0f172a",
+      funcFill: "#34d399", funcStroke: "#0f172a",
+      connFill: "#202b3d", connStroke: "#cbd5e1",
+      labelText: "#0f172a", connGlyph: "#cbd5e1",
+      edge: "#cbd5e1", flag: "#f87171", flagFill: "#3b1f32",
+      backEdge: "#94a3b8", edgeLabel: base.textMuted,
     };
   }
   return {
