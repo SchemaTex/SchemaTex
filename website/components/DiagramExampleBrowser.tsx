@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { InteractiveCapabilities } from 'schematex';
 
 export interface DiagramTypeOption {
@@ -8,6 +8,7 @@ export interface DiagramTypeOption {
   name: string;
   cluster: string;
   standard: string;
+  standardAlso?: readonly string[];
   starterDsl: string;
   capability: InteractiveCapabilities;
 }
@@ -34,6 +35,14 @@ interface DiagramExampleBrowserProps {
 }
 
 type BrowserView = 'type' | 'use-case';
+
+interface GroupBucket {
+  id: string;
+  label: string;
+  /** Only set when grouping by type — the header then carries the citation. */
+  standard?: string;
+  items: DiagramExampleOption[];
+}
 
 function positionLabel(position: InteractiveCapabilities['position']): string {
   switch (position) {
@@ -63,26 +72,16 @@ export function DiagramExampleBrowser({
 }: DiagramExampleBrowserProps) {
   const [query, setQuery] = useState('');
   const [view, setView] = useState<BrowserView>('type');
-  const [group, setGroup] = useState('all');
   const [newOpen, setNewOpen] = useState(false);
   const [typeQuery, setTypeQuery] = useState('');
   const capabilityByType = useMemo(
     () => new Map(types.map((entry) => [entry.type, entry.capability])),
     [types],
   );
-  const groups = useMemo(() => {
-    const entries = view === 'type'
-      ? examples.map((example) => ({ id: example.type, label: example.typeName }))
-      : examples.flatMap((example) => example.useCases);
-    return [...new Map(entries.map((entry) => [entry.id, entry])).values()]
-      .sort((a, b) => a.label.localeCompare(b.label));
-  }, [examples, view]);
   const filtered = useMemo(() => {
     const needle = query.trim().toLowerCase();
+    if (!needle) return examples;
     return examples.filter((example) => {
-      const inGroup = group === 'all' || (view === 'type'
-        ? example.type === group
-        : example.useCases.some((entry) => entry.id === group));
       const capability = capabilityByType.get(example.type);
       const haystack = [
         example.title,
@@ -92,10 +91,41 @@ export function DiagramExampleBrowser({
         capability?.reason,
         ...example.useCases.map((entry) => entry.label),
       ].filter(Boolean).join(' ').toLowerCase();
-      return inGroup && (!needle || haystack.includes(needle));
+      return haystack.includes(needle);
     });
-  }, [capabilityByType, examples, group, query, view]);
+  }, [capabilityByType, examples, query]);
+  /**
+   * The two tabs pick the *grouping axis*, so the list must actually group —
+   * otherwise both tabs render the same flat alphabetical run and the choice
+   * is meaningless. Grouping also removes the need to repeat the type and
+   * standard on every row, which is what was forcing them to truncate.
+   */
+  const grouped = useMemo(() => {
+    const buckets = new Map<string, GroupBucket>();
+    for (const example of filtered) {
+      const keys: Array<{ id: string; label: string; standard?: string }> = view === 'type'
+        ? [{ id: example.type, label: example.typeName, standard: example.standard }]
+        : example.useCases.length > 0
+          ? example.useCases
+          : [{ id: 'other', label: 'Other' }];
+      for (const key of keys) {
+        const bucket = buckets.get(key.id)
+          ?? { id: key.id, label: key.label, standard: key.standard, items: [] };
+        bucket.items.push(example);
+        buckets.set(key.id, bucket);
+      }
+    }
+    return [...buckets.values()].sort((a, b) => a.label.localeCompare(b.label));
+  }, [filtered, view]);
   const active = examples.find((example) => example.id === activeId) ?? examples[0];
+  const listRef = useRef<HTMLDivElement>(null);
+  // Grouping means the active specimen is rarely near the top any more — a
+  // `?example=` deep link would otherwise land on an unrelated group.
+  useEffect(() => {
+    if (!active) return;
+    const option = listRef.current?.querySelector<HTMLElement>(`[data-example-id="${CSS.escape(active.id)}"]`);
+    option?.scrollIntoView({ block: 'nearest' });
+  }, [active, view]);
   const matchingTypes = useMemo(() => {
     const needle = typeQuery.trim().toLowerCase();
     return types.filter((entry) => !needle || [
@@ -165,10 +195,7 @@ export function DiagramExampleBrowser({
             type="button"
             role="tab"
             aria-selected={view === id}
-            onClick={() => {
-              setView(id);
-              setGroup('all');
-            }}
+            onClick={() => setView(id)}
           >
             {text}
           </button>
@@ -182,15 +209,8 @@ export function DiagramExampleBrowser({
             type="search"
             value={query}
             onChange={(event) => setQuery(event.currentTarget.value)}
-            placeholder="Search diagram or use case"
+            placeholder="Search diagram, standard, or use case"
           />
-        </label>
-        <label>
-          <span className="sr-only">Filter examples</span>
-          <select value={group} onChange={(event) => setGroup(event.currentTarget.value)}>
-            <option value="all">All {view === 'type' ? 'types' : 'use cases'}</option>
-            {groups.map((entry) => <option key={entry.id} value={entry.id}>{entry.label}</option>)}
-          </select>
         </label>
       </div>
 
@@ -203,27 +223,43 @@ export function DiagramExampleBrowser({
         </select>
       </label>
 
-      <div className="sx-example-list" role="listbox" aria-label={label}>
-        {filtered.map((example) => {
-          const selected = example.id === active?.id;
-          const capability = capabilityByType.get(example.type);
-          return (
-            <button
-              key={example.id}
-              type="button"
-              role="option"
-              data-example-id={example.id}
-              aria-selected={selected}
-              className="sx-example-option"
-              onClick={() => onSelect(example.id)}
-            >
-              <span className="sx-example-option-type">{example.typeName} · § {example.standard}</span>
-              <strong>{example.title}</strong>
-              <small>{capability ? capabilityLabel(capability) : 'source editing'}</small>
-            </button>
-          );
-        })}
-        {filtered.length === 0 && (
+      <div className="sx-example-list" role="listbox" aria-label={label} ref={listRef}>
+        {grouped.map((bucket) => (
+          <div key={bucket.id} role="group" aria-label={bucket.label} className="sx-example-group">
+            <div className="sx-example-group-heading">
+              <span className="sx-example-group-label">{bucket.label}</span>
+              {bucket.standard && (
+                <span className="sx-example-group-standard" title={bucket.standard}>
+                  § {bucket.standard}
+                </span>
+              )}
+              <span className="sx-example-group-count">{bucket.items.length}</span>
+            </div>
+            {bucket.items.map((example) => {
+              const selected = example.id === active?.id;
+              const capability = capabilityByType.get(example.type);
+              return (
+                <button
+                  key={`${bucket.id}:${example.id}`}
+                  type="button"
+                  role="option"
+                  data-example-id={example.id}
+                  aria-selected={selected}
+                  className="sx-example-option"
+                  onClick={() => onSelect(example.id)}
+                >
+                  <strong>{example.title}</strong>
+                  <small>
+                    {/* Grouping by type already states the type in the header. */}
+                    {view === 'type' ? '' : `${example.typeName} · `}
+                    {capability ? capabilityLabel(capability) : 'source editing'}
+                  </small>
+                </button>
+              );
+            })}
+          </div>
+        ))}
+        {grouped.length === 0 && (
           <p className="sx-example-empty">No matching specimen. Try a diagram name or published standard.</p>
         )}
       </div>

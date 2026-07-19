@@ -403,16 +403,19 @@ body {
   font-size: 14px;
   line-height: 1.2;
 }
+/* Ghost, not solid: `render` is the one primary action on this screen. */
 .sx-new-diagram {
   padding: 6px 8px;
-  border: 1px solid var(--accent);
+  border: 1px solid var(--line-strong);
   border-radius: var(--r-sm);
-  background: var(--accent);
-  color: var(--color-fd-primary-foreground);
+  background: var(--fill);
+  color: var(--text);
   font-family: var(--mono);
   font-size: 11px;
   white-space: nowrap;
+  transition: border-color .12s ease, color .12s ease;
 }
+.sx-new-diagram:hover { border-color: var(--accent); color: var(--accent); }
 .sx-new-diagram:focus-visible,
 .sx-example-view-tabs button:focus-visible,
 .sx-new-diagram-list button:focus-visible {
@@ -528,6 +531,7 @@ body {
 }
 .sx-example-option {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 3px;
   min-width: 0;
   padding: 10px 11px;
@@ -544,7 +548,51 @@ body {
 .sx-example-option[aria-selected='true'] {
   box-shadow: inset 3px 0 0 var(--accent);
 }
-.sx-example-option-type,
+/* Sticky group headers carry the type + citation once, so rows can lead with
+   the thing people actually scan for: the example's own title. */
+/* Grid items default to min-width:auto and refuse to shrink below their
+   content, so every level down to the ellipsizing span needs min-width:0. */
+.sx-example-group { display: grid; min-width: 0; gap: 1px; }
+.sx-example-group-heading {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  min-width: 0;
+  align-items: baseline;
+  gap: 6px;
+  padding: 7px 11px 6px;
+  border-bottom: 1px solid var(--line);
+  background: var(--fill-muted);
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+/* The type name outranks the citation, so it keeps its intrinsic basis while
+   the standard (basis 0) gives up space first — but both can still ellipsize
+   rather than push the row wider than the rail. */
+.sx-example-group-label {
+  min-width: 0;
+  flex: 0 1 auto;
+  overflow: hidden;
+  color: var(--text);
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sx-example-group-standard {
+  /* min-width:0 is what actually lets a flex child ellipsize. */
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+  color: var(--accent);
+  text-overflow: ellipsis;
+  text-transform: none;
+  white-space: nowrap;
+}
+.sx-example-group-count { margin-left: auto; flex-shrink: 0; color: var(--text-muted); }
+
 .sx-example-option small {
   overflow: hidden;
   color: var(--text-muted);
@@ -555,11 +603,11 @@ body {
   text-transform: uppercase;
   white-space: nowrap;
 }
-.sx-example-option-type { color: var(--accent); letter-spacing: .05em; }
 .sx-example-option strong {
   overflow: hidden;
   color: var(--text);
   font-size: 12px;
+  font-weight: 600;
   line-height: 1.35;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -589,9 +637,44 @@ body {
   font-size: 10px;
 }
 
+/* Doc-bar citation. Matches the gallery-card convention site-wide: the diagram
+   name is sans (it is a name), the standard is mono + accent (it is a citation).
+   Always one line — registry strings are external input and must never be able
+   to reflow the action buttons. */
+.diagram-frame-title {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  align-items: baseline;
+  gap: 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.diagram-frame-name {
+  flex-shrink: 0;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.diagram-frame-standard {
+  display: flex;
+  min-width: 0;
+  align-items: baseline;
+}
+.diagram-frame-sep { flex-shrink: 0; margin: 0 8px; color: var(--text-muted); opacity: .5; }
+.diagram-frame-standard-text {
+  overflow: hidden;
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .sx-capability-bar {
   display: grid;
-  grid-template-columns: auto minmax(180px, 1fr) auto;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
   gap: 12px;
   padding: 7px 10px;
@@ -604,13 +687,18 @@ body {
 }
 .sx-capability-summary,
 .sx-capability-selection { display: flex; min-width: 0; align-items: center; gap: 10px; }
-.sx-capability-summary b,
-.sx-capability-reason b { color: var(--accent); font-weight: 600; }
+.sx-capability-summary { flex-shrink: 0; }
+.sx-capability-summary b { color: var(--accent); font-weight: 600; }
+/* Dotted underline = "this is clipped, hover for the rest". Without it a
+   truncated constraint reads as a rendering bug rather than an affordance. */
+.sx-capability-explained { cursor: help; text-decoration: underline dotted var(--line-strong); text-underline-offset: 3px; }
+.sx-capability-explained:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: var(--r-sm); }
 .sx-capability-reason {
   min-width: 0;
   margin: 0;
   overflow: hidden;
   color: var(--text-muted);
+  cursor: help;
   text-overflow: ellipsis;
   white-space: nowrap;
 }

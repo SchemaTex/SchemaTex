@@ -40,7 +40,10 @@ export interface DiagramListItem {
   tagline: string;
   useWhen: string;
   cluster: DiagramMeta["cluster"];
+  /** Primary published standard — a short, single-line citation. */
   standard: string;
+  /** Secondary standards and lineage; render on hover/detail, not inline. */
+  standardAlso?: readonly string[];
   /** Other names the same diagram goes by — helps map a user request to a type. */
   aliases?: readonly string[];
   /** Use-case / industry / standard search terms (not names). */
@@ -56,6 +59,7 @@ export function listDiagrams(): DiagramListItem[] {
     useWhen: d.useWhen,
     cluster: d.cluster,
     standard: d.standard,
+    ...(d.standardAlso ? { standardAlso: d.standardAlso } : {}),
     ...(d.aliases ? { aliases: d.aliases } : {}),
     ...(d.keywords ? { keywords: d.keywords } : {}),
     interactive: getCoreInteractiveCapabilities(d.type),

@@ -34,7 +34,15 @@ export function PlaygroundWorkspace({ examples, types, initialId }: PlaygroundWo
   );
 
   useEffect(() => {
-    setSidebarCollapsed(window.localStorage.getItem(SIDEBAR_STORAGE_KEY) === 'true');
+    const stored = window.localStorage.getItem(SIDEBAR_STORAGE_KEY);
+    if (stored !== null) {
+      setSidebarCollapsed(stored === 'true');
+      return;
+    }
+    // No stored preference yet: under ~1200px the library, source, and canvas
+    // squeeze each other until every label truncates. Start collapsed and let
+    // the user opt back in — their choice is then remembered.
+    setSidebarCollapsed(window.innerWidth < 1200);
   }, []);
 
   const toggleSidebar = useCallback(() => {

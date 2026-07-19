@@ -38,31 +38,80 @@ interface PlaygroundProps {
 
 type MonacoEditorInstance = Parameters<OnMount>[0];
 
-// URL-safe base64 (hash fragment)
-function encodeShare(s: string): string {
-  if (typeof window === 'undefined') return '';
-  try {
-    const utf8 = new TextEncoder().encode(s);
-    let bin = '';
-    for (const b of utf8) bin += String.fromCharCode(b);
-    return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-  } catch {
-    return '';
-  }
+// ── Share links ────────────────────────────────────────────────────────────
+// The document lives in the URL hash so sharing needs no backend and the DSL
+// never leaves the browser. Two rules keep the URL short:
+//   1. the hash is written only when the user actually shares (see handleShare),
+//      never on every keystroke;
+//   2. an unmodified specimen shares as `?example=slug` instead.
+// `#z=` is gzip+base64url (25–50% shorter, growing with document size); `#s=`
+// is the original raw base64 and is still decoded, so links shared before this
+// change keep working.
+
+function bytesToBase64Url(bytes: Uint8Array): string {
+  let bin = '';
+  for (const b of bytes) bin += String.fromCharCode(b);
+  return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 }
 
-function decodeShare(s: string): string | null {
-  if (typeof window === 'undefined') return null;
-  try {
-    const pad = s.length % 4 === 0 ? '' : '='.repeat(4 - (s.length % 4));
-    const b64 = s.replace(/-/g, '+').replace(/_/g, '/') + pad;
-    const bin = atob(b64);
-    const bytes = new Uint8Array(bin.length);
-    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-    return new TextDecoder().decode(bytes);
-  } catch {
-    return null;
+function base64UrlToBytes(s: string): Uint8Array {
+  const pad = s.length % 4 === 0 ? '' : '='.repeat(4 - (s.length % 4));
+  const bin = atob(s.replace(/-/g, '+').replace(/_/g, '/') + pad);
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return bytes;
+}
+
+async function collectStream(stream: ReadableStream<Uint8Array>): Promise<Uint8Array> {
+  const chunks: Uint8Array[] = [];
+  const reader = stream.getReader();
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    if (value) chunks.push(value);
   }
+  const total = chunks.reduce((sum, chunk) => sum + chunk.length, 0);
+  const out = new Uint8Array(total);
+  let offset = 0;
+  for (const chunk of chunks) {
+    out.set(chunk, offset);
+    offset += chunk.length;
+  }
+  return out;
+}
+
+/** Returns the hash fragment (without `#`) for `text`, gzipped when supported. */
+async function encodeShare(text: string): Promise<string> {
+  const raw = new TextEncoder().encode(text);
+  if (typeof CompressionStream === 'function') {
+    try {
+      const gzipped = await collectStream(
+        new Blob([raw as BlobPart]).stream().pipeThrough(new CompressionStream('gzip')),
+      );
+      if (gzipped.length < raw.length) return `z=${bytesToBase64Url(gzipped)}`;
+    } catch {
+      /* fall through to the uncompressed form */
+    }
+  }
+  return `s=${bytesToBase64Url(raw)}`;
+}
+
+async function decodeShare(hash: string): Promise<string | null> {
+  try {
+    if (hash.startsWith('s=')) {
+      return new TextDecoder().decode(base64UrlToBytes(hash.slice(2)));
+    }
+    if (hash.startsWith('z=') && typeof DecompressionStream === 'function') {
+      const bytes = base64UrlToBytes(hash.slice(2));
+      const inflated = await collectStream(
+        new Blob([bytes as BlobPart]).stream().pipeThrough(new DecompressionStream('gzip')),
+      );
+      return new TextDecoder().decode(inflated);
+    }
+  } catch {
+    /* malformed or truncated link — fall back to the route's example */
+  }
+  return null;
 }
 
 function formatBytes(n: number): string {
@@ -127,7 +176,9 @@ export function Playground({
   const [shareState, setShareState] = useState<'idle' | 'done'>('idle');
   const [exportOpen, setExportOpen] = useState(false);
   const [zoom, setZoom] = useState(100);
-  const [split, setSplit] = useState(50);
+  // Canvas-weighted: with round-trip editing the diagram is the working
+  // surface and the source is the input, so they are not equal partners.
+  const [split, setSplit] = useState(42);
   const [renderEpoch, setRenderEpoch] = useState(0);
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
   const [selectedItem, setSelectedItem] = useState<SceneItem | null>(null);
@@ -174,34 +225,30 @@ export function Playground({
   }, [initial]);
 
   useEffect(() => {
-    if (!syncHash) return;
-    if (hydrated.current) return;
-    hydrated.current = true;
+    if (!syncHash || hydrated.current) return;
     const hash = window.location.hash.replace(/^#/, '');
-    if (hash.startsWith('s=')) {
-      const decoded = decodeShare(hash.slice(2));
-      if (decoded) {
-        setText(decoded);
-      }
+    if (!hash) {
+      hydrated.current = true;
+      return;
     }
+    let active = true;
+    // A shared document wins over `?example=`; that is the whole point of the
+    // link. Anything malformed falls back to the route's example.
+    //
+    // `hydrated` is only latched once the decode actually lands. Latching it up
+    // front would make StrictMode's mount → cleanup → mount cycle discard the
+    // first decode and then skip the retry, silently dropping shared links.
+    void decodeShare(hash).then((decoded) => {
+      if (!active || !decoded) return;
+      hydrated.current = true;
+      setText(decoded);
+    });
+    return () => { active = false; };
   }, [syncHash]);
 
   useEffect(() => {
     renderStartedRef.current = performance.now();
   }, [text]);
-
-  useEffect(() => {
-    if (!syncHash) return;
-    const id = setTimeout(() => {
-      const encoded = encodeShare(text);
-      if (encoded) {
-        const url = new URL(window.location.href);
-        url.hash = `s=${encoded}`;
-        window.history.replaceState(null, '', url.toString());
-      }
-    }, 400);
-    return () => clearTimeout(id);
-  }, [syncHash, text]);
 
   const result = renderState.result;
   const scene = result?.ok ? result.scene ?? [] : [];
@@ -339,6 +386,26 @@ export function Playground({
     replaceModelWithoutUndo(nextSource);
   }, [replaceModelWithoutUndo]);
 
+  /**
+   * Monaco caches its dimensions and `automaticLayout` does not reliably catch
+   * a grid track collapsing underneath it. The sidebar auto-collapses during
+   * mount on narrower viewports, which otherwise leaves the editor measured
+   * against a stale box and painting nothing at all.
+   */
+  useEffect(() => {
+    const pane = splitRef.current;
+    if (!pane || typeof ResizeObserver === 'undefined') return;
+    const observer = new ResizeObserver(() => editorRef.current?.layout());
+    observer.observe(pane);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    // The sidebar fades over .12s, so re-measure once the transition settles.
+    const id = window.setTimeout(() => editorRef.current?.layout(), 180);
+    return () => window.clearTimeout(id);
+  }, [sidebarCollapsed]);
+
   useEffect(() => () => {
     cursorDisposableRef.current?.dispose();
     const editor = editorRef.current;
@@ -355,6 +422,7 @@ export function Playground({
   const meta = {
     name: typeMeta?.name ?? activeType ?? 'schematex',
     std: typeMeta?.standard ?? 'source-defined',
+    stdAlso: typeMeta?.standardAlso,
   };
   const capability = activeType ? getInteractiveCapabilities(activeType) : null;
   const lineCount = useMemo(() => text.split('\n').length, [text]);
@@ -372,16 +440,19 @@ export function Playground({
 
   const handleShare = useCallback(async () => {
     try {
-      const encoded = encodeShare(text);
       const url = new URL(window.location.href);
-      url.hash = `s=${encoded}`;
-      await navigator.clipboard.writeText(url.toString());
+      // Untouched specimen → share the short `?example=` route rather than
+      // embedding a copy of a document the receiver can already resolve.
+      url.hash = text === initial ? '' : `#${await encodeShare(text)}`;
+      const href = url.toString().replace(/#$/, '');
+      window.history.replaceState(null, '', href);
+      await navigator.clipboard.writeText(href);
       setShareState('done');
       setTimeout(() => setShareState('idle'), 1500);
     } catch {
       /* noop */
     }
-  }, [text]);
+  }, [initial, text]);
 
   const getExportSvg = useCallback(() => {
     const exported = renderResult(text, { theme: 'default' });
@@ -596,6 +667,7 @@ export function Playground({
     <DiagramFrame
       diagram={meta.name}
       standard={meta.std}
+      standardAlso={meta.stdAlso}
       actions={actions}
       footer={footer}
       className={fill ? 'h-full' : ''}
@@ -609,12 +681,20 @@ export function Playground({
             ) : (
               <span><b>⌨</b> source editing</span>
             )}
-            <span>
+            {/* The reason is a full sentence and belongs on hover — inline it
+                truncates to a half-thought. The glyph + short label carry the
+                contract; `⃠` is reserved for an actual refusal so it keeps
+                meaning something. */}
+            <span
+              className={capability.reason ? 'sx-capability-position sx-capability-explained' : 'sx-capability-position'}
+              title={capability.reason}
+              tabIndex={capability.reason ? 0 : undefined}
+            >
               <b>{positionGlyph(capability.position)}</b> {positionText(capability.position)}
             </span>
           </div>
           {capability.reason && (
-            <p className="sx-capability-reason"><b>⃠</b> {capability.reason}</p>
+            <p className="sx-capability-reason" title={capability.reason}>{capability.reason}</p>
           )}
           {selectedItem && (
             <div className="sx-capability-selection" aria-live="polite">

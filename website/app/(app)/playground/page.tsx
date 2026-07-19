@@ -28,6 +28,7 @@ const types: DiagramTypeOption[] = registry.map((entry) => {
     name: entry.name,
     cluster: entry.cluster,
     standard: entry.standard,
+    standardAlso: entry.standardAlso,
     starterDsl: starters[0]?.dsl ?? entry.type,
     capability: getInteractiveCapabilities(type),
   };
