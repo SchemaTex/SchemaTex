@@ -7,6 +7,7 @@ import type {
   ErdLayoutRow,
   ErdRef,
 } from "../../core/types";
+import { applyPins } from "../../core/editing";
 
 // ─── Layout constants ─────────────────────────────────────────
 
@@ -303,7 +304,7 @@ function assignYCoordinates(
 
 // ─── Main layout ──────────────────────────────────────────────
 
-export function layoutErd(ast: ErdAst): ErdLayoutResult {
+export function layoutErd(ast: ErdAst, pins?: Map<string, { x: number; y: number }>): ErdLayoutResult {
   const C = ERD_CONST;
   const isLR = ast.direction === "LR";
 
@@ -414,6 +415,11 @@ export function layoutErd(ast: ErdAst): ErdLayoutResult {
       cursorY += ls.maxHeight + C.ROW_GAP;
     }
   }
+
+  applyPins(placed, pins, {
+    id: (entity) => entity.entity.id,
+    position: () => isLR ? "move-y" : "move-x",
+  });
 
   // Compute overall bounds.
   let maxX = 0;

@@ -540,7 +540,7 @@ set 2: fill=#999 opacity=0.25, stroke-dasharray=1 2
 
 ### 8.4 `dark` preset
 
-用 Catppuccin Mocha palette，fill opacity 提高到 0.55 以在深背景可读。
+用 Schematex slate/blue dark palette palette，fill opacity 提高到 0.55 以在深背景可读。
 
 ---
 

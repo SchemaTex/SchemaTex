@@ -285,7 +285,15 @@ export function parseVennDSL(input: string): VennAST {
         throw new VennParseError(`duplicate set id "${id}"`, lineNo);
       }
       const color = props["color"] ?? props["fill"];
-      const setObj: VennSet = { id, label: label ?? id, color };
+      const atMatch = /^\(\s*([+-]?(?:\d+(?:\.\d*)?|\.\d+))\s*,\s*([+-]?(?:\d+(?:\.\d*)?|\.\d+))\s*\)$/.exec(props["at"] ?? "");
+      const radiusValue = Number(props["radius"]);
+      const setObj: VennSet = {
+        id,
+        label: label ?? id,
+        color,
+        ...(atMatch ? { at: { x: Number(atMatch[1]), y: Number(atMatch[2]) } } : {}),
+        ...(Number.isFinite(radiusValue) && radiusValue > 0 ? { radius: radiusValue } : {}),
+      };
       sets.push(setObj);
       setsById.set(id, setObj);
       knownSetIds.add(id);

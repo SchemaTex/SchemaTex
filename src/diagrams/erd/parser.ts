@@ -6,6 +6,8 @@ import type {
   ErdNotation,
   ErdRef,
 } from "../../core/types";
+import { createSourceLocator } from "../../core/source-range";
+import type { SourceRange } from "../../core/types";
 
 export class ErdParseError extends Error {
   constructor(message: string, public lineNumber?: number) {
@@ -87,16 +89,26 @@ function parseCardToken(raw: string, side: "left" | "right"): ErdCardinality | n
 interface RawLine {
   text: string;
   lineNumber: number;
+  start: number;
 }
 
 function lex(text: string): RawLine[] {
-  return text.split(/\r?\n/).map((raw, i) => ({
-    text: stripComment(raw).trim(),
-    lineNumber: i + 1,
-  })).filter((l) => l.text.length > 0);
+  const out: RawLine[] = [];
+  const lines = text.split(/\r?\n/);
+  let lineStart = 0;
+  for (let i = 0; i < lines.length; i++) {
+    const raw = lines[i]!;
+    const stripped = stripComment(raw);
+    const leading = stripped.length - stripped.trimStart().length;
+    const value = stripped.trim();
+    if (value) out.push({ text: value, lineNumber: i + 1, start: lineStart + leading });
+    lineStart += raw.length + (i < lines.length - 1 ? (text[lineStart + raw.length] === "\r" ? 2 : 1) : 0);
+  }
+  return out;
 }
 
 export function parseErd(text: string): ErdAst {
+  const locator = createSourceLocator(text);
   const lines = lex(text);
   if (lines.length === 0) throw new ErdParseError("Empty input");
 
@@ -106,7 +118,7 @@ export function parseErd(text: string): ErdAst {
   const h0 = headerWords[0]?.toLowerCase();
   // Mermaid `erDiagram` paste-compat path (entities auto-create, bare relationships, type-first attrs).
   if (h0 === "erdiagram") {
-    return parseMermaidErd(lines);
+    return parseMermaidErd(lines, locator.range);
   }
   if (h0 !== "erd") {
     throw new ErdParseError(`Expected 'erd' (or Mermaid 'erDiagram') header, got: ${header.text}`, header.lineNumber);
@@ -116,6 +128,7 @@ export function parseErd(text: string): ErdAst {
   let notation: ErdNotation = "crowsfoot";
   let direction: "LR" | "TB" = "LR";
   let title: string | undefined;
+  let titleSourceRange: SourceRange | undefined;
 
   // Header attribute lines (notation:, direction:, title:) — order-insensitive, before the first table/ref.
   while (i < lines.length) {
@@ -148,7 +161,10 @@ export function parseErd(text: string): ErdAst {
       continue;
     }
     if (lower.startsWith("title:")) {
-      title = unquote(t.slice("title:".length).trim());
+      const token = t.slice("title:".length).trim();
+      title = unquote(token);
+      const at = t.indexOf(token);
+      titleSourceRange = locator.range(line.start + at, line.start + at + token.length);
       i++;
       continue;
     }
@@ -164,7 +180,7 @@ export function parseErd(text: string): ErdAst {
     const head = t.split(/\s+/)[0]?.toLowerCase();
 
     if (head === "table") {
-      const consumed = parseTableBlock(lines, i, entities);
+      const consumed = parseTableBlock(lines, i, entities, locator.range);
       i = consumed;
       continue;
     }
@@ -198,6 +214,7 @@ export function parseErd(text: string): ErdAst {
     notation,
     direction,
     title,
+    titleSourceRange,
     entities,
     refs,
   };
@@ -214,7 +231,11 @@ const REL_RE = new RegExp(
  * Mermaid: `ENTITY { type name KEY }` — attributes are **type-first**, the
  * opposite of the native `table` block. KEY ∈ PK | FK | UK.
  */
-function parseMermaidAttr(raw: string): ErdAttribute {
+function parseMermaidAttr(
+  raw: string,
+  absoluteStart?: number,
+  range?: (start: number, end: number) => SourceRange
+): ErdAttribute {
   const tokens = raw.trim().split(/\s+/).filter(Boolean);
   const flags = { pk: false, fk: false, uk: false };
   const words: string[] = [];
@@ -228,9 +249,17 @@ function parseMermaidAttr(raw: string): ErdAttribute {
   // type-first: [type, name] — if only one word, treat it as the name.
   const type = words.length >= 2 ? words[0] : undefined;
   const name = words.length >= 2 ? words[1]! : (words[0] ?? "");
+  const nameAt = raw.indexOf(name);
+  const typeAt = type ? raw.indexOf(type) : -1;
   return {
     name,
     type,
+    ...(absoluteStart !== undefined && range && nameAt >= 0
+      ? { nameSourceRange: range(absoluteStart + nameAt, absoluteStart + nameAt + name.length) }
+      : {}),
+    ...(absoluteStart !== undefined && range && type && typeAt >= 0
+      ? { typeSourceRange: range(absoluteStart + typeAt, absoluteStart + typeAt + type.length) }
+      : {}),
     pk: flags.pk || undefined,
     fk: flags.fk || undefined,
     uk: flags.uk || undefined,
@@ -238,7 +267,10 @@ function parseMermaidAttr(raw: string): ErdAttribute {
   };
 }
 
-function parseMermaidErd(lines: RawLine[]): ErdAst {
+function parseMermaidErd(
+  lines: RawLine[],
+  range: (start: number, end: number) => SourceRange
+): ErdAst {
   const entityMap = new Map<string, ErdEntity>();
   const order: string[] = [];
   const refs: ErdRef[] = [];
@@ -248,6 +280,7 @@ function parseMermaidErd(lines: RawLine[]): ErdAst {
   // `title: "..."` when it uses the Mermaid `erDiagram` header. Rejecting them
   // used to fail an otherwise-valid diagram.
   let title: string | undefined;
+  let titleSourceRange: SourceRange | undefined;
   let direction: "LR" | "TB" = "LR";
   let notation: ErdNotation = "crowsfoot";
 
@@ -271,7 +304,10 @@ function parseMermaidErd(lines: RawLine[]): ErdAst {
     // `notation:` are validated identically.
     const lower = t.toLowerCase();
     if (lower.startsWith("title:")) {
-      title = unquote(t.slice("title:".length).trim());
+      const token = t.slice("title:".length).trim();
+      title = unquote(token);
+      const at = t.indexOf(token);
+      titleSourceRange = range(lines[i]!.start + at, lines[i]!.start + at + token.length);
       i++;
       continue;
     }
@@ -302,8 +338,11 @@ function parseMermaidErd(lines: RawLine[]): ErdAst {
     const openBlock = new RegExp(`^(${MERMAID_NAME.source})\\s*\\{$`).exec(t);
     if (inlineBlock) {
       const e = ensure(inlineBlock[1]!);
+      let from = t.indexOf(inlineBlock[2]!);
       for (const a of inlineBlock[2]!.split(";").map((s) => s.trim()).filter(Boolean)) {
-        e.attributes.push(parseMermaidAttr(a));
+        const at = t.indexOf(a, from);
+        e.attributes.push(parseMermaidAttr(a, lines[i]!.start + at, range));
+        from = at + a.length;
       }
       i++;
       continue;
@@ -312,7 +351,7 @@ function parseMermaidErd(lines: RawLine[]): ErdAst {
       const e = ensure(openBlock[1]!);
       i++;
       while (i < lines.length && lines[i]!.text !== "}") {
-        e.attributes.push(parseMermaidAttr(lines[i]!.text));
+        e.attributes.push(parseMermaidAttr(lines[i]!.text, lines[i]!.start, range));
         i++;
       }
       if (i >= lines.length) throw new ErdParseError(`Unterminated entity block '${openBlock[1]}'.`, ln);
@@ -351,6 +390,7 @@ function parseMermaidErd(lines: RawLine[]): ErdAst {
     notation,
     direction,
     title,
+    titleSourceRange,
     entities: order.map((id) => entityMap.get(id)!),
     refs,
   };
@@ -361,7 +401,8 @@ function parseMermaidErd(lines: RawLine[]): ErdAst {
 function parseTableBlock(
   lines: RawLine[],
   startIdx: number,
-  outEntities: ErdEntity[]
+  outEntities: ErdEntity[],
+  range: (start: number, end: number) => SourceRange
 ): number {
   const head = lines[startIdx]!;
   // Two accepted shapes:
@@ -372,17 +413,25 @@ function parseTableBlock(
     const declRaw = inlineMatch[1]!.trim();
     const inside = inlineMatch[2]!.trim();
     const { id, name } = splitDecl(declRaw, head.lineNumber);
+    const displayToken = /^("[^"]+")\s+as\s+/i.exec(declRaw)?.[1];
+    const displayAt = displayToken ? head.text.indexOf(displayToken) : -1;
+    const nameSourceRange = displayToken && displayAt >= 0
+      ? range(head.start + displayAt, head.start + displayAt + displayToken.length)
+      : undefined;
     if (outEntities.some((e) => e.id === id)) {
       throw new ErdParseError(`Duplicate table id '${id}'.`, head.lineNumber);
     }
     const attributes: ErdAttribute[] = [];
     if (inside.length > 0) {
       const attrLines = inside.split(";").map((s) => s.trim()).filter(Boolean);
+      let from = head.text.indexOf(inside);
       for (const a of attrLines) {
-        attributes.push(parseAttributeLine(a, head.lineNumber, id));
+        const at = head.text.indexOf(a, from);
+        attributes.push(parseAttributeLine(a, head.lineNumber, id, head.start + at, range));
+        from = at + a.length;
       }
     }
-    outEntities.push({ id, name, attributes });
+    outEntities.push({ id, name, nameSourceRange, attributes });
     return startIdx + 1;
   }
 
@@ -395,6 +444,11 @@ function parseTableBlock(
   }
   const declRaw = m[1]!.trim();
   const { id, name } = splitDecl(declRaw, head.lineNumber);
+  const displayToken = /^("[^"]+")\s+as\s+/i.exec(declRaw)?.[1];
+  const displayAt = displayToken ? head.text.indexOf(displayToken) : -1;
+  const nameSourceRange = displayToken && displayAt >= 0
+    ? range(head.start + displayAt, head.start + displayAt + displayToken.length)
+    : undefined;
 
   if (outEntities.some((e) => e.id === id)) {
     throw new ErdParseError(`Duplicate table id '${id}'.`, head.lineNumber);
@@ -405,10 +459,10 @@ function parseTableBlock(
   while (i < lines.length) {
     const line = lines[i]!;
     if (line.text === "}") {
-      outEntities.push({ id, name, attributes });
+      outEntities.push({ id, name, nameSourceRange, attributes });
       return i + 1;
     }
-    const attr = parseAttributeLine(line.text, line.lineNumber, id);
+    const attr = parseAttributeLine(line.text, line.lineNumber, id, line.start, range);
     attributes.push(attr);
     i++;
   }
@@ -431,7 +485,13 @@ function splitDecl(declRaw: string, lineNumber: number): { id: string; name: str
  *   markers ∈ {PK, FK, UK, NN, *, !}, case-insensitive
  *   `*` and `!` are aliases for NOT NULL (Barker convention)
  */
-function parseAttributeLine(raw: string, lineNumber: number, tableId: string): ErdAttribute {
+function parseAttributeLine(
+  raw: string,
+  lineNumber: number,
+  tableId: string,
+  absoluteStart?: number,
+  range?: (start: number, end: number) => SourceRange
+): ErdAttribute {
   let s = raw.trim();
   // Comment after ':' at end (only if not part of "type" — types do not contain ':').
   let comment: string | undefined;
@@ -472,9 +532,23 @@ function parseAttributeLine(raw: string, lineNumber: number, tableId: string): E
   if (fkTarget) flags.fk = true;
   if (flags.pk) flags.nn = true; // PK implies NOT NULL.
 
+  const nameAt = raw.indexOf(name);
+  let typeSourceRange: SourceRange | undefined;
+  if (absoluteStart !== undefined && range && typeParts.length > 0) {
+    const first = typeParts[0]!;
+    const last = typeParts[typeParts.length - 1]!;
+    const firstAt = raw.indexOf(first, nameAt + name.length);
+    const lastAt = raw.indexOf(last, firstAt + first.length - last.length);
+    if (firstAt >= 0 && lastAt >= firstAt) typeSourceRange = range(absoluteStart + firstAt, absoluteStart + lastAt + last.length);
+  }
+
   return {
     name,
+    ...(absoluteStart !== undefined && range && nameAt >= 0
+      ? { nameSourceRange: range(absoluteStart + nameAt, absoluteStart + nameAt + name.length) }
+      : {}),
     type: typeParts.length > 0 ? typeParts.join(" ") : undefined,
+    ...(typeSourceRange ? { typeSourceRange } : {}),
     pk: flags.pk || undefined,
     fk: flags.fk || undefined,
     uk: flags.uk || undefined,

@@ -60,7 +60,7 @@ labelled `k/n` beside its join.
 
 Shares the risk-reliability colour cluster: neutral block bodies, **blue** for the computed
 reliability numerals, **red** for single points of failure. `monochrome` falls back to border
-weight for SPOF (regulator print); `dark` is the Catppuccin variant. Semantic SVG: `<title>` +
+weight for SPOF (regulator print); `dark` is the Schematex slate/blue variant. Semantic SVG: `<title>` +
 `<desc>` (computed summary), CSS classes from theme tokens, `data-id`/`data-r`/`data-spof`/
 `data-critical` for interaction. No inline styles.
 

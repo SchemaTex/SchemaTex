@@ -6,6 +6,7 @@ import { renderSiteplan } from "./renderer";
 
 export const siteplan: DiagramPlugin = {
   type: "siteplan" as DiagramPlugin["type"],
+  capabilities: { scene: true, editablePosition: true },
   detect(text: string): boolean {
     for (const raw of text.split(/\r?\n/)) {
       const t = raw.trim();

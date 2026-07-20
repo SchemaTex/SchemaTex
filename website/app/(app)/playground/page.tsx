@@ -1,48 +1,69 @@
-import { Playground } from '@/components/Playground';
-import { DiagramIcon } from '@/components/DiagramIcon';
+import { PlaygroundWorkspace } from '@/components/PlaygroundWorkspace';
+import type {
+  DiagramExampleOption,
+  DiagramTypeOption,
+} from '@/components/DiagramExampleBrowser';
 import { allExamples } from '@/lib/examples-source';
 import { DIAGRAM_TYPE_COUNT } from '@/lib/diagram-stats';
-import { getRepoStats } from '@/lib/github-stats';
+import { resolveUseCase, USE_CASE_LABELS } from '@/lib/use-cases';
+import { getInteractiveCapabilities, type InteractiveCapabilities } from 'schematex';
+import { getDiagramMeta, listDiagrams } from 'schematex/ai';
 
-const heroDefault = `genogram "The Smiths"
-  john [male, 1950]
-  mary [female, 1952]
-  john -- mary
-    alice [female, 1975, index]
-    bob [male, 1978]
-  alice -close- mary
-  alice -hostile- bob`;
+const registry = listDiagrams();
+const examplesByType = new Map<string, typeof allExamples>();
+for (const example of allExamples) {
+  const type = getDiagramMeta(example.diagram)?.type;
+  if (!type) continue;
+  const entries = examplesByType.get(type) ?? [];
+  entries.push(example);
+  examplesByType.set(type, entries);
+}
 
-const galleryExamples = allExamples.map((ex) => ({
-  slug: ex.slug,
-  title: ex.title,
-  dsl: ex.dsl,
-  icon: ex.diagram as import('@/components/DiagramIcon').DiagramType,
-}));
-import Link from 'next/link';
+const types: DiagramTypeOption[] = registry.map((entry) => {
+  const type = entry.type as InteractiveCapabilities['type'];
+  const starters = [...(examplesByType.get(entry.type) ?? [])]
+    .sort((a, b) => a.complexity - b.complexity || a.dsl.length - b.dsl.length);
+  return {
+    type,
+    name: entry.name,
+    cluster: entry.cluster,
+    standard: entry.standard,
+    standardAlso: entry.standardAlso,
+    starterSlug: starters[0]?.slug,
+    capability: getInteractiveCapabilities(type),
+  };
+});
+
+const galleryExamples: DiagramExampleOption[] = allExamples.flatMap((example) => {
+  const meta = getDiagramMeta(example.diagram);
+  if (!meta) return [];
+  const type = meta.type as InteractiveCapabilities['type'];
+  const useCase = resolveUseCase(example.industry);
+  return [{
+    id: example.slug,
+    title: example.title,
+    type,
+    typeName: meta.name,
+    cluster: meta.cluster,
+    standard: meta.standard,
+    useCases: [{ id: useCase, label: USE_CASE_LABELS[useCase].label }],
+    note: example.description,
+  }];
+}).sort((a, b) => {
+  const capabilityRank = (entry: DiagramExampleOption) => {
+    const capability = getInteractiveCapabilities(entry.type);
+    if (capability.position === 'free') return 0;
+    if (capability.position !== 'none') return 1;
+    return capability.text.length > 0 ? 2 : 3;
+  };
+  return capabilityRank(a) - capabilityRank(b) || a.title.localeCompare(b.title);
+});
 
 export const metadata = {
-  title: 'Playground — paste LLM output, see SVG live',
+  title: 'Playground — edit industry-standard diagrams',
   description:
-    `Interactive Schematex playground. Edit the text DSL on the left, see the rendered SVG diagram on the right. Made for AI — paste ChatGPT or Claude output, get a professional diagram back. Works for all ${DIAGRAM_TYPE_COUNT} diagram types.`,
+    `Full-screen Schematex editor with round-trip source and canvas editing, ${DIAGRAM_TYPE_COUNT} diagram engines, standards-aware position constraints, SVG, PNG, and PDF export.`,
   alternates: { canonical: 'https://schematex.js.org/playground' },
-};
-
-const CLUSTER_COLOR: Record<string, string> = {
-  genogram: 'var(--cat-0)',
-  ecomap: 'var(--cat-0)',
-  pedigree: 'var(--cat-0)',
-  sociogram: 'var(--cat-0)',
-  phylo: 'var(--cat-1)',
-  block: 'var(--cat-1)',
-  fishbone: 'var(--cat-1)',
-  decisiontree: 'var(--cat-1)',
-  timing: 'var(--cat-2)',
-  logic: 'var(--cat-2)',
-  circuit: 'var(--cat-2)',
-  ladder: 'var(--cat-2)',
-  sld: 'var(--cat-2)',
-  entity: 'var(--cat-3)',
 };
 
 export default async function PlaygroundPage({
@@ -51,100 +72,51 @@ export default async function PlaygroundPage({
   searchParams: Promise<{ example?: string }>;
 }) {
   const { example } = await searchParams;
-  const active = galleryExamples.find((ex) => ex.slug === example);
-  const initial = active?.dsl ?? heroDefault;
-  const { stars } = await getRepoStats();
-
+  const initialExample = example
+    ? galleryExamples.find((entry) => entry.id === example) ?? galleryExamples[0]
+    : undefined;
+  const initialDsl = initialExample
+    ? allExamples.find((entry) => entry.slug === initialExample.id)?.dsl ?? 'flowchart'
+    : '';
   return (
-    <div className="mx-auto max-w-6xl px-6 pb-16 pt-12">
-      {/* Page header */}
-      <div className="mb-8 pb-8" style={{ borderBottom: '1px solid var(--fill-muted)' }}>
-        <p className="type-eye mb-3">/ PLAYGROUND</p>
-        <h1
-          className="mb-3 text-[40px] font-semibold leading-none"
-          style={{ color: 'var(--text)', letterSpacing: '-0.02em' }}
-        >
-          Live editor
-        </h1>
-        <p className="text-[15px]" style={{ color: 'var(--text-muted)', maxWidth: 640 }}>
-          Edit the DSL on the left. Diagram re-renders on the right. Pick a preset below
-          to start from a real example, or paste output from ChatGPT / Claude — the DSL
-          is designed for LLMs to emit on the first try.
+    <div className="sx-playground-page">
+      <PlaygroundWorkspace
+        examples={galleryExamples}
+        types={types}
+        initialId={initialExample?.id}
+        initialDsl={initialDsl}
+      />
+
+      <section className="sx-playground-seo" aria-labelledby="playground-heading">
+        <p className="type-eye">/ ROUND-TRIP DIAGRAM EDITOR</p>
+        <h1 id="playground-heading">Edit industry-standard diagrams without losing the source.</h1>
+        <p>
+          Schematex keeps every canvas gesture as deterministic DSL. The editor exposes only the
+          labels, axes, and native geometry that each diagram standard can change safely; all
+          other structure remains explicit and reviewable in source.
         </p>
-      </div>
-
-      {/* Preset rail — bordered card wrap */}
-      <div
-        className="mb-5 grid items-center gap-3"
-        style={{
-          gridTemplateColumns: 'auto 1fr',
-          border: '1px solid var(--fill-muted)',
-          borderRadius: 'var(--r)',
-          background: 'var(--fill)',
-          padding: '10px 14px',
-        }}
-      >
-        <span
-          className="type-eye shrink-0 pr-3"
-          style={{ borderRight: '1px solid var(--fill-muted)' }}
-        >
-          PRESETS ·
-        </span>
-        <div className="flex gap-1.5 overflow-x-auto py-0.5" style={{ scrollbarWidth: 'thin' }}>
-          {galleryExamples.map((ex) => {
-            const isActive = ex.slug === example || (!example && ex.slug === 'genogram');
-            const dotColor = CLUSTER_COLOR[ex.icon] ?? 'var(--neutral)';
-            return (
-              <Link
-                key={ex.slug}
-                href={`/playground?example=${ex.slug}`}
-                className="flex shrink-0 flex-col p-1.5 transition"
-                style={{
-                  width: 92,
-                  border: '1px solid var(--fill-muted)',
-                  borderRadius: 'var(--r-sm)',
-                  background: 'var(--bg)',
-                  ...(isActive
-                    ? { borderColor: 'var(--accent)', boxShadow: 'inset 0 0 0 1px var(--accent)' }
-                    : {}),
-                }}
-              >
-                {/* Thumbnail */}
-                <div
-                  className="dot-grid mb-1.5 flex items-center justify-center rounded-sm"
-                  style={{ height: 60, color: 'var(--stroke)' }}
-                >
-                  <DiagramIcon
-                    type={ex.icon}
-                    size={26}
-                    style={{ color: isActive ? 'var(--text)' : 'var(--stroke)' }}
-                  />
-                </div>
-                {/* Name row */}
-                <div
-                  className="flex items-center gap-1 font-mono text-[11px]"
-                  style={{ color: isActive ? 'var(--accent-ink)' : 'var(--text-muted)' }}
-                >
-                  <span
-                    aria-hidden
-                    style={{
-                      width: 6,
-                      height: 6,
-                      borderRadius: '50%',
-                      background: dotColor,
-                      flexShrink: 0,
-                    }}
-                  />
-                  <span className="truncate">{ex.slug}</span>
-                </div>
-              </Link>
-            );
-          })}
+        <div className="sx-standards-table-wrap">
+          <table className="sx-standards-table">
+            <caption>{registry.length} engines and their canonical editing contracts</caption>
+            <thead>
+              <tr><th>Diagram</th><th>Standard</th><th>Canvas contract</th><th>Why constrained</th></tr>
+            </thead>
+            <tbody>
+              {registry.map((entry) => {
+                const capability = getInteractiveCapabilities(entry.type as InteractiveCapabilities['type']);
+                return (
+                  <tr key={entry.type}>
+                    <th scope="row">{entry.name}</th>
+                    <td>§ {entry.standard}</td>
+                    <td>{capability.text.join(', ') || 'source only'} · {capability.position}</td>
+                    <td>{capability.reason ?? '—'}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
-      </div>
-
-      {/* Editor panel */}
-      <Playground key={example ?? 'default'} initial={initial} height={640} syncHash stars={stars} />
+      </section>
     </div>
   );
 }

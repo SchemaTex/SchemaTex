@@ -498,7 +498,7 @@ const DEFAULT_MATRIX: MatrixTokens = {
 
 ### Dark theme
 
-遵循 Catppuccin Mocha：axisLine `#cdd6f4`, heatmapScale 改用 `[#1e1e2e, #313244, …, #f38ba8]` 冷→暖。
+遵循 Schematex slate/blue dark palette：axisLine `#f8fafc`, heatmapScale 改用 `[#0f172a, #172033, …, #f87171]` 冷→暖。
 
 Resolver：
 

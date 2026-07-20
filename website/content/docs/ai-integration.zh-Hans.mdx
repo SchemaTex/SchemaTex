@@ -5,24 +5,28 @@ description: 通过 Vercel AI SDK、托管 MCP 端点或 @schematex/mcp npm 包�
 
 <MCPConnectCard />
 
+Machine client 无需抓取渲染后的网页即可发现完整公共接口：[`/llms.txt`](/llms.txt) 是精选索引，
+[`/llms-full.txt`](/llms-full.txt) 包含完整英文文档，每个 docs URL 都有 `.md` mirror，
+[`/api/interactive-capabilities`](/api/interactive-capabilities) 则以 JSON 输出 canonical editor capability registry。
+
 ## TL;DR
 
-Schematex 内置了专为 LLM 设计的工具层——五个工具让 AI 代理能够**发现**图表类型、**学习**语法、**查看**精选示例、**校验**自身输出并**渲染** SVG。三种集成路径，工具集完全相同：
+Schematex 内置了专为 LLM 设计的工具层——八个工具让 AI 代理能够**发现**、**生成**、**校验**、**渲染**、**检查**并**安全编辑**图表。三种集成路径使用同一套契约：
 
 | 路径 | 适用场景 | 安装 |
 |---|---|---|
-| **Vercel AI SDK** | 在 Next.js / Node 应用中构建自己的 AI 功能 | `npm i schematex ai zod` |
+| **Vercel AI SDK** | 在 Next.js / Node 应用中构建自己的 AI 功能 | `npm i schematex ai` |
 | **托管 MCP** | 连接 Claude Desktop、ChatGPT、Cursor、Windsurf | 将客户端指向 `https://schematex.js.org/mcp` |
 | **本地 stdio MCP** | 离线 / 自定义 host | `npx @schematex/mcp` |
 
 ---
 
-## 五个工具
+## 八个工具
 
-每种路径暴露的五个工具语义完全一致。
+每种路径暴露的八个工具语义完全一致。
 
 ### `listDiagrams()`
-返回全部 45 种图表类型，包含简介、使用场景提示、所属 cluster 和权威标准。首先调用此工具来选择类型。
+返回全部 50 种图表类型，包含简介、使用场景提示、所属 cluster、权威标准和 Interactive 能力摘要。首先调用此工具来选择类型。
 
 ### `getSyntax({ type, detail? })`
 返回某种图表的标准语法。确定类型后调用。
@@ -44,6 +48,15 @@ Schematex 内置了专为 LLM 设计的工具层——五个工具让 AI 代理�
 
 **只有当你需要在对话本身中返回 SVG 时才使用 `renderDsl`**：Claude Desktop、ChatGPT、Cursor 或任何没有自己渲染管线的纯聊天客户端。
 </Callout>
+
+### `getDiagramCapabilities({ type })`
+返回该 diagram 安全的文字与位置编辑契约。在提出拖拽或 geometry 修改前调用。
+
+### `inspectDiagram({ type?, dsl })`
+返回 source revision、稳定的可编辑 target key、label、bounds 和允许操作。它刻意不向模型暴露原始 source offset。
+
+### `applyDiagramEdits({ type?, dsl, revision, edits })`
+Atomic 地应用最多 50 个 `setLabel` / `setPosition` 操作。revision 过期、target 未知、操作不安全或结果无效时返回原始 DSL，绝不会留下半次编辑。
 
 若要在应用内做 AI 预览，用 `renderResult()` 或 `renderPreview()` 渲染返回的 DSL：
 
@@ -81,10 +94,19 @@ call validateDsl and self-correct on errors before returning to the user.`,
 });
 ```
 
-`schematex/ai/sdk` 子路径只有在 `ai` 和 `zod` 已安装时才加载（两者都是可选的 peer dep）。如果不使用 AI SDK，直接从 `schematex/ai` 导入原始函数，接入任意框架：
+`schematex/ai/sdk` 子路径只有在可选的 `ai` peer dependency 已安装时才加载。它直接使用 JSON Schema，你的应用不再需要安装 Zod。如果不使用 AI SDK，直接从 `schematex/ai` 导入原始函数，接入任意框架：
 
 ```ts
-import { listDiagrams, getSyntax, getExamples, validateDsl, renderDsl } from 'schematex/ai';
+import {
+  listDiagrams,
+  getSyntax,
+  getExamples,
+  validateDsl,
+  renderDsl,
+  getDiagramCapabilities,
+  inspectDiagram,
+  applyDiagramEdits,
+} from 'schematex/ai';
 ```
 
 ### 单次生成（无工具循环）

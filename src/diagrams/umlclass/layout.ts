@@ -34,6 +34,7 @@ import type {
   UmlClassPackage,
   UmlClassRelationship,
 } from "./types";
+import { applyPins } from "../../core/editing";
 
 // ─── Coordinate model (spec §5.1) ────────────────────────────
 
@@ -100,7 +101,10 @@ interface EdgeChain {
 
 // ─── Entry ────────────────────────────────────────────────────
 
-export function layoutUmlClass(ast: UmlClassAst): UmlClassLayoutResult {
+export function layoutUmlClass(
+  ast: UmlClassAst,
+  pins?: Map<string, { x: number; y: number }>
+): UmlClassLayoutResult {
   const direction = ast.direction ?? "tb";
   const vertical = direction === "tb" || direction === "bt";
 
@@ -145,6 +149,16 @@ export function layoutUmlClass(ast: UmlClassAst): UmlClassLayoutResult {
   //     positions; then a second shift makes room for frame extents.
   const packages = layoutPackages(ast, boxByID);
   shiftForPackages(nodes, boxes, packages);
+
+  applyPins(boxes, pins, {
+    id: (box) => box.classifier.id,
+    position: () => vertical ? "move-x" : "move-y",
+  });
+  for (const node of nodes) {
+    if (!node.box) continue;
+    node.cx = node.box.x + node.box.width / 2;
+    node.cy = node.box.y + node.box.height / 2;
+  }
 
   // 9. Canvas size (boxes + frames).
   const { width, height } = canvasSize(boxes, packages);

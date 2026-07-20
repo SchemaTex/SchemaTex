@@ -33,6 +33,7 @@ import { parseFloorplan } from "./parser";
 import { FLOORPLAN_CONST as C, formatArea, layoutFloorplan } from "./layout";
 import { FLOORPLAN_SYMBOLS } from "./catalog";
 import type { DimLineGeom, FloorplanLayoutResult, OpeningGeom } from "./types";
+import { resolveSceneTitle } from "../../core/title-scene";
 
 type Theme = ResolvedTheme<FloorplanTokens>;
 
@@ -73,6 +74,11 @@ function buildCss(t: Theme): string {
 .sx-fp-error-box { fill: ${t.bg}; stroke: ${t.negative}; stroke-width: 1.5; }
 .sx-fp-error-title { font: 700 13px ui-monospace, Menlo, monospace; fill: ${t.negative}; }
 .sx-fp-error-line { font: 12px ui-monospace, Menlo, monospace; fill: ${t.negative}; }
+.sx-native-handle { fill: #fff; stroke: #2563eb; stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+.sx-native-handle[data-axis='x'] { cursor: ew-resize; }
+.sx-native-handle[data-axis='y'] { cursor: ns-resize; }
+.sx-native-handle[data-axis='xy'] { cursor: nwse-resize; }
+.sx-native-handle:hover { fill: #dbeafe; stroke-width: 2; }
 `.trim();
 }
 
@@ -381,11 +387,81 @@ export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: Rende
   const openings: string[] = [];
   const labels: string[] = [];
   const dims: string[] = [];
+  const nativeHandles: string[] = [];
+
+  for (const room of lay.rooms) {
+    const key = `node:${room.id}`;
+    config?.__scene?.push({
+      key,
+      kind: "node",
+      semanticId: room.id,
+      label: room.label,
+      sourceRange: room.labelSourceRange,
+      bbox: {
+        x: X(room.x),
+        y: Y(room.y) + titleH,
+        width: px(room.w),
+        height: px(room.h),
+      },
+      editable: { label: room.labelSourceRange !== undefined, position: "none" },
+    });
+    if (
+      config?.__scene &&
+      room.parts.length === 1 &&
+      room.sizeSourceRange &&
+      room.sourceW !== undefined &&
+      room.sourceH !== undefined
+    ) {
+      const unitScale = lay.unit === "ft" ? 0.3048 : 1;
+      const addResizeHandle = (
+        axis: "x" | "y" | "xy",
+        x: number,
+        y: number,
+      ): void => {
+        const handleKey = `handle:room:${room.id}:${axis}`;
+        config.__scene!.push({
+          key: handleKey,
+          kind: "node",
+          label: `${room.label} size`,
+          bbox: { x: x - 5, y: y - 5 + titleH, width: 10, height: 10 },
+          positionSource: {
+            kind: "size",
+            range: room.sizeSourceRange!,
+            width: room.sourceW!,
+            height: room.sourceH!,
+            unitsPerSvgX: 1 / (scale * unitScale),
+            unitsPerSvgY: 1 / (scale * unitScale),
+            axis,
+            minWidth: lay.unit === "ft" ? 2 : 0.6,
+            minHeight: lay.unit === "ft" ? 2 : 0.6,
+          },
+          editable: { label: false, position: axis === "x" ? "move-x" : axis === "y" ? "move-y" : "free" },
+        });
+        nativeHandles.push(el("circle", {
+          cx: x,
+          cy: y,
+          r: 5,
+          class: "sx-native-handle",
+          "data-axis": axis,
+          "data-sx-key": handleKey,
+          "data-sx-owner": handleKey,
+        }));
+      };
+      addResizeHandle("x", X(room.x + room.w), Y(room.y + room.h / 2));
+      addResizeHandle("y", X(room.x + room.w / 2), Y(room.y + room.h));
+      addResizeHandle("xy", X(room.x + room.w), Y(room.y + room.h));
+    }
+  }
 
   for (const r of lay.rooms) {
     floors.push(
       group(
-        { class: "sx-fp-floor", "data-room": r.id },
+        {
+          class: "sx-fp-floor",
+          "data-room": r.id,
+          "data-sx-key": config?.__scene ? `node:${r.id}` : undefined,
+          "data-sx-owner": config?.__scene ? `node:${r.id}` : undefined,
+        },
         r.parts.map((p) =>
           rect({
             fill: r.fill ?? t.floorFill,
@@ -402,8 +478,15 @@ export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: Rende
       const main = r.parts.reduce((a, b) => (b.w * b.h > a.w * a.h ? b : a));
       const cx = X(main.x + main.w / 2);
       const cy = Y(main.y + main.h / 2);
-      labels.push(textEl({ class: "sx-fp-room-name", x: cx, y: r2(cy - 3), "text-anchor": "middle" }, r.label));
-      labels.push(textEl({ class: "sx-fp-room-area", x: cx, y: r2(cy + 13), "text-anchor": "middle" }, r.areaText));
+      labels.push(textEl({
+        class: "sx-fp-room-name",
+        x: cx,
+        y: r2(cy - 3),
+        "text-anchor": "middle",
+        "data-sx-owner": config?.__scene ? `node:${r.id}` : undefined,
+        "data-sx-role": config?.__scene && r.labelSourceRange ? "label" : undefined,
+      }, r.label));
+      labels.push(textEl({ class: "sx-fp-room-area", x: cx, y: r2(cy + 13), "text-anchor": "middle", "data-sx-owner": config?.__scene ? `node:${r.id}` : undefined }, r.areaText));
     }
   }
 
@@ -415,6 +498,25 @@ export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: Rende
     const cx = r2(X(it.x) + wpx / 2);
     const cy = r2(Y(it.y) + hpx / 2);
     const rot = Math.round(it.rotate * 10) / 10;
+    const itemKey = `item:furniture:${it.sourceLine ?? `${it.roomId}:${it.type}:${it.seq}`}`;
+    const canMove = it.positionSourceRange !== undefined && it.sourceX !== undefined && it.sourceY !== undefined;
+    config?.__scene?.push({
+      key: itemKey,
+      kind: "node",
+      label: it.label ?? it.type,
+      sourceRange: it.labelSourceRange,
+      bbox: { x: X(it.x), y: Y(it.y) + titleH, width: wpx, height: hpx },
+      positionSource: canMove
+        ? {
+            range: it.positionSourceRange!,
+            x: it.sourceX!,
+            y: it.sourceY!,
+            unitsPerSvgX: 1 / (scale * (lay.unit === "ft" ? 0.3048 : 1)),
+            unitsPerSvgY: 1 / (scale * (lay.unit === "ft" ? 0.3048 : 1)),
+          }
+        : undefined,
+      editable: { label: it.labelSourceRange !== undefined, position: canMove ? "free" : "none" },
+    });
     const children = [def.draw({ w: it.w, h: it.h, px, label: it.label, seats: it.seats })];
     if (warnSet.has(idx)) {
       children.push(rect({ class: "sx-fp-warn-item", x: -1, y: -1, width: r2(wpx + 2), height: r2(hpx + 2) }));
@@ -424,24 +526,47 @@ export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: Rende
         {
           class: "sx-fp-item",
           "data-furniture": it.type,
+          "data-sx-key": config?.__scene ? itemKey : undefined,
+          "data-sx-owner": config?.__scene ? itemKey : undefined,
           transform: `translate(${cx},${cy})${rot ? ` rotate(${rot})` : ""} translate(${r2(-wpx / 2)},${r2(-hpx / 2)})`,
         },
         children
       )
     );
     if (it.label && !def.consumesLabel) {
-      labels.push(textEl({ class: "sx-fp-furn-label", x: cx, y: r2(cy + 4), "text-anchor": "middle" }, it.label));
+      const labelKey = `label:furniture:${it.roomId}:${it.type}:${it.seq}`;
+      config?.__scene?.push({
+        key: labelKey,
+        kind: "label",
+        label: it.label,
+        sourceRange: it.labelSourceRange,
+        bbox: { x: cx - Math.max(24, it.label.length * 3.2), y: cy - 8 + titleH, width: Math.max(48, it.label.length * 6.4), height: 16 },
+        editable: { label: it.labelSourceRange !== undefined, position: "none" },
+      });
+      labels.push(textEl({
+        class: "sx-fp-furn-label",
+        x: cx,
+        y: r2(cy + 4),
+        "text-anchor": "middle",
+        "data-sx-key": config?.__scene && it.labelSourceRange ? labelKey : undefined,
+        "data-sx-owner": config?.__scene ? itemKey : undefined,
+        "data-sx-role": config?.__scene && it.labelSourceRange ? "label" : undefined,
+      }, it.label));
     }
   });
 
   const tw = lay.wallT;
   for (const r of lay.rooms) {
+    const roomWalls: string[] = [];
     for (const p of r.parts) {
-      walls.push(rect({ class: "sx-fp-wall", x: r2(X(p.x) - px(tw / 2)), y: r2(Y(p.y) - px(tw / 2)), width: r2(px(p.w + tw)), height: px(tw) }));
-      walls.push(rect({ class: "sx-fp-wall", x: r2(X(p.x) - px(tw / 2)), y: r2(Y(p.y + p.h) - px(tw / 2)), width: r2(px(p.w + tw)), height: px(tw) }));
-      walls.push(rect({ class: "sx-fp-wall", x: r2(X(p.x) - px(tw / 2)), y: r2(Y(p.y) - px(tw / 2)), width: px(tw), height: r2(px(p.h + tw)) }));
-      walls.push(rect({ class: "sx-fp-wall", x: r2(X(p.x + p.w) - px(tw / 2)), y: r2(Y(p.y) - px(tw / 2)), width: px(tw), height: r2(px(p.h + tw)) }));
+      roomWalls.push(rect({ class: "sx-fp-wall", x: r2(X(p.x) - px(tw / 2)), y: r2(Y(p.y) - px(tw / 2)), width: r2(px(p.w + tw)), height: px(tw) }));
+      roomWalls.push(rect({ class: "sx-fp-wall", x: r2(X(p.x) - px(tw / 2)), y: r2(Y(p.y + p.h) - px(tw / 2)), width: r2(px(p.w + tw)), height: px(tw) }));
+      roomWalls.push(rect({ class: "sx-fp-wall", x: r2(X(p.x) - px(tw / 2)), y: r2(Y(p.y) - px(tw / 2)), width: px(tw), height: r2(px(p.h + tw)) }));
+      roomWalls.push(rect({ class: "sx-fp-wall", x: r2(X(p.x + p.w) - px(tw / 2)), y: r2(Y(p.y) - px(tw / 2)), width: px(tw), height: r2(px(p.h + tw)) }));
     }
+    walls.push(config?.__scene
+      ? group({ "data-sx-owner": `node:${r.id}` }, roomWalls)
+      : roomWalls.join(""));
   }
 
   // interior seams between parts of the same room — open the wall fully
@@ -450,20 +575,27 @@ export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: Rende
     const tpx = px(tw);
     if (s.vertical) {
       openings.push(
-        rect({ class: "sx-fp-gap", fill, x: r2(X(s.along) - tpx / 2 - 0.5), y: Y(s.lo), width: r2(tpx + 1), height: px(s.hi - s.lo) })
+        config?.__scene
+          ? group({ "data-sx-owner": `node:${lay.rooms[s.room]!.id}` }, [rect({ class: "sx-fp-gap", fill, x: r2(X(s.along) - tpx / 2 - 0.5), y: Y(s.lo), width: r2(tpx + 1), height: px(s.hi - s.lo) })])
+          : rect({ class: "sx-fp-gap", fill, x: r2(X(s.along) - tpx / 2 - 0.5), y: Y(s.lo), width: r2(tpx + 1), height: px(s.hi - s.lo) })
       );
     } else {
       openings.push(
-        rect({ class: "sx-fp-gap", fill, x: X(s.lo), y: r2(Y(s.along) - tpx / 2 - 0.5), width: px(s.hi - s.lo), height: r2(tpx + 1) })
+        config?.__scene
+          ? group({ "data-sx-owner": `node:${lay.rooms[s.room]!.id}` }, [rect({ class: "sx-fp-gap", fill, x: X(s.lo), y: r2(Y(s.along) - tpx / 2 - 0.5), width: px(s.hi - s.lo), height: r2(tpx + 1) })])
+          : rect({ class: "sx-fp-gap", fill, x: X(s.lo), y: r2(Y(s.along) - tpx / 2 - 0.5), width: px(s.hi - s.lo), height: r2(tpx + 1) })
       );
     }
   }
 
   for (const o of lay.openings) {
-    openings.push(punchGap(o, lay, ctx));
-    if (o.kind === "window") openings.push(windowSymbol(o, ctx));
-    else if (o.kind === "door") openings.push(doorSymbol(o, ctx));
-    else openings.push(jambLines(o, ctx));
+    const openingParts = [punchGap(o, lay, ctx)];
+    if (o.kind === "window") openingParts.push(windowSymbol(o, ctx));
+    else if (o.kind === "door") openingParts.push(doorSymbol(o, ctx));
+    else openingParts.push(jambLines(o, ctx));
+    openings.push(config?.__scene
+      ? group({ "data-sx-owner": `node:${lay.rooms[o.owner]!.id}` }, openingParts)
+      : openingParts.join(""));
   }
 
   for (const d of lay.dims) dims.push(renderDim(d, ctx));
@@ -502,6 +634,9 @@ export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: Rende
     `${lay.items.length} furniture item${lay.items.length === 1 ? "" : "s"}.` +
     (lay.warnings.length ? ` Warnings: ${lay.warnings.join("; ")}.` : "");
 
+  const titleScene = resolveSceneTitle(lay.title, lay.titleSourceRange, titleX, TITLE.y, config);
+  const titleNode = textEl({ class: "sx-fp-title", x: titleScene.x, y: titleScene.y, "text-anchor": "middle", ...titleScene.attrs }, lay.title);
+
   return svgRoot(
     { viewBox: `0 0 ${W} ${H}`, width: W, height: H, class: "sx-fp", role: "img" },
     [
@@ -509,20 +644,36 @@ export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: Rende
       descEl(descText),
       el("style", {}, buildCss(t)),
       rect({ fill: t.bg, x: 0, y: 0, width: W, height: H }),
-      textEl({ class: "sx-fp-title", x: titleX, y: TITLE.y, "text-anchor": "middle" }, lay.title),
-      group({ transform: `translate(0,${titleH})` }, [
-        group({ class: "sx-fp-floors" }, floors),
-        group({ class: "sx-fp-furniture" }, furniture),
-        group({ class: "sx-fp-walls" }, walls),
-        group({ class: "sx-fp-openings" }, openings),
-        group({ class: "sx-fp-labels" }, labels),
-        group({ class: "sx-fp-dims" }, dims),
-      ]),
+      ...(config?.__scene
+        ? [
+            group({ transform: `translate(0,${titleH})` }, [
+              group({ class: "sx-fp-floors" }, floors),
+              group({ class: "sx-fp-furniture" }, furniture),
+              group({ class: "sx-fp-walls" }, walls),
+              group({ class: "sx-fp-openings" }, openings),
+              group({ class: "sx-fp-labels" }, labels),
+              group({ class: "sx-fp-dims" }, dims),
+              group({ class: "sx-native-handles" }, nativeHandles),
+            ]),
+            titleNode,
+          ]
+        : [
+            titleNode,
+            group({ transform: `translate(0,${titleH})` }, [
+              group({ class: "sx-fp-floors" }, floors),
+              group({ class: "sx-fp-furniture" }, furniture),
+              group({ class: "sx-fp-walls" }, walls),
+              group({ class: "sx-fp-openings" }, openings),
+              group({ class: "sx-fp-labels" }, labels),
+              group({ class: "sx-fp-dims" }, dims),
+              group({ class: "sx-native-handles" }, nativeHandles),
+            ]),
+          ]),
       ...warnBlock,
     ]
   );
 }
 
 export function renderFloorplan(text: string, config?: RenderConfig): string {
-  return renderFloorplanLayout(layoutFloorplan(parseFloorplan(text)), config);
+  return renderFloorplanLayout(layoutFloorplan(parseFloorplan(text), config?.__pins), config);
 }

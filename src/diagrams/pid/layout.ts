@@ -8,6 +8,7 @@ import type {
   PidLayoutResult,
   PidLine,
 } from "./types";
+import { applyPins } from "../../core/editing";
 
 const PADDING = 30;
 const TITLE_AREA = 26;
@@ -100,7 +101,7 @@ function manhattanPath(
   };
 }
 
-export function layoutPid(ast: PidAST): PidLayoutResult {
+export function layoutPid(ast: PidAST, pins?: Map<string, { x: number; y: number }>): PidLayoutResult {
   // 1. Place equipment in declaration order along the primary direction.
   const equipment: PidLayoutEquipment[] = [];
   const equipById = new Map<string, PidLayoutEquipment>();
@@ -137,6 +138,23 @@ export function layoutPid(ast: PidAST): PidLayoutResult {
     equipment.push(layoutEq);
     equipById.set(equip.id, layoutEq);
     cursorX += geo.width + EQUIP_GAP_X;
+  }
+
+  const equipBeforePins = new Map(equipment.map((item) => [item.equip.id, { x: item.x, y: item.y }]));
+  applyPins(equipment, pins, {
+    id: (item) => item.equip.id,
+    position: () => "free",
+  });
+  for (const item of equipment) {
+    const before = equipBeforePins.get(item.equip.id)!;
+    const dx = item.x - before.x;
+    const dy = item.y - before.y;
+    item.cx += dx;
+    item.cy += dy;
+    for (const port of Object.values(item.ports)) {
+      port.x += dx;
+      port.y += dy;
+    }
   }
 
   // 1b. Pre-compute pipe midpoints (equipment→equipment lines only) so that a
@@ -217,6 +235,20 @@ export function layoutPid(ast: PidAST): PidLayoutResult {
     }
   }
 
+  const instrumentRects = instruments.map((item) => ({
+    item,
+    x: item.cx - item.r,
+    y: item.cy - item.r,
+  }));
+  applyPins(instrumentRects, pins, {
+    id: (entry) => entry.item.inst.tag,
+    position: () => "free",
+  });
+  for (const entry of instrumentRects) {
+    entry.item.cx = entry.x + entry.item.r;
+    entry.item.cy = entry.y + entry.item.r;
+  }
+
   // 3. Route lines.
   const lines: PidLayoutLine[] = [];
   for (const ln of ast.lines) {
@@ -249,6 +281,7 @@ export function layoutPid(ast: PidAST): PidLayoutResult {
     instruments,
     lines,
     title: ast.title,
+    titleSourceRange: ast.titleSourceRange,
   };
 }
 

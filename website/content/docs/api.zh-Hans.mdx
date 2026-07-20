@@ -74,7 +74,7 @@ renderToContainer(text, exportContainer);          // strict
 renderPreviewToContainer(text, previewContainer);  // visible fallback
 ```
 
-React 组件已经使用了预览安全的结果边界：
+Canvas 不应修改 DSL 时，使用精简的只读 React 组件：
 
 ```tsx
 import { SchematexDiagram } from 'schematex/react';
@@ -87,6 +87,32 @@ import { SchematexDiagram } from 'schematex/react';
 ```
 
 `onError` 在严格的解析/布局/渲染失败时触发，先于组件显示诊断 fallback SVG。
+
+需要受控 Editor 时，使用 `InteractiveSchematexDiagram`：
+
+```tsx
+'use client';
+
+import { useState } from 'react';
+import { InteractiveSchematexDiagram } from 'schematex/react';
+
+export function DiagramEditor({ initialDsl }: { initialDsl: string }) {
+  const [dsl, setDsl] = useState(initialDsl);
+  return (
+    <InteractiveSchematexDiagram
+      value={dsl}
+      onChange={setDsl}
+      debounceMs={120}
+      canvasClassName="diagramCanvas"
+    />
+  );
+}
+```
+
+它是受控组件：持久化、undo、源码编辑和协作仍由你的应用负责。
+`canvasClassName` 作用于直接包含生成 SVG 的内部 host `<div>`，不会修改 SVG 自己的 class attribute。
+完整 Props 表、样式契约、event 语义、能力查询与 Vanilla DOM API 见
+[Interactive Editing](/docs/interactive-editing)。
 
 ## 可 tree-shaking 的导入
 
@@ -109,6 +135,7 @@ interface SchematexConfig {
   theme?: string;             // e.g. 'default' | 'monochrome' | 'dark'
   fontFamily?: string;
   mode?: 'strict' | 'preview';
+  scene?: boolean;            // 返回可编辑 SceneItem metadata
 }
 ```
 

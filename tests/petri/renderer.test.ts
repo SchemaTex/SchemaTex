@@ -58,6 +58,6 @@ describe("petri renderer — semantic SVG", () => {
       fontSize: 12,
       padding: 0,
     });
-    expect(svg).toContain("#313244"); // dark place fill
+    expect(svg).toContain("#172033"); // dark place fill
   });
 });

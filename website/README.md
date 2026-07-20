@@ -3,7 +3,7 @@
 Landing + docs + examples site for [Schematex](https://github.com/SchemaTex/SchemaTex).
 
 Built with **Next.js 15** + **Fumadocs** + **Tailwind v4**. Deployed to
-Vercel at [schematex.dev](https://schematex.dev).
+Vercel at [schematex.js.org](https://schematex.js.org).
 
 ## Develop
 
@@ -64,5 +64,5 @@ so translation is a file-copy operation.
 
 Vercel picks up automatically. Set project root to `website/` if needed.
 
-- `NEXT_PUBLIC_SITE_URL=https://schematex.dev`
-- Domain: point `schematex.dev` at the Vercel project.
+- `NEXT_PUBLIC_SITE_URL=https://schematex.js.org`
+- Domain: point `schematex.js.org` at the Vercel project.

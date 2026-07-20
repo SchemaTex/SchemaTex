@@ -576,7 +576,7 @@ export interface DecisionTreeTokens {
 | chanceFill | `#dbeafe` | `#ffffff` | `#102a43` |
 | outcomeFill | `#f1f5f9` | `#ffffff` | `#1e1e1e` |
 | optimalEdge | `#16a34a` | `#000000` | `#4ade80` |
-| mlClassPalette | Tailwind "sky/emerald/amber/rose/violet/teal/pink/lime/cyan/orange" 500 | grayscale 10 steps | Catppuccin accent 10 |
+| mlClassPalette | Tailwind "sky/emerald/amber/rose/violet/teal/pink/lime/cyan/orange" 500 | grayscale 10 steps | Schematex slate/blue accent 10 |
 
 ### 9.3 CSS custom properties
 

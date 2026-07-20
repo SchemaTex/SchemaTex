@@ -86,7 +86,7 @@ renderToContainer(text, exportContainer);          // strict
 renderPreviewToContainer(text, previewContainer);  // visible fallback
 ```
 
-The React component already uses the preview-safe result boundary:
+Use the small read-only React component when the canvas should not modify DSL:
 
 ```tsx
 import { SchematexDiagram } from 'schematex/react';
@@ -100,6 +100,37 @@ import { SchematexDiagram } from 'schematex/react';
 
 `onError` fires on strict parser/layout/render failure before the component
 shows the diagnostic fallback SVG.
+
+For a controlled editor, use `InteractiveSchematexDiagram`:
+
+```tsx
+'use client';
+
+import { useState } from 'react';
+import { InteractiveSchematexDiagram } from 'schematex/react';
+
+export function DiagramEditor({ initialDsl }: { initialDsl: string }) {
+  const [dsl, setDsl] = useState(initialDsl);
+  return (
+    <InteractiveSchematexDiagram
+      value={dsl}
+      onChange={(nextDsl, detail) => {
+        setDsl(nextDsl);
+        console.log(detail.reason, detail.item?.semanticId);
+      }}
+      debounceMs={120}
+      canvasClassName="diagramCanvas"
+    />
+  );
+}
+```
+
+This component is controlled: persistence, undo, source-code editing, and
+collaboration stay in your application. `canvasClassName` applies to the inner
+host `<div>` that directly contains the generated SVG; it does not mutate the
+SVG's class attribute. See [Interactive editing](/docs/interactive-editing) for
+the complete Props table, styling contract, event semantics, capability
+discovery, and Vanilla DOM API.
 
 ## Tree-shakable imports
 
@@ -122,6 +153,7 @@ interface SchematexConfig {
   theme?: string;             // e.g. 'default' | 'monochrome' | 'dark'
   fontFamily?: string;
   mode?: 'strict' | 'preview';
+  scene?: boolean;            // include editable SceneItem metadata
 }
 ```
 

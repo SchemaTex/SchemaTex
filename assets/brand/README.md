@@ -103,11 +103,11 @@ Mark aligned to cap-height. Gap = `0.35 × mark width`.
 ### Drop-in meta
 
 ```html
-<meta property="og:image" content="https://schematex.dev/og-default.png">
+<meta property="og:image" content="https://schematex.js.org/og-default.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://schematex.dev/og-default.png">
+<meta name="twitter:image" content="https://schematex.js.org/og-default.png">
 ```
 
 **Rotation rule:** rotate the right-pane diagram with each release — genogram for clinical posts, ladder for industrial, entity for corporate. Never invent a diagram the library can't actually render.

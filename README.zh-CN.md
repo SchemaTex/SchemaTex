@@ -9,9 +9,9 @@
 </p>
 
 <p align="center">
-  <a href="https://schematex.dev">官网</a> ·
-  <a href="https://schematex.dev/playground">Playground</a> ·
-  <a href="https://schematex.dev/docs">文档</a> ·
+  <a href="https://schematex.js.org">官网</a> ·
+  <a href="https://schematex.js.org/playground">Playground</a> ·
+  <a href="https://schematex.js.org/docs">文档</a> ·
   <a href="https://www.npmjs.com/package/schematex">npm</a>
 </p>
 
@@ -33,7 +33,7 @@
 
 ---
 
-**Schematex** 是一个开源渲染引擎，专门画那些专业人士**真正在用**的图 —— 医学、电气、法律、分析领域。**37 种图**，覆盖医学、工程、法律与分析：
+**Schematex** 是一个开源渲染与编辑引擎，专门画那些专业人士**真正在用**的图 —— 医学、电气、法律、分析领域。**50 种图**，覆盖医学、工程、法律与分析：
 
 - 👪 **关系类** —— 家系图（genogram）、生态图（ecomap）、遗传谱系图（pedigree）、社交图（sociogram）、系统发育树（phylo）
 - ⚡ **电气与工业** —— 梯形图（ladder）、单线图（SLD）、电路原理图（circuit）、逻辑门（logic）、时序图（timing）、方框图（block）、**FBD**、**SFC**、面包板（breadboard）、**P&ID**（ISA-5.1）
@@ -80,9 +80,30 @@ genogram "The Smiths"
 import { render } from 'schematex/genogram';
 ```
 
+### React Editor
+
+同一个 npm 包内置受控的开源 Canvas Editor。你的应用负责 DSL state、持久化、undo 和协作；Schematex 负责安全的 SVG 手势和所见即所得文字编辑。
+
+```tsx
+'use client';
+
+import { useState } from 'react';
+import { InteractiveSchematexDiagram } from 'schematex/react';
+
+export function DiagramEditor() {
+  const [dsl, setDsl] = useState('flowchart "发布流程"\n  draft [草稿]\n  draft -> shipped [发布]');
+
+  return <InteractiveSchematexDiagram value={dsl} onChange={setDsl} />;
+}
+```
+
+20 个具备 parser-native range 的 engine 支持确定性的 Canvas 编辑，其中 17 个还支持稳定 ID 拖拽或 native geometry handle。其余 30 个仍可正常 render 和通过 DSL 源码编辑，但不会生成猜测式 Canvas handle。详见 [Interactive Editing 指南](https://schematex.js.org/docs/interactive-editing) 和 [在线测试 workspace](https://schematex.js.org/playground)。
+
+开发型 LLM 可以从 [`llms.txt`](https://schematex.js.org/llms.txt) 开始，通过 [`llms-full.txt`](https://schematex.js.org/llms-full.txt) 读取完整 Markdown 文档，或查询 [machine-readable interactive capability registry](https://schematex.js.org/api/interactive-capabilities)。任意 docs URL 末尾加 `.md` 即可获得干净的 Markdown。
+
 ## 图库
 
-全部 37 种图共用同一条渲染管线，下面展示其中一部分 —— **在 [schematex.dev/playground](https://schematex.dev/playground) 实时试用任意一种。**
+全部 50 种图共用同一条渲染管线，下面展示其中一部分 —— **在 [schematex.js.org/playground](https://schematex.js.org/playground) 实时试用任意一种。**
 
 ### 👪 家系图 Genogram —— *McGoldrick 家庭系统标准*
 
@@ -110,7 +131,7 @@ genogram "The Potter Family"
 
 ![Harry Potter Genogram](examples/genogram/harry-potter.svg)
 
-[家系图语法 →](https://schematex.dev/docs/genogram)
+[家系图语法 →](https://schematex.js.org/docs/genogram)
 
 ---
 
@@ -135,7 +156,7 @@ ecomap "Nguyen Family Resettlement"
 
 ![Nguyen Family Ecomap](examples/ecomap/refugee-family.svg)
 
-[生态图语法 →](https://schematex.dev/docs/ecomap)
+[生态图语法 →](https://schematex.js.org/docs/ecomap)
 
 ---
 
@@ -157,7 +178,7 @@ pedigree "BRCA1 Family — Hereditary Breast/Ovarian Cancer"
 
 ![BRCA1 Pedigree](examples/pedigree/brca-family.svg)
 
-[谱系图语法 →](https://schematex.dev/docs/pedigree)
+[谱系图语法 →](https://schematex.js.org/docs/pedigree)
 
 ---
 
@@ -175,7 +196,7 @@ phylo "Bacterial Diversity"
 
 ![Bacterial Diversity Phylogenetic Tree](examples/phylo/bacterial-diversity.svg)
 
-[系统发育树语法 →](https://schematex.dev/docs/phylo)
+[系统发育树语法 →](https://schematex.js.org/docs/phylo)
 
 ---
 
@@ -209,7 +230,7 @@ sociogram "Operation Sunset - Communication Network"
 
 ![Operation Sunset Sociogram](examples/sociogram/criminal-network.svg)
 
-[社交图语法 →](https://schematex.dev/docs/sociogram)
+[社交图语法 →](https://schematex.js.org/docs/sociogram)
 
 ---
 
@@ -227,7 +248,7 @@ MISO:  zzzz====  data: ["","","","","0xFF","0x12","0x34","0x56"]
 
 ![SPI Transaction Timing Diagram](examples/timing/spi-transaction.svg)
 
-[时序图语法 →](https://schematex.dev/docs/timing)
+[时序图语法 →](https://schematex.js.org/docs/timing)
 
 ---
 
@@ -248,7 +269,7 @@ Cout = OR(c1, c2)
 
 ![1-bit Full Adder Logic Gate](examples/logic/full-adder.svg)
 
-[逻辑门语法 →](https://schematex.dev/docs/logic)
+[逻辑门语法 →](https://schematex.js.org/docs/logic)
 
 ---
 
@@ -267,7 +288,7 @@ Re e 0 1k
 
 ![CE Amp Netlist Schematic](examples/circuit/ce-amp-netlist.svg)
 
-[电路语法 →](https://schematex.dev/docs/circuit)
+[电路语法 →](https://schematex.js.org/docs/circuit)
 
 ---
 
@@ -288,7 +309,7 @@ rung 1 "Set Auto, reset Manual":
 
 ![System Mode Selection Ladder](examples/ladder/mode-selection.svg)
 
-[梯形图语法 →](https://schematex.dev/docs/ladder)
+[梯形图语法 →](https://schematex.js.org/docs/ladder)
 
 ---
 
@@ -317,7 +338,7 @@ CB2 -> L2
 
 ![Utility with Generator Backup SLD](examples/sld/generator-ats.svg)
 
-[单线图语法 →](https://schematex.dev/docs/sld)
+[单线图语法 →](https://schematex.js.org/docs/sld)
 
 ---
 
@@ -338,7 +359,7 @@ entity "Acme Holdings"
 
 ![Acme Holdings Entity Structure](examples/entity/holding-company.svg)
 
-[实体结构语法 →](https://schematex.dev/docs/entity)
+[实体结构语法 →](https://schematex.js.org/docs/entity)
 
 ---
 
@@ -367,7 +388,7 @@ H2 -> s1
 
 ![Nested Feedback Loops Block Diagram](examples/block/nested-feedback.svg)
 
-[方框图语法 →](https://schematex.dev/docs/block)
+[方框图语法 →](https://schematex.js.org/docs/block)
 
 ---
 
@@ -394,7 +415,7 @@ algo : "Core Update penalty" : "Weak E-E-A-T signals" : "SGE traffic diversion"
 
 ![Website Traffic Drop Fishbone](examples/fishbone/website-traffic-drop.svg)
 
-[鱼骨图语法 →](https://schematex.dev/docs/fishbone)
+[鱼骨图语法 →](https://schematex.js.org/docs/fishbone)
 
 ### 🌳 决策树 Decision Tree —— *Howard-Raiffa · CART/sklearn · 分类法*
 
@@ -442,7 +463,7 @@ q "Airway compromise?"
       no: a "Level 4/5 — Less urgent"
 ```
 
-[决策树语法 →](https://schematex.dev/docs/decisiontree)
+[决策树语法 →](https://schematex.js.org/docs/decisiontree)
 
 ---
 
@@ -489,7 +510,7 @@ config: style = gantt
 2026-05-15 - 2026-06-25: "Campaign prep" [category: "Marketing"]
 ```
 
-[时间线语法 →](https://schematex.dev/docs/timeline)
+[时间线语法 →](https://schematex.js.org/docs/timeline)
 
 ### 🗓️ PERT / CPM —— *PMI PMBOK 7 活动节点网络图*
 
@@ -509,7 +530,7 @@ task F "Marketing collateral" duration: 7  after: B
 task G "Launch event"         duration: 2  after: E, F
 ```
 
-[PERT / CPM 语法 →](https://schematex.dev/docs/pert)
+[PERT / CPM 语法 →](https://schematex.js.org/docs/pert)
 
 ---
 
@@ -544,7 +565,7 @@ petri "Mutual Exclusion — two processes, one resource"
 
 ![Mutual Exclusion Petri Net](examples/petri/mutual-exclusion.svg)
 
-[Petri 网语法 →](https://schematex.dev/docs/petri)
+[Petri 网语法 →](https://schematex.js.org/docs/petri)
 
 ---
 
@@ -582,7 +603,7 @@ network "Acme HQ — CCTV"
 
 ![CCTV camera network topology](examples/network/cctv-camera-network.svg)
 
-[网络拓扑语法 →](https://schematex.dev/docs/network)
+[网络拓扑语法 →](https://schematex.js.org/docs/network)
 
 ---
 
@@ -623,7 +644,7 @@ AbstractShape <|-- Square
 
 ![UML class shape hierarchy](examples/umlclass/shape-hierarchy.svg)
 
-[UML 类图语法 →](https://schematex.dev/docs/umlclass)
+[UML 类图语法 →](https://schematex.js.org/docs/umlclass)
 
 ---
 
@@ -641,7 +662,7 @@ faulttree "Both pumps fail"
 
 ![Redundant pump fault tree](examples/faulttree/pump-redundancy.svg)
 
-[故障树语法 →](https://schematex.dev/docs/faulttree)
+[故障树语法 →](https://schematex.js.org/docs/faulttree)
 
 ---
 
@@ -669,7 +690,7 @@ consequence "Vapour cloud explosion"
 
 ![LPG loss-of-containment bowtie](examples/bowtie/lpg-loss-of-containment.svg)
 
-[领结图语法 →](https://schematex.dev/docs/bowtie)
+[领结图语法 →](https://schematex.js.org/docs/bowtie)
 
 ## 为什么选 SchemaTex？
 
@@ -738,7 +759,7 @@ const opaque = await svgToPngBlob(svg, { background: 'white' }); // 选择性填
 downloadBlob(blob, 'diagram.png');
 ```
 
-参见 [API 参考 →](https://schematex.dev/docs/api)。
+参见 [API 参考 →](https://schematex.js.org/docs/api)。
 
 ### 背景与暗色模式
 

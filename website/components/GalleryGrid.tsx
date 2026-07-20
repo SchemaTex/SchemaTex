@@ -7,17 +7,18 @@ import {
   type GalleryExample,
 } from '@/lib/gallery-examples';
 import { DiagramIcon, type DiagramType as DiagramIconType } from '@/components/DiagramIcon';
+import { ThemedSvg } from '@/components/ThemedSvg';
 
-function safeRender(dsl: string): string {
+function safeRender(dsl: string, theme: 'default' | 'dark'): string {
   try {
-    return render(dsl);
+    return render(dsl, { theme });
   } catch {
     return '';
   }
 }
 
 function GalleryCard({ ex }: { ex: GalleryExample }) {
-  const svg = safeRender(ex.dsl);
+  const lightSvg = safeRender(ex.dsl, 'default');
   const cluster = getDiagramCluster(ex.diagram);
   const clusterColor = CLUSTER_META[cluster]?.color ?? 'var(--text-muted)';
   const industry = INDUSTRY_LABELS[ex.industry] ?? { label: ex.industry };
@@ -29,7 +30,7 @@ function GalleryCard({ ex }: { ex: GalleryExample }) {
         {/* Card bar: diagram icon · diagram type · § standard */}
         <div
           className="flex items-center gap-2 px-3 py-2 font-mono text-xs"
-          style={{ borderBottom: '1px solid var(--fill-muted)', color: 'var(--text-muted)' }}
+          style={{ borderBottom: '1px solid var(--line)', color: 'var(--text-muted)' }}
         >
           <DiagramIcon
             type={ex.diagram as DiagramIconType}
@@ -41,17 +42,16 @@ function GalleryCard({ ex }: { ex: GalleryExample }) {
           <span className="truncate">§ {ex.standard}</span>
         </div>
 
-        {/* Diagram preview — dot-grid background, fixed height.
-            Force white surface so the always-light-theme schematex SVG remains
-            readable when the site is in dark mode. */}
+        {/* Diagram preview — dot-grid background, fixed height, renderer theme follows the site. */}
         <div
           className="dot-grid flex items-center justify-center p-4"
-          style={{ height: 180, color: 'var(--stroke)', background: '#ffffff' }}
+          style={{ height: 180, color: 'var(--stroke)', background: 'var(--fill)' }}
         >
-          {svg ? (
-            <div
+          {lightSvg ? (
+            <ThemedSvg
+              light={lightSvg}
+              darkSrc={`/api/example-svg/${ex.slug}?theme=dark`}
               className="h-full w-full [&_svg]:mx-auto [&_svg]:max-h-full [&_svg]:max-w-full"
-              dangerouslySetInnerHTML={{ __html: svg }}
             />
           ) : (
             <span className="font-mono text-xs" style={{ color: 'var(--text-muted)', opacity: 0.5 }}>
@@ -63,7 +63,7 @@ function GalleryCard({ ex }: { ex: GalleryExample }) {
         {/* Card footer: title + description + use-case pill */}
         <div
           className="flex flex-1 flex-col gap-1.5 p-3"
-          style={{ borderTop: '1px solid var(--fill-muted)' }}
+          style={{ borderTop: '1px solid var(--line)' }}
         >
           <div
             className="text-[14px] font-medium leading-snug"

@@ -6,6 +6,7 @@ import { renderFloorplan } from "./renderer";
 
 export const floorplan: DiagramPlugin = {
   type: "floorplan",
+  capabilities: { scene: true, editablePosition: true },
   detect(text: string): boolean {
     for (const raw of text.split(/\r?\n/)) {
       const t = raw.trim();

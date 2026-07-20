@@ -4,6 +4,7 @@ import { renderBreadboard } from "./renderer";
 
 export const breadboard: DiagramPlugin = {
   type: "breadboard",
+  capabilities: { scene: true, editablePosition: true },
   detect(text: string): boolean {
     for (const raw of text.split(/\r?\n/)) {
       const t = raw.trim();

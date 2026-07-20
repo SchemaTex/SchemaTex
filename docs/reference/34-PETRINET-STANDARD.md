@@ -308,7 +308,7 @@ After layout, the engine evaluates `M₀` (or the marking after a `fire:` sequen
 Schematex has two visual stances (see `00-OVERVIEW.md` §Theme System):
 
 - **`IndustrialTokens`** — circuit / ladder / SLD / logic / FBD / SFC: *forced monochrome* under IEEE 315 / IEC 61131-3, no colourful variant by design.
-- **`BaseTheme` + a semantic extension** — most others (timeline, flowchart, venn, pert): a tasteful house palette in `default`, true black/white in `monochrome`, Catppuccin in `dark`.
+- **`BaseTheme` + a semantic extension** — most others (timeline, flowchart, venn, pert): a tasteful house palette in `default`, true black/white in `monochrome`, Schematex slate/blue in `dark`.
 
 **Petri net belongs to the second group, not the first.** It is a CS/mathematics formalism, not an IEC/IEEE compliance drawing. The canonical reference (Murata 1989) *is* black-and-white — so `monochrome` must reproduce the textbook look faithfully — but academic and industrial tools (PIPE green transitions, CPN Tools coloured tokens, GreatSPN) freely use colour, so a tasteful `default` colour theme is legitimate and useful for the web gallery. This mirrors exactly how **`pert`** handles it: house-blue body with one reserved semantic accent (red = critical path there; here, **green = enabled, red = inhibitor/dead**).
 
@@ -380,22 +380,22 @@ export interface PetriTokens {
 
 > Note the principle (shared with `venn`/`industrial`): in `monochrome`, semantics that ride on colour in `default` must fall back to a **shape/weight** distinction — bold ring for enabled, the hollow-circle arrowhead for inhibitor — so a black-and-white print is still unambiguous.
 
-**`dark`** — Catppuccin Mocha, mirroring `DARK_THEME`:
+**`dark`** — Schematex slate/blue dark palette, mirroring `DARK_THEME`:
 
 | Token | Value |
 |-------|-------|
-| `placeFill` | `#313244` (`fill`) |
-| `placeStroke` | `#cdd6f4` (`stroke`) |
-| `transitionBarFill` | `#cdd6f4` (light bar on dark) |
-| `transitionBoxFill` | `#313244` |
-| `transitionStroke` | `#cdd6f4` |
-| `tokenFill` | `#cdd6f4` |
-| `enabledStroke` | `#a6e3a1` (`positive` green) |
-| `enabledFill` | `rgba(166,227,161,0.15)` |
-| `deadStroke` | `#6c7086` (`neutral`) |
-| `inhibitorStroke` | `#f38ba8` (`negative` red) |
-| `arcStroke` | `#cdd6f4` |
-| `weightLabel` | `#89b4fa` (`accent`) |
+| `placeFill` | `#172033` (`fill`) |
+| `placeStroke` | `#f8fafc` (`stroke`) |
+| `transitionBarFill` | `#f8fafc` (light bar on dark) |
+| `transitionBoxFill` | `#172033` |
+| `transitionStroke` | `#f8fafc` |
+| `tokenFill` | `#f8fafc` |
+| `enabledStroke` | `#34d399` (`positive` green) |
+| `enabledFill` | `rgba(52,211,153,0.15)` |
+| `deadStroke` | `#64748b` (`neutral`) |
+| `inhibitorStroke` | `#f87171` (`negative` red) |
+| `arcStroke` | `#f8fafc` |
+| `weightLabel` | `#6d8fff` (`accent`) |
 | `tokenPalette` | `DARK_PALETTE` |
 
 ### 6.4 Stroke & type scale (reuse `theme.ts` constants)

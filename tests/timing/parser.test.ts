@@ -1,5 +1,6 @@
 import { describe, test, expect } from "vitest";
 import { parseTiming, TimingParseError } from "../../src/diagrams/timing/parser";
+import { renderTiming } from "../../src/diagrams/timing/renderer";
 import type { TimingSignal } from "../../src/core/types";
 
 const sig = (ast: ReturnType<typeof parseTiming>, name: string) =>
@@ -38,5 +39,23 @@ describe("timing parser — LLM-friendly forms", () => {
 
   test("invalid raw wave names the bad character", () => {
     expect(() => parseTiming(`timing "t"\nBAD: 01q0`)).toThrow(/"q" is not a valid state/);
+  });
+});
+
+describe("timing renderer themes", () => {
+  test("uses the shared slate palette for dark waveforms and labels", () => {
+    const svg = renderTiming(parseTiming(`timing "SPI"
+CLK: 0101
+DATA: x=== data: ["A"]`), {
+      theme: "dark",
+      fontFamily: "sans-serif",
+      fontSize: 12,
+      padding: 0,
+    });
+
+    expect(svg).toContain("stroke: #f8fafc");
+    expect(svg).toContain("fill: #f8fafc");
+    expect(svg).not.toContain("#111");
+    expect(svg).not.toContain("#eee");
   });
 });

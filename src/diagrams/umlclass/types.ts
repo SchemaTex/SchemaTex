@@ -44,6 +44,8 @@ export interface UmlClassMember {
   kind: UmlClassMemberKind;
   visibility?: UmlClassVisibility;
   name: string;
+  /** Exact authored member-name token. */
+  nameSourceRange?: import("../../core/types").SourceRange;
   /** Static = class-scope (renders underlined). */
   isStatic?: boolean;
   /** Abstract operation (renders italic). Only meaningful for operations. */
@@ -52,6 +54,8 @@ export interface UmlClassMember {
   isDerived?: boolean;
   /** `: Type` after the name (attr) or before `{}` (op return). */
   type?: string;
+  /** Exact authored member/return type token. */
+  typeSourceRange?: import("../../core/types").SourceRange;
   /** `[0..1]`, `[*]`, etc. for attributes. */
   multiplicity?: string;
   /** `= literal` default value (attributes only). */
@@ -68,6 +72,8 @@ export interface UmlClassClassifier {
   id: string;
   /** Display name (defaults to id; differs only when an `as` alias is used). */
   name: string;
+  /** Exact authored classifier display-name/id token. */
+  nameSourceRange?: import("../../core/types").SourceRange;
   kind: UmlClassClassifierKind;
   /** «interface», «enumeration», «entity», custom — rendered above the name. */
   stereotype?: string;
@@ -124,6 +130,7 @@ export interface UmlClassRelationship {
 export interface UmlClassAst {
   type: "umlclass";
   title?: string;
+  titleSourceRange?: import("../../core/types").SourceRange;
   /** Rank direction — default "tb" (parents on top). */
   direction: UmlClassDirection;
   classifiers: UmlClassClassifier[];

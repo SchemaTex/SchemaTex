@@ -4,6 +4,7 @@ import { renderUmlClass } from "./renderer";
 
 export const umlclass: DiagramPlugin = {
   type: "umlclass",
+  capabilities: { scene: true, editablePosition: true },
   detect(text: string): boolean {
     for (const raw of text.split(/\r?\n/)) {
       const t = raw.trim();

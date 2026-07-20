@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { ThemedSvg } from '@/components/ThemedSvg';
 import { DiagramIcon } from '@/components/DiagramIcon';
 import { ClusterIcon } from '@/components/ClusterIcon';
 import {
@@ -39,7 +40,7 @@ function ClusterSection({ group }: { group: DiagramClusterGroup }) {
     <div id={group.cluster} className="scroll-mt-20 pt-14 first:pt-0">
       <div
         className="mb-6 flex items-center gap-2.5 border-b pb-3"
-        style={{ borderColor: 'var(--fill-muted)' }}
+        style={{ borderColor: 'var(--line)' }}
       >
         <ClusterIcon cluster={group.cluster} size={20} style={{ color: 'var(--accent)' }} />
         <h2 className="text-xl font-semibold" style={{ color: 'var(--text)' }}>{group.label}</h2>
@@ -114,12 +115,13 @@ function ExampleThumb({
     <Link href={`/examples/${ex.slug}`} className="gal-card">
       <div
         className="dot-grid flex items-center justify-center p-3"
-        style={{ height: 150, color: 'var(--stroke)', background: '#ffffff' }}
+        style={{ height: 150, color: 'var(--stroke)', background: 'var(--fill)' }}
       >
         {ex.svg ? (
-          <div
+          <ThemedSvg
+            light={ex.svg}
+            darkSrc={`/api/example-svg/${ex.slug}?theme=dark`}
             className="h-full w-full [&_svg]:mx-auto [&_svg]:max-h-full [&_svg]:max-w-full"
-            dangerouslySetInnerHTML={{ __html: ex.svg }}
           />
         ) : (
           <DiagramIcon type={type} size={40} style={{ color: 'var(--text-muted)', opacity: 0.35 }} />
@@ -127,7 +129,7 @@ function ExampleThumb({
       </div>
       <div
         className="flex items-center gap-2 px-3 py-2"
-        style={{ borderTop: '1px solid var(--fill-muted)' }}
+        style={{ borderTop: '1px solid var(--line)' }}
       >
         <span className="truncate text-[12.5px]" style={{ color: 'var(--text)' }}>{ex.title}</span>
         <span className="ml-auto flex shrink-0 gap-0.5" title={`complexity ${ex.complexity}`}>

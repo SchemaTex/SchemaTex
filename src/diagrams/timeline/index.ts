@@ -4,6 +4,7 @@ import { renderTimeline } from "./renderer";
 
 export const timeline: DiagramPlugin = {
   type: "timeline" as DiagramPlugin["type"],
+  capabilities: { scene: true, editablePosition: true },
   detect(text) {
     return /^\s*timeline\b/i.test(text);
   },

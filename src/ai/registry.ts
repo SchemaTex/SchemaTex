@@ -36,8 +36,20 @@ export interface DiagramMeta {
   useWhen: string;
   /** Domain cluster for grouping. */
   cluster: DiagramCluster;
-  /** Published standard the parser and layout follow. */
+  /**
+   * Primary published standard the parser and layout follow.
+   *
+   * This is a *short citation* rendered inline in product UI (playground doc
+   * bar, gallery cards, ChatDiagram). Keep it to one standard, <= 60 chars,
+   * and never reference repository files — see `standardAlso` for the rest.
+   */
   standard: string;
+  /**
+   * Secondary standards, conventions, and lineage the engine also follows.
+   * Surfaced on hover / in docs rather than inline, so a long provenance list
+   * cannot break the layout of a single-line citation.
+   */
+  standardAlso?: readonly string[];
   /** Path to the syntax doc key in the generated content bundle. */
   syntaxKey: string;
   /**
@@ -64,7 +76,8 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
     useWhen:
       "Use for family therapy, social-work case notes, or medical family history. Handles 3+ generations with deaths, cutoffs, hostility, closeness, and the proband marker.",
     cluster: "relationships",
-    standard: "McGoldrick, Gerson & Petry (2020) + GenoPro emotional taxonomy",
+    standard: "McGoldrick, Gerson & Petry (2020)",
+    standardAlso: ["GenoPro emotional taxonomy"],
     syntaxKey: "genogram",
   },
   {
@@ -165,7 +178,8 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
     useWhen:
       "Use for PLC programs that are easier to read as data-flow than as ladder rungs — boolean logic (AND/OR/NOT/NAND/NOR/XOR), timers (TON/TOF/TP), counters (CTU/CTD), edge detectors (R_TRIG/F_TRIG), comparison (EQ/NE/GT/GE/LT/LE), math (ADD/SUB/MUL/DIV/MOVE), selection (SEL/MUX/MAX/MIN/LIMIT). Inline expression notation `Out = OR(A, AND(B, C))`. Sister language to `ladder` (§10) and `sfc` (§24); together they form the visual half of IEC 61131-3.",
     cluster: "electrical-industrial",
-    standard: "IEC 61131-3:2013 §6.4 + §2.5 standard FB library; see 23-FBD-STANDARD.md",
+    standard: "IEC 61131-3:2013 §6.4",
+    standardAlso: ["IEC 61131-3:2013 §2.5 standard FB library"],
     syntaxKey: "fbd",
   },
   {
@@ -175,7 +189,8 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
     useWhen:
       "Use for PLC sequential control — batch reactors, robotic cells, packaging lines, assembly stations — where the program has explicit phases that hand off to each other on boolean conditions. Steps with action qualifiers (N/S/R/L/D/P), transitions with conditions, alternative branches (single bar, OR semantics) and simultaneous branches (double bar, AND semantics), jumps for loops. Distinct from `state` (UML — Schematex `state` covers reactive UI/lifecycle FSMs, not cyclic PLC scans) and from `flowchart` (no bars, no qualifiers).",
     cluster: "electrical-industrial",
-    standard: "IEC 61131-3:2013 §6.5 + IEC 60848 GRAFCET visual subset; see 24-SFC-STANDARD.md",
+    standard: "IEC 61131-3:2013 §6.5",
+    standardAlso: ["IEC 60848 GRAFCET visual subset"],
     syntaxKey: "sfc",
   },
   {
@@ -205,7 +220,8 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
     useWhen:
       "Use for maker / Arduino / ESP32 / Raspberry Pi tutorials and lab handouts where the user wants to see *how to physically wire components on a breadboard* — not the abstract circuit schematic. Address tie-points by `@col-row` (e.g. `@5e`, `@+t8`). Smooth Bézier jumper-wires with conventional colors. Distinct from `circuit` (IEEE 315 schematic — same prototype, different view).",
     cluster: "electrical-industrial",
-    standard: "Fritzing visual conventions + Wokwi DSL precedent (no ISO standard exists for this view; see 26-BREADBOARD-STANDARD.md)",
+    standard: "Fritzing visual conventions",
+    standardAlso: ["Wokwi DSL precedent", "No ISO standard exists for this view"],
     syntaxKey: "breadboard",
   },
   // ── Corporate / Legal ────────────────────────────────────────
@@ -227,7 +243,8 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
     useWhen:
       "Use for relational database schema diagrams — tables, columns, primary/foreign keys, and cardinality (1..1 / 0..N / 1..N) between tables. DBML-like text DSL plus Mermaid `}o--||` glyph aliases. Distinct from `entity` (which is for corporate/legal ownership). v0.1 supports crow's-foot only; Chen and Barker notations are deferred.",
     cluster: "corporate-legal",
-    standard: "Chen 1976 / Everest 1976 (crow's foot) — implements the crow's-foot subset; see 27-ERD-STANDARD.md",
+    standard: "Chen 1976 / Everest 1976 (crow's foot)",
+    standardAlso: ["Implements the crow's-foot subset"],
     syntaxKey: "erd",
   },
   // ── Causality / Analysis ─────────────────────────────────────
@@ -279,7 +296,8 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
     useWhen:
       "Use for business processes that span multiple roles, departments, or systems — claims handling, hiring, order-to-cash, incident response, ISO-9001 / SOX audits. Pools = participants, lanes = roles, events = start/intermediate/end, gateways = XOR/AND/OR/event-based branches, message flows cross pool boundaries (`~~>`). Distinct from `flowchart` (no pools/lanes/event taxonomy), `state` (mode-centric, not activity-centric), and `pid` (physical equipment, not organisational work).",
     cluster: "behavior-modeling",
-    standard: "OMG BPMN 2.0.2 / ISO/IEC 19510:2013 visual subset; see 25-BPMN-STANDARD.md",
+    standard: "OMG BPMN 2.0.2 / ISO/IEC 19510:2013",
+    standardAlso: ["Visual subset"],
     syntaxKey: "bpmn",
   },
   {
@@ -289,7 +307,8 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
     useWhen:
       "Use for software-engineering requirements and scope diagrams — 'what does this system do, and for whom'. Actors (stick figures, or `(external)` rectangles for other systems) sit outside a subject boundary; use cases are ellipses inside it. `--` association, `..>` «include» (source includes target), `<..` «extend» (left extends right, with optional `[condition]` and extension points), `--|>` generalization (hollow triangle to parent, between actors or between use cases). Accepts a PlantUML-style inline form (`:Actor:`, `(Use case)`, `as ID`). Distinct from `state` (intra-object behavior, not system scope), `flowchart` (no actor/subject/include-extend semantics), and `bpmn` (how a process executes, not what a system offers).",
     cluster: "behavior-modeling",
-    standard: "OMG UML 2.5.1 §18 visual subset; see 29-USECASE-STANDARD.md",
+    standard: "OMG UML 2.5.1 §18",
+    standardAlso: ["Visual subset"],
     syntaxKey: "usecase",
   },
   {
@@ -299,7 +318,7 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
     useWhen:
       "Use for time-ordered interactions between participants — API call flows, auth handshakes, distributed protocols, object collaborations, 'who calls whom in what order'. Lifelines run top→bottom; messages run left→right: `->` synchronous (filled head), `->>` asynchronous (open head), `-->` reply (dashed), `-x` lost, `o->` found. `+`/`-` suffixes open/close activation bars; `*Target` creates a participant and `destroy` ends one. All twelve UML combined fragments — `alt`/`opt`/`loop`/`par`/`break`/`critical`/`seq`/`strict`/`neg`/`ignore`/`consider`/`assert` — plus `ref` interaction-use frames. Participant kinds `actor`/`boundary`/`control`/`entity`/`database` render their UML/Jacobson symbols; `«stereotype»` overrides the label. Distinct from `usecase` (system scope, not message order), `state` (one object's modes, not inter-object messages), `bpmn` (organisational process), and `flowchart` (no lifelines/time axis).",
     cluster: "behavior-modeling",
-    standard: "OMG UML 2.5.1 §17 (Interactions); see 33-SEQUENCE-STANDARD.md",
+    standard: "OMG UML 2.5.1 §17 (Interactions)",
     syntaxKey: "sequence",
   },
   {
@@ -310,7 +329,8 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
     useWhen:
       "Use whenever the user mentions 'Petri net', 'place/transition net', 'token', 'marking', 'concurrency model', 'mutual exclusion', 'producer/consumer', or wants to model concurrent resource flow / synchronisation. Declare `place <id> *<tokens>` (circles holding tokens), `transition <id>` (bars — add `timed rate: <λ>` for a GSPN timed transition), and bipartite arcs: `->` standard, `-o` inhibitor (enabled only while the place is empty), `--` read/test, `=>` reset. Arc weight via `weight: n` or `*n`; place limit via `capacity: n`. The engine validates the bipartite structure, applies a `fire: T1, T2` sequence to the initial marking, and highlights which transitions are *enabled* in the result. `layout: lr|tb`. Distinct from `state` (one active state, not a token distribution), `sfc` (a restricted PLC Petri net), `bpmn` (organisational process), and `flowchart` (single thread, no concurrency or marking).",
     cluster: "concurrency",
-    standard: "Murata 1989 + ISO/IEC 15909-1 (place/transition net); see 34-PETRINET-STANDARD.md",
+    standard: "Murata 1989 + ISO/IEC 15909-1",
+    standardAlso: ["Place/transition net"],
     syntaxKey: "petri",
   },
   // ── Network / infrastructure ─────────────────────────────────
@@ -322,7 +342,8 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
     useWhen:
       "Use whenever the user mentions 'network diagram', 'network topology', 'infrastructure diagram', a 'cámaras / CCTV / camera network', a LAN/WAN/data-center diagram, or wants to lay out routers, switches, firewalls, access points, servers, IP cameras, NVRs, etc. Declare typed devices `<kind> <id> \"label\"` (router, switch, l3switch, firewall, loadbalancer, ap, wlc, gateway, modem, ids, proxy, vpngw, server, serverfarm, pc, laptop, mobile, ipphone, printer, storage, camera (with `type: fixed|bullet|dome|ptz|turret`), nvr, dvr, poeswitch, encoder, monitor, internet, wan, pstn, cloud, lan) and connect with `a -- b` (undirected), `a -> b` (directed), or `a == b` (LAG). After `:` add a link spec: a link type (fiber/wireless/serial/poe/vpn/lag), `trunk`/`access` mode, `vlan: 10,20`, a speed like `1G`/`10G`, and `port: Gi0/1>eth0`. Group devices in nested boundaries: `site`/`rack` (physical) and `subnet`/`vlan`/`zone`/`dmz` (logical) blocks `{ … }`. Choose `layout: tiered` (default; band by `tier: edge|core|distribution|access`), `tree`, `star`, `ring`, `bus`, `mesh`, `spine-leaf` (declare `spines:`/`leaves:` and the mesh is auto-generated), or `manual`. The engine never drops a device/port/link, and validates VLAN range 1–4094 plus device IP-in-subnet-CIDR. Distinct from `flowchart` (no device icons/topology), `c4` (software containers, not physical devices), and `sld` (electrical single-line, not data network).",
     cluster: "network-infrastructure",
-    standard: "Cisco-convention topology icons + hierarchical/spine-leaf models + ANSI/TIA-606 + ONVIF; see 35-NETWORK-STANDARD.md",
+    standard: "Cisco-convention topology icons",
+    standardAlso: ["Hierarchical / spine-leaf models", "ANSI/TIA-606", "ONVIF"],
     syntaxKey: "network",
   },
   // ── Research / evidence synthesis ────────────────────────────
@@ -333,7 +354,7 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
     useWhen:
       "Use whenever the user mentions 'PRISMA', 'systematic review', 'meta-analysis flow', 'scoping review', 'evidence screening', or 'Cochrane review' — this is the dedicated, standards-correct engine (prefer it over a generic flowchart). The author writes record counts and exclusion reasons; the rigid four-row layout (Identification → Screening → Eligibility → Included) is correct by construction, with mandatory `n = …` counts, parallel exclusion side-boxes, and an optional second 'other methods' column (`mode: 2020-dual`). Vocabulary swaps for scoping reviews (`kind: scoping-review`) and IPD (`kind: ipd`). Count arithmetic is validated (`validate-counts: warn|strict|off`). Distinct from `flowchart` (no mandatory stages/counts/exclusion-box convention).",
     cluster: "research",
-    standard: "PRISMA 2020 (Page MJ et al., BMJ 2021;372:n71); see 28-PRISMA-STANDARD.md",
+    standard: "PRISMA 2020 (Page et al., BMJ 2021;372:n71)",
     syntaxKey: "prisma",
   },
   // ── Project management / scheduling ──────────────────────────
@@ -345,7 +366,8 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
     useWhen:
       "Use whenever the user mentions 'PERT', 'CPM', 'critical path', 'Gantt chart', 'project schedule', 'project network', 'precedence diagram', or wants a project schedule from tasks + durations + dependencies. Unlike a flowchart, this engine *computes* the schedule: write `task <id> \"label\" duration: <n> after: <preds>` and it runs the forward/backward pass and returns Early/Late Start & Finish, total slack, project duration, and highlights the critical path in red. **For a Gantt chart use the `gantt` header (or `layout: gantt`)** — bars are placed from the computed ES/EF (not typed-in dates, the way Mermaid requires), one task per row, grouped into sections by `lane:`, with a calendar date axis from `start: YYYY-MM-DD` (`calendar: continuous`|`5day` to exclude weekends), `progress: 60%` overlays, `milestone` diamonds, dependency connectors, an optional `today:` marker, and the critical path drawn in red. Supports PDM dependency types (FS/SS/FF/SF) with lag/lead (`after: A SS+2d`), three-point estimation (`duration: 4/6/10` → te + variance), a `layout: timescaled` mode, and a legacy `layout: aoa` mode (activity-on-arrow). Distinct from `flowchart` (no scheduling), `timeline` (no critical-path computation), and `bpmn` (organisational process, not a one-off schedule).",
     cluster: "project-management",
-    standard: "PMI PMBOK 7 + Moder 1983 (AON/PDM); Gantt 1910; see 32-PERT-STANDARD.md",
+    standard: "PMI PMBOK 7 + Moder 1983 (AON/PDM)",
+    standardAlso: ["Gantt 1910"],
     syntaxKey: "pert",
     aliases: [
       "PERT chart",
@@ -380,7 +402,8 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
       "Use for OO design — the static type structure of a software system. Declare `class X { + name: T }` / `«interface» Y { + op(): R }` / `«enumeration» Z { A B C }`, then connect with PlantUML-flavoured glyphs: `<|--` generalization (hollow triangle to parent), `<|..` realization (dashed + hollow triangle to interface), `*--` composition (filled diamond at the whole), `o--` aggregation (hollow diamond at the whole), `-->` directed association (open arrow to target), `..>` dependency (dashed + open arrow), `--` plain association. Adornment placement is normalised regardless of which id is typed first (reversed forms accepted). Mermaid `classDiagram` glyphs work as aliases. Layout is generalization-driven (parents on top by default). Distinct from `erd` (data tables + crow's-foot — no visibility/methods/inheritance) and from `entity` (legal/corporate ownership). This is the C4 (§30) Code-level engine.",
     cluster: "software-uml",
     standard:
-      "OMG UML 2.5.1 §9–§11 (Classification / Classifiers / Associations) + ISO/IEC 19505-2:2012; see 36-UMLCLASS-STANDARD.md",
+      "OMG UML 2.5.1 §9–§11",
+    standardAlso: ["ISO/IEC 19505-2:2012", "Classification / Classifiers / Associations"],
     syntaxKey: "umlclass",
   },
   {
@@ -392,7 +415,8 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
       "Use for safety / reliability analysis: start from one top event and decompose its causes through gates down to basic events with known failure probabilities. Flat declaration wired by id: `top T \"…\" = OR(G1, G2)`, `gate G1 = AND(A, B)`, `basic A \"…\" p: 0.01`. Gates: AND/OR/XOR(a,b,…), VOTING(k/n; …), INHIBIT(x) if cond, PAND(a,b). `house H state: 0|1` switches branches; `undeveloped` for unanalysed causes. The engine *computes* the minimal cut sets (MOCUS) and P(top) (`prob: rare|mcub|exact`) and highlights single points of failure — the differentiator over a shape stencil. Keyword `faulttree` (alias `fta`). Distinct from `logic` (left-right signal netlist), `decisiontree` (expected-value rollback), and `fishbone` (qualitative, unquantified).",
     cluster: "risk-reliability",
     standard:
-      "NUREG-0492 Fault Tree Handbook + IEC 61025:2006 + NASA FT Handbook 2002; MOCUS cut sets (Fussell-Vesely 1972); see 37-FAULT-TREE-STANDARD.md",
+      "NUREG-0492 Fault Tree Handbook",
+    standardAlso: ["IEC 61025:2006", "NASA FT Handbook 2002", "MOCUS cut sets (Fussell-Vesely 1972)"],
     syntaxKey: "faulttree",
   },
   {
@@ -404,7 +428,8 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
       "Use for process-safety / barrier risk analysis (oil & gas, aviation SMS, chemical, rail): one hazard, one top event, the threats that could cause it and the consequences if it happens, with the controls (barriers) in between. Indentation-structured DSL mirrors the CCPS 7-step build: `hazard \"…\"`, `topevent \"…\"`, then each `threat \"…\"` with indented `prevent \"…\"` barrier chain, each `consequence \"…\"` with indented `mitigate \"…\"` chain; `escalation \"…\"` nests under a barrier it degrades, `barrier \"…\"` nests under an escalation. Correct-by-construction: the engine *rejects* a threat/consequence with no barrier and an escalation not attached to a barrier (CCPS/EI barrier rule set). Qualitative — no probability rollup (that is `faulttree`'s job; a bowtie's left wing read backwards IS a fault tree). Distinct from `fishbone` (one-sided causes, no barriers) and `faulttree` (Boolean gates + cut sets, left wing only).",
     cluster: "risk-reliability",
     standard:
-      "CCPS / Energy Institute 2018 (Bow Ties in Risk Management) + IEC 31010:2019 §B.4.6 + ICAO Doc 9859; Swiss-cheese lineage (Reason 1990); see 38-BOWTIE-STANDARD.md",
+      "CCPS / Energy Institute 2018",
+    standardAlso: ["IEC 31010:2019 §B.4.6", "ICAO Doc 9859", "Swiss-cheese lineage (Reason 1990)"],
     syntaxKey: "bowtie",
   },
   // ── Generic process / flow ───────────────────────────────────
@@ -469,7 +494,8 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
     useWhen:
       "Use to propagate the consequences of an initiating event through a chain of barriers/safety functions and quantify each outcome's frequency — the inductive complement to a fault tree and the right wing of a bowtie. Header `eventtree`/`eta`; declare the initiating event with a frequency, the ordered functions with success/failure branch probabilities, and outcome rows with `s`/`f`/`*` patterns. The engine computes path frequency = f_initiating × Π branch-probabilities and flags the dominant sequence.",
     cluster: "risk-reliability",
-    standard: "IEC 62502:2010 · NUREG/CR-2300 (PRA) · ISO 31010 Annex B; see 39-EVENT-TREE-STANDARD.md",
+    standard: "IEC 62502:2010",
+    standardAlso: ["NUREG/CR-2300 (PRA)", "ISO 31010 Annex B"],
     syntaxKey: "eventtree",
     aliases: ["Event Tree Analysis", "ETA diagram", "event tree", "事件树分析"],
     keywords: [
@@ -491,7 +517,8 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
     useWhen:
       "Use to score and prioritise how each component/process step can fail — severity, occurrence, detection — and decide what to fix first. Header `fmea`; declare item/function → failure mode → effect (with `sev`) → cause (with `occ`) → controls (with `det`). The engine computes RPN = S×O×D and the AIAG-VDA Action Priority (High/Medium/Low), sorts the sheet, and colour-fills the RPN/AP cells by risk. Schematex's first table-shaped diagram.",
     cluster: "risk-reliability",
-    standard: "AIAG-VDA FMEA Handbook (2019) · IEC 60812:2018 · SAE J1739 · MIL-STD-1629A; see 40-FMEA-STANDARD.md",
+    standard: "AIAG-VDA FMEA Handbook (2019)",
+    standardAlso: ["IEC 60812:2018", "SAE J1739", "MIL-STD-1629A"],
     syntaxKey: "fmea",
     aliases: [
       "FMEA",
@@ -520,7 +547,8 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
     useWhen:
       "Use to model whether a system *works* from the reliability of its components, and to compute the overall figure — RAMS analysis, redundancy/high-availability design, fault-tolerance trade studies. Header `rbd`; nest `series { … }`, `parallel { … }`, and `kofn k/n { … }` success-logic groups around `block ID \"Label\" R=0.99` leaves (`p=0.01` failure prob or `R=99%` also accepted). The engine computes system reliability (∏ for series, 1−∏(1−Rᵢ) for parallel, exact k-of-n), the Birnbaum reliability-importance of every block, and flags blocks whose failure alone fails the system (SPOF, drawn in red). For reliability over a mission, add `mission: <t>` and give blocks a distribution — `rate=λ`/`mtbf=N` (exponential) or `weibull=β,η` — and the engine evaluates R(t). Sibling of fault tree (§37) in the risk-reliability cluster.",
     cluster: "risk-reliability",
-    standard: "IEC 61078:2016 · MIL-HDBK-338B; see 50-RBD-STANDARD.md",
+    standard: "IEC 61078:2016",
+    standardAlso: ["MIL-HDBK-338B"],
     syntaxKey: "rbd",
     aliases: [
       "RBD",
@@ -555,7 +583,8 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
       "Use to put options side by side and, when there are weighted criteria, to *decide*. Header `comparison \"Title\"` (or `tchart` / `pugh`) with `mode:` — `tchart` (2–N bullet columns, also Y-chart), `pros-cons` (green ✓ / red ✗ valence), `matrix` (options × criteria grid; cells take text or yes/no/partial marks), `decision`/`pugh` (criteria carry `weight:`, each option a numeric score, and the engine computes every option's weighted total Σ(w·s), ranks them, and highlights the winner — Stuart Pugh / ASQ concept selection), or `double-bubble` (Thinking Maps compare/contrast: shared traits in the middle, unique ones fanning out). Distinct from `matrix` (the 2×2 / BCG / quadrant engine, which *positions* items on two axes) — this one lays out a *table* and computes the decision.",
     cluster: "strategy",
     standard:
-      "Pugh, Total Design (1991) controlled convergence · ASQ decision matrix · Hyerle Thinking Maps (double-bubble) · K-12 graphic-organizer convention; see 51-COMPARISON-STANDARD.md",
+      "Pugh, Total Design (1991)",
+    standardAlso: ["ASQ decision matrix", "Hyerle Thinking Maps (double-bubble)", "K-12 graphic-organizer convention"],
     syntaxKey: "comparison",
     aliases: [
       "comparison chart",
@@ -595,7 +624,8 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
     useWhen:
       "Use for systems thinking / system dynamics: variables connected by `+`/`−` causal links, where the engine detects feedback loops and labels each R (even number of negative links) or B (odd). Header `causalloop`/`cld`; write `A -> B : +` links and optional `loop R1 \"name\"` annotations and `delay` marks. Distinct from `sociogram` (social ties, no polarity) and `flowchart` (process steps).",
     cluster: "causality-analysis",
-    standard: "Sterman, Business Dynamics (2000) · Meadows, Thinking in Systems; see 41-CAUSAL-LOOP-STANDARD.md",
+    standard: "Sterman, Business Dynamics (2000)",
+    standardAlso: ["Meadows, Thinking in Systems"],
     syntaxKey: "causalloop",
     aliases: [
       "Causal Loop Diagram",
@@ -622,7 +652,8 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
     useWhen:
       "Use to model a probabilistic state process (reliability/availability, queueing, regime models) where you want the long-run distribution or absorption answer, not just the picture. Header `markov`/`markovchain`; write `S1 -> S2 : 0.3` transitions (each state's out-edges sum to 1). The engine computes the stationary distribution, classifies states, and for absorbing chains the fundamental matrix. Sibling of `state` and `petri`.",
     cluster: "behavior-modeling",
-    standard: "Norris, Markov Chains (1997) · Kemeny & Snell, Finite Markov Chains; see 42-MARKOV-CHAIN-STANDARD.md",
+    standard: "Norris, Markov Chains (1997)",
+    standardAlso: ["Kemeny & Snell, Finite Markov Chains"],
     syntaxKey: "markov",
     aliases: [
       "Markov chain",
@@ -649,7 +680,8 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
     useWhen:
       "Use to visualise a git branching/merging history. Header `gitGraph`; ordered `commit`, `branch <name>`, `checkout <name>`, `merge <name>`, `cherry-pick id: \"…\"`, with `commit id:/tag:/type: HIGHLIGHT|REVERSE`. Mermaid `gitGraph` syntax parity so LLM output is drop-in compatible. Commits sit on per-branch lanes ordered chronologically; merges join lanes.",
     cluster: "software-uml",
-    standard: "Mermaid gitGraph syntax · git DAG model; see 43-GIT-GRAPH-STANDARD.md",
+    standard: "Mermaid gitGraph syntax",
+    standardAlso: ["git DAG model"],
     syntaxKey: "gitgraph",
     aliases: [
       "Git commit graph",
@@ -676,7 +708,7 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
     useWhen:
       "Use for ARIS-style business process modelling (SAP / enterprise BPM). Header `epc`; declare `event`, `function`, connectors `and`/`or`/`xor`, and the control flow between them. The engine validates strict event↔function alternation and connector legality (an event cannot be the source of an OR/XOR split). Distinct from `bpmn` and `flowchart` — a separate published standard with stricter rules.",
     cluster: "corporate-legal",
-    standard: "ARIS / Keller, Nüttgens & Scheer (1992); see 44-EPC-STANDARD.md",
+    standard: "ARIS / Keller, Nüttgens & Scheer (1992)",
     syntaxKey: "epc",
     aliases: [
       "Event-driven Process Chain",
@@ -702,7 +734,8 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
     useWhen:
       "Use to model what a system/process does and its inputs/controls/outputs/mechanisms — systems engineering, defence/government process docs, enterprise architecture. Header `idef0`; declare `function` boxes and ICOM arrows (`input`/`control`/`output`/`mechanism`) plus box→box flows that name the target ICOM side. The engine enforces ICOM placement and assigns node numbers, in a diagonal box staircase.",
     cluster: "project-management",
-    standard: "FIPS PUB 183 (1993) · SADT (Ross); see 45-IDEF0-STANDARD.md",
+    standard: "FIPS PUB 183 (1993)",
+    standardAlso: ["SADT (Ross)"],
     syntaxKey: "idef0",
     aliases: [
       "IDEF0",
@@ -729,7 +762,8 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
     useWhen:
       "Use for security threat modelling (Microsoft SDL / OWASP Threat Dragon workflow): DFD shapes (external entity, process, data store), labelled data flows, and `boundary` trust zones. Header `threatmodel`/`stride`. The engine maps each element type to its STRIDE categories (external = S,R; process = all six; store = T,I,D + conditional R for logs; flow = T,I,D) and accents flows crossing a trust boundary. Includes the DFD base notation (no separate `dfd` engine).",
     cluster: "network-infrastructure",
-    standard: "Shostack, Threat Modeling (2014) STRIDE-per-element · Microsoft SDL · base DFD DeMarco/Yourdon; see 46-THREAT-MODEL-STRIDE-STANDARD.md + 31-DFD-STANDARD.md",
+    standard: "Shostack, Threat Modeling (2014)",
+    standardAlso: ["STRIDE-per-element", "Microsoft SDL", "DFD (DeMarco/Yourdon)"],
     syntaxKey: "threatmodel",
     aliases: [
       "Threat model",
@@ -758,7 +792,7 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
     useWhen:
       "Use to annotate a welded joint on an engineering drawing: a horizontal reference line, a leader arrow to the joint, and a weld-symbol glyph above (other side) / below (arrow side) with size, length-pitch, groove angle, root opening, contour + finish. Header `welding [standard: aws|iso-a|iso-b]`; one `joint \"label\" { arrow: … other: … around field tail: … }` block per joint. Full glyph catalog (fillet, all groove types, plug/slot, spot/seam, back/backing, surfacing, edge) + weld-all-around, field flag, and tail process note. Validates illegal type/side/dimension combinations.",
     cluster: "electrical-industrial",
-    standard: "AWS A2.4:2020 · ISO 2553:2019; see 47-WELDING-SYMBOL-STANDARD.md",
+    standard: "AWS A2.4:2020 · ISO 2553:2019",
     syntaxKey: "welding",
     aliases: [
       "Welding symbols",
@@ -787,7 +821,8 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
       "Use for any measurable room/space layout: apartments and small homes, classroom seating arrangements, wedding/event floor plans, small shops and offices. Declare rooms with real dimensions (`room living at 0,0 size 5.2x4.2`, `unit m|ft`), chain placement with right-of/below, hang doors/windows on walls (`door between A B at 50%`), and place furniture room-relative \u2014 individually or as `grid`/`row`/`arc` arrays (27-desk classroom, 15 banquet rounds). L/T/U-shaped rooms via `extend`, stairs (straight/L/U/spiral with UP arrow + cut-plane break line), bifold/sliding/pocket doors, casement/sliding/bay windows, north compass. The engine merges shared walls, computes room areas and dimension lines, auto-seats tables, and validates room overlap, non-adjacent doors, and furniture collisions (chair-ring envelopes included). Not for photorealistic renders or CAD construction documents.",
     cluster: "architecture",
     standard:
-      "Ramsey & Sleeper Architectural Graphic Standards · US National CAD Standard v6 \u00b7 banquet-industry capacity conventions; see 48-FLOORPLAN-STANDARD.md",
+      "Ramsey & Sleeper Architectural Graphic Standards",
+    standardAlso: ["US National CAD Standard v6", "Banquet-industry capacity conventions"],
     syntaxKey: "floorplan",
     aliases: [
       "Floor plan",
@@ -821,7 +856,8 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
       "Use for listing/proposal site sketches and early planning diagrams focused on the land around a property: parcel or lot boundary, road frontage, driveway/walkway, building footprints, setbacks, easements, utility/fence/frontage lines, trees/cars/pins, dimensions, callouts, north arrow, scale bar, and legend. Header `siteplan \"Title\" unit ft|m`. Use `parcel ... points`, `structure ... points`, `road ... from/to width`, `driveway ... points width`, `setback/easement/fence/frontage ... from/to`, `tree/car ... at`, `dim ... from/to`, and `callout ... at/to`. Not for survey-grade bearings, CAD, permit-ready drawings, grading/drainage engineering, or 3D walkthroughs. Use `floorplan` for interior rooms/walls/furniture.",
     cluster: "architecture",
     standard:
-      "Planning/zoning site-plan convention · ALTA/NSPS survey drawing vocabulary · real-estate plot-plan/listing sketch conventions; see 52-SITEPLAN-STANDARD.md",
+      "Planning / zoning site-plan convention",
+    standardAlso: ["ALTA/NSPS survey drawing vocabulary", "Real-estate plot-plan sketch conventions"],
     syntaxKey: "siteplan",
     aliases: [
       "Site plan",
@@ -859,7 +895,8 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
       "Use to diagram a single play, set, or team shape for American football, basketball, or soccer. Header `playbook \"Title\" sport football|basketball|soccer`. Place players by formation (football `formation i-form|spread|trips|...`, basketball `set horns|spread-pnr|5-out|...`, soccer `formation 4-3-3|4-4-2|...`) or individually with `player`. Draw assignments with movement verbs whose line style is coaching-correct per sport: football `route X go` / `run RB power right` / `block` / `pull` / `handoff` (solid routes, arrowheads, block T-bars) on a yard-scaled field with LOS, hashes, end zone and goalposts; basketball `pass` (dashed) / `cut` (solid) / `dribble` (wavy) / `screen` (T-bar) to named landmarks (rim, elbow, wing, corner) on an NBA half-court; soccer `pass` (solid) / `run` (dashed) / `dribble` (wavy) / `shot` on an IFAB pitch. Optional `defense` overlays man/zone shells. The engine resolves formations, named routes, and landmarks, and renders each sport in its own coordinate model. Not for play-by-play game film, statistics, or league-table graphics.",
     cluster: "sports",
     standard:
-      "American Football Coaches Association X&O convention · FIBA/NBA half-court markings · IFAB Laws of the Game pitch (Law 1); see 49-SPORTS-PLAYBOOK-STANDARD.md",
+      "American Football Coaches Association X&O",
+    standardAlso: ["FIBA/NBA half-court markings", "IFAB Laws of the Game (Law 1)"],
     syntaxKey: "playbook",
     aliases: [
       "Sports playbook",

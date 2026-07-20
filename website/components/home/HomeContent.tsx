@@ -9,6 +9,9 @@ import { localizedPath, type SupportedLocale } from '@/lib/i18n/locales';
 import type { Dictionary } from '@/lib/i18n/dictionaries/en';
 import { allExamples } from '@/lib/examples-source';
 import { DIAGRAM_TYPE_COUNT } from '@/lib/diagram-stats';
+import { ThemedSvg } from '@/components/ThemedSvg';
+import { DiagramContactSheet } from '@/components/home/DiagramContactSheet';
+import { en } from '@/lib/i18n/dictionaries/en';
 
 // Featured cases — each tying a real diagram to the professional who ships it.
 // Order optimized for cluster coverage: relationships / industrial / corporate / causality.
@@ -67,9 +70,9 @@ const STANDARDS_RAIL = [
 
 const FALLBACK_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 120" role="img" aria-label="Diagram preview unavailable"><rect width="200" height="120" fill="transparent"/><text x="100" y="64" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#999">preview unavailable</text></svg>`;
 
-function safeRender(dsl: string): string {
+function safeRender(dsl: string, theme: 'default' | 'dark'): string {
   try {
-    return render(dsl);
+    return render(dsl, { theme });
   } catch {
     return FALLBACK_SVG;
   }
@@ -97,12 +100,12 @@ export default function Page() {
 }`;
 
 const SNIPPET_REACT_CLIENT = `'use client';
-import { render } from 'schematex';
-import { useMemo } from 'react';
+import { useState } from 'react';
+import { InteractiveSchematexDiagram } from 'schematex/react';
 
-export function Diagram({ dsl }: { dsl: string }) {
-  const svg = useMemo(() => render(dsl), [dsl]);
-  return <div dangerouslySetInnerHTML={{ __html: svg }} />;
+export function DiagramEditor({ initialDsl }: { initialDsl: string }) {
+  const [dsl, setDsl] = useState(initialDsl);
+  return <InteractiveSchematexDiagram value={dsl} onChange={setDsl} />;
 }`;
 
 // ───────────────────────────────────────────────────────────────────
@@ -119,6 +122,9 @@ export function HomeContent({
   lang: SupportedLocale;
   stars: number;
 }) {
+  const positioningProof = (
+    dict.positioning as Dictionary['positioning'] & { proof?: typeof en.positioning.proof }
+  ).proof ?? en.positioning.proof;
   // Hero rotates through the same 9 professional cases used in the grid below.
   const heroSlides: HeroSlide[] = FEATURED_SLUGS.flatMap((slug) => {
     const ex = allExamples.find((g) => g.slug === slug);
@@ -128,7 +134,6 @@ export function HomeContent({
         label: ex.diagram,
         standard: ex.standard ?? '—',
         dsl: ex.dsl,
-        svg: safeRender(ex.dsl),
       },
     ];
   });
@@ -209,7 +214,7 @@ export function HomeContent({
                 className="group inline-flex h-10 items-center gap-2 px-4 text-sm font-medium transition hover:opacity-95"
                 style={{
                   background: 'var(--accent)',
-                  color: '#fff',
+                  color: 'var(--color-fd-primary-foreground)',
                   border: '1px solid var(--accent)',
                   borderRadius: 'var(--r-sm)',
                 }}
@@ -231,7 +236,7 @@ export function HomeContent({
                 className="inline-flex h-10 items-center gap-2 px-3 font-mono text-[13px] text-fd-foreground"
                 style={{
                   background: 'var(--fill)',
-                  border: '1px solid var(--fill-muted)',
+                  border: '1px solid var(--line)',
                   borderRadius: 'var(--r-sm)',
                 }}
               >
@@ -259,7 +264,7 @@ export function HomeContent({
       <section
         aria-label={dict.standardsRail.ariaLabel}
         className="overflow-hidden border-b py-3.5"
-        style={{ borderColor: 'var(--fill-muted)', borderTopWidth: 1, background: 'var(--fill)' }}
+        style={{ borderColor: 'var(--line)', borderTopWidth: 1, background: 'var(--fill)' }}
       >
         <div className="marquee-track font-mono text-xs text-fd-muted-foreground">
           {[...STANDARDS_RAIL, ...STANDARDS_RAIL].map((s, i) => (
@@ -272,6 +277,8 @@ export function HomeContent({
           ))}
         </div>
       </section>
+
+      <DiagramContactSheet />
 
       {/* ────────────── PROFESSIONAL USE CASES ────────────── */}
       <section
@@ -298,17 +305,17 @@ export function HomeContent({
               if (!ex) return null;
               const persona = ex.persona ?? '';
               const color = DIAGRAM_TO_CAT[ex.diagram] ?? 'var(--cat-7)';
-              const svg = safeRender(ex.dsl);
+              const lightSvg = safeRender(ex.dsl, 'default');
               return (
                 <Link
                   key={ex.slug}
                   href={`/playground?example=${ex.slug}`}
                   className="group flex flex-col overflow-hidden bg-fd-card transition hover:border-[color:var(--accent)]"
-                  style={{ border: '1px solid var(--fill-muted)', borderRadius: 'var(--r)' }}
+                  style={{ border: '1px solid var(--line)', borderRadius: 'var(--r)' }}
                 >
                   <div
                     className="flex items-center gap-2 px-3 py-2 font-mono text-xs text-fd-muted-foreground"
-                    style={{ borderBottom: '1px solid var(--fill-muted)' }}
+                    style={{ borderBottom: '1px solid var(--line)' }}
                   >
                     <span aria-hidden className="size-2" style={{ background: color, borderRadius: 2 }} />
                     <span className="text-fd-foreground">{ex.diagram}</span>
@@ -317,14 +324,15 @@ export function HomeContent({
                   </div>
                   <div
                     className="dot-grid flex aspect-[4/3] items-center justify-center overflow-hidden p-4"
-                    style={{ background: '#ffffff' }}
+                    style={{ background: 'var(--fill)' }}
                   >
-                    <div
-                      className="flex h-full w-full items-center justify-center [&_svg]:block [&_svg]:h-auto [&_svg]:max-h-full [&_svg]:w-auto [&_svg]:max-w-full"
-                      dangerouslySetInnerHTML={{ __html: svg }}
+                    <ThemedSvg
+                      light={lightSvg}
+                      darkSrc={`/api/example-svg/${ex.slug}?theme=dark`}
+                      className="flex h-full w-full items-center justify-center [&>div]:h-full [&>div]:w-full [&_svg]:block [&_svg]:h-auto [&_svg]:max-h-full [&_svg]:w-auto [&_svg]:max-w-full"
                     />
                   </div>
-                  <div className="flex flex-col gap-1.5 p-4" style={{ borderTop: '1px solid var(--fill-muted)' }}>
+                  <div className="flex flex-col gap-1.5 p-4" style={{ borderTop: '1px solid var(--line)' }}>
                     <div
                       className="font-mono text-[11px] uppercase tracking-[0.08em]"
                       style={{ color: 'var(--accent)' }}
@@ -353,7 +361,7 @@ export function HomeContent({
             <Link
               href="/gallery"
               className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-fd-foreground transition hover:border-[color:var(--stroke)]"
-              style={{ background: 'var(--fill)', border: '1px solid var(--fill-muted)', borderRadius: 'var(--r-sm)' }}
+              style={{ background: 'var(--fill)', border: '1px solid var(--line)', borderRadius: 'var(--r-sm)' }}
             >
               {dict.cases.browseGallery}
             </Link>
@@ -420,38 +428,38 @@ export function HomeContent({
 
           <div
             className="mt-12 overflow-x-auto"
-            style={{ border: '1px solid var(--fill-muted)', borderRadius: 'var(--r)', background: 'var(--fill)' }}
+            style={{ border: '1px solid var(--line)', borderRadius: 'var(--r)', background: 'var(--fill)' }}
           >
             <table className="w-full min-w-[720px] font-mono text-[13px]">
               <thead>
                 <tr
                   className="text-left text-fd-muted-foreground"
-                  style={{ borderBottom: '1px solid var(--fill-muted)' }}
+                  style={{ borderBottom: '1px solid var(--line)' }}
                 >
                   <th className="px-5 py-3 font-normal">{dict.positioning.columns.tool}</th>
-                  <th className="px-5 py-3 font-normal">{dict.positioning.columns.domain}</th>
-                  <th className="px-5 py-3 font-normal">{dict.positioning.columns.price}</th>
-                  <th className="px-5 py-3 font-normal">{dict.positioning.columns.forDevelopers}</th>
-                  <th className="px-5 py-3 font-normal">{dict.positioning.columns.aiFriendly}</th>
+                  <th className="px-5 py-3 font-normal">{positioningProof.columns.domain}</th>
+                  <th className="px-5 py-3 font-normal">{positioningProof.columns.standards}</th>
+                  <th className="px-5 py-3 font-normal">{positioningProof.columns.roundTrip}</th>
+                  <th className="px-5 py-3 font-normal">{positioningProof.columns.aiFriendly}</th>
                 </tr>
               </thead>
               <tbody>
                 {[
-                  { tool: 'Mermaid', dom: dict.positioning.rows.mermaid.domain, price: dict.positioning.free, dev: dict.positioning.rows.mermaid.dev, llm: dict.positioning.partial },
-                  { tool: 'D2', dom: dict.positioning.rows.d2.domain, price: dict.positioning.free, dev: dict.positioning.rows.d2.dev, llm: dict.positioning.partial },
-                  { tool: 'WaveDrom', dom: dict.positioning.rows.wavedrom.domain, price: dict.positioning.free, dev: dict.positioning.rows.wavedrom.dev, llm: dict.positioning.partial },
-                  { tool: 'PlantUML', dom: dict.positioning.rows.plantuml.domain, price: dict.positioning.free, dev: dict.positioning.rows.plantuml.dev, llm: '—' },
+                  { tool: 'Mermaid', ...positioningProof.rows.mermaid },
+                  { tool: 'D2', ...positioningProof.rows.d2 },
+                  { tool: 'draw.io / Excalidraw', ...positioningProof.rows.canvas },
+                  { tool: 'PlantUML', ...positioningProof.rows.plantuml },
                 ].map((row) => (
                   <tr
                     key={row.tool}
-                    style={{ borderBottom: '1px solid var(--fill-muted)' }}
+                    style={{ borderBottom: '1px solid var(--line)' }}
                     className="text-fd-muted-foreground"
                   >
                     <td className="px-5 py-3 text-fd-foreground">{row.tool}</td>
-                    <td className="px-5 py-3">{row.dom}</td>
-                    <td className="px-5 py-3">{row.price}</td>
-                    <td className="px-5 py-3">{row.dev}</td>
-                    <td className="px-5 py-3">{row.llm}</td>
+                    <td className="px-5 py-3">{row.domain}</td>
+                    <td className="px-5 py-3">{row.standards}</td>
+                    <td className="px-5 py-3">{row.roundTrip}</td>
+                    <td className="px-5 py-3">{row.ai}</td>
                   </tr>
                 ))}
                 <tr style={{ background: 'var(--accent-soft)', color: 'var(--accent-ink)' }}>
@@ -461,10 +469,10 @@ export function HomeContent({
                     </span>
                     schematex
                   </td>
-                  <td className="px-5 py-3">{dict.positioning.schematex.domain(DIAGRAM_TYPE_COUNT)}</td>
-                  <td className="px-5 py-3 font-semibold">{dict.positioning.free}</td>
-                  <td className="px-5 py-3">{dict.positioning.schematex.dev}</td>
-                  <td className="px-5 py-3 font-semibold">{dict.positioning.schematex.ai}</td>
+                  <td className="px-5 py-3">{positioningProof.schematex.domain(DIAGRAM_TYPE_COUNT)}</td>
+                  <td className="px-5 py-3 font-semibold">{positioningProof.schematex.standards(DIAGRAM_TYPE_COUNT)}</td>
+                  <td className="px-5 py-3">{positioningProof.schematex.roundTrip}</td>
+                  <td className="px-5 py-3 font-semibold">{positioningProof.schematex.ai}</td>
                 </tr>
               </tbody>
             </table>
@@ -547,14 +555,14 @@ export function HomeContent({
             <Link
               href="/playground"
               className="inline-flex items-center gap-1.5 px-6 py-3 text-sm font-medium transition hover:opacity-95"
-              style={{ background: 'var(--accent)', color: '#fff', border: '1px solid var(--accent)', borderRadius: 'var(--r-sm)' }}
+              style={{ background: 'var(--accent)', color: 'var(--color-fd-primary-foreground)', border: '1px solid var(--accent)', borderRadius: 'var(--r-sm)' }}
             >
               {dict.finalCta.openPlayground}
             </Link>
             <Link
               href="/gallery"
               className="inline-flex items-center px-6 py-3 text-sm font-medium text-fd-foreground transition hover:border-[color:var(--stroke)]"
-              style={{ background: 'var(--fill)', border: '1px solid var(--fill-muted)', borderRadius: 'var(--r-sm)' }}
+              style={{ background: 'var(--fill)', border: '1px solid var(--line)', borderRadius: 'var(--r-sm)' }}
             >
               {dict.finalCta.browseGallery}
             </Link>
@@ -648,7 +656,7 @@ function StatCard({
   return (
     <div
       className="flex flex-col p-8"
-      style={{ border: '1px solid var(--fill-muted)', borderRadius: 'var(--r)', background: 'var(--fill)' }}
+      style={{ border: '1px solid var(--line)', borderRadius: 'var(--r)', background: 'var(--fill)' }}
     >
       <div
         className="text-[64px] font-semibold leading-none tracking-tight text-fd-foreground"

@@ -71,9 +71,9 @@ function versionsByType(): Map<DiagramType, string[]> {
   return out;
 }
 
-function safeRender(dsl: string): string | null {
+function safeRender(dsl: string, theme: 'default' | 'dark'): string | null {
   try {
-    return render(dsl);
+    return render(dsl, { theme });
   } catch {
     return null;
   }
@@ -107,7 +107,7 @@ export function buildDiagramEntries(): DiagramIndexEntry[] {
         slug: ex.slug,
         title: ex.title,
         complexity: ex.complexity,
-        svg: safeRender(ex.dsl),
+        svg: safeRender(ex.dsl, 'default'),
       })),
     };
   });

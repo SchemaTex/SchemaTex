@@ -7,22 +7,22 @@ description: Vercel AI SDK、ホスト型 MCP エンドポイント、または 
 
 ## 要点まとめ
 
-Schematex には LLM 向けのツールレイヤーが付属しています — AI エージェントがダイアグラムタイプを**探索**し、構文を**学習**し、サンプルを**確認**し、自分の出力を**検証**し、SVG を**レンダリング**できる 5 つのツールです。3 つの統合パスがあり、すべて同じツールを使います：
+Schematex には、ダイアグラムを**探索**、**生成**、**検証**、**レンダリング**、**調査**、**安全に編集**できる 8 つの LLM ツールが付属します。3 つの統合パスは同じ契約を使います：
 
 | パス | 用途 | インストール |
 |---|---|---|
-| **Vercel AI SDK** | Next.js / Node アプリに独自の AI 機能を構築する | `npm i schematex ai zod` |
+| **Vercel AI SDK** | Next.js / Node アプリに独自の AI 機能を構築する | `npm i schematex ai` |
 | **ホスト型 MCP** | Claude Desktop、ChatGPT、Cursor、Windsurf に接続する | クライアントを `https://schematex.js.org/mcp` に向ける |
 | **ローカル stdio MCP** | オフライン / カスタムホスト | `npx @schematex/mcp` |
 
 ---
 
-## 5 つのツール
+## 8 つのツール
 
-すべてのパスは同じ 5 つのツールを同一のセマンティクスで公開します。
+すべてのパスは同じ 8 つのツールを同一のセマンティクスで公開します。
 
 ### `listDiagrams()`
-すべての 45 種類のダイアグラムタイプを、タグライン、「いつ使うか」のヒント、クラスター、規範的な規格とともに返します。最初に呼び出してタイプを選択してください。
+50 種類すべてのダイアグラムタイプと Interactive 能力を返します。最初に呼び出してタイプを選択してください。
 
 ### `getSyntax({ type, detail? })`
 1 つのダイアグラムの正規構文を返します。タイプを選んだ後に呼び出してください。
@@ -44,6 +44,10 @@ DSL を SVG 文字列にレンダリングします。成功時は `{ ok: true, 
 
 **`renderDsl` を使うのは**、SVG をチャット内で返す必要がある場合のみです：Claude Desktop、ChatGPT、Cursor、または独自のレンダリングパイプラインを持たない純粋なチャットクライアント。
 </Callout>
+
+### 安全な編集：`getDiagramCapabilities`、`inspectDiagram`、`applyDiagramEdits`
+
+編集契約、安定した target key、revision を取得し、label または position の変更を atomic に適用します。古い revision や安全でない編集では元の DSL が返ります。
 
 アプリ内の AI プレビューには、返された DSL を `renderResult()` または `renderPreview()` でレンダリングしてください：
 
@@ -81,7 +85,7 @@ call validateDsl and self-correct on errors before returning to the user.`,
 });
 ```
 
-`schematex/ai/sdk` サブパスは `ai` と `zod` がインストールされている場合のみ読み込まれます（どちらもオプションのピア依存関係）。AI SDK を使わない場合は、`schematex/ai` からプレーンな関数をインポートして任意のフレームワークに接続してください：
+`schematex/ai/sdk` サブパスに必要なオプション peer dependency は `ai` だけです。JSON Schema を直接使うため Zod は不要です。AI SDK を使わない場合は `schematex/ai` から関数をインポートしてください：
 
 ```ts
 import { listDiagrams, getSyntax, getExamples, validateDsl, renderDsl } from 'schematex/ai';

@@ -1,4 +1,4 @@
-import type { RenderConfig } from "../../core/types";
+import type { RenderConfig, SourceRange } from "../../core/types";
 import {
   circle,
   defs,
@@ -14,6 +14,7 @@ import {
   title as svgTitle,
 } from "../../core/svg";
 import { DEFAULT_FONT_FAMILY, TITLE } from "../../core/theme";
+import { resolveSceneTitle } from "../../core/title-scene";
 import { parseSiteplan } from "./parser";
 import { formatSiteLength, layoutSiteplan } from "./layout";
 import type {
@@ -85,6 +86,10 @@ export function renderSiteplanLayout(lay: SiteplanLayoutResult, config?: RenderC
   const sx = (n: number) => ox + n * scale;
   const sy = (n: number) => oy + n * scale;
   const len = (n: number) => n * scale;
+  const titleWidth = Math.max(48, lay.title.length * 9 + 10);
+  const resolvedTitle = lay.title
+    ? resolveSceneTitle(lay.title, lay.titleSourceRange, pad + titleWidth / 2, 26, config)
+    : undefined;
 
   const style = el(
     "style",
@@ -126,6 +131,8 @@ export function renderSiteplanLayout(lay: SiteplanLayoutResult, config?: RenderC
 .sx-sp-legend-box { fill: ${PAPER}; stroke: #cfd5dd; stroke-width: 0.9; }
 .sx-sp-legend-title { fill: ${INK}; font-size: 10px; font-weight: 700; }
 .sx-sp-legend-text { fill: ${MUTED}; font-size: 9.4px; }
+.sx-native-handle { fill: #fff; stroke: #2563eb; stroke-width: 1.4; vector-effect: non-scaling-stroke; cursor: move; }
+.sx-native-handle:hover { fill: #dbeafe; stroke-width: 2; }
 `.trim()
   );
 
@@ -155,8 +162,8 @@ export function renderSiteplanLayout(lay: SiteplanLayoutResult, config?: RenderC
     rect({ x: 8, y: 8, width: r2(width - 16), height: r2(height - 16), class: "sx-sp-sheet" }),
   ];
 
-  if (lay.title) {
-    children.push(svgText({ x: pad, y: 26, class: "sx-sp-title", "font-family": fontFamily, "text-anchor": "start" }, lay.title));
+  if (resolvedTitle) {
+    children.push(svgText({ x: resolvedTitle.x, y: resolvedTitle.y, class: "sx-sp-title", "font-family": fontFamily, "text-anchor": "middle", ...resolvedTitle.attrs }, lay.title));
     children.push(svgLine({ x1: pad, y1: titleBand, x2: r2(width - pad), y2: titleBand, class: "sx-sp-sheet-rule" }));
   }
 
@@ -169,30 +176,95 @@ export function renderSiteplanLayout(lay: SiteplanLayoutResult, config?: RenderC
   const markers: string[] = [];
   const callouts: string[] = [];
   const labels: string[] = [];
+  const nativeHandles: string[] = [];
+  const addPointHandle = (key: string, point: Point, range: SourceRange | undefined): void => {
+    if (!config?.__scene || !range) return;
+    const x = sx(point.x);
+    const y = sy(point.y);
+    config.__scene.push({
+      key,
+      kind: "node",
+      bbox: { x: x - 5, y: y - 5, width: 10, height: 10 },
+      positionSource: {
+        kind: "point",
+        range,
+        x: point.x,
+        y: point.y,
+        unitsPerSvgX: 1 / scale,
+        unitsPerSvgY: 1 / scale,
+      },
+      editable: { label: false, position: "free" },
+    });
+    nativeHandles.push(circle({
+      cx: x,
+      cy: y,
+      r: 4.5,
+      class: "sx-native-handle",
+      "data-sx-key": key,
+      "data-sx-owner": key,
+    }));
+  };
   for (const p of lay.paths.filter((p) => p.role === "road")) {
     roads.push(renderPath(p, sx, sy, len, true));
     if (p.label) labels.push(labelOnLine(p.points, p.label, sx, sy, fontFamily, "sx-sp-small", -4));
+    p.points.forEach((point, index) => addPointHandle(`handle:path:${p.id}:${index}`, point, p.pointSourceRanges?.[index]));
   }
   for (const p of lay.polygons) {
     if (p.role === "structure") structures.push(renderPolygon(p, sx, sy, fontFamily));
     else surfaces.push(renderPolygon(p, sx, sy, fontFamily));
+    p.points.forEach((point, index) => addPointHandle(`handle:polygon:${p.id}:${index}`, point, p.pointSourceRanges?.[index]));
   }
   for (const p of lay.paths.filter((p) => p.role !== "road")) {
     paths.push(renderPath(p, sx, sy, len, false));
     if (p.label) labels.push(labelOnLine(p.points, p.label, sx, sy, fontFamily, "sx-sp-small", -5));
+    p.points.forEach((point, index) => addPointHandle(`handle:path:${p.id}:${index}`, point, p.pointSourceRanges?.[index]));
   }
   for (const l of lay.lines) {
     const d = pathD(l.points, sx, sy);
     overlays.push(svgPath({ d, class: `sx-sp-${l.role}`, "data-line": l.id }));
     if (l.label) labels.push(labelOnLine(l.points, l.label, sx, sy, fontFamily, "sx-sp-small", l.role === "frontage" ? 11 : -5));
+    l.points.forEach((point, index) => addPointHandle(`handle:line:${l.id}:${index}`, point, l.pointSourceRanges?.[index]));
   }
-  for (const d of lay.dimensions) dims.push(renderDimension(d.from, d.to, d.label, sx, sy, fontFamily));
-  for (const m of lay.markers) markers.push(renderMarker(m.kind, sx(m.at.x), sy(m.at.y), len(m.size), m.rotate, m.label, fontFamily));
-  for (const c of lay.callouts) {
+  for (const [index, d] of lay.dimensions.entries()) {
+    dims.push(renderDimension(d.from, d.to, d.label, sx, sy, fontFamily));
+    addPointHandle(`handle:dimension:${index}:from`, d.from, d.fromSourceRange);
+    addPointHandle(`handle:dimension:${index}:to`, d.to, d.toSourceRange);
+  }
+  for (const m of lay.markers) {
+    const x = sx(m.at.x);
+    const y = sy(m.at.y);
+    const size = Math.max(8, len(m.size));
+    const key = `node:${m.id}`;
+    if (config?.__scene && m.atSourceRange) {
+      config.__scene.push({
+        key,
+        kind: "node",
+        semanticId: m.id,
+        label: m.label ?? m.kind,
+        bbox: { x: x - size / 2, y: y - size / 2, width: size, height: size },
+        positionSource: {
+          kind: "point",
+          range: m.atSourceRange,
+          x: m.at.x,
+          y: m.at.y,
+          unitsPerSvgX: 1 / scale,
+          unitsPerSvgY: 1 / scale,
+        },
+        editable: { label: false, position: "free" },
+      });
+    }
+    markers.push(group({
+      "data-sx-key": config?.__scene && m.atSourceRange ? key : undefined,
+      "data-sx-owner": config?.__scene && m.atSourceRange ? key : undefined,
+    }, [renderMarker(m.kind, x, y, size, m.rotate, m.label, fontFamily)]));
+  }
+  for (const [index, c] of lay.callouts.entries()) {
     callouts.push(svgPath({ d: `M${r2(sx(c.at.x))} ${r2(sy(c.at.y))} L${r2(sx(c.to.x))} ${r2(sy(c.to.y))}`, class: "sx-sp-callout" }));
     callouts.push(svgText({ x: sx(c.at.x), y: sy(c.at.y) - 5, class: "sx-sp-small", "font-family": fontFamily, "text-anchor": "middle" }, c.label));
+    addPointHandle(`handle:callout:${index}:at`, c.at, c.atSourceRange);
+    addPointHandle(`handle:callout:${index}:to`, c.to, c.toSourceRange);
   }
-  const scene = [
+  const renderedScene = [
     group({ class: "sx-sp-roads" }, roads),
     group({ class: "sx-sp-surfaces" }, surfaces),
     group({ class: "sx-sp-structures" }, structures),
@@ -202,9 +274,10 @@ export function renderSiteplanLayout(lay: SiteplanLayoutResult, config?: RenderC
     group({ class: "sx-sp-markers" }, markers),
     group({ class: "sx-sp-callouts" }, callouts),
     group({ class: "sx-sp-labels" }, labels),
+    group({ class: "sx-native-handles" }, nativeHandles),
   ];
 
-  children.push(group({ class: "sx-siteplan-scene" }, scene));
+  children.push(group({ class: "sx-siteplan-scene" }, renderedScene));
   if (hasPanel) {
     children.push(svgLine({ x1: r2(panelX - 12), y1: titleBand + 14, x2: r2(panelX - 12), y2: r2(height - pad), class: "sx-sp-sheet-rule" }));
     const panelParts: string[] = [];

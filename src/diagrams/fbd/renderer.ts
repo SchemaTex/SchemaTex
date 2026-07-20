@@ -3,11 +3,12 @@
  * IEC 61131-3 §6.4 visual conventions; see 23-FBD-STANDARD.md.
  */
 
-import type { FbdAst, FbdDataType, FbdLayoutBlock, FbdLayoutNetwork, FbdLayoutResult } from "../../core/types";
+import type { FbdAst, FbdDataType, FbdLayoutBlock, FbdLayoutNetwork, FbdLayoutResult, RenderConfig, SceneItem } from "../../core/types";
 import { defs, el, group, line, path, rect, svgRoot, text, title, desc, circle, escapeXml } from "../../core/svg";
 import { parseFbd } from "./parser";
 import { layoutFbd, FBD_CONST } from "./layout";
 import { isStdBlock, getBlockSpec } from "./blocks";
+import { resolveSceneTitle } from "../../core/title-scene";
 
 const STYLES = `
 .lt-fbd-bg { fill: #ffffff; }
@@ -57,7 +58,7 @@ function wireClass(t: FbdDataType): string {
   }
 }
 
-function renderBlock(lb: FbdLayoutBlock): string {
+function renderBlock(lb: FbdLayoutBlock, scene?: SceneItem[]): string {
   const { x, y, width, height, block } = lb;
   const headerH = FBD_CONST.block_header_h;
   const parts: string[] = [];
@@ -145,17 +146,30 @@ function renderBlock(lb: FbdLayoutBlock): string {
     }
   }
 
+  const stable = lb.block.instance !== undefined;
+  if (stable) {
+    scene?.push({
+      key: `node:${block.id}`,
+      kind: "node",
+      semanticId: block.id,
+      label: block.instance ?? block.id,
+      bbox: { x, y, width, height },
+      editable: { label: false, position: "move-y" },
+    });
+  }
   return group(
     {
       class: "lt-fbd-block",
       "data-block-type": block.blockType,
       "data-instance": block.instance ?? "",
+      "data-sx-key": scene && stable ? `node:${block.id}` : undefined,
+      "data-sx-owner": scene && stable ? `node:${block.id}` : undefined,
     },
     parts
   );
 }
 
-function renderNetwork(ln: FbdLayoutNetwork): string {
+function renderNetwork(ln: FbdLayoutNetwork, scene?: SceneItem[]): string {
   const parts: string[] = [];
   // Frame
   parts.push(rect({
@@ -188,11 +202,21 @@ function renderNetwork(ln: FbdLayoutNetwork): string {
 
   // Wires
   for (const wl of ln.wires) {
-    parts.push(path({
+    const from = wl.wire.from.kind === "port" ? wl.wire.from.blockId : `var:${wl.wire.from.name}`;
+    const to = wl.wire.to.kind === "port" ? wl.wire.to.blockId : `var:${wl.wire.to.name}`;
+    parts.push(group({
+      ...(scene ? {
+        "data-sx-live-explicit": "true",
+        "data-sx-live-start": from,
+        "data-sx-live-end": to,
+        "data-sx-live-mode": "orthogonal",
+      } : {}),
+    }, [path({
       class: wireClass(wl.wire.dataType),
       d: wl.path,
       "data-wire-type": wl.wire.dataType,
-    }));
+      "data-sx-live-edge": scene ? "true" : undefined,
+    })]));
     if (wl.wire.negatedAtSink) {
       // Find sink point — last point of path
       const m = wl.path.match(/L\s+([\d.-]+)\s+([\d.-]+)\s*$/);
@@ -215,21 +239,34 @@ function renderNetwork(ln: FbdLayoutNetwork): string {
   }
 
   // Blocks (drawn after wires so they sit on top)
-  for (const b of ln.blocks) parts.push(renderBlock(b));
+  for (const b of ln.blocks) parts.push(renderBlock(b, scene));
 
   return group({ class: "lt-fbd-network", "data-network": ln.network.index }, parts);
 }
 
-export function renderFbdLayout(layout: FbdLayoutResult): string {
+export function renderFbdLayout(layout: FbdLayoutResult, config?: RenderConfig): string {
   const margin = 24;
+  const titleBand = layout.ast.title ? 30 : 0;
   const w = layout.width + margin * 2 + 16;
-  const h = layout.height + margin * 2;
+  const h = layout.height + margin * 2 + titleBand;
   const styleBlock = el("style", {}, escapeXml(STYLES).replace(/&quot;/g, '"'));
-  const titleEl = title(`FBD: ${layout.ast.title ?? "Function Block Diagram"}`);
+  const metadataTitle = title(`FBD: ${layout.ast.title ?? "Function Block Diagram"}`);
   const descEl = desc(`FBD with ${layout.networks.length} network(s).`);
+  const resolvedTitle = layout.ast.title
+    ? resolveSceneTitle(layout.ast.title, layout.ast.titleSourceRange, w / 2, 22, config)
+    : undefined;
+  const visibleTitle = resolvedTitle
+    ? text({
+        x: resolvedTitle.x,
+        y: resolvedTitle.y,
+        class: "lt-fbd-title",
+        "text-anchor": "middle",
+        ...resolvedTitle.attrs,
+      }, layout.ast.title!)
+    : "";
   const root = group(
-    { transform: `translate(${margin},${margin})` },
-    layout.networks.map(renderNetwork)
+    { transform: `translate(${margin},${margin + titleBand})` },
+    layout.networks.map((network) => renderNetwork(network, config?.__scene))
   );
 
   return svgRoot(
@@ -242,16 +279,17 @@ export function renderFbdLayout(layout: FbdLayoutResult): string {
     },
     [
       defs([styleBlock]),
-      titleEl,
+      metadataTitle,
       descEl,
       rect({ class: "lt-fbd-bg", x: 0, y: 0, width: w, height: h }),
+      visibleTitle,
       root,
     ]
   );
 }
 
-export function renderFbd(text: string): string {
+export function renderFbd(text: string, config?: RenderConfig): string {
   const ast: FbdAst = parseFbd(text);
-  const layout = layoutFbd(ast);
-  return renderFbdLayout(layout);
+  const layout = layoutFbd(ast, config?.__pins);
+  return renderFbdLayout(layout, config);
 }

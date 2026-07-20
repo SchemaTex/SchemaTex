@@ -24,6 +24,7 @@ import type {
   FlowchartNode,
 } from "../../core/types";
 import { bkXCoords, type BKNode } from "../../core/layered/bk";
+import { applyPins } from "../../core/editing";
 import { ICON_SIZE, ICON_GAP, hasIcon } from "./icons";
 
 // ─── Constants / Defaults ──────────────────────────────────
@@ -986,7 +987,10 @@ function hasOverlappingTopLevelClusters(
 
 // ─── Entry point ──────────────────────────────────────────
 
-export function layoutFlowchart(ast: FlowchartAST): FlowchartLayoutResult {
+export function layoutFlowchart(
+  ast: FlowchartAST,
+  pins?: Map<string, { x: number; y: number }>
+): FlowchartLayoutResult {
   const dir: FlowchartDirection = ast.direction;
   const isHorizontalDir = dir === "LR" || dir === "RL";
 
@@ -1498,6 +1502,23 @@ export function layoutFlowchart(ast: FlowchartAST): FlowchartLayoutResult {
     }
   }
 
+  // Authored pins are applied after all direction transforms but before edge
+  // routing. Interactive flowcharts intentionally allow both axes: the pin is
+  // a visual override, while the authored graph still controls connectivity.
+  applyPins(outNodes, pins, {
+    id: (item) => item.node.id,
+    position: () => "free",
+  });
+  nodeCenter.clear();
+  for (const ln of outNodes) {
+    nodeCenter.set(ln.node.id, {
+      x: ln.x + ln.width / 2,
+      y: ln.y + ln.height / 2,
+      w: ln.width,
+      h: ln.height,
+    });
+  }
+
   // Map original edge → declaration index, for linkStyle targeting.
   const edgeIndex = new Map<typeof ast.edges[number], number>();
   ast.edges.forEach((e, i) => edgeIndex.set(e, i));
@@ -1603,13 +1624,39 @@ export function layoutFlowchart(ast: FlowchartAST): FlowchartLayoutResult {
     })
     .filter((c): c is NonNullable<typeof c> => c !== null);
 
+  let expandedViewBox: FlowchartLayoutResult["viewBox"];
+  if (pins && pins.size > 0 && outNodes.length > 0) {
+    const bounds = [
+      ...outNodes.map((node) => ({
+        x: node.x,
+        y: node.y,
+        width: node.width,
+        height: node.height,
+      })),
+      ...clusters,
+    ];
+    const minPinnedX = Math.min(0, ...bounds.map((box) => box.x - padding));
+    const minPinnedY = Math.min(0, ...bounds.map((box) => box.y - padding));
+    const maxPinnedX = Math.max(outWidth, ...bounds.map((box) => box.x + box.width + padding));
+    const maxPinnedY = Math.max(outHeight, ...bounds.map((box) => box.y + box.height + padding));
+    if (minPinnedX !== 0 || minPinnedY !== 0 || maxPinnedX !== outWidth || maxPinnedY !== outHeight) {
+      expandedViewBox = {
+        x: minPinnedX,
+        y: minPinnedY,
+        width: maxPinnedX - minPinnedX,
+        height: maxPinnedY - minPinnedY,
+      };
+    }
+  }
+
   return {
-    width: outWidth,
-    height: outHeight,
+    width: expandedViewBox?.width ?? outWidth,
+    height: expandedViewBox?.height ?? outHeight,
     direction: dir,
     nodes: outNodes,
     edges: outEdges,
     clusters,
+    viewBox: expandedViewBox,
   };
 }
 
@@ -1727,4 +1774,3 @@ function edgeLabelAnchor(
   }
   return { x: a.x + 6, y: midY, textAnchor: "start" };
 }
-

@@ -9,9 +9,9 @@
 </p>
 
 <p align="center">
-  <a href="https://schematex.dev">Website</a> ·
-  <a href="https://schematex.dev/playground">Playground</a> ·
-  <a href="https://schematex.dev/docs">Docs</a> ·
+  <a href="https://schematex.js.org">Website</a> ·
+  <a href="https://schematex.js.org/playground">Playground</a> ·
+  <a href="https://schematex.js.org/docs">Docs</a> ·
   <a href="https://www.npmjs.com/package/schematex">npm</a>
 </p>
 
@@ -33,7 +33,7 @@
 
 ---
 
-**Schematex** is the open-source rendering engine for the diagrams professionals actually use — medical, electrical, legal, and analytical. **49 diagram families** spanning medicine, engineering, law, and analysis:
+**Schematex** is the open-source rendering and editing engine for the diagrams professionals actually use — medical, electrical, legal, and analytical. **50 diagram families** spanning medicine, engineering, law, and analysis:
 
 - 👪 **Relationships** — genograms, ecomaps, pedigrees, sociograms, phylogenetic trees
 - ⚡ **Electrical & Industrial** — ladder logic, single-line diagrams, circuit schematics, logic gates, timing, block diagrams, **FBD**, **SFC**, breadboard, **P&ID** (ISA-5.1)
@@ -80,9 +80,36 @@ The diagram type is inferred from the first keyword. Tree-shake by importing onl
 import { render } from 'schematex/genogram';
 ```
 
+### React editor
+
+The same package includes a controlled, open-source canvas editor. Your app owns the DSL state, persistence, undo, and collaboration; Schematex owns safe SVG gestures and WYSIWYG label editing.
+
+```tsx
+'use client';
+
+import { useState } from 'react';
+import { InteractiveSchematexDiagram } from 'schematex/react';
+
+export function DiagramEditor() {
+  const [dsl, setDsl] = useState('flowchart "Release"\n  draft [Draft]\n  draft -> shipped [Ship]');
+
+  return (
+    <InteractiveSchematexDiagram
+      value={dsl}
+      onChange={setDsl}
+      ariaLabel="Release workflow editor"
+    />
+  );
+}
+```
+
+Twenty parser-native engines support deterministic canvas editing; 17 also support stable-ID drag or native geometry handles. The other 30 remain fully renderable and editable through their DSL source, without guessed canvas handles. See the [interactive editing guide](https://schematex.js.org/docs/interactive-editing) and [live workspace](https://schematex.js.org/playground).
+
+Coding agents can start at [`llms.txt`](https://schematex.js.org/llms.txt), load the complete Markdown corpus from [`llms-full.txt`](https://schematex.js.org/llms-full.txt), or query the [machine-readable interaction capability registry](https://schematex.js.org/api/interactive-capabilities). Append `.md` to any documentation URL for clean Markdown.
+
 ## Gallery
 
-All 49 diagram types share one unified pipeline. A selection is shown below — **try any of them live at [schematex.dev/playground](https://schematex.dev/playground).**
+All 50 diagram types share one unified pipeline. A selection is shown below — **try any of them live at [schematex.js.org/playground](https://schematex.js.org/playground).**
 
 ### 👪 Genogram — *McGoldrick family-systems standard*
 
@@ -110,7 +137,7 @@ genogram "The Potter Family"
 
 ![Harry Potter Genogram](examples/genogram/harry-potter.svg)
 
-[Genogram syntax →](https://schematex.dev/docs/genogram)
+[Genogram syntax →](https://schematex.js.org/docs/genogram)
 
 ---
 
@@ -135,7 +162,7 @@ ecomap "Nguyen Family Resettlement"
 
 ![Nguyen Family Ecomap](examples/ecomap/refugee-family.svg)
 
-[Ecomap syntax →](https://schematex.dev/docs/ecomap)
+[Ecomap syntax →](https://schematex.js.org/docs/ecomap)
 
 ---
 
@@ -157,7 +184,7 @@ pedigree "BRCA1 Family — Hereditary Breast/Ovarian Cancer"
 
 ![BRCA1 Pedigree](examples/pedigree/brca-family.svg)
 
-[Pedigree syntax →](https://schematex.dev/docs/pedigree)
+[Pedigree syntax →](https://schematex.js.org/docs/pedigree)
 
 ---
 
@@ -175,7 +202,7 @@ phylo "Bacterial Diversity"
 
 ![Bacterial Diversity Phylogenetic Tree](examples/phylo/bacterial-diversity.svg)
 
-[Phylo syntax →](https://schematex.dev/docs/phylo)
+[Phylo syntax →](https://schematex.js.org/docs/phylo)
 
 ---
 
@@ -209,7 +236,7 @@ sociogram "Operation Sunset - Communication Network"
 
 ![Operation Sunset Sociogram](examples/sociogram/criminal-network.svg)
 
-[Sociogram syntax →](https://schematex.dev/docs/sociogram)
+[Sociogram syntax →](https://schematex.js.org/docs/sociogram)
 
 ---
 
@@ -227,7 +254,7 @@ MISO:  zzzz====  data: ["","","","","0xFF","0x12","0x34","0x56"]
 
 ![SPI Transaction Timing Diagram](examples/timing/spi-transaction.svg)
 
-[Timing syntax →](https://schematex.dev/docs/timing)
+[Timing syntax →](https://schematex.js.org/docs/timing)
 
 ---
 
@@ -248,7 +275,7 @@ Cout = OR(c1, c2)
 
 ![1-bit Full Adder Logic Gate](examples/logic/full-adder.svg)
 
-[Logic gate syntax →](https://schematex.dev/docs/logic)
+[Logic gate syntax →](https://schematex.js.org/docs/logic)
 
 ---
 
@@ -280,7 +307,7 @@ L1 switched neutral type=lamp label="Lamp"
 
 ![Two-way stair-light circuit](examples/circuit/two-way-stair-light.svg)
 
-[Circuit syntax →](https://schematex.dev/docs/circuit)
+[Circuit syntax →](https://schematex.js.org/docs/circuit)
 
 ---
 
@@ -301,7 +328,7 @@ rung 1 "Set Auto, reset Manual":
 
 ![System Mode Selection Ladder](examples/ladder/mode-selection.svg)
 
-[Ladder syntax →](https://schematex.dev/docs/ladder)
+[Ladder syntax →](https://schematex.js.org/docs/ladder)
 
 ---
 
@@ -330,7 +357,7 @@ CB2 -> L2
 
 ![Utility with Generator Backup SLD](examples/sld/generator-ats.svg)
 
-[SLD syntax →](https://schematex.dev/docs/sld)
+[SLD syntax →](https://schematex.js.org/docs/sld)
 
 ---
 
@@ -351,7 +378,7 @@ entity "Acme Holdings"
 
 ![Acme Holdings Entity Structure](examples/entity/holding-company.svg)
 
-[Entity syntax →](https://schematex.dev/docs/entity)
+[Entity syntax →](https://schematex.js.org/docs/entity)
 
 ---
 
@@ -380,7 +407,7 @@ H2 -> s1
 
 ![Nested Feedback Loops Block Diagram](examples/block/nested-feedback.svg)
 
-[Block syntax →](https://schematex.dev/docs/block)
+[Block syntax →](https://schematex.js.org/docs/block)
 
 ---
 
@@ -407,7 +434,7 @@ algo : "Core Update penalty" : "Weak E-E-A-T signals" : "SGE traffic diversion"
 
 ![Website Traffic Drop Fishbone](examples/fishbone/website-traffic-drop.svg)
 
-[Fishbone syntax →](https://schematex.dev/docs/fishbone)
+[Fishbone syntax →](https://schematex.js.org/docs/fishbone)
 
 ### 🌳 Decision Tree — *Howard-Raiffa · CART/sklearn · Taxonomy*
 
@@ -455,7 +482,7 @@ q "Airway compromise?"
       no: a "Level 4/5 — Less urgent"
 ```
 
-[Decision Tree syntax →](https://schematex.dev/docs/decisiontree)
+[Decision Tree syntax →](https://schematex.js.org/docs/decisiontree)
 
 ---
 
@@ -502,7 +529,7 @@ config: style = gantt
 2026-05-15 - 2026-06-25: "Campaign prep" [category: "Marketing"]
 ```
 
-[Timeline syntax →](https://schematex.dev/docs/timeline)
+[Timeline syntax →](https://schematex.js.org/docs/timeline)
 
 ### 🗓️ PERT / CPM — *PMI PMBOK 7 activity-on-node network*
 
@@ -522,7 +549,7 @@ task F "Marketing collateral" duration: 7  after: B
 task G "Launch event"         duration: 2  after: E, F
 ```
 
-[PERT / CPM syntax →](https://schematex.dev/docs/pert)
+[PERT / CPM syntax →](https://schematex.js.org/docs/pert)
 
 #### …and as a Gantt chart — *the one that computes its own critical path*
 
@@ -576,7 +603,7 @@ petri "Mutual Exclusion — two processes, one resource"
 
 ![Mutual Exclusion Petri Net](examples/petri/mutual-exclusion.svg)
 
-[Petri net syntax →](https://schematex.dev/docs/petri)
+[Petri net syntax →](https://schematex.js.org/docs/petri)
 
 ---
 
@@ -614,7 +641,7 @@ network "Acme HQ — CCTV"
 
 ![CCTV camera network topology](examples/network/cctv-camera-network.svg)
 
-[Network topology syntax →](https://schematex.dev/docs/network)
+[Network topology syntax →](https://schematex.js.org/docs/network)
 
 ---
 
@@ -655,7 +682,7 @@ AbstractShape <|-- Square
 
 ![UML class shape hierarchy](examples/umlclass/shape-hierarchy.svg)
 
-[UML class syntax →](https://schematex.dev/docs/umlclass)
+[UML class syntax →](https://schematex.js.org/docs/umlclass)
 
 ---
 
@@ -673,7 +700,7 @@ faulttree "Both pumps fail"
 
 ![Redundant pump fault tree](examples/faulttree/pump-redundancy.svg)
 
-[Fault tree syntax →](https://schematex.dev/docs/faulttree)
+[Fault tree syntax →](https://schematex.js.org/docs/faulttree)
 
 ---
 
@@ -701,7 +728,7 @@ consequence "Vapour cloud explosion"
 
 ![LPG loss-of-containment bowtie](examples/bowtie/lpg-loss-of-containment.svg)
 
-[Bowtie syntax →](https://schematex.dev/docs/bowtie)
+[Bowtie syntax →](https://schematex.js.org/docs/bowtie)
 
 ---
 
@@ -727,7 +754,7 @@ rbd "Redundant Server"
 
 ![Redundant server reliability block diagram](examples/rbd/redundant-server.svg)
 
-[RBD syntax →](https://schematex.dev/docs/rbd)
+[RBD syntax →](https://schematex.js.org/docs/rbd)
 
 ### 🏠 Floor plan — *Architectural Graphic Standards plan view*
 
@@ -748,7 +775,7 @@ furniture dining-table in kitchen at 0.5,1.7 size 1.5x0.9
 
 ![Four-bedroom family home floor plan](examples/floorplan/family-home.svg)
 
-[Floor plan syntax →](https://schematex.dev/docs/floorplan)
+[Floor plan syntax →](https://schematex.js.org/docs/floorplan)
 
 ### 🏟️ Sports playbook — *coaching X&O notation, three sports*
 
@@ -767,7 +794,7 @@ pass 1 2
 ![Spread Pick & Roll basketball play](examples/playbook/basketball-pick-and-roll.svg)
 ![Counter-attack soccer play](examples/playbook/soccer-counter-attack.svg)
 
-[Sports playbook syntax →](https://schematex.dev/docs/playbook)
+[Sports playbook syntax →](https://schematex.js.org/docs/playbook)
 
 ### 🧭 Comparison & decision matrix — *Pugh 1991 controlled convergence · ASQ weighted scoring · Thinking Maps*
 
@@ -807,7 +834,7 @@ criterion "Self-host control" weight: 2
 ![Cloud provider comparison matrix](examples/comparison/cloud-feature-matrix.svg)
 ![Plant cell vs animal cell — Thinking-Maps double-bubble](examples/comparison/cell-double-bubble.svg)
 
-[Comparison syntax →](https://schematex.dev/docs/comparison)
+[Comparison syntax →](https://schematex.js.org/docs/comparison)
 
 ## Why SchemaTex?
 
@@ -876,7 +903,7 @@ const opaque = await svgToPngBlob(svg, { background: 'white' }); // opt-in fill
 downloadBlob(blob, 'diagram.png');
 ```
 
-See the [API reference →](https://schematex.dev/docs/api).
+See the [API reference →](https://schematex.js.org/docs/api).
 
 ### Backgrounds & dark mode
 

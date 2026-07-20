@@ -16,6 +16,8 @@ import type {
   FlowchartLayoutResult,
   FlowchartEdge,
   FlowchartNode,
+  RenderConfig,
+  SceneItem,
 } from "../../core/types";
 import {
   svgRoot,
@@ -31,6 +33,7 @@ import {
 } from "../../core/svg";
 import { parseFlowchart } from "./parser";
 import { layoutFlowchart, FC_CONST } from "./layout";
+import { resolveSceneTitle } from "../../core/title-scene";
 import { shapeSVG } from "./shapes";
 import { renderIcon, hasIcon, ICON_SIZE, ICON_GAP } from "./icons";
 import { resolveFlowchartTheme, type ThemeName } from "../../core/theme";
@@ -113,21 +116,40 @@ function markerStartFor(edge: FlowchartEdge): string | undefined {
   return edge.arrowStart === "arrow" ? "url(#sx-fc-arrow)" : undefined;
 }
 
-function renderCluster(lc: FlowchartLayoutCluster): string {
+function renderCluster(lc: FlowchartLayoutCluster, scene?: SceneItem[]): string {
   const sg = lc.subgraph;
   const bg = rect({ x: lc.x, y: lc.y, width: lc.width, height: lc.height, rx: 8, class: "sx-fc-cluster" });
   const label = textEl(
     { x: lc.x + 12, y: lc.y + 15, class: "sx-fc-cluster-title" },
     sg.label
   );
+  const key = `group:${sg.id}`;
+  scene?.push({
+    key,
+    kind: "group",
+    semanticId: sg.id,
+    label: sg.label,
+    bbox: { x: lc.x, y: lc.y, width: lc.width, height: lc.height },
+    editable: { label: false, position: "none" },
+  });
   return group(
-    { "data-cluster-id": sg.id, "data-depth": lc.depth, class: "sx-fc-cluster-g" },
+    {
+      "data-cluster-id": sg.id,
+      "data-depth": lc.depth,
+      "data-sx-key": scene ? key : undefined,
+      class: "sx-fc-cluster-g",
+    },
     [bg, label]
   );
 }
 
-function renderNode(ln: FlowchartLayoutNode): string {
+function renderNode(
+  ln: FlowchartLayoutNode,
+  position: SceneItem["editable"]["position"],
+  scene?: SceneItem[]
+): string {
   const n: FlowchartNode = ln.node;
+  const key = `node:${n.id}`;
   const shapeEl = shapeSVG(n.shape, ln.width, ln.height);
 
   // Icon nodes: glyph sits in a reserved band at the top, label centred in the
@@ -148,6 +170,7 @@ function renderNode(ln: FlowchartLayoutNode): string {
       class: "sx-fc-node-text",
       "text-anchor": "middle",
       "dominant-baseline": "central",
+      "data-sx-role": scene && n.labelSourceRange ? "label" : undefined,
     },
     n.label
   );
@@ -156,12 +179,22 @@ function renderNode(ln: FlowchartLayoutNode): string {
     .replace(/<\/?[bi]>/gi, "");
   const nodeTitle = titleEl(plainLabel);
   const classAttr = ["sx-fc-node-g", ...(n.classes ?? []).map((c) => `sx-fc-class-${c}`)].join(" ");
+  scene?.push({
+    key,
+    kind: "node",
+    semanticId: n.id,
+    label: n.label,
+    sourceRange: n.labelSourceRange,
+    bbox: { x: ln.x, y: ln.y, width: ln.width, height: ln.height },
+    editable: { label: n.labelSourceRange !== undefined, position },
+  });
   return group(
     {
       "data-node-id": n.id,
       "data-shape": n.shape,
       "data-layer": ln.layer,
       "data-classes": n.classes?.join(" "),
+      "data-sx-key": scene ? key : undefined,
       class: classAttr,
       transform: `translate(${fmt(ln.x)} ${fmt(ln.y)})`,
     },
@@ -169,8 +202,11 @@ function renderNode(ln: FlowchartLayoutNode): string {
   );
 }
 
-function renderEdge(le: FlowchartLayoutEdge): string {
+function renderEdge(le: FlowchartLayoutEdge, scene?: SceneItem[]): string {
   const e = le.edge;
+  const index = le.index ?? 0;
+  const key = `edge:${index}`;
+  const labelKey = `${key}:label`;
   const attrs: Record<string, string | number | undefined> = {
     d: le.path,
     class: edgeCssClass(e),
@@ -187,7 +223,8 @@ function renderEdge(le: FlowchartLayoutEdge): string {
           e.label,
           le.labelAnchor.x,
           le.labelAnchor.y,
-          le.labelAnchor.textAnchor ?? "middle"
+          le.labelAnchor.textAnchor ?? "middle",
+          scene ? labelKey : undefined
         )
       : "";
 
@@ -195,6 +232,26 @@ function renderEdge(le: FlowchartLayoutEdge): string {
     e.label ? `${e.from} → ${e.to}: ${e.label}` : `${e.from} → ${e.to}`
   );
 
+  scene?.push({
+    key,
+    kind: "edge",
+    semanticId: e.id,
+    path: le.path,
+    editable: { label: false, position: "none" },
+  });
+  if (scene && e.label && le.labelAnchor) {
+    const labelWidth = Math.max(20, e.label.length * 6.5 + 10);
+    const textAnchor = le.labelAnchor.textAnchor ?? "middle";
+    const x = le.labelAnchor.x - (textAnchor === "start" ? 0 : textAnchor === "end" ? labelWidth : labelWidth / 2);
+    scene.push({
+      key: labelKey,
+      kind: "label",
+      label: e.label,
+      sourceRange: e.labelSourceRange,
+      bbox: { x, y: le.labelAnchor.y - 8, width: labelWidth, height: 16 },
+      editable: { label: e.labelSourceRange !== undefined, position: "none" },
+    });
+  }
   return group(
     {
       "data-edge-id": e.id ?? `${e.from}->${e.to}`,
@@ -202,6 +259,7 @@ function renderEdge(le: FlowchartLayoutEdge): string {
       "data-kind": e.kind,
       "data-from": e.from,
       "data-to": e.to,
+      "data-sx-key": scene ? key : undefined,
     },
     [p, edgeTitle, labelEl].filter((s) => s.length > 0)
   );
@@ -211,7 +269,8 @@ function renderEdgeLabel(
   label: string,
   cx: number,
   cy: number,
-  textAnchor: "start" | "middle" | "end"
+  textAnchor: "start" | "middle" | "end",
+  sceneKey?: string
 ): string {
   // Approximate pill size — matches entity diagram edge label style.
   const w = Math.max(20, label.length * 6.5 + 10);
@@ -233,6 +292,8 @@ function renderEdgeLabel(
       class: "sx-fc-edge-label",
       "text-anchor": textAnchor,
       "dominant-baseline": "central",
+      "data-sx-key": sceneKey,
+      "data-sx-role": sceneKey ? "label" : undefined,
     },
     label
   );
@@ -245,13 +306,15 @@ function fmt(n: number): string {
 
 export function renderFlowchartAST(
   ast: FlowchartAST,
-  themeName: ThemeName = "default"
+  themeName: ThemeName = "default",
+  config?: RenderConfig
 ): string {
-  const layout: FlowchartLayoutResult = layoutFlowchart(ast);
+  const layout: FlowchartLayoutResult = layoutFlowchart(ast, config?.__pins);
+  const position = "free" as const;
 
-  const clusterSvg = layout.clusters.map(renderCluster);
-  const nodeSvg = layout.nodes.map(renderNode);
-  const edgeSvg = layout.edges.map(renderEdge);
+  const clusterSvg = layout.clusters.map((cluster) => renderCluster(cluster, config?.__scene));
+  const nodeSvg = layout.nodes.map((node) => renderNode(node, position, config?.__scene));
+  const edgeSvg = layout.edges.map((edge) => renderEdge(edge, config?.__scene));
 
   // Per-node style overrides (from `style nodeId fill:#f9f,...` statements)
   const nodeStyleOverrides = ast.nodes
@@ -285,13 +348,23 @@ export function renderFlowchartAST(
     })
     .join("\n");
 
-  const titleBlock = ast.title
+  const titleScene = ast.title
+    ? resolveSceneTitle(
+        ast.title,
+        ast.titleSourceRange,
+        (layout.viewBox?.x ?? 0) + layout.width / 2,
+        16,
+        config
+      )
+    : undefined;
+  const titleBlock = ast.title && titleScene
     ? textEl(
         {
-          x: layout.width / 2,
-          y: 16,
+          x: titleScene.x,
+          y: titleScene.y,
           class: "sx-fc-title",
           "text-anchor": "middle",
+          ...titleScene.attrs,
         },
         ast.title
       )
@@ -323,13 +396,14 @@ export function renderFlowchartAST(
   const hasClusters = layout.clusters.length > 0;
   const topPad = ast.title ? (hasClusters ? 56 : 24) : 0;
   const totalH = layout.height + topPad;
+  const viewBox = layout.viewBox ?? { x: 0, y: 0, width: layout.width, height: layout.height };
 
   // Retitled title sits in the un-translated band at top, centered.
   const titleSvg = titleBlock;
 
   return svgRoot(
     {
-      viewBox: `0 0 ${fmt(layout.width)} ${fmt(totalH)}`,
+      viewBox: `${fmt(viewBox.x)} ${fmt(viewBox.y)} ${fmt(viewBox.width)} ${fmt(viewBox.height + topPad)}`,
       width: fmt(layout.width),
       height: fmt(totalH),
       class: "sx-fc",
@@ -338,18 +412,22 @@ export function renderFlowchartAST(
       role: "graphics-document",
     },
     topPad > 0
-      ? [
-          ...headMeta,
-          titleSvg,
-          group({ transform: `translate(0 ${topPad})` }, content),
-        ]
-      : [...headMeta, titleSvg, ...content]
+      ? config?.__scene
+        ? [...headMeta, group({ transform: `translate(0 ${topPad})` }, content), titleSvg]
+        : [...headMeta, titleSvg, group({ transform: `translate(0 ${topPad})` }, content)]
+      : config?.__scene
+        ? [...headMeta, ...content, titleSvg]
+        : [...headMeta, titleSvg, ...content]
   );
 }
 
-export function renderFlowchart(text: string, themeName: ThemeName = "default"): string {
+export function renderFlowchart(
+  text: string,
+  themeName: ThemeName = "default",
+  config?: RenderConfig
+): string {
   const ast = parseFlowchart(text);
-  return renderFlowchartAST(ast, themeName);
+  return renderFlowchartAST(ast, themeName, config);
 }
 
 // Keep FC_CONST reachable via renderer for test convenience.

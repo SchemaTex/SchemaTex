@@ -71,17 +71,17 @@ const LIGHT_PALETTE: GitPalette = {
 };
 
 const DARK_PALETTE: GitPalette = {
-  bg: "#1e1e2e",
+  bg: "#0f172a",
   lanes: [
-    "#89b4fa", "#a6e3a1", "#f9e2af", "#f5c2e7",
-    "#94e2d5", "#cba6f7", "#fab387", "#9399b2",
+    "#6d8fff", "#34d399", "#fbbf24", "#f472b6",
+    "#22d3ee", "#a78bfa", "#f87171", "#94a3b8",
   ],
-  laneInk: ["#1e1e2e", "#1e1e2e", "#1e1e2e", "#1e1e2e", "#1e1e2e", "#1e1e2e", "#1e1e2e", "#1e1e2e"],
-  mergeCenter: "#1e1e2e",
-  labelInk: "#cdd6f4",
-  tagFill: "#45475a",
-  tagStroke: "#f9e2af",
-  tagInk: "#f9e2af",
+  laneInk: ["#0f172a", "#0f172a", "#0f172a", "#0f172a", "#0f172a", "#0f172a", "#0f172a", "#0f172a"],
+  mergeCenter: "#0f172a",
+  labelInk: "#f8fafc",
+  tagFill: "#202b3d",
+  tagStroke: "#fbbf24",
+  tagInk: "#fbbf24",
 };
 
 function resolvePalette(theme: string | undefined): GitPalette {

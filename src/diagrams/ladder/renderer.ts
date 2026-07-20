@@ -4,6 +4,7 @@ import type {
   LadderCoil,
   LadderFunctionBlock,
   RenderConfig,
+  SourceRange,
 } from "../../core/types";
 import {
   svgRoot,
@@ -16,6 +17,7 @@ import {
 } from "../../core/svg";
 import { resolveIndustrialTheme, type IndustrialTokens, type ResolvedTheme } from "../../core/theme";
 import { layoutLadder, type LadderLayoutNode, wrapName } from "./layout";
+import { createSourceLocator } from "../../core/source-range";
 
 type IT = ResolvedTheme<IndustrialTokens>;
 
@@ -36,7 +38,21 @@ function buildCss(t: IT): string {
 .lt-ladder-comment { font: italic 10px sans-serif; fill: ${t.textMuted}; }
 .lt-ladder-title { font: 700 16px sans-serif; fill: ${t.text}; }
 .lt-ladder-symbol-label { font: bold 10px sans-serif; fill: ${t.stroke}; text-anchor: middle; }
+.lt-ladder-rung-handle { fill: ${t.bg}; stroke: #2563eb; stroke-width: 1.5; rx: 3; }
+.lt-ladder-rung-grip { fill: #2563eb; }
 `.trim();
+}
+
+function rungSourceBlocks(source: string | undefined): SourceRange[] {
+  if (!source) return [];
+  const locator = createSourceLocator(source);
+  const starts: number[] = [];
+  let offset = 0;
+  for (const rawLine of source.split(/\n/)) {
+    if (/^\s*rung\s+\S+/i.test(rawLine.replace(/\r$/, ""))) starts.push(offset);
+    offset += rawLine.length + 1;
+  }
+  return starts.map((start, index) => locator.range(start, starts[index + 1] ?? source.length));
 }
 
 const LINE_H = 11;
@@ -216,6 +232,7 @@ export function renderLadder(ast: LadderAST, config?: RenderConfig): string {
   }
 
   const inner: string[] = [];
+  const rungBlocks = rungSourceBlocks(config?.__source);
 
   inner.push(
     el("line", {
@@ -236,7 +253,38 @@ export function renderLadder(ast: LadderAST, config?: RenderConfig): string {
     })
   );
 
-  for (const r of layout.rungs) {
+  for (let index = 0; index < layout.rungs.length; index++) {
+    const r = layout.rungs[index]!;
+    const block = rungBlocks[index];
+    if (config?.__scene && block) {
+      const key = `ladder:rung:${r.rung.number}:order`;
+      const handleX = layout.leftRailX - 31;
+      const handleY = r.y - 9;
+      config.__scene.push({
+        key,
+        kind: "handle",
+        semanticId: `rung:${r.rung.number}`,
+        label: r.rung.comment ?? `Rung ${r.rung.number}`,
+        bbox: { x: handleX, y: handleY + titleOffset, width: 18, height: 18 },
+        positionSource: {
+          kind: "source-block",
+          range: block,
+          blocks: rungBlocks,
+          index,
+          step: r.height,
+        },
+        editable: { label: false, position: "move-y" },
+      });
+      inner.push(group({ "data-sx-key": key, "aria-label": `Reorder rung ${r.rung.number}` }, [
+        el("rect", { x: handleX, y: handleY, width: 18, height: 18, class: "lt-ladder-rung-handle" }),
+        ...[0, 1, 2].flatMap((row) => [0, 1].map((col) => el("circle", {
+          cx: handleX + 6 + col * 6,
+          cy: handleY + 5 + row * 4,
+          r: 1.25,
+          class: "lt-ladder-rung-grip",
+        }))),
+      ]));
+    }
     inner.push(
       text(
         { x: layout.leftRailX - 6, y: r.y + 3, class: "lt-ladder-rung-num" },

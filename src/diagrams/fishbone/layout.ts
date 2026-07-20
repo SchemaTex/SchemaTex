@@ -29,6 +29,7 @@ import { resolveFishboneTheme } from "../../core/theme";
 
 export interface FishboneLayoutCause {
   label: string;
+  sourceRange?: import("../../core/types").SourceRange;
   /** Rib index (0 = first category) */
   ribIndex: number;
   /** Slot index on the rib (0 = closest to spine) */
@@ -51,6 +52,7 @@ export interface FishboneLayoutCause {
 
 export interface FishboneLayoutSubCause {
   label: string;
+  sourceRange?: import("../../core/types").SourceRange;
   x: number;
   y: number;
   tickX1: number;
@@ -63,6 +65,7 @@ export interface FishboneLayoutRib {
   index: number;
   half: "top" | "bottom";
   label: string;
+  sourceRange?: import("../../core/types").SourceRange;
   color: string;
   /** Where rib meets spine */
   spineX: number;
@@ -469,6 +472,7 @@ export function layoutFishbone(ast: FishboneAST, opts?: { palette?: readonly str
             causeDir === "head" ? tickX2 + 4 : tickX2 - 4;
           subCauses.push({
             label: sub.label,
+            sourceRange: sub.sourceRange,
             x: subX,
             y: subY,
             tickX1,
@@ -487,6 +491,7 @@ export function layoutFishbone(ast: FishboneAST, opts?: { palette?: readonly str
 
         causes.push({
           label: child.label,
+          sourceRange: child.sourceRange,
           ribIndex: globalIdx,
           slotIndex: s,
           ribX,
@@ -507,6 +512,7 @@ export function layoutFishbone(ast: FishboneAST, opts?: { palette?: readonly str
         index: globalIdx,
         half,
         label: major.label,
+        sourceRange: major.sourceRange,
         color,
         spineX,
         spineY,

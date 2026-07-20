@@ -7,22 +7,22 @@ description: 透過 Vercel AI SDK、託管 MCP 端點或 @schematex/mcp npm 套�
 
 ## TL;DR
 
-Schematex 內建了專為 LLM 設計的工具層——五個工具讓 AI 代理能**探索**圖表類型、**學習**語法、**查看**精選範例、**驗證**自己的輸出，並**渲染** SVG。三種整合路徑，使用相同的工具：
+Schematex 內建八個 LLM 工具，讓 AI 代理能**探索**、**生成**、**驗證**、**渲染**、**檢查**並**安全編輯**圖表。三種整合路徑使用同一套契約：
 
 | 路徑 | 使用時機 | 安裝方式 |
 |---|---|---|
-| **Vercel AI SDK** | 在 Next.js / Node 應用程式中建構自己的 AI 功能 | `npm i schematex ai zod` |
+| **Vercel AI SDK** | 在 Next.js / Node 應用程式中建構自己的 AI 功能 | `npm i schematex ai` |
 | **Hosted MCP** | 連接 Claude Desktop、ChatGPT、Cursor、Windsurf | 將客戶端指向 `https://schematex.js.org/mcp` |
 | **Local stdio MCP** | 離線 / 自訂主機 | `npx @schematex/mcp` |
 
 ---
 
-## 五個工具
+## 八個工具
 
-每條路徑都提供語義完全相同的五個工具。
+每條路徑都提供語義完全相同的八個工具。
 
 ### `listDiagrams()`
-返回所有 45 種圖表類型，包含標語、「使用時機」提示、群集和權威標準。首先呼叫以選擇類型。
+返回所有 50 種圖表類型及其 Interactive 能力。首先呼叫以選擇類型。
 
 ### `getSyntax({ type, detail? })`
 取得某種圖表的標準語法。選擇類型後呼叫。
@@ -45,6 +45,10 @@ Schematex 內建了專為 LLM 設計的工具層——五個工具讓 AI 代理�
 
 **只有在以下情況才使用 `renderDsl`**：你需要在對話本身中返回 SVG：Claude Desktop、ChatGPT、Cursor，或任何沒有自己渲染流程的純聊天客戶端。
 </Callout>
+
+### 安全編輯：`getDiagramCapabilities`、`inspectDiagram`、`applyDiagramEdits`
+
+這三個工具會返回編輯契約、穩定 target key 與 revision，再 atomic 地套用 label 或 position 修改。revision 過期或編輯不安全時會返回原始 DSL。
 
 若要在應用程式內 AI 預覽，請使用 `renderResult()` 或 `renderPreview()` 渲染返回的 DSL：
 
@@ -82,7 +86,7 @@ call validateDsl and self-correct on errors before returning to the user.`,
 });
 ```
 
-`schematex/ai/sdk` 子路徑只在安裝了 `ai` 和 `zod` 的情況下載入（兩者都是選用的對等依賴）。如果你不使用 AI SDK，請從 `schematex/ai` 匯入純函式並連接到任何框架：
+`schematex/ai/sdk` 子路徑只需要選用的 `ai` peer dependency。它直接使用 JSON Schema，不再需要安裝 Zod。不使用 AI SDK 時，請從 `schematex/ai` 匯入函式：
 
 ```ts
 import { listDiagrams, getSyntax, getExamples, validateDsl, renderDsl } from 'schematex/ai';

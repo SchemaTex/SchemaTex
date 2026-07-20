@@ -9,6 +9,7 @@ import type {
   PidLine,
   PidLineType,
 } from "./types";
+import { createSourceLocator } from "../../core/source-range";
 
 export class PidParseError extends Error {
   constructor(message: string, public line?: number) {
@@ -45,14 +46,18 @@ interface RawLine {
   text: string;
   indent: number;
   line: number;
+  start: number;
 }
 
 function preprocess(src: string): RawLine[] {
   const out: RawLine[] = [];
   const lines = src.split(/\r?\n/);
+  let absoluteStart = 0;
   for (let i = 0; i < lines.length; i++) {
     const raw = lines[i];
     if (raw === undefined) continue;
+    const lineStart = absoluteStart;
+    absoluteStart += raw.length + (i < lines.length - 1 ? (src[lineStart + raw.length] === "\r" ? 2 : 1) : 0);
     let stripped = "";
     let inQuote = false;
     for (const ch of raw) {
@@ -63,7 +68,7 @@ function preprocess(src: string): RawLine[] {
     const trimmed = stripped.trim();
     if (!trimmed) continue;
     const indent = stripped.length - stripped.replace(/^\s+/, "").length;
-    out.push({ text: trimmed, indent, line: i + 1 });
+    out.push({ text: trimmed, indent, line: i + 1, start: lineStart + stripped.indexOf(trimmed) });
   }
   return out;
 }
@@ -166,6 +171,7 @@ function tokenize(s: string): string[] {
 }
 
 export function parsePid(src: string): PidAST {
+  const locator = createSourceLocator(src);
   const lines = preprocess(src);
   if (lines.length === 0) {
     throw new PidParseError("Empty document");
@@ -177,6 +183,7 @@ export function parsePid(src: string): PidAST {
   }
 
   let title: string | undefined;
+  let titleSourceRange: import("../../core/types").SourceRange | undefined;
   let direction: PidDirection = "LR";
 
   // header: pid "title" [direction: LR]
@@ -185,6 +192,13 @@ export function parsePid(src: string): PidAST {
   if (headerAttrs.direction === "TB") direction = "TB";
   if (headerAttrs.direction === "LR") direction = "LR";
   if (rest) title = unquote(rest);
+  const titleToken = /"[^"]*"/.exec(header.text);
+  if (titleToken?.index !== undefined) {
+    titleSourceRange = locator.range(
+      header.start + titleToken.index,
+      header.start + titleToken.index + titleToken[0].length
+    );
+  }
 
   const equipment: PidEquipment[] = [];
   const linesAst: PidLine[] = [];
@@ -294,6 +308,7 @@ export function parsePid(src: string): PidAST {
   return {
     type: "pid",
     title,
+    titleSourceRange,
     direction,
     equipment,
     lines: linesAst,

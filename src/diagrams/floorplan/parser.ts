@@ -30,6 +30,7 @@ import type {
   WallSide,
 } from "./types";
 import { FURNITURE_TYPES } from "./catalog";
+import { createSourceLocator, findFirstQuotedRange } from "../../core/source-range";
 
 export class FloorplanParseError extends Error {
   readonly line: number;
@@ -63,6 +64,22 @@ function tokenize(line: string): Tok[] {
     else out.push({ word: m[2]! });
   }
   return out;
+}
+
+function findAtCoordinateRange(line: string): { start: number; end: number } | undefined {
+  const match = /\bat\s+([+-]?(?:\d+(?:\.\d*)?|\.\d+)\s*,\s*[+-]?(?:\d+(?:\.\d*)?|\.\d+))/i.exec(line);
+  if (!match || match.index === undefined) return undefined;
+  const token = match[1]!;
+  const start = match.index + match[0].indexOf(token);
+  return { start, end: start + token.length };
+}
+
+function findSizeRange(line: string): { start: number; end: number } | undefined {
+  const match = /\bsize\s+(\d*\.?\d+(?:\s*[x×]\s*\d*\.?\d+)?)/i.exec(line);
+  if (!match || match.index === undefined) return undefined;
+  const token = match[1]!;
+  const start = match.index + match[0].indexOf(token);
+  return { start, end: start + token.length };
 }
 
 // ─── Value parsers ───────────────────────────────────────────────
@@ -362,6 +379,7 @@ function parseArray(mode: ArrayMode, tok: Tok[], ast: FloorplanAst, ln: number):
 // ─── Entry point ─────────────────────────────────────────────────
 
 export function parseFloorplan(text: string): FloorplanAst {
+  const locator = createSourceLocator(text);
   const ast: FloorplanAst = {
     type: "floorplan",
     title: "Floor Plan",
@@ -375,9 +393,13 @@ export function parseFloorplan(text: string): FloorplanAst {
 
   let sawHeader = false;
   const lines = text.split(/\r?\n/);
+  let absoluteLineStart = 0;
   for (let i = 0; i < lines.length; i++) {
     const ln = i + 1;
-    const raw = normalizeQuotes(lines[i]!).trim();
+    const original = lines[i]!;
+    const raw = normalizeQuotes(original).trim();
+    const lineStart = absoluteLineStart;
+    absoluteLineStart += original.length + (i < lines.length - 1 ? (text[lineStart + original.length] === "\r" ? 2 : 1) : 0);
     if (!raw) continue;
     const all = tokenize(raw);
     // Token-level comment stripping: a bare token starting with "#" or "//"
@@ -401,16 +423,39 @@ export function parseFloorplan(text: string): FloorplanAst {
     const kw = head.word.toLowerCase();
     if (kw === "floorplan") {
       parseHeader(tok, ast, ln);
+      const titleToken = findFirstQuotedRange(original);
+      if (titleToken) ast.titleSourceRange = locator.range(lineStart + titleToken.start, lineStart + titleToken.end);
       sawHeader = true;
     } else if (!sawHeader) {
       throw new FloorplanParseError(`the first statement must be the "floorplan" header`, ln);
-    } else if (kw === "room") parseRoom(tok, ast, ln);
+    } else if (kw === "room") {
+      parseRoom(tok, ast, ln);
+      const room = ast.rooms[ast.rooms.length - 1];
+      const labelToken = findFirstQuotedRange(original);
+      if (room && labelToken) room.labelSourceRange = locator.range(lineStart + labelToken.start, lineStart + labelToken.end);
+      const positionToken = findAtCoordinateRange(original);
+      if (room && positionToken) room.positionSourceRange = locator.range(lineStart + positionToken.start, lineStart + positionToken.end);
+      const sizeToken = findSizeRange(original);
+      if (room && sizeToken) room.sizeSourceRange = locator.range(lineStart + sizeToken.start, lineStart + sizeToken.end);
+    }
     else if (kw === "north") {
       ast.north = tok.length ? parseNum(tok.shift(), "north rotation (degrees)", ln) : 0;
       if (tok.length) throw new FloorplanParseError(`north: unexpected trailing tokens`, ln);
     } else if (kw === "extend") parseExtend(tok, ast, ln);
     else if (kw === "door" || kw === "window" || kw === "opening") parseOpening(kw as OpeningKind, tok, ast, ln);
-    else if (kw === "furniture") parseFurniture(tok, ast, ln);
+    else if (kw === "furniture") {
+      parseFurniture(tok, ast, ln);
+      const item = ast.furniture[ast.furniture.length - 1];
+      const labelToken = item?.label ? findFirstQuotedRange(original) : undefined;
+      if (item && labelToken) item.labelSourceRange = locator.range(lineStart + labelToken.start, lineStart + labelToken.end);
+      const positionToken = findAtCoordinateRange(original);
+      if (item && positionToken) {
+        item.positionSourceRange = locator.range(
+          lineStart + positionToken.start,
+          lineStart + positionToken.end
+        );
+      }
+    }
     else if (kw === "grid" || kw === "row" || kw === "arc") parseArray(kw as ArrayMode, tok, ast, ln);
     else {
       throw new FloorplanParseError(

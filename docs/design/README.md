@@ -49,7 +49,7 @@ preview/
 | `--accent` | `#2563eb` | Only CTA color |
 | `--text` | `#0f172a` | Body text (light) |
 | `--text-muted` | `#475569` | Secondary text |
-| `--stroke` | `#334155` | Borders (light) / `#a6adc8` (dark) |
+| `--stroke` | `#334155` | Borders (light) / `#cbd5e1` (dark) |
 | `--fill` | `#f8fafc` | Card backgrounds |
 | `--fill-muted` | `#f1f5f9` | Subtle backgrounds |
 | `--mono` | system monospace stack | Code, labels, metadata |
@@ -57,7 +57,7 @@ preview/
 | `--accent-ink` | derived | Text on accent-soft background |
 | `--cat-0` … `--cat-7` | cluster colors | Diagram domain badges |
 
-Dark theme (`data-theme="dark"`) uses Catppuccin Mocha: bg `#1e1e2e`, text `#cdd6f4`, accent `#89b4fa`.
+Dark theme (`data-theme="dark"`) uses Schematex slate/blue dark palette: bg `#0f172a`, text `#f8fafc`, accent `#6d8fff`.
 
 ---
 

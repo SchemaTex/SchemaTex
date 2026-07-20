@@ -19,8 +19,8 @@ type IT = ResolvedTheme<IndustrialTokens>;
 // alternating row backgrounds, so they don't need to live in IndustrialTokens.
 const BAND_ODD_LIGHT = "#f7f7f7";
 const BAND_EVEN_LIGHT = "#fbfbfb";
-const BAND_ODD_DARK = "#2a2b3c";
-const BAND_EVEN_DARK = "#313244";
+const BAND_ODD_DARK = "#172033";
+const BAND_EVEN_DARK = "#202b3d";
 
 function buildCss(t: IT): string {
   const isDark = t.bg !== "#ffffff";

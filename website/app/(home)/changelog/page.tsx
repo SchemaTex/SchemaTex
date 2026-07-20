@@ -4,6 +4,7 @@ import { DiagramIcon } from '@/components/DiagramIcon';
 import { parseChangelog, type ChangelogEntry, type ChangelogVersion } from '@/lib/changelog';
 import { getDiagramEntryMap } from '@/lib/diagrams-index';
 import { resolveDiagramType, type DiagramType } from 'schematex/ai';
+import { ThemedSvg } from '@/components/ThemedSvg';
 
 export const metadata: Metadata = {
   title: 'Changelog — what shipped in each Schematex release',
@@ -70,7 +71,7 @@ export default async function ChangelogPage({
 
   return (
     <main className="flex flex-1 flex-col">
-      <section className="border-b px-6 pb-8 pt-12" style={{ borderColor: 'var(--fill-muted)' }}>
+      <section className="border-b px-6 pb-8 pt-12" style={{ borderColor: 'var(--line)' }}>
         <div className="mx-auto max-w-4xl">
           <p className="type-eye mb-3">/ CHANGELOG</p>
           <div className="mb-4 flex flex-wrap items-center gap-2">
@@ -112,7 +113,7 @@ export default async function ChangelogPage({
 function VersionBlock({ version }: { version: ChangelogVersion }) {
   const diagrams = versionDiagrams(version);
   return (
-    <div className="scroll-mt-20 border-b py-9" style={{ borderColor: 'var(--fill-muted)' }}>
+    <div className="scroll-mt-20 border-b py-9" style={{ borderColor: 'var(--line)' }}>
       <div className="mb-5 flex items-baseline gap-3">
         <h2 className="font-mono text-xl font-semibold" style={{ color: 'var(--text)' }}>
           {version.unreleased ? 'Unreleased' : `v${version.version}`}
@@ -131,19 +132,24 @@ function VersionBlock({ version }: { version: ChangelogVersion }) {
           {diagrams.map((t) => {
             const meta = entryMap.get(t);
             const svg = meta?.examples[0]?.svg ?? null;
+            const exampleSlug = meta?.examples[0]?.slug;
             return (
               <Link key={t} href={`/gallery?view=type#type-${t}`} className="gal-card">
                 <div
                   className="dot-grid flex items-center justify-center p-2"
-                  style={{ height: 120, color: 'var(--stroke)', background: '#ffffff' }}
+                  style={{ height: 120, color: 'var(--stroke)', background: 'var(--fill)' }}
                 >
-                  {svg ? (
-                    <div className="h-full w-full [&_svg]:mx-auto [&_svg]:max-h-full [&_svg]:max-w-full" dangerouslySetInnerHTML={{ __html: svg }} />
+                  {svg && exampleSlug ? (
+                    <ThemedSvg
+                      light={svg}
+                      darkSrc={`/api/example-svg/${exampleSlug}?theme=dark`}
+                      className="h-full w-full [&_svg]:mx-auto [&_svg]:max-h-full [&_svg]:max-w-full"
+                    />
                   ) : (
                     <DiagramIcon type={t} size={34} style={{ color: 'var(--text-muted)', opacity: 0.35 }} />
                   )}
                 </div>
-                <div className="flex items-center gap-1.5 px-2.5 py-1.5 font-mono text-[11px]" style={{ borderTop: '1px solid var(--fill-muted)', color: 'var(--text-muted)' }}>
+                <div className="flex items-center gap-1.5 px-2.5 py-1.5 font-mono text-[11px]" style={{ borderTop: '1px solid var(--line)', color: 'var(--text-muted)' }}>
                   <DiagramIcon type={t} size={12} />
                   <span className="truncate" style={{ color: 'var(--text)' }}>{meta?.name ?? t}</span>
                 </div>
@@ -169,7 +175,7 @@ function EntryBlock({ entry }: { entry: ChangelogEntry }) {
       <div className="flex flex-wrap items-center gap-2">
         <span
           className="font-mono text-[10px] uppercase tracking-wider"
-          style={{ padding: '2px 7px', borderRadius: 'var(--r-sm)', background: color, color: '#fff' }}
+          style={{ padding: '2px 7px', borderRadius: 'var(--r-sm)', background: color, color: 'var(--color-fd-primary-foreground)' }}
         >
           {entry.kind}
         </span>
@@ -183,7 +189,7 @@ function EntryBlock({ entry }: { entry: ChangelogEntry }) {
               key={t}
               href={`/gallery?view=type#type-${t}`}
               className="inline-flex items-center gap-1 font-mono text-[11px] hover:text-[color:var(--accent)]"
-              style={{ color: 'var(--text-muted)', border: '1px solid var(--fill-muted)', borderRadius: 'var(--r-sm)', padding: '1px 6px' }}
+              style={{ color: 'var(--text-muted)', border: '1px solid var(--line)', borderRadius: 'var(--r-sm)', padding: '1px 6px' }}
             >
               <DiagramIcon type={t} size={12} />
               {meta?.name ?? t}

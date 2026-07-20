@@ -18,6 +18,7 @@ import type {
   NetworkLink,
   TopologyClass,
 } from "./types";
+import { applyPins } from "../../core/editing";
 
 export const NET_CONST = {
   DEVICE_W: 64,
@@ -323,7 +324,10 @@ function classify(ast: NetworkAst): TopologyClass {
 
 // ─── main ────────────────────────────────────────────────────────
 
-export function layoutNetwork(ast: NetworkAst): NetworkLayoutResult {
+export function layoutNetwork(
+  ast: NetworkAst,
+  pins?: Map<string, { x: number; y: number }>
+): NetworkLayoutResult {
   const links = withAutoLinks(ast);
 
   // 1. centers per mode
@@ -402,6 +406,15 @@ export function layoutNetwork(ast: NetworkAst): NetworkLayoutResult {
   const dx = NET_CONST.PAD - minX;
   const dy = NET_CONST.PAD - minY;
   for (const b of boxes) { b.x += dx; b.y += dy; b.cx += dx; b.cy += dy; }
+
+  applyPins(boxes, pins, {
+    id: (box) => box.device.id,
+    position: () => "free",
+  });
+  for (const b of boxes) {
+    b.cx = b.x + b.w / 2;
+    b.cy = b.y + b.h / 2;
+  }
 
   const groups: GroupBox[] = [];
   for (const g of ast.groups) {
@@ -488,8 +501,10 @@ export function layoutNetwork(ast: NetworkAst): NetworkLayoutResult {
     };
   });
 
-  const width = maxX - minX + 2 * NET_CONST.PAD;
-  const height = maxY - minY + 2 * NET_CONST.PAD;
+  const pinnedMaxX = Math.max(maxX - minX + NET_CONST.PAD, ...boxes.map((b) => effBox(b).right));
+  const pinnedMaxY = Math.max(maxY - minY + NET_CONST.PAD, ...boxes.map((b) => effBox(b).bottom));
+  const width = pinnedMaxX + NET_CONST.PAD;
+  const height = pinnedMaxY + NET_CONST.PAD;
 
   return {
     ast,

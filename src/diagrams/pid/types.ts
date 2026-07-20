@@ -119,6 +119,7 @@ export interface PidInstrument {
 export interface PidAST {
   type: "pid";
   title?: string;
+  titleSourceRange?: import("../../core/types").SourceRange;
   direction: PidDirection;
   equipment: PidEquipment[];
   lines: PidLine[];
@@ -167,4 +168,5 @@ export interface PidLayoutResult {
   instruments: PidLayoutInstrument[];
   lines: PidLayoutLine[];
   title?: string;
+  titleSourceRange?: import("../../core/types").SourceRange;
 }

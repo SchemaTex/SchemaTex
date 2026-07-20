@@ -10,7 +10,7 @@
  *     labels.
  */
 
-import type { VennAST, VennLayoutResult, VennShape } from "../../core/types";
+import type { RenderConfig, SourceRange, VennAST, VennLayoutResult, VennShape } from "../../core/types";
 import {
   svgRoot,
   group,
@@ -24,6 +24,18 @@ import {
 import { resolveVennTheme } from "../../core/theme";
 import { parseVennDSL } from "./parser";
 import { layoutVenn } from "./layout";
+import { createSourceLocator } from "../../core/source-range";
+
+interface GeometryRange {
+  range: SourceRange;
+  prefix?: string;
+  suffix?: string;
+}
+
+interface SetGeometryRanges {
+  center: GeometryRange;
+  radius: GeometryRange;
+}
 
 function ellipseEl(attrs: Record<string, string | number | undefined>): string {
   return el("ellipse", attrs);
@@ -45,7 +57,55 @@ function buildCss(tokens: ReturnType<typeof resolveVennTheme>): string {
 .schematex-venn-label-external { font: 500 11px sans-serif; fill: ${tokens.vennLabelColor}; dominant-baseline: central; }
 .schematex-venn-leader { stroke: ${tokens.vennLeaderColor}; stroke-width: 0.7; fill: none; opacity: 0.8; }
 .schematex-venn-leader-dot { fill: ${tokens.vennLeaderColor}; }
+.schematex-venn-handle { fill: #fff; stroke: #2563eb; stroke-width: 2; vector-effect: non-scaling-stroke; }
 `.trim();
+}
+
+function geometryRanges(source: string | undefined): Map<string, SetGeometryRanges> {
+  const result = new Map<string, SetGeometryRanges>();
+  if (!source) return result;
+  const locator = createSourceLocator(source);
+  const number = "[+-]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:[eE][+-]?\\d+)?";
+  let offset = 0;
+  for (const rawLine of source.split(/\n/)) {
+    const line = rawLine.replace(/\r$/, "");
+    const declaration = /^\s*set\s+([A-Za-z][\w-]*)\b/i.exec(line);
+    if (!declaration) {
+      offset += rawLine.length + 1;
+      continue;
+    }
+    const id = declaration[1]!;
+    const at = new RegExp(`\\bat\\s*:\\s*\\(\\s*(${number})\\s*,\\s*(${number})\\s*\\)`, "i").exec(line);
+    const radius = new RegExp(`\\bradius\\s*:\\s*(${number})`, "i").exec(line);
+    const closeBracket = line.lastIndexOf("]");
+    const openBracket = closeBracket >= 0 ? line.lastIndexOf("[", closeBracket) : -1;
+    const insertAt = closeBracket >= 0 ? closeBracket : line.length;
+    const hasProps = openBracket >= 0 && line.slice(openBracket + 1, closeBracket).trim().length > 0;
+    const center = at
+      ? (() => {
+          const first = offset + at.index + at[0].indexOf(at[1]!);
+          const second = offset + at.index + at[0].lastIndexOf(at[2]!);
+          return { range: locator.range(first, second + at[2]!.length) };
+        })()
+      : {
+          range: locator.range(offset + insertAt, offset + insertAt),
+          prefix: closeBracket >= 0 ? `${hasProps ? ", " : ""}at: (` : " [at: (",
+          suffix: closeBracket >= 0 ? ")" : ")]",
+        };
+    const radiusRange = radius
+      ? (() => {
+          const value = offset + radius.index + radius[0].lastIndexOf(radius[1]!);
+          return { range: locator.range(value, value + radius[1]!.length) };
+        })()
+      : {
+          range: locator.range(offset + insertAt, offset + insertAt),
+          prefix: closeBracket >= 0 ? `${hasProps ? ", " : ""}radius: ` : " [radius: ",
+          suffix: closeBracket >= 0 ? "" : "]",
+        };
+    result.set(id, { center, radius: radiusRange });
+    offset += rawLine.length + 1;
+  }
+  return result;
 }
 
 function renderShape(
@@ -53,14 +113,18 @@ function renderShape(
   index: number,
   color: string,
   opacity: number,
-  setLabel: string
+  setLabel: string,
+  sceneKey?: string,
 ): string {
   const classes = `schematex-venn-set schematex-venn-set-${index}`;
   const hoverTitle = titleEl(`Set ${setLabel}`);
   if (shape.kind === "circle") {
     return el(
       "g",
-      { class: `schematex-venn-set-group schematex-venn-set-group-${index}` },
+      {
+        class: `schematex-venn-set-group schematex-venn-set-group-${index}`,
+        ...(sceneKey ? { "data-sx-key": sceneKey } : {}),
+      },
       [
         circleEl({
           cx: shape.cx,
@@ -77,7 +141,10 @@ function renderShape(
   }
   return el(
     "g",
-    { class: `schematex-venn-set-group schematex-venn-set-group-${index}` },
+    {
+      class: `schematex-venn-set-group schematex-venn-set-group-${index}`,
+      ...(sceneKey ? { "data-sx-key": sceneKey } : {}),
+    },
     [
       ellipseEl({
         cx: shape.cx,
@@ -97,7 +164,7 @@ function renderShape(
 
 export function renderVennAST(
   ast: VennAST,
-  options: { theme?: string } = {}
+  options: RenderConfig | { theme?: string } = {}
 ): string {
   const layout = layoutVenn(ast);
   return renderVennLayout(ast, layout, options);
@@ -106,7 +173,7 @@ export function renderVennAST(
 export function renderVennLayout(
   ast: VennAST,
   layout: VennLayoutResult,
-  options: { theme?: string } = {}
+  options: RenderConfig | { theme?: string } = {}
 ): string {
   const tokens = resolveVennTheme(options.theme ?? "default");
   const effectiveBlend =
@@ -115,9 +182,68 @@ export function renderVennLayout(
 
   // Shape rendering.
   const colors = tokens.vennSetColors;
+  const config = options as RenderConfig;
+  const authoredGeometry = geometryRanges(config.__source);
+  const handleEls: string[] = [];
   const shapeEls = layout.shapes.map((shape, i) => {
     const color = ast.sets[i]?.color ?? colors[i % colors.length] ?? "#4E79A7";
-    return renderShape(shape, i, color, tokens.vennSetOpacity, ast.sets[i]?.label ?? shape.id);
+    const ranges = authoredGeometry.get(shape.id);
+    const sceneKey = ranges && config.__scene ? `venn:set:${shape.id}` : undefined;
+    if (sceneKey && ranges && config.__scene) {
+      const halfWidth = shape.kind === "circle" ? shape.r : shape.rx;
+      const halfHeight = shape.kind === "circle" ? shape.r : shape.ry;
+      config.__scene.push({
+        key: sceneKey,
+        kind: "node",
+        semanticId: shape.id,
+        label: ast.sets[i]?.label ?? shape.id,
+        bbox: {
+          x: shape.cx - halfWidth,
+          y: shape.cy - halfHeight,
+          width: halfWidth * 2,
+          height: halfHeight * 2,
+        },
+        positionSource: {
+          kind: "point",
+          range: ranges.center.range,
+          x: shape.cx / layout.width,
+          y: shape.cy / layout.height,
+          unitsPerSvgX: 1 / layout.width,
+          unitsPerSvgY: 1 / layout.height,
+          prefix: ranges.center.prefix,
+          suffix: ranges.center.suffix,
+        },
+        editable: { label: false, position: "free" },
+      });
+      const radius = shape.kind === "circle" ? shape.r : shape.rx;
+      const handleKey = `venn:set:${shape.id}:radius`;
+      config.__scene.push({
+        key: handleKey,
+        kind: "handle",
+        semanticId: `${shape.id}:radius`,
+        bbox: { x: shape.cx + radius - 6, y: shape.cy - 6, width: 12, height: 12 },
+        positionSource: {
+          kind: "scalar",
+          range: ranges.radius.range,
+          value: radius / Math.min(layout.width, layout.height),
+          unitsPerSvgX: 1 / Math.min(layout.width, layout.height),
+          min: 0.04,
+          max: 0.8,
+          prefix: ranges.radius.prefix,
+          suffix: ranges.radius.suffix,
+        },
+        editable: { label: false, position: "move-x" },
+      });
+      handleEls.push(circleEl({
+        cx: shape.cx + radius,
+        cy: shape.cy,
+        r: 5,
+        class: "schematex-venn-handle",
+        "data-sx-key": handleKey,
+        "aria-label": `Resize set ${shape.id}`,
+      }));
+    }
+    return renderShape(shape, i, color, tokens.vennSetOpacity, ast.sets[i]?.label ?? shape.id, sceneKey);
   });
 
   const shapesGroup = group(
@@ -203,6 +329,7 @@ export function renderVennLayout(
     el("style", {}, css),
     titleBlock,
     shapesGroup,
+    group({ class: "schematex-venn-handles" }, handleEls),
     group({ class: "schematex-venn-leaders" }, leaderEls),
     group({ class: "schematex-venn-setlabels" }, setLabelEls),
     group({ class: "schematex-venn-labels" }, labelEls),
@@ -220,7 +347,7 @@ export function renderVennLayout(
   );
 }
 
-export function renderVenn(text: string, options: { theme?: string } = {}): string {
+export function renderVenn(text: string, options: RenderConfig | { theme?: string } = {}): string {
   const ast = parseVennDSL(text);
   return renderVennAST(ast, options);
 }

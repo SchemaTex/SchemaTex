@@ -5,6 +5,7 @@ import { renderOrgchart } from "./renderer";
 
 export const orgchart: DiagramPlugin = {
   type: "orgchart",
+  capabilities: { scene: true, editablePosition: true },
   detect(text) {
     return /^\s*orgchart\b/i.test(text);
   },

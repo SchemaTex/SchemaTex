@@ -201,7 +201,7 @@ export function GalleryFilterBar({
     <div
       className="sticky top-0 z-30 -mx-6 px-6 py-4 backdrop-blur-md"
       style={{
-        borderBottom: '1px solid var(--fill-muted)',
+        borderBottom: '1px solid var(--line)',
         background: 'color-mix(in srgb, var(--bg) 90%, transparent)',
       }}
     >
@@ -210,7 +210,7 @@ export function GalleryFilterBar({
         <div
           className="flex items-center gap-2 px-3 py-2"
           style={{
-            border: '1px solid var(--fill-muted)',
+            border: '1px solid var(--line)',
             borderRadius: 'var(--r-sm)',
             background: 'var(--fill)',
           }}
@@ -379,7 +379,7 @@ export function GalleryFilterBar({
             {/* Header */}
             <div
               className="flex items-center justify-between px-4 py-3"
-              style={{ borderBottom: '1px solid var(--fill-muted)' }}
+              style={{ borderBottom: '1px solid var(--line)' }}
             >
               <span className="type-eye">FILTERS</span>
               <button
@@ -406,7 +406,7 @@ export function GalleryFilterBar({
             {/* Footer */}
             <div
               className="flex items-center justify-between gap-3 px-4 py-3"
-              style={{ borderTop: '1px solid var(--fill-muted)' }}
+              style={{ borderTop: '1px solid var(--line)' }}
             >
               <button
                 type="button"

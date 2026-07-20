@@ -43,7 +43,7 @@ Every diagram supports three presets, which is exactly the palette matrix the we
 |---|---|---|
 | `default` | Standard web / docs | White (#ffffff) |
 | `monochrome` | Print, clinical, B&W compliance | White (#ffffff) |
-| `dark` | Dark mode UI | Catppuccin Mocha (#1e1e2e) |
+| `dark` | Dark mode UI | Schematex slate/blue dark palette (#0f172a) |
 
 The website **must** demo all three — it's a product differentiator. A top-of-page theme-switcher feels natural.
 
@@ -71,17 +71,17 @@ These are the universal tokens every diagram uses. The website should adopt the 
 
 | Token | Hex | Notes |
 |---|---|---|
-| `bg` | `#1e1e2e` | Catppuccin Mocha base |
-| `text` | `#cdd6f4` | — |
-| `textMuted` | `#7f849c` | — |
-| `stroke` | `#cdd6f4` | Inverted — light strokes on dark bg |
-| `fill` | `#313244` | Mantle |
-| `fillMuted` | `#45475a` | Surface0 |
-| `accent` | `#89b4fa` | Blue |
-| `positive` | `#a6e3a1` | Green |
-| `negative` | `#f38ba8` | Red |
-| `neutral` | `#6c7086` | Overlay0 |
-| `warn` | `#fab387` | Peach |
+| `bg` | `#0f172a` | Schematex slate/blue dark palette base |
+| `text` | `#f8fafc` | — |
+| `textMuted` | `#94a3b8` | — |
+| `stroke` | `#f8fafc` | Inverted — light strokes on dark bg |
+| `fill` | `#172033` | Mantle |
+| `fillMuted` | `#202b3d` | Surface0 |
+| `accent` | `#6d8fff` | Blue |
+| `positive` | `#34d399` | Green |
+| `negative` | `#f87171` | Red |
+| `neutral` | `#64748b` | Muted slate |
+| `warn` | `#fbbf24` | Peach |
 
 #### `monochrome` (compliance / print)
 
@@ -104,13 +104,13 @@ Default palette (Tailwind 600):
 #475569  slate
 ```
 
-Dark palette (Catppuccin Mocha):
+Dark palette (Schematex slate/blue dark palette):
 
 ```
-#89b4fa  blue      #a6e3a1  green
-#fab387  peach     #cba6f7  mauve
-#f38ba8  red       #94e2d5  teal
-#f5c2e7  pink      #89dceb  sky
+#6d8fff  blue      #34d399  green
+#fbbf24  peach     #a78bfa  mauve
+#f87171  red       #22d3ee  teal
+#f472b6  pink      #38bdf8  sky
 ```
 
 Use these for website charts, tag chips, cluster badges — never invent a new 8-color palette.
@@ -242,7 +242,7 @@ For the other 12 diagrams, generate from the DSL examples in `preview/*.html` �
 ## Quick designer checklist
 
 - [ ] Website uses the `default` base theme values verbatim (no custom grays/blues)
-- [ ] Dark mode uses Catppuccin Mocha base (#1e1e2e, #cdd6f4, etc.)
+- [ ] Dark mode uses the Schematex slate/blue palette base (`#0f172a`, `#f8fafc`) and passes `npm run check:website-theme`
 - [ ] All category chips / charts draw from the 8-color palette, not invented colors
 - [ ] Typography stays in 3 tiers for content, with a separate hero scale only for marketing headers
 - [ ] Industrial diagrams are NOT recolored in dark mode except luminance inversion

@@ -11,6 +11,7 @@ export { renderIndividualSymbol, getRequiredDefs } from "./symbols";
 
 export const genogram: DiagramPlugin = {
   type: "genogram",
+  capabilities: { scene: true, editablePosition: true },
 
   detect(text: string): boolean {
     const firstLine = firstContentLine(text)?.toLowerCase() ?? "";
@@ -27,12 +28,14 @@ export const genogram: DiagramPlugin = {
       nodeWidth: 40,
       nodeHeight: 40,
     };
-    const layout = layoutGenogram(ast, layoutConfig);
+    const layout = layoutGenogram(ast, layoutConfig, config?.__pins);
     const renderConfig: RenderConfig = {
       fontFamily: config?.fontFamily ?? "system-ui, -apple-system, sans-serif",
       fontSize: config?.fontSize ?? 12,
       theme: config?.theme ?? "default",
       padding: config?.padding ?? 20,
+      __scene: config?.__scene,
+      __pins: config?.__pins,
     };
     return renderGenogram(layout, renderConfig, ast);
   },

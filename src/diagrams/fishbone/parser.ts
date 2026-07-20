@@ -5,7 +5,9 @@ import type {
   FishboneNode,
   FishboneOrientation,
   FishboneSides,
+  SourceRange,
 } from "../../core/types";
+import { createSourceLocator } from "../../core/source-range";
 
 export class FishboneParseError extends Error {
   public line?: number;
@@ -24,6 +26,7 @@ interface CategoryDef {
   color?: string;
   side?: "top" | "bottom";
   order?: number;
+  sourceRange?: SourceRange;
 }
 
 const SLOPE_PRESETS: Record<string, number> = {
@@ -67,9 +70,22 @@ const SLOPE_PRESETS: Record<string, number> = {
  */
 export function parseFishboneDSL(text: string): FishboneAST {
   const rawLines = text.split(/\r?\n/);
+  const locator = createSourceLocator(text);
+  const lineStarts: number[] = [];
+  let nextLineStart = 0;
+  for (let i = 0; i < rawLines.length; i++) {
+    lineStarts.push(nextLineStart);
+    nextLineStart += rawLines[i]!.length + (i < rawLines.length - 1 ? (text[nextLineStart + rawLines[i]!.length] === "\r" ? 2 : 1) : 0);
+  }
+  const tokenRange = (lineIndex: number, token: string, from = 0): SourceRange | undefined => {
+    const at = rawLines[lineIndex]!.indexOf(token, from);
+    return at < 0 ? undefined : locator.range(lineStarts[lineIndex]! + at, lineStarts[lineIndex]! + at + token.length);
+  };
 
   let title: string | undefined;
+  let titleSourceRange: SourceRange | undefined;
   let effect = "";
+  let effectSourceRange: SourceRange | undefined;
   let orientation: FishboneOrientation = "ltr";
   let width: number | undefined;
   let height: number | undefined;
@@ -103,7 +119,11 @@ export function parseFishboneDSL(text: string): FishboneAST {
     // Header: fishbone "Title"  OR  fishbone: "Title"
     if (!headerSeen && /^fishbone\b/i.test(trimmed)) {
       const m = trimmed.match(/^fishbone\s*:?\s*(.*)$/i);
-      if (m && m[1]) title = stripQuotes(m[1]);
+      if (m && m[1]) {
+        const token = m[1].trim();
+        title = stripQuotes(token);
+        titleSourceRange = tokenRange(i, token);
+      }
       headerSeen = true;
       continue;
     }
@@ -120,14 +140,16 @@ export function parseFishboneDSL(text: string): FishboneAST {
         (implicitBulletIndent === null || indent <= implicitBulletIndent)
       ) {
         const bucket = causesByCategory.get(implicitActiveCatId)!;
-        const node: FishboneNode = { label: subText, children: [] };
+        const token = trimmed.slice(1).trim();
+        const node: FishboneNode = { label: subText, sourceRange: tokenRange(i, token), children: [] };
         bucket.push(node);
         lastLevel1 = node;
         implicitBulletIndent = indent;
         continue;
       }
       if (lastLevel1) {
-        lastLevel1.children.push({ label: subText, children: [] });
+        const token = trimmed.slice(1).trim();
+        lastLevel1.children.push({ label: subText, sourceRange: tokenRange(i, token), children: [] });
         continue;
       }
       // No Level-1 in scope. If an implicit-category heading just declared
@@ -138,7 +160,8 @@ export function parseFishboneDSL(text: string): FishboneAST {
       // parse cleanly.
       if (implicitActiveCatId) {
         const bucket = causesByCategory.get(implicitActiveCatId)!;
-        const node: FishboneNode = { label: subText, children: [] };
+        const token = trimmed.slice(1).trim();
+        const node: FishboneNode = { label: subText, sourceRange: tokenRange(i, token), children: [] };
         bucket.push(node);
         lastLevel1 = node;
         implicitBulletIndent = indent;
@@ -156,7 +179,11 @@ export function parseFishboneDSL(text: string): FishboneAST {
       implicitActiveCatId = null;
       implicitBulletIndent = null;
       const m = trimmed.match(/^effect\s*:?\s*(.*)$/i);
-      if (m) effect = stripQuotes(m[1] ?? "");
+      if (m) {
+        const token = (m[1] ?? "").trim();
+        effect = stripQuotes(token);
+        effectSourceRange = tokenRange(i, token);
+      }
       continue;
     }
 
@@ -217,7 +244,7 @@ export function parseFishboneDSL(text: string): FishboneAST {
           const orderProp = props["order"];
           const orderNum = orderProp !== undefined ? Number(orderProp) : NaN;
           const order = Number.isFinite(orderNum) ? orderNum : undefined;
-          categories.push({ id, label, color: props["color"], side, order });
+          categories.push({ id, label, color: props["color"], side, order, sourceRange: tokenRange(i, structured[2]!) });
           causesByCategory.set(id, []);
         }
         lastLevel1 = null;
@@ -229,17 +256,21 @@ export function parseFishboneDSL(text: string): FishboneAST {
         const id = slugify(label);
         const rest = compact[2]!.trim();
         if (!getCat(id)) {
-          categories.push({ id, label });
+          categories.push({ id, label, sourceRange: tokenRange(i, compact[1]!.trim()) });
           causesByCategory.set(id, []);
         }
         // split by `;` for compact style causes
         const bucket = causesByCategory.get(id)!;
+        let compactFrom = rawLines[i]!.indexOf(rest);
         for (const part of rest.split(/[;,]/)) {
           const txt = stripQuotes(part.trim());
           if (txt) {
-            const node: FishboneNode = { label: txt, children: [] };
+            const token = part.trim();
+            const range = tokenRange(i, token, Math.max(0, compactFrom));
+            const node: FishboneNode = { label: txt, sourceRange: range, children: [] };
             bucket.push(node);
             lastLevel1 = node;
+            if (range) compactFrom = range.end - lineStarts[i]!;
           }
         }
         continue;
@@ -264,7 +295,7 @@ export function parseFishboneDSL(text: string): FishboneAST {
       const { text: causeText } = splitTrailingProps(rest);
       const label = stripQuotes(causeText);
       if (!label) continue;
-      const node: FishboneNode = { label, children: [] };
+      const node: FishboneNode = { label, sourceRange: tokenRange(i, causeText.trim()), children: [] };
       bucket.push(node);
       lastLevel1 = node;
       implicitActiveCatId = null;
@@ -294,7 +325,7 @@ export function parseFishboneDSL(text: string): FishboneAST {
       if (label) {
         const id = slugify(label);
         if (!getCat(id)) {
-          categories.push({ id, label });
+          categories.push({ id, label, sourceRange: tokenRange(i, trimmed) });
           causesByCategory.set(id, []);
         }
         implicitActiveCatId = id;
@@ -320,6 +351,7 @@ export function parseFishboneDSL(text: string): FishboneAST {
 
   const majors: FishboneNode[] = categories.map((c) => ({
     label: c.label,
+    sourceRange: c.sourceRange,
     color: c.color,
     children: causesByCategory.get(c.id) ?? [],
     side: c.side,
@@ -329,7 +361,9 @@ export function parseFishboneDSL(text: string): FishboneAST {
   return {
     type: "fishbone",
     title,
+    titleSourceRange,
     effect,
+    effectSourceRange,
     majors,
     orientation,
     width,

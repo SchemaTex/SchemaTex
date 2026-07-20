@@ -1,4 +1,4 @@
-import type { FishboneAST } from "../../core/types";
+import type { FishboneAST, RenderConfig, SceneItem } from "../../core/types";
 import {
   svgRoot,
   group,
@@ -14,6 +14,7 @@ import {
 import { parseFishboneDSL } from "./parser";
 import { layoutFishbone, type FishboneLayoutResult, type FishboneBBox } from "./layout";
 import { resolveFishboneTheme } from "../../core/theme";
+import { resolveSceneTitle } from "../../core/title-scene";
 
 const CSS = `
 .sx-fb { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
@@ -79,7 +80,7 @@ function buildMask(id: string, w: number, h: number, bboxes: FishboneBBox[]): st
   return el("mask", { id, maskUnits: "userSpaceOnUse" }, [base, holes]);
 }
 
-function renderHead(layout: FishboneLayoutResult, ltr: boolean): string {
+function renderHead(layout: FishboneLayoutResult, ltr: boolean, ast: FishboneAST, scene?: SceneItem[]): string {
   const h = layout.head;
   const tipX = ltr ? h.tipX : h.x - (h.tipX - h.x);
   const leftX = ltr ? h.x : h.x;
@@ -93,6 +94,12 @@ function renderHead(layout: FishboneLayoutResult, ltr: boolean): string {
   // Bias text toward the wide base (35% from base, 65% from tip) so it reads
   // balanced inside the tapering triangle rather than shifted toward the tip.
   const textX = ltr ? leftX + h.w * 0.38 : rightX - h.w * 0.38;
+  const key = "label:effect";
+  scene?.push({
+    key, kind: "label", label: h.label, sourceRange: ast.effectSourceRange,
+    bbox: { x: Math.min(leftX, rightX), y: h.y - h.h / 2, width: Math.abs(rightX - leftX), height: h.h },
+    editable: { label: ast.effectSourceRange !== undefined, position: "none" },
+  });
   return group({ class: "sx-fb-head-g" }, [
     polygon({
       points,
@@ -106,15 +113,23 @@ function renderHead(layout: FishboneLayoutResult, ltr: boolean): string {
         y: h.y,
         class: "sx-fb-head-text",
         fill: darken(stroke, 0.3),
+        "data-sx-key": scene && ast.effectSourceRange ? key : undefined,
+        "data-sx-role": scene && ast.effectSourceRange ? "label" : undefined,
       },
       h.label
     ),
   ]);
 }
 
-function renderRibs(layout: FishboneLayoutResult, maskUrl: string): string {
+function renderRibs(layout: FishboneLayoutResult, maskUrl: string, scene?: SceneItem[]): string {
   const parts: string[] = [];
   for (const rib of layout.ribs) {
+    const ribKey = `rib:${rib.index}:label`;
+    scene?.push({
+      key: ribKey, kind: "label", label: rib.label, sourceRange: rib.sourceRange,
+      bbox: { x: rib.headerX, y: rib.headerY, width: rib.headerW, height: rib.headerH },
+      editable: { label: rib.sourceRange !== undefined, position: "none" },
+    });
     const pillFill = lighten(rib.color, 0.82);
     const pillStroke = rib.color;
     const headerTextFill = darken(rib.color, 0.3);
@@ -164,6 +179,8 @@ function renderRibs(layout: FishboneLayoutResult, maskUrl: string): string {
           y: rib.headerY + rib.headerH / 2,
           class: "sx-fb-header-text",
           fill: headerTextFill,
+          "data-sx-key": scene && rib.sourceRange ? ribKey : undefined,
+          "data-sx-role": scene && rib.sourceRange ? "label" : undefined,
         },
         rib.label
       )
@@ -171,6 +188,11 @@ function renderRibs(layout: FishboneLayoutResult, maskUrl: string): string {
 
     // Branches + labels
     for (const cause of rib.causes) {
+      const causeKey = `rib:${rib.index}:cause:${cause.slotIndex}`;
+      scene?.push({
+        key: causeKey, kind: "label", label: cause.label, sourceRange: cause.sourceRange,
+        editable: { label: cause.sourceRange !== undefined, position: "none" },
+      });
       parts.push(
         lineEl({
           x1: cause.ribX,
@@ -189,13 +211,21 @@ function renderRibs(layout: FishboneLayoutResult, maskUrl: string): string {
             y: cause.labelY,
             class: "sx-fb-cause-label",
             "text-anchor": cause.labelAnchor,
+            "data-sx-key": scene && cause.sourceRange ? causeKey : undefined,
+            "data-sx-role": scene && cause.sourceRange ? "label" : undefined,
           },
           cause.label
         )
       );
 
       // Sub-causes (Level 2)
-      for (const sub of cause.subCauses) {
+      for (let subIndex = 0; subIndex < cause.subCauses.length; subIndex++) {
+        const sub = cause.subCauses[subIndex]!;
+        const subKey = `${causeKey}:sub:${subIndex}`;
+        scene?.push({
+          key: subKey, kind: "label", label: sub.label, sourceRange: sub.sourceRange,
+          editable: { label: sub.sourceRange !== undefined, position: "none" },
+        });
         parts.push(
           lineEl({
             x1: sub.tickX1,
@@ -213,6 +243,8 @@ function renderRibs(layout: FishboneLayoutResult, maskUrl: string): string {
               y: sub.y,
               class: "sx-fb-sub-label",
               "text-anchor": sub.anchor,
+              "data-sx-key": scene && sub.sourceRange ? subKey : undefined,
+              "data-sx-role": scene && sub.sourceRange ? "label" : undefined,
             },
             sub.label
           )
@@ -223,7 +255,7 @@ function renderRibs(layout: FishboneLayoutResult, maskUrl: string): string {
   return group({ class: "sx-fb-ribs" }, parts);
 }
 
-export function renderFishboneAST(ast: FishboneAST, options: { theme?: string } = {}): string {
+export function renderFishboneAST(ast: FishboneAST, options: RenderConfig = {} as RenderConfig): string {
   const themeName = options.theme ?? ast.metadata?.["theme"] ?? "default";
   const tokens = resolveFishboneTheme(themeName);
   const layout = layoutFishbone(ast, { palette: tokens.palette });
@@ -257,19 +289,14 @@ export function renderFishboneAST(ast: FishboneAST, options: { theme?: string } 
   });
 
   const titleBlock = layout.title
-    ? textEl(
-        {
-          x: layout.width / 2,
-          y: 28,
-          class: "sx-fb-title",
-          "text-anchor": "middle",
-        },
-        layout.title
-      )
+    ? (() => {
+        const title = resolveSceneTitle(layout.title!, ast.titleSourceRange, layout.width / 2, 28, options);
+        return textEl({ x: title.x, y: title.y, class: "sx-fb-title", "text-anchor": "middle", ...title.attrs }, layout.title!);
+      })()
     : "";
 
-  const head = renderHead(layout, ltr);
-  const ribs = renderRibs(layout, maskUrl);
+  const head = renderHead(layout, ltr, ast, options.__scene);
+  const ribs = renderRibs(layout, maskUrl, options.__scene);
 
   const inner = [
     titleEl(layout.title ? `${layout.title} — Fishbone diagram` : "Fishbone diagram"),
@@ -325,7 +352,7 @@ export function renderFishboneAST(ast: FishboneAST, options: { theme?: string } 
   );
 }
 
-export function renderFishbone(text: string, options: { theme?: string } = {}): string {
+export function renderFishbone(text: string, options: RenderConfig = {} as RenderConfig): string {
   const ast = parseFishboneDSL(text);
   return renderFishboneAST(ast, options);
 }

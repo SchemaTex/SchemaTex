@@ -13,6 +13,7 @@ import type {
   PetriTokenStyle,
   PetriTransition,
 } from "./types";
+import { createSourceLocator } from "../../core/source-range";
 
 export class PetriParseError extends Error {
   line?: number;
@@ -86,6 +87,8 @@ function toInt(raw: string, what: string, line: number): number {
 
 export function parsePetri(text: string): PetriAst {
   const rawLines = text.split(/\r?\n/);
+  const locator = createSourceLocator(text);
+  let absoluteStart = 0;
   const ast: PetriAst = {
     type: "petri",
     direction: "lr",
@@ -103,6 +106,8 @@ export function parsePetri(text: string): PetriAst {
 
   for (let ln = 0; ln < rawLines.length; ln++) {
     const rawLine = rawLines[ln]!;
+    const lineStart = absoluteStart;
+    absoluteStart += rawLine.length + (ln < rawLines.length - 1 ? (text[lineStart + rawLine.length] === "\r" ? 2 : 1) : 0);
     const lineNo = ln + 1;
     const trimmed = rawLine.trim();
     if (!trimmed) continue;
@@ -113,7 +118,16 @@ export function parsePetri(text: string): PetriAst {
       sawHeader = true;
       const toks = tokenize(trimmed);
       const titleTok = toks.find((t, idx) => idx > 0 && t.quoted);
-      if (titleTok) ast.title = titleTok.text;
+      if (titleTok) {
+        ast.title = titleTok.text;
+        const quoted = /"[^"]*"/.exec(rawLine);
+        if (quoted?.index !== undefined) {
+          ast.titleSourceRange = locator.range(
+            lineStart + quoted.index,
+            lineStart + quoted.index + quoted[0].length
+          );
+        }
+      }
       else if (toks[1] && !toks[1].quoted) ast.title = toks.slice(1).map((t) => t.text).join(" ");
       continue;
     }

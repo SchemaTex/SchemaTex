@@ -90,20 +90,20 @@ const PALETTE_MONO: FmeaPalette = {
 };
 
 const PALETTE_DARK: FmeaPalette = {
-  bg: "#1e1e2e",
-  grid: "#45475a",
-  border: "#cdd6f4",
-  headerFill: "#313244",
-  headerText: "#cdd6f4",
-  bandFill: "#313244",
-  bandText: "#cdd6f4",
-  cellText: "#cdd6f4",
-  cellAltFill: "#26273a",
-  metaText: "#bac2de",
-  rpnHigh: "#f38ba8", rpnMid: "#f9e2af", rpnLow: "#a6e3a1",
-  apHigh: "#f38ba8", apMid: "#f9e2af", apLow: "#a6e3a1",
-  riskText: "#11111b",
-  flagStroke: "#eba0ac",
+  bg: "#0f172a",
+  grid: "#334155",
+  border: "#cbd5e1",
+  headerFill: "#172033",
+  headerText: "#f8fafc",
+  bandFill: "#202b3d",
+  bandText: "#f8fafc",
+  cellText: "#e2e8f0",
+  cellAltFill: "#131d30",
+  metaText: "#cbd5e1",
+  rpnHigh: "#f87171", rpnMid: "#fbbf24", rpnLow: "#34d399",
+  apHigh: "#f87171", apMid: "#fbbf24", apLow: "#34d399",
+  riskText: "#0f172a",
+  flagStroke: "#fb7185",
 };
 
 function resolvePalette(theme: string): FmeaPalette {

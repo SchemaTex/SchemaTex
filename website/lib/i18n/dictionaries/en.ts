@@ -1,10 +1,9 @@
 // ───────────────────────────────────────────────────────────────────
 // English — the source of truth for every UI-chrome string on the homepage.
 //
-// `Dictionary` is derived from this object (`typeof en`), so every other
-// locale file is type-checked against it: a missing or misspelled key is a
-// compile error, not a silent English fallback. This is why we hand-roll a
-// typed dictionary instead of JSON (matches the cross-product pattern).
+// `Dictionary` is derived from this object, so every established locale key is
+// type-checked. Newly launched positioning proof copy intentionally falls back
+// to English until it is ready for a dedicated translation pass.
 //
 // Interpolated strings are modelled as functions (e.g. `(count) => string`)
 // so word order stays translatable. Proper nouns / brand terms / standards
@@ -111,6 +110,26 @@ export const en = {
       dev: '✓ (0 deps, npm)',
       ai: 'designed for it',
     },
+    proof: {
+      columns: {
+        domain: 'Domain',
+        standards: 'Standards-compliant types',
+        roundTrip: 'Edit the render, keep the source',
+        aiFriendly: 'AI-friendly',
+      },
+      rows: {
+        mermaid: { domain: 'General flow/UML', standards: '—', roundTrip: '✗ text only', ai: 'partial' },
+        d2: { domain: 'General diagrams', standards: '—', roundTrip: '✗ text only', ai: 'partial' },
+        canvas: { domain: 'Freeform canvas', standards: '—', roundTrip: '✗ canvas only, no source', ai: '✗' },
+        plantuml: { domain: 'UML', standards: 'UML subset', roundTrip: '✗ text only', ai: '—' },
+      },
+      schematex: {
+        domain: (count: number) => `${count} professional families`,
+        standards: (count: number) => String(count),
+        roundTrip: '✓ round-trip',
+        ai: '✓ MCP + llms.txt',
+      },
+    },
   },
 
   // ── Quickstart ──
@@ -173,7 +192,9 @@ export const en = {
 // to `string` (and keep the function signatures) so a translated locale like
 // '文档' satisfies the type. `as const` would pin every key to its English
 // literal and reject all translations.
-/** Structural type every locale dictionary must satisfy. */
-export type Dictionary = typeof en;
+/** Structural type every locale dictionary must satisfy; `proof` is English-fallback copy. */
+export type Dictionary = Omit<typeof en, 'positioning'> & {
+  positioning: Omit<typeof en.positioning, 'proof'>;
+};
 
 export default en;

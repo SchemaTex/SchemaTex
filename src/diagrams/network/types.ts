@@ -101,6 +101,7 @@ export interface NetworkDevice {
   kind: DeviceKind;
   /** Human label; falls back to id at render time. */
   label?: string;
+  labelSourceRange?: import("../../core/types").SourceRange;
   tier?: DeviceTier;
   /** Camera body style (camera kind only). */
   cameraType?: CameraType;
@@ -113,6 +114,7 @@ export interface NetworkDevice {
   icon?: string;
   /** Manual placement (layout: manual). */
   at?: { x: number; y: number };
+  atSourceRange?: import("../../core/types").SourceRange;
   /** Group ids this device belongs to (innermost last). */
   groups: string[];
   line?: number;
@@ -132,6 +134,7 @@ export interface NetworkLink {
   portNear?: string;
   portFar?: string;
   label?: string;
+  labelSourceRange?: import("../../core/types").SourceRange;
   /** True when synthesized by spine-leaf auto-mesh (not authored). */
   auto?: boolean;
   line?: number;
@@ -141,6 +144,7 @@ export interface NetworkGroup {
   id: string;
   kind: GroupKind;
   label?: string;
+  labelSourceRange?: import("../../core/types").SourceRange;
   /** Direct device-id members. */
   members: string[];
   /** Nested group ids. */
@@ -152,6 +156,7 @@ export interface NetworkGroup {
 export interface NetworkAst {
   type: "network";
   title?: string;
+  titleSourceRange?: import("../../core/types").SourceRange;
   layout: NetworkLayoutMode;
   direction: NetworkDirection;
   /** spine-leaf only. */

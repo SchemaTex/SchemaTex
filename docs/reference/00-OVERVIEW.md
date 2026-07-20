@@ -268,7 +268,7 @@ schematex/
 - `PersonTokens`（genogram/pedigree）：`maleFill`, `femaleFill`, `unknownFill`, `deceasedMark`, `conditionFill`
 - `BiologyTokens`（phylo）：`cladeColors`, `supportGood/Medium/Warn/Bad`
 
-**三个内置 preset：** `default`（蓝灰配色）、`monochrome`（黑白/学术/打印）、`dark`（Catppuccin Mocha）
+**三个内置 preset：** `default`（蓝灰配色）、`monochrome`（黑白/学术/打印）、`dark`（Schematex slate/blue dark palette）
 
 **Resolver functions：**
 - `resolveBaseTheme(name)` → 通用图表（ecomap, sociogram）

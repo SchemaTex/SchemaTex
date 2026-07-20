@@ -4,6 +4,7 @@ import { renderStateDiagram } from "./renderer";
 
 export const state: DiagramPlugin = {
   type: "state" as DiagramPlugin["type"],
+  capabilities: { scene: true, editablePosition: true },
   detect(text) {
     return /^\s*(?:state\b|stateDiagram(?:-v2)?\b)/i.test(text);
   },

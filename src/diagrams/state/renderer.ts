@@ -1,8 +1,9 @@
 import { circle, defs, el, escapeXml, group, line, path, polygon, rect, svgRoot, text } from "../../core/svg";
-import type { RenderConfig } from "../../core/types";
+import type { RenderConfig, SceneItem } from "../../core/types";
 import { resolveStateTheme, type StateTokens, type ResolvedTheme } from "../../core/theme";
 import { layoutStateDiagram } from "./layout";
 import { parseStateDiagram } from "./parser";
+import { resolveSceneTitle } from "../../core/title-scene";
 import type {
   StateActivity,
   StateDiagramAST,
@@ -85,7 +86,11 @@ function activityText(a: StateActivity): string {
 
 // ── Simple state ────────────────────────────────────────────
 
-function renderSimple(node: StateLayoutNode): string {
+function renderSimple(
+  node: StateLayoutNode,
+  position: SceneItem["editable"]["position"],
+  scene?: SceneItem[]
+): string {
   const { x, y, width, height } = node;
   const children: string[] = [
     rect({ x, y, width, height, rx: 8, ry: 8, class: "lt-state-body" }),
@@ -95,14 +100,14 @@ function renderSimple(node: StateLayoutNode): string {
   if (node.node.activities.length === 0) {
     children.push(
       text(
-        { x: x + width / 2, y: y + height / 2 + 4, "text-anchor": "middle", class: "lt-state-name" },
+        { x: x + width / 2, y: y + height / 2 + 4, "text-anchor": "middle", class: "lt-state-name", "data-sx-role": scene && node.node.labelSourceRange ? "label" : undefined },
         label
       )
     );
   } else {
     children.push(
       text(
-        { x: x + width / 2, y: y + 16, "text-anchor": "middle", class: "lt-state-name" },
+        { x: x + width / 2, y: y + 16, "text-anchor": "middle", class: "lt-state-name", "data-sx-role": scene && node.node.labelSourceRange ? "label" : undefined },
         label
       )
     );
@@ -115,12 +120,22 @@ function renderSimple(node: StateLayoutNode): string {
       cy += 14;
     }
   }
-  return group({ class: "lt-state lt-simple", "data-id": node.id }, children);
+  const key = `node:${node.id}`;
+  scene?.push({
+    key,
+    kind: "node",
+    semanticId: node.id,
+    label,
+    sourceRange: node.node.labelSourceRange,
+    bbox: { x, y, width, height },
+    editable: { label: node.node.labelSourceRange !== undefined, position },
+  });
+  return group({ class: "lt-state lt-simple", "data-id": node.id, "data-sx-key": scene ? key : undefined }, children);
 }
 
 // ── Composite cluster ───────────────────────────────────────
 
-function renderComposite(c: StateLayoutCluster): string {
+function renderComposite(c: StateLayoutCluster, scene?: SceneItem[]): string {
   const { x, y, width, height } = c;
   const titleBarH = 22;
   const acts = c.state.activities;
@@ -163,8 +178,17 @@ function renderComposite(c: StateLayoutCluster): string {
     }
   }
 
+  const key = `group:${c.id}`;
+  scene?.push({
+    key,
+    kind: "group",
+    semanticId: c.id,
+    label: c.state.label || c.state.id,
+    bbox: { x, y, width, height },
+    editable: { label: false, position: "none" },
+  });
   return group(
-    { class: "lt-state lt-composite", "data-id": c.id },
+    { class: "lt-state lt-composite", "data-id": c.id, "data-sx-key": scene ? key : undefined },
     parts
   );
 }
@@ -255,14 +279,30 @@ function renderPseudo(node: StateLayoutNode): string {
   }
 }
 
-function renderNode(node: StateLayoutNode): string {
-  if (node.node.kind === "pseudo") return renderPseudo(node);
-  return renderSimple(node);
+function renderNode(
+  node: StateLayoutNode,
+  position: SceneItem["editable"]["position"],
+  scene?: SceneItem[]
+): string {
+  if (node.node.kind === "pseudo") {
+    const key = `node:${node.id}`;
+    scene?.push({
+      key,
+      kind: "node",
+      semanticId: node.id,
+      bbox: { x: node.x, y: node.y, width: node.width, height: node.height },
+      editable: { label: false, position: "none" },
+    });
+    const svg = renderPseudo(node);
+    return scene ? svg.replace("<g ", `<g data-sx-key="${key}" `) : svg;
+  }
+  return renderSimple(node, position, scene);
 }
 
 // ── Edges + notes ──────────────────────────────────────────
 
-function renderEdge(edge: StateLayoutEdge): string {
+function renderEdge(edge: StateLayoutEdge, scene?: SceneItem[]): string {
+  const key = `edge:${edge.id}`;
   const parts: string[] = [
     path({
       d: edge.path,
@@ -270,6 +310,7 @@ function renderEdge(edge: StateLayoutEdge): string {
       "marker-end": `url(#${ARROW_MARKER_ID})`,
       "data-from": edge.from,
       "data-to": edge.to,
+      "data-sx-live-edge": scene ? "true" : undefined,
     }),
   ];
   if (edge.label) {
@@ -285,6 +326,7 @@ function renderEdge(edge: StateLayoutEdge): string {
         rx: 2,
         ry: 2,
         class: "lt-transition-label-bg",
+        "data-sx-live-midpoint": scene ? "true" : undefined,
       })
     );
     parts.push(
@@ -294,12 +336,45 @@ function renderEdge(edge: StateLayoutEdge): string {
           y: edge.labelY,
           "text-anchor": anchor,
           class: "lt-transition-label",
+          "data-sx-key": scene && edge.labelSourceRange ? `${key}:label` : undefined,
+          "data-sx-role": scene && edge.labelSourceRange ? "label" : undefined,
+          "data-sx-live-midpoint": scene ? "true" : undefined,
         },
         edge.label
       )
     );
   }
-  return group({ class: "lt-edge", "data-edge-id": edge.id }, parts);
+  scene?.push({
+    key,
+    kind: "edge",
+    semanticId: edge.id,
+    path: edge.path,
+    editable: { label: false, position: "none" },
+  });
+  if (scene && edge.label && edge.labelSourceRange) {
+    const width = Math.max(20, edge.label.length * 6.4 + 8);
+    const anchor = edge.labelAnchor ?? "middle";
+    const x = edge.labelX - (anchor === "start" ? 0 : anchor === "end" ? width : width / 2);
+    scene.push({
+      key: `${key}:label`,
+      kind: "label",
+      label: edge.label,
+      sourceRange: edge.labelSourceRange,
+      bbox: { x, y: edge.labelY - 10, width, height: 14 },
+      editable: { label: true, position: "none" },
+    });
+  }
+  return group({
+    class: "lt-edge",
+    "data-edge-id": edge.id,
+    "data-from": edge.from,
+    "data-to": edge.to,
+    "data-sx-key": scene ? key : undefined,
+    "data-sx-live-explicit": scene ? "true" : undefined,
+    "data-sx-live-start": scene ? edge.from : undefined,
+    "data-sx-live-end": scene ? edge.to : undefined,
+    "data-sx-live-mode": scene ? "orthogonal" : undefined,
+  }, parts);
 }
 
 function renderNote(n: StateLayoutNote): string {
@@ -327,8 +402,8 @@ export function renderStateDiagram(
   ast: StateDiagramAST,
   config?: RenderConfig
 ): string {
-  const layout = layoutStateDiagram(ast);
-  return renderLayout(layout, resolveStateTheme(config?.theme ?? "default"));
+  const layout = layoutStateDiagram(ast, config?.__pins);
+  return renderLayout(layout, resolveStateTheme(config?.theme ?? "default"), config);
 }
 
 export function renderState(text: string, config?: RenderConfig): string {
@@ -336,10 +411,21 @@ export function renderState(text: string, config?: RenderConfig): string {
   return renderStateDiagram(ast, config);
 }
 
-function renderLayout(layout: StateLayoutResult, t: StateTheme): string {
-  const titleNode = layout.title
-    ? text({ x: layout.width / 2, y: 22, class: "lt-title", "text-anchor": "middle" }, layout.title)
+function renderLayout(layout: StateLayoutResult, t: StateTheme, config?: RenderConfig): string {
+  const titleScene = layout.title
+    ? resolveSceneTitle(layout.title, layout.titleSourceRange, layout.width / 2, 22, config)
+    : undefined;
+  const titleNode = layout.title && titleScene
+    ? text({ x: titleScene.x, y: titleScene.y, class: "lt-title", "text-anchor": "middle", ...titleScene.attrs }, layout.title)
     : "";
+
+  const body = [
+    // Composite clusters first so simple-state bodies sit on top.
+    group({ class: "lt-clusters" }, layout.clusters.map((cluster) => renderComposite(cluster, config?.__scene))),
+    group({ class: "lt-state-bodies" }, layout.nodes.map((node) => renderNode(node, layout.direction === "LR" ? "move-y" : "move-x", config?.__scene))),
+    group({ class: "lt-edges" }, layout.edges.map((edge) => renderEdge(edge, config?.__scene))),
+    group({ class: "lt-notes" }, layout.notes.map(renderNote)),
+  ];
 
   return svgRoot(
     {
@@ -353,12 +439,7 @@ function renderLayout(layout: StateLayoutResult, t: StateTheme): string {
       el("title", {}, escapeXml(`State Diagram${layout.title ? " — " + layout.title : ""}`)),
       el("desc", {}, "UML 2.5 / Harel statechart rendered by Schematex"),
       defs([renderArrowMarker(t), el("style", {}, buildStyle(t))]),
-      titleNode,
-      // Composite clusters first so simple-state bodies sit on top.
-      group({ class: "lt-clusters" }, layout.clusters.map(renderComposite)),
-      group({ class: "lt-state-bodies" }, layout.nodes.map(renderNode)),
-      group({ class: "lt-edges" }, layout.edges.map(renderEdge)),
-      group({ class: "lt-notes" }, layout.notes.map(renderNote)),
+      ...(config?.__scene ? [...body, titleNode] : [titleNode, ...body]),
     ]
   );
 }

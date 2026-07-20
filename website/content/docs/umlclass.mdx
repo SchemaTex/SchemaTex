@@ -190,3 +190,7 @@ A lone leading `~` is still the package-visibility glyph; tilde-generics only co
 ## 8. Theming & accessibility
 
 All strokes and fills come from theme tokens (no inline styles); CSS classes are prefixed `sx-umlclass-*`. Visibility renders as text glyphs (`+ - # ~`), never coloured icons — standard-faithful and monochrome-safe. Every diagram carries `<title>`/`<desc>` and `data-*` attributes (`data-id`, `data-kind`, `data-from`/`data-to`/`data-kind` on relationships, `data-package-id` on frames) for interactivity.
+
+## Interactive editing
+
+The title, classifier display aliases, member names, and member types expose independent exact source fields. Classifiers move only across relationship ranks so presentation changes cannot silently alter UML semantics.

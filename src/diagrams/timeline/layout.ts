@@ -276,6 +276,7 @@ function layoutSwimlane(ast: TimelineAST): TimelineLayoutResult {
       .filter(t => t.x >= plotX - 2 && t.x <= plotX + plotW + 2),
     axisY,
     title: ast.title,
+    timeUnitsPerSvgX: ast.scale === "proportional" ? (paddedEnd - paddedStart) / plotW : undefined,
   };
 }
 
@@ -468,6 +469,7 @@ function layoutGantt(ast: TimelineAST): TimelineLayoutResult {
       .filter(t => t.x >= plotX - 2 && t.x <= plotX + plotW + 2),
     axisY,
     title: ast.title,
+    timeUnitsPerSvgX: ast.scale === "proportional" ? (paddedEnd - paddedStart) / plotW : undefined,
     pins,
     legend: hasLegend ? legend : undefined,
   };
@@ -652,6 +654,7 @@ function layoutLollipop(ast: TimelineAST): TimelineLayoutResult {
       .filter(t => t.x >= plotX - 2 && t.x <= plotX + plotW + 2),
     axisY: realAxisY,
     title: ast.title,
+    timeUnitsPerSvgX: ast.scale === "proportional" ? (paddedEnd - paddedStart) / axisW : undefined,
     cards,
   };
 }

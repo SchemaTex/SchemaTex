@@ -23,8 +23,9 @@ import {
   el,
   escapeXml,
 } from "../../core/svg";
-import type { RenderConfig } from "../../core/types";
+import type { RenderConfig, SourceRange } from "../../core/types";
 import { resolveMatrixTheme, type MatrixTokens, type ResolvedTheme } from "../../core/theme";
+import { createSourceLocator } from "../../core/source-range";
 
 type MatrixTheme = ResolvedTheme<MatrixTokens>;
 
@@ -832,17 +833,63 @@ function renderCorrelationLegend(ast: MatrixAST, lay: MatrixLayoutResult): strin
   return group({ id: "sx-matrix-corr-legend" }, rows);
 }
 
-function renderPoints(ast: MatrixAST, lay: MatrixLayoutResult): string {
+function matrixPointRanges(source: string | undefined): SourceRange[] {
+  if (!source) return [];
+  const locator = createSourceLocator(source);
+  const ranges: SourceRange[] = [];
+  const number = "[+-]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:[eE][+-]?\\d+)?";
+  const point = new RegExp(`^\\s*"(?:\\\\.|[^"\\\\])*"\\s+at\\s*\\(\\s*(${number})\\s*,\\s*(${number})\\s*\\)`, "gm");
+  let match: RegExpExecArray | null;
+  while ((match = point.exec(source))) {
+    const first = match.index + match[0].indexOf(match[1]!);
+    const second = match.index + match[0].lastIndexOf(match[2]!);
+    ranges.push(locator.range(first, second + match[2]!.length));
+  }
+  return ranges;
+}
+
+function renderPoints(ast: MatrixAST, lay: MatrixLayoutResult, config?: RenderConfig): string {
   if (ast.mode !== "quadrant") return "";
   const nodes: string[] = [];
-  for (const p of lay.points) {
-    nodes.push(renderOnePoint(p, lay.categories));
+  const ranges = matrixPointRanges(config?.__source);
+  for (let index = 0; index < lay.points.length; index++) {
+    nodes.push(renderOnePoint(lay.points[index]!, lay.categories, lay, config, ranges[index]));
   }
   return group({ id: "sx-matrix-points" }, nodes);
 }
 
-function renderOnePoint(pl: PointLayout, categories: string[]): string {
+function renderOnePoint(
+  pl: PointLayout,
+  categories: string[],
+  lay: MatrixLayoutResult,
+  config?: RenderConfig,
+  coordinateRange?: SourceRange,
+): string {
   const p = pl.point;
+  const sceneKey = coordinateRange ? `matrix:point:${p.id}` : undefined;
+  if (sceneKey && coordinateRange && config?.__scene) {
+    config.__scene.push({
+      key: sceneKey,
+      kind: "node",
+      semanticId: p.id,
+      label: p.label,
+      bbox: {
+        x: pl.px - Math.max(10, pl.r),
+        y: pl.py - Math.max(10, pl.r),
+        width: Math.max(20, pl.r * 2),
+        height: Math.max(20, pl.r * 2),
+      },
+      positionSource: {
+        kind: "point",
+        range: coordinateRange,
+        x: p.x,
+        y: p.y,
+        unitsPerSvgX: 1 / lay.plot.w,
+        unitsPerSvgY: -1 / lay.plot.h,
+      },
+      editable: { label: false, position: "free" },
+    });
+  }
   const color = bubbleFill(p, categories);
   const shape = p.shape ?? "circle";
   let shapeEl: string;
@@ -930,6 +977,7 @@ function renderOnePoint(pl: PointLayout, categories: string[]): string {
       class: "sx-matrix-point",
       "data-point-id": p.id,
       "data-label": p.label,
+      ...(sceneKey ? { "data-sx-key": sceneKey } : {}),
       ...(p.category ? { "data-category": p.category } : {}),
     },
     [titleEl(titleStr), shapeEl, leader, label, badge].filter((s) => s.length > 0)
@@ -1539,7 +1587,7 @@ export function renderMatrixAST(ast: MatrixAST, config?: RenderConfig): string {
     renderHeatmap(ast, lay),
     renderCorrelation(ast, lay),
     renderAxes(ast, lay),
-    renderPoints(ast, lay),
+    renderPoints(ast, lay, config),
     renderLegend(ast, lay),
     renderCorrelationLegend(ast, lay),
   ].filter((s) => s.length > 0);

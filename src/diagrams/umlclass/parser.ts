@@ -20,6 +20,8 @@ import type {
   UmlClassRelationship,
   UmlClassVisibility,
 } from "./types";
+import type { SourceRange } from "../../core/types";
+import { createSourceLocator } from "../../core/source-range";
 
 export class UmlClassParseError extends Error {
   constructor(message: string, public line?: number) {
@@ -31,6 +33,7 @@ export class UmlClassParseError extends Error {
 // ─── Public entry ─────────────────────────────────────────────
 
 export function parseUmlClass(text: string): UmlClassAst {
+  const locator = createSourceLocator(text);
   const ast: UmlClassAst = {
     type: "umlclass",
     direction: "tb",
@@ -41,6 +44,17 @@ export function parseUmlClass(text: string): UmlClassAst {
   };
 
   const rawLines = text.split(/\r?\n/);
+  const lineStarts: number[] = [];
+  let lineStart = 0;
+  for (let lineIndex = 0; lineIndex < rawLines.length; lineIndex++) {
+    lineStarts.push(lineStart);
+    lineStart += rawLines[lineIndex]!.length + (lineIndex < rawLines.length - 1 ? (text[lineStart + rawLines[lineIndex]!.length] === "\r" ? 2 : 1) : 0);
+  }
+  const absoluteTrimStart = (lineIndex: number, authored: string): number => {
+    const raw = rawLines[lineIndex] ?? "";
+    const at = raw.indexOf(authored);
+    return lineStarts[lineIndex]! + Math.max(0, at);
+  };
   let i = 0;
 
   // ── Header ──
@@ -54,7 +68,11 @@ export function parseUmlClass(text: string): UmlClassAst {
       // Strip the header keyword; an optional trailing quoted title becomes ast.title.
       const after = t.replace(/^(umlclass|class-diagram|classDiagram)\b/i, "").trim();
       const titleMatch = matchQuoted(after);
-      if (titleMatch) ast.title = titleMatch.value;
+      if (titleMatch) {
+        ast.title = titleMatch.value;
+        const tokenAt = t.indexOf(after) + after.indexOf(after.slice(0, titleMatch.length));
+        ast.titleSourceRange = locator.range(absoluteTrimStart(i, t) + tokenAt, absoluteTrimStart(i, t) + tokenAt + titleMatch.length);
+      }
       headerSeen = true;
       i++;
       break;
@@ -98,6 +116,9 @@ export function parseUmlClass(text: string): UmlClassAst {
       const v = afterColon(t);
       const q = matchQuoted(v);
       ast.title = q ? q.value : v;
+      const token = q ? v.slice(0, q.length) : v;
+      const at = t.indexOf(token);
+      ast.titleSourceRange = locator.range(absoluteTrimStart(i, t) + at, absoluteTrimStart(i, t) + at + token.length);
       i++; continue;
     }
     if (matchDirective(t, "direction")) {
@@ -118,6 +139,11 @@ export function parseUmlClass(text: string): UmlClassAst {
     const headerPart = braceIdx >= 0 ? t.slice(0, braceIdx).trim() : t;
     const classifier = tryParseClassifierHeader(headerPart, i + 1);
     if (classifier) {
+      const nameToken = classifierDisplayToken(headerPart);
+      if (nameToken) {
+        const abs = absoluteTrimStart(i, t) + headerPart.indexOf(nameToken.token);
+        classifier.nameSourceRange = locator.range(abs + nameToken.innerStart, abs + nameToken.innerEnd);
+      }
       const members: UmlClassMember[] = [];
       if (braceIdx >= 0) {
         const after = t.slice(braceIdx + 1);
@@ -139,7 +165,10 @@ export function parseUmlClass(text: string): UmlClassAst {
             // Manual compartment separator — accepted but currently ignored (rare).
             if (/^(--|\.\.|==|__)$/.test(mt)) { i++; continue; }
             const m = parseMember(mt, classifier.kind, i + 1);
-            if (m) members.push(m);
+            if (m) {
+              annotateMemberRanges(m, mt, absoluteTrimStart(i, mt), locator.range);
+              members.push(m);
+            }
             i++;
           }
         }
@@ -169,6 +198,12 @@ export function parseUmlClass(text: string): UmlClassAst {
     const memberLine = tryParseMemberLine(t);
     if (memberLine) {
       applyMemberLine(ast, memberLine.id, memberLine.body, i + 1);
+      const cls = ast.classifiers.find((candidate) => candidate.id === memberLine.id);
+      const member = cls?.members[cls.members.length - 1];
+      if (member) {
+        const bodyAt = t.indexOf(memberLine.body);
+        annotateMemberRanges(member, memberLine.body, absoluteTrimStart(i, t) + bodyAt, locator.range);
+      }
       i++; continue;
     }
 
@@ -183,6 +218,43 @@ export function parseUmlClass(text: string): UmlClassAst {
   emitAutoCreatedWarning(ast);
 
   return ast;
+}
+
+function classifierDisplayToken(line: string): { token: string; innerStart: number; innerEnd: number } | undefined {
+  const alias = /\bas\s+("[^"]+"|[A-Za-z_][\w.]*)/i.exec(line);
+  if (alias) {
+    const token = alias[1]!;
+    return token.startsWith('"')
+      ? { token, innerStart: 0, innerEnd: token.length }
+      : { token, innerStart: 0, innerEnd: token.length };
+  }
+  // A bare classifier token is also its stable relationship id. Editing only
+  // that token would leave references dangling, so expose display aliases
+  // only until multi-range id rename is implemented.
+  return undefined;
+}
+
+function annotateMemberRanges(
+  member: UmlClassMember,
+  authored: string,
+  absoluteStart: number,
+  range: (start: number, end: number) => SourceRange
+): void {
+  const namePattern = member.kind === "operation"
+    ? new RegExp(`\\b${escapeRegExp(member.name)}\\s*(?=\\()`)
+    : new RegExp(`\\b${escapeRegExp(member.name)}\\b`);
+  const nameMatch = namePattern.exec(authored);
+  if (nameMatch?.index !== undefined) {
+    member.nameSourceRange = range(absoluteStart + nameMatch.index, absoluteStart + nameMatch.index + member.name.length);
+  }
+  if (member.type) {
+    const typeAt = authored.lastIndexOf(member.type);
+    if (typeAt >= 0) member.typeSourceRange = range(absoluteStart + typeAt, absoluteStart + typeAt + member.type.length);
+  }
+}
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 // ─── Header / classifier parsing ──────────────────────────────

@@ -21,12 +21,30 @@ const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
 /** @type {import('next').NextConfig} */
 const config = {
   reactStrictMode: true,
-  async rewrites() {
-    if (!GA_ID) return [];
+  // The browser E2E harness may run beside a contributor's normal dev server.
+  // Give that process its own compiler output so two Next instances never
+  // write incompatible chunks into the same `.next` directory.
+  distDir: process.env.SCHEMATEX_NEXT_DIST_DIR || '.next',
+  async redirects() {
     return [
-      { source: '/js/gtag.js', destination: `https://www.googletagmanager.com/gtag/js?id=${GA_ID}` },
-      { source: '/g/collect', destination: 'https://www.google-analytics.com/g/collect' },
+      { source: '/playground/interactive', destination: '/playground', permanent: true },
     ];
+  },
+  async rewrites() {
+    const routes = [
+      // Clean Markdown mirrors for coding agents and plain-text clients.
+      { source: '/docs.md', destination: '/llms.mdx/docs' },
+      { source: '/docs/:path*.md', destination: '/llms.mdx/docs/:path*' },
+      { source: '/:lang/docs.md', destination: '/llms.mdx/:lang/docs' },
+      { source: '/:lang/docs/:path*.md', destination: '/llms.mdx/:lang/docs/:path*' },
+    ];
+    if (GA_ID) {
+      routes.push(
+        { source: '/js/gtag.js', destination: `https://www.googletagmanager.com/gtag/js?id=${GA_ID}` },
+        { source: '/g/collect', destination: 'https://www.google-analytics.com/g/collect' },
+      );
+    }
+    return routes;
   },
   transpilePackages: ['schematex'],
   serverExternalPackages: ['@resvg/resvg-js'],
@@ -41,6 +59,8 @@ const config = {
     if (dev) {
       webpackConfig.resolve.alias['schematex$'] = path.resolve(__dirname, '../src/index.ts');
       webpackConfig.resolve.alias['schematex/ai'] = path.resolve(__dirname, '../src/ai/index.ts');
+      webpackConfig.resolve.alias['schematex/react$'] = path.resolve(__dirname, '../src/react.tsx');
+      webpackConfig.resolve.alias['schematex/export$'] = path.resolve(__dirname, '../src/export.ts');
     }
     // 676 MDX modules (54 EN + 422 locale variants + 199 examples) cause the
     // webpack PackFileCacheStrategy to OOM on Vercel's 8 GB build machine when

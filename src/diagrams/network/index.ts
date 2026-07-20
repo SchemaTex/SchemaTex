@@ -4,6 +4,7 @@ import { renderNetwork } from "./renderer";
 
 export const network: DiagramPlugin = {
   type: "network",
+  capabilities: { scene: true, editablePosition: true },
   detect(text: string): boolean {
     for (const raw of text.split(/\r?\n/)) {
       const t = raw.trim();

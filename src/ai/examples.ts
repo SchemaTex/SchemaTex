@@ -3,6 +3,8 @@
  */
 import { EXAMPLES, type GeneratedExample } from "./_generated";
 
+const EXAMPLES_BY_SLUG = new Map(EXAMPLES.map((example) => [example.slug, example]));
+
 export type Example = GeneratedExample;
 
 export interface GetExamplesOptions {
@@ -53,4 +55,9 @@ export function getExamplesForType(
 
 export function listAllExampleSlugs(): string[] {
   return EXAMPLES.map((e) => e.slug);
+}
+
+/** Return one bundled example by its stable gallery slug. */
+export function getExampleBySlug(slug: string): Example | undefined {
+  return EXAMPLES_BY_SLUG.get(slug);
 }

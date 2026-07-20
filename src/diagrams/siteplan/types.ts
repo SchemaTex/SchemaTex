@@ -32,6 +32,7 @@ export interface SiteplanPolygon {
   id: string;
   label?: string;
   points: Point[];
+  pointSourceRanges?: import("../../core/types").SourceRange[];
   fill?: string;
   line?: number;
 }
@@ -41,6 +42,7 @@ export interface SiteplanPath {
   id: string;
   label?: string;
   points: Point[];
+  pointSourceRanges?: import("../../core/types").SourceRange[];
   width: number;
   line?: number;
 }
@@ -50,6 +52,7 @@ export interface SiteplanLine {
   id: string;
   label?: string;
   points: Point[];
+  pointSourceRanges?: import("../../core/types").SourceRange[];
   line?: number;
 }
 
@@ -57,6 +60,7 @@ export interface SiteplanMarker {
   kind: SiteplanMarkerKind;
   id: string;
   at: Point;
+  atSourceRange?: import("../../core/types").SourceRange;
   size: number;
   label?: string;
   rotate: number;
@@ -67,6 +71,8 @@ export interface SiteplanCallout {
   label: string;
   at: Point;
   to: Point;
+  atSourceRange?: import("../../core/types").SourceRange;
+  toSourceRange?: import("../../core/types").SourceRange;
   line?: number;
 }
 
@@ -74,12 +80,15 @@ export interface SiteplanDimension {
   label: string;
   from: Point;
   to: Point;
+  fromSourceRange?: import("../../core/types").SourceRange;
+  toSourceRange?: import("../../core/types").SourceRange;
   line?: number;
 }
 
 export interface SiteplanAst {
   type: "siteplan";
   title: string;
+  titleSourceRange?: import("../../core/types").SourceRange;
   unit: SiteplanUnit;
   north?: number;
   scale?: number;
@@ -106,6 +115,7 @@ export interface SiteplanLegendItem {
 
 export interface SiteplanLayoutResult {
   title: string;
+  titleSourceRange?: import("../../core/types").SourceRange;
   unit: SiteplanUnit;
   north?: number;
   scale?: number;

@@ -5,6 +5,7 @@ import { lintPid } from "./lint";
 
 export const pid: DiagramPlugin = {
   type: "pid" as DiagramPlugin["type"],
+  capabilities: { scene: true, editablePosition: true },
   detect(text) {
     return /^\s*pid\b/i.test(text);
   },

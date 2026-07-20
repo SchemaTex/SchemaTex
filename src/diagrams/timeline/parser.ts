@@ -11,6 +11,7 @@ import type {
   TimelineStyle,
 } from "./types";
 import { parseDate, tryParseDate } from "./dates";
+import { createSourceLocator } from "../../core/source-range";
 
 export class TimelineParseError extends Error {
   constructor(
@@ -28,19 +29,23 @@ interface RawLine {
   indent: number;
   text: string;
   line: number;
+  start: number;
 }
 
 function preprocess(src: string): RawLine[] {
   const out: RawLine[] = [];
   const lines = src.split(/\r?\n/);
+  let absoluteStart = 0;
   for (let i = 0; i < lines.length; i++) {
     const raw = lines[i];
     if (raw === undefined) continue;
     const trimmed = raw.trim();
+    const lineStart = absoluteStart;
+    absoluteStart += raw.length + (i < lines.length - 1 ? (src[lineStart + raw.length] === "\r" ? 2 : 1) : 0);
     if (!trimmed) continue;
     if (trimmed.startsWith("#") || trimmed.startsWith("//")) continue;
     const spaces = raw.length - raw.replace(/^\s+/, "").length;
-    out.push({ indent: Math.floor(spaces / 2), text: trimmed, line: i + 1 });
+    out.push({ indent: Math.floor(spaces / 2), text: trimmed, line: i + 1, start: lineStart + raw.indexOf(trimmed) });
   }
   return out;
 }
@@ -107,7 +112,15 @@ function splitTopLevel(s: string, sep: string): string[] {
  * Tricky bit: a bare BC year is negative (`-753`), so we must distinguish the
  * date-range separator (space-hyphen-space or `..`) from an intra-date minus.
  */
-function splitDateAndBody(s: string, lineNum: number): { date: string; end?: string; body: string } {
+function splitDateAndBody(s: string, lineNum: number): {
+  date: string;
+  end?: string;
+  body: string;
+  dateStart: number;
+  dateEnd: number;
+  endStart?: number;
+  endEnd?: number;
+} {
   // Find the unquoted colon that separates row-key from body. Prefer a
   // colon with whitespace on both sides (matching the canonical ` : `
   // separator) — that way ordinal time-of-day keys like `14:30 : "Standup"`
@@ -136,32 +149,59 @@ function splitDateAndBody(s: string, lineNum: number): { date: string; end?: str
     }
   }
   if (colon < 0) throw new TimelineParseError(`Expected ':' after date: ${s}`, lineNum);
-  const datePart = s.slice(0, colon).trim();
+  const datePartRaw = s.slice(0, colon);
+  const datePart = datePartRaw.trim();
+  const datePartOffset = datePartRaw.indexOf(datePart);
   const body = s.slice(colon + 1).trim();
+
+  const token = (start: number, end: number) => {
+    const raw = datePart.slice(start, end);
+    const value = raw.trim();
+    const local = raw.indexOf(value);
+    return {
+      value,
+      start: datePartOffset + start + local,
+      end: datePartOffset + start + local + value.length,
+    };
+  };
 
   // Detect `..` range
   const dd = datePart.indexOf("..");
   if (dd > 0) {
+    const a = token(0, dd);
+    const b = token(dd + 2, datePart.length);
     return {
-      date: datePart.slice(0, dd).trim(),
-      end: datePart.slice(dd + 2).trim(),
+      date: a.value,
+      end: b.value,
       body,
+      dateStart: a.start,
+      dateEnd: a.end,
+      endStart: b.start,
+      endEnd: b.end,
     };
   }
   // Detect ` - ` (with surrounding whitespace) for range
   const mDash = / - /.exec(datePart);
   if (mDash && mDash.index > 0) {
+    const a = token(0, mDash.index);
+    const b = token(mDash.index + 3, datePart.length);
     return {
-      date: datePart.slice(0, mDash.index).trim(),
-      end: datePart.slice(mDash.index + 3).trim(),
+      date: a.value,
+      end: b.value,
       body,
+      dateStart: a.start,
+      dateEnd: a.end,
+      endStart: b.start,
+      endEnd: b.end,
     };
   }
-  return { date: datePart, body };
+  const a = token(0, datePart.length);
+  return { date: a.value, body, dateStart: a.start, dateEnd: a.end };
 }
 
 export function parseTimeline(src: string): TimelineAST {
   const lines = preprocess(src);
+  const locator = createSourceLocator(src);
   if (!lines.length) throw new TimelineParseError("Empty timeline");
 
   const ast: TimelineAST = {
@@ -191,8 +231,17 @@ export function parseTimeline(src: string): TimelineAST {
       if (rest.startsWith('"')) {
         const [title] = readQuoted(rest, first.line);
         ast.title = title;
+        const titleToken = /"[^"]*"/.exec(first.text);
+        if (titleToken?.index !== undefined) {
+          ast.titleSourceRange = locator.range(
+            first.start + titleToken.index,
+            first.start + titleToken.index + titleToken[0].length
+          );
+        }
       } else {
         ast.title = rest;
+        const localStart = first.text.indexOf(rest);
+        ast.titleSourceRange = locator.range(first.start + localStart, first.start + localStart + rest.length);
       }
     }
     i = 1;
@@ -218,7 +267,8 @@ export function parseTimeline(src: string): TimelineAST {
     if (/^era\b/i.test(text)) {
       const body = text.replace(/^era\s+/i, "");
       const { props, rest } = parseProperties(body, L.line);
-      const { date, end, body: labelPart } = splitDateAndBody(rest, L.line);
+      const split = splitDateAndBody(rest, L.line);
+      const { date, end, body: labelPart } = split;
       if (!end) throw new TimelineParseError(`era requires a date range: ${text}`, L.line);
       const [label] = readQuoted(labelPart, L.line);
       const era: TimelineEra = {
@@ -226,6 +276,8 @@ export function parseTimeline(src: string): TimelineAST {
         label,
         start: safeParseDate(date, L.line),
         end: safeParseDate(end, L.line),
+        startSourceRange: locator.range(L.start + text.indexOf(rest) + split.dateStart, L.start + text.indexOf(rest) + split.dateEnd),
+        endSourceRange: locator.range(L.start + text.indexOf(rest) + split.endStart!, L.start + text.indexOf(rest) + split.endEnd!),
         color: props["color"],
       };
       ast.eras.push(era);
@@ -261,7 +313,7 @@ export function parseTimeline(src: string): TimelineAST {
         if (child.indent <= baseIndent && /^(section|track)\b/i.test(child.text)) break;
         if (isTrack && child.indent <= baseIndent) break;
         if (/^note\s*:/i.test(child.text)) { i++; continue; }
-        const parsed = parseEventLine(child.text, child.line, nextId, ordinal);
+        const parsed = parseEventLine(child.text, child.line, nextId, ordinal, child.start, locator.range);
         if (!parsed) throw new TimelineParseError(`Unrecognized line in ${keyword}: ${child.text}`, child.line);
         parsed.event.trackId = trackId;
         ast.events.push(parsed.event);
@@ -277,7 +329,7 @@ export function parseTimeline(src: string): TimelineAST {
     }
 
     // Otherwise: flat event line
-    const parsed = parseEventLine(text, L.line, nextId, ordinal);
+    const parsed = parseEventLine(text, L.line, nextId, ordinal, L.start, locator.range);
     if (parsed) {
       ast.events.push(parsed.event);
       i++;
@@ -367,10 +419,14 @@ function parseEventLine(
   text: string,
   line: number,
   nextId: (p: string) => string,
-  ordinal: { index: number }
+  ordinal: { index: number },
+  sourceStart?: number,
+  locate?: (start: number, end: number) => import("../../core/types").SourceRange,
 ): { event: TimelineEvent; hasNote: boolean } | null {
   const { props, rest } = parseProperties(text, line);
-  const { date, end, body } = splitDateAndBody(rest, line);
+  const split = splitDateAndBody(rest, line);
+  const { date, end, body } = split;
+  const restOffset = text.indexOf(rest);
 
   // body forms:
   //   milestone "label"
@@ -394,6 +450,12 @@ function parseEventLine(
     kind,
     start: parseRowKey(date, ordinal),
     end: end ? parseRowKey(end, ordinal) : undefined,
+    startSourceRange: sourceStart !== undefined && locate
+      ? locate(sourceStart + restOffset + split.dateStart, sourceStart + restOffset + split.dateEnd)
+      : undefined,
+    endSourceRange: end && sourceStart !== undefined && locate && split.endStart !== undefined && split.endEnd !== undefined
+      ? locate(sourceStart + restOffset + split.endStart, sourceStart + restOffset + split.endEnd)
+      : undefined,
     icon: props["icon"],
     shape: props["shape"] as TimelineEventShape | undefined,
     color: props["color"],

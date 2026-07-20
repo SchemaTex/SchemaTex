@@ -216,7 +216,7 @@ function PlaygroundPage2() {
 
   const handleShare = () => {
     try {
-      const fakeUrl = `schematex.dev/p/${active}/${btoa(source).slice(0, 8)}`;
+      const fakeUrl = `schematex.js.org/p/${active}/${btoa(source).slice(0, 8)}`;
       navigator.clipboard && navigator.clipboard.writeText('https://' + fakeUrl);
     } catch(e) {}
     setShareState('copied');

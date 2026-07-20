@@ -7,6 +7,7 @@ import type {
   StateNote,
   StateTransition,
 } from "./types";
+import { createSourceLocator } from "../../core/source-range";
 
 export class StateParseError extends Error {
   constructor(message: string, public line?: number) {
@@ -19,6 +20,8 @@ interface RawLine {
   indent: number;
   text: string;
   line: number;
+  /** Absolute UTF-16 offset of `text` in the original source. */
+  start: number;
 }
 
 const PSEUDO_KEYWORDS: Record<string, PseudoStateKind> = {
@@ -46,17 +49,30 @@ const MERMAID_STEREOTYPE: Record<string, PseudoStateKind> = {
 function preprocess(src: string): RawLine[] {
   const out: RawLine[] = [];
   const lines = src.split(/\r?\n/);
+  let offset = 0;
   for (let i = 0; i < lines.length; i++) {
     const raw = lines[i];
     if (raw === undefined) continue;
     const trimmed = raw.trim();
-    if (!trimmed) continue;
+    if (!trimmed) {
+      offset += raw.length + (i < lines.length - 1 ? (src[offset + raw.length] === "\r" ? 2 : 1) : 0);
+      continue;
+    }
     // Comment forms: # // and Mermaid's %%
-    if (trimmed.startsWith("#") || trimmed.startsWith("//") || trimmed.startsWith("%%")) continue;
+    if (trimmed.startsWith("#") || trimmed.startsWith("//") || trimmed.startsWith("%%")) {
+      offset += raw.length + (i < lines.length - 1 ? (src[offset + raw.length] === "\r" ? 2 : 1) : 0);
+      continue;
+    }
     const indent = raw.length - raw.replace(/^\s+/, "").length;
-    out.push({ indent, text: trimmed, line: i + 1 });
+    out.push({ indent, text: trimmed, line: i + 1, start: offset + raw.indexOf(trimmed) });
+    offset += raw.length + (i < lines.length - 1 ? (src[offset + raw.length] === "\r" ? 2 : 1) : 0);
   }
   return out;
+}
+
+function tokenBounds(text: string, token: string, from = 0): { start: number; end: number } {
+  const start = text.indexOf(token, from);
+  return { start, end: start + token.length };
 }
 
 function unquote(s: string): string {
@@ -263,6 +279,7 @@ function isIdent(tok: string): boolean {
  */
 export function parseStateDiagram(src: string): StateDiagramAST {
   const lines = preprocess(src);
+  const locator = createSourceLocator(src);
   if (lines.length === 0) {
     throw new StateParseError("Empty document");
   }
@@ -291,6 +308,10 @@ export function parseStateDiagram(src: string): StateDiagramAST {
   }
   if (beforeProps.startsWith('"')) title = unquote(beforeProps);
   else if (beforeProps.length > 0) title = beforeProps;
+  const titleStart = beforeProps ? header.text.indexOf(beforeProps, headerTok[0].length) : -1;
+  const titleSourceRange = titleStart >= 0
+    ? locator.range(header.start + titleStart, header.start + titleStart + beforeProps.length)
+    : undefined;
 
   const ctx: ParseContext = {
     states: [],
@@ -369,6 +390,9 @@ export function parseStateDiagram(src: string): StateDiagramAST {
     if (aliasMatch) {
       const node = ensureSimpleState(ctx, aliasMatch[2], parent);
       node.label = aliasMatch[1];
+      const quoted = `"${aliasMatch[1]}"`;
+      const bounds = tokenBounds(text, quoted);
+      node.labelSourceRange = locator.range(ln.start + bounds.start, ln.start + bounds.end);
       i++;
       continue;
     }
@@ -398,7 +422,10 @@ export function parseStateDiagram(src: string): StateDiagramAST {
     const stateLabelMatch = text.match(/^state\s+([A-Za-z_][A-Za-z0-9_]*)\s*:\s*(.+)$/);
     if (stateLabelMatch) {
       const node = ensureSimpleState(ctx, stateLabelMatch[1], parent);
-      node.label = unquote(stateLabelMatch[2].trim());
+      const token = stateLabelMatch[2].trim();
+      node.label = unquote(token);
+      const bounds = tokenBounds(text, token, text.indexOf(":") + 1);
+      node.labelSourceRange = locator.range(ln.start + bounds.start, ln.start + bounds.end);
       i++;
       continue;
     }
@@ -544,6 +571,13 @@ export function parseStateDiagram(src: string): StateDiagramAST {
         trigger: parsedLabel.trigger,
         guard: parsedLabel.guard,
         action: parsedLabel.action,
+        labelSourceRange: labelRaw
+          ? (() => {
+              const token = labelRaw.trim();
+              const bounds = tokenBounds(text, token, text.indexOf(":") + 1);
+              return locator.range(ln.start + bounds.start, ln.start + bounds.end);
+            })()
+          : undefined,
       });
       i++;
       continue;
@@ -553,7 +587,10 @@ export function parseStateDiagram(src: string): StateDiagramAST {
     const labelOnlyMatch = text.match(/^([A-Za-z_][A-Za-z0-9_]*)\s*:\s*(.+)$/);
     if (labelOnlyMatch && isIdent(labelOnlyMatch[1])) {
       const node = ensureSimpleState(ctx, labelOnlyMatch[1], parent);
-      node.label = unquote(labelOnlyMatch[2].trim());
+      const token = labelOnlyMatch[2].trim();
+      node.label = unquote(token);
+      const bounds = tokenBounds(text, token, text.indexOf(":") + 1);
+      node.labelSourceRange = locator.range(ln.start + bounds.start, ln.start + bounds.end);
       i++;
       continue;
     }
@@ -587,6 +624,7 @@ export function parseStateDiagram(src: string): StateDiagramAST {
   return {
     type: "state",
     title,
+    titleSourceRange,
     direction,
     states: ctx.states,
     transitions: ctx.transitions,

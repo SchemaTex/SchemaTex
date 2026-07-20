@@ -25,6 +25,8 @@ export interface DTreeNode {
   id: string;
   kind: DTreeNodeKind;
   label: string;
+  /** Exact authored node-label token. */
+  labelSourceRange?: import("../../core/types").SourceRange;
   children: DTreeNode[];
 
   // ── Decision-mode: edge annotations on incoming edge
@@ -60,6 +62,7 @@ export interface DTreeAST {
   type: "decisiontree";
   mode: DTreeMode;
   title?: string;
+  titleSourceRange?: import("../../core/types").SourceRange;
   direction: DTreeDirection;
   /** Class names for ML classification. */
   classes?: string[];

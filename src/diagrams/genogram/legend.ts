@@ -486,7 +486,7 @@ function markerItem(m: IndividualMarker, theme?: GenogramThemeLike): LegendItem 
         label: "Sibling(s) — unknown count",
         kind: "shape",
         shape: "diamond",
-        fill: "#ffffff",
+        fill: theme?.fill,
         color: theme?.stroke,
         section: "markers",
       };

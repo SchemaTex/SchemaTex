@@ -3,10 +3,12 @@
  */
 
 import type {
+  BreadboardCoord,
   BreadboardLayoutPart,
   BreadboardLayoutResult,
   BreadboardLayoutSubstrate,
   RenderConfig,
+  SceneItem,
 } from "../../core/types";
 import {
   svgRoot,
@@ -21,8 +23,9 @@ import {
   escapeXml,
 } from "../../core/svg";
 import { resolveBaseTheme, type BaseTheme } from "../../core/theme";
+import { resolveSceneTitle } from "../../core/title-scene";
 import { partSpec } from "./parts";
-import { layoutBreadboard, BB_CONST } from "./layout";
+import { breadboardCoordXY, layoutBreadboard, BB_CONST } from "./layout";
 import { parseBreadboard } from "./parser";
 
 const WIRE_COLOR_MAP: Record<string, string> = {
@@ -166,7 +169,13 @@ function renderSubstrate(sub: BreadboardLayoutSubstrate): string {
 
 // ─── Parts ───────────────────────────────────────────────────
 
-function renderPart(lp: BreadboardLayoutPart): string {
+function editableCoord(coord: BreadboardCoord): { kind: "hole" | "rail"; col: number; row?: string; rail?: string } {
+  return coord.kind === "hole"
+    ? { kind: "hole", col: coord.col, row: coord.row }
+    : { kind: "rail", col: coord.col, rail: coord.rail };
+}
+
+function renderPart(lp: BreadboardLayoutPart, sub: BreadboardLayoutSubstrate, scene?: SceneItem[]): string {
   const spec = partSpec(lp.part.kind, lp.part.args);
   const body = spec.body(lp.part, lp.width, lp.height);
   const labelText = lp.part.label ?? defaultPartLabel(lp);
@@ -177,10 +186,56 @@ function renderPart(lp: BreadboardLayoutPart): string {
         class: "lt-bb-part-label",
       }, labelText)
     : "";
+  const placement = lp.part.placement;
+  const canMove = placement.kind !== "side" && lp.part.placementSourceRange !== undefined;
+  const key = `node:${lp.part.id}`;
+  if (canMove) {
+    const from = placement.kind === "point" ? placement.at : placement.from;
+    const to = placement.kind === "span" ? placement.to : undefined;
+    const anchor = breadboardCoordXY(sub, from);
+    const gridX0 = breadboardCoordXY(sub, { kind: "hole", col: 1, row: "a" }).x;
+    const holeRowYs = [..."abcdefghij"].map((row) =>
+      breadboardCoordXY(sub, { kind: "hole", col: 1, row: row as "a" }).y
+    );
+    const railRowYs = sub.hasRails
+      ? Object.fromEntries(["+t", "-t", "+b", "-b"].map((rail) => [
+          rail,
+          breadboardCoordXY(sub, { kind: "rail", rail: rail as "+t", col: 1 }).y,
+        ]))
+      : {};
+    scene?.push({
+      key,
+      kind: "node",
+      semanticId: lp.part.id,
+      label: lp.part.label ?? lp.part.id,
+      bbox: { x: lp.x, y: lp.y, width: lp.width, height: lp.height },
+      positionSource: {
+        kind: "breadboard",
+        range: lp.part.placementSourceRange!,
+        from: editableCoord(from),
+        to: to ? editableCoord(to) : undefined,
+        anchorSvgX: anchor.x,
+        anchorSvgY: anchor.y,
+        gridX0,
+        holeRowYs,
+        railRowYs,
+        pitch: sub.pitch,
+        cols: sub.cols,
+      },
+      editable: { label: false, position: "free" },
+    });
+  }
   return group(
-    { class: `lt-bb-part lt-bb-part-${lp.part.kind}`, transform: `translate(${lp.x.toFixed(2)} ${lp.y.toFixed(2)})` },
-    [body]
-  ) + labelEl;
+    {
+      class: `lt-bb-part lt-bb-part-${lp.part.kind}`,
+      "data-sx-key": scene && canMove ? key : undefined,
+      "data-sx-owner": scene && canMove ? key : undefined,
+    },
+    [
+      group({ transform: `translate(${lp.x.toFixed(2)} ${lp.y.toFixed(2)})` }, [body]),
+      labelEl,
+    ],
+  );
 }
 
 function defaultPartLabel(lp: BreadboardLayoutPart): string | undefined {
@@ -200,12 +255,41 @@ function defaultPartLabel(lp: BreadboardLayoutPart): string | undefined {
 
 // ─── Wires ───────────────────────────────────────────────────
 
-function renderWire(lw: BreadboardLayoutResult["wires"][number]): string {
+function renderWire(lw: BreadboardLayoutResult["wires"][number], scene?: SceneItem[], index = 0): string {
   const stroke = WIRE_COLOR_MAP[lw.color] ?? "#475569";
-  const path = pathEl({ d: lw.path, class: "lt-bb-wire", stroke });
-  const dot1 = circleEl({ cx: lw.fromXY.x, cy: lw.fromXY.y, r: 1.8, fill: stroke, class: "lt-bb-wire-dot" });
-  const dot2 = circleEl({ cx: lw.toXY.x, cy: lw.toXY.y, r: 1.8, fill: stroke, class: "lt-bb-wire-dot" });
-  return path + dot1 + dot2;
+  const from = lw.wire.from.kind === "pin" ? lw.wire.from.partId : undefined;
+  const to = lw.wire.to.kind === "pin" ? lw.wire.to.partId : undefined;
+  scene?.push({
+    key: `edge:${index}`,
+    kind: "edge",
+    path: lw.path,
+    editable: { label: false, position: "none" },
+  });
+  const path = pathEl({ d: lw.path, class: "lt-bb-wire", stroke, "data-sx-live-edge": scene ? "true" : undefined });
+  const dot1 = circleEl({
+    cx: lw.fromXY.x,
+    cy: lw.fromXY.y,
+    r: 1.8,
+    fill: stroke,
+    class: "lt-bb-wire-dot",
+    "data-sx-owner": scene && from ? `node:${from}` : undefined,
+  });
+  const dot2 = circleEl({
+    cx: lw.toXY.x,
+    cy: lw.toXY.y,
+    r: 1.8,
+    fill: stroke,
+    class: "lt-bb-wire-dot",
+    "data-sx-owner": scene && to ? `node:${to}` : undefined,
+  });
+  return group({
+    class: "lt-bb-wire-g",
+    ...(scene && (from || to) ? {
+      "data-sx-live-explicit": "true",
+      "data-sx-live-start": from,
+      "data-sx-live-end": to,
+    } : {}),
+  }, [path, dot1, dot2]);
 }
 
 // ─── Public API ─────────────────────────────────────────────
@@ -216,13 +300,16 @@ export function renderBreadboardLayout(layout: BreadboardLayoutResult, config?: 
 
   const titleStr = layout.ast.title ?? "Breadboard";
 
-  const titleNode = layout.ast.title
-    ? textEl({ x: layout.width / 2, y: 22, class: "lt-bb-title", "text-anchor": "middle" }, layout.ast.title)
+  const title = layout.ast.title
+    ? resolveSceneTitle(layout.ast.title, layout.ast.titleSourceRange, layout.width / 2, 22, config)
+    : undefined;
+  const titleNode = title
+    ? textEl({ x: title.x, y: title.y, class: "lt-bb-title", "text-anchor": "middle", ...title.attrs }, layout.ast.title!)
     : "";
 
   const substrate = renderSubstrate(layout.substrate);
-  const parts = layout.parts.map(renderPart).join("\n");
-  const wires = layout.wires.map(renderWire).join("\n");
+  const parts = layout.parts.map((part) => renderPart(part, layout.substrate, config?.__scene)).join("\n");
+  const wires = layout.wires.map((wire, index) => renderWire(wire, config?.__scene, index)).join("\n");
 
   const inner = [
     titleEl(escapeXml(titleStr)),

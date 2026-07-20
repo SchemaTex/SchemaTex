@@ -1,9 +1,8 @@
 /**
  * Transport-agnostic Schematex MCP server factory.
  *
- * Produces a fully-wired `McpServer` instance with all five Schematex tools
- * registered. The stdio bin (bin.ts) and the hosted HTTP route (in the
- * website repo) both call this same factory to avoid drift.
+ * Produces a fully-wired `McpServer` instance from the same model-visible
+ * manifest used by the AI SDK and hosted HTTP transport.
  */
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
@@ -13,11 +12,16 @@ import {
   getExamples,
   validateDsl,
   renderDsl,
+  getDiagramCapabilities,
+  inspectDiagram,
+  applyDiagramEdits,
+  SCHEMATEX_TOOL_DEFINITIONS as definitions,
+  type DiagramEdit,
 } from "schematex/ai";
 import { buildRenderDslContent } from "./render-content.js";
 
 const NAME = "schematex";
-const VERSION = "0.1.0";
+const VERSION = "1.0.0";
 
 export function createSchematexMcpServer(): McpServer {
   const server = new McpServer({
@@ -28,9 +32,8 @@ export function createSchematexMcpServer(): McpServer {
   server.registerTool(
     "listDiagrams",
     {
-      title: "List Schematex diagrams",
-      description:
-        "List every Schematex diagram type with a tagline, 'use when' hint, domain cluster, and authoritative standard. Call this first to discover what's available.",
+      title: definitions.listDiagrams.title,
+      description: definitions.listDiagrams.description,
       inputSchema: {},
     },
     async () => ({
@@ -41,9 +44,8 @@ export function createSchematexMcpServer(): McpServer {
   server.registerTool(
     "getSyntax",
     {
-      title: "Get diagram syntax reference",
-      description:
-        "Return syntax for one diagram type. Default `detail: canonical` is the compact first-shot generation path: canonical header, preferred forms, rules, and repair checks. Request `detail: reference` only for advanced forms or imported adapters after choosing a type.",
+      title: definitions.getSyntax.title,
+      description: definitions.getSyntax.description,
       inputSchema: {
         type: z
           .string()
@@ -66,9 +68,8 @@ export function createSchematexMcpServer(): McpServer {
   server.registerTool(
     "getExamples",
     {
-      title: "Get curated DSL examples",
-      description:
-        "Return curated real-world DSL examples for a diagram type, each with scenario notes and tags. Use as few-shot context before generating DSL.",
+      title: definitions.getExamples.title,
+      description: definitions.getExamples.description,
       inputSchema: {
         type: z.string().describe("Diagram type id."),
         limit: z
@@ -108,9 +109,8 @@ export function createSchematexMcpServer(): McpServer {
   server.registerTool(
     "validateDsl",
     {
-      title: "Validate Schematex DSL",
-      description:
-        "Validate Schematex DSL. Pass the selected diagram `type` whenever you know it. Returns { ok: true } or { ok: false, errors: [{line, column, message, source, hint}] }. Call before returning DSL and self-correct on errors.",
+      title: definitions.validateDsl.title,
+      description: definitions.validateDsl.description,
       inputSchema: {
         type: z
           .string()
@@ -129,9 +129,8 @@ export function createSchematexMcpServer(): McpServer {
   server.registerTool(
     "renderDsl",
     {
-      title: "Render DSL to SVG",
-      description:
-        "Render Schematex DSL to a diagram. Returns a PNG image (the final artifact — display as-is, do not redraw) plus the original SVG as an embedded resource for editing. On error, returns { ok: false, errors } as text.",
+      title: definitions.renderDsl.title,
+      description: definitions.renderDsl.description,
       inputSchema: {
         type: z
           .string()
@@ -145,6 +144,56 @@ export function createSchematexMcpServer(): McpServer {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any -- SDK's CallToolResult content is a strict discriminated union; our helper returns the same shape but typed loosely so it can be shared with the HTTP route. Trust at the boundary.
     async ({ type, dsl, theme, padding }) =>
       buildRenderDslContent(renderDsl(type, dsl, { theme, padding })) as any
+  );
+
+  server.registerTool(
+    "getDiagramCapabilities",
+    {
+      title: definitions.getDiagramCapabilities.title,
+      description: definitions.getDiagramCapabilities.description,
+      inputSchema: { type: z.string().describe("Diagram type id.") },
+    },
+    async ({ type }) => ({
+      content: [{ type: "text", text: JSON.stringify(getDiagramCapabilities(type), null, 2) }],
+    })
+  );
+
+  server.registerTool(
+    "inspectDiagram",
+    {
+      title: definitions.inspectDiagram.title,
+      description: definitions.inspectDiagram.description,
+      inputSchema: {
+        type: z.string().optional(),
+        dsl: z.string().describe("Existing Schematex DSL source."),
+      },
+    },
+    async ({ type, dsl }) => ({
+      content: [{ type: "text", text: JSON.stringify(inspectDiagram(type, dsl), null, 2) }],
+    })
+  );
+
+  server.registerTool(
+    "applyDiagramEdits",
+    {
+      title: definitions.applyDiagramEdits.title,
+      description: definitions.applyDiagramEdits.description,
+      inputSchema: {
+        type: z.string().optional(),
+        dsl: z.string(),
+        revision: z.number().int().nonnegative(),
+        edits: z.array(z.discriminatedUnion("op", [
+          z.object({ target: z.string(), op: z.literal("setLabel"), value: z.string() }),
+          z.object({ target: z.string(), op: z.literal("setPosition"), x: z.number(), y: z.number() }),
+        ])).min(1).max(50),
+      },
+    },
+    async ({ type, dsl, revision, edits }) => ({
+      content: [{
+        type: "text",
+        text: JSON.stringify(applyDiagramEdits(type, dsl, revision, edits as DiagramEdit[]), null, 2),
+      }],
+    })
   );
 
   return server;

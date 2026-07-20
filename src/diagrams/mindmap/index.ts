@@ -5,6 +5,7 @@ import { renderMindmap } from "./renderer";
 
 export const mindmap: DiagramPlugin = {
   type: "mindmap",
+  capabilities: { scene: true },
   detect(text: string): boolean {
     const lines = text.trim().split("\n");
     const first = lines[0]?.trim().toLowerCase() ?? "";
@@ -25,6 +26,7 @@ export const mindmap: DiagramPlugin = {
     return renderMindmap(text, {
       theme: config?.theme,
       fontFamily: config?.fontFamily,
+      scene: config?.__scene,
     });
   },
 };

@@ -1,9 +1,10 @@
-import type { LayoutResult, LayoutNode, LayoutEdge, RenderConfig, DiagramAST, RelationshipType } from "../../core/types";
+import type { LayoutResult, LayoutNode, LayoutEdge, RenderConfig, DiagramAST, RelationshipType, SceneItem } from "../../core/types";
 import { svgRoot, el, group, text, title, desc } from "../../core/svg";
 import { cssCustomProperties, resolveGenogramTheme, STROKE_WIDTH } from "../../core/theme";
 import { renderIndividualSymbol, getRequiredDefs } from "./symbols";
 import { applyLegendOverrides, renderLegend } from "../../core/legend";
 import { buildGenogramLegend } from "./legend";
+import { resolveSceneTitle } from "../../core/title-scene";
 
 // ─── Public API ─────────────────────────────────────────────
 
@@ -22,10 +23,8 @@ export function renderGenogram(
   const structuralEdges = layout.edges.filter(e => !EMOTIONAL_REL_TYPES.has(e.relationship.type));
   const emotionalEdges = layout.edges.filter(e => EMOTIONAL_REL_TYPES.has(e.relationship.type));
 
-  const edgeLayers = renderEdges(structuralEdges);
-  const emotionalLayer = renderEmotionalEdges(emotionalEdges);
-  const nodeLayers = renderNodes(genGroups);
-  const labelLayer = renderLabels(layout.nodes, config);
+  const edgeLayers = renderEdges(structuralEdges, config.__scene);
+  const emotionalLayer = renderEmotionalEdges(emotionalEdges, config.__scene);
   // Secondary parent-child rels carry their own visible label (e.g. "foster")
   // already embedded in the relationship; suppress edge labels for them so
   // the sentinel from layout doesn't render as text.
@@ -33,7 +32,7 @@ export function renderGenogram(
     (e) => !e.relationship.secondary
   );
   const edgeLabelLayer = renderEdgeLabels(labelEdges, config);
-  const siblingOfLayer = renderSiblingOfBrackets(layout, ast);
+  const siblingOfLayer = renderSiblingOfBrackets(layout, ast, config.__scene);
 
   const nodeCount = layout.nodes.length;
   const genCount = genGroups.size;
@@ -43,6 +42,8 @@ export function renderGenogram(
   // Adjust viewBox and add title offset if title exists
   const titleHeight = chartTitle ? 40 : 0;
   const totalHeight = layout.height + titleHeight;
+  const nodeLayers = renderNodes(genGroups, titleHeight, config.__scene);
+  const labelLayer = renderLabels(layout.nodes, config, config.__scene);
 
   const layers: string[] = [
     title(chartTitle ? `Genogram: ${chartTitle}` : "Genogram"),
@@ -57,28 +58,32 @@ export function renderGenogram(
   // it in a horizontally-centering group AFTER the legend tells us the final
   // viewBox width.
   const chartContent: string[] = [];
-  if (chartTitle) {
-    chartContent.push(
-      text(
+  const titleScene = chartTitle
+    ? resolveSceneTitle(chartTitle, ast?.titleSourceRange, layout.width / 2, 28, config)
+    : undefined;
+  const titleNode = chartTitle && titleScene
+    ? text(
         {
-          x: layout.width / 2,
-          y: 28,
+          x: titleScene.x,
+          y: titleScene.y,
           class: "schematex-genogram-title",
           "text-anchor": "middle",
           "font-size": "20",
           "font-weight": "bold",
           "font-family": config.fontFamily,
+          ...titleScene.attrs,
         },
         chartTitle
       )
-    );
-  }
+    : "";
+  if (titleNode && !config.__scene) chartContent.push(titleNode);
   chartContent.push(
     group(
       { transform: titleHeight > 0 ? `translate(0, ${titleHeight})` : undefined },
       [edgeLayers, siblingOfLayer, emotionalLayer, ...nodeLayers, labelLayer, edgeLabelLayer]
     )
   );
+  if (titleNode && config.__scene) chartContent.push(titleNode);
 
   // Compose legend (against the natural canvas size, not the centered one).
   let finalWidth = layout.width;
@@ -223,11 +228,11 @@ function getEmotionalStrokeWidth(type: RelationshipType): number {
   return 2;
 }
 
-function renderEmotionalEdges(edges: LayoutEdge[]): string {
+function renderEmotionalEdges(edges: LayoutEdge[], scene?: SceneItem[]): string {
   if (edges.length === 0) return group({ class: "schematex-genogram-emotional-edges" }, []);
 
   const children: string[] = [];
-  for (const edge of edges) {
+  for (const [index, edge] of edges.entries()) {
     const type = edge.relationship.type;
     const color = getEmotionalColor(type);
     const lineStyle = getEmotionalLineStyle(type);
@@ -242,6 +247,7 @@ function renderEmotionalEdges(edges: LayoutEdge[]): string {
         "stroke-width": strokeWidth,
         style: lineStyle || undefined,
         "marker-end": directional ? "url(#schematex-genogram-arrow)" : undefined,
+        "data-sx-live-edge": scene ? "true" : undefined,
       }),
     ];
 
@@ -258,6 +264,7 @@ function renderEmotionalEdges(edges: LayoutEdge[]): string {
               "text-anchor": "middle",
               "font-size": "10",
               fill: color,
+              "data-sx-live-midpoint": scene ? "true" : undefined,
             },
             edge.relationship.label
           )
@@ -265,12 +272,19 @@ function renderEmotionalEdges(edges: LayoutEdge[]): string {
       }
     }
 
+    const key = `edge:emotional:${index}`;
+    scene?.push({ key, kind: "edge", path: edge.path, editable: { label: false, position: "none" } });
     children.push(
       group(
         {
+          "data-sx-key": scene ? key : undefined,
           class: `schematex-genogram-emotional schematex-genogram-emotional-${type}`,
           "data-from": edge.from,
           "data-to": edge.to,
+          "data-sx-live-explicit": scene ? "true" : undefined,
+          "data-sx-live-start": scene ? edge.from : undefined,
+          "data-sx-live-end": scene ? edge.to : undefined,
+          "data-sx-live-mode": scene ? "quadratic" : undefined,
           "data-relationship-type": type,
         },
         elements
@@ -311,10 +325,63 @@ function renderEdgeLabels(edges: LayoutEdge[], config: RenderConfig): string {
 
 // ─── Edges ──────────────────────────────────────────────────
 
-function renderEdges(edges: LayoutEdge[]): string {
+function structuralLiveAttrs(edge: LayoutEdge, scene?: SceneItem[]): Record<string, string | undefined> {
+  if (!scene) return {};
+  const relationshipFrom = edge.relationship.from;
+  const relationshipTo = edge.relationship.to;
+  if (edge.relationship.type === "parent-child" && relationshipFrom.includes("+")) {
+    const partners = relationshipFrom.split("+").filter(Boolean);
+    const midpointOwners = partners.map((id) => `${id}:0.5`).join(",");
+    if (relationshipTo === "_drop") {
+      return {
+        "data-sx-live-explicit": "true",
+        "data-sx-live-all": midpointOwners,
+        "data-sx-live-mode": "orthogonal",
+        "data-sx-live-kind": "family-drop",
+      };
+    }
+    if (relationshipTo === "_sibship") {
+      const startOwners = edge.from.includes("+") ? midpointOwners : edge.from;
+      const endOwners = edge.to.includes("+") ? midpointOwners : edge.to;
+      return {
+        "data-sx-live-explicit": "true",
+        "data-sx-live-start": startOwners,
+        "data-sx-live-end": endOwners,
+        "data-sx-live-mode": "orthogonal",
+        "data-sx-live-kind": "sibship",
+      };
+    }
+    return {
+      "data-sx-live-explicit": "true",
+      "data-sx-live-start": midpointOwners,
+      "data-sx-live-end": edge.to,
+      "data-sx-live-mode": "orthogonal",
+    };
+  }
+  return {
+    "data-sx-live-explicit": "true",
+    "data-sx-live-start": edge.from,
+    "data-sx-live-end": edge.to,
+    "data-sx-live-mode": "orthogonal",
+  };
+}
+
+function structuralPublicEndpoints(edge: LayoutEdge): { from: string; to: string } {
+  if (
+    edge.relationship.type === "parent-child" &&
+    edge.relationship.to === "_sibship" &&
+    edge.relationship.from.includes("+")
+  ) {
+    const [from, to] = edge.relationship.from.split("+");
+    if (from && to) return { from, to };
+  }
+  return { from: edge.from, to: edge.to };
+}
+
+function renderEdges(edges: LayoutEdge[], scene?: SceneItem[]): string {
   const children: string[] = [];
 
-  for (const edge of edges) {
+  for (const [index, edge] of edges.entries()) {
     const relType = edge.relationship.type;
     const isSecondary = edge.relationship.secondary === true;
     const cssClass = isSecondary
@@ -322,7 +389,7 @@ function renderEdges(edges: LayoutEdge[]): string {
       : `schematex-genogram-edge schematex-genogram-edge-${relType}`;
 
     const elements: string[] = [
-      el("path", { d: edge.path, class: "schematex-genogram-edge-path" }),
+      el("path", { d: edge.path, class: "schematex-genogram-edge-path", "data-sx-live-edge": scene ? "true" : undefined }),
     ];
 
     // cohabiting-ended: single slash mark like separation
@@ -338,6 +405,7 @@ function renderEdges(edges: LayoutEdge[]): string {
             class: "schematex-genogram-separation-mark",
             stroke: "#333",
             "stroke-width": "2",
+            "data-sx-live-midpoint": scene ? "true" : undefined,
           })
         );
       }
@@ -356,6 +424,7 @@ function renderEdges(edges: LayoutEdge[]): string {
             class: "schematex-genogram-divorce-mark",
             stroke: "#333",
             "stroke-width": "2",
+            "data-sx-live-midpoint": scene ? "true" : undefined,
           }),
           el("line", {
             x1: mid.x - 4 + 6,
@@ -365,6 +434,7 @@ function renderEdges(edges: LayoutEdge[]): string {
             class: "schematex-genogram-divorce-mark",
             stroke: "#333",
             "stroke-width": "2",
+            "data-sx-live-midpoint": scene ? "true" : undefined,
           })
         );
       }
@@ -383,17 +453,23 @@ function renderEdges(edges: LayoutEdge[]): string {
             class: "schematex-genogram-separation-mark",
             stroke: "#333",
             "stroke-width": "2",
+            "data-sx-live-midpoint": scene ? "true" : undefined,
           })
         );
       }
     }
 
+    const key = `edge:structural:${index}`;
+    scene?.push({ key, kind: "edge", path: edge.path, editable: { label: false, position: "none" } });
+    const publicEndpoints = structuralPublicEndpoints(edge);
     children.push(
       group(
         {
+          "data-sx-key": scene ? key : undefined,
           class: cssClass,
-          "data-from": edge.from,
-          "data-to": edge.to,
+          "data-from": publicEndpoints.from,
+          "data-to": publicEndpoints.to,
+          ...structuralLiveAttrs(edge, scene),
         },
         elements
       )
@@ -429,7 +505,9 @@ function groupByGeneration(nodes: LayoutNode[]): Map<number, LayoutNode[]> {
 }
 
 function renderNodes(
-  genGroups: Map<number, LayoutNode[]>
+  genGroups: Map<number, LayoutNode[]>,
+  titleHeight: number,
+  scene?: SceneItem[]
 ): string[] {
   const layers: string[] = [];
   const sortedGens = Array.from(genGroups.keys()).sort((a, b) => a - b);
@@ -441,9 +519,20 @@ function renderNodes(
     for (const node of nodes) {
       const cx = node.x + node.width / 2;
       const cy = node.y + node.height / 2;
-      nodeElements.push(
-        renderIndividualSymbol(node.individual, cx, cy, node.width)
-      );
+      const key = `node:${node.id}`;
+      scene?.push({
+        key,
+        kind: "node",
+        semanticId: node.id,
+        label: node.individual.label,
+        sourceRange: node.individual.labelSourceRange,
+        bbox: { x: node.x, y: node.y + titleHeight, width: node.width, height: node.height },
+        editable: { label: node.individual.labelSourceRange !== undefined, position: "move-x" },
+      });
+      const symbol = renderIndividualSymbol(node.individual, cx, cy, node.width);
+      nodeElements.push(scene
+        ? group({ "data-sx-key": key, "data-sx-owner": key, "data-individual-id": node.id }, [symbol])
+        : symbol);
     }
 
     layers.push(
@@ -469,12 +558,14 @@ function renderNodes(
 
 function renderSiblingOfBrackets(
   layout: LayoutResult,
-  ast?: DiagramAST
+  ast?: DiagramAST,
+  scene?: SceneItem[]
 ): string {
   if (!ast) return group({ class: "schematex-genogram-sibling-of-edges" }, []);
   const elements: string[] = [];
   const nodeById = new Map(layout.nodes.map((n) => [n.id, n] as const));
 
+  let edgeIndex = 0;
   for (const ind of ast.individuals) {
     if (!ind.siblingOf) continue;
     const fromNode = nodeById.get(ind.id);
@@ -491,14 +582,21 @@ function renderSiblingOfBrackets(
     const path =
       `M ${fromCx} ${fromTopY} L ${fromCx} ${bracketY}` +
       ` L ${toCx} ${bracketY} L ${toCx} ${toTopY}`;
+    const key = `edge:sibling-of:${edgeIndex++}`;
+    scene?.push({ key, kind: "edge", path, editable: { label: false, position: "none" } });
     elements.push(
       group(
         {
+          "data-sx-key": scene ? key : undefined,
           class: "schematex-genogram-sibling-of",
           "data-from": ind.id,
           "data-to": ind.siblingOf,
+          "data-sx-live-explicit": scene ? "true" : undefined,
+          "data-sx-live-start": scene ? ind.id : undefined,
+          "data-sx-live-end": scene ? ind.siblingOf : undefined,
+          "data-sx-live-mode": scene ? "orthogonal" : undefined,
         },
-        [el("path", { d: path })]
+        [el("path", { d: path, "data-sx-live-edge": scene ? "true" : undefined })]
       )
     );
   }
@@ -508,7 +606,8 @@ function renderSiblingOfBrackets(
 
 function renderLabels(
   nodes: LayoutNode[],
-  config: RenderConfig
+  config: RenderConfig,
+  scene?: SceneItem[]
 ): string {
   const labels: string[] = [];
   const captionStep = config.fontSize + 1;
@@ -542,6 +641,8 @@ function renderLabels(
           y: labelY,
           class: "schematex-genogram-label",
           "data-individual-id": ind.id,
+          "data-sx-owner": scene ? `node:${ind.id}` : undefined,
+          "data-sx-role": scene && ind.labelSourceRange ? "label" : undefined,
         },
         nameLabel
       )
@@ -557,6 +658,7 @@ function renderLabels(
             y: lineY,
             class: "schematex-genogram-vitals",
             "data-individual-id": ind.id,
+            "data-sx-owner": scene ? `node:${ind.id}` : undefined,
           },
           datesLine
         )
@@ -571,6 +673,7 @@ function renderLabels(
             y: lineY,
             class: "schematex-genogram-note",
             "data-individual-id": ind.id,
+            "data-sx-owner": scene ? `node:${ind.id}` : undefined,
           },
           ind.note
         )

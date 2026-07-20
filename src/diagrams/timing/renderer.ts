@@ -1,5 +1,7 @@
-import type { TimingAST, TimingSignal, TimingGroup } from "../../core/types";
+import type { RenderConfig, TimingAST, TimingSignal, TimingGroup } from "../../core/types";
 import { svgRoot, defs, group, el, text, title as titleEl, desc } from "../../core/svg";
+import { resolveSceneTitle } from "../../core/title-scene";
+import { resolveBaseTheme } from "../../core/theme";
 
 const NAME_W = 120;
 const SIG_H = 36;
@@ -258,7 +260,8 @@ function renderWave(signal: TimingSignal, ctx: WaveCtx): { svg: string; labels: 
   return { svg: waveSvg, labels: busTexts.join("") };
 }
 
-export function renderTiming(ast: TimingAST): string {
+export function renderTiming(ast: TimingAST, config?: RenderConfig): string {
+  const t = resolveBaseTheme(config?.theme ?? "default");
   const pw = DEFAULT_PW * (ast.hscale ?? 1);
   const rows = flatten(ast.signals);
   const maxWaveLen = Math.max(
@@ -284,6 +287,7 @@ export function renderTiming(ast: TimingAST): string {
   const labelSvgs: string[] = [];
   const nameSvgs: string[] = [];
   const gridLines: string[] = [];
+  const nativeHandles: string[] = [];
 
   // Grid: vertical period ticks across signal area
   for (let i = 0; i <= maxWaveLen; i++) {
@@ -359,6 +363,55 @@ export function renderTiming(ast: TimingAST): string {
     labelSvgs.push(
       group({ transform: `translate(${NAME_W}, 0)` }, [labels])
     );
+
+    if (config?.__scene && signal.waveSourceRange) {
+      const effective: string[] = [];
+      let previous = "x";
+      for (const char of signal.wave) {
+        const state = char === "." ? previous : char;
+        effective.push(state);
+        previous = state;
+      }
+      const boundaries: number[] = [];
+      for (let boundary = 1; boundary < effective.length; boundary++) {
+        if (effective[boundary] !== effective[boundary - 1]) boundaries.push(boundary);
+      }
+      for (const boundary of boundaries) {
+        let runStart = boundary - 1;
+        while (runStart > 0 && effective[runStart - 1] === effective[boundary - 1]) runStart--;
+        let runEnd = boundary + 1;
+        while (runEnd < effective.length && effective[runEnd] === effective[boundary]) runEnd++;
+        const key = `handle:timing:${signal.name}:${boundary}`;
+        const hx = NAME_W + boundary * pw;
+        config.__scene.push({
+          key,
+          kind: "node",
+          label: `${signal.name} transition ${boundary}`,
+          bbox: { x: hx - 5, y: yMid - 5, width: 10, height: 10 },
+          positionSource: {
+            kind: "wave-boundary",
+            range: signal.waveSourceRange,
+            wave: signal.wave,
+            boundary,
+            runStart,
+            runEnd,
+            periodWidth: pw,
+          },
+          editable: { label: false, position: "move-x" },
+        });
+        nativeHandles.push(el("rect", {
+          x: hx - 4,
+          y: yMid - 4,
+          width: 8,
+          height: 8,
+          rx: 1.5,
+          class: "sx-native-handle",
+          transform: `rotate(45 ${hx} ${yMid})`,
+          "data-sx-key": key,
+          "data-sx-owner": key,
+        }));
+      }
+    }
   }
 
   const xhatch = el(
@@ -370,10 +423,10 @@ export function renderTiming(ast: TimingAST): string {
       height: 6,
     },
     [
-      el("rect", { x: 0, y: 0, width: 6, height: 6, fill: "#f5f5f5" }),
+      el("rect", { x: 0, y: 0, width: 6, height: 6, fill: t.fillMuted }),
       el("path", {
         d: "M 0,6 L 6,0 M -1,1 L 1,-1 M 5,7 L 7,5",
-        stroke: "#999",
+        stroke: t.textMuted,
         "stroke-width": 0.8,
       }),
     ]
@@ -381,16 +434,18 @@ export function renderTiming(ast: TimingAST): string {
 
   const css = `
 .schematex-timing { font-family: system-ui, -apple-system, sans-serif; }
-.schematex-timing-name { font: 12px monospace; fill: #111; }
+.schematex-timing-name { font: 12px monospace; fill: ${t.text}; }
 .schematex-timing-name-activelow { text-decoration: overline; }
-.schematex-timing-group-label { font: bold 12px sans-serif; fill: #111; }
-.schematex-timing-wave { stroke: #111; stroke-width: 1.75; fill: none; stroke-linejoin: miter; stroke-linecap: square; }
-.schematex-timing-bus { fill: none; stroke: #111; stroke-width: 1.5; }
-.schematex-timing-bus-label { font: 11px monospace; fill: #111; }
-.schematex-timing-unknown { stroke: #555; stroke-width: 0.5; }
-.schematex-timing-hiz { stroke: #555; stroke-width: 1.5; stroke-dasharray: 4 3; }
-.schematex-timing-grid { stroke: #eee; stroke-width: 0.5; }
-.schematex-timing-title { font: 700 16px system-ui, -apple-system, sans-serif; fill: #111; }
+.schematex-timing-group-label { font: bold 12px sans-serif; fill: ${t.text}; }
+.schematex-timing-wave { stroke: ${t.stroke}; stroke-width: 1.75; fill: none; stroke-linejoin: miter; stroke-linecap: square; }
+.schematex-timing-bus { fill: none; stroke: ${t.stroke}; stroke-width: 1.5; }
+.schematex-timing-bus-label { font: 11px monospace; fill: ${t.text}; }
+.schematex-timing-unknown { stroke: ${t.textMuted}; stroke-width: 0.5; }
+.schematex-timing-hiz { stroke: ${t.textMuted}; stroke-width: 1.5; stroke-dasharray: 4 3; }
+.schematex-timing-grid { stroke: ${t.fillMuted}; stroke-width: 0.5; }
+.schematex-timing-title { font: 700 16px system-ui, -apple-system, sans-serif; fill: ${t.text}; }
+.sx-native-handle { fill: ${t.fill}; stroke: ${t.accent}; stroke-width: 1.4; cursor: ew-resize; vector-effect: non-scaling-stroke; }
+.sx-native-handle:hover { fill: ${t.fillMuted}; stroke-width: 2; }
 `.trim();
 
   return svgRoot(
@@ -410,16 +465,21 @@ export function renderTiming(ast: TimingAST): string {
       group({ class: "schematex-timing-waves" }, waveSvgs),
       group({ class: "schematex-timing-labels" }, labelSvgs),
       group({ class: "schematex-timing-names" }, nameSvgs),
+      group({ class: "sx-native-handles" }, nativeHandles),
       ast.title
-        ? text(
-            {
-              x: width / 2,
-              y: PAD_TOP + 12,
-              "text-anchor": "middle",
-              class: "schematex-timing-title",
-            },
-            ast.title
-          )
+        ? (() => {
+            const title = resolveSceneTitle(ast.title!, ast.titleSourceRange, width / 2, PAD_TOP + 12, config);
+            return text(
+              {
+                x: title.x,
+                y: title.y,
+                "text-anchor": "middle",
+                class: "schematex-timing-title",
+                ...title.attrs,
+              },
+              ast.title!
+            );
+          })()
         : "",
     ]
   );

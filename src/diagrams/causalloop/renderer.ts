@@ -47,7 +47,7 @@ interface CausalLoopTokens {
 
 function resolveTokens(theme: string): CausalLoopTokens {
   if (theme === "dark") {
-    return { bg: "#1e1e2e", ink: "#cdd6f4", accent: "#89b4fa", delay: "#cdd6f4" };
+    return { bg: "#0f172a", ink: "#e2e8f0", accent: "#6d8fff", delay: "#e2e8f0" };
   }
   if (theme === "monochrome") {
     return { bg: "#ffffff", ink: "#111111", accent: "#111111", delay: "#111111" };

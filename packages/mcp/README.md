@@ -1,6 +1,6 @@
 # @schematex/mcp
 
-MCP (Model Context Protocol) server for [Schematex](https://schematex.js.org) — gives AI agents tools to discover diagram types, read syntax references, fetch curated examples, validate DSL, and render SVG diagrams.
+MCP (Model Context Protocol) server for [Schematex](https://schematex.js.org) — gives AI agents eight tools to discover, generate, validate, render, inspect, and safely edit diagrams.
 
 ## Two ways to use it
 
@@ -42,10 +42,13 @@ Example Claude Desktop config (`~/Library/Application Support/Claude/claude_desk
 | `getExamples` | Curated real-world DSL examples with scenario notes |
 | `validateDsl` | Parse-only check; returns structured errors with line numbers |
 | `renderDsl` | Render DSL → SVG; failed renders return errors plus a visible diagnostic SVG |
+| `getDiagramCapabilities` | Return safe text / position editing modes for one diagram type |
+| `inspectDiagram` | Return a revision and stable editable targets without exposing source offsets |
+| `applyDiagramEdits` | Atomically apply revision-guarded label or position edits |
 
 ## Recommended agent prompt
 
-> You write Schematex DSL. First call `listDiagrams` to pick a type. Then call `getSyntax` and `getExamples` for that type. Prefer canonical syntax unless an advanced feature requires `getSyntax({ detail: "reference" })`. Write the DSL, pass the selected type to `validateDsl`, and self-correct on any errors before returning the final DSL to the user.
+> You write and edit Schematex DSL. For generation, call `listDiagrams`, `getSyntax`, `getExamples`, then `validateDsl` and self-correct. For edits, call `inspectDiagram`, use only returned target keys and allowed operations, and pass its exact revision to `applyDiagramEdits`.
 
 ## License
 

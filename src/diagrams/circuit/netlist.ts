@@ -340,6 +340,7 @@ export function parseNetlist(
 
     const comp: CircuitComponent = {
       id,
+      stableId: true,
       componentType: cType,
       direction: explicitDir ?? "right",
       label: kv.label ?? id,
@@ -368,6 +369,7 @@ export function parseNetlist(
       const gId = `_GND${autoGnd++}`;
       components.push({
         id: gId,
+        stableId: false,
         componentType: "ground",
         direction: "down",
         label: undefined,

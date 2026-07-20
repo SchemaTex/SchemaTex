@@ -1,0 +1,313 @@
+---
+title: Interactive editing
+description: Embed the open-source React or Vanilla Schematex editor, understand its complete API, and persist safe DSL edits.
+---
+
+Schematex 1.0 ships the editor in the same repository and npm package as the
+renderer. Every canvas operation produces ordinary DSL: there is no private
+document model and no second JSON format to synchronize.
+
+## Install and runtime
+
+```bash
+npm install schematex
+```
+
+`InteractiveSchematexDiagram` requires `schematex >= 1.0.0` and React 18 or
+newer. React and React DOM are optional peer dependencies because non-React
+users can continue using the core renderer without installing them.
+
+No Schematex stylesheet import is required. The component injects its minimal
+selection, cursor, and label-editor styles; use `className`, `canvasClassName`,
+and `labelEditorStyle` for application-specific layout and appearance.
+
+## React quick start
+
+```tsx
+'use client';
+
+import { useState } from 'react';
+import { InteractiveSchematexDiagram } from 'schematex/react';
+
+export function Editor({ initialDsl }: { initialDsl: string }) {
+  const [dsl, setDsl] = useState(initialDsl);
+
+  return (
+    <InteractiveSchematexDiagram
+      value={dsl}
+      onChange={(nextDsl, { reason, item }) => {
+        setDsl(nextDsl);
+        // Save nextDsl or push it into your own undo/collaboration model.
+        console.log(reason, item?.semanticId);
+      }}
+      onSelect={(item) => console.log(item?.key)}
+      ariaLabel="Architecture diagram editor"
+    />
+  );
+}
+```
+
+The component is controlled. It owns selection, pointer gestures, live
+connector previews, and the WYSIWYG label input. Your application owns source
+state, persistence, undo, permissions, and collaboration.
+
+In a Next.js App Router project, render it from a Client Component as shown
+above. Vite and other client-rendered React applications use the same component
+without the `'use client'` directive. You do not need `dynamic(..., { ssr:
+false })`.
+
+## Complete React API
+
+```ts
+interface InteractiveEditDetail {
+  reason: 'label' | 'position';
+  item: SceneItem | null;
+}
+
+interface InteractiveSchematexDiagramProps {
+  value: string;
+  onChange: (value: string, detail: InteractiveEditDetail) => void;
+  type?: DiagramType;
+  theme?: string;
+  fontFamily?: string;
+  padding?: number;
+  readOnly?: boolean;
+  debounceMs?: number;
+  className?: string;
+  canvasClassName?: string;
+  style?: React.CSSProperties;
+  ariaLabel?: string;
+  labelEditorClassName?: string;
+  labelEditorStyle?: React.CSSProperties;
+  selectedKey?: string | null;
+  onSelect?: (item: SceneItem | null) => void;
+  onPreviewChange?: (value: string | null, detail: InteractiveEditDetail) => void;
+  onRender?: (result: SchematexRenderResult) => void;
+  onError?: (error: Error) => void;
+}
+```
+
+| Prop | Default | Contract |
+|---|---|---|
+| `value` | required | Controlled Schematex DSL. Update it from `onChange`; the component never owns the canonical document. |
+| `onChange` | required | Called synchronously after a label commit or completed position gesture. The second argument identifies the reason and selected semantic item. |
+| `type` | auto-detect | Optional canonical diagram type. Pass it when the surrounding UI has already chosen a type. |
+| `theme` | renderer default | Theme name forwarded to `renderResult()`. |
+| `fontFamily` | renderer default | Font family forwarded to the diagram renderer. |
+| `padding` | engine default | Outer SVG padding in pixels. |
+| `readOnly` | `false` | Keeps the same controlled render surface but disables scene metadata, selection, label editing, and dragging. |
+| `debounceMs` | `0` | Delays expensive rendering when `value` changes from an external source editor. Canvas commits still use revision guards. |
+| `className` | none | Class on the outer focusable editor region. |
+| `canvasClassName` | none | Class on the inner canvas host `<div>` that directly contains the generated `<svg>`. |
+| `style` | none | Inline style on the outer editor region. |
+| `ariaLabel` | `Editable Schematex diagram` | Accessible name for the editor region. Use a document-specific label. |
+| `labelEditorClassName` | `sx-label-editor` | Class on the temporary WYSIWYG `<input>` rendered into `document.body`. |
+| `labelEditorStyle` | none | Inline overrides merged after the measured WYSIWYG input styles. |
+| `selectedKey` | uncontrolled | Optional controlled `SceneItem.key`. Use it to mirror a source-editor cursor or an external inspector onto the canvas selection. |
+| `onSelect` | no-op | Called with the selected `SceneItem`, or `null` when selection clears. |
+| `onPreviewChange` | no-op | Emits a revision-guarded transient source document while a position gesture is active. Render it in a source editor, but persist only `onChange`; `null` discards a cancelled preview. |
+| `onRender` | no-op | Called with every new `SchematexRenderResult`, including invalid preview results. |
+| `onError` | no-op | Called when parsing, layout, or rendering fails; the diagnostic fallback SVG remains visible. |
+
+`SceneItem` keys are stable edit targets for the current source revision. Do
+not persist a raw source range or assume that an item index remains stable after
+structural DSL edits.
+
+## Sizing and styling
+
+`canvasClassName` names the SVG host, not the SVG itself. Target its direct SVG
+child when you want a responsive canvas:
+
+```tsx
+<InteractiveSchematexDiagram
+  value={dsl}
+  onChange={setDsl}
+  className="diagramEditor"
+  canvasClassName="diagramCanvas"
+/>
+```
+
+```css
+.diagramEditor {
+  min-height: 28rem;
+  border: 1px solid #e8eef6;
+  overflow: auto;
+}
+
+.diagramCanvas {
+  min-height: inherit;
+  display: grid;
+  place-items: center;
+}
+
+.diagramCanvas > svg {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+}
+```
+
+The WYSIWYG input is portalled into `document.body` so it stays aligned when
+the canvas scrolls or its container clips overflow. Press Enter or blur to
+commit; press Escape to cancel.
+
+## Persistence, undo, and autosave
+
+Treat each `onChange` value as the next complete document. A minimal undo and
+autosave integration looks like this:
+
+```tsx
+const [dsl, setDsl] = useState(initialDsl);
+const history = useRef<string[]>([initialDsl]);
+
+function commit(nextDsl: string) {
+  history.current.push(nextDsl);
+  setDsl(nextDsl);
+  queueAutosave(nextDsl);
+}
+
+<InteractiveSchematexDiagram value={dsl} onChange={commit} />;
+```
+
+For collaboration, broadcast the returned DSL or translate its change into
+your existing document/CRDT layer. Apply permissions with `readOnly`; the
+component does not implement authentication or server-side authorization.
+
+## Error and preview contract
+
+The editor uses `renderResult()` rather than throwing into the React tree.
+Invalid DSL therefore produces a visible diagnostic SVG and an `onError`
+callback. Use `onRender` when the application also needs `ok`, `status`,
+`diagnostics`, or the detected diagram type:
+
+```tsx
+<InteractiveSchematexDiagram
+  value={dsl}
+  onChange={setDsl}
+  onRender={(result) => setIsValid(result.ok)}
+  onError={(error) => reportEditorError(error)}
+/>
+```
+
+Do not treat “an SVG string exists” as proof that the DSL is valid. Save,
+export, telemetry, and billing decisions should inspect the result status.
+
+## Vanilla DOM
+
+```ts
+import { renderResult } from 'schematex';
+import { attachInteraction, sourceRevision } from 'schematex/interactive';
+
+let source = initialDsl;
+let result = renderResult(source, { scene: true });
+host.innerHTML = result.svg;
+
+if (result.ok) {
+  attachInteraction(host.querySelector('svg')!, {
+    getSource: () => source,
+    getScene: () => ({
+      rev: sourceRevision(source),
+      items: result.scene ?? [],
+    }),
+    onSourceChange: (nextSource) => {
+      source = nextSource;
+      rerender();
+    },
+  });
+}
+```
+
+Use the React component unless you need to integrate gestures into an existing
+non-React canvas. `attachInteraction()` is deliberately low level; its caller
+must rerender after a committed edit and detach listeners before replacing the
+SVG.
+
+## Capability discovery
+
+```ts
+import {
+  getInteractiveCapabilities,
+  INTERACTIVE_DIAGRAM_COUNT,
+  POSITION_EDITABLE_DIAGRAM_COUNT,
+} from 'schematex';
+
+getInteractiveCapabilities('sequence');
+// {
+//   type: 'sequence',
+//   text: ['title', 'labels'],
+//   position: 'move-x',
+//   reason: 'Horizontal lifeline order is editable, while the vertical axis …'
+// }
+
+console.log(INTERACTIVE_DIAGRAM_COUNT);         // 20
+console.log(POSITION_EDITABLE_DIAGRAM_COUNT);   // 17
+```
+
+`INTERACTIVE_DIAGRAM_COUNT` is `20`: only engines with parser-native source
+ranges are advertised as canvas-editable. Seventeen also expose a position
+model. The other 30 engines remain fully renderable and editable through the
+DSL source, but return empty `text` plus `position: "none"` and emit no guessed
+canvas handles. A value such as `free`, `move-x`, `cross-axis`, or `native-xy`
+is a semantic constraint, not a UI hint.
+`reason` explains the standard or layout rule behind that constraint and is
+the canonical copy for product UI, documentation, and AI integrations.
+
+For web agents and non-JavaScript tooling, the same registry is available as
+[machine-readable JSON](/api/interactive-capabilities). The [complete human
+capability matrix](https://github.com/SchemaTex/SchemaTex/blob/main/docs/system/INTERACTIVE-EDITING-CAPABILITIES.md)
+documents each diagram's axes, editable fields, routing behavior, and limits.
+
+## How edits persist
+
+- Stable semantic objects persist presentation-only positions under
+  `@overrides`, for example `pin R1 153.1,73.1`.
+- Domain geometry—dates, room sizes, floorplan furniture, site coordinates,
+  breadboard holes, waveform boundaries—rewrites its native DSL token.
+- Authored labels replace only their exact source range. Computed labels and
+  identifiers without a safe rename contract remain read-only.
+- Core records the source revision and exact expected text on every editable
+  scene item. `setLabel` fails closed if either changed; callers must rerender
+  instead of retrying an old target.
+- Connected lines preview during drag and are recomputed from semantic
+  endpoints after drop. Engines that promise orthogonal routing remain
+  horizontal/vertical after the rerender.
+
+The [interactive workspace](/playground) includes published examples for all
+50 diagram families. Its capability bar is generated from the same registry,
+so parser-native canvas editing and source-only behavior cannot drift apart.
+
+## AI-safe edits
+
+AI agents should never invent source offsets. The `schematex/ai` package and
+both MCP transports expose this revision-guarded flow:
+
+```ts
+import { inspectDiagram, applyDiagramEdits } from 'schematex/ai';
+
+const inspected = inspectDiagram('flowchart', dsl);
+if (inspected.ok) {
+  const result = applyDiagramEdits('flowchart', dsl, inspected.revision, [
+    { target: inspected.items[0].key, op: 'setLabel', value: 'Approved' },
+  ]);
+}
+```
+
+The batch is atomic: a stale revision, unknown target, unsafe operation, or
+invalid final render returns the original DSL instead of a partial mutation.
+
+## Read-only React renderer
+
+When the canvas must never modify DSL, use the smaller read-only component:
+
+```tsx
+import { SchematexDiagram } from 'schematex/react';
+
+<SchematexDiagram
+  dsl={dsl}
+  type="circuit"
+  onError={(error) => console.error(error)}
+/>;
+```
+
+Schematex is AGPL-3.0. Closed-source commercial products should review the
+[licensing notes](/docs/ai-integration#licensing-notes) before distribution.

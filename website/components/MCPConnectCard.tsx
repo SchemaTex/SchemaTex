@@ -44,7 +44,7 @@ export function MCPConnectCard({
         className="mcp-connect-cta inline-flex items-center justify-center gap-1 font-medium transition no-underline"
         style={{
           background: '#D97757',
-          color: '#ffffff',
+          color: 'var(--color-fd-primary-foreground)',
           padding: '6px 11px',
           borderRadius: 'var(--r-sm)',
           fontSize: '12px',
@@ -124,7 +124,7 @@ function CopyURLPill() {
       className="flex items-center justify-between gap-2 flex-1 min-w-0"
       style={{
         background: 'var(--bg)',
-        border: '1px solid var(--fill-muted)',
+        border: '1px solid var(--line)',
         borderRadius: 'var(--r-sm)',
         padding: '8px 6px 8px 14px',
         minHeight: '40px',

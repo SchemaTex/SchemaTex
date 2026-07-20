@@ -23,6 +23,7 @@ export default defineConfig({
     browser: "src/browser.ts",
     react: "src/react.tsx",
     export: "src/export.ts",
+    interactive: "src/interactive.ts",
     "ai/index": "src/ai/index.ts",
     "ai/ai-sdk": "src/ai/ai-sdk.ts",
   },

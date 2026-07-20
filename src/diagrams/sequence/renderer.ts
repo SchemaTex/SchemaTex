@@ -4,7 +4,7 @@
  * Spec: docs/reference/33-SEQUENCE-STANDARD.md §3, §7
  */
 
-import type { RenderConfig } from "../../core/types";
+import type { RenderConfig, SceneItem } from "../../core/types";
 import {
   svgRoot,
   group,
@@ -23,6 +23,7 @@ import {
 import { resolveBaseTheme, type BaseTheme } from "../../core/theme";
 import { parseSequence } from "./parser";
 import { layoutSequence } from "./layout";
+import { resolveSceneTitle } from "../../core/title-scene";
 import type {
   SeqActivationBar,
   SeqAst,
@@ -96,15 +97,30 @@ const CHAR_W = 6.0;
 
 // ── lifelines ──────────────────────────────────────────────────
 
-function renderLifeline(ll: SeqLifeline): string {
+function renderLifeline(ll: SeqLifeline, scene?: SceneItem[], sceneOffsetY = 0): string {
   const parts: string[] = [];
   // time axis
   parts.push(line({ class: "sx-seq-axis", x1: ll.x, y1: ll.axisTop, x2: ll.x, y2: ll.axisBottom }));
-  parts.push(renderHead(ll));
-  return group({ class: "sx-seq-lifeline", "data-id": ll.participant.id, "data-kind": ll.participant.kind }, parts);
+  parts.push(renderHead(ll, scene !== undefined && ll.participant.nameSourceRange !== undefined));
+  const key = `node:${ll.participant.id}`;
+  scene?.push({
+    key,
+    kind: "node",
+    semanticId: ll.participant.id,
+    label: ll.participant.name,
+    sourceRange: ll.participant.nameSourceRange,
+    bbox: { x: ll.headX, y: ll.headY + sceneOffsetY, width: ll.headW, height: ll.headH },
+    editable: { label: ll.participant.nameSourceRange !== undefined, position: "move-x" },
+  });
+  return group({
+    class: "sx-seq-lifeline",
+    "data-id": ll.participant.id,
+    "data-kind": ll.participant.kind,
+    "data-sx-key": scene ? key : undefined,
+  }, parts);
 }
 
-function renderHead(ll: SeqLifeline): string {
+function renderHead(ll: SeqLifeline, editableLabel = false): string {
   const p = ll.participant;
   const cx = ll.x;
   const stereo = p.stereotype ? `«${p.stereotype}»` : null;
@@ -121,13 +137,13 @@ function renderHead(ll: SeqLifeline): string {
       line({ x1: cx - 8, y1: topY + 14, x2: cx + 8, y2: topY + 14 }),
       line({ x1: cx, y1: topY + 22, x2: cx - 7, y2: topY + 32 }),
       line({ x1: cx, y1: topY + 22, x2: cx + 7, y2: topY + 32 }),
-      textEl({ class: "sx-seq-head-name", x: cx, y: topY + 44, "text-anchor": "middle" }, p.name),
+      textEl({ class: "sx-seq-head-name", x: cx, y: topY + 44, "text-anchor": "middle", "data-sx-role": editableLabel ? "label" : undefined }, p.name),
     );
     return group({ class: "sx-seq-actor sx-seq-head" }, fig);
   }
 
   if (p.kind === "boundary" || p.kind === "control" || p.kind === "entity") {
-    return renderRobustnessIcon(ll, stereo);
+    return renderRobustnessIcon(ll, stereo, editableLabel);
   }
 
   if (p.kind === "database") {
@@ -139,7 +155,7 @@ function renderHead(ll: SeqLifeline): string {
     const d = `M ${x} ${y + ry} a ${w / 2} ${ry} 0 0 1 ${w} 0 v ${h - 2 * ry} a ${w / 2} ${ry} 0 0 1 ${-w} 0 Z M ${x} ${y + ry} a ${w / 2} ${ry} 0 0 0 ${w} 0`;
     return group({ class: "sx-seq-head" }, [
       pathEl({ d }),
-      textEl({ class: "sx-seq-head-name", x: cx, y: y + h / 2 + 6, "text-anchor": "middle" }, p.name),
+      textEl({ class: "sx-seq-head-name", x: cx, y: y + h / 2 + 6, "text-anchor": "middle", "data-sx-role": editableLabel ? "label" : undefined }, p.name),
     ]);
   }
 
@@ -154,18 +170,18 @@ function renderHead(ll: SeqLifeline): string {
       textEl({ class: "sx-seq-head-stereo", x: cx, y: ll.headY + 14, "text-anchor": "middle" }, stereoText),
     );
     parts.push(
-      textEl({ class: "sx-seq-head-name", x: cx, y: ll.headY + 28, "text-anchor": "middle" }, p.name),
+      textEl({ class: "sx-seq-head-name", x: cx, y: ll.headY + 28, "text-anchor": "middle", "data-sx-role": editableLabel ? "label" : undefined }, p.name),
     );
   } else {
     parts.push(
-      textEl({ class: "sx-seq-head-name", x: cx, y: ll.headY + ll.headH / 2 + 5, "text-anchor": "middle" }, p.name),
+      textEl({ class: "sx-seq-head-name", x: cx, y: ll.headY + ll.headH / 2 + 5, "text-anchor": "middle", "data-sx-role": editableLabel ? "label" : undefined }, p.name),
     );
   }
   return group({ class: "sx-seq-head" }, parts);
 }
 
 /** Jacobson analysis-class icons (UML robustness): boundary / control / entity. */
-function renderRobustnessIcon(ll: SeqLifeline, stereo: string | null): string {
+function renderRobustnessIcon(ll: SeqLifeline, stereo: string | null, editableLabel = false): string {
   const p = ll.participant;
   const cx = ll.x;
   const R = 11;
@@ -187,7 +203,7 @@ function renderRobustnessIcon(ll: SeqLifeline, stereo: string | null): string {
       polygon({ class: "sx-seq-icon-fill", points: `${cx - 2},${cy - R - 6} ${cx + 5},${cy - R - 1} ${cx - 3},${cy - R + 2}` }),
     );
   }
-  parts.push(textEl({ class: "sx-seq-head-name", x: cx, y: ll.headY + 44, "text-anchor": "middle" }, p.name));
+  parts.push(textEl({ class: "sx-seq-head-name", x: cx, y: ll.headY + 44, "text-anchor": "middle", "data-sx-role": editableLabel ? "label" : undefined }, p.name));
   return group({ class: "sx-seq-head sx-seq-icon-head", "data-icon": p.kind }, parts);
 }
 
@@ -207,7 +223,7 @@ function renderActivation(a: SeqActivationBar): string {
 
 // ── messages ────────────────────────────────────────────────────
 
-function renderMessage(m: SeqMessageRow): string {
+function renderMessage(m: SeqMessageRow, scene?: SceneItem[], index = 0, sceneOffsetY = 0): string {
   const k = m.message.arrow;
   const lineClass = k === "reply" ? "sx-seq-msg-reply" : "sx-seq-msg";
   const markerEnd = k === "async" || k === "reply" ? "url(#sx-seq-open)" : "url(#sx-seq-filled)";
@@ -217,17 +233,19 @@ function renderMessage(m: SeqMessageRow): string {
     const bottom = m.selfBottomY ?? m.y + 28;
     const right = m.x2;
     const d = `M ${m.x1} ${m.y} H ${right} V ${bottom} H ${m.x1}`;
-    parts.push(pathEl({ class: lineClass, d, "marker-end": markerEnd }));
+    parts.push(pathEl({ class: lineClass, d, "marker-end": markerEnd, "data-sx-live-edge": scene ? "true" : undefined }));
     if (m.message.label) {
       parts.push(
         textEl(
-          { class: "sx-seq-msg-label", x: right + 6, y: (m.y + bottom) / 2 + 3 },
+          { class: "sx-seq-msg-label", x: right + 6, y: (m.y + bottom) / 2 + 3, "data-sx-key": scene && m.message.labelSourceRange ? `edge:${index}:label` : undefined, "data-sx-role": scene && m.message.labelSourceRange ? "label" : undefined, "data-sx-live-midpoint": scene ? "true" : undefined },
           numbered(m, m.message.label),
         ),
       );
     }
   } else {
-    parts.push(line({ class: lineClass, x1: m.x1, y1: m.y, x2: m.x2, y2: m.y, "marker-end": markerEnd }));
+    parts.push(scene
+      ? pathEl({ class: lineClass, d: `M ${m.x1} ${m.y} L ${m.x2} ${m.y}`, "marker-end": markerEnd, "data-sx-live-edge": "true" })
+      : line({ class: lineClass, x1: m.x1, y1: m.y, x2: m.x2, y2: m.y, "marker-end": markerEnd }));
     // lost / found endpoint circle
     if (k === "lost") parts.push(circle({ class: "sx-seq-endpoint", cx: m.x2, cy: m.y, r: 4 }));
     if (k === "found") parts.push(circle({ class: "sx-seq-endpoint", cx: m.x1, cy: m.y, r: 4 }));
@@ -235,19 +253,46 @@ function renderMessage(m: SeqMessageRow): string {
       const mid = (m.x1 + m.x2) / 2;
       parts.push(
         textEl(
-          { class: "sx-seq-msg-label", x: mid, y: m.y - 6, "text-anchor": "middle" },
+          { class: "sx-seq-msg-label", x: mid, y: m.y - 6, "text-anchor": "middle", "data-sx-key": scene && m.message.labelSourceRange ? `edge:${index}:label` : undefined, "data-sx-role": scene && m.message.labelSourceRange ? "label" : undefined, "data-sx-live-midpoint": scene ? "true" : undefined },
           numbered(m, m.message.label),
         ),
       );
     }
   }
 
+  const key = `edge:${index}`;
+  scene?.push({
+    key,
+    kind: "edge",
+    path: m.self
+      ? `M ${m.x1} ${m.y} H ${m.x2} V ${m.selfBottomY ?? m.y + 28} H ${m.x1}`
+      : `M ${m.x1} ${m.y} L ${m.x2} ${m.y}`,
+    editable: { label: false, position: "none" },
+  });
+  if (scene && m.message.label && m.message.labelSourceRange) {
+    const width = Math.max(20, numbered(m, m.message.label).length * 6 + 8);
+    const x = m.self ? m.x2 + 6 : (m.x1 + m.x2) / 2 - width / 2;
+    const y = (m.self ? (m.y + (m.selfBottomY ?? m.y + 28)) / 2 - 8 : m.y - 18) + sceneOffsetY;
+    scene.push({
+      key: `${key}:label`,
+      kind: "label",
+      label: m.message.label,
+      sourceRange: m.message.labelSourceRange,
+      bbox: { x, y, width, height: 16 },
+      editable: { label: true, position: "none" },
+    });
+  }
   return group(
     {
       class: "sx-seq-message",
       "data-kind": k,
       "data-from": m.message.from,
       "data-to": m.message.to,
+      "data-sx-key": scene ? key : undefined,
+      "data-sx-live-explicit": scene ? "true" : undefined,
+      "data-sx-live-start": scene ? m.message.from : undefined,
+      "data-sx-live-end": scene ? m.message.to : undefined,
+      "data-sx-live-mode": scene ? "orthogonal" : undefined,
     },
     parts,
   );
@@ -386,15 +431,17 @@ export function renderSequenceLayout(layout: SeqLayoutResult, config?: RenderCon
   children.push(markers(t));
 
   const titleBand = layout.title ? 32 : 0;
-  if (layout.title) {
-    children.push(
-      textEl({ x: layout.width / 2, y: 22, class: "sx-seq-title", "text-anchor": "middle" }, layout.title),
-    );
-  }
+  const titleScene = layout.title
+    ? resolveSceneTitle(layout.title, layout.ast.titleSourceRange, layout.width / 2, 22, config)
+    : undefined;
+  const titleNode = layout.title && titleScene
+    ? textEl({ x: titleScene.x, y: titleScene.y, class: "sx-seq-title", "text-anchor": "middle", ...titleScene.attrs }, layout.title)
+    : "";
+  if (titleNode && !config?.__scene) children.push(titleNode);
 
   const body: string[] = [];
   // lifelines (axes + heads) underneath
-  body.push(group({ class: "sx-seq-lifelines" }, layout.lifelines.map(renderLifeline)));
+  body.push(group({ class: "sx-seq-lifelines" }, layout.lifelines.map((ll) => renderLifeline(ll, config?.__scene, titleBand))));
   // fragment boxes behind everything (so activation bars sit inside them)
   body.push(group({ class: "sx-seq-frames" }, layout.fragments.map(renderFragmentBox)));
   // activation bars over the axis and frame boxes
@@ -403,7 +450,7 @@ export function renderSequenceLayout(layout: SeqLayoutResult, config?: RenderCon
   body.push(group({ class: "sx-seq-frame-tabs" }, layout.fragments.map(renderFragmentTab)));
   body.push(group({ class: "sx-seq-refs" }, layout.refs.map(renderRef)));
   // messages
-  body.push(group({ class: "sx-seq-messages" }, layout.messages.map(renderMessage)));
+  body.push(group({ class: "sx-seq-messages" }, layout.messages.map((message, index) => renderMessage(message, config?.__scene, index, titleBand))));
   // notes / dividers / invariants / destroys on top
   body.push(group({ class: "sx-seq-notes" }, layout.notes.map(renderNote)));
   body.push(group({ class: "sx-seq-divs" }, layout.dividers.map(renderDivider)));
@@ -413,6 +460,7 @@ export function renderSequenceLayout(layout: SeqLayoutResult, config?: RenderCon
   children.push(
     titleBand ? group({ transform: `translate(0, ${titleBand})` }, body) : group({}, body),
   );
+  if (titleNode && config?.__scene) children.push(titleNode);
 
   const height = layout.height + titleBand;
   return svgRoot(
@@ -431,6 +479,6 @@ export function renderSequenceLayout(layout: SeqLayoutResult, config?: RenderCon
 
 export function renderSequence(textOrAst: string | SeqAst, config?: RenderConfig): string {
   const ast = typeof textOrAst === "string" ? parseSequence(textOrAst) : textOrAst;
-  const layout = layoutSequence(ast);
+  const layout = layoutSequence(ast, config?.__pins);
   return renderSequenceLayout(layout, config);
 }

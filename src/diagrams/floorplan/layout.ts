@@ -351,7 +351,10 @@ function sideSegments(room: RoomBox, side: WallSide): SideSeg[] {
 
 // ─── Layout ──────────────────────────────────────────────────────
 
-export function layoutFloorplan(ast: FloorplanAst): FloorplanLayoutResult {
+export function layoutFloorplan(
+  ast: FloorplanAst,
+  pins?: Map<string, { x: number; y: number }>
+): FloorplanLayoutResult {
   const u = ast.unit === "ft" ? FT : 1;
   const errors: string[] = [];
   const warnings: string[] = [];
@@ -376,6 +379,10 @@ export function layoutFloorplan(ast: FloorplanAst): FloorplanLayoutResult {
       const room: RoomBox = {
         id: r.id,
         label: r.label,
+        labelSourceRange: r.labelSourceRange,
+        sizeSourceRange: r.sizeSourceRange,
+        sourceW: r.w,
+        sourceH: r.h,
         x: part.x,
         y: part.y,
         w,
@@ -385,6 +392,9 @@ export function layoutFloorplan(ast: FloorplanAst): FloorplanLayoutResult {
         areaText: "",
         fill: r.fill,
         nolabel: r.nolabel ?? false,
+        positionMode: r.rel
+          ? (r.rel.how === "right-of" || r.rel.how === "left-of" ? "move-y" : "move-x")
+          : "free",
       };
       refreshRoomBounds(room, ast.unit);
       byId.set(r.id, rooms.length);
@@ -419,6 +429,31 @@ export function layoutFloorplan(ast: FloorplanAst): FloorplanLayoutResult {
       }
       room.parts.push(part);
       refreshRoomBounds(room, ast.unit);
+    }
+  }
+
+  // Room pins use rendered bbox top-left coordinates. Convert them back to
+  // world meters using the same fixed scale/bands as the renderer, then shift
+  // every room part before openings, furniture, validation, and dimensions are
+  // derived so the whole plan remains internally consistent after a drop.
+  if (pins?.size && rooms.length) {
+    const initialMinX = Math.min(...rooms.map((room) => room.x));
+    const initialMinY = Math.min(...rooms.map((room) => room.y));
+    const ox = -initialMinX + FLOORPLAN_CONST.dimBand + FLOORPLAN_CONST.pad;
+    const oy = -initialMinY + FLOORPLAN_CONST.dimBand + FLOORPLAN_CONST.pad;
+    for (const room of rooms) {
+      const pin = pins.get(room.id);
+      if (!pin) continue;
+      const nextX = pin.x / FLOORPLAN_CONST.scale - ox;
+      const nextY = (pin.y - 40) / FLOORPLAN_CONST.scale - oy;
+      const dx = room.positionMode === "move-y" ? 0 : nextX - room.x;
+      const dy = room.positionMode === "move-x" ? 0 : nextY - room.y;
+      room.x += dx;
+      room.y += dy;
+      for (const part of room.parts) {
+        part.x += dx;
+        part.y += dy;
+      }
     }
   }
 
@@ -476,12 +511,33 @@ export function layoutFloorplan(ast: FloorplanAst): FloorplanLayoutResult {
     h: number,
     rotate: number,
     label?: string,
-    seats?: string[]
+    seats?: string[],
+    labelSourceRange?: import("../../core/types").SourceRange,
+    positionSourceRange?: import("../../core/types").SourceRange,
+    sourceX?: number,
+    sourceY?: number,
+    sourceLine?: number
   ): void => {
     const room = rooms[roomIdx]!;
     const seq = (seqByType.get(type) ?? 0) + 1;
     seqByType.set(type, seq);
-    items.push({ type, x: room.x + localX, y: room.y + localY, w, h, rotate, label, seats, roomId: room.id, seq });
+    items.push({
+      type,
+      x: room.x + localX,
+      y: room.y + localY,
+      w,
+      h,
+      rotate,
+      label,
+      labelSourceRange,
+      positionSourceRange,
+      sourceX,
+      sourceY,
+      sourceLine,
+      seats,
+      roomId: room.id,
+      seq,
+    });
   };
   const roomIdxOf = (stmt: string, roomId: string | undefined, line: number | undefined): number | undefined => {
     if (!roomId) {
@@ -502,7 +558,22 @@ export function layoutFloorplan(ast: FloorplanAst): FloorplanLayoutResult {
     if (idx === undefined) continue;
     const w = f.size ? f.size.w * u : def.w;
     const h = f.size ? f.size.h * u : def.h;
-    place(f.type, idx, f.x * u, f.y * u, w, h, f.rotate, f.label, f.seats);
+    place(
+      f.type,
+      idx,
+      f.x * u,
+      f.y * u,
+      w,
+      h,
+      f.rotate,
+      f.label,
+      f.seats,
+      f.labelSourceRange,
+      f.positionSourceRange,
+      f.x,
+      f.y,
+      f.line
+    );
   }
 
   for (const a of ast.arrays) {
@@ -687,6 +758,7 @@ export function layoutFloorplan(ast: FloorplanAst): FloorplanLayoutResult {
 
   return {
     title: ast.title,
+    titleSourceRange: ast.titleSourceRange,
     unit: ast.unit,
     north: ast.north,
     rooms,

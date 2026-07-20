@@ -1,4 +1,10 @@
-import type { InlineToken, MindmapAST, MindmapLayoutNode, MindmapLabelLine } from "../../core/types";
+import type {
+  InlineToken,
+  MindmapAST,
+  MindmapLayoutNode,
+  MindmapLabelLine,
+  SceneItem,
+} from "../../core/types";
 import { resolveMindmapTheme, type MindmapTokens } from "../../core/theme";
 import type { ResolvedTheme } from "../../core/theme";
 import {
@@ -51,7 +57,8 @@ function renderLine(
   fontSize: number,
   fontFamily: string,
   fontWeight: number,
-  theme: Theme
+  theme: Theme,
+  editableLabel = false
 ): LineRenderResult {
   const baselineY = cy + fontSize * 0.35;
 
@@ -150,6 +157,7 @@ function renderLine(
     "font-family": fontFamily,
     "font-size": fontSize,
     "font-weight": fontWeight,
+    "data-sx-role": editableLabel ? "label" : undefined,
   }, tspans.join(""));
   return { textElement, decorations };
 }
@@ -197,7 +205,8 @@ function renderNode(
   color: string,
   theme: Theme,
   fontFamily: string,
-  orderClass: boolean
+  orderClass: boolean,
+  scene?: SceneItem[]
 ): string {
   const isRoot = n.node.depth === 0;
   const isMain = n.node.depth === 1;
@@ -221,7 +230,16 @@ function renderNode(
   for (let i = 0; i < lineCount; i++) {
     const line = n.lines[i];
     const cy = topY + (i + 0.5) * lh;
-    const r = renderLine(line, textLeft, cy, fs, fontFamily, weight, theme);
+    const r = renderLine(
+      line,
+      textLeft,
+      cy,
+      fs,
+      fontFamily,
+      weight,
+      theme,
+      n.node.sourceRange !== undefined && scene !== undefined
+    );
     decorations.push(...r.decorations);
     children.push(r.textElement);
   }
@@ -251,11 +269,30 @@ function renderNode(
   // Futures Wheel: add a semantic `mm-order-N` class so nodes can be themed by
   // consequence order (order 0 = central event, 1 = 1st-order ring, …).
   const cls = orderClass ? `${baseCls} mm-order-${n.node.depth}` : baseCls;
+  const key = `node:${n.node.id}`;
+  scene?.push({
+    key,
+    kind: "node",
+    label: n.node.label,
+    labelWrite: "verbatim",
+    sourceRange: n.node.sourceRange,
+    bbox: {
+      x: n.x - n.labelWidth / 2,
+      y: n.y - n.labelHeight / 2,
+      width: n.labelWidth,
+      height: n.labelHeight,
+    },
+    editable: {
+      label: n.node.sourceRange !== undefined,
+      position: "none",
+    },
+  });
 
   return group(
     {
       class: cls,
       "data-node-id": n.node.id,
+      "data-sx-key": scene ? key : undefined,
       "data-depth": n.node.depth,
       "data-order": orderClass ? n.node.depth : undefined,
       "data-branch-idx": n.branchIndex,
@@ -269,7 +306,8 @@ function renderNode(
 export function renderMindmapAST(
   ast: MindmapAST,
   themeName = "default",
-  fontFamily = "system-ui, -apple-system, sans-serif"
+  fontFamily = "system-ui, -apple-system, sans-serif",
+  scene?: SceneItem[]
 ): string {
   const theme = resolveMindmapTheme(ast.themeOverride ?? themeName);
   const mode = modeOf(ast);
@@ -319,7 +357,7 @@ export function renderMindmapAST(
   const nodeSvgs: string[] = [];
   for (const n of layout.nodes) {
     const color = n.node.depth === 0 ? theme.centralFill : paletteColor(theme, n.branchIndex);
-    nodeSvgs.push(renderNode(n, color, theme, fontFamily, isWheel));
+    nodeSvgs.push(renderNode(n, color, theme, fontFamily, isWheel, scene));
   }
 
   const title = ast.title ?? tokensToPlainText(ast.root.tokens);
@@ -345,7 +383,10 @@ export function renderMindmapAST(
   );
 }
 
-export function renderMindmap(text: string, opts?: { theme?: string; fontFamily?: string }): string {
+export function renderMindmap(
+  text: string,
+  opts?: { theme?: string; fontFamily?: string; scene?: SceneItem[] }
+): string {
   const ast = parseMindmap(text);
-  return renderMindmapAST(ast, opts?.theme, opts?.fontFamily);
+  return renderMindmapAST(ast, opts?.theme, opts?.fontFamily, opts?.scene);
 }
