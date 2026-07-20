@@ -309,7 +309,14 @@ export function Playground({
     editorRef.current = editor;
     monacoRef.current = monaco;
     cursorDisposableRef.current?.dispose();
-    cursorDisposableRef.current = editor.onDidChangeCursorPosition(({ position }) => {
+    // Annotate the event explicitly: `monaco-editor` is only a transitive dep
+    // of `@monaco-editor/react`, so a fresh CI/Vercel `npm install` can fail to
+    // resolve its types and widen `editor` to `any` — which turns this
+    // destructured param into an implicit-any build error even though local
+    // installs type-check fine. The explicit shape is contravariantly
+    // compatible with the real ICursorPositionChangedEvent.
+    cursorDisposableRef.current = editor.onDidChangeCursorPosition(
+      ({ position }: { position: { lineNumber: number; column: number } }) => {
       const candidates = sceneRef.current.flatMap((item) => {
         const ranges = [item.sourceRange, item.positionSource?.range].filter(
           (range): range is NonNullable<typeof range> => Boolean(range),
