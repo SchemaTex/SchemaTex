@@ -10,7 +10,7 @@ export interface DiagramTypeOption {
   cluster: string;
   standard: string;
   standardAlso?: readonly string[];
-  starterDsl: string;
+  starterSlug?: string;
   capability: InteractiveCapabilities;
 }
 
@@ -23,7 +23,6 @@ export interface DiagramExampleOption {
   standard: string;
   useCases: Array<{ id: string; label: string }>;
   note?: string;
-  dsl: string;
 }
 
 interface DiagramExampleBrowserProps {
@@ -32,6 +31,8 @@ interface DiagramExampleBrowserProps {
   activeId: string;
   onSelect: (id: string) => void;
   onNew: (type: DiagramTypeOption) => void;
+  loadingId?: string | null;
+  loadError?: string | null;
   label?: string;
 }
 
@@ -59,6 +60,8 @@ export function DiagramExampleBrowser({
   activeId,
   onSelect,
   onNew,
+  loadingId = null,
+  loadError = null,
   label = 'Diagram examples',
 }: DiagramExampleBrowserProps) {
   const [query, setQuery] = useState('');
@@ -105,6 +108,8 @@ export function DiagramExampleBrowser({
           ＋ New diagram
         </button>
       </div>
+
+      {loadError && <p className="sx-example-load-error" role="alert">{loadError}</p>}
 
       {newOpen && (
         <div className="sx-new-diagram-panel">
@@ -199,14 +204,19 @@ export function DiagramExampleBrowser({
                   role="option"
                   data-example-id={example.id}
                   aria-selected={selected}
+                  aria-busy={loadingId === example.id}
                   className="sx-example-option"
                   onClick={() => onSelect(example.id)}
                 >
                   <strong>{example.title}</strong>
                   <small>
                     {/* Grouping by type already states the type in the header. */}
-                    {view === 'type' ? '' : `${example.typeName} · `}
-                    {capability ? capabilityLabel(capability) : 'source editing'}
+                    {loadingId === example.id
+                      ? 'Loading source…'
+                      : <>
+                          {view === 'type' ? '' : `${example.typeName} · `}
+                          {capability ? capabilityLabel(capability) : 'source editing'}
+                        </>}
                   </small>
                 </button>
               );

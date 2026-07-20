@@ -21,6 +21,10 @@ const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
 /** @type {import('next').NextConfig} */
 const config = {
   reactStrictMode: true,
+  // The browser E2E harness may run beside a contributor's normal dev server.
+  // Give that process its own compiler output so two Next instances never
+  // write incompatible chunks into the same `.next` directory.
+  distDir: process.env.SCHEMATEX_NEXT_DIST_DIR || '.next',
   async redirects() {
     return [
       { source: '/playground/interactive', destination: '/playground', permanent: true },
@@ -55,6 +59,8 @@ const config = {
     if (dev) {
       webpackConfig.resolve.alias['schematex$'] = path.resolve(__dirname, '../src/index.ts');
       webpackConfig.resolve.alias['schematex/ai'] = path.resolve(__dirname, '../src/ai/index.ts');
+      webpackConfig.resolve.alias['schematex/react$'] = path.resolve(__dirname, '../src/react.tsx');
+      webpackConfig.resolve.alias['schematex/export$'] = path.resolve(__dirname, '../src/export.ts');
     }
     // 676 MDX modules (54 EN + 422 locale variants + 199 examples) cause the
     // webpack PackFileCacheStrategy to OOM on Vercel's 8 GB build machine when

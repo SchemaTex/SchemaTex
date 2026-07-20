@@ -29,7 +29,7 @@ const types: DiagramTypeOption[] = registry.map((entry) => {
     cluster: entry.cluster,
     standard: entry.standard,
     standardAlso: entry.standardAlso,
-    starterDsl: starters[0]?.dsl ?? entry.type,
+    starterSlug: starters[0]?.slug,
     capability: getInteractiveCapabilities(type),
   };
 });
@@ -48,7 +48,6 @@ const galleryExamples: DiagramExampleOption[] = allExamples.flatMap((example) =>
     standard: meta.standard,
     useCases: [{ id: useCase, label: USE_CASE_LABELS[useCase].label }],
     note: example.description,
-    dsl: example.dsl,
   }];
 }).sort((a, b) => {
   const capabilityRank = (entry: DiagramExampleOption) => {
@@ -73,9 +72,20 @@ export default async function PlaygroundPage({
   searchParams: Promise<{ example?: string }>;
 }) {
   const { example } = await searchParams;
+  const initialExample = example
+    ? galleryExamples.find((entry) => entry.id === example) ?? galleryExamples[0]
+    : undefined;
+  const initialDsl = initialExample
+    ? allExamples.find((entry) => entry.slug === initialExample.id)?.dsl ?? 'flowchart'
+    : '';
   return (
     <div className="sx-playground-page">
-      <PlaygroundWorkspace examples={galleryExamples} types={types} initialId={example} />
+      <PlaygroundWorkspace
+        examples={galleryExamples}
+        types={types}
+        initialId={initialExample?.id}
+        initialDsl={initialDsl}
+      />
 
       <section className="sx-playground-seo" aria-labelledby="playground-heading">
         <p className="type-eye">/ ROUND-TRIP DIAGRAM EDITOR</p>

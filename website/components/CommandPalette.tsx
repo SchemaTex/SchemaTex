@@ -35,10 +35,17 @@ export function CommandPalette({
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     setHighlighted(Math.max(0, optionsRef.current.findIndex((example) => example.id === activeId)));
-    const frame = window.requestAnimationFrame(() => {
+    // Focus synchronously — the input is already committed when this effect
+    // runs, so we don't need to wait for a frame. The rAF retry is a fallback
+    // for the rare case another element claims focus during the same commit.
+    // Never rely on rAF alone: if it is throttled, typing lands in the editor
+    // behind the palette and silently corrupts the diagram source.
+    const focusInput = () => {
       inputRef.current?.focus();
       inputRef.current?.select();
-    });
+    };
+    focusInput();
+    const frame = window.requestAnimationFrame(focusInput);
     return () => {
       window.cancelAnimationFrame(frame);
       document.body.style.overflow = previousOverflow;

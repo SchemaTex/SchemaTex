@@ -50,6 +50,10 @@ type MonacoEditorInstance = Parameters<OnMount>[0];
 // is the original raw base64 and is still decoded, so links shared before this
 // change keep working.
 
+const MAX_SHARE_SOURCE_BYTES = 256 * 1024;
+const MAX_SHARE_ENCODED_CHARS = 384 * 1024;
+const BASE64_URL_PATTERN = /^[A-Za-z0-9_-]*$/;
+
 function bytesToBase64Url(bytes: Uint8Array): string {
   let bin = '';
   for (const b of bytes) bin += String.fromCharCode(b);
@@ -57,6 +61,9 @@ function bytesToBase64Url(bytes: Uint8Array): string {
 }
 
 function base64UrlToBytes(s: string): Uint8Array {
+  if (s.length > MAX_SHARE_ENCODED_CHARS || !BASE64_URL_PATTERN.test(s)) {
+    throw new RangeError('Share payload is too large or malformed.');
+  }
   const pad = s.length % 4 === 0 ? '' : '='.repeat(4 - (s.length % 4));
   const bin = atob(s.replace(/-/g, '+').replace(/_/g, '/') + pad);
   const bytes = new Uint8Array(bin.length);
@@ -64,15 +71,28 @@ function base64UrlToBytes(s: string): Uint8Array {
   return bytes;
 }
 
-async function collectStream(stream: ReadableStream<Uint8Array>): Promise<Uint8Array> {
+async function collectStream(
+  stream: ReadableStream<Uint8Array>,
+  maxBytes: number,
+): Promise<Uint8Array> {
   const chunks: Uint8Array[] = [];
   const reader = stream.getReader();
-  for (;;) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    if (value) chunks.push(value);
+  let total = 0;
+  try {
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      if (!value) continue;
+      total += value.length;
+      if (total > maxBytes) {
+        await reader.cancel('Share payload exceeds the safe size limit.');
+        throw new RangeError('Share payload exceeds the safe size limit.');
+      }
+      chunks.push(value);
+    }
+  } finally {
+    reader.releaseLock();
   }
-  const total = chunks.reduce((sum, chunk) => sum + chunk.length, 0);
   const out = new Uint8Array(total);
   let offset = 0;
   for (const chunk of chunks) {
@@ -85,10 +105,14 @@ async function collectStream(stream: ReadableStream<Uint8Array>): Promise<Uint8A
 /** Returns the hash fragment (without `#`) for `text`, gzipped when supported. */
 async function encodeShare(text: string): Promise<string> {
   const raw = new TextEncoder().encode(text);
+  if (raw.length > MAX_SHARE_SOURCE_BYTES) {
+    throw new RangeError('This diagram is too large for a browser-only share link.');
+  }
   if (typeof CompressionStream === 'function') {
     try {
       const gzipped = await collectStream(
         new Blob([raw as BlobPart]).stream().pipeThrough(new CompressionStream('gzip')),
+        MAX_SHARE_SOURCE_BYTES,
       );
       if (gzipped.length < raw.length) return `z=${bytesToBase64Url(gzipped)}`;
     } catch {
@@ -101,12 +125,15 @@ async function encodeShare(text: string): Promise<string> {
 async function decodeShare(hash: string): Promise<string | null> {
   try {
     if (hash.startsWith('s=')) {
-      return new TextDecoder().decode(base64UrlToBytes(hash.slice(2)));
+      const bytes = base64UrlToBytes(hash.slice(2));
+      if (bytes.length > MAX_SHARE_SOURCE_BYTES) return null;
+      return new TextDecoder().decode(bytes);
     }
     if (hash.startsWith('z=') && typeof DecompressionStream === 'function') {
       const bytes = base64UrlToBytes(hash.slice(2));
       const inflated = await collectStream(
         new Blob([bytes as BlobPart]).stream().pipeThrough(new DecompressionStream('gzip')),
+        MAX_SHARE_SOURCE_BYTES,
       );
       return new TextDecoder().decode(inflated);
     }
@@ -177,7 +204,7 @@ export function Playground({
     svgBytes: number;
   }>({ result: null, renderMs: 0, svgBytes: 0 });
   const [copyState, setCopyState] = useState<'idle' | 'done'>('idle');
-  const [shareState, setShareState] = useState<'idle' | 'done'>('idle');
+  const [shareState, setShareState] = useState<'idle' | 'done' | 'too-large'>('idle');
   const [exportOpen, setExportOpen] = useState(false);
   const [zoom, setZoom] = useState(100);
   // Canvas-weighted: with round-trip editing the diagram is the working
@@ -454,8 +481,11 @@ export function Playground({
       await navigator.clipboard.writeText(href);
       setShareState('done');
       setTimeout(() => setShareState('idle'), 1500);
-    } catch {
-      /* noop */
+    } catch (error) {
+      if (error instanceof RangeError) {
+        setShareState('too-large');
+        setTimeout(() => setShareState('idle'), 2500);
+      }
     }
   }, [initial, text]);
 
@@ -594,7 +624,7 @@ export function Playground({
         {copyState === 'done' ? 'copied' : 'copy'}
       </button>
       <button type="button" onClick={handleShare} className="pg-mini">
-        {shareState === 'done' ? 'link copied' : 'share'}
+        {shareState === 'done' ? 'link copied' : shareState === 'too-large' ? 'too large to share' : 'share'}
       </button>
       <div ref={exportRef} className="relative">
         <button
