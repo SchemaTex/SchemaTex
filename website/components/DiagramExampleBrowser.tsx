@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { InteractiveCapabilities } from 'schematex';
+import { useGroupedExamples, type BrowserView } from './useGroupedExamples';
 
 export interface DiagramTypeOption {
   type: InteractiveCapabilities['type'];
@@ -32,16 +33,6 @@ interface DiagramExampleBrowserProps {
   onSelect: (id: string) => void;
   onNew: (type: DiagramTypeOption) => void;
   label?: string;
-}
-
-type BrowserView = 'type' | 'use-case';
-
-interface GroupBucket {
-  id: string;
-  label: string;
-  /** Only set when grouping by type — the header then carries the citation. */
-  standard?: string;
-  items: DiagramExampleOption[];
 }
 
 function positionLabel(position: InteractiveCapabilities['position']): string {
@@ -78,46 +69,8 @@ export function DiagramExampleBrowser({
     () => new Map(types.map((entry) => [entry.type, entry.capability])),
     [types],
   );
-  const filtered = useMemo(() => {
-    const needle = query.trim().toLowerCase();
-    if (!needle) return examples;
-    return examples.filter((example) => {
-      const capability = capabilityByType.get(example.type);
-      const haystack = [
-        example.title,
-        example.typeName,
-        example.standard,
-        example.note,
-        capability?.reason,
-        ...example.useCases.map((entry) => entry.label),
-      ].filter(Boolean).join(' ').toLowerCase();
-      return haystack.includes(needle);
-    });
-  }, [capabilityByType, examples, query]);
-  /**
-   * The two tabs pick the *grouping axis*, so the list must actually group —
-   * otherwise both tabs render the same flat alphabetical run and the choice
-   * is meaningless. Grouping also removes the need to repeat the type and
-   * standard on every row, which is what was forcing them to truncate.
-   */
-  const grouped = useMemo(() => {
-    const buckets = new Map<string, GroupBucket>();
-    for (const example of filtered) {
-      const keys: Array<{ id: string; label: string; standard?: string }> = view === 'type'
-        ? [{ id: example.type, label: example.typeName, standard: example.standard }]
-        : example.useCases.length > 0
-          ? example.useCases
-          : [{ id: 'other', label: 'Other' }];
-      for (const key of keys) {
-        const bucket = buckets.get(key.id)
-          ?? { id: key.id, label: key.label, standard: key.standard, items: [] };
-        bucket.items.push(example);
-        buckets.set(key.id, bucket);
-      }
-    }
-    return [...buckets.values()].sort((a, b) => a.label.localeCompare(b.label));
-  }, [filtered, view]);
-  const active = examples.find((example) => example.id === activeId) ?? examples[0];
+  const { filtered, grouped } = useGroupedExamples(examples, view, query);
+  const active = examples.find((example) => example.id === activeId);
   const listRef = useRef<HTMLDivElement>(null);
   // Grouping means the active specimen is rarely near the top any more — a
   // `?example=` deep link would otherwise land on an unrelated group.
@@ -216,7 +169,8 @@ export function DiagramExampleBrowser({
 
       <label className="sx-example-mobile-select">
         <span className="sr-only">Choose an example</span>
-        <select value={active?.id} onChange={(event) => onSelect(event.currentTarget.value)}>
+        <select value={active?.id ?? ''} onChange={(event) => onSelect(event.currentTarget.value)}>
+          {!active && <option value="" disabled>Choose an example</option>}
           {filtered.map((example) => (
             <option key={example.id} value={example.id}>{mobileLabel(example)}</option>
           ))}

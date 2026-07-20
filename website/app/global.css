@@ -439,6 +439,75 @@ body {
 .sx-command-caps b { color: var(--accent); font-weight: 600; }
 .sx-command-actions { display: flex; flex-shrink: 0; margin-left: auto; align-items: center; gap: 6px; }
 
+.sx-command-palette-backdrop {
+  position: fixed;
+  z-index: 80;
+  inset: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  background: color-mix(in srgb, var(--text) 12%, transparent);
+}
+.sx-command-palette {
+  width: min(560px, calc(100vw - 32px));
+  max-height: 76vh;
+  margin-top: 12vh;
+  overflow: hidden;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r);
+  background: var(--bg);
+  box-shadow: 0 16px 48px color-mix(in srgb, var(--text) 20%, transparent);
+}
+.sx-command-palette-search {
+  display: flex;
+  height: 46px;
+  align-items: center;
+  gap: 9px;
+  padding: 0 12px;
+  border-bottom: 1px solid var(--line);
+  color: var(--text-muted);
+  font-family: var(--mono);
+}
+.sx-command-palette-search input {
+  min-width: 0;
+  flex: 1;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  outline: none;
+}
+.sx-command-palette-esc {
+  padding: 2px 5px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  font-size: 10px;
+}
+.sx-command-palette-list { max-height: calc(76vh - 46px); overflow: auto; padding: 6px 0 10px; }
+.sx-command-palette-group { padding-top: 6px; }
+.sx-command-palette-heading {
+  display: flex;
+  gap: 5px;
+  padding: 7px 12px 4px;
+  color: var(--text-muted);
+  font-family: var(--mono);
+  font-size: 10px;
+  text-transform: uppercase;
+}
+.sx-command-palette-heading span:first-child { color: var(--text); }
+.sx-command-palette-heading b { margin-left: auto; font-weight: 500; }
+.sx-command-palette-group button {
+  display: grid;
+  width: 100%;
+  grid-template-columns: 16px minmax(0, 1fr);
+  align-items: center;
+  padding: 7px 12px;
+  color: var(--text);
+  text-align: left;
+}
+.sx-command-palette-group button[data-highlighted='true'] { background: var(--accent-soft); color: var(--accent); }
+.sx-command-palette-group button strong { overflow: hidden; font-size: 12px; font-weight: 550; text-overflow: ellipsis; white-space: nowrap; }
+.sx-command-palette-empty { margin: 0; padding: 18px 12px; color: var(--text-muted); font-size: 12px; }
+
 .sx-status-bar {
   display: flex;
   height: 30px;
@@ -715,6 +784,15 @@ body {
   font-family: var(--mono);
   font-size: 10px;
 }
+.sx-empty-canvas-prompt {
+  top: 50%;
+  right: auto;
+  bottom: auto;
+  left: 50%;
+  margin: 0;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+}
 
 /* Doc-bar citation. Matches the gallery-card convention site-wide: the diagram
    name is sans (it is a name), the standard is mono + accent (it is a citation).
@@ -842,8 +920,12 @@ body {
   .sx-sidebar-toggle,
   .pg-sidebar-action { display: none; }
   .sx-command-bar { gap: 6px; padding: 0 8px; }
+  .sx-command-identity { display: none; }
   .sx-command-standard,
   .sx-command-caps { display: none; }
+  .sx-status-bar { gap: 8px; padding: 0 8px; overflow: hidden; white-space: nowrap; }
+  .sx-status-right { min-width: 0; gap: 6px; }
+  .sx-status-right > span { overflow: hidden; text-overflow: ellipsis; }
   .sx-editor-split {
     grid-template-columns: 1fr;
     grid-template-rows: minmax(0, 1fr) 1px minmax(0, 1fr);
@@ -858,7 +940,7 @@ body {
     pointer-events: none;
   }
   .sx-playground-seo { padding: 72px 20px 96px; }
-  .sx-canvas-caption { display: none; }
+  .sx-canvas-caption:not(.sx-empty-canvas-prompt) { display: none; }
 }
 
 .sx-monaco-selection {

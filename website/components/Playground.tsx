@@ -34,6 +34,8 @@ interface PlaygroundProps {
   types?: DiagramTypeOption[];
   sidebarCollapsed?: boolean;
   onToggleSidebar?: () => void;
+  onOpenLibrary?: (trigger: HTMLButtonElement) => void;
+  emptyExampleCount?: number;
 }
 
 type MonacoEditorInstance = Parameters<OnMount>[0];
@@ -163,6 +165,8 @@ export function Playground({
   types = [],
   sidebarCollapsed = false,
   onToggleSidebar,
+  onOpenLibrary,
+  emptyExampleCount,
 }: PlaygroundProps) {
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
@@ -576,6 +580,16 @@ export function Playground({
 
   const actions = (
     <>
+      {onOpenLibrary && (
+        <button
+          type="button"
+          className="pg-mini pg-library-action"
+          onClick={(event) => onOpenLibrary(event.currentTarget)}
+        >
+          library
+          <span className="pg-kbd">⌘K</span>
+        </button>
+      )}
       <button type="button" onClick={handleCopy} className="pg-mini">
         {copyState === 'done' ? 'copied' : 'copy'}
       </button>
@@ -678,7 +692,9 @@ export function Playground({
         </span>
       )}
       <div className="sx-status-right">
-        {error ? (
+        {emptyExampleCount !== undefined ? (
+          <span>⌘K to choose an example</span>
+        ) : error ? (
           <span style={{ color: 'var(--negative)' }}>✗ parse error</span>
         ) : (
           <span>
@@ -769,7 +785,12 @@ export function Playground({
               canvasClassName="flex h-full w-full items-center justify-center [&_svg]:block [&_svg]:max-h-full [&_svg]:max-w-full"
               style={{ transform: `scale(${zoom / 100})`, transformOrigin: 'center center' }}
             />
-            {error && (
+            {emptyExampleCount !== undefined && (
+              <p className="sx-canvas-caption sx-empty-canvas-prompt">
+                ⌘K to browse {emptyExampleCount} examples
+              </p>
+            )}
+            {emptyExampleCount === undefined && error && (
               <div className="sx-playground-error pointer-events-none absolute inset-x-4 top-4 z-10 rounded-sm border border-[color:var(--negative)] px-3 py-2 font-mono text-xs text-[color:var(--negative)]">
                 {error}
               </div>
