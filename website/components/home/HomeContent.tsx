@@ -10,6 +10,8 @@ import type { Dictionary } from '@/lib/i18n/dictionaries/en';
 import { allExamples } from '@/lib/examples-source';
 import { DIAGRAM_TYPE_COUNT } from '@/lib/diagram-stats';
 import { ThemedSvg } from '@/components/ThemedSvg';
+import { DiagramContactSheet } from '@/components/home/DiagramContactSheet';
+import { en } from '@/lib/i18n/dictionaries/en';
 
 // Featured cases — each tying a real diagram to the professional who ships it.
 // Order optimized for cluster coverage: relationships / industrial / corporate / causality.
@@ -120,6 +122,9 @@ export function HomeContent({
   lang: SupportedLocale;
   stars: number;
 }) {
+  const positioningProof = (
+    dict.positioning as Dictionary['positioning'] & { proof?: typeof en.positioning.proof }
+  ).proof ?? en.positioning.proof;
   // Hero rotates through the same 9 professional cases used in the grid below.
   const heroSlides: HeroSlide[] = FEATURED_SLUGS.flatMap((slug) => {
     const ex = allExamples.find((g) => g.slug === slug);
@@ -272,6 +277,8 @@ export function HomeContent({
           ))}
         </div>
       </section>
+
+      <DiagramContactSheet />
 
       {/* ────────────── PROFESSIONAL USE CASES ────────────── */}
       <section
@@ -430,18 +437,18 @@ export function HomeContent({
                   style={{ borderBottom: '1px solid var(--line)' }}
                 >
                   <th className="px-5 py-3 font-normal">{dict.positioning.columns.tool}</th>
-                  <th className="px-5 py-3 font-normal">{dict.positioning.columns.domain}</th>
-                  <th className="px-5 py-3 font-normal">{dict.positioning.columns.price}</th>
-                  <th className="px-5 py-3 font-normal">{dict.positioning.columns.forDevelopers}</th>
-                  <th className="px-5 py-3 font-normal">{dict.positioning.columns.aiFriendly}</th>
+                  <th className="px-5 py-3 font-normal">{positioningProof.columns.domain}</th>
+                  <th className="px-5 py-3 font-normal">{positioningProof.columns.standards}</th>
+                  <th className="px-5 py-3 font-normal">{positioningProof.columns.roundTrip}</th>
+                  <th className="px-5 py-3 font-normal">{positioningProof.columns.aiFriendly}</th>
                 </tr>
               </thead>
               <tbody>
                 {[
-                  { tool: 'Mermaid', dom: dict.positioning.rows.mermaid.domain, price: dict.positioning.free, dev: dict.positioning.rows.mermaid.dev, llm: dict.positioning.partial },
-                  { tool: 'D2', dom: dict.positioning.rows.d2.domain, price: dict.positioning.free, dev: dict.positioning.rows.d2.dev, llm: dict.positioning.partial },
-                  { tool: 'WaveDrom', dom: dict.positioning.rows.wavedrom.domain, price: dict.positioning.free, dev: dict.positioning.rows.wavedrom.dev, llm: dict.positioning.partial },
-                  { tool: 'PlantUML', dom: dict.positioning.rows.plantuml.domain, price: dict.positioning.free, dev: dict.positioning.rows.plantuml.dev, llm: '—' },
+                  { tool: 'Mermaid', ...positioningProof.rows.mermaid },
+                  { tool: 'D2', ...positioningProof.rows.d2 },
+                  { tool: 'draw.io / Excalidraw', ...positioningProof.rows.canvas },
+                  { tool: 'PlantUML', ...positioningProof.rows.plantuml },
                 ].map((row) => (
                   <tr
                     key={row.tool}
@@ -449,10 +456,10 @@ export function HomeContent({
                     className="text-fd-muted-foreground"
                   >
                     <td className="px-5 py-3 text-fd-foreground">{row.tool}</td>
-                    <td className="px-5 py-3">{row.dom}</td>
-                    <td className="px-5 py-3">{row.price}</td>
-                    <td className="px-5 py-3">{row.dev}</td>
-                    <td className="px-5 py-3">{row.llm}</td>
+                    <td className="px-5 py-3">{row.domain}</td>
+                    <td className="px-5 py-3">{row.standards}</td>
+                    <td className="px-5 py-3">{row.roundTrip}</td>
+                    <td className="px-5 py-3">{row.ai}</td>
                   </tr>
                 ))}
                 <tr style={{ background: 'var(--accent-soft)', color: 'var(--accent-ink)' }}>
@@ -462,10 +469,10 @@ export function HomeContent({
                     </span>
                     schematex
                   </td>
-                  <td className="px-5 py-3">{dict.positioning.schematex.domain(DIAGRAM_TYPE_COUNT)}</td>
-                  <td className="px-5 py-3 font-semibold">{dict.positioning.free}</td>
-                  <td className="px-5 py-3">{dict.positioning.schematex.dev}</td>
-                  <td className="px-5 py-3 font-semibold">{dict.positioning.schematex.ai}</td>
+                  <td className="px-5 py-3">{positioningProof.schematex.domain(DIAGRAM_TYPE_COUNT)}</td>
+                  <td className="px-5 py-3 font-semibold">{positioningProof.schematex.standards(DIAGRAM_TYPE_COUNT)}</td>
+                  <td className="px-5 py-3">{positioningProof.schematex.roundTrip}</td>
+                  <td className="px-5 py-3 font-semibold">{positioningProof.schematex.ai}</td>
                 </tr>
               </tbody>
             </table>
