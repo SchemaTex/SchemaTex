@@ -57,6 +57,7 @@ export {
 } from "./prompt-context";
 
 export type { Example, GetExamplesOptions } from "./examples";
+export { getExampleBySlug } from "./examples";
 export type { GenerationProfile } from "./profiles";
 export type { SyntaxDetail, SyntaxDoc } from "./syntax";
 export type { SchematexValidationError } from "./errors";

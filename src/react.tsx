@@ -167,13 +167,22 @@ function defaultLabelEditorStyle(state: LabelEditorState): CSSProperties {
 }
 
 const INTERACTIVE_STYLES = `
-.schematex-interactive-editor [data-sx-key^='node:'],
-.schematex-interactive-editor [data-sx-key='title'] { cursor: grab; }
+.schematex-interactive-editor .sx-interactive-movable {
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+.schematex-interactive-editor [data-sx-interactive-position='move-x'] { cursor: ew-resize; }
+.schematex-interactive-editor [data-sx-interactive-position='move-y'] { cursor: ns-resize; }
 .schematex-interactive-editor [data-sx-role='label'] { cursor: text; }
-.schematex-interactive-editor .sx-interactive-selected > .sx-fc-node,
-.schematex-interactive-editor .sx-interactive-selected > path {
-  stroke: var(--schematex-editor-accent, #2457f5) !important;
-  stroke-width: 2.5 !important;
+.schematex-interactive-editor [data-sx-key],
+.schematex-interactive-editor [data-sx-owner] {
+  transition: filter .12s ease, opacity .12s ease;
+}
+.schematex-interactive-editor .sx-interactive-selected:not([data-sx-role='label']) {
+  filter:
+    drop-shadow(0 0 1px var(--schematex-editor-accent, #2457f5))
+    drop-shadow(0 0 1px var(--schematex-editor-accent, #2457f5));
 }
 .schematex-interactive-editor .sx-interactive-selected[data-sx-role='label'] {
   fill: var(--schematex-editor-accent, #2457f5) !important;
@@ -182,7 +191,10 @@ const INTERACTIVE_STYLES = `
 .schematex-interactive-editor [data-sx-dragging='true'] { cursor: grabbing; opacity: .82; }
 .schematex-interactive-editor .sx-label-editing { opacity: 0; }
 @media (prefers-reduced-motion: reduce) {
-  .schematex-interactive-editor * { scroll-behavior: auto !important; }
+  .schematex-interactive-editor * {
+    scroll-behavior: auto !important;
+    transition-duration: 0s !important;
+  }
 }
 `;
 
@@ -216,9 +228,24 @@ export function InteractiveSchematexDiagram({
   const hostRef = useRef<HTMLDivElement>(null);
   const sourceRef = useRef(value);
   const selectedRef = useRef<SceneItem | null>(null);
+  const onChangeRef = useRef(onChange);
+  const onSelectRef = useRef(onSelect);
+  const onPreviewChangeRef = useRef(onPreviewChange);
+  const cancelLabelEditRef = useRef<(() => void) | null>(null);
   const [renderSource, setRenderSource] = useState(value);
   const [labelEditor, setLabelEditor] = useState<LabelEditorState | null>(null);
   sourceRef.current = value;
+  onChangeRef.current = onChange;
+  onSelectRef.current = onSelect;
+  onPreviewChangeRef.current = onPreviewChange;
+  const hasPreviewHandler = onPreviewChange !== undefined;
+
+  // A fixed-position editor is anchored to one exact render. Close it as soon
+  // as any controlled render input changes instead of waiting for a debounced
+  // SVG replacement to detach the old interaction listeners.
+  useEffect(() => {
+    cancelLabelEditRef.current?.();
+  }, [fontFamily, padding, readOnly, theme, type, value]);
 
   useEffect(() => {
     if (debounceMs <= 0) {
@@ -244,8 +271,8 @@ export function InteractiveSchematexDiagram({
 
   const selectItem = useCallback((item: SceneItem | null) => {
     selectedRef.current = item;
-    onSelect?.(item);
-  }, [onSelect]);
+    onSelectRef.current?.(item);
+  }, []);
 
   useEffect(() => {
     if (readOnly || !result.ok || scene.length === 0) return;
@@ -256,6 +283,7 @@ export function InteractiveSchematexDiagram({
       getScene: () => ({ rev: revision, items: scene }),
       onSelect: selectItem,
       onRequestLabelEdit: (item, anchor, commit, cancel) => {
+        cancelLabelEditRef.current = cancel;
         setLabelEditor({
           item,
           anchor,
@@ -265,16 +293,20 @@ export function InteractiveSchematexDiagram({
           cancel,
         });
       },
-      onSourceChange: (source, reason) => {
-        onChange(source, { reason, item: selectedRef.current });
+      onLabelEditEnd: () => {
+        cancelLabelEditRef.current = null;
         setLabelEditor(null);
       },
-      onSourcePreview: onPreviewChange
-        ? (source, reason) => onPreviewChange(source, { reason, item: selectedRef.current })
+      onSourceChange: (source, reason) => {
+        onChangeRef.current(source, { reason, item: selectedRef.current });
+        setLabelEditor(null);
+      },
+      onSourcePreview: hasPreviewHandler
+        ? (source, reason) => onPreviewChangeRef.current?.(source, { reason, item: selectedRef.current })
         : undefined,
     });
     return detach;
-  }, [onChange, onPreviewChange, readOnly, result.ok, revision, scene, selectItem]);
+  }, [hasPreviewHandler, readOnly, result.ok, revision, scene, selectItem]);
 
   useEffect(() => {
     if (selectedKey === undefined) return;

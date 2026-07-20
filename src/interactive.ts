@@ -33,6 +33,8 @@ export interface InteractionOptions {
     commit: (text: string) => void,
     cancel: () => void
   ) => void;
+  /** Called whenever an active label editor commits, cancels, or is detached. */
+  onLabelEditEnd?: () => void;
   /**
    * Transient, revision-guarded position source produced during a drag.
    * The host may display it without rerendering the controlled SVG. `null`
@@ -426,6 +428,30 @@ export function attachInteraction(
     return scene.rev === sourceRevision(options.getSource()) ? scene : null;
   };
 
+  // Renderers describe capability in SceneItem; interaction state is added at
+  // runtime so default SVG output remains byte-for-byte free of editor chrome.
+  const decoratedElements = Array.from(
+    svg.querySelectorAll<SVGElement>("[data-sx-key], [data-sx-owner]")
+  );
+  const initialScene = currentScene();
+  const previousTouchAction = svg.style.touchAction;
+  let hasMovableElement = false;
+  if (initialScene) {
+    const itemsByKey = new Map(initialScene.items.map((item) => [item.key, item]));
+    for (const element of decoratedElements) {
+      const owned = itemsByKey.get(element.getAttribute("data-sx-owner") ?? "");
+      const keyed = itemsByKey.get(element.getAttribute("data-sx-key") ?? "");
+      const movable = owned && owned.editable.position !== "none" ? owned
+        : keyed && keyed.editable.position !== "none" ? keyed
+        : null;
+      if (!movable) continue;
+      hasMovableElement = true;
+      element.classList.add("sx-interactive-movable");
+      element.setAttribute("data-sx-interactive-position", movable.editable.position);
+    }
+  }
+  if (hasMovableElement) svg.style.touchAction = "none";
+
   const select = (hit: { item: SceneItem; element: SVGElement } | null): void => {
     if (selected !== hit?.element) {
       svg.querySelectorAll(".sx-interactive-selected").forEach((element) =>
@@ -478,6 +504,7 @@ export function attachInteraction(
       settled = true;
       label.classList.remove("sx-label-editing");
       cancelActiveLabelEdit = null;
+      options.onLabelEditEnd?.();
     };
     cancelActiveLabelEdit = cancel;
     options.onRequestLabelEdit(hit.item, labelEditAnchor(label), (text) => {
@@ -530,7 +557,7 @@ export function attachInteraction(
   };
 
   const onPointerDown = (event: PointerEvent): void => {
-    if (event.button !== 0 || event.pointerType === "touch") return;
+    if (event.button !== 0 || !event.isPrimary) return;
     const scene = currentScene();
     if (!scene) return;
     const hit = sceneItemFor(eventElement(event.target), scene.items, { preferOwner: true });
@@ -563,7 +590,13 @@ export function attachInteraction(
       moved: false,
     };
     select(hit);
-    hit.element.setPointerCapture(event.pointerId);
+    event.preventDefault();
+    try {
+      hit.element.setPointerCapture(event.pointerId);
+    } catch {
+      // Synthetic pointers and a node removed during the gesture may not be
+      // eligible for capture. The SVG-level listeners still complete the drag.
+    }
   };
 
   const onPointerMove = (event: PointerEvent): void => {
@@ -630,6 +663,11 @@ export function attachInteraction(
     finishDrag(false);
     cancelActiveLabelEdit?.();
     selected?.classList.remove("sx-interactive-selected");
+    for (const element of decoratedElements) {
+      element.classList.remove("sx-interactive-movable");
+      element.removeAttribute("data-sx-interactive-position");
+    }
+    svg.style.touchAction = previousTouchAction;
     svg.removeEventListener("click", onClick);
     svg.removeEventListener("dblclick", onDoubleClick);
     svg.removeEventListener("pointerdown", onPointerDown);

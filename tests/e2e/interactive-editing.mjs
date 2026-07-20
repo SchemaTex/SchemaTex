@@ -3,6 +3,7 @@ import { spawn } from "node:child_process";
 import { connect } from "node:net";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
+import { gzipSync } from "node:zlib";
 import { chromium } from "playwright";
 import { INTERACTIVE_FIXTURES } from "./interactive-fixtures.mjs";
 
@@ -11,6 +12,7 @@ const root = resolve(here, "../..");
 const website = resolve(root, "website");
 const baseUrl = process.env.SCHEMATEX_E2E_BASE_URL ?? "http://127.0.0.1:3101";
 const previewUrl = new URL("/playground", baseUrl).toString();
+const SERVER_READY_TIMEOUT_MS = 300_000;
 
 let server;
 let serverLog = "";
@@ -43,7 +45,7 @@ async function isListening() {
 }
 
 async function waitForExistingServer() {
-  const deadline = Date.now() + 120_000;
+  const deadline = Date.now() + SERVER_READY_TIMEOUT_MS;
   while (Date.now() < deadline) {
     if (await isReady()) return true;
     await new Promise((resolveWait) => setTimeout(resolveWait, 500));
@@ -66,7 +68,11 @@ async function waitForServer() {
   server = spawn("npm", ["run", "dev", "--", "-p", url.port || "3101"], {
     cwd: website,
     detached: process.platform !== "win32",
-    env: { ...process.env, NEXT_TELEMETRY_DISABLED: "1" },
+    env: {
+      ...process.env,
+      NEXT_TELEMETRY_DISABLED: "1",
+      SCHEMATEX_NEXT_DIST_DIR: process.env.SCHEMATEX_NEXT_DIST_DIR ?? ".next-e2e",
+    },
     stdio: ["ignore", "pipe", "pipe"],
   });
   const remember = (chunk) => {
@@ -75,7 +81,7 @@ async function waitForServer() {
   server.stdout?.on("data", remember);
   server.stderr?.on("data", remember);
 
-  const deadline = Date.now() + 120_000;
+  const deadline = Date.now() + SERVER_READY_TIMEOUT_MS;
   while (Date.now() < deadline) {
     if (await isReady()) return;
     if (server.exitCode != null) break;
@@ -187,6 +193,27 @@ try {
   await page.goto(previewUrl, { waitUntil: "domcontentloaded" });
   console.log("e2e: page loaded");
   await page.locator(".monaco-editor").waitFor({ state: "visible", timeout: 120_000 });
+  const lazyExampleId = "mindmap-product-launch";
+  await page.locator(`[data-example-id="${lazyExampleId}"]`).click();
+  await page.waitForFunction(
+    (id) => new URL(window.location.href).searchParams.get("example") === id,
+    lazyExampleId,
+  );
+  await page.waitForFunction(() =>
+    (window.monaco?.editor.getModels()[0]?.getValue() ?? "").includes("Product Launch Plan"),
+  );
+  assert.equal(await page.locator(`[data-example-id="${lazyExampleId}"]`).getAttribute("aria-busy"), "false");
+  console.log("e2e: lazy specimen source passed");
+
+  await page.getByRole("button", { name: "＋ New diagram" }).click();
+  await page.getByPlaceholder("Type or standard").fill("Decision tree");
+  await page.locator(".sx-new-diagram-list button", { hasText: "Decision tree" }).first().click();
+  await page.locator('[data-example-id="new:decisiontree"]').waitFor({ state: "visible" });
+  await page.waitForFunction(() =>
+    /^decisiontree\b/m.test(window.monaco?.editor.getModels()[0]?.getValue() ?? ""),
+  );
+  console.log("e2e: lazy new-diagram starter passed");
+
   await loadDiagram("flowchart-td");
   await page.locator('[data-sx-key="node:C"]').waitFor({ state: "visible" });
 
@@ -253,6 +280,14 @@ try {
     document.querySelector('[data-sx-key="node:C"] [data-sx-role="label"]')?.textContent
       === "Render preview",
   );
+
+  // A source/scene replacement must close the fixed-position label portal.
+  await page.locator('[data-sx-key="node:C"]').dblclick();
+  await page.locator(".sx-label-editor").waitFor({ state: "visible" });
+  await loadDiagram("state");
+  await page.locator('[data-sx-key="node:Review"]').waitFor({ state: "visible" });
+  await page.locator(".sx-label-editor").waitFor({ state: "detached" });
+  await loadDiagram("flowchart-td");
 
   const draggable = page.locator('[data-sx-key="node:D"]');
   const box = await draggable.boundingBox();
@@ -367,6 +402,8 @@ try {
   const sofa = page.locator('.sx-fp-item[data-furniture="sofa"]');
   const livingRoom = page.locator('[data-sx-key="node:living"]');
   await sofa.waitFor({ state: "visible" });
+  assert.equal(await sofa.getAttribute("data-sx-interactive-position"), "free");
+  assert.equal(await sofa.evaluate((node) => getComputedStyle(node).cursor), "grab");
   const sofaBox = await sofa.boundingBox();
   assert.ok(sofaBox);
   const sofaTransformBefore = await sofa.getAttribute("transform");
@@ -481,7 +518,66 @@ try {
     assert.equal(await page.locator(".dot-grid pre").count(), 0, `${exampleId} should render`);
   }
   console.log("e2e: render-audit specimens passed");
+
+  // Touch pointers use the same revision-guarded position writer. Synthetic
+  // PointerEvents keep this deterministic in headless Chrome while exercising
+  // the browser path that was previously rejected outright.
+  await loadDiagram("flowchart-td");
+  const touchNode = page.locator('[data-sx-key="node:D"]');
+  await page.waitForFunction(() =>
+    document.querySelector('[data-sx-key="node:D"]')
+      ?.getAttribute("data-sx-interactive-position") === "free",
+  );
+  const touchBox = await touchNode.boundingBox();
+  assert.ok(touchBox);
+  const touchX = touchBox.x + touchBox.width / 2;
+  const touchY = touchBox.y + touchBox.height / 2;
+  assert.equal(
+    await page.locator(".dot-grid svg").evaluate((node) => getComputedStyle(node).touchAction),
+    "none",
+  );
+  await touchNode.dispatchEvent("pointerdown", {
+    pointerId: 71,
+    pointerType: "touch",
+    isPrimary: true,
+    button: 0,
+    buttons: 1,
+    clientX: touchX,
+    clientY: touchY,
+  });
+  await page.locator(".dot-grid svg").dispatchEvent("pointermove", {
+    pointerId: 71,
+    pointerType: "touch",
+    isPrimary: true,
+    button: -1,
+    buttons: 1,
+    clientX: touchX + 54,
+    clientY: touchY + 36,
+  });
+  assert.match(await touchNode.getAttribute("transform"), /translate\(/);
+  await page.locator(".dot-grid svg").dispatchEvent("pointerup", {
+    pointerId: 71,
+    pointerType: "touch",
+    isPrimary: true,
+    button: 0,
+    buttons: 0,
+    clientX: touchX + 54,
+    clientY: touchY + 36,
+  });
+  await page.waitForFunction(() => /^pin D /m.test(window.monaco?.editor.getModels()[0]?.getValue() ?? ""));
+  console.log("e2e: touch drag passed");
   }
+
+  // A tiny gzip fragment can expand dramatically. Oversized decoded source is
+  // rejected and the route's normal example remains usable.
+  const oversizedShare = gzipSync("x".repeat(300_000)).toString("base64url");
+  await page.goto(`${previewUrl}#z=${oversizedShare}`, { waitUntil: "domcontentloaded" });
+  await page.locator(".monaco-editor").waitFor({ state: "visible", timeout: 120_000 });
+  const safeSourceLength = await page.evaluate(
+    () => window.monaco?.editor.getModels()[0]?.getValueLength() ?? Number.MAX_SAFE_INTEGER,
+  );
+  assert.ok(safeSourceLength < 256 * 1024, "oversized share source must be rejected");
+  console.log("e2e: oversized share rejected");
 
   assert.deepEqual(browserErrors, []);
   console.log("interactive editing e2e: WYSIWYG edit, live edges, free drag, and examples passed");
