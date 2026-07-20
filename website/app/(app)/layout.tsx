@@ -27,7 +27,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
             href={REPO_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-fd-muted-foreground hover:text-fd-foreground"
+            className="sx-app-header-github text-fd-muted-foreground hover:text-fd-foreground"
           >
             GitHub
           </a>

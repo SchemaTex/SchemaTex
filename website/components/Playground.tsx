@@ -7,8 +7,8 @@ import { InteractiveSchematexDiagram } from 'schematex/react';
 import { svgToPngBlob, downloadBlob, printSvgAsPdf, withWhiteSvgBackground } from 'schematex/export';
 import type { Monaco, OnMount } from '@monaco-editor/react';
 import { useTheme } from 'next-themes';
-import { DiagramFrame } from './DiagramFrame';
 import type { DiagramTypeOption } from './DiagramExampleBrowser';
+import { PlaygroundShell } from './PlaygroundShell';
 
 const MonacoEditor = dynamic(() => import('@monaco-editor/react'), {
   ssr: false,
@@ -424,6 +424,7 @@ export function Playground({
     std: typeMeta?.standard ?? 'source-defined',
     stdAlso: typeMeta?.standardAlso,
   };
+  const fullCitation = [`${meta.name} · § ${meta.std}`, ...(meta.stdAlso ?? [])].join('\n');
   const capability = activeType ? getInteractiveCapabilities(activeType) : null;
   const lineCount = useMemo(() => text.split('\n').length, [text]);
   const charCount = useMemo(() => text.length, [text]);
@@ -637,77 +638,74 @@ export function Playground({
     </>
   );
 
-  const footer = (
-    <div
-      className="flex shrink-0 items-center justify-between px-3 py-2 font-mono text-[11px] text-fd-muted-foreground"
-      style={{ background: 'var(--bg)', borderTop: '1px solid var(--line)' }}
-    >
-      <span>
-        UTF-8 · LF · {lineCount} line{lineCount === 1 ? '' : 's'} · {charCount} chars
-      </span>
-      <span>
+  const selectedRange = formatSceneRange(selectedItem);
+
+  const identity = (
+    <>
+      <div className="sx-command-identity" title={fullCitation}>
+        <span className="sx-command-name">{meta.name}</span>
+        <span className="sx-command-standard">§ {meta.std}</span>
+      </div>
+      {capability && (
+        <div className="sx-command-caps">
+          <span>
+            <b>{capability.text.length > 0 ? '✎' : '⌨'}</b>{' '}
+            {capability.text.length > 0 ? capability.text.join(' · ') : 'source editing'}
+          </span>
+          <span
+            className={capability.reason ? 'sx-capability-explained' : undefined}
+            title={capability.reason}
+            tabIndex={capability.reason ? 0 : undefined}
+          >
+            <b>{positionGlyph(capability.position)}</b> {positionText(capability.position)}
+          </span>
+        </div>
+      )}
+    </>
+  );
+
+  const status = (
+    <>
+      <span>{lineCount} line{lineCount === 1 ? '' : 's'} · {charCount} chars</span>
+      {selectedItem && (
+        <span className="sx-status-selection" aria-live="polite">
+          <b>▣</b> {selectedItem.key}
+          {selectedRange && <span>{selectedRange}</span>}
+          <span>
+            {selectedItem.editable.label ? '✎ label' : 'label locked'} ·{' '}
+            {positionGlyph(selectedItem.editable.position)} {positionText(selectedItem.editable.position)}
+          </span>
+        </span>
+      )}
+      <div className="sx-status-right">
         {error ? (
           <span style={{ color: 'var(--negative)' }}>✗ parse error</span>
         ) : (
-          <>
+          <span>
             <span style={{ color: 'var(--positive)' }}>✓ parsed</span>
             <span className="mx-1.5 opacity-40">·</span>
             <span style={{ color: 'var(--accent)' }} suppressHydrationWarning>{renderMs.toFixed(1)} ms</span>
             <span className="mx-1.5 opacity-40">·</span>
-            {formatBytes(svgBytes)} SVG
-          </>
+            {formatBytes(svgBytes)}
+          </span>
         )}
-      </span>
-    </div>
+        <div className="sx-status-zoom">
+          <button type="button" onClick={() => setZoom((z) => Math.max(25, z - 25))} aria-label="Zoom out">−</button>
+          <span style={{ minWidth: 34, textAlign: 'center' }}>{zoom}%</span>
+          <button type="button" onClick={() => setZoom((z) => Math.min(200, z + 25))} aria-label="Zoom in">+</button>
+        </div>
+      </div>
+    </>
   );
 
-  const selectedRange = formatSceneRange(selectedItem);
-
   return (
-    <DiagramFrame
-      diagram={meta.name}
-      standard={meta.std}
-      standardAlso={meta.stdAlso}
+    <PlaygroundShell
+      identity={identity}
       actions={actions}
-      footer={footer}
+      status={status}
       className={fill ? 'h-full' : ''}
       style={fill ? undefined : { height }}
     >
-      {capability && (
-        <div className="sx-capability-bar" aria-label="Editing contract">
-          <div className="sx-capability-summary">
-            {capability.text.length > 0 ? (
-              <span><b>✎</b> {capability.text.join(' · ')}</span>
-            ) : (
-              <span><b>⌨</b> source editing</span>
-            )}
-            {/* The reason is a full sentence and belongs on hover — inline it
-                truncates to a half-thought. The glyph + short label carry the
-                contract; `⃠` is reserved for an actual refusal so it keeps
-                meaning something. */}
-            <span
-              className={capability.reason ? 'sx-capability-position sx-capability-explained' : 'sx-capability-position'}
-              title={capability.reason}
-              tabIndex={capability.reason ? 0 : undefined}
-            >
-              <b>{positionGlyph(capability.position)}</b> {positionText(capability.position)}
-            </span>
-          </div>
-          {capability.reason && (
-            <p className="sx-capability-reason" title={capability.reason}>{capability.reason}</p>
-          )}
-          {selectedItem && (
-            <div className="sx-capability-selection" aria-live="polite">
-              <span>▣ {selectedItem.key}</span>
-              <span>
-                {selectedItem.editable.label ? '✎ label' : 'label locked'} ·{' '}
-                {positionGlyph(selectedItem.editable.position)} {positionText(selectedItem.editable.position)}
-              </span>
-              {selectedRange && <span>{selectedRange}</span>}
-            </div>
-          )}
-        </div>
-      )}
       <div
         ref={splitRef}
         className="sx-editor-split"
@@ -754,38 +752,6 @@ export function Playground({
           title="Drag to resize source and preview"
         />
         <div className="sx-preview-pane">
-          <div
-            className="flex shrink-0 items-center justify-between px-3 py-1.5 font-mono text-[11px]"
-            style={{ borderBottom: '1px solid var(--line)', color: 'var(--text-muted)', background: 'var(--fill)' }}
-          >
-            <span>↘ preview</span>
-            <div className="flex items-center gap-1">
-              <button
-                type="button"
-                onClick={() => setZoom((z) => Math.max(25, z - 25))}
-                className="flex size-5 items-center justify-center transition hover:text-[color:var(--text)]"
-                aria-label="Zoom out"
-              >
-                −
-              </button>
-              <button
-                type="button"
-                onClick={() => setZoom(100)}
-                className="min-w-9 text-center"
-                title="Reset zoom (⌘0)"
-              >
-                {zoom}%
-              </button>
-              <button
-                type="button"
-                onClick={() => setZoom((z) => Math.min(200, z + 25))}
-                className="flex size-5 items-center justify-center transition hover:text-[color:var(--text)]"
-                aria-label="Zoom in"
-              >
-                +
-              </button>
-            </div>
-          </div>
           <div ref={canvasRef} className="dot-grid relative flex flex-1 items-center justify-center overflow-auto p-6">
             <InteractiveSchematexDiagram
               key={`${rendererTheme}:${renderEpoch}`}
@@ -811,6 +777,6 @@ export function Playground({
           </div>
         </div>
       </div>
-    </DiagramFrame>
+    </PlaygroundShell>
   );
 }
