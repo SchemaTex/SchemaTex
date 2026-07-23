@@ -9,6 +9,7 @@ import type { Monaco, OnMount } from '@monaco-editor/react';
 import { useTheme } from 'next-themes';
 import type { DiagramTypeOption } from './DiagramExampleBrowser';
 import { PlaygroundShell } from './PlaygroundShell';
+import { UserSay } from '@/lib/usersay';
 
 const MonacoEditor = dynamic(() => import('@monaco-editor/react'), {
   ssr: false,
@@ -501,6 +502,13 @@ export function Playground({
     return exported.ok ? withWhiteSvgBackground(exported.svg) : null;
   }, [text]);
 
+  // Fires UserSay first_export on the first successful export (any format).
+  // UserSay deduplicates "first_" events server-side; callers fire it on
+  // every successful export and let the backend decide.
+  const trackExport = useCallback(() => {
+    UserSay.trigger('first_export');
+  }, []);
+
   const handleDownloadSvg = useCallback(() => {
     const exportSvg = getExportSvg();
     if (!exportSvg) return;
@@ -513,7 +521,8 @@ export function Playground({
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-  }, [getExportSvg, meta.name]);
+    trackExport();
+  }, [getExportSvg, meta.name, trackExport]);
 
   const handleDownloadPng = useCallback(async () => {
     const exportSvg = getExportSvg();
@@ -521,15 +530,19 @@ export function Playground({
     try {
       const blob = await svgToPngBlob(exportSvg, { scale: 2, background: 'white' });
       downloadBlob(blob, `${meta.name || 'diagram'}.png`);
+      trackExport();
     } catch {
       /* noop — browser may block in certain environments */
     }
-  }, [getExportSvg, meta.name]);
+  }, [getExportSvg, meta.name, trackExport]);
 
   const handlePrintPdf = useCallback(() => {
     const exportSvg = getExportSvg();
-    if (exportSvg) printSvgAsPdf(exportSvg, meta.name || 'diagram');
-  }, [getExportSvg, meta.name]);
+    if (exportSvg) {
+      printSvgAsPdf(exportSvg, meta.name || 'diagram');
+      trackExport();
+    }
+  }, [getExportSvg, meta.name, trackExport]);
 
   const handleSplitPointerDown = useCallback((event: ReactPointerEvent<HTMLButtonElement>) => {
     if (!splitRef.current || window.matchMedia('(max-width: 767px)').matches) return;
