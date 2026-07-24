@@ -252,6 +252,7 @@ export function attachViewport(
   let detached = false;
   let panGesture: PanGesture | null = null;
   let pinchGesture: PinchGesture | null = null;
+  let hasSuccessfulFit = false;
   let suppressPanClick = false;
   const activePointers = new Map<number, ActivePointer>();
 
@@ -312,6 +313,7 @@ export function attachViewport(
   const fit = (): void => {
     const measured = refreshMetrics();
     if (!measured) return;
+    hasSuccessfulFit = true;
     const scale = clamp(
       Math.min(
         measured.frameWidth / measured.contentWidth,
@@ -363,6 +365,7 @@ export function attachViewport(
   };
 
   const onPointerDown = (event: PointerEvent): void => {
+    suppressPanClick = false;
     if (event.button !== 0) return;
     const point = localPoint(frame, event.clientX, event.clientY);
     if (event.pointerType === "touch") {
@@ -502,6 +505,10 @@ export function attachViewport(
     ?? (typeof ResizeObserver === "undefined" ? undefined : ResizeObserver);
   const resizeObserver = ResizeObserverConstructor
     ? new ResizeObserverConstructor(() => {
+        if (settings.initialFit === "contain" && !hasSuccessfulFit) {
+          fit();
+          return;
+        }
         refreshMetrics();
         renderState(state);
       })

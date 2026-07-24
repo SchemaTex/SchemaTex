@@ -25,7 +25,9 @@ class FakeElement extends EventTarget {
   clientHeight = 0;
   scrollWidth = 0;
   scrollHeight = 0;
-  ownerDocument = { defaultView: undefined };
+  ownerDocument: {
+    defaultView: { ResizeObserver?: typeof ResizeObserver } | undefined;
+  } = { defaultView: undefined };
   svg: FakeElement | null = null;
   capturedPointers: number[] = [];
 
@@ -35,6 +37,10 @@ class FakeElement extends EventTarget {
 
   getBoundingClientRect(): Rect {
     return { ...this.rect };
+  }
+
+  setBoundingClientRect(rect: Rect): void {
+    this.rect = rect;
   }
 
   querySelector<T>(): T | null {
@@ -51,18 +57,67 @@ class FakeElement extends EventTarget {
   releasePointerCapture(): void {}
 }
 
-function fixture(options: Parameters<typeof attachViewport>[2] = {}): {
+class FakeResizeObserver {
+  constructor(private readonly callback: ResizeObserverCallback) {}
+
+  observe(): void {}
+  disconnect(): void {}
+
+  trigger(): void {
+    this.callback([], this as unknown as ResizeObserver);
+  }
+}
+
+function fixture(
+  options: Parameters<typeof attachViewport>[2] = {},
+  {
+    initiallyHidden = false,
+    observeResize = false,
+  }: {
+    initiallyHidden?: boolean;
+    observeResize?: boolean;
+  } = {},
+): {
   controller: ViewportController;
   frame: FakeElement;
   host: FakeElement;
+  svg: FakeElement;
   changes: ViewportState[];
+  resizeObserver: FakeResizeObserver | null;
 } {
-  const frame = new FakeElement({ left: 0, top: 0, width: 200, height: 200 });
-  frame.clientWidth = 200;
-  frame.clientHeight = 200;
-  const host = new FakeElement({ left: 0, top: 0, width: 400, height: 200 });
-  const svg = new FakeElement({ left: 0, top: 0, width: 400, height: 200 });
+  const frame = new FakeElement({
+    left: 0,
+    top: 0,
+    width: initiallyHidden ? 0 : 200,
+    height: initiallyHidden ? 0 : 200,
+  });
+  frame.clientWidth = initiallyHidden ? 0 : 200;
+  frame.clientHeight = initiallyHidden ? 0 : 200;
+  const host = new FakeElement({
+    left: 0,
+    top: 0,
+    width: initiallyHidden ? 0 : 400,
+    height: initiallyHidden ? 0 : 200,
+  });
+  const svg = new FakeElement({
+    left: 0,
+    top: 0,
+    width: initiallyHidden ? 0 : 400,
+    height: initiallyHidden ? 0 : 200,
+  });
   host.svg = svg;
+  let resizeObserver: FakeResizeObserver | null = null;
+  if (observeResize) {
+    class FixtureResizeObserver extends FakeResizeObserver {
+      constructor(callback: ResizeObserverCallback) {
+        super(callback);
+        resizeObserver = this;
+      }
+    }
+    frame.ownerDocument.defaultView = {
+      ResizeObserver: FixtureResizeObserver as unknown as typeof ResizeObserver,
+    };
+  }
   const changes: ViewportState[] = [];
   const controller = attachViewport(
     frame as unknown as HTMLElement,
@@ -70,7 +125,7 @@ function fixture(options: Parameters<typeof attachViewport>[2] = {}): {
     options,
     (state) => changes.push(state),
   );
-  return { controller, frame, host, changes };
+  return { controller, frame, host, svg, changes, resizeObserver };
 }
 
 function pointerEvent(
@@ -160,6 +215,32 @@ describe("attachViewport", () => {
     expect(controller.getState().scale).toBe(0.5);
   });
 
+  it("defers the initial contain fit until a hidden frame has non-zero size", () => {
+    const {
+      controller,
+      frame,
+      host,
+      svg,
+      resizeObserver,
+    } = fixture({}, { initiallyHidden: true, observeResize: true });
+
+    expect(controller.getState()).toEqual({ scale: 1, x: 0, y: 0 });
+
+    frame.setBoundingClientRect({ left: 0, top: 0, width: 200, height: 200 });
+    frame.clientWidth = 200;
+    frame.clientHeight = 200;
+    host.setBoundingClientRect({ left: 0, top: 0, width: 400, height: 200 });
+    svg.setBoundingClientRect({ left: 0, top: 0, width: 400, height: 200 });
+    resizeObserver?.trigger();
+
+    expect(controller.getState()).toEqual({ scale: 0.5, x: 0, y: 50 });
+    expect(host.style.transform).toBe("translate(0px, 50px) scale(0.5)");
+
+    controller.zoomTo(1, { x: 100, y: 100 });
+    resizeObserver?.trigger();
+    expect(controller.getState().scale).toBe(1);
+  });
+
   it("requires a modifier for wheel zoom by default", () => {
     const { controller, frame } = fixture({ initialFit: "none" });
     const bareWheel = new Event("wheel", { cancelable: true });
@@ -216,6 +297,45 @@ describe("attachViewport", () => {
     }));
     expect(frame.capturedPointers).toEqual([9]);
     expect(controller.getState()).toEqual({ scale: 1, x: -20, y: 0 });
+  });
+
+  it("does not let a missing post-pan click suppress the next pointer sequence", () => {
+    const { frame } = fixture({ initialFit: "none" });
+    frame.dispatchEvent(pointerEvent("pointerdown", {
+      pointerId: 9,
+      pointerType: "mouse",
+      clientX: 100,
+      clientY: 100,
+    }));
+    frame.dispatchEvent(pointerEvent("pointermove", {
+      pointerId: 9,
+      pointerType: "mouse",
+      clientX: 80,
+      clientY: 100,
+    }));
+    frame.dispatchEvent(pointerEvent("pointerup", {
+      pointerId: 9,
+      pointerType: "mouse",
+      clientX: 80,
+      clientY: 100,
+    }));
+
+    frame.dispatchEvent(pointerEvent("pointerdown", {
+      pointerId: 10,
+      pointerType: "mouse",
+      clientX: 100,
+      clientY: 100,
+    }));
+    frame.dispatchEvent(pointerEvent("pointerup", {
+      pointerId: 10,
+      pointerType: "mouse",
+      clientX: 100,
+      clientY: 100,
+    }));
+    const click = new Event("click", { bubbles: true, cancelable: true });
+    frame.dispatchEvent(click);
+
+    expect(click.defaultPrevented).toBe(false);
   });
 
   it("restores every mutated inline style on detach", () => {
