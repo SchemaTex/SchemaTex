@@ -97,11 +97,15 @@ export function DiagramEditor() {
     <InteractiveSchematexDiagram
       value={dsl}
       onChange={setDsl}
+      viewport
       ariaLabel="Release workflow editor"
     />
   );
 }
 ```
+
+`viewport` opts into built-in pan, pinch/wheel zoom, and fit-to-view while your
+app keeps ownership of any zoom controls through `viewportRef`.
 
 Twenty parser-native engines support deterministic canvas editing; 17 also support stable-ID drag or native geometry handles. The other 30 remain fully renderable and editable through their DSL source, without guessed canvas handles. See the [interactive editing guide](https://schematex.js.org/docs/interactive-editing) and [live workspace](https://schematex.js.org/playground).
 

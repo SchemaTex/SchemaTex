@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
 import { gzipSync } from "node:zlib";
 import { chromium } from "playwright";
+import { renderResult } from "../../dist/index.js";
 import { INTERACTIVE_FIXTURES } from "./interactive-fixtures.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -121,6 +122,7 @@ const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
 page.setDefaultTimeout(60_000);
 await page.addInitScript(() => {
   localStorage.setItem("schematex_cookie_consent", "denied");
+  localStorage.setItem("schematex:playground:sidebar-collapsed", "false");
 });
 const browserErrors = [];
 page.on("pageerror", (error) => browserErrors.push(error.message));
@@ -218,6 +220,164 @@ try {
   await page.locator('[data-sx-key="node:C"]').waitFor({ state: "visible" });
 
   if (process.env.SCHEMATEX_E2E_FOCUS !== "expanded") {
+  const viewportFrame = page.locator('[data-schematex-viewport="true"]');
+  const viewportHost = page.locator('[data-schematex-viewport-host="true"]');
+  await viewportFrame.waitFor({ state: "visible" });
+  assert.equal(await viewportFrame.evaluate((element) => element.style.touchAction), "none");
+
+  // Reset to a known 1× state, then prove that a CSS-pixel drag is converted
+  // through the ancestor host transform before setPosition writes diagram units.
+  await page.keyboard.press("Control+0");
+  await page.locator(".sx-status-zoom").getByText("100%").waitFor();
+  const zoomIn = page.getByRole("button", { name: "Zoom in" });
+  for (let index = 0; index < 4; index++) await zoomIn.click();
+  await page.locator(".sx-status-zoom").getByText("200%").waitFor();
+  const scaledNode = page.locator('[data-sx-key="node:D"]');
+  const scaledNodeBox = await scaledNode.boundingBox();
+  assert.ok(scaledNodeBox);
+  const scaledScene = renderResult(INTERACTIVE_FIXTURES["flowchart-td"], { scene: true });
+  const scaledNodeScene = scaledScene.ok
+    ? scaledScene.scene?.find((item) => item.key === "node:D")
+    : null;
+  assert.ok(scaledNodeScene?.bbox);
+  await page.mouse.move(
+    scaledNodeBox.x + scaledNodeBox.width / 2,
+    scaledNodeBox.y + scaledNodeBox.height / 2,
+  );
+  await page.mouse.down();
+  await page.mouse.move(
+    scaledNodeBox.x + scaledNodeBox.width / 2 + 80,
+    scaledNodeBox.y + scaledNodeBox.height / 2,
+    { steps: 4 },
+  );
+  await page.mouse.up();
+  const scaledPinSource = await page.waitForFunction(() => {
+    const source = window.monaco?.editor.getModels()[0]?.getValue() ?? "";
+    return /^pin D /m.test(source) ? source : false;
+  });
+  const scaledPin = (await scaledPinSource.jsonValue()).match(/^pin D (-?[\d.]+),(-?[\d.]+)/m);
+  assert.ok(scaledPin);
+  assert.ok(
+    Math.abs(Number(scaledPin[1]) - (scaledNodeScene.bbox.x + 40)) < 2,
+    `2× drag must write 40 diagram units, got ${Number(scaledPin[1]) - scaledNodeScene.bbox.x}`,
+  );
+  assert.ok(Math.abs(Number(scaledPin[2]) - scaledNodeScene.bbox.y) < 2);
+  console.log("e2e: 2x coordinate conversion passed");
+
+  await loadDiagram("flowchart-td");
+  await page.keyboard.press("Control+0");
+  for (let index = 0; index < 4; index++) await zoomIn.click();
+  const sourceBeforePan = await page.evaluate(
+    () => window.monaco?.editor.getModels()[0]?.getValue() ?? "",
+  );
+  const transformBeforePan = await viewportHost.evaluate((element) => element.style.transform);
+  await viewportFrame.evaluate((element) => {
+    const rect = element.getBoundingClientRect();
+    const init = {
+      bubbles: true,
+      cancelable: true,
+      pointerId: 91,
+      pointerType: "mouse",
+      isPrimary: true,
+      button: 0,
+    };
+    element.dispatchEvent(new PointerEvent("pointerdown", {
+      ...init,
+      clientX: rect.left + 12,
+      clientY: rect.top + 12,
+    }));
+    element.dispatchEvent(new PointerEvent("pointermove", {
+      ...init,
+      clientX: rect.left + 42,
+      clientY: rect.top + 12,
+    }));
+    element.dispatchEvent(new PointerEvent("pointerup", {
+      ...init,
+      clientX: rect.left + 42,
+      clientY: rect.top + 12,
+    }));
+  });
+  assert.notEqual(
+    await viewportHost.evaluate((element) => element.style.transform),
+    transformBeforePan,
+    "blank-space drag must pan the host",
+  );
+  assert.equal(
+    await page.evaluate(() => window.monaco?.editor.getModels()[0]?.getValue() ?? ""),
+    sourceBeforePan,
+    "viewport pan must never write DSL",
+  );
+  await viewportFrame.hover();
+  const zoomBeforeWheel = await page.locator(".sx-status-zoom span").textContent();
+  await page.mouse.wheel(0, -120);
+  await page.waitForFunction((before) =>
+    document.querySelector(".sx-status-zoom span")?.textContent !== before,
+  zoomBeforeWheel);
+  await page.getByRole("button", { name: "Fit diagram to preview" }).click();
+  console.log("e2e: blank-space pan passed");
+
+  // A second touch during a node drag must cancel the transient position
+  // source before switching to pinch. Synthetic touch pointers exercise the
+  // same browser PointerEvent path; physical-device coverage stays a release check.
+  await loadDiagram("flowchart-td");
+  await page.keyboard.press("Control+0");
+  const touchNode = page.locator('[data-sx-key="node:D"]');
+  const touchNodeBox = await touchNode.boundingBox();
+  const touchFrameBox = await viewportFrame.boundingBox();
+  assert.ok(touchNodeBox && touchFrameBox);
+  const sourceBeforeTouch = await page.evaluate(
+    () => window.monaco?.editor.getModels()[0]?.getValue() ?? "",
+  );
+  const firstTouch = {
+    pointerId: 101,
+    pointerType: "touch",
+    isPrimary: true,
+    button: 0,
+    clientX: touchNodeBox.x + touchNodeBox.width / 2,
+    clientY: touchNodeBox.y + touchNodeBox.height / 2,
+  };
+  await touchNode.dispatchEvent("pointerdown", firstTouch);
+  await touchNode.dispatchEvent("pointermove", {
+    ...firstTouch,
+    clientX: firstTouch.clientX + 48,
+  });
+  await page.waitForFunction((source) =>
+    (window.monaco?.editor.getModels()[0]?.getValue() ?? "") !== source,
+  sourceBeforeTouch);
+  const transformBeforePinch = await viewportHost.evaluate((element) => element.style.transform);
+  const secondTouch = {
+    pointerId: 102,
+    pointerType: "touch",
+    isPrimary: false,
+    button: 0,
+    clientX: touchFrameBox.x + touchFrameBox.width - 24,
+    clientY: touchFrameBox.y + touchFrameBox.height / 2,
+  };
+  await viewportFrame.dispatchEvent("pointerdown", secondTouch);
+  await page.waitForFunction((source) =>
+    (window.monaco?.editor.getModels()[0]?.getValue() ?? "") === source,
+  sourceBeforeTouch);
+  await viewportFrame.dispatchEvent("pointermove", {
+    ...secondTouch,
+    clientX: secondTouch.clientX - 50,
+  });
+  assert.notEqual(
+    await viewportHost.evaluate((element) => element.style.transform),
+    transformBeforePinch,
+    "two touch pointers must control the viewport after cancelling node drag",
+  );
+  await viewportFrame.dispatchEvent("pointerup", secondTouch);
+  await touchNode.dispatchEvent("pointerup", firstTouch);
+  assert.equal(
+    await page.evaluate(() => window.monaco?.editor.getModels()[0]?.getValue() ?? ""),
+    sourceBeforeTouch,
+    "cancelled touch drag must not commit an onChange",
+  );
+  console.log("e2e: touch drag-to-pinch arbitration passed");
+
+  await loadDiagram("flowchart-td");
+  await page.keyboard.press("Control+0");
+  await page.locator(".sx-status-zoom").getByText("100%").waitFor();
   await page.locator('[data-sx-key="node:C"]').click();
   assert.equal(
     await page.locator(".sx-interactive-selected").getAttribute("data-sx-key"),
@@ -255,6 +415,44 @@ try {
     fontFamily: labelBefore.fontFamily,
     fontWeight: labelBefore.fontWeight,
   });
+  const editorFontSizeBeforeZoom = await labelEditor.evaluate((input) =>
+    Number.parseFloat(getComputedStyle(input).fontSize),
+  );
+  const zoomBeforeLabelEdit = await page.locator(".sx-status-zoom span").textContent();
+  await viewportFrame.evaluate((element) => {
+    const rect = element.getBoundingClientRect();
+    element.dispatchEvent(new WheelEvent("wheel", {
+      bubbles: true,
+      cancelable: true,
+      clientX: rect.left + rect.width / 2,
+      clientY: rect.top + rect.height / 2,
+      deltaY: -120,
+    }));
+  });
+  await page.waitForFunction((before) =>
+    document.querySelector(".sx-status-zoom span")?.textContent !== before,
+  zoomBeforeLabelEdit);
+  await page.waitForFunction((before) => {
+    const input = document.querySelector(".sx-label-editor");
+    return input && Number.parseFloat(getComputedStyle(input).fontSize) > before;
+  }, editorFontSizeBeforeZoom);
+  const labelAfterZoom = await page
+    .locator('[data-sx-key="node:C"] [data-sx-role="label"]')
+    .boundingBox();
+  const editorAfterZoom = await labelEditor.boundingBox();
+  assert.ok(labelAfterZoom && editorAfterZoom);
+  assert.ok(
+    Math.abs(
+      editorAfterZoom.x + editorAfterZoom.width / 2 -
+      (labelAfterZoom.x + labelAfterZoom.width / 2),
+    ) < 3,
+  );
+  assert.ok(
+    Math.abs(
+      editorAfterZoom.y + editorAfterZoom.height / 2 -
+      (labelAfterZoom.y + labelAfterZoom.height / 2),
+    ) < 3,
+  );
   await labelEditor.fill("Inspect SVG");
   await labelEditor.press("Enter");
   await page.waitForFunction(() =>
