@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, 
 import dynamic from 'next/dynamic';
 import { getInteractiveCapabilities, renderResult, setPosition, type SceneItem, type SchematexRenderResult } from 'schematex';
 import { InteractiveSchematexDiagram } from 'schematex/react';
+import type { ViewportController, ViewportOptions } from 'schematex/interactive';
 import { svgToPngBlob, downloadBlob, printSvgAsPdf, withWhiteSvgBackground } from 'schematex/export';
 import type { Monaco, OnMount } from '@monaco-editor/react';
 import { useTheme } from 'next-themes';
@@ -183,6 +184,11 @@ const PLAYGROUND_LABEL_EDITOR_STYLE: CSSProperties = {
   borderColor: 'var(--accent)',
   outlineColor: 'color-mix(in srgb, var(--accent) 18%, transparent)',
 };
+const PLAYGROUND_VIEWPORT_OPTIONS = {
+  minScale: 0.1,
+  maxScale: 4,
+  wheelRequiresModifier: false,
+} satisfies ViewportOptions;
 
 export function Playground({
   initial,
@@ -216,6 +222,7 @@ export function Playground({
   const exportRef = useRef<HTMLDivElement>(null);
   const splitRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
+  const viewportRef = useRef<ViewportController>(null);
   const editorRef = useRef<MonacoEditorInstance | null>(null);
   const monacoRef = useRef<Monaco | null>(null);
   const cursorDisposableRef = useRef<{ dispose: () => void } | null>(null);
@@ -424,6 +431,10 @@ export function Playground({
     replaceModelWithoutUndo(nextSource);
   }, [replaceModelWithoutUndo]);
 
+  const handleViewportChange = useCallback(({ scale }: { scale: number }) => {
+    setZoom(Math.round(scale * 100));
+  }, []);
+
   /**
    * Monaco caches its dimensions and `automaticLayout` does not reliably catch
    * a grid track collapsing underneath it. The sidebar auto-collapses during
@@ -560,7 +571,7 @@ export function Playground({
         triggerRender();
       } else if (event.key === '0') {
         event.preventDefault();
-        setZoom(100);
+        viewportRef.current?.reset();
       }
     };
     window.addEventListener('keydown', onKeyDown);
@@ -743,9 +754,10 @@ export function Playground({
           </span>
         )}
         <div className="sx-status-zoom">
-          <button type="button" onClick={() => setZoom((z) => Math.max(25, z - 25))} aria-label="Zoom out">−</button>
+          <button type="button" onClick={() => viewportRef.current?.fit()} aria-label="Fit diagram to preview">fit</button>
+          <button type="button" onClick={() => viewportRef.current?.zoomOut(0.25)} aria-label="Zoom out">−</button>
           <span style={{ minWidth: 34, textAlign: 'center' }}>{zoom}%</span>
-          <button type="button" onClick={() => setZoom((z) => Math.min(200, z + 25))} aria-label="Zoom in">+</button>
+          <button type="button" onClick={() => viewportRef.current?.zoomIn(0.25)} aria-label="Zoom in">+</button>
         </div>
       </div>
     </>
@@ -820,7 +832,9 @@ export function Playground({
               labelEditorStyle={PLAYGROUND_LABEL_EDITOR_STYLE}
               className="flex h-full w-full items-center justify-center focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--accent)]"
               canvasClassName="flex h-full w-full items-center justify-center [&_svg]:block [&_svg]:max-h-full [&_svg]:max-w-full"
-              style={{ transform: `scale(${zoom / 100})`, transformOrigin: 'center center' }}
+              viewport={PLAYGROUND_VIEWPORT_OPTIONS}
+              viewportRef={viewportRef}
+              onViewportChange={handleViewportChange}
             />
             {emptyExampleCount !== undefined && (
               <p className="sx-canvas-caption sx-empty-canvas-prompt">

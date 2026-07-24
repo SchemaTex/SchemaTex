@@ -12,8 +12,9 @@ Schematex 1.0 把 Editor 和 Renderer 放在同一个开源仓库、同一个 np
 npm install schematex
 ```
 
-`InteractiveSchematexDiagram` 要求 `schematex >= 1.0.0`、React 18 或更新版本。
-React 和 React DOM 是 optional peer dependency，因此只使用 core renderer 的项目无需安装它们。
+`InteractiveSchematexDiagram` 要求 `schematex >= 1.0.0`，内置 viewport 要求
+`schematex >= 1.1.0`；两者都支持 React 18 或更新版本。React 和 React DOM 是
+optional peer dependency，因此只使用 core renderer 的项目无需安装它们。
 
 不需要导入 Schematex stylesheet。组件会注入 selection、cursor 和 label editor 所需的最小样式；
 应用自己的布局和视觉样式通过 `className`、`canvasClassName` 与 `labelEditorStyle` 控制。
@@ -70,6 +71,9 @@ interface InteractiveSchematexDiagramProps {
   className?: string;
   canvasClassName?: string;
   style?: React.CSSProperties;
+  viewport?: boolean | ViewportOptions;
+  onViewportChange?: (state: ViewportState) => void;
+  viewportRef?: React.Ref<ViewportController>;
   ariaLabel?: string;
   labelEditorClassName?: string;
   labelEditorStyle?: React.CSSProperties;
@@ -94,6 +98,9 @@ interface InteractiveSchematexDiagramProps {
 | `className` | 无 | 外层、可 focus 的 editor region 的 class。 |
 | `canvasClassName` | 无 | 直接包含生成 SVG 的内部 Canvas host `<div>` 的 class。它不是 SVG 自身的 class。 |
 | `style` | 无 | 外层 editor region 的 inline style。 |
+| `viewport` | `false` | 选择启用 host 层的 pan、zoom、pinch 和 fit。传 `true` 使用安全默认值，也可传 options object 覆盖。 |
+| `onViewportChange` | no-op | gesture 或 controller command 改变 `{ scale, x, y }` 后调用。viewport 是纯展示态，绝不写入 DSL。 |
+| `viewportRef` | 无 | 指向命令式 `ViewportController` 的 ref，供应用自己的缩放按钮、fit、reset 和程序化 pan 使用。 |
 | `ariaLabel` | `Editable Schematex diagram` | editor region 的 accessible name，建议改成当前文档的具体名称。 |
 | `labelEditorClassName` | `sx-label-editor` | 临时 WYSIWYG `<input>` 的 class；该 input 会挂到 `document.body`。 |
 | `labelEditorStyle` | 无 | 在测量所得的 WYSIWYG input 样式之后合并的 inline override。 |
@@ -142,6 +149,47 @@ interface InteractiveSchematexDiagramProps {
 WYSIWYG input 会 portal 到 `document.body`，因此 Canvas scroll 或容器裁剪 overflow 时仍能保持对齐。
 按 Enter 或 blur 提交，按 Escape 取消。
 
+## Viewport
+
+Viewport 默认关闭，因此 inline diagram、SEO 缩略图和已有 card layout 升级后不会突然改变行为。
+Schematex 负责坐标安全的 transform 与 gesture；应用负责画自己的控制按钮：
+
+```tsx
+import { useRef, useState } from 'react';
+import { InteractiveSchematexDiagram } from 'schematex/react';
+import type { ViewportController } from 'schematex/interactive';
+
+const viewportRef = useRef<ViewportController>(null);
+const [zoom, setZoom] = useState(100);
+
+<InteractiveSchematexDiagram
+  value={dsl}
+  onChange={setDsl}
+  viewport={{ wheelRequiresModifier: false }}
+  viewportRef={viewportRef}
+  onViewportChange={({ scale }) => setZoom(Math.round(scale * 100))}
+/>;
+
+<button onClick={() => viewportRef.current?.zoomOut()}>−</button>
+<span>{zoom}%</span>
+<button onClick={() => viewportRef.current?.zoomIn()}>+</button>
+<button onClick={() => viewportRef.current?.fit()}>Fit</button>
+```
+
+`wheelRequiresModifier` 默认是 `true`：Ctrl/Command + wheel 缩放，普通 wheel 继续滚动页面。
+macOS trackpad pinch 本身会产生 Ctrl-modified wheel event。占满视口的 Canvas 可以设为 `false`。
+拖空白处会 pan，拖可编辑节点会移动节点，双指会 pinch。节点拖动中落下第二指时，库会先语义取消
+节点拖动，再进入 pinch，因此不会提交半次 `setPosition`。
+
+Controller 提供 `zoomIn`、`zoomOut`、`zoomTo`、`panBy`、`fit`、`reset`、
+`getState` 和 `setState`。默认 scale 范围是 `0.1`–`10`，初次使用 `contain` fit。
+普通 DSL 修改会保留当前 viewport，diagram type 改变时才重新 fit。
+
+Transform 必须放在 host `<div>` 上，不能放进 SVG `<g>`，也不能靠改 `viewBox` 缩放。
+编辑层用 `svg.getScreenCTM()` 把 pointer 坐标换成 SVG 坐标：它包含 ancestor CSS transform，
+却不包含内部 SVG group transform。正因为 viewport 在 SVG 外，2× 缩放时拖动 80 个屏幕像素
+才会准确写回 40 个 diagram unit。
+
 ## 持久化、undo 与 autosave
 
 把每次 `onChange` 的值当作下一份完整文档。最小 undo / autosave 接法如下：
@@ -182,11 +230,20 @@ Editor 使用 `renderResult()`，不会把错误直接抛进 React tree。非法
 
 ```ts
 import { renderResult } from 'schematex';
-import { attachInteraction, sourceRevision } from 'schematex/interactive';
+import {
+  attachInteraction,
+  attachViewport,
+  sourceRevision,
+} from 'schematex/interactive';
 
+const frame = document.querySelector<HTMLElement>('#diagram-frame')!;
+const host = frame.querySelector<HTMLElement>('#diagram-host')!;
 let source = initialDsl;
 let result = renderResult(source, { scene: true });
 host.innerHTML = result.svg;
+const viewport = attachViewport(frame, host, {
+  wheelRequiresModifier: true,
+});
 
 if (result.ok) {
   attachInteraction(host.querySelector('svg')!, {
@@ -205,6 +262,7 @@ if (result.ok) {
 
 除非需要把 gesture 接入已有的非 React Canvas，否则优先使用 React 组件。
 `attachInteraction()` 是低层 API：调用方必须在 commit 后重新 render，并在替换 SVG 前 detach listener。
+Frame 被移除时调用 `viewport.detach()`。
 
 ## 能力查询
 
@@ -274,9 +332,13 @@ import { SchematexDiagram } from 'schematex/react';
 <SchematexDiagram
   dsl={dsl}
   type="circuit"
+  viewport
   onError={(error) => console.error(error)}
 />;
 ```
+
+`SchematexDiagram` 接受相同的 `viewport`、`onViewportChange` 和 `viewportRef` props。
+省略 `viewport` 时，它仍保持原来的单层 wrapper DOM。
 
 Schematex 使用 AGPL-3.0。闭源商业产品在分发前应阅读
 [license 说明](/docs/ai-integration#licensing-notes)。

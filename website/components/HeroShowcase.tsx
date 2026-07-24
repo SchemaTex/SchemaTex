@@ -117,11 +117,12 @@ export function HeroShowcase({ slides, intervalMs = 6500 }: HeroShowcaseProps) {
               debounceMs={100}
               ariaLabel={`${slide.label} interactive diagram`}
               labelEditorStyle={HERO_LABEL_EDITOR_STYLE}
+              viewport
               className="flex h-full w-full items-center justify-center focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--accent)]"
               canvasClassName="flex h-full w-full items-center justify-center [&_svg]:max-h-full [&_svg]:max-w-full"
             />
             <div className="sx-canvas-caption" aria-hidden>
-              double-click text · drag supported geometry
+              double-click text · drag geometry · pinch or ⌘+wheel to zoom
             </div>
           </div>
         </div>

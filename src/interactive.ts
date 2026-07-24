@@ -1,8 +1,15 @@
 import { setLabel, setPosition } from "./core/editing";
 import { sourceRevision } from "./core/revision";
+import { pointInSvg } from "./core/screen-point";
 import type { SceneItem } from "./core/types";
 
 export { sourceRevision } from "./core/revision";
+export {
+  attachViewport,
+  type ViewportController,
+  type ViewportOptions,
+  type ViewportState,
+} from "./viewport";
 
 export interface InteractionScene {
   /** Use sourceRevision(source) so stale preview/source pairs are rejected. */
@@ -15,6 +22,8 @@ export interface LabelEditAnchor {
   rect: DOMRect;
   /** Re-measure after scrolling or viewport changes so a fixed editor stays over the glyph. */
   measureRect?: () => DOMRect;
+  /** Re-measure both screen-space geometry and typography after a viewport transform. */
+  remeasure?: () => LabelEditAnchor;
   fontFamily: string;
   fontSize: number;
   fontWeight: string;
@@ -102,16 +111,6 @@ function sceneItemFor(
   if (!key || !element) return null;
   const item = items.find((candidate) => candidate.key === key);
   return item ? { item, element } : null;
-}
-
-function pointInSvg(svg: SVGSVGElement, clientX: number, clientY: number): { x: number; y: number } | null {
-  const matrix = svg.getScreenCTM();
-  if (!matrix) return null;
-  const point = svg.createSVGPoint();
-  point.x = clientX;
-  point.y = clientY;
-  const mapped = point.matrixTransform(matrix.inverse());
-  return { x: mapped.x, y: mapped.y };
 }
 
 function fmt(value: number): string {
@@ -260,21 +259,29 @@ function previewQuadraticEdge(
 }
 
 function labelEditAnchor(label: SVGGraphicsElement): LabelEditAnchor {
-  const style = window.getComputedStyle(label);
-  const matrix = label.getScreenCTM();
-  const screenScaleY = matrix ? Math.hypot(matrix.c, matrix.d) : 1;
-  const fontSize = Number.parseFloat(style.fontSize) || 12;
-  const rect = label.getBoundingClientRect();
-  return {
-    rect,
-    measureRect: () => label.isConnected ? label.getBoundingClientRect() : rect,
-    fontFamily: style.fontFamily,
-    fontSize: fontSize * screenScaleY,
-    fontWeight: style.fontWeight,
-    fontStyle: style.fontStyle,
-    letterSpacing: style.letterSpacing,
-    color: style.fill && style.fill !== "none" ? style.fill : style.color,
+  let fallbackRect = label.getBoundingClientRect();
+  const measureRect = (): DOMRect => {
+    if (label.isConnected) fallbackRect = label.getBoundingClientRect();
+    return fallbackRect;
   };
+  const remeasure = (): LabelEditAnchor => {
+    const style = window.getComputedStyle(label);
+    const matrix = label.getScreenCTM();
+    const screenScaleY = matrix ? Math.hypot(matrix.c, matrix.d) : 1;
+    const fontSize = Number.parseFloat(style.fontSize) || 12;
+    return {
+      rect: measureRect(),
+      measureRect,
+      remeasure,
+      fontFamily: style.fontFamily,
+      fontSize: fontSize * screenScaleY,
+      fontWeight: style.fontWeight,
+      fontStyle: style.fontStyle,
+      letterSpacing: style.letterSpacing,
+      color: style.fill && style.fill !== "none" ? style.fill : style.color,
+    };
+  };
+  return remeasure();
 }
 
 function collectLiveEdges(

@@ -13,6 +13,8 @@ Schematex deliberately does not infer edit targets by comparing SVG text with qu
 
 The current release has **20 parser-native canvas-editable engines**. **17** of them also expose a safe position model. The remaining 30 engines render normally and remain editable in the DSL editor, but emit no canvas handles.
 
+Pan, zoom, pinch, and fit are host-layer viewport capabilities shared by all 50 diagram types; they do not change any engine's parser, renderer, scene metadata, or DSL editing classification.
+
 ## Capability vocabulary
 
 1. **Title edit** — double-click an authored title and replace its exact DSL token. Authored titles can also be dragged; the presentation position is stored as `pin @title x,y` in `@overrides`.
@@ -91,7 +93,7 @@ FMEA, Pugh comparison, fault tree, and RBD are especially required to test repea
 
 The typed registry is `src/core/interactive-capabilities.ts` and is exported from `schematex`. `getInteractiveCapabilities(type)` returns empty `text` plus `position: "none"` for a source-only engine. `INTERACTIVE_CAPABILITIES` itself contains only the 20 shipped native engines.
 
-The controlled React editor is exported from `schematex/react`; the low-level DOM adapter is available from `schematex/interactive`. AI and MCP callers should use the revision-guarded `inspectDiagram` → `applyDiagramEdits` flow rather than inventing offsets.
+The controlled React editor is exported from `schematex/react`; the low-level `attachInteraction()` and `attachViewport()` DOM adapters are available from `schematex/interactive`. AI and MCP callers should use the revision-guarded `inspectDiagram` → `applyDiagramEdits` flow rather than inventing offsets.
 
 ## Related documents
 

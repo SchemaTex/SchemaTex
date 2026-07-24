@@ -13,9 +13,10 @@ document model and no second JSON format to synchronize.
 npm install schematex
 ```
 
-`InteractiveSchematexDiagram` requires `schematex >= 1.0.0` and React 18 or
-newer. React and React DOM are optional peer dependencies because non-React
-users can continue using the core renderer without installing them.
+`InteractiveSchematexDiagram` requires `schematex >= 1.0.0`; the built-in
+viewport requires `schematex >= 1.1.0`. Both support React 18 or newer. React
+and React DOM are optional peer dependencies because non-React users can
+continue using the core renderer without installing them.
 
 No Schematex stylesheet import is required. The component injects its minimal
 selection, cursor, and label-editor styles; use `className`, `canvasClassName`,
@@ -76,6 +77,9 @@ interface InteractiveSchematexDiagramProps {
   className?: string;
   canvasClassName?: string;
   style?: React.CSSProperties;
+  viewport?: boolean | ViewportOptions;
+  onViewportChange?: (state: ViewportState) => void;
+  viewportRef?: React.Ref<ViewportController>;
   ariaLabel?: string;
   labelEditorClassName?: string;
   labelEditorStyle?: React.CSSProperties;
@@ -100,6 +104,9 @@ interface InteractiveSchematexDiagramProps {
 | `className` | none | Class on the outer focusable editor region. |
 | `canvasClassName` | none | Class on the inner canvas host `<div>` that directly contains the generated `<svg>`. |
 | `style` | none | Inline style on the outer editor region. |
+| `viewport` | `false` | Opts into host-layer pan, zoom, pinch, and fit. Pass `true` for safe defaults or an options object to override them. |
+| `onViewportChange` | no-op | Called after a gesture or controller command changes `{ scale, x, y }`. Viewport state is presentation-only and never enters the DSL. |
+| `viewportRef` | none | Ref to the imperative `ViewportController` used for application-owned zoom buttons, fit, reset, and programmatic pan. |
 | `ariaLabel` | `Editable Schematex diagram` | Accessible name for the editor region. Use a document-specific label. |
 | `labelEditorClassName` | `sx-label-editor` | Class on the temporary WYSIWYG `<input>` rendered into `document.body`. |
 | `labelEditorStyle` | none | Inline overrides merged after the measured WYSIWYG input styles. |
@@ -151,6 +158,52 @@ The WYSIWYG input is portalled into `document.body` so it stays aligned when
 the canvas scrolls or its container clips overflow. Press Enter or blur to
 commit; press Escape to cancel.
 
+## Viewport
+
+The viewport is opt-in so inline diagrams, SEO thumbnails, and existing card
+layouts do not change behavior after upgrading. Schematex provides the
+coordinate-safe transform and gestures; your application owns the controls:
+
+```tsx
+import { useRef, useState } from 'react';
+import { InteractiveSchematexDiagram } from 'schematex/react';
+import type { ViewportController } from 'schematex/interactive';
+
+const viewportRef = useRef<ViewportController>(null);
+const [zoom, setZoom] = useState(100);
+
+<InteractiveSchematexDiagram
+  value={dsl}
+  onChange={setDsl}
+  viewport={{ wheelRequiresModifier: false }}
+  viewportRef={viewportRef}
+  onViewportChange={({ scale }) => setZoom(Math.round(scale * 100))}
+/>;
+
+<button onClick={() => viewportRef.current?.zoomOut()}>−</button>
+<span>{zoom}%</span>
+<button onClick={() => viewportRef.current?.zoomIn()}>+</button>
+<button onClick={() => viewportRef.current?.fit()}>Fit</button>
+```
+
+`wheelRequiresModifier` defaults to `true`: Ctrl/Command + wheel zooms while a
+normal wheel keeps scrolling the page. macOS trackpad pinch already reports a
+Ctrl-modified wheel event. Full-screen canvases can set it to `false`. Drag
+unclaimed canvas space to pan, drag an editable node to move the node, and use
+two touch pointers to pinch. A second touch cancels an in-progress node drag
+before pinch begins, so a partial `setPosition` is never committed.
+
+The controller exposes `zoomIn`, `zoomOut`, `zoomTo`, `panBy`, `fit`, `reset`,
+`getState`, and `setState`. Scale is clamped to `0.1`–`10` by default. Initial
+fit is `contain`; ordinary DSL edits preserve the current viewport, while a
+diagram-type change fits the replacement diagram.
+
+The transform belongs on the host `<div>`, never an SVG `<g>` or a rewritten
+`viewBox`. Schematex editing converts pointer coordinates with
+`svg.getScreenCTM()`, which includes ancestor CSS transforms but not an inner
+SVG group transform. Keeping the viewport outside the SVG is what makes a
+node dragged 80 screen pixels at 2× zoom move 40 diagram units.
+
 ## Persistence, undo, and autosave
 
 Treat each `onChange` value as the next complete document. A minimal undo and
@@ -196,11 +249,20 @@ export, telemetry, and billing decisions should inspect the result status.
 
 ```ts
 import { renderResult } from 'schematex';
-import { attachInteraction, sourceRevision } from 'schematex/interactive';
+import {
+  attachInteraction,
+  attachViewport,
+  sourceRevision,
+} from 'schematex/interactive';
 
+const frame = document.querySelector<HTMLElement>('#diagram-frame')!;
+const host = frame.querySelector<HTMLElement>('#diagram-host')!;
 let source = initialDsl;
 let result = renderResult(source, { scene: true });
 host.innerHTML = result.svg;
+const viewport = attachViewport(frame, host, {
+  wheelRequiresModifier: true,
+});
 
 if (result.ok) {
   attachInteraction(host.querySelector('svg')!, {
@@ -220,7 +282,7 @@ if (result.ok) {
 Use the React component unless you need to integrate gestures into an existing
 non-React canvas. `attachInteraction()` is deliberately low level; its caller
 must rerender after a committed edit and detach listeners before replacing the
-SVG.
+SVG. Call `viewport.detach()` when the frame is removed.
 
 ## Capability discovery
 
@@ -305,9 +367,14 @@ import { SchematexDiagram } from 'schematex/react';
 <SchematexDiagram
   dsl={dsl}
   type="circuit"
+  viewport
   onError={(error) => console.error(error)}
 />;
 ```
+
+`SchematexDiagram` accepts the same `viewport`, `onViewportChange`, and
+`viewportRef` props. When `viewport` is omitted it keeps its original
+single-wrapper DOM structure.
 
 Schematex is AGPL-3.0. Closed-source commercial products should review the
 [licensing notes](/docs/ai-integration#licensing-notes) before distribution.

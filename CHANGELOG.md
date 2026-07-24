@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.1.0] — 2026-07-24
+
+### Added — host-layer viewport pan, zoom, pinch, and fit
+
+- **Coordinate-safe viewport.** `attachViewport()` applies translate/scale to the SVG host rather than an inner SVG group, so `getScreenCTM()` keeps node dragging correct at every zoom level.
+- **Gesture arbitration.** Blank-space drag pans, editable-node drag keeps moving the node, modifier-wheel and trackpad pinch zoom around the pointer, and a second touch semantically cancels an in-progress node drag before pinch begins.
+- **React APIs.** `SchematexDiagram` and `InteractiveSchematexDiagram` accept opt-in `viewport`, `onViewportChange`, and `viewportRef` props. Existing markup and touch behavior remain unchanged when viewport is omitted.
+- **Imperative controls.** Applications can call `zoomIn`, `zoomOut`, `zoomTo`, `panBy`, `fit`, `reset`, `getState`, and `setState` without adopting React or a third-party pan/zoom dependency.
+- **Website proof.** Every full Playground preview uses the public viewport with application-owned fit and zoom controls, and the homepage's interactive showcase uses the safe modifier-wheel default; gallery cards and marketing thumbnails remain intentionally static.
+
+---
+
 ## [1.0.0] — 2026-07-17
 
 ### Added — open-source interactive editor and AI-safe editing

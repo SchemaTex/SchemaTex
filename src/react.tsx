@@ -8,6 +8,8 @@ import {
   useRef,
   useState,
   type CSSProperties,
+  type Ref,
+  type RefObject,
 } from "react";
 import { createPortal } from "react-dom";
 import {
@@ -18,8 +20,12 @@ import type { SchematexRenderResult } from "./core/diagnostics";
 import type { SceneItem } from "./core/types";
 import {
   attachInteraction,
+  attachViewport,
   sourceRevision,
   type LabelEditAnchor,
+  type ViewportController,
+  type ViewportOptions,
+  type ViewportState,
 } from "./interactive";
 
 export interface SchematexDiagramProps {
@@ -32,6 +38,10 @@ export interface SchematexDiagramProps {
   padding?: number;
   className?: string;
   style?: CSSProperties;
+  /** Opt-in host-layer pan, zoom, and fit-to-view. */
+  viewport?: boolean | ViewportOptions;
+  onViewportChange?: (state: ViewportState) => void;
+  viewportRef?: Ref<ViewportController>;
   /** Called after a strict parser/layout failure; the diagnostic SVG still renders. */
   onError?: (error: Error) => void;
 }
@@ -40,6 +50,111 @@ function renderError(result: SchematexRenderResult): Error | null {
   return result.ok
     ? null
     : new Error(result.diagnostics[0]?.message ?? "Schematex render failed");
+}
+
+function setReactRef<T>(ref: Ref<T> | undefined, value: T | null): void {
+  if (typeof ref === "function") {
+    ref(value);
+    return;
+  }
+  if (ref) (ref as { current: T | null }).current = value;
+}
+
+function useDiagramViewport({
+  viewport,
+  onViewportChange,
+  viewportRef,
+  frameRef,
+  hostRef,
+  structuralKey,
+  contentKey,
+  onInternalChange,
+}: {
+  viewport: boolean | ViewportOptions | undefined;
+  onViewportChange: ((state: ViewportState) => void) | undefined;
+  viewportRef: Ref<ViewportController> | undefined;
+  frameRef: RefObject<HTMLDivElement | null>;
+  hostRef: RefObject<HTMLDivElement | null>;
+  structuralKey: string;
+  contentKey: string;
+  onInternalChange?: (state: ViewportState) => void;
+}): boolean {
+  const enabled = viewport !== undefined && viewport !== false;
+  const options = typeof viewport === "object" ? viewport : {};
+  const {
+    minScale,
+    maxScale,
+    initialFit,
+    wheelRequiresModifier,
+    pan,
+    pinch,
+    doubleClickZoom,
+  } = options;
+  const controllerRef = useRef<ViewportController | null>(null);
+  const changeRef = useRef(onViewportChange);
+  const internalChangeRef = useRef(onInternalChange);
+  const fittedStructuralKeyRef = useRef(structuralKey);
+  changeRef.current = onViewportChange;
+  internalChangeRef.current = onInternalChange;
+
+  useEffect(() => {
+    if (!enabled || !frameRef.current || !hostRef.current) {
+      setReactRef(viewportRef, null);
+      return;
+    }
+    const controller = attachViewport(
+      frameRef.current,
+      hostRef.current,
+      {
+        minScale,
+        maxScale,
+        initialFit,
+        wheelRequiresModifier,
+        pan,
+        pinch,
+        doubleClickZoom,
+      },
+      (state) => {
+        internalChangeRef.current?.(state);
+        changeRef.current?.(state);
+      },
+    );
+    controllerRef.current = controller;
+    fittedStructuralKeyRef.current = structuralKey;
+    setReactRef(viewportRef, controller);
+    return () => {
+      controller.detach();
+      controllerRef.current = null;
+      setReactRef(viewportRef, null);
+    };
+  }, [
+    doubleClickZoom,
+    enabled,
+    frameRef,
+    hostRef,
+    initialFit,
+    maxScale,
+    minScale,
+    pan,
+    pinch,
+    structuralKey,
+    viewportRef,
+    wheelRequiresModifier,
+  ]);
+
+  useEffect(() => {
+    const controller = controllerRef.current;
+    if (!controller) return;
+    if (fittedStructuralKeyRef.current !== structuralKey) {
+      fittedStructuralKeyRef.current = structuralKey;
+      if ((initialFit ?? "contain") === "contain") controller.fit();
+      return;
+    }
+    // Re-measure a replacement SVG while preserving the user's current state.
+    controller.setState({});
+  }, [contentKey, initialFit, structuralKey]);
+
+  return enabled;
 }
 
 /** Small read-only renderer; use InteractiveSchematexDiagram for canvas editing. */
@@ -51,17 +166,48 @@ export function SchematexDiagram({
   padding,
   className,
   style,
+  viewport,
+  onViewportChange,
+  viewportRef,
   onError,
 }: SchematexDiagramProps) {
+  const frameRef = useRef<HTMLDivElement>(null);
+  const hostRef = useRef<HTMLDivElement>(null);
   const result = useMemo(
     () => renderResult(dsl, { type, theme, fontFamily, padding }),
     [dsl, type, theme, fontFamily, padding],
   );
+  const viewportEnabled = useDiagramViewport({
+    viewport,
+    onViewportChange,
+    viewportRef,
+    frameRef,
+    hostRef,
+    structuralKey: result.type ?? type ?? "",
+    contentKey: result.svg,
+  });
 
   useEffect(() => {
     const error = renderError(result);
     if (error) onError?.(error);
   }, [onError, result]);
+
+  if (viewportEnabled) {
+    return (
+      <div
+        ref={frameRef}
+        className={className}
+        style={style}
+        data-schematex-viewport="true"
+      >
+        <div
+          ref={hostRef}
+          data-schematex-viewport-host="true"
+          dangerouslySetInnerHTML={{ __html: result.svg }}
+        />
+      </div>
+    );
+  }
 
   return (
     <div
@@ -92,6 +238,10 @@ export interface InteractiveSchematexDiagramProps {
   /** Class applied to the inner canvas host div that contains the generated SVG. */
   canvasClassName?: string;
   style?: CSSProperties;
+  /** Opt-in host-layer pan, zoom, and fit-to-view. */
+  viewport?: boolean | ViewportOptions;
+  onViewportChange?: (state: ViewportState) => void;
+  viewportRef?: Ref<ViewportController>;
   ariaLabel?: string;
   labelEditorClassName?: string;
   labelEditorStyle?: CSSProperties;
@@ -216,6 +366,9 @@ export function InteractiveSchematexDiagram({
   className,
   canvasClassName,
   style,
+  viewport,
+  onViewportChange,
+  viewportRef,
   ariaLabel = "Editable Schematex diagram",
   labelEditorClassName = "sx-label-editor",
   labelEditorStyle,
@@ -225,6 +378,7 @@ export function InteractiveSchematexDiagram({
   onRender,
   onError,
 }: InteractiveSchematexDiagramProps) {
+  const frameRef = useRef<HTMLDivElement>(null);
   const hostRef = useRef<HTMLDivElement>(null);
   const sourceRef = useRef(value);
   const selectedRef = useRef<SceneItem | null>(null);
@@ -232,6 +386,7 @@ export function InteractiveSchematexDiagram({
   const onSelectRef = useRef(onSelect);
   const onPreviewChangeRef = useRef(onPreviewChange);
   const cancelLabelEditRef = useRef<(() => void) | null>(null);
+  const syncLabelAnchorRef = useRef<(() => void) | null>(null);
   const [renderSource, setRenderSource] = useState(value);
   const [labelEditor, setLabelEditor] = useState<LabelEditorState | null>(null);
   sourceRef.current = value;
@@ -262,6 +417,16 @@ export function InteractiveSchematexDiagram({
   );
   const scene = result.ok ? result.scene ?? [] : [];
   const revision = useMemo(() => sourceRevision(renderSource), [renderSource]);
+  const viewportEnabled = useDiagramViewport({
+    viewport,
+    onViewportChange,
+    viewportRef,
+    frameRef,
+    hostRef,
+    structuralKey: result.type ?? type ?? "",
+    contentKey: result.svg,
+    onInternalChange: () => syncLabelAnchorRef.current?.(),
+  });
 
   useEffect(() => {
     onRender?.(result);
@@ -327,33 +492,49 @@ export function InteractiveSchematexDiagram({
   useEffect(() => {
     const key = labelEditor?.item.key;
     const measureRect = labelEditor?.anchor.measureRect;
+    const remeasure = labelEditor?.anchor.remeasure;
     if (!key || !measureRect) return;
     let frame = 0;
     const syncAnchor = () => {
       cancelAnimationFrame(frame);
       frame = requestAnimationFrame(() => {
-        const rect = measureRect();
         setLabelEditor((current) => {
           if (!current || current.item.key !== key) return current;
-          const previous = current.anchor.rect;
-          return previous.left === rect.left &&
-            previous.top === rect.top &&
-            previous.width === rect.width &&
-            previous.height === rect.height
+          const anchor = remeasure?.() ?? {
+            ...current.anchor,
+            rect: measureRect(),
+          };
+          const previous = current.anchor;
+          return previous.rect.left === anchor.rect.left &&
+            previous.rect.top === anchor.rect.top &&
+            previous.rect.width === anchor.rect.width &&
+            previous.rect.height === anchor.rect.height &&
+            previous.fontSize === anchor.fontSize &&
+            previous.fontFamily === anchor.fontFamily &&
+            previous.fontWeight === anchor.fontWeight &&
+            previous.fontStyle === anchor.fontStyle &&
+            previous.letterSpacing === anchor.letterSpacing &&
+            previous.color === anchor.color
             ? current
-            : { ...current, anchor: { ...current.anchor, rect } };
+            : {
+                ...current,
+                anchor,
+                draftWidth: measureDraftWidth(anchor, current.draft),
+              };
         });
       });
     };
     syncAnchor();
+    syncLabelAnchorRef.current = syncAnchor;
     window.addEventListener("resize", syncAnchor);
     window.addEventListener("scroll", syncAnchor, true);
     return () => {
+      if (syncLabelAnchorRef.current === syncAnchor) syncLabelAnchorRef.current = null;
       cancelAnimationFrame(frame);
       window.removeEventListener("resize", syncAnchor);
       window.removeEventListener("scroll", syncAnchor, true);
     };
-  }, [labelEditor?.anchor.measureRect, labelEditor?.item.key]);
+  }, [labelEditor?.anchor.measureRect, labelEditor?.anchor.remeasure, labelEditor?.item.key]);
 
   const overlay = labelEditor && typeof document !== "undefined"
     ? createPortal(
@@ -396,18 +577,21 @@ export function InteractiveSchematexDiagram({
     <div
       ref={hostRef}
       className={canvasClassName}
+      data-schematex-viewport-host={viewportEnabled ? "true" : undefined}
       dangerouslySetInnerHTML={{ __html: result.svg }}
     />
-  ), [canvasClassName, result.svg]);
+  ), [canvasClassName, result.svg, viewportEnabled]);
 
   return (
     <div
+      ref={frameRef}
       className={`schematex-interactive-editor ${className ?? ""}`.trim()}
       style={style}
       role="region"
       aria-label={ariaLabel}
       tabIndex={0}
       data-schematex-editor="true"
+      data-schematex-viewport={viewportEnabled ? "true" : undefined}
     >
       <style>{INTERACTIVE_STYLES}</style>
       {svgHost}
