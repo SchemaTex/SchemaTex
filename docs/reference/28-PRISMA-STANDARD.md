@@ -448,6 +448,7 @@ When a reason list grows beyond what a side box can hold at default width, the r
 - Reason and source names containing spaces or punctuation can be quoted: `"wrong study design"=70`.
 - Trailing commas allowed.
 - Unknown keys inside a stage block are a parse error (not warning) — keeps stages well-defined.
+- **A common leading margin is stripped before indent levels are measured.** Only *relative* indentation is meaningful, so a block indented wholesale — pasted from a markdown fence, a JSX template literal, or an LLM reply that indents its whole answer — parses identically to the flat form, at any margin width including odd ones. The `prisma` header must still be the least-indented line in the block; a header sitting deeper than the body is a parse error naming the indentation, not the keyword.
 
 ---
 
