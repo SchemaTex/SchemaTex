@@ -1,0 +1,49 @@
+---
+title: Planta de evacuação
+---
+
+## Sobre plantas de evacuação
+
+Uma **planta de evacuação** afixada mostra “você está aqui”, as rotas até as saídas finais e a posição de alarmes, equipamentos de incêndio e primeiros socorros. O Schematex usa geometria mensurável e valida ISO 23601, NFPA 170 ou o profile bilíngue da UAE Civil Defence.
+
+<Playground initial={`evacuation "Planta de evacuação" unit m
+compliance iso
+sheet a3 landscape
+room sala "Sala" at 0,0 size 6x4
+here in sala at 2,2
+exit-final saida in sala at 6,2 side east "SAÍDA"
+route primary here -> saida`} height={460} />
+
+---
+
+## 1. Local publicado
+
+Cada cópia precisa de um único `here`. Para vários pontos de instalação, renderize uma cópia por local e altere somente essa linha.
+
+## 2. Sinalização
+
+Os símbolos usam uma grade fixa de 24×24 e 8 mm impressos. Verde representa condição segura e vermelho, equipamento de incêndio. O vocabulário inclui saídas, ponto de encontro, extintor, acionador, primeiros socorros, AED e proibições.
+
+## 3. Rotas
+
+`route primary here -> corredor -> escada -> saida` só atravessa `door` ou `opening` declarados. Os ambientes intermediários devem ser nomeados; o engine não inventa caminhos.
+
+## 4. Profiles
+
+`iso` aplica ISO 23601/7010/3864, `nfpa` aplica NFPA 170/NFPA 101 e `uae` exige rótulos em inglês e árabe.
+
+## 5. Escala de impressão
+
+Declare sheet e orientation. Todas as placas de piso compartilham a escala calculada, enquanto os símbolos continuam com 8 mm. ISO/UAE limita a escala a 1:250.
+
+## 6. Camadas e pavimentos
+
+Móveis comuns, áreas e cotas ficam ocultos; escadas, elevadores, norte, rotas e símbolos permanecem. `floor N "Rótulo"` cria várias placas e IDs de escada compartilhados validam o alinhamento.
+
+## 7. Legenda obrigatória
+
+A legenda Tier M está sempre ativa. `legend: off` é erro porque ISO 23601 e NFPA 170 exigem a explicação dos símbolos usados.
+
+## 8. Validação
+
+O engine verifica local, saída, continuidade, independência, salas sem rota, destino, legibilidade, bilinguismo, elevador, legenda, cores, escala e vocabulário, citando a norma em cada mensagem.

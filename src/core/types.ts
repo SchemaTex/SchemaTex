@@ -92,6 +92,7 @@ export type DiagramType =
   | "welding" // Welding symbols — AWS A2.4 / ISO 2553 reference-line callouts (47-WELDING-SYMBOL-STANDARD)
   // Architectural / space planning
   | "floorplan" // Floor plan / space layout — AGS poché walls, door swing arcs, furniture catalog (48-FLOORPLAN-STANDARD)
+  | "evacuation" // Posted escape / evacuation plan — ISO 23601 / NFPA 170 Ch.11 (53-EVACUATION-PLAN-STANDARD)
   | "siteplan" // Site plan / parcel layout — property boundaries, roads, setbacks, easements, footprints
   // Sports / tactics
   | "playbook"; // Football playbook — chalkboard X&O notation, route tree, formations, coverage (49-SPORTS-PLAYBOOK-STANDARD)
@@ -807,6 +808,11 @@ export interface SceneItem {
 
 export interface DiagramPlugin {
   type: DiagramType;
+  /**
+   * Product-facing diagram types served by this implementation engine.
+   * Example: evacuation is a first-class type but reuses the floorplan plugin.
+   */
+  altTypes?: readonly DiagramType[];
   detect: (text: string) => boolean;
   render: (text: string, config?: RenderConfig) => string;
   /** Parse DSL text to the diagram's AST (for JSON export / programmatic access). */

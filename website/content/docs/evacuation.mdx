@@ -1,0 +1,177 @@
+---
+title: Evacuation plan
+---
+
+## About evacuation plans
+
+An **evacuation plan** is the posted life-safety diagram that tells a person where they are, which routes lead to final exits, and where to find alarms, firefighting equipment, first aid, and the assembly point. Schematex builds it on measurable `floorplan` geometry and checks rules that a drawing tool cannot see: missing location markers, broken route hops, non-independent exits, print scale, safety-sign size, and the mandatory legend.
+
+The engine supports three selectable regimes: ISO 23601 / ISO 7010 / ISO 3864, NFPA 170 Chapter 11 with NFPA 101, and UAE Civil Defence bilingual plans. The output is an editable SVG aid for competent review; it does not replace approval by the authority having jurisdiction.
+
+<Playground initial={`evacuation "Office Escape Plan" unit m
+compliance iso
+sheet a3 landscape
+room office "Open Office" at 0,0 size 6x5
+room lobby "Lift Lobby" below office size 6x2.4
+room stairA "Stair A" left-of lobby size 3x2.4
+room stairB "Stair B" right-of lobby size 3x2.4
+opening between office lobby at 50% width 1.6
+door between lobby stairA at 50% width 1.1
+door between lobby stairB at 50% width 1.1
+here in office at 3,2.5
+exit-final xA in stairA at 0,1.2 side west "EXIT"
+exit-final xB in stairB at 3,1.2 side east "EXIT"
+extinguisher f1 in lobby at 2,1.8 class "ABC"
+route primary here -> lobby -> stairB -> xB
+route secondary here -> lobby -> stairA -> xA`} height={620} />
+
+---
+
+## 1. Start with the posted location
+
+Change the header to `evacuation` (alias `escapeplan`), declare the target sheet, and add exactly one `here` marker for the location where this copy will be mounted:
+
+```
+evacuation "Floor 2 — Escape Plan" unit m
+compliance iso
+sheet a3 landscape
+room office "Office" at 0,0 size 6x5
+here in office at 3,2.5
+exit-final x1 in office at 6,2.5 side east "EXIT"
+route primary here -> x1
+```
+
+One building may need many posted copies. Keep the geometry and routes identical and render one copy per mounting point, changing only the `here` line.
+
+## 2. Safety signs
+
+Signs use a fixed 24×24 drawing grid and a fixed printed size (8 mm by default), independent of the floor-plan scale. Safe-condition signs have a solid green plate, firefighting signs a solid red plate, and their pictograms are white knockout shapes. Schematex draws original geometry; it does not embed or trace ISO or NFPA artwork.
+
+The coordinate-based vocabulary is:
+
+- Exits and rescue: `exit`, `exit-final`, `assembly`, `refuge`, `shelter`, `escape-ladder`, `rescue-window`, `emergency-door-push`, `emergency-door-slide`
+- Medical and emergency help: `first-aid`, `aed`, `stretcher`, `doctor`, `eyewash`, `safety-shower`, `emergency-phone`, `break-glass`
+- Fire equipment: `extinguisher`, `hose-reel`, `fire-ladder`, `fire-equipment`, `call-point`, `fire-phone`, `riser`
+- Plan and prohibition: `here`, `not-an-exit`, `no-elevator`, `alarm-sounder`
+- Door overlays: `fire-door` and `smoke-door` attach to an existing door rather than a coordinate
+
+Use either the short form or explicit `safety`:
+
+```
+extinguisher ext1 in corridor at 1.2,0.3 side north class "ABC"
+safety first-aid aid1 in lobby at 4.8,1.8
+assembly muster outside at 14,10 "Assembly Point A"
+fire-door between corridor stairA rating "EI30"
+```
+
+Room coordinates are relative to that room. `outside at x,y` is plan-absolute. `side north|south|east|west` snaps a sign onto the wall; `hand left|right` overrides the automatically selected directional variant.
+
+## 3. Escape routes
+
+A route is an authored sequence, not an inferred path:
+
+```
+route primary here -> corridor -> stairB -> exitB
+route secondary here -> corridor -> lobby -> stairA -> exitA
+route accessible here -> corridor -> refugeA
+route rescue fireEntry -> serviceCorridor -> riserRoom
+```
+
+Every hop between different rooms must cross a declared `door` or `opening`. Name intermediate rooms explicitly. Schematex draws deterministic orthogonal segments through each opening, rounds the bends, and places chevrons every 2 m pointing away from `here`. `secondary` is dashed, `accessible` carries a wheelchair marker, and `rescue` is blue.
+
+Routes must end at `exit`, `exit-final`, or `assembly`. Two routes are independent only when they end at different final exits and their room sequences differ structurally.
+
+## 4. Compliance profiles
+
+| Profile | Use it for | Important differences |
+| --- | --- | --- |
+| `iso` (default) | DIN/BS/international ISO 23601 plans | ISO 7010 signs, 1:250 scale floor, ≥7 mm signs |
+| `nfpa` | US emergency evacuation diagrams | NFPA 170 variants, two routes are an error, automatic `no-elevator` |
+| `uae` | UAE Civil Defence submissions | yellow location marker, English/Arabic labels, ISO-derived scale floor |
+
+Select the profile near the top:
+
+```
+compliance nfpa
+```
+
+Profile selection changes glyph variants and validation, never room geometry.
+
+## 5. Print scale and sheet size
+
+Declare `sheet a4|a3|a2|letter|tabloid` with `landscape` or `portrait`. Schematex subtracts a 15 mm margin, fits the largest floor plate to both printable axes, and rounds up to a conventional denominator (`1:50`, `1:100`, `1:200`, `1:250`, and so on).
+
+Safety signs remain 8 mm on paper. The scale converts that fixed paper size back into a temporary plan-space footprint for collision checking; signs do not shrink with the building. ISO and UAE plans coarser than 1:250 are errors.
+
+Every rendered sheet carries a note such as:
+
+```
+Scale 1:200 on A3 (landscape) · symbols 8.0 mm · ISO 23601 ✓
+```
+
+## 6. Layers and multi-floor plans
+
+Evacuation mode keeps rooms, walls, openings, door swings, stairs, elevators, columns, room names, north, routes, safety signs, the legend, and scale note. It automatically hides ordinary furniture, area text, and dimension lines. Add `show furniture` only when a specific item is necessary for orientation.
+
+Multi-floor syntax is inherited from floorplan:
+
+```
+evacuation "Building Escape Plans" unit m stack horizontal
+floor 0 "Ground Floor"
+room lobby at 0,0 size 8x5
+furniture stairs S1 in lobby at 0.4,0.4
+
+floor 1 "First Floor"
+room landing at 0,0 size 8x5
+furniture stairs S1 in landing at 0.4,0.4
+```
+
+All plates share one scale. Reusing `S1` registers one stairwell: the lower occurrence is labeled UP, upper occurrences DN, and a coordinate offset greater than 0.1 m warns. Each floor is still validated as its own posted sheet.
+
+## 7. Mandatory legend
+
+The legend is Tier M: it is always present and lists every encoding used, grouped as Escape routes, Exits, Fire equipment, First aid, and Structural. ISO profiles include the sign identity code in labels; NFPA omits ISO codes.
+
+You may rename labels or sections with the shared legend directives, but `legend: off` is a parse error because ISO 23601 and NFPA 170 require the legend.
+
+## 8. Validation messages
+
+The engine checks all of these before publication:
+
+1. Every floor has a `here` marker.
+2. Every floor has an exit.
+3. Route hops cross a declared opening.
+4. Two escape routes are structurally independent (NFPA error; ISO/UAE warning).
+5. Connected rooms are represented on a route or have an exit.
+6. Routes terminate at an exit or assembly point.
+7. Fixed-size safety signs remain legible and do not overlap.
+8. UAE labels contain non-empty English and Arabic halves separated by ` / `.
+9. NFPA/UAE plans with elevators receive one `no-elevator` marker automatically.
+10. The legend cannot be disabled.
+11. `monochrome` reports an error and still renders in semantic safety colors for diagnosis.
+12. ISO/UAE printed scale is no coarser than 1:250.
+13. Unknown sign kinds list valid names and suggest the closest match.
+
+Each diagnostic names the governing source so the author knows whether the fix comes from ISO 23601, NFPA 170/NFPA 101, or UAE Civil Defence guidance.
+
+## 9. Grammar
+
+```text
+plan       ::= ("evacuation"|"escapeplan") string? ("unit" ("m"|"ft"))? statement*
+statement  ::= floorplan-statement | compliance | sheet | safety | route | rated-door | legend
+compliance ::= "compliance" ("iso"|"nfpa"|"uae")
+sheet      ::= "sheet" ("a4"|"a3"|"a2"|"letter"|"tabloid") ("landscape"|"portrait")?
+safety     ::= "safety"? kind id? ("in" room "at" coord | "outside" "at" coord)
+               ("side" wallside)? ("hand" ("left"|"right"))? ("rotate" num)?
+               ("class" string)? string?
+route      ::= "route" ("primary"|"secondary"|"accessible"|"rescue")?
+               anchor ("->" anchor)+ string?
+rated-door ::= ("fire-door"|"smoke-door")
+               ("between" room room | room wallside ("at" pct)?) ("rating" string)?
+```
+
+## Related examples
+
+- [Office floor with two escape routes](/examples#evacuation)
+- [US warehouse using NFPA](/examples#evacuation)
+- [English/Arabic clinic plan](/examples#evacuation)

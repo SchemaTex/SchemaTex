@@ -1,0 +1,49 @@
+---
+title: Plan d’évacuation
+---
+
+## À propos des plans d’évacuation
+
+Un **plan d’évacuation** affiché indique votre position, les cheminements vers les sorties définitives et l’emplacement des alarmes, moyens de lutte contre l’incendie et premiers secours. Schematex s’appuie sur une géométrie mesurable et contrôle ISO 23601, NFPA 170 ou le profil bilingue UAE Civil Defence.
+
+<Playground initial={`evacuation "Plan d’évacuation" unit m
+compliance iso
+sheet a3 landscape
+room salle "Salle" at 0,0 size 6x4
+here in salle at 2,2
+exit-final sortie in salle at 6,2 side east "SORTIE"
+route primary here -> sortie`} height={460} />
+
+---
+
+## 1. Position du lecteur
+
+Chaque exemplaire comporte un seul `here`. Pour plusieurs emplacements d’affichage, rendez plusieurs copies en ne modifiant que cette ligne.
+
+## 2. Signalétique
+
+Les pictogrammes sont dessinés dans un repère fixe 24×24 et imprimés à 8 mm. Le vert désigne l’évacuation et le rouge les équipements incendie. Le vocabulaire comprend sorties, point de rassemblement, extincteur, déclencheur, premiers secours, AED et interdictions.
+
+## 3. Itinéraires
+
+`route primary here -> couloir -> escalier -> sortie` traverse uniquement des portes ou ouvertures déclarées. Les locaux intermédiaires doivent être nommés; aucun chemin n’est inventé.
+
+## 4. Profils
+
+`iso` applique ISO 23601/7010/3864, `nfpa` NFPA 170/NFPA 101 et `uae` l’étiquetage anglais/arabe obligatoire.
+
+## 5. Échelle d’impression
+
+Déclarez la feuille et son orientation. Toutes les plaques d’étage partagent l’échelle calculée, tandis que les symboles restent physiquement à 8 mm. ISO/UAE limite l’échelle à 1:250.
+
+## 6. Calques et étages
+
+Le mobilier courant, les surfaces et les cotes sont masqués; escaliers, ascenseurs, nord, itinéraires et symboles restent visibles. `floor N "Libellé"` crée plusieurs plaques et les mêmes identifiants d’escalier contrôlent l’alignement vertical.
+
+## 7. Légende obligatoire
+
+La légende Tier M ne peut pas être désactivée. Elle regroupe itinéraires, sorties, incendie, secours et éléments structurels.
+
+## 8. Contrôles
+
+Le moteur vérifie position, sortie, continuité, indépendance, locaux sans chemin, destination, lisibilité, bilinguisme, ascenseur, légende, couleurs, échelle et noms de symboles, avec la référence normative dans chaque message.

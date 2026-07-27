@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.2] — 2026-07-26
+
+### Added — multi-floor plans and standards-aware evacuation diagrams
+
+- **Multi-floor floorplans.** `floor N "Label"` sections assemble horizontal or vertical plates at one shared scale. Stair instance ids register across levels, infer `UP`/`DN`, warn above 0.1 m misalignment, and reject cross-floor references. Legacy level-0 single-floor SVG output remains byte-identical.
+- **Evacuation mode.** `evacuation` / `escapeplan` is a first-class diagram type served by the floorplan engine. It adds 40 renderable ISO 7010 / NFPA 170 safety-sign variants, original 24×24 line art on semantic colour plates, orthogonal escape routes with chevrons, fire/smoke-door marks, a mandatory Tier-M legend, and evacuation-specific layer switching.
+- **Compliance computation.** `iso`, `nfpa`, and `uae` profiles compute a conventional print scale and fixed-sheet symbol size for A2/A3/A4/Letter/Tabloid, then run all 13 ISO 23601 / NFPA 170 / UAE Civil Defence checks with standard-cited diagnostics. Monochrome remains renderable for diagnosis but is reported as non-compliant.
+- **Launch surfaces.** Added six validated examples, nine-language evacuation docs, multi-floor sections in every floorplan locale, AI routing/profile coverage, gallery output, and the corrected ISO identities for emergency push/slide doors and F004/F006.
+
+---
+
 ## [1.0.1] — 2026-07-24
 
 ### Added — host-layer viewport pan, zoom, pinch, and fit

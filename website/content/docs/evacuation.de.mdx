@@ -1,0 +1,85 @@
+---
+title: Flucht- und Rettungsplan
+---
+
+## Über Flucht- und Rettungspläne
+
+Ein **Flucht- und Rettungsplan** zeigt den **Standort**, die Fluchtwege zu den Notausgängen sowie Feuerlöscher, Handfeuermelder, Erste Hilfe und Sammelstelle. Schematex legt diese Angaben auf einen maßhaltigen Grundriss und prüft die für **DIN ISO 23601** wichtigen Punkte: Standortmarkierung, durchgängige Wege, unabhängige Ausgänge, Druckmaßstab, Sicherheitszeichen und Pflichtlegende.
+
+<Playground initial={`evacuation "Bürogeschoss — Flucht- und Rettungsplan" unit m
+compliance iso
+sheet a3 landscape
+room buero "Büro" at 0,0 size 6x5
+room flur "Flur" below buero size 6x2.4
+room treppeA "Treppe A" left-of flur size 3x2.4
+room treppeB "Treppe B" right-of flur size 3x2.4
+opening between buero flur at 50% width 1.6
+door between flur treppeA at 50% width 1.1
+door between flur treppeB at 50% width 1.1
+here in buero at 3,2.5
+exit-final xA in treppeA at 0,1.2 side west "AUSGANG"
+exit-final xB in treppeB at 3,1.2 side east "AUSGANG"
+extinguisher f1 in flur at 2,1.8 class "ABC"
+route primary here -> flur -> treppeB -> xB
+route secondary here -> flur -> treppeA -> xA`} height={620} />
+
+---
+
+## 1. Standort und Blattformat
+
+Jedes ausgehängte Blatt braucht genau eine Standortmarkierung:
+
+```
+evacuation "2. Obergeschoss — Flucht- und Rettungsplan" unit m
+compliance iso
+sheet a3 landscape
+here in buero at 3,2.5
+```
+
+Für fünf Montageorte werden fünf Varianten gerendert; nur die `here`-Zeile ändert sich.
+
+## 2. Sicherheitszeichen
+
+Die Zeichen werden in einem festen 24×24-Raster gezeichnet und auf dem Blatt standardmäßig 8 mm groß ausgegeben. Grün kennzeichnet sichere Zustände und Flucht, Rot die Brandschutzeinrichtungen. Die Piktogramme sind eigenständig neu gezeichnet; amtliche ISO-Vektordateien werden weder kopiert noch nachgezeichnet.
+
+Wichtige Schlüsselwörter sind `exit`, `exit-final`, `assembly`, `here`, `extinguisher`, `call-point`, `first-aid`, `aed`, `no-elevator`, `fire-door` und `smoke-door`. Die vollständige Liste entspricht der englischen Referenzseite.
+
+## 3. Fluchtwege
+
+```
+route primary here -> flur -> treppeB -> xB
+route secondary here -> flur -> treppeA -> xA
+```
+
+Jeder Raumwechsel muss über eine deklarierte Tür oder Öffnung führen. Zwischenräume müssen ausdrücklich genannt werden. Pfeilspitzen zeigen immer vom Standort zum Ausgang; der alternative Weg ist gestrichelt.
+
+## 4. Normprofile
+
+- `compliance iso`: DIN ISO 23601 / ISO 7010 / ISO 3864, Maßstab höchstens 1:250.
+- `compliance nfpa`: NFPA 170 Kapitel 11, zwei unabhängige Wege sind ein Fehler.
+- `compliance uae`: UAE Civil Defence, englisch-arabische Beschriftung ist Pflicht.
+
+## 5. Druckmaßstab
+
+`sheet a4|a3|a2|letter|tabloid landscape|portrait` legt das Ausgabeformat fest. Der größte Geschossrahmen bestimmt den gemeinsamen Maßstab. Sicherheitszeichen bleiben physisch 8 mm groß und werden nicht zusammen mit dem Gebäude verkleinert.
+
+## 6. Geschosse
+
+Mit `floor N "Bezeichnung"` entstehen getrennte Geschossrahmen. Gleich benannte Treppen-IDs wie `S1` registrieren ein durchgehendes Treppenhaus; mehr als 0,1 m Versatz erzeugt eine Warnung. Jedes Geschoss muss Standort, Ausgänge und Wege selbst erfüllen.
+
+## 7. Pflichtlegende und Ebenen
+
+Die Tier-M-Legende ist immer aktiv; `legend: off` ist unzulässig. Möbel, Flächenangaben und Maßketten werden automatisch ausgeblendet. Treppen, Aufzüge, Stützen, Nordpfeil, Wege, Zeichen und Maßstabshinweis bleiben sichtbar.
+
+## 8. Prüfung
+
+Schematex meldet unter anderem fehlenden Standort, fehlenden Ausgang, nicht benachbarte Wegsprünge, nicht unabhängige Wege, unerschlossene Räume, ein falsches Wegende, überlappende Zeichen, fehlende Zweisprachigkeit, deaktivierte Legende, Monochrom-Ausgabe, zu kleinen Druckmaßstab und unbekannte Zeichen. Jede Meldung nennt DIN ISO 23601, NFPA oder UAE Civil Defence als Grundlage.
+
+## 9. Grammatik
+
+Die DSL-Formen sind identisch mit der englischen Seite; Titel und sichtbare Beschriftungen dürfen deutsch sein. Die Schlüsselwörter bleiben englisch, damit Quellen zwischen Sprachversionen austauschbar sind.
+
+## Verwandte Beispiele
+
+- [Bürogeschoss mit zwei Fluchtwegen](/examples#evacuation)
+- [Zweistöckiges Wohnhaus](/examples#evacuation)

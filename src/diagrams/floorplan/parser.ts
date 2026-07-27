@@ -12,9 +12,15 @@
 
 import type {
   ArrayMode,
+  CompliancePolicy,
   DoorHinge,
   DoorSwing,
   DoorType,
+  EscapeRouteAst,
+  EscapeRouteKind,
+  EvacuationSheetOrientation,
+  EvacuationSheetSize,
+  FireDoorMarkAst,
   WindowType,
   FloorplanArray,
   FloorplanAst,
@@ -27,10 +33,15 @@ import type {
   OpeningKind,
   RelativeAlign,
   RelativeHow,
+  SafetyKind,
+  SafetySymbolAst,
   WallSide,
 } from "./types";
+import type { LegendOverrides } from "../../core/types";
+import { parseLegendDirective } from "../../core/legend-parser";
 import { FURNITURE_TYPES } from "./catalog";
 import { createSourceLocator, findFirstQuotedRange } from "../../core/source-range";
+import { SAFETY_KINDS } from "./types";
 
 export class FloorplanParseError extends Error {
   readonly line: number;
@@ -124,6 +135,24 @@ function parseId(t: Tok | undefined, what: string, ln: number): string {
 
 const SIDES: readonly WallSide[] = ["north", "south", "east", "west"];
 const REL_HOW: readonly RelativeHow[] = ["right-of", "left-of", "above", "below"];
+const COMPLIANCE_POLICIES: readonly CompliancePolicy[] = ["iso", "nfpa", "uae"];
+const SHEET_SIZES: readonly EvacuationSheetSize[] = [
+  "a4",
+  "a3",
+  "a2",
+  "letter",
+  "tabloid",
+];
+const SHEET_ORIENTATIONS: readonly EvacuationSheetOrientation[] = [
+  "landscape",
+  "portrait",
+];
+const ROUTE_KINDS: readonly EscapeRouteKind[] = [
+  "primary",
+  "secondary",
+  "accessible",
+  "rescue",
+];
 
 const FURNITURE_ALIASES: Record<string, FurnitureType> = {
   section: "sectional",
@@ -174,7 +203,14 @@ function parseFurnitureType(t: Tok | undefined, ln: number): FurnitureType {
 
 // ─── Statement parsers ───────────────────────────────────────────
 
-function parseHeader(tok: Tok[], ast: FloorplanAst, ln: number): void {
+function parseHeader(
+  tok: Tok[],
+  ast: FloorplanAst,
+  ln: number,
+  mode: FloorplanAst["mode"]
+): void {
+  ast.mode = mode;
+  if (mode === "evacuation" && ast.title === "Floor Plan") ast.title = "Evacuation Plan";
   while (tok.length) {
     const t = tok.shift()!;
     if (isStr(t)) ast.title = t.str;
@@ -182,16 +218,22 @@ function parseHeader(tok: Tok[], ast: FloorplanAst, ln: number): void {
       const u = parseId(tok.shift(), "unit (m|ft)", ln);
       if (u !== "m" && u !== "ft") throw new FloorplanParseError(`unit must be "m" or "ft", got "${u}"`, ln);
       ast.unit = u as FloorplanUnit;
-    } else throw new FloorplanParseError(`floorplan: unexpected token "${t.word}"`, ln);
+    } else if (t.word === "stack") {
+      const stack = parseId(tok.shift(), "stack (horizontal|vertical)", ln);
+      if (stack !== "horizontal" && stack !== "vertical") {
+        throw new FloorplanParseError(`stack must be horizontal|vertical, got "${stack}"`, ln);
+      }
+      ast.stack = stack;
+    } else throw new FloorplanParseError(`${mode}: unexpected token "${t.word}"`, ln);
   }
 }
 
-function parseRoom(tok: Tok[], ast: FloorplanAst, ln: number): void {
+function parseRoom(tok: Tok[], ast: FloorplanAst, ln: number, floor: number): void {
   const id = parseId(tok.shift(), "a room id", ln);
-  if (ast.rooms.some((r) => r.id === id)) {
-    throw new FloorplanParseError(`duplicate room id "${id}"`, ln);
+  if (ast.rooms.some((r) => r.id === id && r.floor === floor)) {
+    throw new FloorplanParseError(`duplicate room id "${id}" on floor ${floor}`, ln);
   }
-  const room: FloorplanRoom = { id, label: id, w: 4, h: 3, line: ln };
+  const room: FloorplanRoom = { id, label: id, w: 4, h: 3, floor, line: ln };
   while (tok.length) {
     const t = tok.shift()!;
     if (isStr(t)) room.label = t.str;
@@ -224,9 +266,9 @@ function parseRoom(tok: Tok[], ast: FloorplanAst, ln: number): void {
   ast.rooms.push(room);
 }
 
-function parseExtend(tok: Tok[], ast: FloorplanAst, ln: number): void {
+function parseExtend(tok: Tok[], ast: FloorplanAst, ln: number, floor: number): void {
   const room = parseId(tok.shift(), "a room id", ln);
-  const ext: FloorplanExtend = { room, w: 2, h: 2, line: ln };
+  const ext: FloorplanExtend = { room, w: 2, h: 2, floor, line: ln };
   while (tok.length) {
     const t = tok.shift()!;
     if (!isWord(t)) throw new FloorplanParseError(`extend: unexpected string "${t.str}"`, ln);
@@ -260,7 +302,7 @@ function parseExtend(tok: Tok[], ast: FloorplanAst, ln: number): void {
 const DOOR_TYPES: readonly DoorType[] = ["single", "double", "sliding", "pocket", "bifold"];
 const WINDOW_TYPES: readonly WindowType[] = ["fixed", "sliding", "casement", "bay"];
 
-function parseOpening(kind: OpeningKind, tok: Tok[], ast: FloorplanAst, ln: number): void {
+function parseOpening(kind: OpeningKind, tok: Tok[], ast: FloorplanAst, ln: number, floor: number): void {
   const op: FloorplanOpening = {
     kind,
     pct: 50,
@@ -269,6 +311,7 @@ function parseOpening(kind: OpeningKind, tok: Tok[], ast: FloorplanAst, ln: numb
     swing: "in",
     doorType: "single",
     windowType: "fixed",
+    floor,
     line: ln,
   };
   const t0 = tok.shift();
@@ -317,9 +360,16 @@ function parseOpening(kind: OpeningKind, tok: Tok[], ast: FloorplanAst, ln: numb
   ast.openings.push(op);
 }
 
-function parseFurniture(tok: Tok[], ast: FloorplanAst, ln: number): void {
+const FURNITURE_INSTANCE_KEYWORDS = new Set(["in", "at", "size", "rotate", "seats"]);
+
+function parseFurniture(tok: Tok[], ast: FloorplanAst, ln: number, floor: number): void {
   const type = parseFurnitureType(tok.shift(), ln);
-  const f: FloorplanFurniture = { type, x: 0, y: 0, rotate: 0, line: ln };
+  const f: FloorplanFurniture = { type, x: 0, y: 0, rotate: 0, floor, line: ln };
+  const instance = tok[0];
+  if (isWord(instance) && !FURNITURE_INSTANCE_KEYWORDS.has(instance.word)) {
+    f.instanceId = instance.word;
+    tok.shift();
+  }
   while (tok.length) {
     const t = tok.shift()!;
     if (isStr(t)) f.label = t.str;
@@ -344,7 +394,7 @@ function parseFurniture(tok: Tok[], ast: FloorplanAst, ln: number): void {
   ast.furniture.push(f);
 }
 
-function parseArray(mode: ArrayMode, tok: Tok[], ast: FloorplanAst, ln: number): void {
+function parseArray(mode: ArrayMode, tok: Tok[], ast: FloorplanAst, ln: number, floor: number): void {
   const type = parseFurnitureType(tok.shift(), ln);
   const a: FloorplanArray = {
     mode,
@@ -353,6 +403,7 @@ function parseArray(mode: ArrayMode, tok: Tok[], ast: FloorplanAst, ln: number):
     cols: 1,
     count: Infinity,
     rotate: 0,
+    floor,
     line: ln,
   };
   while (tok.length) {
@@ -376,22 +427,281 @@ function parseArray(mode: ArrayMode, tok: Tok[], ast: FloorplanAst, ln: number):
   ast.arrays.push(a);
 }
 
+function levenshtein(a: string, b: string): number {
+  const row = Array.from({ length: b.length + 1 }, (_, index) => index);
+  for (let i = 1; i <= a.length; i++) {
+    let previous = row[0] ?? 0;
+    row[0] = i;
+    for (let j = 1; j <= b.length; j++) {
+      const saved = row[j] ?? 0;
+      row[j] = Math.min(
+        (row[j] ?? 0) + 1,
+        (row[j - 1] ?? 0) + 1,
+        previous + (a[i - 1] === b[j - 1] ? 0 : 1)
+      );
+      previous = saved;
+    }
+  }
+  return row[b.length] ?? Math.max(a.length, b.length);
+}
+
+function parseSafetyKind(word: string, ln: number): SafetyKind {
+  if ((SAFETY_KINDS as readonly string[]).includes(word)) {
+    return word as SafetyKind;
+  }
+  const suggestion = [...SAFETY_KINDS].sort(
+    (a, b) => levenshtein(word, a) - levenshtein(word, b)
+  )[0];
+  throw new FloorplanParseError(
+    `unknown safety kind "${word}". Did you mean "${suggestion}"? Valid kinds: ${SAFETY_KINDS.join(", ")} ` +
+      `(ISO 7010 / NFPA 170 safety-symbol catalogue)`,
+    ln
+  );
+}
+
+function defaultSafetyId(ast: FloorplanAst, kind: SafetyKind): string {
+  if (kind === "here" && !ast.safety.some((symbol) => symbol.id === "here")) {
+    return "here";
+  }
+  let suffix = 1;
+  let candidate: string = kind;
+  while (ast.safety.some((symbol) => symbol.id === candidate)) {
+    suffix += 1;
+    candidate = `${kind}-${suffix}`;
+  }
+  return candidate;
+}
+
+function parseSafety(
+  kindWord: string,
+  tok: Tok[],
+  ast: FloorplanAst,
+  ln: number,
+  floor: number
+): void {
+  const kind = parseSafetyKind(kindWord, ln);
+  const symbol: SafetySymbolAst = {
+    kind,
+    id: "",
+    outside: false,
+    x: 0,
+    y: 0,
+    rotate: 0,
+    floor,
+    line: ln,
+  };
+  if (isWord(tok[0]) && !isWord(tok[0], "in") && !isWord(tok[0], "outside")) {
+    symbol.id = (tok.shift() as { word: string }).word;
+  } else {
+    symbol.id = defaultSafetyId(ast, kind);
+  }
+  if (ast.safety.some((existing) => existing.id === symbol.id && existing.floor === floor)) {
+    throw new FloorplanParseError(
+      `duplicate safety symbol id "${symbol.id}" on floor ${floor}`,
+      ln
+    );
+  }
+
+  const location = tok.shift();
+  if (isWord(location, "in")) {
+    symbol.room = parseId(tok.shift(), `a room id after "in"`, ln);
+    if (!isWord(tok.shift(), "at")) {
+      throw new FloorplanParseError(`safety ${kind}: expected "at x,y"`, ln);
+    }
+    const coord = parseCoord(tok.shift(), "safety location", ln);
+    symbol.x = coord.x;
+    symbol.y = coord.y;
+  } else if (isWord(location, "outside")) {
+    symbol.outside = true;
+    if (!isWord(tok.shift(), "at")) {
+      throw new FloorplanParseError(`safety ${kind}: expected "outside at x,y"`, ln);
+    }
+    const coord = parseCoord(tok.shift(), "safety location", ln);
+    symbol.x = coord.x;
+    symbol.y = coord.y;
+  } else {
+    throw new FloorplanParseError(
+      `safety ${kind}: expected "in <room> at x,y" or "outside at x,y"`,
+      ln
+    );
+  }
+
+  while (tok.length) {
+    const token = tok.shift();
+    if (isStr(token)) {
+      symbol.label = token.str;
+    } else if (isWord(token, "side")) {
+      const side = parseId(tok.shift(), "a wall side", ln);
+      if (!(SIDES as readonly string[]).includes(side)) {
+        throw new FloorplanParseError(
+          `expected a wall side north|south|east|west, got "${side}"`,
+          ln
+        );
+      }
+      symbol.side = side as WallSide;
+    } else if (isWord(token, "hand")) {
+      const hand = parseId(tok.shift(), "hand (left|right)", ln);
+      if (hand !== "left" && hand !== "right") {
+        throw new FloorplanParseError(`hand must be left|right, got "${hand}"`, ln);
+      }
+      symbol.hand = hand;
+    } else if (isWord(token, "rotate")) {
+      symbol.rotate = parseNum(tok.shift(), "rotate", ln);
+    } else if (isWord(token, "class")) {
+      const fireClass = tok.shift();
+      if (!isStr(fireClass)) {
+        throw new FloorplanParseError(`class expects a quoted fire class`, ln);
+      }
+      symbol.fireClass = fireClass.str;
+    } else {
+      throw new FloorplanParseError(`safety ${kind}: unexpected option`, ln);
+    }
+  }
+  ast.safety.push(symbol);
+}
+
+function parseRoute(
+  tok: Tok[],
+  ast: FloorplanAst,
+  ln: number,
+  floor: number
+): void {
+  let kind: EscapeRouteKind = "primary";
+  if (isWord(tok[0]) && (ROUTE_KINDS as readonly string[]).includes(tok[0].word)) {
+    kind = (tok.shift() as { word: EscapeRouteKind }).word;
+  }
+  const anchors: string[] = [];
+  let label: string | undefined;
+  const first = tok.shift();
+  if (!isWord(first) || first.word === "->") {
+    throw new FloorplanParseError(`route: expected a starting anchor`, ln);
+  }
+  anchors.push(first.word);
+  while (tok.length) {
+    const arrow = tok.shift();
+    if (isStr(arrow)) {
+      label = arrow.str;
+      break;
+    }
+    if (!isWord(arrow, "->")) {
+      throw new FloorplanParseError(`route: expected "->" between anchors`, ln);
+    }
+    const anchor = tok.shift();
+    if (!isWord(anchor) || anchor.word === "->") {
+      throw new FloorplanParseError(`route: expected an anchor after "->"`, ln);
+    }
+    anchors.push(anchor.word);
+  }
+  if (tok.length) {
+    throw new FloorplanParseError(`route: unexpected trailing tokens`, ln);
+  }
+  if (anchors.length < 2) {
+    throw new FloorplanParseError(`route needs at least two anchors`, ln);
+  }
+  const route: EscapeRouteAst = {
+    id: `route-${ast.routes.length + 1}`,
+    kind,
+    anchors,
+    label,
+    floor,
+    line: ln,
+  };
+  ast.routes.push(route);
+}
+
+function parseFireDoor(
+  kind: FireDoorMarkAst["kind"],
+  tok: Tok[],
+  ast: FloorplanAst,
+  ln: number,
+  floor: number
+): void {
+  const mark: FireDoorMarkAst = { kind, floor, line: ln };
+  const target = tok.shift();
+  if (isWord(target, "between")) {
+    mark.between = [
+      parseId(tok.shift(), "a room id", ln),
+      parseId(tok.shift(), "a second room id", ln),
+    ];
+  } else {
+    mark.room = parseId(target, `a room id or "between"`, ln);
+    const side = parseId(tok.shift(), "a wall side", ln);
+    if (!(SIDES as readonly string[]).includes(side)) {
+      throw new FloorplanParseError(
+        `expected a wall side north|south|east|west, got "${side}"`,
+        ln
+      );
+    }
+    mark.side = side as WallSide;
+    if (isWord(tok[0], "at")) {
+      tok.shift();
+      mark.pct = parsePct(tok.shift(), ln);
+    }
+  }
+  while (tok.length) {
+    const token = tok.shift();
+    if (isWord(token, "rating")) {
+      const rating = tok.shift();
+      if (!isStr(rating)) {
+        throw new FloorplanParseError(`rating expects a quoted value`, ln);
+      }
+      mark.rating = rating.str;
+    } else if (isWord(token)) {
+      throw new FloorplanParseError(`${kind}: unexpected token "${token.word}"`, ln);
+    } else if (token) {
+      throw new FloorplanParseError(`${kind}: unexpected string "${token.str}"`, ln);
+    }
+  }
+  ast.fireDoors.push(mark);
+}
+
+function parseEvacuationLegend(
+  raw: string,
+  overrides: LegendOverrides,
+  ln: number
+): void {
+  const normalized = raw.replace(
+    /^legend\s+(on|off|auto)\s*$/i,
+    "legend: $1"
+  );
+  if (!parseLegendDirective(normalized, overrides)) {
+    throw new FloorplanParseError(`invalid legend directive`, ln);
+  }
+  if (overrides.mode === "off") {
+    throw new FloorplanParseError(
+      `an evacuation plan must carry a legend (ISO 23601 §6 / NFPA 170 Ch.11); "legend: off" is not permitted in evacuation mode`,
+      ln
+    );
+  }
+}
+
 // ─── Entry point ─────────────────────────────────────────────────
 
 export function parseFloorplan(text: string): FloorplanAst {
   const locator = createSourceLocator(text);
   const ast: FloorplanAst = {
     type: "floorplan",
+    mode: "floorplan",
     title: "Floor Plan",
     unit: "m",
+    floors: [],
+    stack: "horizontal",
     rooms: [],
     extensions: [],
     openings: [],
     furniture: [],
     arrays: [],
+    compliance: "iso",
+    sheet: { size: "a3", orientation: "landscape" },
+    safety: [],
+    routes: [],
+    fireDoors: [],
+    showFurniture: false,
+    legendOverrides: {},
   };
 
   let sawHeader = false;
+  let currentFloor = 0;
   const lines = text.split(/\r?\n/);
   let absoluteLineStart = 0;
   for (let i = 0; i < lines.length; i++) {
@@ -421,15 +731,48 @@ export function parseFloorplan(text: string): FloorplanAst {
     const head = tok.shift();
     if (!isWord(head)) throw new FloorplanParseError(`unexpected string at line start`, ln);
     const kw = head.word.toLowerCase();
-    if (kw === "floorplan") {
-      parseHeader(tok, ast, ln);
+    if (kw === "floorplan" || kw === "evacuation" || kw === "escapeplan") {
+      parseHeader(tok, ast, ln, kw === "floorplan" ? "floorplan" : "evacuation");
       const titleToken = findFirstQuotedRange(original);
       if (titleToken) ast.titleSourceRange = locator.range(lineStart + titleToken.start, lineStart + titleToken.end);
       sawHeader = true;
     } else if (!sawHeader) {
-      throw new FloorplanParseError(`the first statement must be the "floorplan" header`, ln);
+      throw new FloorplanParseError(
+        `the first statement must be the "floorplan", "evacuation", or "escapeplan" header`,
+        ln
+      );
+    } else if (kw === "floor") {
+      const level = parseNum(tok.shift(), "floor level", ln);
+      if (!Number.isInteger(level)) {
+        throw new FloorplanParseError(`floor level must be an integer, got ${level}`, ln);
+      }
+      if (ast.floors.some((floor) => floor.level === level)) {
+        throw new FloorplanParseError(`duplicate floor ${level} — merge the two sections`, ln);
+      }
+      const labelToken = tok.shift();
+      if (labelToken && !isStr(labelToken)) {
+        throw new FloorplanParseError(`floor: unexpected token "${labelToken.word}"`, ln);
+      }
+      if (tok.length) {
+        const trailing = tok[0];
+        if (trailing) {
+          throw new FloorplanParseError(
+            `floor: unexpected ${isStr(trailing) ? `string "${trailing.str}"` : `token "${trailing.word}"`}`,
+            ln
+          );
+        }
+      }
+      const label = isStr(labelToken)
+        ? labelToken.str
+        : level === 0 || level === 1
+          ? "Ground Floor"
+          : level > 1
+            ? `Floor ${level}`
+            : `Basement ${-level}`;
+      ast.floors.push({ level, label, line: ln });
+      currentFloor = level;
     } else if (kw === "room") {
-      parseRoom(tok, ast, ln);
+      parseRoom(tok, ast, ln, currentFloor);
       const room = ast.rooms[ast.rooms.length - 1];
       const labelToken = findFirstQuotedRange(original);
       if (room && labelToken) room.labelSourceRange = locator.range(lineStart + labelToken.start, lineStart + labelToken.end);
@@ -437,14 +780,72 @@ export function parseFloorplan(text: string): FloorplanAst {
       if (room && positionToken) room.positionSourceRange = locator.range(lineStart + positionToken.start, lineStart + positionToken.end);
       const sizeToken = findSizeRange(original);
       if (room && sizeToken) room.sizeSourceRange = locator.range(lineStart + sizeToken.start, lineStart + sizeToken.end);
+    } else if (ast.mode === "evacuation" && kw === "compliance") {
+      const policy = parseId(tok.shift(), "compliance profile (iso|nfpa|uae)", ln);
+      if (!(COMPLIANCE_POLICIES as readonly string[]).includes(policy)) {
+        throw new FloorplanParseError(
+          `compliance must be iso|nfpa|uae, got "${policy}"`,
+          ln
+        );
+      }
+      ast.compliance = policy as CompliancePolicy;
+      if (tok.length) throw new FloorplanParseError(`compliance: unexpected trailing tokens`, ln);
+    } else if (ast.mode === "evacuation" && kw === "sheet") {
+      const size = parseId(tok.shift(), "sheet size", ln);
+      if (!(SHEET_SIZES as readonly string[]).includes(size)) {
+        throw new FloorplanParseError(
+          `sheet must be a4|a3|a2|letter|tabloid, got "${size}"`,
+          ln
+        );
+      }
+      ast.sheet.size = size as EvacuationSheetSize;
+      if (tok.length) {
+        const orientation = parseId(tok.shift(), "sheet orientation", ln);
+        if (!(SHEET_ORIENTATIONS as readonly string[]).includes(orientation)) {
+          throw new FloorplanParseError(
+            `sheet orientation must be landscape|portrait, got "${orientation}"`,
+            ln
+          );
+        }
+        ast.sheet.orientation = orientation as EvacuationSheetOrientation;
+      }
+      if (tok.length) throw new FloorplanParseError(`sheet: unexpected trailing tokens`, ln);
+    } else if (ast.mode === "evacuation" && kw === "show") {
+      const layer = parseId(tok.shift(), `a layer after "show"`, ln);
+      if (layer !== "furniture") {
+        throw new FloorplanParseError(`show supports only "furniture", got "${layer}"`, ln);
+      }
+      ast.showFurniture = true;
+      if (tok.length) throw new FloorplanParseError(`show furniture: unexpected trailing tokens`, ln);
+    } else if (
+      ast.mode === "evacuation" &&
+      (kw === "legend" || kw === "legend:" || kw.startsWith("legend."))
+    ) {
+      parseEvacuationLegend(raw, ast.legendOverrides, ln);
+    } else if (ast.mode === "evacuation" && kw === "safety") {
+      parseSafety(parseId(tok.shift(), "a safety kind", ln), tok, ast, ln, currentFloor);
+    } else if (
+      ast.mode === "evacuation" &&
+      (SAFETY_KINDS as readonly string[]).includes(kw)
+    ) {
+      parseSafety(kw, tok, ast, ln, currentFloor);
+    } else if (ast.mode === "evacuation" && kw === "route") {
+      parseRoute(tok, ast, ln, currentFloor);
+    } else if (
+      ast.mode === "evacuation" &&
+      (kw === "fire-door" || kw === "smoke-door")
+    ) {
+      parseFireDoor(kw, tok, ast, ln, currentFloor);
     }
     else if (kw === "north") {
       ast.north = tok.length ? parseNum(tok.shift(), "north rotation (degrees)", ln) : 0;
       if (tok.length) throw new FloorplanParseError(`north: unexpected trailing tokens`, ln);
-    } else if (kw === "extend") parseExtend(tok, ast, ln);
-    else if (kw === "door" || kw === "window" || kw === "opening") parseOpening(kw as OpeningKind, tok, ast, ln);
+    } else if (kw === "extend") parseExtend(tok, ast, ln, currentFloor);
+    else if (kw === "door" || kw === "window" || kw === "opening") {
+      parseOpening(kw as OpeningKind, tok, ast, ln, currentFloor);
+    }
     else if (kw === "furniture") {
-      parseFurniture(tok, ast, ln);
+      parseFurniture(tok, ast, ln, currentFloor);
       const item = ast.furniture[ast.furniture.length - 1];
       const labelToken = item?.label ? findFirstQuotedRange(original) : undefined;
       if (item && labelToken) item.labelSourceRange = locator.range(lineStart + labelToken.start, lineStart + labelToken.end);
@@ -456,10 +857,12 @@ export function parseFloorplan(text: string): FloorplanAst {
         );
       }
     }
-    else if (kw === "grid" || kw === "row" || kw === "arc") parseArray(kw as ArrayMode, tok, ast, ln);
+    else if (kw === "grid" || kw === "row" || kw === "arc") {
+      parseArray(kw as ArrayMode, tok, ast, ln, currentFloor);
+    }
     else {
       throw new FloorplanParseError(
-        `unknown keyword "${kw}". Expected: floorplan, room, extend, door, window, opening, furniture, grid, row, arc`,
+        `unknown keyword "${kw}". Expected: floorplan, evacuation, floor, room, extend, door, window, opening, furniture, grid, row, arc, safety, route`,
         ln
       );
     }

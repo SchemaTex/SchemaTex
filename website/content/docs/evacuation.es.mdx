@@ -1,0 +1,49 @@
+---
+title: Plano de evacuación
+---
+
+## Acerca de los planos de evacuación
+
+Un **plano de evacuación** publicado muestra «usted está aquí», las rutas hacia las salidas finales y la ubicación de alarmas, equipos contra incendios y primeros auxilios. Schematex lo construye sobre geometría medible y valida ISO 23601, NFPA 170 o el perfil bilingüe de UAE Civil Defence.
+
+<Playground initial={`evacuation "Plano de evacuación" unit m
+compliance iso
+sheet a3 landscape
+room sala "Sala" at 0,0 size 6x4
+here in sala at 2,2
+exit-final salida in sala at 6,2 side east "SALIDA"
+route primary here -> salida`} height={460} />
+
+---
+
+## 1. Ubicación publicada
+
+Cada copia necesita un único `here`. Para varios puntos de montaje, renderiza una copia por ubicación y cambia solo esa línea.
+
+## 2. Señales
+
+Las señales usan un lienzo fijo de 24×24 y 8 mm impresos. Verde significa condición segura; rojo, equipo contra incendios. Usa `exit`, `exit-final`, `assembly`, `extinguisher`, `call-point`, `first-aid`, `aed`, `no-elevator` y el resto del catálogo documentado.
+
+## 3. Rutas
+
+`route primary here -> corredor -> escalera -> salida` conecta anclas mediante puertas u `opening` declarados. Las habitaciones intermedias son obligatorias; el motor no inventa caminos.
+
+## 4. Perfiles
+
+`compliance iso` aplica ISO 23601/7010/3864; `nfpa` aplica NFPA 170 y NFPA 101; `uae` exige etiquetas inglesas/árabes separadas por ` / `.
+
+## 5. Escala
+
+Declara `sheet a4|a3|a2|letter|tabloid landscape|portrait`. El plano calcula una escala convencional compartida y mantiene las señales a 8 mm. ISO/UAE rechaza escalas más gruesas que 1:250.
+
+## 6. Capas y pisos
+
+El modo oculta muebles ordinarios, áreas y cotas; conserva escaleras, ascensores, norte, rutas y símbolos. `floor N "Etiqueta"` crea placas con escala común e IDs de escalera compartidos.
+
+## 7. Leyenda obligatoria
+
+La leyenda Tier M siempre está activa. `legend: off` es un error porque ISO 23601 y NFPA 170 exigen explicar los símbolos usados.
+
+## 8. Validación
+
+Se comprueban ubicación, salida, continuidad, independencia, habitaciones sin ruta, destino, legibilidad, bilingüismo, ascensor, leyenda, color, escala y vocabulario. Cada mensaje cita la norma aplicable.

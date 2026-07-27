@@ -207,3 +207,17 @@ coord     ::= num "," num          dims ::= num "x" num          pct ::= num "%"
 - [兩臥室公寓](/examples#floorplan) — 相對放置，7 扇門，完整家具
 - [27 張桌子的教室](/examples#floorplan) — `grid … count` 截斷，`unit ft`
 - [120 人婚宴](/examples#floorplan) — 自動座位宴會圓桌，舞池
+
+## 多樓層平面圖
+
+用 `floor N "標籤"` 把同一份 source 分成共用比例尺的樓層 plate；`stack horizontal|vertical` 控制排版方向。`S1` 這類可選 furniture ID 會登記同一段樓梯：低層自動標 UP，高層標 DN，錯位超過 0.1 m 會 warning。房間、門、家具與 array 參照不能跨層。
+
+```
+floorplan "兩層住宅" unit m
+floor 0 "一樓"
+room hall at 0,0 size 6x4
+furniture stairs S1 in hall at 4,0.4
+floor 1 "二樓"
+room landing at 0,0 size 6x4
+furniture stairs S1 in landing at 4,0.4
+```

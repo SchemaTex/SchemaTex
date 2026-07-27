@@ -21,9 +21,9 @@ import {
 } from "../../src";
 
 describe("listDiagrams", () => {
-  it("returns all 50 diagram types", () => {
+  it("returns all 51 diagram types", () => {
     const list = listDiagrams();
-    expect(list.length).toBe(50);
+    expect(list.length).toBe(51);
     const types = list.map((d) => d.type);
     expect(types).toContain("genogram");
     expect(types).toContain("siteplan");
@@ -49,6 +49,7 @@ describe("listDiagrams", () => {
     expect(types).toContain("usecase");
     expect(types).toContain("prisma");
     expect(types).toContain("pert");
+    expect(types).toContain("evacuation");
   });
 
   it("each entry has tagline + useWhen + standard", () => {
@@ -60,8 +61,8 @@ describe("listDiagrams", () => {
   });
 
   it("uses the canonical interactive capability registry for all engines", () => {
-    expect(INTERACTIVE_DIAGRAM_COUNT).toBe(20);
-    expect(POSITION_EDITABLE_DIAGRAM_COUNT).toBe(17);
+    expect(INTERACTIVE_DIAGRAM_COUNT).toBe(21);
+    expect(POSITION_EDITABLE_DIAGRAM_COUNT).toBe(18);
     let sourceOnly = 0;
     for (const entry of listDiagrams()) {
       expect(entry.interactive).toEqual(getDiagramCapabilities(entry.type));

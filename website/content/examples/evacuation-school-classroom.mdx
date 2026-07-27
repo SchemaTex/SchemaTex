@@ -1,0 +1,38 @@
+---
+title: School classroom wing — dual egress
+description: "A classroom-wing evacuation sheet that keeps instructional furniture out of the life-safety view and shows two distinct paths to protected stairs."
+diagram: evacuation
+standard: ISO 23601 · ISO 7010 · ISO 3864
+industry: [education, safety]
+persona: For the school operations lead posting an escape plan beside a classroom door
+complexity: 3
+tags: [evacuation, school, classroom, fire-safety, iso-23601]
+featured: false
+relatedLink:
+  label: Evacuation plan syntax
+  href: /docs/evacuation
+status: published
+dsl: |
+  evacuation "Classroom Wing — Escape Plan" unit m
+  compliance iso
+  sheet a3 landscape
+  room classroom "Classroom 2.14" at 0,0 size 8x6
+  room corridor "Main Corridor" below classroom size 8x2.4
+  room stairW "West Stair" left-of corridor size 3x2.4
+  room stairE "East Stair" right-of corridor size 3x2.4
+  door between classroom corridor at 50% width 1.2
+  door between corridor stairW at 50% width 1.1
+  door between corridor stairE at 50% width 1.1
+  here in classroom at 4,5.2
+  exit-final westExit in stairW at 0,1.2 side west "EXIT"
+  exit-final eastExit in stairE at 3,1.2 side east "EXIT"
+  call-point cpW in corridor at 0.8,0.3 side north
+  call-point cpE in corridor at 7.2,0.3 side north
+  extinguisher ext in corridor at 4,1.8 class "ABC"
+  route primary here -> corridor -> stairE -> eastExit
+  route secondary here -> corridor -> stairW -> westExit
+---
+
+## Furniture-free by default
+
+Evacuation mode preserves any classroom furniture in the source AST but omits it from the posted sheet, leaving the structural path and safety signs readable.

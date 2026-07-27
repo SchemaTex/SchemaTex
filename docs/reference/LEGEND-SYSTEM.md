@@ -16,6 +16,7 @@ A legend is a small key drawn next to a diagram that explains what a color, line
 | Tier-A migration | entity, fishbone, phylo | planned |
 | Tier-B migration | timeline, matrix (already render legends — unify under shared core); flowchart, decisiontree, orgchart | planned |
 | Tier-C compliance | timing, logic, circuit, ladder, sld, venn, mindmap | no legend by design |
+| Tier-M mandatory | evacuation | **implemented** |
 
 ---
 
@@ -35,6 +36,7 @@ Legend is on by default for diagrams whose visual encoding cannot be read at a g
 | **B** Category-driven | timeline, matrix, flowchart (with classDef), decisiontree, orgchart | **on** | Per-category colors carry meaning that text labels alone don't expose. |
 | **C-conditional** | blockdiagram | **on** if `role` set on ≥2 blocks; otherwise off | Block roles drive fill colors; transfer-function labels usually self-describe. |
 | **C** Compliance / self-labeled | timing, logic, circuit, ladder, sld, venn, mindmap | **off** | Symbols are field-standard or labels live on the shape itself. |
+| **M** Mandatory safety communication | evacuation | **on; cannot be disabled** | ISO 23601 escape plans require a key for safety, fire-equipment, route, and structural symbols. `legend: off` is a validation error and the legend still renders. |
 
 Auto-derivation is *signal-rich*: it only emits items for encodings that **vary in this specific chart**. Universal McGoldrick / Hartman / Moreno conventions everyone in the field reads at a glance — square=Male, circle=Female, ── = married, │ = parent-child, ── = positive tie — are excluded by default. A pedigree showing only unaffected family members renders with no legend at all.
 
@@ -310,7 +312,7 @@ sociogram
 
 ## Adding a legend to a new diagram
 
-1. Decide the tier (A / B / C). See the table above.
+1. Decide the tier (A / B / C / M). See the table above. Tier M is reserved for standards-mandated legends and must reject `legend: off` while continuing to render the legend.
 2. Author the per-diagram standard doc's `## Legend` section listing sections and keys.
 3. Implement `buildXxxLegend(ast)` returning a `LegendSpec` with `mode: "on"` (or `"auto"` for conditional cases like blockdiagram).
 4. In the diagram parser, accept legend directives via `parseLegendDirective(line, overrides)` from `src/core/legend-parser.ts`.

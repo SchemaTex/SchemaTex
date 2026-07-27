@@ -211,3 +211,20 @@ Comments run from `#` to end of line. CJK quotes (`“”`) are accepted as ASCI
 ## Interactive editing
 
 Furniture and electrical fixtures move independently in room coordinates. A simple room exposes east, south, and corner resize handles that rewrite native dimensions; the room body itself does not drag, keeping furniture selection unambiguous. Shared-wall openings remain topology-validated.
+
+## Multi-floor plan sets
+
+Use `floor N "Label"` to divide one source into framed floor plates. All plates share one drawing scale; `stack horizontal|vertical` controls the sheet arrangement.
+
+```
+floorplan "Two-Storey Villa" unit m stack horizontal
+floor 0 "Ground Floor"
+room hall at 0,0 size 6x4
+furniture stairs S1 in hall at 4,0.4
+
+floor 1 "First Floor"
+room landing at 0,0 size 6x4
+furniture stairs S1 in landing at 4,0.4
+```
+
+The optional furniture instance id (`S1`) registers the same stair run across levels. The lower occurrence becomes UP, upper occurrences DN, and offsets over 0.1 m warn. Room references, doors, furniture, and arrays cannot cross floor sections.

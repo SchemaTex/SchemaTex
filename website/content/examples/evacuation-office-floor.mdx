@@ -1,0 +1,40 @@
+---
+title: Office floor — two independent escape routes
+description: "A posted office escape plan with two structurally independent routes, final exits, fire equipment, first aid, a mandatory legend, and an ISO print-scale check."
+diagram: evacuation
+standard: ISO 23601 · ISO 7010 · ISO 3864
+industry: [business, safety]
+persona: For the facilities manager preparing a posted office escape plan
+complexity: 3
+tags: [evacuation, fire-safety, office, escape-route, iso-23601]
+featured: false
+relatedLink:
+  label: Evacuation plan syntax
+  href: /docs/evacuation
+status: published
+dsl: |
+  evacuation "Office Floor — Escape Plan" unit m
+  compliance iso
+  sheet a3 landscape
+  room office "Open Office" at 0,0 size 6x5
+  room lobby "Lift Lobby" below office size 6x2.4
+  room stairA "Stair A" left-of lobby size 3x2.4
+  room stairB "Stair B" right-of lobby size 3x2.4
+  opening between office lobby at 50% width 1.6
+  door between lobby stairA at 50% width 1.1
+  door between lobby stairB at 50% width 1.1
+  here in office at 3,2.5
+  exit-final xA in stairA at 0,1.2 side west "EXIT"
+  exit-final xB in stairB at 3,1.2 side east "EXIT"
+  call-point cp1 in lobby at 0.8,0.3 side north
+  extinguisher f1 in lobby at 2.0,0.3 side north class "ABC"
+  first-aid fa1 in lobby at 4.8,1.8
+  fire-door between lobby stairA rating "EI30"
+  fire-door between lobby stairB rating "EI30"
+  route primary here -> lobby -> stairB -> xB
+  route secondary here -> lobby -> stairA -> xA
+---
+
+## Why this plan is reviewable
+
+Both routes name every room they cross and finish at different final exits. The engine verifies the shared openings, computes the A3 print scale, and derives the Tier-M legend from the signs actually used.

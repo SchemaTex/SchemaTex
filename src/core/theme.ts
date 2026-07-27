@@ -1838,6 +1838,53 @@ export function resolveFloorplanTheme(name: string): ResolvedTheme<FloorplanToke
   return { ...BASE_THEMES[themeName], ...FLOORPLAN_TOKENS[themeName] };
 }
 
+// ─── Evacuation Plan Tokens ─────────────────────────────────
+// ISO 3864 safety colours are meaning, not decoration. Evacuation plans stay
+// on a light paper sheet in every app theme; monochrome is diagnosed by the
+// renderer and deliberately falls back to this same semantic palette.
+
+export interface EvacuationTokens extends FloorplanTokens {
+  safeGreen: string;
+  fireRed: string;
+  mandBlue: string;
+  warnYellow: string;
+  routeGreen: string;
+  rescueBlue: string;
+  symbolKnockout: string;
+  hereMark: string;
+  complianceText: string;
+}
+
+const DEFAULT_EVACUATION: EvacuationTokens = {
+  ...DEFAULT_FLOORPLAN,
+  safeGreen: "#00843D",
+  fireRed: "#C8102E",
+  mandBlue: "#005387",
+  warnYellow: "#FFCC00",
+  routeGreen: "#00A651",
+  rescueBlue: "#006EB6",
+  symbolKnockout: "#FFFFFF",
+  hereMark: "#00843D",
+  complianceText: "#334155",
+};
+
+export const EVACUATION_TOKENS: Record<ThemeName, EvacuationTokens> = {
+  default: DEFAULT_EVACUATION,
+  dark: DEFAULT_EVACUATION,
+  monochrome: DEFAULT_EVACUATION,
+};
+
+export function resolveEvacuationTheme(
+  name: string
+): ResolvedTheme<EvacuationTokens> {
+  const themeName: ThemeName = "default";
+  void name;
+  return {
+    ...BASE_THEMES[themeName],
+    ...EVACUATION_TOKENS[themeName],
+  };
+}
+
 // ─── Sports Playbook Tokens (multi-sport) ──────────────────
 // 49-SPORTS-PLAYBOOK-STANDARD §7. Coaching diagrams have no ratified colour
 // standard, so Schematex adopts a polished broadcast look: a **green playing

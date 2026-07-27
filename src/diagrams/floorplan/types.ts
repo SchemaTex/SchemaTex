@@ -10,6 +10,8 @@
  * renderer multiplies by a px/m scale.
  */
 
+import type { LegendOverrides, LegendSpec } from "../../core/types";
+
 // ─── Enums ───────────────────────────────────────────────────────
 
 export type FloorplanUnit = "m" | "ft";
@@ -33,6 +35,71 @@ export type RelativeHow = "right-of" | "left-of" | "above" | "below";
 export type RelativeAlign = "start" | "center" | "end";
 
 export type ArrayMode = "grid" | "row" | "arc";
+
+export type CompliancePolicy = "iso" | "nfpa" | "uae";
+
+export type EvacuationSheetSize =
+  | "a4"
+  | "a3"
+  | "a2"
+  | "letter"
+  | "tabloid";
+
+export type EvacuationSheetOrientation = "landscape" | "portrait";
+
+/** Coordinate-based safety signs. Door ratings are separate structural marks. */
+export const SAFETY_KINDS = [
+  "here",
+  "exit",
+  "exit-final",
+  "assembly",
+  "refuge",
+  "shelter",
+  "first-aid",
+  "aed",
+  "stretcher",
+  "doctor",
+  "eyewash",
+  "safety-shower",
+  "emergency-phone",
+  "break-glass",
+  "escape-ladder",
+  "rescue-window",
+  "emergency-door-push",
+  "emergency-door-slide",
+  "extinguisher",
+  "hose-reel",
+  "fire-ladder",
+  "fire-equipment",
+  "call-point",
+  "fire-phone",
+  "riser",
+  "not-an-exit",
+  "no-elevator",
+  "alarm-sounder",
+] as const;
+
+export type SafetyKind = (typeof SAFETY_KINDS)[number];
+
+export type SafetyColour =
+  | "safe"
+  | "fire"
+  | "mandatory"
+  | "warning"
+  | "neutral";
+
+export type EscapeRouteKind =
+  | "primary"
+  | "secondary"
+  | "accessible"
+  | "rescue";
+
+/** One level in a multi-floor plan set (§48.2.5). */
+export interface FloorplanFloor {
+  level: number;
+  label: string;
+  line?: number;
+}
 
 /**
  * Furniture / fixture catalog (§2.2). Full v0.1 vocabulary across the four
@@ -189,6 +256,8 @@ export interface FloorplanRoom {
   fill?: string;
   /** Suppress the centered name + area label (single-space plans). */
   nolabel?: boolean;
+  /** Owning floor level; statements outside a floor section use level 0. */
+  floor: number;
   line?: number;
 }
 
@@ -209,6 +278,7 @@ export interface FloorplanExtend {
   };
   w: number;
   h: number;
+  floor: number;
   line?: number;
 }
 
@@ -227,11 +297,14 @@ export interface FloorplanOpening {
   swing: DoorSwing;
   doorType: DoorType;
   windowType: WindowType;
+  floor: number;
   line?: number;
 }
 
 export interface FloorplanFurniture {
   type: FurnitureType;
+  /** Shared stairs id across floors; absent for anonymous furniture. */
+  instanceId?: string;
   /** Containing room id (required for placement). */
   room?: string;
   /** Position relative to the room's interior origin (top-left), input units. */
@@ -252,6 +325,7 @@ export interface FloorplanFurniture {
    * ignored. Turns a venue plan into an actual seating chart (§2.5).
    */
   seats?: string[];
+  floor: number;
   line?: number;
 }
 
@@ -273,14 +347,56 @@ export interface FloorplanArray {
   radius?: number;
   fromDeg?: number;
   toDeg?: number;
+  floor: number;
+  line?: number;
+}
+
+export interface SafetySymbolAst {
+  kind: SafetyKind;
+  id: string;
+  /** Containing room for room-relative coordinates. */
+  room?: string;
+  /** Exterior positions use plan-absolute input coordinates. */
+  outside: boolean;
+  x: number;
+  y: number;
+  side?: WallSide;
+  hand?: "left" | "right";
+  rotate: number;
+  fireClass?: string;
+  label?: string;
+  floor: number;
+  line?: number;
+}
+
+export interface EscapeRouteAst {
+  id: string;
+  kind: EscapeRouteKind;
+  anchors: string[];
+  label?: string;
+  floor: number;
+  line?: number;
+}
+
+export interface FireDoorMarkAst {
+  kind: "fire-door" | "smoke-door";
+  room?: string;
+  side?: WallSide;
+  pct?: number;
+  between?: [string, string];
+  rating?: string;
+  floor: number;
   line?: number;
 }
 
 export interface FloorplanAst {
   type: "floorplan";
+  mode: "floorplan" | "evacuation";
   title: string;
   titleSourceRange?: import("../../core/types").SourceRange;
   unit: FloorplanUnit;
+  floors: FloorplanFloor[];
+  stack: "horizontal" | "vertical";
   /** `north` statement: draw a compass; value = clockwise rotation in degrees (0 = up). */
   north?: number;
   rooms: FloorplanRoom[];
@@ -288,6 +404,17 @@ export interface FloorplanAst {
   openings: FloorplanOpening[];
   furniture: FloorplanFurniture[];
   arrays: FloorplanArray[];
+  compliance: CompliancePolicy;
+  sheet: {
+    size: EvacuationSheetSize;
+    orientation: EvacuationSheetOrientation;
+  };
+  safety: SafetySymbolAst[];
+  routes: EscapeRouteAst[];
+  fireDoors: FireDoorMarkAst[];
+  /** Furniture remains in the AST; evacuation rendering hides it by default. */
+  showFurniture: boolean;
+  legendOverrides: LegendOverrides;
 }
 
 // ─── Layout result (absolute meters, y-down) ─────────────────────
@@ -325,6 +452,7 @@ export interface RoomBox {
   fill?: string;
   nolabel: boolean;
   positionMode: "free" | "move-x" | "move-y";
+  floor: number;
 }
 
 /**
@@ -369,11 +497,77 @@ export interface ItemGeom {
   sourceX?: number;
   sourceY?: number;
   sourceLine?: number;
+  instanceId?: string;
   /** Per-seat occupant names, mapped to auto-seated chairs in placement order. */
   seats?: string[];
   roomId: string;
+  floor: number;
   /** Sequence number within its type (for warning messages: "round-table-8 #4"). */
   seq: number;
+}
+
+export interface SafetySymbolGeom {
+  kind: SafetyKind;
+  id: string;
+  x: number;
+  y: number;
+  /** Real-world footprint derived from fixed printed millimetres × scale. */
+  sizeM: number;
+  sheetMm: number;
+  code: string;
+  colour: SafetyColour;
+  hand: "left" | "right";
+  rotate: number;
+  label?: string;
+  fireClass?: string;
+  roomId?: string;
+  floor: number;
+  auto?: boolean;
+}
+
+export interface RoutePoint {
+  x: number;
+  y: number;
+}
+
+export interface RouteGeom {
+  id: string;
+  kind: EscapeRouteKind;
+  points: RoutePoint[];
+  chevrons: Array<RoutePoint & { deg: number }>;
+  roomSequence: string[];
+  startAnchor: string;
+  endAnchor: string;
+  label?: string;
+  floor: number;
+}
+
+export interface FireDoorGeom {
+  kind: FireDoorMarkAst["kind"];
+  opening: number;
+  rating?: string;
+  floor: number;
+}
+
+export interface EvacuationScale {
+  denominator: number;
+  sheet: EvacuationSheetSize;
+  orientation: EvacuationSheetOrientation;
+  printableMm: { w: number; h: number };
+  symbolMm: number;
+  compliant: boolean;
+  note: string;
+}
+
+export interface EvacuationLayoutData {
+  profile: CompliancePolicy;
+  scale: EvacuationScale;
+  symbols: SafetySymbolGeom[];
+  routes: RouteGeom[];
+  fireDoors: FireDoorGeom[];
+  legend: LegendSpec;
+  showFurniture: boolean;
+  notes: string[];
 }
 
 export interface DimLineGeom {
@@ -401,6 +595,7 @@ export interface FloorplanLayoutResult {
   title: string;
   titleSourceRange?: import("../../core/types").SourceRange;
   unit: FloorplanUnit;
+  mode: FloorplanAst["mode"];
   /** Compass rotation in degrees when the plan declares `north`. */
   north?: number;
   rooms: RoomBox[];
@@ -408,6 +603,8 @@ export interface FloorplanLayoutResult {
   openings: OpeningGeom[];
   items: ItemGeom[];
   dims: DimLineGeom[];
+  /** Per-floor grouping and local bounds. A legacy single plan has one level-0 plate. */
+  plates: FloorPlate[];
   /** Plan bounding box over room exteriors (meters, before dim/padding bands). */
   bounds: { minX: number; minY: number; maxX: number; maxY: number };
   /** Wall band thickness (meters). */
@@ -420,6 +617,22 @@ export interface FloorplanLayoutResult {
   warnings: string[];
   /** Indices into `items` flagged by collision warnings (renderer highlights them). */
   warnItems: number[];
+  evacuation?: EvacuationLayoutData;
+}
+
+export interface FloorPlate {
+  level: number;
+  label: string;
+  offset: { x: number; y: number };
+  /** Local bounds before the plate offset is applied. */
+  bounds: { minX: number; minY: number; maxX: number; maxY: number };
+  areaM2: number;
+  areaText: string;
+  roomIdx: number[];
+  itemIdx: number[];
+  openingIdx: number[];
+  dimIdx: number[];
+  seamIdx: number[];
 }
 
 // ─── Symbol catalog contract ─────────────────────────────────────
@@ -454,4 +667,19 @@ export interface SymbolDef {
   underlay?: boolean;
   /** Draw into a w×h meter box at origin; returns SVG fragment (theme classes only). */
   draw: (ctx: SymbolDrawCtx) => string;
+}
+
+export interface SafetyDrawCtx {
+  hand: "left" | "right";
+  profile: CompliancePolicy;
+}
+
+export interface SafetySymbolDef {
+  /** Printed size in millimetres, never a real-world metre box. */
+  sheetMm: number;
+  /** ISO/NFPA identity reference; empty when no registered code applies. */
+  code: string;
+  colour: SafetyColour;
+  /** Draw original line art in a fixed 24×24 viewBox. */
+  draw: (ctx: SafetyDrawCtx) => string;
 }

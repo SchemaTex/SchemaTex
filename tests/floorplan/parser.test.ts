@@ -122,6 +122,18 @@ window a north at 50%`);
 });
 
 describe("floorplan parser — furniture & arrays", () => {
+  it("parses optional furniture instance ids without consuming keywords or quoted labels", () => {
+    const ast = parseFloorplan(`floorplan
+room living at 0,0 size 6x4
+furniture sofa in living at 0,0
+furniture stairs S1 in living at 2,0
+furniture sofa "Couch" in living at 0,2`);
+    expect(ast.furniture[0]!.instanceId).toBeUndefined();
+    expect(ast.furniture[1]!.instanceId).toBe("S1");
+    expect(ast.furniture[2]!.instanceId).toBeUndefined();
+    expect(ast.furniture[2]!.label).toBe("Couch");
+  });
+
   it("parses furniture with in/at/size/rotate/label", () => {
     const ast = parseFloorplan(`floorplan
 room class at 0,0 size 32x26

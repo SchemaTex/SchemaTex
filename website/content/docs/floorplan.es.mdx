@@ -207,3 +207,17 @@ Los comentarios van desde `#` hasta el final de la línea. Las comillas CJK (`""
 - [Apartamento de dos dormitorios](/examples#floorplan) — posicionamiento relativo, 7 puertas, amueblado completo
 - [Aula de 27 escritorios](/examples#floorplan) — truncamiento `grid … count`, `unit ft`
 - [Recepción de boda para 120](/examples#floorplan) — mesas redondas de banquete con asiento automático, pista de baile
+
+## Conjuntos de varias plantas
+
+`floor N "Etiqueta"` divide una fuente en placas con escala compartida; `stack horizontal|vertical` elige la composición. Un id opcional como `S1` registra la misma escalera: UP abajo, DN arriba, con aviso si se desplaza más de 0,1 m. Las referencias no pueden cruzar plantas.
+
+```
+floorplan "Casa de dos plantas" unit m
+floor 0 "Planta baja"
+room hall at 0,0 size 6x4
+furniture stairs S1 in hall at 4,0.4
+floor 1 "Primera planta"
+room landing at 0,0 size 6x4
+furniture stairs S1 in landing at 4,0.4
+```

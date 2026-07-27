@@ -20,6 +20,7 @@ import type {
   FloorplanRoom,
   FloorplanExtend,
   FloorplanUnit,
+  FloorPlate,
   ItemGeom,
   OpeningGeom,
   RectM,
@@ -28,6 +29,7 @@ import type {
   WallSide,
 } from "./types";
 import { FLOORPLAN_SYMBOLS } from "./catalog";
+import { finalizeEvacuationLayout } from "./evacuation";
 
 const FT = 0.3048;
 
@@ -45,6 +47,8 @@ export const FLOORPLAN_CONST = {
   /** Offsets of the major / minor dimension rows from the plan edge, meters. */
   dimMajorOff: 0.62,
   dimMinorOff: 0.3,
+  /** Gap between floor plates, meters (§48.4.9). */
+  floorGutter: 1.5,
 };
 
 // ─── Formatting ──────────────────────────────────────────────────
@@ -351,10 +355,12 @@ function sideSegments(room: RoomBox, side: WallSide): SideSeg[] {
 
 // ─── Layout ──────────────────────────────────────────────────────
 
-export function layoutFloorplan(
+type OneFloorResult = Omit<FloorplanLayoutResult, "plates">;
+
+function layoutOneFloor(
   ast: FloorplanAst,
   pins?: Map<string, { x: number; y: number }>
-): FloorplanLayoutResult {
+): OneFloorResult {
   const u = ast.unit === "ft" ? FT : 1;
   const errors: string[] = [];
   const warnings: string[] = [];
@@ -395,6 +401,7 @@ export function layoutFloorplan(
         positionMode: r.rel
           ? (r.rel.how === "right-of" || r.rel.how === "left-of" ? "move-y" : "move-x")
           : "free",
+        floor: r.floor,
       };
       refreshRoomBounds(room, ast.unit);
       byId.set(r.id, rooms.length);
@@ -516,7 +523,8 @@ export function layoutFloorplan(
     positionSourceRange?: import("../../core/types").SourceRange,
     sourceX?: number,
     sourceY?: number,
-    sourceLine?: number
+    sourceLine?: number,
+    instanceId?: string
   ): void => {
     const room = rooms[roomIdx]!;
     const seq = (seqByType.get(type) ?? 0) + 1;
@@ -534,8 +542,10 @@ export function layoutFloorplan(
       sourceX,
       sourceY,
       sourceLine,
+      instanceId,
       seats,
       roomId: room.id,
+      floor: room.floor,
       seq,
     });
   };
@@ -572,7 +582,8 @@ export function layoutFloorplan(
       f.positionSourceRange,
       f.x,
       f.y,
-      f.line
+      f.line,
+      f.instanceId
     );
   }
 
@@ -760,6 +771,7 @@ export function layoutFloorplan(
     title: ast.title,
     titleSourceRange: ast.titleSourceRange,
     unit: ast.unit,
+    mode: ast.mode,
     north: ast.north,
     rooms,
     seams,
@@ -773,6 +785,307 @@ export function layoutFloorplan(
     warnings,
     warnItems: [...warnItems],
   };
+}
+
+const STAIR_TYPES = new Set<ItemGeom["type"]>(["stairs", "stairs-l", "stairs-u", "spiral-stairs"]);
+const STAIR_ALIGN_TOLERANCE_M = 0.1;
+
+function floorLabel(ast: FloorplanAst, level: number): string {
+  const declared = ast.floors.find((floor) => floor.level === level);
+  if (declared) return declared.label;
+  if (level === 0 || level === 1) return "Ground Floor";
+  return level > 1 ? `Floor ${level}` : `Basement ${-level}`;
+}
+
+function registerStairs(results: Array<{ level: number; layout: OneFloorResult }>, warnings: string[]): void {
+  const byId = new Map<string, ItemGeom[]>();
+  for (const { layout } of results) {
+    for (const item of layout.items) {
+      if (!item.instanceId || !STAIR_TYPES.has(item.type)) continue;
+      const group = byId.get(item.instanceId) ?? [];
+      group.push(item);
+      byId.set(item.instanceId, group);
+    }
+  }
+  for (const [id, items] of byId) {
+    items.sort((a, b) => a.floor - b.floor);
+    items.forEach((item, index) => {
+      if (item.label === undefined) item.label = index === 0 ? "UP" : "DN";
+    });
+    for (let index = 1; index < items.length; index++) {
+      const lower = items[index - 1];
+      const upper = items[index];
+      if (!lower || !upper) continue;
+      if (lower.floor === upper.floor) continue;
+      const offset = Math.hypot(upper.x - lower.x, upper.y - lower.y);
+      if (offset <= STAIR_ALIGN_TOLERANCE_M + 1e-9) continue;
+      warnings.push(
+        `stairs "${id}" sits at ${lower.x.toFixed(2)},${lower.y.toFixed(2)} on floor ${lower.floor} but ` +
+          `${upper.x.toFixed(2)},${upper.y.toFixed(2)} on floor ${upper.floor} (${offset.toFixed(2)} m offset) — ` +
+          `a stairwell is vertically continuous; align the coordinates or use different ids for different stairs`
+      );
+    }
+  }
+}
+
+function offsetRoom(room: RoomBox, offset: { x: number; y: number }): RoomBox {
+  return {
+    ...room,
+    x: room.x + offset.x,
+    y: room.y + offset.y,
+    parts: room.parts.map((part) => ({ ...part, x: part.x + offset.x, y: part.y + offset.y })),
+  };
+}
+
+function offsetOpening(
+  opening: OpeningGeom,
+  offset: { x: number; y: number },
+  roomBase: number
+): OpeningGeom {
+  return {
+    ...opening,
+    along: opening.along + (opening.vertical ? offset.x : offset.y),
+    lo: opening.lo + (opening.vertical ? offset.y : offset.x),
+    hi: opening.hi + (opening.vertical ? offset.y : offset.x),
+    owner: opening.owner + roomBase,
+    negRoom: opening.negRoom === undefined ? undefined : opening.negRoom + roomBase,
+    posRoom: opening.posRoom === undefined ? undefined : opening.posRoom + roomBase,
+  };
+}
+
+function crossFloorReferences(ast: FloorplanAst): {
+  errors: string[];
+  invalidRooms: Set<FloorplanRoom>;
+  invalidExtensions: Set<FloorplanExtend>;
+  invalidOpenings: Set<FloorplanOpening>;
+  invalidFurniture: Set<FloorplanAst["furniture"][number]>;
+  invalidArrays: Set<FloorplanAst["arrays"][number]>;
+} {
+  const errors: string[] = [];
+  const invalidRooms = new Set<FloorplanRoom>();
+  const invalidExtensions = new Set<FloorplanExtend>();
+  const invalidOpenings = new Set<FloorplanOpening>();
+  const invalidFurniture = new Set<FloorplanAst["furniture"][number]>();
+  const invalidArrays = new Set<FloorplanAst["arrays"][number]>();
+  const floorsByRoom = new Map<string, number[]>();
+  for (const room of ast.rooms) {
+    const floors = floorsByRoom.get(room.id) ?? [];
+    floors.push(room.floor);
+    floorsByRoom.set(room.id, floors);
+  }
+  const floorFor = (id: string, preferred: number): number | undefined => {
+    const floors = floorsByRoom.get(id);
+    if (!floors) return undefined;
+    return floors.includes(preferred) ? preferred : floors[0];
+  };
+
+  for (const room of ast.rooms) {
+    if (!room.rel) continue;
+    const refFloor = floorFor(room.rel.ref, room.floor);
+    if (refFloor !== undefined && refFloor !== room.floor) {
+      errors.push(
+        `room "${room.id}" (floor ${room.floor}) references "${room.rel.ref}" (floor ${refFloor}) — ` +
+          `relative placement cannot cross floors`
+      );
+      invalidRooms.add(room);
+    }
+  }
+  for (const extension of ast.extensions) {
+    const targetFloor = floorFor(extension.room, extension.floor);
+    const refFloor = extension.rel ? floorFor(extension.rel.ref, extension.floor) : extension.floor;
+    if (
+      (targetFloor !== undefined && targetFloor !== extension.floor) ||
+      (refFloor !== undefined && refFloor !== extension.floor)
+    ) {
+      errors.push(`extend "${extension.room}" on floor ${extension.floor} references a room on another floor`);
+      invalidExtensions.add(extension);
+    }
+  }
+  for (const opening of ast.openings) {
+    const ids = opening.between ?? (opening.room ? [opening.room] : []);
+    const roomFloors = ids.map((id) => floorFor(id, opening.floor));
+    if (opening.between && roomFloors[0] !== undefined && roomFloors[1] !== undefined && roomFloors[0] !== roomFloors[1]) {
+      errors.push(
+        `${opening.kind} between "${opening.between[0]}" (floor ${roomFloors[0]}) and ` +
+          `"${opening.between[1]}" (floor ${roomFloors[1]}): rooms are on different floors`
+      );
+      invalidOpenings.add(opening);
+    } else if (roomFloors.some((floor) => floor !== undefined && floor !== opening.floor)) {
+      errors.push(`${opening.kind} on floor ${opening.floor} references a room on another floor`);
+      invalidOpenings.add(opening);
+    }
+  }
+  for (const furniture of ast.furniture) {
+    if (!furniture.room) continue;
+    const roomFloor = floorFor(furniture.room, furniture.floor);
+    if (roomFloor !== undefined && roomFloor !== furniture.floor) {
+      errors.push(
+        `furniture ${furniture.type}${furniture.instanceId ? ` "${furniture.instanceId}"` : ""} on floor ` +
+          `${furniture.floor} references "${furniture.room}" on floor ${roomFloor}`
+      );
+      invalidFurniture.add(furniture);
+    }
+  }
+  for (const array of ast.arrays) {
+    if (!array.room) continue;
+    const roomFloor = floorFor(array.room, array.floor);
+    if (roomFloor !== undefined && roomFloor !== array.floor) {
+      errors.push(`${array.mode} ${array.type} on floor ${array.floor} references "${array.room}" on floor ${roomFloor}`);
+      invalidArrays.add(array);
+    }
+  }
+  return { errors, invalidRooms, invalidExtensions, invalidOpenings, invalidFurniture, invalidArrays };
+}
+
+export function layoutFloorplan(
+  ast: FloorplanAst,
+  pins?: Map<string, { x: number; y: number }>
+): FloorplanLayoutResult {
+  if (ast.floors.length === 0) {
+    const layout = layoutOneFloor(ast, pins);
+    const result: FloorplanLayoutResult = {
+      ...layout,
+      plates: [{
+        level: 0,
+        label: "Ground Floor",
+        offset: { x: 0, y: 0 },
+        bounds: { ...layout.bounds },
+        areaM2: layout.totalAreaM2,
+        areaText: formatArea(layout.totalAreaM2, ast.unit),
+        roomIdx: layout.rooms.map((_, index) => index),
+        itemIdx: layout.items.map((_, index) => index),
+        openingIdx: layout.openings.map((_, index) => index),
+        dimIdx: layout.dims.map((_, index) => index),
+        seamIdx: layout.seams.map((_, index) => index),
+      }],
+    };
+    return ast.mode === "evacuation"
+      ? finalizeEvacuationLayout(ast, result)
+      : result;
+  }
+
+  const refs = crossFloorReferences(ast);
+  const levelSet = new Set<number>(ast.floors.map((floor) => floor.level));
+  for (const statement of [
+    ...ast.rooms,
+    ...ast.extensions,
+    ...ast.openings,
+    ...ast.furniture,
+    ...ast.arrays,
+  ]) {
+    levelSet.add(statement.floor);
+  }
+  const levels = [...levelSet].sort((a, b) => ast.stack === "vertical" ? b - a : a - b);
+  const perFloor = levels.map((level) => {
+    const rooms = ast.rooms
+      .filter((room) => room.floor === level)
+      .map((room) => refs.invalidRooms.has(room) ? { ...room, rel: undefined, at: { x: 0, y: 0 } } : room);
+    const subAst: FloorplanAst = {
+      ...ast,
+      floors: [],
+      rooms,
+      extensions: ast.extensions.filter((extension) => extension.floor === level && !refs.invalidExtensions.has(extension)),
+      openings: ast.openings.filter((opening) => opening.floor === level && !refs.invalidOpenings.has(opening)),
+      furniture: ast.furniture.filter((item) => item.floor === level && !refs.invalidFurniture.has(item)),
+      arrays: ast.arrays.filter((array) => array.floor === level && !refs.invalidArrays.has(array)),
+    };
+    return { level, layout: layoutOneFloor(subAst) };
+  });
+
+  const stairWarnings: string[] = [];
+  registerStairs(perFloor, stairWarnings);
+
+  const rooms: RoomBox[] = [];
+  const seams: SeamGeom[] = [];
+  const openings: OpeningGeom[] = [];
+  const items: ItemGeom[] = [];
+  const dims: DimLineGeom[] = [];
+  const plates: FloorPlate[] = [];
+  const errors = [...refs.errors];
+  const warnings = [...stairWarnings];
+  const warnItems: number[] = [];
+  let cursor = 0;
+
+  for (const { level, layout } of perFloor) {
+    const offset = ast.stack === "horizontal" ? { x: cursor, y: 0 } : { x: 0, y: cursor };
+    const roomBase = rooms.length;
+    const itemBase = items.length;
+    const openingBase = openings.length;
+    const dimBase = dims.length;
+    const seamBase = seams.length;
+
+    rooms.push(...layout.rooms.map((room) => offsetRoom(room, offset)));
+    items.push(...layout.items.map((item) => ({ ...item, x: item.x + offset.x, y: item.y + offset.y })));
+    openings.push(...layout.openings.map((opening) => offsetOpening(opening, offset, roomBase)));
+    seams.push(...layout.seams.map((seam) => ({
+      ...seam,
+      along: seam.along + (seam.vertical ? offset.x : offset.y),
+      lo: seam.lo + (seam.vertical ? offset.y : offset.x),
+      hi: seam.hi + (seam.vertical ? offset.y : offset.x),
+      room: seam.room + roomBase,
+    })));
+    dims.push(...layout.dims.map((dim) => ({
+      ...dim,
+      at: dim.at + (dim.vertical ? offset.x : offset.y),
+      lo: dim.lo + (dim.vertical ? offset.y : offset.x),
+      hi: dim.hi + (dim.vertical ? offset.y : offset.x),
+    })));
+    errors.push(...layout.errors);
+    warnings.push(...layout.warnings);
+    warnItems.push(...layout.warnItems.map((index) => index + itemBase));
+
+    plates.push({
+      level,
+      label: floorLabel(ast, level),
+      offset,
+      bounds: { ...layout.bounds },
+      areaM2: layout.totalAreaM2,
+      areaText: formatArea(layout.totalAreaM2, ast.unit),
+      roomIdx: layout.rooms.map((_, index) => roomBase + index),
+      itemIdx: layout.items.map((_, index) => itemBase + index),
+      openingIdx: layout.openings.map((_, index) => openingBase + index),
+      dimIdx: layout.dims.map((_, index) => dimBase + index),
+      seamIdx: layout.seams.map((_, index) => seamBase + index),
+    });
+
+    const extent = ast.stack === "horizontal"
+      ? layout.bounds.maxX - layout.bounds.minX
+      : layout.bounds.maxY - layout.bounds.minY;
+    cursor += extent + FLOORPLAN_CONST.floorGutter;
+  }
+
+  let minX = Infinity;
+  let minY = Infinity;
+  let maxX = -Infinity;
+  let maxY = -Infinity;
+  for (const plate of plates) {
+    minX = Math.min(minX, plate.bounds.minX + plate.offset.x);
+    minY = Math.min(minY, plate.bounds.minY + plate.offset.y);
+    maxX = Math.max(maxX, plate.bounds.maxX + plate.offset.x);
+    maxY = Math.max(maxY, plate.bounds.maxY + plate.offset.y);
+  }
+
+  const result: FloorplanLayoutResult = {
+    title: ast.title,
+    unit: ast.unit,
+    mode: ast.mode,
+    north: ast.north,
+    rooms,
+    seams,
+    openings,
+    items,
+    dims,
+    plates,
+    bounds: { minX, minY, maxX, maxY },
+    wallT: FLOORPLAN_CONST.wallT,
+    totalAreaM2: plates.reduce((sum, plate) => sum + plate.areaM2, 0),
+    errors,
+    warnings,
+    warnItems,
+  };
+  return ast.mode === "evacuation"
+    ? finalizeEvacuationLayout(ast, result)
+    : result;
 }
 
 // ─── Opening resolution ──────────────────────────────────────────

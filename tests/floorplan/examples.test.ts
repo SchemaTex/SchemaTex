@@ -28,6 +28,9 @@ function extractDsl(mdx: string): string {
 }
 
 const files = readdirSync(EXAMPLES_DIR).filter((f) => f.startsWith("floorplan-") && f.endsWith(".mdx"));
+const evacuationFiles = readdirSync(EXAMPLES_DIR).filter(
+  (f) => f.startsWith("evacuation-") && f.endsWith(".mdx")
+);
 
 describe("floorplan examples — gallery is correct-by-construction", () => {
   it("covers every floorplan example file", () => {
@@ -40,6 +43,30 @@ describe("floorplan examples — gallery is correct-by-construction", () => {
       const lay = layoutFloorplan(parseFloorplan(dsl));
       expect({ file, errors: lay.errors }).toEqual({ file, errors: [] });
       expect({ file, warnings: lay.warnings }).toEqual({ file, warnings: [] });
+    });
+  }
+});
+
+describe("evacuation examples — gallery is compliance-checked", () => {
+  it("ships all six launch examples", () => {
+    expect(evacuationFiles).toHaveLength(6);
+  });
+
+  it("features the realistic hotel plan instead of the demo-sized office", () => {
+    const featured = evacuationFiles.filter((file) =>
+      /\nfeatured: true\n/.test(readFileSync(join(EXAMPLES_DIR, file), "utf8"))
+    );
+    expect(featured).toEqual(["evacuation-hotel-floor.mdx"]);
+  });
+
+  for (const file of evacuationFiles) {
+    it(`${file}: no errors and no collision warnings`, () => {
+      const dsl = extractDsl(readFileSync(join(EXAMPLES_DIR, file), "utf8"));
+      const lay = layoutFloorplan(parseFloorplan(dsl));
+      expect({ file, errors: lay.errors }).toEqual({ file, errors: [] });
+      expect(
+        lay.warnings.filter((warning) => /overlap|collision/i.test(warning))
+      ).toEqual([]);
     });
   }
 });

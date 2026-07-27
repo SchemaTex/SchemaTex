@@ -1,0 +1,49 @@
+---
+title: 避難経路図
+---
+
+## 避難経路図について
+
+**避難経路図**は、現在地、最終出口までの経路、火災報知器、消火設備、応急手当の位置を掲示する図です。Schematex は実寸の floorplan 上に表示し、ISO 23601、NFPA 170、UAE Civil Defence の各 profile を検証します。
+
+<Playground initial={`evacuation "避難経路図" unit m
+compliance iso
+sheet a3 landscape
+room room "Room" at 0,0 size 6x4
+here in room at 2,2
+exit-final exit1 in room at 6,2 side east "EXIT"
+route primary here -> exit1`} height={460} />
+
+---
+
+## 1. 現在地
+
+掲示する一枚ごとに `here` は一つ必要です。掲示場所が複数なら、平面と経路を共有し、`here` の行だけ変えて別々に render します。
+
+## 2. 安全記号
+
+記号は固定 24×24 grid に描かれ、印刷時は標準 8 mm です。緑は安全・避難、赤は消防設備を意味します。`exit`、`exit-final`、`assembly`、`extinguisher`、`call-point`、`first-aid`、`aed` などを使用できます。
+
+## 3. 経路
+
+`route primary here -> corridor -> stair -> exit1` の各部屋間には、宣言済みの `door` または `opening` が必要です。engine は経路探索を行わないため、中間室を明示します。
+
+## 4. Compliance profile
+
+`iso` は ISO 23601/7010/3864、`nfpa` は NFPA 170/NFPA 101、`uae` は英語・アラビア語の二言語表示を適用します。
+
+## 5. 印刷 scale
+
+sheet と orientation を宣言すると、全 floor plate で共通の scale を計算します。記号は 8 mm のままで、ISO/UAE は 1:250 より粗い scale を error にします。
+
+## 6. Layer と複数階
+
+通常家具、面積、寸法線は自動的に非表示です。階段、elevator、north、route、安全記号は残ります。`floor N "Label"` と共通 stair ID で階を登録します。
+
+## 7. 必須 legend
+
+Tier M legend は常に表示され、`legend: off` は parse error です。
+
+## 8. Validation
+
+現在地、出口、開口の連続性、独立経路、未接続室、終点、記号の重なり、二言語、elevator 禁止、legend、色、scale、未知記号を検査し、各 message に根拠規格を示します。
