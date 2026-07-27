@@ -4,46 +4,174 @@ title: 疏散圖
 
 ## 關於疏散圖
 
-張貼式**疏散圖**要說明「您在此處」、通往最終出口的路線，以及警報、消防設備與急救設施的位置。Schematex 在可量測的 floorplan 幾何上繪製這些資訊，並依 ISO 23601、NFPA 170 或 UAE Civil Defence 雙語 profile 驗證。
+**疏散圖**是張貼在現場的生命安全圖，用來告知人員目前所在位置、通往最終安全出口的疏散路線，以及警報裝置、消防設備、急救設施與集合點的位置。Schematex 依據可量測的 `floorplan` 幾何產生圖面，並檢查一般繪圖工具無法辨識的規則：目前位置標記缺漏、路線分段中斷、出口不獨立、列印比例尺、安全標誌尺寸與強制圖例。
 
-<Playground initial={`evacuation "樓層疏散圖" unit m
+引擎支援三套可選規範：ISO 23601 / ISO 7010 / ISO 3864、搭配 NFPA 101 使用的 NFPA 170 Chapter 11，以及 UAE Civil Defence 雙語疏散圖。輸出是可編輯的 SVG，可協助專業人員審查，但不能取代主管機關的正式核准。
+
+<Playground initial={`evacuation "辦公樓層 — 疏散圖" unit m
 compliance iso
 sheet a3 landscape
-room room "房間" at 0,0 size 6x4
-here in room at 2,2
-exit-final exit1 in room at 6,2 side east "出口"
-route primary here -> exit1`} height={460} />
+room office "開放式辦公室" at 0,0 size 6x5
+room lobby "電梯廳" below office size 6x2.4
+room stairA "樓梯 A" left-of lobby size 3x2.4
+room stairB "樓梯 B" right-of lobby size 3x2.4
+opening between office lobby at 50% width 1.6
+door between lobby stairA at 50% width 1.1
+door between lobby stairB at 50% width 1.1
+here in office at 3,2.5
+exit-final xA in stairA at 0,1.2 side west "安全出口"
+exit-final xB in stairB at 3,1.2 side east "安全出口"
+extinguisher f1 in lobby at 2,1.8 class "ABC"
+route primary here -> lobby -> stairB -> xB
+route secondary here -> lobby -> stairA -> xA`} height={620} />
 
 ---
 
-## 1. 張貼位置
+## 1. 從張貼位置開始
 
-每張圖必須有且只有一個 `here`。同一棟樓有多個張貼點時，保持平面與路線不變，只修改 `here` 那一行並分別 render。
+將 header 改為 `evacuation`（別名為 `escapeplan`），宣告目標 `sheet`，並在這份疏散圖實際張貼的位置加入且只加入一個 `here` 標記：
 
-## 2. 安全符號
+```
+evacuation "2 樓 — 疏散圖" unit m
+compliance iso
+sheet a3 landscape
+room office "辦公室" at 0,0 size 6x5
+here in office at 3,2.5
+exit-final x1 in office at 6,2.5 side east "安全出口"
+route primary here -> x1
+```
 
-符號畫在固定 24×24 grid 上，預設印刷尺寸為 8 mm。綠色表示安全與逃生，紅色表示消防設備。詞彙包括出口、集合點、滅火器、手動警報、急救、AED 與禁止標記。
+一棟建築可能需要張貼許多份疏散圖。幾何與疏散路線應保持一致，只修改 `here` 這一行，針對每個張貼點分別 render 一份。
+
+## 2. 安全標誌
+
+安全標誌使用固定的 24×24 繪圖網格，並採固定的列印尺寸（預設 8 mm），與 floorplan 比例尺無關。安全狀態標誌使用實心綠色 plate，消防標誌使用實心紅色 plate，pictogram 則以白色反白形狀呈現。Schematex 繪製原創幾何，不會嵌入或描摹 ISO、NFPA 的官方圖形。
+
+可依座標放置的標誌類型如下：
+
+- 出口與救援：`exit`、`exit-final`、`assembly`、`refuge`、`shelter`、`escape-ladder`、`rescue-window`、`emergency-door-push`、`emergency-door-slide`
+- 醫療與緊急協助：`first-aid`、`aed`、`stretcher`、`doctor`、`eyewash`、`safety-shower`、`emergency-phone`、`break-glass`
+- 消防設備：`extinguisher`、`hose-reel`、`fire-ladder`、`fire-equipment`、`call-point`、`fire-phone`、`riser`
+- 圖面與禁止：`here`、`not-an-exit`、`no-elevator`、`alarm-sounder`
+- 門的 overlay：`fire-door` 與 `smoke-door` 附著在既有 door，而不是放置於單一座標
+
+可以使用簡寫，也可以明確寫出 `safety`：
+
+```
+extinguisher ext1 in corridor at 1.2,0.3 side north class "ABC"
+safety first-aid aid1 in lobby at 4.8,1.8
+assembly muster outside at 14,10 "集合點 A"
+fire-door between corridor stairA rating "EI30"
+```
+
+房間座標是相對於該房間的座標。`outside at x,y` 使用整份 plan 的絕對座標。`side north|south|east|west` 會將標誌吸附至牆面；`hand left|right` 可覆寫自動選取的方向 variant。
 
 ## 3. 疏散路線
 
-`route primary here -> corridor -> stair -> exit1` 的相鄰房間必須由已宣告的 `door` 或 `opening` 連通。中間房間要明確寫出；engine 不會自行尋路。
+Route 是由作者明確編寫的 sequence，不是引擎推算出的 path：
 
-## 4. Compliance profile
+```
+route primary here -> corridor -> stairB -> exitB
+route secondary here -> corridor -> lobby -> stairA -> exitA
+route accessible here -> corridor -> refugeA
+route rescue fireEntry -> serviceCorridor -> riserRoom
+```
 
-`iso` 使用 ISO 23601/7010/3864；`nfpa` 使用 NFPA 170/NFPA 101；`uae` 強制英文 / 阿拉伯文雙語標籤。
+不同房間之間的每個 hop 都必須穿過已宣告的 `door` 或 `opening`。所有中間房間都要明確列出。Schematex 會以確定方式繪製穿過各個開口的正交線段，將轉角圓滑化，並每隔 2 m 放置一個背離 `here` 方向的 chevron。`secondary` 使用虛線，`accessible` 帶有輪椅標記，`rescue` 使用藍色。
 
-## 5. 列印比例尺
+Routes 必須終止於 `exit`、`exit-final` 或 `assembly`。兩條路線只有在通往不同的最終出口，而且房間 sequence 的結構也不同時，才算彼此獨立。
 
-宣告 sheet 與方向後，所有樓層 plate 共用計算出的常規比例尺，符號始終保持 8 mm。ISO/UAE 下比 1:250 更粗的比例尺會報 error。
+## 4. Compliance profiles
 
-## 6. 圖層與多樓層
+| Profile | 適用情境 | 主要差異 |
+| --- | --- | --- |
+| `iso`（預設） | DIN、BS 與國際 ISO 23601 疏散圖 | ISO 7010 標誌、比例尺不得粗於 1:250、標誌 ≥7 mm |
+| `nfpa` | 美國緊急疏散圖 | NFPA 170 variants、未提供兩條 routes 時回報 error、自動加入 `no-elevator` |
+| `uae` | UAE Civil Defence 送審圖 | 黃色目前位置標記、英文/阿拉伯文 labels、沿用 ISO 的比例尺下限 |
 
-一般家具、面積文字與尺寸標註自動隱藏；樓梯、電梯、北向、路線與安全符號保留。`floor N "標籤"` 產生多個 plate，共用 stair ID 用於驗證垂直對齊。
+在文件開頭附近選擇 profile：
+
+```
+compliance nfpa
+```
+
+Profile 只會改變 glyph variants 與驗證規則，不會改變房間幾何。
+
+## 5. 列印比例尺與 sheet 尺寸
+
+以 `landscape` 或 `portrait` 宣告 `sheet a4|a3|a2|letter|tabloid`。Schematex 會扣除 15 mm 邊界，讓最大的 floor plate 同時適配兩個可列印方向，再將比例尺分母向上取整為常用值（`1:50`、`1:100`、`1:200`、`1:250` 等）。
+
+安全標誌在紙面上始終維持 8 mm。比例尺會將這個固定紙面尺寸暫時換算回 plan-space footprint，以進行碰撞檢查；建築變大時，標誌不會跟著縮小。ISO 與 UAE 疏散圖的比例尺粗於 1:250 時會回報 error。
+
+每張 render 完成的 sheet 都會帶有類似以下的說明：
+
+```
+Scale 1:200 on A3 (landscape) · symbols 8.0 mm · ISO 23601 ✓
+```
+
+## 6. Layers 與多樓層疏散圖
+
+Evacuation mode 會保留房間、牆體、開口、門扇開啟弧、樓梯、電梯、柱、房間名稱、指北針、疏散路線、安全標誌、圖例與比例尺說明，並自動隱藏一般家具、面積文字和尺寸標註。只有特定家具確實有助於現場辨向時，才加入 `show furniture`。
+
+多樓層 syntax 繼承自 floorplan：
+
+```
+evacuation "建築疏散圖" unit m stack horizontal
+floor 0 "一樓"
+room lobby at 0,0 size 8x5
+furniture stairs S1 in lobby at 0.4,0.4
+
+floor 1 "二樓"
+room landing at 0,0 size 8x5
+furniture stairs S1 in landing at 0.4,0.4
+```
+
+所有 plates 共用一個比例尺。重複使用 `S1` 會將各層樓梯登記為同一座樓梯間：低樓層標為 UP，高樓層標為 DN；座標錯位超過 0.1 m 時會產生 warning。每個樓層仍會以獨立張貼的疏散圖進行驗證。
 
 ## 7. 強制圖例
 
-Tier M legend 永遠開啟，`legend: off` 是 parse error。
+圖例屬於 Tier M：它始終顯示，並列出圖中使用的所有編碼，依疏散路線、出口、消防設備、急救設施與結構元素分組。ISO profiles 會在 label 中包含安全標誌識別 code；NFPA 不顯示 ISO code。
 
-## 8. 驗證
+可以使用共用 legend directives 重新命名 labels 或 sections，但 `legend: off` 會產生 parse error，因為 ISO 23601 與 NFPA 170 都要求必須有圖例。
 
-engine 會檢查目前位置、出口、開口連續性、獨立路線、無路線房間、路線終點、符號碰撞、雙語、電梯禁用、圖例、顏色、比例尺與未知符號；每則訊息都帶標準出處。
+## 8. 驗證訊息
+
+引擎會在發布前完成以下所有檢查：
+
+1. 每個樓層都有一個 `here` 標記。
+2. 每個樓層都有出口。
+3. Route 的每次跨房間 hop 都穿過已宣告的開口。
+4. 兩條疏散路線在結構上彼此獨立（NFPA 回報 error；ISO/UAE 回報 warning）。
+5. 相連的房間出現在某條 route 上，或擁有自己的出口。
+6. Routes 終止於出口或集合點。
+7. 固定尺寸的安全標誌保持清楚可辨，且彼此不重疊。
+8. UAE labels 包含以 ` / ` 分隔的非空英文與阿拉伯文兩部分。
+9. 包含電梯的 NFPA/UAE 疏散圖會自動取得一個 `no-elevator` 標記。
+10. 圖例無法關閉。
+11. `monochrome` 會回報 error，但仍以語意化安全色彩 render，以便診斷。
+12. ISO/UAE 的列印比例尺不得粗於 1:250。
+13. 未知 sign kind 會列出有效名稱，並建議最接近的項目。
+
+每則 diagnostic 都會標明所依據的規範，讓作者知道應依 ISO 23601、NFPA 170/NFPA 101 或 UAE Civil Defence 指引進行修正。
+
+## 9. 語法
+
+```text
+plan       ::= ("evacuation"|"escapeplan") string? ("unit" ("m"|"ft"))? statement*
+statement  ::= floorplan-statement | compliance | sheet | safety | route | rated-door | legend
+compliance ::= "compliance" ("iso"|"nfpa"|"uae")
+sheet      ::= "sheet" ("a4"|"a3"|"a2"|"letter"|"tabloid") ("landscape"|"portrait")?
+safety     ::= "safety"? kind id? ("in" room "at" coord | "outside" "at" coord)
+               ("side" wallside)? ("hand" ("left"|"right"))? ("rotate" num)?
+               ("class" string)? string?
+route      ::= "route" ("primary"|"secondary"|"accessible"|"rescue")?
+               anchor ("->" anchor)+ string?
+rated-door ::= ("fire-door"|"smoke-door")
+               ("between" room room | room wallside ("at" pct)?) ("rating" string)?
+```
+
+## 相關範例
+
+- [包含兩條疏散路線的辦公樓層](/examples#evacuation)
+- [採用 NFPA profile 的美國倉庫](/examples#evacuation)
+- [英文/阿拉伯文雙語診所疏散圖](/examples#evacuation)

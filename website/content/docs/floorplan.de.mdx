@@ -208,16 +208,23 @@ Kommentare laufen von `#` bis zum Zeilenende. CJK-Anführungszeichen (`""`) werd
 - [27-Schreibtisch-Klassenzimmer](/examples#floorplan) — `grid … count`-Kürzung, `unit ft`
 - [Hochzeitsempfang für 120 Personen](/examples#floorplan) — automatisch bestuhlte Bankettrundes, Tanzfläche
 
+## Interaktive Bearbeitung
+
+Möbel und elektrische Einbauten lassen sich unabhängig in Raumkoordinaten verschieben. Ein einfacher Raum zeigt Resize-Handles an der Ost- und Südseite sowie an der Ecke; sie schreiben die ursprünglichen Abmessungen neu. Der Raumkörper selbst lässt sich nicht ziehen, damit die Möbelauswahl eindeutig bleibt. Öffnungen in gemeinsamen Wänden werden weiterhin anhand der Topologie validiert.
+
 ## Mehrgeschossige Plansätze
 
-`floor N "Bezeichnung"` teilt eine Quelle in gerahmte Geschossplatten mit gemeinsamem Maßstab. `stack horizontal|vertical` bestimmt die Anordnung. Eine optionale Möbel-ID wie `S1` registriert denselben Treppenlauf: unten UP, oben DN; mehr als 0,1 m Versatz warnt. Raum-, Tür-, Möbel- und Array-Referenzen dürfen keine Geschossgrenze überschreiten.
+Mit `floor N "Bezeichnung"` wird eine Quelle in gerahmte Geschossplatten aufgeteilt. Alle plates verwenden denselben Zeichnungsmaßstab; `stack horizontal|vertical` bestimmt die Anordnung auf dem sheet.
 
 ```
 floorplan "Zweistöckiges Haus" unit m stack horizontal
 floor 0 "Erdgeschoss"
-room flur at 0,0 size 6x4
-furniture stairs S1 in flur at 4,0.4
+room hall at 0,0 size 6x4
+furniture stairs S1 in hall at 4,0.4
+
 floor 1 "Obergeschoss"
-room diele at 0,0 size 6x4
-furniture stairs S1 in diele at 4,0.4
+room landing at 0,0 size 6x4
+furniture stairs S1 in landing at 4,0.4
 ```
+
+Die optionale furniture-Instanz-ID (`S1`) registriert denselben Treppenlauf über mehrere Geschosse. Das untere Vorkommen wird zu UP, die oberen zu DN; ein Versatz von mehr als 0,1 m erzeugt eine Warnung. Raumreferenzen, Türen, furniture und arrays dürfen keine Geschossabschnitte überschreiten.

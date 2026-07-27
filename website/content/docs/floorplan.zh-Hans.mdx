@@ -208,16 +208,23 @@ coord     ::= num "," num          dims ::= num "x" num          pct ::= num "%"
 - [27 张桌子的教室](/examples#floorplan) — `grid … count` 截断、`unit ft`
 - [120 人婚宴](/examples#floorplan) — 自动排座宴会圆桌、舞池
 
+## 交互编辑
+
+家具和电气设备可以在房间坐标内独立移动。简单房间会显示东侧、南侧和转角 resize handles，用来重写原始尺寸；房间主体本身不能拖动，从而避免家具选择产生歧义。共享墙上的 openings 仍会接受 topology validation。
+
 ## 多楼层平面图
 
-用 `floor N "标签"` 把同一份 source 分成共用比例尺的楼层 plate；`stack horizontal|vertical` 控制拼版方向。`S1` 这样的可选 furniture ID 会注册同一段楼梯：低层自动标 UP，高层标 DN，错位超过 0.1 m 会 warning。房间、门、家具和 array 引用不能跨层。
+用 `floor N "标签"` 把同一份 source 分成带边框的楼层 plates。所有 plates 共用一个绘图比例尺；`stack horizontal|vertical` 控制它们在 sheet 上的拼版方向。
 
 ```
-floorplan "两层住宅" unit m
+floorplan "两层住宅" unit m stack horizontal
 floor 0 "一层"
 room hall at 0,0 size 6x4
 furniture stairs S1 in hall at 4,0.4
+
 floor 1 "二层"
 room landing at 0,0 size 6x4
 furniture stairs S1 in landing at 4,0.4
 ```
+
+可选的 furniture instance ID（`S1`）会注册跨楼层的同一段楼梯。低层自动标为 UP，高层标为 DN，错位超过 0.1 m 会产生 warning。房间引用、门、furniture 和 arrays 不能跨越 floor sections。

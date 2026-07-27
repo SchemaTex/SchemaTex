@@ -208,16 +208,23 @@ coord     ::= num "," num          dims ::= num "x" num          pct ::= num "%"
 - [27-desk classroom](/examples#floorplan) — `grid … count` 잘라내기, `unit ft`
 - [Wedding reception for 120](/examples#floorplan) — 자동 좌석 배치된 연회 원형 테이블, 댄스 플로어
 
+## Interactive editing
+
+가구와 전기 설비는 room 좌표 안에서 각각 이동할 수 있습니다. 단순한 room은 동쪽, 남쪽, 모서리에 resize handles를 표시하며, 이 handles가 원래 치수를 다시 씁니다. Room 본체는 드래그되지 않으므로 가구를 명확하게 선택할 수 있습니다. 공유 벽의 openings에는 계속 topology validation이 적용됩니다.
+
 ## 여러 층 plan set
 
-`floor N "Label"`로 하나의 source를 같은 scale의 floor plate로 나누고 `stack horizontal|vertical`로 배치를 정합니다. `S1` 같은 선택 furniture ID는 같은 계단을 등록해 아래층은 UP, 위층은 DN이 됩니다. 0.1 m보다 큰 오프셋은 warning이며 참조는 층을 넘을 수 없습니다.
+`floor N "Label"`을 사용하면 하나의 source를 테두리가 있는 floor plates로 나눌 수 있습니다. 모든 plates는 같은 drawing scale을 공유하며 `stack horizontal|vertical`로 sheet 위의 배치를 지정합니다.
 
 ```
-floorplan "Two-Storey House" unit m
-floor 0 "Ground Floor"
+floorplan "2층 주택" unit m stack horizontal
+floor 0 "1층"
 room hall at 0,0 size 6x4
 furniture stairs S1 in hall at 4,0.4
-floor 1 "First Floor"
+
+floor 1 "2층"
 room landing at 0,0 size 6x4
 furniture stairs S1 in landing at 4,0.4
 ```
+
+선택 사항인 furniture instance ID(`S1`)는 여러 층의 같은 계단을 등록합니다. 아래쪽 항목은 UP, 위쪽 항목은 DN이 되며 0.1 m보다 큰 오프셋은 warning을 발생시킵니다. Room references, doors, furniture, arrays는 floor sections를 넘어갈 수 없습니다.
