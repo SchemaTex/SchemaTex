@@ -555,23 +555,72 @@ export function validateEvacuation(
       else warnings.push(message);
     }
 
-    const routedRooms = new Set(floorRoutes.flatMap((route) => route.roomSequence));
+    const plateRooms = new Set(plate.roomIdx);
+    const roomIndexById = new Map<string, number>();
+    for (const roomIndex of plate.roomIdx) {
+      const room = lay.rooms[roomIndex];
+      if (room) roomIndexById.set(room.id, roomIndex);
+    }
+
+    // Rule #5 checks graph reachability; it does not infer or draw routes.
+    // A corridor building normally authors routes on the corridor only, while
+    // guest rooms remain visibly connected to it through declared openings.
+    const connectedRooms = new Set<number>();
+    const adjacentRooms = new Map<number, number[]>();
+    for (const opening of lay.openings) {
+      const neg = opening.negRoom;
+      const pos = opening.posRoom;
+      if (neg !== undefined && plateRooms.has(neg)) connectedRooms.add(neg);
+      if (pos !== undefined && plateRooms.has(pos)) connectedRooms.add(pos);
+      if (
+        neg === undefined ||
+        pos === undefined ||
+        !plateRooms.has(neg) ||
+        !plateRooms.has(pos)
+      ) {
+        continue;
+      }
+      const fromNeg = adjacentRooms.get(neg) ?? [];
+      fromNeg.push(pos);
+      adjacentRooms.set(neg, fromNeg);
+      const fromPos = adjacentRooms.get(pos) ?? [];
+      fromPos.push(neg);
+      adjacentRooms.set(pos, fromPos);
+    }
+
+    const reachableRooms = new Set<number>();
+    const queue: number[] = [];
+    for (const route of floorRoutes) {
+      for (const roomId of route.roomSequence) {
+        const roomIndex = roomIndexById.get(roomId);
+        if (roomIndex === undefined || reachableRooms.has(roomIndex)) continue;
+        reachableRooms.add(roomIndex);
+        queue.push(roomIndex);
+      }
+    }
+    for (let cursor = 0; cursor < queue.length; cursor++) {
+      const roomIndex = queue[cursor];
+      if (roomIndex === undefined) continue;
+      for (const neighbor of adjacentRooms.get(roomIndex) ?? []) {
+        if (reachableRooms.has(neighbor)) continue;
+        reachableRooms.add(neighbor);
+        queue.push(neighbor);
+      }
+    }
+
     for (const roomIndex of plate.roomIdx) {
       const room = lay.rooms[roomIndex];
       if (!room) continue;
-      const connected = lay.openings.some(
-        (opening) =>
-          opening.negRoom === roomIndex || opening.posRoom === roomIndex
-      );
-      if (!connected) continue;
+      if (!connectedRooms.has(roomIndex)) continue;
       const ownsExit = floorSymbols.some(
         (symbol) =>
           symbol.roomId === room.id &&
           (symbol.kind === "exit" || symbol.kind === "exit-final")
       );
-      if (!routedRooms.has(room.id) && !ownsExit) {
+      if (!reachableRooms.has(roomIndex) && !ownsExit) {
         warnings.push(
-          `room "${room.id}" on floor ${level} is not on any escape route and has no exit — occupants there have no marked way out (ISO 23601 §6)`
+          `room "${room.id}" on floor ${level} cannot reach any escape route through declared doors/openings and has no exit — ` +
+            `occupants there have no marked way out (ISO 23601 §6)`
         );
       }
     }

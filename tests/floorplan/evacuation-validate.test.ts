@@ -19,8 +19,66 @@ exit-final xe in east at 4,1 side east "EXIT / مخرج"
 route primary here -> hub -> west -> xw
 route secondary here -> hub -> east -> xe`;
 
+const hotelPlan = `evacuation "Hotel Level 2 — Escape Plan" unit m
+compliance iso
+sheet a3 landscape
+room corr "Corridor" at 0,6 size 48x2.4
+room stairW "Stair West" at 0,0 size 4x6
+room stairE "Stair East" at 44,0 size 4x6
+room lift "Lift Lobby" at 0,8.4 size 4x6
+room n0 "Room 201" at 4,0 size 5x6
+room n1 "Room 202" at 9,0 size 5x6
+room n2 "Room 203" at 14,0 size 5x6
+room n3 "Room 204" at 19,0 size 5x6
+room n4 "Room 205" at 24,0 size 5x6
+room n5 "Room 206" at 29,0 size 5x6
+room n6 "Room 207" at 34,0 size 5x6
+room n7 "Room 208" at 39,0 size 5x6
+room s0 "Room 221" at 4,8.4 size 5x6
+room s1 "Room 222" at 9,8.4 size 5x6
+room s2 "Room 223" at 14,8.4 size 5x6
+room s3 "Room 224" at 19,8.4 size 5x6
+room s4 "Room 225" at 24,8.4 size 5x6
+room s5 "Room 226" at 29,8.4 size 5x6
+room s6 "Room 227" at 34,8.4 size 5x6
+room s7 "Room 228" at 39,8.4 size 5x6
+door between n0 corr at 50% width 0.9
+door between n1 corr at 50% width 0.9
+door between n2 corr at 50% width 0.9
+door between n3 corr at 50% width 0.9
+door between n4 corr at 50% width 0.9
+door between n5 corr at 50% width 0.9
+door between n6 corr at 50% width 0.9
+door between n7 corr at 50% width 0.9
+door between s0 corr at 50% width 0.9
+door between s1 corr at 50% width 0.9
+door between s2 corr at 50% width 0.9
+door between s3 corr at 50% width 0.9
+door between s4 corr at 50% width 0.9
+door between s5 corr at 50% width 0.9
+door between s6 corr at 50% width 0.9
+door between s7 corr at 50% width 0.9
+door between stairW corr at 50% width 1.1
+door between stairE corr at 50% width 1.1
+opening between lift corr at 50% width 1.6
+here in corr at 24,1.2
+exit-final xW in stairW at 0,3 side west "EXIT"
+exit-final xE in stairE at 4,3 side east "EXIT"
+extinguisher e1 in corr at 10,0.3 side north class "ABC"
+call-point cp1 in corr at 12,0.3 side north
+first-aid fa1 in lift at 2,0.4
+no-elevator ne1 in lift at 2,3
+route primary here -> corr -> stairE -> xE
+route secondary here -> corr -> stairW -> xW`;
+
 function layout(source: string) {
   return layoutFloorplan(parseFloorplan(source));
+}
+
+function deadRoomWarnings(source: string): string[] {
+  return layout(source).warnings.filter((warning) =>
+    /room ".*".*escape route.*ISO 23601 §6/.test(warning)
+  );
 }
 
 describe("evacuation validation — all 13 rules", () => {
@@ -134,21 +192,37 @@ route secondary here -> corr -> stairW -> xw`;
     ).toBe(false);
   });
 
-  it("#5 warns for a connected room omitted from every route", () => {
+  it("#5 warns exactly once for a room in an isolated connected component", () => {
     const source = `${twoRoutePlan}
-room store above start size 2x2
-door between start store at 50%`;
-    expect(layout(source).warnings).toEqual(
-      expect.arrayContaining([
-        expect.stringMatching(/room "store".*not on any escape route.*ISO 23601 §6/),
-      ])
-    );
+room store at 20,20 size 2x2
+room service below store size 2x2
+door between store service at 50%
+exit-final serviceExit in service at 0,1 side west`;
+    expect(deadRoomWarnings(source)).toEqual([
+      expect.stringMatching(/room "store".*escape route.*ISO 23601 §6/),
+    ]);
+  });
+
+  it("#5 accepts a 20-room hotel whose guest rooms connect to routed corridor", () => {
+    const lay = layout(hotelPlan);
+    expect(lay.evacuation?.scale.denominator).toBe(200);
+    expect(lay.errors).toEqual([]);
+    expect(lay.warnings).toEqual([]);
+  });
+
+  it("#5 accepts rooms that reach a routed room through two openings", () => {
+    const source = `${twoRoutePlan}
+room foyer above start size 4x2
+room guest above foyer size 4x2
+door between start foyer at 50%
+door between foyer guest at 50%`;
+    expect(deadRoomWarnings(source)).toEqual([]);
   });
 
   it("#5 exempts an unconnected shaft", () => {
     const source = `${twoRoutePlan}
 room shaft at 20,20 size 1x1`;
-    expect(layout(source).warnings.some((warning) => /room "shaft"/.test(warning))).toBe(false);
+    expect(deadRoomWarnings(source)).toEqual([]);
   });
 
   it("#6 rejects a route ending in an ordinary room", () => {

@@ -1071,12 +1071,19 @@ export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: Rende
   }
 
   const nRooms = lay.rooms.length;
+  const evacuationDiagnostics = [
+    renderErrors.length
+      ? `${renderErrors.length} error${renderErrors.length === 1 ? "" : "s"}`
+      : "",
+    lay.warnings.length
+      ? `${lay.warnings.length} warning${lay.warnings.length === 1 ? "" : "s"}`
+      : "",
+  ].filter(Boolean).join(", ");
   const descText = isEvacuation && lay.evacuation
     ? `${nRooms} room${nRooms === 1 ? "" : "s"}, ${lay.evacuation.routes.length} escape route${lay.evacuation.routes.length === 1 ? "" : "s"}, ` +
       `${lay.evacuation.profile === "iso" ? "ISO 23601" : lay.evacuation.profile === "nfpa" ? "NFPA 170" : "UAE Civil Defence"} profile. ` +
       lay.evacuation.scale.note +
-      (renderErrors.length ? ` Errors: ${renderErrors.join("; ")}.` : "") +
-      (lay.warnings.length ? ` Warnings: ${lay.warnings.join("; ")}.` : "")
+      (evacuationDiagnostics ? ` ${evacuationDiagnostics}.` : "")
     : legacySingle
     ? `${nRooms} room${nRooms === 1 ? "" : "s"}, ${formatArea(lay.totalAreaM2, lay.unit)} total. ` +
       `${lay.items.length} furniture item${lay.items.length === 1 ? "" : "s"}.` +

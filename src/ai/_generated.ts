@@ -800,6 +800,26 @@ export const EXAMPLES: readonly GeneratedExample[] = [
     "notes": "## English and Arabic stay separate\n\nThe bilingual label separator (` / `) becomes two SVG text runs, so the Arabic half can render right-to-left without reordering the Latin half."
   },
   {
+    "slug": "evacuation-hotel-floor",
+    "diagram": "evacuation",
+    "title": "Hotel Level 2 — 20-room escape plan",
+    "description": "A realistic hotel escape plan with a 48 m central corridor, sixteen guest rooms, two remote stairs, a lift lobby, and an ISO-compliant 1:200 print scale on A3.",
+    "standard": "ISO 23601 · ISO 7010 · ISO 3864",
+    "tags": [
+      "evacuation",
+      "fire-safety",
+      "hotel",
+      "hospitality",
+      "escape-route",
+      "iso-23601",
+      "print-scale"
+    ],
+    "complexity": 4,
+    "featured": true,
+    "dsl": "evacuation \"Hotel Level 2 — Escape Plan\" unit m\ncompliance iso\nsheet a3 landscape\nroom corr \"Corridor\" at 0,6 size 48x2.4\nroom stairW \"Stair West\" at 0,0 size 4x6\nroom stairE \"Stair East\" at 44,0 size 4x6\nroom lift \"Lift Lobby\" at 0,8.4 size 4x6\nroom n0 \"Room 201\" at 4,0 size 5x6\nroom n1 \"Room 202\" at 9,0 size 5x6\nroom n2 \"Room 203\" at 14,0 size 5x6\nroom n3 \"Room 204\" at 19,0 size 5x6\nroom n4 \"Room 205\" at 24,0 size 5x6\nroom n5 \"Room 206\" at 29,0 size 5x6\nroom n6 \"Room 207\" at 34,0 size 5x6\nroom n7 \"Room 208\" at 39,0 size 5x6\nroom s0 \"Room 221\" at 4,8.4 size 5x6\nroom s1 \"Room 222\" at 9,8.4 size 5x6\nroom s2 \"Room 223\" at 14,8.4 size 5x6\nroom s3 \"Room 224\" at 19,8.4 size 5x6\nroom s4 \"Room 225\" at 24,8.4 size 5x6\nroom s5 \"Room 226\" at 29,8.4 size 5x6\nroom s6 \"Room 227\" at 34,8.4 size 5x6\nroom s7 \"Room 228\" at 39,8.4 size 5x6\ndoor between n0 corr at 50% width 0.9\ndoor between n1 corr at 50% width 0.9\ndoor between n2 corr at 50% width 0.9\ndoor between n3 corr at 50% width 0.9\ndoor between n4 corr at 50% width 0.9\ndoor between n5 corr at 50% width 0.9\ndoor between n6 corr at 50% width 0.9\ndoor between n7 corr at 50% width 0.9\ndoor between s0 corr at 50% width 0.9\ndoor between s1 corr at 50% width 0.9\ndoor between s2 corr at 50% width 0.9\ndoor between s3 corr at 50% width 0.9\ndoor between s4 corr at 50% width 0.9\ndoor between s5 corr at 50% width 0.9\ndoor between s6 corr at 50% width 0.9\ndoor between s7 corr at 50% width 0.9\ndoor between stairW corr at 50% width 1.1\ndoor between stairE corr at 50% width 1.1\nopening between lift corr at 50% width 1.6\nhere in corr at 24,1.2\nexit-final xW in stairW at 0,3 side west \"EXIT\"\nexit-final xE in stairE at 4,3 side east \"EXIT\"\nextinguisher e1 in corr at 10,0.3 side north class \"ABC\"\ncall-point cp1 in corr at 12,0.3 side north\nfirst-aid fa1 in lift at 2,0.4\nno-elevator ne1 in lift at 2,3\nroute primary here -> corr -> stairE -> xE\nroute secondary here -> corr -> stairW -> xW",
+    "notes": "## Why this is a realistic posted plan\n\nThe two authored routes stay on the central corridor and discharge into opposite stairs. Guest rooms and the lift lobby reach that routed corridor through declared doors or openings, so the validator proves connectivity without drawing seventeen overlapping green route bands.\n\nAt 48 metres long, the floor fits an A3 landscape sheet at **1:200**. That puts the example close enough to the ISO 23601 scale limit to make the print-scale check meaningful while keeping fixed-size safety signs legible."
+  },
+  {
     "slug": "evacuation-office-floor",
     "diagram": "evacuation",
     "title": "Office floor — two independent escape routes",
@@ -813,7 +833,7 @@ export const EXAMPLES: readonly GeneratedExample[] = [
       "iso-23601"
     ],
     "complexity": 3,
-    "featured": true,
+    "featured": false,
     "dsl": "evacuation \"Office Floor — Escape Plan\" unit m\ncompliance iso\nsheet a3 landscape\nroom office \"Open Office\" at 0,0 size 6x5\nroom lobby \"Lift Lobby\" below office size 6x2.4\nroom stairA \"Stair A\" left-of lobby size 3x2.4\nroom stairB \"Stair B\" right-of lobby size 3x2.4\nopening between office lobby at 50% width 1.6\ndoor between lobby stairA at 50% width 1.1\ndoor between lobby stairB at 50% width 1.1\nhere in office at 3,2.5\nexit-final xA in stairA at 0,1.2 side west \"EXIT\"\nexit-final xB in stairB at 3,1.2 side east \"EXIT\"\ncall-point cp1 in lobby at 0.8,0.3 side north\nextinguisher f1 in lobby at 2.0,0.3 side north class \"ABC\"\nfirst-aid fa1 in lobby at 4.8,1.8\nfire-door between lobby stairA rating \"EI30\"\nfire-door between lobby stairB rating \"EI30\"\nroute primary here -> lobby -> stairB -> xB\nroute secondary here -> lobby -> stairA -> xA",
     "notes": "## Why this plan is reviewable\n\nBoth routes name every room they cross and finish at different final exits. The engine verifies the shared openings, computes the A3 print scale, and derives the Tier-M legend from the signs actually used."
   },

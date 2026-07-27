@@ -73,6 +73,17 @@ route secondary here -> office -> lobby -> west -> xw`);
     );
   });
 
+  it("keeps the accessible description concise when the plan has many warnings", () => {
+    const svg = renderFloorplan(`${source}
+first-aid fa2 in office at 1,1
+extinguisher f2 in office at 1,1
+call-point cp2 in office at 1,1`);
+    const desc = svg.match(/<desc>(.*?)<\/desc>/s)?.[1] ?? "";
+    expect(desc).toMatch(/[3-9]\d* warnings/);
+    expect(desc).not.toContain("safety symbols");
+    expect(desc.length).toBeLessThan(300);
+  });
+
   it("keeps Latin and Arabic label runs separate for bilingual plans", () => {
     const svg = renderFloorplan(source.replace("compliance iso", "compliance uae"));
     expect(svg).toContain(">EXIT</text>");

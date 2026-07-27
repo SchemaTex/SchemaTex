@@ -48,8 +48,15 @@ describe("floorplan examples — gallery is correct-by-construction", () => {
 });
 
 describe("evacuation examples — gallery is compliance-checked", () => {
-  it("ships all five launch examples", () => {
-    expect(evacuationFiles).toHaveLength(5);
+  it("ships all six launch examples", () => {
+    expect(evacuationFiles).toHaveLength(6);
+  });
+
+  it("features the realistic hotel plan instead of the demo-sized office", () => {
+    const featured = evacuationFiles.filter((file) =>
+      /\nfeatured: true\n/.test(readFileSync(join(EXAMPLES_DIR, file), "utf8"))
+    );
+    expect(featured).toEqual(["evacuation-hotel-floor.mdx"]);
   });
 
   for (const file of evacuationFiles) {

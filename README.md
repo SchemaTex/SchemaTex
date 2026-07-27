@@ -800,7 +800,7 @@ exit-final east in stair at 3,1.2 side east "EXIT"
 route primary here -> lobby -> stair -> east
 ```
 
-![Office evacuation plan](examples/evacuation/office-floor.svg)
+![Hotel Level 2 evacuation plan](examples/evacuation/hotel-floor.svg)
 
 [Evacuation plan syntax →](https://schematex.js.org/docs/evacuation)
 
