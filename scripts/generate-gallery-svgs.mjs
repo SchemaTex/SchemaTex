@@ -513,6 +513,29 @@ consequence "Asset loss"
   mitigate "Business-continuity plan"`,
   },
   {
+    file: 'examples/evacuation/office-floor.svg',
+    text: `evacuation "Office Floor — Escape Plan" unit m
+compliance iso
+sheet a3 landscape
+room office "Open Office" at 0,0 size 6x5
+room lobby "Lift Lobby" below office size 6x2.4
+room stairA "Stair A" left-of lobby size 3x2.4
+room stairB "Stair B" right-of lobby size 3x2.4
+opening between office lobby at 50% width 1.6
+door between lobby stairA at 50% width 1.1
+door between lobby stairB at 50% width 1.1
+here in office at 3,2.5
+exit-final xA in stairA at 0,1.2 side west "EXIT"
+exit-final xB in stairB at 3,1.2 side east "EXIT"
+call-point cp1 in lobby at 0.8,0.3 side north
+extinguisher f1 in lobby at 2.0,0.3 side north class "ABC"
+first-aid fa1 in lobby at 4.8,1.8
+fire-door between lobby stairA rating "EI30"
+fire-door between lobby stairB rating "EI30"
+route primary here -> lobby -> stairB -> xB
+route secondary here -> lobby -> stairA -> xA`,
+  },
+  {
     file: 'examples/floorplan/family-home.svg',
     text: `floorplan "Four-Bedroom Family Home — 160 m²" unit m
 north

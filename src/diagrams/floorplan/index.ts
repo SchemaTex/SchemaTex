@@ -7,12 +7,13 @@ import { renderFloorplan } from "./renderer";
 export const floorplan: DiagramPlugin = {
   type: "floorplan",
   capabilities: { scene: true, editablePosition: true },
+  altTypes: ["evacuation"],
   detect(text: string): boolean {
     for (const raw of text.split(/\r?\n/)) {
       const t = raw.trim();
       if (!t) continue;
       if (t.startsWith("#") || t.startsWith("//")) continue;
-      return /^floorplan\b/i.test(t);
+      return /^(floorplan|evacuation|escapeplan)\b/i.test(t);
     }
     return false;
   },
@@ -51,4 +52,16 @@ export { parseFloorplan, FloorplanParseError } from "./parser";
 export { layoutFloorplan, formatLength, formatArea, FLOORPLAN_CONST } from "./layout";
 export { renderFloorplan, renderFloorplanLayout } from "./renderer";
 export { FLOORPLAN_SYMBOLS, FURNITURE_TYPES } from "./catalog";
+export {
+  SAFETY_PREVIEW_SYMBOLS,
+  SAFETY_SYMBOLS,
+  resolveSafetySymbol,
+} from "./safety-symbols";
+export {
+  EVACUATION_PROFILES,
+  EVACUATION_SHEETS_MM,
+  computeEvacuationScale,
+  validateEvacuation,
+} from "./evacuation";
+export { buildEvacuationLegend } from "./legend";
 export type * from "./types";

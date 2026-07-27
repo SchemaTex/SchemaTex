@@ -848,6 +848,45 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
     ],
   },
   {
+    type: "evacuation",
+    name: "Evacuation plan",
+    tagline:
+      "Multi-floor escape plans with standards-shaped safety signs, directional routes, mandatory legends, and ISO/NFPA/UAE compliance checks.",
+    useWhen:
+      "Use for posted life-safety diagrams such as a Flucht- und Rettungsplan, fire escape plan, emergency egress map, or evacuation notice. Header `evacuation` or `escapeplan`; room, wall, door, stair, and multi-floor geometry comes from the floorplan engine. Add `safety` signs and `route` polylines, select `compliance iso|nfpa|uae`, and declare the print sheet so Schematex can validate sign sizes, YOU ARE HERE placement, final exits, route continuity, required colors, and the mandatory legend. Not a substitute for approval by the local authority having jurisdiction.",
+    cluster: "architecture",
+    standard: "ISO 23601:2020",
+    standardAlso: [
+      "ISO 7010:2019",
+      "ISO 3864-1:2011",
+      "NFPA 170 Ch. 11",
+      "UAE Fire and Life Safety Code",
+    ],
+    syntaxKey: "evacuation",
+    aliases: [
+      "Evacuation plan",
+      "escape plan",
+      "emergency egress map",
+      "emergency exit plan",
+      "fire escape plan",
+      "Flucht- und Rettungsplan",
+      "Fluchtplan",
+      "مخطط الإخلاء",
+      "疏散图",
+    ],
+    keywords: [
+      "ISO 23601",
+      "ISO 7010",
+      "NFPA 170",
+      "UAE Civil Defence",
+      "emergency exit",
+      "escape route",
+      "YOU ARE HERE",
+      "assembly point",
+      "fire safety",
+    ],
+  },
+  {
     type: "siteplan",
     name: "Site plan",
     tagline:
@@ -990,6 +1029,8 @@ export const DIAGRAM_SINCE: Readonly<Record<DiagramType, string>> = {
   welding: "0.8.1",
   // 0.9.3
   floorplan: "0.9.3",
+  // 1.0.2 — multi-floor evacuation plans
+  evacuation: "1.0.2",
   siteplan: "0.9.12",
   // 0.9.4 — multi-sport playbook (football X&O / basketball / soccer)
   playbook: "0.9.4",

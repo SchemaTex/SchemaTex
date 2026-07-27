@@ -207,3 +207,17 @@ coord     ::= num "," num          dims ::= num "x" num          pct ::= num "%"
 - [Two-bedroom apartment](/examples#floorplan) — 상대 배치, 문 7개, 완전한 가구 배치
 - [27-desk classroom](/examples#floorplan) — `grid … count` 잘라내기, `unit ft`
 - [Wedding reception for 120](/examples#floorplan) — 자동 좌석 배치된 연회 원형 테이블, 댄스 플로어
+
+## 여러 층 plan set
+
+`floor N "Label"`로 하나의 source를 같은 scale의 floor plate로 나누고 `stack horizontal|vertical`로 배치를 정합니다. `S1` 같은 선택 furniture ID는 같은 계단을 등록해 아래층은 UP, 위층은 DN이 됩니다. 0.1 m보다 큰 오프셋은 warning이며 참조는 층을 넘을 수 없습니다.
+
+```
+floorplan "Two-Storey House" unit m
+floor 0 "Ground Floor"
+room hall at 0,0 size 6x4
+furniture stairs S1 in hall at 4,0.4
+floor 1 "First Floor"
+room landing at 0,0 size 6x4
+furniture stairs S1 in landing at 4,0.4
+```

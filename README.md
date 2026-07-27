@@ -33,7 +33,7 @@
 
 ---
 
-**Schematex** is the open-source rendering and editing engine for the diagrams professionals actually use — medical, electrical, legal, and analytical. **50 diagram families** spanning medicine, engineering, law, and analysis:
+**Schematex** is the open-source rendering and editing engine for the diagrams professionals actually use — medical, electrical, legal, and analytical. **51 diagram families** spanning medicine, engineering, law, and analysis:
 
 - 👪 **Relationships** — genograms, ecomaps, pedigrees, sociograms, phylogenetic trees
 - ⚡ **Electrical & Industrial** — ladder logic, single-line diagrams, circuit schematics, logic gates, timing, block diagrams, **FBD**, **SFC**, breadboard, **P&ID** (ISA-5.1)
@@ -44,6 +44,7 @@
 - 🛡️ **Risk & Reliability** — **fault trees** (NUREG-0492 / IEC 61025) that *compute* MOCUS minimal cut sets + P(top), **bowtie** barrier-based risk (CCPS / Energy Institute 2018)
 - 🗓️ **Project management** — **PERT / CPM** networks (PMBOK 7) that *compute* the schedule: ES/EF/LS/LF, slack, critical path, three-point estimation, swimlanes, time-scaled layout
 - 🖧 **Network & Infrastructure** — **network topology** diagrams (Cisco-convention icons) with device/link/port integrity, IP-CCTV camera systems, three-tier campus, spine-leaf fabric, subnets & VLANs
+- 🏠 **Architecture & Space** — measurable single/multi-floor plans and standards-aware evacuation plans with safety signs, escape routes, mandatory legends, and print-scale checks
 - ◉ **Concurrency** — **Petri nets** (Murata 1989 / ISO-IEC 15909) that *compute* enablement and fire token sequences
 - 🔬 **Research** — **PRISMA 2020** systematic-review flow diagrams
 - 📅 **Timelines** — proportional / equidistant / log axis · swimlane · gantt · lollipop · BC dates · geological Ma scale
@@ -107,13 +108,13 @@ export function DiagramEditor() {
 `viewport` opts into built-in pan, pinch/wheel zoom, and fit-to-view while your
 app keeps ownership of any zoom controls through `viewportRef`.
 
-Twenty parser-native engines support deterministic canvas editing; 17 also support stable-ID drag or native geometry handles. The other 30 remain fully renderable and editable through their DSL source, without guessed canvas handles. See the [interactive editing guide](https://schematex.js.org/docs/interactive-editing) and [live workspace](https://schematex.js.org/playground).
+Twenty-one parser-native diagram types support deterministic canvas editing; 18 also support stable-ID drag or native geometry handles. The other 30 remain fully renderable and editable through their DSL source, without guessed canvas handles. See the [interactive editing guide](https://schematex.js.org/docs/interactive-editing) and [live workspace](https://schematex.js.org/playground).
 
 Coding agents can start at [`llms.txt`](https://schematex.js.org/llms.txt), load the complete Markdown corpus from [`llms-full.txt`](https://schematex.js.org/llms-full.txt), or query the [machine-readable interaction capability registry](https://schematex.js.org/api/interactive-capabilities). Append `.md` to any documentation URL for clean Markdown.
 
 ## Gallery
 
-All 50 diagram types share one unified pipeline. A selection is shown below — **try any of them live at [schematex.js.org/playground](https://schematex.js.org/playground).**
+All 51 diagram types share one unified pipeline. A selection is shown below — **try any of them live at [schematex.js.org/playground](https://schematex.js.org/playground).**
 
 ### 👪 Genogram — *McGoldrick family-systems standard*
 
@@ -780,6 +781,28 @@ furniture dining-table in kitchen at 0.5,1.7 size 1.5x0.9
 ![Four-bedroom family home floor plan](examples/floorplan/family-home.svg)
 
 [Floor plan syntax →](https://schematex.js.org/docs/floorplan)
+
+### 🟩 Evacuation plan — *ISO 23601 · NFPA 170 Ch.11*
+
+Posted escape plans reuse measurable floor geometry and add fixed-sheet safety signs, orthogonal routes with directional chevrons, a mandatory Tier-M legend, and profile-aware checks for ISO, NFPA, or UAE Civil Defence. Multi-floor plates share one scale and register stairs by id.
+
+```text
+evacuation "Office Escape Plan" unit m
+compliance iso
+sheet a3 landscape
+room office at 0,0 size 6x5
+room lobby below office size 6x2.4
+room stair right-of lobby size 3x2.4
+opening between office lobby at 50% width 1.6
+door between lobby stair at 50% width 1.1
+here in office at 3,2.5
+exit-final east in stair at 3,1.2 side east "EXIT"
+route primary here -> lobby -> stair -> east
+```
+
+![Office evacuation plan](examples/evacuation/office-floor.svg)
+
+[Evacuation plan syntax →](https://schematex.js.org/docs/evacuation)
 
 ### 🏟️ Sports playbook — *coaching X&O notation, three sports*
 

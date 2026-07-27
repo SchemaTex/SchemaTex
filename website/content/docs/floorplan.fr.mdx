@@ -207,3 +207,17 @@ Les commentaires vont de `#` jusqu'à la fin de la ligne. Les guillemets CJK (`"
 - [Appartement deux chambres](/examples#floorplan) — placement relatif, 7 portes, ameublement complet
 - [Salle de classe de 27 bureaux](/examples#floorplan) — troncature `grid … count`, `unit ft`
 - [Réception de mariage pour 120 personnes](/examples#floorplan) — banquettes rondes avec placement automatique, piste de danse
+
+## Jeux de plans multi-étages
+
+`floor N "Libellé"` divise une source en plaques partageant la même échelle; `stack horizontal|vertical` règle la composition. Un identifiant facultatif comme `S1` relie le même escalier: UP en bas, DN en haut, avec avertissement au-delà de 0,1 m de décalage. Les références ne traversent pas les étages.
+
+```
+floorplan "Maison à deux étages" unit m
+floor 0 "Rez-de-chaussée"
+room hall at 0,0 size 6x4
+furniture stairs S1 in hall at 4,0.4
+floor 1 "Étage"
+room palier at 0,0 size 6x4
+furniture stairs S1 in palier at 4,0.4
+```

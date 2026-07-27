@@ -1,0 +1,53 @@
+---
+title: Two-storey villa — coordinated escape plates
+description: "A two-level residential escape-plan set with a shared drawing scale, aligned stair IDs, and two independently checked routes on each floor."
+diagram: evacuation
+standard: ISO 23601 · ISO 7010 · ISO 3864
+industry: [safety, residential]
+persona: For the property manager coordinating posted plans across a two-storey residence
+complexity: 3
+tags: [evacuation, multi-floor, residential, stairs, iso-23601]
+featured: false
+relatedLink:
+  label: Evacuation plan syntax
+  href: /docs/evacuation
+status: published
+dsl: |
+  evacuation "Two-Storey Villa — Escape Plans" unit m stack horizontal
+  compliance iso
+  sheet a3 landscape
+  floor 0 "Ground Floor"
+  room living "Living Room" at 0,0 size 6x5
+  room hall "Hall" below living size 6x2.4
+  room stairA "Main Stair" left-of hall size 3x2.4
+  room stairB "Rear Stair" right-of hall size 3x2.4
+  door between living hall at 50% width 1.2
+  door between hall stairA at 50% width 1.0
+  door between hall stairB at 50% width 1.0
+  furniture stairs S1 in stairA at 0.3,0.3 size 2.0x1.8
+  furniture stairs S2 in stairB at 0.3,0.3 size 2.0x1.8
+  here gHere in living at 3,2.5
+  exit-final gA in stairA at 0,1.2 side west "EXIT"
+  exit-final gB in stairB at 3,1.2 side east "EXIT"
+  route primary gHere -> hall -> stairB -> gB
+  route secondary gHere -> hall -> stairA -> gA
+  floor 1 "First Floor"
+  room bedrooms "Bedroom Landing" at 0,0 size 6x5
+  room upperHall "Upper Hall" below bedrooms size 6x2.4
+  room upperA "Main Stair" left-of upperHall size 3x2.4
+  room upperB "Rear Stair" right-of upperHall size 3x2.4
+  door between bedrooms upperHall at 50% width 1.2
+  door between upperHall upperA at 50% width 1.0
+  door between upperHall upperB at 50% width 1.0
+  furniture stairs S1 in upperA at 0.3,0.3 size 2.0x1.8
+  furniture stairs S2 in upperB at 0.3,0.3 size 2.0x1.8
+  here uHere in bedrooms at 3,2.5
+  exit-final uA in upperA at 0,1.2 side west "EXIT"
+  exit-final uB in upperB at 3,1.2 side east "EXIT"
+  route primary uHere -> upperHall -> upperB -> uB
+  route secondary uHere -> upperHall -> upperA -> uA
+---
+
+## One scale, two independently checked sheets
+
+The repeated `S1` and `S2` IDs register two continuous stairwells. A coordinate drift over 0.1 m becomes a warning, while each level still has to carry its own marker, exits, and routes.

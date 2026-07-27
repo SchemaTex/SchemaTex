@@ -1,0 +1,49 @@
+---
+title: 疏散图
+---
+
+## 关于疏散图
+
+张贴式**疏散图**要说明“您在此处”、通往最终出口的路线，以及报警、消防设备和急救设施的位置。Schematex 在可量测的 floorplan 几何上绘制这些信息，并按 ISO 23601、NFPA 170 或 UAE Civil Defence 双语 profile 校验。
+
+<Playground initial={`evacuation "楼层疏散图" unit m
+compliance iso
+sheet a3 landscape
+room room "房间" at 0,0 size 6x4
+here in room at 2,2
+exit-final exit1 in room at 6,2 side east "出口"
+route primary here -> exit1`} height={460} />
+
+---
+
+## 1. 张贴位置
+
+每张图必须有且只有一个 `here`。同一栋楼有多个张贴点时，保持平面和路线不变，只修改 `here` 那一行并分别 render。
+
+## 2. 安全符号
+
+符号画在固定 24×24 grid 上，默认印刷尺寸为 8 mm。绿色表示安全与逃生，红色表示消防设备。可用词汇包括出口、集合点、灭火器、手动报警、急救、AED 和禁止标记。
+
+## 3. 疏散路线
+
+`route primary here -> corridor -> stair -> exit1` 的相邻房间必须由已声明的 `door` 或 `opening` 连通。中间房间要明确写出；engine 不会自行寻路。
+
+## 4. Compliance profile
+
+`iso` 使用 ISO 23601/7010/3864；`nfpa` 使用 NFPA 170/NFPA 101；`uae` 强制英文 / 阿拉伯文双语标签。
+
+## 5. 打印比例尺
+
+声明 sheet 与方向后，所有楼层 plate 共用计算出的常规比例尺，符号始终保持 8 mm。ISO/UAE 下比 1:250 更粗的比例尺会报 error。
+
+## 6. 图层与多楼层
+
+普通家具、面积文字和尺寸标注自动隐藏；楼梯、电梯、北向、路线与安全符号保留。`floor N "标签"` 生成多个 plate，共用的 stair ID 用于校验垂直对齐。
+
+## 7. 强制图例
+
+Tier M legend 始终开启，`legend: off` 是 parse error。
+
+## 8. 校验
+
+engine 会检查当前位置、出口、开口连续性、独立路线、无路线房间、路线终点、符号碰撞、双语、电梯禁用、图例、颜色、比例尺和未知符号；每条消息都带标准出处。

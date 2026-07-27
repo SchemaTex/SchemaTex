@@ -207,3 +207,17 @@ coord     ::= num "," num          dims ::= num "x" num          pct ::= num "%"
 - [2ベッドルームアパートメント](/examples#floorplan) — 相対配置、7つのドア、完全な家具配置
 - [27台のデスク教室](/examples#floorplan) — `grid … count` 切り捨て、`unit ft`
 - [120名のウェディングレセプション](/examples#floorplan) — 自動着席の宴会ラウンドテーブル、ダンスフロア
+
+## 複数階の plan set
+
+`floor N "Label"` で一つの source を同一 scale の floor plate に分割し、`stack horizontal|vertical` で配置を選びます。`S1` のような任意の furniture ID は同じ階段を登録し、下階は UP、上階は DN になります。0.1 m を超えるずれは warning で、参照は階をまたげません。
+
+```
+floorplan "Two-Storey House" unit m
+floor 0 "Ground Floor"
+room hall at 0,0 size 6x4
+furniture stairs S1 in hall at 4,0.4
+floor 1 "First Floor"
+room landing at 0,0 size 6x4
+furniture stairs S1 in landing at 4,0.4
+```

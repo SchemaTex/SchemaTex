@@ -207,3 +207,17 @@ Comentários vão de `#` até o final da linha. Aspas CJK (`""`) são aceitas co
 - [Apartamento de dois quartos](/examples#floorplan) — posicionamento relativo, 7 portas, mobília completa
 - [Sala de aula com 27 mesas](/examples#floorplan) — truncamento `grid … count`, `unit ft`
 - [Recepção de casamento para 120 pessoas](/examples#floorplan) — mesas de banquete com assentos automáticos, pista de dança
+
+## Conjuntos de vários pavimentos
+
+`floor N "Rótulo"` divide uma fonte em placas com escala comum; `stack horizontal|vertical` escolhe a composição. Um id opcional como `S1` registra a mesma escada: UP embaixo, DN em cima, com aviso acima de 0,1 m de deslocamento. Referências não podem atravessar pavimentos.
+
+```
+floorplan "Casa de dois pavimentos" unit m
+floor 0 "Térreo"
+room hall at 0,0 size 6x4
+furniture stairs S1 in hall at 4,0.4
+floor 1 "Pavimento superior"
+room landing at 0,0 size 6x4
+furniture stairs S1 in landing at 4,0.4
+```

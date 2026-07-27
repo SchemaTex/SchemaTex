@@ -135,16 +135,25 @@ const plugins: DiagramPlugin[] = [
   playbook,
 ];
 
+function servesType(plugin: DiagramPlugin, type: DiagramType): boolean {
+  return plugin.type === type || plugin.altTypes?.includes(type) === true;
+}
+
+function requestedType(plugin: DiagramPlugin, config?: SchematexConfig): DiagramType {
+  return config?.type && servesType(plugin, config.type) ? config.type : plugin.type;
+}
+
 function detectPlugin(text: string, config?: SchematexConfig): DiagramPlugin {
   if (config?.type) {
-    const plugin = plugins.find((p) => p.type === config.type);
+    const type = config.type;
+    const plugin = plugins.find((candidate) => servesType(candidate, type));
     if (plugin) return plugin;
   }
   for (const plugin of plugins) {
     if (plugin.detect(text)) return plugin;
   }
   throw new Error(
-    "Cannot detect diagram type. Start your text with 'genogram', 'ecomap', 'pedigree', 'phylo', 'sociogram', 'timing', 'logic', 'circuit', 'blockdiagram', 'ladder', 'sld', 'entity-structure', 'fishbone', 'venn', 'flowchart', 'mindmap', 'matrix', 'orgchart', 'state', 'pid', 'erd', 'breadboard', 'bpmn', 'fbd', 'sfc', 'prisma', 'usecase', 'pert', 'sequence', 'petri', 'network', 'umlclass', 'faulttree', 'bowtie', 'rbd', 'floorplan', 'siteplan', or 'playbook'."
+    "Cannot detect diagram type. Start your text with 'genogram', 'ecomap', 'pedigree', 'phylo', 'sociogram', 'timing', 'logic', 'circuit', 'blockdiagram', 'ladder', 'sld', 'entity-structure', 'fishbone', 'venn', 'flowchart', 'mindmap', 'matrix', 'orgchart', 'state', 'pid', 'erd', 'breadboard', 'bpmn', 'fbd', 'sfc', 'prisma', 'usecase', 'pert', 'sequence', 'petri', 'network', 'umlclass', 'faulttree', 'bowtie', 'rbd', 'floorplan', 'evacuation', 'siteplan', or 'playbook'."
   );
 }
 
@@ -287,6 +296,7 @@ function normalizeHeader(input: MappedText, type: string): MappedText {
  */
 function headerCandidates(type: string): string[] {
   if (type === "erd") return ["erDiagram", "erd"];
+  if (type === "evacuation") return ["evacuation"];
   return [type];
 }
 
@@ -305,10 +315,11 @@ function headerCandidates(type: string): string[] {
 function recoverHeader(
   plugin: DiagramPlugin,
   prepared: MappedText,
-  forced: boolean
+  forced: boolean,
+  type: DiagramType
 ): MappedText {
   if (!forced || !plugin.parse || plugin.detect(prepared.text)) return prepared;
-  for (const hdr of headerCandidates(plugin.type)) {
+  for (const hdr of headerCandidates(type)) {
     const candidate = replaceMapped(prepared, 0, 0, `${hdr}\n`);
     if (!plugin.detect(candidate.text)) continue;
     try {
@@ -432,10 +443,11 @@ function preprocess(source: string): PreparedInput {
 function prepareForPlugin(
   input: PreparedInput,
   plugin: DiagramPlugin,
-  forced: boolean
+  forced: boolean,
+  type: DiagramType = plugin.type
 ): PreparedInput {
-  const normalized = normalizeHeader(input, plugin.type);
-  const recovered = recoverHeader(plugin, normalized, forced);
+  const normalized = normalizeHeader(input, type);
+  const recovered = recoverHeader(plugin, normalized, forced, type);
   return { ...input, text: recovered.text, boundaries: recovered.boundaries };
 }
 
@@ -545,8 +557,9 @@ export function parse(text: string, config?: SchematexConfig): unknown {
       `Diagram type '${plugin.type}' does not yet expose a parse() method.`
     );
   }
-  const forced = config?.type != null && plugin.type === config.type;
-  const prepared = prepareForPlugin(prepared0, plugin, forced);
+  const type = requestedType(plugin, config);
+  const forced = config?.type != null && servesType(plugin, config.type);
+  const prepared = prepareForPlugin(prepared0, plugin, forced, type);
   const ast = plugin.parse(prepared.text);
   remapAstSourceRanges(ast, prepared);
   return ast;
@@ -565,8 +578,9 @@ export function parseResult(
         `Diagram type '${plugin.type}' does not yet expose a parse() method.`
       );
     }
-    const forced = config?.type != null && plugin.type === config.type;
-    const prepared = prepareForPlugin(prepared0, plugin, forced);
+    const type = requestedType(plugin, config);
+    const forced = config?.type != null && servesType(plugin, config.type);
+    const prepared = prepareForPlugin(prepared0, plugin, forced, type);
     const ast = plugin.parse(prepared.text);
     remapAstSourceRanges(ast, prepared);
     const diagnostics = [...prepared.diagnostics, ...runLint(plugin, prepared.text)];
@@ -605,8 +619,9 @@ export function render(text: string, config?: SchematexConfig): string {
 
   const prepared0 = preprocess(text);
   const plugin = detectPlugin(prepared0.text, config);
-  const forced = config?.type != null && plugin.type === config.type;
-  const prepared = prepareForPlugin(prepared0, plugin, forced);
+  const type = requestedType(plugin, config);
+  const forced = config?.type != null && servesType(plugin, config.type);
+  const prepared = prepareForPlugin(prepared0, plugin, forced, type);
   return renderWithPlugin(prepared, plugin, config).svg;
 }
 
@@ -618,8 +633,9 @@ export function renderResult(
   try {
     const prepared0 = preprocess(text);
     plugin = detectPlugin(prepared0.text, config);
-    const forced = config?.type != null && plugin.type === config.type;
-    const prepared = prepareForPlugin(prepared0, plugin, forced);
+    const type = requestedType(plugin, config);
+    const forced = config?.type != null && servesType(plugin, config.type);
+    const prepared = prepareForPlugin(prepared0, plugin, forced, type);
     const rendered = renderWithPlugin(prepared, plugin, config);
     const diagnostics = [...prepared.diagnostics, ...runLint(plugin, prepared.text)];
     return {

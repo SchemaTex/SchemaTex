@@ -65,6 +65,7 @@ export const INTERACTIVE_CAPABILITIES = {
   network: capability("network", ["title", "labels"], "free"),
   umlclass: capability("umlclass", ["title", "structured-fields"], "cross-axis", "Relationship ranks own the primary layout axis, so classifiers move across ranks without changing UML relationships."),
   floorplan: capability("floorplan", ["title", "labels"], "native-xy", "Native handles rewrite room dimensions, openings, and item coordinates in plan units; topology and shared-wall validation still apply."),
+  evacuation: capability("evacuation", ["title", "labels"], "native-xy", "Room and furniture edits reuse floorplan-native ranges and handles; standards-governed safety signs, routes, and compliance annotations remain source-edited."),
   siteplan: capability("siteplan", ["title"], "native-xy", "Native handles rewrite authored plan coordinates and endpoints while scale, boundaries, and surveyed geometry remain explicit."),
 } as const satisfies Partial<Record<DiagramType, InteractiveCapabilities>>;
 

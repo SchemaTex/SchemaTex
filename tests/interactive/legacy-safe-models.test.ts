@@ -28,7 +28,7 @@ function sceneItem(source: string, key: string): SceneItem {
 }
 
 describe("interactive safety invariants", () => {
-  it("advertises only the 20 parser-native engines and keeps the other 30 source-only", () => {
+  it("advertises 21 parser-native diagram types and keeps the other 30 source-only", () => {
     const diagrams = listDiagrams();
     const native = diagrams.filter(
       (entry) => getInteractiveCapabilities(entry.type as DiagramType).text.length > 0,
@@ -37,7 +37,7 @@ describe("interactive safety invariants", () => {
       (entry) => getInteractiveCapabilities(entry.type as DiagramType).text.length === 0,
     );
 
-    expect(native).toHaveLength(20);
+    expect(native).toHaveLength(21);
     expect(sourceOnly).toHaveLength(30);
 
     for (const entry of sourceOnly) {

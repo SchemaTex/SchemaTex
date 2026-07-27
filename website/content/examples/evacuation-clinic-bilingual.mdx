@@ -1,0 +1,38 @@
+---
+title: Bilingual clinic — English / Arabic evacuation plan
+description: "A clinic escape plan for Gulf-region review with English/Arabic exit labels, the UAE location treatment, two routes, and a Civil Defence scale check."
+diagram: evacuation
+standard: UAE Civil Defence · ISO 23601 · ISO 7010
+industry: [safety, healthcare]
+persona: For the clinic administrator preparing a bilingual Civil Defence submission
+complexity: 3
+tags: [evacuation, clinic, uae, arabic, bilingual, fire-safety]
+featured: false
+relatedLink:
+  label: Evacuation plan syntax
+  href: /docs/evacuation
+status: published
+dsl: |
+  evacuation "Clinic Evacuation Plan / مخطط إخلاء العيادة" unit m
+  compliance uae
+  sheet a3 landscape
+  room clinic "Clinic / العيادة" at 0,0 size 7x5
+  room corridor "Corridor / الممر" below clinic size 7x2.4
+  room west "West Exit / المخرج الغربي" left-of corridor size 3x2.4
+  room east "East Exit / المخرج الشرقي" right-of corridor size 3x2.4
+  door between clinic corridor at 50% width 1.2
+  door between corridor west at 50% width 1.1
+  door between corridor east at 50% width 1.1
+  here in clinic at 3.5,2.5
+  exit-final westExit in west at 0,1.2 side west "EXIT / مخرج"
+  exit-final eastExit in east at 3,1.2 side east "EXIT / مخرج"
+  extinguisher ext in corridor at 1.2,1.8 class "ABC"
+  first-aid aid in clinic at 6.2,0.8
+  call-point alarm in corridor at 5.8,0.3 side north
+  route primary here -> corridor -> east -> eastExit
+  route secondary here -> corridor -> west -> westExit
+---
+
+## English and Arabic stay separate
+
+The bilingual label separator (` / `) becomes two SVG text runs, so the Arabic half can render right-to-left without reordering the Latin half.

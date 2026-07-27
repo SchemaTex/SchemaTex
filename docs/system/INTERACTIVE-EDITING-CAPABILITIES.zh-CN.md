@@ -11,7 +11,7 @@
 
 Schematex 不会通过“比较 SVG 文字和源码中的引号字符串”来猜 edit target。只要文字重复、renderer 按计算分数重排，或 config value 恰好和 label 相同，这种方法就存在 ambiguity。没有 native range 的 engine 仍可通过源码编辑，但不提供 Canvas handle。
 
-当前版本有 **20 个 parser-native Canvas 可编辑 engine**，其中 **17 个**还具备安全的位置模型。其余 30 个 engine 正常 render，也能在 DSL editor 中修改，但不会生成 Canvas handle。
+当前版本有 **21 种 parser-native Canvas 可编辑图**，其中 **18 种**还具备安全的位置模型。其余 30 种图正常 render，也能在 DSL editor 中修改，但不会生成 Canvas handle。
 
 ## 能力词汇
 
@@ -38,6 +38,7 @@ Schematex 不会通过“比较 SVG 文字和源码中的引号字符串”来�
 | Circuit · positional | 编辑 + x/y 拖拽 | 显式 component label 和 value | 显式 ID component：x/y，通过 `@overrides` | 用户定义 wire 在 drop 后重连 | 生成 ID 受保护 |
 | Circuit · netlist | 编辑 + x/y 拖拽 | 显式 `label=` 和 `value=` | SPICE component ID：x/y，通过 `@overrides` | Net 实时跟随，rerender 后仍是正交线段 | Component ID 和 net name 是 identity |
 | Floorplan | 编辑 + x/y 拖拽 | Room 和 furniture label | Furniture：native x/y；简单 room：size handle | 改写 furniture coordinate 或 `size WxH` | Room body 不拖；multipart room 无单一 resize box |
+| Evacuation | 编辑 + x/y 拖拽 | Room 和 furniture label | Furniture：native x/y；简单 room：size handle | 复用 floorplan-native coordinate edit | Safety sign、route 和 compliance annotation 仍通过源码编辑 |
 | Genogram | 编辑 + x/y 拖拽 | 显式 person label | Person：仅 x，通过 `@overrides` | 伴侣、子女和 household connector 实时跟随 | Generation y 被锁定 |
 | Network | 编辑 + x/y 拖拽 | Device 和 authored link label | Device：x/y，通过 `@overrides` | Topology link 保持连接并重新路由 | Device ID 仍是 identity |
 | Decision tree | 编辑 + x/y 拖拽 | Question 和 answer | 无 | Tree geometry 自动排版 | 生成 node ID 不允许 pin |
@@ -53,7 +54,7 @@ Schematex 不会通过“比较 SVG 文字和源码中的引号字符串”来�
 | Siteplan | 编辑 + x/y 拖拽 | 仅标题 | Vertex 和 marker：native x/y | 改写精确 coordinate pair | 暂不支持 whole-shape translation 和曲线 |
 | Mindmap | Root text 是内容，不是独立 title | Authored Markdown heading/item | 无 | Hierarchy 自动排版 | 生成 ID 不稳定，因此禁用 pin |
 
-Flowchart、Circuit 和 Floorplan 各有多个 Playground specimen，所以 test workspace 为这 20 个独立 engine 提供了 23 个 interactive specimen。
+Flowchart、Circuit 和 Floorplan 各有多个 Playground specimen，所以 test workspace 为这 21 种图提供了 24 个 interactive specimen。
 
 ## 仅源码编辑
 
@@ -89,7 +90,7 @@ FMEA、Pugh comparison、fault tree、RBD 在开启 Canvas 编辑之前，尤其
 
 ## Public APIs
 
-Typed registry 位于 `src/core/interactive-capabilities.ts`，并从 `schematex` 导出。对 source-only engine 调用 `getInteractiveCapabilities(type)` 会得到空 `text` 和 `position: "none"`；`INTERACTIVE_CAPABILITIES` 本身只包含已 ship 的 20 个 native engine。
+Typed registry 位于 `src/core/interactive-capabilities.ts`，并从 `schematex` 导出。对 source-only engine 调用 `getInteractiveCapabilities(type)` 会得到空 `text` 和 `position: "none"`；`INTERACTIVE_CAPABILITIES` 本身只包含已 ship 的 21 种 native diagram type。
 
 受控 React editor 从 `schematex/react` 导出；低层 DOM adapter 位于 `schematex/interactive`。AI 和 MCP 调用方应使用带 revision guard 的 `inspectDiagram` → `applyDiagramEdits` 流程，不应自己构造 offset。
 

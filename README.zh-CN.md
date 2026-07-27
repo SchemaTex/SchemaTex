@@ -33,7 +33,7 @@
 
 ---
 
-**Schematex** 是一个开源渲染与编辑引擎，专门画那些专业人士**真正在用**的图 —— 医学、电气、法律、分析领域。**50 种图**，覆盖医学、工程、法律与分析：
+**Schematex** 是一个开源渲染与编辑引擎，专门画那些专业人士**真正在用**的图 —— 医学、电气、法律、分析领域。**51 种图**，覆盖医学、工程、法律与分析：
 
 - 👪 **关系类** —— 家系图（genogram）、生态图（ecomap）、遗传谱系图（pedigree）、社交图（sociogram）、系统发育树（phylo）
 - ⚡ **电气与工业** —— 梯形图（ladder）、单线图（SLD）、电路原理图（circuit）、逻辑门（logic）、时序图（timing）、方框图（block）、**FBD**、**SFC**、面包板（breadboard）、**P&ID**（ISA-5.1）
@@ -97,13 +97,13 @@ export function DiagramEditor() {
 }
 ```
 
-20 个具备 parser-native range 的 engine 支持确定性的 Canvas 编辑，其中 17 个还支持稳定 ID 拖拽或 native geometry handle。其余 30 个仍可正常 render 和通过 DSL 源码编辑，但不会生成猜测式 Canvas handle。详见 [Interactive Editing 指南](https://schematex.js.org/docs/interactive-editing) 和 [在线测试 workspace](https://schematex.js.org/playground)。
+21 种具备 parser-native range 的图支持确定性的 Canvas 编辑，其中 18 种还支持稳定 ID 拖拽或 native geometry handle。其余 30 种仍可正常 render 和通过 DSL 源码编辑，但不会生成猜测式 Canvas handle。详见 [Interactive Editing 指南](https://schematex.js.org/docs/interactive-editing) 和 [在线测试 workspace](https://schematex.js.org/playground)。
 
 开发型 LLM 可以从 [`llms.txt`](https://schematex.js.org/llms.txt) 开始，通过 [`llms-full.txt`](https://schematex.js.org/llms-full.txt) 读取完整 Markdown 文档，或查询 [machine-readable interactive capability registry](https://schematex.js.org/api/interactive-capabilities)。任意 docs URL 末尾加 `.md` 即可获得干净的 Markdown。
 
 ## 图库
 
-全部 50 种图共用同一条渲染管线，下面展示其中一部分 —— **在 [schematex.js.org/playground](https://schematex.js.org/playground) 实时试用任意一种。**
+全部 51 种图共用同一条渲染管线，下面展示其中一部分 —— **在 [schematex.js.org/playground](https://schematex.js.org/playground) 实时试用任意一种。**
 
 ### 👪 家系图 Genogram —— *McGoldrick 家庭系统标准*
 

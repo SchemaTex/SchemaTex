@@ -207,3 +207,17 @@ Kommentare laufen von `#` bis zum Zeilenende. CJK-Anführungszeichen (`""`) werd
 - [Zwei-Zimmer-Wohnung](/examples#floorplan) — relative Platzierung, 7 Türen, vollständige Möblierung
 - [27-Schreibtisch-Klassenzimmer](/examples#floorplan) — `grid … count`-Kürzung, `unit ft`
 - [Hochzeitsempfang für 120 Personen](/examples#floorplan) — automatisch bestuhlte Bankettrundes, Tanzfläche
+
+## Mehrgeschossige Plansätze
+
+`floor N "Bezeichnung"` teilt eine Quelle in gerahmte Geschossplatten mit gemeinsamem Maßstab. `stack horizontal|vertical` bestimmt die Anordnung. Eine optionale Möbel-ID wie `S1` registriert denselben Treppenlauf: unten UP, oben DN; mehr als 0,1 m Versatz warnt. Raum-, Tür-, Möbel- und Array-Referenzen dürfen keine Geschossgrenze überschreiten.
+
+```
+floorplan "Zweistöckiges Haus" unit m stack horizontal
+floor 0 "Erdgeschoss"
+room flur at 0,0 size 6x4
+furniture stairs S1 in flur at 4,0.4
+floor 1 "Obergeschoss"
+room diele at 0,0 size 6x4
+furniture stairs S1 in diele at 4,0.4
+```

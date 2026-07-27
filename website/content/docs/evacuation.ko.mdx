@@ -1,0 +1,49 @@
+---
+title: 대피 안내도
+---
+
+## 대피 안내도 소개
+
+**대피 안내도**는 현재 위치, 최종 출구까지의 경로, 화재 경보·소화 장비·응급 처치 위치를 게시하는 도면입니다. Schematex는 실측 floorplan 위에 표시하고 ISO 23601, NFPA 170 또는 UAE Civil Defence profile을 검사합니다.
+
+<Playground initial={`evacuation "대피 안내도" unit m
+compliance iso
+sheet a3 landscape
+room room "Room" at 0,0 size 6x4
+here in room at 2,2
+exit-final exit1 in room at 6,2 side east "EXIT"
+route primary here -> exit1`} height={460} />
+
+---
+
+## 1. 현재 위치
+
+게시물 한 장마다 `here`가 하나 필요합니다. 게시 위치가 여러 곳이면 평면과 route는 유지하고 `here` 줄만 바꿔 각각 render합니다.
+
+## 2. 안전 표지
+
+표지는 고정 24×24 grid에 그려지고 인쇄 크기는 기본 8 mm입니다. 녹색은 안전·대피, 빨간색은 소방 장비를 뜻합니다. 출구, 집결지, 소화기, 발신기, 응급 처치, AED와 금지 표지를 지원합니다.
+
+## 3. 대피 route
+
+`route primary here -> corridor -> stair -> exit1`의 방 사이에는 선언된 `door` 또는 `opening`이 있어야 합니다. 중간 방은 반드시 적어야 하며 engine이 경로를 임의로 찾지 않습니다.
+
+## 4. Compliance profile
+
+`iso`는 ISO 23601/7010/3864, `nfpa`는 NFPA 170/NFPA 101, `uae`는 영어/아랍어 이중 언어 규칙을 적용합니다.
+
+## 5. 인쇄 scale
+
+sheet와 orientation을 선언하면 모든 floor plate에 공통 scale을 계산합니다. 표지는 8 mm로 유지되며 ISO/UAE에서 1:250보다 거친 scale은 error입니다.
+
+## 6. Layer와 여러 층
+
+일반 가구, 면적, 치수는 숨기고 계단, elevator, north, route와 표지는 유지합니다. `floor N "Label"`과 같은 stair ID로 층간 정렬을 확인합니다.
+
+## 7. 필수 legend
+
+Tier M legend는 항상 켜져 있고 `legend: off`는 허용되지 않습니다.
+
+## 8. Validation
+
+현재 위치, 출구, 개구부 연속성, 독립 route, 누락된 방, 종점, 표지 충돌, 이중 언어, elevator 금지, legend, 색상, scale과 알 수 없는 표지를 검사하며 표준 근거를 함께 표시합니다.

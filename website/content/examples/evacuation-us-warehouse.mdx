@@ -1,0 +1,40 @@
+---
+title: US warehouse — NFPA evacuation diagram
+description: "A warehouse evacuation diagram using the NFPA profile, including two remote exits, an area of refuge, a non-exit marking, and an automatic elevator prohibition."
+diagram: evacuation
+standard: NFPA 170 Ch.11 · NFPA 101
+industry: [safety, logistics]
+persona: For the EHS manager posting a warehouse emergency egress map
+complexity: 3
+tags: [evacuation, warehouse, nfpa-170, nfpa-101, fire-safety]
+featured: false
+relatedLink:
+  label: Evacuation plan syntax
+  href: /docs/evacuation
+status: published
+dsl: |
+  evacuation "Warehouse Emergency Egress Map" unit ft
+  compliance nfpa
+  sheet tabloid landscape
+  room floor "Warehouse Floor" at 0,0 size 40x28
+  room aisle "Protected Cross-Aisle" below floor size 40x8
+  room west "West Exit Lobby" left-of aisle size 10x8
+  room east "East Exit Lobby" right-of aisle size 10x8
+  door between floor aisle at 50% width 6
+  door between aisle west at 50% width 4
+  door between aisle east at 50% width 4
+  furniture elevator in floor at 2,2 size 7x7
+  here in floor at 20,20
+  exit-final westExit in west at 0,4 side west "EXIT"
+  exit-final eastExit in east at 10,4 side east "EXIT"
+  refuge refugeA in east at 3,4 "AREA OF REFUGE"
+  not-an-exit serviceDoor in floor at 20,0 side north "NOT AN EXIT"
+  extinguisher extW in aisle at 8,4 class "ABC"
+  extinguisher extE in aisle at 32,4 class "ABC"
+  route primary here -> aisle -> east -> eastExit
+  route accessible here -> aisle -> west -> westExit
+---
+
+## Profile-specific behavior
+
+Under `nfpa`, fewer than two independent routes is an error. Because an elevator is present, Schematex also emits one `no-elevator` marker automatically instead of making the author repeat a mechanically satisfiable rule.

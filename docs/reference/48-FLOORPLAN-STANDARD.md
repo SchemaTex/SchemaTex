@@ -98,6 +98,30 @@ Any auto-seating table accepts a `seats "Name" "Name" …` clause that writes an
 - Named tables are placed as individual `furniture` statements (a seating chart names each table's guests), not via `grid`/`row` arrays.
 - Names render horizontally (upright); rotate the table only when legibility allows.
 
+### 2.5 Multi-floor plans (1.0.2)
+
+A multi-floor document is one `floorplan` containing two or more `floor` sections:
+
+```dsl
+floorplan "Two-storey villa" unit m
+stack horizontal
+
+floor 0 "Ground Floor"
+  room living "Living Room" at 0,0 size 6x5
+  furniture stairs in living at 4.5,1 size 1.2x3 id main-stair
+
+floor 1 "First Floor"
+  room hall "Landing" at 0,0 size 6x5
+  furniture stairs in hall at 4.5,1 size 1.2x3 id main-stair
+```
+
+- `floor <integer> "<label>"` starts a plate. Labels are optional; levels may be negative.
+- `stack horizontal|vertical` selects plate assembly. All plates share one pixels-per-metre scale.
+- A stair `id` is its cross-floor identity. The lowest occurrence is labelled `UP`; every higher occurrence is labelled `DN`, unless the author supplied an explicit label.
+- Matching vertical-circulation ids whose world coordinates differ by more than 0.1 m produce an alignment warning.
+- Structural and opening references never cross a floor boundary. A reference to an id that exists only on another floor is an error naming both levels.
+- A one-floor level-0 document keeps the legacy SVG path byte-for-byte: no plate wrapper or plate title is introduced.
+
 ---
 
 ## 3. DSL Grammar
@@ -105,7 +129,9 @@ Any auto-seating table accepts a `seats "Name" "Name" …` clause that writes an
 Header keyword: `floorplan` (unique for `detect()`).
 
 ```ebnf
-plan      ::= "floorplan" string? ("unit" ("m"|"ft"))? NL statement*
+plan      ::= "floorplan" string? ("unit" ("m"|"ft"))? NL
+              ("stack" ("horizontal"|"vertical") NL)? (statement | floor-section)*
+floor-section ::= "floor" signed-int string? NL statement*
 statement ::= room | extend | north | door | window | opening | furniture | array
 room      ::= "room" id string? placement "size" dims ("fill" color)? ("nolabel")?
 extend    ::= "extend" id placement "size" dims        (* L/T/U rooms; must share an edge *)
@@ -118,7 +144,8 @@ door      ::= "door" (wallref | "between" id id) "at" pct
               ("type" ("single"|"double"|"sliding"|"pocket"|"bifold"))?
 window    ::= "window" wallref "at" pct ("width" num)? ("type" ("fixed"|"sliding"|"casement"|"bay"))?
 opening   ::= "opening" (wallref | "between" id id) "at" pct ("width" num)?
-furniture ::= "furniture" type ("in" id) "at" coord ("size" dims)? ("rotate" num)? string? ("seats" string+)?
+furniture ::= "furniture" type ("in" id) "at" coord ("size" dims)? ("rotate" num)?
+              string? ("seats" string+)? ("id" id)?
 array     ::= ("grid"|"row"|"arc") type "in" id
               ("rows" int)? ("cols" int)? ("count" int)?
               ("area" coord coord)? ("itemsize" dims)? ("rotate" num)?
@@ -162,6 +189,7 @@ grid desk-chair in class rows 5 cols 6 count 27 area 5,7 25,23   # (classroom pl
 6. **Dimension lines.** Overall W and H always; per-room segment dims for rooms touching the top/left exterior. `unit ft` formats as `15'1"`.
 7. **Areas.** `w × h` of the room rect (interior measure), 1 decimal in m², integer sq ft.
 8. **Semantic SVG.** `<title>`, `<desc>` (room count + total area), `data-room`, `data-furniture` attrs, theme classes per element family. No inline styles (house rule).
+9. **Multi-floor plates.** Layout each floor independently, choose a single shared scale from the largest plate, then assemble plates in `stack` order with a 1.5 m visual gap. Plate groups carry `data-floor="<level>"`; plate titles use the declared label.
 
 ---
 
@@ -192,6 +220,9 @@ Every error names the offending ids and a fix direction:
 4. **Furniture outside room interior** — clamp is wrong (hides intent); error with the overshoot amount.
 5. **Opening wider than wall segment** — clamp + warning.
 6. **Unknown furniture type** — list valid types (existing house pattern).
+7. **Duplicate floor level** — error and name the repeated level.
+8. **Cross-floor reference** — error when a room/opening/furniture reference resolves only on another floor; include the source and target levels.
+9. **Stairwell mismatch** — warning when matching stair ids differ by more than 0.1 m in plan coordinates.
 
 Severity: room overlap / non-adjacent door / out-of-room = **error** (render error panel); furniture collision / clamped opening = **warning** (render anyway + warning list, because tight-but-touching layouts are sometimes intended).
 
@@ -204,6 +235,7 @@ Severity: room overlap / non-adjacent door / out-of-room = **error** (render err
 3. **120-guest wedding reception**: 15 × `round-table-8` via two grids + one row, `dance-floor`, `head-table`, two south doors. Asserts: 15×8 = 120 chairs total; **no furniture-collision warnings** at the documented spacing; collision warning *does* fire when the grid area is squeezed below the chair-ring envelope spacing (negative test).
 4. **Error plan**: overlapping rooms + door between non-adjacent rooms + desk placed outside room → exactly 3 errors, each naming both ids and a quantified overlap/gap.
 5. **Minimal smoke**: one room, one door, one window, no furniture — parses, renders, `<desc>` reports "1 room, 12.0 m²".
+6. **Two-storey villa**: two labelled floor plates with a shared stair id. Asserts: shared scale, inferred `UP`/`DN`, 1.5 m plate gap, cross-floor reference error, duplicate-level error, alignment warning above 0.1 m, and no warning at exactly 0.1 m. A separate regression asserts a level-0 single-floor SVG is byte-identical to the pre-1.0.2 output.
 
 Working POC (parser + renderer + the three scenario renders, zero-dep JS): `../CoCEO/daily/2026-06-09-floorplan-poc/` — reference implementation for geometry (wall merge, arc direction, dim lines), **not** for code style (it predates this spec; no svg.ts builder, no theme classes, no collision validation).
 
@@ -213,5 +245,5 @@ Working POC (parser + renderer + the three scenario renders, zero-dep JS): `../C
 
 - **Auto-layout from adjacency constraints only** ("kitchen next to living, no coordinates") — academic-grade problem (diffusion/MIP); v0.1 is explicit-dims + relative placement, which covers the observed demand. Revisit only with usage evidence.
 - **Polygon-vertex rooms** — `extend` (rect union) covers rectilinear L/T/U natively; a `polygon` vertex-list escape hatch (rectilinear-validated, later relaxed to 45°) is reserved syntax for a fast-follow. **Diagonal (45°) walls** = fast-follow; **curved/arc walls** = deferred — evidence: the RPLAN corpus (80k real residential plans) is fully axis-aligned, and RoomSketcher gates curved walls behind its Pro tier. Bay windows (the most common curved-ish feature) are covered by `window … type bay`.
-- **Multi-floor model** (stairs render as correct single-floor symbols with UP/DN + break line; linking floors is deferred), **HVAC/plumbing runs**, **3D/isometric**, **furniture clearance codes** (ADA/fire egress) — all deferred. Electrical **placement** overlay is supported; electrical **panel internals / schedules** remain `sld` / `circuit` territory.
+- **HVAC/plumbing runs**, **3D/isometric**, **furniture clearance codes** (ADA/fire egress) — all deferred. Multi-floor plate assembly and stair registration are implemented in 1.0.2. Electrical **placement** overlay is supported; electrical **panel internals / schedules** remain `sld` / `circuit` territory.
 - **Photorealism** — permanently out of scope; that is the image-model lane.

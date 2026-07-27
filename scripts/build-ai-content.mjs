@@ -70,6 +70,7 @@ const SYNTAX_KEYS = [
   "threatmodel",
   "welding",
   "floorplan",
+  "evacuation",
   "siteplan",
   "playbook",
   "rbd",
