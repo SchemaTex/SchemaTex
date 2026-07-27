@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.3] — 2026-07-27
+
+### Fixed — `prisma` rejected any wholesale-indented block, and said the wrong thing about why
+
+The PRISMA parser is indentation-significant, and it measured indent levels from the absolute left margin. A block indented as a whole — pasted out of a markdown fence, lifted from a JSX template literal, or emitted by a model that indents its entire answer — therefore failed on its very first line, with a message that pointed at the wrong thing.
+
+- **Common leading margin is stripped before levels are measured.** Only relative indentation is meaningful, so a uniformly indented block now parses identically to the flat form at any margin width, including odd ones that are not multiples of the two-space level. Relative nesting is untouched.
+- **The error names the real defect.** Indentation and keyword are now separate checks. The failure previously reported `first non-blank line must be "prisma", got "prisma"` — self-contradictory, because the message printed the trimmed text while the indent test was what actually failed — sending readers hunting for a typo that was not there. A header sitting deeper than its body now says exactly that.
+- **`check-doc-dsls` validates the string the site renders.** The script read `initial={\`…\`}` straight out of the MDX source, while the MDX compiler hands the component that block with its common margin already removed. Nine `prisma` docs were consequently reported as broken for a condition that never reached a reader; the script now dedents the same way the compiler does.
+
+---
+
 ## [1.0.2] — 2026-07-26
 
 ### Added — multi-floor plans and standards-aware evacuation diagrams

@@ -38,21 +38,32 @@ interface RawLine {
 }
 
 function preprocess(src: string): RawLine[] {
-  const out: RawLine[] = [];
   const rows = src.split(/\r?\n/);
+  const kept: { spaces: number; text: string; line: number }[] = [];
   for (let i = 0; i < rows.length; i++) {
     const raw = rows[i] ?? "";
     // Strip end-of-line comments but preserve `#` inside quotes.
     const stripped = stripComment(raw);
     if (!stripped.trim()) continue;
-    const indentSpaces = stripped.length - stripped.replace(/^\s+/, "").length;
-    out.push({
-      indent: Math.floor(indentSpaces / 2),
+    kept.push({
+      spaces: stripped.length - stripped.replace(/^\s+/, "").length,
       text: stripped.trim(),
       line: i + 1,
     });
   }
-  return out;
+
+  // Only *relative* indentation carries meaning here, so strip the common
+  // leading margin before measuring levels. Without this, a block pasted from
+  // an indented context — a markdown fence, a JSX template literal, an LLM
+  // reply that indents its whole answer — fails on the very first line.
+  const base = kept.reduce((min, l) => Math.min(min, l.spaces), Infinity);
+  const offset = Number.isFinite(base) ? base : 0;
+
+  return kept.map((l) => ({
+    indent: Math.floor((l.spaces - offset) / 2),
+    text: l.text,
+    line: l.line,
+  }));
 }
 
 function stripComment(raw: string): string {
@@ -364,8 +375,18 @@ export function parsePrisma(src: string): PrismaAST {
   if (lines.length === 0) throw new PrismaParseError("empty input");
 
   const header = lines.shift()!;
-  if (header.indent !== 0 || header.text.toLowerCase() !== "prisma") {
+  if (header.text.toLowerCase() !== "prisma") {
     throw new PrismaParseError(`first non-blank line must be "prisma", got "${header.text}"`, header.line);
+  }
+  // Reachable only when the header sits *deeper* than some later line — a
+  // uniform margin is already removed by preprocess(). Reported separately so
+  // the message names the real defect instead of echoing a correct-looking
+  // header back at the caller.
+  if (header.indent !== 0) {
+    throw new PrismaParseError(
+      `the "prisma" header is indented — it must be the least-indented line in the block`,
+      header.line,
+    );
   }
 
   // Meta lines: indent 0, "key: value", before any stage block.

@@ -146,3 +146,49 @@ describe("prisma parser", () => {
     expect(ast.previousStudies?.n).toBe(19);
   });
 });
+
+/** Indent the whole block by `n` spaces, leaving blank lines blank. */
+function shift(dsl: string, n: number): string {
+  const pad = " ".repeat(n);
+  return dsl
+    .split("\n")
+    .map((l) => (l.trim() ? pad + l : l))
+    .join("\n");
+}
+
+describe("prisma parser — common leading indentation", () => {
+  it("parses a block indented by 2 spaces exactly like the flat form", () => {
+    // The shape docs and LLM replies actually produce: the whole DSL sits
+    // inside an indented context (a JSX template literal, a markdown fence).
+    expect(parsePrisma(shift(MINIMAL_2020_SINGLE, 2))).toEqual(parsePrisma(MINIMAL_2020_SINGLE));
+  });
+
+  it("parses a block indented by an odd number of spaces", () => {
+    // 3 is not a multiple of the 2-space level width — the margin must be
+    // removed before levels are measured, not floor-divided along with them.
+    expect(parsePrisma(shift(MINIMAL_2020_SINGLE, 3))).toEqual(parsePrisma(MINIMAL_2020_SINGLE));
+  });
+
+  it("preserves relative nesting under a deep common margin", () => {
+    const ast = parsePrisma(shift(MINIMAL_2020_SINGLE, 8));
+    expect(ast.identification.n).toBe(1418);
+    expect(ast.identification.sources?.length).toBe(4);
+    expect(ast.screening.excluded.reasons?.length).toBe(2);
+    expect(ast.warnings).toEqual([]);
+  });
+
+  it("keeps the dual-column form intact when indented", () => {
+    expect(parsePrisma(shift(DUAL, 2))).toEqual(parsePrisma(DUAL));
+  });
+
+  it("rejects a header indented deeper than the body, and names the real defect", () => {
+    const dsl = "  prisma\n" + MINIMAL_2020_SINGLE.replace(/^\s*\nprisma\n/, "");
+    expect(() => parsePrisma(dsl)).toThrow(PrismaParseError);
+    expect(() => parsePrisma(dsl)).toThrow(/header is indented/);
+  });
+
+  it("still reports a wrong header keyword as a wrong keyword", () => {
+    const dsl = MINIMAL_2020_SINGLE.replace("prisma\n", "prizma\n");
+    expect(() => parsePrisma(dsl)).toThrow(/first non-blank line must be "prisma", got "prizma"/);
+  });
+});
