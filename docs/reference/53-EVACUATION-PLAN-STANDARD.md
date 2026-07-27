@@ -211,7 +211,7 @@ Every diagnostic names the relevant id/floor, explains a repair, and cites the g
 1. **Missing location marker** — error; ISO 23601 §6 / NFPA 170 Ch.11.
 2. **Missing exit** — error; ISO 23601 §6 / NFPA 170 Ch.11.
 3. **Non-adjacent route hop** — error when consecutive rooms share no declared opening; ISO 23601 §6.
-4. **Fewer than two independent routes** — NFPA error, ISO/UAE warning. Independence requires different final exits and at least two differing rooms; NFPA 101 §7.4.1 / ISO 23601 §6.
+4. **Fewer than two independent routes** — NFPA error, ISO/UAE warning. **Independence = the two routes discharge at different final exits**, nothing more; NFPA 101 §7.4.1 / ISO 23601 §6. Room-sequence overlap is deliberately *not* part of the test: in a corridor building the two routes legitimately share the corridor and split only at the ends, which is the normal shape of compliant egress, not a defect.
 5. **Dead room** — warning for a connected occupiable room omitted from all routes and without its own exit; ISO 23601 §6.
 6. **Route ends at an ordinary room** — error; destination must be `exit`, `exit-final`, or `assembly`; ISO 23601 §6 / NFPA 170 Ch.11.
 7. **Safety-sign collision** — warning when two fixed-sheet footprints overlap; touching edges are allowed; ISO 23601 §6.

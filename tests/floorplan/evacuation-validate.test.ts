@@ -86,6 +86,45 @@ describe("evacuation validation — all 13 rules", () => {
     );
   });
 
+  it("#4 accepts two routes that share the whole corridor and split only at the exit", () => {
+    // The corridor-building shape: both routes run the same single corridor and
+    // differ only in which stair they discharge into. This is normal compliant
+    // egress (NFPA 101 §7.4.1 asks for two remote *exits*, not two disjoint
+    // paths) — an earlier draft also demanded ≥2 differing rooms and produced a
+    // false positive on every small plan.
+    const corridor = `evacuation "Corridor split"
+compliance iso
+sheet a3 landscape
+room corr at 0,0 size 12x2.4
+room stairW left-of corr size 3x2.4
+room stairE right-of corr size 3x2.4
+door between corr stairW at 50% width 1.1
+door between corr stairE at 50% width 1.1
+here in corr at 6,1.2
+exit-final xw in stairW at 0,1.2 side west "EXIT"
+exit-final xe in stairE at 3,1.2 side east "EXIT"
+route primary here -> corr -> stairE -> xe
+route secondary here -> corr -> stairW -> xw`;
+    const lay = layout(corridor);
+    expect(
+      [...lay.errors, ...lay.warnings].filter((message) =>
+        /fewer than two independent/.test(message)
+      )
+    ).toEqual([]);
+  });
+
+  it("#4 still triggers when both routes discharge at the same final exit", () => {
+    const sameExit = twoRoutePlan.replace(
+      "route secondary here -> hub -> east -> xe",
+      "route secondary here -> hub -> west -> xw"
+    );
+    expect(layout(sameExit).warnings).toEqual(
+      expect.arrayContaining([
+        expect.stringMatching(/fewer than two independent/),
+      ])
+    );
+  });
+
   it("#4 does not trigger for structurally independent destinations", () => {
     const lay = layout(twoRoutePlan);
     expect(

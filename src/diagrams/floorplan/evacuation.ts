@@ -490,15 +490,6 @@ function buildFireDoors(
   return marks;
 }
 
-function symmetricDifferenceSize(a: string[], b: string[]): number {
-  const left = new Set(a);
-  const right = new Set(b);
-  let size = 0;
-  for (const value of left) if (!right.has(value)) size++;
-  for (const value of right) if (!left.has(value)) size++;
-  return size;
-}
-
 function isBilingual(label: string | undefined): boolean {
   if (!label) return false;
   const halves = label.split(" / ");
@@ -545,10 +536,13 @@ export function validateEvacuation(
         const a = floorRoutes[i];
         const b = floorRoutes[j];
         if (!a || !b) continue;
-        if (
-          a.endAnchor !== b.endAnchor &&
-          symmetricDifferenceSize(a.roomSequence, b.roomSequence) >= 2
-        ) {
+        // Independence = the routes discharge at *different* final exits
+        // (NFPA 101 §7.4.1 "two remote means of egress"; ISO 23601 §6
+        // "alternative route"). Room-sequence overlap deliberately does NOT
+        // enter the test: two routes legitimately share the same corridor and
+        // split only at the end — that is the normal shape of a corridor
+        // building, not a compliance defect.
+        if (a.endAnchor !== b.endAnchor) {
           independent = true;
         }
       }

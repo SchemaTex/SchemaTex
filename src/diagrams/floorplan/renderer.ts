@@ -116,6 +116,8 @@ function buildCss(
 .sx-fp-route-accessible { fill: none; stroke: ${e.routeGreen}; stroke-width: ${r2(C.scale * 0.25)}; stroke-linecap: round; stroke-linejoin: round; opacity: .85; }
 .sx-fp-route-rescue { fill: none; stroke: ${e.rescueBlue}; stroke-width: ${r2(C.scale * 0.25)}; stroke-linecap: round; stroke-linejoin: round; opacity: .85; }
 .sx-fp-chevron { fill: ${e.symbolKnockout}; stroke: none; }
+.sx-fp-access-glyph { fill: none; stroke: ${e.safeGreen}; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+.sx-fp-access-glyph-fill { fill: ${e.safeGreen}; stroke: none; }
 .sx-fp-safety-plate-safe { fill: ${e.safeGreen}; stroke: none; }
 .sx-fp-safety-plate-fire { fill: ${e.fireRed}; stroke: none; }
 .sx-fp-safety-plate-mand { fill: ${e.mandBlue}; stroke: none; }
@@ -471,16 +473,14 @@ function renderRoute(
       children.push(
         group(
           {
-            class: "sx-fp-route-accessibility",
+            class: "sx-fp-route-accessible-mark",
             transform: `translate(${c.X(midpoint.x)},${c.Y(midpoint.y)})`,
           },
           [
             el("circle", { class: "sx-fp-chevron", cx: 0, cy: 0, r: 6.5 }),
-            el("circle", { fill: "#00843D", cx: -1.5, cy: -2.5, r: 1.2 }),
+            el("circle", { class: "sx-fp-access-glyph-fill", cx: -1.5, cy: -2.5, r: 1.2 }),
             path({
-              fill: "none",
-              stroke: "#00843D",
-              "stroke-width": 1.4,
+              class: "sx-fp-access-glyph",
               d: "M -1 -1 L -1 2 L 2 2 M 1.5 2 A 3 3 0 1 1 -1.5 -1",
             }),
           ]

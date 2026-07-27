@@ -62,8 +62,8 @@ export const USE_CASE_GROUPS: UseCaseGroup[] = [
       'chemical', 'specialty-chemicals', 'petrochemical', 'oil-gas',
       'water-treatment', 'food-processing', 'beverage', 'brewing', 'baking',
       'packaging', 'plastics', 'energy', 'renewables', 'utilities', 'nuclear',
-      'hvac', 'process-safety', 'fabrication', 'construction', 'residential',
-      'quality',
+      'hvac', 'process-safety', 'safety', 'fire-safety', 'fabrication',
+      'construction', 'residential', 'quality',
     ],
   },
   {
