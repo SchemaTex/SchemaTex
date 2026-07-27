@@ -4,46 +4,174 @@ title: Plano de evacuación
 
 ## Acerca de los planos de evacuación
 
-Un **plano de evacuación** publicado muestra «usted está aquí», las rutas hacia las salidas finales y la ubicación de alarmas, equipos contra incendios y primeros auxilios. Schematex lo construye sobre geometría medible y valida ISO 23601, NFPA 170 o el perfil bilingüe de UAE Civil Defence.
+Un **plano de evacuación** es el diagrama de seguridad que se coloca en un lugar visible para indicar a cada persona dónde se encuentra, qué rutas conducen a cada salida de emergencia y dónde están las alarmas, los equipos contra incendios, los primeros auxilios y el punto de reunión. Schematex lo construye sobre geometría `floorplan` medible y comprueba reglas que una herramienta de dibujo no puede detectar: marcadores de ubicación ausentes, tramos de ruta interrumpidos, salidas no independientes, escala de impresión, tamaño de las señales de seguridad y leyenda obligatoria.
 
-<Playground initial={`evacuation "Plano de evacuación" unit m
+El motor admite tres normativas seleccionables: ISO 23601 / ISO 7010 / ISO 3864, el capítulo 11 de NFPA 170 junto con NFPA 101 y los planos bilingües de UAE Civil Defence. El resultado es un SVG editable que sirve de apoyo para la revisión de profesionales competentes; no sustituye la aprobación de la autoridad con jurisdicción.
+
+<Playground initial={`evacuation "Planta de oficinas — Plano de evacuación" unit m
 compliance iso
 sheet a3 landscape
-room sala "Sala" at 0,0 size 6x4
-here in sala at 2,2
-exit-final salida in sala at 6,2 side east "SALIDA"
-route primary here -> salida`} height={460} />
+room office "Oficina diáfana" at 0,0 size 6x5
+room lobby "Vestíbulo de ascensores" below office size 6x2.4
+room stairA "Escalera A" left-of lobby size 3x2.4
+room stairB "Escalera B" right-of lobby size 3x2.4
+opening between office lobby at 50% width 1.6
+door between lobby stairA at 50% width 1.1
+door between lobby stairB at 50% width 1.1
+here in office at 3,2.5
+exit-final xA in stairA at 0,1.2 side west "SALIDA"
+exit-final xB in stairB at 3,1.2 side east "SALIDA"
+extinguisher f1 in lobby at 2,1.8 class "ABC"
+route primary here -> lobby -> stairB -> xB
+route secondary here -> lobby -> stairA -> xA`} height={620} />
 
 ---
 
-## 1. Ubicación publicada
+## 1. Empiece por la ubicación del plano
 
-Cada copia necesita un único `here`. Para varios puntos de montaje, renderiza una copia por ubicación y cambia solo esa línea.
+Cambie el header a `evacuation` (alias `escapeplan`), declare el `sheet` de destino y añada exactamente un marcador `here` en el lugar donde se instalará esta copia:
 
-## 2. Señales
+```
+evacuation "Planta 2 — Plano de evacuación" unit m
+compliance iso
+sheet a3 landscape
+room office "Oficina" at 0,0 size 6x5
+here in office at 3,2.5
+exit-final x1 in office at 6,2.5 side east "SALIDA"
+route primary here -> x1
+```
 
-Las señales usan un lienzo fijo de 24×24 y 8 mm impresos. Verde significa condición segura; rojo, equipo contra incendios. Usa `exit`, `exit-final`, `assembly`, `extinguisher`, `call-point`, `first-aid`, `aed`, `no-elevator` y el resto del catálogo documentado.
+Un edificio puede necesitar muchas copias colocadas en puntos distintos. Mantenga idénticas la geometría y las rutas, y renderice una copia por cada lugar de instalación cambiando únicamente la línea `here`.
 
-## 3. Rutas
+## 2. Señales de seguridad
 
-`route primary here -> corredor -> escalera -> salida` conecta anclas mediante puertas u `opening` declarados. Las habitaciones intermedias son obligatorias; el motor no inventa caminos.
+Las señales utilizan una cuadrícula fija de 24×24 unidades de dibujo y un tamaño impreso fijo de 8 mm por defecto, independiente de la escala del plano. Las señales de condición segura llevan una plate verde maciza y las señales contra incendios, una plate roja maciza; los pictogramas se forman mediante reservas blancas. Schematex dibuja geometría original, sin incrustar ni calcar material gráfico de ISO o NFPA.
 
-## 4. Perfiles
+El vocabulario basado en coordenadas es:
 
-`compliance iso` aplica ISO 23601/7010/3864; `nfpa` aplica NFPA 170 y NFPA 101; `uae` exige etiquetas inglesas/árabes separadas por ` / `.
+- Salidas y rescate: `exit`, `exit-final`, `assembly`, `refuge`, `shelter`, `escape-ladder`, `rescue-window`, `emergency-door-push`, `emergency-door-slide`
+- Asistencia médica y de emergencia: `first-aid`, `aed`, `stretcher`, `doctor`, `eyewash`, `safety-shower`, `emergency-phone`, `break-glass`
+- Equipos contra incendios: `extinguisher`, `hose-reel`, `fire-ladder`, `fire-equipment`, `call-point`, `fire-phone`, `riser`
+- Plano y prohibición: `here`, `not-an-exit`, `no-elevator`, `alarm-sounder`
+- Overlays de puertas: `fire-door` y `smoke-door` se vinculan a una puerta existente en vez de a una coordenada
 
-## 5. Escala
+Puede usar la forma abreviada o indicar `safety` de manera explícita:
 
-Declara `sheet a4|a3|a2|letter|tabloid landscape|portrait`. El plano calcula una escala convencional compartida y mantiene las señales a 8 mm. ISO/UAE rechaza escalas más gruesas que 1:250.
+```
+extinguisher ext1 in corridor at 1.2,0.3 side north class "ABC"
+safety first-aid aid1 in lobby at 4.8,1.8
+assembly muster outside at 14,10 "Punto de reunión A"
+fire-door between corridor stairA rating "EI30"
+```
 
-## 6. Capas y pisos
+Las coordenadas de una sala son relativas a esa sala. `outside at x,y` es una coordenada absoluta del plano. `side north|south|east|west` ajusta una señal a la pared; `hand left|right` sustituye la variante direccional seleccionada automáticamente.
 
-El modo oculta muebles ordinarios, áreas y cotas; conserva escaleras, ascensores, norte, rutas y símbolos. `floor N "Etiqueta"` crea placas con escala común e IDs de escalera compartidos.
+## 3. Rutas de evacuación
+
+Una ruta es una secuencia definida por el autor, no un recorrido inferido:
+
+```
+route primary here -> corridor -> stairB -> exitB
+route secondary here -> corridor -> lobby -> stairA -> exitA
+route accessible here -> corridor -> refugeA
+route rescue fireEntry -> serviceCorridor -> riserRoom
+```
+
+Cada salto entre salas distintas debe atravesar una `door` o `opening` declarada. Indique explícitamente las salas intermedias. Schematex dibuja segmentos ortogonales deterministas que pasan por cada abertura, redondea los giros y coloca chevrons cada 2 m orientados en sentido contrario a `here`. `secondary` se dibuja con trazo discontinuo, `accessible` incorpora un símbolo de silla de ruedas y `rescue` aparece en azul.
+
+Las rutas deben terminar en `exit`, `exit-final` o `assembly`. Dos rutas solo son independientes cuando terminan en salidas finales distintas y sus secuencias de salas presentan diferencias estructurales.
+
+## 4. Compliance profiles
+
+| Profile | Para qué se usa | Diferencias importantes |
+| --- | --- | --- |
+| `iso` (predeterminado) | Planos DIN/BS/internacionales según ISO 23601 | señales ISO 7010, límite de escala 1:250, señales ≥7 mm |
+| `nfpa` | Diagramas estadounidenses de evacuación de emergencia | variantes NFPA 170, no disponer de dos rutas es un error, `no-elevator` automático |
+| `uae` | Presentaciones ante UAE Civil Defence | marcador de ubicación amarillo, rótulos en inglés y árabe, límite de escala derivado de ISO |
+
+Seleccione el profile cerca del comienzo:
+
+```
+compliance nfpa
+```
+
+El profile elegido cambia las variantes de los glyphs y la validación, nunca la geometría de las salas.
+
+## 5. Escala de impresión y tamaño del sheet
+
+Declare `sheet a4|a3|a2|letter|tabloid` con `landscape` o `portrait`. Schematex descuenta un margen de 15 mm, ajusta la floor plate más grande a los dos ejes imprimibles y redondea el denominador al siguiente valor convencional (`1:50`, `1:100`, `1:200`, `1:250`, etc.).
+
+Las señales de seguridad conservan 8 mm en el papel. La escala convierte temporalmente ese tamaño físico fijo en una huella dentro del plano para comprobar colisiones; las señales no se reducen al aumentar el edificio. En los planos ISO y UAE, una escala menos detallada que 1:250 se considera un error.
+
+Cada sheet renderizado incluye una nota como:
+
+```
+Scale 1:200 on A3 (landscape) · symbols 8.0 mm · ISO 23601 ✓
+```
+
+## 6. Layers y planos de varias plantas
+
+El evacuation mode conserva salas, paredes, aberturas, giros de puertas, escaleras, ascensores, pilares, nombres de salas, norte, rutas, señales de seguridad, leyenda y nota de escala. Oculta automáticamente el mobiliario ordinario, el texto de superficie y las cotas. Añada `show furniture` solo cuando un elemento concreto sea necesario para orientarse.
+
+La sintaxis de varias plantas se hereda de floorplan:
+
+```
+evacuation "Planos de evacuación del edificio" unit m stack horizontal
+floor 0 "Planta baja"
+room lobby at 0,0 size 8x5
+furniture stairs S1 in lobby at 0.4,0.4
+
+floor 1 "Primera planta"
+room landing at 0,0 size 8x5
+furniture stairs S1 in landing at 0.4,0.4
+```
+
+Todas las plates comparten una única escala. Al reutilizar `S1` se registra la misma caja de escalera: la aparición inferior se etiqueta UP, las superiores DN y un desplazamiento de coordenadas superior a 0,1 m genera una advertencia. Aun así, cada planta se valida como un plano colocado independiente.
 
 ## 7. Leyenda obligatoria
 
-La leyenda Tier M siempre está activa. `legend: off` es un error porque ISO 23601 y NFPA 170 exigen explicar los símbolos usados.
+La leyenda es Tier M: siempre está presente y enumera todas las codificaciones utilizadas, agrupadas en Rutas de evacuación, Salidas, Equipos contra incendios, Primeros auxilios y Elementos estructurales. Los profiles ISO incluyen en los rótulos el código de identidad de la señal; NFPA omite los códigos ISO.
 
-## 8. Validación
+Puede cambiar el nombre de los rótulos o las secciones mediante las directivas de legend compartidas, pero `legend: off` produce un error de parseo porque ISO 23601 y NFPA 170 exigen la leyenda.
 
-Se comprueban ubicación, salida, continuidad, independencia, habitaciones sin ruta, destino, legibilidad, bilingüismo, ascensor, leyenda, color, escala y vocabulario. Cada mensaje cita la norma aplicable.
+## 8. Mensajes de validación
+
+El motor comprueba todo lo siguiente antes de publicar:
+
+1. Cada planta tiene un marcador `here`.
+2. Cada planta tiene una salida.
+3. Los saltos de una ruta cruzan una abertura declarada.
+4. Dos rutas de evacuación son estructuralmente independientes (error en NFPA; advertencia en ISO/UAE).
+5. Las salas conectadas están representadas en una ruta o disponen de salida.
+6. Las rutas terminan en una salida o un punto de reunión.
+7. Las señales de seguridad de tamaño fijo siguen siendo legibles y no se solapan.
+8. Los rótulos UAE contienen mitades no vacías en inglés y árabe, separadas por ` / `.
+9. Los planos NFPA/UAE con ascensores reciben automáticamente un marcador `no-elevator`.
+10. No se puede desactivar la leyenda.
+11. `monochrome` informa de un error y aun así renderiza con colores semánticos de seguridad para facilitar el diagnóstico.
+12. La escala impresa de los planos ISO/UAE no es menos detallada que 1:250.
+13. Un tipo de señal desconocido muestra los nombres válidos y sugiere la coincidencia más cercana.
+
+Cada diagnóstico cita la fuente normativa aplicable para que el autor sepa si la corrección procede de ISO 23601, NFPA 170/NFPA 101 o las directrices de UAE Civil Defence.
+
+## 9. Gramática
+
+```text
+plan       ::= ("evacuation"|"escapeplan") string? ("unit" ("m"|"ft"))? statement*
+statement  ::= floorplan-statement | compliance | sheet | safety | route | rated-door | legend
+compliance ::= "compliance" ("iso"|"nfpa"|"uae")
+sheet      ::= "sheet" ("a4"|"a3"|"a2"|"letter"|"tabloid") ("landscape"|"portrait")?
+safety     ::= "safety"? kind id? ("in" room "at" coord | "outside" "at" coord)
+               ("side" wallside)? ("hand" ("left"|"right"))? ("rotate" num)?
+               ("class" string)? string?
+route      ::= "route" ("primary"|"secondary"|"accessible"|"rescue")?
+               anchor ("->" anchor)+ string?
+rated-door ::= ("fire-door"|"smoke-door")
+               ("between" room room | room wallside ("at" pct)?) ("rating" string)?
+```
+
+## Ejemplos relacionados
+
+- [Planta de oficinas con dos rutas de evacuación](/examples#evacuation)
+- [Almacén estadounidense según NFPA](/examples#evacuation)
+- [Plano de clínica en inglés y árabe](/examples#evacuation)

@@ -208,16 +208,23 @@ Comentários vão de `#` até o final da linha. Aspas CJK (`""`) são aceitas co
 - [Sala de aula com 27 mesas](/examples#floorplan) — truncamento `grid … count`, `unit ft`
 - [Recepção de casamento para 120 pessoas](/examples#floorplan) — mesas de banquete com assentos automáticos, pista de dança
 
+## Edição interativa
+
+Móveis e elementos elétricos se movem de forma independente nas coordenadas do ambiente. Um ambiente simples apresenta resize handles a leste, ao sul e no canto, que reescrevem as dimensões originais. O corpo do ambiente não pode ser arrastado, mantendo inequívoca a seleção dos móveis. As aberturas em paredes compartilhadas continuam sujeitas à validação topológica.
+
 ## Conjuntos de vários pavimentos
 
-`floor N "Rótulo"` divide uma fonte em placas com escala comum; `stack horizontal|vertical` escolhe a composição. Um id opcional como `S1` registra a mesma escada: UP embaixo, DN em cima, com aviso acima de 0,1 m de deslocamento. Referências não podem atravessar pavimentos.
+Use `floor N "Rótulo"` para dividir uma fonte em floor plates emolduradas. Todas as plates compartilham uma escala de desenho; `stack horizontal|vertical` controla a disposição no sheet.
 
 ```
-floorplan "Casa de dois pavimentos" unit m
+floorplan "Casa de dois pavimentos" unit m stack horizontal
 floor 0 "Térreo"
 room hall at 0,0 size 6x4
 furniture stairs S1 in hall at 4,0.4
+
 floor 1 "Pavimento superior"
 room landing at 0,0 size 6x4
 furniture stairs S1 in landing at 4,0.4
 ```
+
+O id opcional da instância de furniture (`S1`) registra o mesmo lance de escada entre pavimentos. A ocorrência inferior se torna UP e as superiores, DN; um deslocamento maior que 0,1 m gera um aviso. Referências de ambientes, portas, furniture e arrays não podem atravessar seções de pavimento.

@@ -208,16 +208,23 @@ Los comentarios van desde `#` hasta el final de la línea. Las comillas CJK (`""
 - [Aula de 27 escritorios](/examples#floorplan) — truncamiento `grid … count`, `unit ft`
 - [Recepción de boda para 120](/examples#floorplan) — mesas redondas de banquete con asiento automático, pista de baile
 
+## Edición interactiva
+
+El mobiliario y los elementos eléctricos se mueven de forma independiente en las coordenadas de la sala. Una sala sencilla muestra resize handles en los lados este y sur y en la esquina; estos reescriben las dimensiones originales. El cuerpo de la sala no se arrastra, de modo que la selección del mobiliario no resulte ambigua. Las aberturas en paredes compartidas siguen sujetas a validación topológica.
+
 ## Conjuntos de varias plantas
 
-`floor N "Etiqueta"` divide una fuente en placas con escala compartida; `stack horizontal|vertical` elige la composición. Un id opcional como `S1` registra la misma escalera: UP abajo, DN arriba, con aviso si se desplaza más de 0,1 m. Las referencias no pueden cruzar plantas.
+Use `floor N "Etiqueta"` para dividir una fuente en floor plates enmarcadas. Todas las plates comparten una escala de dibujo; `stack horizontal|vertical` controla su disposición en el sheet.
 
 ```
-floorplan "Casa de dos plantas" unit m
+floorplan "Casa de dos plantas" unit m stack horizontal
 floor 0 "Planta baja"
 room hall at 0,0 size 6x4
 furniture stairs S1 in hall at 4,0.4
+
 floor 1 "Primera planta"
 room landing at 0,0 size 6x4
 furniture stairs S1 in landing at 4,0.4
 ```
+
+El id opcional de la instancia de furniture (`S1`) registra el mismo tramo de escalera entre plantas. La aparición inferior pasa a ser UP y las superiores, DN; un desplazamiento mayor de 0,1 m genera una advertencia. Las referencias de salas, puertas, furniture y arrays no pueden cruzar secciones de planta.

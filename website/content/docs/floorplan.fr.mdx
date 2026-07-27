@@ -208,16 +208,23 @@ Les commentaires vont de `#` jusqu'à la fin de la ligne. Les guillemets CJK (`"
 - [Salle de classe de 27 bureaux](/examples#floorplan) — troncature `grid … count`, `unit ft`
 - [Réception de mariage pour 120 personnes](/examples#floorplan) — banquettes rondes avec placement automatique, piste de danse
 
+## Édition interactive
+
+Le mobilier et les équipements électriques se déplacent indépendamment dans les coordonnées de la pièce. Une pièce simple présente des resize handles à l’est, au sud et dans l’angle ; ils réécrivent ses dimensions natives. Le corps de la pièce ne se déplace pas par glisser-déposer, afin que la sélection du mobilier reste sans ambiguïté. Les ouvertures dans les murs communs restent soumises à la validation topologique.
+
 ## Jeux de plans multi-étages
 
-`floor N "Libellé"` divise une source en plaques partageant la même échelle; `stack horizontal|vertical` règle la composition. Un identifiant facultatif comme `S1` relie le même escalier: UP en bas, DN en haut, avec avertissement au-delà de 0,1 m de décalage. Les références ne traversent pas les étages.
+Utilisez `floor N "Libellé"` pour diviser une source en floor plates encadrées. Toutes les plates partagent la même échelle de dessin ; `stack horizontal|vertical` règle leur disposition sur le sheet.
 
 ```
-floorplan "Maison à deux étages" unit m
+floorplan "Maison à deux étages" unit m stack horizontal
 floor 0 "Rez-de-chaussée"
 room hall at 0,0 size 6x4
 furniture stairs S1 in hall at 4,0.4
+
 floor 1 "Étage"
-room palier at 0,0 size 6x4
-furniture stairs S1 in palier at 4,0.4
+room landing at 0,0 size 6x4
+furniture stairs S1 in landing at 4,0.4
 ```
+
+L’id facultatif de l’instance de furniture (`S1`) enregistre la même volée d’escalier entre les étages. L’occurrence inférieure devient UP et les occurrences supérieures DN ; un décalage supérieur à 0,1 m déclenche un avertissement. Les références de pièces, les portes, le furniture et les arrays ne peuvent pas franchir une section d’étage.

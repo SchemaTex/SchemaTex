@@ -208,16 +208,23 @@ coord     ::= num "," num          dims ::= num "x" num          pct ::= num "%"
 - [27台のデスク教室](/examples#floorplan) — `grid … count` 切り捨て、`unit ft`
 - [120名のウェディングレセプション](/examples#floorplan) — 自動着席の宴会ラウンドテーブル、ダンスフロア
 
+## Interactive editing
+
+家具と電気器具は、room 座標内で個別に移動できます。単純な room には東側、南側、隅に resize handles が表示され、元の寸法を書き換えます。Room 本体はドラッグできないため、家具を迷わず選択できます。共有壁の openings には引き続き topology validation が適用されます。
+
 ## 複数階の plan set
 
-`floor N "Label"` で一つの source を同一 scale の floor plate に分割し、`stack horizontal|vertical` で配置を選びます。`S1` のような任意の furniture ID は同じ階段を登録し、下階は UP、上階は DN になります。0.1 m を超えるずれは warning で、参照は階をまたげません。
+`floor N "Label"` を使うと、一つの source を枠付きの floor plates に分割できます。すべての plates は同じ drawing scale を共有し、`stack horizontal|vertical` で sheet 上の配置を指定します。
 
 ```
-floorplan "Two-Storey House" unit m
-floor 0 "Ground Floor"
+floorplan "2階建て住宅" unit m stack horizontal
+floor 0 "1階"
 room hall at 0,0 size 6x4
 furniture stairs S1 in hall at 4,0.4
-floor 1 "First Floor"
+
+floor 1 "2階"
 room landing at 0,0 size 6x4
 furniture stairs S1 in landing at 4,0.4
 ```
+
+任意の furniture instance ID（`S1`）は、複数階にある同じ階段を登録します。下階の表示は UP、上階の表示は DN になり、ずれが 0.1 m を超えると warning が出ます。Room references、doors、furniture、arrays は floor sections をまたげません。

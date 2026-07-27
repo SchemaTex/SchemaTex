@@ -4,82 +4,174 @@ title: Flucht- und Rettungsplan
 
 ## Über Flucht- und Rettungspläne
 
-Ein **Flucht- und Rettungsplan** zeigt den **Standort**, die Fluchtwege zu den Notausgängen sowie Feuerlöscher, Handfeuermelder, Erste Hilfe und Sammelstelle. Schematex legt diese Angaben auf einen maßhaltigen Grundriss und prüft die für **DIN ISO 23601** wichtigen Punkte: Standortmarkierung, durchgängige Wege, unabhängige Ausgänge, Druckmaßstab, Sicherheitszeichen und Pflichtlegende.
+Ein **Flucht- und Rettungsplan** ist der ausgehängte Plan für den Personenschutz. Er zeigt einer Person ihren Standort, die Fluchtwege zu den Endausgängen sowie Alarmierungseinrichtungen, Feuerlöscheinrichtungen, Erste-Hilfe-Einrichtungen und die Sammelstelle. Schematex baut ihn auf maßhaltiger `floorplan`-Geometrie auf und prüft Regeln, die ein reines Zeichenprogramm nicht erkennen kann: fehlende Standortmarkierungen, unterbrochene Wegabschnitte, nicht unabhängige Ausgänge, Druckmaßstab, Größe der Sicherheitszeichen und die Pflichtlegende.
+
+Die Engine unterstützt drei wählbare Regelwerke: DIN ISO 23601 / ISO 7010 / ISO 3864, NFPA 170 Kapitel 11 in Verbindung mit NFPA 101 sowie zweisprachige Pläne nach UAE Civil Defence. Die Ausgabe ist eine editierbare SVG-Arbeitshilfe für die Prüfung durch Fachkundige; sie ersetzt nicht die Freigabe durch die zuständige Behörde.
 
 <Playground initial={`evacuation "Bürogeschoss — Flucht- und Rettungsplan" unit m
 compliance iso
 sheet a3 landscape
-room buero "Büro" at 0,0 size 6x5
-room flur "Flur" below buero size 6x2.4
-room treppeA "Treppe A" left-of flur size 3x2.4
-room treppeB "Treppe B" right-of flur size 3x2.4
-opening between buero flur at 50% width 1.6
-door between flur treppeA at 50% width 1.1
-door between flur treppeB at 50% width 1.1
-here in buero at 3,2.5
-exit-final xA in treppeA at 0,1.2 side west "AUSGANG"
-exit-final xB in treppeB at 3,1.2 side east "AUSGANG"
-extinguisher f1 in flur at 2,1.8 class "ABC"
-route primary here -> flur -> treppeB -> xB
-route secondary here -> flur -> treppeA -> xA`} height={620} />
+room office "Großraumbüro" at 0,0 size 6x5
+room lobby "Aufzugsvorraum" below office size 6x2.4
+room stairA "Treppe A" left-of lobby size 3x2.4
+room stairB "Treppe B" right-of lobby size 3x2.4
+opening between office lobby at 50% width 1.6
+door between lobby stairA at 50% width 1.1
+door between lobby stairB at 50% width 1.1
+here in office at 3,2.5
+exit-final xA in stairA at 0,1.2 side west "AUSGANG"
+exit-final xB in stairB at 3,1.2 side east "AUSGANG"
+extinguisher f1 in lobby at 2,1.8 class "ABC"
+route primary here -> lobby -> stairB -> xB
+route secondary here -> lobby -> stairA -> xA`} height={620} />
 
 ---
 
-## 1. Standort und Blattformat
+## 1. Mit dem Standort beginnen
 
-Jedes ausgehängte Blatt braucht genau eine Standortmarkierung:
+Ändern Sie den Header in `evacuation` (Alias `escapeplan`), geben Sie das Ziel-`sheet` an und setzen Sie genau eine `here`-Markierung an die Stelle, an der dieses Exemplar ausgehängt wird:
 
 ```
 evacuation "2. Obergeschoss — Flucht- und Rettungsplan" unit m
 compliance iso
 sheet a3 landscape
-here in buero at 3,2.5
+room office "Büro" at 0,0 size 6x5
+here in office at 3,2.5
+exit-final x1 in office at 6,2.5 side east "AUSGANG"
+route primary here -> x1
 ```
 
-Für fünf Montageorte werden fünf Varianten gerendert; nur die `here`-Zeile ändert sich.
+Für ein Gebäude können viele ausgehängte Exemplare erforderlich sein. Behalten Sie Geometrie und Fluchtwege unverändert bei und rendern Sie für jeden Montageort ein eigenes Exemplar, in dem nur die `here`-Zeile geändert wird.
 
 ## 2. Sicherheitszeichen
 
-Die Zeichen werden in einem festen 24×24-Raster gezeichnet und auf dem Blatt standardmäßig 8 mm groß ausgegeben. Grün kennzeichnet sichere Zustände und Flucht, Rot die Brandschutzeinrichtungen. Die Piktogramme sind eigenständig neu gezeichnet; amtliche ISO-Vektordateien werden weder kopiert noch nachgezeichnet.
+Sicherheitszeichen verwenden ein festes 24×24-Zeichenraster und eine feste Druckgröße von standardmäßig 8 mm, unabhängig vom Maßstab des Grundrisses. Rettungszeichen haben eine vollflächig grüne plate, Brandschutzzeichen eine vollflächig rote plate; die Piktogramme sind jeweils weiße Aussparungen. Schematex zeichnet eigenständige Geometrie und bettet weder ISO- noch NFPA-Grafiken ein oder zeichnet sie nach.
 
-Wichtige Schlüsselwörter sind `exit`, `exit-final`, `assembly`, `here`, `extinguisher`, `call-point`, `first-aid`, `aed`, `no-elevator`, `fire-door` und `smoke-door`. Die vollständige Liste entspricht der englischen Referenzseite.
+Das koordinatenbasierte Vokabular umfasst:
+
+- Ausgänge und Rettung: `exit`, `exit-final`, `assembly`, `refuge`, `shelter`, `escape-ladder`, `rescue-window`, `emergency-door-push`, `emergency-door-slide`
+- Medizinische und sonstige Nothilfe: `first-aid`, `aed`, `stretcher`, `doctor`, `eyewash`, `safety-shower`, `emergency-phone`, `break-glass`
+- Feuerlöscheinrichtungen: `extinguisher`, `hose-reel`, `fire-ladder`, `fire-equipment`, `call-point`, `fire-phone`, `riser`
+- Plan- und Verbotszeichen: `here`, `not-an-exit`, `no-elevator`, `alarm-sounder`
+- Tür-Overlays: `fire-door` und `smoke-door` werden an einer vorhandenen Tür statt an einer Koordinate angebracht
+
+Verwenden Sie entweder die Kurzform oder das ausdrückliche `safety`:
+
+```
+extinguisher ext1 in corridor at 1.2,0.3 side north class "ABC"
+safety first-aid aid1 in lobby at 4.8,1.8
+assembly muster outside at 14,10 "Sammelstelle A"
+fire-door between corridor stairA rating "EI30"
+```
+
+Raumkoordinaten beziehen sich auf den jeweiligen Raum. `outside at x,y` ist eine absolute Plankoordinate. Mit `side north|south|east|west` rastet ein Zeichen an der Wand ein; `hand left|right` überschreibt die automatisch gewählte Richtungsvariante.
 
 ## 3. Fluchtwege
 
+Ein Fluchtweg ist eine bewusst festgelegte Folge und kein automatisch ermittelter Pfad:
+
 ```
-route primary here -> flur -> treppeB -> xB
-route secondary here -> flur -> treppeA -> xA
+route primary here -> corridor -> stairB -> exitB
+route secondary here -> corridor -> lobby -> stairA -> exitA
+route accessible here -> corridor -> refugeA
+route rescue fireEntry -> serviceCorridor -> riserRoom
 ```
 
-Jeder Raumwechsel muss über eine deklarierte Tür oder Öffnung führen. Zwischenräume müssen ausdrücklich genannt werden. Pfeilspitzen zeigen immer vom Standort zum Ausgang; der alternative Weg ist gestrichelt.
+Jeder Übergang zwischen verschiedenen Räumen muss durch eine deklarierte `door` oder `opening` führen. Geben Sie Zwischenräume ausdrücklich an. Schematex zeichnet deterministische orthogonale Segmente durch jede Öffnung, rundet die Knicke ab und setzt alle 2 m chevrons, die vom Standort weg weisen. `secondary` wird gestrichelt dargestellt, `accessible` trägt ein Rollstuhlsymbol und `rescue` ist blau.
 
-## 4. Normprofile
+Fluchtwege müssen an `exit`, `exit-final` oder `assembly` enden. Zwei Wege sind nur dann unabhängig, wenn sie an verschiedenen Endausgängen enden und sich ihre Raumfolgen strukturell unterscheiden.
 
-- `compliance iso`: DIN ISO 23601 / ISO 7010 / ISO 3864, Maßstab höchstens 1:250.
-- `compliance nfpa`: NFPA 170 Kapitel 11, zwei unabhängige Wege sind ein Fehler.
-- `compliance uae`: UAE Civil Defence, englisch-arabische Beschriftung ist Pflicht.
+## 4. Compliance profiles
 
-## 5. Druckmaßstab
+| Profile | Einsatzbereich | Wichtige Unterschiede |
+| --- | --- | --- |
+| `iso` (Standard) | Pläne nach DIN/BS/internationaler ISO 23601 | ISO-7010-Zeichen, Maßstab höchstens 1:250, Zeichen ≥7 mm |
+| `nfpa` | US-amerikanische Emergency Evacuation Diagrams | NFPA-170-Varianten, zwei Wege sind Pflicht, automatisches `no-elevator` |
+| `uae` | Einreichungen bei UAE Civil Defence | gelbe Standortmarkierung, englisch-arabische Beschriftung, von ISO abgeleitete Maßstabsgrenze |
 
-`sheet a4|a3|a2|letter|tabloid landscape|portrait` legt das Ausgabeformat fest. Der größte Geschossrahmen bestimmt den gemeinsamen Maßstab. Sicherheitszeichen bleiben physisch 8 mm groß und werden nicht zusammen mit dem Gebäude verkleinert.
+Wählen Sie das profile am Anfang:
 
-## 6. Geschosse
+```
+compliance nfpa
+```
 
-Mit `floor N "Bezeichnung"` entstehen getrennte Geschossrahmen. Gleich benannte Treppen-IDs wie `S1` registrieren ein durchgehendes Treppenhaus; mehr als 0,1 m Versatz erzeugt eine Warnung. Jedes Geschoss muss Standort, Ausgänge und Wege selbst erfüllen.
+Die Auswahl des profiles ändert Zeichenvarianten und Validierung, niemals die Raumgeometrie.
 
-## 7. Pflichtlegende und Ebenen
+## 5. Druckmaßstab und sheet-Größe
 
-Die Tier-M-Legende ist immer aktiv; `legend: off` ist unzulässig. Möbel, Flächenangaben und Maßketten werden automatisch ausgeblendet. Treppen, Aufzüge, Stützen, Nordpfeil, Wege, Zeichen und Maßstabshinweis bleiben sichtbar.
+Deklarieren Sie `sheet a4|a3|a2|letter|tabloid` zusammen mit `landscape` oder `portrait`. Schematex zieht einen Rand von 15 mm ab, passt die größte floor plate an beide druckbaren Achsen an und rundet den Nenner auf einen üblichen Wert auf (`1:50`, `1:100`, `1:200`, `1:250` und so weiter).
 
-## 8. Prüfung
+Sicherheitszeichen bleiben auf dem Papier 8 mm groß. Der Maßstab rechnet diese feste Papiergröße für die Kollisionsprüfung vorübergehend in eine Grundrissfläche zurück; die Zeichen schrumpfen nicht mit dem Gebäude. Bei ISO- und UAE-Plänen ist ein gröberer Maßstab als 1:250 ein Fehler.
 
-Schematex meldet unter anderem fehlenden Standort, fehlenden Ausgang, nicht benachbarte Wegsprünge, nicht unabhängige Wege, unerschlossene Räume, ein falsches Wegende, überlappende Zeichen, fehlende Zweisprachigkeit, deaktivierte Legende, Monochrom-Ausgabe, zu kleinen Druckmaßstab und unbekannte Zeichen. Jede Meldung nennt DIN ISO 23601, NFPA oder UAE Civil Defence als Grundlage.
+Jedes gerenderte sheet enthält einen Hinweis wie:
+
+```
+Scale 1:200 on A3 (landscape) · symbols 8.0 mm · ISO 23601 ✓
+```
+
+## 6. Ebenen und mehrgeschossige Pläne
+
+Der Evacuation mode behält Räume, Wände, Öffnungen, Türschwenkbögen, Treppen, Aufzüge, Stützen, Raumnamen, Nordpfeil, Fluchtwege, Sicherheitszeichen, Legende und Maßstabshinweis bei. Normales Mobiliar, Flächentext und Maßlinien werden automatisch ausgeblendet. Fügen Sie `show furniture` nur hinzu, wenn ein bestimmtes Objekt für die Orientierung erforderlich ist.
+
+Die Syntax für mehrere Geschosse wird vom floorplan übernommen:
+
+```
+evacuation "Flucht- und Rettungspläne des Gebäudes" unit m stack horizontal
+floor 0 "Erdgeschoss"
+room lobby at 0,0 size 8x5
+furniture stairs S1 in lobby at 0.4,0.4
+
+floor 1 "1. Obergeschoss"
+room landing at 0,0 size 8x5
+furniture stairs S1 in landing at 0.4,0.4
+```
+
+Alle plates verwenden denselben Maßstab. Die Wiederverwendung von `S1` registriert ein gemeinsames Treppenhaus: Das untere Vorkommen wird mit UP beschriftet, die oberen mit DN; ein Koordinatenversatz von mehr als 0,1 m erzeugt eine Warnung. Jedes Geschoss wird dennoch als eigener ausgehängter Plan validiert.
+
+## 7. Pflichtlegende
+
+Die Legende gehört zu Tier M: Sie ist immer vorhanden und führt jede verwendete Darstellung auf, gruppiert nach Fluchtwegen, Ausgängen, Feuerlöscheinrichtungen, Erste Hilfe und Bauteilen. ISO profiles enthalten den Kenncode des Sicherheitszeichens in der Beschriftung; bei NFPA werden ISO-Codes weggelassen.
+
+Mit den gemeinsamen legend-Direktiven können Sie Beschriftungen oder Abschnitte umbenennen. `legend: off` ist jedoch ein Parse-Fehler, weil DIN ISO 23601 und NFPA 170 eine Legende verlangen.
+
+## 8. Validierungsmeldungen
+
+Die Engine prüft vor der Veröffentlichung alle folgenden Regeln:
+
+1. Jedes Geschoss hat eine `here`-Markierung.
+2. Jedes Geschoss hat einen Ausgang.
+3. Jeder Wegabschnitt zwischen Räumen führt durch eine deklarierte Öffnung.
+4. Zwei Fluchtwege sind strukturell unabhängig (NFPA: Fehler; ISO/UAE: Warnung).
+5. Verbundene Räume sind auf einem Fluchtweg vertreten oder haben einen eigenen Ausgang.
+6. Fluchtwege enden an einem Ausgang oder einer Sammelstelle.
+7. Sicherheitszeichen fester Größe bleiben lesbar und überlappen sich nicht.
+8. UAE-Beschriftungen enthalten nicht leere englische und arabische Hälften, getrennt durch ` / `.
+9. NFPA-/UAE-Pläne mit Aufzügen erhalten automatisch eine `no-elevator`-Markierung.
+10. Die Legende kann nicht deaktiviert werden.
+11. `monochrome` meldet einen Fehler und rendert zur Diagnose trotzdem in den semantischen Sicherheitsfarben.
+12. Der Druckmaßstab von ISO-/UAE-Plänen ist nicht gröber als 1:250.
+13. Bei unbekannten Zeichentypen werden gültige Namen aufgeführt und der ähnlichste vorgeschlagen.
+
+Jede Diagnose nennt die maßgebliche Quelle. So erkennen Verfassende, ob sich die Korrektur aus DIN ISO 23601, NFPA 170/NFPA 101 oder den Richtlinien von UAE Civil Defence ergibt.
 
 ## 9. Grammatik
 
-Die DSL-Formen sind identisch mit der englischen Seite; Titel und sichtbare Beschriftungen dürfen deutsch sein. Die Schlüsselwörter bleiben englisch, damit Quellen zwischen Sprachversionen austauschbar sind.
+```text
+plan       ::= ("evacuation"|"escapeplan") string? ("unit" ("m"|"ft"))? statement*
+statement  ::= floorplan-statement | compliance | sheet | safety | route | rated-door | legend
+compliance ::= "compliance" ("iso"|"nfpa"|"uae")
+sheet      ::= "sheet" ("a4"|"a3"|"a2"|"letter"|"tabloid") ("landscape"|"portrait")?
+safety     ::= "safety"? kind id? ("in" room "at" coord | "outside" "at" coord)
+               ("side" wallside)? ("hand" ("left"|"right"))? ("rotate" num)?
+               ("class" string)? string?
+route      ::= "route" ("primary"|"secondary"|"accessible"|"rescue")?
+               anchor ("->" anchor)+ string?
+rated-door ::= ("fire-door"|"smoke-door")
+               ("between" room room | room wallside ("at" pct)?) ("rating" string)?
+```
 
 ## Verwandte Beispiele
 
 - [Bürogeschoss mit zwei Fluchtwegen](/examples#evacuation)
-- [Zweistöckiges Wohnhaus](/examples#evacuation)
+- [US-Lagerhalle nach NFPA](/examples#evacuation)
+- [Englisch-arabischer Klinikplan](/examples#evacuation)

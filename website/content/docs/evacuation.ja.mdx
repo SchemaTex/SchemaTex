@@ -4,46 +4,174 @@ title: 避難経路図
 
 ## 避難経路図について
 
-**避難経路図**は、現在地、最終出口までの経路、火災報知器、消火設備、応急手当の位置を掲示する図です。Schematex は実寸の floorplan 上に表示し、ISO 23601、NFPA 170、UAE Civil Defence の各 profile を検証します。
+**避難経路図**は、現在地、最終出口へ至る避難経路、火災報知設備、消火器などの消防設備、救急設備、集合場所を示す掲示用の安全図です。Schematex は、実測可能な `floorplan` geometry を基に図面を作成し、通常の作図ツールでは判断できない項目を検証します。たとえば、現在地マーカーの欠落、route 区間の断絶、独立していない出口、印刷 scale、安全標識の大きさ、必須 legend などです。
 
-<Playground initial={`evacuation "避難経路図" unit m
+Engine では、ISO 23601 / ISO 7010 / ISO 3864、NFPA 101 と併用する NFPA 170 Chapter 11、UAE Civil Defence の二言語図面という 3 つの制度を選択できます。出力される編集可能な SVG は、有資格者による確認を補助するためのものであり、所轄官庁の承認に代わるものではありません。
+
+<Playground initial={`evacuation "オフィス階 — 避難経路図" unit m
 compliance iso
 sheet a3 landscape
-room room "Room" at 0,0 size 6x4
-here in room at 2,2
-exit-final exit1 in room at 6,2 side east "EXIT"
-route primary here -> exit1`} height={460} />
+room office "オープンオフィス" at 0,0 size 6x5
+room lobby "エレベーターホール" below office size 6x2.4
+room stairA "階段 A" left-of lobby size 3x2.4
+room stairB "階段 B" right-of lobby size 3x2.4
+opening between office lobby at 50% width 1.6
+door between lobby stairA at 50% width 1.1
+door between lobby stairB at 50% width 1.1
+here in office at 3,2.5
+exit-final xA in stairA at 0,1.2 side west "非常口"
+exit-final xB in stairB at 3,1.2 side east "非常口"
+extinguisher f1 in lobby at 2,1.8 class "ABC"
+route primary here -> lobby -> stairB -> xB
+route secondary here -> lobby -> stairA -> xA`} height={620} />
 
 ---
 
-## 1. 現在地
+## 1. 掲示位置から始める
 
-掲示する一枚ごとに `here` は一つ必要です。掲示場所が複数なら、平面と経路を共有し、`here` の行だけ変えて別々に render します。
+Header を `evacuation`（alias は `escapeplan`）に変更し、出力先の `sheet` を宣言します。さらに、その図面を掲示する位置に `here` マーカーを 1 つだけ追加します。
 
-## 2. 安全記号
+```
+evacuation "2階 — 避難経路図" unit m
+compliance iso
+sheet a3 landscape
+room office "事務室" at 0,0 size 6x5
+here in office at 3,2.5
+exit-final x1 in office at 6,2.5 side east "非常口"
+route primary here -> x1
+```
 
-記号は固定 24×24 grid に描かれ、印刷時は標準 8 mm です。緑は安全・避難、赤は消防設備を意味します。`exit`、`exit-final`、`assembly`、`extinguisher`、`call-point`、`first-aid`、`aed` などを使用できます。
+1 棟の建物でも、複数の掲示図が必要になることがあります。Geometry と routes は同一のまま、掲示位置ごとに `here` の行だけを変えて 1 枚ずつ render してください。
 
-## 3. 経路
+## 2. 安全標識
 
-`route primary here -> corridor -> stair -> exit1` の各部屋間には、宣言済みの `door` または `opening` が必要です。engine は経路探索を行わないため、中間室を明示します。
+安全標識は、floorplan の scale と切り離された固定 24×24 drawing grid と、既定で 8 mm の固定印刷サイズを使用します。避難誘導標識は緑の塗りつぶし plate、消防標識は赤の塗りつぶし plate とし、pictogram は白抜きで描画します。Schematex は独自の geometry を描画し、ISO や NFPA の図版を埋め込んだりトレースしたりしません。
 
-## 4. Compliance profile
+座標で配置できる語彙は次のとおりです。
 
-`iso` は ISO 23601/7010/3864、`nfpa` は NFPA 170/NFPA 101、`uae` は英語・アラビア語の二言語表示を適用します。
+- 出口・救助：`exit`、`exit-final`、`assembly`、`refuge`、`shelter`、`escape-ladder`、`rescue-window`、`emergency-door-push`、`emergency-door-slide`
+- 医療・緊急支援：`first-aid`、`aed`、`stretcher`、`doctor`、`eyewash`、`safety-shower`、`emergency-phone`、`break-glass`
+- 消防設備：`extinguisher`、`hose-reel`、`fire-ladder`、`fire-equipment`、`call-point`、`fire-phone`、`riser`
+- 図面・禁止：`here`、`not-an-exit`、`no-elevator`、`alarm-sounder`
+- Door overlay：`fire-door` と `smoke-door` は座標ではなく、既存の door に付与します
 
-## 5. 印刷 scale
+短縮形と、`safety` を明示する形のどちらも使用できます。
 
-sheet と orientation を宣言すると、全 floor plate で共通の scale を計算します。記号は 8 mm のままで、ISO/UAE は 1:250 より粗い scale を error にします。
+```
+extinguisher ext1 in corridor at 1.2,0.3 side north class "ABC"
+safety first-aid aid1 in lobby at 4.8,1.8
+assembly muster outside at 14,10 "集合場所 A"
+fire-door between corridor stairA rating "EI30"
+```
 
-## 6. Layer と複数階
+Room 座標は、その room を基準とする相対座標です。`outside at x,y` は plan 全体の絶対座標です。`side north|south|east|west` で標識を壁に吸着し、`hand left|right` で自動選択された方向 variant を上書きできます。
 
-通常家具、面積、寸法線は自動的に非表示です。階段、elevator、north、route、安全記号は残ります。`floor N "Label"` と共通 stair ID で階を登録します。
+## 3. 避難経路
+
+Route は作成者が指定する sequence であり、自動推定される path ではありません。
+
+```
+route primary here -> corridor -> stairB -> exitB
+route secondary here -> corridor -> lobby -> stairA -> exitA
+route accessible here -> corridor -> refugeA
+route rescue fireEntry -> serviceCorridor -> riserRoom
+```
+
+異なる room 間の各 hop は、宣言済みの `door` または `opening` を通過する必要があります。途中の room も明示してください。Schematex は各 opening を通る決定的な直交 segment を描き、曲がり角を丸め、`here` から離れる向きの chevron を 2 m ごとに配置します。`secondary` は破線、`accessible` は車いすマーカー付き、`rescue` は青で表示されます。
+
+Routes の終点には `exit`、`exit-final`、`assembly` のいずれかが必要です。2 本の routes が独立していると判定されるのは、最終出口が異なり、かつ room sequence の構造も異なる場合だけです。
+
+## 4. Compliance profiles
+
+| Profile | 用途 | 主な違い |
+| --- | --- | --- |
+| `iso`（既定） | DIN、BS、その他の国際的な ISO 23601 図面 | ISO 7010 標識、scale 上限 1:250、標識 7 mm 以上 |
+| `nfpa` | 米国の緊急避難図 | NFPA 170 variants、2 routes がない場合は error、`no-elevator` を自動追加 |
+| `uae` | UAE Civil Defence への申請 | 黄色の現在地マーカー、英語・アラビア語 labels、ISO 由来の scale 上限 |
+
+冒頭付近で profile を選択します。
+
+```
+compliance nfpa
+```
+
+Profile を変更すると glyph variants と validation が変わりますが、room geometry は変わりません。
+
+## 5. 印刷 scale と sheet サイズ
+
+`sheet a4|a3|a2|letter|tabloid` に `landscape` または `portrait` を指定します。Schematex は 15 mm の margin を差し引き、最大の floor plate が印刷可能な縦横両方に収まるよう調整し、分母を一般的な値（`1:50`、`1:100`、`1:200`、`1:250` など）へ切り上げます。
+
+安全標識の紙面上の大きさは常に 8 mm です。Scale は、collision check のために、この固定された紙面寸法を一時的な plan-space footprint へ逆算します。建物が大きくなっても標識は縮小しません。ISO および UAE の図面では、1:250 より粗い scale は error です。
+
+Render された各 sheet には、次のような注記が入ります。
+
+```
+Scale 1:200 on A3 (landscape) · symbols 8.0 mm · ISO 23601 ✓
+```
+
+## 6. Layers と複数階の図面
+
+Evacuation mode では、rooms、walls、openings、door swings、stairs、elevators、columns、room names、north、routes、安全標識、legend、scale note を残します。通常の家具、面積表示、寸法線は自動的に非表示になります。方向を把握するために特定の家具が必要な場合だけ `show furniture` を追加してください。
+
+複数階の syntax は floorplan から継承されます。
+
+```
+evacuation "建物避難経路図" unit m stack horizontal
+floor 0 "1階"
+room lobby at 0,0 size 8x5
+furniture stairs S1 in lobby at 0.4,0.4
+
+floor 1 "2階"
+room landing at 0,0 size 8x5
+furniture stairs S1 in landing at 0.4,0.4
+```
+
+すべての plates は同じ scale を共有します。`S1` を再利用すると同じ階段室として登録され、下階の表示は UP、上階の表示は DN になります。座標のずれが 0.1 m を超えると warning が出ます。各階は、それぞれ独立した掲示図として引き続き validation されます。
 
 ## 7. 必須 legend
 
-Tier M legend は常に表示され、`legend: off` は parse error です。
+Legend は Tier M です。常に表示され、使用されているすべての表現を、避難経路、出口、消防設備、応急手当、構造の各 group に分けて一覧化します。ISO profiles では label に安全標識の識別 code が含まれ、NFPA では ISO code を表示しません。
 
-## 8. Validation
+共通の legend directives を使って labels や sections の名前を変更できます。ただし、ISO 23601 と NFPA 170 は legend を必須としているため、`legend: off` は parse error になります。
 
-現在地、出口、開口の連続性、独立経路、未接続室、終点、記号の重なり、二言語、elevator 禁止、legend、色、scale、未知記号を検査し、各 message に根拠規格を示します。
+## 8. Validation messages
+
+Engine は公開前に次の項目をすべて検証します。
+
+1. 各階に `here` マーカーがあること。
+2. 各階に非常口があること。
+3. Route の hop が宣言済みの opening を通ること。
+4. 2 本の避難 routes が構造的に独立していること（NFPA は error、ISO/UAE は warning）。
+5. 接続された rooms が route 上に含まれるか、その room 自体に出口があること。
+6. Routes が出口または集合場所で終わること。
+7. 固定サイズの安全標識が判読でき、互いに重ならないこと。
+8. UAE labels に、` / ` で区切られた空でない英語部分とアラビア語部分があること。
+9. Elevator がある NFPA/UAE 図面には、`no-elevator` マーカーが 1 つ自動追加されること。
+10. Legend を無効にできないこと。
+11. `monochrome` は error を報告し、診断のために semantic safety colors のまま render すること。
+12. ISO/UAE の印刷 scale が 1:250 より粗くないこと。
+13. 不明な sign kind に対して、有効な名前の一覧と最も近い候補が示されること。
+
+各 diagnostic には根拠となる規格が明記されるため、作成者は ISO 23601、NFPA 170/NFPA 101、UAE Civil Defence guidance のどれに基づく修正なのか判断できます。
+
+## 9. 文法
+
+```text
+plan       ::= ("evacuation"|"escapeplan") string? ("unit" ("m"|"ft"))? statement*
+statement  ::= floorplan-statement | compliance | sheet | safety | route | rated-door | legend
+compliance ::= "compliance" ("iso"|"nfpa"|"uae")
+sheet      ::= "sheet" ("a4"|"a3"|"a2"|"letter"|"tabloid") ("landscape"|"portrait")?
+safety     ::= "safety"? kind id? ("in" room "at" coord | "outside" "at" coord)
+               ("side" wallside)? ("hand" ("left"|"right"))? ("rotate" num)?
+               ("class" string)? string?
+route      ::= "route" ("primary"|"secondary"|"accessible"|"rescue")?
+               anchor ("->" anchor)+ string?
+rated-door ::= ("fire-door"|"smoke-door")
+               ("between" room room | room wallside ("at" pct)?) ("rating" string)?
+```
+
+## 関連例
+
+- [2 本の避難経路を持つオフィス階](/examples#evacuation)
+- [NFPA を使用した米国の倉庫](/examples#evacuation)
+- [英語・アラビア語併記の診療所図面](/examples#evacuation)
