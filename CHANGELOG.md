@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed — floorplan symbol catalog and AI vocabulary stay synchronized
+
+- **The AI profile now derives its compact `types:` vocabulary from the live floorplan catalog.** The six 0.9.9 restaurant symbols (`range`, `fryer`, `walk-in`, `commercial-sink`, `prep-table`, `booth`) can no longer exist in the engine while remaining invisible to generation; a mechanical test rejects any future catalog/profile drift.
+- **Seven production-requested AGS-style symbols are now first-class.** Added `bench`, `grill`, `easel`, `fountain`, `teacher-desk`, `toy-box`, and `beanbag` as original theme-class SVG line art. `teacher-desk` is a separate front-facing lectern/worktop because the existing office `desk` always adds a chair.
+- **Every accepted furniture name participates in one lookup and one recovery list.** Added `lounge-chair` → `armchair`, `stool` → `bar-stool`, `closet` → `wardrobe`, `file-cabinet` → `filing-cabinet`, and household `oven` → `stove`; unknown-type diagnostics now list aliases alongside canonical catalog keys.
+
 ### Added — `stageplot`: venue-ready stage plots and derived console schedules
 
 - **One source of truth for plot + patch.** `stageplot` is a first-class type served by the floorplan plugin's `altTypes` mode. Measured `stage` surfaces reuse the metre/foot coordinate model; microphone/DI nodes automatically produce the input list, while wedges, IEMs, and side fills produce a quantity-bearing monitor-output schedule.

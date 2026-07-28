@@ -177,7 +177,7 @@ const STAGE_KIND_ALIASES: Record<string, StageEquipmentKind> = {
   "setlist": "set-list",
 };
 
-const FURNITURE_ALIASES: Record<string, FurnitureType> = {
+export const FURNITURE_ALIASES: Record<string, FurnitureType> = {
   section: "sectional",
   sectional_sofa: "sectional",
   cabinet: "wall-cabinet",
@@ -210,14 +210,24 @@ const FURNITURE_ALIASES: Record<string, FurnitureType> = {
   armoire: "wardrobe",
   wc: "toilet",
   "water-closet": "toilet",
+  "lounge-chair": "armchair",
+  stool: "bar-stool",
+  closet: "wardrobe",
+  "file-cabinet": "filing-cabinet",
+  oven: "stove",
 };
+
+export const FURNITURE_TYPE_NAMES: readonly string[] = [
+  ...FURNITURE_TYPES,
+  ...Object.keys(FURNITURE_ALIASES),
+];
 
 function parseFurnitureType(t: Tok | undefined, ln: number): FurnitureType {
   const word = isWord(t) ? t.word : "";
   const canonical = FURNITURE_ALIASES[word] ?? (word as FurnitureType);
   if (!(FURNITURE_TYPES as readonly string[]).includes(canonical)) {
     throw new FloorplanParseError(
-      `unknown furniture type "${word}". Valid types: ${FURNITURE_TYPES.join(", ")}`,
+      `unknown furniture type "${word}". Valid types: ${FURNITURE_TYPE_NAMES.join(", ")}`,
       ln
     );
   }
