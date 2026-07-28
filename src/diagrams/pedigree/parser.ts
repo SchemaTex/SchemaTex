@@ -9,6 +9,7 @@ import type {
   LegendEntry,
   ConditionFill,
 } from "../../core/types";
+import { IDENTIFIER_SOURCE, isIdentifier } from "../../core/identifier";
 import { parseLegendDirective } from "../../core/legend-parser";
 
 // ─── ParseError ─────────────────────────────────────────────
@@ -40,6 +41,15 @@ const GENETIC_STATUSES = new Set([
 ]);
 const MARKERS = new Set(["proband", "consultand", "evaluated"]);
 const VALID_STATUS = new Set(["deceased", "stillborn", "pregnancy", "sab", "tab", "ectopic"]);
+const LEGEND_ENTRY_RE = new RegExp(
+  `^legend:\\s*(${IDENTIFIER_SOURCE})\\s*=\\s*"([^"]*)"\\s*(?:\\(\\s*fill:\\s*([a-zA-Z-]+)\\s*\\))?$`,
+  "u"
+);
+const NUMERIC_PEDIGREE_ID_RE = /^\d+(?:\.\d+)+$/;
+
+function isPedigreeIdentifier(value: string): boolean {
+  return isIdentifier(value) || NUMERIC_PEDIGREE_ID_RE.test(value);
+}
 
 // ─── Public API ────────────────────────────────────────────
 
@@ -64,7 +74,7 @@ export function parsePedigree(text: string): DiagramAST {
   // The `:mode` suffix is captured into metadata so future renderers can
   // act on it (taxonomy mode, etc.); ignored downstream if unsupported.
   const headerMatch = headerLine.match(
-    /^pedigree(?::([a-zA-Z][\w-]*))?\s*(?:"([^"]*)")?\s*$/i
+    new RegExp(`^pedigree(?::(${IDENTIFIER_SOURCE}))?\\s*(?:"([^"]*)")?\\s*$`, "iu")
   );
   if (!headerMatch) {
     throw new PedigreeParseError(
@@ -104,9 +114,7 @@ export function parsePedigree(text: string): DiagramAST {
     }
 
     // Legend definition (legacy trait-fill DSL).
-    const legendMatch = trimmed.match(
-      /^legend:\s*([a-zA-Z][a-zA-Z0-9_-]*)\s*=\s*"([^"]*)"\s*(?:\(\s*fill:\s*([a-zA-Z-]+)\s*\))?$/
-    );
+    const legendMatch = trimmed.match(LEGEND_ENTRY_RE);
     if (legendMatch) {
       legend.push({
         id: legendMatch[1],
@@ -123,7 +131,7 @@ export function parsePedigree(text: string): DiagramAST {
       const { leftId, op, rightRaw } = coupleMatch;
       const lineNum = i + 1;
 
-      const { id: rightId, propsStr: rightProps } = parseIdWithProps(rightRaw);
+      const { id: rightId, propsStr: rightProps } = parseIdWithProps(rightRaw, lineNum);
       const leftKey = leftId.toLowerCase();
       const rightKey = rightId.toLowerCase();
 
@@ -155,7 +163,7 @@ export function parsePedigree(text: string): DiagramAST {
         if (leadingSpaces(childLine) <= coupleIndent) break;
 
         const childLineNum = i + 1;
-        const { id: childId, propsStr } = parseIdWithProps(childTrimmed);
+        const { id: childId, propsStr } = parseIdWithProps(childTrimmed, childLineNum);
         const childKey = childId.toLowerCase();
 
         individualsMap.set(childKey, buildIndividual(childId, propsStr, childLineNum));
@@ -169,7 +177,7 @@ export function parsePedigree(text: string): DiagramAST {
     }
 
     // Individual definition
-    const { id, propsStr } = parseIdWithProps(trimmed);
+    const { id, propsStr } = parseIdWithProps(trimmed, i + 1);
     const key = id.toLowerCase();
     const ind = buildIndividual(id, propsStr, i + 1);
     const existing = individualsMap.get(key);
@@ -209,7 +217,7 @@ function detectCoupleOp(trimmed: string): { leftId: string; op: typeof COUPLE_OP
       if (trimmed.substring(j, j + op.token.length) === op.token) {
         const left = trimmed.substring(0, j).trim();
         const right = trimmed.substring(j + op.token.length).trim();
-        if (left && right && /^[a-zA-Z][a-zA-Z0-9_-]*$/.test(left)) {
+        if (left && right && isPedigreeIdentifier(left)) {
           return { leftId: left, op, rightRaw: right };
         }
       }
@@ -218,10 +226,15 @@ function detectCoupleOp(trimmed: string): { leftId: string; op: typeof COUPLE_OP
   return null;
 }
 
-function parseIdWithProps(raw: string): { id: string; propsStr: string | null } {
+function parseIdWithProps(raw: string, lineNumber: number): { id: string; propsStr: string | null } {
   const bracketIdx = raw.indexOf("[");
-  if (bracketIdx === -1) return { id: raw.trim(), propsStr: null };
+  if (bracketIdx === -1) {
+    const id = raw.trim();
+    if (!isPedigreeIdentifier(id)) throw new PedigreeParseError(`Invalid individual id '${id}'`, lineNumber);
+    return { id, propsStr: null };
+  }
   const id = raw.substring(0, bracketIdx).trim();
+  if (!isPedigreeIdentifier(id)) throw new PedigreeParseError(`Invalid individual id '${id}'`, lineNumber);
   const endBracket = raw.lastIndexOf("]");
   const propsStr = raw.substring(bracketIdx + 1, endBracket === -1 ? raw.length : endBracket);
   return { id, propsStr };

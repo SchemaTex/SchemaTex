@@ -1,4 +1,5 @@
 import { parseLegendDirective } from "../../core/legend-parser";
+import { IDENTIFIER_SOURCE, isIdentifier } from "../../core/identifier";
 import { matchQuotedTitle } from "../../core/quotes";
 
 export class SociogramParseError extends Error {
@@ -96,10 +97,10 @@ function findEdgeOp(line: string): { leftId: string; rightId: string; op: EdgeOp
     const leftId = line.slice(0, idx).trim();
     const afterOp = line.slice(idx + opStr.length + 2).trim();
 
-    if (!leftId || !/^[a-zA-Z][a-zA-Z0-9_-]*$/.test(leftId)) continue;
+    if (!leftId || !isIdentifier(leftId)) continue;
 
     // Right side: ID [props]
-    const rightMatch = afterOp.match(/^([a-zA-Z][a-zA-Z0-9_-]*)(.*)/);
+    const rightMatch = afterOp.match(new RegExp(`^(${IDENTIFIER_SOURCE})(.*)`, "u"));
     if (!rightMatch) continue;
 
     const rightId = rightMatch[1];
@@ -114,7 +115,9 @@ function findEdgeOp(line: string): { leftId: string; rightId: string; op: EdgeOp
   }
 
   // Try -.> which has the dot embedded
-  const dashDotMatch = line.match(/^([a-zA-Z][a-zA-Z0-9_-]*)\s+-\.>\s+([a-zA-Z][a-zA-Z0-9_-]*)(.*)/);
+  const dashDotMatch = line.match(
+    new RegExp(`^(${IDENTIFIER_SOURCE})\\s+-\\.>\\s+(${IDENTIFIER_SOURCE})(.*)`, "u")
+  );
   if (dashDotMatch) {
     return {
       leftId: dashDotMatch[1],
@@ -245,7 +248,7 @@ export function parseSociogram(text: string): SociogramAST {
     if (currentGroup && indent >= 4) {
       const { clean, props } = extractProps(trimmed);
       const memberId = clean.split(/\s/)[0];
-      if (memberId && /^[a-zA-Z][a-zA-Z0-9_-]*$/.test(memberId)) {
+      if (memberId && isIdentifier(memberId)) {
         currentGroup.members.push(memberId);
         if (!nodeIds.has(memberId)) {
           nodeIds.add(memberId);
@@ -295,7 +298,7 @@ export function parseSociogram(text: string): SociogramAST {
     // Node definition: ID [props]
     const { clean, props } = extractProps(trimmed);
     const nodeId = clean.split(/\s/)[0];
-    if (nodeId && /^[a-zA-Z][a-zA-Z0-9_-]*$/.test(nodeId) && !nodeIds.has(nodeId)) {
+    if (nodeId && isIdentifier(nodeId) && !nodeIds.has(nodeId)) {
       nodeIds.add(nodeId);
       const node: SociogramNode = {
         id: nodeId,

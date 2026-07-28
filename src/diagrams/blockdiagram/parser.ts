@@ -5,7 +5,22 @@ import type {
   SummingJunction,
   BlockRole,
 } from "../../core/types";
+import { IDENTIFIER_SOURCE, isIdentifier } from "../../core/identifier";
 import { matchQuotedTitle } from "../../core/quotes";
+
+const BLOCK_DECL_RE = new RegExp(
+  `^(${IDENTIFIER_SOURCE})\\s*=\\s*block\\s*\\(\\s*"([^"]*)"\\s*\\)\\s*(?:\\[([^\\]]*)\\])?\\s*$`,
+  "u"
+);
+const SUM_DECL_RE = new RegExp(
+  `^(${IDENTIFIER_SOURCE})\\s*=\\s*sum\\s*\\(([^)]*)\\)\\s*$`,
+  "u"
+);
+const SIGNAL_DECL_RE = new RegExp(
+  `^(${IDENTIFIER_SOURCE})\\s*=\\s*signal\\s*\\(\\s*"([^"]*)"\\s*\\)\\s*(?:\\[([^\\]]*)\\])?\\s*$`,
+  "u"
+);
+const BRACKETED_IDENTIFIER_RE = new RegExp(`^\\[(${IDENTIFIER_SOURCE})\\]$`, "u");
 
 export class BlockDiagramParseError extends Error {
   constructor(
@@ -110,9 +125,7 @@ export function parseBlockDiagram(text: string): BlockAST {
     }
 
     // block:  ID = block("label") [role: X, name: "Y"]
-    const blockMatch = line.match(
-      /^([A-Za-z_]\w*)\s*=\s*block\s*\(\s*"([^"]*)"\s*\)\s*(?:\[([^\]]*)\])?\s*$/
-    );
+    const blockMatch = line.match(BLOCK_DECL_RE);
     if (blockMatch) {
       const id = blockMatch[1];
       const label = blockMatch[2];
@@ -124,9 +137,7 @@ export function parseBlockDiagram(text: string): BlockAST {
     }
 
     // sum:  ID = sum(+a, -b, ...)
-    const sumMatch = line.match(
-      /^([A-Za-z_]\w*)\s*=\s*sum\s*\(([^)]*)\)\s*$/
-    );
+    const sumMatch = line.match(SUM_DECL_RE);
     if (sumMatch) {
       const id = sumMatch[1];
       const rawInputs = sumMatch[2]
@@ -143,9 +154,7 @@ export function parseBlockDiagram(text: string): BlockAST {
     }
 
     // signal:  ID = signal("label") [discrete]
-    const sigMatch = line.match(
-      /^([A-Za-z_]\w*)\s*=\s*signal\s*\(\s*"([^"]*)"\s*\)\s*(?:\[([^\]]*)\])?\s*$/
-    );
+    const sigMatch = line.match(SIGNAL_DECL_RE);
     if (sigMatch) {
       const id = sigMatch[1];
       const label = sigMatch[2];
@@ -178,7 +187,7 @@ export function parseBlockDiagram(text: string): BlockAST {
         }
         if (bracketStart >= 0) {
           const inner = body.slice(bracketStart + 1, -1).trim();
-          const isBareId = /^[A-Za-z_]\w*$/.test(inner);
+          const isBareId = isIdentifier(inner);
           if (!isBareId) {
             body = body.slice(0, bracketStart).trim();
             if (inner.startsWith('"') && inner.endsWith('"') && !inner.slice(1, -1).includes(',')) {
@@ -194,11 +203,11 @@ export function parseBlockDiagram(text: string): BlockAST {
         throw new BlockDiagramParseError(`Invalid connection: ${line}`, lineNo, undefined, line);
       }
       const endpoints = parts.map((p) => {
-        const m = /^\[([A-Za-z_]\w*)\]$/.exec(p);
+        const m = BRACKETED_IDENTIFIER_RE.exec(p);
         return m ? m[1] : p;
       });
       for (const ep of endpoints) {
-        if (!/^[A-Za-z_]\w*$/.test(ep)) continue;
+        if (!isIdentifier(ep)) continue;
         const exists =
           blocks.some((b) => b.id === ep) ||
           sums.some((s) => s.id === ep) ||

@@ -18,6 +18,7 @@ import type {
   BreadboardPart,
 } from "../../core/types";
 import { partSpec, HOLE_PITCH } from "./parts";
+import { PIN_ALIASES } from "./pin-aliases";
 
 export const BB_CONST = {
   PITCH: HOLE_PITCH,
@@ -143,7 +144,20 @@ function placePart(
   let anchor: BreadboardCoord;
   if (part.placement.kind === "point") anchor = part.placement.at;
   else if (part.placement.kind === "span") anchor = part.placement.from;
-  else throw new Error(`Grid/module part '${part.id}' must use @coord placement`);
+  else if (spec.category === "module") {
+    const centeredCol = Math.max(1, Math.round(sub.cols / 2));
+    if (part.placement.side === "beside-left") {
+      anchor = { kind: "hole", col: 2, row: "a" };
+    } else if (part.placement.side === "beside-right") {
+      anchor = { kind: "hole", col: Math.max(1, sub.cols - 1), row: "a" };
+    } else if (part.placement.side === "below") {
+      anchor = { kind: "hole", col: centeredCol, row: "j" };
+    } else {
+      anchor = { kind: "hole", col: centeredCol, row: "a" };
+    }
+  } else {
+    throw new Error(`Grid part '${part.id}' must use @coord placement`);
+  }
   const anchorXY = holeXY(sub, anchor);
 
   // For module parts (sensors / displays): anchor is the first pin (lower-left of module),
@@ -215,6 +229,15 @@ function addPinAliases(
       setAlias(pins, `GPIO${n}`, xy);
       setAlias(pins, `IO${n}`, xy);
     }
+
+    const picoGpio = /^GP(\d+)$/i.exec(name);
+    if (picoGpio) {
+      const n = picoGpio[1]!;
+      setAlias(pins, `GPIO${n}`, xy);
+      setAlias(pins, `IO${n}`, xy);
+      setAlias(pins, `D${n}`, xy);
+      setAlias(pins, n, xy);
+    }
   }
 
   const alias = (canonical: string, ...aliases: string[]): void => {
@@ -245,6 +268,52 @@ function addPinAliases(
   if (kind === "mcu-esp32" || kind === "mcu-pico") {
     alias("VIN", "5V", "VBUS", "USB");
   }
+
+  const catalogAliases = PIN_ALIASES[kind];
+  if (catalogAliases) {
+    for (const [canonical, aliases] of Object.entries(catalogAliases)) {
+      alias(canonical, ...aliases);
+    }
+  }
+}
+
+function editDistance(a: string, b: string): number {
+  const left = Array.from(a.toUpperCase());
+  const right = Array.from(b.toUpperCase());
+  let previous = Array.from({ length: right.length + 1 }, (_, index) => index);
+  for (let i = 0; i < left.length; i++) {
+    const current = [i + 1];
+    for (let j = 0; j < right.length; j++) {
+      current.push(
+        Math.min(
+          current[j]! + 1,
+          previous[j + 1]! + 1,
+          previous[j]! + (left[i] === right[j] ? 0 : 1)
+        )
+      );
+    }
+    previous = current;
+  }
+  return previous[right.length]!;
+}
+
+function nearestPinName(
+  requested: string,
+  pins: Record<string, { x: number; y: number }>
+): string | undefined {
+  const byFoldedName = new Map<string, string>();
+  for (const name of Object.keys(pins)) {
+    const folded = name.toUpperCase();
+    const previous = byFoldedName.get(folded);
+    if (!previous || name.length < previous.length) byFoldedName.set(folded, name);
+  }
+  return [...byFoldedName.values()].sort((a, b) => {
+    const distance = editDistance(requested, a) - editDistance(requested, b);
+    if (distance !== 0) return distance;
+    const lengthDelta =
+      Math.abs(requested.length - a.length) - Math.abs(requested.length - b.length);
+    return lengthDelta || a.localeCompare(b);
+  })[0];
 }
 
 function endpointXY(
@@ -257,11 +326,17 @@ function endpointXY(
   if (!part) throw new Error(`Wire references unknown part '${ep.partId}'`);
   const pin = part.pins[ep.pin] ?? part.pins[ep.pin.toUpperCase()] ?? part.pins[ep.pin.toLowerCase()];
   if (!pin) {
-    const known = Object.keys(part.pins)
+    const known = partSpec(part.part.kind, part.part.args).pins
+      .map((candidate) => candidate.name)
       .filter((name, idx, all) => all.indexOf(name) === idx)
       .slice(0, 24)
       .join(", ");
-    throw new Error(`Part '${ep.partId}' has no pin named '${ep.pin}' (known pins: ${known})`);
+    const suggestion = nearestPinName(ep.pin, part.pins);
+    throw new Error(
+      `Part '${ep.partId}' has no pin named '${ep.pin}'.` +
+      (suggestion ? ` Did you mean '${suggestion}'?` : "") +
+      ` (known pins: ${known})`
+    );
   }
   // Return a copy so post-layout translation doesn't double-shift this point
   // through both part.pins[name] and lw.fromXY.

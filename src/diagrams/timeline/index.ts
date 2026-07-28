@@ -1,4 +1,5 @@
 import type { DiagramPlugin, RenderConfig } from "../../core/types";
+import type { SchematexDiagnostic } from "../../core/diagnostics";
 import { parseTimeline } from "./parser";
 import { renderTimeline } from "./renderer";
 
@@ -11,6 +12,20 @@ export const timeline: DiagramPlugin = {
   parse: parseTimeline,
   render(text, config?: RenderConfig) {
     return renderTimeline(text, config);
+  },
+  lint(text: string): SchematexDiagnostic[] {
+    try {
+      return (parseTimeline(text).warnings ?? []).map((warning) => ({
+        severity: "warning",
+        code: "timeline/undated-entry",
+        message: warning.message,
+        line: warning.line,
+        hint: `Add a date before the colon, or keep the entry undated.`,
+        fatal: false,
+      }));
+    } catch {
+      return [];
+    }
   },
 };
 

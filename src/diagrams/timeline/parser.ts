@@ -317,6 +317,7 @@ export function parseTimeline(src: string): TimelineAST {
         if (!parsed) throw new TimelineParseError(`Unrecognized line in ${keyword}: ${child.text}`, child.line);
         parsed.event.trackId = trackId;
         ast.events.push(parsed.event);
+        if (parsed.warning) (ast.warnings ??= []).push(parsed.warning);
         i++;
         if (i < lines.length && /^note\s*:/i.test(lines[i]!.text) && lines[i]!.indent > child.indent) {
           const noteBody = lines[i]!.text.replace(/^note\s*:\s*/i, "");
@@ -332,6 +333,7 @@ export function parseTimeline(src: string): TimelineAST {
     const parsed = parseEventLine(text, L.line, nextId, ordinal, L.start, locator.range);
     if (parsed) {
       ast.events.push(parsed.event);
+      if (parsed.warning) (ast.warnings ??= []).push(parsed.warning);
       i++;
       // Optional note block on next line (indented)
       if (i < lines.length && /^note\s*:/i.test(lines[i]!.text) && lines[i]!.indent > L.indent) {
@@ -422,7 +424,11 @@ function parseEventLine(
   ordinal: { index: number },
   sourceStart?: number,
   locate?: (start: number, end: number) => import("../../core/types").SourceRange,
-): { event: TimelineEvent; hasNote: boolean } | null {
+): {
+  event: TimelineEvent;
+  hasNote: boolean;
+  warning?: { line: number; message: string };
+} | null {
   const { props, rest } = parseProperties(text, line);
   const split = splitDateAndBody(rest, line);
   const { date, end, body } = split;
@@ -433,6 +439,30 @@ function parseEventLine(
   //   "label"
   let kind: "point" | "range" | "milestone" = end ? "range" : "point";
   let bodyS = body.trim();
+  if (bodyS === "") {
+    ordinal.index += 1;
+    return {
+      event: {
+        id: nextId("ev"),
+        label: date,
+        kind: "point",
+        start: {
+          value: ordinal.index,
+          raw: "",
+          precision: "ordinal",
+        },
+        icon: props["icon"],
+        shape: props["shape"] as TimelineEventShape | undefined,
+        color: props["color"],
+        category: props["category"],
+      },
+      hasNote: false,
+      warning: {
+        line,
+        message: `Timeline entry "${date}" has no date/value after ':'. Rendered as an undated entry.`,
+      },
+    };
+  }
   if (/^milestone\b/i.test(bodyS)) {
     kind = "milestone";
     bodyS = bodyS.replace(/^milestone\s+/i, "");

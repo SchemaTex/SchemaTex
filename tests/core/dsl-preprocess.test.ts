@@ -1,9 +1,49 @@
 import { describe, it, expect } from "vitest";
 import {
+  stripArtifactWrappers,
   parseFrontmatter,
   stripLineComment,
   isBlankOrComment,
 } from "../../src/core/dsl-preprocess";
+
+describe("stripArtifactWrappers", () => {
+  it("unwraps nested Markdown and artifact framing", () => {
+    expect(
+      stripArtifactWrappers(
+        "\n```mermaid\n<artifact title='X' type='diagram'>\nflowchart TD\n  A --> B\n</artifact>\n```"
+      )
+    ).toBe("flowchart TD\n  A --> B");
+  });
+
+  it("removes Anthropic control tags while preserving enclosed DSL", () => {
+    expect(
+      stripArtifactWrappers(
+        'flowchart TD\n<invoke name="render">\n<parameter name="dsl">\n  A --> B\n</parameter>\n</invoke>'
+      )
+    ).toBe("flowchart TD\n\n\n  A --> B\n\n");
+  });
+
+  it("removes standalone scalar parameter lines completely", () => {
+    expect(
+      stripArtifactWrappers(
+        'timeline\n<parameter name="open" string="true">false</parameter>\n2026: "Launch"'
+      )
+    ).toBe('timeline\n2026: "Launch"');
+  });
+
+  it("removes DeepSeek fullwidth-pipe tokens", () => {
+    expect(
+      stripArtifactWrappers(
+        "flowchart TD\n  A --> B\n</｜｜DSML｜｜parameter>\n  B --> C"
+      )
+    ).toBe("flowchart TD\n  A --> B\n\n  B --> C");
+  });
+
+  it("returns clean DSL byte-for-byte and preserves legitimate angle brackets", () => {
+    const clean = "circuit\n  <ep> --color-- <ep>";
+    expect(stripArtifactWrappers(clean)).toBe(clean);
+  });
+});
 
 describe("parseFrontmatter", () => {
   it("returns empty data when no --- block is present", () => {

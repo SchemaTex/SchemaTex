@@ -39,6 +39,7 @@ import type {
   IcomRole,
 } from "./types";
 import { ICOM_SIDE } from "./types";
+import { isIdentifier, readIdentifier } from "../../core/identifier";
 
 export class Idef0ParseError extends Error {
   constructor(message: string, public line?: number) {
@@ -135,10 +136,10 @@ export function parseIdef0(text: string): Idef0Ast {
 // ─── Function box ─────────────────────────────────────────────
 
 function parseFunction(ast: Idef0Ast, rest: string, lineNo: number): void {
-  const idM = /^([A-Za-z_]\w*)/.exec(rest);
-  if (!idM) throw new Idef0ParseError(`function needs an id, got "${truncate(rest, 40)}"`, lineNo);
-  const id = idM[1]!;
-  let tail = rest.slice(id.length).trim();
+  const idMatch = readIdentifier(rest);
+  if (!idMatch) throw new Idef0ParseError(`function needs an id, got "${truncate(rest, 40)}"`, lineNo);
+  const id = idMatch.value;
+  let tail = rest.slice(idMatch.end).trim();
 
   let name = id;
   const q = matchQuoted(tail);
@@ -170,10 +171,10 @@ function parseFunction(ast: Idef0Ast, rest: string, lineNo: number): void {
 // ─── ICOM role arrow (one box endpoint + boundary) ────────────
 
 function parseRoleArrow(ast: Idef0Ast, role: IcomRole, rest: string, lineNo: number): void {
-  const idM = /^([A-Za-z_]\w*)/.exec(rest);
-  if (!idM) throw new Idef0ParseError(`${role} needs a box id, got "${truncate(rest, 40)}"`, lineNo);
-  const boxId = idM[1]!;
-  let tail = rest.slice(boxId.length).trim();
+  const idMatch = readIdentifier(rest);
+  if (!idMatch) throw new Idef0ParseError(`${role} needs a box id, got "${truncate(rest, 40)}"`, lineNo);
+  const boxId = idMatch.value;
+  let tail = rest.slice(idMatch.end).trim();
 
   let label = "";
   const q = matchQuoted(tail);
@@ -208,15 +209,16 @@ function parseFlowArrow(ast: Idef0Ast, t: string, lineNo: number): void {
   const lhs = t.slice(0, arrowIdx).trim();
   let rhs = t.slice(arrowIdx + 2).trim();
 
-  const srcM = /^([A-Za-z_]\w*)$/.exec(lhs);
-  if (!srcM) throw new Idef0ParseError(`flow arrow source must be a box id, got "${truncate(lhs, 40)}"`, lineNo);
-  const srcId = srcM[1]!;
+  if (!isIdentifier(lhs)) throw new Idef0ParseError(`flow arrow source must be a box id, got "${truncate(lhs, 40)}"`, lineNo);
+  const srcId = lhs;
 
   // target:  Box  or  Box.role
-  const tgtM = /^([A-Za-z_]\w*)(?:\.([a-z]+))?/i.exec(rhs);
-  if (!tgtM) throw new Idef0ParseError(`flow arrow target must be a box id, got "${truncate(rhs, 40)}"`, lineNo);
-  const tgtId = tgtM[1]!;
-  const roleWord = tgtM[2]?.toLowerCase();
+  const targetId = readIdentifier(rhs);
+  if (!targetId) throw new Idef0ParseError(`flow arrow target must be a box id, got "${truncate(rhs, 40)}"`, lineNo);
+  const tgtId = targetId.value;
+  const afterId = rhs.slice(targetId.end);
+  const roleMatch = /^\s*\.([a-z]+)/i.exec(afterId);
+  const roleWord = roleMatch?.[1]?.toLowerCase();
 
   let role: IcomRole = "input"; // default: a flow lands on the target's input
   if (roleWord) {
@@ -235,7 +237,7 @@ function parseFlowArrow(ast: Idef0Ast, t: string, lineNo: number): void {
     role = roleWord as IcomRole;
   }
 
-  rhs = rhs.slice(tgtM[0].length).trim();
+  rhs = afterId.slice(roleMatch?.[0].length ?? 0).trim();
   let label = "";
   const q = matchQuoted(rhs);
   if (q) {

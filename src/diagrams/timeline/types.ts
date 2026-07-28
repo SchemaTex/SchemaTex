@@ -79,6 +79,11 @@ export interface TimelineTrack {
   label: string;
 }
 
+export interface TimelineWarning {
+  line: number;
+  message: string;
+}
+
 export interface TimelineAST {
   type: "timeline";
   title?: string;
@@ -91,6 +96,7 @@ export interface TimelineAST {
   eras: TimelineEra[];
   /** Explicit (named) tracks. Auto-packed events get synthesized ids. */
   tracks: TimelineTrack[];
+  warnings?: TimelineWarning[];
   metadata?: Record<string, string>;
 }
 

@@ -1,5 +1,6 @@
 import type { DiagramPlugin, DiagramType, RenderConfig, SceneItem, SourceRange } from "./types";
 import {
+  findArtifactWrapperRanges,
   parseFrontmatter,
   stripLineComment,
   UNIVERSAL_COMMENT_MARKERS,
@@ -237,24 +238,11 @@ function textLines(source: string): TextLine[] {
  * appended title are left alone — the frontmatter is silently dropped rather
  * than producing a misleading parse error.
  */
-/**
- * Strip a Markdown code fence wrapping the whole input. LLMs very frequently
- * wrap their diagram output in ```` ```mermaid … ``` ```` / ```` ``` … ``` ````
- * fences; left in place the first line (` ```mermaid `) is treated as the
- * diagram header and the entire diagram fails to detect/parse. We remove a
- * leading fence line and a trailing fence line independently (so a truncated
- * artifact with only an opening fence is still recovered). A bare ```` ``` ````
- * line is never valid diagram syntax, so this is safe; inputs with no fence are
- * returned untouched.
- */
-function stripCodeFences(input: MappedText): MappedText {
+/** Blank globally invalid LLM wrappers while preserving source offsets. */
+function blankArtifactWrappers(input: MappedText): MappedText {
   let result = input;
-  const opening = /^\uFEFF?[ \t]*```[A-Za-z0-9_-]*[ \t]*(?:\r?\n|$)/.exec(result.text);
-  if (opening) result = blankMapped(result, 0, opening[0].length);
-  const closing = /(?:^|\r?\n)[ \t]*```[ \t]*$/.exec(result.text);
-  if (closing) {
-    const fenceAt = closing.index + (closing[0].startsWith("\n") ? 1 : closing[0].startsWith("\r\n") ? 2 : 0);
-    result = blankMapped(result, fenceAt, result.text.length);
+  for (const range of findArtifactWrapperRanges(input.text)) {
+    result = blankMapped(result, range.start, range.end);
   }
   return result;
 }
@@ -415,7 +403,7 @@ function appendFrontmatterTitle(
 }
 
 function preprocess(source: string): PreparedInput {
-  let mapped = stripCodeFences(originalMappedText(source));
+  let mapped = blankArtifactWrappers(originalMappedText(source));
   const frontmatter = blankFrontmatter(mapped);
   const locator = createSourceLocator(source);
   const frontmatterTitleRange = frontmatter.titleRange

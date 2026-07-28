@@ -7,6 +7,7 @@ import type {
   JurisdictionDef,
   ClusterDef,
 } from "../../core/types";
+import { IDENTIFIER_SOURCE, isIdentifier } from "../../core/identifier";
 import { matchQuotedTitle } from "../../core/quotes";
 
 export class EntityParseError extends Error {
@@ -227,7 +228,10 @@ export function parseEntityDSL(text: string): EntityAST {
 
     // entity id "Name" type[@jurisdiction] [props]
     const entityMatch = line.match(
-      /^entity\s+([A-Za-z][A-Za-z0-9_-]*)\s+"([^"]*)"\s+([a-zA-Z]+)(?:@([A-Za-z]{2,3}))?(?:\s*\[([^\]]*)\])?\s*$/
+      new RegExp(
+        `^entity\\s+(${IDENTIFIER_SOURCE})\\s+"([^"]*)"\\s+([a-zA-Z]+)(?:@([A-Za-z]{2,3}))?(?:\\s*\\[([^\\]]*)\\])?\\s*$`,
+        "u"
+      )
     );
     if (entityMatch) {
       const id = entityMatch[1];
@@ -269,12 +273,15 @@ export function parseEntityDSL(text: string): EntityAST {
     if (edgeInfo) {
       const left = line.slice(0, edgeInfo.idx).trim();
       const rest = line.slice(edgeInfo.idx + edgeInfo.len).trim();
-      if (!/^[A-Za-z][A-Za-z0-9_-]*$/.test(left)) {
+      if (!isIdentifier(left)) {
         throw new EntityParseError(`Invalid edge source on line: ${line}`);
       }
       // rest: "target [: pct] [props]" OR "target [props]"
       const restMatch = rest.match(
-        /^([A-Za-z][A-Za-z0-9_-]*)(?:\s*:\s*([^[]+?))?(?:\s*\[([^\]]*)\])?\s*$/
+        new RegExp(
+          `^(${IDENTIFIER_SOURCE})(?:\\s*:\\s*([^[]+?))?(?:\\s*\\[([^\\]]*)\\])?\\s*$`,
+          "u"
+        )
       );
       if (!restMatch) {
         throw new EntityParseError(`Cannot parse edge: ${line}`);

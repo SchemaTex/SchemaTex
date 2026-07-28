@@ -22,9 +22,23 @@ import type {
   FbdDataType,
   FbdWire,
 } from "../../core/types";
+import { IDENTIFIER_SOURCE, isIdentifier } from "../../core/identifier";
 import { matchQuotedTitle } from "../../core/quotes";
 import { createSourceLocator } from "../../core/source-range";
 import { BLOCK_SPECS, isStdBlock, getBlockSpec } from "./blocks";
+
+const VAR_DECL_RE = new RegExp(
+  `^(var|var_input|var_output|var_in_out|var_global|var_external)\\s+(${IDENTIFIER_SOURCE})\\s*:\\s*(${IDENTIFIER_SOURCE})\\s*(?:=\\s*(.+))?$`,
+  "iu"
+);
+const PORT_REF_RE = new RegExp(
+  `^(${IDENTIFIER_SOURCE})\\.([A-Za-z_][A-Za-z0-9_]*)$`,
+  "u"
+);
+const ASSIGNMENT_RE = new RegExp(
+  `^(${IDENTIFIER_SOURCE})\\s*=\\s*([A-Za-z_][A-Za-z0-9_]*\\s*\\(.*\\))\\s*(\\[[^\\]]*\\])?\\s*$`,
+  "u"
+);
 
 export class FbdParseError extends Error {
   line?: number;
@@ -97,7 +111,7 @@ function stripBrackets(s: string): string {
 }
 
 function parseVarDecl(line: RawLine): FbdVarDecl | null {
-  const m = line.text.match(/^(var|var_input|var_output|var_in_out|var_global|var_external)\s+([a-zA-Z_]\w*)\s*:\s*([a-zA-Z_]\w*)\s*(?:=\s*(.+))?$/i);
+  const m = line.text.match(VAR_DECL_RE);
   if (!m) return null;
   const scope = SCOPE_KEYWORDS[m[1].toLowerCase()] ?? "local";
   const name = m[2];
@@ -391,7 +405,7 @@ function bindArg(
   }
 
   // Port reference  Inst.PortName ?
-  const portRef = arg.raw.match(/^([A-Za-z_]\w*)\.([A-Za-z_]\w*)$/);
+  const portRef = arg.raw.match(PORT_REF_RE);
   if (portRef) {
     const srcId = portRef[1];
     const srcPort = portRef[2];
@@ -422,7 +436,7 @@ function bindArg(
 
   // Plain variable reference
   const varName = arg.raw;
-  if (!/^[A-Za-z_]\w*$/.test(varName)) {
+  if (!isIdentifier(varName)) {
     throw new FbdParseError(`Invalid argument: ${arg.raw}`, lineNo, arg.raw);
   }
   ensureVar(state, varName, port.dataType === "any" ? "bool" : port.dataType);
@@ -550,7 +564,7 @@ export function parseFbd(text: string): FbdAst {
 function parseStatement(state: ParserState, line: RawLine): void {
   const text = line.text;
   // Form A:  Inst = BLOCK(args) [props]
-  const m = text.match(/^([A-Za-z_]\w*)\s*=\s*([A-Za-z_]\w*\s*\(.*\))\s*(\[[^\]]*\])?\s*$/);
+  const m = text.match(ASSIGNMENT_RE);
   if (m) {
     const lhs = m[1];
     const callStr = m[2];

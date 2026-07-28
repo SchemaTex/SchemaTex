@@ -23,6 +23,12 @@ import type {
   PertThreePoint,
   PertUnit,
 } from "./types";
+import { IDENTIFIER_SOURCE, isIdentifier } from "../../core/identifier";
+
+const ATTACHED_DEP_RE = new RegExp(
+  `^(${IDENTIFIER_SOURCE})\\+(\\d+(?:\\.\\d+)?)([dwh])?$`,
+  "u"
+);
 
 export class PertParseError extends Error {
   line?: number;
@@ -235,14 +241,14 @@ function parseDepRef(raw: string, unit: PertUnit, lineNo: number): PertDependenc
   }
 
   // Form 2: <id>+<lag>[<unit>]  (attached FS lag sugar; only '+' to avoid dash-id ambiguity)
-  const attached = ref.match(/^([A-Za-z_][\w-]*)\+(\d+(?:\.\d+)?)([dwh])?$/);
+  const attached = ref.match(ATTACHED_DEP_RE);
   if (attached) {
     checkUnit(attached[3]?.toLowerCase());
     return { pred: attached[1], type: "FS", lag: Number(attached[2]) };
   }
 
   // Form 3: bare id (FS, zero lag)
-  if (/^[A-Za-z_][\w-]*$/.test(ref)) {
+  if (isIdentifier(ref)) {
     return { pred: ref, type: "FS", lag: 0 };
   }
 
@@ -259,8 +265,8 @@ function parseTaskLine(ln: RawLine, ast: PertAst): void {
     throw new PertParseError(`malformed task line: ${ln.text}`, ln.line);
   }
   const id = head[1];
-  if (!/^[A-Za-z_][\w-]*$/.test(id)) {
-    throw new PertParseError(`invalid task id '${id}' (letters, digits, dashes, underscores; must start with a letter or _)`, ln.line);
+  if (!isIdentifier(id)) {
+    throw new PertParseError(`invalid task id '${id}' (Unicode letters/digits, dashes, underscores; must start with a letter, digit, or _)`, ln.line);
   }
   let rest = head[2].trim();
 

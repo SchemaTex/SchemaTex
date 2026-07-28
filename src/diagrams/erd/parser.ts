@@ -6,6 +6,7 @@ import type {
   ErdNotation,
   ErdRef,
 } from "../../core/types";
+import { IDENTIFIER_SOURCE } from "../../core/identifier";
 import { createSourceLocator } from "../../core/source-range";
 import type { SourceRange } from "../../core/types";
 
@@ -222,9 +223,10 @@ export function parseErd(text: string): ErdAst {
 
 // ─── Mermaid `erDiagram` paste-compat parser ──────────────────
 
-const MERMAID_NAME = /[A-Za-z_][\w-]*/;
+const MERMAID_NAME_SOURCE = IDENTIFIER_SOURCE;
 const REL_RE = new RegExp(
-  `^(${MERMAID_NAME.source})\\s+([}|o][o|]|\\|\\||\\|o)(\\.\\.|--|~~)([}|o][{|]|\\|\\||o\\|)\\s+(${MERMAID_NAME.source})\\s*(?::\\s*(.*))?$`
+  `^(${MERMAID_NAME_SOURCE})\\s+([}|o][o|]|\\|\\||\\|o)(\\.\\.|--|~~)([}|o][{|]|\\|\\||o\\|)\\s+(${MERMAID_NAME_SOURCE})\\s*(?::\\s*(.*))?$`,
+  "u"
 );
 
 /**
@@ -334,8 +336,8 @@ function parseMermaidErd(
     }
 
     // Entity block: `NAME {` (multi-line) or `NAME { ... }` (inline).
-    const inlineBlock = new RegExp(`^(${MERMAID_NAME.source})\\s*\\{\\s*(.*?)\\s*\\}$`).exec(t);
-    const openBlock = new RegExp(`^(${MERMAID_NAME.source})\\s*\\{$`).exec(t);
+    const inlineBlock = new RegExp(`^(${MERMAID_NAME_SOURCE})\\s*\\{\\s*(.*?)\\s*\\}$`, "u").exec(t);
+    const openBlock = new RegExp(`^(${MERMAID_NAME_SOURCE})\\s*\\{$`, "u").exec(t);
     if (inlineBlock) {
       const e = ensure(inlineBlock[1]!);
       let from = t.indexOf(inlineBlock[2]!);
@@ -471,7 +473,7 @@ function parseTableBlock(
 
 function splitDecl(declRaw: string, lineNumber: number): { id: string; name: string } {
   void lineNumber;
-  const aliasMatch = /^"([^"]+)"\s+as\s+([A-Za-z_][\w]*)$/i.exec(declRaw);
+  const aliasMatch = new RegExp(`^"([^"]+)"\\s+as\\s+(${IDENTIFIER_SOURCE})$`, "iu").exec(declRaw);
   if (aliasMatch) {
     return { id: aliasMatch[2]!, name: aliasMatch[1]! };
   }
@@ -503,7 +505,10 @@ function parseAttributeLine(
 
   // FK target: ` -> Table.col` or ` => Table.col`
   let fkTarget: string | undefined;
-  const arrowMatch = /\s+(?:->|=>)\s+([A-Za-z_][\w]*\.[A-Za-z_][\w]*)\s*$/.exec(s);
+  const arrowMatch = new RegExp(
+    `\\s+(?:->|=>)\\s+(${IDENTIFIER_SOURCE}\\.${IDENTIFIER_SOURCE})\\s*$`,
+    "u"
+  ).exec(s);
   if (arrowMatch) {
     fkTarget = arrowMatch[1];
     s = s.slice(0, arrowMatch.index).trim();
