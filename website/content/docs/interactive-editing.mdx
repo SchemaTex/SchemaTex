@@ -307,7 +307,7 @@ console.log(POSITION_EDITABLE_DIAGRAM_COUNT);   // 18
 
 `INTERACTIVE_DIAGRAM_COUNT` is `21`: only diagram types with parser-native source
 ranges are advertised as canvas-editable. Eighteen also expose a position
-model. The other 30 diagram types remain fully renderable and editable through the
+model. The other 31 diagram types remain fully renderable and editable through the
 DSL source, but return empty `text` plus `position: "none"` and emit no guessed
 canvas handles. A value such as `free`, `move-x`, `cross-axis`, or `native-xy`
 is a semantic constraint, not a UI hint.
@@ -335,7 +335,7 @@ documents each diagram's axes, editable fields, routing behavior, and limits.
   horizontal/vertical after the rerender.
 
 The [interactive workspace](/playground) includes published examples for all
-51 diagram families. Its capability bar is generated from the same registry,
+52 diagram families. Its capability bar is generated from the same registry,
 so parser-native canvas editing and source-only behavior cannot drift apart.
 
 ## AI-safe edits

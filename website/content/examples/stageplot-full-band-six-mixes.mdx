@@ -1,0 +1,46 @@
+---
+title: Full band — drum riser and six monitor mixes
+description: "A 40 × 24 ft full-band stage plot with an 8-inch drum riser, stereo backline, six visibly numbered wedge mixes, power drops, and six console inputs."
+diagram: stageplot
+standard: Professional live-sound advance convention
+industry: [live-events, touring]
+persona: For a production manager advancing a full-band theater show
+complexity: 4
+tags: [stageplot, full-band, drum-riser, six-monitor-mixes, power, technical-rider]
+featured: false
+relatedLink:
+  label: Stage plot syntax
+  href: /docs/stageplot
+status: published
+dsl: |
+  stageplot "Full Band — Six Monitor Mixes" unit ft
+  stage deck at 0,0 size 40x24
+  equipment stage-riser drum-riser in deck at 14,1 size 12x9 "8 in drum riser"
+  equipment drum-kit drums in deck at 17,3 "Drums"
+  equipment drum-mic kick in deck at 18,7 channel 1 source "Kick" model "Shure Beta 52A" stand short-boom phantom no
+  equipment drum-mic snare in deck at 20,5 channel 2 source "Snare" model "Shure SM57" stand short-boom phantom no
+  equipment overhead oh-l in deck at 15,2 channel 3 source "OH L" model "Shure KSM137" stand boom phantom yes
+  equipment overhead oh-r in deck at 24,2 channel 4 source "OH R" model "Shure KSM137" stand boom phantom yes
+  equipment guitar-amp guitar-l in deck at 4,5 "Guitar L"
+  equipment guitar-amp guitar-r in deck at 32,5 "Guitar R"
+  equipment bass-cabinet bass-cab in deck at 28,3 "Bass"
+  equipment keyboard keys in deck at 3,12 "Keys"
+  equipment di-box keys-di in deck at 7,13 channel 5 source "Keys L" model "Radial ProD2" stand none phantom no
+  equipment boom-stand lead in deck at 19,18 channel 6 source "Lead vocal" model "Shure Beta 58A" stand boom phantom no
+  monitor 1 m1 in deck at 2,20 "Keys"
+  monitor 2 m2 in deck at 9,20 "Guitar L"
+  monitor 3 m3 in deck at 16,20 "Lead"
+  monitor 4 m4 in deck at 23,20 "Lead"
+  monitor 5 m5 in deck at 30,20 "Guitar R"
+  monitor 6 m6 in deck at 36,16 "Drums"
+  equipment power-drop power-l in deck at 1,2 "20A"
+  equipment power-drop power-r in deck at 38,2 "20A"
+  equipment snake snake-a in deck at 36,10
+  signal kick -> snake-a
+  signal snare -> snake-a
+  signal keys-di -> snake-a
+  signal lead -> snake-a
+---
+
+Mix numbers 1–6 are the dominant wedge marks. The drum platform uses
+`stage-riser`, which cannot be confused with evacuation mode's fire-riser sign.

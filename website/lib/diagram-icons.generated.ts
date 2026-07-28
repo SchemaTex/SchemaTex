@@ -52,6 +52,7 @@ export const DIAGRAM_ICON_MARKUP: Record<DiagramType, string> = {
   "welding": "<path d=\"M3 9 H15\" />\n  <path d=\"M15 9 L20 15\" />\n  <path d=\"M18.6 14.1 L20 15 L19.3 13.4\" />\n  <path d=\"M8.5 9 V13.6 L12.7 9\" />\n  <circle cx=\"15\" cy=\"9\" r=\"1.4\" />",
   "floorplan": "<rect x=\"3\" y=\"4\" width=\"18\" height=\"16\"/>\n  <path d=\"M13 4 V10\"/>\n  <path d=\"M13 14 V20\"/>\n  <path d=\"M13 14 H21\"/>\n  <path d=\"M3 20 A5 5 0 0 1 8 15\"/>",
   "evacuation": "<path d=\"M4 3 H15 V8\"/>\n  <path d=\"M15 13 V21 H4 V3\"/>\n  <path d=\"M7 17 H9.5 A3 3 0 0 0 12.5 14 V10 H20\"/>\n  <path d=\"M17.5 7.5 L20 10 L17.5 12.5\"/>",
+  "stageplot": "<path d=\"M4 4h16v13H4z\"/>\n  <circle cx=\"12\" cy=\"8.5\" r=\"2.3\"/>\n  <path d=\"M8.2 13.2 6.5 16h3.4zM15.8 13.2 14.1 16h3.4z\"/>\n  <path d=\"M2.5 6v9M21.5 6v9\"/>\n  <path d=\"M8 20h8\"/>",
   "siteplan": "<path d=\"M3.5 5.5 L15.5 3.5 L20.5 9 L18 19 L7 20.5 L3 13 Z\"/>\n  <path d=\"M4 9.5 H20\"/>\n  <path d=\"M9 9.5 V20\"/>\n  <path d=\"M11.5 12.5 H16.5 V16.5 H11.5 Z\"/>\n  <circle cx=\"6.6\" cy=\"15.8\" r=\"1.4\"/>\n  <path d=\"M6.6 17.2 V18.3\"/>\n  <path d=\"M4.5 7.3 L14.8 5.5\"/>",
   "playbook": "<circle cx=\"6\" cy=\"7\" r=\"3\"/>\n  <path d=\"M6 10 Q6 16 12 17 H18\"/>\n  <path d=\"M16 15 L18.5 17 L16 19\"/>\n  <path d=\"M14.5 4 L19 8.5 M19 4 L14.5 8.5\"/>",
 };

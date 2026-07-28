@@ -21,12 +21,13 @@ import {
 } from "../../src";
 
 describe("listDiagrams", () => {
-  it("returns all 51 diagram types", () => {
+  it("returns all 52 diagram types", () => {
     const list = listDiagrams();
-    expect(list.length).toBe(51);
+    expect(list.length).toBe(52);
     const types = list.map((d) => d.type);
     expect(types).toContain("genogram");
     expect(types).toContain("siteplan");
+    expect(types).toContain("stageplot");
     expect(types).toContain("rbd");
     expect(types).toContain("comparison");
     expect(types).toContain("petri");
@@ -68,7 +69,7 @@ describe("listDiagrams", () => {
       expect(entry.interactive).toEqual(getDiagramCapabilities(entry.type));
       if (entry.interactive.text.length === 0) sourceOnly++;
     }
-    expect(sourceOnly).toBe(30);
+    expect(sourceOnly).toBe(31);
   });
 
   it("publishes canonical reasons for every constrained position model", () => {

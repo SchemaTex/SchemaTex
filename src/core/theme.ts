@@ -1885,6 +1885,62 @@ export function resolveEvacuationTheme(
   };
 }
 
+// ─── Stage Plot Tokens ────────────────────────────────────────
+// 54-STAGE-PLOT-STANDARD §9. Stage plots are print-first operational sheets.
+// Direction rails and numbered monitor mixes carry the strongest hierarchy;
+// signal blue and input green are semantic accents, not decoration.
+
+export interface StageplotTokens extends FloorplanTokens {
+  paper: string;
+  ink: string;
+  stageSurface: string;
+  stageEdge: string;
+  signal: string;
+  monitor: string;
+  input: string;
+  rail: string;
+  equipmentFill: string;
+}
+
+const DEFAULT_STAGEPLOT: StageplotTokens = {
+  ...DEFAULT_FLOORPLAN,
+  paper: "#F8FAFC",
+  ink: "#172033",
+  stageSurface: "#E8EEF5",
+  stageEdge: "#1E3A5F",
+  signal: "#2563EB",
+  monitor: "#D97706",
+  input: "#0F766E",
+  rail: "#1E3A5F",
+  equipmentFill: "#FFFFFF",
+};
+
+const MONOCHROME_STAGEPLOT: StageplotTokens = {
+  ...MONOCHROME_FLOORPLAN,
+  paper: "#FFFFFF",
+  ink: "#000000",
+  stageSurface: "#F2F2F2",
+  stageEdge: "#000000",
+  signal: "#333333",
+  monitor: "#000000",
+  input: "#000000",
+  rail: "#000000",
+  equipmentFill: "#FFFFFF",
+};
+
+export const STAGEPLOT_TOKENS: Record<ThemeName, StageplotTokens> = {
+  default: DEFAULT_STAGEPLOT,
+  monochrome: MONOCHROME_STAGEPLOT,
+  dark: DEFAULT_STAGEPLOT,
+};
+
+export function resolveStageplotTheme(
+  name: string
+): ResolvedTheme<StageplotTokens> {
+  const themeName: ThemeName = name === "monochrome" ? "monochrome" : "default";
+  return { ...BASE_THEMES[themeName], ...STAGEPLOT_TOKENS[themeName] };
+}
+
 // ─── Sports Playbook Tokens (multi-sport) ──────────────────
 // 49-SPORTS-PLAYBOOK-STANDARD §7. Coaching diagrams have no ratified colour
 // standard, so Schematex adopts a polished broadcast look: a **green playing

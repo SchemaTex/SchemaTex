@@ -35,13 +35,17 @@ import type {
   RelativeHow,
   SafetyKind,
   SafetySymbolAst,
+  StageEquipmentAst,
+  StageEquipmentKind,
+  StageSignalPathAst,
+  StageStandType,
   WallSide,
 } from "./types";
 import type { LegendOverrides } from "../../core/types";
 import { parseLegendDirective } from "../../core/legend-parser";
 import { FURNITURE_TYPES } from "./catalog";
 import { createSourceLocator, findFirstQuotedRange } from "../../core/source-range";
-import { SAFETY_KINDS } from "./types";
+import { SAFETY_KINDS, STAGE_EQUIPMENT_KINDS } from "./types";
 
 export class FloorplanParseError extends Error {
   readonly line: number;
@@ -153,6 +157,25 @@ const ROUTE_KINDS: readonly EscapeRouteKind[] = [
   "accessible",
   "rescue",
 ];
+const STAGE_STANDS: readonly StageStandType[] = [
+  "boom",
+  "straight",
+  "short-boom",
+  "clip",
+  "none",
+];
+const STAGE_KIND_ALIASES: Record<string, StageEquipmentKind> = {
+  riser: "stage-riser",
+  di: "di-box",
+  directbox: "di-box",
+  wedge: "monitor-wedge",
+  monitor: "monitor-wedge",
+  foh: "foh-console",
+  console: "foh-console",
+  "keyboard-stand": "keyboard",
+  "musicstand": "music-stand",
+  "setlist": "set-list",
+};
 
 const FURNITURE_ALIASES: Record<string, FurnitureType> = {
   section: "sectional",
@@ -201,6 +224,36 @@ function parseFurnitureType(t: Tok | undefined, ln: number): FurnitureType {
   return canonical;
 }
 
+function parseStageEquipmentKind(
+  t: Tok | undefined,
+  ln: number
+): StageEquipmentKind {
+  const word = isWord(t) ? t.word.toLowerCase() : "";
+  const canonical =
+    STAGE_KIND_ALIASES[word] ?? (word as StageEquipmentKind);
+  if (!(STAGE_EQUIPMENT_KINDS as readonly string[]).includes(canonical)) {
+    throw new FloorplanParseError(
+      `unknown stage equipment kind "${word}". Valid kinds: ${STAGE_EQUIPMENT_KINDS.join(", ")}`,
+      ln
+    );
+  }
+  return canonical;
+}
+
+function parseYesNo(
+  t: Tok | undefined,
+  what: string,
+  ln: number
+): boolean {
+  const value = parseId(t, `${what} (yes|no)`, ln).toLowerCase();
+  if (["yes", "on", "true"].includes(value)) return true;
+  if (["no", "off", "false"].includes(value)) return false;
+  throw new FloorplanParseError(
+    `${what} must be yes|no, got "${value}"`,
+    ln
+  );
+}
+
 // ─── Statement parsers ───────────────────────────────────────────
 
 function parseHeader(
@@ -211,6 +264,7 @@ function parseHeader(
 ): void {
   ast.mode = mode;
   if (mode === "evacuation" && ast.title === "Floor Plan") ast.title = "Evacuation Plan";
+  if (mode === "stageplot" && ast.title === "Floor Plan") ast.title = "Stage Plot";
   while (tok.length) {
     const t = tok.shift()!;
     if (isStr(t)) ast.title = t.str;
@@ -226,6 +280,223 @@ function parseHeader(
       ast.stack = stack;
     } else throw new FloorplanParseError(`${mode}: unexpected token "${t.word}"`, ln);
   }
+}
+
+function parseStageEquipmentOptions(
+  item: StageEquipmentAst,
+  tok: Tok[],
+  ln: number
+): boolean {
+  let sawLocation = false;
+  while (tok.length) {
+    const t = tok.shift()!;
+    if (isStr(t)) item.label = t.str;
+    else if (t.word === "in") {
+      item.room = parseId(tok.shift(), `a stage id after "in"`, ln);
+      item.outside = false;
+    } else if (t.word === "outside") {
+      item.outside = true;
+    } else if (t.word === "at") {
+      const coord = parseCoord(tok.shift(), "stage equipment location", ln);
+      item.x = coord.x;
+      item.y = coord.y;
+      sawLocation = true;
+    } else if (t.word === "size") {
+      item.size = parseDims(tok.shift(), "stage equipment size", ln);
+    } else if (t.word === "rotate") {
+      item.rotate = parseNum(tok.shift(), "rotate", ln);
+    } else if (t.word === "channel" || t.word === "ch") {
+      item.channel = parseNum(tok.shift(), "input channel", ln);
+    } else if (t.word === "source") {
+      const source = tok.shift();
+      if (!isStr(source)) {
+        throw new FloorplanParseError(`source expects quoted text`, ln);
+      }
+      item.source = source.str;
+    } else if (t.word === "model" || t.word === "mic") {
+      const model = tok.shift();
+      if (!isStr(model)) {
+        throw new FloorplanParseError(`model expects quoted text`, ln);
+      }
+      item.model = model.str;
+    } else if (t.word === "stand") {
+      const stand = parseId(tok.shift(), "stand type", ln);
+      if (!(STAGE_STANDS as readonly string[]).includes(stand)) {
+        throw new FloorplanParseError(
+          `stand must be ${STAGE_STANDS.join("|")}, got "${stand}"`,
+          ln
+        );
+      }
+      item.stand = stand as StageStandType;
+    } else if (t.word === "phantom" || t.word === "48v") {
+      item.phantom = parseYesNo(tok.shift(), "phantom", ln);
+    } else if (t.word === "notes" || t.word === "note") {
+      const notes = tok.shift();
+      if (!isStr(notes)) {
+        throw new FloorplanParseError(`notes expects quoted text`, ln);
+      }
+      item.notes = notes.str;
+    } else if (t.word === "mix" || t.word === "number") {
+      item.mix = parseNum(tok.shift(), "monitor mix number", ln);
+    } else {
+      throw new FloorplanParseError(
+        `equipment ${item.kind}: unexpected token "${t.word}"`,
+        ln
+      );
+    }
+  }
+  return sawLocation;
+}
+
+function assertUniqueStageEquipment(
+  ast: FloorplanAst,
+  item: StageEquipmentAst,
+  ln: number
+): void {
+  if (
+    ast.stageplot.equipment.some(
+      (existing) => existing.id === item.id && existing.floor === item.floor
+    )
+  ) {
+    throw new FloorplanParseError(
+      `duplicate stage equipment id "${item.id}" on floor ${item.floor}`,
+      ln
+    );
+  }
+}
+
+function parseStageEquipment(
+  tok: Tok[],
+  ast: FloorplanAst,
+  ln: number,
+  floor: number
+): void {
+  const kind = parseStageEquipmentKind(tok.shift(), ln);
+  const id = parseId(tok.shift(), "a stage equipment id", ln);
+  const item: StageEquipmentAst = {
+    kind,
+    id,
+    outside: false,
+    x: 0,
+    y: 0,
+    rotate: 0,
+    phantom: false,
+    floor,
+    line: ln,
+  };
+  const sawLocation = parseStageEquipmentOptions(item, tok, ln);
+  if ((!item.room && !item.outside) || !sawLocation) {
+    throw new FloorplanParseError(
+      `equipment ${kind} "${id}": expected "in <stage> at x,y" or "outside at x,y"`,
+      ln
+    );
+  }
+  assertUniqueStageEquipment(ast, item, ln);
+  ast.stageplot.equipment.push(item);
+}
+
+function defaultMonitorId(
+  ast: FloorplanAst,
+  mix: number,
+  floor: number
+): string {
+  let suffix = 1;
+  let id = `mix-${mix}`;
+  while (
+    ast.stageplot.equipment.some(
+      (item) => item.id === id && item.floor === floor
+    )
+  ) {
+    suffix += 1;
+    id = `mix-${mix}-${suffix}`;
+  }
+  return id;
+}
+
+function parseStageMonitor(
+  tok: Tok[],
+  ast: FloorplanAst,
+  ln: number,
+  floor: number
+): void {
+  const mix = parseNum(tok.shift(), "monitor mix number", ln);
+  const next = tok[0];
+  const id =
+    isWord(next) &&
+    !["in", "outside", "at", "size", "rotate"].includes(next.word)
+      ? (tok.shift() as { word: string }).word
+      : defaultMonitorId(ast, mix, floor);
+  const item: StageEquipmentAst = {
+    kind: "monitor-wedge",
+    id,
+    outside: false,
+    x: 0,
+    y: 0,
+    rotate: 0,
+    phantom: false,
+    mix,
+    floor,
+    line: ln,
+  };
+  const sawLocation = parseStageEquipmentOptions(item, tok, ln);
+  if ((!item.room && !item.outside) || !sawLocation) {
+    throw new FloorplanParseError(
+      `monitor ${mix}: expected "in <stage> at x,y" or "outside at x,y"`,
+      ln
+    );
+  }
+  assertUniqueStageEquipment(ast, item, ln);
+  ast.stageplot.equipment.push(item);
+}
+
+function parseStageSignal(
+  tok: Tok[],
+  ast: FloorplanAst,
+  ln: number,
+  floor: number
+): void {
+  const anchors: string[] = [];
+  let label: string | undefined;
+  const first = tok.shift();
+  if (!isWord(first) || first.word === "->") {
+    throw new FloorplanParseError(`signal: expected a starting equipment id`, ln);
+  }
+  anchors.push(first.word);
+  while (tok.length) {
+    const arrow = tok.shift();
+    if (isStr(arrow)) {
+      label = arrow.str;
+      break;
+    }
+    if (!isWord(arrow, "->")) {
+      throw new FloorplanParseError(
+        `signal: expected "->" between equipment ids`,
+        ln
+      );
+    }
+    const anchor = tok.shift();
+    if (!isWord(anchor) || anchor.word === "->") {
+      throw new FloorplanParseError(
+        `signal: expected an equipment id after "->"`,
+        ln
+      );
+    }
+    anchors.push(anchor.word);
+  }
+  if (tok.length) {
+    throw new FloorplanParseError(`signal: unexpected trailing tokens`, ln);
+  }
+  if (anchors.length < 2) {
+    throw new FloorplanParseError(`signal needs at least two equipment ids`, ln);
+  }
+  const signal: StageSignalPathAst = {
+    id: `signal-${ast.stageplot.signals.length + 1}`,
+    anchors,
+    label,
+    floor,
+    line: ln,
+  };
+  ast.stageplot.signals.push(signal);
 }
 
 function parseRoom(tok: Tok[], ast: FloorplanAst, ln: number, floor: number): void {
@@ -698,6 +969,11 @@ export function parseFloorplan(text: string): FloorplanAst {
     fireDoors: [],
     showFurniture: false,
     legendOverrides: {},
+    stageplot: {
+      equipment: [],
+      signals: [],
+      showInputList: true,
+    },
   };
 
   let sawHeader = false;
@@ -731,14 +1007,29 @@ export function parseFloorplan(text: string): FloorplanAst {
     const head = tok.shift();
     if (!isWord(head)) throw new FloorplanParseError(`unexpected string at line start`, ln);
     const kw = head.word.toLowerCase();
-    if (kw === "floorplan" || kw === "evacuation" || kw === "escapeplan") {
-      parseHeader(tok, ast, ln, kw === "floorplan" ? "floorplan" : "evacuation");
+    if (
+      kw === "floorplan" ||
+      kw === "evacuation" ||
+      kw === "escapeplan" ||
+      kw === "stageplot" ||
+      kw === "stage-plot"
+    ) {
+      parseHeader(
+        tok,
+        ast,
+        ln,
+        kw === "floorplan"
+          ? "floorplan"
+          : kw === "stageplot" || kw === "stage-plot"
+            ? "stageplot"
+            : "evacuation"
+      );
       const titleToken = findFirstQuotedRange(original);
       if (titleToken) ast.titleSourceRange = locator.range(lineStart + titleToken.start, lineStart + titleToken.end);
       sawHeader = true;
     } else if (!sawHeader) {
       throw new FloorplanParseError(
-        `the first statement must be the "floorplan", "evacuation", or "escapeplan" header`,
+        `the first statement must be the "floorplan", "evacuation", "escapeplan", or "stageplot" header`,
         ln
       );
     } else if (kw === "floor") {
@@ -771,6 +1062,33 @@ export function parseFloorplan(text: string): FloorplanAst {
             : `Basement ${-level}`;
       ast.floors.push({ level, label, line: ln });
       currentFloor = level;
+    } else if (ast.mode === "stageplot" && kw === "stage") {
+      parseRoom(tok, ast, ln, currentFloor);
+      const room = ast.rooms[ast.rooms.length - 1];
+      if (room) {
+        room.nolabel = true;
+        const labelToken = findFirstQuotedRange(original);
+        if (labelToken) {
+          room.labelSourceRange = locator.range(
+            lineStart + labelToken.start,
+            lineStart + labelToken.end
+          );
+        }
+        const positionToken = findAtCoordinateRange(original);
+        if (positionToken) {
+          room.positionSourceRange = locator.range(
+            lineStart + positionToken.start,
+            lineStart + positionToken.end
+          );
+        }
+        const sizeToken = findSizeRange(original);
+        if (sizeToken) {
+          room.sizeSourceRange = locator.range(
+            lineStart + sizeToken.start,
+            lineStart + sizeToken.end
+          );
+        }
+      }
     } else if (kw === "room") {
       parseRoom(tok, ast, ln, currentFloor);
       const room = ast.rooms[ast.rooms.length - 1];
@@ -836,6 +1154,24 @@ export function parseFloorplan(text: string): FloorplanAst {
       (kw === "fire-door" || kw === "smoke-door")
     ) {
       parseFireDoor(kw, tok, ast, ln, currentFloor);
+    } else if (ast.mode === "stageplot" && kw === "equipment") {
+      parseStageEquipment(tok, ast, ln, currentFloor);
+    } else if (ast.mode === "stageplot" && kw === "monitor") {
+      parseStageMonitor(tok, ast, ln, currentFloor);
+    } else if (ast.mode === "stageplot" && kw === "signal") {
+      parseStageSignal(tok, ast, ln, currentFloor);
+    } else if (ast.mode === "stageplot" && kw === "input-list") {
+      ast.stageplot.showInputList = parseYesNo(
+        tok.shift(),
+        "input-list",
+        ln
+      );
+      if (tok.length) {
+        throw new FloorplanParseError(
+          `input-list: unexpected trailing tokens`,
+          ln
+        );
+      }
     }
     else if (kw === "north") {
       ast.north = tok.length ? parseNum(tok.shift(), "north rotation (degrees)", ln) : 0;
@@ -862,7 +1198,7 @@ export function parseFloorplan(text: string): FloorplanAst {
     }
     else {
       throw new FloorplanParseError(
-        `unknown keyword "${kw}". Expected: floorplan, evacuation, floor, room, extend, door, window, opening, furniture, grid, row, arc, safety, route`,
+        `unknown keyword "${kw}". Expected: floorplan, evacuation, stageplot, floor, room, stage, extend, door, window, opening, furniture, equipment, monitor, signal, input-list, grid, row, arc, safety, route`,
         ln
       );
     }

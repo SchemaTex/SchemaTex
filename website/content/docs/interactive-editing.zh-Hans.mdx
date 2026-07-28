@@ -286,7 +286,7 @@ console.log(POSITION_EDITABLE_DIAGRAM_COUNT);   // 18
 ```
 
 只有具备 parser-native source range 的 21 种图会被声明为 Canvas 可编辑，其中 18 种还具备位置模型。
-其余 30 种图仍可正常 render，也能通过 DSL 源码编辑，但会返回空 `text` 与 `position: "none"`，并且不会生成猜测式 Canvas handle。
+其余 31 种图仍可正常 render，也能通过 DSL 源码编辑，但会返回空 `text` 与 `position: "none"`，并且不会生成猜测式 Canvas handle。
 `free`、`move-x`、`cross-axis`、`native-xy` 等 position 值是语义约束，不只是 UI 提示。
 `reason` 解释该限制背后的标准或布局规则，是产品 UI、文档和 AI 集成共用的 canonical 文案。
 
@@ -302,7 +302,7 @@ Web agent 和非 JavaScript 工具可以读取同一份 [machine-readable JSON](
 - Core 会在每个可编辑 scene item 上记录 source revision 和精确 expected text；任一发生变化时，`setLabel` 都会安全拒绝，调用方必须重新 render，不能重试旧 target。
 - 相连线条在拖拽时实时预览，drop 后从 semantic endpoint 重新计算；承诺 orthogonal routing 的 engine 在重新 render 后仍只有水平 / 垂直线段。
 
-[Interactive Workspace](/playground) 包含全部 51 种图的已发布案例。能力栏直接由同一份 registry 生成，因此 parser-native Canvas 编辑与 source-only 行为不会发生文案漂移。
+[Interactive Workspace](/playground) 包含全部 52 种图的已发布案例。能力栏直接由同一份 registry 生成，因此 parser-native Canvas 编辑与 source-only 行为不会发生文案漂移。
 
 ## 对 AI 安全的编辑
 

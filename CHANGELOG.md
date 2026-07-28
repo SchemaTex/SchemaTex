@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased]
+
+### Added — `stageplot`: venue-ready stage plots and derived input lists
+
+- **One source of truth for plot + patch.** `stageplot` is a first-class type served by the floorplan plugin's `altTypes` mode. Measured `stage` surfaces reuse the metre/foot coordinate model; microphone and DI nodes carrying `channel`, `source`, `model`, `stand`, `phantom`, and `notes` automatically produce the console input-list table.
+- **Live-sound symbol catalog.** Added original builder-only symbols for drums/backline, microphones and stands, DI/mixer/FOH/snake, wedges/side fills/IEM, power, music stands, set lists, and the namespaced `stage-riser`; existing stage, dance-floor, DJ booth, podium, row-chair, and piano art is reused.
+- **Correct performer-view directions.** The audience is fixed at the bottom, with STAGE RIGHT on page-left and STAGE LEFT on page-right. Monitor wedges prominently show their console mix/send number.
+- **Signal paths without safety coupling.** Extracted the deterministic orthogonal-polyline primitive for reuse; evacuation keeps its own opening checks, chevrons, route kinds, and life-safety semantics.
+- **Launch surfaces.** Added the 54 standard, AI registry/profile, docs, icon, changelog routing, three canonical gallery examples (rock band, jazz trio, full band with drum riser and six mixes), and static README gallery output.
+
+---
+
 ## [1.0.4] — 2026-07-27
 
 ### Fixed — LLM-generated DSL no longer fails on wrappers, valid names, labels, pins, or empty dates

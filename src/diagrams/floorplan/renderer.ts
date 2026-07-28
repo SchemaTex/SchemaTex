@@ -41,6 +41,7 @@ import { resolveSafetySymbol } from "./safety-symbols";
 import type {
   RoutePoint,
 } from "./types";
+import { renderStageplotLayout } from "./stageplot";
 
 type Theme = ResolvedTheme<FloorplanTokens>;
 type EvacuationTheme = ResolvedTheme<EvacuationTokens>;
@@ -656,6 +657,7 @@ function renderFireDoor(
 // ─── Main ────────────────────────────────────────────────────────
 
 export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: RenderConfig): string {
+  if (lay.mode === "stageplot") return renderStageplotLayout(lay, config);
   const isEvacuation = lay.mode === "evacuation" && lay.evacuation !== undefined;
   const evacuationTheme = isEvacuation
     ? resolveEvacuationTheme(config?.theme ?? "default")

@@ -31,6 +31,9 @@ const files = readdirSync(EXAMPLES_DIR).filter((f) => f.startsWith("floorplan-")
 const evacuationFiles = readdirSync(EXAMPLES_DIR).filter(
   (f) => f.startsWith("evacuation-") && f.endsWith(".mdx")
 );
+const stageplotFiles = readdirSync(EXAMPLES_DIR).filter(
+  (f) => f.startsWith("stageplot-") && f.endsWith(".mdx")
+);
 
 describe("floorplan examples — gallery is correct-by-construction", () => {
   it("covers every floorplan example file", () => {
@@ -67,6 +70,28 @@ describe("evacuation examples — gallery is compliance-checked", () => {
       expect(
         lay.warnings.filter((warning) => /overlap|collision/i.test(warning))
       ).toEqual([]);
+    });
+  }
+});
+
+describe("stageplot examples — plot and input list stay one valid tree", () => {
+  it("ships the three canonical band configurations", () => {
+    expect(stageplotFiles).toHaveLength(3);
+  });
+
+  it("features the broad four-piece starting point", () => {
+    const featured = stageplotFiles.filter((file) =>
+      /\nfeatured: true\n/.test(readFileSync(join(EXAMPLES_DIR, file), "utf8"))
+    );
+    expect(featured).toEqual(["stageplot-four-piece-rock.mdx"]);
+  });
+
+  for (const file of stageplotFiles) {
+    it(`${file}: no errors and a derived input list`, () => {
+      const dsl = extractDsl(readFileSync(join(EXAMPLES_DIR, file), "utf8"));
+      const lay = layoutFloorplan(parseFloorplan(dsl));
+      expect({ file, errors: lay.errors }).toEqual({ file, errors: [] });
+      expect(lay.stageplot?.inputList.length).toBeGreaterThan(0);
     });
   }
 });

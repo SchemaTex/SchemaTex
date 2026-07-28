@@ -11,7 +11,7 @@
 
 Schematex 不会通过“比较 SVG 文字和源码中的引号字符串”来猜 edit target。只要文字重复、renderer 按计算分数重排，或 config value 恰好和 label 相同，这种方法就存在 ambiguity。没有 native range 的 engine 仍可通过源码编辑，但不提供 Canvas handle。
 
-当前版本有 **21 种 parser-native Canvas 可编辑图**，其中 **18 种**还具备安全的位置模型。其余 30 种图正常 render，也能在 DSL editor 中修改，但不会生成 Canvas handle。
+当前版本有 **21 种 parser-native Canvas 可编辑图**，其中 **18 种**还具备安全的位置模型。其余 31 种图正常 render，也能在 DSL editor 中修改，但不会生成 Canvas handle。
 
 ## 能力词汇
 
