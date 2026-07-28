@@ -132,8 +132,9 @@ export type ValidateDslResult =
       type: string | null;
       /**
        * `valid` = parsed cleanly; `partial` = parsed and renderable but the
-       * engine recovered from incomplete/incorrect input (see `warnings`). A
-       * `partial` result still renders — it is NOT a failure.
+       * engine recovered from incomplete input or found non-blocking warnings.
+       * A `partial` result still renders — diagnostics with severity `error`
+       * return the `invalid` branch instead.
        */
       status: "valid" | "partial";
       /** Non-fatal lint findings (empty when `status` is `valid`). */
@@ -402,6 +403,7 @@ function toValidationError(
   type?: string | null
 ): SchematexValidationError {
   return {
+    code: diagnostic.code,
     line: diagnostic.line,
     column: diagnostic.column,
     source: diagnostic.source,

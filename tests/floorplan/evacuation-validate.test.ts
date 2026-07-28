@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { renderResult } from "../../src/core/api";
 import { layoutFloorplan } from "../../src/diagrams/floorplan/layout";
 import { parseFloorplan } from "../../src/diagrams/floorplan/parser";
 import { renderFloorplan } from "../../src/diagrams/floorplan/renderer";
@@ -313,11 +314,23 @@ no-elevator ne in start at 0.7,0.7`;
     expect(lay.evacuation?.legend.mode).toBe("on");
   });
 
-  it("#11 reports monochrome but still renders the plan", () => {
-    const svg = renderFloorplan(twoRoutePlan, { theme: "monochrome" });
-    expect(svg).toContain("monochrome theme is not permitted");
-    expect(svg).toContain('class="sx-fp-routes"');
-    expect(svg).not.toContain("Floor plan validation failed");
+  it("#11 blocks monochrome through the public result contract", () => {
+    const result = renderResult(twoRoutePlan, {
+      type: "evacuation",
+      theme: "monochrome",
+    });
+    expect(result.ok).toBe(false);
+    expect(result.status).toBe("invalid");
+    expect(result.diagnostics).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          code: "floorplan/evacuation-color-required",
+          severity: "error",
+        }),
+      ])
+    );
+    expect(result.svg).toContain("monochrome theme is not permitted");
+    expect(result.svg).not.toContain('class="sx-fp-routes"');
   });
 
   it("#11 does not report the color error under the default theme", () => {

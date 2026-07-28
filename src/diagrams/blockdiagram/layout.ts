@@ -83,6 +83,10 @@ interface Track {
 }
 
 export function layoutBlockDiagram(ast: BlockAST): BlockDiagramLayout {
+  const explicitNodeIds = new Set<string>([
+    ...ast.blocks.map((block) => block.id),
+    ...ast.sums.map((sum) => sum.id),
+  ]);
   const nodeIds = new Set<string>();
   for (const b of ast.blocks) nodeIds.add(b.id);
   for (const s of ast.sums) nodeIds.add(s.id);
@@ -103,11 +107,12 @@ export function layoutBlockDiagram(ast: BlockAST): BlockDiagramLayout {
   }
 
   // Entry points
-  const hasIn = nodeIds.has("in");
+  const hasIn = nodeIds.has("in") && !explicitNodeIds.has("in");
+  const hasOut = nodeIds.has("out") && !explicitNodeIds.has("out");
   const entries: string[] = [];
   if (hasIn) entries.push("in");
   for (const id of nodeIds) {
-    if (id === "in" || id === "out") continue;
+    if ((id === "in" && hasIn) || (id === "out" && hasOut)) continue;
     if ((incoming.get(id) ?? []).length === 0 && !entries.includes(id)) {
       entries.push(id);
     }
@@ -138,7 +143,7 @@ export function layoutBlockDiagram(ast: BlockAST): BlockDiagramLayout {
   // Feedback detection: outgoing edges are ALL going backward
   const isFeedback = new Set<string>();
   for (const id of nodeIds) {
-    if (id === "in" || id === "out") continue;
+    if ((id === "in" && hasIn) || (id === "out" && hasOut)) continue;
     const myCol = col.get(id)!;
     const outs = outgoing.get(id) ?? [];
     if (outs.length === 0) continue;
@@ -295,7 +300,7 @@ export function layoutBlockDiagram(ast: BlockAST): BlockDiagramLayout {
       hasBranch: hasBranchOf("in"),
     });
   }
-  if (nodeIds.has("out")) {
+  if (hasOut) {
     const outCol = col.get("out") ?? maxFwdCol;
     const cx = colX[Math.min(outCol, colX.length - 1)];
     nodes.push({
@@ -316,8 +321,8 @@ export function layoutBlockDiagram(ast: BlockAST): BlockDiagramLayout {
     const knownIds = new Set<string>([
       ...ast.blocks.map((b) => b.id),
       ...ast.sums.map((s) => s.id),
-      "in",
-      "out",
+      ...(hasIn ? ["in"] : []),
+      ...(hasOut ? ["out"] : []),
     ]);
     for (const id of nodeIds) {
       if (knownIds.has(id)) continue;

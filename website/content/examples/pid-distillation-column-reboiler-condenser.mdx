@@ -29,7 +29,7 @@ dsl: |
   line L5 from T-201.bottom to E-202.in          [size: "6in", service: "bottoms", type: "process"]
   line L6 from T-201.top to PSV-201.in           [size: "2in", service: "relief", type: "process_minor"]
 
-  inst PT-201 : field_discrete
+  inst PI-201 : field_discrete
     measures T-201
   inst LIC-201 : cr_shared
     measures D-201
@@ -45,4 +45,4 @@ Distillation columns are a canonical P&ID use case because the physical process 
 
 - `equip` lines select ISO process equipment symbols.
 - `line ... from ... to ...` connects equipment ports and carries line tags.
-- `inst` declarations create ISA-5.1 instrument bubbles tied to measured equipment.
+- `inst` declarations create ISA-5.1 instrument bubbles tied to measured equipment. `PI-201` is a local pressure indicator, so it does not promise an unshown transmitter signal.

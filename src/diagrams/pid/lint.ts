@@ -9,9 +9,10 @@ import { parsePid } from "./parser";
  * the engineer's intent) — it only flags loops the DSL describes incompletely
  * so a control engineer can trust the diagram at the element level:
  *
- *  1. PID_LOOP_INCOMPLETE — an instrument that `measures` a variable but has no
- *     signal path reaching a controller (the classic "transmitter with a
- *     dangling output" mistake).
+ *  1. PID_LOOP_INCOMPLETE — a transmitter that `measures` a variable but has no
+ *     signal path reaching a receiving instrument (the classic "transmitter
+ *     with a dangling output" mistake). Receivers include controllers,
+ *     indicators, recorders, alarms, switches, relays, and final drivers.
  *  2. PID_SIGNAL_TYPE_MISMATCH — a signal line whose type contradicts ISA-5.1
  *     §5.2 convention for the devices it connects (transmitter→controller is
  *     electric; controller→control-valve is pneumatic).
@@ -51,6 +52,14 @@ function isController(tag: string): boolean {
 /** ISA succeeding-letter `T` = transmitter (FT, LT, PT, TT, FIT, …). */
 function isTransmitter(tag: string): boolean {
   return idLetters(tag).slice(1).includes("T");
+}
+
+/**
+ * ISA succeeding letters that consume or act on a signal. A transmitter may
+ * legitimately feed an indicator/recorder/alarm/SIS instead of a controller.
+ */
+function isSignalReceiver(tag: string): boolean {
+  return /[CIRASYZ]/.test(idLetters(tag).slice(1));
 }
 
 export function lintPidAst(ast: PidAST): SchematexDiagnostic[] {
@@ -93,12 +102,12 @@ export function lintPidAst(ast: PidAST): SchematexDiagnostic[] {
     }
   }
 
-  const canReachController = (start: string): boolean => {
+  const canReachSignalReceiver = (start: string): boolean => {
     const seen = new Set<string>([start]);
     const queue = [start];
     while (queue.length) {
       const cur = queue.shift()!;
-      if (cur !== start && isController(cur)) return true;
+      if (cur !== start && isSignalReceiver(cur)) return true;
       for (const nxt of signalAdj.get(cur) ?? []) {
         if (!seen.has(nxt)) {
           seen.add(nxt);
@@ -111,15 +120,17 @@ export function lintPidAst(ast: PidAST): SchematexDiagnostic[] {
 
   // ── Rule 1: loop completeness ───────────────────────────────────
   for (const inst of ast.instruments) {
-    // A sensing element / transmitter participates in a loop when it `measures`
-    // a variable. A controller is itself the loop's brain, so skip those.
-    if (!inst.measures || isController(inst.tag)) continue;
-    if (!canReachController(inst.tag)) {
+    // Only a transmitter promises an outgoing signal. A local indicator or a
+    // standalone process switch may measure something without another node.
+    if (!inst.measures || !isTransmitter(inst.tag) || isController(inst.tag)) {
+      continue;
+    }
+    if (!canReachSignalReceiver(inst.tag)) {
       out.push({
         severity: "warning",
         code: "PID_LOOP_INCOMPLETE",
-        message: `instrument loop ${inst.tag} has no signal path to a controller`,
-        hint: `${inst.tag} measures '${inst.measures}' but no signal line (electric/pneumatic/…) connects it to a controller instrument (e.g. a tag with a 'C' function letter such as FIC). Add a signal line from ${inst.tag} to the controller.`,
+        message: `transmitter ${inst.tag} has no signal path to a receiving instrument`,
+        hint: `${inst.tag} measures '${inst.measures}' but no signal line (electric/pneumatic/…) connects it to a controller, indicator, recorder, alarm, switch, relay, or final driver. Add the intended receiving instrument and signal line.`,
         fatal: false,
       });
     }

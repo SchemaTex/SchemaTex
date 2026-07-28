@@ -312,7 +312,7 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
     prefer: [
       'Declare blocks `ID = block("label") [role: …]`, junctions `ID = sum(+a, -b)`, and signals `ID = signal("label")`, then wire ids with directed `->` (chainable: `a -> b -> c`).',
       "Model feedback through an explicit `sum(+ref, -fb)` — the signs are visual (+ enters, − subtracts), not computed; send a long return path over the top with `[route: above]` on the sensor block.",
-      'Roles for styling: controller, plant, sensor, actuator, reference, disturbance, generic. Use the auto-provided `in`/`out` ports for the system boundary, and annotate an edge with `["label"]`.',
+      'Roles for styling: controller, plant, sensor, actuator, reference, disturbance, generic. The reserved ids `in` and `out` render as boundary ports when they are not explicitly declared as blocks; annotate an edge with `["label"]`.',
     ],
     avoid: [
       "An unknown id on a `->` line does NOT error — it silently becomes a stray generic `block`, so a typo'd id creates a phantom box. Keep ids consistent.",
@@ -321,7 +321,7 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
     ],
     repair: [
       "'Invalid connection: <line>' -> a `->` line needs an id on both sides (e.g. `err -> C`); `C ->` or `-> C` alone is rejected.",
-      "Most ids auto-declare, so few lines hard-fail — if a box is unexpectedly empty or duplicated, look for an id typo (see avoid).",
+      "Most ids auto-declare, so few lines hard-fail — if a box is unexpectedly empty, look for an id typo. Reserved `in`/`out` are boundary ports and must not become generic boxes.",
     ],
   },
   ladder: {
@@ -676,10 +676,12 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
     header: 'timeline "Title"',
     mode: "dated events on a time axis — swimlane (default), gantt, or lollipop styles",
     keywords:
-      'DATE: "label" · DATE - DATE: "label" (range) · DATE: milestone "label" · era DATE - DATE: "label" · track "Name": / section Name (lanes) · config: style=swimlane|gantt|lollipop orientation=horizontal|vertical scale=proportional|equidistant|log · point props [side:above|below shape:circle|square|diamond|star|flag color:#hex category:…] · dates: YYYY YYYY-MM YYYY-MM-DD, BC years, ordinal keys (Phase 1, Q1 2024)',
+      'DATE: "label" · DATE - DATE: "label" (range) · DATE: milestone "label" · era DATE - DATE: "label" · track "Name": / section Name (lanes) · config keys: style=swimlane|gantt|lollipop · orientation=horizontal|vertical · scale=proportional|equidistant|log · axis=bottom|center (one or multiple key=value pairs per config line) · point props [side:above|below shape:circle|square|diamond|star|flag color:#hex category:…] · dates: YYYY YYYY-MM YYYY-MM-DD, BC years, ordinal keys (Phase 1, Q1 2024)',
     forms: [
       'timeline "Platform v2 Launch"',
       "config: style = gantt",
+      "config: orientation = horizontal",
+      "config: scale = proportional",
       "",
       '2025-07-01 - 2025-08-15: "Engineering build" [category: "engineering"]',
       '2025-08-20: milestone "Feature freeze" [color: #E53935]',
@@ -688,6 +690,7 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
     prefer: [
       "Use ISO dates (`YYYY-MM-DD`/`YYYY-MM`/`YYYY`) for the row key for proportional layout; for non-date groupings (Phase 1, Q1 2024) use an ordinal key placed in declaration order.",
       "Use `config: style = gantt` for roadmaps (overlapping bars), `lollipop` for milestone stories, default `swimlane` for multi-track streams.",
+      "Prefer one `config: key = value` line per setting for readability; the parser also accepts multiple key=value pairs on one line.",
       "Use `milestone` before the quoted label for diamond headline events; group events with `track \"Name\":` or Mermaid `section Name`; add era bands with `era START - END: \"label\"`.",
     ],
     avoid: [
@@ -802,7 +805,7 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
     header: "breadboard",
     mode: "parts section + wires section; breadboard-native hole/rail coordinates",
     keywords:
-      'breadboard · board: mini|half|full · title: "…" · parts section: id: KIND [args] @placement · wire kinds: resistor led cap-elec cap-ceramic diode button dip header potentiometer · mcu uno|nano|esp32|esp32-c3|esp32-s3|pico · sensor hcsr04|dht11|dht22|vl53l0x · display oled-ssd1306|lcd-1602-i2c|tm1637 · module rotary-ky040|l298n · actuator servo-sg90 · pin aliases: ESP GPIO22 accepts D22/IO22/22, VIN accepts 5V/VBUS, Arduino A4/A5 accept SDA/SCL · placement: @5e (hole) @5e..9e (span) @+t8 @-t8 @+b14 @-b14 (rails) @beside-left @beside-right @above @below · wires section: ep --color-- ep [via @coord] · colors: red black blue yellow orange green white purple brown grey · endpoints: @coord or partId:pin',
+      'breadboard · board: mini|half|full · title: "…" · parts section: id: KIND [args] @placement · wire kinds: resistor led cap-elec cap-ceramic diode button dip header potentiometer · mcu uno|nano|esp32|esp32-c3|esp32-s3|pico · sensor hcsr04|dht11|dht22|vl53l0x · display oled-ssd1306|lcd-1602-i2c|tm1637 · module rotary-ky040|l298n|relay|ds3231 · relay pins: VCC GND IN COM NO NC · DS3231 pins: VCC GND SDA SCL SQW 32K · actuator servo-sg90 · pin aliases: ESP GPIO22 accepts D22/IO22/22, VIN accepts 5V/VBUS, Arduino A4/A5 accept SDA/SCL · placement: @5e (hole) @5e..9e (span) @+t8 @-t8 @+b14 @-b14 (rails) @beside-left @beside-right @above @below · wires section: ep --color-- ep [via @coord] · colors: red black blue yellow orange green white purple brown grey · endpoints: @coord or partId:pin',
     forms: [
       "breadboard",
       "board: half",
@@ -820,16 +823,19 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
       "Declare every part in the `parts` section before referencing it in `wires`; the part `id` is what you use as `partId:pin` in wire endpoints.",
       "Use breadboard-native coordinates: `@5e` for hole column 5 row e, `@5e..9e` for a span, `@+t8`/`@-t8` for top positive/negative rail.",
       "Wire color carries convention — `red` for +V, `black`/`blue` for GND, signal colors (`yellow`, `orange`, `green`) for data; all wire lines are `ep --color-- ep`.",
+      "Use the exact requested part: `module relay` for a relay and `module ds3231` for an RTC. If a requested part is not in the catalog, report it as unsupported instead of substituting a visually similar module.",
     ],
     avoid: [
       "Don't use rail coordinates (`@+t8`) on a `board: mini` — mini boards have no power rails and the parser throws `Mini boards have no power rails`.",
       "Don't omit the `@` placement from a part — `missing placement` is thrown when the `@` token is absent.",
       "Don't reference a part id in wires that was not declared in the parts section — `Wire references unknown part` fails validation.",
+      "Don't substitute `module l298n` for a relay or a generic `dip` for an RTC — those parts have different electrical roles and pin maps.",
     ],
     repair: [
       "'Unknown board' -> set `board:` to `mini`, `half`, or `full`.",
-      "'Unknown part kind' -> use a supported kind (`resistor` `led` `cap-elec` `diode` `button` `dip` `header` `potentiometer`) or a compound (`mcu esp32`, `sensor hcsr04`, `display tm1637`, `module l298n`).",
+      "'Unknown part kind' -> use a supported kind (`resistor` `led` `cap-elec` `diode` `button` `dip` `header` `potentiometer`) or a compound (`mcu esp32`, `sensor hcsr04`, `display tm1637`, `module l298n`, `module relay`, `module ds3231`).",
       "'Wire references unknown part' -> add `X: KIND @placement` to the `parts` section before `wires`.",
+      "'has no pin named' -> use the part catalog's canonical pins; for `cap-elec` use `+`/`-`, for relay use `VCC GND IN COM NO NC`.",
     ],
   },
   bpmn: {
@@ -1132,10 +1138,15 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
     header: 'network "Title"',
     mode: "device declarations + links (annotations are optional)",
     keywords:
-      'device kinds: router switch l3switch firewall loadbalancer ap wlc gateway modem ids proxy vpngw server serverfarm pc laptop mobile ipphone printer storage camera nvr dvr poeswitch encoder monitor internet wan cloud pstn lan · aliases: multilayer->l3switch wifi->ap workstation->pc nas/san->storage · device attrs: tier:edge|core|distribution|access ip: model: count: type:fixed|bullet|dome|ptz|turret at:x,y · link connectors: -- (undirected) | -> (directed) | == (LAG) · link annotations: copper|fiber|wireless|serial|poe|vpn|lag trunk|access speed(1G/10G/100M) vlan:N port:near>far · groups: site rack subnet vlan zone dmz { … } · layout: tiered|tree|star|ring|bus|mesh|spine-leaf|manual · spines: / leaves:',
+      'device kinds: router switch l3switch firewall loadbalancer ap wlc gateway modem ids proxy vpngw server serverfarm pc laptop mobile ipphone printer storage camera nvr dvr poeswitch encoder monitor internet wan cloud pstn lan · aliases: multilayer->l3switch wifi->ap workstation->pc nas/san->storage · device attrs: tier:edge|core|distribution|access ip: model: count: type:fixed|bullet|dome|ptz|turret at:x,y · link connectors: -- (undirected) | -> (directed) | == (LAG) · link annotations: copper|fiber|wireless|serial|poe|vpn|lag trunk|access speed(1G/10G/100M) vlan:N port:near>far · groups: site|rack|subnet|vlan|zone|dmz ID ["label"] { … } · layout: tiered|tree|star|ring|bus|mesh|spine-leaf|manual · spines: / leaves:',
     forms: [
-      'router r1 "Edge Router"',
-      'l3switch core1 "Core" tier: core',
+      'network "Branch office"',
+      'site hq "HQ Building" {',
+      '  rack mdf "MDF Rack" {',
+      '    router r1 "Edge Router"',
+      '    l3switch core1 "Core" tier: core',
+      "  }",
+      "}",
       'switch acc1 "Access" tier: access',
       'pc pc1 "Workstation"',
       "r1 -- core1",
@@ -1145,15 +1156,18 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
     prefer: [
       "Start from the skeleton: `kind id \"label\"` device lines plus `a -- b` links. That alone renders a complete, valid diagram.",
       "Declare every device before any link references it.",
+      "Every boundary needs an unquoted id before its optional label: `site hq \"HQ\" {`, `subnet users \"10.0.10.0/24\" {`.",
       "Keep the cheap structural hints `layout:` (tiered/tree/star/ring/bus/mesh/spine-leaf) and `tier:` (edge/core/distribution/access) — they drive a readable hierarchy.",
       "Common kinds: router, switch, l3switch, firewall, ap, server, pc, laptop, camera, nvr, poeswitch, internet, cloud.",
     ],
     avoid: [
       "Avoid linking to an undeclared device id.",
+      "Don't omit a boundary id — `site \"HQ\" {` is invalid because the quoted text is a label, not an id.",
       "Add verbose per-link annotations (`vlan:`, `port:`, speeds, `trunk`/`access`) and `subnet \"cidr\" { ... }` boundaries ONLY when the request needs them — they don't affect layout and are where generation most often breaks.",
     ],
     repair: [
       "'undeclared device' -> a link references an id with no `kind id` declaration; declare it first.",
+      "'group needs an id' -> write `site hq \"HQ\" {` (kind, id, optional quoted label, then `{`).",
       "If the layout looks flat/messy, add `layout: tiered` + `tier:` on infrastructure; if unsure about per-link annotations, drop them — the skeleton always renders.",
     ],
   },

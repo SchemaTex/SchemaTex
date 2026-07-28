@@ -250,6 +250,7 @@ function assignPositions(
   resolveOverlaps(positions, orderedGens, config);
   centerChildrenUnderParents(positions, graph, config);
   resolveOverlaps(positions, orderedGens, config);
+  enforceCoupleAdjacency(positions, orderedGens, graph, config);
 
   return positions;
 }
@@ -422,6 +423,49 @@ function resolveOverlaps(
   }
 }
 
+/**
+ * Couple adjacency is a semantic hard constraint in a pedigree. Child
+ * centering may move siblings and their spouses independently, so finish the
+ * generation layout by packing each couple as one segment again.
+ */
+function enforceCoupleAdjacency(
+  positions: Map<string, NodePosition>,
+  orderedGens: OrderedGeneration[],
+  graph: LayoutGraph,
+  config: LayoutConfig
+): void {
+  const coupleGap = config.nodeWidth + config.nodeSpacingX * 0.6;
+  const familyGap = config.nodeWidth + config.nodeSpacingX * 1.5;
+
+  for (const generation of orderedGens) {
+    const idsByX = generation.nodeIds
+      .filter((id) => positions.has(id))
+      .sort((a, b) => positions.get(a)!.x - positions.get(b)!.x);
+    const segments = buildSegments(idsByX, graph);
+    if (segments.length === 0) continue;
+
+    const originalMin = Math.min(...idsByX.map((id) => positions.get(id)!.x));
+    const originalMax = Math.max(...idsByX.map((id) => positions.get(id)!.x));
+    const originalCenter = (originalMin + originalMax) / 2;
+    let cursor = originalMin;
+    segments.forEach((segment, index) => {
+      if (index > 0) cursor += familyGap;
+      const first = positions.get(segment.ids[0]);
+      if (first) first.x = cursor;
+      if (segment.type === "couple") {
+        cursor += coupleGap;
+        const second = positions.get(segment.ids[1]);
+        if (second) second.x = cursor;
+      }
+    });
+
+    const packedMin = Math.min(...idsByX.map((id) => positions.get(id)!.x));
+    const packedMax = Math.max(...idsByX.map((id) => positions.get(id)!.x));
+    const centerShift = originalCenter - (packedMin + packedMax) / 2;
+    for (const id of idsByX) positions.get(id)!.x += centerShift;
+  }
+}
+
 // ─── Step 5: Compute edges ─────────────────────────────────
 
 function computeEdges(
@@ -432,6 +476,7 @@ function computeEdges(
   const edges: LayoutEdge[] = [];
   const half = config.nodeWidth / 2;
   const dropY_offset = config.nodeHeight / 2 + LABEL_HEIGHT + LABEL_GAP + config.nodeSpacingY * 0.35;
+  let routedCoupleCount = 0;
 
   for (const fu of graph.familyUnits) {
     const posA = positions.get(fu.partners[0]);
@@ -444,13 +489,32 @@ function computeEdges(
     const rightId = posA.x < posB.x ? fu.partners[1] : fu.partners[0];
 
     const coupleRel: Relationship = { type: fu.relationship, from: leftId, to: rightId };
-    const couplePath = `M ${leftPos.x + half} ${leftPos.y} L ${rightPos.x - half} ${rightPos.y}`;
+    const startX = leftPos.x + half;
+    const endX = rightPos.x - half;
+    const hasInterveningIndividual = [...positions.values()].some(
+      (position) =>
+        position.id !== leftId &&
+        position.id !== rightId &&
+        position.generation === leftPos.generation &&
+        position.x > leftPos.x &&
+        position.x < rightPos.x
+    );
+    const couplePath = hasInterveningIndividual
+      ? (() => {
+          const routeY =
+            leftPos.y -
+            config.nodeHeight / 2 -
+            18 -
+            routedCoupleCount++ * 12;
+          return `M ${startX} ${leftPos.y} L ${startX} ${routeY} L ${endX} ${routeY} L ${endX} ${rightPos.y}`;
+        })()
+      : `M ${startX} ${leftPos.y} L ${endX} ${rightPos.y}`;
     edges.push({ from: leftId, to: rightId, relationship: coupleRel, path: couplePath });
 
     // Consanguinity: add second parallel line
     if (fu.relationship === "consanguineous") {
       const offset = 3;
-      const consPath = `M ${leftPos.x + half} ${leftPos.y + offset} L ${rightPos.x - half} ${rightPos.y + offset}`;
+      const consPath = shiftPath(couplePath, 0, offset);
       edges.push({
         from: leftId, to: rightId,
         relationship: { type: "consanguineous", from: leftId, to: rightId, label: "_double" },
@@ -578,4 +642,61 @@ function shiftPath(pathData: string, dx: number, dy: number): string {
       return `${cmd} ${x} ${y}`;
     }
   );
+}
+
+export interface PedigreeCoupleCollision {
+  edge: LayoutEdge;
+  node: LayoutNode;
+}
+
+/** Post-layout semantic invariant used by lint and regression tests. */
+export function findPedigreeCoupleCollisions(
+  layout: LayoutResult
+): PedigreeCoupleCollision[] {
+  const collisions: PedigreeCoupleCollision[] = [];
+  const coupleTypes = new Set<RelationshipType>([
+    "married",
+    "separated",
+    "consanguineous",
+    "cohabiting",
+  ]);
+
+  for (const edge of layout.edges) {
+    if (!coupleTypes.has(edge.relationship.type)) continue;
+    if (edge.relationship.label === "_double") continue;
+    const points = [...edge.path.matchAll(/[ML]\s*([\d.-]+)\s+([\d.-]+)/g)]
+      .map((match) => ({ x: Number(match[1]), y: Number(match[2]) }));
+    if (points.length < 2) continue;
+
+    for (const node of layout.nodes) {
+      if (node.id === edge.from || node.id === edge.to) continue;
+      const pad = 2;
+      const left = node.x - pad;
+      const right = node.x + node.width + pad;
+      const top = node.y - pad;
+      const bottom = node.y + node.height + pad;
+      const intersects = points.slice(1).some((point, index) => {
+        const previous = points[index]!;
+        if (Math.abs(previous.y - point.y) < 0.01) {
+          return (
+            point.y >= top &&
+            point.y <= bottom &&
+            Math.max(Math.min(previous.x, point.x), left) <=
+              Math.min(Math.max(previous.x, point.x), right)
+          );
+        }
+        if (Math.abs(previous.x - point.x) < 0.01) {
+          return (
+            point.x >= left &&
+            point.x <= right &&
+            Math.max(Math.min(previous.y, point.y), top) <=
+              Math.min(Math.max(previous.y, point.y), bottom)
+          );
+        }
+        return false;
+      });
+      if (intersects) collisions.push({ edge, node });
+    }
+  }
+  return collisions;
 }

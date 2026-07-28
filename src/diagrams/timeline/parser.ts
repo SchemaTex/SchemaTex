@@ -105,6 +105,41 @@ function splitTopLevel(s: string, sep: string): string[] {
   return out;
 }
 
+function parseConfigAssignments(
+  body: string,
+  line: number
+): Array<{ key: string; value: string }> {
+  const assignments: Array<{ key: string; value: string }> = [];
+  const re = /([A-Za-z][\w-]*)\s*=\s*(.*?)(?=\s+[A-Za-z][\w-]*\s*=|$)/g;
+  let match: RegExpExecArray | null;
+  let consumed = 0;
+  while ((match = re.exec(body)) !== null) {
+    const gap = body.slice(consumed, match.index).trim();
+    if (gap) {
+      throw new TimelineParseError(
+        `Expected 'key = value' in config near: ${gap}`,
+        line
+      );
+    }
+    const value = match[2]!.trim();
+    if (!value) {
+      throw new TimelineParseError(
+        `Config key '${match[1]}' is missing a value`,
+        line
+      );
+    }
+    assignments.push({ key: match[1]!, value });
+    consumed = re.lastIndex;
+  }
+  if (assignments.length === 0 || body.slice(consumed).trim()) {
+    throw new TimelineParseError(
+      `Expected 'key = value' in config: ${body}`,
+      line
+    );
+  }
+  return assignments;
+}
+
 /**
  * Split the leading "date" or "date - date" / "date .. date" segment from
  * `label-and-rest`. Returns [dateSegment, rest-after-colon].
@@ -254,11 +289,9 @@ export function parseTimeline(src: string): TimelineAST {
     // config:
     if (/^config\s*:/i.test(text)) {
       const body = text.replace(/^config\s*:\s*/i, "");
-      const eq = body.indexOf("=");
-      if (eq < 0) throw new TimelineParseError(`Expected 'key = value' in config: ${text}`, L.line);
-      const k = body.slice(0, eq).trim();
-      const v = body.slice(eq + 1).trim();
-      applyConfig(ast, k, v, L.line);
+      for (const assignment of parseConfigAssignments(body, L.line)) {
+        applyConfig(ast, assignment.key, assignment.value, L.line);
+      }
       i++;
       continue;
     }

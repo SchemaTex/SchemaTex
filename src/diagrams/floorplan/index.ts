@@ -4,6 +4,25 @@ import { parseFloorplan } from "./parser";
 import { layoutFloorplan } from "./layout";
 import { renderFloorplan } from "./renderer";
 
+function floorplanDiagnosticCode(message: string): string {
+  if (/^rooms ".+" and ".+" overlap by /.test(message)) {
+    return "floorplan/room-overlap";
+  }
+  if (/^(door|opening|window) between .+: rooms share no wall/.test(message)) {
+    return "floorplan/opening-no-shared-wall";
+  }
+  if (/unknown (reference )?room/.test(message)) {
+    return "floorplan/unknown-room";
+  }
+  if (/another floor|different floors/.test(message)) {
+    return "floorplan/cross-floor-reference";
+  }
+  if (/^extend\b/.test(message)) {
+    return "floorplan/invalid-extension";
+  }
+  return "floorplan/validation";
+}
+
 export const floorplan: DiagramPlugin = {
   type: "floorplan",
   capabilities: { scene: true, editablePosition: true },
@@ -21,14 +40,15 @@ export const floorplan: DiagramPlugin = {
   render(text: string, config?: RenderConfig): string {
     return renderFloorplan(text, config);
   },
-  lint(text: string): SchematexDiagnostic[] {
+  lint(text: string, config?: Partial<RenderConfig>): SchematexDiagnostic[] {
     try {
-      const lay = layoutFloorplan(parseFloorplan(text));
+      const ast = parseFloorplan(text);
+      const lay = layoutFloorplan(ast);
       return [
         ...lay.errors.map(
           (message): SchematexDiagnostic => ({
             severity: "error",
-            code: "floorplan/validation",
+            code: floorplanDiagnosticCode(message),
             message,
             fatal: false,
           })
@@ -41,6 +61,17 @@ export const floorplan: DiagramPlugin = {
             fatal: false,
           })
         ),
+        ...(ast.mode === "evacuation" && config?.theme === "monochrome"
+          ? [
+              {
+                severity: "error" as const,
+                code: "floorplan/evacuation-color-required",
+                message:
+                  "monochrome theme is not permitted for evacuation plans — ISO 3864 safety colours are semantic (green = escape, red = fire equipment)",
+                fatal: false,
+              },
+            ]
+          : []),
       ];
     } catch {
       return []; // parse errors surface through parse(), not lint()

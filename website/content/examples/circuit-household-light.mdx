@@ -14,10 +14,10 @@ relatedLink:
 status: published
 dsl: |
   circuit "Single-pole household light" netlist
-  V1 live neutral 220Vac type=acsource label="V_mains"
+  V1 live 0 220Vac type=acsource label="V_mains"
   F1 live protected 16A
   S1 protected switched type=switch_spst label="S1"
-  L1 switched neutral type=lamp label="Lamp"
+  L1 switched 0 type=lamp label="Lamp"
 ---
 
 ## Scenario
@@ -29,8 +29,8 @@ An electrical installer needs a compact schematic for one wall switch controllin
 - `type=acsource` gives the 220 V mains source the AC symbol.
 - `F1` and `S1` sit in series on the live path before the load.
 - `type=lamp` is explicit because a bare `L1` means an inductor in SPICE notation.
-- `live`, `protected`, `switched`, and `neutral` describe electrical nets, not coordinates.
+- `live`, `protected`, and `switched` describe electrical nets; `0` is the bonded neutral reference, not a coordinate.
 
 ## How to read
 
-Current leaves the source on `live`, passes through fuse `F1` and switch `S1`, powers lamp `L1`, then returns on `neutral`. The auto-layout keeps that functional order left to right and draws neutral as a lower return rail instead of wrapping it around the top of the page.
+Current leaves the source on `live`, passes through fuse `F1` and switch `S1`, powers lamp `L1`, then returns on the bonded neutral reference `0`. The auto-layout keeps that functional order left to right and draws the return as a lower rail instead of wrapping it around the top of the page.

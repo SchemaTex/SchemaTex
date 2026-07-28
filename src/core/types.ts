@@ -819,12 +819,15 @@ export interface DiagramPlugin {
   /** Parse DSL text to the diagram's AST (for JSON export / programmatic access). */
   parse?: (text: string) => unknown;
   /**
-   * Optional non-fatal validation pass. Runs after a successful parse and
-   * returns domain-level warnings (e.g. an incomplete instrument loop) without
-   * blocking rendering. Surfaced through `parseResult` / `renderResult`
-   * diagnostics. Must not throw — return `[]` when there's nothing to flag.
+   * Optional domain-validation pass. Runs after a successful parse and may
+   * return render-blocking errors or non-blocking warnings. Surfaced through
+   * `parseResult` / `renderResult` diagnostics. Must not throw — return `[]`
+   * when there is nothing to flag.
    */
-  lint?: (text: string) => SchematexDiagnostic[];
+  lint?: (
+    text: string,
+    config?: Partial<RenderConfig>
+  ) => SchematexDiagnostic[];
   capabilities?: {
     /** Renderer can populate RenderConfig.__scene when explicitly requested. */
     scene?: boolean;
@@ -1960,6 +1963,8 @@ export type BreadboardPartKind =
   | "display-tm1637"
   | "module-rotary-ky040"
   | "module-l298n"
+  | "module-relay-1ch"
+  | "module-rtc-ds3231"
   | "actuator-servo-sg90";
 
 export interface BreadboardPart {

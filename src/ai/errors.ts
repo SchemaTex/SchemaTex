@@ -2,6 +2,8 @@ import { diagnosticFromError } from "../core/diagnostics";
 
 /** Structured error type returned by the AI tool layer. */
 export interface SchematexValidationError {
+  /** Stable machine-readable diagnostic code. */
+  code?: string;
   /** 1-based line number where the error occurred, if the parser reported it. */
   line?: number;
   /** 1-based column, if reported. */
@@ -28,6 +30,7 @@ export interface SchematexValidationError {
 export function extractError(err: unknown): SchematexValidationError {
   const diagnostic = diagnosticFromError(err);
   return {
+    code: diagnostic.code,
     line: diagnostic.line,
     column: diagnostic.column,
     source: diagnostic.source,

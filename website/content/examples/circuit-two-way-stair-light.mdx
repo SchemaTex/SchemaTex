@@ -14,11 +14,11 @@ relatedLink:
 status: published
 dsl: |
   circuit "Two-way stair light" netlist
-  V1 live neutral 220Vac type=acsource label="V_mains"
+  V1 live 0 220Vac type=acsource label="V_mains"
   F1 live feed 16A
   S1 feed traveler_a traveler_b type=switch_spdt label="S1"
   S2 switched traveler_a traveler_b type=switch_spdt label="S2"
-  L1 switched neutral type=lamp label="Lamp"
+  L1 switched 0 type=lamp label="Lamp"
 ---
 
 ## Scenario
@@ -29,9 +29,9 @@ A stair or hallway lamp must be operable from either end. That requires a change
 
 - Both `S1` and `S2` use `type=switch_spdt`, exposing one common and two throws.
 - `traveler_a` and `traveler_b` connect the two throws of the switches.
-- `feed` is the fused live common on `S1`; `switched` is the lamp-side common on `S2`.
+- `feed` is the fused live common on `S1`; `switched` is the lamp-side common on `S2`; `0` is the bonded neutral reference.
 - `L1 ... type=lamp` uses a load-appropriate designator and the lamp symbol.
 
 ## How to read
 
-Each switch selects one traveler. The lamp is energized when both switches select the same continuous path and de-energized when they select different paths, so changing either switch changes the lamp state. Neutral returns directly from the lamp to the source on the lower rail.
+Each switch selects one traveler. The lamp is energized when both switches select the same continuous path and de-energized when they select different paths, so changing either switch changes the lamp state. The bonded neutral reference `0` returns directly from the lamp to the source on the lower rail.

@@ -665,16 +665,6 @@ export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: Rende
   const t: Theme =
     evacuationTheme ?? resolveFloorplanTheme(config?.theme ?? "default");
   if (lay.errors.length > 0) return renderErrorPanel(lay, t);
-  // Deliberate exception: monochrome is a compliance error but does not block
-  // rendering. Keeping the colour SVG visible lets the author diagnose the
-  // remaining plan instead of replacing it with the ordinary error panel.
-  const renderErrors =
-    isEvacuation && config?.theme === "monochrome"
-      ? [
-          "monochrome theme is not permitted for evacuation plans — ISO 3864 safety colours are semantic (green = escape, red = fire equipment); rendering in default colours instead",
-        ]
-      : [];
-
   const scale = C.scale;
   const px = (m: number): number => r2(m * scale);
   const band = C.dimBand + C.pad;
@@ -694,8 +684,10 @@ export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: Rende
   const ctx: Ctx = { X, Y, px, t, wallT: lay.wallT };
 
   const titleH = TITLE.bandH;
-  const diagnosticCount = lay.warnings.length + renderErrors.length;
-  const warnH = diagnosticCount ? diagnosticCount * 17 + 10 : 0;
+  // Diagnostics are returned out-of-band by the public result APIs. Keep the
+  // exported drawing itself clean: warnings belong in the editor/admin UI,
+  // never in the architectural sheet body.
+  const warnH = 0;
   let W = px(lay.bounds.maxX - lay.bounds.minX + band + tail);
   let H = px(lay.bounds.maxY - lay.bounds.minY + band + tail) + titleH + warnH;
   // house rule (PR #40): center the title on the content, not the canvas —
@@ -866,7 +858,11 @@ export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: Rende
     }
   }
 
-  const warnSet = new Set(lay.warnItems);
+  // Collision overlays are editor affordances. Plain SVG export keeps the
+  // drawing clean and returns the warnings through renderResult instead.
+  const warnSet = config?.__scene
+    ? new Set(lay.warnItems)
+    : new Set<number>();
   lay.items.forEach((it, idx) => {
     if (
       isEvacuation &&
@@ -1073,27 +1069,16 @@ export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: Rende
   }
 
   const nRooms = lay.rooms.length;
-  const evacuationDiagnostics = [
-    renderErrors.length
-      ? `${renderErrors.length} error${renderErrors.length === 1 ? "" : "s"}`
-      : "",
-    lay.warnings.length
-      ? `${lay.warnings.length} warning${lay.warnings.length === 1 ? "" : "s"}`
-      : "",
-  ].filter(Boolean).join(", ");
   const descText = isEvacuation && lay.evacuation
     ? `${nRooms} room${nRooms === 1 ? "" : "s"}, ${lay.evacuation.routes.length} escape route${lay.evacuation.routes.length === 1 ? "" : "s"}, ` +
       `${lay.evacuation.profile === "iso" ? "ISO 23601" : lay.evacuation.profile === "nfpa" ? "NFPA 170" : "UAE Civil Defence"} profile. ` +
-      lay.evacuation.scale.note +
-      (evacuationDiagnostics ? ` ${evacuationDiagnostics}.` : "")
+      lay.evacuation.scale.note
     : legacySingle
     ? `${nRooms} room${nRooms === 1 ? "" : "s"}, ${formatArea(lay.totalAreaM2, lay.unit)} total. ` +
-      `${lay.items.length} furniture item${lay.items.length === 1 ? "" : "s"}.` +
-      (lay.warnings.length ? ` Warnings: ${lay.warnings.join("; ")}.` : "")
+      `${lay.items.length} furniture item${lay.items.length === 1 ? "" : "s"}.`
     : `${lay.plates.length} floors, ${nRooms} rooms, ${formatArea(lay.totalAreaM2, lay.unit)} total (` +
       `${lay.plates.map((plate) => `${plate.label} ${plate.areaText}`).join(", ")}). ` +
-      `${lay.items.length} furniture item${lay.items.length === 1 ? "" : "s"}.` +
-      (lay.warnings.length ? ` Warnings: ${lay.warnings.join("; ")}.` : "");
+      `${lay.items.length} furniture item${lay.items.length === 1 ? "" : "s"}.`;
 
   const groupedLayers = (layers: RenderLayers): string[] =>
     isEvacuation
@@ -1162,35 +1147,6 @@ export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: Rende
   }
   H = legendBottom + warnH;
   const chartXOffset = Math.max(0, (W - naturalWidth) / 2);
-  const warnBlock: string[] = [];
-  if (diagnosticCount) {
-    const y0 = H - warnH + 4;
-    renderErrors.forEach((error, index) => {
-      warnBlock.push(
-        textEl(
-          {
-            class: "sx-fp-compliance-error",
-            x: 10,
-            y: r2(y0 + index * 17 + 10),
-          },
-          `✕ ${error}`
-        )
-      );
-    });
-    lay.warnings.forEach((warning, index) => {
-      warnBlock.push(
-        textEl(
-          {
-            class: "sx-fp-warn",
-            x: 10,
-            y: r2(y0 + (renderErrors.length + index) * 17 + 10),
-          },
-          `⚠ ${warning}`
-        )
-      );
-    });
-  }
-
   const titleScene = resolveSceneTitle(
     lay.title,
     lay.titleSourceRange,
@@ -1238,7 +1194,6 @@ export function renderFloorplanLayout(lay: FloorplanLayoutResult, config?: Rende
             ),
           ]),
       ...(legendSvg ? [legendSvg] : []),
-      ...warnBlock,
     ]
   );
 }

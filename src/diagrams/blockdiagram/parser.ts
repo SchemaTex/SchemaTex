@@ -21,6 +21,7 @@ const SIGNAL_DECL_RE = new RegExp(
   "u"
 );
 const BRACKETED_IDENTIFIER_RE = new RegExp(`^\\[(${IDENTIFIER_SOURCE})\\]$`, "u");
+const BOUNDARY_PORT_IDS = new Set(["in", "out"]);
 
 export class BlockDiagramParseError extends Error {
   constructor(
@@ -212,7 +213,7 @@ export function parseBlockDiagram(text: string): BlockAST {
           blocks.some((b) => b.id === ep) ||
           sums.some((s) => s.id === ep) ||
           signals.has(ep);
-        if (!exists) {
+        if (!exists && !BOUNDARY_PORT_IDS.has(ep)) {
           blocks.push({ id: ep, label: ep, role: "generic" });
         }
       }
