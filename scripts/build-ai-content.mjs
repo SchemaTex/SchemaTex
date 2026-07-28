@@ -71,6 +71,7 @@ const SYNTAX_KEYS = [
   "welding",
   "floorplan",
   "evacuation",
+  "stageplot",
   "siteplan",
   "playbook",
   "rbd",

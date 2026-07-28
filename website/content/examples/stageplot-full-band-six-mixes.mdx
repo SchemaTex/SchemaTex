@@ -1,0 +1,60 @@
+---
+title: Full band — drum riser and six monitor mixes
+description: "A 40 × 24 ft full-band technical advance with an 8-inch drum riser, 15 console inputs, six monitor sends, stereo keys, an IEM, power circuits, and a derived output schedule."
+diagram: stageplot
+standard: Professional live-sound advance convention
+industry: [live-events, touring]
+persona: For a production manager advancing a full-band theater show
+complexity: 4
+tags: [stageplot, full-band, drum-riser, six-monitor-mixes, power, technical-rider]
+featured: false
+relatedLink:
+  label: Stage plot syntax
+  href: /docs/stageplot
+status: published
+dsl: |
+  stageplot "Full Band — Six Monitor Mixes" unit ft
+  venue "Grand Hall"
+  show-date "August 21, 2026"
+  revision "Rev 3 · July 27, 2026"
+  technical-contact "Morgan Lee · production@example.com · +1 310 555 0142"
+  stage deck at 0,0 size 40x24
+  equipment stage-riser drum-riser in deck at 14,1 size 12x9 "8 in drum riser"
+  equipment drum-kit drums in deck at 17,3 "Drums"
+  equipment drum-mic kick in deck at 19,7 channel 1 source "Kick" model "Shure Beta 52A" stand short-boom phantom no
+  equipment drum-mic snare in deck at 16,6 channel 2 source "Snare top" model "Shure SM57" stand short-boom phantom no
+  equipment drum-mic hi-hat in deck at 14,4 channel 3 source "Hi-hat" model "Shure SM81" stand boom phantom yes
+  equipment drum-mic rack-tom in deck at 21,4 channel 4 source "Rack tom" model "Sennheiser e604" stand clip phantom no
+  equipment drum-mic floor-tom in deck at 24,6 channel 5 source "Floor tom" model "Sennheiser e604" stand clip phantom no
+  equipment overhead oh-l in deck at 14,1 channel 6 source "OH L" model "Shure KSM137" stand boom phantom yes
+  equipment overhead oh-r in deck at 23,1 channel 7 source "OH R" model "Shure KSM137" stand boom phantom yes
+  equipment guitar-amp guitar-l in deck at 4,5 "Guitar L"
+  equipment guitar-amp guitar-r in deck at 32,5 "Guitar R"
+  equipment bass-cabinet bass-cab in deck at 28,3 "Bass"
+  equipment di-box bass-di in deck at 29,7 channel 8 source "Bass DI" model "Radial J48" stand none phantom yes
+  equipment drum-mic guitar-l-mic in deck at 5,7 channel 9 source "Guitar L" model "Sennheiser e906" stand short-boom phantom no
+  equipment drum-mic guitar-r-mic in deck at 32,7 channel 10 source "Guitar R" model "Sennheiser e906" stand short-boom phantom no
+  equipment keyboard keys in deck at 3,12 "Keys"
+  equipment di-box keys-l in deck at 7,12 channel 11 source "Keys L" model "Radial ProD2" stand none phantom no
+  equipment di-box keys-r in deck at 7,14 channel 12 source "Keys R" model "Radial ProD2" stand none phantom no
+  equipment boom-stand bgv-l in deck at 9,17 channel 13 source "Jon — Guitar / vocal" model "Shure Beta 58A" stand boom phantom no
+  equipment boom-stand lead in deck at 19,18 channel 14 source "Maya — Lead vocal" model "Shure Beta 58A" stand boom phantom no
+  equipment boom-stand bgv-r in deck at 30,17 channel 15 source "Rae — Guitar / vocal" model "Shure Beta 58A" stand boom phantom no
+  equipment iem bass-iem in deck at 27,14 mix 4 "Bass IEM" notes "Artist provides receiver"
+  monitor 1 m1 in deck at 2,20 "Keys"
+  monitor 2 m2 in deck at 9,20 "Guitar L"
+  monitor 3 m3 in deck at 16,20 "Lead"
+  monitor 5 m5 in deck at 30,20 "Guitar R"
+  monitor 6 m6 in deck at 20,12 "Drums"
+  equipment power-drop power-l in deck at 1,2 "120V / 20A · Circuit A"
+  equipment power-drop power-r in deck at 38,2 "120V / 20A · Circuit B"
+  equipment snake snake-a in deck at 36,10
+  signal kick -> snake-a
+  signal snare -> snake-a
+  signal keys-l -> snake-a
+  signal lead -> snake-a
+---
+
+The five wedges and one IEM derive six output rows without duplicating monitor
+data. Fifteen realistic console inputs stress the print layout, while patch
+routes stay hidden so placement remains dominant.

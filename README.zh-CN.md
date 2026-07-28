@@ -33,7 +33,7 @@
 
 ---
 
-**Schematex** 是一个开源渲染与编辑引擎，专门画那些专业人士**真正在用**的图 —— 医学、电气、法律、分析领域。**51 种图**，覆盖医学、工程、法律与分析：
+**Schematex** 是一个开源渲染与编辑引擎，专门画那些专业人士**真正在用**的图 —— 医学、电气、法律、现场制作与分析领域。**52 种图**，覆盖医学、工程、法律、现场制作与分析：
 
 - 👪 **关系类** —— 家系图（genogram）、生态图（ecomap）、遗传谱系图（pedigree）、社交图（sociogram）、系统发育树（phylo）
 - ⚡ **电气与工业** —— 梯形图（ladder）、单线图（SLD）、电路原理图（circuit）、逻辑门（logic）、时序图（timing）、方框图（block）、**FBD**、**SFC**、面包板（breadboard）、**P&ID**（ISA-5.1）
@@ -44,6 +44,7 @@
 - 🛡️ **风险与可靠性** —— **故障树**（NUREG-0492 / IEC 61025），引擎*计算* MOCUS 最小割集 + P(top)；**领结图 bowtie** 基于屏障的风险管理（CCPS / Energy Institute 2018）
 - 🗓️ **项目管理** —— **PERT / CPM** 网络图（PMBOK 7），引擎*计算*进度：ES/EF/LS/LF、时差、关键路径、三点估算、泳道、时间刻度布局
 - 🖧 **网络与基础设施** —— **网络拓扑图**（Cisco 约定图标），设备 / 链路 / 端口完整性校验、IP 网络摄像机系统、三层园区网、spine-leaf 架构、子网与 VLAN
+- 🏠 **建筑与空间** —— 可量测的单层 / 多层平面图、标准化疏散图，以及自动生成 input list 的正式 stage plot
 - ◉ **并发** —— **Petri 网**（Murata 1989 / ISO-IEC 15909），引擎*计算*使能状态并按序列触发 token
 - 🔬 **研究综述** —— **PRISMA 2020** 系统综述流程图
 - 📅 **时间线** —— 比例 / 等距 / 对数轴 · 泳道 · 甘特 · 棒棒糖 · 公元前日期 · 地质 Ma 刻度
@@ -97,13 +98,13 @@ export function DiagramEditor() {
 }
 ```
 
-21 种具备 parser-native range 的图支持确定性的 Canvas 编辑，其中 18 种还支持稳定 ID 拖拽或 native geometry handle。其余 30 种仍可正常 render 和通过 DSL 源码编辑，但不会生成猜测式 Canvas handle。详见 [Interactive Editing 指南](https://schematex.js.org/docs/interactive-editing) 和 [在线测试 workspace](https://schematex.js.org/playground)。
+21 种具备 parser-native range 的图支持确定性的 Canvas 编辑，其中 18 种还支持稳定 ID 拖拽或 native geometry handle。其余 31 种仍可正常 render 和通过 DSL 源码编辑，但不会生成猜测式 Canvas handle。详见 [Interactive Editing 指南](https://schematex.js.org/docs/interactive-editing) 和 [在线测试 workspace](https://schematex.js.org/playground)。
 
 开发型 LLM 可以从 [`llms.txt`](https://schematex.js.org/llms.txt) 开始，通过 [`llms-full.txt`](https://schematex.js.org/llms-full.txt) 读取完整 Markdown 文档，或查询 [machine-readable interactive capability registry](https://schematex.js.org/api/interactive-capabilities)。任意 docs URL 末尾加 `.md` 即可获得干净的 Markdown。
 
 ## 图库
 
-全部 51 种图共用同一条渲染管线，下面展示其中一部分 —— **在 [schematex.js.org/playground](https://schematex.js.org/playground) 实时试用任意一种。**
+全部 52 种图共用同一条渲染管线，下面展示其中一部分 —— **在 [schematex.js.org/playground](https://schematex.js.org/playground) 实时试用任意一种。**
 
 ### 👪 家系图 Genogram —— *McGoldrick 家庭系统标准*
 

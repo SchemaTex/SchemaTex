@@ -9,6 +9,7 @@ import { parseMachineSections } from "./editing";
 import { createSourceLocator, findFirstQuotedRange } from "./source-range";
 import { sourceRevision } from "./revision";
 import { TITLE_SCENE_ID } from "./title-scene";
+import { isInteractiveDiagramType } from "./interactive-capabilities";
 import {
   diagnosticFromError,
   renderDiagnosticSvg,
@@ -154,7 +155,7 @@ function detectPlugin(text: string, config?: SchematexConfig): DiagramPlugin {
     if (plugin.detect(text)) return plugin;
   }
   throw new Error(
-    "Cannot detect diagram type. Start your text with 'genogram', 'ecomap', 'pedigree', 'phylo', 'sociogram', 'timing', 'logic', 'circuit', 'blockdiagram', 'ladder', 'sld', 'entity-structure', 'fishbone', 'venn', 'flowchart', 'mindmap', 'matrix', 'orgchart', 'state', 'pid', 'erd', 'breadboard', 'bpmn', 'fbd', 'sfc', 'prisma', 'usecase', 'pert', 'sequence', 'petri', 'network', 'umlclass', 'faulttree', 'bowtie', 'rbd', 'floorplan', 'evacuation', 'siteplan', or 'playbook'."
+    "Cannot detect diagram type. Start your text with 'genogram', 'ecomap', 'pedigree', 'phylo', 'sociogram', 'timing', 'logic', 'circuit', 'blockdiagram', 'ladder', 'sld', 'entity-structure', 'fishbone', 'venn', 'flowchart', 'mindmap', 'matrix', 'orgchart', 'state', 'pid', 'erd', 'breadboard', 'bpmn', 'fbd', 'sfc', 'prisma', 'usecase', 'pert', 'sequence', 'petri', 'network', 'umlclass', 'faulttree', 'bowtie', 'rbd', 'floorplan', 'evacuation', 'stageplot', 'siteplan', or 'playbook'."
   );
 }
 
@@ -610,7 +611,7 @@ export function render(text: string, config?: SchematexConfig): string {
   const type = requestedType(plugin, config);
   const forced = config?.type != null && servesType(plugin, config.type);
   const prepared = prepareForPlugin(prepared0, plugin, forced, type);
-  return renderWithPlugin(prepared, plugin, config).svg;
+  return renderWithPlugin(prepared, plugin, type, config).svg;
 }
 
 export function renderResult(
@@ -624,7 +625,7 @@ export function renderResult(
     const type = requestedType(plugin, config);
     const forced = config?.type != null && servesType(plugin, config.type);
     const prepared = prepareForPlugin(prepared0, plugin, forced, type);
-    const rendered = renderWithPlugin(prepared, plugin, config);
+    const rendered = renderWithPlugin(prepared, plugin, type, config);
     const diagnostics = [...prepared.diagnostics, ...runLint(plugin, prepared.text)];
     return {
       ok: true,
@@ -656,10 +657,17 @@ export function renderPreview(text: string, config?: SchematexConfig): string {
 function renderWithPlugin(
   prepared: PreparedInput,
   plugin: DiagramPlugin,
+  type: DiagramType,
   config?: SchematexConfig
 ): { svg: string; scene?: SceneItem[] } {
   let scene: SceneItem[] | undefined;
-  if (config?.scene === true && plugin.capabilities?.scene) scene = [];
+  if (
+    config?.scene === true &&
+    plugin.capabilities?.scene &&
+    isInteractiveDiagramType(type)
+  ) {
+    scene = [];
+  }
   const renderConfig: RenderConfig = {
     fontFamily: config?.fontFamily ?? "system-ui, -apple-system, sans-serif",
     fontSize: 12,

@@ -30,6 +30,7 @@ import type {
 } from "./types";
 import { FLOORPLAN_SYMBOLS } from "./catalog";
 import { finalizeEvacuationLayout } from "./evacuation";
+import { finalizeStageplotLayout } from "./stageplot";
 
 const FT = 0.3048;
 
@@ -959,9 +960,9 @@ export function layoutFloorplan(
         seamIdx: layout.seams.map((_, index) => index),
       }],
     };
-    return ast.mode === "evacuation"
-      ? finalizeEvacuationLayout(ast, result)
-      : result;
+    if (ast.mode === "evacuation") return finalizeEvacuationLayout(ast, result);
+    if (ast.mode === "stageplot") return finalizeStageplotLayout(ast, result);
+    return result;
   }
 
   const refs = crossFloorReferences(ast);
@@ -1083,9 +1084,9 @@ export function layoutFloorplan(
     warnings,
     warnItems,
   };
-  return ast.mode === "evacuation"
-    ? finalizeEvacuationLayout(ast, result)
-    : result;
+  if (ast.mode === "evacuation") return finalizeEvacuationLayout(ast, result);
+  if (ast.mode === "stageplot") return finalizeStageplotLayout(ast, result);
+  return result;
 }
 
 // ─── Opening resolution ──────────────────────────────────────────

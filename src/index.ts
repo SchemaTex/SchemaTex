@@ -1,7 +1,7 @@
 /**
  * Schematex — professional text-to-diagram rendering and editing engine.
  *
- * Supports 50 medical, engineering, legal, software, and analytical diagrams.
+ * Supports 52 medical, engineering, legal, software, production, and analytical diagrams.
  * Output: SVG plus optional scene metadata for browser editing.
  *
  * @example
@@ -96,6 +96,12 @@ export { welding } from "./diagrams/welding";
 export { rbd } from "./diagrams/rbd";
 export { comparison } from "./diagrams/comparison";
 export { floorplan } from "./diagrams/floorplan";
+export {
+  deriveStageInputList,
+  deriveStageOutputList,
+  renderStageplotLayout,
+  STAGE_SYMBOLS,
+} from "./diagrams/floorplan";
 export { siteplan } from "./diagrams/siteplan";
 export { playbook } from "./diagrams/playbook";
 

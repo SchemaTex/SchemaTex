@@ -94,6 +94,50 @@ export type EscapeRouteKind =
   | "accessible"
   | "rescue";
 
+/**
+ * Live-sound stage equipment. `stage-riser` is deliberately namespaced:
+ * evacuation mode already uses bare `riser` for a fire-service riser sign.
+ * Stage mode accepts `riser` as a parser alias but stores this canonical key.
+ */
+export const STAGE_EQUIPMENT_KINDS = [
+  "drum-kit",
+  "guitar-amp",
+  "bass-amp",
+  "keyboard",
+  "bass-cabinet",
+  "boom-stand",
+  "straight-stand",
+  "drum-mic",
+  "overhead",
+  "di-box",
+  "mixer",
+  "foh-console",
+  "snake",
+  "monitor-wedge",
+  "side-fill",
+  "iem",
+  "power-drop",
+  "stage-riser",
+  "music-stand",
+  "set-list",
+  // Reused from the floorplan catalog; no duplicate line art.
+  "stage",
+  "dance-floor",
+  "dj-booth",
+  "podium",
+  "row-chairs",
+  "piano",
+] as const;
+
+export type StageEquipmentKind = (typeof STAGE_EQUIPMENT_KINDS)[number];
+
+export type StageStandType =
+  | "boom"
+  | "straight"
+  | "short-boom"
+  | "clip"
+  | "none";
+
 /** One level in a multi-floor plan set (§48.2.5). */
 export interface FloorplanFloor {
   level: number;
@@ -389,9 +433,64 @@ export interface FireDoorMarkAst {
   line?: number;
 }
 
+export interface StageEquipmentAst {
+  kind: StageEquipmentKind;
+  /** Stable id used by signal paths. */
+  id: string;
+  /** Containing stage/room for room-relative coordinates. */
+  room?: string;
+  /** Absolute plan coordinates rather than room-relative coordinates. */
+  outside: boolean;
+  x: number;
+  y: number;
+  size?: { w: number; h: number };
+  rotate: number;
+  label?: string;
+  /** Mixer input channel. Presence derives one input-list row. */
+  channel?: number;
+  /** Instrument/person/source shown in the input list. */
+  source?: string;
+  /** Suggested microphone or DI model. */
+  model?: string;
+  stand?: StageStandType;
+  phantom: boolean;
+  notes?: string;
+  /** Monitor mix/send number; required for wedges. */
+  mix?: number;
+  floor: number;
+  line?: number;
+}
+
+export interface StageSignalPathAst {
+  id: string;
+  anchors: string[];
+  label?: string;
+  floor: number;
+  line?: number;
+}
+
+export interface StageplotDocumentMeta {
+  venue?: string;
+  showDate?: string;
+  revision?: string;
+  technicalContact?: string;
+}
+
+export interface StageplotAstData {
+  equipment: StageEquipmentAst[];
+  signals: StageSignalPathAst[];
+  document: StageplotDocumentMeta;
+  /** The derived table is visible by default. */
+  showInputList: boolean;
+  /** The derived monitor/output schedule is visible by default. */
+  showOutputList: boolean;
+  /** Patch routes are opt-in so placement remains dominant. */
+  showSignalPaths: boolean;
+}
+
 export interface FloorplanAst {
   type: "floorplan";
-  mode: "floorplan" | "evacuation";
+  mode: "floorplan" | "evacuation" | "stageplot";
   title: string;
   titleSourceRange?: import("../../core/types").SourceRange;
   unit: FloorplanUnit;
@@ -415,6 +514,7 @@ export interface FloorplanAst {
   /** Furniture remains in the AST; evacuation rendering hides it by default. */
   showFurniture: boolean;
   legendOverrides: LegendOverrides;
+  stageplot: StageplotAstData;
 }
 
 // ─── Layout result (absolute meters, y-down) ─────────────────────
@@ -570,6 +670,66 @@ export interface EvacuationLayoutData {
   notes: string[];
 }
 
+export interface StageInputRow {
+  channel: number;
+  source: string;
+  model: string;
+  position: string;
+  stand: StageStandType;
+  phantom: boolean;
+  notes: string;
+}
+
+export type StageOutputType = "WEDGE" | "IEM" | "SIDE FILL";
+
+export interface StageOutputRow {
+  mix: number;
+  destination: string;
+  type: StageOutputType;
+  quantity: number;
+  position: string;
+  notes: string;
+}
+
+export interface StageEquipmentGeom {
+  kind: StageEquipmentKind;
+  id: string;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  rotate: number;
+  label?: string;
+  channel?: number;
+  source?: string;
+  model?: string;
+  stand: StageStandType;
+  phantom: boolean;
+  notes?: string;
+  mix?: number;
+  roomId?: string;
+  floor: number;
+}
+
+export interface StageSignalPathGeom {
+  id: string;
+  points: RoutePoint[];
+  anchors: string[];
+  label?: string;
+  floor: number;
+}
+
+export interface StageplotLayoutData {
+  equipment: StageEquipmentGeom[];
+  signals: StageSignalPathGeom[];
+  inputList: StageInputRow[];
+  outputList: StageOutputRow[];
+  document: StageplotDocumentMeta;
+  showInputList: boolean;
+  showOutputList: boolean;
+  showSignalPaths: boolean;
+}
+
 export interface DimLineGeom {
   vertical: boolean;
   /** Line position: y for horizontal dims, x for vertical dims (meters). */
@@ -618,6 +778,7 @@ export interface FloorplanLayoutResult {
   /** Indices into `items` flagged by collision warnings (renderer highlights them). */
   warnItems: number[];
   evacuation?: EvacuationLayoutData;
+  stageplot?: StageplotLayoutData;
 }
 
 export interface FloorPlate {

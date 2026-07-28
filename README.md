@@ -33,7 +33,7 @@
 
 ---
 
-**Schematex** is the open-source rendering and editing engine for the diagrams professionals actually use — medical, electrical, legal, and analytical. **51 diagram families** spanning medicine, engineering, law, and analysis:
+**Schematex** is the open-source rendering and editing engine for the diagrams professionals actually use — medical, electrical, legal, production, and analytical. **52 diagram families** spanning medicine, engineering, law, live production, and analysis:
 
 - 👪 **Relationships** — genograms, ecomaps, pedigrees, sociograms, phylogenetic trees
 - ⚡ **Electrical & Industrial** — ladder logic, single-line diagrams, circuit schematics, logic gates, timing, block diagrams, **FBD**, **SFC**, breadboard, **P&ID** (ISA-5.1)
@@ -44,7 +44,7 @@
 - 🛡️ **Risk & Reliability** — **fault trees** (NUREG-0492 / IEC 61025) that *compute* MOCUS minimal cut sets + P(top), **bowtie** barrier-based risk (CCPS / Energy Institute 2018)
 - 🗓️ **Project management** — **PERT / CPM** networks (PMBOK 7) that *compute* the schedule: ES/EF/LS/LF, slack, critical path, three-point estimation, swimlanes, time-scaled layout
 - 🖧 **Network & Infrastructure** — **network topology** diagrams (Cisco-convention icons) with device/link/port integrity, IP-CCTV camera systems, three-tier campus, spine-leaf fabric, subnets & VLANs
-- 🏠 **Architecture & Space** — measurable single/multi-floor plans and standards-aware evacuation plans with safety signs, escape routes, mandatory legends, and print-scale checks
+- 🏠 **Architecture & Space** — measurable single/multi-floor plans, standards-aware evacuation plans, and venue-ready stage plots with auto-derived input lists
 - ◉ **Concurrency** — **Petri nets** (Murata 1989 / ISO-IEC 15909) that *compute* enablement and fire token sequences
 - 🔬 **Research** — **PRISMA 2020** systematic-review flow diagrams
 - 📅 **Timelines** — proportional / equidistant / log axis · swimlane · gantt · lollipop · BC dates · geological Ma scale
@@ -108,13 +108,13 @@ export function DiagramEditor() {
 `viewport` opts into built-in pan, pinch/wheel zoom, and fit-to-view while your
 app keeps ownership of any zoom controls through `viewportRef`.
 
-Twenty-one parser-native diagram types support deterministic canvas editing; 18 also support stable-ID drag or native geometry handles. The other 30 remain fully renderable and editable through their DSL source, without guessed canvas handles. See the [interactive editing guide](https://schematex.js.org/docs/interactive-editing) and [live workspace](https://schematex.js.org/playground).
+Twenty-one parser-native diagram types support deterministic canvas editing; 18 also support stable-ID drag or native geometry handles. The other 31 remain fully renderable and editable through their DSL source, without guessed canvas handles. See the [interactive editing guide](https://schematex.js.org/docs/interactive-editing) and [live workspace](https://schematex.js.org/playground).
 
 Coding agents can start at [`llms.txt`](https://schematex.js.org/llms.txt), load the complete Markdown corpus from [`llms-full.txt`](https://schematex.js.org/llms-full.txt), or query the [machine-readable interaction capability registry](https://schematex.js.org/api/interactive-capabilities). Append `.md` to any documentation URL for clean Markdown.
 
 ## Gallery
 
-All 51 diagram types share one unified pipeline. A selection is shown below — **try any of them live at [schematex.js.org/playground](https://schematex.js.org/playground).**
+All 52 diagram types share one unified pipeline. A selection is shown below — **try any of them live at [schematex.js.org/playground](https://schematex.js.org/playground).**
 
 ### 👪 Genogram — *McGoldrick family-systems standard*
 
@@ -803,6 +803,33 @@ route primary here -> lobby -> stair -> east
 ![Hotel Level 2 evacuation plan](examples/evacuation/hotel-floor.svg)
 
 [Evacuation plan syntax →](https://schematex.js.org/docs/evacuation)
+
+### 🎚️ Stage plot — *professional live-sound advance convention*
+
+A measured stage layout plus its console input and monitor-output schedules come from one equipment tree. Formal revision/contact metadata, automatic dimensions, backline, microphone/DI symbols, numbered monitor mixes, power, snake boxes, FOH, and optional orthogonal signal paths share the floorplan coordinate model. The direction rails remove the most dangerous ambiguity: page-left is **STAGE RIGHT** and page-right is **STAGE LEFT**, from the performer facing the audience.
+
+```text
+stageplot "Four-piece Rock Band" unit ft
+venue "The Sound Room"
+show-date "August 14, 2026"
+revision "Rev 2 · July 27, 2026"
+technical-contact "Morgan Lee · production@example.com"
+signal-paths on
+stage deck at 0,0 size 32x20
+equipment drum-kit drums in deck at 12,2 "Drums"
+equipment drum-mic kick in deck at 13,5 channel 1 source "Kick" model "Shure Beta 52A" stand short-boom phantom no
+equipment di-box bass-di in deck at 5,8 channel 2 source "Bass DI" model "Radial J48" stand none phantom yes
+equipment boom-stand lead in deck at 15,15 channel 3 source "Lead vocal" model "Shure SM58" stand boom phantom no
+monitor 1 lead-mix in deck at 13,17 "Lead"
+equipment iem bass-iem in deck at 5,13 mix 2 "Bass IEM"
+equipment snake snake-a in deck at 29,10
+signal bass-di -> snake-a
+signal lead -> snake-a
+```
+
+![Four-piece rock band stage plot](examples/stageplot/four-piece-rock.svg)
+
+[Stage plot syntax →](https://schematex.js.org/docs/stageplot)
 
 ### 🏟️ Sports playbook — *coaching X&O notation, three sports*
 

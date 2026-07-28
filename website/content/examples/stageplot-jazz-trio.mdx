@@ -1,0 +1,38 @@
+---
+title: Jazz trio stage plot
+description: "A compact 24 × 16 ft jazz-trio advance with piano, upright bass, drums, three input channels, two monitor mixes, and a stage snake."
+diagram: stageplot
+standard: Professional live-sound advance convention
+industry: [live-events, jazz]
+persona: For a performing-arts-center audio engineer setting a jazz trio
+complexity: 2
+tags: [stageplot, jazz-trio, piano, upright-bass, live-sound, input-list]
+featured: false
+relatedLink:
+  label: Stage plot syntax
+  href: /docs/stageplot
+status: published
+dsl: |
+  stageplot "Jazz Trio" unit ft
+  venue "Center Stage"
+  show-date "September 5, 2026"
+  revision "Rev 1 · July 27, 2026"
+  technical-contact "Avery Chen · sound@example.com"
+  stage deck at 0,0 size 24x16
+  equipment piano piano in deck at 2,3 "Grand piano"
+  equipment straight-stand piano-mic in deck at 7,4 channel 1 source "Piano" model "AKG C414" stand straight phantom yes
+  equipment bass-amp upright-bass in deck at 17,3 "Upright bass"
+  equipment di-box bass-di in deck at 18,7 channel 2 source "Upright bass DI" model "Radial PZ-DI" stand none phantom yes
+  equipment drum-kit drums in deck at 10,2 "Drums"
+  equipment overhead drum-oh in deck at 14,2 channel 3 source "Drum overhead" model "Neumann KM 184" stand boom phantom yes
+  monitor 1 piano-mix in deck at 4,12 "Piano"
+  monitor 2 bass-mix in deck at 17,12 "Bass"
+  equipment snake snake-a in deck at 21,8
+  signal piano-mic -> snake-a
+  signal bass-di -> snake-a
+  signal drum-oh -> snake-a
+---
+
+The input list is small enough to patch at a glance, while explicit 48V values
+and auto-derived stage positions make the condenser and active-DI requirements
+visible before soundcheck. Signal paths remain hidden by default.

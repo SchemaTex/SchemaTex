@@ -7,13 +7,13 @@ import { renderFloorplan } from "./renderer";
 export const floorplan: DiagramPlugin = {
   type: "floorplan",
   capabilities: { scene: true, editablePosition: true },
-  altTypes: ["evacuation"],
+  altTypes: ["evacuation", "stageplot"],
   detect(text: string): boolean {
     for (const raw of text.split(/\r?\n/)) {
       const t = raw.trim();
       if (!t) continue;
       if (t.startsWith("#") || t.startsWith("//")) continue;
-      return /^(floorplan|evacuation|escapeplan)\b/i.test(t);
+      return /^(floorplan|evacuation|escapeplan|stageplot|stage-plot)\b/i.test(t);
     }
     return false;
   },
@@ -64,4 +64,13 @@ export {
   validateEvacuation,
 } from "./evacuation";
 export { buildEvacuationLegend } from "./legend";
+export {
+  deriveStageInputList,
+  deriveStageOutputList,
+  finalizeStageplotLayout,
+  inferStageStand,
+  renderStageplotLayout,
+} from "./stageplot";
+export { STAGE_SYMBOLS } from "./stage-symbols";
+export { orthogonalPolyline } from "./orthogonal-routing";
 export type * from "./types";

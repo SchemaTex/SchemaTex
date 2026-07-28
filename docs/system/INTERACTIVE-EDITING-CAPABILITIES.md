@@ -11,9 +11,9 @@ Canvas editing is enabled only when that diagram's parser and renderer produce d
 
 Schematex deliberately does not infer edit targets by comparing SVG text with quoted strings in the source. That approach is ambiguous when labels repeat, when a renderer sorts rows by a computed score, or when quoted config values resemble labels. An engine without native ranges is source-editable, not canvas-editable.
 
-The current release has **21 parser-native canvas-editable diagram types**. **18** of them also expose a safe position model. The remaining 30 types render normally and remain editable in the DSL editor, but emit no canvas handles.
+The current release has **21 parser-native canvas-editable diagram types**. **18** of them also expose a safe position model. The remaining 31 types render normally and remain editable in the DSL editor, but emit no canvas handles.
 
-Pan, zoom, pinch, and fit are host-layer viewport capabilities shared by all 51 diagram types; they do not change any engine's parser, renderer, scene metadata, or DSL editing classification.
+Pan, zoom, pinch, and fit are host-layer viewport capabilities shared by all 52 diagram types; they do not change any engine's parser, renderer, scene metadata, or DSL editing classification.
 
 ## Capability vocabulary
 

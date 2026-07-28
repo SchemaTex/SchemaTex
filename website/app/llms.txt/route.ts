@@ -32,7 +32,7 @@ export function GET() {
   const body = [
     '# Schematex',
     '',
-    '> Open-source text-to-SVG diagram renderer and controlled React editor for 50 industry-standard diagram types. Every interactive edit persists as ordinary Schematex DSL.',
+    '> Open-source text-to-SVG diagram renderer and controlled React editor for 52 industry-standard diagram types. Every interactive edit persists as ordinary Schematex DSL.',
     '',
     'Canonical site: https://schematex.js.org',
     'Source: https://github.com/SchemaTex/SchemaTex',

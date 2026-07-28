@@ -887,6 +887,43 @@ export const DIAGRAM_REGISTRY: readonly DiagramMeta[] = [
     ],
   },
   {
+    type: "stageplot",
+    name: "Stage plot",
+    tagline:
+      "Measured live-sound stage layouts with backline, microphone and DI symbols, numbered monitor mixes, signal paths, and an input list derived from the same equipment tree.",
+    useWhen:
+      "Use for a venue-ready stage plot / technical advance that tells the audio crew where performers, backline, microphones, DIs, monitor wedges, power, snake boxes, side fills, IEMs, and FOH equipment go. Header `stageplot \"Title\" unit ft|m`; declare the measured deck with `stage`, add `equipment` and numbered `monitor` nodes, and optionally connect equipment ids with `signal`. Put channel/source/model/stand/phantom/notes metadata on microphone or DI equipment; Schematex automatically renders the matching input list, so the plot and console patch cannot drift. The drawing fixes the audience at the bottom: page-left is STAGE RIGHT and page-right is STAGE LEFT from performer view. Not a rigging, electrical, fire-code, or structural drawing.",
+    cluster: "architecture",
+    standard: "Professional live-sound advance convention",
+    standardAlso: [
+      "Yamaha Pro Audio stage-plot/input-list practice",
+      "Venue technical-manual stage-direction convention",
+    ],
+    syntaxKey: "stageplot",
+    aliases: [
+      "Stage plot",
+      "stageplot",
+      "stage plan",
+      "band stage layout",
+      "technical rider stage plot",
+      "input list",
+      "舞台设备布置图",
+      "舞台图",
+    ],
+    keywords: [
+      "live sound",
+      "technical advance",
+      "backline",
+      "monitor mix",
+      "input channel list",
+      "microphone plot",
+      "DI box",
+      "FOH console",
+      "stage left",
+      "stage right",
+    ],
+  },
+  {
     type: "siteplan",
     name: "Site plan",
     tagline:
@@ -1031,6 +1068,8 @@ export const DIAGRAM_SINCE: Readonly<Record<DiagramType, string>> = {
   floorplan: "0.9.3",
   // 1.0.2 — multi-floor evacuation plans
   evacuation: "1.0.2",
+  // 1.1.0 — stage plot + derived input list
+  stageplot: "1.1.0",
   siteplan: "0.9.12",
   // 0.9.4 — multi-sport playbook (football X&O / basketball / soccer)
   playbook: "0.9.4",

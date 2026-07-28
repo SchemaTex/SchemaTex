@@ -1,0 +1,153 @@
+---
+title: Stage plot
+description: Build a venue-ready live-sound stage plot and derive its mixer input and monitor-output schedules from the same equipment tree.
+---
+
+# Stage plot
+
+## About stage plots
+
+A stage plot is the setup sheet the venue audio crew follows on show day. It
+places the band, backline, microphones, DIs, monitor mixes, power, snake boxes
+and FOH equipment on a measured deck. Schematex renders matching input and
+monitor-output schedules from those same plotted devices, so the documents
+cannot disagree.
+
+```text
+stageplot "Four-piece Rock Band" unit ft
+venue "The Sound Room"
+show-date "August 14, 2026"
+revision "Rev 2 · July 27, 2026"
+technical-contact "Morgan Lee · production@example.com"
+signal-paths on
+stage deck "32 ft × 20 ft" at 0,0 size 32x20
+equipment drum-kit drums in deck at 12,2 "Drums"
+equipment drum-mic kick in deck at 13,5 channel 1 source "Kick" model "Shure Beta 52A" stand short-boom phantom no
+equipment overhead oh-l in deck at 11,2 channel 2 source "Drum OH L" model "Shure SM81" stand boom phantom yes
+equipment bass-amp bass in deck at 3,5 "Bass"
+equipment di-box bass-di in deck at 5,8 channel 3 source "Bass DI" model "Radial J48" stand none phantom yes
+equipment guitar-amp guitar in deck at 24,5 "Guitar"
+equipment boom-stand lead in deck at 15,15 channel 4 source "Lead vocal" model "Shure SM58" stand boom phantom no
+monitor 1 lead-mix in deck at 13,17 "Lead"
+monitor 2 bass-mix in deck at 3,14 "Bass"
+monitor 3 guitar-mix in deck at 25,14 "Guitar"
+equipment snake snake-a in deck at 29,10 "Stage box"
+equipment foh-console foh outside at 16,27 "FOH"
+signal bass-di -> snake-a -> foh "Bass"
+signal lead -> snake-a -> foh "Vocal"
+```
+
+## 1. Formal sheet metadata
+
+`venue`, `show-date`, `revision`, and `technical-contact` populate the
+print-first document header. They are optional for quick sketches, but should
+be present before sending a plot to a venue.
+
+## 2. Stage directions
+
+The audience is always at the bottom of the drawing. Stage directions belong
+to a performer standing onstage and facing that audience:
+
+- page-left is **STAGE RIGHT**
+- page-right is **STAGE LEFT**
+- upstage is away from the audience
+- downstage is the audience edge
+
+The renderer prints both side labels with “performer view” so a venue crew does
+not have to guess which convention the author used.
+
+## 3. Measured stage and equipment
+
+```text
+stage <id> ["Label"] at x,y size WxH
+equipment <kind> <id> (in <stage> at x,y | outside at x,y)
+  [size WxH] [rotate deg] ["label"]
+```
+
+Coordinates inside a stage are relative to its top-left/upstage-right corner in
+the declared `unit m|ft`. Use `outside at` for FOH or another device off the
+deck.
+
+The renderer automatically places width and depth dimension lines around the
+primary stage.
+
+Native equipment kinds:
+
+- Backline: `drum-kit`, `guitar-amp`, `bass-amp`, `keyboard`,
+  `bass-cabinet`
+- Microphones and stands: `boom-stand`, `straight-stand`, `drum-mic`,
+  `overhead`
+- Signal: `di-box`, `mixer`, `foh-console`, `snake`
+- Monitoring: `monitor-wedge`, `side-fill`, `iem`
+- Utility: `power-drop`, `stage-riser`, `music-stand`, `set-list`
+
+The existing `stage`, `dance-floor`, `dj-booth`, `podium`, `row-chairs`, and
+`piano` floorplan symbols are reused.
+
+`stage-riser` is the drum/platform riser. In evacuation diagrams, bare `riser`
+still means the fire-service riser safety sign; stage mode safely normalizes
+the convenience alias `riser` to `stage-riser`.
+
+## 4. Numbered monitor mixes and outputs
+
+```text
+monitor 1 lead-wedge in deck at 13,17 "Lead"
+monitor 2 bass-wedge in deck at 3,14 "Bass"
+```
+
+The number is the console mix/send and is printed as `MIX N`. Wedges, IEMs,
+and side fills must all carry a positive mix number. Schematex groups those
+endpoints into a derived `MONITOR OUTPUTS` table containing mix, destination,
+type, quantity, stage position, and notes. Use `output-list off` only when
+embedding the plot without this schedule.
+
+Library consumers can call `deriveStageOutputList(source)` to receive the same
+structured rows used by the SVG.
+
+## 5. Automatic input list
+
+Add channel metadata to an input-bearing microphone or DI:
+
+```text
+equipment drum-mic kick in deck at 13,5 channel 1 source "Kick" model "Shure Beta 52A" stand short-boom phantom no notes "Inside kick"
+```
+
+Each node with `channel N` becomes one row with:
+
+1. channel number
+2. instrument or vocal
+3. suggested microphone or DI
+4. auto-derived stage position (`USR`, `USC`, `DSL`, and so on)
+5. stand type
+6. 48V phantom power yes/no
+7. notes
+
+Rows are sorted by channel. `input-list on` is the default; use
+`input-list off` only when embedding the plot without its twin sheet.
+
+Library consumers can call `deriveStageInputList(source)` to receive the same
+structured rows used by the SVG table.
+
+## 6. Signal paths
+
+```text
+signal bass-di -> snake-a -> foh "Bass"
+```
+
+Signal paths connect equipment ids with deterministic orthogonal lines. They
+are recorded but hidden by default so placement remains dominant. Add
+`signal-paths on` for the few operationally important paths such as DI→snake
+or snake→FOH. The escape-route engine shares only the neutral orthogonal
+geometry; life-safety rules do not leak into stage plots.
+
+## 7. Print conventions
+
+Input badges say `CH N` and monitor marks say `MIX N`; meaning never depends on
+blue versus amber alone. The legend explains both marks, while position codes
+combine up/mid/downstage with stage right/center/left.
+
+## 8. Related examples
+
+- [Four-piece rock band](/examples#stageplot)
+- [Jazz trio](/examples#stageplot)
+- [Full band with a drum riser and six monitor mixes](/examples#stageplot)

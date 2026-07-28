@@ -13,6 +13,7 @@ import type {
   SafetySymbolGeom,
 } from "./types";
 import { buildEvacuationLegend } from "./legend";
+import { orthogonalPolyline } from "./orthogonal-routing";
 import { resolveSafetySymbol, SAFETY_SYMBOLS } from "./safety-symbols";
 
 const FT = 0.3048;
@@ -167,25 +168,10 @@ function openingPoint(
     : { x: round((opening.lo + opening.hi) / 2), y: round(opening.along) };
 }
 
-function samePoint(a: RoutePoint, b: RoutePoint): boolean {
-  return Math.abs(a.x - b.x) < 1e-9 && Math.abs(a.y - b.y) < 1e-9;
-}
-
 function appendOrthogonal(points: RoutePoint[], target: RoutePoint): void {
   const source = points[points.length - 1];
-  if (!source || samePoint(source, target)) return;
-  const dx = target.x - source.x;
-  const dy = target.y - source.y;
-  if (Math.abs(dx) > 1e-9 && Math.abs(dy) > 1e-9) {
-    const bend =
-      Math.abs(dx) >= Math.abs(dy)
-        ? { x: target.x, y: source.y }
-        : { x: source.x, y: target.y };
-    if (!samePoint(source, bend)) points.push({ x: round(bend.x), y: round(bend.y) });
-  }
-  if (!samePoint(points[points.length - 1] ?? source, target)) {
-    points.push({ x: round(target.x), y: round(target.y) });
-  }
+  if (!source) return;
+  points.push(...orthogonalPolyline([source, target]).slice(1));
 }
 
 function buildChevrons(points: RoutePoint[]): Array<RoutePoint & { deg: number }> {

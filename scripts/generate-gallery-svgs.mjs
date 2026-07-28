@@ -513,6 +513,36 @@ consequence "Asset loss"
   mitigate "Business-continuity plan"`,
   },
   {
+    file: 'examples/stageplot/four-piece-rock.svg',
+    text: `stageplot "Four-piece Rock Band" unit ft
+venue "The Sound Room"
+show-date "August 14, 2026"
+revision "Rev 2 · July 27, 2026"
+technical-contact "Morgan Lee · production@example.com · +1 310 555 0142"
+signal-paths on
+stage deck "32 ft × 20 ft" at 0,0 size 32x20
+equipment drum-kit drums in deck at 12,2 "Drums"
+equipment drum-mic kick in deck at 13,5 channel 1 source "Kick" model "Shure Beta 52A" stand short-boom phantom no
+equipment drum-mic snare in deck at 15,4 channel 2 source "Snare top" model "Shure SM57" stand short-boom phantom no
+equipment drum-mic rack-tom in deck at 17,4 channel 3 source "Rack tom" model "Sennheiser e604" stand clip phantom no
+equipment drum-mic floor-tom in deck at 18,6 channel 4 source "Floor tom" model "Sennheiser e604" stand clip phantom no
+equipment overhead oh-l in deck at 11,2 channel 5 source "Drum OH L" model "Shure SM81" stand boom phantom yes
+equipment overhead oh-r in deck at 18,2 channel 6 source "Drum OH R" model "Shure SM81" stand boom phantom yes
+equipment bass-amp bass in deck at 3,5 "Bass"
+equipment di-box bass-di in deck at 5,8 channel 7 source "Bass DI" model "Radial J48" stand none phantom yes
+equipment guitar-amp guitar in deck at 24,5 "Guitar"
+equipment drum-mic guitar-mic in deck at 24,7 channel 8 source "Guitar amp" model "Sennheiser e906" stand short-boom phantom no
+equipment boom-stand lead in deck at 15,15 channel 9 source "Lead vocal" model "Shure SM58" stand boom phantom no
+monitor 1 mix-one in deck at 13,17 "Lead"
+monitor 2 mix-two in deck at 3,14 "Bass"
+monitor 3 mix-three in deck at 25,14 "Guitar"
+monitor 4 mix-four in deck at 14,10 "Drums"
+equipment snake snake-a in deck at 29,10 "Stage box"
+equipment foh-console foh outside at 16,27 "FOH"
+signal bass-di -> snake-a -> foh "Bass"
+signal lead -> snake-a -> foh "Vocal"`,
+  },
+  {
     file: 'examples/evacuation/office-floor.svg',
     text: `evacuation "Office Floor — Escape Plan" unit m
 compliance iso
