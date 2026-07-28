@@ -4,6 +4,7 @@ import { renderDsl, validateDsl } from "../../src/ai/tools";
 import { getGenerationProfile } from "../../src/ai/profiles";
 import {
   findPedigreeCoupleCollisions,
+  findPedigreeTopologyIssues,
   layoutPedigree,
 } from "../../src/diagrams/pedigree/layout";
 import { parsePedigree } from "../../src/diagrams/pedigree/parser";
@@ -97,7 +98,7 @@ furniture round-table-8 in studio at 2,1`;
 });
 
 describe("generation quality hardening — semantic invariants", () => {
-  it("keeps disjoint pedigree couples adjacent and collision-free", () => {
+  it("preserves pedigree topology while keeping couples collision-free", () => {
     const layout = layoutPedigree(parsePedigree(PEDIGREE), {
       nodeSpacingX: 80,
       nodeSpacingY: 100,
@@ -105,6 +106,7 @@ describe("generation quality hardening — semantic invariants", () => {
       nodeHeight: 40,
     });
     expect(findPedigreeCoupleCollisions(layout)).toEqual([]);
+    expect(findPedigreeTopologyIssues(layout)).toEqual([]);
 
     const centers = (id: string) => {
       const node = layout.nodes.find((entry) => entry.id === id)!;
@@ -112,6 +114,29 @@ describe("generation quality hardening — semantic invariants", () => {
     };
     expect(Math.abs(centers("ii-1") - centers("ii-3"))).toBeLessThan(100);
     expect(Math.abs(centers("ii-2") - centers("ii-5"))).toBeLessThan(100);
+
+    const childEdge = layout.edges.find(
+      (edge) =>
+        edge.relationship.type === "parent-child" && edge.to === "iii-2"
+    )!;
+    const child = layout.nodes.find((entry) => entry.id === "iii-2")!;
+    const endpoint = [...childEdge.path.matchAll(/[ML]\s*([\d.-]+)\s+([\d.-]+)/g)]
+      .at(-1);
+    expect(Number(endpoint?.[1])).toBe(child.x + child.width / 2);
+    expect(Number(endpoint?.[2])).toBe(child.y);
+
+    const rootRails = layout.edges.filter(
+      (edge) =>
+        edge.relationship.type === "parent-child" &&
+        edge.relationship.to === "_sibship" &&
+        (edge.relationship.from === "i-1+i-2" ||
+          edge.relationship.from === "i-3+i-4")
+    );
+    expect(rootRails).toHaveLength(2);
+    const railYs = rootRails.map((edge) =>
+      Number(edge.path.match(/^M\s+[\d.-]+\s+([\d.-]+)/)?.[1])
+    );
+    expect(new Set(railYs).size).toBe(2);
     expect(renderResult(PEDIGREE).status).toBe("valid");
   });
 

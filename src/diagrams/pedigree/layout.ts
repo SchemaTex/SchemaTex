@@ -443,6 +443,35 @@ function enforceCoupleAdjacency(
       .sort((a, b) => positions.get(a)!.x - positions.get(b)!.x);
     const segments = buildSegments(idsByX, graph);
     if (segments.length === 0) continue;
+    const familyById = new Map(
+      graph.familyUnits.map((family) => [family.id, family])
+    );
+    const lineageTarget = (segment: Segment): number => {
+      const targets = segment.ids.flatMap((id) => {
+        const birthFamilyId = graph.childOf.get(id);
+        const birthFamily = birthFamilyId
+          ? familyById.get(birthFamilyId)
+          : undefined;
+        if (!birthFamily) return [];
+        const parentA = positions.get(birthFamily.partners[0]);
+        const parentB = positions.get(birthFamily.partners[1]);
+        return parentA && parentB ? [(parentA.x + parentB.x) / 2] : [];
+      });
+      if (targets.length > 0) {
+        return targets.reduce((sum, target) => sum + target, 0) / targets.length;
+      }
+      const current = segment.ids
+        .map((id) => positions.get(id)?.x)
+        .filter((x): x is number => x !== undefined);
+      return current.reduce((sum, x) => sum + x, 0) / current.length;
+    };
+    segments.sort((a, b) => {
+      const lineageDelta = lineageTarget(a) - lineageTarget(b);
+      if (Math.abs(lineageDelta) > 0.01) return lineageDelta;
+      const aX = positions.get(a.ids[0])?.x ?? 0;
+      const bX = positions.get(b.ids[0])?.x ?? 0;
+      return aX - bX;
+    });
 
     const originalMin = Math.min(...idsByX.map((id) => positions.get(id)!.x));
     const originalMax = Math.max(...idsByX.map((id) => positions.get(id)!.x));
@@ -476,6 +505,7 @@ function computeEdges(
   const edges: LayoutEdge[] = [];
   const half = config.nodeWidth / 2;
   const dropY_offset = config.nodeHeight / 2 + LABEL_HEIGHT + LABEL_GAP + config.nodeSpacingY * 0.35;
+  const childTrackOffsets = computeChildTrackOffsets(graph, positions);
   let routedCoupleCount = 0;
 
   for (const fu of graph.familyUnits) {
@@ -525,7 +555,8 @@ function computeEdges(
     if (fu.children.length > 0) {
       const midX = (posA.x + posB.x) / 2;
       const coupleY = posA.y;
-      const dropY = coupleY + dropY_offset;
+      const dropY =
+        coupleY + dropY_offset + (childTrackOffsets.get(fu.id) ?? 0);
 
       const childPositions = fu.children
         .map((cid) => ({ id: cid, pos: positions.get(cid) }))
@@ -544,17 +575,21 @@ function computeEdges(
       });
 
       if (childPositions.length > 1) {
+        // The descent line must physically meet the sibship rail even when
+        // inter-family marriages force the parents outside their children span.
+        const railLeft = Math.min(leftX, midX);
+        const railRight = Math.max(rightX, midX);
         edges.push({
           from: fu.partners[0], to: fu.partners[1],
           relationship: { type: "parent-child", from: fu.id, to: "_sibship" },
-          path: `M ${leftX} ${dropY} L ${rightX} ${dropY}`,
+          path: `M ${railLeft} ${dropY} L ${railRight} ${dropY}`,
         });
       }
 
       for (const child of childPositions) {
         const childTop = child.pos.y - config.nodeHeight / 2;
         const childPath = childPositions.length === 1
-          ? `M ${midX} ${coupleY} L ${midX} ${childTop}`
+          ? `M ${midX} ${dropY} L ${child.pos.x} ${dropY} L ${child.pos.x} ${childTop}`
           : `M ${child.pos.x} ${dropY} L ${child.pos.x} ${childTop}`;
 
         edges.push({
@@ -567,6 +602,45 @@ function computeEdges(
   }
 
   return edges;
+}
+
+/**
+ * Different families in the same generation need distinct descent tracks.
+ * Otherwise overlapping horizontal sibship rails visually merge two unrelated
+ * families into one, even when every individual branch endpoint is correct.
+ */
+function computeChildTrackOffsets(
+  graph: LayoutGraph,
+  positions: Map<string, NodePosition>
+): Map<string, number> {
+  const byGeneration = new Map<number, FamilyUnit[]>();
+  for (const family of graph.familyUnits) {
+    if (family.children.length === 0) continue;
+    const generation = positions.get(family.partners[0])?.generation;
+    if (generation === undefined) continue;
+    const families = byGeneration.get(generation) ?? [];
+    families.push(family);
+    byGeneration.set(generation, families);
+  }
+
+  const offsets = new Map<string, number>();
+  const trackGap = 12;
+  for (const families of byGeneration.values()) {
+    families.sort((a, b) => {
+      const a0 = positions.get(a.partners[0])?.x ?? 0;
+      const a1 = positions.get(a.partners[1])?.x ?? 0;
+      const b0 = positions.get(b.partners[0])?.x ?? 0;
+      const b1 = positions.get(b.partners[1])?.x ?? 0;
+      return (a0 + a1) / 2 - (b0 + b1) / 2;
+    });
+    const center = (families.length - 1) / 2;
+    families.forEach((family, index) => {
+      // Left-hand families take the lower track. That prevents a right-hand
+      // parents' descent line from cutting through a left family's long rail.
+      offsets.set(family.id, (center - index) * trackGap);
+    });
+  }
+  return offsets;
 }
 
 // ─── Step 6: Package result ─────────────────────────────────
@@ -649,6 +723,16 @@ export interface PedigreeCoupleCollision {
   node: LayoutNode;
 }
 
+export interface PedigreeTopologyIssue {
+  code:
+    | "PEDIGREE_PARENT_CHILD_DISCONNECTED"
+    | "PEDIGREE_SIBSHIP_LINES_MERGED"
+    | "PEDIGREE_DESCENT_LINES_CROSS";
+  message: string;
+  familyId: string;
+  childId?: string;
+}
+
 /** Post-layout semantic invariant used by lint and regression tests. */
 export function findPedigreeCoupleCollisions(
   layout: LayoutResult
@@ -699,4 +783,222 @@ export function findPedigreeCoupleCollisions(
     }
   }
   return collisions;
+}
+
+interface PathPoint {
+  x: number;
+  y: number;
+}
+
+interface PathSegment {
+  from: PathPoint;
+  to: PathPoint;
+}
+
+function pathPoints(pathData: string): PathPoint[] {
+  return [...pathData.matchAll(/[ML]\s*([\d.-]+)\s+([\d.-]+)/g)].map(
+    (match) => ({ x: Number(match[1]), y: Number(match[2]) })
+  );
+}
+
+function pathSegments(pathData: string): PathSegment[] {
+  const points = pathPoints(pathData);
+  return points.slice(1).map((point, index) => ({
+    from: points[index]!,
+    to: point,
+  }));
+}
+
+function samePoint(a: PathPoint, b: PathPoint): boolean {
+  return Math.abs(a.x - b.x) < 0.01 && Math.abs(a.y - b.y) < 0.01;
+}
+
+function pointOnSegment(point: PathPoint, segment: PathSegment): boolean {
+  const minX = Math.min(segment.from.x, segment.to.x) - 0.01;
+  const maxX = Math.max(segment.from.x, segment.to.x) + 0.01;
+  const minY = Math.min(segment.from.y, segment.to.y) - 0.01;
+  const maxY = Math.max(segment.from.y, segment.to.y) + 0.01;
+  if (Math.abs(segment.from.y - segment.to.y) < 0.01) {
+    return (
+      Math.abs(point.y - segment.from.y) < 0.01 &&
+      point.x >= minX &&
+      point.x <= maxX
+    );
+  }
+  if (Math.abs(segment.from.x - segment.to.x) < 0.01) {
+    return (
+      Math.abs(point.x - segment.from.x) < 0.01 &&
+      point.y >= minY &&
+      point.y <= maxY
+    );
+  }
+  return false;
+}
+
+function segmentsTouch(a: PathSegment, b: PathSegment): boolean {
+  const aHorizontal = Math.abs(a.from.y - a.to.y) < 0.01;
+  const bHorizontal = Math.abs(b.from.y - b.to.y) < 0.01;
+  if (aHorizontal && bHorizontal) {
+    if (Math.abs(a.from.y - b.from.y) >= 0.01) return false;
+    return (
+      Math.max(Math.min(a.from.x, a.to.x), Math.min(b.from.x, b.to.x)) <=
+      Math.min(Math.max(a.from.x, a.to.x), Math.max(b.from.x, b.to.x)) + 0.01
+    );
+  }
+  if (!aHorizontal && !bHorizontal) {
+    if (Math.abs(a.from.x - b.from.x) >= 0.01) return false;
+    return (
+      Math.max(Math.min(a.from.y, a.to.y), Math.min(b.from.y, b.to.y)) <=
+      Math.min(Math.max(a.from.y, a.to.y), Math.max(b.from.y, b.to.y)) + 0.01
+    );
+  }
+  const horizontal = aHorizontal ? a : b;
+  const vertical = aHorizontal ? b : a;
+  return pointOnSegment(
+    { x: vertical.from.x, y: horizontal.from.y },
+    horizontal
+  ) && pointOnSegment(
+    { x: vertical.from.x, y: horizontal.from.y },
+    vertical
+  );
+}
+
+/** Validate that rendered parent-child geometry still encodes the parsed kinship. */
+export function findPedigreeTopologyIssues(
+  layout: LayoutResult
+): PedigreeTopologyIssue[] {
+  const issues: PedigreeTopologyIssue[] = [];
+  const nodes = new Map(layout.nodes.map((node) => [node.id, node]));
+  const familyEdges = new Map<string, LayoutEdge[]>();
+  const childEdges: LayoutEdge[] = [];
+
+  for (const edge of layout.edges) {
+    if (edge.relationship.type !== "parent-child") continue;
+    const familyId = edge.relationship.from;
+    const group = familyEdges.get(familyId) ?? [];
+    group.push(edge);
+    familyEdges.set(familyId, group);
+    if (nodes.has(edge.relationship.to)) childEdges.push(edge);
+  }
+
+  const reportedChildren = new Set<string>();
+  for (const edge of childEdges) {
+    const childId = edge.relationship.to;
+    const node = nodes.get(childId)!;
+    const expected = { x: node.x + node.width / 2, y: node.y };
+    const points = pathPoints(edge.path);
+    const actual = points.at(-1);
+    if (!actual || !samePoint(actual, expected)) {
+      const key = `${edge.relationship.from}:${childId}`;
+      reportedChildren.add(key);
+      issues.push({
+        code: "PEDIGREE_PARENT_CHILD_DISCONNECTED",
+        familyId: edge.relationship.from,
+        childId,
+        message: `Parent-child connector for ${childId} does not terminate at that child's top anchor.`,
+      });
+    }
+  }
+
+  for (const [familyId, edges] of familyEdges) {
+    const drop = edges.find((edge) => edge.relationship.to === "_drop");
+    const start = drop ? pathPoints(drop.path)[0] : undefined;
+    const segments = edges.flatMap((edge) => pathSegments(edge.path));
+    if (!start || segments.length === 0) continue;
+
+    const reachable = new Set<number>();
+    segments.forEach((segment, index) => {
+      if (pointOnSegment(start, segment)) reachable.add(index);
+    });
+    let changed = true;
+    while (changed) {
+      changed = false;
+      segments.forEach((segment, index) => {
+        if (reachable.has(index)) return;
+        if (
+          [...reachable].some((reachableIndex) =>
+            segmentsTouch(segment, segments[reachableIndex]!)
+          )
+        ) {
+          reachable.add(index);
+          changed = true;
+        }
+      });
+    }
+
+    for (const edge of edges) {
+      const childId = edge.relationship.to;
+      const node = nodes.get(childId);
+      if (!node) continue;
+      const key = `${familyId}:${childId}`;
+      if (reportedChildren.has(key)) continue;
+      const target = { x: node.x + node.width / 2, y: node.y };
+      const connected = [...reachable].some((index) =>
+        pointOnSegment(target, segments[index]!)
+      );
+      if (!connected) {
+        reportedChildren.add(key);
+        issues.push({
+          code: "PEDIGREE_PARENT_CHILD_DISCONNECTED",
+          familyId,
+          childId,
+          message: `Parent-child connector for ${childId} is disconnected from family ${familyId}.`,
+        });
+      }
+    }
+  }
+
+  const rails = layout.edges.filter(
+    (edge) =>
+      edge.relationship.type === "parent-child" &&
+      edge.relationship.to === "_sibship"
+  );
+  for (let i = 0; i < rails.length; i++) {
+    const a = pathSegments(rails[i]!.path)[0];
+    if (!a || Math.abs(a.from.y - a.to.y) >= 0.01) continue;
+    for (let j = i + 1; j < rails.length; j++) {
+      if (rails[i]!.relationship.from === rails[j]!.relationship.from) continue;
+      const b = pathSegments(rails[j]!.path)[0];
+      if (!b || Math.abs(b.from.y - b.to.y) >= 0.01) continue;
+      if (Math.abs(a.from.y - b.from.y) >= 0.01) continue;
+      const overlap =
+        Math.min(Math.max(a.from.x, a.to.x), Math.max(b.from.x, b.to.x)) -
+        Math.max(Math.min(a.from.x, a.to.x), Math.min(b.from.x, b.to.x));
+      if (overlap > 0.01) {
+        issues.push({
+          code: "PEDIGREE_SIBSHIP_LINES_MERGED",
+          familyId: rails[i]!.relationship.from,
+          message: `Sibship rails for ${rails[i]!.relationship.from} and ${rails[j]!.relationship.from} overlap and visually merge unrelated families.`,
+        });
+      }
+    }
+  }
+
+  const familyGeometry = [...familyEdges].map(([familyId, edges]) => ({
+    familyId,
+    segments: edges.flatMap((edge) => pathSegments(edge.path)),
+  }));
+  for (let i = 0; i < familyGeometry.length; i++) {
+    for (let j = i + 1; j < familyGeometry.length; j++) {
+      const a = familyGeometry[i]!;
+      const b = familyGeometry[j]!;
+      const aMembers = new Set(a.familyId.split("+"));
+      if (b.familyId.split("+").some((member) => aMembers.has(member))) {
+        continue;
+      }
+      if (
+        a.segments.some((segmentA) =>
+          b.segments.some((segmentB) => segmentsTouch(segmentA, segmentB))
+        )
+      ) {
+        issues.push({
+          code: "PEDIGREE_DESCENT_LINES_CROSS",
+          familyId: a.familyId,
+          message: `Descent geometry for ${a.familyId} intersects ${b.familyId} and creates a false kinship junction.`,
+        });
+      }
+    }
+  }
+
+  return issues;
 }

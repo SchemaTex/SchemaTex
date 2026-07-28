@@ -140,14 +140,14 @@ const CASES = [
     number: "01",
     title: "Couple lines preserve kinship",
     beforeLabel: "Valid, but visually false",
-    afterLabel: "Valid and collision-free",
+    afterLabel: "Valid and topology-preserving",
     beforeDsl: PEDIGREE,
     afterDsl: PEDIGREE,
     spine: "SAME DSL",
     issue:
       "Two correct spouse edges crossed unrelated people, making the family history read as two different couples.",
     fix:
-      "Couples are packed as semantic segments; multi-partner relationships use an upper avoidance track.",
+      "Couples stay adjacent, every descent path terminates at the named child, and unrelated sibship rails use separate tracks.",
   },
   {
     id: "sld",

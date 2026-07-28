@@ -4,6 +4,7 @@ import { firstContentLine } from "../../core/dsl-preprocess";
 import { parsePedigree, PedigreeParseError } from "./parser";
 import {
   findPedigreeCoupleCollisions,
+  findPedigreeTopologyIssues,
   layoutPedigree,
 } from "./layout";
 import { renderPedigree } from "./renderer";
@@ -45,13 +46,22 @@ export const pedigree: DiagramPlugin = {
     try {
       const ast = parsePedigree(text);
       const layout = layoutPedigree(ast, PEDIGREE_LAYOUT_CONFIG);
-      return findPedigreeCoupleCollisions(layout).map(({ edge, node }) => ({
-        severity: "error",
-        code: "PEDIGREE_COUPLE_EDGE_NODE_COLLISION",
-        message: `Couple edge ${edge.from} -- ${edge.to} intersects unrelated individual ${node.id}.`,
-        hint: "Keep each couple adjacent or route the couple edge around unrelated individuals.",
-        fatal: false,
-      }));
+      return [
+        ...findPedigreeCoupleCollisions(layout).map(({ edge, node }) => ({
+          severity: "error" as const,
+          code: "PEDIGREE_COUPLE_EDGE_NODE_COLLISION",
+          message: `Couple edge ${edge.from} -- ${edge.to} intersects unrelated individual ${node.id}.`,
+          hint: "Keep each couple adjacent or route the couple edge around unrelated individuals.",
+          fatal: false,
+        })),
+        ...findPedigreeTopologyIssues(layout).map((issue) => ({
+          severity: "error" as const,
+          code: issue.code,
+          message: issue.message,
+          hint: "Keep every descent path connected to its family rail and terminating at the named child's top anchor.",
+          fatal: false,
+        })),
+      ];
     } catch {
       return [];
     }
@@ -63,5 +73,6 @@ export {
   PedigreeParseError,
   layoutPedigree,
   findPedigreeCoupleCollisions,
+  findPedigreeTopologyIssues,
   renderPedigree,
 };
