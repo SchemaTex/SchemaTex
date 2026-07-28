@@ -158,6 +158,8 @@ export type FurnitureType =
   | "sofa"
   | "loveseat"
   | "armchair"
+  | "bench"
+  | "beanbag"
   | "coffee-table"
   | "tv"
   | "rug"
@@ -212,14 +214,17 @@ export type FurnitureType =
   // classroom / office
   | "desk-chair"
   | "desk"
+  | "teacher-desk"
   | "desk-l"
   | "chair"
+  | "easel"
   | "whiteboard"
   | "smartboard"
   | "bookcase"
   | "cubbies"
   | "filing-cabinet"
   | "lockers"
+  | "toy-box"
   | "kidney-table"
   | "round-table-4"
   | "round-table-6"
@@ -261,6 +266,7 @@ export type FurnitureType =
   | "walk-in"
   | "commercial-sink"
   | "fryer"
+  | "grill"
   // electrical overlay fixtures
   | "outlet"
   | "duplex-outlet"
@@ -271,6 +277,7 @@ export type FurnitureType =
   | "electrical-panel"
   | "distribution-board"
   // site / outdoor
+  | "fountain"
   | "tree"
   | "car";
 

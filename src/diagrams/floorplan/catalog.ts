@@ -479,6 +479,44 @@ export const FLOORPLAN_SYMBOLS: Record<FurnitureType, SymbolDef> = {
   sofa: { w: 2.2, h: 0.9, draw: sofaDraw(3) },
   loveseat: { w: 1.5, h: 0.9, draw: sofaDraw(2) },
   armchair: { w: 0.9, h: 0.9, draw: sofaDraw(1) },
+  // Freestanding slatted bench: three seat boards and two cross supports.
+  bench: {
+    w: 1.8,
+    h: 0.55,
+    draw: (c) => {
+      const parts = [box(c, "sx-fp-furn", 0.04)];
+      for (const y of [c.h / 3, (2 * c.h) / 3]) {
+        parts.push(line({ class: "sx-fp-furn-line", x1: 0, y1: c.px(y), x2: c.px(c.w), y2: c.px(y) }));
+      }
+      for (const x of [c.w * 0.16, c.w * 0.84]) {
+        parts.push(line({ class: "sx-fp-furn-line", x1: c.px(x), y1: 0, x2: c.px(x), y2: c.px(c.h) }));
+      }
+      return parts.join("");
+    },
+  },
+  // Soft organic plan-view outline with two upholstery seam lines.
+  beanbag: {
+    w: 1.0,
+    h: 1.0,
+    draw: (c) => {
+      const X = (n: number) => c.px(n * c.w);
+      const Y = (n: number) => c.px(n * c.h);
+      return [
+        path({
+          class: "sx-fp-furn",
+          d: `M ${X(0.5)} ${Y(0.03)} C ${X(0.82)} ${Y(0.02)} ${X(0.99)} ${Y(0.22)} ${X(0.94)} ${Y(0.5)} C ${X(1.0)} ${Y(0.78)} ${X(0.78)} ${Y(0.99)} ${X(0.5)} ${Y(0.94)} C ${X(0.22)} ${Y(1.0)} ${X(0.01)} ${Y(0.78)} ${X(0.06)} ${Y(0.5)} C ${X(0.01)} ${Y(0.22)} ${X(0.18)} ${Y(0.02)} ${X(0.5)} ${Y(0.03)} Z`,
+        }),
+        path({
+          class: "sx-fp-furn-line",
+          d: `M ${X(0.5)} ${Y(0.03)} C ${X(0.42)} ${Y(0.28)} ${X(0.42)} ${Y(0.68)} ${X(0.5)} ${Y(0.94)}`,
+        }),
+        path({
+          class: "sx-fp-furn-line",
+          d: `M ${X(0.06)} ${Y(0.5)} C ${X(0.3)} ${Y(0.42)} ${X(0.7)} ${Y(0.42)} ${X(0.94)} ${Y(0.5)}`,
+        }),
+      ].join("");
+    },
+  },
   "coffee-table": { w: 1.0, h: 0.5, draw: (c) => box(c, "sx-fp-furn", 0.06) },
   tv: { w: 1.4, h: 0.15, draw: (c) => rect({ class: "sx-fp-furn-solid", x: 0, y: 0, width: c.px(c.w), height: c.px(c.h) }) },
   rug: {
@@ -935,12 +973,67 @@ export const FLOORPLAN_SYMBOLS: Record<FurnitureType, SymbolDef> = {
     envelope: [0, 0, CHAIR_OVERHANG, 0],
     draw: (c) => box(c) + chairAt(c.px, c.w / 2, c.h + CHAIR_GAP, 180),
   },
+  // Classroom lectern/teacher station: a front-facing worktop without the
+  // office chair that the generic `desk` symbol auto-adds.
+  "teacher-desk": {
+    w: 1.4,
+    h: 0.7,
+    draw: (c) =>
+      [
+        box(c, "sx-fp-furn", 0.03),
+        line({
+          class: "sx-fp-furn-line",
+          x1: c.px(0.08),
+          y1: c.px(c.h * 0.72),
+          x2: c.px(c.w - 0.08),
+          y2: c.px(c.h * 0.72),
+        }),
+        rect({
+          class: "sx-fp-furn-line",
+          x: c.px(c.w * 0.32),
+          y: c.px(c.h * 0.12),
+          width: c.px(c.w * 0.36),
+          height: c.px(c.h * 0.42),
+          rx: c.px(0.03),
+        }),
+      ].join(""),
+  },
   chair: {
     w: 0.45,
     h: 0.45,
     draw: (c) =>
       rect({ class: "sx-fp-chair", x: 0, y: 0, width: c.px(c.w), height: c.px(c.h), rx: c.px(0.1) }) +
       line({ class: "sx-fp-furn-line", x1: 0, y1: c.px(0.06), x2: 0, y2: c.px(c.h - 0.06) }),
+  },
+  // A-frame easel in plan: triangular stance with the drawing board crossing
+  // the two front legs.
+  easel: {
+    w: 0.8,
+    h: 0.75,
+    draw: (c) => {
+      const inset = c.w * 0.09;
+      return [
+        polygon({
+          class: "sx-fp-furn",
+          points: `${c.px(c.w / 2)},${c.px(c.h * 0.08)} ${c.px(inset)},${c.px(c.h * 0.9)} ${c.px(c.w - inset)},${c.px(c.h * 0.9)}`,
+        }),
+        rect({
+          class: "sx-fp-furn",
+          x: 0,
+          y: c.px(c.h * 0.58),
+          width: c.px(c.w),
+          height: c.px(c.h * 0.16),
+          rx: c.px(0.02),
+        }),
+        line({
+          class: "sx-fp-furn-line",
+          x1: c.px(c.w / 2),
+          y1: c.px(c.h * 0.08),
+          x2: c.px(c.w / 2),
+          y2: c.px(c.h * 0.9),
+        }),
+      ].join("");
+    },
   },
   whiteboard: { w: 3.0, h: 0.12, draw: boardDraw },
   smartboard: { w: 2.0, h: 0.12, draw: boardDraw },
@@ -981,6 +1074,33 @@ export const FLOORPLAN_SYMBOLS: Record<FurnitureType, SymbolDef> = {
       }
       return parts.join("");
     },
+  },
+  // Lidded toy chest: the inset lid, rear hinges, and front pull remain
+  // recognizable at classroom-plan scale.
+  "toy-box": {
+    w: 1.0,
+    h: 0.5,
+    draw: (c) =>
+      [
+        box(c, "sx-fp-furn", 0.05),
+        rect({
+          class: "sx-fp-furn-line",
+          x: c.px(0.07),
+          y: c.px(0.07),
+          width: c.px(c.w - 0.14),
+          height: c.px(c.h - 0.14),
+          rx: c.px(0.03),
+        }),
+        line({ class: "sx-fp-furn-line", x1: c.px(c.w * 0.24), y1: 0, x2: c.px(c.w * 0.36), y2: 0 }),
+        line({ class: "sx-fp-furn-line", x1: c.px(c.w * 0.64), y1: 0, x2: c.px(c.w * 0.76), y2: 0 }),
+        line({
+          class: "sx-fp-furn-line",
+          x1: c.px(c.w * 0.44),
+          y1: c.px(c.h * 0.86),
+          x2: c.px(c.w * 0.56),
+          y2: c.px(c.h * 0.86),
+        }),
+      ].join(""),
   },
   cubbies: {
     w: 2.0,
@@ -1405,6 +1525,43 @@ export const FLOORPLAN_SYMBOLS: Record<FurnitureType, SymbolDef> = {
       return parts.join("");
     },
   },
+  // Commercial charbroiler / flat grill: standard 0.9 m-deep cook-line
+  // footprint, parallel grate bars, and a front control strip.
+  grill: {
+    w: 0.9,
+    h: 0.9,
+    draw: (c) => {
+      const parts = [box(c)];
+      const top = c.h * 0.08;
+      const bottom = c.h * 0.68;
+      for (let i = 1; i <= 5; i++) {
+        const x = (i / 6) * c.w;
+        parts.push(line({
+          class: "sx-fp-furn-line",
+          x1: c.px(x),
+          y1: c.px(top),
+          x2: c.px(x),
+          y2: c.px(bottom),
+        }));
+      }
+      parts.push(line({
+        class: "sx-fp-furn-line",
+        x1: 0,
+        y1: c.px(c.h * 0.74),
+        x2: c.px(c.w),
+        y2: c.px(c.h * 0.74),
+      }));
+      for (const x of [0.25, 0.5, 0.75]) {
+        parts.push(circle({
+          class: "sx-fp-furn-dot",
+          cx: c.px(c.w * x),
+          cy: c.px(c.h * 0.86),
+          r: c.px(0.035),
+        }));
+      }
+      return parts.join("");
+    },
+  },
 
   // ── electrical overlay fixtures ──
   outlet: { w: 0.22, h: 0.22, underlay: true, draw: outletDraw(false) },
@@ -1417,6 +1574,32 @@ export const FLOORPLAN_SYMBOLS: Record<FurnitureType, SymbolDef> = {
   "distribution-board": { w: 0.6, h: 0.28, underlay: true, draw: panelDraw("DB") },
 
   // ── site / outdoor ──
+  // Circular courtyard fountain: basin wall, inner water ring, and four
+  // radial jets around the centre nozzle.
+  fountain: {
+    w: 1.8,
+    h: 1.8,
+    draw: (c) => {
+      const cx = c.w / 2;
+      const cy = c.h / 2;
+      const r = Math.min(c.w, c.h) / 2;
+      const parts = [
+        circle({ class: "sx-fp-furn", cx: c.px(cx), cy: c.px(cy), r: c.px(r) }),
+        circle({ class: "sx-fp-furn-line", cx: c.px(cx), cy: c.px(cy), r: c.px(r * 0.72) }),
+        circle({ class: "sx-fp-furn-dot", cx: c.px(cx), cy: c.px(cy), r: c.px(r * 0.08) }),
+      ];
+      for (const [dx, dy] of [[0, -1], [1, 0], [0, 1], [-1, 0]] as const) {
+        parts.push(line({
+          class: "sx-fp-furn-line",
+          x1: c.px(cx + dx * r * 0.16),
+          y1: c.px(cy + dy * r * 0.16),
+          x2: c.px(cx + dx * r * 0.55),
+          y2: c.px(cy + dy * r * 0.55),
+        }));
+      }
+      return parts.join("");
+    },
+  },
   // Tree in plan: a canopy disc with a foliage ring and a trunk dot.
   tree: {
     w: 2.0,
@@ -1448,3 +1631,33 @@ export const FLOORPLAN_SYMBOLS: Record<FurnitureType, SymbolDef> = {
 };
 
 export const FURNITURE_TYPES = Object.keys(FLOORPLAN_SYMBOLS) as readonly FurnitureType[];
+
+/**
+ * Prompt-facing catalog vocabulary, derived from the catalog keys at module
+ * load so adding a symbol cannot silently leave the generation profile stale.
+ * Families with three or more variants retain the compact slash notation.
+ */
+function compactFurnitureTypes(types: readonly FurnitureType[]): string {
+  const compactPrefixes = ["bed-", "round-table-"] as const;
+  const emitted = new Set<FurnitureType>();
+  const tokens: string[] = [];
+
+  for (const type of types) {
+    if (emitted.has(type)) continue;
+    const prefix = compactPrefixes.find((candidate) => type.startsWith(candidate));
+    const family = prefix
+      ? types.filter((candidate) => candidate.startsWith(prefix))
+      : [];
+    if (prefix && family.length >= 3) {
+      tokens.push(`${family[0]}/${family.slice(1).map((member) => member.slice(prefix.length)).join("/")}`);
+      for (const member of family) emitted.add(member);
+    } else {
+      tokens.push(type);
+      emitted.add(type);
+    }
+  }
+
+  return tokens.join(" ");
+}
+
+export const FLOORPLAN_TYPE_KEYWORDS = compactFurnitureTypes(FURNITURE_TYPES);
