@@ -8,7 +8,6 @@
 
 import type { RenderConfig } from "../../core/types";
 import {
-  circle,
   desc as descEl,
   el,
   group,
@@ -34,6 +33,8 @@ import type {
   StageEquipmentAst,
   StageEquipmentGeom,
   StageInputRow,
+  StageOutputRow,
+  StageOutputType,
   StageStandType,
   StageplotLayoutData,
 } from "./types";
@@ -64,6 +65,23 @@ export function inferStageStand(item: StageEquipmentAst): StageStandType {
   return "none";
 }
 
+function stagePosition(
+  ast: FloorplanAst,
+  item: Pick<StageEquipmentAst, "room" | "outside" | "x" | "y" | "floor">
+): string {
+  if (item.outside) return "OFFSTAGE";
+  const room = ast.rooms.find(
+    (candidate) =>
+      candidate.id === item.room && candidate.floor === item.floor
+  );
+  if (!room || room.w <= 0 || room.h <= 0) return "—";
+  const xRatio = item.x / room.w;
+  const yRatio = item.y / room.h;
+  const vertical = yRatio < 1 / 3 ? "US" : yRatio < 2 / 3 ? "MS" : "DS";
+  const horizontal = xRatio < 1 / 3 ? "R" : xRatio < 2 / 3 ? "C" : "L";
+  return `${vertical}${horizontal}`;
+}
+
 /**
  * Derive the console patch from the plotted equipment. This is the sole input
  * list derivation used by both the public helper and SVG renderer.
@@ -80,11 +98,75 @@ export function deriveStageInputList(
       channel: item.channel,
       source: item.source ?? item.label ?? titleCase(item.kind),
       model: item.model ?? "—",
+      position: stagePosition(ast, item),
       stand: inferStageStand(item),
       phantom: item.phantom,
       notes: item.notes ?? "",
     }))
     .sort((a, b) => a.channel - b.channel);
+}
+
+const OUTPUT_TYPES: Partial<
+  Record<StageEquipmentAst["kind"], StageOutputType>
+> = {
+  "monitor-wedge": "WEDGE",
+  iem: "IEM",
+  "side-fill": "SIDE FILL",
+};
+
+/**
+ * Derive the console output schedule from monitor endpoints. Multiple speakers
+ * on the same mix and of the same type collapse to one quantity-bearing row.
+ */
+export function deriveStageOutputList(
+  input: FloorplanAst | string
+): StageOutputRow[] {
+  const ast = typeof input === "string" ? parseFloorplan(input) : input;
+  const grouped = new Map<
+    string,
+    StageOutputRow & {
+      destinations: Set<string>;
+      positions: Set<string>;
+      noteValues: Set<string>;
+    }
+  >();
+  for (const item of ast.stageplot.equipment) {
+    const type = OUTPUT_TYPES[item.kind];
+    if (!type || item.mix === undefined || item.mix <= 0) continue;
+    const key = `${item.mix}:${type}`;
+    const destination =
+      item.label ?? item.source ?? titleCase(item.kind);
+    const position = stagePosition(ast, item);
+    const existing = grouped.get(key);
+    if (existing) {
+      existing.quantity += 1;
+      existing.destinations.add(destination);
+      existing.positions.add(position);
+      if (item.notes) existing.noteValues.add(item.notes);
+      continue;
+    }
+    grouped.set(key, {
+      mix: item.mix,
+      destination,
+      type,
+      quantity: 1,
+      position,
+      notes: item.notes ?? "",
+      destinations: new Set([destination]),
+      positions: new Set([position]),
+      noteValues: new Set(item.notes ? [item.notes] : []),
+    });
+  }
+  return [...grouped.values()]
+    .map((row) => ({
+      mix: row.mix,
+      destination: [...row.destinations].join(" / "),
+      type: row.type,
+      quantity: row.quantity,
+      position: [...row.positions].join(" + "),
+      notes: [...row.noteValues].join(" · "),
+    }))
+    .sort((a, b) => a.mix - b.mix || a.type.localeCompare(b.type));
 }
 
 function roomKey(floor: number, id: string): string {
@@ -189,11 +271,11 @@ export function finalizeStageplotLayout(
       }
     }
     if (
-      source.kind === "monitor-wedge" &&
+      OUTPUT_TYPES[source.kind] &&
       (!Number.isInteger(source.mix) || (source.mix ?? 0) <= 0)
     ) {
       lay.errors.push(
-        `monitor-wedge "${source.id}" needs a positive mix number — it must match a console mix send`
+        `${source.kind} "${source.id}" needs a positive mix number — every monitor output must match a console mix send`
       );
     }
     if (room) stageBoundsCheck(item, room, lay.errors);
@@ -244,7 +326,11 @@ export function finalizeStageplotLayout(
     equipment,
     signals,
     inputList: deriveStageInputList(ast),
+    outputList: deriveStageOutputList(ast),
+    document: ast.stageplot.document,
     showInputList: ast.stageplot.showInputList,
+    showOutputList: ast.stageplot.showOutputList,
+    showSignalPaths: ast.stageplot.showSignalPaths,
   };
   return lay;
 }
@@ -252,17 +338,24 @@ export function finalizeStageplotLayout(
 function stageCss(t: Theme): string {
   return `
 .sx-stageplot { font-family: ${BODY_FONT}; }
-.sx-stage-title { font: 600 20px ${DISPLAY_FONT}; letter-spacing: -.01em; fill: ${t.ink}; }
+.sx-stage-eyebrow { font: 700 8.5px ${MONO_FONT}; letter-spacing: .12em; fill: ${t.input}; }
+.sx-stage-title { font: 650 22px ${DISPLAY_FONT}; letter-spacing: -.02em; fill: ${t.ink}; }
+.sx-stage-meta-label { font: 700 7.5px ${MONO_FONT}; letter-spacing: .09em; fill: ${t.textMuted}; }
+.sx-stage-meta-value { font: 550 9.5px ${BODY_FONT}; fill: ${t.ink}; }
+.sx-stage-header-rule { stroke: ${t.hatchStroke}; stroke-width: 1; }
 .sx-stage-section { font: 600 13px ${DISPLAY_FONT}; fill: ${t.ink}; }
 .sx-stage-caption { font: 500 9px ${MONO_FONT}; fill: ${t.textMuted}; letter-spacing: .04em; }
 .sx-stage-surface { fill: ${t.stageSurface}; stroke: ${t.stageEdge}; stroke-width: 2.2; }
-.sx-stage-deck-line { fill: none; stroke: ${t.stageEdge}; stroke-width: 1; opacity: .24; }
-.sx-stage-rail { fill: ${t.rail}; }
+.sx-stage-deck-line { fill: none; stroke: ${t.stageEdge}; stroke-width: .8; opacity: .16; }
+.sx-stage-rail { fill: ${t.rail}; opacity: .92; }
 .sx-stage-rail-text { font: 700 11px ${DISPLAY_FONT}; fill: ${t.paper}; letter-spacing: .08em; }
 .sx-stage-direction { font: 700 11px ${DISPLAY_FONT}; fill: ${t.rail}; letter-spacing: .1em; }
 .sx-stage-direction-note { font: 500 9px ${BODY_FONT}; fill: ${t.textMuted}; }
 .sx-stage-audience { fill: ${t.stageEdge}; opacity: .1; stroke: ${t.stageEdge}; stroke-width: 1; }
 .sx-stage-audience-text { font: 700 11px ${DISPLAY_FONT}; fill: ${t.stageEdge}; letter-spacing: .18em; }
+.sx-stage-dim { fill: none; stroke: ${t.textMuted}; stroke-width: 1; }
+.sx-stage-dim-guide { fill: none; stroke: ${t.hatchStroke}; stroke-width: .8; stroke-dasharray: 2 3; }
+.sx-stage-dim-text { font: 650 9px ${MONO_FONT}; fill: ${t.textMuted}; paint-order: stroke; stroke: ${t.paper}; stroke-width: 3px; }
 .sx-stage-device { fill: ${t.equipmentFill}; stroke: ${t.ink}; stroke-width: 1.3; }
 .sx-stage-signal-device { fill: ${t.paper}; stroke: ${t.signal}; stroke-width: 1.5; }
 .sx-stage-detail { fill: none; stroke: ${t.ink}; stroke-width: 1; stroke-linecap: round; stroke-linejoin: round; }
@@ -274,24 +367,28 @@ function stageCss(t: Theme): string {
 .sx-stage-monitor-cone { fill: ${t.paper}; stroke: ${t.ink}; stroke-width: 1; }
 .sx-stage-power { fill: ${t.paper}; stroke: ${t.monitor}; stroke-width: 1.6; }
 .sx-stage-power-mark { fill: ${t.monitor}; stroke: none; }
-.sx-stage-riser { fill: ${t.paper}; fill-opacity: .55; stroke: ${t.stageEdge}; stroke-width: 1.4; stroke-dasharray: 6 4; }
-.sx-stage-riser-cross { stroke: ${t.stageEdge}; stroke-width: .8; opacity: .35; }
+.sx-stage-riser { fill: ${t.fillMuted}; fill-opacity: .88; stroke: ${t.stageEdge}; stroke-width: 1.2; }
+.sx-stage-riser-lip { stroke: ${t.stageEdge}; stroke-width: 2.4; opacity: .45; }
+.sx-stage-riser-label { font: 650 8px ${MONO_FONT}; fill: ${t.stageEdge}; paint-order: stroke; stroke: ${t.fillMuted}; stroke-width: 3px; }
 .sx-stage-paper { fill: ${t.paper}; stroke: ${t.ink}; stroke-width: 1; }
 .sx-stage-glyph-text { font-family: ${MONO_FONT}; font-weight: 700; fill: ${t.ink}; }
 .sx-stage-label { font: 600 10px ${BODY_FONT}; fill: ${t.ink}; paint-order: stroke; stroke: ${t.paper}; stroke-width: 3px; stroke-linejoin: round; }
 .sx-stage-channel { fill: ${t.signal}; stroke: ${t.paper}; stroke-width: 1.5; }
-.sx-stage-channel-text { font: 700 8px ${MONO_FONT}; fill: ${t.paper}; }
-.sx-stage-mix-text { font: 800 13px ${MONO_FONT}; fill: ${t.paper}; }
-.sx-stage-signal { fill: none; stroke: ${t.signal}; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 5 4; }
-.sx-stage-signal-arrow { fill: ${t.signal}; stroke: none; }
+.sx-stage-channel-text { font: 700 7px ${MONO_FONT}; fill: ${t.paper}; letter-spacing: -.02em; }
+.sx-stage-mix-badge { fill: ${t.monitor}; stroke: ${t.paper}; stroke-width: 1.5; }
+.sx-stage-mix-text { font: 800 8.5px ${MONO_FONT}; fill: ${t.paper}; }
+.sx-stage-signal { fill: none; stroke: ${t.signal}; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 4 5; opacity: .48; }
+.sx-stage-signal-arrow { fill: ${t.signal}; stroke: none; opacity: .58; }
 .sx-stage-signal-label { font: 600 9px ${MONO_FONT}; fill: ${t.signal}; paint-order: stroke; stroke: ${t.paper}; stroke-width: 3px; }
+.sx-stage-legend-text { font: 600 8.5px ${BODY_FONT}; fill: ${t.textMuted}; }
+.sx-stage-legend-mix { fill: ${t.monitor}; stroke: ${t.ink}; stroke-width: 1; }
 .sx-input-heading { font: 700 13px ${DISPLAY_FONT}; fill: ${t.ink}; }
 .sx-input-head-bg { fill: ${t.input}; }
 .sx-input-head { font: 700 9px ${MONO_FONT}; fill: ${t.paper}; letter-spacing: .03em; }
 .sx-input-row { fill: ${t.paper}; stroke: ${t.hatchStroke}; stroke-width: 1; }
 .sx-input-row-alt { fill: ${t.fillMuted}; stroke: ${t.hatchStroke}; stroke-width: 1; }
-.sx-input-cell { font: 500 10px ${BODY_FONT}; fill: ${t.ink}; }
-.sx-input-cell-mono { font: 600 10px ${MONO_FONT}; fill: ${t.ink}; }
+.sx-input-cell { font: 500 10.5px ${BODY_FONT}; fill: ${t.ink}; }
+.sx-input-cell-mono { font: 650 10px ${MONO_FONT}; fill: ${t.ink}; }
 .sx-stage-error-title { font: 700 16px ${DISPLAY_FONT}; fill: ${t.negative}; }
 .sx-stage-error-line { font: 11px ${MONO_FONT}; fill: ${t.negative}; }
 `.trim();
@@ -348,6 +445,102 @@ function tableCell(
   );
 }
 
+interface StageTableColumn<T> {
+  header: string;
+  width: number;
+  value: (row: T) => string;
+  mono?: boolean;
+}
+
+function renderStageTable<T>(options: {
+  heading: string;
+  caption: string;
+  rows: T[];
+  columns: StageTableColumn<T>[];
+  x: number;
+  y: number;
+  width: number;
+}): { shapes: string[]; height: number } {
+  const headingH = 30;
+  const headH = 30;
+  const rowH = 28;
+  const shapes = [
+    textEl(
+      {
+        class: "sx-input-heading",
+        x: options.x,
+        y: r2(options.y + 18),
+      },
+      options.heading
+    ),
+    textEl(
+      {
+        class: "sx-stage-caption",
+        x: r2(options.x + options.width),
+        y: r2(options.y + 18),
+        "text-anchor": "end",
+      },
+      options.caption
+    ),
+    rect({
+      class: "sx-input-head-bg",
+      x: options.x,
+      y: options.y + headingH,
+      width: options.width,
+      height: headH,
+      rx: 3,
+    }),
+  ];
+  let cursor = options.x;
+  for (const column of options.columns) {
+    shapes.push(
+      textEl(
+        {
+          class: "sx-input-head",
+          x: r2(cursor + 8),
+          y: r2(options.y + headingH + 19),
+        },
+        column.header
+      )
+    );
+    cursor += column.width;
+  }
+  options.rows.forEach((row, index) => {
+    const rowY = options.y + headingH + headH + index * rowH;
+    shapes.push(
+      rect({
+        class: index % 2 ? "sx-input-row-alt" : "sx-input-row",
+        x: options.x,
+        y: rowY,
+        width: options.width,
+        height: rowH,
+      })
+    );
+    let x = options.x;
+    for (const column of options.columns) {
+      shapes.push(
+        tableCell(
+          column.value(row),
+          x,
+          rowY,
+          column.width,
+          column.mono ? "sx-input-cell-mono" : "sx-input-cell"
+        )
+      );
+      x += column.width;
+    }
+  });
+  return {
+    shapes,
+    height: headingH + headH + options.rows.length * rowH,
+  };
+}
+
+function formatStageDimension(value: number, unit: FloorplanAst["unit"]): string {
+  const rounded = Math.round(value * 10) / 10;
+  return `${rounded} ${unit}`;
+}
+
 export function renderStageplotLayout(
   lay: FloorplanLayoutResult,
   config?: RenderConfig
@@ -363,15 +556,19 @@ export function renderStageplotLayout(
   }
 
   const px = (meters: number): number => r2(meters * SCALE);
-  const plotPad = { left: 104, right: 104, top: 54, bottom: 84 };
+  const plotPad = { left: 112, right: 112, top: 64, bottom: 88 };
   const plotW =
     px(lay.bounds.maxX - lay.bounds.minX) + plotPad.left + plotPad.right;
   const plotH =
     px(lay.bounds.maxY - lay.bounds.minY) + plotPad.top + plotPad.bottom;
-  const tableW = 880;
-  const width = Math.max(680, plotW, stage.showInputList ? tableW : 0);
+  const tableW = 960;
+  const width = Math.max(
+    680,
+    plotW,
+    stage.showInputList || stage.showOutputList ? tableW : 0
+  );
   const plotOffsetX = (width - plotW) / 2;
-  const titleH = 48;
+  const titleH = 78;
   const X = (meters: number): number =>
     r2(plotOffsetX + plotPad.left + px(meters - lay.bounds.minX));
   const Y = (meters: number): number =>
@@ -418,7 +615,8 @@ export function renderStageplotLayout(
     }
   }
 
-  const signalShapes = stage.signals.map((signal) => {
+  const signalShapes = stage.showSignalPaths
+    ? stage.signals.map((signal) => {
     const d = signal.points
       .map((point, index) => `${index === 0 ? "M" : "L"} ${X(point.x)} ${Y(point.y)}`)
       .join(" ");
@@ -442,7 +640,7 @@ export function renderStageplotLayout(
       return [
         polygon({
           class: "sx-stage-signal-arrow",
-          points: "-4,-3 4,0 -4,3",
+          points: "-3,-2.3 3.5,0 -3,2.3",
           transform: `translate(${x},${y}) rotate(${deg})`,
         }),
       ];
@@ -470,7 +668,8 @@ export function renderStageplotLayout(
           : []),
       ]
     );
-  });
+      })
+    : [];
 
   const sortedEquipment = [...stage.equipment].sort((a, b) => {
     const au = STAGE_SYMBOLS[a.kind].underlay ? 0 : 1;
@@ -501,26 +700,50 @@ export function renderStageplotLayout(
             "text-anchor": "middle",
             "dominant-baseline": "central",
           },
-          String(item.mix)
+          `MIX ${item.mix}`
+        )
+      );
+    } else if (OUTPUT_TYPES[item.kind] && item.mix !== undefined) {
+      const badgeW = 42;
+      children.push(
+        rect({
+          class: "sx-stage-mix-badge",
+          x: r2(w - badgeW + 2),
+          y: -3,
+          width: badgeW,
+          height: 15,
+          rx: 7.5,
+        }),
+        textEl(
+          {
+            class: "sx-stage-mix-text",
+            x: r2(w - badgeW / 2 + 2),
+            y: 7.5,
+            "text-anchor": "middle",
+          },
+          `MIX ${item.mix}`
         )
       );
     }
     if (item.channel !== undefined) {
+      const badgeW = 34;
       children.push(
-        circle({
+        rect({
           class: "sx-stage-channel",
-          cx: r2(w - 6),
-          cy: 6,
-          r: 8,
+          x: r2(w - badgeW + 2),
+          y: -3,
+          width: badgeW,
+          height: 15,
+          rx: 7.5,
         }),
         textEl(
           {
             class: "sx-stage-channel-text",
-            x: r2(w - 6),
-            y: 9,
+            x: r2(w - badgeW / 2 + 2),
+            y: 7.5,
             "text-anchor": "middle",
           },
-          String(item.channel)
+          `CH ${item.channel}`
         )
       );
     }
@@ -528,10 +751,14 @@ export function renderStageplotLayout(
       children.push(
         textEl(
           {
-            class: "sx-stage-label",
-            x: w / 2,
-            y: r2(h + 13),
-            "text-anchor": "middle",
+            class:
+              item.kind === "stage-riser"
+                ? "sx-stage-riser-label"
+                : "sx-stage-label",
+            x: item.kind === "stage-riser" ? 7 : w / 2,
+            y: item.kind === "stage-riser" ? 13 : r2(h + 13),
+            "text-anchor":
+              item.kind === "stage-riser" ? "start" : "middle",
           },
           item.label
         )
@@ -553,25 +780,127 @@ export function renderStageplotLayout(
   const primary = lay.rooms[0];
   const directions: string[] = [];
   if (primary) {
-    const leftX = X(primary.x) - 68;
-    const rightX = X(primary.x + primary.w) + 68;
-    const midY = Y(primary.y + primary.h / 2);
-    const upY = Y(primary.y) - 20;
-    const downY = Y(primary.y + primary.h) + 22;
+    const stageLeft = X(primary.x);
+    const stageRight = X(primary.x + primary.w);
+    const stageTop = Y(primary.y);
+    const stageBottom = Y(primary.y + primary.h);
+    const leftX = stageLeft - 76;
+    const rightX = stageRight + 76;
+    const midY = (stageTop + stageBottom) / 2;
+    const upY = stageTop - 43;
+    const downY = stageBottom + 22;
+    const horizontalDimY = stageTop - 19;
+    const verticalDimX = stageLeft - 34;
+    const tick = 3.6;
+    const sourceWidth =
+      primary.sourceW ??
+      primary.w / (lay.unit === "ft" ? FT : 1);
+    const sourceHeight =
+      primary.sourceH ??
+      primary.h / (lay.unit === "ft" ? FT : 1);
     directions.push(
+      line({
+        class: "sx-stage-dim-guide",
+        x1: stageLeft,
+        y1: stageTop,
+        x2: stageLeft,
+        y2: horizontalDimY,
+      }),
+      line({
+        class: "sx-stage-dim-guide",
+        x1: stageRight,
+        y1: stageTop,
+        x2: stageRight,
+        y2: horizontalDimY,
+      }),
+      line({
+        class: "sx-stage-dim",
+        x1: stageLeft,
+        y1: horizontalDimY,
+        x2: stageRight,
+        y2: horizontalDimY,
+      }),
+      line({
+        class: "sx-stage-dim",
+        x1: r2(stageLeft - tick),
+        y1: r2(horizontalDimY + tick),
+        x2: r2(stageLeft + tick),
+        y2: r2(horizontalDimY - tick),
+      }),
+      line({
+        class: "sx-stage-dim",
+        x1: r2(stageRight - tick),
+        y1: r2(horizontalDimY + tick),
+        x2: r2(stageRight + tick),
+        y2: r2(horizontalDimY - tick),
+      }),
+      textEl(
+        {
+          class: "sx-stage-dim-text",
+          x: r2((stageLeft + stageRight) / 2),
+          y: r2(horizontalDimY - 5),
+          "text-anchor": "middle",
+        },
+        formatStageDimension(sourceWidth, lay.unit)
+      ),
+      line({
+        class: "sx-stage-dim-guide",
+        x1: verticalDimX,
+        y1: stageTop,
+        x2: stageLeft,
+        y2: stageTop,
+      }),
+      line({
+        class: "sx-stage-dim-guide",
+        x1: verticalDimX,
+        y1: stageBottom,
+        x2: stageLeft,
+        y2: stageBottom,
+      }),
+      line({
+        class: "sx-stage-dim",
+        x1: verticalDimX,
+        y1: stageTop,
+        x2: verticalDimX,
+        y2: stageBottom,
+      }),
+      line({
+        class: "sx-stage-dim",
+        x1: r2(verticalDimX - tick),
+        y1: r2(stageTop + tick),
+        x2: r2(verticalDimX + tick),
+        y2: r2(stageTop - tick),
+      }),
+      line({
+        class: "sx-stage-dim",
+        x1: r2(verticalDimX - tick),
+        y1: r2(stageBottom + tick),
+        x2: r2(verticalDimX + tick),
+        y2: r2(stageBottom - tick),
+      }),
+      textEl(
+        {
+          class: "sx-stage-dim-text",
+          x: r2(verticalDimX - 5),
+          y: r2(midY),
+          "text-anchor": "middle",
+          transform: `rotate(-90 ${r2(verticalDimX - 5)} ${r2(midY)})`,
+        },
+        formatStageDimension(sourceHeight, lay.unit)
+      ),
       rect({
         class: "sx-stage-rail",
-        x: r2(leftX - 16),
-        y: r2(Y(primary.y)),
-        width: 32,
+        x: r2(leftX - 12),
+        y: stageTop,
+        width: 24,
         height: px(primary.h),
         rx: 3,
       }),
       rect({
         class: "sx-stage-rail",
-        x: r2(rightX - 16),
-        y: r2(Y(primary.y)),
-        width: 32,
+        x: r2(rightX - 12),
+        y: stageTop,
+        width: 24,
         height: px(primary.h),
         rx: 3,
       }),
@@ -599,7 +928,7 @@ export function renderStageplotLayout(
         {
           class: "sx-stage-direction-note",
           x: leftX,
-          y: r2(Y(primary.y + primary.h) + 14),
+          y: r2(stageBottom + 14),
           "text-anchor": "middle",
         },
         "performer view"
@@ -608,7 +937,7 @@ export function renderStageplotLayout(
         {
           class: "sx-stage-direction-note",
           x: rightX,
-          y: r2(Y(primary.y + primary.h) + 14),
+          y: r2(stageBottom + 14),
           "text-anchor": "middle",
         },
         "performer view"
@@ -651,106 +980,279 @@ export function renderStageplotLayout(
     );
   }
 
-  const table: string[] = [];
+  const tableSections: string[] = [];
   const plotBottom = titleH + plotH;
-  let height = plotBottom + 20;
-  if (stage.showInputList) {
-    const tableX = (width - tableW) / 2;
-    const tableY = plotBottom + 24;
-    const headingH = 30;
-    const headH = 30;
-    const rowH = 28;
-    const columns = [58, 174, 218, 122, 62, 246];
-    const headers = ["CH", "INSTRUMENT / VOCAL", "SUGGESTED MIC / DI", "STAND", "48V", "NOTES"];
-    table.push(
-      textEl(
-        { class: "sx-input-heading", x: tableX, y: r2(tableY + 18) },
-        "INPUT LIST"
-      ),
-      textEl(
-        {
-          class: "sx-stage-caption",
-          x: r2(tableX + tableW),
-          y: r2(tableY + 18),
-          "text-anchor": "end",
-        },
-        "AUTO-DERIVED FROM STAGE EQUIPMENT"
-      ),
-      rect({
-        class: "sx-input-head-bg",
-        x: tableX,
-        y: tableY + headingH,
-        width: tableW,
-        height: headH,
-        rx: 3,
-      })
-    );
-    let cursor = tableX;
-    headers.forEach((header, index) => {
-      table.push(
+  const tableX = (width - tableW) / 2;
+  let cursorY = plotBottom + 12;
+  tableSections.push(
+    group(
+      {
+        class: "sx-stage-legend",
+        "data-stage-sheet": "legend",
+      },
+      [
         textEl(
           {
-            class: "sx-input-head",
-            x: r2(cursor + 8),
-            y: r2(tableY + headingH + 19),
+            class: "sx-stage-caption",
+            x: tableX,
+            y: r2(cursorY + 16),
           },
-          header
-        )
-      );
-      cursor += columns[index] ?? 0;
-    });
-    stage.inputList.forEach((row, index) => {
-      const rowY = tableY + headingH + headH + index * rowH;
-      table.push(
+          "LEGEND"
+        ),
         rect({
-          class: index % 2 ? "sx-input-row-alt" : "sx-input-row",
-          x: tableX,
-          y: rowY,
-          width: tableW,
-          height: rowH,
-        })
-      );
-      let x = tableX;
-      const values = [
-        String(row.channel),
-        row.source,
-        row.model,
-        row.stand,
-        row.phantom ? "YES" : "NO",
-        row.notes,
-      ];
-      values.forEach((value, cellIndex) => {
-        const cellWidth = columns[cellIndex] ?? 0;
-        table.push(
-          tableCell(
-            value,
-            x,
-            rowY,
-            cellWidth,
-            cellIndex === 0 || cellIndex === 4
-              ? "sx-input-cell-mono"
-              : "sx-input-cell"
-          )
-        );
-        x += cellWidth;
-      });
+          class: "sx-stage-channel",
+          x: r2(tableX + 62),
+          y: r2(cursorY + 3),
+          width: 36,
+          height: 16,
+          rx: 8,
+        }),
+        textEl(
+          {
+            class: "sx-stage-channel-text",
+            x: r2(tableX + 80),
+            y: r2(cursorY + 14),
+            "text-anchor": "middle",
+          },
+          "CH 5"
+        ),
+        textEl(
+          {
+            class: "sx-stage-legend-text",
+            x: r2(tableX + 106),
+            y: r2(cursorY + 16),
+          },
+          "INPUT CHANNEL"
+        ),
+        polygon({
+          class: "sx-stage-legend-mix",
+          points: `${r2(tableX + 222)},${r2(cursorY + 19)} ${r2(tableX + 263)},${r2(cursorY + 19)} ${r2(tableX + 258)},${r2(cursorY + 3)} ${r2(tableX + 227)},${r2(cursorY + 3)}`,
+        }),
+        textEl(
+          {
+            class: "sx-stage-mix-text",
+            x: r2(tableX + 242.5),
+            y: r2(cursorY + 13),
+            "text-anchor": "middle",
+          },
+          "MIX 1"
+        ),
+        textEl(
+          {
+            class: "sx-stage-legend-text",
+            x: r2(tableX + 273),
+            y: r2(cursorY + 16),
+          },
+          "MONITOR SEND"
+        ),
+        textEl(
+          {
+            class: "sx-stage-caption",
+            x: r2(tableX + tableW),
+            y: r2(cursorY + 16),
+            "text-anchor": "end",
+          },
+          "POSITION: US / MS / DS + STAGE R / C / L"
+        ),
+      ]
+    )
+  );
+  cursorY += 38;
+
+  if (stage.showOutputList && stage.outputList.length > 0) {
+    const outputTable = renderStageTable<StageOutputRow>({
+      heading: "MONITOR OUTPUTS",
+      caption: "AUTO-DERIVED FROM MONITOR ENDPOINTS",
+      rows: stage.outputList,
+      columns: [
+        {
+          header: "MIX",
+          width: 70,
+          value: (row) => String(row.mix),
+          mono: true,
+        },
+        {
+          header: "DESTINATION",
+          width: 220,
+          value: (row) => row.destination,
+        },
+        { header: "TYPE", width: 110, value: (row) => row.type },
+        {
+          header: "QTY",
+          width: 60,
+          value: (row) => String(row.quantity),
+          mono: true,
+        },
+        {
+          header: "POSITION",
+          width: 100,
+          value: (row) => row.position,
+          mono: true,
+        },
+        { header: "NOTES", width: 400, value: (row) => row.notes },
+      ],
+      x: tableX,
+      y: cursorY,
+      width: tableW,
     });
-    height =
-      tableY + headingH + headH + Math.max(1, stage.inputList.length) * rowH + 22;
+    tableSections.push(
+      group(
+        {
+          class: "sx-stage-output-list",
+          "data-stage-sheet": "output-list",
+        },
+        outputTable.shapes
+      )
+    );
+    cursorY += outputTable.height + 24;
   }
 
-  const inputTable = stage.showInputList
-    ? group(
+  if (stage.showInputList) {
+    const inputTable = renderStageTable<StageInputRow>({
+      heading: "INPUT LIST",
+      caption: "AUTO-DERIVED FROM STAGE EQUIPMENT",
+      rows: stage.inputList,
+      columns: [
+        {
+          header: "CH",
+          width: 56,
+          value: (row) => String(row.channel),
+          mono: true,
+        },
+        {
+          header: "INSTRUMENT / VOCAL",
+          width: 180,
+          value: (row) => row.source,
+        },
+        {
+          header: "SUGGESTED MIC / DI",
+          width: 190,
+          value: (row) => row.model,
+        },
+        {
+          header: "POSITION",
+          width: 76,
+          value: (row) => row.position,
+          mono: true,
+        },
+        { header: "STAND", width: 114, value: (row) => row.stand },
+        {
+          header: "48V",
+          width: 60,
+          value: (row) => (row.phantom ? "YES" : "NO"),
+          mono: true,
+        },
+        { header: "NOTES", width: 284, value: (row) => row.notes },
+      ],
+      x: tableX,
+      y: cursorY,
+      width: tableW,
+    });
+    tableSections.push(
+      group(
         {
           class: "sx-stage-input-list",
           "data-stage-sheet": "input-list",
         },
-        table
+        inputTable.shapes
       )
-    : "";
+    );
+    cursorY += inputTable.height + 24;
+  }
+
+  const height = cursorY;
+  const venueAndDate = [
+    stage.document.venue,
+    stage.document.showDate,
+  ]
+    .filter(Boolean)
+    .join(" · ");
+  const technicalContact = stage.document.technicalContact ?? "—";
+  const revision = stage.document.revision ?? "—";
+  const contactParts = technicalContact
+    .split(/\s*·\s*/)
+    .filter((part) => part.length > 0);
+  const contactLines =
+    contactParts.length <= 1
+      ? [technicalContact]
+      : [
+          contactParts.slice(0, 2).join(" · "),
+          contactParts.slice(2).join(" · "),
+        ].filter((line) => line.length > 0);
+  const header = group(
+    { class: "sx-stage-document-header" },
+    [
+      textEl(
+        { class: "sx-stage-eyebrow", x: 24, y: 18 },
+        "STAGE PLOT / TECHNICAL ADVANCE"
+      ),
+      textEl(
+        {
+          class: "sx-stage-title",
+          x: 24,
+          y: 43,
+        },
+        lay.title
+      ),
+      ...(venueAndDate
+        ? [
+            textEl(
+              {
+                class: "sx-stage-meta-value",
+                x: 24,
+                y: 61,
+              },
+              venueAndDate
+            ),
+          ]
+        : []),
+      textEl(
+        {
+          class: "sx-stage-meta-label",
+          x: r2(width - 340),
+          y: 18,
+        },
+        "REVISION"
+      ),
+      textEl(
+        {
+          class: "sx-stage-meta-value",
+          x: r2(width - 340),
+          y: 32,
+        },
+        revision
+      ),
+      textEl(
+        {
+          class: "sx-stage-meta-label",
+          x: r2(width - 340),
+          y: 43,
+        },
+        "TECHNICAL CONTACT"
+      ),
+      ...contactLines.map((contactLine, index) =>
+        textEl(
+          {
+            class: "sx-stage-meta-value",
+            x: r2(width - 340),
+            y: 55 + index * 11,
+          },
+          contactLine
+        )
+      ),
+      line({
+        class: "sx-stage-header-rule",
+        x1: 24,
+        y1: 70,
+        x2: r2(width - 24),
+        y2: 70,
+      }),
+    ]
+  );
   const description =
     `${stage.equipment.length} stage devices, ${stage.inputList.length} input channels, ` +
-    `${stage.signals.length} signal paths. Stage right is page left and stage left is page right, from performer view.`;
+    `${stage.outputList.length} monitor outputs, ${stage.signals.length} declared signal paths. ` +
+    `Stage right is page left and stage left is page right, from performer view.`;
 
   return svgRoot(
     {
@@ -765,20 +1267,12 @@ export function renderStageplotLayout(
       descEl(description),
       el("style", {}, stageCss(t)),
       rect({ fill: t.paper, x: 0, y: 0, width, height }),
-      textEl(
-        {
-          class: "sx-stage-title",
-          x: width / 2,
-          y: 30,
-          "text-anchor": "middle",
-        },
-        lay.title
-      ),
+      header,
       group({ class: "sx-stage-directions" }, directions),
       group({ class: "sx-stage-surfaces" }, surface),
       group({ class: "sx-stage-signals" }, signalShapes),
       group({ class: "sx-stage-equipment-layer" }, equipmentShapes),
-      inputTable,
+      ...tableSections,
     ].filter(Boolean)
   );
 }

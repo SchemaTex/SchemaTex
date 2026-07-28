@@ -1,17 +1,24 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 880 922.34" width="880" height="922.34" class="sx-stageplot" role="img"><title>Four-piece Rock Band</title>
-<desc>13 stage devices, 5 input channels, 2 signal paths. Stage right is page left and stage left is page right, from performer view.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 960 1302.34" width="960" height="1302.34" class="sx-stageplot" role="img"><title>Four-piece Rock Band</title>
+<desc>18 stage devices, 9 input channels, 4 monitor outputs, 2 declared signal paths. Stage right is page left and stage left is page right, from performer view.</desc>
 <style>.sx-stageplot { font-family: "Noto Sans", "Noto Sans Arabic", sans-serif; }
-.sx-stage-title { font: 600 20px "IBM Plex Sans", "Noto Sans", sans-serif; letter-spacing: -.01em; fill: #172033; }
+.sx-stage-eyebrow { font: 700 8.5px "IBM Plex Mono", "Noto Sans Mono", monospace; letter-spacing: .12em; fill: #0F766E; }
+.sx-stage-title { font: 650 22px "IBM Plex Sans", "Noto Sans", sans-serif; letter-spacing: -.02em; fill: #172033; }
+.sx-stage-meta-label { font: 700 7.5px "IBM Plex Mono", "Noto Sans Mono", monospace; letter-spacing: .09em; fill: #475569; }
+.sx-stage-meta-value { font: 550 9.5px "Noto Sans", "Noto Sans Arabic", sans-serif; fill: #172033; }
+.sx-stage-header-rule { stroke: #cbd5e1; stroke-width: 1; }
 .sx-stage-section { font: 600 13px "IBM Plex Sans", "Noto Sans", sans-serif; fill: #172033; }
 .sx-stage-caption { font: 500 9px "IBM Plex Mono", "Noto Sans Mono", monospace; fill: #475569; letter-spacing: .04em; }
 .sx-stage-surface { fill: #E8EEF5; stroke: #1E3A5F; stroke-width: 2.2; }
-.sx-stage-deck-line { fill: none; stroke: #1E3A5F; stroke-width: 1; opacity: .24; }
-.sx-stage-rail { fill: #1E3A5F; }
+.sx-stage-deck-line { fill: none; stroke: #1E3A5F; stroke-width: .8; opacity: .16; }
+.sx-stage-rail { fill: #1E3A5F; opacity: .92; }
 .sx-stage-rail-text { font: 700 11px "IBM Plex Sans", "Noto Sans", sans-serif; fill: #F8FAFC; letter-spacing: .08em; }
 .sx-stage-direction { font: 700 11px "IBM Plex Sans", "Noto Sans", sans-serif; fill: #1E3A5F; letter-spacing: .1em; }
 .sx-stage-direction-note { font: 500 9px "Noto Sans", "Noto Sans Arabic", sans-serif; fill: #475569; }
 .sx-stage-audience { fill: #1E3A5F; opacity: .1; stroke: #1E3A5F; stroke-width: 1; }
 .sx-stage-audience-text { font: 700 11px "IBM Plex Sans", "Noto Sans", sans-serif; fill: #1E3A5F; letter-spacing: .18em; }
+.sx-stage-dim { fill: none; stroke: #475569; stroke-width: 1; }
+.sx-stage-dim-guide { fill: none; stroke: #cbd5e1; stroke-width: .8; stroke-dasharray: 2 3; }
+.sx-stage-dim-text { font: 650 9px "IBM Plex Mono", "Noto Sans Mono", monospace; fill: #475569; paint-order: stroke; stroke: #F8FAFC; stroke-width: 3px; }
 .sx-stage-device { fill: #FFFFFF; stroke: #172033; stroke-width: 1.3; }
 .sx-stage-signal-device { fill: #F8FAFC; stroke: #2563EB; stroke-width: 1.5; }
 .sx-stage-detail { fill: none; stroke: #172033; stroke-width: 1; stroke-linecap: round; stroke-linejoin: round; }
@@ -23,132 +30,254 @@
 .sx-stage-monitor-cone { fill: #F8FAFC; stroke: #172033; stroke-width: 1; }
 .sx-stage-power { fill: #F8FAFC; stroke: #D97706; stroke-width: 1.6; }
 .sx-stage-power-mark { fill: #D97706; stroke: none; }
-.sx-stage-riser { fill: #F8FAFC; fill-opacity: .55; stroke: #1E3A5F; stroke-width: 1.4; stroke-dasharray: 6 4; }
-.sx-stage-riser-cross { stroke: #1E3A5F; stroke-width: .8; opacity: .35; }
+.sx-stage-riser { fill: #f1f5f9; fill-opacity: .88; stroke: #1E3A5F; stroke-width: 1.2; }
+.sx-stage-riser-lip { stroke: #1E3A5F; stroke-width: 2.4; opacity: .45; }
+.sx-stage-riser-label { font: 650 8px "IBM Plex Mono", "Noto Sans Mono", monospace; fill: #1E3A5F; paint-order: stroke; stroke: #f1f5f9; stroke-width: 3px; }
 .sx-stage-paper { fill: #F8FAFC; stroke: #172033; stroke-width: 1; }
 .sx-stage-glyph-text { font-family: "IBM Plex Mono", "Noto Sans Mono", monospace; font-weight: 700; fill: #172033; }
 .sx-stage-label { font: 600 10px "Noto Sans", "Noto Sans Arabic", sans-serif; fill: #172033; paint-order: stroke; stroke: #F8FAFC; stroke-width: 3px; stroke-linejoin: round; }
 .sx-stage-channel { fill: #2563EB; stroke: #F8FAFC; stroke-width: 1.5; }
-.sx-stage-channel-text { font: 700 8px "IBM Plex Mono", "Noto Sans Mono", monospace; fill: #F8FAFC; }
-.sx-stage-mix-text { font: 800 13px "IBM Plex Mono", "Noto Sans Mono", monospace; fill: #F8FAFC; }
-.sx-stage-signal { fill: none; stroke: #2563EB; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 5 4; }
-.sx-stage-signal-arrow { fill: #2563EB; stroke: none; }
+.sx-stage-channel-text { font: 700 7px "IBM Plex Mono", "Noto Sans Mono", monospace; fill: #F8FAFC; letter-spacing: -.02em; }
+.sx-stage-mix-badge { fill: #D97706; stroke: #F8FAFC; stroke-width: 1.5; }
+.sx-stage-mix-text { font: 800 8.5px "IBM Plex Mono", "Noto Sans Mono", monospace; fill: #F8FAFC; }
+.sx-stage-signal { fill: none; stroke: #2563EB; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 4 5; opacity: .48; }
+.sx-stage-signal-arrow { fill: #2563EB; stroke: none; opacity: .58; }
 .sx-stage-signal-label { font: 600 9px "IBM Plex Mono", "Noto Sans Mono", monospace; fill: #2563EB; paint-order: stroke; stroke: #F8FAFC; stroke-width: 3px; }
+.sx-stage-legend-text { font: 600 8.5px "Noto Sans", "Noto Sans Arabic", sans-serif; fill: #475569; }
+.sx-stage-legend-mix { fill: #D97706; stroke: #172033; stroke-width: 1; }
 .sx-input-heading { font: 700 13px "IBM Plex Sans", "Noto Sans", sans-serif; fill: #172033; }
 .sx-input-head-bg { fill: #0F766E; }
 .sx-input-head { font: 700 9px "IBM Plex Mono", "Noto Sans Mono", monospace; fill: #F8FAFC; letter-spacing: .03em; }
 .sx-input-row { fill: #F8FAFC; stroke: #cbd5e1; stroke-width: 1; }
 .sx-input-row-alt { fill: #f1f5f9; stroke: #cbd5e1; stroke-width: 1; }
-.sx-input-cell { font: 500 10px "Noto Sans", "Noto Sans Arabic", sans-serif; fill: #172033; }
-.sx-input-cell-mono { font: 600 10px "IBM Plex Mono", "Noto Sans Mono", monospace; fill: #172033; }
+.sx-input-cell { font: 500 10.5px "Noto Sans", "Noto Sans Arabic", sans-serif; fill: #172033; }
+.sx-input-cell-mono { font: 650 10px "IBM Plex Mono", "Noto Sans Mono", monospace; fill: #172033; }
 .sx-stage-error-title { font: 700 16px "IBM Plex Sans", "Noto Sans", sans-serif; fill: #dc2626; }
 .sx-stage-error-line { font: 11px "IBM Plex Mono", "Noto Sans Mono", monospace; fill: #dc2626; }</style>
-<rect fill="#F8FAFC" x="0" y="0" width="880" height="922.3399999999999"/>
-<text class="sx-stage-title" x="440" y="30" text-anchor="middle">Four-piece Rock Band</text>
-<g class="sx-stage-directions"><rect class="sx-stage-rail" x="102.4" y="102" width="32" height="316.99" rx="3"/>
-<rect class="sx-stage-rail" x="745.6" y="102" width="32" height="316.99" rx="3"/>
-<text class="sx-stage-rail-text" x="118.4" y="260.5" text-anchor="middle" transform="rotate(-90 118.4 260.5)">STAGE RIGHT</text>
-<text class="sx-stage-rail-text" x="761.6" y="260.5" text-anchor="middle" transform="rotate(90 761.6 260.5)">STAGE LEFT</text>
-<text class="sx-stage-direction-note" x="118.4" y="432.99" text-anchor="middle">performer view</text>
-<text class="sx-stage-direction-note" x="761.6" y="432.99" text-anchor="middle">performer view</text>
-<text class="sx-stage-direction" x="440" y="82" text-anchor="middle">UPSTAGE</text>
-<text class="sx-stage-direction" x="440" y="440.99" text-anchor="middle">DOWNSTAGE</text>
-<rect class="sx-stage-audience" x="186.4" y="450.99" width="507.19" height="26" rx="3"/>
-<text class="sx-stage-audience-text" x="440" y="468.99" text-anchor="middle">AUDIENCE</text></g>
-<g class="sx-stage-surfaces"><g class="sx-stage-surface-group" data-stage="deck"><rect class="sx-stage-surface" x="186.4" y="102" width="507.19" height="316.99" rx="2"/>
-<line class="sx-stage-deck-line" x1="186.4" y1="154" x2="693.59" y2="154"/>
-<line class="sx-stage-deck-line" x1="186.4" y1="206" x2="693.59" y2="206"/>
-<line class="sx-stage-deck-line" x1="186.4" y1="258" x2="693.59" y2="258"/>
-<line class="sx-stage-deck-line" x1="186.4" y1="310" x2="693.59" y2="310"/>
-<line class="sx-stage-deck-line" x1="186.4" y1="362" x2="693.59" y2="362"/>
-<line class="sx-stage-deck-line" x1="186.4" y1="414" x2="693.59" y2="414"/></g></g>
-<g class="sx-stage-signals"><g class="sx-stage-signal-path" data-signal="signal-1"><path class="sx-stage-signal" d="M 278.14 237.64 L 664.24 237.64 L 664.24 274.8 L 664.24 561.14 L 502.4 561.14"/>
-<polygon class="sx-stage-signal-arrow" points="-4,-3 4,0 -4,3" transform="translate(540.69,237.64) rotate(0)"/>
-<polygon class="sx-stage-signal-arrow" points="-4,-3 4,0 -4,3" transform="translate(664.24,262.91) rotate(90)"/>
-<polygon class="sx-stage-signal-arrow" points="-4,-3 4,0 -4,3" transform="translate(664.24,469.51) rotate(90)"/>
-<polygon class="sx-stage-signal-arrow" points="-4,-3 4,0 -4,3" transform="translate(554.19,561.14) rotate(180)"/>
-<text class="sx-stage-signal-label" x="471.18" y="231.64" text-anchor="middle">Bass</text></g>
-<g class="sx-stage-signal-path" data-signal="signal-2"><path class="sx-stage-signal" d="M 447.54 378.74 L 664.24 378.74 L 664.24 274.8 L 664.24 561.14 L 502.4 561.14"/>
-<polygon class="sx-stage-signal-arrow" points="-4,-3 4,0 -4,3" transform="translate(594.9,378.74) rotate(0)"/>
-<polygon class="sx-stage-signal-arrow" points="-4,-3 4,0 -4,3" transform="translate(664.24,308.06) rotate(-90)"/>
-<polygon class="sx-stage-signal-arrow" points="-4,-3 4,0 -4,3" transform="translate(664.24,469.51) rotate(90)"/>
-<polygon class="sx-stage-signal-arrow" points="-4,-3 4,0 -4,3" transform="translate(554.19,561.14) rotate(180)"/>
-<text class="sx-stage-signal-label" x="555.9" y="372.74" text-anchor="middle">Vocal</text></g></g>
-<g class="sx-stage-equipment-layer"><g class="sx-stage-equipment" data-equipment="drum-kit" data-equipment-id="drums" transform="translate(439,185.7) translate(-62.4,-52)"><circle class="sx-stage-device" cx="62.4" cy="64.48" r="28.08"/><circle class="sx-stage-device" cx="34.94" cy="35.36" r="14.56"/><circle class="sx-stage-device" cx="89.86" cy="35.36" r="14.56"/><circle class="sx-stage-cymbal" cx="16.22" cy="17.68" r="13"/><circle class="sx-stage-cymbal" cx="108.58" cy="17.68" r="13"/><text class="sx-stage-glyph-text" x="62.4" y="52" text-anchor="middle" dominant-baseline="central" font-size="9.36">DRUMS</text>
+<rect fill="#F8FAFC" x="0" y="0" width="960" height="1302.34"/>
+<g class="sx-stage-document-header"><text class="sx-stage-eyebrow" x="24" y="18">STAGE PLOT / TECHNICAL ADVANCE</text>
+<text class="sx-stage-title" x="24" y="43">Four-piece Rock Band</text>
+<text class="sx-stage-meta-value" x="24" y="61">The Sound Room · August 14, 2026</text>
+<text class="sx-stage-meta-label" x="620" y="18">REVISION</text>
+<text class="sx-stage-meta-value" x="620" y="32">Rev 2 · July 27, 2026</text>
+<text class="sx-stage-meta-label" x="620" y="43">TECHNICAL CONTACT</text>
+<text class="sx-stage-meta-value" x="620" y="55">Morgan Lee · production@example.com</text>
+<text class="sx-stage-meta-value" x="620" y="66">+1 310 555 0142</text>
+<line class="sx-stage-header-rule" x1="24" y1="70" x2="936" y2="70"/></g>
+<g class="sx-stage-directions"><line class="sx-stage-dim-guide" x1="226.4" y1="142" x2="226.4" y2="123"/>
+<line class="sx-stage-dim-guide" x1="733.6" y1="142" x2="733.6" y2="123"/>
+<line class="sx-stage-dim" x1="226.4" y1="123" x2="733.6" y2="123"/>
+<line class="sx-stage-dim" x1="222.8" y1="126.6" x2="230" y2="119.4"/>
+<line class="sx-stage-dim" x1="730" y1="126.6" x2="737.2" y2="119.4"/>
+<text class="sx-stage-dim-text" x="480" y="118" text-anchor="middle">32 ft</text>
+<line class="sx-stage-dim-guide" x1="192.4" y1="142" x2="226.4" y2="142"/>
+<line class="sx-stage-dim-guide" x1="192.4" y1="458.99" x2="226.4" y2="458.99"/>
+<line class="sx-stage-dim" x1="192.4" y1="142" x2="192.4" y2="458.99"/>
+<line class="sx-stage-dim" x1="188.8" y1="145.6" x2="196" y2="138.4"/>
+<line class="sx-stage-dim" x1="188.8" y1="462.59" x2="196" y2="455.39"/>
+<text class="sx-stage-dim-text" x="187.4" y="300.5" text-anchor="middle" transform="rotate(-90 187.4 300.5)">20 ft</text>
+<rect class="sx-stage-rail" x="138.4" y="142" width="24" height="316.99" rx="3"/>
+<rect class="sx-stage-rail" x="797.6" y="142" width="24" height="316.99" rx="3"/>
+<text class="sx-stage-rail-text" x="150.4" y="300.495" text-anchor="middle" transform="rotate(-90 150.4 300.495)">STAGE RIGHT</text>
+<text class="sx-stage-rail-text" x="809.6" y="300.495" text-anchor="middle" transform="rotate(90 809.6 300.495)">STAGE LEFT</text>
+<text class="sx-stage-direction-note" x="150.4" y="472.99" text-anchor="middle">performer view</text>
+<text class="sx-stage-direction-note" x="809.6" y="472.99" text-anchor="middle">performer view</text>
+<text class="sx-stage-direction" x="480" y="99" text-anchor="middle">UPSTAGE</text>
+<text class="sx-stage-direction" x="480" y="480.99" text-anchor="middle">DOWNSTAGE</text>
+<rect class="sx-stage-audience" x="226.4" y="490.99" width="507.19" height="26" rx="3"/>
+<text class="sx-stage-audience-text" x="480" y="508.99" text-anchor="middle">AUDIENCE</text></g>
+<g class="sx-stage-surfaces"><g class="sx-stage-surface-group" data-stage="deck"><rect class="sx-stage-surface" x="226.4" y="142" width="507.19" height="316.99" rx="2"/>
+<line class="sx-stage-deck-line" x1="226.4" y1="194" x2="733.59" y2="194"/>
+<line class="sx-stage-deck-line" x1="226.4" y1="246" x2="733.59" y2="246"/>
+<line class="sx-stage-deck-line" x1="226.4" y1="298" x2="733.59" y2="298"/>
+<line class="sx-stage-deck-line" x1="226.4" y1="350" x2="733.59" y2="350"/>
+<line class="sx-stage-deck-line" x1="226.4" y1="402" x2="733.59" y2="402"/>
+<line class="sx-stage-deck-line" x1="226.4" y1="454" x2="733.59" y2="454"/></g></g>
+<g class="sx-stage-signals"><g class="sx-stage-signal-path" data-signal="signal-1"><path class="sx-stage-signal" d="M 318.14 277.64 L 704.24 277.64 L 704.24 314.8 L 704.24 601.14 L 542.4 601.14"/>
+<polygon class="sx-stage-signal-arrow" points="-3,-2.3 3.5,0 -3,2.3" transform="translate(580.69,277.64) rotate(0)"/>
+<polygon class="sx-stage-signal-arrow" points="-3,-2.3 3.5,0 -3,2.3" transform="translate(704.24,302.91) rotate(90)"/>
+<polygon class="sx-stage-signal-arrow" points="-3,-2.3 3.5,0 -3,2.3" transform="translate(704.24,509.51) rotate(90)"/>
+<polygon class="sx-stage-signal-arrow" points="-3,-2.3 3.5,0 -3,2.3" transform="translate(594.19,601.14) rotate(180)"/>
+<text class="sx-stage-signal-label" x="511.18" y="271.64" text-anchor="middle">Bass</text></g>
+<g class="sx-stage-signal-path" data-signal="signal-2"><path class="sx-stage-signal" d="M 487.54 418.74 L 704.24 418.74 L 704.24 314.8 L 704.24 601.14 L 542.4 601.14"/>
+<polygon class="sx-stage-signal-arrow" points="-3,-2.3 3.5,0 -3,2.3" transform="translate(634.9,418.74) rotate(0)"/>
+<polygon class="sx-stage-signal-arrow" points="-3,-2.3 3.5,0 -3,2.3" transform="translate(704.24,348.06) rotate(-90)"/>
+<polygon class="sx-stage-signal-arrow" points="-3,-2.3 3.5,0 -3,2.3" transform="translate(704.24,509.51) rotate(90)"/>
+<polygon class="sx-stage-signal-arrow" points="-3,-2.3 3.5,0 -3,2.3" transform="translate(594.19,601.14) rotate(180)"/>
+<text class="sx-stage-signal-label" x="595.9" y="412.74" text-anchor="middle">Vocal</text></g></g>
+<g class="sx-stage-equipment-layer"><g class="sx-stage-equipment" data-equipment="drum-kit" data-equipment-id="drums" transform="translate(479,225.7) translate(-62.4,-52)"><circle class="sx-stage-device" cx="62.4" cy="64.48" r="28.08"/><circle class="sx-stage-device" cx="34.94" cy="35.36" r="14.56"/><circle class="sx-stage-device" cx="89.86" cy="35.36" r="14.56"/><circle class="sx-stage-cymbal" cx="16.22" cy="17.68" r="13"/><circle class="sx-stage-cymbal" cx="108.58" cy="17.68" r="13"/><text class="sx-stage-glyph-text" x="62.4" y="52" text-anchor="middle" dominant-baseline="central" font-size="9.36">DRUMS</text>
 <text class="sx-stage-label" x="62.4" y="117" text-anchor="middle">Drums</text></g>
-<g class="sx-stage-equipment" data-equipment="drum-mic" data-equipment-id="kick" data-channel="1" transform="translate(410.64,202.05) translate(-18.2,-20.8)"><line class="sx-stage-stand" x1="18.2" y1="36.61" x2="18.2" y2="18.72"/><line class="sx-stage-stand" x1="6.55" y1="39.1" x2="18.2" y2="36.61"/><line class="sx-stage-stand" x1="29.85" y1="39.1" x2="18.2" y2="36.61"/><line class="sx-stage-stand" x1="18.2" y1="18.72" x2="29.12" y2="14.56"/><ellipse class="sx-stage-mic" cx="29.12" cy="14.56" rx="5.72" ry="2.34" transform="rotate(-18 29.12 14.56)"/>
-<circle class="sx-stage-channel" cx="30.4" cy="6" r="8"/>
-<text class="sx-stage-channel-text" x="30.4" y="9" text-anchor="middle">1</text></g>
-<g class="sx-stage-equipment" data-equipment="overhead" data-equipment-id="oh-l" data-channel="2" transform="translate(389.36,180.5) translate(-28.6,-46.8)"><line class="sx-stage-stand" x1="28.6" y1="82.37" x2="28.6" y2="18.72"/><line class="sx-stage-stand" x1="10.3" y1="87.98" x2="28.6" y2="82.37"/><line class="sx-stage-stand" x1="46.9" y1="87.98" x2="28.6" y2="82.37"/><line class="sx-stage-stand" x1="28.6" y1="18.72" x2="50.34" y2="9.36"/><ellipse class="sx-stage-mic" cx="50.34" cy="9.36" rx="5.72" ry="2.34" transform="rotate(-18 50.34 9.36)"/>
-<circle class="sx-stage-channel" cx="51.2" cy="6" r="8"/>
-<text class="sx-stage-channel-text" x="51.2" y="9" text-anchor="middle">2</text></g>
-<g class="sx-stage-equipment" data-equipment="overhead" data-equipment-id="oh-r" data-channel="3" transform="translate(484.45,180.5) translate(-28.6,-46.8)"><line class="sx-stage-stand" x1="28.6" y1="82.37" x2="28.6" y2="18.72"/><line class="sx-stage-stand" x1="10.3" y1="87.98" x2="28.6" y2="82.37"/><line class="sx-stage-stand" x1="46.9" y1="87.98" x2="28.6" y2="82.37"/><line class="sx-stage-stand" x1="28.6" y1="18.72" x2="50.34" y2="9.36"/><ellipse class="sx-stage-mic" cx="50.34" cy="9.36" rx="5.72" ry="2.34" transform="rotate(-18 50.34 9.36)"/>
-<circle class="sx-stage-channel" cx="51.2" cy="6" r="8"/>
-<text class="sx-stage-channel-text" x="51.2" y="9" text-anchor="middle">3</text></g>
-<g class="sx-stage-equipment" data-equipment="bass-amp" data-equipment-id="bass" transform="translate(266.46,202.57) translate(-32.5,-21.32)"><rect class="sx-stage-device" x="0" y="0" width="65" height="42.64" rx="3.12"/><line class="sx-stage-detail" x1="4.16" y1="11.96" x2="60.84" y2="11.96"/><circle class="sx-stage-port" cx="8.32" cy="6.24" r="1.3"/><circle class="sx-stage-port" cx="18.72" cy="6.24" r="1.3"/><circle class="sx-stage-port" cx="29.12" cy="6.24" r="1.3"/><circle class="sx-stage-port" cx="39.52" cy="6.24" r="1.3"/><circle class="sx-stage-port" cx="49.92" cy="6.24" r="1.3"/><circle class="sx-stage-port" cx="60.32" cy="6.24" r="1.3"/><text class="sx-stage-glyph-text" x="32.5" y="21.32" text-anchor="middle" dominant-baseline="central" font-size="11.44">BASS</text>
+<g class="sx-stage-equipment" data-equipment="drum-mic" data-equipment-id="kick" data-channel="1" transform="translate(450.64,242.05) translate(-18.2,-20.8)"><line class="sx-stage-stand" x1="18.2" y1="36.61" x2="18.2" y2="18.72"/><line class="sx-stage-stand" x1="6.55" y1="39.1" x2="18.2" y2="36.61"/><line class="sx-stage-stand" x1="29.85" y1="39.1" x2="18.2" y2="36.61"/><line class="sx-stage-stand" x1="18.2" y1="18.72" x2="29.12" y2="14.56"/><ellipse class="sx-stage-mic" cx="29.12" cy="14.56" rx="5.72" ry="2.34" transform="rotate(-18 29.12 14.56)"/>
+<rect class="sx-stage-channel" x="4.4" y="-3" width="34" height="15" rx="7.5"/>
+<text class="sx-stage-channel-text" x="21.4" y="7.5" text-anchor="middle">CH 1</text></g>
+<g class="sx-stage-equipment" data-equipment="drum-mic" data-equipment-id="snare" data-channel="2" transform="translate(482.35,226.2) translate(-18.2,-20.8)"><line class="sx-stage-stand" x1="18.2" y1="36.61" x2="18.2" y2="18.72"/><line class="sx-stage-stand" x1="6.55" y1="39.1" x2="18.2" y2="36.61"/><line class="sx-stage-stand" x1="29.85" y1="39.1" x2="18.2" y2="36.61"/><line class="sx-stage-stand" x1="18.2" y1="18.72" x2="29.12" y2="14.56"/><ellipse class="sx-stage-mic" cx="29.12" cy="14.56" rx="5.72" ry="2.34" transform="rotate(-18 29.12 14.56)"/>
+<rect class="sx-stage-channel" x="4.4" y="-3" width="34" height="15" rx="7.5"/>
+<text class="sx-stage-channel-text" x="21.4" y="7.5" text-anchor="middle">CH 2</text></g>
+<g class="sx-stage-equipment" data-equipment="drum-mic" data-equipment-id="rack-tom" data-channel="3" transform="translate(514.05,226.2) translate(-18.2,-20.8)"><line class="sx-stage-stand" x1="18.2" y1="36.61" x2="18.2" y2="18.72"/><line class="sx-stage-stand" x1="6.55" y1="39.1" x2="18.2" y2="36.61"/><line class="sx-stage-stand" x1="29.85" y1="39.1" x2="18.2" y2="36.61"/><line class="sx-stage-stand" x1="18.2" y1="18.72" x2="29.12" y2="14.56"/><ellipse class="sx-stage-mic" cx="29.12" cy="14.56" rx="5.72" ry="2.34" transform="rotate(-18 29.12 14.56)"/>
+<rect class="sx-stage-channel" x="4.4" y="-3" width="34" height="15" rx="7.5"/>
+<text class="sx-stage-channel-text" x="21.4" y="7.5" text-anchor="middle">CH 3</text></g>
+<g class="sx-stage-equipment" data-equipment="drum-mic" data-equipment-id="floor-tom" data-channel="4" transform="translate(529.9,257.9) translate(-18.2,-20.8)"><line class="sx-stage-stand" x1="18.2" y1="36.61" x2="18.2" y2="18.72"/><line class="sx-stage-stand" x1="6.55" y1="39.1" x2="18.2" y2="36.61"/><line class="sx-stage-stand" x1="29.85" y1="39.1" x2="18.2" y2="36.61"/><line class="sx-stage-stand" x1="18.2" y1="18.72" x2="29.12" y2="14.56"/><ellipse class="sx-stage-mic" cx="29.12" cy="14.56" rx="5.72" ry="2.34" transform="rotate(-18 29.12 14.56)"/>
+<rect class="sx-stage-channel" x="4.4" y="-3" width="34" height="15" rx="7.5"/>
+<text class="sx-stage-channel-text" x="21.4" y="7.5" text-anchor="middle">CH 4</text></g>
+<g class="sx-stage-equipment" data-equipment="overhead" data-equipment-id="oh-l" data-channel="5" transform="translate(429.36,220.5) translate(-28.6,-46.8)"><line class="sx-stage-stand" x1="28.6" y1="82.37" x2="28.6" y2="18.72"/><line class="sx-stage-stand" x1="10.3" y1="87.98" x2="28.6" y2="82.37"/><line class="sx-stage-stand" x1="46.9" y1="87.98" x2="28.6" y2="82.37"/><line class="sx-stage-stand" x1="28.6" y1="18.72" x2="50.34" y2="9.36"/><ellipse class="sx-stage-mic" cx="50.34" cy="9.36" rx="5.72" ry="2.34" transform="rotate(-18 50.34 9.36)"/>
+<rect class="sx-stage-channel" x="25.2" y="-3" width="34" height="15" rx="7.5"/>
+<text class="sx-stage-channel-text" x="42.2" y="7.5" text-anchor="middle">CH 5</text></g>
+<g class="sx-stage-equipment" data-equipment="overhead" data-equipment-id="oh-r" data-channel="6" transform="translate(540.3,220.5) translate(-28.6,-46.8)"><line class="sx-stage-stand" x1="28.6" y1="82.37" x2="28.6" y2="18.72"/><line class="sx-stage-stand" x1="10.3" y1="87.98" x2="28.6" y2="82.37"/><line class="sx-stage-stand" x1="46.9" y1="87.98" x2="28.6" y2="82.37"/><line class="sx-stage-stand" x1="28.6" y1="18.72" x2="50.34" y2="9.36"/><ellipse class="sx-stage-mic" cx="50.34" cy="9.36" rx="5.72" ry="2.34" transform="rotate(-18 50.34 9.36)"/>
+<rect class="sx-stage-channel" x="25.2" y="-3" width="34" height="15" rx="7.5"/>
+<text class="sx-stage-channel-text" x="42.2" y="7.5" text-anchor="middle">CH 6</text></g>
+<g class="sx-stage-equipment" data-equipment="bass-amp" data-equipment-id="bass" transform="translate(306.46,242.57) translate(-32.5,-21.32)"><rect class="sx-stage-device" x="0" y="0" width="65" height="42.64" rx="3.12"/><line class="sx-stage-detail" x1="4.16" y1="11.96" x2="60.84" y2="11.96"/><circle class="sx-stage-port" cx="8.32" cy="6.24" r="1.3"/><circle class="sx-stage-port" cx="18.72" cy="6.24" r="1.3"/><circle class="sx-stage-port" cx="29.12" cy="6.24" r="1.3"/><circle class="sx-stage-port" cx="39.52" cy="6.24" r="1.3"/><circle class="sx-stage-port" cx="49.92" cy="6.24" r="1.3"/><circle class="sx-stage-port" cx="60.32" cy="6.24" r="1.3"/><text class="sx-stage-glyph-text" x="32.5" y="21.32" text-anchor="middle" dominant-baseline="central" font-size="11.44">BASS</text>
 <text class="sx-stage-label" x="32.5" y="55.64" text-anchor="middle">Bass</text></g>
-<g class="sx-stage-equipment" data-equipment="di-box" data-equipment-id="bass-di" data-channel="4" transform="translate(278.13,237.64) translate(-12.48,-8.84)"><rect class="sx-stage-signal-device" x="0" y="0" width="24.96" height="17.68" rx="2.08"/><text class="sx-stage-glyph-text" x="12.48" y="8.84" text-anchor="middle" dominant-baseline="central" font-size="6.19">DI</text>
-<circle class="sx-stage-channel" cx="18.96" cy="6" r="8"/>
-<text class="sx-stage-channel-text" x="18.96" y="9" text-anchor="middle">4</text></g>
-<g class="sx-stage-equipment" data-equipment="guitar-amp" data-equipment-id="guitar" transform="translate(599.29,199.97) translate(-32.5,-18.72)"><rect class="sx-stage-device" x="0" y="0" width="65" height="37.44" rx="3.12"/><line class="sx-stage-detail" x1="4.16" y1="11.96" x2="60.84" y2="11.96"/><circle class="sx-stage-port" cx="8.32" cy="6.24" r="1.3"/><circle class="sx-stage-port" cx="18.72" cy="6.24" r="1.3"/><circle class="sx-stage-port" cx="29.12" cy="6.24" r="1.3"/><circle class="sx-stage-port" cx="39.52" cy="6.24" r="1.3"/><circle class="sx-stage-port" cx="49.92" cy="6.24" r="1.3"/><circle class="sx-stage-port" cx="60.32" cy="6.24" r="1.3"/><text class="sx-stage-glyph-text" x="32.5" y="18.72" text-anchor="middle" dominant-baseline="central" font-size="11.44">GTR</text>
+<g class="sx-stage-equipment" data-equipment="di-box" data-equipment-id="bass-di" data-channel="7" transform="translate(318.13,277.64) translate(-12.48,-8.84)"><rect class="sx-stage-signal-device" x="0" y="0" width="24.96" height="17.68" rx="2.08"/><text class="sx-stage-glyph-text" x="12.48" y="8.84" text-anchor="middle" dominant-baseline="central" font-size="6.19">DI</text>
+<rect class="sx-stage-channel" x="-7.04" y="-3" width="34" height="15" rx="7.5"/>
+<text class="sx-stage-channel-text" x="9.96" y="7.5" text-anchor="middle">CH 7</text></g>
+<g class="sx-stage-equipment" data-equipment="guitar-amp" data-equipment-id="guitar" transform="translate(639.29,239.97) translate(-32.5,-18.72)"><rect class="sx-stage-device" x="0" y="0" width="65" height="37.44" rx="3.12"/><line class="sx-stage-detail" x1="4.16" y1="11.96" x2="60.84" y2="11.96"/><circle class="sx-stage-port" cx="8.32" cy="6.24" r="1.3"/><circle class="sx-stage-port" cx="18.72" cy="6.24" r="1.3"/><circle class="sx-stage-port" cx="29.12" cy="6.24" r="1.3"/><circle class="sx-stage-port" cx="39.52" cy="6.24" r="1.3"/><circle class="sx-stage-port" cx="49.92" cy="6.24" r="1.3"/><circle class="sx-stage-port" cx="60.32" cy="6.24" r="1.3"/><text class="sx-stage-glyph-text" x="32.5" y="18.72" text-anchor="middle" dominant-baseline="central" font-size="11.44">GTR</text>
 <text class="sx-stage-label" x="32.5" y="50.44" text-anchor="middle">Guitar</text></g>
-<g class="sx-stage-equipment" data-equipment="boom-stand" data-equipment-id="lead" data-channel="5" transform="translate(447.55,378.74) translate(-23.4,-39)"><line class="sx-stage-stand" x1="23.4" y1="68.64" x2="23.4" y2="15.6"/><line class="sx-stage-stand" x1="8.42" y1="73.32" x2="23.4" y2="68.64"/><line class="sx-stage-stand" x1="38.38" y1="73.32" x2="23.4" y2="68.64"/><line class="sx-stage-stand" x1="23.4" y1="15.6" x2="37.44" y2="7.8"/><ellipse class="sx-stage-mic" cx="37.44" cy="7.8" rx="5.72" ry="2.34" transform="rotate(-18 37.44 7.8)"/>
-<circle class="sx-stage-channel" cx="40.8" cy="6" r="8"/>
-<text class="sx-stage-channel-text" x="40.8" y="9" text-anchor="middle">5</text></g>
-<g class="sx-stage-equipment" data-equipment="monitor-wedge" data-equipment-id="mix-one" data-mix="1" transform="translate(417.14,388.34) translate(-24.7,-16.9)"><polygon class="sx-stage-monitor" points="0,33.8 49.4,33.8 38.53,0 10.87,0"/>
-<text class="sx-stage-mix-text" x="24.7" y="20.96" text-anchor="middle" dominant-baseline="central">1</text>
+<g class="sx-stage-equipment" data-equipment="drum-mic" data-equipment-id="guitar-mic" data-channel="8" transform="translate(624.99,273.75) translate(-18.2,-20.8)"><line class="sx-stage-stand" x1="18.2" y1="36.61" x2="18.2" y2="18.72"/><line class="sx-stage-stand" x1="6.55" y1="39.1" x2="18.2" y2="36.61"/><line class="sx-stage-stand" x1="29.85" y1="39.1" x2="18.2" y2="36.61"/><line class="sx-stage-stand" x1="18.2" y1="18.72" x2="29.12" y2="14.56"/><ellipse class="sx-stage-mic" cx="29.12" cy="14.56" rx="5.72" ry="2.34" transform="rotate(-18 29.12 14.56)"/>
+<rect class="sx-stage-channel" x="4.4" y="-3" width="34" height="15" rx="7.5"/>
+<text class="sx-stage-channel-text" x="21.4" y="7.5" text-anchor="middle">CH 8</text></g>
+<g class="sx-stage-equipment" data-equipment="boom-stand" data-equipment-id="lead" data-channel="9" transform="translate(487.55,418.74) translate(-23.4,-39)"><line class="sx-stage-stand" x1="23.4" y1="68.64" x2="23.4" y2="15.6"/><line class="sx-stage-stand" x1="8.42" y1="73.32" x2="23.4" y2="68.64"/><line class="sx-stage-stand" x1="38.38" y1="73.32" x2="23.4" y2="68.64"/><line class="sx-stage-stand" x1="23.4" y1="15.6" x2="37.44" y2="7.8"/><ellipse class="sx-stage-mic" cx="37.44" cy="7.8" rx="5.72" ry="2.34" transform="rotate(-18 37.44 7.8)"/>
+<rect class="sx-stage-channel" x="14.8" y="-3" width="34" height="15" rx="7.5"/>
+<text class="sx-stage-channel-text" x="31.8" y="7.5" text-anchor="middle">CH 9</text></g>
+<g class="sx-stage-equipment" data-equipment="monitor-wedge" data-equipment-id="mix-one" data-mix="1" transform="translate(457.14,428.34) translate(-24.7,-16.9)"><polygon class="sx-stage-monitor" points="0,33.8 49.4,33.8 38.53,0 10.87,0"/>
+<text class="sx-stage-mix-text" x="24.7" y="20.96" text-anchor="middle" dominant-baseline="central">MIX 1</text>
 <text class="sx-stage-label" x="24.7" y="46.8" text-anchor="middle">Lead</text></g>
-<g class="sx-stage-equipment" data-equipment="monitor-wedge" data-equipment-id="mix-two" data-mix="2" transform="translate(258.66,340.79) translate(-24.7,-16.9)"><polygon class="sx-stage-monitor" points="0,33.8 49.4,33.8 38.53,0 10.87,0"/>
-<text class="sx-stage-mix-text" x="24.7" y="20.96" text-anchor="middle" dominant-baseline="central">2</text>
+<g class="sx-stage-equipment" data-equipment="monitor-wedge" data-equipment-id="mix-two" data-mix="2" transform="translate(298.66,380.79) translate(-24.7,-16.9)"><polygon class="sx-stage-monitor" points="0,33.8 49.4,33.8 38.53,0 10.87,0"/>
+<text class="sx-stage-mix-text" x="24.7" y="20.96" text-anchor="middle" dominant-baseline="central">MIX 2</text>
 <text class="sx-stage-label" x="24.7" y="46.8" text-anchor="middle">Bass</text></g>
-<g class="sx-stage-equipment" data-equipment="monitor-wedge" data-equipment-id="mix-three" data-mix="3" transform="translate(607.35,340.79) translate(-24.7,-16.9)"><polygon class="sx-stage-monitor" points="0,33.8 49.4,33.8 38.53,0 10.87,0"/>
-<text class="sx-stage-mix-text" x="24.7" y="20.96" text-anchor="middle" dominant-baseline="central">3</text>
+<g class="sx-stage-equipment" data-equipment="monitor-wedge" data-equipment-id="mix-three" data-mix="3" transform="translate(647.35,380.79) translate(-24.7,-16.9)"><polygon class="sx-stage-monitor" points="0,33.8 49.4,33.8 38.53,0 10.87,0"/>
+<text class="sx-stage-mix-text" x="24.7" y="20.96" text-anchor="middle" dominant-baseline="central">MIX 3</text>
 <text class="sx-stage-label" x="24.7" y="46.8" text-anchor="middle">Guitar</text></g>
-<g class="sx-stage-equipment" data-equipment="snake" data-equipment-id="snake-a" transform="translate(664.24,274.8) translate(-18.2,-14.3)"><rect class="sx-stage-signal-device" x="0" y="0" width="36.4" height="28.6" rx="2.08"/><circle class="sx-stage-port" cx="7.28" cy="6.76" r="1.82"/><circle class="sx-stage-port" cx="14.56" cy="6.76" r="1.82"/><circle class="sx-stage-port" cx="21.84" cy="6.76" r="1.82"/><circle class="sx-stage-port" cx="29.12" cy="6.76" r="1.82"/><circle class="sx-stage-port" cx="7.28" cy="14.04" r="1.82"/><circle class="sx-stage-port" cx="14.56" cy="14.04" r="1.82"/><circle class="sx-stage-port" cx="21.84" cy="14.04" r="1.82"/><circle class="sx-stage-port" cx="29.12" cy="14.04" r="1.82"/><circle class="sx-stage-port" cx="7.28" cy="21.32" r="1.82"/><circle class="sx-stage-port" cx="14.56" cy="21.32" r="1.82"/><circle class="sx-stage-port" cx="21.84" cy="21.32" r="1.82"/><circle class="sx-stage-port" cx="29.12" cy="21.32" r="1.82"/>
+<g class="sx-stage-equipment" data-equipment="monitor-wedge" data-equipment-id="mix-four" data-mix="4" transform="translate(472.99,317.4) translate(-24.7,-16.9)"><polygon class="sx-stage-monitor" points="0,33.8 49.4,33.8 38.53,0 10.87,0"/>
+<text class="sx-stage-mix-text" x="24.7" y="20.96" text-anchor="middle" dominant-baseline="central">MIX 4</text>
+<text class="sx-stage-label" x="24.7" y="46.8" text-anchor="middle">Drums</text></g>
+<g class="sx-stage-equipment" data-equipment="snake" data-equipment-id="snake-a" transform="translate(704.25,314.8) translate(-18.2,-14.3)"><rect class="sx-stage-signal-device" x="0" y="0" width="36.4" height="28.6" rx="2.08"/><circle class="sx-stage-port" cx="7.28" cy="6.76" r="1.82"/><circle class="sx-stage-port" cx="14.56" cy="6.76" r="1.82"/><circle class="sx-stage-port" cx="21.84" cy="6.76" r="1.82"/><circle class="sx-stage-port" cx="29.12" cy="6.76" r="1.82"/><circle class="sx-stage-port" cx="7.28" cy="14.04" r="1.82"/><circle class="sx-stage-port" cx="14.56" cy="14.04" r="1.82"/><circle class="sx-stage-port" cx="21.84" cy="14.04" r="1.82"/><circle class="sx-stage-port" cx="29.12" cy="14.04" r="1.82"/><circle class="sx-stage-port" cx="7.28" cy="21.32" r="1.82"/><circle class="sx-stage-port" cx="14.56" cy="21.32" r="1.82"/><circle class="sx-stage-port" cx="21.84" cy="21.32" r="1.82"/><circle class="sx-stage-port" cx="29.12" cy="21.32" r="1.82"/>
 <text class="sx-stage-label" x="18.2" y="41.6" text-anchor="middle">Stage box</text></g>
-<g class="sx-stage-equipment" data-equipment="foh-console" data-equipment-id="foh" transform="translate(502.4,561.14) translate(-62.4,-31.2)"><rect class="sx-stage-signal-device" x="0" y="0" width="124.8" height="62.4" rx="3.12"/><line class="sx-stage-detail" x1="9.36" y1="6.24" x2="9.36" y2="56.16"/><circle class="sx-stage-port" cx="9.36" cy="11.44" r="1.82"/><line class="sx-stage-detail" x1="20.8" y1="6.24" x2="20.8" y2="56.16"/><circle class="sx-stage-port" cx="20.8" cy="11.44" r="1.82"/><line class="sx-stage-detail" x1="32.24" y1="6.24" x2="32.24" y2="56.16"/><circle class="sx-stage-port" cx="32.24" cy="11.44" r="1.82"/><line class="sx-stage-detail" x1="43.68" y1="6.24" x2="43.68" y2="56.16"/><circle class="sx-stage-port" cx="43.68" cy="11.44" r="1.82"/><line class="sx-stage-detail" x1="55.12" y1="6.24" x2="55.12" y2="56.16"/><circle class="sx-stage-port" cx="55.12" cy="11.44" r="1.82"/><line class="sx-stage-detail" x1="66.56" y1="6.24" x2="66.56" y2="56.16"/><circle class="sx-stage-port" cx="66.56" cy="11.44" r="1.82"/><line class="sx-stage-detail" x1="78" y1="6.24" x2="78" y2="56.16"/><circle class="sx-stage-port" cx="78" cy="11.44" r="1.82"/><line class="sx-stage-detail" x1="89.44" y1="6.24" x2="89.44" y2="56.16"/><circle class="sx-stage-port" cx="89.44" cy="11.44" r="1.82"/><line class="sx-stage-detail" x1="100.88" y1="6.24" x2="100.88" y2="56.16"/><circle class="sx-stage-port" cx="100.88" cy="11.44" r="1.82"/><line class="sx-stage-detail" x1="112.32" y1="6.24" x2="112.32" y2="56.16"/><circle class="sx-stage-port" cx="112.32" cy="11.44" r="1.82"/><text class="sx-stage-glyph-text" x="62.4" y="31.2" text-anchor="middle" dominant-baseline="central" font-size="10.4">FOH</text>
+<g class="sx-stage-equipment" data-equipment="foh-console" data-equipment-id="foh" transform="translate(542.4,601.14) translate(-62.4,-31.2)"><rect class="sx-stage-signal-device" x="0" y="0" width="124.8" height="62.4" rx="3.12"/><line class="sx-stage-detail" x1="9.36" y1="6.24" x2="9.36" y2="56.16"/><circle class="sx-stage-port" cx="9.36" cy="11.44" r="1.82"/><line class="sx-stage-detail" x1="20.8" y1="6.24" x2="20.8" y2="56.16"/><circle class="sx-stage-port" cx="20.8" cy="11.44" r="1.82"/><line class="sx-stage-detail" x1="32.24" y1="6.24" x2="32.24" y2="56.16"/><circle class="sx-stage-port" cx="32.24" cy="11.44" r="1.82"/><line class="sx-stage-detail" x1="43.68" y1="6.24" x2="43.68" y2="56.16"/><circle class="sx-stage-port" cx="43.68" cy="11.44" r="1.82"/><line class="sx-stage-detail" x1="55.12" y1="6.24" x2="55.12" y2="56.16"/><circle class="sx-stage-port" cx="55.12" cy="11.44" r="1.82"/><line class="sx-stage-detail" x1="66.56" y1="6.24" x2="66.56" y2="56.16"/><circle class="sx-stage-port" cx="66.56" cy="11.44" r="1.82"/><line class="sx-stage-detail" x1="78" y1="6.24" x2="78" y2="56.16"/><circle class="sx-stage-port" cx="78" cy="11.44" r="1.82"/><line class="sx-stage-detail" x1="89.44" y1="6.24" x2="89.44" y2="56.16"/><circle class="sx-stage-port" cx="89.44" cy="11.44" r="1.82"/><line class="sx-stage-detail" x1="100.88" y1="6.24" x2="100.88" y2="56.16"/><circle class="sx-stage-port" cx="100.88" cy="11.44" r="1.82"/><line class="sx-stage-detail" x1="112.32" y1="6.24" x2="112.32" y2="56.16"/><circle class="sx-stage-port" cx="112.32" cy="11.44" r="1.82"/><text class="sx-stage-glyph-text" x="62.4" y="31.2" text-anchor="middle" dominant-baseline="central" font-size="10.4">FOH</text>
 <text class="sx-stage-label" x="62.4" y="75.4" text-anchor="middle">FOH</text></g></g>
-<g class="sx-stage-input-list" data-stage-sheet="input-list"><text class="sx-input-heading" x="0" y="718.34">INPUT LIST</text>
-<text class="sx-stage-caption" x="880" y="718.34" text-anchor="end">AUTO-DERIVED FROM STAGE EQUIPMENT</text>
-<rect class="sx-input-head-bg" x="0" y="730.3399999999999" width="880" height="30" rx="3"/>
-<text class="sx-input-head" x="8" y="749.34">CH</text>
-<text class="sx-input-head" x="66" y="749.34">INSTRUMENT / VOCAL</text>
-<text class="sx-input-head" x="240" y="749.34">SUGGESTED MIC / DI</text>
-<text class="sx-input-head" x="458" y="749.34">STAND</text>
-<text class="sx-input-head" x="580" y="749.34">48V</text>
-<text class="sx-input-head" x="642" y="749.34">NOTES</text>
-<rect class="sx-input-row" x="0" y="760.3399999999999" width="880" height="28"/>
-<text class="sx-input-cell-mono" x="8" y="778.34">1</text>
-<text class="sx-input-cell" x="66" y="778.34">Kick</text>
-<text class="sx-input-cell" x="240" y="778.34">Shure Beta 52A</text>
-<text class="sx-input-cell" x="458" y="778.34">short-boom</text>
-<text class="sx-input-cell-mono" x="580" y="778.34">NO</text>
-<text class="sx-input-cell" x="642" y="778.34"></text>
-<rect class="sx-input-row-alt" x="0" y="788.3399999999999" width="880" height="28"/>
-<text class="sx-input-cell-mono" x="8" y="806.34">2</text>
-<text class="sx-input-cell" x="66" y="806.34">Drum OH L</text>
-<text class="sx-input-cell" x="240" y="806.34">Shure SM81</text>
-<text class="sx-input-cell" x="458" y="806.34">boom</text>
-<text class="sx-input-cell-mono" x="580" y="806.34">YES</text>
-<text class="sx-input-cell" x="642" y="806.34"></text>
-<rect class="sx-input-row" x="0" y="816.3399999999999" width="880" height="28"/>
-<text class="sx-input-cell-mono" x="8" y="834.34">3</text>
-<text class="sx-input-cell" x="66" y="834.34">Drum OH R</text>
-<text class="sx-input-cell" x="240" y="834.34">Shure SM81</text>
-<text class="sx-input-cell" x="458" y="834.34">boom</text>
-<text class="sx-input-cell-mono" x="580" y="834.34">YES</text>
-<text class="sx-input-cell" x="642" y="834.34"></text>
-<rect class="sx-input-row-alt" x="0" y="844.3399999999999" width="880" height="28"/>
-<text class="sx-input-cell-mono" x="8" y="862.34">4</text>
-<text class="sx-input-cell" x="66" y="862.34">Bass DI</text>
-<text class="sx-input-cell" x="240" y="862.34">Radial J48</text>
-<text class="sx-input-cell" x="458" y="862.34">none</text>
-<text class="sx-input-cell-mono" x="580" y="862.34">YES</text>
-<text class="sx-input-cell" x="642" y="862.34"></text>
-<rect class="sx-input-row" x="0" y="872.3399999999999" width="880" height="28"/>
-<text class="sx-input-cell-mono" x="8" y="890.34">5</text>
-<text class="sx-input-cell" x="66" y="890.34">Lead vocal</text>
-<text class="sx-input-cell" x="240" y="890.34">Shure SM58</text>
-<text class="sx-input-cell" x="458" y="890.34">boom</text>
-<text class="sx-input-cell-mono" x="580" y="890.34">NO</text>
-<text class="sx-input-cell" x="642" y="890.34"></text></g></svg>
+<g class="sx-stage-legend" data-stage-sheet="legend"><text class="sx-stage-caption" x="0" y="748.34">LEGEND</text>
+<rect class="sx-stage-channel" x="62" y="735.34" width="36" height="16" rx="8"/>
+<text class="sx-stage-channel-text" x="80" y="746.34" text-anchor="middle">CH 5</text>
+<text class="sx-stage-legend-text" x="106" y="748.34">INPUT CHANNEL</text>
+<polygon class="sx-stage-legend-mix" points="222,751.34 263,751.34 258,735.34 227,735.34"/>
+<text class="sx-stage-mix-text" x="242.5" y="745.34" text-anchor="middle">MIX 1</text>
+<text class="sx-stage-legend-text" x="273" y="748.34">MONITOR SEND</text>
+<text class="sx-stage-caption" x="960" y="748.34" text-anchor="end">POSITION: US / MS / DS + STAGE R / C / L</text></g>
+<g class="sx-stage-output-list" data-stage-sheet="output-list"><text class="sx-input-heading" x="0" y="788.34">MONITOR OUTPUTS</text>
+<text class="sx-stage-caption" x="960" y="788.34" text-anchor="end">AUTO-DERIVED FROM MONITOR ENDPOINTS</text>
+<rect class="sx-input-head-bg" x="0" y="800.3399999999999" width="960" height="30" rx="3"/>
+<text class="sx-input-head" x="8" y="819.34">MIX</text>
+<text class="sx-input-head" x="78" y="819.34">DESTINATION</text>
+<text class="sx-input-head" x="298" y="819.34">TYPE</text>
+<text class="sx-input-head" x="408" y="819.34">QTY</text>
+<text class="sx-input-head" x="468" y="819.34">POSITION</text>
+<text class="sx-input-head" x="568" y="819.34">NOTES</text>
+<rect class="sx-input-row" x="0" y="830.3399999999999" width="960" height="28"/>
+<text class="sx-input-cell-mono" x="8" y="848.34">1</text>
+<text class="sx-input-cell" x="78" y="848.34">Lead</text>
+<text class="sx-input-cell" x="298" y="848.34">WEDGE</text>
+<text class="sx-input-cell-mono" x="408" y="848.34">1</text>
+<text class="sx-input-cell-mono" x="468" y="848.34">DSC</text>
+<text class="sx-input-cell" x="568" y="848.34"></text>
+<rect class="sx-input-row-alt" x="0" y="858.3399999999999" width="960" height="28"/>
+<text class="sx-input-cell-mono" x="8" y="876.34">2</text>
+<text class="sx-input-cell" x="78" y="876.34">Bass</text>
+<text class="sx-input-cell" x="298" y="876.34">WEDGE</text>
+<text class="sx-input-cell-mono" x="408" y="876.34">1</text>
+<text class="sx-input-cell-mono" x="468" y="876.34">DSR</text>
+<text class="sx-input-cell" x="568" y="876.34"></text>
+<rect class="sx-input-row" x="0" y="886.3399999999999" width="960" height="28"/>
+<text class="sx-input-cell-mono" x="8" y="904.34">3</text>
+<text class="sx-input-cell" x="78" y="904.34">Guitar</text>
+<text class="sx-input-cell" x="298" y="904.34">WEDGE</text>
+<text class="sx-input-cell-mono" x="408" y="904.34">1</text>
+<text class="sx-input-cell-mono" x="468" y="904.34">DSL</text>
+<text class="sx-input-cell" x="568" y="904.34"></text>
+<rect class="sx-input-row-alt" x="0" y="914.3399999999999" width="960" height="28"/>
+<text class="sx-input-cell-mono" x="8" y="932.34">4</text>
+<text class="sx-input-cell" x="78" y="932.34">Drums</text>
+<text class="sx-input-cell" x="298" y="932.34">WEDGE</text>
+<text class="sx-input-cell-mono" x="408" y="932.34">1</text>
+<text class="sx-input-cell-mono" x="468" y="932.34">MSC</text>
+<text class="sx-input-cell" x="568" y="932.34"></text></g>
+<g class="sx-stage-input-list" data-stage-sheet="input-list"><text class="sx-input-heading" x="0" y="984.34">INPUT LIST</text>
+<text class="sx-stage-caption" x="960" y="984.34" text-anchor="end">AUTO-DERIVED FROM STAGE EQUIPMENT</text>
+<rect class="sx-input-head-bg" x="0" y="996.3399999999999" width="960" height="30" rx="3"/>
+<text class="sx-input-head" x="8" y="1015.34">CH</text>
+<text class="sx-input-head" x="64" y="1015.34">INSTRUMENT / VOCAL</text>
+<text class="sx-input-head" x="244" y="1015.34">SUGGESTED MIC / DI</text>
+<text class="sx-input-head" x="434" y="1015.34">POSITION</text>
+<text class="sx-input-head" x="510" y="1015.34">STAND</text>
+<text class="sx-input-head" x="624" y="1015.34">48V</text>
+<text class="sx-input-head" x="684" y="1015.34">NOTES</text>
+<rect class="sx-input-row" x="0" y="1026.34" width="960" height="28"/>
+<text class="sx-input-cell-mono" x="8" y="1044.34">1</text>
+<text class="sx-input-cell" x="64" y="1044.34">Kick</text>
+<text class="sx-input-cell" x="244" y="1044.34">Shure Beta 52A</text>
+<text class="sx-input-cell-mono" x="434" y="1044.34">USC</text>
+<text class="sx-input-cell" x="510" y="1044.34">short-boom</text>
+<text class="sx-input-cell-mono" x="624" y="1044.34">NO</text>
+<text class="sx-input-cell" x="684" y="1044.34"></text>
+<rect class="sx-input-row-alt" x="0" y="1054.34" width="960" height="28"/>
+<text class="sx-input-cell-mono" x="8" y="1072.34">2</text>
+<text class="sx-input-cell" x="64" y="1072.34">Snare top</text>
+<text class="sx-input-cell" x="244" y="1072.34">Shure SM57</text>
+<text class="sx-input-cell-mono" x="434" y="1072.34">USC</text>
+<text class="sx-input-cell" x="510" y="1072.34">short-boom</text>
+<text class="sx-input-cell-mono" x="624" y="1072.34">NO</text>
+<text class="sx-input-cell" x="684" y="1072.34"></text>
+<rect class="sx-input-row" x="0" y="1082.34" width="960" height="28"/>
+<text class="sx-input-cell-mono" x="8" y="1100.34">3</text>
+<text class="sx-input-cell" x="64" y="1100.34">Rack tom</text>
+<text class="sx-input-cell" x="244" y="1100.34">Sennheiser e604</text>
+<text class="sx-input-cell-mono" x="434" y="1100.34">USC</text>
+<text class="sx-input-cell" x="510" y="1100.34">clip</text>
+<text class="sx-input-cell-mono" x="624" y="1100.34">NO</text>
+<text class="sx-input-cell" x="684" y="1100.34"></text>
+<rect class="sx-input-row-alt" x="0" y="1110.34" width="960" height="28"/>
+<text class="sx-input-cell-mono" x="8" y="1128.34">4</text>
+<text class="sx-input-cell" x="64" y="1128.34">Floor tom</text>
+<text class="sx-input-cell" x="244" y="1128.34">Sennheiser e604</text>
+<text class="sx-input-cell-mono" x="434" y="1128.34">USC</text>
+<text class="sx-input-cell" x="510" y="1128.34">clip</text>
+<text class="sx-input-cell-mono" x="624" y="1128.34">NO</text>
+<text class="sx-input-cell" x="684" y="1128.34"></text>
+<rect class="sx-input-row" x="0" y="1138.34" width="960" height="28"/>
+<text class="sx-input-cell-mono" x="8" y="1156.34">5</text>
+<text class="sx-input-cell" x="64" y="1156.34">Drum OH L</text>
+<text class="sx-input-cell" x="244" y="1156.34">Shure SM81</text>
+<text class="sx-input-cell-mono" x="434" y="1156.34">USC</text>
+<text class="sx-input-cell" x="510" y="1156.34">boom</text>
+<text class="sx-input-cell-mono" x="624" y="1156.34">YES</text>
+<text class="sx-input-cell" x="684" y="1156.34"></text>
+<rect class="sx-input-row-alt" x="0" y="1166.34" width="960" height="28"/>
+<text class="sx-input-cell-mono" x="8" y="1184.34">6</text>
+<text class="sx-input-cell" x="64" y="1184.34">Drum OH R</text>
+<text class="sx-input-cell" x="244" y="1184.34">Shure SM81</text>
+<text class="sx-input-cell-mono" x="434" y="1184.34">USC</text>
+<text class="sx-input-cell" x="510" y="1184.34">boom</text>
+<text class="sx-input-cell-mono" x="624" y="1184.34">YES</text>
+<text class="sx-input-cell" x="684" y="1184.34"></text>
+<rect class="sx-input-row" x="0" y="1194.34" width="960" height="28"/>
+<text class="sx-input-cell-mono" x="8" y="1212.34">7</text>
+<text class="sx-input-cell" x="64" y="1212.34">Bass DI</text>
+<text class="sx-input-cell" x="244" y="1212.34">Radial J48</text>
+<text class="sx-input-cell-mono" x="434" y="1212.34">MSR</text>
+<text class="sx-input-cell" x="510" y="1212.34">none</text>
+<text class="sx-input-cell-mono" x="624" y="1212.34">YES</text>
+<text class="sx-input-cell" x="684" y="1212.34"></text>
+<rect class="sx-input-row-alt" x="0" y="1222.34" width="960" height="28"/>
+<text class="sx-input-cell-mono" x="8" y="1240.34">8</text>
+<text class="sx-input-cell" x="64" y="1240.34">Guitar amp</text>
+<text class="sx-input-cell" x="244" y="1240.34">Sennheiser e906</text>
+<text class="sx-input-cell-mono" x="434" y="1240.34">MSL</text>
+<text class="sx-input-cell" x="510" y="1240.34">short-boom</text>
+<text class="sx-input-cell-mono" x="624" y="1240.34">NO</text>
+<text class="sx-input-cell" x="684" y="1240.34"></text>
+<rect class="sx-input-row" x="0" y="1250.34" width="960" height="28"/>
+<text class="sx-input-cell-mono" x="8" y="1268.34">9</text>
+<text class="sx-input-cell" x="64" y="1268.34">Lead vocal</text>
+<text class="sx-input-cell" x="244" y="1268.34">Shure SM58</text>
+<text class="sx-input-cell-mono" x="434" y="1268.34">DSC</text>
+<text class="sx-input-cell" x="510" y="1268.34">boom</text>
+<text class="sx-input-cell-mono" x="624" y="1268.34">NO</text>
+<text class="sx-input-cell" x="684" y="1268.34"></text></g></svg>

@@ -72,6 +72,10 @@ the page-right edge**. Swapping those labels is a blocking correctness defect.
 
 ```text
 stageplot "Title" [unit m|ft]
+venue "Venue or room"
+show-date "Human-readable show date"
+revision "Revision label and date"
+technical-contact "Name · email · phone"
 stage <id> ["Label"] at x,y size WxH
 
 equipment <kind> <id>
@@ -85,10 +89,14 @@ equipment <kind> <id>
 monitor <mix-number> [id] in <stage> at x,y ["label"]
 signal <equipment-id> -> <equipment-id> [-> ...] ["label"]
 input-list on|off
+output-list on|off
+signal-paths on|off
 ```
 
 `monitor` is shorthand for `equipment monitor-wedge ... mix N`.
-`input-list` defaults to `on`.
+`input-list` and `output-list` default to `on`. Signal paths default to `off`;
+declaring routes records the patch topology, while `signal-paths on` opts into
+the visual overlay.
 
 ## 5. Equipment catalog
 
@@ -119,6 +127,7 @@ channel:
 | Channel | `channel` |
 | Instrument / vocal | `source`, falling back to label/kind |
 | Suggested mic / DI | `model`, falling back to `—` |
+| Position | auto-derived `USR/USC/USL`, `MSR/MSC/MSL`, or `DSR/DSC/DSL` |
 | Stand | explicit `stand`, otherwise inferred from symbol kind |
 | 48V | `phantom yes|no` |
 | Notes | `notes`, falling back to empty |
@@ -128,19 +137,31 @@ Duplicate or non-positive channels are errors. The exported
 
 ## 7. Monitor numbering
 
-`monitor-wedge` requires a positive `mix` number. The number is printed as the
-dominant mark inside the wedge and exposed as `data-mix`. Multiple wedges may
-share a mix; that represents one console send feeding more than one speaker.
-Missing or non-positive wedge numbers are errors.
+Every `monitor-wedge`, `side-fill`, and `iem` requires a positive `mix` number.
+Wedges print `MIX N` inside the cabinet; side fills and IEM packs receive an
+amber mix badge. Multiple endpoints may share a mix.
 
-`side-fill` and `iem` may carry a mix number but do not require one.
+The SVG derives a monitor-output schedule grouped by mix and endpoint type:
+
+| Column | Source |
+|---|---|
+| Mix | `mix` |
+| Destination | label/source |
+| Type | wedge, IEM, or side fill |
+| Quantity | endpoints sharing that mix and type |
+| Position | auto-derived stage position |
+| Notes | merged endpoint notes |
+
+Library consumers can call `deriveStageOutputList()` to receive the same rows.
 
 ## 8. Signal paths
 
 `signal` joins two or more equipment ids. Layout converts anchor centres to a
-deterministic orthogonal polyline. Only this routing primitive is shared with
-evacuation mode. Escape-route kinds, opening continuity, chevrons and
-life-safety validation remain evacuation-specific.
+deterministic orthogonal polyline. `signal-paths on` renders the routes as a
+low-contrast patch overlay; paths remain hidden by default so placement and
+monitor information dominate the operational sheet. Only this routing
+primitive is shared with evacuation mode. Escape-route kinds, opening
+continuity, chevrons and life-safety validation remain evacuation-specific.
 
 Unknown anchors and paths with fewer than two endpoints are errors.
 
@@ -156,19 +177,22 @@ The print-first palette is fixed through semantic tokens:
 - input green `#0F766E`
 
 Display/headline text uses IBM Plex Sans; body text uses Noto Sans; channel
-and utility text uses IBM Plex Mono. The scale is 20 px title, 13 px section,
-11 px body and 9 px caption. The orientation rails are the signature visual
-device and must remain visible at print size.
+and utility text uses IBM Plex Mono. The scale is 22 px title, 13 px section,
+10.5 px table body and 9 px caption. Channel pills say `CH N`; monitor marks
+say `MIX N`, so grayscale printing never depends on blue versus amber alone.
+The orientation rails remain the signature device but are subordinate to the
+automatic width/depth dimension lines.
 
 Z-order:
 
-1. paper and measured stage surface
-2. risers/underlays
-3. signal paths
+1. paper and formal document header
+2. measured stage surface and risers
+3. optional signal paths
 4. backline and equipment
 5. microphone/monitor marks and labels
 6. stage-direction rails and dimensions
-7. derived input-list table
+7. grayscale-safe legend
+8. derived monitor-output and input-list tables
 
 ## 10. Validation
 
@@ -179,7 +203,7 @@ Errors:
 - equipment outside its declared stage
 - duplicate equipment id
 - duplicate/non-positive input channel
-- wedge without a positive mix number
+- monitor wedge, side fill, or IEM without a positive mix number
 - signal path with an unknown endpoint
 
 Warnings:
@@ -192,7 +216,7 @@ The regression suite and gallery must include:
 
 1. Four-piece rock band — drums, bass, guitar, lead vocal, DIs, wedges, snake
 2. Jazz trio — piano, upright/bass amp, drums, compact monitoring
-3. Full band — drum riser and six numbered monitor mixes
+3. Full band — drum riser, 15 realistic inputs and six numbered monitor mixes
 
 All three render with zero errors; the full-band fixture visibly contains mix
-numbers 1–6.
+numbers 1–6 in the plot and in the derived output schedule.

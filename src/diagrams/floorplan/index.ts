@@ -66,6 +66,7 @@ export {
 export { buildEvacuationLegend } from "./legend";
 export {
   deriveStageInputList,
+  deriveStageOutputList,
   finalizeStageplotLayout,
   inferStageStand,
   renderStageplotLayout,

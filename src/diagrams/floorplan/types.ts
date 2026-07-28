@@ -469,11 +469,23 @@ export interface StageSignalPathAst {
   line?: number;
 }
 
+export interface StageplotDocumentMeta {
+  venue?: string;
+  showDate?: string;
+  revision?: string;
+  technicalContact?: string;
+}
+
 export interface StageplotAstData {
   equipment: StageEquipmentAst[];
   signals: StageSignalPathAst[];
+  document: StageplotDocumentMeta;
   /** The derived table is visible by default. */
   showInputList: boolean;
+  /** The derived monitor/output schedule is visible by default. */
+  showOutputList: boolean;
+  /** Patch routes are opt-in so placement remains dominant. */
+  showSignalPaths: boolean;
 }
 
 export interface FloorplanAst {
@@ -662,8 +674,20 @@ export interface StageInputRow {
   channel: number;
   source: string;
   model: string;
+  position: string;
   stand: StageStandType;
   phantom: boolean;
+  notes: string;
+}
+
+export type StageOutputType = "WEDGE" | "IEM" | "SIDE FILL";
+
+export interface StageOutputRow {
+  mix: number;
+  destination: string;
+  type: StageOutputType;
+  quantity: number;
+  position: string;
   notes: string;
 }
 
@@ -699,7 +723,11 @@ export interface StageplotLayoutData {
   equipment: StageEquipmentGeom[];
   signals: StageSignalPathGeom[];
   inputList: StageInputRow[];
+  outputList: StageOutputRow[];
+  document: StageplotDocumentMeta;
   showInputList: boolean;
+  showOutputList: boolean;
+  showSignalPaths: boolean;
 }
 
 export interface DimLineGeom {

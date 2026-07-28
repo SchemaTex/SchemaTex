@@ -499,6 +499,21 @@ function parseStageSignal(
   ast.stageplot.signals.push(signal);
 }
 
+function parseStageDocumentValue(
+  tok: Tok[],
+  field: string,
+  ln: number
+): string {
+  const value = tok.shift();
+  if (!isStr(value)) {
+    throw new FloorplanParseError(`${field} expects quoted text`, ln);
+  }
+  if (tok.length) {
+    throw new FloorplanParseError(`${field}: unexpected trailing tokens`, ln);
+  }
+  return value.str;
+}
+
 function parseRoom(tok: Tok[], ast: FloorplanAst, ln: number, floor: number): void {
   const id = parseId(tok.shift(), "a room id", ln);
   if (ast.rooms.some((r) => r.id === id && r.floor === floor)) {
@@ -972,7 +987,10 @@ export function parseFloorplan(text: string): FloorplanAst {
     stageplot: {
       equipment: [],
       signals: [],
+      document: {},
       showInputList: true,
+      showOutputList: true,
+      showSignalPaths: false,
     },
   };
 
@@ -1160,6 +1178,29 @@ export function parseFloorplan(text: string): FloorplanAst {
       parseStageMonitor(tok, ast, ln, currentFloor);
     } else if (ast.mode === "stageplot" && kw === "signal") {
       parseStageSignal(tok, ast, ln, currentFloor);
+    } else if (ast.mode === "stageplot" && kw === "venue") {
+      ast.stageplot.document.venue = parseStageDocumentValue(tok, "venue", ln);
+    } else if (ast.mode === "stageplot" && kw === "show-date") {
+      ast.stageplot.document.showDate = parseStageDocumentValue(
+        tok,
+        "show-date",
+        ln
+      );
+    } else if (ast.mode === "stageplot" && kw === "revision") {
+      ast.stageplot.document.revision = parseStageDocumentValue(
+        tok,
+        "revision",
+        ln
+      );
+    } else if (
+      ast.mode === "stageplot" &&
+      (kw === "technical-contact" || kw === "contact")
+    ) {
+      ast.stageplot.document.technicalContact = parseStageDocumentValue(
+        tok,
+        kw,
+        ln
+      );
     } else if (ast.mode === "stageplot" && kw === "input-list") {
       ast.stageplot.showInputList = parseYesNo(
         tok.shift(),
@@ -1169,6 +1210,30 @@ export function parseFloorplan(text: string): FloorplanAst {
       if (tok.length) {
         throw new FloorplanParseError(
           `input-list: unexpected trailing tokens`,
+          ln
+        );
+      }
+    } else if (ast.mode === "stageplot" && kw === "output-list") {
+      ast.stageplot.showOutputList = parseYesNo(
+        tok.shift(),
+        "output-list",
+        ln
+      );
+      if (tok.length) {
+        throw new FloorplanParseError(
+          `output-list: unexpected trailing tokens`,
+          ln
+        );
+      }
+    } else if (ast.mode === "stageplot" && kw === "signal-paths") {
+      ast.stageplot.showSignalPaths = parseYesNo(
+        tok.shift(),
+        "signal-paths",
+        ln
+      );
+      if (tok.length) {
+        throw new FloorplanParseError(
+          `signal-paths: unexpected trailing tokens`,
           ln
         );
       }
@@ -1198,7 +1263,7 @@ export function parseFloorplan(text: string): FloorplanAst {
     }
     else {
       throw new FloorplanParseError(
-        `unknown keyword "${kw}". Expected: floorplan, evacuation, stageplot, floor, room, stage, extend, door, window, opening, furniture, equipment, monitor, signal, input-list, grid, row, arc, safety, route`,
+        `unknown keyword "${kw}". Expected: floorplan, evacuation, stageplot, floor, room, stage, extend, door, window, opening, furniture, equipment, monitor, signal, venue, show-date, revision, technical-contact, input-list, output-list, signal-paths, grid, row, arc, safety, route`,
         ln
       );
     }

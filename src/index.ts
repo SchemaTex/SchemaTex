@@ -98,6 +98,7 @@ export { comparison } from "./diagrams/comparison";
 export { floorplan } from "./diagrams/floorplan";
 export {
   deriveStageInputList,
+  deriveStageOutputList,
   renderStageplotLayout,
   STAGE_SYMBOLS,
 } from "./diagrams/floorplan";

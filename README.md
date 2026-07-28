@@ -806,16 +806,22 @@ route primary here -> lobby -> stair -> east
 
 ### 🎚️ Stage plot — *professional live-sound advance convention*
 
-A measured stage layout and its console input list come from one equipment tree. Backline, microphone/DI symbols, numbered monitor mixes, power, snake boxes, FOH, and orthogonal signal paths share the floorplan coordinate model. The direction rails remove the most dangerous ambiguity: page-left is **STAGE RIGHT** and page-right is **STAGE LEFT**, from the performer facing the audience.
+A measured stage layout plus its console input and monitor-output schedules come from one equipment tree. Formal revision/contact metadata, automatic dimensions, backline, microphone/DI symbols, numbered monitor mixes, power, snake boxes, FOH, and optional orthogonal signal paths share the floorplan coordinate model. The direction rails remove the most dangerous ambiguity: page-left is **STAGE RIGHT** and page-right is **STAGE LEFT**, from the performer facing the audience.
 
 ```text
 stageplot "Four-piece Rock Band" unit ft
+venue "The Sound Room"
+show-date "August 14, 2026"
+revision "Rev 2 · July 27, 2026"
+technical-contact "Morgan Lee · production@example.com"
+signal-paths on
 stage deck at 0,0 size 32x20
 equipment drum-kit drums in deck at 12,2 "Drums"
 equipment drum-mic kick in deck at 13,5 channel 1 source "Kick" model "Shure Beta 52A" stand short-boom phantom no
 equipment di-box bass-di in deck at 5,8 channel 2 source "Bass DI" model "Radial J48" stand none phantom yes
 equipment boom-stand lead in deck at 15,15 channel 3 source "Lead vocal" model "Shure SM58" stand boom phantom no
 monitor 1 lead-mix in deck at 13,17 "Lead"
+equipment iem bass-iem in deck at 5,13 mix 2 "Bass IEM"
 equipment snake snake-a in deck at 29,10
 signal bass-di -> snake-a
 signal lead -> snake-a

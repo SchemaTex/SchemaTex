@@ -14,6 +14,10 @@ relatedLink:
 status: published
 dsl: |
   stageplot "Jazz Trio" unit ft
+  venue "Center Stage"
+  show-date "September 5, 2026"
+  revision "Rev 1 · July 27, 2026"
+  technical-contact "Avery Chen · sound@example.com"
   stage deck at 0,0 size 24x16
   equipment piano piano in deck at 2,3 "Grand piano"
   equipment straight-stand piano-mic in deck at 7,4 channel 1 source "Piano" model "AKG C414" stand straight phantom yes
@@ -30,4 +34,5 @@ dsl: |
 ---
 
 The input list is small enough to patch at a glance, while explicit 48V values
-make the condenser and active-DI requirements visible before soundcheck.
+and auto-derived stage positions make the condenser and active-DI requirements
+visible before soundcheck. Signal paths remain hidden by default.

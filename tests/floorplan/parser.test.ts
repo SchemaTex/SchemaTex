@@ -219,7 +219,7 @@ arc chair in hall count 13 center 12,8 radius 5 from 200 to 340`);
     expect(() =>
       parseFloorplan(`floorplan\nroom a at 0,0 size 4x3\nwall a north`)
     ).toThrow(
-      /room, stage, extend, door, window, opening, furniture, equipment, monitor, signal, input-list, grid, row, arc/
+      /room, stage, extend, door, window, opening, furniture, equipment, monitor, signal, venue, show-date, revision, technical-contact, input-list, output-list, signal-paths, grid, row, arc/
     );
   });
 
