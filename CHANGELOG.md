@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+---
+
+## [1.0.6] — 2026-07-28
+
 ### Fixed — floorplan symbol catalog and AI vocabulary stay synchronized
 
 - **The AI profile now derives its compact `types:` vocabulary from the live floorplan catalog.** The six 0.9.9 restaurant symbols (`range`, `fryer`, `walk-in`, `commercial-sink`, `prep-table`, `booth`) can no longer exist in the engine while remaining invisible to generation; a mechanical test rejects any future catalog/profile drift.
