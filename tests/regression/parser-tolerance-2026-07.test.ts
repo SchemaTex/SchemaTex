@@ -21,6 +21,13 @@ const fixtures = JSON.parse(
 describe("production parser tolerance regressions (2026-07)", () => {
   test("keeps every reported production error verbatim as a fixture", () => {
     expect(fixtures.map((fixture) => fixture.error)).toEqual([
+      '[line N:1] expected node identifier, got "```mermaid"',
+      '[line N:1] expected node identifier, got "<artifact "',
+      "</parameter>",
+      "</invoke>",
+      "<parameter …>",
+      "antml:*",
+      "<｜｜DSML｜｜parameter>",
       'expected node identifier, got "الجد1 --> "',
       'got "原因1"',
       'got "סבא1 --> ה"',

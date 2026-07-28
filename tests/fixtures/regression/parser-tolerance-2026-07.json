@@ -1,5 +1,47 @@
 [
   {
+    "error": "[line N:1] expected node identifier, got \"```mermaid\"",
+    "engine": "flowchart",
+    "outcome": "render",
+    "dsl": "```mermaid\nflowchart TD\nA --> B\n```"
+  },
+  {
+    "error": "[line N:1] expected node identifier, got \"<artifact \"",
+    "engine": "flowchart",
+    "outcome": "render",
+    "dsl": "<artifact title='Dependency map' type='diagram'>\nflowchart TD\nA --> B\n</artifact>"
+  },
+  {
+    "error": "</parameter>",
+    "engine": "flowchart",
+    "outcome": "render",
+    "dsl": "flowchart TD\nA --> B\n</parameter>"
+  },
+  {
+    "error": "</invoke>",
+    "engine": "flowchart",
+    "outcome": "render",
+    "dsl": "flowchart TD\n<invoke name='render'>\nA --> B\n</invoke>"
+  },
+  {
+    "error": "<parameter …>",
+    "engine": "flowchart",
+    "outcome": "render",
+    "dsl": "flowchart TD\n<parameter name='dsl'>\nA --> B\n</parameter>"
+  },
+  {
+    "error": "antml:*",
+    "engine": "flowchart",
+    "outcome": "render",
+    "dsl": "flowchart TD\n<antml:parameter name='dsl'>\nA --> B\n</antml:parameter>"
+  },
+  {
+    "error": "<｜｜DSML｜｜parameter>",
+    "engine": "flowchart",
+    "outcome": "render",
+    "dsl": "flowchart TD\nA --> B\n<｜｜DSML｜｜parameter>"
+  },
+  {
     "error": "expected node identifier, got \"الجد1 --> \"",
     "engine": "flowchart",
     "outcome": "render",

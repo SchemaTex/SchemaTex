@@ -1,5 +1,11 @@
 import { describe, test, expect } from "vitest";
-import { renderResult } from "../../src/core/api";
+import {
+  parse,
+  parseResult,
+  render,
+  renderResult,
+} from "../../src/core/api";
+import { renderDsl, validateDsl } from "../../src/ai";
 
 const ok = (dsl: string, type?: import("../../src/core/api").SchematexConfig["type"]) =>
   renderResult(dsl, type ? { type } : undefined);
@@ -30,6 +36,41 @@ describe("markdown code-fence stripping (cross-engine)", () => {
   test("a fence with a language tag (```schematex) is stripped", () => {
     const r = ok("```schematex\norgchart\n  CEO\n  CEO -> CTO\n```");
     expect(r.ok).toBe(true);
+  });
+});
+
+describe("LLM artifact-wrapper stripping (all public entry points)", () => {
+  const dirtyDsl = [
+    "",
+    "```mermaid",
+    "<artifact title='Dependency map' type='diagram'>",
+    "flowchart TD",
+    "  Alpha --> Beta",
+    "</parameter>",
+    "<｜｜DSML｜｜parameter>",
+    "</artifact>",
+    "```",
+  ].join("\n");
+
+  test("strict parse and render inherit the shared cleanup", () => {
+    expect(() => parse(dirtyDsl, { type: "flowchart" })).not.toThrow();
+    expect(render(dirtyDsl, { type: "flowchart" })).toContain("<svg");
+  });
+
+  test("result APIs inherit the shared cleanup", () => {
+    expect(parseResult(dirtyDsl, { type: "flowchart" }).ok).toBe(true);
+    expect(renderResult(dirtyDsl, { type: "flowchart" }).ok).toBe(true);
+  });
+
+  test("AI validate and render entry points inherit the shared cleanup", () => {
+    expect(validateDsl("flowchart", dirtyDsl).ok).toBe(true);
+    expect(renderDsl("flowchart", dirtyDsl).ok).toBe(true);
+  });
+
+  test("a scalar tool parameter line is removed rather than leaving its value", () => {
+    const dsl =
+      'timeline\n<parameter name="open" string="true">false</parameter>\n2026: "Launch"';
+    expect(renderResult(dsl, { type: "timeline" }).ok).toBe(true);
   });
 });
 
