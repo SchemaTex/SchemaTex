@@ -93,6 +93,7 @@ export type DiagramType =
   // Architectural / space planning
   | "floorplan" // Floor plan / space layout — AGS poché walls, door swing arcs, furniture catalog (48-FLOORPLAN-STANDARD)
   | "evacuation" // Posted escape / evacuation plan — ISO 23601 / NFPA 170 Ch.11 (53-EVACUATION-PLAN-STANDARD)
+  | "stageplot" // Live-sound stage plot + derived input list (54-STAGE-PLOT-STANDARD)
   | "siteplan" // Site plan / parcel layout — property boundaries, roads, setbacks, easements, footprints
   // Sports / tactics
   | "playbook"; // Football playbook — chalkboard X&O notation, route tree, formations, coverage (49-SPORTS-PLAYBOOK-STANDARD)
