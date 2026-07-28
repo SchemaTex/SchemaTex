@@ -22,7 +22,38 @@ import type {
   SfcVarDecl,
   SfcVarType,
 } from "../../core/types";
+import { IDENTIFIER_SOURCE } from "../../core/identifier";
 import { matchQuotedTitle } from "../../core/quotes";
+
+const VAR_DECL_RE = new RegExp(
+  `^var\\s+(${IDENTIFIER_SOURCE})\\s*:\\s*(${IDENTIFIER_SOURCE})\\s*(?:=\\s*(.+))?$`,
+  "iu"
+);
+const STEP_HEAD_RE = new RegExp(
+  `^step\\s+(${IDENTIFIER_SOURCE})\\s*(\\[[^\\]]*\\])?\\s*$`,
+  "u"
+);
+const TRANSITION_RE = new RegExp(
+  `^transition(?:\\s+(${IDENTIFIER_SOURCE}))?\\s+from\\s*:\\s*(${IDENTIFIER_SOURCE})\\s+to\\s*:\\s*(${IDENTIFIER_SOURCE})\\s*:\\s*(.+)$`,
+  "u"
+);
+const ALT_HEAD_RE = new RegExp(
+  `^alt\\s+from\\s*:\\s*(${IDENTIFIER_SOURCE})\\s*:\\s*$`,
+  "u"
+);
+const MERGE_RE = new RegExp(`^merge_to\\s*:\\s*(${IDENTIFIER_SOURCE})\\s*$`, "u");
+const SIM_HEAD_RE = new RegExp(
+  `^sim\\s+from\\s*:\\s*(${IDENTIFIER_SOURCE})\\s*:\\s*(.+)$`,
+  "u"
+);
+const SIM_MERGE_RE = new RegExp(
+  `^merge_to\\s*:\\s*(${IDENTIFIER_SOURCE})\\s*:\\s*(.+)$`,
+  "u"
+);
+const JUMP_RE = new RegExp(
+  `^jump\\s+from\\s*:\\s*(${IDENTIFIER_SOURCE})\\s+to\\s*:\\s*(${IDENTIFIER_SOURCE})\\s*$`,
+  "u"
+);
 
 export class SfcParseError extends Error {
   line?: number;
@@ -76,7 +107,7 @@ function tokenizeLines(text: string): RawLine[] {
 }
 
 function parseVarDecl(line: RawLine): SfcVarDecl | null {
-  const m = line.text.match(/^var\s+([a-zA-Z_]\w*)\s*:\s*([a-zA-Z_]\w*)\s*(?:=\s*(.+))?$/i);
+  const m = line.text.match(VAR_DECL_RE);
   if (!m) return null;
   const dt = m[2].toLowerCase();
   const decl: SfcVarDecl = {
@@ -102,7 +133,7 @@ interface ParseState {
 }
 
 function parseStepHead(line: RawLine): { id: string; kind: SfcStepKind; label?: string } | null {
-  const m = line.text.match(/^step\s+([a-zA-Z_]\w*)\s*(\[[^\]]*\])?\s*$/);
+  const m = line.text.match(STEP_HEAD_RE);
   if (!m) return null;
   const attrs = parseAttrs(m[2]);
   let kind: SfcStepKind = "normal";
@@ -198,7 +229,7 @@ function expectStep(state: ParseState, indent: number): SfcStep | null {
 
 function parseTransitionLine(line: RawLine): SfcTransition | null {
   // transition [id] from: A to: B: condition
-  const m = line.text.match(/^transition(?:\s+([a-zA-Z_]\w*))?\s+from\s*:\s*([a-zA-Z_]\w*)\s+to\s*:\s*([a-zA-Z_]\w*)\s*:\s*(.+)$/);
+  const m = line.text.match(TRANSITION_RE);
   if (!m) return null;
   const t: SfcTransition = {
     from: m[2],
@@ -213,7 +244,7 @@ function parseAltBlock(state: ParseState, indent: number): SfcNode | null {
   if (state.i >= state.lines.length) return null;
   const head = state.lines[state.i];
   if (head.indent !== indent) return null;
-  const m = head.text.match(/^alt\s+from\s*:\s*([a-zA-Z_]\w*)\s*:\s*$/);
+  const m = head.text.match(ALT_HEAD_RE);
   if (!m) return null;
   state.i++;
 
@@ -271,7 +302,7 @@ function parseAltBlock(state: ParseState, indent: number): SfcNode | null {
     throw new SfcParseError(`alt block missing merge_to clause`, head.lineNo, head.text);
   }
   const mergeLine = state.lines[state.i];
-  const mm = mergeLine.text.match(/^merge_to\s*:\s*([a-zA-Z_]\w*)\s*$/);
+  const mm = mergeLine.text.match(MERGE_RE);
   if (!mm) {
     throw new SfcParseError(`Expected "merge_to: STEP" (got: ${mergeLine.text})`, mergeLine.lineNo, mergeLine.text);
   }
@@ -283,7 +314,7 @@ function parseSimBlock(state: ParseState, indent: number): SfcNode | null {
   if (state.i >= state.lines.length) return null;
   const head = state.lines[state.i];
   if (head.indent !== indent) return null;
-  const m = head.text.match(/^sim\s+from\s*:\s*([a-zA-Z_]\w*)\s*:\s*(.+)$/);
+  const m = head.text.match(SIM_HEAD_RE);
   if (!m) return null;
   const condition = m[2].trim();
   state.i++;
@@ -319,7 +350,7 @@ function parseSimBlock(state: ParseState, indent: number): SfcNode | null {
     throw new SfcParseError(`sim block missing merge_to clause`, head.lineNo, head.text);
   }
   const mergeLine = state.lines[state.i];
-  const mm = mergeLine.text.match(/^merge_to\s*:\s*([a-zA-Z_]\w*)\s*:\s*(.+)$/);
+  const mm = mergeLine.text.match(SIM_MERGE_RE);
   if (!mm) {
     throw new SfcParseError(`Expected "merge_to: STEP: condition" (got: ${mergeLine.text})`, mergeLine.lineNo, mergeLine.text);
   }
@@ -382,7 +413,7 @@ export function parseSfc(text: string): SfcAst {
       continue;
     }
     // jump
-    const jm = ln.text.match(/^jump\s+from\s*:\s*([a-zA-Z_]\w*)\s+to\s*:\s*([a-zA-Z_]\w*)\s*$/);
+    const jm = ln.text.match(JUMP_RE);
     if (jm) {
       // Treat as a transition with TRUE condition; no special node type for v0.1.
       state.transitions.push({

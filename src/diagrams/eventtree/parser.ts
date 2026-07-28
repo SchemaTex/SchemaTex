@@ -28,6 +28,7 @@ import type {
   EventTreeOutcome,
   EventTreePatternToken,
 } from "./types";
+import { readIdentifier } from "../../core/identifier";
 
 export class EventTreeParseError extends Error {
   constructor(message: string, public line?: number) {
@@ -222,10 +223,11 @@ function validate(ast: EventTreeAst): void {
 // ─── Helpers ──────────────────────────────────────────────────
 
 function parseIdAndLabel(s: string, lineNo: number): { id: string; label?: string; remainder: string } {
-  const m = /^([A-Za-z_]\w*)/.exec(s.trim());
-  if (!m) throw new EventTreeParseError(`expected an id, got "${truncate(s, 40)}"`, lineNo);
-  const id = m[1]!;
-  let rest = s.trim().slice(id.length).trim();
+  const trimmed = s.trim();
+  const token = readIdentifier(trimmed);
+  if (!token) throw new EventTreeParseError(`expected an id, got "${truncate(s, 40)}"`, lineNo);
+  const id = token.value;
+  let rest = trimmed.slice(token.end).trim();
   const q = matchQuoted(rest);
   let label: string | undefined;
   if (q) { label = q.value; rest = rest.slice(q.length).trim(); }

@@ -23,6 +23,7 @@ import type {
   BreadboardWire,
   BreadboardWireColor,
 } from "../../core/types";
+import { isIdentifier } from "../../core/identifier";
 import { createSourceLocator } from "../../core/source-range";
 
 export class BreadboardParseError extends Error {
@@ -216,7 +217,7 @@ function parsePart(rawLine: string, lineNumber: number): BreadboardPart {
     throw new BreadboardParseError(`Part declaration must use 'id: kind ...' syntax`, lineNumber);
   }
   const id = rawLine.slice(0, colonIdx).trim();
-  if (!/^[a-zA-Z][\w-]*$/.test(id)) {
+  if (!isIdentifier(id)) {
     throw new BreadboardParseError(`Invalid part id '${id}'`, lineNumber);
   }
   const after = rawLine.slice(colonIdx + 1).trim();

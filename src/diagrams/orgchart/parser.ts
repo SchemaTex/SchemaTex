@@ -7,6 +7,7 @@ import type {
   OrgchartNodeKind,
   OrgchartRoleIcon,
 } from "./types";
+import { isIdentifier } from "../../core/identifier";
 import { matchQuotedTitle } from "../../core/quotes";
 import { createSourceLocator, findFirstQuotedRange } from "../../core/source-range";
 
@@ -175,7 +176,7 @@ function parseNodeLine(line: string): {
   const colonIdx = rest.indexOf(":");
   if (colonIdx < 0) return null;
   const id = rest.slice(0, colonIdx).trim();
-  if (!/^[A-Za-z][A-Za-z0-9_-]*$/.test(id)) return null;
+  if (!isIdentifier(id)) return null;
 
   const tailRaw = rest.slice(colonIdx + 1);
   const tailLeading = tailRaw.length - tailRaw.trimStart().length;
@@ -297,7 +298,7 @@ export function parseOrgchart(text: string): OrgchartAST {
       if (idx < 0) continue;
       const left = line.slice(0, idx).trim();
       let rest = line.slice(idx + token.length).trim();
-      if (!/^[A-Za-z][A-Za-z0-9_-]*$/.test(left)) break;
+      if (!isIdentifier(left)) break;
       let props: Record<string, string> = {};
       const propsMatch = rest.match(/\[([^\]]*)\]\s*$/);
       if (propsMatch) {
@@ -305,7 +306,7 @@ export function parseOrgchart(text: string): OrgchartAST {
         rest = rest.slice(0, rest.length - propsMatch[0].length).trim();
       }
       const to = rest.split(/\s+/)[0];
-      if (!/^[A-Za-z][A-Za-z0-9_-]*$/.test(to)) break;
+      if (!isIdentifier(to)) break;
       const edge: OrgchartEdge = { from: left, to, kind };
       if (props.label) edge.label = props.label;
       edges.push(edge);

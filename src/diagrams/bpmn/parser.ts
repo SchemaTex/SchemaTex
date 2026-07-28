@@ -44,6 +44,10 @@ import type {
   BpmnPool,
   BpmnTaskMarker,
 } from "../../core/types";
+import { IDENTIFIER_SOURCE, readIdentifier } from "../../core/identifier";
+
+const FLOW_OBJECT_PREFIX_RE = new RegExp(`^${IDENTIFIER_SOURCE}\\s*:`, "u");
+const FLOW_OBJECT_RE = new RegExp(`^(${IDENTIFIER_SOURCE})\\s*:\\s*(.+)$`, "u");
 
 export class BpmnParseError extends Error {
   constructor(message: string, public line: number) {
@@ -306,7 +310,7 @@ function parsePool(
 
     // Pool with no lanes — flow objects directly inside pool. Treat as a
     // single implicit lane.
-    if (cur.text.match(/^[A-Za-z_][\w]*\s*:/)) {
+    if (FLOW_OBJECT_PREFIX_RE.test(cur.text)) {
       // create implicit lane lazily
       let implicit = pool.lanes
         .map((id) => lanesById.get(id))
@@ -381,7 +385,7 @@ function parseFlowObject(
   objectOwner: Map<string, { poolId: string; laneId: string }>
 ): number {
   const ln = lines[idx]!;
-  const m = ln.text.match(/^([A-Za-z_][\w]*)\s*:\s*(.+)$/);
+  const m = ln.text.match(FLOW_OBJECT_RE);
   if (!m) {
     throw new BpmnParseError(
       `expected 'id: kind ...' (got '${ln.text.slice(0, 40)}')`,
@@ -543,9 +547,9 @@ function parseFlowLine(
       if (!q) return null;
       return { ep: q.value, rest: q.rest };
     }
-    const m = t.match(/^([A-Za-z_][\w]*)\s*/);
-    if (!m) return null;
-    return { ep: m[1]!, rest: t.slice(m[0].length) };
+    const id = readIdentifier(t);
+    if (!id) return null;
+    return { ep: id.value, rest: t.slice(id.end).trimStart() };
   }
 
   const head = takeEndpoint(text);

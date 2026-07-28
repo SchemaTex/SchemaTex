@@ -1,10 +1,15 @@
 /**
  * DSL preprocessing shared across all diagram parsers.
  *
- * Two cross-cutting Mermaid-compat features are normalized here so each
+ * Three cross-cutting input features are normalized here so each
  * per-diagram parser sees a consistent surface:
  *
- *   1. **Frontmatter** — Mermaid allows a YAML-style block at the top of
+ *   1. **LLM wrappers** — Markdown fences, leaked `<artifact>` tags, and
+ *      model tool-call framing are never diagram syntax. They are removed
+ *      before detection so every parser and every public entry point inherits
+ *      the same recovery behavior.
+ *
+ *   2. **Frontmatter** — Mermaid allows a YAML-style block at the top of
  *      the input:
  *
  *          ---
@@ -18,14 +23,149 @@
  *      (`flowchart TD "..."`, `genogram "..."`) can merge the frontmatter
  *      title in if no inline one was provided.
  *
- *   2. **Comments** — different parsers historically supported different
+ *   3. **Comments** — different parsers historically supported different
  *      comment markers (`#`, `//`, Mermaid's `%%`). {@link stripLineComment}
  *      strips all three, respecting double-quoted regions so URLs with `//`
  *      and CSS-style values containing `#` don't get truncated.
  *
- * Both helpers are intentionally narrow: they only do what every parser
+ * These helpers are intentionally narrow: they only do what every parser
  * needs. Diagram-specific lexing stays in each parser.
  */
+
+export interface DslRemovalRange {
+  start: number;
+  end: number;
+}
+
+const ANTHROPIC_CONTROL_TAG =
+  /<\/?(?:antml:)?(?:function_calls|invoke|parameter)\b[^>]*>/gi;
+const DEEPSEEK_CONTROL_TAG = /<[^<>]*｜[^<>]*>/g;
+const SCALAR_PARAMETER_LINE =
+  /^[ \t]*<(?:antml:)?parameter\b[^>]*>[ \t]*(?:true|false|null|undefined|-?\d+(?:\.\d+)?|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')[ \t]*<\/(?:antml:)?parameter>[ \t]*(?:\r?\n|$)/gim;
+
+function blankRange(text: string, start: number, end: number): string {
+  return (
+    text.slice(0, start) +
+    text.slice(start, end).replace(/[^\r\n]/g, " ") +
+    text.slice(end)
+  );
+}
+
+function mergeRemovalRanges(ranges: DslRemovalRange[]): DslRemovalRange[] {
+  const sorted = [...ranges].sort((a, b) => a.start - b.start || a.end - b.end);
+  const merged: DslRemovalRange[] = [];
+  for (const range of sorted) {
+    const previous = merged[merged.length - 1];
+    if (!previous || range.start > previous.end) {
+      merged.push({ ...range });
+      continue;
+    }
+    previous.end = Math.max(previous.end, range.end);
+  }
+  return merged;
+}
+
+function collectMatches(
+  text: string,
+  pattern: RegExp,
+  ranges: DslRemovalRange[]
+): string {
+  let result = text;
+  pattern.lastIndex = 0;
+  for (const match of text.matchAll(pattern)) {
+    const start = match.index;
+    if (start === undefined || match[0].length === 0) continue;
+    const end = start + match[0].length;
+    ranges.push({ start, end });
+    result = blankRange(result, start, end);
+  }
+  return result;
+}
+
+/**
+ * Locate wrappers that can never be valid Schematex DSL.
+ *
+ * The returned ranges refer to the original UTF-16 input. The core API blanks
+ * them instead of deleting them so diagnostics and editing source ranges still
+ * point at the authored text. {@link stripArtifactWrappers} uses the same
+ * ranges for callers that want the compact, cleaned string.
+ */
+export function findArtifactWrapperRanges(text: string): DslRemovalRange[] {
+  if (!text) return [];
+
+  const ranges: DslRemovalRange[] = [];
+  let working = text;
+
+  // Markdown fence around the whole artifact. Blank it first so a nested
+  // <artifact> opener becomes the first significant token for the next pass.
+  const openingFence =
+    /^\uFEFF?\s*```[A-Za-z0-9_-]*[ \t]*(?:\r?\n|$)/.exec(working);
+  if (openingFence) {
+    ranges.push({ start: 0, end: openingFence[0].length });
+    working = blankRange(working, 0, openingFence[0].length);
+  }
+  const closingFence = /(?:^|\r?\n)[ \t]*```[ \t]*$/.exec(working);
+  if (closingFence) {
+    const newlineLength = closingFence[0].startsWith("\r\n")
+      ? 2
+      : closingFence[0].startsWith("\n")
+        ? 1
+        : 0;
+    const start = closingFence.index + newlineLength;
+    ranges.push({ start, end: working.length });
+    working = blankRange(working, start, working.length);
+  }
+
+  // Only treat <artifact> as a wrapper when it is the first significant token.
+  // Angle-bracket syntax elsewhere (for example circuit <ep>) stays untouched.
+  const artifactOpen = /^\uFEFF?\s*<artifact\b[^>]*>[ \t]*(?:\r?\n)?/i.exec(
+    working
+  );
+  if (artifactOpen) {
+    ranges.push({ start: 0, end: artifactOpen[0].length });
+    working = blankRange(working, 0, artifactOpen[0].length);
+
+    const artifactClose = /(?:\r?\n)?[ \t]*<\/artifact>[ \t\r\n]*$/i.exec(
+      working
+    );
+    if (artifactClose) {
+      ranges.push({
+        start: artifactClose.index,
+        end: artifactClose.index + artifactClose[0].length,
+      });
+      working = blankRange(
+        working,
+        artifactClose.index,
+        artifactClose.index + artifactClose[0].length
+      );
+    }
+  }
+
+  // A standalone scalar parameter line contains control metadata, not DSL.
+  // Removing only its tags would leave e.g. `false` as a bogus diagram line.
+  working = collectMatches(working, SCALAR_PARAMETER_LINE, ranges);
+  working = collectMatches(working, ANTHROPIC_CONTROL_TAG, ranges);
+  collectMatches(working, DEEPSEEK_CONTROL_TAG, ranges);
+
+  return mergeRemovalRanges(ranges);
+}
+
+/**
+ * Strip model-authored wrappers from DSL text.
+ *
+ * Clean input is returned byte-for-byte unchanged. This pure helper mirrors
+ * the shared core preprocessing behavior and is useful to downstream callers
+ * that need the normalized source itself.
+ */
+export function stripArtifactWrappers(text: string): string {
+  const ranges = findArtifactWrapperRanges(text);
+  if (ranges.length === 0) return text;
+  let result = text;
+  for (const range of [...ranges].reverse()) {
+    result = result.slice(0, range.start) + result.slice(range.end);
+  }
+  return result;
+}
 
 export interface DslFrontmatter {
   /** Parsed key/value pairs from the `---` block. Empty if no block found. */

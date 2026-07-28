@@ -7,7 +7,44 @@ import type {
   StateNote,
   StateTransition,
 } from "./types";
+import { IDENTIFIER_SOURCE, isIdentifier } from "../../core/identifier";
 import { createSourceLocator } from "../../core/source-range";
+
+const COMPOSITE_RE = new RegExp(
+  `^(?:composite|state)\\s+(${IDENTIFIER_SOURCE})\\s*\\{?\\s*$`,
+  "u"
+);
+const ALIAS_RE = new RegExp(
+  `^state\\s+"([^"]*)"\\s+as\\s+(${IDENTIFIER_SOURCE})\\s*$`,
+  "u"
+);
+const STEREOTYPE_RE = new RegExp(
+  `^state\\s+(${IDENTIFIER_SOURCE})\\s+<<\\s*(choice|fork|join|end)\\s*>>\\s*$`,
+  "u"
+);
+const STATE_LABEL_RE = new RegExp(`^state\\s+(${IDENTIFIER_SOURCE})\\s*:\\s*(.+)$`, "u");
+const PSEUDO_RE = new RegExp(
+  `^(initial|final|choice|junction|fork|join|history|dhistory|terminate|entry_point|exit_point)\\s+(${IDENTIFIER_SOURCE})\\s*$`,
+  "u"
+);
+const NOTE_LINE_RE = new RegExp(
+  `^note\\s+(left[_ ]of|right[_ ]of)\\s+(${IDENTIFIER_SOURCE})\\s*:\\s*(.*)$`,
+  "u"
+);
+const NOTE_MERMAID_RE = new RegExp(
+  `^note\\s+(left[_ ]of|right[_ ]of)\\s+(${IDENTIFIER_SOURCE})\\s*$`,
+  "u"
+);
+const NOTE_BLOCK_RE = new RegExp(
+  `^note\\s+(left[_ ]of\\s+|right[_ ]of\\s+)?(${IDENTIFIER_SOURCE})\\s*\\{\\s*$`,
+  "u"
+);
+const TRANSITION_RE = new RegExp(
+  `^(\\[\\*\\]|${IDENTIFIER_SOURCE})\\s*-+>\\s*(\\[\\*\\]|${IDENTIFIER_SOURCE})\\s*(?::\\s*(.*))?$`,
+  "u"
+);
+const LABEL_ONLY_RE = new RegExp(`^(${IDENTIFIER_SOURCE})\\s*:\\s*(.+)$`, "u");
+const BARE_IDENTIFIER_RE = new RegExp(`^(${IDENTIFIER_SOURCE})\\s*$`, "u");
 
 export class StateParseError extends Error {
   constructor(message: string, public line?: number) {
@@ -257,7 +294,7 @@ function ensureSimpleState(
 }
 
 function isIdent(tok: string): boolean {
-  return /^[A-Za-z_][A-Za-z0-9_]*$/.test(tok);
+  return isIdentifier(tok);
 }
 
 /**
@@ -374,7 +411,7 @@ export function parseStateDiagram(src: string): StateDiagramAST {
     }
 
     // ── Composite definition: composite IDENT {  OR  state IDENT { (Mermaid) ──
-    const compMatch = text.match(/^(?:composite|state)\s+([A-Za-z_][A-Za-z0-9_]*)\s*\{?\s*$/);
+    const compMatch = text.match(COMPOSITE_RE);
     const isCompositeWithBrace = compMatch && text.endsWith("{");
     if (isCompositeWithBrace) {
       const id = compMatch![1];
@@ -386,7 +423,7 @@ export function parseStateDiagram(src: string): StateDiagramAST {
     }
 
     // ── Mermaid alias: `state "Long name" as ID` ──
-    const aliasMatch = text.match(/^state\s+"([^"]*)"\s+as\s+([A-Za-z_][A-Za-z0-9_]*)\s*$/);
+    const aliasMatch = text.match(ALIAS_RE);
     if (aliasMatch) {
       const node = ensureSimpleState(ctx, aliasMatch[2], parent);
       node.label = aliasMatch[1];
@@ -398,7 +435,7 @@ export function parseStateDiagram(src: string): StateDiagramAST {
     }
 
     // ── Mermaid stereotype: `state ID <<choice>>` / `<<fork>>` / `<<join>>` / `<<end>>` ──
-    const stereoMatch = text.match(/^state\s+([A-Za-z_][A-Za-z0-9_]*)\s+<<\s*(choice|fork|join|end)\s*>>\s*$/);
+    const stereoMatch = text.match(STEREOTYPE_RE);
     if (stereoMatch) {
       const id = stereoMatch[1];
       const kind = MERMAID_STEREOTYPE[stereoMatch[2]];
@@ -419,7 +456,7 @@ export function parseStateDiagram(src: string): StateDiagramAST {
     }
 
     // ── `state ID : description` (Mermaid declares + labels) ──
-    const stateLabelMatch = text.match(/^state\s+([A-Za-z_][A-Za-z0-9_]*)\s*:\s*(.+)$/);
+    const stateLabelMatch = text.match(STATE_LABEL_RE);
     if (stateLabelMatch) {
       const node = ensureSimpleState(ctx, stateLabelMatch[1], parent);
       const token = stateLabelMatch[2].trim();
@@ -431,9 +468,7 @@ export function parseStateDiagram(src: string): StateDiagramAST {
     }
 
     // ── Schematex pseudo-state declaration: initial X / fork F / etc. ──
-    const pseudoMatch = text.match(
-      /^(initial|final|choice|junction|fork|join|history|dhistory|terminate|entry_point|exit_point)\s+([A-Za-z_][A-Za-z0-9_]*)\s*$/
-    );
+    const pseudoMatch = text.match(PSEUDO_RE);
     if (pseudoMatch) {
       const kindKw = pseudoMatch[1];
       const id = pseudoMatch[2];
@@ -466,9 +501,7 @@ export function parseStateDiagram(src: string): StateDiagramAST {
 
     // ── Notes ──
     // Single-line: `note right_of X : text`  /  `note right of X : text`
-    const noteSimple = text.match(
-      /^note\s+(left[_ ]of|right[_ ]of)\s+([A-Za-z_][A-Za-z0-9_]*)\s*:\s*(.*)$/
-    );
+    const noteSimple = text.match(NOTE_LINE_RE);
     if (noteSimple) {
       const side = noteSimple[1].startsWith("left") ? "left" : "right";
       const target = noteSimple[2];
@@ -485,9 +518,7 @@ export function parseStateDiagram(src: string): StateDiagramAST {
     // Block forms:
     //  Schematex:  note X { ... } or note left_of X { ... }
     //  Mermaid:    note right of X \n ... \n end note
-    const noteBlockMermaid = text.match(
-      /^note\s+(left[_ ]of|right[_ ]of)\s+([A-Za-z_][A-Za-z0-9_]*)\s*$/
-    );
+    const noteBlockMermaid = text.match(NOTE_MERMAID_RE);
     if (noteBlockMermaid) {
       const side = noteBlockMermaid[1].startsWith("left") ? "left" : "right";
       const target = noteBlockMermaid[2];
@@ -512,9 +543,7 @@ export function parseStateDiagram(src: string): StateDiagramAST {
       });
       continue;
     }
-    const noteBlockSchematex = text.match(
-      /^note\s+(left[_ ]of\s+|right[_ ]of\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*\{\s*$/
-    );
+    const noteBlockSchematex = text.match(NOTE_BLOCK_RE);
     if (noteBlockSchematex) {
       const side = noteBlockSchematex[1]?.startsWith("left") ? "left" : "right";
       const target = noteBlockSchematex[2];
@@ -539,9 +568,7 @@ export function parseStateDiagram(src: string): StateDiagramAST {
     }
 
     // ── Transition: A -> B [: label]  OR Mermaid `A --> B [: label]` ──
-    const transMatch = text.match(
-      /^(\[\*\]|[A-Za-z_][A-Za-z0-9_]*)\s*-+>\s*(\[\*\]|[A-Za-z_][A-Za-z0-9_]*)\s*(?::\s*(.*))?$/
-    );
+    const transMatch = text.match(TRANSITION_RE);
     if (transMatch) {
       const fromTok = transMatch[1];
       const toTok = transMatch[2];
@@ -584,7 +611,7 @@ export function parseStateDiagram(src: string): StateDiagramAST {
     }
 
     // ── Mermaid `Foo: description` to label an existing/new state ──
-    const labelOnlyMatch = text.match(/^([A-Za-z_][A-Za-z0-9_]*)\s*:\s*(.+)$/);
+    const labelOnlyMatch = text.match(LABEL_ONLY_RE);
     if (labelOnlyMatch && isIdent(labelOnlyMatch[1])) {
       const node = ensureSimpleState(ctx, labelOnlyMatch[1], parent);
       const token = labelOnlyMatch[2].trim();
@@ -596,7 +623,7 @@ export function parseStateDiagram(src: string): StateDiagramAST {
     }
 
     // ── Bare state declaration: `IDENT` ──
-    const bareIdent = text.match(/^([A-Za-z_][A-Za-z0-9_]*)\s*$/);
+    const bareIdent = text.match(BARE_IDENTIFIER_RE);
     if (bareIdent) {
       ensureSimpleState(ctx, bareIdent[1], parent);
       i++;

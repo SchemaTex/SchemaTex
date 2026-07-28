@@ -7,7 +7,14 @@ import type {
   FishboneSides,
   SourceRange,
 } from "../../core/types";
+import { IDENTIFIER_SOURCE } from "../../core/identifier";
 import { createSourceLocator } from "../../core/source-range";
+
+const STRUCTURED_CATEGORY_RE = new RegExp(
+  `^category\\s+(${IDENTIFIER_SOURCE})\\s+("[^"]*"|[^\\s[]+)(?:\\s*(\\[.*\\]))?\\s*$`,
+  "iu"
+);
+const CATEGORY_CAUSE_RE = new RegExp(`^(${IDENTIFIER_SOURCE})\\s*:\\s*(.+)$`, "u");
 
 export class FishboneParseError extends Error {
   public line?: number;
@@ -229,9 +236,7 @@ export function parseFishboneDSL(text: string): FishboneAST {
       implicitActiveCatId = null;
       implicitBulletIndent = null;
       const compact = trimmed.match(/^category\s+([^:]+?)\s*:\s*(.+)$/i);
-      const structured = trimmed.match(
-        /^category\s+([a-zA-Z][\w-]*)\s+("[^"]*"|[^\s[]+)(?:\s*(\[.*\]))?\s*$/i
-      );
+      const structured = trimmed.match(STRUCTURED_CATEGORY_RE);
 
       if (structured) {
         const id = structured[1]!;
@@ -278,7 +283,7 @@ export function parseFishboneDSL(text: string): FishboneAST {
     }
 
     // <categoryId> : "cause"
-    const causeMatch = trimmed.match(/^([a-zA-Z][\w-]*)\s*:\s*(.+)$/);
+    const causeMatch = trimmed.match(CATEGORY_CAUSE_RE);
     if (causeMatch) {
       const catId = causeMatch[1]!;
       const cat = getCat(catId);

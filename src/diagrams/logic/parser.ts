@@ -7,7 +7,21 @@ import type {
   LogicGateStyle,
   LogicGateModule,
 } from "../../core/types";
+import { IDENTIFIER_SOURCE } from "../../core/identifier";
 import { matchQuotedTitle } from "../../core/quotes";
+
+const MODULE_OPEN_RE = new RegExp(
+  `^module\\s+(?:"([^"]+)"|(${IDENTIFIER_SOURCE}))\\s*\\{$`,
+  "u"
+);
+const OUTPUT_ASSIGN_RE = new RegExp(
+  `^(${IDENTIFIER_SOURCE})\\s*<-\\s*(${IDENTIFIER_SOURCE})$`,
+  "u"
+);
+const GATE_DECL_RE = new RegExp(
+  `^(${IDENTIFIER_SOURCE})\\s*=\\s*([A-Za-z_][A-Za-z0-9_]*)\\s*\\(([^)]*)\\)$`,
+  "u"
+);
 
 export class LogicParseError extends Error {
   constructor(message: string) {
@@ -61,7 +75,7 @@ export function parseLogic(text: string): LogicGateAST {
     if (!line) continue;
 
     // module "Label" {   or  module Label {
-    const modOpen = line.match(/^module\s+(?:"([^"]+)"|([a-zA-Z_][\w]*))\s*\{$/);
+    const modOpen = line.match(MODULE_OPEN_RE);
     if (modOpen) {
       const label = modOpen[1] ?? modOpen[2];
       const id = `mod_${moduleCounter++}`;
@@ -109,14 +123,14 @@ export function parseLogic(text: string): LogicGateAST {
     }
 
     // OUTPUT <- GATE  (map output to gate)
-    const assignMatch = line.match(/^([a-zA-Z_][\w]*)\s*<-\s*([a-zA-Z_][\w]*)$/);
+    const assignMatch = line.match(OUTPUT_ASSIGN_RE);
     if (assignMatch) {
       explicitOutputFrom.set(assignMatch[1], assignMatch[2]);
       continue;
     }
 
     // Gate: ID = GATE(a, b, ...)
-    const gateMatch = line.match(/^([a-zA-Z_][\w]*)\s*=\s*([A-Za-z_][\w]*)\s*\(([^)]*)\)$/);
+    const gateMatch = line.match(GATE_DECL_RE);
     if (gateMatch) {
       const id = gateMatch[1];
       const rawType = gateMatch[2].toUpperCase();

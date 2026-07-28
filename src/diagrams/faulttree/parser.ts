@@ -18,6 +18,7 @@ import type {
   FaultTreeGateKind,
   FaultTreeProbMethod,
 } from "./types";
+import { IDENTIFIER_SOURCE, isIdentifier, readIdentifier } from "../../core/identifier";
 
 export class FaultTreeParseError extends Error {
   constructor(message: string, public line?: number) {
@@ -212,7 +213,7 @@ function parseGateExpr(s: string, lineNo: number): FaultTreeGate {
 
 function parseTransfer(ast: FaultTreeAst, rest: string, lineNo: number): void {
   // transfer-out:  ID -> "name"
-  const out = /^([A-Za-z_]\w*)\s*->\s*(.+)$/.exec(rest);
+  const out = new RegExp(`^(${IDENTIFIER_SOURCE})\\s*->\\s*(.+)$`, "u").exec(rest);
   if (out) {
     const q = matchQuoted(out[2]!.trim());
     const name = q ? q.value : out[2]!.trim();
@@ -325,10 +326,11 @@ function upsertEvent(ast: FaultTreeAst, ev: FaultTreeEvent): void {
 }
 
 function parseIdAndLabel(s: string, lineNo: number): { id: string; label?: string; remainder: string } {
-  const m = /^([A-Za-z_]\w*)/.exec(s.trim());
-  if (!m) throw new FaultTreeParseError(`expected an event id, got "${truncate(s, 40)}"`, lineNo);
-  const id = m[1]!;
-  let rest = s.trim().slice(id.length).trim();
+  const trimmed = s.trim();
+  const token = readIdentifier(trimmed);
+  if (!token) throw new FaultTreeParseError(`expected an event id, got "${truncate(s, 40)}"`, lineNo);
+  const id = token.value;
+  let rest = trimmed.slice(token.end).trim();
   const q = matchQuoted(rest);
   let label: string | undefined;
   if (q) { label = q.value; rest = rest.slice(q.length).trim(); }
@@ -353,7 +355,7 @@ function splitRefs(s: string, lineNo: number): string[] {
 }
 
 function isId(s: string): boolean {
-  return /^[A-Za-z_]\w*$/.test(s);
+  return isIdentifier(s);
 }
 
 /** Index of a top-level `=` (not inside parens or quotes), or -1. */
