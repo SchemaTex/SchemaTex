@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.4] — 2026-07-27
+
+### Fixed — LLM-generated DSL no longer fails on valid names, labels, pins, or empty timeline dates
+
+Several diagram parsers maintained their own ASCII-only identifier checks and strict label boundaries. Valid multilingual DSL and familiar hardware notation could therefore fail before layout, even when the diagram had an unambiguous representation.
+
+- **One Unicode identifier contract.** Parsers that validate user-facing ids now share one grammar: a Unicode letter or underscore followed by Unicode letters, digits, combining marks, underscores, or hyphens. Arabic, Chinese, Hebrew, and accented Latin ids render without per-engine exceptions.
+- **More tolerant flowchart labels.** Unquoted labels accept balanced parentheses, including nested function-style text. Ambiguous label syntax now recommends quoting the label; unsupported Mermaid-style `note for` statements remain errors but include a concrete rewrite.
+- **Breadboard names match real pinouts.** Expanded Arduino Nano and Raspberry Pi Pico pin catalogs, plus aliases for common MCU and module notation such as `D2`, `A1`, and `pin1`. Side-placed grid modules such as servos receive a deterministic default coordinate, while genuinely unknown pins report the closest valid name.
+- **Empty timeline values fail soft.** An entry such as `Tarea C :` renders as an undated event and emits a warning instead of rejecting the entire timeline.
+- **Production regressions are executable fixtures.** Every reported error string is preserved verbatim in tests. Circuit, SLD, genogram, and ladder parsing behavior is unchanged.
+
+---
+
 ## [1.0.3] — 2026-07-27
 
 ### Fixed — `prisma` rejected any wholesale-indented block, and said the wrong thing about why
