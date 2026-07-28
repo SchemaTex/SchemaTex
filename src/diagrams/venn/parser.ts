@@ -20,11 +20,20 @@ import type {
   VennRegionValue,
   VennSet,
 } from "../../core/types";
+import { IDENTIFIER_SOURCE, isIdentifier } from "../../core/identifier";
 import {
   extractQuotedString,
   isOpenQuote,
   stripQuotes as stripQuotesShared,
 } from "../../core/quotes";
+
+const ONLY_REGION_RE = new RegExp(`^(${IDENTIFIER_SOURCE})\\s+only$`, "iu");
+const SET_DECL_RE = new RegExp(`^set\\s+(${IDENTIFIER_SOURCE})\\s+(.+)$`, "iu");
+const SET_ENUM_RE = new RegExp(`^(${IDENTIFIER_SOURCE})\\s*=\\s*\\{([^}]*)\\}\\s*$`, "u");
+const EULER_REL_RE = new RegExp(
+  `^(${IDENTIFIER_SOURCE})\\s+(subset|in|disjoint|overlap)\\s+(${IDENTIFIER_SOURCE})\\s*$`,
+  "iu"
+);
 
 export class VennParseError extends Error {
   constructor(message: string, public readonly line?: number) {
@@ -202,7 +211,7 @@ function parseRegionKey(
 ): { sets: string[]; only: boolean } {
   const trimmed = text.trim();
   // "A only"
-  const onlyMatch = /^([A-Za-z][\w-]*)\s+only$/i.exec(trimmed);
+  const onlyMatch = ONLY_REGION_RE.exec(trimmed);
   if (onlyMatch && onlyMatch[1]) {
     const id = onlyMatch[1];
     if (!knownSets.has(id)) {
@@ -216,7 +225,7 @@ function parseRegionKey(
     throw new VennParseError(`empty region key: "${text}"`);
   }
   for (const p of parts) {
-    if (!/^[A-Za-z][\w-]*$/.test(p)) {
+    if (!isIdentifier(p)) {
       throw new VennParseError(`invalid set ref "${p}" in region key`);
     }
     if (!knownSets.has(p)) {
@@ -276,7 +285,7 @@ export function parseVennDSL(input: string): VennAST {
     }
 
     // set <id> "label" [props?]
-    const setMatch = /^set\s+([A-Za-z][\w-]*)\s+(.+)$/i.exec(raw);
+    const setMatch = SET_DECL_RE.exec(raw);
     if (setMatch && setMatch[1] && setMatch[2]) {
       const id = setMatch[1];
       const rest = setMatch[2];
@@ -301,7 +310,7 @@ export function parseVennDSL(input: string): VennAST {
     }
 
     // Enumeration: ID = { ... }
-    const enumMatch = /^([A-Za-z][\w-]*)\s*=\s*\{([^}]*)\}\s*$/.exec(raw);
+    const enumMatch = SET_ENUM_RE.exec(raw);
     if (enumMatch && enumMatch[1] !== undefined && enumMatch[2] !== undefined) {
       const id = enumMatch[1];
       const items = splitTopLevelCommas(enumMatch[2])
@@ -320,9 +329,7 @@ export function parseVennDSL(input: string): VennAST {
     }
 
     // Euler relation: ID subset ID   |  ID in ID  |  ID disjoint ID  |  ID overlap ID
-    const eulerMatch = /^([A-Za-z][\w-]*)\s+(subset|in|disjoint|overlap)\s+([A-Za-z][\w-]*)\s*$/i.exec(
-      raw
-    );
+    const eulerMatch = EULER_REL_RE.exec(raw);
     if (eulerMatch && eulerMatch[1] && eulerMatch[2] && eulerMatch[3]) {
       const from = eulerMatch[1];
       const relRaw = eulerMatch[2].toLowerCase();

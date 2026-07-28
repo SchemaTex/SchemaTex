@@ -32,6 +32,7 @@ import type {
   EpcEdge,
   EpcNode,
 } from "./types";
+import { isIdentifier, readIdentifier } from "../../core/identifier";
 import { analyseEpc } from "./analysis";
 
 export class EpcParseError extends Error {
@@ -220,10 +221,11 @@ function ensureRef(ast: EpcAst, id: string, _lineNo: number): void {
 // ─── Token helpers ────────────────────────────────────────────
 
 function parseIdAndLabel(s: string, lineNo: number): { id: string; label?: string } {
-  const m = /^([A-Za-z_]\w*)/.exec(s.trim());
-  if (!m) throw new EpcParseError(`expected a node id, got "${truncate(s, 40)}"`, lineNo);
-  const id = m[1]!;
-  const rest = s.trim().slice(id.length).trim();
+  const trimmed = s.trim();
+  const token = readIdentifier(trimmed);
+  if (!token) throw new EpcParseError(`expected a node id, got "${truncate(s, 40)}"`, lineNo);
+  const id = token.value;
+  const rest = trimmed.slice(token.end).trim();
   if (rest === "") return { id };
   const q = matchQuoted(rest);
   if (q) return { id, label: q.value };
@@ -232,7 +234,7 @@ function parseIdAndLabel(s: string, lineNo: number): { id: string; label?: strin
 }
 
 function isId(s: string): boolean {
-  return /^[A-Za-z_]\w*$/.test(s);
+  return isIdentifier(s);
 }
 
 /** True when the line has a top-level `->` (not inside quotes). */

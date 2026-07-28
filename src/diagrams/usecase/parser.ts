@@ -19,6 +19,7 @@ import type {
   UsecaseRelKind,
   UsecaseRelation,
 } from "./types";
+import { IDENTIFIER_SOURCE } from "../../core/identifier";
 
 export class UsecaseParseError extends Error {
   line?: number;
@@ -306,7 +307,7 @@ function parseActorDecl(ln: RawLine, state: ParserState): boolean {
   }
   // optional `as ID`
   let id: string | undefined;
-  const asMatch = rest.match(/\s+as\s+([A-Za-z_]\w*)\s*$/);
+  const asMatch = rest.match(new RegExp(`\\s+as\\s+(${IDENTIFIER_SOURCE})\\s*$`, "u"));
   if (asMatch) {
     id = asMatch[1];
     rest = rest.slice(0, asMatch.index).trim();
@@ -348,7 +349,7 @@ function parseUsecaseDecl(ln: RawLine, state: ParserState): boolean {
   }
   // optional `as ID`
   let id: string | undefined;
-  const asMatch = rest.match(/\s+as\s+([A-Za-z_]\w*)\s*$/);
+  const asMatch = rest.match(new RegExp(`\\s+as\\s+(${IDENTIFIER_SOURCE})\\s*$`, "u"));
   if (asMatch) {
     id = asMatch[1];
     rest = rest.slice(0, asMatch.index).trim();
@@ -392,7 +393,7 @@ function parseUsecaseDecl(ln: RawLine, state: ParserState): boolean {
 // PlantUML inline form: :Name: [as ID]  or  (Name) [as ID]
 function parsePlantUmlInline(ln: RawLine, state: ParserState): boolean {
   // Actor: :Name:
-  let m = ln.text.match(/^:([^:]+):\s*(?:as\s+([A-Za-z_]\w*))?\s*$/);
+  let m = ln.text.match(new RegExp(`^:([^:]+):\\s*(?:as\\s+(${IDENTIFIER_SOURCE}))?\\s*$`, "u"));
   if (m) {
     const name = m[1].trim();
     const id = m[2] ?? defaultIdFor(name);
@@ -401,7 +402,7 @@ function parsePlantUmlInline(ln: RawLine, state: ParserState): boolean {
     return true;
   }
   // Use case: (Name)
-  m = ln.text.match(/^\(([^()]+)\)\s*(?:as\s+([A-Za-z_]\w*))?\s*$/);
+  m = ln.text.match(new RegExp(`^\\(([^()]+)\\)\\s*(?:as\\s+(${IDENTIFIER_SOURCE}))?\\s*$`, "u"));
   if (m) {
     const name = m[1].trim();
     const id = m[2] ?? defaultIdFor(name);

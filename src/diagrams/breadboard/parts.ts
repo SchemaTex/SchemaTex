@@ -297,12 +297,18 @@ function mcuSpec(
   geometry: { width: number; height: number; cornerR: number }
 ): PartSpec {
   const { width, height, cornerR } = geometry;
+  const maxVerticalIndex = Math.max(
+    0,
+    ...slots
+      .filter((slot) => slot.side === "left" || slot.side === "right")
+      .map((slot) => slot.idx)
+  );
+  const verticalStride = Math.min(12, (height - 34) / Math.max(1, maxVerticalIndex));
   const pins: PartPin[] = slots.map((s) => {
-    const stride = 12;
-    if (s.side === "left") return { name: s.name, x: 4, y: 14 + s.idx * stride };
-    if (s.side === "right") return { name: s.name, x: width - 4, y: 14 + s.idx * stride };
-    if (s.side === "top") return { name: s.name, x: 14 + s.idx * stride, y: 4 };
-    return { name: s.name, x: 14 + s.idx * stride, y: height - 4 };
+    if (s.side === "left") return { name: s.name, x: 4, y: 14 + s.idx * verticalStride };
+    if (s.side === "right") return { name: s.name, x: width - 4, y: 14 + s.idx * verticalStride };
+    if (s.side === "top") return { name: s.name, x: 14 + s.idx * 12, y: 4 };
+    return { name: s.name, x: 14 + s.idx * 12, y: height - 4 };
   });
   return {
     kind,
@@ -366,27 +372,109 @@ const UNO_SLOTS: McuPinSlot[] = [
   { name: "A5", side: "left", idx: 11 },
 ];
 
+// Arduino Nano classic (A000005) — the full two-row header, not an Uno slice.
+const NANO_SLOTS: McuPinSlot[] = [
+  { name: "D1", side: "left", idx: 0 },
+  { name: "D0", side: "left", idx: 1 },
+  { name: "RST", side: "left", idx: 2 },
+  { name: "GND", side: "left", idx: 3 },
+  { name: "D2", side: "left", idx: 4 },
+  { name: "D3", side: "left", idx: 5 },
+  { name: "D4", side: "left", idx: 6 },
+  { name: "D5", side: "left", idx: 7 },
+  { name: "D6", side: "left", idx: 8 },
+  { name: "D7", side: "left", idx: 9 },
+  { name: "D8", side: "left", idx: 10 },
+  { name: "D9", side: "left", idx: 11 },
+  { name: "D10", side: "left", idx: 12 },
+  { name: "D11", side: "left", idx: 13 },
+  { name: "D12", side: "left", idx: 14 },
+  { name: "D13", side: "right", idx: 0 },
+  { name: "3V3", side: "right", idx: 1 },
+  { name: "AREF", side: "right", idx: 2 },
+  { name: "A0", side: "right", idx: 3 },
+  { name: "A1", side: "right", idx: 4 },
+  { name: "A2", side: "right", idx: 5 },
+  { name: "A3", side: "right", idx: 6 },
+  { name: "A4", side: "right", idx: 7 },
+  { name: "A5", side: "right", idx: 8 },
+  { name: "A6", side: "right", idx: 9 },
+  { name: "A7", side: "right", idx: 10 },
+  { name: "5V", side: "right", idx: 11 },
+  { name: "RST", side: "right", idx: 12 },
+  { name: "GND", side: "right", idx: 13 },
+  { name: "VIN", side: "right", idx: 14 },
+];
+
 const ESP32_SLOTS: McuPinSlot[] = [
   { name: "3V3", side: "left", idx: 0 },
-  { name: "GND", side: "left", idx: 1 },
-  { name: "GPIO15", side: "left", idx: 2 },
-  { name: "GPIO2", side: "left", idx: 3 },
-  { name: "GPIO4", side: "left", idx: 4 },
-  { name: "GPIO5", side: "left", idx: 5 },
-  { name: "GPIO18", side: "left", idx: 6 },
-  { name: "GPIO19", side: "left", idx: 7 },
-  { name: "GPIO21", side: "left", idx: 8 },
-  { name: "GPIO22", side: "left", idx: 9 },
+  { name: "EN", side: "left", idx: 1 },
+  { name: "GPIO36", side: "left", idx: 2 },
+  { name: "GPIO39", side: "left", idx: 3 },
+  { name: "GPIO34", side: "left", idx: 4 },
+  { name: "GPIO35", side: "left", idx: 5 },
+  { name: "GPIO32", side: "left", idx: 6 },
+  { name: "GPIO33", side: "left", idx: 7 },
+  { name: "GPIO25", side: "left", idx: 8 },
+  { name: "GPIO26", side: "left", idx: 9 },
+  { name: "GPIO27", side: "left", idx: 10 },
+  { name: "GPIO14", side: "left", idx: 11 },
+  { name: "GPIO12", side: "left", idx: 12 },
+  { name: "GND", side: "left", idx: 13 },
+  { name: "GPIO13", side: "left", idx: 14 },
   { name: "VIN", side: "right", idx: 0 },
-  { name: "GND", side: "right", idx: 1 },
-  { name: "GPIO13", side: "right", idx: 2 },
-  { name: "GPIO12", side: "right", idx: 3 },
-  { name: "GPIO14", side: "right", idx: 4 },
-  { name: "GPIO27", side: "right", idx: 5 },
-  { name: "GPIO26", side: "right", idx: 6 },
-  { name: "GPIO25", side: "right", idx: 7 },
-  { name: "GPIO33", side: "right", idx: 8 },
-  { name: "GPIO32", side: "right", idx: 9 },
+  { name: "GPIO23", side: "right", idx: 1 },
+  { name: "GPIO22", side: "right", idx: 2 },
+  { name: "GPIO1", side: "right", idx: 3 },
+  { name: "GPIO3", side: "right", idx: 4 },
+  { name: "GPIO21", side: "right", idx: 5 },
+  { name: "GND", side: "right", idx: 6 },
+  { name: "GPIO19", side: "right", idx: 7 },
+  { name: "GPIO18", side: "right", idx: 8 },
+  { name: "GPIO5", side: "right", idx: 9 },
+  { name: "GPIO17", side: "right", idx: 10 },
+  { name: "GPIO16", side: "right", idx: 11 },
+  { name: "GPIO4", side: "right", idx: 12 },
+  { name: "GPIO0", side: "right", idx: 13 },
+  { name: "GPIO2", side: "right", idx: 14 },
+  { name: "GPIO15", side: "right", idx: 15 },
+];
+
+const PICO_SLOTS: McuPinSlot[] = [
+  { name: "GP0", side: "left", idx: 0 },
+  { name: "GP1", side: "left", idx: 1 },
+  { name: "GND", side: "left", idx: 2 },
+  { name: "GP2", side: "left", idx: 3 },
+  { name: "GP3", side: "left", idx: 4 },
+  { name: "GP4", side: "left", idx: 5 },
+  { name: "GP5", side: "left", idx: 6 },
+  { name: "GP6", side: "left", idx: 7 },
+  { name: "GP7", side: "left", idx: 8 },
+  { name: "GP8", side: "left", idx: 9 },
+  { name: "GP9", side: "left", idx: 10 },
+  { name: "GP10", side: "left", idx: 11 },
+  { name: "GP11", side: "left", idx: 12 },
+  { name: "GP12", side: "left", idx: 13 },
+  { name: "GP13", side: "left", idx: 14 },
+  { name: "GP14", side: "left", idx: 15 },
+  { name: "GP15", side: "left", idx: 16 },
+  { name: "VBUS", side: "right", idx: 0 },
+  { name: "VSYS", side: "right", idx: 1 },
+  { name: "3V3_EN", side: "right", idx: 2 },
+  { name: "3V3", side: "right", idx: 3 },
+  { name: "ADC_VREF", side: "right", idx: 4 },
+  { name: "GP28", side: "right", idx: 5 },
+  { name: "AGND", side: "right", idx: 6 },
+  { name: "GP27", side: "right", idx: 7 },
+  { name: "GP26", side: "right", idx: 8 },
+  { name: "RUN", side: "right", idx: 9 },
+  { name: "GP22", side: "right", idx: 10 },
+  { name: "GP21", side: "right", idx: 11 },
+  { name: "GP20", side: "right", idx: 12 },
+  { name: "GP19", side: "right", idx: 13 },
+  { name: "GP18", side: "right", idx: 14 },
+  { name: "GP17", side: "right", idx: 15 },
+  { name: "GP16", side: "right", idx: 16 },
 ];
 
 // ─── Sensor / display modules ────────────────────────────────
@@ -445,9 +533,9 @@ export const PART_CATALOG: Record<BreadboardPartKind, PartSpec> = {
   dip: dipSpec(),
   header: HEADER,
   "mcu-uno": mcuSpec("mcu-uno", "#0d9488", "Arduino Uno", UNO_SLOTS, { width: 110, height: 200, cornerR: 6 }),
-  "mcu-nano": mcuSpec("mcu-nano", "#0d9488", "Arduino Nano", UNO_SLOTS.slice(0, 18), { width: 90, height: 180, cornerR: 4 }),
+  "mcu-nano": mcuSpec("mcu-nano", "#0d9488", "Arduino Nano", NANO_SLOTS, { width: 90, height: 180, cornerR: 4 }),
   "mcu-esp32": mcuSpec("mcu-esp32", "#1e293b", "ESP32 DevKit", ESP32_SLOTS, { width: 110, height: 180, cornerR: 4 }),
-  "mcu-pico": mcuSpec("mcu-pico", "#1e3a8a", "Raspberry Pi Pico", ESP32_SLOTS, { width: 100, height: 180, cornerR: 4 }),
+  "mcu-pico": mcuSpec("mcu-pico", "#1e3a8a", "Raspberry Pi Pico", PICO_SLOTS, { width: 100, height: 180, cornerR: 4 }),
   potentiometer: moduleSpec("potentiometer", 54, 46, "#eab308", ["1", "2", "3"], "POT"),
   "sensor-hcsr04": moduleSpec("sensor-hcsr04", 100, 60, "#1e3a8a", ["VCC", "TRIG", "ECHO", "GND"], "HC-SR04"),
   "sensor-dht11": moduleSpec("sensor-dht11", 70, 60, "#1e40af", ["VCC", "DATA", "GND"], "DHT11"),

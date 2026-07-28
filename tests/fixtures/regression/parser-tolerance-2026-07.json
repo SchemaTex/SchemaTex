@@ -1,0 +1,74 @@
+[
+  {
+    "error": "expected node identifier, got \"الجد1 --> \"",
+    "engine": "flowchart",
+    "outcome": "render",
+    "dsl": "flowchart TD\nالجد1 --> الأب1"
+  },
+  {
+    "error": "got \"原因1\"",
+    "engine": "flowchart",
+    "outcome": "render",
+    "dsl": "flowchart TD\n原因1 --> 结果1"
+  },
+  {
+    "error": "got \"סבא1 --> ה\"",
+    "engine": "flowchart",
+    "outcome": "render",
+    "dsl": "flowchart TD\nסבא1 --> הורה1"
+  },
+  {
+    "error": "got \"áconos[Diá\"",
+    "engine": "flowchart",
+    "outcome": "render",
+    "dsl": "flowchart TD\nDiáconos[Diáconos] --> Acción1"
+  },
+  {
+    "error": "got \"ô1 --> Pai\"",
+    "engine": "flowchart",
+    "outcome": "render",
+    "dsl": "flowchart TD\nAvô1 --> Pai1"
+  },
+  {
+    "error": "expected edge operator, got \"for F1\"",
+    "engine": "flowchart",
+    "outcome": "actionable-error",
+    "dsl": "flowchart TB\nF1[Father]\nnote for F1\n\"Parents are P1 and P2\""
+  },
+  {
+    "error": "expected edge operator, got \")\"",
+    "engine": "flowchart",
+    "outcome": "render",
+    "dsl": "flowchart TD\nA(Calculate f(x)) --> B[Review for F1]"
+  },
+  {
+    "error": "Part 'esp32' has no pin named 'D2'",
+    "engine": "breadboard",
+    "outcome": "render",
+    "dsl": "breadboard\nparts\n  esp32: mcu esp32 @beside-left\nwires\n  esp32:D2 --blue-- @1a"
+  },
+  {
+    "error": "Part 'nano' has no pin named 'A1' (known pins: ...)",
+    "engine": "breadboard",
+    "outcome": "render",
+    "dsl": "breadboard\nparts\n  nano: mcu nano @beside-left\nwires\n  nano:A1 --blue-- @1a"
+  },
+  {
+    "error": "Part 'btn' has no pin named 'pin1'",
+    "engine": "breadboard",
+    "outcome": "render",
+    "dsl": "breadboard\nparts\n  btn: button @5e\nwires\n  btn:pin1 --green-- @1a"
+  },
+  {
+    "error": "Grid/module part 'servo' must use @coord placement",
+    "engine": "breadboard",
+    "outcome": "render",
+    "dsl": "breadboard\nparts\n  servo: actuator servo @beside-left\nwires\n  servo:signal --yellow-- @1a"
+  },
+  {
+    "error": "Line N: Unrecognized line in section: Tarea C :",
+    "engine": "timeline",
+    "outcome": "warning",
+    "dsl": "timeline \"Plan\"\nsection Trabajo\n  Tarea C :"
+  }
+]

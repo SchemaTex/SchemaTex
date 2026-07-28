@@ -6,6 +6,7 @@ import type {
   RelationshipType,
   Sex,
 } from "../../core/types";
+import { IDENTIFIER_SOURCE } from "../../core/identifier";
 import { parseLegendDirective } from "../../core/legend-parser";
 
 // ─── Error ─────────────────────────────────────────────────
@@ -46,8 +47,12 @@ const CONNECTION_OPS: Record<string, ConnectionOpInfo> = {
 const OP_PATTERN =
   "===>|<===|===|<=>|==>|<==|<->|-->|<--|~=~|~x~|~~~|-\\/-|---|==|- -";
 const CONNECTION_RE = new RegExp(
-  `^([a-zA-Z][a-zA-Z0-9_-]*)\\s+(${OP_PATTERN})\\s+([a-zA-Z][a-zA-Z0-9_-]*)(.*)$`
+  `^(${IDENTIFIER_SOURCE})\\s+(${OP_PATTERN})\\s+(${IDENTIFIER_SOURCE})(.*)$`,
+  "u"
 );
+const HEADER_RE = new RegExp(`^ecomap(?::(${IDENTIFIER_SOURCE}))?\\s*(?:"([^"]*)")?\\s*$`, "iu");
+const CENTER_RE = new RegExp(`^center:\\s*(${IDENTIFIER_SOURCE})\\s*(\\[.*\\])?\\s*$`, "u");
+const SYSTEM_RE = new RegExp(`^(${IDENTIFIER_SOURCE})\\s*(\\[.*\\])?\\s*$`, "u");
 
 // ─── Public API ────────────────────────────────────────────
 
@@ -78,9 +83,7 @@ export function parseEcomap(text: string): DiagramAST {
   // Mermaid-style header tolerance: `ecomap`, `ecomap "Title"`,
   // `ecomap:mode`, `ecomap:mode "Title"`. The `:mode` is captured as
   // metadata for future use; current renderer ignores it.
-  const headerMatch = header.match(
-    /^ecomap(?::([a-zA-Z][\w-]*))?\s*(?:"([^"]*)")?\s*$/i
-  );
+  const headerMatch = header.match(HEADER_RE);
   if (!headerMatch)
     throw new EcomapParseError(
       `Expected 'ecomap' header (got '${header}')`,
@@ -111,9 +114,7 @@ export function parseEcomap(text: string): DiagramAST {
     }
 
     // Center definition
-    const centerMatch = trimmed.match(
-      /^center:\s*([a-zA-Z][a-zA-Z0-9_-]*)\s*(\[.*\])?\s*$/
-    );
+    const centerMatch = trimmed.match(CENTER_RE);
     if (centerMatch) {
       const id = centerMatch[1].toLowerCase();
       centerId = id;
@@ -175,9 +176,7 @@ export function parseEcomap(text: string): DiagramAST {
     }
 
     // System definition
-    const sysMatch = trimmed.match(
-      /^([a-zA-Z][a-zA-Z0-9_-]*)\s*(\[.*\])?\s*$/
-    );
+    const sysMatch = trimmed.match(SYSTEM_RE);
     if (sysMatch) {
       const id = sysMatch[1].toLowerCase();
       if (!knownIds.has(id)) {

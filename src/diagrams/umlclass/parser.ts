@@ -21,7 +21,29 @@ import type {
   UmlClassVisibility,
 } from "./types";
 import type { SourceRange } from "../../core/types";
+import {
+  QUALIFIED_IDENTIFIER_SOURCE,
+  isQualifiedIdentifier,
+  readQualifiedIdentifier,
+} from "../../core/identifier";
 import { createSourceLocator } from "../../core/source-range";
+
+const CLASSIFIER_ALIAS_TOKEN_RE = new RegExp(
+  `\\bas\\s+("[^"]+"|${QUALIFIED_IDENTIFIER_SOURCE})`,
+  "iu"
+);
+const CLASSIFIER_ID_PREFIX_RE = new RegExp(
+  `^(${QUALIFIED_IDENTIFIER_SOURCE})`,
+  "u"
+);
+const CLASSIFIER_ALIAS_RE = new RegExp(
+  `^as\\s+(?:"([^"]+)"|(${QUALIFIED_IDENTIFIER_SOURCE}))`,
+  "iu"
+);
+const MEMBER_LINE_RE = new RegExp(
+  `^(${QUALIFIED_IDENTIFIER_SOURCE})\\s*:\\s*(.+)$`,
+  "u"
+);
 
 export class UmlClassParseError extends Error {
   constructor(message: string, public line?: number) {
@@ -221,7 +243,7 @@ export function parseUmlClass(text: string): UmlClassAst {
 }
 
 function classifierDisplayToken(line: string): { token: string; innerStart: number; innerEnd: number } | undefined {
-  const alias = /\bas\s+("[^"]+"|[A-Za-z_][\w.]*)/i.exec(line);
+  const alias = CLASSIFIER_ALIAS_TOKEN_RE.exec(line);
   if (alias) {
     const token = alias[1]!;
     return token.startsWith('"')
@@ -316,7 +338,7 @@ function tryParseClassifierHeader(line: string, lineNo: number): UmlClassClassif
     name = q.value;
     rest = rest.slice(q.length).trim();
   } else {
-    const idMatch = /^([A-Za-z_][\w.]*)/.exec(rest);
+    const idMatch = CLASSIFIER_ID_PREFIX_RE.exec(rest);
     if (!idMatch) {
       throw new UmlClassParseError(`expected classifier name`, lineNo);
     }
@@ -344,7 +366,7 @@ function tryParseClassifierHeader(line: string, lineNo: number): UmlClassClassif
   }
 
   // Optional `as Alias` — alias becomes the *display* name; id stays for refs.
-  const aliasMatch = /^as\s+(?:"([^"]+)"|([A-Za-z_][\w.]*))/i.exec(rest);
+  const aliasMatch = CLASSIFIER_ALIAS_RE.exec(rest);
   if (aliasMatch) {
     name = aliasMatch[1] ?? aliasMatch[2] ?? name;
     rest = rest.slice(aliasMatch[0].length).trim();
@@ -407,10 +429,10 @@ function parseNamespaceHeader(line: string): { name: string; label?: string } {
     return { name, ...(label ? { label } : {}) };
   }
   // Quoted label form: Name "Label".
-  const nameMatch = /^([A-Za-z_][\w.]*)/.exec(rest);
+  const nameMatch = readQualifiedIdentifier(rest);
   if (nameMatch) {
-    const name = nameMatch[0];
-    const tail = rest.slice(name.length).trim();
+    const name = nameMatch.value;
+    const tail = rest.slice(nameMatch.end).trim();
     const q = matchQuoted(tail);
     if (q) return { name, label: q.value };
     return { name };
@@ -443,7 +465,7 @@ function assignToPackage(ast: UmlClassAst, pkgId: string, classifierId: string):
 // ─── Single-line member / annotation (`Class : member`) ───────
 
 function tryParseMemberLine(line: string): { id: string; body: string } | undefined {
-  const m = /^([A-Za-z_][\w.]*)\s*:\s*(.+)$/.exec(line);
+  const m = MEMBER_LINE_RE.exec(line);
   if (!m) return undefined;
   const body = m[2]!.trim();
   if (!body) return undefined;
@@ -534,7 +556,7 @@ function splitInlineMembers(body: string): string[] {
       let j = i + 1;
       while (j < body.length && (body[j] === " " || body[j] === "\t")) j++;
       const next = body[j] ?? "";
-      const nextStartsMember = /[A-Za-z_/]/.test(next);
+      const nextStartsMember = /[\p{L}_/]/u.test(next);
       if (prevIsBoundary && nextStartsMember) {
         hasGlyphMember = true;
         if (i > start) { out.push(body.slice(start, i)); start = i; }
@@ -624,7 +646,7 @@ function parseMember(
     visibility === undefined &&
     colonIdx < 0 &&
     eqIdx < 0 &&
-    /^[A-Za-z_][\w.]*$/.test(body)
+    isQualifiedIdentifier(body)
   ) {
     return {
       kind: "literal",
@@ -679,7 +701,7 @@ function parseOperation(
         const lastSpace = rest.lastIndexOf(" ");
         const candType = rest.slice(0, lastSpace).trim();
         const candName = rest.slice(lastSpace + 1).trim();
-        if (/^[A-Za-z_][\w.]*$/.test(candName)) {
+        if (isQualifiedIdentifier(candName)) {
           ptype = candType;
           pname = candName;
         }
@@ -753,7 +775,7 @@ function parseAttribute(
     const lastSpace = rest.lastIndexOf(" ");
     const candType = rest.slice(0, lastSpace).trim();
     const candName = rest.slice(lastSpace + 1).trim();
-    if (/^[A-Za-z_][\w.]*$/.test(candName)) {
+    if (isQualifiedIdentifier(candName)) {
       type = candType;
       name = candName;
     }
@@ -923,8 +945,12 @@ function tokenise(s: string): Token[] {
       const q = matchQuoted(s.slice(i));
       if (q) { out.push({ kind: "quoted", value: q.value }); i += q.length; continue; }
     }
-    const m = /^[A-Za-z_][\w.]*/.exec(s.slice(i));
-    if (m) { out.push({ kind: "ident", value: m[0] }); i += m[0].length; continue; }
+    const identifier = readQualifiedIdentifier(s, i);
+    if (identifier) {
+      out.push({ kind: "ident", value: identifier.value });
+      i = identifier.end;
+      continue;
+    }
     i++; // skip stray punctuation
   }
   return out;

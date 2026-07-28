@@ -9,7 +9,21 @@ import type {
   PidLine,
   PidLineType,
 } from "./types";
+import { IDENTIFIER_SOURCE } from "../../core/identifier";
 import { createSourceLocator } from "../../core/source-range";
+
+const EQUIPMENT_DECL_RE = new RegExp(
+  `^equip\\s+(${IDENTIFIER_SOURCE})\\s*:\\s*(.+)$`,
+  "u"
+);
+const LINE_DECL_RE = new RegExp(
+  `^line\\s+(${IDENTIFIER_SOURCE})\\s+from\\s+(\\S+)\\s+to\\s+(\\S+)\\s*(.*)$`,
+  "u"
+);
+const INSTRUMENT_DECL_RE = new RegExp(
+  `^inst\\s+(${IDENTIFIER_SOURCE})\\s*:\\s*(.+)$`,
+  "u"
+);
 
 export class PidParseError extends Error {
   constructor(message: string, public line?: number) {
@@ -228,7 +242,7 @@ export function parsePid(src: string): PidAST {
     currentInst = undefined;
 
     // ── equip ID : type [attrs] ───────────────────────────
-    const equipMatch = text.match(/^equip\s+([A-Za-z][A-Za-z0-9_-]*)\s*:\s*(.+)$/);
+    const equipMatch = text.match(EQUIPMENT_DECL_RE);
     if (equipMatch) {
       const id = equipMatch[1];
       const tail = equipMatch[2];
@@ -251,7 +265,7 @@ export function parsePid(src: string): PidAST {
     }
 
     // ── line ID from X.port to Y.port [attrs] ─────────────
-    const lineMatch = text.match(/^line\s+([A-Za-z0-9_-]+)\s+from\s+(\S+)\s+to\s+(\S+)\s*(.*)$/);
+    const lineMatch = text.match(LINE_DECL_RE);
     if (lineMatch) {
       const id = lineMatch[1];
       const fromTok = lineMatch[2];
@@ -280,7 +294,7 @@ export function parsePid(src: string): PidAST {
     // The tag accepts ISA loop tags with OR without a dash (`FT-101`, `PLC`,
     // `XV101`) — LLMs frequently emit dashless tags, and rejecting them blanked
     // the whole diagram.
-    const instMatch = text.match(/^inst\s+([A-Za-z][A-Za-z0-9]*(?:-[A-Za-z0-9]+)?)\s*:\s*(.+)$/);
+    const instMatch = text.match(INSTRUMENT_DECL_RE);
     if (instMatch) {
       const tag = instMatch[1];
       const { rest: catRest, attrs } = extractAttrs(instMatch[2]);

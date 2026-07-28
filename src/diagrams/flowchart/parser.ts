@@ -51,6 +51,12 @@ import type {
   FlowchartSubgraph,
   SourceRange,
 } from "../../core/types";
+import {
+  IDENTIFIER_SOURCE,
+  isIdentifier,
+  isIdentifierChar,
+  readIdentifier,
+} from "../../core/identifier";
 import { createSourceLocator } from "../../core/source-range";
 
 export class FlowchartParseError extends Error {
@@ -58,7 +64,8 @@ export class FlowchartParseError extends Error {
     message: string,
     public line: number,
     public column: number,
-    public source?: string
+    public source?: string,
+    public hint?: string
   ) {
     super(`[line ${line}:${column}] ${message}`);
     this.name = "FlowchartParseError";
@@ -99,16 +106,23 @@ function labelToken(
   };
 }
 
-/** Find a shape closer while allowing delimiters inside an ASCII quoted label. */
+/**
+ * Find a shape closer while allowing quoted text and balanced delimiters in an
+ * unquoted label (`A[Review (phase 1)]`, `B(Calculate f(x))`, ...).
+ */
 function findCloser(line: string, start: number, closer: string): number {
   let inQuote = false;
+  const nestedClosers: string[] = [];
   for (let i = start; i <= line.length - closer.length; i++) {
     const ch = line[i]!;
     if (ch === '"' && (i === 0 || line[i - 1] !== "\\")) {
       inQuote = !inQuote;
       continue;
     }
-    if (!inQuote && line.startsWith(closer, i)) return i;
+    if (inQuote) continue;
+    if (nestedClosers.length === 0 && line.startsWith(closer, i)) return i;
+    if (ch === "(") nestedClosers.push(")");
+    else if (nestedClosers[nestedClosers.length - 1] === ch) nestedClosers.pop();
   }
   return -1;
 }
@@ -231,8 +245,6 @@ function parseShapeSuffix(
   return null;
 }
 
-const ID_CHAR = /[A-Za-z0-9_-]/;
-
 interface EdgeOp {
   kind: FlowchartEdgeKind;
   bidirectional: boolean;
@@ -334,10 +346,10 @@ function parseEdgeOp(line: string, pos: number): EdgeOp | null {
 
 /** Parse one node reference: identifier + optional shape-suffix. */
 function parseNodeRef(line: string, pos: number): { ref: NodeRef; end: number } | null {
-  let i = pos;
-  while (i < line.length && ID_CHAR.test(line[i]!)) i++;
-  if (i === pos) return null;
-  const id = line.slice(pos, i);
+  const identifier = readIdentifier(line, pos);
+  if (!identifier) return null;
+  const id = identifier.value;
+  const i = identifier.end;
   const shape = parseShapeSuffix(line, i);
   if (shape) {
     return {
@@ -491,7 +503,9 @@ function parseChainStatement(
         throw new FlowchartParseError(
           `expected edge operator, got ${JSON.stringify(tail.slice(0, 10))}`,
           lineNo,
-          pos + 1
+          pos + 1,
+          line,
+          'If this is label text, put it inside the node shape and quote it, for example A["label with spaces (and parentheses)"].'
         );
       }
       break;
@@ -542,11 +556,11 @@ function parseSubgraphHeader(rest: string, idx: number): FlowchartSubgraph {
   if (!s) return { id: defaultId, label: defaultId, children: [], subgraphs: [] };
 
   // id [label]  — Mermaid: `subgraph ide1 [one]`
-  const idBracket = /^(\w[\w-]*)\s+\[([^\]]*)\]$/.exec(s);
+  const idBracket = new RegExp(`^(${IDENTIFIER_SOURCE})\\s+\\[([^\\]]*)\\]$`, "u").exec(s);
   if (idBracket) return { id: idBracket[1]!, label: idBracket[2]!, children: [], subgraphs: [] };
 
   // id "label"
-  const idQuoted = /^(\w[\w-]*)\s+"([^"]*)"$/.exec(s);
+  const idQuoted = new RegExp(`^(${IDENTIFIER_SOURCE})\\s+"([^"]*)"$`, "u").exec(s);
   if (idQuoted) return { id: idQuoted[1]!, label: idQuoted[2]!, children: [], subgraphs: [] };
 
   // "label"  (no explicit id)
@@ -600,7 +614,7 @@ function extractInlineClasses(
   // Greedy left-to-right pass; restart after each substitution because the
   // index landscape changes. The pattern :::name allows hyphens to match
   // Mermaid's `\w[\w-]*` shape.
-  const re = /:::([A-Za-z_][\w-]*)/g;
+  const re = new RegExp(`:::(${IDENTIFIER_SOURCE})`, "gu");
   let m: RegExpExecArray | null;
   // Collect first; rewriting in-place would invalidate `re.lastIndex`.
   const hits: Array<{ start: number; end: number; name: string }> = [];
@@ -632,7 +646,7 @@ function extractInlineClasses(
     // Now walk leftward over the identifier characters.
     const idEnd = cursor;
     let idStart = idEnd;
-    while (idStart > 0 && /[A-Za-z0-9_-]/.test(before[idStart - 1]!)) idStart--;
+    while (idStart > 0 && isIdentifierChar(before[idStart - 1]!)) idStart--;
     if (idStart === idEnd) {
       // No identifier found — leave this `:::name` untouched so the parser
       // reports its native error.
@@ -767,11 +781,27 @@ export function parseFlowchart(source: string): FlowchartAST {
       continue;
     }
 
+    // Mermaid flowcharts have no `note for X` statement (that syntax belongs
+    // to sequence diagrams). Diagnose it explicitly instead of parsing `note`
+    // as a node id and reporting the opaque `expected edge operator: for X`.
+    if (/^note\s+for\s+/i.test(trimmed)) {
+      throw new FlowchartParseError(
+        "flowchart does not support 'note for <node>' statements",
+        i + 1,
+        rawOriginal.toLowerCase().indexOf("note") + 1,
+        rawOriginal,
+        'Put the note inside the target node label, for example F1["Father — Parents are P1 and P2"].'
+      );
+    }
+
     // ── icon statement: `icon A: server` or `icon A server` ──
     // A standalone statement (parallel to `class` / `style`) so it never
     // collides with the `A[label]` shape grammar. Attaches a built-in icon to
     // the node, rendered above its label.
-    const iconMatch = /^icon\s+(\w[\w-]*)\s*:?\s+([\w-]+)\s*$/.exec(trimmed);
+    const iconMatch = new RegExp(
+      `^icon\\s+(${IDENTIFIER_SOURCE})\\s*:?\\s+([\\w-]+)\\s*$`,
+      "u"
+    ).exec(trimmed);
     if (iconMatch) {
       const nid = iconMatch[1]!;
       const iconName = iconMatch[2]!;
@@ -787,10 +817,18 @@ export function parseFlowchart(source: string): FlowchartAST {
     }
 
     // ── class statement: `class A,B className` ───────────────
-    const classMatch = /^class\s+([\w,\s]+?)\s+(\w[\w-]*)\s*$/.exec(trimmed);
+    const classMatch = new RegExp(`^class\\s+(.+?)\\s+(${IDENTIFIER_SOURCE})\\s*$`, "u").exec(trimmed);
     if (classMatch) {
       const idList = classMatch[1]!.split(/[,\s]+/).map((s) => s.trim()).filter((s) => s.length > 0);
       const className = classMatch[2]!;
+      if (!idList.every(isIdentifier)) {
+        throw new FlowchartParseError(
+          "class statement contains an invalid node identifier",
+          i + 1,
+          1,
+          rawOriginal
+        );
+      }
       for (const nid of idList) {
         const existing = nodeMap.get(nid);
         if (!existing) {
@@ -805,7 +843,7 @@ export function parseFlowchart(source: string): FlowchartAST {
     }
 
     // ── classDef: store for future renderer use ──────────────
-    const classDefMatch = /^classDef\s+(\w[\w-]*)\s+(.+)$/.exec(trimmed);
+    const classDefMatch = new RegExp(`^classDef\\s+(${IDENTIFIER_SOURCE})\\s+(.+)$`, "u").exec(trimmed);
     if (classDefMatch) {
       const cdef: FlowchartClassDef = {
         id: classDefMatch[1]!,
@@ -819,7 +857,7 @@ export function parseFlowchart(source: string): FlowchartAST {
     }
 
     // ── style statement: `style nodeId fill:#f9f,...` ────────
-    const styleMatch = /^style\s+(\w[\w-]*)\s+(.+)$/.exec(trimmed);
+    const styleMatch = new RegExp(`^style\\s+(${IDENTIFIER_SOURCE})\\s+(.+)$`, "u").exec(trimmed);
     if (styleMatch) {
       const nid = styleMatch[1]!;
       const props = parseCssProps(styleMatch[2]!);
