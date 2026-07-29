@@ -14,6 +14,8 @@ export interface GetExamplesOptions {
   preferFeatured?: boolean;
   /** Maximum complexity (1–5). */
   maxComplexity?: number;
+  /** Rank examples that match these intent/scenario tags ahead of generic featured examples. */
+  intentTags?: readonly string[];
 }
 
 /**
@@ -44,6 +46,23 @@ export function getExamplesForType(
   }
   // Featured first when requested, then by complexity ascending.
   const sorted = [...filtered].sort((a, b) => {
+    const intentTags = (opts.intentTags ?? []).map((tag) => tag.toLowerCase());
+    if (intentTags.length > 0) {
+      const score = (example: Example): number => {
+        const haystack = [
+          example.slug,
+          example.title,
+          example.description,
+          ...example.tags,
+        ].join(" ").toLowerCase();
+        return intentTags.reduce(
+          (total, tag) => total + (haystack.includes(tag) ? 1 : 0),
+          0
+        );
+      };
+      const scoreDelta = score(b) - score(a);
+      if (scoreDelta !== 0) return scoreDelta;
+    }
     if (opts.preferFeatured) {
       if (a.featured !== b.featured) return a.featured ? -1 : 1;
     }

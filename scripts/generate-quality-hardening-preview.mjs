@@ -133,6 +133,39 @@ furniture desk-chair in workspace at 0.5,0.8
 furniture desk-chair in workspace at 2.7,0.8
 furniture plant in workspace at 4.7,4.8`;
 
+const FLOORPLAN_CLASSROOM_BEFORE = `floorplan "Classroom — 30 desks" unit m
+room class "Classroom" at 0,0 size 9x7 nolabel
+door class south at 12% width 1
+furniture whiteboard in class at 2.5,0.1 size 4x0.2
+furniture teacher-desk "Teacher" in class at 0.5,0.6 size 1.8x0.8
+grid desk-chair in class rows 5 cols 6 count 30 area 1.2,2.1 7.8,5.5 itemsize 1.3x1.1
+furniture rug "Learning Zone — KEEP CLEAR" in class at 3,2.8 size 3x2`;
+
+const FLOORPLAN_CLASSROOM_AFTER = `floorplan "Classroom — explicit fit and protected zone" unit m
+room class "Classroom" at 0,0 size 9x7 nolabel
+door class south at 12% width 1
+fixture whiteboard in class on north at 55% size 4x0.2
+furniture teacher-desk "Teacher" in class at 0.5,0.6 size 1.8x0.8
+grid desk-chair in class rows 4 cols 4 count 16 within 0.5,1.8 5.6,6.5 itemsize 1x0.8 gap 0.25
+zone reading "Learning Zone · KEEP CLEAR" in class at 6,2 size 2.4x3.5 keep-clear`;
+
+const FLOORPLAN_REPEATED_HEADER = `floorplan "Victorian — Ground" unit m
+floor 0 "Ground Floor"
+room hall at -2,-1 size 5x4
+floorplan "Victorian — First" unit m
+floor 1 "First Floor"
+room hall at 4,3 size 5x4`;
+
+const FLOORPLAN_LABEL_BEFORE = `floorplan "Future Archives Exhibition" unit m
+room gallery "Gallery 14 · Future Archives" at 0,0 size 14x9
+furniture stage "Archive Timeline" in gallery at 1,1 size 12x1.5
+grid shelving in gallery rows 2 cols 3 area 2,4 12,8 itemsize 1.8x0.6`;
+
+const FLOORPLAN_LABEL_AFTER = `floorplan "Future Archives Exhibition" unit m
+room gallery "Gallery 14 · Future Archives" at 0,0 size 14x9 label-role primary
+furniture stage "Archive Timeline" in gallery at 1,1 size 12x1.5
+grid shelving in gallery rows 2 cols 3 within 2,4 12,8 itemsize 1.8x0.6`;
+
 const CASES = [
   {
     id: "pedigree",
@@ -224,6 +257,52 @@ const CASES = [
     fix:
       "Errors now block render before SVG generation; the corrected plan gives every interior door a shared wall.",
     gateDsl: FLOORPLAN_BEFORE,
+  },
+  {
+    id: "floorplan-classroom",
+    type: "floorplan",
+    number: "07",
+    title: "An array proves it fits before placing anything",
+    beforeLabel: "24 pairwise warnings, rug still obstructed",
+    afterLabel: "One fit contract, one protected zone",
+    beforeDsl: FLOORPLAN_CLASSROOM_BEFORE,
+    afterDsl: FLOORPLAN_CLASSROOM_AFTER,
+    spine: "SAME INTENT",
+    issue:
+      "Area meant item centers, so footprints collided row after row; the rug looked protected but underlay semantics made obstruction invisible.",
+    fix:
+      "Within means physical bounds, gap is measurable, wall fixtures anchor to walls, and keep-clear zones reject obstructions.",
+  },
+  {
+    id: "floorplan-header",
+    type: "floorplan",
+    number: "08",
+    title: "A second document header stops at the source",
+    beforeLabel: "Two documents silently became one",
+    afterLabel: "One structural diagnostic at line 4",
+    beforeDsl: FLOORPLAN_REPEATED_HEADER,
+    afterDsl: FLOORPLAN_REPEATED_HEADER,
+    spine: "SAME DSL",
+    issue:
+      "The parser mutated mode and title mid-document, then laid unrelated floors out as though the source were structurally valid.",
+    fix:
+      "The document contract is immutable: the second header fails once, at its own line, before geometry can cascade.",
+    expectInvalidAfter: true,
+  },
+  {
+    id: "floorplan-label",
+    type: "floorplan",
+    number: "09",
+    title: "Primary room intent becomes visible hierarchy",
+    beforeLabel: "Exhibit identity reads like metadata",
+    afterLabel: "Primary identity reads first",
+    beforeDsl: FLOORPLAN_LABEL_BEFORE,
+    afterDsl: FLOORPLAN_LABEL_AFTER,
+    spine: "SAME INTENT",
+    issue:
+      "The exhibition title existed in source but had exactly the same typographic weight as every ordinary room label.",
+    fix:
+      "A semantic label role changes typography without baking arbitrary font sizes into the DSL.",
   },
 ];
 
@@ -334,9 +413,12 @@ function htmlPage(baseline, current, gates) {
   const beforeAccepted = Object.values(baseline.cases).filter(
     (result) => result.ok
   ).length;
-  const afterValid = Object.values(current).filter(
-    (result) => result.ok && result.status === "valid"
-  ).length;
+  const afterContract = CASES.filter((entry) => {
+    const result = current[entry.id];
+    return entry.expectInvalidAfter
+      ? !result.ok && result.status === "invalid"
+      : result.ok && result.status === "valid";
+  }).length;
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -593,7 +675,7 @@ function htmlPage(baseline, current, gates) {
     <div class="meter" aria-label="Release summary">
       <div class="metric"><strong>${CASES.length}</strong><span>production-shaped visual cases</span></div>
       <div class="metric"><strong>${beforeAccepted}/${CASES.length}</strong><span>before cases reported ok, including misleading output</span></div>
-      <div class="metric"><strong>${afterValid}/${CASES.length}</strong><span>after candidates render cleanly; broken floorplan is blocked separately</span></div>
+      <div class="metric"><strong>${afterContract}/${CASES.length}</strong><span>after outcomes satisfy the contract; invalid sources stop at the gate</span></div>
     </div>
   </header>
   <nav class="jump shell" aria-label="Preview cases">
@@ -631,6 +713,26 @@ async function captureBefore() {
   console.log(`Captured ${Object.keys(cases).length} before cases → ${BASELINE_PATH}`);
 }
 
+async function captureMissingBefore() {
+  const baseline = JSON.parse(await readFile(BASELINE_PATH, "utf8"));
+  const cases = await renderCases();
+  const missing = Object.fromEntries(
+    Object.entries(cases).filter(([id]) => baseline.cases[id] === undefined)
+  );
+  await writeFile(
+    BASELINE_PATH,
+    `${JSON.stringify(
+      {
+        ...baseline,
+        cases: { ...baseline.cases, ...missing },
+      },
+      null,
+      2
+    )}\n`
+  );
+  console.log(`Captured ${Object.keys(missing).length} missing before cases → ${BASELINE_PATH}`);
+}
+
 async function generatePreview() {
   const baseline = JSON.parse(await readFile(BASELINE_PATH, "utf8"));
   const { renderResult } = await loadEngine();
@@ -655,6 +757,8 @@ async function generatePreview() {
 
 if (process.argv.includes("--capture-before")) {
   await captureBefore();
+} else if (process.argv.includes("--capture-missing-before")) {
+  await captureMissingBefore();
 } else {
   await generatePreview();
 }

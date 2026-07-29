@@ -1,0 +1,7 @@
+floorplan "Classroom — explicit fit and protected zone" unit m
+room class "Classroom" at 0,0 size 9x7 nolabel
+door class south at 12% width 1
+fixture whiteboard in class on north at 55% size 4x0.2
+furniture teacher-desk "Teacher" in class at 0.5,0.6 size 1.8x0.8
+grid desk-chair in class rows 4 cols 4 count 16 within 0.5,1.8 5.6,6.5 itemsize 1x0.8 gap 0.25
+zone reading "Learning Zone · KEEP CLEAR" in class at 6,2 size 2.4x3.5 keep-clear

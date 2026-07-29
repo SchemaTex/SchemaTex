@@ -23,11 +23,11 @@ dsl: |
   furniture stage "Stage" in hall at 4.2,0.4 size 5.6x1.6
   furniture podium in hall at 3.2,0.9
   furniture smartboard in hall at 5.2,0.06 size 3.6x0.12
-  grid row-chairs in hall rows 6 cols 2 area 3.2,3.2 10.8,8.8 itemsize 4.4x0.5
+  grid row-chairs in hall rows 6 cols 2 centers 3.2,3.2 10.8,8.8 itemsize 4.4x0.5
 ---
 
 ## What this shows
 
 `grid row-chairs rows 6 cols 2` lays out both seating banks in one statement; each strip auto-places chairs at the 0.55 m theater pitch, so the plan's seat count (8 per strip × 12 = 96) is structural, not decorative — count the chair elements in the SVG.
 
-The two double doors at the rear and the side door give code-style egress, and the aisle width is just the gap between the grid's `area` columns — widen it by editing one x-coordinate.
+The two double doors at the rear and the side door give code-style egress, and the aisle width is just the gap between the grid's `centers` columns — widen it by editing one x-coordinate.

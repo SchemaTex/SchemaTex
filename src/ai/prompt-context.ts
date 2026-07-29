@@ -13,6 +13,19 @@
 import { resolveDiagramType } from "./registry";
 import { getExamples, getSyntax } from "./tools";
 import type { SyntaxDetail } from "./syntax";
+import {
+  FLOORPLAN_CAPABILITIES,
+  type FloorplanCapability,
+} from "../diagrams/floorplan/capabilities";
+
+export interface PromptIntent {
+  /** Short use-case wording such as "classroom", "open-plan office", or "multi-floor home". */
+  scenario?: string;
+  /** Explicit gallery tags take precedence over generic featured ordering. */
+  tags?: readonly string[];
+  /** Capabilities the caller expects the chosen diagram type to represent. */
+  requestedCapabilities?: readonly FloorplanCapability[];
+}
 
 export interface BuildPromptContextOptions {
   /** How many few-shot examples to embed. Default 2. Set 0 to omit examples. */
@@ -23,6 +36,8 @@ export interface BuildPromptContextOptions {
   preferFeatured?: boolean;
   /** Cap embedded example complexity (1–5). */
   maxComplexity?: number;
+  /** Optional intent used for capability truthfulness and example retrieval. */
+  intent?: PromptIntent;
 }
 
 export interface PromptContext {
@@ -60,6 +75,23 @@ export function buildPromptContext(
     "",
     syntax.content,
   ];
+  if (canonical === "floorplan") {
+    const requested = opts.intent?.requestedCapabilities ?? [];
+    const unsupported = requested.filter(
+      (capability) => !FLOORPLAN_CAPABILITIES[capability].supported
+    );
+    parts.push(
+      "",
+      "## Capability contract",
+      "Floorplan represents measured rectilinear rooms, furniture placement, wall fixtures, protected zones, and explicit multi-floor plates.",
+      "It does not represent curved room boundaries, plumbing/HVAC runs, electrical circuit connectivity, or automatic space planning."
+    );
+    if (unsupported.length > 0) {
+      parts.push(
+        `Requested but unsupported: ${unsupported.join(", ")}. Do not fake these semantics with rectangles, furniture points, or decorative lines.`
+      );
+    }
+  }
 
   let exampleCount = 0;
   if (limit > 0) {
@@ -67,6 +99,13 @@ export function buildPromptContext(
       preferFeatured: opts.preferFeatured ?? true,
       limit,
       maxComplexity: opts.maxComplexity,
+      intentTags: [
+        ...(opts.intent?.tags ?? []),
+        ...(opts.intent?.scenario
+          ?.toLowerCase()
+          .split(/[^a-z0-9]+/)
+          .filter((token) => token.length >= 3) ?? []),
+      ],
     }).examples;
     exampleCount = examples.length;
     if (examples.length > 0) {

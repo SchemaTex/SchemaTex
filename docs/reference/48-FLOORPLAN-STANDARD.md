@@ -132,8 +132,9 @@ Header keyword: `floorplan` (unique for `detect()`).
 plan      ::= "floorplan" string? ("unit" ("m"|"ft"))? NL
               ("stack" ("horizontal"|"vertical") NL)? (statement | floor-section)*
 floor-section ::= "floor" signed-int string? NL statement*
-statement ::= room | extend | north | door | window | opening | furniture | array
-room      ::= "room" id string? placement "size" dims ("fill" color)? ("nolabel")?
+statement ::= room | extend | north | door | window | opening | furniture | fixture | zone | array
+room      ::= "room" id string? placement "size" dims ("fill" color)?
+              ("nolabel" | "label-role" ("normal"|"primary"|"secondary"|"hidden"))?
 extend    ::= "extend" id placement "size" dims        (* L/T/U rooms; must share an edge *)
 north     ::= "north" num?                             (* compass, clockwise deg, default 0 *)
 placement ::= "at" coord
@@ -144,21 +145,28 @@ door      ::= "door" (wallref | "between" id id) "at" pct
               ("type" ("single"|"double"|"sliding"|"pocket"|"bifold"))?
 window    ::= "window" wallref "at" pct ("width" num)? ("type" ("fixed"|"sliding"|"casement"|"bay"))?
 opening   ::= "opening" (wallref | "between" id id) "at" pct ("width" num)?
-furniture ::= "furniture" type ("in" id) "at" coord ("size" dims)? ("rotate" num)?
-              string? ("seats" string+)? ("id" id)?
+furniture ::= "furniture" type id? ("in" id) "at" coord ("size" dims)? ("rotate" num)?
+              string? ("seats" string+)?
+fixture   ::= "fixture" type id? "in" id "on" wallside "at" pct ("size" dims)? string?
+zone      ::= "zone" id string? "in" id "at" coord "size" dims ("keep-clear")?
 array     ::= ("grid"|"row"|"arc") type "in" id
               ("rows" int)? ("cols" int)? ("count" int)?
-              ("area" coord coord)? ("itemsize" dims)? ("rotate" num)?
+              (("centers"|"within") coord coord)? ("itemsize" dims)? ("gap" num)? ("rotate" num)?
               ("center" coord)? ("radius" num)? ("from" num "to" num)?   (* arc only *)
-wallref   ::= id ("north"|"south"|"east"|"west")
+wallref   ::= id wallside
+wallside  ::= "north"|"south"|"east"|"west"
 coord     ::= num "," num          dims ::= num "x" num          pct ::= num "%"
 ```
 
 Notes for implementers (LLM-ergonomics, learned from the working POC):
-- **All numbers are in `unit`** (default `m`). Furniture `at` is **relative to its room's interior origin** (top-left). This is what LLMs emit naturally from "7m x 3m house" prompts.
+- **All authored numbers are in `unit`** (default `m`). Catalog sizes and omitted opening widths are physical meter defaults converted into that source unit exactly once. Furniture `at` is **relative to its room's interior origin** (top-left).
+- One document has exactly one header. Multi-floor content begins each level with `floor N`; a second header is a structural error at that line, not permission to mutate the document mode or unit.
 - `door between A B` resolves the shared wall segment automatically and positions at `pct` along the *overlap*, not the full wall — the single biggest ergonomic win over coordinate-based door placement.
 - Comments: `#` to end of line. CJK quotes accepted as ASCII quotes (Schematex house rule).
 - `grid … count N` truncates row-major (27 desks in a 5×6 grid — the real classroom case).
+- `centers p1 p2` names the first/last item centers explicitly. `within p1 p2` names hard outer bounds: layout subtracts item footprints, checks rows/cols/itemsize/gap as one group, and places nothing when the group cannot fit. Legacy `area` is accepted as a `centers` alias but is no longer canonical.
+- `zone … keep-clear` is protected geometry. It is deliberately different from a `rug` underlay: furniture may sit on a decorative rug, but any item intersecting a keep-clear zone is an error.
+- Wall-mounted objects use `fixture … on <side> at N%`; the anchor resolves against the current exterior wall segment, so room resizing cannot silently push a panel outside.
 - `extend` grows a room into an L/T/U shape; side wallrefs (`door living east …`) then position along the **concatenated exterior segments** of that side (interior seams between parts are skipped), and `pct` selects the segment + position deterministically.
 - On a multi-part room, furniture must be covered by the part union — a sofa straddling the notch is an error naming the uncovered m².
 - `arc` places items on a circular arc facing center (semicircle classrooms, ceremony seating).
@@ -174,7 +182,7 @@ door hall west at 50% width 1.0
 opening between living kitchen at 35% width 1.2
 window living north at 30% width 1.8
 furniture sofa in living at 0.25,2.9
-grid desk-chair in class rows 5 cols 6 count 27 area 5,7 25,23   # (classroom plan)
+grid desk-chair in class rows 5 cols 6 count 27 centers 5,7 25,23   # explicit first/last centers
 ```
 
 ---
@@ -185,11 +193,11 @@ grid desk-chair in class rows 5 cols 6 count 27 area 5,7 25,23   # (classroom pl
 2. **Walls.** Thickness 0.2 m default, drawn as filled bands **centered on room boundary lines**, so two adjacent room rects sharing an edge produce one merged wall automatically — no wall graph needed. Corners overlap-fill naturally.
 3. **Openings.** Punch a white gap in the wall band, then draw the symbol: door = leaf line + quarter arc (90°) from hinge jamb, swing into the owning room by default; window = 3 glazing lines + jamb caps; archway = jamb lines only. Opening width clamps to fit its wall segment minus 0.05 m margins.
 4. **Z-order.** room fills → furniture → walls → opening symbols → labels → dimension lines. (Walls over furniture keeps poché crisp when furniture abuts a wall.)
-5. **Labels.** Room name (semibold) + area on the next line, centered; `nolabel` suppresses (single-space plans like classrooms). Furniture optional string label centers on the symbol.
+5. **Labels.** Room name + area center on the largest room part. `label-role primary|normal|secondary|hidden` expresses semantic hierarchy without renderer-specific font sizes; `nolabel` remains the hidden shorthand.
 6. **Dimension lines.** Overall W and H always; per-room segment dims for rooms touching the top/left exterior. `unit ft` formats as `15'1"`.
 7. **Areas.** `w × h` of the room rect (interior measure), 1 decimal in m², integer sq ft.
-8. **Semantic SVG.** `<title>`, `<desc>` (room count + total area), `data-room`, `data-furniture` attrs, theme classes per element family. No inline styles (house rule).
-9. **Multi-floor plates.** Layout each floor independently, choose a single shared scale from the largest plate, then assemble plates in `stack` order with a 1.5 m visual gap. Plate groups carry `data-floor="<level>"`; plate titles use the declared label.
+8. **Semantic SVG.** `<title>`, `<desc>` (room count + total area), `data-room`, `data-furniture`, `data-fixture`, and `data-zone` attrs, theme classes per element family. Scene keys are floor-qualified whenever multiple plates exist. No inline styles (house rule).
+9. **Multi-floor plates.** Layout each floor independently, normalize each plate's real min bounds (including negative origins), choose one shared scale, then assemble plates in `stack` order with an exact 1.5 m visual gap. Plate groups carry `data-floor="<level>"`; plate titles use the declared label.
 
 ---
 
@@ -216,15 +224,18 @@ Every error names the offending ids and a fix direction:
 
 1. **Room overlap** — `rooms "bed1" and "bath" overlap by 0.40×2.60 m — move "bath" right-of "bed1" or shrink size`.
 2. **Door/opening between non-adjacent rooms** — `door between "kitchen" and "bed2": rooms share no wall (gap 2.0 m on x-axis)`.
-3. **Furniture collision** — ⚠ the #1 failure mode observed in the POC (3 rounds of manual spacing fixes on the wedding example). Oriented-box (SAT) check across all placed items *including auto-seated chairs* (each symbol declares a chair-ring envelope beyond its nominal box, not just the table disc); plain AABBs false-positive on rotated items — adjacent chairs on a ceremony arc — so the test is exact on the rotated envelope: `round-table-8 #4 overlaps round-table-8 #7 by 0.3 m — increase grid area or reduce cols`. **Underlay exemption:** floor coverings (`rug`, `dance-floor`) and work surfaces (`counter`, `island`) never collide — furniture legitimately sits *on* them (coffee table on rug, sink embedded in counter run).
+3. **Furniture collision** — Oriented-box (SAT) checks use each symbol's declared clearance envelope. Repeated items from one array produce one quantified `array-pitch-too-small` diagnostic instead of N² pair messages. Cross-array and explicit-item collisions remain pair diagnostics. **Underlay exemption:** decorative floor coverings (`rug`, `dance-floor`) and work surfaces (`counter`, `island`) may carry furniture; use a `keep-clear` zone when overlap is forbidden.
 4. **Furniture outside room interior** — clamp is wrong (hides intent); error with the overshoot amount.
 5. **Opening wider than wall segment** — clamp + warning.
 6. **Unknown furniture type** — list valid types (existing house pattern).
 7. **Duplicate floor level** — error and name the repeated level.
 8. **Cross-floor reference** — error when a room/opening/furniture reference resolves only on another floor; include the source and target levels.
 9. **Stairwell mismatch** — warning when matching stair ids differ by more than 0.1 m in plan coordinates.
+10. **Array fit** — `within` validates required vs available width/height before placement and reports one `array-does-not-fit` error with rows, columns, item size, and gap.
+11. **Protected-zone obstruction** — any furniture envelope crossing a `keep-clear` zone is an error naming both entities.
+12. **Capability mismatch** — curved boundaries and MEP routes are rejected by the public capability contract; they are never silently approximated with rectangles or furniture points.
 
-Severity: room overlap / non-adjacent door / out-of-room = **error** (render error panel); furniture collision / clamped opening = **warning** (render anyway + warning list, because tight-but-touching layouts are sometimes intended).
+Layout emits stable typed diagnostics (`code`, `phase`, `line`, `floor`, `entityIds`, `hint`). Human-readable `errors`/`warnings` are compatibility views, not strings that callers must regex-classify.
 
 ---
 

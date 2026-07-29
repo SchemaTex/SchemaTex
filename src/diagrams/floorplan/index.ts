@@ -4,25 +4,6 @@ import { parseFloorplan } from "./parser";
 import { layoutFloorplan } from "./layout";
 import { renderFloorplan } from "./renderer";
 
-function floorplanDiagnosticCode(message: string): string {
-  if (/^rooms ".+" and ".+" overlap by /.test(message)) {
-    return "floorplan/room-overlap";
-  }
-  if (/^(door|opening|window) between .+: rooms share no wall/.test(message)) {
-    return "floorplan/opening-no-shared-wall";
-  }
-  if (/unknown (reference )?room/.test(message)) {
-    return "floorplan/unknown-room";
-  }
-  if (/another floor|different floors/.test(message)) {
-    return "floorplan/cross-floor-reference";
-  }
-  if (/^extend\b/.test(message)) {
-    return "floorplan/invalid-extension";
-  }
-  return "floorplan/validation";
-}
-
 export const floorplan: DiagramPlugin = {
   type: "floorplan",
   capabilities: { scene: true, editablePosition: true },
@@ -44,23 +25,38 @@ export const floorplan: DiagramPlugin = {
     try {
       const ast = parseFloorplan(text);
       const lay = layoutFloorplan(ast);
+      const structuredMessages = new Set(lay.diagnostics.map((entry) => entry.message));
       return [
-        ...lay.errors.map(
-          (message): SchematexDiagnostic => ({
-            severity: "error",
-            code: floorplanDiagnosticCode(message),
-            message,
+        ...lay.diagnostics.map(
+          (entry): SchematexDiagnostic => ({
+            severity: entry.severity,
+            code: entry.code,
+            message: entry.message,
+            line: entry.line,
+            hint: entry.hint,
             fatal: false,
           })
         ),
-        ...lay.warnings.map(
-          (message): SchematexDiagnostic => ({
-            severity: "warning",
-            code: "floorplan/warning",
-            message,
-            fatal: false,
-          })
-        ),
+        ...lay.errors
+          .filter((message) => !structuredMessages.has(message))
+          .map(
+            (message): SchematexDiagnostic => ({
+              severity: "error",
+              code: "floorplan/validation",
+              message,
+              fatal: false,
+            })
+          ),
+        ...lay.warnings
+          .filter((message) => !structuredMessages.has(message))
+          .map(
+            (message): SchematexDiagnostic => ({
+              severity: "warning",
+              code: "floorplan/warning",
+              message,
+              fatal: false,
+            })
+          ),
         ...(ast.mode === "evacuation" && config?.theme === "monochrome"
           ? [
               {
@@ -104,4 +100,13 @@ export {
 } from "./stageplot";
 export { STAGE_SYMBOLS } from "./stage-symbols";
 export { orthogonalPolyline } from "./orthogonal-routing";
+export {
+  FLOORPLAN_CAPABILITIES,
+  getFloorplanCapabilities,
+  validateFloorplanIntent,
+} from "./capabilities";
+export type {
+  FloorplanCapability,
+  FloorplanCapabilityEntry,
+} from "./capabilities";
 export type * from "./types";

@@ -101,6 +101,11 @@ export {
   deriveStageOutputList,
   renderStageplotLayout,
   STAGE_SYMBOLS,
+  FLOORPLAN_CAPABILITIES,
+  getFloorplanCapabilities,
+  validateFloorplanIntent,
+  type FloorplanCapability,
+  type FloorplanCapabilityEntry,
 } from "./diagrams/floorplan";
 export { siteplan } from "./diagrams/siteplan";
 export { playbook } from "./diagrams/playbook";

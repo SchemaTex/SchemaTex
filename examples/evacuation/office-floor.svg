@@ -21,7 +21,11 @@
 .sx-fp-window { fill: none; stroke: #334155; stroke-width: 1.3; }
 .sx-fp-jamb { fill: none; stroke: #475569; stroke-width: 1.2; }
 .sx-fp-room-name { font: 600 13.5px sans-serif; fill: #0f172a; paint-order: stroke; stroke: #ffffff; stroke-width: 3px; stroke-linejoin: round; }
+.sx-fp-room-name-primary { font-size: 18px; font-weight: 750; letter-spacing: -0.01em; }
+.sx-fp-room-name-secondary { font-size: 11px; font-weight: 500; }
 .sx-fp-room-area { font: 11px sans-serif; fill: #64748b; paint-order: stroke; stroke: #ffffff; stroke-width: 3px; stroke-linejoin: round; }
+.sx-fp-zone { fill: none; stroke: #94a3b8; stroke-width: 1.4; stroke-dasharray: 7 4; }
+.sx-fp-zone-label { font: 700 10px sans-serif; fill: #475569; paint-order: stroke; stroke: #ffffff; stroke-width: 3px; stroke-linejoin: round; letter-spacing: .03em; }
 .sx-fp-stair-break { fill: none; stroke: #475569; stroke-width: 1.6; }
 .sx-fp-compass { fill: none; stroke: #94a3b8; stroke-width: 1.2; }
 .sx-fp-compass-n { font: 700 11px sans-serif; fill: #64748b; }
@@ -102,10 +106,10 @@
 <g class="sx-fp-safety" data-safety="extinguisher" data-code="F001" data-safety-id="f1"><g transform="translate(365.75,354.75) scale(0.92) translate(-12,-12)"><rect class="sx-fp-safety-plate-fire" x="0" y="0" width="24" height="24" rx="2"/><rect class="sx-fp-safety-knockout-stroke" x="8" y="8" width="8" height="11" rx="2"/><path class="sx-fp-safety-knockout-stroke" d="M 9 8 V 5 H 15 V 8 M 12 5 L 16 4 M 16 4 C 21 7 20 12 17 14"/><line class="sx-fp-safety-knockout-stroke" x1="8" y1="20" x2="16" y2="20"/></g>
 <text class="sx-fp-safety-class" x="365.75" y="375.75" text-anchor="middle">ABC</text></g>
 <g class="sx-fp-safety" data-safety="first-aid" data-code="E003" data-safety-id="fa1"><g transform="translate(519.75,453.75) scale(0.92) translate(-12,-12)"><rect class="sx-fp-safety-plate-safe" x="0" y="0" width="24" height="24" rx="2"/><path class="sx-fp-safety-knockout" d="M 9 4 H 15 V 9 H 20 V 15 H 15 V 20 H 9 V 15 H 4 V 9 H 9 Z"/></g></g></g>
-<g class="sx-fp-labels"><text class="sx-fp-room-name" x="420.75" y="214.25" text-anchor="middle">Open Office</text>
-<text class="sx-fp-room-name" x="420.75" y="417.75" text-anchor="middle">Lift Lobby</text>
-<text class="sx-fp-room-name" x="173.25" y="417.75" text-anchor="middle">Stair A</text>
-<text class="sx-fp-room-name" x="668.25" y="417.75" text-anchor="middle">Stair B</text></g>
+<g class="sx-fp-labels"><text class="sx-fp-room-name sx-fp-room-name-normal" x="420.75" y="214.25" text-anchor="middle">Open Office</text>
+<text class="sx-fp-room-name sx-fp-room-name-normal" x="420.75" y="417.75" text-anchor="middle">Lift Lobby</text>
+<text class="sx-fp-room-name sx-fp-room-name-normal" x="173.25" y="417.75" text-anchor="middle">Stair A</text>
+<text class="sx-fp-room-name sx-fp-room-name-normal" x="668.25" y="417.75" text-anchor="middle">Stair B</text></g>
 <g class="sx-fp-dims"><g class="sx-fp-compass-g" transform=""><circle class="sx-fp-compass" cx="731.5" cy="45.65" r="17.6"/>
 <line class="sx-fp-compass" x1="731.5" y1="57.97" x2="731.5" y2="35.97"/>
 <polygon class="sx-fp-compass" fill="#64748b" points="731.5,30.69 727.63,40.37 735.37,40.37"/>

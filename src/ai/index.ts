@@ -53,6 +53,7 @@ export type { DiagramType } from "../core/types";
 export {
   buildPromptContext,
   type BuildPromptContextOptions,
+  type PromptIntent,
   type PromptContext,
 } from "./prompt-context";
 

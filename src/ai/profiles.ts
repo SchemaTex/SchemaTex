@@ -1673,7 +1673,7 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
     header: 'floorplan "Title" [unit m|ft] [stack horizontal|vertical]',
     mode: "explicit dimensions + relative room placement; optional `floor N` sections share one drawing scale",
     keywords:
-      'floor N "Label" · stack horizontal|vertical · room id "Label" at x,y | right-of/left-of/above/below ref [offset n] [align start|center|end] size WxH [fill #hex] [nolabel] · extend <room> at x,y | right-of ref size WxH (L/T/U rooms) · north [deg] · door <room> north|south|east|west | between A B at N% [width n] [hinge left|right] [swing in|out] [type single|double|sliding|pocket|bifold] · window <wallref> at N% [width n] [type fixed|sliding|casement|bay] · opening <wallref|between A B> at N% [width n] · furniture <type> [instanceId] in room at x,y [size WxH or square size N] [rotate deg] ["label"] [seats "Name" "Name" …] · aliases: section->sectional socket/receptacle->outlet/duplex-outlet consumer-unit/db->distribution-board lounge-chair->armchair stool->bar-stool closet->wardrobe file-cabinet->filing-cabinet oven->stove (household only) · grid|row <type> in room rows R cols C [count N] area x1,y1 x2,y2 [itemsize WxH] · arc <type> in room count N center x,y radius r from deg to deg · types: ' +
+      'floor N "Label" · stack horizontal|vertical · room id "Label" at x,y | right-of/left-of/above/below ref [offset n] [align start|center|end] size WxH [fill #hex] [nolabel|label-role normal|primary|secondary|hidden] · extend <room> at x,y | right-of ref size WxH (L/T/U rooms) · north [deg] · door <room> north|south|east|west | between A B at N% [width n] [hinge left|right] [swing in|out] [type single|double|sliding|pocket|bifold] · window <wallref> at N% [width n] [type fixed|sliding|casement|bay] · opening <wallref|between A B> at N% [width n] · furniture <type> [instanceId] in room at x,y [size WxH or square size N] [rotate deg] ["label"] [seats "Name" "Name" …] · fixture <type> in room on north|south|east|west at N% [size WxH] · zone <id> "Label" in room at x,y size WxH [keep-clear] · aliases: section->sectional socket/receptacle->outlet/duplex-outlet consumer-unit/db->distribution-board lounge-chair->armchair stool->bar-stool closet->wardrobe file-cabinet->filing-cabinet oven->stove (household only) · grid|row <type> in room rows R cols C [count N] (centers|within) x1,y1 x2,y2 [itemsize WxH] [gap n] · arc <type> in room count N center x,y radius r from deg to deg · types: ' +
       FLOORPLAN_TYPE_KEYWORDS,
     forms: [
       'floorplan "Two-Storey Villa" unit m stack horizontal',
@@ -1693,6 +1693,9 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
       "Use `door between A B` for interior doors (the engine finds the shared wall); use `door <room> <side>` only for exterior walls.",
       "Furniture `at x,y` is relative to its room's interior top-left corner, in the plan unit.",
       "Use `grid`/`row`/`arc` for repeated items (desks, banquet tables, ceremony chairs) instead of many `furniture` lines; `count` truncates row-major.",
+      "Use `within p1 p2` when the rectangle is a hard physical boundary; the engine subtracts item footprints before choosing centers and proves rows/cols/gap fit. Use `centers p1 p2` only when the two coordinates intentionally name first/last item centers.",
+      "Use `zone id \"Label\" in room at x,y size WxH keep-clear` for circulation, activity, and access regions that must remain unobstructed. A decorative rug is not a clearance contract.",
+      "Use `fixture <type> in room on <side> at N%` for wall-mounted boards and panels so placement stays on the wall when the room changes.",
       "Round tables auto-seat their chairs (round-table-8 = 8 chairs); dining/banquet/conference tables auto-seat both long edges; leave chair clearance ≥ 0.5 m around tables.",
       'For a seating chart / plan de table / 席次表 — who sits where, not just where the tables go — add `seats "Alice" "Bob" …` to each table: the names are written onto the chairs in seating order (round tables clockwise from top, head/long tables along the seated edge). Fewer names than chairs is fine (extras stay empty); CJK names quote like any label.',
       "For L/T/U-shaped rooms, declare the main rectangle then `extend <room> at x,y size WxH` — the extension must share an edge; the engine merges walls and sums the area.",
@@ -1700,18 +1703,20 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
       "Commercial & site symbols: retail uses shelving/checkout/clothing-rack/fitting-room; warehouse uses pallet-rack/loading-dock/forklift; salon uses salon-chair/shampoo-bowl/manicure-table; gym uses treadmill/weight-bench/power-rack/yoga-mat; `tree` and `car` are sized for site plans, landscaping, and parking stalls.",
       "Restaurant kitchens use the real commercial symbols `prep-table`, `range`, `grill`, `fryer`, `walk-in`, and `commercial-sink`; don't substitute a row of household `stove` symbols with text labels. The `oven` → `stove` alias is only for household kitchens.",
       "For electrical fittings plans, stay in `floorplan` and add overlay furniture: `duplex-outlet`, `switch`, `ceiling-light`, `data-outlet`, `electrical-panel`, `distribution-board`. Use `sld` for the panel internals, not floorplan.",
+      "Floorplan is rectilinear and placement-focused. If the request requires curved room boundaries, plumbing/HVAC routes, or electrical circuit connectivity, report that capability as unsupported instead of approximating it with rectangles or furniture points.",
     ],
     avoid: [
       "Don't overlap room rectangles — adjacency means edges touch exactly (right-of/below guarantee this).",
       "Don't place a `door between` rooms that share no edge; the engine rejects it with the measured gap.",
       "Don't position furniture in absolute plan coordinates — coordinates are room-relative.",
       "Don't reference a room declared on another floor; duplicate local room ids are allowed, but room placement, openings, and arrays must resolve within their own floor.",
+      "Don't repeat the floorplan header to start another level; one document has one header and every additional level starts with `floor N`.",
     ],
     repair: [
       "'rooms … overlap by …' -> move the second room with right-of/below placement or shrink its size.",
       "'rooms share no wall' -> make the rooms adjacent (sizes summing to a shared edge) or hang the door on a wall side instead.",
       "'extends … outside room' -> reduce the furniture x,y or size; coordinates start at the room's top-left interior corner.",
-      "'overlaps … by … m' (warning) -> spread the grid `area` corners or reduce rows/cols; remember chair rings extend ~0.45 m beyond a table edge.",
+      "'array overlaps internally …' -> enlarge the `within` bounds, reduce rows/cols, shrink itemsize, or add a truthful gap; one array diagnostic replaces pairwise collision spam.",
       "'references room … on floor …' -> move the statement into that room's `floor` section or reference a room declared on the current floor.",
     ],
   },

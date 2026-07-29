@@ -35,6 +35,8 @@ export type RelativeHow = "right-of" | "left-of" | "above" | "below";
 export type RelativeAlign = "start" | "center" | "end";
 
 export type ArrayMode = "grid" | "row" | "arc";
+export type ArrayPlacement = "centers" | "within";
+export type FloorplanLabelRole = "normal" | "primary" | "secondary" | "hidden";
 
 export type CompliancePolicy = "iso" | "nfpa" | "uae";
 
@@ -307,6 +309,8 @@ export interface FloorplanRoom {
   fill?: string;
   /** Suppress the centered name + area label (single-space plans). */
   nolabel?: boolean;
+  /** Semantic typographic hierarchy; avoids authoring renderer-specific font sizes. */
+  labelRole?: FloorplanLabelRole;
   /** Owning floor level; statements outside a floor section use level 0. */
   floor: number;
   line?: number;
@@ -361,6 +365,8 @@ export interface FloorplanFurniture {
   /** Position relative to the room's interior origin (top-left), input units. */
   x: number;
   y: number;
+  /** Wall-mounted fixtures resolve from an exterior wall segment, not a guessed x/y. */
+  anchor?: { side: WallSide; pct: number };
   /** Explicit size in input units; omitted → catalog default (meters). */
   size?: { w: number; h: number };
   /** Rotation in degrees, clockwise, around the symbol center. */
@@ -391,6 +397,10 @@ export interface FloorplanArray {
   /** Placement area corners, room-relative input units. */
   p1?: { x: number; y: number };
   p2?: { x: number; y: number };
+  /** `centers` preserves explicit first/last centers; `within` treats p1/p2 as hard bounds. */
+  placement: ArrayPlacement;
+  /** Minimum clear gap between nominal item footprints, in input units. */
+  gap: number;
   itemsize?: { w: number; h: number };
   rotate: number;
   /** Arc mode only. */
@@ -398,6 +408,20 @@ export interface FloorplanArray {
   radius?: number;
   fromDeg?: number;
   toDeg?: number;
+  floor: number;
+  line?: number;
+}
+
+export interface FloorplanZone {
+  id: string;
+  label: string;
+  room: string;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  /** Protected zones are validation geometry, not collision-ignored underlays. */
+  keepClear: boolean;
   floor: number;
   line?: number;
 }
@@ -510,6 +534,7 @@ export interface FloorplanAst {
   openings: FloorplanOpening[];
   furniture: FloorplanFurniture[];
   arrays: FloorplanArray[];
+  zones: FloorplanZone[];
   compliance: CompliancePolicy;
   sheet: {
     size: EvacuationSheetSize;
@@ -558,6 +583,7 @@ export interface RoomBox {
   areaM2: number;
   fill?: string;
   nolabel: boolean;
+  labelRole: FloorplanLabelRole;
   positionMode: "free" | "move-x" | "move-y";
   floor: number;
 }
@@ -605,12 +631,47 @@ export interface ItemGeom {
   sourceY?: number;
   sourceLine?: number;
   instanceId?: string;
+  /** Source array line groups collision diagnostics without N² pair noise. */
+  arrayGroup?: number;
+  /** Wall-mounted fixtures remain distinguishable in the scene model. */
+  anchored?: boolean;
   /** Per-seat occupant names, mapped to auto-seated chairs in placement order. */
   seats?: string[];
   roomId: string;
   floor: number;
   /** Sequence number within its type (for warning messages: "round-table-8 #4"). */
   seq: number;
+}
+
+export interface ZoneGeom {
+  id: string;
+  label: string;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  keepClear: boolean;
+  roomId: string;
+  floor: number;
+  sourceLine?: number;
+}
+
+export type FloorplanDiagnosticPhase =
+  | "document"
+  | "placement"
+  | "topology"
+  | "geometry"
+  | "capability";
+
+export interface FloorplanGeometryDiagnostic {
+  severity: "error" | "warning";
+  code: string;
+  phase: FloorplanDiagnosticPhase;
+  message: string;
+  line?: number;
+  floor?: number;
+  entityIds?: string[];
+  hint?: string;
 }
 
 export interface SafetySymbolGeom {
@@ -769,6 +830,7 @@ export interface FloorplanLayoutResult {
   seams: SeamGeom[];
   openings: OpeningGeom[];
   items: ItemGeom[];
+  zones: ZoneGeom[];
   dims: DimLineGeom[];
   /** Per-floor grouping and local bounds. A legacy single plan has one level-0 plate. */
   plates: FloorPlate[];
@@ -782,6 +844,8 @@ export interface FloorplanLayoutResult {
   errors: string[];
   /** Non-blocking problems (§6: furniture collision, clamped opening). */
   warnings: string[];
+  /** Authoritative structured diagnostics; errors/warnings are compatibility views. */
+  diagnostics: FloorplanGeometryDiagnostic[];
   /** Indices into `items` flagged by collision warnings (renderer highlights them). */
   warnItems: number[];
   evacuation?: EvacuationLayoutData;
@@ -798,6 +862,7 @@ export interface FloorPlate {
   areaText: string;
   roomIdx: number[];
   itemIdx: number[];
+  zoneIdx: number[];
   openingIdx: number[];
   dimIdx: number[];
   seamIdx: number[];
