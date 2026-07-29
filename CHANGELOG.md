@@ -9,14 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Fixed — generation truthfulness and measured layout across Mindmap, Block, Circuit, and State
+---
 
-- **Markdown-wrapped Mindmaps preserve the one-root contract.** The optional `mindmap` marker is resolved from the first significant source line, while a genuine second H1 still fails with `MINDMAP_MULTIPLE_ROOTS` at its authored line.
-- **Block Diagram no longer reports clean success after losing source.** A shared logical-line reader preserves physical or escaped newlines inside quoted labels. Unknown statements and bare undeclared endpoints now return stable diagnostics; measured layered placement gives every fan-out peer its own row and reserves signal-label geometry.
-- **Automotive Circuit is a real capability, not a placeholder.** Added three-pin B/L/P flasher and center-off SPDT symbols, optional-pilot pin semantics, topology-driven left/right parallel load banks, split selector rails, a continuous return rail, and label-aware series spacing. Positional type acceptance now derives from the live symbol registry.
-- **Long State chains follow explicit direction policy.** `direction auto` selects TB for four-or-more long states and keeps short flows compact in LR. Quoted multiline labels are measured before layout, transition labels expand the canvas rather than clip, explicit extreme LR emits `STATE_EXTREME_ASPECT_RATIO`, and pinned renders expose `data-manual-layout`.
-- **Generation contracts are public and executable.** Circuit, Block Diagram, and State export machine-readable capability objects consumed by the AI profiles and regression tests.
-- **A deterministic release preview preserves the failures.** [examples/quality-hardening-preview.html](examples/quality-hardening-preview.html) now compares 14 before/after cases, including the five production-shaped 22.2 fixtures.
+## [1.0.7] — 2026-07-28
+
+### Fixed — trustworthy validation and measured layout across generation-heavy diagrams
+
+- **`valid` now means the requested diagram is semantically representable.** Domain validation errors stop normal SVG rendering instead of producing a plausible-looking partial result, while stable diagnostic codes and authored source lines remain available for repair.
+- **Pedigree family structure routes as family structure.** Couples are packed as semantic segments and multi-partner relationships use an upper avoidance track, preventing spouse and descent lines from colliding or implying the wrong topology.
+- **Floorplan rejects structural ambiguity before geometry cascades.** A document contract is fixed by its first header; repeated headers fail at their own line, multiline labels preserve logical statements, generated rooms and furniture use measured bounds, and collision checks distinguish intentional placement from impossible overlap. Machine-readable capabilities now expose supported furniture and fail closed for unknown runtime modes.
+- **Mindmap and Block Diagram preserve the source they validate.** A shared logical-line reader handles physical and escaped newlines inside quoted labels. Markdown-wrapped Mindmaps keep their one-root contract; Block rejects unknown statements and undeclared endpoints, spreads boundary ports, reserves routed label lanes, and places measured fan-out peers on distinct rows.
+- **Automotive Circuit is a complete topology, not symbol-shaped output.** Added B/L/P flasher and center-off selector symbols, optional pilot-pin semantics, topology-derived parallel load banks, split selector rails, a continuous return rail, and label-aware spacing. Linear branch recognition avoids exponential path enumeration while coverage checks prove that every component rendered.
+- **Long State chains remain readable and complete.** `direction auto` selects TB for long flows while keeping short flows compact in LR. Multiline state cards and transition labels contribute to canvas bounds, pinned renders expose manual-layout provenance, and only explicit pathological LR output receives `STATE_EXTREME_ASPECT_RATIO`.
+- **Related source contracts no longer drift silently.** SLD titles reserve measured space, Circuit types resolve from the live registry, Block boundary ports reach the AST, Timeline config lines parse consistently, and Floorplan export failures surface actionable diagnostics.
+- **Generation capabilities and release evidence are executable.** Circuit, Block Diagram, State, and Floorplan publish machine-readable contracts consumed by AI profiles and regression tests. [examples/quality-hardening-preview.html](examples/quality-hardening-preview.html) preserves 14 frozen before/after cases as real rendered SVG rather than hand-authored mockups.
 
 ---
 
