@@ -221,7 +221,7 @@ yk -> err`} />
 | `err = sum(r, -ym)` （無 `+`）| `r` 被視為 `+r`——可行，但不明確 | 寫 `sum(+r, -ym)` 更清楚 |
 | `ctrl -> plant, plant -> out` （同一行用逗號）| `,` 不是分隔符——解析失敗 | 每行一個連線，或用鏈接：`ctrl -> plant -> out` |
 | `s1 = signal("E(s)") [label: "E"]` | `label:` 不適用於訊號；用在連線上 | 從訊號宣告中移除 `label:` |
-| `role: filter` | 未知角色——靜默預設為 `generic` | 使用 `plant`、`controller`、`sensor`、`actuator`、`reference`、`disturbance` 或 `generic` |
+| `role: filter` | 解析失敗——未知角色 | 使用 `plant`、`controller`、`sensor`、`actuator`、`reference`、`disturbance` 或 `generic` |
 | `A -> B [discrete, label: "e"]` — 先寫標籤失敗 | `[…]` 內屬性順序無關，但純 `"text"` 簡寫只在它是唯一項目時有效 | 使用 `[label: "e", discrete]` |
 
 ---

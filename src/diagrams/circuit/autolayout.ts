@@ -393,11 +393,22 @@ function shortestComponentPath(
   return null;
 }
 
-function pathsToGround(
+/**
+ * Recognize a selector output as independent series branches ending at GND.
+ *
+ * A load-bank branch may contain one component (for example a lamp) or a
+ * simple series chain (for example LED + resistor). Internal nets must connect
+ * exactly the previous and next component; branching or reconvergence means
+ * this specialized layout is not a truthful representation of the topology.
+ *
+ * Every component is visited at most once, so this stays linear instead of
+ * enumerating the exponentially many simple paths in a dense graph.
+ */
+function seriesBranchesToGround(
   ast: CircuitAST,
   rootNet: string,
   excluded: Set<string>
-): CircuitComponent[][] {
+): CircuitComponent[][] | null {
   const pinMap = ast.pinMap ?? {};
   const byNet = new Map<string, CircuitComponent[]>();
   for (const component of ast.components) {
@@ -409,40 +420,49 @@ function pathsToGround(
     }
   }
 
-  const result: CircuitComponent[][] = [];
-  const visit = (
-    net: string,
-    path: CircuitComponent[],
-    used: Set<string>,
-    seenNets: Set<string>
-  ): void => {
-    if (path.length > ast.components.length) return;
-    for (const component of byNet.get(net) ?? []) {
-      if (used.has(component.id)) continue;
-      const nextUsed = new Set(used);
-      nextUsed.add(component.id);
-      const nextPath = [...path, component];
-      for (const [, nextNet] of pinsForComponent(pinMap, component)) {
-        if (nextNet === net) continue;
-        if (nextNet === "GND") {
-          result.push(nextPath);
-          continue;
-        }
-        if (seenNets.has(nextNet)) continue;
-        const nextSeen = new Set(seenNets);
-        nextSeen.add(nextNet);
-        visit(nextNet, nextPath, nextUsed, nextSeen);
-      }
-    }
-  };
-  visit(rootNet, [], new Set(), new Set([rootNet]));
+  const starters = [...new Map(
+    (byNet.get(rootNet) ?? []).map((component) => [component.id, component])
+  ).values()];
+  const used = new Set<string>();
+  const branches: CircuitComponent[][] = [];
 
-  const unique = new Map<string, CircuitComponent[]>();
-  for (const path of result) {
-    const key = path.map((component) => component.id).join(">");
-    if (!unique.has(key)) unique.set(key, path);
+  for (const starter of starters) {
+    if (used.has(starter.id)) return null;
+    const branch: CircuitComponent[] = [];
+    const seenNets = new Set<string>([rootNet]);
+    let currentNet = rootNet;
+    let current = starter;
+
+    while (true) {
+      if (used.has(current.id)) return null;
+      used.add(current.id);
+      branch.push(current);
+
+      const nextNets = [...new Set(
+        pinsForComponent(pinMap, current)
+          .map(([, net]) => net)
+          .filter((net) => net !== currentNet)
+      )];
+      if (nextNets.length !== 1) return null;
+      const nextNet = nextNets[0]!;
+      if (nextNet === "GND") {
+        branches.push(branch);
+        break;
+      }
+      if (seenNets.has(nextNet)) return null;
+      seenNets.add(nextNet);
+
+      const nextComponents = [...new Map(
+        (byNet.get(nextNet) ?? [])
+          .filter((component) => component.id !== current.id)
+          .map((component) => [component.id, component])
+      ).values()];
+      if (nextComponents.length !== 1) return null;
+      currentNet = nextNet;
+      current = nextComponents[0]!;
+    }
   }
-  return [...unique.values()];
+  return branches;
 }
 
 function routePlacedNetlist(
@@ -571,12 +591,28 @@ function tryLayoutParallelLoadBank(ast: CircuitAST): AutoLayoutResult | null {
       selector.id,
       ...spinePath.map((component) => component.id),
     ]);
-    const branchGroups = outputNets.map((net) =>
-      pathsToGround(ast, net, excluded)
-    );
-    if (branchGroups.some((group) => group.length < 2)) continue;
-    const branchIds = branchGroups.flat().flat().map((component) => component.id);
-    if (new Set(branchIds).size !== branchIds.length) continue;
+    const completeBranchGroups: CircuitComponent[][][] = [];
+    for (const net of outputNets) {
+      const branches = seriesBranchesToGround(ast, net, excluded);
+      if (!branches || branches.length < 2) break;
+      completeBranchGroups.push(branches);
+    }
+    if (completeBranchGroups.length !== outputNets.length) continue;
+    const expectedBranchIds = ast.components
+      .filter((component) => !isGround(component) && !excluded.has(component.id))
+      .map((component) => component.id);
+    const branchIds = completeBranchGroups
+      .flat()
+      .flat()
+      .map((component) => component.id);
+    const uniqueBranchIds = new Set(branchIds);
+    if (
+      uniqueBranchIds.size !== branchIds.length ||
+      expectedBranchIds.length !== uniqueBranchIds.size ||
+      expectedBranchIds.some((id) => !uniqueBranchIds.has(id))
+    ) {
+      continue;
+    }
 
     const items: LaidOutComponent[] = [];
     const put = (
@@ -618,7 +654,7 @@ function tryLayoutParallelLoadBank(ast: CircuitAST): AutoLayoutResult | null {
     }
     const selectorItem = putSpineComponent(selector);
 
-    const branches = branchGroups.flat();
+    const branches = completeBranchGroups.flat();
     const widestBranchLabel = Math.max(
       0,
       ...branches
@@ -641,7 +677,7 @@ function tryLayoutParallelLoadBank(ast: CircuitAST): AutoLayoutResult | null {
       selectorOutputX - ((branches.length - 1) * laneGap) / 2;
     let maxBranchY = branchStartY;
     let laneIndex = 0;
-    for (const group of branchGroups) {
+    for (const group of completeBranchGroups) {
       for (const branch of group) {
         const laneX = firstLaneX + laneIndex * laneGap;
         let y = branchStartY;
@@ -681,7 +717,7 @@ function tryLayoutParallelLoadBank(ast: CircuitAST): AutoLayoutResult | null {
     // median-spine router can place both on the same y and make a short visual
     // overlap near the selector. Give each group its own bounded rail and feed
     // trunk instead.
-    branchGroups.forEach((group, groupIndex) => {
+    completeBranchGroups.forEach((group, groupIndex) => {
       const outputNet = outputNets[groupIndex]!;
       const selectorAnchor = anchorForNet(
         pinMap,

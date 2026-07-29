@@ -15,6 +15,7 @@ import { getExamples, getSyntax } from "./tools";
 import type { SyntaxDetail } from "./syntax";
 import {
   FLOORPLAN_CAPABILITIES,
+  isFloorplanCapability,
   type FloorplanCapability,
 } from "../diagrams/floorplan/capabilities";
 
@@ -78,7 +79,9 @@ export function buildPromptContext(
   if (canonical === "floorplan") {
     const requested = opts.intent?.requestedCapabilities ?? [];
     const unsupported = requested.filter(
-      (capability) => !FLOORPLAN_CAPABILITIES[capability].supported
+      (capability) =>
+        !isFloorplanCapability(capability) ||
+        !FLOORPLAN_CAPABILITIES[capability].supported
     );
     parts.push(
       "",

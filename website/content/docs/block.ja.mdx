@@ -221,7 +221,7 @@ yk -> err`} />
 | `err = sum(r, -ym)`（`+` なし） | `r` は `+r` として扱われる — 動作するが曖昧 | 明確にするため `sum(+r, -ym)` と書く |
 | `ctrl -> plant, plant -> out`（1 行にカンマ） | `,` はセパレーターではない — パース失敗 | 接続は 1 行に 1 つ、またはチェインを使う：`ctrl -> plant -> out` |
 | `s1 = signal("E(s)") [label: "E"]` | `label:` は signal では無効；接続で使う | signal の宣言から `label:` を削除 |
-| `role: filter` | 不明なロール — 暗黙で `generic` にデフォルト | `plant`、`controller`、`sensor`、`actuator`、`reference`、`disturbance`、`generic` を使う |
+| `role: filter` | パースエラー — 不明なロール | `plant`、`controller`、`sensor`、`actuator`、`reference`、`disturbance`、`generic` を使う |
 | `A -> B [discrete, label: "e"]` — label を先に書いても失敗 | `[…]` 内の属性の順序は関係ないが、`"text"` の省略記法は唯一の項目の場合のみ有効 | `[label: "e", discrete]` を使う |
 
 ---

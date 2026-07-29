@@ -11,7 +11,7 @@ import {
   readLogicalLines,
   UnterminatedDslStringError,
 } from "../../core/logical-lines";
-import { matchQuotedTitle } from "../../core/quotes";
+import { extractQuotedString } from "../../core/quotes";
 
 const QUOTED_CONTENT = String.raw`((?:[^"\\]|\\.)*)`;
 const BLOCK_DECL_RE = new RegExp(
@@ -65,12 +65,13 @@ interface SignalDecl {
 }
 
 interface ParsedAttrs {
-  name?: string;
   role?: BlockRole;
   discrete?: boolean;
   label?: string;
   route?: "above" | "below";
 }
+
+type AttrContext = "block" | "signal" | "connection";
 
 function splitAttrs(source: string): string[] {
   const parts: string[] = [];
@@ -107,30 +108,99 @@ function unquoteAttr(value: string): string {
   return value;
 }
 
-function parseAttrs(source: string): ParsedAttrs {
+function parseAttrs(
+  source: string,
+  context: AttrContext,
+  line: number,
+  statement: string
+): ParsedAttrs {
   const result: ParsedAttrs = {};
-  for (const raw of splitAttrs(source)) {
-    const part = raw.trim();
-    if (!part) continue;
+  const parts = splitAttrs(source).map((part) => part.trim()).filter(Boolean);
+  for (const part of parts) {
     if (part === "discrete") {
+      if (context === "block") {
+        throw parserError(
+          '`discrete` is not valid on a block declaration',
+          line,
+          statement,
+          "BLOCK_UNKNOWN_ATTRIBUTE",
+          "Block attributes are `role: ...` and `route: above|below`."
+        );
+      }
       result.discrete = true;
       continue;
     }
     if (part.startsWith('"') && part.endsWith('"')) {
+      if (context !== "connection" || parts.length !== 1) {
+        throw parserError(
+          "a bare quoted label is only valid as the sole connection attribute",
+          line,
+          statement,
+          "BLOCK_INVALID_ATTRIBUTE",
+          'Use `["label"]`, or combine attributes as `[label: "label", discrete]`.'
+        );
+      }
       result.label = unquoteAttr(part);
       continue;
     }
     const match = part.match(/^(\w+)\s*:\s*(.+)$/);
-    if (!match) continue;
-    const key = match[1]!.toLowerCase();
-    const value = unquoteAttr(match[2]!.trim());
-    if (key === "name") result.name = value;
-    else if (key === "role" && ROLE_VALUES.has(value as BlockRole)) {
-      result.role = value as BlockRole;
-    } else if (key === "label") result.label = value;
-    else if (key === "route" && (value === "above" || value === "below")) {
-      result.route = value;
+    if (!match) {
+      throw parserError(
+        `invalid ${context} attribute "${part}"`,
+        line,
+        statement,
+        "BLOCK_INVALID_ATTRIBUTE"
+      );
     }
+    const key = match[1]!.toLowerCase();
+    const rawValue = match[2]!.trim();
+    const value = unquoteAttr(rawValue);
+
+    if (context === "block" && key === "role") {
+      if (!ROLE_VALUES.has(value as BlockRole)) {
+        throw parserError(
+          `unknown block role "${value}"`,
+          line,
+          statement,
+          "BLOCK_INVALID_ATTRIBUTE_VALUE",
+          `Use one of: ${[...ROLE_VALUES].join(", ")}.`
+        );
+      }
+      result.role = value as BlockRole;
+      continue;
+    }
+    if (context === "block" && key === "route") {
+      if (value !== "above" && value !== "below") {
+        throw parserError(
+          `invalid route "${value}"`,
+          line,
+          statement,
+          "BLOCK_INVALID_ATTRIBUTE_VALUE",
+          "Use `route: above` or `route: below`."
+        );
+      }
+      result.route = value;
+      continue;
+    }
+    if (context === "connection" && key === "label") {
+      if (!rawValue.startsWith('"') || !rawValue.endsWith('"')) {
+        throw parserError(
+          "connection labels must be double-quoted",
+          line,
+          statement,
+          "BLOCK_INVALID_ATTRIBUTE_VALUE",
+          'Use `[label: "signal"]`.'
+        );
+      }
+      result.label = value;
+      continue;
+    }
+    throw parserError(
+      `unknown ${context} attribute "${key}"`,
+      line,
+      statement,
+      "BLOCK_UNKNOWN_ATTRIBUTE"
+    );
   }
   return result;
 }
@@ -150,6 +220,29 @@ function parserError(
     code,
     hint
   );
+}
+
+function parseBlockHeader(line: string, lineNo: number): string | undefined {
+  const match = /^blockdiagram\b/i.exec(line);
+  if (!match) return undefined;
+  const remainder = line.slice(match[0].length).trim();
+  if (!remainder) return undefined;
+  let quoted: ReturnType<typeof extractQuotedString>;
+  try {
+    quoted = extractQuotedString(remainder, 0);
+  } catch {
+    quoted = null;
+  }
+  if (!quoted || remainder.slice(quoted.end).trim()) {
+    throw parserError(
+      "invalid blockdiagram header",
+      lineNo,
+      line,
+      "BLOCK_INVALID_HEADER",
+      'Use `blockdiagram` or `blockdiagram "Title"` with no trailing content.'
+    );
+  }
+  return decodeDslString(quoted.value);
 }
 
 export function parseBlockDiagram(text: string): BlockAST {
@@ -172,8 +265,27 @@ export function parseBlockDiagram(text: string): BlockAST {
     throw error;
   }
 
-  let title: string | undefined;
-  let headerSeen = false;
+  const header = statements[0];
+  if (!header) {
+    throw new BlockDiagramParseError(
+      "missing `blockdiagram` header",
+      undefined,
+      undefined,
+      undefined,
+      "BLOCK_MISSING_HEADER"
+    );
+  }
+  const headerLine = header.text.trim();
+  if (!/^blockdiagram\b/i.test(headerLine)) {
+    throw parserError(
+      "the first statement must be a blockdiagram header",
+      header.line,
+      headerLine,
+      "BLOCK_MISSING_HEADER",
+      'Start with `blockdiagram` or `blockdiagram "Title"`.'
+    );
+  }
+  const title = parseBlockHeader(headerLine, header.line);
   const blocks: BlockNode[] = [];
   const sums: SummingJunction[] = [];
   const connections: BlockEdge[] = [];
@@ -208,29 +320,26 @@ export function parseBlockDiagram(text: string): BlockAST {
     }
   };
 
-  for (const statement of statements) {
+  for (const statement of statements.slice(1)) {
     const line = statement.text.trim();
     const lineNo = statement.line;
 
     if (/^blockdiagram\b/i.test(line)) {
-      if (headerSeen) {
-        throw parserError(
-          "multiple blockdiagram headers are not allowed",
-          lineNo,
-          line,
-          "BLOCK_MULTIPLE_HEADERS"
-        );
-      }
-      headerSeen = true;
-      title = matchQuotedTitle(line);
-      continue;
+      throw parserError(
+        "multiple blockdiagram headers are not allowed",
+        lineNo,
+        line,
+        "BLOCK_MULTIPLE_HEADERS"
+      );
     }
 
     const blockMatch = line.match(BLOCK_DECL_RE);
     if (blockMatch) {
       const id = blockMatch[1]!;
       assertFresh(id, lineNo, line);
-      const attrs = blockMatch[3] ? parseAttrs(blockMatch[3]) : {};
+      const attrs = blockMatch[3]
+        ? parseAttrs(blockMatch[3], "block", lineNo, line)
+        : {};
       const node: BlockNode = {
         id,
         label: decodeDslString(blockMatch[2]!),
@@ -261,7 +370,9 @@ export function parseBlockDiagram(text: string): BlockAST {
     if (signalMatch) {
       const id = signalMatch[1]!;
       assertFresh(id, lineNo, line);
-      const attrs = signalMatch[3] ? parseAttrs(signalMatch[3]) : {};
+      const attrs = signalMatch[3]
+        ? parseAttrs(signalMatch[3], "signal", lineNo, line)
+        : {};
       signals.set(id, {
         id,
         label: decodeDslString(signalMatch[2]!),
@@ -303,7 +414,7 @@ export function parseBlockDiagram(text: string): BlockAST {
           const inner = body.slice(bracketStart + 1, -1).trim();
           if (!isIdentifier(inner)) {
             body = body.slice(0, bracketStart).trim();
-            tailAttrs = parseAttrs(inner);
+            tailAttrs = parseAttrs(inner, "connection", lineNo, line);
           }
         }
       }
@@ -375,16 +486,6 @@ export function parseBlockDiagram(text: string): BlockAST {
       line,
       "BLOCK_UNKNOWN_STATEMENT",
       "Use a block/sum/signal declaration or a directed `A -> B` connection."
-    );
-  }
-
-  if (!headerSeen) {
-    throw new BlockDiagramParseError(
-      "missing `blockdiagram` header",
-      undefined,
-      undefined,
-      undefined,
-      "BLOCK_MISSING_HEADER"
     );
   }
 

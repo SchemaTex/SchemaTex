@@ -70,10 +70,28 @@ export function getFloorplanCapabilities(): typeof FLOORPLAN_CAPABILITIES {
   return FLOORPLAN_CAPABILITIES;
 }
 
+export function isFloorplanCapability(
+  value: unknown
+): value is FloorplanCapability {
+  return (
+    typeof value === "string" &&
+    Object.prototype.hasOwnProperty.call(FLOORPLAN_CAPABILITIES, value)
+  );
+}
+
 export function validateFloorplanIntent(
   requested: readonly FloorplanCapability[]
 ): SchematexDiagnostic[] {
   return requested.flatMap((capability) => {
+    if (!isFloorplanCapability(capability)) {
+      return [{
+        severity: "error" as const,
+        code: "floorplan/unknown-capability",
+        message: `Unknown floorplan capability: ${String(capability)}`,
+        hint: `Use one of: ${Object.keys(FLOORPLAN_CAPABILITIES).join(", ")}.`,
+        fatal: true,
+      }];
+    }
     const entry = FLOORPLAN_CAPABILITIES[capability];
     if (entry.supported) return [];
     return [{

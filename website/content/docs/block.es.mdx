@@ -221,7 +221,7 @@ yk -> err`} />
 | `err = sum(r, -ym)` (sin `+`) | `r` se trata como `+r` — funciona, pero es ambiguo | Escribe `sum(+r, -ym)` para mayor claridad |
 | `ctrl -> plant, plant -> out` (coma en una línea) | `,` no es un separador — parse falla | Una conexión por línea o usa cadena: `ctrl -> plant -> out` |
 | `s1 = signal("E(s)") [label: "E"]` | `label:` no es válido en signal; úsalo en conexiones | Elimina `label:` de la declaración de señal |
-| `role: filter` | Rol desconocido — silenciosamente toma el valor `generic` | Usa `plant`, `controller`, `sensor`, `actuator`, `reference`, `disturbance`, o `generic` |
+| `role: filter` | Error de análisis — rol desconocido | Usa `plant`, `controller`, `sensor`, `actuator`, `reference`, `disturbance`, o `generic` |
 | `A -> B [discrete, label: "e"]` — la etiqueta primero falla | El orden de atributos dentro de `[…]` no importa, pero el atajo de `"texto"` solo funciona cuando es el único elemento | Usa `[label: "e", discrete]` |
 
 ---

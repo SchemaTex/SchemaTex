@@ -221,7 +221,7 @@ yk -> err`} />
 | `err = sum(r, -ym)` (kein `+`) | `r` wird als `+r` behandelt — funktioniert, aber mehrdeutig | `sum(+r, -ym)` für Klarheit schreiben |
 | `ctrl -> plant, plant -> out` (Komma in einer Zeile) | `,` ist kein Trennzeichen — Parse-Fehler | Eine Verbindung pro Zeile oder Kette verwenden: `ctrl -> plant -> out` |
 | `s1 = signal("E(s)") [label: "E"]` | `label:` nicht für Signal gültig; für Verbindungen verwenden | `label:` aus der Signaldeklaration entfernen |
-| `role: filter` | Unbekannte Rolle — fällt stillschweigend auf `generic` zurück | `plant`, `controller`, `sensor`, `actuator`, `reference`, `disturbance` oder `generic` verwenden |
+| `role: filter` | Parserfehler — unbekannte Rolle | `plant`, `controller`, `sensor`, `actuator`, `reference`, `disturbance` oder `generic` verwenden |
 | `A -> B [discrete, label: "e"]` — Label zuerst schlägt fehl | Reihenfolge der Attribute in `[…]` ist egal, aber die kurze `"text"`-Form funktioniert nur, wenn sie das einzige Element ist | `[label: "e", discrete]` verwenden |
 
 ---

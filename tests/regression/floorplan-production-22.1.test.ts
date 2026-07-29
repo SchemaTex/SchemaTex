@@ -209,4 +209,21 @@ furniture desk "Work" in same at 0.5,0.5`;
     );
     expect(unsupported.text).toContain("Do not fake these semantics");
   });
+
+  it("reports unknown runtime capabilities instead of throwing from public helpers", () => {
+    const unknown = "plumbing-run" as FloorplanCapability;
+    expect(validateFloorplanIntent([unknown])).toMatchObject([
+      {
+        severity: "error",
+        code: "floorplan/unknown-capability",
+        fatal: true,
+      },
+    ]);
+
+    const context = buildPromptContext("floorplan", {
+      examples: 0,
+      intent: { requestedCapabilities: [unknown] },
+    });
+    expect(context.text).toContain("Requested but unsupported: plumbing-run");
+  });
 });

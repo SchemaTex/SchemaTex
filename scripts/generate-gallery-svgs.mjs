@@ -110,9 +110,9 @@ Cout = or(c1, c2)`,
     file: 'examples/block/pid-loop.svg',
     text: `blockdiagram "PID Closed-Loop Control System"
 
-C = block("C(s)") [name: "PID Controller", role: controller]
-G = block("G(s)") [name: "Plant", role: plant]
-H = block("H(s)") [name: "Sensor", role: sensor]
+C = block("C(s)") [role: controller]
+G = block("G(s)") [role: plant]
+H = block("H(s)") [role: sensor]
 
 r = signal("r(t)")
 e = signal("e(t)")

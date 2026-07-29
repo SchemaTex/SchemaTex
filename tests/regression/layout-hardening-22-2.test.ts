@@ -168,6 +168,40 @@ MCU -> Motor ["PWM"]`);
       );
     }
   });
+
+  it("rejects malformed headers and attributes instead of silently changing meaning", () => {
+    const cases = [
+      {
+        source: 'blockdiagram "X" trailing\nA = block("A")',
+        code: "BLOCK_INVALID_HEADER",
+      },
+      {
+        source: 'blockdiagram "X"\nA = block("A") [rol: controller]',
+        code: "BLOCK_UNKNOWN_ATTRIBUTE",
+      },
+      {
+        source: 'blockdiagram "X"\nA = block("A") [role: contorller]',
+        code: "BLOCK_INVALID_ATTRIBUTE_VALUE",
+      },
+      {
+        source: `blockdiagram "X"
+A = block("A")
+B = block("B")
+A -> B [labell: "signal"]`,
+        code: "BLOCK_UNKNOWN_ATTRIBUTE",
+      },
+      {
+        source: 'A = block("A")\nblockdiagram "X"',
+        code: "BLOCK_MISSING_HEADER",
+      },
+    ];
+
+    for (const entry of cases) {
+      const result = parseResult(entry.source, { type: "blockdiagram" });
+      expect(result.ok).toBe(false);
+      expect(result.diagnostics[0]?.code).toBe(entry.code);
+    }
+  });
 });
 
 describe("22.2 measured layered layout", () => {
@@ -279,6 +313,33 @@ describe("22.2 measured layered layout", () => {
       expect(rendered.svg).toContain(">OFF<");
       expect(rendered.svg).toContain(">P<");
     }
+  });
+
+  it("keeps dense selector graphs bounded without omitting components", () => {
+    const depth = 18;
+    const lines = [
+      "V1 live 0 12V",
+      "S1 live left right type=switch_spdt_center_off",
+    ];
+    for (const side of ["left", "right"]) {
+      for (let layer = 0; layer < depth; layer++) {
+        const from = layer === 0 ? side : `${side}${layer}`;
+        const to = layer === depth - 1 ? "0" : `${side}${layer + 1}`;
+        const prefix = side[0]!.toUpperCase();
+        lines.push(`R${prefix}${layer}a ${from} ${to} 1k`);
+        lines.push(`R${prefix}${layer}b ${from} ${to} 1k`);
+      }
+    }
+
+    const ast = parseNetlist(lines.join("\n"));
+    const started = performance.now();
+    const layout = layoutCircuitNetlist(ast);
+    const elapsed = performance.now() - started;
+
+    expect(elapsed).toBeLessThan(500);
+    expect(new Set(layout.items.map((item) => item.component.id))).toEqual(
+      new Set(ast.components.map((component) => component.id))
+    );
   });
 
   it("chooses TB for a long auto chain and preserves compact LR", () => {

@@ -285,9 +285,9 @@ DEDENT        = decrease in whitespace
 blockdiagram "PID Closed-Loop Control System"
 
 # System components
-C = block("C(s)") [name: "PID Controller", role: controller]
-G = block("G(s)") [name: "Plant", role: plant]
-H = block("H(s)") [name: "Sensor", role: sensor]
+C = block("C(s)") [role: controller]
+G = block("G(s)") [role: plant]
+H = block("H(s)") [role: sensor]
 
 # Signals
 r = signal("r(t)")   # reference input
