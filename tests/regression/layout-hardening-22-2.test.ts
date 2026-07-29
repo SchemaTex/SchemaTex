@@ -34,6 +34,24 @@ ${Array.from(
   (_, index) => `TCXO -> G${index + 1} ["25 MHz REF"]`
 ).join("\n")}`;
 
+const PID_BLOCK = `blockdiagram "PID Closed-Loop Control System"
+C = block("C(s)") [role: controller]
+G = block("G(s)") [role: plant]
+H = block("H(s)") [role: sensor]
+r = signal("r(t)")
+e = signal("e(t)")
+u = signal("u(t)")
+y = signal("y(t)")
+ym = signal("y_m(t)")
+err = sum(+r, -ym)
+in -> r
+r -> err ["R(s)"]
+err -> C ["E(s)"]
+C -> G ["U(s)"]
+G -> out ["Y(s)"]
+G -> H ["Y(s)"]
+H -> err ["Y_m(s)"]`;
+
 const AUTOMOTIVE = `circuit "Circuito de Intermitentes Automotriz 12V" netlist
 B1 bat 0 12V label="Batería / Encendedor 12V"
 F1 bat p1 15A label="Fusible 15A"
@@ -175,6 +193,33 @@ describe("22.2 measured layered layout", () => {
       expect(rendered.svg).toContain("<tspan");
       expect(rendered.svg).toContain("STM32F407");
     }
+  });
+
+  it("keeps return-path blocks off the forward row without stretching the canvas", () => {
+    const layout = layoutBlockDiagram(parseBlockDiagram(PID_BLOCK));
+    const block = (id: string) => {
+      const node = layout.nodes.find((candidate) => candidate.id === id);
+      expect(node?.kind).toBe("block");
+      return node! as Extract<typeof node, { kind: "block" }>;
+    };
+    const plant = block("G");
+    const sensor = block("H");
+    const output = layout.nodes.find((node) => node.id === "out");
+
+    expect(sensor.y).toBeGreaterThan(plant.y + plant.height);
+    expect(output?.kind).toBe("port");
+    if (output?.kind === "port") {
+      expect(output.y).toBe(plant.y + plant.height / 2);
+    }
+    expect(layout.edges.find((edge) => edge.from === "H")?.isFeedback).toBe(
+      true
+    );
+    expect(layout.width).toBeLessThan(1200);
+    expect(findBlockDiagramCollisions(layout)).toEqual({
+      nodeNode: [],
+      labelLabel: [],
+      labelNode: [],
+    });
   });
 
   it("supports real automotive B/L/P and center-off symbols", () => {

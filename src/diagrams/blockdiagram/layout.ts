@@ -89,7 +89,7 @@ const BLOCK_TEXT_MAX = 190;
 const EDGE_FONT = 12;
 const EDGE_LINE_H = 14;
 const EDGE_TEXT_MAX = 165;
-const COL_GAP = 210;
+const MIN_COL_GAP = 64;
 const ROW_GAP = 42;
 const TOP_PAD = 32;
 const BOTTOM_PAD = 34;
@@ -148,12 +148,13 @@ function measureEdgeLabel(label: string | undefined): {
 function centeredRows(
   ids: string[],
   heightOf: (id: string) => number,
-  contentHeight: number
+  contentHeight: number,
+  top: number = TOP_PAD
 ): Map<string, number> {
   const total =
     ids.reduce((sum, id) => sum + heightOf(id), 0) +
     Math.max(0, ids.length - 1) * ROW_GAP;
-  let cursor = TOP_PAD + (contentHeight - total) / 2;
+  let cursor = top + (contentHeight - total) / 2;
   const centers = new Map<string, number>();
   for (const id of ids) {
     const height = heightOf(id);
@@ -325,7 +326,33 @@ export function layoutBlockDiagram(ast: BlockAST): BlockDiagramLayout {
     });
   }
 
-  const stackHeights = layers.map((ids) =>
+  // A return-path block (for example a feedback sensor) is not another stage
+  // in the forward pipeline. Detect it from topology and place it in a
+  // dedicated side band. This keeps the main path aligned without relying on
+  // role names or diagram-specific IDs.
+  const feedbackNodeSide = new Map<string, "above" | "below">();
+  for (const id of nodeIds) {
+    const ins = incoming.get(id) ?? [];
+    const outs = outgoing.get(id) ?? [];
+    if (
+      explicitIds.has(id) &&
+      ins.length > 0 &&
+      outs.length > 0 &&
+      outs.every(
+        (edge) => (layer.get(edge.to) ?? 0) < (layer.get(id) ?? 0)
+      )
+    ) {
+      feedbackNodeSide.set(
+        id,
+        blockById.get(id)?.route === "above" ? "above" : "below"
+      );
+    }
+  }
+
+  const normalLayers = layers.map((ids) =>
+    ids.filter((id) => !feedbackNodeSide.has(id))
+  );
+  const stackHeights = normalLayers.map((ids) =>
     ids.reduce((sum, id) => sum + measures.get(id)!.height, 0) +
     Math.max(0, ids.length - 1) * ROW_GAP
   );
@@ -333,24 +360,95 @@ export function layoutBlockDiagram(ast: BlockAST): BlockDiagramLayout {
   const feedbackEdges = ast.connections.filter(
     (edge) => (layer.get(edge.to) ?? 0) <= (layer.get(edge.from) ?? 0)
   );
+  const feedbackEdgeSide = (edge: BlockEdge): "above" | "below" =>
+    feedbackNodeSide.get(edge.from) === "above" ? "above" : "below";
+  const aboveFeedbackCount = feedbackEdges.filter(
+    (edge) => feedbackEdgeSide(edge) === "above"
+  ).length;
+  const belowFeedbackCount = feedbackEdges.length - aboveFeedbackCount;
+  const feedbackNodes = [...feedbackNodeSide].sort(
+    ([left], [right]) =>
+      (layer.get(left) ?? 0) - (layer.get(right) ?? 0) ||
+      layers[layer.get(left) ?? 0]!.indexOf(left) -
+        layers[layer.get(right) ?? 0]!.indexOf(right)
+  );
+  const aboveFeedbackNodes = feedbackNodes
+    .filter(([, side]) => side === "above")
+    .map(([id]) => id);
+  const belowFeedbackNodes = feedbackNodes
+    .filter(([, side]) => side === "below")
+    .map(([id]) => id);
+  const stackHeight = (ids: string[]): number =>
+    ids.reduce((sum, id) => sum + measures.get(id)!.height, 0) +
+    Math.max(0, ids.length - 1) * ROW_GAP;
+  const aboveStackHeight = stackHeight(aboveFeedbackNodes);
+  const belowStackHeight = stackHeight(belowFeedbackNodes);
+  const aboveLaneBand = aboveFeedbackCount * FEEDBACK_LANE_GAP;
+  const normalTop =
+    TOP_PAD +
+    aboveLaneBand +
+    aboveStackHeight +
+    (aboveFeedbackNodes.length > 0 ? ROW_GAP : 0);
 
   const columnWidths = layers.map((ids) =>
     Math.max(MIN_BLOCK_W, ...ids.map((id) => measures.get(id)!.width))
   );
+  // Horizontal whitespace is a measured property of the edges between two
+  // columns. Short labels should not force poster-wide diagrams, while the
+  // last of several fan-out channels still gets enough room for its label.
+  const pairSources = new Map<string, string[]>();
+  for (const edge of ast.connections) {
+    const fromLayer = layer.get(edge.from) ?? 0;
+    const toLayer = layer.get(edge.to) ?? 0;
+    if (toLayer <= fromLayer) continue;
+    const key = `${fromLayer}:${toLayer}`;
+    const ids = pairSources.get(key) ?? [];
+    if (!ids.includes(edge.from)) ids.push(edge.from);
+    pairSources.set(key, ids);
+  }
+  for (const [key, ids] of pairSources) {
+    const fromLayer = Number(key.split(":")[0]);
+    ids.sort(
+      (left, right) =>
+        layers[fromLayer]!.indexOf(left) - layers[fromLayer]!.indexOf(right)
+    );
+  }
+  const columnGaps = Array.from(
+    { length: Math.max(0, layers.length - 1) },
+    () => MIN_COL_GAP
+  );
+  for (const edge of ast.connections) {
+    const fromLayer = layer.get(edge.from) ?? 0;
+    const toLayer = layer.get(edge.to) ?? 0;
+    if (toLayer !== fromLayer + 1) continue;
+    const sources = pairSources.get(`${fromLayer}:${toLayer}`) ?? [edge.from];
+    const sourceRank = Math.max(0, sources.indexOf(edge.from));
+    const remainingFraction = 1 - (sourceRank + 1) / (sources.length + 1);
+    const labelWidth = measureEdgeLabel(edge.label).width ?? 0;
+    const required = labelWidth > 0
+      ? Math.ceil((labelWidth + 12) / Math.max(0.2, remainingFraction))
+      : MIN_COL_GAP;
+    columnGaps[fromLayer] = Math.max(
+      columnGaps[fromLayer] ?? MIN_COL_GAP,
+      required
+    );
+  }
   const columnCenters: number[] = [];
   let xCursor = SIDE_PAD;
-  for (const width of columnWidths) {
+  for (let rank = 0; rank < columnWidths.length; rank++) {
+    const width = columnWidths[rank]!;
     columnCenters.push(xCursor + width / 2);
-    xCursor += width + COL_GAP;
+    xCursor += width + (columnGaps[rank] ?? 0);
   }
-  const width = Math.max(360, xCursor - COL_GAP + SIDE_PAD);
+  const width = Math.max(360, xCursor + SIDE_PAD);
 
   const centers = new Map<string, { x: number; y: number }>();
-  layers.forEach((ids, rank) => {
+  normalLayers.forEach((ids, rank) => {
     const rowCenters = centeredRows(
       ids,
       (id) => measures.get(id)!.height,
-      contentHeight
+      contentHeight,
+      normalTop
     );
     for (const id of ids) {
       centers.set(id, {
@@ -359,6 +457,27 @@ export function layoutBlockDiagram(ast: BlockAST): BlockDiagramLayout {
       });
     }
   });
+  let aboveCursor = TOP_PAD + aboveLaneBand;
+  for (const id of aboveFeedbackNodes) {
+    const measure = measures.get(id)!;
+    centers.set(id, {
+      x: columnCenters[layer.get(id) ?? 0]!,
+      y: aboveCursor + measure.height / 2,
+    });
+    aboveCursor += measure.height + ROW_GAP;
+  }
+  let belowCursor =
+    normalTop +
+    contentHeight +
+    (belowFeedbackNodes.length > 0 ? ROW_GAP : 0);
+  for (const id of belowFeedbackNodes) {
+    const measure = measures.get(id)!;
+    centers.set(id, {
+      x: columnCenters[layer.get(id) ?? 0]!,
+      y: belowCursor + measure.height / 2,
+    });
+    belowCursor += measure.height + ROW_GAP;
+  }
 
   const nodes: LaidNode[] = [];
   const branchCount = new Map<string, number>();
@@ -421,22 +540,11 @@ export function layoutBlockDiagram(ast: BlockAST): BlockDiagramLayout {
 
   const sourceRanksByPair = new Map<string, Map<string, number>>();
   const sourceCountsByPair = new Map<string, number>();
-  for (const edge of ast.connections) {
-    const fromLayer = layer.get(edge.from) ?? 0;
-    const toLayer = layer.get(edge.to) ?? 0;
-    if (toLayer <= fromLayer) continue;
-    const key = `${fromLayer}:${toLayer}`;
-    const ids = [
-      ...new Set(
-        ast.connections
-          .filter(
-            (candidate) =>
-              (layer.get(candidate.from) ?? 0) === fromLayer &&
-              (layer.get(candidate.to) ?? 0) === toLayer
-          )
-          .map((candidate) => candidate.from)
-      ),
-    ].sort((a, b) => (centers.get(a)?.y ?? 0) - (centers.get(b)?.y ?? 0));
+  for (const [key, pairIds] of pairSources) {
+    const ids = [...pairIds].sort(
+      (left, right) =>
+        (centers.get(left)?.y ?? 0) - (centers.get(right)?.y ?? 0)
+    );
     sourceRanksByPair.set(
       key,
       new Map(ids.map((id, index) => [id, index] as const))
@@ -457,7 +565,13 @@ export function layoutBlockDiagram(ast: BlockAST): BlockDiagramLayout {
   }
 
   const edges: LaidEdge[] = [];
-  let feedbackIndex = 0;
+  let aboveFeedbackIndex = 0;
+  let belowFeedbackIndex = 0;
+  const belowStackEnd =
+    normalTop +
+    contentHeight +
+    (belowFeedbackNodes.length > 0 ? ROW_GAP + belowStackHeight : 0);
+  const belowLaneStart = belowStackEnd + BOTTOM_PAD;
   for (const edge of ast.connections) {
     const source = centers.get(edge.from);
     const target = centers.get(edge.to);
@@ -505,28 +619,33 @@ export function layoutBlockDiagram(ast: BlockAST): BlockDiagramLayout {
       midY = targetY - 7;
     } else {
       isFeedback = true;
-      const laneY =
-        TOP_PAD +
-        contentHeight +
-        BOTTOM_PAD +
-        feedbackIndex * FEEDBACK_LANE_GAP;
-      feedbackIndex++;
-      const sourceBottom = source.y + nodeHeight(edge.from) / 2;
-      const targetBottom = target.y + nodeHeight(edge.to) / 2;
-      path = `M ${source.x} ${sourceBottom} L ${source.x} ${laneY} L ${target.x} ${laneY} L ${target.x} ${targetBottom}`;
+      const side = feedbackEdgeSide(edge);
+      const laneY = side === "above"
+        ? TOP_PAD + aboveFeedbackIndex++ * FEEDBACK_LANE_GAP
+        : belowLaneStart + belowFeedbackIndex++ * FEEDBACK_LANE_GAP;
+      const sourceEdgeY = side === "above"
+        ? source.y - nodeHeight(edge.from) / 2
+        : source.y + nodeHeight(edge.from) / 2;
+      const targetEdgeY = side === "above"
+        ? target.y - nodeHeight(edge.to) / 2
+        : target.y + nodeHeight(edge.to) / 2;
+      path = `M ${source.x} ${sourceEdgeY} L ${source.x} ${laneY} L ${target.x} ${laneY} L ${target.x} ${targetEdgeY}`;
       midX = (source.x + target.x) / 2;
-      midY = laneY - 7;
+      midY = laneY + (side === "above" ? 7 : -7);
     }
 
     let polarity: LaidEdgePolarity | undefined;
     if (sumById.has(edge.to)) {
       const sign = sumPolarity.get(edge.to)?.get(edge.from) ?? "+";
-      const pin = isFeedback ? "bottom" : "left";
+      const side = feedbackEdgeSide(edge);
+      const pin = isFeedback ? side === "above" ? "top" : "bottom" : "left";
       polarity = {
         sign,
         pin,
         x: isFeedback ? target.x - 8 : targetX - 8,
-        y: isFeedback ? target.y + SUM_R + 10 : targetY + 5,
+        y: isFeedback
+          ? target.y + (side === "above" ? -SUM_R - 4 : SUM_R + 10)
+          : targetY + 5,
       };
     }
 
@@ -544,10 +663,8 @@ export function layoutBlockDiagram(ast: BlockAST): BlockDiagramLayout {
   }
 
   const height =
-    TOP_PAD +
-    contentHeight +
-    BOTTOM_PAD +
-    feedbackEdges.length * FEEDBACK_LANE_GAP;
+    belowLaneStart +
+    Math.max(BOTTOM_PAD, belowFeedbackCount * FEEDBACK_LANE_GAP);
 
   return {
     width,
