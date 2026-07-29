@@ -1,5 +1,8 @@
 import type { DiagramType } from "../core/types";
 import { FLOORPLAN_TYPE_KEYWORDS } from "../diagrams/floorplan/catalog";
+import { CIRCUIT_GENERATION_CAPABILITIES } from "../diagrams/circuit/capabilities";
+import { BLOCKDIAGRAM_GENERATION_CAPABILITIES } from "../diagrams/blockdiagram/capabilities";
+import { STATE_GENERATION_CAPABILITIES } from "../diagrams/state/capabilities";
 
 /**
  * Shared generation policy exposed to LLM-facing syntax callers.
@@ -262,7 +265,7 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
     header: 'circuit "Title" netlist',
     mode: "SPICE-style netlist (recommended for generation)",
     keywords:
-      'header: circuit "name" netlist · ID net1 net2 [value] [key=value …] · prefixes R(resistor) C(capacitor) L(inductor) D(diode) V(voltage_source) I(current_source) Q(BJT) M(MOSFET) J(jfet) S(switch) F(fuse) B(battery) K(relay) U/X(ic) W(wire) T(terminal) · lamps/loads: L1 switched neutral type=lamp · two-way lighting: switch_spdt with traveler nets · ground nets 0/gnd/ground/earth/vss/agnd/dgnd · type= override · dir=(right|left|up|down) · pins="…" · positional mode (no netlist): id: type dir [label= value= at=x,y width= height= length=] · panel primitives: enclosure/cabinet/panel din_rail wire_duct plc terminal_block contactor relay_coil pilot_light selector_switch emergency_stop · wire right|left|up|down · at: id.pin or x,y · net NAME · ground vcc no_connect',
+      `header: circuit "name" netlist · ID net1 net2 [value] [key=value …] · prefixes R(resistor) C(capacitor) L(inductor) D(diode) V(voltage_source) I(current_source) Q(BJT) M(MOSFET) J(jfet) S(switch) F(fuse) B(battery) K(relay) U/X(ic) W(wire) T(terminal) · lamps/loads: L1 switched neutral type=lamp · automotive: ${CIRCUIT_GENERATION_CAPABILITIES.automotiveTypes.map((type) => `type=${type}`).join(", ")} · two-way lighting: switch_spdt with traveler nets · ground nets 0/gnd/ground/earth/vss/agnd/dgnd · type= override · dir=(right|left|up|down) · pins="…" · positional mode (no netlist): id: type dir [label= value= at=x,y width= height= length=] · panel primitives: enclosure/cabinet/panel din_rail wire_duct plc terminal_block contactor relay_coil pilot_light selector_switch emergency_stop · wire right|left|up|down · at: id.pin or x,y · net NAME · ground vcc no_connect`,
     forms: [
       'circuit "Bridge Rectifier Supply" netlist',
       "V1 ac1 ac2 12Vac",
@@ -279,6 +282,7 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
       "The id first letter sets the type (R=resistor, C=capacitor, L=inductor, D=diode, V=voltage_source, Q=BJT, M=MOSFET). Use `type=` only when the prefix is ambiguous.",
       "For household AC lighting, use clear L/N nets: `V1 live neutral 220Vac type=acsource`, then `F1 live protected`, `S1 protected switched`, `L1 switched neutral type=lamp`. The renderer keeps live/control above and neutral return below.",
       "For two-way/stair lighting, use two `switch_spdt` parts sharing two traveler nets; do not place SPST switches in series.",
+      "For an automotive turn-signal path use `automotive_flasher_3pin` with B/L/P nets and `switch_spdt_center_off` for the left/off/right selector; these are real three-pin symbols, not generic aliases.",
       "Optional `dir=right|left|up|down` nudges a symbol's orientation (e.g. `C1 vout 0 100n dir=down` for a shunt cap); it does not set position.",
       "For control cabinet / panel-layout drawings, use positional mode (no `netlist`) with absolute `at=x,y`: start with `enclosure width=… height=…`, add `wire_duct`, `din_rail`, `plc`, `terminal_block`, `contactor`, and front-panel controls.",
     ],
@@ -288,6 +292,7 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
       "Do not use `RL1` for a lamp unless it is truly a relay/load resistor; prefer `L1 ... type=lamp` or `H1 ... type=pilot_light`.",
       "Do not model two-way/three-way light switching as a simple series chain of `switch_spst`; use traveler nets and `switch_spdt`/crossover switching.",
       "Don't give a multi-terminal part fewer nets than it has pins (a `transformer` needs 4: `T1 p1 p2 s1 s2 type=transformer`).",
+      "Don't invent an automotive `flasher` placeholder or model a center-off selector as a two-pin switch; use the supported three-pin automotive types.",
     ],
     repair: [
       "'Cannot infer type from id' -> rename to a SPICE-prefix id (R*, C*, L*, D*, V*, Q*, M*…) or add `type=<name>` (e.g. `N1 in out type=nmos`).",
@@ -301,7 +306,7 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
     header: 'blockdiagram "Title"',
     mode: "named block/sum/signal decls + directed -> chains",
     keywords:
-      'ID = block("label") [role:…][route:above|below] · ID = sum(+a, -b) · ID = signal("label") [discrete] · connect ids with -> (chainable a -> b -> c) · in / out boundary ports · edge label ["text"] | roles: controller plant sensor actuator reference disturbance generic',
+      `ID = block("label") [role:…][route:above|below] · labels support ${BLOCKDIAGRAM_GENERATION_CAPABILITIES.multilineLabels.join(" and ")} inside the closing quotes · ID = sum(+a, -b) · ID = signal("label") [discrete] · connect declared ids with -> (chainable a -> b -> c) · explicit shorthand ${BLOCKDIAGRAM_GENERATION_CAPABILITIES.explicitShorthand} -> ${BLOCKDIAGRAM_GENERATION_CAPABILITIES.explicitShorthand} · in / out boundary ports · edge label ["text"] | roles: controller plant sensor actuator reference disturbance generic`,
     forms: [
       'C = block("PID C(s)") [role: controller]',
       'G = block("Plant G(s)") [role: plant]',
@@ -313,15 +318,17 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
       'Declare blocks `ID = block("label") [role: …]`, junctions `ID = sum(+a, -b)`, and signals `ID = signal("label")`, then wire ids with directed `->` (chainable: `a -> b -> c`).',
       "Model feedback through an explicit `sum(+ref, -fb)` — the signs are visual (+ enters, − subtracts), not computed; send a long return path over the top with `[route: above]` on the sensor block.",
       'Roles for styling: controller, plant, sensor, actuator, reference, disturbance, generic. The reserved ids `in` and `out` render as boundary ports when they are not explicitly declared as blocks; annotate an edge with `["label"]`.',
+      "Use explicit `\\n` breaks inside long hardware labels. Node bounds are measured before layered placement, so fan-out peers receive separate rows.",
     ],
     avoid: [
-      "An unknown id on a `->` line does NOT error — it silently becomes a stray generic `block`, so a typo'd id creates a phantom box. Keep ids consistent.",
+      "Don't reference a bare undeclared id on a `->` line — it is a hard error. Declare the block first, or use the intentional `[ID]` shorthand.",
       "Avoid drawing feedback as a bare reverse arrow with no junction; route it into a `sum(...)` so the loop reads correctly.",
       'Don\'t quote ids; quotes belong only inside `block("…")` / `signal("…")` labels and edge `["…"]` labels.',
     ],
     repair: [
       "'Invalid connection: <line>' -> a `->` line needs an id on both sides (e.g. `err -> C`); `C ->` or `-> C` alone is rejected.",
-      "Most ids auto-declare, so few lines hard-fail — if a box is unexpectedly empty, look for an id typo. Reserved `in`/`out` are boundary ports and must not become generic boxes.",
+      "'undeclared endpoint' -> declare the missing `ID = block(\"…\")`; use `[ID]` only when an id-as-label shorthand is intentional. Reserved `in`/`out` remain boundary ports.",
+      "'unrecognized statement' -> repair the exact source line; the parser never drops an unknown declaration and returns clean success.",
     ],
   },
   ladder: {
@@ -709,7 +716,7 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
     header: "stateDiagram-v2",
     mode: "Mermaid stateDiagram-v2 (recommended; native 'state' header also accepted)",
     keywords:
-      'stateDiagram-v2 (or state "Title" [direction: LR]) · [*] --> S / S --> [*] · S --> T : trigger [guard] / action · state "Long name" as ID · state ID <<choice>> | <<fork>> | <<join>> | <<end>> · composite state ID { … } with -- for concurrent regions · note right_of X : text · direction TB|LR · native pseudo-states: initial final choice junction fork join history dhistory terminate entry_point exit_point',
+      `stateDiagram-v2 (or state "Title" [direction: LR]) · [*] --> S / S --> [*] · S --> T : trigger [guard] / action · state "Long name" as ID (quoted labels support \`\\n\` or physical newlines) · state ID <<choice>> | <<fork>> | <<join>> | <<end>> · composite state ID { … } with -- for concurrent regions · note right_of X : text · direction ${STATE_GENERATION_CAPABILITIES.directions.join("|")} · native pseudo-states: initial final choice junction fork join history dhistory terminate entry_point exit_point`,
     forms: [
       "stateDiagram-v2",
       "  [*] --> Idle",
@@ -723,16 +730,20 @@ const PROFILES: Record<DiagramType, GenerationProfile> = {
       "Use Mermaid `stateDiagram-v2` with `[*]` for initial/final pseudo-states and `-->` for transitions — matches the dominant training prior and is less error-prone than the native `state \"Title\"` + `initial`/`final` form.",
       "Write transition labels as `: trigger [guard] / action` — all three segments optional, but the colon is required if any label follows the arrow.",
       "For composite states use `state ID { … }` (Mermaid) or `composite ID { … }` (native); separate concurrent regions with `--` inside the block.",
+      "When the user asks for down/vertical/top-to-bottom arrows, use `direction TB`. For long linear chains, use `direction auto` or TB; reserve LR for short compact lifecycles.",
+      "Break a long state into measured rows inside the quoted label, e.g. `state \"M₀ · (1,0,0)\\nPackage received\" as M0`.",
     ],
     avoid: [
       "Don't mix the two header styles — `[*]` (Mermaid) and `initial X` (native) are both accepted but must not appear together.",
       "Don't invent pseudo-state kinds — valid are `initial`/`final`/`choice`/`junction`/`fork`/`join`/`history`/`dhistory`/`terminate`/`entry_point`/`exit_point` and `<<choice>>`/`<<fork>>`/`<<join>>`/`<<end>>`.",
       "Don't leave a composite `{` block unclosed — an unclosed brace is a hard parse error.",
+      "Don't use `direction LR` for a requested downward sequence or as a workaround for long labels; it can trigger `STATE_EXTREME_ASPECT_RATIO`.",
     ],
     repair: [
       "'Expected' header -> the first non-comment line must be `stateDiagram-v2`, `stateDiagram`, or `state`.",
       "'Unparseable line' -> check for an unsupported pseudo-state keyword, a missing `-->` arrow, or a line that is neither a transition, declaration, nor directive.",
       "'Unclosed composite block' -> every `state ID {` or `composite ID {` must be closed with a matching `}`.",
+      "'STATE_EXTREME_ASPECT_RATIO' -> switch an explicitly horizontal long chain to `direction TB` or `direction auto`.",
     ],
   },
   pid: {

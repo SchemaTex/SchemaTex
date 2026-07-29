@@ -18,4 +18,12 @@ export const blockdiagram: DiagramPlugin = {
 
 export { parseBlockDiagram } from "./parser";
 export { renderBlockDiagram } from "./renderer";
-export { layoutBlockDiagram } from "./layout";
+export {
+  findBlockDiagramCollisions,
+  layoutBlockDiagram,
+} from "./layout";
+export {
+  BLOCKDIAGRAM_GENERATION_CAPABILITIES,
+  getBlockDiagramGenerationCapabilities,
+  type BlockDiagramGenerationCapabilities,
+} from "./capabilities";

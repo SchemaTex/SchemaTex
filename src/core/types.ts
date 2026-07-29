@@ -1091,6 +1091,7 @@ export type CircuitComponentType =
   // ── Switches ──────────────────────────────────────────────────
   | "switch_spst"       // Single-pole single-throw (angled arm + gap)
   | "switch_spdt"       // Single-pole double-throw (3-pin)
+  | "switch_spdt_center_off" // Three-position left/off/right selector
   | "switch_dpdt"       // Double-pole double-throw (6-pin)
   | "push_no"           // Push button normally-open (circle + contact gap)
   | "push_nc"           // Push button normally-closed (circle + line + slash)
@@ -1112,6 +1113,7 @@ export type CircuitComponentType =
   | "speaker"           // Triangle + box + radiating lines
   | "microphone"        // Circle + vertical lines (capsule)
   | "buzzer"            // Piezo symbol or speaker variant
+  | "automotive_flasher_3pin" // Automotive B/L/P turn-signal flasher
 
   // ── Measurement ───────────────────────────────────────────────
   | "ammeter"           // Circle + "A"
@@ -1193,6 +1195,10 @@ export interface BlockNode {
   role?: BlockRole;
   /** Routing hint for feedback/feedforward blocks: "above" = route over forward path */
   route?: "above" | "below";
+  /** True when explicitly requested through the `[ID]` shorthand. */
+  synthetic?: boolean;
+  /** One-based declaration/recovery line for diagnostics and provenance. */
+  sourceLine?: number;
 }
 
 export interface SummingJunction {

@@ -170,8 +170,10 @@ function renderItem(
     const midpointX = it.x + offX + (it.length * Math.cos(angle)) / 2;
     const midpointY = it.y + offY + (it.length * Math.sin(angle)) / 2;
     const vertical = Math.abs(Math.sin(angle)) > 0.5;
-    const labelX = midpointX + (vertical ? 34 : 0);
-    const labelY = midpointY - (vertical ? 2 : 18);
+    const labelX =
+      midpointX + (vertical ? 34 : 0) + (sym.labelOffset?.dx ?? 0);
+    const labelY =
+      midpointY - (vertical ? 2 : 18) + (sym.labelOffset?.dy ?? 0);
     if (comp.label) {
       labels.push(
         text(

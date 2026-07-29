@@ -156,6 +156,12 @@ floorplan "Victorian — First" unit m
 floor 1 "First Floor"
 room hall at 4,3 size 5x4`;
 
+const FLOORPLAN_REPEATED_HEADER_AFTER = `floorplan "Victorian — Two Floors" unit m
+floor 0 "Ground Floor"
+room hall at -2,-1 size 5x4
+floor 1 "First Floor"
+room hall at 4,3 size 5x4`;
+
 const FLOORPLAN_LABEL_BEFORE = `floorplan "Future Archives Exhibition" unit m
 room gallery "Gallery 14 · Future Archives" at 0,0 size 14x9
 furniture stage "Archive Timeline" in gallery at 1,1 size 12x1.5
@@ -165,6 +171,141 @@ const FLOORPLAN_LABEL_AFTER = `floorplan "Future Archives Exhibition" unit m
 room gallery "Gallery 14 · Future Archives" at 0,0 size 14x9 label-role primary
 furniture stage "Archive Timeline" in gallery at 1,1 size 12x1.5
 grid shelving in gallery rows 2 cols 3 within 2,4 12,8 itemsize 1.8x0.6`;
+
+const MINDMAP_WRAPPED = [
+  "```",
+  "mindmap",
+  "",
+  "# Lycanthropy Class Tree",
+  "## Primal Archetypes",
+  "### Moonbound",
+  "- Lunar senses",
+  "- Controlled shift",
+  "### Bloodfang",
+  "- Pack tactics",
+  "- Relentless pursuit",
+  "## Combat Paths",
+  "### Berserker",
+  "- Rage",
+  "- Regeneration",
+  "### Stalker",
+  "- Silence",
+  "- Ambush",
+  "## Playstyles",
+  "### Vanguard",
+  "- Guard the pack",
+  "- Break the line",
+  "### Hunter",
+  "- Track",
+  "- Isolate",
+  "```",
+].join("\n");
+
+const BLOCK_WASHER = `blockdiagram "Samsung Washer Control Board"
+AC = block("120/240 VAC
+Mains Input") [role: reference]
+PSU = block("SMPS
+DC41 Power Board") [role: plant]
+MCU = block("MCU Principal
+DC41-00285C") [role: controller]
+UI = block("Display + Key Matrix
+User Interface") [role: reference]
+Motor = block("Direct Drive Motor
+Hall Feedback") [role: actuator]
+Heater = block("Heater + NTC
+Temperature Loop") [role: actuator]
+Pump = block("Drain Pump
+Water Level Sensor") [role: actuator]
+Lock = block("Door Lock
+Safety Interlock") [role: sensor]
+AC -> PSU ["rectified supply"]
+PSU -> MCU ["5 V / 12 V"]
+UI -> MCU ["keys"]
+MCU -> Motor ["3-phase PWM"]
+MCU -> Heater ["relay drive"]
+MCU -> Pump ["triac drive"]
+Lock -> MCU ["interlock"]`;
+
+const BLOCK_SPI = `blockdiagram "SPI Bus Topology — 28× ADF4351"
+CPU = block("STM32F407\\nSPI1 Peripheral\\nSCK · MOSI\\n+ 7× GPIO LE[1:7]") [role: controller]
+TCXO = block("25 MHz TCXO\\nClock Distribution\\nBuffer Fanout ×7") [role: reference]
+G1 = block("G1: GSM 850\\nU2→U3→U4→U5\\n4× Daisy-Chain")
+G2 = block("G2: GSM 900\\nU6→U7→U8→U9\\n4× Daisy-Chain")
+G3 = block("G3: DCS 1800\\nU10→U11→U12→U13\\n4× Daisy-Chain")
+G4 = block("G4: PCS 1900\\nU14→U15→U16→U17\\n4× Daisy-Chain")
+G5 = block("G5: LTE Low\\nU18→U19→U20→U21\\n4× Daisy-Chain")
+G6 = block("G6: LTE Mid\\nU22→U23→U24→U25\\n4× Daisy-Chain")
+G7 = block("G7: LTE High\\nU26→U27→U28→U29\\n4× Daisy-Chain")
+in -> CPU
+in -> TCXO
+CPU -> G1 ["SCK, MOSI + LE1"]
+CPU -> G2 ["SCK, MOSI + LE2"]
+CPU -> G3 ["SCK, MOSI + LE3"]
+CPU -> G4 ["SCK, MOSI + LE4"]
+CPU -> G5 ["SCK, MOSI + LE5"]
+CPU -> G6 ["SCK, MOSI + LE6"]
+CPU -> G7 ["SCK, MOSI + LE7"]
+TCXO -> G1 ["25 MHz REF"]
+TCXO -> G2 ["25 MHz REF"]
+TCXO -> G3 ["25 MHz REF"]
+TCXO -> G4 ["25 MHz REF"]
+TCXO -> G5 ["25 MHz REF"]
+TCXO -> G6 ["25 MHz REF"]
+TCXO -> G7 ["25 MHz REF"]`;
+
+const CIRCUIT_AUTOMOTIVE_BEFORE = `circuit "Circuito de Intermitentes Automotriz 12V" netlist
+B1 bat 0 12V label="Batería / Encendedor 12V"
+F1 bat p1 15A label="Fusible 15A"
+S1 p1 p2 type=switch_spst label="Interruptor Activación"
+K1 p2 fl_out piloto type=flasher label="Flasher 3 Contactos"
+S2 fl_out izq der type=switch_spdt label="Selector 3 Salidas (Izq/Der)"
+L1 izq 0 type=lamp label="Ámbar Del. Izq"
+L2 izq 0 type=lamp label="Ámbar Tras. Izq"
+D1 izq l1 type=led label="LED Verde Izq 1"
+R1 l1 0 500
+D2 izq l2 type=led label="LED Verde Izq 2"
+R2 l2 0 500
+L3 der 0 type=lamp label="Ámbar Del. Der"
+L4 der 0 type=lamp label="Ámbar Tras. Der"
+D3 der r1 type=led label="LED Verde Der 1"
+R3 r1 0 500
+D4 der r2 type=led label="LED Verde Der 2"
+R4 r2 0 500`;
+
+const CIRCUIT_AUTOMOTIVE_AFTER = CIRCUIT_AUTOMOTIVE_BEFORE
+  .replace("type=flasher", "type=automotive_flasher_3pin")
+  .replace(
+    'type=switch_spdt label="Selector 3 Salidas (Izq/Der)"',
+    'type=switch_spdt_center_off label="Selector Izq / OFF / Der"'
+  );
+
+const STATE_REACHABILITY_BEFORE = `stateDiagram-v2
+direction LR
+[*] --> M0
+state "M0: (1,0,0,0,0) Package Received from Seller" as M0
+state "M1: (0,1,0,0,0) At Sorting Center" as M1
+state "M2: (0,0,1,0,0) At Warehouse / Transit Hub" as M2
+state "M3: (0,0,0,1,0) With Delivery Courier" as M3
+state "M4: (0,0,0,0,1) Customer Received Package" as M4
+M0 --> M1 : T1 — Pickup Package
+M1 --> M2 : T2 — Sorting Process
+M2 --> M3 : T3 — Transportation to Hub
+M3 --> M4 : T4 — Last Mile Delivery
+M4 --> [*]`;
+
+const STATE_REACHABILITY_AFTER = `stateDiagram-v2
+direction auto
+[*] --> M0
+state "M₀ · (1,0,0,0,0)\\nPackage received from seller" as M0
+state "M₁ · (0,1,0,0,0)\\nAt sorting center" as M1
+state "M₂ · (0,0,1,0,0)\\nAt warehouse / transit hub" as M2
+state "M₃ · (0,0,0,1,0)\\nWith delivery courier" as M3
+state "M₄ · (0,0,0,0,1)\\nCustomer received package" as M4
+M0 --> M1 : T₁ — Pickup package
+M1 --> M2 : T₂ — Sorting process
+M2 --> M3 : T₃ — Transportation to hub
+M3 --> M4 : T₄ — Last-mile delivery
+M4 --> [*]`;
 
 const CASES = [
   {
@@ -279,15 +420,15 @@ const CASES = [
     number: "08",
     title: "A second document header stops at the source",
     beforeLabel: "Two documents silently became one",
-    afterLabel: "One structural diagnostic at line 4",
+    afterLabel: "One document, explicit floor sections",
     beforeDsl: FLOORPLAN_REPEATED_HEADER,
-    afterDsl: FLOORPLAN_REPEATED_HEADER,
-    spine: "SAME DSL",
+    afterDsl: FLOORPLAN_REPEATED_HEADER_AFTER,
+    spine: "SAME INTENT",
     issue:
       "The parser mutated mode and title mid-document, then laid unrelated floors out as though the source were structurally valid.",
     fix:
-      "The document contract is immutable: the second header fails once, at its own line, before geometry can cascade.",
-    expectInvalidAfter: true,
+      "One immutable document header now owns explicit floor sections; the original repeated-header source is rejected separately at line 4.",
+    gateDsl: FLOORPLAN_REPEATED_HEADER,
   },
   {
     id: "floorplan-label",
@@ -303,6 +444,81 @@ const CASES = [
       "The exhibition title existed in source but had exactly the same typographic weight as every ordinary room label.",
     fix:
       "A semantic label role changes typography without baking arbitrary font sizes into the DSL.",
+  },
+  {
+    id: "mindmap-wrapper",
+    type: "mindmap",
+    number: "10",
+    title: "A Markdown wrapper cannot invent a second root",
+    beforeLabel: "One real root, reported as two",
+    afterLabel: "Wrapper removed, tree preserved",
+    beforeDsl: MINDMAP_WRAPPED,
+    afterDsl: MINDMAP_WRAPPED,
+    spine: "SAME DSL",
+    issue:
+      "Blanking the outer fence shifted the optional marker away from physical line 1, so the parser promoted “mindmap” into a fake center node.",
+    fix:
+      "Marker discovery skips blank wrapper lines without shifting source positions; a genuine second H1 still fails with MINDMAP_MULTIPLE_ROOTS.",
+  },
+  {
+    id: "block-washer",
+    type: "blockdiagram",
+    number: "11",
+    title: "A valid Block diagram cannot lose declarations",
+    beforeLabel: "Valid, but detailed labels vanished",
+    afterLabel: "Physical multiline labels survive",
+    beforeDsl: BLOCK_WASHER,
+    afterDsl: BLOCK_WASHER,
+    spine: "SAME DSL",
+    issue:
+      "The line-regex parser discarded every physical multiline declaration, then recreated generic id-only nodes from edges and called the result valid.",
+    fix:
+      "A shared logical-line reader accumulates quoted statements; unknown lines and bare undeclared endpoints now fail instead of disappearing.",
+  },
+  {
+    id: "block-spi",
+    type: "blockdiagram",
+    number: "12",
+    title: "Fan-out peers receive real rows",
+    beforeLabel: "Nine nodes collapsed into two coordinates",
+    afterLabel: "Measured layered fan-out",
+    beforeDsl: BLOCK_SPI,
+    afterDsl: BLOCK_SPI,
+    spine: "SAME DSL",
+    issue:
+      "CPU and TCXO shared one coordinate, G1–G7 shared another, and literal line breaks were squeezed into fixed 100×54 boxes.",
+    fix:
+      "Labels are measured before placement; each layer allocates independent rows, ports and label lanes, with structural collision checks.",
+  },
+  {
+    id: "circuit-automotive",
+    type: "circuit",
+    number: "13",
+    title: "Automotive intent gets automotive primitives",
+    beforeLabel: "Unsupported flasher stops the render",
+    afterLabel: "B/L/P flasher, center-off selector, branch lanes",
+    beforeDsl: CIRCUIT_AUTOMOTIVE_BEFORE,
+    afterDsl: CIRCUIT_AUTOMOTIVE_AFTER,
+    spine: "SAME INTENT",
+    issue:
+      "Strict validation correctly refused the invented flasher type, but SchemaTex still could not represent the requested three-pin device or lay out eight parallel loads.",
+    fix:
+      "The capability now exists end-to-end; topology-driven planning aligns the series spine, separates left/right load banks, and shares one return rail.",
+  },
+  {
+    id: "state-reachability",
+    type: "state",
+    number: "14",
+    title: "A downward sequence stays printable",
+    beforeLabel: "2037×128 horizontal strip",
+    afterLabel: "Measured top-to-bottom state cards",
+    beforeDsl: STATE_REACHABILITY_BEFORE,
+    afterDsl: STATE_REACHABILITY_AFTER,
+    spine: "SAME INTENT",
+    issue:
+      "The generated LR directive overruled the requested down arrows, while long labels remained single-line and stretched five states across the page.",
+    fix:
+      "Direction auto selects TB for long chains, state and transition labels share measured multiline bounds, and explicit extreme LR returns a warning.",
   },
 ];
 

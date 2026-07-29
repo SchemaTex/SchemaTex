@@ -83,3 +83,58 @@ export function estimateMaxLineWidth(
   }
   return max;
 }
+
+/**
+ * Deterministically wrap text to a measured pixel width.
+ *
+ * Explicit newlines are always preserved. Latin text prefers word boundaries;
+ * CJK and over-wide tokens fall back to code-point boundaries. This is layout
+ * input, not a renderer convenience: every consumer receives the exact lines
+ * whose bounds it must reserve.
+ */
+export function wrapTextToWidth(
+  text: string,
+  fontSize: number,
+  maxWidth: number,
+  opts: EstimateTextWidthOptions = {}
+): string[] {
+  const output: string[] = [];
+
+  const pushParagraph = (paragraph: string): void => {
+    if (paragraph === "") {
+      output.push("");
+      return;
+    }
+
+    let line = "";
+    let lastBreak = -1;
+    for (const ch of paragraph) {
+      const candidate = line + ch;
+      if (
+        line &&
+        estimateTextWidth(candidate, fontSize, opts) > maxWidth
+      ) {
+        if (lastBreak >= 0) {
+          const head = line.slice(0, lastBreak).trimEnd();
+          const tail = line.slice(lastBreak).trimStart();
+          if (head) output.push(head);
+          line = tail;
+        } else {
+          output.push(line);
+          line = "";
+        }
+        lastBreak = -1;
+      }
+
+      if (ch === " " && line.length > 0) lastBreak = line.length;
+      line += ch;
+      if (isFullWidth(ch)) lastBreak = line.length;
+    }
+    if (line.trim().length > 0) output.push(line.trim());
+  };
+
+  for (const paragraph of String(text).split(/\r?\n/)) {
+    pushParagraph(paragraph);
+  }
+  return output.length > 0 ? output : [""];
+}

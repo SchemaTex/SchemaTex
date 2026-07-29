@@ -102,6 +102,10 @@ const TYPE_ALIASES: Record<string, CircuitComponentType> = {
   lamp: "lamp",
   light: "lamp",
   bulb: "lamp",
+  flasher: "automotive_flasher_3pin",
+  automotive_flasher: "automotive_flasher_3pin",
+  selector_center_off: "switch_spdt_center_off",
+  switch_center_off: "switch_spdt_center_off",
 };
 
 const NETLIST_SPECIAL_TYPES = new Set<CircuitComponentType>([

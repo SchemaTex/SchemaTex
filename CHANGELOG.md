@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed — generation truthfulness and measured layout across Mindmap, Block, Circuit, and State
+
+- **Markdown-wrapped Mindmaps preserve the one-root contract.** The optional `mindmap` marker is resolved from the first significant source line, while a genuine second H1 still fails with `MINDMAP_MULTIPLE_ROOTS` at its authored line.
+- **Block Diagram no longer reports clean success after losing source.** A shared logical-line reader preserves physical or escaped newlines inside quoted labels. Unknown statements and bare undeclared endpoints now return stable diagnostics; measured layered placement gives every fan-out peer its own row and reserves signal-label geometry.
+- **Automotive Circuit is a real capability, not a placeholder.** Added three-pin B/L/P flasher and center-off SPDT symbols, optional-pilot pin semantics, topology-driven left/right parallel load banks, split selector rails, a continuous return rail, and label-aware series spacing. Positional type acceptance now derives from the live symbol registry.
+- **Long State chains follow explicit direction policy.** `direction auto` selects TB for four-or-more long states and keeps short flows compact in LR. Quoted multiline labels are measured before layout, transition labels expand the canvas rather than clip, explicit extreme LR emits `STATE_EXTREME_ASPECT_RATIO`, and pinned renders expose `data-manual-layout`.
+- **Generation contracts are public and executable.** Circuit, Block Diagram, and State export machine-readable capability objects consumed by the AI profiles and regression tests.
+- **A deterministic release preview preserves the failures.** [examples/quality-hardening-preview.html](examples/quality-hardening-preview.html) now compares 14 before/after cases, including the five production-shaped 22.2 fixtures.
+
 ---
 
 ## [1.0.6] — 2026-07-28

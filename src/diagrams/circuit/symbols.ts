@@ -24,6 +24,10 @@ export interface SymbolDef {
   anchors: Record<string, PinAnchor>;
   /** Canonical netlist pin order; falls back to start/end for two-terminal symbols. */
   netlistPins?: string[];
+  /** Pins that are valid when intentionally left open (for example a flasher's pilot output). */
+  optionalNetlistPins?: string[];
+  /** Per-symbol adjustment for the renderer-owned component label. */
+  labelOffset?: { dx?: number; dy?: number };
   /** SVG fragment drawn from (0,0); caller wraps in <g transform="translate()+rotate()">. */
   svg: (label?: string, value?: string, attrs?: Record<string, string>) => string;
 }
@@ -713,6 +717,54 @@ const switch_spdt: SymbolDef = {
       lineWire(42, -12, 50, -12),
       `<circle cx="42" cy="12" r="2" ${FILL}/>`,
       lineWire(42, 12, 50, 12),
+    ].join(""),
+};
+
+const switch_spdt_center_off: SymbolDef = {
+  length: 54,
+  netlistPins: ["common", "left", "right"],
+  anchors: {
+    start: { x: 0, y: 0 },
+    end: { x: 54, y: 0 },
+    common: { x: 0, y: 0 },
+    left: { x: 54, y: -13 },
+    right: { x: 54, y: 13 },
+  },
+  svg: () =>
+    [
+      lineWire(0, 0, 10, 0),
+      `<circle cx="10" cy="0" r="2" ${FILL}/>`,
+      `<line x1="10" y1="0" x2="35" y2="0" ${BODY}/>`,
+      `<circle cx="44" cy="-13" r="2" ${FILL}/>`,
+      lineWire(44, -13, 54, -13),
+      `<circle cx="44" cy="13" r="2" ${FILL}/>`,
+      lineWire(44, 13, 54, 13),
+      `<text x="31" y="-7" class="schematex-circuit-pol">OFF</text>`,
+    ].join(""),
+};
+
+const automotive_flasher_3pin: SymbolDef = {
+  length: 58,
+  netlistPins: ["b", "l", "p"],
+  optionalNetlistPins: ["p"],
+  labelOffset: { dy: -16 },
+  anchors: {
+    start: { x: 0, y: 0 },
+    end: { x: 58, y: -11 },
+    b: { x: 0, y: 0 },
+    l: { x: 58, y: -11 },
+    p: { x: 58, y: 11 },
+  },
+  svg: () =>
+    [
+      lineWire(0, 0, 10, 0),
+      `<rect x="10" y="-18" width="38" height="36" rx="4" fill="white" ${BODY}/>`,
+      `<path d="M 17,7 L 23,-7 L 29,7 L 35,-7 L 41,7" fill="none" ${BODY}/>`,
+      lineWire(48, -11, 58, -11),
+      lineWire(48, 11, 58, 11),
+      `<text x="12" y="-22" class="schematex-circuit-pol">B</text>`,
+      `<text x="43" y="-22" class="schematex-circuit-pol">L</text>`,
+      `<text x="43" y="29" class="schematex-circuit-pol">P</text>`,
     ].join(""),
 };
 
@@ -1742,6 +1794,7 @@ export const SYMBOLS: Partial<Record<CircuitComponentType, SymbolDef>> = {
   speaker,
   microphone,
   buzzer,
+  automotive_flasher_3pin,
   potentiometer,
   rheostat,
   thermistor_ntc,
@@ -1750,6 +1803,7 @@ export const SYMBOLS: Partial<Record<CircuitComponentType, SymbolDef>> = {
   variable_cap,
   variable_inductor,
   switch_spdt,
+  switch_spdt_center_off,
   push_nc,
   gnd_chassis,
   gnd_digital,
@@ -1804,6 +1858,10 @@ export const SYMBOLS: Partial<Record<CircuitComponentType, SymbolDef>> = {
 
 export function getSymbol(t: string): SymbolDef | undefined {
   return SYMBOLS[t as CircuitComponentType];
+}
+
+export function listCircuitSymbolTypes(): CircuitComponentType[] {
+  return Object.keys(SYMBOLS).sort() as CircuitComponentType[];
 }
 
 export function getNetlistPinOrder(t: string): string[] | undefined {

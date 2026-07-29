@@ -62,8 +62,18 @@ export { phylo } from "./diagrams/phylo";
 export { sociogram } from "./diagrams/sociogram";
 export { timing } from "./diagrams/timing";
 export { logic } from "./diagrams/logic";
-export { circuit } from "./diagrams/circuit";
-export { blockdiagram } from "./diagrams/blockdiagram";
+export {
+  circuit,
+  CIRCUIT_GENERATION_CAPABILITIES,
+  getCircuitGenerationCapabilities,
+  type CircuitGenerationCapabilities,
+} from "./diagrams/circuit";
+export {
+  blockdiagram,
+  BLOCKDIAGRAM_GENERATION_CAPABILITIES,
+  getBlockDiagramGenerationCapabilities,
+  type BlockDiagramGenerationCapabilities,
+} from "./diagrams/blockdiagram";
 export { ladder } from "./diagrams/ladder";
 export { sld } from "./diagrams/sld";
 export { entity } from "./diagrams/entity";
@@ -73,7 +83,12 @@ export { flowchart } from "./diagrams/flowchart";
 export { orgchart } from "./diagrams/orgchart";
 export { decisiontree } from "./diagrams/decisiontree";
 export { timeline } from "./diagrams/timeline";
-export { state } from "./diagrams/state";
+export {
+  state,
+  STATE_GENERATION_CAPABILITIES,
+  getStateGenerationCapabilities,
+  type StateGenerationCapabilities,
+} from "./diagrams/state";
 export { pid } from "./diagrams/pid";
 export { prisma } from "./diagrams/prisma";
 export { usecase } from "./diagrams/usecase";
