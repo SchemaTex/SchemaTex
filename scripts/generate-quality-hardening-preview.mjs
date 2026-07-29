@@ -564,6 +564,16 @@ function diagnosticCodes(result) {
     .filter(Boolean);
 }
 
+function isPortraitSvg(svg) {
+  const viewBox = String(svg).match(
+    /\bviewBox=["'](?:-?[\d.]+\s+){2}([\d.]+)\s+([\d.]+)["']/
+  );
+  if (!viewBox) return false;
+  const width = Number(viewBox[1]);
+  const height = Number(viewBox[2]);
+  return width > 0 && height > 0 && width / height < 0.7;
+}
+
 function diagramCard(side, label, result, note) {
   const status = result.ok ? result.status : "invalid";
   const codes = diagnosticCodes(result);
@@ -593,6 +603,10 @@ function caseSection(entry, before, after, gate) {
     gate && !gate.ok
       ? `<aside class="gate-note"><span>Same broken DSL now stops at the gate</span><strong>${diagnosticCodes(gate).length} structured diagnostics · status invalid</strong></aside>`
       : "";
+  const portraitClass =
+    isPortraitSvg(before.svg) || isPortraitSvg(after.svg)
+      ? " portrait-comparison"
+      : "";
   return `<section class="case" id="${entry.id}">
     <header class="case-head">
       <div class="case-number">${entry.number}</div>
@@ -601,7 +615,7 @@ function caseSection(entry, before, after, gate) {
         <h2>${escapeHtml(entry.title)}</h2>
       </div>
     </header>
-    <div class="comparison">
+    <div class="comparison${portraitClass}">
       ${diagramCard("before", entry.beforeLabel, before, entry.issue)}
       <div class="spine" aria-hidden="true"><span>${entry.spine}</span></div>
       ${diagramCard("after", entry.afterLabel, after, entry.fix)}
@@ -814,7 +828,19 @@ function htmlPage(baseline, current, gates) {
         #fff;
       background-size: 16px 16px;
     }
-    .canvas img { display: block; width: 100%; height: 100%; object-fit: contain; }
+    .portrait-comparison .canvas {
+      height: clamp(680px, 78vw, 900px);
+    }
+    .canvas img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      min-width: 0;
+      min-height: 0;
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
     .render-note { min-height: 72px; margin: 15px 2px 0; color: var(--muted); font-size: 14px; }
     .before .render-note { border-left: 3px solid var(--fault); padding-left: 11px; }
     .after .render-note { border-left: 3px solid var(--pass); padding-left: 11px; }
